@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-05-25 18:54+0200\n"
+"POT-Creation-Date: 2010-05-26 19:11+0200\n"
 "PO-Revision-Date: 2010-05-15 16:09+0000\n"
 "Last-Translator: Martin Slavík <Unknown>\n"
 "Language-Team: Czech <Jmol-developers@lists.sf.net>\n"
@@ -495,65 +495,114 @@ msgstr "{0} atomy budou minimalizovány."
 msgid "could not setup force field {0}"
 msgstr "nemohu nastavit silové pole {0}"
 
-#: org/jmol/modelkit/AtomPopupResourceBundle.java:63
+#: org/jmol/modelkit/ModelKitPopup.java:64
 #, fuzzy
-msgid "delete atom"
-msgstr "Vybrat atom"
+msgid "Element?"
+msgstr "Prvek"
 
-#: org/jmol/modelkit/AtomPopupResourceBundle.java:64
-msgid "drag atom"
-msgstr ""
-
-#: org/jmol/modelkit/AtomPopupResourceBundle.java:65
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:68
 #, fuzzy
-msgid "drag-minimize"
-msgstr "Minimalizovat"
+msgid "atoms"
+msgstr "Atomy"
 
-#: org/jmol/modelkit/AtomPopupResourceBundle.java:70
-msgid "increase charge"
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:69
+msgid "more..."
 msgstr ""
 
-#: org/jmol/modelkit/AtomPopupResourceBundle.java:71
-msgid "decrease charge"
-msgstr ""
-
-#: org/jmol/modelkit/BondPopupResourceBundle.java:60
-msgid "delete"
-msgstr ""
-
-#: org/jmol/modelkit/BondPopupResourceBundle.java:61
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:70
 #, fuzzy
-msgid "single"
-msgstr "Soubor"
+msgid "bonds"
+msgstr "Vazby"
 
-#: org/jmol/modelkit/BondPopupResourceBundle.java:62
-msgid "double"
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:71
+msgid "new"
 msgstr ""
 
-#: org/jmol/modelkit/BondPopupResourceBundle.java:63
-#, fuzzy
-msgid "triple"
-msgstr "Soubor"
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:72
+#: org/jmol/viewer/ActionManager.java:54
+msgid "center"
+msgstr "střed"
 
-#: org/jmol/modelkit/BondPopupResourceBundle.java:64
-msgid "increase"
-msgstr ""
-
-#: org/jmol/modelkit/BondPopupResourceBundle.java:65
-msgid "decrease"
-msgstr ""
-
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:57
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:73
 #, fuzzy
 msgid "minimize"
 msgstr "Minimalizovat"
 
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:58
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:74
 #, fuzzy
-msgid "save"
+msgid "clear"
+msgstr "Vymazat"
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:75
+#, fuzzy
+msgid "save file"
 msgstr "Uložit"
 
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:59
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:76
+#, fuzzy
+msgid "save state"
+msgstr "Současný stav"
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:77
+#, fuzzy
+msgid "add hydrogens"
+msgstr "Ukázat vodíky"
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:78
+#, fuzzy
+msgid "delete atom"
+msgstr "Vybrat atom"
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:79
+msgid "drag atom"
+msgstr ""
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:80
+#, fuzzy
+msgid "drag-minimize"
+msgstr "Minimalizovat"
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:86
+msgid "increase charge"
+msgstr ""
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:87
+msgid "decrease charge"
+msgstr ""
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:88
+#, fuzzy
+msgid "delete bond"
+msgstr "Vybrat atom"
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:89
+#, fuzzy
+msgid "single"
+msgstr "Soubor"
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:90
+msgid "double"
+msgstr ""
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:91
+#, fuzzy
+msgid "triple"
+msgstr "Soubor"
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:92
+msgid "increase order"
+msgstr ""
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:93
+msgid "decrease order"
+msgstr ""
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:94
+#, fuzzy
+msgid "rotate bond"
+msgstr "Z otáčení"
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:95
 msgid "exit modelkit mode"
 msgstr ""
 
@@ -562,12 +611,12 @@ msgstr ""
 msgid "No atoms loaded"
 msgstr "Žádný atom nenahrán"
 
-#: org/jmol/popup/JmolPopup.java:365
+#: org/jmol/popup/JmolPopup.java:357
 #: org/jmol/popup/MainPopupResourceBundle.java:542
 msgid "Space Group"
 msgstr "Prostorová grupa"
 
-#: org/jmol/popup/JmolPopup.java:427 org/jmol/popup/JmolPopup.java:467
+#: org/jmol/popup/JmolPopup.java:419 org/jmol/popup/JmolPopup.java:459
 #: org/jmol/popup/MainPopupResourceBundle.java:563
 #: org/jmol/popup/MainPopupResourceBundle.java:577
 #: org/jmol/popup/MainPopupResourceBundle.java:586
@@ -575,57 +624,57 @@ msgstr "Prostorová grupa"
 msgid "All"
 msgstr "Vše"
 
-#: org/jmol/popup/JmolPopup.java:569
+#: org/jmol/popup/JmolPopup.java:561
 #: org/jmol/popup/MainPopupResourceBundle.java:936
 msgid "Mouse Manual"
 msgstr "Návod pro myš :-)"
 
-#: org/jmol/popup/JmolPopup.java:570
+#: org/jmol/popup/JmolPopup.java:562
 #: org/jmol/popup/MainPopupResourceBundle.java:937
 msgid "Translations"
 msgstr "Nastavit jazyk"
 
-#: org/jmol/popup/JmolPopup.java:572
+#: org/jmol/popup/JmolPopup.java:564
 msgid "System"
 msgstr "Systém"
 
-#: org/jmol/popup/JmolPopup.java:578
+#: org/jmol/popup/JmolPopup.java:570
 msgid "1 processor"
 msgstr "1 procesor"
 
-#: org/jmol/popup/JmolPopup.java:579
+#: org/jmol/popup/JmolPopup.java:571
 #, java-format
 msgid "{0} processors"
 msgstr "{0} procesorů"
 
-#: org/jmol/popup/JmolPopup.java:581
+#: org/jmol/popup/JmolPopup.java:573
 msgid "unknown processor count"
 msgstr "neznámý počet procesorů"
 
-#: org/jmol/popup/JmolPopup.java:583
+#: org/jmol/popup/JmolPopup.java:575
 msgid "Java version:"
 msgstr "Verze Javy:"
 
-#: org/jmol/popup/JmolPopup.java:587
+#: org/jmol/popup/JmolPopup.java:579
 msgid "Java memory usage:"
 msgstr "Využití paměti Javy:"
 
-#: org/jmol/popup/JmolPopup.java:593
+#: org/jmol/popup/JmolPopup.java:585
 #, java-format
 msgid "{0} MB total"
 msgstr "celkem MB: {0}"
 
-#: org/jmol/popup/JmolPopup.java:595
+#: org/jmol/popup/JmolPopup.java:587
 #, java-format
 msgid "{0} MB free"
 msgstr "volných MB: {0}"
 
-#: org/jmol/popup/JmolPopup.java:598
+#: org/jmol/popup/JmolPopup.java:590
 #, java-format
 msgid "{0} MB maximum"
 msgstr "maximálně MB: {0}"
 
-#: org/jmol/popup/JmolPopup.java:601
+#: org/jmol/popup/JmolPopup.java:593
 msgid "unknown maximum"
 msgstr "neznámé maximum"
 
@@ -2008,18 +2057,18 @@ msgid "file {0} created"
 msgstr "soubor {0} vytvořen"
 
 #: org/jmol/script/ScriptEvaluator.java:8904
-#: org/jmol/script/ScriptEvaluator.java:9157
+#: org/jmol/script/ScriptEvaluator.java:9163
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "{0} atomů smazáno"
 
-#: org/jmol/script/ScriptEvaluator.java:9734
-#: org/jmol/script/ScriptEvaluator.java:10131
+#: org/jmol/script/ScriptEvaluator.java:9740
+#: org/jmol/script/ScriptEvaluator.java:10137
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} vodíkových můstků"
 
-#: org/jmol/script/ScriptEvaluator.java:10086
+#: org/jmol/script/ScriptEvaluator.java:10092
 #, java-format
 msgid "{0} struts added"
 msgstr "{0} podpěr (struts) přidáno"
@@ -2027,10 +2076,6 @@ msgstr "{0} podpěr (struts) přidáno"
 #: org/jmol/shape/Frank.java:73
 msgid "Click for menu..."
 msgstr "Klikněte pro menu..."
-
-#: org/jmol/viewer/ActionManager.java:54
-msgid "center"
-msgstr "střed"
 
 #: org/jmol/viewer/ActionManager.java:55
 msgid "translate"
@@ -2153,45 +2198,50 @@ msgstr "vyber a táhni atomy (vyžaduje {0})"
 msgid "rotate selected atoms (requires {0})"
 msgstr "otočit vybrané atomy (vyžaduje {0})"
 
-#: org/jmol/viewer/ActionManager.java:85
+#: org/jmol/viewer/ActionManager.java:84
+#, fuzzy, java-format
+msgid "rotate branch around bond (requires {0})"
+msgstr "otočit vybrané atomy (vyžaduje {0})"
+
+#: org/jmol/viewer/ActionManager.java:86
 #, fuzzy, java-format
 msgid "move atom (requires {0})"
 msgstr "přesunout označení (vyžaduje {0})"
 
-#: org/jmol/viewer/ActionManager.java:86
+#: org/jmol/viewer/ActionManager.java:87
 #, fuzzy, java-format
 msgid "move atom and minimize molecule (requires {0})"
 msgstr "přesunout označení (vyžaduje {0})"
 
-#: org/jmol/viewer/ActionManager.java:87
+#: org/jmol/viewer/ActionManager.java:88
 #, java-format
 msgid "move label (requires {0})"
 msgstr "přesunout označení (vyžaduje {0})"
 
-#: org/jmol/viewer/ActionManager.java:88
+#: org/jmol/viewer/ActionManager.java:89
 #, java-format
 msgid "move specific DRAW point (requires {0})"
 msgstr "přesunout specifický DRAW bod ( vyžaduje {0})"
 
-#: org/jmol/viewer/ActionManager.java:89
+#: org/jmol/viewer/ActionManager.java:90
 #, java-format
 msgid "move whole DRAW object (requires {0})"
 msgstr "přesuň celý DRAW objekt (vyžaduje {0})"
 
-#: org/jmol/viewer/ActionManager.java:91
+#: org/jmol/viewer/ActionManager.java:92
 msgid "pick an atom"
 msgstr "vybrat atom"
 
-#: org/jmol/viewer/ActionManager.java:92
+#: org/jmol/viewer/ActionManager.java:93
 msgid "pick a DRAW point (for measurements)"
 msgstr "vybrat DRAW bod (pro měření)"
 
-#: org/jmol/viewer/ActionManager.java:93
+#: org/jmol/viewer/ActionManager.java:94
 #, java-format
 msgid "pick a label to toggle it hidden/displayed (requires {0})"
 msgstr "vybrat popisek pro skrytí/zobrazení (vyžaduje {0})"
 
-#: org/jmol/viewer/ActionManager.java:94
+#: org/jmol/viewer/ActionManager.java:95
 #, java-format
 msgid ""
 "pick an atom to include it in a measurement (after starting a measurement or "
@@ -2199,67 +2249,67 @@ msgid ""
 msgstr ""
 "vyber atom, který chceš zahrnout do měření (po zahájení měření nebo po {0})"
 
-#: org/jmol/viewer/ActionManager.java:95
+#: org/jmol/viewer/ActionManager.java:96
 msgid "pick an atom to initiate or conclude a measurement"
 msgstr "vyber atom pro zahájení nebo ukončení měření"
 
-#: org/jmol/viewer/ActionManager.java:96
+#: org/jmol/viewer/ActionManager.java:97
 msgid "pick an ISOSURFACE point"
 msgstr "vyber bod izopovrchu (ISOSURFACE)"
 
-#: org/jmol/viewer/ActionManager.java:97
+#: org/jmol/viewer/ActionManager.java:98
 #, fuzzy, java-format
 msgid "pick a point or atom to navigate to (requires {0})"
 msgstr ""
 "vyber bod nebo atom ke kterým chceš navigovat (vyžaduje SET NAVIGATIONMODE; "
 "bez dokumentace)"
 
-#: org/jmol/viewer/ActionManager.java:99
+#: org/jmol/viewer/ActionManager.java:100
 #, fuzzy, java-format
 msgid "delete atom (requires {0})"
 msgstr "samž vazby (vyžaduje {0})"
 
-#: org/jmol/viewer/ActionManager.java:100
+#: org/jmol/viewer/ActionManager.java:101
 #, java-format
 msgid "delete bond (requires {0})"
 msgstr "samž vazby (vyžaduje {0})"
 
-#: org/jmol/viewer/ActionManager.java:101
+#: org/jmol/viewer/ActionManager.java:102
 #, java-format
 msgid "connect atoms (requires {0})"
 msgstr "spoj atomy (vyžaduje {0})"
 
-#: org/jmol/viewer/ActionManager.java:102
+#: org/jmol/viewer/ActionManager.java:103
 #, fuzzy, java-format
 msgid "assign/new atom or bond (requires {0})"
 msgstr "spoj atomy (vyžaduje {0})"
 
-#: org/jmol/viewer/ActionManager.java:104
+#: org/jmol/viewer/ActionManager.java:105
 msgid "reset (when clicked off the model)"
 msgstr "obnovit (po klepnutí mimo model)"
 
-#: org/jmol/viewer/ActionManager.java:105
+#: org/jmol/viewer/ActionManager.java:106
 #, java-format
 msgid "stop motion (requires {0})"
 msgstr "zastav pohyb (vyžaduje {0})"
 
-#: org/jmol/viewer/ActionManager.java:106
+#: org/jmol/viewer/ActionManager.java:107
 msgid "simulate multi-touch using the mouse)"
 msgstr "simulovat multi-touch pomocí myši"
 
-#: org/jmol/viewer/ActionManager.java:1655
+#: org/jmol/viewer/ActionManager.java:1672
 msgid "pick one more atom in order to spin the model around an axis"
 msgstr "vybrat jeden či více atomů k rotaci okolo osy"
 
-#: org/jmol/viewer/ActionManager.java:1656
+#: org/jmol/viewer/ActionManager.java:1673
 msgid "pick two atoms in order to spin the model around an axis"
 msgstr "vybrat dva atomy k rotaci okolo osy"
 
-#: org/jmol/viewer/ActionManager.java:1659
+#: org/jmol/viewer/ActionManager.java:1676
 msgid "pick one more atom in order to display the symmetry relationship"
 msgstr "vyber jeden nebo více atomů pro zobrazení vzájemné symetrie"
 
-#: org/jmol/viewer/ActionManager.java:1660
+#: org/jmol/viewer/ActionManager.java:1677
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
 msgstr "vyber dva atomy pro zobrazení jejich vzájemné symetrie"
@@ -2275,24 +2325,24 @@ msgstr "skryté atomy: {0}"
 msgid "{0} atoms selected"
 msgstr "{0} atomů vybráno"
 
-#: org/jmol/viewer/Viewer.java:4207
+#: org/jmol/viewer/Viewer.java:4211
 #, java-format
 msgid "{0} hydrogens added"
 msgstr "{0} vodíky přidány"
 
-#: org/jmol/viewer/Viewer.java:4274
+#: org/jmol/viewer/Viewer.java:4290
 msgid "Drag to move label"
 msgstr "Táhni myší pro přesun popisku"
 
-#: org/jmol/viewer/Viewer.java:7514
+#: org/jmol/viewer/Viewer.java:7625
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "schránka není přístupná -- použijte podepsaný applet"
 
-#: org/jmol/viewer/Viewer.java:8242
+#: org/jmol/viewer/Viewer.java:8353
 msgid "Cannot set log file path."
 msgstr "Nemohu nastavit cestu k log souboru."
 
-#: org/jmol/viewer/Viewer.java:8244
+#: org/jmol/viewer/Viewer.java:8355
 #, java-format
 msgid "Setting log file to {0}"
 msgstr "Nastavuji log soubor na {0}"

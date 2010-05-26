@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-05-25 18:54+0200\n"
+"POT-Creation-Date: 2010-05-26 19:11+0200\n"
 "PO-Revision-Date: 2010-05-25 13:23+0000\n"
 "Last-Translator: 英华 <wantinghard@gmail.com>\n"
 "Language-Team: Simplified Chinese <zh_CN@li.org>\n"
@@ -488,65 +488,114 @@ msgstr "{0} 原子将被最小化"
 msgid "could not setup force field {0}"
 msgstr "无法设定力场 {0}"
 
-#: org/jmol/modelkit/AtomPopupResourceBundle.java:63
+#: org/jmol/modelkit/ModelKitPopup.java:64
 #, fuzzy
-msgid "delete atom"
-msgstr "选取原子"
+msgid "Element?"
+msgstr "元素"
 
-#: org/jmol/modelkit/AtomPopupResourceBundle.java:64
-msgid "drag atom"
-msgstr ""
-
-#: org/jmol/modelkit/AtomPopupResourceBundle.java:65
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:68
 #, fuzzy
-msgid "drag-minimize"
-msgstr "最小化"
+msgid "atoms"
+msgstr "原子"
 
-#: org/jmol/modelkit/AtomPopupResourceBundle.java:70
-msgid "increase charge"
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:69
+msgid "more..."
 msgstr ""
 
-#: org/jmol/modelkit/AtomPopupResourceBundle.java:71
-msgid "decrease charge"
-msgstr ""
-
-#: org/jmol/modelkit/BondPopupResourceBundle.java:60
-msgid "delete"
-msgstr ""
-
-#: org/jmol/modelkit/BondPopupResourceBundle.java:61
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:70
 #, fuzzy
-msgid "single"
-msgstr "文件"
+msgid "bonds"
+msgstr "键"
 
-#: org/jmol/modelkit/BondPopupResourceBundle.java:62
-msgid "double"
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:71
+msgid "new"
 msgstr ""
 
-#: org/jmol/modelkit/BondPopupResourceBundle.java:63
-#, fuzzy
-msgid "triple"
-msgstr "文件"
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:72
+#: org/jmol/viewer/ActionManager.java:54
+msgid "center"
+msgstr "居中"
 
-#: org/jmol/modelkit/BondPopupResourceBundle.java:64
-msgid "increase"
-msgstr ""
-
-#: org/jmol/modelkit/BondPopupResourceBundle.java:65
-msgid "decrease"
-msgstr ""
-
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:57
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:73
 #, fuzzy
 msgid "minimize"
 msgstr "最小化"
 
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:58
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:74
 #, fuzzy
-msgid "save"
+msgid "clear"
+msgstr "全部清除"
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:75
+#, fuzzy
+msgid "save file"
 msgstr "保存"
 
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:59
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:76
+#, fuzzy
+msgid "save state"
+msgstr "当前状态"
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:77
+#, fuzzy
+msgid "add hydrogens"
+msgstr "显示氢原子"
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:78
+#, fuzzy
+msgid "delete atom"
+msgstr "选取原子"
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:79
+msgid "drag atom"
+msgstr ""
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:80
+#, fuzzy
+msgid "drag-minimize"
+msgstr "最小化"
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:86
+msgid "increase charge"
+msgstr ""
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:87
+msgid "decrease charge"
+msgstr ""
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:88
+#, fuzzy
+msgid "delete bond"
+msgstr "选取原子"
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:89
+#, fuzzy
+msgid "single"
+msgstr "文件"
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:90
+msgid "double"
+msgstr ""
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:91
+#, fuzzy
+msgid "triple"
+msgstr "文件"
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:92
+msgid "increase order"
+msgstr ""
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:93
+msgid "decrease order"
+msgstr ""
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:94
+#, fuzzy
+msgid "rotate bond"
+msgstr "绕 Z 轴旋转"
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:95
 msgid "exit modelkit mode"
 msgstr ""
 
@@ -555,12 +604,12 @@ msgstr ""
 msgid "No atoms loaded"
 msgstr "未载入原子"
 
-#: org/jmol/popup/JmolPopup.java:365
+#: org/jmol/popup/JmolPopup.java:357
 #: org/jmol/popup/MainPopupResourceBundle.java:542
 msgid "Space Group"
 msgstr "空间群"
 
-#: org/jmol/popup/JmolPopup.java:427 org/jmol/popup/JmolPopup.java:467
+#: org/jmol/popup/JmolPopup.java:419 org/jmol/popup/JmolPopup.java:459
 #: org/jmol/popup/MainPopupResourceBundle.java:563
 #: org/jmol/popup/MainPopupResourceBundle.java:577
 #: org/jmol/popup/MainPopupResourceBundle.java:586
@@ -568,57 +617,57 @@ msgstr "空间群"
 msgid "All"
 msgstr "全部"
 
-#: org/jmol/popup/JmolPopup.java:569
+#: org/jmol/popup/JmolPopup.java:561
 #: org/jmol/popup/MainPopupResourceBundle.java:936
 msgid "Mouse Manual"
 msgstr "鼠标使用手册"
 
-#: org/jmol/popup/JmolPopup.java:570
+#: org/jmol/popup/JmolPopup.java:562
 #: org/jmol/popup/MainPopupResourceBundle.java:937
 msgid "Translations"
 msgstr "翻译"
 
-#: org/jmol/popup/JmolPopup.java:572
+#: org/jmol/popup/JmolPopup.java:564
 msgid "System"
 msgstr "系统"
 
-#: org/jmol/popup/JmolPopup.java:578
+#: org/jmol/popup/JmolPopup.java:570
 msgid "1 processor"
 msgstr "1 个处理器"
 
-#: org/jmol/popup/JmolPopup.java:579
+#: org/jmol/popup/JmolPopup.java:571
 #, java-format
 msgid "{0} processors"
 msgstr "{0} 个处理器"
 
-#: org/jmol/popup/JmolPopup.java:581
+#: org/jmol/popup/JmolPopup.java:573
 msgid "unknown processor count"
 msgstr "未知 处理器数目"
 
-#: org/jmol/popup/JmolPopup.java:583
+#: org/jmol/popup/JmolPopup.java:575
 msgid "Java version:"
 msgstr "Java 版本:"
 
-#: org/jmol/popup/JmolPopup.java:587
+#: org/jmol/popup/JmolPopup.java:579
 msgid "Java memory usage:"
 msgstr "Java 内存使用:"
 
-#: org/jmol/popup/JmolPopup.java:593
+#: org/jmol/popup/JmolPopup.java:585
 #, java-format
 msgid "{0} MB total"
 msgstr "共 {0} MB"
 
-#: org/jmol/popup/JmolPopup.java:595
+#: org/jmol/popup/JmolPopup.java:587
 #, java-format
 msgid "{0} MB free"
 msgstr "{0} MB 未使用"
 
-#: org/jmol/popup/JmolPopup.java:598
+#: org/jmol/popup/JmolPopup.java:590
 #, java-format
 msgid "{0} MB maximum"
 msgstr "最大 {0} MB"
 
-#: org/jmol/popup/JmolPopup.java:601
+#: org/jmol/popup/JmolPopup.java:593
 msgid "unknown maximum"
 msgstr "极大值未知"
 
@@ -1997,18 +2046,18 @@ msgid "file {0} created"
 msgstr "已创建文件： {0}"
 
 #: org/jmol/script/ScriptEvaluator.java:8904
-#: org/jmol/script/ScriptEvaluator.java:9157
+#: org/jmol/script/ScriptEvaluator.java:9163
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "己删除 {0} 个原子"
 
-#: org/jmol/script/ScriptEvaluator.java:9734
-#: org/jmol/script/ScriptEvaluator.java:10131
+#: org/jmol/script/ScriptEvaluator.java:9740
+#: org/jmol/script/ScriptEvaluator.java:10137
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} 个氢键"
 
-#: org/jmol/script/ScriptEvaluator.java:10086
+#: org/jmol/script/ScriptEvaluator.java:10092
 #, java-format
 msgid "{0} struts added"
 msgstr "已增加 {0} struts"
@@ -2016,10 +2065,6 @@ msgstr "已增加 {0} struts"
 #: org/jmol/shape/Frank.java:73
 msgid "Click for menu..."
 msgstr "点击出现菜单..."
-
-#: org/jmol/viewer/ActionManager.java:54
-msgid "center"
-msgstr "居中"
 
 #: org/jmol/viewer/ActionManager.java:55
 msgid "translate"
@@ -2135,110 +2180,115 @@ msgstr "选择并拖动原子（需要 {0} ）"
 msgid "rotate selected atoms (requires {0})"
 msgstr "旋转所选原子 (需要 {0})"
 
-#: org/jmol/viewer/ActionManager.java:85
+#: org/jmol/viewer/ActionManager.java:84
+#, fuzzy, java-format
+msgid "rotate branch around bond (requires {0})"
+msgstr "旋转所选原子 (需要 {0})"
+
+#: org/jmol/viewer/ActionManager.java:86
 #, java-format
 msgid "move atom (requires {0})"
 msgstr ""
 
-#: org/jmol/viewer/ActionManager.java:86
+#: org/jmol/viewer/ActionManager.java:87
 #, java-format
 msgid "move atom and minimize molecule (requires {0})"
 msgstr ""
 
-#: org/jmol/viewer/ActionManager.java:87
+#: org/jmol/viewer/ActionManager.java:88
 #, java-format
 msgid "move label (requires {0})"
 msgstr "移动标记 (需要 {0})"
 
-#: org/jmol/viewer/ActionManager.java:88
+#: org/jmol/viewer/ActionManager.java:89
 #, java-format
 msgid "move specific DRAW point (requires {0})"
 msgstr "移动特定 DRAW 点 (需要 {0})"
 
-#: org/jmol/viewer/ActionManager.java:89
+#: org/jmol/viewer/ActionManager.java:90
 #, java-format
 msgid "move whole DRAW object (requires {0})"
 msgstr "移动整个 DRAW 对象 (需要 {0})"
 
-#: org/jmol/viewer/ActionManager.java:91
+#: org/jmol/viewer/ActionManager.java:92
 msgid "pick an atom"
 msgstr "请选取原子"
 
-#: org/jmol/viewer/ActionManager.java:92
+#: org/jmol/viewer/ActionManager.java:93
 msgid "pick a DRAW point (for measurements)"
 msgstr "请选取 DRAW 点 (以用测量)"
 
-#: org/jmol/viewer/ActionManager.java:93
+#: org/jmol/viewer/ActionManager.java:94
 #, java-format
 msgid "pick a label to toggle it hidden/displayed (requires {0})"
 msgstr "选取一个标签在切换其显示/隐藏(需要{0})"
 
-#: org/jmol/viewer/ActionManager.java:94
+#: org/jmol/viewer/ActionManager.java:95
 #, java-format
 msgid ""
 "pick an atom to include it in a measurement (after starting a measurement or "
 "after {0})"
 msgstr "选取一个原子以把它包括在测量中（在开始一次测量或 {0} 之后）"
 
-#: org/jmol/viewer/ActionManager.java:95
+#: org/jmol/viewer/ActionManager.java:96
 msgid "pick an atom to initiate or conclude a measurement"
 msgstr "选取一个初始原子或结束测量"
 
-#: org/jmol/viewer/ActionManager.java:96
+#: org/jmol/viewer/ActionManager.java:97
 msgid "pick an ISOSURFACE point"
 msgstr "选取一个等平面(Isosurface)点"
 
-#: org/jmol/viewer/ActionManager.java:97
+#: org/jmol/viewer/ActionManager.java:98
 #, java-format
 msgid "pick a point or atom to navigate to (requires {0})"
 msgstr ""
 
-#: org/jmol/viewer/ActionManager.java:99
+#: org/jmol/viewer/ActionManager.java:100
 #, java-format
 msgid "delete atom (requires {0})"
 msgstr ""
 
-#: org/jmol/viewer/ActionManager.java:100
+#: org/jmol/viewer/ActionManager.java:101
 #, java-format
 msgid "delete bond (requires {0})"
 msgstr "删除键（需要 {0} ）"
 
-#: org/jmol/viewer/ActionManager.java:101
+#: org/jmol/viewer/ActionManager.java:102
 #, java-format
 msgid "connect atoms (requires {0})"
 msgstr "连接原子（需要 {0} ）"
 
-#: org/jmol/viewer/ActionManager.java:102
+#: org/jmol/viewer/ActionManager.java:103
 #, java-format
 msgid "assign/new atom or bond (requires {0})"
 msgstr ""
 
-#: org/jmol/viewer/ActionManager.java:104
+#: org/jmol/viewer/ActionManager.java:105
 msgid "reset (when clicked off the model)"
 msgstr "重设（单击关闭模型时）"
 
-#: org/jmol/viewer/ActionManager.java:105
+#: org/jmol/viewer/ActionManager.java:106
 #, java-format
 msgid "stop motion (requires {0})"
 msgstr "停止活动（需要 {0} ）"
 
-#: org/jmol/viewer/ActionManager.java:106
+#: org/jmol/viewer/ActionManager.java:107
 msgid "simulate multi-touch using the mouse)"
 msgstr "用鼠标模拟多点触控(multi-touch)"
 
-#: org/jmol/viewer/ActionManager.java:1655
+#: org/jmol/viewer/ActionManager.java:1672
 msgid "pick one more atom in order to spin the model around an axis"
 msgstr "请再多选一个原子来使分子可以一个轴旋转"
 
-#: org/jmol/viewer/ActionManager.java:1656
+#: org/jmol/viewer/ActionManager.java:1673
 msgid "pick two atoms in order to spin the model around an axis"
 msgstr "选取两个原子，使分子可以绕轴自旋"
 
-#: org/jmol/viewer/ActionManager.java:1659
+#: org/jmol/viewer/ActionManager.java:1676
 msgid "pick one more atom in order to display the symmetry relationship"
 msgstr "选择另一个原子以显示对称性关系"
 
-#: org/jmol/viewer/ActionManager.java:1660
+#: org/jmol/viewer/ActionManager.java:1677
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
 msgstr "选择两个原子以显示它们之间的对称性关系"
@@ -2254,24 +2304,24 @@ msgstr "{0} 个原子己隐藏"
 msgid "{0} atoms selected"
 msgstr "{0} 个原子己选定"
 
-#: org/jmol/viewer/Viewer.java:4207
+#: org/jmol/viewer/Viewer.java:4211
 #, java-format
 msgid "{0} hydrogens added"
 msgstr "{0} 个氢原子已增加"
 
-#: org/jmol/viewer/Viewer.java:4274
+#: org/jmol/viewer/Viewer.java:4290
 msgid "Drag to move label"
 msgstr "拖拽移动标签"
 
-#: org/jmol/viewer/Viewer.java:7514
+#: org/jmol/viewer/Viewer.java:7625
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "不能存取剪贴板——请用使用签署过的小程序 (applet)"
 
-#: org/jmol/viewer/Viewer.java:8242
+#: org/jmol/viewer/Viewer.java:8353
 msgid "Cannot set log file path."
 msgstr "无法设置日志文件路径"
 
-#: org/jmol/viewer/Viewer.java:8244
+#: org/jmol/viewer/Viewer.java:8355
 #, java-format
 msgid "Setting log file to {0}"
 msgstr "设定日志文件为 {0}"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-05-25 18:54+0200\n"
+"POT-Creation-Date: 2010-05-26 19:11+0200\n"
 "PO-Revision-Date: 2010-05-25 18:27+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@gmail.com>\n"
 "Language-Team: Ukrainian <translation@linux.org.ua>\n"
@@ -144,8 +144,7 @@ msgid "Check"
 msgstr "Перевірити"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid ""
-"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Вгору"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -493,59 +492,111 @@ msgstr "{0} атомів буде мінімізовано."
 msgid "could not setup force field {0}"
 msgstr "не вдалося встановити поле сили {0}"
 
-#: org/jmol/modelkit/AtomPopupResourceBundle.java:63
-msgid "delete atom"
-msgstr "вилучити атом"
+#: org/jmol/modelkit/ModelKitPopup.java:64
+#, fuzzy
+msgid "Element?"
+msgstr "Елемент"
 
-#: org/jmol/modelkit/AtomPopupResourceBundle.java:64
-msgid "drag atom"
-msgstr "перетягнути атом"
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:68
+#, fuzzy
+msgid "atoms"
+msgstr "Атоми"
 
-#: org/jmol/modelkit/AtomPopupResourceBundle.java:65
-msgid "drag-minimize"
-msgstr "перетягнути-мінімізувати"
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:69
+msgid "more..."
+msgstr ""
 
-#: org/jmol/modelkit/AtomPopupResourceBundle.java:70
-msgid "increase charge"
-msgstr "збільшити заряд"
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:70
+#, fuzzy
+msgid "bonds"
+msgstr "Зв’язки"
 
-#: org/jmol/modelkit/AtomPopupResourceBundle.java:71
-msgid "decrease charge"
-msgstr "зменшити заряд"
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:71
+msgid "new"
+msgstr ""
 
-#: org/jmol/modelkit/BondPopupResourceBundle.java:60
-msgid "delete"
-msgstr "вилучити"
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:72
+#: org/jmol/viewer/ActionManager.java:54
+msgid "center"
+msgstr "центр"
 
-#: org/jmol/modelkit/BondPopupResourceBundle.java:61
-msgid "single"
-msgstr "одинарний"
-
-#: org/jmol/modelkit/BondPopupResourceBundle.java:62
-msgid "double"
-msgstr "подвійний"
-
-#: org/jmol/modelkit/BondPopupResourceBundle.java:63
-msgid "triple"
-msgstr "потрійний"
-
-#: org/jmol/modelkit/BondPopupResourceBundle.java:64
-msgid "increase"
-msgstr "збільшити"
-
-#: org/jmol/modelkit/BondPopupResourceBundle.java:65
-msgid "decrease"
-msgstr "зменшити"
-
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:57
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:73
 msgid "minimize"
 msgstr "мінімізувати"
 
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:58
-msgid "save"
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:74
+#, fuzzy
+msgid "clear"
+msgstr "Спорожнити"
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:75
+#, fuzzy
+msgid "save file"
 msgstr "зберегти"
 
-#: org/jmol/modelkit/modelKitPopupResourceBundle.java:59
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:76
+#, fuzzy
+msgid "save state"
+msgstr "Поточний стан"
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:77
+#, fuzzy
+msgid "add hydrogens"
+msgstr "Показувати атоми водню"
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:78
+msgid "delete atom"
+msgstr "вилучити атом"
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:79
+msgid "drag atom"
+msgstr "перетягнути атом"
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:80
+msgid "drag-minimize"
+msgstr "перетягнути-мінімізувати"
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:86
+msgid "increase charge"
+msgstr "збільшити заряд"
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:87
+msgid "decrease charge"
+msgstr "зменшити заряд"
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:88
+#, fuzzy
+msgid "delete bond"
+msgstr "вилучити атом"
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:89
+msgid "single"
+msgstr "одинарний"
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:90
+msgid "double"
+msgstr "подвійний"
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:91
+msgid "triple"
+msgstr "потрійний"
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:92
+#, fuzzy
+msgid "increase order"
+msgstr "збільшити заряд"
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:93
+#, fuzzy
+msgid "decrease order"
+msgstr "зменшити заряд"
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:94
+#, fuzzy
+msgid "rotate bond"
+msgstr "обертання навколо Z"
+
+#: org/jmol/modelkit/modelKitPopupResourceBundle.java:95
 msgid "exit modelkit mode"
 msgstr "вийти з режиму моделювання"
 
@@ -554,12 +605,12 @@ msgstr "вийти з режиму моделювання"
 msgid "No atoms loaded"
 msgstr "Атомів не завантажено"
 
-#: org/jmol/popup/JmolPopup.java:365
+#: org/jmol/popup/JmolPopup.java:357
 #: org/jmol/popup/MainPopupResourceBundle.java:542
 msgid "Space Group"
 msgstr "Просторова група"
 
-#: org/jmol/popup/JmolPopup.java:427 org/jmol/popup/JmolPopup.java:467
+#: org/jmol/popup/JmolPopup.java:419 org/jmol/popup/JmolPopup.java:459
 #: org/jmol/popup/MainPopupResourceBundle.java:563
 #: org/jmol/popup/MainPopupResourceBundle.java:577
 #: org/jmol/popup/MainPopupResourceBundle.java:586
@@ -567,57 +618,57 @@ msgstr "Просторова група"
 msgid "All"
 msgstr "Все"
 
-#: org/jmol/popup/JmolPopup.java:569
+#: org/jmol/popup/JmolPopup.java:561
 #: org/jmol/popup/MainPopupResourceBundle.java:936
 msgid "Mouse Manual"
 msgstr "Довідник з користування мишею"
 
-#: org/jmol/popup/JmolPopup.java:570
+#: org/jmol/popup/JmolPopup.java:562
 #: org/jmol/popup/MainPopupResourceBundle.java:937
 msgid "Translations"
 msgstr "Переклади"
 
-#: org/jmol/popup/JmolPopup.java:572
+#: org/jmol/popup/JmolPopup.java:564
 msgid "System"
 msgstr "Система"
 
-#: org/jmol/popup/JmolPopup.java:578
+#: org/jmol/popup/JmolPopup.java:570
 msgid "1 processor"
 msgstr "1 процесор"
 
-#: org/jmol/popup/JmolPopup.java:579
+#: org/jmol/popup/JmolPopup.java:571
 #, java-format
 msgid "{0} processors"
 msgstr "{0} процесорів"
 
-#: org/jmol/popup/JmolPopup.java:581
+#: org/jmol/popup/JmolPopup.java:573
 msgid "unknown processor count"
 msgstr "невідома кількість процесорів"
 
-#: org/jmol/popup/JmolPopup.java:583
+#: org/jmol/popup/JmolPopup.java:575
 msgid "Java version:"
 msgstr "Версія Java:"
 
-#: org/jmol/popup/JmolPopup.java:587
+#: org/jmol/popup/JmolPopup.java:579
 msgid "Java memory usage:"
 msgstr "Використання пам’яті Java:"
 
-#: org/jmol/popup/JmolPopup.java:593
+#: org/jmol/popup/JmolPopup.java:585
 #, java-format
 msgid "{0} MB total"
 msgstr "Всього: {0} МБ"
 
-#: org/jmol/popup/JmolPopup.java:595
+#: org/jmol/popup/JmolPopup.java:587
 #, java-format
 msgid "{0} MB free"
 msgstr "Вільно: {0} MБ"
 
-#: org/jmol/popup/JmolPopup.java:598
+#: org/jmol/popup/JmolPopup.java:590
 #, java-format
 msgid "{0} MB maximum"
 msgstr "Максимум: {0} MБ"
 
-#: org/jmol/popup/JmolPopup.java:601
+#: org/jmol/popup/JmolPopup.java:593
 msgid "unknown maximum"
 msgstr "максимум невідомий"
 
@@ -2004,18 +2055,18 @@ msgid "file {0} created"
 msgstr "створено файл {0}"
 
 #: org/jmol/script/ScriptEvaluator.java:8904
-#: org/jmol/script/ScriptEvaluator.java:9157
+#: org/jmol/script/ScriptEvaluator.java:9163
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "вилучено {0} атомів"
 
-#: org/jmol/script/ScriptEvaluator.java:9734
-#: org/jmol/script/ScriptEvaluator.java:10131
+#: org/jmol/script/ScriptEvaluator.java:9740
+#: org/jmol/script/ScriptEvaluator.java:10137
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} водневих зв’язки"
 
-#: org/jmol/script/ScriptEvaluator.java:10086
+#: org/jmol/script/ScriptEvaluator.java:10092
 #, java-format
 msgid "{0} struts added"
 msgstr "додано {0} розпірки"
@@ -2023,10 +2074,6 @@ msgstr "додано {0} розпірки"
 #: org/jmol/shape/Frank.java:73
 msgid "Click for menu..."
 msgstr "Клацніть, щоб відкрити меню…"
-
-#: org/jmol/viewer/ActionManager.java:54
-msgid "center"
-msgstr "центр"
 
 #: org/jmol/viewer/ActionManager.java:55
 msgid "translate"
@@ -2075,8 +2122,7 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:65
 #, java-format
-msgid ""
-"click on two points to spin around axis counterclockwise (requires {0})"
+msgid "click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 "клацніть лівою кнопкою миші у двох точках, щоб почати обертання навколо вісі "
 "проти годинникової стрілки (потрібно {0})"
@@ -2153,46 +2199,50 @@ msgstr "позначення і перетягування атомів (пот�
 msgid "rotate selected atoms (requires {0})"
 msgstr "обертати позначені атоми (потрібно {0})"
 
-#: org/jmol/viewer/ActionManager.java:85
+#: org/jmol/viewer/ActionManager.java:84
+#, fuzzy, java-format
+msgid "rotate branch around bond (requires {0})"
+msgstr "обертати позначені атоми (потрібно {0})"
+
+#: org/jmol/viewer/ActionManager.java:86
 #, java-format
 msgid "move atom (requires {0})"
 msgstr "пересунути атом (потрібно {0})"
 
-#: org/jmol/viewer/ActionManager.java:86
+#: org/jmol/viewer/ActionManager.java:87
 #, java-format
 msgid "move atom and minimize molecule (requires {0})"
 msgstr "пересунути атом і мінімізувати молекулу (потрібно {0})"
 
-#: org/jmol/viewer/ActionManager.java:87
+#: org/jmol/viewer/ActionManager.java:88
 #, java-format
 msgid "move label (requires {0})"
 msgstr "пересування мітки (потрібно {0})"
 
-#: org/jmol/viewer/ActionManager.java:88
+#: org/jmol/viewer/ActionManager.java:89
 #, java-format
 msgid "move specific DRAW point (requires {0})"
 msgstr "пересунути певну точку креслення (потрібно {0})"
 
-#: org/jmol/viewer/ActionManager.java:89
+#: org/jmol/viewer/ActionManager.java:90
 #, java-format
 msgid "move whole DRAW object (requires {0})"
 msgstr "пересунути весь об’єкт креслення (потрібно {0})"
 
-#: org/jmol/viewer/ActionManager.java:91
+#: org/jmol/viewer/ActionManager.java:92
 msgid "pick an atom"
 msgstr "вибрати атом"
 
-#: org/jmol/viewer/ActionManager.java:92
+#: org/jmol/viewer/ActionManager.java:93
 msgid "pick a DRAW point (for measurements)"
 msgstr "вибрати точку креслення (для вимірювання)"
 
-#: org/jmol/viewer/ActionManager.java:93
+#: org/jmol/viewer/ActionManager.java:94
 #, java-format
 msgid "pick a label to toggle it hidden/displayed (requires {0})"
-msgstr ""
-"вибрати мітку для перемикання стану приховано/показано (потрібно {0})"
+msgstr "вибрати мітку для перемикання стану приховано/показано (потрібно {0})"
 
-#: org/jmol/viewer/ActionManager.java:94
+#: org/jmol/viewer/ActionManager.java:95
 #, java-format
 msgid ""
 "pick an atom to include it in a measurement (after starting a measurement or "
@@ -2201,65 +2251,65 @@ msgstr ""
 "вибрати атом для включення його у виміри (після початку вимірювання або "
 "після {0})"
 
-#: org/jmol/viewer/ActionManager.java:95
+#: org/jmol/viewer/ActionManager.java:96
 msgid "pick an atom to initiate or conclude a measurement"
 msgstr "вибрати атом для того, щоб розпочати або завершити вимірювання"
 
-#: org/jmol/viewer/ActionManager.java:96
+#: org/jmol/viewer/ActionManager.java:97
 msgid "pick an ISOSURFACE point"
 msgstr "вибрати точку ізоповерхні"
 
-#: org/jmol/viewer/ActionManager.java:97
+#: org/jmol/viewer/ActionManager.java:98
 #, java-format
 msgid "pick a point or atom to navigate to (requires {0})"
 msgstr "вибрати точку або атом для переходу (потрібно {0})"
 
-#: org/jmol/viewer/ActionManager.java:99
+#: org/jmol/viewer/ActionManager.java:100
 #, java-format
 msgid "delete atom (requires {0})"
 msgstr "вилучити атом (потрібно {0})"
 
-#: org/jmol/viewer/ActionManager.java:100
+#: org/jmol/viewer/ActionManager.java:101
 #, java-format
 msgid "delete bond (requires {0})"
 msgstr "вилучити зв’язок (потрібно {0})"
 
-#: org/jmol/viewer/ActionManager.java:101
+#: org/jmol/viewer/ActionManager.java:102
 #, java-format
 msgid "connect atoms (requires {0})"
 msgstr "з’єднати атоми (потрібно {0})"
 
-#: org/jmol/viewer/ActionManager.java:102
+#: org/jmol/viewer/ActionManager.java:103
 #, java-format
 msgid "assign/new atom or bond (requires {0})"
 msgstr "призначити/додати атом або зв’язок (потрібно {0})"
 
-#: org/jmol/viewer/ActionManager.java:104
+#: org/jmol/viewer/ActionManager.java:105
 msgid "reset (when clicked off the model)"
 msgstr "відновити (після клацання лівою кнопкою миші поза моделлю)"
 
-#: org/jmol/viewer/ActionManager.java:105
+#: org/jmol/viewer/ActionManager.java:106
 #, java-format
 msgid "stop motion (requires {0})"
 msgstr "зупинити рух (потрібен {0})"
 
-#: org/jmol/viewer/ActionManager.java:106
+#: org/jmol/viewer/ActionManager.java:107
 msgid "simulate multi-touch using the mouse)"
 msgstr "імітувати сенсорне керування за допомогою миші)"
 
-#: org/jmol/viewer/ActionManager.java:1655
+#: org/jmol/viewer/ActionManager.java:1672
 msgid "pick one more atom in order to spin the model around an axis"
 msgstr "вибрати ще один атом для обертання моделі навколо вісі"
 
-#: org/jmol/viewer/ActionManager.java:1656
+#: org/jmol/viewer/ActionManager.java:1673
 msgid "pick two atoms in order to spin the model around an axis"
 msgstr "вибрати два атоми для обертання моделі навколо вісі"
 
-#: org/jmol/viewer/ActionManager.java:1659
+#: org/jmol/viewer/ActionManager.java:1676
 msgid "pick one more atom in order to display the symmetry relationship"
 msgstr "вибрати ще один атом для показу взаємозв’язків симетрії"
 
-#: org/jmol/viewer/ActionManager.java:1660
+#: org/jmol/viewer/ActionManager.java:1677
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
 msgstr "вибрати два атоми для показу взаємозв’язків симетрії між ними"
@@ -2275,37 +2325,46 @@ msgstr "приховано атоми {0}"
 msgid "{0} atoms selected"
 msgstr "позначено атоми {0}"
 
-#: org/jmol/viewer/Viewer.java:4207
+#: org/jmol/viewer/Viewer.java:4211
 #, java-format
 msgid "{0} hydrogens added"
 msgstr "додано атоми водню {0}"
 
-#: org/jmol/viewer/Viewer.java:4274
+#: org/jmol/viewer/Viewer.java:4290
 msgid "Drag to move label"
 msgstr "Перетягніть, щоб пересунути мітку"
 
-#: org/jmol/viewer/Viewer.java:7514
+#: org/jmol/viewer/Viewer.java:7625
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "доступ до буфера даних заборонено — використовуйте підписаний аплет"
 
-#: org/jmol/viewer/Viewer.java:8242
+#: org/jmol/viewer/Viewer.java:8353
 msgid "Cannot set log file path."
 msgstr "Не вдалося встановити шлях до файла журналу."
 
-#: org/jmol/viewer/Viewer.java:8244
+#: org/jmol/viewer/Viewer.java:8355
 #, java-format
 msgid "Setting log file to {0}"
 msgstr "Встановлення файла журналу {0}"
 
+#~ msgid "delete"
+#~ msgstr "вилучити"
+
+#~ msgid "increase"
+#~ msgstr "збільшити"
+
+#~ msgid "decrease"
+#~ msgstr "зменшити"
+
 #~ msgid "File creation failed."
 #~ msgstr "Не вдалося створити файл."
 
-#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
+#~ "{0}."
 #~ msgstr ""
-#~ "Створення файлів цим аплетом заборонено. Щоб отримати JPEG у форматі Base64, "
-#~ "скористайтеся {0}."
+#~ "Створення файлів цим аплетом заборонено. Щоб отримати JPEG у форматі "
+#~ "Base64, скористайтеся {0}."
 
 #~ msgid "Java memory usage"
 #~ msgstr "Використання пам’яті Java"
@@ -2316,7 +2375,6 @@ msgstr "Встановлення файла журналу {0}"
 #~ msgid "File or URL"
 #~ msgstr "Файл або адреса URL"
 
-#, java-format
 #~ msgid "File {0}"
 #~ msgstr "Файл {0}"
 
@@ -2326,14 +2384,12 @@ msgstr "Встановлення файла журналу {0}"
 #~ msgid "Script with history"
 #~ msgstr "Скрипт з журналом"
 
-#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "Зображення {0}"
 
 #~ msgid "JVXL Isosurface"
 #~ msgstr "Ізоповерхня JVXL"
 
-#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "Просторова модель {0}"
 

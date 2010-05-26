@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-05-17 20:16+0200\n"
-"PO-Revision-Date: 2010-05-22 14:11+0000\n"
-"Last-Translator: Nicolas Vervelle <Unknown>\n"
+"PO-Revision-Date: 2010-05-26 04:49+0000\n"
+"Last-Translator: Waluyo Adi Siswanto <Unknown>\n"
 "Language-Team: Indonesian <id@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-05-25 21:08+0000\n"
+"X-Launchpad-Export-Date: 2010-05-26 16:56+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -113,11 +113,11 @@ msgstr ""
 #: org/openscience/jmol/app/JmolApp.java:216
 #, java-format
 msgid "{0} or {1}:filename"
-msgstr ""
+msgstr "{0} atau {1}:namaberkas"
 
 #: org/openscience/jmol/app/JmolApp.java:230
 msgid "For example:"
-msgstr ""
+msgstr "Contohnya:"
 
 #: org/openscience/jmol/app/JmolApp.java:236
 msgid ""
@@ -127,15 +127,15 @@ msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:466
 msgid "Executing script 1..."
-msgstr ""
+msgstr "Menjalankan skrip 1..."
 
 #: org/openscience/jmol/app/JmolApp.java:476
 msgid "Executing script file..."
-msgstr ""
+msgstr "Menjalankan berkas skrip..."
 
 #: org/openscience/jmol/app/JmolApp.java:497
 msgid "Executing script 2..."
-msgstr ""
+msgstr "Menjalankan skrip 2..."
 
 #: org/openscience/jmol/app/jmolpanel/AboutDialog.java:57
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:177
@@ -158,60 +158,60 @@ msgstr "Setuju"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:90
 msgid "Jmol Script Console"
-msgstr ""
+msgstr "Konsul Skrip Jmol"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:113
 msgid "Editor"
-msgstr ""
+msgstr "Penyunting"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:114
 msgid "Check"
-msgstr ""
+msgstr "Periksa"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:115
 msgid "Top"
-msgstr ""
+msgstr "Atas"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:116
 msgid "Step"
-msgstr ""
+msgstr "Langkah"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:123
 msgid "Variables"
-msgstr ""
+msgstr "Variabel"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:124
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:291
 msgid "Clear"
-msgstr ""
+msgstr "Bersihkan"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:125
 msgid "Halt"
-msgstr ""
+msgstr "Berhenti"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:127
 msgid "History"
-msgstr ""
+msgstr "Riwayat"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:128
 msgid "State"
-msgstr ""
+msgstr "Kondisi"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:130
 msgid "Help"
-msgstr ""
+msgstr "Bantuan"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:131
 msgid "Close"
-msgstr ""
+msgstr "Tutup"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:132
 msgid "Undo"
-msgstr ""
+msgstr "Tidak jadi"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:133
 msgid "Redo"
-msgstr ""
+msgstr "Jadi Lagi"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:164
 msgid "AtomSetChooser"
@@ -329,11 +329,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:194
 msgid "Basic"
-msgstr ""
+msgstr "Umum"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:196
 msgid "Advanced"
-msgstr ""
+msgstr "Lanjutan"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:224
 msgid "Checkpoint File: "
@@ -341,23 +341,23 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:229
 msgid "Amount of Memory:"
-msgstr ""
+msgstr "Besar Memori:"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:235
 msgid "Number of Processors:"
-msgstr ""
+msgstr "Jumlah Prosesor:"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:248
 msgid "Route"
-msgstr ""
+msgstr "Rute"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:254
 msgid "Method: "
-msgstr ""
+msgstr "Metode: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:261
 msgid "Basis Set: "
-msgstr ""
+msgstr "Set Dasar: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:269
 msgid "Density Fitting Basis Set (DFT Only): "
@@ -369,11 +369,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:288
 msgid "Molecular Properties"
-msgstr ""
+msgstr "Properti Molekul"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:294
 msgid "Total Charge: "
-msgstr ""
+msgstr "Muatan Total: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:301
 msgid "Multiplicity: "
@@ -381,7 +381,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:308
 msgid "Selection: "
-msgstr ""
+msgstr "Seleksi: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:343
 msgid "Gaussian Input File Name"
@@ -389,19 +389,19 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:349
 msgid "File..."
-msgstr ""
+msgstr "Berkas..."
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:360
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:759
 msgid "Save"
-msgstr ""
+msgstr "Simpan"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:364
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:501
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:169
 #: org/openscience/jmol/app/jmolpanel/RecentFilesDialog.java:70
 msgid "Cancel"
-msgstr ""
+msgstr "Batal"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:49
 msgid "&Macros"
@@ -429,11 +429,11 @@ msgstr "Buka &URL"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:55
 msgid "Scrip&t Editor..."
-msgstr ""
+msgstr "Penyunting Skrip..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:56
 msgid "Conso&le..."
-msgstr ""
+msgstr "Konsul..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:57
 msgid "Jmol Java &Console"
@@ -547,7 +547,7 @@ msgstr "Semu&a"
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:110
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:117
 msgid "&None"
-msgstr ""
+msgstr "&Tak Ada"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:86
 msgid "Hydrogen"
@@ -708,7 +708,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:139
 msgid "&View"
-msgstr ""
+msgstr "&Tampilan"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:140
 msgid "&Front"
@@ -744,7 +744,7 @@ msgstr "Alat Bantu"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:148
 msgid "&Gaussian..."
-msgstr ""
+msgstr "&Gaussian..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:150
 msgid "Distance &Units"
@@ -852,7 +852,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:176
 msgid "&Help"
-msgstr ""
+msgstr "&Bantuan"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:178
 msgid "User Guide"
@@ -864,7 +864,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:180
 msgid "Hydrogens"
-msgstr ""
+msgstr "Hidrogen"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:181
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:66
@@ -877,7 +877,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:183
 msgid "Axes"
-msgstr ""
+msgstr "Sumbu"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:184
 msgid "Bounding Box"

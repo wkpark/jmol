@@ -7047,11 +7047,22 @@ public class ScriptEvaluator {
     }
     if (isSyntaxCheck || shapeType < 0)
       return;
-    typeMask = (shapeType == JmolConstants.SHAPE_STRUTS ? JmolEdge.BOND_STRUT
-        : shapeType == JmolConstants.SHAPE_HSTICKS ? JmolEdge.BOND_HYDROGEN_MASK
-            : shapeType == JmolConstants.SHAPE_SSSTICKS ? JmolEdge.BOND_SULFUR_MASK
-                : shapeType == JmolConstants.SHAPE_STICKS ? JmolEdge.BOND_COVALENT_MASK
-                    : 0);
+    switch (shapeType) {
+    case JmolConstants.SHAPE_STRUTS:
+      typeMask = JmolEdge.BOND_STRUT;
+      break;
+    case JmolConstants.SHAPE_HSTICKS:
+      typeMask = JmolEdge.BOND_HYDROGEN_MASK;
+      break;
+    case JmolConstants.SHAPE_SSSTICKS:
+      typeMask = JmolEdge.BOND_SULFUR_MASK;
+      break;
+    case JmolConstants.SHAPE_STICKS:
+      typeMask = JmolEdge.BOND_COVALENT_MASK;
+      break;
+    default:
+      typeMask = 0;
+    }
     if (typeMask == 0) {
       loadShape(shapeType);
       if (shapeType == JmolConstants.SHAPE_LABELS)

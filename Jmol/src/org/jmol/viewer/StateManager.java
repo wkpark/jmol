@@ -600,7 +600,7 @@ public class StateManager {
         + ";picking;pickingstyle;propertycolorschemeoverload;radius;rgbblue;rgbgreen;rgbred"
         + ";scaleangstromsperinch;selectionhalos;showscript;showselections;solvent;strandcount"
         + ";spinx;spiny;spinz;spinfps;navx;navy;navz;navfps;" + JmolConstants.getCallbackName(-1)
-        + ";undo;bondpicking;modelkitmode;";
+        + ";undo;bondpicking;modelkitmode;allowgestures;allowkeystrokes;allowmultitouch;allowmodelkit;";
 
   protected static int getJmolVersionInt() {
     // 11.9.999 --> 1109999
@@ -695,6 +695,7 @@ public class StateManager {
         messageStyleChime = g.messageStyleChime;
         defaultDirectory = g.defaultDirectory;
         allowGestures = g.allowGestures;
+        allowModelkit = g.allowModelkit;
         allowMultiTouch = g.allowMultiTouch;
         allowKeyStrokes = g.allowKeyStrokes;
         useScriptQueue = g.useScriptQueue;
@@ -790,6 +791,7 @@ public class StateManager {
       setParameterValue("allowEmbeddedScripts", allowEmbeddedScripts);
       setParameterValue("allowGestures", allowGestures);
       setParameterValue("allowKeyStrokes", allowKeyStrokes);
+      setParameterValue("allowModelkit", allowModelkit);
       setParameterValue("allowMultiTouch", allowMultiTouch);
       setParameterValue("allowRotateSelected", allowRotateSelected);
       setParameterValue("ambientPercent", ambientPercent);
@@ -1147,6 +1149,7 @@ public class StateManager {
     //misc
 
     boolean allowGestures = false;
+    boolean allowModelkit = true;
     boolean allowMultiTouch = true; // but you still need to set the parameter multiTouchSparshUI=true
     boolean allowKeyStrokes = false;
     int animationFps = 10;

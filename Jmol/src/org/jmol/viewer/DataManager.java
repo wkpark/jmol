@@ -206,7 +206,7 @@ class DataManager {
     return (float[][][]) data[1];
   }
 
-  protected void deleteModelAtoms(int firstAtomIndex, int nAtoms, BitSet bsDeleted) {
+  void deleteModelAtoms(int firstAtomIndex, int nAtoms, BitSet bsDeleted) {
     if (dataValues == null)
       return;
     Enumeration e = (dataValues.keys());
@@ -278,12 +278,12 @@ class DataManager {
     }
   }
 
+  private float[] userVdws;
   int[] userVdwMars;
-  float[] userVdws;
   int defaultVdw = JmolConstants.VDW_JMOL;
   BitSet bsUserVdws;
   
-  public void setUserVdw(int iMode) {
+  private void setUserVdw(int iMode) {
     userVdwMars = new int[Elements.elementNumberMax];
     userVdws = new float[Elements.elementNumberMax];
     bsUserVdws = new BitSet();
@@ -295,7 +295,7 @@ class DataManager {
     }
   }
 
-  public void setDefaultVdw(int iType) {
+  void setDefaultVdw(int iType) {
     // only allowed types here are VDW_JMOL, VDW_BABEL, VDW_RASMOL, VDW_USER, VDW_AUTO
     switch (iType) {
     case JmolConstants.VDW_JMOL:
@@ -347,7 +347,7 @@ class DataManager {
         + sb.append("  end \"element_vdw\";\n\n").toString());
   }
 
-  public static void getInlineData(StringBuffer loadScript, String strModel, boolean isAppend) {
+  static void getInlineData(StringBuffer loadScript, String strModel, boolean isAppend) {
     String tag = (isAppend ? "append" : "model");
     loadScript.append("data \"").append(tag).append(" inline\"\n")
         .append(strModel).append("end \"").append(tag).append(" inline\";");

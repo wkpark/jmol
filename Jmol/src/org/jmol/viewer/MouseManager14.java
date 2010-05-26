@@ -142,16 +142,22 @@ class MouseManager14 implements MouseWheelListener, MouseListener,
           String ret = viewer.loadInline(ImageCreator.getClipboardTextStatic(), false);
           if (ret != null)
             Logger.error(ret);
-          break;
         }
+        break;
       case 26:
       case 'z': // undo
         switch (modifiers) {
         case Binding.CTRL:
           viewer.undoAction(false, 0, 0);
-          break;
         }
-        
+        break;
+      case 25:
+      case 'y': // undo
+        switch (modifiers) {
+        case Binding.CTRL:
+          viewer.undoAction(false, 0, -1);
+        }
+        break;        
       }
       return;
     }

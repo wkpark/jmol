@@ -204,18 +204,6 @@ abstract public class AtomCollection {
     return atoms[i].getAtomNumber();
   }
 
-  public float getAtomX(int i) {
-    return atoms[i].x;
-  }
-
-  public float getAtomY(int i) {
-    return atoms[i].y;
-  }
-
-  public float getAtomZ(int i) {
-    return atoms[i].z;
-  }
-
   public Point3f getAtomPoint3f(int i) {
     return atoms[i];
   }
@@ -891,7 +879,7 @@ abstract public class AtomCollection {
   final public static byte TAINT_ATOMNAME = 0;
   final public static byte TAINT_ATOMTYPE = 1;
   final public static byte TAINT_COORD = 2;
-  final private static byte TAINT_ELEMENT = 3;
+  final public static byte TAINT_ELEMENT = 3;
   final private static byte TAINT_FORMALCHARGE = 4;
   final private static byte TAINT_IONICRADIUS = 5;
   final private static byte TAINT_OCCUPANCY = 6;
@@ -1233,9 +1221,36 @@ abstract public class AtomCollection {
         hAtoms[i] = new Point3f[n];
         //System.out.println(atom.getInfo() + " targetValence=" + targetValence + " nB="
          //+ nBonds + " nVal=" + nVal + " n=" + n);
-        nH += n;
         int hPt = 0;
         switch (n) {
+        default:
+          break;
+        case 4: // tetrahedral
+          z.set(0.635f, 0.635f, 0.635f);
+          pt = new Point3f(z);
+          pt.add(atom);
+          hAtoms[i][hPt++] = pt;
+          if (vConnect != null)
+            vConnect.add(atom);
+          z.set(-0.635f, -0.635f, 0.635f);
+          pt = new Point3f(z);
+          pt.add(atom);
+          hAtoms[i][hPt++] = pt;
+          if (vConnect != null)
+            vConnect.add(atom);
+          z.set(-0.635f, 0.635f, -0.635f);
+          pt = new Point3f(z);
+          pt.add(atom);
+          hAtoms[i][hPt++] = pt;
+          if (vConnect != null)
+            vConnect.add(atom);
+          z.set(0.635f, -0.635f, -0.635f);
+          pt = new Point3f(z);
+          pt.add(atom);
+          hAtoms[i][hPt++] = pt;
+          if (vConnect != null)
+            vConnect.add(atom);
+          break;
         case 3: // three bonds needed RC
           getHybridizationAndAxes(i, z, x, "sp3a", false, true, -1);
           pt = new Point3f(z);
@@ -1311,6 +1326,7 @@ abstract public class AtomCollection {
             break;
           }
         }
+        nH += hPt;
       }
     nTotal[0] = nH;
     return hAtoms;
@@ -1406,7 +1422,7 @@ abstract public class AtomCollection {
         x.cross(x3, z);
         for (int i = 0; i < atom1.bonds.length; i++) {
           if (atom1.bonds[i].isCovalent() 
-              && atom1.getBondedAtomIndex(0) != atom.index) {
+              && atom1.getBondedAtomIndex(i) != atom.index) {
             x.set(atom1);
             x.sub(atom1.bonds[i].getOtherAtom(atom1));
             x.cross(z, x);

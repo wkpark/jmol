@@ -9145,6 +9145,12 @@ public class ScriptEvaluator {
   private void zap(boolean isZapCommand) throws ScriptException {
     if (statementLength == 1 || !isZapCommand) {
       viewer.zap(true, isZapCommand && !isStateScript);
+      if (isZapCommand && !isStateScript && viewer.isModelkitMode()) {
+        viewer.loadInline("1 0 C 0 0"); // a JME string for methane
+        viewer.setRotationRadius(5.0f, true);
+        viewer.setStringProperty("picking", "assignAtom_C");
+        viewer.setStringProperty("picking", "assignBond_p");
+      }
       refresh();
       return;
     }
@@ -11498,38 +11504,13 @@ public class ScriptEvaluator {
       str = "deleteBond";
       break;
     }
-    String option = null;
-    if ((mode = str.indexOf("_")) >= 0) {
-      option = str.substring(mode + 1);
-      if (option.length() == 0)
-        error(ERROR_invalidArgument);
-      option = Character.toUpperCase(option.charAt(0))
-          + (option.length() == 1 ? "" : option.substring(1, 2));
-      str = str.substring(0, mode);
-      mode = JmolConstants.getPickingMode(str.substring(0, mode));
-    } else {
-      mode = JmolConstants.getPickingMode(str);
-    }
-    if (mode >= 0) {
-      setStringProperty("picking", str);
-      if (option != null)
-        switch (mode) {
-        case JmolConstants.PICKING_ASSIGN_ATOM:
-          if (!isSyntaxCheck)
-            viewer.setAtomPickingOption(option);
-          return;
-        case JmolConstants.PICKING_ASSIGN_BOND:
-          if (!isSyntaxCheck)
-            viewer.setBondPickingOption(option);
-          return;
-        default:
-          mode = -1;
-        }
-    }
+    mode = ((mode = str.indexOf("_")) >= 0 ? mode : str.length());
+    mode = JmolConstants.getPickingMode(str.substring(0, mode));
     if (mode < 0)
       error(ERROR_unrecognizedParameter, "SET PICKING " + type, str);
+    setStringProperty("picking", str);
   }
-
+    
   private void setPickingStyle() throws ScriptException {
     if (statementLength > 4 || tokAt(2) == Token.string) {
       setStringProperty("pickingStyle", stringSetting(2, false));
@@ -12422,6 +12403,8 @@ public class ScriptEvaluator {
         data = viewer.getPdbData(modelIndex, type2);
       else
         doDefer = true;
+    } else if (data == "MOL" && isCoord) {
+      data = viewer.getModelExtract("selected", true);
     } else if (data == "XYZ" || data == "MOL" || data == "CML") {
       data = viewer.getData("selected", data);
     } else if (data == "FUNCS") {

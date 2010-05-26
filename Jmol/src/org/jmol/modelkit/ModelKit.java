@@ -25,7 +25,6 @@ package org.jmol.modelkit;
 
 import org.jmol.api.*;
 import org.jmol.i18n.GT;
-import org.jmol.popup.SimplePopup;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
 
@@ -36,7 +35,7 @@ import javax.swing.JFrame;
 public class ModelKit extends JDialog implements JmolModelKitInterface {
 
   JmolViewer viewer;
-  SimplePopup modelkitMenu;
+  ModelKitPopup modelkitMenu;
 
   public ModelKit() {
     // necessary for reflection
@@ -65,7 +64,7 @@ public class ModelKit extends JDialog implements JmolModelKitInterface {
   public void getMenus(boolean doTranslate) {
     GT.setDoTranslate(true);
     try {
-      modelkitMenu = new SimplePopup(viewer, "modelkitMenu",
+      modelkitMenu = new ModelKitPopup(viewer, "modelkitMenu",
           new ModelKitPopupResourceBundle());
     } catch (Exception e) {
       Logger.error("Modelkit menus not loaded");

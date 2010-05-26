@@ -316,16 +316,6 @@ abstract public class BondCollection extends AtomCollection {
     bondCount = 0;
   }
   
-  public void deleteAtoms(BitSet bs) {
-    if (bs == null)
-      return;
-    BitSet bsBonds = new BitSet();
-      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i+1))
-        atoms[i].delete(bsBonds);
-    deleteBonds(bsBonds, false);
-  }
-
-
 
   protected short defaultCovalentMad;
 
@@ -829,8 +819,6 @@ abstract public class BondCollection extends AtomCollection {
 
   protected void removeUnnecessaryBonds(Atom atom, boolean deleteAtom) {
     BitSet bs = new BitSet();
-    if (deleteAtom)
-      bs.set(atom.index);
     BitSet bsBonds = new BitSet();
     Bond[] bonds = atom.bonds;
     if (bonds == null)
@@ -845,10 +833,10 @@ abstract public class BondCollection extends AtomCollection {
       }
     if (bsBonds.nextSetBit(0) >= 0)
       deleteBonds(bsBonds, false);
+    if (deleteAtom)
+      bs.set(atom.index);
     if (bs.nextSetBit(0) >= 0)
       viewer.deleteAtoms(bs, false);
   }
-
-
 }
 

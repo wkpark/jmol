@@ -73,55 +73,29 @@ public class FileManager {
   }
 
   void clear() {
-    setLoadScript("", false);
     fullPathName = fileName = nameAsGiven = "zapped";
   }
 
-  private String loadScript;
-
-  String getLoadScript() {
-    return loadScript;
-  }
-
-  private void setLoadScript(String script, boolean isAppend) {
-    if (script != null && script.indexOf("#nocache") >= 0) // 2D addhydrogens
-      return;
-    if (loadScript == null || !isAppend)
-      loadScript = "";
-    loadScript += viewer.getLoadState();
-    addLoadScript(script);
-  }
-
-  void addLoadScript(String script) {
-    if (script == null)
-      return;
-    if (script.equals("-")) {
-      loadScript = "";
-      return;
+  private void setLoadState(Hashtable htParams) {
+    if (viewer.getPreserveState()) {
+      htParams.put("loadState", viewer.getLoadState());
     }
-    loadScript += "  " + script + ";\n";
   }
-  
+
   private String nameAsGiven = "zapped";
   private String fullPathName;
   private String fileName;
-  private String inlineData;
-  //TODO: We might consider an option to not preserve inlineData in certain cases where
-  //      data are huge. The reason to save the data is that we can then use load ""
-  //      
 
   void setFileInfo(String[] fileInfo) {
     // used by ScriptEvaluator dataFrame and load methods to temporarily save the state here
     fullPathName = fileInfo[0];
     fileName = fileInfo[1];
     nameAsGiven = fileInfo[2];
-    inlineData = fileInfo[3];
-    loadScript = fileInfo[4];
   }
 
   String[] getFileInfo() {
     // used by ScriptEvaluator dataFrame method
-    return new String[] { fullPathName, fileName, nameAsGiven, inlineData, loadScript };
+    return new String[] { fullPathName, fileName, nameAsGiven };
   }
 
   String getFullPathName() {
@@ -130,10 +104,6 @@ public class FileManager {
 
   String getFileName() {
     return fileName != null ? fileName : nameAsGiven;
-  }
-
-  String getInlineData(int iData) {
-    return (iData < 0 ? inlineData : "");  
   }
 
   // for applet proxy
@@ -164,7 +134,7 @@ public class FileManager {
       sfunc.append("  _setFileState;\n");
       commands.append("function _setFileState() {\n\n");
     }
-    commands.append(loadScript);
+    viewer.appendLoadStates(commands);
     if (viewer.getModelSetFileName().equals("zapped"))
       commands.append("  zap;\n");
     if (sfunc != null)
@@ -231,9 +201,9 @@ public class FileManager {
    * 
    */
   Object createAtomSetCollectionFromFile(String name, Hashtable htParams,
-                                    String loadScript, boolean isAppend) {
+                                    StringBuffer loadScript, boolean isAppend) {
     if (htParams.get("atomDataOnly") == null)
-      setLoadScript(loadScript, isAppend);
+      setLoadState(htParams);
     int pt = name.indexOf("::");
     nameAsGiven = (pt >= 0 ? name.substring(pt + 2) : name);
     String fileType = (pt >= 0 ? name.substring(0, pt) : null);
@@ -257,9 +227,9 @@ public class FileManager {
   }
 
   Object createAtomSetCollectionFromFiles(String[] fileNames,
-                                     String loadScript, boolean isAppend,
-                                     Hashtable htParams) {
-    setLoadScript(loadScript, isAppend);
+                                     StringBuffer loadScript, Hashtable htParams,
+                                     boolean isAppend) {
+    setLoadState(htParams);
     String[] fullPathNames = new String[fileNames.length];
     String[] namesAsGiven = new String[fileNames.length];
     String[] fileTypes = new String[fileNames.length];
@@ -277,39 +247,38 @@ public class FileManager {
     }
 
     fullPathName = fileName = nameAsGiven = "file[]";
-    inlineData = "";
     FilesReader filesReader = new FilesReader(fullPathNames, namesAsGiven,
         fileTypes, null, htParams);
     filesReader.run();
     return filesReader.atomSetCollection;
   }
 
-  Object createAtomSetCollectionFromString(String strModel, Hashtable htParams,
+  Object createAtomSetCollectionFromString(String strModel, StringBuffer loadScript, Hashtable htParams,
                                            boolean isAppend,
                                            boolean isLoadVariable) {
-    if (!isLoadVariable) {
-      String tag = (isAppend ? "append" : "model");
-      String script = "data \"" + tag + " inline\"\n" + strModel + "end \""
-          + tag + " inline\";";
-      setLoadScript(script, isAppend);
-    }
+ //TODO -- must check loadvariable business. 
+    if (!isLoadVariable)
+      DataManager.getInlineData(loadScript, strModel, isAppend);
+    setLoadState(htParams);
     Logger.info("FileManager.getAtomSetCollectionFromString()");
     if (!isAppend) {
       fullPathName = fileName = "string";
-      if (viewer.getPreserveState())
-        inlineData = strModel;
     }
+//    if (viewer.getPreserveState())
+  //    htParams.put("inlineData", strModel);
     FileReader fileReader = new FileReader("string", "string", null,
         getBufferedReaderForString(strModel), htParams);
     fileReader.run();
     return fileReader.atomSetCollection;
   }
 
-  Object createAtomSeCollectionFromStrings(String[] arrayModels, Hashtable htParams,
-                                      boolean isAppend) {
+  Object createAtomSeCollectionFromStrings(String[] arrayModels,
+                                           StringBuffer loadScript,
+                                           Hashtable htParams, boolean isAppend) {
     String oldSep = "\"" + viewer.getDataSeparator() + "\"";
     String tag = "\"" + (isAppend ? "append" : "model") + " inline\"";
-    StringBuffer sb = new StringBuffer("set dataSeparator \"~~~next file~~~\";\ndata ");
+    StringBuffer sb = new StringBuffer(
+        "set dataSeparator \"~~~next file~~~\";\ndata ");
     sb.append(tag);
     for (int i = 0; i < arrayModels.length; i++) {
       if (i > 0)
@@ -317,10 +286,10 @@ public class FileManager {
       sb.append(arrayModels[i]);
     }
     sb.append("end ").append(tag).append(";set dataSeparator ").append(oldSep);
-    setLoadScript(sb.toString(), isAppend);
+    loadScript.append(sb);
+    setLoadState(htParams);
     Logger.info("FileManager.getAtomSetCollectionFromStrings(string[])");
     fullPathName = fileName = "string[]";
-    inlineData = "";
     String[] fullPathNames = new String[arrayModels.length];
     StringDataReader[] readers = new StringDataReader[arrayModels.length];
     for (int i = 0; i < arrayModels.length; i++) {
@@ -339,7 +308,6 @@ public class FileManager {
     // NO STATE SCRIPT -- HERE WE ARE TRYING TO CONSERVE SPACE
     Logger.info("FileManager.getAtomSetCollectionFromArrayData(Vector)");
     fullPathName = fileName = "String[]";
-    inlineData = "";
     int nModels = arrayData.size();
     String[] fullPathNames = new String[nModels];
     DataReader[] readers = new DataReader[nModels];
@@ -360,7 +328,6 @@ public class FileManager {
   }
 
   Object createAtomSetCollectionFromDOM(Object DOMNode, Hashtable htParams) {
-    inlineData = "";
     fullPathName = fileName = "JSNode";
     DOMReader aDOMReader = new DOMReader(DOMNode, htParams);
     aDOMReader.run();

@@ -55,7 +55,7 @@ public class SimplePopup {
   //  System.out.println("JmolPopup " + this + " finalize");
   //}
 
-  JmolViewer viewer;
+  protected JmolViewer viewer;
   protected Component display;
   protected MenuItemListener mil;
   protected CheckboxMenuItemListener cmil;
@@ -230,6 +230,8 @@ public class SimplePopup {
       enableMenu(TemperatureOnly.get(i), haveBFactors);
   }
 
+  private ButtonGroup group;
+
   protected void addMenuItems(String parentId, String key, Object menu,
                             PopupResource popupResourceBundle,
                             boolean allowSignedFeatures) {
@@ -240,7 +242,6 @@ public class SimplePopup {
       addMenuItem(menu, "#" + key, "", "");
       return;
     }
-    ButtonGroup group = null;
     // process predefined @terms
     StringTokenizer st = new StringTokenizer(value);
     String item;
@@ -259,7 +260,8 @@ public class SimplePopup {
       String word = popupResourceBundle.getWord(item);
       boolean isCB = false;
       if (item.indexOf("Menu") >= 0) {
-        group = null;
+        if (item.indexOf("more") < 0)
+          group = null;
         if (!allowSignedFeatures && item.startsWith("SIGNED"))
           continue;
         Object subMenu = newMenu(word, id + "." + item);        
@@ -337,60 +339,56 @@ public class SimplePopup {
     // special considerations here
   }
 
-  Hashtable htCheckbox = new Hashtable();
+  protected Hashtable htCheckbox = new Hashtable();
 
   void rememberCheckbox(String key, Object checkboxMenuItem) {
-    htCheckbox.put(key, checkboxMenuItem);
+    htCheckbox.put(key + "::" + htCheckbox.size(), checkboxMenuItem);
   }
 
   /**
    * (1) setOption --> set setOption true or set setOption false
-   *  
-   * @param what option to set
-   * @param TF   true or false
-   * @return possibly modified script or ""
+   * 
+   * @param item
+   * 
+   * @param what
+   *          option to set
+   * @param TF
+   *          true or false
    */
-  String setCheckBoxValue(String what, boolean TF) {
+  protected void setCheckBoxValue(JMenuItem item, String what, boolean TF) {
     int pt;
-    if (what.indexOf("##") < 0) {
-      // not a special computed checkbox
-      // name:trueAction|falseAction
-      String basename = what.substring(0, (pt = what.indexOf(":")));
-      if (viewer.getBooleanProperty(basename) == TF)
-        return "";
-      if (basename.endsWith("P!")) {
-        if (!TF)
-          return "";
-        what = "set picking " + basename.substring(0, basename.length() - 2);
+    // name:trueAction|falseAction
+    String basename = what.substring(0, (pt = what.indexOf(":")));
+    if (viewer.getBooleanProperty(basename) == TF)
+      return;
+    if (basename.endsWith("P!")) {
+      if (basename.indexOf("??") >= 0) {
+        what = setCheckBoxOption(item, basename, what);
       } else {
-        what = what.substring(pt + 1);
-        if ((pt = what.indexOf("|")) >= 0)
-          what = (TF ? what.substring(0, pt) : what.substring(pt + 1)).trim();
-        what = TextFormat.simpleReplace(what, "T/F", (TF ? " TRUE" : " FALSE"));
+        if (what == null)
+          return;
+        if (!TF)
+          return;
+        what = "set picking " + basename.substring(0, basename.length() - 2);
       }
+    } else {
+      what = what.substring(pt + 1);
+      if ((pt = what.indexOf("|")) >= 0)
+        what = (TF ? what.substring(0, pt) : what.substring(pt + 1)).trim();
+      what = TextFormat.simpleReplace(what, "T/F", (TF ? " TRUE" : " FALSE"));
     }
     viewer.evalStringQuiet(what);
-    return what;
+  }
+
+  protected String setCheckBoxOption(JMenuItem item, String name, String what) {
+    return null;
   }
 
   String currentMenuItemId = null;
 
   class MenuItemListener implements ActionListener {
     public void actionPerformed(ActionEvent e) {
-      restorePopupMenu();
-      String script = e.getActionCommand();
-      if (script == null || script.length() == 0)
-        return;
-      if (script.equals("MAIN")) {
-        show(thisx, thisy);
-        return;
-      }
-      String id = getId(e.getSource());
-      if (id != null) {
-        script = fixScript(id, script);
-        currentMenuItemId = id;
-      }
-      viewer.evalStringQuiet(script);
+      checkMenuClick(e.getSource(), e.getActionCommand());
     }
   }
 
@@ -406,7 +404,7 @@ public class SimplePopup {
     }
   }
 
-  String fixScript(String id, String script) {
+  protected String fixScript(String id, String script) {
     int pt;
     if (script == "" || id.endsWith("Checkbox"))
       return script;
@@ -432,6 +430,22 @@ public class SimplePopup {
       script = TextFormat.simpleReplace(script, "PdbId?", "=xxxx");
     }
     return script;
+  }
+
+  public void checkMenuClick(Object source, String script) {
+    restorePopupMenu();
+    if (script == null || script.length() == 0)
+      return;
+    if (script.equals("MAIN")) {
+      show(thisx, thisy);
+      return;
+    }
+    String id = getId(source);
+    if (id != null) {
+      script = fixScript(id, script);
+      currentMenuItemId = id;
+    }
+    viewer.evalStringQuiet(script);
   }
 
   void restorePopupMenu() {
@@ -491,11 +505,11 @@ public class SimplePopup {
     return jmi;
   }
 
-  void setLabel(Object menu, String entry) {
+  protected void setLabel(Object menu, String entry) {
     if (menu instanceof JMenuItem)
-      ((JMenuItem) menu).setLabel(entry);
+      ((JMenuItem) menu).setText(entry);
     else
-      ((JMenu) menu).setLabel(entry);
+      ((JMenu) menu).setText(entry);
   }
 
   String getId(Object menu) {
@@ -504,7 +518,7 @@ public class SimplePopup {
 
   void setCheckBoxValue(Object source) {
     JMenuItem jcmi = (JMenuItem) source;
-    setCheckBoxValue(jcmi.getActionCommand(), jcmi.isSelected());
+    setCheckBoxValue(jcmi, jcmi.getActionCommand(), jcmi.isSelected());
   }
 
   void setCheckBoxState(Object item, boolean state) {
@@ -517,7 +531,7 @@ public class SimplePopup {
 
   void updateMenuItem(Object menuItem, String entry, String script) {
     JMenuItem jmi = (JMenuItem) menuItem;
-    jmi.setLabel(entry);
+    jmi.setText(entry);
     jmi.setActionCommand(script);
   }
   
@@ -561,7 +575,7 @@ public class SimplePopup {
   }
 
   void renameMenu(Object menu, String newMenuName) {
-    ((JMenu) menu).setLabel(newMenuName);
+    ((JMenu) menu).setText(newMenuName);
   }
 
   int getMenuItemCount(Object menu) {

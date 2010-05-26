@@ -947,5 +947,17 @@ abstract public class ModelSet extends ModelCollection {
     return bs;
   }
 
+  public String getInlineData(int modelIndex) {
+    String data = models[modelIndex >= 0 ? modelIndex : modelCount - 1].loadState;
+    int pt = data.lastIndexOf("data \"");
+    if (pt < 0)
+      return null;
+    pt = data.indexOf("\n", pt);
+    int pt2 = data.lastIndexOf("end \"");
+    if (pt2 < pt || pt < 0)
+      return null;
+    return data.substring(pt + 1, pt2);
+  }
+
 }
 

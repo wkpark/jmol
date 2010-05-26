@@ -522,8 +522,8 @@ abstract public class ModelCollection extends BondCollection {
   public StateScript addStateScript(String script1, BitSet bsBonds, BitSet bsAtoms1,
                              BitSet bsAtoms2, String script2,
                              boolean addFrameNumber, boolean postDefinitions) {
+    int iModel = viewer.getCurrentModelIndex();
     if (addFrameNumber) {
-      int iModel = viewer.getCurrentModelIndex();
       if (thisStateModel != iModel)
         script1 = "frame "
             + (iModel < 0 ? "" + iModel : getModelNumberDotted(iModel)) + ";\n  "
@@ -2968,16 +2968,21 @@ abstract public class ModelCollection extends BondCollection {
     return bsResult;
   }
 
-  public String getModelExtract(BitSet bs) {
+  public String getModelExtract(BitSet bs, boolean doTransform) {
     int nAtoms = 0;
     int nBonds = 0;
     int[] atomMap = new int[atomCount];
     StringBuffer mol = new StringBuffer();
+    mol.append(viewer.getFullPathName()).append("\nJmol version ").append(Viewer.getJmolVersion())
+        .append("\nEXTRACT: ").append(Escape.escape(bs)).append("\n"); 
     StringBuffer s = new StringBuffer();
-
+    Quaternion q = (doTransform ? viewer.getRotationQuaternion() : null);
+    Point3f pTemp = new Point3f();
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+      if (q != null && atoms[i].isDeleted())
+        continue;
       atomMap[i] = ++nAtoms;
-      getAtomRecordMOL(s, i);
+      getAtomRecordMOL(s, i, q, pTemp);
     }
     for (int i = 0; i < bondCount; i++) {
       Bond bond = bonds[i];
@@ -3000,13 +3005,17 @@ abstract public class ModelCollection extends BondCollection {
     return mol.toString();
   }
   
-  private void getAtomRecordMOL(StringBuffer s, int i){
+  private void getAtomRecordMOL(StringBuffer s, int i, Quaternion q, Point3f pTemp){
     //   -0.9920    3.2030    9.1570 Cl  0  0  0  0  0
     //    3.4920    4.0920    5.8700 Cl  0  0  0  0  0
     //012345678901234567890123456789012
-    TextFormat.rFill(s, "          " ,TextFormat.safeTruncate(getAtomX(i),9));
-    TextFormat.rFill(s, "          " ,TextFormat.safeTruncate(getAtomY(i),9));
-    TextFormat.rFill(s, "          " ,TextFormat.safeTruncate(getAtomZ(i),9));
+    if (q == null)
+      pTemp.set(atoms[i]);
+    else
+      q.transform(atoms[i], pTemp);
+    TextFormat.rFill(s, "          " ,TextFormat.safeTruncate(pTemp.x,9));
+    TextFormat.rFill(s, "          " ,TextFormat.safeTruncate(pTemp.y,9));
+    TextFormat.rFill(s, "          " ,TextFormat.safeTruncate(pTemp.z,9));
     s.append(" ").append((getElementSymbol(i) + "  ").substring(0,2)).append("\n");
   }
 
@@ -3149,9 +3158,9 @@ abstract public class ModelCollection extends BondCollection {
     getAtomIdentityInfo(i, info);
     info.put("element", getElementName(i));
     info.put("elemno", new Integer(getElementNumber(i)));
-    info.put("x", new Float(getAtomX(i)));
-    info.put("y", new Float(getAtomY(i)));
-    info.put("z", new Float(getAtomZ(i)));
+    info.put("x", new Float(atoms[i].x));
+    info.put("y", new Float(atoms[i].y));
+    info.put("z", new Float(atoms[i].z));
     info.put("coord", new Point3f(atom));
     if (vibrationVectors != null && vibrationVectors[i] != null) {
       info.put("vibVector", new Vector3f(vibrationVectors[i]));
@@ -3683,5 +3692,38 @@ abstract public class ModelCollection extends BondCollection {
     }
     viewer.addHydrogens(bsA, false);
   }
+
+  public void deleteAtoms(BitSet bs) {
+    if (bs == null)
+      return;
+    BitSet bsBonds = new BitSet();
+    for (int i = bs.nextSetBit(0); i >= 0 && i < atomCount ; i = bs.nextSetBit(i + 1))
+      atoms[i].delete(bsBonds);
+    BitSet bsTemp = new BitSet();
+    for (int i = 0; i < modelCount; i++) {
+      BitSetUtil.copy(bs, bsTemp);
+      bsTemp.and(models[i].bsAtoms);
+      models[i].bsDeleted.or(bsTemp);
+    }
+    deleteBonds(bsBonds, false);
+  }
+
+  public void appendLoadStates(StringBuffer commands) {
+    for (int i = 0; i < modelCount; i++) {
+      commands.append(models[i].loadState);
+      if (models[i].isModelKit) {
+        BitSet bs = getModelAtomBitSet(i, true);
+        if (tainted[TAINT_COORD] != null)
+          tainted[TAINT_COORD].andNot(bs);
+        if (tainted[TAINT_ELEMENT] != null)
+          tainted[TAINT_ELEMENT].andNot(bs);
+        models[i].loadScript = new StringBuffer(); 
+        Viewer.getInlineData(commands, viewer.getModelExtract(bs, false), false);
+      } else {
+        commands.append(models[i].loadScript);
+      }
+    }
+  }
+
 
 }

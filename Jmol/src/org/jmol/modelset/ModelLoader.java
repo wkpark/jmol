@@ -87,8 +87,9 @@ public final class ModelLoader extends ModelSet {
     viewer.setStringProperty("_fileType", "");
   }
 
-  public ModelLoader(Viewer viewer, Object atomSetCollection,
-      ModelLoader mergeModelSet, String modelSetName, BitSet bsNew) {
+  public ModelLoader(Viewer viewer, StringBuffer loadScript,
+      Object atomSetCollection, ModelLoader mergeModelSet, String modelSetName,
+      BitSet bsNew) {
     this.viewer = viewer;
     JmolAdapter adapter = viewer.getModelAdapter();
     this.modelSetName = modelSetName;
@@ -98,8 +99,11 @@ public final class ModelLoader extends ModelSet {
       viewer.resetShapes();
     preserveState = viewer.getPreserveState();
 
+    Hashtable info = adapter
+        .getAtomSetCollectionAuxiliaryInfo(atomSetCollection);
+    info.put("loadScript", loadScript);
     initializeInfo(adapter.getFileTypeName(atomSetCollection).toLowerCase()
-        .intern(), adapter.getAtomSetCollectionAuxiliaryInfo(atomSetCollection));
+        .intern(), info);
     createModelSet(adapter, atomSetCollection, bsNew);
     // dumpAtomSetNameDiagnostics(adapter, atomSetCollection);
   }
@@ -419,6 +423,14 @@ public final class ModelLoader extends ModelSet {
       if (getModelAuxiliaryInfo(ipt, "periodicOriginXyz") != null)
         someModelsHaveSymmetry = true;
     }
+    Model m = models[baseModelIndex];
+    String loadState = (String) modelSetAuxiliaryInfo.remove("loadState");
+    StringBuffer loadScript = (StringBuffer)modelSetAuxiliaryInfo.remove("loadScript");
+    if (loadScript.indexOf("#jmolModelkit") < 0 || !m.isModelKit) {
+      m.loadState += m.loadScript + loadState;
+      m.loadScript.append("  ").append(loadScript).append(";\n");
+      
+    }
     if (isTrajectory) {
       // fill in the rest of the data
       Logger.info((modelCount - ipt + 1) + " trajectory steps read");
@@ -450,6 +462,8 @@ public final class ModelLoader extends ModelSet {
     models[modelIndex].setNAltLocs(codes == null ? 0 : codes.length());
     codes = (String) getModelAuxiliaryInfo(modelIndex, "insertionCodes");
     models[modelIndex].setNInsertions(codes == null ? 0 : codes.length());
+    models[modelIndex].isModelKit = "Jme".equals(getModelAuxiliaryInfo(modelIndex,
+    "fileType"));
     return models[modelIndex].isPDB = getModelAuxiliaryInfoBoolean(modelIndex,
         "isPDB");
   }

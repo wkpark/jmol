@@ -1133,7 +1133,7 @@ public class ActionManager {
         viewer.undoAction(true);
         switch (bondPickingMode) {
         case JmolConstants.PICKING_ASSIGN_BOND:
-          viewer.script("assign bond ({" + nearestPoint.index + "}) \""
+          viewer.script("assign bond [{" + nearestPoint.index + "}] \""
               + pickBondAssignType + "\"");
           break;
         case JmolConstants.PICKING_ROTATE_BOND:

@@ -187,16 +187,18 @@ public abstract class AtomSetCollectionReader {
   
   public Object readData(String filename, Hashtable htParams, 
                          BufferedReader reader) throws Exception {
-    initialize(htParams);
+    this.htParams = htParams;
+    initialize();
     readAtomSetCollection(reader);
     reader.close();
-    return finalize(htParams, filename);
+    return finalize(filename);
   }  
   
   protected Object readData(String filename, Hashtable htParams, Object DOMNode) {
-    initialize(htParams);
+    this.htParams = htParams;
+    initialize();
     readAtomSetCollectionFromDOM(DOMNode);
-    return finalize(htParams, filename);
+    return finalize(filename);
   }
 
   public void readAtomSetCollectionFromDOM(Object DOMNode) {
@@ -273,7 +275,9 @@ public abstract class AtomSetCollectionReader {
 
   /////////////////////////////////////////////////////////////////////////////////////
   
-  private Object finalize(Hashtable htParams, String filename) {
+  private Object finalize(String filename) {
+    String s = (String) htParams.get("loadState");
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("loadState", s == null ? "" : s);
     if (!htParams.containsKey("templateAtomCount"))
       htParams.put("templateAtomCount", new Integer(atomSetCollection
           .getAtomCount()));
@@ -311,10 +315,9 @@ public abstract class AtomSetCollectionReader {
           + ":\n" + line + "\n" + e.getMessage();
   }
   
-  private void initialize(Hashtable htParams) {
+  private void initialize() {
 
     initializeSymmetry();
-    this.htParams = htParams;
     this.viewer = (JmolViewer) htParams.get("viewer");
     htParams.remove("viewer"); // don't pass this on to user
     getHeader = htParams.containsKey("getHeader");
@@ -431,9 +434,9 @@ public abstract class AtomSetCollectionReader {
       ignoreFileUnitCell = iHaveUnitCell;
     }
     
-    if (htParams.containsKey("OutputStream")) {
+    if (htParams.containsKey("OutputStream"))
       os = (OutputStream) htParams.get("OutputStream"); 
-    }
+    
   }
 
   public boolean haveModel;

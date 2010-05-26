@@ -624,19 +624,19 @@ public class JmolPopup extends SimplePopup {
 
   /**
    * (1) setOption --> set setOption true or set setOption false
+   * @param item 
    *  
    * @param what option to set
    * @param TF   true or false
-   * @return    null
    */
-  String setCheckBoxValue(String what, boolean TF) {
-    what = super.setCheckBoxValue(what, TF);
+  protected void setCheckBoxValue(JMenuItem item, String what, boolean TF) {    
     if (what.indexOf("#CONFIG") >= 0) {
       configurationSelected = what;
       updateConfigurationComputedMenu();
       updateModelSetComputedMenu();
+      return;
     }
-    return null;
+    super.setCheckBoxValue(item, what, TF);
   }
 
   protected void updateForShow() {

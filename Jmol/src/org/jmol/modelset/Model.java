@@ -101,6 +101,14 @@ public final class Model {
     return isPDB;
   }
   
+  String loadState = "";
+  StringBuffer loadScript = new StringBuffer();
+
+  boolean isModelKit;
+  public boolean isModelkit() {
+    return isModelKit;
+  }
+  
   boolean isTrajectory;
   int trajectoryBaseIndex;
   int selectedTrajectory = -1;
@@ -115,8 +123,11 @@ public final class Model {
   int firstAtomIndex;  
   int atomCount = 0; // includes deleted atoms
   final BitSet bsAtoms = new BitSet();
-
+  final BitSet bsDeleted = new BitSet();
   // this one is variable and calculated only if necessary:
+  public int getTrueAtomCount() {
+    return bsAtoms.cardinality() - bsDeleted.cardinality();
+  }
   
   private int bondCount = -1;
 
@@ -320,6 +331,7 @@ public final class Model {
     for (int i = 0; i < bioPolymerCount; i++)
       bioPolymers[i].recalculateLeadMidpointsAndWingVectors();
     BitSetUtil.deleteBits(bsAtoms, bsDeleted);
+    BitSetUtil.deleteBits(this.bsDeleted, bsDeleted);
   }
-  
+
 }

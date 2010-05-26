@@ -39,15 +39,23 @@ class ModelKitPopupResourceBundle extends PopupResource {
   }
     
   private static String[][] menuContents = {
-    { "modelkitMenu", "atomMenu bondMenu - addh minimize saveSIGNED exit" },
-    { "atomMenu" , "assignAtom_XP!RD dragAtomP!RD dragMinimizeP!RD - assignAtom_CP!RD assignAtom_HP!RD assignAtom_NP!RD assignAtom_OP!RD - assignAtom_PlP!RD assignAtom_MiP!RD" },
-    { "bondMenu", "assignBond_0P!RD assignBond_1P!RD assignBond_2P!RD assignBond_3P!RD - assignBond_pP!RD assignBond_mP!RD - rotateBondP!RD" }
+    { "modelkitMenu", "atomMenu bondMenu - new center addh minimize saveFileSIGNED saveStateSIGNED exit" },
+    { "atomMenu" , "assignAtom_XP!RD dragAtomP!RD dragMinimizeP!RD " +
+    		"- assignAtom_CP!RD assignAtom_HP!RD assignAtom_NP!RD assignAtom_OP!RD " +
+    		"_??P!RD _??P!RD _??P!RD " +
+    		"moreAtomMenu - assignAtom_PlP!RD assignAtom_MiP!RD" },
+    { "moreAtomMenu", "clearQ - _??P!RD _??P!RD _??P!RD _??P!RD _??P!RD _??P!RD " },
+    { "bondMenu", "assignBond_0P!RD assignBond_1P!RD assignBond_2P!RD assignBond_3P!RD - assignBond_pP!RD assignBond_mP!RD - rotateBondP!RD" },
   };
   
   private static String[][] structureContents = {
+    { "new" , "zap" },
     { "minimize" , "minimize" },
+    { "center" , "center visible" },
     { "addh" , "delete hydrogens; calculate hydrogens" },
-    { "saveSIGNED", "write '?jmol.mol'" },
+    { "saveFileSIGNED", "write COORD '?jmol.mol'" },
+    { "saveStateSIGNED", "write '?jmol.jpg'" },
+    { "clearQ", "clearQ" },
     { "exit", "set modelkitMode false" },
   };
   
@@ -58,9 +66,14 @@ class ModelKitPopupResourceBundle extends PopupResource {
       GT.setDoTranslate(true);
     String[] words = new String[] {
         "atomMenu", GT._("atoms"),
+        "moreAtomMenu", GT._("more..."),
         "bondMenu", GT._("bonds"),
+        "new", GT._("new"),
+        "center", GT._("center"),
         "minimize", GT._("minimize"),
-        "saveSIGNED", GT._("save"),
+        "clearQ", GT._("clear"),
+        "saveFileSIGNED", GT._("save file"),
+        "saveStateSIGNED", GT._("save state"),
         "addh", GT._("add hydrogens"),
         "assignAtom_XP!RD" , GT._("delete atom"),
         "dragAtomP!RD" , GT._("drag atom"),
@@ -69,6 +82,7 @@ class ModelKitPopupResourceBundle extends PopupResource {
         "assignAtom_HP!RD" , "H",
         "assignAtom_NP!RD" , "N",
         "assignAtom_OP!RD" , "O",
+        "_??P!RD", "??",
         "assignAtom_PlP!RD", GT._("increase charge"),
         "assignAtom_MiP!RD", GT._("decrease charge"),
         "assignBond_0P!RD" , GT._("delete bond"),

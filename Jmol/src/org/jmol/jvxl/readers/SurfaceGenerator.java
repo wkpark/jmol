@@ -1090,7 +1090,8 @@ public class SurfaceGenerator {
       value = new BufferedReader(new StringReader((String) value));
     }
     BufferedReader br = (BufferedReader) value;
-    fileType = SurfaceFileTyper.determineSurfaceFileType(br);
+    if (fileType == null)
+      fileType = SurfaceFileTyper.determineSurfaceFileType(br);
     if (fileType != null && fileType.startsWith("UPPSALA")) {
       //"http://eds.bmc.uu.se/cgi-bin/eds/gen_maps_zip.pl?POST?pdbCode=1blu&mapformat=ccp4&maptype=2fofc&page=generate"
       // -- ah, but this does not work, because it is asynchronous!

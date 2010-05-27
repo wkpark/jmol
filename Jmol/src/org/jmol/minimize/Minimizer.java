@@ -69,16 +69,17 @@ public class Minimizer implements MinimizerInterface {
   private String ff = "UFF";
   private BitSet bsTaint, bsSelected, bsAtoms;
   private BitSet bsFixed;
+  private BitSet bsAromatic;
   
   public Vector constraints;
   
   private boolean isSilent;
   
   public Minimizer() {
+    System.out.println("minimi");
   }
 
   public void setProperty(String propertyName, Object value) {
-    //System.out.println("minimizer: set " + propertyName + " = " + value);
     if (propertyName.equals("cancel")) {
       stopMinimization(false);
       return;
@@ -149,6 +150,7 @@ public class Minimizer implements MinimizerInterface {
     setMinimizationOn(false);
     atomCount = 0;
     bondCount = 0;
+    bsAromatic = null;
     atoms = null;
     minAtoms = null;
     minBonds = null;
@@ -201,13 +203,21 @@ public class Minimizer implements MinimizerInterface {
       atoms = viewer.getModelSet().atoms;
     }
     bsAtoms = BitSetUtil.copy(bsSelected);
+    if (bsFixed != null)
+      bsAtoms.or(bsFixed);
     atomCount = BitSetUtil.cardinalityOf(bsAtoms);
     if (atomCount == 0) {
       Logger.error(GT._("No atoms selected -- nothing to do!"));
       return false;
     }
 
-    if ((!BitSetUtil.areEqual(bsSelected, this.bsSelected)
+    boolean sameAtoms = BitSetUtil.areEqual(bsSelected, this.bsSelected);
+    System.out.println(sameAtoms);
+    System.out.println(Escape.escape(bsSelected) + "\n" + Escape.escape(this.bsSelected));
+    this.bsSelected = bsSelected;
+    if (!sameAtoms)
+      bsAromatic = null;
+    if ((!sameAtoms
         || !BitSetUtil.areEqual(bsFixed, this.bsFixed))
         && !setupMinimization()) {
       clear();
@@ -221,7 +231,6 @@ public class Minimizer implements MinimizerInterface {
     if (bsFixed != null)
       this.bsFixed = bsFixed;
     setAtomPositions();
-    this.bsSelected = bsSelected;
 
     if (constraints != null) {
       for (int i = constraints.size(); --i >= 0;) {
@@ -256,6 +265,7 @@ public class Minimizer implements MinimizerInterface {
 
     // add all atoms
 
+    coordSaved = null;
     atomMap = new int[atomCountFull];
     minAtoms = new MinAtom[atomCount];
     int elemnoMax = 0;
@@ -382,13 +392,13 @@ public class Minimizer implements MinimizerInterface {
   //////////////// atom type support //////////////////
   
   
-  final static int TOKEN_ELEMENT_ONLY = 0;
-  final static int TOKEN_ELEMENT_CHARGED = 1;
-  final static int TOKEN_ELEMENT_CONNECTED = 2;
-  final static int TOKEN_ELEMENT_AROMATIC = 3;
-  final static int TOKEN_ELEMENT_SP = 4;
-  final static int TOKEN_ELEMENT_SP2 = 5;
-  final static int TOKEN_ELEMENT_ALLYLIC = 6;
+  private final static int TOKEN_ELEMENT_ONLY = 0;
+  private final static int TOKEN_ELEMENT_CHARGED = 1;
+  private final static int TOKEN_ELEMENT_CONNECTED = 2;
+  private final static int TOKEN_AROMATIC = 3;
+  private final static int TOKEN_ELEMENT_SP = 4;
+  private final static int TOKEN_ELEMENT_SP2 = 5;
+  private final static int TOKEN_ELEMENT_ALLYLIC = 6;
   
   /*
 Token[keyword(0x80064) value="expressionBegin"]
@@ -401,11 +411,11 @@ Token[integer(0x2) intValue=3(0x3) value="3"]
 Token[keyword(0x880001) value=")"]
 
    */
-  final static int PT_ELEMENT = 2;
-  final static int PT_CHARGE = 5;
-  final static int PT_CONNECT = 6;
+  private final static int PT_ELEMENT = 2;
+  private final static int PT_CHARGE = 5;
+  private final static int PT_CONNECT = 6;
   
-  final static Token[][] tokenTypes = new Token[][] {
+  private final static Token[][] tokenTypes = new Token[][] {
          /*0*/  new Token[]{
        Token.tokenExpressionBegin,
        new Token(Token.opEQ, Token.elemno), 
@@ -429,11 +439,8 @@ Token[keyword(0x880001) value=")"]
        Token.intToken(0),   // 6
        Token.tokenRightParen,
        Token.tokenExpressionEnd},
-         /*3*/  new Token[]{
+         /*3*/  new Token[]{     // not used this way
        Token.tokenExpressionBegin,
-       new Token(Token.opEQ, Token.elemno), 
-       Token.intToken(0), //2
-       Token.tokenAnd, 
        new Token(Token.identifier, "flatring"),
        Token.tokenExpressionEnd},
          /*4*/  new Token[]{ //sp == connected(1,"triple") or connected(2, "double")
@@ -525,13 +532,14 @@ Token[keyword(0x880001) value=")"]
     int elemNo = 0;
     if (n >= 10)
       n = 0;
+    boolean isAromatic = false;
     if (smarts.charAt(1) == '#') {
       elemNo = Parser.parseInt(smarts.substring(2, len - 1));
     } else {
       String s = smarts.substring(1, (n > 0 ? len - 3 : len - 1));
       if (s.equals(s.toLowerCase())) {
         s = s.toUpperCase();
-        search = tokenTypes[TOKEN_ELEMENT_AROMATIC];
+        isAromatic = true;
       }
       elemNo = Elements.elementNumberFromSymbol(s, false);
     }
@@ -565,7 +573,15 @@ Token[keyword(0x880001) value=")"]
     Object v = viewer.evaluateExpression(search);
     if (Logger.debugging && !v.toString().equals("{}"))
       Logger.debug(smarts + " minimize atoms=" + v.toString());
-    return (v instanceof BitSet ? (BitSet) v : null);
+    if (!(v instanceof BitSet))
+      return null;
+    BitSet bs = (BitSet) v;
+    if (isAromatic && bs.cardinality() > 0) {
+      if (bsAromatic == null)
+        bsAromatic = (BitSet) viewer.evaluateExpression(tokenTypes[TOKEN_AROMATIC]);
+      bs.and(bsAromatic);
+    }
+    return bs;
   }
   
   public void getAngles() {
@@ -708,7 +724,7 @@ Token[keyword(0x880001) value=")"]
   }
   
   public boolean startMinimization() {
-    try {
+   try {
       Logger.info("minimizer: startMinimization");
       viewer.setIntProperty("_minimizationStep", 0);
       viewer.setStringProperty("_minimizationStatus", "starting");
@@ -837,7 +853,7 @@ Token[keyword(0x880001) value=")"]
         } while (minimizationOn && !isInterrupted());
       } catch (Exception e) {
         if (minimizationOn)
-          Logger.debug(" minimization thread interrupted");
+          Logger.error(e.getMessage());
       }
     }
   }

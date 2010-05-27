@@ -3896,11 +3896,11 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public boolean isAtomPDB(int i) {
-    return models[atoms[i].modelIndex].isPDB;
+    return i >= 0 && models[atoms[i].modelIndex].isPDB;
   }
 
   public boolean isAtomAssignable(int i) {
-    return !isAtomPDB(i) && atoms[i].modelIndex == modelCount - 1;
+    return i >= 0 && !isAtomPDB(i) && atoms[i].modelIndex == modelCount - 1;
   }
 
 

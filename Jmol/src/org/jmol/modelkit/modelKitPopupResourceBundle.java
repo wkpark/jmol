@@ -41,7 +41,7 @@ class ModelKitPopupResourceBundle extends PopupResource {
   private static String[][] menuContents = {
     { "modelkitMenu", "atomMenu bondMenu optionsMenu" },
     { "optionsMenu", "new center addh minimize hmin " +
-    		"- saveFileSIGNED saveStateSIGNED exit" },
+    		" - undo redo - SIGNEDsaveFile SIGNEDsaveState exit" },
     { "atomMenu" , "assignAtom_XP!CB assignAtom_XxP!CB dragAtomP!CB dragMinimizeP!CB dragMoleculeP!CB dragMinimizeMoleculeP!CB " +
     		"- assignAtom_CP!CB assignAtom_HP!CB assignAtom_NP!CB assignAtom_OP!CB " +
     		"_??P!CB _??P!CB _??P!CB " +
@@ -56,9 +56,11 @@ class ModelKitPopupResourceBundle extends PopupResource {
     { "addh" , "calculate hydrogens {model=_lastframe}" },
     { "minimize" , "minimize" },
     { "hmin" , "delete hydrogens and model=_lastframe; minimize addhydrogens" },
-    { "saveFileSIGNED", "select visible;write COORD '?jmol.mol'" },
-    { "saveStateSIGNED", "write '?jmol.jpg'" },
+    { "SIGNEDsaveFile", "select visible;write COORD '?jmol.mol'" },
+    { "SIGNEDsaveState", "write '?jmol.jpg'" },
     { "clearQ", "clearQ" },
+    { "undo" , "!UNDO" },
+    { "redo" , "!REDO" },
     { "exit", "set modelkitMode false" },
   };
   
@@ -73,13 +75,15 @@ class ModelKitPopupResourceBundle extends PopupResource {
         "bondMenu", "<bonds.png>",//GT._("bonds"),
         "optionsMenu", "<dotdotdot.png>",//GT._("atoms"),
         "new", GT._("new"),
+        "undo", GT._("undo (CTRL-Z)"),
+        "redo", GT._("redo (CTRL-Y)"),
         "center", GT._("center"),
         "addh", GT._("add hydrogens"),
         "minimize", GT._("minimize"),
         "hmin", GT._("fix hydrogens and minimize"),
         "clearQ", GT._("clear"),
-        "saveFileSIGNED", GT._("save file"),
-        "saveStateSIGNED", GT._("save state"),
+        "SIGNEDsaveFile", GT._("save file"),
+        "SIGNEDsaveState", GT._("save state"),
         "assignAtom_XP!CB" , GT._("delete atom"),
         "assignAtom_XxP!CB" , GT._("drag to bond"),
         "dragAtomP!CB" , GT._("drag atom"),

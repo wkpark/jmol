@@ -213,7 +213,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void stopMinimization() {
     if (minimizer != null) {
       minimizer.setProperty("stop", null);
-      minimizer = null;
     }
   }
 
@@ -489,7 +488,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
               + (isSignedApplet ? " (signed)" : "")));
     }
 
-    zap(false, false); // here to allow echos
+    zap(false, true); // here to allow echos
     global.setParameterValue("language", GT.getLanguage());
   }
 
@@ -1810,7 +1809,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * @return null or error message
    */
   public String openReader(String fullPathName, String fileName, Reader reader) {
-    zap(true, false);
+    zap(true, true);
     Object atomSetCollection = fileManager.createAtomSetCollectionFromReader(
         fullPathName, fileName, reader, setLoadParameters(null));
     return createModelSetAndReturnError(atomSetCollection, false, null);
@@ -1865,7 +1864,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
   public String openDOM(Object DOMNode) {
     // applet.loadDOMNode
-    zap(true, false);
+    zap(true, true);
     long timeBegin = System.currentTimeMillis();
     Object atomSetCollection = fileManager.createAtomSetCollectionFromDOM(
         DOMNode, setLoadParameters(null));
@@ -1897,7 +1896,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (arrayData == null || arrayData.size() == 0)
       return null;
     if (!isAppend)
-      zap(true, false);
+      zap(true, true);
     Object atomSetCollection = fileManager.createAtomSeCollectionFromArrayData(
         arrayData, setLoadParameters(null), isAppend);
     return createModelSetAndReturnError(atomSetCollection, isAppend, null);
@@ -1998,13 +1997,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     if (strModel != null) {
       if (!isAppend)
-        zap(true, false);
+        zap(true, true);
       atomSetCollection = fileManager.createAtomSetCollectionFromString(
           strModel, loadScript, htParams, isAppend, isLoadVariable
               || haveFileData && !isString);
     } else {
       if (!isAppend && fileName.charAt(0) != '?')
-        zap(false, false);
+        zap(false, true);
       atomSetCollection = fileManager.createAtomSetCollectionFromFile(fileName,
           htParams, loadScript, isAppend);
     }
@@ -2016,7 +2015,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                       Hashtable htParams,
                                       StringBuffer loadScript) {
     if (!isAppend)
-      zap(false, false);
+      zap(false, true);
     return fileManager.createAtomSetCollectionFromFiles(fileNames, loadScript,
         setLoadParameters(htParams), isAppend);
   }
@@ -2117,7 +2116,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
 
     if (!isAppend)
-      zap(true, false);
+      zap(true, true);
     StringBuffer loadScript = new StringBuffer();
     Object atomSetCollection = fileManager.createAtomSetCollectionFromString(
         strModel, loadScript, setLoadParameters(htParams), isAppend, false);
@@ -2128,7 +2127,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                    boolean isAppend) {
     // loadInline
     if (!isAppend)
-      zap(true, false);
+      zap(true, true);
     StringBuffer loadScript = new StringBuffer();
     Object atomSetCollection = fileManager.createAtomSeCollectionFromStrings(
         arrayModels, loadScript, setLoadParameters(htParams), isAppend);
@@ -2378,6 +2377,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (resetUndo) {
         actionStates.clear();
         actionStatesRedo.clear();
+        lastUndoRedo = 0;
       }
       if (haveDisplay) {
         mouseManager.clear();
@@ -2401,7 +2401,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private void zap(String msg) {
-    zap(true, false);
+    zap(true, true);
     echoMessage(msg);
   }
 
@@ -3941,7 +3941,19 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return "script processing stepped";
     if (checkHalt(str, isInterrupt))
       return "script execution halted";
+    if (checkUndo(str))
+      return "OK - " + str;  
     return null;
+  }
+
+  private boolean checkUndo(String str) {
+    if (str.equalsIgnoreCase("redo"))
+      undoAction(false, 0, -1);
+    else if (str.equalsIgnoreCase("undo"))
+      undoAction(false, 0, 1);
+    else
+      return false;
+    return true;
   }
 
   public boolean usingScriptQueue() {
@@ -8496,7 +8508,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (rangeFixed > 0) {
       bsFixed = getAtomsWithin(rangeFixed, bsSelected, true);
       bsFixed.andNot(bsSelected);
-      bsSelected.or(bsFixed);
     }
     try {
       getMinimizer(true).minimize(steps, crit, bsSelected, bsFixed, isSilent);
@@ -8724,17 +8735,28 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private final static int MAX_ACTION_UNDO = 25;
   private final Vector actionStates = new Vector();
   private final Vector actionStatesRedo = new Vector();
-
+  private int lastUndoRedo = 0;
+  
   void undoAction(boolean isSave, int taintedAtom, int type) {
-    //System.out.println("REDO:" + actionStatesRedo.size());
-    //System.out.println("UNDO:" + actionStates.size());
+    System.out.println("REDO:" + actionStatesRedo.size());
+    System.out.println("UNDO:" + actionStates.size());
 
     if (!isSave) {
+      stopMinimization();
       String s;
+      System.out.println(type + " " + lastUndoRedo);
+      if (lastUndoRedo != 0 && lastUndoRedo != type) {
+        if (type == -1)
+          actionStates.add(0, actionStatesRedo.remove(0));
+        else
+          actionStatesRedo.add(0, actionStates.remove(0));
+      }
+      lastUndoRedo = type;
       if (type == -1) {
         if (actionStatesRedo.size() == 0)
           return;
         s = (String) actionStatesRedo.remove(0);
+        actionStates.add(0, s);
       } else if (actionStates.size()== 0) {
         return;
       } else {
@@ -8744,6 +8766,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       evalStringQuiet(s);
       return;
     }
+    lastUndoRedo = 0;
     actionStatesRedo.clear();
     BitSet bs;
     StringBuffer sb = new StringBuffer();
@@ -8803,7 +8826,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   void moveAtomWithHydrogens(int atomIndex, int deltaX, int deltaY,
                                     BitSet bsAtoms) {
-    clearModelDependentObjects();
+    stopMinimization();
     Atom atom = modelSet.atoms[atomIndex];
     if (bsAtoms == null) {
       bsAtoms = BitSetUtil.setBit(atomIndex);

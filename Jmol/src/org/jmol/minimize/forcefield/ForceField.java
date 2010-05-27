@@ -92,6 +92,7 @@ abstract public class ForceField {
   public void setConstraints(Minimizer m) {
     this.bsFixed = m.bsMinFixed;
     calc.setConstraints(m.constraints);
+    coordSaved = null;
   }
     
   public boolean setup() {

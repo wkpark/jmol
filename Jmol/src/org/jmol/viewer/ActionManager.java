@@ -1378,7 +1378,6 @@ public class ActionManager {
   }
 
   private void exitMeasurementMode() {
-    dragAtomIndex = -1;
     if (measurementPending == null)
       return;
     viewer.setPendingMeasurement(measurementPending = null);

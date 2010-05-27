@@ -40,9 +40,9 @@ class ModelKitPopupResourceBundle extends PopupResource {
     
   private static String[][] menuContents = {
     { "modelkitMenu", "atomMenu bondMenu optionsMenu" },
-    { "optionsMenu", "new center addh minimize " +
+    { "optionsMenu", "new center addh minimize hmin " +
     		"- saveFileSIGNED saveStateSIGNED exit" },
-    { "atomMenu" , "assignAtom_XP!CB dragMoleculeP!CB dragAtomP!CB dragMinimizeP!CB dragMinimizeMoleculeP!CB " +
+    { "atomMenu" , "assignAtom_XP!CB assignAtom_XxP!CB dragMoleculeP!CB dragAtomP!CB dragMinimizeP!CB dragMinimizeMoleculeP!CB " +
     		"- assignAtom_CP!CB assignAtom_HP!CB assignAtom_NP!CB assignAtom_OP!CB " +
     		"_??P!CB _??P!CB _??P!CB " +
     		"moreAtomMenu - assignAtom_PlP!CB assignAtom_MiP!CB" },
@@ -52,9 +52,10 @@ class ModelKitPopupResourceBundle extends PopupResource {
   
   private static String[][] structureContents = {
     { "new" , "zap" },
-    { "minimize" , "minimize" },
     { "center" , "zoomto {visible} 0/1.5" },
     { "addh" , "calculate hydrogens {model=_lastframe}" },
+    { "minimize" , "minimize" },
+    { "hmin" , "delete hydrogens and model=_lastframe; minimize addhydrogens" },
     { "saveFileSIGNED", "select visible;write COORD '?jmol.mol'" },
     { "saveStateSIGNED", "write '?jmol.jpg'" },
     { "clearQ", "clearQ" },
@@ -73,12 +74,14 @@ class ModelKitPopupResourceBundle extends PopupResource {
         "optionsMenu", "<dotdotdot.png>",//GT._("atoms"),
         "new", GT._("new"),
         "center", GT._("center"),
+        "addh", GT._("add hydrogens"),
         "minimize", GT._("minimize"),
+        "hmin", GT._("fix hydrogens and minimize"),
         "clearQ", GT._("clear"),
         "saveFileSIGNED", GT._("save file"),
         "saveStateSIGNED", GT._("save state"),
-        "addh", GT._("add hydrogens"),
         "assignAtom_XP!CB" , GT._("delete atom"),
+        "assignAtom_XxP!CB" , GT._("drag to bond"),
         "dragMoleculeP!CB" , GT._("drag molecule"),
         "dragAtomP!CB" , GT._("drag atom"),
         "dragMinimizeP!CB" , GT._("drag atom/minimize molecule"),

@@ -506,7 +506,7 @@ public class ActionManager {
         return;
       case PICKING_ASSIGN_ATOM:
         measuresEnabled = !isPickAtomAssignCharge;
-        break;
+        return;
       case PICKING_DRAW:
         drawMode = true;
         // drawMode and dragSelectedMode are incompatible
@@ -831,27 +831,32 @@ public class ActionManager {
         viewer.undoAction(true, -1, 0);
         viewer.script("connect "
             + measurementPending.getMeasurementScript(" ", false));
-      } else if (pressed.inRange(dragged.x, dragged.y)) {
-        String s = "assign atom ({" + dragAtomIndex + "}) \""
-            + pickAtomAssignType + "\"";
-        if (isPickAtomAssignCharge) {
-          s += ";{atomindex=" + dragAtomIndex + "}.label='%C'; ";
-          viewer.undoAction(true, dragAtomIndex,
-              AtomCollection.TAINT_FORMALCHARGE);
-        } else {
+      } else if (pickAtomAssignType.equals("Xx")) {
+        exitMeasurementMode();
+        viewer.refresh(3, "bond dropped");
+      } else {
+        if (pressed.inRange(dragged.x, dragged.y)) {
+          String s = "assign atom ({" + dragAtomIndex + "}) \""
+              + pickAtomAssignType + "\"";
+          if (isPickAtomAssignCharge) {
+            s += ";{atomindex=" + dragAtomIndex + "}.label='%C'; ";
+            viewer.undoAction(true, dragAtomIndex,
+                AtomCollection.TAINT_FORMALCHARGE);
+          } else {
+            viewer.undoAction(true, -1, 0);
+          }
+          viewer.script(s);
+        } else if (!isPickAtomAssignCharge) {
           viewer.undoAction(true, -1, 0);
-        }
-        viewer.script(s);
-      } else if (!isPickAtomAssignCharge) {
-        viewer.undoAction(true, -1, 0);
-        Atom a = viewer.getModelSet().atoms[dragAtomIndex];
-        if (a.getElementNumber() == 1) {
-          viewer.script("delete ({" + dragAtomIndex + "})");
-        } else {
-          Point3f ptNew = new Point3f(x, y, a.screenZ);
-          viewer.unTransformPoint(ptNew, ptNew);
-          viewer.script("assign atom ({" + dragAtomIndex + "}) \""
-              + pickAtomAssignType + "\" " + Escape.escape(ptNew));
+          Atom a = viewer.getModelSet().atoms[dragAtomIndex];
+          if (a.getElementNumber() == 1) {
+            viewer.script("delete ({" + dragAtomIndex + "})");
+          } else {
+            Point3f ptNew = new Point3f(x, y, a.screenZ);
+            viewer.unTransformPoint(ptNew, ptNew);
+            viewer.script("assign atom ({" + dragAtomIndex + "}) \""
+                + pickAtomAssignType + "\" " + Escape.escape(ptNew));
+          }
         }
       }
       exitMeasurementMode();
@@ -1366,12 +1371,14 @@ public class ActionManager {
   }
 
   private void enterMeasurementMode() {
+    System.out.println("entering");
     viewer.setCursor(Viewer.CURSOR_CROSSHAIR);
     viewer.setPendingMeasurement(measurementPending = new MeasurementPending(
         viewer.getModelSet()));
   }
 
   private void exitMeasurementMode() {
+    dragAtomIndex = -1;
     if (measurementPending == null)
       return;
     viewer.setPendingMeasurement(measurementPending = null);

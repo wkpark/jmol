@@ -29,6 +29,7 @@ import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
 
 import java.awt.Component;
+
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 
@@ -56,7 +57,10 @@ public class ModelKit extends JDialog implements JmolModelKitInterface {
   private ModelKit(JmolViewer viewer, JFrame parentFrame) {
     super(parentFrame, "", false);
     this.viewer = viewer;
+    
   }
+
+
 
   /* (non-Javadoc)
    * @see org.jmol.modelkit.JmolModelKitInterface#getMenus(boolean)
@@ -70,6 +74,7 @@ public class ModelKit extends JDialog implements JmolModelKitInterface {
       Logger.error("Modelkit menus not loaded");
     }
     GT.setDoTranslate(doTranslate);
+    
   }
   
   /* (non-Javadoc)

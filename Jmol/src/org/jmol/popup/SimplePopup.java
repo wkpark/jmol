@@ -28,6 +28,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
 import java.awt.Component;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -38,7 +39,9 @@ import java.util.StringTokenizer;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
@@ -108,12 +111,22 @@ public class SimplePopup {
     cmil = new CheckboxMenuItemListener();
   }
 
-  public SimplePopup(JmolViewer viewer, String title, PopupResource bundle) {
+  private boolean isHorizontal = false;
+  
+  public SimplePopup(JmolViewer viewer, String title, PopupResource bundle, boolean isHorizontal) {
     this(viewer);
+    this.isHorizontal = isHorizontal;
     build(title, swingPopup = new JPopupMenu(title), bundle);
   }
 
   protected void build(String title, Object popupMenu, PopupResource bundle) {
+    if (isHorizontal && popupMenu instanceof JPopupMenu) {
+      JPopupMenu pm = (JPopupMenu) popupMenu;
+      //BoxLayout bl = new BoxLayout(pm, BoxLayout.LINE_AXIS);
+      GridLayout bl = new GridLayout(3,4);
+      pm.setLayout(bl);
+
+    }
     htMenus.put(title, popupMenu);
     boolean allowSignedFeatures = (!viewer.isApplet() || viewer.getBooleanProperty("_signedApplet"));
     addMenuItems("", title, popupMenu, bundle, 
@@ -504,7 +517,7 @@ public class SimplePopup {
 
   Object addMenuItem(Object menu, String entry, String script, String id) {
     JMenuItem jmi = new JMenuItem(entry);
-    updateMenuItem(jmi, entry, script);
+    updateButton(jmi, entry, script);
     jmi.addActionListener(mil);
     jmi.setName(id == null ? ((Component) menu).getName() + "." : id);
     addToMenu(menu, jmi);
@@ -535,10 +548,24 @@ public class SimplePopup {
     ((JMenuItem) item).setSelected(state);
   }
 
-  void updateMenuItem(Object menuItem, String entry, String script) {
-    JMenuItem jmi = (JMenuItem) menuItem;
-    jmi.setText(entry);
-    jmi.setActionCommand(script);
+  protected ImageIcon getIcon(String name) {
+    return null; // subclassed
+  }
+
+  void updateButton(AbstractButton b, String entry, String script) {
+    ImageIcon icon = null;
+    if (entry.startsWith("<")) {
+      int pt = entry.indexOf(">");
+      icon = getIcon(entry.substring(1, pt));
+      entry = entry.substring(pt + 1);
+    }
+
+    if (icon != null)
+      b.setIcon(icon);
+    if (entry != null)
+      b.setText(entry);
+    if (script != null)
+      b.setActionCommand(script);
   }
   
   Object addCheckboxMenuItem(Object menu, String entry, String basename,
@@ -556,6 +583,7 @@ public class SimplePopup {
     jm.setSelected(state);
     jm.addItemListener(cmil);
     jm.setActionCommand(basename);
+    updateButton(jm, entry, basename);
     jm.setName(id == null ? ((Component) menu).getName() + "." : id);
     addToMenu(menu, jm);
     return jm;
@@ -569,8 +597,9 @@ public class SimplePopup {
     addToMenu(menu, (JMenu) subMenu);
   }
 
-  Object newMenu(String menuName, String id) {
-    JMenu jm = new JMenu(menuName);
+  Object newMenu(String entry, String id) {
+    JMenu jm = new JMenu(entry);
+    updateButton(jm, entry, null);
     jm.setName(id);
     jm.setAutoscrolls(true);
     return jm;
@@ -580,8 +609,8 @@ public class SimplePopup {
     ((JMenu) menu).setAutoscrolls(true);
   }
 
-  void renameMenu(Object menu, String newMenuName) {
-    ((JMenu) menu).setText(newMenuName);
+  void renameMenu(Object menu, String entry) {
+    ((JMenu) menu).setText(entry);
   }
 
   int getMenuItemCount(Object menu) {

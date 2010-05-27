@@ -566,6 +566,9 @@ public class ActionManager {
       switch (atomPickingMode) {
       default:
         return;
+      case JmolConstants.PICKING_ASSIGN_ATOM:
+        measuresEnabled = !isPickAtomAssignCharge;
+        break;
       case JmolConstants.PICKING_DRAW:
         drawMode = true;
         // drawMode and dragSelectedMode are incompatible
@@ -711,7 +714,7 @@ public class ActionManager {
         && dragAtomIndex >= 0) {
       BitSet bs = new BitSet();
       bs.set(dragAtomIndex);
-      bs = viewer.getAtomBits(Token.group, bs);
+      bs = viewer.getAtomBits(Token.molecule, bs);
       dragAtomIndex = -1;
       viewer.stopMinimization();
       viewer.minimize(Integer.MAX_VALUE, 0, bs, false, false, false);
@@ -1144,6 +1147,10 @@ public class ActionManager {
 
     if (isBound(action, ACTION_clickFrank) && viewer.frankClicked(x, y)) {
       viewer.popupMenu(-x, y, 'j');
+      return false;
+    }
+    if (isBound(action, ACTION_clickFrank) && viewer.frankClickedModelKit(x, y)) {
+      viewer.popupMenu(0, 0, 'm');
       return false;
     }
     if (viewer.getNavigationMode()

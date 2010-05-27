@@ -240,7 +240,8 @@ final public class JmolConstants {
   public final static int CONNECT_IDENTIFY_ONLY    = 5;
   public final static float DEFAULT_MAX_CONNECT_DISTANCE = 100000000f;
   public final static float DEFAULT_MIN_CONNECT_DISTANCE = 0.1f;
-  
+  public static final int MINIMIZATION_ATOM_MAX = 200;
+
   private final static String[] connectOperationStrings =
   { "delete", "modify", "create", "modifyOrCreate", "auto", "adjust" };
 
@@ -2349,6 +2350,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     //    "@hetero", handled specially
 
   };
+  public final static String MODELKIT_ZAP_STRING = "1 0 C 0 0";
+  public static final String MODELKIT_ZAP_TITLE = "Jmol Model Kit";
 
   ////////////////////////////////////////////////////////////////
   // font-related

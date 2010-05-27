@@ -23,8 +23,10 @@
  */
 package org.jmol.modelkit;
 
+import java.net.URL;
 import java.util.Enumeration;
 
+import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
@@ -37,7 +39,16 @@ import org.jmol.util.Elements;
 class ModelKitPopup extends SimplePopup {
 
   ModelKitPopup(JmolViewer viewer, String title, PopupResource bundle) {
-    super(viewer, title, bundle);
+    super(viewer, title, bundle, false);
+  }
+
+  protected ImageIcon getIcon(String name) {
+    String imageName = "org/jmol/modelkit/images/" + name;
+    URL imageUrl = this.getClass().getClassLoader().getResource(imageName);
+    if (imageUrl != null) {
+      return new ImageIcon(imageUrl);
+    }
+    return null;
   }
 
   public void checkMenuClick(Object source, String script) {

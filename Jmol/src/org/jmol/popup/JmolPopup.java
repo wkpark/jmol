@@ -678,7 +678,7 @@ public class JmolPopup extends SimplePopup {
     currentFrankId = id;
     nFrankList = 0;
     frankList[nFrankList++] = new Object[] { null, null, null };
-    addMenuItem(frankPopup, GT._(getMenuText("mainMenuText")), "MAIN", "");
+    addMenuItem(frankPopup, getMenuText("mainMenuText"), "MAIN", "");
     for (int i = id.indexOf(".", 2) + 1;;) {
       int iNew = id.indexOf(".", i);
       if (iNew < 0)

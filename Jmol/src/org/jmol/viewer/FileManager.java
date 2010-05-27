@@ -262,7 +262,7 @@ public class FileManager {
     setLoadState(htParams);
     Logger.info("FileManager.getAtomSetCollectionFromString()");
     if (!isAppend) {
-      fullPathName = fileName = "string";
+      fullPathName = fileName = (strModel == JmolConstants.MODELKIT_ZAP_STRING ? JmolConstants.MODELKIT_ZAP_TITLE : "string");
     }
 //    if (viewer.getPreserveState())
   //    htParams.put("inlineData", strModel);

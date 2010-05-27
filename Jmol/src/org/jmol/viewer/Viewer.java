@@ -1985,7 +1985,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     htParams = setLoadParameters(htParams);
     boolean isLoadVariable = fileName.startsWith("@");
     boolean haveFileData = (htParams.containsKey("fileData"));
-    boolean isString = fileName.equalsIgnoreCase("string");
+    boolean isString = (fileName.equalsIgnoreCase("string") || fileName
+        .equals(JmolConstants.MODELKIT_ZAP_TITLE));
     String strModel = null;
     if (haveFileData) {
       strModel = (String) htParams.get("fileData");
@@ -2210,7 +2211,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public String getCurrentFileAsString() {
     String filename = getFullPathName();
-    if (filename == "string")
+    if (filename.equals("string") || filename.equals(JmolConstants.MODELKIT_ZAP_TITLE))
       return modelSet.getInlineData(getCurrentModelIndex());
     if (filename.indexOf("[]") >= 0)
       return filename;
@@ -2739,6 +2740,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public boolean frankClicked(int x, int y) {
     return !global.disablePopupMenu && getShowFrank()
         && shapeManager.frankClicked(x, y);
+  }
+
+  public boolean frankClickedModelKit(int x, int y) {
+    return !global.disablePopupMenu && isModelkitMode()
+        && x >= 0 && y >= 0 && x < 40 && y < 80;
   }
 
   public int findNearestAtomIndex(int x, int y) {
@@ -6074,14 +6080,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           : JmolConstants.PICKING_IDENTIFY);
     }
     global.modelkitMode = value;
+    highlight(null);
     if (value) {
       setNavigationMode(false);
       selectAll();
       // setShapeProperty(JmolConstants.SHAPE_LABELS, "color", "RED");
       setAtomPickingOption("C");
       setBondPickingOption("p");
+      popupMenu(0, 0, 'm');
     }
-    highlight(null);
 
   }
 
@@ -8382,7 +8389,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public boolean getDragSelected() {
-    return global.dragSelected;
+    return global.dragSelected && !global.modelkitMode;
   }
 
   public float getLoadAtomDataTolerance() {
@@ -8484,6 +8491,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       bsSelected = getModelUndeletedAtomsBitSet(getVisibleFramesBitSet().length() - 1);
     if (addHydrogen)
       bsSelected.or(addHydrogens(bsSelected, asScript, isSilent));
+    if (bsSelected.cardinality() > JmolConstants.MINIMIZATION_ATOM_MAX){
+      Logger.error("Too many atoms for minimization (>" + JmolConstants.MINIMIZATION_ATOM_MAX + ")");
+      return;
+    }
     try {
       getMinimizer(true).minimize(steps, crit, bsSelected, isSilent);
     } catch (Exception e) {

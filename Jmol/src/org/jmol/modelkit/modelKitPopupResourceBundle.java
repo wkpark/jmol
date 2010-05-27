@@ -39,8 +39,8 @@ class ModelKitPopupResourceBundle extends PopupResource {
   }
     
   private static String[][] menuContents = {
-    { "modelkitMenu", "atomMenu bondMenu " +
-    		"- new center addh minimize " +
+    { "modelkitMenu", "atomMenu bondMenu optionsMenu" },
+    { "optionsMenu", "new center addh minimize " +
     		"- saveFileSIGNED saveStateSIGNED exit" },
     { "atomMenu" , "assignAtom_XP!CB dragMoleculeP!CB dragAtomP!CB dragMinimizeP!CB " +
     		"- assignAtom_CP!CB assignAtom_HP!CB assignAtom_NP!CB assignAtom_OP!CB " +
@@ -53,7 +53,7 @@ class ModelKitPopupResourceBundle extends PopupResource {
   private static String[][] structureContents = {
     { "new" , "zap" },
     { "minimize" , "minimize" },
-    { "center" , "center visible" },
+    { "center" , "zoomto {visible} 0/1.5" },
     { "addh" , "calculate hydrogens {model=_lastframe}" },
     { "saveFileSIGNED", "select visible;write COORD '?jmol.mol'" },
     { "saveStateSIGNED", "write '?jmol.jpg'" },
@@ -67,9 +67,10 @@ class ModelKitPopupResourceBundle extends PopupResource {
     if (!wasTranslating)
       GT.setDoTranslate(true);
     String[] words = new String[] {
-        "atomMenu", GT._("atoms"),
-        "moreAtomMenu", GT._("more..."),
-        "bondMenu", GT._("bonds"),
+        "atomMenu", "<atoms.png>",//GT._("atoms"),
+        "moreAtomMenu", "<dotdotdot.png>",//GT._("more..."),
+        "bondMenu", "<bonds.png>",//GT._("bonds"),
+        "optionsMenu", "<dotdotdot.png>",//GT._("atoms"),
         "new", GT._("new"),
         "center", GT._("center"),
         "minimize", GT._("minimize"),

@@ -198,6 +198,7 @@ class GuiMap {
     labels.put("pickMeasureScriptTip", GT
         ._("Click atoms to measure distances"));
     labels.put("homeTip", GT._("Return molecule to home position."));
+    labels.put("modelkitScriptTip", GT._("Open the model kit."));
 
     return labels;
   }

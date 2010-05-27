@@ -119,6 +119,8 @@ public class SimplePopup {
     build(title, swingPopup = new JPopupMenu(title), bundle);
   }
 
+  private boolean allowSignedFeatures;
+  
   protected void build(String title, Object popupMenu, PopupResource bundle) {
     if (isHorizontal && popupMenu instanceof JPopupMenu) {
       JPopupMenu pm = (JPopupMenu) popupMenu;
@@ -128,9 +130,8 @@ public class SimplePopup {
 
     }
     htMenus.put(title, popupMenu);
-    boolean allowSignedFeatures = (!viewer.isApplet() || viewer.getBooleanProperty("_signedApplet"));
-    addMenuItems("", title, popupMenu, bundle, 
-        allowSignedFeatures);
+    allowSignedFeatures = (!viewer.isApplet() || viewer.getBooleanProperty("_signedApplet"));
+    addMenuItems("", title, popupMenu, bundle);
   }
 
   protected int thisx, thisy;
@@ -246,8 +247,7 @@ public class SimplePopup {
   private ButtonGroup group;
 
   protected void addMenuItems(String parentId, String key, Object menu,
-                            PopupResource popupResourceBundle,
-                            boolean allowSignedFeatures) {
+                            PopupResource popupResourceBundle) {
     String id = parentId + "." + key;
     String value = popupResourceBundle.getStructure(key);
     //Logger.debug(id + " --- " + value);
@@ -275,17 +275,16 @@ public class SimplePopup {
       if (item.indexOf("Menu") >= 0) {
         if (item.indexOf("more") < 0)
           group = null;
-        if (!allowSignedFeatures && item.startsWith("SIGNED"))
-          continue;
         Object subMenu = newMenu(word, id + "." + item);        
         addMenuSubMenu(menu, subMenu);
         htMenus.put(item, subMenu);
         if (item.indexOf("Computed") < 0)
-          addMenuItems(id, item, subMenu, popupResourceBundle, allowSignedFeatures);
+          addMenuItems(id, item, subMenu, popupResourceBundle);
         checkSpecialMenu(item, subMenu, word);
         newMenu = subMenu;
       } else if ("-".equals(item)) {
         addMenuSeparator(menu);
+        continue;
       } else if (item.endsWith("Checkbox") || (isCB = (item.endsWith("CB") || item.endsWith("RD")))) {
         // could be "PRD" -- set picking checkbox
         script = popupResourceBundle.getStructure(item);
@@ -307,6 +306,8 @@ public class SimplePopup {
         newMenu = addMenuItem(menu, word, script, id + "." + item);
       }
 
+      if (!allowSignedFeatures && item.startsWith("SIGNED"))
+        enableMenu(newMenu, false);
       if (item.indexOf("VARIABLE") >= 0)
         htMenus.put(item, newMenu);
       // menus or menu items:

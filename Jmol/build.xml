@@ -225,8 +225,13 @@
   
   <target name="applet-classes" id="applet-classes" depends="init">
     <mkdir dir="${applet.classes.dir}"/>
+    <copy todir="${applet.classes.dir}" >
+      <fileset dir="src">
+        <include name="org/jmol/modelkit/images/*" />
+      </fileset>
+    </copy>
 
-    <property name="build.compiler" value="javac1.1" />
+    <property name="build.compiler" value="javac1.4" />
     <!-- mth 20040713 ... with the Sun Java 1.5 compiler the default
          source code version is 1.5. And one cannot generate code for
          a 1.1 virtual machine from 1.5 source. Therefore, in order to
@@ -595,6 +600,7 @@ all support for previous versions removed
     <jar destfile="${jmol.applet.build.dir}/JmolApplet0_Minimize.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/minimize/**" />
+        <include name="org/jmol/modelkit/images/**" />
         <include name="org/jmol/modelkit/**" />
       </fileset>
     </jar>
@@ -953,6 +959,7 @@ all support for previous versions removed
 	      <fileset dir="${applet.classes.dir}">
 	        <include name="org/jmol/minimize/**" />
 	        <include name="org/jmol/modelkit/**" />
+	        <include name="org/jmol/modelkit/images/**" />
 	      </fileset>
 	    </jar>
 

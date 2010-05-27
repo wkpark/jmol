@@ -8338,9 +8338,9 @@
   <fah_proj number="6067" name="p6067_Mutant_scan" public="y"
     server="171.64.65.54" atoms="77078" preferred="3" deadline="6"
     credit="481" frames="100" code="A3" contact="kasson" kfactor="2.1"/>
-  <fah_proj number="6068" name="p6068_Mutant_scan" public="y"
+  <fah_proj number="6068" name="p6068_Mutant_scan" public="y" file="xyz"
     server="171.64.65.54" atoms="77069" preferred="3" deadline="6"
-    credit="481" frames="100" code="A3" contact="kasson" kfactor="2.1"/>
+    credit="481" frames="100" code="A3" contact="kasson" kfactor="2.1" contrib="David McKee"/>
   <fah_proj number="6069" name="p6069_Mutant_scan" public="y"
     server="171.64.65.54" atoms="77059" preferred="3" deadline="6"
     credit="481" frames="100" code="A3" contact="kasson" kfactor="2.1"/>
@@ -8723,50 +8723,95 @@
     credit="611" frames="100" code="OG" contact="yslin"/>
 
   <!-- Projects 10800 to 10899 -->
-  <fah_proj number="10820" name="p10820" public="n"
+  <fah_proj number="10820" name="Abeta42_monomer" public="n"
     server="171.64.122.84" atoms="34383" preferred="10" deadline="20"
     credit="210" frames="100" code="G" contact="yslin"/>
-  <fah_proj number="10821" name="p10821" public="n"
+  <fah_proj number="10821" name="Abeta42_monomer" public="n"
     server="171.64.122.84" atoms="34398" preferred="10" deadline="20"
     credit="205" frames="100" code="G" contact="yslin"/>
-  <fah_proj number="10822" name="p10822" public="n"
+  <fah_proj number="10822" name="Abeta42_monomer" public="n"
     server="171.64.122.84" atoms="34407" preferred="10" deadline="20"
     credit="207" frames="100" code="G" contact="yslin"/>
-  <fah_proj number="10823" name="p10823" public="n"
+  <fah_proj number="10823" name="Abeta42_monomer" public="n"
     server="171.64.122.84" atoms="34374" preferred="10" deadline="20"
     credit="206" frames="100" code="G" contact="yslin"/>
-  <fah_proj number="10824" name="p10824" public="n"
+  <fah_proj number="10824" name="Abeta42_monomer" public="n"
     server="171.64.122.84" atoms="34383" preferred="10" deadline="20"
     credit="207" frames="100" code="G" contact="yslin"/>
-  <fah_proj number="10825" name="p10825" public="n"
+  <fah_proj number="10825" name="Abeta42_monomer" public="n"
     server="171.64.122.84" atoms="34377" preferred="10" deadline="20"
     credit="207" frames="100" code="G" contact="yslin"/>
-  <fah_proj number="10826" name="p10826" public="n"
+  <fah_proj number="10826" name="Abeta42_monomer" public="n"
     server="171.64.122.84" atoms="34371" preferred="10" deadline="20"
     credit="209" frames="100" code="G" contact="yslin"/>
-  <fah_proj number="10827" name="p10827" public="n"
+  <fah_proj number="10827" name="Abeta42_monomer" public="n"
     server="171.64.122.84" atoms="34359" preferred="10" deadline="20"
     credit="207" frames="100" code="G" contact="yslin"/>
-  <fah_proj number="10828" name="p10828" public="n"
+  <fah_proj number="10828" name="Abeta42_monomer" public="n"
     server="171.64.122.84" atoms="34368" preferred="10" deadline="20"
     credit="209" frames="100" code="G" contact="yslin"/>
-  <fah_proj number="10829" name="p10829" public="n"
+  <fah_proj number="10829" name="Abeta42_monomer" public="n"
     server="171.64.122.84" atoms="34386" preferred="10" deadline="20"
     credit="211" frames="100" code="G" contact="yslin"/>
-  <fah_proj number="10830" name="p10830" public="n"
+  <fah_proj number="10830" name="Abeta42_monomer" public="n"
     server="171.64.122.84" atoms="34401" preferred="10" deadline="20"
     credit="209" frames="100" code="G" contact="yslin"/>
-  <fah_proj number="10831" name="p10831" public="n"
+  <fah_proj number="10831" name="Abeta42_monomer" public="n"
     server="171.64.122.84" atoms="34380" preferred="10" deadline="20"
     credit="207" frames="100" code="G" contact="yslin"/>
-  <fah_proj number="10832" name="p10832" public="n"
+  <fah_proj number="10832" name="Abeta42_monomer" public="n"
     server="171.64.122.84" atoms="34377" preferred="10" deadline="20"
     credit="207" frames="100" code="G" contact="yslin"/>
-  <fah_proj number="10833" name="p10833" public="n"
+  <fah_proj number="10833" name="Abeta42_monomer" public="n"
     server="171.64.122.84" atoms="34365" preferred="10" deadline="20"
     credit="209" frames="100" code="G" contact="yslin"/>
-  <fah_proj number="10834" name="p10834" public="n"
+  <fah_proj number="10834" name="Abeta42_monomer" public="n"
     server="171.64.122.84" atoms="34398" preferred="10" deadline="20"
     credit="208" frames="100" code="G" contact="yslin"/>
+  <fah_proj number="10840" name="Abeta42_monomer" public="n"
+    server="171.64.122.84" atoms="12279" preferred="5" deadline="20"
+    credit="69" frames="100" code="G" contact="yslin"/>
+  <fah_proj number="10841" name="Abeta42_monomer" public="n"
+    server="171.64.122.84" atoms="12267" preferred="5" deadline="20"
+    credit="68" frames="100" code="G" contact="yslin"/>
+  <fah_proj number="10842" name="Abeta42_monomer" public="n"
+    server="171.64.122.84" atoms="12282" preferred="5" deadline="20"
+    credit="69" frames="100" code="G" contact="yslin"/>
+  <fah_proj number="10843" name="Abeta42_monomer" public="n"
+    server="171.64.122.84" atoms="12282" preferred="5" deadline="20"
+    credit="69" frames="100" code="G" contact="yslin"/>
+  <fah_proj number="10844" name="Abeta42_monomer" public="n"
+    server="171.64.122.84" atoms="12231" preferred="5" deadline="20"
+    credit="69" frames="100" code="G" contact="yslin"/>
+  <fah_proj number="10845" name="Abeta42_monomer" public="n"
+    server="171.64.122.84" atoms="12240" preferred="5" deadline="20"
+    credit="68" frames="100" code="G" contact="yslin"/>
+  <fah_proj number="10846" name="Abeta42_monomer" public="n"
+    server="171.64.122.84" atoms="12261" preferred="5" deadline="20"
+    credit="69" frames="100" code="G" contact="yslin"/>
+  <fah_proj number="10847" name="Abeta42_monomer" public="n"
+    server="171.64.122.84" atoms="12258" preferred="5" deadline="20"
+    credit="69" frames="100" code="G" contact="yslin"/>
+  <fah_proj number="10848" name="Abeta42_monomer" public="n"
+    server="171.64.122.84" atoms="12267" preferred="5" deadline="20"
+    credit="69" frames="100" code="G" contact="yslin"/>
+  <fah_proj number="10849" name="Abeta42_monomer" public="n"
+    server="171.64.122.84" atoms="12255" preferred="5" deadline="20"
+    credit="69" frames="100" code="G" contact="yslin"/>
+  <fah_proj number="10850" name="Abeta42_monomer" public="n"
+    server="171.64.122.84" atoms="12231" preferred="5" deadline="20"
+    credit="68" frames="100" code="G" contact="yslin"/>
+  <fah_proj number="10851" name="Abeta42_monomer" public="n"
+    server="171.64.122.84" atoms="12243" preferred="5" deadline="20"
+    credit="68" frames="100" code="G" contact="yslin"/>
+  <fah_proj number="10852" name="Abeta42_monomer" public="n"
+    server="171.64.122.84" atoms="12264" preferred="5" deadline="20"
+    credit="69" frames="100" code="G" contact="yslin"/>
+  <fah_proj number="10853" name="Abeta42_monomer" public="n"
+    server="171.64.122.84" atoms="12288" preferred="5" deadline="20"
+    credit="68" frames="100" code="G" contact="yslin"/>
+  <fah_proj number="10854" name="Abeta42_monomer" public="n"
+    server="171.64.122.84" atoms="12249" preferred="5" deadline="20"
+    credit="69" frames="100" code="G" contact="yslin"/>
 
 </fah_projects>

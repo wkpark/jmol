@@ -32,6 +32,7 @@ import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.viewer.JmolConstants;
+import org.jmol.modelset.Atom;
 import org.jmol.script.Token;
 
 final public class Measure {
@@ -459,7 +460,7 @@ final public class Measure {
     Point3f[] cptsB = getCenterAndPoints(ptsB);
     float[] retStddev = new float[2];
     Quaternion q = calculateQuaternionRotation(new Point3f[][] { cptsA,
-        cptsB }, retStddev);
+        cptsB }, retStddev, false);
     Vector3f v = new Vector3f(cptsB[0]);
     v.sub(cptsA[0]);
     m.set(q.getMatrix(), v, 1);
@@ -467,9 +468,18 @@ final public class Measure {
       centerA.set(cptsA[0]);
     return retStddev[1];
   }
+  
+  public static Quaternion calculateQuaternionRotation(
+                                                       Point3f[][] centerAndPoints,
+                                                       float[] retStddev,
+                                                       boolean doReport) {
 
-  public static Quaternion calculateQuaternionRotation(Point3f[][] centerAndPoints,
-                                                       float[] retStddev) {
+    retStddev[1] = Float.NaN;
+    Quaternion q = new Quaternion();
+    if (centerAndPoints[0].length == 1
+        || centerAndPoints[0].length != centerAndPoints[1].length)
+      return q;
+
     /*
      * see Berthold K. P. Horn,
      * "Closed-form solution of absolute orientation using unit quaternions" J.
@@ -479,14 +489,23 @@ final public class Measure {
      * and Lydia E. Kavraki, "Molecular Distance Measures"
      * http://cnx.org/content/m11608/latest/
      */
-    retStddev[1] = Float.NaN;
-    Quaternion q = new Quaternion();
-    if (centerAndPoints[0].length == 1 || centerAndPoints[0].length != centerAndPoints[1].length)
-      return q;
-    double Sxx = 0, Sxy = 0, Sxz = 0, Syx = 0, Syy = 0, Syz = 0, Szx = 0, Szy = 0, Szz = 0;
+
     int n = centerAndPoints[0].length - 1;
+    if (doReport)
+      for (int i = 1; i <= n; i++) {
+        Point3f aij = centerAndPoints[0][i];
+        Point3f bij = centerAndPoints[1][i];
+        if (aij instanceof Atom)
+          Logger.info(" atom 1 " + ((Atom) aij).getInfo() + "\tatom 2 "
+              + ((Atom) bij).getInfo());
+        else
+          break;
+      }
+
     if (n < 2)
       return q;
+
+    double Sxx = 0, Sxy = 0, Sxz = 0, Syx = 0, Syy = 0, Syz = 0, Szx = 0, Szy = 0, Szz = 0;
     for (int i = n + 1; --i >= 1;) {
       Point3f aij = centerAndPoints[0][i];
       Point3f bij = centerAndPoints[1][i];
@@ -525,7 +544,7 @@ final public class Measure {
     float[] v = eigen.getEigenvectorsFloatTransposed()[3];
     q = new Quaternion(new Point4f(v[1], v[2], v[3], v[0]));
     retStddev[1] = getRmsd(centerAndPoints, q);
-    //System.out.println("Measure" + q.getInfo());
+    // System.out.println("Measure" + q.getInfo());
     return q;
   }
 

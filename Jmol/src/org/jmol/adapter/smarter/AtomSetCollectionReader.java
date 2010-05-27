@@ -380,8 +380,7 @@ public abstract class AtomSetCollectionReader {
         firstLastStep[1] = -1;
       if (firstLastStep[2] < 1)
         firstLastStep[2] = 1;
-      bsModels = new BitSet();
-      bsModels.set(firstLastStep[0]);
+      bsModels = BitSetUtil.setBit(firstLastStep[0]);
       if (firstLastStep[1] > firstLastStep[0]) {
         for (int i = firstLastStep[0]; i <= firstLastStep[1]; i += firstLastStep[2])
           bsModels.set(i);

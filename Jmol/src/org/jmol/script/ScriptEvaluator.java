@@ -6190,7 +6190,7 @@ public class ScriptEvaluator {
         vAtomSets.add(new BitSet[] { bsAtoms1, bsAtoms2 });
       }
       centerAndPoints = viewer.getCenterAndPoints(vAtomSets, true);
-      q = ModelSet.calculateQuaternionRotation(centerAndPoints, retStddev);
+      q = Measure.calculateQuaternionRotation(centerAndPoints, retStddev, true);
       float r0 = (Float.isNaN(retStddev[1]) ? Float.NaN
           : (int) (retStddev[0] * 100) / 100f);
       float r1 = (Float.isNaN(retStddev[1]) ? Float.NaN
@@ -8998,7 +8998,7 @@ public class ScriptEvaluator {
         break;
       }
     if (!isSyntaxCheck)
-      viewer.minimize(steps, crit, bsSelected, addHydrogen, isSilent, false);
+      viewer.minimize(steps, crit, bsSelected, addHydrogen, isSilent, false, 0);
   }
 
   private void select(int i) throws ScriptException {
@@ -11489,7 +11489,7 @@ public class ScriptEvaluator {
     // set picking dragselected
 
     String str = parameterAsString(i);
-    int mode = JmolConstants.getPickingMode(str);
+    int mode = ActionManager.getPickingMode(str);
     switch (getToken(i).tok) {
     case Token.on:
     case Token.normal:
@@ -11515,7 +11515,7 @@ public class ScriptEvaluator {
       break;
     }
     mode = ((mode = str.indexOf("_")) >= 0 ? mode : str.length());
-    mode = JmolConstants.getPickingMode(str.substring(0, mode));
+    mode = ActionManager.getPickingMode(str.substring(0, mode));
     if (mode < 0)
       error(ERROR_unrecognizedParameter, "SET PICKING " + type, str);
     setStringProperty("picking", str);
@@ -11552,7 +11552,7 @@ public class ScriptEvaluator {
         str = "measure";
       break;
     }
-    if (JmolConstants.getPickingStyle(str) < 0)
+    if (ActionManager.getPickingStyle(str) < 0)
       error(ERROR_unrecognizedParameter, "SET PICKINGSTYLE " + type, str);
     setStringProperty("pickingStyle", str);
   }

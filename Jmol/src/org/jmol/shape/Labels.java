@@ -30,6 +30,7 @@ import org.jmol.modelset.LabelToken;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
+import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.JmolConstants;
 
 import java.util.Hashtable;
@@ -594,7 +595,7 @@ public class Labels extends AtomShape {
   public synchronized boolean checkObjectDragged(int prevX, int prevY, int x,
                                                  int y, int modifiers,
                                                  BitSet bsVisible) {
-    if (viewer.getPickingMode() != JmolConstants.PICKING_LABEL)
+    if (viewer.getPickingMode() != ActionManager.PICKING_LABEL)
       return false;
     // mouse down ?
     if (prevX == Integer.MIN_VALUE) {

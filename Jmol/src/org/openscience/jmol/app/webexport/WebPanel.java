@@ -653,7 +653,6 @@ abstract class WebPanel extends JPanel implements ActionListener,
 
   public BitSet allSelectedWidgets() {
     BitSet selectedWidgets = new BitSet(nWidgets);
-    selectedWidgets.clear();
     DefaultListModel listModel = (DefaultListModel) instanceList.getModel();
     for (int i = 0; i < listModel.getSize(); i++) {
       JmolInstance thisInstance = (JmolInstance) (listModel.getElementAt(i));

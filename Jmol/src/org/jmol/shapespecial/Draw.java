@@ -1048,8 +1048,8 @@ public class Draw extends MeshCollection {
   private final Point3fi PT_NAN = new Point3fi(Float.NaN, 0.0f, 0.0f);
   
   public Point3fi checkObjectClicked(int x, int y, int action, BitSet bsVisible) {
-    boolean isPickingMode = (viewer.getPickingMode() == JmolConstants.PICKING_DRAW);
-    boolean isSpinMode = (viewer.getPickingMode() == JmolConstants.PICKING_SPIN);
+    boolean isPickingMode = (viewer.getPickingMode() == ActionManager.PICKING_DRAW);
+    boolean isSpinMode = (viewer.getPickingMode() == ActionManager.PICKING_SPIN);
     boolean isDrawPicking = viewer.getDrawPicking();
     if (!isPickingMode && !isDrawPicking && !isSpinMode)
       return null;
@@ -1111,7 +1111,7 @@ public class Draw extends MeshCollection {
                                                  int y, int action,
                                                  BitSet bsVisible) {
     //TODO -- can dispense with this first check:
-    if (viewer.getPickingMode() != JmolConstants.PICKING_DRAW)
+    if (viewer.getPickingMode() != ActionManager.PICKING_DRAW)
       return false;
     boolean moveAll = viewer.isBound(action,
         ActionManager.ACTION_dragDrawObject);

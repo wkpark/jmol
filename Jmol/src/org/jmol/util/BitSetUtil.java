@@ -29,6 +29,12 @@ final public class BitSetUtil {
 
   public static final BitSet bsNull= new BitSet();
 
+  public static BitSet setBit(int i) {
+    BitSet bs = new BitSet(i + 1);
+    bs.set(i);
+    return bs;
+  }
+  
   public static boolean areEqual(BitSet a, BitSet b) {
     return (a == null || b == null ? a == null && b == null : a.equals(b));
   }

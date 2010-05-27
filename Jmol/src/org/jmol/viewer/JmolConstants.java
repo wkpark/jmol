@@ -230,6 +230,10 @@ final public class JmolConstants {
   public final static float DEFAULT_BOND_TOLERANCE = 0.45f;
   //minimum acceptable bonding distance ... from OpenBabel ... mth 2003 05 26
   public final static float DEFAULT_MIN_BOND_DISTANCE = 0.4f;
+  public final static float DEFAULT_MAX_CONNECT_DISTANCE = 100000000f;
+  public final static float DEFAULT_MIN_CONNECT_DISTANCE = 0.1f;
+  public static final int MINIMIZATION_ATOM_MAX = 200;
+  public static final float MINIMIZE_FIXED_RANGE = 5.0f;
 
 
   public final static int CONNECT_DELETE_BONDS     = 0;
@@ -238,9 +242,6 @@ final public class JmolConstants {
   public final static int CONNECT_MODIFY_OR_CREATE = Token.modifyorcreate;
   public final static int CONNECT_AUTO_BOND        = Token.auto;
   public final static int CONNECT_IDENTIFY_ONLY    = 5;
-  public final static float DEFAULT_MAX_CONNECT_DISTANCE = 100000000f;
-  public final static float DEFAULT_MIN_CONNECT_DISTANCE = 0.1f;
-  public static final int MINIMIZATION_ATOM_MAX = 200;
 
   private final static String[] connectOperationStrings =
   { "delete", "modify", "create", "modifyOrCreate", "auto", "adjust" };
@@ -276,95 +277,6 @@ final public class JmolConstants {
   public final static int AXES_MODE_UNITCELL = 2;
 
   
-  /**
-   * picking modes     select picking....
-   */
-  public final static int PICKING_OFF       = 0;
-  public final static int PICKING_IDENTIFY  = 1;
-  public final static int PICKING_LABEL     = 2;
-  public final static int PICKING_CENTER    = 3;
-  public final static int PICKING_DRAW      = 4;
-  public final static int PICKING_SPIN      = 5;
-  public final static int PICKING_SYMMETRY  = 6;
-  //public final static int PICKING_COORD  = 6;
-  public final static int PICKING_DELETE_ATOM      =  7;
-  public final static int PICKING_DELETE_BOND      =  8;
-  public final static int PICKING_SELECT_ATOM      =  9;
-  public final static int PICKING_SELECT_GROUP     = 10;
-  public final static int PICKING_SELECT_CHAIN     = 11;
-  public final static int PICKING_SELECT_MOLECULE  = 12;
-  public final static int PICKING_SELECT_POLYMER   = 13;
-  public final static int PICKING_SELECT_STRUCTURE = 14;
-  public final static int PICKING_SELECT_SITE      = 15;
-  public final static int PICKING_SELECT_MODEL     = 16;
-  public final static int PICKING_SELECT_ELEMENT   = 17;
-  public final static int PICKING_MEASURE          = 18;
-  public final static int PICKING_MEASURE_DISTANCE = 19;
-  public final static int PICKING_MEASURE_ANGLE    = 20;
-  public final static int PICKING_MEASURE_TORSION  = 21;
-  public final static int PICKING_NAVIGATE         = 22;
-  public final static int PICKING_CONNECT          = 23;
-  public final static int PICKING_STRUTS           = 24;
-  public final static int PICKING_DRAG_MOLECULE    = 25;
-  public final static int PICKING_DRAG_ATOM        = 26;
-  public final static int PICKING_DRAG_MINIMIZE    = 27;
-  public final static int PICKING_INVERT_STEREO    = 28;
-  public final static int PICKING_ASSIGN_ATOM      = 29;
-  public final static int PICKING_ASSIGN_BOND      = 30;
-  public final static int PICKING_ROTATE_BOND      = 31;
-  
-
-
-  private final static String[] pickingModeNames = {
-    "off", "identify", "label", "center", "draw", "spin",
-    "symmetry", "deleteatom", "deletebond", 
-    "atom", "group", "chain", "molecule", "polymer", "structure", 
-    "site", "model", "element", 
-    "measure", "distance", "angle", "torsion", "navigate", 
-    "connect", "struts", 
-    "dragmolecule", "dragatom", "dragminimize", "invertstereo", 
-    "assignatom", "assignbond", "rotatebond"
-  };
- 
-  public final static String getPickingModeName(int pickingMode) {
-    return (pickingMode < 0 || pickingMode >= pickingModeNames.length ? "off"
-        : pickingModeNames[pickingMode]);
-  }
-  
-  public final static int getPickingMode(String str) {
-    for (int i = pickingModeNames.length; --i >= 0; )
-      if (str.equalsIgnoreCase(pickingModeNames[i]))
-        return i;
-    return -1;
-  }
-  /**
-   * picking styles
-   */
-  public final static int PICKINGSTYLE_SELECT_JMOL = 0;
-  public final static int PICKINGSTYLE_SELECT_CHIME = 0;
-  public final static int PICKINGSTYLE_SELECT_RASMOL = 1;
-  public final static int PICKINGSTYLE_SELECT_PFAAT = 2;
-  public final static int PICKINGSTYLE_SELECT_DRAG = 3;
-  public final static int PICKINGSTYLE_MEASURE_ON = 4;
-  public final static int PICKINGSTYLE_MEASURE_OFF = 5;
-  
-  private final static String[] pickingStyleNames = {
-    "toggle", "selectOrToggle", "extendedSelect", "drag",
-    "measure", "measureoff"
-  };
-
-  public final static String getPickingStyleName(int pickingStyle) {
-    return (pickingStyle < 0 || pickingStyle >= pickingStyleNames.length ? "toggle"
-        : pickingStyleNames[pickingStyle]);
-  }
-  
-  public final static int getPickingStyle(String str) {
-    for (int i = pickingStyleNames.length; --i >= 0; )
-      if (str.equalsIgnoreCase(pickingStyleNames[i]))
-        return i;
-    return -1;
-  }
-
   public final static int[] argbsHbondType =
   {
     0xFFFF69B4, // 0  unused - pink

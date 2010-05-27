@@ -2168,7 +2168,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (bsNew.cardinality() > 0) {
         String jmolScript = (String) modelSet
             .getModelSetAuxiliaryInfo("jmolscript");
-        minimize(Integer.MAX_VALUE, 0, bsNew, true, true, true);
+        minimize(Integer.MAX_VALUE, 0, bsNew, true, true, true, 0);
         // no longer necessary? -- this is the JME/SMILES data:
         if (jmolScript != null)
           modelSet.getModelSetAuxiliaryInfo().put("jmolscript", jmolScript);
@@ -2331,7 +2331,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void setIteratorForAtom(AtomIndexIterator iterator, int atomIndex,
                                  float distance) {
-    modelSet.setIteratorForAtom(iterator, atomIndex, distance);
+    modelSet.setIteratorForAtom(iterator, -1, atomIndex, distance);
   }
 
   public void fillAtomData(AtomData atomData, int mode) {
@@ -2840,8 +2840,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public BitSet getAtomsWithin(float distance, BitSet bs,
-                               boolean isWithinModelSet) {
-    return modelSet.getAtomsWithin(distance, bs, isWithinModelSet);
+                               boolean withinAllModels) {
+    return modelSet.getAtomsWithin(distance, bs, withinAllModels);
   }
 
   public BitSet getAtomsConnected(float min, float max, int intType, BitSet bs) {
@@ -4302,9 +4302,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   void hoverOn(int atomIndex, int action) {
     if (isModelkitMode()) {
-      BitSet bs = new BitSet();
-      bs.set(atomIndex);
-      highlight(bs);
+      highlight(BitSetUtil.setBit(atomIndex));
       refresh(3, "hover on atom");
       return;
     }
@@ -4317,7 +4315,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     loadShape(JmolConstants.SHAPE_HOVER);
     if (isBound(action, ActionManager.ACTION_dragLabel)
-        && getPickingMode() == JmolConstants.PICKING_LABEL
+        && getPickingMode() == ActionManager.PICKING_LABEL
         && modelSet.atoms[atomIndex].isShapeVisible(JmolConstants
             .getShapeVisibilityFlag(JmolConstants.SHAPE_LABELS))) {
       setShapeProperty(JmolConstants.SHAPE_HOVER, "specialLabel", GT
@@ -4460,22 +4458,22 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         option = strMode.substring(pt + 1);
         strMode = strMode.substring(0, pt);
       }
-      pickingMode = JmolConstants.getPickingMode(strMode);
+      pickingMode = ActionManager.getPickingMode(strMode);
     }
     if (pickingMode < 0)
-      pickingMode = JmolConstants.PICKING_IDENTIFY;
+      pickingMode = ActionManager.PICKING_IDENTIFY;
     actionManager.setPickingMode(pickingMode);
-    global.setParameterValue("picking", JmolConstants
+    global.setParameterValue("picking", ActionManager
         .getPickingModeName(actionManager.getAtomPickingMode()));
     if (option == null || option.length() == 0)
       return;
     option = Character.toUpperCase(option.charAt(0))
         + (option.length() == 1 ? "" : option.substring(1, 2));
     switch (pickingMode) {
-    case JmolConstants.PICKING_ASSIGN_ATOM:
+    case ActionManager.PICKING_ASSIGN_ATOM:
       setAtomPickingOption(option);
       break;
-    case JmolConstants.PICKING_ASSIGN_BOND:
+    case ActionManager.PICKING_ASSIGN_BOND:
       setBondPickingOption(option);
       break;
     default:
@@ -4507,11 +4505,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (!haveDisplay)
       return;
     if (style != null)
-      pickingStyle = JmolConstants.getPickingStyle(style);
+      pickingStyle = ActionManager.getPickingStyle(style);
     if (pickingStyle < 0)
-      pickingStyle = JmolConstants.PICKINGSTYLE_SELECT_JMOL;
+      pickingStyle = ActionManager.PICKINGSTYLE_SELECT_JMOL;
     actionManager.setPickingStyle(pickingStyle);
-    global.setParameterValue("pickingStyle", JmolConstants
+    global.setParameterValue("pickingStyle", ActionManager
         .getPickingStyleName(actionManager.getPickingStyle()));
   }
 
@@ -6074,10 +6072,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private void setModelKitMode(boolean value) {
     if (value || global.modelkitMode) {
-      setPickingMode(null, value ? JmolConstants.PICKING_ASSIGN_BOND
-          : JmolConstants.PICKING_IDENTIFY);
-      setPickingMode(null, value ? JmolConstants.PICKING_ASSIGN_ATOM
-          : JmolConstants.PICKING_IDENTIFY);
+      setPickingMode(null, value ? ActionManager.PICKING_ASSIGN_BOND
+          : ActionManager.PICKING_IDENTIFY);
+      setPickingMode(null, value ? ActionManager.PICKING_ASSIGN_ATOM
+          : ActionManager.PICKING_IDENTIFY);
     }
     global.modelkitMode = value;
     highlight(null);
@@ -7131,10 +7129,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void checkObjectDragged(int prevX, int prevY, int x, int y, int action) {
     int iShape = 0;
     switch (getPickingMode()) {
-    case JmolConstants.PICKING_LABEL:
+    case ActionManager.PICKING_LABEL:
       iShape = JmolConstants.SHAPE_LABELS;
       break;
-    case JmolConstants.PICKING_DRAW:
+    case ActionManager.PICKING_DRAW:
       iShape = JmolConstants.SHAPE_DRAW;
       break;
     }
@@ -7162,7 +7160,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private void checkMinimization() {
     if (!global.monitorEnergy)
       return;
-    minimize(0, 0, getModelUndeletedAtomsBitSet(-1), false, true, false);
+    minimize(0, 0, getModelUndeletedAtomsBitSet(-1), false, true, false, 0);
     echoMessage("Energy = " + getParameter("_minimizationEnergy"));
   }
 
@@ -7298,9 +7296,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void setFrameTitle(int modelIndex, String title) {
-    BitSet bs = new BitSet(modelIndex);
-    bs.set(modelIndex);
-    modelSet.setFrameTitle(bs, title);
+    modelSet.setFrameTitle(BitSetUtil.setBit(modelIndex), title);
   }
 
   public void setFrameTitle(String title) {
@@ -7451,9 +7447,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     BitSet bs = null;
     if (index >= 0) {
       Bond b = modelSet.getBonds()[index];
-      bs = new BitSet();
+      bs = BitSetUtil.setBit(b.getAtomIndex2());
       bs.set(b.getAtomIndex1());
-      bs.set(b.getAtomIndex2());
     }
     highlight(bs);
     refresh(3, "highlightBond");
@@ -8485,9 +8480,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * @param isSilent
    * @param asScript
    *          TODO
+   * @param rangeFixed TODO
    */
   public void minimize(int steps, float crit, BitSet bsSelected,
-                       boolean addHydrogen, boolean isSilent, boolean asScript) {
+                       boolean addHydrogen, boolean isSilent, boolean asScript, float rangeFixed) {
     if (bsSelected == null)
       bsSelected = getModelUndeletedAtomsBitSet(getVisibleFramesBitSet().length() - 1);
     if (addHydrogen)
@@ -8496,8 +8492,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       Logger.error("Too many atoms for minimization (>" + JmolConstants.MINIMIZATION_ATOM_MAX + ")");
       return;
     }
+    BitSet bsFixed = null;
+    if (rangeFixed > 0) {
+      bsFixed = getAtomsWithin(rangeFixed, bsSelected, true);
+      bsFixed.andNot(bsSelected);
+      bsSelected.or(bsFixed);
+    }
     try {
-      getMinimizer(true).minimize(steps, crit, bsSelected, isSilent);
+      getMinimizer(true).minimize(steps, crit, bsSelected, bsFixed, isSilent);
     } catch (Exception e) {
       Logger.error(e.getMessage());
     }
@@ -8786,8 +8788,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     }
     Atom atom = modelSet.atoms[atomIndex];
-    BitSet bs = new BitSet();
-    bs.set(atomIndex);
+    BitSet bs = BitSetUtil.setBit(atomIndex);
     Point3f[] pts = new Point3f[] { pt };
     Vector vConnections = new Vector();
     vConnections.add(atom);
@@ -8801,22 +8802,19 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void moveAtomWithHydrogens(int atomIndex, int deltaX, int deltaY,
-                                    boolean wholeMolecule) {
+                                    BitSet bsAtoms) {
     clearModelDependentObjects();
     Atom atom = modelSet.atoms[atomIndex];
-    BitSet bs = new BitSet();
-    bs.set(atomIndex);
-    if (wholeMolecule) {
-      bs = getAtomBits(Token.molecule, bs);
-    } else {
+    if (bsAtoms == null) {
+      bsAtoms = BitSetUtil.setBit(atomIndex);
       Bond[] bonds = atom.bonds;
       for (int i = 0; i < bonds.length; i++) {
         Atom atom2 = atom.bonds[i].getOtherAtom(atom);
         if (atom2.getElementNumber() == 1)
-          bs.set(atom2.index);
+          bsAtoms.set(atom2.index);
       }
     }
-    moveSelected(deltaX, deltaY, Integer.MIN_VALUE, Integer.MIN_VALUE, bs, true);
+    moveSelected(deltaX, deltaY, Integer.MIN_VALUE, Integer.MIN_VALUE, bsAtoms, true);
   }
 
   void appendLoadStates(StringBuffer commands) {
@@ -8826,6 +8824,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public static void getInlineData(StringBuffer loadScript, String strModel,
                                    boolean isAppend) {
     DataManager.getInlineData(loadScript, strModel, isAppend);
+  }
+
+  boolean isAtomPDB(int i) {
+    return modelSet.isAtomPDB(i);
+  }
+  boolean isAtomAssignable(int i) {
+    return modelSet.isAtomAssignable(i);
   }
 
 }

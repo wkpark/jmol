@@ -70,7 +70,6 @@ class JmolInstance {
     bgColor = viewer.getBackgroundArgb();
     javaname = name.replaceAll("[^a-zA-Z_0-9-]", "_"); //escape filename characters
     whichWidgets=new BitSet(nWidgets);
-    whichWidgets.clear(0,nWidgets);
     FileSystemView Directories = FileSystemView.getFileSystemView();
     File homedir = Directories.getHomeDirectory();
     String homedirpath = homedir.getPath();

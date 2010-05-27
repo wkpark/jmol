@@ -168,7 +168,7 @@ public class Minimizer implements MinimizerInterface {
     //  viewer = null;
   }
   
-  public boolean minimize(int steps, double crit, BitSet bsSelected, boolean forceSilent) {
+  public boolean minimize(int steps, double crit, BitSet bsSelected, BitSet bsFixed, boolean forceSilent) {
     isSilent = (forceSilent || viewer.getBooleanProperty("minimizationSilent"));
     Object val;
     if (steps == Integer.MAX_VALUE) {
@@ -207,7 +207,8 @@ public class Minimizer implements MinimizerInterface {
       return false;
     }
 
-    if (!BitSetUtil.areEqual(bsSelected, this.bsSelected)
+    if ((!BitSetUtil.areEqual(bsSelected, this.bsSelected)
+        || !BitSetUtil.areEqual(bsFixed, this.bsFixed))
         && !setupMinimization()) {
       clear();
       return false;
@@ -217,6 +218,8 @@ public class Minimizer implements MinimizerInterface {
       BitSetUtil.andNot(bsTaint, bsFixed);
       viewer.setTaintedAtoms(bsTaint, AtomCollection.TAINT_COORD);
     }
+    if (bsFixed != null)
+      this.bsFixed = bsFixed;
     setAtomPositions();
     this.bsSelected = bsSelected;
 

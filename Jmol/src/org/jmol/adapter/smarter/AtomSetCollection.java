@@ -40,6 +40,7 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.api.VolumeDataInterface;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
@@ -929,8 +930,7 @@ public class AtomSetCollection {
           Atom atom1 = newCloneAtom(atoms[i]);
           atom1.set(ptAtom);
           atom1.atomSite = atomSite;
-          atom1.bsSymmetry = new BitSet(1);
-          atom1.bsSymmetry.set(iCellOpPt + iSym);
+          atom1.bsSymmetry = BitSetUtil.setBit(iCellOpPt + iSym);
           atom1.bsSymmetry.set(iSym);
           if (addCartesian)
             cartesians[pt++] = cartesian;
@@ -988,10 +988,8 @@ public class AtomSetCollection {
       len = Math.min(len, Parser.parseInt(filter.substring(filter.indexOf("#<") + 2)) - 1);
       filter = TextFormat.simpleReplace(filter, "#<", "_<");
     }
-    for (int iAtom = iAtomFirst; iAtom < atomMax; iAtom++) {
-      atoms[iAtom].bsSymmetry = new BitSet(1);
-      atoms[iAtom].bsSymmetry.set(0);
-      }
+    for (int iAtom = iAtomFirst; iAtom < atomMax; iAtom++)
+      atoms[iAtom].bsSymmetry = BitSetUtil.setBit(0);
     for (int i = 1; i < len; i++) { 
       if (filter.indexOf("!#") >= 0) {
         if (filter.toUpperCase().indexOf("!#" + (i + 1) + ";") >= 0)
@@ -1011,8 +1009,7 @@ public class AtomSetCollection {
             atom1 = newCloneAtom(atoms[iAtom]);
             atom1.atomSite = atomSite;
           mat.transform(atom1);
-          atom1.bsSymmetry = new BitSet(i);
-          atom1.bsSymmetry.set(i);
+          atom1.bsSymmetry = BitSetUtil.setBit(i);
           if (addBonds) {
             // Clone bonds
             for (int bondNum = bondIndex0; bondNum < bondCount0; bondNum++) {

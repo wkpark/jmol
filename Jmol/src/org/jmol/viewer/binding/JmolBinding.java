@@ -70,6 +70,7 @@ public class JmolBinding extends Binding {
   protected void setPickBindings() {
     bind(SINGLE_CLICK+LEFT, ActionManager.ACTION_dragAtom);
     bind(SINGLE_CLICK+LEFT, ActionManager.ACTION_dragMinimize);
+    bind(SINGLE_CLICK+LEFT, ActionManager.ACTION_dragMinimizeMolecule);
     bind(SINGLE_CLICK+LEFT, ActionManager.ACTION_pickAtom);
     bind(SINGLE_CLICK+LEFT, ActionManager.ACTION_pickPoint);
     bind(SINGLE_CLICK+LEFT, ActionManager.ACTION_pickLabel);

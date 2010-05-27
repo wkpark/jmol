@@ -442,8 +442,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     if (propertyName == "deleteModelAtoms") {
       int modelIndex = ((int[]) ((Object[]) value)[2])[0];
-      BitSet bsModels = new BitSet();
-      bsModels.set(modelIndex);
+      BitSet bsModels = BitSetUtil.setBit(modelIndex);
       int firstAtomDeleted = ((int[]) ((Object[]) value)[2])[1];
       int nAtomsDeleted = ((int[]) ((Object[]) value)[2])[2];
       for (int i = meshCount; --i >= 0;) {

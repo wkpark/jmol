@@ -106,8 +106,7 @@ public class DrawMesh extends Mesh {
     drawVertexCounts = (int[]) ArrayUtil.deleteElements(drawVertexCounts, modelIndex, 1);
     ptCenters = (Point3f[]) ArrayUtil.deleteElements(ptCenters, modelIndex, 1);
     axes = (Vector3f[]) ArrayUtil.deleteElements(axes, modelIndex, 1);
-    BitSet bs = new BitSet();
-    bs.set(modelIndex);
+    BitSet bs = BitSetUtil.setBit(modelIndex);
     BitSetUtil.deleteBits(modelFlags, bs);
     //no! title = (String[]) ArrayUtil.deleteElements(title, modelIndex, 1);
   }

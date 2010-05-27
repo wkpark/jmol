@@ -42,7 +42,7 @@ class ModelKitPopupResourceBundle extends PopupResource {
     { "modelkitMenu", "atomMenu bondMenu optionsMenu" },
     { "optionsMenu", "new center addh minimize " +
     		"- saveFileSIGNED saveStateSIGNED exit" },
-    { "atomMenu" , "assignAtom_XP!CB dragMoleculeP!CB dragAtomP!CB dragMinimizeP!CB " +
+    { "atomMenu" , "assignAtom_XP!CB dragMoleculeP!CB dragAtomP!CB dragMinimizeP!CB dragMinimizeMoleculeP!CB " +
     		"- assignAtom_CP!CB assignAtom_HP!CB assignAtom_NP!CB assignAtom_OP!CB " +
     		"_??P!CB _??P!CB _??P!CB " +
     		"moreAtomMenu - assignAtom_PlP!CB assignAtom_MiP!CB" },
@@ -81,7 +81,8 @@ class ModelKitPopupResourceBundle extends PopupResource {
         "assignAtom_XP!CB" , GT._("delete atom"),
         "dragMoleculeP!CB" , GT._("drag molecule"),
         "dragAtomP!CB" , GT._("drag atom"),
-        "dragMinimizeP!CB" , GT._("drag-minimize"),
+        "dragMinimizeP!CB" , GT._("drag atom/minimize molecule"),
+        "dragMinimizeMoleculeP!CB" , GT._("drag and minimize molecule (docking)"),
         "assignAtom_CP!CB" , "C",
         "assignAtom_HP!CB" , "H",
         "assignAtom_NP!CB" , "N",

@@ -58,6 +58,7 @@ import org.jmol.util.Point3fi;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
 import org.jmol.util.TriangleData;
+import org.jmol.util.XmlUtil;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.ShapeManager;
 import org.jmol.script.Token;
@@ -1917,9 +1918,10 @@ abstract public class ModelCollection extends BondCollection {
     bspf.initialize(modelIndex, atoms, viewer.getModelUndeletedAtomsBitSet(modelIndex));
   }
  
-  public void setIteratorForAtom(AtomIndexIterator iterator, int atomIndex,
-                                   float distance) {
-    int modelIndex = atoms[atomIndex].modelIndex;
+  public void setIteratorForAtom(AtomIndexIterator iterator, int modelIndex,
+                                   int atomIndex, float distance) {
+    if (modelIndex < 0)
+      modelIndex = atoms[atomIndex].modelIndex;
     modelIndex = models[modelIndex].trajectoryBaseIndex;    
     initializeBspt(modelIndex);
     iterator.set(modelIndex, models[modelIndex].firstAtomIndex, atomIndex, atoms[atomIndex], distance);    
@@ -2205,7 +2207,7 @@ abstract public class ModelCollection extends BondCollection {
                 bsResult, -1);
             continue;
           }
-          setIteratorForAtom(iter, i, distance);
+          setIteratorForAtom(iter, iModel, i, distance);
           iter.addAtoms(bsResult);
         }
     } else {
@@ -2216,7 +2218,7 @@ abstract public class ModelCollection extends BondCollection {
             getAtomsWithin(distance, atoms[i], bsResult, atoms[i].modelIndex);
             continue;
           }
-          setIteratorForAtom(iter, i, distance);
+          setIteratorForAtom(iter, -1, i, distance);
           iter.addAtoms(bsResult);
         }
     }
@@ -2263,7 +2265,7 @@ abstract public class ModelCollection extends BondCollection {
     for (int iModel = modelCount; --iModel >= 0;) {
       if (!bsCheck.get(iModel))
         continue;
-      setIteratorForAtom(iter, models[iModel].firstAtomIndex, -1);
+      setIteratorForAtom(iter, -1, models[iModel].firstAtomIndex, -1);
       iter.set(coord, distance);
       iter.addAtoms(bsResult);
     }
@@ -2536,7 +2538,7 @@ abstract public class ModelCollection extends BondCollection {
         continue;
       boolean isFirstExcluded = (bsExclude != null && bsExclude.get(i));
       float searchRadius = myBondingRadius + maxBondingRadius + bondTolerance;
-      setIteratorForAtom(iter, i, searchRadius);
+      setIteratorForAtom(iter, -1, i, searchRadius);
       while (iter.hasNext()) {
         Atom atomNear = atoms[iter.next()];
         if (atomNear.isDeleted())
@@ -2671,7 +2673,7 @@ abstract public class ModelCollection extends BondCollection {
         max2 = hbondMax2;
         firstIsCO = bsCO.get(i);
       }
-      setIteratorForAtom(iter, atom.index, dmax);
+      setIteratorForAtom(iter, -1, atom.index, dmax);
       while (iter.hasNext()) {
         Atom atomNear = atoms[iter.next()];
         int elementNumberNear = atomNear.getElementNumber();
@@ -3675,8 +3677,7 @@ abstract public class ModelCollection extends BondCollection {
       atom.add(v);
     }
 
-    BitSet bsA = new BitSet(atomIndex);
-    bsA.set(atomIndex);
+    BitSet bsA = BitSetUtil.setBit(atomIndex);
 
     if (autoBond) {
 
@@ -3737,6 +3738,169 @@ abstract public class ModelCollection extends BondCollection {
       commands.append(models[i].loadScript);
     }
     return commands.toString();
+  }
+
+  /*
+   * <molecule title="acetic_acid.mol"
+   * xmlns="http://www.xml-cml.org/schema/cml2/core"
+   * xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   * xsi:schemaLocation="http://www.xml-cml.org/schema/cml2/core cmlAll.xsd">
+   * <atomArray> <atom id="a1" elementType="C" x3="0.1853" y3="0.0096"
+   * z3="0.4587"/> <atom id="a2" elementType="O" x3="0.6324" y3="1.0432"
+   * z3="0.8951"/> <atom id="a3" elementType="C" x3="-1.0665" y3="-0.1512"
+   * z3="-0.3758"/> <atom id="a4" elementType="O" x3="0.7893" y3="-1.1734"
+   * z3="0.6766" formalCharge="-1"/> <atom id="a5" elementType="H" x3="-1.7704"
+   * y3="-0.8676" z3="0.1055"/> <atom id="a6" elementType="H" x3="-0.8068"
+   * y3="-0.5215" z3="-1.3935"/> <atom id="a7" elementType="H" x3="-1.5889"
+   * y3="0.8259" z3="-0.4854"/> </atomArray> <bondArray> <bond atomRefs2="a1 a2"
+   * order="partial12"/> <bond atomRefs2="a1 a3" order="S"/> <bond
+   * atomRefs2="a1 a4" order="partial12"/> <bond atomRefs2="a3 a5" order="S"/>
+   * <bond atomRefs2="a3 a6" order="S"/> <bond atomRefs2="a3 a7" order="S"/>
+   * </bondArray> </molecule>
+   */
+  public String getModelCml(BitSet bs, int atomsMax, boolean addBonds) {
+    StringBuffer sb = new StringBuffer("");
+    int nAtoms = BitSetUtil.cardinalityOf(bs);
+    if (nAtoms == 0)
+      return "";
+    XmlUtil.openTag(sb, "molecule");
+    XmlUtil.openTag(sb, "atomArray");
+    BitSet bsAtoms = new BitSet();
+    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+      if (--atomsMax < 0)
+        break;
+      Atom atom = atoms[i];
+      String name = atom.getAtomName();
+      TextFormat.simpleReplace(name, "\"", "''");
+      bsAtoms.set(atom.index);
+      XmlUtil
+          .appendTag(sb, "atom/", new String[] { 
+              "id", "a" + (atom.index + 1),
+              "title", atom.getAtomName(),
+              "elementType", atom.getElementSymbol(), 
+              "x3", "" + atom.x, 
+              "y3", "" + atom.y, 
+              "z3", "" + atom.z });
+    }
+    XmlUtil.closeTag(sb, "atomArray");
+    if (addBonds) {
+      XmlUtil.openTag(sb, "bondArray");
+      for (int i = 0; i < bondCount; i++) {
+        Bond bond = bonds[i];
+        Atom a1 = bond.atom1;
+        Atom a2 = bond.atom2;
+        if (!bsAtoms.get(a1.index) || !bsAtoms.get(a2.index))
+          continue;
+        String order = JmolConstants.getCmlOrder(bond.order);
+        if (order == null)
+          continue;
+        XmlUtil.appendTag(sb, "bond/", new String[] { 
+            "atomRefs2", "a" + (bond.atom1.index + 1) + " a" + (bond.atom2.index + 1), 
+            "order", order, });
+      }
+      XmlUtil.closeTag(sb, "bondArray");
+    }
+    XmlUtil.closeTag(sb, "molecule");
+    return sb.toString();
+  }
+
+  // atom addition //
+  
+  protected void growAtomArrays(int newLength) {
+    atoms = (Atom[]) ArrayUtil.setLength(atoms, newLength);
+    if (vibrationVectors != null)
+      vibrationVectors = (Vector3f[]) ArrayUtil.setLength(vibrationVectors,
+          newLength);
+    if (occupancies != null)
+      occupancies = ArrayUtil.setLength(occupancies, newLength);
+    if (bfactor100s != null)
+      bfactor100s = ArrayUtil.setLength(bfactor100s, newLength);
+    if (partialCharges != null)
+      partialCharges = ArrayUtil.setLength(partialCharges, newLength);
+    if (ellipsoids != null)
+      ellipsoids = (Object[][]) ArrayUtil.setLength(ellipsoids, newLength);
+    if (atomNames != null)
+      atomNames = ArrayUtil.setLength(atomNames, newLength);
+    if (atomTypes != null)
+      atomTypes = ArrayUtil.setLength(atomTypes, newLength);
+    if (atomSerials != null)
+      atomSerials = ArrayUtil.setLength(atomSerials, newLength);
+  }
+
+  protected Atom addAtom(int modelIndex, Group group, short atomicAndIsotopeNumber,
+                       String atomName, int atomSerial, int atomSite, float x, float y, float z) {
+    return addAtom(modelIndex, group, atomicAndIsotopeNumber, atomName, atomSerial,
+        atomSite, x, y, z, Float.NaN, Float.NaN, Float.NaN, Float.NaN, 0, 0,
+        100, Float.NaN, null, false, '\0', (byte) 0, null);
+  }
+  protected Atom addAtom(int modelIndex, Group group,
+                         short atomicAndIsotopeNumber, String atomName, int atomSerial,
+                         int atomSite, float x, float y, float z,
+                         float radius, float vectorX, float vectorY,
+                         float vectorZ, int formalCharge, float partialCharge,
+                         int occupancy, float bfactor, Object[] ellipsoid,
+                         boolean isHetero, char alternateLocationID,
+                         byte specialAtomID, BitSet atomSymmetry) {
+    Atom atom = new Atom(modelIndex, atomCount, x, y, z, radius, atomSymmetry,
+        atomSite, atomicAndIsotopeNumber, formalCharge, isHetero,
+        alternateLocationID);
+    models[modelIndex].atomCount++;
+    models[modelIndex].bsAtoms.set(atomCount);
+    if (atomicAndIsotopeNumber % 128 == 1)
+      models[modelIndex].hydrogenCount++;
+    atoms[atomCount] = atom;
+    setBFactor(atomCount, bfactor);
+    setOccupancy(atomCount, occupancy);
+    setPartialCharge(atomCount, partialCharge);
+    if (ellipsoid != null)
+      setEllipsoid(atomCount, ellipsoid);
+    atom.group = group;
+    atom.colixAtom = viewer
+        .getColixAtomPalette(atom, JmolConstants.PALETTE_CPK);
+    if (atomName != null) {
+      int i;
+      if ((i = atomName.indexOf('\0')) >= 0) {
+        if (atomTypes == null)
+          atomTypes = new String[atoms.length];
+        atomTypes[atomCount] = atomName.substring(i + 1);
+        atomName = atomName.substring(0, i);
+      }
+      atom.atomID = specialAtomID;
+      if (specialAtomID == 0) {
+        if (atomNames == null)
+          atomNames = new String[atoms.length];
+        atomNames[atomCount] = atomName.intern();
+      }
+    }
+    if (atomSerial != Integer.MIN_VALUE) {
+      if (atomSerials == null)
+        atomSerials = new int[atoms.length];
+      atomSerials[atomCount] = atomSerial;
+    }
+    if (!Float.isNaN(vectorX))
+      setVibrationVector(atomCount, vectorX, vectorY, vectorZ);
+    atomCount++;
+    return atom;
+  }
+
+  public String getInlineData(int modelIndex) {
+    String data = models[modelIndex >= 0 ? modelIndex : modelCount - 1].loadState;
+    int pt = data.lastIndexOf("data \"");
+    if (pt < 0)
+      return null;
+    pt = data.indexOf("\n", pt);
+    int pt2 = data.lastIndexOf("end \"");
+    if (pt2 < pt || pt < 0)
+      return null;
+    return data.substring(pt + 1, pt2);
+  }
+
+  public boolean isAtomPDB(int i) {
+    return models[atoms[i].modelIndex].isPDB;
+  }
+
+  public boolean isAtomAssignable(int i) {
+    return !isAtomPDB(i) && atoms[i].modelIndex == modelCount - 1;
   }
 
 

@@ -34,6 +34,7 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
 import org.jmol.shape.MeshRenderer;
+import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.JmolConstants;
 
 public class DrawRenderer extends MeshRenderer {
@@ -75,7 +76,7 @@ public class DrawRenderer extends MeshRenderer {
       drawLineData(mesh.lineData);
       return;
     }
-    boolean isDrawPickMode = (viewer.getPickingMode() == JmolConstants.PICKING_DRAW);
+    boolean isDrawPickMode = (viewer.getPickingMode() == ActionManager.PICKING_DRAW);
     int nPoints = vertexCount;
     boolean isCurved = (
         (drawType == JmolConstants.DRAW_CURVE 

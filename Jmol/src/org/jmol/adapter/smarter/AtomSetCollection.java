@@ -234,6 +234,7 @@ public class AtomSetCollection {
     // auxiliary info
     // Clone each AtomSet
     int clonedAtoms = 0;
+    setAtomSetCollectionAuxiliaryInfo("loadState", collection.getAtomSetCollectionAuxiliaryInfo("loadState"));
     for (int atomSetNum = 0; atomSetNum < collection.atomSetCount; atomSetNum++) {
       newAtomSet();
       atomSetAuxiliaryInfo[currentAtomSetIndex] = collection.atomSetAuxiliaryInfo[atomSetNum];
@@ -276,6 +277,7 @@ public class AtomSetCollection {
       if (Boolean.TRUE.equals(
           collection.getAtomSetCollectionAuxiliaryInfo(globalBooleans[i])))
         setGlobalBoolean(i);
+    
   }
 
   void setNoAutoBond() {

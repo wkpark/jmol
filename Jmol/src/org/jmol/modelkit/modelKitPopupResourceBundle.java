@@ -96,7 +96,7 @@ class ModelKitPopupResourceBundle extends PopupResource {
         "assignBond_3P!CB", GT._("triple"),
         "assignBond_pP!CB", GT._("increase order"),
         "assignBond_mP!CB", GT._("decrease order"),
-        "rotateBondP!CB", GT._("rotate bond"),
+        "rotateBondP!CB", GT._("rotate bond (SHIFT-DRAG)"),
         "exit", GT._("exit modelkit mode"),
     };
  

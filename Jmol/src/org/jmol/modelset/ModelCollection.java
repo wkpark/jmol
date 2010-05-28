@@ -35,7 +35,6 @@ import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
-import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.api.AtomIndexIterator;
@@ -825,7 +824,6 @@ abstract public class ModelCollection extends BondCollection {
     return bs;
   }
 
-
   /** 
    * only some models can be iterated through.
    * models for which trajectoryBaseIndexes[i] != i are trajectories only
@@ -1568,6 +1566,7 @@ abstract public class ModelCollection extends BondCollection {
                              Point3f center, boolean isInternal) {
     bspf = null;
     BitSet bs = (fullMolecule ? getMoleculeBitSet(bsAtoms) : BitSetUtil.copy(bsAtoms));
+    BitSetUtil.andNot(bs, viewer.getMotionFixedAtoms());
     if (mNew == null) {
       matTemp.set(matrixRotate);
     } else {
@@ -1934,7 +1933,7 @@ abstract public class ModelCollection extends BondCollection {
     // This iterator returns only atoms OTHER than the atom specified
     // and with the specified restrictions. 
     // Model zero-based means the index returned is within the model, 
-    // not the full atom set.
+    // not the full atom set. broken in 12.0.RC6; repaired in 12.0.RC15
     
     initializeBspf();
     AtomIteratorWithinModel iter = new AtomIteratorWithinModel();
@@ -1948,31 +1947,8 @@ abstract public class ModelCollection extends BondCollection {
     return (modelIndex < 0 ? bondCount : models[modelIndex].getBondCount());
   }
 
-  ////////// atoms /////////
+  ////////// struts /////////
 
-  public void setAtomCoordRelative(Tuple3f offset, BitSet bs) {
-    setAtomCoordRelative(bs, offset.x, offset.y, offset.z);
-    recalculatePositionDependentQuantities();
-  }
-
-  public void setAtomCoord(BitSet bs, int tokType, Object xyzValues) {
-    super.setAtomCoord(bs, tokType, xyzValues);
-    switch(tokType) {
-    case Token.vibx:
-    case Token.viby:
-    case Token.vibz:
-    case Token.vibxyz:
-      break;
-    default:
-      recalculatePositionDependentQuantities();
-    }
-  }
-
-  public void recalculatePositionDependentQuantities() {
-    if (getHaveStraightness())
-      calculateStraightness();
-    recalculateLeadMidpointsAndWingVectors(-1);
-  }
 
   /** see comments in org.jmol.modelsetbio.AlphaPolymer.java
    * 
@@ -3903,5 +3879,5 @@ abstract public class ModelCollection extends BondCollection {
     return i >= 0 && !isAtomPDB(i) && atoms[i].modelIndex == modelCount - 1;
   }
 
-
+  
 }

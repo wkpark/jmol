@@ -178,9 +178,9 @@ class BioShape {
     return (short)(Math.sqrt(bFactor100/eightPiSquared100) * 1000);
   }
 
-  void findNearestAtomIndex(int xMouse, int yMouse, Atom[] closest) {
+  void findNearestAtomIndex(int xMouse, int yMouse, Atom[] closest, BitSet bsNot) {
     bioPolymer.findNearestAtomIndex(xMouse, yMouse, closest, mads,
-        shape.myVisibilityFlag);
+        shape.myVisibilityFlag, bsNot);
   }
   
   void setMad(short mad, BitSet bsSelected) {

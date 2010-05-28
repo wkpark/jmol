@@ -3118,6 +3118,9 @@ public class ScriptEvaluator {
       case Token.hidden:
         rpn.addX(BitSetUtil.copy(viewer.getHiddenSet()));
         break;
+      case Token.fixed:
+        rpn.addX(BitSetUtil.copy(viewer.getMotionFixedAtoms()));
+        break;
       case Token.displayed:
         rpn.addX(BitSetUtil.copyInvert(viewer.getHiddenSet(), atomCount));
         break;
@@ -4893,6 +4896,9 @@ public class ScriptEvaluator {
           break;
         case Token.file:
           file();
+          break;
+        case Token.fixed:
+          fixed();
           break;
         case Token.font:
           font(-1, 0);
@@ -7792,8 +7798,8 @@ public class ScriptEvaluator {
     if (!isSyntaxCheck)
       viewer.setCursor(Viewer.CURSOR_WAIT);
     
-    errMsg = viewer.loadModelFromFile(filename, filenames, isAppend, htParams,
-        loadScript, tokType);
+    errMsg = viewer.loadModelFromFile(null, filename, filenames, null,
+        isAppend, htParams, loadScript, tokType);
     if (os != null)
       try {
         Logger.info(GT._("file {0} created", localName));
@@ -8922,10 +8928,21 @@ public class ScriptEvaluator {
     float crit = 0;
     boolean addHydrogen = false;
     boolean isSilent = false;
+    BitSet bsFixed = null;
     MinimizerInterface minimizer = viewer.getMinimizer(false);
     // may be null
     for (int i = 1; i < statementLength; i++)
       switch (getToken(i).tok) {
+      case Token.addhydrogens:
+        addHydrogen = true;
+        continue;
+      case Token.cancel:
+      case Token.stop:
+        checkLength(2);
+        if (isSyntaxCheck || minimizer == null)
+          return;
+        minimizer.setProperty(parameterAsString(i), null);
+        return;
       case Token.clear:
         checkLength(2);
         if (isSyntaxCheck || minimizer == null)
@@ -8936,10 +8953,9 @@ public class ScriptEvaluator {
         if (i != 1)
           error(ERROR_invalidArgument);
         int n = 0;
-        i++;
         float targetValue = 0;
         int[] aList = new int[5];
-        if (tokAt(i) == Token.clear) {
+        if (tokAt(++i) == Token.clear) {
           checkLength(2);
         } else {
           while (n < 4 && !isFloatParameter(i)) {
@@ -8955,50 +8971,41 @@ public class ScriptEvaluator {
           viewer.getMinimizer(true).setProperty("constraint",
               new Object[] { aList, new int[n], new Float(targetValue) });
         return;
-      case Token.silent:
-        isSilent = true;
-        break;
-      case Token.stop:
-      case Token.cancel:
-        checkLength(2);
-        if (isSyntaxCheck || minimizer == null)
-          return;
-        minimizer.setProperty(parameterAsString(i), null);
-        return;
-      case Token.fix:
-      case Token.fixed:
-        if (i != 1)
-          error(ERROR_invalidArgument);
-        BitSet bsFixed = expression(++i);
-        if (bsFixed.nextSetBit(0) < 0)
-          bsFixed = null;
-        checkLength(iToken + 1, 1);
-        if (!isSyntaxCheck)
-          viewer.getMinimizer(true).setProperty("fixed", bsFixed);
-        return;
+      case Token.criterion:
+        crit = floatParameter(++i);
+        continue;
       case Token.energy:
         steps = 0;
         continue;
-      case Token.addhydrogens:
-        addHydrogen = true;
-        continue;
-      case Token.step:
-      case Token.steps:
-        steps = intParameter(++i);
-        continue;
-      case Token.criterion:
-        crit = floatParameter(++i);
+      case Token.fixed:
+        if (i != 1)
+          error(ERROR_invalidArgument);
+        bsFixed = expression(++i);
+        if (bsFixed.nextSetBit(0) < 0)
+          bsFixed = null;
+        i = iToken;
+        if (!isSyntaxCheck)
+          viewer.getMinimizer(true).setProperty("fixed", bsFixed);
+        if (i + 1 == statementLength)
+          return;
         continue;
       case Token.select:
         bsSelected = expression(++i);
         i = iToken;
+        continue;
+      case Token.silent:
+        isSilent = true;
+        break;
+      case Token.step:
+      case Token.steps:
+        steps = intParameter(++i);
         continue;
       default:
         error(ERROR_invalidArgument);
         break;
       }
     if (!isSyntaxCheck)
-      viewer.minimize(steps, crit, bsSelected, addHydrogen, isSilent, false, 0);
+      viewer.minimize(steps, crit, bsSelected, bsFixed, 0, addHydrogen, isSilent, false);
   }
 
   private void select(int i) throws ScriptException {
@@ -10332,6 +10339,13 @@ public class ScriptEvaluator {
     viewer.setCurrentModelIndex(-1);
   }
 
+  private void fixed() throws ScriptException {
+    BitSet bs = (statementLength == 1 ? null : expression(1));
+    if (isSyntaxCheck)
+      return;
+    viewer.setMotionFixedAtoms(bs);
+  }
+  
   private void frame(int offset) throws ScriptException {
     boolean useModelNumber = true;
     // for now -- as before -- remove to implement

@@ -227,7 +227,7 @@ public class FileManager {
   }
 
   Object createAtomSetCollectionFromFiles(String[] fileNames,
-                                     StringBuffer loadScript, Hashtable htParams,
+                                     Hashtable htParams,
                                      boolean isAppend) {
     setLoadState(htParams);
     String[] fullPathNames = new String[fileNames.length];

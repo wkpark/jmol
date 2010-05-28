@@ -42,6 +42,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Tuple3f;
 
 /*
  * An abstract class always created using new ModelLoader(...)
@@ -69,8 +70,6 @@ abstract public class ModelSet extends ModelCollection {
 
   ////////////////////////////////////////////////////////////////
 
-  //protected Shape[] shapes;
-  
   protected void releaseModelSet() {
     models = null;
     closest[0] = null;
@@ -265,7 +264,7 @@ abstract public class ModelSet extends ModelCollection {
 
   protected final Atom[] closest = new Atom[1];
 
-  public int findNearestAtomIndex(int x, int y) {
+  public int findNearestAtomIndex(int x, int y, BitSet bsNot) {
     if (atomCount == 0)
       return -1;
     closest[0] = null;
@@ -273,8 +272,8 @@ abstract public class ModelSet extends ModelCollection {
       x <<= 1;
       y <<= 1;
     }
-    findNearestAtomIndex(x, y, closest);
-    viewer.findNearestShapeAtomIndex(x, y, closest);
+    findNearestAtomIndex(x, y, closest, bsNot);
+    shapeManager.findNearestShapeAtomIndex(x, y, closest, bsNot);
     int closestIndex = (closest[0] == null ? -1 : closest[0].index);
     closest[0] = null;
     return closestIndex;
@@ -768,6 +767,33 @@ abstract public class ModelSet extends ModelCollection {
     // must reset the shapes to give them new atom counts and arrays
     shapeManager.loadDefaultShapes(this);
     return bs;
+  }
+
+  public void setAtomCoordRelative(Tuple3f offset, BitSet bs) {
+    setAtomCoordRelative(bs, offset.x, offset.y, offset.z);
+    recalculatePositionDependentQuantities(bs);
+  }
+
+  public void setAtomCoord(BitSet bs, int tokType, Object xyzValues) {
+    super.setAtomCoord(bs, tokType, xyzValues);
+    switch(tokType) {
+    case Token.vibx:
+    case Token.viby:
+    case Token.vibz:
+    case Token.vibxyz:
+      break;
+    default:
+      recalculatePositionDependentQuantities(bs);
+    }
+  }
+
+  public void recalculatePositionDependentQuantities(BitSet bs) {
+    if (getHaveStraightness())
+      calculateStraightness();
+    recalculateLeadMidpointsAndWingVectors(-1);
+    BitSet bsModels = getModelBitSet(bs, false);
+    for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1))
+      shapeManager.refreshShapeTrajectories(i, viewer.getModelUndeletedAtomsBitSet(i));
   }
 
 }

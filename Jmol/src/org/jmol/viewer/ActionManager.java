@@ -759,7 +759,7 @@ public class ActionManager {
       break;
     }
     if (isBound) {
-      dragAtomIndex = viewer.findNearestAtomIndex(x, y);
+      dragAtomIndex = viewer.findNearestAtomIndex(x, y, true);
       if (dragAtomIndex >= 0
           && atomPickingMode == PICKING_ASSIGN_ATOM
           && viewer.isAtomAssignable(dragAtomIndex)) {
@@ -771,7 +771,7 @@ public class ActionManager {
     if (dragSelectedMode) {
       haveSelection = true;
       if (isSelectAndDrag) {
-        haveSelection = (viewer.findNearestAtomIndex(x, y) >= 0);
+        haveSelection = (viewer.findNearestAtomIndex(x, y, true) >= 0);
         // checkPointOrAtomClicked(x, y, mods, pressedCount, true);
       }
       if (isBound(action, ACTION_dragSelected) && haveSelection) {
@@ -921,9 +921,7 @@ public class ActionManager {
     bs = viewer.getAtomBits((viewer.isAtomPDB(dragAtomIndex) ? Token.group
         : Token.molecule), bs);
     viewer.stopMinimization();
-    float range = (atomPickingMode == PICKING_DRAG_MINIMIZE_MOLECULE ? JmolConstants.MINIMIZE_FIXED_RANGE
-        : 0);
-    viewer.minimize(Integer.MAX_VALUE, 0, bs, false, false, false, range);
+    viewer.minimize(Integer.MAX_VALUE, 0, bs, null, 0, false, false, false);
   }
 
   protected float getExitRate() {
@@ -1038,7 +1036,7 @@ public class ActionManager {
 
     if (dragAtomIndex >= 0 && isBound(action, ACTION_assignNew)
         && atomPickingMode == PICKING_ASSIGN_ATOM) {
-      int nearestAtomIndex = viewer.findNearestAtomIndex(x, y);
+      int nearestAtomIndex = viewer.findNearestAtomIndex(x, y, true);
       if (nearestAtomIndex >= 0) {
         if (measurementPending != null) {
           measurementPending.setCount(1);
@@ -1247,7 +1245,7 @@ public class ActionManager {
     if (nearestPoint != null && Float.isNaN(nearestPoint.x))
       return false;
     int nearestAtomIndex = (drawMode || nearestPoint != null ? -1 : viewer
-        .findNearestAtomIndex(x, y));
+        .findNearestAtomIndex(x, y, true));
     if (nearestAtomIndex >= 0
         && (clickedCount > 0 || measurementPending == null)
         && !viewer.isInSelectionSubset(nearestAtomIndex))

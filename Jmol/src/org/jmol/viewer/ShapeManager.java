@@ -315,11 +315,11 @@ public class ShapeManager {
     shapes[JmolConstants.SHAPE_LABELS].setProperty("label:"+strLabel, new Integer(i), null);
   }
   
-  public void findNearestShapeAtomIndex(int x, int y, Atom[] closest) {
+  public void findNearestShapeAtomIndex(int x, int y, Atom[] closest, BitSet bsNot) {
     if (shapes != null)
       for (int i = 0; i < shapes.length && closest[0] == null; ++i)
         if (shapes[i] != null)
-          shapes[i].findNearestAtomIndex(x, y, closest);
+          shapes[i].findNearestAtomIndex(x, y, closest, bsNot);
   }
 
   public void getShapeState(StringBuffer commands, boolean isAll) {

@@ -218,16 +218,16 @@ abstract public class JmolViewer extends JmolSimpleViewer {
    
   abstract public String openReader(String fullPathName, String fileName, Reader reader);
   
-  /**
-   * deprecated -- this method does not actually open the file
+  /*
+   * REMOVED -- this method does not actually open the file
    * 
    * @param fullPathName
    * @param fileName
    * @param clientFile
    * @deprecated
    */
-  abstract public void openClientFile(String fullPathName, String fileName,
-                             Object clientFile);
+//  abstract public void openClientFile(String fullPathName, String fileName,
+  //                           Object clientFile);
 
   abstract public void showUrl(String urlString);
 

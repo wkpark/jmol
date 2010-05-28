@@ -283,7 +283,7 @@ public abstract class Shape {
     return false;
   }
 
-  public void findNearestAtomIndex(int xMouse, int yMouse, Atom[] closest) {
+  public void findNearestAtomIndex(int xMouse, int yMouse, Atom[] closest, BitSet bsNot) {
   }
 
   public void checkBoundsMinMax(Point3f pointMin, Point3f pointMax) {

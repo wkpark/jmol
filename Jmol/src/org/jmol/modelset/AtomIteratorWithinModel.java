@@ -97,7 +97,7 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
   
   private int iNext;
   public boolean hasNext() {
-    if (false && atomIndex >= 0)
+    if (atomIndex >= 0)
       while (bsptIter.hasMoreElements()) {
         Atom a = (Atom) bsptIter.nextElement();
         if ((iNext = a.index) != atomIndex

@@ -167,6 +167,9 @@ public final class EnvelopeCalculation {
   
   private float maxRadius = 0;
   private boolean modelZeroBased;
+  private boolean disregardNeighbors = false;
+  private BitSet bsMySelected;
+  
 
   private FastBitSet[] dotsConvexMaps;
   public FastBitSet[] getDotsConvexMaps() {
@@ -192,9 +195,6 @@ public final class EnvelopeCalculation {
   public BitSet getBsSurfaceClone() {
     return BitSetUtil.copy(bsSurface);
   }
-  
-  private boolean disregardNeighbors = false;
-  private BitSet bsMySelected;
   
   public void setMads(short[] mads) {
     this.mads = mads;
@@ -224,6 +224,17 @@ public final class EnvelopeCalculation {
     radiusP = diameterP = 0;
     mads = null;
   }
+
+  public void reCalculate(BitSet bs) {
+    calculate(null, maxRadius, bs, bsIgnore, disregardNeighbors, onlySelectedDots, isSurface, multiModel); 
+  }  
+
+  
+  private BitSet bsIgnore;
+  private boolean onlySelectedDots;
+  private boolean isSurface;
+  private boolean multiModel;
+  
   
   /**
    * @param rd
@@ -242,7 +253,15 @@ public final class EnvelopeCalculation {
     // was: this.setRadius = (setRadius == Float.MAX_VALUE &&
     // !useVanderwaalsRadius ? SURFACE_DISTANCE_FOR_CALCULATION : setRadius);
 
-    atomData.radiusData = rd;
+    if (rd == null) {
+      rd = atomData.radiusData;
+    } else {
+      atomData.radiusData = rd;
+      this.bsIgnore = bsIgnore;
+      this.onlySelectedDots = onlySelectedDots;
+      this.multiModel = multiModel;
+      this.isSurface = isSurface;
+    }
     if (rd.value == Float.MAX_VALUE)
       rd.value = SURFACE_DISTANCE_FOR_CALCULATION;
     atomData.modelIndex = (multiModel ? -1 : 0);
@@ -261,8 +280,8 @@ public final class EnvelopeCalculation {
         : null);
     BitSetUtil.andNot(bsMySelected, bsIgnore);
     this.disregardNeighbors = disregardNeighbors;
-    bsSurface = new BitSet();
     this.maxRadius = maxRadius;
+    bsSurface = new BitSet();
     // now, calculate surface for selected atoms
     boolean isAll = (bsSelected == null);
     AtomIndexIterator iter = viewer.getSelectedAtomIterator(bsMySelected, false, modelZeroBased);
@@ -513,9 +532,8 @@ public final class EnvelopeCalculation {
       }
       neighborCenters[neighborCount] = atomData.atomXyz[indexN];
       neighborIndices[neighborCount] = indexN;
-      float neighborPlusProbeRadii = neighborRadius + radiusP;
-      neighborPlusProbeRadii2[neighborCount] = neighborPlusProbeRadii
-          * neighborPlusProbeRadii;
+      float r = neighborRadius + radiusP;
+      neighborPlusProbeRadii2[neighborCount] = r * r;
       neighborRadii2[neighborCount] = neighborRadius * neighborRadius;
       ++neighborCount;
     }
@@ -532,5 +550,6 @@ public final class EnvelopeCalculation {
     atomData.atomCount -= nAtomsDeleted;
     atomCount = atomData.atomCount;
     
-  }  
+  }
+
 }

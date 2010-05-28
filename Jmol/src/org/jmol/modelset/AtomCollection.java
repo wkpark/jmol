@@ -1092,10 +1092,12 @@ abstract public class AtomCollection {
    * A more general algorithm of recording which object drew
    * which pixel would be very expensive and not worth the trouble
    */
-  protected void findNearestAtomIndex(int x, int y, Atom[] closest) {
+  protected void findNearestAtomIndex(int x, int y, Atom[] closest, BitSet bsNot) {
     Atom champion = null;
     //int championIndex = -1;
     for (int i = atomCount; --i >= 0;) {
+      if (bsNot != null && bsNot.get(i))
+        continue;
       Atom contender = atoms[i];
       if (contender.isClickable()
           && isCursorOnTopOf(contender, x, y, minimumPixelSelectionRadius,

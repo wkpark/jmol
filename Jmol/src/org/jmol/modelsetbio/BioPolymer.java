@@ -348,10 +348,12 @@ public abstract class BioPolymer extends Polymer {
   private final Vector3f unitVectorX = new Vector3f(1, 0, 0);
 
   public void findNearestAtomIndex(int xMouse, int yMouse, Atom[] closest,
-                                   short[] mads, int myVisibilityFlag) {
+                                   short[] mads, int myVisibilityFlag, BitSet bsNot) {
     for (int i = monomerCount; --i >= 0;) {
-      if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0
-          || !monomers[i].getLeadAtom().isVisible(0))
+      if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0)
+        continue;
+      Atom a = monomers[i].getLeadAtom();
+      if (!a.isVisible(0) || bsNot != null && bsNot.get(a.index))
         continue;
       if (mads[i] > 0 || mads[i + 1] > 0)
         monomers[i].findNearestAtomIndex(xMouse, yMouse, closest, mads[i],

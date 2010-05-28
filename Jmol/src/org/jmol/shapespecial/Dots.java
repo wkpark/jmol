@@ -132,8 +132,7 @@ public class Dots extends AtomShape {
     }
 
     if ("refreshTrajectories" == propertyName) {
-      bsSelected = null;
-      setSize(0, bs);
+      ec.reCalculate(bs);
       return;
     }
 
@@ -281,10 +280,8 @@ public class Dots extends AtomShape {
       return "";
     StringBuffer s = new StringBuffer();
     Hashtable temp = new Hashtable();
-  //  Hashtable temp2 = new Hashtable();
     int atomCount = viewer.getAtomCount();
     String type = (isSurface ? "geoSurface " : "dots ");
-  //  boolean areOff = false;
     for (int i = 0; i < atomCount; i++) {
       if (dotsConvexMaps[i] == null || !bsOn.get(i))
         continue;

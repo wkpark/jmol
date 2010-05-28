@@ -54,7 +54,6 @@ public class Minimizer implements MinimizerInterface {
   public BitSet bsMinFixed;
   private int atomCount;
   private int bondCount;
-  private int atomCountFull;
   private int[] atomMap; 
  
   public int[][] angles;
@@ -68,6 +67,7 @@ public class Minimizer implements MinimizerInterface {
   private ForceField pFF;
   private String ff = "UFF";
   private BitSet bsTaint, bsSelected, bsAtoms;
+  private BitSet bsFixedDefault;
   private BitSet bsFixed;
   private BitSet bsAromatic;
   
@@ -76,7 +76,6 @@ public class Minimizer implements MinimizerInterface {
   private boolean isSilent;
   
   public Minimizer() {
-    System.out.println("minimi");
   }
 
   public void setProperty(String propertyName, Object value) {
@@ -96,7 +95,7 @@ public class Minimizer implements MinimizerInterface {
       return;
     }
     if (propertyName.equals("fixed")) {
-      bsFixed = (BitSet) value;
+      bsFixedDefault = (BitSet) value;
       return;
     }
     if (propertyName.equals("stop")) {
@@ -162,6 +161,7 @@ public class Minimizer implements MinimizerInterface {
     bsTaint = null;
     bsAtoms = null;
     bsFixed = null;
+    bsFixedDefault = null;
     bsMinFixed = null;
     bsSelected = null;
     constraints = null;
@@ -170,7 +170,8 @@ public class Minimizer implements MinimizerInterface {
     //  viewer = null;
   }
   
-  public boolean minimize(int steps, double crit, BitSet bsSelected, BitSet bsFixed, boolean forceSilent) {
+  public boolean minimize(int steps, double crit, BitSet bsSelected,
+                          BitSet bsFixed, boolean haveFixed, boolean forceSilent) {
     isSilent = (forceSilent || viewer.getBooleanProperty("minimizationSilent"));
     Object val;
     if (steps == Integer.MAX_VALUE) {
@@ -180,6 +181,11 @@ public class Minimizer implements MinimizerInterface {
     }
     this.steps = steps;
 
+    // if the user indicated minimize ... FIX ... or we don't have any defualt,
+    // use the bsFixed coming in here, which is set to "nearby and in frame" in that case. 
+    // and if something is fixed, then AND it with "nearby and in frame" as well.
+    if (!haveFixed && bsFixedDefault != null)
+      bsFixed.and(bsFixedDefault);
     if (crit <= 0) {
       val = viewer.getParameter("minimizationCriterion");
       if (val != null && val instanceof Float)
@@ -198,27 +204,21 @@ public class Minimizer implements MinimizerInterface {
       Logger.error(GT._("Could not get class for force field {0}", ff));
       return false;
     }
-    if (atoms == null) {
-      atomCountFull = viewer.getAtomCount();
-      atoms = viewer.getModelSet().atoms;
-    }
-    bsAtoms = BitSetUtil.copy(bsSelected);
-    if (bsFixed != null)
-      bsAtoms.or(bsFixed);
-    atomCount = BitSetUtil.cardinalityOf(bsAtoms);
-    if (atomCount == 0) {
+    if (bsSelected.cardinality() == 0) {
       Logger.error(GT._("No atoms selected -- nothing to do!"));
       return false;
     }
+    atoms = viewer.getModelSet().atoms;
+    bsAtoms = BitSetUtil.copy(bsSelected);
+    if (bsFixed != null)
+      bsAtoms.or(bsFixed);
+    atomCount = bsAtoms.cardinality();
 
     boolean sameAtoms = BitSetUtil.areEqual(bsSelected, this.bsSelected);
-    System.out.println(sameAtoms);
-    System.out.println(Escape.escape(bsSelected) + "\n" + Escape.escape(this.bsSelected));
     this.bsSelected = bsSelected;
     if (!sameAtoms)
       bsAromatic = null;
-    if ((!sameAtoms
-        || !BitSetUtil.areEqual(bsFixed, this.bsFixed))
+    if ((!sameAtoms || !BitSetUtil.areEqual(bsFixed, this.bsFixed))
         && !setupMinimization()) {
       clear();
       return false;
@@ -266,7 +266,7 @@ public class Minimizer implements MinimizerInterface {
     // add all atoms
 
     coordSaved = null;
-    atomMap = new int[atomCountFull];
+    atomMap = new int[atoms.length];
     minAtoms = new MinAtom[atomCount];
     int elemnoMax = 0;
     BitSet bsElements = new BitSet();
@@ -352,10 +352,10 @@ public class Minimizer implements MinimizerInterface {
       else if (search == null)
         break;
       else
-        for (int j = bsAtoms.nextSetBit(0), pt = 0; j < atomCountFull && j >= 0; j = bsAtoms.nextSetBit(j + 1)) {
+        for (int j = bsAtoms.nextSetBit(0), pt = 0; j < atoms.length && j >= 0; j = bsAtoms.nextSetBit(j + 1)) {
             if (search.get(j)) {
               minAtoms[pt].type = data[1].intern();
-              System.out.println("pt=" +pt + " UFF type=" + data[1]);
+              //System.out.println("pt=" +pt + " UFF type=" + data[1]);
             }
             pt++;
           }

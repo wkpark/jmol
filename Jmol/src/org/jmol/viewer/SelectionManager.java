@@ -47,6 +47,7 @@ class SelectionManager {
 
   private final BitSet bsHidden = new BitSet();
   private final BitSet bsSelection = new BitSet();
+  private final BitSet bsFixed = new BitSet();
 
   BitSet bsSubset; // set in Eval and only pointed to here
   private BitSet bsDeleted;
@@ -64,6 +65,7 @@ class SelectionManager {
     hide(null, true);
     setSelectionSubset(null);
     bsDeleted = null;
+    setMotionFixedAtoms(null);
   }
 
   void hide(BitSet bs, boolean isQuiet) {
@@ -249,6 +251,8 @@ class SelectionManager {
       StateManager.appendCmd(commands, "subset " + Escape.escape(bsSubset));
     if (bsDeleted != null && bsDeleted.length() > 0)
       StateManager.appendCmd(commands, "delete " + Escape.escape(bsDeleted));
+    if (bsFixed.length() > 0)
+      StateManager.appendCmd(commands, "fix " + Escape.escape(bsFixed));
     String cmd = null;
     Hashtable temp = new Hashtable();
     temp.put("-", bsSelection);
@@ -267,7 +271,7 @@ class SelectionManager {
     return commands.toString();
   }
 
-  public int deleteAtoms(BitSet bs) {
+  int deleteAtoms(BitSet bs) {
     BitSet bsNew = BitSetUtil.copy(bs);
     if (bsDeleted == null) {
       bsDeleted = bsNew;
@@ -288,7 +292,7 @@ class SelectionManager {
     return bsSelection;
   }
 
-  public BitSet getSelectionSubset() {
+  BitSet getSelectionSubset() {
     return bsSubset;
   }
 
@@ -299,15 +303,27 @@ class SelectionManager {
       bs.and(bsSubset);
   }
 
-  public void processDeletedModelAtoms(BitSet bsAtoms) {
+  void processDeletedModelAtoms(BitSet bsAtoms) {
     if (bsDeleted != null)
       BitSetUtil.deleteBits(bsDeleted, bsAtoms);
     if (bsSubset != null)
       BitSetUtil.deleteBits(bsSubset, bsAtoms);
+    BitSetUtil.deleteBits(bsFixed, bsAtoms);
     BitSetUtil.deleteBits(bsHidden, bsAtoms);
     BitSet bs = BitSetUtil.copy(bsSelection);
     BitSetUtil.deleteBits(bs, bsAtoms);
     setSelectionSet(bs);
+  }
+
+  void setMotionFixedAtoms(BitSet bs) {
+    if (bs == null)
+      bsFixed.clear();
+    else
+      bsFixed.or(bs);
+  }
+
+  BitSet getMotionFixedAtoms() {
+    return bsFixed;
   }
 
 }

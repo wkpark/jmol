@@ -239,10 +239,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if ("modelIndex" == propertyName) {
       if (!iHaveModelIndex) {
         modelIndex = ((Integer) value).intValue();
-        sg.setModelIndex(Math.abs(modelIndex));
         isFixed = (modelIndex < 0);
+        sg.setModelIndex(Math.abs(modelIndex));
       }
-      isFixed = (modelIndex < 0);
       return;
     }
 
@@ -424,7 +423,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       if (script != null && !(iHaveBitSets = getScriptBitSets(script, null)))
         sg.setParameter("select", bs);
       initializeIsosurface();
-      sg.setModelIndex(modelIndex);
+      sg.setModelIndex(isFixed ? -1 : modelIndex);
       return;
     }
 
@@ -667,7 +666,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       modelIndex = viewer.getCurrentModelIndex();
     isFixed = (modelIndex < 0);
     if (modelIndex < 0)
-      modelIndex = 0;
+      modelIndex = 0; // but note that modelIndex = -1
+    // is critical for surfaceGenerator. Setting this equal to 
+    // 0 indicates only surfaces for model 0.
     title = null;
     explicitContours = false;
     atomIndex = -1;

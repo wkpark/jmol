@@ -243,11 +243,12 @@ public class Token {
   public final static int define       = 2 | atomExpressionCommand | expression;
   public final static int delete       = 3 | atomExpressionCommand;
   final static int display      = 4 | atomExpressionCommand | deprecatedparam;
-  final static int hide         = 5 | atomExpressionCommand;
-  final static int restrict     = 6 | atomExpressionCommand;
+  final static int fixed        = 5 | atomExpressionCommand | expression; // Jmol 12.0.RC15
+  final static int hide         = 6 | atomExpressionCommand;
+  final static int restrict     = 7 | atomExpressionCommand;
 //final static int select       see mathfunc
-  final static int subset       = 7 | atomExpressionCommand | predefinedset;
-  final static int zap          = 8 | atomExpressionCommand | expression;
+  final static int subset       = 8 | atomExpressionCommand | predefinedset;
+  final static int zap          = 9 | atomExpressionCommand | expression;
 
   final static int print        = 1 | mathExpressionCommand;
   final static int returncmd    = 2 | mathExpressionCommand;
@@ -291,8 +292,8 @@ public class Token {
 //final static int data         see mathfunc
   final static int delay        = scriptCommand | 12 | defaultON;
   final static int depth        = scriptCommand | 13 | defaultON;
-  final static int exit         = scriptCommand | 17 | noArgs;
-  final static int exitjmol     = scriptCommand | 18 | noArgs;
+  final static int exit         = scriptCommand | 14 | noArgs;
+  final static int exitjmol     = scriptCommand | 17 | noArgs;
 //final static int file         see intproperty
   final static int font         = scriptCommand | 19;
   final static int frame        = scriptCommand | 20;
@@ -1032,8 +1033,6 @@ public class Token {
   public final static int fill    = misc  | 114;
   final static int filter         = misc  | 116;// new
   public final static int first   = misc  | 118;// new
-  final static int fix            = misc  | 119;// new
-  final static int fixed          = misc  | 120;// new
   final static int fixedtemp      = misc  | 122;
   final static int flat           = misc  | 124;// new
   final static int fps            = misc  | 126 | expression;// new
@@ -1849,8 +1848,8 @@ public class Token {
       "facecenteroffset",new Token(facecenteroffset),
       "filter",          new Token(filter),
       "first",           new Token(first),
-      "fix",             new Token(fix),
       "fixed",           new Token(fixed),
+      "fix",             null,
       "flat",            new Token(flat),
       "fps",             new Token(fps),
       "from",            new Token(from),

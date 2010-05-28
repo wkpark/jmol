@@ -132,7 +132,7 @@ abstract class TransformManager {
         matrixRotate.set(m);
     //}
     setZoomEnabled(true);
-    zoomToPercent(100);
+    zoomToPercent(viewer.isModelkitMode() ? 50 : 100);
     zoomPercent = zoomPercentSetting;
     slabReset();
     scaleFitToScreen(true);

@@ -651,10 +651,10 @@ public final class ModelLoader extends ModelSet {
                        float vectorX, float vectorY, float vectorZ,
                        char alternateLocationID, float radius) {
     checkNewGroup(chainID, group3, groupSequenceNumber, groupInsertionCode);
-    if (isPDB && atomName.indexOf('*') >= 0)
-      atomName = atomName.replace('*', '\'');
     byte specialAtomID = 0;
     if (atomName != null) {
+      if (isPDB && atomName.indexOf('*') >= 0)
+        atomName = atomName.replace('*', '\'');
       specialAtomID = JmolConstants.lookupSpecialAtomID(atomName);
       if (isPDB && specialAtomID == JmolConstants.ATOMID_ALPHA_CARBON
           && "CA".equalsIgnoreCase(group3))

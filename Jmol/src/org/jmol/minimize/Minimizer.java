@@ -568,11 +568,9 @@ Token[keyword(0x880001) value=")"]
     case 'A': // amide/allylic (also just plain C=X)
       search = tokenTypes[TOKEN_ELEMENT_ALLYLIC];
       break;
-    }
+    } 
     search[PT_ELEMENT].intValue = elemNo;
     Object v = viewer.evaluateExpression(search);
-    if (Logger.debugging && !v.toString().equals("{}"))
-      Logger.debug(smarts + " minimize atoms=" + v.toString());
     if (!(v instanceof BitSet))
       return null;
     BitSet bs = (BitSet) v;
@@ -581,6 +579,8 @@ Token[keyword(0x880001) value=")"]
         bsAromatic = (BitSet) viewer.evaluateExpression(tokenTypes[TOKEN_AROMATIC]);
       bs.and(bsAromatic);
     }
+    if (Logger.debugging && bs.cardinality() > 0)
+      Logger.debug(smarts + " minimize atoms=" + bs);
     return bs;
   }
   

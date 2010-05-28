@@ -1756,7 +1756,7 @@ public class ActionManager {
       if (isBound(action, ACTION_assignNew)) {
         // only for rings
         bs = viewer.getAtomBitSet("connected(atomIndex=" + atomIndex
-            + ") and !within(SMARTS,'[R]')");
+            + ") and !within(SMARTS,'[r50,R]')");
         if (bs.cardinality() > 2)
           return;
         viewer.undoAction(true, atomIndex, AtomCollection.TAINT_COORD);

@@ -1930,7 +1930,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     } else if (isString) {
       strModel = modelSet.getInlineData(-1);
       if (strModel == null)
-        return "cannot find string data";
+        if (isModelkitMode())
+          strModel = JmolConstants.MODELKIT_ZAP_STRING;
+        else
+         return "cannot find string data";
     }
     if (strModel != null) {
       if (!isAppend)
@@ -4294,6 +4297,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         bsB = (asScript ? modelSet.addHydrogens(vConnections, pts)
             : addHydrogensInline(bsAtoms, vConnections, pts));
       } catch (Exception e) {
+        e.printStackTrace();
         // ignore
       }
       if (wasAppendNew)
@@ -4611,7 +4615,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void popupMenu(int x, int y, char type) {
-    if (isPreviewOnly || global.disablePopupMenu)
+    if (!haveDisplay || !refreshing || isPreviewOnly || global.disablePopupMenu)
       return;
     switch (type) {
     case 'j':
@@ -8854,23 +8858,25 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       actionManager.setBondPickingOption(option);
   }
 
-  private final static int MAX_ACTION_UNDO = 25;
+  private final static int MAX_ACTION_UNDO = 100;
   private final Vector actionStates = new Vector();
   private final Vector actionStatesRedo = new Vector();
   private int lastUndoRedo = 0;
   
   void undoAction(boolean isSave, int taintedAtom, int type) {
-    //System.out.println("REDO:" + actionStatesRedo.size());
-    //System.out.println("UNDO:" + actionStates.size());
-
     if (!isSave) {
       stopMinimization();
       String s;
       if (lastUndoRedo != 0 && lastUndoRedo != type) {
-        if (type == -1)
+        try {
+        if (type == -1) {
           actionStates.add(0, actionStatesRedo.remove(0));
-        else
+        } else {
           actionStatesRedo.add(0, actionStates.remove(0));
+        }
+        } catch (Exception e) {
+         System.out.println("oops"); // ignore
+        }
       }
       lastUndoRedo = type;
       if (type == -1) {
@@ -8878,7 +8884,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           return;
         s = (String) actionStatesRedo.remove(0);
         actionStates.add(0, s);
-      } else if (actionStates.size()== 0) {
+      } else if (actionStates.size() == 0) {
         return;
       } else {
         s = (String) actionStates.remove(0);
@@ -8900,8 +8906,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       sb.append("zap ");
       sb.append(Escape.escape(bs)).append(";");
       DataManager.getInlineData(sb, modelSet.getModelExtract(bs, false), true);
-      sb.append(actionManager.getPickingState()).append(
-          transformManager.getMoveToText(0, false));
+      sb.append("set refreshing false;")
+          .append(actionManager.getPickingState()).append(
+              transformManager.getMoveToText(0, false)).append(
+              "set refreshing true;");
+
     }
     actionStates.add(0, sb.toString());
     if (actionStates.size() == MAX_ACTION_UNDO)

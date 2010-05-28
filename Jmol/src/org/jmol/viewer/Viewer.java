@@ -95,6 +95,7 @@ import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
 
 import java.net.URL;
+import java.net.URLEncoder;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -105,6 +106,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 
 /*
  * 
@@ -4203,12 +4205,19 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.defaultLoadScript;
   }
 
-  public Object setLoadFormat(String name, char type) {
+  public Object setLoadFormat(String name, char type, boolean withPrefix) {
     String f = name.substring(1);
     switch(type) {
     case '=':
+      return TextFormat.formatString(global.loadFormat, "FILE", f);
     case '$':
-      return TextFormat.formatString(type == '=' ? global.loadFormat : global.smilesUrlFormat, "FILE", f);
+      try {
+          f = URLEncoder.encode(f, "US-ASCII");
+        } catch (UnsupportedEncodingException e) {
+          // 
+        }
+      return (withPrefix ? "MOL::" : "") 
+        + TextFormat.formatString(global.smilesUrlFormat, "FILE", f);
     case '_': // isosurface "=...", but we code that type as '-'
       String server = FileManager.fixFileNameVariables(global.edsUrlFormat, f);
       String strCutoff = FileManager.fixFileNameVariables(global.edsUrlCutoff, f);      

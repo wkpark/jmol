@@ -14872,7 +14872,7 @@ public class ScriptEvaluator {
         boolean firstPass = (!surfaceObjectSeen && !planeSeen);
         if (filename.startsWith("=") && filename.length() > 1) {
           // Uppsala Electron Density Server (default, at least)
-          String[] info = (String[]) viewer.setLoadFormat(filename, '_');
+          String[] info = (String[]) viewer.setLoadFormat(filename, '_', false);
           filename = info[0];
           String strCutoff = (!firstPass || !Float.isNaN(cutoff) ? null : info[1]);
           if (strCutoff != null) {

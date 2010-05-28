@@ -215,6 +215,10 @@ public class MolReader extends AtomSetCollectionReader {
       int atomIndex2 = parseInt(line, 3, 6);
       int order = parseInt(line, 6, 9);
       switch (order) {
+      case 0:
+      case -10:
+        order = 1; // smiles parser error 
+        break;
       case 1:
         if (is2D)
           switch (line.length() >= 12 ? parseInt(line.substring(9, 12)) : 0) {

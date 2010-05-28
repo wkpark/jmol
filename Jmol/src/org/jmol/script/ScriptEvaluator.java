@@ -7464,6 +7464,7 @@ public class ScriptEvaluator {
     boolean isAppend = false;
     boolean appendNew = viewer.getAppendNew();
     boolean isInline = false;
+    boolean isSmiles = false;
     boolean doLoadFiles = (!isSyntaxCheck || isCmdLine_C_Option);
     String filter = null;
     Vector firstLastSteps = null;
@@ -7502,6 +7503,7 @@ public class ScriptEvaluator {
         loadScript.append(" " + modelName);
         isAppend = (modelName.equalsIgnoreCase("append"));
         isInline = (modelName.equalsIgnoreCase("inline"));
+        isSmiles = (modelName.equalsIgnoreCase("smiles"));
         tokType = (Parser.isOneOf(modelName.toLowerCase(),
             JmolConstants.LOAD_ATOM_DATA_TYPES) ? Token
             .getTokFromName(modelName.toLowerCase()) : 0);
@@ -7581,6 +7583,8 @@ public class ScriptEvaluator {
             loadScript.append(" /*file*/").append(Escape.escape(filenames[j]));
         }
       }
+      if (isSmiles)
+        filename = "$" + filename;
     } else if (getToken(i + 1).tok == Token.leftbrace
         || theTok == Token.point3f || theTok == Token.integer
         || theTok == Token.manifest || theTok == Token.packed
@@ -7777,7 +7781,7 @@ public class ScriptEvaluator {
       else
         htParams.put("OutputStream", os);
     }
-      
+
     if (filenames == null && tokType == 0) {
       // a single file or string -- complete the loadScript
       loadScript.append(" ");
@@ -7797,7 +7801,7 @@ public class ScriptEvaluator {
 
     if (!isSyntaxCheck)
       viewer.setCursor(Viewer.CURSOR_WAIT);
-    
+
     errMsg = viewer.loadModelFromFile(null, filename, filenames, null,
         isAppend, htParams, loadScript, tokType);
     if (os != null)
@@ -7838,14 +7842,14 @@ public class ScriptEvaluator {
       viewer.setCurrentModelIndex(modelCount);
     }
     if (logMessages)
-      scriptStatusOrBuffer("Successfully loaded:" + 
-          (filenames == null ? htParams.get("fullPathName")
-             : modelName));
+      scriptStatusOrBuffer("Successfully loaded:"
+          + (filenames == null ? htParams.get("fullPathName") : modelName));
     String script = viewer.getDefaultLoadScript();
     String msg = "";
     if (script.length() > 0)
       msg += "\nUsing defaultLoadScript: " + script;
-    String embeddedScript = (String) viewer.getModelSetAuxiliaryInfo().remove("jmolscript");
+    String embeddedScript = (String) viewer.getModelSetAuxiliaryInfo().remove(
+        "jmolscript");
     if (embeddedScript != null && viewer.getAllowEmbeddedScripts()) {
       msg += "\nAdding embedded #jmolscript: " + embeddedScript;
       script += ";" + embeddedScript;
@@ -7855,7 +7859,8 @@ public class ScriptEvaluator {
     }
     if (msg.length() > 0)
       Logger.info(msg);
-    String siteScript = (String) viewer.getModelSetAuxiliaryInfo().remove("sitescript");
+    String siteScript = (String) viewer.getModelSetAuxiliaryInfo().remove(
+        "sitescript");
     if (siteScript != null)
       script = siteScript + ";" + script;
     if (script.length() > 0 && !isCmdLine_c_or_C_Option)
@@ -14867,15 +14872,10 @@ public class ScriptEvaluator {
         boolean firstPass = (!surfaceObjectSeen && !planeSeen);
         if (filename.startsWith("=") && filename.length() > 1) {
           // Uppsala Electron Density Server (default, at least)
-          String[] info = viewer.getElectronDensityLoadInfo();
-          String server = info[0];
-          // String option = (!firstPass || ptWithin > 0 ? null : info[1]);
-          String strCutoff = (isSyntaxCheck || !firstPass
-              || !Float.isNaN(cutoff) ? null : info[1]);
-          String f = filename.substring(1);
-          filename = FileManager.fixFileNameVariables(server, f);
+          String[] info = (String[]) viewer.setLoadFormat(filename, '_');
+          filename = info[0];
+          String strCutoff = (!firstPass || !Float.isNaN(cutoff) ? null : info[1]);
           if (strCutoff != null) {
-            strCutoff = FileManager.fixFileNameVariables(strCutoff, f);
             cutoff = ScriptVariable.fValue(ScriptVariable.getVariable(viewer
                 .evaluateExpression(strCutoff)));
             if (cutoff > 0) {

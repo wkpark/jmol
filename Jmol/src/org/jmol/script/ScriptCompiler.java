@@ -57,7 +57,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
    * String characters --> Token token --> Vector ltoken[] --> Token[][] aatokenCompiled[][]
    * 
    */
-  private static final String LOAD_TYPES = "append;data;files;inline;menu;trajectory;models;" + JmolConstants.LOAD_ATOM_DATA_TYPES;
+  private static final String LOAD_TYPES = "append;data;files;inline;menu;smiles;trajectory;models;" + JmolConstants.LOAD_ATOM_DATA_TYPES;
   
   public ScriptCompiler(Viewer viewer) {
     this.viewer = viewer;
@@ -916,7 +916,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         strFormat = strFormat.toLowerCase();
         if (Parser.isOneOf(strFormat, LOAD_TYPES))
           addTokenToPrefix(new Token(Token.identifier, strFormat));
-        else if (strFormat.indexOf("=") == 0) {
+        else if (strFormat.indexOf("=") == 0 || strFormat.indexOf("$") == 0) {
           addTokenToPrefix(new Token(Token.string, strFormat));
           iHaveQuotedString = true;
         }
@@ -1888,16 +1888,19 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     return sb.toString();
   }
 
-  //  static String[] loadFormats = { "append", "files", "trajectory", "menu", "models",
-  //  /*ancient:*/ "alchemy", "mol2", "mopac", "nmrpdb", "charmm", "xyz", "mdl", "pdb" };
+  // static String[] loadFormats = { "append", "files", "trajectory", "menu",
+  // "models",
+  // /*ancient:*/ "alchemy", "mol2", "mopac", "nmrpdb", "charmm", "xyz", "mdl",
+  // "pdb" };
 
   private boolean lookingAtLoadFormat() {
-    // just allow a simple word or =xxxx
+    // just allow a simple word or =xxxx or $CCCC
     int ichT = ichToken;
     char ch = '\0';
+    boolean allchar = (ichT < cchScript && ((ch = script.charAt(ichT)) == '$' || ch == '='));
     while (ichT < cchScript
-        && ((ch = script.charAt(ichT)) == '=' && ichT == ichToken 
-            || Character.isLetterOrDigit(ch)))
+        && (Character.isLetterOrDigit(ch = script.charAt(ichT)) || allchar
+            && (!eol(ch) && !Character.isWhitespace(ch))))
       ++ichT;
     if (ichT == ichToken || !eol(ch) && !isSpaceOrTab(ch))
       return false;

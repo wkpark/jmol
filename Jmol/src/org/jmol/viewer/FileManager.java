@@ -204,6 +204,8 @@ public class FileManager {
                                     StringBuffer loadScript, boolean isAppend) {
     if (htParams.get("atomDataOnly") == null)
       setLoadState(htParams);
+    if (name.indexOf("=") == 0 || name.indexOf('$') == 0)
+      name = (String) viewer.setLoadFormat(name, name.charAt(0));
     int pt = name.indexOf("::");
     nameAsGiven = (pt >= 0 ? name.substring(pt + 2) : name);
     String fileType = (pt >= 0 ? name.substring(0, pt) : null);
@@ -797,9 +799,8 @@ public class FileManager {
     File file = null;
     URL url = null;
     String[] names = null;
-    if (name.indexOf("=") == 0)
-      name = TextFormat.formatString(viewer.getLoadFormat(), "FILE", name
-          .substring(1));
+    if (name.indexOf("=") == 0 || name.indexOf('$') == 0)
+      name = (String) viewer.setLoadFormat(name, name.charAt(0));
     if (name.indexOf(":") < 0 && name.indexOf("/") != 0)
       name = addDirectory(viewer.getDefaultDirectory(), name);
     if (appletDocumentBase != null) {
@@ -1197,10 +1198,17 @@ public class FileManager {
               : (String) t);
         }
       }
-      if (reader != null)
+      if (reader != null) {
         atomSetCollection = viewer.getModelAdapter()
             .getAtomSetCollectionFromReader(fullPathNameIn, fileTypeIn, reader,
                 htParams);
+        try {
+          
+          reader.close();
+        } catch (IOException e) {
+          // ignore
+        }
+      }
       if (errorMessage != null) {
         if (!errorMessage.startsWith("NOTE:"))
           Logger.error("file ERROR: " + fullPathNameIn + "\n" + errorMessage);

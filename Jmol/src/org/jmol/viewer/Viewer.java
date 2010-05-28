@@ -4203,8 +4203,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.defaultLoadScript;
   }
 
-  String getLoadFormat() {
-    return global.loadFormat;
+  public Object setLoadFormat(String name, char type) {
+    String f = name.substring(1);
+    switch(type) {
+    case '=':
+    case '$':
+      return TextFormat.formatString(type == '=' ? global.loadFormat : global.smilesUrlFormat, "FILE", f);
+    case '_': // isosurface "=...", but we code that type as '-'
+      String server = FileManager.fixFileNameVariables(global.edsUrlFormat, f);
+      String strCutoff = FileManager.fixFileNameVariables(global.edsUrlCutoff, f);      
+      return new String[] { server, strCutoff };
+    }
+    return name.substring(1);
   }
 
   public String[] getElectronDensityLoadInfo() {

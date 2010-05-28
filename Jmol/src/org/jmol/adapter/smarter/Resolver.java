@@ -1023,6 +1023,13 @@ class LimitedLineReader {
 
   LimitedLineReader(BufferedReader bufferedReader, int readLimit)
     throws Exception {
+    // It appears that some web servers cannot handle this. 
+    // All I know is that the Indiana University smi23d server
+    // returns only one char the SECOND time this is run. 
+    // for some reason the URL connection is not closing?
+    // but the problem only occurs when this limited buffer is used;
+    // when you use MOL:: in front of the filename, then it is fine.
+    // So we do that...
     bufferedReader.mark(readLimit);
     buf = new char[readLimit];
     cchBuf = Math.max(bufferedReader.read(buf), 0);

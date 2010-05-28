@@ -583,7 +583,7 @@ public class StateManager {
         + ";axis3color;backgroundcolor;backgroundmodel;bondsymmetryatoms;boundboxcolor;cameradepth"
         + ";debug;debugscript;defaultlatttice;defaults;diffusepercent;exportdrivers"
         + ";_filecaching;_filecache;fontcaching;fontscaling;language;loglevel;measureStyleChime"
-        + ";loadformat;edsurlformat;edsurlcutoff;multiprocessor;navigationmode;"
+        + ";loadformat;smilesurlformat;edsurlformat;edsurlcutoff;multiprocessor;navigationmode;"
         + ";perspectivedepth;phongexponent;perspectivemodel;preservestate;refreshing;repaintwaitms;rotationradius"
         + ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showunitcell"
         + ";slabenabled;zshade;zshadepower;specular;specularexponent;specularpercent;specularpower;stateversion"
@@ -925,6 +925,7 @@ public class StateManager {
       setParameterValue("slabByAtom", slabByAtom);
       setParameterValue("smartAromatic", smartAromatic);
       setParameterValue("smallMoleculeMaxAtoms", smallMoleculeMaxAtoms);
+      setParameterValue("smilesUrlFormat", smilesUrlFormat);
       setParameterValue("solventProbe", solventOn);
       setParameterValue("solventProbeRadius", solventProbeRadius);
       setParameterValue("specular", specular);
@@ -994,7 +995,8 @@ public class StateManager {
 //    String _fileCache = "";
     boolean forceAutoBond = false;
     char inlineNewlineChar = '|'; //pseudo static
-    String loadFormat = "http://www.rcsb.org/pdb/files/%FILE.pdb";
+    String loadFormat = "PDB::http://www.rcsb.org/pdb/files/%FILE.pdb";
+    String smilesUrlFormat = "MOL::http://cheminfo.informatics.indiana.edu/rest/thread/d3.py/SMILES/%FILE";
     String edsUrlFormat = "http://eds.bmc.uu.se/eds/dfs/%LC13/%LCFILE/%LCFILE.omap";
     String edsUrlCutoff = "load('http://eds.bmc.uu.se/eds/dfs/%LC13/%LCFILE/%LCFILE.sfdat').lines.find('MAP_SIGMA').split(' ')[2]";
     String edsUrlOptions = "within 2.0 {*}";
@@ -1047,6 +1049,7 @@ public class StateManager {
       appendCmd(str, "set forceAutoBond " + forceAutoBond);
       appendCmd(str, "#set defaultLoadFilter " + Escape.escape(defaultLoadFilter)) ;
       appendCmd(str, "#set loadFormat " + Escape.escape(loadFormat));
+      appendCmd(str, "#set smilesUrlFormat " + Escape.escape(smilesUrlFormat));
       appendCmd(str, "#set edsUrlFormat " + Escape.escape(edsUrlFormat));
       appendCmd(str, "#set edsUrlCutoff " + Escape.escape(edsUrlCutoff));
 //      if (autoLoadOrientation)

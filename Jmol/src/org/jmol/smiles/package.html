@@ -234,7 +234,7 @@ includes:
    [connection] == { [branch] | [bond] [node] } [connections]
    [branch] == "(" [smarts] ")" 
    [node] == { [atomExpression] | [ringPointer] }
-   [ringPointer] == { "%" [digits] | [digit] }
+   [ringPointer] == { "%" [digit][digit] | [digit] }
       # note: all ringPointers must have a second matching ringPointer 
       #       and must be preceded by an atomExpression or 
    [bond] == { "-" | "=" | "#" | "." | "/" | "\\" | ":" | "~" | "@" | NULL

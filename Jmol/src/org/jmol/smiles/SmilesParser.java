@@ -268,10 +268,11 @@ public class SmilesParser {
       switch (ch) {
       case '%':
         // [ringPoint]
-        index = getDigits(pattern, index + 1, ret);
-        if ((ringNumber = ret[0]) < 1)
+        if (index + 3 <= pattern.length())
+          index = getDigits(pattern.substring(0, index + 3), index + 1, ret);
+        if ((ringNumber = ret[0]) < 10)
           throw new InvalidSmilesException(
-              "Ring number > 0 must follow the % sign");
+              "Two digits must follow the % sign");
         break;
       default:
         ringNumber = ch - '0';

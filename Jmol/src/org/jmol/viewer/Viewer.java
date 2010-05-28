@@ -4213,6 +4213,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case '$':
       try {
           f = URLEncoder.encode(f, "US-ASCII");
+          f = TextFormat.simpleReplace(f, "%2F", "/");
         } catch (UnsupportedEncodingException e) {
           // 
         }

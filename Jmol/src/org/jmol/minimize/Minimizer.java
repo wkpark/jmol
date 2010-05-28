@@ -397,7 +397,7 @@ public class Minimizer implements MinimizerInterface {
   private final static int TOKEN_ELEMENT_CONNECTED = 2;
   private final static int TOKEN_AROMATIC = 3;
   private final static int TOKEN_ELEMENT_SP = 4;
-  private final static int TOKEN_ELEMENT_SP2 = 5;
+ // private final static int TOKEN_ELEMENT_SP2 = 5;
   private final static int TOKEN_ELEMENT_ALLYLIC = 6;
   
   /*

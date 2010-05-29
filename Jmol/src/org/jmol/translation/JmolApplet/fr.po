@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-05-27 20:44+0200\n"
-"PO-Revision-Date: 2010-05-19 03:02+0000\n"
-"Last-Translator: Tognu <jaalvarez@ipn.mx>\n"
+"PO-Revision-Date: 2010-05-28 20:45+0000\n"
+"Last-Translator: Nicolas Delvaux <Unknown>\n"
 "Language-Team: French <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-05-19 18:52+0000\n"
+"X-Launchpad-Export-Date: 2010-05-29 08:36+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: France\n"
 "X-Poedit-Language: French\n"
@@ -147,7 +147,8 @@ msgid "Check"
 msgstr "Vérifier"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Retourner en haut"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -496,21 +497,20 @@ msgid "could not setup force field {0}"
 msgstr "Impossible d''installer le champ de force {0}"
 
 #: org/jmol/modelkit/ModelKitPopup.java:75
-#, fuzzy
 msgid "Element?"
-msgstr "Elément"
+msgstr "Élément?"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:77
 msgid "new"
-msgstr ""
+msgstr "Nouveau"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:78
 msgid "undo (CTRL-Z)"
-msgstr ""
+msgstr "Annuler (CTRL-Z)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:79
 msgid "redo (CTRL-Y)"
-msgstr ""
+msgstr "Rétablir (CTRL-Y)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:80
 #: org/jmol/viewer/ActionManager.java:56
@@ -518,52 +518,44 @@ msgid "center"
 msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:81
-#, fuzzy
 msgid "add hydrogens"
-msgstr "Afficher les Hydrogènes"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:82
-#, fuzzy
 msgid "minimize"
-msgstr "Réduire"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:83
 msgid "fix hydrogens and minimize"
 msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:84
-#, fuzzy
 msgid "clear"
-msgstr "Effacer"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:85
-#, fuzzy
 msgid "save file"
-msgstr "Sauvegarder"
+msgstr "Sauvegardez le fichier"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:86
-#, fuzzy
 msgid "save state"
-msgstr "Etat courant"
+msgstr "sauvegardez l'état"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:87
-#, fuzzy
 msgid "delete atom"
-msgstr "Sélectionner atome"
+msgstr "Effacez l'atome"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:88
-#, fuzzy
 msgid "drag to bond"
-msgstr "rotation"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:89
 msgid "drag atom"
 msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:90
-#, fuzzy
 msgid "drag atom (and minimize)"
-msgstr "Réduire"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:91
 msgid "drag molecule (SHIFT to rotate)"
@@ -582,23 +574,20 @@ msgid "decrease charge"
 msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:100
-#, fuzzy
 msgid "delete bond"
-msgstr "Sélectionner atome"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:101
-#, fuzzy
 msgid "single"
-msgstr "Fichier"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:102
 msgid "double"
 msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:103
-#, fuzzy
 msgid "triple"
-msgstr "Fichier"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:104
 msgid "increase order"
@@ -609,9 +598,8 @@ msgid "decrease order"
 msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:106
-#, fuzzy
 msgid "rotate bond (SHIFT-DRAG)"
-msgstr "rotation"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:107
 msgid "exit modelkit mode"
@@ -1632,9 +1620,8 @@ msgid "Optimize structure"
 msgstr "Optimiser la structure"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:877
-#, fuzzy
 msgid "Model kit"
-msgstr "Modèle"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:881
 msgid "Extract MOL data"
@@ -2066,7 +2053,7 @@ msgstr "{0} de nouveaux liens; {1} modification"
 #: org/jmol/script/ScriptEvaluator.java:7799
 #, java-format
 msgid "file {0} created"
-msgstr ""
+msgstr "Fichier {0} crée"
 
 #: org/jmol/script/ScriptEvaluator.java:8916
 #: org/jmol/script/ScriptEvaluator.java:9176
@@ -2099,7 +2086,7 @@ msgstr "rotation"
 
 #: org/jmol/viewer/ActionManager.java:59
 msgid "rotate Z"
-msgstr ""
+msgstr "Faire tourner Z"
 
 #: org/jmol/viewer/ActionManager.java:60
 msgid ""
@@ -2130,7 +2117,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:67
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:69
@@ -2159,12 +2147,12 @@ msgstr ""
 #: org/jmol/viewer/ActionManager.java:76
 #, java-format
 msgid "select an atom (requires {0})"
-msgstr ""
+msgstr "sélectionner un atome (requiert {0})"
 
 #: org/jmol/viewer/ActionManager.java:77
 #, java-format
 msgid "select NONE (requires {0})"
-msgstr ""
+msgstr "Ne rien sélectionner (requiert {0})"
 
 #: org/jmol/viewer/ActionManager.java:78
 #, java-format
@@ -2191,7 +2179,7 @@ msgstr ""
 #: org/jmol/viewer/ActionManager.java:83
 #, java-format
 msgid "move selected atoms (requires {0})"
-msgstr ""
+msgstr "déplacer les atomes sélectionnés (requiert {0})"
 
 #: org/jmol/viewer/ActionManager.java:84
 #, java-format
@@ -2355,14 +2343,6 @@ msgstr ""
 msgid "Setting log file to {0}"
 msgstr ""
 
-#, fuzzy
-#~ msgid "atoms"
-#~ msgstr "Atomes"
-
-#, fuzzy
-#~ msgid "bonds"
-#~ msgstr "Liens"
-
 #~ msgid "Java memory usage"
 #~ msgstr "Utilisation mémoire de Java"
 
@@ -2372,22 +2352,25 @@ msgstr ""
 #~ msgid "File creation failed."
 #~ msgstr "Création du fichier échoué"
 
+#, java-format
 #~ msgid "File {0}"
 #~ msgstr "Fichier {0}"
 
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
-#~ "La création de fichier par cette n''est pas autorisée. Pour le format "
-#~ "JPEG Base64, utiliser {0}."
+#~ "La création de fichier par cette n''est pas autorisée. Pour le format JPEG "
+#~ "Base64, utiliser {0}."
 
 #~ msgid "File or URL"
 #~ msgstr "Fichier ou URL"
 
+#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "{0} Modèle 3D"
 
+#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "{0} Image"
 

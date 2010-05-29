@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-05-27 20:44+0200\n"
-"PO-Revision-Date: 2010-05-26 04:49+0000\n"
+"PO-Revision-Date: 2010-05-28 23:27+0000\n"
 "Last-Translator: Waluyo Adi Siswanto <Unknown>\n"
 "Language-Team: Indonesian <id@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-05-26 16:56+0000\n"
+"X-Launchpad-Export-Date: 2010-05-29 08:36+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -53,7 +53,7 @@ msgstr "proses startup mode senyap"
 
 #: org/openscience/jmol/app/JmolApp.java:150
 msgid "list commands during script execution"
-msgstr ""
+msgstr "daftar perintah ketika menjalankan skrip"
 
 #: org/openscience/jmol/app/JmolApp.java:152
 msgid "start with no splash screen"
@@ -65,50 +65,52 @@ msgstr "tanpa konsul -- seluruh keluaran ke sysout"
 
 #: org/openscience/jmol/app/JmolApp.java:156
 msgid "send only output from print messages to console (implies -i)"
-msgstr ""
+msgstr "hanya mengirim keluaran dari pesan cetak ke konsul (menggunakan -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:158
 msgid "independent command thread"
-msgstr ""
+msgstr "ulir perintah bebas"
 
 #: org/openscience/jmol/app/JmolApp.java:160
 msgid "exit after script (implicit with -n)"
-msgstr ""
+msgstr "keluar setelah skrip (implisit menggunakan -n)"
 
 #: org/openscience/jmol/app/JmolApp.java:164
 msgid "script file to execute or '-' for System.in"
-msgstr ""
+msgstr "berkas skrip untuk menjalankan atau '-' pada System.in"
 
 #: org/openscience/jmol/app/JmolApp.java:170
 msgid "use multitouch interface (requires \"sparshui\" parameter"
-msgstr ""
+msgstr "gunakan antarmuka multitouch (memerlukan parameter \"sparshui\")"
 
 #: org/openscience/jmol/app/JmolApp.java:177
 msgid "Jmol script to execute BEFORE -s option"
-msgstr ""
+msgstr "Skrip Jmol untuk dijalankan SEBELUM pilihan -s"
 
 #: org/openscience/jmol/app/JmolApp.java:183
 msgid "Jmol script to execute AFTER -s option"
-msgstr ""
+msgstr "Skrip Jmol untuk menjalankan SETELAH opsi -s"
 
 #: org/openscience/jmol/app/JmolApp.java:192
 msgid "property=value"
-msgstr ""
+msgstr "properti=angka"
 
 #: org/openscience/jmol/app/JmolApp.java:195
 msgid "supported options are given below"
-msgstr ""
+msgstr "opsi pilihan yang didukung dapat dilihat dibawah ini"
 
 #: org/openscience/jmol/app/JmolApp.java:201
 #, java-format
 msgid "window width x height, e.g. {0}"
-msgstr ""
+msgstr "jendela lebar x tinggi, misalnya {0}"
 
 #: org/openscience/jmol/app/JmolApp.java:211
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
 msgstr ""
+"Kualitas gambar JPG (1-100; bawaan 75) atau kompresi gambar PNG (0-9; bawaan "
+"2, kompresi maksimum 9)"
 
 #: org/openscience/jmol/app/JmolApp.java:216
 #, java-format
@@ -124,6 +126,8 @@ msgid ""
 "The -D options are as follows (defaults in parenthesis) and must be called "
 "preceding '-jar Jmol.jar':"
 msgstr ""
+"Opsi -D adalah sebagai berikut (bawaan dalam kurung) dan harus ditulis "
+"sebelum '-jar Jmol.jar':"
 
 #: org/openscience/jmol/app/JmolApp.java:466
 msgid "Executing script 1..."
@@ -215,11 +219,11 @@ msgstr "Jadi Lagi"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:164
 msgid "AtomSetChooser"
-msgstr ""
+msgstr "PemilihAtomSet"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:168
 msgid "No AtomSets"
-msgstr ""
+msgstr "Tidak ada AtomSet"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:197
 msgid "Properties"
@@ -307,7 +311,7 @@ msgstr "Berhenti menjalankan"
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:370
 #, java-format
 msgid "Go to next {0} in the collection"
-msgstr ""
+msgstr "Ke selanjutnya {0} dalam koleksi"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:371
 #, java-format
@@ -317,7 +321,7 @@ msgstr "Loncat ke terakhir {0} dalam koleksi"
 #: org/openscience/jmol/app/jmolpanel/ConsoleTextArea.java:87
 #, java-format
 msgid "Error reading from BufferedReader: {0}"
-msgstr ""
+msgstr "Kesalahan membaca dari BufferedReader: {0}"
 
 #: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:198
 msgid "Delete atoms"
@@ -325,7 +329,7 @@ msgstr "Hapus atom-atom"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:187
 msgid "Export Gaussian Input File"
-msgstr ""
+msgstr "Ekspor Berkas Masukan Gaussian"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:194
 msgid "Basic"
@@ -337,7 +341,7 @@ msgstr "Lanjutan"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:224
 msgid "Checkpoint File: "
-msgstr ""
+msgstr "Berkas Checkpoint: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:229
 msgid "Amount of Memory:"
@@ -361,11 +365,11 @@ msgstr "Set Dasar: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:269
 msgid "Density Fitting Basis Set (DFT Only): "
-msgstr ""
+msgstr "Aturan Density Fitting Basis (hanya DFT): "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:275
 msgid "Job Options: "
-msgstr ""
+msgstr "Opsi Kerja: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:288
 msgid "Molecular Properties"
@@ -377,7 +381,7 @@ msgstr "Muatan Total: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:301
 msgid "Multiplicity: "
-msgstr ""
+msgstr "Multiplisitas: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:308
 msgid "Selection: "
@@ -385,7 +389,7 @@ msgstr "Seleksi: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:343
 msgid "Gaussian Input File Name"
-msgstr ""
+msgstr "Nama Berkas Masukan Gaussian"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:349
 msgid "File..."
@@ -437,7 +441,7 @@ msgstr "Konsul..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:57
 msgid "Jmol Java &Console"
-msgstr ""
+msgstr "Konsul Java Jmol"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:58
 msgid "AtomSet&Chooser..."
@@ -465,16 +469,16 @@ msgstr "Expor ke Halaman &Web..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:64
 msgid "Export one or more views to a web page."
-msgstr ""
+msgstr "Ekspor satu atau lebih tampilan ke halaman web."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:65
 msgid "Render in POV-&Ray..."
-msgstr ""
+msgstr "Pencitraan dalam POV-&Ray..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:66
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:114
 msgid "Render in POV-Ray"
-msgstr ""
+msgstr "Pencitraan dalam POV-&Ray"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:67
 msgid "Write &State..."
@@ -482,7 +486,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:68
 msgid "Save current view as a Jmol state script."
-msgstr ""
+msgstr "Simpan tempilan sekarang sebagai skrip Jmol"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:69
 msgid "&Print..."
@@ -490,7 +494,7 @@ msgstr "&Cetak..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:70
 msgid "Print view."
-msgstr ""
+msgstr "Cetak tampilan."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:71
 msgid "&Close"
@@ -502,7 +506,7 @@ msgstr "&Keluar"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:73
 msgid "Recent &Files..."
-msgstr ""
+msgstr "Berkas Ter&kini..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:74
 msgid "&Edit"
@@ -527,7 +531,7 @@ msgstr "Salin Skrip"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:80
 msgid "Pr&eferences..."
-msgstr ""
+msgstr "Pr&eferensi..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:81
 msgid "&Paste"
@@ -611,7 +615,7 @@ msgstr "&Ikatan"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:105
 msgid "&Wireframe"
-msgstr ""
+msgstr "&Wireframe"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:106
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:107
@@ -687,7 +691,7 @@ msgstr "Kedalaman &Perspektif"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:134
 msgid "A&xes"
-msgstr ""
+msgstr "&Sumbu"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:135
 msgid "B&ounding Box"
@@ -695,11 +699,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:136
 msgid "&Hydrogens"
-msgstr ""
+msgstr "&Hidrogen"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:137
 msgid "V&ectors"
-msgstr ""
+msgstr "Vektor"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:138
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:149
@@ -772,7 +776,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:156
 msgid "&Graph..."
-msgstr ""
+msgstr "&Grafiks..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:157
 msgid "Calculate chemical &shifts..."
@@ -828,7 +832,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:170
 msgid "All frames"
-msgstr ""
+msgstr "Semua bingkai"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:171
 msgid "Go to &last frame"
@@ -868,7 +872,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:181
 msgid "What's New"
-msgstr ""
+msgstr "Apa Yang Baru"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:182
 msgid "Hydrogens"
@@ -994,7 +998,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1065
 msgid "Open URL"
-msgstr ""
+msgstr "Buka URL"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1066
 msgid "Enter URL of molecular model"
@@ -1006,7 +1010,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:124
 msgid "Delete"
-msgstr ""
+msgstr "Hapus"
 
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:133
 msgid "DeleteAll"
@@ -1014,11 +1018,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:151
 msgid "Dismiss"
-msgstr ""
+msgstr "Selesai"
 
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:201
 msgid "Value"
-msgstr ""
+msgstr "Nilai"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:152
 msgid "Conversion from Jmol to POV-Ray"
@@ -1026,7 +1030,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:156
 msgid "File Name:"
-msgstr ""
+msgstr "Nama Berkas:"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:158
 msgid ""
@@ -1035,7 +1039,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:168
 msgid "Working Directory"
-msgstr ""
+msgstr "Direktori Kerja"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:170
 msgid "Where the .pov files will be saved"
@@ -1096,11 +1100,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:358
 msgid "N - PNG"
-msgstr ""
+msgstr "N - PNG"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:361
 msgid "P - PPM"
-msgstr ""
+msgstr "P - PPM"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:364
 msgid "C - Compressed Targa-24"
@@ -1112,7 +1116,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:383
 msgid "Alpha transparency"
-msgstr ""
+msgstr "Transparansi Alfa"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:385
 msgid "Output Alpha transparency data"

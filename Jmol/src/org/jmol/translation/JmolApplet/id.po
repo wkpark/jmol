@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
-"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-05-27 20:44+0200\n"
 "PO-Revision-Date: 2010-05-28 23:28+0000\n"
 "Last-Translator: Waluyo Adi Siswanto <Unknown>\n"
@@ -134,8 +134,7 @@ msgid "Check"
 msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid ""
-"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -2099,8 +2098,7 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:67
 #, java-format
-msgid ""
-"click on two points to spin around axis counterclockwise (requires {0})"
+msgid "click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:69

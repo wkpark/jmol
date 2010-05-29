@@ -148,6 +148,7 @@ In addition, Jmol 3D-SEARCH adds the following primitives and options:
 <br/>
 <table border="1" cellpadding="5" width="500">
 <tr><td>d</td><td>non-hydrogen degree -- number of non-hydrogen connections</td></tr>
+<tr><td>=</td><td>Jmol atom index, for example: [=23]</td></tr>
 <tr><td>[number]?</td><td>mass number or undefined (so, for example, [C12?] means any carbon that isn't explicitly C13 or C14</td></tr>
 </table>  
 <br/>
@@ -165,7 +166,8 @@ In addition, Jmol 3D-SEARCH adds the following primitives and options:
  
 </li><li>Jmol 3D-SEARCH does NOT implement:
 <ul><li> "zero-level parentheses", since the match is 
-    always only within a given model (but note that you can still use '.' for a "not-connected" indicator)
+    always only within a given model (but note that you can still use '.' for a 
+    "not-connected" indicator, provided there is SOME connection to the two segments via ring numbers.
 </li><li>"?" in atom stereochemistry ("chirality") because 
     3D structures are always defined stereochemically.
  
@@ -327,7 +329,8 @@ includes:
       #       Nothing would be retrieved by "-&=", as a bond cannot be both single
       #       and double. However, "-@" is potentially very useful -- "ring single-bonds"
       #       or "=&!@" -- "doubly-bonded atoms where the double bond is not in a ring"
- 
+      # note: Jmol will not match two totally independent molecular pieces. For example,
+      #       Jmol will not math [Na+].[Cl-]
 
 </pre>
 </p>

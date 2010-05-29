@@ -3876,7 +3876,7 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public boolean isAtomAssignable(int i) {
-    return i >= 0 && !isAtomPDB(i) && atoms[i].modelIndex == modelCount - 1;
+    return i >= 0 && atoms[i].modelIndex == modelCount - 1;
   }
 
   

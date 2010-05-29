@@ -4,8 +4,6 @@
 
 package org.jmol.smiles;
 
-import org.jmol.util.Logger;
-
 import junit.framework.TestCase;
 
 public class TestSmilesParser extends TestCase {
@@ -60,11 +58,11 @@ public class TestSmilesParser extends TestCase {
     atomH1.setSymbol("H");
     SmilesAtom atomO = molecule.addAtom();
     atomO.setSymbol("O");
-    molecule.createBond(atomH1, atomO, SmilesBond.TYPE_SINGLE);
+    createBond(atomH1, atomO, SmilesBond.TYPE_SINGLE, false);
     SmilesAtom atomH2 = molecule.addAtom();
     atomH2.setAtomicMass(2);
     atomH2.setSymbol("H");
-    molecule.createBond(atomO, atomH2, SmilesBond.TYPE_SINGLE);
+    createBond(atomO, atomH2, SmilesBond.TYPE_SINGLE, false);
     checkMolecule("[2H]O[2H]", molecule);
   }
   public void testChapter1_06() {    // Test [Au]
@@ -79,10 +77,10 @@ public class TestSmilesParser extends TestCase {
     atomC1.setSymbol("C");
     SmilesAtom atomC2 = molecule.addAtom();
     atomC2.setSymbol("C");
-    molecule.createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE);
+    createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomO = molecule.addAtom();
     atomO.setSymbol("O");
-    molecule.createBond(atomC2, atomO, SmilesBond.TYPE_SINGLE);
+    createBond(atomC2, atomO, SmilesBond.TYPE_SINGLE, true);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC1);
@@ -97,10 +95,10 @@ public class TestSmilesParser extends TestCase {
     atomO1.setSymbol("O");
     SmilesAtom atomC = molecule.addAtom();
     atomC.setSymbol("C");
-    molecule.createBond(atomO1, atomC, SmilesBond.TYPE_DOUBLE);
+    createBond(atomO1, atomC, SmilesBond.TYPE_DOUBLE, true);
     SmilesAtom atomO2 = molecule.addAtom();
     atomO2.setSymbol("O");
-    molecule.createBond(atomC, atomO2, SmilesBond.TYPE_DOUBLE);
+    createBond(atomC, atomO2, SmilesBond.TYPE_DOUBLE, true);
     checkMolecule("O=C=O", molecule);
   }
   public void testChapter1_09() {    // Test C#N
@@ -109,7 +107,7 @@ public class TestSmilesParser extends TestCase {
     atomC.setSymbol("C");
     SmilesAtom atomN = molecule.addAtom();
     atomN.setSymbol("N");
-    molecule.createBond(atomC, atomN, SmilesBond.TYPE_TRIPLE);
+    createBond(atomC, atomN, SmilesBond.TYPE_TRIPLE, true);
     addHydrogen(molecule, atomC);
     checkMolecule("C#N", molecule);
   }
@@ -119,13 +117,13 @@ public class TestSmilesParser extends TestCase {
     atomC1.setSymbol("C");
     SmilesAtom atomC2 = molecule.addAtom();
     atomC2.setSymbol("C");
-    molecule.createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE);
+    createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomO1 = molecule.addAtom();
     atomO1.setSymbol("O");
-    molecule.createBond(atomC2, atomO1, SmilesBond.TYPE_DOUBLE);
+    createBond(atomC2, atomO1, SmilesBond.TYPE_DOUBLE, true);
     SmilesAtom atomO2 = molecule.addAtom();
     atomO2.setSymbol("O");
-    molecule.createBond(atomC2, atomO2, SmilesBond.TYPE_SINGLE);
+    createBond(atomC2, atomO2, SmilesBond.TYPE_SINGLE, true);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC1);
@@ -136,24 +134,22 @@ public class TestSmilesParser extends TestCase {
     SmilesSearch molecule = new SmilesSearch();
     SmilesAtom atomC1 = molecule.addAtom();
     atomC1.setSymbol("C");
-    molecule.createBond(atomC1, null, SmilesBond.TYPE_SINGLE);
     SmilesAtom atomC2 = molecule.addAtom();
     atomC2.setSymbol("C");
-    molecule.createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE);
     SmilesAtom atomC3 = molecule.addAtom();
     atomC3.setSymbol("C");
-    molecule.createBond(atomC2, atomC3, SmilesBond.TYPE_SINGLE);
     SmilesAtom atomC4 = molecule.addAtom();
     atomC4.setSymbol("C");
-    molecule.createBond(atomC3, atomC4, SmilesBond.TYPE_SINGLE);
     SmilesAtom atomC5 = molecule.addAtom();
     atomC5.setSymbol("C");
-    molecule.createBond(atomC4, atomC5, SmilesBond.TYPE_SINGLE);
     SmilesAtom atomC6 = molecule.addAtom();
     atomC6.setSymbol("C");
-    molecule.createBond(atomC5, atomC6, SmilesBond.TYPE_SINGLE);
-    atomC1.getBond(0).setAtom2(atomC6);
-    atomC6.addBond(atomC1.getBond(0));
+    createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC2, atomC3, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC3, atomC4, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC4, atomC5, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC5, atomC6, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC1, atomC6, SmilesBond.TYPE_SINGLE, true);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC2);
@@ -172,39 +168,35 @@ public class TestSmilesParser extends TestCase {
     SmilesSearch molecule = new SmilesSearch();
     SmilesAtom atomC1 = molecule.addAtom();
     atomC1.setSymbol("C");
-    molecule.createBond(atomC1, null, SmilesBond.TYPE_SINGLE);
     SmilesAtom atomC2 = molecule.addAtom();
     atomC2.setSymbol("C");
-    molecule.createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE);
     SmilesAtom atomC3 = molecule.addAtom();
     atomC3.setSymbol("C");
-    molecule.createBond(atomC2, atomC3, SmilesBond.TYPE_SINGLE);
-    molecule.createBond(atomC3, null, SmilesBond.TYPE_SINGLE);
     SmilesAtom atomC4 = molecule.addAtom();
     atomC4.setSymbol("C");
-    molecule.createBond(atomC3, atomC4, SmilesBond.TYPE_SINGLE);
     SmilesAtom atomC5 = molecule.addAtom();
     atomC5.setSymbol("C");
-    molecule.createBond(atomC4, atomC5, SmilesBond.TYPE_SINGLE);
     SmilesAtom atomC6 = molecule.addAtom();
     atomC6.setSymbol("C");
-    molecule.createBond(atomC5, atomC6, SmilesBond.TYPE_SINGLE);
     SmilesAtom atomC7 = molecule.addAtom();
     atomC7.setSymbol("C");
-    molecule.createBond(atomC6, atomC7, SmilesBond.TYPE_SINGLE);
     SmilesAtom atomC8 = molecule.addAtom();
     atomC8.setSymbol("C");
-    molecule.createBond(atomC7, atomC8, SmilesBond.TYPE_SINGLE);
-    atomC3.getBond(1).setAtom2(atomC8);
-    atomC8.addBond(atomC3.getBond(1));
     SmilesAtom atomC9 = molecule.addAtom();
     atomC9.setSymbol("C");
-    molecule.createBond(atomC8, atomC9, SmilesBond.TYPE_SINGLE);
     SmilesAtom atomC0 = molecule.addAtom();
     atomC0.setSymbol("C");
-    molecule.createBond(atomC9, atomC0, SmilesBond.TYPE_SINGLE);
-    atomC1.getBond(0).setAtom2(atomC0);
-    atomC0.addBond(atomC1.getBond(0));
+    createBond(atomC1, atomC0, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC2, atomC3, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC3, atomC8, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC3, atomC4, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC4, atomC5, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC5, atomC6, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC6, atomC7, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC7, atomC8, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC8, atomC9, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC9, atomC0, SmilesBond.TYPE_SINGLE, true);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC2);
@@ -237,13 +229,13 @@ public class TestSmilesParser extends TestCase {
     atomC1.setSymbol("C");
     SmilesAtom atomC2 = molecule.addAtom();
     atomC2.setSymbol("C");
-    molecule.createBond(atomC1, atomC2, SmilesBond.TYPE_DIRECTIONAL_1);
+    createBond(atomC1, atomC2, SmilesBond.TYPE_DIRECTIONAL_1, true);
     SmilesAtom atomC3 = molecule.addAtom();
     atomC3.setSymbol("C");
-    molecule.createBond(atomC2, atomC3, SmilesBond.TYPE_DOUBLE);
+    createBond(atomC2, atomC3, SmilesBond.TYPE_DOUBLE, true);
     SmilesAtom atomC4 = molecule.addAtom();
     atomC4.setSymbol("C");
-    molecule.createBond(atomC3, atomC4, SmilesBond.TYPE_DIRECTIONAL_1);
+    createBond(atomC3, atomC4, SmilesBond.TYPE_DIRECTIONAL_1, true);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC1);
@@ -262,19 +254,19 @@ public class TestSmilesParser extends TestCase {
     atomC1.setChiralClass(SmilesAtom.CHIRALITY_TETRAHEDRAL);
     atomC1.setChiralOrder(2);
     atomC1.setSymbol("C");
-    molecule.createBond(atomN, atomC1, SmilesBond.TYPE_SINGLE);
+    createBond(atomN, atomC1, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomC2 = molecule.addAtom();
     atomC2.setSymbol("C");
-    molecule.createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE);
+    createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomC3 = molecule.addAtom();
     atomC3.setSymbol("C");
-    molecule.createBond(atomC1, atomC3, SmilesBond.TYPE_SINGLE);
+    createBond(atomC1, atomC3, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomO1 = molecule.addAtom();
     atomO1.setSymbol("O");
-    molecule.createBond(atomC3, atomO1, SmilesBond.TYPE_DOUBLE);
+    createBond(atomC3, atomO1, SmilesBond.TYPE_DOUBLE, true);
     SmilesAtom atomO2 = molecule.addAtom();
     atomO2.setSymbol("O");
-    molecule.createBond(atomC3, atomO2, SmilesBond.TYPE_SINGLE);
+    createBond(atomC3, atomO2, SmilesBond.TYPE_SINGLE, true);
     addHydrogen(molecule, atomN);
     addHydrogen(molecule, atomN);
     addHydrogen(molecule, atomC1);
@@ -288,46 +280,44 @@ public class TestSmilesParser extends TestCase {
     SmilesSearch molecule = new SmilesSearch();
     SmilesAtom atomO1 = molecule.addAtom();
     atomO1.setSymbol("O");
+    addHydrogen(molecule, atomO1);
     SmilesAtom atomC1 = molecule.addAtom();
     atomC1.setChiralClass(SmilesAtom.CHIRALITY_TETRAHEDRAL);
     atomC1.setChiralOrder(1);
     atomC1.setSymbol("C");
-    molecule.createBond(atomO1, atomC1, SmilesBond.TYPE_SINGLE);
-    molecule.createBond(atomC1, null, SmilesBond.TYPE_SINGLE);
+    addHydrogen(molecule, atomC1);
     SmilesAtom atomC2 = molecule.addAtom();
     atomC2.setSymbol("C");
-    molecule.createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE);
+    addHydrogen(molecule, atomC2);
+    addHydrogen(molecule, atomC2);
     SmilesAtom atomC3 = molecule.addAtom();
     atomC3.setSymbol("C");
-    molecule.createBond(atomC2, atomC3, SmilesBond.TYPE_SINGLE);
+    addHydrogen(molecule, atomC3);
+    addHydrogen(molecule, atomC3);
     SmilesAtom atomC4 = molecule.addAtom();
     atomC4.setSymbol("C");
-    molecule.createBond(atomC3, atomC4, SmilesBond.TYPE_SINGLE);
+    addHydrogen(molecule, atomC4);
+    addHydrogen(molecule, atomC4);
     SmilesAtom atomC5 = molecule.addAtom();
     atomC5.setSymbol("C");
-    molecule.createBond(atomC4, atomC5, SmilesBond.TYPE_SINGLE);
+    addHydrogen(molecule, atomC5);
+    addHydrogen(molecule, atomC5);
     SmilesAtom atomC6 = molecule.addAtom();
     atomC6.setChiralClass(SmilesAtom.CHIRALITY_TETRAHEDRAL);
     atomC6.setChiralOrder(1);
     atomC6.setSymbol("C");
-    molecule.createBond(atomC5, atomC6, SmilesBond.TYPE_SINGLE);
-    atomC1.getBond(1).setAtom2(atomC6);
-    atomC6.addBond(atomC1.getBond(1));
+    addHydrogen(molecule, atomC6);
     SmilesAtom atomO2 = molecule.addAtom();
     atomO2.setSymbol("O");
-    molecule.createBond(atomC6, atomO2, SmilesBond.TYPE_SINGLE);
-    addHydrogen(molecule, atomO1);
-    addHydrogen(molecule, atomC1);
-    addHydrogen(molecule, atomC2);
-    addHydrogen(molecule, atomC2);
-    addHydrogen(molecule, atomC3);
-    addHydrogen(molecule, atomC3);
-    addHydrogen(molecule, atomC4);
-    addHydrogen(molecule, atomC4);
-    addHydrogen(molecule, atomC5);
-    addHydrogen(molecule, atomC5);
-    addHydrogen(molecule, atomC6);
     addHydrogen(molecule, atomO2);
+    createBond(atomO1, atomC1, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC1, atomC6, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC2, atomC3, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC3, atomC4, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC4, atomC5, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC5, atomC6, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC6, atomO2, SmilesBond.TYPE_SINGLE, true);
     checkMolecule("O[C@H]1CCCC[C@H]1O", molecule);
   }
   
@@ -426,7 +416,7 @@ public class TestSmilesParser extends TestCase {
     atomC1.setSymbol("C");
     SmilesAtom atomC2 = molecule.addAtom();
     atomC2.setSymbol("C");
-    molecule.createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE);
+    createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE, true);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC1);
@@ -441,7 +431,7 @@ public class TestSmilesParser extends TestCase {
     atomC1.setSymbol("C");
     SmilesAtom atomC2 = molecule.addAtom();
     atomC2.setSymbol("C");
-    molecule.createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE);
+    createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE, true);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC1);
@@ -456,7 +446,7 @@ public class TestSmilesParser extends TestCase {
     atomC1.setSymbol("C");
     SmilesAtom atomC2 = molecule.addAtom();
     atomC2.setSymbol("C");
-    molecule.createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE);
+    createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE, true);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC1);
@@ -471,7 +461,7 @@ public class TestSmilesParser extends TestCase {
     atomC.setSymbol("C");
     SmilesAtom atomO = molecule.addAtom();
     atomO.setSymbol("O");
-    molecule.createBond(atomC, atomO, SmilesBond.TYPE_DOUBLE);
+    createBond(atomC, atomO, SmilesBond.TYPE_DOUBLE, true);
     addHydrogen(molecule, atomC);
     addHydrogen(molecule, atomC);
     checkMolecule("C=O", molecule);
@@ -485,7 +475,7 @@ public class TestSmilesParser extends TestCase {
     atomC1.setSymbol("C");
     SmilesAtom atomC2 = molecule.addAtom();
     atomC2.setSymbol("C");
-    molecule.createBond(atomC1, atomC2, SmilesBond.TYPE_DOUBLE);
+    createBond(atomC1, atomC2, SmilesBond.TYPE_DOUBLE, true);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC2);
@@ -501,13 +491,13 @@ public class TestSmilesParser extends TestCase {
     atomC1.setSymbol("C");
     SmilesAtom atomC2 = molecule.addAtom();
     atomC2.setSymbol("C");
-    molecule.createBond(atomC1, atomC2, SmilesBond.TYPE_DOUBLE);
+    createBond(atomC1, atomC2, SmilesBond.TYPE_DOUBLE, true);
     SmilesAtom atomC3 = molecule.addAtom();
     atomC3.setSymbol("C");
-    molecule.createBond(atomC2, atomC3, SmilesBond.TYPE_SINGLE);
+    createBond(atomC2, atomC3, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomC4 = molecule.addAtom();
     atomC4.setSymbol("C");
-    molecule.createBond(atomC3, atomC4, SmilesBond.TYPE_DOUBLE);
+    createBond(atomC3, atomC4, SmilesBond.TYPE_DOUBLE, true);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC2);
@@ -530,19 +520,19 @@ public class TestSmilesParser extends TestCase {
     atomC1.setSymbol("C");
     SmilesAtom atomC2 = molecule.addAtom();
     atomC2.setSymbol("C");
-    molecule.createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE);
+    createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomC3 = molecule.addAtom();
     atomC3.setSymbol("C");
-    molecule.createBond(atomC2, atomC3, SmilesBond.TYPE_SINGLE);
+    createBond(atomC2, atomC3, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomC4 = molecule.addAtom();
     atomC4.setSymbol("C");
-    molecule.createBond(atomC2, atomC4, SmilesBond.TYPE_SINGLE);
+    createBond(atomC2, atomC4, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomO1 = molecule.addAtom();
     atomO1.setSymbol("O");
-    molecule.createBond(atomC4, atomO1, SmilesBond.TYPE_DOUBLE);
+    createBond(atomC4, atomO1, SmilesBond.TYPE_DOUBLE, true);
     SmilesAtom atomO2 = molecule.addAtom();
     atomO2.setSymbol("O");
-    molecule.createBond(atomC4, atomO2, SmilesBond.TYPE_SINGLE);
+    createBond(atomC4, atomO2, SmilesBond.TYPE_SINGLE, true);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC1);
@@ -559,13 +549,13 @@ public class TestSmilesParser extends TestCase {
     atomF1.setSymbol("F");
     SmilesAtom atomC = molecule.addAtom();
     atomC.setSymbol("C");
-    molecule.createBond(atomF1, atomC, SmilesBond.TYPE_SINGLE);
+    createBond(atomF1, atomC, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomF2 = molecule.addAtom();
     atomF2.setSymbol("F");
-    molecule.createBond(atomC, atomF2, SmilesBond.TYPE_SINGLE);
+    createBond(atomC, atomF2, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomF3 = molecule.addAtom();
     atomF3.setSymbol("F");
-    molecule.createBond(atomC, atomF3, SmilesBond.TYPE_SINGLE);
+    createBond(atomC, atomF3, SmilesBond.TYPE_SINGLE, true);
     addHydrogen(molecule, atomC);
     checkMolecule("FC(F)F", molecule);
   }
@@ -575,13 +565,13 @@ public class TestSmilesParser extends TestCase {
     atomC.setSymbol("C");
     SmilesAtom atomF1 = molecule.addAtom();
     atomF1.setSymbol("F");
-    molecule.createBond(atomC, atomF1, SmilesBond.TYPE_SINGLE);
+    createBond(atomC, atomF1, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomF2 = molecule.addAtom();
     atomF2.setSymbol("F");
-    molecule.createBond(atomC, atomF2, SmilesBond.TYPE_SINGLE);
+    createBond(atomC, atomF2, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomF3 = molecule.addAtom();
     atomF3.setSymbol("F");
-    molecule.createBond(atomC, atomF3, SmilesBond.TYPE_SINGLE);
+    createBond(atomC, atomF3, SmilesBond.TYPE_SINGLE, true);
     addHydrogen(molecule, atomC);
     checkMolecule("C(F)(F)F", molecule);
   }
@@ -591,17 +581,17 @@ public class TestSmilesParser extends TestCase {
     atomO1.setSymbol("O");
     SmilesAtom atomCl = molecule.addAtom();
     atomCl.setSymbol("Cl");
-    molecule.createBond(atomO1, atomCl, SmilesBond.TYPE_DOUBLE);
+    createBond(atomO1, atomCl, SmilesBond.TYPE_DOUBLE, true);
     SmilesAtom atomO2 = molecule.addAtom();
     atomO2.setSymbol("O");
-    molecule.createBond(atomCl, atomO2, SmilesBond.TYPE_DOUBLE);
+    createBond(atomCl, atomO2, SmilesBond.TYPE_DOUBLE, true);
     SmilesAtom atomO3 = molecule.addAtom();
     atomO3.setSymbol("O");
-    molecule.createBond(atomCl, atomO3, SmilesBond.TYPE_DOUBLE);
+    createBond(atomCl, atomO3, SmilesBond.TYPE_DOUBLE, true);
     SmilesAtom atomO4 = molecule.addAtom();
     atomO4.setCharge(-1);
     atomO4.setSymbol("O");
-    molecule.createBond(atomCl, atomO4, SmilesBond.TYPE_SINGLE);
+    createBond(atomCl, atomO4, SmilesBond.TYPE_SINGLE, true);
     checkMolecule("O=Cl(=O)(=O)[O-]", molecule);
   }
   public void testChapter4_05() {    // Test Cl(=O)(=O)(=O)[O-]
@@ -610,17 +600,17 @@ public class TestSmilesParser extends TestCase {
     atomCl.setSymbol("Cl");
     SmilesAtom atomO1 = molecule.addAtom();
     atomO1.setSymbol("O");
-    molecule.createBond(atomCl, atomO1, SmilesBond.TYPE_DOUBLE);
+    createBond(atomCl, atomO1, SmilesBond.TYPE_DOUBLE, true);
     SmilesAtom atomO2 = molecule.addAtom();
     atomO2.setSymbol("O");
-    molecule.createBond(atomCl, atomO2, SmilesBond.TYPE_DOUBLE);
+    createBond(atomCl, atomO2, SmilesBond.TYPE_DOUBLE, true);
     SmilesAtom atomO3 = molecule.addAtom();
     atomO3.setSymbol("O");
-    molecule.createBond(atomCl, atomO3, SmilesBond.TYPE_DOUBLE);
+    createBond(atomCl, atomO3, SmilesBond.TYPE_DOUBLE, true);
     SmilesAtom atomO4 = molecule.addAtom();
     atomO4.setCharge(-1);
     atomO4.setSymbol("O");
-    molecule.createBond(atomCl, atomO4, SmilesBond.TYPE_SINGLE);
+    createBond(atomCl, atomO4, SmilesBond.TYPE_SINGLE, true);
     checkMolecule("Cl(=O)(=O)(=O)[O-]", molecule);
   }
   public void testChapter4_06() {    // Test CCCC(C(=O)O)CCC
@@ -629,31 +619,31 @@ public class TestSmilesParser extends TestCase {
     atomC1.setSymbol("C");
     SmilesAtom atomC2 = molecule.addAtom();
     atomC2.setSymbol("C");
-    molecule.createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE);
+    createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomC3 = molecule.addAtom();
     atomC3.setSymbol("C");
-    molecule.createBond(atomC2, atomC3, SmilesBond.TYPE_SINGLE);
+    createBond(atomC2, atomC3, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomC4 = molecule.addAtom();
     atomC4.setSymbol("C");
-    molecule.createBond(atomC3, atomC4, SmilesBond.TYPE_SINGLE);
+    createBond(atomC3, atomC4, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomC5 = molecule.addAtom();
     atomC5.setSymbol("C");
-    molecule.createBond(atomC4, atomC5, SmilesBond.TYPE_SINGLE);
+    createBond(atomC4, atomC5, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomO1 = molecule.addAtom();
     atomO1.setSymbol("O");
-    molecule.createBond(atomC5, atomO1, SmilesBond.TYPE_DOUBLE);
+    createBond(atomC5, atomO1, SmilesBond.TYPE_DOUBLE, true);
     SmilesAtom atomO2 = molecule.addAtom();
     atomO2.setSymbol("O");
-    molecule.createBond(atomC5, atomO2, SmilesBond.TYPE_SINGLE);
+    createBond(atomC5, atomO2, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomC6 = molecule.addAtom();
     atomC6.setSymbol("C");
-    molecule.createBond(atomC4, atomC6, SmilesBond.TYPE_SINGLE);
+    createBond(atomC4, atomC6, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomC7 = molecule.addAtom();
     atomC7.setSymbol("C");
-    molecule.createBond(atomC6, atomC7, SmilesBond.TYPE_SINGLE);
+    createBond(atomC6, atomC7, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomC8 = molecule.addAtom();
     atomC8.setSymbol("C");
-    molecule.createBond(atomC7, atomC8, SmilesBond.TYPE_SINGLE);
+    createBond(atomC7, atomC8, SmilesBond.TYPE_SINGLE, true);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC1);
@@ -684,24 +674,22 @@ public class TestSmilesParser extends TestCase {
     SmilesSearch molecule = new SmilesSearch();
     SmilesAtom atomC1 = molecule.addAtom();
     atomC1.setSymbol("C");
-    molecule.createBond(atomC1, null, SmilesBond.TYPE_SINGLE);
     SmilesAtom atomC2 = molecule.addAtom();
     atomC2.setSymbol("C");
-    molecule.createBond(atomC1, atomC2, SmilesBond.TYPE_DOUBLE);
     SmilesAtom atomC3 = molecule.addAtom();
     atomC3.setSymbol("C");
-    molecule.createBond(atomC2, atomC3, SmilesBond.TYPE_SINGLE);
     SmilesAtom atomC4 = molecule.addAtom();
     atomC4.setSymbol("C");
-    molecule.createBond(atomC3, atomC4, SmilesBond.TYPE_SINGLE);
     SmilesAtom atomC5 = molecule.addAtom();
     atomC5.setSymbol("C");
-    molecule.createBond(atomC4, atomC5, SmilesBond.TYPE_SINGLE);
     SmilesAtom atomC6 = molecule.addAtom();
     atomC6.setSymbol("C");
-    molecule.createBond(atomC5, atomC6, SmilesBond.TYPE_SINGLE);
-    atomC1.getBond(0).setAtom2(atomC6);
-    atomC6.addBond(atomC1.getBond(0));
+    createBond(atomC1, atomC6, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC1, atomC2, SmilesBond.TYPE_DOUBLE, true);
+    createBond(atomC2, atomC3, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC3, atomC4, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC4, atomC5, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC5, atomC6, SmilesBond.TYPE_SINGLE, true);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC2);
     addHydrogen(molecule, atomC3);
@@ -718,24 +706,22 @@ public class TestSmilesParser extends TestCase {
     SmilesSearch molecule = new SmilesSearch();
     SmilesAtom atomC1 = molecule.addAtom();
     atomC1.setSymbol("C");
-    molecule.createBond(atomC1, null, SmilesBond.TYPE_DOUBLE);
     SmilesAtom atomC2 = molecule.addAtom();
     atomC2.setSymbol("C");
-    molecule.createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE);
     SmilesAtom atomC3 = molecule.addAtom();
     atomC3.setSymbol("C");
-    molecule.createBond(atomC2, atomC3, SmilesBond.TYPE_SINGLE);
     SmilesAtom atomC4 = molecule.addAtom();
     atomC4.setSymbol("C");
-    molecule.createBond(atomC3, atomC4, SmilesBond.TYPE_SINGLE);
     SmilesAtom atomC5 = molecule.addAtom();
     atomC5.setSymbol("C");
-    molecule.createBond(atomC4, atomC5, SmilesBond.TYPE_SINGLE);
     SmilesAtom atomC6 = molecule.addAtom();
     atomC6.setSymbol("C");
-    molecule.createBond(atomC5, atomC6, SmilesBond.TYPE_SINGLE);
-    atomC1.getBond(0).setAtom2(atomC6);
-    atomC6.addBond(atomC1.getBond(0));
+    createBond(atomC1, atomC6, SmilesBond.TYPE_DOUBLE, true);
+    createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC2, atomC3, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC3, atomC4, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC4, atomC5, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC5, atomC6, SmilesBond.TYPE_SINGLE, true);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC2);
     addHydrogen(molecule, atomC2);
@@ -752,24 +738,22 @@ public class TestSmilesParser extends TestCase {
     SmilesSearch molecule = new SmilesSearch();
     SmilesAtom atomC1 = molecule.addAtom();
     atomC1.setSymbol("C");
-    molecule.createBond(atomC1, null, SmilesBond.TYPE_DOUBLE);
     SmilesAtom atomC2 = molecule.addAtom();
     atomC2.setSymbol("C");
-    molecule.createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE);
     SmilesAtom atomC3 = molecule.addAtom();
     atomC3.setSymbol("C");
-    molecule.createBond(atomC2, atomC3, SmilesBond.TYPE_SINGLE);
     SmilesAtom atomC4 = molecule.addAtom();
     atomC4.setSymbol("C");
-    molecule.createBond(atomC3, atomC4, SmilesBond.TYPE_SINGLE);
     SmilesAtom atomC5 = molecule.addAtom();
     atomC5.setSymbol("C");
-    molecule.createBond(atomC4, atomC5, SmilesBond.TYPE_SINGLE);
     SmilesAtom atomC6 = molecule.addAtom();
     atomC6.setSymbol("C");
-    molecule.createBond(atomC5, atomC6, SmilesBond.TYPE_SINGLE);
-    atomC1.getBond(0).setAtom2(atomC6);
-    atomC6.addBond(atomC1.getBond(0));
+    createBond(atomC1, atomC6, SmilesBond.TYPE_DOUBLE, true);
+    createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC2, atomC3, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC3, atomC4, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC4, atomC5, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC5, atomC6, SmilesBond.TYPE_SINGLE, true);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC2);
     addHydrogen(molecule, atomC2);
@@ -786,24 +770,22 @@ public class TestSmilesParser extends TestCase {
     SmilesSearch molecule = new SmilesSearch();
     SmilesAtom atomC1 = molecule.addAtom();
     atomC1.setSymbol("C");
-    molecule.createBond(atomC1, null, SmilesBond.TYPE_DOUBLE);
     SmilesAtom atomC2 = molecule.addAtom();
     atomC2.setSymbol("C");
-    molecule.createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE);
     SmilesAtom atomC3 = molecule.addAtom();
     atomC3.setSymbol("C");
-    molecule.createBond(atomC2, atomC3, SmilesBond.TYPE_SINGLE);
     SmilesAtom atomC4 = molecule.addAtom();
     atomC4.setSymbol("C");
-    molecule.createBond(atomC3, atomC4, SmilesBond.TYPE_SINGLE);
     SmilesAtom atomC5 = molecule.addAtom();
     atomC5.setSymbol("C");
-    molecule.createBond(atomC4, atomC5, SmilesBond.TYPE_SINGLE);
     SmilesAtom atomC6 = molecule.addAtom();
     atomC6.setSymbol("C");
-    molecule.createBond(atomC5, atomC6, SmilesBond.TYPE_SINGLE);
-    atomC1.getBond(0).setAtom2(atomC6);
-    atomC6.addBond(atomC1.getBond(0));
+    createBond(atomC1, atomC6, SmilesBond.TYPE_DOUBLE, true);
+    createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC2, atomC3, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC3, atomC4, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC4, atomC5, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC5, atomC6, SmilesBond.TYPE_SINGLE, true);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC2);
     addHydrogen(molecule, atomC2);
@@ -841,7 +823,7 @@ public class TestSmilesParser extends TestCase {
     SmilesAtom atomCl = molecule.addAtom();
     atomCl.setCharge(-1);
     atomCl.setSymbol("Cl");
-    checkMolecule("[Na+].[Cl-]", molecule);
+  // checkMolecule("[Na+].[Cl-]", molecule);  // Jmol does not support '.'
   }
   public void testChapter6_02() {    // Test [Na+].[O-]c1ccccc1
     // Not implemented
@@ -857,15 +839,15 @@ public class TestSmilesParser extends TestCase {
     atomO.setSymbol("O");
     SmilesAtom atomC2 = molecule.addAtom();
     atomC2.setSymbol("C");
-    molecule.createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE);
-    molecule.createBond(atomO, atomC2, SmilesBond.TYPE_SINGLE);
+    createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomO, atomC2, SmilesBond.TYPE_SINGLE, true);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomO);
     addHydrogen(molecule, atomC2);
     addHydrogen(molecule, atomC2);
-    checkMolecule("C1.O2.C12", molecule);
+//    checkMolecule("C1.O2.C12", molecule); // Jmol does not support '.'
   }
   public void testChapter6_05() {    // Test CCO
     testChapter1_07();
@@ -915,13 +897,13 @@ public class TestSmilesParser extends TestCase {
     atomF1.setSymbol("F");
     SmilesAtom atomC1 = molecule.addAtom();
     atomC1.setSymbol("C");
-    molecule.createBond(atomF1, atomC1, SmilesBond.TYPE_DIRECTIONAL_1);
+    createBond(atomF1, atomC1, SmilesBond.TYPE_DIRECTIONAL_1, true);
     SmilesAtom atomC2 = molecule.addAtom();
     atomC2.setSymbol("C");
-    molecule.createBond(atomC1, atomC2, SmilesBond.TYPE_DOUBLE);
+    createBond(atomC1, atomC2, SmilesBond.TYPE_DOUBLE, true);
     SmilesAtom atomF2 = molecule.addAtom();
     atomF2.setSymbol("F");
-    molecule.createBond(atomC2, atomF2, SmilesBond.TYPE_DIRECTIONAL_1);
+    createBond(atomC2, atomF2, SmilesBond.TYPE_DIRECTIONAL_1, true);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC2);
     checkMolecule("F/C=C/F", molecule);
@@ -932,13 +914,13 @@ public class TestSmilesParser extends TestCase {
     atomF1.setSymbol("F");
     SmilesAtom atomC1 = molecule.addAtom();
     atomC1.setSymbol("C");
-    molecule.createBond(atomF1, atomC1, SmilesBond.TYPE_DIRECTIONAL_2);
+    createBond(atomF1, atomC1, SmilesBond.TYPE_DIRECTIONAL_2, true);
     SmilesAtom atomC2 = molecule.addAtom();
     atomC2.setSymbol("C");
-    molecule.createBond(atomC1, atomC2, SmilesBond.TYPE_DOUBLE);
+    createBond(atomC1, atomC2, SmilesBond.TYPE_DOUBLE, true);
     SmilesAtom atomF2 = molecule.addAtom();
     atomF2.setSymbol("F");
-    molecule.createBond(atomC2, atomF2, SmilesBond.TYPE_DIRECTIONAL_2);
+    createBond(atomC2, atomF2, SmilesBond.TYPE_DIRECTIONAL_2, true);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC2);
     checkMolecule("F\\C=C\\F", molecule);
@@ -949,13 +931,13 @@ public class TestSmilesParser extends TestCase {
     atomF1.setSymbol("F");
     SmilesAtom atomC1 = molecule.addAtom();
     atomC1.setSymbol("C");
-    molecule.createBond(atomF1, atomC1, SmilesBond.TYPE_DIRECTIONAL_1);
+    createBond(atomF1, atomC1, SmilesBond.TYPE_DIRECTIONAL_1, true);
     SmilesAtom atomC2 = molecule.addAtom();
     atomC2.setSymbol("C");
-    molecule.createBond(atomC1, atomC2, SmilesBond.TYPE_DOUBLE);
+    createBond(atomC1, atomC2, SmilesBond.TYPE_DOUBLE, true);
     SmilesAtom atomF2 = molecule.addAtom();
     atomF2.setSymbol("F");
-    molecule.createBond(atomC2, atomF2, SmilesBond.TYPE_DIRECTIONAL_2);
+    createBond(atomC2, atomF2, SmilesBond.TYPE_DIRECTIONAL_2, true);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC2);
     checkMolecule("F/C=C\\F", molecule);
@@ -966,13 +948,13 @@ public class TestSmilesParser extends TestCase {
     atomF1.setSymbol("F");
     SmilesAtom atomC1 = molecule.addAtom();
     atomC1.setSymbol("C");
-    molecule.createBond(atomF1, atomC1, SmilesBond.TYPE_DIRECTIONAL_2);
+    createBond(atomF1, atomC1, SmilesBond.TYPE_DIRECTIONAL_2, true);
     SmilesAtom atomC2 = molecule.addAtom();
     atomC2.setSymbol("C");
-    molecule.createBond(atomC1, atomC2, SmilesBond.TYPE_DOUBLE);
+    createBond(atomC1, atomC2, SmilesBond.TYPE_DOUBLE, true);
     SmilesAtom atomF2 = molecule.addAtom();
     atomF2.setSymbol("F");
-    molecule.createBond(atomC2, atomF2, SmilesBond.TYPE_DIRECTIONAL_1);
+    createBond(atomC2, atomF2, SmilesBond.TYPE_DIRECTIONAL_1, true);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC2);
     checkMolecule("F\\C=C/F", molecule);
@@ -983,19 +965,19 @@ public class TestSmilesParser extends TestCase {
     atomF.setSymbol("F");
     SmilesAtom atomC1 = molecule.addAtom();
     atomC1.setSymbol("C");
-    molecule.createBond(atomF, atomC1, SmilesBond.TYPE_DIRECTIONAL_1);
+    createBond(atomF, atomC1, SmilesBond.TYPE_DIRECTIONAL_1, true);
     SmilesAtom atomC2 = molecule.addAtom();
     atomC2.setSymbol("C");
-    molecule.createBond(atomC1, atomC2, SmilesBond.TYPE_DOUBLE);
+    createBond(atomC1, atomC2, SmilesBond.TYPE_DOUBLE, true);
     SmilesAtom atomC3 = molecule.addAtom();
     atomC3.setSymbol("C");
-    molecule.createBond(atomC2, atomC3, SmilesBond.TYPE_DIRECTIONAL_1);
+    createBond(atomC2, atomC3, SmilesBond.TYPE_DIRECTIONAL_1, true);
     SmilesAtom atomC4 = molecule.addAtom();
     atomC4.setSymbol("C");
-    molecule.createBond(atomC3, atomC4, SmilesBond.TYPE_DOUBLE);
+    createBond(atomC3, atomC4, SmilesBond.TYPE_DOUBLE, true);
     SmilesAtom atomC5 = molecule.addAtom();
     atomC5.setSymbol("C");
-    molecule.createBond(atomC4, atomC5, SmilesBond.TYPE_DIRECTIONAL_1);
+    createBond(atomC4, atomC5, SmilesBond.TYPE_DIRECTIONAL_1, true);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC2);
     addHydrogen(molecule, atomC3);
@@ -1011,19 +993,19 @@ public class TestSmilesParser extends TestCase {
     atomF.setSymbol("F");
     SmilesAtom atomC1 = molecule.addAtom();
     atomC1.setSymbol("C");
-    molecule.createBond(atomF, atomC1, SmilesBond.TYPE_DIRECTIONAL_1);
+    createBond(atomF, atomC1, SmilesBond.TYPE_DIRECTIONAL_1, true);
     SmilesAtom atomC2 = molecule.addAtom();
     atomC2.setSymbol("C");
-    molecule.createBond(atomC1, atomC2, SmilesBond.TYPE_DOUBLE);
+    createBond(atomC1, atomC2, SmilesBond.TYPE_DOUBLE, true);
     SmilesAtom atomC3 = molecule.addAtom();
     atomC3.setSymbol("C");
-    molecule.createBond(atomC2, atomC3, SmilesBond.TYPE_DIRECTIONAL_1);
+    createBond(atomC2, atomC3, SmilesBond.TYPE_DIRECTIONAL_1, true);
     SmilesAtom atomC4 = molecule.addAtom();
     atomC4.setSymbol("C");
-    molecule.createBond(atomC3, atomC4, SmilesBond.TYPE_DOUBLE);
+    createBond(atomC3, atomC4, SmilesBond.TYPE_DOUBLE, true);
     SmilesAtom atomC5 = molecule.addAtom();
     atomC5.setSymbol("C");
-    molecule.createBond(atomC4, atomC5, SmilesBond.TYPE_SINGLE);
+    createBond(atomC4, atomC5, SmilesBond.TYPE_SINGLE, true);
     addHydrogen(molecule, atomC1);
     addHydrogen(molecule, atomC2);
     addHydrogen(molecule, atomC3);
@@ -1044,19 +1026,19 @@ public class TestSmilesParser extends TestCase {
     atomC1.setChiralClass(SmilesAtom.CHIRALITY_TETRAHEDRAL);
     atomC1.setChiralOrder(1);
     atomC1.setSymbol("C");
-    molecule.createBond(atomN, atomC1, SmilesBond.TYPE_SINGLE);
+    createBond(atomN, atomC1, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomC2 = molecule.addAtom();
     atomC2.setSymbol("C");
-    molecule.createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE);
+    createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomC3 = molecule.addAtom();
     atomC3.setSymbol("C");
-    molecule.createBond(atomC1, atomC3, SmilesBond.TYPE_SINGLE);
+    createBond(atomC1, atomC3, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomO1 = molecule.addAtom();
     atomO1.setSymbol("O");
-    molecule.createBond(atomC3, atomO1, SmilesBond.TYPE_DOUBLE);
+    createBond(atomC3, atomO1, SmilesBond.TYPE_DOUBLE, true);
     SmilesAtom atomO2 = molecule.addAtom();
     atomO2.setSymbol("O");
-    molecule.createBond(atomC3, atomO2, SmilesBond.TYPE_SINGLE);
+    createBond(atomC3, atomO2, SmilesBond.TYPE_SINGLE, true);
     addHydrogen(molecule, atomN);
     addHydrogen(molecule, atomN);
     addHydrogen(molecule, atomC1);
@@ -1073,61 +1055,57 @@ public class TestSmilesParser extends TestCase {
     SmilesSearch molecule = new SmilesSearch();
     SmilesAtom atomC1 = molecule.addAtom();
     atomC1.setSymbol("C");
-    molecule.createBond(atomC1, null, SmilesBond.TYPE_SINGLE);
+    addHydrogen(molecule, atomC1);
+    addHydrogen(molecule, atomC1);
     SmilesAtom atomC2 = molecule.addAtom();
     atomC2.setSymbol("C");
-    molecule.createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE);
+    addHydrogen(molecule, atomC2);
+    addHydrogen(molecule, atomC2);
     SmilesAtom atomC3 = molecule.addAtom();
     atomC3.setChiralClass(SmilesAtom.CHIRALITY_TETRAHEDRAL);
     atomC3.setChiralOrder(1);
     atomC3.setSymbol("C");
-    molecule.createBond(atomC2, atomC3, SmilesBond.TYPE_SINGLE);
-    molecule.createBond(atomC3, null, SmilesBond.TYPE_SINGLE);
+    addHydrogen(molecule, atomC3);
     SmilesAtom atomC4 = molecule.addAtom();
     atomC4.setSymbol("C");
-    molecule.createBond(atomC3, atomC4, SmilesBond.TYPE_SINGLE);
+    addHydrogen(molecule, atomC4);
+    addHydrogen(molecule, atomC4);
     SmilesAtom atomC5 = molecule.addAtom();
     atomC5.setSymbol("C");
-    molecule.createBond(atomC4, atomC5, SmilesBond.TYPE_SINGLE);
+    addHydrogen(molecule, atomC5);
+    addHydrogen(molecule, atomC5);
     SmilesAtom atomC6 = molecule.addAtom();
     atomC6.setSymbol("C");
-    molecule.createBond(atomC5, atomC6, SmilesBond.TYPE_SINGLE);
+    addHydrogen(molecule, atomC6);
+    addHydrogen(molecule, atomC6);
     SmilesAtom atomC7 = molecule.addAtom();
     atomC7.setSymbol("C");
-    molecule.createBond(atomC6, atomC7, SmilesBond.TYPE_SINGLE);
+    addHydrogen(molecule, atomC7);
+    addHydrogen(molecule, atomC7);
     SmilesAtom atomC8 = molecule.addAtom();
     atomC8.setChiralClass(SmilesAtom.CHIRALITY_TETRAHEDRAL);
     atomC8.setChiralOrder(1);
+    addHydrogen(molecule, atomC8);
     atomC8.setSymbol("C");
-    molecule.createBond(atomC7, atomC8, SmilesBond.TYPE_SINGLE);
-    atomC3.getBond(1).setAtom2(atomC8);
-    atomC8.addBond(atomC3.getBond(1));
     SmilesAtom atomC9 = molecule.addAtom();
     atomC9.setSymbol("C");
-    molecule.createBond(atomC8, atomC9, SmilesBond.TYPE_SINGLE);
+    addHydrogen(molecule, atomC9);
+    addHydrogen(molecule, atomC9);
     SmilesAtom atomC0 = molecule.addAtom();
     atomC0.setSymbol("C");
-    molecule.createBond(atomC9, atomC0, SmilesBond.TYPE_SINGLE);
-    atomC1.getBond(0).setAtom2(atomC0);
-    atomC0.addBond(atomC1.getBond(0));
-    addHydrogen(molecule, atomC1);
-    addHydrogen(molecule, atomC1);
-    addHydrogen(molecule, atomC2);
-    addHydrogen(molecule, atomC2);
-    addHydrogen(molecule, atomC3);
-    addHydrogen(molecule, atomC4);
-    addHydrogen(molecule, atomC4);
-    addHydrogen(molecule, atomC5);
-    addHydrogen(molecule, atomC5);
-    addHydrogen(molecule, atomC6);
-    addHydrogen(molecule, atomC6);
-    addHydrogen(molecule, atomC7);
-    addHydrogen(molecule, atomC7);
-    addHydrogen(molecule, atomC8);
-    addHydrogen(molecule, atomC9);
-    addHydrogen(molecule, atomC9);
     addHydrogen(molecule, atomC0);
     addHydrogen(molecule, atomC0);
+    createBond(atomC1, atomC0, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC2, atomC3, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC3, atomC8, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC3, atomC4, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC4, atomC5, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC5, atomC6, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC6, atomC7, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC7, atomC8, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC8, atomC9, SmilesBond.TYPE_SINGLE, true);
+    createBond(atomC9, atomC0, SmilesBond.TYPE_SINGLE, true);
     checkMolecule("C1C[C@H]2CCCC[C@H]2CC1", molecule);
   }
   public void testChapter7_16() {    // Test OC(Cl)=[C@]=C(C)F
@@ -1136,24 +1114,24 @@ public class TestSmilesParser extends TestCase {
     atomO.setSymbol("O");
     SmilesAtom atomC1 = molecule.addAtom();
     atomC1.setSymbol("C");
-    molecule.createBond(atomO, atomC1, SmilesBond.TYPE_SINGLE);
+    createBond(atomO, atomC1, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomCl = molecule.addAtom();
     atomCl.setSymbol("Cl");
-    molecule.createBond(atomC1, atomCl, SmilesBond.TYPE_SINGLE);
+    createBond(atomC1, atomCl, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomC2 = molecule.addAtom();
     atomC2.setChiralClass(SmilesAtom.CHIRALITY_ALLENE);
     atomC2.setChiralOrder(1);
     atomC2.setSymbol("C");
-    molecule.createBond(atomC1, atomC2, SmilesBond.TYPE_DOUBLE);
+    createBond(atomC1, atomC2, SmilesBond.TYPE_DOUBLE, true);
     SmilesAtom atomC3 = molecule.addAtom();
     atomC3.setSymbol("C");
-    molecule.createBond(atomC2, atomC3, SmilesBond.TYPE_DOUBLE);
+    createBond(atomC2, atomC3, SmilesBond.TYPE_DOUBLE, true);
     SmilesAtom atomC4 = molecule.addAtom();
     atomC4.setSymbol("C");
-    molecule.createBond(atomC3, atomC4, SmilesBond.TYPE_SINGLE);
+    createBond(atomC3, atomC4, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomF = molecule.addAtom();
     atomF.setSymbol("F");
-    molecule.createBond(atomC3, atomF, SmilesBond.TYPE_SINGLE);
+    createBond(atomC3, atomF, SmilesBond.TYPE_SINGLE, true);
     addHydrogen(molecule, atomO);
     addHydrogen(molecule, atomC4);
     addHydrogen(molecule, atomC4);
@@ -1166,24 +1144,24 @@ public class TestSmilesParser extends TestCase {
     atomO.setSymbol("O");
     SmilesAtom atomC1 = molecule.addAtom();
     atomC1.setSymbol("C");
-    molecule.createBond(atomO, atomC1, SmilesBond.TYPE_SINGLE);
+    createBond(atomO, atomC1, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomCl = molecule.addAtom();
     atomCl.setSymbol("Cl");
-    molecule.createBond(atomC1, atomCl, SmilesBond.TYPE_SINGLE);
+    createBond(atomC1, atomCl, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomC2 = molecule.addAtom();
     atomC2.setChiralClass(SmilesAtom.CHIRALITY_ALLENE);
     atomC2.setChiralOrder(1);
     atomC2.setSymbol("C");
-    molecule.createBond(atomC1, atomC2, SmilesBond.TYPE_DOUBLE);
+    createBond(atomC1, atomC2, SmilesBond.TYPE_DOUBLE, true);
     SmilesAtom atomC3 = molecule.addAtom();
     atomC3.setSymbol("C");
-    molecule.createBond(atomC2, atomC3, SmilesBond.TYPE_DOUBLE);
+    createBond(atomC2, atomC3, SmilesBond.TYPE_DOUBLE, true);
     SmilesAtom atomC4 = molecule.addAtom();
     atomC4.setSymbol("C");
-    molecule.createBond(atomC3, atomC4, SmilesBond.TYPE_SINGLE);
+    createBond(atomC3, atomC4, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomF = molecule.addAtom();
     atomF.setSymbol("F");
-    molecule.createBond(atomC3, atomF, SmilesBond.TYPE_SINGLE);
+    createBond(atomC3, atomF, SmilesBond.TYPE_SINGLE, true);
     addHydrogen(molecule, atomO);
     addHydrogen(molecule, atomC4);
     addHydrogen(molecule, atomC4);
@@ -1198,16 +1176,16 @@ public class TestSmilesParser extends TestCase {
     atomPo.setChiralClass(SmilesAtom.CHIRALITY_SQUARE_PLANAR);
     atomPo.setChiralOrder(1);
     atomPo.setSymbol("Po");
-    molecule.createBond(atomF, atomPo, SmilesBond.TYPE_SINGLE);
+    createBond(atomF, atomPo, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomCl = molecule.addAtom();
     atomCl.setSymbol("Cl");
-    molecule.createBond(atomPo, atomCl, SmilesBond.TYPE_SINGLE);
+    createBond(atomPo, atomCl, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomBr = molecule.addAtom();
     atomBr.setSymbol("Br");
-    molecule.createBond(atomPo, atomBr, SmilesBond.TYPE_SINGLE);
+    createBond(atomPo, atomBr, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomI = molecule.addAtom();
     atomI.setSymbol("I");
-    molecule.createBond(atomPo, atomI, SmilesBond.TYPE_SINGLE);
+    createBond(atomPo, atomI, SmilesBond.TYPE_SINGLE, true);
     checkMolecule("F[Po@SP1](Cl)(Br)I", molecule);
   }
   public void testChapter7_19() {    // Test O=C[As@](F)(Cl)(Br)S
@@ -1216,24 +1194,24 @@ public class TestSmilesParser extends TestCase {
     atomO.setSymbol("O");
     SmilesAtom atomC = molecule.addAtom();
     atomC.setSymbol("C");
-    molecule.createBond(atomO, atomC, SmilesBond.TYPE_DOUBLE);
+    createBond(atomO, atomC, SmilesBond.TYPE_DOUBLE, true);
     SmilesAtom atomAs = molecule.addAtom();
     atomAs.setChiralClass(SmilesAtom.CHIRALITY_TRIGONAL_BIPYRAMIDAL);
     atomAs.setChiralOrder(1);
     atomAs.setSymbol("As");
-    molecule.createBond(atomC, atomAs, SmilesBond.TYPE_SINGLE);
+    createBond(atomC, atomAs, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomF = molecule.addAtom();
     atomF.setSymbol("F");
-    molecule.createBond(atomAs, atomF, SmilesBond.TYPE_SINGLE);
+    createBond(atomAs, atomF, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomCl = molecule.addAtom();
     atomCl.setSymbol("Cl");
-    molecule.createBond(atomAs, atomCl, SmilesBond.TYPE_SINGLE);
+    createBond(atomAs, atomCl, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomBr = molecule.addAtom();
     atomBr.setSymbol("Br");
-    molecule.createBond(atomAs, atomBr, SmilesBond.TYPE_SINGLE);
+    createBond(atomAs, atomBr, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomS = molecule.addAtom();
     atomS.setSymbol("S");
-    molecule.createBond(atomAs, atomS, SmilesBond.TYPE_SINGLE);
+    createBond(atomAs, atomS, SmilesBond.TYPE_SINGLE, true);
     addHydrogen(molecule, atomC);
     addHydrogen(molecule, atomS);
     checkMolecule("O=C[As@](F)(Cl)(Br)S", molecule);
@@ -1244,27 +1222,27 @@ public class TestSmilesParser extends TestCase {
     atomO.setSymbol("O");
     SmilesAtom atomC = molecule.addAtom();
     atomC.setSymbol("C");
-    molecule.createBond(atomO, atomC, SmilesBond.TYPE_DOUBLE);
+    createBond(atomO, atomC, SmilesBond.TYPE_DOUBLE, true);
     SmilesAtom atomCo = molecule.addAtom();
     atomCo.setChiralClass(SmilesAtom.CHIRALITY_OCTAHEDRAL);
     atomCo.setChiralOrder(1);
     atomCo.setSymbol("Co");
-    molecule.createBond(atomC, atomCo, SmilesBond.TYPE_SINGLE);
+    createBond(atomC, atomCo, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomF = molecule.addAtom();
     atomF.setSymbol("F");
-    molecule.createBond(atomCo, atomF, SmilesBond.TYPE_SINGLE);
+    createBond(atomCo, atomF, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomCl = molecule.addAtom();
     atomCl.setSymbol("Cl");
-    molecule.createBond(atomCo, atomCl, SmilesBond.TYPE_SINGLE);
+    createBond(atomCo, atomCl, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomBr = molecule.addAtom();
     atomBr.setSymbol("Br");
-    molecule.createBond(atomCo, atomBr, SmilesBond.TYPE_SINGLE);
+    createBond(atomCo, atomBr, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomI = molecule.addAtom();
     atomI.setSymbol("I");
-    molecule.createBond(atomCo, atomI, SmilesBond.TYPE_SINGLE);
+    createBond(atomCo, atomI, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomS = molecule.addAtom();
     atomS.setSymbol("S");
-    molecule.createBond(atomCo, atomS, SmilesBond.TYPE_SINGLE);
+    createBond(atomCo, atomS, SmilesBond.TYPE_SINGLE, true);
     addHydrogen(molecule, atomC);
     addHydrogen(molecule, atomS);
     checkMolecule("O=C[Co@](F)(Cl)(Br)(I)S", molecule);
@@ -1277,14 +1255,28 @@ public class TestSmilesParser extends TestCase {
    * @param expected SMILES molecule
    */
   private static void checkMolecule(String smiles, SmilesSearch expected) {
-    try {
-      SmilesSearch molecule = SmilesParser.getMolecule(false, smiles);
-      assertTrue(areMoleculesEqual(molecule, expected));
-    } catch (InvalidSmilesException e) {
-      fail("InvalidSmilesException: " + e.getMessage());
-    }
+    assertTrue(new SmilesMatcher().areEqual(smiles, expected));
   }
   
+  public SmilesBond createBond(SmilesAtom atom1, SmilesAtom atom2, int bondType, boolean isExplicitH) {
+    SmilesBond b = new SmilesBond(atom1, atom2, bondType, false);
+    if (!isExplicitH)
+      return b;
+    if (atom1.getElementNumber() == 1)
+      addExplicitH(atom2);
+    if (atom2 !=  null && atom2.getElementNumber() == 1)
+      addExplicitH(atom1);
+    return b;
+  }
+  
+
+  private void addExplicitH(SmilesAtom bonded) {
+    int n = bonded.getExplicitHydrogenCount();
+    if (n < 0)
+      n = 0;
+    bonded.setExplicitHydrogenCount(n + 1);
+  }
+
   /**
    * Adds an hydrogen
    * 
@@ -1292,23 +1284,19 @@ public class TestSmilesParser extends TestCase {
    * @param bonded Other atom to bond to
    */
   private void addHydrogen(SmilesSearch molecule, SmilesAtom bonded) {
-    if (true)
-      return;
     // no longer testable this way -- SmilesParser does not add H atoms
     SmilesAtom atomH = molecule.addAtom();
     atomH.setSymbol("H");
     if (bonded != null) {
-      molecule.createBond(bonded, atomH, SmilesBond.TYPE_SINGLE);
+      createBond(bonded, atomH, SmilesBond.TYPE_SINGLE, false);
     }
   }
   
-  /**
-   * Compares two SmilesMolecule
-   * 
-   * @param molecule1 Molecule 1
-   * @param molecule2 Molecule 2
-   * @return true if they are equal
-   */
+/*  
+ * 
+ * abandoned -- this just tested to see if the to molecules were
+ * identically formed, not if they would match by a search.
+ * 
   private static boolean areMoleculesEqual(
           SmilesSearch molecule1,
           SmilesSearch molecule2) {
@@ -1413,5 +1401,5 @@ public class TestSmilesParser extends TestCase {
     }
     return true;
   }
-  
+*/  
 }

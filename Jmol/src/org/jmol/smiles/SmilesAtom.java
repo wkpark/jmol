@@ -57,6 +57,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
   boolean hasSymbol;
   boolean isFirst = true;
   
+  int jmolIndex = -1;
   short elementNumber = -2; // UNDEFINED (could be A or a or *)
   
   private short atomicMass = Short.MIN_VALUE;
@@ -67,12 +68,12 @@ public class SmilesAtom extends Point3f implements JmolNode {
   private int chiralClass = Integer.MIN_VALUE;
   private int chiralOrder = Integer.MIN_VALUE;
   private boolean isAromatic;
+  SmilesAtom parent;
   SmilesBond[] bonds = new SmilesBond[INITIAL_BONDS];
-  private int bondsCount;
+  int bondCount;
 
   public void setBonds(SmilesBond[] bonds) {
     this.bonds = bonds;
-    bondsCount = bonds.length;
   }
 
 
@@ -93,6 +94,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
       atomsOr = tmp;
     }
     SmilesAtom sAtom = new SmilesAtom(index);
+    sAtom.parent = this;
     atomsOr[nAtomsOr] = sAtom;
     nAtomsOr++;
     return sAtom;
@@ -107,6 +109,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
       primitives = tmp;
     }
     SmilesAtom sAtom = new SmilesAtom(index);
+    sAtom.parent = this;
     primitives[nPrimitives] = sAtom;
     setSymbol("*");
     hasSymbol = false;
@@ -141,6 +144,13 @@ public class SmilesAtom extends Point3f implements JmolNode {
 
   int component;
   int atomSite;
+  int degree = -1;
+  int nonhydrogenDegree = -1;
+  int valence = -1;
+  int connectivity = -1;
+  int ringMembership = Integer.MIN_VALUE;
+  int ringSize = Integer.MIN_VALUE;
+  int ringConnectivity = -1;
   
   public SmilesAtom(int iComponent, int ptAtom, int flags, short atomicNumber, int charge) {
     component = iComponent;
@@ -192,9 +202,9 @@ public class SmilesAtom extends Point3f implements JmolNode {
         break;
   	  }
   	  
-      for (int i = 0; i < bondsCount; i++) {
+      for (int i = 0; i < bondCount; i++) {
         SmilesBond bond = bonds[i];
-        switch (bond.getBondType()) {
+        switch (bond.bondType) {
         case SmilesBond.TYPE_ANY: // for aromatics
         case SmilesBond.TYPE_SINGLE:
         case SmilesBond.TYPE_DIRECTIONAL_1:
@@ -324,7 +334,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
    * @param atom Temporary: number of a matching atom in a molecule.
    */
   public void setMatchingAtom(int atom) {
-    this.matchingAtom = atom;
+    matchingAtom = atom;
   }
 
   /**
@@ -383,85 +393,30 @@ public class SmilesAtom extends Point3f implements JmolNode {
     implicitHydrogenCount = count;
   }
 
-  /**
-   * Returns the number of bonds of this atom.
-   * 
-   * @return Number of bonds.
-   */
-  public int getCovalentBondCount() {
-    return bondsCount;
-  }
-
-  /**
-   * Returns the bond at index <code>number</code>.
-   * 
-   * @param number Bond number.
-   * @return Bond.
-   */
-  public SmilesBond getBond(int number) {
-    if ((number >= 0) && (number < bondsCount)) {
-      return bonds[number];
-    }
-    return null;
-  }
-  
-  /**
-   * Add a bond to the atom.
-   * 
-   * @param bond Bond to add.
-   */
-  public void addBond(SmilesBond bond) {
-    if (bondsCount >= bonds.length) {
-      SmilesBond[] tmp = new SmilesBond[bonds.length * 2];
-      System.arraycopy(bonds, 0, tmp, 0, bonds.length);
-      bonds = tmp;
-    }
-    //if (Logger.debugging)
-      //Logger.debug("adding bond to " + this + ": " + bond.getAtom1() + " " + bond.getAtom2());
-    bonds[bondsCount] = bond;
-    bondsCount++;
-  }
-
-  public int getMatchingBondedAtom(int i) {
-    if (i >= bondsCount)
-      return -1;
-    SmilesBond b = bonds[i];
-    return (b.getAtom1() == this ? b.getAtom2() : b.getAtom1()).matchingAtom;
-  }
-
-
-
-  int degree = -1;
   public void setDegree(int degree) {
     this.degree = degree;
   }
 
-  int nonhydrogenDegree = -1;
   public void setNonhydrogenDegree(int degree) {
     nonhydrogenDegree = degree;
   }
 
-  int valence = -1;
   public void setValence(int valence) {
     this.valence = valence;
   }
 
-  int connectivity = -1;
   public void setConnectivity(int connectivity) {
     this.connectivity = connectivity;
   }
 
-  int ringMembership = Integer.MIN_VALUE;
   public void setRingMembership(int rm) {
     ringMembership = rm;
   }
 
-  int ringSize = Integer.MIN_VALUE;
   public void setRingSize(int rs) {
     ringSize = rs;
   }
 
-  int ringConnectivity = -1;
   public void setRingConnectivity(int rc) {
     ringConnectivity = rc;
   }
@@ -470,30 +425,18 @@ public class SmilesAtom extends Point3f implements JmolNode {
     return component;
   }
 
-  public JmolEdge[] getEdges() {
-    return bonds;
-  }
-
   public int getAtomSite() {
     return atomSite;
-  }
-
-  public int getBondedAtomIndex(int j) {
-    return bonds[j].getOtherAtom(this).index;
-  }
-
-  public int getCovalentHydrogenCount() {
-    int n = 0;
-    for (int k = 0; k < bonds.length; k++)
-      if (bonds[k].getOtherAtom(this).elementNumber == 1)
-        n++;
-    return n;
   }
 
   public int getImplicitHydrogenCount() {
     // searching a SMILES string all H atoms will 
     // be explicitly defined
     return 0;
+  }
+
+  public int getExplicitHydrogenCount() {
+    return explicitHydrogenCount;
   }
 
   public int getFormalCharge() {
@@ -504,7 +447,76 @@ public class SmilesAtom extends Point3f implements JmolNode {
     return atomicMass;
   }
 
+  /**
+   * Add a bond to the atom.
+   * 
+   * @param bond Bond to add.
+   */
+  public void addBond(SmilesBond bond) {
+    if (bondCount >= bonds.length) {
+      SmilesBond[] tmp = new SmilesBond[bonds.length * 2];
+      System.arraycopy(bonds, 0, tmp, 0, bonds.length);
+      bonds = tmp;
+    }
+    //if (Logger.debugging)
+      //Logger.debug("adding bond to " + this + ": " + bond.getAtom1() + " " + bond.getAtom2());
+    bonds[bondCount] = bond;
+    bondCount++;
+  }
+
+  public JmolEdge[] getEdges() {
+    return (parent != null ? parent.getEdges() : bonds);
+  }
+
+  /**
+   * Returns the bond at index <code>number</code>.
+   * 
+   * @param number Bond number.
+   * @return Bond.
+   */
+  public SmilesBond getBond(int number) {
+    return (parent != null ? parent.getBond(number)
+        : number >= 0 && number < bondCount ? bonds[number] : null);
+  }
+  
+  /**
+   * Returns the number of bonds of this atom.
+   * 
+   * @return Number of bonds.
+   */
+  public int getCovalentBondCount() {
+    return (parent != null ? parent.getCovalentBondCount() : bondCount);
+  }
+
+  public int getMatchingBondedAtom(int i) {
+    if (parent != null)
+      return parent.getMatchingBondedAtom(i);
+    if (i >= bondCount)
+      return -1;
+    SmilesBond b = bonds[i];
+    return (b.getAtom1() == this ? b.getAtom2() : b.getAtom1()).matchingAtom;
+  }
+
+  public int getBondedAtomIndex(int j) {
+    if (bonds == null || bonds[j] == null)
+      System.out.println("OOPS SMILESAOTM ");
+    return (parent != null ? parent.getBondedAtomIndex(j) : bonds[j]
+        .getOtherAtom(this).index);
+  }
+
+  public int getCovalentHydrogenCount() {
+    if  (parent != null)
+      return parent.getCovalentHydrogenCount();
+    int n = 0;
+    for (int k = 0; k < bonds.length; k++)
+      if (bonds[k].getOtherAtom(this).elementNumber == 1)
+        n++;
+    return n;
+  }
+
   public int getValence() {
+    if (parent != null)
+      return parent.getValence();
     int n = valence;
     if (n < 0 && bonds != null)
       for (int i = bonds.length; --i >= 0;)
@@ -514,6 +526,8 @@ public class SmilesAtom extends Point3f implements JmolNode {
   }
 
   public SmilesBond getBondTo(SmilesAtom atom) {
+    if  (parent != null)
+      return parent.getBondTo(atom);
     for (int k = 0; k < bonds.length; k++)
       if (bonds[k] != null && bonds[k].getOtherAtom(this) == atom)
       return bonds[k];

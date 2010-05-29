@@ -65,7 +65,7 @@ or [2H] are selected; connected hydrogen atoms as in [CH3] are not selected.
 
 </li><li>Adds { } for selection of one or more subsets of matched atoms.
     Simply place { } around any atom or group of atoms that are to be 
-    specifically returned from a search.
+    specifically returned from a search:  <b>select search("{C}C=O")</b>, for example, returns all alpha carbons. 
 
 </li></ul>
 <b>aromaticity</b>
@@ -158,7 +158,7 @@ In addition, Jmol 3D-SEARCH adds the following primitives and options:
     
 </li><li>Allows any order of bracketed primitives: [H2C13] same as [13CH2].
  
-</li><li>All atom logic implemented: [X,!X,X&X,X&X&X;X&X] etc.
+</li><li>All atom and bond logic implemented: [X,!X,X&X,X&X&X;X&X]-,=X
  
 </li><li>"&" is optional: [13CH2] same as [13&C&H2]
     except in cases of ambiguity with element symbols: [Rh] is rhodium, not [R&h].
@@ -231,19 +231,16 @@ includes:
       
    [smarts] == [node][connections] 
    [connections] == [connection] | NULL }
-   [connection] == { [branch] | [bond] [node] } [connections]
-   [branch] == "(" [smarts] ")" 
+   [connection] == { [branch] | [bondExpression] [node] } [connections]
+   [branch] == "(" { [smarts] | [bondExpression] [smarts] } ")" 
    [node] == { [atomExpression] | [ringPointer] }
-   [ringPointer] == { "%" [digit][digit] | [digit] }
-      # note: all ringPointers must have a second matching ringPointer 
-      #       and must be preceded by an atomExpression or 
-   [bond] == { "-" | "=" | "#" | "." | "/" | "\\" | ":" | "~" | "@" | NULL
 
- 
    [atomExpression] = { [unbracketedAtomType] 
                              | "[" [bracketedExpression] "]" 
                              | [nestedExpression] }
    
+   [nestedExpression] == "$(" + [atomExpression] + ")"
+
    [unbracketedAtomType] == [atomType] 
                                  & ! { "Ac" | "Ba" | "Ca" | "Na" | "Pa" | "Sc"
                                      | "ac" | "ba" | "ca" | "na" | "pa" | "sc" }
@@ -256,13 +253,13 @@ includes:
                             including Xx and only through element 109)
    [aromaticType] == { "a" | [validElementSymbol].toLowerCase() }
        
-   [bracketedExpression] == { [orSet] | [orSet] ";" [andSet] } 
+   [bracketedExpression] == { [atomOrSet] | [atomOrSet] ";" [atomAndSet] } 
    
-   [orSet] == { [andSet] | [andSet] "," [andSet] }
-   [andSet] == { [primitives] | [primitives] "&" [andSet]
-                              | "!" [primitive] 
-                              | "!" [primitive] "&" [andSet] }
-   [primitives] == { [primitive] | [primitive] [primitives] }
+   [atomOrSet] == { [atomAndSet] | [atomAndSet] "," [atomAndSet] }
+   [atomAndSet] == { [atomPrimitives] | [atomPrimitives] "&" [atomAndSet]
+                              | "!" [atomPrimitive] 
+                              | "!" [atomPrimitive] "&" [atomAndSet] }
+   [atomPrimitives] == { [atomPrimitive] | [atomPrimitive] [atomPrimitives] }
        # note -- if & is not used, certain combinations of primitiveDescritors
        #         are not allowed. Specifically, combinations that together
        #         form the symbol for an element will be read as the element (Ar, Rh, etc.)
@@ -277,7 +274,9 @@ includes:
                               | [x_Prop] | [nestedExpression] }
    [isotope] == [digits] | [digits] "?"
        # note -- isotope mass may come before or after element symbol, 
-       #         EXCEPT "H1" which must be parsed as "an atom with a single H"
+       #         EXCEPT "H1" which must be parsed as "an atom with a single H" 
+   [digits] = { [digit] | [digit] [digits] }
+   [digit] = { "0" | "1" | "2" | "3" | "4" | "5" | "6" | 7" | "8" | "9" }
    [charge] == { "-" [digits] | "+" [digits] | [plusSet] | [minusSet] }
    [plusSet] == { "+" | "+" [plusSet] }
    [minusSet] == { "-" | "-" [minusSet] }
@@ -308,10 +307,27 @@ includes:
                                       #   includes implicit H atoms
    [x_Prop] == { "x" [digits] | "x" } # ring connectivity -- total ring connections
    
-   [nestedExpression] == "$(" + [atomExpression] + ")"
+   [ringPointer] == { "%" [digit][digit] | [digit] }
+      # note: all ringPointers must have a second matching ringPointer 
+      #       and must be preceded by an atomExpression for the 
+      #       first occurance and either an atomExpression or a bondExpression
+      #       for the second occurance
+
+   [bondExpression] == { [bondOrSet] | [bondOrSet] ";" [bondAndSet] } 
+   
+   [bondOrSet] == { [bondAndSet] | [bondAndSet] "," [bondAndSet] }
+   [bondAndSet] == { [bondPrimitives] | [bondPrimitives] "&" [bondAndSet]
+                              | "!" [bondPrimitive] 
+                              | "!" [bondPrimitive] "&" [bondAndSet] }
+   [bondPrimitives] == { [bondPrimitive] | [bondPrimitive] [bondPrimitives] }       
+   [bond] == { "-" | "=" | "#" | "." | "/" | "\\" | ":" | "~" | "@" | NULL
+      # note: All bondExpressions are not valid. Stereochemistry should not 
+      #       be mixed with the others, as it represents a single bond always.
+      #       In addition, '.' ("no bond") cannot be mixed with any bond type.
+      #       Nothing would be retrieved by "-&=", as a bond cannot be both single
+      #       and double. However, "-@" is potentially very useful -- "ring single-bonds"
+      #       or "=&!@" -- "doubly-bonded atoms where the double bond is not in a ring"
  
-   [digits] = { [digit] | [digit] [digits] }
-   [digit] = { "0" | "1" | "2" | "3" | "4" | "5" | "6" | 7" | "8" | "9" }
 
 </pre>
 </p>

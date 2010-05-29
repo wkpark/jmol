@@ -4364,7 +4364,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   void hoverOn(int atomIndex, int action) {
     if (isModelkitMode()) {
-      highlight(BitSetUtil.setBit(atomIndex));
+      if (isAtomAssignable(atomIndex))
+          highlight(BitSetUtil.setBit(atomIndex));
       refresh(3, "hover on atom");
       return;
     }
@@ -7503,7 +7504,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     BitSet bs = null;
     if (index >= 0) {
       Bond b = modelSet.getBonds()[index];
-      bs = BitSetUtil.setBit(b.getAtomIndex2());
+      int i = b.getAtomIndex2();
+      if (!isAtomAssignable(i))
+        return;
+      bs = BitSetUtil.setBit(i);
       bs.set(b.getAtomIndex1());
     }
     highlight(bs);

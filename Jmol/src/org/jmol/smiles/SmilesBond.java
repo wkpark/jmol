@@ -41,12 +41,56 @@ public class SmilesBond implements JmolEdge {
   public final static int TYPE_AROMATIC = 4;
   public final static int TYPE_DIRECTIONAL_1 = 5;
   public final static int TYPE_DIRECTIONAL_2 = 6;
-  public final static int TYPE_RING_BOND = 7;
+  public final static int TYPE_RING = 7;
   public final static int TYPE_ANY = 8;
+  public final static int TYPE_MULTIPLE = 999;
 
   private SmilesAtom atom1;
   private SmilesAtom atom2;
-  private int bondType;
+  int bondType;
+  boolean isNot;
+  public SmilesBond[] primitives;
+  public int nPrimitives;
+  public SmilesBond[] bondsOr;
+  public int nBondsOr;
+
+  public void set(SmilesBond bond) {
+    // not the atoms.
+    bondType = bond.bondType;
+    isNot = bond.isNot;
+    primitives = bond.primitives;
+    nPrimitives = bond.nPrimitives;
+    bondsOr = bond.bondsOr;
+    nBondsOr = bond.nBondsOr;
+  }
+
+  public SmilesBond addBondOr() {
+    if (bondsOr == null)
+      bondsOr = new SmilesBond[2];
+    if (nBondsOr >= bondsOr.length) {
+      SmilesBond[] tmp = new SmilesBond[bondsOr.length * 2];
+      System.arraycopy(bondsOr, 0, tmp, 0, bondsOr.length);
+      bondsOr = tmp;
+    }
+    SmilesBond sBond = new SmilesBond(TYPE_UNKNOWN, false);
+    bondsOr[nBondsOr] = sBond;
+    nBondsOr++;
+    return sBond;
+  }
+
+  public SmilesBond addPrimitive() {
+    if (primitives == null)
+      primitives = new SmilesBond[2];
+    if (nPrimitives >= primitives.length) {
+      SmilesBond[] tmp = new SmilesBond[primitives.length * 2];
+      System.arraycopy(primitives, 0, tmp, 0, primitives.length);
+      primitives = tmp;
+    }
+    SmilesBond sBond = new SmilesBond(TYPE_UNKNOWN, false);
+    primitives[nPrimitives] = sBond;
+    nPrimitives++;
+    return sBond;
+  }
 
   public String toString() {
     return atom1 + " -" + bondType + "- " + atom2;
@@ -57,14 +101,43 @@ public class SmilesBond implements JmolEdge {
    * @param atom1 First atom
    * @param atom2 Second atom
    * @param bondType Bond type
+   * @param isNot 
+   * @param isBondNot
    */
-  public SmilesBond(SmilesAtom atom1, SmilesAtom atom2, int bondType) {
-    this.atom1 = atom1;
-    this.atom2 = atom2;
-    this.bondType = bondType;
-    if (atom2 != null)
-      atom2.isFirst = false;
+  public SmilesBond(SmilesAtom atom1, SmilesAtom atom2, int bondType, boolean isNot) {
+    set(atom1, atom2);
+    set(bondType, isNot);
   }
+
+  SmilesBond(int bondType, boolean isNot) {
+    set(bondType, isNot);
+  }
+
+  void set(int bondType, boolean isNot) {
+    this.bondType = bondType;
+    this.isNot = isNot;
+  }
+  
+  void set(SmilesAtom atom1, SmilesAtom atom2) {
+    if (atom1 != null) {
+      this.atom1 = atom1;
+      atom1.addBond(this);
+    }
+    if (atom2 != null) {
+      this.atom2 = atom2;
+      atom2.isFirst = false;
+      atom2.addBond(this);
+    }
+  }
+
+  static boolean isBondType(char ch, boolean isSearch) throws InvalidSmilesException {
+    if ("!.-=#:/\\,&;@~".indexOf(ch) < 0)
+      return false;
+    if (!isSearch && "-=#:/\\.".indexOf(ch) < 0)
+        throw new InvalidSmilesException("SMARTS bond type " + ch
+            + " not allowed in SMILES");
+    return true;
+   }
 
   /**
    * @param code Bond code
@@ -87,7 +160,7 @@ public class SmilesBond implements JmolEdge {
     case '\\':
       return TYPE_DIRECTIONAL_2;
     case '@':
-      return TYPE_RING_BOND;
+      return TYPE_RING;
     case '~':
       return TYPE_ANY;
     }
@@ -98,28 +171,22 @@ public class SmilesBond implements JmolEdge {
     return atom1;
   }
 
-  public void setAtom1(SmilesAtom atom) {
-    this.atom1 = atom;
-  }
-
   public SmilesAtom getAtom2() {
     return atom2;
   }
 
-  public void setAtom2(SmilesAtom atom) {
+  void setAtom2(SmilesAtom atom) {
     this.atom2 = atom;
-    if (atom2 != null)
+    if (atom2 != null) {
       atom2.isFirst = false;
+      atom.addBond(this);
+    }
   }
 
   public int getBondType() {
     return bondType;
   }
 
-  public void setBondType(int bondType) {
-    this.bondType = bondType;
-  }
-  
   public SmilesAtom getOtherAtom(SmilesAtom a) {
     return (atom1 == a ? atom2 : atom1);
   }
@@ -151,5 +218,4 @@ public class SmilesBond implements JmolEdge {
   public int getValence() {
     return (bondType & 7);
   }
-  
 }

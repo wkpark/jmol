@@ -6330,7 +6330,6 @@ public class ScriptEvaluator {
         matches[j] = Escape.escape(b[j]);
       return matches;
     } catch (Exception e) {
-      // e.printStackTrace();
       evalError(e.getMessage(), null);
       return null; // unattainable
     }

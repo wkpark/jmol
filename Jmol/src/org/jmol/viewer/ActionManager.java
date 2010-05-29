@@ -761,7 +761,7 @@ public class ActionManager {
     if (isBound) {
       dragAtomIndex = viewer.findNearestAtomIndex(x, y, true);
       if (dragAtomIndex >= 0
-          && atomPickingMode == PICKING_ASSIGN_ATOM
+          && (atomPickingMode == PICKING_ASSIGN_ATOM || atomPickingMode == PICKING_INVERT_STEREO)
           && viewer.isAtomAssignable(dragAtomIndex)) {
         enterMeasurementMode();
         measurementPending.addPoint(dragAtomIndex, null, false);
@@ -1367,7 +1367,6 @@ public class ActionManager {
   }
 
   private void enterMeasurementMode() {
-    System.out.println("entering");
     viewer.setCursor(Viewer.CURSOR_CROSSHAIR);
     viewer.setPendingMeasurement(measurementPending = new MeasurementPending(
         viewer.getModelSet()));
@@ -1757,10 +1756,15 @@ public class ActionManager {
         // only for rings
         bs = viewer.getAtomBitSet("connected(atomIndex=" + atomIndex
             + ") and !within(SMARTS,'[r50,R]')");
-        if (bs.cardinality() > 2)
-          return;
-        viewer.undoAction(true, atomIndex, AtomCollection.TAINT_COORD);
-        viewer.invertSelected(null, null, atomIndex, bs);
+        switch (bs.cardinality()) {
+        case 0:
+        case 1:
+          break;
+        case 2:
+          viewer.undoAction(true, atomIndex, AtomCollection.TAINT_COORD);
+          viewer.invertSelected(null, null, atomIndex, bs);
+          break;
+        }
       }
       return;
     case PICKING_DELETE_ATOM:

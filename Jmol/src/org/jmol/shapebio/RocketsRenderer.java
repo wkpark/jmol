@@ -156,8 +156,6 @@ public class RocketsRenderer extends BioShapeRenderer {
   private void renderPendingRocketSegment(int i, Point3f pointStart,
                                           Point3f pointBeforeEnd,
                                           Point3f pointEnd, boolean tEnd) {
-    System.out.println("rr " + startIndexPending + " " + endIndexPending + " "
-        + tEnd);
     viewer.transformPoint(pointStart, screenA);
     viewer.transformPoint(pointEnd, screenB);
     int zMid = (int) Math.floor((screenA.z + screenB.z) / 2f);

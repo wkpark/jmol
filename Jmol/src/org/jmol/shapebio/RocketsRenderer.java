@@ -154,16 +154,18 @@ public class RocketsRenderer extends BioShapeRenderer {
   private Point3f screenC = new Point3f();
 
   private void renderPendingRocketSegment(int i, Point3f pointStart,
-                                  Point3f pointBeforeEnd, Point3f pointEnd,
-                                  boolean tEnd) {
+                                          Point3f pointBeforeEnd,
+                                          Point3f pointEnd, boolean tEnd) {
+    System.out.println("rr " + startIndexPending + " " + endIndexPending + " "
+        + tEnd);
     viewer.transformPoint(pointStart, screenA);
     viewer.transformPoint(pointEnd, screenB);
     int zMid = (int) Math.floor((screenA.z + screenB.z) / 2f);
     int diameter = viewer.scaleToScreen(zMid, mad);
-    if (tEnd) {
+    if (tEnd && !renderAsBarrels) {
       viewer.transformPoint(pointBeforeEnd, screenC);
       if (g3d.setColix(colix)) {
-        if (renderAsBarrels || pointBeforeEnd.distance(pointEnd) <= MIN_CONE_HEIGHT)
+        if (pointBeforeEnd.distance(pointEnd) <= MIN_CONE_HEIGHT)
           g3d.fillCylinderBits(Graphics3D.ENDCAPS_FLAT, diameter, screenB,
               screenC);
         else

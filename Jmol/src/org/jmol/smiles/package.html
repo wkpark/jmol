@@ -270,7 +270,7 @@ includes:
        #         but [Ard2] is [Ar&d2] -- "argon with two non-hydrogen connections"
        #         Also, "!" may not be use with implied "&". 
        #         Thus, [!a], [!a&!h2], and [h2&!a] are all valid, but [!ah2] is invalid.             
-   [primitive] == { [isotope] | [atomType] | [charge] | [stereochemistry]
+   [primitive] == { [isotope] | [atomType] | [atomIndex] | [charge] | [stereochemistry]
                               | [A_Prop] | [D_Prop] | [H_Prop] | [h_Prop] 
                               | [R_Prop] | [r_Prop] | [v_Prop] | [X_Prop]
                               | [x_Prop] | [nestedExpression] }
@@ -279,6 +279,7 @@ includes:
        #         EXCEPT "H1" which must be parsed as "an atom with a single H" 
    [digits] = { [digit] | [digit] [digits] }
    [digit] = { "0" | "1" | "2" | "3" | "4" | "5" | "6" | 7" | "8" | "9" }
+   [atomIndex] = "=" [digits]
    [charge] == { "-" [digits] | "+" [digits] | [plusSet] | [minusSet] }
    [plusSet] == { "+" | "+" [plusSet] }
    [minusSet] == { "-" | "-" [minusSet] }

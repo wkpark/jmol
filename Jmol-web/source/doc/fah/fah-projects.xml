@@ -8792,7 +8792,7 @@
   <fah_proj number="10847" name="Abeta42_monomer" public="n" file="xyz"
     server="171.64.122.84" atoms="12258" preferred="5" deadline="20"
     credit="69" frames="100" code="G" contact="yslin"/>
-  <fah_proj number="10848" name="Abeta42_monomer" public="n"
+  <fah_proj number="10848" name="Abeta42_monomer" public="n" file="xyz"
     server="171.64.122.84" atoms="12267" preferred="5" deadline="20"
     credit="69" frames="100" code="G" contact="yslin"/>
   <fah_proj number="10849" name="Abeta42_monomer" public="n"

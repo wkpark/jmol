@@ -7,13 +7,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-05-27 20:44+0200\n"
-"PO-Revision-Date: 2010-03-16 20:20+0000\n"
-"Last-Translator: andbelo <Unknown>\n"
+"PO-Revision-Date: 2010-06-01 15:08+0000\n"
+"Last-Translator: Marcelo Ribeiro de Almeida <neonrj@hotmail.com>\n"
 "Language-Team: Brazilian Portuguese <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-03-16 20:48+0000\n"
+"X-Launchpad-Export-Date: 2010-06-01 18:32+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: BRAZIL\n"
 "X-Poedit-Language: Portuguese\n"
@@ -70,9 +70,8 @@ msgstr ""
 "enviar somente a saída de mensagens impressas para o console (assume -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:158
-#, fuzzy
 msgid "independent command thread"
-msgstr "sequência de comando independente"
+msgstr "Comando ameaça independente"
 
 #: org/openscience/jmol/app/JmolApp.java:160
 msgid "exit after script (implicit with -n)"
@@ -439,9 +438,8 @@ msgid "Scrip&t Editor..."
 msgstr "Editor de \"scrip&t\"..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:56
-#, fuzzy
 msgid "Conso&le..."
-msgstr "Output Conso&le..."
+msgstr "Conso&le..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:57
 msgid "Jmol Java &Console"
@@ -832,11 +830,11 @@ msgstr "Voltar ao quadro anterior"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:169
 msgid "All &frames"
-msgstr ""
+msgstr "Todos os &quadros"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:170
 msgid "All frames"
-msgstr ""
+msgstr "Todos os frames"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:171
 msgid "Go to &last frame"
@@ -934,7 +932,7 @@ msgstr "Recolocar a molécula na posição inicial"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:201
 msgid "Open the model kit."
-msgstr ""
+msgstr "Abrir o kit modelo"
 
 #: org/openscience/jmol/app/jmolpanel/HelpDialog.java:64
 msgid "Jmol Help"

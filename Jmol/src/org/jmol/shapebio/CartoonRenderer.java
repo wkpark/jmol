@@ -50,16 +50,16 @@ public class CartoonRenderer extends RocketsRenderer {
         bioShape.falsifyMesh(i, false);
       renderAsRockets = val;
     }
-    val = viewer.getRocketBarrelFlag();
-    if (renderAsBarrels != val) {
+    val = !viewer.getRocketBarrelFlag();
+    if (renderArrowHeads != val) {
       for (int i = 0; i < monomerCount; i++)
         bioShape.falsifyMesh(i, false);
-      renderAsBarrels = val;
+      renderArrowHeads = val;
     }
     ribbonTopScreens = calcScreens(0.5f);
     ribbonBottomScreens = calcScreens(-0.5f);
     calcRopeMidPoints(newRockets);
-    if (renderAsBarrels) {
+    if (!renderArrowHeads) {
       calcScreenControlPoints(cordMidPoints);
       controlPoints = cordMidPoints;
     }
@@ -111,7 +111,7 @@ public class CartoonRenderer extends RocketsRenderer {
       previousStructure = thisStructure;
       boolean isHelix = isHelix(i);
       boolean isSheet = isSheet(i);
-      boolean isHelixRocket = (renderAsRockets || renderAsBarrels ? isHelix : false);
+      boolean isHelixRocket = (renderAsRockets || !renderArrowHeads ? isHelix : false);
       if (bsVisible.get(i)) {
         if (isHelixRocket) {
           //next pass
@@ -129,7 +129,7 @@ public class CartoonRenderer extends RocketsRenderer {
       lastWasHelix = isHelix;
     }
 
-    if (renderAsRockets || renderAsBarrels)
+    if (renderAsRockets || !renderArrowHeads)
       renderRockets();
   }
 

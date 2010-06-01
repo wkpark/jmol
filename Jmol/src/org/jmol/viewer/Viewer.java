@@ -38,6 +38,7 @@ import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.BoxInfo;
 import org.jmol.modelset.Group;
+import org.jmol.modelset.JmolMolecule;
 import org.jmol.modelset.MeasurementPending;
 import org.jmol.modelset.ModelLoader;
 import org.jmol.modelset.ModelSet;
@@ -2880,7 +2881,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public BitSet getBranchBitSet(int atomIndex, int atomIndexNot) {
-    return modelSet.getBranchBitSet(atomIndex, atomIndexNot, true);
+    return JmolMolecule.getBranchBitSet(modelSet.atoms,
+        getModelUndeletedAtomsBitSet(modelSet.atoms[atomIndex].modelIndex),
+        atomIndex, atomIndexNot, true);
   }
 
   public int getAtomIndexFromAtomNumber(int atomNumber) {
@@ -7564,7 +7567,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
       if (Measure.computeAngle(pt, atom1, atom2, true) > 90
           || Measure.computeAngle(pt, atom2, atom1, true) > 90) {
-        bsBranch = modelSet.getBranchBitSet(atom2.index, atom1.index, true);
+        bsBranch = getBranchBitSet(atom2.index, atom1.index);
       }
       if (bsBranch != null)
         for (int n = 0, i = 0; i < atom1.bonds.length; i++) {

@@ -1528,17 +1528,26 @@ abstract public class ModelCollection extends BondCollection {
   
   ///////// molecules /////////
 
-  private BitSet bsTemp = new BitSet();
 
   public Vector getMoleculeInfo(BitSet bsAtoms) {
     if (moleculeCount == 0)
       getMolecules();
     Vector V = new Vector();
+    BitSet bsTemp = new BitSet();
     for (int i = 0; i < moleculeCount; i++) {
       bsTemp = BitSetUtil.copy(bsAtoms);
-      bsTemp.and(molecules[i].atomList);
-      if (bsTemp.length() > 0)
-        V.addElement(molecules[i].getInfo());
+      JmolMolecule m = molecules[i];
+      bsTemp.and(m.atomList);
+      if (bsTemp.length() > 0) {
+        Hashtable info = new Hashtable();
+        info.put("number", new Integer(m.moleculeIndex + 1)); //for now
+        info.put("modelNumber", getModelNumberDotted(m.modelIndex));
+        info.put("numberInModel", new Integer(m.indexInModel + 1));
+        info.put("nAtoms", new Integer(m.atomCount));
+        info.put("nElements", new Integer(m.nElements));
+        info.put("mf", m.getMolecularFormula());
+        V.addElement(info);
+      }
     }
     return V;
   }
@@ -1553,13 +1562,32 @@ abstract public class ModelCollection extends BondCollection {
     }
     return 0;
   }
-  /*
-   int getFirstMoleculeIndexInModel(int modelIndex) {
-   if (moleculeCount == 0)
-   getMolecules();
-   return getModel(modelIndex).firstMolecule;
-   }
-   */
+  
+  public BitSet getMoleculeBitSet(BitSet bs) {
+    // returns cumulative sum of all atoms in molecules containing these atoms
+    if (moleculeCount == 0)
+      getMolecules();
+    BitSet bsResult = BitSetUtil.copy(bs);
+    BitSet bsInitial = BitSetUtil.copy(bs);
+    int i;
+    BitSet bsTemp = new BitSet();
+    while ((i = bsInitial.length()) > 0) {
+      bsTemp = getMoleculeBitSet(i - 1);
+      bsInitial.andNot(bsTemp);
+      bsResult.or(bsTemp);
+    }
+    return bsResult;
+  }
+
+  public BitSet getMoleculeBitSet(int atomIndex) {
+    if (moleculeCount == 0)
+      getMolecules();
+    for (int i = 0; i < moleculeCount; i++)
+      if (molecules[i].atomList.get(atomIndex))
+        return molecules[i].atomList;
+    return null;
+  }
+
 
   public void rotateAtoms(Matrix3f mNew, Matrix3f matrixRotate,
                              BitSet bsAtoms, boolean fullMolecule,
@@ -1600,30 +1628,6 @@ abstract public class ModelCollection extends BondCollection {
     recalculateLeadMidpointsAndWingVectors(-1);
   }
 
-  public BitSet getMoleculeBitSet(BitSet bs) {
-    // returns cumulative sum of all atoms in molecules containing these atoms
-    if (moleculeCount == 0)
-      getMolecules();
-    BitSet bsResult = BitSetUtil.copy(bs);
-    BitSet bsInitial = BitSetUtil.copy(bs);
-    int i;
-    while ((i = bsInitial.length()) > 0) {
-      bsTemp = getMoleculeBitSet(i - 1);
-      bsInitial.andNot(bsTemp);
-      bsResult.or(bsTemp);
-    }
-    return bsResult;
-  }
-
-  public BitSet getMoleculeBitSet(int atomIndex) {
-    if (moleculeCount == 0)
-      getMolecules();
-    for (int i = 0; i < moleculeCount; i++)
-      if (molecules[i].atomList.get(atomIndex))
-        return molecules[i].atomList;
-    return null;
-  }
-
   public void invertSelected(Point3f pt, Point4f plane, int iAtom,
                              BitSet invAtoms, BitSet bs) {
     bspf = null;
@@ -1659,10 +1663,11 @@ abstract public class ModelCollection extends BondCollection {
         return;
       BitSet bsAtoms = new BitSet();
       Vector vNot = new Vector();
+      BitSet bsModel = viewer.getModelUndeletedAtomsBitSet(thisAtom.modelIndex);
       for (int i = 0; i < bonds.length; i++) {
         Atom a = bonds[i].getOtherAtom(thisAtom);
         if (invAtoms.get(a.index)) {
-            bsAtoms.or(getBranchBitSet(a.index, iAtom, true));
+            bsAtoms.or(JmolMolecule.getBranchBitSet(atoms, bsModel, a.index, iAtom, true));
         } else {
           vNot.add(a);
         }
@@ -1751,6 +1756,7 @@ abstract public class ModelCollection extends BondCollection {
       getMolecules();
     selectedMolecules.xor(selectedMolecules);
     selectedMoleculeCount = 0;
+    BitSet bsTemp = new BitSet();
     for (int i = 0; i < moleculeCount; i++) {
       BitSetUtil.copy(bsSelected, bsTemp);
       bsTemp.and(molecules[i].atomList);
@@ -1761,82 +1767,40 @@ abstract public class ModelCollection extends BondCollection {
     }
   }
 
-  public Molecule[] getMolecules() {
+  public JmolMolecule[] getMolecules() {
     if (moleculeCount > 0)
       return molecules;
     if (molecules == null)
-      molecules = new Molecule[4];
+      molecules = new JmolMolecule[4];
     moleculeCount = 0;
-    BitSet atomlist = new BitSet(atomCount);
+    BitSet bsExclude = new BitSet(atomCount);
     BitSet bsBranch;
-    int thisModelIndex = -1;
     Model m = null;
+    BitSet[] bsModelAtoms = new BitSet[modelCount];
     for (int i = 0; i < modelCount; i++) {
+      // TODO: Trajetories?
+      bsModelAtoms[i] = viewer.getModelUndeletedAtomsBitSet(i);
       m = models[i];
       m.moleculeCount = 0;
+      int count = 0;
       int bpt = m.getBioPolymerCount();
       for (int j = 0; j < bpt; j++) {
         bsBranch = new BitSet();
-        m.getBioPolymer(j).getRange(bsBranch); 
+        m.getBioPolymer(j).getRange(bsBranch);
         int iAtom = bsBranch.nextSetBit(0);
-        addMolecule(iAtom, bsBranch, m, atomlist);
+        molecules = JmolMolecule.addMolecule(molecules, moleculeCount++, atoms,
+            iAtom, bsBranch, m.modelIndex, count++, bsExclude);
       }
     }
-    bsBranch = new BitSet();
-    for (int i = 0; i < atomCount; i++)
-      if (!atomlist.get(i) && !bsBranch.get(i)) {
-        int modelIndex = atoms[i].modelIndex;
-        if (modelIndex != thisModelIndex) {
-          m = models[modelIndex];
-          thisModelIndex = modelIndex;
-        }
-        bsBranch = getBranchBitSet(i, -1, true);
-        addMolecule(i, bsBranch, m, atomlist);
-      }
+    molecules = JmolMolecule.getMolecules(atoms, bsModelAtoms, molecules,
+        moleculeCount, bsExclude);
+    moleculeCount = molecules.length;
+    for (int i = moleculeCount; --i >= 0;) {
+      m = models[molecules[i].modelIndex];
+      m.firstMoleculeIndex = i;
+      m.moleculeCount++;
+    }
     return molecules;
-  }
-
-  private void addMolecule(int iAtom, BitSet bsBranch, Model m, 
-                           BitSet atomlist) {
-    atomlist.or(bsBranch);
-    if (moleculeCount == molecules.length)
-      molecules = (Molecule[]) ArrayUtil.setLength(molecules,
-          moleculeCount * 2);
-    if (m.moleculeCount == 0)
-      m.firstMolecule = moleculeCount;
-    molecules[moleculeCount] = new Molecule((ModelSet) this, moleculeCount,
-        iAtom, bsBranch, m.modelIndex, m.moleculeCount++);
-    moleculeCount++;
-  }
-
-  public BitSet getBranchBitSet(int atomIndex, int atomIndexNot, boolean allowCyclic) {
-    BitSet bs = new BitSet(atomCount);
-    if (atomIndex < 0)
-      return bs;
-    BitSet bsToTest = viewer.getModelUndeletedAtomsBitSet(atoms[atomIndex].modelIndex);
-    if (atomIndexNot >= 0)
-      bsToTest.clear(atomIndexNot);
-    return (getCovalentlyConnectedBitSet(atoms[atomIndex], bs, bsToTest, allowCyclic) ?
-        bs : new BitSet());
-  }
-
-  private boolean getCovalentlyConnectedBitSet(Atom atom, BitSet bs,
-                                            BitSet bsToTest, boolean allowCyclic) {
-    int atomIndex = atom.index;
-    if (!bsToTest.get(atomIndex))
-      return allowCyclic;
-    bsToTest.clear(atomIndex);
-    bs.set(atomIndex);
-    if (atom.bonds == null)
-      return true;
-    for (int i = atom.bonds.length; --i >= 0;) {
-      Bond bond = atom.bonds[i];
-      if ((bond.order & JmolEdge.BOND_HYDROGEN_MASK) != 0)
-        continue;
-      if (!getCovalentlyConnectedBitSet(bond.getOtherAtom(atom), bs, bsToTest, allowCyclic))
-        return false;
-    }
-    return true;
   }
 
   public boolean hasCalculatedHBonds(BitSet bs) {

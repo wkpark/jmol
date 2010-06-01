@@ -39,16 +39,16 @@ public class RocketsRenderer extends BioShapeRenderer {
 
   private final static float MIN_CONE_HEIGHT = 0.05f;
 
-  protected boolean renderAsBarrels;
+  protected boolean renderArrowHeads;
 
   protected void renderBioShape(BioShape bioShape) {
     if (!(bioShape.bioPolymer instanceof AminoPolymer))
       return;
-    boolean val = viewer.getRocketBarrelFlag();
-    if (renderAsBarrels != val) {
+    boolean val = !viewer.getRocketBarrelFlag();
+    if (renderArrowHeads != val) {
       for (int i = 0; i < monomerCount; i++)
         bioShape.falsifyMesh(i, false);
-      renderAsBarrels = val;
+      renderArrowHeads = val;
     }
     calcRopeMidPoints(false);    
     calcScreenControlPoints(cordMidPoints);
@@ -71,7 +71,7 @@ public class RocketsRenderer extends BioShapeRenderer {
     for (int i = 0; i < monomerCount; ++i) {
       point = cordMidPoints[i];
       Monomer residue = monomers[i];
-      if (isNewStyle && !renderAsBarrels) {
+      if (isNewStyle && renderArrowHeads) {
           point.set(controlPoints[i]);
       } else if (isHelix(i) ||  !isNewStyle && isSheet(i)) {
         ProteinStructure proteinstructure = residue.getProteinStructure();
@@ -160,7 +160,7 @@ public class RocketsRenderer extends BioShapeRenderer {
     viewer.transformPoint(pointEnd, screenB);
     int zMid = (int) Math.floor((screenA.z + screenB.z) / 2f);
     int diameter = viewer.scaleToScreen(zMid, mad);
-    if (tEnd && !renderAsBarrels) {
+    if (tEnd && renderArrowHeads) {
       viewer.transformPoint(pointBeforeEnd, screenC);
       if (g3d.setColix(colix)) {
         if (pointBeforeEnd.distance(pointEnd) <= MIN_CONE_HEIGHT)
@@ -183,7 +183,7 @@ public class RocketsRenderer extends BioShapeRenderer {
                           Point3f pointEnd, boolean tEnd) {
     if (!g3d.setColix(colix))
       return;
-    if (tEnd) {
+    if (tEnd && renderArrowHeads) {
       drawArrowHeadBox(pointBeforeEnd, pointEnd);
       drawBox(pointStart, pointBeforeEnd);
     } else {

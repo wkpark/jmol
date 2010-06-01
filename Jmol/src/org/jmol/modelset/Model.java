@@ -146,7 +146,7 @@ public final class Model {
     return bondCount;
   }
   
-  int firstMolecule;
+  int firstMoleculeIndex;
   int moleculeCount;
   
   int nAltLocs;

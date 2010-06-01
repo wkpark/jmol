@@ -102,7 +102,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   public int find(String pattern, String smiles, boolean isSearch, boolean isAll) {
     InvalidSmilesException.setLastError(null);
     try {
-      SmilesSearch search = SmilesParser.getMolecule(false, smiles);
+      SmilesSearch search = SmilesParser.getMolecule(smiles, false);
       return find(pattern, search, isSearch, isAll).length;
     } catch (Exception e) {
       if (InvalidSmilesException.getLastError() == null)
@@ -117,20 +117,15 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     // do not worry about stereochemistry -- this
     // will be handled by SmilesSearch.setSmilesCoordinates
     BitSet bsAromatic = new BitSet();
-    int atomCount = search.patternAtomCount;
-    int nAtomsNew = atomCount;
-    for (int i = 0; i < atomCount; i++) {
-      int nH = search.patternAtoms[i].explicitHydrogenCount;
-      if (nH < 0)
-        nH = 0;
-      nAtomsNew += nH;
-    }
-    SmilesAtom[] atoms = new SmilesAtom[nAtomsNew];
+    int atomCount = search.atomCount;
+    int nAtomsMissing = atomCount;
+    nAtomsMissing = search.getMissingHydrogenCount();
+    SmilesAtom[] atoms = new SmilesAtom[nAtomsMissing];
     int ptAtom = 0;
     for (int i = 0; i < atomCount; i++) {
       SmilesAtom sAtom = search.getAtom(i);
       int cclass = sAtom.getChiralClass();
-      int n = sAtom.explicitHydrogenCount;
+      int n = sAtom.missingHydrogenCount;
       if (n < 0)
         n = 0;
       // create a Jmol atom for this pattern atom
@@ -210,7 +205,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
         }
       }
     }
-    BitSet[] list = getSubstructureSetArray(pattern, atoms, -nAtomsNew, null, null,
+    BitSet[] list = getSubstructureSetArray(pattern, atoms, -nAtomsMissing, null, null,
         null, bsAromatic, isSearch, isAll);
     return list;
   }
@@ -232,7 +227,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   public BitSet getSubstructureSet(String smiles, JmolNode[] atoms, int atomCount,
                                    BitSet bsSelected, boolean isSearch,
                                    boolean isAll) throws Exception {
-    SmilesSearch search = SmilesParser.getMolecule(isSearch, smiles);
+    SmilesSearch search = SmilesParser.getMolecule(smiles, isSearch);
     search.jmolAtoms = atoms;
     search.bsSelected = bsSelected;
     search.jmolAtomCount = atomCount;
@@ -261,7 +256,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
                                           BitSet bsRequired, BitSet bsNot, 
                                           BitSet bsAromatic, boolean isSearch, boolean isAll)
       throws Exception {
-    SmilesSearch search = SmilesParser.getMolecule(isSearch, smiles);
+    SmilesSearch search = SmilesParser.getMolecule(smiles, isSearch);
     search.jmolAtoms = atoms;
     search.jmolAtomCount = Math.abs(atomCount);
     if (atomCount < 0)
@@ -296,7 +291,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   public int[][] getCorrelationMaps(String smiles, JmolNode[] atoms,
                                     int atomCount, BitSet bsSelected,
                                     boolean isSearch, boolean isAll) throws Exception {
-    SmilesSearch search = SmilesParser.getMolecule(isSearch, smiles);
+    SmilesSearch search = SmilesParser.getMolecule(smiles, isSearch);
     search.jmolAtoms = atoms;
     search.jmolAtomCount = Math.abs(atomCount);
     if (atomCount < 0)
@@ -313,6 +308,14 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     for (int i = 0; i < maps.length; i++)
       maps[i] = (int[]) vSubstructures.get(i);
     return maps;
+  }
+  public String getMolecularFormula(String pattern, boolean isSearch) {
+    try {
+      SmilesSearch search = SmilesParser.getMolecule(pattern, isSearch);
+      return search.getMolecularFormula();
+    } catch (InvalidSmilesException e) {
+      return null;
+    }
   }
 
 

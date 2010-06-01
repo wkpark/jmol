@@ -1111,8 +1111,9 @@ class ScriptMathProcessor {
     if (isSyntaxCheck)
       return addX((int) 1);
     
-    // {*}.find("CCCC")
-    // "CCCC".find("CC")
+    // {*}.find("SMARTS", "CCCC")
+    // "CCCC".find("SMARTS", "CC")
+    // "CCCC".find("SMILES", "MF")
     // {2.1}.find("CCCC",{1.1}) // find pattern "CCCC" in {2.1} with conformation given by {1.1}
 
     ScriptVariable x1 = getX();
@@ -1125,9 +1126,13 @@ class ScriptMathProcessor {
       BitSet bs2 = (iPt < args.length && args[iPt].tok == Token.bitset ? (BitSet) args[iPt++].value
           : null);
       boolean isAll = (iPt < args.length && ScriptVariable.bValue(args[iPt]));
-      if (x1.tok == Token.string)
+      if (x1.tok == Token.string) {
+        String s = ScriptVariable.sValue(x1);
+        if (flags.equalsIgnoreCase("mf"))
+          return bs2 == null && addX(isSyntaxCheck ? "" : viewer.getSmilesMatcher().getMolecularFormula(s, isSearch));
         return (bs2 == null && addX(isSyntaxCheck ? 0 : viewer.getSmilesMatcher().find(flags,
-            ScriptVariable.sValue(x1), isSearch, isAll)));
+            s, isSearch, isAll)));
+      }
       if (isSmiles || isSearch)
         sFind = flags;
       if (x1.tok == Token.bitset) {

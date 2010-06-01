@@ -113,7 +113,7 @@ public class SmilesParser {
   
 
 
-  public static SmilesSearch getMolecule(boolean isSearch, String pattern) throws InvalidSmilesException {
+  public static SmilesSearch getMolecule(String pattern, boolean isSearch) throws InvalidSmilesException {
     return (new SmilesParser(isSearch)).parse(pattern);
   }
 
@@ -124,13 +124,14 @@ public class SmilesParser {
   /**
    * Parses a SMILES String
    * 
-   * @param pattern SMILES String
+   * @param pattern
+   *          SMILES String
    * @return Molecule corresponding to <code>pattern</code>
    * @throws InvalidSmilesException
    */
-   SmilesSearch parse(String pattern) throws InvalidSmilesException {
-    //if (Logger.debugging)
-      //Logger.debug("Smiles Parser: " + pattern);
+  SmilesSearch parse(String pattern) throws InvalidSmilesException {
+    // if (Logger.debugging)
+    // Logger.debug("Smiles Parser: " + pattern);
     if (pattern == null)
       throw new InvalidSmilesException("SMILES expressions must not be null");
     // First pass
@@ -138,30 +139,42 @@ public class SmilesParser {
     molecule.isSearch = isSearch;
     molecule.pattern = pattern;
     parseSmiles(molecule, pattern, null);
+    
+    // Check for braces
+    
     if (braceCount != 0)
       throw new InvalidSmilesException("unmatched '{'");
 
-    if (!isSearch)
-      for (int i = molecule.patternAtomCount; --i >= 0; )
-        if (!molecule.getAtom(i).setHydrogenCount(molecule))
-          throw new InvalidSmilesException("unbracketed atoms must be one of: B C N O P S F Cl Br I");
-            
     // Check for rings
+    
     if (ringBonds != null)
       for (int i = 0; i < ringBonds.length; i++)
         if (ringBonds[i] != null)
           throw new InvalidSmilesException("Open ring");
 
+    // finalize atoms
+    
+    molecule.setAtomArray();
+
+    for (int i = molecule.atomCount; --i >= 0;) {
+      molecule.getAtom(i).setBondArray();
+      if (!isSearch && !molecule.getAtom(i).setHydrogenCount(molecule))
+        throw new InvalidSmilesException(
+            "unbracketed atoms must be one of: B C N O P S F Cl Br I");
+    }
+
+    if (!isSearch)
+      molecule.elementCounts[1] = molecule.getMissingHydrogenCount();
     fixChirality(molecule);
 
     return molecule;
   }
 
    private void fixChirality(SmilesSearch molecule) throws InvalidSmilesException {
-     for (int i = molecule.patternAtomCount; --i >= 0; ) {
+     for (int i = molecule.atomCount; --i >= 0; ) {
        SmilesAtom sAtom = molecule.getAtom(i);
        int stereoClass = sAtom.getChiralClass();
-       int nBonds = sAtom.explicitHydrogenCount;
+       int nBonds = sAtom.missingHydrogenCount;
        if (nBonds < 0)
          nBonds = 0;
        nBonds += sAtom.getCovalentBondCount();

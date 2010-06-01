@@ -24,23 +24,9 @@
 
 package org.jmol.api;
 
-public interface JmolNode {
+public interface JmolMolecularGraph {
+
+  JmolNode[] getAtoms();
   
-  // abstracts out the essential pieces for SMILES processing
-  
-  public void set(float x, float y, float z);
-  public int getAtomSite();
-  public int getBondedAtomIndex(int j);
-  public int getCovalentHydrogenCount();
-  public JmolEdge[] getEdges();
-  public short getElementNumber();
-  public int getFormalCharge();
-  public int getIndex();
-  public short getIsotopeNumber();
-  public int getModelIndex();
-  public int getValence();
-  public int getCovalentBondCount();
-  public int getImplicitHydrogenCount();
-  public short getAtomicAndIsotopeNumber();
   
 }

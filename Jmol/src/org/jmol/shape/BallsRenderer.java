@@ -29,7 +29,7 @@ import java.util.BitSet;
 
 import org.jmol.g3d.*;
 import org.jmol.modelset.Atom;
-import org.jmol.modelset.Molecule;
+import org.jmol.modelset.JmolMolecule;
 
 import javax.vecmath.*;
 public class BallsRenderer extends ShapeRenderer {
@@ -66,21 +66,21 @@ public class BallsRenderer extends ShapeRenderer {
     Atom[] atoms = modelSet.atoms;
     BitSet bsOK = viewer.transformAtoms(firstPass);
     if (firstPass && slabByMolecule && slabbing) {
-      Molecule[] molecules = modelSet.getMolecules();
+      JmolMolecule[] molecules = modelSet.getMolecules();
       int moleculeCount = modelSet.getMoleculeCountInModel(-1);
       for (int i = 0; i < moleculeCount; i++) {
-        Molecule m = molecules[i];
+        JmolMolecule m = molecules[i];
         int j = 0;
         int pt = m.firstAtomIndex;
         if (!bsOK.get(pt))
           continue;
-        for (; j < m.nAtoms; j++, pt++)
+        for (; j < m.atomCount; j++, pt++)
           if (g3d.isClippedZ(atoms[pt].screenZ
               - (atoms[pt].screenDiameter >> 1)))
             break;
-        if (j != m.nAtoms) {
+        if (j != m.atomCount) {
           pt = m.firstAtomIndex;
-          for (int k = 0; k < m.nAtoms; k++) {
+          for (int k = 0; k < m.atomCount; k++) {
             bsOK.clear(pt);
             atoms[pt++].screenZ = 0;
           }

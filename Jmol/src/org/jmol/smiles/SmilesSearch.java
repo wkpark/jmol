@@ -33,7 +33,9 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.api.JmolEdge;
+import org.jmol.api.JmolMolecularGraph;
 import org.jmol.api.JmolNode;
+import org.jmol.modelset.JmolMolecule;
 
 /**
  *  -- was SmilesMolecule, 
@@ -43,7 +45,7 @@ import org.jmol.api.JmolNode;
  * definition of "aromatic" is 
  * 
  */
-public class SmilesSearch {
+public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
 
   boolean isSilent;
   boolean isSmilesFind;
@@ -56,6 +58,18 @@ public class SmilesSearch {
     return nNested;
   }  
 
+  private final static int INITIAL_ATOMS = 16;
+  SmilesAtom[] patternAtoms = new SmilesAtom[INITIAL_ATOMS];
+
+  void setAtomArray() {
+    nodes = patternAtoms;
+    if (patternAtoms.length > atomCount) {
+      SmilesAtom[] tmp = new SmilesAtom[atomCount];
+      System.arraycopy(patternAtoms, 0, tmp, 0, atomCount);
+      nodes = patternAtoms = tmp;
+    }
+  }
+
   JmolNode[] jmolAtoms;
   int jmolAtomCount;
   BitSet bsSelected;
@@ -65,7 +79,6 @@ public class SmilesSearch {
   boolean isSearch;
   
   String pattern;
-  int patternAtomCount;
   boolean asVector;
   boolean getMaps;
 
@@ -80,8 +93,6 @@ public class SmilesSearch {
   int[] ringConnections;
   private BitSet[] ringMemberships;
 
-  private final static int INITIAL_ATOMS = 16;
-  SmilesAtom[] patternAtoms = new SmilesAtom[INITIAL_ATOMS];
   private Vector vReturn;
   private BitSet bsReturn = new BitSet();
   private BitSet bsAromatic = new BitSet();
@@ -92,24 +103,34 @@ public class SmilesSearch {
   /*                             Atoms                             */
   /* ============================================================= */
 
+  public JmolNode[] getAtoms() {
+    return patternAtoms;
+  }
+
   public SmilesAtom addAtom() {
-    if (patternAtomCount >= patternAtoms.length) {
+    if (atomCount >= patternAtoms.length) {
       SmilesAtom[] tmp = new SmilesAtom[patternAtoms.length * 2];
       System.arraycopy(patternAtoms, 0, tmp, 0, patternAtoms.length);
       patternAtoms = tmp;
     }
-    SmilesAtom sAtom = new SmilesAtom(patternAtomCount);
-    patternAtoms[patternAtomCount] = sAtom;
-    patternAtomCount++;
+    SmilesAtom sAtom = new SmilesAtom(atomCount);
+    patternAtoms[atomCount] = sAtom;
+    atomCount++;
     return sAtom;
   }
 
   public int getPatternAtomCount() {
-    return patternAtomCount;
+    return atomCount;
   }
 
   public SmilesAtom getAtom(int number) {
     return patternAtoms[number];
+  }
+
+  public String toString() {
+    StringBuffer sb = new StringBuffer(pattern);
+    sb.append("\nmolecular formula: " + getMolecularFormula());
+    return sb.toString();    
   }
   
   /** 
@@ -149,7 +170,7 @@ public class SmilesSearch {
     if (asVector)
       vReturn = new Vector();
     //System.out.println("smilesseearch search" + pattern);
-    if (patternAtomCount > 0)
+    if (atomCount > 0)
       for (int i = 0; i < jmolAtomCount; i++)
         if (!checkMatch(patternAtoms[0], 0, i, firstAtomOnly))
           break;
@@ -252,7 +273,7 @@ public class SmilesSearch {
     patternAtoms[patternAtom.index].setMatchingAtom(iAtom);
     atomNum++;
     // System.out.println("smilesSearch " + pattern + " " + atomNum);
-    if (atomNum < patternAtomCount) {
+    if (atomNum < atomCount) {
       // next position...
       patternAtom = patternAtoms[atomNum];
       // for all the pattern bonds for this atom...
@@ -280,14 +301,14 @@ public class SmilesSearch {
       if (!checkStereochemistry())
         return true;
       BitSet bs = new BitSet();
-      for (int j = 0; j < patternAtomCount; j++) {
+      for (int j = 0; j < atomCount; j++) {
         int i = patternAtoms[j].getMatchingAtom();
         if (!firstAtomOnly && haveSelected && !patternAtoms[j].selected)
           continue;
         bs.set(i);
         if (firstAtomOnly)
           break;
-        if (!isSearch && patternAtoms[j].explicitHydrogenCount > 0)
+        if (!isSearch && patternAtoms[j].missingHydrogenCount > 0)
           getHydrogens(getJmolAtom(i), bs);
       }
       if (bsRequired != null && !bsRequired.intersects(bs))
@@ -297,8 +318,8 @@ public class SmilesSearch {
       if (asVector) {
         if (getMaps) {
           // every map is important always
-          int[] map = new int[patternAtomCount];
-          for (int j = 0; j < patternAtomCount; j++)
+          int[] map = new int[atomCount];
+          for (int j = 0; j < atomCount; j++)
             map[j] = patternAtoms[j].getMatchingAtom();
           vReturn.add(map);
         } else {
@@ -461,7 +482,7 @@ public class SmilesSearch {
         break;
 
       // H explicit H count
-      n = patternAtom.explicitHydrogenCount;
+      n = patternAtom.missingHydrogenCount;
       if (n >= 0 && n != atom.getCovalentHydrogenCount())
         break;
 
@@ -540,9 +561,9 @@ public class SmilesSearch {
     if (haveAtomStereochemistry) {
       JmolNode atom1 = null, atom2 = null, atom3 = null, 
       atom4 = null, atom5 = null, atom6 = null;
-      for (int i = 0; i < patternAtomCount; i++) {
+      for (int i = 0; i < atomCount; i++) {
         SmilesAtom sAtom = patternAtoms[i];
-        int nH = sAtom.explicitHydrogenCount;
+        int nH = sAtom.missingHydrogenCount;
         if (nH < 0)
           nH = 0;
         int chiralClass = sAtom.getChiralClass();
@@ -579,7 +600,7 @@ public class SmilesSearch {
               atom1 = a;
             }
           }
-          nH = sAtom2.explicitHydrogenCount;
+          nH = sAtom2.missingHydrogenCount;
           atom3 = getJmolAtom(sAtom2.getMatchingBondedAtom(1));
           atom4 = getJmolAtom(sAtom2.getMatchingBondedAtom(2));
           if (atom3 == null || atom4 == null && nH != 1)
@@ -678,7 +699,7 @@ public class SmilesSearch {
     // next, /C=C/ double bond stereochemistry
 
     if (haveBondStereochemistry) {
-      for (int k = 0; k < patternAtomCount; k++) {
+      for (int k = 0; k < atomCount; k++) {
         SmilesAtom sAtom1 = patternAtoms[k];
         SmilesAtom sAtom2 = null;
         SmilesAtom sAtomDirected1 = null;
@@ -1059,7 +1080,7 @@ public class SmilesSearch {
   private Object getBitSets(String smarts, boolean firstAtomOnly, StringBuffer ringSets) {
     SmilesSearch search;
     try {
-      search = SmilesParser.getMolecule(true, smarts);
+      search = SmilesParser.getMolecule(smarts, true);
     } catch (InvalidSmilesException e) {
       return null;
     }
@@ -1085,4 +1106,12 @@ public class SmilesSearch {
     return search.search(firstAtomOnly);
   }
 
+  public int getMissingHydrogenCount() {
+    int n = 0;
+    int nH;
+    for (int i = 0; i < atomCount; i++)
+      if ((nH = patternAtoms[i].missingHydrogenCount) >= 0)
+          n += nH;
+    return n;
+  }
 }

@@ -45,7 +45,7 @@ abstract public class BondCollection extends AtomCollection {
   }
 
   //note: Molecules is set up to only be calculated WHEN NEEDED
-  protected Molecule[] molecules = new Molecule[4];
+  protected JmolMolecule[] molecules = new JmolMolecule[4];
   protected int moleculeCount;
 
   protected Bond[] bonds;

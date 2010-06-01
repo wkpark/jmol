@@ -28,6 +28,7 @@ import javax.vecmath.Point3f;
 
 import org.jmol.api.JmolEdge;
 import org.jmol.api.JmolNode;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.Elements;
 //import org.jmol.util.Logger;
 
@@ -62,7 +63,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
   
   private short atomicMass = Short.MIN_VALUE;
   private int charge;
-  int explicitHydrogenCount = Integer.MIN_VALUE;
+  int missingHydrogenCount = Integer.MIN_VALUE;
   int implicitHydrogenCount = Integer.MIN_VALUE;
   private int matchingAtom = -1;
   private int chiralClass = Integer.MIN_VALUE;
@@ -161,14 +162,18 @@ public class SmilesAtom extends Point3f implements JmolNode {
   }
 
   /**
-   * Finalizes the hydrogen count for implicit hydrogens in a <code>SmilesMolecule</code>.
+   * Finalizes the hydrogen count hydrogens in a <code>SmilesMolecule</code>.
+   * "missing" here means the number of atoms not present in the SMILES string
+   * for unbracketed atoms or the number of hydrogen atoms "CC" being really CH3CH3
+   * or explicitly mentioned in the bracketed atom, "[CH2]". These hydrogen atoms
+   * are not part of the topological model constructed and need to be accounted for. 
    * 
    * @param molecule Molecule containing the atom.
    * @return false if inappropriate
    */
   public boolean setHydrogenCount(SmilesSearch molecule) {
     // only called for SMILES search -- simple C or [C]
-    if (explicitHydrogenCount != Integer.MIN_VALUE)
+    if (missingHydrogenCount != Integer.MIN_VALUE)
       return true;
     // Determining max count
   	int count = 0;
@@ -221,7 +226,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
       }
       
       if (count > 0)
-        explicitHydrogenCount = count;
+        missingHydrogenCount = count;
       return true;
   }
 
@@ -381,7 +386,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
    * @param count Number of hydrogen atoms.
    */
   public void setExplicitHydrogenCount(int count) {
-    explicitHydrogenCount = count;
+    missingHydrogenCount = count;
   }
 
   /**
@@ -436,7 +441,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
   }
 
   public int getExplicitHydrogenCount() {
-    return explicitHydrogenCount;
+    return missingHydrogenCount;
   }
 
   public int getFormalCharge() {
@@ -447,12 +452,17 @@ public class SmilesAtom extends Point3f implements JmolNode {
     return atomicMass;
   }
 
+  public short getAtomicAndIsotopeNumber() {
+    return Elements.getAtomicAndIsotopeNumber(elementNumber, atomicMass);
+  }
+
+
   /**
    * Add a bond to the atom.
    * 
    * @param bond Bond to add.
    */
-  public void addBond(SmilesBond bond) {
+  void addBond(SmilesBond bond) {
     if (bondCount >= bonds.length) {
       SmilesBond[] tmp = new SmilesBond[bonds.length * 2];
       System.arraycopy(bonds, 0, tmp, 0, bonds.length);
@@ -464,6 +474,10 @@ public class SmilesAtom extends Point3f implements JmolNode {
     bondCount++;
   }
 
+  public void setBondArray() {
+    bonds = (SmilesBond[]) ArrayUtil.setLength(bonds, bondCount);
+  }
+  
   public JmolEdge[] getEdges() {
     return (parent != null ? parent.getEdges() : bonds);
   }

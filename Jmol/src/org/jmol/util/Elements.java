@@ -376,6 +376,10 @@ public class Elements {
     return (code >> 7) + elementSymbolFromNumber(code & 127);
   }
   
+  public final static short getAtomicAndIsotopeNumber(int n, int mass) {
+    return (short) ((n < 0 ? 0 : n) + (mass <= 0 ? 0 : mass << 7));
+  }
+  
   /**
    * @param atomicAndIsotopeNumber (may be atomicNumber + isotopeNumber*128)
    * @return  index into altElementNumbers

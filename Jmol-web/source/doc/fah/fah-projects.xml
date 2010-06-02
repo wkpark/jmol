@@ -5579,18 +5579,18 @@
   <fah_proj number="2968" name="Trpzip2 Folding at 300K" public="y" file="xyz"
     server="143.89.28.70" atoms="8991" preferred="16.7" deadline="24"
     credit="80.7" frames="100" code="G" contact="xuhuihuang@gmail.com" contrib="SandStar"/>
-  <fah_proj number="2969" name="Trpzip2 Folding at 350K" public="y"
+  <fah_proj number="2969" name="Trpzip2 Folding at 350K" public="y" file="xyz"
     server="143.89.28.70" atoms="8991" preferred="16.7" deadline="24"
-    credit="80.7" frames="100" code="G" contact="xuhuihuang@gmail.com"/>
+    credit="80.7" frames="100" code="G" contact="xuhuihuang@gmail.com" contrib="Leszek Dobrowolski"/>
   <fah_proj number="2970" name="p2970_N17_native" public="y" file="xyz"
     server="171.64.122.131" atoms="7294" preferred="55" deadline="81"
     credit="292.5" frames="100" code="GST" contact="nwkelley" contrib="Smoking2000"/>
   <fah_proj number="2971" name="p2971_N17_extend" public="y" file="xyz"
     server="171.64.122.131" atoms="7294" preferred="55" deadline="81"
     credit="292.5" frames="100" code="GST" contact="nwkelley" contrib="Smoking2000"/>
-  <fah_proj number="2972" name="Trpzip2 Folding at 400K" public="y"
+  <fah_proj number="2972" name="Trpzip2 Folding at 400K" public="y" file="xyz"
     server="143.89.28.70" atoms="8991" preferred="16.7" deadline="24"
-    credit="80.7" frames="100" code="G" contact="xuhuihuang@gmail.com"/>
+    credit="80.7" frames="100" code="G" contact="xuhuihuang@gmail.com" contrib="Leszek Dobrowolski"/>
   <fah_proj number="2973" name="Trpzip2 Folding at 450K" public="y"
     server="143.89.28.70" atoms="8991" preferred="16.7" deadline="24"
     credit="80.7" frames="100" code="G" contact="xuhuihuang@gmail.com"/>
@@ -8807,9 +8807,9 @@
   <fah_proj number="10852" name="Abeta42_monomer" public="n" file="xyz"
     server="171.64.122.84" atoms="12264" preferred="5" deadline="20"
     credit="69" frames="100" code="G" contact="yslin" contrib="SandStar"/>
-  <fah_proj number="10853" name="Abeta42_monomer" public="n"
+  <fah_proj number="10853" name="Abeta42_monomer" public="n" file="xyz"
     server="171.64.122.84" atoms="12288" preferred="5" deadline="20"
-    credit="68" frames="100" code="G" contact="yslin"/>
+    credit="68" frames="100" code="G" contact="yslin" contrib="SandStar"/>
   <fah_proj number="10854" name="Abeta42_monomer" public="n"
     server="171.64.122.84" atoms="12249" preferred="5" deadline="20"
     credit="69" frames="100" code="G" contact="yslin"/>

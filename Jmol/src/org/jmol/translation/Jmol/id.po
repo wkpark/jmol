@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-05-27 20:44+0200\n"
-"PO-Revision-Date: 2010-05-28 23:27+0000\n"
+"PO-Revision-Date: 2010-06-01 23:12+0000\n"
 "Last-Translator: Waluyo Adi Siswanto <Unknown>\n"
 "Language-Team: Indonesian <id@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-05-29 08:36+0000\n"
+"X-Launchpad-Export-Date: 2010-06-02 18:24+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -29,7 +29,7 @@ msgstr "latar tembus pandang"
 
 #: org/openscience/jmol/app/JmolApp.java:140
 msgid "give this help page"
-msgstr ""
+msgstr "tampilkan halaman bantua untuk ini"
 
 #: org/openscience/jmol/app/JmolApp.java:142
 msgid "no display (and also exit when done)"
@@ -482,7 +482,7 @@ msgstr "Pencitraan dalam POV-&Ray"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:67
 msgid "Write &State..."
-msgstr ""
+msgstr "Tulis State..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:68
 msgid "Save current view as a Jmol state script."
@@ -695,7 +695,7 @@ msgstr "&Sumbu"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:135
 msgid "B&ounding Box"
-msgstr ""
+msgstr "Kotak Bingkai"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:136
 msgid "&Hydrogens"
@@ -708,7 +708,7 @@ msgstr "Vektor"
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:138
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:149
 msgid "&Measurements"
-msgstr ""
+msgstr "Pengukuran"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:139
 msgid "&View"
@@ -740,7 +740,7 @@ msgstr "Transformasi..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:146
 msgid "Define &Center"
-msgstr ""
+msgstr "Tentukan Titik Tengah"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:147
 msgid "&Tools"
@@ -752,7 +752,7 @@ msgstr "&Gaussian..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:150
 msgid "Distance &Units"
-msgstr ""
+msgstr "Satuan Jarak"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:151
 msgid "&Nanometers 1E-9"
@@ -772,7 +772,7 @@ msgstr "&Animasi..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:155
 msgid "&Vibrate..."
-msgstr ""
+msgstr "Getaran..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:156
 msgid "&Graph..."
@@ -780,7 +780,7 @@ msgstr "&Grafiks..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:157
 msgid "Calculate chemical &shifts..."
-msgstr ""
+msgstr "Hitung pergeseran kimia..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:158
 msgid "&Crystal Properties"
@@ -788,7 +788,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:159
 msgid "&Once"
-msgstr ""
+msgstr "Sekali"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:160
 msgid "&Loop"
@@ -796,39 +796,39 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:161
 msgid "P&alindrome"
-msgstr ""
+msgstr "Palindroma"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:162
 msgid "&Stop animation"
-msgstr ""
+msgstr "Hentikan animasi"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:163
 msgid "&Rewind to first frame"
-msgstr ""
+msgstr "Putar balik ke frame pertama"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:164
 msgid "Rewind to first frame"
-msgstr ""
+msgstr "Putar balik ke frame pertama"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:165
 msgid "Go to &next frame"
-msgstr ""
+msgstr "Ke frame selanjutnya"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:166
 msgid "Go to next frame"
-msgstr ""
+msgstr "Ke frame selanjutnya"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:167
 msgid "Go to &previous frame"
-msgstr ""
+msgstr "Ke frame sebelumnya"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:168
 msgid "Go to previous frame"
-msgstr ""
+msgstr "Ke frame sebelumnya"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:169
 msgid "All &frames"
-msgstr ""
+msgstr "Semua frame"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:170
 msgid "All frames"
@@ -836,31 +836,31 @@ msgstr "Semua bingkai"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:171
 msgid "Go to &last frame"
-msgstr ""
+msgstr "Ke frame terakhir"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:172
 msgid "Go to last frame"
-msgstr ""
+msgstr "Ke frame terakhir"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:173
 msgid "Start &vibration"
-msgstr ""
+msgstr "Mulai getaran"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:174
 msgid "&Stop vibration"
-msgstr ""
+msgstr "Hentikan getaran"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:175
 msgid "&First frequency"
-msgstr ""
+msgstr "Frekuensi pertama"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:176
 msgid "&Next frequency"
-msgstr ""
+msgstr "Frekuensi berikutnya"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:177
 msgid "&Previous frequency"
-msgstr ""
+msgstr "Frekuensi sebelumnya"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:178
 msgid "&Help"
@@ -868,7 +868,7 @@ msgstr "&Bantuan"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:180
 msgid "User Guide"
-msgstr ""
+msgstr "Panduan Pengguna"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:181
 msgid "What's New"
@@ -881,11 +881,11 @@ msgstr "Hidrogen"
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:183
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:66
 msgid "Measurements"
-msgstr ""
+msgstr "Pengukuran"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:184
 msgid "Perspective Depth"
-msgstr ""
+msgstr "Kedalaman Perspektif"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:185
 msgid "Axes"
@@ -893,7 +893,7 @@ msgstr "Sumbu"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:186
 msgid "Bounding Box"
-msgstr ""
+msgstr "Kotak Bingkai"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:188
 msgid "RasMol/Chime compatible axes orientation/rotations"
@@ -901,56 +901,56 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:190
 msgid "File Preview (requires restarting Jmol)"
-msgstr ""
+msgstr "Pratampilan Berkas (Jmol perlu dijalankan ulang)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:192
 msgid "Clear console button (requires restarting Jmol)"
-msgstr ""
+msgstr "Butang bersihkan konsul (Jmol perlu dijalankan ulang)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:193
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:194
 msgid "Use Atom Color"
-msgstr ""
+msgstr "Mengguakan Warna Atom"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:195
 msgid "Rotate molecule."
-msgstr ""
+msgstr "Putar molekul."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:197
 msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
-msgstr ""
+msgstr "Pilih kelompok atom menggunakan SHIFT-LEFT-DRAG."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:199
 msgid "Click atoms to measure distances"
-msgstr ""
+msgstr "Klik atom-atom untuk mengukur jarak"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:200
 msgid "Return molecule to home position."
-msgstr ""
+msgstr "Kembalikan molekul ke posisi rumahnya."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:201
 msgid "Open the model kit."
-msgstr ""
+msgstr "Buka kit model."
 
 #: org/openscience/jmol/app/jmolpanel/HelpDialog.java:64
 msgid "Jmol Help"
-msgstr ""
+msgstr "Bantuan Jmol"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:123
 msgid "Initializing 3D display..."
-msgstr ""
+msgstr "Inisialisasi tampilan 3D..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:155
 msgid "Initializing Preferences..."
-msgstr ""
+msgstr "Inisialisasi Preferensi..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:157
 msgid "Initializing Recent Files..."
-msgstr ""
+msgstr "Inisialisasi Berkas Terkini..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:159
 msgid "Initializing Script Window..."
-msgstr ""
+msgstr "Inisialisasi Jendela Skrip..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:182
 msgid "Building Command Hooks..."
@@ -958,11 +958,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:193
 msgid "Building Menubar..."
-msgstr ""
+msgstr "Membangun Kotak Menu..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:209
 msgid "Starting display..."
-msgstr ""
+msgstr "Memulai tampilan..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:252
 msgid "Setting up Drag-and-Drop..."
@@ -970,11 +970,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:254
 msgid "Launching main frame..."
-msgstr ""
+msgstr "Meluncurkan frame utama..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:283
 msgid "Jmol Console"
-msgstr ""
+msgstr "Konsul Jmol"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:305
 msgid "Could not create ConsoleTextArea: "
@@ -982,19 +982,19 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:322
 msgid "Creating main window..."
-msgstr ""
+msgstr "Membuat jendela utama..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:323
 msgid "Initializing Swing..."
-msgstr ""
+msgstr "Inisialisasi Swing..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:335
 msgid "Initializing Jmol..."
-msgstr ""
+msgstr "Inisialisasi Jmol..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:447
 msgid "Closing Jmol..."
-msgstr ""
+msgstr "Menutup Jmol..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1065
 msgid "Open URL"
@@ -1014,7 +1014,7 @@ msgstr "Hapus"
 
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:133
 msgid "DeleteAll"
-msgstr ""
+msgstr "HapusSemua"
 
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:151
 msgid "Dismiss"
@@ -1026,7 +1026,7 @@ msgstr "Nilai"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:152
 msgid "Conversion from Jmol to POV-Ray"
-msgstr ""
+msgstr "Konversi dari Jmol ke POV-Ray"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:156
 msgid "File Name:"
@@ -1036,6 +1036,7 @@ msgstr "Nama Berkas:"
 msgid ""
 "'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
 msgstr ""
+"'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:168
 msgid "Working Directory"
@@ -1051,11 +1052,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:195
 msgid "Run POV-Ray directly"
-msgstr ""
+msgstr "Jalankan langsung POV-Ray"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:197
 msgid "Launch POV-Ray from within Jmol"
-msgstr ""
+msgstr "Luncurkan POV-Ray dari dalam Jmol"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:242
 msgid "Display While Rendering"
@@ -1067,7 +1068,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:267
 msgid "width:"
-msgstr ""
+msgstr "lebar:"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:269
 msgid "Image width"
@@ -1076,7 +1077,7 @@ msgstr ""
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:284
 #: org/openscience/jmol/app/webexport/PopInJmol.java:68
 msgid "height:"
-msgstr ""
+msgstr "tinggi:"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:286
 msgid "Image height"
@@ -1092,7 +1093,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:316
 msgid "User defined"
-msgstr ""
+msgstr "Ditentukan pengguna"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:318
 msgid "Keep ratio of Jmol window"

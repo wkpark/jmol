@@ -692,9 +692,9 @@ public class Resolver {
     // "atom" is a VERY generic term; just "atom" breaks HIN reader. 
     // >= token.length are necessary to allow for comments at the end of valid lines
     //  (as perfectly legal in simple Fortran list based IO) 
-    if (lines[0].startsWith("mol 1"))
-      return false;  /* hin format also uses "atom " */
     for (int i = 0; i < lines.length; i++) {
+      if (lines[i].startsWith("mol 1"))
+        return false;  /* hin format also uses "atom " */
       String[] tokens = Parser.getTokens(lines[i]);
       if (tokens.length == 0)
         continue;
@@ -898,11 +898,8 @@ public class Resolver {
   private final static String[] moldenFileStartRecords =
   {"Molden", "[Molden"};
 
-  private final static String[] hyperChemFileStartRecords = 
-  { "HyperChem", "mol 1" };
-
   private final static String[][] fileStartsWithRecords =
-  { cubeFileStartRecords, mol2Records, webmoFileStartRecords, moldenFileStartRecords, hyperChemFileStartRecords};
+  { cubeFileStartRecords, mol2Records, webmoFileStartRecords, moldenFileStartRecords };
 
   ////////////////////////////////////////////////////////////////
   // these test lines that startWith one of these strings
@@ -944,12 +941,14 @@ public class Resolver {
   private final static String[] mdTopLineStartRecords =
   { "MdTop", "%FLAG TITLE" };
   
+  private final static String[] hyperChemLineStartRecords = 
+  { "HyperChem", "mol 1" };
   
   private final static String[][] lineStartsWithRecords =
   { cifLineStartRecords, pqrLineStartRecords, pdbLineStartRecords, shelxLineStartRecords, 
     ghemicalMMLineStartRecords, jaguarLineStartRecords, 
     mdlLineStartRecords, spartanSmolLineStartRecords, csfLineStartRecords, 
-    mol2Records, mdTopLineStartRecords };
+    mol2Records, mdTopLineStartRecords, hyperChemLineStartRecords };
 
   ////////////////////////////////////////////////////////////////
   // contains formats

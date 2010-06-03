@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-05-27 20:44+0200\n"
-"PO-Revision-Date: 2010-06-01 23:12+0000\n"
+"PO-Revision-Date: 2010-06-02 23:32+0000\n"
 "Last-Translator: Waluyo Adi Siswanto <Unknown>\n"
 "Language-Team: Indonesian <id@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-06-02 18:24+0000\n"
+"X-Launchpad-Export-Date: 2010-06-03 18:28+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -1044,7 +1044,7 @@ msgstr "Direktori Kerja"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:170
 msgid "Where the .pov files will be saved"
-msgstr ""
+msgstr "Tempat berkas .pov akan disimpan"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:190
 msgid "POV-Ray Runtime Options"
@@ -1060,7 +1060,7 @@ msgstr "Luncurkan POV-Ray dari dalam Jmol"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:242
 msgid "Display While Rendering"
-msgstr ""
+msgstr "Tampilan Ketika Pewarnaan"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:244
 msgid "Should POV-Ray attempt to display while rendering?"
@@ -1072,7 +1072,7 @@ msgstr "lebar:"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:269
 msgid "Image width"
-msgstr ""
+msgstr "Lebar gambar"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:284
 #: org/openscience/jmol/app/webexport/PopInJmol.java:68
@@ -1081,15 +1081,15 @@ msgstr "tinggi:"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:286
 msgid "Image height"
-msgstr ""
+msgstr "Tinggi gambar"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:303
 msgid "Fixed ratio : "
-msgstr ""
+msgstr "Rasio tetap : "
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:305
 msgid "Use a fixed ratio for width:height"
-msgstr ""
+msgstr "Gunakan rasio tetap untuk lebar:tinggi"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:316
 msgid "User defined"
@@ -1109,11 +1109,11 @@ msgstr "P - PPM"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:364
 msgid "C - Compressed Targa-24"
-msgstr ""
+msgstr "C - Compressed Targa-24"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:367
 msgid "T - Uncompressed Targa-24"
-msgstr ""
+msgstr "T - Uncompressed Targa-24"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:383
 msgid "Alpha transparency"
@@ -1121,19 +1121,19 @@ msgstr "Transparansi Alfa"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:385
 msgid "Output Alpha transparency data"
-msgstr ""
+msgstr "Keluaran data transparansi Alfa"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:398
 msgid "Mosaic preview"
-msgstr ""
+msgstr "Pratampilan Mosaic"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:400
 msgid "Render the image in several passes"
-msgstr ""
+msgstr "Pencitraan gambar dalam beberapa langkah"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:410
 msgid "Start size : "
-msgstr ""
+msgstr "Ukuran awal : "
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:412
 msgid "Initial size of the tiles"
@@ -1141,7 +1141,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:428
 msgid "End size : "
-msgstr ""
+msgstr "Ukuran akhir : "
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:430
 msgid "Final size of the tiles"
@@ -1150,12 +1150,12 @@ msgstr ""
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:451
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:453
 msgid "Location of the POV-Ray Executable"
-msgstr ""
+msgstr "Lokasi POV-Ray yang bisa dijalankan"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:490
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:757
 msgid "Go!"
-msgstr ""
+msgstr "Jalankan!"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:492
 msgid "Save file and possibly launch POV-Ray"
@@ -1163,69 +1163,69 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:503
 msgid "Cancel this dialog without saving"
-msgstr ""
+msgstr "Hilangkan dialog ini tanpa menyimpan"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:137
 msgid "Preferences"
-msgstr ""
+msgstr "Preferensi"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:154
 msgid "Display"
-msgstr ""
+msgstr "Tampilan"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:155
 msgid "Atoms"
-msgstr ""
+msgstr "Atom-atom"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:156
 msgid "Bonds"
-msgstr ""
+msgstr "Ikatan-ikatan"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:161
 msgid "Jmol Defaults"
-msgstr ""
+msgstr "Bawaan Jmol"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:165
 msgid "RasMol Defaults"
-msgstr ""
+msgstr "Bawaan RasMol"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:173
 msgid "Apply"
-msgstr ""
+msgstr "Terapkan"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:201
 msgid "Show All"
-msgstr ""
+msgstr "Tampilkan Semua"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:300
 msgid "Default atom size"
-msgstr ""
+msgstr "Ukuran bawaan atom"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:301
 msgid "(percentage of vanDerWaals radius)"
-msgstr ""
+msgstr "(persentase jejari vanDerWaals)"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:354
 msgid "Compute Bonds"
-msgstr ""
+msgstr "Menghitung ikatan-ikatan"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:356
 msgid "Automatically"
-msgstr ""
+msgstr "Secara otomatis"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:357
 msgid "Don't Compute Bonds"
-msgstr ""
+msgstr "Jangan Menghitung Ikatan"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:387
 msgid "Default Bond Radius"
-msgstr ""
+msgstr "Jejari Ikatan Bawaan"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:388
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:426
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:477
 msgid "(Angstroms)"
-msgstr ""
+msgstr "(Angstroms)"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:425
 msgid "Bond Tolerance - sum of two covalent radii + this value"
@@ -1233,23 +1233,23 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:476
 msgid "Minimum Bonding Distance"
-msgstr ""
+msgstr "Jarak Minimum Ikatan"
 
 #: org/openscience/jmol/app/jmolpanel/RecentFilesDialog.java:61
 msgid "Recent Files"
-msgstr ""
+msgstr "Berkas Terkini"
 
 #: org/openscience/jmol/app/jmolpanel/RecentFilesDialog.java:66
 msgid "Open"
-msgstr ""
+msgstr "Buka"
 
 #: org/openscience/jmol/app/jmolpanel/Splash.java:46
 msgid "Loading..."
-msgstr ""
+msgstr "Memuat..."
 
 #: org/openscience/jmol/app/jmolpanel/WhatsNewDialog.java:57
 msgid "What's New in Jmol"
-msgstr ""
+msgstr "Hal Baru di Jmol"
 
 #: org/openscience/jmol/app/webexport/JmolInstance.java:81
 msgid "Attempt to make scratch directory failed."
@@ -1297,23 +1297,23 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebExport.java:105
 msgid "Couldn't find file: {0}"
-msgstr ""
+msgstr "Tidak bisa menemukan berkas: {0}"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:124
 msgid "Introduction"
-msgstr ""
+msgstr "Pengantar"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:134
 msgid "Pop-In Jmol"
-msgstr ""
+msgstr "Pop-In Jmol"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:135
 msgid "ScriptButton Jmol"
-msgstr ""
+msgstr "TombolSkrip Jmol"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:152
 msgid "Log"
-msgstr ""
+msgstr "Catatan"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:167
 #, java-format
@@ -1331,11 +1331,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebExport.java:350
 msgid "Insert the page TITLE here."
-msgstr ""
+msgstr "Sisipkan halaman JUDUL disini"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:351
 msgid "Insert the page INTRODUCTION here."
-msgstr ""
+msgstr "Sisipkan halaman PENGANTAR disini"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:353
 #, java-format
@@ -1351,7 +1351,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebExport.java:356
 msgid "Insert your TITLE and INTRODUCTION here."
-msgstr ""
+msgstr "Sisipkan JUDUL dan PENGANTAR anda disini"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:358
 #, java-format
@@ -1363,7 +1363,7 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/WebExport.java:359
 #, java-format
 msgid "Insert more information for {0} here."
-msgstr ""
+msgstr "Sisipkan informassi lain untuk {0} disini"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:127
 msgid "A web page containing Jmol applets"
@@ -1379,7 +1379,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:164
 msgid "Delete Selected"
-msgstr ""
+msgstr "Hapus Pilihan"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:196
 msgid "Jmol Instances:"
@@ -1412,7 +1412,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:318
 msgid "Author (your name):"
-msgstr ""
+msgstr "Penulis (nama anda):"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:325
 msgid "Browser window title for this web page:"
@@ -1447,7 +1447,7 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/WebPanel.java:554
 #, java-format
 msgid "Using directory {0}"
-msgstr ""
+msgstr "Menggunakan direktori {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:555
 msgid "adding JmolPopIn.js"

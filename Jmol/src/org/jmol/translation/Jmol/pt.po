@@ -7,13 +7,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-05-27 20:44+0200\n"
-"PO-Revision-Date: 2010-05-27 22:12+0000\n"
-"Last-Translator: Frederico Tavares <Unknown>\n"
+"PO-Revision-Date: 2010-06-03 19:48+0000\n"
+"Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Portugal@Folding <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-05-28 06:36+0000\n"
+"X-Launchpad-Export-Date: 2010-06-03 19:56+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: Portugal\n"
 "X-Poedit-Language: Portuguese\n"
@@ -408,7 +408,7 @@ msgstr "Cancelar"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:49
 msgid "&Macros"
-msgstr ""
+msgstr "&Macros"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:50
 msgid "&File"
@@ -416,7 +416,7 @@ msgstr "&Ficheiro"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:51
 msgid "&New"
-msgstr ""
+msgstr "&Novo"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:52
 msgid "&Open"
@@ -460,7 +460,7 @@ msgstr "Exportar &Imagem..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:62
 msgid "Save current view as an image."
-msgstr ""
+msgstr "Guardar a vista corrente como imagem."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:63
 msgid "Export to &Web Page..."
@@ -497,7 +497,7 @@ msgstr "Visualização de impressão"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:71
 msgid "&Close"
-msgstr ""
+msgstr "&Fechar"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:72
 msgid "E&xit"
@@ -514,7 +514,7 @@ msgstr "&Editar"
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:76
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:82
 msgid "Select &All"
-msgstr ""
+msgstr "Seleccionar &Tudo"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:77
 msgid "Deselect All"
@@ -534,7 +534,7 @@ msgstr "Pr&eferências..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:81
 msgid "&Paste"
-msgstr ""
+msgstr "&Colar"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:83
 msgid "&Select"
@@ -606,7 +606,7 @@ msgstr "&Atomo"
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:102
 #, java-format
 msgid "{0}% van der Waals"
-msgstr ""
+msgstr "{0}% van der Waals"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:103
 msgid "&Bond"
@@ -627,7 +627,7 @@ msgstr "{0} Å"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:109
 msgid "&Label"
-msgstr ""
+msgstr "&Rótulo"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:111
 msgid "&Symbol"
@@ -669,11 +669,11 @@ msgstr ""
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:126
 #, java-format
 msgid "Scale {0}"
-msgstr ""
+msgstr "Escala {0}"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:127
 msgid "&Zoom"
-msgstr ""
+msgstr "&Zoom"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:128
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:129
@@ -690,7 +690,7 @@ msgstr "Profundidade da &Perspectiva"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:134
 msgid "A&xes"
-msgstr ""
+msgstr "Ei&xos"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:135
 msgid "B&ounding Box"
@@ -719,19 +719,19 @@ msgstr "&Frente"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:141
 msgid "&Top"
-msgstr ""
+msgstr "&Topo"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:142
 msgid "&Bottom"
-msgstr ""
+msgstr "&Fundo"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:143
 msgid "&Right"
-msgstr ""
+msgstr "&Direita"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:144
 msgid "&Left"
-msgstr ""
+msgstr "&Esquerda"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:145
 msgid "Tr&ansform..."
@@ -787,11 +787,11 @@ msgstr "&Propriedades do Cristal"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:159
 msgid "&Once"
-msgstr ""
+msgstr "&Uma vez"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:160
 msgid "&Loop"
-msgstr ""
+msgstr "&Ciclo"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:161
 msgid "P&alindrome"

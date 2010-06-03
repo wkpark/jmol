@@ -427,9 +427,6 @@ public class SmilesParser {
    * @param currentAtom
    *          Current atom
    * @param bond 
-   * @param bondType
-   *          Bond type
-   * @param isBondNot
    * @param isBracketed
    *          Indicates if is a isBracketed definition (between [])
    * @param isPrimitive

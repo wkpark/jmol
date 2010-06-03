@@ -743,7 +743,6 @@ abstract public class ModelSet extends ModelCollection {
    * 
    * @param vConnections
    * @param pts
-   * @param atomIndex
    * @return            BitSet of new atoms
    */
   public BitSet addHydrogens(Vector vConnections, Point3f[] pts) {

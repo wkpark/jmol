@@ -102,7 +102,6 @@ public class SmilesBond implements JmolEdge {
    * @param atom2 Second atom
    * @param bondType Bond type
    * @param isNot 
-   * @param isBondNot
    */
   public SmilesBond(SmilesAtom atom1, SmilesAtom atom2, int bondType, boolean isNot) {
     set(atom1, atom2);

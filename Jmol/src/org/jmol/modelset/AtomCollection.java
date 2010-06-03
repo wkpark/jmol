@@ -1212,7 +1212,7 @@ abstract public class AtomCollection {
     int nH = 0;
     // just not doing aldehydes here -- all A-X-B bent == sp3 for now
     if (bs != null)
-      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i+1)) {
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
         if (bsDeleted != null && bsDeleted.get(i))
           continue;
         Atom atom = atoms[i];
@@ -1229,86 +1229,60 @@ abstract public class AtomCollection {
 
         hAtoms[i] = new Point3f[n];
         //System.out.println(atom.getInfo() + " targetValence=" + targetValence + " nB="
-         //+ nBonds + " nVal=" + nVal + " n=" + n);
+        //+ nBonds + " nVal=" + nVal + " n=" + n);
         int hPt = 0;
-        switch (n) {
-        default:
-          break;
-        case 4: // tetrahedral
-          z.set(0.635f, 0.635f, 0.635f);
-          pt = new Point3f(z);
-          pt.add(atom);
-          hAtoms[i][hPt++] = pt;
-          if (vConnect != null)
-            vConnect.add(atom);
-          z.set(-0.635f, -0.635f, 0.635f);
-          pt = new Point3f(z);
-          pt.add(atom);
-          hAtoms[i][hPt++] = pt;
-          if (vConnect != null)
-            vConnect.add(atom);
-          z.set(-0.635f, 0.635f, -0.635f);
-          pt = new Point3f(z);
-          pt.add(atom);
-          hAtoms[i][hPt++] = pt;
-          if (vConnect != null)
-            vConnect.add(atom);
-          z.set(0.635f, -0.635f, -0.635f);
-          pt = new Point3f(z);
-          pt.add(atom);
-          hAtoms[i][hPt++] = pt;
-          if (vConnect != null)
-            vConnect.add(atom);
-          break;
-        case 3: // three bonds needed RC
-          getHybridizationAndAxes(i, z, x, "sp3a", false, true, -1);
-          pt = new Point3f(z);
-          pt.scaleAdd(1.1f, z, atom);
-          hAtoms[i][hPt++] = pt;
-          if (vConnect != null)
-            vConnect.add(atom);
-          getHybridizationAndAxes(i, z, x, "sp3b", false, true, -1);
-          pt = new Point3f(z);
-          pt.scaleAdd(1.1f, z, atom);
-          hAtoms[i][hPt++] = pt;
-          if (vConnect != null)
-            vConnect.add(atom);
-          getHybridizationAndAxes(i, z, x, "sp3c", false, true, -1);
-          pt = new Point3f(z);
-          pt.scaleAdd(1.1f, z, atom);
-          hAtoms[i][hPt++] = pt;
-          if (vConnect != null)
-            vConnect.add(atom);
-          break;
-        case 2:
-          // 2 bonds needed R2C or R-N or R2C=C or O
-          //                    or RC=C or C=C
-          boolean isEne = (atomicNumber == 5 || nBonds == 1 && targetValence == 4);
-          getHybridizationAndAxes(i, z, x, (isEne ? "sp2b" : targetValence == 3 ? "sp3b" : "lpa"), false, true, -1);
-          pt = new Point3f(z);
-          pt.scaleAdd(1.1f, z, atom);
-          hAtoms[i][hPt++] = pt;
-          if (vConnect != null)
-            vConnect.add(atom);
-          getHybridizationAndAxes(i, z, x, (isEne ? "sp2c" : targetValence == 3 ? "sp3c" : "lpb"), false, true, -1);
-          pt = new Point3f(z);
-          pt.scaleAdd(1.1f, z, atom);
-          hAtoms[i][hPt++] = pt;
-          if (vConnect != null)
-            vConnect.add(atom);
-          break;
-        case 1:
-          // one bond needed R2B, R3C, R-N-R, R-O R=C-R R=N R-3-C
-          // nbonds ......... 2 .. 3 .. 2 ... 1 ... 2 .. 1 .. 1
-          // nval ........... 2 .. 3 .. 2 ... 1 ... 3 .. 2 .. 3
-          // targetValence .. 3 .. 4 .. 3 ... 2 ... 4 .. 3 .. 4
-          // ................sp3 . sp3 . sp3 . sp2 sp2 . sp
-          switch (targetValence - nBonds) {
+        if (nBonds == 0) {
+          switch (n) {
+          case 4:
+            z.set(0.635f, 0.635f, 0.635f);
+            pt = new Point3f(z);
+            pt.add(atom);
+            hAtoms[i][hPt++] = pt;
+            if (vConnect != null)
+              vConnect.add(atom);
+          // fall through
+          case 3:
+            z.set(-0.635f, -0.635f, 0.635f);
+            pt = new Point3f(z);
+            pt.add(atom);
+            hAtoms[i][hPt++] = pt;
+            if (vConnect != null)
+              vConnect.add(atom);
+          // fall through
+          case 2:
+            z.set(-0.635f, 0.635f, -0.635f);
+            pt = new Point3f(z);
+            pt.add(atom);
+            hAtoms[i][hPt++] = pt;
+            if (vConnect != null)
+              vConnect.add(atom);
+          // fall through
           case 1:
-            // sp3 or Boron sp2
-            getHybridizationAndAxes(i, z, x, (atomicNumber == 5 ? "sp2c" 
-                : targetValence == 2 ? "sp3b" : "lpa"),
-                false, false, -1);
+            z.set(0.635f, -0.635f, -0.635f);
+            pt = new Point3f(z);
+            pt.add(atom);
+            hAtoms[i][hPt++] = pt;
+            if (vConnect != null)
+              vConnect.add(atom);
+          }
+        } else {
+          switch (n) {
+          default:
+            break;
+          case 3: // three bonds needed RC
+            getHybridizationAndAxes(i, z, x, "sp3a", false, true, -1);
+            pt = new Point3f(z);
+            pt.scaleAdd(1.1f, z, atom);
+            hAtoms[i][hPt++] = pt;
+            if (vConnect != null)
+              vConnect.add(atom);
+            getHybridizationAndAxes(i, z, x, "sp3b", false, true, -1);
+            pt = new Point3f(z);
+            pt.scaleAdd(1.1f, z, atom);
+            hAtoms[i][hPt++] = pt;
+            if (vConnect != null)
+              vConnect.add(atom);
+            getHybridizationAndAxes(i, z, x, "sp3c", false, true, -1);
             pt = new Point3f(z);
             pt.scaleAdd(1.1f, z, atom);
             hAtoms[i][hPt++] = pt;
@@ -1316,23 +1290,62 @@ abstract public class AtomCollection {
               vConnect.add(atom);
             break;
           case 2:
-            // sp2
-            getHybridizationAndAxes(i, z, x, (targetValence == 4 ? "sp2c" : "sp2b"), false, false, -1);
+            // 2 bonds needed R2C or R-N or R2C=C or O
+            //                    or RC=C or C=C
+            boolean isEne = (atomicNumber == 5 || nBonds == 1
+                && targetValence == 4);
+            getHybridizationAndAxes(i, z, x, (isEne ? "sp2b"
+                : targetValence == 3 ? "sp3b" : "lpa"), false, true, -1);
+            pt = new Point3f(z);
+            pt.scaleAdd(1.1f, z, atom);
+            hAtoms[i][hPt++] = pt;
+            if (vConnect != null)
+              vConnect.add(atom);
+            getHybridizationAndAxes(i, z, x, (isEne ? "sp2c"
+                : targetValence == 3 ? "sp3c" : "lpb"), false, true, -1);
             pt = new Point3f(z);
             pt.scaleAdd(1.1f, z, atom);
             hAtoms[i][hPt++] = pt;
             if (vConnect != null)
               vConnect.add(atom);
             break;
-          case 3:
-            // sp
-            getHybridizationAndAxes(i, z, x, "sp", false, true, -1);
-            pt = new Point3f(z);
-            pt.scaleAdd(1.1f, z, atom);
-            hAtoms[i][hPt++] = pt;
-            if (vConnect != null)
-              vConnect.add(atom);
-            break;
+          case 1:
+            // one bond needed R2B, R3C, R-N-R, R-O R=C-R R=N R-3-C
+            // nbonds ......... 2 .. 3 .. 2 ... 1 ... 2 .. 1 .. 1
+            // nval ........... 2 .. 3 .. 2 ... 1 ... 3 .. 2 .. 3
+            // targetValence .. 3 .. 4 .. 3 ... 2 ... 4 .. 3 .. 4
+            // ................sp3 . sp3 . sp3 . sp2 sp2 . sp
+            switch (targetValence - nBonds) {
+            case 1:
+              // sp3 or Boron sp2
+              getHybridizationAndAxes(i, z, x, (atomicNumber == 5 ? "sp2c"
+                  : targetValence == 2 ? "sp3b" : "lpa"), false, false, -1);
+              pt = new Point3f(z);
+              pt.scaleAdd(1.1f, z, atom);
+              hAtoms[i][hPt++] = pt;
+              if (vConnect != null)
+                vConnect.add(atom);
+              break;
+            case 2:
+              // sp2
+              getHybridizationAndAxes(i, z, x, (targetValence == 4 ? "sp2c"
+                  : "sp2b"), false, false, -1);
+              pt = new Point3f(z);
+              pt.scaleAdd(1.1f, z, atom);
+              hAtoms[i][hPt++] = pt;
+              if (vConnect != null)
+                vConnect.add(atom);
+              break;
+            case 3:
+              // sp
+              getHybridizationAndAxes(i, z, x, "sp", false, true, -1);
+              pt = new Point3f(z);
+              pt.scaleAdd(1.1f, z, atom);
+              hAtoms[i][hPt++] = pt;
+              if (vConnect != null)
+                vConnect.add(atom);
+              break;
+            }
           }
         }
         nH += hPt;

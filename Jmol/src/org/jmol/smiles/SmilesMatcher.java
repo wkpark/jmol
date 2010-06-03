@@ -118,9 +118,8 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     // will be handled by SmilesSearch.setSmilesCoordinates
     BitSet bsAromatic = new BitSet();
     int atomCount = search.atomCount;
-    int nAtomsMissing = atomCount;
-    nAtomsMissing = search.getMissingHydrogenCount();
-    SmilesAtom[] atoms = new SmilesAtom[nAtomsMissing];
+    int nAtomsMissing = search.getMissingHydrogenCount();
+    SmilesAtom[] atoms = new SmilesAtom[atomCount + nAtomsMissing];
     int ptAtom = 0;
     for (int i = 0; i < atomCount; i++) {
       SmilesAtom sAtom = search.getAtom(i);

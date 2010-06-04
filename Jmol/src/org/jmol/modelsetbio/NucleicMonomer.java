@@ -29,6 +29,7 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
+import org.jmol.modelset.Group;
 import org.jmol.modelset.Chain;
 import org.jmol.util.Quaternion;
 import org.jmol.viewer.JmolConstants;
@@ -369,5 +370,33 @@ public class NucleicMonomer extends PhosphorusMonomer {
    vB.sub(ptNorP);
    return Quaternion.getQuaternionFrame(vA, vB, null);
  }
-
+ 
+ public boolean isBasePaired(Group g) {
+    if (!(g instanceof NucleicMonomer) || isPurine == g.isPurine())
+      return false;
+    NucleicMonomer otherNucleotide = (isPurine ? (NucleicMonomer) g : this);
+    NucleicMonomer myNucleotide = (isPurine ? this : (NucleicMonomer) g);
+    Atom myN1 = myNucleotide.getN1();
+    Atom otherN3 = otherNucleotide.getN3();
+    return (myN1.isBonded(otherN3));
+  }
+ 
+ public int getBasePairedLeadAtomIndex() {
+    Atom N = (isPurine ? getN1() : getN3());
+    //System.out.println(N.getInfo());
+    Bond[] bonds = N.getBonds();
+    for (int i = 0; i < bonds.length; i++) {
+      //System.out.println(bonds[i].getOtherAtom(N).getInfo());
+      if (bonds[i].isHydrogen()) {
+        Atom N2 = bonds[i].getOtherAtom(N);
+        Group g = N2.getGroup();
+        if (!(g instanceof NucleicMonomer))
+          continue;
+        NucleicMonomer m = (NucleicMonomer) g;
+        if ((isPurine ? m.getN3() : m.getN1()) == N2)
+          return m.getLeadAtomIndex();
+      }
+    }
+    return -1;
+  }
 }

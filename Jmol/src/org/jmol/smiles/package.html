@@ -269,17 +269,20 @@ includes:
    [stereoClass] == { "AL" | "TH" | "SP" | "TP" | "OH" }
    [stereoOrder] == [digits]
    
-   [ringPointer] == { "%" [digit][digit] | [digit] }
+   [ringPointer] == { "%" [digit][digit] | [digit] | "%0" [digits] "%"}
       # note: all ringPointers must have a second matching ringPointer 
       #       and must be preceded by an atomExpression for the 
       #       first occurance and either an atomExpression or a bond
       #       for the second occurance
+      # note: Jmol BIOSMARTS extends the possible number of rings to > 100 by 
+      #       allowing %0n%
 
    [bond] == { "-" | "=" | "#" | "." | "/" | "\\" | ":" | NULL
       # note: Jmol will not match two totally independent molecular pieces. For example,
       #       Jmol will not math [Na+].[Cl-]. However, "." can be used to clarify a
       #       structure that has "ring" bond notation:
       #       CC1CCC.C1CC   is a valid structure.
+      # note: BIOSEQUENCE uses ":" to indicate "base-paired" - default for branches
 
 </pre>
 </p>
@@ -289,7 +292,10 @@ includes:
 <p>
 <pre> 
       # note: prior to parsing, all white space is removed
-       
+
+   [smartsString] == { [biosequence] | [smartDef] } 
+   [biosequence] == "~" [smartDef] 
+      # note: in a biosequence, "atom types" are 1-letter code group names
    [smartDef] == [variableDefs] [smarts] | [smarts]
    [variableDefs] == [variableDef] | [variableDef] [variableDefs]
    [variableDef] ==  "$" [label] "=" "\"" [smarts] "\"" [comments] ";"
@@ -303,6 +309,7 @@ includes:
    [connections] == [connection] | NULL }
    [connection] == { [branch] | [bondExpression] [node] } [connections]
    [branch] == "(" { [smarts] | [bondExpression] [smarts] } ")" 
+      # note: Default bonding for a branch is single for SMILES or base-paired (:) for BIOSEQUENCE
    [node] == { [atomExpression] | [ringPointer] }
 
    [atomExpression] = { [unbracketedAtomType] 
@@ -317,6 +324,7 @@ includes:
       # note: Brackets are required for these elements: [Na], [Ca], etc.
       #       These elements Xy are instead interpreted as "X" "y", a single-letter
       #       element followed by an aromatic atom. 
+      # note: in a biosequence, all atom types are 1-letter code group names
       
    [atomType] == { [validElementSymbol] | "A" | [aromaticType] | "*" }
    [validElementSymbol] == (see <a href="../util/Elements.java">Elements.java</a>; 

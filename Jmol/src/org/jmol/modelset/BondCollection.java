@@ -260,14 +260,14 @@ abstract public class BondCollection extends AtomCollection {
       Atom atom2 = bond.atom2;
       if (atom1.isBonded(atom2))
         continue;
-      bond.order = checkBond(bond.order);
-      int n = setBond(bondCount++, bond).index;
+      int n = addHBond(atom1, atom2, bond.order, 0);
       if (bsHBondsRasmol != null)
         bsHBondsRasmol.set(n);
     }
   }
   
   protected int addHBond(Atom atom1, Atom atom2, int order, float energy) {
+    // from autoHbond
     order = checkBond(order);
     return setBond(bondCount++, bondMutually(atom1, atom2, order, (short) 1, energy)).index;
   }

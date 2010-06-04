@@ -1322,10 +1322,17 @@ final public class Atom extends Point3fi implements JmolNode {
     return group.isWithinStructure(type);
   }
   
-  public int getNextResidueAtom(String name) {
-    return group.chain.getGroupAtom(group.getGroupIndex() + 1, name);
+  public int getNextResidueAtom(String name, int offset) {
+    return group.chain.getGroupAtom(group.getGroupIndex() + offset, name);
+  }
+  
+  public boolean isBasePaired(JmolNode node) {
+    return group.isBasePaired(((Atom) node).getGroup());
   }
 
+  public int getBasePairedLeadAtomIndex() {
+    return group.getBasePairedLeadAtomIndex();
+  }
 
   /* DEVELOPER NOTE -- ATOM/MODEL DELETION --
    * 

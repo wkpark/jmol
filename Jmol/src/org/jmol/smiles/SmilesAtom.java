@@ -50,8 +50,9 @@ public class SmilesAtom extends Point3f implements JmolNode {
     return ("0;11;AL;33;TH;TP;OH;77;SP;".indexOf(xx) + 1)/ 3;
   }
 
+  static final String UNBRACKETED_SET = "B, C, N, O, P, S, F, Cl, Br, I,";
   static boolean allowSmilesUnbracketed(String xx) {
-    return ("B, C, N, O, P, S, F, Cl, Br, I,".indexOf(xx + ",") >= 0);
+    return (UNBRACKETED_SET.indexOf(xx + ",") >= 0);
   }
   
   int index;
@@ -146,7 +147,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
 
   
   public String toString() {
-    String s = (elementNumber == -1 ? "A" : elementNumber == -2 ? "*" : Elements.elementSymbolFromNumber(elementNumber));
+    String s = (residueChar != null || residueName != null ? (residueChar == null ? residueName : residueChar) + "." + atomName : elementNumber == -1 ? "A" : elementNumber == -2 ? "*" : Elements.elementSymbolFromNumber(elementNumber));
     if (isAromatic)
       s = s.toLowerCase();
     return "[" + s
@@ -513,6 +514,10 @@ public class SmilesAtom extends Point3f implements JmolNode {
 
   public void setBondArray() {
     bonds = (SmilesBond[]) ArrayUtil.setLength(bonds, bondCount);
+    if (isBioAtom)
+      for (int i = 0; i < bonds.length; i++)
+        if (bonds[i].bondType == SmilesBond.TYPE_AROMATIC)
+          bonds[i].bondType = SmilesBond.TYPE_BIO_PAIR;
   }
   
   public JmolEdge[] getEdges() {
@@ -585,16 +590,32 @@ public class SmilesAtom extends Point3f implements JmolNode {
     return null;
   }
 
-  public int getNextResidueAtom(String name) {
-    return -1;
-  }
-  
-  public void setGroupBits(BitSet bs) {
-    return;
-  }
-  
   public boolean isLeadAtom() {
     return isLeadAtom;
   }
   
+  public int getNextResidueAtom(String name, int offset) {
+    if (isBioAtom)
+    for (int k = 0; k < bonds.length; k++)
+      if (bonds[k].getAtomIndex1() == index && bonds[k].bondType == SmilesBond.TYPE_BIO_SEQUENCE)
+        return bonds[k].getOtherAtom(this).index;
+    return -1;
+  }
+  
+  public void setGroupBits(BitSet bs) {
+    bs.set(index);
+    return;
+  }
+  
+  public boolean isBasePaired(JmolNode node) {
+    SmilesBond bond = getBondTo((SmilesAtom) node);
+    return bond.isHydrogen();
+  }
+  
+  public int getBasePairedLeadAtomIndex() {
+    for (int k = 0; k < bonds.length; k++)
+      if (bonds[k].bondType == SmilesBond.TYPE_BIO_PAIR)
+        return bonds[k].getOtherAtom(this).index;
+    return -1;
+  }
 }

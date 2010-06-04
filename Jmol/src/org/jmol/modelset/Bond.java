@@ -104,7 +104,7 @@ public class Bond implements JmolEdge {
     return (order & JmolEdge.BOND_COVALENT_MASK) != 0;
   }
 
-  boolean isHydrogen() {
+  public boolean isHydrogen() {
     return (order & JmolEdge.BOND_HYDROGEN_MASK) != 0;
   }
 

@@ -82,7 +82,6 @@ public class NucleicPolymer extends BioPolymer {
             && myN9.distanceSquared(otherN1) > 50 // not stacked
             && Math.abs(Measure.distanceToPlane(plane, otherN3)) < 1 // in plane
         ) {
-          //System.out.println(myN9.distanceSquared(otherN1) + " " + Measure.distanceToPlane(plane, otherN3));
           bestNucleotide = otherNucleotide;
           bestN3 = otherN3;
           minDist2 = dist2;

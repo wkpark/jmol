@@ -429,4 +429,11 @@ public class Group {
     return -1;
   }
 
+  public boolean isBasePaired(Group g) {
+    return false;
+  }
+  
+  public int getBasePairedLeadAtomIndex() {
+    return -1;
+  }
 }

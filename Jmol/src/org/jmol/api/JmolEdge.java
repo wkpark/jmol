@@ -93,4 +93,6 @@ public interface JmolEdge {
 
   public boolean isCovalent();
 
+  public boolean isHydrogen();
+  
 }

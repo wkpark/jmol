@@ -1138,9 +1138,9 @@ class ScriptMathProcessor {
       if (x1.tok == Token.bitset) {
         Object ret = eval.getSmilesMatches(sFind, (BitSet) x1.value, null, null,
               bs2, !isSmiles, isAll);
-        if (!isAll)
-          return addX((BitSet) ret);
-        return addX((String[]) ret);
+        return (isAll ? addX((String[]) ret) 
+            : ret instanceof String ? addX((String) ret) 
+            : addX((BitSet) ret));
       }
       if (x1.tok == Token.list) {
         String[] list = (String[]) x1.value;

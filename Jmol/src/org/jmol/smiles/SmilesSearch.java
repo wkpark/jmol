@@ -73,6 +73,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
   boolean isAll;
   boolean isSearch;
   boolean isSmilesFind;
+  boolean isBioSequence;
   
   boolean hasRings;
   boolean haveSelected;
@@ -288,7 +289,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
         if (!checkMatch(atom0, 0, i, firstAtomOnly))
           break;
         if (skipGroup) {
-          int j = jmolAtoms[i].getNextResidueAtom(null);
+          int j = jmolAtoms[i].getNextResidueAtom(null, 1);
           if (j > i)
             i = j - 1;
         }
@@ -318,8 +319,8 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
 
     // check for requested selection or not-selection
 
-    if (bsFound.get(iAtom) || bsNot != null && bsNot.get(iAtom) || bsSelected != null
-        && !bsSelected.get(iAtom))
+    if (bsFound.get(iAtom) || bsNot != null && bsNot.get(iAtom)
+        || bsSelected != null && !bsSelected.get(iAtom))
       return true;
 
     JmolNode atom = jmolAtoms[iAtom];
@@ -353,30 +354,37 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
       if (patternBond.getAtomIndex2() != patternAtom.index)
         continue;
       SmilesAtom atom1 = patternBond.getAtom1();
-      if (patternAtom.isBioAtom && atom1.isBioAtom 
-          && patternBond.bondType == SmilesBond.TYPE_BIO)
-        continue; // no bond check here
       int matchingAtom = atom1.getMatchingAtom();
-      // at least for SMILES...
-      // we don't care what the bond is designated as for an aromatic atom.
-      // That may seem strange, but it's true for aromatic carbon, as we
-      // already know it is double- or aromatic-bonded.
-      // for N, we assume it is attached to at least one aromatic atom,
-      // and that is enough for us.
-      // this does not actually work for SEARCH
+      if (patternAtom.isBioAtom && atom1.isBioAtom) {
+        switch (patternBond.bondType) {
+        case SmilesBond.TYPE_BIO_SEQUENCE:
+          continue; // no bond check here
+        case SmilesBond.TYPE_BIO_PAIR:
+          if (jmolAtoms[iAtom].isBasePaired(jmolAtoms[matchingAtom]))
+            continue;
+        }
+      } else {
+        // at least for SMILES...
+        // we don't care what the bond is designated as for an aromatic atom.
+        // That may seem strange, but it's true for aromatic carbon, as we
+        // already know it is double- or aromatic-bonded.
+        // for N, we assume it is attached to at least one aromatic atom,
+        // and that is enough for us.
+        // this does not actually work for SEARCH
 
-      int k = 0;
-      for (; k < bonds.length; k++)
-        if ((bonds[k].getAtomIndex1() == matchingAtom || bonds[k]
-            .getAtomIndex2() == matchingAtom)
-            && bonds[k].isCovalent())
-          break;
-      if (k == bonds.length)
-        return true; // probably wasn't a covalent bond
+        int k = 0;
+        for (; k < bonds.length; k++)
+          if ((bonds[k].getAtomIndex1() == matchingAtom || bonds[k]
+              .getAtomIndex2() == matchingAtom)
+              && bonds[k].isCovalent() != isBioSequence)
+            break;
+        if (k == bonds.length)
+          return true; // probably wasn't a covalent bond
 
-      if (!checkMatchBond(patternAtom, atom1, patternBond, iAtom, matchingAtom,
-          bonds[k]))
-        return true;
+        if (!checkMatchBond(patternAtom, atom1, patternBond, iAtom,
+            matchingAtom, bonds[k]))
+          return true;
+      }
     }
     // add this atom to the growing list
     // note that we explicitly do a reference using
@@ -400,13 +408,23 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
       // run through the bonds of that assigned atom
       SmilesAtom atom1 = patternBond.getAtom1();
       atom = jmolAtoms[atom1.getMatchingAtom()];
-      if (atom1.isBioAtom && patternAtom.isBioAtom && 
-          patternBond.bondType == SmilesBond.TYPE_BIO) {
-        // go to the next group and find the required atom.
-        int iNext = atom.getNextResidueAtom(patternAtom.atomName);
-        if (iNext >= 0 && !checkMatch(patternAtom, atomNum, iNext,
-            firstAtomOnly))
-          return false;
+      if (atom1.isBioAtom && patternAtom.isBioAtom) {
+        int iNext;
+        switch (patternBond.bondType) {
+        case SmilesBond.TYPE_BIO_SEQUENCE:
+          // go to the next group and find the required atom.
+          iNext = atom.getNextResidueAtom(patternAtom.atomName, 1);
+          if (iNext >= 0
+              && !checkMatch(patternAtom, atomNum, iNext, firstAtomOnly))
+            return false;
+          break;
+        case SmilesBond.TYPE_AROMATIC:
+        case SmilesBond.TYPE_BIO_PAIR:
+          iNext = atom.getBasePairedLeadAtomIndex();
+          if (iNext >= 0
+              && !checkMatch(patternAtom, atomNum, iNext, firstAtomOnly))
+            return false;
+        }
       } else {
         bonds = atom.getEdges();
         // now run through all the bonds looking for atoms that might match

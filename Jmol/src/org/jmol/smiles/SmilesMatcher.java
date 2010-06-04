@@ -25,6 +25,7 @@
 package org.jmol.smiles;
 
 import java.util.BitSet;
+import java.util.Hashtable;
 import java.util.Vector;
 
 import org.jmol.api.JmolEdge;
@@ -134,15 +135,20 @@ public class SmilesMatcher implements SmilesMatcherInterface {
           cclass == Integer.MIN_VALUE ? cclass : (cclass << 8)
               + sAtom.getChiralOrder(), sAtom.elementNumber, sAtom
               .getCharge());
+      atom.atomName = sAtom.atomName;
+      atom.residueName = sAtom.residueName;
+      atom.residueChar = sAtom.residueChar;
+      atom.isBioAtom = sAtom.isBioAtom;
+      atom.isLeadAtom = sAtom.isLeadAtom;
+      atom.setAtomicMass(sAtom.getAtomicMass());
+      sAtom.setMatchingAtom(ptAtom++);
       System.out.println(atom);
       // we pass on the aromatic flag because
       // we don't want SmilesSearch to calculate
       // that for us
-      atom.setAtomicMass(sAtom.getAtomicMass());
+      // set up the bonds array and fill with H atoms
       if (sAtom.isAromatic())
         bsAromatic.set(ptAtom);
-      sAtom.setMatchingAtom(ptAtom++);
-      // set up the bonds array and fill with H atoms
       SmilesBond[] bonds = new SmilesBond[sAtom.getCovalentBondCount() + n];
       atom.setBonds(bonds);
       // when there is only 1 H and the atom is NOT FIRST, then it will
@@ -175,6 +181,10 @@ public class SmilesMatcher implements SmilesMatcherInterface {
           switch (sBond.bondType) {
           // these first two are for cis/trans alkene
           // stereochemistry; we co-opt stereo near/far here
+          case SmilesBond.TYPE_BIO_PAIR:
+          case SmilesBond.TYPE_BIO_SEQUENCE:
+            order = sBond.bondType;
+            break;
           case SmilesBond.TYPE_DIRECTIONAL_1:
             order = JmolEdge.BOND_STEREO_NEAR;
             break;
@@ -204,7 +214,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
         }
       }
     }
-    BitSet[] list = getSubstructureSetArray(pattern, atoms, -nAtomsMissing, null, null,
+    BitSet[] list = getSubstructureSetArray(pattern, atoms, -atoms.length, null, null,
         null, bsAromatic, isSearch, isAll);
     return list;
   }
@@ -315,6 +325,58 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     } catch (InvalidSmilesException e) {
       return null;
     }
+  }
+
+  public String getBioSmiles(JmolNode[] atoms, int atomCount,
+                                   BitSet bsSelected) {
+    StringBuffer sb = new StringBuffer("~");
+    Hashtable ht = new Hashtable();
+    int nPairs = 0;
+    String end = null;
+    try {
+      for (int i = bsSelected.nextSetBit(0); i >= 0; i = bsSelected.nextSetBit(i + 1)) {
+        JmolNode a = atoms[i];
+        String ch = a.getGroup1('?');
+        boolean unknown = (ch.equals("?"));
+        if (unknown)
+          continue;
+        if (end != null) {
+          sb.append(end);
+          end = null;
+        }
+        sb.append(ch);
+        //sb.append("[" + a.getNextResidueAtom("0", 0) + "]");
+        int i1 = a.getBasePairedLeadAtomIndex();
+        if (i1 >= 0 && i1 < a.getIndex())
+          i1 = a.getNextResidueAtom("0", 0);
+        if (i1 > 0) {
+          Integer ii = new Integer(i1);
+          String s = (String) ht.get(ii);
+          if (s == null) {
+            ht.put(ii, s = ":" + (++nPairs < 10 ? "" + nPairs 
+                : nPairs < 100 ? "%" + nPairs
+                :"%0" + nPairs + "%"));
+          }
+          sb.append(s);
+        }
+        int i2 = a.getNextResidueAtom("0", 1);
+        if (i2 < 0 || !bsSelected.get(i2)) {
+          if (i2 < 0) {
+            while ((i = bsSelected.nextSetBit(i + 1)) >= 0 
+                && (i2 = atoms[i].getNextResidueAtom(null, 1)) < 0) {
+              //
+            }
+            if (i2 < 0 || (i2 = i) <= 0)
+              break;
+          }
+          end = ".\n";
+        }
+        i = i2 - 1;
+      }
+    } catch (Exception e) {
+      return "";
+    }
+    return sb.toString();
   }
 
 

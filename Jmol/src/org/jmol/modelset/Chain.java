@@ -66,6 +66,7 @@ public final class Chain {
   }
   
   public int getGroupAtom(int groupIndex, String name) {
+    groupIndex -= groups[0].getGroupIndex();
     if (groupIndex < groupCount) {
       Group group = groups[groupIndex];
       if ("0".equals(name))

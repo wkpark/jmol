@@ -47,9 +47,11 @@ public interface JmolNode {
   public String getAtomName();
   public String getGroup3(boolean allowNull);
   public String getGroup1(char c0);
-  public int getNextResidueAtom(String name);
+  public int getNextResidueAtom(String name, int offset);
+  public int getBasePairedLeadAtomIndex();
   public void setGroupBits(BitSet bs);
   public boolean isLeadAtom();
+  public boolean isBasePaired(JmolNode node);
   
   
 }

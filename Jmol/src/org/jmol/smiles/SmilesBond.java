@@ -43,7 +43,8 @@ public class SmilesBond implements JmolEdge {
   public final static int TYPE_DIRECTIONAL_2 = 6;
   public final static int TYPE_RING = 7;
   public final static int TYPE_ANY = 8;
-  public final static int TYPE_BIO = 9;
+  public final static int TYPE_BIO_SEQUENCE = 9;
+  public final static int TYPE_BIO_PAIR = 10;
   public final static int TYPE_MULTIPLE = 999;
 
   private SmilesAtom atom1;
@@ -164,7 +165,7 @@ public class SmilesBond implements JmolEdge {
     case '~':
       return TYPE_ANY;
     case '+':
-      return TYPE_BIO;
+      return TYPE_BIO_SEQUENCE;
     }
     return TYPE_UNKNOWN;
   }
@@ -214,10 +215,14 @@ public class SmilesBond implements JmolEdge {
   }
 
   public boolean isCovalent() {
-    return true;
+    return bondType != TYPE_BIO_PAIR;
   }
 
   public int getValence() {
     return (bondType & 7);
+  }
+  
+  public boolean isHydrogen() {
+    return bondType == TYPE_BIO_PAIR;
   }
 }

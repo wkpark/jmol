@@ -6294,14 +6294,17 @@ public class ScriptEvaluator {
     }
   }
 
-  Object getSmilesMatches(String smiles, BitSet bsSelected,
-                                  BitSet bsRequired, BitSet bsNot,
-                                  BitSet bsMatch3D, boolean isSearch,
-                                  boolean isAll) throws ScriptException {
+  Object getSmilesMatches(String smiles, BitSet bsSelected, BitSet bsRequired,
+                          BitSet bsNot, BitSet bsMatch3D, boolean isSearch,
+                          boolean isAll) throws ScriptException {
     if (isSyntaxCheck) {
       if (isAll)
         return new String[] { "" };
       return new BitSet();
+    }
+    if (smiles.length() == 0) {
+      return viewer.getSmilesMatcher().getBioSmiles(viewer.getModelSet().atoms,
+          viewer.getAtomCount(), bsSelected);
     }
     try {
       BitSet[] b;

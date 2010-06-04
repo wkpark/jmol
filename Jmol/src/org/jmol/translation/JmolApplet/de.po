@@ -14,13 +14,13 @@ msgstr ""
 "Project-Id-Version: JmolApplet 11\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-05-27 20:44+0200\n"
-"PO-Revision-Date: 2010-05-26 10:17+0000\n"
-"Last-Translator: Jan-Christoph Borchardt <inquata@gmail.com>\n"
+"PO-Revision-Date: 2010-06-04 18:54+0000\n"
+"Last-Translator: Aleixo Sánchez <aleixosk@gmail.com>\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-05-26 16:56+0000\n"
+"X-Launchpad-Export-Date: 2010-06-04 22:04+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/AppletConsole.java:113
@@ -150,7 +150,8 @@ msgid "Check"
 msgstr "Prüfen"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "An die Spitze"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -499,21 +500,20 @@ msgid "could not setup force field {0}"
 msgstr "kann Kraftfeld {0} nicht einrichten"
 
 #: org/jmol/modelkit/ModelKitPopup.java:75
-#, fuzzy
 msgid "Element?"
-msgstr "Element"
+msgstr "Element?"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:77
 msgid "new"
-msgstr ""
+msgstr "neu"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:78
 msgid "undo (CTRL-Z)"
-msgstr ""
+msgstr "Rückgängig (CTRL-Z)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:79
 msgid "redo (CTRL-Y)"
-msgstr ""
+msgstr "Wiederherstellen (CTRL-Y)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:80
 #: org/jmol/viewer/ActionManager.java:56
@@ -521,42 +521,36 @@ msgid "center"
 msgstr "Mittelpunkt"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:81
-#, fuzzy
 msgid "add hydrogens"
-msgstr "Wasserstoffe anzeigen"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:82
 msgid "minimize"
 msgstr "minimieren"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:83
-#, fuzzy
 msgid "fix hydrogens and minimize"
-msgstr "{0} Wasserstoff-Brücken hinzugefügt"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:84
-#, fuzzy
 msgid "clear"
-msgstr "Leeren"
+msgstr "leeren"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:85
-#, fuzzy
 msgid "save file"
-msgstr "speichern"
+msgstr "Datei speichern"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:86
-#, fuzzy
 msgid "save state"
-msgstr "Aktueller Zustand"
+msgstr "Zustand speichern"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:87
 msgid "delete atom"
 msgstr "Atom löschen"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:88
-#, fuzzy
 msgid "drag to bond"
-msgstr "rotieren Z-Achse"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:89
 msgid "drag atom"
@@ -571,9 +565,8 @@ msgid "drag molecule (SHIFT to rotate)"
 msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:92
-#, fuzzy
 msgid "drag and minimize molecule (docking)"
-msgstr "Atom verschieben und Molekül minimieren (benötigt {0})"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:98
 msgid "increase charge"
@@ -584,9 +577,8 @@ msgid "decrease charge"
 msgstr "Ladung verringern"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:100
-#, fuzzy
 msgid "delete bond"
-msgstr "Atom löschen"
+msgstr "Bindung löschen"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:101
 msgid "single"
@@ -601,19 +593,16 @@ msgid "triple"
 msgstr "dreifach"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:104
-#, fuzzy
 msgid "increase order"
-msgstr "Ladung erhöhen"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:105
-#, fuzzy
 msgid "decrease order"
-msgstr "Ladung verringern"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:106
-#, fuzzy
 msgid "rotate bond (SHIFT-DRAG)"
-msgstr "rotieren Z-Achse"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:107
 msgid "exit modelkit mode"
@@ -2138,7 +2127,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:67
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:69
@@ -2214,9 +2204,9 @@ msgid "rotate selected atoms (requires {0})"
 msgstr "Ausgewählte Atome drehen (benötigt {0})"
 
 #: org/jmol/viewer/ActionManager.java:86
-#, fuzzy, java-format
+#, java-format
 msgid "rotate branch around bond (requires {0})"
-msgstr "Ausgewählte Atome drehen (benötigt {0})"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:88
 #, java-format
@@ -2229,9 +2219,9 @@ msgid "move atom and minimize molecule (requires {0})"
 msgstr "Atom verschieben und Molekül minimieren (benötigt {0})"
 
 #: org/jmol/viewer/ActionManager.java:90
-#, fuzzy, java-format
+#, java-format
 msgid "move and minimize molecule (requires {0})"
-msgstr "Atom verschieben und Molekül minimieren (benötigt {0})"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:91
 #, java-format
@@ -2369,35 +2359,18 @@ msgstr "Kann Pfad für Log-Datei nicht setzen"
 msgid "Setting log file to {0}"
 msgstr "Stelle Log Datei auf {0}"
 
-#, fuzzy
-#~ msgid "atoms"
-#~ msgstr "Atome"
-
-#, fuzzy
-#~ msgid "bonds"
-#~ msgstr "Bindungen"
-
-#~ msgid "delete"
-#~ msgstr "löschen"
-
-#~ msgid "increase"
-#~ msgstr "erhöhen"
-
-#~ msgid "decrease"
-#~ msgstr "verringern"
-
 #~ msgid "Java memory usage"
 #~ msgstr "Java Speichernutzung"
 
 #~ msgid "About Jmol"
 #~ msgstr "Über Jmol"
 
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
-#~ "Dateierstellung mit diesem Applet ist nicht zulässig. Für das Base64 "
-#~ "Format, benutzen Sie {0}."
+#~ "Dateierstellung mit diesem Applet ist nicht zulässig. Für das Base64 Format, "
+#~ "benutzen Sie {0}."
 
 #~ msgid "File creation failed."
 #~ msgstr "Dateierstellung fehlgeschlagen."
@@ -2408,9 +2381,11 @@ msgstr "Stelle Log Datei auf {0}"
 #~ msgid "File from PDB"
 #~ msgstr "Datei aus PDB"
 
+#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "{0} Grafik"
 
+#, java-format
 #~ msgid "File {0}"
 #~ msgstr "Datei {0}"
 
@@ -2420,18 +2395,31 @@ msgstr "Stelle Log Datei auf {0}"
 #~ msgid "Script with state"
 #~ msgstr "Skript mit Zustand"
 
+#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "{0} 3D Modell"
 
 #~ msgid "JVXL Isosurface"
 #~ msgstr "JVXL Isofläche"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr "FEHLER: Kann boolschen Flag keinen numerischen Wert zuweisen: {0}"
 
+#, java-format
 #~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 #~ msgstr "FEHLER: Kann der Variable keinen Boolschen Wert zuweisen: {0}"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to string value: {0}"
 #~ msgstr ""
 #~ "Fehler: kann kein boolsches Kennzeichen zu einem variablen Wert setzen:{0}"
+
+#~ msgid "increase"
+#~ msgstr "erhöhen"
+
+#~ msgid "delete"
+#~ msgstr "löschen"
+
+#~ msgid "decrease"
+#~ msgstr "verringern"

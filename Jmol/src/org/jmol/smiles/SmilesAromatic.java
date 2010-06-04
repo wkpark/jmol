@@ -49,8 +49,10 @@ public class SmilesAromatic {
    * @return
    *        true if standard deviation of vNorm.dot.vMean is less than cutoff
    */
-  
-  public final static boolean isFlatSp2Ring(JmolNode[] atoms, BitSet bsSelected, BitSet bs, float cutoff) {
+
+  public final static boolean isFlatSp2Ring(JmolNode[] atoms,
+                                            BitSet bsSelected, BitSet bs,
+                                            float cutoff) {
     /*
      * 
      * Bob Hanson, hansonr@stolaf.edu
@@ -107,10 +109,10 @@ public class SmilesAromatic {
      *      would have any chance of passing the first two tests.
      *   
      */
-    
+
     if (cutoff <= 0)
       cutoff = 0.01f;
-    
+
     Vector3f vTemp = new Vector3f();
     Vector3f vA = new Vector3f();
     Vector3f vB = new Vector3f();
@@ -125,7 +127,7 @@ public class SmilesAromatic {
       JmolEdge[] bonds = ringAtom.getEdges();
       if (bonds.length < 3)
         continue;
-      for (int n = 0, k = bonds.length; --k >= 0; ) {
+      for (int n = 0, k = bonds.length; --k >= 0;) {
         int iAtom = ringAtom.getBondedAtomIndex(k);
         if (bsSelected != null && !bsSelected.get(iAtom))
           continue;
@@ -144,7 +146,7 @@ public class SmilesAromatic {
       int iSub = -1;
       int r1 = -1;
       int r2 = -1;
-      for (int k = bonds.length; --k >= 0; ) {
+      for (int k = bonds.length; --k >= 0;) {
         int iAtom = ringAtom.getBondedAtomIndex(k);
         if (bsSelected != null && !bsSelected.get(iAtom))
           continue;
@@ -156,16 +158,16 @@ public class SmilesAromatic {
           r2 = iAtom;
       }
       // get the normals through r1 - k - r2 and r1 - iSub - r2
-      SmilesSearch.getNormalThroughPoints((Point3f)atoms[r1], (Point3f)atoms[i], (Point3f)atoms[r2], vTemp, vA,
-          vB);
+      getNormalThroughPoints(atoms[r1],
+          atoms[i], atoms[r2], vTemp, vA, vB);
       if (vMean == null)
         vMean = new Vector3f();
       if (!addNormal(vTemp, vMean, maxDev))
         return false;
       vNorms[nNorms++] = new Vector3f(vTemp);
       if (iSub >= 0) {
-        SmilesSearch.getNormalThroughPoints((Point3f)atoms[r1], (Point3f)atoms[iSub], (Point3f)atoms[r2],
-            vTemp, vA, vB);
+        getNormalThroughPoints(atoms[r1],
+            atoms[iSub], atoms[r2], vTemp, vA, vB);
         if (!addNormal(vTemp, vMean, maxDev))
           return false;
         vNorms[nNorms++] = new Vector3f(vTemp);
@@ -201,4 +203,19 @@ public class SmilesAromatic {
     //System.out.println("stdev = " + sum);
     return (sum < cutoff);
   }
+  
+  static float getNormalThroughPoints(JmolNode pointA, JmolNode pointB,
+                                      JmolNode pointC, Vector3f vNorm,
+                                      Vector3f vAB, Vector3f vAC) {
+    vAB.sub((Point3f) pointB, (Point3f) pointA);
+    vAC.sub((Point3f) pointC, (Point3f) pointA);
+    vNorm.cross(vAB, vAC);
+    vNorm.normalize();
+    // ax + by + cz + d = 0
+    // so if a point is in the plane, then N dot X = -d
+    vAB.set((Point3f) pointA);
+    return -vAB.dot(vNorm);
+  }
+
+
 }

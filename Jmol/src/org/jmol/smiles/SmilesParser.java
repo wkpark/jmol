@@ -155,8 +155,8 @@ public class SmilesParser {
     molecule.setAtomArray();
 
     for (int i = molecule.atomCount; --i >= 0;) {
-      molecule.getAtom(i).setBondArray();
-      if (!isSearch && !molecule.getAtom(i).setHydrogenCount(molecule))
+      molecule.patternAtoms[i].setBondArray();
+      if (!isSearch && !molecule.patternAtoms[i].setHydrogenCount(molecule))
         throw new InvalidSmilesException(
             "unbracketed atoms must be one of: B C N O P S F Cl Br I");
     }
@@ -170,7 +170,7 @@ public class SmilesParser {
 
    private void fixChirality(SmilesSearch molecule) throws InvalidSmilesException {
      for (int i = molecule.atomCount; --i >= 0; ) {
-       SmilesAtom sAtom = molecule.getAtom(i);
+       SmilesAtom sAtom = molecule.patternAtoms[i];
        int stereoClass = sAtom.getChiralClass();
        int nBonds = sAtom.missingHydrogenCount;
        if (nBonds < 0)
@@ -471,11 +471,12 @@ public class SmilesParser {
         else if (!res.equals("*"))
           newAtom.residueChar = res;
         if (!name.equals("*"))
-          newAtom.atomName = name;
+          newAtom.setAtomName(name);
         ch = '\0';
-        newAtom.isBioAtom = true;
+        newAtom.setBioAtom();
       }
       while (ch != '\0') {
+        newAtom.setAtomName("");
         if (Character.isDigit(ch)) {
           index = getDigits(pattern, index, ret);
           int mass = ret[0];
@@ -791,6 +792,9 @@ public class SmilesParser {
         throw new InvalidSmilesException("invalid '.'");
       return new SmilesBond(SmilesBond.TYPE_NONE, false);      
     }
+    if (ch == '+' && bondSet != null)
+      throw new InvalidSmilesException("invalid '+'");
+      
     SmilesBond newBond = (bondSet == null ? (bond == null ? new SmilesBond(
         currentAtom, null, SmilesBond.TYPE_UNKNOWN, false) : bond)
         : isPrimitive ? bondSet.addPrimitive() : bondSet.addBondOr());

@@ -122,7 +122,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     SmilesAtom[] atoms = new SmilesAtom[atomCount + nAtomsMissing];
     int ptAtom = 0;
     for (int i = 0; i < atomCount; i++) {
-      SmilesAtom sAtom = search.getAtom(i);
+      SmilesAtom sAtom = search.patternAtoms[i];
       int cclass = sAtom.getChiralClass();
       int n = sAtom.missingHydrogenCount;
       if (n < 0)
@@ -162,7 +162,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
 
     // set up bonds
     for (int i = 0; i < atomCount; i++) {
-      SmilesAtom sAtom = search.getAtom(i);
+      SmilesAtom sAtom = search.patternAtoms[i];
       int i1 = sAtom.getMatchingAtom();
       SmilesAtom atom1 = atoms[i1];
       int n = sAtom.getCovalentBondCount();

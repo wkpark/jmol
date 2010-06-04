@@ -59,6 +59,23 @@ public class SmilesAtom extends Point3f implements JmolNode {
   String residueName;
   String residueChar;
   boolean isBioAtom;
+  
+  void setBioAtom() {
+    isBioAtom = true;
+    if (parent != null)
+      parent.isBioAtom = true;
+  }
+  
+  void setAtomName(String name) {
+    if (name == null)
+      return;
+    if (name.length() > 0)
+      atomName = name;
+    // ensure that search does not skip groups
+    if (parent != null)
+      parent.atomName = name;
+  }
+
   boolean not;
   boolean selected;
   boolean hasSymbol;

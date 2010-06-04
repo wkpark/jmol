@@ -59,6 +59,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
   String residueName;
   String residueChar;
   boolean isBioAtom;
+  boolean isLeadAtom;
   
   void setBioAtom() {
     isBioAtom = true;
@@ -71,6 +72,8 @@ public class SmilesAtom extends Point3f implements JmolNode {
       return;
     if (name.length() > 0)
       atomName = name;
+    if (name.equals("0"))
+      isLeadAtom = true;
     // ensure that search does not skip groups
     if (parent != null)
       parent.atomName = name;
@@ -588,6 +591,10 @@ public class SmilesAtom extends Point3f implements JmolNode {
   
   public void setGroupBits(BitSet bs) {
     return;
+  }
+  
+  public boolean isLeadAtom() {
+    return isLeadAtom;
   }
   
 }

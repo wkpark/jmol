@@ -463,13 +463,17 @@ public class SmilesParser {
 
       int hydrogenCount = Integer.MIN_VALUE;
       int biopt = pattern.indexOf('.');
-      if (biopt > 0) {
-        String res = pattern.substring(0, biopt).toUpperCase();
-        String name = pattern.substring(biopt + 1).toUpperCase();
-        if (res.length() > 1)
-          newAtom.residueName = res;
-        else if (!res.equals("*"))
-          newAtom.residueChar = res;
+      if (biopt >= 0) {
+        String name = pattern.substring(index, biopt).toUpperCase();
+        if (name.length() == 0)
+          name = "*";
+        if (name.length() > 1)
+          newAtom.residueName = name;
+        else if (!name.equals("*"))
+          newAtom.residueChar = name;
+        name = pattern.substring(biopt + 1).toUpperCase();
+        if (name.length() == 0)
+          name = "*";
         if (!name.equals("*"))
           newAtom.setAtomName(name);
         ch = '\0';

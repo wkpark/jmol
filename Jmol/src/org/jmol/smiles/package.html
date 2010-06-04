@@ -35,7 +35,7 @@
 <h1>Jmol 3D-SEARCH</h1>
 <p>Robert M. Hanson<br/>Department of Chemistry<br/>St. Olaf College<br/>5/19/2010</p>
 <p>
-An adaptation of SMILES and SMARTS for 3D molecular atom search and selection.
+An adaptation of SMILES and SMARTS for 3D molecular atom search and selection, including 3D-BIOSMARTS.
 
     The <a href=".">org.jmol.smiles</a> package provides extensive functionality for selecting
     atoms within a three-dimensional model based on SMILES and SMARTS strings. 
@@ -66,6 +66,9 @@ or [2H] are selected; connected hydrogen atoms as in [CH3] are not selected.
 </li><li>Adds { } for selection of one or more subsets of matched atoms.
     Simply place { } around any atom or group of atoms that are to be 
     specifically returned from a search:  <b>select search("{C}C=O")</b>, for example, returns all alpha carbons. 
+
+</li><li>Adds [residueName.atomName] and "+" (sequential residues) for 
+    searching biomolecular structures: <b>select search("[ALA.*]+[GLY.*,PRO.*]")</b>, for example, returns alanine-glycine or alanine-proline sequences. 
 
 </li></ul>
 <b>aromaticity</b>
@@ -320,7 +323,7 @@ includes:
                             including Xx and only through element 109)
    [aromaticType] == { "a" | [validElementSymbol].toLowerCase() }
        
-   [bracketedExpression] == { [atomOrSet] | [atomOrSet] ";" [atomAndSet] | [bioAtom] } 
+   [bracketedExpression] == { [atomOrSet] | [atomOrSet] ";" [atomAndSet] } 
    
    [atomOrSet] == { [atomAndSet] | [atomAndSet] "," [atomAndSet] }
    [atomAndSet] == { [atomPrimitives] | [atomPrimitives] "&" [atomAndSet]
@@ -376,10 +379,12 @@ includes:
    [x_Prop] == { "x" [digits] | "x" } # ring connectivity -- total ring connections
    
    [bioAtom] == [residueName] "." [atomName]
-   [residueName] == { "*" | [oneDigitGroupName] | [groupName] }
+   [residueName] == { "*" | [oneDigitGroupName] | [groupName] | null }
+      # note: null same as "*"
    [oneDigitGroupName] == (see JmolConstants.predefinedGroup1Names)
    [groupName] == (any PDB residue name)
-   [atomName] == { "*" | (any atom name) }
+   [atomName] == { "*" | "0" | (any atom name) | null }
+      # note: null same as "*"; "0" refers to "lead atom -- CA for proteins, P for nucleic, or O for carbohydrate
    [ringPointer] == { "%" [digit][digit] | [digit] }
       # note: all ringPointers must have a second matching ringPointer 
       #       and must be preceded by an atomExpression for the 

@@ -221,6 +221,10 @@ public abstract class Monomer extends Group {
     return getAtomFromOffsetIndex(0);
   }
 
+  public int getLeadAtomIndex() {
+    return getLeadAtom().index;
+  }
+
   public final Atom getWingAtom() {
     return getAtomFromOffsetIndex(1);
   }

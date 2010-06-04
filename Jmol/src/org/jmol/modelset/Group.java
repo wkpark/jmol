@@ -380,6 +380,10 @@ public class Group {
     return null; // but see Monomer class
   }
 
+  public int getLeadAtomIndex() {
+    return -1; // but see Monomer class
+  }
+
   public Quaternion getQuaternion(char qType) {
     return null;
   }

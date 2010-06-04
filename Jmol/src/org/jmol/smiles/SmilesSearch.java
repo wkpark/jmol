@@ -599,7 +599,9 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
       }
 
       // BIOSMARTS
-      if (patternAtom.atomName != null && !patternAtom.atomName.equals(atom.getAtomName().toUpperCase()))
+      if (patternAtom.atomName != null && 
+          (patternAtom.isLeadAtom() ? !atom.isLeadAtom() 
+              : !patternAtom.atomName.equals(atom.getAtomName().toUpperCase())))
           break;
       
       if (patternAtom.residueName != null && !patternAtom.residueName.equals(atom.getGroup3(false).toUpperCase()))

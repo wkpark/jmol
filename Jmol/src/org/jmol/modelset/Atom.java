@@ -953,7 +953,7 @@ final public class Atom extends Point3fi implements JmolNode {
     //  (this will be a difference in terms of *clickability*).
     // except BACKBONE -- in which case we only see the lead atoms
     if (group.shapeVisibilityFlags != JmolConstants.BACKBONE_VISIBILITY_FLAG
-        || group.isLeadAtom(index))
+        || isLeadAtom())
       flags |= group.shapeVisibilityFlags;
 
     // We know that (flags & AIM), so now we must remove that flag
@@ -962,6 +962,10 @@ final public class Atom extends Point3fi implements JmolNode {
     return ((flags & ~JmolConstants.ATOM_IN_FRAME) != 0);
   }
 
+  public boolean isLeadAtom() {
+    return group.isLeadAtom(index);
+  }
+  
   public float getGroupPhi() {
     return group.phi;
   }

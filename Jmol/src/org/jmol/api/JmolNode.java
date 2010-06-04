@@ -49,6 +49,7 @@ public interface JmolNode {
   public String getGroup1(char c0);
   public int getNextResidueAtom(String name);
   public void setGroupBits(BitSet bs);
+  public boolean isLeadAtom();
   
   
 }

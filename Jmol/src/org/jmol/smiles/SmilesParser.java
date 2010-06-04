@@ -110,9 +110,7 @@ public class SmilesParser {
   private boolean isSearch;
   private SmilesBond[] ringBonds;
   private int braceCount;
-  
-
-
+ 
   public static SmilesSearch getMolecule(String pattern, boolean isSearch) throws InvalidSmilesException {
     return (new SmilesParser(isSearch)).parse(pattern);
   }
@@ -293,6 +291,7 @@ public class SmilesParser {
     boolean isAtom = (!isRing && (ch == '_' || ch == '[' || ch == '*' || Character
         .isLetter(ch)));
     if (isRing) {
+      molecule.hasRings = true;
       int ringNumber;
       switch (ch) {
       case '%':
@@ -463,7 +462,19 @@ public class SmilesParser {
       }
 
       int hydrogenCount = Integer.MIN_VALUE;
-
+      int biopt = pattern.indexOf('.');
+      if (biopt > 0) {
+        String res = pattern.substring(0, biopt).toUpperCase();
+        String name = pattern.substring(biopt + 1).toUpperCase();
+        if (res.length() > 1)
+          newAtom.residueName = res;
+        else if (!res.equals("*"))
+          newAtom.residueChar = res;
+        if (!name.equals("*"))
+          newAtom.atomName = name;
+        ch = '\0';
+        newAtom.isBioAtom = true;
+      }
       while (ch != '\0') {
         if (Character.isDigit(ch)) {
           index = getDigits(pattern, index, ret);
@@ -549,6 +560,8 @@ public class SmilesParser {
               if (isPrimitive)
                 atomSet.hasSymbol = true;
               // indicates we have already assigned an atom number
+              if (!symbol.equals("*"))
+                molecule.needAromatic = true;
               index += symbol.length();
             } else {
               index = getDigits(pattern, index + 1, ret);
@@ -799,6 +812,9 @@ public class SmilesParser {
       case SmilesBond.TYPE_DIRECTIONAL_1:
       case SmilesBond.TYPE_DIRECTIONAL_2:
         molecule.haveBondStereochemistry = true;
+        break;
+      case SmilesBond.TYPE_AROMATIC:
+        molecule.needAromatic = true;
         break;
       }
       newBond.set(bondType, isBondNot);

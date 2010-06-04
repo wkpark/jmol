@@ -43,6 +43,7 @@ public class SmilesBond implements JmolEdge {
   public final static int TYPE_DIRECTIONAL_2 = 6;
   public final static int TYPE_RING = 7;
   public final static int TYPE_ANY = 8;
+  public final static int TYPE_BIO = 9;
   public final static int TYPE_MULTIPLE = 999;
 
   private SmilesAtom atom1;
@@ -130,7 +131,7 @@ public class SmilesBond implements JmolEdge {
   }
 
   static boolean isBondType(char ch, boolean isSearch) throws InvalidSmilesException {
-    if ("!.-=#:/\\,&;@~".indexOf(ch) < 0)
+    if ("-=#:/\\.+!,&;@~".indexOf(ch) < 0)
       return false;
     if (!isSearch && "-=#:/\\.".indexOf(ch) < 0)
         throw new InvalidSmilesException("SMARTS bond type " + ch
@@ -162,6 +163,8 @@ public class SmilesBond implements JmolEdge {
       return TYPE_RING;
     case '~':
       return TYPE_ANY;
+    case '+':
+      return TYPE_BIO;
     }
     return TYPE_UNKNOWN;
   }

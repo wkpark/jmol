@@ -559,6 +559,10 @@ final public class Atom extends Point3fi implements JmolNode {
      return group;
    }
    
+   public void setGroupBits(BitSet bs) {
+     group.selectAtoms(bs);
+   }
+   
    public String getAtomName() {
      return (atomID > 0 ? JmolConstants.getSpecialAtomName(atomID) 
          : group.chain.modelSet.atomNames[index]);
@@ -1312,6 +1316,10 @@ final public class Atom extends Point3fi implements JmolNode {
 
   boolean isWithinStructure(byte type) {
     return group.isWithinStructure(type);
+  }
+  
+  public int getNextResidueAtom(String name) {
+    return group.chain.getGroupAtom(group.getGroupIndex() + 1, name);
   }
 
 

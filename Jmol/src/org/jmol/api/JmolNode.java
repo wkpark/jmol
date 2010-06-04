@@ -24,6 +24,8 @@
 
 package org.jmol.api;
 
+import java.util.BitSet;
+
 public interface JmolNode {
   
   // abstracts out the essential pieces for SMILES processing
@@ -42,5 +44,11 @@ public interface JmolNode {
   public int getCovalentBondCount();
   public int getImplicitHydrogenCount();
   public short getAtomicAndIsotopeNumber();
+  public String getAtomName();
+  public String getGroup3(boolean allowNull);
+  public String getGroup1(char c0);
+  public int getNextResidueAtom(String name);
+  public void setGroupBits(BitSet bs);
+  
   
 }

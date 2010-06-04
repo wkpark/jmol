@@ -143,13 +143,15 @@ It is recommended they be restricted to the set A-Z, a-z, and 0-9.
 <tr><td>@</td><td>stereochemistry</td></tr>
 </table>
 <br/>
-In addition, Jmol 3D-SEARCH adds the following primitives and options:
+In addition, Jmol 3D-BIOSMARTS adds the following primitives and options:
 <br/>
 <br/>
 <table border="1" cellpadding="5" width="500">
 <tr><td>d</td><td>non-hydrogen degree -- number of non-hydrogen connections</td></tr>
 <tr><td>=</td><td>Jmol atom index, for example: [=23]</td></tr>
 <tr><td>[number]?</td><td>mass number or undefined (so, for example, [C12?] means any carbon that isn't explicitly C13 or C14</td></tr>
+<tr><td>[RES.ATOMNAME]</td><td>residue and atom name, for example [ALA.CA] or [*.P]</td></tr>
+<tr><td>[RES.ATOMNAME]+[RES.ATOMNAME]</td><td>adjacent residues, for example [ALA.CA][*.CA]</td></tr>
 </table>  
 <br/>
 </li><li>All primitives that are not element names, <b>*</b>, <b>A</b>, or <b>a</b> must be 
@@ -280,7 +282,7 @@ includes:
 </p>
 
 </p>     
-<a name="specs"><h3>Detailed Jmol 3D-SEARCH SMARTS Specification</h3></a>
+<a name="specs"><h3>Detailed Jmol 3D-BIOSMARTS Specification</h3></a>
 <p>
 <pre> 
       # note: prior to parsing, all white space is removed
@@ -318,7 +320,7 @@ includes:
                             including Xx and only through element 109)
    [aromaticType] == { "a" | [validElementSymbol].toLowerCase() }
        
-   [bracketedExpression] == { [atomOrSet] | [atomOrSet] ";" [atomAndSet] } 
+   [bracketedExpression] == { [atomOrSet] | [atomOrSet] ";" [atomAndSet] | [bioAtom] } 
    
    [atomOrSet] == { [atomAndSet] | [atomAndSet] "," [atomAndSet] }
    [atomAndSet] == { [atomPrimitives] | [atomPrimitives] "&" [atomAndSet]
@@ -373,6 +375,11 @@ includes:
                                       #   includes implicit H atoms
    [x_Prop] == { "x" [digits] | "x" } # ring connectivity -- total ring connections
    
+   [bioAtom] == [residueName] "." [atomName]
+   [residueName] == { "*" | [oneDigitGroupName] | [groupName] }
+   [oneDigitGroupName] == (see JmolConstants.predefinedGroup1Names)
+   [groupName] == (any PDB residue name)
+   [atomName] == { "*" | (any atom name) }
    [ringPointer] == { "%" [digit][digit] | [digit] }
       # note: all ringPointers must have a second matching ringPointer 
       #       and must be preceded by an atomExpression for the 
@@ -386,7 +393,7 @@ includes:
                               | "!" [bondPrimitive] 
                               | "!" [bondPrimitive] "&" [bondAndSet] }
    [bondPrimitives] == { [bondPrimitive] | [bondPrimitive] [bondPrimitives] }       
-   [bond] == { "-" | "=" | "#" | "." | "/" | "\\" | ":" | "~" | "@" | NULL
+   [bond] == { "-" | "=" | "#" | "." | "/" | "\\" | ":" | "~" | "@" | "+" | NULL
       # note: All bondExpressions are not valid. Stereochemistry should not 
       #       be mixed with the others, as it represents a single bond always.
       #       In addition, '.' ("no bond") cannot be mixed with any bond type.
@@ -395,6 +402,7 @@ includes:
       #       or "=&!@" -- "doubly-bonded atoms where the double bond is not in a ring"
       # note: Jmol will not match two totally independent molecular pieces. For example,
       #       Jmol will not math [Na+].[Cl-]
+      # note: "+" indicates "adjacent biomolecular groups in a chain"
 
 </pre>
 </p>

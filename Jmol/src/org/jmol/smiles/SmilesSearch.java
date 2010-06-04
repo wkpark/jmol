@@ -42,8 +42,6 @@ import org.jmol.modelset.JmolMolecule;
  * but this now includes more data than that and the search itself
  * so as to keep this thread safe
  * 
- * definition of "aromatic" is 
- * 
  */
 public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
 
@@ -82,10 +80,12 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
   boolean asVector;
   boolean getMaps;
 
+  boolean hasRings;
   boolean haveSelected;
   boolean haveBondStereochemistry;
   boolean haveAtomStereochemistry;
   boolean needRingData;
+  boolean needAromatic;
   boolean needRingMemberships;
   int ringDataMax = 8;
   BitSet[] ringData;
@@ -200,7 +200,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
       System.out.println(pattern + " " + iAtom + " " + atomNum);
       System.out.println(" ");
     }
-    
+
     if (bsNot != null && bsNot.get(iAtom) || bsSelected != null
         && !bsSelected.get(iAtom))
       return true;
@@ -247,6 +247,9 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
       if (patternBond.getAtomIndex2() != patternAtom.index)
         continue;
       SmilesAtom atom1 = patternBond.getAtom1();
+      if (patternAtom.isBioAtom && atom1.isBioAtom 
+          && patternBond.bondType == SmilesBond.TYPE_BIO)
+        continue; // no bond check here
       int matchingAtom = atom1.getMatchingAtom();
       // at least for SMILES...
       // we don't care what the bond is designated as for an aromatic atom.
@@ -255,6 +258,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
       // for N, we assume it is attached to at least one aromatic atom,
       // and that is enough for us.
       // this does not actually work for SEARCH
+
       int k = 0;
       for (; k < bonds.length; k++)
         if ((bonds[k].getAtomIndex1() == matchingAtom || bonds[k]
@@ -264,7 +268,8 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
       if (k == bonds.length)
         return true; // probably wasn't a covalent bond
 
-      if (!checkMatchBond(patternAtom, atom1, patternBond, iAtom, matchingAtom, bonds[k]))
+      if (!checkMatchBond(patternAtom, atom1, patternBond, iAtom, matchingAtom,
+          bonds[k]))
         return true;
     }
     // add this atom to the growing list
@@ -277,25 +282,33 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
       // next position...
       patternAtom = patternAtoms[atomNum];
       // for all the pattern bonds for this atom...
-      for (int i = 0; i < patternAtom.getCovalentBondCount(); i++) {
-        SmilesBond patternBond = patternAtom.getBond(i);
-        // find the bond to atoms already assigned
-        // note that it must be there, because SMILES strings
-        // are parsed in order, from left to right. You can't
-        // have two fragments going at the same time.
-        if (patternBond.getAtom2() == patternAtom) {
-          // run through the bonds of that assigned atom
-          atom = getJmolAtom(patternBond.getAtom1().getMatchingAtom());
-          bonds = atom.getEdges();
-          // now run through all the bonds looking for atoms that might match
-          // this is the iterative step
-          if (bonds != null)
-            for (int j = 0; j < bonds.length; j++)
-              if (!checkMatch(patternAtom, atomNum, atom.getBondedAtomIndex(j),
-                  firstAtomOnly))
-                return false;
-          break; // once through
-        }
+      SmilesBond patternBond = null;
+      // find the bond to atoms already assigned
+      // note that it must be there, because SMILES strings
+      // are parsed in order, from left to right. You can't
+      // have two fragments going at the same time.
+      for (int i = 0; i < patternAtom.getCovalentBondCount(); i++)
+        if ((patternBond = patternAtom.getBond(i)).getAtom2() == patternAtom)
+          break;
+      // run through the bonds of that assigned atom
+      SmilesAtom atom1 = patternBond.getAtom1();
+      atom = getJmolAtom(atom1.getMatchingAtom());
+      if (atom1.isBioAtom && patternAtom.isBioAtom && 
+          patternBond.bondType == SmilesBond.TYPE_BIO) {
+        // go to the next group and find the required atom.
+        iAtom = atom.getNextResidueAtom(patternAtom.atomName);
+        if (iAtom >= 0 && !checkMatch(patternAtom, atomNum, iAtom,
+            firstAtomOnly))
+          return false;
+      } else {
+        bonds = atom.getEdges();
+        // now run through all the bonds looking for atoms that might match
+        // this is the iterative step
+        if (bonds != null)
+          for (int j = 0; j < bonds.length; j++)
+            if (!checkMatch(patternAtom, atomNum, atom.getBondedAtomIndex(j),
+                firstAtomOnly))
+              return false;
       }
     } else {
       if (!checkStereochemistry())
@@ -306,6 +319,8 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
         if (!firstAtomOnly && haveSelected && !patternAtoms[j].selected)
           continue;
         bs.set(i);
+        if (patternAtoms[j].isBioAtom && patternAtoms[j].atomName == null)
+          getJmolAtom(i).setGroupBits(bs);
         if (firstAtomOnly)
           break;
         if (!isSearch && patternAtoms[j].missingHydrogenCount > 0)
@@ -343,8 +358,8 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
         ringSets.append(" ");
         for (int k = atomNum * 3 + 2; --k > atomNum;)
           ringSets.append("-").append(
-              patternAtoms[(k <= atomNum * 2 ? atomNum * 2 - k + 1 : k - 1) % atomNum]
-                  .getMatchingAtom());
+              patternAtoms[(k <= atomNum * 2 ? atomNum * 2 - k + 1 : k - 1)
+                  % atomNum].getMatchingAtom());
         ringSets.append("- ");
       }
       if (!isAll || bsReturn.cardinality() == jmolAtomCount)
@@ -541,6 +556,16 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
           break;
       }
 
+      // BIOSMARTS
+      if (patternAtom.atomName != null && !patternAtom.atomName.equals(atom.getAtomName().toUpperCase()))
+          break;
+      
+      if (patternAtom.residueName != null && !patternAtom.residueName.equals(atom.getGroup3(false).toUpperCase()))
+        break;
+    
+      if (patternAtom.residueChar != null && !patternAtom.residueChar.equals(atom.getGroup1('\0').toUpperCase()))
+        break;
+    
       foundAtom = !foundAtom;
       break;
     }
@@ -989,7 +1014,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
   }
 
   private JmolNode getJmolAtom(int i) {
-    return (i < 0 ? null : jmolAtoms[i]);
+    return (i < 0 || i >= jmolAtoms.length ? null : jmolAtoms[i]);
   }
 
   private JmolNode getHydrogens(JmolNode atom, BitSet bsHydrogens) {
@@ -1014,12 +1039,15 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
   }
 
   public void setRingData(BitSet bsA) {
-    boolean needAromatic = (bsA == null);
+    needAromatic &= (bsA == null);
     // when using "xxx".find("search","....")
     // or $(...), the aromatic set has already been determined
     if (!needAromatic)  {
       bsAromatic.clear();
-      bsAromatic.or(bsA);
+      if (bsA != null)
+        bsAromatic.or(bsA);
+      if (!needRingMemberships && !needRingData)
+        return;
     }
     if (needRingData) {
       ringCounts = new int[jmolAtomCount];

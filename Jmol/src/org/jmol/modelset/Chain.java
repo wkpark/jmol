@@ -65,6 +65,16 @@ public final class Chain {
     return groups[groupIndex];
   }
   
+  public int getGroupAtom(int groupIndex, String name) {
+    if (groupIndex < groupCount) {
+      Group group = groups[groupIndex];
+      for (int i = group.firstAtomIndex; i <= group.lastAtomIndex; i++)
+        if (name == null || name.equals(modelSet.atoms[i].getAtomName().toUpperCase()))
+          return i;
+    }
+    return -1;
+  }
+   
   public int getGroupCount() {
     return groupCount;
   }

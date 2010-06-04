@@ -1718,6 +1718,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     // at the terminus it could have H5T or O5T ...
     "P",   // 13 - phosphate phosphorus  SPINE
 
+    // END OF FIRST BACKBONE SET
+    
     // ... But we need to distinguish phosphorus separately because
     // it could be found in phosphorus-only nucleic polymers
  
@@ -1788,8 +1790,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "H",   // 65 - amino hydrogen
     // these appear on the N-terminus end of 1ALE & 1LCD
     "1H",  // 66 - N-terminus hydrogen
-    "2H",  // 67 - second N-terminus Hydrogen
-    "3H",  // 68 - third N-terminus Hydrogen
+    "2H",  // 67 - second N-terminus hydrogen
+    "3H",  // 68 - third N-terminus hydrogen
     "HA",  // 69 - H on alpha carbon
     "1HA", // 70 - H on alpha carbon in Gly only
     "2HA", // 71 - 1ALE calls the two GLY hdrogens 1HA & 2HA
@@ -2015,9 +2017,9 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int[] argbsShapely = {
     0xFFFF00FF, // default
     // these are rasmol values, not xwindows colors
-    0xFF8CFF8C, // ALA
     0xFF00007C, // ARG
     0xFFFF7C70, // ASN
+    0xFF8CFF8C, // ALA
     0xFFA00042, // ASP
     0xFFFFFF70, // CYS
     0xFFFF4C4C, // GLN
@@ -2027,8 +2029,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     0xFF004C00, // ILE
     0xFF455E45, // LEU
     0xFF4747B8, // LYS
-    0xFFB8A042, // MET
     0xFF534C52, // PHE
+    0xFFB8A042, // MET
     0xFF525252, // PRO
     0xFFFF7042, // SER
     0xFFB84C00, // THR
@@ -2253,7 +2255,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     // structure related
     //
     "@alpha _a=2", // rasmol doc says "approximately *.CA" - whatever?
-    "@backbone (protein,nucleic) & (_a>0 & _a<32 || _a>="+ATOMID_BACKBONE_MIN+")",
+    "@backbone (protein,nucleic) & (_a>0 & _a<14 || _a>="+ATOMID_BACKBONE_MIN+")",
     "@spine protein & _a>0 & _a<= 3 || nucleic & (_a >= 6 & _a <= 10 || _a=" + ATOMID_NUCLEIC_PHOSPHORUS + ")",
     "@sidechain (protein,nucleic) & !backbone",
     "@base nucleic & !backbone",

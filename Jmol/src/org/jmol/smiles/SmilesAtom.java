@@ -24,6 +24,8 @@
 
 package org.jmol.smiles;
 
+import java.util.BitSet;
+
 import javax.vecmath.Point3f;
 
 import org.jmol.api.JmolEdge;
@@ -53,6 +55,10 @@ public class SmilesAtom extends Point3f implements JmolNode {
   }
   
   int index;
+  String atomName;
+  String residueName;
+  String residueChar;
+  boolean isBioAtom;
   boolean not;
   boolean selected;
   boolean hasSymbol;
@@ -456,6 +462,17 @@ public class SmilesAtom extends Point3f implements JmolNode {
     return Elements.getAtomicAndIsotopeNumber(elementNumber, atomicMass);
   }
 
+  public String getAtomName() {
+    return atomName == null ? "" : atomName;
+  }
+  
+  public String getGroup3(boolean allowNull) {
+    return residueName == null ? "" : residueName;
+  }
+  
+  public String getGroup1(char c0) {
+    return residueChar == null ? "" : residueChar;
+  }
 
   /**
    * Add a bond to the atom.
@@ -548,5 +565,12 @@ public class SmilesAtom extends Point3f implements JmolNode {
     return null;
   }
 
-
+  public int getNextResidueAtom(String name) {
+    return -1;
+  }
+  
+  public void setGroupBits(BitSet bs) {
+    return;
+  }
+  
 }

@@ -9,13 +9,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-05-27 20:44+0200\n"
-"PO-Revision-Date: 2010-05-15 16:06+0000\n"
-"Last-Translator: Martin Slavík <Unknown>\n"
+"PO-Revision-Date: 2010-06-05 14:34+0000\n"
+"Last-Translator: Konki <pavel.konkol@seznam.cz>\n"
 "Language-Team: Czech <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-05-17 18:00+0000\n"
+"X-Launchpad-Export-Date: 2010-06-05 17:16+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: CZECH REPUBLIC\n"
 "X-Poedit-Language: Czech\n"
@@ -70,9 +70,8 @@ msgid "send only output from print messages to console (implies -i)"
 msgstr "poslat pouze výstup příkazů print na konzoli (předpokládá -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:158
-#, fuzzy
 msgid "independent command thread"
-msgstr "nezávislá řada příkazů"
+msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:160
 msgid "exit after script (implicit with -n)"
@@ -936,7 +935,7 @@ msgstr "Navrátit molekulu do výchozí polohy."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:201
 msgid "Open the model kit."
-msgstr ""
+msgstr "Otevřít modelovou vybavu."
 
 #: org/openscience/jmol/app/jmolpanel/HelpDialog.java:64
 msgid "Jmol Help"
@@ -1356,7 +1355,8 @@ msgstr "Vložte zde titulek pro {0}."
 msgid ""
 "Insert additional explanatory text here. Long text will wrap around Jmol "
 "model {0}."
-msgstr "Vlož sem text s vysvětlením. Dlouhý text bude obtékat Jmol model {0}."
+msgstr ""
+"Vlož sem text s vysvětlením. Dlouhý text bude obtékat Jmol model {0}."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:356
 msgid "Insert your TITLE and INTRODUCTION here."
@@ -1576,6 +1576,7 @@ msgstr "neimplementováno"
 #~ msgid "Show Selected"
 #~ msgstr "Zobrazit vybrané"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."

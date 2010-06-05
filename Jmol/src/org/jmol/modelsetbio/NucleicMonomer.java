@@ -373,7 +373,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
    return Quaternion.getQuaternionFrame(vA, vB, null);
  }
  
- public boolean isBasePaired(Group g) {
+ public boolean isCrossLinked(Group g) {
     if (!(g instanceof NucleicMonomer) || isPurine == g.isPurine())
       return false;
     NucleicMonomer otherNucleotide = (isPurine ? (NucleicMonomer) g : this);

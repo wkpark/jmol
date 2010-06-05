@@ -429,7 +429,7 @@ public class Group {
     return -1;
   }
 
-  public boolean isBasePaired(Group g) {
+  public boolean isCrossLinked(Group g) {
     return false;
   }
   

@@ -613,7 +613,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
     return;
   }
   
-  public boolean isBasePaired(JmolNode node) {
+  public boolean isCrossLinked(JmolNode node) {
     SmilesBond bond = getBondTo((SmilesAtom) node);
     return bond.isHydrogen();
   }

@@ -56,6 +56,6 @@ public interface JmolNode {
   public int getCrossLinkLeadAtomIndex();
   public void setGroupBits(BitSet bs);
   public boolean isLeadAtom();
-  public boolean isBasePaired(JmolNode node);
+  public boolean isCrossLinked(JmolNode node);
   
 }

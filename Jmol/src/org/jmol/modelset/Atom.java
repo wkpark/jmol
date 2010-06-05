@@ -1330,8 +1330,8 @@ final public class Atom extends Point3fi implements JmolNode {
     return group.chain.getGroupAtom(group.getGroupIndex() + offset, name);
   }
   
-  public boolean isBasePaired(JmolNode node) {
-    return group.isBasePaired(((Atom) node).getGroup());
+  public boolean isCrossLinked(JmolNode node) {
+    return group.isCrossLinked(((Atom) node).getGroup());
   }
 
   public int getCrossLinkLeadAtomIndex() {

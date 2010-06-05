@@ -32,10 +32,10 @@
   <body bgcolor="white">
     
     <p>
-<h1>Jmol 3D-SEARCH</h1>
+<h1>Jmol 3D-SEARCH BIOSMILES/BIOSMARTS</h1>
 <p>Robert M. Hanson<br/>Department of Chemistry<br/>St. Olaf College<br/>5/19/2010</p>
 <p>
-An adaptation of SMILES and SMARTS for 3D molecular atom search and selection, including 3D-BIOSMARTS.
+An adaptation of SMILES and SMARTS for 3D molecular atom search and selection, including multi-dimensional biomolecular sequence information including nucleic acid base pairing and cysteine cross-linking.
 
     The <a href=".">org.jmol.smiles</a> package provides extensive functionality for selecting
     atoms within a three-dimensional model based on SMILES and SMARTS strings. 
@@ -67,9 +67,11 @@ or [2H] are selected; connected hydrogen atoms as in [CH3] are not selected.
     Simply place { } around any atom or group of atoms that are to be 
     specifically returned from a search:  <b>select search("{C}C=O")</b>, for example, returns all alpha carbons. 
 
-</li><li>Adds [residueName.atomName] and "+" (sequential residues) for 
-    searching biomolecular structures: <b>select search("[ALA.*]+[GLY.*,PRO.*]")</b>, for example, returns alanine-glycine or alanine-proline sequences. 
+</li><li>Adds "BIOATOM" [residueName.atomName] and "+" (sequential residues) for 
+    searching biomolecular structures: <b>select search("[ALA.*]+[PRO.*]")</b>, for example, returns alanine-glycine or alanine-proline sequences. 
+<b>select search("[ALA.*]+[GLY.*,PRO.*]")</b> returns alanine-glycine or alanine-proline sequences. 
 
+</li><li>Or, simpler "BIOSEQUENCE" notation: <b>select search("~AG")</b> or <b>select search("~A[G,P]")</b>.
 </li></ul>
 <b>aromaticity</b>
  

@@ -328,7 +328,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
     JmolNode atom = jmolAtoms[iAtom];
 
     // check atoms 
-    
+
     if (patternAtom.atomsOr != null) {
       for (int ii = 0; ii < patternAtom.nAtomsOr; ii++)
         if (!checkMatch(patternAtom.atomsOr[ii], atomNum, iAtom, firstAtomOnly))
@@ -357,25 +357,24 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
       // note that there might be more than one of these.
       // in EACH case we need to ensure that the actual
       // bonds to the previously assigned atoms matches
+      
       SmilesAtom atom1 = patternBond.getAtom1();
       int matchingAtom = atom1.getMatchingAtom();
-      if (atom1.isBioSequence && patternAtom.isBioSequence) {
-        switch (patternBond.bondType) {
-        case SmilesBond.TYPE_BIO_SEQUENCE:
-          continue; // no bond check here
-        case SmilesBond.TYPE_BIO_PAIR:
-          if (jmolAtoms[iAtom].isBasePaired(jmolAtoms[matchingAtom]))
-            continue;
-        }
-      } else {
-        // at least for SMILES...
-        // we don't care what the bond is designated as for an aromatic atom.
-        // That may seem strange, but it's true for aromatic carbon, as we
-        // already know it is double- or aromatic-bonded.
-        // for N, we assume it is attached to at least one aromatic atom,
-        // and that is enough for us.
-        // this does not actually work for SEARCH
+      
+      // BIOSMILES/BIOSMARTS check is by group
+      
+      switch (patternBond.bondType) {
+      case SmilesBond.TYPE_BIO_SEQUENCE:
+        continue; // no bond check here
+      case SmilesBond.TYPE_BIO_PAIR:
+        if (jmolAtoms[iAtom].isCrossLinked(jmolAtoms[matchingAtom]))
+          continue;
+        break;
+      default:
 
+        // regular SMILES/SMARTS check 
+        // is to find the bond and test it against the pattern
+        
         int k = 0;
         for (; k < bonds.length; k++)
           if ((bonds[k].getAtomIndex1() == matchingAtom || bonds[k]
@@ -395,10 +394,10 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
     // Add this atom to the growing list.
 
     patternAtoms[patternAtom.index].setMatchingAtom(iAtom);
-    
+
     // Note that we explicitly do a reference using
     // index because this could be a SEARCH [x,x] "sub" atom.
-    
+
     if (++atomNum == atomCount) {
       if (!checkStereochemistry())
         return true;
@@ -408,6 +407,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
         if (!firstAtomOnly && haveSelected && !patternAtoms[j].selected)
           continue;
         bs.set(i);
+        // note: bioSequences only return the "lead" atom. 
         if (patternAtoms[j].isBioAtom && patternAtoms[j].atomName == null)
           jmolAtoms[i].setGroupBits(bs);
         if (firstAtomOnly)
@@ -462,7 +462,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
     // note that it must be there, because SMILES strings
     // are parsed in order, from left to right. You can't
     // have two fragments going at the same time. 
-    
+
     SmilesBond patternBond = null;
     for (int i = 0; i < patternAtom.getCovalentBondCount(); i++) {
       if ((patternBond = patternAtom.getBond(i)).getAtom2() == patternAtom)
@@ -514,29 +514,28 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
     SmilesAtom atom1 = patternBond.getAtom1();
     atom = jmolAtoms[atom1.getMatchingAtom()];
 
-    if (atom1.isBioSequence && patternAtom.isBioSequence) {
+    // Option 2: The connecting bond is a bio sequence or
+    // from ~GGC(T)C:ATTC...
+    // For sequences, we go to the next GROUP, either via
+    // the standard sequence or via basepair/cysteine pairing. 
 
-      // Option 2: The two atoms are bioAtoms from ~ABC...
-      // For sequences, we go to the next GROUP, either via
-      // the standard sequence or via basepair/cysteine pairing. 
-
-      BitSet bs = new BitSet();      
+    int nextGroupAtom = -1;
+    switch (patternBond.bondType) {
+    case SmilesBond.TYPE_BIO_SEQUENCE:
+      nextGroupAtom = atom.getOffsetResidueAtom(patternAtom.atomName, 1);
+      break;
+    case SmilesBond.TYPE_BIO_PAIR:
+      nextGroupAtom = atom.getCrossLinkLeadAtomIndex();
+      break;
+    }
+    if (nextGroupAtom >= 0) {
+      BitSet bs = new BitSet();
       atom1.setGroupBits(bs);
       bsFound.or(bs);
-      int iNext = -1;
-      switch (patternBond.bondType) {
-      case SmilesBond.TYPE_BIO_SEQUENCE:
-        iNext = atom.getOffsetResidueAtom(patternAtom.atomName, 1);
-        break;
-      case SmilesBond.TYPE_BIO_PAIR:
-        iNext = atom.getCrossLinkLeadAtomIndex();
-        break;
-      }
-      if (iNext >= 0 && !checkMatch(patternAtom, atomNum, iNext, firstAtomOnly))
-        return false;      
+      if (!checkMatch(patternAtom, atomNum, nextGroupAtom, firstAtomOnly))
+        return false;
       bsFound.andNot(bs);
       return true;
-
     }
 
     // Option 3: Standard practice

@@ -60,7 +60,9 @@ public class SmilesAtom extends Point3f implements JmolNode {
   String residueName;
   String residueChar;
   boolean isBioAtom;
+  boolean isBioSequence;
   boolean isLeadAtom;
+  int notBondedIndex = -1;
   
   void setBioAtom() {
     isBioAtom = true;
@@ -68,7 +70,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
       parent.isBioAtom = true;
   }
   
-  void setAtomName(String name) {
+  void setAtomName(String name, boolean isBioSequence) {
     if (name == null)
       return;
     if (name.length() > 0)
@@ -76,8 +78,11 @@ public class SmilesAtom extends Point3f implements JmolNode {
     if (name.equals("0"))
       isLeadAtom = true;
     // ensure that search does not skip groups
-    if (parent != null)
+    this.isBioSequence = isBioSequence;
+    if (parent != null) {
+      parent.isBioSequence = isBioSequence;
       parent.atomName = name;
+    }
   }
 
   boolean not;
@@ -203,37 +208,12 @@ public class SmilesAtom extends Point3f implements JmolNode {
     if (missingHydrogenCount != Integer.MIN_VALUE)
       return true;
     // Determining max count
-  	int count = 0;
-  	  // not a complete set...
-  	  // B, C, N, O, P, S, F, Cl, Br, and I
-  	  // B (3), C (4), N (3,5), O (2), P (3,5), S (2,4,6), and 1 for the halogens
-  	  
-  	  switch (elementNumber) {
-  	  default:
-  	    return false;
-  	  case 0:
-  	  case -1: // A a
-  	    return true;
-      case 6: // C
-        count = (isAromatic ? 3 : 4);
-        break;
-      case 8: // O
-      case 16: // S
-        count = 2;
-        break;
-      case 5:  // B
-      case 7:  // N
-      case 15: // P
-        count = 3;
-        break;
-      case 9: // F
-      case 17: // Cl
-      case 35: // Br
-      case 53: // I
-        count = 1;
-        break;
-  	  }
-  	  
+  	int count = getDefaultCount(elementNumber, isAromatic);
+    if (count == -2)
+      return false;
+    if (count == -1)
+      return true;
+    
       for (int i = 0; i < bondCount; i++) {
         SmilesBond bond = bonds[i];
         switch (bond.bondType) {
@@ -257,6 +237,32 @@ public class SmilesAtom extends Point3f implements JmolNode {
       return true;
   }
 
+  static int getDefaultCount(int elementNumber, boolean isAromatic) {
+    // not a complete set...
+    // B, C, N, O, P, S, F, Cl, Br, and I
+    // B (3), C (4), N (3,5), O (2), P (3,5), S (2,4,6), and 1 for the halogens
+
+    switch (elementNumber) {
+    case 0:
+    case -1: // A a
+      return -1;
+    case 6: // C
+      return (isAromatic ? 3 : 4);
+    case 8: // O
+    case 16: // S
+      return 2;
+    case 5: // B
+    case 7: // N
+    case 15: // P
+      return 3;
+    case 9: // F
+    case 17: // Cl
+    case 35: // Br
+    case 53: // I
+      return 1;
+    }
+    return -2;
+  }
   /**
    * Returns the atom index of the atom.
    * 
@@ -594,7 +600,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
     return isLeadAtom;
   }
   
-  public int getNextResidueAtom(String name, int offset) {
+  public int getOffsetResidueAtom(String name, int offset) {
     if (isBioAtom)
     for (int k = 0; k < bonds.length; k++)
       if (bonds[k].getAtomIndex1() == index && bonds[k].bondType == SmilesBond.TYPE_BIO_SEQUENCE)
@@ -612,10 +618,29 @@ public class SmilesAtom extends Point3f implements JmolNode {
     return bond.isHydrogen();
   }
   
-  public int getBasePairedLeadAtomIndex() {
+  public int getCrossLinkLeadAtomIndex() {
     for (int k = 0; k < bonds.length; k++)
       if (bonds[k].bondType == SmilesBond.TYPE_BIO_PAIR)
         return bonds[k].getOtherAtom(this).index;
     return -1;
+  }
+  
+  public String getGroupType() {
+    return null;
+  }
+  
+  public char getChainID() {
+    return '\0';
+  }
+  
+  static String getAtomLabel(int atomicNumber, int isotopeNumber, int valence, int charge, int nH, boolean isAromatic) {
+    String sym = Elements.elementSymbolFromNumber(atomicNumber);
+    if (isAromatic)
+      sym = sym.toLowerCase();
+    int count = (isotopeNumber != 0 || charge != 0 ? -1 : getDefaultCount(atomicNumber, false));
+    return (count == valence ? sym : 
+      "[" + (isotopeNumber <= 0 ? "" : "" + isotopeNumber)
+          + sym + (charge < 0 ? "" + charge : charge > 0 ? "+" + charge : "")
+          + (nH > 0 ? "H" + nH : "") + "]");
   }
 }

@@ -38,7 +38,6 @@ import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.BoxInfo;
 import org.jmol.modelset.Group;
-import org.jmol.modelset.JmolMolecule;
 import org.jmol.modelset.MeasurementPending;
 import org.jmol.modelset.ModelLoader;
 import org.jmol.modelset.ModelSet;

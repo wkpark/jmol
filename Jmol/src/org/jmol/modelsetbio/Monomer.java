@@ -49,6 +49,8 @@ public abstract class Monomer extends Group {
     super(chain, group3, seqcode, firstAtomIndex, lastAtomIndex);
     offsets = interestingAtomOffsets;
     leadAtomIndex = firstAtomIndex + (offsets[0] & 0xFF);
+    if (leadAtomIndex == 255)
+      System.out.println("monomer??");
   }
 
   int monomerIndex;
@@ -276,29 +278,17 @@ public abstract class Monomer extends Group {
     ProteinStructure structure = getProteinStructure();
     if(structure != null) {
       info.put("structureId", new Integer(structure.uniqueID));
-      info.put("structureType", getStructureTypeName(structure.type));
+      info.put("structureType", JmolConstants.getProteinStructureName(structure.type, false));
     }
     info.put("shapeVisibilityFlags", new Integer(shapeVisibilityFlags));
     return info;
   }
   
-  static String getStructureTypeName(byte type) {
-    switch(type) {
-    case JmolConstants.PROTEIN_STRUCTURE_HELIX:
-      return "helix";
-    case JmolConstants.PROTEIN_STRUCTURE_SHEET:
-      return "sheet";
-    case JmolConstants.PROTEIN_STRUCTURE_TURN:
-      return "turn";
-    case JmolConstants.PROTEIN_STRUCTURE_DNA:
-      return "DNA";
-    case JmolConstants.PROTEIN_STRUCTURE_RNA:
-      return "RNA";
-    default:
-      return type+"?";
-    }
+  public String getStructureId() {
+    ProteinStructure structure = getProteinStructure();
+    return (structure == null ? "" : JmolConstants.getProteinStructureName(structure.type, false));
   }
-
+  
   final void updateOffsetsForAlternativeLocations(BitSet bsSelected,
                                                   int nAltLocInModel) {
     chain.updateOffsetsForAlternativeLocations(bsSelected, nAltLocInModel,

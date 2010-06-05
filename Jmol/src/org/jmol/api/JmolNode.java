@@ -44,14 +44,18 @@ public interface JmolNode {
   public int getCovalentBondCount();
   public int getImplicitHydrogenCount();
   public short getAtomicAndIsotopeNumber();
+  
+  // BIOSMILES/BIOSMARTS
+  
   public String getAtomName();
-  public String getGroup3(boolean allowNull);
+  public String getGroupType();
   public String getGroup1(char c0);
-  public int getNextResidueAtom(String name, int offset);
-  public int getBasePairedLeadAtomIndex();
+  public String getGroup3(boolean allowNull);
+  public char getChainID();
+  public int getOffsetResidueAtom(String name, int offset);
+  public int getCrossLinkLeadAtomIndex();
   public void setGroupBits(BitSet bs);
   public boolean isLeadAtom();
   public boolean isBasePaired(JmolNode node);
-  
   
 }

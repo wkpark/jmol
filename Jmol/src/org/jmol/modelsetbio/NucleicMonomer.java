@@ -156,8 +156,10 @@ public class NucleicMonomer extends PhosphorusMonomer {
                  byte[] offsets) {
     super(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, offsets);
-    if (offsets[NP] == -1 && (offsets[0] = offsets[H5T]) == -1)
+    if (offsets[NP] == -1 && (offsets[0] = offsets[H5T]) == -1) {
         offsets[0] = offsets[O5Pr];
+        leadAtomIndex = firstAtomIndex + offsets[0];
+    }
     this.hasRnaO2Prime = offsets[O2Pr] != -1;
     this.isPyrimidine = offsets[O2] != -1;
     this.isPurine =
@@ -381,7 +383,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
     return (myN1.isBonded(otherN3));
   }
  
- public int getBasePairedLeadAtomIndex() {
+  public int getCrossLinkLeadAtomIndex() {
     Atom N = (isPurine ? getN1() : getN3());
     //System.out.println(N.getInfo());
     Bond[] bonds = N.getBonds();

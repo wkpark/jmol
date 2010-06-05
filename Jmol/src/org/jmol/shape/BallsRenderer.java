@@ -27,9 +27,9 @@ package org.jmol.shape;
 
 import java.util.BitSet;
 
+import org.jmol.api.JmolMolecule;
 import org.jmol.g3d.*;
 import org.jmol.modelset.Atom;
-import org.jmol.modelset.JmolMolecule;
 
 import javax.vecmath.*;
 public class BallsRenderer extends ShapeRenderer {

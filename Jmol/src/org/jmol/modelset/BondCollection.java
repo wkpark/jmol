@@ -34,6 +34,7 @@ import org.jmol.util.Logger;
 
 import org.jmol.viewer.JmolConstants;
 import org.jmol.api.JmolEdge;
+import org.jmol.api.JmolMolecule;
 import org.jmol.script.Token;
 
 abstract public class BondCollection extends AtomCollection {

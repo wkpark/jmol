@@ -1110,7 +1110,7 @@ class ScriptMathProcessor {
       return false;
     if (isSyntaxCheck)
       return addX((int) 1);
-    
+
     // {*}.find("SMARTS", "CCCC")
     // "CCCC".find("SMARTS", "CC")
     // "CCCC".find("SMILES", "MF")
@@ -1126,22 +1126,27 @@ class ScriptMathProcessor {
       BitSet bs2 = (iPt < args.length && args[iPt].tok == Token.bitset ? (BitSet) args[iPt++].value
           : null);
       boolean isAll = (iPt < args.length && ScriptVariable.bValue(args[iPt]));
+      Object ret = null;
       if (x1.tok == Token.string) {
-        String s = ScriptVariable.sValue(x1);
+        String smiles = ScriptVariable.sValue(x1);
+        if (bs2 != null)
+          return false;
         if (flags.equalsIgnoreCase("mf"))
-          return bs2 == null && addX(isSyntaxCheck ? "" : viewer.getSmilesMatcher().getMolecularFormula(s, isSearch));
-        return (bs2 == null && addX(isSyntaxCheck ? 0 : viewer.getSmilesMatcher().find(flags,
-            s, isSearch, isAll)));
+          return bs2 == null
+              && addX(isSyntaxCheck ? "" : viewer.getSmilesMatcher()
+                  .getMolecularFormula(smiles, isSearch));
+        ret = eval.getSmilesMatches(flags, smiles, null, null, null, null,
+            isSearch, isAll);
       }
       if (isSmiles || isSearch)
         sFind = flags;
       if (x1.tok == Token.bitset) {
-        Object ret = eval.getSmilesMatches(sFind, (BitSet) x1.value, null, null,
-              bs2, !isSmiles, isAll);
-        return (isAll ? addX((String[]) ret) 
-            : ret instanceof String ? addX((String) ret) 
-            : addX((BitSet) ret));
+        ret = eval.getSmilesMatches(sFind, null, (BitSet) x1.value, null, null,
+            bs2, !isSmiles, isAll);
       }
+      if (ret != null)
+        return (isAll ? addX((String[]) ret)
+            : ret instanceof String ? addX((String) ret) : addX((BitSet) ret));
       if (x1.tok == Token.list) {
         String[] list = (String[]) x1.value;
         Vector v = new Vector();
@@ -1149,10 +1154,10 @@ class ScriptMathProcessor {
           BitSet bs = Escape.unescapeBitset(list[i]);
           if (bs == null)
             continue;
-          BitSet ret = (BitSet) eval.getSmilesMatches(sFind, bs, null, null,
+          bs = (BitSet) eval.getSmilesMatches(sFind, null, bs, null, null,
               null, !isSmiles, false);
-          if (ret.cardinality() > 0)
-            v.addElement(ret);
+          if (bs.cardinality() > 0)
+            v.addElement(bs);
         }
         list = new String[v.size()];
         for (int i = v.size(); --i >= 0;)
@@ -1976,7 +1981,7 @@ class ScriptMathProcessor {
         eval.error(ScriptEvaluator.ERROR_invalidArgument);
       if (isSyntaxCheck)
         return (asBitSet ? addX(new BitSet()) : addX(new Vector()));
-      String[] x = (String[]) eval.getSmilesMatches(ScriptVariable.sValue(args[1]), bsSelected, bsRequired, bsNot, null, tok == Token.search, true);
+      String[] x = (String[]) eval.getSmilesMatches(ScriptVariable.sValue(args[1]), null, bsSelected, bsRequired, bsNot, null, tok == Token.search, true);
       return (asBitSet ? addX(Escape.getBitSetFromArray(x)) : addX(x));
     }
     if (withinSpec instanceof String) {

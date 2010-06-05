@@ -30,6 +30,7 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
+import org.jmol.modelset.Group;
 import org.jmol.modelset.Chain;
 import org.jmol.util.Logger;
 import org.jmol.util.Quaternion;
@@ -43,7 +44,8 @@ public class AminoMonomer extends AlphaMonomer {
   private final static byte N = 2;
   private final static byte C = 3;
   private final static byte OT = 4;
-  //private final static byte O1 = 5;
+//  private final static byte O1 = 5;
+  private final static byte SG = 6;
   
   // negative values are optional
   final static byte[] interestingAminoAtomIDs = {
@@ -53,6 +55,7 @@ public class AminoMonomer extends AlphaMonomer {
     JmolConstants.ATOMID_CARBONYL_CARBON,   // 3 C  point man
     ~JmolConstants.ATOMID_TERMINATING_OXT,  // 4 OXT
     ~JmolConstants.ATOMID_O1,               // 5 O1
+    ~JmolConstants.ATOMID_SG,               // 6 CYS SG
   };
 
   static Monomer
@@ -332,4 +335,18 @@ public class AminoMonomer extends AlphaMonomer {
     return tag;
   }
   
+  public int getCrossLinkLeadAtomIndex() {
+    Atom S = getAtomFromOffsetIndex(SG);
+    if (S != null) {
+      Bond[] bonds = S.getBonds();
+      for (int i = 0; i < bonds.length; i++) {
+        Atom a = bonds[i].getOtherAtom(S);
+        Group g = a.getGroup();
+        if (a.getElementNumber() == 16 && g.getGroup1() == 'C')
+          return g.getLeadAtomIndex();
+      }
+    }
+    return -1;
+  }
+
 }

@@ -178,7 +178,7 @@ public class Group {
   }
   
   public byte getProteinStructureType() {
-    return JmolConstants.PROTEIN_STRUCTURE_NONE;
+    return JmolConstants.PROTEIN_STRUCTURE_NOT;
   }
 
   public int setProteinStructureType(byte iType, int monomerIndexCurrent) {
@@ -433,7 +433,7 @@ public class Group {
     return false;
   }
   
-  public int getBasePairedLeadAtomIndex() {
+  public int getCrossLinkLeadAtomIndex() {
     return -1;
   }
 }

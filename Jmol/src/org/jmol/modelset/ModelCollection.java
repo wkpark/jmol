@@ -42,6 +42,7 @@ import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolBioResolver;
 import org.jmol.api.JmolEdge;
+import org.jmol.api.JmolMolecule;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.bspt.Bspf;
@@ -2761,7 +2762,7 @@ abstract public class ModelCollection extends BondCollection {
               if (bsAtoms == null) {
                 int iModel = atoms[iLastAtom].modelIndex;
                 cmd.append("  structure ").append(
-                    JmolConstants.getProteinStructureName(itype)).append(" ")
+                    JmolConstants.getProteinStructureName(itype, false)).append(" ")
                     .append(Escape.escape(bs)).append("    \t# model=").append(
                         getModelNumberDotted(iModel)).append(" & (").append(
                         res1).append(" - ").append(res2).append(");\n");

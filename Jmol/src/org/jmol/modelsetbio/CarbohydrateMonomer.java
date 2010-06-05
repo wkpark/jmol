@@ -25,6 +25,7 @@ package org.jmol.modelsetbio;
 
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Chain;
+import org.jmol.viewer.JmolConstants;
 
 public class CarbohydrateMonomer extends Monomer {
 
@@ -48,6 +49,10 @@ public class CarbohydrateMonomer extends Monomer {
   }
 
   public boolean isCarbohydrate() { return true; }
+
+  public byte getProteinStructureType() {
+    return JmolConstants.PROTEIN_STRUCTURE_CARBOHYDRATE;
+  }
 
   boolean isConnectedAfter(Monomer possiblyPreviousMonomer) {
     return true;

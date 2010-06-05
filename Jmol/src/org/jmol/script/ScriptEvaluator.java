@@ -6294,27 +6294,37 @@ public class ScriptEvaluator {
     }
   }
 
-  Object getSmilesMatches(String smiles, BitSet bsSelected, BitSet bsRequired,
-                          BitSet bsNot, BitSet bsMatch3D, boolean isSearch,
-                          boolean isAll) throws ScriptException {
+  Object getSmilesMatches(String pattern, String smiles, BitSet bsSelected,
+                          BitSet bsRequired, BitSet bsNot, BitSet bsMatch3D,
+                          boolean isSearch, boolean isAll)
+      throws ScriptException {
     if (isSyntaxCheck) {
       if (isAll)
         return new String[] { "" };
       return new BitSet();
     }
-    if (smiles.length() == 0) {
-      return viewer.getSmilesMatcher().getBioSmiles(viewer.getModelSet().atoms,
-          viewer.getAtomCount(), bsSelected);
+    if (pattern.length() == 0) {
+      return viewer.getSmilesMatcher().getBioSmiles(
+          viewer.getModelSet().atoms,
+          viewer.getAtomCount(),
+          bsSelected,
+          Viewer.getJmolVersion() + " "
+              + viewer.getModelName(viewer.getCurrentModelIndex()));
     }
     try {
+      boolean asAtoms = true;
       BitSet[] b;
       if (bsMatch3D == null) {
-        b = viewer.getSmilesMatcher().getSubstructureSetArray(smiles,
-            viewer.getModelSet().atoms, viewer.getAtomCount(), bsSelected,
-            bsRequired, bsNot, null, isSearch, isAll);
+        asAtoms = (smiles == null);
+        if (asAtoms)
+          b = viewer.getSmilesMatcher().getSubstructureSetArray(pattern,
+              viewer.getModelSet().atoms, viewer.getAtomCount(), bsSelected,
+              bsRequired, bsNot, null, isSearch, isAll);
+        else
+          b = viewer.getSmilesMatcher().find(pattern, smiles, isSearch, isAll);
       } else {
         Vector vReturn = new Vector();
-        float stddev = getSmilesCorrelation(bsMatch3D, bsSelected, smiles,
+        float stddev = getSmilesCorrelation(bsMatch3D, bsSelected, pattern,
             null, null, null, vReturn, isSearch);
         if (Float.isNaN(stddev)) {
           if (isAll)
@@ -6326,13 +6336,17 @@ public class ScriptEvaluator {
         for (int j = 0; j < b.length; j++)
           b[j] = (BitSet) vReturn.get(j);
       }
-      if (!isAll)
-        return (b.length > 0 ? b[0] : new BitSet());
+      if (!isAll) {
+        if (asAtoms)
+          return (b.length > 0 ? b[0] : new BitSet());
+        return (b.length > 0 ? new BondSet(b[0]) : new BondSet(new BitSet()));
+      }
       String[] matches = new String[b.length];
       for (int j = 0; j < b.length; j++)
-        matches[j] = Escape.escape(b[j]);
+        matches[j] = Escape.escape(b[j], asAtoms);
       return matches;
     } catch (Exception e) {
+      e.printStackTrace();
       evalError(e.getMessage(), null);
       return null; // unattainable
     }

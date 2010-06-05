@@ -100,16 +100,16 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    * @param isAll
    * @return number of occurances of pattern within smiles
    */
-  public int find(String pattern, String smiles, boolean isSearch, boolean isAll) {
+  public BitSet[] find(String pattern, String smiles, boolean isSearch, boolean isAll) {
     InvalidSmilesException.setLastError(null);
     try {
       SmilesSearch search = SmilesParser.getMolecule(smiles, false);
-      return find(pattern, search, isSearch, isAll).length;
+      return find(pattern, search, isSearch, isAll);
     } catch (Exception e) {
       if (InvalidSmilesException.getLastError() == null)
         InvalidSmilesException.setLastError(e.getMessage());
       e.printStackTrace();
-      return -1;
+      return null;
     }
   }
   
@@ -142,7 +142,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
       atom.isLeadAtom = sAtom.isLeadAtom;
       atom.setAtomicMass(sAtom.getAtomicMass());
       sAtom.setMatchingAtom(ptAtom++);
-      System.out.println(atom);
+      //System.out.println(atom);
       // we pass on the aromatic flag because
       // we don't want SmilesSearch to calculate
       // that for us
@@ -158,7 +158,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
       while (--n >= 0) {
         SmilesAtom atomH = atoms[ptAtom] = new SmilesAtom(0, ptAtom, 0,
             (short) 1, 0);
-        System.out.println(atomH);
+        //System.out.println(atomH);
         ptAtom++;
         atomH.setBonds(new SmilesBond[1]);
         atomH.bonds[0] = bonds[offset + n] = new SmilesBond(atom, atomH,
@@ -175,7 +175,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
       for (int j = 0; j < n; j++) {
         SmilesBond sBond = sAtom.getBond(j);
         boolean firstAtom = (sBond.getAtom1() == sAtom);
-        SmilesBond b;
+        //SmilesBond b;
         if (firstAtom) {
           int order = 1;
           switch (sBond.bondType) {
@@ -205,18 +205,17 @@ public class SmilesMatcher implements SmilesMatcherInterface {
             break;
           }
           SmilesAtom atom2 = atoms[sBond.getAtom2().getMatchingAtom()];
-          b = new SmilesBond(atom1, atom2, order, false);
-          if (firstAtom)
-            System.out.println(b);
+          /*b = */new SmilesBond(atom1, atom2, order, false);
+          //if (firstAtom)
+            //System.out.println(b);
         } else {
-          SmilesAtom atom2 = atoms[sBond.getAtom1().getMatchingAtom()];
-          b = atom2.getBondTo(atom1);
+          //SmilesAtom atom2 = atoms[sBond.getAtom1().getMatchingAtom()];
+          //b = atom2.getBondTo(atom1);
         }
       }
     }
-    BitSet[] list = getSubstructureSetArray(pattern, atoms, -atoms.length, null, null,
+    return getSubstructureSetArray(pattern, atoms, -atoms.length, null, null,
         null, bsAromatic, isSearch, isAll);
-    return list;
   }
   /**
    * Returns a vector of bits indicating which atoms match the pattern.
@@ -328,56 +327,72 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   }
 
   public String getBioSmiles(JmolNode[] atoms, int atomCount,
-                                   BitSet bsSelected) {
-    StringBuffer sb = new StringBuffer("~");
+                                   BitSet bsSelected, String comment) {
+    StringBuffer sb = new StringBuffer();
+    BitSet bs = (BitSet) bsSelected.clone();
+    sb.append("//* Jmol BIOSMILES ").append(comment.replace('*','_')).append(" *//");
     Hashtable ht = new Hashtable();
-    int nPairs = 0;
-    String end = null;
+    int[] nPairs = new int[1];
+    String end = "\n";
+    BitSet bsIgnore = new BitSet();
+    String lastComponent = null;
+    String s;
     try {
-      for (int i = bsSelected.nextSetBit(0); i >= 0; i = bsSelected.nextSetBit(i + 1)) {
+      int len = 0;
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
         JmolNode a = atoms[i];
         String ch = a.getGroup1('?');
+        String groupType = a.getGroupType();
         boolean unknown = (ch.equals("?"));
-        if (unknown)
-          continue;
         if (end != null) {
           sb.append(end);
           end = null;
+          len = 0;
+          if (!unknown) {
+            char id = a.getChainID();
+            if (id != '\0')
+              sb.append("//* chain ").append(id).append(" ")
+                  .append(groupType).append(" *// ");
+            sb.append("~");
+          }
+          if (unknown && groupType.length() == 0) {
+            s = SmilesParser.getSmilesComponent(atoms, atomCount, a, bs, nPairs);
+            if (s.equals(lastComponent)) {
+              end = "";
+            } else {
+              lastComponent = s;
+              sb.append(s);
+              end = ".\n";
+            }
+            continue;
+          }
         }
         sb.append(ch);
-        //sb.append("[" + a.getNextResidueAtom("0", 0) + "]");
-        int i1 = a.getBasePairedLeadAtomIndex();
-        if (i1 >= 0 && i1 < a.getIndex())
-          i1 = a.getNextResidueAtom("0", 0);
-        if (i1 > 0) {
-          Integer ii = new Integer(i1);
-          String s = (String) ht.get(ii);
-          if (s == null) {
-            ht.put(ii, s = ":" + (++nPairs < 10 ? "" + nPairs 
-                : nPairs < 100 ? "%" + nPairs
-                :"%0" + nPairs + "%"));
-          }
-          sb.append(s);
-        }
-        int i2 = a.getNextResidueAtom("0", 1);
-        if (i2 < 0 || !bsSelected.get(i2)) {
-          if (i2 < 0) {
-            while ((i = bsSelected.nextSetBit(i + 1)) >= 0 
-                && (i2 = atoms[i].getNextResidueAtom(null, 1)) < 0) {
-              //
-            }
-            if (i2 < 0 || (i2 = i) <= 0)
+        len++;
+        int i0 = a.getOffsetResidueAtom("0", 0);
+        int i1 = a.getCrossLinkLeadAtomIndex();
+        if (i1 >= 0)
+          sb.append(":").append(SmilesParser.getRingCache(ht, i0, i1, nPairs));
+        int i2 = a.getOffsetResidueAtom("0", 1); 
+        a.setGroupBits(bsIgnore);
+        bs.andNot(bsIgnore);
+        if (i2 < 0 || !bs.get(i2)) {
+          if (i2 < 0 && (i2 = bs.nextSetBit(i + 1)) < 0)
               break;
-          }
-          end = ".\n";
+          if (len > 0)
+            end = ".\n";
         }
         i = i2 - 1;
       }
     } catch (Exception e) {
       return "";
     }
-    return sb.toString();
+    if (!ht.isEmpty()) // unmatched rings
+      return "";
+    s = sb.toString();
+    if (s.endsWith(".\n"))
+      s = s.substring(0, s.length() - 2);
+    return s;
   }
-
 
 }

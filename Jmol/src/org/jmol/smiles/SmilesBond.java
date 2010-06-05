@@ -46,6 +46,19 @@ public class SmilesBond implements JmolEdge {
   public final static int TYPE_BIO_SEQUENCE = 9;
   public final static int TYPE_BIO_PAIR = 10;
   public final static int TYPE_MULTIPLE = 999;
+  
+  static String getBondOrderString(int order) {
+    switch (order) {
+    case 1:
+      return "";
+    case 2:
+      return "=";
+    case 3:
+      return "#";
+    default:
+      return "";
+    }
+  }
 
   private SmilesAtom atom1;
   private SmilesAtom atom2;
@@ -134,7 +147,7 @@ public class SmilesBond implements JmolEdge {
   static boolean isBondType(char ch, boolean isSearch) throws InvalidSmilesException {
     if ("-=#:/\\.+!,&;@~".indexOf(ch) < 0)
       return false;
-    if (!isSearch && "-=#:/\\.".indexOf(ch) < 0)
+    if (!isSearch && "-=#:/\\.~".indexOf(ch) < 0)  // ~ here for BIOSMARTS
         throw new InvalidSmilesException("SMARTS bond type " + ch
             + " not allowed in SMILES");
     return true;

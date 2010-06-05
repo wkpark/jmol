@@ -1304,19 +1304,21 @@ final public class JmolConstants {
   /**
    * Default table of PdbStructure colors
    */
+  public final static byte PROTEIN_STRUCTURE_NOT = -1;
   public final static byte PROTEIN_STRUCTURE_NONE = 0;
   public final static byte PROTEIN_STRUCTURE_TURN = 1;
   public final static byte PROTEIN_STRUCTURE_SHEET = 2;
   public final static byte PROTEIN_STRUCTURE_HELIX = 3;
   public final static byte PROTEIN_STRUCTURE_DNA = 4;
   public final static byte PROTEIN_STRUCTURE_RNA = 5;
+  public final static byte PROTEIN_STRUCTURE_CARBOHYDRATE = 6;
 
-  public final static String[] proteinStructureNames = {
-    "none", "turn", "sheet", "helix", "dna", "rna"
+  private final static String[] proteinStructureNames = {
+    "none", "turn", "sheet", "helix", "dna", "rna", "carbohydrate"
   };
   
-  public final static String getProteinStructureName(int itype) {
-    return (itype >= 0 && itype <= 5 ? proteinStructureNames[itype] : "");
+  public final static String getProteinStructureName(int itype, boolean isGeneric) {
+    return (itype < 0 || itype > 6 ? "" : isGeneric && itype < 4 ? "protein" : proteinStructureNames[itype]);
   }
   
   /****************************************************************
@@ -1338,6 +1340,7 @@ final public class JmolConstants {
    *This correction was made above on Dec 5, 1998.
    ****************************************************************/
   public final static int[] argbsStructure = {
+    0xFF808080, // PROTEIN_STRUCTURE_NOT
     0xFFFFFFFF, // PROTEIN_STRUCTURE_NONE
     0xFF6080FF, // PROTEIN_STRUCTURE_TURN
     0xFFFFC800, // PROTEIN_STRUCTURE_SHEET
@@ -1727,11 +1730,11 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "OD2",   // 15  ASP carbonyl/carbonate
     "OE1",   // 16  GLU/GLN carbonyl/carbonate
     "OE2",   // 17  GLU carbonyl/carbonate
-    
+    "SG",    // 18  CYS sulfur
     // reserved for future expansion ... lipids & carbohydrates
     // 9/2006 -- carbohydrates are just handled as group3 codes
     // see below
-    null, null, // 18 - 19
+    null, // 18 - 19
     null, null, null, null, // 20 - 23
     null, null, null, null, // 24 - 27
     null, null, null, null, // 28 - 31
@@ -1885,6 +1888,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static byte ATOMID_CARBONYL_OD2 = 15;
   public final static byte ATOMID_CARBONYL_OE1 = 16;
   public final static byte ATOMID_CARBONYL_OE2 = 17;
+  public final static byte ATOMID_SG = 18;
   
   public final static byte ATOMID_N1 = 32;
   public final static byte ATOMID_C2 = 33;
@@ -2124,7 +2128,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     'R',
     'N',
     'D',
-    'C',
+    'C', // 5 Cysteine
     'Q',
     'E',
     'G',

@@ -1039,6 +1039,10 @@ final public class Atom extends Point3fi implements JmolNode {
     return group.chain.modelSet.getModelFileNumber(modelIndex);
   }
   
+  public String getGroupType() {
+    return JmolConstants.getProteinStructureName(getProteinStructureType(), true);
+  }
+  
   public byte getProteinStructureType() {
     return group.getProteinStructureType();
   }
@@ -1286,7 +1290,7 @@ final public class Atom extends Point3fi implements JmolNode {
         s = "";
       return s;
     case Token.structure:
-      return JmolConstants.getProteinStructureName(atom.getProteinStructureType());
+      return JmolConstants.getProteinStructureName(atom.getProteinStructureType(), false);
     case Token.strucid:
       return atom.getStructureId();
     case Token.symbol:
@@ -1322,7 +1326,7 @@ final public class Atom extends Point3fi implements JmolNode {
     return group.isWithinStructure(type);
   }
   
-  public int getNextResidueAtom(String name, int offset) {
+  public int getOffsetResidueAtom(String name, int offset) {
     return group.chain.getGroupAtom(group.getGroupIndex() + offset, name);
   }
   
@@ -1330,8 +1334,8 @@ final public class Atom extends Point3fi implements JmolNode {
     return group.isBasePaired(((Atom) node).getGroup());
   }
 
-  public int getBasePairedLeadAtomIndex() {
-    return group.getBasePairedLeadAtomIndex();
+  public int getCrossLinkLeadAtomIndex() {
+    return group.getCrossLinkLeadAtomIndex();
   }
 
   /* DEVELOPER NOTE -- ATOM/MODEL DELETION --

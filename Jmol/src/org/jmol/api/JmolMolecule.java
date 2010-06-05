@@ -23,12 +23,9 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.modelset;
+package org.jmol.api;
 
 
-import org.jmol.api.JmolEdge;
-import org.jmol.api.JmolNode;
-import org.jmol.util.ArrayUtil;
 import org.jmol.util.Elements;
 
 import java.util.BitSet;
@@ -101,7 +98,7 @@ public class JmolMolecule {
         molecules = addMolecule(molecules, moleculeCount++, atoms, i, bsBranch,
             modelIndex, indexInModel++, bsExclude);
       }
-    return (JmolMolecule[]) ArrayUtil.setLength(molecules, moleculeCount);
+    return (JmolMolecule[]) allocateArray(molecules, moleculeCount);
   }
   
   /**
@@ -141,13 +138,12 @@ public class JmolMolecule {
                                        int indexInModel, BitSet bsExclude) {
     bsExclude.or(bsBranch);
     if (iMolecule == molecules.length)
-      molecules = (JmolMolecule[]) ArrayUtil
-          .setLength(molecules, iMolecule * 2 + 1);
+      molecules = allocateArray(molecules, iMolecule * 2 + 1);
     molecules[iMolecule] = new JmolMolecule(atoms, iMolecule, iAtom,
         bsBranch, modelIndex, indexInModel);
     return molecules;
   }
-
+  
   public String getMolecularFormula() {
     if (mf != null)
       return mf;
@@ -231,4 +227,14 @@ public class JmolMolecule {
     }
     return true;
   }
+  
+  private static JmolMolecule[] allocateArray(JmolMolecule[] molecules, int len) {
+    if (molecules.length == len)
+      return molecules;
+    JmolMolecule[] jm = new JmolMolecule[len];
+    System.arraycopy(molecules, 0, jm, 0, len < molecules.length ? len : molecules.length);
+    return jm;
+  }
+  
+
 }  

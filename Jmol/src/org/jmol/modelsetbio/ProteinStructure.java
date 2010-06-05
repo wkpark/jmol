@@ -59,7 +59,7 @@ public abstract class ProteinStructure {
     if(Logger.debugging)
       Logger.debug(
           "Creating ProteinStructure " + uniqueID 
-          + " " + JmolConstants.getProteinStructureName(type) 
+          + " " + JmolConstants.getProteinStructureName(type, false) 
           + " from " + monomerIndexFirst + " through "+ monomerIndexLast
           + " in polymer " + apolymer);
   }
@@ -179,7 +179,7 @@ public abstract class ProteinStructure {
   }
 
   public void getInfo(Hashtable info) {
-    info.put("type", JmolConstants.getProteinStructureName(type));
+    info.put("type", JmolConstants.getProteinStructureName(type, false));
     int[] leadAtomIndices = apolymer.getLeadAtomIndices();
     int[] iArray = new int[monomerCount];
     System.arraycopy(leadAtomIndices, monomerIndexFirst, iArray, 0, monomerCount);

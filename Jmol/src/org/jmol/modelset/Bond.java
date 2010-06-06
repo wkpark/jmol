@@ -204,7 +204,7 @@ public class Bond implements JmolEdge {
   }
 
   public int getCovalentOrder() {
-    return (isCovalent() ? order & ~JmolEdge.BOND_NEW : 0);
+    return JmolConstants.getCovalentBondOrder(order);
   }
 
   String getOrderName() {

@@ -344,6 +344,19 @@ final public class JmolConstants {
     + ((bondOrderInteger % 1000000) & 0x1F));
   }
 
+  public final static int getCovalentBondOrder(int order) {
+    if ((order & JmolEdge.BOND_COVALENT_MASK) == 0)
+      return 0;
+    order &= ~JmolEdge.BOND_NEW; 
+    if ((order & JmolEdge.BOND_PARTIAL_MASK) != 0)
+      return getPartialBondOrder(order);
+    if ((order & JmolEdge.BOND_SULFUR_MASK) != 0)
+      order &= ~JmolEdge.BOND_SULFUR_MASK;
+    if ((order & 0xF8) != 0) // "ANY"
+      order = 1;
+    return order & 7;
+  }
+  
   public final static int getPartialBondOrder(int order) {
     return ((order & ~JmolEdge.BOND_NEW) >> 5);
   }

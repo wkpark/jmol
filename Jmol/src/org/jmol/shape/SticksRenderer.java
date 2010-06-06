@@ -188,6 +188,7 @@ public class SticksRenderer extends ShapeRenderer {
   }
     
   int getRenderBondOrder(int order) {
+    
     order &= ~JmolEdge.BOND_NEW; 
     if ((order & JmolEdge.BOND_PARTIAL_MASK) != 0)
       return order;

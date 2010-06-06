@@ -127,7 +127,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
     needAromatic &= (bsA == null);
     // when using "xxx".find("search","....")
     // or $(...), the aromatic set has already been determined
-    if (!needAromatic)  {
+    if (!needAromatic) {
       bsAromatic.clear();
       if (bsA != null)
         bsAromatic.or(bsA);
@@ -139,36 +139,25 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
       ringConnections = new int[jmolAtomCount];
       ringData = new BitSet[ringDataMax + 1];
     }
-    if (needRingMemberships)
-      ringMemberships = new BitSet[jmolAtomCount];
-    
+
     ringSets = new StringBuffer();
     String s = "****";
-    int iRing = 0;
     while (s.length() < ringDataMax)
       s += s;
-    
-    
+
     for (int i = 3; i <= ringDataMax; i++) {
       if (i > jmolAtomCount)
         continue;
       Vector v = (Vector) getBitSets("*1" + s.substring(0, i - 2) + "*1",
           false, ringSets);
-      if (needAromatic || needRingMemberships)
-      for (int r = v.size(); --r >= 0;) {
-        BitSet bs = (BitSet) v.get(r);
-        boolean isAromatic = (needAromatic && SmilesAromatic.isFlatSp2Ring(jmolAtoms, bsSelected, bs, 0.01f));
-        for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1)) {
-          if (isAromatic)
-            bsAromatic.set(j);
-          if (needRingMemberships) {
-          if (ringMemberships[j] == null)
-            ringMemberships[j] = new BitSet();
-          ringMemberships[j].set(iRing);
-          }
-        }        
-        iRing++;
-      }
+      if (needAromatic)
+        for (int r = v.size(); --r >= 0;) {
+          BitSet bs = (BitSet) v.get(r);
+          if (SmilesAromatic.isFlatSp2Ring(
+              jmolAtoms, bsSelected, bs, 0.01f))
+          for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1)) 
+              bsAromatic.set(j);
+        }
       if (needRingData) {
         ringData[i] = new BitSet();
         for (int k = 0; k < v.size(); k++) {
@@ -224,7 +213,6 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
   private BitSet[] ringData;
   private int[] ringCounts;
   private int[] ringConnections;
-  private BitSet[] ringMemberships;
   private StringBuffer ringSets;
   private boolean isRingCheck;
   
@@ -749,15 +737,11 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
       switch (patternBond.bondType) {
       case SmilesBond.TYPE_AROMATIC: // :
       case SmilesBond.TYPE_DOUBLE:
-        bondFound = (ringSets.indexOf("-" + iAtom + "-" + matchingAtom + "-") >= 0);
+      case SmilesBond.TYPE_RING:
+        bondFound = isRingBond(iAtom, matchingAtom);
         break;
       case SmilesBond.TYPE_SINGLE:
-        bondFound = (ringSets.indexOf("-" + iAtom + "-" + matchingAtom + "-") < 0);
-        break;
-      case SmilesBond.TYPE_RING:
-        bondFound = (ringMemberships[iAtom] != null
-            && ringMemberships[matchingAtom] != null && ringMemberships[iAtom]
-            .intersects(ringMemberships[matchingAtom]));
+        bondFound = !isRingBond(iAtom, matchingAtom);
         break;
       case SmilesBond.TYPE_ANY:
       case SmilesBond.TYPE_UNKNOWN:
@@ -774,8 +758,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
       case SmilesBond.TYPE_DIRECTIONAL_1:
       case SmilesBond.TYPE_DIRECTIONAL_2:
         // STEREO_NEAR and _FAR are stand-ins for find()
-        bondFound = (order == JmolEdge.BOND_COVALENT_SINGLE
-            || order == JmolEdge.BOND_STEREO_NEAR || order == JmolEdge.BOND_STEREO_FAR);
+        bondFound = (order == JmolEdge.BOND_COVALENT_SINGLE);
         break;
       case SmilesBond.TYPE_DOUBLE:
         bondFound = (order == JmolEdge.BOND_COVALENT_DOUBLE);
@@ -784,13 +767,17 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
         bondFound = (order == JmolEdge.BOND_COVALENT_TRIPLE);
         break;
       case SmilesBond.TYPE_RING:
-        bondFound = (ringSets.indexOf("-" + iAtom + "-" + matchingAtom + "-") >= 0);
+        bondFound = isRingBond(iAtom, matchingAtom);
         break;
       }
     }
     return bondFound != patternBond.isNot;
   }
 
+  private boolean isRingBond(int i, int j) {
+    return (ringSets.indexOf("-" + i + "-" + j + "-") >= 0);
+  }
+  
   /* ============================================================= */
   /*                          Stereochemistry                      */
   /* ============================================================= */

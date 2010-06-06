@@ -35,7 +35,7 @@ public interface JmolEdge {
 
   // | new connection              1 << 15
   //  ||| | Hydrogen bond 0x3800   F << 11
-  //       |Stereo 0x400           1 << 10  NOT IMPLEMENTED
+  //       |Stereo 0x400           1 << 10  
   //        |Aromatic 0x200        1 << 9
   //         |Sulfur-Sulfur 0x100  1 << 8
   //           ||| Partial n       7 << 5
@@ -58,12 +58,12 @@ public interface JmolEdge {
   public final static int BOND_PARTIAL12     = 0x42;
   public final static int BOND_PARTIAL23     = 0x61;
   public final static int BOND_PARTIAL32     = 0x64;
-  public final static int BOND_COVALENT_MASK = 0x3FF; // MUST be numerically correct
-  public final static int BOND_COVALENT_SINGLE = 1;
+  public final static int BOND_COVALENT_MASK = 0x3FF; // MUST be numerically correct in 0x7 if not partial
+  public final static int BOND_COVALENT_SINGLE = 1;   // and in 0xE0 if partial
   public final static int BOND_COVALENT_DOUBLE = 2;
   public final static int BOND_COVALENT_TRIPLE = 3;
   public final static int BOND_COVALENT_QUADRUPLE = 4;
-  public final static int BOND_ORDER_UNSPECIFIED = 7;
+  public final static int BOND_ORDER_UNSPECIFIED = 0x11;
   public final static int BOND_ORDER_ANY     = 0xFFFF;
   public final static int BOND_ORDER_NULL    = 0x1FFFF;
   public final static int BOND_NEW           = 0x20000;

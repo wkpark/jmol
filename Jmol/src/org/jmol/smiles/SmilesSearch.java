@@ -1264,7 +1264,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
           return "@SP3";       
       } else {
         chiralClass = SmilesAtom.CHIRALITY_TETRAHEDRAL;
-        return (checkChirality(false, atom0, chiralClass, 1, atom1, atom2, atom3, atom4, atom5, atom6, v)? "@@" : "@");
+        return (checkChirality(false, atom0, chiralClass, 1, atom1, atom2, atom3, atom4, atom5, atom6, v)? "@" : "@@");
       }       
     }
     return "";

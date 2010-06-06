@@ -633,14 +633,17 @@ public class SmilesAtom extends Point3f implements JmolNode {
     return '\0';
   }
   
-  static String getAtomLabel(int atomicNumber, int isotopeNumber, int valence, int charge, int nH, boolean isAromatic) {
+  static String getAtomLabel(int atomicNumber, int isotopeNumber, int valence,
+                             int charge, int nH, boolean isAromatic,
+                             String stereo) {
     String sym = Elements.elementSymbolFromNumber(atomicNumber);
     if (isAromatic)
       sym = sym.toLowerCase();
-    int count = (isotopeNumber != 0 || charge != 0 ? -1 : getDefaultCount(atomicNumber, false));
-    return (count == valence ? sym : 
-      "[" + (isotopeNumber <= 0 ? "" : "" + isotopeNumber)
-          + sym + (charge < 0 ? "" + charge : charge > 0 ? "+" + charge : "")
-          + (nH > 0 ? "H" + nH : "") + "]");
+    int count = (stereo.length() > 0 || isotopeNumber != 0 || charge != 0 ? -1 : getDefaultCount(
+        atomicNumber, false));
+    return (count == valence ? sym : "["
+        + (isotopeNumber <= 0 ? "" : "" + isotopeNumber) + sym
+        + (charge < 0 ? "" + charge : charge > 0 ? "+" + charge : "")
+        + stereo + (nH > 1 ? "H" + nH : nH == 1 ? "H" : "") + "]");
   }
 }

@@ -797,6 +797,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
       atom4 = null, atom5 = null, atom6 = null;
       for (int i = 0; i < atomCount; i++) {
         SmilesAtom sAtom = patternAtoms[i];
+        JmolNode atom0 = jmolAtoms[sAtom.getMatchingAtom()];
         int nH = sAtom.missingHydrogenCount;
         if (nH < 0)
           nH = 0;
@@ -843,7 +844,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
             atom4 = getHydrogens(getJmolAtom(sAtom2.getMatchingAtom()), null);
           if (isSmilesFind && !setSmilesCoordinates(sAtom, new JmolNode[] { atom1, atom2, atom3, atom4, null, null }))
               return false;
-          if (sAtom.not != (getChirality(atom2, atom3, atom4, atom1) != order))
+          if (sAtom.not != (getChirality(atom2, atom3, atom4, atom1, v) != order))
             return false;
           continue;
         case SmilesAtom.CHIRALITY_TETRAHEDRAL:
@@ -881,51 +882,9 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
 
           if (isSmilesFind && !setSmilesCoordinates(sAtom, new JmolNode[] { atom1, atom2, atom3, atom4, atom5, atom6 }))
               return false;
-          switch (chiralClass) {
-          case SmilesAtom.CHIRALITY_TETRAHEDRAL:
-            if (sAtom.not != (getChirality(atom2, atom3, atom4, atom1) != order))
-              return false;
-            continue;
-          case SmilesAtom.CHIRALITY_TRIGONAL_BIPYRAMIDAL:
-            // check for axial-axial'
-            if (sAtom.not != (!isDiaxial(sAtom, atom5, atom1)
-                || getChirality(atom2, atom3, atom4, atom1) != order))
-              return false;
-            continue;
-          case SmilesAtom.CHIRALITY_OCTAHEDRAL:
-            if (sAtom.not != (!isDiaxial(sAtom, atom6, atom1)))
-              return false;
-            // check for CW or CCW set
-            getPlaneNormals(atom2, atom3, atom4, atom5);
-            if (sAtom.not != (vNorm1.dot(vNorm2) < 0 
-                || vNorm2.dot(vNorm3) < 0))
-              return false;
-            // now check rotation in relation to the first atom
-            vNorm2.set((Point3f) getJmolAtom(sAtom.getMatchingAtom()));
-            vNorm2.sub((Point3f) atom1);
-            if (sAtom.not != ((vNorm2.dot(vNorm1) < 0 ? 1 : 2) != order))
-              return false;
-            continue;
-          case SmilesAtom.CHIRALITY_SQUARE_PLANAR:
-            getPlaneNormals(atom1, atom2, atom3, atom4);
-            // vNorm1 vNorm2 vNorm3 are right-hand normals for the given
-            // triangles
-            // 1-2-3, 2-3-4, 3-4-1
-            // sp1 up up up U-shaped
-            // sp2 up up DOWN 4-shaped
-            // sp3 up DOWN DOWN Z-shaped
-
-            if (vNorm1.dot(vNorm2) < 0) {
-              if (sAtom.not != (order != 3))
-                return false;
-            } else if (sAtom.not != (vNorm2.dot(vNorm3) < 0)) {
-              if (order != 2)
-                return false;
-            } else if (sAtom.not != (order != 1)) {
-              return false;
-            }
-            continue;
-          }
+          
+          if (!checkChirality(sAtom.not, atom0, chiralClass, order, atom1, atom2, atom3, atom4, atom5, atom6, v))
+            return false;
           continue;
         }
       }
@@ -995,8 +954,54 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
       }
     }
     return true;
+    
   }
 
+  static boolean checkChirality(boolean isNot, JmolNode atom0, int chiralClass, int order, 
+                                JmolNode atom1, JmolNode atom2, JmolNode atom3, JmolNode atom4, JmolNode atom5, JmolNode atom6, VTemp v) {
+    
+    switch (chiralClass) {
+    case SmilesAtom.CHIRALITY_TETRAHEDRAL:
+      return (isNot == (getChirality(atom2, atom3, atom4, atom1, v) != order));
+    case SmilesAtom.CHIRALITY_TRIGONAL_BIPYRAMIDAL:
+      // check for axial-axial'
+      return (isNot == (!isDiaxial(atom0, atom5, atom1, v)
+          || getChirality(atom2, atom3, atom4, atom1, v) != order));
+    case SmilesAtom.CHIRALITY_OCTAHEDRAL:
+      if (isNot != (!isDiaxial(atom0, atom6, atom1, v)))
+        return false;
+      // check for CW or CCW set
+      getPlaneNormals(atom2, atom3, atom4, atom5, v);
+      if (isNot != (v.vNorm1.dot(v.vNorm2) < 0 
+          || v.vNorm2.dot(v.vNorm3) < 0))
+        return false;
+      // now check rotation in relation to the first atom
+      v.vNorm2.set((Point3f) atom0);
+      v.vNorm2.sub((Point3f) atom1);
+      return (isNot == ((v.vNorm2.dot(v.vNorm1) < 0 ? 1 : 2) != order));
+    case SmilesAtom.CHIRALITY_SQUARE_PLANAR:
+      getPlaneNormals(atom1, atom2, atom3, atom4, v);
+      // vNorm1 vNorm2 vNorm3 are right-hand normals for the given
+      // triangles
+      // 1-2-3, 2-3-4, 3-4-1
+      // sp1 up up up U-shaped
+      // sp2 up up DOWN 4-shaped
+      // sp3 up DOWN DOWN Z-shaped
+
+      if (v.vNorm1.dot(v.vNorm2) < 0) {
+        if (isNot != (order != 3))
+          return false;
+      } else if (isNot != (v.vNorm2.dot(v.vNorm3) < 0)) {
+        if (order != 2)
+          return false;
+      } else if (isNot != (order != 1)) {
+        return false;
+      }
+      return true;
+    }
+    return true;
+  }
+  
   private JmolNode getJmolAtom(int i) {
     return (i < 0 || i >= jmolAtoms.length ? null : jmolAtoms[i]);
   }
@@ -1147,9 +1152,9 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
         break;
       case 3: // Z-shaped
         cAtoms[map[0]].set(1, 0, 0);
-        cAtoms[map[1]].set(-1, 0, 0);
+        cAtoms[map[1]].set(0, 1, 0);
         cAtoms[map[2]].set(0, -1, 0);
-        cAtoms[map[3]].set(0, 1, 0);
+        cAtoms[map[3]].set(-1, 0, 0);
         break;
       }
       break;
@@ -1173,45 +1178,48 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
     return true;
   }
 
-  private final Vector3f vTemp = new Vector3f();
-  private final Vector3f vA = new Vector3f();
-  private final Vector3f vB = new Vector3f();
+  static class VTemp {
+    final Vector3f vTemp = new Vector3f();
+    final Vector3f vA = new Vector3f();
+    final Vector3f vB = new Vector3f();
+    Vector3f vTemp1;
+    Vector3f vTemp2;
+    Vector3f vNorm1;
+    Vector3f vNorm2;
+    Vector3f vNorm3;
+  }
   
-  private boolean isDiaxial(SmilesAtom sAtom, JmolNode atom2, JmolNode atom1) {
-    JmolNode atom0 = jmolAtoms[sAtom.getMatchingAtom()];
-    vA.set((Point3f) atom0);
-    vB.set((Point3f) atom0);
-    vA.sub((Point3f) atom1);
-    vB.sub((Point3f) atom2);
+  VTemp v = new VTemp();
+
+  
+  private static boolean isDiaxial(JmolNode atom0, JmolNode atom2, JmolNode atom1, VTemp v) {
+    v.vA.set((Point3f) atom0);
+    v.vB.set((Point3f) atom0);
+    v.vA.sub((Point3f) atom1);
+    v.vB.sub((Point3f) atom2);
     // about 172 degrees
-    return (vA.dot(vB) < -0.95f);
+    return (v.vA.dot(v.vB) < -0.95f);
   }
 
-  private int getChirality(JmolNode a, JmolNode b, JmolNode c, JmolNode pt) {
-    float d = SmilesAromatic.getNormalThroughPoints(a, b, c, vTemp, vA, vB);
-    return (distanceToPlane(vTemp, d, (Point3f) pt) > 0 ? 1 : 2);
+  private static int getChirality(JmolNode a, JmolNode b, JmolNode c, JmolNode pt, VTemp v) {
+    float d = SmilesAromatic.getNormalThroughPoints(a, b, c, v.vTemp, v.vA, v.vB);
+    return (distanceToPlane(v.vTemp, d, (Point3f) pt) > 0 ? 1 : 2);
   }
 
-  private Vector3f vTemp1;
-  private Vector3f vTemp2;
-  private Vector3f vNorm1;
-  private Vector3f vNorm2;
-  private Vector3f vNorm3;
-
-  private void getPlaneNormals(JmolNode atom1, JmolNode atom2, JmolNode atom3, JmolNode atom4) {
-    if (vTemp1 == null) {
-      vTemp1 = new Vector3f();
-      vTemp2 = new Vector3f();
-      vNorm1 = new Vector3f();
-      vNorm2 = new Vector3f();
-      vNorm3 = new Vector3f();
+  private static void getPlaneNormals(JmolNode atom1, JmolNode atom2, JmolNode atom3, JmolNode atom4, VTemp v) {
+    if (v.vTemp1 == null) {
+      v.vTemp1 = new Vector3f();
+      v.vTemp2 = new Vector3f();
+      v.vNorm1 = new Vector3f();
+      v.vNorm2 = new Vector3f();
+      v.vNorm3 = new Vector3f();
     }
-    SmilesAromatic.getNormalThroughPoints(atom1, atom2, atom3, vNorm1, vTemp1,
-        vTemp2);
-    SmilesAromatic.getNormalThroughPoints(atom2, atom3, atom4, vNorm2, vTemp1,
-        vTemp2);
-    SmilesAromatic.getNormalThroughPoints(atom3, atom4, atom1, vNorm3, vTemp1,
-        vTemp2);
+    SmilesAromatic.getNormalThroughPoints(atom1, atom2, atom3, v.vNorm1, v.vTemp1,
+        v.vTemp2);
+    SmilesAromatic.getNormalThroughPoints(atom2, atom3, atom4, v.vNorm2, v.vTemp1,
+        v.vTemp2);
+    SmilesAromatic.getNormalThroughPoints(atom3, atom4, atom1, v.vNorm3, v.vTemp1,
+        v.vTemp2);
   }
 
   private static float distanceToPlane(Vector3f norm, float w, Point3f pt) {
@@ -1221,5 +1229,45 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
             * norm.z));
   }
 
+  /**
+   * 
+   * @param atom0
+   * @param atoms
+   * @param nAtoms
+   * @return        String
+   */
+  static String getStereoFlag(JmolNode atom0, JmolNode[] atoms, int nAtoms, VTemp v) {
+    JmolNode atom1 = atoms[0];
+    JmolNode atom2 = atoms[1];
+    JmolNode atom3 = atoms[2];
+    JmolNode atom4 = atoms[3];
+    JmolNode atom5 = atoms[4];
+    JmolNode atom6 = atoms[5];
+    int chiralClass = 0;
+    switch (nAtoms) {
+    default:
+      break;
+    case 2:
+    case 5:
+    case 6:
+      // not doing these for now
+      break;
+    case 4:
+      float d = SmilesAromatic.getNormalThroughPoints(atom1, atom2, atom3, v.vTemp, v.vA, v.vB);
+      if (Math.abs(distanceToPlane(v.vTemp, d, (Point3f) atom4)) < 0.2f) {
+        chiralClass = SmilesAtom.CHIRALITY_SQUARE_PLANAR;
+        if (checkChirality(false, atom0, chiralClass, 1, atom1, atom2, atom3, atom4, atom5, atom6, v))
+          return "@SP1";
+        if (checkChirality(false, atom0, chiralClass, 2, atom1, atom2, atom3, atom4, atom5, atom6, v))
+          return "@SP2";
+        if (checkChirality(false, atom0, chiralClass, 3, atom1, atom2, atom3, atom4, atom5, atom6, v))
+          return "@SP3";       
+      } else {
+        chiralClass = SmilesAtom.CHIRALITY_TETRAHEDRAL;
+        return (checkChirality(false, atom0, chiralClass, 1, atom1, atom2, atom3, atom4, atom5, atom6, v)? "@@" : "@");
+      }       
+    }
+    return "";
+  }
 
 }

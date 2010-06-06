@@ -36,6 +36,7 @@ import org.jmol.api.JmolEdge;
 import org.jmol.api.JmolMolecularGraph;
 import org.jmol.api.JmolMolecule;
 import org.jmol.api.JmolNode;
+import org.jmol.util.Logger;
 
 /**
  *  -- was SmilesMolecule, 
@@ -386,6 +387,8 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
     // Note that we explicitly do a reference using
     // index because this could be a SEARCH [x,x] "sub" atom.
 
+    if (Logger.debugging)
+      Logger.debug("pattern atom " + atomNum + " " + patternAtom);
     if (++atomNum == atomCount) {
       if (!checkStereochemistry())
         return true;
@@ -758,7 +761,9 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
       case SmilesBond.TYPE_DIRECTIONAL_1:
       case SmilesBond.TYPE_DIRECTIONAL_2:
         // STEREO_NEAR and _FAR are stand-ins for find()
-        bondFound = (order == JmolEdge.BOND_COVALENT_SINGLE);
+        bondFound = (order == JmolEdge.BOND_COVALENT_SINGLE
+            || order == JmolEdge.BOND_STEREO_FAR
+            || order == JmolEdge.BOND_STEREO_NEAR);
         break;
       case SmilesBond.TYPE_DOUBLE:
         bondFound = (order == JmolEdge.BOND_COVALENT_DOUBLE);

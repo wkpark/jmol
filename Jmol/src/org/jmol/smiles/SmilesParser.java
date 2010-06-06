@@ -1113,11 +1113,11 @@ public class SmilesParser {
       stereo[stereoFlag++] = aH;
     int nMax = 0;
     StringBuffer sMore = new StringBuffer();
-    for (int i = v.size(); --i >= 0;) {
+    for (int i = 0; i < v.size(); i++) {
       JmolEdge bond = (JmolEdge) v.get(i);
       JmolNode a = bond.getOtherAtom(atom);
       int n = a.getCovalentBondCount() - a.getCovalentHydrogenCount();
-      if (n == 1 && v.size() > 1) {
+      if (n == 1 && i < v.size() - 1) {
         StringBuffer s2 = new StringBuffer();
         s2.append("(");
         s2.append(SmilesBond.getBondOrderString(bond.getOrder()));

@@ -189,15 +189,15 @@ public class SmilesGenerator {
     Hashtable ht = new Hashtable();
     StringBuffer sb1 = new StringBuffer();
     BitSet bs0 = (BitSet) bs2.clone();
-    getSmiles(sb1, null, atom, bs0, bs2, ht, nPairs, bsAromatic, vTemp);
+    getSmiles(sb1, null, null, atom, bs0, bs2, ht, nPairs, bsAromatic, vTemp);
     while (bs2.cardinality() > 0 && !ht.isEmpty()) {
       Enumeration e = ht.keys();
       e.hasMoreElements();
       atomIndex = ((Integer) ((Object[]) ht.get(e.nextElement()))[1])
           .intValue();
       sb1.append(".");
-      getSmiles(sb1, null, atoms[atomIndex], bs0, bs2, ht, nPairs, bsAromatic,
-          vTemp);
+      getSmiles(sb1, null, null, atoms[atomIndex], bs0, bs2, ht, nPairs,
+          bsAromatic, vTemp);
     }
     if (!ht.isEmpty()) {
       dumpRingKeys(ht, sb1);
@@ -207,9 +207,9 @@ public class SmilesGenerator {
   }
 
   private static void getSmiles(StringBuffer sb, JmolNode prevAtom,
-                                JmolNode atom, BitSet bs0, BitSet bs,
-                                Hashtable ht, int[] nPairs, BitSet bsAromatic,
-                                VTemp vTemp) {
+                                JmolEdge prevBond, JmolNode atom, BitSet bs0,
+                                BitSet bs, Hashtable ht, int[] nPairs,
+                                BitSet bsAromatic, VTemp vTemp) {
     int atomIndex = atom.getIndex();
     if (!bs.get(atomIndex))
       return;
@@ -248,11 +248,13 @@ public class SmilesGenerator {
     int valence = atom.getValence();
     int charge = atom.getFormalCharge();
     int isotope = atom.getIsotopeNumber();
+    
     if (bondPrev != null) {
-      sb.append(SmilesBond.getBondOrderString(bondPrev.getOrder()));
+      sb.append(SmilesBond.getBondOrderString(bondPrev.getCovalentOrder()));
       if (stereoFlag < 7)
         stereo[stereoFlag++] = prevAtom;
     }
+    
     if (stereoFlag < 7 && nH == 1)
       stereo[stereoFlag++] = aH;
     int nMax = 0;
@@ -261,11 +263,11 @@ public class SmilesGenerator {
       JmolEdge bond = (JmolEdge) v.get(i);
       JmolNode a = bond.getOtherAtom(atom);
       int n = a.getCovalentBondCount() - a.getCovalentHydrogenCount();
-      if (n == 1 && i < v.size() - (bond0 == null ? 1 : 0)) {
+      int order = bond.getCovalentOrder();
+      if (order == 1 && n == 1 && i < v.size() - (bond0 == null ? 1 : 0)) {
         StringBuffer s2 = new StringBuffer();
         s2.append("(");
-        s2.append(SmilesBond.getBondOrderString(bond.getOrder()));
-        getSmiles(s2, atom, a, bs0, bs, ht, nPairs, bsAromatic, vTemp);
+        getSmiles(s2, atom, prevBond, a, bs0, bs, ht, nPairs, bsAromatic, vTemp);
         s2.append(")");
         if (sMore.indexOf(s2.toString()) >= 0)
           stereoFlag = 10;
@@ -273,9 +275,9 @@ public class SmilesGenerator {
         v.removeElementAt(i--);
         if (stereoFlag < 7)
           stereo[stereoFlag++] = a;
-      } else if (n > nMax
+      } else if ((order > 1 || n > nMax)
           && !ht.containsKey(getRingKey(a.getIndex(), atomIndex))) {
-        nMax = n;
+        nMax = (order > 1 ? Integer.MAX_VALUE : n);
         bond0 = bond;
       }
     }
@@ -299,7 +301,7 @@ public class SmilesGenerator {
         nH, isAromatic, s));
     sb.append(sMore);
     if (bond0 != null)
-      getSmiles(sb, atom, a, bs0, bs, ht, nPairs, bsAromatic, vTemp);
+      getSmiles(sb, atom, prevBond, a, bs0, bs, ht, nPairs, bsAromatic, vTemp);
   }
 
   private static String getRingKey(int i0, int i1) {

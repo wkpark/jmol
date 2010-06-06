@@ -25,7 +25,6 @@
 package org.jmol.smiles;
 
 import java.util.BitSet;
-import java.util.Hashtable;
 import java.util.Vector;
 
 import org.jmol.api.JmolEdge;
@@ -113,7 +112,11 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     }
   }
   
-  private BitSet[] find(String pattern, SmilesSearch search, boolean isSearch, boolean isAll) throws Exception {
+  public String getLastException() {
+    return InvalidSmilesException.getLastError();
+  }
+  
+  private BitSet[] find(String pattern, SmilesSearch search, boolean isSearch, boolean isAll) {
     // create a topological model set from smiles
     // do not worry about stereochemistry -- this
     // will be handled by SmilesSearch.setSmilesCoordinates
@@ -237,13 +240,13 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    * @param isSearch
    * @param isAll
    * @return BitSet indicating which atoms match the pattern.
-   * @throws Exception
-   *           Raised if <code>smiles</code> is not a valid SMILES pattern.
    */
 
   public BitSet getSubstructureSet(String smiles, JmolNode[] atoms, int atomCount,
                                    BitSet bsSelected, boolean isSearch,
-                                   boolean isAll) throws Exception {
+                                   boolean isAll) {
+    InvalidSmilesException.setLastError(null);
+    try {
     SmilesSearch search = SmilesParser.getMolecule(smiles, isSearch);
     search.jmolAtoms = atoms;
     search.bsSelected = bsSelected;
@@ -251,6 +254,12 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     search.setRingData(null);
     search.isAll = isAll;
     return (BitSet) search.search(false);
+    } catch (Exception e) {
+      if (InvalidSmilesException.getLastError() == null)
+        InvalidSmilesException.setLastError(e.getMessage());
+      e.printStackTrace();
+      return null;
+    }
   }
 
   /**
@@ -266,13 +275,13 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    * @param isSearch 
    * @param isAll 
    * @return BitSet Array indicating which atoms match the pattern.
-   * @throws Exception Raised if <code>smiles</code> is not a valid SMILES pattern.
    */
   public BitSet[] getSubstructureSetArray(String smiles, JmolNode[] atoms, int atomCount, 
                                           BitSet bsSelected, 
                                           BitSet bsRequired, BitSet bsNot, 
-                                          BitSet bsAromatic, boolean isSearch, boolean isAll)
-      throws Exception {
+                                          BitSet bsAromatic, boolean isSearch, boolean isAll) {
+    InvalidSmilesException.setLastError(null);
+    try {
     SmilesSearch search = SmilesParser.getMolecule(smiles, isSearch);
     search.jmolAtoms = atoms;
     search.jmolAtomCount = Math.abs(atomCount);
@@ -289,6 +298,12 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     for (int i = 0; i < bitsets.length; i++)
       bitsets[i] = (BitSet) vSubstructures.get(i);
     return bitsets;
+    } catch (Exception e) {
+      if (InvalidSmilesException.getLastError() == null)
+        InvalidSmilesException.setLastError(e.getMessage());
+      e.printStackTrace();
+      return null;
+    }
   }
 
   /**
@@ -302,12 +317,13 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    * @param isSearch 
    * @param isAll 
    * @return      a set of atom correlations
-   * @throws Exception 
    * 
    */
   public int[][] getCorrelationMaps(String smiles, JmolNode[] atoms,
                                     int atomCount, BitSet bsSelected,
-                                    boolean isSearch, boolean isAll) throws Exception {
+                                    boolean isSearch, boolean isAll) {
+    InvalidSmilesException.setLastError(null);
+    try {
     SmilesSearch search = SmilesParser.getMolecule(smiles, isSearch);
     search.jmolAtoms = atoms;
     search.jmolAtomCount = Math.abs(atomCount);
@@ -325,84 +341,36 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     for (int i = 0; i < maps.length; i++)
       maps[i] = (int[]) vSubstructures.get(i);
     return maps;
+  } catch (Exception e) {
+    if (InvalidSmilesException.getLastError() == null)
+      InvalidSmilesException.setLastError(e.getMessage());
+    e.printStackTrace();
+    return null;
   }
+  }
+  
   public String getMolecularFormula(String pattern, boolean isSearch) {
+    InvalidSmilesException.setLastError(null);
     try {
       SmilesSearch search = SmilesParser.getMolecule(pattern, isSearch);
       return search.getMolecularFormula();
     } catch (InvalidSmilesException e) {
+      if (InvalidSmilesException.getLastError() == null)
+        InvalidSmilesException.setLastError(e.getMessage());
       return null;
     }
   }
 
   public String getBioSmiles(JmolNode[] atoms, int atomCount,
                                    BitSet bsSelected, String comment) {
-    StringBuffer sb = new StringBuffer();
-    BitSet bs = (BitSet) bsSelected.clone();
-    sb.append("//* Jmol BIOSMILES ").append(comment.replace('*','_')).append(" *//");
-    Hashtable ht = new Hashtable();
-    int[] nPairs = new int[1];
-    String end = "\n";
-    BitSet bsIgnore = new BitSet();
-    String lastComponent = null;
-    String s;
-    SmilesSearch.VTemp v = new SmilesSearch.VTemp();
+    InvalidSmilesException.setLastError(null);
     try {
-      int len = 0;
-      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-        JmolNode a = atoms[i];
-        String ch = a.getGroup1('?');
-        String groupType = a.getGroupType();
-        boolean unknown = (ch.equals("?"));
-        if (end != null) {
-          sb.append(end);
-          end = null;
-          len = 0;
-          if (!unknown) {
-            char id = a.getChainID();
-            if (id != '\0')
-              sb.append("//* chain ").append(id).append(" ")
-                  .append(groupType).append(" *// ");
-            sb.append("~");
-          }
-          if (unknown && groupType.length() == 0) {
-            s = SmilesParser.getSmilesComponent(atoms, atomCount, a, bs, nPairs, v);
-            if (s.equals(lastComponent)) {
-              end = "";
-            } else {
-              lastComponent = s;
-              sb.append(s);
-              end = ".\n";
-            }
-            continue;
-          }
-        }
-        sb.append(ch);
-        len++;
-        int i0 = a.getOffsetResidueAtom("0", 0);
-        int i1 = a.getCrossLinkLeadAtomIndex();
-        if (i1 >= 0)
-          sb.append(":").append(SmilesParser.getRingCache(ht, i0, i1, nPairs));
-        int i2 = a.getOffsetResidueAtom("0", 1); 
-        a.setGroupBits(bsIgnore);
-        bs.andNot(bsIgnore);
-        if (i2 < 0 || !bs.get(i2)) {
-          if (i2 < 0 && (i2 = bs.nextSetBit(i + 1)) < 0)
-              break;
-          if (len > 0)
-            end = ".\n";
-        }
-        i = i2 - 1;
-      }
-    } catch (Exception e) {
-      return "";
+      return SmilesGenerator.getBioSmiles(atoms, atomCount, bsSelected, comment);
+    } catch (InvalidSmilesException e) {
+      if (InvalidSmilesException.getLastError() == null)
+        InvalidSmilesException.setLastError(e.getMessage());
+      return null;
     }
-    if (!ht.isEmpty()) // unmatched rings
-      return "";
-    s = sb.toString();
-    if (s.endsWith(".\n"))
-      s = s.substring(0, s.length() - 2);
-    return s;
   }
 
 }

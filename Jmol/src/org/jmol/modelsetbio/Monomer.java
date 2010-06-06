@@ -49,8 +49,6 @@ public abstract class Monomer extends Group {
     super(chain, group3, seqcode, firstAtomIndex, lastAtomIndex);
     offsets = interestingAtomOffsets;
     leadAtomIndex = firstAtomIndex + (offsets[0] & 0xFF);
-    if (leadAtomIndex == 255)
-      System.out.println("monomer??");
   }
 
   int monomerIndex;

@@ -519,21 +519,28 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
     // For sequences, we go to the next GROUP, either via
     // the standard sequence or via basepair/cysteine pairing. 
 
-    int nextGroupAtom = -1;
     switch (patternBond.bondType) {
     case SmilesBond.TYPE_BIO_SEQUENCE:
-      nextGroupAtom = atom.getOffsetResidueAtom(patternAtom.atomName, 1);
-      break;
+      int nextGroupAtom = atom.getOffsetResidueAtom(patternAtom.atomName, 1);
+      if (nextGroupAtom >= 0) {
+        BitSet bs = new BitSet();
+        atom1.setGroupBits(bs);
+        bsFound.or(bs);
+        if (!checkMatch(patternAtom, atomNum, nextGroupAtom, firstAtomOnly))
+          return false;
+        bsFound.andNot(bs);
+        return true;
+      }
     case SmilesBond.TYPE_BIO_PAIR:
-      nextGroupAtom = atom.getCrossLinkLeadAtomIndex();
-      break;
-    }
-    if (nextGroupAtom >= 0) {
+      Vector vLinks = new Vector();
+      atom.getCrossLinkLeadAtomIndexes(vLinks);
       BitSet bs = new BitSet();
       atom1.setGroupBits(bs);
       bsFound.or(bs);
-      if (!checkMatch(patternAtom, atomNum, nextGroupAtom, firstAtomOnly))
-        return false;
+      for (int j = 0; j < vLinks.size(); j++)
+        if (!checkMatch(patternAtom, atomNum, ((Integer) vLinks.get(j)).intValue(),
+            firstAtomOnly))
+          return false;
       bsFound.andNot(bs);
       return true;
     }
@@ -1234,6 +1241,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
    * @param atom0
    * @param atoms
    * @param nAtoms
+   * @param v
    * @return        String
    */
   static String getStereoFlag(JmolNode atom0, JmolNode[] atoms, int nAtoms, VTemp v) {

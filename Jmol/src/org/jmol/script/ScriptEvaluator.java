@@ -6255,12 +6255,16 @@ public class ScriptEvaluator {
       int atomCount = viewer.getAtomCount();
       int[][] maps = viewer.getSmilesMatcher().getCorrelationMaps(smiles,
           atoms, atomCount, bsA, isSearch, false);
+      if (maps == null)
+        evalError(viewer.getSmilesMatcher().getLastException(), null);
       if (maps.length == 0)
         return Float.NaN;
       for (int i = 0; i < maps[0].length; i++)
         ptsA.add(atoms[maps[0][i]]);
       maps = viewer.getSmilesMatcher().getCorrelationMaps(smiles, atoms,
           atomCount, bsB, isSearch, true);
+      if (maps == null)
+        evalError(viewer.getSmilesMatcher().getLastException(), null);
       if (maps.length == 0)
         return Float.NaN;
       float lowestStdDev = Float.MAX_VALUE;
@@ -6303,15 +6307,18 @@ public class ScriptEvaluator {
         return new String[] { "" };
       return new BitSet();
     }
+    try {
     if (pattern.length() == 0) {
-      return viewer.getSmilesMatcher().getBioSmiles(
+      Object ret = viewer.getSmilesMatcher().getBioSmiles(
           viewer.getModelSet().atoms,
           viewer.getAtomCount(),
           bsSelected,
           Viewer.getJmolVersion() + " "
               + viewer.getModelName(viewer.getCurrentModelIndex()));
+      if (ret == null)
+        evalError(viewer.getSmilesMatcher().getLastException(), null);
+      return ret;
     }
-    try {
       boolean asAtoms = true;
       BitSet[] b;
       if (bsMatch3D == null) {
@@ -6322,6 +6329,9 @@ public class ScriptEvaluator {
               bsRequired, bsNot, null, isSearch, isAll);
         else
           b = viewer.getSmilesMatcher().find(pattern, smiles, isSearch, isAll);
+        if (b == null)
+          evalError(viewer.getSmilesMatcher().getLastException(), null);
+        
       } else {
         Vector vReturn = new Vector();
         float stddev = getSmilesCorrelation(bsMatch3D, bsSelected, pattern,
@@ -6346,8 +6356,7 @@ public class ScriptEvaluator {
         matches[j] = Escape.escape(b[j], asAtoms);
       return matches;
     } catch (Exception e) {
-      e.printStackTrace();
-      evalError(e.getMessage(), null);
+      evalError(viewer.getSmilesMatcher().getLastException(), null);
       return null; // unattainable
     }
   }

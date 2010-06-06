@@ -31,6 +31,7 @@ import org.jmol.script.Token;
 
 import java.util.Hashtable;
 import java.util.BitSet;
+import java.util.Vector;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -433,7 +434,6 @@ public class Group {
     return false;
   }
   
-  public int getCrossLinkLeadAtomIndex() {
-    return -1;
+  public void getCrossLinkLeadAtomIndexes(Vector vReturn) {
   }
 }

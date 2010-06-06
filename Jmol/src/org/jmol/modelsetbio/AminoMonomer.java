@@ -23,6 +23,8 @@
  */
 package org.jmol.modelsetbio;
 
+import java.util.Vector;
+
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
@@ -335,18 +337,19 @@ public class AminoMonomer extends AlphaMonomer {
     return tag;
   }
   
-  public int getCrossLinkLeadAtomIndex() {
+  public void getCrossLinkLeadAtomIndexes(Vector vReturn) {
     Atom S = getAtomFromOffsetIndex(SG);
     if (S != null) {
       Bond[] bonds = S.getBonds();
       for (int i = 0; i < bonds.length; i++) {
         Atom a = bonds[i].getOtherAtom(S);
         Group g = a.getGroup();
-        if (a.getElementNumber() == 16 && g.getGroup1() == 'C')
-          return g.getLeadAtomIndex();
+        if (a.getElementNumber() == 16 && g.getGroup1() == 'C') {
+          vReturn.add(new Integer(g.getLeadAtomIndex()));
+          return;
+        }
       }
     }
-    return -1;
   }
 
 }

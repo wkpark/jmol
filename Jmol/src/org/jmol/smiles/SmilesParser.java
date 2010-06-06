@@ -24,16 +24,12 @@
 
 package org.jmol.smiles;
 
-import java.util.BitSet;
 import java.util.Vector;
 import java.util.Hashtable;
-import java.util.Enumeration;
 
-import org.jmol.api.JmolMolecule;
-import org.jmol.api.JmolNode;
-import org.jmol.api.JmolEdge;
 import org.jmol.util.Elements;
 import org.jmol.util.TextFormat;
+import org.jmol.util.Logger;
 
 /**
  * Parses a SMILES String to create a <code>SmilesMolecule</code>.
@@ -301,8 +297,8 @@ public class SmilesParser {
           switch (ch) {
           case '%':
             // [ringPoint]
-            if (getChar(pattern, index + 1) == '0') { // %0nnn%
-              String subPattern = getSubPattern(pattern, index + 1, ch);
+            if (getChar(pattern, index + 1) == '(') { // %(nnn)
+              String subPattern = getSubPattern(pattern, index + 1, '(');
               getDigits(subPattern, 0, ret);
               index += subPattern.length() + 3;
               if (ret[0] < 0)
@@ -328,12 +324,14 @@ public class SmilesParser {
           case '[':
           case '_':
             String subPattern = getSubPattern(pattern, index, ch);
+            index += subPattern.length() + (ch == '[' ? 2 : 0);
+            if (isBioSequence && ch == '[' && subPattern.indexOf(".") < 0)
+              subPattern += ".0";
             currentAtom = parseAtom(molecule, null, subPattern, currentAtom,
                 bond, true, false, isBranchAtom);
             if (bond.bondType != SmilesBond.TYPE_UNKNOWN
                 && bond.bondType != SmilesBond.TYPE_NONE)
               bond.set(null, currentAtom);
-            index += subPattern.length() + (ch == '[' ? 2 : 0);
             break;
           default:
             // [atomType]
@@ -474,7 +472,7 @@ public class SmilesParser {
 
       int[] ret = new int[1];
 
-      if (isBioSequence)
+      if (isBioSequence && pattern.length() == 1)
         pattern += ".0";
       char ch = pattern.charAt(0);
 
@@ -802,7 +800,7 @@ public class SmilesParser {
     newAtom.setChiralClass(stereoClass);
     newAtom.setChiralOrder(order);
     if (getChar(pattern, index) == '?') {
-      System.out.println("Ignoring '?' in stereochemistry");
+      Logger.info("Ignoring '?' in stereochemistry");
       index++;
     }
     return index;
@@ -828,7 +826,7 @@ public class SmilesParser {
 
     SmilesBond newBond = (bondSet == null ? (bond == null ? new SmilesBond(
         currentAtom, null,
-        (isBioSequence ? (isBranchAtom ? SmilesBond.TYPE_BIO_PAIR
+        (isBioSequence && currentAtom != null ? (isBranchAtom ? SmilesBond.TYPE_BIO_PAIR
             : SmilesBond.TYPE_BIO_SEQUENCE) : SmilesBond.TYPE_UNKNOWN), false)
         : bond) : isPrimitive ? bondSet.addPrimitive() : bondSet.addBondOr());
 
@@ -1003,7 +1001,7 @@ public class SmilesParser {
   }
 
   static String getRingPointer(int i) {
-    return (i < 10 ? "" + i : i < 100 ? "%" + i : "%0" + i + "%");
+    return (i < 10 ? "" + i : i < 100 ? "%" + i : "%(" + i + ")");
   }
 
   private static String cleanPattern(String pattern, boolean isSmarts) {
@@ -1017,160 +1015,4 @@ public class SmilesParser {
     return pattern;
   }
 
-  // generation of SMILES string
-
-  static String getSmilesComponent(JmolNode[] atoms, int atomCount,
-                                   JmolNode atom, BitSet bs, int[] nPairs,
-                                   SmilesSearch.VTemp vTemp)
-      throws InvalidSmilesException {
-    // clear all bits of bs
-
-    if (atom.getElementNumber() == 1 && atom.getEdges().length > 0)
-      atom = atoms[atom.getBondedAtomIndex(0)]; // don't start with H
-    BitSet bs2 = (BitSet) bs.clone();
-    BitSet bsAromatic = new BitSet();
-    int atomIndex = atom.getIndex();
-    bs2 = JmolMolecule.getBranchBitSet(atoms, bs2, atomIndex, -1, true);
-    bs.andNot(bs2);
-    for (int j = 0; j < atomCount; j++)
-      if (bs2.get(j)) {
-        JmolNode a = atoms[j];
-        if (a.getElementNumber() == 1 && a.getIsotopeNumber() == 0)
-          bs2.clear(j);
-      }
-    if (bs2.cardinality() > 2) {
-      SmilesSearch search = getMolecule("a", true);
-      search.jmolAtoms = atoms;
-      search.bsSelected = bs2;
-      search.jmolAtomCount = atomCount;
-      search.setRingData(null);
-      bsAromatic = search.getBsAromatic();
-    }
-    Hashtable ht = new Hashtable();
-    StringBuffer sb1 = new StringBuffer();
-    BitSet bs0 = (BitSet) bs2.clone();
-    getSmiles(sb1, null, atom, bs0, bs2, ht, nPairs, bsAromatic, vTemp);
-    while (bs2.cardinality() > 0 && !ht.isEmpty()) {
-      Enumeration e = ht.keys();
-      e.hasMoreElements();
-      atomIndex = ((Integer) ((Object[]) ht.get(e.nextElement()))[1])
-          .intValue();
-      sb1.append(".");
-      getSmiles(sb1, null, atoms[atomIndex], bs0, bs2, ht, nPairs, bsAromatic,
-          vTemp);
-    }
-    return (ht.isEmpty() ? sb1.toString() : "//* ?ring error? *//");
-  }
-
-  private static void getSmiles(StringBuffer sb, JmolNode prevAtom,
-                                JmolNode atom, BitSet bs0, BitSet bs,
-                                Hashtable ht, int[] nPairs, BitSet bsAromatic,
-                                SmilesSearch.VTemp vTemp) {
-    int atomIndex = atom.getIndex();
-    if (!bs.get(atomIndex))
-      return;
-    bs.clear(atomIndex);
-    int atomicNumber = atom.getElementNumber();
-    int nH = 0;
-    Vector v = new Vector();
-    JmolEdge bond0 = null;
-    JmolEdge bondPrev = null;
-    int prevIndex = (prevAtom == null ? -1 : prevAtom.getIndex());
-    JmolEdge[] bonds = atom.getEdges();
-    JmolNode aH = null;
-    boolean isAromatic = bsAromatic.get(atomIndex);
-    int stereoFlag = (isAromatic ? 10 : 0);
-    JmolNode[] stereo = new JmolNode[7];
-    if (bonds != null)
-      for (int i = bonds.length; --i >= 0;) {
-        JmolEdge bond = bonds[i];
-        if (!bond.isCovalent())
-          continue;
-        if (bond.getCovalentOrder() != 1)
-          stereoFlag = 10;
-        JmolNode atom1 = bonds[i].getOtherAtom(atom);
-        int index1 = atom1.getIndex();
-        if (atom1.getElementNumber() == 1 && atom1.getIsotopeNumber() == 0) {
-          aH = atom1;
-          nH++;
-          if (nH > 1)
-            stereoFlag = 10;
-        } else if (index1 == prevIndex)
-          bondPrev = bonds[i];
-        else if (bs0.get(index1))
-          v.add(bonds[i]);
-      }
-    // TODO : stereochemistry
-    int valence = atom.getValence();
-    int charge = atom.getFormalCharge();
-    int isotope = atom.getIsotopeNumber();
-    if (bondPrev != null) {
-      sb.append(SmilesBond.getBondOrderString(bondPrev.getOrder()));
-      if (stereoFlag < 7)
-        stereo[stereoFlag++] = prevAtom;
-    }
-    if (stereoFlag < 7 && nH == 1)
-      stereo[stereoFlag++] = aH;
-    int nMax = 0;
-    StringBuffer sMore = new StringBuffer();
-    for (int i = 0; i < v.size(); i++) {
-      JmolEdge bond = (JmolEdge) v.get(i);
-      JmolNode a = bond.getOtherAtom(atom);
-      int n = a.getCovalentBondCount() - a.getCovalentHydrogenCount();
-      if (n == 1 && i < v.size() - 1) {
-        StringBuffer s2 = new StringBuffer();
-        s2.append("(");
-        s2.append(SmilesBond.getBondOrderString(bond.getOrder()));
-        getSmiles(s2, atom, a, bs0, bs, ht, nPairs, bsAromatic, vTemp);
-        s2.append(")");
-        if (sMore.indexOf(s2.toString()) >= 0)
-          stereoFlag = 10;
-        sMore.append(s2);
-        v.removeElementAt(i);
-        if (stereoFlag < 7)
-          stereo[stereoFlag++] = a;
-      } else if (n > nMax
-          && !ht.containsKey(getRingKey(a.getIndex(), atomIndex))) {
-        nMax = n;
-        bond0 = bond;
-      }
-    }
-    for (int i = v.size(); --i >= 0;) {
-      JmolEdge bond = (JmolEdge) v.get(i);
-      if (bond == bond0)
-        continue;
-      JmolNode a = bond.getOtherAtom(atom);
-      String s = getRingCache(ht, atomIndex, a.getIndex(), nPairs);
-      sMore.append(SmilesBond.getBondOrderString(bond.getOrder()));
-      sMore.append(s);
-      if (stereoFlag < 7)
-        stereo[stereoFlag++] = a;
-    }
-    JmolNode a = (bond0 == null ? null : bond0.getOtherAtom(atom));
-    if (a != null && stereoFlag < 7)
-      stereo[stereoFlag++] = a;
-    String s = (stereoFlag > 6 ? "" : SmilesSearch.getStereoFlag(atom, stereo,
-        stereoFlag, vTemp));
-    sb.append(SmilesAtom.getAtomLabel(atomicNumber, isotope, valence, charge,
-        nH, isAromatic, s));
-    sb.append(sMore);
-    if (bond0 != null)
-      getSmiles(sb, atom, a, bs0, bs, ht, nPairs, bsAromatic, vTemp);
-  }
-
-  static String getRingKey(int i0, int i1) {
-    return Math.min(i0, i1) + "_" + Math.max(i0, i1);
-  }
-
-  static String getRingCache(Hashtable ht, int i0, int i1, int[] nPairs) {
-    String key = getRingKey(i0, i1);
-    Object[] o = (Object[]) ht.get(key);
-    String s = (o == null ? null : (String) o[0]);
-    if (s == null)
-      ht.put(key, new Object[] { s = getRingPointer(++nPairs[0]),
-          new Integer(i1) });
-    else
-      ht.remove(key);
-    return s;//  + " _" + key + "_ \n";
-  }
 }

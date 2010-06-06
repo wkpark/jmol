@@ -37,6 +37,7 @@ import org.jmol.util.Elements;
 import org.jmol.util.Point3fi;
 
 import java.util.BitSet;
+import java.util.Vector;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
@@ -1334,156 +1335,8 @@ final public class Atom extends Point3fi implements JmolNode {
     return group.isCrossLinked(((Atom) node).getGroup());
   }
 
-  public int getCrossLinkLeadAtomIndex() {
-    return group.getCrossLinkLeadAtomIndex();
+  public void getCrossLinkLeadAtomIndexes(Vector vReturn) {
+    group.getCrossLinkLeadAtomIndexes(vReturn);
   }
 
-  /* DEVELOPER NOTE -- ATOM/MODEL DELETION --
-   * 
-   * The challenge of atom deletion:
-   * 
-   * Many data structures involve reference to Atom, atomIndex, Model, or modelIndex
-   * A first-pass list includes:
-
-org.jmol.modelset
------------------
-
-Atom.atomIndex
-Atom.modelIndex
-Bond.atom1
-Bond.atom2
-Chain.model
-Group.firstAtomIndex
-Group.lastAtomIndex
-Model.modelIndex
-Model.fileIndex
-Model.firstAtomIndex
-Model.firstMolecule
-Model.chains
-Model.bioPolymers
-Model.auxiliaryInfo
-
-AtomCollection.atoms
-AtomCollection.atomCount
-AtomCollection.atomNames
-AtomCollection.atomSerials
-AtomCollection.bfactor100s
-AtomCollection.bspf
-AtomCollection.bsHidden
-AtomCollection.bsSurface
-AtomCollection.nSurfaceAtoms
-AtomCollection.clientAtomReferences
-AtomCollection.hasBfactorRange   -- set false
-AtomCollection.occupancies
-AtomCollection.partialCharges
-AtomCollection.specialAtomIDs
-AtomCollection.surfaceDistance100s -- set null
-AtomCollection.tainted
-AtomCollection.vibrationVectors
-
-BondCollection.bonds
-BondCollection.bondCount
-
-ModelCollection.averageAtomPoint
-ModelCollection.bboxModels
-ModelCollection.bboxAtoms
-ModelCollection.boxInfo
-
-ModelCollection.modelNumbers
-ModelCollection.models
-ModelCollection.modelSetAuxiliaryInfo["group3Lists", "group3Counts, "models"]
-ModelCollection.molecules -- just set null
-ModelCollection.moleculeCount
-ModelCollection.stateScripts ?????
-ModelCollection.thisStateModel  -- just set -1
-ModelCollection.structures
-ModelCollection.structureCount
-
-ModelSet.shapes  (many of these hold references that would need adjusting)
-
-CellInfo.modelIndex
-Measurement.countPlusIndices
-MeasurementPending.countPlusIndices
-Polymer.leadAtomIndices -- can be set null in BioPolymer.recalculateLeadMidpointsAndWingVectors()
-
-org.jmol.modelsetbio
---------------------
-
-org.jmol.popup
---------------
- [ would need updating ]
-
-org.jmol.shape
---------------
-
-AtomShape.mads
-AtomShape.colixes
-AtomShape.paletteIDs
-AtomShape.bsSizeSet
-AtomShape.bsColixSet
-AtomShape.atomCount
-AtomShape.atoms
-
-Dots?
-
-Labels.strings
-Labels.formats
-Labels.bgcolixes
-Labels.fids
-Labels.offsets
-Measures.measurements
-
-Mesh.title (sometimes model-based?)
-Mesh.atomIndex
-Mesh.modelIndex
-Mesh.modelFlags
-MeshCollection.meshes
-MeshCollection.modelCount
-MeshCollection.title ?
-
-Sticks.bsOrderSet
-Sticks.bsSizeSet
-Sticks.bsColixSet
-Sticks.selectedBonds
-
-TextShape.modelIndex
-
-org.jmol.shapebio
------------------
-
-BioShape.modelIndex
-BioShape.leadAtomIndices
-BioShapeCollection.atoms
-BioShapeRenderer -- all need to be set null
-
-org.jmol.shapespecial
----------------------
-
-Dipole.modelIndex
-Dipole.atoms
-DrawMesh.drawTypes
-DrawMesh.ptCenters
-DrawMesh.drawVertexCount
-DrawMesh.drawVertexCounts
-Draw.modelCount
-MolecularOrbital.htModels
-Polyhedra.Polyhedrons
-Polyhedra.Polyhedron.centralAtom
-
-org.jmol.viewer
----------------
-
-SelectionManager.bsHidden
-SelectionManager.bsSelection
-SelectionManager.bsSubset
-Eval.bsSubset
-
-org.openscience.jmol.app
-------------------------
-
-AtomSetChooser ??
-
-
-   * 
-   */
 }

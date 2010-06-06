@@ -1131,10 +1131,13 @@ class ScriptMathProcessor {
         String smiles = ScriptVariable.sValue(x1);
         if (bs2 != null)
           return false;
-        if (flags.equalsIgnoreCase("mf"))
-          return bs2 == null
-              && addX(isSyntaxCheck ? "" : viewer.getSmilesMatcher()
-                  .getMolecularFormula(smiles, isSearch));
+        if (flags.equalsIgnoreCase("mf")) {
+          String mf = (isSyntaxCheck ? "" : viewer.getSmilesMatcher()
+              .getMolecularFormula(smiles, isSearch));
+          if (mf == null)
+            eval.evalError(viewer.getSmilesMatcher().getLastException(), null);
+          return addX(mf);
+        }
         ret = eval.getSmilesMatches(flags, smiles, null, null, null, null,
             isSearch, isAll);
       }

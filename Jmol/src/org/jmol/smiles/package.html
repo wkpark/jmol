@@ -49,9 +49,28 @@ the term "aromatic" is <a href="#aromaticity">defined</a>.
  <h3>General Considerations</h3>
 <p>
 <b>format</b>
-<ul><li> 
+<ul>
+<li> 
 Allows any amount of white space -- spaces, tabs, new lines. Prior to parsing, all white space is removed.
-</li></ul>
+</li>
+<li> 
+Comments in the form //*....*// are allowed anywhere within the string. The following example illustrates the use of comments and white space for the BIOSMILES representation of 1d66:
+<pre>
+$ load 1d66.pdb;calculate hbonds
+108 hydrogen bonds
+$ print {*}.find("SMILES")
+//* Jmol BIOSMILES 12.0.RC17_dev  2010-06-05 17:08 1 *//
+//* chain D dna *// ~C:1C:2G:3G:4A:5G:6G:7A:8C:9A:%10G:%11T:%12C:%13C:%14T:%15C:%16C:%17G:%18G:%19.
+//* chain E dna *// ~C:%19C:%18G:%17G:%16A:%15G:%14G:%13A:%12C:%11T:%10G:9T:8C:7C:6T:5C:4C:3G:2G:1.
+//* chain A protein *// ~EQACDICRLKKLKCSKEKPKCAKCLKNNWECRYSPKTKRSPLTRAHLTEVESRLERL.
+//* chain B protein *// ~EQACDICRLKKLKCSKEKPKCAKCLKNNWECRYSPKTKRSPLTRAHLTEVESRLERL.
+[Cd][Cd].
+[O]
+</pre>
+
+</li>
+
+</ul>
  
 <b>atom selection</b>
 
@@ -63,16 +82,55 @@ Allows any amount of white space -- spaces, tabs, new lines. Prior to parsing, a
 atoms. "CCC" is the same as "[C][C][C]". only unbracketed or bracketed hydrogen atoms such as H[C]C or [H] 
 or [2H] are selected; connected hydrogen atoms as in [CH3] are not selected.
 
-</li><li>Adds { } for selection of one or more subsets of matched atoms.
-    Simply place { } around any atom or group of atoms that are to be 
-    specifically returned from a search:  <b>select search("{C}C=O")</b>, for example, returns all alpha carbons. 
+</li><li>To select one or more atoms within the found pattern, simply enclose the desired atoms in { }: 
+ <b>select search("{C}C=O")</b>, for example, returns all alpha carbons. 
 
-</li><li>Adds "BIOATOM" [residueName.atomName] and "+" (sequential residues) for 
-    searching biomolecular structures: <b>select search("[ALA.*]+[PRO.*]")</b>, for example, returns alanine-glycine or alanine-proline sequences. 
-<b>select search("[ALA.*]+[GLY.*,PRO.*]")</b> returns alanine-glycine or alanine-proline sequences. 
-
-</li><li>Or, simpler "BIOSEQUENCE" notation: <b>select search("~AG")</b> or <b>select search("~A[G,P]")</b>.
 </li></ul>
+<b>BIOSMILES/BIOSMARTS</b>
+
+<ul>
+<li>Jmol 12.0 extends SMILES and SMARTS to biomolecules. The extension involves only a few simple additions:
+<br /><br />
+<ol>
+<li><b>[residueName.atomName]</b> For selecting specific residue atoms. Wild cards are optional: [ALA.*], [*.*], [*.CA]. The special
+designation "0" for an atom name, as in <b>[GLY.0]</b>, indicates the "lead atom" -- the alpha carbon for proteins or the phosphorus atom in nucleic acids. 
+<br /><br />
+</li><li><b>"~"</b>  Tilde (~) indicates a "BIOSEQUENCE" string. The string will be 
+standard single-character group symbol. For example: <b>select search("~AG")</b> or <b>select search("~A[G,P]")</b>.
+This search returns only the "lead atom" -- the 1-letter code is a stand-in for [XXX.0]. Groups may
+also be indicated in their standard Jmol notation, [XXX]. These may be mixed. So, for example, <b>G[ALA]C</b>. 
+The BIOSEQUENCE tilde must be repeated for each component in the search (separated by ".").
+<br /><br /></li><li><b>"+" and ":" </b> Jmol's extension adds the + and : bond types for sequences. + indicates "connected groups", and ":" indicates "cross-linked groups". 
+Recognized cross-linking includes hydrogen bonding between the purine N1 and pyrimidine N3 in nucleic acids and cysteine-cysteine disulfide bonds in proteins. 
+Cross-linking can be "one-to-one" or "one-to-many". (In the future this could be expanded to carbohydrates.) The standard SMILES branching notation can also be used to represent cross-linking: 
+In normally hybridized DNA, <b>CCC:GGG</b> would be three CG base-pairs (because the two strands are going in opposite direction). 
+<br /><br />
+</li><li><b>branches and rings</b> Jmol's extension still allows for standard SMILES branching notation using parentheses. Within BIOSEQUENCES, 
+branching indicates cross-linking. Thus, above CG stretch could be indicated  <b>C(G)C(G)C(G)</b>. 
+
+Ring notation can also be used: C1CC(GGG1) ensures that
+the hybridization is as a true set of CG pairs. 
+
+In order to allow for more than 99 branches (or base pairs), we extend the ring % notation by enclosing the number in parentheses. 
+For example, a section of the large ribosomal unit for PDB code 1EEF reads:
+<pre>
+//* chain 9 rna *// ~UUAG:%(792)G:%(793)C:%(794)G:%(795)G:%(796)C:%(797)CAC
+  AG:%(798)C:%(799)G:%(800)G:%(801)U:%(802)G:%(803)G:%(804)G:%(805)GUUGCCUC:%(806)
+  C:%(807)C:%(808)G:%(809)U:%(810)ACCC:%(811)AUCCCG:%(811)AACA:%(810)C:%(809)
+  G:%(808)G:%(807)AAG:%(806)AU:%(812)AA:%(812)GC:%(805)C:%(804)C:%(803)A:%(802)
+  C:%(801)C:%(800)AG:%(799)C:%(798)GUUC:%(813)C:%(814)G:%(815)G:%(816)G:%(817)
+  GAGUAC:%(818)U:%(819)G:%(820)G:%(821)A:%(822)G:%(823)UG:%(824)C:%(825)GCG
+  AG:%(825)C:%(824)C:%(823)U:%(822)C:%(821)U:%(820)G:%(819)G:%(818)GAAAC:%(817)
+  C:%(816)C:%(815)G:%(814)G:%(813)UUCG:%(797)C:%(796)C:%(795)G:%(794)C:%(793)
+  C:%(792)ACC.
+</pre>
+<br /><br />
+</li></ol>
+
+
+</li></ul>
+
+
 <b>aromaticity</b>
  
 <ul>
@@ -148,15 +206,34 @@ It is recommended they be restricted to the set A-Z, a-z, and 0-9.
 <tr><td>@</td><td>stereochemistry</td></tr>
 </table>
 <br/>
-In addition, Jmol 3D-BIOSMARTS adds the following primitives and options:
+In addition, Jmol 3D-SMARTS adds the following primitives and options:
 <br/>
 <br/>
 <table border="1" cellpadding="5" width="500">
 <tr><td>d</td><td>non-hydrogen degree -- number of non-hydrogen connections</td></tr>
 <tr><td>=</td><td>Jmol atom index, for example: [=23]</td></tr>
 <tr><td>[number]?</td><td>mass number or undefined (so, for example, [C12?] means any carbon that isn't explicitly C13 or C14</td></tr>
-<tr><td>[RES.ATOMNAME]</td><td>residue and atom name, for example [ALA.CA] or [*.P]</td></tr>
-<tr><td>[RES.ATOMNAME]+[RES.ATOMNAME]</td><td>adjacent residues, for example [ALA.CA][*.CA]</td></tr>
+</table>  
+<br/>
+<br/>
+Jmol BIOSMILES adds the following primitives and options:
+<br/>
+<br/>
+<table border="1" cellpadding="5" width="500">
+<tr><td>[RES.ATOMNAME]</td><td>residue and atom name, for example [ALA.CA]. "0" for atomName indicates the "lead" atom.</td></tr>
+<tr><td>~...~...</td><td>BIOSEQUENCE using single-letter or [RES] codes.</td></tr>
+<tr><td>%(n)</td><td>ring branching where n may be larger than 99.</td></tr>
+</table>  
+<br/>
+<br/>
+Jmol BIOSMARTS adds the following primitives and options:
+<br/>
+<br/>
+<table border="1" cellpadding="5" width="500">
+<tr><td>[*.ATOMNAME], [RESIDUE.*], [*.*]</td><td>Wildcards for residues and atom names</td></tr>
+<tr><td>[RES.ATOMNAME]+[RES.ATOMNAME]</td><td>atoms in adjacent residues, for example [ALA.CA]+[GLY.N]</td></tr>
+<tr><td>[RES.ATOMNAME]:[RES.ATOMNAME]</td><td>atoms in cross-linked residues, for example [CYS.CA]:[CYS.CA]</td></tr>
+<tr><td>~...~...</td><td>BIOSEQUENCE notation using single-letter or [RES] codes, including logic: <b>select search("~A:[C,T]")</b></td></tr>
 </table>  
 <br/>
 </li><li>All primitives that are not element names, <b>*</b>, <b>A</b>, or <b>a</b> must be 
@@ -271,20 +348,20 @@ includes:
    [stereoClass] == { "AL" | "TH" | "SP" | "TP" | "OH" }
    [stereoOrder] == [digits]
    
-   [ringPointer] == { "%" [digit][digit] | [digit] | "%0" [digits] "%"}
+   [ringPointer] == { "%" [digit][digit] | [digit] | "%(" [digits] ")"}
       # note: all ringPointers must have a second matching ringPointer 
       #       and must be preceded by an atomExpression for the 
       #       first occurance and either an atomExpression or a bond
       #       for the second occurance
       # note: Jmol BIOSMARTS extends the possible number of rings to > 100 by 
-      #       allowing %0n%
+      #       allowing %(n)
 
    [bond] == { "-" | "=" | "#" | "." | "/" | "\\" | ":" | NULL
       # note: Jmol will not match two totally independent molecular pieces. For example,
       #       Jmol will not math [Na+].[Cl-]. However, "." can be used to clarify a
       #       structure that has "ring" bond notation:
       #       CC1CCC.C1CC   is a valid structure.
-      # note: BIOSEQUENCE uses ":" to indicate "base-paired" - default for branches
+      # note: BIOSEQUENCE uses ":" to indicate "cross-linked", which is the default for branches
 
 </pre>
 </p>
@@ -306,7 +383,9 @@ includes:
       
    [smarts] == { [biosequence] | [node] [connections] } 
    [biosequence] == "~" [node] [connections] 
-      # note: in a biosequence, "atom types" are standard 1-letter-code group names
+      # note: In a biosequence, "atom types" are standard 1-letter-code group names
+      #       or bracketed residues [xxx]. The "~" must be the first character
+      #       in a component and must be repeated for each component (separated by ".")
    [connections] == [connection] | NULL }
    [connection] == { [branch] | [bondExpression] [node] } [connections]
    [branch] == "(" { [smarts] | [bondExpression] [smarts] } ")" 
@@ -387,18 +466,19 @@ includes:
                                       #   includes implicit H atoms
    [x_Prop] == { "x" [digits] | "x" } # ring connectivity -- total ring connections
    
-   [bioAtom] == [residueName] "." [atomName]
+   [bioAtom] == { [residueName] "." [atomName]
+      # note: BIOSEQUENCE (only) also allows just [residueName], an abbreviation for [residueName] ".0"
    [residueName] == { "*" | [oneDigitGroupName] | [groupName] | null }
       # note: null same as "*"
    [oneDigitGroupName] == (see JmolConstants.predefinedGroup1Names)
    [groupName] == (any PDB residue name)
    [atomName] == { "*" | "0" | (any atom name) | null }
       # note: null same as "*"; "0" refers to "lead atom -- CA for proteins, P for nucleic, or O for carbohydrate
-   [ringPointer] == { "%" [digit][digit] | [digit] }
-      # note: all ringPointers must have a second matching ringPointer 
+   [ringPointer] == { [digit] | "%" [digit][digit] | "%(" [digits] ")" }
+      # note: All ringPointers must have a second matching ringPointer 
       #       and must be preceded by an atomExpression for the 
       #       first occurance and either an atomExpression or a bondExpression
-      #       for the second occurance
+      #       for the second occurance.
 
    [bondExpression] == { [bondOrSet] | [bondOrSet] ";" [bondAndSet] } 
    
@@ -420,7 +500,7 @@ includes:
       # note: a BIOSEQUENCE ends with "." or the end of the string. A new BIOSEQUENCE
       #       can continue with "~" immediately following this "." 
       # note: For a SMARTS search, "." indicates the start of a new subset, not necessarily a
-      #       new molecule.
+      #       new component.
       
 </pre>
 </p>
@@ -475,7 +555,7 @@ assume a bonding scheme (PDB, GAUSSIAN, etc.).
 </p>
 
 <p>
- -- <a href="mailto:hansonr@stolaf.edu">Bob Hanson</a>  5/19/2010
+ -- <a href="mailto:hansonr@stolaf.edu">Bob Hanson</a>  last updated 6/6/2010
  </p>
 </body>
 </html>

@@ -24,6 +24,7 @@
  */
 package org.jmol.modelsetbio;
 
+import java.util.Vector;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
@@ -158,7 +159,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
           firstAtomIndex, lastAtomIndex, offsets);
     if (offsets[NP] == -1 && (offsets[0] = offsets[H5T]) == -1) {
         offsets[0] = offsets[O5Pr];
-        leadAtomIndex = firstAtomIndex + offsets[0];
+        leadAtomIndex = firstAtomIndex + (offsets[0] & 0xFF);
     }
     this.hasRnaO2Prime = offsets[O2Pr] != -1;
     this.isPyrimidine = offsets[O2] != -1;
@@ -383,7 +384,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
     return (myN1.isBonded(otherN3));
   }
  
-  public int getCrossLinkLeadAtomIndex() {
+  public void getCrossLinkLeadAtomIndexes(Vector vReturn) {
     Atom N = (isPurine ? getN1() : getN3());
     //System.out.println(N.getInfo());
     Bond[] bonds = N.getBonds();
@@ -396,9 +397,8 @@ public class NucleicMonomer extends PhosphorusMonomer {
           continue;
         NucleicMonomer m = (NucleicMonomer) g;
         if ((isPurine ? m.getN3() : m.getN1()) == N2)
-          return m.getLeadAtomIndex();
+          vReturn.add(new Integer(m.getLeadAtomIndex()));
       }
     }
-    return -1;
   }
 }

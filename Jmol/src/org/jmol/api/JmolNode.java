@@ -25,6 +25,7 @@
 package org.jmol.api;
 
 import java.util.BitSet;
+import java.util.Vector;
 
 public interface JmolNode {
   
@@ -53,7 +54,7 @@ public interface JmolNode {
   public String getGroup3(boolean allowNull);
   public char getChainID();
   public int getOffsetResidueAtom(String name, int offset);
-  public int getCrossLinkLeadAtomIndex();
+  public void getCrossLinkLeadAtomIndexes(Vector vReturn);
   public void setGroupBits(BitSet bs);
   public boolean isLeadAtom();
   public boolean isCrossLinked(JmolNode node);

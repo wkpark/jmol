@@ -123,8 +123,8 @@ class Widgets {
           + GT._("select stereo type") + "\""
           + "onchange=\"void(jmolScriptWait((this.options[this.selectedIndex]).value,"
           + appletID + "));\">"
-          + "\n<option selected=\"\" value=\"" + GT._("stereo off")
-          + "\">" + GT._("Stereo Off") + " </option>"
+          + "\n<option selected=\"\" value=\"stereo off\">"
+          + GT._("Stereo Off") + " </option>"
           + "\n<option value=\"stereo REDBLUE\">" + GT._("Red/Blue")
           + "</option>"
           + "\n<option value=\"stereo REDCYAN\">" + GT._("Red/Cyan")

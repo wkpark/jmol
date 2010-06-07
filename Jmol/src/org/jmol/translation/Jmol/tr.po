@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-05-27 20:44+0200\n"
+"POT-Creation-Date: 2010-06-07 21:20+0200\n"
 "PO-Revision-Date: 2010-05-25 21:47+0000\n"
 "Last-Translator: Angel Spy <melissadilara@yahoo.com>\n"
 "Language-Team: Turkish <yerellestirme@kde.org.tr>\n"
@@ -971,6 +971,7 @@ msgid "Launching main frame..."
 msgstr "Ana çerçeve başlatılıyor..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:283
+#: org/openscience/jmol/app/webexport/Widgets.java:205
 msgid "Jmol Console"
 msgstr "Jmol Konsolu"
 
@@ -1322,38 +1323,38 @@ msgstr ""
 "Sayfa iskeleti ve JavaScript, {0} {1} üzerinde kullanılarak web'e aktarma "
 "fonksiyonu ile oluşturuldu."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:348
+#: org/openscience/jmol/app/webexport/WebExport.java:349
 #, java-format
 msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebExport.java:350
+#: org/openscience/jmol/app/webexport/WebExport.java:351
 msgid "Insert the page TITLE here."
 msgstr "Sayfa BAŞLIĞINI buraya ekle."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:351
+#: org/openscience/jmol/app/webexport/WebExport.java:352
 msgid "Insert the page INTRODUCTION here."
 msgstr "Sayfa GİRİŞİNİ buraya ekle."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:353
+#: org/openscience/jmol/app/webexport/WebExport.java:354
 #, java-format
 msgid "Insert a caption for {0} here."
 msgstr "{0} için başlık yazısını buraya ekle."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:354
+#: org/openscience/jmol/app/webexport/WebExport.java:355
 #, java-format
 msgid ""
 "Insert additional explanatory text here. Long text will wrap around Jmol "
 "model {0}."
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebExport.java:356
+#: org/openscience/jmol/app/webexport/WebExport.java:357
 msgid "Insert your TITLE and INTRODUCTION here."
 msgstr "BAŞLIKĞINIZI ve GİRİŞİNİZİ buraya ekleyin."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:358
+#: org/openscience/jmol/app/webexport/WebExport.java:359
 #, java-format
 msgid ""
 "The button {0} will appear in the box below.  Insert information for {0} "
@@ -1361,7 +1362,7 @@ msgid ""
 msgstr ""
 "{0} düğmesi aşağıdaki kutuda belirecek. Buraya ve alta {0} için bilgi girin."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:359
+#: org/openscience/jmol/app/webexport/WebExport.java:360
 #, java-format
 msgid "Insert more information for {0} here."
 msgstr "Buraya {0} için daha fazla bilgi ekleyin."
@@ -1390,96 +1391,102 @@ msgstr "Jmol Örnekleri:"
 msgid "Select widgets:"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:275
+#: org/openscience/jmol/app/webexport/WebPanel.java:299
 msgid "Help/Instructions"
 msgstr "Yardım/Yönergeler"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:282
-#: org/openscience/jmol/app/webexport/WebPanel.java:290
+#: org/openscience/jmol/app/webexport/WebPanel.java:306
+#: org/openscience/jmol/app/webexport/WebPanel.java:314
 msgid "Cartoon of Page"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:296
+#: org/openscience/jmol/app/webexport/WebPanel.java:320
 msgid "Save HTML as..."
 msgstr "HTML'yi farklı kaydet..."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:306
+#: org/openscience/jmol/app/webexport/WebPanel.java:330
 msgid "Relative server path to jar files:"
 msgstr "jar dosyaları için Göreli sunucu adresi:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:312
+#: org/openscience/jmol/app/webexport/WebPanel.java:336
 msgid "Relative local path to jar files:"
 msgstr "jar dosyaları için Göreli yerel adres:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:318
+#: org/openscience/jmol/app/webexport/WebPanel.java:342
 msgid "Author (your name):"
 msgstr "Yazar (adınız):"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:325
+#: org/openscience/jmol/app/webexport/WebPanel.java:349
 msgid "Browser window title for this web page:"
 msgstr "Bu web sayfası için tarayıcı penceresi başlığı:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:401
+#: org/openscience/jmol/app/webexport/WebPanel.java:425
 msgid "Give the occurrence of Jmol a name:"
 msgstr "Jmol olayına bir isim ver:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:417
+#: org/openscience/jmol/app/webexport/WebPanel.java:441
 msgid "Error creating new instance containing script(s) and image."
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:428
+#: org/openscience/jmol/app/webexport/WebPanel.java:452
 #, java-format
 msgid "added Instance {0}"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:431
+#: org/openscience/jmol/app/webexport/WebPanel.java:455
 #, java-format
 msgid "updated Instance {0}"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:468
+#: org/openscience/jmol/app/webexport/WebPanel.java:492
 msgid "Select a directory to create or an HTML file to save"
 msgstr "Oluşturulacak bir dizin veya kaydedilecek bir HTML dosyası seçin"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:486
+#: org/openscience/jmol/app/webexport/WebPanel.java:510
 msgid "Call to FileWriter unsuccessful."
 msgstr "FileWriter çağrılamadı."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:554
+#: org/openscience/jmol/app/webexport/WebPanel.java:578
 #, java-format
 msgid "Using directory {0}"
 msgstr "{0} dizini kullanılıyor"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:555
+#: org/openscience/jmol/app/webexport/WebPanel.java:579
 msgid "adding JmolPopIn.js"
 msgstr "JmolPopIn.js ekleniyor"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:564
+#: org/openscience/jmol/app/webexport/WebPanel.java:588
 #, java-format
 msgid "adding {0}.png"
 msgstr "{0}.png ekleniyor"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:586
+#: org/openscience/jmol/app/webexport/WebPanel.java:610
 #, java-format
 msgid "adding {0}.spt"
 msgstr "{0}.spt ekleniyor"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:600
+#: org/openscience/jmol/app/webexport/WebPanel.java:624
+#: org/openscience/jmol/app/webexport/WebPanel.java:651
 #, java-format
 msgid "adding {0}"
 msgstr "{0} ekleniyor"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:640
+#: org/openscience/jmol/app/webexport/WebPanel.java:639
+#, fuzzy, java-format
+msgid "Unable to load resource {0}"
+msgstr "\"{0}\" adresi bulunamadı."
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:691
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
 msgstr ""
 "A. Herr&#x00E1;ez'in J. Gutow tarafından düzenlenen şablonuna dayanmaktadır"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:643
+#: org/openscience/jmol/app/webexport/WebPanel.java:694
 #, java-format
 msgid "creating {0}"
 msgstr "{0} oluşturuluyor"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:678
+#: org/openscience/jmol/app/webexport/WebPanel.java:729
 #, java-format
 msgid ""
 "Could not find or open:\n"
@@ -1488,7 +1495,7 @@ msgstr ""
 "Bulunamadı veya açılamadı:\n"
 "{0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:681
+#: org/openscience/jmol/app/webexport/WebPanel.java:732
 #, java-format
 msgid ""
 "copying\n"
@@ -1499,63 +1506,128 @@ msgstr ""
 "kopyalanıyor\n"
 "         şuraya"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:688
+#: org/openscience/jmol/app/webexport/WebPanel.java:739
 msgid "compressing large data file to"
 msgstr "geniş veri dosyası şuraya sıkıştırılıyor"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:50
+#: org/openscience/jmol/app/webexport/Widgets.java:60
 msgid "Spin on/off"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:61
+#: org/openscience/jmol/app/webexport/Widgets.java:74
 msgid "enable/disable spin"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:62
+#: org/openscience/jmol/app/webexport/Widgets.java:75
 msgid "Spin on"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:68
+#: org/openscience/jmol/app/webexport/Widgets.java:81
 msgid "Background Color"
 msgstr "Arkaplan Rengi"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:78
+#: org/openscience/jmol/app/webexport/Widgets.java:96
 msgid "background color:"
 msgstr "arkaplan rengi:"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:91
+#: org/openscience/jmol/app/webexport/Widgets.java:109
 msgid "Stereo Viewing"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:100
+#: org/openscience/jmol/app/webexport/Widgets.java:123
 msgid "select stereo type"
 msgstr "stereo türünü seç"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:103
+#: org/openscience/jmol/app/webexport/Widgets.java:126
 msgid "stereo off"
 msgstr "stereo kapalı"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:104
+#: org/openscience/jmol/app/webexport/Widgets.java:127
 msgid "Stereo Off"
 msgstr "Stereo Kapalı"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:105
+#: org/openscience/jmol/app/webexport/Widgets.java:128
 msgid "Red/Blue"
 msgstr "Kırmızı/Mavi"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:107
+#: org/openscience/jmol/app/webexport/Widgets.java:130
 msgid "Red/Cyan"
 msgstr "Kırmızı/Camgöbeği"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:109
+#: org/openscience/jmol/app/webexport/Widgets.java:132
 msgid "Red/Green"
 msgstr "Kırmızı/Yeşil"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:117
+#: org/openscience/jmol/app/webexport/Widgets.java:139
+msgid "Animation Control"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:163
+#, fuzzy
+msgid "Animation"
+msgstr "Animasyonu &durdur"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:164
+msgid "First Frame"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:166
+#, fuzzy
+msgid "Previous Frame"
+msgstr "Bir önceki çerçeveye git"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:168
+msgid "Play"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:170
+#, fuzzy
+msgid "Next Frame"
+msgstr "Bir sonraki çerçeveye git"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:172
+#, fuzzy
+msgid "Pause"
+msgstr "&Yapıştır"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:172
+#, fuzzy
+msgid "Stop"
+msgstr "Adım"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:174
+#, fuzzy
+msgid "Last Frame"
+msgstr "Son çerçeveye git"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:177
+#, fuzzy
+msgid "Loop"
+msgstr "&Döngü"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:179
+#, fuzzy
+msgid "Palindrome"
+msgstr "P&alindrom"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:181
+msgid "Play Once"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:190
+msgid "Open Console Button"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:203
+#, fuzzy
+msgid "launch Jmol console"
+msgstr "Jmol Konsolu"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:210
 msgid "Download view"
 msgstr "İndirme görünümü"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:127
+#: org/openscience/jmol/app/webexport/Widgets.java:225
 msgid "unimplemented"
 msgstr ""
 

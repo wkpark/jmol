@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-05-27 20:44+0200\n"
+"POT-Creation-Date: 2010-06-07 21:20+0200\n"
 "PO-Revision-Date: 2010-05-28 06:00+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@gmail.com>\n"
 "Language-Team: Ukrainian <translation@linux.org.ua>\n"
@@ -22,8 +22,8 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/WebMaker.java:66
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr ""
-"Помилка під час спроби запуску Jmol: не вказано значення властивості "
-"«user.home»."
+"Помилка під час спроби запуску Jmol: не вказано значення властивості «user."
+"home»."
 
 #: org/openscience/jmol/app/JmolApp.java:139
 msgid "transparent background"
@@ -922,8 +922,7 @@ msgstr "Обертати молекулу."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:197
 msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
-msgstr ""
-"Вкажіть набір атомів за допомогою SHIFT-СТРІЛКА ЛІВОРУЧ-ПЕРЕТЯГУВАННЯ."
+msgstr "Вкажіть набір атомів за допомогою SHIFT-СТРІЛКА ЛІВОРУЧ-ПЕРЕТЯГУВАННЯ."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:199
 msgid "Click atoms to measure distances"
@@ -978,6 +977,7 @@ msgid "Launching main frame..."
 msgstr "Запуск головного блоку…"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:283
+#: org/openscience/jmol/app/webexport/Widgets.java:205
 msgid "Jmol Console"
 msgstr "Консоль Jmol"
 
@@ -1331,29 +1331,29 @@ msgstr ""
 "Каркас сторінки та JavaScript, створений функцією експорту у мережу за "
 "допомогою {0} на {1}."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:348
+#: org/openscience/jmol/app/webexport/WebExport.java:349
 #, java-format
 msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
 msgstr ""
-"Щоб отримати просторову модель, з якою можна буде працювати, натисніть "
-"{0}тут{1}. Перше звантаження за допомогою аплету може бути доволі тривалим."
+"Щоб отримати просторову модель, з якою можна буде працювати, натисніть {0}тут"
+"{1}. Перше звантаження за допомогою аплету може бути доволі тривалим."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:350
+#: org/openscience/jmol/app/webexport/WebExport.java:351
 msgid "Insert the page TITLE here."
 msgstr "Тут ви можете вставити заголовок сторінки."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:351
+#: org/openscience/jmol/app/webexport/WebExport.java:352
 msgid "Insert the page INTRODUCTION here."
 msgstr "Тут ви можете вставити вступну частину сторінки."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:353
+#: org/openscience/jmol/app/webexport/WebExport.java:354
 #, java-format
 msgid "Insert a caption for {0} here."
 msgstr "Тут ви можете вставити підпис до {0}."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:354
+#: org/openscience/jmol/app/webexport/WebExport.java:355
 #, java-format
 msgid ""
 "Insert additional explanatory text here. Long text will wrap around Jmol "
@@ -1362,11 +1362,11 @@ msgstr ""
 "Тут ви можете вставити додатковий текст пояснення. Довгі рядки буде поділено "
 "на частини і розташовано навколо моделі Jmol {0}."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:356
+#: org/openscience/jmol/app/webexport/WebExport.java:357
 msgid "Insert your TITLE and INTRODUCTION here."
 msgstr "Тут ви можете вказати ваш заголовок та вступний текст."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:358
+#: org/openscience/jmol/app/webexport/WebExport.java:359
 #, java-format
 msgid ""
 "The button {0} will appear in the box below.  Insert information for {0} "
@@ -1375,7 +1375,7 @@ msgstr ""
 "Кнопку {0} буде показано у розташованому нижче полі. Тут і нижче ви можете "
 "вставити відомості для {0}."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:359
+#: org/openscience/jmol/app/webexport/WebExport.java:360
 #, java-format
 msgid "Insert more information for {0} here."
 msgstr "Тут ви можете вставити додаткові відомості щодо {0}."
@@ -1404,97 +1404,103 @@ msgstr "Екземпляри Jmol:"
 msgid "Select widgets:"
 msgstr "Виберіть віджети:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:275
+#: org/openscience/jmol/app/webexport/WebPanel.java:299
 msgid "Help/Instructions"
 msgstr "Довідка/Настанови"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:282
-#: org/openscience/jmol/app/webexport/WebPanel.java:290
+#: org/openscience/jmol/app/webexport/WebPanel.java:306
+#: org/openscience/jmol/app/webexport/WebPanel.java:314
 msgid "Cartoon of Page"
 msgstr "Макет сторінки"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:296
+#: org/openscience/jmol/app/webexport/WebPanel.java:320
 msgid "Save HTML as..."
 msgstr "Зберегти HTML як…"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:306
+#: org/openscience/jmol/app/webexport/WebPanel.java:330
 msgid "Relative server path to jar files:"
 msgstr "Відносний шлях на сервері для файлів jar:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:312
+#: org/openscience/jmol/app/webexport/WebPanel.java:336
 msgid "Relative local path to jar files:"
 msgstr "Відносний локальний шлях до файлів jar:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:318
+#: org/openscience/jmol/app/webexport/WebPanel.java:342
 msgid "Author (your name):"
 msgstr "Автор (ваше ім’я):"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:325
+#: org/openscience/jmol/app/webexport/WebPanel.java:349
 msgid "Browser window title for this web page:"
 msgstr "Заголовок вікна переглядача для цієї веб-сторінки:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:401
+#: org/openscience/jmol/app/webexport/WebPanel.java:425
 msgid "Give the occurrence of Jmol a name:"
 msgstr "Надайте об’єкту Jmol назву:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:417
+#: org/openscience/jmol/app/webexport/WebPanel.java:441
 msgid "Error creating new instance containing script(s) and image."
 msgstr ""
 "Помилка під час спроби створення нового екземпляра зі скриптами та "
 "зображенням."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:428
+#: org/openscience/jmol/app/webexport/WebPanel.java:452
 #, java-format
 msgid "added Instance {0}"
 msgstr "доданий екземпляр {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:431
+#: org/openscience/jmol/app/webexport/WebPanel.java:455
 #, java-format
 msgid "updated Instance {0}"
 msgstr "оновлений екземпляр {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:468
+#: org/openscience/jmol/app/webexport/WebPanel.java:492
 msgid "Select a directory to create or an HTML file to save"
 msgstr "Вкажіть каталог для створення або файл HTML для збереження"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:486
+#: org/openscience/jmol/app/webexport/WebPanel.java:510
 msgid "Call to FileWriter unsuccessful."
 msgstr "Помилка виклику методу FileWriter."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:554
+#: org/openscience/jmol/app/webexport/WebPanel.java:578
 #, java-format
 msgid "Using directory {0}"
 msgstr "Використання каталогу {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:555
+#: org/openscience/jmol/app/webexport/WebPanel.java:579
 msgid "adding JmolPopIn.js"
 msgstr "додавання JmolPopIn.js"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:564
+#: org/openscience/jmol/app/webexport/WebPanel.java:588
 #, java-format
 msgid "adding {0}.png"
 msgstr "додавання {0}.png"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:586
+#: org/openscience/jmol/app/webexport/WebPanel.java:610
 #, java-format
 msgid "adding {0}.spt"
 msgstr "додавання {0}.spt"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:600
+#: org/openscience/jmol/app/webexport/WebPanel.java:624
+#: org/openscience/jmol/app/webexport/WebPanel.java:651
 #, java-format
 msgid "adding {0}"
 msgstr "додавання {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:640
+#: org/openscience/jmol/app/webexport/WebPanel.java:639
+#, fuzzy, java-format
+msgid "Unable to load resource {0}"
+msgstr "Неможливо знайти url \"{0}\"."
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:691
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
 msgstr "Засновано на шаблоні A. Herr&#x00E1;ez, зміненому J. Gutow"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:643
+#: org/openscience/jmol/app/webexport/WebPanel.java:694
 #, java-format
 msgid "creating {0}"
 msgstr "створення {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:678
+#: org/openscience/jmol/app/webexport/WebPanel.java:729
 #, java-format
 msgid ""
 "Could not find or open:\n"
@@ -1503,7 +1509,7 @@ msgstr ""
 "Не вдалося виявити або відкрити:\n"
 "{0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:681
+#: org/openscience/jmol/app/webexport/WebPanel.java:732
 #, java-format
 msgid ""
 "copying\n"
@@ -1514,63 +1520,128 @@ msgstr ""
 "{0}\n"
 "         до"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:688
+#: org/openscience/jmol/app/webexport/WebPanel.java:739
 msgid "compressing large data file to"
 msgstr "стискання великого файла даних до"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:50
+#: org/openscience/jmol/app/webexport/Widgets.java:60
 msgid "Spin on/off"
 msgstr "Увімкнути/Вимкнути обертання"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:61
+#: org/openscience/jmol/app/webexport/Widgets.java:74
 msgid "enable/disable spin"
 msgstr "увімкнути/вимкнути обертання"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:62
+#: org/openscience/jmol/app/webexport/Widgets.java:75
 msgid "Spin on"
 msgstr "Обертання увімкнено"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:68
+#: org/openscience/jmol/app/webexport/Widgets.java:81
 msgid "Background Color"
 msgstr "Колір тла"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:78
+#: org/openscience/jmol/app/webexport/Widgets.java:96
 msgid "background color:"
 msgstr "колір тла:"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:91
+#: org/openscience/jmol/app/webexport/Widgets.java:109
 msgid "Stereo Viewing"
 msgstr "Об’ємний перегляд"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:100
+#: org/openscience/jmol/app/webexport/Widgets.java:123
 msgid "select stereo type"
 msgstr "виберіть тип стерео"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:103
+#: org/openscience/jmol/app/webexport/Widgets.java:126
 msgid "stereo off"
 msgstr "вимкнути стерео"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:104
+#: org/openscience/jmol/app/webexport/Widgets.java:127
 msgid "Stereo Off"
 msgstr "Вимкнути стерео"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:105
+#: org/openscience/jmol/app/webexport/Widgets.java:128
 msgid "Red/Blue"
 msgstr "Червоний/Синій"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:107
+#: org/openscience/jmol/app/webexport/Widgets.java:130
 msgid "Red/Cyan"
 msgstr "Червоний/Блакитний"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:109
+#: org/openscience/jmol/app/webexport/Widgets.java:132
 msgid "Red/Green"
 msgstr "Червоний/Зелений"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:117
+#: org/openscience/jmol/app/webexport/Widgets.java:139
+msgid "Animation Control"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:163
+#, fuzzy
+msgid "Animation"
+msgstr "З&упинити анімацію"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:164
+msgid "First Frame"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:166
+#, fuzzy
+msgid "Previous Frame"
+msgstr "Перейти до попереднього кадру"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:168
+msgid "Play"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:170
+#, fuzzy
+msgid "Next Frame"
+msgstr "Перейти до наступного кадру"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:172
+#, fuzzy
+msgid "Pause"
+msgstr "&Вставити"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:172
+#, fuzzy
+msgid "Stop"
+msgstr "Крок"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:174
+#, fuzzy
+msgid "Last Frame"
+msgstr "Перейти до останнього кадру"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:177
+#, fuzzy
+msgid "Loop"
+msgstr "&Зациклити"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:179
+#, fuzzy
+msgid "Palindrome"
+msgstr "П&аліндром"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:181
+msgid "Play Once"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:190
+msgid "Open Console Button"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:203
+#, fuzzy
+msgid "launch Jmol console"
+msgstr "Консоль Jmol"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:210
 msgid "Download view"
 msgstr "Звантажити перегляд"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:127
+#: org/openscience/jmol/app/webexport/Widgets.java:225
 msgid "unimplemented"
 msgstr "не реалізовано"
 

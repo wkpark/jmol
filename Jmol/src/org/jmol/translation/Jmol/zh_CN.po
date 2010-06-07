@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-05-27 20:44+0200\n"
+"POT-Creation-Date: 2010-06-07 21:20+0200\n"
 "PO-Revision-Date: 2010-05-30 06:23+0000\n"
 "Last-Translator: Eleanor Chen <chenyueg@gmail.com>\n"
 "Language-Team: Simplified Chinese <zh_CN@li.org>\n"
@@ -967,6 +967,7 @@ msgid "Launching main frame..."
 msgstr "启动主框架..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:283
+#: org/openscience/jmol/app/webexport/Widgets.java:205
 msgid "Jmol Console"
 msgstr "Jmol控制台"
 
@@ -1316,7 +1317,7 @@ msgid ""
 "on {1}."
 msgstr "通过使用在 {1} 上使用 {0} 导出到网页函数，已生成页面骨架和JavaScript。"
 
-#: org/openscience/jmol/app/webexport/WebExport.java:348
+#: org/openscience/jmol/app/webexport/WebExport.java:349
 #, java-format
 msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
@@ -1325,38 +1326,38 @@ msgstr ""
 "若需得到三维模型，你可以操作，点击 {0} 这里的 {1}.Java 小程序首次载入时可能下"
 "载时间较长"
 
-#: org/openscience/jmol/app/webexport/WebExport.java:350
+#: org/openscience/jmol/app/webexport/WebExport.java:351
 msgid "Insert the page TITLE here."
 msgstr "此处插入网页标题"
 
-#: org/openscience/jmol/app/webexport/WebExport.java:351
+#: org/openscience/jmol/app/webexport/WebExport.java:352
 msgid "Insert the page INTRODUCTION here."
 msgstr "此处插入网页简介"
 
-#: org/openscience/jmol/app/webexport/WebExport.java:353
+#: org/openscience/jmol/app/webexport/WebExport.java:354
 #, java-format
 msgid "Insert a caption for {0} here."
 msgstr "为此处的 {0} 插入标题"
 
-#: org/openscience/jmol/app/webexport/WebExport.java:354
+#: org/openscience/jmol/app/webexport/WebExport.java:355
 #, java-format
 msgid ""
 "Insert additional explanatory text here. Long text will wrap around Jmol "
 "model {0}."
 msgstr "此处插入额外的解释性文字。如果文字很长则会围绕Jmol模型 {0} 环绕。"
 
-#: org/openscience/jmol/app/webexport/WebExport.java:356
+#: org/openscience/jmol/app/webexport/WebExport.java:357
 msgid "Insert your TITLE and INTRODUCTION here."
 msgstr "此处插入你的标题和简介。"
 
-#: org/openscience/jmol/app/webexport/WebExport.java:358
+#: org/openscience/jmol/app/webexport/WebExport.java:359
 #, java-format
 msgid ""
 "The button {0} will appear in the box below.  Insert information for {0} "
 "here and below."
 msgstr "按钮 {0} 将出现在下方的盒子中，插入此处和入方的 {0} 的信息。"
 
-#: org/openscience/jmol/app/webexport/WebExport.java:359
+#: org/openscience/jmol/app/webexport/WebExport.java:360
 #, java-format
 msgid "Insert more information for {0} here."
 msgstr "此处插入 {0} 的更多信息。"
@@ -1385,95 +1386,101 @@ msgstr "Jmol 实例："
 msgid "Select widgets:"
 msgstr "选择微件："
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:275
+#: org/openscience/jmol/app/webexport/WebPanel.java:299
 msgid "Help/Instructions"
 msgstr "帮助/指示"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:282
-#: org/openscience/jmol/app/webexport/WebPanel.java:290
+#: org/openscience/jmol/app/webexport/WebPanel.java:306
+#: org/openscience/jmol/app/webexport/WebPanel.java:314
 msgid "Cartoon of Page"
 msgstr "页面卡通"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:296
+#: org/openscience/jmol/app/webexport/WebPanel.java:320
 msgid "Save HTML as..."
 msgstr "把HTML另存为..."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:306
+#: org/openscience/jmol/app/webexport/WebPanel.java:330
 msgid "Relative server path to jar files:"
 msgstr "jar 文件的服务器相对路径"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:312
+#: org/openscience/jmol/app/webexport/WebPanel.java:336
 msgid "Relative local path to jar files:"
 msgstr "jar 文件的本地相对路径"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:318
+#: org/openscience/jmol/app/webexport/WebPanel.java:342
 msgid "Author (your name):"
 msgstr "作者(您的名字)"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:325
+#: org/openscience/jmol/app/webexport/WebPanel.java:349
 msgid "Browser window title for this web page:"
 msgstr "浏览此网页的窗口标题"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:401
+#: org/openscience/jmol/app/webexport/WebPanel.java:425
 msgid "Give the occurrence of Jmol a name:"
 msgstr "给存在的 Jmol 命名："
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:417
+#: org/openscience/jmol/app/webexport/WebPanel.java:441
 msgid "Error creating new instance containing script(s) and image."
 msgstr "建立包含脚本和图像的新实例时出错。"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:428
+#: org/openscience/jmol/app/webexport/WebPanel.java:452
 #, java-format
 msgid "added Instance {0}"
 msgstr "增加的实例 {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:431
+#: org/openscience/jmol/app/webexport/WebPanel.java:455
 #, java-format
 msgid "updated Instance {0}"
 msgstr "更新的实例 {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:468
+#: org/openscience/jmol/app/webexport/WebPanel.java:492
 msgid "Select a directory to create or an HTML file to save"
 msgstr "选择建立一个目录或HTML文件以保存"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:486
+#: org/openscience/jmol/app/webexport/WebPanel.java:510
 msgid "Call to FileWriter unsuccessful."
 msgstr "调用 FileWriter 不成功"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:554
+#: org/openscience/jmol/app/webexport/WebPanel.java:578
 #, java-format
 msgid "Using directory {0}"
 msgstr "使用目录 {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:555
+#: org/openscience/jmol/app/webexport/WebPanel.java:579
 msgid "adding JmolPopIn.js"
 msgstr "正在增加 JmolPopIn.js"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:564
+#: org/openscience/jmol/app/webexport/WebPanel.java:588
 #, java-format
 msgid "adding {0}.png"
 msgstr "正在增加 {0}.png"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:586
+#: org/openscience/jmol/app/webexport/WebPanel.java:610
 #, java-format
 msgid "adding {0}.spt"
 msgstr "正在增加 {0}.spt"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:600
+#: org/openscience/jmol/app/webexport/WebPanel.java:624
+#: org/openscience/jmol/app/webexport/WebPanel.java:651
 #, java-format
 msgid "adding {0}"
 msgstr "正在加入 {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:640
+#: org/openscience/jmol/app/webexport/WebPanel.java:639
+#, fuzzy, java-format
+msgid "Unable to load resource {0}"
+msgstr "无法找到网址 \"{0}\"。"
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:691
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
 msgstr "基于A.Herriez建立、J.Gutow修改的模板"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:643
+#: org/openscience/jmol/app/webexport/WebPanel.java:694
 #, java-format
 msgid "creating {0}"
 msgstr "正在创建 {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:678
+#: org/openscience/jmol/app/webexport/WebPanel.java:729
 #, java-format
 msgid ""
 "Could not find or open:\n"
@@ -1482,7 +1489,7 @@ msgstr ""
 "无法找到或打开：\n"
 "{0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:681
+#: org/openscience/jmol/app/webexport/WebPanel.java:732
 #, java-format
 msgid ""
 "copying\n"
@@ -1493,63 +1500,128 @@ msgstr ""
 "{0}\n"
 "         到"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:688
+#: org/openscience/jmol/app/webexport/WebPanel.java:739
 msgid "compressing large data file to"
 msgstr "把大数据文件压缩到"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:50
+#: org/openscience/jmol/app/webexport/Widgets.java:60
 msgid "Spin on/off"
 msgstr "旋转 开/关"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:61
+#: org/openscience/jmol/app/webexport/Widgets.java:74
 msgid "enable/disable spin"
 msgstr "启用/停用 旋转"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:62
+#: org/openscience/jmol/app/webexport/Widgets.java:75
 msgid "Spin on"
 msgstr "旋转 开"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:68
+#: org/openscience/jmol/app/webexport/Widgets.java:81
 msgid "Background Color"
 msgstr "背景颜色"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:78
+#: org/openscience/jmol/app/webexport/Widgets.java:96
 msgid "background color:"
 msgstr "背景颜色"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:91
+#: org/openscience/jmol/app/webexport/Widgets.java:109
 msgid "Stereo Viewing"
 msgstr "立体化查看"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:100
+#: org/openscience/jmol/app/webexport/Widgets.java:123
 msgid "select stereo type"
 msgstr "选择立体类型"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:103
+#: org/openscience/jmol/app/webexport/Widgets.java:126
 msgid "stereo off"
 msgstr "立体 关"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:104
+#: org/openscience/jmol/app/webexport/Widgets.java:127
 msgid "Stereo Off"
 msgstr "立体 关"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:105
+#: org/openscience/jmol/app/webexport/Widgets.java:128
 msgid "Red/Blue"
 msgstr "红色 / 蓝色"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:107
+#: org/openscience/jmol/app/webexport/Widgets.java:130
 msgid "Red/Cyan"
 msgstr "红色 / 青色"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:109
+#: org/openscience/jmol/app/webexport/Widgets.java:132
 msgid "Red/Green"
 msgstr "红色 / 绿色"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:117
+#: org/openscience/jmol/app/webexport/Widgets.java:139
+msgid "Animation Control"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:163
+#, fuzzy
+msgid "Animation"
+msgstr "停止动画(&S)"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:164
+msgid "First Frame"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:166
+#, fuzzy
+msgid "Previous Frame"
+msgstr "转到上一帧"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:168
+msgid "Play"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:170
+#, fuzzy
+msgid "Next Frame"
+msgstr "转到下一帧"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:172
+#, fuzzy
+msgid "Pause"
+msgstr "粘贴(&P)"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:172
+#, fuzzy
+msgid "Stop"
+msgstr "步进"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:174
+#, fuzzy
+msgid "Last Frame"
+msgstr "转到最后一帧"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:177
+#, fuzzy
+msgid "Loop"
+msgstr "循环(&L)"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:179
+#, fuzzy
+msgid "Palindrome"
+msgstr "回文(&A)"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:181
+msgid "Play Once"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:190
+msgid "Open Console Button"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/Widgets.java:203
+#, fuzzy
+msgid "launch Jmol console"
+msgstr "Jmol控制台"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:210
 msgid "Download view"
 msgstr "下载视图"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:127
+#: org/openscience/jmol/app/webexport/Widgets.java:225
 msgid "unimplemented"
 msgstr "功能尚未实现"
 

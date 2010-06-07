@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-05-27 20:44+0200\n"
-"PO-Revision-Date: 2010-04-27 13:00+0000\n"
-"Last-Translator: Jogai <wouter@microshit.nl>\n"
+"PO-Revision-Date: 2010-06-07 15:36+0000\n"
+"Last-Translator: Jaap-Willem Dooge <Jaap-Willem.Dooge@jdsoft.eu>\n"
 "Language-Team: Nederlands <jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-04-28 15:32+0000\n"
+"X-Launchpad-Export-Date: 2010-06-07 16:45+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: Nederlands\n"
 "X-Poedit-Language: Dutch\n"
@@ -146,8 +146,9 @@ msgid "Check"
 msgstr "Controleer"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
-msgstr ""
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgstr "Omhoog"
 
 #: org/jmol/console/ScriptEditor.java:136
 msgid "Step"
@@ -465,7 +466,7 @@ msgstr "Zweeds"
 
 #: org/jmol/i18n/GT.java:145
 msgid "Tamil"
-msgstr ""
+msgstr "Tamil"
 
 #: org/jmol/i18n/GT.java:146
 msgid "Turkish"
@@ -495,21 +496,20 @@ msgid "could not setup force field {0}"
 msgstr "Kon het krachtveld {0} niet starten"
 
 #: org/jmol/modelkit/ModelKitPopup.java:75
-#, fuzzy
 msgid "Element?"
-msgstr "Element"
+msgstr "Element?"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:77
 msgid "new"
-msgstr ""
+msgstr "nieuw"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:78
 msgid "undo (CTRL-Z)"
-msgstr ""
+msgstr "Ongedaan maken (Ctrl+Z)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:79
 msgid "redo (CTRL-Y)"
-msgstr ""
+msgstr "Opnieuw uitvoeren (Ctrl+Y)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:80
 #: org/jmol/viewer/ActionManager.java:56
@@ -517,88 +517,76 @@ msgid "center"
 msgstr "Midden"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:81
-#, fuzzy
 msgid "add hydrogens"
-msgstr "Laat waterstoffen zien"
+msgstr "voeg waterstof toe"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:82
-#, fuzzy
 msgid "minimize"
-msgstr "Minimaliseren"
+msgstr "minimaliseren"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:83
 msgid "fix hydrogens and minimize"
-msgstr ""
+msgstr "repareer waterstof en minimaliseer"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:84
-#, fuzzy
 msgid "clear"
-msgstr "Wissen"
+msgstr "helder"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:85
-#, fuzzy
 msgid "save file"
-msgstr "Opslaan"
+msgstr "bestand opslaan"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:86
-#, fuzzy
 msgid "save state"
-msgstr "Huidige toestand"
+msgstr "opslagstatus"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:87
-#, fuzzy
 msgid "delete atom"
-msgstr "Selecteer atoom"
+msgstr "verwijder atoom"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:88
-#, fuzzy
 msgid "drag to bond"
-msgstr "Draai"
+msgstr "versleep naar verbinding"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:89
 msgid "drag atom"
-msgstr ""
+msgstr "versleep atoom"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:90
-#, fuzzy
 msgid "drag atom (and minimize)"
-msgstr "Minimaliseren"
+msgstr "versleep atoom (en minimalizeer)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:91
 msgid "drag molecule (SHIFT to rotate)"
-msgstr ""
+msgstr "versleep molecuul (SHIFT om te roteren)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:92
-#, fuzzy
 msgid "drag and minimize molecule (docking)"
-msgstr "verplaats label (heeft {0} nodig)"
+msgstr "versleep en minimalizeer molecuul (koppelen)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:98
 msgid "increase charge"
-msgstr ""
+msgstr "verhoog lading"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:99
 msgid "decrease charge"
-msgstr ""
+msgstr "verlaag lading"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:100
-#, fuzzy
 msgid "delete bond"
-msgstr "Selecteer atoom"
+msgstr "verwijder koppeling"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:101
-#, fuzzy
 msgid "single"
-msgstr "Bestand"
+msgstr "enkel"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:102
 msgid "double"
-msgstr ""
+msgstr "dubbel"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:103
-#, fuzzy
 msgid "triple"
-msgstr "Bestand"
+msgstr "driedubbel"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:104
 msgid "increase order"
@@ -609,13 +597,12 @@ msgid "decrease order"
 msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:106
-#, fuzzy
 msgid "rotate bond (SHIFT-DRAG)"
-msgstr "Draai"
+msgstr "roteer verbinding (SHIFT+slepen)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:107
 msgid "exit modelkit mode"
-msgstr ""
+msgstr "verlaat modelkit modus"
 
 #: org/jmol/popup/JmolPopup.java:141
 #: org/jmol/popup/MainPopupResourceBundle.java:530
@@ -1528,7 +1515,7 @@ msgstr "Selecteer site"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:838
 msgid "Show symmetry operation"
-msgstr ""
+msgstr "Toon symetrische operatie"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:841
 msgid "Show"
@@ -1576,7 +1563,7 @@ msgstr "Herlaad"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:857
 msgid "Open from PDB"
-msgstr ""
+msgstr "Open vanuit PDB"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:858
 msgid "Open file or URL"
@@ -1597,11 +1584,11 @@ msgstr "Sla een kopie op van {0}"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:863
 msgid "Save script with state"
-msgstr ""
+msgstr "Bewaar script met status"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:864
 msgid "Save script with history"
-msgstr ""
+msgstr "Bewaar script met geschiedenis"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:865
 #: org/jmol/popup/MainPopupResourceBundle.java:866
@@ -1609,7 +1596,7 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:868
 #, java-format
 msgid "Export {0} image"
-msgstr ""
+msgstr "Exporteer {0} afbeelding"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:869
 msgid "Save JVXL isosurface"
@@ -1632,9 +1619,8 @@ msgid "Optimize structure"
 msgstr "Optimaliseer structuur"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:877
-#, fuzzy
 msgid "Model kit"
-msgstr "Model"
+msgstr "Model kit"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:881
 msgid "Extract MOL data"
@@ -1951,7 +1937,7 @@ msgstr "{0} vereist dat er maar een model getoond wordt"
 #: org/jmol/script/ScriptEvaluator.java:2517
 #, java-format
 msgid "{0} requires that only one model be loaded"
-msgstr ""
+msgstr "{0} vereist dat slechts een model geladen is"
 
 #: org/jmol/script/ScriptEvaluator.java:2520
 msgid "No data available"
@@ -2081,7 +2067,7 @@ msgstr "{0} waterstofbruggen"
 #: org/jmol/script/ScriptEvaluator.java:10102
 #, java-format
 msgid "{0} struts added"
-msgstr ""
+msgstr "{0} stutten toegevoegd"
 
 #: org/jmol/shape/Frank.java:73
 msgid "Click for menu..."
@@ -2097,12 +2083,14 @@ msgstr "Draai"
 
 #: org/jmol/viewer/ActionManager.java:59
 msgid "rotate Z"
-msgstr ""
+msgstr "roteer Z"
 
 #: org/jmol/viewer/ActionManager.java:60
 msgid ""
 "rotate Z (horizontal motion of mouse) or zoom (vertical motion of mouse)"
 msgstr ""
+"roteer Z (horizontale beweging van de muis) of zoom (verticale beweging van "
+"de muis)"
 
 #: org/jmol/viewer/ActionManager.java:61
 msgid "zoom"
@@ -2110,26 +2098,29 @@ msgstr "Vergroot"
 
 #: org/jmol/viewer/ActionManager.java:62
 msgid "zoom (along right edge of window)"
-msgstr ""
+msgstr "zoom (langs de rechterzijde van het scherm)"
 
 #: org/jmol/viewer/ActionManager.java:63
 #, java-format
 msgid "translate navigation point (requires {0} and {1})"
-msgstr ""
+msgstr "vertaal navigatiepunt (vereist {0} en {1})"
 
 #: org/jmol/viewer/ActionManager.java:65
 msgid "spin model (swipe and release button and stop motion simultaneously)"
-msgstr ""
+msgstr "spin model (veeg en laat de muisknop tegelijk opkomen)"
 
 #: org/jmol/viewer/ActionManager.java:66
 #, java-format
 msgid "click on two points to spin around axis clockwise (requires {0})"
 msgstr ""
+"klik op twee punten om met de klok mee te rond te draaien (vereist {0})"
 
 #: org/jmol/viewer/ActionManager.java:67
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
+"klik op twee punten om tegen de klok in rond te draaien (vereist {0})"
 
 #: org/jmol/viewer/ActionManager.java:69
 #, java-format
@@ -2139,7 +2130,7 @@ msgstr ""
 #: org/jmol/viewer/ActionManager.java:70
 #, java-format
 msgid "adjust depth (back plane; requires {0})"
-msgstr ""
+msgstr "pas diepte aan (achterplaat; vereist {0})"
 
 #: org/jmol/viewer/ActionManager.java:71
 #, java-format
@@ -2148,7 +2139,7 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:73
 msgid "pop up the full context menu"
-msgstr ""
+msgstr "toon het volledige contextmenu"
 
 #: org/jmol/viewer/ActionManager.java:74
 msgid "pop up recent context menu (click on Jmol frank)"
@@ -2162,22 +2153,23 @@ msgstr "selecteer een atoom (heeft {0} nodig)"
 #: org/jmol/viewer/ActionManager.java:77
 #, java-format
 msgid "select NONE (requires {0})"
-msgstr ""
+msgstr "selecteer GEEN (heeft {0} nodig)"
 
 #: org/jmol/viewer/ActionManager.java:78
-#, fuzzy, java-format
+#, java-format
 msgid "toggle selection (requires {0})"
-msgstr "verplaats geselecteerde atomen (heeft {0} nodig)"
+msgstr "schakel selectie (vereist {0})"
 
 #: org/jmol/viewer/ActionManager.java:79
 #, java-format
 msgid "unselect this group of atoms (requires {0})"
-msgstr ""
+msgstr "deselecteer deze groep van atomen (vereist {0})"
 
 #: org/jmol/viewer/ActionManager.java:80
 #, java-format
 msgid "add this group of atoms to the set of selected atoms (requires {0})"
 msgstr ""
+"voeg deze groep atomen toe aan de geselecteerde atoomset (vereist {0})"
 
 #: org/jmol/viewer/ActionManager.java:81
 #, java-format
@@ -2185,6 +2177,8 @@ msgid ""
 "if all are selected, unselect all, otherwise add this group of atoms to the "
 "set of selected atoms (requires {0})"
 msgstr ""
+"als alle geselecteerd zijn, deselecteer alle. Voeg anders deze groep atomen "
+"toe aan de geselecteerde atoomset (vereist {0})"
 
 #: org/jmol/viewer/ActionManager.java:83
 #, java-format
@@ -2202,24 +2196,24 @@ msgid "rotate selected atoms (requires {0})"
 msgstr "draau geselecteerde atomen (heeft {0} nodig)"
 
 #: org/jmol/viewer/ActionManager.java:86
-#, fuzzy, java-format
+#, java-format
 msgid "rotate branch around bond (requires {0})"
-msgstr "draau geselecteerde atomen (heeft {0} nodig)"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:88
-#, fuzzy, java-format
+#, java-format
 msgid "move atom (requires {0})"
-msgstr "verplaats label (heeft {0} nodig)"
+msgstr "verplaats atoom (vereist {0})"
 
 #: org/jmol/viewer/ActionManager.java:89
-#, fuzzy, java-format
+#, java-format
 msgid "move atom and minimize molecule (requires {0})"
-msgstr "verplaats label (heeft {0} nodig)"
+msgstr "verplaats atoom en minimaliseer molecuul (vereist {0})"
 
 #: org/jmol/viewer/ActionManager.java:90
-#, fuzzy, java-format
+#, java-format
 msgid "move and minimize molecule (requires {0})"
-msgstr "verplaats label (heeft {0} nodig)"
+msgstr "verplaats en minimaliseer molecuul (vereist {0})"
 
 #: org/jmol/viewer/ActionManager.java:91
 #, java-format
@@ -2234,7 +2228,7 @@ msgstr ""
 #: org/jmol/viewer/ActionManager.java:93
 #, java-format
 msgid "move whole DRAW object (requires {0})"
-msgstr ""
+msgstr "verplaats compleet tekenobject (vereist {0})"
 
 #: org/jmol/viewer/ActionManager.java:95
 msgid "pick an atom"
@@ -2242,7 +2236,7 @@ msgstr "kies een atoom"
 
 #: org/jmol/viewer/ActionManager.java:96
 msgid "pick a DRAW point (for measurements)"
-msgstr ""
+msgstr "kies een tekenpunt (voor afmetingen)"
 
 #: org/jmol/viewer/ActionManager.java:97
 #, java-format
@@ -2265,14 +2259,14 @@ msgid "pick an ISOSURFACE point"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:101
-#, fuzzy, java-format
+#, java-format
 msgid "pick a point or atom to navigate to (requires {0})"
-msgstr "verbind atomen (heeft {0} nodig)"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:103
-#, fuzzy, java-format
+#, java-format
 msgid "delete atom (requires {0})"
-msgstr "verwijder binding (heeft {0} nodig)"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:104
 #, java-format
@@ -2285,9 +2279,9 @@ msgid "connect atoms (requires {0})"
 msgstr "verbind atomen (heeft {0} nodig)"
 
 #: org/jmol/viewer/ActionManager.java:106
-#, fuzzy, java-format
+#, java-format
 msgid "assign/new atom or bond (requires {0})"
-msgstr "verbind atomen (heeft {0} nodig)"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:108
 msgid "reset (when clicked off the model)"
@@ -2296,7 +2290,7 @@ msgstr ""
 #: org/jmol/viewer/ActionManager.java:109
 #, java-format
 msgid "stop motion (requires {0})"
-msgstr ""
+msgstr "stop beweging (vereist {0})"
 
 #: org/jmol/viewer/ActionManager.java:110
 msgid "simulate multi-touch using the mouse)"
@@ -2352,34 +2346,29 @@ msgstr ""
 msgid "Setting log file to {0}"
 msgstr ""
 
-#, fuzzy
-#~ msgid "atoms"
-#~ msgstr "Atomen"
-
-#, fuzzy
-#~ msgid "bonds"
-#~ msgstr "Bindingen"
-
 #~ msgid "About Jmol"
 #~ msgstr "Over Jmol"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to string value: {0}"
 #~ msgstr "FOUT: kan een booleaans niet vullen met een tekenreeks: {0}"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr "FOUT: kan een booleaans niet vullen met een numerieke waarde: {0}"
 
+#, java-format
 #~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 #~ msgstr ""
-#~ "FOUT: Kan de waarde van deze variabele niet veranderen naar een "
-#~ "booleaans: {0}"
+#~ "FOUT: Kan de waarde van deze variabele niet veranderen naar een booleaans: "
+#~ "{0}"
 
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
-#~ "Bestand aanmaken niet toegestaan voor deze applet. Voor Base64 JPEG "
-#~ "formaat, gebruik {0}."
+#~ "Bestand aanmaken niet toegestaan voor deze applet. Voor Base64 JPEG formaat, "
+#~ "gebruik {0}."
 
 #~ msgid "File creation failed."
 #~ msgstr "Aanmaken bestand mislukt."

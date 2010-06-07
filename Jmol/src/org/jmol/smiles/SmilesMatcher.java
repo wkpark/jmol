@@ -30,6 +30,7 @@ import java.util.Vector;
 import org.jmol.api.JmolEdge;
 import org.jmol.api.JmolNode;
 import org.jmol.api.SmilesMatcherInterface;
+import org.jmol.util.Logger;
 
 /**
  * A class to match a SMILES pattern with a Jmol molecule.
@@ -167,7 +168,8 @@ public class SmilesMatcher implements SmilesMatcherInterface {
         //System.out.println(atomH);
         ptAtom++;
         atomH.setBonds(new SmilesBond[1]);
-        new SmilesBond(atom, atomH, JmolEdge.BOND_COVALENT_SINGLE, false);
+        SmilesBond b = new SmilesBond(atom, atomH, JmolEdge.BOND_COVALENT_SINGLE, false);
+        Logger.info("" + b);
       }
     }
 
@@ -186,15 +188,15 @@ public class SmilesMatcher implements SmilesMatcherInterface {
           switch (sBond.bondType) {
           // these first two are for cis/trans alkene
           // stereochemistry; we co-opt stereo near/far here
-          case SmilesBond.TYPE_BIO_PAIR:
-          case SmilesBond.TYPE_BIO_SEQUENCE:
-            order = sBond.bondType;
-            break;
           case SmilesBond.TYPE_DIRECTIONAL_1:
             order = JmolEdge.BOND_STEREO_NEAR;
             break;
           case SmilesBond.TYPE_DIRECTIONAL_2:
             order = JmolEdge.BOND_STEREO_FAR;
+            break;
+          case SmilesBond.TYPE_BIO_PAIR:
+          case SmilesBond.TYPE_BIO_SEQUENCE:
+            order = sBond.bondType;
             break;
           case SmilesBond.TYPE_SINGLE:
             order = JmolEdge.BOND_COVALENT_SINGLE;
@@ -210,9 +212,8 @@ public class SmilesMatcher implements SmilesMatcherInterface {
             break;
           }
           SmilesAtom atom2 = atoms[sBond.getAtom2().getMatchingAtom()];
-          /*b = */new SmilesBond(atom1, atom2, order, false);
-          //if (firstAtom)
-            //System.out.println(b);
+          SmilesBond b = new SmilesBond(atom1, atom2, order, false);
+          Logger.info("" + b);
         } else {
           //SmilesAtom atom2 = atoms[sBond.getAtom1().getMatchingAtom()];
           //b = atom2.getBondTo(atom1);

@@ -1008,6 +1008,41 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
   private void setSmilesBondCoordinates(SmilesAtom sAtom1, SmilesAtom sAtom2) {
     JmolNode dbAtom1 = jmolAtoms[sAtom1.getMatchingAtom()];
     JmolNode dbAtom2 = jmolAtoms[sAtom2.getMatchingAtom()];
+    // Note that the directionality of the bond depends upon whether
+    // the alkene C is the first or the second atom in the bond. 
+    // if it is the first -- C(/X)= or C/1= -- then the X is UP
+    // but if it is the second: -- X/C= or X/1... C1= -- then the X is DOWN
+    //
+    //                         C C       C     C
+    //                        / /         \   /
+    //      C(/C)=C/C  ==    C=C     ==    C=C     ==   C\C=C/C   
+    //
+    // because what we are doing is translating the / or \ vertically
+    // to match the atoms it is connected to. Same with rings:
+    //
+    //                       CCC C     CCC     C
+    //                        / /         \   /
+    //  C1CC.C/1=C/C  ==     C=C    ==     C=C     ==   CCC\C=C/C   
+    //
+    // If the branch ALSO has a double bond,
+    // then for THAT double bond we will have it the normal way:
+    //
+    //                              Br
+    //                             /    BR
+    //                          C=C      \
+    //                         / C        C=C     C
+    //                        / /            \   /
+    //  C(/C=C/Br)=C/C  ==   C=C     ==       C=C     ==  Br\C=C\C=C/C   
+    // 
+    // interesting case for ring connections:
+    //
+    // Br/C=C\1OCCC.C/1=C/C=C/CCS/C=C\2CCCC.NN/2
+    //
+    // Note that that directionality of the matching ring bonds must be OPPOSITE.
+    // Better is to not show it both places:
+    //
+    // Br/C=C\1OCCC.C/1=C/C=C/CCS/C=C\2CCCC.NN/2
+    //
     dbAtom1.set(-1, 0, 0);
     dbAtom2.set(1, 0, 0);
     int nBonds = 0;
@@ -1019,13 +1054,15 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
       if (atom == dbAtom2)
         continue;
       atom.set(-1, (nBonds++ == 0) ? -1 : 1, 0);
+      int mode = (bond.getAtomIndex2() == dbAtom1.getIndex() ? nBonds : -nBonds);
       switch (bond.getOrder()) {
       case JmolEdge.BOND_STEREO_NEAR:
-        dir1 = nBonds;
+        dir1 = mode;
         break;
       case JmolEdge.BOND_STEREO_FAR:
-        dir1 = -nBonds;
+        dir1 = -mode;
       }
+      System.out.println("bond " + nBonds + " " + atom + " " + ((Point3f) atom).y  + " " +  bond + " " + mode + " " + dir1 + " " + dbAtom1 + " " + dbAtom2);
     }
     int dir2 = 0;
     nBonds = 0;
@@ -1038,13 +1075,16 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
         continue;
       atoms[nBonds] = atom;
       atom.set(1, (nBonds++ == 0) ? 1 : -1, 0);
+      int mode = (bond.getAtomIndex2() == dbAtom2.getIndex() ? nBonds : -nBonds);
       switch (bond.getOrder()) {
       case JmolEdge.BOND_STEREO_NEAR:
-        dir2 = nBonds;
+        dir2 = mode;
         break;
       case JmolEdge.BOND_STEREO_FAR:
-        dir2 = -nBonds;
+        dir2 = -mode;
       }
+      System.out.println("bond " + nBonds + " " + atom + " " + ((Point3f) atom).y  + " " +  bond + " " + mode + " " + dir2 + " " + dbAtom1 + " " + dbAtom2);
+      
     }
     //     2     3
     //      \   /
@@ -1055,11 +1095,14 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
     // check for overall directionality matching even/oddness of bond order
     // and switch Y positions of 3 and 4 if necessary
     //  
-    if ((dir1 * dir2 > 0) == (Math.abs(dir1) % 2 == Math.abs(dir2) % 2))
-      return;
+    System.out.println(dir1 + " " + dir2 + " " + (dir1 * dir2 > 0) + " " + (Math.abs(dir1) % 2 == Math.abs(dir2) % 2));
+    if ((dir1 * dir2 > 0) == (Math.abs(dir1) % 2 == Math.abs(dir2) % 2)) {
     float y = ((Point3f) atoms[0]).y;
     ((Point3f) atoms[0]).y = ((Point3f) atoms[1]).y;
     ((Point3f) atoms[1]).y = y;
+    }
+    System.out.println(atoms[0] + " " + ((Point3f) atoms[0]).y + " and " + atoms[1] + " " + ((Point3f) atoms[1]).y);
+    
   }
 
   private boolean setSmilesCoordinates(SmilesAtom sAtom, JmolNode[] cAtoms) {

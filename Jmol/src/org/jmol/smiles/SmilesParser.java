@@ -712,20 +712,33 @@ public class SmilesParser {
       return;
     }
     ringBonds.remove(r);
-    if (bond.bondType == SmilesBond.TYPE_UNKNOWN) {
-      if (bond0.bondType == SmilesBond.TYPE_UNKNOWN)
-        bond.bondType = (isSmarts || currentAtom.isAromatic()
+    // wnen the bond type is unknown, we go with:
+    // (1) the other end, if defined there
+    // (2) or if SMARTS, "ANY"
+    // (3) or if both atoms are aromatic, "ANY"
+    // (4) or "SINGLE"
+    // we must check for C1......C/1....
+    // in which case the "/" is referring to "second to first" not "first to second"
+    switch (bond.bondType) {
+    case SmilesBond.TYPE_UNKNOWN:
+      bond.bondType = (bond0.bondType != SmilesBond.TYPE_UNKNOWN 
+          ? bond0.bondType : isSmarts || currentAtom.isAromatic()
             && bond0.getAtom1().isAromatic() ? SmilesBond.TYPE_ANY
             : SmilesBond.TYPE_SINGLE);
-      else
-        bond.bondType = bond0.bondType;
-    } else if (bond0.bondType != SmilesBond.TYPE_UNKNOWN
-        && bond0.bondType != bond.bondType) {
-      throw new InvalidSmilesException("Incoherent bond type for ring");
+      break;
+    case SmilesBond.TYPE_DIRECTIONAL_1:
+      bond.bondType = SmilesBond.TYPE_DIRECTIONAL_2;
+      break;
+    case SmilesBond.TYPE_DIRECTIONAL_2:
+      bond.bondType = SmilesBond.TYPE_DIRECTIONAL_1;
+      break;
     }
+    if (bond0.bondType != SmilesBond.TYPE_UNKNOWN && bond0.bondType != bond.bondType)
+      throw new InvalidSmilesException("Incoherent bond type for ring");
     bond0.set(bond);
     currentAtom.bondCount--;
     bond0.setAtom2(currentAtom);
+    System.out.println("SMILESPARSER " + bond0);
   }
 
   private int checkCharge(String pattern, int index, SmilesAtom newAtom)

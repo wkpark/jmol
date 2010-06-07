@@ -636,7 +636,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
               }
               URL fileURL = WebExport.getResource(this, inFile);
               if (fileURL==null){
-                LogPanel.log("    "+GT._("Unable to load resource "+inFile));
+                LogPanel.log("    "+GT._("Unable to load resource {0}", inFile));
               }else{
                 InputStream is = fileURL.openConnection().getInputStream();
                 FileOutputStream os = new FileOutputStream(datadirPath + "/"

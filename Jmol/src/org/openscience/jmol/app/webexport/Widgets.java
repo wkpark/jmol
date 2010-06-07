@@ -161,24 +161,24 @@ class Widgets {
     String getJavaScript(int appletID, JmolInstance instance) {
       String jsString ="<table id=\"AnimContrl\" style=\"text-align:center; border:thin solid black;\">";
       jsString +="<tbody><tr><td>"+GT._("Animation")+"</td></tr><tr><td><table><tbody>";
-      jsString +="<tr><td><button title=\"first frame\" style=\"font-size:0px;\" onclick=\"void(jmolScriptWait(\'frame 1\'));\">";
+      jsString +="<tr><td><button title=\""+GT._("First Frame")+"\" style=\"font-size:0px;\" onclick=\"void(jmolScriptWait(\'frame 1\'));\">";
       jsString +="<img src = \"firstButton.png\"></button></td>";
-      jsString+= "<td><button title=\"previous frame\" style=\"font-size:0px;\" onclick=\"void(jmolScriptWait(\'frame previous\'));\">";
+      jsString+= "<td><button title=\""+GT._("Previous Frame")+"\" style=\"font-size:0px;\" onclick=\"void(jmolScriptWait(\'frame previous\'));\">";
       jsString+= "<img src = \"prevButton.png\" ></button></td>";        
-      jsString+= "<td><button title=\""+GT._("play")+"\" style=\"font-size:0px;\" onclick=\"void(jmolScriptWait(\'animation on\'));\">";
+      jsString+= "<td><button title=\""+GT._("Play")+"\" style=\"font-size:0px;\" onclick=\"void(jmolScriptWait(\'animation on\'));\">";
       jsString+= "<img src = \"playButton.png\"></button></td>";        
-      jsString+= "<td><button title=\""+GT._("next frame")+"\" style=\"font-size:0px;\" onclick=\"void(jmolScriptWait(\'frame next\'));\">";
+      jsString+= "<td><button title=\""+GT._("Next Frame")+"\" style=\"font-size:0px;\" onclick=\"void(jmolScriptWait(\'frame next\'));\">";
       jsString+= "<img src = \"nextButton.png\"></button></td>";        
-      jsString+= "<td><button title=\""+GT._("pause/stop")+"\" style=\"font-size:0px;\" onclick=\"void(jmolScriptWait(\'animation off\'));\">";
+      jsString+= "<td><button title=\""+GT._("Pause")+"/"+GT._("Stop")+"\" style=\"font-size:0px;\" onclick=\"void(jmolScriptWait(\'animation off\'));\">";
       jsString+= "<img src = \"pauseButton.png\"></button></td>";        
-      jsString+= "<td><button title=\""+GT._("last frame")+"\" style=\"font-size:0px;\" onclick=\"void(jmolScriptWait(\'frame last\'));\">";
+      jsString+= "<td><button title=\""+GT._("Last Frame")+"\" style=\"font-size:0px;\" onclick=\"void(jmolScriptWait(\'frame last\'));\">";
       jsString+= "<img src = \"lastButton.png\"></button></td>";
       jsString+= "</tr></tbody></table><table><tbody><tr><td>Mode:</td>";
-      jsString+= "<td id=\"jmol_loop_"+appletID+"\"><button title=\""+GT._("loop")+"\" style=\"font-size:0px\" onclick=\"void(jmol_animationmode(\'loop\',"+appletID+"));\">";
+      jsString+= "<td id=\"jmol_loop_"+appletID+"\"><button title=\""+GT._("Loop")+"\" style=\"font-size:0px\" onclick=\"void(jmol_animationmode(\'loop\',"+appletID+"));\">";
       jsString+= "<img src = \"playLoopButton.png\" ></button></td>";
-      jsString+= "<td id=\"jmol_palindrome_"+appletID+"\"><button title=\""+GT._("palindrome")+"\" style=\"font-size:0px\" onclick=\"void(jmol_animationmode(\'palindrome\', "+appletID+"));\">";
+      jsString+= "<td id=\"jmol_palindrome_"+appletID+"\"><button title=\""+GT._("Palindrome")+"\" style=\"font-size:0px\" onclick=\"void(jmol_animationmode(\'palindrome\', "+appletID+"));\">";
       jsString+= "<img src = \"playPalindromeButton.png\" ></button></td>";
-      jsString+= "<td id=\"jmol_playOnce_"+appletID+"\" style=\"background:blue;\"><button title=\""+GT._("once through")+"\" style=\"font-size:0px\" onclick=\"void(jmol_animationmode(\'playOnce\', "+appletID+"));\">";
+      jsString+= "<td id=\"jmol_playOnce_"+appletID+"\" style=\"background:blue;\"><button title=\""+GT._("Play Once")+"\" style=\"font-size:0px\" onclick=\"void(jmol_animationmode(\'playOnce\', "+appletID+"));\">";
       jsString+= "<img src = \"playOnceButton.png\" ></button></td></tr></tbody></table></td></tr></tbody></table>";
       return (jsString);
     }

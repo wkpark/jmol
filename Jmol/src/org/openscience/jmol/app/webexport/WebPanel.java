@@ -225,6 +225,29 @@ abstract class WebPanel extends JPanel implements ActionListener,
     return instanceList;
   }
 
+//  private static byte[] getResourceAsBytes(String fullPath) {
+//    byte[] buf = new byte[1024];
+//    byte[] bytes = new byte[4096];
+//    BufferedInputStream bis = new BufferedInputStream(ClassLoader
+//        .getSystemResourceAsStream(fullPath));
+//    int len = 0;
+//    int totalLen = 0;
+//    try {
+//      while ((len = bis.read(buf)) > 0) {
+//        totalLen += len;
+//        if (totalLen >= bytes.length)
+//          bytes = ArrayUtil.ensureLength(bytes, totalLen * 2);
+//        System.arraycopy(buf, 0, bytes, totalLen - len, len);
+//      }
+//      buf = new byte[totalLen];
+//      System.arraycopy(bytes, 0, buf, 0, totalLen);
+//    } catch (Exception IOException) {
+//      Logger.error("WebPanel IO ERROR reading resource " + fullPath);
+//      return null;
+//    }
+//    return buf;
+//  }
+
   /*
    * for example:
    * getResourceAsBytes("org/openscience/jmol/app/images/angleButton.gif")
@@ -269,6 +292,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
     }
     return buf;
   }*/
+
 
   private JPanel getLeftPanel(int w, int h) {
 
@@ -600,6 +624,33 @@ abstract class WebPanel extends JPanel implements ActionListener,
             LogPanel.log("  " + GT._("adding {0}", scriptFileName));
             viewer.writeTextFile(datadirPath + "/" + scriptFileName + "",
                 WebExport.getResourceString(this, scriptFileName));
+          }
+          String [] supportFileNames=theWidgets.widgetList[i].getSupportFileNames();
+          int nFiles = supportFileNames.length;
+          if (nFiles!=0){
+            for(int fileN=0;fileN<nFiles;fileN++){
+              String inFile = supportFileNames[fileN];
+              String outFile = inFile;
+              if((inFile.lastIndexOf("/"))!=-1) {
+                 outFile = inFile.substring((inFile.lastIndexOf("/")+1));
+              }
+              URL fileURL = WebExport.getResource(this, inFile);
+              if (fileURL==null){
+                LogPanel.log("    "+GT._("Unable to load resource "+inFile));
+              }else{
+                InputStream is = fileURL.openConnection().getInputStream();
+                FileOutputStream os = new FileOutputStream(datadirPath + "/"
+                    + outFile);
+                int temp = is.read();
+                while (temp != -1) {
+                  os.write(temp);
+                  temp = is.read();
+                }
+                os.flush();
+                os.close();
+                LogPanel.log("  " + GT._("adding {0}", outFile));
+              }
+            }         
           }
         }
       }

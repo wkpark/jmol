@@ -331,8 +331,9 @@ public class WebExport extends JPanel implements WindowListener {
 
   static URL getResource(Object object, String fileName, boolean flagError) {
     URL url = null;
+    if (!fileName.contains("/"))fileName="org/openscience/jmol/app/webexport/html/"+fileName;
     try {
-      if ((url = object.getClass().getResource("html/" + fileName)) == null && flagError)
+      if ((url = ClassLoader.getSystemResource(fileName)) == null && flagError)
         System.err.println("Couldn't find file: " + fileName);
     } catch (Exception e) {
       System.err.println("Exception " + e.getMessage() + " in getResource "

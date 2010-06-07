@@ -9,13 +9,15 @@ class Widgets {
   
   // group of javascript widgets to allow user input to Jmol
 
-  Widget[] widgetList = new Widget[3];
+  Widget[] widgetList = new Widget[5];
 
   Widgets() {
     // this should just be a list of available widgets
     widgetList[0] = new SpinOnWidget();
     widgetList[1] = new BackgroundColorWidget();
     widgetList[2] = new StereoViewWidget();
+    widgetList[3] = new AnimationWidget();
+    widgetList[4] = new ConsoleWidget();
     // widgetList[3] = new DownLoadWidget();
   }
 
@@ -40,8 +42,16 @@ class Widgets {
      */
     abstract String getJavaScriptFileName();// returns the name of the
 
-    // TODO add a method for getting list of image files probably should return
-    // an array of strings.
+    /**
+     * The list of files returned by this function should contain the full path to
+     * each file.  The only exception is that files that only contain a filename
+     * will be assumed to be in the html section of WebExport.
+     * @return string of filenames.
+     */
+    abstract String[] getSupportFileNames();// returns array of support file names.
+    //These file names should include the full path within the Java application jar.
+    //files stored in html part of WebExport will be found even if only the filename
+    //is given.
 
   }
 
@@ -49,7 +59,10 @@ class Widgets {
     SpinOnWidget() {
       name = GT._("Spin on/off");
     }
-
+    String[] getSupportFileNames(){
+      String[] fileNames = new String[0];
+      return(fileNames);
+    }
     String getJavaScriptFileName() {
       return "JmolSpin.js";
     }
@@ -71,7 +84,12 @@ class Widgets {
     String getJavaScriptFileName() {
       return ("JmolColorPicker.js");
     }
-
+    
+    String[] getSupportFileNames(){
+      String[] fileNames = new String[0];
+      return(fileNames);
+    }
+    
     String getJavaScript(int appletID, JmolInstance instance) {
       Point3f ptRGB = Graphics3D.colorPointFromInt2(instance.bgColor);
       return "<table><tbody><tr><td>"
@@ -94,7 +112,12 @@ class Widgets {
     String getJavaScriptFileName() {
       return "none";
     }
-
+    
+    String[] getSupportFileNames(){
+      String[] fileNames = new String[0];
+      return(fileNames);
+    }
+    
     String getJavaScript(int appletID, JmolInstance instance) {
       return "<select id=\"StereoMode" + appletID + "\" title=\""
           + GT._("select stereo type") + "\""
@@ -111,7 +134,77 @@ class Widgets {
           + "\n</select>";
     }
   }
+  class AnimationWidget extends Widget {
+    AnimationWidget() {
+      name = GT._("Animation Control");
+    }
 
+    String getJavaScriptFileName() {
+      return ("JmolAnimationCntrl.js");
+    }
+
+    String[] getSupportFileNames(){
+      String[] fileNames = new String[9];
+      String imagePath = "org/openscience/jmol/app/images/";
+      fileNames[0] = imagePath+"lastButton.png";
+      fileNames[1] = imagePath+"playButton.png";
+      fileNames[2] = imagePath+"playLoopButton.png";
+      fileNames[3] = imagePath+"playOnceButton.png";
+      fileNames[4] = imagePath+"playPalindromeButton.png";
+      fileNames[5] = imagePath+"prevButton.png";
+      fileNames[6] = imagePath+"pauseButton.png";
+      fileNames[7] = imagePath+"nextButton.png";
+      fileNames[8] = imagePath+"firstButton.png";
+      return(fileNames);
+    }
+    
+    String getJavaScript(int appletID, JmolInstance instance) {
+      String jsString ="<table id=\"AnimContrl\" style=\"text-align:center; border:thin solid black;\">";
+      jsString +="<tbody><tr><td>"+GT._("Animation")+"</td></tr><tr><td><table><tbody>";
+      jsString +="<tr><td><button title=\"first frame\" style=\"font-size:0px;\" onclick=\"void(jmolScriptWait(\'frame 1\'));\">";
+      jsString +="<img src = \"firstButton.png\"></button></td>";
+      jsString+= "<td><button title=\"previous frame\" style=\"font-size:0px;\" onclick=\"void(jmolScriptWait(\'frame previous\'));\">";
+      jsString+= "<img src = \"prevButton.png\" ></button></td>";        
+      jsString+= "<td><button title=\""+GT._("play")+"\" style=\"font-size:0px;\" onclick=\"void(jmolScriptWait(\'animation on\'));\">";
+      jsString+= "<img src = \"playButton.png\"></button></td>";        
+      jsString+= "<td><button title=\""+GT._("next frame")+"\" style=\"font-size:0px;\" onclick=\"void(jmolScriptWait(\'frame next\'));\">";
+      jsString+= "<img src = \"nextButton.png\"></button></td>";        
+      jsString+= "<td><button title=\""+GT._("pause/stop")+"\" style=\"font-size:0px;\" onclick=\"void(jmolScriptWait(\'animation off\'));\">";
+      jsString+= "<img src = \"pauseButton.png\"></button></td>";        
+      jsString+= "<td><button title=\""+GT._("last frame")+"\" style=\"font-size:0px;\" onclick=\"void(jmolScriptWait(\'frame last\'));\">";
+      jsString+= "<img src = \"lastButton.png\"></button></td>";
+      jsString+= "</tr></tbody></table><table><tbody><tr><td>Mode:</td>";
+      jsString+= "<td id=\"jmol_loop_"+appletID+"\"><button title=\""+GT._("loop")+"\" style=\"font-size:0px\" onclick=\"void(jmol_animationmode(\'loop\',"+appletID+"));\">";
+      jsString+= "<img src = \"playLoopButton.png\" ></button></td>";
+      jsString+= "<td id=\"jmol_palindrome_"+appletID+"\"><button title=\""+GT._("palindrome")+"\" style=\"font-size:0px\" onclick=\"void(jmol_animationmode(\'palindrome\', "+appletID+"));\">";
+      jsString+= "<img src = \"playPalindromeButton.png\" ></button></td>";
+      jsString+= "<td id=\"jmol_playOnce_"+appletID+"\" style=\"background:blue;\"><button title=\""+GT._("once through")+"\" style=\"font-size:0px\" onclick=\"void(jmol_animationmode(\'playOnce\', "+appletID+"));\">";
+      jsString+= "<img src = \"playOnceButton.png\" ></button></td></tr></tbody></table></td></tr></tbody></table>";
+      return (jsString);
+    }
+    
+   }
+ 
+  class ConsoleWidget extends Widget {
+    ConsoleWidget() {
+      name = GT._("Open Console Button");
+    }
+
+    String getJavaScriptFileName() {
+      return ("none");
+    }
+    
+    String[] getSupportFileNames(){
+      String[] fileNames = new String[0];
+      return(fileNames);
+    }
+
+    String getJavaScript(int appletID, JmolInstance instance) {
+      return ("<button title=\"" + GT._("launch Jmol console")
+          + "\" onclick=\"void(jmolScript(\'console\'));\">"
+          + GT._("Jmol Console") + "</button>");
+    }
+  }
   class DownLoadWidget extends Widget {
     DownLoadWidget() {
       name = GT._("Download view");
@@ -120,6 +213,11 @@ class Widgets {
     String getJavaScriptFileName() {
       // TODO
       return ("none");
+    }
+    
+    String[] getSupportFileNames(){
+      String[] fileNames = new String[0];
+      return(fileNames);
     }
 
     String getJavaScript(int appletID, JmolInstance instance) {

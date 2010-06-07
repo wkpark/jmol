@@ -214,9 +214,12 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
   private BitSet[] ringData;
   private int[] ringCounts;
   private int[] ringConnections;
-  private StringBuffer ringSets;
   private boolean isRingCheck;
-  
+  private StringBuffer ringSets;
+  StringBuffer getRingSets() {
+    return ringSets;
+  }
+    
   private BitSet bsAromatic = new BitSet();
   BitSet getBsAromatic() {
     return bsAromatic;
@@ -669,7 +672,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
                 + atom.getImplicitHydrogenCount())
           break;
 
-        // r <n>
+        // r <n> ring of a given size
         if (ringData != null && patternAtom.ringSize >= -1) {
           if (patternAtom.ringSize <= 0) {
             if ((ringCounts[iAtom] == 0) != (patternAtom.ringSize == 0))
@@ -679,7 +682,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
             break;
           }
         }
-        // R <n>
+        // R <n> a certain number of rings
         if (ringData != null && patternAtom.ringMembership >= -1) {
           //  R --> -1 implies "!R0"
           if (patternAtom.ringMembership == -1 ? ringCounts[iAtom] == 0
@@ -741,10 +744,10 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
       case SmilesBond.TYPE_AROMATIC: // :
       case SmilesBond.TYPE_DOUBLE:
       case SmilesBond.TYPE_RING:
-        bondFound = isRingBond(iAtom, matchingAtom);
+        bondFound = isRingBond(ringSets, iAtom, matchingAtom);
         break;
       case SmilesBond.TYPE_SINGLE:
-        bondFound = !isRingBond(iAtom, matchingAtom);
+        bondFound = !isRingBond(ringSets, iAtom, matchingAtom);
         break;
       case SmilesBond.TYPE_ANY:
       case SmilesBond.TYPE_UNKNOWN:
@@ -772,14 +775,14 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
         bondFound = (order == JmolEdge.BOND_COVALENT_TRIPLE);
         break;
       case SmilesBond.TYPE_RING:
-        bondFound = isRingBond(iAtom, matchingAtom);
+        bondFound = isRingBond(ringSets, iAtom, matchingAtom);
         break;
       }
     }
     return bondFound != patternBond.isNot;
   }
 
-  private boolean isRingBond(int i, int j) {
+  static boolean isRingBond(StringBuffer ringSets, int i, int j) {
     return (ringSets.indexOf("-" + i + "-" + j + "-") >= 0);
   }
   
@@ -794,6 +797,8 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
     if (haveAtomStereochemistry) {
       JmolNode atom1 = null, atom2 = null, atom3 = null, 
       atom4 = null, atom5 = null, atom6 = null;
+      SmilesAtom sAtom1 = null, sAtom2 = null;
+      JmolNode[] jn;
       for (int i = 0; i < atomCount; i++) {
         SmilesAtom sAtom = patternAtoms[i];
         JmolNode atom0 = jmolAtoms[sAtom.getMatchingAtom()];
@@ -806,9 +811,9 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
         switch (chiralClass) {
         case Integer.MIN_VALUE:
           break;
-        case SmilesAtom.CHIRALITY_ALLENE:
-          SmilesAtom sAtom1 = sAtom.getBond(0).getOtherAtom(sAtom);
-          SmilesAtom sAtom2 = sAtom.getBond(1).getOtherAtom(sAtom);
+        case SmilesAtom.STEREOCHEMISTRY_ALLENE:
+          sAtom1 = sAtom.getBond(0).getOtherAtom(sAtom);
+          sAtom2 = sAtom.getBond(1).getOtherAtom(sAtom);
           if (sAtom1 == null || sAtom2 == null)
             continue;
           // cumulenes
@@ -846,10 +851,44 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
           if (sAtom.not != (getChirality(atom2, atom3, atom4, atom1, v) != order))
             return false;
           continue;
-        case SmilesAtom.CHIRALITY_TETRAHEDRAL:
-        case SmilesAtom.CHIRALITY_SQUARE_PLANAR:
-        case SmilesAtom.CHIRALITY_TRIGONAL_BIPYRAMIDAL:
-        case SmilesAtom.CHIRALITY_OCTAHEDRAL:
+        case SmilesAtom.STEREOCHEMISTRY_ALKENE:
+          jn = new JmolNode[4];
+          int nBonds = sAtom.getCovalentBondCount();
+          for (int k = 0; k < nBonds; k++) {
+            sAtom1 = sAtom.bonds[k].getOtherAtom(sAtom);
+            if (sAtom.bonds[k].getCovalentOrder() == 2) {
+              sAtom2 = sAtom1;
+            } else if (jn[0] == null) {
+              jn[0] = getJmolAtom(sAtom1.getMatchingAtom());
+            } else {
+              jn[1] = getJmolAtom(sAtom1.getMatchingAtom());
+            }
+          }
+          if (sAtom2 == null || jn[1] == null && nH != 1)
+            continue;
+          if (jn[1] == null)
+            getH(sAtom, jn, 1);
+          nBonds = sAtom2.getCovalentBondCount();
+          for (int k = 0; k < nBonds; k++) {
+            sAtom1 = sAtom.bonds[k].getOtherAtom(sAtom);
+            if (sAtom.bonds[k].getCovalentOrder() == 2) {
+            } else if (jn[2] == null) {
+              jn[2] = getJmolAtom(sAtom2.getMatchingAtom());
+            } else {
+              jn[3] = getJmolAtom(sAtom2.getMatchingAtom());
+            }
+          }
+          if (jn[3] == null && !getH(sAtom2, jn, 3))
+              continue;
+          if (isSmilesFind && !setSmilesCoordinates(sAtom, jn))
+              return false;
+          if (!checkStereochemistry(sAtom.not, atom0, chiralClass, order, jn[0], jn[3], jn[2], jn[1], null, null, v))
+            return false;
+          continue;
+        case SmilesAtom.STEREOCHEMISTRY_TETRAHEDRAL:
+        case SmilesAtom.STEREOCHEMISTRY_SQUARE_PLANAR:
+        case SmilesAtom.STEREOCHEMISTRY_TRIGONAL_BIPYRAMIDAL:
+        case SmilesAtom.STEREOCHEMISTRY_OCTAHEDRAL:
           atom1 = getJmolAtom(sAtom.getMatchingBondedAtom(0));
           switch (nH) {
           case 0:
@@ -882,7 +921,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
           if (isSmilesFind && !setSmilesCoordinates(sAtom, new JmolNode[] { atom1, atom2, atom3, atom4, atom5, atom6 }))
               return false;
           
-          if (!checkChirality(sAtom.not, atom0, chiralClass, order, atom1, atom2, atom3, atom4, atom5, atom6, v))
+          if (!checkStereochemistry(sAtom.not, atom0, chiralClass, order, atom1, atom2, atom3, atom4, atom5, atom6, v))
             return false;
           continue;
         }
@@ -956,17 +995,33 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
     
   }
 
-  static boolean checkChirality(boolean isNot, JmolNode atom0, int chiralClass, int order, 
+  private boolean getH(SmilesAtom sAtom, JmolNode[] saTemp, int pt) {
+    if ((saTemp[pt] = getHydrogens(getJmolAtom(sAtom.getMatchingAtom()), null)) == null)
+      return false;
+    if (sAtom.isFirst) {
+      // check for the VERY first atom in a set
+      // attached H is first in that case
+      // so we have to switch it, since we have
+      // assigned already the first atom to be
+      // the first pattern atom
+      JmolNode a = saTemp[pt];
+      saTemp[pt] = saTemp[pt - 1];
+      saTemp[pt - 1] = a;
+    }
+    return true;
+  }
+  
+  static boolean checkStereochemistry(boolean isNot, JmolNode atom0, int chiralClass, int order, 
                                 JmolNode atom1, JmolNode atom2, JmolNode atom3, JmolNode atom4, JmolNode atom5, JmolNode atom6, VTemp v) {
     
     switch (chiralClass) {
-    case SmilesAtom.CHIRALITY_TETRAHEDRAL:
+    case SmilesAtom.STEREOCHEMISTRY_TETRAHEDRAL:
       return (isNot == (getChirality(atom2, atom3, atom4, atom1, v) != order));
-    case SmilesAtom.CHIRALITY_TRIGONAL_BIPYRAMIDAL:
+    case SmilesAtom.STEREOCHEMISTRY_TRIGONAL_BIPYRAMIDAL:
       // check for axial-axial'
       return (isNot == (!isDiaxial(atom0, atom5, atom1, v)
           || getChirality(atom2, atom3, atom4, atom1, v) != order));
-    case SmilesAtom.CHIRALITY_OCTAHEDRAL:
+    case SmilesAtom.STEREOCHEMISTRY_OCTAHEDRAL:
       if (isNot != (!isDiaxial(atom0, atom6, atom1, v)))
         return false;
       // check for CW or CCW set
@@ -978,7 +1033,8 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
       v.vNorm2.set((Point3f) atom0);
       v.vNorm2.sub((Point3f) atom1);
       return (isNot == ((v.vNorm2.dot(v.vNorm1) < 0 ? 1 : 2) != order));
-    case SmilesAtom.CHIRALITY_SQUARE_PLANAR:
+    case SmilesAtom.STEREOCHEMISTRY_SQUARE_PLANAR:
+    case SmilesAtom.STEREOCHEMISTRY_ALKENE:
       getPlaneNormals(atom1, atom2, atom3, atom4, v);
       // vNorm1 vNorm2 vNorm3 are right-hand normals for the given
       // triangles
@@ -1113,8 +1169,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
     // index.
     // all the necessary information is passed via the atomSite field of Atom
 
-    int iAtom = sAtom.getMatchingAtom();
-    JmolNode atom = jmolAtoms[iAtom];
+    JmolNode atom = jmolAtoms[sAtom.getMatchingAtom()];
     // atomSite is used by smilesMatch.find to encode chiralClass and chiralOrder 
     int atomSite = atom.getAtomSite();
     if (atomSite == Integer.MIN_VALUE)
@@ -1166,8 +1221,8 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
       // cAtoms[map[i]].getIndex());
     }
     switch (chiralClass) {
-    case SmilesAtom.CHIRALITY_ALLENE:
-    case SmilesAtom.CHIRALITY_TETRAHEDRAL:
+    case SmilesAtom.STEREOCHEMISTRY_ALLENE:
+    case SmilesAtom.STEREOCHEMISTRY_TETRAHEDRAL:
       if (chiralOrder == 2) {
         int i = map[0];
         map[0] = map[1];
@@ -1178,7 +1233,8 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
       cAtoms[map[2]].set(0, 1, -1);
       cAtoms[map[3]].set(-1, -1, -1);
       break;
-    case SmilesAtom.CHIRALITY_SQUARE_PLANAR:
+    case SmilesAtom.STEREOCHEMISTRY_ALKENE:
+    case SmilesAtom.STEREOCHEMISTRY_SQUARE_PLANAR:
       switch (chiralOrder) {
       case 1: // U-shaped
         cAtoms[map[0]].set(1, 0, 0);
@@ -1200,8 +1256,8 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
         break;
       }
       break;
-    case SmilesAtom.CHIRALITY_TRIGONAL_BIPYRAMIDAL:
-    case SmilesAtom.CHIRALITY_OCTAHEDRAL:
+    case SmilesAtom.STEREOCHEMISTRY_TRIGONAL_BIPYRAMIDAL:
+    case SmilesAtom.STEREOCHEMISTRY_OCTAHEDRAL:
       int n = map.length;
       if (chiralOrder == 2) {
         int i = map[0];
@@ -1298,16 +1354,16 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
     case 4:
       float d = SmilesAromatic.getNormalThroughPoints(atom1, atom2, atom3, v.vTemp, v.vA, v.vB);
       if (Math.abs(distanceToPlane(v.vTemp, d, (Point3f) atom4)) < 0.2f) {
-        chiralClass = SmilesAtom.CHIRALITY_SQUARE_PLANAR;
-        if (checkChirality(false, atom0, chiralClass, 1, atom1, atom2, atom3, atom4, atom5, atom6, v))
+        chiralClass = SmilesAtom.STEREOCHEMISTRY_SQUARE_PLANAR;
+        if (checkStereochemistry(false, atom0, chiralClass, 1, atom1, atom2, atom3, atom4, atom5, atom6, v))
           return "@SP1";
-        if (checkChirality(false, atom0, chiralClass, 2, atom1, atom2, atom3, atom4, atom5, atom6, v))
+        if (checkStereochemistry(false, atom0, chiralClass, 2, atom1, atom2, atom3, atom4, atom5, atom6, v))
           return "@SP2";
-        if (checkChirality(false, atom0, chiralClass, 3, atom1, atom2, atom3, atom4, atom5, atom6, v))
+        if (checkStereochemistry(false, atom0, chiralClass, 3, atom1, atom2, atom3, atom4, atom5, atom6, v))
           return "@SP3";       
       } else {
-        chiralClass = SmilesAtom.CHIRALITY_TETRAHEDRAL;
-        return (checkChirality(false, atom0, chiralClass, 1, atom1, atom2, atom3, atom4, atom5, atom6, v)? "@" : "@@");
+        chiralClass = SmilesAtom.STEREOCHEMISTRY_TETRAHEDRAL;
+        return (checkStereochemistry(false, atom0, chiralClass, 1, atom1, atom2, atom3, atom4, atom5, atom6, v)? "@" : "@@");
       }       
     }
     return "";

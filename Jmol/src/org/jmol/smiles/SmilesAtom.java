@@ -40,15 +40,16 @@ import org.jmol.util.Elements;
  */
 public class SmilesAtom extends Point3f implements JmolNode {
   
-  final static int CHIRALITY_DEFAULT = 0;
-  final static int CHIRALITY_ALLENE = 2;
-  final static int CHIRALITY_TETRAHEDRAL = 4;
-  final static int CHIRALITY_TRIGONAL_BIPYRAMIDAL = 5;
-  final static int CHIRALITY_OCTAHEDRAL = 6;
-  final static int CHIRALITY_SQUARE_PLANAR = 8;
+  final static int STEREOCHEMISTRY_DEFAULT = 0;
+  final static int STEREOCHEMISTRY_ALLENE = 2;
+  final static int STEREOCHEMISTRY_ALKENE = 3;
+  final static int STEREOCHEMISTRY_TETRAHEDRAL = 4;
+  final static int STEREOCHEMISTRY_TRIGONAL_BIPYRAMIDAL = 5;
+  final static int STEREOCHEMISTRY_OCTAHEDRAL = 6;
+  final static int STEREOCHEMISTRY_SQUARE_PLANAR = 8;
   
   static int getChiralityClass(String xx) {
-    return ("0;11;AL;33;TH;TP;OH;77;SP;".indexOf(xx) + 1)/ 3;
+    return ("0;11;AL;EZ;TH;TP;OH;77;SP;".indexOf(xx) + 1)/ 3;
   }
 
   static final String UNBRACKETED_SET = "B, C, N, O, P, S, F, Cl, Br, I,";

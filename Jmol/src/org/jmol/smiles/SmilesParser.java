@@ -185,9 +185,10 @@ public class SmilesParser {
         nBonds = 0;
       nBonds += sAtom.getCovalentBondCount();
       switch (stereoClass) {
-      case SmilesAtom.CHIRALITY_DEFAULT:
+      case SmilesAtom.STEREOCHEMISTRY_DEFAULT:
         switch (nBonds) {
         case 2:
+        case 3:
         case 4:
         case 5:
         case 6:
@@ -195,19 +196,20 @@ public class SmilesParser {
           break;
         }
         break;
-      case SmilesAtom.CHIRALITY_SQUARE_PLANAR:
+      case SmilesAtom.STEREOCHEMISTRY_SQUARE_PLANAR:
         if (nBonds != 4)
-          stereoClass = SmilesAtom.CHIRALITY_DEFAULT;
+          stereoClass = SmilesAtom.STEREOCHEMISTRY_DEFAULT;
         break;
-      case SmilesAtom.CHIRALITY_ALLENE:
-      case SmilesAtom.CHIRALITY_OCTAHEDRAL:
-      case SmilesAtom.CHIRALITY_TETRAHEDRAL:
-      case SmilesAtom.CHIRALITY_TRIGONAL_BIPYRAMIDAL:
+      case SmilesAtom.STEREOCHEMISTRY_ALKENE:
+      case SmilesAtom.STEREOCHEMISTRY_ALLENE:
+      case SmilesAtom.STEREOCHEMISTRY_OCTAHEDRAL:
+      case SmilesAtom.STEREOCHEMISTRY_TETRAHEDRAL:
+      case SmilesAtom.STEREOCHEMISTRY_TRIGONAL_BIPYRAMIDAL:
         if (nBonds != stereoClass)
-          stereoClass = SmilesAtom.CHIRALITY_DEFAULT;
+          stereoClass = SmilesAtom.STEREOCHEMISTRY_DEFAULT;
         break;
       }
-      if (stereoClass == SmilesAtom.CHIRALITY_DEFAULT)
+      if (stereoClass == SmilesAtom.STEREOCHEMISTRY_DEFAULT)
         throw new InvalidSmilesException(
             "Incorrect number of bonds for stereochemistry descriptor");
       sAtom.setChiralClass(stereoClass);
@@ -738,7 +740,6 @@ public class SmilesParser {
     bond0.set(bond);
     currentAtom.bondCount--;
     bond0.setAtom2(currentAtom);
-    System.out.println("SMILESPARSER " + bond0);
   }
 
   private int checkCharge(String pattern, int index, SmilesAtom newAtom)
@@ -773,7 +774,7 @@ public class SmilesParser {
     int order = Integer.MIN_VALUE;
     int len = pattern.length();
     int ch;
-    stereoClass = SmilesAtom.CHIRALITY_DEFAULT;
+    stereoClass = SmilesAtom.STEREOCHEMISTRY_DEFAULT;
     order = 1;
     if (++index < len) {
       switch (ch = pattern.charAt(index)) {
@@ -783,7 +784,7 @@ public class SmilesParser {
         break;
       case 'H':
         break;
-      case 'A':
+      case 'E':
       case 'O':
       case 'S':
       case 'T':

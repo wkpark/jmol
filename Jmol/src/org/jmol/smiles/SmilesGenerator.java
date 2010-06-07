@@ -178,18 +178,21 @@ public class SmilesGenerator {
         if (a.getElementNumber() == 1 && a.getIsotopeNumber() == 0)
           bs2.clear(j);
       }
+    StringBuffer ringSets = null;
     if (bs2.cardinality() > 2) {
-      SmilesSearch search = SmilesParser.getMolecule("a", true);
+      SmilesSearch search = null;
+      search = SmilesParser.getMolecule("A[=&@]A", true);
       search.jmolAtoms = atoms;
       search.bsSelected = bs2;
       search.jmolAtomCount = atomCount;
       search.setRingData(null);
       bsAromatic = search.getBsAromatic();
+      ringSets = search.getRingSets();
     }
     Hashtable ht = new Hashtable();
     StringBuffer sb1 = new StringBuffer();
     BitSet bs0 = (BitSet) bs2.clone();
-    getSmiles(sb1, null, null, atom, bs0, bs2, ht, nPairs, bsAromatic, vTemp);
+    getSmiles(sb1, null, null, atom, bs0, bs2, ht, nPairs, bsAromatic, ringSets, vTemp);
     while (bs2.cardinality() > 0 && !ht.isEmpty()) {
       Enumeration e = ht.keys();
       e.hasMoreElements();
@@ -197,7 +200,7 @@ public class SmilesGenerator {
           .intValue();
       sb1.append(".");
       getSmiles(sb1, null, null, atoms[atomIndex], bs0, bs2, ht, nPairs,
-          bsAromatic, vTemp);
+          bsAromatic, ringSets, vTemp);
     }
     if (!ht.isEmpty()) {
       dumpRingKeys(ht, sb1);
@@ -209,7 +212,7 @@ public class SmilesGenerator {
   private static void getSmiles(StringBuffer sb, JmolNode prevAtom,
                                 JmolEdge prevBond, JmolNode atom, BitSet bs0,
                                 BitSet bs, Hashtable ht, int[] nPairs,
-                                BitSet bsAromatic, VTemp vTemp) {
+                                BitSet bsAromatic, StringBuffer ringSets, VTemp vTemp) {
     int atomIndex = atom.getIndex();
     if (!bs.get(atomIndex))
       return;
@@ -267,7 +270,7 @@ public class SmilesGenerator {
       if (order == 1 && n == 1 && i < v.size() - (bond0 == null ? 1 : 0)) {
         StringBuffer s2 = new StringBuffer();
         s2.append("(");
-        getSmiles(s2, atom, prevBond, a, bs0, bs, ht, nPairs, bsAromatic, vTemp);
+        getSmiles(s2, atom, prevBond, a, bs0, bs, ht, nPairs, bsAromatic, ringSets, vTemp);
         s2.append(")");
         if (sMore.indexOf(s2.toString()) >= 0)
           stereoFlag = 10;
@@ -301,7 +304,7 @@ public class SmilesGenerator {
         nH, isAromatic, s));
     sb.append(sMore);
     if (bond0 != null)
-      getSmiles(sb, atom, prevBond, a, bs0, bs, ht, nPairs, bsAromatic, vTemp);
+      getSmiles(sb, atom, prevBond, a, bs0, bs, ht, nPairs, bsAromatic, ringSets, vTemp);
   }
 
   private static String getRingKey(int i0, int i1) {

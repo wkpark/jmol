@@ -589,12 +589,27 @@ public class SmilesAtom extends Point3f implements JmolNode {
     return n;
   }
 
-  public SmilesBond getBondTo(SmilesAtom atom) {
+  SmilesBond getBondTo(SmilesAtom atom) {
     if  (parent != null)
       return parent.getBondTo(atom);
-    for (int k = 0; k < bonds.length; k++)
-      if (bonds[k] != null && bonds[k].getOtherAtom(this) == atom)
-      return bonds[k];
+    SmilesBond bond;
+    for (int k = 0; k < bonds.length; k++) {
+      if ((bond = bonds[k]) == null)
+        continue;
+      if (bond.getOtherAtom(this) == atom)
+        return bond;
+    }
+    return null;
+  }
+
+  SmilesBond getBondNotTo(SmilesAtom atom) {
+    SmilesBond bond;
+    for (int k = 0; k < bonds.length; k++) {
+      if ((bond = bonds[k]) == null)
+        continue;
+      if (atom != bond.getOtherAtom(this))
+        return bond;
+    }
     return null;
   }
 

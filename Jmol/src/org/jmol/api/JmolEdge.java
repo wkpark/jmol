@@ -81,6 +81,8 @@ public interface JmolEdge {
   public final static int BOND_H_MINUS_4     = 8 << 11;
   public final static int BOND_H_NUCLEOTIDE  = 9 << 11;
 
+  public int getIndex();
+  
   public int getAtomIndex1();
 
   public int getAtomIndex2();

@@ -64,6 +64,11 @@ public class SmilesBond implements JmolEdge {
   private SmilesAtom atom2;
   
   int bondType;
+  int index = -1;
+  public int getIndex() {
+    return index;
+  }
+  
   boolean isNot;
   JmolEdge matchingBond;
   
@@ -241,4 +246,5 @@ public class SmilesBond implements JmolEdge {
   public boolean isHydrogen() {
     return bondType == TYPE_BIO_PAIR;
   }
+  
 }

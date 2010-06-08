@@ -180,6 +180,8 @@ public class SmilesParser {
     for (int i = molecule.atomCount; --i >= 0;) {
       SmilesAtom sAtom = molecule.patternAtoms[i];
       int stereoClass = sAtom.getChiralClass();
+      if (stereoClass == Integer.MIN_VALUE)
+        continue;
       int nBonds = sAtom.missingHydrogenCount;
       if (nBonds < 0)
         nBonds = 0;
@@ -789,6 +791,8 @@ public class SmilesParser {
         break;
       case 'H':
         break;
+      case 'A':
+      case 'D':
       case 'E':
       case 'O':
       case 'S':

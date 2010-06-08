@@ -156,9 +156,12 @@ public class SmilesMatcher implements SmilesMatcherInterface {
       // when there is only 1 H and the atom is NOT FIRST, then it will
       // be important to designate the bonds in order -- with the
       // H SECOND not first
-      // "Double Bond" here just to remind us to switch this one.
+      // this is still not satisfactory for allenes or the second atom of 
+      // imines and possibly double bonds. We handle that later.
+      
       if (!sAtom.isFirst && n == 1 && cclass > 0)
         bsFixH.set(ptAtom);
+      
       sAtom.setMatchingAtom(ptAtom++);
       SmilesBond[] bonds = new SmilesBond[sAtom.getCovalentBondCount() + n];
       atom.setBonds(bonds);

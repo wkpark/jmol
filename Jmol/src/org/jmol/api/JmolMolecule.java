@@ -186,6 +186,8 @@ public class JmolMolecule {
       atomList = new BitSet();
       atomList.set(0, nodes.length);
     }
+    elementCounts = new int[Elements.elementNumberMax];
+    altElementCounts = new int[Elements.altElementMax];
     int count = 0;
     for (int i = atomList.nextSetBit(0); i >= 0; i = atomList.nextSetBit(i + 1)) {
       count++;

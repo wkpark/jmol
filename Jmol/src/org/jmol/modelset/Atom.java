@@ -1338,5 +1338,9 @@ final public class Atom extends Point3fi implements JmolNode {
   public void getCrossLinkLeadAtomIndexes(Vector vReturn) {
     group.getCrossLinkLeadAtomIndexes(vReturn);
   }
+  
+  public String toString() {
+    return getInfo();
+  }
 
 }

@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-07 21:20+0200\n"
-"PO-Revision-Date: 2010-05-28 06:00+0000\n"
+"POT-Creation-Date: 2010-06-08 21:22+0200\n"
+"PO-Revision-Date: 2010-06-08 06:16+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@gmail.com>\n"
 "Language-Team: Ukrainian <translation@linux.org.ua>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-05-28 06:36+0000\n"
+"X-Launchpad-Export-Date: 2010-06-08 18:48+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -1487,9 +1487,9 @@ msgid "adding {0}"
 msgstr "додавання {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:639
-#, fuzzy, java-format
+#, java-format
 msgid "Unable to load resource {0}"
-msgstr "Неможливо знайти url \"{0}\"."
+msgstr "Не вдалося завантажити ресурс {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:691
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
@@ -1552,10 +1552,6 @@ msgstr "Об’ємний перегляд"
 msgid "select stereo type"
 msgstr "виберіть тип стерео"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:126
-msgid "stereo off"
-msgstr "вимкнути стерео"
-
 #: org/openscience/jmol/app/webexport/Widgets.java:127
 msgid "Stereo Off"
 msgstr "Вимкнути стерео"
@@ -1574,68 +1570,59 @@ msgstr "Червоний/Зелений"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:139
 msgid "Animation Control"
-msgstr ""
+msgstr "Керування анімацією"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:163
-#, fuzzy
 msgid "Animation"
-msgstr "З&упинити анімацію"
+msgstr "Анімація"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:164
 msgid "First Frame"
-msgstr ""
+msgstr "Перший кадр"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:166
-#, fuzzy
 msgid "Previous Frame"
-msgstr "Перейти до попереднього кадру"
+msgstr "Попередній кадр"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:168
 msgid "Play"
-msgstr ""
+msgstr "Відтворити"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:170
-#, fuzzy
 msgid "Next Frame"
-msgstr "Перейти до наступного кадру"
+msgstr "Наступний кадр"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:172
-#, fuzzy
 msgid "Pause"
-msgstr "&Вставити"
+msgstr "Призупинити"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:172
-#, fuzzy
 msgid "Stop"
-msgstr "Крок"
+msgstr "Зупинити"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:174
-#, fuzzy
 msgid "Last Frame"
-msgstr "Перейти до останнього кадру"
+msgstr "Останній кадр"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:177
-#, fuzzy
 msgid "Loop"
-msgstr "&Зациклити"
+msgstr "Зациклити"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:179
-#, fuzzy
 msgid "Palindrome"
-msgstr "П&аліндром"
+msgstr "Паліндром"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:181
 msgid "Play Once"
-msgstr ""
+msgstr "Одноразове відтворення"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:190
 msgid "Open Console Button"
-msgstr ""
+msgstr "Кнопка відкриття консолі"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:203
-#, fuzzy
 msgid "launch Jmol console"
-msgstr "Консоль Jmol"
+msgstr "відкрити консоль Jmol"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:210
 msgid "Download view"
@@ -1644,6 +1631,9 @@ msgstr "Звантажити перегляд"
 #: org/openscience/jmol/app/webexport/Widgets.java:225
 msgid "unimplemented"
 msgstr "не реалізовано"
+
+#~ msgid "stereo off"
+#~ msgstr "вимкнути стерео"
 
 #~ msgid "Show Selected"
 #~ msgstr "Показати позначені"

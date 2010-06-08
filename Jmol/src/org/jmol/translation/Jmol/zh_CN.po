@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-07 21:20+0200\n"
+"POT-Creation-Date: 2010-06-08 21:22+0200\n"
 "PO-Revision-Date: 2010-05-30 06:23+0000\n"
 "Last-Translator: Eleanor Chen <chenyueg@gmail.com>\n"
 "Language-Team: Simplified Chinese <zh_CN@li.org>\n"
@@ -1532,10 +1532,6 @@ msgstr "立体化查看"
 msgid "select stereo type"
 msgstr "选择立体类型"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:126
-msgid "stereo off"
-msgstr "立体 关"
-
 #: org/openscience/jmol/app/webexport/Widgets.java:127
 msgid "Stereo Off"
 msgstr "立体 关"
@@ -1624,6 +1620,9 @@ msgstr "下载视图"
 #: org/openscience/jmol/app/webexport/Widgets.java:225
 msgid "unimplemented"
 msgstr "功能尚未实现"
+
+#~ msgid "stereo off"
+#~ msgstr "立体 关"
 
 #~ msgid "Show Selected"
 #~ msgstr "显示所选对象"

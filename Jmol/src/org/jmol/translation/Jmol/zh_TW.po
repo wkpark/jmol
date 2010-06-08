@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-07 21:20+0200\n"
-"PO-Revision-Date: 2010-05-28 14:11+0000\n"
+"POT-Creation-Date: 2010-06-08 21:22+0200\n"
+"PO-Revision-Date: 2010-06-08 14:45+0000\n"
 "Last-Translator: iychiang <iychiang1809@gmail.com>\n"
 "Language-Team: Traditional Chinese <zh_TW@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-05-29 08:36+0000\n"
+"X-Launchpad-Export-Date: 2010-06-08 18:44+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -1469,9 +1469,9 @@ msgid "adding {0}"
 msgstr "加入 {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:639
-#, fuzzy, java-format
+#, java-format
 msgid "Unable to load resource {0}"
-msgstr "無法找到網址\"{0}\""
+msgstr "無法載入資源 {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:691
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
@@ -1534,10 +1534,6 @@ msgstr "立體視覺"
 msgid "select stereo type"
 msgstr "選擇立體視覺種類"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:126
-msgid "stereo off"
-msgstr "關閉立體視覺"
-
 #: org/openscience/jmol/app/webexport/Widgets.java:127
 msgid "Stereo Off"
 msgstr "關閉立體視覺"
@@ -1556,68 +1552,59 @@ msgstr "紅/綠"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:139
 msgid "Animation Control"
-msgstr ""
+msgstr "動畫控制"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:163
-#, fuzzy
 msgid "Animation"
-msgstr "停止動畫(&S)"
+msgstr "動畫"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:164
 msgid "First Frame"
-msgstr ""
+msgstr "第一格"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:166
-#, fuzzy
 msgid "Previous Frame"
-msgstr "跳到前個畫面"
+msgstr "上一格"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:168
 msgid "Play"
-msgstr ""
+msgstr "播放"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:170
-#, fuzzy
 msgid "Next Frame"
-msgstr "跳到下一個畫面"
+msgstr "下一格"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:172
-#, fuzzy
 msgid "Pause"
-msgstr "貼上( &P)"
+msgstr "暫停"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:172
-#, fuzzy
 msgid "Stop"
-msgstr "步進"
+msgstr "停止"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:174
-#, fuzzy
 msgid "Last Frame"
-msgstr "跳到最後一個畫面"
+msgstr "最後一格"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:177
-#, fuzzy
 msgid "Loop"
-msgstr "環(&L)"
+msgstr "循環播放"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:179
-#, fuzzy
 msgid "Palindrome"
-msgstr "回文結構(&a)"
+msgstr "迴文"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:181
 msgid "Play Once"
-msgstr ""
+msgstr "播放一次"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:190
 msgid "Open Console Button"
-msgstr ""
+msgstr "開啟指令列的按鍵"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:203
-#, fuzzy
 msgid "launch Jmol console"
-msgstr "Jmol 主控台"
+msgstr "啟動 Jmol 指令列"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:210
 msgid "Download view"
@@ -1626,6 +1613,9 @@ msgstr "下載觀看"
 #: org/openscience/jmol/app/webexport/Widgets.java:225
 msgid "unimplemented"
 msgstr "未實作的"
+
+#~ msgid "stereo off"
+#~ msgstr "關閉立體視覺"
 
 #~ msgid "Show Selected"
 #~ msgstr "顯示所選的"

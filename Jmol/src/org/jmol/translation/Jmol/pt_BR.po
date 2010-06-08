@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-07 21:20+0200\n"
+"POT-Creation-Date: 2010-06-08 21:22+0200\n"
 "PO-Revision-Date: 2010-06-01 15:08+0000\n"
 "Last-Translator: Marcelo Ribeiro de Almeida <neonrj@hotmail.com>\n"
 "Language-Team: Brazilian Portuguese <Jmol-developers@lists.sf.net>\n"
@@ -1549,10 +1549,6 @@ msgstr "Vendo stereo"
 msgid "select stereo type"
 msgstr "selecionar tipo de stereo"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:126
-msgid "stereo off"
-msgstr "stereo desligado"
-
 #: org/openscience/jmol/app/webexport/Widgets.java:127
 msgid "Stereo Off"
 msgstr "Stereo desligado"
@@ -1641,6 +1637,9 @@ msgstr "Baixar vista"
 #: org/openscience/jmol/app/webexport/Widgets.java:225
 msgid "unimplemented"
 msgstr "não implementado"
+
+#~ msgid "stereo off"
+#~ msgstr "stereo desligado"
 
 #~ msgid "Show Selected"
 #~ msgstr "Mostrar selecionado"

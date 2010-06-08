@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-07 21:20+0200\n"
+"POT-Creation-Date: 2010-06-08 21:22+0200\n"
 "PO-Revision-Date: 2010-06-05 14:34+0000\n"
 "Last-Translator: Konki <pavel.konkol@seznam.cz>\n"
 "Language-Team: Czech <Jmol-developers@lists.sf.net>\n"
@@ -1545,10 +1545,6 @@ msgstr "Stereo pohled"
 msgid "select stereo type"
 msgstr "vybrat stereo typ"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:126
-msgid "stereo off"
-msgstr "vypnout stereo"
-
 #: org/openscience/jmol/app/webexport/Widgets.java:127
 msgid "Stereo Off"
 msgstr "Vypnout stereo"
@@ -1637,6 +1633,9 @@ msgstr "Ulož pohled"
 #: org/openscience/jmol/app/webexport/Widgets.java:225
 msgid "unimplemented"
 msgstr "neimplementováno"
+
+#~ msgid "stereo off"
+#~ msgstr "vypnout stereo"
 
 #~ msgid "The -D options are as follows (defaults in parenthesis):"
 #~ msgstr "-D volby jsou následující (standardní v závorkách):"

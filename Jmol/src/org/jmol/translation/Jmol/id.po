@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-07 21:20+0200\n"
-"PO-Revision-Date: 2010-06-02 23:32+0000\n"
+"POT-Creation-Date: 2010-06-08 21:22+0200\n"
+"PO-Revision-Date: 2010-06-08 02:22+0000\n"
 "Last-Translator: Waluyo Adi Siswanto <Unknown>\n"
 "Language-Team: Indonesian <id@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-06-03 18:28+0000\n"
+"X-Launchpad-Export-Date: 2010-06-08 18:44+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -784,7 +784,7 @@ msgstr "Hitung pergeseran kimia..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:158
 msgid "&Crystal Properties"
-msgstr ""
+msgstr "Properti &Kristal"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:159
 msgid "&Once"
@@ -792,7 +792,7 @@ msgstr "Sekali"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:160
 msgid "&Loop"
-msgstr ""
+msgstr "Per&ulangan"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:161
 msgid "P&alindrome"
@@ -1003,11 +1003,11 @@ msgstr "Buka URL"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1066
 msgid "Enter URL of molecular model"
-msgstr ""
+msgstr "Tulis URL model molekuler"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1240
 msgid "IO Exception:"
-msgstr ""
+msgstr "Perkecualian IO:"
 
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:124
 msgid "Delete"
@@ -1049,7 +1049,7 @@ msgstr "Tempat berkas .pov akan disimpan"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:190
 msgid "POV-Ray Runtime Options"
-msgstr ""
+msgstr "Pilihan POV-Ray Runtime"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:195
 msgid "Run POV-Ray directly"
@@ -1065,7 +1065,7 @@ msgstr "Tampilan Ketika Pewarnaan"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:244
 msgid "Should POV-Ray attempt to display while rendering?"
-msgstr ""
+msgstr "Apakah POV-Ray akan tetap ditampilkan ketika pencitraan"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:267
 msgid "width:"
@@ -1098,7 +1098,7 @@ msgstr "Ditentukan pengguna"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:318
 msgid "Keep ratio of Jmol window"
-msgstr ""
+msgstr "Pertahankan rasio jendela Jmol"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:358
 msgid "N - PNG"
@@ -1138,7 +1138,7 @@ msgstr "Ukuran awal : "
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:412
 msgid "Initial size of the tiles"
-msgstr ""
+msgstr "Ukuran awal daru ubin"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:428
 msgid "End size : "
@@ -1146,7 +1146,7 @@ msgstr "Ukuran akhir : "
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:430
 msgid "Final size of the tiles"
-msgstr ""
+msgstr "Ukuran akhir dari ubin"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:451
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:453
@@ -1160,7 +1160,7 @@ msgstr "Jalankan!"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:492
 msgid "Save file and possibly launch POV-Ray"
-msgstr ""
+msgstr "Simpan berkas dan mungkin menjalankan POV-Ray"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:503
 msgid "Cancel this dialog without saving"
@@ -1230,7 +1230,7 @@ msgstr "(Angstroms)"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:425
 msgid "Bond Tolerance - sum of two covalent radii + this value"
-msgstr ""
+msgstr "Toleransi Ikatan - jumlah jejari dua kovalen + angka ini"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:476
 msgid "Minimum Bonding Distance"
@@ -1254,47 +1254,47 @@ msgstr "Hal Baru di Jmol"
 
 #: org/openscience/jmol/app/webexport/JmolInstance.java:81
 msgid "Attempt to make scratch directory failed."
-msgstr ""
+msgstr "Gagal membuat direktori scratch."
 
 #: org/openscience/jmol/app/webexport/LogPanel.java:52
 msgid "Log and Error Messages:"
-msgstr ""
+msgstr "Pesan Log dan Kesalahan:"
 
 #: org/openscience/jmol/app/webexport/LogPanel.java:60
 msgid "Messages (see Log tab for full history):"
-msgstr ""
+msgstr "Pesan-pesan (lihat tab Log untuk riwayat lengkap):"
 
 #: org/openscience/jmol/app/webexport/PopInJmol.java:41
 msgid "These names will be used as filenames for the applets"
-msgstr ""
+msgstr "Nama-nama ini akan digunakan sebagai nama berkas untuk aplet"
 
 #: org/openscience/jmol/app/webexport/PopInJmol.java:66
 msgid "Applet width:"
-msgstr ""
+msgstr "Lebar Aplet:"
 
 #: org/openscience/jmol/app/webexport/PopInJmol.java:97
 #, java-format
 msgid "insert a caption for {0} here."
-msgstr ""
+msgstr "sisipkan caption untuk {0} disini."
 
 #: org/openscience/jmol/app/webexport/PopInJmol.java:100
 #, java-format
 msgid "insert a note for {0} here."
-msgstr ""
+msgstr "sisipkan nota untuk {0} disini."
 
 #: org/openscience/jmol/app/webexport/ScriptButtons.java:39
 msgid "These names will be used for button labels"
-msgstr ""
+msgstr "Nama-nama ini akan digunakan untuk tombol label"
 
 #: org/openscience/jmol/app/webexport/ScriptButtons.java:51
 msgid "% of window for applet width:"
-msgstr ""
+msgstr "% dari jendela untuk lebar aplet:"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:82
 #: org/openscience/jmol/app/webexport/WebExport.java:196
 #: org/openscience/jmol/app/webexport/WebExport.java:266
 msgid "Jmol Web Page Maker"
-msgstr ""
+msgstr "Pembuat Halaman Web Jmol"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:105
 msgid "Couldn't find file: {0}"
@@ -1341,7 +1341,7 @@ msgstr "Sisipkan halaman PENGANTAR disini"
 #: org/openscience/jmol/app/webexport/WebExport.java:354
 #, java-format
 msgid "Insert a caption for {0} here."
-msgstr ""
+msgstr "Sisipkan caption untuk {0} disini."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:355
 #, java-format
@@ -1368,11 +1368,11 @@ msgstr "Sisipkan informassi lain untuk {0} disini"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:127
 msgid "A web page containing Jmol applets"
-msgstr ""
+msgstr "Halaman web mengandung aplet Jmol"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:152
 msgid "double-click and drag to reorder"
-msgstr ""
+msgstr "Klik ganda dan seret untuk pengurutan ulang"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:157
 msgid "Add Present Jmol State as Instance..."
@@ -1392,7 +1392,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:299
 msgid "Help/Instructions"
-msgstr ""
+msgstr "Bantuan/Instruksi"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:306
 #: org/openscience/jmol/app/webexport/WebPanel.java:314
@@ -1401,7 +1401,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:320
 msgid "Save HTML as..."
-msgstr ""
+msgstr "Simpa HTML sebagai..."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:330
 msgid "Relative server path to jar files:"
@@ -1409,7 +1409,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:336
 msgid "Relative local path to jar files:"
-msgstr ""
+msgstr "Lokasi lokal relatif terhadap berkas jar:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:342
 msgid "Author (your name):"
@@ -1452,28 +1452,28 @@ msgstr "Menggunakan direktori {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:579
 msgid "adding JmolPopIn.js"
-msgstr ""
+msgstr "menambah JmolPopIn.js"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:588
 #, java-format
 msgid "adding {0}.png"
-msgstr ""
+msgstr "menambah {0}.png"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:610
 #, java-format
 msgid "adding {0}.spt"
-msgstr ""
+msgstr "menambah {0}.spt"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:624
 #: org/openscience/jmol/app/webexport/WebPanel.java:651
 #, java-format
 msgid "adding {0}"
-msgstr ""
+msgstr "menambah {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:639
-#, fuzzy, java-format
+#, java-format
 msgid "Unable to load resource {0}"
-msgstr "Tidak bisa menemukan url \"{0}\"."
+msgstr "Tidak bisa memuat sumber {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:691
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
@@ -1482,7 +1482,7 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/WebPanel.java:694
 #, java-format
 msgid "creating {0}"
-msgstr ""
+msgstr "membuat {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:729
 #, java-format
@@ -1490,6 +1490,8 @@ msgid ""
 "Could not find or open:\n"
 "{0}"
 msgstr ""
+"Tidak bisa menemukan atau membuka:\n"
+"{0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:732
 #, java-format
@@ -1498,50 +1500,49 @@ msgid ""
 "{0}\n"
 "         to"
 msgstr ""
+"menyalin\n"
+"{0}\n"
+"         ke"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:739
 msgid "compressing large data file to"
-msgstr ""
+msgstr "memampatkan berkas data besar menjadi"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:60
 msgid "Spin on/off"
-msgstr ""
+msgstr "Putaran mati/hidup"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:74
 msgid "enable/disable spin"
-msgstr ""
+msgstr "aktifkan/matikan putaran"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:75
 msgid "Spin on"
-msgstr ""
+msgstr "Putaran hidup"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:81
 msgid "Background Color"
-msgstr ""
+msgstr "Warna Latar"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:96
 msgid "background color:"
-msgstr ""
+msgstr "warna latar:"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:109
 msgid "Stereo Viewing"
-msgstr ""
+msgstr "Tampilan Stereo"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:123
 msgid "select stereo type"
-msgstr ""
-
-#: org/openscience/jmol/app/webexport/Widgets.java:126
-msgid "stereo off"
-msgstr ""
+msgstr "pilih tipe stereo"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:127
 msgid "Stereo Off"
-msgstr ""
+msgstr "Stereo Padam"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:128
 msgid "Red/Blue"
-msgstr ""
+msgstr "Merah/Biru"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:130
 msgid "Red/Cyan"
@@ -1549,76 +1550,71 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:132
 msgid "Red/Green"
-msgstr ""
+msgstr "Merah/Hijau"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:139
 msgid "Animation Control"
-msgstr ""
+msgstr "Kontrol Animasi"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:163
-#, fuzzy
 msgid "Animation"
-msgstr "Hentikan animasi"
+msgstr "Animasi"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:164
 msgid "First Frame"
-msgstr ""
+msgstr "Bingkai Pertama"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:166
-#, fuzzy
 msgid "Previous Frame"
-msgstr "Ke frame sebelumnya"
+msgstr "Bingkai Sebelumnya"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:168
 msgid "Play"
-msgstr ""
+msgstr "Putar"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:170
-#, fuzzy
 msgid "Next Frame"
-msgstr "Ke frame selanjutnya"
+msgstr "Bingkai Berikutnya"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:172
-#, fuzzy
 msgid "Pause"
-msgstr "Tempe&l"
+msgstr "Jeda"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:172
-#, fuzzy
 msgid "Stop"
-msgstr "Langkah"
+msgstr "Henti"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:174
-#, fuzzy
 msgid "Last Frame"
-msgstr "Ke frame terakhir"
+msgstr "Bingkai Terakhir"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:177
 msgid "Loop"
-msgstr ""
+msgstr "Perulangan"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:179
-#, fuzzy
 msgid "Palindrome"
-msgstr "Palindroma"
+msgstr "Palindrome"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:181
 msgid "Play Once"
-msgstr ""
+msgstr "Mainkan Sekali"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:190
 msgid "Open Console Button"
-msgstr ""
+msgstr "Buka Tombol Konsul"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:203
-#, fuzzy
 msgid "launch Jmol console"
-msgstr "Konsul Jmol"
+msgstr "Jalankan Konsul Jmol"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:210
 msgid "Download view"
-msgstr ""
+msgstr "Tampilan Muaturun"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:225
 msgid "unimplemented"
-msgstr ""
+msgstr "belum diimplementasi"
+
+#~ msgid "stereo off"
+#~ msgstr "stereo padam"

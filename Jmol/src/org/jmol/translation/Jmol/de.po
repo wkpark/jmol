@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-07 21:20+0200\n"
+"POT-Creation-Date: 2010-06-08 21:22+0200\n"
 "PO-Revision-Date: 2010-05-25 08:56+0000\n"
 "Last-Translator: xlazarus <xlazarus@lazarusware.at>\n"
 "Language-Team: German\n"
@@ -1555,10 +1555,6 @@ msgstr "Stereoskopische Ansicht"
 msgid "select stereo type"
 msgstr "Stereo-Modus auswählen"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:126
-msgid "stereo off"
-msgstr "Stereo aus"
-
 #: org/openscience/jmol/app/webexport/Widgets.java:127
 msgid "Stereo Off"
 msgstr "Stereo aus"
@@ -1647,6 +1643,9 @@ msgstr "Ansicht herunterladen"
 #: org/openscience/jmol/app/webexport/Widgets.java:225
 msgid "unimplemented"
 msgstr "nicht implementiert"
+
+#~ msgid "stereo off"
+#~ msgstr "Stereo aus"
 
 #~ msgid "Show Selected"
 #~ msgstr "Auswahl anzeigen"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-07 21:20+0200\n"
+"POT-Creation-Date: 2010-06-08 21:22+0200\n"
 "PO-Revision-Date: 2010-05-25 21:47+0000\n"
 "Last-Translator: Angel Spy <melissadilara@yahoo.com>\n"
 "Language-Team: Turkish <yerellestirme@kde.org.tr>\n"
@@ -1538,10 +1538,6 @@ msgstr ""
 msgid "select stereo type"
 msgstr "stereo türünü seç"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:126
-msgid "stereo off"
-msgstr "stereo kapalı"
-
 #: org/openscience/jmol/app/webexport/Widgets.java:127
 msgid "Stereo Off"
 msgstr "Stereo Kapalı"
@@ -1630,6 +1626,9 @@ msgstr "İndirme görünümü"
 #: org/openscience/jmol/app/webexport/Widgets.java:225
 msgid "unimplemented"
 msgstr ""
+
+#~ msgid "stereo off"
+#~ msgstr "stereo kapalı"
 
 #~ msgid "Show Selected"
 #~ msgstr "Seçilenleri Göster"

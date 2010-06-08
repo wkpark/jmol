@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 11.7.x\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-07 21:20+0200\n"
+"POT-Creation-Date: 2010-06-08 21:22+0200\n"
 "PO-Revision-Date: 2010-03-18 11:27+0000\n"
 "Last-Translator: Krasznecz Zoltán <krasznecz.zoltan@gmail.com>\n"
 "Language-Team: Hungarian <Jmol-developers@lists.sf.net>\n"
@@ -1544,10 +1544,6 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:123
 msgid "select stereo type"
-msgstr ""
-
-#: org/openscience/jmol/app/webexport/Widgets.java:126
-msgid "stereo off"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:127

@@ -42,7 +42,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
   
   final static int STEREOCHEMISTRY_DEFAULT = 0;
   final static int STEREOCHEMISTRY_ALLENE = 2;
-  final static int STEREOCHEMISTRY_ALKENE = 3;
+  final static int STEREOCHEMISTRY_EZ = 3;
   final static int STEREOCHEMISTRY_TETRAHEDRAL = 4;
   final static int STEREOCHEMISTRY_TRIGONAL_BIPYRAMIDAL = 5;
   final static int STEREOCHEMISTRY_OCTAHEDRAL = 6;
@@ -181,7 +181,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
   int atomSite;
   int degree = -1;
   int nonhydrogenDegree = -1;
-  int valence = -1;
+  int valence = 0;
   int connectivity = -1;
   int ringMembership = Integer.MIN_VALUE;
   int ringSize = Integer.MIN_VALUE;
@@ -582,7 +582,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
     if (parent != null)
       return parent.getValence();
     int n = valence;
-    if (n < 0 && bonds != null)
+    if (n <= 0 && bonds != null)
       for (int i = bonds.length; --i >= 0;)
         n += bonds[i].getValence();
     valence = n;

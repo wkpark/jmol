@@ -251,7 +251,7 @@ public class TestSmilesParser extends TestCase {
     SmilesAtom atomN = molecule.addAtom();
     atomN.setSymbol("N");
     SmilesAtom atomC1 = molecule.addAtom();
-    atomC1.setChiralClass(SmilesAtom.CHIRALITY_TETRAHEDRAL);
+    atomC1.setChiralClass(SmilesAtom.STEREOCHEMISTRY_TETRAHEDRAL);
     atomC1.setChiralOrder(2);
     atomC1.setSymbol("C");
     createBond(atomN, atomC1, SmilesBond.TYPE_SINGLE, true);
@@ -282,7 +282,7 @@ public class TestSmilesParser extends TestCase {
     atomO1.setSymbol("O");
     addHydrogen(molecule, atomO1);
     SmilesAtom atomC1 = molecule.addAtom();
-    atomC1.setChiralClass(SmilesAtom.CHIRALITY_TETRAHEDRAL);
+    atomC1.setChiralClass(SmilesAtom.STEREOCHEMISTRY_TETRAHEDRAL);
     atomC1.setChiralOrder(1);
     atomC1.setSymbol("C");
     addHydrogen(molecule, atomC1);
@@ -303,7 +303,7 @@ public class TestSmilesParser extends TestCase {
     addHydrogen(molecule, atomC5);
     addHydrogen(molecule, atomC5);
     SmilesAtom atomC6 = molecule.addAtom();
-    atomC6.setChiralClass(SmilesAtom.CHIRALITY_TETRAHEDRAL);
+    atomC6.setChiralClass(SmilesAtom.STEREOCHEMISTRY_TETRAHEDRAL);
     atomC6.setChiralOrder(1);
     atomC6.setSymbol("C");
     addHydrogen(molecule, atomC6);
@@ -1023,7 +1023,7 @@ public class TestSmilesParser extends TestCase {
     SmilesAtom atomN = molecule.addAtom();
     atomN.setSymbol("N");
     SmilesAtom atomC1 = molecule.addAtom();
-    atomC1.setChiralClass(SmilesAtom.CHIRALITY_TETRAHEDRAL);
+    atomC1.setChiralClass(SmilesAtom.STEREOCHEMISTRY_TETRAHEDRAL);
     atomC1.setChiralOrder(1);
     atomC1.setSymbol("C");
     createBond(atomN, atomC1, SmilesBond.TYPE_SINGLE, true);
@@ -1062,7 +1062,7 @@ public class TestSmilesParser extends TestCase {
     addHydrogen(molecule, atomC2);
     addHydrogen(molecule, atomC2);
     SmilesAtom atomC3 = molecule.addAtom();
-    atomC3.setChiralClass(SmilesAtom.CHIRALITY_TETRAHEDRAL);
+    atomC3.setChiralClass(SmilesAtom.STEREOCHEMISTRY_TETRAHEDRAL);
     atomC3.setChiralOrder(1);
     atomC3.setSymbol("C");
     addHydrogen(molecule, atomC3);
@@ -1083,7 +1083,7 @@ public class TestSmilesParser extends TestCase {
     addHydrogen(molecule, atomC7);
     addHydrogen(molecule, atomC7);
     SmilesAtom atomC8 = molecule.addAtom();
-    atomC8.setChiralClass(SmilesAtom.CHIRALITY_TETRAHEDRAL);
+    atomC8.setChiralClass(SmilesAtom.STEREOCHEMISTRY_TETRAHEDRAL);
     atomC8.setChiralOrder(1);
     addHydrogen(molecule, atomC8);
     atomC8.setSymbol("C");
@@ -1119,7 +1119,7 @@ public class TestSmilesParser extends TestCase {
     atomCl.setSymbol("Cl");
     createBond(atomC1, atomCl, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomC2 = molecule.addAtom();
-    atomC2.setChiralClass(SmilesAtom.CHIRALITY_ALLENE);
+    atomC2.setChiralClass(SmilesAtom.STEREOCHEMISTRY_ALLENE);
     atomC2.setChiralOrder(1);
     atomC2.setSymbol("C");
     createBond(atomC1, atomC2, SmilesBond.TYPE_DOUBLE, true);
@@ -1149,7 +1149,7 @@ public class TestSmilesParser extends TestCase {
     atomCl.setSymbol("Cl");
     createBond(atomC1, atomCl, SmilesBond.TYPE_SINGLE, true);
     SmilesAtom atomC2 = molecule.addAtom();
-    atomC2.setChiralClass(SmilesAtom.CHIRALITY_ALLENE);
+    atomC2.setChiralClass(SmilesAtom.STEREOCHEMISTRY_ALLENE);
     atomC2.setChiralOrder(1);
     atomC2.setSymbol("C");
     createBond(atomC1, atomC2, SmilesBond.TYPE_DOUBLE, true);
@@ -1173,7 +1173,7 @@ public class TestSmilesParser extends TestCase {
     SmilesAtom atomF = molecule.addAtom();
     atomF.setSymbol("F");
     SmilesAtom atomPo = molecule.addAtom();
-    atomPo.setChiralClass(SmilesAtom.CHIRALITY_SQUARE_PLANAR);
+    atomPo.setChiralClass(SmilesAtom.STEREOCHEMISTRY_SQUARE_PLANAR);
     atomPo.setChiralOrder(1);
     atomPo.setSymbol("Po");
     createBond(atomF, atomPo, SmilesBond.TYPE_SINGLE, true);
@@ -1196,7 +1196,7 @@ public class TestSmilesParser extends TestCase {
     atomC.setSymbol("C");
     createBond(atomO, atomC, SmilesBond.TYPE_DOUBLE, true);
     SmilesAtom atomAs = molecule.addAtom();
-    atomAs.setChiralClass(SmilesAtom.CHIRALITY_TRIGONAL_BIPYRAMIDAL);
+    atomAs.setChiralClass(SmilesAtom.STEREOCHEMISTRY_TRIGONAL_BIPYRAMIDAL);
     atomAs.setChiralOrder(1);
     atomAs.setSymbol("As");
     createBond(atomC, atomAs, SmilesBond.TYPE_SINGLE, true);
@@ -1224,7 +1224,7 @@ public class TestSmilesParser extends TestCase {
     atomC.setSymbol("C");
     createBond(atomO, atomC, SmilesBond.TYPE_DOUBLE, true);
     SmilesAtom atomCo = molecule.addAtom();
-    atomCo.setChiralClass(SmilesAtom.CHIRALITY_OCTAHEDRAL);
+    atomCo.setChiralClass(SmilesAtom.STEREOCHEMISTRY_OCTAHEDRAL);
     atomCo.setChiralOrder(1);
     atomCo.setSymbol("Co");
     createBond(atomC, atomCo, SmilesBond.TYPE_SINGLE, true);

@@ -188,6 +188,8 @@ public class SmilesParser {
       case SmilesAtom.STEREOCHEMISTRY_DEFAULT:
         switch (nBonds) {
         case 2:
+          stereoClass = (sAtom.getValence() == 3 ? 3 : 2);
+          break;
         case 3:
         case 4:
         case 5:
@@ -200,7 +202,10 @@ public class SmilesParser {
         if (nBonds != 4)
           stereoClass = SmilesAtom.STEREOCHEMISTRY_DEFAULT;
         break;
-      case SmilesAtom.STEREOCHEMISTRY_ALKENE:
+      case SmilesAtom.STEREOCHEMISTRY_EZ:
+        if (nBonds != 2 && nBonds != 3)
+          stereoClass = SmilesAtom.STEREOCHEMISTRY_DEFAULT;
+        break;
       case SmilesAtom.STEREOCHEMISTRY_ALLENE:
       case SmilesAtom.STEREOCHEMISTRY_OCTAHEDRAL:
       case SmilesAtom.STEREOCHEMISTRY_TETRAHEDRAL:

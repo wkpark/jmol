@@ -38,13 +38,13 @@ public class SmilesBond implements JmolEdge {
   public final static int TYPE_SINGLE = 1;
   public final static int TYPE_DOUBLE = 2;
   public final static int TYPE_TRIPLE = 3;
-  public final static int TYPE_AROMATIC = 4;
-  public final static int TYPE_DIRECTIONAL_1 = 5;
-  public final static int TYPE_DIRECTIONAL_2 = 6;
-  public final static int TYPE_RING = 7;
-  public final static int TYPE_ANY = 8;
-  public final static int TYPE_BIO_SEQUENCE = 9;
-  public final static int TYPE_BIO_PAIR = 10;
+  public final static int TYPE_AROMATIC = 0x11;
+  public final static int TYPE_DIRECTIONAL_1 = 0x21;
+  public final static int TYPE_DIRECTIONAL_2 = 0x31;
+  public final static int TYPE_RING = 0x41;
+  public final static int TYPE_ANY = 0x51;
+  public final static int TYPE_BIO_SEQUENCE = 0x60;
+  public final static int TYPE_BIO_PAIR = 0x70;
   public final static int TYPE_MULTIPLE = 999;
   
   static String getBondOrderString(int order) {
@@ -62,8 +62,11 @@ public class SmilesBond implements JmolEdge {
 
   private SmilesAtom atom1;
   private SmilesAtom atom2;
+  
   int bondType;
   boolean isNot;
+  JmolEdge matchingBond;
+  
   public SmilesBond[] primitives;
   public int nPrimitives;
   public SmilesBond[] bondsOr;

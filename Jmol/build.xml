@@ -578,7 +578,6 @@ all support for previous versions removed
         <exclude name="JmolSmiles*" />
         <exclude name="org/jmol/export/**/*" />
         <exclude name="org/jmol/multitouch/**/*" />
-        <exclude name="org/jmol/translation/**/*" />
         <exclude name="org/openscience/**/*" />
         <exclude name="com/sparshui/**/*" />
       </fileset>
@@ -751,7 +750,6 @@ all support for previous versions removed
         <include name="**/*" />
         <exclude name="JmolSmiles*" />
         <exclude name="org/openscience/**/*" />
-        <exclude name="org/jmol/translation/**/*" />
      </fileset>
       <fileset dir="${appletjars.dir}" includes="**/*"/>
     </jar>
@@ -929,11 +927,9 @@ all support for previous versions removed
 	        <include name="org/jmol/api/JmolMolecule.class" />
 	        <include name="org/jmol/api/SmilesMatcherInterface.class" />
 	        <include name="org/jmol/util/Elements.class" />
-	        <!-- 
 	      	<include name="org/jmol/util/DefaultLogger.class" />
 	        <include name="org/jmol/util/Logger.class" />
 	        <include name="org/jmol/util/LoggerInterface.class" />
-	        -->	
 	      </fileset>
 	      <fileset dir="${appletjars.dir}">
 	        <include name="javax/vecmath/*3f*" />

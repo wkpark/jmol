@@ -559,14 +559,15 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
 
   private JmolNode getHydrogens(JmolNode atom, BitSet bsHydrogens) {
     JmolEdge[] b = atom.getEdges();
-    JmolNode atomH = null;
-    for (int k = 0, i = 0; i < b.length; i++)
-      if ((atomH = jmolAtoms[k = atom.getBondedAtomIndex(i)]).getElementNumber() == 1) {
+    int k = -1;
+    for (int i = 0; i < b.length; i++)
+      if (jmolAtoms[atom.getBondedAtomIndex(i)].getElementNumber() == 1) {
+        k = atom.getBondedAtomIndex(i);
         if (bsHydrogens == null)
           break;
         bsHydrogens.set(k);
       }
-    return atomH;
+    return (k >= 0 ? jmolAtoms[k] : null);
   }
 
   private boolean checkPrimitiveAtom(SmilesAtom patternAtom, int iAtom) {
@@ -729,6 +730,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
         if (!checkPrimitiveBond(patternAtom, atom1, patternBond.primitives[i], iAtom, matchingAtom, bond))
           return false;
     }
+    patternBond.matchingBond = bond;
     return true;
   }
 
@@ -815,17 +817,19 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
           sAtom1 = sAtom.getBond(0).getOtherAtom(sAtom);
           sAtom2 = sAtom.getBond(1).getOtherAtom(sAtom);
           if (sAtom1 == null || sAtom2 == null)
-            continue;
+            continue; // "OK - stereochemistry is desgnated for something like C=C=O
           // cumulenes
-          while (sAtom1.getCovalentBondCount() == 2 && sAtom2.getCovalentBondCount() == 2) {
-            sAtom1 = sAtom1.getBond(0).getOtherAtom(sAtom1);
-            sAtom2 = sAtom2.getBond(1).getOtherAtom(sAtom2);
-          }
-          // derive atoms 1-4 from different carbons:
           atom1 = getJmolAtom(sAtom1.getMatchingBondedAtom(0));
           atom2 = getJmolAtom(sAtom1.getMatchingBondedAtom(1));
+          while (atom1.getCovalentBondCount() == 2 && atom2.getCovalentBondCount() == 2) {
+            sAtom1 = sAtom1.getBond(0).getOtherAtom(sAtom1);
+            sAtom2 = sAtom2.getBond(1).getOtherAtom(sAtom2);
+            atom1 = getJmolAtom(sAtom1.getMatchingBondedAtom(0));
+            atom2 = getJmolAtom(sAtom1.getMatchingBondedAtom(1));
+          }
+          // derive atoms 1-4 from different carbons:
           if (atom2 == null && nH != 1)
-            continue;
+            continue; // "OK -- stereochem is designated for 2H case
           if (atom2 == null) {
             atom2 = getHydrogens(getJmolAtom(sAtom1.getMatchingAtom()), null);
             if (sAtom1.isFirst) {
@@ -846,17 +850,18 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
             continue;
           if (atom4 == null)
             atom4 = getHydrogens(getJmolAtom(sAtom2.getMatchingAtom()), null);
-          if (isSmilesFind && !setSmilesCoordinates(sAtom, new JmolNode[] { atom1, atom2, atom3, atom4, null, null }))
+          if (isSmilesFind && !setSmilesCoordinates(sAtom, sAtom2, new JmolNode[] { atom1, atom2, atom3, atom4, null, null }))
               return false;
           if (sAtom.not != (getChirality(atom2, atom3, atom4, atom1, v) != order))
             return false;
           continue;
-        case SmilesAtom.STEREOCHEMISTRY_ALKENE:
-          jn = new JmolNode[4];
+        case SmilesAtom.STEREOCHEMISTRY_EZ:
+          jn = new JmolNode[6];
+          jn[4] = new SmilesAtom(604);
           int nBonds = sAtom.getCovalentBondCount();
           for (int k = 0; k < nBonds; k++) {
             sAtom1 = sAtom.bonds[k].getOtherAtom(sAtom);
-            if (sAtom.bonds[k].getCovalentOrder() == 2) {
+            if (sAtom.bonds[k].matchingBond.getCovalentOrder() == 2) {
               sAtom2 = sAtom1;
             } else if (jn[0] == null) {
               jn[0] = getJmolAtom(sAtom1.getMatchingAtom());
@@ -864,25 +869,31 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
               jn[1] = getJmolAtom(sAtom1.getMatchingAtom());
             }
           }
-          if (sAtom2 == null || jn[1] == null && nH != 1)
+          if (sAtom2 == null)
             continue;
           if (jn[1] == null)
-            getH(sAtom, jn, 1);
+            getH(sAtom, sAtom2, jn, 1, false);
           nBonds = sAtom2.getCovalentBondCount();
+          if (nBonds < 2 || nBonds > 3)
+            continue;  // [C@]=O always matches
           for (int k = 0; k < nBonds; k++) {
-            sAtom1 = sAtom.bonds[k].getOtherAtom(sAtom);
-            if (sAtom.bonds[k].getCovalentOrder() == 2) {
+            sAtom1 = sAtom2.bonds[k].getOtherAtom(sAtom2);
+            if (sAtom2.bonds[k].matchingBond.getCovalentOrder() == 2) {
             } else if (jn[2] == null) {
-              jn[2] = getJmolAtom(sAtom2.getMatchingAtom());
+              jn[2] = getJmolAtom(sAtom1.getMatchingAtom());
             } else {
-              jn[3] = getJmolAtom(sAtom2.getMatchingAtom());
+              jn[3] = getJmolAtom(sAtom1.getMatchingAtom());
             }
           }
-          if (jn[3] == null && !getH(sAtom2, jn, 3))
-              continue;
-          if (isSmilesFind && !setSmilesCoordinates(sAtom, jn))
+          if (jn[3] == null)
+            getH(sAtom2, sAtom, jn, 3, false);
+          if (isSmilesFind && !setSmilesCoordinates(sAtom, sAtom2, jn))
               return false;
-          if (!checkStereochemistry(sAtom.not, atom0, chiralClass, order, jn[0], jn[3], jn[2], jn[1], null, null, v))
+          if (jn[1] == null)
+            getH(sAtom, sAtom2, jn, 1, true);
+          if (jn[3] == null)
+            getH(sAtom2, sAtom, jn, 3, true);
+          if (!checkStereochemistry(sAtom.not, atom0, chiralClass, order, jn[0], jn[1], jn[2], jn[3], null, null, v))
             return false;
           continue;
         case SmilesAtom.STEREOCHEMISTRY_TETRAHEDRAL:
@@ -918,7 +929,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
           // we only use TP1, TP2, OH1, OH2 here.
           // so we must also check that the two bookend atoms are axial
 
-          if (isSmilesFind && !setSmilesCoordinates(sAtom, new JmolNode[] { atom1, atom2, atom3, atom4, atom5, atom6 }))
+          if (isSmilesFind && !setSmilesCoordinates(sAtom, sAtom2, new JmolNode[] { atom1, atom2, atom3, atom4, atom5, atom6 }))
               return false;
           
           if (!checkStereochemistry(sAtom.not, atom0, chiralClass, order, atom1, atom2, atom3, atom4, atom5, atom6, v))
@@ -995,26 +1006,41 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
     
   }
 
-  private boolean getH(SmilesAtom sAtom, JmolNode[] saTemp, int pt) {
-    if ((saTemp[pt] = getHydrogens(getJmolAtom(sAtom.getMatchingAtom()), null)) == null)
-      return false;
+  private void getH(SmilesAtom sAtom, SmilesAtom sAtom2, JmolNode[] jn, int pt, boolean asLonePair) {
+    if (asLonePair) {
+      Vector3f v = new Vector3f((Point3f)getJmolAtom(sAtom.getMatchingAtom()));
+      v.scale(-4);
+      v.add((Point3f) jn[pt - 1]);
+      if (isSmilesFind) {
+        v.add((Point3f) jn[3 - pt]);
+        if (jn[4 - pt] != null)
+          v.add((Point3f) jn[4 - pt]);
+      } else {
+        v.add((Point3f)getJmolAtom(sAtom2.getMatchingAtom()));
+      }
+      v.scale(-0.5f);
+      jn[pt] = new SmilesAtom(-1);
+      ((Point3f) jn[pt]).set(v);
+    } else if ((jn[pt] = getHydrogens(getJmolAtom(sAtom.getMatchingAtom()), null)) == null) {
+      return;
+    }
     if (sAtom.isFirst) {
       // check for the VERY first atom in a set
       // attached H is first in that case
       // so we have to switch it, since we have
       // assigned already the first atom to be
       // the first pattern atom
-      JmolNode a = saTemp[pt];
-      saTemp[pt] = saTemp[pt - 1];
-      saTemp[pt - 1] = a;
+      JmolNode a = jn[pt];
+      jn[pt] = jn[pt - 1];
+      jn[pt - 1] = a;
     }
-    return true;
   }
   
   static boolean checkStereochemistry(boolean isNot, JmolNode atom0, int chiralClass, int order, 
                                 JmolNode atom1, JmolNode atom2, JmolNode atom3, JmolNode atom4, JmolNode atom5, JmolNode atom6, VTemp v) {
     
     switch (chiralClass) {
+    default:
     case SmilesAtom.STEREOCHEMISTRY_TETRAHEDRAL:
       return (isNot == (getChirality(atom2, atom3, atom4, atom1, v) != order));
     case SmilesAtom.STEREOCHEMISTRY_TRIGONAL_BIPYRAMIDAL:
@@ -1032,9 +1058,12 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
       // now check rotation in relation to the first atom
       v.vNorm2.set((Point3f) atom0);
       v.vNorm2.sub((Point3f) atom1);
-      return (isNot == ((v.vNorm2.dot(v.vNorm1) < 0 ? 1 : 2) != order));
+      return (isNot == ((v.vNorm1.dot(v.vNorm2) < 0 ? 2 : 1) == order));
+    case SmilesAtom.STEREOCHEMISTRY_EZ:
+      getPlaneNormals(atom1, atom2, atom3, atom4, v);
+      //System.out.println(order + " "+ atom1.getAtomName() + "-" + atom2.getAtomName() + "-"  + atom3.getAtomName() + "-" + atom4.getAtomName());
+      return (isNot == ((v.vNorm1.dot(v.vNorm2) < 0 ? 1 : 2) == order));
     case SmilesAtom.STEREOCHEMISTRY_SQUARE_PLANAR:
-    case SmilesAtom.STEREOCHEMISTRY_ALKENE:
       getPlaneNormals(atom1, atom2, atom3, atom4, v);
       // vNorm1 vNorm2 vNorm3 are right-hand normals for the given
       // triangles
@@ -1042,19 +1071,10 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
       // sp1 up up up U-shaped
       // sp2 up up DOWN 4-shaped
       // sp3 up DOWN DOWN Z-shaped
-
-      if (v.vNorm1.dot(v.vNorm2) < 0) {
-        if (isNot != (order != 3))
-          return false;
-      } else if (isNot != (v.vNorm2.dot(v.vNorm3) < 0)) {
-        if (order != 2)
-          return false;
-      } else if (isNot != (order != 1)) {
-        return false;
-      }
-      return true;
+      return (v.vNorm1.dot(v.vNorm2) < 0 ? isNot == (order != 3)
+          : v.vNorm2.dot(v.vNorm3) < 0 ? isNot == (order != 2)
+          : isNot == (order != 1));
     }
-    return true;
   }
   
   private JmolNode getJmolAtom(int i) {
@@ -1118,7 +1138,6 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
       case JmolEdge.BOND_STEREO_FAR:
         dir1 = -mode;
       }
-      System.out.println("bond " + nBonds + " " + atom + " " + ((Point3f) atom).y  + " " +  bond + " " + mode + " " + dir1 + " " + dbAtom1 + " " + dbAtom2);
     }
     int dir2 = 0;
     nBonds = 0;
@@ -1139,7 +1158,6 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
       case JmolEdge.BOND_STEREO_FAR:
         dir2 = -mode;
       }
-      System.out.println("bond " + nBonds + " " + atom + " " + ((Point3f) atom).y  + " " +  bond + " " + mode + " " + dir2 + " " + dbAtom1 + " " + dbAtom2);
       
     }
     //     2     3
@@ -1151,17 +1169,15 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
     // check for overall directionality matching even/oddness of bond order
     // and switch Y positions of 3 and 4 if necessary
     //  
-    System.out.println(dir1 + " " + dir2 + " " + (dir1 * dir2 > 0) + " " + (Math.abs(dir1) % 2 == Math.abs(dir2) % 2));
     if ((dir1 * dir2 > 0) == (Math.abs(dir1) % 2 == Math.abs(dir2) % 2)) {
     float y = ((Point3f) atoms[0]).y;
     ((Point3f) atoms[0]).y = ((Point3f) atoms[1]).y;
     ((Point3f) atoms[1]).y = y;
     }
-    System.out.println(atoms[0] + " " + ((Point3f) atoms[0]).y + " and " + atoms[1] + " " + ((Point3f) atoms[1]).y);
     
   }
 
-  private boolean setSmilesCoordinates(SmilesAtom sAtom, JmolNode[] cAtoms) {
+  private boolean setSmilesCoordinates(SmilesAtom sAtom, SmilesAtom sAtom2, JmolNode[] cAtoms) {
 
     // When testing equality of two SMILES strings in terms of stereochemistry,
     // we need to set the atom positions based on the ORIGINAL SMILES order,
@@ -1188,19 +1204,18 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
     // atom set.
     int[] map = new int[cAtoms[4] == null ? 4 : cAtoms[5] == null ? 5 : 6];
     JmolEdge[] bonds = atom.getEdges();
-    for (int i = 0; i < map.length; i++) {
-      map[i] = cAtoms[i].getIndex();
-      // System.out.println("i=" + i + "; cAtoms[i]=" + map[i]);
-    }
+    for (int i = 0; i < map.length; i++)
+      map[i] = (cAtoms[i] == null ? 104 + i * 100: cAtoms[i].getIndex());
     int k;
     JmolNode a2 = null;
-    JmolEdge[] b2 = null;
     if (chiralClass == 2) {
       a2 = bonds[1].getOtherAtom(atom);
-      b2 = a2.getEdges();
       atom = bonds[0].getOtherAtom(atom);
       bonds = atom.getEdges();
+    } else if (chiralClass == 3) {
+      a2 = jmolAtoms[sAtom2.getMatchingAtom()];
     }
+    JmolEdge[] b2 = (a2 == null ? null : a2.getEdges());
     for (int i = 0; i < map.length; i++) {
       for (k = 0; k < bonds.length; k++)
         if (bonds[k].getOtherAtom(atom) == cAtoms[i])
@@ -1211,7 +1226,8 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
         for (k = 0; k < b2.length; k++)
           if (b2[k].getOtherAtom(a2) == cAtoms[i])
             break;
-        map[i] = (k * 10 + 200) + i;
+        if (k < b2.length)
+          map[i] = (k * 10 + 300) + i;
       }
     }
     Arrays.sort(map);
@@ -1233,7 +1249,22 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
       cAtoms[map[2]].set(0, 1, -1);
       cAtoms[map[3]].set(-1, -1, -1);
       break;
-    case SmilesAtom.STEREOCHEMISTRY_ALKENE:
+    case SmilesAtom.STEREOCHEMISTRY_EZ:
+      switch (chiralOrder) {
+      case 1: // U-shaped
+        cAtoms[map[0]].set(1, 0, 0);
+        cAtoms[map[3]].set(0, 1, 0);
+        cAtoms[map[2]].set(-1, 0, 0);
+        cAtoms[map[1]].set(0, -1, 0);
+        break;
+      case 2: // 4-shaped
+        cAtoms[map[0]].set(1, 0, 0);
+        cAtoms[map[3]].set(-1, 0, 0);
+        cAtoms[map[2]].set(0, 1, 0);
+        cAtoms[map[1]].set(0, -1, 0);
+        break;
+      }
+      break;
     case SmilesAtom.STEREOCHEMISTRY_SQUARE_PLANAR:
       switch (chiralOrder) {
       case 1: // U-shaped

@@ -855,7 +855,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
           if (sAtom.not != (getChirality(atom2, atom3, atom4, atom1, v) != order))
             return false;
           continue;
-        case SmilesAtom.STEREOCHEMISTRY_EZ:
+        case SmilesAtom.STEREOCHEMISTRY_DOUBLE_BOND:
           jn = new JmolNode[6];
           jn[4] = new SmilesAtom(604);
           int nBonds = sAtom.getCovalentBondCount();
@@ -1059,7 +1059,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
       v.vNorm2.set((Point3f) atom0);
       v.vNorm2.sub((Point3f) atom1);
       return (isNot == ((v.vNorm1.dot(v.vNorm2) < 0 ? 2 : 1) == order));
-    case SmilesAtom.STEREOCHEMISTRY_EZ:
+    case SmilesAtom.STEREOCHEMISTRY_DOUBLE_BOND:
       getPlaneNormals(atom1, atom2, atom3, atom4, v);
       //System.out.println(order + " "+ atom1.getAtomName() + "-" + atom2.getAtomName() + "-"  + atom3.getAtomName() + "-" + atom4.getAtomName());
       return (isNot == ((v.vNorm1.dot(v.vNorm2) < 0 ? 1 : 2) == order));
@@ -1249,7 +1249,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
       cAtoms[map[2]].set(0, 1, -1);
       cAtoms[map[3]].set(-1, -1, -1);
       break;
-    case SmilesAtom.STEREOCHEMISTRY_EZ:
+    case SmilesAtom.STEREOCHEMISTRY_DOUBLE_BOND:
       switch (chiralOrder) {
       case 1: // U-shaped
         cAtoms[map[0]].set(1, 0, 0);

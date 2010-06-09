@@ -819,9 +819,9 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
         if (Logger.debugging)
           Logger.debug("...type " + chiralClass);
         switch (chiralClass) {
-        case SmilesAtom.STEREOCHEMISTRY_DOUBLE_BOND:
+//        case SmilesAtom.STEREOCHEMISTRY_DOUBLE_BOND:
         case SmilesAtom.STEREOCHEMISTRY_ALLENE:
-          boolean isAllene = (chiralClass == SmilesAtom.STEREOCHEMISTRY_ALLENE);
+          boolean isAllene = true;//(chiralClass == SmilesAtom.STEREOCHEMISTRY_ALLENE);
           if (isAllene) {
             sAtom1 = sAtom.getBond(0).getOtherAtom(sAtom);
             sAtom2 = sAtom.getBond(1).getOtherAtom(sAtom);
@@ -1077,15 +1077,15 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
       v.vNorm2.set((Point3f) atom0);
       v.vNorm2.sub((Point3f) atom1);
       return (isNot == ((v.vNorm1.dot(v.vNorm2) < 0 ? 2 : 1) == order));
-    case SmilesAtom.STEREOCHEMISTRY_DOUBLE_BOND:
+    //case SmilesAtom.STEREOCHEMISTRY_DOUBLE_BOND:
       //System.out.println("draw p1 @{point" + new Point3f((Point3f)atom1)+"} color red");
       //System.out.println("draw p2 @{point" + new Point3f((Point3f)atom2)+"} color yellow");
       //System.out.println("draw p3 @{point" + new Point3f((Point3f)atom3)+"} color green");
       //System.out.println("draw p4 @{point" + new Point3f((Point3f)atom4)+"} color blue");
 
-      getPlaneNormals(atom1, atom2, atom3, atom4, v);
+      //getPlaneNormals(atom1, atom2, atom3, atom4, v);
       //System.out.println(order + " "+ atom1.getAtomName() + "-" + atom2.getAtomName() + "-"  + atom3.getAtomName() + "-" + atom4.getAtomName());
-      return (isNot == ((v.vNorm1.dot(v.vNorm2) < 0 ? 2 : 1) == order));
+      //return (isNot == ((v.vNorm1.dot(v.vNorm2) < 0 ? 2 : 1) == order));
     case SmilesAtom.STEREOCHEMISTRY_SQUARE_PLANAR:
       getPlaneNormals(atom1, atom2, atom3, atom4, v);
       // vNorm1 vNorm2 vNorm3 are right-hand normals for the given
@@ -1267,6 +1267,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
       cAtoms[map[2]].set(0, 1, -1);
       cAtoms[map[3]].set(-1, -1, -1);
       break;
+/*      
     case SmilesAtom.STEREOCHEMISTRY_DOUBLE_BOND:
       switch (chiralOrder) {
       case 1: // U-shaped 0 3 2 1
@@ -1283,6 +1284,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
         break;
       }
       break;
+*/      
     case SmilesAtom.STEREOCHEMISTRY_SQUARE_PLANAR:
       switch (chiralOrder) {
       case 1: // U-shaped

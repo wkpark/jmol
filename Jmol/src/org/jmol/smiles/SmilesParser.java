@@ -204,10 +204,12 @@ public class SmilesParser {
         if (nBonds != 4)
           stereoClass = SmilesAtom.STEREOCHEMISTRY_DEFAULT;
         break;
+/*        
       case SmilesAtom.STEREOCHEMISTRY_DOUBLE_BOND:
         if (nBonds != 2 && nBonds != 3)
           stereoClass = SmilesAtom.STEREOCHEMISTRY_DEFAULT;
         break;
+*/        
       case SmilesAtom.STEREOCHEMISTRY_ALLENE:
       case SmilesAtom.STEREOCHEMISTRY_OCTAHEDRAL:
       case SmilesAtom.STEREOCHEMISTRY_TETRAHEDRAL:

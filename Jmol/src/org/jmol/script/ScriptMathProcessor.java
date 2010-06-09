@@ -39,6 +39,7 @@ import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.api.JmolEdge;
+import org.jmol.api.JmolMolecule;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.BoxInfo;
 import org.jmol.modelset.MeasurementData;
@@ -47,7 +48,6 @@ import org.jmol.script.ScriptEvaluator.ScriptException;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
-
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Parser;
@@ -1118,14 +1118,16 @@ class ScriptMathProcessor {
 
     ScriptVariable x1 = getX();
     String sFind = ScriptVariable.sValue(args[0]);
-    String flags = (args.length > 1 ? ScriptVariable.sValue(args[1]) : "");
+    String flags = (args.length > 1  && args[1].tok != Token.on && args[1].tok != Token.off 
+        ? ScriptVariable.sValue(args[1]) : "");
     boolean isSmiles = sFind.equalsIgnoreCase("SMILES");
     boolean isSearch = sFind.equalsIgnoreCase("SMARTS");
+    boolean isMF = sFind.equalsIgnoreCase("MF");
     if (isSmiles || isSearch || x1.tok == Token.bitset) {
       int iPt = (isSmiles || isSearch ? 2 : 1);
       BitSet bs2 = (iPt < args.length && args[iPt].tok == Token.bitset ? (BitSet) args[iPt++].value
           : null);
-      boolean isAll = (iPt < args.length && ScriptVariable.bValue(args[iPt]));
+      boolean isAll = (args[args.length - 1].tok == Token.on);
       Object ret = null;
       if (x1.tok == Token.string) {
         String smiles = ScriptVariable.sValue(x1);
@@ -1144,8 +1146,14 @@ class ScriptMathProcessor {
       if (isSmiles || isSearch)
         sFind = flags;
       if (x1.tok == Token.bitset) {
+        if (isMF) {  
+          return addX(JmolMolecule.getMolecularFormula(viewer.getModelSet().atoms
+              , (BitSet) x1.value, false));
+        }
         ret = eval.getSmilesMatches(sFind, null, (BitSet) x1.value, null, null,
             bs2, !isSmiles, isAll);
+        if (isAll && sFind.length() == 0)
+          return addX((String) ret);
       }
       if (ret != null)
         return (isAll ? addX((String[]) ret)
@@ -1158,7 +1166,7 @@ class ScriptMathProcessor {
           if (bs == null)
             continue;
           bs = (BitSet) eval.getSmilesMatches(sFind, null, bs, null, null,
-              null, !isSmiles, false);
+              null, !isSmiles, isAll && sFind.length() == 0);
           if (bs.cardinality() > 0)
             v.addElement(bs);
         }

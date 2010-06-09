@@ -40,7 +40,8 @@ public class JmolMolecule {
   
   public JmolMolecule() {}
   
-  protected JmolNode[] nodes;
+  public JmolNode[] nodes;
+  
   public int moleculeIndex;
   public int modelIndex;
   public int indexInModel;
@@ -144,10 +145,17 @@ public class JmolMolecule {
     return molecules;
   }
   
-  public String getMolecularFormula() {
+  public static String getMolecularFormula(JmolNode[] atoms, BitSet bsSelected, boolean includeMissingHydrogens) {
+    JmolMolecule m = new JmolMolecule();
+    m.nodes = atoms;
+    m.atomList = bsSelected;
+    return m.getMolecularFormula(includeMissingHydrogens);
+  }
+  
+  public String getMolecularFormula(boolean includeMissingHydrogens) {
     if (mf != null)
       return mf;
-    getElementAndAtomCount();
+    getElementAndAtomCount(includeMissingHydrogens);
     String mf = "";
     String sep = "";
     int nX;
@@ -181,7 +189,7 @@ public class JmolMolecule {
     this.indexInModel = indexInModel;
   }
 
-  private void getElementAndAtomCount() {
+  private void getElementAndAtomCount(boolean includeMissingHydrogens) {
     if (atomList == null) {
       atomList = new BitSet();
       atomList.set(0, nodes.length);
@@ -197,6 +205,14 @@ public class JmolMolecule {
         if (elementCounts[n] == 1)
           nElements++;
         elementNumberMax = Math.max(elementNumberMax, n);
+        if (includeMissingHydrogens) {
+        int nH = nodes[i].getImplicitHydrogenCount();
+        if (nH > 0) {
+          if (elementCounts[1] == 0)
+            nElements++;
+          elementCounts[1] += nH;
+        }
+        }
       } else {
         n = Elements.altElementIndexFromNumber(n);
         altElementCounts[n]++;

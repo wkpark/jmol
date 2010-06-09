@@ -1546,7 +1546,7 @@ abstract public class ModelCollection extends BondCollection {
         info.put("numberInModel", new Integer(m.indexInModel + 1));
         info.put("nAtoms", new Integer(m.atomCount));
         info.put("nElements", new Integer(m.nElements));
-        info.put("mf", m.getMolecularFormula());
+        info.put("mf", m.getMolecularFormula(false));
         V.addElement(info);
       }
     }

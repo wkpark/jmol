@@ -158,16 +158,14 @@ public class SmilesAromatic {
           r2 = iAtom;
       }
       // get the normals through r1 - k - r2 and r1 - iSub - r2
-      getNormalThroughPoints(atoms[r1],
-          atoms[i], atoms[r2], vTemp, vA, vB);
+      getNormalThroughPoints(atoms[r1], atoms[i], atoms[r2], vTemp, vA, vB);
       if (vMean == null)
         vMean = new Vector3f();
       if (!addNormal(vTemp, vMean, maxDev))
         return false;
       vNorms[nNorms++] = new Vector3f(vTemp);
       if (iSub >= 0) {
-        getNormalThroughPoints(atoms[r1],
-            atoms[iSub], atoms[r2], vTemp, vA, vB);
+        getNormalThroughPoints(atoms[r1], atoms[iSub], atoms[r2], vTemp, vA, vB);
         if (!addNormal(vTemp, vMean, maxDev))
           return false;
         vNorms[nNorms++] = new Vector3f(vTemp);
@@ -178,7 +176,8 @@ public class SmilesAromatic {
     return isFlat;
   }
 
-  private final static boolean addNormal(Vector3f vTemp, Vector3f vMean, float maxDev) {
+  private final static boolean addNormal(Vector3f vTemp, Vector3f vMean,
+                                         float maxDev) {
     float similarity = vMean.dot(vTemp);
     if (similarity != 0 && Math.abs(similarity) < maxDev)
       return false;
@@ -190,8 +189,8 @@ public class SmilesAromatic {
   }
 
   private final static boolean checkStandardDeviation(Vector3f[] vNorms,
-                                                Vector3f vMean, int n,
-                                                float cutoff) {
+                                                      Vector3f vMean, int n,
+                                                      float cutoff) {
     double sum = 0;
     double sum2 = 0;
     for (int i = 0; i < n; i++) {
@@ -203,7 +202,7 @@ public class SmilesAromatic {
     //System.out.println("stdev = " + sum);
     return (sum < cutoff);
   }
-  
+
   static float getNormalThroughPoints(JmolNode pointA, JmolNode pointB,
                                       JmolNode pointC, Vector3f vNorm,
                                       Vector3f vAB, Vector3f vAC) {
@@ -216,6 +215,5 @@ public class SmilesAromatic {
     vAB.set((Point3f) pointA);
     return -vAB.dot(vNorm);
   }
-
 
 }

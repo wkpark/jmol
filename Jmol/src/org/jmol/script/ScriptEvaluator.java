@@ -6307,14 +6307,13 @@ public class ScriptEvaluator {
         return new String[] { "" };
       return new BitSet();
     }
-    try {
     if (pattern.length() == 0) {
-      Object ret = viewer.getSmilesMatcher().getBioSmiles(
+      Object ret = viewer.getSmilesMatcher().getSmiles(
           viewer.getModelSet().atoms,
           viewer.getAtomCount(),
           bsSelected,
           Viewer.getJmolVersion() + " "
-              + viewer.getModelName(viewer.getCurrentModelIndex()));
+              + viewer.getModelName(viewer.getCurrentModelIndex()), isAll);
       if (ret == null)
         evalError(viewer.getSmilesMatcher().getLastException(), null);
       return ret;
@@ -6355,10 +6354,6 @@ public class ScriptEvaluator {
       for (int j = 0; j < b.length; j++)
         matches[j] = Escape.escape(b[j], asAtoms);
       return matches;
-    } catch (Exception e) {
-      evalError(viewer.getSmilesMatcher().getLastException(), null);
-      return null; // unattainable
-    }
   }
 
   private void connect(int index) throws ScriptException {

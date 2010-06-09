@@ -730,10 +730,10 @@ public class SmilesParser {
     // in which case the "/" is referring to "second to first" not "first to second"
     switch (bond.bondType) {
     case SmilesBond.TYPE_UNKNOWN:
-      bond.bondType = (bond0.bondType != SmilesBond.TYPE_UNKNOWN 
-          ? bond0.bondType : isSmarts || currentAtom.isAromatic()
-            && bond0.getAtom1().isAromatic() ? SmilesBond.TYPE_ANY
-            : SmilesBond.TYPE_SINGLE);
+      bond.bondType = (bond0.bondType != SmilesBond.TYPE_UNKNOWN ? bond0.bondType
+          : isSmarts || currentAtom.isAromatic()
+              && bond0.getAtom1().isAromatic() ? SmilesBond.TYPE_ANY
+              : SmilesBond.TYPE_SINGLE);
       break;
     case SmilesBond.TYPE_DIRECTIONAL_1:
       bond.bondType = SmilesBond.TYPE_DIRECTIONAL_2;
@@ -742,7 +742,8 @@ public class SmilesParser {
       bond.bondType = SmilesBond.TYPE_DIRECTIONAL_1;
       break;
     }
-    if (bond0.bondType != SmilesBond.TYPE_UNKNOWN && bond0.bondType != bond.bondType)
+    if (bond0.bondType != SmilesBond.TYPE_UNKNOWN
+        && bond0.bondType != bond.bondType)
       throw new InvalidSmilesException("Incoherent bond type for ring");
     bond0.set(bond);
     currentAtom.bondCount--;
@@ -848,10 +849,13 @@ public class SmilesParser {
       throw new InvalidSmilesException("invalid '+'");
 
     SmilesBond newBond = (bondSet == null ? (bond == null ? new SmilesBond(
-        currentAtom, null,
+        currentAtom,
+        null,
         (isBioSequence && currentAtom != null ? (isBranchAtom ? SmilesBond.TYPE_BIO_PAIR
-            : SmilesBond.TYPE_BIO_SEQUENCE) : SmilesBond.TYPE_UNKNOWN), false)
-        : bond) : isPrimitive ? bondSet.addPrimitive() : bondSet.addBondOr());
+            : SmilesBond.TYPE_BIO_SEQUENCE)
+            : SmilesBond.TYPE_UNKNOWN), false)
+        : bond)
+        : isPrimitive ? bondSet.addPrimitive() : bondSet.addBondOr());
 
     if (ch != '\0'
         && !checkLogic(molecule, pattern, null, newBond, currentAtom,

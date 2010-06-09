@@ -33,13 +33,14 @@ import org.jmol.api.JmolEdge;
 import org.jmol.api.JmolNode;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Elements;
+
 //import org.jmol.util.Logger;
 
 /**
  * This class represents an atom in a <code>SmilesMolecule</code>.
  */
 public class SmilesAtom extends Point3f implements JmolNode {
-  
+
   final static int STEREOCHEMISTRY_DEFAULT = 0;
   final static int STEREOCHEMISTRY_ALLENE = 2;
   final static int STEREOCHEMISTRY_DOUBLE_BOND = 3;
@@ -47,16 +48,17 @@ public class SmilesAtom extends Point3f implements JmolNode {
   final static int STEREOCHEMISTRY_TRIGONAL_BIPYRAMIDAL = 5;
   final static int STEREOCHEMISTRY_OCTAHEDRAL = 6;
   final static int STEREOCHEMISTRY_SQUARE_PLANAR = 8;
-  
+
   static int getChiralityClass(String xx) {
-    return ("0;11;AL;DB;TH;TP;OH;77;SP;".indexOf(xx) + 1)/ 3;
+    return ("0;11;AL;DB;TH;TP;OH;77;SP;".indexOf(xx) + 1) / 3;
   }
 
   static final String UNBRACKETED_SET = "B, C, N, O, P, S, F, Cl, Br, I,";
+
   static boolean allowSmilesUnbracketed(String xx) {
     return (UNBRACKETED_SET.indexOf(xx + ",") >= 0);
   }
-  
+
   int index;
   String atomName;
   String residueName;
@@ -65,13 +67,13 @@ public class SmilesAtom extends Point3f implements JmolNode {
   boolean isBioSequence;
   boolean isLeadAtom;
   int notBondedIndex = -1;
-  
+
   void setBioAtom() {
     isBioAtom = true;
     if (parent != null)
       parent.isBioAtom = true;
   }
-  
+
   void setAtomName(String name, boolean isBioSequence) {
     if (name == null)
       return;
@@ -91,10 +93,10 @@ public class SmilesAtom extends Point3f implements JmolNode {
   boolean selected;
   boolean hasSymbol;
   boolean isFirst = true;
-  
+
   int jmolIndex = -1;
   short elementNumber = -2; // UNDEFINED (could be A or a or *)
-  
+
   private short atomicMass = Short.MIN_VALUE;
   private int charge;
   int missingHydrogenCount = Integer.MIN_VALUE;
@@ -111,15 +113,14 @@ public class SmilesAtom extends Point3f implements JmolNode {
     this.bonds = bonds;
   }
 
-
   int iNested = 0;
-  
+
   SmilesAtom[] atomsOr;
   int nAtomsOr;
-  
+
   SmilesAtom[] primitives;
   int nPrimitives;
-  
+
   public SmilesAtom addAtomOr() {
     if (atomsOr == null)
       atomsOr = new SmilesAtom[2];
@@ -152,20 +153,23 @@ public class SmilesAtom extends Point3f implements JmolNode {
     return sAtom;
   }
 
-  
   public String toString() {
-    String s = (residueChar != null || residueName != null ? (residueChar == null ? residueName : residueChar) + "." + atomName : elementNumber == -1 ? "A" : elementNumber == -2 ? "*" : Elements.elementSymbolFromNumber(elementNumber));
+    String s = (residueChar != null || residueName != null ? (residueChar == null ? residueName
+        : residueChar)
+        + "." + atomName
+        : elementNumber == -1 ? "A" : elementNumber == -2 ? "*" : Elements
+            .elementSymbolFromNumber(elementNumber));
     if (isAromatic)
       s = s.toLowerCase();
-    return "[" + s
-    + '.' + index + (matchingAtom >= 0 ? "(" + matchingAtom + ")" : "")
-//    + " ch:" + charge 
-//    + " ar:" + isAromatic 
-//    + " H:" + explicitHydrogenCount
-//    + " h:" + implicitHydrogenCount
-    + "]";
+    return "[" + s + '.' + index
+        + (matchingAtom >= 0 ? "(" + matchingAtom + ")" : "")
+        //    + " ch:" + charge 
+        //    + " ar:" + isAromatic 
+        //    + " H:" + explicitHydrogenCount
+        //    + " h:" + implicitHydrogenCount
+        + "]";
   }
-  
+
   private final static int INITIAL_BONDS = 4;
 
   /**
@@ -186,8 +190,9 @@ public class SmilesAtom extends Point3f implements JmolNode {
   int ringMembership = Integer.MIN_VALUE;
   int ringSize = Integer.MIN_VALUE;
   int ringConnectivity = -1;
-  
-  public SmilesAtom(int iComponent, int ptAtom, int flags, short atomicNumber, int charge) {
+
+  public SmilesAtom(int iComponent, int ptAtom, int flags, short atomicNumber,
+      int charge) {
     component = iComponent;
     index = ptAtom;
     this.atomSite = flags;
@@ -210,33 +215,33 @@ public class SmilesAtom extends Point3f implements JmolNode {
     if (missingHydrogenCount != Integer.MIN_VALUE)
       return true;
     // Determining max count
-  	int count = getDefaultCount(elementNumber, isAromatic);
+    int count = getDefaultCount(elementNumber, isAromatic);
     if (count == -2)
       return false;
     if (count == -1)
       return true;
-    
-      for (int i = 0; i < bondCount; i++) {
-        SmilesBond bond = bonds[i];
-        switch (bond.bondType) {
-        case SmilesBond.TYPE_ANY: // for aromatics
-        case SmilesBond.TYPE_SINGLE:
-        case SmilesBond.TYPE_DIRECTIONAL_1:
-        case SmilesBond.TYPE_DIRECTIONAL_2:
-          count -= 1;
-          break;
-        case SmilesBond.TYPE_DOUBLE:
-          count -= 2;
-          break;
-        case SmilesBond.TYPE_TRIPLE:
-          count -= 3;
-          break;
-        }
+
+    for (int i = 0; i < bondCount; i++) {
+      SmilesBond bond = bonds[i];
+      switch (bond.bondType) {
+      case SmilesBond.TYPE_ANY: // for aromatics
+      case SmilesBond.TYPE_SINGLE:
+      case SmilesBond.TYPE_DIRECTIONAL_1:
+      case SmilesBond.TYPE_DIRECTIONAL_2:
+        count -= 1;
+        break;
+      case SmilesBond.TYPE_DOUBLE:
+        count -= 2;
+        break;
+      case SmilesBond.TYPE_TRIPLE:
+        count -= 3;
+        break;
       }
-      
-      if (count > 0)
-        missingHydrogenCount = count;
-      return true;
+    }
+
+    if (count > 0)
+      missingHydrogenCount = count;
+    return true;
   }
 
   static int getDefaultCount(int elementNumber, boolean isAromatic) {
@@ -265,6 +270,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
     }
     return -2;
   }
+
   /**
    * Returns the atom index of the atom.
    * 
@@ -304,9 +310,9 @@ public class SmilesAtom extends Point3f implements JmolNode {
       elementNumber = 0;
       return true;
     }
-    
+
     if (isAromatic)
-      symbol = symbol.substring(0, 1).toUpperCase() 
+      symbol = symbol.substring(0, 1).toUpperCase()
           + (symbol.length() == 1 ? "" : symbol.substring(1));
     elementNumber = Elements.elementNumberFromSymbol(symbol, true);
     return (elementNumber != 0);
@@ -338,7 +344,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
   public void setAtomicMass(int mass) {
     atomicMass = (short) mass;
   }
-  
+
   /**
    * Returns the charge of the atom.
    * 
@@ -494,11 +500,11 @@ public class SmilesAtom extends Point3f implements JmolNode {
   public String getAtomName() {
     return atomName == null ? "" : atomName;
   }
-  
+
   public String getGroup3(boolean allowNull) {
     return residueName == null ? "" : residueName;
   }
-  
+
   public String getGroup1(char c0) {
     return residueChar == null ? "" : residueChar;
   }
@@ -515,7 +521,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
       bonds = tmp;
     }
     //if (Logger.debugging)
-      //Logger.debug("adding bond to " + this + ": " + bond.getAtom1() + " " + bond.getAtom2());
+    //Logger.debug("adding bond to " + this + ": " + bond.getAtom1() + " " + bond.getAtom2());
     bonds[bondCount] = bond;
     bondCount++;
   }
@@ -527,7 +533,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
         if (bonds[i].bondType == SmilesBond.TYPE_AROMATIC)
           bonds[i].bondType = SmilesBond.TYPE_BIO_PAIR;
   }
-  
+
   public JmolEdge[] getEdges() {
     return (parent != null ? parent.getEdges() : bonds);
   }
@@ -539,10 +545,10 @@ public class SmilesAtom extends Point3f implements JmolNode {
    * @return Bond.
    */
   public SmilesBond getBond(int number) {
-    return (parent != null ? parent.getBond(number)
-        : number >= 0 && number < bondCount ? bonds[number] : null);
+    return (parent != null ? parent.getBond(number) : number >= 0
+        && number < bondCount ? bonds[number] : null);
   }
-  
+
   /**
    * Returns the number of bonds of this atom.
    * 
@@ -569,7 +575,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
   }
 
   public int getCovalentHydrogenCount() {
-    if  (parent != null)
+    if (parent != null)
       return parent.getCovalentHydrogenCount();
     int n = 0;
     for (int k = 0; k < bonds.length; k++)
@@ -590,7 +596,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
   }
 
   SmilesBond getBondTo(SmilesAtom atom) {
-    if  (parent != null)
+    if (parent != null)
       return parent.getBondTo(atom);
     SmilesBond bond;
     for (int k = 0; k < bonds.length; k++) {
@@ -616,50 +622,51 @@ public class SmilesAtom extends Point3f implements JmolNode {
   public boolean isLeadAtom() {
     return isLeadAtom;
   }
-  
+
   public int getOffsetResidueAtom(String name, int offset) {
     if (isBioAtom)
-    for (int k = 0; k < bonds.length; k++)
-      if (bonds[k].getAtomIndex1() == index && bonds[k].bondType == SmilesBond.TYPE_BIO_SEQUENCE)
-        return bonds[k].getOtherAtom(this).index;
+      for (int k = 0; k < bonds.length; k++)
+        if (bonds[k].getAtomIndex1() == index
+            && bonds[k].bondType == SmilesBond.TYPE_BIO_SEQUENCE)
+          return bonds[k].getOtherAtom(this).index;
     return -1;
   }
-  
+
   public void setGroupBits(BitSet bs) {
     bs.set(index);
     return;
   }
-  
+
   public boolean isCrossLinked(JmolNode node) {
     SmilesBond bond = getBondTo((SmilesAtom) node);
     return bond.isHydrogen();
   }
-  
+
   public void getCrossLinkLeadAtomIndexes(Vector vLinks) {
     for (int k = 0; k < bonds.length; k++)
       if (bonds[k].bondType == SmilesBond.TYPE_BIO_PAIR)
         vLinks.add(new Integer(bonds[k].getOtherAtom(this).index));
   }
-  
+
   public String getGroupType() {
     return null;
   }
-  
+
   public char getChainID() {
     return '\0';
   }
-  
+
   static String getAtomLabel(int atomicNumber, int isotopeNumber, int valence,
                              int charge, int nH, boolean isAromatic,
                              String stereo) {
     String sym = Elements.elementSymbolFromNumber(atomicNumber);
     if (isAromatic)
       sym = sym.toLowerCase();
-    int count = (stereo.length() > 0 || isotopeNumber != 0 || charge != 0 ? -1 : getDefaultCount(
-        atomicNumber, false));
+    int count = (stereo.length() > 0 || isotopeNumber != 0 || charge != 0 ? -1
+        : getDefaultCount(atomicNumber, false));
     return (count == valence ? sym : "["
         + (isotopeNumber <= 0 ? "" : "" + isotopeNumber) + sym
-        + (charge < 0 ? "" + charge : charge > 0 ? "+" + charge : "")
-        + stereo + (nH > 1 ? "H" + nH : nH == 1 ? "H" : "") + "]");
+        + (charge < 0 ? "" + charge : charge > 0 ? "+" + charge : "") + stereo
+        + (nH > 1 ? "H" + nH : nH == 1 ? "H" : "") + "]");
   }
 }

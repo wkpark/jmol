@@ -46,7 +46,7 @@ public class SmilesBond implements JmolEdge {
   public final static int TYPE_BIO_SEQUENCE = 0x60;
   public final static int TYPE_BIO_PAIR = 0x70;
   public final static int TYPE_MULTIPLE = 999;
-  
+
   static String getBondOrderString(int order) {
     switch (order) {
     case 1:
@@ -62,16 +62,17 @@ public class SmilesBond implements JmolEdge {
 
   private SmilesAtom atom1;
   private SmilesAtom atom2;
-  
+
   int bondType;
   int index = -1;
+
   public int getIndex() {
     return index;
   }
-  
+
   boolean isNot;
   JmolEdge matchingBond;
-  
+
   public SmilesBond[] primitives;
   public int nPrimitives;
   public SmilesBond[] bondsOr;
@@ -118,6 +119,7 @@ public class SmilesBond implements JmolEdge {
   public String toString() {
     return atom1 + " -" + bondType + "- " + atom2;
   }
+
   /**
    * SmilesBond constructor
    * 
@@ -126,7 +128,8 @@ public class SmilesBond implements JmolEdge {
    * @param bondType Bond type
    * @param isNot 
    */
-  public SmilesBond(SmilesAtom atom1, SmilesAtom atom2, int bondType, boolean isNot) {
+  public SmilesBond(SmilesAtom atom1, SmilesAtom atom2, int bondType,
+      boolean isNot) {
     set(atom1, atom2);
     set(bondType, isNot);
   }
@@ -139,7 +142,7 @@ public class SmilesBond implements JmolEdge {
     this.bondType = bondType;
     this.isNot = isNot;
   }
-  
+
   void set(SmilesAtom atom1, SmilesAtom atom2) {
     if (atom1 != null) {
       this.atom1 = atom1;
@@ -152,14 +155,15 @@ public class SmilesBond implements JmolEdge {
     }
   }
 
-  static boolean isBondType(char ch, boolean isSearch) throws InvalidSmilesException {
+  static boolean isBondType(char ch, boolean isSearch)
+      throws InvalidSmilesException {
     if ("-=#:/\\.+!,&;@~".indexOf(ch) < 0)
       return false;
-    if (!isSearch && "-=#:/\\.~".indexOf(ch) < 0)  // ~ here for BIOSMARTS
-        throw new InvalidSmilesException("SMARTS bond type " + ch
-            + " not allowed in SMILES");
+    if (!isSearch && "-=#:/\\.~".indexOf(ch) < 0) // ~ here for BIOSMARTS
+      throw new InvalidSmilesException("SMARTS bond type " + ch
+          + " not allowed in SMILES");
     return true;
-   }
+  }
 
   /**
    * @param code Bond code
@@ -242,9 +246,9 @@ public class SmilesBond implements JmolEdge {
   public int getValence() {
     return (bondType & 7);
   }
-  
+
   public boolean isHydrogen() {
     return bondType == TYPE_BIO_PAIR;
   }
-  
+
 }

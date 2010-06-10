@@ -1207,18 +1207,18 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return null;
     pickedMesh = isomeshes[imesh];
     setPropertySuper("thisID", pickedMesh.thisID, null);
-    pickedVertex = (pickFront ? jminz : jmaxz);
+    int iFace = pickedVertex = (pickFront ? jminz : jmaxz);
     Point3fi ptRet = new Point3fi();
-    ptRet.set(((IsosurfaceMesh)pickedMesh).centers[pickedVertex]);
+    ptRet.set(((IsosurfaceMesh)pickedMesh).centers[iFace]);
     pickedModel = ptRet.modelIndex = (short) pickedMesh.modelIndex;
     ptRet.index = imesh;
-    Vector3f vNorm = new Vector3f();
-    ((IsosurfaceMesh)pickedMesh).getFacePlane(pickedVertex, vNorm);
-    // get normal to surface
-    vNorm.scale(-1);
     if (pickFront) {
       setStatusPicked(-4, ptRet);
     } else {
+      Vector3f vNorm = new Vector3f();
+      ((IsosurfaceMesh)pickedMesh).getFacePlane(iFace, vNorm);
+      // get normal to surface
+      vNorm.scale(-1);
       setHeading(ptRet, vNorm, 2);
     }
     return ptRet;

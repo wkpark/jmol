@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-05-27 20:44+0200\n"
+"POT-Creation-Date: 2010-06-10 19:22+0200\n"
 "PO-Revision-Date: 2010-04-04 21:33+0000\n"
 "Last-Translator: Sérgio Ceroni da Silva <Unknown>\n"
 "Language-Team: Brazilian Portuguese <Jmol-developers@lists.sf.net>\n"
@@ -475,12 +475,12 @@ msgstr "Turco"
 msgid "Ukrainian"
 msgstr "Ucraniano"
 
-#: org/jmol/minimize/Minimizer.java:198
+#: org/jmol/minimize/Minimizer.java:204
 #, java-format
 msgid "Could not get class for force field {0}"
 msgstr "Não foi possível obter a classe para o campo de força {0}"
 
-#: org/jmol/minimize/Minimizer.java:210
+#: org/jmol/minimize/Minimizer.java:208
 msgid "No atoms selected -- nothing to do!"
 msgstr "Nenhum átomo selecionado -- nada a fazer!"
 
@@ -1823,12 +1823,12 @@ msgstr "parâmetro {0} não identificável"
 msgid "unrecognized token: {0}"
 msgstr "símbolo não identificável: {0}"
 
-#: org/jmol/script/ScriptCompiler.java:2283
+#: org/jmol/script/ScriptCompiler.java:2286
 msgid "script compiler ERROR: "
 msgstr "ERRO no compilador de \"script\": "
 
 #: org/jmol/script/ScriptEvaluator.java:2286
-#: org/jmol/script/ScriptEvaluator.java:8796
+#: org/jmol/script/ScriptEvaluator.java:8827
 msgid "script ERROR: "
 msgstr "ERRO no \"script\": "
 
@@ -2055,34 +2055,34 @@ msgstr "parâmetro SHOW não identificável --  usar {0}"
 msgid "write what? {0} or {1} \"filename\""
 msgstr "Escrever o quê? {0} ou {1} \"nome-de-arquivo\""
 
-#: org/jmol/script/ScriptEvaluator.java:6573
+#: org/jmol/script/ScriptEvaluator.java:6599
 #, java-format
 msgid "{0} connections deleted"
 msgstr "{0} conexão(ões) removida(s)"
 
-#: org/jmol/script/ScriptEvaluator.java:6594
+#: org/jmol/script/ScriptEvaluator.java:6620
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} ligação(ões) nova(s); {1} modificada(s)"
 
-#: org/jmol/script/ScriptEvaluator.java:7799
+#: org/jmol/script/ScriptEvaluator.java:7829
 #, java-format
 msgid "file {0} created"
 msgstr "Criado o arquivo {0}"
 
-#: org/jmol/script/ScriptEvaluator.java:8916
-#: org/jmol/script/ScriptEvaluator.java:9176
+#: org/jmol/script/ScriptEvaluator.java:8947
+#: org/jmol/script/ScriptEvaluator.java:9208
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "{0} átomo(s) deletado(s)"
 
-#: org/jmol/script/ScriptEvaluator.java:9753
-#: org/jmol/script/ScriptEvaluator.java:10147
+#: org/jmol/script/ScriptEvaluator.java:9785
+#: org/jmol/script/ScriptEvaluator.java:10179
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} ponte(s) de Hidrogênio"
 
-#: org/jmol/script/ScriptEvaluator.java:10102
+#: org/jmol/script/ScriptEvaluator.java:10134
 #, java-format
 msgid "{0} struts added"
 msgstr "{0} estrutura(s) adicionada(s)"
@@ -2257,7 +2257,8 @@ msgid "pick an atom"
 msgstr "selecionar um átomo"
 
 #: org/jmol/viewer/ActionManager.java:96
-msgid "pick a DRAW point (for measurements)"
+#, fuzzy, java-format
+msgid "pick a DRAW point (for measurements) (requires {0}"
 msgstr "selecione um ponto \"DRAW\" (para medição)"
 
 #: org/jmol/viewer/ActionManager.java:97
@@ -2280,7 +2281,8 @@ msgid "pick an atom to initiate or conclude a measurement"
 msgstr "selecione um átomo para iniciar ou concluir uma medição"
 
 #: org/jmol/viewer/ActionManager.java:100
-msgid "pick an ISOSURFACE point"
+#, fuzzy, java-format
+msgid "pick an ISOSURFACE point (requires {0}"
 msgstr "selecionar um ponto \"ISOSURFACE\""
 
 #: org/jmol/viewer/ActionManager.java:101
@@ -2323,53 +2325,53 @@ msgstr "parar movimento (requer {0})"
 msgid "simulate multi-touch using the mouse)"
 msgstr "simular multitoque usando o \"mouse\")"
 
-#: org/jmol/viewer/ActionManager.java:1838
+#: org/jmol/viewer/ActionManager.java:1846
 msgid "pick one more atom in order to spin the model around an axis"
 msgstr ""
 "selecione um átomo adicional para poder rodar o modelo em torno de um eixo"
 
-#: org/jmol/viewer/ActionManager.java:1839
+#: org/jmol/viewer/ActionManager.java:1847
 msgid "pick two atoms in order to spin the model around an axis"
 msgstr "selecione dois átomos para poder rodar o modelo em torno de um eixo"
 
-#: org/jmol/viewer/ActionManager.java:1842
+#: org/jmol/viewer/ActionManager.java:1850
 msgid "pick one more atom in order to display the symmetry relationship"
 msgstr "selecione um átomo adicional para mostrar a relação de simetria"
 
-#: org/jmol/viewer/ActionManager.java:1843
+#: org/jmol/viewer/ActionManager.java:1851
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
 msgstr "selecione dois átomos para mostrar a relação de simetria entre eles"
 
-#: org/jmol/viewer/SelectionManager.java:77
-#: org/jmol/viewer/SelectionManager.java:93
+#: org/jmol/viewer/SelectionManager.java:79
+#: org/jmol/viewer/SelectionManager.java:95
 #, java-format
 msgid "{0} atoms hidden"
 msgstr "{0} átomo(s) oculto(s)"
 
-#: org/jmol/viewer/SelectionManager.java:135
+#: org/jmol/viewer/SelectionManager.java:137
 #, java-format
 msgid "{0} atoms selected"
 msgstr "{0} átomo(s) selecionado(s)"
 
-#: org/jmol/viewer/Viewer.java:4257
+#: org/jmol/viewer/Viewer.java:4309
 #, java-format
 msgid "{0} hydrogens added"
 msgstr "{0} hidrogênio(s) adicionado"
 
-#: org/jmol/viewer/Viewer.java:4334
+#: org/jmol/viewer/Viewer.java:4387
 msgid "Drag to move label"
 msgstr "Arraste para mover rótulo"
 
-#: org/jmol/viewer/Viewer.java:7712
+#: org/jmol/viewer/Viewer.java:7771
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "área de transferência não está acessível -- use o \"applet\" assinado"
 
-#: org/jmol/viewer/Viewer.java:8445
+#: org/jmol/viewer/Viewer.java:8504
 msgid "Cannot set log file path."
 msgstr "Impossível definir caminho para arquivo de log"
 
-#: org/jmol/viewer/Viewer.java:8447
+#: org/jmol/viewer/Viewer.java:8506
 #, java-format
 msgid "Setting log file to {0}"
 msgstr "Arquivo de log definido para {0}"

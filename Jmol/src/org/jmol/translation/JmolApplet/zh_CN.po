@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-05-27 20:44+0200\n"
+"POT-Creation-Date: 2010-06-10 19:22+0200\n"
 "PO-Revision-Date: 2010-06-04 13:35+0000\n"
 "Last-Translator: Eleanor Chen <chenyueg@gmail.com>\n"
 "Language-Team: Simplified Chinese <zh_CN@li.org>\n"
@@ -102,7 +102,9 @@ msgid ""
 "Messages will appear here. Enter commands in the box below. Click the "
 "console Help menu item for on-line help, which will appear in a new browser "
 "window."
-msgstr "信息会显示于此。在下方窗口中键入命令。点击主控台的帮助(Help)菜单可得到在线帮助信息（新窗口中显示）。"
+msgstr ""
+"信息会显示于此。在下方窗口中键入命令。点击主控台的帮助(Help)菜单可得到在线帮"
+"助信息（新窗口中显示）。"
 
 #: org/jmol/appletwrapper/AppletWrapper.java:91
 msgid "Loading Jmol applet ..."
@@ -138,8 +140,7 @@ msgid "Check"
 msgstr "勾选"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid ""
-"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "回到顶端"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -468,12 +469,12 @@ msgstr "土耳其语"
 msgid "Ukrainian"
 msgstr "乌克兰语"
 
-#: org/jmol/minimize/Minimizer.java:198
+#: org/jmol/minimize/Minimizer.java:204
 #, java-format
 msgid "Could not get class for force field {0}"
 msgstr "不能获得力场 {0} 的类别"
 
-#: org/jmol/minimize/Minimizer.java:210
+#: org/jmol/minimize/Minimizer.java:208
 msgid "No atoms selected -- nothing to do!"
 msgstr "没有选择任何原子--不需处理!"
 
@@ -1800,12 +1801,12 @@ msgstr "无法识别参数：{0}"
 msgid "unrecognized token: {0}"
 msgstr "无法识别标记：{0}"
 
-#: org/jmol/script/ScriptCompiler.java:2283
+#: org/jmol/script/ScriptCompiler.java:2286
 msgid "script compiler ERROR: "
 msgstr "脚本编译器错误： "
 
 #: org/jmol/script/ScriptEvaluator.java:2286
-#: org/jmol/script/ScriptEvaluator.java:8796
+#: org/jmol/script/ScriptEvaluator.java:8827
 msgid "script ERROR: "
 msgstr "脚本错误： "
 
@@ -2026,34 +2027,34 @@ msgstr "无法辨识 SHOW 的参数 -- 使用{0}"
 msgid "write what? {0} or {1} \"filename\""
 msgstr "写什么呢？{0} 或 {1} \"文件名\""
 
-#: org/jmol/script/ScriptEvaluator.java:6573
+#: org/jmol/script/ScriptEvaluator.java:6599
 #, java-format
 msgid "{0} connections deleted"
 msgstr "己删除 {0} 个连接"
 
-#: org/jmol/script/ScriptEvaluator.java:6594
+#: org/jmol/script/ScriptEvaluator.java:6620
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} 个新化学键; {1} 个己修改"
 
-#: org/jmol/script/ScriptEvaluator.java:7799
+#: org/jmol/script/ScriptEvaluator.java:7829
 #, java-format
 msgid "file {0} created"
 msgstr "已创建文件： {0}"
 
-#: org/jmol/script/ScriptEvaluator.java:8916
-#: org/jmol/script/ScriptEvaluator.java:9176
+#: org/jmol/script/ScriptEvaluator.java:8947
+#: org/jmol/script/ScriptEvaluator.java:9208
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "己删除 {0} 个原子"
 
-#: org/jmol/script/ScriptEvaluator.java:9753
-#: org/jmol/script/ScriptEvaluator.java:10147
+#: org/jmol/script/ScriptEvaluator.java:9785
+#: org/jmol/script/ScriptEvaluator.java:10179
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} 个氢键"
 
-#: org/jmol/script/ScriptEvaluator.java:10102
+#: org/jmol/script/ScriptEvaluator.java:10134
 #, java-format
 msgid "{0} struts added"
 msgstr "已增加 {0} struts"
@@ -2103,8 +2104,7 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:67
 #, java-format
-msgid ""
-"click on two points to spin around axis counterclockwise (requires {0})"
+msgid "click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:69
@@ -2217,7 +2217,8 @@ msgid "pick an atom"
 msgstr "请选取原子"
 
 #: org/jmol/viewer/ActionManager.java:96
-msgid "pick a DRAW point (for measurements)"
+#, fuzzy, java-format
+msgid "pick a DRAW point (for measurements) (requires {0}"
 msgstr "请选取 DRAW 点 (以用测量)"
 
 #: org/jmol/viewer/ActionManager.java:97
@@ -2237,7 +2238,8 @@ msgid "pick an atom to initiate or conclude a measurement"
 msgstr "选取一个初始原子或结束测量"
 
 #: org/jmol/viewer/ActionManager.java:100
-msgid "pick an ISOSURFACE point"
+#, fuzzy, java-format
+msgid "pick an ISOSURFACE point (requires {0}"
 msgstr "选取一个等平面(Isosurface)点"
 
 #: org/jmol/viewer/ActionManager.java:101
@@ -2278,71 +2280,68 @@ msgstr "停止活动（需要 {0} ）"
 msgid "simulate multi-touch using the mouse)"
 msgstr "用鼠标模拟多点触控(multi-touch)"
 
-#: org/jmol/viewer/ActionManager.java:1838
+#: org/jmol/viewer/ActionManager.java:1846
 msgid "pick one more atom in order to spin the model around an axis"
 msgstr "请再多选一个原子来使分子可以一个轴旋转"
 
-#: org/jmol/viewer/ActionManager.java:1839
+#: org/jmol/viewer/ActionManager.java:1847
 msgid "pick two atoms in order to spin the model around an axis"
 msgstr "选取两个原子，使分子可以绕轴自旋"
 
-#: org/jmol/viewer/ActionManager.java:1842
+#: org/jmol/viewer/ActionManager.java:1850
 msgid "pick one more atom in order to display the symmetry relationship"
 msgstr "选择另一个原子以显示对称性关系"
 
-#: org/jmol/viewer/ActionManager.java:1843
+#: org/jmol/viewer/ActionManager.java:1851
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
 msgstr "选择两个原子以显示它们之间的对称性关系"
 
-#: org/jmol/viewer/SelectionManager.java:77
-#: org/jmol/viewer/SelectionManager.java:93
+#: org/jmol/viewer/SelectionManager.java:79
+#: org/jmol/viewer/SelectionManager.java:95
 #, java-format
 msgid "{0} atoms hidden"
 msgstr "{0} 个原子己隐藏"
 
-#: org/jmol/viewer/SelectionManager.java:135
+#: org/jmol/viewer/SelectionManager.java:137
 #, java-format
 msgid "{0} atoms selected"
 msgstr "{0} 个原子己选定"
 
-#: org/jmol/viewer/Viewer.java:4257
+#: org/jmol/viewer/Viewer.java:4309
 #, java-format
 msgid "{0} hydrogens added"
 msgstr "{0} 个氢原子已增加"
 
-#: org/jmol/viewer/Viewer.java:4334
+#: org/jmol/viewer/Viewer.java:4387
 msgid "Drag to move label"
 msgstr "拖拽移动标签"
 
-#: org/jmol/viewer/Viewer.java:7712
+#: org/jmol/viewer/Viewer.java:7771
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "不能存取剪贴板——请用使用签署过的小程序 (applet)"
 
-#: org/jmol/viewer/Viewer.java:8445
+#: org/jmol/viewer/Viewer.java:8504
 msgid "Cannot set log file path."
 msgstr "无法设置日志文件路径"
 
-#: org/jmol/viewer/Viewer.java:8447
+#: org/jmol/viewer/Viewer.java:8506
 #, java-format
 msgid "Setting log file to {0}"
 msgstr "设定日志文件为 {0}"
 
-#, java-format
 #~ msgid "ERROR: cannot set boolean flag to string value: {0}"
 #~ msgstr "错误：不能把布尔真假值设定为字符串值：{0}"
 
-#, java-format
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr "错误：不能把布尔真假值标设定为数值：{0}"
 
-#, java-format
 #~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 #~ msgstr "错误：不能把这个变量值设为布尔真假值：{0}"
 
-#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
+#~ "{0}."
 #~ msgstr "不允许用这个小程序创建文件。欲使用 Base64 JPEC 格式，请使用 {0}。"
 
 #~ msgid "File creation failed."

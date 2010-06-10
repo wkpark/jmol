@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-05-27 20:44+0200\n"
+"POT-Creation-Date: 2010-06-10 19:22+0200\n"
 "PO-Revision-Date: 2010-06-08 04:32+0000\n"
 "Last-Translator: victor tejada yau <Unknown>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
@@ -142,8 +142,7 @@ msgid "Check"
 msgstr "Verificar"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid ""
-"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Subir"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -472,12 +471,12 @@ msgstr "Turco"
 msgid "Ukrainian"
 msgstr "Ucraniano"
 
-#: org/jmol/minimize/Minimizer.java:198
+#: org/jmol/minimize/Minimizer.java:204
 #, java-format
 msgid "Could not get class for force field {0}"
 msgstr "Imposible obtener la clase para el campo de fuerza {0}"
 
-#: org/jmol/minimize/Minimizer.java:210
+#: org/jmol/minimize/Minimizer.java:208
 msgid "No atoms selected -- nothing to do!"
 msgstr "No hay átomos seleccionados -- ¡nada que hacer!"
 
@@ -1804,12 +1803,12 @@ msgstr "no se reconoce el parámetro {0}"
 msgid "unrecognized token: {0}"
 msgstr "no se reconoce la palabra clave {0}"
 
-#: org/jmol/script/ScriptCompiler.java:2283
+#: org/jmol/script/ScriptCompiler.java:2286
 msgid "script compiler ERROR: "
 msgstr "ERROR del compilador de guiones: "
 
 #: org/jmol/script/ScriptEvaluator.java:2286
-#: org/jmol/script/ScriptEvaluator.java:8796
+#: org/jmol/script/ScriptEvaluator.java:8827
 msgid "script ERROR: "
 msgstr "ERROR en guión: "
 
@@ -1915,8 +1914,7 @@ msgstr "Se requiere un índice entre 1 y {0} para MO"
 
 #: org/jmol/script/ScriptEvaluator.java:2505
 msgid "no MO basis/coefficient data available for this frame"
-msgstr ""
-"en este modelo no hay datos disponibles de base o coeficientes para MO"
+msgstr "en este modelo no hay datos disponibles de base o coeficientes para MO"
 
 #: org/jmol/script/ScriptEvaluator.java:2508
 msgid "no MO occupancy data available"
@@ -2037,34 +2035,34 @@ msgstr "no se reconoce el parámetro SHOW; utilice {0}"
 msgid "write what? {0} or {1} \"filename\""
 msgstr "¿qué escribir? {0} o {1} \"nombre de archivo\""
 
-#: org/jmol/script/ScriptEvaluator.java:6573
+#: org/jmol/script/ScriptEvaluator.java:6599
 #, java-format
 msgid "{0} connections deleted"
 msgstr "se han borrado {0} conexiones"
 
-#: org/jmol/script/ScriptEvaluator.java:6594
+#: org/jmol/script/ScriptEvaluator.java:6620
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} enlaces nuevos; {1} modificados"
 
-#: org/jmol/script/ScriptEvaluator.java:7799
+#: org/jmol/script/ScriptEvaluator.java:7829
 #, java-format
 msgid "file {0} created"
 msgstr "se ha creado el archivo {0}"
 
-#: org/jmol/script/ScriptEvaluator.java:8916
-#: org/jmol/script/ScriptEvaluator.java:9176
+#: org/jmol/script/ScriptEvaluator.java:8947
+#: org/jmol/script/ScriptEvaluator.java:9208
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "se han borrado {0} átomos"
 
-#: org/jmol/script/ScriptEvaluator.java:9753
-#: org/jmol/script/ScriptEvaluator.java:10147
+#: org/jmol/script/ScriptEvaluator.java:9785
+#: org/jmol/script/ScriptEvaluator.java:10179
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} enlaces de hidrógeno"
 
-#: org/jmol/script/ScriptEvaluator.java:10102
+#: org/jmol/script/ScriptEvaluator.java:10134
 #, java-format
 msgid "{0} struts added"
 msgstr "se han añadido {0} puntales"
@@ -2114,13 +2112,11 @@ msgstr ""
 #: org/jmol/viewer/ActionManager.java:66
 #, java-format
 msgid "click on two points to spin around axis clockwise (requires {0})"
-msgstr ""
-"pulsa en dos puntos para definir un eje de giro horario (requiere {0})"
+msgstr "pulsa en dos puntos para definir un eje de giro horario (requiere {0})"
 
 #: org/jmol/viewer/ActionManager.java:67
 #, java-format
-msgid ""
-"click on two points to spin around axis counterclockwise (requires {0})"
+msgid "click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 "pulsa en dos puntos para definir un eje de giro antihorario (requiere {0})"
 
@@ -2236,7 +2232,8 @@ msgid "pick an atom"
 msgstr "elige un átomo"
 
 #: org/jmol/viewer/ActionManager.java:96
-msgid "pick a DRAW point (for measurements)"
+#, fuzzy, java-format
+msgid "pick a DRAW point (for measurements) (requires {0}"
 msgstr "elegir un punto dibujado (para mediciones)"
 
 #: org/jmol/viewer/ActionManager.java:97
@@ -2258,7 +2255,8 @@ msgid "pick an atom to initiate or conclude a measurement"
 msgstr "elegir un átomo para iniciar o concluir una medición"
 
 #: org/jmol/viewer/ActionManager.java:100
-msgid "pick an ISOSURFACE point"
+#, fuzzy, java-format
+msgid "pick an ISOSURFACE point (requires {0}"
 msgstr "elige un punto de una isosuperficie"
 
 #: org/jmol/viewer/ActionManager.java:101
@@ -2299,54 +2297,54 @@ msgstr "detener movimiento (requiere {0})"
 msgid "simulate multi-touch using the mouse)"
 msgstr "simular multitáctil usando el ratón)"
 
-#: org/jmol/viewer/ActionManager.java:1838
+#: org/jmol/viewer/ActionManager.java:1846
 msgid "pick one more atom in order to spin the model around an axis"
 msgstr "elige un átomo más para que el modelo gire en torno a un eje"
 
-#: org/jmol/viewer/ActionManager.java:1839
+#: org/jmol/viewer/ActionManager.java:1847
 msgid "pick two atoms in order to spin the model around an axis"
 msgstr "elige en orden dos átomos para que el modelo gire en torno a un eje"
 
-#: org/jmol/viewer/ActionManager.java:1842
+#: org/jmol/viewer/ActionManager.java:1850
 msgid "pick one more atom in order to display the symmetry relationship"
 msgstr "elige un átomo más para mostrar la relación de simetría"
 
-#: org/jmol/viewer/ActionManager.java:1843
+#: org/jmol/viewer/ActionManager.java:1851
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
 msgstr ""
 "elige en orden dos átomos para mostrar la relación de simetría entre ambos"
 
-#: org/jmol/viewer/SelectionManager.java:77
-#: org/jmol/viewer/SelectionManager.java:93
+#: org/jmol/viewer/SelectionManager.java:79
+#: org/jmol/viewer/SelectionManager.java:95
 #, java-format
 msgid "{0} atoms hidden"
 msgstr "{0} átomos ocultos"
 
-#: org/jmol/viewer/SelectionManager.java:135
+#: org/jmol/viewer/SelectionManager.java:137
 #, java-format
 msgid "{0} atoms selected"
 msgstr "{0} átomos seleccionados"
 
-#: org/jmol/viewer/Viewer.java:4257
+#: org/jmol/viewer/Viewer.java:4309
 #, java-format
 msgid "{0} hydrogens added"
 msgstr "se han añadido {0} hidrógenos"
 
-#: org/jmol/viewer/Viewer.java:4334
+#: org/jmol/viewer/Viewer.java:4387
 msgid "Drag to move label"
 msgstr "Arrastra para mover la etiqueta"
 
-#: org/jmol/viewer/Viewer.java:7712
+#: org/jmol/viewer/Viewer.java:7771
 msgid "clipboard is not accessible -- use signed applet"
 msgstr ""
 "no es posible acceder al portapapeles; utilice la miniaplicación firmada"
 
-#: org/jmol/viewer/Viewer.java:8445
+#: org/jmol/viewer/Viewer.java:8504
 msgid "Cannot set log file path."
 msgstr "Imposible establecer la ruta del archivo de registro."
 
-#: org/jmol/viewer/Viewer.java:8447
+#: org/jmol/viewer/Viewer.java:8506
 #, java-format
 msgid "Setting log file to {0}"
 msgstr "Definiendo el archivo de registro como {0}"
@@ -2357,17 +2355,16 @@ msgstr "Definiendo el archivo de registro como {0}"
 #~ msgid "About Jmol"
 #~ msgstr "Acerca de Jmol"
 
-#, java-format
 #~ msgid "ERROR: cannot set boolean flag to string value: {0}"
 #~ msgstr ""
-#~ "ERROR: no es posible dar valor de texto a una variable lógica booleana: {0}"
+#~ "ERROR: no es posible dar valor de texto a una variable lógica booleana: "
+#~ "{0}"
 
-#, java-format
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr ""
-#~ "ERROR: no es posible dar valor numérico a una variable lógica booleana: {0}"
+#~ "ERROR: no es posible dar valor numérico a una variable lógica booleana: "
+#~ "{0}"
 
-#, java-format
 #~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 #~ msgstr ""
 #~ "ERROR: no es posible ajustar el valor de esta variable a un valor lógico "
@@ -2376,25 +2373,22 @@ msgstr "Definiendo el archivo de registro como {0}"
 #~ msgid "File creation failed."
 #~ msgstr "Ha fallado la creación del archivo."
 
-#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
+#~ "{0}."
 #~ msgstr ""
 #~ "No está permitida la creación de archivos desde esta miniaplicación. Para "
 #~ "usar un formato JPEG Base64, utiliza {0}."
 
-#, java-format
 #~ msgid "File {0}"
 #~ msgstr "Archivo {0}"
 
-#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "Imagen {0}"
 
 #~ msgid "JVXL Isosurface"
 #~ msgstr "Isosuperficie JVXL"
 
-#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "Modelo 3D {0}"
 
@@ -2410,9 +2404,8 @@ msgstr "Definiendo el archivo de registro como {0}"
 #~ msgid "Script with history"
 #~ msgstr "Guión con historial"
 
-#, java-format
 #~ msgid ""
 #~ "click and drag to select selected OR this group of atoms (requires {0})"
 #~ msgstr ""
-#~ "pulsar y arrastrar para añadir un grupo de átomos a la selección (requiere "
-#~ "{0})"
+#~ "pulsar y arrastrar para añadir un grupo de átomos a la selección "
+#~ "(requiere {0})"

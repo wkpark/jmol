@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JmolApplet 11.7.x\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-05-27 20:44+0200\n"
+"POT-Creation-Date: 2010-06-10 19:22+0200\n"
 "PO-Revision-Date: 2010-03-18 11:20+0000\n"
 "Last-Translator: Krasznecz Zoltán <krasznecz.zoltan@gmail.com>\n"
 "Language-Team: Hungarian <Jmol-developers@lists.sf.net>\n"
@@ -478,12 +478,12 @@ msgstr "Török"
 msgid "Ukrainian"
 msgstr "Ukrán"
 
-#: org/jmol/minimize/Minimizer.java:198
+#: org/jmol/minimize/Minimizer.java:204
 #, java-format
 msgid "Could not get class for force field {0}"
 msgstr "Nem található meg az erőtérhez tartozó {0} osztály"
 
-#: org/jmol/minimize/Minimizer.java:210
+#: org/jmol/minimize/Minimizer.java:208
 msgid "No atoms selected -- nothing to do!"
 msgstr "Nincs kiválasztott atom - nincs mit tenni!"
 
@@ -1823,12 +1823,12 @@ msgstr "ismeretlen {0} paraméter"
 msgid "unrecognized token: {0}"
 msgstr "ismeretlen elem: {0}"
 
-#: org/jmol/script/ScriptCompiler.java:2283
+#: org/jmol/script/ScriptCompiler.java:2286
 msgid "script compiler ERROR: "
 msgstr "skript fordítási HIBA: "
 
 #: org/jmol/script/ScriptEvaluator.java:2286
-#: org/jmol/script/ScriptEvaluator.java:8796
+#: org/jmol/script/ScriptEvaluator.java:8827
 msgid "script ERROR: "
 msgstr "skript HIBA: "
 
@@ -2054,34 +2054,34 @@ msgstr "ismeretlen SHOW paraméter, használja ezt: {0}"
 msgid "write what? {0} or {1} \"filename\""
 msgstr "mit írjak? {0} vagy {1} \"fájlnév\""
 
-#: org/jmol/script/ScriptEvaluator.java:6573
+#: org/jmol/script/ScriptEvaluator.java:6599
 #, java-format
 msgid "{0} connections deleted"
 msgstr "{0} kapcsolat törölve"
 
-#: org/jmol/script/ScriptEvaluator.java:6594
+#: org/jmol/script/ScriptEvaluator.java:6620
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} új kötés, {1} módosítva"
 
-#: org/jmol/script/ScriptEvaluator.java:7799
+#: org/jmol/script/ScriptEvaluator.java:7829
 #, java-format
 msgid "file {0} created"
 msgstr ""
 
-#: org/jmol/script/ScriptEvaluator.java:8916
-#: org/jmol/script/ScriptEvaluator.java:9176
+#: org/jmol/script/ScriptEvaluator.java:8947
+#: org/jmol/script/ScriptEvaluator.java:9208
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "{0} atom tötölve"
 
-#: org/jmol/script/ScriptEvaluator.java:9753
-#: org/jmol/script/ScriptEvaluator.java:10147
+#: org/jmol/script/ScriptEvaluator.java:9785
+#: org/jmol/script/ScriptEvaluator.java:10179
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} hidrogénkötés"
 
-#: org/jmol/script/ScriptEvaluator.java:10102
+#: org/jmol/script/ScriptEvaluator.java:10134
 #, java-format
 msgid "{0} struts added"
 msgstr ""
@@ -2244,7 +2244,8 @@ msgid "pick an atom"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:96
-msgid "pick a DRAW point (for measurements)"
+#, java-format
+msgid "pick a DRAW point (for measurements) (requires {0}"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:97
@@ -2264,7 +2265,8 @@ msgid "pick an atom to initiate or conclude a measurement"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:100
-msgid "pick an ISOSURFACE point"
+#, java-format
+msgid "pick an ISOSURFACE point (requires {0}"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:101
@@ -2305,52 +2307,52 @@ msgstr ""
 msgid "simulate multi-touch using the mouse)"
 msgstr ""
 
-#: org/jmol/viewer/ActionManager.java:1838
+#: org/jmol/viewer/ActionManager.java:1846
 msgid "pick one more atom in order to spin the model around an axis"
 msgstr "válassz ki még egy atomot, hogy a modell a tengely körül forogjon"
 
-#: org/jmol/viewer/ActionManager.java:1839
+#: org/jmol/viewer/ActionManager.java:1847
 msgid "pick two atoms in order to spin the model around an axis"
 msgstr "válassz ki két atomot, hogy a modell a tengely körül forogjon"
 
-#: org/jmol/viewer/ActionManager.java:1842
+#: org/jmol/viewer/ActionManager.java:1850
 msgid "pick one more atom in order to display the symmetry relationship"
 msgstr ""
 
-#: org/jmol/viewer/ActionManager.java:1843
+#: org/jmol/viewer/ActionManager.java:1851
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
 msgstr ""
 
-#: org/jmol/viewer/SelectionManager.java:77
-#: org/jmol/viewer/SelectionManager.java:93
+#: org/jmol/viewer/SelectionManager.java:79
+#: org/jmol/viewer/SelectionManager.java:95
 #, java-format
 msgid "{0} atoms hidden"
 msgstr "{0} atom elrejtve"
 
-#: org/jmol/viewer/SelectionManager.java:135
+#: org/jmol/viewer/SelectionManager.java:137
 #, java-format
 msgid "{0} atoms selected"
 msgstr "{0} atom kiválasztva"
 
-#: org/jmol/viewer/Viewer.java:4257
+#: org/jmol/viewer/Viewer.java:4309
 #, java-format
 msgid "{0} hydrogens added"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:4334
+#: org/jmol/viewer/Viewer.java:4387
 msgid "Drag to move label"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:7712
+#: org/jmol/viewer/Viewer.java:7771
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "a vágólap nem érhető el, használjon aláírt Java kisalkalmazást"
 
-#: org/jmol/viewer/Viewer.java:8445
+#: org/jmol/viewer/Viewer.java:8504
 msgid "Cannot set log file path."
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:8447
+#: org/jmol/viewer/Viewer.java:8506
 #, java-format
 msgid "Setting log file to {0}"
 msgstr ""

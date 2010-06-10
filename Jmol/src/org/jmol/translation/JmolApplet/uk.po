@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-05-27 20:44+0200\n"
+"POT-Creation-Date: 2010-06-10 19:22+0200\n"
 "PO-Revision-Date: 2010-05-28 06:00+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@gmail.com>\n"
 "Language-Team: Ukrainian <translation@linux.org.ua>\n"
@@ -144,8 +144,7 @@ msgid "Check"
 msgstr "Перевірити"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid ""
-"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Вгору"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -474,12 +473,12 @@ msgstr "Турецька"
 msgid "Ukrainian"
 msgstr "Українська"
 
-#: org/jmol/minimize/Minimizer.java:198
+#: org/jmol/minimize/Minimizer.java:204
 #, java-format
 msgid "Could not get class for force field {0}"
 msgstr "Не вдалося визначити клас для поля сили {0}"
 
-#: org/jmol/minimize/Minimizer.java:210
+#: org/jmol/minimize/Minimizer.java:208
 msgid "No atoms selected -- nothing to do!"
 msgstr "Не позначено жодного атома — дії не виконуватимуться!"
 
@@ -1806,12 +1805,12 @@ msgstr "невідомий параметр {0}"
 msgid "unrecognized token: {0}"
 msgstr "невідомий елемент: {0}"
 
-#: org/jmol/script/ScriptCompiler.java:2283
+#: org/jmol/script/ScriptCompiler.java:2286
 msgid "script compiler ERROR: "
 msgstr "ПОМИЛКА обробки скрипту: "
 
 #: org/jmol/script/ScriptEvaluator.java:2286
-#: org/jmol/script/ScriptEvaluator.java:8796
+#: org/jmol/script/ScriptEvaluator.java:8827
 msgid "script ERROR: "
 msgstr "ПОМИЛКА скрипту: "
 
@@ -2041,34 +2040,34 @@ msgstr "невідомий параметр SHOW — використано {0}"
 msgid "write what? {0} or {1} \"filename\""
 msgstr "що записувати? {0} або «назву файла» {1}"
 
-#: org/jmol/script/ScriptEvaluator.java:6573
+#: org/jmol/script/ScriptEvaluator.java:6599
 #, java-format
 msgid "{0} connections deleted"
 msgstr "вилучено {0} з’єднань"
 
-#: org/jmol/script/ScriptEvaluator.java:6594
+#: org/jmol/script/ScriptEvaluator.java:6620
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} нові зв’язки; {1} змінено"
 
-#: org/jmol/script/ScriptEvaluator.java:7799
+#: org/jmol/script/ScriptEvaluator.java:7829
 #, java-format
 msgid "file {0} created"
 msgstr "створено файл {0}"
 
-#: org/jmol/script/ScriptEvaluator.java:8916
-#: org/jmol/script/ScriptEvaluator.java:9176
+#: org/jmol/script/ScriptEvaluator.java:8947
+#: org/jmol/script/ScriptEvaluator.java:9208
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "вилучено {0} атомів"
 
-#: org/jmol/script/ScriptEvaluator.java:9753
-#: org/jmol/script/ScriptEvaluator.java:10147
+#: org/jmol/script/ScriptEvaluator.java:9785
+#: org/jmol/script/ScriptEvaluator.java:10179
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} водневих зв’язки"
 
-#: org/jmol/script/ScriptEvaluator.java:10102
+#: org/jmol/script/ScriptEvaluator.java:10134
 #, java-format
 msgid "{0} struts added"
 msgstr "додано {0} розпірки"
@@ -2124,8 +2123,7 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:67
 #, java-format
-msgid ""
-"click on two points to spin around axis counterclockwise (requires {0})"
+msgid "click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 "клацніть лівою кнопкою миші у двох точках, щоб почати обертання навколо вісі "
 "проти годинникової стрілки (потрібно {0})"
@@ -2242,14 +2240,14 @@ msgid "pick an atom"
 msgstr "вибрати атом"
 
 #: org/jmol/viewer/ActionManager.java:96
-msgid "pick a DRAW point (for measurements)"
+#, fuzzy, java-format
+msgid "pick a DRAW point (for measurements) (requires {0}"
 msgstr "вибрати точку креслення (для вимірювання)"
 
 #: org/jmol/viewer/ActionManager.java:97
 #, java-format
 msgid "pick a label to toggle it hidden/displayed (requires {0})"
-msgstr ""
-"вибрати мітку для перемикання стану приховано/показано (потрібно {0})"
+msgstr "вибрати мітку для перемикання стану приховано/показано (потрібно {0})"
 
 #: org/jmol/viewer/ActionManager.java:98
 #, java-format
@@ -2265,7 +2263,8 @@ msgid "pick an atom to initiate or conclude a measurement"
 msgstr "вибрати атом для того, щоб розпочати або завершити вимірювання"
 
 #: org/jmol/viewer/ActionManager.java:100
-msgid "pick an ISOSURFACE point"
+#, fuzzy, java-format
+msgid "pick an ISOSURFACE point (requires {0}"
 msgstr "вибрати точку ізоповерхні"
 
 #: org/jmol/viewer/ActionManager.java:101
@@ -2306,52 +2305,52 @@ msgstr "зупинити рух (потрібен {0})"
 msgid "simulate multi-touch using the mouse)"
 msgstr "імітувати сенсорне керування за допомогою миші)"
 
-#: org/jmol/viewer/ActionManager.java:1838
+#: org/jmol/viewer/ActionManager.java:1846
 msgid "pick one more atom in order to spin the model around an axis"
 msgstr "вибрати ще один атом для обертання моделі навколо вісі"
 
-#: org/jmol/viewer/ActionManager.java:1839
+#: org/jmol/viewer/ActionManager.java:1847
 msgid "pick two atoms in order to spin the model around an axis"
 msgstr "вибрати два атоми для обертання моделі навколо вісі"
 
-#: org/jmol/viewer/ActionManager.java:1842
+#: org/jmol/viewer/ActionManager.java:1850
 msgid "pick one more atom in order to display the symmetry relationship"
 msgstr "вибрати ще один атом для показу взаємозв’язків симетрії"
 
-#: org/jmol/viewer/ActionManager.java:1843
+#: org/jmol/viewer/ActionManager.java:1851
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
 msgstr "вибрати два атоми для показу взаємозв’язків симетрії між ними"
 
-#: org/jmol/viewer/SelectionManager.java:77
-#: org/jmol/viewer/SelectionManager.java:93
+#: org/jmol/viewer/SelectionManager.java:79
+#: org/jmol/viewer/SelectionManager.java:95
 #, java-format
 msgid "{0} atoms hidden"
 msgstr "приховано атоми {0}"
 
-#: org/jmol/viewer/SelectionManager.java:135
+#: org/jmol/viewer/SelectionManager.java:137
 #, java-format
 msgid "{0} atoms selected"
 msgstr "позначено атоми {0}"
 
-#: org/jmol/viewer/Viewer.java:4257
+#: org/jmol/viewer/Viewer.java:4309
 #, java-format
 msgid "{0} hydrogens added"
 msgstr "додано атоми водню {0}"
 
-#: org/jmol/viewer/Viewer.java:4334
+#: org/jmol/viewer/Viewer.java:4387
 msgid "Drag to move label"
 msgstr "Перетягніть, щоб пересунути мітку"
 
-#: org/jmol/viewer/Viewer.java:7712
+#: org/jmol/viewer/Viewer.java:7771
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "доступ до буфера даних заборонено — використовуйте підписаний аплет"
 
-#: org/jmol/viewer/Viewer.java:8445
+#: org/jmol/viewer/Viewer.java:8504
 msgid "Cannot set log file path."
 msgstr "Не вдалося встановити шлях до файла журналу."
 
-#: org/jmol/viewer/Viewer.java:8447
+#: org/jmol/viewer/Viewer.java:8506
 #, java-format
 msgid "Setting log file to {0}"
 msgstr "Встановлення файла журналу {0}"
@@ -2359,12 +2358,12 @@ msgstr "Встановлення файла журналу {0}"
 #~ msgid "File creation failed."
 #~ msgstr "Не вдалося створити файл."
 
-#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
+#~ "{0}."
 #~ msgstr ""
-#~ "Створення файлів цим аплетом заборонено. Щоб отримати JPEG у форматі Base64, "
-#~ "скористайтеся {0}."
+#~ "Створення файлів цим аплетом заборонено. Щоб отримати JPEG у форматі "
+#~ "Base64, скористайтеся {0}."
 
 #~ msgid "Java memory usage"
 #~ msgstr "Використання пам’яті Java"
@@ -2375,7 +2374,6 @@ msgstr "Встановлення файла журналу {0}"
 #~ msgid "File or URL"
 #~ msgstr "Файл або адреса URL"
 
-#, java-format
 #~ msgid "File {0}"
 #~ msgstr "Файл {0}"
 
@@ -2385,14 +2383,12 @@ msgstr "Встановлення файла журналу {0}"
 #~ msgid "Script with history"
 #~ msgstr "Скрипт з журналом"
 
-#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "Зображення {0}"
 
 #~ msgid "JVXL Isosurface"
 #~ msgstr "Ізоповерхня JVXL"
 
-#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "Просторова модель {0}"
 

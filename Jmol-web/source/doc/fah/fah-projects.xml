@@ -8492,6 +8492,11 @@
     server="171.64.65.61" atoms="1047" preferred="6" deadline="9"
     credit="450" frames="100" code="GG2" contact="vvoelz"/>
 
+  <!-- Projects 6700 to 6799 -->
+  <fah_proj number="6700" name="p6700_VSD in POPC and water, neutralized" public="n"
+    server="171.64.65.56" atoms="28637" preferred="3" deadline="6"
+    credit="511" frames="100" code="A3" contact="kasson" kfactor="2.3"/>
+
   <!-- Projects 9900 to 9999 -->
   <fah_proj number="9900" name="p9900_supervillin_e1" public="y"
     server="171.64.122.137" atoms="576" preferred="2" deadline="3"
@@ -8813,15 +8818,15 @@
   <fah_proj number="10854" name="Abeta42_monomer" public="n"
     server="171.64.122.84" atoms="12249" preferred="5" deadline="20"
     credit="69" frames="100" code="G" contact="yslin"/>
-  <fah_proj number="10861" name="Abeta42_mono" public="n"
+  <fah_proj number="10861" name="Abeta42_mono" public="n" file="xyz"
     server="171.64.122.84" atoms="34350" preferred="40" deadline="60"
     credit="207" frames="100" code="G" contact="yslin"/>
   <fah_proj number="10862" name="Abeta42_mono" public="n"
     server="171.64.122.84" atoms="34350" preferred="40" deadline="60"
     credit="207" frames="100" code="G" contact="yslin"/>
-  <fah_proj number="10863" name="Abeta42_mono" public="n"
+  <fah_proj number="10863" name="Abeta42_mono" public="n" file="xyz"
     server="171.64.122.84" atoms="34350" preferred="40" deadline="60"
-    credit="207" frames="100" code="G" contact="yslin"/>
+    credit="207" frames="100" code="G" contact="yslin" contrib="SandStar"/>
   <fah_proj number="10864" name="Abeta42_mono" public="n"
     server="171.64.122.84" atoms="34350" preferred="40" deadline="60"
     credit="207" frames="100" code="G" contact="yslin"/>
@@ -8843,9 +8848,9 @@
   <fah_proj number="10870" name="Abeta42_mono" public="n"
     server="171.64.122.84" atoms="34350" preferred="40" deadline="60"
     credit="207" frames="100" code="G" contact="yslin"/>
-  <fah_proj number="10871" name="Abeta42_mono" public="n"
+  <fah_proj number="10871" name="Abeta42_mono" public="n" file="xyz"
     server="171.64.122.84" atoms="34350" preferred="40" deadline="60"
-    credit="207" frames="100" code="G" contact="yslin"/>
+    credit="207" frames="100" code="G" contact="yslin" contrib="SandStar"/>
   <fah_proj number="10872" name="Abeta42_mono" public="n"
     server="171.64.122.84" atoms="34350" preferred="40" deadline="60"
     credit="207" frames="100" code="G" contact="yslin"/>

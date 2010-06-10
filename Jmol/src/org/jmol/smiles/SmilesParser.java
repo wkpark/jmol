@@ -783,7 +783,7 @@ public class SmilesParser {
     int stereoClass = 0;
     int order = Integer.MIN_VALUE;
     int len = pattern.length();
-    int ch;
+    char ch;
     stereoClass = SmilesAtom.STEREOCHEMISTRY_DEFAULT;
     order = 1;
     if (++index < len) {

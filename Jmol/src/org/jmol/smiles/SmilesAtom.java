@@ -50,7 +50,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
   final static int STEREOCHEMISTRY_SQUARE_PLANAR = 8;
   
   static int getChiralityClass(String xx) {
-    return ("0;11;AL;33/*DB*/;TH;TP;OH;77;SP;".indexOf(xx) + 1) / 3;
+    return ("0;11;AL;33;TH;TP;OH;77;SP;".indexOf(xx) + 1) / 3;
   }
 
   static final String UNBRACKETED_SET = "B, C, N, O, P, S, F, Cl, Br, I,";

@@ -1177,7 +1177,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     int jminz = -1;
     int maxz = Integer.MIN_VALUE;
     int minz = Integer.MAX_VALUE;
-    for (int i = 0; i < meshCount && imesh < 0; i++) {
+    boolean pickFront = viewer.getDrawPicking();
+    for (int i = 0; i < meshCount; i++) {
       IsosurfaceMesh m = isomeshes[i];
       if (m.visibilityFlags == 0 || m.modelIndex >= 0
           && !bsVisible.get(m.modelIndex))
@@ -1187,12 +1188,15 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
           Point3f v = centers[j];
           int d2 = coordinateInRange(x, y, v, dmin2, ptXY);
           if (d2 >= 0) {
-            imesh = i;
             if (ptXY.z < minz) {
+              if (pickFront)
+                imesh = i;
               minz = ptXY.z;
               jminz = j;
             }
             if (ptXY.z > maxz) {
+              if (!pickFront)
+                imesh = i;
               maxz = ptXY.z;
               jmaxz = j;
             }
@@ -1201,18 +1205,22 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     }
     if (imesh < 0)
       return null;
-    IsosurfaceMesh pickedMesh = isomeshes[imesh];
+    pickedMesh = isomeshes[imesh];
     setPropertySuper("thisID", pickedMesh.thisID, null);
-    boolean toFront = false;
-    int iface = (toFront ? jminz : jmaxz);
+    pickedVertex = (pickFront ? jminz : jmaxz);
     Point3fi ptRet = new Point3fi();
-    ptRet.set(pickedMesh.centers[iface]);
-    ptRet.modelIndex = (short) pickedMesh.modelIndex;
+    ptRet.set(((IsosurfaceMesh)pickedMesh).centers[pickedVertex]);
+    pickedModel = ptRet.modelIndex = (short) pickedMesh.modelIndex;
+    ptRet.index = imesh;
     Vector3f vNorm = new Vector3f();
-    pickedMesh.getFacePlane(iface, vNorm);
+    ((IsosurfaceMesh)pickedMesh).getFacePlane(pickedVertex, vNorm);
     // get normal to surface
     vNorm.scale(-1);
-    setHeading(ptRet, vNorm, 2);
+    if (pickFront) {
+      setStatusPicked(-4, ptRet);
+    } else {
+      setHeading(ptRet, vNorm, 2);
+    }
     return ptRet;
   }
 

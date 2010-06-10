@@ -228,9 +228,9 @@ public class ShapeManager {
                                     BitSet bsVisible) {
     Shape shape;
     Point3fi pt = null;
-    if (viewer.getNavigationMode() && viewer.getNavigateSurface() 
-        && (shape = shapes[JmolConstants.SHAPE_ISOSURFACE]) != null && 
-        (pt = shape.checkObjectClicked(x, y, modifiers, bsVisible)) != null)
+    if ((shape = shapes[JmolConstants.SHAPE_ISOSURFACE]) != null
+        && (viewer.getDrawPicking() || viewer.getNavigationMode() && viewer.getNavigateSurface()) 
+         && (pt = shape.checkObjectClicked(x, y, modifiers, bsVisible)) != null)
       return new Token(Token.isosurface, pt);
 
     if (modifiers != 0 && viewer.getBondPicking()

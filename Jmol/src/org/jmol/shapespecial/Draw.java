@@ -1041,9 +1041,6 @@ public class Draw extends MeshCollection {
   
   private final static int MAX_OBJECT_CLICK_DISTANCE_SQUARED = 10 * 10;
 
-  private DrawMesh pickedMesh = null;
-  private int pickedModel;
-  private int pickedVertex;
   private final Point3i ptXY = new Point3i();
   private final Point3fi PT_NAN = new Point3fi(Float.NaN, 0.0f, 0.0f);
   
@@ -1058,10 +1055,7 @@ public class Draw extends MeshCollection {
     Point3f v = pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][pickedVertex]];
     if (isDrawPicking && !isPickingMode) {
       if (action != 0) // not mouseMove
-        viewer.setStatusAtomPicked(-2, "[\"draw\",\"" + pickedMesh.thisID + "\"," +
-          + pickedModel + "," + pickedVertex + "," + v.x + "," + v.y + "," + v.z+"]"
-          + (pickedMesh.title == null ? "" 
-               : "\"" + pickedMesh.title[0]+"\""));
+        setStatusPicked(-2, v);
       return getPickedPoint(v);
     }
     if (action == 0 || pickedMesh.polygonIndexes[pickedModel][0] == pickedMesh.polygonIndexes[pickedModel][1]) {
@@ -1086,8 +1080,9 @@ public class Draw extends MeshCollection {
     Point3fi pt = new Point3fi();
     pt.set(v);
     pt.modelIndex = (short) pickedMesh.modelIndex;
-    if (pt.modelIndex < 0 && pickedMesh.modelFlags != null && BitSetUtil.cardinalityOf(pickedMesh.modelFlags) == 1)
-      pt.modelIndex = (short) pickedMesh.modelFlags.nextSetBit(0);
+    BitSet bs = ((DrawMesh) pickedMesh).modelFlags;
+    if (pt.modelIndex < 0 && bs != null && BitSetUtil.cardinalityOf(bs) == 1)
+      pt.modelIndex = (short) bs.nextSetBit(0);
     return pt; 
   }
 
@@ -1129,9 +1124,10 @@ public class Draw extends MeshCollection {
     }
     if (pickedMesh == null)
       return false;
-    move2D(pickedMesh, pickedMesh.polygonIndexes[pickedModel], pickedVertex, x,
+    DrawMesh dm = (DrawMesh) pickedMesh;
+    move2D(dm, dm.polygonIndexes[pickedModel], pickedVertex, x,
         y, moveAll);
-    thisMesh = pickedMesh;
+    thisMesh = dm;
     return true;
   }
   

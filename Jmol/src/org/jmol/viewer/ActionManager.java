@@ -1251,8 +1251,7 @@ public class ActionManager {
         && !viewer.isInSelectionSubset(nearestAtomIndex))
       nearestAtomIndex = -1;
 
-    if (clickedCount == 0
-        && atomPickingMode != PICKING_ASSIGN_ATOM) {
+    if (clickedCount == 0 && atomPickingMode != PICKING_ASSIGN_ATOM) {
       // mouse move
       if (measurementPending == null)
         return (nearestAtomIndex >= 0);
@@ -1279,8 +1278,7 @@ public class ActionManager {
       viewer.popupMenu(0, 0, 'm');
       return false;
     }
-    if (viewer.getNavigationMode()
-        && atomPickingMode == PICKING_NAVIGATE
+    if (viewer.getNavigationMode() && atomPickingMode == PICKING_NAVIGATE
         && isBound(action, ACTION_pickNavigate)) {
       viewer.navTranslatePercent(0f, x * 100f / viewer.getScreenWidth() - 50f,
           y * 100f / viewer.getScreenHeight() - 50f);
@@ -1290,10 +1288,9 @@ public class ActionManager {
     // bond change by clicking on a bond
     // bond deletion by clicking a bond
     if (tokType == Token.bonds) {
-      if (isBound(
-          action,
-          bondPickingMode == PICKING_ROTATE_BOND || bondPickingMode == PICKING_ASSIGN_BOND ? ACTION_assignNew
-              : ACTION_deleteBond)) {
+      if (isBound(action, bondPickingMode == PICKING_ROTATE_BOND
+          || bondPickingMode == PICKING_ASSIGN_BOND ? ACTION_assignNew
+          : ACTION_deleteBond)) {
         if (bondPickingMode == PICKING_ASSIGN_BOND)
           viewer.undoAction(true, -1, 0);
         switch (bondPickingMode) {
@@ -1309,10 +1306,12 @@ public class ActionManager {
         }
         return false;
       }
+    } else if (tokType == Token.isosurface) {
+      return false;
     } else {
-      if (atomPickingMode != PICKING_ASSIGN_ATOM
-          && measurementPending != null && isBound(action, ACTION_pickMeasure)) {
-        atomPicked(nearestAtomIndex, nearestPoint, action);
+      if (atomPickingMode != PICKING_ASSIGN_ATOM && measurementPending != null
+          && isBound(action, ACTION_pickMeasure)) {
+        atomOrPointPicked(nearestAtomIndex, nearestPoint, action);
         if (addToMeasurement(nearestAtomIndex, nearestPoint, false) == 4)
           toggleMeasurement();
         return false;
@@ -1327,16 +1326,18 @@ public class ActionManager {
           enterMeasurementMode();
           addToMeasurement(nearestAtomIndex, nearestPoint, true);
         }
-        atomPicked(nearestAtomIndex, nearestPoint, action);
+        atomOrPointPicked(nearestAtomIndex, nearestPoint, action);
         return false;
       }
     }
     boolean isDragSelected = (dragSelectedMode && (isBound(action,
         ACTION_rotateSelected) || isBound(action, ACTION_dragSelected)));
+    
     if (isBound(action, ACTION_pickAtom) || isBound(action, ACTION_pickPoint)
         || isDragSelected) {
       // TODO: in drawMode the binding changes
-      atomPicked(nearestAtomIndex, nearestPoint, isDragSelected ? 0 : action);
+        if (tokType != Token.isosurface)
+          atomOrPointPicked(nearestAtomIndex, nearestPoint, isDragSelected ? 0 : action);
       return (nearestAtomIndex >= 0);
     }
     if (isBound(action, ACTION_reset)) {
@@ -1550,6 +1551,8 @@ public class ActionManager {
   private MeasurementPending measurementQueued;
   
   private void resetMeasurement() {
+    // doesn't reset the measurement that is being picked using
+    // double-click, just the one using set picking measure.
     measurementQueued = new MeasurementPending(viewer.getModelSet());    
   }
 
@@ -1663,10 +1666,12 @@ public class ActionManager {
     binding = newBinding;
   }
   
-  private void atomPicked(int atomIndex, Point3fi ptClicked, int action) {
+  private void atomOrPointPicked(int atomIndex, Point3fi ptClicked, int action) {
     // atomIndex < 0 is off structure.
+    // if picking spin or picking symmetry is on, then 
+    // we need to enter this method to process those events.
     if (atomIndex < 0) {
-      resetMeasurement();
+      resetMeasurement(); // for set picking measure only
       if (isBound(action, ACTION_selectNone)) {
         viewer.script("select none");
         return;

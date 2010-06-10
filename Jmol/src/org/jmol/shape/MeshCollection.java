@@ -64,6 +64,10 @@ public abstract class MeshCollection extends Shape {
   public String[] title;
   protected boolean allowMesh = true;
   
+  protected Mesh pickedMesh = null;
+  protected int pickedModel;
+  protected int pickedVertex;
+
   private Mesh setMesh(String thisID) {
     linkedMesh = null;
     if (thisID == null || TextFormat.isWild(thisID)) {
@@ -683,6 +687,14 @@ public void setVisibilityFlags(BitSet bs) {
     BitSet bs = Escape.unescapeBitset(script.substring(i + 3, j + 1));
     modelIndex = (bs == null ? -1 : bs.nextSetBit(0));
     iHaveModelIndex = (modelIndex >= 0);
+  }
+  
+  protected void setStatusPicked(int flag, Point3f v) {
+    // for draw and isosurface
+    viewer.setStatusAtomPicked(flag, "[\"" + myType + "\"," + Escape.escape(pickedMesh.thisID) + "," +
+        + pickedModel + "," + pickedVertex + "," + v.x + "," + v.y + "," + v.z + "," 
+        + (pickedMesh.title == null ? "\"\"" 
+               : Escape.escape(pickedMesh.title[0]))+"]");
   }
 }
 

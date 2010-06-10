@@ -836,11 +836,17 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
             if (sAtom1 == null || sAtom2 == null)
               continue; // "OK - stereochemistry is desgnated for something like C=C=O
             // cumulenes
+            SmilesAtom sAtom1a = sAtom;
+            SmilesAtom sAtom2a = sAtom;
             while (sAtom1.getCovalentBondCount() == 2
                 && sAtom2.getCovalentBondCount() == 2
                 && sAtom1.getValence() == 4 && sAtom2.getValence() == 4) {
-              sAtom1 = sAtom1.getBond(0).getOtherAtom(sAtom1);
-              sAtom2 = sAtom2.getBond(1).getOtherAtom(sAtom2);
+              SmilesBond b = sAtom1.getBondNotTo(sAtom1a, true);
+              sAtom1a = sAtom1;
+              sAtom1 = b.getOtherAtom(sAtom1);
+              b = sAtom2.getBondNotTo(sAtom2a, true);
+              sAtom2a = sAtom2;
+              sAtom2 = b.getOtherAtom(sAtom2);
             }
             sAtom = sAtom1;
           }
@@ -1491,13 +1497,14 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
     int chiralClass = 0;
     switch (nAtoms) {
     default:
-      break;
-    case 2:
     case 5:
     case 6:
       // not doing these for now
       break;
-    case 4:
+    case 2: // allene
+    case 4: // tetrahedral, square planar
+      if (atom3 == null || atom4 == null)
+        return "";
       float d = SmilesAromatic.getNormalThroughPoints(atom1, atom2, atom3, v.vTemp, v.vA, v.vB);
       if (Math.abs(distanceToPlane(v.vTemp, d, (Point3f) atom4)) < 0.2f) {
         chiralClass = SmilesAtom.STEREOCHEMISTRY_SQUARE_PLANAR;

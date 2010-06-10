@@ -221,7 +221,7 @@ public class SmilesGenerator {
     while ((atom = getSmiles(sb, atom)) != null) {
     }
     while (bsToDo.cardinality() > 0 || !htRings.isEmpty()) {
-      System.out.println(bsToDo);
+      //System.out.println(bsToDo);
       Enumeration e = htRings.keys();
       if (e.hasMoreElements()) {
         atom = atoms[((Integer) ((Object[]) htRings.get(e.nextElement()))[1])
@@ -341,6 +341,7 @@ public class SmilesGenerator {
 
   private JmolNode getSmiles(StringBuffer sb, JmolNode atom) {
     int atomIndex = atom.getIndex();
+
     if (!bsToDo.get(atomIndex))
       return null;
     bsToDo.clear(atomIndex);
@@ -370,8 +371,6 @@ public class SmilesGenerator {
         JmolEdge bond = bonds[i];
         if (!bond.isCovalent())
           continue;
-        if (bond.getCovalentOrder() != 1)
-          stereoFlag = 10;
         JmolNode atom1 = bonds[i].getOtherAtom(atom);
         int index1 = atom1.getIndex();
         if (atom1.getElementNumber() == 1 && atom1.getIsotopeNumber() == 0) {
@@ -402,8 +401,15 @@ public class SmilesGenerator {
       stereoShown = true;
     } else {
       strBond = SmilesBond.getBondOrderString(bondPrev.getCovalentOrder());
-      if (stereoFlag < 7)
-        stereo[stereoFlag++] = prevAtom;
+      if (stereoFlag < 7) {
+        if (bondPrev.getCovalentOrder() == 2 && prevBondAtoms != null && prevBondAtoms[1] != null) {
+          // allene continuation
+          stereo[stereoFlag++] = prevBondAtoms[0];
+          stereo[stereoFlag++] = prevBondAtoms[1];
+        } else {
+          stereo[stereoFlag++] = prevAtom;
+        }
+      }
       if (prevBondAtoms == null)
         bondAtoms[nBondAtoms++] = prevAtom;
       else
@@ -431,8 +437,8 @@ public class SmilesGenerator {
       }
     }
     JmolNode atomNext = (bond0 == null ? null : bond0.getOtherAtom(atom));
-    int order = (bond0 == null ? 0 : bond0.getCovalentOrder());
-    boolean deferStereo = (order == 1 && prevBondAtoms == null);
+    int orderNext = (bond0 == null ? 0 : bond0.getCovalentOrder());
+    boolean deferStereo = (orderNext == 1 && prevBondAtoms == null);
     char chBond = getBondStereochemistry(bondPrev, prevAtom);
 
     // now construct the branches part
@@ -469,15 +475,10 @@ public class SmilesGenerator {
     // process the bond to the next atom
     // and cancel any double bond stereochemistry if nec.
 
-    int index2 = (order == 2 ? atomNext.getIndex() : -1);
+    int index2 = (orderNext == 2 ? atomNext.getIndex() : -1);
     if (nH > 1 || isAromatic
         || SmilesSearch.isRingBond(ringSets, atomIndex, index2)) {
       nBondAtoms = -1;
-    } else if (order == 2 && havePreviousBondAtoms) {
-      nBondAtoms = -1;
-      // allene - could handle this!
-    } else {
-      // OK!
     }
     if (nBondAtoms < 0) {
       bondAtoms = null;
@@ -524,8 +525,17 @@ public class SmilesGenerator {
     // we allow for charge, hydrogen count, isotope number,
     // and stereochemistry 
 
-    if (atomNext != null && stereoFlag < 7)
+    if (havePreviousBondAtoms && stereoFlag == 2 && orderNext == 2 && atomNext.getCovalentBondCount() == 3) {
+      // NOT cumulenes.
+      bonds = atomNext.getEdges();
+      for (int k = 0; k < bonds.length; k++) {
+        if (bonds[k].isCovalent() && atomNext.getBondedAtomIndex(k) != atomIndex)
+          stereo[stereoFlag++] = atoms[atomNext.getBondedAtomIndex(k)]; 
+      }
+      nBondAtoms = 0;
+    } else if (atomNext != null && stereoFlag < 7) {
       stereo[stereoFlag++] = atomNext;
+    }
     String s = (stereoFlag > 6 ? "" : SmilesSearch.getStereoFlag(atom, stereo,
         stereoFlag, vTemp));
     /*   

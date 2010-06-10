@@ -1598,6 +1598,7 @@ public class ActionManager {
       bondPickingMode = pickingMode;
       if (viewer.getBondPicking())
         return;
+      break;
       // if we have bondPicking mode, then we don't set atomPickingMode to this
     }
     atomPickingMode = pickingMode;

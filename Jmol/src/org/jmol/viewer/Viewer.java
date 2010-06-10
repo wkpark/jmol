@@ -4673,7 +4673,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
 
   /*
-   * animFrameCallback is called:
+   * aniframeCallback is called:
    * 
    * -- each time a frame is changed -- whenever the animation state is changed
    * -- whenever the visible frame range is changed
@@ -6152,6 +6152,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setBondPickingOption("p");
       if (isSignedApplet || !isApplet)
         popupMenu(0, 0, 'm');
+    } else {
+      setStringProperty("pickingMode", "ident");
+      setStringProperty("pickingStyle", "toggle");
+      setBooleanProperty("bondPicking", false);
     }
 
   }

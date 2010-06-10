@@ -93,11 +93,11 @@ public class ActionManager {
     GT._("move whole DRAW object (requires {0})", "set picking DRAW"),
     
     GT._("pick an atom"),
-    GT._("pick a DRAW point (for measurements)"),
+    GT._("pick a DRAW point (for measurements) (requires {0}", "set DRAWPICKING"),
     GT._("pick a label to toggle it hidden/displayed (requires {0})", "set picking LABEL"),
     GT._("pick an atom to include it in a measurement (after starting a measurement or after {0})", "set picking DISTANCE/ANGLE/TORSION"),
     GT._("pick an atom to initiate or conclude a measurement"),
-    GT._("pick an ISOSURFACE point"),
+    GT._("pick an ISOSURFACE point (requires {0}", "set DRAWPICKING"),
     GT._("pick a point or atom to navigate to (requires {0})", "set NAVIGATIONMODE"),
 
     GT._("delete atom (requires {0})", "set picking DELETE ATOM"),

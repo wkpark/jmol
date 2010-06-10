@@ -1035,7 +1035,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
           dir2 = (bondType == SmilesBond.TYPE_ATROPISOMER_1 ? 1 : -1);
           float f = v.vTemp1.dot(v.vTemp2);
           if (f < 0.05f || f > 0.95f
-              || v.vNorm1.dot(v.vNorm2) * dir1 * dir2 < 0)
+              || v.vNorm1.dot(v.vNorm2) * dir1 * dir2 > 0) // sign of dihedral < or > here
             return false;
         } else {
           // for 

@@ -244,6 +244,14 @@ public class SmilesGenerator {
     return sb.toString();
   }
 
+  /**
+   * Retrieves the saved character based on the index of the bond.
+   * bsBondsUp and bsBondsDown are global fields.
+   * 
+   * @param bond
+   * @param atomFrom
+   * @return   the correct character '/', '\\', '\0' (meaning "no stereochemistry")
+   */
   private char getBondStereochemistry(JmolEdge bond, JmolNode atomFrom) {
     if (bond == null)
       return '\0';
@@ -254,9 +262,19 @@ public class SmilesGenerator {
         : bsBondsDn.get(i) ? (isFirst ? '\\' : '/') : '\0');
   }
 
+  /**
+   * Creates global BitSets bsBondsUp and bsBondsDown. Noniterative. 
+   *
+   */
   private void setBondDirections() {
     BitSet bsDone = new BitSet();
     JmolEdge[][] edges = new JmolEdge[2][3];
+    
+    // We don't assume a bond list, just an atom list, so we
+    // loop through all the bonds of all the atoms, flagging them
+    // as having been done already so as not to do twice. 
+    // The bonds we are marking will be bits in bsBondsUp or bsBondsDn
+    
     for (int i = bsSelected.nextSetBit(0); i >= 0; i = bsSelected
         .nextSetBit(i + 1)) {
       JmolNode atom1 = atoms[i];
@@ -278,6 +296,12 @@ public class SmilesGenerator {
         if (Logger.debugging)
           Logger.debug(atom1 + " == " + atom2);
         int edgeCount = 1;
+        
+        // OK, so we have a double bond. Only looking at single bonds.
+        
+        // First pass: just see if there is an already-assigned bond direction
+        // and collect the edges in an array. 
+        
         for (int j = 0; j < 2 && edgeCount > 0 && edgeCount < 3; j++) {
           edgeCount = 0;
           JmolNode atomA = atom12[j];
@@ -294,11 +318,31 @@ public class SmilesGenerator {
         }
         if (edgeCount == 3 || edgeCount == 0)
           continue;
+        
+        // If no bond around this double bond is already marked, we assign it UP.
+        
         if (b0 == null) {
           i0 = 0;
           b0 = edges[i0][0];
           bsBondsUp.set(b0.getIndex());
         }
+        
+        // The character '/' or '\\' is assigned based on a
+        // geometric reference to the reference bond. Initially
+        // this comes in in reference to the double bond, but
+        // when we save the bond, we are saving the correct 
+        // character for the bond itself -- based on its 
+        // "direction" from atom 1 to atom 2. Then, when 
+        // creating the SMILES string, we use the atom on the 
+        // left as the reference to get the correct character
+        // for the string itself. The only tricky part, I think.
+        // SmilesSearch.isDiaxial is just a simple method that
+        // does the dot products to determine direction. In this
+        // case we are looking simply for vA.vB < 0,meaning 
+        // "more than 90 degrees apart" (ab, and cd)
+        // Parity errors would be caught here, but I doubt you
+        // could ever get that with a real molecule. 
+        
         char c0 = getBondStereochemistry(b0, atom12[i0]);
         a0 = b0.getOtherAtom(atom12[i0]);
         for (int j = 0; j < 2; j++)

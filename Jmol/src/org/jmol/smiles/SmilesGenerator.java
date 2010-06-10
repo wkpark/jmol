@@ -297,7 +297,7 @@ public class SmilesGenerator {
           Logger.debug(atom1 + " == " + atom2);
         int edgeCount = 1;
         
-        // OK, so we have a double bond. Only looking at single bonds.
+        // OK, so we have a double bond. Only looking at single bonds around it.
         
         // First pass: just see if there is an already-assigned bond direction
         // and collect the edges in an array. 

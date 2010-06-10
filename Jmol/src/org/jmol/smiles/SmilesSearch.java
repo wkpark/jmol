@@ -751,6 +751,8 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
       case SmilesBond.TYPE_SINGLE:
         bondFound = !isRingBond(ringSets, iAtom, matchingAtom);
         break;
+      case SmilesBond.TYPE_ATROPISOMER_1:
+      case SmilesBond.TYPE_ATROPISOMER_2:
       case SmilesBond.TYPE_ANY:
       case SmilesBond.TYPE_UNKNOWN:
         bondFound = true;
@@ -765,6 +767,8 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
       case SmilesBond.TYPE_SINGLE:
       case SmilesBond.TYPE_DIRECTIONAL_1:
       case SmilesBond.TYPE_DIRECTIONAL_2:
+      case SmilesBond.TYPE_ATROPISOMER_1:
+      case SmilesBond.TYPE_ATROPISOMER_2:
         // STEREO_NEAR and _FAR are stand-ins for find()
         bondFound = (order == JmolEdge.BOND_COVALENT_SINGLE
             || order == JmolEdge.BOND_STEREO_FAR
@@ -819,7 +823,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
         if (Logger.debugging)
           Logger.debug("...type " + chiralClass);
         switch (chiralClass) {
-//        case SmilesAtom.STEREOCHEMISTRY_DOUBLE_BOND:
+        //        case SmilesAtom.STEREOCHEMISTRY_DOUBLE_BOND:
         case SmilesAtom.STEREOCHEMISTRY_ALLENE:
           boolean isAllene = true;//(chiralClass == SmilesAtom.STEREOCHEMISTRY_ALLENE);
           if (isAllene) {
@@ -864,8 +868,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
               jn[3] = getJmolAtom(sAtom1.getMatchingAtom());
             }
           }
-          
-          
+
           if (isSmilesFind) {
             if (jn[1] == null)
               getX(sAtom, sAtom2, jn, 1, false, isAllene);
@@ -937,58 +940,109 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
         SmilesAtom sAtomDirected2 = null;
         int dir1 = 0;
         int dir2 = 0;
-
+        int bondType = 0;
+        SmilesBond b;
         int nBonds = sAtom1.getCovalentBondCount();
+        boolean isAtropisomer = false;
         for (int j = 0; j < nBonds; j++) {
-          SmilesBond b = sAtom1.getBond(j);
+          b = sAtom1.getBond(j);
           boolean isAtom2 = (b.getAtom2() == sAtom1);
           int type = b.bondType;
           switch (type) {
+          case SmilesBond.TYPE_ATROPISOMER_1:
+          case SmilesBond.TYPE_ATROPISOMER_2:
           case SmilesBond.TYPE_DOUBLE:
             if (isAtom2)
               continue;
             sAtom2 = b.getAtom2();
+            bondType = type;
+            isAtropisomer = (type != SmilesBond.TYPE_DOUBLE);
+            if (isAtropisomer)
+              dir1 = (b.isNot ? -1 : 1);
             break;
           case SmilesBond.TYPE_DIRECTIONAL_1:
           case SmilesBond.TYPE_DIRECTIONAL_2:
             sAtomDirected1 = (isAtom2 ? b.getAtom1() : b.getAtom2());
             dir1 = (isAtom2 != (type == SmilesBond.TYPE_DIRECTIONAL_1) ? 1 : -1);
-          }
-        }
-        if (sAtom2 == null || dir1 == 0)
-          continue;
-        nBonds = sAtom2.getCovalentBondCount();
-        for (int j = 0; j < nBonds && dir2 == 0; j++) {
-          SmilesBond b = sAtom2.getBond(j);
-          boolean isAtom2 = (b.getAtom2() == sAtom2);
-          int type = b.bondType;
-          switch (type) {
-          case SmilesBond.TYPE_DIRECTIONAL_1:
-          case SmilesBond.TYPE_DIRECTIONAL_2:
-            sAtomDirected2 = (isAtom2 ? b.getAtom1() : b.getAtom2());
-            dir2 = (isAtom2 != (type == SmilesBond.TYPE_DIRECTIONAL_1) ? 1 : -1);
             break;
           }
         }
-        if (dir2 == 0)
-          continue;
-
+        if (isAtropisomer) {
+          System.out.println(sAtom1 + " " + sAtom2);
+          b = sAtom1.getBondNotTo(sAtom2, false);
+          if (b == null)
+            return false;
+          sAtomDirected1 = b.getOtherAtom(sAtom1);
+          b = sAtom2.getBondNotTo(sAtom1, false);
+          if (b == null)
+            return false;
+          sAtomDirected2 = b.getOtherAtom(sAtom2);
+        } else {
+          if (sAtom2 == null || dir1 == 0)
+            continue;
+          nBonds = sAtom2.getCovalentBondCount();
+          for (int j = 0; j < nBonds && dir2 == 0; j++) {
+            b = sAtom2.getBond(j);
+            boolean isAtom2 = (b.getAtom2() == sAtom2);
+            int type = b.bondType;
+            switch (type) {
+            case SmilesBond.TYPE_DIRECTIONAL_1:
+            case SmilesBond.TYPE_DIRECTIONAL_2:
+              sAtomDirected2 = (isAtom2 ? b.getAtom1() : b.getAtom2());
+              dir2 = (isAtom2 != (type == SmilesBond.TYPE_DIRECTIONAL_1) ? 1
+                  : -1);
+              break;
+            }
+          }
+          if (dir2 == 0)
+            continue;
+        }
         if (isSmilesFind)
-          setSmilesBondCoordinates(sAtom1, sAtom2);
+          setSmilesBondCoordinates(sAtom1, sAtom2, bondType);
         JmolNode dbAtom1 = getJmolAtom(sAtom1.getMatchingAtom());
         JmolNode dbAtom2 = getJmolAtom(sAtom2.getMatchingAtom());
         JmolNode dbAtom1a = getJmolAtom(sAtomDirected1.getMatchingAtom());
         JmolNode dbAtom2a = getJmolAtom(sAtomDirected2.getMatchingAtom());
-        Vector3f v1 = new Vector3f((Point3f) dbAtom1a);
-        Vector3f v2 = new Vector3f((Point3f) dbAtom2a);
-        v1.sub((Point3f) dbAtom1);
-        v2.sub((Point3f) dbAtom2);
-        // for \C=C\, (dir1*dir2 == -1), dot product should be negative
-        // because the bonds are oppositely directed
-        // for \C=C/, (dir1*dir2 == 1), dot product should be positive
-        // because the bonds are only about 60 degrees apart
-        if (v1.dot(v2) * dir1 * dir2 < 0)
+        if (dbAtom1a == null || dbAtom2a == null)
           return false;
+        v.vTemp1.set((Point3f) dbAtom1a);
+        v.vTemp1.sub((Point3f) dbAtom1);
+        v.vTemp2.set((Point3f) dbAtom2a);
+        v.vTemp2.sub((Point3f) dbAtom2);
+        if (isAtropisomer) {
+          // We cross dihedral bonds with the bond axis
+          // to get two vectors projections in the
+          // plane perpendicular to the bond axis
+          // Then we check the dot product of these
+          // as well as cross them and compare the 
+          // dot product of that with the bond axis
+          // to get direction. Ranges here involve
+          // acos(0.05) and acos(0.95) to exclude 
+          // conformations very close to 90o and 0o
+          
+          v.vNorm1.set((Point3f) dbAtom1);
+          v.vNorm1.sub((Point3f) dbAtom2);
+          v.vNorm1.normalize();
+          v.vTemp1.cross(v.vTemp1, v.vNorm1);
+          v.vTemp1.normalize();
+          v.vTemp2.cross(v.vTemp2, v.vNorm1);
+          v.vTemp2.normalize();
+          v.vNorm2.cross(v.vTemp1, v.vTemp2);
+          dir2 = (bondType == SmilesBond.TYPE_ATROPISOMER_1 ? 1 : -1);
+          float f = v.vTemp1.dot(v.vTemp2);
+          if (f < 0.05f || f > 0.95f
+              || v.vNorm1.dot(v.vNorm2) * dir1 * dir2 < 0)
+            return false;
+        } else {
+          // for 
+          // for \C=C\, (dir1*dir2 == -1), dot product should be negative
+          // because the bonds are oppositely directed
+          // for \C=C/, (dir1*dir2 == 1), dot product should be positive
+          // because the bonds are only about 60 degrees apart
+          if (v.vTemp1.dot(v.vTemp2) * dir1 * dir2 < 0)
+            return false;
+        }
+        System.out.println("ok - smilessearchB");
       }
     }
     return true;
@@ -1104,7 +1158,8 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
     return (i < 0 || i >= jmolAtoms.length ? null : jmolAtoms[i]);
   }
 
-  private void setSmilesBondCoordinates(SmilesAtom sAtom1, SmilesAtom sAtom2) {
+  private void setSmilesBondCoordinates(SmilesAtom sAtom1, SmilesAtom sAtom2,
+                                        int bondType) {
     JmolNode dbAtom1 = jmolAtoms[sAtom1.getMatchingAtom()];
     JmolNode dbAtom2 = jmolAtoms[sAtom2.getMatchingAtom()];
     // Note that the directionality of the bond depends upon whether
@@ -1144,60 +1199,86 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
     //
     dbAtom1.set(-1, 0, 0);
     dbAtom2.set(1, 0, 0);
-    int nBonds = 0;
-    int dir1 = 0;
-    JmolEdge[] bonds = dbAtom1.getEdges();
-    for (int k = bonds.length; --k >= 0;) {
-      JmolEdge bond = bonds[k];
-      JmolNode atom = bond.getOtherAtom(dbAtom1);
-      if (atom == dbAtom2)
-        continue;
-      atom.set(-1, (nBonds++ == 0) ? -1 : 1, 0);
-      int mode = (bond.getAtomIndex2() == dbAtom1.getIndex() ? nBonds : -nBonds);
-      switch (bond.getOrder()) {
-      case JmolEdge.BOND_STEREO_NEAR:
-        dir1 = mode;
-        break;
-      case JmolEdge.BOND_STEREO_FAR:
-        dir1 = -mode;
+    if (bondType == SmilesBond.TYPE_DOUBLE) {
+      int nBonds = 0;
+      int dir1 = 0;
+      JmolEdge[] bonds = dbAtom1.getEdges();
+      for (int k = bonds.length; --k >= 0;) {
+        JmolEdge bond = bonds[k];
+        JmolNode atom = bond.getOtherAtom(dbAtom1);
+        if (atom == dbAtom2)
+          continue;
+        atom.set(-1, (nBonds++ == 0) ? -1 : 1, 0);
+        int mode = (bond.getAtomIndex2() == dbAtom1.getIndex() ? nBonds
+            : -nBonds);
+        switch (bond.getOrder()) {
+        case JmolEdge.BOND_STEREO_NEAR:
+          dir1 = mode;
+          break;
+        case JmolEdge.BOND_STEREO_FAR:
+          dir1 = -mode;
+        }
       }
-    }
-    int dir2 = 0;
-    nBonds = 0;
-    JmolNode[] atoms = new JmolNode[2];
-    bonds = dbAtom2.getEdges();
-    for (int k = bonds.length; --k >= 0;) {
-      JmolEdge bond = bonds[k];
-      JmolNode atom = bond.getOtherAtom(dbAtom2);
-      if (atom == dbAtom1)
-        continue;
-      atoms[nBonds] = atom;
-      atom.set(1, (nBonds++ == 0) ? 1 : -1, 0);
-      int mode = (bond.getAtomIndex2() == dbAtom2.getIndex() ? nBonds : -nBonds);
-      switch (bond.getOrder()) {
-      case JmolEdge.BOND_STEREO_NEAR:
-        dir2 = mode;
-        break;
-      case JmolEdge.BOND_STEREO_FAR:
-        dir2 = -mode;
+      int dir2 = 0;
+      nBonds = 0;
+      JmolNode[] atoms = new JmolNode[2];
+      bonds = dbAtom2.getEdges();
+      for (int k = bonds.length; --k >= 0;) {
+        JmolEdge bond = bonds[k];
+        JmolNode atom = bond.getOtherAtom(dbAtom2);
+        if (atom == dbAtom1)
+          continue;
+        atoms[nBonds] = atom;
+        atom.set(1, (nBonds++ == 0) ? 1 : -1, 0);
+        int mode = (bond.getAtomIndex2() == dbAtom2.getIndex() ? nBonds
+            : -nBonds);
+        switch (bond.getOrder()) {
+        case JmolEdge.BOND_STEREO_NEAR:
+          dir2 = mode;
+          break;
+        case JmolEdge.BOND_STEREO_FAR:
+          dir2 = -mode;
+        }
+
       }
-      
+      //     2     3
+      //      \   /
+      //       C=C
+      //      /   \
+      //     1     4
+      //
+      // check for overall directionality matching even/oddness of bond order
+      // and switch Y positions of 3 and 4 if necessary
+      //  
+      if ((dir1 * dir2 > 0) == (Math.abs(dir1) % 2 == Math.abs(dir2) % 2)) {
+        float y = ((Point3f) atoms[0]).y;
+        ((Point3f) atoms[0]).y = ((Point3f) atoms[1]).y;
+        ((Point3f) atoms[1]).y = y;
+      }
+    } else {
+      JmolNode[] jn = new JmolNode[6];
+      int pt = 0;
+      int ii;
+      for (int k = 0; k < sAtom1.bondCount && pt < 3; k++) {
+        if ((ii = sAtom1.getBondedAtomIndex(k)) == sAtom2.index
+            || getJmolAtom(ii).getElementNumber() == 1)
+          continue;
+        jn[pt++] = getJmolAtom(ii);
+      }
+      pt = 3;
+      for (int k = 0; k < sAtom1.bondCount && pt < 6; k++) {
+        if ((ii = sAtom2.getBondedAtomIndex(k)) == sAtom1.index
+            || getJmolAtom(ii).getElementNumber() == 1)
+          continue;
+        jn[pt++] = getJmolAtom(ii);
+      }
+      int[] map = getMappedAtoms(dbAtom1, dbAtom2, jn);
+      int dir = (bondType == SmilesBond.TYPE_ATROPISOMER_1 ? 1 : -1);
+      jn[map[0]].set(1, 0, 1);
+      jn[map[1]].set(-1, 0, 1);
+      jn[map[3]].set(0, dir, -1);
+      jn[map[4]].set(0, -dir, -1);
     }
-    //     2     3
-    //      \   /
-    //       C=C
-    //      /   \
-    //     1     4
-    //
-    // check for overall directionality matching even/oddness of bond order
-    // and switch Y positions of 3 and 4 if necessary
-    //  
-    if ((dir1 * dir2 > 0) == (Math.abs(dir1) % 2 == Math.abs(dir2) % 2)) {
-    float y = ((Point3f) atoms[0]).y;
-    ((Point3f) atoms[0]).y = ((Point3f) atoms[1]).y;
-    ((Point3f) atoms[1]).y = y;
-    }
-    
   }
 
   private boolean setSmilesCoordinates(JmolNode atom, SmilesAtom sAtom, SmilesAtom sAtom2, JmolNode[] cAtoms) {
@@ -1214,46 +1295,15 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
       return false;
     int chiralClass = atomSite >> 8;
     int chiralOrder = atomSite & 0xFF;
-
+    JmolNode a2 = (chiralClass == 2 || chiralClass == 3 ?
+      a2 = jmolAtoms[sAtom2.getMatchingAtom()] : null);
+        
     // set the chirality center at the origin
     atom.set(0, 0, 0);
-
-    // Here is the secret:
-    // Sort the atoms by the origintal order of bonds
-    // in the SMILES string that generated the
-    // atom set.
-    int[] map = new int[cAtoms[4] == null ? 4 : cAtoms[5] == null ? 5 : 6];
-    for (int i = 0; i < map.length; i++)
-      map[i] = (cAtoms[i] == null ? 104 + i * 100: cAtoms[i].getIndex());
-    int k;
-    JmolNode a2 = null;
-    if (chiralClass == 2 || chiralClass == 3) {
-      a2 = jmolAtoms[sAtom2.getMatchingAtom()];
-    }
     atom = jmolAtoms[sAtom.getMatchingAtom()];
     atom.set(0, 0, 0);
-    JmolEdge[] bonds = atom.getEdges();
-    JmolEdge[] b2 = (a2 == null ? null : a2.getEdges());
-    for (int i = 0; i < map.length; i++) {
-      for (k = 0; k < bonds.length; k++)
-        if (bonds[k].getOtherAtom(atom) == cAtoms[i])
-          break;
-      if (k < bonds.length) {
-        map[i] = (k * 10 + 100) + i;
-      } else if (a2 != null) {
-        for (k = 0; k < b2.length; k++)
-          if (b2[k].getOtherAtom(a2) == cAtoms[i])
-            break;
-        if (k < b2.length)
-          map[i] = (k * 10 + 300) + i;
-      }
-    }
-    Arrays.sort(map);
-    for (int i = 0; i < map.length; i++) {
-      map[i] = map[i] % 10;
-      // System.out.println("i=" + i + "; map[i]=" + map[i] + " a=" +
-      // cAtoms[map[i]].getIndex());
-    }
+
+    int[] map = getMappedAtoms(atom, a2, cAtoms);
     switch (chiralClass) {
     case SmilesAtom.STEREOCHEMISTRY_ALLENE:
     case SmilesAtom.STEREOCHEMISTRY_TETRAHEDRAL:
@@ -1327,15 +1377,49 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
     return true;
   }
 
+  int[] getMappedAtoms(JmolNode atom, JmolNode a2, JmolNode[] cAtoms) {
+   
+    // Here is the secret:
+    // Sort the atoms by the origintal order of bonds
+    // in the SMILES string that generated the
+    // atom set.
+    int[] map = new int[cAtoms[4] == null ? 4 : cAtoms[5] == null ? 5 : 6];
+    for (int i = 0; i < map.length; i++)
+      map[i] = (cAtoms[i] == null ? 104 + i * 100: cAtoms[i].getIndex());
+    int k;
+    JmolEdge[] bonds = atom.getEdges();
+    JmolEdge[] b2 = (a2 == null ? null : a2.getEdges());
+    for (int i = 0; i < map.length; i++) {
+      for (k = 0; k < bonds.length; k++)
+        if (bonds[k].getOtherAtom(atom) == cAtoms[i])
+          break;
+      if (k < bonds.length) {
+        map[i] = (k * 10 + 100) + i;
+      } else if (a2 != null) {
+        for (k = 0; k < b2.length; k++)
+          if (b2[k].getOtherAtom(a2) == cAtoms[i])
+            break;
+        if (k < b2.length)
+          map[i] = (k * 10 + 300) + i;
+      }
+    }
+    Arrays.sort(map);
+    for (int i = 0; i < map.length; i++) {
+      map[i] = map[i] % 10;
+      // System.out.println("i=" + i + "; map[i]=" + map[i] + " a=" +
+      // cAtoms[map[i]].getIndex());
+    }
+    return map;
+  }
   static class VTemp {
     final Vector3f vTemp = new Vector3f();
     final Vector3f vA = new Vector3f();
     final Vector3f vB = new Vector3f();
-    Vector3f vTemp1;
-    Vector3f vTemp2;
-    Vector3f vNorm1;
-    Vector3f vNorm2;
-    Vector3f vNorm3;
+    final Vector3f vTemp1 = new Vector3f();
+    final Vector3f vTemp2 = new Vector3f();
+    final Vector3f vNorm1 = new Vector3f();
+    final Vector3f vNorm2 = new Vector3f();
+    final Vector3f vNorm3 = new Vector3f();
   }
   
   VTemp v = new VTemp();
@@ -1370,13 +1454,6 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
   }
 
   private static void getPlaneNormals(JmolNode atom1, JmolNode atom2, JmolNode atom3, JmolNode atom4, VTemp v) {
-    if (v.vTemp1 == null) {
-      v.vTemp1 = new Vector3f();
-      v.vTemp2 = new Vector3f();
-      v.vNorm1 = new Vector3f();
-      v.vNorm2 = new Vector3f();
-      v.vNorm3 = new Vector3f();
-    }
     SmilesAromatic.getNormalThroughPoints(atom1, atom2, atom3, v.vNorm1, v.vTemp1,
         v.vTemp2);
     SmilesAromatic.getNormalThroughPoints(atom2, atom3, atom4, v.vNorm2, v.vTemp1,

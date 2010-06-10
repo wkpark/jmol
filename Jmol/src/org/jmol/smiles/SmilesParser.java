@@ -874,6 +874,16 @@ public class SmilesParser {
       if (currentAtom == null && bondType != SmilesBond.TYPE_NONE)
         throw new InvalidSmilesException("Bond without a previous atom");
       switch (bondType) {
+      case SmilesBond.TYPE_ATROPISOMER_1:
+      case SmilesBond.TYPE_ATROPISOMER_2:
+        if (isBondNot) {
+          isBondNot = false;
+          bondType = (bondType == SmilesBond.TYPE_ATROPISOMER_1 ? SmilesBond.TYPE_ATROPISOMER_2 : SmilesBond.TYPE_ATROPISOMER_1);
+        }
+//        if (bondSet != null)
+  //        bondSet.bondType = bondType;
+        molecule.haveBondStereochemistry = true;
+        break;
       case SmilesBond.TYPE_DIRECTIONAL_1:
       case SmilesBond.TYPE_DIRECTIONAL_2:
         molecule.haveBondStereochemistry = true;
@@ -1034,7 +1044,7 @@ public class SmilesParser {
   }
 
   private static String cleanPattern(String pattern, boolean isSmarts) {
-    pattern = pattern.replaceAll("\\s", "");
+    pattern = pattern.replaceAll("\\s", "").replaceAll("\\^\\^","'");
     int i = 0;
     int i2 = 0;
     while ((i = pattern.indexOf("//*")) >= 0

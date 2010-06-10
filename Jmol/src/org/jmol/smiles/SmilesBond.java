@@ -39,13 +39,16 @@ public class SmilesBond implements JmolEdge {
   public final static int TYPE_DOUBLE = 2;
   public final static int TYPE_TRIPLE = 3;
   public final static int TYPE_AROMATIC = 0x11;
-  public final static int TYPE_DIRECTIONAL_1 = 0x21;
-  public final static int TYPE_DIRECTIONAL_2 = 0x31;
+  public final static int TYPE_DIRECTIONAL_1 = 0x101;
+  public final static int TYPE_DIRECTIONAL_2 = 0x201;
+  public final static int TYPE_ATROPISOMER_1 = 0x301;
+  public final static int TYPE_ATROPISOMER_2 = 0x401;
   public final static int TYPE_RING = 0x41;
   public final static int TYPE_ANY = 0x51;
   public final static int TYPE_BIO_SEQUENCE = 0x60;
   public final static int TYPE_BIO_PAIR = 0x70;
   public final static int TYPE_MULTIPLE = 999;
+
 
   static String getBondOrderString(int order) {
     switch (order) {
@@ -157,9 +160,9 @@ public class SmilesBond implements JmolEdge {
 
   static boolean isBondType(char ch, boolean isSearch)
       throws InvalidSmilesException {
-    if ("-=#:/\\.+!,&;@~".indexOf(ch) < 0)
+    if ("-=#:/\\.+!,&;@~^'".indexOf(ch) < 0)
       return false;
-    if (!isSearch && "-=#:/\\.~".indexOf(ch) < 0) // ~ here for BIOSMARTS
+    if (!isSearch && "-=#:/\\.~^'".indexOf(ch) < 0) // ~ here for BIOSMARTS
       throw new InvalidSmilesException("SMARTS bond type " + ch
           + " not allowed in SMILES");
     return true;
@@ -185,6 +188,10 @@ public class SmilesBond implements JmolEdge {
       return TYPE_DIRECTIONAL_1;
     case '\\':
       return TYPE_DIRECTIONAL_2;
+    case '^':
+      return TYPE_ATROPISOMER_1;
+    case '\'':
+      return TYPE_ATROPISOMER_2;
     case '@':
       return TYPE_RING;
     case '~':

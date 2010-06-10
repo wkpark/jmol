@@ -48,7 +48,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
   final static int STEREOCHEMISTRY_TRIGONAL_BIPYRAMIDAL = 5;
   final static int STEREOCHEMISTRY_OCTAHEDRAL = 6;
   final static int STEREOCHEMISTRY_SQUARE_PLANAR = 8;
-
+  
   static int getChiralityClass(String xx) {
     return ("0;11;AL;33/*DB*/;TH;TP;OH;77;SP;".indexOf(xx) + 1) / 3;
   }
@@ -608,12 +608,13 @@ public class SmilesAtom extends Point3f implements JmolNode {
     return null;
   }
 
-  SmilesBond getBondNotTo(SmilesAtom atom) {
+  SmilesBond getBondNotTo(SmilesAtom atom, boolean allowH) {
     SmilesBond bond;
     for (int k = 0; k < bonds.length; k++) {
       if ((bond = bonds[k]) == null)
         continue;
-      if (atom != bond.getOtherAtom(this))
+      SmilesAtom atom2 = bond.getOtherAtom(this);
+      if (atom != atom2 && (allowH ||  atom2.elementNumber != 1))
         return bond;
     }
     return null;

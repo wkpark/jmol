@@ -9,13 +9,13 @@ msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-06-08 21:22+0200\n"
-"PO-Revision-Date: 2010-05-31 21:09+0100\n"
-"Last-Translator: Angel Herráez <aherraez@users.sourceforge.net>\n"
+"PO-Revision-Date: 2010-06-11 17:38+0000\n"
+"Last-Translator: DiegoJ <diegojromerolopez@gmail.com>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-05-19 18:52+0000\n"
+"X-Launchpad-Export-Date: 2010-06-11 20:04+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: SPAIN\n"
 "X-Poedit-Language: Spanish\n"
@@ -68,7 +68,8 @@ msgstr "sin consola; toda la salida va a sysout"
 
 #: org/openscience/jmol/app/JmolApp.java:156
 msgid "send only output from print messages to console (implies -i)"
-msgstr "enviar sólo salida de mensajes de impresión a la consola (implica -i)"
+msgstr ""
+"enviar sólo salida de mensajes de impresión a la consola (implica -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:158
 msgid "independent command thread"
@@ -1485,9 +1486,9 @@ msgid "adding {0}"
 msgstr "añadir {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:639
-#, fuzzy, java-format
+#, java-format
 msgid "Unable to load resource {0}"
-msgstr "No se encuentra la URL \"{0}\"."
+msgstr "No se pudo cargar el recurso {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:691
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
@@ -1566,68 +1567,59 @@ msgstr "Rojo / Verde"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:139
 msgid "Animation Control"
-msgstr ""
+msgstr "Control de la animación"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:163
-#, fuzzy
 msgid "Animation"
-msgstr "&Detener"
+msgstr "Animación"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:164
 msgid "First Frame"
-msgstr ""
+msgstr "Primer fotograma"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:166
-#, fuzzy
 msgid "Previous Frame"
 msgstr "Fotograma anterior"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:168
 msgid "Play"
-msgstr ""
+msgstr "Reproducir"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:170
-#, fuzzy
 msgid "Next Frame"
-msgstr "Fotograma siguiente"
+msgstr "Siguiente fotograma"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:172
-#, fuzzy
 msgid "Pause"
-msgstr "&Pegar"
+msgstr "Pausar"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:172
-#, fuzzy
 msgid "Stop"
-msgstr "Un paso"
+msgstr "Parar"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:174
-#, fuzzy
 msgid "Last Frame"
-msgstr "Ultimo fotograma"
+msgstr "Último fotograma"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:177
-#, fuzzy
 msgid "Loop"
-msgstr "&Bucle"
+msgstr "Bucle"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:179
-#, fuzzy
 msgid "Palindrome"
-msgstr "&Palíndromo"
+msgstr "Palíndromo"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:181
 msgid "Play Once"
-msgstr ""
+msgstr "Reproducir una vez"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:190
 msgid "Open Console Button"
-msgstr ""
+msgstr "Abrir botón de consola"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:203
-#, fuzzy
 msgid "launch Jmol console"
-msgstr "Consola de Jmol"
+msgstr "lanzar consola de Jmol"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:210
 msgid "Download view"
@@ -1637,12 +1629,10 @@ msgstr "Descargar la vista"
 msgid "unimplemented"
 msgstr "sin aplicarse"
 
-#~ msgid "stereo off"
-#~ msgstr "Stereo Off"
-
 #~ msgid "Show Selected"
 #~ msgstr "Mostrar las seleccionadas"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
@@ -1655,3 +1645,6 @@ msgstr "sin aplicarse"
 
 #~ msgid "Output Conso&le..."
 #~ msgstr "C&onsola..."
+
+#~ msgid "stereo off"
+#~ msgstr "Stereo Off"

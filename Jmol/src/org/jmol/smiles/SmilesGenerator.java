@@ -37,19 +37,17 @@ import org.jmol.util.Logger;
 import org.jmol.smiles.SmilesSearch.VTemp;
 
 /**
- * public method getBioSmiles returns a Jmol BIOSMILES string
- * or, if it is not biological, a SMILES string with comment header.
- * Square planar and tetrahedral stereochemistry only, not double-bond stereochemistry.
+ * Double bond, allene, square planar and tetrahedral stereochemistry only
+ * not octahedral or trigonal bipyramidal.
  * 
+ * No attempt at canonicalization -- unnecessary for model searching.
+ * 
+ * see SmilesMatcher and package.html for details
+ *
+ * Bob Hanson, Jmol 12.0.RC17 2010.06.5
+ *
  */
 public class SmilesGenerator {
-
-  /*
-   * see package.html for details
-   *
-   * Bob Hanson, Jmol 12.0.RC17 2010.06.5
-   * 
-   */
 
   // inputs:
   private JmolNode[] atoms;
@@ -82,7 +80,7 @@ public class SmilesGenerator {
     int i = bsSelected.nextSetBit(0);
     if (i < 0)
       return "";
-    return getSmilesComponent(atoms[i], bsSelected);
+    return getSmilesComponent(atoms[i], bsSelected, false);
   }
 
   String getBioSmiles(JmolNode[] atoms, int atomCount, BitSet bsSelected,
@@ -120,7 +118,7 @@ public class SmilesGenerator {
             sb.append("~");
             len++;
           } else {
-            s = getSmilesComponent(a, bs);
+            s = getSmilesComponent(a, bs, true);
             if (s.equals(lastComponent)) {
               end = "";
             } else {
@@ -136,12 +134,7 @@ public class SmilesGenerator {
           len = 2;
         }
         if (unknown) {
-          sb.append("[");
-          if (groupType.length() > 0)
-            sb.append(a.getGroup3(false)).append(".0");
-          else
-            sb.append(Elements.elementNameFromNumber(a.getElementNumber()));
-          sb.append("]");
+          addBracketedBioName(sb, a, groupType.length() > 0 ? ".0" : null);
         } else {
           sb.append(ch);
         }
@@ -179,6 +172,16 @@ public class SmilesGenerator {
     return s;
   }
 
+  private void addBracketedBioName(StringBuffer sb, JmolNode a, String atomName) {
+    sb.append("[");
+    if (atomName != null)
+      sb.append(a.getGroup3(false)).append(atomName);
+    else
+      sb.append(Elements.elementNameFromNumber(a.getElementNumber()));
+    sb.append("]");
+
+  }
+
   /**
    * 
    * creates a valid SMILES string from a model.
@@ -186,10 +189,11 @@ public class SmilesGenerator {
    * 
    * @param atom
    * @param bs
+   * @param allowConnectionsToOutsideWorld 
    * @return        SMILES
    * @throws InvalidSmilesException
    */
-  private String getSmilesComponent(JmolNode atom, BitSet bs)
+  private String getSmilesComponent(JmolNode atom, BitSet bs, boolean allowConnectionsToOutsideWorld)
       throws InvalidSmilesException {
 
     if (atom.getElementNumber() == 1 && atom.getEdges().length > 0)
@@ -218,7 +222,7 @@ public class SmilesGenerator {
     }
     bsToDo = (BitSet) bsSelected.clone();
     StringBuffer sb = new StringBuffer();
-    while ((atom = getSmiles(sb, atom)) != null) {
+    while ((atom = getSmiles(sb, atom, allowConnectionsToOutsideWorld)) != null) {
     }
     while (bsToDo.cardinality() > 0 || !htRings.isEmpty()) {
       //System.out.println(bsToDo);
@@ -234,7 +238,7 @@ public class SmilesGenerator {
       sb.append(".");
       prevBondAtoms = null;
       prevAtom = null;
-      while ((atom = getSmiles(sb, atom)) != null) {
+      while ((atom = getSmiles(sb, atom, allowConnectionsToOutsideWorld)) != null) {
       }
     }
     if (!htRings.isEmpty()) {
@@ -383,12 +387,13 @@ public class SmilesGenerator {
     }
   }
 
-  private JmolNode getSmiles(StringBuffer sb, JmolNode atom) {
+  private JmolNode getSmiles(StringBuffer sb, JmolNode atom, boolean allowConnectionsToOutsideWorld) {
     int atomIndex = atom.getIndex();
 
     if (!bsToDo.get(atomIndex))
       return null;
     bsToDo.clear(atomIndex);
+    boolean isExtension = (!bsSelected.get(atomIndex));
     boolean havePreviousBondAtoms = (prevBondAtoms != null);
     int prevIndex = (prevAtom == null ? -1 : prevAtom.getIndex());
     boolean isAromatic = bsAromatic.get(atomIndex);
@@ -403,12 +408,12 @@ public class SmilesGenerator {
     JmolNode aH = null;
     int stereoFlag = (isAromatic ? 10 : 0);
     JmolNode[] stereo = new JmolNode[7];
-
     if (Logger.debugging)
       Logger.debug(sb.toString());
 
     // first look through the bonds for the best 
     // continuation -- bond0 -- and count hydrogens
+    // and create a list of bonds to process.
 
     if (bonds != null)
       for (int i = bonds.length; --i >= 0;) {
@@ -417,15 +422,22 @@ public class SmilesGenerator {
           continue;
         JmolNode atom1 = bonds[i].getOtherAtom(atom);
         int index1 = atom1.getIndex();
+        if (!bsSelected.get(index1)) {
+          if (allowConnectionsToOutsideWorld && bsSelected.get(atomIndex))
+            bsToDo.set(index1);
+          else
+            continue;
+        }
         if (atom1.getElementNumber() == 1 && atom1.getIsotopeNumber() == 0) {
           aH = atom1;
           nH++;
           if (nH > 1)
             stereoFlag = 10;
-        } else if (index1 == prevIndex)
+        } else if (index1 == prevIndex) {
           bondPrev = bonds[i];
-        else if (bsSelected.get(index1))
+        } else {
           v.add(bonds[i]);
+        }
       }
 
     // order of listing is critical for stereochemistry:
@@ -434,8 +446,9 @@ public class SmilesGenerator {
     // 2) bond to previous atom
     // 3) atom symbol
     // 4) hydrogen atoms
-    // 5) connections and rings
-
+    // 5) branches
+    // 6) rings
+    
     // add the bond to the previous atom
 
     String strBond = null;
@@ -500,7 +513,7 @@ public class SmilesGenerator {
       boolean b = stereoShown;
       JmolEdge bond0t = bond0;
       stereoShown = true;
-      getSmiles(s2, a);
+      getSmiles(s2, a, allowConnectionsToOutsideWorld);
       stereoShown = b;
       bond0 = bond0t;
       s2.append(")");
@@ -595,9 +608,16 @@ public class SmilesGenerator {
     int valence = atom.getValence();
     int charge = atom.getFormalCharge();
     int isotope = atom.getIsotopeNumber();
-
-    sb.append(SmilesAtom.getAtomLabel(atomicNumber, isotope, valence, charge,
-        nH, isAromatic, s));
+    String atomName = atom.getAtomName();
+    String groupType = atom.getGroupType();
+    // for bioSMARTS we provide the connecting atom if 
+    // present. For example, in 1BLU we have 
+    // .[/*CYS.SG*/#16]  /*...*/ is a comment only
+    if (isExtension && groupType.length() != 0 && atomName.length() != 0)
+      sb.append("[/*" + atom.getGroup3(false) + "." + atomName + "*/#" + atomicNumber + "]");
+    else
+      sb.append(SmilesAtom.getAtomLabel(atomicNumber, isotope, valence, charge,
+          nH, isAromatic, s));
     //sb.append("{" + atomIndex  + "}");
     sb.append(sMore);
 

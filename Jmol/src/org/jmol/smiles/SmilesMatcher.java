@@ -31,48 +31,55 @@ import org.jmol.api.JmolNode;
 import org.jmol.api.SmilesMatcherInterface;
 
 /**
- * A class to match a SMILES pattern with a Jmol molecule.
+ * Originating author: Nicholas Vervelle
+ * 
+ * A class to handle a variety of SMILES/SMARTS-related functions, including:
+ *  -- determining if two SMILES strings are equivalent
+ *  -- determining the molecular formula of a SMILES or SMARTS string
+ *  -- searching for specific runs of atoms in a 3D model
+ *  -- searching for specific runs of atoms in a SMILES description
+ *  -- generating valid (though not canonical) SMILES and bioSMILES strings
+ *  -- getting atom-atom correlation maps to be used with biomolecular alignment methods
+ *  
  * <p>
  * The SMILES specification can been found at the
  * <a href="http://www.daylight.com/smiles/">SMILES Home Page</a>.
  * <p>
- * An example on how to use it:
  * <pre><code>
- * SmilesMatcher matcher = new SmilesMatcher();
- * try {
- *   BitSet bitSet = matcher.getSubstructureSet(smilesString, atoms, atomCount);
- *   
- *   // or, to get the exact finds:
- *   
- *   BitSet[] matcher.getSubstructureSetArray(smiles, atoms, atomCount, 
- *                                         bsSelected, bsRequired, bsNot);
- *                                         
- *   //The input BitSets may be null
+ * public methods:
  * 
- *   // or, to count the matches of one Smiles string in another:
+ * boolean areEqual  -- checks a SMILES string against a reference
+ * 
+ * BitSet[] find  -- finds one or more occurances of a SMILES or SMARTS string within a SMILES string
+ * 
+ * int[][] getCorrelationMaps  -- returns correlated arrays of atoms
+ * 
+ * String getLastError  -- returns any error that was last encountered.
+ * 
+ * String getMolecularFormula   -- returns the MF of a SMILES or SMARTS string
+ * 
+ * String getSmiles  -- returns a standard SMILES string or a
+ *                  Jmol BIOSMILES string with comment header.
+ * 
+ * BitSet getSubstructureSet  -- returns a single BitSet with all found atoms included
  *   
- *   int nFound = matcher.find(smilesString1, smilesString2, oneOnly);
- *   // smilesString1 is found in smilesString2 or return -1 for parsing error
- *   
- * } catch (InvalidSmilesException e) {
- *   // Exception management
- * }
  *   
  *   in Jmol script:
  *   
  *   string2.find("SMILES", string1)
+ *   string2.find("SMARTS", string1)
  *   
  *   e.g.
  *   
  *     print "CCCC".find("SMILES", "C[C]")
  *
- *   2
+ *   select search("smartsString")
+ *   
+ *   All bioSMARTS strings begin with ~ (tilde).
  *   
  * </code></pre>
  * 
- * @author Nicolas Vervelle
- * @see org.jmol.smiles.SmilesParser
- * @see org.jmol.smiles.SmilesSearch
+ * @author Bob Hanson
  * 
  */
 public class SmilesMatcher implements SmilesMatcherInterface {
@@ -153,7 +160,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   /**
    * Returns a vector of bits indicating which atoms match the pattern.
    * 
-   * @param smiles SMILES pattern.
+   * @param pattern SMILES pattern.
    * @param atoms 
    * @param atomCount 
    * @param bsSelected 
@@ -164,14 +171,14 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    * @param isAll 
    * @return BitSet Array indicating which atoms match the pattern.
    */
-  public BitSet[] getSubstructureSetArray(String smiles, JmolNode[] atoms,
+  public BitSet[] getSubstructureSetArray(String pattern, JmolNode[] atoms,
                                           int atomCount, BitSet bsSelected,
                                           BitSet bsRequired, BitSet bsNot,
                                           BitSet bsAromatic, boolean isSearch,
                                           boolean isAll) {
     InvalidSmilesException.setLastError(null);
     try {
-      SmilesSearch search = SmilesParser.getMolecule(smiles, isSearch);
+      SmilesSearch search = SmilesParser.getMolecule(pattern, isSearch);
       search.jmolAtoms = atoms;
       search.jmolAtomCount = Math.abs(atomCount);
       if (atomCount < 0)

@@ -4327,7 +4327,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     StringBuffer sbConnect = new StringBuffer();
     for (int i = 0; i < vConnections.size(); i++) {
       Atom a = (Atom) vConnections.get(i);
-      sbConnect.append("connect 0 100 ").append("({" + (atomIndex++) + "}) ")
+      sbConnect.append(";  connect 0 100 ").append("({" + (atomIndex++) + "}) ")
           .append("({" + a.index + "});");
     }
     StringBuffer sb = new StringBuffer();
@@ -8142,6 +8142,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // fileManager.addLoadScript("zap " + Escape.escape(bs));
     setCurrentModelIndex(0, false);
     animationManager.setAnimationOn(false);
+    BitSet bsD0 = BitSetUtil.copy(getDeletedAtoms());
     BitSet bsDeleted = modelSet.deleteModels(bs);
     selectionManager.processDeletedModelAtoms(bsDeleted);
     setAnimationRange(0, 0);
@@ -8154,6 +8155,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     hoverAtomIndex = -1;
     setFileLoadStatus(FILE_STATUS_MODELS_DELETED, null, null, null, null);
     refreshMeasures(true);
+    bsDeleted.andNot(bsD0);
     return BitSetUtil.cardinalityOf(bsDeleted);
   }
 
@@ -8900,6 +8902,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         s = (String) actionStates.remove(0);
         actionStatesRedo.add(0, s);
       }
+      if (Logger.debugging)
+        log(s);
       evalStringQuiet(s);
       return;
     }
@@ -8930,7 +8934,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void assignBond(int bondIndex, char type) {
     try {
       BitSet bsAtoms = modelSet.setBondOrder(bondIndex, type);
-      if (bsAtoms == null)
+      if (bsAtoms == null || type == '0')
         refresh(3, "setBondOrder");
       else
         addHydrogens(bsAtoms, false, true);
@@ -8962,6 +8966,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     } catch (Exception e) {
       //
     }
+  }
+
+  public void assignConnect(int index, int index2) {
+    clearModelDependentObjects();
+    BitSet bsA = BitSetUtil.setBit(index);
+    BitSet bsB = BitSetUtil.setBit(index2);
+    modelSet.makeConnections(0, Float.MAX_VALUE, JmolEdge.BOND_ORDER_NULL,
+        JmolConstants.CONNECT_MODIFY_OR_CREATE, bsA, bsB, null, false, 0);
+    modelSet.assignAtom(index, ".", true);
+    modelSet.assignAtom(index2, ".", true);
+    refresh(3, "assignConnect");
   }
 
   void moveAtomWithHydrogens(int atomIndex, int deltaX, int deltaY,

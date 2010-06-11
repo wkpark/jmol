@@ -10328,9 +10328,15 @@ public class ScriptEvaluator {
   private void assign() throws ScriptException {
     int atomsOrBonds = tokAt(1);
     int index = expression(2).nextSetBit(0);
+    int index2 = -1;
+    String type = null;
     if (index < 0)
       error(ERROR_invalidArgument);
-    String type = parameterAsString(++iToken);
+    if (atomsOrBonds == Token.connect) {
+      index2 = expression(++iToken).nextSetBit(0);
+    } else {      
+      type = parameterAsString(++iToken);
+    }
     Point3f pt = (++iToken < statementLength ? centerParameter(iToken) : null);
     if (isSyntaxCheck)
       return;
@@ -10341,6 +10347,8 @@ public class ScriptEvaluator {
     case Token.bonds:
       viewer.assignBond(index, (type + "p").charAt(0));
       break;
+    case Token.connect:
+      viewer.assignConnect(index, index2);
     }
   }
 

@@ -780,7 +780,7 @@ abstract public class BondCollection extends AtomCollection {
  
   public BitSet setBondOrder(int bondIndex, char type) {
     int bondOrder = type - '0';
-    Bond bond = bonds[bondIndex];  
+    Bond bond = bonds[bondIndex];
     switch (type) {
     case '0':
     case '1':
@@ -789,8 +789,9 @@ abstract public class BondCollection extends AtomCollection {
       break;
     case 'p':
     case 'm':
-      bondOrder = JmolConstants.getBondOrderNumberFromOrder(bond.getCovalentOrder()).charAt(0)
-       - '0' + (type == 'p' ? 1 : -1);
+      bondOrder = JmolConstants.getBondOrderNumberFromOrder(
+          bond.getCovalentOrder()).charAt(0)
+          - '0' + (type == 'p' ? 1 : -1);
       if (bondOrder > 3)
         bondOrder = 1;
       else if (bondOrder < 0)
@@ -799,19 +800,21 @@ abstract public class BondCollection extends AtomCollection {
     default:
       return null;
     }
-    if (bondOrder == 0) {
-      BitSet bs = new BitSet();
-      bs.set(bond.index);
-      deleteBonds(bs, false);
-      return null;
-    }
     BitSet bsAtoms = new BitSet();
     try {
-    bond.setOrder(bondOrder | JmolEdge.BOND_NEW);
-    removeUnnecessaryBonds(bond.atom1, false);
-    removeUnnecessaryBonds(bond.atom2, false);
-    bsAtoms.set(bond.getAtomIndex1());
-    bsAtoms.set(bond.getAtomIndex2());
+      if (bondOrder == 0) {
+        BitSet bs = new BitSet();
+        bs.set(bond.index);
+        bsAtoms.set(bond.getAtomIndex1());
+        bsAtoms.set(bond.getAtomIndex2());
+        deleteBonds(bs, false);
+        return bsAtoms;
+      }
+      bond.setOrder(bondOrder | JmolEdge.BOND_NEW);
+      removeUnnecessaryBonds(bond.atom1, false);
+      removeUnnecessaryBonds(bond.atom2, false);
+      bsAtoms.set(bond.getAtomIndex1());
+      bsAtoms.set(bond.getAtomIndex2());
     } catch (Exception e) {
       Logger.error("Exception in seBondOrder: " + e.getMessage());
     }

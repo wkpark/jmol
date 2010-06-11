@@ -831,7 +831,7 @@ public class ActionManager {
       // also check valence and add/remove H atoms as necessary?
       if (measurementPending.getCount() == 2) {
         viewer.undoAction(true, -1, 0);
-        viewer.script("connect "
+        viewer.script("assign connect "
             + measurementPending.getMeasurementScript(" ", false));
       } else if (pickAtomAssignType.equals("Xx")) {
         exitMeasurementMode();

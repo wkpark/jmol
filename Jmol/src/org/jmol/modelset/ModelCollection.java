@@ -3592,7 +3592,7 @@ abstract public class ModelCollection extends BondCollection {
       atom.setFormalCharge(atom.getFormalCharge() - 1);
     } else if (type.equals("X")) {
       isDelete = true;
-    } else {
+    } else if (!type.equals(".")){
       return; // uninterpretable
     }
 

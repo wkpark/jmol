@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-06-10 19:22+0200\n"
-"PO-Revision-Date: 2010-06-12 16:32+0100\n"
+"PO-Revision-Date: 2010-06-12 16:43+0100\n"
 "Last-Translator: Angel Herráez <aherraez@users.sourceforge.net>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -63,7 +63,7 @@ msgstr "&Buscar"
 
 #: org/jmol/applet/AppletConsole.java:405
 msgid "&Commands"
-msgstr "Ó&rdenes"
+msgstr "&Instrucciones"
 
 #: org/jmol/applet/AppletConsole.java:406
 msgid "Math &Functions"
@@ -2207,7 +2207,7 @@ msgstr "elige un átomo"
 #: org/jmol/viewer/ActionManager.java:96
 #, java-format
 msgid "pick a DRAW point (for measurements) (requires {0}"
-msgstr "seleccionar un punto de dibujo (para medir) (requiere {0})"
+msgstr "elige un punto de un objeto dibujado (para mediciones) (requiere {0})"
 
 #: org/jmol/viewer/ActionManager.java:97
 #, java-format
@@ -2221,12 +2221,12 @@ msgstr "elige un átomo para incluirlo en una medición (tras haber comenzado un
 
 #: org/jmol/viewer/ActionManager.java:99
 msgid "pick an atom to initiate or conclude a measurement"
-msgstr "elegir un átomo para iniciar o concluir una medición"
+msgstr "elige un átomo para iniciar o concluir una medición"
 
 #: org/jmol/viewer/ActionManager.java:100
 #, java-format
 msgid "pick an ISOSURFACE point (requires {0}"
-msgstr "elija un punto en una isosuperficie (requiere {0})"
+msgstr "elige un punto en una isosuperficie (requiere {0})"
 
 #: org/jmol/viewer/ActionManager.java:101
 #, java-format

@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-06-08 21:22+0200\n"
-"PO-Revision-Date: 2010-06-12 18:26+0100\n"
+"PO-Revision-Date: 2010-06-12 20:23+0100\n"
 "Last-Translator: Angel Herráez <aherraez@users.sourceforge.net>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -1335,7 +1335,7 @@ msgstr "Inserta aquí una leyenda para {0}."
 #: org/openscience/jmol/app/webexport/WebExport.java:355
 #, java-format
 msgid "Insert additional explanatory text here. Long text will wrap around Jmol model {0}."
-msgstr "Insertar texto explicativo adicional aquí. Texto largo se envuelven alrededor del modelo Jmol {0}."
+msgstr "Inserta aquí texto explicativo adicional. Si el texto es largo, rodeará al modelo Jmol {0}."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:357
 msgid "Insert your TITLE and INTRODUCTION here."
@@ -1458,7 +1458,7 @@ msgstr "añadiendo {0}"
 #: org/openscience/jmol/app/webexport/WebPanel.java:639
 #, java-format
 msgid "Unable to load resource {0}"
-msgstr "No se pudo cargar el recurso {0}"
+msgstr "No se ha podido cargar el recurso {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:691
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
@@ -1501,7 +1501,7 @@ msgstr "activa o desactiva el giro"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:75
 msgid "Spin on"
-msgstr "Girando"
+msgstr "girando"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:81
 msgid "Background Color"
@@ -1517,23 +1517,23 @@ msgstr "Visión en estéreo"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:123
 msgid "select stereo type"
-msgstr "Seleccione el tipo estéreo"
+msgstr "selecciona la visión en estéreo"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:127
 msgid "Stereo Off"
-msgstr "Sin estéreo"
+msgstr "sin estéreo"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:128
 msgid "Red/Blue"
-msgstr "Rojo / Azul"
+msgstr "rojo / azul"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:130
 msgid "Red/Cyan"
-msgstr "Rojo / Cian"
+msgstr "rojo / cian"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:132
 msgid "Red/Green"
-msgstr "Rojo / Verde"
+msgstr "rojo / verde"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:139
 msgid "Animation Control"
@@ -1585,11 +1585,11 @@ msgstr "Reproducir una vez"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:190
 msgid "Open Console Button"
-msgstr "Botón Abrir consola"
+msgstr "Botón para abrir consola"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:203
 msgid "launch Jmol console"
-msgstr "abre la consola de Jmol"
+msgstr "abre la consola de guiones de Jmol"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:210
 msgid "Download view"

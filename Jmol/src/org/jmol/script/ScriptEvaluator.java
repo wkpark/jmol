@@ -1988,6 +1988,8 @@ public class ScriptEvaluator {
       switch (tok = getToken(i).tok) {
       case Token.define:
         Object v;
+        // compiler can indicate that a definition MUST
+        // be interpreted as a String
         boolean forceString = (theToken.intValue == Token.string);
         // Object var_set;
         String s;
@@ -2004,13 +2006,18 @@ public class ScriptEvaluator {
           v = getParameter(var, false);
         }
         tok = tokAt(0);
-        forceString = (forceString || Token.tokAttr(tok, Token.implicitStringCommand)
+        forceString |= (Token.tokAttr(tok, Token.implicitStringCommand)
             || tok == Token.script); // for the file names
         if (v instanceof ScriptVariable) {
+          // select @{...}
           fixed[j] = (Token) v;
-          if (isExpression && fixed[j].tok == Token.list)
-            fixed[j] = new ScriptVariable(Token.bitset, getAtomBitSet(this,
-                ScriptVariable.sValue((ScriptVariable) fixed[j])));
+          if (isExpression && fixed[j].tok == Token.list) {
+            BitSet bs = ScriptVariable.getBitSet((ScriptVariable) v, true);
+            // I can't remember why we have to be checking list variables
+            // for atom names. 
+            fixed[j] = new ScriptVariable(Token.bitset, bs == null ? getAtomBitSet(this,
+                ScriptVariable.sValue((ScriptVariable) fixed[j])) : bs);
+          }
         } else if (v instanceof Boolean) {
           fixed[j] = (((Boolean) v).booleanValue() ? Token.tokenOn
               : Token.tokenOff);
@@ -2028,10 +2035,13 @@ public class ScriptEvaluator {
           if (!forceString)
             v = getStringObjectAsVariable((String) v, null);
           if (v instanceof ScriptVariable) {
+            // was a variable name
             fixed[j] = (Token) v;
           } else {
+            // wasn't a known variable name
             s = (String) v;
             if (isExpression && !forceString) {
+              // select @x  where x is "arg", for example
               fixed[j] = new Token(Token.bitset, getAtomBitSet(this, s));
             } else {
               // bit of a hack here....
@@ -2044,7 +2054,7 @@ public class ScriptEvaluator {
               // read incorrectly here as an identifier.
 
               // note that command keywords cannot be implemented as variables
-              // because they are not Tfoken.identifiers in the first place.
+              // because they are not Token.identifiers in the first place.
               // but the identifier tok is important here because just below
               // there is a check for SET parameter name assignments.
               // even those may not work...
@@ -2072,7 +2082,11 @@ public class ScriptEvaluator {
               && !(Escape.unescapePoint(sv[1]) instanceof String)) {
             fixed[j] = new Token(Token.list, sv);
           } else {
-            fixed[j] = new Token(Token.string, Escape.escape(sv, true));
+            BitSet bs = Escape.unEscapeBitSetArray(sv, true);
+            if (bs == null)
+              fixed[j] = new Token(Token.string, Escape.escape(sv, true));
+            else
+              fixed[j] = new Token(Token.bitset, bs);
           }
         } else {
           Point3f center = getObjectCenter(var, Integer.MIN_VALUE,
@@ -3366,7 +3380,12 @@ public class ScriptEvaluator {
           val = getParameter((String) value, false);
           if (val instanceof String)
             val = getStringObjectAsVariable((String) val, null);
-          if (val instanceof String || val instanceof String[])
+          if (val instanceof String[]) {
+            BitSet bs = Escape.unEscapeBitSetArray((String[]) val, true);
+            if (bs != null)
+              val = bs;
+          }
+          else if (val instanceof String || val instanceof String[])
             val = lookupIdentifierValue((String) value);
           rpn.addX(val);
           break;
@@ -4654,7 +4673,7 @@ public class ScriptEvaluator {
       return true;
     }
 
-    if (true || Logger.debugging) {
+    if (Logger.debugging) {
       Logger.info("script execution paused at command " + (pc + 1) + " level "
           + scriptLevel + ": " + thisCommand);
     }
@@ -6254,7 +6273,7 @@ public class ScriptEvaluator {
       Atom[] atoms = viewer.getModelSet().atoms;
       int atomCount = viewer.getAtomCount();
       int[][] maps = viewer.getSmilesMatcher().getCorrelationMaps(smiles,
-          atoms, atomCount, bsA, isSearch, false);
+          atoms, atomCount, bsA, isSearch, true);
       if (maps == null)
         evalError(viewer.getSmilesMatcher().getLastException(), null);
       if (maps.length == 0)
@@ -6262,7 +6281,7 @@ public class ScriptEvaluator {
       for (int i = 0; i < maps[0].length; i++)
         ptsA.add(atoms[maps[0][i]]);
       maps = viewer.getSmilesMatcher().getCorrelationMaps(smiles, atoms,
-          atomCount, bsB, isSearch, true);
+          atomCount, bsB, isSearch, false);
       if (maps == null)
         evalError(viewer.getSmilesMatcher().getLastException(), null);
       if (maps.length == 0)
@@ -6325,9 +6344,9 @@ public class ScriptEvaluator {
         if (asAtoms)
           b = viewer.getSmilesMatcher().getSubstructureSetArray(pattern,
               viewer.getModelSet().atoms, viewer.getAtomCount(), bsSelected,
-              bsRequired, bsNot, null, isSearch, isAll);
+              bsRequired, bsNot, null, isSearch, !isAll);
         else
-          b = viewer.getSmilesMatcher().find(pattern, smiles, isSearch, isAll);
+          b = viewer.getSmilesMatcher().find(pattern, smiles, isSearch, !isSearch, !isAll);
         if (b == null)
           evalError(viewer.getSmilesMatcher().getLastException(), null);
         
@@ -9228,7 +9247,7 @@ public class ScriptEvaluator {
       }
     }
     Point3f center = null;
-    Point3f currentCenter = viewer.getRotationCenter();
+    //Point3f currentCenter = viewer.getRotationCenter();
     int i = 1;
     // zoomTo time-sec
     float time = (isZoomTo ? (isFloatParameter(i) ? floatParameter(i++) : 2f)
@@ -9250,8 +9269,7 @@ public class ScriptEvaluator {
     }
 
     // disabled sameAtom stuff -- just too weird
-    boolean isSameAtom = false && (center != null && currentCenter
-        .distance(center) < 0.1);
+    boolean isSameAtom = false;// && (center != null && currentCenter.distance(center) < 0.1);
     // zoom/zoomTo [0|n|+n|-n|*n|/n|IN|OUT]
     // zoom/zoomTo percent|-factor|+factor|*factor|/factor | 0
     float zoom = viewer.getZoomSetting();
@@ -11734,9 +11752,9 @@ public class ScriptEvaluator {
     }
     if (settingProperty) {
       if (!isExpression) {
-        if (!(t.value instanceof BitSet))
+        bs = ScriptVariable.getBitSet(t, true);
+        if (bs == null)
           error(ERROR_invalidArgument);
-        bs = (BitSet) t.value;
       }
       if (propertyName.startsWith("property_")) {
         viewer.setData(propertyName, new Object[] { propertyName,

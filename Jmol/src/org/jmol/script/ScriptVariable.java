@@ -930,4 +930,14 @@ public class ScriptVariable extends Token {
     return super.toString() + "[" + name + "] index =" + index + " hashcode=" + hashCode();
   }
 
+  public static BitSet getBitSet(ScriptVariable x, boolean allowNull) {
+    switch (x.tok) {
+    case Token.bitset:
+      return bsSelect(x);
+    case Token.list:
+      return Escape.unEscapeBitSetArray((String[]) x.value, allowNull);
+    }
+    return (allowNull ? null : new BitSet());
+  }
+
 }

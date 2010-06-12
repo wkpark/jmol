@@ -67,7 +67,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
   boolean isBioSequence;
   boolean isLeadAtom;
   int notBondedIndex = -1;
-
+  
   void setBioAtom() {
     isBioAtom = true;
     if (parent != null)

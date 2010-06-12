@@ -273,7 +273,7 @@ public class Escape {
   public static Object unescapePointOrBitsetOrMatrixOrArray(String s) {
     if (s.charAt(0) == '{')
       return unescapePoint(s);
-    if ((s.startsWith("({") && s.indexOf("({") == s.lastIndexOf("({")
+    if ((isStringArray(s)
         || s.startsWith("[{") && s.indexOf("[{") == s.lastIndexOf("[{"))
         && s.indexOf(',') < 0 && s.indexOf('.') < 0 && s.indexOf('-') < 0)
       return unescapeBitset(s);
@@ -282,6 +282,10 @@ public class Escape {
     return s;
   }
 
+  public static boolean isStringArray(String s) {
+    return s.startsWith("({") && s.lastIndexOf("({") == 0
+        && s.indexOf("})") == s.length() - 2;
+  }
   public static Object unescapePoint(String strPoint) {
     if (strPoint == null || strPoint.length() == 0)
       return strPoint;
@@ -827,12 +831,14 @@ public class Escape {
     return array;
   }
 
-  public static BitSet getBitSetFromArray(String[] list) {
+  public static BitSet unEscapeBitSetArray(String[] list, boolean allowNull) {
     BitSet bs = new BitSet();
     for (int i = 0; i < list.length; i++) {
-      BitSet bs1 = Escape.unescapeBitset(list[i]);
+      BitSet bs1 = unescapeBitset(list[i]);
       if (bs1 != null)
         bs.or(bs1);
+      else if (allowNull)
+        return null;
     }
     return bs;
   }

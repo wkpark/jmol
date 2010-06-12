@@ -260,30 +260,21 @@ public class SmilesParser {
       // Branch -- note that bonds come AFTER '(', not before. 
 
       if (ch == '(') {
+        boolean isMeasure = (getChar(pattern, index + 1) == '.');
         if (currentAtom == null)
-          throw new InvalidSmilesException("No previous atom for branch");
-        pt = index++;
-        int parenthesisCount = 1;
-        while (++pt < len && parenthesisCount > 0) {
-          switch (pattern.charAt(pt)) {
-          case '(':
-            parenthesisCount++;
-            break;
-          case ')':
-            parenthesisCount--;
-            break;
-          }
-        }
-        if (parenthesisCount != 0)
-          throw new InvalidSmilesException("Unbalanced parenthesis");
-        String subSmiles = pattern.substring(index, pt - 1);
-        parseSmiles(molecule, subSmiles, currentAtom, true);
-        ch = getChar(pattern, pt);
+          throw new InvalidSmilesException("No previous atom for " + (isMeasure ? "measure" : "branch"));
+        String subString = getSubPattern(pattern, index, '(');
+        
+        if (subString.startsWith("."))
+          parseMeasure(molecule, subString.substring(1), currentAtom);
+        else
+          parseSmiles(molecule, subString, currentAtom, true);
+        index = subString.length() + 2;
+        ch = getChar(pattern, index);
         if (ch == '}' && checkBrace(molecule, ch, '}'))
-          pt++;
-        if (pt == len && !isSmarts && !isBioSequence)
+          index++;
+        if (index == len && !isSmarts && !isBioSequence)
           throw new InvalidSmilesException("Pattern must not end with ')'");
-        index = pt;
       } else {
         pt = index;
         while (SmilesBond.isBondType(ch, isSmarts))
@@ -366,6 +357,7 @@ public class SmilesParser {
                 index + size), currentAtom, bond, false, false, isBranchAtom);
             index += size;
           }
+          
         } else {
           throw new InvalidSmilesException("Unexpected character: "
               + pattern.charAt(index));
@@ -381,6 +373,60 @@ public class SmilesParser {
       pattern = pattern.substring(index);
       isBranchAtom = false;
     }
+  }
+
+  Hashtable htMeasures = new Hashtable();
+  
+  private void parseMeasure(SmilesSearch molecule, String strMeasure,
+                            SmilesAtom currentAtom)
+      throws InvalidSmilesException {
+    // parsing of C(.d:1.5,1.6)C
+    // or C(.d1:1.5)C(.d1:1.6)
+    // 
+    int pt = strMeasure.indexOf(":");
+    String id = (pt < 0 ? strMeasure : strMeasure.substring(0, pt));
+    while (pt != 0) { // no real repeat here -- just an enclosure for break
+      int len = id.length();
+      if (len == 1)
+        id += "0";
+      SmilesMeasure m = (SmilesMeasure) htMeasures.get(id);
+      if ((m == null) == (pt < 0))
+        break;
+      try {
+        if (pt > 0) {
+          int type = (SmilesMeasure.TYPES.indexOf(id.charAt(0)));
+          if (type < 2)
+            break;
+          int[] ret = new int[1];
+          int index = getDigits(id, 1, ret);
+          int pt2 = strMeasure.indexOf(",", pt);
+          if (pt2 < 0)
+            break;
+          String s = strMeasure.substring(pt + 1, pt2);
+          float min = (pt + 1 == pt2 ? 0 : Float.parseFloat(s));
+          s = strMeasure.substring(pt2 + 1);
+          float max = (s.length() == 0 ? Float.MAX_VALUE : Float.parseFloat(s));
+          molecule.measures.add(m = new SmilesMeasure(molecule, index, type,
+              min, max));
+          if (index > 0)
+            htMeasures.put(id, m);
+          else if (index == 0 && Logger.debugging)
+            Logger.debug("measure created: " + m);
+        } else {
+          if (m.nPoints == m.type) {
+            htMeasures.remove(id);
+            if (Logger.debugging)
+              Logger.debug("measure created: " + m);
+          }
+        }
+        if (!m.addPoint(currentAtom.index))
+          break;
+      } catch (NumberFormatException e) {
+        break;
+      }
+      return;
+    }
+    throw new InvalidSmilesException("invalid measure: " + strMeasure);
   }
 
   private boolean checkBrace(SmilesSearch molecule, char ch, char type)
@@ -507,6 +553,11 @@ public class SmilesParser {
         else if (!name.equals("*"))
           newAtom.residueChar = name;
         name = pattern.substring(biopt + 1).toUpperCase();
+        if ((biopt = name.indexOf("#")) >= 0) {
+          getDigits(name, biopt + 1, ret);
+          newAtom.elementNumber = (short) ret[0];
+          name = name.substring(0, biopt);
+        }
         if (name.length() == 0)
           name = "*";
         if (!name.equals("*"))
@@ -534,6 +585,14 @@ public class SmilesParser {
               throw new InvalidSmilesException("Invalid SEARCH primitive: "
                   + pattern.substring(index));
             newAtom.iNested = ret[0];
+            break;
+          case '=':
+            index = getDigits(pattern, index + 1, ret);
+            newAtom.jmolIndex = ret[0];
+            break;
+          case '#':
+            index = getDigits(pattern, index + 1, ret);
+            newAtom.elementNumber = (short) ret[0];
             break;
           case '-':
           case '+':
@@ -564,8 +623,8 @@ public class SmilesParser {
                         index + 2))) ? 2 : 1));
             String symbol = Character.toUpperCase(ch) + sym2;
             boolean mustBeSymbol = true;
-            boolean checkForPrimitive = (isBracketed && (ch == '=' || Character
-                .isLetter(ch)));
+            boolean checkForPrimitive = (isBracketed && Character
+                .isLetter(ch));
             if (checkForPrimitive) {
               if (!isNot && (isPrimitive ? atomSet : newAtom).hasSymbol) {
                 // if we already have a symbol, and we aren't negating,
@@ -578,7 +637,7 @@ public class SmilesParser {
                 // 
                 mustBeSymbol = !Character.isDigit(nextChar)
                     || getChar(pattern, index + 2) == '?';
-              } else if ("=DdhRrvXx".indexOf(ch) >= 0
+              } else if ("DdhRrvXx".indexOf(ch) >= 0
                   && Character.isDigit(nextChar)) {
                 // not a symbol if any of these are followed by a number 
                 mustBeSymbol = false;
@@ -612,9 +671,6 @@ public class SmilesParser {
               default:
                 throw new InvalidSmilesException("Invalid SEARCH primitive: "
                     + pattern.substring(index));
-              case '=':
-                newAtom.jmolIndex = val;
-                break;
               case 'D':
                 // default is 1
                 newAtom.setDegree(val == Integer.MIN_VALUE ? 1 : val);

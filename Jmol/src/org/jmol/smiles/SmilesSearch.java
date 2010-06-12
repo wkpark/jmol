@@ -70,8 +70,8 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
   int jmolAtomCount;
   BitSet bsSelected;
   BitSet bsRequired;
-  BitSet bsNot;      
-  boolean isAll;
+  boolean firstMatchOnly;
+  boolean matchAllAtoms;
   boolean isSmarts;
   boolean isSmilesFind;
   
@@ -83,9 +83,34 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
   boolean needAromatic;
   boolean needRingMemberships;
   int ringDataMax = 8;
+  final Vector measures = new Vector();
 
   boolean asVector;
   boolean getMaps;
+
+  //  private data 
+  
+  private int selectedAtomCount;
+  private BitSet[] ringData;
+  private int[] ringCounts;
+  private int[] ringConnections;
+  private boolean isRingCheck;
+  private StringBuffer ringSets;
+  StringBuffer getRingSets() {
+    return ringSets;
+  }
+    
+  private BitSet bsAromatic = new BitSet();
+  BitSet getBsAromatic() {
+    return bsAromatic;
+  }
+  
+  private Hashtable htNested;
+  private int nNested;
+
+  private Vector vReturn;
+  private BitSet bsReturn = new BitSet();
+    
 
   void setAtomArray() {
     nodes = patternAtoms;
@@ -192,46 +217,23 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
     }
     //search.isSilent = true;
     search.bsSelected = bsSelected;
-    search.bsRequired = bsRequired;
-    search.bsNot = bsNot;
+    search.bsRequired = null; // not necessarily required for THIS PART
     search.jmolAtoms = jmolAtoms;
     search.jmolAtomCount = jmolAtomCount;
     search.htNested = htNested;
     search.isSmilesFind = isSmilesFind;
-    search.isAll = true;
-    // note - we do NOT pass on bsSelectOut
-    if (firstAtomOnly)
+    search.matchAllAtoms = false;
+    if (firstAtomOnly) {
       search.setRingData(bsAromatic);
-    else
+      search.firstMatchOnly = false;
+    } else {
       search.isRingCheck = true;
+      search.asVector = true;
+    }
     search.ringSets = ringSets;
-    search.asVector = !firstAtomOnly;
     return search.search(firstAtomOnly);
   }
   
-  //  private data 
-  
-  private BitSet[] ringData;
-  private int[] ringCounts;
-  private int[] ringConnections;
-  private boolean isRingCheck;
-  private StringBuffer ringSets;
-  StringBuffer getRingSets() {
-    return ringSets;
-  }
-    
-  private BitSet bsAromatic = new BitSet();
-  BitSet getBsAromatic() {
-    return bsAromatic;
-  }
-  
-  private Hashtable htNested;
-  private int nNested;
-
-  private Vector vReturn;
-  private BitSet bsReturn = new BitSet();
-    
-
 
   /* ============================================================= */
   /*                             Search                            */
@@ -272,8 +274,9 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
      *    that is all we need as well.
      *    
      */
-    if (asVector)
+    if (asVector || getMaps)
       vReturn = new Vector();
+    selectedAtomCount = (bsSelected == null ? jmolAtomCount : bsSelected.cardinality());
     //System.out.println("smilesseearch search" + pattern);
     if (atomCount > 0) {
       SmilesAtom atom0 = patternAtoms[0];
@@ -289,7 +292,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
         }
       }
     }
-    return (asVector ? (Object) vReturn : bsReturn);
+    return (asVector || getMaps ? (Object) vReturn : bsReturn);
   }
 
   private BitSet bsFound = new BitSet();
@@ -313,8 +316,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
 
     // check for requested selection or not-selection
 
-    if (bsFound.get(iAtom) || bsNot != null && bsNot.get(iAtom)
-        || bsSelected != null && !bsSelected.get(iAtom))
+    if (bsFound.get(iAtom) || bsSelected != null && !bsSelected.get(iAtom))
       return true;
 
     JmolNode atom = jmolAtoms[iAtom];
@@ -349,12 +351,12 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
       // note that there might be more than one of these.
       // in EACH case we need to ensure that the actual
       // bonds to the previously assigned atoms matches
-      
+
       SmilesAtom atom1 = patternBond.getAtom1();
       int matchingAtom = atom1.getMatchingAtom();
-      
+
       // BIOSMILES/BIOSMARTS check is by group
-      
+
       switch (patternBond.bondType) {
       case SmilesBond.TYPE_BIO_SEQUENCE:
         continue; // no bond check here
@@ -366,7 +368,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
 
         // regular SMILES/SMARTS check 
         // is to find the bond and test it against the pattern
-        
+
         int k = 0;
         for (; k < bonds.length; k++)
           if ((bonds[k].getAtomIndex1() == matchingAtom || bonds[k]
@@ -392,169 +394,188 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
 
     if (Logger.debugging)
       Logger.debug("pattern atom " + atomNum + " " + patternAtom);
-    if (++atomNum == atomCount) {
-      if (!checkStereochemistry())
-        return true;
-      BitSet bs = new BitSet();
-      for (int j = 0; j < atomCount; j++) {
-        int i = patternAtoms[j].getMatchingAtom();
-        if (!firstAtomOnly && haveSelected && !patternAtoms[j].selected)
-          continue;
-        bs.set(i);
-        // note: bioSequences only return the "lead" atom. 
-        if (patternAtoms[j].isBioAtom && patternAtoms[j].atomName == null)
-          jmolAtoms[i].setGroupBits(bs);
-        if (firstAtomOnly)
+    if (++atomNum < atomCount) {
+
+      // so far, so good... not done yet... on to the next position...
+
+      bsFound.set(iAtom);
+      patternAtom = patternAtoms[atomNum];
+      // for all the pattern bonds for this atom...
+      // find the bond to atoms already assigned
+      // note that it must be there, because SMILES strings
+      // are parsed in order, from left to right. You can't
+      // have two fragments going at the same time. 
+
+      SmilesBond patternBond = null;
+      for (int i = 0; i < patternAtom.getCovalentBondCount(); i++) {
+        if ((patternBond = patternAtom.getBond(i)).getAtom2() == patternAtom)
           break;
-        if (!isSmarts && patternAtoms[j].missingHydrogenCount > 0)
-          getHydrogens(jmolAtoms[i], bs);
+        patternBond = null;
       }
-      if (bsRequired != null && !bsRequired.intersects(bs))
-        return true;
-      bsReturn.or(bs);
-      if (asVector) {
-        if (getMaps) {
-          // every map is important always
-          int[] map = new int[atomCount];
-          for (int j = 0; j < atomCount; j++)
-            map[j] = patternAtoms[j].getMatchingAtom();
-          vReturn.add(map);
+      if (patternBond == null) {
+
+        // Option 1: we are processing ".":
+
+        // Question: What does "." mean?
+        // Answer: For SMILES strings it means "start a new entity"
+        //   UNLESS, of course, a ring connector is connecting them.
+        // For SMARTS it simply means "not connected to the previous atom."
+
+        BitSet bs = new BitSet();
+        bs.or(bsFound);
+        SmilesAtom pa = patternAtoms[patternAtom.notBondedIndex];
+        JmolNode a = jmolAtoms[pa.getMatchingAtom()];
+        if (pa.isBioSequence) {
+          // clear out adjacent residues
+          int ii = a.getOffsetResidueAtom("0", 1);
+          if (ii >= 0)
+            bs.set(ii);
+          ii = a.getOffsetResidueAtom("0", -1);
+          if (ii >= 0)
+            bs.set(ii);
         } else {
-          boolean isOK = true;
-          for (int j = vReturn.size(); --j >= 0 && isOK;)
-            isOK = !(((BitSet) vReturn.get(j)).equals(bs));
-          if (!isOK)
-            return true;
-          vReturn.add(bs);
+          // clear out all atoms connected to the last atom only
+          bonds = a.getEdges();
+          for (int k = 0; k < bonds.length; k++)
+            bs.set(bonds[k].getOtherAtom(a).getIndex());
         }
+        for (int j = 0; j < jmolAtomCount; j++)
+          if (!bs.get(j) && !checkMatch(patternAtom, atomNum, j, firstAtomOnly))
+            return false;
+
+        bsFound.clear(iAtom);
+        return true;
+
       }
-      /*
-       * if (!isSilent && Logger.debugging) { StringBuffer s = new
-       * StringBuffer(); for (int k = 0; k < atomNum; k++)
-       * s.append("-").append(atoms[k].getMatchingAtom());
-       * s.append(" ").append(atomNum
-       * ).append("/").append(getPatternAtomCount());
-       * Logger.debug(s.toString()); Logger.debug("match: " + bs); }
-       */
-      if (isRingCheck) {
-        ringSets.append(" ");
-        for (int k = atomNum * 3 + 2; --k > atomNum;)
-          ringSets.append("-").append(
-              patternAtoms[(k <= atomNum * 2 ? atomNum * 2 - k + 1 : k - 1)
-                  % atomNum].getMatchingAtom());
-        ringSets.append("- ");
-      }
-      return (isAll && bsReturn.cardinality() != jmolAtomCount);
-    }
 
-    // so far, so good... on to the next position...
+      // The new atom is connected to the old one in the pattern.
+      // It doesn't so much matter WHICH connection we found -- 
+      // there may be several -- but whatever we have, we must
+      // have a connection in the real molecule between these two
+      // particular atoms. So we just follow that connection. 
 
-    bsFound.set(iAtom);
-    patternAtom = patternAtoms[atomNum];
-    // for all the pattern bonds for this atom...
-    // find the bond to atoms already assigned
-    // note that it must be there, because SMILES strings
-    // are parsed in order, from left to right. You can't
-    // have two fragments going at the same time. 
+      SmilesAtom atom1 = patternBond.getAtom1();
+      atom = jmolAtoms[atom1.getMatchingAtom()];
 
-    SmilesBond patternBond = null;
-    for (int i = 0; i < patternAtom.getCovalentBondCount(); i++) {
-      if ((patternBond = patternAtom.getBond(i)).getAtom2() == patternAtom)
-        break;
-      patternBond = null;
-    }
-    if (patternBond == null) {
+      // Option 2: The connecting bond is a bio sequence or
+      // from ~GGC(T)C:ATTC...
+      // For sequences, we go to the next GROUP, either via
+      // the standard sequence or via basepair/cysteine pairing. 
 
-      // Option 1: we are processing ".":
-
-      // Question: What does "." mean?
-      // Answer: For SMILES strings it means "start a new entity"
-      //   UNLESS, of course, a ring connector is connecting them.
-      // For SMARTS it simply means "not connected to the previous atom."
-
-      BitSet bs = new BitSet();
-      bs.or(bsFound);
-      SmilesAtom pa = patternAtoms[patternAtom.notBondedIndex];
-      JmolNode a = jmolAtoms[pa.getMatchingAtom()];
-      if (pa.isBioSequence) {
-        // clear out adjacent residues
-        int ii = a.getOffsetResidueAtom("0", 1);
-        if (ii >= 0)
-          bs.set(ii);
-        ii = a.getOffsetResidueAtom("0", -1);
-        if (ii >= 0)
-          bs.set(ii);
-      } else {
-        // clear out all atoms connected to the last atom only
-        bonds = a.getEdges();
-        for (int k = 0; k < bonds.length; k++)
-          bs.set(bonds[k].getOtherAtom(a).getIndex());
-      }
-      for (int j = 0; j < jmolAtomCount; j++)
-        if (!bs.get(j) && !checkMatch(patternAtom, atomNum, j, firstAtomOnly))
-          return false;
-
-      bsFound.clear(iAtom);
-      return true;
-
-    }
-
-    // The new atom is connected to the old one in the pattern.
-    // It doesn't so much matter WHICH connection we found -- 
-    // there may be several -- but whatever we have, we must
-    // have a connection in the real molecule between these two
-    // particular atoms. So we just follow that connection. 
-
-    SmilesAtom atom1 = patternBond.getAtom1();
-    atom = jmolAtoms[atom1.getMatchingAtom()];
-
-    // Option 2: The connecting bond is a bio sequence or
-    // from ~GGC(T)C:ATTC...
-    // For sequences, we go to the next GROUP, either via
-    // the standard sequence or via basepair/cysteine pairing. 
-
-    switch (patternBond.bondType) {
-    case SmilesBond.TYPE_BIO_SEQUENCE:
-      int nextGroupAtom = atom.getOffsetResidueAtom(patternAtom.atomName, 1);
-      if (nextGroupAtom >= 0) {
+      switch (patternBond.bondType) {
+      case SmilesBond.TYPE_BIO_SEQUENCE:
+        int nextGroupAtom = atom.getOffsetResidueAtom(patternAtom.atomName, 1);
+        if (nextGroupAtom >= 0) {
+          BitSet bs = new BitSet();
+          atom1.setGroupBits(bs);
+          bsFound.or(bs);
+          if (!checkMatch(patternAtom, atomNum, nextGroupAtom, firstAtomOnly))
+            return false;
+          bsFound.andNot(bs);
+          return true;
+        }
+      case SmilesBond.TYPE_BIO_PAIR:
+        Vector vLinks = new Vector();
+        atom.getCrossLinkLeadAtomIndexes(vLinks);
         BitSet bs = new BitSet();
         atom1.setGroupBits(bs);
         bsFound.or(bs);
-        if (!checkMatch(patternAtom, atomNum, nextGroupAtom, firstAtomOnly))
-          return false;
+        for (int j = 0; j < vLinks.size(); j++)
+          if (!checkMatch(patternAtom, atomNum, ((Integer) vLinks.get(j))
+              .intValue(), firstAtomOnly))
+            return false;
         bsFound.andNot(bs);
         return true;
       }
-    case SmilesBond.TYPE_BIO_PAIR:
-      Vector vLinks = new Vector();
-      atom.getCrossLinkLeadAtomIndexes(vLinks);
-      BitSet bs = new BitSet();
-      atom1.setGroupBits(bs);
-      bsFound.or(bs);
-      for (int j = 0; j < vLinks.size(); j++)
-        if (!checkMatch(patternAtom, atomNum, ((Integer) vLinks.get(j)).intValue(),
-            firstAtomOnly))
-          return false;
-      bsFound.andNot(bs);
+
+      // Option 3: Standard practice
+      // Run through the bonds of that assigned atom
+      // to see if any match this new connection.
+
+      bonds = atom.getEdges();
+      if (bonds != null)
+        for (int j = 0; j < bonds.length; j++)
+          if (!checkMatch(patternAtom, atomNum, atom.getBondedAtomIndex(j),
+              firstAtomOnly))
+            return false;
+
+      // Done checking this atom from any one of the places
+      // higher in this stack. Clear the atom and keep going...
+
+      bsFound.clear(iAtom);
       return true;
     }
 
-    // Option 3: Standard practice
-    // Run through the bonds of that assigned atom
-    // to see if any match this new connection.
+    // the pattern is complete
 
-    bonds = atom.getEdges();
-    if (bonds != null)
-      for (int j = 0; j < bonds.length; j++)
-        if (!checkMatch(patternAtom, atomNum, atom.getBondedAtomIndex(j),
-            firstAtomOnly))
-          return false;
+    // check stereochemistry
 
-    // Done checking this atom from any one of the places
-    // higher in this stack. Clear the atom and keep going...
+    if (!checkStereochemistry())
+      return true;
 
-    bsFound.clear(iAtom);
-    return true;
+    // set up the return BitSet and Vector, if requested
+
+    // bioSequences only return the "lead" atom 
+    // If the search is SMILES, we add the missing hydrogens
+
+    BitSet bs = new BitSet();
+    for (int j = 0; j < atomCount; j++) {
+      int i = patternAtoms[j].getMatchingAtom();
+      if (!firstAtomOnly && haveSelected && !patternAtoms[j].selected)
+        continue;
+      bs.set(i);
+      if (patternAtoms[j].isBioAtom && patternAtoms[j].atomName == null)
+        jmolAtoms[i].setGroupBits(bs);
+      if (firstAtomOnly)
+        break;
+      if (!isSmarts && patternAtoms[j].missingHydrogenCount > 0)
+        getHydrogens(jmolAtoms[i], bs);
+    }
+    if (bsRequired != null && !bsRequired.intersects(bs))
+      return true;
+    if (matchAllAtoms && bs.cardinality() != selectedAtomCount)
+      return true;
+    bsReturn.or(bs);
+
+    if (getMaps) {
+      // every map is important always
+      int[] map = new int[atomCount];
+      for (int j = 0; j < atomCount; j++)
+        map[j] = patternAtoms[j].getMatchingAtom();
+      vReturn.add(map);
+      return !firstMatchOnly;
+    }
+
+    if (asVector) {
+      boolean isOK = true;
+      for (int j = vReturn.size(); --j >= 0 && isOK;)
+        isOK = !(((BitSet) vReturn.get(j)).equals(bs));
+      if (!isOK)
+        return true;
+      vReturn.add(bs);
+    }
+    
+    if (isRingCheck) {
+      ringSets.append(" ");
+      for (int k = atomNum * 3 + 2; --k > atomNum;)
+        ringSets.append("-").append(
+            patternAtoms[(k <= atomNum * 2 ? atomNum * 2 - k + 1 : k - 1)
+                % atomNum].getMatchingAtom());
+      ringSets.append("- ");
+      return true;
+    }
+
+    // requested return is a BitSet or vector of BitSets
+
+    // TRUE means "continue searching"
+
+    if (firstMatchOnly)
+      return false;
+
+    // only continue if we have not found all the atoms already
+
+    return (bs.cardinality() != selectedAtomCount);
+
   }
 
   private JmolNode getHydrogens(JmolNode atom, BitSet bsHydrogens) {
@@ -582,7 +603,8 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
         // BIOSMARTS
         if (patternAtom.atomName != null
             && (patternAtom.isLeadAtom() ? !atom.isLeadAtom()
-                : !patternAtom.atomName.equals(atom.getAtomName().toUpperCase())))
+                : !patternAtom.atomName
+                    .equals(atom.getAtomName().toUpperCase())))
           break;
 
         if (patternAtom.residueName != null
@@ -591,10 +613,14 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
           break;
 
         if (patternAtom.residueChar != null
-            && !patternAtom.residueChar
-                .equals(atom.getGroup1('\0').toUpperCase()))
+            && !patternAtom.residueChar.equals(atom.getGroup1('\0')
+                .toUpperCase()))
           break;
 
+        // # <n> or Symbol Check atomic number
+        if (patternAtom.elementNumber >= 0
+            && patternAtom.elementNumber != atom.getElementNumber())
+          break;
 
       } else {
         // _ <n> apply "recursive" SEARCH -- for example, [C&$(C[$(aaaO);$(aaC)])]"
@@ -614,14 +640,14 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
           break;
 
         // # <n> or Symbol Check atomic number
-        short targetAtomicNumber = patternAtom.elementNumber;
-        n = atom.getElementNumber();
-        if (targetAtomicNumber >= 0 && targetAtomicNumber != n)
+        if (patternAtom.elementNumber >= 0
+            && patternAtom.elementNumber != atom.getElementNumber())
           break;
 
         // Check aromatic
         boolean isAromatic = patternAtom.isAromatic();
-        if (targetAtomicNumber != -2 && isAromatic != bsAromatic.get(iAtom))
+        if (patternAtom.elementNumber != -2
+            && isAromatic != bsAromatic.get(iAtom))
           break;
 
         // <n> Check isotope
@@ -807,6 +833,9 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
     if (Logger.debugging)
       Logger.debug("checking stereochemistry...");
 
+    for (int i = 0; i < measures.size(); i++)
+      if (!((SmilesMeasure) measures.get(i)).check())
+        return false;
     if (haveAtomStereochemistry) {
       JmolNode atom1 = null, atom2 = null, atom3 = null, atom4 = null, atom5 = null, atom6 = null;
       SmilesAtom sAtom1 = null, sAtom2 = null;
@@ -1015,36 +1044,18 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
         JmolNode dbAtom2a = getJmolAtom(sAtomDirected2.getMatchingAtom());
         if (dbAtom1a == null || dbAtom2a == null)
           return false;
-        v.vTemp1.set((Point3f) dbAtom1a);
-        v.vTemp1.sub((Point3f) dbAtom1);
-        v.vTemp2.set((Point3f) dbAtom2a);
-        v.vTemp2.sub((Point3f) dbAtom2);
+        SmilesMeasure.setTorsionData((Point3f) dbAtom1a, (Point3f) dbAtom1,
+            (Point3f) dbAtom2, (Point3f) dbAtom2a, v, isAtropisomer);
         if (isAtropisomer) {
-          // We cross dihedral bonds with the bond axis
-          // to get two vectors projections in the
-          // plane perpendicular to the bond axis
-          // Then we check the dot product of these
-          // as well as cross them and compare the 
-          // dot product of that with the bond axis
-          // to get direction. Ranges here involve
+          // Ranges here involve
           // acos(0.05) and acos(0.95) to exclude 
           // conformations very close to 90o and 0o
-          
-          v.vNorm1.set((Point3f) dbAtom1);
-          v.vNorm1.sub((Point3f) dbAtom2);
-          v.vNorm1.normalize();
-          v.vTemp1.cross(v.vTemp1, v.vNorm1);
-          v.vTemp1.normalize();
-          v.vTemp2.cross(v.vTemp2, v.vNorm1);
-          v.vTemp2.normalize();
-          v.vNorm2.cross(v.vTemp1, v.vTemp2);
           dir2 = (bondType == SmilesBond.TYPE_ATROPISOMER_1 ? 1 : -1);
           float f = v.vTemp1.dot(v.vTemp2);
           if (f < 0.05f || f > 0.95f
               || v.vNorm1.dot(v.vNorm2) * dir1 * dir2 > 0) // sign of dihedral < or > here
             return false;
         } else {
-          // for 
           // for \C=C\, (dir1*dir2 == -1), dot product should be negative
           // because the bonds are oppositely directed
           // for \C=C/, (dir1*dir2 == 1), dot product should be positive

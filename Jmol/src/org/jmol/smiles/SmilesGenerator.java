@@ -612,9 +612,9 @@ public class SmilesGenerator {
     String groupType = atom.getGroupType();
     // for bioSMARTS we provide the connecting atom if 
     // present. For example, in 1BLU we have 
-    // .[/*CYS.SG*/#16]  /*...*/ is a comment only
+    // .[CYS.SG#16] could match either the atom number or the element number 
     if (isExtension && groupType.length() != 0 && atomName.length() != 0)
-      sb.append("[/*" + atom.getGroup3(false) + "." + atomName + "*/#" + atomicNumber + "]");
+      sb.append("[" + atom.getGroup3(false) + "." + atomName + "#" + atomicNumber + "]");
     else
       sb.append(SmilesAtom.getAtomLabel(atomicNumber, isotope, valence, charge,
           nH, isAromatic, s));

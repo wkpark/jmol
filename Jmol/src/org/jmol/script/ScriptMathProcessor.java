@@ -129,8 +129,9 @@ class ScriptMathProcessor {
             || x.tok == Token.string || x.tok == Token.matrix3f
             || x.tok == Token.matrix4f)
           x = ScriptVariable.selectItem(x);
-        if (asBitSet && x.tok == Token.list)
-          x = new ScriptVariable(Token.bitset, Escape.getBitSetFromArray((String[]) x.value));
+        if (asBitSet && x.tok == 
+          Token.list)
+          x = new ScriptVariable(Token.bitset, Escape.unEscapeBitSetArray((String[]) x.value, false));
         return x;
       }
     }
@@ -1929,10 +1930,11 @@ class ScriptMathProcessor {
     boolean asArray = Token.tokAttr(intValue, Token.minmaxmask);
     if (x1 == null)
       return addX(ScriptVariable.sprintf(args));
-    if (x1.tok == Token.bitset)
-      return addX(eval.getBitsetIdent(ScriptVariable.bsSelect(x1), format,
+    BitSet bs = ScriptVariable.getBitSet(x1, true);
+    if (bs == null)
+      return addX(ScriptVariable.sprintf(TextFormat.formatCheck(format), x1));
+    return addX(eval.getBitsetIdent(bs, format,
           x1.value, true, x1.index, asArray));
-    return addX(ScriptVariable.sprintf(TextFormat.formatCheck(format), x1));
   }
 
   private boolean evaluateWithin(ScriptVariable[] args) throws ScriptException {
@@ -1992,8 +1994,10 @@ class ScriptMathProcessor {
         eval.error(ScriptEvaluator.ERROR_invalidArgument);
       if (isSyntaxCheck)
         return (asBitSet ? addX(new BitSet()) : addX(new Vector()));
-      String[] x = (String[]) eval.getSmilesMatches(ScriptVariable.sValue(args[1]), null, bsSelected, bsRequired, bsNot, null, tok == Token.search, true);
-      return (asBitSet ? addX(Escape.getBitSetFromArray(x)) : addX(x));
+      String[] x = (String[]) eval.getSmilesMatches(ScriptVariable
+          .sValue(args[1]), null, bsSelected, bsRequired, bsNot, null,
+          tok == Token.search, true);
+      return (asBitSet ? addX(Escape.unEscapeBitSetArray(x, false)) : addX(x));
     }
     if (withinSpec instanceof String) {
       if (tok == Token.nada) {
@@ -2036,7 +2040,8 @@ class ScriptMathProcessor {
       case Token.basepair:
         return addX(isSyntaxCheck ? bs : viewer.getAtomBits(tok, ""));
       case Token.spec_seqcode:
-        return addX(isSyntaxCheck ? bs : viewer.getAtomBits(Token.sequence, withinStr));
+        return addX(isSyntaxCheck ? bs : viewer.getAtomBits(Token.sequence,
+            withinStr));
       }
       return false;
     case 2:
@@ -2204,6 +2209,9 @@ class ScriptMathProcessor {
 
   private boolean evaluateSubstructure(ScriptVariable[] args, int tok)
       throws ScriptException {
+    // select substucture(....) legacy - was same as SMILES, now SMARTS
+    // select smiles(...)
+    // select smarts(...)  now same as substructure
     if (args.length == 0)
       return false;
     BitSet bs = new BitSet();
@@ -2215,7 +2223,7 @@ class ScriptMathProcessor {
             : null);
         bs = viewer.getSmilesMatcher().getSubstructureSet(pattern,
             viewer.getModelSet().atoms, viewer.getAtomCount(), bsSelected,
-            tok == Token.search, true);
+            tok != Token.smiles, false);
       } catch (Exception e) {
         eval.evalError(e.getMessage(), null);
       }

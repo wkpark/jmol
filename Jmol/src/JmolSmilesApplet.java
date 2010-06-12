@@ -65,19 +65,19 @@ public class JmolSmilesApplet extends Applet {
    * answer (smiles).  
    * @param pattern
    * @param smiles
-   * @param isSearch
+   * @param isSmarts
    * @param isAll set TRUE if you want a full count
    * @return    n>0 with isAll TRUE: found n occurances, 
    *               1: found at least 1, 0: not found, -1: error
    */
-  public int find(String pattern, String smiles, boolean isSearch, boolean isAll) {
-    System.out.println("find " + pattern + " in " + smiles + " isSearch? "
-        + isSearch + "; isAll? " + isAll);
+  public int find(String pattern, String smiles, boolean isSmarts, boolean isAll) {
+    System.out.println("find " + pattern + " in " + smiles + " isSmarts? "
+        + isSmarts + "; isAll? " + isAll);
     lastError = null;
     int ret = -1;
     try {
       SmilesMatcher sm = new SmilesMatcher();
-      BitSet[] result = sm.find(pattern, smiles, isSearch, isAll);
+      BitSet[] result = sm.find(pattern, smiles, isSmarts, !isSmarts, !isAll);
       if (result == null)
         lastError = InvalidSmilesException.getLastError();
       ret = (result == null ? -1 : result.length);

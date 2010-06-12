@@ -576,7 +576,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
     LogPanel.log("");
     if (made_datadir) {
       LogPanel.log(GT._("Using directory {0}", datadirPath));
-      LogPanel.log("  " + GT._("adding JmolPopIn.js"));
+      LogPanel.log("  " + GT._("adding {0}", "JmolPopIn.js"));
 
       viewer.writeTextFile(datadirPath + "/JmolPopIn.js", WebExport
           .getResourceString(this, "JmolPopIn.js"));
@@ -585,7 +585,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
         String javaname = thisInstance.javaname;
         String script = thisInstance.script;
         LogPanel.log("  ...jmolApplet" + i);
-        LogPanel.log("      ..." + GT._("adding {0}.png", javaname));
+        LogPanel.log("      ..." + GT._("adding {0}", javaname + ".png"));
         try {
           thisInstance.movepict(datadirPath);
         } catch (IOException IOe) {
@@ -607,7 +607,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
         }
         script = TextFormat.replaceQuotedStrings(script, filesToCopy,
             copiedFileNames);
-        LogPanel.log("      ..." + GT._("adding {0}.spt", javaname));
+        LogPanel.log("      ..." + GT._("adding {0}", javaname + ".spt"));
         viewer.writeTextFile(datadirPath + "/" + javaname + ".spt", script);
       }
       String html = WebExport.getResourceString(this, panelName + "_template");

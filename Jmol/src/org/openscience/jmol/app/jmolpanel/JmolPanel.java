@@ -597,8 +597,11 @@ public class JmolPanel extends JPanel implements SplashInterface {
       boolean isToggle = Boolean.valueOf(isToggleString).booleanValue();
       if (isToggle) {
         b = new JToggleButton(ii);
-        if (key.equals("rotate"))
+        System.out.println(key);
+        if (key.equals("rotateScript"))
           display.buttonRotate = (JToggleButton) b;
+        if (key.equals("modelkitScript"))
+          display.buttonModelkit = (JToggleButton) b;
         display.toolbarButtonGroup.add(b);
         String isSelectedString = JmolResourceHandler.getStringX(key
             + "ToggleSelected");
@@ -797,6 +800,13 @@ public class JmolPanel extends JPanel implements SplashInterface {
     }
     menu.addMenuListener(display.getMenuListener());
     return menu;
+  }
+
+  void setButtonMode(String string) {
+    if (string.equals("modelkit"))
+      display.buttonModelkit.setSelected(true);
+    else if (string.equals("rotate"))
+      display.buttonRotate.setSelected(true);
   }
 
   private static class ActionChangedListener implements PropertyChangeListener {
@@ -1318,4 +1328,5 @@ public class JmolPanel extends JPanel implements SplashInterface {
       viewer.evalStringQuiet(script);
     }
   }
+
 }

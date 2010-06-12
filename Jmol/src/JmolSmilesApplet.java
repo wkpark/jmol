@@ -77,7 +77,7 @@ public class JmolSmilesApplet extends Applet {
     int ret = -1;
     try {
       SmilesMatcher sm = new SmilesMatcher();
-      BitSet[] result = sm.find(pattern, smiles, isSmarts, !isSmarts, !isAll);
+      BitSet[] result = sm.find(pattern, smiles, isSmarts, !isAll);
       if (result == null)
         lastError = InvalidSmilesException.getLastError();
       ret = (result == null ? -1 : result.length);

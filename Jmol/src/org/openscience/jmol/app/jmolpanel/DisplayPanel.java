@@ -91,6 +91,8 @@ public class DisplayPanel extends JPanel
   }
 
   AbstractButton buttonRotate;
+  AbstractButton buttonModelkit;
+  
   ButtonGroup toolbarButtonGroup = new ButtonGroup();
 
   void setRotateMode() {
@@ -99,6 +101,12 @@ public class DisplayPanel extends JPanel
       viewer.setSelectionHalos(false);
   }
     
+  void setModelkitMode() {
+    if (buttonModelkit != null)
+      buttonModelkit.setSelected(true);
+    viewer.setSelectionHalos(false);
+  }
+
   public void componentHidden(java.awt.event.ComponentEvent e) {
     //System.out.println("DisplayPanel.componentHidden");
   }

@@ -6152,10 +6152,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setBondPickingOption("p");
       if (isSignedApplet || !isApplet)
         popupMenu(0, 0, 'm');
+      statusManager.setCallbackFunction("modelkit", "ON");
     } else {
       setStringProperty("pickingMode", "ident");
       setStringProperty("pickingStyle", "toggle");
       setBooleanProperty("bondPicking", false);
+      statusManager.setCallbackFunction("modelkit", "OFF");
     }
 
   }

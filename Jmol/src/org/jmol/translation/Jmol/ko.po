@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-08 21:22+0200\n"
+"POT-Creation-Date: 2010-06-13 00:33+0200\n"
 "PO-Revision-Date: 2010-04-16 18:30+0000\n"
 "Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Korean <LL@li.org>\n"
@@ -320,7 +320,7 @@ msgstr "{0} 콜렉션의 맨 마지막으로"
 msgid "Error reading from BufferedReader: {0}"
 msgstr "BufferedReader로 읽기 실패: {0}"
 
-#: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:198
+#: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:206
 msgid "Delete atoms"
 msgstr "원자 지움"
 
@@ -995,15 +995,15 @@ msgstr "Jmol 초기화..."
 msgid "Closing Jmol..."
 msgstr "Jmol 닫기..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1065
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1075
 msgid "Open URL"
 msgstr "URL 열기"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1066
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1076
 msgid "Enter URL of molecular model"
 msgstr "분자 모델의 URL을 넣으세요"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1240
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1250
 msgid "IO Exception:"
 msgstr "IO 예외"
 
@@ -1448,19 +1448,8 @@ msgid "Using directory {0}"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:579
-msgid "adding JmolPopIn.js"
-msgstr ""
-
 #: org/openscience/jmol/app/webexport/WebPanel.java:588
-#, java-format
-msgid "adding {0}.png"
-msgstr ""
-
 #: org/openscience/jmol/app/webexport/WebPanel.java:610
-#, java-format
-msgid "adding {0}.spt"
-msgstr ""
-
 #: org/openscience/jmol/app/webexport/WebPanel.java:624
 #: org/openscience/jmol/app/webexport/WebPanel.java:651
 #, java-format

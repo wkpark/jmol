@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-08 21:22+0200\n"
+"POT-Creation-Date: 2010-06-13 00:33+0200\n"
 "PO-Revision-Date: 2010-05-25 21:47+0000\n"
 "Last-Translator: Angel Spy <melissadilara@yahoo.com>\n"
 "Language-Team: Turkish <yerellestirme@kde.org.tr>\n"
@@ -321,7 +321,7 @@ msgstr "Koleksiyondaki en son {0} elemanına git"
 msgid "Error reading from BufferedReader: {0}"
 msgstr "TamponlanmışOkuyucudan okuma sırasında bir hata oluştu: {0}"
 
-#: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:198
+#: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:206
 msgid "Delete atoms"
 msgstr "Atomları sil"
 
@@ -995,15 +995,15 @@ msgstr "Jmol başlatılıyor..."
 msgid "Closing Jmol..."
 msgstr "Jmol Kapanıyor..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1065
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1075
 msgid "Open URL"
 msgstr "URL Aç"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1066
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1076
 msgid "Enter URL of molecular model"
 msgstr "Moleküler modelin adresini gir"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1240
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1250
 msgid "IO Exception:"
 msgstr ""
 
@@ -1452,19 +1452,8 @@ msgid "Using directory {0}"
 msgstr "{0} dizini kullanılıyor"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:579
-msgid "adding JmolPopIn.js"
-msgstr "JmolPopIn.js ekleniyor"
-
 #: org/openscience/jmol/app/webexport/WebPanel.java:588
-#, java-format
-msgid "adding {0}.png"
-msgstr "{0}.png ekleniyor"
-
 #: org/openscience/jmol/app/webexport/WebPanel.java:610
-#, java-format
-msgid "adding {0}.spt"
-msgstr "{0}.spt ekleniyor"
-
 #: org/openscience/jmol/app/webexport/WebPanel.java:624
 #: org/openscience/jmol/app/webexport/WebPanel.java:651
 #, java-format
@@ -1626,6 +1615,15 @@ msgstr "İndirme görünümü"
 #: org/openscience/jmol/app/webexport/Widgets.java:225
 msgid "unimplemented"
 msgstr ""
+
+#~ msgid "adding JmolPopIn.js"
+#~ msgstr "JmolPopIn.js ekleniyor"
+
+#~ msgid "adding {0}.png"
+#~ msgstr "{0}.png ekleniyor"
+
+#~ msgid "adding {0}.spt"
+#~ msgstr "{0}.spt ekleniyor"
 
 #~ msgid "stereo off"
 #~ msgstr "stereo kapalı"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-08 21:22+0200\n"
+"POT-Creation-Date: 2010-06-13 00:33+0200\n"
 "PO-Revision-Date: 2010-05-22 11:54+0000\n"
 "Last-Translator: Konstantin Tokarev <annulen@yandex.ru>\n"
 "Language-Team: Russian <ru@li.org>\n"
@@ -318,7 +318,7 @@ msgstr "Перейти к последней {0} в коллекции"
 msgid "Error reading from BufferedReader: {0}"
 msgstr "Ошибка чтения буфера: {0}"
 
-#: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:198
+#: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:206
 msgid "Delete atoms"
 msgstr "Удалить атомы"
 
@@ -992,15 +992,15 @@ msgstr "Инициализация Jmol..."
 msgid "Closing Jmol..."
 msgstr "Закрытие Jmol..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1065
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1075
 msgid "Open URL"
 msgstr "Открыть URL"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1066
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1076
 msgid "Enter URL of molecular model"
 msgstr "Введите URL молекулярной модели"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1240
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1250
 msgid "IO Exception:"
 msgstr ""
 
@@ -1446,19 +1446,8 @@ msgid "Using directory {0}"
 msgstr "Используемая директория {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:579
-msgid "adding JmolPopIn.js"
-msgstr "добавление JmolPopIn.js"
-
 #: org/openscience/jmol/app/webexport/WebPanel.java:588
-#, java-format
-msgid "adding {0}.png"
-msgstr "добавление {0}.png"
-
 #: org/openscience/jmol/app/webexport/WebPanel.java:610
-#, java-format
-msgid "adding {0}.spt"
-msgstr "добавление {0}.spt"
-
 #: org/openscience/jmol/app/webexport/WebPanel.java:624
 #: org/openscience/jmol/app/webexport/WebPanel.java:651
 #, java-format
@@ -1614,6 +1603,15 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/Widgets.java:225
 msgid "unimplemented"
 msgstr ""
+
+#~ msgid "adding JmolPopIn.js"
+#~ msgstr "добавление JmolPopIn.js"
+
+#~ msgid "adding {0}.png"
+#~ msgstr "добавление {0}.png"
+
+#~ msgid "adding {0}.spt"
+#~ msgstr "добавление {0}.spt"
 
 #~ msgid "Show Selected"
 #~ msgstr "Показать Выбранное"

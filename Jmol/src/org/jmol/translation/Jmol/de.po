@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-08 21:22+0200\n"
+"POT-Creation-Date: 2010-06-13 00:33+0200\n"
 "PO-Revision-Date: 2010-05-25 08:56+0000\n"
 "Last-Translator: xlazarus <xlazarus@lazarusware.at>\n"
 "Language-Team: German\n"
@@ -330,7 +330,7 @@ msgstr "Springe zum letzten {0} der Sammlung"
 msgid "Error reading from BufferedReader: {0}"
 msgstr "Fehler beim Lesen von BufferedReader: {0}"
 
-#: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:198
+#: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:206
 msgid "Delete atoms"
 msgstr "Lösche Atome"
 
@@ -1006,15 +1006,15 @@ msgstr "Initialisiere Jmol..."
 msgid "Closing Jmol..."
 msgstr "Beende Jmol..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1065
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1075
 msgid "Open URL"
 msgstr "URL öffnen"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1066
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1076
 msgid "Enter URL of molecular model"
 msgstr "URL eines Molekül-Modells eingeben"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1240
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1250
 msgid "IO Exception:"
 msgstr "IO-Fehler:"
 
@@ -1470,19 +1470,8 @@ msgid "Using directory {0}"
 msgstr "Verwende Verzeichnis {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:579
-msgid "adding JmolPopIn.js"
-msgstr "hinzufügen von JmolPopIn.js"
-
 #: org/openscience/jmol/app/webexport/WebPanel.java:588
-#, java-format
-msgid "adding {0}.png"
-msgstr "hinzufügen von {0}.png"
-
 #: org/openscience/jmol/app/webexport/WebPanel.java:610
-#, java-format
-msgid "adding {0}.spt"
-msgstr "hinzufügen von {0}.spt"
-
 #: org/openscience/jmol/app/webexport/WebPanel.java:624
 #: org/openscience/jmol/app/webexport/WebPanel.java:651
 #, java-format
@@ -1643,6 +1632,15 @@ msgstr "Ansicht herunterladen"
 #: org/openscience/jmol/app/webexport/Widgets.java:225
 msgid "unimplemented"
 msgstr "nicht implementiert"
+
+#~ msgid "adding JmolPopIn.js"
+#~ msgstr "hinzufügen von JmolPopIn.js"
+
+#~ msgid "adding {0}.png"
+#~ msgstr "hinzufügen von {0}.png"
+
+#~ msgid "adding {0}.spt"
+#~ msgstr "hinzufügen von {0}.spt"
 
 #~ msgid "stereo off"
 #~ msgstr "Stereo aus"

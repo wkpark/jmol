@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-08 21:22+0200\n"
+"POT-Creation-Date: 2010-06-13 00:33+0200\n"
 "PO-Revision-Date: 2010-05-30 06:23+0000\n"
 "Last-Translator: Eleanor Chen <chenyueg@gmail.com>\n"
 "Language-Team: Simplified Chinese <zh_CN@li.org>\n"
@@ -317,7 +317,7 @@ msgstr "跳转到集合中的最后一个 {0}"
 msgid "Error reading from BufferedReader: {0}"
 msgstr "从缓冲阅读器读取错误：{0}"
 
-#: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:198
+#: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:206
 msgid "Delete atoms"
 msgstr "删除原子"
 
@@ -991,15 +991,15 @@ msgstr "启动Jmol..."
 msgid "Closing Jmol..."
 msgstr "关闭Jmol..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1065
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1075
 msgid "Open URL"
 msgstr "打开URL"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1066
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1076
 msgid "Enter URL of molecular model"
 msgstr "输入分子模型的URL"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1240
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1250
 msgid "IO Exception:"
 msgstr "IO例外:"
 
@@ -1447,19 +1447,8 @@ msgid "Using directory {0}"
 msgstr "使用目录 {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:579
-msgid "adding JmolPopIn.js"
-msgstr "正在增加 JmolPopIn.js"
-
 #: org/openscience/jmol/app/webexport/WebPanel.java:588
-#, java-format
-msgid "adding {0}.png"
-msgstr "正在增加 {0}.png"
-
 #: org/openscience/jmol/app/webexport/WebPanel.java:610
-#, java-format
-msgid "adding {0}.spt"
-msgstr "正在增加 {0}.spt"
-
 #: org/openscience/jmol/app/webexport/WebPanel.java:624
 #: org/openscience/jmol/app/webexport/WebPanel.java:651
 #, java-format
@@ -1620,6 +1609,15 @@ msgstr "下载视图"
 #: org/openscience/jmol/app/webexport/Widgets.java:225
 msgid "unimplemented"
 msgstr "功能尚未实现"
+
+#~ msgid "adding JmolPopIn.js"
+#~ msgstr "正在增加 JmolPopIn.js"
+
+#~ msgid "adding {0}.png"
+#~ msgstr "正在增加 {0}.png"
+
+#~ msgid "adding {0}.spt"
+#~ msgstr "正在增加 {0}.spt"
 
 #~ msgid "stereo off"
 #~ msgstr "立体 关"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-08 21:22+0200\n"
+"POT-Creation-Date: 2010-06-13 00:33+0200\n"
 "PO-Revision-Date: 2010-05-27 09:44+0000\n"
 "Last-Translator: Gérard Duteil <Unknown>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
@@ -326,7 +326,7 @@ msgstr "Aller au dernier {0} de la collection"
 msgid "Error reading from BufferedReader: {0}"
 msgstr "Erreur à la lecture du BufferedReader: {0}"
 
-#: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:198
+#: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:206
 msgid "Delete atoms"
 msgstr "Effacer les atomes"
 
@@ -1001,15 +1001,15 @@ msgstr "Initialisation de Jmol..."
 msgid "Closing Jmol..."
 msgstr "Fermeture de Jmol..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1065
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1075
 msgid "Open URL"
 msgstr "Ouvrir une URL"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1066
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1076
 msgid "Enter URL of molecular model"
 msgstr "Saisissez l'URL d'un modèle moléculaire"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1240
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1250
 msgid "IO Exception:"
 msgstr "Exception E/S!"
 
@@ -1463,19 +1463,8 @@ msgid "Using directory {0}"
 msgstr "Utilisation répertoire {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:579
-msgid "adding JmolPopIn.js"
-msgstr "ajoutant JmolPopIn.js"
-
 #: org/openscience/jmol/app/webexport/WebPanel.java:588
-#, java-format
-msgid "adding {0}.png"
-msgstr "ajoutant {0}. png"
-
 #: org/openscience/jmol/app/webexport/WebPanel.java:610
-#, java-format
-msgid "adding {0}.spt"
-msgstr "ajoutant {0}. spt"
-
 #: org/openscience/jmol/app/webexport/WebPanel.java:624
 #: org/openscience/jmol/app/webexport/WebPanel.java:651
 #, java-format
@@ -1637,6 +1626,15 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/Widgets.java:225
 msgid "unimplemented"
 msgstr ""
+
+#~ msgid "adding JmolPopIn.js"
+#~ msgstr "ajoutant JmolPopIn.js"
+
+#~ msgid "adding {0}.png"
+#~ msgstr "ajoutant {0}. png"
+
+#~ msgid "adding {0}.spt"
+#~ msgstr "ajoutant {0}. spt"
 
 #~ msgid "The -D options are as follows (defaults in parenthesis):"
 #~ msgstr ""

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-08 21:22+0200\n"
+"POT-Creation-Date: 2010-06-13 00:33+0200\n"
 "PO-Revision-Date: 2010-06-09 20:05+0000\n"
 "Last-Translator: Marcelo Ribeiro de Almeida <neonrj@hotmail.com>\n"
 "Language-Team: Brazilian Portuguese <Jmol-developers@lists.sf.net>\n"
@@ -325,7 +325,7 @@ msgstr "Avançar para o último {0} na coleção"
 msgid "Error reading from BufferedReader: {0}"
 msgstr "Erro ao ler de \"BufferedReader\": {0}"
 
-#: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:198
+#: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:206
 msgid "Delete atoms"
 msgstr "Apagar átomos"
 
@@ -999,15 +999,15 @@ msgstr "Preparando o Jmol..."
 msgid "Closing Jmol..."
 msgstr "Fechando o Jmol..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1065
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1075
 msgid "Open URL"
 msgstr "Abrir URL"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1066
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1076
 msgid "Enter URL of molecular model"
 msgstr "Fornecer a URL de um modelo molecular"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1240
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1250
 msgid "IO Exception:"
 msgstr "Entrada/saída anormal:"
 
@@ -1463,19 +1463,8 @@ msgid "Using directory {0}"
 msgstr "Usando diretório {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:579
-msgid "adding JmolPopIn.js"
-msgstr "adicionando JmolPopIn.js"
-
 #: org/openscience/jmol/app/webexport/WebPanel.java:588
-#, java-format
-msgid "adding {0}.png"
-msgstr "adicionando {0}.png"
-
 #: org/openscience/jmol/app/webexport/WebPanel.java:610
-#, java-format
-msgid "adding {0}.spt"
-msgstr "adicionando {0}.spt"
-
 #: org/openscience/jmol/app/webexport/WebPanel.java:624
 #: org/openscience/jmol/app/webexport/WebPanel.java:651
 #, java-format
@@ -1628,6 +1617,15 @@ msgstr "Baixar vista"
 #: org/openscience/jmol/app/webexport/Widgets.java:225
 msgid "unimplemented"
 msgstr "não implementado"
+
+#~ msgid "adding JmolPopIn.js"
+#~ msgstr "adicionando JmolPopIn.js"
+
+#~ msgid "adding {0}.png"
+#~ msgstr "adicionando {0}.png"
+
+#~ msgid "adding {0}.spt"
+#~ msgstr "adicionando {0}.spt"
 
 #~ msgid "Show Selected"
 #~ msgstr "Mostrar selecionado"

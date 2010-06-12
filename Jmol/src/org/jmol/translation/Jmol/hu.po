@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 11.7.x\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-08 21:22+0200\n"
+"POT-Creation-Date: 2010-06-13 00:33+0200\n"
 "PO-Revision-Date: 2010-03-18 11:27+0000\n"
 "Last-Translator: Krasznecz Zoltán <krasznecz.zoltan@gmail.com>\n"
 "Language-Team: Hungarian <Jmol-developers@lists.sf.net>\n"
@@ -326,7 +326,7 @@ msgstr "Ugárs az utolsó {0}-ra a gyűjteményben"
 msgid "Error reading from BufferedReader: {0}"
 msgstr "Hiba a {0} BufferedReader olvasása közben"
 
-#: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:198
+#: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:206
 msgid "Delete atoms"
 msgstr "Atomok törlése"
 
@@ -1001,15 +1001,15 @@ msgstr "Jmol inicializálása..."
 msgid "Closing Jmol..."
 msgstr "Jmol bezárása..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1065
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1075
 msgid "Open URL"
 msgstr "Webcím megnyitása"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1066
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1076
 msgid "Enter URL of molecular model"
 msgstr "Adja meg a molekuláris modell webcímét"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1240
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1250
 msgid "IO Exception:"
 msgstr "IO-hiba:"
 
@@ -1461,19 +1461,8 @@ msgid "Using directory {0}"
 msgstr "{0} mappa használata"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:579
-msgid "adding JmolPopIn.js"
-msgstr "JmolPopIn.js hozzáadása"
-
 #: org/openscience/jmol/app/webexport/WebPanel.java:588
-#, java-format
-msgid "adding {0}.png"
-msgstr "{0}.png hozzáadása"
-
 #: org/openscience/jmol/app/webexport/WebPanel.java:610
-#, java-format
-msgid "adding {0}.spt"
-msgstr "{0}.spt hozzáadása"
-
 #: org/openscience/jmol/app/webexport/WebPanel.java:624
 #: org/openscience/jmol/app/webexport/WebPanel.java:651
 #, java-format
@@ -1634,6 +1623,15 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/Widgets.java:225
 msgid "unimplemented"
 msgstr ""
+
+#~ msgid "adding JmolPopIn.js"
+#~ msgstr "JmolPopIn.js hozzáadása"
+
+#~ msgid "adding {0}.png"
+#~ msgstr "{0}.png hozzáadása"
+
+#~ msgid "adding {0}.spt"
+#~ msgstr "{0}.spt hozzáadása"
 
 #~ msgid "Show Selected"
 #~ msgstr "A jelöltek látszanak"

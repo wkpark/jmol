@@ -1035,6 +1035,8 @@ public class Jmol implements WrappedApplet {
     }
 
     public void setCallbackFunction(String callbackName, String callbackFunction) {
+      if (callbackName.equalsIgnoreCase("modelkit"))
+        return;
       //also serves to change language for callbacks and menu
       if (callbackName.equalsIgnoreCase("language")) {
         clearDefaultConsoleMessage();

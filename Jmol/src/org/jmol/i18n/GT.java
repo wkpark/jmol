@@ -125,6 +125,7 @@ public class GT {
       new Language("en_GB", GT._("British English"),          true),
       new Language("en_US", GT._("American English"),         true), // global default for "en" will be "en_US"
       new Language("et",    GT._("Estonian"),                 false),
+      new Language("fo",    GT._("Faroese"),                  false),
       new Language("fr",    GT._("French"),                   true),
       new Language("de",    GT._("German"),                   true),
       new Language("el",    GT._("Greek"),                    false),

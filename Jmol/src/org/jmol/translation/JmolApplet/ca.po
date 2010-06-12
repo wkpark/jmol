@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-10 19:22+0200\n"
+"POT-Creation-Date: 2010-06-12 18:40+0200\n"
 "PO-Revision-Date: 2010-01-10 16:53+0000\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.cat>\n"
 "Language-Team: Catalan <Jmol-developers@lists.sourceforge.net>\n"
@@ -397,82 +397,86 @@ msgid "Estonian"
 msgstr "Estonià"
 
 #: org/jmol/i18n/GT.java:128
+msgid "Faroese"
+msgstr ""
+
+#: org/jmol/i18n/GT.java:129
 msgid "French"
 msgstr "Francès"
 
-#: org/jmol/i18n/GT.java:129
+#: org/jmol/i18n/GT.java:130
 msgid "German"
 msgstr "Alemany"
 
-#: org/jmol/i18n/GT.java:130
+#: org/jmol/i18n/GT.java:131
 msgid "Greek"
 msgstr "Grec"
 
-#: org/jmol/i18n/GT.java:131
+#: org/jmol/i18n/GT.java:132
 msgid "Hungarian"
 msgstr "Hongarès"
 
-#: org/jmol/i18n/GT.java:132
+#: org/jmol/i18n/GT.java:133
 msgid "Indonesian"
 msgstr ""
 
-#: org/jmol/i18n/GT.java:133
+#: org/jmol/i18n/GT.java:134
 msgid "Italian"
 msgstr "Italià"
 
-#: org/jmol/i18n/GT.java:134
+#: org/jmol/i18n/GT.java:135
 msgid "Japanese"
 msgstr ""
 
-#: org/jmol/i18n/GT.java:135
+#: org/jmol/i18n/GT.java:136
 msgid "Korean"
 msgstr "Coreà"
 
-#: org/jmol/i18n/GT.java:136
+#: org/jmol/i18n/GT.java:137
 msgid "Norwegian Bokmal"
 msgstr "Noruec Bökmal"
 
-#: org/jmol/i18n/GT.java:137
+#: org/jmol/i18n/GT.java:138
 msgid "Occitan"
 msgstr ""
 
-#: org/jmol/i18n/GT.java:138
+#: org/jmol/i18n/GT.java:139
 msgid "Polish"
 msgstr "Polonès"
 
-#: org/jmol/i18n/GT.java:139
+#: org/jmol/i18n/GT.java:140
 msgid "Brazilian Portuguese"
 msgstr "Portuguès del Brasil"
 
-#: org/jmol/i18n/GT.java:140
+#: org/jmol/i18n/GT.java:141
 msgid "Portuguese"
 msgstr "Portuguès"
 
-#: org/jmol/i18n/GT.java:141
+#: org/jmol/i18n/GT.java:142
 msgid "Russian"
 msgstr "Rus"
 
-#: org/jmol/i18n/GT.java:142
+#: org/jmol/i18n/GT.java:143
 msgid "Slovenian"
 msgstr "Eslovè"
 
-#: org/jmol/i18n/GT.java:143
+#: org/jmol/i18n/GT.java:144
 msgid "Spanish"
 msgstr "Espanyol"
 
-#: org/jmol/i18n/GT.java:144
+#: org/jmol/i18n/GT.java:145
 msgid "Swedish"
 msgstr "Suec"
 
-#: org/jmol/i18n/GT.java:145
+#: org/jmol/i18n/GT.java:146
 msgid "Tamil"
 msgstr ""
 
-#: org/jmol/i18n/GT.java:146
+#: org/jmol/i18n/GT.java:147
 msgid "Turkish"
 msgstr "Turc"
 
-#: org/jmol/i18n/GT.java:147
+#: org/jmol/i18n/GT.java:148
 msgid "Ukrainian"
 msgstr "Ucraïnès"
 
@@ -2353,11 +2357,11 @@ msgid "clipboard is not accessible -- use signed applet"
 msgstr ""
 "el porta-retalls no és accessible -- utilitzeu una miniaplicació signada"
 
-#: org/jmol/viewer/Viewer.java:8504
+#: org/jmol/viewer/Viewer.java:8506
 msgid "Cannot set log file path."
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:8506
+#: org/jmol/viewer/Viewer.java:8508
 #, java-format
 msgid "Setting log file to {0}"
 msgstr ""

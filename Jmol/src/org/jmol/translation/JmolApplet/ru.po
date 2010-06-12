@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-10 19:22+0200\n"
+"POT-Creation-Date: 2010-06-12 18:40+0200\n"
 "PO-Revision-Date: 2010-05-22 12:05+0000\n"
 "Last-Translator: Serguey Basalaev <SBasalaev@gmail.com>\n"
 "Language-Team: Russian <ru@li.org>\n"
@@ -394,82 +394,86 @@ msgid "Estonian"
 msgstr "Эстонский"
 
 #: org/jmol/i18n/GT.java:128
+msgid "Faroese"
+msgstr ""
+
+#: org/jmol/i18n/GT.java:129
 msgid "French"
 msgstr "Французский"
 
-#: org/jmol/i18n/GT.java:129
+#: org/jmol/i18n/GT.java:130
 msgid "German"
 msgstr "Немецкий"
 
-#: org/jmol/i18n/GT.java:130
+#: org/jmol/i18n/GT.java:131
 msgid "Greek"
 msgstr "Греческий"
 
-#: org/jmol/i18n/GT.java:131
+#: org/jmol/i18n/GT.java:132
 msgid "Hungarian"
 msgstr "Венгерский"
 
-#: org/jmol/i18n/GT.java:132
+#: org/jmol/i18n/GT.java:133
 msgid "Indonesian"
 msgstr "Индонезийский"
 
-#: org/jmol/i18n/GT.java:133
+#: org/jmol/i18n/GT.java:134
 msgid "Italian"
 msgstr "Итальянский"
 
-#: org/jmol/i18n/GT.java:134
+#: org/jmol/i18n/GT.java:135
 msgid "Japanese"
 msgstr "Японский"
 
-#: org/jmol/i18n/GT.java:135
+#: org/jmol/i18n/GT.java:136
 msgid "Korean"
 msgstr "Корейский"
 
-#: org/jmol/i18n/GT.java:136
+#: org/jmol/i18n/GT.java:137
 msgid "Norwegian Bokmal"
 msgstr "Норвежский (букмол)"
 
-#: org/jmol/i18n/GT.java:137
+#: org/jmol/i18n/GT.java:138
 msgid "Occitan"
 msgstr "Окситанский"
 
-#: org/jmol/i18n/GT.java:138
+#: org/jmol/i18n/GT.java:139
 msgid "Polish"
 msgstr "Польский"
 
-#: org/jmol/i18n/GT.java:139
+#: org/jmol/i18n/GT.java:140
 msgid "Brazilian Portuguese"
 msgstr "Бразильский португальский"
 
-#: org/jmol/i18n/GT.java:140
+#: org/jmol/i18n/GT.java:141
 msgid "Portuguese"
 msgstr "Португальский"
 
-#: org/jmol/i18n/GT.java:141
+#: org/jmol/i18n/GT.java:142
 msgid "Russian"
 msgstr "Русский"
 
-#: org/jmol/i18n/GT.java:142
+#: org/jmol/i18n/GT.java:143
 msgid "Slovenian"
 msgstr "Словенский"
 
-#: org/jmol/i18n/GT.java:143
+#: org/jmol/i18n/GT.java:144
 msgid "Spanish"
 msgstr "Испанский"
 
-#: org/jmol/i18n/GT.java:144
+#: org/jmol/i18n/GT.java:145
 msgid "Swedish"
 msgstr "Шведский"
 
-#: org/jmol/i18n/GT.java:145
+#: org/jmol/i18n/GT.java:146
 msgid "Tamil"
 msgstr ""
 
-#: org/jmol/i18n/GT.java:146
+#: org/jmol/i18n/GT.java:147
 msgid "Turkish"
 msgstr "Турецкий"
 
-#: org/jmol/i18n/GT.java:147
+#: org/jmol/i18n/GT.java:148
 msgid "Ukrainian"
 msgstr "Украинский"
 
@@ -2328,11 +2332,11 @@ msgstr "Перетащите для перемещения метки"
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "буфер недоступен — используйте подписанный апплет"
 
-#: org/jmol/viewer/Viewer.java:8504
+#: org/jmol/viewer/Viewer.java:8506
 msgid "Cannot set log file path."
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:8506
+#: org/jmol/viewer/Viewer.java:8508
 #, java-format
 msgid "Setting log file to {0}"
 msgstr ""

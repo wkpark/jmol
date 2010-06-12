@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-10 19:22+0200\n"
+"POT-Creation-Date: 2010-06-12 18:40+0200\n"
 "PO-Revision-Date: 2010-06-11 04:36+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@gmail.com>\n"
 "Language-Team: Ukrainian <translation@linux.org.ua>\n"
@@ -144,8 +144,7 @@ msgid "Check"
 msgstr "Перевірити"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid ""
-"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Вгору"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -395,82 +394,86 @@ msgid "Estonian"
 msgstr "Естонська"
 
 #: org/jmol/i18n/GT.java:128
+msgid "Faroese"
+msgstr ""
+
+#: org/jmol/i18n/GT.java:129
 msgid "French"
 msgstr "Французька"
 
-#: org/jmol/i18n/GT.java:129
+#: org/jmol/i18n/GT.java:130
 msgid "German"
 msgstr "Німецька"
 
-#: org/jmol/i18n/GT.java:130
+#: org/jmol/i18n/GT.java:131
 msgid "Greek"
 msgstr "Грецька"
 
-#: org/jmol/i18n/GT.java:131
+#: org/jmol/i18n/GT.java:132
 msgid "Hungarian"
 msgstr "Угорська"
 
-#: org/jmol/i18n/GT.java:132
+#: org/jmol/i18n/GT.java:133
 msgid "Indonesian"
 msgstr "Індонезійська"
 
-#: org/jmol/i18n/GT.java:133
+#: org/jmol/i18n/GT.java:134
 msgid "Italian"
 msgstr "Італійська"
 
-#: org/jmol/i18n/GT.java:134
+#: org/jmol/i18n/GT.java:135
 msgid "Japanese"
 msgstr "Японська"
 
-#: org/jmol/i18n/GT.java:135
+#: org/jmol/i18n/GT.java:136
 msgid "Korean"
 msgstr "Корейська"
 
-#: org/jmol/i18n/GT.java:136
+#: org/jmol/i18n/GT.java:137
 msgid "Norwegian Bokmal"
 msgstr "Норвезька (Бокмал)"
 
-#: org/jmol/i18n/GT.java:137
+#: org/jmol/i18n/GT.java:138
 msgid "Occitan"
 msgstr "Оксітанська"
 
-#: org/jmol/i18n/GT.java:138
+#: org/jmol/i18n/GT.java:139
 msgid "Polish"
 msgstr "Польська"
 
-#: org/jmol/i18n/GT.java:139
+#: org/jmol/i18n/GT.java:140
 msgid "Brazilian Portuguese"
 msgstr "Бразильська португальська"
 
-#: org/jmol/i18n/GT.java:140
+#: org/jmol/i18n/GT.java:141
 msgid "Portuguese"
 msgstr "Португальська"
 
-#: org/jmol/i18n/GT.java:141
+#: org/jmol/i18n/GT.java:142
 msgid "Russian"
 msgstr "Російська"
 
-#: org/jmol/i18n/GT.java:142
+#: org/jmol/i18n/GT.java:143
 msgid "Slovenian"
 msgstr "Словенська"
 
-#: org/jmol/i18n/GT.java:143
+#: org/jmol/i18n/GT.java:144
 msgid "Spanish"
 msgstr "Іспанська"
 
-#: org/jmol/i18n/GT.java:144
+#: org/jmol/i18n/GT.java:145
 msgid "Swedish"
 msgstr "Шведська"
 
-#: org/jmol/i18n/GT.java:145
+#: org/jmol/i18n/GT.java:146
 msgid "Tamil"
 msgstr "Тамільська"
 
-#: org/jmol/i18n/GT.java:146
+#: org/jmol/i18n/GT.java:147
 msgid "Turkish"
 msgstr "Турецька"
 
-#: org/jmol/i18n/GT.java:147
+#: org/jmol/i18n/GT.java:148
 msgid "Ukrainian"
 msgstr "Українська"
 
@@ -2124,8 +2127,7 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:67
 #, java-format
-msgid ""
-"click on two points to spin around axis counterclockwise (requires {0})"
+msgid "click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 "клацніть лівою кнопкою миші у двох точках, щоб почати обертання навколо вісі "
 "проти годинникової стрілки (потрібно {0})"
@@ -2249,8 +2251,7 @@ msgstr "вибрати точку DRAW (для вимірювання) (потр
 #: org/jmol/viewer/ActionManager.java:97
 #, java-format
 msgid "pick a label to toggle it hidden/displayed (requires {0})"
-msgstr ""
-"вибрати мітку для перемикання стану приховано/показано (потрібно {0})"
+msgstr "вибрати мітку для перемикання стану приховано/показано (потрібно {0})"
 
 #: org/jmol/viewer/ActionManager.java:98
 #, java-format
@@ -2349,11 +2350,11 @@ msgstr "Перетягніть, щоб пересунути мітку"
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "доступ до буфера даних заборонено — використовуйте підписаний аплет"
 
-#: org/jmol/viewer/Viewer.java:8504
+#: org/jmol/viewer/Viewer.java:8506
 msgid "Cannot set log file path."
 msgstr "Не вдалося встановити шлях до файла журналу."
 
-#: org/jmol/viewer/Viewer.java:8506
+#: org/jmol/viewer/Viewer.java:8508
 #, java-format
 msgid "Setting log file to {0}"
 msgstr "Встановлення файла журналу {0}"
@@ -2361,12 +2362,12 @@ msgstr "Встановлення файла журналу {0}"
 #~ msgid "File creation failed."
 #~ msgstr "Не вдалося створити файл."
 
-#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
+#~ "{0}."
 #~ msgstr ""
-#~ "Створення файлів цим аплетом заборонено. Щоб отримати JPEG у форматі Base64, "
-#~ "скористайтеся {0}."
+#~ "Створення файлів цим аплетом заборонено. Щоб отримати JPEG у форматі "
+#~ "Base64, скористайтеся {0}."
 
 #~ msgid "Java memory usage"
 #~ msgstr "Використання пам’яті Java"
@@ -2377,7 +2378,6 @@ msgstr "Встановлення файла журналу {0}"
 #~ msgid "File or URL"
 #~ msgstr "Файл або адреса URL"
 
-#, java-format
 #~ msgid "File {0}"
 #~ msgstr "Файл {0}"
 
@@ -2387,14 +2387,12 @@ msgstr "Встановлення файла журналу {0}"
 #~ msgid "Script with history"
 #~ msgstr "Скрипт з журналом"
 
-#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "Зображення {0}"
 
 #~ msgid "JVXL Isosurface"
 #~ msgstr "Ізоповерхня JVXL"
 
-#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "Просторова модель {0}"
 

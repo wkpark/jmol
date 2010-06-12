@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-10 19:22+0200\n"
+"POT-Creation-Date: 2010-06-12 18:40+0200\n"
 "PO-Revision-Date: 2009-10-03 09:20+0000\n"
 "Last-Translator: ΑναστόπουλοςΧάρης <harrisanasto@gmail.com>\n"
 "Language-Team: Greek <el@li.org>\n"
@@ -384,82 +384,86 @@ msgid "Estonian"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:128
-msgid "French"
+msgid "Faroese"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:129
-msgid "German"
+msgid "French"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:130
-msgid "Greek"
+msgid "German"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:131
-msgid "Hungarian"
+msgid "Greek"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:132
-msgid "Indonesian"
+msgid "Hungarian"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:133
-msgid "Italian"
+msgid "Indonesian"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:134
-msgid "Japanese"
+msgid "Italian"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:135
-msgid "Korean"
+msgid "Japanese"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:136
-msgid "Norwegian Bokmal"
+msgid "Korean"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:137
-msgid "Occitan"
+msgid "Norwegian Bokmal"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:138
-msgid "Polish"
+msgid "Occitan"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:139
-msgid "Brazilian Portuguese"
+msgid "Polish"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:140
-msgid "Portuguese"
+msgid "Brazilian Portuguese"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:141
-msgid "Russian"
+msgid "Portuguese"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:142
-msgid "Slovenian"
+msgid "Russian"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:143
-msgid "Spanish"
+msgid "Slovenian"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:144
-msgid "Swedish"
+msgid "Spanish"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:145
-msgid "Tamil"
+msgid "Swedish"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:146
-msgid "Turkish"
+msgid "Tamil"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:147
+msgid "Turkish"
+msgstr ""
+
+#: org/jmol/i18n/GT.java:148
 msgid "Ukrainian"
 msgstr ""
 
@@ -2321,11 +2325,11 @@ msgstr ""
 msgid "clipboard is not accessible -- use signed applet"
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:8504
+#: org/jmol/viewer/Viewer.java:8506
 msgid "Cannot set log file path."
 msgstr ""
 
-#: org/jmol/viewer/Viewer.java:8506
+#: org/jmol/viewer/Viewer.java:8508
 #, java-format
 msgid "Setting log file to {0}"
 msgstr ""

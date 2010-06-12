@@ -206,7 +206,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
     }
   }
 
-  //private boolean isSilent;
+  private boolean isSilent;
 
   private Object getBitSets(String smarts, boolean firstAtomOnly, StringBuffer ringSets) {
     SmilesSearch search;
@@ -215,7 +215,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
     } catch (InvalidSmilesException e) {
       return null;
     }
-    //search.isSilent = true;
+    search.isSilent = true;
     search.bsSelected = bsSelected;
     search.bsRequired = null; // not necessarily required for THIS PART
     search.jmolAtoms = jmolAtoms;
@@ -274,6 +274,10 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
      *    that is all we need as well.
      *    
      */
+    
+    if (Logger.debugging && !isSilent)
+      Logger.debug("SmilesSearch processing " + pattern);
+
     if (asVector || getMaps)
       vReturn = new Vector();
     selectedAtomCount = (bsSelected == null ? jmolAtomCount : bsSelected.cardinality());
@@ -392,7 +396,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
     // Note that we explicitly do a reference using
     // index because this could be a SEARCH [x,x] "sub" atom.
 
-    if (Logger.debugging)
+    if (Logger.debugging && !isSilent)
       Logger.debug("pattern atom " + atomNum + " " + patternAtom);
     if (++atomNum < atomCount) {
 
@@ -830,13 +834,14 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
 
     // first, @ stereochemistry
 
-    if (Logger.debugging)
-      Logger.debug("checking stereochemistry...");
-
     for (int i = 0; i < measures.size(); i++)
       if (!((SmilesMeasure) measures.get(i)).check())
         return false;
     if (haveAtomStereochemistry) {
+
+      if (Logger.debugging)
+        Logger.debug("checking stereochemistry...");
+
       JmolNode atom1 = null, atom2 = null, atom3 = null, atom4 = null, atom5 = null, atom6 = null;
       SmilesAtom sAtom1 = null, sAtom2 = null;
       JmolNode[] jn;

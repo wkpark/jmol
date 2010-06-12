@@ -1119,8 +1119,8 @@ class ScriptMathProcessor {
 
     ScriptVariable x1 = getX();
     String sFind = ScriptVariable.sValue(args[0]);
-    String flags = (args.length > 1  && args[1].tok != Token.on && args[1].tok != Token.off 
-        ? ScriptVariable.sValue(args[1]) : "");
+    String flags = (args.length > 1 && args[1].tok != Token.on
+        && args[1].tok != Token.off ? ScriptVariable.sValue(args[1]) : "");
     boolean isSmiles = sFind.equalsIgnoreCase("SMILES");
     boolean isSearch = sFind.equalsIgnoreCase("SMARTS");
     boolean isMF = sFind.equalsIgnoreCase("MF");
@@ -1130,53 +1130,35 @@ class ScriptMathProcessor {
           : null);
       boolean isAll = (args[args.length - 1].tok == Token.on);
       Object ret = null;
-      if (x1.tok == Token.string) {
+      switch (x1.tok) {
+      case Token.string:
         String smiles = ScriptVariable.sValue(x1);
         if (bs2 != null)
           return false;
         if (flags.equalsIgnoreCase("mf")) {
-          String mf = (isSyntaxCheck ? "" : viewer.getSmilesMatcher()
+          ret = (isSyntaxCheck ? "" : viewer.getSmilesMatcher()
               .getMolecularFormula(smiles, isSearch));
-          if (mf == null)
+          if (ret == null)
             eval.evalError(viewer.getSmilesMatcher().getLastException(), null);
-          return addX(mf);
+        } else {
+          ret = eval.getSmilesMatches(flags, smiles, null, null, isSearch, !isAll);
         }
-        ret = eval.getSmilesMatches(flags, smiles, null, null, null, null,
-            isSearch, isAll);
+        break;
+      case Token.bitset:
+        if (isMF)
+          return addX(JmolMolecule.getMolecularFormula(
+              viewer.getModelSet().atoms, (BitSet) x1.value, false));
+        if (isSmiles || isSearch)
+          sFind = flags;
+        BitSet bsMatch3D = bs2;
+        ret = eval.getSmilesMatches(sFind, null, (BitSet) x1.value, bsMatch3D, !isSmiles,
+            !isAll);
+        break;
       }
-      if (isSmiles || isSearch)
-        sFind = flags;
-      if (x1.tok == Token.bitset) {
-        if (isMF) {  
-          return addX(JmolMolecule.getMolecularFormula(viewer.getModelSet().atoms
-              , (BitSet) x1.value, false));
-        }
-        ret = eval.getSmilesMatches(sFind, null, (BitSet) x1.value, null, null,
-            bs2, !isSmiles, isAll);
-        if (isAll && sFind.length() == 0)
-          return addX((String) ret);
-      }
-      if (ret != null)
-        return (isAll ? addX((String[]) ret)
-            : ret instanceof String ? addX((String) ret) : addX((BitSet) ret));
-      if (x1.tok == Token.list) {
-        String[] list = (String[]) x1.value;
-        Vector v = new Vector();
-        for (int i = 0; i < list.length; i++) {
-          BitSet bs = Escape.unescapeBitset(list[i]);
-          if (bs == null)
-            continue;
-          bs = (BitSet) eval.getSmilesMatches(sFind, null, bs, null, null,
-              null, !isSmiles, isAll && sFind.length() == 0);
-          if (bs.cardinality() > 0)
-            v.addElement(bs);
-        }
-        list = new String[v.size()];
-        for (int i = v.size(); --i >= 0;)
-          list[i] = Escape.escape((BitSet) v.get(i));
-        return addX(list);
-      }
-      eval.error(ScriptEvaluator.ERROR_invalidArgument);
+      if (ret == null)
+        eval.error(ScriptEvaluator.ERROR_invalidArgument); 
+      return (ret instanceof String[] ? addX((String[]) ret)
+          : ret instanceof String ? addX((String) ret) : addX((BitSet) ret));
     }
     boolean isReverse = (flags.indexOf("v") >= 0);
     boolean isCaseInsensitive = (flags.indexOf("i") >= 0);
@@ -1962,26 +1944,10 @@ class ScriptMathProcessor {
     case Token.smiles:
     case Token.search:
       BitSet bsSelected = null;
-      BitSet bsRequired = null;
-      BitSet bsNot = null;
       boolean isOK = true;
       switch (i) {
       case 2:
         break;
-      case 5:
-        isOK = (args[4].tok == Token.bitset);
-        if (isOK)
-          bsNot = (BitSet) args[4].value;
-        else
-          break;
-        // fall through
-      case 4:
-        isOK = (args[3].tok == Token.bitset);
-        if (isOK)
-          bsRequired = (BitSet) args[3].value;
-        else
-          break;
-        // fall through
       case 3:
         isOK = (args[2].tok == Token.bitset);
         if (isOK)
@@ -1995,8 +1961,7 @@ class ScriptMathProcessor {
       if (isSyntaxCheck)
         return (asBitSet ? addX(new BitSet()) : addX(new Vector()));
       String[] x = (String[]) eval.getSmilesMatches(ScriptVariable
-          .sValue(args[1]), null, bsSelected, bsRequired, bsNot, null,
-          tok == Token.search, true);
+          .sValue(args[1]), null, bsSelected, null, tok == Token.search, false);
       return (asBitSet ? addX(Escape.unEscapeBitSetArray(x, false)) : addX(x));
     }
     if (withinSpec instanceof String) {

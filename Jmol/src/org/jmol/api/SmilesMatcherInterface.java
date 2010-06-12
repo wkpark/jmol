@@ -9,7 +9,7 @@ public interface SmilesMatcherInterface {
   public boolean areEqual(String smiles1, String smiles2);
 
   public abstract BitSet[] find(String pattern,/* ...in... */String smiles,
-                                boolean isSmarts, boolean matchAllAtoms, boolean firstMatchOnly);
+                                boolean isSmarts, boolean firstMatchOnly);
 
   public abstract BitSet getSubstructureSet(String pattern, JmolNode[] atoms,
                                             int atomCount, BitSet bsSelected,
@@ -20,8 +20,6 @@ public interface SmilesMatcherInterface {
                                                    JmolNode[] atoms,
                                                    int atomCount,
                                                    BitSet bsSelected,
-                                                   BitSet bsRequired,
-                                                   BitSet bsNot,
                                                    BitSet bsAromatic,
                                                    boolean isSmarts,
                                                    boolean firstMatchOnly);

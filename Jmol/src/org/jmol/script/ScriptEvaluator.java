@@ -6259,7 +6259,7 @@ public class ScriptEvaluator {
 
   float getSmilesCorrelation(BitSet bsA, BitSet bsB, String smiles,
                              Vector ptsA, Vector ptsB, Matrix4f m,
-                             Vector vReturn, boolean isSearch)
+                             Vector vReturn, boolean isSmarts)
       throws ScriptException {
     float tolerance = 0.1f; // TODO
     try {
@@ -6273,7 +6273,7 @@ public class ScriptEvaluator {
       Atom[] atoms = viewer.getModelSet().atoms;
       int atomCount = viewer.getAtomCount();
       int[][] maps = viewer.getSmilesMatcher().getCorrelationMaps(smiles,
-          atoms, atomCount, bsA, isSearch, true);
+          atoms, atomCount, bsA, isSmarts, true);
       if (maps == null)
         evalError(viewer.getSmilesMatcher().getLastException(), null);
       if (maps.length == 0)
@@ -6281,7 +6281,7 @@ public class ScriptEvaluator {
       for (int i = 0; i < maps[0].length; i++)
         ptsA.add(atoms[maps[0][i]]);
       maps = viewer.getSmilesMatcher().getCorrelationMaps(smiles, atoms,
-          atomCount, bsB, isSearch, false);
+          atomCount, bsB, isSmarts, false);
       if (maps == null)
         evalError(viewer.getSmilesMatcher().getLastException(), null);
       if (maps.length == 0)
@@ -6318,61 +6318,79 @@ public class ScriptEvaluator {
   }
 
   Object getSmilesMatches(String pattern, String smiles, BitSet bsSelected,
-                          BitSet bsRequired, BitSet bsNot, BitSet bsMatch3D,
-                          boolean isSearch, boolean isAll)
+                          BitSet bsMatch3D, boolean isSmarts, boolean firstMatchOnly)
       throws ScriptException {
     if (isSyntaxCheck) {
-      if (isAll)
-        return new String[] { "" };
-      return new BitSet();
+      if (firstMatchOnly)
+        return new BitSet();
+      return new String[] { "({})" };
     }
+
+    // just retrieving the SMILES or bioSMILES string
+
     if (pattern.length() == 0) {
-      Object ret = viewer.getSmilesMatcher().getSmiles(
-          viewer.getModelSet().atoms,
-          viewer.getAtomCount(),
-          bsSelected,
-          Viewer.getJmolVersion() + " "
-              + viewer.getModelName(viewer.getCurrentModelIndex()), isAll);
+      boolean isBioSmiles = (!firstMatchOnly);
+      Object ret = viewer.getSmilesMatcher()
+          .getSmiles(
+              viewer.getModelSet().atoms,
+              viewer.getAtomCount(),
+              bsSelected,
+              Viewer.getJmolVersion() + " "
+                  + viewer.getModelName(viewer.getCurrentModelIndex()),
+              isBioSmiles);
       if (ret == null)
         evalError(viewer.getSmilesMatcher().getLastException(), null);
       return ret;
     }
-      boolean asAtoms = true;
-      BitSet[] b;
-      if (bsMatch3D == null) {
-        asAtoms = (smiles == null);
-        if (asAtoms)
-          b = viewer.getSmilesMatcher().getSubstructureSetArray(pattern,
-              viewer.getModelSet().atoms, viewer.getAtomCount(), bsSelected,
-              bsRequired, bsNot, null, isSearch, !isAll);
-        else
-          b = viewer.getSmilesMatcher().find(pattern, smiles, isSearch, !isSearch, !isAll);
-        if (b == null)
-          evalError(viewer.getSmilesMatcher().getLastException(), null);
-        
-      } else {
-        Vector vReturn = new Vector();
-        float stddev = getSmilesCorrelation(bsMatch3D, bsSelected, pattern,
-            null, null, null, vReturn, isSearch);
-        if (Float.isNaN(stddev)) {
-          if (isAll)
-            return new String[] { "" };
+
+    boolean asAtoms = true;
+    BitSet[] b;
+    if (bsMatch3D == null) {
+
+      // getting a BitSet or BitSet[] from a set of atoms or a pattern.
+
+      asAtoms = (smiles == null);
+      if (asAtoms)
+        b = viewer.getSmilesMatcher().getSubstructureSetArray(pattern,
+            viewer.getModelSet().atoms, viewer.getAtomCount(), bsSelected,
+            null, isSmarts, false);
+      else
+        b = viewer.getSmilesMatcher().find(pattern, smiles, isSmarts, false);
+
+      if (b == null) {       
+        showString(viewer.getSmilesMatcher().getLastException(), false);
+        return "";
+      }
+    } else {
+
+      // getting a correlation
+
+      Vector vReturn = new Vector();
+      float stddev = getSmilesCorrelation(bsMatch3D, bsSelected, pattern, null,
+          null, null, vReturn, isSmarts);
+      if (Float.isNaN(stddev)) {
+        if (firstMatchOnly)
           return new BitSet();
-        }
-        showString("RMSD " + stddev + " Angstroms");
-        b = new BitSet[vReturn.size()];
-        for (int j = 0; j < b.length; j++)
-          b[j] = (BitSet) vReturn.get(j);
+        return new String[] { };
       }
-      if (!isAll) {
-        if (asAtoms)
-          return (b.length > 0 ? b[0] : new BitSet());
-        return (b.length > 0 ? new BondSet(b[0]) : new BondSet(new BitSet()));
-      }
-      String[] matches = new String[b.length];
+      showString("RMSD " + stddev + " Angstroms");
+      b = new BitSet[vReturn.size()];
       for (int j = 0; j < b.length; j++)
-        matches[j] = Escape.escape(b[j], asAtoms);
-      return matches;
+        b[j] = (BitSet) vReturn.get(j);
+    }
+    if (firstMatchOnly) {
+      // sum total of all now, not just first
+      BitSet bs = new BitSet();
+      for (int j = 0; j < b.length; j++)
+        bs.or(b[j]);
+      if (asAtoms)
+        return bs;
+      return new BondSet(bs);
+    }
+    String[] matches = new String[b.length];
+    for (int j = 0; j < b.length; j++)
+      matches[j] = Escape.escape(b[j], asAtoms);
+    return matches;
   }
 
   private void connect(int index) throws ScriptException {

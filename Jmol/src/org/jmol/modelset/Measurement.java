@@ -298,6 +298,8 @@ public class Measurement {
       return "nm";
     else if (units == "picometers")
       return "pm";
+    else if (units == "angstroms")
+      return "\u00C5";
     return units;
   }
   

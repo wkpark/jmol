@@ -1627,14 +1627,14 @@ public class StateManager {
                                    String setPrev, int nAll, String selectCmd) {
     if (ht == null)
       return "";
-    String strAll = "({0:" + (nAll - 1) + "})";
+    //String strAll = "({0:" + (nAll - 1) + "})";
     Enumeration e = ht.keys();
     while (e.hasMoreElements()) {
       String key = (String) e.nextElement();
       String set = Escape.escape((BitSet) ht.get(key));
       if (set.length() < 5) // nothing selected
         continue;
-      set = selectCmd + " " + (set.equals(strAll) && false ? "*" : set);
+      set = selectCmd + " " + set;
       if (!set.equals(setPrev))
         appendCmd(s, set);
       setPrev = set;

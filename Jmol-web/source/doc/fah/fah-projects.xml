@@ -5591,9 +5591,9 @@
   <fah_proj number="2972" name="Trpzip2 Folding at 400K" public="y" file="xyz"
     server="143.89.28.70" atoms="8991" preferred="16.7" deadline="24"
     credit="80.7" frames="100" code="G" contact="xuhuihuang@gmail.com" contrib="Leszek Dobrowolski"/>
-  <fah_proj number="2973" name="Trpzip2 Folding at 450K" public="y"
+  <fah_proj number="2973" name="Trpzip2 Folding at 450K" public="y" file="xyz"
     server="143.89.28.70" atoms="8991" preferred="16.7" deadline="24"
-    credit="80.7" frames="100" code="G" contact="xuhuihuang@gmail.com"/>
+    credit="80.7" frames="100" code="G" contact="xuhuihuang@gmail.com" contrib="Chiricozzi Walter"/>
 
   <!-- Projects 3000 to 3099 -->
   <fah_proj number="3000" name="p3000_SMP-supervillin-beta1" public="n" file="xyz"
@@ -8496,6 +8496,9 @@
   <fah_proj number="6700" name="p6700_VSD in POPC and water, neutralized" public="n"
     server="171.64.65.56" atoms="28637" preferred="3" deadline="6"
     credit="511" frames="100" code="A3" contact="kasson" kfactor="2.3"/>
+  <fah_proj number="6701" name="p6701_VSD in POPC and water, neutralized" public="y"
+    server="171.64.65.56" atoms="28637" preferred="3.2" deadline="6"
+    credit="921" frames="100" code="A3" contact="kasson" kfactor="4.1"/>
 
   <!-- Projects 9900 to 9999 -->
   <fah_proj number="9900" name="p9900_supervillin_e1" public="y"
@@ -8695,6 +8698,12 @@
   <fah_proj number="10400" name="p10400" public="n"
     server="171.64.65.79" atoms="576" preferred="36" deadline="53"
     credit="93" frames="100" code="A4" contact="kyleb"/>
+  <fah_proj number="10401" name="p10401" public="n"
+    server="171.64.65.80" atoms="576" preferred="23" deadline="33"
+    credit="58" frames="100" code="A4" contact="kyleb"/>
+  <fah_proj number="10402" name="p10402" public="n"
+    server="171.64.65.79" atoms="576" preferred="36" deadline="53"
+    credit="93" frames="100" code="A4" contact="kyleb"/>
 
   <!-- Projects 10500 to 10599 -->
   <fah_proj number="10501" name="p10501" public="y"
@@ -8836,7 +8845,7 @@
   <fah_proj number="10865" name="Abeta42_mono" public="n"
     server="171.64.122.84" atoms="34350" preferred="40" deadline="60"
     credit="207" frames="100" code="G" contact="lin5"/>
-  <fah_proj number="10866" name="Abeta42_mono" public="n"
+  <fah_proj number="10866" name="Abeta42_mono" public="n" file="xyz"
     server="171.64.122.84" atoms="34350" preferred="40" deadline="60"
     credit="207" frames="100" code="G" contact="lin5"/>
   <fah_proj number="10867" name="Abeta42_mono" public="n"

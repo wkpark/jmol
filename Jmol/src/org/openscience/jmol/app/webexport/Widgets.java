@@ -92,9 +92,9 @@ class Widgets {
     
     String getJavaScript(int appletID, JmolInstance instance) {
       Point3f ptRGB = Graphics3D.colorPointFromInt2(instance.bgColor);
-      return "<table><tbody><tr><td>"
+      return "<table><tbody><tr><td style=\"min-width:70px;\">"
           + GT._("background color:")
-          + "</td><td><script type = 'text/javascript'>"
+          + "</td><td style=\"min-width:70px;\"><script type = 'text/javascript'>"
           + "var scriptStr = 'color background $COLOR$;';"
           + "JmolColorPickerBox(scriptStr, [" 
           + (int)ptRGB.x + "," + (int)ptRGB.y + "," + (int)ptRGB.z
@@ -169,7 +169,7 @@ class Widgets {
       jsString+= "<img src = \"playButton.png\"></button></td>";        
       jsString+= "<td><button title=\""+GT._("Next Frame")+"\" style=\"font-size:0px;\" onclick=\"void(jmolScriptWait(\'frame next\'));\">";
       jsString+= "<img src = \"nextButton.png\"></button></td>";        
-      jsString+= "<td><button title=\""+GT._("Pause")+"/"+GT._("Stop")+"\" style=\"font-size:0px;\" onclick=\"void(jmolScriptWait(\'animation off\'));\">";
+      jsString+= "<td><button title=\""+GT._("Pause")+"\" style=\"font-size:0px;\" onclick=\"void(jmolScriptWait(\'animation off\'));\">";
       jsString+= "<img src = \"pauseButton.png\"></button></td>";        
       jsString+= "<td><button title=\""+GT._("Last Frame")+"\" style=\"font-size:0px;\" onclick=\"void(jmolScriptWait(\'frame last\'));\">";
       jsString+= "<img src = \"lastButton.png\"></button></td>";

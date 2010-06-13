@@ -31,7 +31,7 @@ All parameters are strings although appletId could potentially be a number, but 
 var JmolColorPickerStatus = {
     lastPicked: '', //last picked color...not used at present
     funcName: '', //where to pass to next after pickedColor()
-    passThrough: '' //name of the global variable or structure containing information to be passed
+    passThrough: '', //name of the global variable or structure containing information to be passed
     }
 
 var JmolColorPickerBoxes=new Array();//array of boxInfo
@@ -47,14 +47,6 @@ function addJavaScript(path, file) {
  document.write("<"+"script src=\"" + path + "/" + file + "\" type=\"text/javascript\"><" + "/script>"); 
 }
 
-function changePathIfLocal(){
- var protocol = window.location.protocol.toLowerCase();
-  if (protocol == "file:") { 
-    jmoljarpath = jmollocaljarpath;
-    jmoljspath = jmollocaljspath;
-  }
-}
-
 
 //Build the ColorPicker Div.
 function makeColorPicker(){
@@ -62,7 +54,7 @@ function makeColorPicker(){
     if(! JmolColorPickerDiv){
         var colorPickerCSS = document.createElement('style');
         colorPickerCSS.type = 'text/css';
-        CSSStr ='.JmolColorPicker_vis {border-style:solid;border-width:thin;clear:both;display:block;overflow:auto;position:absolute;z-index:2;}'
+        CSSStr ='.JmolColorPicker_vis {border-style:solid;border-width:thin;clear:both;display:block;overflow:auto;position:relative;left:-52px;width:104px;z-index:2;}'
         CSSStr +='.JmolColorPicker_hid {height:0;min-height:0;display:none;overflow:hidden;visibility:hidden;z-index:0;}';
         content = document.createTextNode(CSSStr); 
         colorPickerCSS.appendChild(content);
@@ -124,13 +116,11 @@ function makeColorPicker(){
     return(JmolColorPickerDiv);   
 }
 
-function pickedColor(colorStr){
-    document.getElementById('JmolColorPickerDiv').setAttribute("class", "JmolColorPicker_hid");
+function pickedColor(colorStr){    document.getElementById('JmolColorPickerDiv').setAttribute("class", "JmolColorPicker_hid");
     if(colorStr!='cancel'){
         var evalStr = ''+ JmolColorPickerStatus.funcName+'("'+colorStr+'",'+ JmolColorPickerStatus.passThrough+');';
         eval(evalStr);
-    }
-}
+    }}
 
 function hoverColor(colorStr){
     document.getElementById("JmolColorPickerHover").style.background = colorStr;

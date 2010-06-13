@@ -102,6 +102,6 @@ function changePathIfLocal(){
   if (protocol == "file:") { 
     jmoljarpath = jmollocaljarpath;
     jmoljspath = jmollocaljspath;
-    jmoljarfile = "JmolApplet.jar"
+    jmoljarfile = jmollocaljar;
   }
 }

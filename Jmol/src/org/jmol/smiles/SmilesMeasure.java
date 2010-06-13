@@ -36,18 +36,21 @@ public class SmilesMeasure  {
   int nPoints;
   int type;
   int index;
+  boolean isNot;
+  
   private int[] indices = new int[4];
   static final String TYPES = "__dat";
   
   private float min;
   private float max;
   
-  SmilesMeasure(SmilesSearch search, int index, int type, float min, float max) {
+  SmilesMeasure(SmilesSearch search, int index, int type, float min, float max, boolean isNot) {
     this.search = search;
     this.type = Math.min(4, Math.max(type, 2));
     this.index = index;
-    this.min = min;
-    this.max = max;
+    this.min = Math.min(min, max);
+    this.max = Math.max(min, max);
+    this.isNot = isNot;
   }
   
   public String toString() {
@@ -72,7 +75,10 @@ public class SmilesMeasure  {
   
   boolean check() {
     for (int i = 0; i < type; i++) {
-      points[i] = (Point3f) search.jmolAtoms[search.patternAtoms[indices[i]].getMatchingAtom()];
+      int iAtom = search.patternAtoms[indices[i]].getMatchingAtom();
+      System.out.print(iAtom + "-");
+      points[i] = (Point3f) search.jmolAtoms[iAtom];
+      System.out.println(points[i]);
     }
     float d = 0;
     switch (type) {
@@ -84,12 +90,13 @@ public class SmilesMeasure  {
       search.v.vB.sub(points[2], points[1]);
       d = search.v.vA.angle(search.v.vB) / radiansPerDegree;
       break;
-    case 4:
+    case 4: 
       setTorsionData(points[0], points[1], points[2], points[3], search.v, true);
-      d = search.v.vTemp1.angle(search.v.vTemp2) / radiansPerDegree * search.v.vNorm1.dot(search.v.vNorm2);
+      d = search.v.vTemp1.angle(search.v.vTemp2) / radiansPerDegree * (search.v.vNorm1.dot(search.v.vNorm2) < 0 ? 1 : -1);
       break;
     }
-    return d >= min && d <= max;   
+    System.out.println(type + " " + min + " " + max + " " + d + " " + isNot);
+    return ((d < min || d > max) == isNot);   
   }
 
   public static void setTorsionData(Point3f pt1a, Point3f pt1,

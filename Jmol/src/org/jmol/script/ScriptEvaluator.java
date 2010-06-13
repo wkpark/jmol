@@ -8051,34 +8051,44 @@ public class ScriptEvaluator {
   }
 
   private void measure() throws ScriptException {
-    if (statementLength == 1) {
-      viewer.hideMeasurements(false);
+    if (tokAt(1) == Token.search) {
+      String smarts = stringParameter(statementLength == 3 ? 2 : 4);
+      if (isSyntaxCheck)
+        return;
+      Atom[] atoms = viewer.getModelSet().atoms;
+      int atomCount = viewer.getAtomCount();
+      int[][] maps = viewer.getSmilesMatcher().getCorrelationMaps(smarts,
+          atoms, atomCount, viewer.getSelectionSet(), true, false);
+      if (maps == null)
+        return;
+      setShapeProperty(JmolConstants.SHAPE_MEASURES, "maps", maps);
       return;
     }
     switch (statementLength) {
+    case 1:
     case 2:
       switch (getToken(1).tok) {
+      case Token.nada:
       case Token.on:
-        if (!isSyntaxCheck)
-          viewer.hideMeasurements(false);
+        setShapeProperty(JmolConstants.SHAPE_MEASURES, "hideAll", Boolean.FALSE);
         return;
       case Token.off:
-        if (!isSyntaxCheck)
-          viewer.hideMeasurements(true);
+        setShapeProperty(JmolConstants.SHAPE_MEASURES, "hideAll", Boolean.TRUE);
         return;
       case Token.delete:
         if (!isSyntaxCheck)
           viewer.clearAllMeasurements();
         return;
       case Token.string:
-        if (!isSyntaxCheck)
-          viewer.setMeasurementFormats(stringParameter(1));
+        setShapeProperty(JmolConstants.SHAPE_MEASURES, "setFormats", stringParameter(1));
         return;
       }
       error(ERROR_keywordExpected, "ON, OFF, DELETE");
       break;
     case 3: // measure delete N
-      if (getToken(1).tok == Token.delete) {
+      // search "smartsString"
+      switch (getToken(1).tok) {
+      case Token.delete:
         if (getToken(2).tok == Token.all) {
           if (!isSyntaxCheck)
             viewer.clearAllMeasurements();
@@ -8232,16 +8242,21 @@ public class ScriptEvaluator {
     }
     switch (tokAction) {
     case Token.delete:
-      viewer.deleteMeasurement(countPlusIndexes);
+      setShapeProperty(JmolConstants.SHAPE_MEASURES, "delete",
+          countPlusIndexes);
       break;
     case Token.on:
-      viewer.showMeasurement(countPlusIndexes, true);
+      setShapeProperty(JmolConstants.SHAPE_MEASURES, "show",
+          countPlusIndexes);
       break;
     case Token.off:
-      viewer.showMeasurement(countPlusIndexes, false);
-      break;
+      setShapeProperty(JmolConstants.SHAPE_MEASURES, "hide",
+          countPlusIndexes);
     default:
-      viewer.toggleMeasurement(countPlusIndexes, strFormat);
+      setShapeProperty(JmolConstants.SHAPE_MEASURES, 
+          (strFormat == null ? "toggle" : "toggleOn"), countPlusIndexes);
+      if (strFormat != null)
+        setShapeProperty(JmolConstants.SHAPE_MEASURES, "setFormats", strFormat);
     }
   }
 

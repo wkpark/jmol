@@ -148,8 +148,19 @@ public class Measures extends Shape implements JmolMeasurementClient {
     //any one of the following clears the "select measures" business
     
     bsSelected = null;
-    
-    if ("measure" == propertyName) {
+
+    if ("maps" == propertyName) {
+      int[][] maps = (int[][]) value;
+      for (int i = 0; i < maps.length; i++) {
+        int len = maps[i].length;
+        if (len < 2 || len > 4) 
+          continue;
+        int[] v = new int[len + 1];
+        v[0] = len;
+        System.arraycopy(maps[i], 0, v, 1, len);
+        toggleOn((int[]) v);
+      }
+    } else if ("measure" == propertyName) {
       MeasurementData md = (MeasurementData) value;
       tickInfo = md.tickInfo;
       if (md.tickInfo != null && md.tickInfo.id.equals("default")) {

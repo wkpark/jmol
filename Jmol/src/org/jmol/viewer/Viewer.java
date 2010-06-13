@@ -3251,41 +3251,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.justifyMeasurements;
   }
 
-  public void setMeasurementFormats(String strFormat) {
-    setShapeProperty(JmolConstants.SHAPE_MEASURES, "setFormats", strFormat);
-  }
-
-  public void deleteMeasurement(int i) {
-    // Eval
-    setShapeProperty(JmolConstants.SHAPE_MEASURES, "delete", new Integer(i));
-  }
-
-  public void deleteMeasurement(int[] atomCountPlusIndices) {
-    // Eval
-    setShapeProperty(JmolConstants.SHAPE_MEASURES, "delete",
-        atomCountPlusIndices);
-  }
-
-  public void showMeasurement(int[] atomCountPlusIndices, boolean isON) {
-    // Eval
-    setShapeProperty(JmolConstants.SHAPE_MEASURES, isON ? "show" : "hide",
-        atomCountPlusIndices);
-  }
-
-  public void hideMeasurements(boolean isOFF) {
-    // Eval
-    setShapeProperty(JmolConstants.SHAPE_MEASURES, "hideAll", Boolean
-        .valueOf(isOFF));
-  }
-
-  public void toggleMeasurement(int[] atomCountPlusIndices, String strFormat) {
-    // Eval
-    setShapeProperty(JmolConstants.SHAPE_MEASURES,
-        (strFormat == null ? "toggle" : "toggleOn"), atomCountPlusIndices);
-    if (strFormat != null)
-      setShapeProperty(JmolConstants.SHAPE_MEASURES, "setFormats", strFormat);
-  }
-
   // ///////////////////////////////////////////////////////////////
   // delegated to AnimationManager
   // ///////////////////////////////////////////////////////////////
@@ -8157,7 +8122,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     hoverAtomIndex = -1;
     setFileLoadStatus(FILE_STATUS_MODELS_DELETED, null, null, null, null);
     refreshMeasures(true);
-    bsDeleted.andNot(bsD0);
+    if (bsD0 != null)
+      bsDeleted.andNot(bsD0);
     return BitSetUtil.cardinalityOf(bsDeleted);
   }
 
@@ -9011,6 +8977,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
   boolean isAtomAssignable(int i) {
     return modelSet.isAtomAssignable(i);
+  }
+
+  public void deleteMeasurement(int i) {
+    setShapeProperty(JmolConstants.SHAPE_MEASURES, "delete", new Integer(i));
   }
 
 }

@@ -381,9 +381,10 @@ public class SmilesParser {
                             SmilesAtom currentAtom)
       throws InvalidSmilesException {
     // parsing of C(.d:1.5,1.6)C
-    // or C(.d1:1.5)C(.d1:1.6)
-    // 
+    // or C(.d1:1.5-1.6)C(.d1)
+    // or C(.d1:!1.5-1.6)C(.d1)
     int pt = strMeasure.indexOf(":");
+    boolean isNot = false;
     String id = (pt < 0 ? strMeasure : strMeasure.substring(0, pt));
     while (pt != 0) { // no real repeat here -- just an enclosure for break
       int len = id.length();
@@ -403,11 +404,15 @@ public class SmilesParser {
           if (pt2 < 0)
             break;
           String s = strMeasure.substring(pt + 1, pt2);
+          if (s.startsWith("!")) {
+            isNot = true;
+            s = s.substring(1);
+          }
           float min = (pt + 1 == pt2 ? 0 : Float.parseFloat(s));
           s = strMeasure.substring(pt2 + 1);
           float max = (s.length() == 0 ? Float.MAX_VALUE : Float.parseFloat(s));
           molecule.measures.add(m = new SmilesMeasure(molecule, index, type,
-              min, max));
+              min, max, isNot));
           if (index > 0)
             htMeasures.put(id, m);
           else if (index == 0 && Logger.debugging)

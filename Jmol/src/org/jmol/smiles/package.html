@@ -89,7 +89,8 @@ or [2H] are selected; connected hydrogen atoms as in [CH3] are not selected.
 <b>BIOSMILES/BIOSMARTS</b>
 
 <ul>
-<li>Jmol 12.0 extends SMILES and SMARTS to biomolecules. The extension involves only a few simple additions:
+<li>Jmol 12.0 extends SMILES and SMARTS to biomolecules and the searching of three-dimensional characteristics of molecules, including distances, angles, and torsions. 
+The extension involves only a few simple additions:
 <br /><br />
 <ol>
 <li><b>[residueName.atomName]</b> For selecting specific residue atoms. Wild cards are optional: [ALA.*], [*.*], [*.CA]. The special
@@ -128,7 +129,11 @@ For example, a section of the large ribosomal unit for PDB code 1FFK reads:
 </li></ol>
 
 
-</li></ul>
+</li><li><b>Measurements</b> An additional extension, consisting of a measurement type (d - distance, a - angle, or t - torsion) 
+allows SMARTS searches to target specific ranges of values. 
+</li>
+
+</ul>
 
 
 <b>aromaticity</b>
@@ -213,6 +218,46 @@ In addition, Jmol 3D-SMARTS adds the following primitives and options:
 <tr><td>d</td><td>non-hydrogen degree -- number of non-hydrogen connections</td></tr>
 <tr><td>=</td><td>Jmol atom index, for example: [=23]</td></tr>
 <tr><td>[number]?</td><td>mass number or undefined (so, for example, [C12?] means any carbon that isn't explicitly C13 or C14</td></tr>
+<tr><td valign="top">(.measure)</td><td>The extension capitalizes on the fact that in a standard SMARTS string, period "." cannot
+ever appear immediately following an open parenthesis "(". Using this fact, the format involves the following:
+<pre>
+  "(." [single character type - "d" (distance), "a" (angle), or "t" (torsion)] [optional numeric identifier] 
+           ":" [optional "!" (not)] [minimum value] "," [maximum value] ")"
+</pre>
+This extension must appear immediately following an element symbol or a bracketed atom expression.  
+For example, the following will find all aliphatic carbon-carbon bonds that are between 1.5 and 1.6 angstroms long. 
+<pre>
+select search("C(.d:1.5-1.6)C")
+</pre>
+The following will select for all trans-diaxial methyl groups on a cyclohexane ring, finding all torsions that are outside
+the range -160 to 160 degrees:
+<pre>
+select search("[CH3](.t:!-160,160)CC[CH3]")
+</pre>
+The default in terms of specifying which atoms are involved is simply "the next N-1 atoms," where N is 2, 3, or 4. 
+For more complicated patterns, one can designate the specific atoms in the measurement using a numeric 
+identifier after the measurement type. The following will
+target the bond angle across the carbonyl group in the backbone of a peptide:
+<pre>
+select search("[*.CA](.a1:105-110)C(.a1)(=O)N(.a1)")
+</pre> 
+Designations can overlap; one simply adds whatever (.xn) designation is wanted after the desired atoms:
+<pre>
+select search("C(.a1:105,108)C(.a1)(.a2:110,130)C(.a1)(.a2)C(.a2)")
+</pre> 
+In Jmol, this capability is extended to the <b>measure</b> command for easy access to SMARTS-based measurements:
+<pre>
+select *
+measure search("C(.a1:110,130)C(.a1)(=O)C(.a1)")
+</pre> 
+Note that the atoms in no way have to be connected. The only restriction is that the three markers for an angle
+or the four markers for a torsion will be identified in order from left to right within the SMARTS string. The following,
+for example, will find all carbonyl oxygen atoms that are within 5 angstroms of each other:
+<pre>
+select search("{O}(.d1:0,5)=C.{O}(.d1)=C")
+</pre>
+The "." here indicating "not bonded." The close of the selection brace may appear before or after the (.x) designation.
+</td></tr>
 </table>  
 <br/>
 <br/>
@@ -367,7 +412,7 @@ includes:
 </p>
 
 </p>     
-<a name="specs"><h3>Detailed Jmol 3D-BIOSMARTS Specification</h3></a>
+<a name="specs"><h3>Detailed Jmol 3D-bioSMARTS Specification</h3></a>
 <p>
 <pre> 
       # note: prior to parsing, all white space is removed
@@ -381,17 +426,28 @@ includes:
       # note: Variable definitions must be parsed first. 
       #       After that, all variable references [$XXXX] are replaced
       
-   [smarts] == { [biosequence] | [node] [connections] } 
-   [biosequence] == "~" [node] [connections] 
-      # note: In a biosequence, "atom types" are standard 1-letter-code group names
-      #       or bracketed residues [xxx]. The "~" must be the first character
-      #       in a component and must be repeated for each component (separated by ".")
+   [smarts] == { [biosequence] | [node3D] [connections] } 
+   [biosequence] == "~" [bionode] [connections]
+   [bionode] == { "[" [residueName] "." [atomName] "]" | [residueCode] } 
+   [residueName] == { "ARG" | "GLY" ... } 
+   [atomName] == {"C" | "CA" | "N" ... } 
+   [residueCode] == { "A" | "R" | "G" ... }
+      # note: In a biosequence, residues are designated using standard 1-letter-code group names
+      #       or bracketed residues [xxx] with optional atoms specified: [ARG], [CYS.SG]. 
+      #       The "~" must be the first character in a component and must be repeated 
+      #       for each component (separated by ".")
    [connections] == [connection] | NULL }
-   [connection] == { [branch] | [bondExpression] [node] } [connections]
+   [connection] == { [branch] | [bondExpression] [node3D] } [connections]
    [branch] == "(" { [smarts] | [bondExpression] [smarts] } ")" 
       # note: Default bonding for a branch is single for SMILES or base-paired (:) for BIOSEQUENCE
-   [node] == { [atomExpression] | [ringPointer] }
-
+   [node3D] == { [atomExpression] | [atomExpression] "(." [measure] ")" | [ringPointer] }
+   [measure] == { [measureId] | [measureId] ":" [range] | [measureId] ":!" [range] }
+   [measureId] == { [measureCode] | [measureCode] [digits] }
+   [measureCode == { "d" | "a" | "t" }
+   [range] == [minimumValue] "," [maximumValue]
+   [minimumValue] == [decimalNumber]
+   [maximumValue] == [decimalNumber]
+    
    [atomExpression] = { [unbracketedAtomType] 
                              | "[" [bracketedExpression] "]" 
                              | [nestedExpression] }

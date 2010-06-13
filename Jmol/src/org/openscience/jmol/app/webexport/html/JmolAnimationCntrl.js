@@ -28,3 +28,4 @@ function jmol_animationmode(selected, n){
         document.getElementById(cellID).setAttribute("style","background: blue;");
         var result  = jmolScript('animation mode palindrome',n);
     }
+}

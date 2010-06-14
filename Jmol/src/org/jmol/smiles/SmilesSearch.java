@@ -33,7 +33,6 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.api.JmolEdge;
-import org.jmol.api.JmolMolecularGraph;
 import org.jmol.api.JmolMolecule;
 import org.jmol.api.JmolNode;
 import org.jmol.util.Logger;
@@ -44,7 +43,7 @@ import org.jmol.util.Logger;
  * so as to keep this thread safe
  * 
  */
-public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
+public class SmilesSearch extends JmolMolecule {
 
   public String toString() {
     StringBuffer sb = new StringBuffer(pattern);
@@ -54,12 +53,6 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
   
   private final static int INITIAL_ATOMS = 16;
   SmilesAtom[] patternAtoms = new SmilesAtom[INITIAL_ATOMS];
-
-  // JmolMolecularGraph interface -- when matching a SMILES string
-  
-  public JmolNode[] getAtoms() {
-    return patternAtoms;
-  }
 
   /* ============================================================= */
   /*                             Setup                             */

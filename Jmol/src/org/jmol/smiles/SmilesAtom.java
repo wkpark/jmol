@@ -31,7 +31,6 @@ import javax.vecmath.Point3f;
 
 import org.jmol.api.JmolEdge;
 import org.jmol.api.JmolNode;
-import org.jmol.util.ArrayUtil;
 import org.jmol.util.Elements;
 
 //import org.jmol.util.Logger;
@@ -106,7 +105,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
   private int chiralOrder = Integer.MIN_VALUE;
   private boolean isAromatic;
   SmilesAtom parent;
-  SmilesBond[] bonds = new SmilesBond[INITIAL_BONDS];
+  SmilesBond[] bonds = new SmilesBond[4];
   int bondCount;
 
   public void setBonds(SmilesBond[] bonds) {
@@ -169,8 +168,6 @@ public class SmilesAtom extends Point3f implements JmolNode {
         //    + " h:" + implicitHydrogenCount
         + "]";
   }
-
-  private final static int INITIAL_BONDS = 4;
 
   /**
    * Constructs a <code>SmilesAtom</code>.
@@ -527,7 +524,21 @@ public class SmilesAtom extends Point3f implements JmolNode {
   }
 
   public void setBondArray() {
-    bonds = (SmilesBond[]) ArrayUtil.setLength(bonds, bondCount);
+    if (bonds.length > bondCount) {
+      SmilesBond[] tmp = new SmilesBond[bondCount];
+      System.arraycopy(bonds, 0, tmp, 0, bondCount);
+      bonds = tmp;
+    }
+    if (atomsOr != null && atomsOr.length > nAtomsOr) {
+      SmilesAtom[] tmp = new SmilesAtom[atomsOr.length];
+      System.arraycopy(atomsOr, 0, tmp, 0, nAtomsOr);
+      atomsOr = tmp;
+    }
+    if (primitives != null && primitives.length > nPrimitives) {
+      SmilesAtom[] tmp = new SmilesAtom[primitives.length];
+      System.arraycopy(primitives, 0, tmp, 0, nPrimitives);
+      primitives = tmp;
+    }
     if (isBioAtom)
       for (int i = 0; i < bonds.length; i++)
         if (bonds[i].bondType == SmilesBond.TYPE_AROMATIC)

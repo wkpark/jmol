@@ -31,7 +31,7 @@ All parameters are strings although appletId could potentially be a number, but 
 var JmolColorPickerStatus = {
     lastPicked: '', //last picked color...not used at present
     funcName: '', //where to pass to next after pickedColor()
-    passThrough: '', //name of the global variable or structure containing information to be passed
+    passThrough: '' //name of the global variable or structure containing information to be passed
     }
 
 var JmolColorPickerBoxes=new Array();//array of boxInfo

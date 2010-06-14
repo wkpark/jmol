@@ -183,11 +183,11 @@ public class SmilesGenerator {
       sb.append(a.getGroup3(false));
       if (!atomName.equals(".0"))
         sb.append(atomName).append("#").append(a.getElementNumber());
-      sb.append("//*").append(
+      sb.append("//* ").append(
           a.getResno());
       if (chChain != '\0')
         sb.append(":").append(chChain);
-      sb.append("*//");
+      sb.append(" *//");
     } else {
       sb.append(Elements.elementNameFromNumber(a.getElementNumber()));
     }

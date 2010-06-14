@@ -6,7 +6,7 @@ public interface SmilesMatcherInterface {
 
   public abstract String getLastException();
 
-  public boolean areEqual(String smiles1, String smiles2);
+  public int areEqual(String smiles1, String smiles2);
 
   public abstract BitSet[] find(String pattern,/* ...in... */String smiles,
                                 boolean isSmarts, boolean firstMatchOnly);

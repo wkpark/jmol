@@ -72,21 +72,62 @@ the term "aromatic" is <a href="#aromaticity">defined</a>.
 Allows any amount of white space -- spaces, tabs, new lines. Prior to parsing, all white space is removed.
 </li>
 <li> 
-Comments in the form //*....*// are allowed anywhere within the string. The following example illustrates the use of comments and white space for the bioSMILES representation of 1d66:
+Comments in the form //*....*// are allowed anywhere within the string. The following example illustrates the use of comments and white space for the bioSMILES representations of several models:
 <pre>
-$ load 1d66.pdb;calculate hbonds
-108 hydrogen bonds
-$ print {*}.find("SMILES")
+$ load 1crn.pdb; print {*}.find("SMILES",true)
+//* Jmol bioSMILES 12.0.RC19_dev  2010-06-06 14:24 1 *//
+~TTC:1C:2PSIVARSNFNVC:3RLPGTPEAIC:3ATYTGC:2IIIPGATC:1PGDYAN
+
+$ load 1blu.pdb; print {*}.find("SMILES",true)
+//* Jmol bioSMILES 12.0.RC19_dev  2010-06-06 14:24 1 *//
+~ALMITDECINCDVCEPECPNGAISQGDETYVIEPSLCTECVGHYETSQCVEVCPVDCIIKDPSHEETEDELRAK
+  YERITG.
+//* FS4 *//[Fe@@]123[S]4[Fe@@]56[S]7[Fe@]84[S]3[Fe@@]97[S]26.
+  [CYS.SG#16//* 8 *//]8.[CYS.SG#16//* 53 *//]1.[CYS.SG#16//* 14 *//]9.[CYS.SG#16//* 11 *//]5.
+//* FS4 *//[Fe@@]%10%11%12[S]%13[Fe@@]%14%15[S]%16[Fe@]%17%13[S]%12[Fe@@]%18%16[S]%11%15.
+  [CYS.SG#16//* 37 *//]%17.[CYS.SG#16//* 18 *//]%10.[CYS.SG#16//* 49 *//]%18.[CYS.SG#16//* 40 *//]%14.
+//* HOH *//[O]
+
+$ load 1d66.pdb;print {*}.find("SMILES", true)
 //* Jmol bioSMILES 12.0.RC19_dev  2010-06-06 14:24 1 *//
 //* chain D dna *// ~CCGGAGGACAGTCCTCCGG.
 //* chain E dna *// ~CCGGAGGACTGTCCTCCGG.
-//* chain A protein *// ~EQACDICRLKKLKCSKEKPKCAKCLKNNWECRYSPKTKRSPLTRAHLTEVESRLERL.
-//* chain B protein *// ~EQACDICRLKKLKCSKEKPKCAKCLKNNWECRYSPKTKRSPLTRAHLTEVESRLERL.
-[Cd]1234[Cd]567[CYS.SG#16]4.[CYS.SG#16]15.[CYS.SG#16]2.[CYS.SG#16]7.[CYS.SG#16]6.[CYS.SG#16]3.
-[Cd]89%10%11[Cd]%12%13%14[CYS.SG#16]%10.[CYS.SG#16]%13.[CYS.SG#16]9.[CYS.SG#16]%14.[CYS.SG#16]8%12.[CYS.SG#16]%11.
-[O]
+//* chain A protein *// ~EQACDICRLKKLKCSKEKPKCAKCLKNNWECRYSPKTKRSPLTRAHLTEV
+  ESRLERL.
+//* chain B protein *// ~EQACDICRLKKLKCSKEKPKCAKCLKNNWECRYSPKTKRSPLTRAHLTEV
+  ESRLERL.
+//* CD *//[Cd]1234[Cd]567[CYS.SG#16//* 28:B *//]4.[CYS.SG#16//* 11:B *//]15.
+  [CYS.SG#16//* 31:B *//]2.[CYS.SG#16//* 21:B *//]7.[CYS.SG#16//* 14:B *//]6.[CYS.SG#16//* 38:B *//]3.
+//* CD *//[Cd]89%10%11[Cd]%12%13%14[CYS.SG#16//* 28:A *//]%10.[CYS.SG#16//* 14:A *//]%13.
+  [CYS.SG#16//* 31:A *//]9.[CYS.SG#16//* 21:A *//]%14.[CYS.SG#16//* 11:A *//]8%12.[CYS.SG#16//* 38:A *//]%11.
+//* HOH *//[O]
+
+$ load 1d66.pdb;calculate hbonds;print {*}.find("SMILES", true)
+108 hydrogen bonds
+//* Jmol bioSMILES 12.0.RC19_dev  2010-06-06 14:24 1 *//
+//* chain D dna *// ~C:1C:2G:3G:4A:5G:6G:7A:8C:9A:%10G:%11T:%12C:%13C:%14T:%15
+  C:%16C:%17G:%18G:%19.
+//* chain E dna *// ~C:%19C:%18G:%17G:%16A:%15G:%14G:%13A:%12C:%11T:%10G:9T:8
+  C:7C:6T:5C:4C:3G:2G:1.
+//* chain A protein *// ~E:%20QA:%20C:%21D:%22:%23I:%24C:%25:%26R:%21:%27L:%23
+  K:%24K:%27:%25L:%26KCSK:%28EK:%28PKC:%29A:%30K:%31C:%32:%33L:%29:%34K:%30
+  N:%31N:%34:%32W:%33E:%35CR:%35:%22YSPKTKRSP:%36LT:%36:%37R:%38A:%39H:%40L:%37:%41
+  T:%38:%42E:%39:%43:%44V:%40:%45E:%41:%46S:%43:%42R:%44L:%45:%47:%48E:%46R:%47
+  L:%48.
+//* chain B protein *// ~EQAC:%49D:%50:%51I:%52C:%53:%54R:%49:%55L:%51K:%52
+  K:%55:%53L:%54KCSK:%56EK:%56PKC:%57:%58A:%59K:%60C:%57:%61:%62L:%58:%63K:%59
+  N:%60N:%61:%63W:%62ECR:%50YSPKTKRSP:%64LT:%64:%65R:%66A:%67H:%68L:%65:%69
+  T:%66:%70E:%67:%71V:%68:%72E:%69:%73S:%70:%74R:%71L:%72:%75E:%73R:%74L:%75.
+//* CD *//[Cd]%76%77%78%79[Cd]%80%81%82[CYS.SG#16//* 28:B *//]%79.[CYS.SG#16//* 11:B *//]%76%80.
+  [CYS.SG#16//* 31:B *//]%77.[CYS.SG#16//* 21:B *//]%82.[CYS.SG#16//* 14:B *//]%81.[CYS.SG#16//* 38:B *//]%78.
+//* CD *//[Cd]%83%84%85%86[Cd]%87%88%89[CYS.SG#16//* 28:A *//]%85.[CYS.SG#16//* 14:A *//]%88.
+  [CYS.SG#16//* 31:A *//]%84.[CYS.SG#16//* 21:A *//]%89.[CYS.SG#16//* 11:A *//]%83%87.[CYS.SG#16//* 38:A *//]%86.
+//* HOH *//[O]
 </pre>
 
+</li><li>Jmol recognizes "/..../" at the beginning of a pattern as processing flags. "/noAromatic/", for example,
+turns off all checks for aromaticity, speeding processing when that is not important or no distinction between
+aromatic and nonaromatic atoms is desired.
 </li>
 
 </ul>
@@ -139,12 +180,16 @@ For example, a section of the large ribosomal unit for PDB code 1FFK reads:
   C:%(816)C:%(815)G:%(814)G:%(813)UUCG:%(797)C:%(796)C:%(795)G:%(794)C:%(793)
   C:%(792)ACC.
 </pre>
-<br /><br />
+</li><li><b>Measurements</b> An additional extension, consisting of a measurement type (d - distance, a - angle, or t - torsion) 
+allows SMARTS searches to target specific ranges of values. 
+</li><li><b>Special Flags</b>Jmol recognizes "/..../" at the beginning of a pattern as processing flags. 
+Currently the only flag supported is "noAromatic". This flag turns off all aromaticity checks.
+It may be desireable when no distinction between
+aromatic and nonaromatic atoms is desired. For large biomolecules it can 
+dramatically improve processing speed when no check for aromaticity is necessary. All atoms are then considered NOT aromatic.
 </li></ol>
 
 
-</li><li><b>Measurements</b> An additional extension, consisting of a measurement type (d - distance, a - angle, or t - torsion) 
-allows SMARTS searches to target specific ranges of values. 
 </li>
 
 </ul>
@@ -157,6 +202,9 @@ allows SMARTS searches to target specific ranges of values.
     see <a href="#aromaticity">below</a>.
 
 </li><li>Note that "aromatic" is not restricted to any specific subset of elements.
+</li><li>For large biomolecule searches, the search for aromatic rings can be time consuming and unnecessary.
+Adding the flag "/noAromatic/" at the beginning of the search pattern will turn off all checks for aromaticity
+and may dramatically increase processing speed.
 </li></ul>
   
 </p>     
@@ -451,7 +499,10 @@ includes:
 <pre> 
       # note: prior to parsing, all white space is removed
 
-   [smartDef] == [variableDefs] [smarts] | [smarts]
+   [smartDef] == [preface] [smarts]
+   [preface] == { [flagDefs] [variableDefs] || [variableDefs] || NULL } 
+   [flagDefs] == "/" [processingFlags] "/"
+   [processingFlags] == "noAromatic" (case-insensitive)
    [variableDefs] == [variableDef] | [variableDef] [variableDefs]
    [variableDef] ==  "$" [label] "=" "\"" [smarts] "\"" [comments] ";"
    [label] == [any characters other than "=" and "$", and not starting with "("]
@@ -560,12 +611,12 @@ includes:
    
    [bioAtom] == { [residueName] "." [atomName]
       # note: BIOSEQUENCE (only) also allows just [residueName], an abbreviation for [residueName] ".0"
-   [residueName] == { "*" | [oneDigitGroupName] | [groupName] | null }
-      # note: null same as "*"
+   [residueName] == { "*" | [oneDigitGroupName] | [groupName] | NULL }
+      # note: NULL same as "*"
    [oneDigitGroupName] == (see JmolConstants.predefinedGroup1Names)
    [groupName] == (any PDB residue name)
-   [atomName] == { "*" | "0" | (any atom name) | null }
-      # note: null same as "*"; "0" refers to "lead atom -- CA for proteins, P for nucleic, or O for carbohydrate
+   [atomName] == { "*" | "0" | (any atom name) | NULL }
+      # note: NULL same as "*"; "0" refers to "lead atom -- CA for proteins, P for nucleic, or O for carbohydrate
    [ringPointer] == { [digit] | "%" [digit][digit] | "%(" [digits] ")" }
       # note: All ringPointers must have a second matching ringPointer 
       #       and must be preceded by an atomExpression for the 

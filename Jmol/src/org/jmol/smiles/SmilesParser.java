@@ -140,6 +140,12 @@ public class SmilesParser {
     SmilesSearch molecule = new SmilesSearch();
     molecule.isSmarts = isSmarts;
     molecule.pattern = pattern = cleanPattern(pattern, isSmarts);
+    if (isSmarts && pattern.startsWith("/")) {
+      String flags = getSubPattern(pattern, 0, '/').toUpperCase();
+      pattern = pattern.substring(flags.length());
+      if (flags.indexOf("NOAROMATIC") >= 0)
+        molecule.noAromatic = true;
+    }
     if (pattern.indexOf("$") >= 0)
       pattern = parseVariables(pattern);
     if (pattern.indexOf("$(") >= 0)

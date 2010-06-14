@@ -82,8 +82,9 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
   boolean needRingData;
   boolean needAromatic;
   boolean needRingMemberships;
-  int ringDataMax = 8;
+  int ringDataMax = Integer.MIN_VALUE;
   final Vector measures = new Vector();
+  public boolean noAromatic;
 
   boolean asVector;
   boolean getMaps;
@@ -150,7 +151,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
   }
 
   void setRingData(BitSet bsA) {
-    needAromatic &= (bsA == null);
+    needAromatic &= (bsA == null) & !noAromatic;
     // when using "xxx".find("search","....")
     // or $(...), the aromatic set has already been determined
     if (!needAromatic) {
@@ -160,6 +161,8 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
       if (!needRingMemberships && !needRingData)
         return;
     }
+    if (ringDataMax < 0)
+      ringDataMax = 8;
     if (needRingData) {
       ringCounts = new int[jmolAtomCount];
       ringConnections = new int[jmolAtomCount];
@@ -1446,7 +1449,6 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
   }
   
   VTemp v = new VTemp();
-
   
   static boolean isDiaxial(JmolNode atomA, JmolNode atomB, JmolNode atom1, JmolNode atom2, VTemp v, float f) {
     v.vA.set((Point3f) atomA);

@@ -89,7 +89,7 @@ public class SmilesGenerator {
     this.atomCount = atomCount;
     StringBuffer sb = new StringBuffer();
     BitSet bs = (BitSet) bsSelected.clone();
-    sb.append("//* Jmol BIOSMILES ").append(comment.replace('*', '_')).append(
+    sb.append("//* Jmol bioSMILES ").append(comment.replace('*', '_')).append(
         " *//");
     Hashtable ht = new Hashtable();
     String end = "\n";
@@ -148,9 +148,9 @@ public class SmilesGenerator {
           len += 1 + s.length();
         }
         vLinks.clear();
-        int i2 = a.getOffsetResidueAtom("0", 1);
         a.setGroupBits(bsIgnore);
         bs.andNot(bsIgnore);
+        int i2 = a.getOffsetResidueAtom("0", 1);
         if (i2 < 0 || !bs.get(i2)) {
           if (i2 < 0 && (i2 = bs.nextSetBit(i + 1)) < 0)
             break;
@@ -160,6 +160,7 @@ public class SmilesGenerator {
         i = i2 - 1;
       }
     } catch (Exception e) {
+      e.printStackTrace();
       return "";
     }
     if (!ht.isEmpty()) {
@@ -174,12 +175,20 @@ public class SmilesGenerator {
 
   private void addBracketedBioName(StringBuffer sb, JmolNode a, String atomName) {
     sb.append("[");
-    if (atomName != null)
-      sb.append(a.getGroup3(false)).append(atomName);
-    else
+    if (atomName != null) {
+      char chChain = a.getChainID();
+      sb.append(a.getGroup3(false));
+      if (!atomName.equals(".0"))
+        sb.append(atomName).append("#").append(a.getElementNumber());
+      sb.append("//*").append(
+          a.getResno());
+      if (chChain != '\0')
+        sb.append(":").append(chChain);
+      sb.append("*//");
+    } else {
       sb.append(Elements.elementNameFromNumber(a.getElementNumber()));
+    }
     sb.append("]");
-
   }
 
   /**
@@ -200,7 +209,7 @@ public class SmilesGenerator {
       atom = atoms[atom.getBondedAtomIndex(0)]; // don't start with H
     bsAromatic = new BitSet();
     bsSelected = JmolMolecule.getBranchBitSet(atoms, (BitSet) bs.clone(), atom
-        .getIndex(), -1, true);
+        .getIndex(), -1, true, false);
     bs.andNot(bsSelected);
     for (int j = bsSelected.nextSetBit(0); j >= 0; j = bsSelected
         .nextSetBit(j + 1)) {
@@ -614,7 +623,7 @@ public class SmilesGenerator {
     // present. For example, in 1BLU we have 
     // .[CYS.SG#16] could match either the atom number or the element number 
     if (isExtension && groupType.length() != 0 && atomName.length() != 0)
-      sb.append("[" + atom.getGroup3(false) + "." + atomName + "#" + atomicNumber + "]");
+      addBracketedBioName(sb, atom, "." + atomName);
     else
       sb.append(SmilesAtom.getAtomLabel(atomicNumber, isotope, valence, charge,
           nH, isAromatic, s));

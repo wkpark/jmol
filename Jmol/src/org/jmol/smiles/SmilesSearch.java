@@ -363,11 +363,8 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
 
       switch (patternBond.bondType) {
       case SmilesBond.TYPE_BIO_SEQUENCE:
-        continue; // no bond check here
       case SmilesBond.TYPE_BIO_PAIR:
-        if (jmolAtoms[iAtom].isCrossLinked(jmolAtoms[matchingAtom]))
-          continue;
-        break;
+        continue; // no bond check here
       default:
 
         // regular SMILES/SMARTS check 
@@ -476,8 +473,8 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
           if (!checkMatch(patternAtom, atomNum, nextGroupAtom, firstAtomOnly))
             return false;
           bsFound.andNot(bs);
-          return true;
         }
+        return true;
       case SmilesBond.TYPE_BIO_PAIR:
         Vector vLinks = new Vector();
         atom.getCrossLinkLeadAtomIndexes(vLinks);
@@ -823,7 +820,7 @@ public class SmilesSearch extends JmolMolecule implements JmolMolecularGraph {
   }
 
   static boolean isRingBond(StringBuffer ringSets, int i, int j) {
-    return (ringSets.indexOf("-" + i + "-" + j + "-") >= 0);
+    return (ringSets != null && ringSets.indexOf("-" + i + "-" + j + "-") >= 0);
   }
   
   /* ============================================================= */

@@ -643,14 +643,19 @@ public class SmilesAtom extends Point3f implements JmolNode {
     return bond.isHydrogen();
   }
 
-  public void getCrossLinkLeadAtomIndexes(Vector vLinks) {
+  public boolean getCrossLinkLeadAtomIndexes(Vector vLinks) {
     for (int k = 0; k < bonds.length; k++)
       if (bonds[k].bondType == SmilesBond.TYPE_BIO_PAIR)
         vLinks.add(new Integer(bonds[k].getOtherAtom(this).index));
+    return true;
   }
 
   public String getGroupType() {
     return null;
+  }
+
+  public int getResno() {
+    return 0;
   }
 
   public char getChainID() {
@@ -670,4 +675,5 @@ public class SmilesAtom extends Point3f implements JmolNode {
         + (charge < 0 ? "" + charge : charge > 0 ? "+" + charge : "") + stereo
         + (nH > 1 ? "H" + nH : nH == 1 ? "H" : "") + "]");
   }
+
 }

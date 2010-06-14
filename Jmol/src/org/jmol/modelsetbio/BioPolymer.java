@@ -47,7 +47,7 @@ public abstract class BioPolymer extends Polymer {
 
   Monomer[] monomers;
 
-  public Monomer[] getMonomers() {
+  public Group[] getGroups() {
     return monomers;
   }
 

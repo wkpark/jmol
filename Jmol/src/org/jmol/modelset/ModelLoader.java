@@ -1173,7 +1173,7 @@ public final class ModelLoader extends ModelSet {
           dz2 /= 3;
         //float dz1 = dz2/3;
         //b.atom1.z += dz1;
-        BitSet bs = JmolMolecule.getBranchBitSet(atoms, bsToTest, b.atom2.index, b.atom1.index, false);
+        BitSet bs = JmolMolecule.getBranchBitSet(atoms, bsToTest, b.atom2.index, b.atom1.index, false, true);
         bs.set(b.atom2.index); // ring structures
         for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1))
           atoms[j].z += dz2;

@@ -434,6 +434,11 @@ public class Group {
     return false;
   }
   
-  public void getCrossLinkLeadAtomIndexes(Vector vReturn) {
+  public boolean getCrossLinkLeadAtomIndexes(Vector vReturn) {
+    return false;
+  }
+
+  public boolean isConnectedPrevious() {
+    return false;
   }
 }

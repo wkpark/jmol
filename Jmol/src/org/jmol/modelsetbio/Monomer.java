@@ -24,6 +24,7 @@
 package org.jmol.modelsetbio;
 
 import org.jmol.modelset.Atom;
+import org.jmol.modelset.Bond;
 import org.jmol.modelset.Chain;
 import org.jmol.modelset.Group;
 
@@ -35,6 +36,8 @@ import org.jmol.script.Token;
 
 import java.util.Hashtable;
 import java.util.BitSet;
+import java.util.Vector;
+
 import javax.vecmath.Point3f;
 
 public abstract class Monomer extends Group {
@@ -338,6 +341,45 @@ public abstract class Monomer extends Group {
       id += cid;
     return id;
   }
+  
+  public boolean getCrossLinkLeadAtomIndexes(Vector vReturn) {    
+   for (int i = firstAtomIndex; i <= lastAtomIndex; i++)
+      if (getCrossLink(i, vReturn) && vReturn == null)
+          return true;
+    return false;
+  }  
+
+  protected boolean getCrossLink(int i, Vector vReturn) {
+    // vReturn null --> just checking for connection to previous group
+    // not obvious from PDB file for carbohydrates
+    Atom atom = chain.getAtom(i);
+    Bond[] bonds = atom.getBonds();
+    int ibp = getBioPolymerIndexInModel();
+    if (ibp < 0)
+      return false;
+    boolean haveCrossLink = false;
+    for (int j = 0; j < bonds.length; j++) {
+      Atom a = bonds[j].getOtherAtom(atom);
+      Group g = a.getGroup();
+      int iPolymer = g.getBioPolymerIndexInModel();
+      int igroup = g.getMonomerIndex();
+      if (vReturn == null) {
+        if (iPolymer == ibp && igroup == monomerIndex - 1)
+          return true;
+      } else if (iPolymer >= 0
+          && igroup >= 0
+          && (iPolymer != ibp || igroup < monomerIndex - 1 || igroup > monomerIndex + 1)) {
+        vReturn.add(new Integer(g.getLeadAtomIndex()));
+        haveCrossLink = true;
+      }
+    }
+    return haveCrossLink;
+
+  }
+  public boolean isConnectedPrevious() {
+    return true; // but not nec. for carbohydrates... see 1k7c
+  }
+
 }
   
 

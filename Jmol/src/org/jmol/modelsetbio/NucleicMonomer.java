@@ -338,14 +338,14 @@ public class NucleicMonomer extends PhosphorusMonomer {
      Atom p1 = getAtomFromOffsetIndex(O1P);
      Atom p2 = getAtomFromOffsetIndex(O2P);
      Bond[] bonds = ptNorP.getBonds();
-     int groupIndex = ptNorP.getGroupIndex();
+     Group g = ptNorP.getGroup();
      for (int i = 0; i < bonds.length; i++) {
        Atom atom = bonds[i].getOtherAtom(ptNorP);
        if (p1 != null && atom.index == p1.index)
          continue;
        if (p2 != null && atom.index == p2.index)
          continue;
-       if (atom.getGroupIndex() == groupIndex)
+       if (atom.getGroup() == g)
          ptB = atom;
        else
          ptA = atom;
@@ -384,10 +384,11 @@ public class NucleicMonomer extends PhosphorusMonomer {
     return (myN1.isBonded(otherN3));
   }
  
-  public void getCrossLinkLeadAtomIndexes(Vector vReturn) {
+  public boolean getCrossLinkLeadAtomIndexes(Vector vReturn) {
     Atom N = (isPurine ? getN1() : getN3());
     //System.out.println(N.getInfo());
     Bond[] bonds = N.getBonds();
+    boolean haveCrossLinks = false;
     for (int i = 0; i < bonds.length; i++) {
       //System.out.println(bonds[i].getOtherAtom(N).getInfo());
       if (bonds[i].isHydrogen()) {
@@ -396,9 +397,12 @@ public class NucleicMonomer extends PhosphorusMonomer {
         if (!(g instanceof NucleicMonomer))
           continue;
         NucleicMonomer m = (NucleicMonomer) g;
-        if ((isPurine ? m.getN3() : m.getN1()) == N2)
+        if ((isPurine ? m.getN3() : m.getN1()) == N2) {
           vReturn.add(new Integer(m.getLeadAtomIndex()));
+          haveCrossLinks = true;
+        }
       }
     }
+    return haveCrossLinks;
   }
 }

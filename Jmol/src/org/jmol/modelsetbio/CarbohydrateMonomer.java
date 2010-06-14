@@ -73,6 +73,17 @@ public class CarbohydrateMonomer extends Monomer {
     if (isCursorOnTopOf(anomericO, x, y, radiusBegin, competitor))
       closest[0] = anomericO;
   }
-
+  
+  public boolean isConnectedPrevious() {
+    if (monomerIndex <= 0)
+      return false;
+      for (int i = firstAtomIndex; i <= lastAtomIndex; i++) {
+        // called by subclassed getCrossLinkAtomIndexes in
+        // AminoMonomer, NucleicMonomer, and CarbohydrateMonomer
+        if (getCrossLink(i, null))
+          return true;
+    }  
+    return false;
+  }
 
 }

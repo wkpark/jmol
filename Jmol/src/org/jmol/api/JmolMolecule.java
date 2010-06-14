@@ -95,7 +95,7 @@ public class JmolMolecule {
           if (bsModelAtoms != null)
             bsToTest = bsModelAtoms[modelIndex];
         }
-        bsBranch = getBranchBitSet(atoms, bsToTest, i, -1, true);
+        bsBranch = getBranchBitSet(atoms, bsToTest, i, -1, true, true);
         molecules = addMolecule(molecules, moleculeCount++, atoms, i, bsBranch,
             modelIndex, indexInModel++, bsExclude);
       }
@@ -119,18 +119,19 @@ public class JmolMolecule {
    *          atoms.
    * @param allowCyclic
    *          allow
+   * @param allowBioResidue TODO
    * @return a bitset of atoms along this branch
    */
   public static BitSet getBranchBitSet(JmolNode[] atoms, BitSet bsToTest,
                                        int atomIndex, int atomIndexNot,
-                                       boolean allowCyclic) {
+                                       boolean allowCyclic, boolean allowBioResidue) {
     BitSet bs = new BitSet(atoms.length);
     if (atomIndex < 0)
       return bs;
     if (atomIndexNot >= 0)
       bsToTest.clear(atomIndexNot);
     return (getCovalentlyConnectedBitSet(atoms[atomIndex], bsToTest,
-        allowCyclic, bs) ? bs : new BitSet());
+        allowCyclic, allowBioResidue, bs) ? bs : new BitSet());
   }
 
   public final static JmolMolecule[] addMolecule(JmolMolecule[] molecules, int iMolecule,
@@ -227,9 +228,11 @@ public class JmolMolecule {
   private static boolean getCovalentlyConnectedBitSet(JmolNode atom,
                                                       BitSet bsToTest,
                                                       boolean allowCyclic,
-                                                      BitSet bsResult) {
+                                                      boolean allowBioResidue, BitSet bsResult) {
     int atomIndex = atom.getIndex();
     if (!bsToTest.get(atomIndex))
+      return allowCyclic;
+    if (!allowBioResidue && atom.getGroupType().length() > 0)
       return allowCyclic;
     bsToTest.clear(atomIndex);
     bsResult.set(atomIndex);
@@ -240,7 +243,7 @@ public class JmolMolecule {
       JmolEdge bond = bonds[i];
       if (bond.isCovalent()
           && !getCovalentlyConnectedBitSet(bond.getOtherAtom(atom), bsToTest,
-              allowCyclic, bsResult))
+              allowCyclic, allowBioResidue, bsResult))
         return false;
     }
     return true;

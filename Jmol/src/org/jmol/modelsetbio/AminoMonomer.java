@@ -23,8 +23,6 @@
  */
 package org.jmol.modelsetbio;
 
-import java.util.Vector;
-
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
@@ -32,7 +30,6 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
-import org.jmol.modelset.Group;
 import org.jmol.modelset.Chain;
 import org.jmol.util.Logger;
 import org.jmol.util.Quaternion;
@@ -47,7 +44,7 @@ public class AminoMonomer extends AlphaMonomer {
   private final static byte C = 3;
   private final static byte OT = 4;
 //  private final static byte O1 = 5;
-  private final static byte SG = 6;
+//  private final static byte SG = 6;
   
   // negative values are optional
   final static byte[] interestingAminoAtomIDs = {
@@ -56,8 +53,8 @@ public class AminoMonomer extends AlphaMonomer {
     JmolConstants.ATOMID_AMINO_NITROGEN,    // 2 N
     JmolConstants.ATOMID_CARBONYL_CARBON,   // 3 C  point man
     ~JmolConstants.ATOMID_TERMINATING_OXT,  // 4 OXT
-    ~JmolConstants.ATOMID_O1,               // 5 O1
-    ~JmolConstants.ATOMID_SG,               // 6 CYS SG
+//    ~JmolConstants.ATOMID_O1,               // 5 O1
+//    ~JmolConstants.ATOMID_SG,               // 6 CYS SG
   };
 
   static Monomer
@@ -294,7 +291,7 @@ public class AminoMonomer extends AlphaMonomer {
       vA.sub(ptCa, ptC);
       if (monomerIndex == bioPolymer.monomerCount - 1)
         return null;
-      vB.sub(((AminoMonomer) bioPolymer.getMonomers()[monomerIndex + 1]).getNitrogenAtom(), ptC);
+      vB.sub(((AminoMonomer) bioPolymer.getGroups()[monomerIndex + 1]).getNitrogenAtom(), ptC);
       break;
     case 'n':
       // amino nitrogen chemical shift tensor frame      
@@ -337,19 +334,4 @@ public class AminoMonomer extends AlphaMonomer {
     return tag;
   }
   
-  public void getCrossLinkLeadAtomIndexes(Vector vReturn) {
-    Atom S = getAtomFromOffsetIndex(SG);
-    if (S != null) {
-      Bond[] bonds = S.getBonds();
-      for (int i = 0; i < bonds.length; i++) {
-        Atom a = bonds[i].getOtherAtom(S);
-        Group g = a.getGroup();
-        if (a.getElementNumber() == 16 && g.getGroup1() == 'C') {
-          vReturn.add(new Integer(g.getLeadAtomIndex()));
-          return;
-        }
-      }
-    }
-  }
-
 }

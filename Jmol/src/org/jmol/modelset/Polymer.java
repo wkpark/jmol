@@ -142,4 +142,7 @@ abstract public class Polymer {
   public void getRangeGroups(int residues, BitSet bs, BitSet bsResult) {
   }
 
+  public Group[] getGroups() {
+    return null;
+  }
 }

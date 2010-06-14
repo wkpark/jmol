@@ -78,7 +78,7 @@ class BioShape {
       colixes = new short[monomerCount];
       paletteIDs = new byte[monomerCount];
       mads = new short[monomerCount + 1];
-      monomers = bioPolymer.getMonomers();
+      monomers = (Monomer[]) bioPolymer.getGroups();
       meshReady = new boolean[monomerCount];
       meshes = new Mesh[monomerCount];
       wingVectors = bioPolymer.getWingVectors();

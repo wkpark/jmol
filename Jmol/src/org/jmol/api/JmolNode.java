@@ -52,9 +52,10 @@ public interface JmolNode {
   public String getGroupType();
   public String getGroup1(char c0);
   public String getGroup3(boolean allowNull);
+  public int getResno();
   public char getChainID();
   public int getOffsetResidueAtom(String name, int offset);
-  public void getCrossLinkLeadAtomIndexes(Vector vReturn);
+  public boolean getCrossLinkLeadAtomIndexes(Vector vReturn);
   public void setGroupBits(BitSet bs);
   public boolean isLeadAtom();
   public boolean isCrossLinked(JmolNode node);

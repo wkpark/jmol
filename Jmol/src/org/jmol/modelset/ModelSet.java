@@ -794,6 +794,5 @@ abstract public class ModelSet extends ModelCollection {
     for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1))
       shapeManager.refreshShapeTrajectories(i, viewer.getModelUndeletedAtomsBitSet(i));
   }
-
 }
 

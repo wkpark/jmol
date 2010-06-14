@@ -1090,7 +1090,7 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   private static class Structure {
-    String typeName;
+    //String typeName;
     byte type;
     char startChainID;
     int startSeqcode;
@@ -1106,7 +1106,7 @@ abstract public class ModelCollection extends BondCollection {
         char startChainID,
         int startSeqcode, char endChainID, int endSeqcode) {
       this.modelIndex = modelIndex;
-      this.typeName = typeName;
+      //this.typeName = typeName;
       this.structureID = structureID;
       this.strandCount = strandCount; 
       this.serialID = serialID;
@@ -1668,7 +1668,7 @@ abstract public class ModelCollection extends BondCollection {
       for (int i = 0; i < bonds.length; i++) {
         Atom a = bonds[i].getOtherAtom(thisAtom);
         if (invAtoms.get(a.index)) {
-            bsAtoms.or(JmolMolecule.getBranchBitSet(atoms, bsModel, a.index, iAtom, true));
+            bsAtoms.or(JmolMolecule.getBranchBitSet(atoms, bsModel, a.index, iAtom, true, true));
         } else {
           vNot.add(a);
         }
@@ -3844,5 +3844,26 @@ abstract public class ModelCollection extends BondCollection {
     return i >= 0 && atoms[i].modelIndex == modelCount - 1;
   }
 
-  
+  public int getGroupAtom(Atom atom, int offset, String name) {
+    Group g = atom.group;
+    int monomerIndex = g.getMonomerIndex();
+    if (monomerIndex < 0)
+      return -1;
+    Group[] groups = models[atom.modelIndex].getBioPolymer(
+        g.getBioPolymerIndexInModel()).getGroups();
+    int ipt = monomerIndex + offset;
+    if (ipt >= 0 && ipt < groups.length) {
+      Group m = groups[ipt];
+      if (offset == 1 && !m.isConnectedPrevious())
+        return -1;
+      if ("0".equals(name))
+        return m.getLeadAtomIndex();
+      int max = m.getLastAtomIndex();
+      for (int i = m.getFirstAtomIndex(); i <= max; i++)
+        if (name == null || name.equalsIgnoreCase(atoms[i].getAtomName()))
+          return i;
+    }
+    return -1;
+  }
+
 }

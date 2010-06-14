@@ -171,6 +171,7 @@ public class Parameters {
   final static int SURFACE_MOLECULARORBITAL = 13 | NO_ANISOTROPY | HAS_MAXGRID;
   final static int SURFACE_ATOMICORBITAL = 14;
   final static int SURFACE_MEP = 16 | NO_ANISOTROPY | HAS_MAXGRID;
+  final static int SURFACE_MLP = 17 | NO_ANISOTROPY | HAS_MAXGRID;
   final static int SURFACE_MOLECULAR = 19 | IS_SOLVENTTYPE | NO_ANISOTROPY;
 
   // mapColor only:
@@ -578,8 +579,8 @@ public class Parameters {
   float mep_ptsPerAngstrom = 3f;
   float mep_marginAngstroms = 1f; // may have to adjust this
 
-  void setMep(float[] charges, boolean isRangeDefined) {
-    dataType = SURFACE_MEP;
+  void setMep(float[] charges, boolean isRangeDefined, boolean isMLP) {
+    dataType = (isMLP ? SURFACE_MLP : SURFACE_MEP);
     theProperty = charges;
     isEccentric = isAnisotropic = false;
     if (cutoff == Float.MAX_VALUE) {

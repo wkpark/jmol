@@ -4,10 +4,14 @@ import java.util.BitSet;
 
 import javax.vecmath.Point3f;
 
+import org.jmol.modelset.Atom;
+
 
 public interface MepCalculationInterface {
 
   public abstract void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
                                  Point3f[] atomCoordAngstroms, float[] charges);
+
+  public abstract void fillPotentials(Atom[] atoms, float[] potentials, BitSet bsAromatic, BitSet bsCarbonyl);
 
 }

@@ -94,6 +94,8 @@ abstract public class JmolViewer extends JmolSimpleViewer {
         htmlName, documentBase, codeBase, commandOptions, statusListener);
   }
 
+  abstract public BitSet getSmartsMatch(String smarts, BitSet bsSelected);
+  
   /**
    * an added class for rendering stereo in two independent applets
    * 

@@ -9758,12 +9758,10 @@ public class ScriptEvaluator {
         index--;
     }
     if (vdwType == 0) {
-      iToken = index;
-      vdwType = JmolConstants.getVdwType(optParameterAsString(++index));
+      vdwType = JmolConstants.getVdwType(optParameterAsString(++iToken));
       if (vdwType < 0) {
-        vdwType = JmolConstants.getVdwType("auto");
-      } else {
         iToken = index;
+        vdwType = JmolConstants.getVdwType("auto");
       }
     }
     return new RadiusData(value, type, vdwType);
@@ -14513,16 +14511,19 @@ public class ScriptEvaluator {
         surfaceObjectSeen = true;
         continue;
       case Token.mep:
-        float[] partialCharges = null;
+      case Token.mlp:
+        float[] mdata = null;
         try {
-          partialCharges = viewer.getPartialCharges();
+          mdata = (isSyntaxCheck ? null : theTok == Token.mep ? viewer.getPartialCharges()
+            : viewer.getLipophilicPotentials(bsSelect));
         } catch (Exception e) {
+          // ignore
         }
-        if (!isSyntaxCheck && partialCharges == null)
+        if (!isSyntaxCheck && mdata == null)
           error(ERROR_noPartialCharges);
         surfaceObjectSeen = true;
-        propertyName = "mep";
-        propertyValue = partialCharges;
+        propertyName = (theTok == Token.mep ? "mep" : "mlp");
+        propertyValue = mdata;
         sbCommand.append(" mep ");
         break;
       case Token.sasurface:
@@ -14850,8 +14851,8 @@ public class ScriptEvaluator {
             Escape.escape((Point4f) propertyValue));
         break;
       case Token.map:
-        sbCommand.append(" map");
-        if (haveRadius && !surfaceObjectSeen) {
+        sbCommand.append(" map");        
+        if ((isCavity || haveRadius) && !surfaceObjectSeen) {
           surfaceObjectSeen = true;
           addShapeProperty(propertyList, "bsSolvent",
               lookupIdentifierValue("solvent"));

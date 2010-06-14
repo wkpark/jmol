@@ -1070,9 +1070,10 @@ public class Token {
   final static int manifest       = misc  | 186;// new
   final static int map            = misc  | 188 | expression;// new
   final static int maxset         = misc  | 190;// new
-  final static int mep            = misc  | 192 | expression;
+  final static int mep            = misc  | 192;
   public final static int mesh    = misc  | 194;
   final static int minset         = misc  | 196;// new
+  final static int mlp            = misc  | 197;
   final static int mode           = misc  | 198;
   public final static int modify         = misc  | 200;// new
   public final static int modifyorcreate = misc  | 202;// new
@@ -1691,6 +1692,7 @@ public class Token {
       "mep",             new Token(mep),
       "mesh",            new Token(mesh),
       "min",             new Token(min),
+      "mlp",             new Token(mlp),
       "mode",            new Token(mode),
       "modify",          new Token(modify),
       "modifyorcreate",  new Token(modifyorcreate),

@@ -201,6 +201,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return smilesMatcher;
   }
 
+  public BitSet getSmartsMatch(String smarts, BitSet bsSelected) {
+    if (bsSelected == null)
+      bsSelected = getSelectionSet();
+    return getSmilesMatcher().getSubstructureSet(smarts,
+        getModelSet().atoms, getAtomCount(), bsSelected,
+        true, false);
+  }
+
+
   ScriptEvaluator eval;
   private AnimationManager animationManager;
   private DataManager dataManager;
@@ -8033,6 +8042,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getPartialCharges();
   }
 
+  public float[] getLipophilicPotentials(BitSet bsSelected) {
+    float[] potentials = new float[getAtomCount()];
+    MepCalculationInterface m = (MepCalculationInterface) Interface.getOptionInterface("quantum.MlpCalculation");
+    m.fillPotentials(modelSet.atoms, potentials, getSmartsMatch("a", bsSelected), 
+        getSmartsMatch("/noAromatic/C(=O)*", bsSelected));
+    return potentials;
+  }
+
   public void setProteinType(byte iType, BitSet bs) {
     modelSet.setProteinType(bs == null ? selectionManager.getSelectionSet()
         : bs, iType);
@@ -8982,5 +8999,5 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void deleteMeasurement(int i) {
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "delete", new Integer(i));
   }
-
+  
 }

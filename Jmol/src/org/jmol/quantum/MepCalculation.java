@@ -29,6 +29,7 @@ import javax.vecmath.Point3f;
 
 import org.jmol.api.MepCalculationInterface;
 import org.jmol.api.VolumeDataInterface;
+import org.jmol.modelset.Atom;
 
 /*
  * a simple molecular electrostatic potential cube generator
@@ -43,8 +44,16 @@ import org.jmol.api.VolumeDataInterface;
  */
 public class MepCalculation extends QuantumCalculation implements MepCalculationInterface {
 
+  protected final static int ONE_OVER_D = 0;
+  protected final static int E_MINUS_D = 1;
+  protected final static int ONE_OVER_ONE_PLUS_D = 2;
+  protected final static int ONE_OVER_MINUS_D_31 = 3;
+  
+  protected int distanceMode = ONE_OVER_D;
+  
   public MepCalculation() {
     rangeBohr = 15; //bohr; about 7 Angstroms
+    distanceMode = ONE_OVER_D;
   }
   
   public void calculate(VolumeDataInterface volumeData, BitSet bsSelected, Point3f[] atomCoordAngstroms, float[] charges) {
@@ -70,15 +79,27 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
           float dXY = dX + Y2[iy];
           for (int iz = zMax; --iz >= zMin;) {
             float d2 = dXY + Z2[iz];
-            voxelData[ix][iy][iz] += (d2 == 0 ? charge
-                * Float.POSITIVE_INFINITY : charge / (float) Math.sqrt(d2));
-//if (iy == 2 && iz == 4 && (ix == 0 || ix == 7))
-  //System.out.println("atom " + atomIndex + " " + thisAtom + " ix=" + ix + " data:" + voxelData[ix][iy][iz] + " x2 y2 z2 d2=" + X2[ix] + " " + Y2[iy] + " " + Z2[iz] + " " + d2);
+            float x = charge;
+            if (d2 == 0) {
+              x *= Float.POSITIVE_INFINITY;
+              continue;
+            }
+            switch (distanceMode) {
+            case ONE_OVER_D:
+              x /= (float) Math.sqrt(d2);
+              break;
+            case E_MINUS_D:
+              x *= (float) Math.exp(-Math.sqrt(d2));
+            }
+            voxelData[ix][iy][iz] += x;
           }
         }
       }
     }
     
+  }
+
+  public void fillPotentials(Atom[] atoms, float[] potentials, BitSet bsAromatic, BitSet bsCarbonyl) {
   }
 
 

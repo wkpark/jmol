@@ -856,7 +856,13 @@ public class SurfaceGenerator {
     }
 
     if ("mep" == propertyName) {
-      params.setMep((float[]) value, rangeDefined); // mep charges
+      params.setMep((float[]) value, rangeDefined, false); // mep charges
+      processState();
+      return true;
+    }
+
+    if ("mlp" == propertyName) {
+      params.setMep((float[]) value, rangeDefined, true); // mlp charges
       processState();
       return true;
     }
@@ -962,6 +968,9 @@ public class SurfaceGenerator {
       break;
     case Parameters.SURFACE_MEP:
       surfaceReader = new IsoMepReader(this);
+      break;
+    case Parameters.SURFACE_MLP:
+      surfaceReader = new IsoMlpReader(this);
       break;
     }
     return true;

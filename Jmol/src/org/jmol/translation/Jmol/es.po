@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-13 00:33+0200\n"
+"POT-Creation-Date: 2010-06-14 20:08+0200\n"
 "PO-Revision-Date: 2010-06-12 20:23+0100\n"
 "Last-Translator: Angel Herráez <aherraez@users.sourceforge.net>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
@@ -1581,10 +1581,6 @@ msgstr "Siguiente fotograma"
 msgid "Pause"
 msgstr "Pausa"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:172
-msgid "Stop"
-msgstr "Detener"
-
 #: org/openscience/jmol/app/webexport/Widgets.java:174
 msgid "Last Frame"
 msgstr "Último fotograma"
@@ -1616,6 +1612,9 @@ msgstr "Descargar la vista"
 #: org/openscience/jmol/app/webexport/Widgets.java:225
 msgid "unimplemented"
 msgstr "no implementado"
+
+#~ msgid "Stop"
+#~ msgstr "Detener"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "añadiendo JmolPopIn.js"

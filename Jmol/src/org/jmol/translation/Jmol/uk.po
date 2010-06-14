@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-13 00:33+0200\n"
+"POT-Creation-Date: 2010-06-14 20:08+0200\n"
 "PO-Revision-Date: 2010-06-08 06:16+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@gmail.com>\n"
 "Language-Team: Ukrainian <translation@linux.org.ua>\n"
@@ -1585,10 +1585,6 @@ msgstr "Наступний кадр"
 msgid "Pause"
 msgstr "Призупинити"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:172
-msgid "Stop"
-msgstr "Зупинити"
-
 #: org/openscience/jmol/app/webexport/Widgets.java:174
 msgid "Last Frame"
 msgstr "Останній кадр"
@@ -1620,6 +1616,9 @@ msgstr "Звантажити перегляд"
 #: org/openscience/jmol/app/webexport/Widgets.java:225
 msgid "unimplemented"
 msgstr "не реалізовано"
+
+#~ msgid "Stop"
+#~ msgstr "Зупинити"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "додавання JmolPopIn.js"

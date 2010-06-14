@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-13 00:33+0200\n"
+"POT-Creation-Date: 2010-06-14 20:08+0200\n"
 "PO-Revision-Date: 2010-06-08 14:45+0000\n"
 "Last-Translator: iychiang <iychiang1809@gmail.com>\n"
 "Language-Team: Traditional Chinese <zh_TW@li.org>\n"
@@ -1567,10 +1567,6 @@ msgstr "下一格"
 msgid "Pause"
 msgstr "暫停"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:172
-msgid "Stop"
-msgstr "停止"
-
 #: org/openscience/jmol/app/webexport/Widgets.java:174
 msgid "Last Frame"
 msgstr "最後一格"
@@ -1602,6 +1598,9 @@ msgstr "下載觀看"
 #: org/openscience/jmol/app/webexport/Widgets.java:225
 msgid "unimplemented"
 msgstr "未實作的"
+
+#~ msgid "Stop"
+#~ msgstr "停止"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "JmolPopIn.js加入中"

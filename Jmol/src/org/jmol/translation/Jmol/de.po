@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-13 00:33+0200\n"
+"POT-Creation-Date: 2010-06-14 20:08+0200\n"
 "PO-Revision-Date: 2010-05-25 08:56+0000\n"
 "Last-Translator: xlazarus <xlazarus@lazarusware.at>\n"
 "Language-Team: German\n"
@@ -1592,11 +1592,6 @@ msgstr "Zum nächsten Frame"
 msgid "Pause"
 msgstr "E&infügen"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:172
-#, fuzzy
-msgid "Stop"
-msgstr "Stufe"
-
 #: org/openscience/jmol/app/webexport/Widgets.java:174
 #, fuzzy
 msgid "Last Frame"
@@ -1632,6 +1627,10 @@ msgstr "Ansicht herunterladen"
 #: org/openscience/jmol/app/webexport/Widgets.java:225
 msgid "unimplemented"
 msgstr "nicht implementiert"
+
+#, fuzzy
+#~ msgid "Stop"
+#~ msgstr "Stufe"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "hinzufügen von JmolPopIn.js"

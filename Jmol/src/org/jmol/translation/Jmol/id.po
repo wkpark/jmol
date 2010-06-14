@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-13 00:33+0200\n"
+"POT-Creation-Date: 2010-06-14 20:08+0200\n"
 "PO-Revision-Date: 2010-06-09 03:09+0000\n"
 "Last-Translator: Waluyo Adi Siswanto <Unknown>\n"
 "Language-Team: Indonesian <id@li.org>\n"
@@ -1578,10 +1578,6 @@ msgstr "Bingkai Berikutnya"
 msgid "Pause"
 msgstr "Jeda"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:172
-msgid "Stop"
-msgstr "Henti"
-
 #: org/openscience/jmol/app/webexport/Widgets.java:174
 msgid "Last Frame"
 msgstr "Bingkai Terakhir"
@@ -1613,6 +1609,9 @@ msgstr "Tampilan Muaturun"
 #: org/openscience/jmol/app/webexport/Widgets.java:225
 msgid "unimplemented"
 msgstr "belum diimplementasi"
+
+#~ msgid "Stop"
+#~ msgstr "Henti"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "menambah JmolPopIn.js"

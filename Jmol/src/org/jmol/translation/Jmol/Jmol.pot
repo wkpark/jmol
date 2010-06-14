@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-13 00:33+0200\n"
+"POT-Creation-Date: 2010-06-14 20:08+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1555,10 +1555,6 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:172
 msgid "Pause"
-msgstr ""
-
-#: org/openscience/jmol/app/webexport/Widgets.java:172
-msgid "Stop"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:174

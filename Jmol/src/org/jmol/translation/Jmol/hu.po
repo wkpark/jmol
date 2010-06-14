@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 11.7.x\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-13 00:33+0200\n"
+"POT-Creation-Date: 2010-06-14 20:08+0200\n"
 "PO-Revision-Date: 2010-03-18 11:27+0000\n"
 "Last-Translator: Krasznecz Zoltán <krasznecz.zoltan@gmail.com>\n"
 "Language-Team: Hungarian <Jmol-developers@lists.sf.net>\n"
@@ -1583,11 +1583,6 @@ msgstr "Ugrás a következő kockára"
 msgid "Pause"
 msgstr "&Beillesztés"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:172
-#, fuzzy
-msgid "Stop"
-msgstr "Lépés"
-
 #: org/openscience/jmol/app/webexport/Widgets.java:174
 #, fuzzy
 msgid "Last Frame"
@@ -1623,6 +1618,10 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/Widgets.java:225
 msgid "unimplemented"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Stop"
+#~ msgstr "Lépés"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "JmolPopIn.js hozzáadása"

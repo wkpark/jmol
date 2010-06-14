@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-13 00:33+0200\n"
+"POT-Creation-Date: 2010-06-14 20:08+0200\n"
 "PO-Revision-Date: 2010-06-05 14:34+0000\n"
 "Last-Translator: Konki <pavel.konkol@seznam.cz>\n"
 "Language-Team: Czech <Jmol-developers@lists.sf.net>\n"
@@ -1582,11 +1582,6 @@ msgstr "Přejít na další snímek"
 msgid "Pause"
 msgstr "&Vložit"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:172
-#, fuzzy
-msgid "Stop"
-msgstr "Krok"
-
 #: org/openscience/jmol/app/webexport/Widgets.java:174
 #, fuzzy
 msgid "Last Frame"
@@ -1622,6 +1617,10 @@ msgstr "Ulož pohled"
 #: org/openscience/jmol/app/webexport/Widgets.java:225
 msgid "unimplemented"
 msgstr "neimplementováno"
+
+#, fuzzy
+#~ msgid "Stop"
+#~ msgstr "Krok"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "přidávám JmolPopIn.js"

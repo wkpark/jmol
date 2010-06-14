@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-13 00:33+0200\n"
+"POT-Creation-Date: 2010-06-14 20:08+0200\n"
 "PO-Revision-Date: 2010-06-03 19:48+0000\n"
 "Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Portugal@Folding <Jmol-developers@lists.sourceforge.net>\n"
@@ -1568,11 +1568,6 @@ msgstr "Ir para a próxima frame"
 msgid "Pause"
 msgstr "&Colar"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:172
-#, fuzzy
-msgid "Stop"
-msgstr "Passo"
-
 #: org/openscience/jmol/app/webexport/Widgets.java:174
 #, fuzzy
 msgid "Last Frame"
@@ -1607,3 +1602,7 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/Widgets.java:225
 msgid "unimplemented"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Stop"
+#~ msgstr "Passo"

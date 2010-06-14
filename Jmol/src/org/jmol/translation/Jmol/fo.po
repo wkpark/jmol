@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-13 00:33+0200\n"
+"POT-Creation-Date: 2010-06-14 20:08+0200\n"
 "PO-Revision-Date: 2010-06-12 15:52+0000\n"
 "Last-Translator: Gunleif Joensen <Unknown>\n"
 "Language-Team: Faroese <fo@li.org>\n"
@@ -1556,10 +1556,6 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:172
 msgid "Pause"
-msgstr ""
-
-#: org/openscience/jmol/app/webexport/Widgets.java:172
-msgid "Stop"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:174

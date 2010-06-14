@@ -355,7 +355,7 @@ public abstract class Monomer extends Group {
     Atom atom = chain.getAtom(i);
     Bond[] bonds = atom.getBonds();
     int ibp = getBioPolymerIndexInModel();
-    if (ibp < 0)
+    if (ibp < 0 || bonds == null)
       return false;
     boolean haveCrossLink = false;
     for (int j = 0; j < bonds.length; j++) {

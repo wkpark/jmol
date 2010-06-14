@@ -123,6 +123,9 @@ public class SmilesGenerator {
               end = "";
             } else {
               lastComponent = s;
+              groupType = a.getGroup3(true);
+              if (groupType != null)
+                sb.append("//* ").append(groupType).append(" *//");
               sb.append(s);
               end = ".\n";
             }

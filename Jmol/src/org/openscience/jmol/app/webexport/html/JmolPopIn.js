@@ -21,6 +21,9 @@
 	Modified 2010.3.9 by Jonathan Gutow
 	-- addition of widget activation upon pop-in.
 	-- addition of widget switching on view change in ScriptButton pages.
+	
+	Modified 2010 June by Jonathan Gutow and Angel Herraez
+	-- bug fixes for IE support
 
 */
 
@@ -41,7 +44,7 @@ function popInJmol(n,fileName,width,height) {
     var cntlID =  "JmolCntl"+n;
     var cntlDiv = document.getElementById(cntlID)
     if(cntlDiv)
-        cntlDiv.setAttribute('style', 'visibility:visible;');
+        cntlDiv.style.display = 'block';
 }
 
 function scriptbuttonJmol(fileName, numberOfButtons) {

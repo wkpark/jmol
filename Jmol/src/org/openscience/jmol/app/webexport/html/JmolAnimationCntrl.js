@@ -1,10 +1,18 @@
 /*jmolAnimationCntrl.js
 
-J. Gutow May 2010
+J. Gutow May 2010 
+A. Herraez June 2010
 
-This includes one function that controls the highlighting of the
-animation mode buttons
+This includes 
+- the CSS rules for the box and the buttons
+- one function that controls the highlighting of the
+   animation mode buttons
 */
+
+document.writeln('<style type="text/css"> \n'
+    + '  .AnimContrlCSS { text-align:center; border:thin solid black; } \n'
+    + '  .AnimContrlCSS button { font-size:0px; padding:0; } \n'
+    + '<' + '/style>');
 
 function jmol_animationmode(selected, n){
     var cellID = "jmol_loop_"+n;
@@ -15,17 +23,15 @@ function jmol_animationmode(selected, n){
     document.getElementById(cellID).removeAttribute("style");
     if (selected=="loop") {
         cellID = "jmol_loop_"+n;
-        document.getElementById(cellID).setAttribute("style","background: blue;");
-        var result  = jmolScript('animation mode loop', n);
-    }
-    if (selected=="playOnce") {
+        jmolScript('animation mode loop 0.2 0.2', n);
+    } else if (selected=="playOnce") {
         cellID = "jmol_playOnce_"+n;
-        document.getElementById(cellID).setAttribute("style","background: blue;");
-        var result  = jmolScript('animation mode once', n);
-    }
-    if (selected=="palindrome") {
+        jmolScript('animation mode once', n);
+    } else if (selected=="palindrome") {
         cellID = "jmol_palindrome_"+n;
-        document.getElementById(cellID).setAttribute("style","background: blue;");
-        var result  = jmolScript('animation mode palindrome',n);
+        jmolScript('animation mode palindrome 0.2 0.2', n);
+    } else {
+        return false; 
     }
+    document.getElementById(cellID).style.backgroundColor = "blue";
 }

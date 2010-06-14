@@ -84,10 +84,12 @@ class PopInJmol extends WebPanel implements ChangeListener {
     String widgetDefs = "";
     if (!instance.whichWidgets.isEmpty()) {
       widgetDefs += "<div id=\"JmolCntl" + i
-          + "\" style=\"visibility:hidden; display:none;\">";
+          + "\" style=\"display:none;\">";
       for (int j = 0; j < nWidgets; j++) {
         if (instance.whichWidgets.get(j)) {
-          widgetDefs += theWidgets.widgetList[j].getJavaScript(i, instance);
+          widgetDefs += "\n<div>" 
+              + theWidgets.widgetList[j].getJavaScript(i, instance) 
+              + "</div>\n"; //each widget in one line
         }
       }
       widgetDefs += "</div>";

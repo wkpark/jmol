@@ -121,8 +121,8 @@ class Widgets {
     String getJavaScript(int appletID, JmolInstance instance) {
       return "<select id=\"StereoMode" + appletID + "\" title=\""
           + GT._("select stereo type") + "\""
-          + "onchange=\"void(jmolScriptWait((this.options[this.selectedIndex]).value,"
-          + appletID + "));\">"
+          + "onchange=\"jmolScriptWait((this.options[this.selectedIndex]).value,"
+          + appletID + ");\">"
           + "\n<option selected=\"\" value=\"stereo off\">"
           + GT._("Stereo Off") + " </option>"
           + "\n<option value=\"stereo REDBLUE\">" + GT._("Red/Blue")
@@ -159,26 +159,26 @@ class Widgets {
     }
     
     String getJavaScript(int appletID, JmolInstance instance) {
-      String jsString ="<table id=\"AnimContrl\" style=\"text-align:center; border:thin solid black;\">";
+      String jsString ="<table id=\"AnimContrl\" class=\"AnimContrlCSS\">";
       jsString +="<tbody><tr><td>"+GT._("Animation")+"</td></tr><tr><td><table><tbody>";
-      jsString +="<tr><td><button title=\""+GT._("First Frame")+"\" style=\"font-size:0px;\" onclick=\"void(jmolScriptWait(\'frame 1\'));\">";
+      jsString +="<tr><td><button title=\""+GT._("First Frame")+"\" onclick=\"jmolScriptWait(\'frame rewind\');\">";
       jsString +="<img src = \"firstButton.png\"></button></td>";
-      jsString+= "<td><button title=\""+GT._("Previous Frame")+"\" style=\"font-size:0px;\" onclick=\"void(jmolScriptWait(\'frame previous\'));\">";
+      jsString+= "<td><button title=\""+GT._("Previous Frame")+"\" onclick=\"jmolScriptWait(\'frame previous\');\">";
       jsString+= "<img src = \"prevButton.png\" ></button></td>";        
-      jsString+= "<td><button title=\""+GT._("Play")+"\" style=\"font-size:0px;\" onclick=\"void(jmolScriptWait(\'animation on\'));\">";
+      jsString+= "<td><button title=\""+GT._("Play")+"\" onclick=\"jmolScriptWait(\'frame play\');\">";
       jsString+= "<img src = \"playButton.png\"></button></td>";        
-      jsString+= "<td><button title=\""+GT._("Next Frame")+"\" style=\"font-size:0px;\" onclick=\"void(jmolScriptWait(\'frame next\'));\">";
+      jsString+= "<td><button title=\""+GT._("Next Frame")+"\" onclick=\"jmolScriptWait(\'frame next\');\">";
       jsString+= "<img src = \"nextButton.png\"></button></td>";        
-      jsString+= "<td><button title=\""+GT._("Pause")+"\" style=\"font-size:0px;\" onclick=\"void(jmolScriptWait(\'animation off\'));\">";
-      jsString+= "<img src = \"pauseButton.png\"></button></td>";        
-      jsString+= "<td><button title=\""+GT._("Last Frame")+"\" style=\"font-size:0px;\" onclick=\"void(jmolScriptWait(\'frame last\'));\">";
+      jsString+= "<td><button title=\""+GT._("Pause")+"\" onclick=\"jmolScriptWait(\'frame pause\');\">";
+      jsString+= "<img src = \"pauseButton.png\"></button></td>"; 
+      jsString+= "<td><button title=\""+GT._("Last Frame")+"\" onclick=\"jmolScriptWait(\'frame last\');\">";
       jsString+= "<img src = \"lastButton.png\"></button></td>";
-      jsString+= "</tr></tbody></table><table><tbody><tr><td>Mode:</td>";
-      jsString+= "<td id=\"jmol_loop_"+appletID+"\"><button title=\""+GT._("Loop")+"\" style=\"font-size:0px\" onclick=\"void(jmol_animationmode(\'loop\',"+appletID+"));\">";
+      jsString+= "</tr></tbody></table><table><tbody><tr><td>"+GT._("Mode:")+"</td>";
+      jsString+= "<td id=\"jmol_loop_"+appletID+"\"><button title=\""+GT._("Loop")+"\" onclick=\"jmol_animationmode(\'loop\',"+appletID+");\">";
       jsString+= "<img src = \"playLoopButton.png\" ></button></td>";
-      jsString+= "<td id=\"jmol_palindrome_"+appletID+"\"><button title=\""+GT._("Palindrome")+"\" style=\"font-size:0px\" onclick=\"void(jmol_animationmode(\'palindrome\', "+appletID+"));\">";
+      jsString+= "<td id=\"jmol_palindrome_"+appletID+"\"><button title=\""+GT._("Palindrome")+"\" onclick=\"jmol_animationmode(\'palindrome\', "+appletID+");\">";
       jsString+= "<img src = \"playPalindromeButton.png\" ></button></td>";
-      jsString+= "<td id=\"jmol_playOnce_"+appletID+"\" style=\"background:blue;\"><button title=\""+GT._("Play Once")+"\" style=\"font-size:0px\" onclick=\"void(jmol_animationmode(\'playOnce\', "+appletID+"));\">";
+      jsString+= "<td id=\"jmol_playOnce_"+appletID+"\" style=\"background:blue;\"><button title=\""+GT._("Play Once")+"\" style=\"font-size:0px\" onclick=\"jmol_animationmode(\'playOnce\', "+appletID+");\">";
       jsString+= "<img src = \"playOnceButton.png\" ></button></td></tr></tbody></table></td></tr></tbody></table>";
       return (jsString);
     }
@@ -201,7 +201,7 @@ class Widgets {
 
     String getJavaScript(int appletID, JmolInstance instance) {
       return ("<button title=\"" + GT._("launch Jmol console")
-          + "\" onclick=\"void(jmolScript(\'console\'));\">"
+          + "\" onclick=\"jmolScript(\'console\');\">"
           + GT._("Jmol Console") + "</button>");
     }
   }

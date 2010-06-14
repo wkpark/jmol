@@ -50,7 +50,7 @@ substitutes residues for SMILES atoms and cross-linking and base pairing for SMI
 <li><b>bioSMARTS</b> An extension of SMARTS substructure searching that allows searching of both one-dimensional 
 bioSEQUENCE information and 3D molecular models. 
 </li>
-<li><b>3D-SMARTS</b> An extension of SMARTS substructure searching that allows searching of 
+<li><b>3D-SMARTS</b> A subset of bioSMARTS that allows searching of 
 molecular distance, angle, and torsion measurements. 
 </li>
 </ul>
@@ -159,7 +159,8 @@ The BIOSEQUENCE tilde must be repeated for each component in the search (separat
 <br /><br /></li><li><b>"+" and ":" </b> Jmol's extension adds the + and : bond types for sequences. + indicates "connected groups", and ":" indicates "cross-linked groups". 
 Recognized cross-linking includes hydrogen bonding between the purine N1 and pyrimidine N3 in nucleic acids and cysteine-cysteine disulfide bonds in proteins. 
 Cross-linking can be "one-to-one" or "one-to-many". (In the future this could be expanded to carbohydrates.) The standard SMILES branching notation can also be used to represent cross-linking: 
-In normally hybridized DNA, <b>CCC:GGG</b> would be three CG base-pairs (because the two strands are going in opposite direction). 
+In normally hybridized DNA, <b>~C+C+C:G+G+G</b> would be three CG base-pairs (because the two strands are going in opposite direction).
+The default for bioSEQUENCE connections is "+", so this search could also be represented simply as <b>~CCC:GGG</b>. 
 <br /><br />
 </li><li><b>branches and rings</b> Jmol's extension still allows for standard SMILES branching notation using parentheses. Within BIOSEQUENCES, 
 branching indicates cross-linking. Thus, above CG stretch could be indicated  <b>C(G)C(G)C(G)</b>. 
@@ -180,12 +181,13 @@ For example, a section of the large ribosomal unit for PDB code 1FFK reads:
   C:%(816)C:%(815)G:%(814)G:%(813)UUCG:%(797)C:%(796)C:%(795)G:%(794)C:%(793)
   C:%(792)ACC.
 </pre>
-</li><li><b>Measurements</b> An additional extension, consisting of a measurement type (d - distance, a - angle, or t - torsion) 
+</li><li><b>measurements</b> An additional extension, consisting of a measurement type (d - distance, a - angle, or t - torsion) 
 allows SMARTS searches to target specific ranges of values. 
-</li><li><b>Special Flags</b>Jmol recognizes "/..../" at the beginning of a pattern as processing flags. 
+<br /><br />
+</li><li><b>processing flags</b> Jmol recognizes "/..../" at the beginning of a pattern as processing flags. 
 Currently the only flag supported is "noAromatic". This flag turns off all aromaticity checks.
 It may be desireable when no distinction between
-aromatic and nonaromatic atoms is desired. For large biomolecules it can 
+aromatic and nonaromatic atoms is desired. For large biomolecules /noAromatic/ can 
 dramatically improve processing speed when no check for aromaticity is necessary. All atoms are then considered NOT aromatic.
 </li></ol>
 

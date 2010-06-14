@@ -42,13 +42,16 @@ import org.jmol.api.SmilesMatcherInterface;
  *  -- getting atom-atom correlation maps to be used with biomolecular alignment methods
  *  
  * <p>
- * The SMILES specification can been found at the
+ * The original SMILES description can been found at the
  * <a href="http://www.daylight.com/smiles/">SMILES Home Page</a>.
+ * 
+ * Specification for this implementation can be found in package.html.
+ * 
  * <p>
  * <pre><code>
  * public methods:
  * 
- * boolean areEqual  -- checks a SMILES string against a reference
+ * int areEqual  -- checks a SMILES string against a reference (-1 for error; 0 for no finds; >0 for number of finds)
  * 
  * BitSet[] find  -- finds one or more occurances of a SMILES or SMARTS string within a SMILES string
  * 
@@ -88,20 +91,53 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   private final static int MODE_ARRAY = 2;
   private final static int MODE_MAP = 3;
 
-  public boolean areEqual(String smiles1, String smiles2) {
+  public String getLastException() {
+    return InvalidSmilesException.getLastError();
+  }
+
+  public String getMolecularFormula(String pattern, boolean isSmarts) {
+    InvalidSmilesException.setLastError(null);
+    try {
+      SmilesSearch search = SmilesParser.getMolecule(pattern, isSmarts);
+      search.createTopoMap(null);
+      search.nodes = search.jmolAtoms;
+      return search.getMolecularFormula(!isSmarts);
+    } catch (InvalidSmilesException e) {
+      if (InvalidSmilesException.getLastError() == null)
+        InvalidSmilesException.setLastError(e.getMessage());
+      return null;
+    }
+  }
+
+  public String getSmiles(JmolNode[] atoms, int atomCount, BitSet bsSelected,
+                          String comment, boolean asBioSmiles) {
+    InvalidSmilesException.setLastError(null);
+    try {
+      if (asBioSmiles)
+        return (new SmilesGenerator()).getBioSmiles(atoms, atomCount,
+            bsSelected, comment);
+      return (new SmilesGenerator()).getSmiles(atoms, atomCount, bsSelected);
+    } catch (InvalidSmilesException e) {
+      if (InvalidSmilesException.getLastError() == null)
+        InvalidSmilesException.setLastError(e.getMessage());
+      return null;
+    }
+  }
+
+  public int areEqual(String smiles1, String smiles2) {
     BitSet[] result = find(smiles1, smiles2, false, false);
-    return (result != null && result.length == 1);
+    return (result == null ? -1 : result.length);
   }
 
   /**
    * for JUnit test, mainly
    * 
-   * @param smiles1
+   * @param smiles
    * @param molecule
    * @return        true only if the SMILES strings match and there are no errors
    */
-  public boolean areEqual(String smiles1, SmilesSearch molecule) {
-    BitSet[] ret = find(smiles1, molecule, false, true, true);
+  public boolean areEqual(String smiles, SmilesSearch molecule) {
+    BitSet[] ret = find(smiles, molecule, false, true, true);
     return (ret != null && ret.length == 1);
   }
 
@@ -112,6 +148,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    * 
    * 
    * @param pattern
+   *          SMILES or SMARTS pattern.
    * @param smiles
    * @param isSmarts TRUE for SMARTS strings, FALSE for SMILES strings
    * @param firstMatchOnly 
@@ -132,15 +169,11 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     }
   }
 
-  public String getLastException() {
-    return InvalidSmilesException.getLastError();
-  }
-
   /**
    * Returns a bitset matching the pattern within atoms.
    * 
    * @param pattern
-   *          SMILES pattern.
+   *          SMILES or SMARTS pattern.
    * @param atoms
    * @param atomCount
    * @param bsSelected
@@ -157,8 +190,10 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   }
 
   /**
-   * Returns a vector of bits indicating which atoms match the pattern.
-   * @param pattern SMILES pattern.
+   * Returns a vector of bitsets indicating which atoms match the pattern.
+   * 
+   * @param pattern
+   *          SMILES or SMARTS pattern.
    * @param atoms 
    * @param atomCount 
    * @param bsSelected 
@@ -177,9 +212,11 @@ public class SmilesMatcher implements SmilesMatcherInterface {
 
   /**
    * Rather than returning bitsets, this method returns the
-   * sets of matching atoms so that a direct atom-atom correlation can be done.
+   * sets of matching atoms in array form so that a direct 
+   * atom-atom correlation can be made.
    * 
    * @param pattern 
+   *          SMILES or SMARTS pattern.
    * @param atoms 
    * @param atomCount 
    * @param bsSelected 
@@ -195,6 +232,9 @@ public class SmilesMatcher implements SmilesMatcherInterface {
         false, firstMatchOnly, MODE_MAP);
   }
 
+  
+  /////////////// private methods ////////////////
+  
   private BitSet[] find(String pattern, SmilesSearch search, boolean isSmarts,
                         boolean matchAllAtoms, boolean firstMatchOnly) {
     // create a topological model set from smiles
@@ -249,35 +289,6 @@ public class SmilesMatcher implements SmilesMatcherInterface {
       e.printStackTrace();
     }
     return null;
-  }
-
-  public String getMolecularFormula(String pattern, boolean isSmarts) {
-    InvalidSmilesException.setLastError(null);
-    try {
-      SmilesSearch search = SmilesParser.getMolecule(pattern, isSmarts);
-      search.createTopoMap(null);
-      search.nodes = search.jmolAtoms;
-      return search.getMolecularFormula(!isSmarts);
-    } catch (InvalidSmilesException e) {
-      if (InvalidSmilesException.getLastError() == null)
-        InvalidSmilesException.setLastError(e.getMessage());
-      return null;
-    }
-  }
-
-  public String getSmiles(JmolNode[] atoms, int atomCount, BitSet bsSelected,
-                          String comment, boolean asBioSmiles) {
-    InvalidSmilesException.setLastError(null);
-    try {
-      if (asBioSmiles)
-        return (new SmilesGenerator()).getBioSmiles(atoms, atomCount,
-            bsSelected, comment);
-      return (new SmilesGenerator()).getSmiles(atoms, atomCount, bsSelected);
-    } catch (InvalidSmilesException e) {
-      if (InvalidSmilesException.getLastError() == null)
-        InvalidSmilesException.setLastError(e.getMessage());
-      return null;
-    }
   }
 
 }

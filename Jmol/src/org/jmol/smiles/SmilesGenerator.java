@@ -68,6 +68,7 @@ public class SmilesGenerator {
   private boolean stereoShown;
   // outputs
 
+  private Hashtable htRingsSequence = new Hashtable();
   private Hashtable htRings = new Hashtable();
 
   // generation of SMILES strings
@@ -91,7 +92,6 @@ public class SmilesGenerator {
     BitSet bs = (BitSet) bsSelected.clone();
     sb.append("//* Jmol bioSMILES ").append(comment.replace('*', '_')).append(
         " *//");
-    Hashtable ht = new Hashtable();
     String end = "\n";
     BitSet bsIgnore = new BitSet();
     String lastComponent = null;
@@ -146,7 +146,7 @@ public class SmilesGenerator {
         a.getCrossLinkLeadAtomIndexes(vLinks);
         for (int j = 0; j < vLinks.size(); j++) {
           sb.append(":");
-          s = getRingCache(i0, ((Integer) vLinks.get(j)).intValue());
+          s = getRingCache(i0, ((Integer) vLinks.get(j)).intValue(), htRingsSequence);
           sb.append(s);
           len += 1 + s.length();
         }
@@ -166,8 +166,8 @@ public class SmilesGenerator {
       e.printStackTrace();
       return "";
     }
-    if (!ht.isEmpty()) {
-      dumpRingKeys(sb);
+    if (!htRingsSequence.isEmpty()) {
+      dumpRingKeys(sb, htRingsSequence);
       throw new InvalidSmilesException("//* ?ring error? *//");
     }
     s = sb.toString();
@@ -254,7 +254,7 @@ public class SmilesGenerator {
       }
     }
     if (!htRings.isEmpty()) {
-      dumpRingKeys(sb);
+      dumpRingKeys(sb, htRings);
       throw new InvalidSmilesException("//* ?ring error? *//\n" + sb);
     }
     return sb.toString();
@@ -434,6 +434,10 @@ public class SmilesGenerator {
           continue;
         JmolNode atom1 = bonds[i].getOtherAtom(atom);
         int index1 = atom1.getIndex();
+        if (index1 == prevIndex) {
+          bondPrev = bonds[i];
+          continue;
+        }
         if (!bsSelected.get(index1)) {
           if (allowConnectionsToOutsideWorld && bsSelected.get(atomIndex))
             bsToDo.set(index1);
@@ -445,8 +449,6 @@ public class SmilesGenerator {
           nH++;
           if (nH > 1)
             stereoFlag = 10;
-        } else if (index1 == prevIndex) {
-          bondPrev = bonds[i];
         } else {
           v.add(bonds[i]);
         }
@@ -565,14 +567,14 @@ public class SmilesGenerator {
       sb.append(strBond);
     }
 
-    // now process any rings or single-element branches
+    // now process any rings
 
     for (int i = v.size(); --i >= 0;) {
       JmolEdge bond = (JmolEdge) v.get(i);
       if (bond == bond0)
         continue;
       JmolNode a = bond.getOtherAtom(atom);
-      String s = getRingCache(atomIndex, a.getIndex());
+      String s = getRingCache(atomIndex, a.getIndex(), htRings);
       strBond = SmilesBond.getBondOrderString(bond.getOrder());
       if (!deferStereo && !stereoShown) {
         chBond = getBondStereochemistry(bond, atom);
@@ -654,30 +656,28 @@ public class SmilesGenerator {
     return atomNext;
   }
 
-  private String getRingCache(int i0, int i1) {
+  private String getRingCache(int i0, int i1, Hashtable ht) {
     String key = getRingKey(i0, i1);
-    Object[] o = (Object[]) htRings.get(key);
+    Object[] o = (Object[]) ht.get(key);
     String s = (o == null ? null : (String) o[0]);
     if (s == null) {
-      htRings.put(key, new Object[] {
+      ht.put(key, new Object[] {
           s = SmilesParser.getRingPointer(++nPairs), new Integer(i1) });
-      if (Logger.debugging)
-        Logger.debug("adding for " + i0 + " ring key " + nPairs + ": " + key);
+      //if (Logger.debugging)
+        Logger.info("adding for " + i0 + " ring key " + nPairs + ": " + key);
     } else {
-      htRings.remove(key);
-      if (Logger.debugging)
-        Logger.debug("using ring key " + key);
+      ht.remove(key);
+      //if (Logger.debugging)
+        Logger.info("using ring key " + key);
     }
     return s;//  + " _" + key + "_ \n";
   }
 
-  private void dumpRingKeys(StringBuffer sb) {
-    if (Logger.debugging) {
-      Logger.debug(sb.toString() + "\n\n");
-      Enumeration e = htRings.keys();
-      while (e.hasMoreElements()) {
-        Logger.debug("unmatched ring key: " + e.nextElement());
-      }
+  private void dumpRingKeys(StringBuffer sb, Hashtable ht) {
+    Logger.info(sb.toString() + "\n\n");
+    Enumeration e = ht.keys();
+    while (e.hasMoreElements()) {
+      Logger.info("unmatched ring key: " + e.nextElement());
     }
   }
 

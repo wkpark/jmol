@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-14 20:08+0200\n"
+"POT-Creation-Date: 2010-06-15 19:56+0200\n"
 "PO-Revision-Date: 2010-06-08 14:45+0000\n"
 "Last-Translator: iychiang <iychiang1809@gmail.com>\n"
 "Language-Team: Traditional Chinese <zh_TW@li.org>\n"
@@ -1269,12 +1269,12 @@ msgstr "這些名字將做為applets程式名"
 msgid "Applet width:"
 msgstr "Applet 寬度："
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:97
+#: org/openscience/jmol/app/webexport/PopInJmol.java:99
 #, java-format
 msgid "insert a caption for {0} here."
 msgstr "在{0}這裏加入標題"
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:100
+#: org/openscience/jmol/app/webexport/PopInJmol.java:102
 #, java-format
 msgid "insert a note for {0} here."
 msgstr "在{0}這裏加入注解"
@@ -1570,6 +1570,11 @@ msgstr "暫停"
 #: org/openscience/jmol/app/webexport/Widgets.java:174
 msgid "Last Frame"
 msgstr "最後一格"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:176
+#, fuzzy
+msgid "Mode:"
+msgstr "方法: "
 
 #: org/openscience/jmol/app/webexport/Widgets.java:177
 msgid "Loop"

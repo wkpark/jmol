@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-14 20:08+0200\n"
+"POT-Creation-Date: 2010-06-15 19:56+0200\n"
 "PO-Revision-Date: 2010-04-16 18:30+0000\n"
 "Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Korean <LL@li.org>\n"
@@ -1269,12 +1269,12 @@ msgstr ""
 msgid "Applet width:"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:97
+#: org/openscience/jmol/app/webexport/PopInJmol.java:99
 #, java-format
 msgid "insert a caption for {0} here."
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:100
+#: org/openscience/jmol/app/webexport/PopInJmol.java:102
 #, java-format
 msgid "insert a note for {0} here."
 msgstr ""
@@ -1569,6 +1569,11 @@ msgstr "붙여넣기(&P)"
 #, fuzzy
 msgid "Last Frame"
 msgstr "마지막 프레임으로 가기"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:176
+#, fuzzy
+msgid "Mode:"
+msgstr "방식: "
 
 #: org/openscience/jmol/app/webexport/Widgets.java:177
 #, fuzzy

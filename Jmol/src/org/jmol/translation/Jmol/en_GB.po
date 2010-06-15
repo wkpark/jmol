@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-14 20:08+0200\n"
+"POT-Creation-Date: 2010-06-15 19:56+0200\n"
 "PO-Revision-Date: 2010-01-03 04:31+0000\n"
 "Last-Translator: Philipp Kleinhenz <Unknown>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
@@ -1273,12 +1273,12 @@ msgstr "These names will be used as filenames for the applets"
 msgid "Applet width:"
 msgstr "Applet width:"
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:97
+#: org/openscience/jmol/app/webexport/PopInJmol.java:99
 #, java-format
 msgid "insert a caption for {0} here."
 msgstr "insert a caption for {0} here."
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:100
+#: org/openscience/jmol/app/webexport/PopInJmol.java:102
 #, java-format
 msgid "insert a note for {0} here."
 msgstr "insert a note for {0} here."
@@ -1587,6 +1587,11 @@ msgstr "&Paste"
 #, fuzzy
 msgid "Last Frame"
 msgstr "Go to last frame"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:176
+#, fuzzy
+msgid "Mode:"
+msgstr "Method: "
 
 #: org/openscience/jmol/app/webexport/Widgets.java:177
 #, fuzzy

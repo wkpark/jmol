@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-14 20:08+0200\n"
+"POT-Creation-Date: 2010-06-15 19:56+0200\n"
 "PO-Revision-Date: 2008-08-04 20:46+0000\n"
 "Last-Translator: Ivo Sarak <Unknown>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
@@ -1355,12 +1355,12 @@ msgstr ""
 msgid "Applet width:"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:97
+#: org/openscience/jmol/app/webexport/PopInJmol.java:99
 #, java-format
 msgid "insert a caption for {0} here."
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:100
+#: org/openscience/jmol/app/webexport/PopInJmol.java:102
 #, java-format
 msgid "insert a note for {0} here."
 msgstr ""
@@ -1659,6 +1659,11 @@ msgstr "&Kleebi"
 msgid "Last Frame"
 msgstr "Mine järgmise kaadri juurde"
 
+#: org/openscience/jmol/app/webexport/Widgets.java:176
+#, fuzzy
+msgid "Mode:"
+msgstr "Muudetud"
+
 #: org/openscience/jmol/app/webexport/Widgets.java:177
 #, fuzzy
 msgid "Loop"
@@ -1738,9 +1743,6 @@ msgstr ""
 
 #~ msgid "Attributes"
 #~ msgstr "Omadused"
-
-#~ msgid "Modified"
-#~ msgstr "Muudetud"
 
 #~ msgid "Generic File"
 #~ msgstr "Üldine fail"

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-14 20:08+0200\n"
+"POT-Creation-Date: 2010-06-15 19:56+0200\n"
 "PO-Revision-Date: 2010-05-30 06:23+0000\n"
 "Last-Translator: Eleanor Chen <chenyueg@gmail.com>\n"
 "Language-Team: Simplified Chinese <zh_CN@li.org>\n"
@@ -1266,12 +1266,12 @@ msgstr "这些名字将被用于Java小程序的文件名"
 msgid "Applet width:"
 msgstr "Java小程序的宽度："
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:97
+#: org/openscience/jmol/app/webexport/PopInJmol.java:99
 #, java-format
 msgid "insert a caption for {0} here."
 msgstr "为此处的 {0} 插入一个标题"
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:100
+#: org/openscience/jmol/app/webexport/PopInJmol.java:102
 #, java-format
 msgid "insert a note for {0} here."
 msgstr "为此处的 {0} 插入说明"
@@ -1573,6 +1573,11 @@ msgstr "粘贴(&P)"
 #, fuzzy
 msgid "Last Frame"
 msgstr "转到最后一帧"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:176
+#, fuzzy
+msgid "Mode:"
+msgstr "方法: "
 
 #: org/openscience/jmol/app/webexport/Widgets.java:177
 #, fuzzy

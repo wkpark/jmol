@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-14 20:08+0200\n"
+"POT-Creation-Date: 2010-06-15 19:56+0200\n"
 "PO-Revision-Date: 2010-06-12 20:23+0100\n"
 "Last-Translator: Angel Herráez <aherraez@users.sourceforge.net>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
@@ -1277,12 +1277,12 @@ msgstr "Estos nombres se usarán en archivos para la miniaplicación"
 msgid "Applet width:"
 msgstr "Ancho de Jmol:"
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:97
+#: org/openscience/jmol/app/webexport/PopInJmol.java:99
 #, java-format
 msgid "insert a caption for {0} here."
 msgstr "inserta aquí una leyenda para {0}."
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:100
+#: org/openscience/jmol/app/webexport/PopInJmol.java:102
 #, java-format
 msgid "insert a note for {0} here."
 msgstr "inserta aquí una nota para {0}."
@@ -1584,6 +1584,11 @@ msgstr "Pausa"
 #: org/openscience/jmol/app/webexport/Widgets.java:174
 msgid "Last Frame"
 msgstr "Último fotograma"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:176
+#, fuzzy
+msgid "Mode:"
+msgstr "Método: "
 
 #: org/openscience/jmol/app/webexport/Widgets.java:177
 msgid "Loop"

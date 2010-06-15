@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-14 20:08+0200\n"
+"POT-Creation-Date: 2010-06-15 19:56+0200\n"
 "PO-Revision-Date: 2010-06-09 03:09+0000\n"
 "Last-Translator: Waluyo Adi Siswanto <Unknown>\n"
 "Language-Team: Indonesian <id@li.org>\n"
@@ -1272,12 +1272,12 @@ msgstr "Nama-nama ini akan digunakan sebagai nama berkas untuk aplet"
 msgid "Applet width:"
 msgstr "Lebar Aplet:"
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:97
+#: org/openscience/jmol/app/webexport/PopInJmol.java:99
 #, java-format
 msgid "insert a caption for {0} here."
 msgstr "sisipkan caption untuk {0} disini."
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:100
+#: org/openscience/jmol/app/webexport/PopInJmol.java:102
 #, java-format
 msgid "insert a note for {0} here."
 msgstr "sisipkan nota untuk {0} disini."
@@ -1581,6 +1581,11 @@ msgstr "Jeda"
 #: org/openscience/jmol/app/webexport/Widgets.java:174
 msgid "Last Frame"
 msgstr "Bingkai Terakhir"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:176
+#, fuzzy
+msgid "Mode:"
+msgstr "Metode: "
 
 #: org/openscience/jmol/app/webexport/Widgets.java:177
 msgid "Loop"

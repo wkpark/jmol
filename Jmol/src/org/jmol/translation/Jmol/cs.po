@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-14 20:08+0200\n"
+"POT-Creation-Date: 2010-06-15 19:56+0200\n"
 "PO-Revision-Date: 2010-06-05 14:34+0000\n"
 "Last-Translator: Konki <pavel.konkol@seznam.cz>\n"
 "Language-Team: Czech <Jmol-developers@lists.sf.net>\n"
@@ -1277,12 +1277,12 @@ msgstr "Tyto názvy budou použity jako jména souborů pro applety."
 msgid "Applet width:"
 msgstr "Šířka appletu:"
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:97
+#: org/openscience/jmol/app/webexport/PopInJmol.java:99
 #, java-format
 msgid "insert a caption for {0} here."
 msgstr "zde vložte titulek pro {0}."
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:100
+#: org/openscience/jmol/app/webexport/PopInJmol.java:102
 #, java-format
 msgid "insert a note for {0} here."
 msgstr "zde vložte poznámku pro {0}."
@@ -1586,6 +1586,11 @@ msgstr "&Vložit"
 #, fuzzy
 msgid "Last Frame"
 msgstr "Přejít na poslední snímek"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:176
+#, fuzzy
+msgid "Mode:"
+msgstr "Metoda: "
 
 #: org/openscience/jmol/app/webexport/Widgets.java:177
 #, fuzzy

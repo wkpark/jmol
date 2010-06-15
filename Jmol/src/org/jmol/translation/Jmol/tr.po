@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-14 20:08+0200\n"
+"POT-Creation-Date: 2010-06-15 19:56+0200\n"
 "PO-Revision-Date: 2010-05-25 21:47+0000\n"
 "Last-Translator: Angel Spy <melissadilara@yahoo.com>\n"
 "Language-Team: Turkish <yerellestirme@kde.org.tr>\n"
@@ -1270,12 +1270,12 @@ msgstr "Bu isimler, uygulamacıkların dosya adları olarak kullanılacak"
 msgid "Applet width:"
 msgstr "Uygulamacık genişliği:"
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:97
+#: org/openscience/jmol/app/webexport/PopInJmol.java:99
 #, java-format
 msgid "insert a caption for {0} here."
 msgstr "buraya {0} için bir başlık yazısı ekle."
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:100
+#: org/openscience/jmol/app/webexport/PopInJmol.java:102
 #, java-format
 msgid "insert a note for {0} here."
 msgstr "buraya {0} için bir not ekle."
@@ -1579,6 +1579,11 @@ msgstr "&Yapıştır"
 #, fuzzy
 msgid "Last Frame"
 msgstr "Son çerçeveye git"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:176
+#, fuzzy
+msgid "Mode:"
+msgstr "Yöntem: "
 
 #: org/openscience/jmol/app/webexport/Widgets.java:177
 #, fuzzy

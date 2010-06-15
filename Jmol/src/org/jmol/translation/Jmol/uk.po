@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-14 20:08+0200\n"
+"POT-Creation-Date: 2010-06-15 19:56+0200\n"
 "PO-Revision-Date: 2010-06-08 06:16+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@gmail.com>\n"
 "Language-Team: Ukrainian <translation@linux.org.ua>\n"
@@ -1278,12 +1278,12 @@ msgstr "Ці назви буде використано як назви файл
 msgid "Applet width:"
 msgstr "Ширина аплету:"
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:97
+#: org/openscience/jmol/app/webexport/PopInJmol.java:99
 #, java-format
 msgid "insert a caption for {0} here."
 msgstr "тут вставте підпис до {0}."
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:100
+#: org/openscience/jmol/app/webexport/PopInJmol.java:102
 #, java-format
 msgid "insert a note for {0} here."
 msgstr "тут вставте нотатку щодо {0}."
@@ -1588,6 +1588,11 @@ msgstr "Призупинити"
 #: org/openscience/jmol/app/webexport/Widgets.java:174
 msgid "Last Frame"
 msgstr "Останній кадр"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:176
+#, fuzzy
+msgid "Mode:"
+msgstr "Метод: "
 
 #: org/openscience/jmol/app/webexport/Widgets.java:177
 msgid "Loop"

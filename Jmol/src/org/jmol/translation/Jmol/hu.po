@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 11.7.x\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-14 20:08+0200\n"
+"POT-Creation-Date: 2010-06-15 19:56+0200\n"
 "PO-Revision-Date: 2010-03-18 11:27+0000\n"
 "Last-Translator: Krasznecz Zoltán <krasznecz.zoltan@gmail.com>\n"
 "Language-Team: Hungarian <Jmol-developers@lists.sf.net>\n"
@@ -1276,12 +1276,12 @@ msgstr "Ezeket a neveket fogja a kisalkalmazások fájnneveként használni"
 msgid "Applet width:"
 msgstr "Kisalkalmazás szélessége:"
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:97
+#: org/openscience/jmol/app/webexport/PopInJmol.java:99
 #, java-format
 msgid "insert a caption for {0} here."
 msgstr "adja meg a {0} címkéjét."
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:100
+#: org/openscience/jmol/app/webexport/PopInJmol.java:102
 #, java-format
 msgid "insert a note for {0} here."
 msgstr "adja mega a {0} leírását."
@@ -1587,6 +1587,11 @@ msgstr "&Beillesztés"
 #, fuzzy
 msgid "Last Frame"
 msgstr "Ugrás az utolsó kockára"
+
+#: org/openscience/jmol/app/webexport/Widgets.java:176
+#, fuzzy
+msgid "Mode:"
+msgstr "Módszer: "
 
 #: org/openscience/jmol/app/webexport/Widgets.java:177
 #, fuzzy

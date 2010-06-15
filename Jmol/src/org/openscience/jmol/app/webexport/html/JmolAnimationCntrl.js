@@ -16,11 +16,11 @@ document.writeln('<style type="text/css"> \n'
 
 function jmol_animationmode(selected, n){
     var cellID = "jmol_loop_"+n;
-    document.getElementById(cellID).removeAttribute("style");
+    document.getElementById(cellID).style.cssText = "";
     cellID = "jmol_playOnce_"+n;
-    document.getElementById(cellID).removeAttribute("style");
+    document.getElementById(cellID).style.cssText = "";
     cellID = "jmol_palindrome_"+n;
-    document.getElementById(cellID).removeAttribute("style");
+    document.getElementById(cellID).style.cssText = "";
     if (selected=="loop") {
         cellID = "jmol_loop_"+n;
         jmolScript('animation mode loop 0.2 0.2', n);
@@ -33,5 +33,5 @@ function jmol_animationmode(selected, n){
     } else {
         return false; 
     }
-    document.getElementById(cellID).style.backgroundColor = "blue";
+    document.getElementById(cellID).style.cssText = "background-color:blue";
 }

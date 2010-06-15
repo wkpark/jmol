@@ -1,7 +1,7 @@
 /* Jmol Simple JavaScript Color Picker
  by Jonathan Gutow
 V1.1
-June 14, 2010
+June 15, 2010
 
 requires
    Jmol.js
@@ -68,7 +68,7 @@ function makeColorPicker(){
     if(! JmolColorPickerDiv){
         var colorPickerCSS = document.createElement('style');
         colorPickerCSS.type = 'text/css';
-        CSSStr ='.JmolColorPicker_vis {border-style:solid;border-width:thin;clear:both;display:block;overflow:visible;position:relative;left:-52px;width:104px;z-index:2;}'
+        CSSStr ='.JmolColorPicker_vis {border-style:solid;border-width:thin;clear:both;display:block;overflow:visible;position:absolute;margin-left:-52px;width:104px;z-index:2;}'
         CSSStr +='.JmolColorPicker_hid {height:0;min-height:0;display:none;overflow:hidden;z-index:0;}';
         if (colorPickerCSS.styleSheet) { // IE
             colorPickerCSS.styleSheet.cssText = CSSStr;
@@ -137,12 +137,19 @@ function makeColorPicker(){
     return(JmolColorPickerDiv);   
 }
 
+// IE6 puts the SELECT control on top of the popup colorpicker DIV, so we trick that:
+var IEversion = 999;
+if (/MSIE (\d+\.\d+);/.test(navigator.userAgent)) { //test for MSIE x.x;
+    IEversion=new Number(RegExp.$1); // capture x.x portion and store as a number
+}
+
 function pickedColor(colorStr){
     changeClass(document.getElementById('JmolColorPickerDiv'), "JmolColorPicker_hid");
     if(colorStr!='cancel'){
         var evalStr = ''+ JmolColorPickerStatus.funcName+'("'+colorStr+'",'+ JmolColorPickerStatus.passThrough+');';
         eval(evalStr);
     }
+    if (IEversion<7) { document.getElementById("StereoMode0").style.visibility='visible'; }
 }
 
 function hoverColor(colorStr){
@@ -161,6 +168,7 @@ function popUpPicker(whereID, funcName, passThrough){
     var where = document.getElementById(whereID);
     where.appendChild(pickerDiv);
     changeClass(pickerDiv,"JmolColorPicker_vis");
+    if (IEversion<7) { document.getElementById("StereoMode0").style.visibility='hidden'; }
 }
 
 

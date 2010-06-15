@@ -1,4 +1,5 @@
 # from pyMLP.py  http://code.google.com/p/pymlp/
+#
 # Broto P., Moreau G., Vandycke C. - 
 # Molecular structures: Perception, autocorrelation descriptor and sar studies.
 # System of atomic contributions for the calculation of the n-octanol/water 
@@ -8,7 +9,8 @@
 # MLPP: A program for the calculation of molecular lipophilicity potential in
 # proteins, Pharm. Sci. 1997, 3.5-6, 217-222
 # 
-
+# adapted by Bob Hanson hansonr@stolaf.edu 6/15/2010
+#
 # generic protein:
 
 _pC	-0.54

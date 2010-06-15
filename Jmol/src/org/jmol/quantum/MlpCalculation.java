@@ -29,21 +29,6 @@ import org.jmol.modelset.Atom;
 import org.jmol.util.Logger;
 
 /*
- * derived from pyMLP.py  http://code.google.com/p/pymlp/
- * 
- * if there is interest, we can generalize this to read any file
- * 
-
-Broto P., Moreau G., Vandycke C. - 
-Molecular structures: Perception, autocorrelation descriptor and sar studies.
-System of atomic contributions for the calculation of the n-octanol/water 
-partition coefficients, Eu. J. Med. Chem. 1984, 19.1, 71-78
-
-Laguerre M., Saux M., Dubost J.P., Carpy A. -
-MLPP: A program for the calculation of molecular lipophilicity potential in
-proteins, Pharm. Sci. 1997, 3.5-6, 217-222
- 
- 
  * 
  * NOTE -- THIS CLASS IS INSTANTIATED USING Interface.getOptionInterface
  * NOT DIRECTLY -- FOR MODULARIZATION. NEVER USE THE CONSTRUCTOR DIRECTLY!

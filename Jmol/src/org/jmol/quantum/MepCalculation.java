@@ -78,7 +78,7 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
   // a) the default resource is property partialCharges for MEP and atomicLipophilicity.txt for MLP
   // b) the default function is Coulomb for MEP and Fauchere for MLP
 
-  // Bob Hanson hansonr@stolaf.edu 6/12/2010
+  // Bob Hanson hansonr@stolaf.edu 6/15/2010
   
   protected final static int ONE_OVER_D = 0;
   protected final static int E_MINUS_D_OVER_2 = 1;

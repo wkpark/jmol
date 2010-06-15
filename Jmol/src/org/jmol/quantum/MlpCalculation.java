@@ -29,10 +29,11 @@ import org.jmol.modelset.Atom;
 import org.jmol.util.Logger;
 
 /*
- * loosely derived from pyMLP.py  http://code.google.com/p/pymlp/
- * see:
+ * derived from pyMLP.py  http://code.google.com/p/pymlp/
  * 
+ * if there is interest, we can generalize this to read any file
  * 
+
 Broto P., Moreau G., Vandycke C. - 
 Molecular structures: Perception, autocorrelation descriptor and sar studies.
 System of atomic contributions for the calculation of the n-octanol/water 
@@ -50,76 +51,30 @@ proteins, Pharm. Sci. 1997, 3.5-6, 217-222
 public class MlpCalculation extends MepCalculation {
 
   public MlpCalculation() {
-    rangeBohr = 8; //bohr; about 4 Angstroms
-    distanceMode = E_MINUS_D;
-  }  
-  
-  public void fillPotentials(Atom[] atoms, float[] potentials, 
-                             BitSet bsAromatic, BitSet bsCarbonyl) {
+    rangeBohr = 15; //bohr; about 8 Angstroms
+    distanceMode = E_MINUS_D;  }  
+
+  public void assignPotentials(Atom[] atoms, float[] potentials,
+                             BitSet bsAromatic, BitSet bsCarbonyl, String data) {
+    getAtomicPotentials(data, "atomicLipophilicity.txt");
     for (int i = 0; i < atoms.length; i++) {
-      float f;
-      String name = atoms[i].getAtomType();
-      switch (atoms[i].getElementNumber()) {
-      case 6:
-        //       0 2 4 6 8 10 13 16 19
-        switch ("C CA".indexOf(name)) {
-        case 0:
-          f = -0.54f;
-          break;
-        case 2:
-          f = 0.02f;
-          break;
-        default:
-          f = (bsAromatic.get(i) ? 0.31f : bsCarbonyl.get(i) ? -0.54f : 0.45f); 
-        }
-        break;
-      case 7:
-        switch ("N NZNH1NH2ND2NE2".indexOf(name)) {
-        case 0:
-          f = -0.44f;
-          break;
-        case 2:
-          f = -1.08f;
-          break;
-        case 4:
-        case 10:
-        case 11:
-          f = -0.11f;
-          break;
-        case 7:
-          f = -0.83f;
-          break;
-        default:
-          f = (bsAromatic.get(i) ? -0.6f : bsCarbonyl.get(i) ? -0.44f : 
-            -1.0f);
-        }
-        break;
-      case 8:
-        switch ("O OHOD1OD2OE1OE2OGOG1".indexOf(name)) {
-        case 0:
-        case 4:
-        case 10:
-          f = -0.68f;
-          break;
-        case 2:
-          f = -0.17f;
-          break;
-        case 7:
-        case 13:
-          f = 0.53f;
-          break;
-        case 15:
-        case 17:
-          f = -1.0f;
-        default:
-          f = (bsCarbonyl.get(i) ? -0.9f : -0.17f);
-        }
-        break;
-      case 16:
-        f = -0.3f;
-        break;
-      default:
-        f = 0;
+      float f = Math.abs(atoms[i].getFormalCharge());
+      if (f == 0) {
+        f = getTabulatedPotential(atoms[i]);
+        if (Float.isNaN(f))
+          switch (atoms[i].getElementNumber()) {
+          case 6:
+            f = (bsAromatic.get(i) ? 0.31f : bsCarbonyl.get(i) ? -0.54f : 0.45f);
+            break;
+          case 7:
+            f = (bsAromatic.get(i) ? -0.6f : bsCarbonyl.get(i) ? -0.44f : -1.0f);
+            break;
+          case 8:
+            f = (bsCarbonyl.get(i) ? -0.9f : -0.17f);
+            break;
+          default:
+            f = 0;
+          }
       }
       if (Logger.debugging)
         Logger.info(atoms[i].getInfo() + " " + f);

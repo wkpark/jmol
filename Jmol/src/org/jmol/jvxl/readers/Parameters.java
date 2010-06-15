@@ -578,6 +578,7 @@ public class Parameters {
   int mep_gridMax = MEP_MAX_GRID;
   float mep_ptsPerAngstrom = 3f;
   float mep_marginAngstroms = 1f; // may have to adjust this
+  public int mep_calcType;
 
   void setMep(float[] charges, boolean isRangeDefined, boolean isMLP) {
     dataType = (isMLP ? SURFACE_MLP : SURFACE_MEP);

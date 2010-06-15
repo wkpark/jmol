@@ -10,8 +10,8 @@ import org.jmol.modelset.Atom;
 public interface MepCalculationInterface {
 
   public abstract void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
-                                 Point3f[] atomCoordAngstroms, float[] charges);
+                                 Point3f[] atomCoordAngstroms, float[] charges, int calcType);
 
-  public abstract void fillPotentials(Atom[] atoms, float[] potentials, BitSet bsAromatic, BitSet bsCarbonyl);
+  public abstract void assignPotentials(Atom[] atoms, float[] potentials, BitSet bsAromatic, BitSet bsCarbonyl, String data);
 
 }

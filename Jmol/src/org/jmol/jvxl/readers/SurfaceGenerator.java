@@ -855,6 +855,11 @@ public class SurfaceGenerator {
       return true;
     }
 
+    if ("mepCalcType" == propertyName) {
+      params.mep_calcType = ((Integer) value).intValue();
+      return true;
+    }
+
     if ("mep" == propertyName) {
       params.setMep((float[]) value, rangeDefined, false); // mep charges
       processState();

@@ -394,6 +394,8 @@ public class TextFormat {
    * @return  String array
    */
   public static String[] split(String text, String run) {
+    if (text.length() == 0)
+      return new String[0];
     int n = 1;
     int i = text.indexOf(run);
     String[] lines;

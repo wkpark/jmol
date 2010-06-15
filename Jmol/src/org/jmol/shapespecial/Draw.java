@@ -1048,7 +1048,8 @@ public class Draw extends MeshCollection {
     boolean isPickingMode = (viewer.getPickingMode() == ActionManager.PICKING_DRAW);
     boolean isSpinMode = (viewer.getPickingMode() == ActionManager.PICKING_SPIN);
     boolean isDrawPicking = viewer.getDrawPicking();
-    if (!isPickingMode && !isDrawPicking && !isSpinMode)
+    if (!isPickingMode && !isDrawPicking && !isSpinMode
+        || Graphics3D.isColixTranslucent(colix))
       return null;
     if (!findPickedObject(x, y, false, bsVisible))
       return null;
@@ -1087,6 +1088,8 @@ public class Draw extends MeshCollection {
   }
 
   public boolean checkObjectHovered(int x, int y, BitSet bsVisible) {
+    if (Graphics3D.isColixTranslucent(colix))
+      return false;
     if (!findPickedObject(x, y, false, bsVisible))
       return false;
     if (g3d.isDisplayAntialiased()) {

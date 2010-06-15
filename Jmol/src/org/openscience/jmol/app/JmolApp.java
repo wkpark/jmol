@@ -114,7 +114,7 @@ public class JmolApp {
 
   public void parseCommandLine(String[] args) {
 
-    Options options = getOptions(args);
+    Options options = getOptions();
 
     CommandLine line = null;
     try {
@@ -133,7 +133,7 @@ public class JmolApp {
 
   }
 
-  private Options getOptions(String[] args) {
+  private Options getOptions() {
     Options options = new Options();
     options.addOption("b", "backgroundtransparent", false, GT
         ._("transparent background"));

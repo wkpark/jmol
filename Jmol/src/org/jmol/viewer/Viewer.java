@@ -8042,11 +8042,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getPartialCharges();
   }
 
-  public float[] getLipophilicPotentials(BitSet bsSelected) {
+  public float[] getAtomicPotentials(boolean isMep, BitSet bsSelected, String fileName) {
     float[] potentials = new float[getAtomCount()];
     MepCalculationInterface m = (MepCalculationInterface) Interface.getOptionInterface("quantum.MlpCalculation");
-    m.fillPotentials(modelSet.atoms, potentials, getSmartsMatch("a", bsSelected), 
-        getSmartsMatch("/noAromatic/C(=O)*", bsSelected));
+    String data = (fileName == null ? null : getFileAsString(fileName));
+    m.assignPotentials(modelSet.atoms, potentials, getSmartsMatch("a", bsSelected), 
+        getSmartsMatch("/noAromatic/C(=O)*", bsSelected), data);
     return potentials;
   }
 

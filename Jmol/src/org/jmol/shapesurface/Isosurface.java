@@ -1180,8 +1180,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     boolean pickFront = viewer.getDrawPicking();
     for (int i = 0; i < meshCount; i++) {
       IsosurfaceMesh m = isomeshes[i];
-      if (m.visibilityFlags == 0 || m.modelIndex >= 0
-          && !bsVisible.get(m.modelIndex))
+      if (!isPickable(m, bsVisible))
         continue;
       Point3f[] centers = m.getCenters();
       for (int j = centers.length; --j >= 0; ) {
@@ -1222,6 +1221,12 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       setHeading(ptRet, vNorm, 2);
     }
     return ptRet;
+  }
+
+  private boolean isPickable(IsosurfaceMesh m, BitSet bsVisible) {
+    return (m.visibilityFlags == 0 || m.modelIndex >= 0
+        && !bsVisible.get(m.modelIndex) || Graphics3D
+        .isColixTranslucent(m.colix));
   }
 
   private void navigate(int dz) {
@@ -1334,8 +1339,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     Vector pickedContour = null;
     for (int i = 0; i < meshCount; i++) {
       IsosurfaceMesh m = isomeshes[i];
-      if (m.visibilityFlags == 0 || m.modelIndex >= 0
-          && !bsVisible.get(m.modelIndex))
+      if (!isPickable(m, bsVisible))
         continue;
       Vector[] vs = m.jvxlData.vContours;
       if (vs != null) {

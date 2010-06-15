@@ -121,8 +121,8 @@ class Widgets {
     String getJavaScript(int appletID, JmolInstance instance) {
       return "<select id=\"StereoMode" + appletID + "\" title=\""
           + GT._("select stereo type") + "\""
-          + "onchange=\"jmolScriptWait((this.options[this.selectedIndex]).value,"
-          + appletID + ");\">"
+          + "onchange=\"void(jmolScriptWait((this.options[this.selectedIndex]).value,"
+          + appletID + "));\">"
           + "\n<option selected=\"\" value=\"stereo off\">"
           + GT._("Stereo Off") + " </option>"
           + "\n<option value=\"stereo REDBLUE\">" + GT._("Red/Blue")
@@ -161,17 +161,17 @@ class Widgets {
     String getJavaScript(int appletID, JmolInstance instance) {
       String jsString ="<table id=\"AnimContrl\" class=\"AnimContrlCSS\">";
       jsString +="<tbody><tr><td>"+GT._("Animation")+"</td></tr><tr><td><table><tbody>";
-      jsString +="<tr><td><button title=\""+GT._("First Frame")+"\" onclick=\"jmolScriptWait(\'frame rewind\');\">";
+      jsString +="<tr><td><button title=\""+GT._("First Frame")+"\" onclick=\"void(jmolScriptWait(\'frame rewind\'));\">";
       jsString +="<img src = \"firstButton.png\"></button></td>";
-      jsString+= "<td><button title=\""+GT._("Previous Frame")+"\" onclick=\"jmolScriptWait(\'frame previous\');\">";
+      jsString+= "<td><button title=\""+GT._("Previous Frame")+"\" onclick=\"void(jmolScriptWait(\'frame previous\'));\">";
       jsString+= "<img src = \"prevButton.png\" ></button></td>";        
-      jsString+= "<td><button title=\""+GT._("Play")+"\" onclick=\"jmolScriptWait(\'frame play\');\">";
+      jsString+= "<td><button title=\""+GT._("Play")+"\" onclick=\"void(jmolScriptWait(\'frame play\'));\">";
       jsString+= "<img src = \"playButton.png\"></button></td>";        
-      jsString+= "<td><button title=\""+GT._("Next Frame")+"\" onclick=\"jmolScriptWait(\'frame next\');\">";
+      jsString+= "<td><button title=\""+GT._("Next Frame")+"\" onclick=\"void(jmolScriptWait(\'frame next\'));\">";
       jsString+= "<img src = \"nextButton.png\"></button></td>";        
-      jsString+= "<td><button title=\""+GT._("Pause")+"\" onclick=\"jmolScriptWait(\'frame pause\');\">";
+      jsString+= "<td><button title=\""+GT._("Pause")+"\" onclick=\"void(jmolScriptWait(\'frame pause\'));\">";
       jsString+= "<img src = \"pauseButton.png\"></button></td>"; 
-      jsString+= "<td><button title=\""+GT._("Last Frame")+"\" onclick=\"jmolScriptWait(\'frame last\');\">";
+      jsString+= "<td><button title=\""+GT._("Last Frame")+"\" onclick=\"void(jmolScriptWait(\'frame last\'));\">";
       jsString+= "<img src = \"lastButton.png\"></button></td>";
       jsString+= "</tr></tbody></table><table><tbody><tr><td>"+GT._("Mode:")+"</td>";
       jsString+= "<td id=\"jmol_loop_"+appletID+"\"><button title=\""+GT._("Loop")+"\" onclick=\"jmol_animationmode(\'loop\',"+appletID+");\">";

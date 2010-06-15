@@ -88,8 +88,9 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
   protected int distanceMode = ONE_OVER_D;
   
   public MepCalculation() {
-    rangeBohr = 15; //bohr; about 7 Angstroms
+    rangeBohrOrAngstroms = 8; // Angstroms
     distanceMode = ONE_OVER_D;
+    unitFactor = 1;
   }
   
   public void assignPotentials(Atom[] atoms, float[] potentials,
@@ -123,7 +124,8 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
       if ((thisAtom = qmAtoms[atomIndex]) == null)
         continue;
       float x0 = potentials[atomIndex];
-      //System.out.println("process map for atom " + atomIndex + " nX,nY,nZ=" + nX + "," + nY + "," + nZ + " charge=" + charge);
+      if (Logger.debugging)
+        Logger.info("process map for atom " + atomIndex + thisAtom + "  charge=" + x0);
       thisAtom.setXYZ(true);
       for (int ix = xMax; --ix >= xMin;) {
         float dX = X2[ix];
@@ -132,13 +134,12 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
           for (int iz = zMax; --iz >= zMin;) {
             float d2 = dXY + Z2[iz];
             float x = x0;
-            if (d2 == 0) {
-              x *= Float.POSITIVE_INFINITY;
-              continue;
-            }
             switch (distanceMode) {
             case ONE_OVER_D:
-              x /= (float) Math.sqrt(d2);
+              if (d2 == 0)
+                x *= Float.POSITIVE_INFINITY;
+              else
+                x /= (float) Math.sqrt(d2);
               break;
             case ONE_OVER_ONE_PLUS_D:
               x /= (1 + (float) Math.sqrt(d2));

@@ -1225,7 +1225,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   private boolean isPickable(IsosurfaceMesh m, BitSet bsVisible) {
     return (m.visibilityFlags == 0 || m.modelIndex >= 0
-        && !bsVisible.get(m.modelIndex) || Graphics3D
+        && !bsVisible.get(m.modelIndex) || !Graphics3D
         .isColixTranslucent(m.colix));
   }
 

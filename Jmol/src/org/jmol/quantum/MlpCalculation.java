@@ -36,8 +36,9 @@ import org.jmol.util.Logger;
 public class MlpCalculation extends MepCalculation {
 
   public MlpCalculation() {
-    rangeBohr = 15; //bohr; about 8 Angstroms
-    distanceMode = E_MINUS_D;  }  
+    super();
+    distanceMode = E_MINUS_D;  
+  }  
 
   public void assignPotentials(Atom[] atoms, float[] potentials,
                              BitSet bsAromatic, BitSet bsCarbonyl, String data) {

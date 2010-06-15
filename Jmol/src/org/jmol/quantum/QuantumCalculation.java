@@ -56,7 +56,9 @@ abstract class QuantumCalculation {
 
   // range in bohr to consider affected by an atomic orbital
   // this is a cube centered on an atom of side rangeBohr*2
-  protected float rangeBohr = 10; //bohr; about 5 Angstroms
+  protected float rangeBohrOrAngstroms = 10; //bohr; about 5 Angstroms
+  
+  protected float unitFactor = bohr_per_angstrom;
 
   protected void initialize(int nX, int nY, int nZ) {
     
@@ -88,8 +90,8 @@ abstract class QuantumCalculation {
     // all coordinates come in as angstroms, not bohr, and are converted here into bohr
 
     for (int i = 3; --i >= 0;) {
-      originBohr[i] = originXYZ[i] * bohr_per_angstrom;
-      stepBohr[i] = stepsXYZ[i] * bohr_per_angstrom;
+      originBohr[i] = originXYZ[i] * unitFactor;
+      stepBohr[i] = stepsXYZ[i] * unitFactor;
       volume *= stepBohr[i];
     }
     setXYZBohr(xBohr, 0, nX);
@@ -140,24 +142,24 @@ abstract class QuantumCalculation {
       myZ2 = Z2;
       
       set(coordAngstroms);
-      scale(bohr_per_angstrom);
+      scale(unitFactor);
     }
 
     protected void setXYZ(boolean setMinMax) {
       int i;
       try {
       if (setMinMax) {
-        i = (int) Math.floor((x - xBohr[0] - rangeBohr) / stepBohr[0]);
+        i = (int) Math.floor((x - xBohr[0] - rangeBohrOrAngstroms) / stepBohr[0]);
         xMin = (i < 0 ? 0 : i);
-        i = (int) Math.floor(1 + (x - xBohr[0] + rangeBohr) / stepBohr[0]);
+        i = (int) Math.floor(1 + (x - xBohr[0] + rangeBohrOrAngstroms) / stepBohr[0]);
         xMax = (i >= nX ? nX : i + 1);
-        i = (int) Math.floor((y - yBohr[0] - rangeBohr) / stepBohr[1]);
+        i = (int) Math.floor((y - yBohr[0] - rangeBohrOrAngstroms) / stepBohr[1]);
         yMin = (i < 0 ? 0 : i);
-        i = (int) Math.floor(1 + (y - yBohr[0] + rangeBohr) / stepBohr[1]);
+        i = (int) Math.floor(1 + (y - yBohr[0] + rangeBohrOrAngstroms) / stepBohr[1]);
         yMax = (i >= nY ? nY : i + 1);
-        i = (int) Math.floor((z - zBohr[0] - rangeBohr) / stepBohr[2]);
+        i = (int) Math.floor((z - zBohr[0] - rangeBohrOrAngstroms) / stepBohr[2]);
         zMin = (i < 0 ? 0 : i);
-        i = (int) Math.floor(1 + (z - zBohr[0] + rangeBohr) / stepBohr[2]);
+        i = (int) Math.floor(1 + (z - zBohr[0] + rangeBohrOrAngstroms) / stepBohr[2]);
         zMax = (i >= nZ ? nZ : i + 1);
       }
       for (i = xMax; --i >= xMin;) {

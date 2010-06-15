@@ -227,6 +227,7 @@ public class Parameters {
     contourIncrements = null;
     contoursDiscrete = null;
     contourColixes = null;
+    mep_calcType = -1;
     pocket = null;
     rangeDefined = false;
     resolution = Float.MAX_VALUE;
@@ -289,9 +290,9 @@ public class Parameters {
   final static int defaultColorNegativeLCAO = 0xFF800080; //purple
   final static int defaultColorPositiveLCAO = 0xFFFFA500; //orange
   final static float defaultSolventRadius = 1.2f;
-  final static float defaultMepCutoff = 0.05f;
-  final static float defaultMepMin = -0.05f;
-  final static float defaultMepMax = 0.05f;
+  final static float defaultMepCutoff = 0.1f;
+  final static float defaultMepMin = -0.1f;
+  final static float defaultMepMax = 0.1f;
 
   //color
   
@@ -578,7 +579,7 @@ public class Parameters {
   int mep_gridMax = MEP_MAX_GRID;
   float mep_ptsPerAngstrom = 3f;
   float mep_marginAngstroms = 1f; // may have to adjust this
-  public int mep_calcType;
+  public int mep_calcType = -1;
 
   void setMep(float[] charges, boolean isRangeDefined, boolean isMLP) {
     dataType = (isMLP ? SURFACE_MLP : SURFACE_MEP);

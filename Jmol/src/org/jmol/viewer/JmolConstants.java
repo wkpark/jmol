@@ -2599,8 +2599,10 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   final public static int SHELL_F_SPHERICAL = 5;
   final public static int SHELL_F_CARTESIAN = 6;
 
-  final private static String[] quantumShellTags = {"S", "P", "SP", "L", 
-    "5D", "D", "7F", "F"};
+  final private static String[] quantumShellTags = {
+    "S", "P", "SP", "L", 
+    "5D", "D", 
+    "7F", "F"};
   
   final private static int[] quantumShellIDs = {
     SHELL_S, SHELL_P, SHELL_SP, SHELL_L, 
@@ -2625,7 +2627,13 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   final public static int getQuantumShellTagIDSpherical(String tag) {
     final int tagID = getQuantumShellTagID(tag);
-    return tagID + (tagID < SHELL_D_CARTESIAN ? 0 : tagID % 2);
+    switch (tagID) {
+    case SHELL_D_CARTESIAN:
+      return SHELL_D_SPHERICAL;
+    case SHELL_F_CARTESIAN:
+      return SHELL_F_SPHERICAL;
+    }
+    return tagID;
   }
 
   final public static String getQuantumShellTag(int shell) {

@@ -482,7 +482,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
               + (isSignedApplet ? " (signed)" : "")));
     }
 
-    zap(false, true); // here to allow echos
+    zap(false, true, false); // here to allow echos
     global.setParameterValue("language", GT.getLanguage());
   }
 
@@ -1768,7 +1768,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * @return null or error
    */
   public String openFile(String fileName) {
-    zap(true, true);
+    zap(true, true, false);
     return loadModelFromFile(null, fileName, null, null, false, null, null, 0);
   }
 
@@ -1779,7 +1779,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * @return null or error
    */
   public String openFiles(String[] fileNames) {
-    zap(true, true);
+    zap(true, true, false);
     return loadModelFromFile(null, null, fileNames, null, false, null, null, 0);
   }
 
@@ -1792,7 +1792,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * @return null or error message
    */
   public String openReader(String fullPathName, String fileName, Reader reader) {
-    zap(true, true);
+    zap(true, true, false);
     return loadModelFromFile(fullPathName, fileName, null, reader, false, null, null, 0);
   }
 
@@ -1805,7 +1805,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
   public String openDOM(Object DOMNode) {
     // applet.loadDOMNode
-    zap(true, true);
+    zap(true, true, false);
     setBooleanProperty("preserveState", false);
     return loadModelFromFile("?", "?", null, DOMNode, false, null, null, 0);
   }
@@ -1844,7 +1844,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       long timeBegin = System.currentTimeMillis();
       
       if (!isAppend)
-        zap(false, true);
+        zap(false, true, false);
 
       atomSetCollection = fileManager.createAtomSetCollectionFromFiles(fileNames,
             setLoadParameters(htParams), isAppend);
@@ -1939,7 +1939,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     if (strModel != null) {
       if (!isAppend)
-        zap(true, true);
+        zap(true, true, false);
       atomSetCollection = fileManager.createAtomSetCollectionFromString(
           strModel, loadScript, htParams, isAppend, isLoadVariable
               || haveFileData && !isString);
@@ -1949,7 +1949,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       // because the user might cancel the operation.
       
       if (!isAppend && fileName.charAt(0) != '?')
-        zap(false, true);
+        zap(false, true, false);
       atomSetCollection = fileManager.createAtomSetCollectionFromFile(fileName,
           htParams, loadScript, isAppend);
     }
@@ -2007,7 +2007,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (arrayData == null || arrayData.size() == 0)
       return null;
     if (!isAppend)
-      zap(true, true);
+      zap(true, true, false);
     setBooleanProperty("preserveState", false);
     Object atomSetCollection = fileManager.createAtomSeCollectionFromArrayData(
         arrayData, setLoadParameters(null), isAppend);
@@ -2082,7 +2082,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
 
     if (!isAppend)
-      zap(true, true);
+      zap(true, true, false);
     StringBuffer loadScript = new StringBuffer();
     Object atomSetCollection = fileManager.createAtomSetCollectionFromString(
         strModel, loadScript, setLoadParameters(htParams), isAppend, false);
@@ -2093,7 +2093,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                    boolean isAppend) {
     // loadInline
     if (!isAppend)
-      zap(true, true);
+      zap(true, true, false);
     StringBuffer loadScript = new StringBuffer();
     Object atomSetCollection = fileManager.createAtomSeCollectionFromStrings(
         arrayModels, loadScript, setLoadParameters(htParams), isAppend);
@@ -2392,7 +2392,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.setEchoStateActive(TF);
   }
 
-  public void zap(boolean notify, boolean resetUndo) {
+  public void zap(boolean notify, boolean resetUndo, boolean zapModelKit) {
     stopAnimationThreads("zap");
     if (modelSet != null) {
       setBooleanProperty("appendNew", true);
@@ -2405,11 +2405,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       clearAllMeasurements();
       clearMinimization();
       modelSet = modelManager.zap();
-      if (resetUndo) {
-        actionStates.clear();
-        actionStatesRedo.clear();
-        lastUndoRedo = 0;
-      }
       if (haveDisplay) {
         mouseManager.clear();
         actionManager.clear();
@@ -2419,6 +2414,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       colorManager.clear();
       definedAtomSets.clear();
       dataManager.clear();
+      if (resetUndo) {
+        if (zapModelKit && isModelkitMode()) {
+          loadInline(JmolConstants.MODELKIT_ZAP_STRING); // a JME string for methane
+          setRotationRadius(5.0f, true);
+          setStringProperty("picking", "assignAtom_C");
+          setStringProperty("picking", "assignBond_p");
+        }
+        actionStates.clear();
+        actionStatesRedo.clear();
+        lastUndoRedo = 0;
+      }
       System.gc();
     } else {
       modelSet = modelManager.zap();
@@ -2432,7 +2438,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private void zap(String msg) {
-    zap(true, true);
+    zap(true, true, false);
     echoMessage(msg);
   }
 
@@ -6120,6 +6126,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (isSignedApplet || !isApplet)
         popupMenu(0, 0, 'm');
       statusManager.setCallbackFunction("modelkit", "ON");
+      global.modelkitMode = true;
+      if (getAtomCount() == 0)
+        zap(false, true, true);
     } else {
       setStringProperty("pickingMode", "ident");
       setStringProperty("pickingStyle", "toggle");

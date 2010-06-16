@@ -9241,13 +9241,7 @@ public class ScriptEvaluator {
 
   private void zap(boolean isZapCommand) throws ScriptException {
     if (statementLength == 1 || !isZapCommand) {
-      viewer.zap(true, isZapCommand && !isStateScript);
-      if (isZapCommand && !isStateScript && viewer.isModelkitMode()) {
-        viewer.loadInline(JmolConstants.MODELKIT_ZAP_STRING); // a JME string for methane
-        viewer.setRotationRadius(5.0f, true);
-        viewer.setStringProperty("picking", "assignAtom_C");
-        viewer.setStringProperty("picking", "assignBond_p");
-      }
+      viewer.zap(true, isZapCommand && !isStateScript, true);
       refresh();
       return;
     }

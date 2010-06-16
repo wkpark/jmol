@@ -43,7 +43,7 @@ class ModelKitPopupResourceBundle extends PopupResource {
     { "optionsMenu", "new center addh minimize hmin " +
     		" - undo redo - SIGNEDsaveFile SIGNEDsaveState exit" },
     { "atomMenu" , "assignAtom_XP!CB assignAtom_XxP!CB dragAtomP!CB dragMinimizeP!CB dragMoleculeP!CB dragMinimizeMoleculeP!CB " +
-    		"- assignAtom_CP!CB assignAtom_HP!CB assignAtom_NP!CB assignAtom_OP!CB " +
+    		"- assignAtom_CP!CB assignAtom_HP!CB assignAtom_NP!CB assignAtom_OP!CB assignAtom_FP!CB assignAtom_ClP!CB assignAtom_BrP!CB " +
     		"_??P!CB _??P!CB _??P!CB " +
     		"moreAtomMenu - assignAtom_PlP!CB assignAtom_MiP!CB" },
     { "moreAtomMenu", "clearQ - _??P!CB _??P!CB _??P!CB _??P!CB _??P!CB _??P!CB " },
@@ -94,6 +94,9 @@ class ModelKitPopupResourceBundle extends PopupResource {
         "assignAtom_HP!CB" , "H",
         "assignAtom_NP!CB" , "N",
         "assignAtom_OP!CB" , "O",
+        "assignAtom_FP!CB" , "F",
+        "assignAtom_ClP!CB" , "Cl",
+        "assignAtom_BrP!CB" , "Br",
         "_??P!CB", "??",
         "assignAtom_PlP!CB", GT._("increase charge"),
         "assignAtom_MiP!CB", GT._("decrease charge"),

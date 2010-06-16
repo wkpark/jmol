@@ -622,7 +622,7 @@ abstract public class ModelSet extends ModelCollection {
     BitSet bsDeleted;
     if (nModelsDeleted == modelCount) {
       bsDeleted = getModelAtomBitSetIncludingDeleted(-1, true);
-      viewer.zap(true, false);
+      viewer.zap(true, false, false);
       return bsDeleted;
     }
 

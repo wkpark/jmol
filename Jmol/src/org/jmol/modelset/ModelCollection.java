@@ -3620,7 +3620,7 @@ abstract public class ModelCollection extends BondCollection {
 
     BitSet bsA = BitSetUtil.setBit(atomIndex);
 
-    if (autoBond) {
+    if (atomicNumber != 1 && autoBond) {
 
       // 4) clear out all atoms within 1.0 angstrom
       bspf = null;

@@ -43,6 +43,10 @@ abstract class BasisFunctionReader extends AtomSetCollectionReader {
 
   private int[][] dfCoefMaps;
   
+  // Jmol's ordering is based on GAUSSIAN
+  
+  // We don't modify the coefficients at read time, only create a 
+  // map to send to MOCalculation. 
 
   // DS: org.jmol.quantum.MOCalculation expects 
   //   d2z^2-x2-y2, dxz, dyz, dx2-y2, dxy
@@ -62,7 +66,10 @@ abstract class BasisFunctionReader extends AtomSetCollectionReader {
   // FC: org.jmol.quantum.MOCalculation expects
   //           xxx yyy zzz xyy xxy xxz xzz yzz yyz xyz
 
-  // any overriding of these -- make sure they have 6 characters per entry
+  // These strings are the equivalents found in the file in Jmol order.
+  // DO NOT CHANGE THESE. They are in the order the MOCalculate expects. 
+  // Subclassed readers can make their own to match. 
+    
   
   protected static String CANONICAL_DC_LIST = "DXX   DYY   DZZ   DXY   DXZ   DYZ";
   protected static String CANONICAL_FC_LIST = "XXX   YYY   ZZZ   XYY   XXY   XXZ   XZZ   YZZ   YYZ   XYZ";

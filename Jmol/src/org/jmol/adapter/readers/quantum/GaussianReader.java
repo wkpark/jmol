@@ -158,16 +158,9 @@ public class GaussianReader extends MOReader {
       readDipoleMoment();
       return true;
     }
-    if (line.startsWith(" Standard basis:")) {
-      Logger.debug(line);
+    if (line.startsWith(" Standard basis:") || line.startsWith(" General basis read from")) {
       energyUnits = "";
-      calculationType = line.substring(17).trim();
-      return true;
-    }
-    if (line.startsWith(" General basis read from cards:")) {
-      Logger.debug(line);
-      energyUnits = "";
-      calculationType = line.substring(31).trim();
+      calculationType = line.substring(line.indexOf(":") + 1).trim();
       return true;
     }
     if (line.startsWith(" AO basis set")) {

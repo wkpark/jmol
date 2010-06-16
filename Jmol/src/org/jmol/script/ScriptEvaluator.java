@@ -12708,7 +12708,7 @@ public class ScriptEvaluator {
       value = "" + commandHistoryLevelMax;
       break;
     case Token.loglevel:
-      value = "" + Viewer.getLogLevel();
+      value = "" + Logger.getLogLevel();
       break;
     case Token.debugscript:
       value = "" + viewer.getDebugScript();

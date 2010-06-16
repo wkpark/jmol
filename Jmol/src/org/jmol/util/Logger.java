@@ -174,7 +174,7 @@ public final class Logger {
   }
 
   /**
-   * Writes a log at INFO level.
+   og* Writes a log at INFO level.
    * 
    * @param txt String to write.
    */
@@ -248,6 +248,13 @@ public final class Logger {
     } catch (Throwable t) {
       //
     }
+  }
+
+  public static int getLogLevel() {
+    for (int i = LEVEL_MAX; --i >= 0;)
+      if (isActiveLevel(i))
+        return i;
+    return 0;
   }
 
   /**

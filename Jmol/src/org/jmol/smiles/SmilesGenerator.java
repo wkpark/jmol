@@ -210,7 +210,6 @@ public class SmilesGenerator {
 
     if (atom.getElementNumber() == 1 && atom.getEdges().length > 0)
       atom = atoms[atom.getBondedAtomIndex(0)]; // don't start with H
-    bsAromatic = new BitSet();
     bsSelected = JmolMolecule.getBranchBitSet(atoms, (BitSet) bs.clone(), atom
         .getIndex(), -1, true, false);
     bs.andNot(bsSelected);
@@ -224,13 +223,15 @@ public class SmilesGenerator {
       SmilesSearch search = null;
       search = SmilesParser.getMolecule("A[=&@]A", true);
       search.jmolAtoms = atoms;
-      search.bsSelected = bsSelected;
+      search.setSelected(bsSelected);
       search.jmolAtomCount = atomCount;
       search.ringDataMax = 7;
       search.setRingData(null);
-      bsAromatic = search.getBsAromatic();
-      ringSets = search.getRingSets();
+      bsAromatic = search.bsAromatic;
+      ringSets = search.ringSets;
       setBondDirections();
+    } else {
+      bsAromatic = new BitSet();
     }
     bsToDo = (BitSet) bsSelected.clone();
     StringBuffer sb = new StringBuffer();

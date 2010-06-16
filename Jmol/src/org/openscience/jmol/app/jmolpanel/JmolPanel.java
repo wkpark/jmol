@@ -597,7 +597,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
       boolean isToggle = Boolean.valueOf(isToggleString).booleanValue();
       if (isToggle) {
         b = new JToggleButton(ii);
-        System.out.println(key);
+        //System.out.println(key);
         if (key.equals("rotateScript"))
           display.buttonRotate = (JToggleButton) b;
         if (key.equals("modelkitScript"))

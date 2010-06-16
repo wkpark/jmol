@@ -506,13 +506,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return mustRender && refreshing;
   }
 
-  public static int getLogLevel() {
-    for (int i = 0; i < Logger.LEVEL_MAX; i++)
-      if (Logger.isActiveLevel(i))
-        return Logger.LEVEL_MAX - i;
-    return 0;
-  }
-
   public Component getDisplay() {
     return display;
   }

@@ -84,7 +84,9 @@ public class SmilesSearch extends JmolMolecule {
   boolean needRingMemberships;
   int ringDataMax = Integer.MIN_VALUE;
   final Vector measures = new Vector();
-  public boolean noAromatic;
+  boolean noAromatic;
+  StringBuffer ringSets;
+  BitSet bsAromatic = new BitSet();
 
   boolean asVector;
   boolean getMaps;
@@ -96,16 +98,7 @@ public class SmilesSearch extends JmolMolecule {
   private int[] ringCounts;
   private int[] ringConnections;
   private boolean isRingCheck;
-  private StringBuffer ringSets;
-  StringBuffer getRingSets() {
-    return ringSets;
-  }
-    
-  private BitSet bsAromatic = new BitSet();
-  BitSet getBsAromatic() {
-    return bsAromatic;
-  }
-  
+  private BitSet bsFound = new BitSet(); 
   private Hashtable htNested;
   private int nNested;
 
@@ -306,8 +299,6 @@ public class SmilesSearch extends JmolMolecule {
     return (asVector || getMaps ? (Object) vReturn : bsReturn);
   }
 
-  private BitSet bsFound = new BitSet();
-  
   /**
    * Check for a specific match of a model set atom with a pattern position
    * 

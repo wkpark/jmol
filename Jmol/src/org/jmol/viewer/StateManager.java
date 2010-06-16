@@ -727,6 +727,8 @@ public class StateManager {
       setParameterValue("hoverLabel", ""); // maintained by the Hover shape
       setParameterValue("isKiosk", viewer.isKiosk()); // maintained by Viewer
       setParameterValue("logFile", viewer.getLogFile()); // maintained by Viewer
+      setParameterValue("logLevel", Logger.getLogLevel());
+
       setParameterValue("mouseWheelFactor", ActionManager.DEFAULT_MOUSE_WHEEL_FACTOR);
       setParameterValue("mouseDragFactor", ActionManager.DEFAULT_MOUSE_DRAG_FACTOR);
       setParameterValue("navFps", TransformManager.DEFAULT_NAV_FPS); 

@@ -67,7 +67,6 @@ public class QchemReader extends MOReader {
 
   private MOInfo[] alphas = null;
   private MOInfo[] betas = null;
-  private int nShell = 0;          // # of shells according to qchem
   private int nBasis = 0;          // # of basis according to qchem
 
   
@@ -308,7 +307,7 @@ $end
     }
     discardLinesUntilStartsWith(" There are");
     tokens = getTokens(line);
-    nShell = parseInt(tokens[2]);
+    //nShell = parseInt(tokens[2]);
     nBasis = parseInt(tokens[5]);
     moData.put("calculationType", calculationType);
   }

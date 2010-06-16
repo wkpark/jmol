@@ -179,24 +179,13 @@ public class MoldenReader extends MopacSlaterReader {
       // We don't know while parsing the [GTO] section if we'll be using 
       // spherical or Cartesian harmonics, so walk the list of shell information
       // and reset as appropriate.
-      Vector sdata = (Vector) moData.get("shells");
-      for (int i = sdata.size(); --i >=0 ;) {
-        int[] slater = (int[]) sdata.get(i);
-        switch (slater[1]) {
-        case JmolAdapter.SHELL_D_CARTESIAN:
-          slater[1] = JmolAdapter.SHELL_D_SPHERICAL;
-          break;
-        case JmolAdapter.SHELL_F_CARTESIAN:
-          slater[1] = JmolAdapter.SHELL_F_SPHERICAL;
-          break;
-        default:
-          // Nothing needs to happen
-          break;
-        }
-      }
-      
+      fixSlaterTypes(JmolAdapter.SHELL_D_CARTESIAN, JmolAdapter.SHELL_D_SPHERICAL);
+      fixSlaterTypes(JmolAdapter.SHELL_F_CARTESIAN, JmolAdapter.SHELL_F_SPHERICAL);
       readLine();
     }
+ 
+    // note that we are assuming Jmol-cannonical order for orbital coefficients.
+    // see BasisFunctionReader
     
     String[] tokens = getTokens();
     while (tokens != null &&  line.indexOf('[') < 0) {

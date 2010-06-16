@@ -49,7 +49,7 @@ abstract class BasisFunctionReader extends AtomSetCollectionReader {
   
   // DC: org.jmol.quantum.MOCalculation expects 
   //      Dxx Dyy Dzz Dxy Dxz Dyz
-
+  
   // FS: org.jmol.quantum.MOCalculation expects
   //        as 2z3-3x2z-3y2z
   //               4xz2-x3-xy2
@@ -62,9 +62,13 @@ abstract class BasisFunctionReader extends AtomSetCollectionReader {
   // FC: org.jmol.quantum.MOCalculation expects
   //           xxx yyy zzz xyy xxy xxz xzz yzz yyz xyz
 
+  // any overriding of these -- make sure they have 6 characters per entry
   
-  protected static String CANONICAL_DC_LIST = "XX    YY    ZZ    XY    XZ    YZ";
+  protected static String CANONICAL_DC_LIST = "DXX   DYY   DZZ   DXY   DXZ   DYZ";
   protected static String CANONICAL_FC_LIST = "XXX   YYY   ZZZ   XYY   XXY   XXZ   XZZ   YZZ   YYZ   XYZ";
+
+  protected static String CANONICAL_DS_LIST = "d0    d1+   d1-   d2+   d2-";
+  protected static String CANONICAL_FS_LIST = "f0    f1+   f1-   f2+   f2-   f3+   f3-";
 
   
   /**
@@ -125,6 +129,16 @@ abstract class BasisFunctionReader extends AtomSetCollectionReader {
     return tag;
   }
   
+  protected void fixSlaterTypes(int typeOld, int typeNew) {
+    // in certain cases we assume Cartesian and then later have to 
+    // correct that. 
+    Vector sdata = (Vector) moData.get("shells");
+    for (int i = sdata.size(); --i >=0 ;) {
+      int[] slater = (int[]) sdata.get(i);
+      if (slater[1] == typeOld)
+        slater[1] = typeNew;
+    }
+  }
 
 
 }

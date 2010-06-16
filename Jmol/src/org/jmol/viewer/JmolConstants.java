@@ -2573,19 +2573,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   //   quantum MO calculation constants need to be here so quantum class is not opened
   
-  private final static String[][] shellOrder = { 
-    {"S"},
-    {"X", "Y", "Z"},
-    {"S", "X", "Y", "Z"},
-    {"d0", "d1+", "d1-", "d2+", "d2-"},
-    {"XX", "YY", "ZZ", "XY", "XZ", "YZ"},
-    {"f0", "f1+", "f1-", "f2+", "f2-", "f3+", "f3-"},
-    {"XXX", "YYY", "ZZZ", "XYY", "XXY", "XXZ", "XZZ", "YZZ", "YYZ", "XYZ"},
-  };
-
-  final public static String[] getShellOrder(int i) {
-    return (i < 0 || i > shellOrder.length ? null : shellOrder[i]);
-  }
+  //   Don't change the order here unless all supporting arrays are 
+  //   also modified. 
   
   final public static int SHELL_S = 0;
   final public static int SHELL_P = 1;
@@ -2612,6 +2601,25 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     SHELL_F_SPHERICAL, SHELL_F_CARTESIAN, 
     SHELL_G_UNSUPPORTED, SHELL_H_UNSUPPORTED,
   };
+  
+  // the following is for reference only and only for debugging purposes:
+  // the actual ordering is set in adapter.quantum.BasisFunctionReader
+  // note that Jmol will adjust for 6D and 10F, but not the others.
+  
+  private final static String[][] shellOrder = { 
+    {"S"},
+    {"X", "Y", "Z"},
+    {"S", "X", "Y", "Z"},
+    {"d0/z2", "d1+/xz", "d1-/yz", "d2+/x2-y2", "d2-/xy"},
+    {"XX", "YY", "ZZ", "XY", "XZ", "YZ"},
+    {"f0/2z3-3x2z-3y2z", "f1+/4xz2-x3-xy2", "f1-/4yz2-x2y-y3", 
+      "f2+/x2z-y2z", "f2-/xyz", "f3+/x3-3xy2", "f3-/3x2y-y3"},
+    {"XXX", "YYY", "ZZZ", "XYY", "XXY", "XXZ", "XZZ", "YZZ", "YYZ", "XYZ"},
+  };
+
+  final public static String[] getShellOrder(int i) {
+    return (i < 0 || i > shellOrder.length ? null : shellOrder[i]);
+  }
   
   public static final String LOAD_ATOM_DATA_TYPES = "xyz;vxyz;vibration;temperature;occupancy;partialcharge";
 
@@ -2646,17 +2654,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     return "" + shell;
   }
   
-  final public static int getQuantumSubshellTagID(int shell, String tag) {
-    for (int iSubshell = shellOrder[shell].length; --iSubshell >= 0; )
-      if (shellOrder[shell][iSubshell].equals(tag))
-        return iSubshell;
-    return -1;
-  }
+  //////////////////////////////////
   
-  final public static String getQuantumSubshellTag(int shell, int subshell) {
-    return shellOrder[shell][subshell];
-  }
-
   public static int modelValue(String strDecimal) {
     //this will overflow, but it doesn't matter -- it's only for file.model
     //2147483647 is maxvalue, so this allows loading

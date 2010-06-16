@@ -544,75 +544,70 @@ $end
  * through the AO's used
  */
 
+  private boolean dFixed = false;
+  private boolean fFixed = false;
+
+  /*
+   * these lists 
+   */
+  private static String DC_LIST = CANONICAL_DC_LIST;
+  private static String DS_LIST = "=" + CANONICAL_DS_LIST;
+  private static String FC_LIST = CANONICAL_FC_LIST;
+  private static String FS_LIST = "=" + CANONICAL_FS_LIST;
+  
   private void readQchemMolecularOrbitals() throws Exception {
-    // since I can't get length of getShellOrder, I need to hardcode here
-    // how many orbitals each shell has.
-    int nOrbitalsPerShell[] = {1,3,4,6,5,10,7};
-    /* reorder: value is offset that the ith AO should have in the shell
-     * because of g03 order of orbitals expected.
-     * g03:   XX, YY, ZZ, XY, XZ, YZ 
-     * qchem: xx, xy, yy, xz, yz, zz : VERIFIED
-     * g03:   d0, d1+, d1-, d2+, d2-
+    /* 
+     * Jmol:   XX, YY, ZZ, XY, XZ, YZ 
+     * qchem: dxx, dxy, dyy, dxz, dyz, dzz : VERIFIED
+     * Jmol:   d0, d1+, d1-, d2+, d2-
      * qchem: d 1=d2-, d 2=d1-, d 3=d0, d 4=d1+, d 5=d2+
-     * g03:   XXX, YYY, ZZZ, XYY, XXY, XXZ, XZZ, YZZ, YYZ, XYZ
-     * qchem: xxx, xxy, xyy, yyy, xxz, xyz, yyz, xzz, yzz, zzz
-     * g03:   f0, f1+, f1-, f2+, f2-, f3+, f3-
+     * Jmol:   XXX, YYY, ZZZ, XYY, XXY, XXZ, XZZ, YZZ, YYZ, XYZ
+     * qchem: fxxx, fxxy, fxyy, fyyy, fxxz, fxyz, fyyz, fxzz, fyzz, fzzz
+     * Jmol:   f0, f1+, f1-, f2+, f2-, f3+, f3-
      * qchem: f 1=f3-, f 2=f2-, f 3=f1-, f 4=f0, f 5=f1+, f 6=f2+, f 7=f3+
      * 
-     * NB d 5 = d2+ show nothing...
      */
-   int[][] reorder = {
-        {0},
-        {0, 1, 2},
-        {0, 1, 2, 3},
-        {0, 3, 1, 4, 5, 2},
-        {4, 2, 0, 1, 3},
-        {0, 4, 3, 1, 5, 9, 8, 6, 7, 2},
-        {6, 4, 2, 0, 1, 3, 5}
-    };
-    float[] reordered = new float[10];
-    int nMOs;  // total number of MOs that were read
-    
+    int nMOs; // total number of MOs that were read
     Vector orbitals = new Vector();
-    String[] aoLabels = new String[nBasis];
     String orbitalType = getTokens(line)[0]; // is RESTRICTED or ALPHA
-    nMOs = readMOs(orbitalType.equals("RESTRICTED"), aoLabels, orbitals, alphas);
+    nMOs = readMOs(orbitalType.equals("RESTRICTED"), orbitals, alphas);
     if (orbitalType.equals("ALPHA")) { // we also have BETA orbitals....
       discardLinesUntilContains("BETA");
-      nMOs += readMOs(false, aoLabels, orbitals, betas);
+      nMOs += readMOs(false, orbitals, betas);
     }
-    // based on labels adjust the cartesian vs pure for the proper shells
-    int iAO = 0; // index of first AO for a particular shell
-    Vector sdata = (Vector) moData.get("shells");
-    // also need the coefficients for easy access to reorder if needed
-    float[][] mocoef = new float[nMOs][];
-    for (int i = 0; i < nMOs; i++) { // get a reference to the mo coefficients
-      Hashtable orb = (Hashtable) orbitals.get(i);
-      mocoef[i] = (float[]) orb.get("coefficients");
-    }    
-    for (int i = 0; i < nShell; i++) {
-      int[] slater = (int[]) sdata.get(i);
-      if (getTokens(aoLabels[iAO]).length > 1 )  // is a spherical orbital
-        slater[1] += slater[1] % 2; // only increment 1 if odd to make spherical
-      int nOrbs = nOrbitalsPerShell[slater[1]];
-      // only check reorder for slater >= SHELL_D_CARTESIAN
-      if (slater[1] >= JmolAdapter.SHELL_D_CARTESIAN) {
-        for (int j=0; j< nMOs; j++) {
-          int[] order = reorder[slater[1]];
-          for (int k=0, l=iAO; k < nOrbs; k++, l++)
-            reordered[order[k]] = mocoef[j][l]; // read in proper order
-          for (int k=0, l=iAO; k < nOrbs; k++, l++)
-            mocoef[j][l] = reordered[k];        // now just set them
-        }
+    boolean isOK = true;
+    if (dList.length() > 0) {
+      if (dList.indexOf("=") < 0) // from "=D0"
+        isOK = getDFMap(dList, JmolAdapter.SHELL_D_CARTESIAN, DC_LIST, 3);
+      else
+        isOK = getDFMap(dList, JmolAdapter.SHELL_D_SPHERICAL, DS_LIST, 3);
+      if (!isOK) {
+        Logger.error("atomic orbital order is unrecognized -- skipping reading of MOs. dList=" + dList);
+        orbitals = null;
+        return;
       }
-      iAO += nOrbs;
-    }   
+    }
+    if (fList.length() > 0) {
+      if (fList.indexOf("=") < 0) // from "=F0"
+        isOK = getDFMap(fList, JmolAdapter.SHELL_F_CARTESIAN, FC_LIST, 3);
+      else
+        isOK = getDFMap(fList, JmolAdapter.SHELL_F_SPHERICAL, FS_LIST, 3);
+      if (!isOK) {
+        Logger.error("atomic orbital order is unrecognized -- skipping reading of MOs. fList=" + fList);
+        orbitals = null;
+        return;
+      }
+    }
+
     moData.put("mos", orbitals);
     moData.put("energyUnits", "au");
     setMOData(moData);
   }
 
-  private int readMOs(boolean restricted, String[] aoLabels,
+  String dList = "";
+  String fList = "";
+  
+  private int readMOs(boolean restricted,
                       Vector orbitals, MOInfo[] moInfos) throws Exception {
     Hashtable[] mos = new Hashtable[6];  // max 6 MO's per line
     float[][] mocoef = new float[6][];   // coefficients for each MO
@@ -631,7 +626,27 @@ $end
       }
       for (int i = 0; i < nBasis; i++) {
         tokens = getTokens(readLine());
-        aoLabels[i] = line.substring(12, 17); // collect the shell labels
+        String s = line.substring(12, 18).trim(); // collect the shell labels
+        switch (s.charAt(0)) {
+        case 'd':
+          s = s.substring(s.length() - 3).toUpperCase();
+          if (dList.indexOf(s) < 0)
+            dList += s + " ";
+          if (!dFixed && s.startsWith("D ")) {
+             fixSlaterTypes(JmolAdapter.SHELL_D_CARTESIAN, JmolAdapter.SHELL_D_SPHERICAL);
+          }
+          dFixed = true;
+          break;
+        case 'f':
+          s = s.substring(s.length() - 3).toUpperCase();
+          if (fList.indexOf(s) < 0)
+            fList += s + " ";
+          if (!fFixed && s.startsWith("F ")) {
+             fixSlaterTypes(JmolAdapter.SHELL_F_CARTESIAN, JmolAdapter.SHELL_F_SPHERICAL);
+          }
+          fFixed = true;
+          break;
+        }
         for (int j = tokens.length-nMO, k=0; k < nMO; j++, k++)
           mocoef[k][i] = parseFloat(tokens[j]);
       }

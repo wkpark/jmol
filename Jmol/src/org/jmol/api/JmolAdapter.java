@@ -72,10 +72,10 @@ public abstract class JmolAdapter {
   public final static int        SHELL_P           = JmolConstants.SHELL_P;
   public final static int        SHELL_SP          = JmolConstants.SHELL_SP;
   public final static int        SHELL_L           = JmolConstants.SHELL_L;
-  public final static int        SHELL_D_CARTESIAN = JmolConstants.SHELL_D_CARTESIAN;
   public final static int        SHELL_D_SPHERICAL = JmolConstants.SHELL_D_SPHERICAL;
-  public final static int        SHELL_F_CARTESIAN = JmolConstants.SHELL_F_CARTESIAN;
+  public final static int        SHELL_D_CARTESIAN = JmolConstants.SHELL_D_CARTESIAN;
   public final static int        SHELL_F_SPHERICAL = JmolConstants.SHELL_F_SPHERICAL;
+  public final static int        SHELL_F_CARTESIAN = JmolConstants.SHELL_F_CARTESIAN;
   
   public static String getElementSymbol(int elementNumber) {
     return Elements.elementSymbolFromNumber(elementNumber);
@@ -97,10 +97,6 @@ public abstract class JmolAdapter {
     return JmolConstants.getQuantumShellTagIDSpherical(tag);
   }
   
-  final public static int getQuantumSubshellTagID(int shell, String tag) {
-    return JmolConstants.getQuantumSubshellTagID(shell, tag);
-  }
-                                           
   final public static short lookupGroupID(String group3) {
     return Group.lookupGroupID(group3);
   }

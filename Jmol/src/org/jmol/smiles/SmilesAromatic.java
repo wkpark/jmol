@@ -42,7 +42,8 @@ public class SmilesAromatic {
    *       a set of atoms with coordinate positions and associated bonds.
    * @param bs
    *       a bitset of atoms within the set of atoms, defining the ring 
-   * @param bsSelected 
+   * @param bsSelected
+   *       must not be null 
    * @param cutoff
    *       an arbitrary value to test the standard deviation against. 
    *       0.01 is appropriate here.   
@@ -129,7 +130,7 @@ public class SmilesAromatic {
         continue;
       for (int n = 0, k = bonds.length; --k >= 0;) {
         int iAtom = ringAtom.getBondedAtomIndex(k);
-        if (bsSelected != null && !bsSelected.get(iAtom))
+        if (!bsSelected.get(iAtom))
           continue;
         if (++n > 3)
           return false;
@@ -148,7 +149,7 @@ public class SmilesAromatic {
       int r2 = -1;
       for (int k = bonds.length; --k >= 0;) {
         int iAtom = ringAtom.getBondedAtomIndex(k);
-        if (bsSelected != null && !bsSelected.get(iAtom))
+        if (!bsSelected.get(iAtom))
           continue;
         if (!bs.get(iAtom))
           iSub = iAtom;

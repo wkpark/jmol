@@ -258,7 +258,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
       search.jmolAtomCount = Math.abs(atomCount);
       if (atomCount < 0)
         search.isSmilesFind = true;
-      search.bsSelected = bsSelected;
+      search.setSelected(bsSelected);
       search.bsRequired = null;//(bsRequired != null && bsRequired.cardinality() > 0 ? bsRequired : null);
       search.setRingData(bsAromatic);
       Vector vSubstructures;

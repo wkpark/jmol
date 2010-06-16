@@ -61,7 +61,14 @@ public class SmilesSearch extends JmolMolecule {
   String pattern;
   JmolNode[] jmolAtoms;
   int jmolAtomCount;
-  BitSet bsSelected;
+  private BitSet bsSelected;
+  void setSelected(BitSet bs) {
+    if (bs == null) {
+      bs = new BitSet(jmolAtomCount);
+      bs.set(0, jmolAtomCount);
+    }
+    bsSelected = bs;
+  }
   BitSet bsRequired;
   boolean firstMatchOnly;
   boolean matchAllAtoms;
@@ -191,7 +198,7 @@ public class SmilesSearch extends JmolMolecule {
       }
     }
     if (needRingData) {
-      for (int i = 0; i < jmolAtomCount; i++) {
+      for (int i = bsSelected.nextSetBit(0); i >= 0; i = bsSelected.nextSetBit(i + 1)) {
         JmolNode atom = jmolAtoms[i];
         JmolEdge[] bonds = atom.getEdges();
         if (bonds != null)
@@ -276,12 +283,16 @@ public class SmilesSearch extends JmolMolecule {
 
     if (asVector || getMaps)
       vReturn = new Vector();
-    selectedAtomCount = (bsSelected == null ? jmolAtomCount : bsSelected.cardinality());
+    if (bsSelected == null) {
+      bsSelected = new BitSet(jmolAtomCount);
+      bsSelected.set(0, jmolAtomCount);
+    }
+    selectedAtomCount = bsSelected.cardinality();
     //System.out.println("smilesseearch search" + pattern);
     if (atomCount > 0) {
       SmilesAtom atom0 = patternAtoms[0];
       boolean skipGroup = (atom0.isBioAtom && atom0.atomName == null);
-      for (int i = 0; i < jmolAtomCount; i++) {
+      for (int i = bsSelected.nextSetBit(0); i >= 0; i = bsSelected.nextSetBit(i + 1)) {
         bsFound.clear();
         if (!checkMatch(atom0, 0, i, firstAtomOnly))
           break;
@@ -316,7 +327,7 @@ public class SmilesSearch extends JmolMolecule {
 
     // check for requested selection or not-selection
 
-    if (bsFound.get(iAtom) || bsSelected != null && !bsSelected.get(iAtom))
+    if (bsFound.get(iAtom) || !bsSelected.get(iAtom))
       return true;
 
     JmolNode atom = jmolAtoms[iAtom];
@@ -436,7 +447,7 @@ public class SmilesSearch extends JmolMolecule {
           for (int k = 0; k < bonds.length; k++)
             bs.set(bonds[k].getOtherAtom(a).getIndex());
         }
-        for (int j = 0; j < jmolAtomCount; j++)
+        for (int j = bsSelected.nextSetBit(0); j>= 0; j = bsSelected.nextSetBit(j + 1))
           if (!bs.get(j) && !checkMatch(patternAtom, atomNum, j, firstAtomOnly))
             return false;
 
@@ -475,7 +486,7 @@ public class SmilesSearch extends JmolMolecule {
         Vector vLinks = new Vector();
         atom.getCrossLinkLeadAtomIndexes(vLinks);
         BitSet bs = new BitSet();
-        atom1.setGroupBits(bs);
+        atom.setGroupBits(bs);
         bsFound.or(bs);
         for (int j = 0; j < vLinks.size(); j++)
           if (!checkMatch(patternAtom, atomNum, ((Integer) vLinks.get(j))

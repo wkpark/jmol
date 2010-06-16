@@ -8468,6 +8468,12 @@
   <fah_proj number="6505" name="p6505_1CFC_A_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="16825" preferred="14" deadline="21"
     credit="74" frames="100" code="G" contact="lan" contrib="SandStar"/>
+  <fah_proj number="6507" name="p6507_1CFC_B_predict" public="n"
+    server="171.64.65.62" atoms="21293" preferred="18" deadline="27"
+    credit="99" frames="100" code="G" contact="lan"/>
+  <fah_proj number="6508" name="p6508_proG_predict" public="n"
+    server="171.64.65.62" atoms="16027" preferred="13" deadline="20"
+    credit="72" frames="100" code="G" contact="lan"/>
 
   <!-- Projects 6600 to 6699 -->
   <fah_proj number="6600" name="p6600_CspTm_300K" public="y"

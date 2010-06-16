@@ -307,8 +307,7 @@ public class MOCalculation extends QuantumCalculation implements
         addData10F();
       break;
     default:
-      Logger.warn(" Unsupported basis type for atomno=" + (atomIndex + 1)
-          + " -- use \"set loglevel 5\" to debug.");
+      Logger.warn(" Unsupported basis type for atomno=" + (atomIndex + 1) + ": " + basisType);
       break;
     }
   }
@@ -1118,7 +1117,7 @@ public class MOCalculation extends QuantumCalculation implements
     if (shell >= 0 && Logger.debugging) {
       String[] so = JmolConstants.getShellOrder(shell);
       for (int i = 0; i < so.length; i++)
-        Logger.debug("MO coeff " + so[i] + " " + (map[i] + moCoeff + i + 1) + " "
+        Logger.debug("MO coeff " + (so == null ? "?" + i  : so[i]) + " " + (map[i] + moCoeff + i + 1) + " "
             + moCoefficients[map[i] + moCoeff + i]);
     }
   }

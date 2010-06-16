@@ -2577,14 +2577,14 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     {"S"},
     {"X", "Y", "Z"},
     {"S", "X", "Y", "Z"},
-    {"XX", "YY", "ZZ", "XY", "XZ", "YZ"},
     {"d0", "d1+", "d1-", "d2+", "d2-"},
+    {"XX", "YY", "ZZ", "XY", "XZ", "YZ"},
+    {"f0", "f1+", "f1-", "f2+", "f2-", "f3+", "f3-"},
     {"XXX", "YYY", "ZZZ", "XYY", "XXY", "XXZ", "XZZ", "YZZ", "YYZ", "XYZ"},
-    {"f0", "f1+", "f1-", "f2+", "f2-", "f3+", "f3-"}
   };
 
   final public static String[] getShellOrder(int i) {
-    return shellOrder[i];
+    return (i < 0 || i > shellOrder.length ? null : shellOrder[i]);
   }
   
   final public static int SHELL_S = 0;
@@ -2598,16 +2598,19 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   final public static int SHELL_D_CARTESIAN = 4;
   final public static int SHELL_F_SPHERICAL = 5;
   final public static int SHELL_F_CARTESIAN = 6;
+  final public static int SHELL_G_UNSUPPORTED = 7;
+  final public static int SHELL_H_UNSUPPORTED = 8;
 
   final private static String[] quantumShellTags = {
     "S", "P", "SP", "L", 
     "5D", "D", 
-    "7F", "F"};
+    "7F", "F", "G", "H"};
   
   final private static int[] quantumShellIDs = {
     SHELL_S, SHELL_P, SHELL_SP, SHELL_L, 
     SHELL_D_SPHERICAL, SHELL_D_CARTESIAN, 
-    SHELL_F_SPHERICAL, SHELL_F_CARTESIAN 
+    SHELL_F_SPHERICAL, SHELL_F_CARTESIAN, 
+    SHELL_G_UNSUPPORTED, SHELL_H_UNSUPPORTED,
   };
   
   public static final String LOAD_ATOM_DATA_TYPES = "xyz;vxyz;vibration;temperature;occupancy;partialcharge";

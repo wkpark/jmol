@@ -318,13 +318,14 @@ public class JaguarReader extends MOReader {
           lumoEnergy = Float.MAX_VALUE;
         }
         nMo++;
-        for (int i = 0; i < moCount; i++) {
+        for (int i = 0, pt =0; i < moCount; i++) {
           String type = dataBlock[i][2];
           //TODO: sort these?
           char ch = type.charAt(0);
           if (!isQuantumBasisSupported(ch))
             continue;
-          coefs[i] = parseFloat((String) dataBlock[i][iOrb + 3]);
+          coefs[pt] = parseFloat((String) dataBlock[i][iOrb + 3]);
+          pt++;
         }
         mo.put("coefficients", coefs);
         orbitals.addElement(mo);

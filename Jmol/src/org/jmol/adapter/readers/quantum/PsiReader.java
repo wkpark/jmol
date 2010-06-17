@@ -371,6 +371,10 @@ Orbital energies (a.u.):
 
    */
   void readPsiMolecularOrbitals() throws Exception {
+    
+    //TODO: This reader will fail for G orbitals
+    //TODO: No way to check order
+    
     Hashtable[] mos = new Hashtable[5];
     Vector[] data = new Vector[5];
     int nThisLine = 0;

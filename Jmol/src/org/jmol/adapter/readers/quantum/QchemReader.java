@@ -623,10 +623,11 @@ $end
         mocoef[i] = new float[nBasis];
         mos[i] = new Hashtable();
       }
-      for (int i = 0; i < nBasis; i++) {
+      for (int i = 0, pt = 0; i < nBasis; i++) {
         tokens = getTokens(readLine());
         String s = line.substring(12, 18).trim(); // collect the shell labels
-        switch (s.charAt(0)) {
+        char ch = s.charAt(0);
+        switch (ch) {
         case 'd':
           s = s.substring(s.length() - 3).toUpperCase();
           if (dList.indexOf(s) < 0)
@@ -645,9 +646,14 @@ $end
           }
           fFixed = true;
           break;
+        default:
+          if (!isQuantumBasisSupported(ch))
+            continue;
+          break;
         }
         for (int j = tokens.length-nMO, k=0; k < nMO; j++, k++)
-          mocoef[k][i] = parseFloat(tokens[j]);
+          mocoef[k][pt] = parseFloat(tokens[j]);
+        pt++;
       }
       // we have all the info we need 
       for (int i = 0; i < nMO; i++ ) {

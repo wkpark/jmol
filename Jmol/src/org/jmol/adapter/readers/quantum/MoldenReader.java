@@ -184,8 +184,9 @@ public class MoldenReader extends MopacSlaterReader {
       readLine();
     }
  
-    // note that we are assuming Jmol-cannonical order for orbital coefficients.
+    // TODO we are assuming Jmol-cannonical order for orbital coefficients.
     // see BasisFunctionReader
+    // TODO no check here for G orbitals
     
     String[] tokens = getTokens();
     while (tokens != null &&  line.indexOf('[') < 0) {

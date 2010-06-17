@@ -1755,7 +1755,7 @@ public class ScriptEvaluator {
   ScriptVariable runFunction(String name, Vector params, Token tokenAtom, boolean getReturn) throws ScriptException {
     pushContext(null);
     contextPath += " >> function " + name;
-    System.out.println(contextPath);
+    //System.out.println(contextPath);
     ScriptFunction function = viewer.getFunction(name);
     if (function == null)
       return null;

@@ -258,4 +258,25 @@ public class SmilesBond implements JmolEdge {
     return bondType == TYPE_BIO_PAIR;
   }
 
+  void switchAtoms() {
+    System.out.println("FIXING BOND " + this);
+    SmilesAtom a = atom1;
+    atom1 = atom2;
+    atom2 = a;
+    switch (bondType) {
+    case TYPE_ATROPISOMER_1:
+      bondType = TYPE_ATROPISOMER_2;
+      break;
+    case TYPE_ATROPISOMER_2:
+      bondType = TYPE_ATROPISOMER_1;
+      break;
+    case TYPE_DIRECTIONAL_1:
+      bondType = TYPE_DIRECTIONAL_2;
+      break;
+    case TYPE_DIRECTIONAL_2:
+      bondType = TYPE_DIRECTIONAL_1;
+      break;
+    }
+  }
+
 }

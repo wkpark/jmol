@@ -361,8 +361,14 @@ public class SmilesSearch extends JmolMolecule {
 
       switch (patternBond.bondType) {
       case SmilesBond.TYPE_BIO_SEQUENCE:
+        if (jmolAtoms[matchingAtom].getOffsetResidueAtom("0", 1)
+            == jmolAtoms[iAtom].getOffsetResidueAtom("0", 0))
+            break;
+        return false;
       case SmilesBond.TYPE_BIO_PAIR:
-        continue; // no bond check here
+        if (jmolAtoms[iAtom].isCrossLinked(jmolAtoms[matchingAtom]))
+          break;
+        return true;
       default:
 
         // regular SMILES/SMARTS check 

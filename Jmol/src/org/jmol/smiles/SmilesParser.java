@@ -257,7 +257,6 @@ public class SmilesParser {
       int[] ret = new int[1];
       int index = 0;
       int pt = 0;
-      int len = pattern.length();
       char ch = pattern.charAt(0);
       boolean haveOpen = checkBrace(molecule, ch, '{');
       if (haveOpen)
@@ -279,8 +278,8 @@ public class SmilesParser {
         ch = getChar(pattern, index);
         if (ch == '}' && checkBrace(molecule, ch, '}'))
           index++;
-        if (index == len && !isSmarts && !isBioSequence)
-          throw new InvalidSmilesException("Pattern must not end with ')'");
+        // DAYLIGHT DEPICT doesn't care...if (index == len && !isSmarts && !isBioSequence)
+          //throw new InvalidSmilesException("Pattern must not end with ')'");
       } else {
         pt = index;
         while (SmilesBond.isBondType(ch, isSmarts))

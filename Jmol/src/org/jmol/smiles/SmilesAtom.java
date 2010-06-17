@@ -539,10 +539,20 @@ public class SmilesAtom extends Point3f implements JmolNode {
       System.arraycopy(primitives, 0, tmp, 0, nPrimitives);
       primitives = tmp;
     }
-    if (isBioAtom)
-      for (int i = 0; i < bonds.length; i++)
-        if (bonds[i].bondType == SmilesBond.TYPE_AROMATIC)
+      for (int i = 0; i < bonds.length; i++) {
+        if (isBioAtom && bonds[i].bondType == SmilesBond.TYPE_AROMATIC)
           bonds[i].bondType = SmilesBond.TYPE_BIO_PAIR;
+        if (bonds[i].getAtom1().index > bonds[i].getAtom2().index) {
+          // it is possible, particularly for a connection to a an atom 
+          // with a branch:   C(CCCN1)1
+          // for the second assigned atom to not have the
+          // higher index. That would prevent SmilesParser
+          // from checking bonds. (atom 1 in this case, for 
+          // example, would be the second atom in a bond for
+          // which the first atom (N) would not yet be assigned.
+          bonds[i].switchAtoms();
+        }
+      }
   }
 
   public JmolEdge[] getEdges() {

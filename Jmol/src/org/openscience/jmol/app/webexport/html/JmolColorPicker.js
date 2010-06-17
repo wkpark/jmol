@@ -47,12 +47,6 @@ function changeClass(someObj,someClassName) {
     someObj.setAttribute("className",someClassName);  // this is for IE
 }
 
-//Jmol set up functions to allow local testing easily
-function addJavaScript(path, file) {
- document.write("<"+"script src=\"" + path + "/" + file + "\" type=\"text/javascript\"><" + "/script>"); 
-}
-
-
 //Build the ColorPicker Div.
 
 // detect if browser supports data:URI   (IE6 & IE7 do not)

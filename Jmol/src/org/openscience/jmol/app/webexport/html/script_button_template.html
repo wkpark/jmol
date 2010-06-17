@@ -36,13 +36,13 @@ html, body { height:100%; overflow:hidden; margin:0; padding:0; }
   <script src="JmolPopIn.js" type="text/javascript"></script>
   @WIDGETJSFILES@
   <script type="text/javascript">
-	var jmoljarpath = ".."; // where JmolApplet*.jar is to be found on a server
-    var jmoljspath = "..";  // where Jmol.js is to be found on a server
+	var jmoljarpath = "@REMOTEAPPLETPATH@"; // where JmolApplet*.jar is to be found on a server
+    var jmoljspath = "@REMOTEAPPLETPATH@";  // where Jmol.js is to be found on a server
     var jmoljarfile = "JmolApplet0.jar";  // set to JmolApplet0.jar to use incremental loading of parts as needed. 
-	var jmollocaljarpath = "."; // where JmolApplet*.jar is to be found locally
-    var jmollocaljspath = ".";  // where Jmol.js is to be found locally
+	var jmollocaljarpath = "@LOCALAPPLETPATH@"; // where JmolApplet*.jar is to be found locally
+    var jmollocaljspath = "@LOCALAPPLETPATH@";  // where Jmol.js is to be found locally
     var jmollocaljar ="JmolApplet.jar";  //JmolApplet.jar is everything in one file 
- 	var dataDir = ".";                // where the model AND .spt files are to be found.
+ 	var dataDir = ".";      // where the model AND .spt files are to be found.  Used by JmolPopIn.js
  	var jmolWidgetStrs = new Array(); // strings to hold view dependent widget definitions.
  	changePathIfLocal();
   </script>

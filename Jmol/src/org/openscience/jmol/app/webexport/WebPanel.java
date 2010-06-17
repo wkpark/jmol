@@ -398,6 +398,14 @@ abstract class WebPanel extends JPanel implements ActionListener,
   
   public void actionPerformed(ActionEvent e) {
 
+    if (e.getSource() == helpButton) {
+      HelpDialog webExportHelp = new HelpDialog(WebExport.getFrame(), WebExport
+          .getHtmlResource(this, panelName + "_instructions"));
+      webExportHelp.setVisible(true);
+      webExportHelp.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+      return;
+    }
+
     if (e.getSource() == remoteAppletPath) {// apparently no events are fired to
                                             // reach this, maybe "enter" does it
       String path = remoteAppletPath.getText();
@@ -494,7 +502,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
       if (returnVal != JFileChooser.APPROVE_OPTION)
         return;
       File file = fc.getSelectedFile();
-      boolean retVal = true;
+      String retVal = null;
       try {
         String path = remoteAppletPath.getText();
         WebExport.setAppletPath(path, true);
@@ -506,16 +514,14 @@ abstract class WebPanel extends JPanel implements ActionListener,
       } catch (IOException IOe) {
         LogPanel.log(IOe.getMessage());
       }
-      if (!retVal) {
+      if (retVal != null) {
+        LogPanel.log(GT._("file {0} created", retVal));
+      } else {
         LogPanel.log(GT._("Call to FileWriter unsuccessful."));
       }
-    }
-    if (e.getSource() == helpButton) {
-      HelpDialog webExportHelp = new HelpDialog(WebExport.getFrame(), WebExport
-          .getHtmlResource(this, panelName + "_instructions"));
-      webExportHelp.setVisible(true);
-      webExportHelp.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-    }
+      return;
+    } 
+    
   }
 
   public void valueChanged(ListSelectionEvent e) {
@@ -553,15 +559,25 @@ abstract class WebPanel extends JPanel implements ActionListener,
     return (instance == null ? "" : instance.name);
   }
 
-  boolean fileWriter(File file, JList InstanceList) throws IOException { // returns
+  String fileWriter(File file, JList InstanceList) throws IOException { // returns
                                                                           // true
                                                                           // if
                                                                           // successful.
     useAppletJS = JmolViewer.checkOption(viewer, "webMakerCreateJS");
     // JOptionPane.showMessageDialog(null, "Creating directory for data...");
-    String datadirPath = file.getPath();
+    String datadirPath = file.getPath().replace('\\','/');
     String datadirName = file.getName();
-    String fileName = null;
+    String fileName;
+    if (datadirName.indexOf(".htm") < 0) {
+      File f = new File(datadirPath + ".html"); 
+      if (f.exists()) {
+        datadirName += ".html";
+        file = f;
+      } else if ((f = new File(datadirPath + ".htm")).exists()) {
+        datadirName += ".htm";
+        file = f;
+      }
+    }
     if (datadirName.indexOf(".htm") > 0) {
       fileName = datadirName;
       datadirPath = file.getParent();
@@ -571,6 +587,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
       fileName = datadirName + ".html";
     }
     datadirPath = datadirPath.replace('\\', '/');
+    fileName = datadirPath + "/" + fileName;
     boolean made_datadir = (file.exists() && file.isDirectory() || file.mkdir());
     DefaultListModel listModel = (DefaultListModel) InstanceList.getModel();
     LogPanel.log("");
@@ -692,14 +709,13 @@ abstract class WebPanel extends JPanel implements ActionListener,
       html = TextFormat.simpleReplace(html, "@LOGDATA@", "<pre>\n"
           + LogPanel.getText() + "\n</pre>\n");
       LogPanel.log("      ..." + GT._("creating {0}", fileName));
-      viewer.writeTextFile(datadirPath + "/" + fileName, html);
+      viewer.writeTextFile(fileName, html);
     } else {
       IOException IOe = new IOException("Error creating directory: "
           + datadirPath);
       throw IOe;
     }
-    LogPanel.log("");
-    return true;
+    return fileName;
   }
 
   public BitSet allSelectedWidgets() {

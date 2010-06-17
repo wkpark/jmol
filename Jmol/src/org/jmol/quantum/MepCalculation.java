@@ -94,12 +94,18 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
   }
   
   public void assignPotentials(Atom[] atoms, float[] potentials,
-                             BitSet bsAromatic, BitSet bsCarbonyl, String data) {
+                               BitSet bsAromatic, BitSet bsCarbonyl,
+                               BitSet bsIgnore, String data) {
     getAtomicPotentials(data, null);
     for (int i = 0; i < atoms.length; i++) {
-        float f = getTabulatedPotential(atoms[i]);
+      float f;
+      if (bsIgnore != null && bsIgnore.get(i)) {
+        f = Float.NaN;
+      } else {
+        f = getTabulatedPotential(atoms[i]);
         if (Float.isNaN(f))
           f = 0;
+      }
       if (Logger.debugging)
         Logger.info(atoms[i].getInfo() + " " + f);
       potentials[i] = f;

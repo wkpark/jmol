@@ -14132,6 +14132,7 @@ public class ScriptEvaluator {
     Boolean smoothing = null;
     BitSet bs;
     BitSet bsSelect = null;
+    BitSet bsIgnore = null;
     StringBuffer sbCommand = new StringBuffer();
     Point3f[] pts;
     String str = null;
@@ -14531,7 +14532,7 @@ public class ScriptEvaluator {
         if (!isSyntaxCheck)
           try {
             data = (fname == null && isMep ? viewer.getPartialCharges()
-                : viewer.getAtomicPotentials(isMep, bsSelect, fname));
+                : viewer.getAtomicPotentials(isMep, bsSelect, bsIgnore, fname));
           } catch (Exception e) {
             // ignore
           }
@@ -14830,7 +14831,7 @@ public class ScriptEvaluator {
         break;
       case Token.ignore:
         propertyName = "ignore";
-        propertyValue = expression(++i);
+        propertyValue = bsIgnore = expression(++i);
         sbCommand.append(" ignore ").append(
             Escape.escape((BitSet) propertyValue));
         i = iToken;

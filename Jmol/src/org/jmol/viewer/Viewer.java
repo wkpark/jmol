@@ -8044,12 +8044,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getPartialCharges();
   }
 
-  public float[] getAtomicPotentials(boolean isMep, BitSet bsSelected, String fileName) {
+  public float[] getAtomicPotentials(boolean isMep, BitSet bsSelected, BitSet bsIgnore, String fileName) {
     float[] potentials = new float[getAtomCount()];
     MepCalculationInterface m = (MepCalculationInterface) Interface.getOptionInterface("quantum.MlpCalculation");
     String data = (fileName == null ? null : getFileAsString(fileName));
     m.assignPotentials(modelSet.atoms, potentials, getSmartsMatch("a", bsSelected), 
-        getSmartsMatch("/noAromatic/C(=O)*", bsSelected), data);
+        getSmartsMatch("/noAromatic/[$(C=O),$(O=C), $(NC=O)]", bsSelected), bsIgnore, data);
     return potentials;
   }
 
@@ -8503,12 +8503,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     try {
       if (logFile == null || data == null)
         return;
-      if (data.startsWith("NOW"))
+      boolean doClear = (data.equals("$CLEAR$"));
+      if (data.startsWith("$NOW$"))
         data = (new Date()).toString() + "\t" + data.substring(3);
-      FileWriter fstream = new FileWriter(logFile, true);
+      FileWriter fstream = new FileWriter(logFile, !doClear);
       BufferedWriter out = new BufferedWriter(fstream);
-      out.write(data);
-      out.write('\n');
+      if (!doClear) {
+        out.write(data);
+        out.write('\n');
+      }
       out.close();
     } catch (Exception e) {
       Logger.debug("cannot log " + data);

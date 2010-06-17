@@ -287,7 +287,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     long time = System.currentTimeMillis(); 
     // at most every 10 seconds
     if (time - lastLogTime > 10000) {
-      viewer.log("NOW multitouch " + type + " pt= " + pt);
+      viewer.log("$NOW$ multitouch " + type + " pt= " + pt);
       lastLogTime = time;
     }
   }

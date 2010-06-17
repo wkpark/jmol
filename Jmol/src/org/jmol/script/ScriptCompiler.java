@@ -608,7 +608,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         } else {
           parenCount = setBraceCount = 0;
           setCommand(lastFlowCommand);
-          if (lastFlowCommand.tok != Token.process)
+          if (lastFlowCommand.tok != Token.process && tokAt(0) == Token.leftbrace)
             ltoken.removeElementAt(0);
         }
       }

@@ -907,7 +907,7 @@ public class ActionManager {
           viewer.spinXYBy(dragGesture.getDX(4, 2), dragGesture.getDY(4, 2),
               speed * 30 * gestureSwipeFactor);
         if (viewer.getLogGestures())
-          viewer.log("NOW swipe " + dragGesture + " " + speed);
+          viewer.log("$NOW$ swipe " + dragGesture + " " + speed);
         return;
       }
 

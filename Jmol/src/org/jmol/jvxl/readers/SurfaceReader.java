@@ -573,7 +573,7 @@ public abstract class SurfaceReader implements VertexDataServer {
   }
 
   public int addVertexCopy(Point3f vertexXYZ, float value, int assocVertex) {
-    if (Float.isNaN(value))
+    if (Float.isNaN(value) && assocVertex != MarchingSquares.EDGE_POINT)
       return -1;
     if (meshDataServer == null)
       return meshData.addVertexCopy(vertexXYZ, value, assocVertex);

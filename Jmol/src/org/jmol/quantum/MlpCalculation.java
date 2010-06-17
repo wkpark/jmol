@@ -41,26 +41,33 @@ public class MlpCalculation extends MepCalculation {
   }  
 
   public void assignPotentials(Atom[] atoms, float[] potentials,
-                             BitSet bsAromatic, BitSet bsCarbonyl, String data) {
+                               BitSet bsAromatic, BitSet bsCarbonyl,
+                               BitSet bsIgnore, String data) {
     getAtomicPotentials(data, "atomicLipophilicity.txt");
     for (int i = 0; i < atoms.length; i++) {
       float f = Math.abs(atoms[i].getFormalCharge());
       if (f == 0) {
-        f = getTabulatedPotential(atoms[i]);
-        if (Float.isNaN(f))
-          switch (atoms[i].getElementNumber()) {
-          case 6:
-            f = (bsAromatic.get(i) ? 0.31f : bsCarbonyl.get(i) ? -0.54f : 0.45f);
-            break;
-          case 7:
-            f = (bsAromatic.get(i) ? -0.6f : bsCarbonyl.get(i) ? -0.44f : -1.0f);
-            break;
-          case 8:
-            f = (bsCarbonyl.get(i) ? -0.9f : -0.17f);
-            break;
-          default:
-            f = 0;
-          }
+        if (bsIgnore != null && bsIgnore.get(i)) {
+          f = Float.NaN;
+        } else {
+          f = getTabulatedPotential(atoms[i]);
+          if (Float.isNaN(f))
+            switch (atoms[i].getElementNumber()) {
+            case 6:
+              f = (bsAromatic.get(i) ? 0.31f : bsCarbonyl.get(i) ? -0.54f
+                  : 0.45f);
+              break;
+            case 7:
+              f = (bsAromatic.get(i) ? -0.6f : bsCarbonyl.get(i) ? -0.44f
+                  : -1.0f);
+              break;
+            case 8:
+              f = (bsCarbonyl.get(i) ? -0.9f : -0.17f);
+              break;
+            default:
+              f = Float.NaN;
+            }
+        }
       }
       if (Logger.debugging)
         Logger.info(atoms[i].getInfo() + " " + f);

@@ -419,6 +419,8 @@ but:
         continue;
       }
       try {
+        if (!isQuantumBasisSupported(line.charAt(13)))
+          continue;
         tokens = getStrings(line.substring(21), nThisLine, 10);
         for (int i = 0; i < nThisLine; i++)
           data[i].addElement(tokens[i]);

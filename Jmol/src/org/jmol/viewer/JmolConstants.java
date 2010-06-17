@@ -2587,24 +2587,31 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   final public static int SHELL_D_CARTESIAN = 4;
   final public static int SHELL_F_SPHERICAL = 5;
   final public static int SHELL_F_CARTESIAN = 6;
-  final public static int SHELL_G_UNSUPPORTED = 7;
-  final public static int SHELL_H_UNSUPPORTED = 8;
-
+  final public static int SHELL_G_SPHERICAL = 7;
+  final public static int SHELL_G_CARTESIAN = 8;
+  final public static int SHELL_H_SPHERICAL = 9;
+  final public static int SHELL_H_CARTESIAN = 10;
+  
+  final public static String SUPPORTED_BASIS_FUNCTIONS = "SPLDF";
+  
   final private static String[] quantumShellTags = {
     "S", "P", "SP", "L", 
-    "5D", "D", 
-    "7F", "F", "G", "H"};
+    "5D", "D", "7F", "F",
+    "9G", "G", "10H", "H",
+    };
   
   final private static int[] quantumShellIDs = {
     SHELL_S, SHELL_P, SHELL_SP, SHELL_L, 
     SHELL_D_SPHERICAL, SHELL_D_CARTESIAN, 
     SHELL_F_SPHERICAL, SHELL_F_CARTESIAN, 
-    SHELL_G_UNSUPPORTED, SHELL_H_UNSUPPORTED,
+    SHELL_G_SPHERICAL, SHELL_G_CARTESIAN, SHELL_H_SPHERICAL, SHELL_H_CARTESIAN, 
   };
   
   // the following is for reference only and only for debugging purposes:
   // the actual ordering is set in adapter.quantum.BasisFunctionReader
   // note that Jmol will adjust for 6D and 10F, but not the others.
+  
+  public static final String SUPPORTED_BASES = "SPDLF";
   
   private final static String[][] shellOrder = { 
     {"S"},
@@ -2621,14 +2628,6 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     return (i < 0 || i > shellOrder.length ? null : shellOrder[i]);
   }
   
-  public static final String LOAD_ATOM_DATA_TYPES = "xyz;vxyz;vibration;temperature;occupancy;partialcharge";
-
-  public final static int ANIMATION_ONCE = 0;
-  public final static int ANIMATION_LOOP = 1;
-  public final static int ANIMATION_PALINDROME = 2;
-  
-  public final static float radiansPerDegree = (float) (Math.PI / 180);
-  
   final public static int getQuantumShellTagID(String tag) {
     for (int i = quantumShellTags.length; --i >= 0;)
       if (tag.equals(quantumShellTags[i]))
@@ -2643,6 +2642,10 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
       return SHELL_D_SPHERICAL;
     case SHELL_F_CARTESIAN:
       return SHELL_F_SPHERICAL;
+    case SHELL_G_CARTESIAN:
+      return SHELL_G_SPHERICAL;
+    case SHELL_H_CARTESIAN:
+      return SHELL_H_SPHERICAL;
     }
     return tagID;
   }
@@ -2656,6 +2659,14 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   
   //////////////////////////////////
   
+  public static final String LOAD_ATOM_DATA_TYPES = "xyz;vxyz;vibration;temperature;occupancy;partialcharge";
+
+  public final static int ANIMATION_ONCE = 0;
+  public final static int ANIMATION_LOOP = 1;
+  public final static int ANIMATION_PALINDROME = 2;
+  
+  public final static float radiansPerDegree = (float) (Math.PI / 180);
+
   public static int modelValue(String strDecimal) {
     //this will overflow, but it doesn't matter -- it's only for file.model
     //2147483647 is maxvalue, so this allows loading

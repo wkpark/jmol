@@ -24,6 +24,7 @@
 package org.jmol.adapter.readers.quantum;
 
 import org.jmol.adapter.smarter.*;
+import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
 
 import java.util.Arrays;
@@ -78,6 +79,11 @@ abstract class BasisFunctionReader extends AtomSetCollectionReader {
   protected static String CANONICAL_FS_LIST = "f0    f1+   f1-   f2+   f2-   f3+   f3-";
 
   
+  protected boolean isQuantumBasisSupported(char ch) {
+    return (JmolAdapter.SUPPORTED_BASIS_FUNCTIONS.indexOf(Character.toUpperCase(ch)) >= 0);
+  }
+
+
   /**
    * 
    * finds the position in the Jmol-required list of function types. This list is

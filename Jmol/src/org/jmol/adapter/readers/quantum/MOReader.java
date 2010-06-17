@@ -269,7 +269,7 @@ abstract public class MOReader extends BasisFunctionReader {
     9  C  1  Z    0.000003   0.000045   0.000052   0.000112  -0.000129
    10  C  1 XX   -0.000010   0.000010  -0.000040   0.000019   0.000045
    11  C  1 YY   -0.000010  -0.000031   0.000000  -0.000003   0.000019
-...
+  ...
 
                       6          7          8          9         10
                   -20.4354   -20.4324   -20.3459   -20.3360   -11.2242
@@ -277,8 +277,8 @@ abstract public class MOReader extends BasisFunctionReader {
     1  C  1  S    0.000000  -0.000001   0.000001   0.000000   0.008876
     2  C  1  S   -0.000003   0.000002   0.000003   0.000002   0.000370
 
-...
- TOTAL NUMBER OF BASIS SET SHELLS             =  101
+  ...
+  TOTAL NUMBER OF BASIS SET SHELLS             =  101
    *
    * NBO: --- note, "-" can be in column with " " causing tokenization failure
    * 
@@ -288,7 +288,13 @@ abstract public class MOReader extends BasisFunctionReader {
    2.  C 1 (s)   -0.1978 -0.1875  0.1959 -0.1992 -0.0159  0.0054 -0.0130  0.0084
 
    */
+  
+  private static final String DS_LIST = "(d1)  (d2)  (d3)  (d4)  (d5)";
+  private static final String FS_LIST = "(f1)  (f2)  (f3)  (f4)  (f5)  (f6)  (f7)";
+  
+
   protected void readMolecularOrbitals(int headerType) throws Exception {
+    // GamessUK, GamessUS, and general NBO reader
     if (ignoreMOs) {
       // but for now can override this with FILTER=" LOCALIZED ORBITALS"
       //should read alpha and beta
@@ -335,25 +341,37 @@ abstract public class MOReader extends BasisFunctionReader {
         if (readLine() == null)
           break;
       }
-        //not everyone has followed the conventions for ending a section of output
+      //not everyone has followed the conventions for ending a section of output
       String str = line.toUpperCase();
-      if (str.length() == 0 || str.indexOf("--") >= 0 || str.indexOf(".....") >=0 
-           || str.indexOf("NBO BASIS") >= 0 // reading NBOs
-           || str.indexOf("CI EIGENVECTORS WILL BE LABELED") >=0 //this happens when doing MCSCF optimizations
-           || str.indexOf("   THIS LOCALIZATION HAD") >=0) { //this happens with certain localization methods
+      if (str.length() == 0 || str.indexOf("--") >= 0
+          || str.indexOf(".....") >= 0 || str.indexOf("NBO BASIS") >= 0 // reading NBOs
+          || str.indexOf("CI EIGENVECTORS WILL BE LABELED") >= 0 //this happens when doing MCSCF optimizations
+          || str.indexOf("   THIS LOCALIZATION HAD") >= 0) { //this happens with certain localization methods
         if (str.length() == 0)
           nBlank++;
         else
           nBlank = 0;
         if (nBlank == 2)
           break;
-        
+
         if (!haveCoeffMap) {
           haveCoeffMap = true;
-          if (dCoeffLabels.length() > 0)
-            getDFMap(dCoeffLabels, JmolAdapter.SHELL_D_CARTESIAN, CANONICAL_DC_LIST, 2);
-          if (fCoeffLabels.length() > 0)
-            getDFMap(fCoeffLabels, JmolAdapter.SHELL_F_CARTESIAN, CANONICAL_FC_LIST, 3);
+          if (dCoeffLabels.length() > 0) {
+            if (dCoeffLabels.indexOf("(") >= 0)
+              getDFMap(dCoeffLabels, JmolAdapter.SHELL_D_SPHERICAL,
+                  DS_LIST, 4);
+            else 
+              getDFMap(dCoeffLabels, JmolAdapter.SHELL_D_CARTESIAN,
+                  CANONICAL_DC_LIST, 2);
+          }
+          if (fCoeffLabels.length() > 0) {
+            if (fCoeffLabels.indexOf("(") >= 0)
+              getDFMap(fCoeffLabels, JmolAdapter.SHELL_F_SPHERICAL,
+                  FS_LIST, 4);
+            else 
+              getDFMap(fCoeffLabels, JmolAdapter.SHELL_F_CARTESIAN,
+                  CANONICAL_FC_LIST, 2);
+          }
         }
         for (int iMo = 0; iMo < nThisLine; iMo++) {
           float[] coefs = new float[data[iMo].size()];
@@ -386,11 +404,11 @@ abstract public class MOReader extends BasisFunctionReader {
           ptOffset = 16;
           fieldSize = 8;
           nSkip = 3;
-            // NBOs
+          // NBOs
         }
         if (mos == null || nThisLine > mos.length) {
-           mos = new Hashtable[nThisLine];
-           data = new Vector[nThisLine];
+          mos = new Hashtable[nThisLine];
+          data = new Vector[nThisLine];
         }
         for (int i = 0; i < nThisLine; i++) {
           mos[i] = new Hashtable();
@@ -399,23 +417,43 @@ abstract public class MOReader extends BasisFunctionReader {
         getMOHeader(headerType, tokens, mos, nThisLine);
         continue;
       }
+      int nChar;
       if (ptOffset < 0) {
         nSkip = tokens.length - nThisLine;
-        for (int i = 0; i < nThisLine; i++)
-          data[i].addElement(tokens[i + nSkip]);
       } else {
-        int pt = ptOffset;
-        for (int i = 0; i < nThisLine; i++, pt += fieldSize)
-          data[i].addElement(line.substring(pt, pt + fieldSize).trim());
+        nChar = 0;
       }
-      if (!haveCoeffMap && tokens[nSkip - 1].length() == 3)
-        fCoeffLabels += " " + canonicalizeQuantumSubshellTag(tokens[nSkip - 1].toUpperCase());      
-      if (!haveCoeffMap && tokens[nSkip - 1].length() == 2)
-        dCoeffLabels += " " + canonicalizeQuantumSubshellTag(tokens[nSkip - 1].toUpperCase());      
+      char ch;
+      String type = tokens[nSkip - 1];
+      if (type.charAt(0) == '(') {
+        ch = type.charAt(1);
+        if (!haveCoeffMap && ch == 'd')
+          dCoeffLabels += " "
+              + canonicalizeQuantumSubshellTag(type.toUpperCase());
+      } else {
+        nChar = type.length();
+        ch = (nChar  < 4 ? 'S' : nChar == 4 ? 'G' : nChar == 5 ? 'H' : '?');
+        if (!haveCoeffMap && nChar == 3)
+          fCoeffLabels += " "
+              + canonicalizeQuantumSubshellTag(type.toUpperCase());
+        else if (!haveCoeffMap && nChar == 2)
+          dCoeffLabels += " "
+              + canonicalizeQuantumSubshellTag(type.toUpperCase());
+      }
+      if (isQuantumBasisSupported(ch)) {
+        if (ptOffset < 0) {
+          for (int i = 0; i < nThisLine; i++)
+            data[i].addElement(tokens[i + nSkip]);
+        } else {
+          int pt = ptOffset;
+          for (int i = 0; i < nThisLine; i++, pt += fieldSize)
+            data[i].addElement(line.substring(pt, pt + fieldSize).trim());
+        }
+      }
       line = "";
     }
     energyUnits = "a.u.";
-    setMOData(!alphaBeta.equals("alpha"));    
+    setMOData(!alphaBeta.equals("alpha"));
   }
   
   protected void getMOHeader(int headerType, String[] tokens, Hashtable[] mos, int nThisLine)

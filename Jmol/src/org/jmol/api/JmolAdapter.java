@@ -76,6 +76,7 @@ public abstract class JmolAdapter {
   public final static int        SHELL_D_CARTESIAN = JmolConstants.SHELL_D_CARTESIAN;
   public final static int        SHELL_F_SPHERICAL = JmolConstants.SHELL_F_SPHERICAL;
   public final static int        SHELL_F_CARTESIAN = JmolConstants.SHELL_F_CARTESIAN;
+  public static final String SUPPORTED_BASIS_FUNCTIONS = JmolConstants.SUPPORTED_BASIS_FUNCTIONS;
   
   public static String getElementSymbol(int elementNumber) {
     return Elements.elementSymbolFromNumber(elementNumber);

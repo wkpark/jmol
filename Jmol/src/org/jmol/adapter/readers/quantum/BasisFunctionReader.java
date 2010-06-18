@@ -128,7 +128,7 @@ abstract class BasisFunctionReader extends AtomSetCollectionReader {
     if (!isOK) {
       Logger.error("Disabling orbitals of type " + shellType + " -- Cannot read orbital order for: " + fileList + "\n expecting: " + jmolList);
       dfCoefMaps[shellType][0] = Integer.MIN_VALUE;
-      throw new NullPointerException("TESTING MO READER");
+      //throw new NullPointerException("TESTING MO READER");
     }
     return isOK;
   }

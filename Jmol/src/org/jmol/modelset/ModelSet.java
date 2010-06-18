@@ -696,6 +696,7 @@ abstract public class ModelSet extends ModelCollection {
     case Token.trace:
       if (fValue > Shape.RADIUS_MAX)
         fValue = Shape.RADIUS_MAX;
+      // fall through
     case Token.halo:
     case Token.star:
       if (values != null)

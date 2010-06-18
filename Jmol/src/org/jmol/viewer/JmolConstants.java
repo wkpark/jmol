@@ -2416,6 +2416,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     case Token.label:
       return SHAPE_LABELS;
     case Token.measure:
+    case Token.measurements:
       return SHAPE_MEASURES;
     case Token.star:
       return SHAPE_STARS;

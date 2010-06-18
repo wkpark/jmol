@@ -115,6 +115,7 @@ public class TestSmarterJmolAdapter extends TestSuite {
     result.addDirectory(false, "vasp", "xml", "XmlVasp");
     result.addDirectory(false, "wien2k", "struct", "Wien2k");
     result.addDirectory(false, "webmo", "mo", "WebMO");
+    result.addDirectory(false, "xsd", "xsd", "XmlXsd");
     result.addDirectory(false, "xyz", "xyz", "Xyz");
     return result;
   }

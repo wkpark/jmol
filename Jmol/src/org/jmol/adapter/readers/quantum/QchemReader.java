@@ -546,14 +546,11 @@ $end
   private boolean dFixed = false;
   private boolean fFixed = false;
 
-  /*
-   * these lists 
-   */
   private static String DC_LIST = CANONICAL_DC_LIST;
-  private static String DS_LIST = "=" + CANONICAL_DS_LIST;
+  private static String DS_LIST = "D3    D4    D2    D5    D1";
   private static String FC_LIST = CANONICAL_FC_LIST;
-  private static String FS_LIST = "=" + CANONICAL_FS_LIST;
-  
+  private static String FS_LIST = "F4    F5    F3    F6    F2    F7    F1";
+ 
   private void readQchemMolecularOrbitals() throws Exception {
     /* 
      * Jmol:   XX, YY, ZZ, XY, XZ, YZ 
@@ -576,10 +573,10 @@ $end
     }
     boolean isOK = true;
     if (dList.length() > 0) {
-      if (dList.indexOf("=") < 0) // from "=D0"
-        isOK = getDFMap(dList, JmolAdapter.SHELL_D_CARTESIAN, DC_LIST, 3);
+      if (dSpherical) 
+        isOK = getDFMap(dList, JmolAdapter.SHELL_D_SPHERICAL, DS_LIST, 2);
       else
-        isOK = getDFMap(dList, JmolAdapter.SHELL_D_SPHERICAL, DS_LIST, 3);
+        isOK = getDFMap(dList, JmolAdapter.SHELL_D_CARTESIAN, DC_LIST, 3);
       if (!isOK) {
         Logger.error("atomic orbital order is unrecognized -- skipping reading of MOs. dList=" + dList);
         orbitals = null;
@@ -587,10 +584,10 @@ $end
       }
     }
     if (fList.length() > 0) {
-      if (fList.indexOf("=") < 0) // from "=F0"
-        isOK = getDFMap(fList, JmolAdapter.SHELL_F_CARTESIAN, FC_LIST, 3);
+      if (fSpherical) 
+        isOK = getDFMap(fList, JmolAdapter.SHELL_F_SPHERICAL, FS_LIST, 2);
       else
-        isOK = getDFMap(fList, JmolAdapter.SHELL_F_SPHERICAL, FS_LIST, 3);
+        isOK = getDFMap(fList, JmolAdapter.SHELL_F_CARTESIAN, FC_LIST, 3);
       if (!isOK) {
         Logger.error("atomic orbital order is unrecognized -- skipping reading of MOs. fList=" + fList);
         orbitals = null;
@@ -605,6 +602,8 @@ $end
 
   String dList = "";
   String fList = "";
+  boolean dSpherical = false;
+  boolean fSpherical = false;
   
   private int readMOs(boolean restricted,
                       Vector orbitals, MOInfo[] moInfos) throws Exception {
@@ -625,25 +624,31 @@ $end
       }
       for (int i = 0, pt = 0; i < nBasis; i++) {
         tokens = getTokens(readLine());
-        String s = line.substring(12, 18).trim(); // collect the shell labels
+        String s = line.substring(12, 17).trim(); // collect the shell labels
         char ch = s.charAt(0);
         switch (ch) {
         case 'd':
           s = s.substring(s.length() - 3).toUpperCase();
+          if (s.startsWith("D ")) {
+             if (!dFixed)
+               fixSlaterTypes(JmolAdapter.SHELL_D_CARTESIAN, JmolAdapter.SHELL_D_SPHERICAL);
+             s = "D" + s.charAt(2);
+             dSpherical = true;
+          }
           if (dList.indexOf(s) < 0)
             dList += s + " ";
-          if (!dFixed && s.startsWith("D ")) {
-             fixSlaterTypes(JmolAdapter.SHELL_D_CARTESIAN, JmolAdapter.SHELL_D_SPHERICAL);
-          }
           dFixed = true;
           break;
         case 'f':
           s = s.substring(s.length() - 3).toUpperCase();
+          if (s.startsWith("F ")) {
+             if (!fFixed)
+               fixSlaterTypes(JmolAdapter.SHELL_F_CARTESIAN, JmolAdapter.SHELL_F_SPHERICAL);
+             s = "F" + s.charAt(2);
+             fSpherical = true;
+          }
           if (fList.indexOf(s) < 0)
             fList += s + " ";
-          if (!fFixed && s.startsWith("F ")) {
-             fixSlaterTypes(JmolAdapter.SHELL_F_CARTESIAN, JmolAdapter.SHELL_F_SPHERICAL);
-          }
           fFixed = true;
           break;
         default:

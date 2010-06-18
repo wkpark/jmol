@@ -356,21 +356,25 @@ abstract public class MOReader extends BasisFunctionReader {
 
         if (!haveCoeffMap) {
           haveCoeffMap = true;
+          boolean isOK = true;
           if (dCoeffLabels.length() > 0) {
             if (dCoeffLabels.indexOf("(") >= 0)
-              getDFMap(dCoeffLabels, JmolAdapter.SHELL_D_SPHERICAL,
+              isOK = getDFMap(dCoeffLabels, JmolAdapter.SHELL_D_SPHERICAL,
                   DS_LIST, 4);
             else 
-              getDFMap(dCoeffLabels, JmolAdapter.SHELL_D_CARTESIAN,
+              isOK = getDFMap(dCoeffLabels, JmolAdapter.SHELL_D_CARTESIAN,
                   CANONICAL_DC_LIST, 2);
           }
           if (fCoeffLabels.length() > 0) {
             if (fCoeffLabels.indexOf("(") >= 0)
-              getDFMap(fCoeffLabels, JmolAdapter.SHELL_F_SPHERICAL,
+              isOK = getDFMap(fCoeffLabels, JmolAdapter.SHELL_F_SPHERICAL,
                   FS_LIST, 4);
             else 
-              getDFMap(fCoeffLabels, JmolAdapter.SHELL_F_CARTESIAN,
+              isOK = getDFMap(fCoeffLabels, JmolAdapter.SHELL_F_CARTESIAN,
                   CANONICAL_FC_LIST, 2);
+          }
+          if (!isOK) {
+            //
           }
         }
         for (int iMo = 0; iMo < nThisLine; iMo++) {

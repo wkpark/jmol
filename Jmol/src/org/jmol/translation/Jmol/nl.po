@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-15 19:56+0200\n"
+"POT-Creation-Date: 2010-06-18 18:27+0200\n"
 "PO-Revision-Date: 2010-04-27 10:16+0000\n"
 "Last-Translator: Joostkam <Unknown>\n"
 "Language-Team: Dutch <jmol-developer@lists.sf.net>\n"
@@ -1426,62 +1426,67 @@ msgstr "Auteur (uw naam):"
 msgid "Browser window title for this web page:"
 msgstr "Paginatitel van deze webpagine in de browser:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:425
+#: org/openscience/jmol/app/webexport/WebPanel.java:433
 msgid "Give the occurrence of Jmol a name:"
 msgstr "Geef de Jmol-instantie een naam:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:441
+#: org/openscience/jmol/app/webexport/WebPanel.java:449
 msgid "Error creating new instance containing script(s) and image."
 msgstr ""
 "Fout tijdens het maken van een nieuwe instantie met script(s) en plaatje."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:452
+#: org/openscience/jmol/app/webexport/WebPanel.java:460
 #, java-format
 msgid "added Instance {0}"
 msgstr "Instantie {0} toegevoegd"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:455
+#: org/openscience/jmol/app/webexport/WebPanel.java:463
 #, java-format
 msgid "updated Instance {0}"
 msgstr "Instantie {0} bijgewerkt"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:492
+#: org/openscience/jmol/app/webexport/WebPanel.java:500
 msgid "Select a directory to create or an HTML file to save"
 msgstr "Selecteer een folder of een HTML-bestand om naar te schrijven"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:510
+#: org/openscience/jmol/app/webexport/WebPanel.java:518
+#, java-format
+msgid "file {0} created"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:520
 msgid "Call to FileWriter unsuccessful."
 msgstr "Aanroepen van FileWriter niet gelukt."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:578
+#: org/openscience/jmol/app/webexport/WebPanel.java:595
 #, java-format
 msgid "Using directory {0}"
 msgstr "Folder {0} wordt gebruikt."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:579
-#: org/openscience/jmol/app/webexport/WebPanel.java:588
-#: org/openscience/jmol/app/webexport/WebPanel.java:610
-#: org/openscience/jmol/app/webexport/WebPanel.java:624
-#: org/openscience/jmol/app/webexport/WebPanel.java:651
+#: org/openscience/jmol/app/webexport/WebPanel.java:596
+#: org/openscience/jmol/app/webexport/WebPanel.java:605
+#: org/openscience/jmol/app/webexport/WebPanel.java:627
+#: org/openscience/jmol/app/webexport/WebPanel.java:641
+#: org/openscience/jmol/app/webexport/WebPanel.java:668
 #, java-format
 msgid "adding {0}"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:639
+#: org/openscience/jmol/app/webexport/WebPanel.java:656
 #, fuzzy, java-format
 msgid "Unable to load resource {0}"
 msgstr "Kan de URL \"{0}\" niet vinden."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:691
+#: org/openscience/jmol/app/webexport/WebPanel.java:708
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
 msgstr "Gebasserd op een voorbeeld van A. Herr&#x00E1;ez en J. Gutow"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:694
+#: org/openscience/jmol/app/webexport/WebPanel.java:711
 #, java-format
 msgid "creating {0}"
 msgstr "aanmaken {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:729
+#: org/openscience/jmol/app/webexport/WebPanel.java:745
 #, java-format
 msgid ""
 "Could not find or open:\n"
@@ -1490,7 +1495,7 @@ msgstr ""
 "Kon het bestand niet vinden of openen:\n"
 "{0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:732
+#: org/openscience/jmol/app/webexport/WebPanel.java:748
 #, java-format
 msgid ""
 "copying\n"
@@ -1501,7 +1506,7 @@ msgstr ""
 "{0}\n"
 "         naar"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:739
+#: org/openscience/jmol/app/webexport/WebPanel.java:755
 msgid "compressing large data file to"
 msgstr "comprimeren groot bestand naar"
 

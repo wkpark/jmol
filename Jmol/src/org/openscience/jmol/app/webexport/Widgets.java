@@ -69,10 +69,12 @@ class Widgets {
 
     String getJavaScript(int appletID, JmolInstance instance) {
       return "<input type=\"checkbox\""
+          + " id=\"JmolSpinWidget" + appletID + "\""
           + (instance.spinOn ? " checked=\"\"" : "")
           + " onclick=\"jmol_spin(this.checked," + appletID + ");\" "
-          + "title=\"" + GT._("enable/disable spin") + "\">"
-          + GT._("Spin on") + "</input>";
+          + "title=\"" + GT._("enable/disable spin") + "\" />"
+          + "<label for=\"JmolSpinWidget" + appletID + "\">" 
+          + GT._("Spin on") + "</label>";
     }
   }
 

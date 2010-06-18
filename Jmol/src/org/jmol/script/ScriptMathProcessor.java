@@ -1975,7 +1975,7 @@ class ScriptMathProcessor {
       distance = ScriptVariable.fValue(args[0]);
       if (i < 2)
         return false;
-      switch (args[1].tok) {
+      switch (tok = args[1].tok) {
       case Token.on:
       case Token.off:
         isWithinModelSet = ScriptVariable.bValue(args[1]);

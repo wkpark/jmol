@@ -320,7 +320,6 @@ abstract public class MOReader extends BasisFunctionReader {
     int nThisLine = 0;
     readLine();
     int moCount = 0;
-    int nSkip = -1;
     int nBlank = 0;
     boolean haveMOs = false;
     if (line.indexOf("---") >= 0)
@@ -409,7 +408,6 @@ abstract public class MOReader extends BasisFunctionReader {
           nThisLine--;
           ptOffset = 16;
           fieldSize = 8;
-          nSkip = 3;
           // NBOs
         }
         if (mos == null || nThisLine > mos.length) {
@@ -423,21 +421,16 @@ abstract public class MOReader extends BasisFunctionReader {
         getMOHeader(headerType, tokens, mos, nThisLine);
         continue;
       }
-      int nChar;
-      if (ptOffset < 0) {
-        nSkip = tokens.length - nThisLine;
-      } else {
-        nChar = 0;
-      }
       char ch;
-      String type = tokens[tokens.length - nThisLine - 1];
+      int nSkip = tokens.length - nThisLine;
+      String type = tokens[nSkip - 1];
       if (type.charAt(0) == '(') {
         ch = type.charAt(1);
         if (!haveCoeffMap && ch == 'd')
           dCoeffLabels += " "
               + canonicalizeQuantumSubshellTag(type.toUpperCase());
       } else {
-        nChar = type.length();
+        int nChar = type.length();
         ch = (nChar  < 4 ? 'S' : nChar == 4 ? 'G' : nChar == 5 ? 'H' : '?');
         if (!haveCoeffMap && nChar == 3)
           fCoeffLabels += " "

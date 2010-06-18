@@ -430,7 +430,7 @@ abstract public class MOReader extends BasisFunctionReader {
         nChar = 0;
       }
       char ch;
-      String type = tokens[nSkip - 1];
+      String type = tokens[tokens.length - nThisLine - 1];
       if (type.charAt(0) == '(') {
         ch = type.charAt(1);
         if (!haveCoeffMap && ch == 'd')

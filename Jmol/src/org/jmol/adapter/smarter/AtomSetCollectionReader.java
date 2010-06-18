@@ -278,6 +278,9 @@ public abstract class AtomSetCollectionReader {
   private Object finalize(String filename) {
     String s = (String) htParams.get("loadState");
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("loadState", s == null ? "" : s);
+    s = (String) htParams.get("smilesString");
+    if (s != null)
+      addJmolScript("smilesString = \"" + s + "\"");      
     if (!htParams.containsKey("templateAtomCount"))
       htParams.put("templateAtomCount", new Integer(atomSetCollection
           .getAtomCount()));
@@ -730,7 +733,7 @@ public abstract class AtomSetCollectionReader {
     atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
     Vector orbitals = (Vector) moData.get("mos");
     if (orbitals != null)
-      Logger.info(orbitals.size() + " molecular orbitals read in model " + modelNumber);
+      Logger.info(orbitals.size() + " molecular orbitals read in model " + atomSetCollection.getAtomSetCount());
   }
 
   private Matrix3f matrixRotate;

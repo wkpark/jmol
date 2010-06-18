@@ -204,7 +204,7 @@ public class FileManager {
                                     StringBuffer loadScript, boolean isAppend) {
     if (htParams.get("atomDataOnly") == null)
       setLoadState(htParams);
-    if (name.indexOf("=") == 0 || name.indexOf('$') == 0)
+    if (name.indexOf('=') == 0 || name.indexOf('$') == 0)
       name = (String) viewer.setLoadFormat(name, name.charAt(0), true);
     int pt = name.indexOf("::");
     nameAsGiven = (pt >= 0 ? name.substring(pt + 2) : name);

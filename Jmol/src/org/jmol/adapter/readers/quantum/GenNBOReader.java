@@ -330,7 +330,7 @@ public class GenNBOReader extends MOReader {
     tokens = getTokens(sb.toString());
     for (int i = 0; i < tokens.length; i++) {
       Hashtable mo = new Hashtable();
-      orbitals.add(mo);
+      setMO(mo);
     }
     if (ntype.equals("MO"))
       return true; // no labels here

@@ -289,8 +289,8 @@ abstract public class MOReader extends BasisFunctionReader {
 
    */
   
-  private static final String DS_LIST = "(d1)  (d2)  (d3)  (d4)  (d5)";
-  private static final String FS_LIST = "(f1)  (f2)  (f3)  (f4)  (f5)  (f6)  (f7)";
+  private static final String DS_LIST = "(D1)  (D2)  (D3)  (D4)  (D5)";
+  private static final String FS_LIST = "(F1)  (F2)  (F3)  (F4)  (F5)  (F6)  (F7)";
   
 
   protected void readMolecularOrbitals(int headerType) throws Exception {
@@ -301,6 +301,8 @@ abstract public class MOReader extends BasisFunctionReader {
       readLine();
       return;
     }
+    // reset the coefficient maps
+    dfCoefMaps = null;
     // Idea here is to concatenate results from gennbo if desired,
     // and these will replace previous results. 
     // we still need atom positions and bases functions.
@@ -390,7 +392,7 @@ abstract public class MOReader extends BasisFunctionReader {
             mos[iMo].put("type", alphaBeta);
           else if (moTypes != null && moCount < moTypes.size())
             mos[iMo].put("type", moTypes.get(moCount++));
-          orbitals.addElement(mos[iMo]);
+          setMO(mos[iMo]);
         }
         nThisLine = 0;
         if (line.length() == 0)
@@ -458,6 +460,9 @@ abstract public class MOReader extends BasisFunctionReader {
     }
     energyUnits = "a.u.";
     setMOData(!alphaBeta.equals("alpha"));
+    // reset the coefficient maps again
+    haveCoeffMap = false;
+    dfCoefMaps = null;
   }
   
   protected void getMOHeader(int headerType, String[] tokens, Hashtable[] mos, int nThisLine)
@@ -512,7 +517,7 @@ abstract public class MOReader extends BasisFunctionReader {
       for (int j = coefs.length; --j >= 0;)
         coefs[j] = parseFloat((String) data[i].get(j));
       mos[i].put("coefficients", coefs);
-      orbitals.addElement(mos[i]);
+      setMO(mos[i]);
     }
   }
 

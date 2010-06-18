@@ -1923,6 +1923,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     htParams = setLoadParameters(htParams);
     boolean isLoadVariable = fileName.startsWith("@");
     boolean haveFileData = (htParams.containsKey("fileData"));
+    if (fileName.indexOf('$') == 0)
+      htParams.put("smilesString", fileName.substring(1));
     boolean isString = (fileName.equalsIgnoreCase("string") || fileName
         .equals(JmolConstants.MODELKIT_ZAP_TITLE));
     String strModel = null;
@@ -4189,12 +4191,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case '=':
       return TextFormat.formatString(global.loadFormat, "FILE", f);
     case '$':
+      /*
       try {
           f = URLEncoder.encode(f, "US-ASCII");
           f = TextFormat.simpleReplace(f, "%2F", "/");
         } catch (UnsupportedEncodingException e) {
           // 
         }
+        */
       return (withPrefix ? "MOL::" : "") 
         + TextFormat.formatString(global.smilesUrlFormat, "FILE", f);
     case '_': // isosurface "=...", but we code that type as '-'

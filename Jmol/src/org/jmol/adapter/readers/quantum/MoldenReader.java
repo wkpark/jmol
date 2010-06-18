@@ -225,7 +225,7 @@ public class MoldenReader extends MopacSlaterReader {
       mo.put("energy", new Float(energy));
       mo.put("occupancy", new Float(occupancy));
       mo.put("coefficients", coefs);
-      orbitals.addElement(mo);
+      setMO(mo);
       if (Logger.debugging) {
         Logger.debug(coefs.length + " coefficients in MO " + orbitals.size() );
       }

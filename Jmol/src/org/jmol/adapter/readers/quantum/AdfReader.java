@@ -436,6 +436,6 @@ OR
     mo.put("occupancy", new Float(occ));
     mo.put("energy", new Float(energy)); //eV
     mo.put("symmetry", sd.sym + "_" + moPt);
-    orbitals.add(mo);
+    setMO(mo);
   }  
 }

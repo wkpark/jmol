@@ -83,7 +83,8 @@ class IsoMOReader extends AtomDataReader {
     MOCalculationInterface q = (MOCalculationInterface) Interface.getOptionInterface("quantum.MOCalculation");
     Hashtable moData = params.moData;
     float[] coef = params.moCoefficients; 
-    
+    int[][] dfCoefMaps = params.dfCoefMaps;
+
     if (coef == null) {
       // electron density calc
       Vector mos = (Vector) (moData.get("mos"));
@@ -93,22 +94,23 @@ class IsoMOReader extends AtomDataReader {
         Logger.info(" generating isosurface data for MO " + (i + 1));
         Hashtable mo = (Hashtable) mos.get(i);
         coef = (float[]) mo.get("coefficients");
-        getData(q, moData, coef, params.theProperty);
+        dfCoefMaps = (int[][]) mo.get("dfCoefMaps");
+        getData(q, moData, coef, dfCoefMaps, params.theProperty);
       }
     } else {
       Logger.info("generating isosurface data for MO using cutoff " + params.cutoff);
-      getData(q, moData, coef, null);
+      getData(q, moData, coef, dfCoefMaps, null);
     }
   }
   
   private void getData(MOCalculationInterface q, Hashtable moData,
-                       float[] coef, float[] nuclearCharges) {
+                       float[] coef, int[][] dfCoefMaps, float[] nuclearCharges) {
     switch (params.qmOrbitalType) {
     case Parameters.QM_TYPE_GAUSSIAN:
       q.calculate(volumeData, bsMySelected, (String) moData
           .get("calculationType"), atomData.atomXyz, atomData.firstAtomIndex,
           (Vector) moData.get("shells"), (float[][]) moData.get("gaussians"),
-          (int[][]) moData.get("dfCoefMaps"), null, coef,
+          dfCoefMaps, null, coef,
           nuclearCharges, moData.get("isNormalized") == null);
       break;
     case Parameters.QM_TYPE_SLATER:

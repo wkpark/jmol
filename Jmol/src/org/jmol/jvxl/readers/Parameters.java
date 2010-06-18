@@ -617,6 +617,7 @@ public class Parameters {
   
   Hashtable moData, mo;
   float[] moCoefficients;
+  int[][] dfCoefMaps;
   public final static int MO_MAX_GRID = 80;
   int qm_gridMax = MO_MAX_GRID;
   float qm_ptsPerAngstrom = 10f;
@@ -656,6 +657,7 @@ public class Parameters {
         }
         mo = (Hashtable) mos.get(qm_moNumber - 1);
         moCoefficients = (float[]) mo.get("coefficients");
+        dfCoefMaps = (int[][]) mo.get("dfCoefMaps");
       }
     }
     dataType = SURFACE_MOLECULARORBITAL;

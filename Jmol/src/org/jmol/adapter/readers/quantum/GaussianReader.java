@@ -125,8 +125,8 @@ public class GaussianReader extends MOReader {
       if (!doGetModel(++modelNumber))
         return checkLastModel();
       equivalentAtomSets++;
-      if (Logger.debugging)
-        Logger.debug(" model " + modelNumber + " step " + stepNumber
+      //if (Logger.debugging)
+        Logger.info(atomSetCollection.getAtomSetCount() + " model " + modelNumber + " step " + stepNumber
             + " equivalentAtomSet " + equivalentAtomSets + " calculation "
             + calculationNumber + " scan point " + scanPoint + line);
       readAtoms();

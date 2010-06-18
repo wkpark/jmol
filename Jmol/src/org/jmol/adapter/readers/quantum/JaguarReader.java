@@ -328,7 +328,7 @@ public class JaguarReader extends MOReader {
           pt++;
         }
         mo.put("coefficients", coefs);
-        orbitals.addElement(mo);
+        setMO(mo);
       }
     }
     moData.put("mos", orbitals);

@@ -574,7 +574,7 @@ public class CsfReader extends MopacSlaterReader {
        System.out.print(" " + list[iMo][i]);
        System.out.println();
        */
-      orbitals.addElement(mo);
+      setMO(mo);
     }
     setMOs("eV");
   }

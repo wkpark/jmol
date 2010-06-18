@@ -41,8 +41,15 @@ abstract class BasisFunctionReader extends AtomSetCollectionReader {
   protected Hashtable moData = new Hashtable();
   protected Vector orbitals = new Vector();
   protected int nOrbitals = 0;
+  
 
-  private int[][] dfCoefMaps;
+  protected int[][] dfCoefMaps;
+  
+  protected void setMO(Hashtable mo) {
+    if (dfCoefMaps != null)
+      mo.put("dfCoefMaps", dfCoefMaps);
+    orbitals.add(mo);
+  }
   
   // Jmol's ordering is based on GAUSSIAN
   
@@ -109,7 +116,6 @@ abstract class BasisFunctionReader extends AtomSetCollectionReader {
     if (dfCoefMaps == null) {
       dfCoefMaps = new int[][] {null, null, null, // first unused; P and SP are assumed standard X Y Z
           new int[5], new int[6], new int[7], new int[10]};
-      moData.put("dfCoefMaps", dfCoefMaps);
     }
     String[] tokens = getTokens(fileList);
     boolean isOK = true;

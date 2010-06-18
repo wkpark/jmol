@@ -192,7 +192,7 @@ public class MopacGraphfReader extends MopacSlaterReader {
       mo.put("coefficients", list2[iMo]);
       if (isBeta)
         mo.put("type", "beta");
-      orbitals.addElement(mo);
+      setMO(mo);
     }
     setMOs("eV");
   }

@@ -546,12 +546,17 @@ $end
   private boolean dFixed = false;
   private boolean fFixed = false;
 
+  // all we do here is list the orbital types found in the file
+  // in the order that corresponds to Jmol's order. getDFMap will set up the array. 
+  
   private static String DC_LIST = CANONICAL_DC_LIST;
   private static String DS_LIST = "D3    D4    D2    D5    D1";
   private static String FC_LIST = CANONICAL_FC_LIST;
   private static String FS_LIST = "F4    F5    F3    F6    F2    F7    F1";
+  
  
   private void readQchemMolecularOrbitals() throws Exception {
+    
     /* 
      * Jmol:   XX, YY, ZZ, XY, XZ, YZ 
      * qchem: dxx, dxy, dyy, dxz, dyz, dzz : VERIFIED

@@ -67,10 +67,11 @@ public class XmlReader {
    * @param name
    * @param data
    * @param withTag
+   * @param allowSelfCloseOption TODO
    * @return trimmed contents or tag + contents, never closing tag
    * @throws Exception
    */
-  public String getXmlData(String name, String data, boolean withTag)
+  public String getXmlData(String name, String data, boolean withTag, boolean allowSelfCloseOption)
       throws Exception {
     // crude
     String closer = "</" + name + ">";
@@ -87,12 +88,12 @@ public class XmlReader {
         return null;
       }
       sb.append(line);
-      boolean allowSelfClose = false;
+      boolean selfClosed = false;
       int pt = line.indexOf("/>");
       int pt1 = line.indexOf(">");
       if (pt1 < 0 || pt == pt1 - 1)
-        allowSelfClose = true;
-      while (line.indexOf(closer) < 0 && (!allowSelfClose  || line.indexOf("/>") < 0))
+        selfClosed = allowSelfCloseOption;
+      while (line.indexOf(closer) < 0 && (!selfClosed  || line.indexOf("/>") < 0))
         sb.append(line = br.readLine());
       data = sb.toString();
     }

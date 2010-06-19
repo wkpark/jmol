@@ -870,8 +870,8 @@ public class JvxlCoder {
   
     
   public static int jvxlEncodeBitSet(BitSet bs, int nPoints, StringBuffer sb) {
-    if (false)
-      return jvxlEncodeBitSet0(bs, nPoints, sb);
+    //if (false)
+      //return jvxlEncodeBitSet0(bs, nPoints, sb);
     int dataCount = 0;
     int n = 0;
     boolean isset = false;

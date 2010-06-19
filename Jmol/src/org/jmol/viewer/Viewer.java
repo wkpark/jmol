@@ -95,7 +95,6 @@ import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
 
 import java.net.URL;
-import java.net.URLEncoder;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -106,7 +105,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
 
 /*
  * 

@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-06-18 18:27+0200\n"
-"PO-Revision-Date: 2010-06-09 03:09+0000\n"
+"PO-Revision-Date: 2010-06-18 23:31+0000\n"
 "Last-Translator: Waluyo Adi Siswanto <Unknown>\n"
 "Language-Team: Indonesian <id@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-06-10 17:04+0000\n"
+"X-Launchpad-Export-Date: 2010-06-19 09:28+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -1452,7 +1452,7 @@ msgstr "Pilih lokasi untuk menyimpan berkas HTML"
 #: org/openscience/jmol/app/webexport/WebPanel.java:518
 #, java-format
 msgid "file {0} created"
-msgstr ""
+msgstr "berkas {0} dibuat"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:520
 msgid "Call to FileWriter unsuccessful."
@@ -1588,9 +1588,8 @@ msgid "Last Frame"
 msgstr "Bingkai Terakhir"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:176
-#, fuzzy
 msgid "Mode:"
-msgstr "Metode: "
+msgstr "Mode:"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:177
 msgid "Loop"
@@ -1620,17 +1619,19 @@ msgstr "Tampilan Muaturun"
 msgid "unimplemented"
 msgstr "belum diimplementasi"
 
+#, java-format
+#~ msgid "adding {0}.spt"
+#~ msgstr "menambah {0}.spt"
+
+#, java-format
+#~ msgid "adding {0}.png"
+#~ msgstr "menambah {0}.png"
+
+#~ msgid "stereo off"
+#~ msgstr "stereo padam"
+
 #~ msgid "Stop"
 #~ msgstr "Henti"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "menambah JmolPopIn.js"
-
-#~ msgid "adding {0}.png"
-#~ msgstr "menambah {0}.png"
-
-#~ msgid "adding {0}.spt"
-#~ msgstr "menambah {0}.spt"
-
-#~ msgid "stereo off"
-#~ msgstr "stereo padam"

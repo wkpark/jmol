@@ -8468,10 +8468,10 @@
   <fah_proj number="6505" name="p6505_1CFC_A_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="16825" preferred="14" deadline="21"
     credit="74" frames="100" code="G" contact="lan" contrib="SandStar"/>
-  <fah_proj number="6507" name="p6507_1CFC_B_predict" public="n"
+  <fah_proj number="6507" name="p6507_1CFC_B_predict" public="y"
     server="171.64.65.62" atoms="21293" preferred="18" deadline="27"
     credit="99" frames="100" code="G" contact="lan"/>
-  <fah_proj number="6508" name="p6508_proG_predict" public="n"
+  <fah_proj number="6508" name="p6508_proG_predict" public="y"
     server="171.64.65.62" atoms="16027" preferred="13" deadline="20"
     credit="72" frames="100" code="G" contact="lan"/>
 
@@ -8881,9 +8881,9 @@
   <fah_proj number="10868" name="Abeta42_mono" public="n" file="xyz"
     server="171.64.122.84" atoms="34350" preferred="40" deadline="60"
     credit="207" frames="100" code="G" contact="lin5"/>
-  <fah_proj number="10869" name="Abeta42_mono" public="n"
+  <fah_proj number="10869" name="Abeta42_mono" public="n" file="xyz"
     server="171.64.122.84" atoms="34350" preferred="40" deadline="60"
-    credit="207" frames="100" code="G" contact="lin5"/>
+    credit="207" frames="100" code="G" contact="lin5" contrib="SandStar"/>
   <fah_proj number="10870" name="Abeta42_mono" public="n" file="xyz"
     server="171.64.122.84" atoms="34350" preferred="40" deadline="60"
     credit="207" frames="100" code="G" contact="lin5" contrib="SandStar"/>
@@ -8944,7 +8944,7 @@
   <fah_proj number="10889" name="Abeta42_mono_s" public="n"
     server="171.64.122.84" atoms="12222" preferred="5" deadline="20"
     credit="68" frames="100" code="G" contact="lin5"/>
-  <fah_proj number="10890" name="Abeta42_mono_s" public="n"
+  <fah_proj number="10890" name="Abeta42_mono_s" public="n" file="xyz"
     server="171.64.122.84" atoms="12222" preferred="5" deadline="20"
     credit="68" frames="100" code="G" contact="lin5"/>
 

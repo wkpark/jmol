@@ -28,7 +28,8 @@
 */
 
 function addJavaScript(path, file) {
- document.write("<"+"script src=\"" + path + "/" + file + "\" type=\"text/javascript\"><" + "/script>"); 
+    if (path.charAt(path.length-1)!="/") { path += "/"; }
+    document.write("<"+"script src=\"" + path + file + "\" type=\"text/javascript\"><" + "/script>"); 
 }
 
 

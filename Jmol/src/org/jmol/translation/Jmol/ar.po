@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-18 18:27+0200\n"
+"POT-Creation-Date: 2010-06-21 19:25+0200\n"
 "PO-Revision-Date: 2009-08-27 13:38+0000\n"
 "Last-Translator: Dilmi Fethi <delphiexile@gmail.com>\n"
 "Language-Team: Arabic <ar@li.org>\n"
@@ -968,7 +968,7 @@ msgid "Launching main frame..."
 msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:283
-#: org/openscience/jmol/app/webexport/Widgets.java:205
+#: org/openscience/jmol/app/webexport/Widgets.java:207
 msgid "Jmol Console"
 msgstr ""
 
@@ -1365,7 +1365,7 @@ msgid "A web page containing Jmol applets"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:152
-msgid "double-click and drag to reorder"
+msgid "click and drag to reorder"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:157
@@ -1495,106 +1495,106 @@ msgstr ""
 msgid "Spin on/off"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:74
+#: org/openscience/jmol/app/webexport/Widgets.java:75
 msgid "enable/disable spin"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:75
+#: org/openscience/jmol/app/webexport/Widgets.java:77
 msgid "Spin on"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:81
+#: org/openscience/jmol/app/webexport/Widgets.java:83
 msgid "Background Color"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:96
+#: org/openscience/jmol/app/webexport/Widgets.java:98
 msgid "background color:"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:109
+#: org/openscience/jmol/app/webexport/Widgets.java:111
 msgid "Stereo Viewing"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:123
+#: org/openscience/jmol/app/webexport/Widgets.java:125
 msgid "select stereo type"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:127
+#: org/openscience/jmol/app/webexport/Widgets.java:129
 msgid "Stereo Off"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:128
+#: org/openscience/jmol/app/webexport/Widgets.java:130
 msgid "Red/Blue"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:130
+#: org/openscience/jmol/app/webexport/Widgets.java:132
 msgid "Red/Cyan"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:132
+#: org/openscience/jmol/app/webexport/Widgets.java:134
 msgid "Red/Green"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:139
+#: org/openscience/jmol/app/webexport/Widgets.java:141
 msgid "Animation Control"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:163
+#: org/openscience/jmol/app/webexport/Widgets.java:165
 msgid "Animation"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:164
+#: org/openscience/jmol/app/webexport/Widgets.java:166
 msgid "First Frame"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:166
+#: org/openscience/jmol/app/webexport/Widgets.java:168
 msgid "Previous Frame"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:168
+#: org/openscience/jmol/app/webexport/Widgets.java:170
 msgid "Play"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:170
+#: org/openscience/jmol/app/webexport/Widgets.java:172
 msgid "Next Frame"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:172
+#: org/openscience/jmol/app/webexport/Widgets.java:174
 msgid "Pause"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:174
+#: org/openscience/jmol/app/webexport/Widgets.java:176
 msgid "Last Frame"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:176
+#: org/openscience/jmol/app/webexport/Widgets.java:178
 msgid "Mode:"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:177
+#: org/openscience/jmol/app/webexport/Widgets.java:179
 msgid "Loop"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:179
+#: org/openscience/jmol/app/webexport/Widgets.java:181
 msgid "Palindrome"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:181
+#: org/openscience/jmol/app/webexport/Widgets.java:183
 msgid "Play Once"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:190
+#: org/openscience/jmol/app/webexport/Widgets.java:192
 msgid "Open Console Button"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:203
+#: org/openscience/jmol/app/webexport/Widgets.java:205
 msgid "launch Jmol console"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:210
+#: org/openscience/jmol/app/webexport/Widgets.java:212
 msgid "Download view"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:225
+#: org/openscience/jmol/app/webexport/Widgets.java:227
 msgid "unimplemented"
 msgstr ""

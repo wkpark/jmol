@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-18 18:27+0200\n"
+"POT-Creation-Date: 2010-06-21 19:25+0200\n"
 "PO-Revision-Date: 2010-05-30 06:23+0000\n"
 "Last-Translator: Eleanor Chen <chenyueg@gmail.com>\n"
 "Language-Team: Simplified Chinese <zh_CN@li.org>\n"
@@ -967,7 +967,7 @@ msgid "Launching main frame..."
 msgstr "启动主框架..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:283
-#: org/openscience/jmol/app/webexport/Widgets.java:205
+#: org/openscience/jmol/app/webexport/Widgets.java:207
 msgid "Jmol Console"
 msgstr "Jmol控制台"
 
@@ -1367,7 +1367,8 @@ msgid "A web page containing Jmol applets"
 msgstr "一个包含Jmol小程序的网页"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:152
-msgid "double-click and drag to reorder"
+#, fuzzy
+msgid "click and drag to reorder"
 msgstr "双击并拖动可以重新排序"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:157
@@ -1502,116 +1503,116 @@ msgstr "把大数据文件压缩到"
 msgid "Spin on/off"
 msgstr "旋转 开/关"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:74
+#: org/openscience/jmol/app/webexport/Widgets.java:75
 msgid "enable/disable spin"
 msgstr "启用/停用 旋转"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:75
+#: org/openscience/jmol/app/webexport/Widgets.java:77
 msgid "Spin on"
 msgstr "旋转 开"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:81
+#: org/openscience/jmol/app/webexport/Widgets.java:83
 msgid "Background Color"
 msgstr "背景颜色"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:96
+#: org/openscience/jmol/app/webexport/Widgets.java:98
 msgid "background color:"
 msgstr "背景颜色"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:109
+#: org/openscience/jmol/app/webexport/Widgets.java:111
 msgid "Stereo Viewing"
 msgstr "立体化查看"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:123
+#: org/openscience/jmol/app/webexport/Widgets.java:125
 msgid "select stereo type"
 msgstr "选择立体类型"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:127
+#: org/openscience/jmol/app/webexport/Widgets.java:129
 msgid "Stereo Off"
 msgstr "立体 关"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:128
+#: org/openscience/jmol/app/webexport/Widgets.java:130
 msgid "Red/Blue"
 msgstr "红色 / 蓝色"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:130
+#: org/openscience/jmol/app/webexport/Widgets.java:132
 msgid "Red/Cyan"
 msgstr "红色 / 青色"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:132
+#: org/openscience/jmol/app/webexport/Widgets.java:134
 msgid "Red/Green"
 msgstr "红色 / 绿色"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:139
+#: org/openscience/jmol/app/webexport/Widgets.java:141
 msgid "Animation Control"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:163
+#: org/openscience/jmol/app/webexport/Widgets.java:165
 #, fuzzy
 msgid "Animation"
 msgstr "停止动画(&S)"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:164
+#: org/openscience/jmol/app/webexport/Widgets.java:166
 msgid "First Frame"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:166
+#: org/openscience/jmol/app/webexport/Widgets.java:168
 #, fuzzy
 msgid "Previous Frame"
 msgstr "转到上一帧"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:168
+#: org/openscience/jmol/app/webexport/Widgets.java:170
 msgid "Play"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:170
+#: org/openscience/jmol/app/webexport/Widgets.java:172
 #, fuzzy
 msgid "Next Frame"
 msgstr "转到下一帧"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:172
+#: org/openscience/jmol/app/webexport/Widgets.java:174
 #, fuzzy
 msgid "Pause"
 msgstr "粘贴(&P)"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:174
+#: org/openscience/jmol/app/webexport/Widgets.java:176
 #, fuzzy
 msgid "Last Frame"
 msgstr "转到最后一帧"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:176
+#: org/openscience/jmol/app/webexport/Widgets.java:178
 #, fuzzy
 msgid "Mode:"
 msgstr "方法: "
 
-#: org/openscience/jmol/app/webexport/Widgets.java:177
+#: org/openscience/jmol/app/webexport/Widgets.java:179
 #, fuzzy
 msgid "Loop"
 msgstr "循环(&L)"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:179
+#: org/openscience/jmol/app/webexport/Widgets.java:181
 #, fuzzy
 msgid "Palindrome"
 msgstr "回文(&A)"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:181
+#: org/openscience/jmol/app/webexport/Widgets.java:183
 msgid "Play Once"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:190
+#: org/openscience/jmol/app/webexport/Widgets.java:192
 msgid "Open Console Button"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:203
+#: org/openscience/jmol/app/webexport/Widgets.java:205
 #, fuzzy
 msgid "launch Jmol console"
 msgstr "Jmol控制台"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:210
+#: org/openscience/jmol/app/webexport/Widgets.java:212
 msgid "Download view"
 msgstr "下载视图"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:225
+#: org/openscience/jmol/app/webexport/Widgets.java:227
 msgid "unimplemented"
 msgstr "功能尚未实现"
 

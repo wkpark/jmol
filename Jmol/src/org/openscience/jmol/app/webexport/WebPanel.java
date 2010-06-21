@@ -149,7 +149,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
     instanceSet.setLayout(new BorderLayout());
     instanceSet.add(new JLabel(listLabel), BorderLayout.NORTH);
     instanceSet.add(instanceListView, BorderLayout.CENTER);
-    instanceSet.add(new JLabel(GT._("double-click and drag to reorder")),
+    instanceSet.add(new JLabel(GT._("click and drag to reorder")),
         BorderLayout.SOUTH);
 
     // Create the Instance add button.

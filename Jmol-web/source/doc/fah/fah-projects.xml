@@ -8765,6 +8765,9 @@
   <fah_proj number="10628" name="OPENMMGMX_test" public="y"
     server="171.67.108.20" atoms="582" preferred="2" deadline="3"
     credit="611" frames="100" code="OG" contact="lin5"/>
+  <fah_proj number="10629" name="OPENMMGMX_test" public="y"
+    server="171.67.108.20" atoms="582" preferred="2" deadline="3"
+    credit="611" frames="100" code="OG" contact="lin5"/>
 
   <!-- Projects 10800 to 10899 -->
   <fah_proj number="10820" name="Abeta42_monomer" public="n"
@@ -8860,7 +8863,7 @@
   <fah_proj number="10861" name="Abeta42_mono" public="n" file="xyz"
     server="171.64.122.84" atoms="34350" preferred="40" deadline="60"
     credit="207" frames="100" code="G" contact="lin5"/>
-  <fah_proj number="10862" name="Abeta42_mono" public="n"
+  <fah_proj number="10862" name="Abeta42_mono" public="n" file="xyz"
     server="171.64.122.84" atoms="34350" preferred="40" deadline="60"
     credit="207" frames="100" code="G" contact="lin5"/>
   <fah_proj number="10863" name="Abeta42_mono" public="n" file="xyz"

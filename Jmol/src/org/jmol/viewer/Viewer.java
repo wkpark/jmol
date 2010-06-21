@@ -2639,9 +2639,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getSymmetryOperation(String spaceGroup, int symop, Point3f pt1,
-                                     Point3f pt2) {
+                                     Point3f pt2, boolean labelOnly) {
     return modelSet.getSymmetryOperation(animationManager.currentModelIndex,
-        spaceGroup, symop, pt1, pt2, null);
+        spaceGroup, symop, pt1, pt2, null, labelOnly);
   }
 
   public Properties getModelSetProperties() {
@@ -6120,6 +6120,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setPickingMode(null, value ? ActionManager.PICKING_ASSIGN_ATOM
           : ActionManager.PICKING_IDENTIFY);
     }
+    boolean isChange = (global.modelkitMode != value);
     global.modelkitMode = value;
     highlight(null);
     if (value) {
@@ -6130,7 +6131,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setBondPickingOption("p");
       if (isSignedApplet || !isApplet)
         popupMenu(0, 0, 'm');
-      statusManager.setCallbackFunction("modelkit", "ON");
+      if (isChange)
+        statusManager.setCallbackFunction("modelkit", "ON");
       global.modelkitMode = true;
       if (getAtomCount() == 0)
         zap(false, true, true);
@@ -6138,7 +6140,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setStringProperty("pickingMode", "ident");
       setStringProperty("pickingStyle", "toggle");
       setBooleanProperty("bondPicking", false);
-      statusManager.setCallbackFunction("modelkit", "OFF");
+      if (isChange)
+        statusManager.setCallbackFunction("modelkit", "OFF");
     }
 
   }

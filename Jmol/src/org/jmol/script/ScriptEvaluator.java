@@ -12621,12 +12621,12 @@ public class ScriptEvaluator {
         Point3f pt1 = centerParameter(2);
         Point3f pt2 = centerParameter(++iToken);
         if (!isSyntaxCheck)
-          msg = viewer.getSymmetryOperation(null, 0, pt1, pt2);
+          msg = viewer.getSymmetryOperation(null, 0, pt1, pt2, false);
         len = ++iToken;
       } else {
         int iop = (checkLength23() == 2 ? 0 : intParameter(2));
         if (!isSyntaxCheck)
-          msg = viewer.getSymmetryOperation(null, iop, null, null);
+          msg = viewer.getSymmetryOperation(null, iop, null, null, false);
         len = -3;
       }
       break;

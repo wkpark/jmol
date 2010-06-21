@@ -1437,7 +1437,7 @@ abstract public class ModelCollection extends BondCollection {
   
   public String getSymmetryOperation(int modelIndex, String spaceGroup, 
                                      int symOp, Point3f pt1, Point3f pt2, 
-                                     String drawID) {
+                                     String drawID, boolean labelOnly) {
     Hashtable sginfo = getSpaceGroupInfo(modelIndex, spaceGroup, symOp, pt1, pt2, drawID); 
     if (sginfo == null)
       return "";
@@ -1453,9 +1453,12 @@ abstract public class ModelCollection extends BondCollection {
         return (String) infolist[i][3];
       if (sb.length() > 0)
         sb.append('\n');
-      if (symOp < 0)
-        sb.append(i + 1).append("\t");
-      sb.append(infolist[i][0]).append("\t").append(infolist[i][2]);
+      if (!labelOnly) {
+        if (symOp < 0)
+          sb.append(i + 1).append("\t");
+        sb.append(infolist[i][0]).append("\t");
+      }
+      sb.append(infolist[i][2]);
     }
     if (sb.length() == 0 && drawID != null)
       sb.append ("draw " + drawID + "* delete");
@@ -3285,7 +3288,8 @@ abstract public class ModelCollection extends BondCollection {
     Object[][] infolist = null;
     if (spaceGroup == null) {
       if (modelIndex <= 0)
-        modelIndex = viewer.getCurrentModelIndex();
+        modelIndex = (pt1 instanceof Atom ? ((Atom) pt1).modelIndex 
+            : viewer.getCurrentModelIndex());
       if (modelIndex < 0)
         strOperations = "no single current model";
       else if (unitCells == null || unitCells[modelIndex] == null)
@@ -3359,7 +3363,8 @@ abstract public class ModelCollection extends BondCollection {
     if (uc == null)
       return "";
     if (pt2 != null)
-      return getSymmetryOperation(iModel, null, op, pt, pt2, (id == null ? "sym" : id));
+      return getSymmetryOperation(iModel, null, op, pt, pt2, 
+          (id == null ? "sym" : id), type == Token.label);
     if (xyz == null) {
       String[] ops = uc.getSymmetryOperations();
       if (ops == null || op == 0 || Math.abs(op) > ops.length)

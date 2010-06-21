@@ -285,6 +285,7 @@ public class ActionManager {
   public final static int PICKING_ASSIGN_ATOM      = 30;
   public final static int PICKING_ASSIGN_BOND      = 31;
   public final static int PICKING_ROTATE_BOND      = 32;
+  public final static int PICKING_SYMOP            = 33;
   
 
 
@@ -296,7 +297,9 @@ public class ActionManager {
     "measure", "distance", "angle", "torsion", "navigate", 
     "connect", "struts", 
     "dragmolecule", "dragatom", "dragminimize", "dragminimizemolecule",
-    "invertstereo", "assignatom", "assignbond", "rotatebond"
+    "invertstereo", "assignatom", "assignbond", "rotatebond",
+    "symop"
+    
   };
  
   public final static String getPickingModeName(int pickingMode) {
@@ -1711,6 +1714,7 @@ public class ActionManager {
     case PICKING_MEASURE_ANGLE:
       n++;
       // fall through
+    case PICKING_SYMOP:
     case PICKING_MEASURE:
     case PICKING_MEASURE_DISTANCE:
       if (!isBound(action, ACTION_pickMeasure))
@@ -1719,11 +1723,13 @@ public class ActionManager {
         resetMeasurement();
       if (queueAtom(atomIndex, ptClicked) < n)
         return;
-      viewer.setStatusMeasuring("measurePicked", n, measurementQueued
-          .getStringDetail());
-      if (atomPickingMode == PICKING_MEASURE
+      viewer.setStatusMeasuring("measurePicked", n, (atomPickingMode == PICKING_SYMOP ? 
+          viewer.getSymmetryOperation(null, 0, measurementQueued.getAtom(1), 
+              measurementQueued.getAtom(2), false) : measurementQueued
+          .getStringDetail()));
+      if (atomPickingMode == PICKING_MEASURE || atomPickingMode == PICKING_SYMOP
           || pickingStyleMeasure == PICKINGSTYLE_MEASURE_ON) {
-        viewer.script("measure "
+        viewer.script((atomPickingMode == PICKING_SYMOP ? "draw symop " : "measure ")
             + measurementQueued.getMeasurementScript(" ", true));
       }
       return;

@@ -13794,7 +13794,8 @@ public class ScriptEvaluator {
   private Object getCapSlabObject(StringBuffer sb, int i)
       throws ScriptException {
     Object propertyValue = null;
-    sb.append(" ").append(getToken(i).value).append(" ");
+    if (sb != null)
+      sb.append(" ").append(getToken(i).value).append(" ");
     int tok = tokAt(i + 1);
     Point4f plane = null;
     switch (tok) {

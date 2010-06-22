@@ -252,6 +252,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   
   private boolean compile0(boolean isFull) {
     
+    script = script.replace('\u201C', '"').replace('\u201D', '"');
     script = cleanScriptComments(script);
     cchScript = this.script.length();
 

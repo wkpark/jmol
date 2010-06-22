@@ -163,6 +163,14 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
     continuing = false;
   }
 
+  protected void finalizeReader() throws Exception {
+    super.finalizeReader();
+    String header = tokenizer.getFileHeader();
+    if (header.length() > 0)
+        atomSetCollection.setAtomSetCollectionAuxiliaryInfo("fileHeader",
+          header);
+  }
+
   public void applySymmetryAndSetTrajectory() throws Exception {
     // This speeds up calculation, because no crosschecking
     // No special-position atoms in mmCIF files, because there will

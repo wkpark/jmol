@@ -71,7 +71,9 @@ public class CifDataReader {
   public int ichPeeked;
   public int fieldCount;
   public String[] loopData;
-
+  public StringBuffer fileHeader = new StringBuffer();
+  private boolean isHeader = true;
+  
   ////////////////////////////////////////////////////////////////
   // special tokenizer class
   ////////////////////////////////////////////////////////////////
@@ -85,6 +87,10 @@ public class CifDataReader {
     this.br = br;
   }
 
+  public String getFileHeader() {
+    return fileHeader.toString();
+  }
+  
   public static Hashtable readCifData(BufferedReader br) {
     CifDataReader cdr = new CifDataReader(br);
     return cdr.getAllCifData();
@@ -138,7 +144,16 @@ public class CifDataReader {
 
   public String readLine() {
     try {
-      return (line = (reader != null ? reader.readLine() : br.readLine()));
+      line = (reader != null ? reader.readLine() : br.readLine());
+      if (line == null)
+        return null;
+      if (isHeader) {
+        if (line.startsWith("#"))
+          fileHeader.append(line).append('\n');
+        else
+          isHeader = false;
+      }
+      return line;
     } catch (Exception e) {
       return null;
     }

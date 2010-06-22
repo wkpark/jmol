@@ -43,7 +43,7 @@ class ModelKitPopupResourceBundle extends PopupResource {
     { "optionsMenu", "new center addh minimize hmin " +
     		" - undo redo - SIGNEDsaveFile SIGNEDsaveState exit" },
     { "atomMenu" , "assignAtom_XP!CB assignAtom_XxP!CB dragAtomP!CB dragMinimizeP!CB dragMoleculeP!CB dragMinimizeMoleculeP!CB " +
-    		"- assignAtom_CP!CB assignAtom_HP!CB assignAtom_NP!CB assignAtom_OP!CB assignAtom_FP!CB assignAtom_ClP!CB assignAtom_BrP!CB " +
+    		"invertStereoP!CB - assignAtom_CP!CB assignAtom_HP!CB assignAtom_NP!CB assignAtom_OP!CB assignAtom_FP!CB assignAtom_ClP!CB assignAtom_BrP!CB " +
     		"_??P!CB _??P!CB _??P!CB " +
     		"moreAtomMenu - assignAtom_PlP!CB assignAtom_MiP!CB" },
     { "moreAtomMenu", "clearQ - _??P!CB _??P!CB _??P!CB _??P!CB _??P!CB _??P!CB " },
@@ -84,6 +84,7 @@ class ModelKitPopupResourceBundle extends PopupResource {
         "clearQ", GT._("clear"),
         "SIGNEDsaveFile", GT._("save file"),
         "SIGNEDsaveState", GT._("save state"),
+        "invertStereoP!CB", GT._("invert ring stereochemistry"),
         "assignAtom_XP!CB" , GT._("delete atom"),
         "assignAtom_XxP!CB" , GT._("drag to bond"),
         "dragAtomP!CB" , GT._("drag atom"),

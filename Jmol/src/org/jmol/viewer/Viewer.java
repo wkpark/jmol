@@ -1442,6 +1442,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setPropertyColorScheme(String scheme, boolean isTranslucent,
                                      boolean isOverloaded) {
     global.propertyColorScheme = scheme;
+    if (scheme.startsWith("translucent ")) {
+      isTranslucent = true;
+      scheme = scheme.substring(12).trim();
+    }
     colorManager.setColorScheme(scheme, isTranslucent, isOverloaded);
   }
 
@@ -5249,7 +5253,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     case Token.propertycolorscheme:
       setPropertyColorScheme(value, false, false);
-      return;
+      break;
     case Token.hoverlabel:
       // a special label for selected atoms
       setShapeProperty(JmolConstants.SHAPE_HOVER, "atomLabel", value);

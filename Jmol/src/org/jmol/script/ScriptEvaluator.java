@@ -6978,9 +6978,10 @@ public class ScriptEvaluator {
       prefix = "bg";
     if (!isSyntaxCheck && shapeType == JmolConstants.SHAPE_MO && !mo(true))
       return;
-    if (theTok == Token.translucent || theTok == Token.opaque) {
+    boolean isTranslucent = (theTok == Token.translucent);
+    if (isTranslucent || theTok == Token.opaque) {
       translucency = parameterAsString(index++);
-      if (theTok == Token.translucent && isFloatParameter(index))
+      if (isTranslucent && isFloatParameter(index))
         translucentLevel = getTranslucentLevel(index++);
     }
     int tok = 0;
@@ -6993,10 +6994,10 @@ public class ScriptEvaluator {
         colorvalue = (argb == 0 ? null : new Integer(argb));
         if (translucency == null && tokAt(index = iToken + 1) != Token.nada) {
           getToken(index);
-          if (translucency == null
-              && (theTok == Token.translucent || theTok == Token.opaque)) {
+          isTranslucent = (theTok == Token.translucent);
+          if (isTranslucent || theTok == Token.opaque) {
             translucency = parameterAsString(index);
-            if (theTok == Token.translucent && isFloatParameter(index + 1))
+            if (isTranslucent && isFloatParameter(index + 1))
               translucentLevel = getTranslucentLevel(++index);
           }
           // checkLength(index + 1);
@@ -7067,7 +7068,7 @@ public class ScriptEvaluator {
           String scheme = (tokAt(index) == Token.string ? parameterAsString(
               index++).toLowerCase() : null);
           if (scheme != null) {
-            setStringProperty("propertyColorScheme", scheme);
+            setStringProperty("propertyColorScheme", (isTranslucent ? "translucent " : "") + scheme);
             isColorIndex = (scheme.indexOf(ColorEncoder.BYELEMENT_PREFIX) == 0 || scheme
                 .indexOf(ColorEncoder.BYRESIDUE_PREFIX) == 0);
           }
@@ -14159,26 +14160,20 @@ public class ScriptEvaluator {
         theTok = Token.string;
       switch (theTok) {
       case Token.boundbox:
-        if (!isSyntaxCheck) {
-          if (fullCommand.indexOf("# BBOX=") >= 0) {
-            String[] bbox = TextFormat.split(extractCommandOption("# BBOX"),
-                ',');
-            pts = new Point3f[] { (Point3f) Escape.unescapePoint(bbox[0]),
-                (Point3f) Escape.unescapePoint(bbox[1]) };
-          } else if (tokAt(i + 1) == Token.point) {
-            pts = new Point3f[] { getPoint3f(i + 2, true),
-                getPoint3f(i + 2, true) };
-            i = iToken;
-          } else {
-            pts = viewer.getBoundBoxVertices();
-          }
-          //addShapeProperty(propertyList, "commandOption", "BBOX=\""
-          //  + Escape.escape(pts[0]) + ","
-          //+ Escape.escape(pts[pts.length - 1]) + "\"");
-          addShapeProperty(propertyList, "boundingBox", pts);
-          sbCommand.append(" boundBox " + Escape.escape(pts[0]) + " "
-              + Escape.escape(pts[pts.length - 1]));
+        if (fullCommand.indexOf("# BBOX=") >= 0) {
+          String[] bbox = TextFormat.split(extractCommandOption("# BBOX"), ',');
+          pts = new Point3f[] { (Point3f) Escape.unescapePoint(bbox[0]),
+              (Point3f) Escape.unescapePoint(bbox[1]) };
+        } else if (isCenterParameter(i + 1)) {
+          pts = new Point3f[] { getPoint3f(i + 1, true),
+              getPoint3f(iToken + 1, true) };
+          i = iToken;
+        } else {
+          pts = viewer.getBoundBoxVertices();
         }
+        addShapeProperty(propertyList, "boundingBox", pts);
+        sbCommand.append(" boundBox " + Escape.escape(pts[0]) + " "
+            + Escape.escape(pts[pts.length - 1]));
         continue;
       case Token.pmesh:
         isPmesh = true;
@@ -14565,17 +14560,17 @@ public class ScriptEvaluator {
         sbCommand.append(" colorScheme");
         // either order OK -- documented for "rwb" TRANSLUCENT
         if (tokAt(i + 1) == Token.translucent) {
-          sbCommand.append(" translucent");
           isColorSchemeTranslucent = true;
           i++;
         }
         colorScheme = parameterAsString(++i);
-        sbCommand.append(" ").append(Escape.escape(colorScheme));
         if (tokAt(i + 1) == Token.translucent) {
           isColorSchemeTranslucent = true;
-          sbCommand.append(" translucent");
           i++;
         }
+        if (isColorSchemeTranslucent)
+          sbCommand.append(" translucent");
+        sbCommand.append(" ").append(Escape.escape(colorScheme));
         break;
       case Token.addhydrogens:
         propertyName = "addHydrogens";

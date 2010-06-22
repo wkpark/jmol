@@ -471,9 +471,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if ("setColorScheme" == propertyName) {
       String schemeName = ((String) ((Object[]) value)[0]);
       setColorCommand(schemeName, true);
+      return;
     }
-    // processed by meshCollection
 
+    // processing by meshCollection:
     setPropertySuper(propertyName, value, bs);
   }  
 
@@ -1099,7 +1100,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return;
     if (vertexColixes == null)
       vertexColixes = thisMesh.vertexColixes = new short[thisMesh.vertexCount];
-    boolean isTranslucent = Graphics3D.isColixTranslucent(thisMesh.colix);
+    boolean isTranslucent = Graphics3D.isColixTranslucent(thisMesh.colix)
+     && !Graphics3D.isColixTranslucent(viewer.getColixForPropertyValue(Float.NaN));
     for (int i = thisMesh.vertexCount; --i >= 0;) {
       vertexColixes[i] = viewer.getColixForPropertyValue(vertexValues[i]);
       if (isTranslucent)

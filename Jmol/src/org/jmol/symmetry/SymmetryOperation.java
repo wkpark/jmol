@@ -353,7 +353,36 @@ class SymmetryOperation extends Matrix4f {
       if (i12ths % 12 != 0)
         str = "-";
     }
-    return str + twelfths[i12ths % 12];  
+    int n = i12ths / 12;
+    if (n < 1)
+      return str + twelfths[i12ths % 12];
+    int m = 0;
+    switch (i12ths % 12) {
+    case 0:
+      return str + n;
+    case 1:
+    case 5:
+    case 7:
+    case 11:
+      m = 12;
+      break;
+    case 2:
+    case 10:
+      m = 6;
+      break;
+    case 3:
+    case 9:
+      m = 4;
+      break;
+    case 4:
+    case 8:
+      m = 3;
+      break;
+    case 6:
+      m = 2;
+      break;
+    }
+    return str + (i12ths * m / 12) + "/" + m;
   }
   
   private final static String[] twelfths = { "0", "1/12", "1/6", "1/4", "1/3",
@@ -452,7 +481,8 @@ class SymmetryOperation extends Matrix4f {
     return getDescription(isym, this, xyzOriginal, uc, pt00, ptTarget, id);
   }
   
-  private static Object[] getDescription(int isym, SymmetryOperation m, String xyzOriginal,
+  private static Object[] getDescription(int isym, SymmetryOperation m,
+                                         String xyzOriginal,
                                          SymmetryInterface uc, Point3f pt00,
                                          Point3f ptTarget, String id) {
     Vector3f vtemp = new Vector3f();
@@ -461,6 +491,7 @@ class SymmetryOperation extends Matrix4f {
     Point3f pt02 = new Point3f();
     Point3f pt03 = new Point3f();
     Vector3f ftrans = new Vector3f();
+    Vector3f vtrans = new Vector3f();
     String xyz = getXYZFromMatrix(m, false, false, false);
     boolean typeOnly = (id == null);
     if (pt00 == null || Float.isNaN(pt00.x))
@@ -484,7 +515,7 @@ class SymmetryOperation extends Matrix4f {
       uc.toFractional(pt01, false);
       uc.toFractional(pt02, false);
       m.transform(pt01);
-      vtemp.sub(pt02, pt01);
+      vtrans.sub(pt02, pt01);
       pt01.set(0, 0, 0);
       pt02.set(0, 0, 0);
     }
@@ -506,10 +537,11 @@ class SymmetryOperation extends Matrix4f {
     m.transform(p1, p1);
     m.transform(p2, p2);
     m.transform(p3, p3);
-    p0.add(vtemp);
-    p1.add(vtemp);
-    p2.add(vtemp);
-    p3.add(vtemp);
+    p0.add(vtrans);
+    p1.add(vtrans);
+    p2.add(vtrans);
+    p3.add(vtrans);
+    approx(vtrans);
     uc.toCartesian(p0);
     uc.toCartesian(p1);
     uc.toCartesian(p2);
@@ -728,10 +760,10 @@ class SymmetryOperation extends Matrix4f {
     }
 
     // fix angle based on direction of axis
-    
+
     int ang = ang1;
-    approx(ax1);
-    
+    approx0(ax1);
+
     if (isrotation) {
 
       Point3f pt1 = new Point3f();
@@ -766,7 +798,7 @@ class SymmetryOperation extends Matrix4f {
         ang1 = -ang1;
       }
     }
-    
+
     // time to get the description
 
     String info1 = "identity";
@@ -872,9 +904,9 @@ class SymmetryOperation extends Matrix4f {
             pt1.set(ipt);
             vtemp.scale(3);
             ptemp.scaleAdd(-1, vtemp, pa1);
-            draw1.append(drawid).append("rotVector2 diameter 0.1 ")
-                .append(Escape.escape(pa1)).append(Escape.escape(ptemp)).append(
-                    " color red");
+            draw1.append(drawid).append("rotVector2 diameter 0.1 ").append(
+                Escape.escape(pa1)).append(Escape.escape(ptemp)).append(
+                " color red");
           }
           scale = p0.distance(pt1);
           draw1.append(drawid).append("rotLine1 ").append(Escape.escape(pt1))
@@ -892,9 +924,9 @@ class SymmetryOperation extends Matrix4f {
           }
           vtemp.scale(3);
           ptemp.scaleAdd(-1, vtemp, pa1);
-          draw1.append(drawid).append("rotVector2 diameter 0.1 ")
-              .append(Escape.escape(pa1)).append(Escape.escape(ptemp)).append(
-                  " color red");
+          draw1.append(drawid).append("rotVector2 diameter 0.1 ").append(
+              Escape.escape(pa1)).append(Escape.escape(ptemp)).append(
+              " color red");
           pt1.set(pa1);
           if (pitch1 == 0 && pt00.distance(p0) < 0.2)
             pt1.scaleAdd(0.5f, pt1, vtemp);
@@ -1098,15 +1130,23 @@ class SymmetryOperation extends Matrix4f {
       pa1 = null;
       ax1 = null;
     }
- 
+
     // and display translation if still not {0 0 0}
     if (ax1 != null)
       ax1.normalize();
-    return new Object[] { 
-        xyz, xyzOriginal, info1, 
-        cmds, approx(ftrans), approx(trans), 
-        approx(ipt), approx(pa1), approx(ax1), 
-        new Integer(ang1), m };
+    Matrix4f m2 = null;
+    if (m != null) {
+      m2 = new Matrix4f(m);
+      if (vtrans.length() != 0) {
+        m2.m03 += vtrans.x;
+        m2.m13 += vtrans.y;
+        m2.m23 += vtrans.z;
+      }
+      xyz = getXYZFromMatrix(m2, false, false, false);
+    }
+    return new Object[] { xyz, xyzOriginal, info1, cmds, approx0(ftrans),
+        approx0(trans), approx0(ipt), approx0(pa1), approx0(ax1),
+        new Integer(ang1), m2, vtrans };
   }
 
   private static void drawLine(StringBuffer s, String id, float diameter, Point3f pt0, Point3f pt1,
@@ -1129,7 +1169,7 @@ class SymmetryOperation extends Matrix4f {
     return (x24 == 0 ? "0" : x24 == 24 ? m + "1" : m + (x24/8) + "/3");
   }
 
-  private static Tuple3f approx(Tuple3f pt) {
+  private static Tuple3f approx0(Tuple3f pt) {
     if (pt != null) {
       if (Math.abs(pt.x) < 0.0001f)
         pt.x = 0;
@@ -1137,6 +1177,15 @@ class SymmetryOperation extends Matrix4f {
         pt.y = 0;
       if (Math.abs(pt.z) < 0.0001f)
         pt.z = 0;
+    }
+    return pt;
+  }
+  
+  private static Tuple3f approx(Tuple3f pt) {
+    if (pt != null) {
+      pt.x = approx(pt.x);
+      pt.y = approx(pt.y);
+      pt.z = approx(pt.z);
     }
     return pt;
   }

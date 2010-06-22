@@ -256,6 +256,7 @@ public abstract class MeshCollection extends Shape {
         break;
       case Token.nocontourlines:
         test = false;
+        // TODO leave this as is for now; probably TRUE is correct...
         tok = (true || allowContourLines ? Token.contourlines : Token.mesh);
         tok2 = Token.mesh;
         break;

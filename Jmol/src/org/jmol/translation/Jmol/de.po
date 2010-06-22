@@ -14,13 +14,13 @@ msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-06-21 19:25+0200\n"
-"PO-Revision-Date: 2010-05-25 08:56+0000\n"
+"PO-Revision-Date: 2010-06-21 18:31+0000\n"
 "Last-Translator: xlazarus <xlazarus@lazarusware.at>\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-05-25 16:32+0000\n"
+"X-Launchpad-Export-Date: 2010-06-22 15:36+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -88,7 +88,8 @@ msgstr "Skript Datei zum Ausführen oder '-' für System.in"
 
 #: org/openscience/jmol/app/JmolApp.java:170
 msgid "use multitouch interface (requires \"sparshui\" parameter"
-msgstr "benutze die Multitouch Schnittstelle (benötigt \"sparshui\" Parameter"
+msgstr ""
+"benutze die Multitouch Schnittstelle (benötigt \"sparshui\" Parameter"
 
 #: org/openscience/jmol/app/JmolApp.java:177
 msgid "Jmol script to execute BEFORE -s option"
@@ -837,11 +838,11 @@ msgstr "Zum vorherigen Frame"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:169
 msgid "All &frames"
-msgstr ""
+msgstr "Alle &frames"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:170
 msgid "All frames"
-msgstr ""
+msgstr "Alle Frames"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:171
 msgid "Go to &last frame"
@@ -939,7 +940,7 @@ msgstr "Molekül in Ausgangsposition bringen."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:201
 msgid "Open the model kit."
-msgstr ""
+msgstr "Öffne Modell Kit"
 
 #: org/openscience/jmol/app/jmolpanel/HelpDialog.java:64
 msgid "Jmol Help"
@@ -1388,9 +1389,8 @@ msgid "A web page containing Jmol applets"
 msgstr "Eine Webseite mit Jmol Applets"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:152
-#, fuzzy
 msgid "click and drag to reorder"
-msgstr "Doppelklick und ziehen um neu anzuordnen"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:157
 msgid "Add Present Jmol State as Instance..."
@@ -1464,7 +1464,7 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/WebPanel.java:518
 #, java-format
 msgid "file {0} created"
-msgstr ""
+msgstr "Datei {0} erstellt"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:520
 msgid "Call to FileWriter unsuccessful."
@@ -1485,9 +1485,9 @@ msgid "adding {0}"
 msgstr "{0} hinzufügen"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:656
-#, fuzzy, java-format
+#, java-format
 msgid "Unable to load resource {0}"
-msgstr "URL \"{0}\" nicht gefunden."
+msgstr "Resource {0} konnte nicht geladen werden"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:708
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
@@ -1568,68 +1568,59 @@ msgstr "Rot/Grün"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:141
 msgid "Animation Control"
-msgstr ""
+msgstr "Animations Kontrolle"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:165
-#, fuzzy
 msgid "Animation"
-msgstr "Animation &Stoppen"
+msgstr "Animation"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:166
 msgid "First Frame"
-msgstr ""
+msgstr "Erstes Bild"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:168
-#, fuzzy
 msgid "Previous Frame"
-msgstr "Zum vorherigen Frame"
+msgstr "Vorheriges Bild"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:170
 msgid "Play"
-msgstr ""
+msgstr "Wiedergabe"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:172
-#, fuzzy
 msgid "Next Frame"
-msgstr "Zum nächsten Frame"
+msgstr "Nächstes Bild"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:174
-#, fuzzy
 msgid "Pause"
-msgstr "E&infügen"
+msgstr "Pause"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:176
-#, fuzzy
 msgid "Last Frame"
-msgstr "Gehe zum letzten Frame"
+msgstr "Letztes Bild"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:178
-#, fuzzy
 msgid "Mode:"
-msgstr "Methode: "
+msgstr "Modus:"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:179
-#, fuzzy
 msgid "Loop"
-msgstr "&Schleife"
+msgstr "Schleife"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:181
-#, fuzzy
 msgid "Palindrome"
-msgstr "P&alindrom"
+msgstr "Palindrom"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:183
 msgid "Play Once"
-msgstr ""
+msgstr "Einmal abspielen"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:192
 msgid "Open Console Button"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:205
-#, fuzzy
 msgid "launch Jmol console"
-msgstr "Jmol Konsole"
+msgstr "Starte Jmol Konsole"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:212
 msgid "Download view"
@@ -1639,21 +1630,19 @@ msgstr "Ansicht herunterladen"
 msgid "unimplemented"
 msgstr "nicht implementiert"
 
-#, fuzzy
-#~ msgid "Stop"
-#~ msgstr "Stufe"
+#~ msgid "Show Selected"
+#~ msgstr "Auswahl anzeigen"
+
+#, java-format
+#~ msgid "adding {0}.png"
+#~ msgstr "hinzufügen von {0}.png"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "hinzufügen von JmolPopIn.js"
 
-#~ msgid "adding {0}.png"
-#~ msgstr "hinzufügen von {0}.png"
-
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "hinzufügen von {0}.spt"
 
 #~ msgid "stereo off"
 #~ msgstr "Stereo aus"
-
-#~ msgid "Show Selected"
-#~ msgstr "Auswahl anzeigen"

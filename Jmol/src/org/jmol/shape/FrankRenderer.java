@@ -34,7 +34,7 @@ public class FrankRenderer extends ShapeRenderer {
   protected void render() {
     Frank frank = (Frank) shape;
     boolean allowKeys = viewer.getBooleanProperty("allowKeyStrokes");
-    boolean modelKitMode = viewer.isModelkitMode();
+    boolean modelKitMode = viewer.isModelKitMode();
     colix = (modelKitMode ? Graphics3D.MAGENTA 
         : viewer.isSignedApplet() ? (allowKeys ? Graphics3D.ORANGE : Graphics3D.RED) : allowKeys ? Graphics3D.BLUE : Graphics3D.GRAY);
     if (exportType != Graphics3D.EXPORT_NOT || !viewer.getShowFrank()

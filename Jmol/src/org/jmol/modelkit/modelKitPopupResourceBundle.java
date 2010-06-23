@@ -52,7 +52,7 @@ class ModelKitPopupResourceBundle extends PopupResource {
   
   private static String[][] structureContents = {
     { "new" , "zap" },
-    { "center" , "zoomto {visible} 0/1.5" },
+    { "center" , "zoomto 0 {visible} 0/1.5" },
     { "addh" , "calculate hydrogens {model=_lastframe}" },
     { "minimize" , "minimize" },
     { "hmin" , "delete hydrogens and model=_lastframe; minimize addhydrogens" },

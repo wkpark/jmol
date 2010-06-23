@@ -428,8 +428,9 @@ public final class ModelLoader extends ModelSet {
     Model m = models[baseModelIndex];
     String loadState = (String) modelSetAuxiliaryInfo.remove("loadState");
     StringBuffer loadScript = (StringBuffer)modelSetAuxiliaryInfo.remove("loadScript");
-    if (loadScript.indexOf("#jmolModelkit") < 0 || !m.isModelKit) {
+    if (loadScript.indexOf("Viewer.AddHydrogens") < 0 || !m.isModelKit) {
       m.loadState += m.loadScript + loadState;
+      m.loadScript = new StringBuffer();
       m.loadScript.append("  ").append(loadScript).append(";\n");
       
     }
@@ -464,8 +465,11 @@ public final class ModelLoader extends ModelSet {
     models[modelIndex].setNAltLocs(codes == null ? 0 : codes.length());
     codes = (String) getModelAuxiliaryInfo(modelIndex, "insertionCodes");
     models[modelIndex].setNInsertions(codes == null ? 0 : codes.length());
-    models[modelIndex].isModelKit = "Jme".equals(getModelAuxiliaryInfo(modelIndex,
-    "fileType"));
+    models[modelIndex].isModelKit = (modelSetName != null 
+        && modelSetName.startsWith("Jmol Model Kit")
+        || modelName.startsWith("Jmol Model Kit")
+        || "Jme".equals(getModelAuxiliaryInfo(modelIndex,
+    "fileType")));
     return models[modelIndex].isPDB = getModelAuxiliaryInfoBoolean(modelIndex,
         "isPDB");
   }
@@ -1092,7 +1096,7 @@ public final class ModelLoader extends ModelSet {
         bondsCache[j] = null;
     }
 
-    setAtomNamesAndNumbers();
+    setAtomNamesAndNumbers(0, baseAtomIndex, mergeModelSet);
 
     // find elements for the popup menus
     
@@ -1108,37 +1112,6 @@ public final class ModelLoader extends ModelSet {
     currentChain = null;    
     setStructureIds();
 
-  }
-
-  private void setAtomNamesAndNumbers() {
-    // first, validate that all atomSerials are NaN
-    if (atomSerials == null)
-      atomSerials = new int[atomCount];
-    // now, we'll assign 1-based atom numbers within each model
-    boolean isZeroBased = isXYZ && viewer.getZeroBasedXyzRasmol();
-    int lastModelIndex = Integer.MAX_VALUE;
-    int atomNo = 1;
-    for (int i = 0; i < atomCount; ++i) {
-      Atom atom = atoms[i];
-      if (atom.modelIndex != lastModelIndex) {
-        lastModelIndex = atom.modelIndex;
-        atomNo = (isZeroBased ? 0 : 1);
-      }
-      // 1) do not change numbers assigned by adapter
-      // 2) do not change the number already assigned when merging
-      // 3) restart numbering with new atoms, not a continuation of old
-      
-      if (atomSerials[i] == 0)
-        atomSerials[i] = (i < baseAtomIndex ? mergeModelSet.atomSerials[i]
-            : atomNo++);
-    }
-    if (atomNames == null)
-      atomNames = new String[atomCount];
-    for (int i = 0; i < atomCount; ++i)
-      if (atomNames[i] == null) {
-        Atom atom = atoms[i];
-        atomNames[i] = (atom.getElementSymbol() + atom.getAtomNumber()).intern();
-      }
   }
 
   private void findElementsPresent() {

@@ -245,7 +245,7 @@ public class Ellipsoids extends AtomShape {
             .nextSetBit(i + 1))
           setStateInfo(temp2, i, getColorCommand("Ellipsoids", paletteIDs[i],
               colixes[i]));
-      sb.append(getShapeCommands(temp, temp2, atomCount));
+      sb.append(getShapeCommands(temp, temp2));
     }
     return sb.toString();
   }

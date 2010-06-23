@@ -44,7 +44,6 @@ import org.jmol.api.JmolBioResolver;
 import org.jmol.api.JmolEdge;
 import org.jmol.api.JmolMolecule;
 import org.jmol.api.SymmetryInterface;
-import org.jmol.atomdata.RadiusData;
 import org.jmol.bspt.Bspf;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
@@ -2295,9 +2294,12 @@ abstract public class ModelCollection extends BondCollection {
       BitSet bsA = new BitSet();
       BitSet bsB = new BitSet();
       for (int i = bsBonds.nextSetBit(0); i >= 0; i = bsBonds.nextSetBit(i + 1)) {
+        Atom atom1 = bonds[i].atom1;
+        if (models[atom1.modelIndex].isModelKit)
+          continue;
         bsA.clear();
         bsB.clear();
-        bsA.set(bonds[i].getAtomIndex1());
+        bsA.set(atom1.index);
         bsB.set(bonds[i].getAtomIndex2());
         addStateScript("connect ", null, bsA, bsB, "delete", false, true);
       }
@@ -2921,12 +2923,13 @@ abstract public class ModelCollection extends BondCollection {
     return bsResult;
   }
 
-  public String getModelExtract(BitSet bs, boolean doTransform) {
+  public String getModelExtract(BitSet bs, boolean doTransform, boolean isModelKit) {
     int nAtoms = 0;
     int nBonds = 0;
     int[] atomMap = new int[atomCount];
     StringBuffer mol = new StringBuffer();
-    mol.append(viewer.getFullPathName()).append("\nJmol version ").append(Viewer.getJmolVersion())
+    String name = (isModelKit ? "Jmol Model Kit" : viewer.getFullPathName()); 
+    mol.append(name).append("\nJmol version ").append(Viewer.getJmolVersion())
         .append("\nEXTRACT: ").append(Escape.escape(bs)).append("\n"); 
     StringBuffer s = new StringBuffer();
     Quaternion q = (doTransform ? viewer.getRotationQuaternion() : null);
@@ -2969,7 +2972,8 @@ abstract public class ModelCollection extends BondCollection {
     TextFormat.rFill(s, "          " ,TextFormat.safeTruncate(pTemp.x,9));
     TextFormat.rFill(s, "          " ,TextFormat.safeTruncate(pTemp.y,9));
     TextFormat.rFill(s, "          " ,TextFormat.safeTruncate(pTemp.z,9));
-    s.append(" ").append((getElementSymbol(i) + "  ").substring(0,2)).append("\n");
+    s.append(" ").append(((atoms[i].isDeleted() ? "Xx" 
+        : getElementSymbol(i)) + "  ").substring(0,2)).append("\n");
   }
 
   private void getBondRecordMOL(StringBuffer s, int i,int[] atomMap){
@@ -3574,7 +3578,6 @@ abstract public class ModelCollection extends BondCollection {
     if (type == null)
       type = "C";
 
-    // TODO
     // not as simple as just defining an atom.
     // if we click on an H, and C is being defined,
     // this sprouts an sp3-carbon at that position.
@@ -3588,16 +3591,19 @@ abstract public class ModelCollection extends BondCollection {
 
     boolean isDelete = false;
     if (atomicNumber > 0) {
-      RadiusData rd = viewer.getDefaultRadiusData();
-      setElement(atom, atomicNumber, rd);
+      setElement(atom, atomicNumber);
+      viewer.setShapeSize(JmolConstants.SHAPE_BALLS, 
+          viewer.getDefaultRadiusData(), BitSetUtil.setBit(atomIndex));
       setAtomName(atomIndex, type + atom.getAtomNumber());
+      if (!models[atom.modelIndex].isModelKit)
+        taint(atomIndex, TAINT_ATOMNAME);
     } else if (type.equals("Pl")) {
       atom.setFormalCharge(atom.getFormalCharge() + 1);
     } else if (type.equals("Mi")) {
       atom.setFormalCharge(atom.getFormalCharge() - 1);
     } else if (type.equals("X")) {
       isDelete = true;
-    } else if (!type.equals(".")){
+    } else if (!type.equals(".")) {
       return; // uninterpretable
     }
 
@@ -3620,7 +3626,7 @@ abstract public class ModelCollection extends BondCollection {
       float d = v.length();
       v.normalize();
       v.scale(dx - d);
-      atom.add(v);
+      setAtomCoordRelative(atomIndex, v.x, v.y, v.z);
     }
 
     BitSet bsA = BitSetUtil.setBit(atomIndex);
@@ -3673,13 +3679,15 @@ abstract public class ModelCollection extends BondCollection {
     StringBuffer commands = new StringBuffer();
     commands.append(models[i].loadState);
     if (models[i].isModelKit) {
-      BitSet bs = viewer.getModelUndeletedAtomsBitSet(i);
-      if (tainted[TAINT_COORD] != null)
-        tainted[TAINT_COORD].andNot(bs);
-      if (tainted[TAINT_ELEMENT] != null)
-        tainted[TAINT_ELEMENT].andNot(bs);
+      BitSet bs = getModelAtomBitSetIncludingDeleted(i, false);
+      if (tainted != null) {
+        if (tainted[TAINT_COORD] != null)
+          tainted[TAINT_COORD].andNot(bs);
+        if (tainted[TAINT_ELEMENT] != null)
+          tainted[TAINT_ELEMENT].andNot(bs);
+      }
       models[i].loadScript = new StringBuffer(); 
-      Viewer.getInlineData(commands, viewer.getModelExtract(bs, false), false);
+      Viewer.getInlineData(commands, getModelExtract(bs, false, true), false);
     } else {
       commands.append(models[i].loadScript);
     }
@@ -3871,4 +3879,52 @@ abstract public class ModelCollection extends BondCollection {
     return -1;
   }
 
+  public boolean haveModelKit() {
+    for (int i = 0; i < modelCount; i++)
+      if (models[i].isModelKit)
+        return true;
+    return false;
+  }
+
+  public BitSet getModelKitStateBitset(BitSet bs, BitSet bsDeleted) {
+    // task here is to remove bits from bs that are deleted atoms in 
+    // models that are model kits.
+
+    BitSet bs1 = BitSetUtil.copy(bsDeleted);
+    for (int i = 0; i < modelCount; i++)
+      if (!models[i].isModelKit)
+        bs1.andNot(models[i].bsAtoms);
+    return BitSetUtil.deleteBits(bs, bs1);
+  }
+  
+  public void setAtomNamesAndNumbers(int iFirst, int baseAtomIndex, AtomCollection mergeSet) {
+    // first, validate that all atomSerials are NaN
+    if (baseAtomIndex < 0)
+      iFirst = models[atoms[iFirst].modelIndex].firstAtomIndex;
+    if (atomSerials == null)
+      atomSerials = new int[atomCount];
+    if (atomNames == null)
+      atomNames = new String[atomCount];
+    // now, we'll assign 1-based atom numbers within each model
+    boolean isZeroBased = isXYZ && viewer.getZeroBasedXyzRasmol();
+    int lastModelIndex = Integer.MAX_VALUE;
+    int atomNo = 1;
+    for (int i = iFirst; i < atomCount; ++i) {
+      Atom atom = atoms[i];
+      if (atom.modelIndex != lastModelIndex) {
+        lastModelIndex = atom.modelIndex;
+        atomNo = (isZeroBased ? 0 : 1);
+      }
+      // 1) do not change numbers assigned by adapter
+      // 2) do not change the number already assigned when merging
+      // 3) restart numbering with new atoms, not a continuation of old
+      if (atomSerials[i] == 0 || baseAtomIndex < 0)
+        atomSerials[i] = (i < baseAtomIndex ? mergeSet.atomSerials[i]
+            : atomNo);
+      if (atomNames[i] == null || baseAtomIndex < 0)
+        atomNames[i] = (atom.getElementSymbol() + atomSerials[i]).intern();
+      if (!models[lastModelIndex].isModelKit || atom.getElementNumber() > 0 && !atom.isDeleted())
+        atomNo++;
+    }
+  }
 }

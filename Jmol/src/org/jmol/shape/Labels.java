@@ -586,8 +586,8 @@ public class Labels extends AtomShape {
         setStateInfo(temp2, i, getFontCommand("label", Font3D
             .getFont3D(fids[i])));
     }
-    return getShapeCommands(temp, temp2, atomCount)
-        + getShapeCommands(null, temp3, atomCount);
+    return getShapeCommands(temp, temp2)
+        + getShapeCommands(null, temp3);
   }
 
   int pickedAtom = -1;

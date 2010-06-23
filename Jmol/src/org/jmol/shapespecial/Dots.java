@@ -294,7 +294,7 @@ public class Dots extends AtomShape {
             + Escape.escape(bs.toBitSet()));
       }
     }
-    s.append(getShapeCommands(temp, null, atomCount));
+    s.append(getShapeCommands(temp, null));
     return s.toString();
   }
 

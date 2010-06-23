@@ -615,7 +615,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
     }
     if (mad >= 0)
       commands.append(" set measurements " + (mad / 2000f));
-    String s = getShapeCommands(temp, null, -1, "select measures");
+    String s = getShapeCommands(temp, null, "select measures");
     if (s != null && s.length() != 0) {
       commands.append(s);
       appendCmd(commands, "select measures ({null})");

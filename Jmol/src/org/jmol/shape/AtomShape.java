@@ -176,7 +176,7 @@ public abstract class AtomShape extends Shape {
     if (bsColixSet != null)
       for (int i = bsColixSet.nextSetBit(0); i >= 0; i = bsColixSet.nextSetBit(i + 1))
           setStateInfo(temp2, i, getColorCommand(type, paletteIDs[i], colixes[i]));
-    return getShapeCommands(temp, temp2, atomCount);
+    return getShapeCommands(temp, temp2);
   }
 
 }

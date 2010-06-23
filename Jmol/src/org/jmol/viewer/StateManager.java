@@ -886,7 +886,7 @@ public class StateManager {
       setParameterValue("minimizationRefresh", minimizationRefresh);
       setParameterValue("minimizationSilent", minimizationSilent);
       setParameterValue("minimizationCriterion", minimizationCriterion);
-      setParameterValue("modelkitMode", modelkitMode);
+      setParameterValue("modelKitMode", modelKitMode);
       setParameterValue("monitorEnergy", monitorEnergy);
       setParameterValue("multiProcessor", multiProcessor && (Viewer.nProcessors > 1));
       setParameterValue("navigationMode", navigationMode);
@@ -1224,7 +1224,7 @@ public class StateManager {
     float navigationSpeed = 5;
     boolean showNavigationPointAlways = false;
     String stereoState = null;
-    boolean modelkitMode = false;
+    boolean modelKitMode = false;
 
     // special persistent object characteristics -- bbcage, uccage, axes:
 
@@ -1608,28 +1608,26 @@ public class StateManager {
   }
 
   public static String getCommands(Hashtable ht) {
-    return getCommands(ht, null, -1, "select");
+    return getCommands(ht, null, "select");
+  }
+
+  public static String getCommands(Hashtable htDefine, Hashtable htMore) {
+    return getCommands(htDefine, htMore, "select");
   }
 
   public static String getCommands(Hashtable htDefine, Hashtable htMore,
-                                   int nAll) {
-    return getCommands(htDefine, htMore, nAll, "select");
-  }
-
-  public static String getCommands(Hashtable htDefine, Hashtable htMore,
-                                   int nAll, String selectCmd) {
+                                   String selectCmd) {
     StringBuffer s = new StringBuffer();
-    String setPrev = getCommands(htDefine, s, null, nAll, selectCmd);
+    String setPrev = getCommands(htDefine, s, null, selectCmd);
     if (htMore != null)
-      getCommands(htMore, s, setPrev, nAll, "select");
+      getCommands(htMore, s, setPrev, "select");
     return s.toString();
   }
 
-  public static String getCommands(Hashtable ht, StringBuffer s,
-                                   String setPrev, int nAll, String selectCmd) {
+  private static String getCommands(Hashtable ht, StringBuffer s,
+                                   String setPrev, String selectCmd) {
     if (ht == null)
       return "";
-    //String strAll = "({0:" + (nAll - 1) + "})";
     Enumeration e = ht.keys();
     while (e.hasMoreElements()) {
       String key = (String) e.nextElement();

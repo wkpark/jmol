@@ -48,7 +48,7 @@ class ModelManager {
   }
   
   String getModelSetFileName() {
-    return (fileName != null ? fileName : viewer.isModelkitMode() ? "" : "zapped");
+    return (fileName != null ? fileName : viewer.isModelKitMode() ? "" : "zapped");
   }
 
   String getModelSetPathName() {

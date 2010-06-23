@@ -536,17 +536,21 @@ abstract public class ModelSet extends ModelCollection {
 
       boolean isH = false;
       for (int i = 0; i < bondCount; i++) {
-        if ((isH = bonds[i].isHydrogen()) || (bonds[i].order & JmolEdge.BOND_NEW) != 0) {
-          Bond bond = bonds[i];
-          commands.append("  connect ").append("({").append(
-              bond.atom1.index).append("}) ").append("({").append(
-              bond.atom2.index).append("}) ");
-          commands.append(JmolConstants.getBondOrderNameFromOrder(bond.order));
-          if (isH)
-            commands.append(" ").append(bond.order >> JmolEdge.BOND_HBOND_SHIFT)
-                .append(" ").append(bond.getEnergy());
-          commands.append(";\n");
-        }
+        if (!models[bonds[i].atom1.modelIndex].isModelKit)
+          if ((isH = bonds[i].isHydrogen())
+              || (bonds[i].order & JmolEdge.BOND_NEW) != 0) {
+            Bond bond = bonds[i];
+            commands.append("  connect ").append("({").append(bond.atom1.index)
+                .append("}) ").append("({").append(bond.atom2.index).append(
+                    "}) ");
+            commands
+                .append(JmolConstants.getBondOrderNameFromOrder(bond.order));
+            if (isH)
+              commands.append(" ").append(
+                  bond.order >> JmolEdge.BOND_HBOND_SHIFT).append(" ").append(
+                  bond.getEnergy());
+            commands.append(";\n");
+          }
       }
       commands.append("\n");
     }
@@ -574,7 +578,8 @@ abstract public class ModelSet extends ModelCollection {
       }
 
       commands.append("  set fontScaling " + viewer.getFontScaling() + ";\n");
-
+      if (viewer.isModelKitMode())
+        commands.append("  set modelKitMode true;\n");
     }
     if (sfunc != null)
       commands.append("\n}\n\n");
@@ -795,5 +800,6 @@ abstract public class ModelSet extends ModelCollection {
     for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1))
       shapeManager.refreshShapeTrajectories(i, viewer.getModelUndeletedAtomsBitSet(i));
   }
+
 }
 

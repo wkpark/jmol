@@ -231,9 +231,9 @@ public class Sticks extends Shape {
           setStateInfo(temp, i, getColorCommand("bonds", colix));
       }
 
-    return getShapeCommands(temp, null, -1, "select BONDS")
+    return getShapeCommands(temp, null, "select BONDS")
         + "\n"
-        + (haveTainted ? getShapeCommands(temp2, null, -1, "select BONDS")
+        + (haveTainted ? getShapeCommands(temp2, null, "select BONDS")
             + "\n" : "");
   }
   

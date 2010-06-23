@@ -852,7 +852,7 @@ public class ActionManager {
           viewer.undoAction(true, -1, 0);
           Atom a = viewer.getModelSet().atoms[dragAtomIndex];
           if (a.getElementNumber() == 1) {
-            viewer.script("delete ({" + dragAtomIndex + "})");
+            viewer.script("assign atom ({" + dragAtomIndex + "}) \"X\"");
           } else {
             Point3f ptNew = new Point3f(x, y, a.screenZ);
             viewer.unTransformPoint(ptNew, ptNew);

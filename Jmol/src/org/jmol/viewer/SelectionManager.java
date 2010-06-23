@@ -245,18 +245,14 @@ class SelectionManager {
       commands.append("function _setSelectionState() {\n");
     }
     StateManager.appendCmd(commands, viewer.getTrajectoryInfo());
-    if (bsHidden.length() > 0)
-      StateManager.appendCmd(commands, "hide " + Escape.escape(bsHidden));
-    if (bsSubset != null && bsSubset.length() > 0)
-      StateManager.appendCmd(commands, "subset " + Escape.escape(bsSubset));
-    if (bsDeleted != null && bsDeleted.length() > 0)
-      StateManager.appendCmd(commands, "delete " + Escape.escape(bsDeleted));
-    if (bsFixed.length() > 0)
-      StateManager.appendCmd(commands, "fix " + Escape.escape(bsFixed));
-    String cmd = null;
     Hashtable temp = new Hashtable();
+    String cmd = null;
+    addBs(commands, "hide ", bsHidden);
+    addBs(commands, "subset ", bsSubset);
+    addBs(commands, "delete ", bsDeleted);
+    addBs(commands, "fix ", bsFixed);
     temp.put("-", bsSelection);
-    cmd = StateManager.getCommands(temp, null, viewer.getAtomCount());
+    cmd = StateManager.getCommands(temp, null);
     if (cmd == null)
       StateManager.appendCmd(commands, "select none");
     else
@@ -269,6 +265,13 @@ class SelectionManager {
     if (sfunc != null)
       commands.append("}\n\n");
     return commands.toString();
+  }
+
+  private static void addBs(StringBuffer sb, String key, 
+                            BitSet bs) {
+    if (bs == null || bs.length() == 0)
+      return;
+    StateManager.appendCmd(sb, key + Escape.escape(bs));
   }
 
   int deleteAtoms(BitSet bs) {

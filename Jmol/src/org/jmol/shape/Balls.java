@@ -154,7 +154,7 @@ public class Balls extends AtomShape {
           setStateInfo(temp, i, getColorCommand("atoms", pid, atoms[i].getColix()));
       }
     }
-    return getShapeCommands(temp, null, atomCount);
+    return getShapeCommands(temp, null);
   }
   
   /*

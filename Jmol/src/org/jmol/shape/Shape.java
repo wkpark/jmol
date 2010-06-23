@@ -348,14 +348,13 @@ public abstract class Shape {
     StateManager.setStateInfo(ht, i1, i2, key);
   }
 
-  static public String getShapeCommands(Hashtable htDefine, Hashtable htMore,
-                                 int atomCount) {
-    return StateManager.getCommands(htDefine, htMore, atomCount);
+  static public String getShapeCommands(Hashtable htDefine, Hashtable htMore) {
+    return StateManager.getCommands(htDefine, htMore);
   }
 
   static public String getShapeCommands(Hashtable htDefine, Hashtable htMore,
-                                 int count, String selectCmd) {
-    return StateManager.getCommands(htDefine, htMore, count, selectCmd);
+                                 String selectCmd) {
+    return StateManager.getCommands(htDefine, htMore, selectCmd);
   }
 
   static public void appendCmd(StringBuffer s, String cmd) {

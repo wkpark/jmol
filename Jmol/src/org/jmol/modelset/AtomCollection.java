@@ -568,7 +568,7 @@ abstract public class AtomCollection {
           break;
         case Token.elemno:
         case Token.element:
-          setElement(atom, iValue, null);
+          setElement(atom, iValue);
           break;
         case Token.formalcharge:
           atom.setFormalCharge(iValue);
@@ -624,14 +624,12 @@ abstract public class AtomCollection {
       }
   }
 
-  protected void setElement(Atom atom, int atomicNumber, RadiusData rd) {
+  protected void setElement(Atom atom, int atomicNumber) {
     taint(atom.index, TAINT_ELEMENT);
     atom.setAtomicAndIsotopeNumber(atomicNumber);
     atom.setPaletteID(JmolConstants.PALETTE_CPK);
     atom.setColixAtom(viewer.getColixAtomPalette(atom,
         JmolConstants.PALETTE_CPK));
-    if (atom.madAtom != 0 && rd != null)
-      atom.setMadAtom(viewer, rd);
   }
 
   public float getVibrationCoord(int atomIndex, char c) {

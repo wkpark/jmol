@@ -25,6 +25,7 @@
 package org.jmol.shape;
 
 import org.jmol.g3d.*;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.Escape;
 
 import java.util.BitSet;
@@ -111,6 +112,11 @@ public class Hover extends TextShape {
     }
 
     if (propertyName == "deleteModelAtoms") {
+      if (atomFormats != null) {
+        int firstAtomDeleted = ((int[])((Object[])value)[2])[1];
+        int nAtomsDeleted = ((int[])((Object[])value)[2])[2];
+        atomFormats = (String[]) ArrayUtil.deleteElements(atomFormats, firstAtomDeleted, nAtomsDeleted);
+      }
       atomIndex = -1;
       return;
     }
@@ -121,12 +127,11 @@ public class Hover extends TextShape {
 
   public String getShapeState() {
     Hashtable temp = new Hashtable();
-    int atomCount = viewer.getAtomCount();
     if (atomFormats != null)
-      for (int i = atomCount; --i >= 0;)
+      for (int i = viewer.getAtomCount(); --i >= 0;)
         if (atomFormats[i] != null)
           setStateInfo(temp, i, "set hoverLabel " + Escape.escape(atomFormats[i]));
     return "\n  hover " + Escape.escape((labelFormat == null ? "" : labelFormat)) 
-    + ";\n" + getShapeCommands(temp, null, atomCount);
+    + ";\n" + getShapeCommands(temp, null);
   }
 }

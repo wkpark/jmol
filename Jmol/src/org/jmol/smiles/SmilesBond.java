@@ -120,7 +120,7 @@ public class SmilesBond implements JmolEdge {
   }
 
   public String toString() {
-    return atom1 + " -" + bondType + "- " + atom2;
+    return atom1 + " -" + (isNot ? "!" : "") + bondType + "- " + atom2;
   }
 
   /**

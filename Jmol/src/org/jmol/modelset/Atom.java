@@ -880,31 +880,31 @@ final public class Atom extends Point3fi implements JmolNode {
     return group.isGroup3(group3);
   }
 
-  boolean isProtein() {
+  public boolean isProtein() {
     return group.isProtein();
   }
 
-  boolean isCarbohydrate() {
+  public boolean isCarbohydrate() {
     return group.isCarbohydrate();
   }
 
-  boolean isNucleic() {
+  public boolean isNucleic() {
     return group.isNucleic();
   }
 
-  boolean isDna() {
+  public boolean isDna() {
     return group.isDna();
   }
   
-  boolean isRna() {
+  public boolean isRna() {
     return group.isRna();
   }
 
-  boolean isPurine() {
+  public boolean isPurine() {
     return group.isPurine();
   }
 
-  boolean isPyrimidine() {
+  public boolean isPyrimidine() {
     return group.isPyrimidine();
   }
 

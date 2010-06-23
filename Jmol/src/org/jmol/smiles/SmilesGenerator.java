@@ -115,7 +115,7 @@ public class SmilesGenerator {
               len = s.length();
               sb.append(s);
             }
-            sb.append("~");
+            sb.append("~").append(groupType.charAt(0)).append("~");
             len++;
           } else {
             s = getSmilesComponent(a, bs, true);

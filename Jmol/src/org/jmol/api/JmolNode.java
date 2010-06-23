@@ -59,5 +59,10 @@ public interface JmolNode {
   public void setGroupBits(BitSet bs);
   public boolean isLeadAtom();
   public boolean isCrossLinked(JmolNode node);
-  
+  public boolean isProtein();
+  public boolean isNucleic();
+  public boolean isDna();
+  public boolean isRna();
+  public boolean isPurine();
+  public boolean isPyrimidine();
 }

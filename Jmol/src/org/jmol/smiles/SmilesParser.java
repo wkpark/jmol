@@ -111,6 +111,10 @@ public class SmilesParser {
    */
   private boolean isSmarts;
   private boolean isBioSequence;
+  private boolean isProtein;
+  private boolean isNucleic;
+  private boolean isRNA;
+  private boolean isDNA;
   private Hashtable ringBonds = new Hashtable();
   private int braceCount;
 
@@ -247,17 +251,36 @@ public class SmilesParser {
   private void parseSmiles(SmilesSearch molecule, String pattern,
                            SmilesAtom currentAtom, boolean isBranchAtom)
       throws InvalidSmilesException {
-
+    int[] ret = new int[1];
+    int pt = 0;
+    char ch;
     while (pattern != null && pattern.length() != 0) {
+      int index = 0;
       if (currentAtom == null) {
         isBioSequence = pattern.startsWith("~");
-        if (isBioSequence)
-          pattern = pattern.substring(1);
+        if (isBioSequence) {
+          index++;
+          ch = getChar(pattern, 2);
+          if (ch == '~' && Character.isLowerCase(ch = pattern.charAt(1))) {
+            switch (ch) {
+            case 'p':
+              isProtein = true;
+              break;
+            case 'n':
+              isNucleic = true;
+              break;
+            case 'r':
+              isRNA = isNucleic = true;
+              break;
+            case 'd':
+              isDNA = isNucleic = true;
+              break;
+            }
+            index = 3;
+          }
+        }
       }
-      int[] ret = new int[1];
-      int index = 0;
-      int pt = 0;
-      char ch = pattern.charAt(0);
+      ch = getChar(pattern, index);
       boolean haveOpen = checkBrace(molecule, ch, '{');
       if (haveOpen)
         ch = getChar(pattern, ++index);
@@ -268,10 +291,11 @@ public class SmilesParser {
         boolean isMeasure = (getChar(pattern, index + 1) == '.');
         if (currentAtom == null)
           throw new InvalidSmilesException("No previous atom for " + (isMeasure ? "measure" : "branch"));
-        String subString = getSubPattern(pattern, index, '(');
-        
+        String subString = getSubPattern(pattern, index, '(');        
         if (subString.startsWith("."))
           parseMeasure(molecule, subString.substring(1), currentAtom);
+        else if (subString.length() == 0 && isBioSequence)
+          currentAtom.notCrossLinked = true;
         else
           parseSmiles(molecule, subString, currentAtom, true);
         index = subString.length() + 2;
@@ -365,7 +389,7 @@ public class SmilesParser {
           
         } else {
           throw new InvalidSmilesException("Unexpected character: "
-              + pattern.charAt(index));
+              + getChar(pattern, index));
         }
 
         ch = getChar(pattern, index);
@@ -555,11 +579,11 @@ public class SmilesParser {
       int hydrogenCount = Integer.MIN_VALUE;
       int biopt = pattern.indexOf('.');
       if (biopt >= 0) {
-        String name = pattern.substring(index, biopt).toUpperCase();
+        String name = pattern.substring(index, biopt);
         if (name.length() == 0)
           name = "*";
         if (name.length() > 1)
-          newAtom.residueName = name;
+          newAtom.residueName = name.toUpperCase();
         else if (!name.equals("*"))
           newAtom.residueChar = name;
         name = pattern.substring(biopt + 1).toUpperCase();
@@ -573,7 +597,7 @@ public class SmilesParser {
         if (!name.equals("*"))
           newAtom.setAtomName(name, isBioSequence);
         ch = '\0';
-        newAtom.setBioAtom();
+        newAtom.setBioAtom(isProtein, isNucleic, isDNA, isRNA);
       }
       while (ch != '\0') {
         newAtom.setAtomName("", false);
@@ -960,6 +984,10 @@ public class SmilesParser {
         break;
       }
       newBond.set(bondType, isBondNot);
+      // in the case of a bioSequence, we also mark the 
+      // parent bond, especially if NOT
+      if (isBioSequence && bondSet != null) 
+        bondSet.set(bondType, isBondNot);
     }
     return newBond;
   }

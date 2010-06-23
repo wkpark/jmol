@@ -66,11 +66,23 @@ public class SmilesAtom extends Point3f implements JmolNode {
   boolean isBioSequence;
   boolean isLeadAtom;
   int notBondedIndex = -1;
+  boolean notCrossLinked;
+  boolean isProtein;
+  boolean isNucleic;
+  boolean isDNA;
+  boolean isRNA;
   
-  void setBioAtom() {
+  void setBioAtom(boolean isProtein, boolean isNucleic, boolean isDNA, boolean isRNA) {
     isBioAtom = true;
-    if (parent != null)
+    this.isProtein = isProtein;
+    this.isNucleic = isNucleic;
+    this.isDNA = isDNA;
+    this.isRNA = isRNA;
+    if (parent != null) {
+      parent.isProtein = isProtein;
+      parent.isProtein = isNucleic;
       parent.isBioAtom = true;
+    }
   }
 
   void setAtomName(String name, boolean isBioSequence) {
@@ -695,6 +707,30 @@ public class SmilesAtom extends Point3f implements JmolNode {
         + (isotopeNumber <= 0 ? "" : "" + isotopeNumber) + sym
         + (charge < 0 ? "" + charge : charge > 0 ? "+" + charge : "") + stereo
         + (nH > 1 ? "H" + nH : nH == 1 ? "H" : "") + "]");
+  }
+
+  public boolean isDna() {
+    return isDNA;
+  }
+
+  public boolean isRna() {
+    return isRNA;
+  }
+
+  public boolean isNucleic() {
+    return isNucleic;
+  }
+
+  public boolean isProtein() {
+    return isProtein;
+  }
+
+  public boolean isPurine() {
+    return residueChar != null && isNucleic && "AG".indexOf(residueChar) >= 0;
+  }
+
+  public boolean isPyrimidine() {
+    return residueChar != null && isNucleic && "CTU".indexOf(residueChar) >= 0;
   }
 
 }

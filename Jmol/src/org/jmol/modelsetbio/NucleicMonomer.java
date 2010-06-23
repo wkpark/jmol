@@ -398,6 +398,8 @@ public class NucleicMonomer extends PhosphorusMonomer {
           continue;
         NucleicMonomer m = (NucleicMonomer) g;
         if ((isPurine ? m.getN3() : m.getN1()) == N2) {
+          if (vReturn == null)
+            return true;
           vReturn.add(new Integer(m.getLeadAtomIndex()));
           haveCrossLinks = true;
         }

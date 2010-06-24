@@ -1670,6 +1670,7 @@ public class ScriptEvaluator {
       return false;
     }
     this.filename = filename;
+    data[1] = ScriptCompiler.getEmbeddedScript(data[1]);
     String script = fixScriptPath(data[1], data[0]);
     if (scriptPath == null) {
       scriptPath = viewer.getFullPath(filename);
@@ -2078,8 +2079,8 @@ public class ScriptEvaluator {
           fixed[j] = new Token(Token.matrix4f, v);
         } else if (v instanceof String[]) {
           String[] sv = (String[]) v;
-          if (sv.length > 0 && sv[1].startsWith("{")
-              && !(Escape.unescapePoint(sv[1]) instanceof String)) {
+          if (sv.length > 0 && sv[0].startsWith("{")
+              && !(Escape.unescapePoint(sv[0]) instanceof String)) {
             fixed[j] = new Token(Token.list, sv);
           } else {
             BitSet bs = Escape.unEscapeBitSetArray(sv, true);
@@ -8764,7 +8765,7 @@ public class ScriptEvaluator {
     int lineEnd = 0;
     int pcEnd = 0;
     int i = 2;
-    String theScript = parameterAsString(1);
+    String theScript = null;
     String localPath = null;
     String remotePath = null;
     String scriptPath = null;
@@ -8794,7 +8795,6 @@ public class ScriptEvaluator {
             return;
         }
       } else {
-        theScript = null;
         tok = tokAt(statementLength - 1);
         doStep = (tok == Token.step);
         if (filename.equalsIgnoreCase("inline")) {

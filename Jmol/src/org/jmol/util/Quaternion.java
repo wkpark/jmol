@@ -646,14 +646,17 @@ public class Quaternion {
    * 
    * @param data1
    * @param data2
+   * @param nMax     > 0 --> limit to this number
    * @param isRelative
    * 
    * @return       pairwise array of data1 / data2 or data1 \ data2
    */
-  public static Quaternion[] div(Quaternion[] data1, Quaternion[] data2, boolean isRelative) {
+  public static Quaternion[] div(Quaternion[] data1, Quaternion[] data2, int nMax, boolean isRelative) {
     int n;
     if (data1 == null || data2 == null || (n = Math.min(data1.length, data2.length)) == 0)
       return null;
+    if (nMax > 0 && n > nMax)
+      n = nMax;
     Quaternion[] dqs = new Quaternion[n];
     for (int i = 0; i < n; i++) {
       if (data1[i] == null || data2[i] == null)

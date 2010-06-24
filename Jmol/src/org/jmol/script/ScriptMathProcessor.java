@@ -1611,12 +1611,13 @@ class ScriptMathProcessor {
       throws ScriptException {
     Point3f pt0 = null;
     // quaternion([quaternion array]) // mean
-    // quaternion([quaternion array], [quaternion array], "relative") //
+    // quaternion([quaternion array1], [quaternion array2], "relative") //
     // difference array
     // quaternion(matrix)
-    // quaternion({atomSet}) // array of all quaternions, by group
-    // quaternion({atomSet}, nMax) // nMax quaternions, by group
-    // quaternion({atomSet}, {atomset}) // difference array, by group
+    // quaternion({atom1}) // quaternion (1st if array)
+    // quaternion({atomSet}, nMax) // nMax quaternions, by group; 0 for all
+    // quaternion({atom1}, {atom2}) // difference 
+    // quaternion({atomSet1}, {atomset2}, nMax) // difference array, by group; 0 for all
     // quaternion(vector, theta)
     // quaternion(q0, q1, q2, q3)
     // quaternion("{x, y, z, w"})
@@ -1627,8 +1628,23 @@ class ScriptMathProcessor {
     // axisangle(x, y, z, theta)
     // axisangle("{x, y, z, theta"})
     int nArgs = args.length;
-    if (nArgs == 3 && args[2].value instanceof String)
-      nArgs--;
+    int nMax = Integer.MAX_VALUE;
+    boolean isRelative = false;
+    if (tok == Token.quaternion) {
+      if (nArgs > 1 && args[nArgs - 1].tok == Token.string
+          && ((String) args[nArgs - 1].value).equalsIgnoreCase("relative")) {
+        nArgs--;
+        isRelative = true;
+      }
+      if (nArgs > 1 && args[nArgs - 1].tok == Token.integer 
+          && args[0].tok == Token.bitset) {
+        nMax = ScriptVariable.iValue(args[nArgs - 1]);
+        if (nMax <= 0)
+          nMax = Integer.MAX_VALUE - 1;
+        nArgs--;
+      }
+    }
+
     switch (nArgs) {
     case 1:
     case 4:
@@ -1673,13 +1689,12 @@ class ScriptMathProcessor {
         Object mean = Quaternion.sphereMean(data1, null, 0.0001f);
         q = (mean instanceof Quaternion ? (Quaternion) mean : null);
         break;
+      } else if (tok == Token.quaternion && args[0].tok == Token.bitset) {
+        qs = viewer.getAtomGroupQuaternions((BitSet) args[0].value, nMax);
       } else if (args[0].tok == Token.matrix3f) {
         q = new Quaternion((Matrix3f) args[0].value);
       } else if (args[0].tok == Token.point4f) {
         p4 = (Point4f) args[0].value;
-      } else if (args[0].tok == Token.bitset && tok == Token.quaternion) {
-        qs = viewer.getAtomGroupQuaternions((BitSet) args[0].value,
-            Integer.MAX_VALUE);
       } else {
         Object v = Escape.unescapePoint(ScriptVariable.sValue(args[0]));
         if (!(v instanceof Point4f))
@@ -1690,12 +1705,11 @@ class ScriptMathProcessor {
         q = new Quaternion(new Point3f(p4.x, p4.y, p4.z), p4.w);
       break;
     case 2:
-      boolean isRelative = (args.length == 3 && ScriptVariable.sValue(args[2]).equalsIgnoreCase("relative"));
       if (tok == Token.quaternion) {
         if (args[0].tok == Token.list && args[1].tok == Token.list) {
           Quaternion[] data1 = getQuaternionArray((Object[]) args[0].value);
           Quaternion[] data2 = getQuaternionArray((Object[]) args[1].value);
-          qs = Quaternion.div(data2, data1, isRelative);
+          qs = Quaternion.div(data2, data1, nMax, isRelative);
           break;
         }
         if (args[0].tok == Token.bitset && args[1].tok == Token.bitset) {
@@ -1703,12 +1717,7 @@ class ScriptMathProcessor {
               (BitSet) args[0].value, Integer.MAX_VALUE);
           Quaternion[] data2 = viewer.getAtomGroupQuaternions(
               (BitSet) args[1].value, Integer.MAX_VALUE);
-          qs = Quaternion.div(data2, data1, isRelative);
-          break;
-        }
-        if (args[0].tok == Token.bitset && args[1].tok == Token.integer) {
-          qs = viewer.getAtomGroupQuaternions((BitSet) args[0].value,
-              ScriptVariable.iValue(args[1]));
+          qs = Quaternion.div(data2, data1, nMax, isRelative);
           break;
         }
       }
@@ -1744,10 +1753,14 @@ class ScriptMathProcessor {
       break;
     }
     if (qs != null) {
-      String[] data = new String[qs.length];
-      for (int i = 0; i < qs.length; i++)
-        data[i] = qs[i].toString();
-      return addX(data);
+      if (nMax == Integer.MAX_VALUE) {
+        q = (qs.length > 0 ? qs[0] : null);
+      } else {
+        String[] data = new String[qs.length];
+        for (int i = 0; i < qs.length; i++)
+          data[i] = qs[i].toString();
+        return addX(data);
+      }
     }
     return addX((q == null ? new Quaternion(p4) : q).toPoint4f());
   }

@@ -865,7 +865,8 @@ public class Token {
   public final static int bondmodeor                     = booleanparam | 36;
   public final static int bondpicking                    = booleanparam | 38;
 // set mathproperty  public final static int bonds                          = booleanparam | 40;
-  public final static int cartoonrockets                 = booleanparam | 42;
+  public final static int cartoonbaseedges               = booleanparam | 42;
+  public final static int cartoonrockets                 = booleanparam | 43;
   public final static int chaincasesensitive             = booleanparam | 44;
   public final static int colorrasmol                    = booleanparam | 46;
   public final static int debugscript                    = booleanparam | 48;
@@ -2092,6 +2093,7 @@ public class Token {
       "bondPicking",                              new Token(bondpicking),
       "bonds",                                    new Token(bonds),
       "bond",                                     null, 
+      "cartoonBaseEdges",                         new Token(cartoonbaseedges),
       "cartoonRockets",                           new Token(cartoonrockets),
       "chainCaseSensitive",                       new Token(chaincasesensitive),
       "colorRasmol",                              new Token(colorrasmol),

@@ -35,6 +35,10 @@ public class CartoonRenderer extends RocketsRenderer {
 
   private boolean newRockets = true;
   private boolean renderAsRockets;
+  private boolean renderEdges;
+  private short colixSugarEdge;
+  private short colixWatsonCrickEdge;
+  private short colixHoogsteenEdge;
   
   protected void renderBioShape(BioShape bioShape) {
     if (bioShape.wingVectors == null || isCarbohydrate)
@@ -71,6 +75,14 @@ public class CartoonRenderer extends RocketsRenderer {
 
   Point3i ptConnect = new Point3i();
   void renderNucleic() {
+    renderEdges = viewer.getCartoonBaseEdgesFlag();
+    boolean isTranslucent = Graphics3D.isColixTranslucent(colix);
+    if (renderEdges) {
+      float tl = Graphics3D.getColixTranslucencyLevel(colix);
+      colixSugarEdge = Graphics3D.getColixTranslucent(Graphics3D.RED, isTranslucent, tl);
+      colixWatsonCrickEdge = Graphics3D.getColixTranslucent(Graphics3D.GREEN, isTranslucent, tl);
+      colixHoogsteenEdge = Graphics3D.getColixTranslucent(Graphics3D.BLUE, isTranslucent, tl);
+    }
     boolean isTraceAlpha = viewer.getTraceAlpha();
     for (int i = bsVisible.nextSetBit(0); i >= 0; i = bsVisible
         .nextSetBit(i + 1)) {
@@ -166,6 +178,10 @@ public class CartoonRenderer extends RocketsRenderer {
 
   private void renderNucleicBaseStep(NucleicMonomer nucleotide,
                              short thisMad, Point3i backboneScreen) {
+    if (renderEdges) {
+      renderLenotisWesthofEdges(nucleotide, thisMad, backboneScreen);
+      return;
+    }
     nucleotide.getBaseRing6Points(ring6Points);
     viewer.transformPoints(ring6Points, ring6Screens);
     renderRing6();
@@ -200,6 +216,39 @@ public class CartoonRenderer extends RocketsRenderer {
       g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 3,
                        ring6Screens[5], ring6Screens[0]);
     }
+  }
+
+  private void renderLenotisWesthofEdges(NucleicMonomer nucleotide,
+                                         short thisMad, Point3i backboneScreen) {
+    //                Nasalean L, Strombaugh J, Zirbel CL, and Leontis NB in 
+    //                Non-Protein Coding RNAs, 
+    //                Nils G. Walter, Sarah A. Woodson, Robert T. Batey, Eds.
+    //                Chapter 1, p 6.
+    // http://books.google.com/books?hl=en&lr=&id=se5JVEqO11AC&oi=fnd&pg=PR11&dq=Non-Protein+Coding+RNAs&ots=3uTkn7m3DA&sig=6LzQREmSdSoZ6yNrQ15zjYREFNE#v=onepage&q&f=false
+    
+    if (!nucleotide.getEdgePoints(ring6Points))
+      return;
+    viewer.transformPoints(ring6Points, ring6Screens);
+    renderTriangle(ring6Points);
+    mad = (short) (thisMad > 1 ? thisMad / 2 : thisMad);
+    g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 3,
+        ring6Screens[0], ring6Screens[1]);
+    g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 3,
+        ring6Screens[1], ring6Screens[2]);
+    g3d.setColix(colixSugarEdge);
+    g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 3,
+        ring6Screens[2], ring6Screens[3]);
+    g3d.setColix(colixWatsonCrickEdge);
+    g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 3,
+        ring6Screens[3], ring6Screens[4]);
+    g3d.setColix(colixHoogsteenEdge);
+    g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 3,
+        ring6Screens[4], ring6Screens[5]);
+   }
+
+  private void renderTriangle(Point3f[] ring6Points2) {
+    g3d.setNoisySurfaceShade(ring6Screens[2], ring6Screens[3], ring6Screens[4]);
+    g3d.fillTriangle(ring6Screens[2], ring6Screens[3], ring6Screens[4]);
   }
 
   private void renderRing6() {

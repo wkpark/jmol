@@ -5991,6 +5991,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case Token.ribbonborder:
       global.ribbonBorder = value;
       break;
+    case Token.cartoonbaseedges:
+      global.cartoonBaseEdges = value;
+      break;
     case Token.cartoonrockets:
       global.cartoonRockets = value;
       break;
@@ -6431,6 +6434,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public boolean getRocketBarrelFlag() {
     return global.rocketBarrels;
+  }
+
+  public boolean getCartoonBaseEdgesFlag() {
+    return global.cartoonBaseEdges;
   }
 
   private void setStrandCount(int type, int value) {

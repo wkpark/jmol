@@ -1882,8 +1882,10 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int ATOMID_PROTEIN_MASK =  0x7 << ATOMID_AMINO_NITROGEN;
 
   public final static byte ATOMID_O5_PRIME        = 6;
+  public final static byte ATOMID_C4_PRIME        = 8;
   public final static byte ATOMID_C3_PRIME        = 9;
   public final static byte ATOMID_O3_PRIME        = 10;
+  public final static byte ATOMID_C1_PRIME        = 12;
   
   // this is entries 6 through through 12 ... 7 bits
   public final static int ATOMID_NUCLEIC_MASK = 0x7F << ATOMID_O5_PRIME;
@@ -1960,9 +1962,9 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int GROUPID_PROLINE          = 15;
   public final static int GROUPID_AMINO_MAX        = 24;
   
-  private final static int GROUPID_WATER           = 42;
-  private final static int GROUPID_SOLVENTS        = 45;
-  private final static int GROUPID_SULPHATE        = 48;
+  private final static int GROUPID_WATER           = 43;
+  private final static int GROUPID_SOLVENTS        = 46;
+  private final static int GROUPID_SULPHATE        = 49;
   
   public final static String[] predefinedGroup3Names = {
     // taken from PDB spec
@@ -2018,16 +2020,17 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "+T",
     "+U",
     "+I",
+    "NOS", // inosine
     
-    // solvent types:
+    // solvent types: -- if these numbers change, also change GROUPID_WATER,_SOLVENT,and_SULFATE
     
-    "HOH", // 42 water
-    "DOD", // 43
-    "WAT", // 44
-    "SOL", // 45 gromacs solvent
-    "UREA",// 46 urea
-    "PO4", // 47 phosphate ions
-    "SO4", // 48 sulphate ions
+    "HOH", // 43 water
+    "DOD", // 44
+    "WAT", // 45
+    "SOL", // 46 gromacs solvent
+    "UREA",// 47 urea
+    "PO4", // 48 phosphate ions
+    "SO4", // 49 sulphate ions
 
   };
   
@@ -2079,6 +2082,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     0xFFA0FFA0, // +T
     0xFFFF8080, // +U
     0xFF80FFFF, // +I
+    0xFF80FFFF, // NOS
 
     // what to do about remediated +X names?
     // we will need a map
@@ -2180,6 +2184,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     'A',
     'T',
     'U',
+    'I',
     'I',
     };
 

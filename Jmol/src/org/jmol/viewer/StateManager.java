@@ -817,6 +817,7 @@ public class StateManager {
       setParameterValue("bondRadiusMilliAngstroms", bondRadiusMilliAngstroms);
       setParameterValue("bondTolerance", bondTolerance);
       setParameterValue("cameraDepth", cameraDepth);
+      setParameterValue("cartoonBaseEdges", cartoonBaseEdges);
       setParameterValue("cartoonRockets", cartoonRockets);
       setParameterValue("chainCaseSensitive", chainCaseSensitive);
       setParameterValue("dataSeparator", dataSeparator);
@@ -1138,6 +1139,7 @@ public class StateManager {
 
     //secondary structure + Rasmol
 
+    boolean cartoonBaseEdges = false;
     boolean cartoonRockets = false;
     boolean chainCaseSensitive = false;
     int hermiteLevel = 0;

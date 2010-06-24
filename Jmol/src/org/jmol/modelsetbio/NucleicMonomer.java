@@ -61,6 +61,8 @@ public class NucleicMonomer extends PhosphorusMonomer {
   private final static byte C3Pr = 22;
   private final static byte O1P = 23; 
   private final static byte O2P = 24;
+  private final static byte C1P = 25;
+  private final static byte C4P = 26;
   //private final static byte S4 = 25;
   //private final static byte O5T = 26;
   //private final static byte OP1 = 27;
@@ -103,7 +105,10 @@ public class NucleicMonomer extends PhosphorusMonomer {
     
     ~JmolConstants.ATOMID_O1P,  // 23 Phosphorus O1
     ~JmolConstants.ATOMID_O2P,  // 24 Phosphorus O2
-    
+
+    ~JmolConstants.ATOMID_C1_PRIME,  // 25 ribose C1'
+    ~JmolConstants.ATOMID_C4_PRIME,  // 26 ribose C4'
+
     // unused:
 
     //~JmolConstants.ATOMID_S4,  // 15 S4   tU
@@ -187,6 +192,17 @@ public class NucleicMonomer extends PhosphorusMonomer {
 
   ////////////////////////////////////////////////////////////////
 
+  Atom getC1P() {
+    return getAtomFromOffsetIndex(C1P);
+  }
+
+  Atom getC2() {
+    return getAtomFromOffsetIndex(C2);
+  }
+
+  Atom getC4P() {
+    return getAtomFromOffsetIndex(C4P);
+  }
 
   Atom getN1() {
     return getAtomFromOffsetIndex(N1);
@@ -200,14 +216,6 @@ public class NucleicMonomer extends PhosphorusMonomer {
     return getAtomFromOffsetIndex(N2);
   }
 
-  Atom getO2() {
-    return getAtomFromOffsetIndex(O2);
-  }
-
-  Atom getO6() {
-    return getAtomFromOffsetIndex(O6);
-  }
-
   Atom getN4() {
     return getAtomFromOffsetIndex(N4);
   }
@@ -216,8 +224,16 @@ public class NucleicMonomer extends PhosphorusMonomer {
     return getAtomFromOffsetIndex(N6);
   }
 
+  Atom getO2() {
+    return getAtomFromOffsetIndex(O2);
+  }
+
   Atom getO4() {
     return getAtomFromOffsetIndex(O4);
+  }
+
+  Atom getO6() {
+    return getAtomFromOffsetIndex(O6);
   }
 
   Atom getTerminatorAtom() {
@@ -406,5 +422,33 @@ public class NucleicMonomer extends PhosphorusMonomer {
       }
     }
     return haveCrossLinks;
+  }
+
+  public boolean getEdgePoints(Point3f[] pts) {
+    pts[0] = getLeadAtom();
+    pts[1] = getC4P();
+    pts[2] = pts[5] = getC1P();
+    switch (getGroup1()) {
+    case 'C':
+      pts[3] = getO2();
+      pts[4] = getN4();
+      return true;
+    case 'A':
+      pts[3] = getC2();
+      pts[4] = getN6();
+      return true;
+    case 'G':
+    case 'I':
+      pts[3] = getC2();
+      pts[4] = getO6();
+      return true;
+    case 'T':
+    case 'U':
+      pts[3] = getO2();
+      pts[4] = getO4();
+      return true;
+    default:
+      return false;
+    }    
   }
 }

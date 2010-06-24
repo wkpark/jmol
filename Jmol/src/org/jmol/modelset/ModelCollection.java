@@ -1079,6 +1079,7 @@ abstract public class ModelCollection extends BondCollection {
         if (q == null)
           continue;
       }
+      n++;
       v.add(q);
       i = g.lastAtomIndex;
     }

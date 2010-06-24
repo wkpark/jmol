@@ -1,7 +1,7 @@
 /* $RCSfile$
- * $Author: hansonr $
- * $Date: 2009-06-30 18:58:33 -0500 (Tue, 30 Jun 2009) $
- * $Revision: 11158 $
+ * $Author$
+ * $Date$
+ * $Revision$
  *
  * Copyright (C) 2004-2005  The Jmol Development Team
  *
@@ -87,6 +87,7 @@ public class JmolFileDropper implements DropTargetListener {
   }
   
   private void loadFile(String fname) {
+    fname = fname.replace('\\', '/');
     if (fname.indexOf("://") < 0)
       fname = (fname.startsWith("/") ? "file://" : "file:///") + fname;
     viewer.openFileAsynchronously(fname);
@@ -97,6 +98,7 @@ public class JmolFileDropper implements DropTargetListener {
     for (int i = 0; i < fileList.size(); ++ i) {
       File f = (File) fileList.get(i);
       String fname = f.getAbsolutePath();
+      fname = fname.replace('\\', '/');
       fname = (fname.startsWith("/") ? "file://" : "file:///") + fname;
       sb.append("load ").append(i == 0 ? "" : "APPEND ")
           .append(Escape.escape(fname)).append(";\n");        

@@ -28,7 +28,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 
 import org.jmol.modelset.AtomCollection;
-import org.jmol.script.Token;
+//import org.jmol.script.Token;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Elements;
@@ -136,6 +136,7 @@ class DataManager {
         bs.or((BitSet) (oldData[2]));
       data[2] = bs;
       data[1] = f;
+/*      
       if (type.indexOf("property_") == 0) {
         int tok = Token.getSettableTokFromString(type.substring(9));
         if (tok != Token.nada) {
@@ -147,6 +148,7 @@ class DataManager {
           return;
         }
       }
+*/      
     }
     dataValues.put(type, data);
   }

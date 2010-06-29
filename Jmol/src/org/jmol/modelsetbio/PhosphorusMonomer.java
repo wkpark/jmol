@@ -114,4 +114,14 @@ public class PhosphorusMonomer extends Monomer {
     vB.sub(ptPPrev, ptP);
     return Quaternion.getQuaternionFrame(vA, vB, null);
   }
+  
+  Atom getQuaternionFrameCenter(char qType) {
+    return getAtomFromOffsetIndex(P);
+  }
+  
+  public Object getHelixData(int tokType, char qType, int mStep) {
+    return getHelixData2(tokType, qType, mStep);
+  }
+  
+
 }

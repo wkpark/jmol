@@ -42,12 +42,12 @@ public class SmilesAtom extends Point3f implements JmolNode {
 
   final static int STEREOCHEMISTRY_DEFAULT = 0;
   final static int STEREOCHEMISTRY_ALLENE = 2;
-//  final static int STEREOCHEMISTRY_DOUBLE_BOND = 3;
+  //  final static int STEREOCHEMISTRY_DOUBLE_BOND = 3;
   final static int STEREOCHEMISTRY_TETRAHEDRAL = 4;
   final static int STEREOCHEMISTRY_TRIGONAL_BIPYRAMIDAL = 5;
   final static int STEREOCHEMISTRY_OCTAHEDRAL = 6;
   final static int STEREOCHEMISTRY_SQUARE_PLANAR = 8;
-  
+
   static int getChiralityClass(String xx) {
     return ("0;11;AL;33;TH;TP;OH;77;SP;".indexOf(xx) + 1) / 3;
   }
@@ -63,29 +63,21 @@ public class SmilesAtom extends Point3f implements JmolNode {
   String residueName;
   String residueChar;
   boolean isBioAtom;
-  boolean isBioSequence;
+  char bioType; //* p n r d 
   boolean isLeadAtom;
   int notBondedIndex = -1;
   boolean notCrossLinked;
-  boolean isProtein;
-  boolean isNucleic;
-  boolean isDNA;
-  boolean isRNA;
-  
-  void setBioAtom(boolean isProtein, boolean isNucleic, boolean isDNA, boolean isRNA) {
-    isBioAtom = true;
-    this.isProtein = isProtein;
-    this.isNucleic = isNucleic;
-    this.isDNA = isDNA;
-    this.isRNA = isRNA;
+
+  void setBioAtom(char bioType) {
+    isBioAtom = (bioType != '\0');
+    this.bioType = bioType;
     if (parent != null) {
-      parent.isProtein = isProtein;
-      parent.isProtein = isNucleic;
-      parent.isBioAtom = true;
+      parent.bioType = bioType;
+      parent.isBioAtom = isBioAtom;
     }
   }
 
-  void setAtomName(String name, boolean isBioSequence) {
+  void setAtomName(String name) {
     if (name == null)
       return;
     if (name.length() > 0)
@@ -93,9 +85,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
     if (name.equals("0"))
       isLeadAtom = true;
     // ensure that search does not skip groups
-    this.isBioSequence = isBioSequence;
     if (parent != null) {
-      parent.isBioSequence = isBioSequence;
       parent.atomName = name;
     }
   }
@@ -551,20 +541,20 @@ public class SmilesAtom extends Point3f implements JmolNode {
       System.arraycopy(primitives, 0, tmp, 0, nPrimitives);
       primitives = tmp;
     }
-      for (int i = 0; i < bonds.length; i++) {
-        if (isBioAtom && bonds[i].bondType == SmilesBond.TYPE_AROMATIC)
-          bonds[i].bondType = SmilesBond.TYPE_BIO_PAIR;
-        if (bonds[i].getAtom1().index > bonds[i].getAtom2().index) {
-          // it is possible, particularly for a connection to a an atom 
-          // with a branch:   C(CCCN1)1
-          // for the second assigned atom to not have the
-          // higher index. That would prevent SmilesParser
-          // from checking bonds. (atom 1 in this case, for 
-          // example, would be the second atom in a bond for
-          // which the first atom (N) would not yet be assigned.
-          bonds[i].switchAtoms();
-        }
+    for (int i = 0; i < bonds.length; i++) {
+      if (isBioAtom && bonds[i].bondType == SmilesBond.TYPE_AROMATIC)
+        bonds[i].bondType = SmilesBond.TYPE_BIO_PAIR;
+      if (bonds[i].getAtom1().index > bonds[i].getAtom2().index) {
+        // it is possible, particularly for a connection to a an atom 
+        // with a branch:   C(CCCN1)1
+        // for the second assigned atom to not have the
+        // higher index. That would prevent SmilesParser
+        // from checking bonds. (atom 1 in this case, for 
+        // example, would be the second atom in a bond for
+        // which the first atom (N) would not yet be assigned.
+        bonds[i].switchAtoms();
       }
+    }
   }
 
   public JmolEdge[] getEdges() {
@@ -588,6 +578,10 @@ public class SmilesAtom extends Point3f implements JmolNode {
    * @return Number of bonds.
    */
   public int getCovalentBondCount() {
+    return getBondCount();
+  }
+
+  public int getBondCount() {
     return (parent != null ? parent.getCovalentBondCount() : bondCount);
   }
 
@@ -628,6 +622,14 @@ public class SmilesAtom extends Point3f implements JmolNode {
     return n;
   }
 
+  /**
+   * if atom is null, return bond TO this atom (bond.getAtom2() == this)
+   * otherwise, return bond connecting this atom with
+   * that atom
+   *  
+   * @param atom
+   * @return  bond
+   */
   SmilesBond getBondTo(SmilesAtom atom) {
     if (parent != null)
       return parent.getBondTo(atom);
@@ -635,7 +637,8 @@ public class SmilesAtom extends Point3f implements JmolNode {
     for (int k = 0; k < bonds.length; k++) {
       if ((bond = bonds[k]) == null)
         continue;
-      if (bond.getOtherAtom(this) == atom)
+      if (atom == null ? bond.getAtom2() == this 
+          : bond.getOtherAtom(this) == atom)
         return bond;
     }
     return null;
@@ -647,7 +650,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
       if ((bond = bonds[k]) == null)
         continue;
       SmilesAtom atom2 = bond.getOtherAtom(this);
-      if (atom != atom2 && (allowH ||  atom2.elementNumber != 1))
+      if (atom != atom2 && (allowH || atom2.elementNumber != 1))
         return bond;
     }
     return null;
@@ -710,27 +713,28 @@ public class SmilesAtom extends Point3f implements JmolNode {
   }
 
   public boolean isDna() {
-    return isDNA;
+    return bioType == 'd';
   }
 
   public boolean isRna() {
-    return isRNA;
+    return bioType == 'r';
   }
 
   public boolean isNucleic() {
-    return isNucleic;
+    return bioType == 'n' || bioType == 'r' || bioType == 'd';
   }
 
   public boolean isProtein() {
-    return isProtein;
+    return bioType == 'p';
   }
 
   public boolean isPurine() {
-    return residueChar != null && isNucleic && "AG".indexOf(residueChar) >= 0;
+    return residueChar != null && isNucleic() && "AG".indexOf(residueChar) >= 0;
   }
 
   public boolean isPyrimidine() {
-    return residueChar != null && isNucleic && "CTU".indexOf(residueChar) >= 0;
+    return residueChar != null && isNucleic()
+        && "CTUI".indexOf(residueChar) >= 0;
   }
 
 }

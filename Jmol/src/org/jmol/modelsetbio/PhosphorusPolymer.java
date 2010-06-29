@@ -23,6 +23,11 @@
  */
 package org.jmol.modelsetbio;
 
+import java.util.BitSet;
+
+import org.jmol.util.OutputStringBuffer;
+import org.jmol.viewer.Viewer;
+
 
 
 class PhosphorusPolymer extends BioPolymer {
@@ -30,4 +35,13 @@ class PhosphorusPolymer extends BioPolymer {
   PhosphorusPolymer(Monomer[] monomers) {
     super(monomers);
   }
+  
+  public void getPdbData(Viewer viewer, char ctype, char qtype, int mStep, int derivType,
+                         boolean isDraw, BitSet bsAtoms, 
+                         OutputStringBuffer pdbATOM, StringBuffer pdbCONECT, 
+                         BitSet bsSelected, boolean addHeader, BitSet bsWritten) {
+    getPdbData(viewer, this, ctype, qtype, mStep, derivType, isDraw, bsAtoms, pdbATOM, 
+        pdbCONECT, bsSelected, addHeader, bsWritten);
+  }   
+
 }

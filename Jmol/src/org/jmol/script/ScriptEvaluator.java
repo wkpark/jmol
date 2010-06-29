@@ -3097,9 +3097,18 @@ public class ScriptEvaluator {
         pc = iToken;
         break;
       case Token.string:
+        String s = (String) value;
+/*      if (s.indexOf("~") == 0) {
+          rpn.addOp(new Token(Token.search, "search"));
+          rpn.addOp(Token.tokenLeftParen);
+          rpn.addX(new ScriptVariable(instruction));
+          rpn.addOp(Token.tokenRightParen);
+          break;
+        }
+*/
         rpn.addX(new ScriptVariable(instruction));
         // note that the compiler has changed all within() types to strings.
-        if (((String) value).equals("hkl")) {
+        if (s.equals("hkl")) {
           rpn.addX(new ScriptVariable(Token.point4f, hklParameter(pc + 2)));
           pc = iToken;
         }

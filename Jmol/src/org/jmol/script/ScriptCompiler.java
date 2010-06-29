@@ -917,10 +917,6 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         strFormat = strFormat.toLowerCase();
         if (Parser.isOneOf(strFormat, LOAD_TYPES))
           addTokenToPrefix(new Token(Token.identifier, strFormat));
-        else if (strFormat.indexOf("=") == 0 || strFormat.indexOf("$") == 0) {
-          addTokenToPrefix(new Token(Token.string, strFormat));
-          iHaveQuotedString = true;
-        }
         return CONTINUE;
       }
       BitSet bs;

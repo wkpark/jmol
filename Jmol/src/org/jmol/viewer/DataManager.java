@@ -28,11 +28,12 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 
 import org.jmol.modelset.AtomCollection;
-//import org.jmol.script.Token;
+import org.jmol.script.Token;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
+import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
 
@@ -55,9 +56,8 @@ class DataManager {
     dataValues.clear();
   }
   
-  void setData(String type, Object[] data, int atomCount,
-               int matchField, int matchFieldColumnCount, int field,
-               int fieldColumnCount) {
+  void setData(String type, Object[] data, int atomCount, int matchField,
+               int matchFieldColumnCount, int field, int fieldColumnCount) {
     //Eval
     /*
      * data[0] -- label
@@ -74,6 +74,7 @@ class DataManager {
       clear();
       return;
     }
+    type = type.toLowerCase();
     if (type.equals("element_vdw")) {
       String stringData = ((String) data[1]).trim();
       if (stringData.length() == 0) {
@@ -136,19 +137,20 @@ class DataManager {
         bs.or((BitSet) (oldData[2]));
       data[2] = bs;
       data[1] = f;
-/*      
-      if (type.indexOf("property_") == 0) {
-        int tok = Token.getSettableTokFromString(type.substring(9));
-        if (tok != Token.nada) {
-          int nValues = bs.cardinality();
-          float[] fValues = new float[nValues];
-          for (int n = 0, i = bs.nextSetBit(0); n < nValues; i = bs.nextSetBit(i + 1))
-            fValues[n++] = f[i];
-          viewer.setAtomProperty(bs, tok, 0, 0, null, fValues, null);
+      if (type.indexOf("property_atom.") == 0) {
+        int tok = Token.getSettableTokFromString(type = type.substring(14));
+        if (tok == Token.nada) {
+          Logger.error("Unknown atom property: " + type);
           return;
         }
+        int nValues = bs.cardinality();
+        float[] fValues = new float[nValues];
+        for (int n = 0, i = bs.nextSetBit(0); n < nValues; i = bs
+            .nextSetBit(i + 1))
+          fValues[n++] = f[i];
+        viewer.setAtomProperty(bs, tok, 0, 0, null, fValues, null);
+        return;
       }
-*/      
     }
     dataValues.put(type, data);
   }

@@ -75,6 +75,7 @@ the term "aromatic" is <a href="#aromaticity">defined</a>.
 <p>
 <b>format</b>
 <ul>
+</li><li>Allows for searching "pattern1 or pattern2" and for a variable number of occurances of a pattern within a pattern using [$(...)n] or [$(...)min-max].
 <li> 
 Allows any amount of white space -- spaces, tabs, new lines. Prior to parsing, all white space is removed.
 </li>
@@ -131,7 +132,6 @@ $ load 1d66.pdb;calculate hbonds;print {*}.find("SMILES", true)
   [CYS.SG#16//* 31:A *//]%84.[CYS.SG#16//* 21:A *//]%89.[CYS.SG#16//* 11:A *//]%83%87.[CYS.SG#16//* 38:A *//]%86.
 //* HOH *//[O]
 </pre>
-
 </li><li>Jmol recognizes "/..../" at the beginning of a pattern as processing flags. "/noAromatic/", for example,
 turns off all checks for aromaticity, speeding processing when that is not important or no distinction between
 aromatic and nonaromatic atoms is desired.
@@ -155,8 +155,7 @@ designation "0" for an atom name, as in <b>[GLY.0]</b>, indicates the "lead atom
 This allows seasrching a bioSMILES string using SMARTS patterns that only involve standard atom types. In the above example, 
 notice that the connecting atoms to protein chains within the non-bioSEQUENCE component indicates the
 connections to the protein using this extended notation. Thus, both the actual 3D model and the bioSMARTS string for 1d66
-can be searched using the SMARTS search "CdS" as well as the more specific search "Cd[*.SG]".
- 
+can be searched using the SMARTS search "CdS" as well as the more specific search "Cd[*.SG]". 
 <br /><br />
 </li><li><b>"~"</b>  Tilde indicates a bioSEQUENCE string. 
 Subsets include <b>"~p~"</b> protein-only sequence, 
@@ -300,13 +299,20 @@ In addition, Jmol 3D-SMARTS adds the following primitives and options:
 <tr><td>d</td><td>non-hydrogen degree -- number of non-hydrogen connections</td></tr>
 <tr><td>=</td><td>Jmol atom index, for example: [=23]</td></tr>
 <tr><td>[number]?</td><td>mass number or undefined (so, for example, [C12?] means any carbon that isn't explicitly C13 or C14</td></tr>
+<tr><td>[$(pattern)n]</td><td>A specific number of occurances of <b>pattern</b>. For example, <b>C[$(C=C)3]C</b> is synonymous with <b>CC=CC=CC=CC</b>.</td></tr>
+<tr><td>[$(pattern)min-max]</td><td>A variable number of occurances of <b>pattern</b>. 
+For example: <b>A[$(C:G)0-2]A</b> is synonymous with <b>AA</b> or <b>AC(:G)A</b> or <b>AC(:G)C(:G)A</b>.</td></tr>
+<tr><td>pattern1 || pattern2</td><td> "||" indicates "or" and allows searching for multiple patterns, which may overlap.
+For example: <b>select search("c{O} || c{C}")</b>. Note that the "||" syntax is an alternative to using "[,]", 
+in this case being equivalent to (and slightly slower than) <b>select search("c{[O,C]}")</b>.</td></tr>
 <tr><td valign="top">(.measure)</td><td>The extension capitalizes on the fact that in a standard SMARTS string, period "." cannot
 ever appear immediately following an open parenthesis "(". Using this fact, the format involves the following:
 <pre>
   "(." [single character type - "d" (distance), "a" (angle), or "t" (torsion)] [optional numeric identifier] 
-           ":" [optional "!" (not)] [minimum value] "," [maximum value] ")"
+           ":" [optional "!" (not)] [minimum value] { "," | "-" } [maximum value] ")"
 </pre>
 This extension must appear immediately following an element symbol or a bracketed atom expression.  
+The separators "," or "-" between minimum and maximum values are equivalent.
 For example, the following will find all aliphatic carbon-carbon bonds that are between 1.5 and 1.6 angstroms long. 
 <pre>
 select search("C(.d:1.5-1.6)C")
@@ -458,10 +464,10 @@ includes:
 <pre> 
       # note: prior to parsing, all white space is removed
        
-   [smiles] == { [entity] || [entity] "." [entity] }
-   [entity] == { [bioSequence] || [molecularSequence] }
+   [smiles] == { [entity] | [entity] "." [entity] }
+   [entity] == { [bioSequence] | [molecularSequence] }
    [molecularSequence] = [node][connections] 
-   [node] == { [atomExpression] | [ringPointer] }
+   [node] == { [atomExpression] | [connectionPointer] }
 
    [atomExpression] = { [unbracketedAtomType] 
                              | "[" [bracketedExpression] "]" }
@@ -499,8 +505,8 @@ includes:
    [stereoClass] == { "AL" | "TH" | "SP" | "TP" | "OH" }
    [stereoOrder] == [digits]
    
-   [ringPointer] == { "%" [digit][digit] | [digit] | "%(" [digits] ")"}
-      # note: all ringPointers must have a second matching ringPointer 
+   [connectionPointer] == { "%" [digit][digit] | [digit] | "%(" [digits] ")"}
+      # note: all connectionPointers must have a second matching connectionPointer 
       #       and must be preceded by an atomExpression for the 
       #       first occurance and either an atomExpression or a bond
       #       for the second occurance
@@ -524,14 +530,14 @@ includes:
       #       for each component (separated by ".")
    [bioType] == { "p" | "n" | "r" | "d" }
       # note: protein, nucleic, RNA, DNA
-   [bioNode] == { "[" [residueName] "." [atomName] "]" 
-                 | "[" [residueName] "." [atomName] "#" [atomicNumber] "]" 
-                 | [residueCode] } 
+   [bioNode] == { "[" [bioResidueName] "." [bioAtomName] "]" 
+                 | "[" [bioResidueName] "." [bioAtomName] "#" [atomicNumber] "]" 
+                 | [bioResidueCode] } 
    [atomicNumber] == [digits]
-   [residueName] == { "ARG" | "GLY" ... } (case-insensitive) 
-   [atomName] == {"C" | "CA" | "N" ... } (case-insensitive)
-   [residueCode] == { "A" | "R" | "G" ... } (case-sensitive)
-      # note: In a bioSEQUENCE, residues are designated using standard 1-letter-code group names
+   [bioResidueName] == { "ARG" | "GLY" ... } (case-insensitive) 
+   [bioAtomName] == {"C" | "CA" | "N" ... } (case-insensitive)
+   [bioResidueCode] == { "A" | "R" | "G" ... } (case-sensitive)
+      # note: In a BioSEQUENCE, residues are designated using standard 1-letter-code group names
       #       or bracketed residues [xxx] with optional atoms specified: [ARG], [CYS.SG]. 
 </pre>
 </p>
@@ -539,62 +545,44 @@ includes:
 <a name="specs"><h3>Detailed Jmol 3D-SMARTS/bioSMARTS Specification</h3></a>
 <p>
 <pre> 
+
+ ######## GENERAL ########
+
       # note: prior to parsing, all white space is removed
 
-   [smartDef] == [preface] [smarts]
-   [preface] == { [flagDefs] [variableDefs] || [variableDefs] || NULL } 
+   [smartDef] == [preface] [smartsSet]
+   [preface] == { [flagDefs] [variableDefs] | [variableDefs] | NULL } 
    [flagDefs] == "/" [processingFlags] "/"
    [processingFlags] == "noAromatic" (case-insensitive)
    [variableDefs] == [variableDef] | [variableDef] [variableDefs]
    [variableDef] ==  "$" [label] "=" "\"" [smarts] "\"" [comments] ";"
    [label] == [any characters other than "=" and "$", and not starting with "("]
    [comments] == [any characters other than ";"]
-   
       # note: Variable definitions must be parsed first. 
       #       After that, all variable references [$XXXX] are replaced
       
-   [smarts] == { [bioSequence] | [node3D] [connections] } 
-   [bioSequence] == [bioCode] [bioNode] [connections]
-   [bioCode] == { "~" | "~" [bioType] "~" }
-      # note: The "~" must be the first character in a component and must be repeated 
-      #       for each component (separated by ".")
-   [bioType] == { "p" | "n" | "r" | "d" }
-      # note: protein, nucleic, RNA, DNA
-   [bioNode] == { "[" [residueName] "]" 
-                 | "[" [residueName] "." [atomName] "]" 
-                 | "[" [residueName] "." [atomName] [A_Prop] "]" 
-                 | [residueCode] } 
-   [residueName] == { "*" | "ARG" | "GLY" ... } (case-insensitive) 
-   [atomName] == { "*" | "0" | "C" | "CA" | "N" ... } (case-insensitive)
-      # note: "0" indicates the "lead atom":
-      #   nucleic: P if present, or H5T if present, or O5'/O5*
-      #   protein: CA
-      #   carbohydrate: the first atom listed in the group
-   [residueCode] == { "*" | "A" | "R" | "G" ... } (case-sensitive)
-      # note: wildcard or standard group 1-letter-code
-      #       or, in the case of RNA or DNA:
-      #         "N" (any residue; same as "*"), 
-      #         "R" (any purine -- A or G)
-      #         "Y" (any pyrimidine -- C or T or U)
+   [smartsSet] == { [smarts] | [smarts] "||" [smartsSet] }
+      # note: Jmol adds the "or" operation "||", for example: "C=O || C=N"
+      #       which, in this case, could also be written as "C=[O,N]"
+      #       Jmol preprocesses these sets, evaluates them independently, and then
+      #       combines them.
+      
+   [smarts] == { [node3D] [connections] | [bioSequence] } 
    [connections] == [connection] | NULL }
    [connection] == { [branch] | [bondExpression] [node3D] } [connections]
    [branch] == { "(" { [smarts] | [bondExpression] [smarts] } ")" | "()" }
       # note: Default bonding for a branch is single for SMARTS or cross-linked (:) for bioSEQUENCE
       # note: "()" is ignored in SMARTS and indicates "not cross-linked" in bioSEQUENCE
-   [node3D] == { [atomExpression] | [atomExpression] "(." [measure] ")" | [ringPointer] }
-   [measure] == { [measureId] | [measureId] ":" [range] | [measureId] ":!" [range] }
-   [measureId] == { [measureCode] | [measureCode] [digits] }
-   [measureCode == { "d" | "a" | "t" }
-   [range] == [minimumValue] "," [maximumValue]
-   [minimumValue] == [decimalNumber]
-   [maximumValue] == [decimalNumber]
+   
+ ######## ATOMS ########
     
-   [atomExpression] = { [unbracketedAtomType] 
-                             | "[" [bracketedExpression] "]" 
+   [node3D] == { [atomExpression] | [atomExpression] "(." [measure] ")" | [connectionPointer] }
+   [atomExpression] = { [unbracketedAtomType]
+                             | [bracketedExpression] 
+                             | [multipleExpression]
                              | [nestedExpression] }
    
-   [nestedExpression] == "$(" + [atomExpression] + ")"
-
+   
    [unbracketedAtomType] == [atomType] 
                                  & ! { "Ac" | "Ba" | "Ca" | "Na" | "Pa" | "Sc"
                                      | "ac" | "ba" | "ca" | "na" | "pa" | "sc" }
@@ -608,12 +596,15 @@ includes:
                             including Xx and only through element 109)
    [aromaticType] == { "a" | [validElementSymbol].toLowerCase() }
        
-   [bracketedExpression] == { [atomOrSet] | [atomOrSet] ";" [atomAndSet] } 
+   [bracketedExpression] == "[" { [atomOrSet] | [atomOrSet] ";" [atomAndSet] } "]" 
    
    [atomOrSet] == { [atomAndSet] | [atomAndSet] "," [atomAndSet] }
    [atomAndSet] == { [atomPrimitives] | [atomPrimitives] "&" [atomAndSet]
                               | "!" [atomPrimitive] 
                               | "!" [atomPrimitive] "&" [atomAndSet] }
+                              
+ ######## ATOM PRIMITIVES ########
+
    [atomPrimitives] == { [atomPrimitive] | [atomPrimitive] [atomPrimitives] }
        # note -- if & is not used, certain combinations of primitiveDescritors
        #         are not allowed. Specifically, combinations that together
@@ -623,7 +614,7 @@ includes:
        #         but [Ard2] is [Ar&d2] -- "argon with two non-hydrogen connections"
        #         Also, "!" may not be use with implied "&". 
        #         Thus, [!a], [!a&!h2], and [h2&!a] are all valid, but [!ah2] is invalid.             
-   [primitive] == { [isotope] | [atomType] | [charge] | [stereochemistry]
+   [atomPrimitive] == { [isotope] | [atomType] | [charge] | [stereochemistry]
                               | [a_Prop] | [A_Prop] | [D_Prop] | [H_Prop] | [h_Prop] 
                               | [R_Prop] | [r_Prop] | [v_Prop] | [X_Prop]
                               | [x_Prop] | [nestedExpression] }
@@ -663,19 +654,58 @@ includes:
                                       #   includes implicit H atoms
    [x_Prop] == { "x" [digits] | "x" } # ring connectivity -- total ring connections
    
-   [bioAtom] == { [residueName] "." [atomName]
-      # note: bioSEQUENCE (only) also allows just [residueName], an abbreviation for [residueName] ".0"
-   [residueName] == { "*" | [oneDigitGroupName] | [groupName] | NULL }
-      # note: NULL same as "*"
-   [oneDigitGroupName] == (see JmolConstants.predefinedGroup1Names)
-   [groupName] == (any PDB residue name)
-   [atomName] == { "*" | "0" | (any atom name) | NULL }
-      # note: NULL same as "*"; "0" refers to "lead atom -- CA for proteins, P for nucleic, or O for carbohydrate
-   [ringPointer] == { [digit] | "%" [digit][digit] | "%(" [digits] ")" }
-      # note: All ringPointers must have a second matching ringPointer 
+ ######## Nested and Multiple Expressions ########
+ 
+   [nestedExpression] == "$(" [atomExpression] ")"
+      # note: nestedExpressions return only the first atom as a match, 
+      #       not all atoms in the expression.
+
+   [multipleExpression] == { "[$(" [atomExpression] ")" [nTimes] "]" 
+                             | "[$(" [atomExpression] ")" [nMinimum] "-" [nMaximum] "]" }
+   [nTimes] == [digits]
+   [nMinimum] == [digits]
+   [nMaximum] == [digits]
+      # note: multipleExpressions allow for searching a given number of expressions or 
+      #       a variable number of expressions (including 0, perhaps)
+      #       Jmol pre-processes these expressions and turns them into a set:
+      #       pattern1 || pattern2 || pattern3....
+
+ ######## BioSEQUENCE ########
+
+   [bioSequence] == [bioCode] [bioNode] [connections]
+   [bioCode] == { "~" | "~" [bioType] "~" }
+      # note: The "~" must be the first character in a component and must be repeated 
+      #       for each component (separated by ".")
+   [bioType] == { "p" | "n" | "r" | "d" }
+      # note: protein, nucleic, RNA, DNA
+   [bioNode] == { "[" [bioResidueName] "]" 
+                 | "[" [bioResidueName] "." [bioAtomName] "]" 
+                 | "[" [bioResidueName] "." [bioAtomName] [A_Prop] "]" 
+                 | [bioResidueCode] } 
+   [bioResidueName] == { "*" | "ARG" | "GLY" ... } (case-insensitive) 
+   [bioAtomName] == { "*" | "0" | "C" | "CA" | "N" ... } (case-insensitive)
+      # note: "0" indicates the "lead atom":
+      #   nucleic: P if present, or H5T if present, or O5'/O5*
+      #   protein: CA
+      #   carbohydrate: the first atom of the group listed in the model file
+   [bioResidueCode] == { "*" | "A" | "R" | "G" ... } (case-sensitive)
+      # note: wildcard or standard group 1-letter-code
+      #       or, in the case of RNA or DNA:
+      #         "N" (any residue; same as "*"), 
+      #         "R" (any purine -- A or G)
+      #         "Y" (any pyrimidine -- C or T or U)
+
+ ######## CONNECTIONS (aka "rings") ########
+
+   [connectionPointer] == { [digit] | "%" [digit][digit] | "%(" [digits] ")" }
+      # note: All connectionPointers must have a second matching connectionPointer 
       #       and must be preceded by an atomExpression for the 
       #       first occurance and either an atomExpression or a bondExpression
-      #       for the second occurance.
+      #       for the second occurance. The matching connectionPointers may be
+      #       in different "components" (separated by "."), in which case they
+      #       represent general connections and not necessarily rings.
+
+ ######## BONDS ########
 
    [bondExpression] == { [bondOrSet] | [bondOrSet] ";" [bondAndSet] } 
    
@@ -683,6 +713,9 @@ includes:
    [bondAndSet] == { [bondPrimitives] | [bondPrimitives] "&" [bondAndSet]
                               | "!" [bondPrimitive] 
                               | "!" [bondPrimitive] "&" [bondAndSet] }
+                                              
+ ######## BOND PRIMITIVES ########
+                              
    [bondPrimitives] == { [bondPrimitive] | [bondPrimitive] [bondPrimitives] }       
    [bond] == { "-" | "=" | "#" | "." | "/" | "\\" | ":" | "~" | "@" | "+" | NULL
       # note: All bondExpressions are not valid. Stereochemistry should not 
@@ -699,6 +732,15 @@ includes:
       # note: For a SMARTS search, "." indicates the start of a new subset, not necessarily a
       #       new component.
       
+ ######## MEASURES ########
+   
+   [measure] == { [measureId] | [measureId] ":" [range] | [measureId] ":!" [range] }
+   [measureId] == { [measureCode] | [measureCode] [digits] }
+   [measureCode == { "d" | "a" | "t" }
+   [range] == [minimumValue] { "," | "-" } [maximumValue]
+   [minimumValue] == [decimalNumber]
+   [maximumValue] == [decimalNumber]
+
 </pre>
 </p>
 

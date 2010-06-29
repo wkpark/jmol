@@ -342,6 +342,13 @@ public abstract class Monomer extends Group {
     return id;
   }
   
+  public boolean isCrossLinked(Group g) {
+    for (int i = firstAtomIndex; i <= lastAtomIndex; i++)
+      if (getCrossLink(i, null, g))
+          return true;
+    return false;
+  }
+ 
   public boolean getCrossLinkLeadAtomIndexes(Vector vReturn) {    
    for (int i = firstAtomIndex; i <= lastAtomIndex; i++)
       if (getCrossLink(i, vReturn) && vReturn == null)
@@ -350,6 +357,10 @@ public abstract class Monomer extends Group {
   }  
 
   protected boolean getCrossLink(int i, Vector vReturn) {
+    return getCrossLink(i, vReturn, null);
+  }
+  
+  private boolean getCrossLink(int i, Vector vReturn, Group group) {
     // vReturn null --> just checking for connection to previous group
     // not obvious from PDB file for carbohydrates
     Atom atom = chain.getAtom(i);
@@ -358,24 +369,29 @@ public abstract class Monomer extends Group {
     if (ibp < 0 || bonds == null)
       return false;
     boolean haveCrossLink = false;
+    boolean checkPrevious = (vReturn == null && group == null);
     for (int j = 0; j < bonds.length; j++) {
       Atom a = bonds[j].getOtherAtom(atom);
       Group g = a.getGroup();
+      if (group != null && g != group)
+        continue;
       int iPolymer = g.getBioPolymerIndexInModel();
       int igroup = g.getMonomerIndex();
-      if (vReturn == null) {
+      if (checkPrevious) {
         if (iPolymer == ibp && igroup == monomerIndex - 1)
           return true;
       } else if (iPolymer >= 0
           && igroup >= 0
           && (iPolymer != ibp || igroup < monomerIndex - 1 || igroup > monomerIndex + 1)) {
-        vReturn.add(new Integer(g.getLeadAtomIndex()));
         haveCrossLink = true;
+        if (group != null)
+          break;
+        vReturn.add(new Integer(g.getLeadAtomIndex()));
       }
     }
     return haveCrossLink;
-
   }
+  
   public boolean isConnectedPrevious() {
     return true; // but not nec. for carbohydrates... see 1k7c
   }

@@ -309,8 +309,7 @@ public class Group {
   }
   
   public final int selectAtoms(BitSet bs) {
-    for (int i = firstAtomIndex; i <= lastAtomIndex; ++i)
-      bs.set(i);
+    bs.set(firstAtomIndex, lastAtomIndex + 1);
     return lastAtomIndex;
   }
 

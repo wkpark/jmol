@@ -8576,7 +8576,8 @@ public class ScriptEvaluator {
         translation = (Vector3f) op[5];
         invPoint = (Point3f) op[6];
         points[0] = (Point3f) op[7];
-        rotAxis = (Vector3f) op[8];
+        if (op[8] != null)
+          rotAxis = (Vector3f) op[8];
         endDegrees = ((Integer) op[9]).intValue();
         if (symop < 0) {
           endDegrees = -endDegrees;
@@ -8591,6 +8592,7 @@ public class ScriptEvaluator {
         nPoints = (points[0] == null ? 0 : 1);
         isMolecular = true;
         haveRotation = true;
+        isSelected = true;
         continue;
       case Token.compare:
       case Token.matrix4f:
@@ -8668,7 +8670,7 @@ public class ScriptEvaluator {
           if (theta < 0)
             rotAxis.scale(-1);
         }
-        m4 = null;
+        m4 = null; 
       }
       if (isSpin && m4 == null)
         m4 = ScriptMathProcessor.getMatrix4f(q.getMatrix(), translation);
@@ -8681,6 +8683,8 @@ public class ScriptEvaluator {
     }
     if (invPlane != null) {
       viewer.invertAtomCoord(invPlane, bsAtoms);
+      if (rotAxis == null)
+        return;
     }
     if (nPoints < 2) {
       if (!isMolecular) {

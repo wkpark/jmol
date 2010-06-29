@@ -930,6 +930,7 @@ all support for previous versions removed
 	      	<include name="org/jmol/util/DefaultLogger.class" />
 	        <include name="org/jmol/util/Logger.class" />
 	        <include name="org/jmol/util/LoggerInterface.class" />
+	        <include name="org/jmol/util/TextFormat.class" />
 	      </fileset>
 	      <fileset dir="${appletjars.dir}">
 	        <include name="javax/vecmath/*3f*" />

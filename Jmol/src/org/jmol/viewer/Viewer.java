@@ -2165,7 +2165,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
             .getModelSetAuxiliaryInfo("jmolscript");
         minimize(Integer.MAX_VALUE, 0, bsNew, null, 0, true, true, true);
         // no longer necessary? -- this is the JME/SMILES data:
-        modelSet.getModelSetAuxiliaryInfo().put("jmolscript", jmolScript);
+        if (jmolScript != null)
+          modelSet.getModelSetAuxiliaryInfo().put("jmolscript", jmolScript);
       }
       if (!isAppend)
         initializeModel();

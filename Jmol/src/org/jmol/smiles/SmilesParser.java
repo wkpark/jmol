@@ -369,21 +369,11 @@ public class SmilesParser {
     int[] ret = new int[1];
     int pt = 0;
     char ch;
+    SmilesBond bond = null;
     while (pattern != null && pattern.length() != 0) {
       int index = 0;
-      if (currentAtom == null) {
-        isBioSequence = pattern.startsWith("~");
-        if (isBioSequence) {
-          index++;
-          bioType = '*';
-          ch = getChar(pattern, 2);
-          if (ch == '~'
-              && ((ch = pattern.charAt(1)) == '*' || Character.isLowerCase(ch))) {
-            bioType = ch;
-            index = 3;
-          }
-        }
-      }
+      if (currentAtom == null || bond != null && bond.bondType == SmilesBond.TYPE_NONE)
+        index = checkBioType(pattern, 0);
       ch = getChar(pattern, index);
       boolean haveOpen = checkBrace(molecule, ch, '{');
       if (haveOpen)
@@ -414,17 +404,22 @@ public class SmilesParser {
         //throw new InvalidSmilesException("Pattern must not end with ')'");
       } else {
         pt = index;
-        while (SmilesBond.isBondType(ch, isSmarts))
+        while (SmilesBond.isBondType(ch, isSmarts, isBioSequence))
           ch = getChar(pattern, ++index);
 
-        SmilesBond bond = parseBond(molecule, null, pattern
+        bond = parseBond(molecule, null, pattern
             .substring(pt, index), null, currentAtom, false, isBranchAtom);
+
 
         if (haveOpen && bond.bondType != SmilesBond.TYPE_UNKNOWN)
           index = pt;
         ch = getChar(pattern, index);
         if (checkBrace(molecule, ch, '{'))
           ch = getChar(pattern, ++index);
+        if (ch == '~' && bond.bondType == SmilesBond.TYPE_NONE) {
+          index = checkBioType(pattern, index);
+          ch = getChar(pattern, index);
+        }
         if (ch == '\0' && bond.bondType == SmilesBond.TYPE_NONE)
           return;
         boolean isRing = (Character.isDigit(ch) || ch == '%');
@@ -510,6 +505,21 @@ public class SmilesParser {
       pattern = pattern.substring(index);
       isBranchAtom = false;
     }
+  }
+
+  private int checkBioType(String pattern, int index) {
+    isBioSequence = (pattern.charAt(index) == '~');
+    if (isBioSequence) {
+      index++;
+      bioType = '*';
+      char ch = getChar(pattern, 2);
+      if (ch == '~'
+          && ((ch = pattern.charAt(1)) == '*' || Character.isLowerCase(ch))) {
+        bioType = ch;
+        index = 3;
+      }
+    }
+    return index;
   }
 
   Hashtable htMeasures = new Hashtable();

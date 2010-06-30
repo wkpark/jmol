@@ -158,13 +158,15 @@ public class SmilesBond implements JmolEdge {
     }
   }
 
-  static boolean isBondType(char ch, boolean isSearch)
+  static boolean isBondType(char ch, boolean isSearch, boolean isBioSequence)
       throws InvalidSmilesException {
     if ("-=#:/\\.+!,&;@~^'".indexOf(ch) < 0)
       return false;
     if (!isSearch && "-=#:/\\.~^'".indexOf(ch) < 0) // ~ here for BIOSMARTS
       throw new InvalidSmilesException("SMARTS bond type " + ch
           + " not allowed in SMILES");
+    if(isBioSequence && ch == '~')
+      return false;
     return true;
   }
 

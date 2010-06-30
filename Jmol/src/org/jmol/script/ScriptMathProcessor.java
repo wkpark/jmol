@@ -2187,9 +2187,9 @@ class ScriptMathProcessor {
 
   private boolean evaluateSubstructure(ScriptVariable[] args, int tok)
       throws ScriptException {
-    // select substucture(....) legacy - was same as SMILES, now SMARTS
+    // select substucture(....) legacy - was same as smiles(), now search()
     // select smiles(...)
-    // select smarts(...)  now same as substructure
+    // select search(...)  now same as substructure
     if (args.length == 0)
       return false;
     BitSet bs = new BitSet();

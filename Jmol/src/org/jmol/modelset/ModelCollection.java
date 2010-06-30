@@ -3677,6 +3677,8 @@ abstract public class ModelCollection extends BondCollection {
   public String getModelLoadState(int i) {
     if (i < 0)
       i = modelCount - 1;
+    if (isJmolDataFrame(i))
+      return "";
     StringBuffer commands = new StringBuffer();
     commands.append(models[i].loadState);
     if (models[i].isModelKit) {

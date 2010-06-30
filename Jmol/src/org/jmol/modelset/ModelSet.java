@@ -534,11 +534,10 @@ abstract public class ModelSet extends ModelCollection {
           commands.append("  ").append(cmd).append("\n");
       }
 
-      boolean isH = false;
       StringBuffer sb = new StringBuffer();
       for (int i = 0; i < bondCount; i++)
         if (!models[bonds[i].atom1.modelIndex].isModelKit)
-          if ((isH = bonds[i].isHydrogen())
+          if (bonds[i].isHydrogen()
               || (bonds[i].order & JmolEdge.BOND_NEW) != 0) {
             Bond bond = bonds[i];
             sb.append(bond.atom1.index)

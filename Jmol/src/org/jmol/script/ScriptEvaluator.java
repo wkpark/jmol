@@ -7943,6 +7943,7 @@ public class ScriptEvaluator {
     boolean isDerivative = false;
     boolean isSecondDerivative = false;
     boolean isRamachandranRelative = false;
+    String stateScript = "";
     int pt = statementLength - 1;
     String type = optParameterAsString(pt).toLowerCase();
     switch (datatype) {
@@ -7956,6 +7957,7 @@ public class ScriptEvaluator {
           + (isDraw ? " draw" : "");
       break;
     case JmolConstants.JMOL_DATA_QUATERNION:
+      stateScript = "set quaternionFrame " + Escape.escape("" + viewer.getQuaternionFrame()) + ";\n  ";
       isQuaternion = true;
       // working backward this time:
       if (type.equalsIgnoreCase("draw")) {
@@ -8011,7 +8013,7 @@ public class ScriptEvaluator {
     viewer.setFileInfo(savedFileInfo);
     if (!isOK)
       return;
-    StateScript ss = viewer.addStateScript(type, true, false);
+    StateScript ss = viewer.addStateScript(stateScript + type, true, false);
     int modelCount = viewer.getModelCount();
     viewer.setJmolDataFrame(type, modelIndex, modelCount - 1);
     String script;

@@ -110,12 +110,12 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   }
 
   public String getSmiles(JmolNode[] atoms, int atomCount, BitSet bsSelected,
-                          String comment, boolean asBioSmiles) {
+                          String comment, boolean asBioSmiles, boolean addCrossLinks) {
     InvalidSmilesException.setLastError(null);
     try {
       if (asBioSmiles)
         return (new SmilesGenerator()).getBioSmiles(atoms, atomCount,
-            bsSelected, comment);
+            bsSelected, comment, addCrossLinks);
       return (new SmilesGenerator()).getSmiles(atoms, atomCount, bsSelected);
     } catch (InvalidSmilesException e) {
       if (InvalidSmilesException.getLastError() == null)

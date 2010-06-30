@@ -209,7 +209,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         true, false);
   }
 
-
   ScriptEvaluator eval;
   private AnimationManager animationManager;
   private DataManager dataManager;
@@ -4895,7 +4894,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
 
   public void setStatusMeasuring(String status, int intInfo, String strMeasure) {
-    // measurement completed or pending or picked
+    
+    // status           intInfo 
+
+    // measureCompleted index
+    // measurePicked    atom count
+    // measurePending   atom count
+    // measureDeleted   -1 (all) or index
+    // measureSequence  -2
     statusManager.setStatusMeasuring(status, intInfo, strMeasure);
   }
 
@@ -8991,8 +8997,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     clearModelDependentObjects();
     BitSet bsA = BitSetUtil.setBit(index);
     BitSet bsB = BitSetUtil.setBit(index2);
-    modelSet.makeConnections(0, Float.MAX_VALUE, JmolEdge.BOND_ORDER_NULL,
-        JmolConstants.CONNECT_MODIFY_OR_CREATE, bsA, bsB, null, false, 0);
+    float[][] connections = new float[1][];
+    connections[0] = new float[] { index, index2, 1 };
+    modelSet.connect(connections);
     modelSet.assignAtom(index, ".", true);
     modelSet.assignAtom(index2, ".", true);
     refresh(3, "assignConnect");
@@ -9040,6 +9047,47 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   BitSet getModelKitStateBitSet(BitSet bs, BitSet bsDeleted) {
     return modelSet.getModelKitStateBitset(bs, bsDeleted);
+  }
+
+  /**
+   * returns the SMILES string for a sequence or atom set
+   * 
+   * @param index1
+   * @param index2
+   * @param bsSelected
+   * @param isBioSmiles
+   * @param addCrossLinks TODO
+   * @param addComment
+   * @return SMILES string
+   */
+  public String getSmiles(int index1, int index2, BitSet bsSelected,
+                          boolean isBioSmiles, boolean addCrossLinks, boolean addComment) {
+    Atom[] atoms = getModelSet().atoms;
+    if (bsSelected == null) {
+      if (index1 < 0 || index2 < 0) {
+        bsSelected = getSelectionSet();
+      } else {
+        if (isBioSmiles) {
+          if (index1 > index2) {
+            int i = index1;
+            index1 = index2;
+            index2 = i;
+          }
+          index1 = atoms[index1].getGroup().getFirstAtomIndex();
+          index2 = atoms[index2].getGroup().getLastAtomIndex();
+        }
+        bsSelected = new BitSet();
+        bsSelected.set(index1, index2 + 1);
+      }
+    }
+    String comment = (addComment ? getJmolVersion() + " "
+        + getModelName(getCurrentModelIndex()) : null);
+    return getSmilesMatcher().getSmiles(atoms, getAtomCount(), bsSelected,
+        comment, isBioSmiles, addCrossLinks);
+  }
+
+  public void connect(float[][] connections) {
+    modelSet.connect(connections);
   }
   
 }

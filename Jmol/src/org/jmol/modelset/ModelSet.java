@@ -535,23 +535,23 @@ abstract public class ModelSet extends ModelCollection {
       }
 
       boolean isH = false;
-      for (int i = 0; i < bondCount; i++) {
+      StringBuffer sb = new StringBuffer();
+      for (int i = 0; i < bondCount; i++)
         if (!models[bonds[i].atom1.modelIndex].isModelKit)
           if ((isH = bonds[i].isHydrogen())
               || (bonds[i].order & JmolEdge.BOND_NEW) != 0) {
             Bond bond = bonds[i];
-            commands.append("  connect ").append("({").append(bond.atom1.index)
-                .append("}) ").append("({").append(bond.atom2.index).append(
-                    "}) ");
-            commands
-                .append(JmolConstants.getBondOrderNameFromOrder(bond.order));
-            if (isH)
-              commands.append(" ").append(
-                  bond.order >> JmolEdge.BOND_HBOND_SHIFT).append(" ").append(
-                  bond.getEnergy());
-            commands.append(";\n");
+            sb.append(bond.atom1.index)
+                .append('\t').append(bond.atom2.index)
+                .append('\t').append(bond.order & ~JmolEdge.BOND_NEW)
+                .append('\t').append(bond.mad / 1000f)
+                .append('\t').append(bond.getEnergy())
+                .append('\t').append(JmolConstants.getBondOrderNameFromOrder(bond.order))
+                .append(";\n");
           }
-      }
+      if (sb.length() > 0)
+        commands.append("data \"connect_atoms\"\n")
+            .append(sb).append("end \"connect_atoms\";\n");
       commands.append("\n");
     }
 
@@ -799,6 +799,32 @@ abstract public class ModelSet extends ModelCollection {
     BitSet bsModels = getModelBitSet(bs, false);
     for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1))
       shapeManager.refreshShapeTrajectories(i, viewer.getModelUndeletedAtomsBitSet(i));
+  }
+
+  public void connect(float[][] connections) {
+    // array of [index1 index2 order diameter energy]
+    molecules = null;
+    moleculeCount = 0;
+    BitSet bsDelete = new BitSet();
+    for (int i = 0; i < connections.length; i++) {
+      float[] f = connections[i];
+      int index1 = (int) f[0];
+      int index2 = (int) f[1];
+      if (index1 < 0 || index2 < 0 || index1 >= atomCount || index2 >= atomCount)
+        continue;
+      short order = (f.length > 2 ? (short) f[2] : JmolEdge.BOND_COVALENT_SINGLE);
+      short mad = (f.length > 3 ? (short) (1000f * connections[i][3]) : getDefaultMadFromOrder(order));
+      if (order == 0 || mad == 0) {
+        Bond b = atoms[index1].getBond(atoms[index2]);
+        if (b != null)
+          bsDelete.set(b.index);
+        continue; 
+      }
+      float energy = (f.length > 4 ? f[4] : 0);
+      bondAtoms(atoms[index1], atoms[index2], order, mad, null, energy, true);
+    }
+    if (bsDelete.nextSetBit(0) >= 0)
+      deleteBonds(bsDelete, false);
   }
 
 }

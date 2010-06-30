@@ -274,17 +274,18 @@ public class ActionManager {
   public final static int PICKING_MEASURE_DISTANCE = 19;
   public final static int PICKING_MEASURE_ANGLE    = 20;
   public final static int PICKING_MEASURE_TORSION  = 21;
-  public final static int PICKING_NAVIGATE         = 22;
-  public final static int PICKING_CONNECT          = 23;
-  public final static int PICKING_STRUTS           = 24;
-  public final static int PICKING_DRAG_MOLECULE    = 25;
-  public final static int PICKING_DRAG_ATOM        = 26;
-  public final static int PICKING_DRAG_MINIMIZE    = 27;
-  public final static int PICKING_DRAG_MINIMIZE_MOLECULE = 28; // for docking
-  public final static int PICKING_INVERT_STEREO    = 29;
-  public final static int PICKING_ASSIGN_ATOM      = 30;
-  public final static int PICKING_ASSIGN_BOND      = 31;
-  public final static int PICKING_ROTATE_BOND      = 32;
+  public final static int PICKING_MEASURE_SEQUENCE = 22;
+  public final static int PICKING_NAVIGATE         = 23;
+  public final static int PICKING_CONNECT          = 24;
+  public final static int PICKING_STRUTS           = 25;
+  public final static int PICKING_DRAG_MOLECULE    = 26;
+  public final static int PICKING_DRAG_ATOM        = 27;
+  public final static int PICKING_DRAG_MINIMIZE    = 28;
+  public final static int PICKING_DRAG_MINIMIZE_MOLECULE = 29; // for docking
+  public final static int PICKING_INVERT_STEREO    = 30;
+  public final static int PICKING_ASSIGN_ATOM      = 31;
+  public final static int PICKING_ASSIGN_BOND      = 32;
+  public final static int PICKING_ROTATE_BOND      = 33;
   
 
 
@@ -293,10 +294,11 @@ public class ActionManager {
     "symmetry", "deleteatom", "deletebond", 
     "atom", "group", "chain", "molecule", "polymer", "structure", 
     "site", "model", "element", 
-    "measure", "distance", "angle", "torsion", "navigate", 
+    "measure", "distance", "angle", "torsion", "sequence", 
+    "navigate", 
     "connect", "struts", 
     "dragmolecule", "dragatom", "dragminimize", "dragminimizemolecule",
-    "invertstereo", "assignatom", "assignbond", "rotatebond",
+    "invertstereo", "assignatom", "assignbond", "rotatebond"
   };
  
   public final static String getPickingModeName(int pickingMode) {
@@ -520,6 +522,7 @@ public class ActionManager {
         break;
       case PICKING_SELECT_ATOM:
       case PICKING_MEASURE_DISTANCE:
+      case PICKING_MEASURE_SEQUENCE:
       case PICKING_MEASURE_ANGLE:
       case PICKING_MEASURE_TORSION:
         measuresEnabled = false;
@@ -1713,14 +1716,18 @@ public class ActionManager {
       // fall through
     case PICKING_MEASURE:
     case PICKING_MEASURE_DISTANCE:
+    case PICKING_MEASURE_SEQUENCE:
       if (!isBound(action, ACTION_pickMeasure))
         return;
       if (measurementQueued == null || measurementQueued.getCount() >= n)
         resetMeasurement();
       if (queueAtom(atomIndex, ptClicked) < n)
         return;
-      viewer.setStatusMeasuring("measurePicked", n, measurementQueued
-          .getStringDetail());
+      if (atomPickingMode == PICKING_MEASURE_SEQUENCE)
+        getSequence();
+      else 
+        viewer.setStatusMeasuring("measurePicked", n, 
+            measurementQueued.getStringDetail());
       if (atomPickingMode == PICKING_MEASURE 
           || pickingStyleMeasure == PICKINGSTYLE_MEASURE_ON) {
         viewer.script("measure "
@@ -1815,6 +1822,15 @@ public class ActionManager {
     }
     viewer.clearClickCount();
     viewer.setStatusAtomPicked(atomIndex, null);
+  }
+
+  private void getSequence() {
+    int a1 = measurementQueued.getAtomIndex(1);
+    int a2 = measurementQueued.getAtomIndex(2);
+    if (a1 < 0 || a2 < 0)
+      return;
+    String sequence = viewer.getSmiles(a1, a2, null, true, false, false);
+    viewer.setStatusMeasuring("measureSequence", -2, sequence);
   }
 
   private void checkTwoAtomAction(int action, Point3fi ptClicked, int atomIndex) {

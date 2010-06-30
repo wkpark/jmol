@@ -33,5 +33,5 @@ public interface SmilesMatcherInterface {
 
   public abstract String getSmiles(JmolNode[] atoms, int atomCount,
                                    BitSet bsSelected, String comment,
-                                   boolean asBioSmiles);
+                                   boolean asBioSmiles, boolean addCrossLinks);
 }

@@ -66,6 +66,7 @@ public class SmilesGenerator {
   private JmolNode prevAtom;
   private JmolNode[] prevBondAtoms;
   private boolean stereoShown;
+  
   // outputs
 
   private Hashtable htRingsSequence = new Hashtable();
@@ -85,12 +86,14 @@ public class SmilesGenerator {
   }
 
   String getBioSmiles(JmolNode[] atoms, int atomCount, BitSet bsSelected,
-                      String comment) throws InvalidSmilesException {
+                      String comment, boolean addCrossLinks)
+      throws InvalidSmilesException {
     this.atoms = atoms;
     this.atomCount = atomCount;
     StringBuffer sb = new StringBuffer();
     BitSet bs = (BitSet) bsSelected.clone();
-    sb.append("//* Jmol bioSMILES ").append(comment.replace('*', '_')).append(
+    if (comment != null)
+      sb.append("//* Jmol bioSMILES ").append(comment.replace('*', '_')).append(
         " *//");
     String end = "\n";
     BitSet bsIgnore = new BitSet();
@@ -111,7 +114,7 @@ public class SmilesGenerator {
           if (groupType.length() > 0) {
             char id = a.getChainID();
             if (id != '\0') {
-              s = "//* chain " + id + " " + groupType + " *// ";
+              s = "//* chain " + id + " " + groupType + " " + a.getResno() + " *// ";
               len = s.length();
               sb.append(s);
             }
@@ -143,18 +146,22 @@ public class SmilesGenerator {
         }
         len++;
         int i0 = a.getOffsetResidueAtom("0", 0);
-        a.getCrossLinkLeadAtomIndexes(vLinks);
-        for (int j = 0; j < vLinks.size(); j++) {
-          sb.append(":");
-          s = getRingCache(i0, ((Integer) vLinks.get(j)).intValue(), htRingsSequence);
-          sb.append(s);
-          len += 1 + s.length();
+        if (addCrossLinks) {
+          a.getCrossLinkLeadAtomIndexes(vLinks);
+          for (int j = 0; j < vLinks.size(); j++) {
+            sb.append(":");
+            s = getRingCache(i0, ((Integer) vLinks.get(j)).intValue(),
+                htRingsSequence);
+            sb.append(s);
+            len += 1 + s.length();
+          }
+          vLinks.clear();
         }
-        vLinks.clear();
         a.setGroupBits(bsIgnore);
         bs.andNot(bsIgnore);
         int i2 = a.getOffsetResidueAtom("0", 1);
         if (i2 < 0 || !bs.get(i2)) {
+          sb.append(" //* ").append(a.getResno()).append(" *//");       
           if (i2 < 0 && (i2 = bs.nextSetBit(i + 1)) < 0)
             break;
           if (len > 0)

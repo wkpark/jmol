@@ -37,6 +37,7 @@ public class Axes extends FontLineShape {
   Point3f axisXY = new Point3f();
   float scale;
   
+  private Point3f fixedOrigin;
   final Point3f originPoint = new Point3f();
   final Point3f[] axisPoints = new Point3f[6];
   final static Point3f pt0 = new Point3f();
@@ -71,6 +72,17 @@ public class Axes extends FontLineShape {
       // z = Float.MAX_VALUE for positioned
       return;
     }
+    if ("origin" == propertyName) {
+      if (value == null) {
+        fixedOrigin = null;
+      } else {
+        if (fixedOrigin == null)
+          fixedOrigin = new Point3f();
+        fixedOrigin.set((Point3f) value);
+      }
+      initShape();
+      return;
+    }
     if ("labels" == propertyName) {
       labels = (String[]) value;
       return;
@@ -92,14 +104,18 @@ public class Axes extends FontLineShape {
     myType = "axes";
     font3d = g3d.getFont3D(JmolConstants.AXES_DEFAULT_FONTSIZE);
     int axesMode = viewer.getAxesMode();
-    originPoint.set(0, 0, 0);
+    if (fixedOrigin == null)
+      originPoint.set(0, 0, 0);
+    else
+      originPoint.set(fixedOrigin);
     if (axesMode == JmolConstants.AXES_MODE_UNITCELL
         && modelSet.getCellInfos() != null) {
       SymmetryInterface unitcell = viewer.getCurrentUnitCell();
       if (unitcell != null && unitcell.haveUnitCell()) {
         Point3f[] vectors = unitcell.getUnitCellVertices();
         Point3f offset = unitcell.getCartesianOffset();
-        originPoint.set(offset);
+        if (fixedOrigin == null)
+          originPoint.set(offset);
         scale = viewer.getAxesScale() / 2f;
         // We must divide by 2 because that is the default for ALL axis types.
         // Not great, but it will have to do.
@@ -109,7 +125,8 @@ public class Axes extends FontLineShape {
         return;
       }
     } else if (axesMode == JmolConstants.AXES_MODE_BOUNDBOX) {
-      originPoint.set(viewer.getBoundBoxCenter());
+      if (fixedOrigin == null)
+        originPoint.set(viewer.getBoundBoxCenter());
     }
     setScale(viewer.getAxesScale() / 2f);
   }
@@ -150,17 +167,23 @@ public class Axes extends FontLineShape {
   }
   
  public String getShapeState() {
-    String axisState = (axisXY.z == 0 ? "" : "  axes position ["
-        + (int) axisXY.x + " " + (int) axisXY.y + (axisXY.z < 0 ? " %" : "")
-        + "];\n");
+    StringBuffer sb = new StringBuffer();
+    sb.append("  axes scale ").append(viewer.getAxesScale()).append(";\n"); 
+    if (fixedOrigin != null)
+      sb.append("  axes center ")
+          .append(Escape.escape(fixedOrigin)).append(";\n");
+    if (axisXY.z != 0)
+      sb.append("  axes position [")
+          .append((int) axisXY.x).append(" ")
+          .append((int) axisXY.y).append(" ")
+          .append(axisXY.z < 0 ? " %" : "").append("];\n");
     if (labels != null) {
-      axisState += "  axes labels ";
+      sb.append("  axes labels ");
       for (int i = 0; i < labels.length; i++)
-        axisState += Escape.escape(labels[i]) + " ";
-      axisState += "\n";
+        sb.append(Escape.escape(labels[i])).append(" ");
+      sb.append(";\n");
     }
-    return super.getShapeState() + "  axesScale = " + viewer.getAxesScale()
-        + ";\n" + axisState;
+    return super.getShapeState() + sb;
   }
 
 }

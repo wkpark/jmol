@@ -6335,14 +6335,7 @@ public class ScriptEvaluator {
 
     if (pattern.length() == 0) {
       boolean isBioSmiles = (!firstMatchOnly);
-      Object ret = viewer.getSmilesMatcher()
-          .getSmiles(
-              viewer.getModelSet().atoms,
-              viewer.getAtomCount(),
-              bsSelected,
-              Viewer.getJmolVersion() + " "
-                  + viewer.getModelName(viewer.getCurrentModelIndex()),
-              isBioSmiles);
+      Object ret = viewer.getSmiles(0, 0, bsSelected, isBioSmiles, true, true);
       if (ret == null)
         evalError(viewer.getSmilesMatcher().getLastException(), null);
       return ret;
@@ -7287,6 +7280,10 @@ public class ScriptEvaluator {
         eArray[ie] = ie;
       data[2] = eArray;
       viewer.setData("element_vdw", data, n, 0, 0, 0, 0);
+      return;
+    }
+    if (dataType.equals("connect_atoms")) {
+      viewer.connect(Parser.parseFloatArray2d(dataString));
       return;
     }
     if (dataType.indexOf("data2d_") == 0) {
@@ -11575,7 +11572,6 @@ public class ScriptEvaluator {
     case Token.delete:
       break;
     default:
-
       checkLength(3);
     }
 
@@ -11853,8 +11849,12 @@ public class ScriptEvaluator {
       setBooleanProperty("axes" + type, true);
       return;
     }
-    // axes scale x.xxx
     switch (tok) {
+    case Token.center:
+      Point3f center = centerParameter(index + 1);
+      setShapeProperty(JmolConstants.SHAPE_AXES, "origin", center);
+      checkLast(iToken);
+      return;
     case Token.scale:
       setFloatProperty("axesScale", floatParameter(checkLast(++index)));
       return;
@@ -11868,18 +11868,16 @@ public class ScriptEvaluator {
         return;
       }
       if (statementLength == index + 7) {
-      // axes labels "X" "Y" "Z" "-X" "-Y" "-Z"
-      setShapeProperty(JmolConstants.SHAPE_AXES, "labels", new String[] {
-          parameterAsString(++index), parameterAsString(++index),
-          parameterAsString(++index), parameterAsString(++index), 
-          parameterAsString(++index), parameterAsString(++index)
-      });
-      }     else {
+        // axes labels "X" "Y" "Z" "-X" "-Y" "-Z"
+        setShapeProperty(JmolConstants.SHAPE_AXES, "labels", new String[] {
+            parameterAsString(++index), parameterAsString(++index),
+            parameterAsString(++index), parameterAsString(++index),
+            parameterAsString(++index), parameterAsString(++index) });
+      } else {
         checkLength(index + 4);
         setShapeProperty(JmolConstants.SHAPE_AXES, "labels", new String[] {
             parameterAsString(++index), parameterAsString(++index),
-            parameterAsString(++index)
-        });
+            parameterAsString(++index) });
       }
       return;
     }

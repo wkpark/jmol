@@ -8474,10 +8474,10 @@
   <fah_proj number="6508" name="p6508_proG_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="16027" preferred="13" deadline="20"
     credit="72" frames="100" code="G" contact="lan" contrib="Bas Couwenberg"/>
-  <fah_proj number="6511" name="p6511_ubiq_predict" public="n"
+  <fah_proj number="6511" name="p6511_ubiq_predict" public="y"
     server="171.64.65.62" atoms="25933" preferred="23" deadline="34"
     credit="123" frames="100" code="G" contact="lan"/>
-  <fah_proj number="6512" name="p6512_TR462A_predict" public="n"
+  <fah_proj number="6512" name="p6512_TR462A_predict" public="y"
     server="171.64.65.62" atoms="13159" preferred="11" deadline="16"
     credit="59" frames="100" code="G" contact="lan"/>
   <fah_proj number="6513" name="p6513_TR462B_predict" public="n"
@@ -8778,6 +8778,9 @@
     server="171.67.108.20" atoms="582" preferred="2" deadline="3"
     credit="611" frames="100" code="OG" contact="lin5"/>
   <fah_proj number="10630" name="OPENMMGMX_test" public="y"
+    server="171.67.108.31" atoms="582" preferred="2" deadline="3"
+    credit="611" frames="100" code="OG" contact="lin5"/>
+  <fah_proj number="10631" name="OPENMMGMX_test" public="y"
     server="171.67.108.31" atoms="582" preferred="2" deadline="3"
     credit="611" frames="100" code="OG" contact="lin5"/>
 

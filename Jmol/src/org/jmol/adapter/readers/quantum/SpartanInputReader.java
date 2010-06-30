@@ -56,11 +56,13 @@ public abstract class SpartanInputReader extends AtomSetCollectionReader {
       discardLinesUntilContains("ATOMLABELS");
       if (line != null)
         readAtomNames();
-      discardLinesUntilContains("HESSIAN");
-      if (line != null)
-        readBonds(atomCount0);
-      if (line != null && line.indexOf("BEGINCONSTRAINTS") >= 0)
-        readConstraints();
+      if (modelAtomCount > 1) {
+        discardLinesUntilContains("HESSIAN");
+        if (line != null)
+          readBonds(atomCount0);
+        if (line != null && line.indexOf("BEGINCONSTRAINTS") >= 0)
+          readConstraints();
+      }
       while (line != null && line.indexOf("END ") < 0 && line.indexOf("MOLSTATE") < 0)
         readLine();
       if (line != null && line.indexOf("MOLSTATE") >= 0)

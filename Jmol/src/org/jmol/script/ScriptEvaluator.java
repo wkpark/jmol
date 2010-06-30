@@ -7996,13 +7996,14 @@ public class ScriptEvaluator {
     }
     int ptDataFrame = viewer.getJmolDataFrameIndex(modelIndex, type);
     if (ptDataFrame > 0) {
+      viewer.deleteAtoms(viewer.getModelUndeletedAtomsBitSet(ptDataFrame), true);
       // data frame can't be 0.
-      viewer.setCurrentModelIndex(ptDataFrame, true);
+      //      viewer.setCurrentModelIndex(ptDataFrame, true);
       // BitSet bs2 = viewer.getModelAtomBitSet(ptDataFrame);
       // bs2.and(bs);
       // need to be able to set data directly as well.
       // viewer.display(BitSetUtil.setAll(viewer.getAtomCount()), bs2, tQuiet);
-      return;
+      // return;
     }
     String[] savedFileInfo = viewer.getFileInfo();
     boolean oldAppendNew = viewer.getAppendNew();

@@ -14196,12 +14196,31 @@ public class ScriptEvaluator {
         continue;
       case Token.within:
         ptWithin = i;
-        float distance = floatParameter(++i);
-        Point3f ptc = centerParameter(++i);
-        i = iToken;
+        float distance;
+        Point3f ptc;
+        bs = null;
+        boolean havePt = false;
+        if (tokAt(i + 1) == Token.expressionBegin) {
+          // within ( x.x , .... )
+          distance = floatParameter(i + 3);
+          if (isPoint3f(i + 4)) {
+            ptc = centerParameter(i + 4);
+            havePt = true;
+            iToken = iToken + 2;
+          } else {
+            bs = expression(statement, i + 5, statementLength, true, false, false, true);
+            if (bs == null)
+              error(ERROR_invalidArgument);
+            ptc = viewer.getAtomSetCenter(bs);
+          }
+        } else {
+          distance = floatParameter(++i);
+          ptc = centerParameter(++i);
+        }
+        i = iToken;          
         if (fullCommand.indexOf("# WITHIN=") >= 0)
           bs = Escape.unescapeBitset(extractCommandOption("# WITHIN"));
-        else
+        else if (!havePt)
           bs = (expressionResult instanceof BitSet ? (BitSet) expressionResult
               : null);
         if (!isSyntaxCheck) {

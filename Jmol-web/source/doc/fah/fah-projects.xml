@@ -8477,9 +8477,9 @@
   <fah_proj number="6511" name="p6511_ubiq_predict" public="y"
     server="171.64.65.62" atoms="25933" preferred="23" deadline="34"
     credit="123" frames="100" code="G" contact="lan"/>
-  <fah_proj number="6512" name="p6512_TR462A_predict" public="y"
+  <fah_proj number="6512" name="p6512_TR462A_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="13159" preferred="11" deadline="16"
-    credit="59" frames="100" code="G" contact="lan"/>
+    credit="59" frames="100" code="G" contact="lan" contrib="Bas Couwenberg"/>
   <fah_proj number="6513" name="p6513_TR462B_predict" public="n"
     server="171.64.65.62" atoms="17092" preferred="14" deadline="21"
     credit="75" frames="100" code="G" contact="lan"/>

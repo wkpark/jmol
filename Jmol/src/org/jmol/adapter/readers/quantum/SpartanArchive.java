@@ -521,8 +521,6 @@ class SpartanArchive {
   //because this is NOT an extension of AtomSetCollectionReader
   private String readLine() throws Exception {
     line = r.readLine();
-    if (Logger.debugging)
-      Logger.debug(line);
     return line;
   }
 }

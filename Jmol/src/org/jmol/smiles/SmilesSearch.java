@@ -307,6 +307,8 @@ public class SmilesSearch extends JmolMolecule {
     selectedAtomCount = bsSelected.cardinality();
     if (subSearches != null) {
       for (int i = 0; i < subSearches.length; i++) {
+        if (subSearches[i] == null)
+          continue;
         getBitSets(subSearches[i], false, false);
         if (firstMatchOnly) {
           if (vReturn == null ? bsReturn.nextSetBit(0) >= 0 : vReturn.size() > 0)
@@ -659,20 +661,23 @@ public class SmilesSearch extends JmolMolecule {
 
       int n;
 
-      if (patternAtom.isBioAtom) {
-
-        if (patternAtom.iNested > 0) {
-          Object o = getNested(patternAtom.iNested);
-          if (o instanceof SmilesSearch) {
-            SmilesSearch search = (SmilesSearch) o;              
+      // _ <n> apply "recursive" SEARCH -- for example, [C&$(C[$(aaaO);$(aaC)])]"
+      if (patternAtom.iNested > 0) {
+        Object o = getNested(patternAtom.iNested);
+        if (o instanceof SmilesSearch) {
+          SmilesSearch search = (SmilesSearch) o;              
+          if (patternAtom.isBioAtom)
             search.nestedBond = patternAtom.getBondTo(null);
-            o = getBitSets(search, true, false);
-            foundAtom = (o != null && ((BitSet) o).nextSetBit(0) >= 0);
-          } else {
-            foundAtom = false;
-          }
-          break;
-        } 
+          o = getBitSets(search, true, false);
+          if (o == null)
+            o = new BitSet();
+          if (!patternAtom.isBioAtom)
+            setNested(patternAtom.iNested, o);
+        }
+        foundAtom = (patternAtom.not != (((BitSet) o).get(iAtom)));
+        break;
+      }
+      if (patternAtom.isBioAtom) {
 
         // BIOSMARTS
         if (patternAtom.atomName != null
@@ -718,18 +723,6 @@ public class SmilesSearch extends JmolMolecule {
           break;
 
       } else {
-        // _ <n> apply "recursive" SEARCH -- for example, [C&$(C[$(aaaO);$(aaC)])]"
-        if (patternAtom.iNested > 0) {
-          Object o = getNested(patternAtom.iNested);
-          if (o instanceof SmilesSearch) {
-            o = getBitSets((SmilesSearch) o, true, false);
-            if (o == null)
-              o = new BitSet();
-            setNested(patternAtom.iNested, o);
-          }
-          foundAtom = (patternAtom.not != (((BitSet) o).get(iAtom)));
-          break;
-        }
 
         // "=" <n>  Jmol index
 

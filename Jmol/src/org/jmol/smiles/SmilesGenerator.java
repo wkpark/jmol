@@ -86,7 +86,7 @@ public class SmilesGenerator {
   }
 
   String getBioSmiles(JmolNode[] atoms, int atomCount, BitSet bsSelected,
-                      String comment, boolean addCrossLinks)
+                      boolean allowUnmatchedRings, boolean addCrossLinks, String comment)
       throws InvalidSmilesException {
     this.atoms = atoms;
     this.atomCount = atomCount;
@@ -173,7 +173,7 @@ public class SmilesGenerator {
       e.printStackTrace();
       return "";
     }
-    if (!htRingsSequence.isEmpty()) {
+    if (!allowUnmatchedRings && !htRingsSequence.isEmpty()) {
       dumpRingKeys(sb, htRingsSequence);
       throw new InvalidSmilesException("//* ?ring error? *//");
     }

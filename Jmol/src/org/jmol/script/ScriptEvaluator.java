@@ -6340,7 +6340,7 @@ public class ScriptEvaluator {
 
     if (pattern.length() == 0) {
       boolean isBioSmiles = (!firstMatchOnly);
-      Object ret = viewer.getSmiles(0, 0, bsSelected, isBioSmiles, true, true);
+      Object ret = viewer.getSmiles(0, 0, bsSelected, isBioSmiles, false, true, true);
       if (ret == null)
         evalError(viewer.getSmilesMatcher().getLastException(), null);
       return ret;

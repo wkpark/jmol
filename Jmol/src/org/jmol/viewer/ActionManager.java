@@ -1829,7 +1829,7 @@ public class ActionManager {
     int a2 = measurementQueued.getAtomIndex(2);
     if (a1 < 0 || a2 < 0)
       return;
-    String sequence = viewer.getSmiles(a1, a2, null, true, false, false);
+    String sequence = viewer.getSmiles(a1, a2, null, true, false, false, false);
     viewer.setStatusMeasuring("measureSequence", -2, sequence);
   }
 

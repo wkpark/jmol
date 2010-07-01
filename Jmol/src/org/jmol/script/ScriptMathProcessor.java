@@ -1121,6 +1121,7 @@ class ScriptMathProcessor {
     String sFind = ScriptVariable.sValue(args[0]);
     String flags = (args.length > 1 && args[1].tok != Token.on
         && args[1].tok != Token.off ? ScriptVariable.sValue(args[1]) : "");
+    boolean isSequence = sFind.equalsIgnoreCase("SEQUENCE");
     boolean isSmiles = sFind.equalsIgnoreCase("SMILES");
     boolean isSearch = sFind.equalsIgnoreCase("SMARTS");
     boolean isMF = sFind.equalsIgnoreCase("MF");
@@ -1148,6 +1149,8 @@ class ScriptMathProcessor {
         if (isMF)
           return addX(JmolMolecule.getMolecularFormula(
               viewer.getModelSet().atoms, (BitSet) x1.value, false));
+        if (isSequence)
+          return addX(viewer.getSmiles(-1, -1, (BitSet) x1.value, true, isAll, isAll, false));
         if (isSmiles || isSearch)
           sFind = flags;
         BitSet bsMatch3D = bs2;

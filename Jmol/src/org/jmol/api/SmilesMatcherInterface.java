@@ -32,6 +32,6 @@ public interface SmilesMatcherInterface {
   public abstract String getMolecularFormula(String pattern, boolean isSearch);
 
   public abstract String getSmiles(JmolNode[] atoms, int atomCount,
-                                   BitSet bsSelected, String comment,
-                                   boolean asBioSmiles, boolean addCrossLinks);
+                                   BitSet bsSelected, boolean asBioSmiles,
+                                   boolean allowUnmatchedRings, boolean addCrossLinks, String comment);
 }

@@ -153,9 +153,17 @@ public class SmilesParser {
     if (pattern.indexOf("||") >= 0) {
       SmilesSearch search = new SmilesSearch();
       String[] patterns = TextFormat.split(pattern, "||");  
+      String toDo = "";
       search.subSearches = new SmilesSearch[patterns.length];
-      for (int i = 0; i < patterns.length; i++)
-        search.subSearches[i] = getSearch(search, patterns[i], noAromatic);
+      for (int i = 0; i < patterns.length; i++) {
+        String key = "|" + patterns[i] + "|";
+        if (toDo.indexOf(key) < 0) {
+          search.subSearches[i] = getSearch(search, patterns[i], noAromatic);
+          toDo += key;
+        }
+      }
+      //if (Logger.debugging)
+        Logger.info(toDo);
       return search;
     }
      return getSearch(null, pattern, noAromatic);
@@ -164,6 +172,29 @@ public class SmilesParser {
   private String parseVariableLength(String pattern)
       throws InvalidSmilesException {
     StringBuffer sout = new StringBuffer();
+    // fix internal ||
+    int len = pattern.length() - 1;
+    int nParen = 0;
+    boolean haveInternalOr = false;
+    for (int i = 0; i < len; i++) {
+      switch (pattern.charAt(i)) {
+      case '(':
+        nParen++;
+        break;
+      case ')':
+        nParen--;
+        break;
+      case '|':
+        if (nParen > 0) {
+          haveInternalOr = true;
+          if (pattern.charAt(i + 1) == '|') {
+            pattern = pattern.substring(0, i) + pattern.substring(i + 1);
+            len--;
+          }
+        }
+        break;
+      }
+    }
     if (pattern.indexOf("||") >= 0) {
       String[] patterns = TextFormat.split(pattern, "||");
       for (int i = 0; i < patterns.length; i++)
@@ -180,7 +211,7 @@ public class SmilesParser {
         int pt1 = pt + bracketed.length() + 2;
         String repeat = getSubPattern(bracketed, 1, '(');
         pt += 4 + repeat.length();
-        if (repeat.indexOf(":") >= 0) {
+        if (repeat.indexOf(':') >= 0 && repeat.indexOf('|') < 0) {
           // must enclose first ":" in ()
           int parenCount = 0;
           int n = repeat.length();
@@ -209,8 +240,15 @@ public class SmilesParser {
             repeat = repeat.substring(0, ptColon) + "("
                 + repeat.substring(ptColon, n) + ")" + repeat.substring(n);
         }
-        if (!Character.isDigit(getChar(pattern, pt)))
+        if (!Character.isDigit(getChar(pattern, pt))) {
+          int ptOr = repeat.indexOf("|");
+          if (ptOr >= 0)
+            return parseVariableLength(pattern.substring(0, pt0 + ptOr + 3) + ")1"
+                + pattern.substring(pt) + "||"
+                + pattern.substring(0, pt0 + 3) + repeat.substring(ptOr + 1) + ")1"
+                + pattern.substring(pt));
           continue;
+        }
         pt = getDigits(pattern, pt, ret);
         int min = ret[0];
         int max = min;
@@ -226,18 +264,23 @@ public class SmilesParser {
           isOK = false;
           break;
         }
+        if (repeat.indexOf("|") >= 0)
+          repeat = "[$(" + repeat + ")]";
         for (int i = min; i <= max; i++) {
           StringBuffer sb = new StringBuffer();
+          sb.append("||").append(pattern.substring(0, pt0));
           for (int j = 0; j < i; j++)
             sb.append(repeat);
-          sout.append("||").append(pattern.substring(0, pt0)).append(sb)
-              .append(pattern.substring(pt1));
+          sb.append(pattern.substring(pt1));
+          sout.append(sb);
         }
-      } 
+      }
       if (!isOK)
         throw new InvalidSmilesException("bad variable expression: "
             + bracketed);
     }
+    if (haveInternalOr)
+      return parseVariableLength(sout.substring(2));
     return (sout.length() < 2 ? pattern : sout.substring(2));
   }
 

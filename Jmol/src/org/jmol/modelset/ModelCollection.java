@@ -1216,16 +1216,18 @@ abstract public class ModelCollection extends BondCollection {
     BitSet bsWritten = new BitSet();
     if (sb == null)
       sb = new OutputStringBuffer(null);
+    if (!isDraw) {
+      sb.append("REMARK   6 Jmol PDB-encoded data: " + type + ";");
+      if (ctype != 'R')
+        sb.append("  quaternionFrame = \"" + qtype + "\"");
+      sb.append("\nREMARK   6 Jmol Version ").append(Viewer.getJmolVersion()).append('\n');
+    }
     for (int p = 0; p < nPoly; p++)
         model.bioPolymers[p].getPdbData(viewer, ctype, qtype,mStep, derivType, isDraw,
             bsAtoms, sb, pdbCONECT, bsSelected, p == 0, bsWritten);
     sb.append(pdbCONECT.toString());
-    if (isDraw || sb.length() == 0)
+    if (isDraw)
       return sb.toString();
-    sb.append("REMARK   6 Jmol PDB-encoded data: " + type + ";");
-    if (ctype != 'R')
-      sb.append("  quaternionFrame = \"" + qtype + "\"");
-      sb.append("\nREMARK   6 Jmol Version " + Viewer.getJmolVersion());
     bsSelected.and(bsAtoms);
     sb.append("\n\n" + getProteinStructureState(bsWritten, false, ctype == 'R', true));
     return sb.toString();

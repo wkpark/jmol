@@ -484,7 +484,8 @@ public class SmilesSearch extends JmolMolecule {
               bs.set(ii);
           }
         }
-        boolean skipGroup = (newPatternAtom.isBioAtom && (newPatternAtom.atomName == null || newPatternAtom.residueChar != null));
+        boolean skipGroup = (iAtom >= 0 && newPatternAtom.isBioAtom 
+            && (newPatternAtom.atomName == null || newPatternAtom.residueChar != null));
         for (int j = bsSelected.nextSetBit(0); j >= 0; j = bsSelected
             .nextSetBit(j + 1)) {
           if (!bs.get(j)

@@ -3255,12 +3255,17 @@ public class ScriptEvaluator {
       case Token.opGT:
       case Token.opEQ:
       case Token.opNE:
+        if (pc + 1 == code.length)
+          error(ERROR_invalidArgument);
         val = code[++pc].value;
         int tokOperator = instruction.tok;
         int tokWhat = instruction.intValue;
         String property = (tokWhat == Token.property ? (String) val : null);
-        if (property != null)
+        if (property != null) {
+          if (pc + 1 == code.length)
+            error(ERROR_invalidArgument);
           val = code[++pc].value;
+        }
         if (tokWhat == Token.configuration && tokOperator != Token.opEQ)
           error(ERROR_invalidArgument);
         if (isSyntaxCheck) {
@@ -7218,6 +7223,48 @@ public class ScriptEvaluator {
     String dataLabel = null;
     boolean isOneValue = false;
     int i;
+    if (tokAt(1) == Token.map) {
+      // {resno=x}.straightness = ({i}).straightness
+      // data map {1.1}.straightness  {2.1}.property_x resno
+      BitSet bsFrom = atomExpression(2);
+      while (true) {
+        if (tokAt(++iToken) != Token.per
+            || !Token.tokAttr(tokAt(++iToken), Token.atomproperty))
+          break;
+        String property1 = parameterAsString(iToken);
+        BitSet bsTo = atomExpression(++iToken);
+        if (tokAt(++iToken) != Token.per
+            || !Token.tokAttr(tokAt(++iToken), Token.settable))
+          break;
+        String property2 = parameterAsString(iToken);
+        if (!Token.tokAttr(tokAt(++iToken), Token.atomproperty))
+          break;
+        String mapKey = parameterAsString(iToken);
+
+        if (isSyntaxCheck)
+          return;
+        String format = "{" + mapKey + "=%[" + mapKey + "]}." + property2
+            + " = %[" + property1 + "]";
+        String[] data = (String[]) getBitsetIdent(bsFrom, format, null, false,
+            Integer.MAX_VALUE, false);
+        StringBuffer sb = new StringBuffer();
+        for (i = 0; i < data.length; i++)
+          if (data[i].indexOf("null") < 0)
+            sb.append(data[i]).append('\n');
+        if (Logger.debugging)
+          Logger.info(sb.toString());
+        BitSet bsSubset = BitSetUtil.copy(viewer.getSelectionSubset());
+        viewer.setSelectionSubset(bsTo);
+        try {
+          runScript(sb.toString());
+        } catch (Exception e) {
+          Logger.error(e.getMessage());
+        }
+        viewer.setSelectionSubset(bsSubset);
+        return;
+      }
+      error(ERROR_invalidArgument);
+    }
     switch (iToken = statementLength) {
     case 5:
       // parameters 3 and 4 are just for the ride: [end] and ["key"]
@@ -7945,6 +7992,7 @@ public class ScriptEvaluator {
     boolean isRamachandranRelative = false;
     String stateScript = "";
     int pt = statementLength - 1;
+    String qFrame = "";
     String type = optParameterAsString(pt).toLowerCase();
     switch (datatype) {
     case JmolConstants.JMOL_DATA_RAMACHANDRAN:
@@ -7957,7 +8005,8 @@ public class ScriptEvaluator {
           + (isDraw ? " draw" : "");
       break;
     case JmolConstants.JMOL_DATA_QUATERNION:
-      stateScript = "set quaternionFrame " + Escape.escape("" + viewer.getQuaternionFrame()) + ";\n  ";
+      qFrame = " \"" + viewer.getQuaternionFrame() + "\"";
+      stateScript = "set quaternionFrame" + qFrame + ";\n  ";
       isQuaternion = true;
       // working backward this time:
       if (type.equalsIgnoreCase("draw")) {
@@ -7986,6 +8035,7 @@ public class ScriptEvaluator {
     if (isSyntaxCheck) // just in case we later add parameter options to this
       return;
     // for now, just one frame visible
+    stateScript += type;
     int modelIndex = viewer.getCurrentModelIndex();
     if (modelIndex < 0)
       error(ERROR_multipleModelsDisplayedNotOK, type);
@@ -7994,16 +8044,16 @@ public class ScriptEvaluator {
       runScript(viewer.getPdbData(modelIndex, type));
       return;
     }
-    int ptDataFrame = viewer.getJmolDataFrameIndex(modelIndex, type);
+    int ptDataFrame = viewer.getJmolDataFrameIndex(modelIndex, stateScript);
     if (ptDataFrame > 0) {
-      viewer.deleteAtoms(viewer.getModelUndeletedAtomsBitSet(ptDataFrame), true);
+      // no -- this is that way we switch frames. viewer.deleteAtoms(viewer.getModelUndeletedAtomsBitSet(ptDataFrame), true);
       // data frame can't be 0.
-      //      viewer.setCurrentModelIndex(ptDataFrame, true);
+      viewer.setCurrentModelIndex(ptDataFrame, true);
       // BitSet bs2 = viewer.getModelAtomBitSet(ptDataFrame);
       // bs2.and(bs);
       // need to be able to set data directly as well.
       // viewer.display(BitSetUtil.setAll(viewer.getAtomCount()), bs2, tQuiet);
-      // return;
+      return;
     }
     String[] savedFileInfo = viewer.getFileInfo();
     boolean oldAppendNew = viewer.getAppendNew();
@@ -8014,14 +8064,14 @@ public class ScriptEvaluator {
     viewer.setFileInfo(savedFileInfo);
     if (!isOK)
       return;
-    StateScript ss = viewer.addStateScript(stateScript + type, true, false);
+    StateScript ss = viewer.addStateScript(stateScript, true, false);
     int modelCount = viewer.getModelCount();
-    viewer.setJmolDataFrame(type, modelIndex, modelCount - 1);
+    viewer.setJmolDataFrame(stateScript, modelIndex, modelCount - 1);
     String script;
     switch (datatype) {
     case JmolConstants.JMOL_DATA_RAMACHANDRAN:
     default:
-      viewer.setFrameTitle(modelCount - 1, type + " plot for model "
+      viewer.setFrameTitle(modelCount - 1, " plot for model "
           + viewer.getModelNumberDotted(modelIndex));
       script = "frame 0.0; frame last; reset;"
           + "select visible; color structure; spacefill 3.0; wireframe 0;"
@@ -8032,7 +8082,8 @@ public class ScriptEvaluator {
       ;
       break;
     case JmolConstants.JMOL_DATA_QUATERNION:
-      viewer.setFrameTitle(modelCount - 1, type + " for model "
+      viewer.setFrameTitle(modelCount - 1, 
+          type.replace('w', ' ') + qFrame + " for model "
           + viewer.getModelNumberDotted(modelIndex));
       String color = (Graphics3D
           .getHexCode(viewer.getColixBackgroundContrast()));
@@ -8053,7 +8104,7 @@ public class ScriptEvaluator {
     viewer.setRotationRadius(isQuaternion ? 12.5f : 260f, true);
     loadShape(JmolConstants.SHAPE_ECHO);
     showString("frame " + viewer.getModelNumberDotted(modelCount - 1)
-        + " created: " + type);
+        + " created: " + type + (isQuaternion ? qFrame : ""));
   }
 
   private void measure() throws ScriptException {

@@ -132,7 +132,7 @@ public class Token {
    *              x    x             shapeCommand
    *             x                   noArgs
    *            x                    defaultON
-   *                    xxxxxxxxxxxx uniqueID (may include math flags)
+   *                     xxxxxxxxxxx uniqueID (may include math flags)
    * 
    *              
    * math bit flags:

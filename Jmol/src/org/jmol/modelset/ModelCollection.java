@@ -591,10 +591,10 @@ abstract public class ModelCollection extends BondCollection {
     public boolean deleteAtoms(int modelIndex, BitSet bsBonds, BitSet bsAtoms) {
       //false return means delete this script
       if (modelIndex == this.modelIndex) 
-        return true;
-      if (modelIndex < this.modelIndex) {
-//        this.modelIndex--;
         return false;
+      if (modelIndex > this.modelIndex) {
+//        this.modelIndex--;
+        return true;
       }
       BitSetUtil.deleteBits(this.bsBonds, bsBonds);
       BitSetUtil.deleteBits(this.bsAtoms1, bsAtoms);
@@ -2186,7 +2186,7 @@ abstract public class ModelCollection extends BondCollection {
   public BitSet getAtomsWithin(float distance, Point3f coord, BitSet bsResult,
                                int modelIndex) {
 
-    if (bsResult == null)
+     if (bsResult == null)
       bsResult = new BitSet();
 
     if (distance < 0) { // just check all unitCell distances
@@ -2204,7 +2204,7 @@ abstract public class ModelCollection extends BondCollection {
       return bsResult;
     }
 
-    BitSet bsCheck = getIterativeModels(false);
+    BitSet bsCheck = getIterativeModels(true);
     AtomIndexIterator iter = getSelectedAtomIterator(null, false, false, false);
     for (int iModel = modelCount; --iModel >= 0;) {
       if (!bsCheck.get(iModel))

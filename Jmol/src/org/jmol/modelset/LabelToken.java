@@ -164,6 +164,7 @@ public class LabelToken {
            Token.polymer,
            Token.property,
            Token.radius,
+           Token.selected,
            Token.sequence,
            Token.spacefill,
            Token.structure,

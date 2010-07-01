@@ -81,7 +81,7 @@ abstract class BasisFunctionReader extends AtomSetCollectionReader {
   
   protected static String CANONICAL_DC_LIST = "DXX   DYY   DZZ   DXY   DXZ   DYZ";
   protected static String CANONICAL_FC_LIST = "XXX   YYY   ZZZ   XYY   XXY   XXZ   XZZ   YZZ   YYZ   XYZ";
-
+  
   protected static String CANONICAL_DS_LIST = "d0    d1+   d1-   d2+   d2-";
   protected static String CANONICAL_FS_LIST = "f0    f1+   f1-   f2+   f2-   f3+   f3-";
 

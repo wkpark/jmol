@@ -8995,10 +8995,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void assignConnect(int index, int index2) {
     clearModelDependentObjects();
-    BitSet bsA = BitSetUtil.setBit(index);
-    BitSet bsB = BitSetUtil.setBit(index2);
     float[][] connections = new float[1][];
-    connections[0] = new float[] { index, index2, 1 };
+    connections[0] = new float[] { index, index2 };
     modelSet.connect(connections);
     modelSet.assignAtom(index, ".", true);
     modelSet.assignAtom(index2, ".", true);

@@ -671,11 +671,11 @@ public class SmilesGenerator {
     if (s == null) {
       ht.put(key, new Object[] {
           s = SmilesParser.getRingPointer(++nPairs), new Integer(i1) });
-      //if (Logger.debugging)
+      if (Logger.debugging)
         Logger.info("adding for " + i0 + " ring key " + nPairs + ": " + key);
     } else {
       ht.remove(key);
-      //if (Logger.debugging)
+      if (Logger.debugging)
         Logger.info("using ring key " + key);
     }
     return s;//  + " _" + key + "_ \n";

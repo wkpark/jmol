@@ -486,8 +486,23 @@ final public class Measure {
      * Opt. Soc. Amer. A, 1987, Vol. 4, pp. 629-642
      * http://www.opticsinfobase.org/viewmedia.cfm?uri=josaa-4-4-629&seq=0
      * 
+     * 
+     * A similar treatment was developed independently (and later!) 
+     * by G. Kramer, in G. R. Kramer,
+     * "Superposition of Molecular Structures Using Quaternions"
+     * Molecular Simulation, 1991, Vol. 7, pp. 113-119. 
+     * 
+     *  In that treatment there is a lot of unnecessary calculation 
+     *  along the trace of matrix M (eqn 20). 
+     *  I'm not sure why the extra x^2 + y^2 + z^2 + x'^2 + y'^2 + z'^2
+     *  is in there, but they are unnecessary and only contribute to larger
+     *  numerical averaging errors an additional processing time, as far as
+     *  I can tell. Adding aI, where a is a scalar and I is the 4x4 identity
+     *  just offsets the eigenvalues but doesn't change the eigenvectors.
+     * 
      * and Lydia E. Kavraki, "Molecular Distance Measures"
      * http://cnx.org/content/m11608/latest/
+     * 
      */
 
     int n = centerAndPoints[0].length - 1;

@@ -419,7 +419,10 @@ but:
         continue;
       }
       try {
-        if (!isQuantumBasisSupported(line.charAt(13)))
+        String type = line.substring(13, 18).trim();
+        if (!isQuantumBasisSupported(type.charAt(0)) && "XYZ".indexOf(type.charAt(0)) >= 0)
+          type = (type.length() == 2 ? "D" : "F") + type;
+        if (!isQuantumBasisSupported(type.charAt(0)))
           continue;
         tokens = getStrings(line.substring(21), nThisLine, 10);
         for (int i = 0; i < nThisLine; i++)

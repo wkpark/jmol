@@ -290,7 +290,18 @@ abstract public class MOReader extends BasisFunctionReader {
    */
   
   private static final String DS_LIST = "(D1)  (D2)  (D3)  (D4)  (D5)";
-  private static final String FS_LIST = "(F1)  (F2)  (F3)  (F4)  (F5)  (F6)  (F7)";
+  private static final String DC_LIST = "(D1)  (D4)  (D6)  (D2)  (D3)  (D5)";
+  // DC_LIST is inferred from the order in NBO 5.G as well as the fact that for GenNBO
+  // we have:   201 dxx, 202 dxy, 203 dxz, 204 dyy, 205 dyz, 206 dzz
+  // thanks to Justin Shorb for helping straighten that out. BH 7/1/2010
+  
+
+  private static final String FS_LIST =  "(F1)  (F2)  (F3)  (F4)  (F5)  (F6)  (F7)";
+  
+  private static String FC_LIST  =       "(F1)  (F2)  (F10) (F4)  (F2)  (F3)  (F6)  (F9)  (F8)  F(5)";
+  // inferred from GenNBO, which is: 301 302 303 304 305 306 307 308 309 310
+  //       for xxx xxy xxz xyy xyz xzz yyy yyz yzz zzz
+
   
 
   protected void readMolecularOrbitals(int headerType) throws Exception {
@@ -359,20 +370,26 @@ abstract public class MOReader extends BasisFunctionReader {
           haveCoeffMap = true;
           boolean isOK = true;
           if (dCoeffLabels.length() > 0) {
-            if (dCoeffLabels.indexOf("(") >= 0)
+            if (dCoeffLabels.indexOf("X") >= 0)
+              isOK = getDFMap(dCoeffLabels, JmolAdapter.SHELL_D_CARTESIAN,
+                CANONICAL_DC_LIST, 2);
+            else if (dCoeffLabels.indexOf("(D6)") >= 0)
+              isOK = getDFMap(dCoeffLabels, JmolAdapter.SHELL_D_CARTESIAN,
+                  DC_LIST, 4);
+            else 
               isOK = getDFMap(dCoeffLabels, JmolAdapter.SHELL_D_SPHERICAL,
                   DS_LIST, 4);
-            else 
-              isOK = getDFMap(dCoeffLabels, JmolAdapter.SHELL_D_CARTESIAN,
-                  CANONICAL_DC_LIST, 2);
           }
           if (fCoeffLabels.length() > 0) {
-            if (fCoeffLabels.indexOf("(") >= 0)
-              isOK = getDFMap(fCoeffLabels, JmolAdapter.SHELL_F_SPHERICAL,
-                  FS_LIST, 4);
-            else 
+            if (fCoeffLabels.indexOf("X") >= 0)
               isOK = getDFMap(fCoeffLabels, JmolAdapter.SHELL_F_CARTESIAN,
                   CANONICAL_FC_LIST, 2);
+            else if (fCoeffLabels.indexOf("(F10)") >= 0)
+              isOK = getDFMap(fCoeffLabels, JmolAdapter.SHELL_F_CARTESIAN,
+                  FC_LIST, 5);                
+            else
+              isOK = getDFMap(fCoeffLabels, JmolAdapter.SHELL_F_SPHERICAL,
+                  FS_LIST, 4);
           }
           if (!isOK) {
             //

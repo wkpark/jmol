@@ -367,7 +367,6 @@ public class NucleicMonomer extends PhosphorusMonomer {
       return super.getQuaternion(qType);
     case 'b':
       //   (C4_i-1 - P_i - C4_i) 
-      // theta (P_i - C4_i - P_i+1 - C4_i+1)
       
       ptNorP = getP();
       if (monomerIndex == 0 || ptNorP == null)

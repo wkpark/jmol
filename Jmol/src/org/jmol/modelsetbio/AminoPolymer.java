@@ -27,6 +27,7 @@ import org.jmol.api.JmolEdge;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.HBond;
 import org.jmol.modelset.Polymer;
+import org.jmol.script.Token;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.viewer.JmolConstants;
@@ -225,8 +226,8 @@ public class AminoPolymer extends AlphaPolymer {
     for (int i = 0; i < monomerCount - 1; ++i) {
       AminoMonomer leadingResidue = (AminoMonomer) monomers[i];
       AminoMonomer trailingResidue = (AminoMonomer) monomers[i + 1];
-      float phi = trailingResidue.getPhi();
-      float psi = leadingResidue.getPsi();
+      float phi = trailingResidue.getGroupParameter(Token.phi);
+      float psi = leadingResidue.getGroupParameter(Token.psi);
       if (isHelix(psi, phi)) {
         //this next is just Bob's attempt to separate different helices
         //it is CONSERVATIVE -- it displays fewer helices than before
@@ -243,7 +244,9 @@ public class AminoPolymer extends AlphaPolymer {
 
       if (Logger.debugging)
         Logger.debug((0+this.monomers[0].getChainID()) + " aminopolymer:" + i
-            + " " + trailingResidue.getPhi() + "," + leadingResidue.getPsi() + " " + structureTags[i]);
+            + " " + trailingResidue.getGroupParameter(Token.phi) 
+            + "," + leadingResidue.getGroupParameter(Token.psi) 
+            + " " + structureTags[i]);
     }
 
     // build alpha helix stretches
@@ -325,7 +328,6 @@ public class AminoPolymer extends AlphaPolymer {
   
   public void freeze() {
     hasOAtoms = checkWingAtoms();
-    calcPhiPsiAngles();
   }
   
   protected boolean calcPhiPsiAngles() {
@@ -359,24 +361,24 @@ public class AminoPolymer extends AlphaPolymer {
     Point3f alphacarbon2 = residue2.getLeadAtom();
     Point3f carbon2 = residue2.getCarbonylCarbonAtom();
 
-    residue2.setPhi(Measure.computeTorsion(carbon1, nitrogen2,
+    residue2.setGroupParameter(Token.phi, Measure.computeTorsion(carbon1, nitrogen2,
                                             alphacarbon2, carbon2, true));
-    residue1.setPsi(Measure.computeTorsion(nitrogen1, alphacarbon1,
+    residue1.setGroupParameter(Token.psi, Measure.computeTorsion(nitrogen1, alphacarbon1,
       carbon1, nitrogen2, true));
     // to offset omega so cis-prolines show up off the plane, 
     // we would have to use residue2 here:
-    residue1.setOmega(Measure.computeTorsion(alphacarbon1,
+    residue1.setGroupParameter(Token.omega, Measure.computeTorsion(alphacarbon1,
 	        carbon1, nitrogen2, alphacarbon2, true));
   }
   
   protected float calculateRamachandranHelixAngle(int m, char qtype) {
-    float psiLast = (m == 0 ? Float.NaN : monomers[m - 1].getPsi());
-    float psi = monomers[m].getPsi();
-    float phi = monomers[m].getPhi();
+    float psiLast = (m == 0 ? Float.NaN : monomers[m - 1].getGroupParameter(Token.psi));
+    float psi = monomers[m].getGroupParameter(Token.psi);
+    float phi = monomers[m].getGroupParameter(Token.phi);
     float phiNext = (m == monomerCount - 1 ? Float.NaN
-        : monomers[m + 1].getPhi());
+        : monomers[m + 1].getGroupParameter(Token.phi));
     float psiNext = (m == monomerCount - 1 ? Float.NaN
-        : monomers[m + 1].getPsi());
+        : monomers[m + 1].getGroupParameter(Token.psi));
     switch (qtype) {
     default:
     case 'p':

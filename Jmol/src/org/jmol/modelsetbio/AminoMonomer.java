@@ -213,13 +213,10 @@ public class AminoMonomer extends AlphaMonomer {
   final private Point3f ptTemp = new Point3f();
   final private static float beta = (float) (17 * Math.PI/180);
   
-  Atom getQuaternionFrameCenter(char qType) {
+  Point3f getQuaternionFrameCenter(char qType) {
     switch (qType) {
     default:
-    case 'a':
-    case 'c':
-    case 'C':
-      return getLeadAtom();
+      return super.getQuaternionFrameCenter(qType);
     case 'q':
     case 'p':
     case 'P':
@@ -277,6 +274,8 @@ public class AminoMonomer extends AlphaMonomer {
     switch (qType) {
     case 'a':
       return super.getQuaternion('a');
+    case 'b':
+      return null;
     case 'c':
       //vA = ptC - ptCa
       //vB = ptN - ptCa
@@ -309,7 +308,7 @@ public class AminoMonomer extends AlphaMonomer {
       vA.cross(vB, vC);
       break;
     }
-    return Quaternion.getQuaternionFrame(vA, vB, vC);
+    return Quaternion.getQuaternionFrame(vA, vB, vC, false);
   }
   
   public boolean isWithinStructure(byte type) {

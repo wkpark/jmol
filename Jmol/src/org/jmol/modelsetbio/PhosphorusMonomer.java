@@ -70,6 +70,10 @@ public class PhosphorusMonomer extends Monomer {
     isPyrimidine = (group3.indexOf('T') + group3.indexOf('C') + group3.indexOf('U') > -3);
   }
 
+  Atom getP() {
+    return getAtomFromOffsetIndex(P);
+  }
+
   boolean isPhosphorusMonomer() { return true; }
 
   public boolean isDna() { return chain.isDna(); }
@@ -112,10 +116,10 @@ public class PhosphorusMonomer extends Monomer {
     Vector3f vB = new Vector3f();
     vA.sub(ptPNext, ptP);
     vB.sub(ptPPrev, ptP);
-    return Quaternion.getQuaternionFrame(vA, vB, null);
+    return Quaternion.getQuaternionFrame(vA, vB, null, false);
   }
   
-  Atom getQuaternionFrameCenter(char qType) {
+  Point3f getQuaternionFrameCenter(char qType) {
     return getAtomFromOffsetIndex(P);
   }
   

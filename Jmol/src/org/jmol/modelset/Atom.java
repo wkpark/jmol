@@ -599,10 +599,6 @@ final public class Atom extends Point3fi implements JmolNode {
      return partialCharges == null ? 0 : partialCharges[index];
    }
 
-   public float getStraightness() {
-     return group.getStraightness();
-   }
-
    public Object[] getEllipsoid() {
      return group.chain.modelSet.getEllipsoid(index);
    }
@@ -967,12 +963,8 @@ final public class Atom extends Point3fi implements JmolNode {
     return group.isLeadAtom(index);
   }
   
-  public float getGroupPhi() {
-    return group.phi;
-  }
-
-  public float getGroupPsi() {
-    return group.psi;
+  public float getGroupParameter(int tok) {
+    return group.getGroupParameter(tok);
   }
 
   public char getChainID() {
@@ -1219,10 +1211,13 @@ final public class Atom extends Point3fi implements JmolNode {
       return atom.getOccupancy100() / 100f;
     case Token.partialcharge:
       return atom.getPartialCharge();
+    case Token.omega:
     case Token.phi:
-      return atom.getGroupPhi();
     case Token.psi:
-      return atom.getGroupPsi();
+    case Token.eta:
+    case Token.theta:
+    case Token.straightness:
+      return atom.getGroupParameter(tokWhat);
     case Token.spacefill:
       return atom.getRadius();
     case Token.backbone:
@@ -1238,8 +1233,6 @@ final public class Atom extends Point3fi implements JmolNode {
     case Token.strands:
     case Token.trace:
       return viewer.getAtomShapeValue(tokWhat, atom.group, atom.index);
-    case Token.straightness:
-      return atom.getStraightness();
     case Token.unitx:
       return atom.getFractionalUnitCoord('X');
     case Token.unity:

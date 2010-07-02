@@ -157,10 +157,11 @@ final public class JmolConstants {
 
   // Jmol data frame types
   
+  public final static int JMOL_DATA_OTHER = -1;
   public final static int JMOL_DATA_RAMACHANDRAN = 0;
   public final static int JMOL_DATA_QUATERNION = 1;
-  public final static int JMOL_DATA_OTHER = 2;
   
+  public static final String allowedQuaternionFrames = "RC;RP;a;b;n;c;p;q;x;";
 
   //note: Eval.write() processing requires drivers to be first-letter-capitalized.
   //do not capitalize any other letter in the word. Separate by semicolon.

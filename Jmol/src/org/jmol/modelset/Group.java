@@ -69,43 +69,64 @@ public class Group {
   
   public int shapeVisibilityFlags = 0;
   
-  protected float phi = Float.NaN;
-  protected float psi = Float.NaN;
-  protected float omega = Float.NaN;
-  protected float straightness = Float.NaN;
+  private float phi = Float.NaN;
+  private float psi = Float.NaN;
+  private float omega = Float.NaN;
+  private float straightness = Float.NaN;
+  private float mu = Float.NaN;
+  private float theta = Float.NaN;
   
-  public float getStraightness() {
-    return straightness;
+  protected boolean calcBioParameters() {
+    return false;
+  }
+
+  public boolean haveParameters() {
+    return true;
   }
   
-  public void setStraightness(float straightness) {
-    this.straightness = straightness; 
+  public void setGroupParameter(int tok, float f) {
+    switch (tok) {
+    case Token.phi:
+      phi = f;
+      break;
+    case Token.psi:
+      psi = f;
+      break;
+    case Token.omega:
+      omega = f;
+      break;
+    case Token.eta:
+      mu = f;
+      break;
+    case Token.theta:
+      theta = f;
+      break;
+    case Token.straightness:
+      straightness = f;
+      break;
+    }
   }
-  
-  public float getPhi() {
-    return phi;
+
+  public float getGroupParameter(int tok) {
+    if (!haveParameters())
+      calcBioParameters();
+    switch (tok) {
+    case Token.omega:
+      return omega;
+    case Token.phi:
+      return phi;
+    case Token.psi:
+      return psi;
+    case Token.eta:
+      return mu;
+    case Token.theta:
+      return theta;
+    case Token.straightness:
+      return straightness;
+    }
+    return Float.NaN;
   }
-  
-  public void setPhi(float phi) {
-    this.phi = phi;
-  }
-  
-  public float getPsi() {
-    return psi;
-  }
-  
-  public void setPsi(float psi) {
-    this.psi = psi;
-  }
-  
-  public void setOmega(float omega) {
-    this.omega = omega;
-  }
-  
-  public float getOmega() {
-    return omega;
-  }
-  
+
   public Group(Chain chain, String group3, int seqcode,
         int firstAtomIndex, int lastAtomIndex) {
     this.chain = chain;

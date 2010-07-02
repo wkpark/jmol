@@ -256,6 +256,17 @@ public class NucleicMonomer extends PhosphorusMonomer {
     return isPurine;
   }
 
+  private final static byte[] heavyAtomIndexes = {
+    /*C1P Sarver: apparently not!,*/ 
+    C5, C6, N1, C2, N3, C4, // all
+    N9, C8, N7, // purine
+    N6, // A
+    N4, // C
+    O2, // C, T, U
+    O4, // T, U
+    N2, O6, // G
+    };
+
   ////////////////////////////////////////////////////////////////
 
   boolean isConnectedAfter(Monomer possiblyPreviousMonomer) {
@@ -292,7 +303,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
       closest[0] = lead;
   }
   
- public void setModelClickability() {
+  public void setModelClickability() {
     Atom atom;
     if (isAtomHidden(leadAtomIndex))
       return;
@@ -301,94 +312,132 @@ public class NucleicMonomer extends PhosphorusMonomer {
       atom.setClickable(JmolConstants.CARTOON_VISIBILITY_FLAG);
     }
     if (isPurine)
-      for (int i = 5; --i >= 0;) {
+      for (int i = 4; --i >= 1;) {
         atom = getAtomFromOffsetIndex(ring5OffsetIndexes[i]);
         atom.setClickable(JmolConstants.CARTOON_VISIBILITY_FLAG);
       }
   }
  
- Atom getQuaternionFrameCenter(char qType) {
-   return (qType == 'p' || qType == 'a' ? getAtomFromOffsetIndex(P) : getN0());
- }
+  Atom getN0() {
+    return (getAtomFromOffsetIndex(isPurine ? N9 : N1));
+  }
  
- Atom getN0() {
-   return (getAtomFromOffsetIndex(isPurine ? N9 : N1));
- }
+  public Object getHelixData(int tokType, char qType, int mStep) {
+    return getHelixData2(tokType, qType, mStep);
+  }
  
- public Object getHelixData(int tokType, char qType, int mStep) {
-   return getHelixData2(tokType, qType, mStep);
- }
- 
+  
+  Point3f baseCenter;  
+  Point3f getQuaternionFrameCenter(char qType) {
+    switch (qType) {
+    case 'p':
+    case 'a':
+      return super.getQuaternionFrameCenter(qType);
+    case 'x':
+    case 'n':
+    default:
+      return getN0();
+    case 'c':
+      if (baseCenter == null) {
+        int n = 0;
+        baseCenter = new Point3f();
+        for (int i = 0; i < heavyAtomIndexes.length; i++) {
+          Atom a = getAtomFromOffsetIndex(heavyAtomIndexes[i]);
+          if (a == null)
+            continue;
+          baseCenter.add(a);
+          n++;
+        }
+        baseCenter.scale(1f / n);
+      }
+      return baseCenter;
+    }
+  }
 
- public Quaternion getQuaternion(char qType) {
-   /*
-    * also AminoMonomer
-    *   
-    */
-    
-   /*
-   Point3f ptP = getP(); 
-   Point3f ptO1P = getO1P();
-   Point3f ptO2P = getO2P();
-   if(ptP == null || ptO1P == null || ptO2P == null)
-     return null;
-   //vA = ptO1P - ptP
-   Vector3f vA = new Vector3f(ptO1P);
-   vA.sub(ptP);
-   
-   //vB = ptO2P - ptP
-   Vector3f vB = new Vector3f(ptO2P);
-   vB.sub(ptP);
-   return Quaternion.getQuaternionFrame(vA, vB);   
-   
-   */
-   
-   Atom ptA = null;
-   Atom ptB = null;
-   Atom ptNorP = getQuaternionFrameCenter(qType);
-   if(ptNorP == null)
-     return null;
-   if (qType == 'a') {
-     return super.getQuaternion(qType);
-   } else if (qType == 'p') {
-     Atom p1 = getAtomFromOffsetIndex(O1P);
-     Atom p2 = getAtomFromOffsetIndex(O2P);
-     Bond[] bonds = ptNorP.getBonds();
-     Group g = ptNorP.getGroup();
-     for (int i = 0; i < bonds.length; i++) {
-       Atom atom = bonds[i].getOtherAtom(ptNorP);
-       if (p1 != null && atom.index == p1.index)
-         continue;
-       if (p2 != null && atom.index == p2.index)
-         continue;
-       if (atom.getGroup() == g)
-         ptB = atom;
-       else
-         ptA = atom;
-     }
-   } else if (isPurine) {
-     // 11.9.34 experimenting:
-     // vA = N9--C2 // was N9--C4
-     // vB = N9--N7 // was N9--C8
-     ptA = getAtomFromOffsetIndex(C2);
-     ptB = getAtomFromOffsetIndex(N7);
-   } else {
-     // 11.9.34 experimenting:
-     // vA = N1--N3 // was N1--C2
-     // vB = N1--C6
-     ptA = getAtomFromOffsetIndex(N3);
-     ptB = getAtomFromOffsetIndex(C6);
-   }
-   if(ptA == null || ptB == null)
-     return null;
+  public Quaternion getQuaternion(char qType) {
+    // quaternionFrame 'C' from  
+    // Sarver M, Zirbel CL, Stombaugh J, Mokdad A, Leontis NB. 
+    // FR3D: finding local and composite recurrent structural motifs in RNA 3D structures. 
+    // J. Math. Biol. (2006) 215-252
 
-   Vector3f vA = new Vector3f(ptA);
-   vA.sub(ptNorP);
-   
-   Vector3f vB = new Vector3f(ptB);
-   vB.sub(ptNorP);
-   return Quaternion.getQuaternionFrame(vA, vB, null);
- }
+    Atom ptA = null, ptB = null, ptNorP;
+    boolean asSarver = false;
+    switch (qType) {
+    case 'a':
+      return super.getQuaternion(qType);
+    case 'b':
+      //   (C4_i-1 - P_i - C4_i) 
+      // theta (P_i - C4_i - P_i+1 - C4_i+1)
+      
+      ptNorP = getP();
+      if (monomerIndex == 0 || ptNorP == null)
+        return null;
+      ptA = getC4P();
+      ptB = ((NucleicMonomer) bioPolymer.monomers[monomerIndex - 1]).getC4P();
+      break;
+    case 'p':
+      ptNorP = getP();
+      if (ptNorP == null)
+        return null;
+      Atom p1 = getAtomFromOffsetIndex(O1P);
+      Atom p2 = getAtomFromOffsetIndex(O2P);
+      Bond[] bonds = ptNorP.getBonds();
+      Group g = ptNorP.getGroup();
+      for (int i = 0; i < bonds.length; i++) {
+        Atom atom = bonds[i].getOtherAtom(ptNorP);
+        if (p1 != null && atom.index == p1.index)
+          continue;
+        if (p2 != null && atom.index == p2.index)
+          continue;
+        if (atom.getGroup() == g)
+          ptB = atom;
+        else
+          ptA = atom;
+      }
+      break;
+    case 'c':
+      // N0 = (purine N9, pyrimidine N1): 
+      ptNorP = getN0();
+      if (ptNorP == null)
+        return null;
+      asSarver = true;
+      // vB = -(N0-C1P)
+      // vA = vB x (vB x (N0-C2))
+      ptA = getAtomFromOffsetIndex(C2);
+      ptB = getAtomFromOffsetIndex(C1P);
+      break;
+    case 'x': // experimental
+    default:
+      ptNorP = getN0();
+      if (ptNorP == null)
+        return null;
+      if (isPurine) {
+        // 11.9.34 experimenting:
+        // vA = N9--C2 // was N9--C4
+        // vB = N9--N7 // was N9--C8
+        ptA = getAtomFromOffsetIndex(C2);
+        ptB = getAtomFromOffsetIndex(N7);
+      } else {
+        // 11.9.34 experimenting:
+        // vA = N1--N3 // was N1--C2
+        // vB = N1--C6
+        ptA = getAtomFromOffsetIndex(N3);
+        ptB = getAtomFromOffsetIndex(C6);
+      }
+      break;
+    }
+    if (ptA == null || ptB == null)
+      return null;
+
+    Vector3f vA = new Vector3f(ptA);
+    vA.sub(ptNorP);
+
+    Vector3f vB = new Vector3f(ptB);
+    vB.sub(ptNorP);
+    if (asSarver)
+      vB.scale(-1);
+    return Quaternion.getQuaternionFrame(vA, vB, null, asSarver);
+  }
  
  public boolean isCrossLinked(Group g) {
     if (!(g instanceof NucleicMonomer) || isPurine == g.isPurine())

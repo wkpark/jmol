@@ -156,16 +156,17 @@ public class AlphaMonomer extends Monomer {
     // jan reichert in email to miguel on 10 May 2004 said 4.2 looked good
   }
   
-  Atom getQuaternionFrameCenter(char qType) {
+  Point3f getQuaternionFrameCenter(char qType) {
     switch (qType) {
-    default:
+    case 'C': // ramachandran
     case 'a':
     case 'c':
-    case 'C':
+    case 'x':
       return getLeadAtom();
+    default:
+    case 'P': // ramachandran
     case 'q':
     case 'p':
-    case 'P':
     case 'n':
       return null;
     }
@@ -206,7 +207,7 @@ public class AlphaMonomer extends Monomer {
     case 'p':
       return null;
     }
-    return Quaternion.getQuaternionFrame(vA, vB, vC);
+    return Quaternion.getQuaternionFrame(vA, vB, vC, false);
   }
   
 

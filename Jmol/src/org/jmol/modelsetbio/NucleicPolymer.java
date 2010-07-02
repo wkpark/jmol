@@ -26,6 +26,7 @@ package org.jmol.modelsetbio;
 import java.util.BitSet;
 import java.util.Vector;
 
+import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
@@ -33,6 +34,7 @@ import org.jmol.api.JmolEdge;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.HBond;
 import org.jmol.modelset.Polymer;
+import org.jmol.script.Token;
 import org.jmol.util.Measure;
 import org.jmol.util.OutputStringBuffer;
 import org.jmol.viewer.Viewer;
@@ -50,6 +52,39 @@ public class NucleicPolymer extends BioPolymer {
 
   boolean hasWingPoints() { return true; }
 
+  protected boolean calcEtaThetaAngles() {
+    //  Carlos M. Duarte, Leven M. Wadley, and Anna Marie Pyle
+    // RNA structure comparison, motif search and discovery using a reduced 
+    // representation of RNA conformational space
+    // Nucleic Acids Research, 2003, Vol. 31, No. 16 4755-4761
+    //   eta (C4_i-1 - P_i - C4_i - P_i+1) 
+    // theta (P_i - C4_i - P_i+1 - C4_i+1)
+
+    float eta = Float.NaN;
+    for (int i = 0; i < monomerCount - 2; ++i) {
+      NucleicMonomer m1 = (NucleicMonomer) monomers[i];
+      NucleicMonomer m2 = (NucleicMonomer) monomers[i + 1];
+      Point3f p1 = m1.getP();
+      Point3f c41 = m1.getC4P();
+      Point3f p2 = m2.getP();
+      Point3f c42 = m2.getC4P();
+      if (i > 0) {
+        NucleicMonomer m0 = (NucleicMonomer) monomers[i - 1];
+        Point3f c40 = m0.getC4P();
+        eta = Measure.computeTorsion(c40, p1, c41, p2, true);
+      }
+      float theta = Measure.computeTorsion(p1, c41, p2, c42, true);
+      if (eta < 0)
+        eta += 360;
+      if (theta < 0)
+        theta += 360;
+      m1.setGroupParameter(Token.eta, eta);
+      m1.setGroupParameter(Token.theta, theta);
+      System.out.println("m1 " + i + " " + eta + " " + theta);
+    }
+    return true;
+  }
+  
   public void calcRasmolHydrogenBonds(Polymer polymer, BitSet bsA, BitSet bsB, Vector vAtoms, int nMaxPerResidue) {
     NucleicPolymer other = (NucleicPolymer)polymer;
     Vector3f vNorm = new Vector3f();

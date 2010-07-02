@@ -1192,44 +1192,87 @@ abstract public class ModelCollection extends BondCollection {
    * 
    *****************************/
 
-  public String getPdbData(int modelIndex, String type, BitSet bsSelected, OutputStringBuffer sb) {
+  public String getPdbData(int modelIndex, String type, 
+                           BitSet bsSelected, 
+                           Object[] parameters, OutputStringBuffer sb) {
     if (isJmolDataFrame(modelIndex))
       modelIndex = getJmolDataSourceFrame(modelIndex);
     if (modelIndex < 0)
       return "";
-    if (!models[modelIndex].isPDB)
-      return null;
     Model model = models[modelIndex];
-    char ctype = (type.length() > 11 && type.indexOf("quaternion ") >= 0 ? type
-        .charAt(11) : 'R');
-    char qtype = (ctype != 'R' ? 'r' 
-        : type.length() > 13 && type.indexOf("ramachandran ") >= 0 ?
-          type.charAt(13) : 'R');
-    if (qtype == 'r')
-      qtype = viewer.getQuaternionFrame();
-    int mStep = viewer.getHelixStep();
-    int derivType = (type.indexOf("diff") < 0 ? 0 : type.indexOf("2") < 0 ? 1 : 2);
-    boolean isDraw = (type.indexOf("draw") >= 0); 
-    BitSet bsAtoms = viewer.getModelUndeletedAtomsBitSet(modelIndex);
-    int nPoly = model.getBioPolymerCount();
-    StringBuffer pdbCONECT = new StringBuffer();
-    BitSet bsWritten = new BitSet();
     if (sb == null)
       sb = new OutputStringBuffer(null);
-    if (!isDraw) {
-      sb.append("REMARK   6 Jmol PDB-encoded data: " + type + ";");
-      if (ctype != 'R')
-        sb.append("  quaternionFrame = \"" + qtype + "\"");
-      sb.append("\nREMARK   6 Jmol Version ").append(Viewer.getJmolVersion()).append('\n');
-    }
-    for (int p = 0; p < nPoly; p++)
-        model.bioPolymers[p].getPdbData(viewer, ctype, qtype,mStep, derivType, isDraw,
-            bsAtoms, sb, pdbCONECT, bsSelected, p == 0, bsWritten);
+    StringBuffer pdbCONECT = new StringBuffer();    
+    boolean isDraw = (type.indexOf("draw") >= 0); 
+    BitSet bsAtoms = null;
+    BitSet bsWritten = new BitSet();
+    boolean isPDB = models[modelIndex].isPDB;
+    char ctype = '\0';
+    if (parameters == null) { 
+      if (!isPDB)
+        return null;
+      ctype = (type.length() > 11 && type.indexOf("quaternion ") >= 0 ? type
+          .charAt(11) : 'R');
+      char qtype = (ctype != 'R' ? 'r' 
+          : type.length() > 13 && type.indexOf("ramachandran ") >= 0 ?
+            type.charAt(13) : 'R');
+      if (qtype == 'r')
+        qtype = viewer.getQuaternionFrame();
+      int mStep = viewer.getHelixStep();
+      int derivType = (type.indexOf("diff") < 0 ? 0 : type.indexOf("2") < 0 ? 1 : 2);
+      int nPoly = model.getBioPolymerCount();
+      if (!isDraw) {
+        sb.append("REMARK   6 Jmol PDB-encoded data: " + type + ";");
+        if (ctype != 'R')
+          sb.append("  quaternionFrame = \"" + qtype + "\"");
+        sb.append("\nREMARK   6 Jmol Version ").append(Viewer.getJmolVersion()).append('\n');
+      }
+      for (int p = 0; p < nPoly; p++)
+          model.bioPolymers[p].getPdbData(viewer, ctype, qtype, mStep, derivType, isDraw,
+              bsAtoms, sb, pdbCONECT, bsSelected, p == 0, bsWritten);
+      bsAtoms = viewer.getModelUndeletedAtomsBitSet(modelIndex);
+      } else {
+     // plot x y z....
+        sb.append("REMARK   6 Jmol PDB-encoded data: " + type + ";\n");
+        bsAtoms = (BitSet) parameters[0];
+        float[] dataX = (float[]) parameters[1];
+        float[] dataY = (float[]) parameters[2];
+        float[] dataZ = (float[]) parameters[3];
+        boolean haveZ = (dataZ != null);
+        Point3f factors = (Point3f) parameters[4];
+        String strExtra = "";
+        Atom atomLast = null;
+        for (int i = bsAtoms.nextSetBit(0), n = 0; i >= 0; i = bsAtoms.nextSetBit(i + 1), n++) {
+          float x = dataX[n] * factors.x;
+          float y = dataY[n] * factors.y;
+          float z = (haveZ ? dataZ[n] * factors.z : 0f);
+          if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
+            continue;
+          Atom a = atoms[i];
+          if (isPDB) {
+            sb.append(LabelToken.formatLabel(viewer, a, "ATOM  %5i %4a%1A%3n %1c%4R%1E   "));
+          } else {
+            sb.append(LabelToken.formatLabel(viewer, a, "ATOM  %5i %4a%1A%3n %1c%4R%1E   "));
+          }
+          sb.append(TextFormat.sprintf(
+              "%8.2f%8.2f%8.2f      %6.3f          %2s    %s\n", new Object[] {
+                  a.getElementSymbol(false).toUpperCase(), strExtra, new float[] {
+                  x, y, z , 0f }}));
+          if (atomLast != null && atomLast.getPolymerIndexInModel() == a.getPolymerIndexInModel())
+            pdbCONECT.append("CONECT")
+            .append(TextFormat.formatString("%5i", "i", atomLast.getAtomNumber()))
+            .append(TextFormat.formatString("%5i", "i", a
+            .getAtomNumber()))
+            .append('\n');
+          atomLast = a;
+        }
+    }    
     sb.append(pdbCONECT.toString());
     if (isDraw)
       return sb.toString();
     bsSelected.and(bsAtoms);
-    sb.append("\n\n" + getProteinStructureState(bsWritten, false, ctype == 'R', true));
+    if (isPDB)
+      sb.append("\n\n" + getProteinStructureState(bsWritten, false, ctype == 'R', true));
     return sb.toString();
   }
 
@@ -2834,8 +2877,8 @@ abstract public class ModelCollection extends BondCollection {
           if (id == 0
               || bsAtoms != null
               && needPhiPsi
-              && (Float.isNaN(atoms[i].getGroupPhi()) || Float.isNaN(atoms[i]
-                  .getGroupPsi())))
+              && (Float.isNaN(atoms[i].getGroupParameter(Token.phi)) || Float.isNaN(atoms[i]
+                  .getGroupParameter(Token.psi))))
             continue;
         }
         char ch = atoms[i].getChainID();

@@ -314,14 +314,16 @@ public class Quaternion {
     vA.sub(center);
     Vector3f vB = new Vector3f(xy);
     vB.sub(center);
-    return getQuaternionFrame(vA, vB, null);
+    return getQuaternionFrame(vA, vB, null, false);
   }
   
   public static final Quaternion getQuaternionFrame(Vector3f vA, Vector3f vB,
-                                                    Vector3f vC) {
+                                                    Vector3f vC, boolean yBased) {
     if (vC == null) {
       vC = new Vector3f();
       vC.cross(vA, vB);
+      if (yBased)
+        vA.cross(vB, vC);
     }
     Vector3f vBprime = new Vector3f();
     vBprime.cross(vC, vA);

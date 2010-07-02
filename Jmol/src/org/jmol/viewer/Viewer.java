@@ -5217,7 +5217,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         global.quaternionFrame = value.substring(0, 2);
       else
         global.quaternionFrame = "" + (value.toLowerCase() + "p").charAt(0);
-      if (!Parser.isOneOf(global.quaternionFrame, "a;n;c;p;q;RC;RP"))
+      if (!Parser.isOneOf(global.quaternionFrame, JmolConstants.allowedQuaternionFrames))
         global.quaternionFrame = "p";
       modelSet.setHaveStraightness(false);
       break;
@@ -8717,7 +8717,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       int modelIndex = getCurrentModelIndex();
       sb = new OutputStringBuffer(new BufferedOutputStream(os));
       msg = modelSet.getPdbData(modelIndex, type2, selectionManager
-          .getSelectionSet(), sb);
+          .getSelectionSet(), null, sb);
     }
     if (msg != null)
       msg = "OK " + msg + " " + fullPath[0];
@@ -8730,9 +8730,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return msg;
   }
 
-  public String getPdbData(int modelIndex, String type) {
+  public String getPdbData(int modelIndex, String type, Object[] parameters) {
     return modelSet.getPdbData(modelIndex, type, selectionManager
-        .getSelectionSet(), null);
+        .getSelectionSet(), parameters, null);
   }
 
   public int getRepaintWait() {

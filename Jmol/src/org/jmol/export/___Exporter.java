@@ -435,7 +435,7 @@ public abstract class ___Exporter {
       tempV2.set(0, 0, 1);
       tempV2.cross(tempV2, tempV1);
       tempV1.cross(tempV1, tempV2);
-      Quaternion q = Quaternion.getQuaternionFrame(tempV2, tempV1, null);
+      Quaternion q = Quaternion.getQuaternionFrame(tempV2, tempV1, null, false);
       m1 = q.getMatrix();
     }
     m.m00 = radius;

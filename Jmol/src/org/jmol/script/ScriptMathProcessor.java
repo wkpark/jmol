@@ -826,14 +826,14 @@ class ScriptMathProcessor {
     float f0 = ScriptVariable.fValue(args[0]);
     float f1 = ScriptVariable.fValue(args[1]);
     float df = ScriptVariable.fValue(args[2]);
-    Float[] data = (isListf ? (Float[]) x1.value : null);
+    float[] data = (isListf ? (float[]) x1.value : null);
     String[] sdata = (isListf ? null : (String[]) x1.value);
     int nbins = (int) ((f1 - f0) / df + 0.01f);
     int[] array = new int[nbins];
     String[] sout = new String[nbins];
     int nPoints = (isListf ? data.length : sdata.length);
     for (int i = 0; i < nPoints; i++) {
-      float v = (isListf ? data[i].floatValue() : Parser.parseFloat(sdata[i]));
+      float v = (isListf ? data[i] : Parser.parseFloat(sdata[i]));
       int bin = (int) ((v - f0) / df);
       if (bin < 0)
         bin = 0;

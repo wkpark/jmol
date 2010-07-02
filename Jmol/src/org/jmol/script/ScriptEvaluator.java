@@ -1035,7 +1035,15 @@ public class ScriptEvaluator {
       s = parameterAsString(i).toLowerCase();
     return new ScriptVariable(Token.propselector, tok, s);
   }
-
+  
+  private float[] getBitsetPropertyFloat(BitSet bs, int tok)
+      throws ScriptException {
+    if (tok == 0)
+      return null;
+    return (float[]) getBitsetProperty(bs, tok | Token.allfloat, null, null,
+        null, null, false, Integer.MAX_VALUE, false);
+  }
+  
   protected Object getBitsetProperty(BitSet bs, int tok, Point3f ptRef,
                                      Point4f planeRef, Object tokenValue,
                                      Object opValue, boolean useAtomMap,
@@ -1399,22 +1407,22 @@ public class ScriptEvaluator {
         return sb.toString();
       }
       if (allFloat) {
-        Float[] fout = new Float[len];
+        float[] fout = new float[len];
         Point3f zero = (len > 0 && isPt ? new Point3f() : null);
         for (int i = len; --i >= 0;) {
           Object v = vout.get(i);
           switch (mode) {
           case 0:
-            fout[i] = (Float) v;
+            fout[i] = ((Float) v).floatValue();
             break;
           case 1:
-            fout[i] = new Float(((Integer) v).floatValue());
+            fout[i] = ((Integer) v).floatValue();
             break;
           case 2:
-            fout[i] = new Float(Parser.parseFloat((String) v));
+            fout[i] = Parser.parseFloat((String) v);
             break;
           case 3:
-            fout[i] = new Float(((Point3f) v).distance(zero));
+            fout[i] = ((Point3f) v).distance(zero);
             break;
           }
         }
@@ -4973,6 +4981,9 @@ public class ScriptEvaluator {
         case Token.log:
           log();
           break;
+        case Token.mapProperty:
+          mapProperty();
+          break;
         case Token.message:
           message();
           break;
@@ -4991,14 +5002,13 @@ public class ScriptEvaluator {
         case Token.pause: // resume is done differently
           pause();
           break;
+        case Token.plot:
+        case Token.quaternion:
+        case Token.ramachandran:
+          plot();
+          break;
         case Token.print:
           print();
-          break;
-        case Token.quaternion:
-          dataFrame(JmolConstants.JMOL_DATA_QUATERNION);
-          break;
-        case Token.ramachandran:
-          dataFrame(JmolConstants.JMOL_DATA_RAMACHANDRAN);
           break;
         case Token.refresh:
           refresh();
@@ -7218,29 +7228,32 @@ public class ScriptEvaluator {
 
   private Object[] data;
 
-  private void data() throws ScriptException {
-    String dataString = null;
-    String dataLabel = null;
-    boolean isOneValue = false;
-    int i;
-    if (tokAt(1) == Token.map) {
-      // {resno=x}.straightness = ({i}).straightness
-      // data map {1.1}.straightness  {2.1}.property_x resno
-      BitSet bsFrom = atomExpression(2);
+  private void mapProperty() throws ScriptException {
+      // map {1.1}.straightness  {2.1}.property_x resno
+      BitSet bsFrom, bsTo;
+      String property1, property2, mapKey;
       while (true) {
-        if (tokAt(++iToken) != Token.per
-            || !Token.tokAttr(tokAt(++iToken), Token.atomproperty))
-          break;
-        String property1 = parameterAsString(iToken);
-        BitSet bsTo = atomExpression(++iToken);
-        if (tokAt(++iToken) != Token.per
-            || !Token.tokAttr(tokAt(++iToken), Token.settable))
-          break;
-        String property2 = parameterAsString(iToken);
-        if (!Token.tokAttr(tokAt(++iToken), Token.atomproperty))
-          break;
-        String mapKey = parameterAsString(iToken);
-
+        if (tokAt(1) == Token.selected) {
+          bsFrom = viewer.getSelectionSet();
+          bsTo = atomExpression(2);
+          property1 = property2 = "selected";
+        } else {
+          bsFrom = atomExpression(1);
+          if (tokAt(++iToken) != Token.per
+              || !Token.tokAttr(tokAt(++iToken), Token.atomproperty))
+            break;
+          property1 = parameterAsString(iToken);
+          bsTo = atomExpression(++iToken);
+          if (tokAt(++iToken) != Token.per
+              || !Token.tokAttr(tokAt(++iToken), Token.settable))
+            break;
+          property2 = parameterAsString(iToken);
+        }
+        if (Token.tokAttr(tokAt(iToken + 1), Token.atomproperty))
+          mapKey = parameterAsString(++iToken);
+        else
+          mapKey = "atomno";
+        checkLast(iToken);
         if (isSyntaxCheck)
           return;
         String format = "{" + mapKey + "=%[" + mapKey + "]}." + property2
@@ -7248,7 +7261,7 @@ public class ScriptEvaluator {
         String[] data = (String[]) getBitsetIdent(bsFrom, format, null, false,
             Integer.MAX_VALUE, false);
         StringBuffer sb = new StringBuffer();
-        for (i = 0; i < data.length; i++)
+        for (int i = 0; i < data.length; i++)
           if (data[i].indexOf("null") < 0)
             sb.append(data[i]).append('\n');
         if (Logger.debugging)
@@ -7259,12 +7272,20 @@ public class ScriptEvaluator {
           runScript(sb.toString());
         } catch (Exception e) {
           Logger.error(e.getMessage());
+        } catch (Error er) {
+          Logger.error(er.getMessage());
         }
         viewer.setSelectionSubset(bsSubset);
         return;
       }
       error(ERROR_invalidArgument);
-    }
+  }
+  
+  private void data() throws ScriptException {
+    String dataString = null;
+    String dataLabel = null;
+    boolean isOneValue = false;
+    int i;
     switch (iToken = statementLength) {
     case 5:
       // parameters 3 and 4 are just for the ride: [end] and ["key"]
@@ -7983,18 +8004,56 @@ public class ScriptEvaluator {
     return filename;
   }
 
-  private void dataFrame(int datatype) throws ScriptException {
+  private void plot() throws ScriptException {
+    // also used for draw [quaternion, helix, ramachandran]
+    // generic propertyX, propertyY, propertyZ // TODO
+    int modelIndex = viewer.getCurrentModelIndex();
+    if (modelIndex < 0)
+      error(ERROR_multipleModelsDisplayedNotOK, "plot");
+    modelIndex = viewer.getJmolDataSourceFrame(modelIndex);
     boolean isQuaternion = false;
-    boolean isDraw = (tokAt(0) == Token.draw);
-    int pt0 = (isDraw ? 1 : 0);
     boolean isDerivative = false;
     boolean isSecondDerivative = false;
     boolean isRamachandranRelative = false;
+    int propertyX = 0, propertyY = 0, propertyZ = 0;
+    BitSet bs = BitSetUtil.copy(viewer.getSelectionSet());
+    Object[] parameters = null;
     String stateScript = "";
     int pt = statementLength - 1;
     String qFrame = "";
     String type = optParameterAsString(pt).toLowerCase();
+
+    boolean isDraw = (tokAt(0) == Token.draw);
+    boolean isPlot = (tokAt(0) == Token.plot); // Jmol 12.0.RC23
+    int pt0 = (isDraw || isPlot ? 1 : 0);
+    int datatype = -1;
+    switch (tokAt(pt0)) {
+    case Token.quaternion:
+    case Token.helix:
+      datatype = JmolConstants.JMOL_DATA_QUATERNION;
+      break;
+    case Token.ramachandran:
+      datatype = JmolConstants.JMOL_DATA_RAMACHANDRAN;
+      break;
+    }
     switch (datatype) {
+    case -1:
+      iToken = 1;
+      if (!isPlot
+          || !Token.tokAttr(propertyX = tokAt(iToken++), Token.atomproperty)
+          || !Token.tokAttr(propertyY = tokAt(iToken++), Token.atomproperty))
+        error(ERROR_invalidArgument);
+      if (Token.tokAttr(propertyZ = tokAt(iToken), Token.atomproperty))
+        iToken++;
+      else
+        propertyZ = 0;
+      type = Token.nameOf(propertyX) + " " + Token.nameOf(propertyY)
+          + (propertyZ == 0 ? "" : " " + Token.nameOf(propertyZ));
+      bs.and(viewer.getModelUndeletedAtomsBitSet(modelIndex));
+      if (bs.nextSetBit(0) < 0)
+        bs = viewer.getModelUndeletedAtomsBitSet(modelIndex);
+      stateScript = "select " + Escape.escape(bs) + ";\n ";
+      break;
     case JmolConstants.JMOL_DATA_RAMACHANDRAN:
       if (type.equalsIgnoreCase("draw")) {
         isDraw = true;
@@ -8035,14 +8094,12 @@ public class ScriptEvaluator {
     if (isSyntaxCheck) // just in case we later add parameter options to this
       return;
     // for now, just one frame visible
-    stateScript += type;
-    int modelIndex = viewer.getCurrentModelIndex();
-    if (modelIndex < 0)
-      error(ERROR_multipleModelsDisplayedNotOK, type);
-    modelIndex = viewer.getJmolDataSourceFrame(modelIndex);
+    stateScript += "plot " + type;
     if (isDraw) {
-      runScript(viewer.getPdbData(modelIndex, type));
+      runScript(viewer.getPdbData(modelIndex, type, null));
       return;
+    } else if (datatype == -1) {
+      stateScript += ";\n  select " + Escape.escape(bs) + ";\n ";
     }
     int ptDataFrame = viewer.getJmolDataFrameIndex(modelIndex, stateScript);
     if (ptDataFrame > 0) {
@@ -8058,7 +8115,56 @@ public class ScriptEvaluator {
     String[] savedFileInfo = viewer.getFileInfo();
     boolean oldAppendNew = viewer.getAppendNew();
     viewer.setAppendNew(true);
-    String data = viewer.getPdbData(modelIndex, type);
+    float[] dataX = null, dataY = null, dataZ = null;
+    float minX = 0, maxX = 0, minY = 0, maxY = 0, minZ = 0, maxZ = 0;
+    Point3f factors = new Point3f(1, 1, 1);
+    switch (datatype) {
+    case -1:
+      dataX = getBitsetPropertyFloat(bs, propertyX);
+      dataY = getBitsetPropertyFloat(bs, propertyY);
+      dataZ = getBitsetPropertyFloat(bs, propertyZ);
+
+      boolean isWorm = (propertyX == Token.eta && propertyY == Token.theta);
+      minX = getMinMax(dataX, false);
+      maxX = getMinMax(dataX, true);
+      minY = getMinMax(dataY, false);
+      maxY = getMinMax(dataY, true);
+      minZ = getMinMax(dataZ, false);
+      maxZ = getMinMax(dataZ, true);
+      factors.x = 200 / (maxX - minX);
+      factors.y = 200 / (maxY - minY);
+      factors.z = 200 / (maxZ - minZ);
+
+      Point3f center = new Point3f((maxX + minX) / 2, (maxY + minY) / 2,
+          (maxZ + minZ) / 2);
+
+      if (isWorm) {
+        center.set(180, 180, center.z);
+        factors.set(1, 1, factors.z);
+      }
+      for (int i = 0; i < dataX.length; i++)
+        dataX[i] = (dataX[i] - center.x) * factors.x;
+      for (int i = 0; i < dataY.length; i++)
+        dataY[i] = (dataY[i] - center.y) * factors.y;
+      for (int i = 0; i < dataZ.length; i++)
+        dataZ[i] = (dataZ[i] - center.z) * factors.z;
+      minX *= factors.x;
+      maxX *= factors.x;
+      minY *= factors.y;
+      maxY *= factors.y;
+      minZ *= factors.z;
+      maxZ *= factors.z;
+      factors.set(1, 1, 1);
+      parameters = new Object[] { bs, dataX, dataY, dataZ, factors };
+      break;
+    case JmolConstants.JMOL_DATA_RAMACHANDRAN:
+      break;
+    case JmolConstants.JMOL_DATA_QUATERNION:
+      break;
+    }
+    String data = viewer.getPdbData(modelIndex, type, parameters);
+    if (Logger.debugging)
+      Logger.info(data);
     boolean isOK = (data != null && viewer.loadInline(data, true) == null);
     viewer.setAppendNew(oldAppendNew);
     viewer.setFileInfo(savedFileInfo);
@@ -8069,9 +8175,31 @@ public class ScriptEvaluator {
     viewer.setJmolDataFrame(stateScript, modelIndex, modelCount - 1);
     String script;
     switch (datatype) {
+    case -1:
+      viewer.setFrameTitle(modelCount - 1, type + " plot for model "
+          + viewer.getModelNumberDotted(modelIndex));
+      //TODO: ranges ?
+      float f = 3;
+      /*      script = "frame 0.0; frame last; reset;"
+              + "select visible; color structure; spacefill " + f + "; wireframe 0;"
+              + "draw plotAxisX" + modelCount + " {" + maxX + " 0 " + minZ + "} {" + minX +" 0 " + minZ + "} \"" + Token.nameOf(propertyX) + "\";"
+              + "draw plotAxisY" + modelCount + " {0 " + maxY + " " + minZ + "} {0 " + minY +" " + minZ + "} \"" + Token.nameOf(propertyY) + "\";";
+      */
+      script = "frame 0.0; frame last; reset;"
+          + "select visible; color structure; spacefill " + f
+          + "; wireframe 0;" + "draw plotAxisX" + modelCount
+          + " {100 0 0} {-100 0 0} \"" + Token.nameOf(propertyX) + "\";"
+          + "draw plotAxisY" + modelCount + " {0 100 0} {0 -100 0} \""
+          + Token.nameOf(propertyY) + "\";"
+          + "select " + Escape.escape(bs) + ";\n ";
+      if (propertyZ != 0)
+        script += "draw plotAxisZ" + modelCount + " {0 0 100} {0 0 -100} \""
+            + Token.nameOf(propertyZ) + "\";";
+      //script += "center " + Escape.escape(new Point3f((maxX + minX) / 2, (maxY + minY) / 2, (propertyZ == 0 ? 0 : (maxZ + minZ) / 2)));
+      break;
     case JmolConstants.JMOL_DATA_RAMACHANDRAN:
     default:
-      viewer.setFrameTitle(modelCount - 1, " plot for model "
+      viewer.setFrameTitle(modelCount - 1, "ramachandran plot for model "
           + viewer.getModelNumberDotted(modelIndex));
       script = "frame 0.0; frame last; reset;"
           + "select visible; color structure; spacefill 3.0; wireframe 0;"
@@ -8082,9 +8210,8 @@ public class ScriptEvaluator {
       ;
       break;
     case JmolConstants.JMOL_DATA_QUATERNION:
-      viewer.setFrameTitle(modelCount - 1, 
-          type.replace('w', ' ') + qFrame + " for model "
-          + viewer.getModelNumberDotted(modelIndex));
+      viewer.setFrameTitle(modelCount - 1, type.replace('w', ' ') + qFrame
+          + " for model " + viewer.getModelNumberDotted(modelIndex));
       String color = (Graphics3D
           .getHexCode(viewer.getColixBackgroundContrast()));
       script = "frame 0.0; frame last; reset;"
@@ -8105,6 +8232,20 @@ public class ScriptEvaluator {
     loadShape(JmolConstants.SHAPE_ECHO);
     showString("frame " + viewer.getModelNumberDotted(modelCount - 1)
         + " created: " + type + (isQuaternion ? qFrame : ""));
+  }
+
+  private static float getMinMax(float[] data, boolean isMax) {
+    if (data == null)
+      return 0;
+    float fmax = (isMax ? -1E10f : 1E10f);
+    for (int i = data.length; --i >= 0;) {
+      float f = data[i];
+      if (Float.isNaN(f))
+        continue;
+      if (isMax == (f > fmax))
+        fmax = f;
+    }
+    return fmax;
   }
 
   private void measure() throws ScriptException {
@@ -12561,7 +12702,7 @@ public class ScriptEvaluator {
         error(ERROR_multipleModelsDisplayedNotOK, "write " + type2);
       data = type2;
       if (isShow)
-        data = viewer.getPdbData(modelIndex, type2);
+        data = viewer.getPdbData(modelIndex, type2, null);
       else
         doDefer = true;
     } else if (data == "MOL" && isCoord) {
@@ -12738,7 +12879,7 @@ public class ScriptEvaluator {
       if (modelIndex < 0)
         error(ERROR_multipleModelsDisplayedNotOK, "show " + theToken.value);
       msg = viewer.getPdbData(modelIndex,
-          theTok == Token.quaternion ? "quaternion w" : "ramachandran");
+          theTok == Token.quaternion ? "quaternion w" : "ramachandran", null);
       break;
     case Token.trace:
       if (!isSyntaxCheck)
@@ -13118,14 +13259,10 @@ public class ScriptEvaluator {
     case Token.pointgroup:
       pointGroup();
       return;
-    case Token.quaternion:
-      dataFrame(JmolConstants.JMOL_DATA_QUATERNION);
-      return;
     case Token.helix:
-      dataFrame(JmolConstants.JMOL_DATA_QUATERNION);
-      return;
+    case Token.quaternion:
     case Token.ramachandran:
-      dataFrame(JmolConstants.JMOL_DATA_RAMACHANDRAN);
+      plot();
       return;
     }
     boolean havePoints = false;
@@ -14944,7 +15081,7 @@ public class ScriptEvaluator {
         i = iToken;
         sbCommand.append(" lp ").append(Escape.escape((Point4f) propertyValue));
         break;
-      case Token.map:
+      case Token.mapProperty:
         sbCommand.append(" map");
         if ((isCavity || haveRadius) && !surfaceObjectSeen) {
           surfaceObjectSeen = true;

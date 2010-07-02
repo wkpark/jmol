@@ -256,6 +256,14 @@ public abstract class Monomer extends Group {
                             short madBegin, short madEnd) {
   }
 
+  protected boolean calcBioParameters() {
+    return bioPolymer.calcParameters();
+  }
+
+  public boolean haveParameters() {
+    return bioPolymer.haveParameters;
+  }
+  
   public Hashtable getMyInfo() {
     Hashtable info = new Hashtable();
     char chainID = chain.getChainID();
@@ -272,10 +280,18 @@ public abstract class Monomer extends Group {
     info.put("_apt2", new Integer(lastAtomIndex));
     info.put("atomIndex1", new Integer(firstAtomIndex));
     info.put("atomIndex2", new Integer(lastAtomIndex));
-    if (!Float.isNaN(phi))
-      info.put("phi", new Float(phi));
-    if (!Float.isNaN(psi))
-      info.put("psi", new Float(psi));
+    float f = getGroupParameter(Token.phi);
+    if (!Float.isNaN(f))
+      info.put("phi", new Float(f));
+    f = getGroupParameter(Token.psi);
+    if (!Float.isNaN(f))
+      info.put("psi", new Float(f));
+    f = getGroupParameter(Token.eta);
+    if (!Float.isNaN(f))
+      info.put("mu", new Float(f));
+    f = getGroupParameter(Token.theta);
+    if (!Float.isNaN(f))
+      info.put("theta", new Float(f));
     ProteinStructure structure = getProteinStructure();
     if(structure != null) {
       info.put("structureId", new Integer(structure.uniqueID));
@@ -313,7 +329,7 @@ public abstract class Monomer extends Group {
     return true;
   }
 
-  Atom getQuaternionFrameCenter(char qtype) {
+  Point3f getQuaternionFrameCenter(char qtype) {
     return null; 
   }
 
@@ -321,11 +337,11 @@ public abstract class Monomer extends Group {
     int iPrev = monomerIndex - mStep;
     Monomer prev = (mStep < 1 || monomerIndex <= 0 ? null : bioPolymer.monomers[iPrev]);
     Quaternion q2 = getQuaternion(qType);
-    Quaternion q1 = (mStep < 1 ? Quaternion.getQuaternionFrame(JmolConstants.axisX, JmolConstants.axisY, JmolConstants.axisZ) 
+    Quaternion q1 = (mStep < 1 ? Quaternion.getQuaternionFrame(JmolConstants.axisX, JmolConstants.axisY, JmolConstants.axisZ, false) 
         : prev == null ? null : prev.getQuaternion(qType));
     if (q1 == null || q2 == null)
       return super.getHelixData(tokType, qType, mStep);
-    Point3f a = (mStep < 1 ? new Point3f(0, 0, 0) : (Point3f) prev.getQuaternionFrameCenter(qType));
+    Point3f a = (mStep < 1 ? new Point3f(0, 0, 0) : prev.getQuaternionFrameCenter(qType));
     Point3f b = getQuaternionFrameCenter(qType);
     return Measure.computeHelicalAxis(tokType == Token.draw ? "helixaxis" + getUniqueID() : null, 
         tokType, (Point3f) a, (Point3f) b, q2.div(q1));

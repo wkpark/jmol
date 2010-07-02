@@ -298,24 +298,26 @@ public class Token {
   final static int font         = scriptCommand | 19;
   final static int frame        = scriptCommand | 20;
 //final static int getproperty  see mathfunc
-  final static int gotocmd      = scriptCommand | 23 | implicitStringCommand;
-  public final static int hbond        = scriptCommand | 25 | deprecatedparam | expression | defaultON;
-  final static int history      = scriptCommand | 26 | deprecatedparam;
-  final static int initialize   = scriptCommand | 27 | noArgs;
-  final static int invertSelected = scriptCommand | 28;
+  final static int gotocmd      = scriptCommand | 21 | implicitStringCommand;
+  public final static int hbond        = scriptCommand | 22 | deprecatedparam | expression | defaultON;
+  final static int history      = scriptCommand | 23 | deprecatedparam;
+  final static int initialize   = scriptCommand | 24 | noArgs;
+  final static int invertSelected = scriptCommand | 25;
 //final static int load         see mathfunc
-  final static int loop         = scriptCommand | 31 | defaultON;
-  final static int minimize     = scriptCommand | 32;
+  final static int loop         = scriptCommand | 26 | defaultON;
+  final static int mapProperty  = scriptCommand | 28 | expression;
+  final static int minimize     = scriptCommand | 30;
 //final static int model        see mathfunc
 //final static int measure      see mathfunc
-  final static int move         = scriptCommand | 33;
+  final static int move         = scriptCommand | 32;
   public final static int moveto       = scriptCommand | 34;
   public final static int navigate     = scriptCommand | 35;
 //final static int quaternion   see mathfunc
-  final static int parallel     = flowCommand | 36;
-  final static int process      = flowCommand | 37;
-  final static int pop          = scriptCommand | 38 | noArgs;
-  final static int push         = scriptCommand | 39 | noArgs;
+  final static int parallel     = flowCommand   | 36;
+  final static int plot         = scriptCommand | 37;
+  final static int pop          = scriptCommand | 38 | noArgs; //internal only
+  final static int process      = flowCommand   | 39;
+  final static int push         = scriptCommand | 40 | noArgs; //internal only
   final static int quit         = scriptCommand | 41 | noArgs;
   final static int ramachandran = scriptCommand | 42 | expression;
   final static int refresh      = scriptCommand | 43 | noArgs;
@@ -559,35 +561,40 @@ public class Token {
   public final static int valence       = intproperty | 20 | settable;
 
   // float values must be multiplied by 100 prior to comparing to integer values
+
+  // max 31 here
   
   public final static int adpmax          = floatproperty | 1;
   public final static int adpmin          = floatproperty | 2;
-  public final static int atomx           = floatproperty | 3 | settable;
-  public final static int atomy           = floatproperty | 4 | settable;
-  public final static int atomz           = floatproperty | 5 | settable;
-  public final static int covalent        = floatproperty | 5;
-  public final static int fracx           = floatproperty | 6 | settable;
-  public final static int fracy           = floatproperty | 7 | settable;
-  public final static int fracz           = floatproperty | 8 | settable;
-  public final static int ionic           = floatproperty | 9 | settable;
-  public final static int partialcharge   = floatproperty | 10 | settable;
-  public final static int phi             = floatproperty | 11;
-  public final static int psi             = floatproperty | 12;
-  public final static int property        = floatproperty | 13 | mathproperty | setparam | settable;
-  public final static int selected        = floatproperty | 14 | settable | predefinedset;
-  public final static int straightness    = floatproperty | 15;
-  public final static int surfacedistance = floatproperty | 16;
-  public final static int temperature     = floatproperty | 17 | settable;
-  public final static int unitx           = floatproperty | 18;
-  public final static int unity           = floatproperty | 19;
-  public final static int unitz           = floatproperty | 20;
-  public final static int vanderwaals     = floatproperty | 21 | settable;
-  public final static int vibx            = floatproperty | 22 | settable;
-  public final static int viby            = floatproperty | 23 | settable;
-  public final static int vibz            = floatproperty | 24 | settable;
-  public final static int x               = floatproperty | 26 | settable;
-  public final static int y               = floatproperty | 27 | settable;
-  public final static int z               = floatproperty | 28 | settable;
+  public final static int covalent        = floatproperty | 3;
+  public final static int eta             = floatproperty | 4; // Jmol 12.0.RC23
+  public final static int omega           = floatproperty | 5;
+  public final static int phi             = floatproperty | 6;
+  public final static int psi             = floatproperty | 7;
+  public final static int straightness    = floatproperty | 8;
+  public final static int surfacedistance = floatproperty | 9;
+  public final static int theta           = floatproperty | 10; // Jmol 12.0.RC23
+  public final static int unitx           = floatproperty | 11;
+  public final static int unity           = floatproperty | 12;
+  public final static int unitz           = floatproperty | 13;
+  public final static int atomx           = floatproperty | 1 | settable;
+  public final static int atomy           = floatproperty | 2 | settable;
+  public final static int atomz           = floatproperty | 3 | settable;
+  public final static int fracx           = floatproperty | 4 | settable;
+  public final static int fracy           = floatproperty | 5 | settable;
+  public final static int fracz           = floatproperty | 6 | settable;
+  public final static int ionic           = floatproperty | 7 | settable;
+  public final static int partialcharge   = floatproperty | 8 | settable;
+  public final static int property        = floatproperty | 9 | mathproperty | setparam | settable;
+  public final static int selected        = floatproperty | 10 | settable | predefinedset;
+  public final static int temperature     = floatproperty | 11 | settable;
+  public final static int vanderwaals     = floatproperty | 12 | settable;
+  public final static int vibx            = floatproperty | 13 | settable;
+  public final static int viby            = floatproperty | 14 | settable;
+  public final static int vibz            = floatproperty | 15 | settable;
+  public final static int x               = floatproperty | 16 | settable;
+  public final static int y               = floatproperty | 17 | settable;
+  public final static int z               = floatproperty | 18 | settable;
   
   public final static int backbone     = floatproperty | shapeCommand | 1 | predefinedset | defaultON | settable;
   public final static int cartoon      = floatproperty | shapeCommand | 2 | defaultON | settable;
@@ -1069,7 +1076,6 @@ public class Token {
   final static int lp             = misc  | 182;// new
   final static int lumo           = misc  | 184;// new
   final static int manifest       = misc  | 186;// new
-  final static int map            = misc  | 188 | expression;// new
   final static int maxset         = misc  | 190;// new
   final static int mep            = misc  | 192;
   public final static int mesh    = misc  | 194;
@@ -1450,7 +1456,7 @@ public class Token {
       "function",          new Token(function),
       "functions",         null,
       "geosurface",        new Token(geosurface),
-      "getproperty",       new Token(getproperty),
+      "getProperty",       new Token(getproperty),
       "goto",              new Token(gotocmd),
       "halo",              new Token(halo),
       "halos",             null,
@@ -1469,8 +1475,8 @@ public class Token {
       "javascript",        new Token(javascript),
       "label",             new Token(label),
       "labels",            null,
-      "lcaocartoon",       new Token(lcaocartoon),
-      "lcaocartoons",      null,
+      "lcaoCartoon",       new Token(lcaocartoon),
+      "lcaoCartoons",      null,
       "load",              new Token(load),
       "log",               new Token(log),
       "loop",              new Token(loop),
@@ -1487,13 +1493,14 @@ public class Token {
       "model",             new Token(model),
       "models",            null,
       "move",              new Token(move),
-      "moveto",            new Token(moveto),
+      "moveTo",            new Token(moveto),
       "navigate",          new Token(navigate),
       "navigation",        null,
       "out",               new Token(out),
       "parallel",          new Token(parallel),
       "pause",             new Token(pause),
       "wait",              null,
+      "plot",              new Token(plot),
       "plot3d",            new Token(plot3d),
       "pmesh",             new Token(pmesh),
       "polygon",           new Token(polygon),
@@ -1611,9 +1618,9 @@ public class Token {
       "atomName",        new Token(atomname),
       "atomno",          new Token(atomno),
       "atomType",        new Token(atomtype),
-      "atomx",           new Token(atomx),
-      "atomy",           new Token(atomy),
-      "atomz",           new Token(atomz),
+      "atomX",           new Token(atomx),
+      "atomY",           new Token(atomy),
+      "atomZ",           new Token(atomz),
       "average",         new Token(average),
       "babel",           new Token(babel),
       "babel21",         new Token(babel21), 
@@ -1654,6 +1661,7 @@ public class Token {
       "fixedTemperature",new Token(fixedtemp),
       "formalCharge",    new Token(formalcharge),
       "charge",          null, 
+      "eta",             new Token(eta),
       "front",           new Token(front),
       "frontlit",        new Token(frontlit),
       "frontOnly",       new Token(frontonly),
@@ -1696,7 +1704,7 @@ public class Token {
       "mlp",             new Token(mlp),
       "mode",            new Token(mode),
       "modify",          new Token(modify),
-      "modifyorcreate",  new Token(modifyorcreate),
+      "modifyOrCreate",  new Token(modifyorcreate),
       "molecule",        new Token(molecule),
       "molecules",       null, 
       "modelIndex",      new Token(modelindex),
@@ -1720,6 +1728,7 @@ public class Token {
       "false",           null, 
       "on",              tokenOn,
       "true",            null, 
+      "omega",           new Token(omega),
       "only",            new Token(only),
       "opaque",          new Token(opaque),
       "partialCharge",   new Token(partialcharge),
@@ -1776,7 +1785,8 @@ public class Token {
       "surfaceDistance", new Token(surfacedistance),
       "symop",           new Token(symop),
       "temperature",     new Token(temperature),
-      "relativetemperature", null,
+      "relativeTemperature", null,
+      "theta",           new Token(theta),
       "thisModel",       new Token(thismodel),
       "ticks",           new Token(ticks),
       "top",             new Token(top),
@@ -1809,8 +1819,8 @@ public class Token {
       "z",               new Token(z),
 
       // more misc parameters
-      "addhydrogens",    new Token(addhydrogens),
-      "allconnected",    new Token(allconnected),
+      "addHydrogens",    new Token(addhydrogens),
+      "allConnected",    new Token(allconnected),
       "angstroms",       new Token(angstroms),
       "anisotropy",      new Token(anisotropy),
       "arc",             new Token(arc),
@@ -1819,7 +1829,7 @@ public class Token {
       "arrow",           new Token(arrow),
       "auto",            new Token(auto),
       "binary",          new Token(binary),
-      "blockdata",       new Token(blockdata),
+      "blockData",       new Token(blockdata),
       "cancel",          new Token(cancel),
       "cap",             new Token(cap),
       "cavity",          new Token(cavity),
@@ -1827,7 +1837,7 @@ public class Token {
       "circle",          new Token(circle),
       "collapsed",       new Token(collapsed),
       "col",             new Token(col),
-      "colorscheme",     new Token(colorscheme),
+      "colorScheme",     new Token(colorscheme),
       "command",         new Token(command),
       "commands",        new Token(commands),
       "contour",         new Token(contour),
@@ -1841,14 +1851,14 @@ public class Token {
       "cylinder",        new Token(cylinder),
       "diameter",        new Token(diameter),
       "discrete",        new Token(discrete),
-      "distancefactor",  new Token(distancefactor),
+      "distanceFactor",  new Token(distancefactor),
       "downsample",      new Token(downsample),
       "eccentricity",    new Token(eccentricity),
       "ed",              new Token(ed),
       "edges",           new Token(edges),
       "energy",          new Token(energy),
-      "exitjmol",        new Token(exitjmol),
-      "facecenteroffset",new Token(facecenteroffset),
+      "exitJmol",        new Token(exitjmol),
+      "faceCenterOffset",new Token(facecenteroffset),
       "filter",          new Token(filter),
       "first",           new Token(first),
       "fixed",           new Token(fixed),
@@ -1856,11 +1866,11 @@ public class Token {
       "flat",            new Token(flat),
       "fps",             new Token(fps),
       "from",            new Token(from),
-      "frontedges",      new Token(frontedges),
-      "fullplane",       new Token(fullplane),
+      "frontEdges",      new Token(frontedges),
+      "fullPlane",       new Token(fullplane),
       "functionXY",      new Token(functionxy),
       "functionXYZ",     new Token(functionxyz),
-      "gridpoints",      new Token(gridpoints),
+      "gridPoints",      new Token(gridpoints),
       "homo",            new Token(homo),
       "ignore",          new Token(ignore),
       "increment",       new Token(increment),
@@ -1870,30 +1880,31 @@ public class Token {
       "internal",        new Token(internal),
       "lattice",         new Token(lattice),
       "line",            new Token(line),
-      "linedata",        new Token(linedata),
+      "lineData",        new Token(linedata),
       "lobe",            new Token(lobe),
-      "lonepair",        new Token(lonepair),
+      "lonePair",        new Token(lonepair),
       "lp",              new Token(lp),
       "lumo",            new Token(lumo),
       "manifest",        new Token(manifest),
-      "map",             new Token(map),
-      "maxset",          new Token(maxset),
-      "minset",          new Token(minset),
-      "modelbased",      new Token(modelbased),
+      "mapProperty",     new Token(mapProperty),
+      "map",             null,
+      "maxSet",          new Token(maxset),
+      "minSet",          new Token(minset),
+      "modelBased",      new Token(modelbased),
       "molecular",       new Token(molecular),
-      "nocross",         new Token(nocross),
-      "nodebug",         new Token(nodebug),
-      "noedges",         new Token(noedges),
-      "nohead",          new Token(nohead),
-      "noload",          new Token(noload),
-      "noplane",         new Token(noplane),
+      "noCross",         new Token(nocross),
+      "noDebug",         new Token(nodebug),
+      "noEdges",         new Token(noedges),
+      "noHead",          new Token(nohead),
+      "noLoad",          new Token(noload),
+      "noPlane",         new Token(noplane),
       "object",          new Token(object),
       "obj",             new Token(obj),
       "offset",          new Token(offset),
-      "offsetside",      new Token(offsetside),
+      "offsetSide",      new Token(offsetside),
       "once",            new Token(once),
       "orbital",         new Token(orbital),
-      "atomicorbital",   new Token(atomicorbital),
+      "atomicOrbital",   new Token(atomicorbital),
       "packed",          new Token(packed),
       "palindrome",      new Token(palindrome),
       "path",            new Token(path),
@@ -1903,12 +1914,12 @@ public class Token {
       "perp",            null,
       "phase",           new Token(phase),
       "pocket",          new Token(pocket),
-      "pointsperangstrom", new Token(pointsperangstrom),
+      "pointsPerAngstrom", new Token(pointsperangstrom),
       "radical",         new Token(radical),
       "rad",             new Token(rad),
       "reference",       new Token(reference),
       "resolution",      new Token(resolution),
-      "reversecolor",    new Token(reversecolor),
+      "reverseColor",    new Token(reversecolor),
       "rotate45",        new Token(rotate45),
       "selection",       new Token(selection),
       "sigma",           new Token(sigma),
@@ -1919,7 +1930,7 @@ public class Token {
       "steps",           new Token(steps),
       "stop",            new Token(stop),
       "title",           new Token(title),
-      "titleformat",     new Token(titleformat),
+      "titleFormat",     new Token(titleformat),
       "to",              new Token(to),
       "value",           new Token(val),
       "variable",        new Token(variable),

@@ -942,7 +942,7 @@ public class ActionManager {
     clicked.setCurrent();
     viewer.setFocus();
     boolean isSelectAndDrag = isBound(Binding.getMouseAction(Integer.MIN_VALUE, mods), ACTION_selectAndDrag);
-    if (isSelectAndDrag)
+    if (isSelectAndDrag && atomPickingMode != PICKING_SELECT_ATOM)
       return;
     checkPointOrAtomClicked(x, y, mods, clickedCount, false);
   }
@@ -1888,14 +1888,16 @@ public class ActionManager {
     if (measurementPending != null || selectionWorking)
       return;
     selectionWorking = true;
-    String s = (isBound(action, ACTION_selectAndNot) ? "selected and not "
-        : isBound(action, ACTION_selectOr) ? "selected or " : isBound(action,
+    String s = (rubberbandSelectionMode || isBound(action,
             ACTION_selectToggle) ? "selected and not (" + item
-            + ") or (not selected) and " : action == 0 || isBound(action,
-            ACTION_selectToggleExtended) ? "selected tog " : isBound(action,
-            ACTION_select) ? "" : null);
+            + ") or (not selected) and " 
+            : isBound(action, ACTION_selectAndNot) ? "selected and not "
+            : isBound(action, ACTION_selectOr) ? "selected or " 
+            : action == 0 || isBound(action, ACTION_selectToggleExtended) ? "selected tog " 
+            : isBound(action, ACTION_select) ? "" : null);
     if (s != null) {
       s += "(" + item + ")";
+      System.out.println(s);
       if (Logger.debugging)
         Logger.debug(s);
       BitSet bs = getSelectionSet(s);

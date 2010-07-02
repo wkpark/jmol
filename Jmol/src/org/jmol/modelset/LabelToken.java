@@ -161,6 +161,8 @@ public class LabelToken {
            Token.format,
            Token.label,
            Token.modelindex,
+           Token.eta,
+           Token.omega,
            Token.polymer,
            Token.property,
            Token.radius,
@@ -171,6 +173,7 @@ public class LabelToken {
            Token.strucno,
            Token.strucid,
            Token.symbol,
+           Token.theta,
            Token.unitx,
            Token.unity,
            Token.unitz,
@@ -412,7 +415,7 @@ public class LabelToken {
         strT = (id <= 0 ? "" : "" + id);
         break;
       case Token.straightness:
-        floatT = atom.getStraightness();
+        floatT = atom.getGroupParameter(Token.straightness);
         if (Float.isNaN(floatT))
           strT = "null";
         break;

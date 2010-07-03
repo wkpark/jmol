@@ -554,6 +554,8 @@ includes:
    [preface] == { [flagDefs] [variableDefs] | [variableDefs] | NULL } 
    [flagDefs] == "/" [processingFlags] "/"
    [processingFlags] == "noAromatic" (case-insensitive)
+      # note: the noAromatic flag indicates to not distinguish between
+      #       aromatic/aliphatic searches -- "C" and "c"
    [variableDefs] == [variableDef] | [variableDef] [variableDefs]
    [variableDef] ==  "$" [label] "=" "\"" [smarts] "\"" [comments] ";"
    [label] == [any characters other than "=" and "$", and not starting with "("]
@@ -660,8 +662,24 @@ includes:
       # note: nestedExpressions return only the first atom as a match, 
       #       not all atoms in the expression.
 
-   [multipleExpression] == { "[$(" [atomExpression] ")" [nTimes] "]" 
-                             | "[$(" [atomExpression] ")" [nMinimum] "-" [nMaximum] "]" }
+   [multipleExpression] == { "[$(" [orExpression] ")" [nTimes] "]" 
+                             | "[$(" [orExpression] ")" [nMinimum] "-" [nMaximum] "]" 
+                             | "[$(" [orExpression] "|" [orExpression] "]" 
+                             | "[$(" [orExpression] "||" [orExpression] "]" }
+   [orExpression] = { [atomExpression] 
+                       | [atomExpression "|" [orExpression] 
+                       | [atomExpression "||" [orExpression] }
+      # note: "|" and "||" are synonymous in this inner context; "|" is preferred simply
+      #       for readability (whereas "||" is required for the [smartsSet] context). 
+      # note: This syntax is carefully written to exclude [$(xxx)] by itself, which
+      #       is a nestedExpression, not a multipleExpression. The difference is that
+      #       the nestedExpression only returns the first atom, while the multipleExpression
+      #       returns all atoms. To return only the first atom within this context 
+      #       it is necessary to use a nested expression within the multiple expression.
+      #       For example: "CC[$( $(C=O) | $(C=N) )2]"
+      #       is the same as "CC$(C=[O,N])$(C=[O,N])", although Jmol preprocesses it as
+      #          "CC$(C=O)$(C=O)||CC$(C=O)$(C=N)||CC$(C=N)$(C=O)||CC$(C=N)$(C=N)"
+      
    [nTimes] == [digits]
    [nMinimum] == [digits]
    [nMaximum] == [digits]

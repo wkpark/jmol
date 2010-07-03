@@ -250,13 +250,13 @@ public class ShelxReader extends AtomSetCollectionReader {
       data[3] = parseFloat(tokens[11]); //U12
       data[4] = parseFloat(tokens[10]); //U13
       data[5] = parseFloat(tokens[9]);  //U23
-      data[6] = 8; // Ortep Type 8: D = 2pi^2, C = 2, a*b*  
       for (int i = 0; i < 6; i++)
         if (Float.isNaN(data[i])) {
             Logger.error("Bad anisotropic Uij data: " + line);
             return;
         }
-      atom.anisoBorU = data;
+      atomSetCollection.setAnisoBorU(atom, data, 8);
+      // Ortep Type 8: D = 2pi^2, C = 2, a*b*  
     }
   }
 

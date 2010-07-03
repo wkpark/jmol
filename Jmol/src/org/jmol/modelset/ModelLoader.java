@@ -889,8 +889,8 @@ public final class ModelLoader extends ModelSet {
         if (!unitCells[modelIndex].getCoordinatesAreFractional())
           continue;
         unitCells[modelIndex].toCartesian(atoms[i]);
-        if (Logger.debugging)
-          Logger.debug("atom " + i + ": " + (Point3f) atoms[i]);
+        //if (Logger.debugging)
+          //Logger.debug("atom " + i + ": " + (Point3f) atoms[i]);
       }
     }
   }

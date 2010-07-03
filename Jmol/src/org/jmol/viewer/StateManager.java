@@ -398,8 +398,7 @@ public class StateManager {
     
     public void restore(float timeSeconds, boolean isAll) {
       if (!isAll) {
-        viewer.moveTo(timeSeconds, null, null, Float.NaN, rotationMatrix, Float.NaN, Float.NaN,
-            Float.NaN, Float.NaN, null, Float.NaN, Float.NaN, Float.NaN);
+        viewer.setRotationMatrix(rotationMatrix);
         return;
       }
       viewer.setBooleanProperty("windowCentered", windowCenteredFlag);

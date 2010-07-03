@@ -64,7 +64,11 @@ class AnimationManager {
         if (currentModelIndex != -1)
           viewer.saveModelOrientation();
         if (fromDataFrame || toDataFrame) {
-          ids = viewer.getJmolFrameType(modelIndex) + viewer.getJmolFrameType(currentModelIndex);
+          ids = viewer.getJmolFrameType(modelIndex) 
+          + " "  + modelIndex + " <-- " 
+          + " " + currentModelIndex + " " 
+          + viewer.getJmolFrameType(currentModelIndex);
+          
           isSameSource = (viewer.getJmolDataSourceFrame(modelIndex) == viewer
               .getJmolDataSourceFrame(currentModelIndex));
         }
@@ -74,11 +78,12 @@ class AnimationManager {
         if (modelIndex >= 0)
           viewer.restoreModelOrientation(modelIndex);
         if (isSameSource && ids.indexOf("quaternion") >= 0 
-            && ids.indexOf("ramachandran") < 0)
+            && ids.indexOf("ramachandran") < 0
+            && ids.indexOf(" property ") < 0) {
           viewer.restoreModelRotation(formerModelIndex);
+        }
       }
     }
-    //System.out.println("set trajectory " + currentModelIndex);
     viewer.setTrajectory(currentModelIndex);
     viewer.setFrameOffset(currentModelIndex);
     if (currentModelIndex == -1 && clearBackgroundModel)
@@ -431,7 +436,6 @@ class AnimationManager {
           Thread.sleep(sleepTime);
         boolean isFirst = true;
         while (!isInterrupted() && animationOn) {
-          //System.out.println(" anim thread " + currentModelIndex + " " + framePointer);
           if (currentModelIndex == framePointer) {
             targetTime += firstFrameDelayMs;
             sleepTime = targetTime

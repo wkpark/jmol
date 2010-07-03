@@ -174,7 +174,7 @@ class SymmetryOperation extends Matrix4f {
        * The coordinates we are using here 
        */
       this.xyz = xyz;
-      Parser.parseFloatArray(xyz, null, temp);
+      Parser.parseStringInfestedFloatArray(xyz, null, temp);
       for (int i = 0; i < 16; i++) {
         if (Float.isNaN(temp[i]))
           return false;
@@ -195,7 +195,7 @@ class SymmetryOperation extends Matrix4f {
     }
     if (xyz.indexOf("[[") == 0) {
       xyz = xyz.replace('[',' ').replace(']',' ').replace(',',' ');
-      Parser.parseFloatArray(xyz, null, temp);
+      Parser.parseStringInfestedFloatArray(xyz, null, temp);
       for (int i = 0; i < 16; i++) {
         if (Float.isNaN(temp[i]))
           return false;

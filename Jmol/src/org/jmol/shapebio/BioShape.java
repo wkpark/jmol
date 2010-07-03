@@ -73,7 +73,7 @@ class BioShape {
     this.modelIndex = modelIndex;
     this.bioPolymer = bioPolymer;
     isActive = shape.isActive;
-    monomerCount = bioPolymer.getMonomerCount();
+    monomerCount = bioPolymer.monomerCount;
     if (monomerCount > 0) {
       colixes = new short[monomerCount];
       paletteIDs = new byte[monomerCount];

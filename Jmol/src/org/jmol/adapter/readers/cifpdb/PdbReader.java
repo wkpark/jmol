@@ -740,7 +740,10 @@ SHEET    3   A 6 ARG A  22  ILE A  26  1  N  VAL A  23   O  GLU A  47
   }
 
   private void cryst1() throws Exception {
-    setUnitCell(getFloat(6, 9), getFloat(15, 9), getFloat(24, 9), getFloat(33,
+    float a = getFloat(6, 9);
+    if (a == 1)
+      a = Float.NaN; // 1 for a means no unit cell
+    setUnitCell(a, getFloat(15, 9), getFloat(24, 9), getFloat(33,
         7), getFloat(40, 7), getFloat(47, 7));
     setSpaceGroupName(parseTrimmed(line, 55, 66));
   }
@@ -898,8 +901,8 @@ Details
       }
       data[i] /= 10000f;
     }
-    atom.anisoBorU = data;
-    atom.anisoBorU[6] = 8; // Ortep Type 8: D = 2pi^2, C = 2, a*b*
+    atomSetCollection.setAnisoBorU(atom, data, 8);
+    // Ortep Type 8: D = 2pi^2, C = 2, a*b*
   }
   /*
    * http://www.wwpdb.org/documentation/format23/sect7.html

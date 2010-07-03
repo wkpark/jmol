@@ -57,7 +57,8 @@ abstract public class Polymer {
 
   protected int type = TYPE_NOBONDING;
   public int bioPolymerIndexInModel;
-  
+  public int monomerCount;
+
   protected final static int TYPE_NOBONDING = 0; // could be phosphorus or alpha
   protected final static int TYPE_AMINO = 1;
   protected final static int TYPE_NUCLEIC = 2;

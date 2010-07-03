@@ -178,7 +178,9 @@ public abstract class AtomSetCollectionReader {
   private int desiredSpaceGroupIndex = -1;
   protected SymmetryInterface symmetry;
   protected OutputStream os;
-
+  private Point3f fileScaling;
+  private Point3f fileOffset;
+  
 /*  
   public void finalize() {
     System.out.println(this + " finalized");
@@ -561,8 +563,7 @@ public abstract class AtomSetCollectionReader {
                    float gamma) {
     if (ignoreFileUnitCell)
       return;
-    if (a != 1) // PDB uses 1 1 1 0 0 0 or 1 1 1 90 90 90 
-      notionalUnitCell[0] = a;
+    notionalUnitCell[0] = a;
     notionalUnitCell[1] = b;
     notionalUnitCell[2] = c;
     if (alpha != 0)
@@ -665,6 +666,14 @@ public abstract class AtomSetCollectionReader {
   }
 
   public void setAtomCoord(Atom atom) {
+    // fileScaling is used by the PLOT command to 
+    // put data into PDB format, preserving name/residue information,
+    // and still get any xyz data into the allotted column space.
+    if (fileScaling != null) {
+      atom.x = atom.x * fileScaling.x + fileOffset.x;
+      atom.y = atom.y * fileScaling.y + fileOffset.y;
+      atom.z = atom.z * fileScaling.z + fileOffset.z;
+    }
     if (doConvertToFractional && !fileCoordinatesAreFractional
         && symmetry != null) {
       symmetry.toFractional(atom, false);
@@ -701,7 +710,7 @@ public abstract class AtomSetCollectionReader {
   public void applySymmetryAndSetTrajectory() throws Exception {
     if (needToApplySymmetry && iHaveUnitCell) {
       atomSetCollection.setCoordinatesAreFractional(iHaveFractionalCoordinates);
-      atomSetCollection.setNotionalUnitCell(notionalUnitCell, matUnitCellOrientation);
+      atomSetCollection.setNotionalUnitCell(notionalUnitCell, matUnitCellOrientation, unitCellOffset);
       atomSetCollection.setAtomSetSpaceGroupName(spaceGroup);
       atomSetCollection.setSymmetryRange(symmetryRange);
       if (doConvertToFractional || fileCoordinatesAreFractional) {
@@ -922,9 +931,85 @@ public abstract class AtomSetCollectionReader {
     checkLineForScript();
   }
   
+  private Point3f unitCellOffset;
+  
   public void checkLineForScript() {
-    if (line.indexOf("Jmol PDB-encoded data") >= 0) 
-       atomSetCollection.setAtomSetCollectionAuxiliaryInfo("jmolData", "" + line);
+    if (line.indexOf("Jmol") >= 0) {
+      if (line.indexOf("Jmol PDB-encoded data") >= 0) {
+        atomSetCollection.setAtomSetCollectionAuxiliaryInfo("jmolData", line);
+        if (!line.endsWith("#noautobond"))
+          line += "#noautobond";
+      }
+      if (line.indexOf("Jmol data min") >= 0) {
+        Logger.info(line);
+        // The idea here is to use a line such as the following:
+        //
+        // REMARK   6 Jmol data min = {-1 -1 -1} max = {1 1 1} 
+        //                      unScaledXyz = xyz / {10 10 10} + {0 0 0} 
+        //                      plotScale = {100 100 100}
+        //
+        // to pass on to Jmol how to graph non-molecular data. 
+        // The format allows for the actual data to be linearly transformed
+        // so that it fits into the PDB format for x, y, and z coordinates.
+        // This adapter will then unscale the data and also pass on to
+        // Jmol the unit cell equivalent that takes the actual data (which
+        // will be considered the fractional coordinates) to Jmol coordinates,
+        // which will be a cube centered at {0 0 0} and ranging from {-100 -100 -100}
+        // to {100 100 100}.
+        //
+        // Jmol 12.0.RC23 uses this to pass through the adapter a quaternion,
+        // ramachandran, or other sort of plot.
+        
+        float[] data = new float[15];
+        parseStringInfestedFloatArray(line.substring(10)
+            .replace('=', ' ').replace('{', ' ').replace('}',' '), data);
+        Point3f minXYZ = new Point3f(data[0], data[1], data[2]);
+        Point3f maxXYZ = new Point3f(data[3], data[4], data[5]);
+        fileScaling = new Point3f(data[6], data[7], data[8]);
+        fileOffset = new Point3f(data[9], data[10], data[11]);
+        Point3f plotScale = new Point3f(data[12], data[13], data[14]);
+        if (plotScale.x <= 0)
+          plotScale.x = 100;
+        if (plotScale.y <= 0)
+          plotScale.y = 100;
+        if (plotScale.z <= 0)
+          plotScale.z = 100;
+        if (fileScaling.y == 0)
+          fileScaling.y = 1;
+        if (fileScaling.z == 0)
+          fileScaling.z = 1;
+        setFractionalCoordinates(true);
+        latticeCells = new int[3];
+        atomSetCollection.setLatticeCells(latticeCells, true, false);
+        setUnitCell(plotScale.x * 2 / (maxXYZ.x - minXYZ.x), 
+            plotScale.y * 2 / (maxXYZ.y - minXYZ.y), 
+            plotScale.z * 2 / (maxXYZ.z == minXYZ.z ? 1 : maxXYZ.z - minXYZ.z),
+            90, 90, 90);
+        /*
+        unitCellOffset = new Point3f(minXYZ);
+        symmetry.toCartesian(unitCellOffset);
+        System.out.println(unitCellOffset);
+        unitCellOffset = new Point3f(maxXYZ);
+        symmetry.toCartesian(unitCellOffset);
+        System.out.println(unitCellOffset);
+        */
+        unitCellOffset = new Point3f(plotScale);
+        unitCellOffset.scale(-1);
+        symmetry.toFractional(unitCellOffset, false);
+        unitCellOffset.scaleAdd(-1f, minXYZ, unitCellOffset);
+        symmetry.setUnitCellOffset(unitCellOffset);
+        /*
+        Point3f pt = new Point3f(minXYZ);
+        symmetry.toCartesian(pt);
+        System.out.println("ASCR minXYZ " + pt);
+        pt.set(maxXYZ);
+        symmetry.toCartesian(pt);
+        System.out.println("ASCR maxXYZ " + pt);
+        */
+        atomSetCollection.setAtomSetCollectionAuxiliaryInfo("jmolDataScaling", 
+            new Point3f[] {minXYZ, maxXYZ, plotScale});
+      }
+    }
     if (line.endsWith("#noautobond")) {
       line = line.substring(0, line.lastIndexOf('#')).trim();
       atomSetCollection.setNoAutoBond();
@@ -986,6 +1071,9 @@ public abstract class AtomSetCollectionReader {
 
   // parser functions are static, so they need notstatic counterparts
   
+  protected void parseStringInfestedFloatArray(String s, float[] data) {
+    Parser.parseStringInfestedFloatArray(s, null, data);
+  }
   protected String[] getTokens() {
     return Parser.getTokens(line);  
   }

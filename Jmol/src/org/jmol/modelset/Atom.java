@@ -798,6 +798,7 @@ final public class Atom extends Point3fi implements JmolNode {
   } 
 
   String getInfoXYZ(boolean useChimeFormat) {
+    // for atom picking
     if (useChimeFormat) {
       String group3 = getGroup3(true);
       char chainID = getChainID();
@@ -811,11 +812,12 @@ final public class Atom extends Point3fi implements JmolNode {
           + " Coordinates: " + x + " " + y + " " + z
           + (pt == null ? "" : " Fractional: "  + pt.x + " " + pt.y + " " + pt.z); 
     }
-    return getIdentity(true) + " " + x + " " + y + " " + z;
+    return getIdentityXYZ(true);
   }
 
-  String getIdentityXYZ() {
-    return getIdentity(false) + " " + x + " " + y + " " + z;
+  String getIdentityXYZ(boolean allInfo) {
+    Point3f pt = getFractionalCoord();
+    return getIdentity(allInfo) + " " + pt.x + " " + pt.y + " " + pt.z;  
   }
   
   String getIdentity(boolean allInfo) {

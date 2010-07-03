@@ -796,6 +796,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     transformManager.stopMotion();
   }
 
+  void setRotationMatrix(Matrix3f rotationMatrix) {
+    transformManager.setRotation(rotationMatrix);
+  }
+  
   public void moveTo(float floatSecondsTotal, Point3f center, Vector3f rotAxis,
                      float degrees, Matrix3f rotationMatrix, float zoom,
                      float xTrans, float yTrans, float rotationRadius,
@@ -7663,7 +7667,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     fdata = new float[nX][nY];
     float[] f = new float[nX * nY];
-    Parser.parseFloatArray(data, null, f);
+    Parser.parseStringInfestedFloatArray(data, null, f);
     for (int i = 0, n = 0; i < nX; i++)
       for (int j = 0; j < nY; j++)
         fdata[i][j] = f[n++];
@@ -7688,7 +7692,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     xyzdata = new float[nX][nY][nZ];
     float[] f = new float[nX * nY * nZ];
-    Parser.parseFloatArray(data, null, f);
+    Parser.parseStringInfestedFloatArray(data, null, f);
     for (int i = 0, n = 0; i < nX; i++)
       for (int j = 0; j < nY; j++)
         for (int k = 0; k < nZ; k++)

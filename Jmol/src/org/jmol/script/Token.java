@@ -1743,6 +1743,7 @@ public class Token {
       "previous",        new Token(prev),
       "prev",            null,
       "property",        new Token(property),
+      "properties",      null,
       "protein",         new Token(protein),
       "psi",             new Token(psi),
       "purine",          new Token(purine),

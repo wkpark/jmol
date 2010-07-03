@@ -1139,7 +1139,7 @@ public class Jmol implements WrappedApplet {
           //System.out.println(data);
           nX = Math.abs(nX);
           float[] fdata = new float[nX * nY];
-          Parser.parseFloatArray(data, null, fdata);
+          Parser.parseStringInfestedFloatArray(data, null, fdata);
           for (int i = 0, ipt = 0; i < nX; i++) {
             for (int j = 0; j < nY; j++, ipt++) {
               fxy[i][j] = fdata[ipt];

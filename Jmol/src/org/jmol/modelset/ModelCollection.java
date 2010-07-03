@@ -240,9 +240,14 @@ abstract public class ModelCollection extends BondCollection {
     }
     boolean checkPolymerConnections = !viewer.isPdbSequential();
     for (int i = baseGroupIndex; i < groupCount; ++i) {
-      Polymer bp = jbr.buildBioPolymer(groups[i], groups, i, checkPolymerConnections);
-      if (bp != null)
-        addBioPolymerToModel(bp, groups[i].getModel());
+      Group g = groups[i];
+      boolean doCheck = checkPolymerConnections 
+        && !isJmolDataFrame(atoms[g.firstAtomIndex].modelIndex);
+      Polymer bp = jbr.buildBioPolymer(g, groups, i, doCheck);
+      if (bp == null || bp.monomerCount == 0)
+        continue;
+      addBioPolymerToModel(bp, g.getModel());
+      i += bp.monomerCount - 1;
     }
   }
 
@@ -1192,8 +1197,7 @@ abstract public class ModelCollection extends BondCollection {
    * 
    *****************************/
 
-  public String getPdbData(int modelIndex, String type, 
-                           BitSet bsSelected, 
+  public String getPdbData(int modelIndex, String type, BitSet bsSelected,
                            Object[] parameters, OutputStringBuffer sb) {
     if (isJmolDataFrame(modelIndex))
       modelIndex = getJmolDataSourceFrame(modelIndex);
@@ -1202,77 +1206,98 @@ abstract public class ModelCollection extends BondCollection {
     Model model = models[modelIndex];
     if (sb == null)
       sb = new OutputStringBuffer(null);
-    StringBuffer pdbCONECT = new StringBuffer();    
-    boolean isDraw = (type.indexOf("draw") >= 0); 
+    StringBuffer pdbCONECT = new StringBuffer();
+    boolean isDraw = (type.indexOf("draw") >= 0);
     BitSet bsAtoms = null;
     BitSet bsWritten = new BitSet();
     boolean isPDB = models[modelIndex].isPDB;
     char ctype = '\0';
-    if (parameters == null) { 
+    if (parameters == null) {
       if (!isPDB)
         return null;
       ctype = (type.length() > 11 && type.indexOf("quaternion ") >= 0 ? type
           .charAt(11) : 'R');
-      char qtype = (ctype != 'R' ? 'r' 
-          : type.length() > 13 && type.indexOf("ramachandran ") >= 0 ?
-            type.charAt(13) : 'R');
+      char qtype = (ctype != 'R' ? 'r' : type.length() > 13
+          && type.indexOf("ramachandran ") >= 0 ? type.charAt(13) : 'R');
       if (qtype == 'r')
         qtype = viewer.getQuaternionFrame();
       int mStep = viewer.getHelixStep();
-      int derivType = (type.indexOf("diff") < 0 ? 0 : type.indexOf("2") < 0 ? 1 : 2);
+      int derivType = (type.indexOf("diff") < 0 ? 0 : type.indexOf("2") < 0 ? 1
+          : 2);
       int nPoly = model.getBioPolymerCount();
       if (!isDraw) {
         sb.append("REMARK   6 Jmol PDB-encoded data: " + type + ";");
         if (ctype != 'R')
           sb.append("  quaternionFrame = \"" + qtype + "\"");
-        sb.append("\nREMARK   6 Jmol Version ").append(Viewer.getJmolVersion()).append('\n');
+        sb.append("\nREMARK   6 Jmol Version ").append(Viewer.getJmolVersion())
+            .append('\n');
+        if (ctype == 'R')
+          sb.append("REMARK   6 Jmol data min = {-180 -180 -180} max = {180 180 180} " +
+          		"unScaledXyz = xyz * {1 1 1} + {0 0 0} plotScale = {100 100 100}\n");
+        else
+          sb.append("REMARK   6 Jmol data min = {-1 -1 -1} max = {1 1 1} " +
+          		"unScaledXyz = xyz * {0.1 0.1 0.1} + {0 0 0} plotScale = {100 100 100}\n");
       }
       for (int p = 0; p < nPoly; p++)
-          model.bioPolymers[p].getPdbData(viewer, ctype, qtype, mStep, derivType, isDraw,
-              bsAtoms, sb, pdbCONECT, bsSelected, p == 0, bsWritten);
+        model.bioPolymers[p].getPdbData(viewer, ctype, qtype, mStep, derivType,
+            isDraw, bsAtoms, sb, pdbCONECT, bsSelected, p == 0, bsWritten);
       bsAtoms = viewer.getModelUndeletedAtomsBitSet(modelIndex);
-      } else {
-     // plot x y z....
-        sb.append("REMARK   6 Jmol PDB-encoded data: " + type + ";\n");
-        bsAtoms = (BitSet) parameters[0];
-        float[] dataX = (float[]) parameters[1];
-        float[] dataY = (float[]) parameters[2];
-        float[] dataZ = (float[]) parameters[3];
-        boolean haveZ = (dataZ != null);
-        Point3f factors = (Point3f) parameters[4];
-        String strExtra = "";
-        Atom atomLast = null;
-        for (int i = bsAtoms.nextSetBit(0), n = 0; i >= 0; i = bsAtoms.nextSetBit(i + 1), n++) {
-          float x = dataX[n] * factors.x;
-          float y = dataY[n] * factors.y;
-          float z = (haveZ ? dataZ[n] * factors.z : 0f);
-          if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
-            continue;
-          Atom a = atoms[i];
-          if (isPDB) {
-            sb.append(LabelToken.formatLabel(viewer, a, "ATOM  %5i %4a%1A%3n %1c%4R%1E   "));
-          } else {
-            sb.append(LabelToken.formatLabel(viewer, a, "ATOM  %5i %4a%1A%3n %1c%4R%1E   "));
-          }
-          sb.append(TextFormat.sprintf(
-              "%8.2f%8.2f%8.2f      %6.3f          %2s    %s\n", new Object[] {
-                  a.getElementSymbol(false).toUpperCase(), strExtra, new float[] {
-                  x, y, z , 0f }}));
-          if (atomLast != null && atomLast.getPolymerIndexInModel() == a.getPolymerIndexInModel())
-            pdbCONECT.append("CONECT")
-            .append(TextFormat.formatString("%5i", "i", atomLast.getAtomNumber()))
-            .append(TextFormat.formatString("%5i", "i", a
-            .getAtomNumber()))
-            .append('\n');
-          atomLast = a;
+    } else {
+      // plot x y z....
+      bsAtoms = (BitSet) parameters[0];
+      float[] dataX = (float[]) parameters[1];
+      float[] dataY = (float[]) parameters[2];
+      float[] dataZ = (float[]) parameters[3];
+      boolean haveZ = (dataZ != null);
+      Point3f minXYZ = (Point3f) parameters[4];
+      Point3f maxXYZ = (Point3f) parameters[5];
+      Point3f factors = (Point3f) parameters[6];
+      Point3f center = (Point3f) parameters[7];
+      sb.append("REMARK   6 Jmol PDB-encoded data: ").append(type)
+          .append(";\n");
+      sb.append("REMARK   6 Jmol data").append(" min = ").append(
+          Escape.escape(minXYZ)).append(" max = ")
+          .append(Escape.escape(maxXYZ)).append(" unScaledXyz = xyz * ")
+          .append(Escape.escape(factors)).append(" + ").append(
+              Escape.escape(center)).append(";\n");
+      String strExtra = "";
+      Atom atomLast = null;
+      for (int i = bsAtoms.nextSetBit(0), n = 0; i >= 0; i = bsAtoms
+          .nextSetBit(i + 1), n++) {
+        float x = dataX[n];
+        float y = dataY[n];
+        float z = (haveZ ? dataZ[n] : 0f);
+        if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
+          continue;
+        Atom a = atoms[i];
+        if (isPDB) {
+          sb.append(LabelToken.formatLabel(viewer, a,
+              "ATOM  %-6i%4a%1A%3n %1c%4R%1E   "));
+          bsWritten.set(i);
+        } else {
+          sb.append(LabelToken.formatLabel(viewer, a,
+              "ATOM  %-6i%4a%1A%3n %1c%4R%1E   "));
         }
-    }    
+        sb.append(TextFormat.sprintf(
+            "%-8.2f%-8.2f%-10.2f    %6.3f          %2s    %s\n", new Object[] {
+                a.getElementSymbol(false).toUpperCase(), strExtra,
+                new float[] { x, y, z, 0f } }));
+        if (atomLast != null
+            && atomLast.getPolymerIndexInModel() == a.getPolymerIndexInModel())
+          pdbCONECT.append("CONECT").append(
+              TextFormat.formatString("%5i", "i", atomLast.getAtomNumber()))
+              .append(TextFormat.formatString("%5i", "i", a.getAtomNumber()))
+              .append('\n');
+        atomLast = a;
+      }
+    }
     sb.append(pdbCONECT.toString());
     if (isDraw)
       return sb.toString();
     bsSelected.and(bsAtoms);
     if (isPDB)
-      sb.append("\n\n" + getProteinStructureState(bsWritten, false, ctype == 'R', true));
+      sb.append("\n\n"
+          + getProteinStructureState(bsWritten, false, ctype == 'R', true));
     return sb.toString();
   }
 
@@ -2145,7 +2170,7 @@ abstract public class ModelCollection extends BondCollection {
           info[2] / 1000f);
       pt = new Point3f();
       for (int i = atomCount; --i >= 0;)
-        if (isInLatticeCell(i, ptcell, pt, true))
+        if (isInLatticeCell(i, ptcell, pt, false))
           bs.set(i);
       return bs;
     }

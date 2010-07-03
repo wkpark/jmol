@@ -587,13 +587,15 @@ public class AtomSetCollection {
     // in addition (Jmol 11.7.36) z = -2 does a full 3x3x3 around the designated cells
     // but then only delivers the atoms that are within the designated cells. 
     // Normalization is the moving of the center of mass into the unit cell.
+    // Starting with Jmol 12.0.RC23 we do not normalize a CIF file that 
+    // is being loaded without {i j k} indicated.
     
     this.latticeCells = latticeCells;
-    isLatticeRange = (latticeCells[2] == 0 || latticeCells[2] == 1 
-        || latticeCells[2] == -1) && (latticeCells[0] <= 555  && latticeCells[1] >= 555);
-    doNormalize = (!isLatticeRange || latticeCells[2] == 1);
-    this.doPackUnitCell = doPackUnitCell;
+    boolean isLatticeRange = (latticeCells[0] <= 555  && latticeCells[1] >= 555
+        && (latticeCells[2] == 0 || latticeCells[2] == 1 || latticeCells[2] == -1));
+    doNormalize = latticeCells[0] != 0 && (!isLatticeRange || latticeCells[2] == 1);
     this.applySymmetryToBonds = applySymmetryToBonds;
+    this.doPackUnitCell = doPackUnitCell;
   }
   
   SymmetryInterface symmetry;
@@ -605,16 +607,23 @@ public class AtomSetCollection {
   
   boolean haveUnitCell = false;
   
-  public void setNotionalUnitCell(float[] info, Matrix3f matUnitCellOrientation) {
+  public void setNotionalUnitCell(float[] info, Matrix3f matUnitCellOrientation, Point3f unitCellOffset) {
     notionalUnitCell = new float[info.length];
+    this.unitCellOffset = unitCellOffset;
     for (int i = 0; i < info.length; i++)
       notionalUnitCell[i] = info[i];
     haveUnitCell = true;
     setAtomSetAuxiliaryInfo("notionalUnitcell", notionalUnitCell);
     setGlobalBoolean(GLOBAL_latticeCells);
     getSymmetry().setUnitCell(notionalUnitCell);
+    // we need to set the auxiliary info as well, because 
+    // ModelLoader creates a new symmetry object.
+    if (unitCellOffset != null){
+      symmetry.setUnitCellOffset(unitCellOffset);
+      setAtomSetAuxiliaryInfo("unitCellOffset", unitCellOffset);
+    }
     if (matUnitCellOrientation != null) {
-      getSymmetry().setUnitCellOrientation(matUnitCellOrientation);
+      symmetry.setUnitCellOrientation(matUnitCellOrientation);
       setAtomSetAuxiliaryInfo("matUnitCellOrientation", matUnitCellOrientation);
     }
   }
@@ -646,7 +655,6 @@ public class AtomSetCollection {
 
   boolean doNormalize = true;
   boolean doPackUnitCell = false;
-  boolean isLatticeRange = false;
    
   private void applySymmetry(int maxX, int maxY, int maxZ) throws Exception {
     if (coordinatesAreFractional && getSymmetry().haveSpaceGroup())
@@ -676,7 +684,9 @@ public class AtomSetCollection {
   }
 
   private final Point3f ptOffset = new Point3f();
-   
+  
+  private Point3f unitCellOffset;
+  
   private Point3i minXYZ, maxXYZ;
   
   private static boolean isWithinCell(Point3f pt, int minX, int maxX, int minY, int maxY, int minZ, int maxZ) {
@@ -686,11 +696,24 @@ public class AtomSetCollection {
         && pt.z > minZ - slop && pt.z < maxZ + slop);
   }
 
+  private boolean needEllipsoids;
+  public void setAnisoBorU(Atom atom, float[] data, int type) {
+    needEllipsoids = true;
+    atom.anisoBorU = data;
+    data[6] = type;
+  }
+  
+  public float[] getAnisoBorU(Atom atom) {
+    return atom.anisoBorU;
+  }
+  
   private void applyAllSymmetry(int maxX, int maxY, int maxZ) throws Exception {
     int noSymmetryCount = getLastAtomSetAtomCount();
     int iAtomFirst = getLastAtomSetAtomIndex();
-    for (int i = iAtomFirst; i < atomCount; i++)
-      atoms[i].ellipsoid = symmetry.getEllipsoid(atoms[i].anisoBorU);
+    if (needEllipsoids)
+      for (int i = iAtomFirst; i < atomCount; i++)
+        atoms[i].ellipsoid = symmetry.getEllipsoid(atoms[i].anisoBorU);
+    
     bondCount0 = bondCount;
 
     symmetry
@@ -975,7 +998,7 @@ public class AtomSetCollection {
     doNormalize = false;
     symmetry = null;
     getSymmetry();
-    setNotionalUnitCell(notionalUnitCell, null);
+    setNotionalUnitCell(notionalUnitCell, null, unitCellOffset);
     getSymmetry().setSpaceGroup(doNormalize);
     addSpaceGroupOperation("x,y,z");
     setAtomSetSpaceGroupName("biomolecule");

@@ -7073,7 +7073,7 @@ public class ScriptEvaluator {
           index++;
           name = parameterAsString(index++);
           data = new float[viewer.getAtomCount()];
-          Parser.parseFloatArray("" + getParameter(name, false), null,
+          Parser.parseStringInfestedFloatArray("" + getParameter(name, false), null,
               (float[]) data);
           pid = JmolConstants.PALETTE_PROPERTY;
         }
@@ -8022,7 +8022,9 @@ public class ScriptEvaluator {
     int pt = statementLength - 1;
     String qFrame = "";
     String type = optParameterAsString(pt).toLowerCase();
-
+    Point3f minXYZ = null;
+    Point3f maxXYZ = null;
+    
     boolean isDraw = (tokAt(0) == Token.draw);
     boolean isPlot = (tokAt(0) == Token.plot); // Jmol 12.0.RC23
     int pt0 = (isDraw || isPlot ? 1 : 0);
@@ -8035,10 +8037,15 @@ public class ScriptEvaluator {
     case Token.ramachandran:
       datatype = JmolConstants.JMOL_DATA_RAMACHANDRAN;
       break;
+    case Token.property:
+      break;
+    default:
+      iToken = 1;
+      error(ERROR_invalidArgument);
     }
     switch (datatype) {
     case -1:
-      iToken = 1;
+      iToken = 2;
       if (!isPlot
           || !Token.tokAttr(propertyX = tokAt(iToken++), Token.atomproperty)
           || !Token.tokAttr(propertyY = tokAt(iToken++), Token.atomproperty))
@@ -8047,9 +8054,8 @@ public class ScriptEvaluator {
         iToken++;
       else
         propertyZ = 0;
-      type = Token.nameOf(propertyX) + " " + Token.nameOf(propertyY)
+      type = "property " + Token.nameOf(propertyX) + " " + Token.nameOf(propertyY)
           + (propertyZ == 0 ? "" : " " + Token.nameOf(propertyZ));
-      bs.and(viewer.getModelUndeletedAtomsBitSet(modelIndex));
       if (bs.nextSetBit(0) < 0)
         bs = viewer.getModelUndeletedAtomsBitSet(modelIndex);
       stateScript = "select " + Escape.escape(bs) + ";\n ";
@@ -8095,11 +8101,10 @@ public class ScriptEvaluator {
       return;
     // for now, just one frame visible
     stateScript += "plot " + type;
+    String preSelected = "; select " + Escape.escape(bs) + ";\n ";
     if (isDraw) {
       runScript(viewer.getPdbData(modelIndex, type, null));
       return;
-    } else if (datatype == -1) {
-      stateScript += ";\n  select " + Escape.escape(bs) + ";\n ";
     }
     int ptDataFrame = viewer.getJmolDataFrameIndex(modelIndex, stateScript);
     if (ptDataFrame > 0) {
@@ -8116,7 +8121,6 @@ public class ScriptEvaluator {
     boolean oldAppendNew = viewer.getAppendNew();
     viewer.setAppendNew(true);
     float[] dataX = null, dataY = null, dataZ = null;
-    float minX = 0, maxX = 0, minY = 0, maxY = 0, minZ = 0, maxZ = 0;
     Point3f factors = new Point3f(1, 1, 1);
     switch (datatype) {
     case -1:
@@ -8124,38 +8128,44 @@ public class ScriptEvaluator {
       dataY = getBitsetPropertyFloat(bs, propertyY);
       dataZ = getBitsetPropertyFloat(bs, propertyZ);
 
-      boolean isWorm = (propertyX == Token.eta && propertyY == Token.theta);
-      minX = getMinMax(dataX, false);
-      maxX = getMinMax(dataX, true);
-      minY = getMinMax(dataY, false);
-      maxY = getMinMax(dataY, true);
-      minZ = getMinMax(dataZ, false);
-      maxZ = getMinMax(dataZ, true);
-      factors.x = 200 / (maxX - minX);
-      factors.y = 200 / (maxY - minY);
-      factors.z = 200 / (maxZ - minZ);
-
-      Point3f center = new Point3f((maxX + minX) / 2, (maxY + minY) / 2,
-          (maxZ + minZ) / 2);
-
-      if (isWorm) {
-        center.set(180, 180, center.z);
-        factors.set(1, 1, factors.z);
+      if (minXYZ == null)
+        minXYZ = new Point3f(getMinMax(dataX, false, propertyX),getMinMax(dataY, false, propertyY), getMinMax(dataZ, false, propertyZ));
+      if (maxXYZ == null)
+        maxXYZ = new Point3f(getMinMax(dataX, true, propertyX),getMinMax(dataY, true, propertyY),getMinMax(dataZ, true, propertyZ));
+      Point3f center = new Point3f(maxXYZ);
+      center.add(minXYZ);
+      center.scale(0.5f);
+      factors.set(maxXYZ);
+      factors.sub(minXYZ);
+      factors.set(factors.x / 200, factors.y / 200, factors.z / 200);
+      if (Token.tokAttr(propertyX, Token.intproperty)) {
+        factors.x = 1;
+        center.x = 0;
+      } else if (factors.x > 0.1 && factors.x <= 10) {
+        factors.x = 1;
       }
+      if (Token.tokAttr(propertyY, Token.intproperty)) {
+        factors.y = 1;
+        center.y = 0;
+      } else if (factors.y > 0.1 && factors.y <= 10) {
+        factors.y = 1;
+      }
+      if (Token.tokAttr(propertyZ, Token.intproperty)) {
+        factors.z = 1;
+        center.z = 0;
+      } else if (factors.z > 0.1 && factors.z <= 10) {
+        factors.z = 1;
+      }
+      if (propertyZ == 0)
+        center.z = minXYZ.z = maxXYZ.z = factors.z = 0;
       for (int i = 0; i < dataX.length; i++)
-        dataX[i] = (dataX[i] - center.x) * factors.x;
+        dataX[i] = (dataX[i] - center.x) / factors.x;
       for (int i = 0; i < dataY.length; i++)
-        dataY[i] = (dataY[i] - center.y) * factors.y;
-      for (int i = 0; i < dataZ.length; i++)
-        dataZ[i] = (dataZ[i] - center.z) * factors.z;
-      minX *= factors.x;
-      maxX *= factors.x;
-      minY *= factors.y;
-      maxY *= factors.y;
-      minZ *= factors.z;
-      maxZ *= factors.z;
-      factors.set(1, 1, 1);
-      parameters = new Object[] { bs, dataX, dataY, dataZ, factors };
+        dataY[i] = (dataY[i] - center.y) / factors.y;
+      if (propertyZ != 0)
+        for (int i = 0; i < dataZ.length; i++)
+          dataZ[i] = (dataZ[i] - center.z) / factors.z;
+      parameters = new Object[] { bs, dataX, dataY, dataZ, minXYZ, maxXYZ, factors, center };
       break;
     case JmolConstants.JMOL_DATA_RAMACHANDRAN:
       break;
@@ -8172,30 +8182,23 @@ public class ScriptEvaluator {
       return;
     StateScript ss = viewer.addStateScript(stateScript, true, false);
     int modelCount = viewer.getModelCount();
+    stateScript += ";\n" + preSelected;
     viewer.setJmolDataFrame(stateScript, modelIndex, modelCount - 1);
     String script;
     switch (datatype) {
     case -1:
       viewer.setFrameTitle(modelCount - 1, type + " plot for model "
           + viewer.getModelNumberDotted(modelIndex));
-      //TODO: ranges ?
       float f = 3;
-      /*      script = "frame 0.0; frame last; reset;"
-              + "select visible; color structure; spacefill " + f + "; wireframe 0;"
-              + "draw plotAxisX" + modelCount + " {" + maxX + " 0 " + minZ + "} {" + minX +" 0 " + minZ + "} \"" + Token.nameOf(propertyX) + "\";"
-              + "draw plotAxisY" + modelCount + " {0 " + maxY + " " + minZ + "} {0 " + minY +" " + minZ + "} \"" + Token.nameOf(propertyY) + "\";";
-      */
       script = "frame 0.0; frame last; reset;"
-          + "select visible; color structure; spacefill " + f
+          + "select visible; spacefill " + f
           + "; wireframe 0;" + "draw plotAxisX" + modelCount
-          + " {100 0 0} {-100 0 0} \"" + Token.nameOf(propertyX) + "\";"
-          + "draw plotAxisY" + modelCount + " {0 100 0} {0 -100 0} \""
-          + Token.nameOf(propertyY) + "\";"
-          + "select " + Escape.escape(bs) + ";\n ";
+          + " {100 -100 -100} {-100 -100 -100} \"" + Token.nameOf(propertyX) + "\";"
+          + "draw plotAxisY" + modelCount + " {-100 100 -100} {-100 -100 -100} \""
+          + Token.nameOf(propertyY) + "\";";
       if (propertyZ != 0)
-        script += "draw plotAxisZ" + modelCount + " {0 0 100} {0 0 -100} \""
+        script += "draw plotAxisZ" + modelCount + " {-100 -100 100} {-100 -100 -100} \""
             + Token.nameOf(propertyZ) + "\";";
-      //script += "center " + Escape.escape(new Point3f((maxX + minX) / 2, (maxY + minY) / 2, (propertyZ == 0 ? 0 : (maxZ + minZ) / 2)));
       break;
     case JmolConstants.JMOL_DATA_RAMACHANDRAN:
     default:
@@ -8203,11 +8206,8 @@ public class ScriptEvaluator {
           + viewer.getModelNumberDotted(modelIndex));
       script = "frame 0.0; frame last; reset;"
           + "select visible; color structure; spacefill 3.0; wireframe 0;"
-          + "draw ramaAxisX" + modelCount + " {200 0 0} {-200 0 0} \"phi\";"
-          + "draw ramaAxisY" + modelCount + " {0 200 0} {0 -200 0} \"psi\";"
-      // + "draw ramaAxisZ" + modelCount + " {0 0 400} {0 0 0} \"" +
-      // (isRamachandranRelative ? "theta" : "omega") +"\";"
-      ;
+          + "draw ramaAxisX" + modelCount + " {100 0 0} {-100 0 0} \"phi\";"
+          + "draw ramaAxisY" + modelCount + " {0 100 0} {0 -100 0} \"psi\";";
       break;
     case JmolConstants.JMOL_DATA_QUATERNION:
       viewer.setFrameTitle(modelCount - 1, type.replace('w', ' ') + qFrame
@@ -8215,28 +8215,39 @@ public class ScriptEvaluator {
       String color = (Graphics3D
           .getHexCode(viewer.getColixBackgroundContrast()));
       script = "frame 0.0; frame last; reset;"
-          + "select visible; wireframe 0; " + "isosurface quatSphere"
-          + modelCount + " resolution 1.0 color " + color
-          + " sphere 10.0 mesh nofill frontonly translucent 0.8;"
+          + "select visible; wireframe 0; spacefill 3.0; " 
+          + "isosurface quatSphere" + modelCount + " color " + color
+          + " sphere 100.0 mesh nofill frontonly translucent 0.8;"
           + "draw quatAxis" + modelCount
-          + "X {10 0 0} {-10 0 0} color red \"x\";" + "draw quatAxis"
-          + modelCount + "Y {0 10 0} {0 -10 0} color green \"y\";"
+          + "X {100 0 0} {-100 0 0} color red \"x\";" + "draw quatAxis"
+          + modelCount + "Y {0 100 0} {0 -100 0} color green \"y\";"
           + "draw quatAxis" + modelCount
-          + "Z {0 0 10} {0 0 -10} color blue \"z\";" + "color structure;"
-          + "draw quatCenter" + modelCount + "{0 0 0} scale 0.02";
+          + "Z {0 0 100} {0 0 -100} color blue \"z\";" + "color structure;"
+          + "draw quatCenter" + modelCount + "{0 0 0} scale 0.02;";
       break;
     }
+    script += preSelected;
     runScript(script);
     ss.setModelIndex(viewer.getCurrentModelIndex());
-    viewer.setRotationRadius(isQuaternion ? 12.5f : 260f, true);
-    loadShape(JmolConstants.SHAPE_ECHO);
+    viewer.setRotationRadius(150f, true);
     showString("frame " + viewer.getModelNumberDotted(modelCount - 1)
         + " created: " + type + (isQuaternion ? qFrame : ""));
   }
 
-  private static float getMinMax(float[] data, boolean isMax) {
+  private static float getMinMax(float[] data, boolean isMax, int tok) {
     if (data == null)
       return 0;
+    switch (tok) {
+    case Token.omega:
+    case Token.phi:
+    case Token.psi:
+      return (isMax ? 180 : -180);
+    case Token.eta:
+    case Token.theta:
+      return (isMax ? 360 : 0);
+    case Token.straightness:
+      return (isMax ? 1 : -1);
+    }
     float fmax = (isMax ? -1E10f : 1E10f);
     for (int i = data.length; --i >= 0;) {
       float f = data[i];
@@ -15172,7 +15183,7 @@ public class ScriptEvaluator {
         } else {
           data = new float[nAtoms];
           if (!isSyntaxCheck)
-            Parser.parseFloatArray("" + getParameter(vname, false), null, data);
+            Parser.parseStringInfestedFloatArray("" + getParameter(vname, false), null, data);
         }
         propertyValue = data;
         sbCommand.append(" variable \"\" ").append(Escape.escape(data));

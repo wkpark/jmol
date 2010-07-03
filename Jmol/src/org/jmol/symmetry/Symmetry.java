@@ -300,6 +300,7 @@ public class Symmetry implements SymmetryInterface {
     if (notionalUnitcell == null)
       return;
     setUnitCell(notionalUnitcell);
+    setUnitCellOffset((Point3f) modelAuxiliaryInfo.get("unitCellOffset"));
     Matrix3f matUnitCellOrientation = (Matrix3f) modelAuxiliaryInfo.get("matUnitCellOrientation");
     if (matUnitCellOrientation != null)
       setUnitCellOrientation(matUnitCellOrientation);

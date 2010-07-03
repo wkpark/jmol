@@ -423,7 +423,7 @@ public class LabelToken {
         strT = Atom.atomPropertyString(atom, t.tok);
         break;
       case 'W':
-        strT = atom.getIdentityXYZ();
+        strT = atom.getIdentityXYZ(false);
         break;
         
       // standard 

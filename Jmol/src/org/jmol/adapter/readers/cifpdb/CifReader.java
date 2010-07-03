@@ -588,6 +588,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       return false;
     }
     int iAtom = 0;
+    float[] data;
     while (tokenizer.getData()) {
       Atom atom = new Atom();
       for (int i = 0; i < tokenizer.fieldCount; ++i) {
@@ -684,10 +685,11 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           if (field.equalsIgnoreCase("Uiso")) {
             int j = fieldOf[U_ISO_OR_EQUIV];
             if (j != NONE) {
-              if (atom.anisoBorU == null)
-                atom.anisoBorU = new float[8];
-              atom.anisoBorU[7] = parseFloat(tokenizer.loopData[j]);
-              atom.anisoBorU[6] = 8; // Ortep Type 8: D = 2pi^2, C = 2, a*b*
+              data = atomSetCollection.getAnisoBorU(atom);
+              if (data == null)
+                atomSetCollection.setAnisoBorU(atom, data = new float[8], 8);
+              data[7] = parseFloat(tokenizer.loopData[j]);
+              // Ortep Type 8: D = 2pi^2, C = 2, a*b*
             }
           }
           break;
@@ -712,12 +714,13 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         case ANISO_MMCIF_U12:
         case ANISO_MMCIF_U13:
         case ANISO_MMCIF_U23:
-          if (atom.anisoBorU == null) {
-            atom.anisoBorU = new float[8];
-            atom.anisoBorU[6] = 8; // Ortep type 8: D = 2pi^2, C = 2, a*b*
+          data = atomSetCollection.getAnisoBorU(atom);
+          if (data == null) {
+            atomSetCollection.setAnisoBorU(atom, data = new float[8], 8);
+            // Ortep type 8: D = 2pi^2, C = 2, a*b*
           }
           int iType = (propertyOf[i] - ANISO_U11) % 6;
-          atom.anisoBorU[iType] = parseFloat(field);
+          data[iType] = parseFloat(field);
           break;
         case ANISO_B11:
         case ANISO_B22:
@@ -725,12 +728,13 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         case ANISO_B12:
         case ANISO_B13:
         case ANISO_B23:
-           if (atom.anisoBorU == null) {
-             atom.anisoBorU = new float[8];
-             atom.anisoBorU[6] = 4; // Ortep Type 4: D = 1/4, C = 2, a*b*
-           }
+          data = atomSetCollection.getAnisoBorU(atom);
+          if (data == null) {
+            atomSetCollection.setAnisoBorU(atom, data = new float[8], 4);
+            // Ortep Type 4: D = 1/4, C = 2, a*b*
+          }
            int iTypeB = (propertyOf[i] - ANISO_B11) % 6;
-           atom.anisoBorU[iTypeB] = parseFloat(field);
+           data[iTypeB] = parseFloat(field);
           break;
         case ANISO_Beta_11:
         case ANISO_Beta_22:
@@ -738,12 +742,13 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         case ANISO_Beta_12:
         case ANISO_Beta_13:
         case ANISO_Beta_23:
-           if (atom.anisoBorU == null) {
-             atom.anisoBorU = new float[8];
-             atom.anisoBorU[6] = 0; // Ortep Type 0: D = 1, c = 2 -- see org.jmol.symmetry/UnitCell.java
-           }
-           int iTypeBeta = (propertyOf[i] - ANISO_Beta_11) % 6;
-           atom.anisoBorU[iTypeBeta] = parseFloat(field);
+          data = atomSetCollection.getAnisoBorU(atom);
+          if (data == null) {
+            atomSetCollection.setAnisoBorU(atom, data = new float[8], 0);
+            //Ortep Type 0: D = 1, c = 2 -- see org.jmol.symmetry/UnitCell.java
+          }
+          int iTypeBeta = (propertyOf[i] - ANISO_Beta_11) % 6;
+          data[iTypeBeta] = parseFloat(field);
           break;
         }
       }

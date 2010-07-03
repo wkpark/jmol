@@ -138,8 +138,6 @@ abstract class TransformManager {
     scaleFitToScreen(true);
     if (viewer.isJmolDataFrame()) {
       fixedRotationCenter.set(0, 0, 0);
-      rotationRadiusDefault = (viewer.getJmolFrameType(
-          viewer.getCurrentModelIndex()).equals("ramachandran") ? 250 : 12);
     } else {
       if (viewer.getAxesOrientationRasmol())
         rotateX((float) Math.PI);

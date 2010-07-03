@@ -51,12 +51,6 @@ public abstract class BioPolymer extends Polymer {
     return monomers;
   }
 
-  int monomerCount;
-
-  public int getMonomerCount() {
-    return monomerCount;
-  }
-
   protected Model model;
 
   BioPolymer(Monomer[] monomers) {
@@ -83,8 +77,8 @@ public abstract class BioPolymer extends Polymer {
       Monomer current;
       if (!(group instanceof Monomer)
           || (current = (Monomer) group).bioPolymer != null || previous != null
-          && previous.getClass() != current.getClass() || checkConnections
-          && !current.isConnectedAfter(previous))
+          && previous.getClass() != current.getClass() 
+          || checkConnections && !current.isConnectedAfter(previous))
         break;
       previous = current;
       count++;

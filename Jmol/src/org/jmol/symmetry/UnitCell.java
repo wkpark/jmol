@@ -97,6 +97,8 @@ class UnitCell extends SimpleUnitCell {
   }
   
   void setOffset(Point3f pt) {
+    if (pt == null)
+      return;
     // from "unitcell {i j k}" via uccage
     fractionalOffset.set(pt);
     matrixCartesianToFractional.m03 = -pt.x;

@@ -8704,7 +8704,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.smallMoleculeMaxAtoms;
   }
 
-  public String streamFileData(String fileName, String type, String type2) {
+  public String streamFileData(String fileName, String type, String type2, int modelIndex, Object[] parameters) {
     String msg = null;
     String[] fullPath = new String[1];
     OutputStream os = getOutputStream(fileName, fullPath);
@@ -8717,11 +8717,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     } else if (type.equals("FILE")) {
       msg = writeCurrentFile(os);
       // quality = Integer.MIN_VALUE;
-    } else if (type.equals("QUAT") || type.equals("RAMA")) {
-      int modelIndex = getCurrentModelIndex();
+    } else if (type.equals("PLOT")) {
       sb = new OutputStringBuffer(new BufferedOutputStream(os));
       msg = modelSet.getPdbData(modelIndex, type2, selectionManager
-          .getSelectionSet(), null, sb);
+          .getSelectionSet(), parameters, sb);
     }
     if (msg != null)
       msg = "OK " + msg + " " + fullPath[0];

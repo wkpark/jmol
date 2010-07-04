@@ -5005,7 +5005,7 @@ public class ScriptEvaluator {
         case Token.plot:
         case Token.quaternion:
         case Token.ramachandran:
-          plot();
+          plot(statement);
           break;
         case Token.print:
           print();
@@ -8004,262 +8004,6 @@ public class ScriptEvaluator {
     return filename;
   }
 
-  private void plot() throws ScriptException {
-    // also used for draw [quaternion, helix, ramachandran]
-    // generic propertyX, propertyY, propertyZ // TODO
-    int modelIndex = viewer.getCurrentModelIndex();
-    if (modelIndex < 0)
-      error(ERROR_multipleModelsDisplayedNotOK, "plot");
-    modelIndex = viewer.getJmolDataSourceFrame(modelIndex);
-    boolean isQuaternion = false;
-    boolean isDerivative = false;
-    boolean isSecondDerivative = false;
-    boolean isRamachandranRelative = false;
-    int propertyX = 0, propertyY = 0, propertyZ = 0;
-    BitSet bs = BitSetUtil.copy(viewer.getSelectionSet());
-    Object[] parameters = null;
-    String stateScript = "";
-    int pt = statementLength - 1;
-    String qFrame = "";
-    String type = optParameterAsString(pt).toLowerCase();
-    Point3f minXYZ = null;
-    Point3f maxXYZ = null;
-    
-    boolean isDraw = (tokAt(0) == Token.draw);
-    boolean isPlot = (tokAt(0) == Token.plot); // Jmol 12.0.RC23
-    int pt0 = (isDraw || isPlot ? 1 : 0);
-    int datatype = -1;
-    switch (tokAt(pt0)) {
-    case Token.quaternion:
-    case Token.helix:
-      datatype = JmolConstants.JMOL_DATA_QUATERNION;
-      break;
-    case Token.ramachandran:
-      datatype = JmolConstants.JMOL_DATA_RAMACHANDRAN;
-      break;
-    case Token.property:
-      break;
-    default:
-      iToken = 1;
-      error(ERROR_invalidArgument);
-    }
-    switch (datatype) {
-    case -1:
-      iToken = 2;
-      if (!isPlot
-          || !Token.tokAttr(propertyX = tokAt(iToken++), Token.atomproperty)
-          || !Token.tokAttr(propertyY = tokAt(iToken++), Token.atomproperty))
-        error(ERROR_invalidArgument);
-      if (Token.tokAttr(propertyZ = tokAt(iToken), Token.atomproperty))
-        iToken++;
-      else
-        propertyZ = 0;
-      type = "property " + Token.nameOf(propertyX) + " " + Token.nameOf(propertyY)
-          + (propertyZ == 0 ? "" : " " + Token.nameOf(propertyZ));
-      if (bs.nextSetBit(0) < 0)
-        bs = viewer.getModelUndeletedAtomsBitSet(modelIndex);
-      stateScript = "select " + Escape.escape(bs) + ";\n ";
-      break;
-    case JmolConstants.JMOL_DATA_RAMACHANDRAN:
-      if (type.equalsIgnoreCase("draw")) {
-        isDraw = true;
-        type = optParameterAsString(--pt).toLowerCase();
-      }
-      isRamachandranRelative = (pt > pt0 && type.startsWith("r"));
-      type = "ramachandran" + (isRamachandranRelative ? " r" : "")
-          + (isDraw ? " draw" : "");
-      break;
-    case JmolConstants.JMOL_DATA_QUATERNION:
-      qFrame = " \"" + viewer.getQuaternionFrame() + "\"";
-      stateScript = "set quaternionFrame" + qFrame + ";\n  ";
-      isQuaternion = true;
-      // working backward this time:
-      if (type.equalsIgnoreCase("draw")) {
-        isDraw = true;
-        type = optParameterAsString(--pt).toLowerCase();
-      }
-      isDerivative = (type.startsWith("deriv") || type.startsWith("diff"));
-      isSecondDerivative = (isDerivative && type.indexOf("2") > 0);
-      if (isDerivative)
-        pt--;
-      if (type.equalsIgnoreCase("helix") || type.equalsIgnoreCase("axis")) {
-        isDraw = true;
-        isDerivative = true;
-        pt = -1;
-      }
-      type = ((pt <= pt0 ? "" : optParameterAsString(pt)) + "w")
-          .substring(0, 1);
-      if (type.equals("a") || type.equals("r"))
-        isDerivative = true;
-      if (!Parser.isOneOf(type, "w;x;y;z;r;a")) // a absolute; r relative
-        evalError("QUATERNION [w,x,y,z,a,r] [difference][2]", null);
-      type = "quaternion " + type + (isDerivative ? " difference" : "")
-          + (isSecondDerivative ? "2" : "") + (isDraw ? " draw" : "");
-      break;
-    }
-    if (isSyntaxCheck) // just in case we later add parameter options to this
-      return;
-    // for now, just one frame visible
-    stateScript += "plot " + type;
-    String preSelected = "; select " + Escape.escape(bs) + ";\n ";
-    if (isDraw) {
-      runScript(viewer.getPdbData(modelIndex, type, null));
-      return;
-    }
-    int ptDataFrame = viewer.getJmolDataFrameIndex(modelIndex, stateScript);
-    if (ptDataFrame > 0) {
-      // no -- this is that way we switch frames. viewer.deleteAtoms(viewer.getModelUndeletedAtomsBitSet(ptDataFrame), true);
-      // data frame can't be 0.
-      viewer.setCurrentModelIndex(ptDataFrame, true);
-      // BitSet bs2 = viewer.getModelAtomBitSet(ptDataFrame);
-      // bs2.and(bs);
-      // need to be able to set data directly as well.
-      // viewer.display(BitSetUtil.setAll(viewer.getAtomCount()), bs2, tQuiet);
-      return;
-    }
-    String[] savedFileInfo = viewer.getFileInfo();
-    boolean oldAppendNew = viewer.getAppendNew();
-    viewer.setAppendNew(true);
-    float[] dataX = null, dataY = null, dataZ = null;
-    Point3f factors = new Point3f(1, 1, 1);
-    switch (datatype) {
-    case -1:
-      dataX = getBitsetPropertyFloat(bs, propertyX);
-      dataY = getBitsetPropertyFloat(bs, propertyY);
-      dataZ = getBitsetPropertyFloat(bs, propertyZ);
-
-      if (minXYZ == null)
-        minXYZ = new Point3f(getMinMax(dataX, false, propertyX),getMinMax(dataY, false, propertyY), getMinMax(dataZ, false, propertyZ));
-      if (maxXYZ == null)
-        maxXYZ = new Point3f(getMinMax(dataX, true, propertyX),getMinMax(dataY, true, propertyY),getMinMax(dataZ, true, propertyZ));
-      Point3f center = new Point3f(maxXYZ);
-      center.add(minXYZ);
-      center.scale(0.5f);
-      factors.set(maxXYZ);
-      factors.sub(minXYZ);
-      factors.set(factors.x / 200, factors.y / 200, factors.z / 200);
-      if (Token.tokAttr(propertyX, Token.intproperty)) {
-        factors.x = 1;
-        center.x = 0;
-      } else if (factors.x > 0.1 && factors.x <= 10) {
-        factors.x = 1;
-      }
-      if (Token.tokAttr(propertyY, Token.intproperty)) {
-        factors.y = 1;
-        center.y = 0;
-      } else if (factors.y > 0.1 && factors.y <= 10) {
-        factors.y = 1;
-      }
-      if (Token.tokAttr(propertyZ, Token.intproperty)) {
-        factors.z = 1;
-        center.z = 0;
-      } else if (factors.z > 0.1 && factors.z <= 10) {
-        factors.z = 1;
-      }
-      if (propertyZ == 0)
-        center.z = minXYZ.z = maxXYZ.z = factors.z = 0;
-      for (int i = 0; i < dataX.length; i++)
-        dataX[i] = (dataX[i] - center.x) / factors.x;
-      for (int i = 0; i < dataY.length; i++)
-        dataY[i] = (dataY[i] - center.y) / factors.y;
-      if (propertyZ != 0)
-        for (int i = 0; i < dataZ.length; i++)
-          dataZ[i] = (dataZ[i] - center.z) / factors.z;
-      parameters = new Object[] { bs, dataX, dataY, dataZ, minXYZ, maxXYZ, factors, center };
-      break;
-    case JmolConstants.JMOL_DATA_RAMACHANDRAN:
-      break;
-    case JmolConstants.JMOL_DATA_QUATERNION:
-      break;
-    }
-    String data = viewer.getPdbData(modelIndex, type, parameters);
-    if (Logger.debugging)
-      Logger.info(data);
-    boolean isOK = (data != null && viewer.loadInline(data, true) == null);
-    viewer.setAppendNew(oldAppendNew);
-    viewer.setFileInfo(savedFileInfo);
-    if (!isOK)
-      return;
-    StateScript ss = viewer.addStateScript(stateScript, true, false);
-    int modelCount = viewer.getModelCount();
-    stateScript += ";\n" + preSelected;
-    viewer.setJmolDataFrame(stateScript, modelIndex, modelCount - 1);
-    String script;
-    switch (datatype) {
-    case -1:
-      viewer.setFrameTitle(modelCount - 1, type + " plot for model "
-          + viewer.getModelNumberDotted(modelIndex));
-      float f = 3;
-      script = "frame 0.0; frame last; reset;"
-          + "select visible; spacefill " + f
-          + "; wireframe 0;" + "draw plotAxisX" + modelCount
-          + " {100 -100 -100} {-100 -100 -100} \"" + Token.nameOf(propertyX) + "\";"
-          + "draw plotAxisY" + modelCount + " {-100 100 -100} {-100 -100 -100} \""
-          + Token.nameOf(propertyY) + "\";";
-      if (propertyZ != 0)
-        script += "draw plotAxisZ" + modelCount + " {-100 -100 100} {-100 -100 -100} \""
-            + Token.nameOf(propertyZ) + "\";";
-      break;
-    case JmolConstants.JMOL_DATA_RAMACHANDRAN:
-    default:
-      viewer.setFrameTitle(modelCount - 1, "ramachandran plot for model "
-          + viewer.getModelNumberDotted(modelIndex));
-      script = "frame 0.0; frame last; reset;"
-          + "select visible; color structure; spacefill 3.0; wireframe 0;"
-          + "draw ramaAxisX" + modelCount + " {100 0 0} {-100 0 0} \"phi\";"
-          + "draw ramaAxisY" + modelCount + " {0 100 0} {0 -100 0} \"psi\";";
-      break;
-    case JmolConstants.JMOL_DATA_QUATERNION:
-      viewer.setFrameTitle(modelCount - 1, type.replace('w', ' ') + qFrame
-          + " for model " + viewer.getModelNumberDotted(modelIndex));
-      String color = (Graphics3D
-          .getHexCode(viewer.getColixBackgroundContrast()));
-      script = "frame 0.0; frame last; reset;"
-          + "select visible; wireframe 0; spacefill 3.0; " 
-          + "isosurface quatSphere" + modelCount + " color " + color
-          + " sphere 100.0 mesh nofill frontonly translucent 0.8;"
-          + "draw quatAxis" + modelCount
-          + "X {100 0 0} {-100 0 0} color red \"x\";" + "draw quatAxis"
-          + modelCount + "Y {0 100 0} {0 -100 0} color green \"y\";"
-          + "draw quatAxis" + modelCount
-          + "Z {0 0 100} {0 0 -100} color blue \"z\";" + "color structure;"
-          + "draw quatCenter" + modelCount + "{0 0 0} scale 0.02;";
-      break;
-    }
-    script += preSelected;
-    runScript(script);
-    ss.setModelIndex(viewer.getCurrentModelIndex());
-    viewer.setRotationRadius(150f, true);
-    loadShape(JmolConstants.SHAPE_ECHO);
-    showString("frame " + viewer.getModelNumberDotted(modelCount - 1)
-        + " created: " + type + (isQuaternion ? qFrame : ""));
-  }
-
-  private static float getMinMax(float[] data, boolean isMax, int tok) {
-    if (data == null)
-      return 0;
-    switch (tok) {
-    case Token.omega:
-    case Token.phi:
-    case Token.psi:
-      return (isMax ? 180 : -180);
-    case Token.eta:
-    case Token.theta:
-      return (isMax ? 360 : 0);
-    case Token.straightness:
-      return (isMax ? 1 : -1);
-    }
-    float fmax = (isMax ? -1E10f : 1E10f);
-    for (int i = data.length; --i >= 0;) {
-      float f = data[i];
-      if (Float.isNaN(f))
-        continue;
-      if (isMax == (f > fmax))
-        fmax = f;
-    }
-    return fmax;
-  }
-
   private void measure() throws ScriptException {
     if (tokAt(1) == Token.search) {
       String smarts = stringParameter(statementLength == 3 ? 2 : 4);
@@ -8468,6 +8212,321 @@ public class ScriptEvaluator {
       if (strFormat != null)
         setShapeProperty(JmolConstants.SHAPE_MEASURES, "setFormats", strFormat);
     }
+  }
+
+  private String plot(Token[] args) throws ScriptException {
+    // also used for draw [quaternion, helix, ramachandran] 
+    // and write quaternion, ramachandran, plot, ....
+    // and plot property propertyX, propertyY, propertyZ //
+    int modelIndex = viewer.getCurrentModelIndex();
+    if (modelIndex < 0)
+      error(ERROR_multipleModelsDisplayedNotOK, "plot");
+    modelIndex = viewer.getJmolDataSourceFrame(modelIndex);
+    int pt = args.length - 1;
+    boolean isReturnOnly = (args != statement);
+    Token[] statementSave = statement;
+    if (isReturnOnly)
+      statement = args;
+    int tokCmd = (isReturnOnly ? Token.show : args[0].tok);
+    int pt0 = (tokCmd == Token.quaternion || tokCmd == Token.ramachandran ? 0
+        : 1);
+    String filename = null;
+    boolean makeNewFrame = true;
+    boolean isDraw = false;
+    switch (tokCmd) {
+    case Token.plot:
+    case Token.quaternion:
+    case Token.ramachandran:
+      break;
+    case Token.draw:
+      makeNewFrame = false;      
+      isDraw = true;
+      break;
+    case Token.show:
+      makeNewFrame = false;      
+      break;
+    case Token.write:
+      makeNewFrame = false;
+      if (tokAt(pt) == Token.string) {
+        filename = stringParameter(pt--);
+      } else if (tokAt(pt - 1) == Token.per) {
+        filename = parameterAsString(pt - 2) + "." + parameterAsString(pt);
+        pt -= 3;
+      } else {
+        statement = statementSave;
+        iToken = statement.length;
+        error(ERROR_endOfStatementUnexpected);
+      }
+      break;      
+    }
+    String qFrame = "";
+    Object[] parameters = null;
+    String stateScript = "";
+    boolean isQuaternion = false;
+    boolean isDerivative = false;
+    boolean isSecondDerivative = false;
+    boolean isRamachandranRelative = false;
+    int propertyX = 0, propertyY = 0, propertyZ = 0;
+    BitSet bs = BitSetUtil.copy(viewer.getSelectionSet());
+    String preSelected = "; select " + Escape.escape(bs) + ";\n ";
+    String type = optParameterAsString(pt).toLowerCase();
+    Point3f minXYZ = null;
+    Point3f maxXYZ = null;
+    int plotType = 0;
+    switch (tokAt(pt0)) {
+    case Token.quaternion:
+    case Token.helix:
+      plotType = JmolConstants.JMOL_DATA_QUATERNION;
+      break;
+    case Token.ramachandran:
+      plotType = JmolConstants.JMOL_DATA_RAMACHANDRAN;
+      break;
+    case Token.property:
+      plotType = JmolConstants.JMOL_DATA_OTHER;
+      iToken = pt0 + 1;
+      break;
+    default:
+      iToken = 1;
+      error(ERROR_invalidArgument);
+    }
+    switch (plotType) {
+    case JmolConstants.JMOL_DATA_OTHER:
+      if (!Token.tokAttr(propertyX = tokAt(iToken++), Token.atomproperty)
+          || !Token.tokAttr(propertyY = tokAt(iToken++), Token.atomproperty))
+        error(ERROR_invalidArgument);
+      if (Token.tokAttr(propertyZ = tokAt(iToken), Token.atomproperty))
+        iToken++;
+      else
+        propertyZ = 0;
+      type = "property " + Token.nameOf(propertyX) + " "
+          + Token.nameOf(propertyY)
+          + (propertyZ == 0 ? "" : " " + Token.nameOf(propertyZ));
+      if (bs.nextSetBit(0) < 0)
+        bs = viewer.getModelUndeletedAtomsBitSet(modelIndex);
+      stateScript = "select " + Escape.escape(bs) + ";\n ";
+      break;
+    case JmolConstants.JMOL_DATA_RAMACHANDRAN:
+      if (type.equalsIgnoreCase("draw")) {
+        isDraw = true;
+        type = optParameterAsString(--pt).toLowerCase();
+      }
+      isRamachandranRelative = (pt > pt0 && type.startsWith("r"));
+      type = "ramachandran" + (isRamachandranRelative ? " r" : "")
+          + (tokCmd == Token.draw ? " draw" : "");
+      break;
+    case JmolConstants.JMOL_DATA_QUATERNION:
+      qFrame = " \"" + viewer.getQuaternionFrame() + "\"";
+      stateScript = "set quaternionFrame" + qFrame + ";\n  ";
+      isQuaternion = true;
+      // working backward this time:
+      if (type.equalsIgnoreCase("draw")) {
+        isDraw = true;
+        type = optParameterAsString(--pt).toLowerCase();
+      }
+      isDerivative = (type.startsWith("deriv") || type.startsWith("diff"));
+      isSecondDerivative = (isDerivative && type.indexOf("2") > 0);
+      if (isDerivative)
+        pt--;
+      if (type.equalsIgnoreCase("helix") || type.equalsIgnoreCase("axis")) {
+        isDraw = true;
+        isDerivative = true;
+        pt = -1;
+      }
+      type = ((pt <= pt0 ? "" : optParameterAsString(pt)) + "w")
+          .substring(0, 1);
+      if (type.equals("a") || type.equals("r"))
+        isDerivative = true;
+      if (!Parser.isOneOf(type, "w;x;y;z;r;a")) // a absolute; r relative
+        evalError("QUATERNION [w,x,y,z,a,r] [difference][2]", null);
+      type = "quaternion " + type + (isDerivative ? " difference" : "")
+          + (isSecondDerivative ? "2" : "") + (isDraw ? " draw" : "");
+      break;
+    }
+    statement = statementSave;
+    if (isSyntaxCheck) // just in case we later add parameter options to this
+      return "";
+    
+    // if not just drawing check to see if there is already a plot of this type
+
+    if (makeNewFrame) {
+      stateScript += "plot " + type;
+      int ptDataFrame = viewer.getJmolDataFrameIndex(modelIndex, stateScript);
+      if (ptDataFrame > 0 && tokCmd != Token.write && tokCmd != Token.show) {
+        // no -- this is that way we switch frames. viewer.deleteAtoms(viewer.getModelUndeletedAtomsBitSet(ptDataFrame), true);
+        // data frame can't be 0.
+        viewer.setCurrentModelIndex(ptDataFrame, true);
+        // BitSet bs2 = viewer.getModelAtomBitSet(ptDataFrame);
+        // bs2.and(bs);
+        // need to be able to set data directly as well.
+        // viewer.display(BitSetUtil.setAll(viewer.getAtomCount()), bs2, tQuiet);
+        return "";
+      }
+    }
+    
+    // prepare data for property plotting
+    
+    float[] dataX = null, dataY = null, dataZ = null;
+    Point3f factors = new Point3f(1, 1, 1);
+    if (plotType == JmolConstants.JMOL_DATA_OTHER) {
+      dataX = getBitsetPropertyFloat(bs, propertyX);
+      dataY = getBitsetPropertyFloat(bs, propertyY);
+      dataZ = getBitsetPropertyFloat(bs, propertyZ);
+
+      if (minXYZ == null)
+        minXYZ = new Point3f(getMinMax(dataX, false, propertyX), getMinMax(
+            dataY, false, propertyY), getMinMax(dataZ, false, propertyZ));
+      if (maxXYZ == null)
+        maxXYZ = new Point3f(getMinMax(dataX, true, propertyX), getMinMax(
+            dataY, true, propertyY), getMinMax(dataZ, true, propertyZ));
+      Point3f center = new Point3f(maxXYZ);
+      center.add(minXYZ);
+      center.scale(0.5f);
+      factors.set(maxXYZ);
+      factors.sub(minXYZ);
+      factors.set(factors.x / 200, factors.y / 200, factors.z / 200);
+      if (Token.tokAttr(propertyX, Token.intproperty)) {
+        factors.x = 1;
+        center.x = 0;
+      } else if (factors.x > 0.1 && factors.x <= 10) {
+        factors.x = 1;
+      }
+      if (Token.tokAttr(propertyY, Token.intproperty)) {
+        factors.y = 1;
+        center.y = 0;
+      } else if (factors.y > 0.1 && factors.y <= 10) {
+        factors.y = 1;
+      }
+      if (Token.tokAttr(propertyZ, Token.intproperty)) {
+        factors.z = 1;
+        center.z = 0;
+      } else if (factors.z > 0.1 && factors.z <= 10) {
+        factors.z = 1;
+      }
+      if (propertyZ == 0)
+        center.z = minXYZ.z = maxXYZ.z = factors.z = 0;
+      for (int i = 0; i < dataX.length; i++)
+        dataX[i] = (dataX[i] - center.x) / factors.x;
+      for (int i = 0; i < dataY.length; i++)
+        dataY[i] = (dataY[i] - center.y) / factors.y;
+      if (propertyZ != 0)
+        for (int i = 0; i < dataZ.length; i++)
+          dataZ[i] = (dataZ[i] - center.z) / factors.z;
+      parameters = new Object[] { bs, dataX, dataY, dataZ, minXYZ, maxXYZ,
+          factors, center };
+    }
+    
+    // all set...
+    
+    if (tokCmd == Token.write)
+      return viewer.streamFileData(filename, "PLOT", type, modelIndex,
+          parameters);
+    String data = viewer.getPdbData(modelIndex, type, parameters);
+    if (tokCmd == Token.show)
+      return data;
+
+    if (Logger.debugging)
+      Logger.info(data);
+
+    if (tokCmd == Token.draw) {
+      runScript(data);
+      return "";
+    }
+
+    // create the new model
+    
+    String[] savedFileInfo = viewer.getFileInfo();
+    boolean oldAppendNew = viewer.getAppendNew();
+    viewer.setAppendNew(true);
+    boolean isOK = (data != null && viewer.loadInline(data, true) == null);
+    viewer.setAppendNew(oldAppendNew);
+    viewer.setFileInfo(savedFileInfo);
+    if (!isOK)
+      return "";
+    int modelCount = viewer.getModelCount();
+    viewer.setJmolDataFrame(stateScript, modelIndex, modelCount - 1);
+    if (plotType != JmolConstants.JMOL_DATA_OTHER)
+      stateScript += ";\n" + preSelected;
+    StateScript ss = viewer.addStateScript(stateScript, true, false);
+    
+    // get post-processing script
+    
+    String script;
+    switch (plotType) {
+    case -1:
+      viewer.setFrameTitle(modelCount - 1, type + " plot for model "
+          + viewer.getModelNumberDotted(modelIndex));
+      float f = 3;
+      script = "frame 0.0; frame last; reset;" + "select visible; spacefill "
+          + f + "; wireframe 0;" + "draw plotAxisX" + modelCount
+          + " {100 -100 -100} {-100 -100 -100} \"" + Token.nameOf(propertyX)
+          + "\";" + "draw plotAxisY" + modelCount
+          + " {-100 100 -100} {-100 -100 -100} \"" + Token.nameOf(propertyY)
+          + "\";";
+      if (propertyZ != 0)
+        script += "draw plotAxisZ" + modelCount
+            + " {-100 -100 100} {-100 -100 -100} \"" + Token.nameOf(propertyZ)
+            + "\";";
+      break;
+    case JmolConstants.JMOL_DATA_RAMACHANDRAN:
+    default:
+      viewer.setFrameTitle(modelCount - 1, "ramachandran plot for model "
+          + viewer.getModelNumberDotted(modelIndex));
+      script = "frame 0.0; frame last; reset;"
+          + "select visible; color structure; spacefill 3.0; wireframe 0;"
+          + "draw ramaAxisX" + modelCount + " {100 0 0} {-100 0 0} \"phi\";"
+          + "draw ramaAxisY" + modelCount + " {0 100 0} {0 -100 0} \"psi\";";
+      break;
+    case JmolConstants.JMOL_DATA_QUATERNION:
+      viewer.setFrameTitle(modelCount - 1, type.replace('w', ' ') + qFrame
+          + " for model " + viewer.getModelNumberDotted(modelIndex));
+      String color = (Graphics3D
+          .getHexCode(viewer.getColixBackgroundContrast()));
+      script = "frame 0.0; frame last; reset;"
+          + "select visible; wireframe 0; spacefill 3.0; "
+          + "isosurface quatSphere" + modelCount + " color " + color
+          + " sphere 100.0 mesh nofill frontonly translucent 0.8;"
+          + "draw quatAxis" + modelCount
+          + "X {100 0 0} {-100 0 0} color red \"x\";" + "draw quatAxis"
+          + modelCount + "Y {0 100 0} {0 -100 0} color green \"y\";"
+          + "draw quatAxis" + modelCount
+          + "Z {0 0 100} {0 0 -100} color blue \"z\";" + "color structure;"
+          + "draw quatCenter" + modelCount + "{0 0 0} scale 0.02;";
+      break;
+    }
+    
+    // run the post-processing script and set rotation radius and display frame title
+    runScript(script + preSelected);
+    ss.setModelIndex(viewer.getCurrentModelIndex());
+    viewer.setRotationRadius(150f, true);
+    loadShape(JmolConstants.SHAPE_ECHO);
+    showString("frame " + viewer.getModelNumberDotted(modelCount - 1)
+        + " created: " + type + (isQuaternion ? qFrame : ""));
+    return "";
+  }
+
+  private static float getMinMax(float[] data, boolean isMax, int tok) {
+    if (data == null)
+      return 0;
+    switch (tok) {
+    case Token.omega:
+    case Token.phi:
+    case Token.psi:
+      return (isMax ? 180 : -180);
+    case Token.eta:
+    case Token.theta:
+      return (isMax ? 360 : 0);
+    case Token.straightness:
+      return (isMax ? 1 : -1);
+    }
+    float fmax = (isMax ? -1E10f : 1E10f);
+    for (int i = data.length; --i >= 0;) {
+      float f = data[i];
+      if (Float.isNaN(f))
+        continue;
+      if (isMax == (f > fmax))
+        fmax = f;
+    }
+    return fmax;
   }
 
   private void refresh() {
@@ -12372,6 +12431,7 @@ public class ScriptEvaluator {
     boolean isApplet = viewer.isApplet();
     boolean isCommand = false;
     boolean isShow = false;
+    boolean isImage = false;
     String driverList = viewer.getExportDriverList();
     if (args == null) {
       args = statement;
@@ -12404,49 +12464,17 @@ public class ScriptEvaluator {
         tok = t.tok;
     }
     switch (tok) {
+    case Token.quaternion:
+    case Token.ramachandran:
+    case Token.property:
+      msg = plot(statement);
+      break;
     case Token.pointgroup:
       type = "PGRP";
       pt++;
       type2 = ScriptVariable.sValue(tokenAt(pt, args)).toLowerCase();
       if (type2.equals("draw"))
         pt++;
-      break;
-    case Token.quaternion:
-      pt++;
-      type2 = ScriptVariable.sValue(tokenAt(pt, args)).toLowerCase();
-      if (Parser.isOneOf(type2, "w;x;y;z;a;r"))
-        pt++;
-      else
-        type2 = "w";
-      type = ScriptVariable.sValue(tokenAt(pt, args)).toLowerCase();
-      boolean isDerivative = (type.indexOf("deriv") == 0 || type
-          .indexOf("diff") == 0);
-      if (isDerivative || type2.equals("a") || type2.equals("r")) {
-        type2 += " difference" + (type.indexOf("2") >= 0 ? "2" : "");
-        if (isDerivative)
-          type = ScriptVariable.sValue(tokenAt(++pt, args)).toLowerCase();
-      }
-      if (type.equals("draw")) {
-        type2 += " draw";
-        pt++;
-      }
-      type2 = "quaternion " + type2;
-      type = "QUAT";
-      break;
-    case Token.ramachandran:
-      pt++;
-      type2 = ScriptVariable.sValue(tokenAt(pt, args)).toLowerCase();
-      if (Parser.isOneOf(type2, "r;c;p"))
-        pt++;
-      else
-        type2 = "";
-      type = ScriptVariable.sValue(tokenAt(pt, args)).toLowerCase();
-      if (type.equals("draw")) {
-        type2 += " draw";
-        pt++;
-      }
-      type2 = "ramachandran " + type2;
-      type = "RAMA";
       break;
     case Token.function:
       type = "FUNCS";
@@ -12540,269 +12568,268 @@ public class ScriptEvaluator {
       }
       break;
     }
-    val = ScriptVariable.sValue(tokenAt(pt, args));
-    if (val.equalsIgnoreCase("clipboard")) {
+
+    if (msg == null) {
+      val = ScriptVariable.sValue(tokenAt(pt, args));
+      if (val.equalsIgnoreCase("clipboard")) {
+        if (isSyntaxCheck)
+          return "";
+        // if (isApplet)
+        // evalError(GT._("The {0} command is not available for the applet.",
+        // "WRITE CLIPBOARD"));
+      } else if (Parser.isOneOf(val.toLowerCase(), "png;jpg;jpeg;jpg64;jpeg64")
+          && tokAt(pt + 1, args) == Token.integer) {
+        quality = ScriptVariable.iValue(tokenAt(++pt, args));
+      } else if (Parser.isOneOf(val.toLowerCase(), "xyz;mol;pdb;cml")) {
+        type = val.toUpperCase();
+        if (pt + 1 == argCount)
+          pt++;
+      }
+
+      // write [image|history|state] clipboard
+
+      // write [optional image|history|state] [JPG quality|JPEG quality|JPG64
+      // quality|PNG|PPM|SPT] "filename"
+      // write script "filename"
+      // write isosurface t.jvxl
+
+      if (type.equals("(image)")
+          && Parser.isOneOf(val.toUpperCase(),
+              "GIF;JPG;JPG64;JPEG;JPEG64;PNG;PPM")) {
+        type = val.toUpperCase();
+        pt++;
+      }
+
+      if (pt + 2 == argCount) {
+        data = ScriptVariable.sValue(tokenAt(++pt, args));
+        if (data.length() > 0 && data.charAt(0) != '.')
+          type = val.toUpperCase();
+      }
+      switch (tokAt(pt, args)) {
+      case Token.nada:
+      case Token.clipboard:
+        break;
+      case Token.identifier:
+      case Token.string:
+        fileName = ScriptVariable.sValue(tokenAt(pt, args));
+        if (pt == argCount - 3 && tokAt(pt + 1, args) == Token.per) {
+          // write filename.xxx gets separated as filename .spt
+          // write isosurface filename.xxx also
+          fileName += "." + ScriptVariable.sValue(tokenAt(pt + 2, args));
+        }
+        if (type != "VAR" && pt == 1)
+          type = "image";
+        else if (fileName.length() > 0 && fileName.charAt(0) == '.'
+            && (pt == 2 || pt == 3)) {
+          fileName = ScriptVariable.sValue(tokenAt(pt - 1, args)) + fileName;
+          if (type != "VAR" && pt == 2)
+            type = "image";
+        }
+        if (fileName.equalsIgnoreCase("clipboard"))
+          fileName = null;
+        break;
+      default:
+        error(ERROR_invalidArgument);
+      }
+      if (type.equals("image") || type.equals("frame")) {
+        if (fileName != null && fileName.indexOf(".") >= 0)
+          type = fileName.substring(fileName.lastIndexOf(".") + 1)
+              .toUpperCase();
+        else
+          type = "JPG";
+        if (type.equals("MNU"))
+          type = "MENU";
+        else if (type.equals("WRL") || type.equals("VRML")) {
+          type = "Vrml";
+          isExport = true;
+        } else if (type.equals("X3D")) {
+          type = "X3d";
+          isExport = true;
+        } else if (type.equals("IDTF")) {
+          type = "Idtf";
+          isExport = true;
+        } else if (type.equals("MA")) {
+          type = "Maya";
+          isExport = true;
+        } else if (type.equals("JVXL")) {
+          type = "ISOX";
+        } else if (type.equals("XJVXL")) {
+          type = "ISOX";
+        } else if (type.equals("MESH")) {
+          type = "MESH";
+        } else if (type.equals("JMOL")) {
+          type = "ZIPALL";
+        }
+      }
+      if (type.equals("data")) {
+        if (fileName != null && fileName.indexOf(".") >= 0)
+          type = fileName.substring(fileName.lastIndexOf(".") + 1)
+              .toUpperCase();
+        else
+          type = "XYZ";
+      }
+      isImage = Parser.isOneOf(type,
+          "GIF;JPEG64;JPEG;JPG64;JPG;PPM;PNG");
+      if (isImage && fileName == null)
+        type = "[image to clipboard]";
+      else if (isImage && (isApplet && !viewer.isSignedApplet() || isShow))
+        type = "JPG64";
+      else if (!isImage
+          && !isExport
+          && !Parser
+              .isOneOf(
+                  type,
+                  "ZIP;ZIPALL;SPT;HIS;MO;ISO;ISOX;MESH;PMESH;VAR;FILE;CML;XYZ;MENU;MOL;PDB;PGRP;QUAT;RAMA;FUNCS;"))
+        error(
+            ERROR_writeWhat,
+            "COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|ISOSURFACE|JMOL|MENU|MO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
+                + "|RAMACHANDRAN|SPT|STATE|VAR x|ZIP|ZIPALL  CLIPBOARD",
+            "CML|GIF|JPG|JPG64|JVXL|MESH|MOL|PDB|PMESH|PNG|PPM|SPT|XJVXL|XYZ|ZIP"
+                + driverList.toUpperCase().replace(';', '|'));
       if (isSyntaxCheck)
         return "";
-      // if (isApplet)
-      // evalError(GT._("The {0} command is not available for the applet.",
-      // "WRITE CLIPBOARD"));
-    } else if (Parser.isOneOf(val.toLowerCase(), "png;jpg;jpeg;jpg64;jpeg64")
-        && tokAt(pt + 1, args) == Token.integer) {
-      quality = ScriptVariable.iValue(tokenAt(++pt, args));
-    } else if (Parser.isOneOf(val.toLowerCase(), "xyz;mol;pdb;cml")) {
-      type = val.toUpperCase();
-      if (pt + 1 == argCount)
-        pt++;
-    }
-
-    // write [image|history|state] clipboard
-
-    // write [optional image|history|state] [JPG quality|JPEG quality|JPG64
-    // quality|PNG|PPM|SPT] "filename"
-    // write script "filename"
-    // write isosurface t.jvxl
-
-    if (type.equals("(image)")
-        && Parser.isOneOf(val.toUpperCase(),
-            "GIF;JPG;JPG64;JPEG;JPEG64;PNG;PPM")) {
-      type = val.toUpperCase();
-      pt++;
-    }
-
-    if (pt + 2 == argCount) {
-      data = ScriptVariable.sValue(tokenAt(++pt, args));
-      if (data.length() > 0 && data.charAt(0) != '.')
-        type = val.toUpperCase();
-    }
-    switch (tokAt(pt, args)) {
-    case Token.nada:
-    case Token.clipboard:
-      break;
-    case Token.identifier:
-    case Token.string:
-      fileName = ScriptVariable.sValue(tokenAt(pt, args));
-      if (pt == argCount - 3 && tokAt(pt + 1, args) == Token.per) {
-        // write filename.xxx gets separated as filename .spt
-        // write isosurface filename.xxx also
-        fileName += "." + ScriptVariable.sValue(tokenAt(pt + 2, args));
-      }
-      if (type != "VAR" && pt == 1)
-        type = "image";
-      else if (fileName.length() > 0 && fileName.charAt(0) == '.'
-          && (pt == 2 || pt == 3)) {
-        fileName = ScriptVariable.sValue(tokenAt(pt - 1, args)) + fileName;
-        if (type != "VAR" && pt == 2)
-          type = "image";
-      }
-      if (fileName.equalsIgnoreCase("clipboard"))
-        fileName = null;
-      break;
-    default:
-      error(ERROR_invalidArgument);
-    }
-    if (type.equals("image") || type.equals("frame")) {
-      if (fileName != null && fileName.indexOf(".") >= 0)
-        type = fileName.substring(fileName.lastIndexOf(".") + 1).toUpperCase();
-      else
-        type = "JPG";
-      if (type.equals("MNU"))
-        type = "MENU";
-      else if (type.equals("WRL") || type.equals("VRML")) {
-        type = "Vrml";
-        isExport = true;
-      } else if (type.equals("X3D")) {
-        type = "X3d";
-        isExport = true;
-      } else if (type.equals("IDTF")) {
-        type = "Idtf";
-        isExport = true;
-      } else if (type.equals("MA")) {
-        type = "Maya";
-        isExport = true;
-      } else if (type.equals("JVXL")) {
-        type = "ISOX";
-      } else if (type.equals("XJVXL")) {
-        type = "ISOX";
-      } else if (type.equals("MESH")) {
-        type = "MESH";
-      } else if (type.equals("JMOL")) {
-        type = "ZIPALL";
-      }
-    }
-    if (type.equals("data")) {
-      if (fileName != null && fileName.indexOf(".") >= 0)
-        type = fileName.substring(fileName.lastIndexOf(".") + 1).toUpperCase();
-      else
-        type = "XYZ";
-    }
-    boolean isImage = Parser.isOneOf(type, "GIF;JPEG64;JPEG;JPG64;JPG;PPM;PNG");
-    if (isImage && fileName == null)
-      type = "[image to clipboard]";
-    else if (isImage && (isApplet && !viewer.isSignedApplet() || isShow))
-      type = "JPG64";
-    else if (!isImage
-        && !isExport
-        && !Parser
-            .isOneOf(
-                type,
-                "ZIP;ZIPALL;SPT;HIS;MO;ISO;ISOX;MESH;PMESH;VAR;FILE;CML;XYZ;MENU;MOL;PDB;PGRP;QUAT;RAMA;FUNCS;"))
-      error(
-          ERROR_writeWhat,
-          "COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|ISOSURFACE|JMOL|MENU|MO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
-              + "|RAMACHANDRAN|SPT|STATE|VAR x|ZIP|ZIPALL  CLIPBOARD",
-          "CML|GIF|JPG|JPG64|JVXL|MESH|MOL|PDB|PMESH|PNG|PPM|SPT|XJVXL|XYZ|ZIP"
-              + driverList.toUpperCase().replace(';', '|'));
-    if (isSyntaxCheck)
-      return "";
-    data = type.intern();
-    Object bytes = null;
-    boolean doDefer = false;
-    if (isExport) {
-      // POV-Ray uses a BufferedWriter instead of a StringBuffer.
-      boolean isPovRay = type.equals("Povray");
-      // todo -- there's no reason this data has to be done this way. 
-      // we could send all of them out to file directly
-      data = viewer.generateOutput(data, fileName, width, height);
-      if (data == null || data.length() == 0)
+      data = type.intern();
+      Object bytes = null;
+      boolean doDefer = false;
+      if (isExport) {
+        // POV-Ray uses a BufferedWriter instead of a StringBuffer.
+        boolean isPovRay = type.equals("Povray");
+        // todo -- there's no reason this data has to be done this way. 
+        // we could send all of them out to file directly
+        data = viewer.generateOutput(data, fileName, width, height);
+        if (data == null || data.length() == 0)
+          return "";
+        if (!isCommand)
+          return data;
+        if (isPovRay) {
+          fileName = data.substring(data.indexOf("File created: ") + 14);
+          fileName = fileName.substring(0, fileName.indexOf("\n"));
+          fileName = fileName.substring(0, fileName.lastIndexOf(" ("));
+          msg = viewer.createImage(fileName + ".ini", "ini", data,
+              Integer.MIN_VALUE, 0, 0, null, fullPath);
+          data = "Created " + fullPath[0] + ":\n\n" + data;
+        } else {
+          msg = data;
+        }
+        if (msg != null) {
+          if (!msg.startsWith("OK"))
+            evalError(msg, null);
+          scriptStatusOrBuffer(data);
+        }
         return "";
+
+      } else if (data == "MENU") {
+        data = viewer.getMenu("");
+      } else if (data == "PGRP") {
+        data = viewer
+            .getPointGroupAsString(type2.equals("draw"), null, 0, 1.0f);
+      } else if (data == "PDB") {
+        if (isShow) {
+          data = viewer.getPdbData(null, null);
+        } else {
+          doDefer = true;
+          /*
+           * OutputStream os = viewer.getOutputStream(fileName, fullPath); msg =
+           * viewer.getPdbData(null, new BufferedOutputStream(os)); if (msg !=
+           * null) msg = "OK " + msg + " " + fullPath[0]; try { os.close(); }
+           * catch (IOException e) { // TODO }
+           */
+        }
+      } else if (data == "FILE") {
+        if (isShow)
+          data = viewer.getCurrentFileAsString();
+        else
+          doDefer = true;
+        if ("?".equals(fileName))
+          fileName = "?Jmol." + viewer.getParameter("_fileType");
+      } else if (data == "MOL" && isCoord) {
+        data = viewer.getModelExtract("selected", true);
+      } else if (data == "XYZ" || data == "MOL" || data == "CML") {
+        data = viewer.getData("selected", data);
+      } else if (data == "FUNCS") {
+        data = viewer.getFunctionCalls(null);
+        type = "TXT";
+      } else if (data == "VAR") {
+        data = ScriptVariable.sValue((ScriptVariable) getParameter(
+            ScriptVariable.sValue(tokenAt(isCommand ? 2 : 1, args)), true));
+        type = "TXT";
+      } else if (data == "SPT") {
+        if (isCoord) {
+          BitSet tainted = viewer.getTaintedAtoms(AtomCollection.TAINT_COORD);
+          viewer.setAtomCoordRelative(new Point3f(0, 0, 0), null);
+          data = (String) viewer.getProperty("string", "stateInfo", null);
+          viewer.setTaintedAtoms(tainted, AtomCollection.TAINT_COORD);
+        } else {
+          data = (String) viewer.getProperty("string", "stateInfo", null);
+          if (localPath != null || remotePath != null)
+            data = FileManager.setScriptFileReferences(data, localPath,
+                remotePath, null);
+        }
+      } else if (data == "ZIP" || data == "ZIPALL") {
+        data = (String) viewer.getProperty("string", "stateInfo", null);
+        bytes = viewer.createImage(fileName, type, data, Integer.MIN_VALUE, -1,
+            -1);
+      } else if (data == "HIS") {
+        data = viewer.getSetHistory(Integer.MAX_VALUE);
+        type = "SPT";
+      } else if (data == "MO") {
+        data = getMoJvxl(Integer.MAX_VALUE);
+        type = "XJVXL";
+      } else if (data == "PMESH") {
+        if ((data = getIsosurfaceJvxl(true, JmolConstants.SHAPE_PMESH)) == null)
+          error(ERROR_noData);
+        type = "XJVXL";
+      } else if (data == "ISO" || data == "ISOX" || data == "MESH") {
+        if ((data = getIsosurfaceJvxl(data == "MESH",
+            JmolConstants.SHAPE_ISOSURFACE)) == null)
+          error(ERROR_noData);
+        type = (data.indexOf("<?xml") >= 0 ? "XJVXL" : "JVXL");
+        if (!isShow)
+          showString((String) getShapeProperty(JmolConstants.SHAPE_ISOSURFACE,
+              "jvxlFileInfo"));
+      } else {
+        // image
+        len = -1;
+        if (quality < 0)
+          quality = -1;
+      }
+      if (data == null && !doDefer)
+        data = "";
+      if (len == 0 && !doDefer)
+        len = (bytes == null ? data.length()
+            : bytes instanceof String ? ((String) bytes).length()
+                : ((byte[]) bytes).length);
+      if (isImage) {
+        refresh();
+        if (width < 0)
+          width = viewer.getScreenWidth();
+        if (height < 0)
+          height = viewer.getScreenHeight();
+      }
       if (!isCommand)
         return data;
-      if (isPovRay) {
-        fileName = data.substring(data.indexOf("File created: ") + 14);
-        fileName = fileName.substring(0, fileName.indexOf("\n"));
-        fileName = fileName.substring(0, fileName.lastIndexOf(" ("));
-        msg = viewer.createImage(fileName + ".ini", "ini", data,
-            Integer.MIN_VALUE, 0, 0, null, fullPath);
-        data = "Created " + fullPath[0] + ":\n\n" + data;
-      } else {
-        msg = data;
-      }
-      if (msg != null) {
-        if (!msg.startsWith("OK"))
-          evalError(msg, null);
-        scriptStatusOrBuffer(data);
-      }
-      return "";
-      
-    } else if (data == "MENU") {
-      data = viewer.getMenu("");
-    } else if (data == "PGRP") {
-      data = viewer.getPointGroupAsString(type2.equals("draw"), null, 0, 1.0f);
-    } else if (data == "PDB") {
       if (isShow) {
-        data = viewer.getPdbData(null, null);
-      } else {
-        doDefer = true;
-        /*
-         * OutputStream os = viewer.getOutputStream(fileName, fullPath); msg =
-         * viewer.getPdbData(null, new BufferedOutputStream(os)); if (msg !=
-         * null) msg = "OK " + msg + " " + fullPath[0]; try { os.close(); }
-         * catch (IOException e) { // TODO }
-         */
+        showString(data);
+        return "";
       }
-    } else if (data == "FILE") {
-      if (isShow)
-        data = viewer.getCurrentFileAsString();
-      else
-        doDefer = true;
-      if ("?".equals(fileName))
-        fileName = "?Jmol." + viewer.getParameter("_fileType");
-    } else if (data == "QUAT" || data == "RAMA") {
-      int modelIndex = viewer.getCurrentModelIndex();
-      if (modelIndex < 0)
-        error(ERROR_multipleModelsDisplayedNotOK, "write " + type2);
-      data = type2;
-      if (isShow)
-        data = viewer.getPdbData(modelIndex, type2, null);
-      else
-        doDefer = true;
-    } else if (data == "MOL" && isCoord) {
-      data = viewer.getModelExtract("selected", true);
-    } else if (data == "XYZ" || data == "MOL" || data == "CML") {
-      data = viewer.getData("selected", data);
-    } else if (data == "FUNCS") {
-      data = viewer.getFunctionCalls(null);
-      type = "TXT";
-    } else if (data == "VAR") {
-      data = ScriptVariable.sValue((ScriptVariable) getParameter(ScriptVariable
-          .sValue(tokenAt(isCommand ? 2 : 1, args)), true));
-      type = "TXT";
-    } else if (data == "SPT") {
-      if (isCoord) {
-        BitSet tainted = viewer.getTaintedAtoms(AtomCollection.TAINT_COORD);
-        viewer.setAtomCoordRelative(new Point3f(0, 0, 0), null);
-        data = (String) viewer.getProperty("string", "stateInfo", null);
-        viewer.setTaintedAtoms(tainted, AtomCollection.TAINT_COORD);
-      } else {
-        data = (String) viewer.getProperty("string", "stateInfo", null);
-        if (localPath != null || remotePath != null)
-          data = FileManager.setScriptFileReferences(data, localPath,
-              remotePath, null);
+      if (bytes != null && bytes instanceof String) {
+        // load error here
+        scriptStatusOrBuffer((String) bytes);
+        return "";
       }
-    } else if (data == "ZIP" || data == "ZIPALL") {
-      data = (String) viewer.getProperty("string", "stateInfo", null);
-      bytes = viewer.createImage(fileName, type, data, Integer.MIN_VALUE, -1,
-          -1);
-    } else if (data == "HIS") {
-      data = viewer.getSetHistory(Integer.MAX_VALUE);
-      type = "SPT";
-    } else if (data == "MO") {
-      data = getMoJvxl(Integer.MAX_VALUE);
-      type = "XJVXL";
-    } else if (data == "PMESH") {
-      if ((data = getIsosurfaceJvxl(true, JmolConstants.SHAPE_PMESH)) == null)
-        error(ERROR_noData);
-      type = "XJVXL";
-    } else if (data == "ISO" || data == "ISOX" || data == "MESH") {
-      if ((data = getIsosurfaceJvxl(data == "MESH",
-          JmolConstants.SHAPE_ISOSURFACE)) == null)
-        error(ERROR_noData);
-      type = (data.indexOf("<?xml") >= 0 ? "XJVXL" : "JVXL");
-      if (!isShow)
-        showString((String) getShapeProperty(
-            JmolConstants.SHAPE_ISOSURFACE, "jvxlFileInfo"));
-    } else {
-      // image
-      len = -1;
-      if (quality < 0)
-        quality = -1;
-    }
-    if (data == null && !doDefer)
-      data = "";
-    if (len == 0 && !doDefer)
-      len = (bytes == null ? data.length()
-          : bytes instanceof String ? ((String) bytes).length()
-              : ((byte[]) bytes).length);
-    if (isImage) {
-      refresh();
-      if (width < 0)
-        width = viewer.getScreenWidth();
-      if (height < 0)
-        height = viewer.getScreenHeight();
-    }
-    if (!isCommand)
-      return data;
-    if (isShow) {
-      showString(data);
-    } else if (bytes != null && bytes instanceof String) {
-      // load error here
-      scriptStatusOrBuffer((String) bytes);
-      return "";
-    } else {
       if (bytes == null && (!isImage || fileName != null))
         bytes = data;
       if (doDefer)
-        msg = viewer.streamFileData(fileName, type, type2);
+        msg = viewer.streamFileData(fileName, type, type2, 0, null);
       else
         msg = viewer.createImage(fileName, type, bytes, quality, width, height,
             bsFrames, fullPath);
-      if (msg != null) {
-        if (!msg.startsWith("OK"))
-          evalError(msg, null);
-        scriptStatusOrBuffer(msg
-            + (isImage ? "; width=" + width + "; height=" + height : ""));
-      }
+    }
+    if (msg != null) {
+      if (!msg.startsWith("OK"))
+        evalError(msg, null);
+      scriptStatusOrBuffer(msg
+          + (isImage ? "; width=" + width + "; height=" + height : ""));
     }
     return "";
   }
@@ -12890,8 +12917,7 @@ public class ScriptEvaluator {
       int modelIndex = viewer.getCurrentModelIndex();
       if (modelIndex < 0)
         error(ERROR_multipleModelsDisplayedNotOK, "show " + theToken.value);
-      msg = viewer.getPdbData(modelIndex,
-          theTok == Token.quaternion ? "quaternion w" : "ramachandran", null);
+      msg = plot(statement);
       break;
     case Token.trace:
       if (!isSyntaxCheck)
@@ -13274,7 +13300,7 @@ public class ScriptEvaluator {
     case Token.helix:
     case Token.quaternion:
     case Token.ramachandran:
-      plot();
+      plot(statement);
       return;
     }
     boolean havePoints = false;

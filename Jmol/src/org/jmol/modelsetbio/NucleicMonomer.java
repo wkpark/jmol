@@ -362,15 +362,16 @@ public class NucleicMonomer extends PhosphorusMonomer {
     // quaternionFrame 'n' same, but with N1/N9 as base atom (only different for DRAW)
     Atom ptA = null, ptB = null, ptNorP;
     boolean yBased = false;
+    boolean reverseY = false;
     switch (qType) {
-    case 'a': // alternative Cr' - P - C4'
-      //   (C4_i-1 - P_i - C4_i) 
-      
+    case 'a': // alternative C4' - P - C4'
+      //   (C4_i-1 - P_i - C4_i), with Y P_i - C4_i      
       ptNorP = getP();
       if (monomerIndex == 0 || ptNorP == null)
         return null;
-      ptA = getC4P();
-      ptB = ((NucleicMonomer) bioPolymer.monomers[monomerIndex - 1]).getC4P();
+      yBased = true;
+      ptA = ((NucleicMonomer) bioPolymer.monomers[monomerIndex - 1]).getC4P();
+      ptB = getC4P();
       break;
     case 'b': // phosphorus backbone
       return super.getQuaternion(qType);
@@ -381,6 +382,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
       if (ptNorP == null)
         return null;
       yBased = true;
+      reverseY = true;
       // vB = -(N0-C1P)
       // vA = vB x (vB x (N0-C2))
       ptA = getAtomFromOffsetIndex(C2);
@@ -437,7 +439,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
 
     Vector3f vB = new Vector3f(ptB);
     vB.sub(ptNorP);
-    if (yBased)
+    if (reverseY)
       vB.scale(-1);
     return Quaternion.getQuaternionFrame(vA, vB, null, yBased);
   }

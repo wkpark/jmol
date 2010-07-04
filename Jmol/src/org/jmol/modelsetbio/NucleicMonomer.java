@@ -327,15 +327,13 @@ public class NucleicMonomer extends PhosphorusMonomer {
   }
    
   Point3f baseCenter;  
+
   Point3f getQuaternionFrameCenter(char qType) {
     switch (qType) {
-    case 'p':
+    case 'a':
     case 'b':
+    case 'p':
       return getP();
-    case 'x':
-    case 'n':
-    default:
-      return getN0();
     case 'c':
       // Sarver's base center; does not include C4'
       if (baseCenter == null) {
@@ -351,6 +349,10 @@ public class NucleicMonomer extends PhosphorusMonomer {
         baseCenter.scale(1f / n);
       }
       return baseCenter;
+    case 'n':
+    case 'x':
+    default:
+      return getN0();
     }
   }
 

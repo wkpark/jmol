@@ -343,6 +343,8 @@ public abstract class Monomer extends Group {
       return super.getHelixData(tokType, qType, mStep);
     Point3f a = (mStep < 1 ? new Point3f(0, 0, 0) : prev.getQuaternionFrameCenter(qType));
     Point3f b = getQuaternionFrameCenter(qType);
+    if (a == null || b == null)
+      return super.getHelixData(tokType, qType, mStep);
     return Measure.computeHelicalAxis(tokType == Token.draw ? "helixaxis" + getUniqueID() : null, 
         tokType, (Point3f) a, (Point3f) b, q2.div(q1));
   }

@@ -158,16 +158,17 @@ public class AlphaMonomer extends Monomer {
   
   Point3f getQuaternionFrameCenter(char qType) {
     switch (qType) {
-    case 'C': // ramachandran
-    case 'a':
+    case 'b':
     case 'c':
+    case 'C': // ramachandran
     case 'x':
       return getLeadAtom();
     default:
-    case 'P': // ramachandran
-    case 'q':
-    case 'p':
+    case 'a':
     case 'n':
+    case 'p':
+    case 'P': // ramachandran
+    case 'q': // Quine
       return null;
     }
   }
@@ -189,7 +190,15 @@ public class AlphaMonomer extends Monomer {
     Vector3f vC = null;
 
     switch (qType) {
+    default:
     case 'a':
+    case 'n':
+    case 'p':
+    case 'q':
+      return null;
+    case 'b':
+    case 'c':
+    case 'x':
       //vA = ptCa(i+1) - ptCa
       //vB = ptCa(i-1) - ptCa
       if (monomerIndex == 0 
@@ -201,11 +210,6 @@ public class AlphaMonomer extends Monomer {
       vA.sub(ptCaNext, ptCa);
       vB.sub(ptCaPrev, ptCa);
       break;
-    default:
-    case 'c':
-    case 'n':
-    case 'p':
-      return null;
     }
     return Quaternion.getQuaternionFrame(vA, vB, vC, false);
   }

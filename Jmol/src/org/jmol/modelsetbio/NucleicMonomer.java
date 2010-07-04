@@ -325,19 +325,19 @@ public class NucleicMonomer extends PhosphorusMonomer {
   public Object getHelixData(int tokType, char qType, int mStep) {
     return getHelixData2(tokType, qType, mStep);
   }
- 
-  
+   
   Point3f baseCenter;  
   Point3f getQuaternionFrameCenter(char qType) {
     switch (qType) {
     case 'p':
-    case 'a':
-      return super.getQuaternionFrameCenter(qType);
+    case 'b':
+      return getP();
     case 'x':
     case 'n':
     default:
       return getN0();
     case 'c':
+      // Sarver's base center; does not include C4'
       if (baseCenter == null) {
         int n = 0;
         baseCenter = new Point3f();
@@ -355,17 +355,15 @@ public class NucleicMonomer extends PhosphorusMonomer {
   }
 
   public Quaternion getQuaternion(char qType) {
-    // quaternionFrame 'C' from  
+    // quaternionFrame 'c' from  
     // Sarver M, Zirbel CL, Stombaugh J, Mokdad A, Leontis NB. 
     // FR3D: finding local and composite recurrent structural motifs in RNA 3D structures. 
     // J. Math. Biol. (2006) 215-252
-
+    // quaternionFrame 'n' same, but with N1/N9 as base atom (only different for DRAW)
     Atom ptA = null, ptB = null, ptNorP;
-    boolean asSarver = false;
+    boolean yBased = false;
     switch (qType) {
-    case 'a':
-      return super.getQuaternion(qType);
-    case 'b':
+    case 'a': // alternative Cr' - P - C4'
       //   (C4_i-1 - P_i - C4_i) 
       
       ptNorP = getP();
@@ -374,7 +372,22 @@ public class NucleicMonomer extends PhosphorusMonomer {
       ptA = getC4P();
       ptB = ((NucleicMonomer) bioPolymer.monomers[monomerIndex - 1]).getC4P();
       break;
-    case 'p':
+    case 'b': // phosphorus backbone
+      return super.getQuaternion(qType);
+    case 'c': // Sarver-defined, with Y in the C1'-N1/9 direction, x toward C2 (W-C edge) 
+    case 'n': // same, just different quaternion center
+      // N0 = (purine N9, pyrimidine N1): 
+      ptNorP = getN0();
+      if (ptNorP == null)
+        return null;
+      yBased = true;
+      // vB = -(N0-C1P)
+      // vA = vB x (vB x (N0-C2))
+      ptA = getAtomFromOffsetIndex(C2);
+      ptB = getAtomFromOffsetIndex(C1P);
+      break;
+    case 'p': // phosphorus tetrahedron
+      // O1P - P - O2P
       ptNorP = getP();
       if (ptNorP == null)
         return null;
@@ -394,17 +407,8 @@ public class NucleicMonomer extends PhosphorusMonomer {
           ptA = atom;
       }
       break;
-    case 'c':
-      // N0 = (purine N9, pyrimidine N1): 
-      ptNorP = getN0();
-      if (ptNorP == null)
-        return null;
-      asSarver = true;
-      // vB = -(N0-C1P)
-      // vA = vB x (vB x (N0-C2))
-      ptA = getAtomFromOffsetIndex(C2);
-      ptB = getAtomFromOffsetIndex(C1P);
-      break;
+    case 'q': // Quine
+      return null;
     case 'x': // experimental
     default:
       ptNorP = getN0();
@@ -433,9 +437,9 @@ public class NucleicMonomer extends PhosphorusMonomer {
 
     Vector3f vB = new Vector3f(ptB);
     vB.sub(ptNorP);
-    if (asSarver)
+    if (yBased)
       vB.scale(-1);
-    return Quaternion.getQuaternionFrame(vA, vB, null, asSarver);
+    return Quaternion.getQuaternionFrame(vA, vB, null, yBased);
   }
  
  public boolean isCrossLinked(Group g) {

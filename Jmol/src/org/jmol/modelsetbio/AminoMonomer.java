@@ -216,13 +216,24 @@ public class AminoMonomer extends AlphaMonomer {
   Point3f getQuaternionFrameCenter(char qType) {
     switch (qType) {
     default:
+    case 'a':
+    case 'b':
+    case 'c':
+    case 'C':
       return super.getQuaternionFrameCenter(qType);
-    case 'q':
-    case 'p':
-    case 'P':
-      return getCarbonylCarbonAtom();
     case 'n':
       return getNitrogenAtom();
+    case 'p':
+    case 'P': // ramachandran
+      return getCarbonylCarbonAtom();
+    case 'q': // Quine -- center of peptide bond
+      if (monomerIndex == bioPolymer.monomerCount - 1)
+        return null;
+      AminoMonomer mNext = ((AminoMonomer) bioPolymer.getGroups()[monomerIndex + 1]);
+      Point3f pt = new Point3f(getCarbonylCarbonAtom());
+      pt.add(mNext.getNitrogenAtom());
+      pt.scale(0.5f);
+      return pt;
     }
   }
 
@@ -263,6 +274,11 @@ public class AminoMonomer extends AlphaMonomer {
      *   Representing Proteins in Silico and Protein Forward Kinematics
      *   http://cnx.org/content/m11621/latest
      *   
+     *  Quine: (an early paper on local helical paths)
+     *  
+     *  J. R. Quine, Journal of Molecular Structure: THEOCHEM, 
+     *  Volume 460, Issues 1-3, 26 February 1999, pages 53-66
+     *  
      */
     
     Point3f ptC = getCarbonylCarbonAtom();
@@ -273,25 +289,6 @@ public class AminoMonomer extends AlphaMonomer {
     
     switch (qType) {
     case 'a':
-      return super.getQuaternion('a');
-    case 'b':
-      return null;
-    case 'c':
-      //vA = ptC - ptCa
-      //vB = ptN - ptCa
-      vA.sub(ptC, ptCa);
-      vB.sub(getNitrogenAtom(), ptCa);
-      break;
-    default:
-    case 'p':
-      //Bob's idea for a peptide plane frame
-      //vA = ptCa - ptC
-      //vB = ptN' - ptC
-      vA.sub(ptCa, ptC);
-      if (monomerIndex == bioPolymer.monomerCount - 1)
-        return null;
-      vB.sub(((AminoMonomer) bioPolymer.getGroups()[monomerIndex + 1]).getNitrogenAtom(), ptC);
-      break;
     case 'n':
       // amino nitrogen chemical shift tensor frame      
       // vA = ptH - ptN rotated beta (17 degrees) clockwise (-) around Y (perp to plane)
@@ -307,6 +304,37 @@ public class AminoMonomer extends AlphaMonomer {
       mat.transform(vC);
       vA.cross(vB, vC);
       break;
+    case 'b': // backbone
+      return super.getQuaternion('b');
+    case 'c':
+      //vA = ptC - ptCa
+      //vB = ptN - ptCa
+      vA.sub(ptC, ptCa);
+      vB.sub(getNitrogenAtom(), ptCa);
+      break;
+    case 'p':
+    case 'x':
+      //Bob's idea for a peptide plane frame
+      //vA = ptCa - ptC
+      //vB = ptN' - ptC
+      if (monomerIndex == bioPolymer.monomerCount - 1)
+        return null;
+      vA.sub(ptCa, ptC);
+      vB.sub(((AminoMonomer) bioPolymer.getGroups()[monomerIndex + 1]).getNitrogenAtom(), ptC);
+      break;
+    case 'q': 
+      // J. R. Quine, Journal of Molecular Structure: THEOCHEM, 
+      // Volume 460, Issues 1-3, 26 February 1999, pages 53-66
+      //vA = ptCa - ptC
+      //vB = ptCa' - ptN'
+      if (monomerIndex == bioPolymer.monomerCount - 1)
+        return null;
+      AminoMonomer mNext = ((AminoMonomer) bioPolymer.getGroups()[monomerIndex + 1]);
+      vB.sub(mNext.getLeadAtom(), mNext.getNitrogenAtom());
+      vA.sub(ptCa, ptC);
+      break;
+    default:
+      return null;
     }
     return Quaternion.getQuaternionFrame(vA, vB, vC, false);
   }

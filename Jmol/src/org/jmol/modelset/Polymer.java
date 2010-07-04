@@ -129,7 +129,7 @@ abstract public class Polymer {
   public void getPdbData(Viewer viewer, char ctype, char qtype, int mStep, int derivType, 
               boolean isDraw, BitSet bsAtoms, OutputStringBuffer pdbATOM, 
               StringBuffer pdbCONECT, BitSet bsSelected, boolean addHeader, 
-              BitSet bsWritten) {
+              boolean bothEnds, BitSet bsWritten) {
     return;
   }
 

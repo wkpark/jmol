@@ -8230,6 +8230,7 @@ public class ScriptEvaluator {
     runScript(script);
     ss.setModelIndex(viewer.getCurrentModelIndex());
     viewer.setRotationRadius(150f, true);
+    loadShape(JmolConstants.SHAPE_ECHO);
     showString("frame " + viewer.getModelNumberDotted(modelCount - 1)
         + " created: " + type + (isQuaternion ? qFrame : ""));
   }

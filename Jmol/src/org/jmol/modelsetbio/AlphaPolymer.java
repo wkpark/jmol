@@ -244,9 +244,9 @@ public class AlphaPolymer extends BioPolymer {
   public void getPdbData(Viewer viewer, char ctype, char qtype, int mStep, int derivType,
                          boolean isDraw, BitSet bsAtoms, 
                          OutputStringBuffer pdbATOM, StringBuffer pdbCONECT, 
-                         BitSet bsSelected, boolean addHeader, BitSet bsWritten) {
+                         BitSet bsSelected, boolean addHeader, boolean bothEnds, BitSet bsWritten) {
     getPdbData(viewer, this, ctype, qtype, mStep, derivType, isDraw, bsAtoms, pdbATOM, 
-        pdbCONECT, bsSelected, addHeader, bsWritten);
+        pdbCONECT, bsSelected, addHeader, bothEnds, bsWritten);
   }
 
   /**

@@ -1063,7 +1063,8 @@ abstract public class ModelCollection extends BondCollection {
       Model model = models[i];
       int nPoly = model.getBioPolymerCount();
       for (int p = 0; p < nPoly; p++)
-        model.bioPolymers[p].getPdbData(viewer, ctype, qtype, mStep, 2, false, null, null, null, null, false, new BitSet());
+        model.bioPolymers[p].getPdbData(viewer, ctype, qtype, mStep, 2, false, 
+            null, null, null, null, false, false, new BitSet());
     }
     setHaveStraightness(true);
   }
@@ -1215,6 +1216,7 @@ abstract public class ModelCollection extends BondCollection {
     if (parameters == null) {
       if (!isPDB)
         return null;
+      boolean bothEnds = false;
       ctype = (type.length() > 11 && type.indexOf("quaternion ") >= 0 ? type
           .charAt(11) : 'R');
       char qtype = (ctype != 'R' ? 'r' : type.length() > 13
@@ -1227,8 +1229,10 @@ abstract public class ModelCollection extends BondCollection {
       int nPoly = model.getBioPolymerCount();
       if (!isDraw) {
         sb.append("REMARK   6 Jmol PDB-encoded data: " + type + ";");
-        if (ctype != 'R')
+        if (ctype != 'R') {
           sb.append("  quaternionFrame = \"" + qtype + "\"");
+          bothEnds = true; //???
+        }
         sb.append("\nREMARK   6 Jmol Version ").append(Viewer.getJmolVersion())
             .append('\n');
         if (ctype == 'R')
@@ -1240,10 +1244,10 @@ abstract public class ModelCollection extends BondCollection {
       }
       for (int p = 0; p < nPoly; p++)
         model.bioPolymers[p].getPdbData(viewer, ctype, qtype, mStep, derivType,
-            isDraw, bsAtoms, sb, pdbCONECT, bsSelected, p == 0, bsWritten);
+            isDraw, bsAtoms, sb, pdbCONECT, bsSelected, p == 0, bothEnds, bsWritten);
       bsAtoms = viewer.getModelUndeletedAtomsBitSet(modelIndex);
     } else {
-      // plot x y z....
+      // plot property x y z....
       bsAtoms = (BitSet) parameters[0];
       float[] dataX = (float[]) parameters[1];
       float[] dataY = (float[]) parameters[2];

@@ -469,7 +469,7 @@ public abstract class BioPolymer extends Polymer {
                                       int mStep, int derivType, boolean isDraw,
                                       BitSet bsAtoms, OutputStringBuffer pdbATOM,
                                       StringBuffer pdbCONECT,
-                                      BitSet bsSelected, boolean addHeader,
+                                      BitSet bsSelected, boolean addHeader, boolean bothEnds,
                                       BitSet bsWritten) {
     boolean calcRamachandranStraightness = (qtype == 'C' || qtype == 'P');
     boolean isRamachandran = (ctype == 'R' || ctype == 'S' && 
@@ -549,15 +549,17 @@ public abstract class BioPolymer extends Polymer {
         pdbATOM.append("  NHX_______ NHY_______ NHZ_______");
       pdbATOM.append("\n\n");
     }
-    int iMax = (mStep < 1 ? 1 : mStep);
-    for (int i = 0; i < iMax; i++)
+    float factor = (ctype == 'R' ? 1f : 10f);
+    bothEnds = false;//&= !isDraw && !isRamachandran;
+    for (int j = 0; j < (bothEnds? 2 : 1); j++, factor *= -1)
+    for (int i = 0; i < (mStep < 1 ? 1 : mStep); i++)
       getData(viewer, i, mStep, p, ctype, qtype, derivType, 
           bsAtoms, bsSelected, bsWritten, 
           isDraw, isRamachandran,
           calcRamachandranStraightness,
           useQuaternionStraightness,
           writeRamachandranStraightness,
-          quaternionStraightness,
+          quaternionStraightness, factor,
           isAmino, isRelativeAlias,
           pdbATOM, pdbCONECT);
   }
@@ -570,7 +572,8 @@ public abstract class BioPolymer extends Polymer {
                               boolean calcRamachandranStraightness,
                               boolean useQuaternionStraightness,
                               boolean writeRamachandranStraightness,
-                              boolean quaternionStraightness, boolean isAmino,
+                              boolean quaternionStraightness, float factor, 
+                              boolean isAmino,
                               boolean isRelativeAlias,
                               OutputStringBuffer pdbATOM, StringBuffer pdbCONECT) {
     String prefix = (derivType > 0 ? "dq" + (derivType == 2 ? "2" : "") : "q");
@@ -581,7 +584,6 @@ public abstract class BioPolymer extends Polymer {
     Quaternion dqprev = null;
     Quaternion qref = null;
     Atom atomLast = null;
-    float factor = (ctype == 'R' ? 1f : 10f);
     float x = 0, y = 0, z = 0, w = 0;
     String strExtra = "";
     float val1 = Float.NaN;

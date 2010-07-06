@@ -5177,6 +5177,12 @@
   <fah_proj number="2621" name="p2621_p1475_tet1_03_1 t= 20000.00000" public="y" file="xyz"
     server="171.64.65.65" atoms="1000" preferred="20" deadline="40"
     credit="292" frames="100" code="G" contact="kasson" contrib="Outback_Jon"/>
+  <fah_proj number="2630" name="p2630_CGVES" public="n"
+    server="171.67.108.24" atoms="102731" preferred="3" deadline="4"
+    credit="462" frames="100" code="A3" contact="kasson" kfactor="3.1"/>
+  <fah_proj number="2631" name="p2631_CGVES" public="n"
+    server="171.67.108.24" atoms="102731" preferred="3" deadline="4"
+    credit="462" frames="100" code="A3" contact="kasson" kfactor="3.1"/>
   <fah_proj number="2650" name="p2650_Protein" public="n" file="xyz"
     server="171.64.65.64" preferred="3" deadline="3"
     credit="1148" code="GS" contrib="7up1n3"/>
@@ -8474,15 +8480,15 @@
   <fah_proj number="6508" name="p6508_proG_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="16027" preferred="13" deadline="20"
     credit="72" frames="100" code="G" contact="lan" contrib="Bas Couwenberg"/>
-  <fah_proj number="6511" name="p6511_ubiq_predict" public="y"
+  <fah_proj number="6511" name="p6511_ubiq_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="25933" preferred="23" deadline="34"
-    credit="123" frames="100" code="G" contact="lan"/>
+    credit="123" frames="100" code="G" contact="lan" contrib="Boron,Bas Couwenberg,Bryan Spencer"/>
   <fah_proj number="6512" name="p6512_TR462A_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="13159" preferred="11" deadline="16"
     credit="59" frames="100" code="G" contact="lan" contrib="Bas Couwenberg"/>
-  <fah_proj number="6513" name="p6513_TR462B_predict" public="n"
+  <fah_proj number="6513" name="p6513_TR462B_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="17092" preferred="14" deadline="21"
-    credit="75" frames="100" code="G" contact="lan"/>
+    credit="75" frames="100" code="G" contact="lan" contrib="SandStar"/>
 
   <!-- Projects 6600 to 6699 -->
   <fah_proj number="6600" name="p6600_CspTm_300K" public="y"
@@ -8513,6 +8519,9 @@
     credit="511" frames="100" code="A3" contact="kasson" kfactor="2.3"/>
   <fah_proj number="6701" name="p6701_VSD in POPC and water, neutralized" public="y"
     server="171.64.65.56" atoms="28637" preferred="3.2" deadline="6"
+    credit="921" frames="100" code="A3" contact="kasson" kfactor="4.1"/>
+  <fah_proj number="6702" name="p6702_VSD in POPC and water, neutralized" public="y"
+    server="171.64.65.56" atoms="28637" preferred="4" deadline="6"
     credit="921" frames="100" code="A3" contact="kasson" kfactor="4.1"/>
 
   <!-- Projects 9900 to 9999 -->
@@ -8911,7 +8920,7 @@
   <fah_proj number="10872" name="Abeta42_mono" public="n"
     server="171.64.122.84" atoms="34350" preferred="40" deadline="60"
     credit="207" frames="100" code="G" contact="lin5"/>
-  <fah_proj number="10873" name="Abeta42_mono" public="n"
+  <fah_proj number="10873" name="Abeta42_mono" public="n" file="xyz"
     server="171.64.122.84" atoms="34350" preferred="40" deadline="60"
     credit="207" frames="100" code="G" contact="lin5"/>
   <fah_proj number="10874" name="Abeta42_mono" public="n"
@@ -8947,7 +8956,7 @@
   <fah_proj number="10884" name="Abeta42_mono_s" public="n" file="xyz"
     server="171.64.122.84" atoms="12222" preferred="5" deadline="20"
     credit="68" frames="100" code="G" contact="lin5" contrib="SandStar"/>
-  <fah_proj number="10885" name="Abeta42_mono_s" public="n"
+  <fah_proj number="10885" name="Abeta42_mono_s" public="n" file="xyz"
     server="171.64.122.84" atoms="12222" preferred="5" deadline="20"
     credit="68" frames="100" code="G" contact="lin5"/>
   <fah_proj number="10886" name="Abeta42_mono_s" public="n" file="xyz"
@@ -8965,5 +8974,8 @@
   <fah_proj number="10890" name="Abeta42_mono_s" public="n" file="xyz"
     server="171.64.122.84" atoms="12222" preferred="5" deadline="20"
     credit="68" frames="100" code="G" contact="lin5"/>
+  <fah_proj number="10895" name="Abeta40_mono" public="n"
+    server="171.64.122.84" atoms="34321" preferred="27" deadline="39"
+    credit="314" frames="100" code="G" contact="lin5"/>
 
 </fah_projects>

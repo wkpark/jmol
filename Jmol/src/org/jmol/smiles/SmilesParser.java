@@ -610,11 +610,14 @@ public class SmilesParser {
           else if (index == 0 && Logger.debugging)
             Logger.debug("measure created: " + m);
         } else {
+          if (!m.addPoint(currentAtom.index))
+            break;
           if (m.nPoints == m.type) {
             htMeasures.remove(id);
             if (Logger.debugging)
               Logger.debug("measure created: " + m);
           }
+          return;
         }
         if (!m.addPoint(currentAtom.index))
           break;

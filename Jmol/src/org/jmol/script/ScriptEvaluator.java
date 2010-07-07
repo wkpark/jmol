@@ -7229,33 +7229,65 @@ public class ScriptEvaluator {
   private Object[] data;
 
   private void mapProperty() throws ScriptException {
-      // map {1.1}.straightness  {2.1}.property_x resno
-      BitSet bsFrom, bsTo;
-      String property1, property2, mapKey;
-      while (true) {
-        if (tokAt(1) == Token.selected) {
-          bsFrom = viewer.getSelectionSet();
-          bsTo = atomExpression(2);
-          property1 = property2 = "selected";
-        } else {
-          bsFrom = atomExpression(1);
-          if (tokAt(++iToken) != Token.per
-              || !Token.tokAttr(tokAt(++iToken), Token.atomproperty))
-            break;
-          property1 = parameterAsString(iToken);
-          bsTo = atomExpression(++iToken);
-          if (tokAt(++iToken) != Token.per
-              || !Token.tokAttr(tokAt(++iToken), Token.settable))
-            break;
-          property2 = parameterAsString(iToken);
+    // map {1.1}.straightness  {2.1}.property_x resno
+    BitSet bsFrom, bsTo;
+    String property1, property2, mapKey;
+    int tokProp1 = 0;
+    int tokProp2 = 0;
+    int tokKey = 0;
+    while (true) {
+      if (tokAt(1) == Token.selected) {
+        bsFrom = viewer.getSelectionSet();
+        bsTo = atomExpression(2);
+        property1 = property2 = "selected";
+      } else {
+        bsFrom = atomExpression(1);
+        if (tokAt(++iToken) != Token.per
+            || !Token.tokAttr(tokProp1 = tokAt(++iToken), Token.atomproperty))
+          break;
+        property1 = parameterAsString(iToken);
+        bsTo = atomExpression(++iToken);
+        if (tokAt(++iToken) != Token.per
+            || !Token.tokAttr(tokProp2 = tokAt(++iToken), Token.settable))
+          break;
+        property2 = parameterAsString(iToken);
+      }
+      if (Token.tokAttr(tokKey = tokAt(iToken + 1), Token.atomproperty))
+        mapKey = parameterAsString(++iToken);
+      else
+        mapKey = "atomno";
+      checkLast(iToken);
+      if (isSyntaxCheck)
+        return;
+      BitSet bsOut = null;
+      showString("mapping " + property1.toUpperCase() + " for "
+          + bsFrom.cardinality() + " atoms to " + property2.toUpperCase()
+          + " using " + mapKey.toUpperCase());
+      if (Token.tokAttrOr(tokProp1, Token.intproperty, Token.floatparam)
+          && Token.tokAttrOr(tokProp2, Token.intproperty, Token.floatparam)
+          && Token.tokAttrOr(tokKey, Token.intproperty, Token.floatparam)) {
+        float[] data1 = getBitsetPropertyFloat(bsFrom, tokProp1);
+        float[] data2 = getBitsetPropertyFloat(bsFrom, tokKey);
+        float[] data3 = getBitsetPropertyFloat(bsTo, tokKey);
+        bsOut = new BitSet();
+        if (data1.length == data2.length) {
+          Hashtable ht = new Hashtable();
+          for (int i = 0; i < data1.length; i++)
+            ht.put(new Float(data2[i]), new Float(data1[i]));
+          int pt = 0;
+          int nOut = 0;
+          for (int i = 0; i < data3.length; i++) {
+            Float F = (Float) ht.get(new Float(data3[i]));
+            if (F == null)
+              continue;
+            bsOut.set(bsTo.nextSetBit(pt++));
+            data3[nOut] = F.floatValue();
+            nOut++;
+          }
+          viewer.setAtomProperty(bsOut, tokProp2, 0, 0, null, data3, null);
         }
-        if (Token.tokAttr(tokAt(iToken + 1), Token.atomproperty))
-          mapKey = parameterAsString(++iToken);
-        else
-          mapKey = "atomno";
-        checkLast(iToken);
-        if (isSyntaxCheck)
-          return;
+      }
+      if (bsOut == null) {
         String format = "{" + mapKey + "=%[" + mapKey + "]}." + property2
             + " = %[" + property1 + "]";
         String[] data = (String[]) getBitsetIdent(bsFrom, format, null, false,
@@ -7271,14 +7303,18 @@ public class ScriptEvaluator {
         try {
           runScript(sb.toString());
         } catch (Exception e) {
-          Logger.error(e.getMessage());
+          viewer.setSelectionSubset(bsSubset);
+          error(-1, "Error: " + e.getMessage());
         } catch (Error er) {
-          Logger.error(er.getMessage());
+          viewer.setSelectionSubset(bsSubset);
+          error(-1, "Error: " + er.getMessage());
         }
         viewer.setSelectionSubset(bsSubset);
-        return;
       }
-      error(ERROR_invalidArgument);
+      showString("DONE");
+      return;
+    }
+    error(ERROR_invalidArgument);
   }
   
   private void data() throws ScriptException {

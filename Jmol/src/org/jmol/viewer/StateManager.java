@@ -1039,7 +1039,6 @@ public class StateManager {
         appendCmd(str, "set axesOrientationRasmol true");
       appendCmd(str, "set bondRadiusMilliAngstroms " + bondRadiusMilliAngstroms);
       appendCmd(str, "set bondTolerance " + bondTolerance);
-      //appendCmd(str, "set defaultDirectory " + Escape.escape(defaultDirectory));
       appendCmd(str, "set defaultLattice " + Escape.escape(ptDefaultLattice));
       appendCmd(str, "set defaultLoadScript \"\"");
       if (defaultLoadScript.length() > 0)
@@ -1049,6 +1048,7 @@ public class StateManager {
       if (sMode.equals("User"))
         appendCmd(str, viewer.getDefaultVdwTypeNameOrData(Integer.MAX_VALUE));
       appendCmd(str, "set forceAutoBond " + forceAutoBond);
+      appendCmd(str, "#set defaultDirectory " + Escape.escape(defaultDirectory));
       appendCmd(str, "#set defaultLoadFilter " + Escape.escape(defaultLoadFilter)) ;
       appendCmd(str, "#set loadFormat " + Escape.escape(loadFormat));
       appendCmd(str, "#set smilesUrlFormat " + Escape.escape(smilesUrlFormat));

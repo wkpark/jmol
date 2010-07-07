@@ -7262,29 +7262,35 @@ public class ScriptEvaluator {
       BitSet bsOut = null;
       showString("mapping " + property1.toUpperCase() + " for "
           + bsFrom.cardinality() + " atoms to " + property2.toUpperCase()
-          + " using " + mapKey.toUpperCase());
-      if (Token.tokAttrOr(tokProp1, Token.intproperty, Token.floatparam)
-          && Token.tokAttrOr(tokProp2, Token.intproperty, Token.floatparam)
-          && Token.tokAttrOr(tokKey, Token.intproperty, Token.floatparam)) {
+          + " for " + bsTo.cardinality() + " atoms using " + mapKey.toUpperCase());
+      if (Token.tokAttrOr(tokProp1, Token.intproperty, Token.floatproperty)
+          && Token.tokAttrOr(tokProp2, Token.intproperty, Token.floatproperty)
+          && Token.tokAttrOr(tokKey, Token.intproperty, Token.floatproperty)) {
         float[] data1 = getBitsetPropertyFloat(bsFrom, tokProp1);
         float[] data2 = getBitsetPropertyFloat(bsFrom, tokKey);
         float[] data3 = getBitsetPropertyFloat(bsTo, tokKey);
+        boolean isProperty = (tokProp2 == Token.property); 
+        float[] dataOut = new float[isProperty ? viewer.getAtomCount() : data3.length];
         bsOut = new BitSet();
         if (data1.length == data2.length) {
           Hashtable ht = new Hashtable();
           for (int i = 0; i < data1.length; i++)
             ht.put(new Float(data2[i]), new Float(data1[i]));
-          int pt = 0;
+          int pt = -1;
           int nOut = 0;
           for (int i = 0; i < data3.length; i++) {
+            pt = bsTo.nextSetBit(pt + 1);
             Float F = (Float) ht.get(new Float(data3[i]));
             if (F == null)
               continue;
-            bsOut.set(bsTo.nextSetBit(pt++));
-            data3[nOut] = F.floatValue();
+            bsOut.set(pt);
+            dataOut[(isProperty ? pt : nOut)] = F.floatValue();
             nOut++;
           }
-          viewer.setAtomProperty(bsOut, tokProp2, 0, 0, null, data3, null);
+          if (isProperty)
+            viewer.setData(property2, new Object[] {property2, dataOut, bsOut}, viewer.getAtomCount(), 0, 0, Integer.MAX_VALUE, 0);
+          else
+            viewer.setAtomProperty(bsOut, tokProp2, 0, 0, null, dataOut, null);
         }
       }
       if (bsOut == null) {

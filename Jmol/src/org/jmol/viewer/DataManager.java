@@ -92,7 +92,6 @@ class DataManager {
       return;
     }
     if (data[2] != null && atomCount > 0) {
-      String stringData = (String) data[1];
       boolean createNew = (matchField != 0 || field != Integer.MIN_VALUE
           && field != Integer.MAX_VALUE);
       Object[] oldData = (Object[]) dataValues.get(type);
@@ -103,6 +102,8 @@ class DataManager {
       // check to see if the data COULD be interpreted as a string of float values
       // and if so, do that. This pre-fetches the tokens in that case.
 
+      String stringData = (data[1] instanceof String ? (String) data[1] : null);
+      float[] floatData = (data[1] instanceof float[] ? (float[]) data[1] : null);
       String[] strData = null;
       if (field == Integer.MIN_VALUE
           && (strData = Parser.getTokens(stringData)).length > 1)
@@ -115,8 +116,13 @@ class DataManager {
       } else if (field == 0 || field == Integer.MAX_VALUE) {
         // just get the selected token values
         bs = (BitSet) data[2];
-        Parser.parseFloatArray(strData == null ? Parser.getTokens(stringData)
+        if (floatData != null) {
+          for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) 
+            f[i] = floatData[i];
+        } else {
+          Parser.parseFloatArray(strData == null ? Parser.getTokens(stringData)
             : strData, bs, f);
+        }
       } else if (matchField <= 0) {
         // get the specified field >= 1 for the selected atoms
         bs = (BitSet) data[2];

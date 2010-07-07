@@ -1713,6 +1713,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       htParams.put("getHeader", Boolean.TRUE);
     if (global.pdbSequential)
       htParams.put("isSequential", Boolean.TRUE);
+    if (!htParams.containsKey("filter")) {
+      String filter = getDefaultLoadFilter();
+      if (filter.length() > 0)
+        htParams.put("filter", filter);
+    }
+
     return htParams;
   }
 
@@ -1846,7 +1852,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (loadScript == null) {
         loadScript = new StringBuffer("load files");
         for (int i = 0; i < fileNames.length; i++)
-          loadScript.append(" /*file*/\"").append(Escape.escape(fileNames[i]));
+          loadScript.append(" /*file*/$FILENAME" + (i + 1) + "$");
       }
       long timeBegin = System.currentTimeMillis();
       
@@ -1855,15 +1861,19 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
       atomSetCollection = fileManager.createAtomSetCollectionFromFiles(fileNames,
             setLoadParameters(htParams), isAppend);
-
       long ms = System.currentTimeMillis() - timeBegin;
       String msg = "";
       for (int i = 0; i < fileNames.length; i++)
         msg += (i == 0 ? "" : ",") + fileNames[i];
       Logger.info("openFiles(" + fileNames.length + ") " + ms + " ms");
+      fileNames = (String[]) htParams.get("fullPathNames");
+      String s = loadScript.toString();
+      for (int i = 0; i < fileNames.length; i++)
+        s = TextFormat.simpleReplace(s, "$FILENAME" + (i + 1) + "$", Escape.escape(fileNames[i]));
+      loadScript = new StringBuffer(s);
     } else {      
       if (loadScript == null)
-        loadScript = new StringBuffer("load /*file*/" + Escape.escape(fileName));
+        loadScript = new StringBuffer("load /*file*/$FILENAME$");
       
       if (reader == null)
 

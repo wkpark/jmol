@@ -7868,7 +7868,7 @@ public class ScriptEvaluator {
           firstLastSteps.addElement(bs);
           loadScript.append(" COORD " + Escape.escape(bs));
         }
-        loadScript.append(" /*file*/").append(Escape.escape(filename));
+        loadScript.append(" /*file*/$FILENAME" + fNames.size() + "$");
       }
       if (firstLastSteps != null)
         htParams.put("firstLastSteps", firstLastSteps);

@@ -168,7 +168,7 @@ public class Wien2kReader extends AtomSetCollectionReader {
     float a = parseFloat(line.substring(12,22));
     float b = parseFloat(line.substring(25,35));
     float c = parseFloat(line.substring(38,48));
-    if (false && isrhombohedral) {
+/*    if (false && isrhombohedral) {
       float ar = a;
       float br = b;
       float cr = c;
@@ -176,7 +176,7 @@ public class Wien2kReader extends AtomSetCollectionReader {
       b = ar * 1 / 3 + br * 1 / 3 - cr * 2 / 3;
       c = ar * 1 / 3 + br * 1 / 3 + cr * 1 / 3;        
     }
-    Atom atom = atomSetCollection.addNewAtom();
+*/    Atom atom = atomSetCollection.addNewAtom();
     setAtomCoord(atom, a, b, c);
   }
   

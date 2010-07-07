@@ -210,13 +210,12 @@ public abstract class AtomSetCollectionReader {
   public boolean continuing = true;
 
   protected JmolViewer viewer;
-  
   final public void readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection(readerName, this);
     try {
       initializeReader();
-      if (continuing)
+      if (line == null && continuing)
         readLine();
       while (line != null && continuing)
         if (checkLine())

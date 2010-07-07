@@ -14173,9 +14173,10 @@ public class ScriptEvaluator {
         setMoData(propertyList, moNumber, offset, iModel, title);
         addShapeProperty(propertyList, "finalize", null);
       }
+      if (propertyList.size() > 0)
+        setShapeProperty(JmolConstants.SHAPE_MO, "setProperties", propertyList);
+      propertyList.clear();
     }
-    if (propertyList.size() > 0)
-      setShapeProperty(JmolConstants.SHAPE_MO, "setProperties", propertyList);
     return true;
   }
 

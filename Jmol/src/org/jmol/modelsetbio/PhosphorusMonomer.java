@@ -102,8 +102,8 @@ public class PhosphorusMonomer extends Monomer {
   }
   
   public Quaternion getQuaternion(char qType) {
-    //vA = ptCa(i+1) - ptCa
-    //vB = ptCa(i-1) - ptCa
+    //vA = ptP(i+1) - ptP
+    //vB = ptP(i-1) - ptP
     if (monomerIndex == 0 
         || monomerIndex == bioPolymer.monomerCount - 1)
       return null;

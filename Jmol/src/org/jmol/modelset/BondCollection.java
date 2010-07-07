@@ -261,7 +261,7 @@ abstract public class BondCollection extends AtomCollection {
       Atom atom2 = bond.atom2;
       if (atom1.isBonded(atom2))
         continue;
-      int n = addHBond(atom1, atom2, bond.order, 0);
+      int n = addHBond(atom1, atom2, bond.order, bond.getEnergy());
       if (bsHBondsRasmol != null)
         bsHBondsRasmol.set(n);
     }

@@ -139,6 +139,10 @@ public class MolReader extends AtomSetCollectionReader {
      */
 
     String header = "";
+    if (line.startsWith("filter=2D;")) {
+      is2D = true;
+      line = line.substring(10);
+    }
     String thisDataSetName = line;
     header += line + "\n";
     atomSetCollection.setCollectionName(line);

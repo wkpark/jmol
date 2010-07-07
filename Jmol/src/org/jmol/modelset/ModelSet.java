@@ -192,7 +192,7 @@ abstract public class ModelSet extends ModelCollection {
 
     if (models[baseModel].hasRasmolHBonds) {
       clearRasmolHydrogenBonds(baseModel, null);
-      calcHydrogenBonds(models[baseModel], bs, bs, null, false, Integer.MAX_VALUE);     
+      getRasmolHydrogenBonds(models[baseModel], bs, bs, null, false, Integer.MAX_VALUE);     
     }
     
     int m = viewer.getCurrentModelIndex();

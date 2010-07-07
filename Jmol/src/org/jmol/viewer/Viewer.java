@@ -7390,6 +7390,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void setAtomProperty(BitSet bs, int tok, int iValue, float fValue,
                               String sValue, float[] values, String[] list) {
+    clearMinimization();
     modelSet.setAtomProperty(bs, tok, iValue, fValue, sValue, values, list);
     switch (tok) {
     case Token.atomx:

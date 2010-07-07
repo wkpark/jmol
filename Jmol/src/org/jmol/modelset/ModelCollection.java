@@ -1047,7 +1047,7 @@ abstract public class ModelCollection extends BondCollection {
           if (!isSame)
             clearRasmolHydrogenBonds(i, bsB);
         }
-        calcHydrogenBonds(models[i], bsA, bsB, vHBonds, nucleicOnly, nMax);
+        getRasmolHydrogenBonds(models[i], bsA, bsB, vHBonds, nucleicOnly, nMax);
       }
   }
 

@@ -610,9 +610,8 @@ public abstract class BioPolymer extends Polymer {
           }
           float angledeg = (writeRamachandranStraightness ? p
               .calculateRamachandranHelixAngle(m, qtype) : 0);
-          float straightness = (calcRamachandranStraightness ? getStraightness((float) Math
-              .cos(angledeg / 2 / 180 * Math.PI))
-              : writeRamachandranStraightness ? monomer.getGroupParameter(Token.straightness) : 0);
+          float straightness = (calcRamachandranStraightness || writeRamachandranStraightness ? getStraightness((float) Math
+              .cos(angledeg / 2 / 180 * Math.PI)): 0);
           if (ctype == 'S') {
             monomer.setGroupParameter(Token.straightness, straightness);
             continue;
@@ -663,7 +662,7 @@ public abstract class BioPolymer extends Polymer {
             strExtra = q.getInfo();
             if (writeRamachandranStraightness) {
               z = angledeg;
-              w = getStraightness((float) (angledeg / 180 * Math.PI));
+              w = straightness;
             } else {
               w = a.getPartialCharge();
             }
@@ -900,8 +899,9 @@ public abstract class BioPolymer extends Polymer {
     //
     return getStraightness(dq.dot(dqnext));
   }
-  private static float getStraightness(float halfCosTheta) {
-    return (float) (1 - 2 * Math.acos(Math.abs(halfCosTheta))/Math.PI);   
+  
+  private static float getStraightness(float cosHalfTheta) {
+    return (float) (1 - 2 * Math.acos(Math.abs(cosHalfTheta))/Math.PI);   
   }
 
   public boolean isDna() { return (monomerCount > 0 && monomers[0].isDna()); }

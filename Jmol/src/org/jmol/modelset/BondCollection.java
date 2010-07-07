@@ -228,7 +228,7 @@ abstract public class BondCollection extends AtomCollection {
   
   protected BitSet bsHBondsRasmol;
 
-  void calcHydrogenBonds(Model m, BitSet bsA, BitSet bsB, Vector vHBonds,
+  void getRasmolHydrogenBonds(Model m, BitSet bsA, BitSet bsB, Vector vHBonds,
                          boolean nucleicOnly, int nMax) {
 
     boolean doAdd = (vHBonds == null);

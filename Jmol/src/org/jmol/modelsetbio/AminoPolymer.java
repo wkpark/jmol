@@ -394,7 +394,7 @@ public class AminoPolymer extends AlphaPolymer {
        * 
        * where 
        * 
-       *   cos(theta/2) = q[i]\q[i-1] = cos(dPsi/2)cos(dPhi/2) - sin(alpha)sin(dPsi/2)sin(dPhi/2)
+       *   cos(theta/2) = dq[i]\dq[i-1] = cos(dPsi/2)cos(dPhi/2) - sin(alpha)sin(dPsi/2)sin(dPhi/2)
        * 
        * and 
        * 

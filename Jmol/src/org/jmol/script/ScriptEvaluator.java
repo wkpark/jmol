@@ -9043,7 +9043,7 @@ public class ScriptEvaluator {
     if (tok == Token.javascript) {
       checkLength(2);
       if (!isSyntaxCheck)
-        viewer.jsEval(theScript);
+        viewer.jsEval(parameterAsString(1));
       return;
     }
     if (filename == null) {
@@ -12918,6 +12918,7 @@ public class ScriptEvaluator {
       if (modelIndex < 0)
         error(ERROR_multipleModelsDisplayedNotOK, "show " + theToken.value);
       msg = plot(statement);
+      len = statementLength;
       break;
     case Token.trace:
       if (!isSyntaxCheck)

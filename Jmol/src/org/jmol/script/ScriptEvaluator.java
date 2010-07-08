@@ -7255,7 +7255,7 @@ public class ScriptEvaluator {
       if (Token.tokAttr(tokKey = tokAt(iToken + 1), Token.atomproperty))
         mapKey = parameterAsString(++iToken);
       else
-        mapKey = "atomno";
+        mapKey = Token.nameOf(tokKey = Token.atomno);
       checkLast(iToken);
       if (isSyntaxCheck)
         return;
@@ -12898,6 +12898,11 @@ public class ScriptEvaluator {
     switch (tok) {
     case Token.nada:
       msg = Escape.escape(((ScriptVariable) theToken).value);
+      break;
+    case Token.smiles:
+      checkLength(2);
+      if (!isSyntaxCheck)
+        msg = viewer.getSmiles(0, 0, viewer.getSelectionSet(), false, true, false, false);
       break;
     case Token.symop:
       if (statementLength > 3) {

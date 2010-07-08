@@ -71,17 +71,18 @@ public class SmilesGenerator {
 
   private Hashtable htRingsSequence = new Hashtable();
   private Hashtable htRings = new Hashtable();
+  private BitSet bsIncludingH;
 
   // generation of SMILES strings
 
   String getSmiles(JmolNode[] atoms, int atomCount, BitSet bsSelected)
       throws InvalidSmilesException {
-    this.atoms = atoms;
-    this.atomCount = atomCount;
-    this.bsSelected = bsSelected;
     int i = bsSelected.nextSetBit(0);
     if (i < 0)
       return "";
+    this.atoms = atoms;
+    this.atomCount = atomCount;
+    this.bsSelected = bsSelected = (BitSet) bsSelected.clone();
     return getSmilesComponent(atoms[i], bsSelected, false);
   }
 
@@ -220,6 +221,7 @@ public class SmilesGenerator {
     bsSelected = JmolMolecule.getBranchBitSet(atoms, (BitSet) bs.clone(), atom
         .getIndex(), -1, true, false);
     bs.andNot(bsSelected);
+    bsIncludingH = (BitSet) bsSelected.clone();
     for (int j = bsSelected.nextSetBit(0); j >= 0; j = bsSelected
         .nextSetBit(j + 1)) {
       JmolNode a = atoms[j];
@@ -446,13 +448,14 @@ public class SmilesGenerator {
           bondPrev = bonds[i];
           continue;
         }
-        if (!bsSelected.get(index1)) {
-          if (allowConnectionsToOutsideWorld && bsSelected.get(atomIndex))
+        boolean isH = (atom1.getElementNumber() == 1 && atom1.getIsotopeNumber() == 0);
+        if (!bsIncludingH.get(index1)) {
+          if (!isH && allowConnectionsToOutsideWorld && bsSelected.get(atomIndex))
             bsToDo.set(index1);
           else
             continue;
         }
-        if (atom1.getElementNumber() == 1 && atom1.getIsotopeNumber() == 0) {
+        if (isH) {
           aH = atom1;
           nH++;
           if (nH > 1)
@@ -617,16 +620,6 @@ public class SmilesGenerator {
     }
     String s = (stereoFlag > 6 ? "" : SmilesSearch.getStereoFlag(atom, stereo,
         stereoFlag, vTemp));
-    /*   
-     if (s.length() == 0 && prevBondAtoms != null 
-     && (nBondAtoms == 2 || nBondAtoms == 3)) {
-     if (atomNext != null)
-     bondAtoms[3] = atomNext;
-     if (bondAtoms[2] == null)
-     bondAtoms[2] = atom;
-     s = SmilesSearch.getDoubleBondStereoFlag(bondAtoms, vTemp);
-     }
-     */
     int valence = atom.getValence();
     int charge = atom.getFormalCharge();
     int isotope = atom.getIsotopeNumber();

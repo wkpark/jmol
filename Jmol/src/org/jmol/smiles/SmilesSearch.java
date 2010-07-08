@@ -738,7 +738,7 @@ public class SmilesSearch extends JmolMolecule {
 
         // Check aromatic
         boolean isAromatic = patternAtom.isAromatic();
-        if (patternAtom.elementNumber != -2
+        if (!noAromatic && patternAtom.elementNumber != -2
             && isAromatic != bsAromatic.get(iAtom))
           break;
 
@@ -864,7 +864,7 @@ public class SmilesSearch extends JmolMolecule {
       return (patternBond.isNot != jmolAtoms[iAtom].isCrossLinked(jmolAtoms[matchingAtom]));
     }
     
-    boolean isAromatic = patternAtom.isAromatic();
+    boolean isAromatic = !noAromatic && patternAtom.isAromatic();
 
     
     int order = bond.getCovalentOrder();

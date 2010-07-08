@@ -6159,7 +6159,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       // setShapeProperty(JmolConstants.SHAPE_LABELS, "color", "RED");
       setAtomPickingOption("C");
       setBondPickingOption("p");
-      if (isSignedApplet || !isApplet)
+      if (!isApplet)
         popupMenu(0, 0, 'm');
       if (isChange)
         statusManager.setCallbackFunction("modelkit", "ON");

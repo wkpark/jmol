@@ -13151,6 +13151,8 @@ public class ScriptEvaluator {
       if (statementLength == 2) {
         if (!isSyntaxCheck)
           msg = viewer.getCurrentFileAsString();
+        if (msg == null)
+          msg = "<unavailable>";
         break;
       }
       len = 3;

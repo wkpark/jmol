@@ -318,7 +318,7 @@ public class CrystalReader extends AtomSetCollectionReader {
         key = "rmsDisplacement";
       else
         break;
-      atomSetCollection.setAtomSetProperty(key, tokens[2]);
+      atomSetCollection.setAtomSetAuxiliaryProperty(key, tokens[2]);
       readLine();
     }
    }

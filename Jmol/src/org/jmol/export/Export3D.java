@@ -384,7 +384,7 @@ final public class Export3D implements JmolRendererInterface {
     // circle3D, drawPixel, plotPixelClipped(point3)
     if (isClipped(x, y, z))
       return;
-    exporter.drawPixel(colix, x, y, z);
+    exporter.drawPixel(colix, x, y, z, 1);
   }
 
   public void plotPixelClippedNoSlab(int argb, int x, int y, int z) {
@@ -397,7 +397,7 @@ final public class Export3D implements JmolRendererInterface {
     if (isClipped(screen.x, screen.y, screen.z))
       return;
     // circle3D, drawPixel, plotPixelClipped(point3)
-    exporter.drawPixel(colix, screen.x, screen.y, screen.z);
+    exporter.drawPixel(colix, screen.x, screen.y, screen.z, 1);
   }
 
   public void drawPoints(int count, int[] coordinates, int scale) {
@@ -407,7 +407,7 @@ final public class Export3D implements JmolRendererInterface {
       int x = coordinates[--i];
       if (isClipped(x, y, z))
         continue;
-      exporter.drawPixel(colix, x, y, z);
+      exporter.drawPixel(colix, x, y, z, scale);
     }
   }
 

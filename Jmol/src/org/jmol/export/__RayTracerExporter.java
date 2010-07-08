@@ -117,9 +117,9 @@ abstract class __RayTracerExporter extends ___Exporter {
     outputCircle(x, y, z, radius, colix, doFill);
   }
 
-  void drawPixel(short colix, int x, int y, int z) {
-    //measures, meshRibbon
-    outputSphere(x, y, z, 0.75f, colix);
+  void drawPixel(short colix, int x, int y, int z, int scale) {
+    //measures, meshRibbon, dots
+    outputSphere(x, y, z, 0.75f * scale, colix);
   }
 
   void drawTextPixel(int argb, int x, int y, int z) {

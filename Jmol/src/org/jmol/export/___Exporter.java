@@ -483,7 +483,7 @@ public abstract class ___Exporter {
                                 int nVertices, int nPolygons, int nFaces, BitSet bsFaces,
                                 int faceVertexMax, short colix, Vector colorList, Hashtable htColixes, Point3f offset);
 
-  abstract void drawPixel(short colix, int x, int y, int z); //measures
+  abstract void drawPixel(short colix, int x, int y, int z, int scale); //measures
   
   abstract void drawTextPixel(int argb, int x, int y, int z);
 

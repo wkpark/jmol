@@ -140,10 +140,11 @@ abstract public class __CartesianExporter extends ___Exporter {
     outputCircle(tempP1, tempP3, radius, colix, doFill);
   }
 
-  void drawPixel(short colix, int x, int y, int z) {
+  void drawPixel(short colix, int x, int y, int z, int scale) {
+    //measures, meshRibbon, dots
     tempP3.set(x, y, z);
     viewer.unTransformPoint(tempP3, tempP1);
-    outputSphere(tempP1, 0.02f, colix);
+    outputSphere(tempP1, 0.02f * scale, colix);
   }
 
   void drawTextPixel(int argb, int x, int y, int z) {

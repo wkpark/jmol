@@ -131,7 +131,8 @@ public class PdbReader extends AtomSetCollectionReader {
         applySymmetryAndSetTrajectory();
       // supposedly MODEL is only for NMR
       model(modelNo);
-      return true;
+      if (!isAtom)
+        return true;
     }
     /*
      * OK, the PDB file format is messed up here, because the above commands are

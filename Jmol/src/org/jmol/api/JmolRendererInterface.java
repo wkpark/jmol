@@ -178,7 +178,7 @@ public interface JmolRendererInterface {
 
   public abstract void plotPixelClipped(Point3i a);
 
-  public abstract void drawPoints(int count, int[] coordinates);
+  public abstract void drawPoints(int count, int[] coordinates, int scale);
 
   public abstract void drawDashedLine(int run, int rise, Point3i pointA,
                                       Point3i pointB);

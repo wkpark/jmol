@@ -5560,6 +5560,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       global.helixStep = value;
       modelSet.setHaveStraightness(false);
       break;
+    case Token.dotscale:
+      // 12.0.RC25
+      global.dotScale = value;
+      break;
     case Token.dotdensity:
       // 11.6.RC2//
       global.dotDensity = value;
@@ -6273,7 +6277,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public int getDotDensity() {
     return global.dotDensity;
   }
-
+  
+  public int getDotScale() {
+    return global.dotScale;
+  }
+  
   public boolean isRangeSelected() {
     return global.rangeSelected;
   }
@@ -9102,5 +9110,5 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void connect(float[][] connections) {
     modelSet.connect(connections);
   }
-  
+
 }

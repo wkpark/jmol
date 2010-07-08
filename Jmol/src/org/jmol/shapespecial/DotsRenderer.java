@@ -42,6 +42,8 @@ public class DotsRenderer extends ShapeRenderer {
   public int screenDotCount;
   public int[] screenCoordinates;
   public int[] faceMap = null; // used only by GeoSurface, but set here
+
+  private int dotScale;
   
   protected void initRenderer() {
     screenLevel = Dots.MAX_LEVEL;
@@ -69,6 +71,7 @@ public class DotsRenderer extends ShapeRenderer {
       screenLevel = Math.max(Math.min(screenLevel, 3), 0);
     }
     screenDotCount = Geodesic.getVertexCount(screenLevel);
+    dotScale = viewer.getDotScale();
     for (int i = screenDotCount; --i >= 0;)
       viewer.transformVector(Geodesic.getVertexVector(i),
           verticesTransformed[i]);
@@ -140,7 +143,7 @@ public class DotsRenderer extends ShapeRenderer {
    */
   protected void renderDots(int nPoints) {
     g3d.setColix(colix);
-    g3d.drawPoints(nPoints, screenCoordinates);
+    g3d.drawPoints(nPoints, screenCoordinates, dotScale);
   }
 }
 

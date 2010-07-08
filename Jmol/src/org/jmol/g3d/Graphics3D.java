@@ -1129,9 +1129,21 @@ final public class Graphics3D implements JmolRendererInterface {
     plotPixelClipped(x, y, z);
   }
 
-  public void drawPoints(int count, int[] coordinates) {
+  public void drawPoints(int count, int[] coordinates, int scale) {
     // for dots only
-    plotPoints(count, coordinates);
+    if (scale > 1) {
+      float s2 = scale * scale * 0.8f;
+      for (int i = -scale; i < scale; i++) {
+        for (int j = -scale; j < scale; j++) {
+          if (i * i + j * j > s2)
+            continue;
+          plotPoints(count, coordinates, i, j);
+          plotPoints(count, coordinates, i, j);
+        }
+      }
+    } else {
+      plotPoints(count, coordinates, 0, 0);
+    }
   }
 
   /* ***************************************************************
@@ -1830,11 +1842,11 @@ final public class Graphics3D implements JmolRendererInterface {
     }
   }
 
-  private void plotPoints(int count, int[] coordinates) {
+  private void plotPoints(int count, int[] coordinates, int xOffset, int yOffset) {
     for (int i = count * 3; i > 0; ) {
       int z = coordinates[--i];
-      int y = coordinates[--i];
-      int x = coordinates[--i];
+      int y = coordinates[--i] + yOffset;
+      int x = coordinates[--i] + xOffset;
       if (isClipped(x, y, z))
         continue;
       int offset = y * width + x++;

@@ -822,7 +822,8 @@ public class Token {
   public final static int bondradiusmilliangstroms       = intparam | 8;
   public final static int delaymaximumms                 = intparam | 10;
   public final static int diffusepercent                 = intparam | 14;
-  public final static int dotdensity                     = intparam | 16;
+  public final static int dotdensity                     = intparam | 15;
+  public final static int dotscale                       = intparam | 16;
   public final static int ellipsoiddotcount              = intparam | 17;  
   public final static int helixstep                      = intparam | 18;
   public final static int hermitelevel                   = intparam | 20;
@@ -2049,6 +2050,7 @@ public class Token {
       "diffusePercent",                           new Token(diffusepercent),
       "diffuse",                                  null, 
       "dotDensity",                               new Token(dotdensity),
+      "dotScale",                                 new Token(dotscale),
       "ellipsoidDotCount",                        new Token(ellipsoiddotcount),
       "helixStep",                                new Token(helixstep),
       "hermiteLevel",                             new Token(hermitelevel),

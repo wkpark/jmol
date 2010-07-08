@@ -74,6 +74,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   private final Point3i s0 = new Point3i();
   private final Point3i s1 = new Point3i();
   private final Point3i s2 = new Point3i();
+  private int dotScale;
   
   private final static float toRadians = (float) Math.PI/180f;
   private final static float[] cossin = new float[36];
@@ -116,6 +117,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     if (drawDots) {
       drawArcs = false;
       drawFill = false;
+      dotScale = viewer.getDotScale();
     }
 
     if (drawDots) {
@@ -318,7 +320,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       coords[i++] = s1.y;
       coords[i++] = s1.z;
     }
-    g3d.drawPoints(dotCount, coords);
+    g3d.drawPoints(dotCount, coords, dotScale);
   }
 
   private void renderArcs(Point3f ptAtom) {

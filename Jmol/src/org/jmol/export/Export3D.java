@@ -400,7 +400,7 @@ final public class Export3D implements JmolRendererInterface {
     exporter.drawPixel(colix, screen.x, screen.y, screen.z);
   }
 
-  public void drawPoints(int count, int[] coordinates) {
+  public void drawPoints(int count, int[] coordinates, int scale) {
     for (int i = count * 3; i > 0;) {
       int z = coordinates[--i];
       int y = coordinates[--i];

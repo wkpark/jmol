@@ -5524,9 +5524,9 @@ public class ScriptEvaluator {
   private void help() throws ScriptException {
     if (isSyntaxCheck)
       return;
-    String what = optParameterAsString(1);
+    String what = optParameterAsString(1).toLowerCase();
     int pt = 0;
-    if (what.toLowerCase().startsWith("mouse") && (pt = what.indexOf(" ")) >= 0
+    if (what.startsWith("mouse") && (pt = what.indexOf(" ")) >= 0
         && pt == what.lastIndexOf(" ")) {
       showString(viewer.getBindingInfo(what.substring(pt + 1)));
       return;

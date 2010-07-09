@@ -1154,6 +1154,8 @@ abstract public class ModelCollection extends BondCollection {
   public String getPdbAtomData(BitSet bs, OutputStringBuffer sb) {
     if (atomCount == 0)
       return "";
+    if (sb == null)
+      sb = new OutputStringBuffer(null);
     int iModel = atoms[0].modelIndex;
     int iModelLast = -1;
     boolean showModels = (iModel != atoms[atomCount - 1].modelIndex);

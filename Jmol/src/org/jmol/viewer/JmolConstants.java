@@ -2282,7 +2282,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "@spine protein & _a>0 & _a<= 3 || nucleic & (_a >= 6 & _a <= 10 || _a=" + ATOMID_NUCLEIC_PHOSPHORUS + ")",
     "@sidechain (protein,nucleic) & !backbone",
     "@base nucleic & !backbone",
-    "@dynamic_flatring within(SMARTS,'[a]')"
+    "@dynamic_flatring search('[a]')"
 
     //    "@hetero", handled specially
 

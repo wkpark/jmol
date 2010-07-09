@@ -1747,10 +1747,15 @@ public class SmilesSearch extends JmolMolecule {
           }
           SmilesAtom atom2 = atoms[sBond.getAtom2().getMatchingAtom()];
           SmilesBond b = new SmilesBond(atom1, atom2, order, false);
+          // do NOT add this bond to the second atom -- we will do that later;
+          atom2.bondCount--;
           Logger.info("" + b);
         } else {
-          //SmilesAtom atom2 = atoms[sBond.getAtom1().getMatchingAtom()];
-          //b = atom2.getBondTo(atom1);
+          SmilesAtom atom2 = atoms[sBond.getAtom1().getMatchingAtom()];
+          SmilesBond b = atom2.getBondTo(atom1);
+          // NOW we can add this bond
+          atom1.addBond(b);
+          
         }
       }
     }

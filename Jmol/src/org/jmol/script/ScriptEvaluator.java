@@ -6338,10 +6338,10 @@ public class ScriptEvaluator {
   }
 
   Object getSmilesMatches(String pattern, String smiles, BitSet bsSelected,
-                          BitSet bsMatch3D, boolean isSmarts, boolean firstMatchOnly)
+                          BitSet bsMatch3D, boolean isSmarts, boolean asOneBitset)
       throws ScriptException {
     if (isSyntaxCheck) {
-      if (firstMatchOnly)
+      if (asOneBitset)
         return new BitSet();
       return new String[] { "({})" };
     }
@@ -6349,7 +6349,7 @@ public class ScriptEvaluator {
     // just retrieving the SMILES or bioSMILES string
 
     if (pattern.length() == 0) {
-      boolean isBioSmiles = (!firstMatchOnly);
+      boolean isBioSmiles = (!asOneBitset);
       Object ret = viewer.getSmiles(0, 0, bsSelected, isBioSmiles, false, true, true);
       if (ret == null)
         evalError(viewer.getSmilesMatcher().getLastException(), null);
@@ -6382,7 +6382,7 @@ public class ScriptEvaluator {
       float stddev = getSmilesCorrelation(bsMatch3D, bsSelected, pattern, null,
           null, null, vReturn, isSmarts);
       if (Float.isNaN(stddev)) {
-        if (firstMatchOnly)
+        if (asOneBitset)
           return new BitSet();
         return new String[] { };
       }
@@ -6391,14 +6391,14 @@ public class ScriptEvaluator {
       for (int j = 0; j < b.length; j++)
         b[j] = (BitSet) vReturn.get(j);
     }
-    if (firstMatchOnly) {
+    if (asOneBitset) {
       // sum total of all now, not just first
       BitSet bs = new BitSet();
       for (int j = 0; j < b.length; j++)
         bs.or(b[j]);
       if (asAtoms)
         return bs;
-      return new BondSet(bs);
+      return new BondSet(bs); // not a bondset, but this prevents subset business
     }
     String[] matches = new String[b.length];
     for (int j = 0; j < b.length; j++)

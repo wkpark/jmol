@@ -12501,7 +12501,7 @@ public class ScriptEvaluator {
     String msg = null;
     int quality = Integer.MIN_VALUE;
     if (tok == Token.string) {
-      Token t = Token.getTokenFromName(ScriptVariable.sValue(args[pt]));
+      Token t = Token.getTokenFromName(ScriptVariable.sValue(args[pt]).toLowerCase());
       if (t != null)
         tok = t.tok;
     }
@@ -12885,7 +12885,7 @@ public class ScriptEvaluator {
     Token token = getToken(1);
     int tok = (token instanceof ScriptVariable ? Token.nada : token.tok);
     if (tok == Token.string) {
-      token = Token.getTokenFromName(str);
+      token = Token.getTokenFromName(str.toLowerCase());
       if (token != null)
         tok = token.tok;
     }

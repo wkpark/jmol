@@ -8974,7 +8974,7 @@
   <fah_proj number="10886" name="Abeta42_mono_s" public="n" file="xyz"
     server="171.64.122.84" atoms="12222" preferred="5" deadline="20"
     credit="68" frames="100" code="G" contact="lin5" contrib="SandStar"/>
-  <fah_proj number="10887" name="Abeta42_mono_s" public="n"
+  <fah_proj number="10887" name="Abeta42_mono_s" public="n" file="xyz"
     server="171.64.122.84" atoms="12222" preferred="5" deadline="20"
     credit="68" frames="100" code="G" contact="lin5"/>
   <fah_proj number="10888" name="Abeta42_mono_s" public="n"
@@ -8995,7 +8995,7 @@
   <fah_proj number="10893" name="AbetaM3_mono" public="n"
     server="171.64.122.84" atoms="34354" preferred="40" deadline="59"
     credit="209" frames="100" code="G" contact="lin5"/>
-  <fah_proj number="10894" name="AbetaM4_mono" public="n"
+  <fah_proj number="10894" name="AbetaM4_mono" public="n" file="xyz"
     server="171.64.122.84" atoms="34354" preferred="40" deadline="59"
     credit="209" frames="100" code="G" contact="lin5"/>
   <fah_proj number="10895" name="Abeta40_mono" public="n"

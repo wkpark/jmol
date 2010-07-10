@@ -8964,7 +8964,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       bs = getModelUndeletedAtomsBitSet(modelIndex);
       sb.append("zap ");
       sb.append(Escape.escape(bs)).append(";");
-      DataManager.getInlineData(sb, modelSet.getModelExtract(bs, false, false), true);
+      DataManager.getInlineData(sb, modelSet.getModelExtract(bs, false, false), true, null);
       sb.append("set refreshing false;")
           .append(actionManager.getPickingState()).append(
               transformManager.getMoveToText(0, false)).append(
@@ -9047,7 +9047,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public static void getInlineData(StringBuffer loadScript, String strModel,
                                    boolean isAppend) {
-    DataManager.getInlineData(loadScript, strModel, isAppend);
+    // because the model is a modelKit atom set
+    DataManager.getInlineData(loadScript, strModel, isAppend, null);
   }
 
   boolean isAtomPDB(int i) {

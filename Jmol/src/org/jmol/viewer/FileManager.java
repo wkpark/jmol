@@ -261,7 +261,7 @@ public class FileManager {
                                            boolean isLoadVariable) {
  //TODO -- must check loadvariable business. 
     if (!isLoadVariable)
-      DataManager.getInlineData(loadScript, strModel, isAppend);
+      DataManager.getInlineData(loadScript, strModel, isAppend, viewer.getDefaultLoadFilter());
     setLoadState(htParams);
     Logger.info("FileManager.getAtomSetCollectionFromString()");
     if (!isAppend) {

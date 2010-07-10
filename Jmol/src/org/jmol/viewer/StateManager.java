@@ -574,9 +574,7 @@ public class StateManager {
     //
     // _xxxxx variables are automatically exempt
     //
-    //this is a final static String. MAKE SURE ALL ENTRIES ARE LOWERCASE!
-    //
-    ";ambientpercent;animationfps"
+    (";ambientpercent;animationfps"
         + ";antialiasdisplay;antialiasimages;antialiastranslucent;appendnew;axescolor"
         + ";axesposition;axesmolecular;axesorientationrasmol;axesunitcell;axeswindow;axis1color;axis2color"
         + ";axis3color;backgroundcolor;backgroundmodel;bondsymmetryatoms;boundboxcolor;cameradepth"
@@ -586,20 +584,19 @@ public class StateManager {
         + ";perspectivedepth;phongexponent;perspectivemodel;preservestate;refreshing;repaintwaitms;rotationradius"
         + ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showunitcell"
         + ";slabenabled;zshade;zshadepower;specular;specularexponent;specularpercent;specularpower;stateversion"
-        + ";statusreporting;stereo;stereostate;vibrationperiod;"
+        + ";statusreporting;stereo;stereostate;vibrationperiod"
         + ";unitcellcolor;visualrange;windowcentered;zerobasedxyzrasmol;zoomenabled;mousedragfactor;mousewheelfactor"
-        +
         //    saved in the hash table but not considered part of the state:
-        ";scriptqueue;scriptreportinglevel;syncscript;syncmouse;syncstereo;" +
-        ";defaultdirectory;currentlocalpath;defaultdirectorylocal"
-        +
+        + ";scriptqueue;scriptreportinglevel;syncscript;syncmouse;syncstereo;" 
+        + ";defaultdirectory;currentlocalpath;defaultdirectorylocal"
         //    more settable Jmol variables    
-        ";ambient;bonds;colorrasmol;diffuse;frank;hetero;hidenotselected"
+        + ";ambient;bonds;colorrasmol;diffuse;frank;hetero;hidenotselected"
         + ";hoverlabel;hydrogen;languagetranslation;measurementunits;navigationdepth;navigationslab"
         + ";picking;pickingstyle;propertycolorschemeoverload;radius;rgbblue;rgbgreen;rgbred"
         + ";scaleangstromsperinch;selectionhalos;showscript;showselections;solvent;strandcount"
         + ";spinx;spiny;spinz;spinfps;navx;navy;navz;navfps;" + JmolConstants.getCallbackName(-1)
-        + ";undo;bondpicking;modelkitmode;allowgestures;allowkeystrokes;allowmultitouch;allowmodelkit;";
+        + ";undo;bondpicking;modelkitmode;allowgestures;allowkeystrokes;allowmultitouch;allowmodelkit"
+        + ";").toLowerCase();
 
   protected static int getJmolVersionInt() {
     // 11.9.999 --> 1109999
@@ -1041,6 +1038,7 @@ public class StateManager {
       appendCmd(str, "set bondRadiusMilliAngstroms " + bondRadiusMilliAngstroms);
       appendCmd(str, "set bondTolerance " + bondTolerance);
       appendCmd(str, "set defaultLattice " + Escape.escape(ptDefaultLattice));
+      appendCmd(str, "set defaultLoadFilter " + Escape.escape(defaultLoadFilter)) ;
       appendCmd(str, "set defaultLoadScript \"\"");
       if (defaultLoadScript.length() > 0)
         setParameterValue("defaultLoadScript", defaultLoadScript);
@@ -1050,7 +1048,6 @@ public class StateManager {
         appendCmd(str, viewer.getDefaultVdwTypeNameOrData(Integer.MAX_VALUE));
       appendCmd(str, "set forceAutoBond " + forceAutoBond);
       appendCmd(str, "#set defaultDirectory " + Escape.escape(defaultDirectory));
-      appendCmd(str, "#set defaultLoadFilter " + Escape.escape(defaultLoadFilter)) ;
       appendCmd(str, "#set loadFormat " + Escape.escape(loadFormat));
       appendCmd(str, "#set smilesUrlFormat " + Escape.escape(smilesUrlFormat));
       appendCmd(str, "#set edsUrlFormat " + Escape.escape(edsUrlFormat));

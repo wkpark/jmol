@@ -7353,10 +7353,9 @@ public class ScriptEvaluator {
     default:
       error(ERROR_badArgumentCount);
     }
-    dataLabel = dataLabel.toLowerCase();
     String dataType = dataLabel + " ";
-    boolean isDefault = (dataLabel.indexOf("(default)") >= 0);
-    dataType = dataType.substring(0, dataType.indexOf(" "));
+    dataType = dataType.substring(0, dataType.indexOf(" ")).toLowerCase();
+    boolean isDefault = (dataLabel.toLowerCase().indexOf("(default)") >= 0);
     boolean isModel = dataType.equals("model");
     boolean isAppend = dataType.equals("append");
     boolean processModel = ((isModel || isAppend) && (!isSyntaxCheck || isCmdLine_C_Option));
@@ -7364,6 +7363,16 @@ public class ScriptEvaluator {
       error(ERROR_invalidArgument);
     int userType = -1;
     if (processModel) {
+      String filterOld = viewer.getDefaultLoadFilter();
+      String filter = null;
+      int pt = dataLabel.toLowerCase().indexOf("filter=");
+      if (pt >= 0) {
+        filter = dataLabel.substring(pt + 7);
+      } else if (filterOld.length() > 0) {
+        dataLabel = dataLabel + " filter=" + filterOld;
+      }
+      if (isAppend)
+        dataType = dataLabel; // because we might have different ones
       // only if first character is "|" do we consider "|" to be new line
       char newLine = viewer.getInlineChar();
       if (dataString.length() > 0 && dataString.charAt(0) != newLine)
@@ -7371,7 +7380,11 @@ public class ScriptEvaluator {
       int modelCount = viewer.getModelCount()
           - (viewer.getFileName().equals("zapped") ? 1 : 0);
       boolean appendNew = viewer.getAppendNew();
+      if (filter != null)
+        viewer.setStringProperty("defaultLoadFilter", filter);
       viewer.loadInline(dataString, newLine, isAppend);
+      if (filter != null)
+        viewer.setStringProperty("defaultLoadFilter", filterOld);
       if (isAppend && appendNew) {
         viewer.setAnimationRange(-1, -1);
         viewer.setCurrentModelIndex(modelCount);

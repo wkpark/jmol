@@ -357,10 +357,11 @@ class DataManager {
         + sb.append("  end \"element_vdw\";\n\n").toString());
   }
 
-  static void getInlineData(StringBuffer loadScript, String strModel, boolean isAppend) {
-    String tag = (isAppend ? "append" : "model");
-    loadScript.append("data \"").append(tag).append(" inline\"\n")
-        .append(strModel).append("end \"").append(tag).append(" inline\";");
+  static void getInlineData(StringBuffer loadScript, String strModel, boolean isAppend, String loadFilter) {
+    String tag = (isAppend ? "append" : "model") + " inline" 
+    + (loadFilter == null || loadFilter.length() == 0 ? "" : " filter=" + loadFilter);
+    loadScript.append("data \"").append(tag).append("\"\n")
+        .append(strModel).append("end \"").append(tag).append("\";");
   }
 
 

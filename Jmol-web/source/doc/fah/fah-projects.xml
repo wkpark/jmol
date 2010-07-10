@@ -8471,7 +8471,7 @@
   <fah_proj number="6503" name="p6503_TR462_B_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="17092" preferred="14" deadline="21"
     credit="75" frames="100" code="G" contact="lan" contrib="Danny Nielsen,Leszek Dobrowolski,SandStar"/>
-  <fah_proj number="6504" name="p6504_TR568_predict" public="n"
+  <fah_proj number="6504" name="p6504_TR568_predict" public="y"
     server="171.64.65.62" atoms="23881" preferred="21" deadline="31"
     credit="112" frames="100" code="G" contact="lan"/>
   <fah_proj number="6505" name="p6505_1CFC_A_predict" public="y" file="xyz"
@@ -8483,7 +8483,7 @@
   <fah_proj number="6508" name="p6508_proG_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="16027" preferred="13" deadline="20"
     credit="72" frames="100" code="G" contact="lan" contrib="Bas Couwenberg"/>
-  <fah_proj number="6509" name="p6509_TR574_predict" public="n"
+  <fah_proj number="6509" name="p6509_TR574_predict" public="y"
     server="171.64.65.62" atoms="35411" preferred="35" deadline="53"
     credit="192" frames="100" code="G" contact="lan"/>
   <fah_proj number="6511" name="p6511_ubiq_predict" public="y" file="xyz"
@@ -9015,7 +9015,7 @@
     credit="69" frames="100" code="G" contact="lin5"/>
 
   <!-- Projects 10900 to 10999 -->
-  <fah_proj number="10900" name="Abeta40_mono_s" public="n"
+  <fah_proj number="10900" name="Abeta40_mono_s" public="n" file="xyz"
     server="171.64.122.84" atoms="12193" preferred="14" deadline="21"
     credit="69" frames="100" code="G" contact="lin5"/>
   <fah_proj number="10901" name="Abeta40_mono" public="n"

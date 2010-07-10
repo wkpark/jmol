@@ -127,6 +127,7 @@ public class RadiusData {
   public int vdwType = JmolConstants.VDW_AUTO;
   public float value = Float.NaN;
   public float valueExtended = 0;
+  public float[] values;
   
   public RadiusData() {
   }

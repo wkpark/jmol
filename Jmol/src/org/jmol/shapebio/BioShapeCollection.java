@@ -28,6 +28,7 @@ package org.jmol.shapebio;
 import java.util.BitSet;
 import java.util.Hashtable;
 
+import org.jmol.atomdata.RadiusData;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Group;
@@ -85,13 +86,13 @@ public abstract class BioShapeCollection extends Shape {
     return 0;
   }
   
-  public void setSize(int size, BitSet bsSelected) {
+  public void setShapeSize(int size, RadiusData rd, BitSet bsSelected) {
     short mad = (short) size;
     initialize();
     for (int i = bioShapes.length; --i >= 0;) {
       BioShape bioShape = bioShapes[i];
       if (bioShape.monomerCount > 0)
-        bioShape.setMad(mad, bsSelected);
+        bioShape.setMad(mad, bsSelected, (rd == null ? null : rd.values));
     }
   }
 

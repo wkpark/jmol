@@ -12469,7 +12469,7 @@ public class ScriptEvaluator {
 
   String write(Token[] args) throws ScriptException {
     String[] fullPath = new String[1];
-    int pt = 0;
+    int pt = 0, pt0 = 0;
     boolean isApplet = viewer.isApplet();
     boolean isCommand = false;
     boolean isShow = false;
@@ -12478,7 +12478,7 @@ public class ScriptEvaluator {
     if (args == null) {
       args = statement;
       isCommand = true;
-      pt++;
+      pt = pt0 = 1;
     } else {
       isShow = true;
     }
@@ -12561,8 +12561,8 @@ public class ScriptEvaluator {
       pt++;
       break;
     case Token.var:
-      pt += 2;
       type = "VAR";
+      pt += 2;
       break;
     case Token.file:
       type = "FILE";
@@ -12659,12 +12659,12 @@ public class ScriptEvaluator {
           // write isosurface filename.xxx also
           fileName += "." + ScriptVariable.sValue(tokenAt(pt + 2, args));
         }
-        if (type != "VAR" && pt == 1)
+        if (type != "VAR" && pt == pt0)
           type = "image";
         else if (fileName.length() > 0 && fileName.charAt(0) == '.'
-            && (pt == 2 || pt == 3)) {
+            && (pt == pt0 + 1 || pt == pt0 + 2)) {
           fileName = ScriptVariable.sValue(tokenAt(pt - 1, args)) + fileName;
-          if (type != "VAR" && pt == 2)
+          if (type != "VAR" && pt == pt0 + 1)
             type = "image";
         }
         if (fileName.equalsIgnoreCase("clipboard"))
@@ -12855,9 +12855,9 @@ public class ScriptEvaluator {
         return "";
       }
       if (bytes != null && bytes instanceof String) {
-        // load error here
+        // load error or completion message here
         scriptStatusOrBuffer((String) bytes);
-        return "";
+        return (String) bytes;
       }
       if (bytes == null && (!isImage || fileName != null))
         bytes = data;
@@ -12872,6 +12872,7 @@ public class ScriptEvaluator {
         evalError(msg, null);
       scriptStatusOrBuffer(msg
           + (isImage ? "; width=" + width + "; height=" + height : ""));
+      return msg;
     }
     return "";
   }

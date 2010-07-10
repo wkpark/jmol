@@ -104,18 +104,19 @@ public class PhosphorusMonomer extends Monomer {
   public Quaternion getQuaternion(char qType) {
     //vA = ptP(i+1) - ptP
     //vB = ptP(i-1) - ptP
-    if (monomerIndex == 0 
-        || monomerIndex == bioPolymer.monomerCount - 1)
+    int i = monomerIndex;
+    if (i == 0 || i >= bioPolymer.monomerCount - 1)
       return null;
-    Point3f ptP = getAtomFromOffsetIndex(P);
-    Point3f ptPNext = bioPolymer.monomers[monomerIndex + 1].getAtomFromOffsetIndex(P);
-    Point3f ptPPrev = bioPolymer.monomers[monomerIndex - 1].getAtomFromOffsetIndex(P);
-    if (ptP == null || ptPNext == null || ptPPrev == null)
+    Point3f ptP = bioPolymer.monomers[i].getAtomFromOffsetIndex(P);
+    Point3f ptA, ptB;
+    ptA = bioPolymer.monomers[i + 1].getAtomFromOffsetIndex(P);
+    ptB = bioPolymer.monomers[i - 1].getAtomFromOffsetIndex(P);
+    if (ptP == null || ptA == null || ptB == null)
       return null;
     Vector3f vA = new Vector3f();
     Vector3f vB = new Vector3f();
-    vA.sub(ptPNext, ptP);
-    vB.sub(ptPPrev, ptP);
+    vA.sub(ptA, ptP);
+    vB.sub(ptB, ptP);
     return Quaternion.getQuaternionFrame(vA, vB, null, false);
   }
   

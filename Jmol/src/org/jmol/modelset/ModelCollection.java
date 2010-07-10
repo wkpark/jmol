@@ -2391,8 +2391,10 @@ abstract public class ModelCollection extends BondCollection {
     if (bsBonds == null)
       bsBonds = new BitSet();
     boolean matchAny = (order == JmolEdge.BOND_ORDER_ANY);
-    boolean matchHbond = ((order & JmolEdge.BOND_HYDROGEN_MASK) != 0);
     boolean matchNull = (order == JmolEdge.BOND_ORDER_NULL);
+    if (matchNull)
+      order = JmolEdge.BOND_COVALENT_SINGLE; //default for setting
+    boolean matchHbond = ((order & JmolEdge.BOND_HYDROGEN_MASK) != 0);
     boolean identifyOnly = false;
     boolean modifyOnly = false;
     boolean createOnly = false;
@@ -2419,8 +2421,6 @@ abstract public class ModelCollection extends BondCollection {
       createOnly = true;
       break;
     }
-    if (matchNull)
-      order = JmolEdge.BOND_COVALENT_SINGLE; //default for setting
     defaultCovalentMad = viewer.getMadBond();
     boolean minDistanceIsFractionRadius = (minDistance < 0);
     boolean maxDistanceIsFractionRadius = (maxDistance < 0);
@@ -2448,11 +2448,9 @@ abstract public class ModelCollection extends BondCollection {
         if (atomA.isDeleted())
           continue;
       }
-      for (int iB = m; --iB >= 0;) {
+      for (int iB = (isBonds ? m : bsB.nextSetBit(0)); iB >= 0; iB = (isBonds ? iB - 1 : bsB.nextSetBit(iB + 1))) {
         if (!isBonds) {
           if (iB == iA)
-            continue;
-          if (!bsB.get(iB))
             continue;
           atomB = atoms[iB];
           if (atomA.modelIndex != atomB.modelIndex || atomB.isDeleted())

@@ -42,6 +42,7 @@ import java.net.MalformedURLException;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.Toolkit;
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.BufferedInputStream;
@@ -368,6 +369,12 @@ public class FileManager {
 
   Object getInputStreamOrErrorMessageFromName(String name, boolean showMsg,
                                               boolean checkOnly) {
+    return getInputStreamOrPost(name, showMsg, null, checkOnly, appletDocumentBase, appletProxy);
+  }
+  private static Object getInputStreamOrPost(String name, boolean showMsg,
+                                              byte[] bytes, boolean checkOnly,
+                                              URL appletDocumentBase, 
+                                              String appletProxy) {
     String errorMessage = null;
     int iurl;
     for (iurl = urlPrefixes.length; --iurl >= 0;)
@@ -391,8 +398,13 @@ public class FileManager {
         if (showMsg && !checkOnly)
           Logger.info("FileManager opening " + url.toString());
         URLConnection conn = url.openConnection();
-        if (post != null && !checkOnly) {
-          conn.setDoOutput(true); 
+        if (bytes != null && !checkOnly) {
+          conn.setRequestProperty("Content-Type", "application/octet-stream");
+          conn.setDoOutput(true);
+          conn.getOutputStream().write(bytes);
+        } else if (post != null && !checkOnly) {
+          conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+          conn.setDoOutput(true);
           OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream()); 
           wr.write(post); 
           wr.flush();           
@@ -1041,7 +1053,7 @@ public class FileManager {
         v.add(name);
         String newName = "$SCRIPT_PATH$/" + name.substring(name.lastIndexOf("/") + 1);
         if (isLocal && name.indexOf("|") < 0) {
-          v.add(null);
+          v.add(null); // data will be gotten from disk
         } else {
           Object ret = getFileAsBytes(name, null);
           if (!(ret instanceof byte[]))
@@ -1054,7 +1066,7 @@ public class FileManager {
     }
     String sname = fileRoot + ".spt";
     v.add("JmolManifest.txt");
-    String sinfo = "# Jmol Mmanifest Zip Format 1.0\n"
+    String sinfo = "# Jmol Manifest Zip Format 1.0\n"
       + "# Created "
       + DateFormat.getDateInstance().format(new Date()) + "\n"
       + "# JmolVersion " + Viewer.getJmolVersion() + "\n"
@@ -1092,8 +1104,9 @@ public class FileManager {
     Logger.info("creating zip file " + outFileName + "...");
     String fullFilePath = null;
     try {
-      ZipOutputStream os = new ZipOutputStream(
-          new FileOutputStream(outFileName));
+      ByteArrayOutputStream bos = (outFileName.startsWith("http://") ? new ByteArrayOutputStream() : null);
+      ZipOutputStream os = new ZipOutputStream(bos == null ? 
+          (OutputStream) new FileOutputStream(outFileName) : bos);
       for (int i = 0; i < fileNamesAndByteArrays.size(); i += 2) {
         String fname = (String) fileNamesAndByteArrays.get(i);
         if (fname.indexOf("file:/") == 0)
@@ -1123,17 +1136,30 @@ public class FileManager {
         os.closeEntry();
       }
       os.close();
-      File f = new File(outFileName);
-      fullFilePath = f.getAbsolutePath().replace('\\','/');
-      nBytes = f.length();
+      Logger.info(nBytesOut + " bytes prior to compression");
+      if (bos != null) {
+        fullFilePath = outFileName;
+        byte[] bytes = bos.toByteArray();
+        nBytes = bytes.length;
+        String ret = postByteArray(outFileName, bytes);
+        if (ret != null)
+          return ret;
+      } else {
+        File f = new File(outFileName);
+        fullFilePath = f.getAbsolutePath().replace('\\','/');
+        nBytes = f.length();
+      }
     } catch (IOException e) {
       Logger.info(e.getMessage());
       return e.getMessage();
     }
-    Logger.info(nBytesOut + " bytes prior to compression");
     return msg + " " + nBytes + " " + fullFilePath;
   }
 
+  private static String postByteArray(String outFileName, byte[] bytes) {
+    //getInputStreamOrPost(outFileName, false, bytes, false, null, null);
+    return null;
+  }
   ////////////////// reader classes -- DOM, File, and Files /////////////
 
   private class DOMReader {

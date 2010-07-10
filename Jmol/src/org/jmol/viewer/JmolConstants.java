@@ -237,20 +237,13 @@ final public class JmolConstants {
   public static final float MINIMIZE_FIXED_RANGE = 5.0f;
 
 
-  public final static int CONNECT_DELETE_BONDS     = 0;
+  public final static int CONNECT_DELETE_BONDS     = Token.delete;
   public final static int CONNECT_MODIFY_ONLY      = Token.modify;
   public final static int CONNECT_CREATE_ONLY      = Token.create;
   public final static int CONNECT_MODIFY_OR_CREATE = Token.modifyorcreate;
   public final static int CONNECT_AUTO_BOND        = Token.auto;
-  public final static int CONNECT_IDENTIFY_ONLY    = 5;
+  public final static int CONNECT_IDENTIFY_ONLY    = Token.identify;
 
-  private final static String[] connectOperationStrings =
-  { "delete", "modify", "create", "modifyOrCreate", "auto", "adjust" };
-
-  public static String connectOperationName(int i) {
-    return connectOperationStrings[i];
-  }
-  
   public static final int MOUSE_NONE = -1;
   public static final int MOUSE_ROTATE = 0;
   public static final int MOUSE_ZOOM = 1;

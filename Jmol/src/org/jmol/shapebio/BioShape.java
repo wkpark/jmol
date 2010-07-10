@@ -183,7 +183,7 @@ class BioShape {
         shape.myVisibilityFlag, bsNot);
   }
   
-  void setMad(short mad, BitSet bsSelected) {
+  void setMad(short mad, BitSet bsSelected, float[] values) {
     isActive = true;
     if (bsSizeSet == null)
       bsSizeSet = new BitSet();
@@ -191,6 +191,11 @@ class BioShape {
     for (int i = monomerCount; --i >= 0; ) {
       int leadAtomIndex = leadAtomIndices[i];
       if (bsSelected.get(leadAtomIndex)) {
+        if (values != null) {
+          if (Float.isNaN(values[leadAtomIndex]))
+            continue;
+          mad = (short) (values[leadAtomIndex] * 2000);
+        }
         boolean isVisible = ((mads[i] = setMad(i, mad)) > 0);
         bsSizeSet.set(i, isVisible);
         monomers[i].setShapeVisibility(flag, isVisible);

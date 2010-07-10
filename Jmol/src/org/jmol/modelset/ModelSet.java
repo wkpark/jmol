@@ -703,13 +703,21 @@ abstract public class ModelSet extends ModelCollection {
       // fall through
     case Token.halo:
     case Token.star:
-      if (values != null)
-        return;
-      if (fValue > Atom.RADIUS_MAX)
-        fValue = Atom.RADIUS_MAX;
-      if (fValue < 0)
-        fValue = 0;
-      shapeManager.setShapeSize(JmolConstants.shapeTokenIndex(tok), (int) (fValue * 2000), null, bs);
+      RadiusData rd = null;
+      int mar = 0;
+      if (values == null) {
+        if (fValue > Atom.RADIUS_MAX)
+          fValue = Atom.RADIUS_MAX;
+        if (fValue < 0)
+          fValue = 0;
+        mar = (int) (fValue * 2000);
+      } else {
+        rd = new RadiusData();
+        rd.values = values;
+        rd.value = Integer.MAX_VALUE;
+      }
+      shapeManager
+          .setShapeSize(JmolConstants.shapeTokenIndex(tok), mar, rd, bs);
       return;
     }
     super.setAtomProperty(bs, tok, iValue, fValue, sValue, values, list);

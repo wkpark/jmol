@@ -27,6 +27,7 @@ package org.jmol.shapebio;
 
 import java.util.BitSet;
 
+import org.jmol.atomdata.RadiusData;
 import org.jmol.modelset.Atom;
 
 public class Backbone extends BioShapeCollection {
@@ -49,8 +50,8 @@ public class Backbone extends BioShapeCollection {
     }
     super.setProperty(propertyName, value, bsSelected);
   }
-  
-  public void setSize(int size, BitSet bsSelected) {
+
+  public void setShapeSize(int size, RadiusData rd, BitSet bsSelected) {
     short mad = (short) size;
     initialize();
     boolean useThisBsSelected = (this.bsSelected != null);
@@ -79,6 +80,11 @@ public class Backbone extends BioShapeCollection {
             || bondSelectionModeOr && (isAtom1 || isAtom2)) {
           bioShape.monomers[i].setShapeVisibility(myVisibilityFlag, isVisible);
           Atom atomA = modelSet.atoms[index1];
+          if (rd != null) {
+            if (Float.isNaN(rd.values[i]))
+              continue;
+            mad = (short) (rd.values[i] * 2000);
+          }
           Atom atomB = modelSet.atoms[index2];
           boolean wasVisible = (bioShape.mads[i] != 0); 
           if (wasVisible != isVisible) {

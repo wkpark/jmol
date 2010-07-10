@@ -330,6 +330,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
 
   Point3f getQuaternionFrameCenter(char qType) {
     switch (qType) {
+    case 'x':
     case 'a':
     case 'b':
     case 'p':
@@ -350,7 +351,6 @@ public class NucleicMonomer extends PhosphorusMonomer {
       }
       return baseCenter;
     case 'n':
-    case 'x':
     default:
       return getN0();
     }
@@ -373,6 +373,14 @@ public class NucleicMonomer extends PhosphorusMonomer {
         return null;
       yBased = true;
       ptA = ((NucleicMonomer) bioPolymer.monomers[monomerIndex - 1]).getC4P();
+      ptB = getC4P();
+      break;
+    case 'x':
+      // P[i]-C4'[i]-P[i+1]
+      ptNorP = getP();
+      if (monomerIndex == bioPolymer.monomerCount - 1 || ptNorP == null)
+        return null;
+      ptA = ((NucleicMonomer) bioPolymer.monomers[monomerIndex + 1]).getP();
       ptB = getC4P();
       break;
     case 'b': // phosphorus backbone
@@ -413,7 +421,6 @@ public class NucleicMonomer extends PhosphorusMonomer {
       break;
     case 'q': // Quine
       return null;
-    case 'x': // experimental
     default:
       ptNorP = getN0();
       if (ptNorP == null)

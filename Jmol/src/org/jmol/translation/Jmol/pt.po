@@ -7,13 +7,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-06-21 19:25+0200\n"
-"PO-Revision-Date: 2010-06-03 19:48+0000\n"
-"Last-Translator: Nicolas Vervelle <Unknown>\n"
+"PO-Revision-Date: 2010-07-09 10:42+0000\n"
+"Last-Translator: Frederico Tavares <Unknown>\n"
 "Language-Team: Portugal@Folding <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-06-03 19:56+0000\n"
+"X-Launchpad-Export-Date: 2010-07-09 15:28+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: Portugal\n"
 "X-Poedit-Language: Portuguese\n"
@@ -54,7 +54,7 @@ msgstr "operação de inicialização silenciosa"
 
 #: org/openscience/jmol/app/JmolApp.java:150
 msgid "list commands during script execution"
-msgstr ""
+msgstr "listar comandos durante a execução da aplicação"
 
 #: org/openscience/jmol/app/JmolApp.java:152
 msgid "start with no splash screen"
@@ -130,15 +130,15 @@ msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:466
 msgid "Executing script 1..."
-msgstr ""
+msgstr "Executando o script 1..."
 
 #: org/openscience/jmol/app/JmolApp.java:476
 msgid "Executing script file..."
-msgstr ""
+msgstr "Executando o ficheiro de script..."
 
 #: org/openscience/jmol/app/JmolApp.java:497
 msgid "Executing script 2..."
-msgstr ""
+msgstr "Executando o script 2..."
 
 #: org/openscience/jmol/app/jmolpanel/AboutDialog.java:57
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:179
@@ -194,7 +194,7 @@ msgstr "Parar"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:127
 msgid "History"
-msgstr ""
+msgstr "Histórico"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:128
 msgid "State"
@@ -214,7 +214,7 @@ msgstr "Anular"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:133
 msgid "Redo"
-msgstr ""
+msgstr "Repetir"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:164
 msgid "AtomSetChooser"
@@ -332,11 +332,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:194
 msgid "Basic"
-msgstr ""
+msgstr "Básico"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:196
 msgid "Advanced"
-msgstr ""
+msgstr "Avançado"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:224
 msgid "Checkpoint File: "
@@ -352,7 +352,7 @@ msgstr "Número de Processadores:"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:248
 msgid "Route"
-msgstr ""
+msgstr "Caminho"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:254
 msgid "Method: "
@@ -432,7 +432,7 @@ msgstr "Abrir &URL"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:55
 msgid "Scrip&t Editor..."
-msgstr ""
+msgstr "Editor de Scrip&t..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:56
 msgid "Conso&le..."
@@ -481,7 +481,7 @@ msgstr "Renderizar em 'POV-Ray'"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:67
 msgid "Write &State..."
-msgstr ""
+msgstr "Escrever E&stado"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:68
 msgid "Save current view as a Jmol state script."
@@ -542,7 +542,7 @@ msgstr "&Seleccionar"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:84
 msgid "&All"
-msgstr ""
+msgstr "&Tudo"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:85
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:98
@@ -660,7 +660,7 @@ msgstr ""
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:119
 #, java-format
 msgid "{0} pixels"
-msgstr ""
+msgstr "{0} píxeis"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:122
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:123
@@ -1228,7 +1228,8 @@ msgstr "(Angstroms)"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:425
 msgid "Bond Tolerance - sum of two covalent radii + this value"
-msgstr "Tolerância da ligação- somatório de dois raios covalentes+ este valor"
+msgstr ""
+"Tolerância da ligação- somatório de dois raios covalentes+ este valor"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:476
 msgid "Minimum Bonding Distance"
@@ -1465,9 +1466,9 @@ msgid "adding {0}"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:656
-#, fuzzy, java-format
+#, java-format
 msgid "Unable to load resource {0}"
-msgstr "Não consegue encontrar url \"{0}\"."
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:708
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
@@ -1546,47 +1547,40 @@ msgid "Animation Control"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:165
-#, fuzzy
 msgid "Animation"
-msgstr "&Animar..."
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:166
 msgid "First Frame"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:168
-#, fuzzy
 msgid "Previous Frame"
-msgstr "Ir para a frame anterior"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:170
 msgid "Play"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:172
-#, fuzzy
 msgid "Next Frame"
-msgstr "Ir para a próxima frame"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:174
-#, fuzzy
 msgid "Pause"
-msgstr "&Colar"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:176
-#, fuzzy
 msgid "Last Frame"
-msgstr "Ir para a última frame"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:178
-#, fuzzy
 msgid "Mode:"
-msgstr "Método: "
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:179
-#, fuzzy
 msgid "Loop"
-msgstr "&Ciclo"
+msgstr "Curva"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:181
 msgid "Palindrome"
@@ -1601,9 +1595,8 @@ msgid "Open Console Button"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:205
-#, fuzzy
 msgid "launch Jmol console"
-msgstr "Consola de Script Jmol"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:212
 msgid "Download view"
@@ -1612,7 +1605,3 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/Widgets.java:227
 msgid "unimplemented"
 msgstr ""
-
-#, fuzzy
-#~ msgid "Stop"
-#~ msgstr "Passo"

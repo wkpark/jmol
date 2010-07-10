@@ -24,11 +24,13 @@
 package org.jmol.console;
 
 import org.jmol.api.*;
+import org.jmol.i18n.GT;
 import org.jmol.script.ScriptCompiler;
 import org.jmol.script.Token;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.FileManager;
+import org.jmol.viewer.Viewer;
 
 import java.awt.Component;
 import java.awt.event.*;
@@ -73,8 +75,8 @@ public abstract class JmolConsole extends JDialog implements ActionListener, Win
   public JmolConsole() {
   }
   
-  public JmolConsole(JmolViewer viewer, JFrame frame, String title) {
-    super(frame, title, false);
+  public JmolConsole(JmolViewer viewer, JFrame frame) {
+    super(frame, getTitleText(), false);
     this.viewer = viewer;
     display = frame;
   }
@@ -84,6 +86,10 @@ public abstract class JmolConsole extends JDialog implements ActionListener, Win
   
   public int nTab = 0;
   private String incompleteCmd;
+  
+  protected static String getTitleText() {
+    return GT._("Jmol Script Console") + " " + Viewer.getJmolVersion();
+  }
   
   protected String completeCommand(String thisCmd) {
     if (thisCmd.length() == 0)

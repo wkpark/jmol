@@ -74,21 +74,17 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   }
 
   public AppletConsole() {
-    System.out.println("AppletConsole default constructor");    
   }
   
   public JmolAppConsoleInterface getAppConsole(Viewer viewer, Component display) {
-    System.out.println("AppletConsle.getAppConsole");
     return new AppletConsole(viewer, display);
   }
 
   private AppletConsole(Viewer viewer, Component display) {
-    System.out.println("AppletConsole is constructing viewer=" + viewer + " display=" + display);
 
     this.display = display;
     set(viewer);
 
-    System.out.println("AppletConsole is constructed");
   }
 
   public void sendConsoleEcho(String strEcho) {
@@ -104,13 +100,11 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
 
   private void set(JmolViewer viewer) {
     //Logger.debug("Console constructor");
-    System.out.println("Console " + this + " set()" + viewer);
-
     this.viewer = viewer;
     boolean doTranslate = GT.getDoTranslate();
     GT.setDoTranslate(true);
 
-    jf = new JFrame(GT._("Jmol Script Console"));
+    jf = new JFrame(getTitleText());
     jf.setSize(600, 400);
     editButton = new JButton(GT._("Editor"));
     stateButton = new JButton(GT._("State"));

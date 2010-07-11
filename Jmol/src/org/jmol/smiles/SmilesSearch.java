@@ -225,7 +225,7 @@ public class SmilesSearch extends JmolMolecule {
     search.htNested = htNested;
     search.isSmilesFind = isSmilesFind;
     search.isSmarts = true;
-    search.measures = measures;
+    //search.measures = measures;
     search.bsAromatic = bsAromatic;
     search.ringData = ringData;
     search.ringCounts = ringCounts;

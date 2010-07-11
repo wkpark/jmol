@@ -1036,12 +1036,19 @@ public class ScriptEvaluator {
     return new ScriptVariable(Token.propselector, tok, s);
   }
   
-  private float[] getBitsetPropertyFloat(BitSet bs, int tok)
+  private float[] getBitsetPropertyFloat(BitSet bs, int tok, float min, float max)
       throws ScriptException {
-    if (tok == 0)
-      return null;
-    return (float[]) getBitsetProperty(bs, tok | Token.allfloat, null, null,
+    float[] data = (float[]) getBitsetProperty(bs, tok | Token.allfloat, null, null,
         null, null, false, Integer.MAX_VALUE, false);
+    if (!Float.isNaN(min))
+      for (int i = 0; i < data.length; i++)
+        if (data[i] < min)
+          data[i] = Float.NaN;
+    if (!Float.isNaN(max))
+      for (int i = 0; i < data.length; i++)
+        if (data[i] > max)
+          data[i] = Float.NaN;
+    return data;
   }
   
   protected Object getBitsetProperty(BitSet bs, int tok, Point3f ptRef,
@@ -7266,9 +7273,9 @@ public class ScriptEvaluator {
       if (Token.tokAttrOr(tokProp1, Token.intproperty, Token.floatproperty)
           && Token.tokAttrOr(tokProp2, Token.intproperty, Token.floatproperty)
           && Token.tokAttrOr(tokKey, Token.intproperty, Token.floatproperty)) {
-        float[] data1 = getBitsetPropertyFloat(bsFrom, tokProp1);
-        float[] data2 = getBitsetPropertyFloat(bsFrom, tokKey);
-        float[] data3 = getBitsetPropertyFloat(bsTo, tokKey);
+        float[] data1 = getBitsetPropertyFloat(bsFrom, tokProp1, Float.NaN, Float.NaN);
+        float[] data2 = getBitsetPropertyFloat(bsFrom, tokKey, Float.NaN, Float.NaN);
+        float[] data3 = getBitsetPropertyFloat(bsTo, tokKey, Float.NaN, Float.NaN);
         boolean isProperty = (tokProp2 == Token.property); 
         float[] dataOut = new float[isProperty ? viewer.getAtomCount() : data3.length];
         bsOut = new BitSet();
@@ -8353,6 +8360,14 @@ public class ScriptEvaluator {
         iToken++;
       else
         propertyZ = 0;
+      if (tokAt(iToken) == Token.min) {
+        minXYZ = getPoint3f(++iToken, false);
+        iToken++;
+      }
+      if (tokAt(iToken) == Token.max) {
+        maxXYZ = getPoint3f(++iToken, false);
+        iToken++;
+      }
       type = "property " + Token.nameOf(propertyX) + " "
           + Token.nameOf(propertyY)
           + (propertyZ == 0 ? "" : " " + Token.nameOf(propertyZ));
@@ -8423,16 +8438,23 @@ public class ScriptEvaluator {
     float[] dataX = null, dataY = null, dataZ = null;
     Point3f factors = new Point3f(1, 1, 1);
     if (plotType == JmolConstants.JMOL_DATA_OTHER) {
-      dataX = getBitsetPropertyFloat(bs, propertyX);
-      dataY = getBitsetPropertyFloat(bs, propertyY);
-      dataZ = getBitsetPropertyFloat(bs, propertyZ);
-
+      dataX = getBitsetPropertyFloat(bs, propertyX, 
+          (minXYZ == null ? Float.NaN : minXYZ.x), 
+          (maxXYZ == null ? Float.NaN : maxXYZ.x));
+      dataY = getBitsetPropertyFloat(bs, propertyY, 
+          (minXYZ == null ? Float.NaN : minXYZ.y), 
+          (maxXYZ == null ? Float.NaN : maxXYZ.y));
+      if (propertyZ != 0)
+        dataZ = getBitsetPropertyFloat(bs, propertyZ, 
+            (minXYZ == null ? Float.NaN : minXYZ.z), 
+            (maxXYZ == null ? Float.NaN : maxXYZ.z));
       if (minXYZ == null)
         minXYZ = new Point3f(getMinMax(dataX, false, propertyX), getMinMax(
             dataY, false, propertyY), getMinMax(dataZ, false, propertyZ));
       if (maxXYZ == null)
         maxXYZ = new Point3f(getMinMax(dataX, true, propertyX), getMinMax(
             dataY, true, propertyY), getMinMax(dataZ, true, propertyZ));
+      Logger.info("plot min/max: " + minXYZ + " " + maxXYZ);
       Point3f center = new Point3f(maxXYZ);
       center.add(minXYZ);
       center.scale(0.5f);

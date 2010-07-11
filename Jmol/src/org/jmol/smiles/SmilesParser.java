@@ -286,6 +286,7 @@ public class SmilesParser {
 
   private SmilesSearch getSearch(SmilesSearch parent, String pattern, boolean noAromatic) throws InvalidSmilesException {
     // First pass
+    htMeasures = new Hashtable();
     SmilesSearch molecule = new SmilesSearch();
     molecule.setParent(parent);
     molecule.isSmarts = isSmarts;

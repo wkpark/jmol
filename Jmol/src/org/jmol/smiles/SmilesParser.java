@@ -140,11 +140,14 @@ public class SmilesParser {
       throw new InvalidSmilesException("SMILES expressions must not be null");
     pattern = cleanPattern(pattern, isSmarts);
     boolean noAromatic = false;
-    if (isSmarts && pattern.startsWith("/")) {
+    boolean ignoreStereochemistry = false;
+    while (isSmarts && pattern.startsWith("/")) {
       String flags = getSubPattern(pattern, 0, '/').toUpperCase();
       pattern = pattern.substring(flags.length());
       if (flags.indexOf("NOAROMATIC") >= 0)
         noAromatic = true;
+      if (flags.indexOf("NOSTEREO") >= 0)
+        ignoreStereochemistry = true;
     }
     if (pattern.indexOf("$") >= 0)
       pattern = parseVariables(pattern);
@@ -158,7 +161,7 @@ public class SmilesParser {
       for (int i = 0; i < patterns.length; i++) {
         String key = "|" + patterns[i] + "|";
         if (toDo.indexOf(key) < 0) {
-          search.subSearches[i] = getSearch(search, patterns[i], noAromatic);
+          search.subSearches[i] = getSearch(search, patterns[i], noAromatic, ignoreStereochemistry);
           toDo += key;
         }
       }
@@ -166,7 +169,7 @@ public class SmilesParser {
         Logger.info(toDo);
       return search;
     }
-     return getSearch(null, pattern, noAromatic);
+     return getSearch(null, pattern, noAromatic, ignoreStereochemistry);
   }
 
   private String parseVariableLength(String pattern)
@@ -284,7 +287,10 @@ public class SmilesParser {
     return (sout.length() < 2 ? pattern : sout.substring(2));
   }
 
-  private SmilesSearch getSearch(SmilesSearch parent, String pattern, boolean noAromatic) throws InvalidSmilesException {
+  private SmilesSearch getSearch(SmilesSearch parent, String pattern,
+                                 boolean noAromatic,
+                                 boolean ignoreStereochemistry)
+      throws InvalidSmilesException {
     // First pass
     htMeasures = new Hashtable();
     SmilesSearch molecule = new SmilesSearch();
@@ -292,6 +298,7 @@ public class SmilesParser {
     molecule.isSmarts = isSmarts;
     molecule.pattern = pattern;
     molecule.noAromatic = noAromatic;
+    molecule.ignoreStereochemistry = ignoreStereochemistry;
     if (pattern.indexOf("$(") >= 0)
       pattern = parseNested(molecule, pattern);
     parseSmiles(molecule, pattern, null, false);
@@ -317,9 +324,9 @@ public class SmilesParser {
         throw new InvalidSmilesException("unbracketed atoms must be one of: "
             + SmilesAtom.UNBRACKETED_SET);
     }
-    
+
     // set the searches now that we know what's a bioAtom and what's not
-    
+
     if (isSmarts) {
       for (int i = molecule.atomCount; --i >= 0;) {
         SmilesAtom atom = molecule.patternAtoms[i];
@@ -329,11 +336,11 @@ public class SmilesParser {
             String s = (String) o;
             if (s.charAt(0) != '~' && atom.bioType != '\0')
               s = "~" + atom.bioType + "~" + s;
-            SmilesSearch search = getSearch(molecule, s, noAromatic);
+            SmilesSearch search = getSearch(molecule, s, noAromatic, ignoreStereochemistry);
             if (search.atomCount > 0 && search.patternAtoms[0].selected)
               atom.selected = true;
-            molecule.setNested(atom.iNested, search);            
-          }         
+            molecule.setNested(atom.iNested, search);
+          }
         }
       }
     }

@@ -85,6 +85,7 @@ public class SmilesSearch extends JmolMolecule {
   int ringDataMax = Integer.MIN_VALUE;
   Vector measures = new Vector();
   boolean noAromatic;
+  boolean ignoreStereochemistry;
   StringBuffer ringSets;
   BitSet bsAromatic = new BitSet();
   SmilesAtom lastChainAtom;
@@ -574,7 +575,7 @@ public class SmilesSearch extends JmolMolecule {
 
     // check stereochemistry
 
-    if (!checkStereochemistry())
+    if (!ignoreStereochemistry && !checkStereochemistry())
       return true;
 
     // set up the return BitSet and Vector, if requested

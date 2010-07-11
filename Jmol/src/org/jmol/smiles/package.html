@@ -132,9 +132,9 @@ $ load 1d66.pdb;calculate hbonds;print {*}.find("SMILES", true)
   [CYS.SG#16//* 31:A *//]%84.[CYS.SG#16//* 21:A *//]%89.[CYS.SG#16//* 11:A *//]%83%87.[CYS.SG#16//* 38:A *//]%86.
 //* HOH *//[O]
 </pre>
-</li><li>Jmol recognizes "/..../" at the beginning of a pattern as processing flags. "/noAromatic/", for example,
-turns off all checks for aromaticity, speeding processing when that is not important or no distinction between
-aromatic and nonaromatic atoms is desired.
+</li><li>Jmol recognizes "/..../" at the beginning of a pattern as processing flags. The two flags noAromatic and noStereo are defined. 
+"/noAromatic/" turns off all checks for aromaticity, speeding processing when that is not important or no distinction between
+aromatic and nonaromatic atoms is desired. "/noAromatic,noStereo/" indicates that in addition, no stereochemical checking should be done. 
 </li>
 
 </ul>
@@ -201,10 +201,12 @@ For example, a section of the large ribosomal unit for PDB code 1FFK reads:
 allows SMARTS searches to target specific ranges of values. 
 <br /><br />
 </li><li><b>processing flags</b> Jmol recognizes "/..../" at the beginning of a pattern as processing flags. 
-Currently the only flag supported is "noAromatic". This flag turns off all aromaticity checks.
+Currently the only flags supported are "noAromatic" and "noStereo". "noAromatic" turns off all aromaticity checks.
 It may be desireable when no distinction between
 aromatic and nonaromatic atoms is desired. For large biomolecules /noAromatic/ can 
 dramatically improve processing speed when no check for aromaticity is necessary. All atoms are then considered NOT aromatic.
+"noStereo" turns off all stereochemical checking.
+
 </li></ol>
 
 
@@ -552,10 +554,14 @@ includes:
 
    [smartDef] == [preface] [smartsSet]
    [preface] == { [flagDefs] [variableDefs] | [variableDefs] | NULL } 
-   [flagDefs] == "/" [processingFlags] "/"
-   [processingFlags] == "noAromatic" (case-insensitive)
+   [flagDefs] == { [flagDef] || [flagDef] [flagDefs] }
+   [flagDef] == "/" [processingFlags] "/"
+   [processingFlags] == { [processingFlag] | [processingFlag] [processingFlags] }
+   [processingFlag] == { "noAromatic" | "noStereo" } (case-insensitive)
       # note: the noAromatic flag indicates to not distinguish between
       #       aromatic/aliphatic searches -- "C" and "c"
+      # note: the noStereo flag turns off all stereochemical testing
+      # note: thus, both "/noAromatic//noStereo/" and "/noAromatic noStereo/" are valid 
    [variableDefs] == [variableDef] | [variableDef] [variableDefs]
    [variableDef] ==  "$" [label] "=" "\"" [smarts] "\"" [comments] ";"
    [label] == [any characters other than "=" and "$", and not starting with "("]

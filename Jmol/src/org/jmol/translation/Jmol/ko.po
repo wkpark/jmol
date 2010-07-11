@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-21 19:25+0200\n"
+"POT-Creation-Date: 2010-07-11 19:51+0200\n"
 "PO-Revision-Date: 2010-04-16 18:30+0000\n"
 "Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Korean <LL@li.org>\n"
@@ -156,10 +156,6 @@ msgstr "\"{0}\" URL을 찾을 수 없습니다."
 #: org/openscience/jmol/app/jmolpanel/WhatsNewDialog.java:96
 msgid "OK"
 msgstr "확인"
-
-#: org/openscience/jmol/app/jmolpanel/AppConsole.java:90
-msgid "Jmol Script Console"
-msgstr "Jmol 스크립트 콘솔"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:113
 msgid "Editor"
@@ -1610,6 +1606,9 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/Widgets.java:227
 msgid "unimplemented"
 msgstr ""
+
+#~ msgid "Jmol Script Console"
+#~ msgstr "Jmol 스크립트 콘솔"
 
 #, fuzzy
 #~ msgid "Stop"

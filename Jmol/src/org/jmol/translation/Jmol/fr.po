@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-21 19:25+0200\n"
+"POT-Creation-Date: 2010-07-11 19:51+0200\n"
 "PO-Revision-Date: 2010-05-27 09:44+0000\n"
 "Last-Translator: Gérard Duteil <Unknown>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
@@ -162,10 +162,6 @@ msgstr "Impossible de trouver l''url \"{0}\"."
 #: org/openscience/jmol/app/jmolpanel/WhatsNewDialog.java:96
 msgid "OK"
 msgstr "OK"
-
-#: org/openscience/jmol/app/jmolpanel/AppConsole.java:90
-msgid "Jmol Script Console"
-msgstr "Console Script Jmol"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:113
 msgid "Editor"
@@ -1632,6 +1628,9 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/Widgets.java:227
 msgid "unimplemented"
 msgstr ""
+
+#~ msgid "Jmol Script Console"
+#~ msgstr "Console Script Jmol"
 
 #, fuzzy
 #~ msgid "Stop"

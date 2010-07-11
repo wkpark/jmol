@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 11.7.x\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-21 19:25+0200\n"
+"POT-Creation-Date: 2010-07-11 19:51+0200\n"
 "PO-Revision-Date: 2010-03-18 11:27+0000\n"
 "Last-Translator: Krasznecz Zoltán <krasznecz.zoltan@gmail.com>\n"
 "Language-Team: Hungarian <Jmol-developers@lists.sf.net>\n"
@@ -162,10 +162,6 @@ msgstr "Nem található a \"{0}\" webcím."
 #: org/openscience/jmol/app/jmolpanel/WhatsNewDialog.java:96
 msgid "OK"
 msgstr "OK"
-
-#: org/openscience/jmol/app/jmolpanel/AppConsole.java:90
-msgid "Jmol Script Console"
-msgstr "Jmol parancsnyelvi konzol"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:113
 msgid "Editor"
@@ -1629,6 +1625,9 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/Widgets.java:227
 msgid "unimplemented"
 msgstr ""
+
+#~ msgid "Jmol Script Console"
+#~ msgstr "Jmol parancsnyelvi konzol"
 
 #, fuzzy
 #~ msgid "Stop"

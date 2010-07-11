@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-21 19:25+0200\n"
+"POT-Creation-Date: 2010-07-11 19:51+0200\n"
 "PO-Revision-Date: 2010-06-28 08:54+0000\n"
 "Last-Translator: Jan-Christoph Borchardt <inquata@gmail.com>\n"
 "Language-Team: German\n"
@@ -88,8 +88,7 @@ msgstr "Skript Datei zum Ausführen oder '-' für System.in"
 
 #: org/openscience/jmol/app/JmolApp.java:170
 msgid "use multitouch interface (requires \"sparshui\" parameter"
-msgstr ""
-"benutze die Multitouch Schnittstelle (benötigt \"sparshui\" Parameter"
+msgstr "benutze die Multitouch Schnittstelle (benötigt \"sparshui\" Parameter"
 
 #: org/openscience/jmol/app/JmolApp.java:177
 msgid "Jmol script to execute BEFORE -s option"
@@ -167,10 +166,6 @@ msgstr "URL \"{0}\" nicht gefunden."
 #: org/openscience/jmol/app/jmolpanel/WhatsNewDialog.java:96
 msgid "OK"
 msgstr "OK"
-
-#: org/openscience/jmol/app/jmolpanel/AppConsole.java:90
-msgid "Jmol Script Console"
-msgstr "Jmol Skript Konsole"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:113
 msgid "Editor"
@@ -1630,17 +1625,18 @@ msgstr "Ansicht herunterladen"
 msgid "unimplemented"
 msgstr "nicht implementiert"
 
+#~ msgid "Jmol Script Console"
+#~ msgstr "Jmol Skript Konsole"
+
 #~ msgid "Show Selected"
 #~ msgstr "Auswahl anzeigen"
 
-#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "hinzufügen von {0}.png"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "hinzufügen von JmolPopIn.js"
 
-#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "hinzufügen von {0}.spt"
 

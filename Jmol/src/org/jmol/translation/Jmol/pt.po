@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-21 19:25+0200\n"
+"POT-Creation-Date: 2010-07-11 19:51+0200\n"
 "PO-Revision-Date: 2010-07-09 10:42+0000\n"
 "Last-Translator: Frederico Tavares <Unknown>\n"
 "Language-Team: Portugal@Folding <Jmol-developers@lists.sourceforge.net>\n"
@@ -158,10 +158,6 @@ msgstr "Não consegue encontrar url \"{0}\"."
 #: org/openscience/jmol/app/jmolpanel/WhatsNewDialog.java:96
 msgid "OK"
 msgstr "OK"
-
-#: org/openscience/jmol/app/jmolpanel/AppConsole.java:90
-msgid "Jmol Script Console"
-msgstr "Consola de Script Jmol"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:113
 msgid "Editor"
@@ -1228,8 +1224,7 @@ msgstr "(Angstroms)"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:425
 msgid "Bond Tolerance - sum of two covalent radii + this value"
-msgstr ""
-"Tolerância da ligação- somatório de dois raios covalentes+ este valor"
+msgstr "Tolerância da ligação- somatório de dois raios covalentes+ este valor"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:476
 msgid "Minimum Bonding Distance"
@@ -1605,3 +1600,6 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/Widgets.java:227
 msgid "unimplemented"
 msgstr ""
+
+#~ msgid "Jmol Script Console"
+#~ msgstr "Consola de Script Jmol"

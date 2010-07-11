@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-06-21 19:25+0200\n"
+"POT-Creation-Date: 2010-07-11 19:51+0200\n"
 "PO-Revision-Date: 2010-06-26 16:23+0000\n"
 "Last-Translator: Waluyo Adi Siswanto <Unknown>\n"
 "Language-Team: Indonesian <id@li.org>\n"
@@ -159,10 +159,6 @@ msgstr "Tidak bisa menemukan url \"{0}\"."
 #: org/openscience/jmol/app/jmolpanel/WhatsNewDialog.java:96
 msgid "OK"
 msgstr "Setuju"
-
-#: org/openscience/jmol/app/jmolpanel/AppConsole.java:90
-msgid "Jmol Script Console"
-msgstr "Konsul Skrip Jmol"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:113
 msgid "Editor"
@@ -1619,11 +1615,12 @@ msgstr "Tampilan Muaturun"
 msgid "unimplemented"
 msgstr "belum diimplementasi"
 
-#, java-format
+#~ msgid "Jmol Script Console"
+#~ msgstr "Konsul Skrip Jmol"
+
 #~ msgid "adding {0}.spt"
 #~ msgstr "menambah {0}.spt"
 
-#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "menambah {0}.png"
 

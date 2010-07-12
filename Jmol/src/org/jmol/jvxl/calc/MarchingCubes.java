@@ -313,12 +313,19 @@ public class MarchingCubes extends TriangleData {
           if (!Float.isNaN(v)) {
             xCount++;
           }
+          if (colorDensity && cutoff == 0) {
+            // 0 cutoff read as "show grid points only"
+            addVertex(x, y, z, pti, v);
+              continue;            
+          }
           if (insideMask == 0) {
             ++outsideCount;
             continue;
           }
-          if (colorDensity)
+          if (colorDensity && (insideMask & 1) == 1) {
+            // xyz corner is inside, so add this point
             addVertex(x, y, z, pti, v);
+          }
           if (insideMask == 0xFF) {
             ++insideCount;
             continue;

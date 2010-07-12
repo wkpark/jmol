@@ -741,7 +741,7 @@ includes:
  ######## BOND PRIMITIVES ########
                               
    [bondPrimitives] == { [bondPrimitive] | [bondPrimitive] [bondPrimitives] }       
-   [bond] == { "-" | "=" | "#" | "." | "/" | "\\" | ":" | "~" | "@" | "+" | NULL
+   [bond] == { "-" | "=" | "#" | "." | "/" | "\\" | ":" | "~" | "@" | "+" | "^" | NULL
       # note: All bondExpressions are not valid. Stereochemistry should not 
       #       be mixed with the others, as it represents a single bond always.
       #       In addition, "." ("no bond") cannot be mixed with any bond type.
@@ -755,6 +755,7 @@ includes:
       #       can continue with "~" immediately following this "." 
       # note: For a SMARTS search, "." indicates the start of a new subset, not necessarily a
       #       new component.
+      # note: "^" indicates atropisomer bond with positive dihedral angle
       
  ######## MEASURES ########
    

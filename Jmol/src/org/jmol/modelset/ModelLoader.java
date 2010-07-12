@@ -188,7 +188,8 @@ public final class ModelLoader extends ModelSet {
   private boolean noAutoBond;
   private boolean is2D;
   
-  private void createModelSet(JmolAdapter adapter, Object atomSetCollection, BitSet bsNew) {
+  private void createModelSet(JmolAdapter adapter, Object atomSetCollection,
+                              BitSet bsNew) {
     int nAtoms = (adapter == null ? 0 : adapter.getAtomCount(atomSetCollection));
     if (nAtoms > 0)
       Logger.info("reading " + nAtoms + " atoms");
@@ -215,7 +216,8 @@ public final class ModelLoader extends ModelSet {
       if (baseTrajectoryCount > 0) {
         if (isTrajectory) {
           for (int i = 0; i < trajectorySteps.size(); i++)
-            mergeModelSet.trajectorySteps.addElement(trajectorySteps.elementAt(i));
+            mergeModelSet.trajectorySteps.addElement(trajectorySteps
+                .elementAt(i));
         }
         trajectorySteps = mergeModelSet.trajectorySteps;
       }
@@ -244,8 +246,18 @@ public final class ModelLoader extends ModelSet {
       iterateOverAllNewAtoms(adapter, atomSetCollection);
       iterateOverAllNewBonds(adapter, atomSetCollection);
       iterateOverAllNewStructures(adapter, atomSetCollection);
-      if (adapter != null)
+      if (adapter != null) {
+        Hashtable info = (merging && !appendNew ? 
+            adapter.getAtomSetAuxiliaryInfo(atomSetCollection, 0) : null);      
         adapter.finish(atomSetCollection);
+        if (info != null) {
+          setModelAuxiliaryInfo(baseModelIndex, "initialAtomCount", info
+              .get("initialAtomCount"));
+          setModelAuxiliaryInfo(baseModelIndex, "initialBondCount", info
+              .get("initialBondCount"));
+          info = null;
+        }
+      }
       initializeUnitCellAndSymmetry();
       initializeBonding();
       setAtomProperties();

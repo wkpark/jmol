@@ -378,18 +378,20 @@ abstract class WebPanel extends JPanel implements ActionListener,
     return editorScrollPane.getHeight();
   }
 
-  public void itemStateChanged(ItemEvent e){
+  public void itemStateChanged(ItemEvent e) {
     DefaultListModel listModel = (DefaultListModel) instanceList.getModel();
     int[] list = instanceList.getSelectedIndices();
+    if (list.length == 0)
+      return; // don't try to update things if there is nothing in the list...
     JmolInstance instance = (JmolInstance) listModel.get(list[0]);
     Object source = e.getSource();
     int stateChange = e.getStateChange();
-    for(int i=0; i<nWidgets;i++){
-      if(source==widgetCheckboxes[i]){
-        if(stateChange==ItemEvent.SELECTED){
+    for (int i = 0; i < nWidgets; i++) {
+      if (source == widgetCheckboxes[i]) {
+        if (stateChange == ItemEvent.SELECTED) {
           instance.addWidget(i);
         }
-        if(stateChange==ItemEvent.DESELECTED){
+        if (stateChange == ItemEvent.DESELECTED) {
           instance.deleteWidget(i);
         }
       }

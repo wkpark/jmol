@@ -400,7 +400,7 @@
 	  Browsers will hence show <code>title</code> as a tooltip when mouse pointer 
 	  stays over the checkbox or over its accompanying <code>labelHtml</code>. 
 	  <br/>
-	  <i>(New in Jmol 11.5.41)</i> The label will be surrounded by <code>&lt;label&gt;</code> tags;
+	  The label will be surrounded by <code>&lt;label&gt;</code> tags;
 	  the effect is that clicking on the label text will have the same effect as 
 	  clicking on the checkbox itself.
 				</blockquote>
@@ -447,7 +447,7 @@
 	  a sequential number (starting at zero),
 	  and as its HTML title, the common <code>title</code> (optional).
 	  <br/>
-	  <i>(New in Jmol 11.5.41)</i> Each radio button label will be surrounded by <code>&lt;label&gt;</code> tags;
+	  Each radio button label will be surrounded by <code>&lt;label&gt;</code> tags;
 	  the effect is that clicking on the label text will have the same effect as 
 	  clicking on the radio button itself.
 				</blockquote>
@@ -826,7 +826,7 @@
 	In addition, the radio buttom itself will have the given <code>id</code> as its HTML id
 	(optional).
 	  <br/>
-	  <i>(New in Jmol 11.5.41)</i> The label will be surrounded by <code>&lt;label&gt;</code> tags;
+	  The label will be surrounded by <code>&lt;label&gt;</code> tags;
 	  the effect is that clicking on the label text will have the same effect as 
 	  clicking on the radio button itself.
 				</blockquote>
@@ -943,7 +943,7 @@
 			
 			<section title="jmolSetAppletWindow">
 				<code>jmolSetAppletWindow(targetWindow)</code>
-				<p><i>(New in Jmol 11.5.41)</i><br/>
+				<p>
 	Whenever a Jmol.js command is given that requires interaction with the 
 	applet, the applet object must first be found. In order to do 
 	this, one or more windows (or document "frames" if employed) must be 
@@ -1016,7 +1016,7 @@
 				</p>
 			</section>
 			<section title="jmolSetCallback">
-				<code>jmolSetCallback(callbackName, "functionName")</code>
+				<code>jmolSetCallback("callbackName", "functionName")</code>
 				<p>
 	Sets which JavaScript function to be called by Jmol for the specified 
 	callback type, as listed below. 
@@ -1028,20 +1028,20 @@
 				<ol>
 					<li>the first parameter returned is the applet HTML name (usually "jmolApplet0");</li>
 					<li>the second parameter holds the information;</li>
-					<li>a third parameter is returned only in the case of <code>pickCallback</code> 
-					and <code>hoverCallback</code>, and holds additional information. </li>
+					<li>additional parameters are returned only in the case of some of the callbacks (see below), 
+					and hold additional information. </li>
 				</ol>
 				<p>
 	Please, note that all these parameters are returned in the form of Java strings, 
 	and as a general rule it is safer to convert them into JavaScript strings before 
 	using them within the function. This can be done in this way:
 				</p>
-				<pre>  function functionName(a,b,c)
-	{
-	   var aa = " + a
-	   var bb = " + b
-	   var cc = " + c
-	   ...(here go desired actions, using  aa, bb and cc instead of a, b, c)...
+				<pre>  function functionName(a,b,c,d) {
+	var aa = " + a;
+	var bb = " + b;
+	var cc = " + c;
+	var dd = " + d;
+	// here go desired actions, using  aa, bb, cc and dd instead of a, b, c, d
 	}</pre>
 				<p>
 	Special case: if <code>functionName</code> is <code>alert</code>, then only the second parameter is sent to the user
@@ -1061,10 +1061,22 @@
 					<p>
 						<i>Called:</i> when the frame is changed. (Applicable to multi-model files 
 	and to multiple files loaded.)
-	<br/><i>Returned 2nd parameter:</i> the frame index number (starting with 0) 
-	<br/><i>Note:</i> This function will be called four times during 
+	<br/><i>Returned 2nd to 9th parameters:</i>
+	<ul>
+		<li>The current frame index number (starting with 0)</li>
+		<li>The current file number (starting with 1)</li>
+		<li>The current model number within the current file (starting with 1)</li>
+		<li>The first frame of the animation range, expressed as fileNo <small>x</small> 1000000 + modelNo</li>
+		<li>The last frame of the animation range, expressed as fileNo <small>x</small> 1000000 + modelNo</li>
+		<li>0 (animation is off) or 1 (animation is on)</li>
+		<li>The current animation direction, either 1 or -1</li>
+		<li>The current direction, either 1 (forward) or -1 (reverse)</li>
+	</ul>
+	<i>Note:</i> 
+	<!-- This function will be called four times during 
 	successful file loading but only three times if file
-	loading was unsuccessful. Note that the frame index number is not the
+	loading was unsuccessful. -->
+	Note that the frame index number is not the
 	number that one would use in the "frame" script command. Frame index 0 is always
 	the first frame, 1 the next, etc. If multiple files have been loaded, the
 	third frame in the first file has index 2 but is accessed in scripts by
@@ -1084,13 +1096,14 @@
 	whenever any atom is hovered over. For example:
 	<pre>
 	function myfunc(a,mess) {
-	  var msg
-	  var s = mess + " // convert the 2nd parameter to a JavaScript string
-	  if (s.charAt(0) == 'C')
-	    msg = "yes, that is a carbon."
-	  else
-	    msg = "no, that is not a carbon. The carbons are grey."
-	  jmolScript('hover "'+msg+'"')
+	  var msg;
+	  var s = "" + mess; // convert the 2nd parameter to a JavaScript string
+	  if (s.charAt(0) == 'C') {
+	    msg = "yes, that is a carbon.";
+	  } else {
+	    msg = "no, that is not a carbon. The carbons are grey.";
+	  }
+	  jmolScript('hover "'+msg+'"');
 	} </pre>
 	sets the message that will be displayed depending upon the atom 
 	hovered over. 
@@ -1100,8 +1113,10 @@
 					<p>
 						<i>Called:</i> upon successful file loading. 
 	<br/><i>Returned 2nd parameter:</i> the URL of the loaded file.
+	<br/><i>Returned 3rd parameter:</i> the filename of the loaded file (without the path).
+	<br/><i>Returned 4th parameter:</i> the internal title of the model in the loaded file.
 	<br/><i>Note:</i> When multiple files are loaded with the same load command, 
-	only the URL of the last-loaded file is returned.
+	only data for the last-loaded file is returned.
 				</p>
 				</section>
 				<section title="messageCallback">
@@ -1167,7 +1182,6 @@
 					</p>
 				</section>
 				<section title="language">
-					<p><i>(New in 11.1.31)</i></p>
 					<p>
 						This is special: it is not called by an event, only by design, and does not return anything. 
 	Instead, it changes the interface language for the applet pop-up menu and messages in the console. 
@@ -1176,7 +1190,7 @@
 	from the pop-up menu itself.
 				</p>
 					<p>
-	The first parameter must be "language" and the second, the two-letter code of the language wanted
+	The first parameter must be "language" and the second, the two-letter code (or 2+2 letter code) of the language wanted
 	(provided that locale has been built into Jmol).
 	<br/>
 						<i>Examples</i>:
@@ -1186,6 +1200,7 @@
 						<li><code>jmolSetCallback("language", "en")</code> (English)</li>
 						<li><code>jmolSetCallback("language", "es")</code> (Spanish)</li>
 						<li><code>jmolSetCallback("language", "fr")</code> (French)</li>
+						<li><code>jmolSetCallback("language", "pt_BR")</code> (Brazilian Portuguese)</li>
 					</ul>
 				</section>
 			</section>
@@ -1195,9 +1210,9 @@
 	Adds parameter data to an applet definition HTML string previously 
 	created using:
 	<pre>
-	jmolSetDocument(0)
-	var appletCode = jmolApplet(....)
-	appletCode = jmolAppletAddParam(appletCode, name, value)</pre>
+	jmolSetDocument(0);
+	var appletCode = jmolApplet(....);
+	appletCode = jmolAppletAddParam(appletCode, name, value);</pre>
 	for later writing to the web page using
 	<pre>document.write(appletCode)</pre>
 				</p>
@@ -1212,10 +1227,10 @@
 	values. -->
 	One example:
 	<pre>
-	var atoms = jmolGetPropertyAsArray("atomInfo","all")
-	var atom1 = atoms[0]
-	var x = atom1.x
-	var info = atom1.info </pre>
+	var atoms = jmolGetPropertyAsArray("atomInfo","all");
+	var atom1 = atoms[0];
+	var x = atom1.x;
+	var info = atom1.info; </pre>
 				</p>
 			</section>
 			<section title="jmolGetPropertyAsString">

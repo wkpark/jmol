@@ -414,7 +414,7 @@ Cada páginaCada página      </p>
 	  al detener el puntero del ratón sobre la casilla o su texto/etiqueta acompañante. 
 				</blockquote>
 	  <br/>
-	  <i>(Nuevo en Jmol 11.5.41)</i> La etiqueta estará rodeada por etiquetas <code>&lt;label&gt;</code>;
+	  La etiqueta estará rodeada por etiquetas <code>&lt;label&gt;</code>;
 	  el resultado es que haciendo clic sobre el texto de la etiqueta se consigue lo mismo
 	  que haciendo clic sobre la propia casilla.
 			</section>
@@ -462,7 +462,7 @@ Cada páginaCada página      </p>
 	de un guión bajo y de un número secuencial (comenzando por cero), y como
 	parámetro HTML title, el <code>title</code> del grupo (opcional).
 	  <br/>
-	  <i>(Nuevo en Jmol 11.5.41)</i> La etiqueta de cada opción estará rodeada por etiquetas <code>&lt;label&gt;</code>;
+	  La etiqueta de cada opción estará rodeada por etiquetas <code>&lt;label&gt;</code>;
 	  el resultado es que haciendo clic sobre el texto de la etiqueta se consigue lo mismo
 	  que haciendo clic sobre el propio botón radio.
 				</blockquote>
@@ -861,7 +861,7 @@ Cada páginaCada página      </p>
 	Además, el botón tendrá el <code>id</code> indicado como su propio 
 	parámetro HTML id.
 	  <br/>
-	  <i>(Nuevo en Jmol 11.5.41)</i> La etiqueta estará rodeada por etiquetas <code>&lt;label&gt;</code>;
+	  La etiqueta estará rodeada por etiquetas <code>&lt;label&gt;</code>;
 	  el resultado es que haciendo clic sobre el texto de la etiqueta se consigue lo mismo
 	  que haciendo clic sobre el propio botón radio.
 				</blockquote>
@@ -973,7 +973,7 @@ Cada páginaCada página      </p>
 
 			<section title="jmolSetAppletWindow">
 				<code>jmolSetAppletWindow(ventanaDiana)</code>
-				<p><i>(Nuevo en Jmol 11.5.41)</i><br/>
+				<p>
 	Cada vez que se proporciona una instrucción de Jmol.js 
 	que requiere la interacción con la miniaplicación, debe primero localizarse el 
 	objeto miniaplicación. Para ello, deben examinarse varias ventanas
@@ -1047,7 +1047,7 @@ Cada páginaCada página      </p>
 	</p>
 			</section>
 			<section title="jmolSetCallback">
-				<code>jmolSetCallback(nombreCallback, "nombreFunción")</code>
+				<code>jmolSetCallback("nombreLlamada", "nombreFunción")</code>
 				<p>
 	Indica qué función javascript debe llamarse desde Jmol cuando se genere una retrollamada
 	("callback") del tipo indicado --a continuación hay una lista--. 
@@ -1060,20 +1060,20 @@ Cada páginaCada página      </p>
 					<li>el primer parámetro devuelto es el nombre HTML de la miniaplicación 
 	(habitualmente, "jmolApplet0");</li>
 					<li>el segundo parámetro contiene la información;</li>
-					<li>un tercer parámetro, sólo en el caso de <code>pickCallback</code> 
-					y <code>hoverCallback</code>, contiene información adicional.</li>
+					<li>se devuelven parámetros adicionales sólo en el caso de algunas retrollamadas 
+					(véase a continuación), y contienen información adicional.</li>
 				</ol>
 				<p>
 	Ten en cuenta que todos estos parámetros se devuelven en forma de texto Java, 
 	y en general es más seguro convertirlos a texto JavaScript antes de 
 	usarlos en la función. Esto se puede hacer así:
 				</p>
-				<pre>  function nombreFunción(a,b,c)
-	{
-	   var aa = " + a
-	   var bb = " + b
-	   var cc = " + c
-	   ...(aquí van las acciones deseadas, usando aa, bb y cc en lugar de a, b, c)...
+				<pre> function nombreFunción(a,b,c,d) {
+	 var aa = " + a;
+	 var bb = " + b;
+	 var cc = " + c;
+	 var dd = " + d;
+	 // aquí van las acciones deseadas, usando aa, bb, cc y dd en lugar de a, b, c y d
 	}</pre>
 				<p>
 	Caso especial: si <code>nombreFunción</code> es <code>alert</code>, sólo se envía al usuario el segundo parámetro,
@@ -1088,15 +1088,26 @@ Cada páginaCada página      </p>
 	<a href="http://www.stolaf.edu/academics/chemapps/jmol/docs/#setcallback">Documentación de guiones interactivos</a>].
 	<br/>Para cancelar la detección de retrollamadas, utiliza <code>set animFrameCallback none</code> etc.
 				</p>
-				<p>Tipos de retrollamada ("callback"), o valores de <code>nombreCallback</code>:
+				<p>Tipos de retrollamada ("callback"), o valores de <code>nombreLlamada</code>:
 				</p>
 				<section title="animFrameCallback">
 					<p>
 						<i>Se invoca:</i> cuando cambia el fotograma ("frame"). (Aplicable a
 	archivos multi-modelo y a varios archivos cargados.)
-	<br/><i>2º parámetro devuelto:</i> el índice del fotograma (comenzando por 0) 
-	<br/><i>Nota:</i> esta función se invoca cuatro veces durante la carga de un archivo, 
-	pero sólo tres veces si la carga del archivo falla.
+	<br/><i>Parámetros devueltos (del 2º al 9º):</i>
+	<ul>
+		<li>El índice del fotograma actual (comenzando por 0)</li>
+		<li>El número del archivo actual (comenzando por 1)</li>
+		<li>El número del modelo actual dentro del archivo actual (comenzando por 1)</li>
+		<li>El primer fotograma del intervalo de animación, expresado como nArchivo <small>x</small> 1000000 + nModelo</li>
+		<li>El último fotograma del intervalo de animación, expresado como nArchivo <small>x</small> 1000000 + nModelo</li>
+		<li>0 (si la animación está detenida) o 1 (si está en marcha)</li>
+		<li>La dirección actual de la animación, bien 1 o -1</li>
+		<li>La dirección actual, bien 1 (avanzando) o -1 (retrocediendo)</li>
+	</ul>
+	<br/><i>Nota:</i> 
+	<!-- esta función se invoca cuatro veces durante la carga de un archivo, 
+	pero sólo tres veces si la carga del archivo falla. -->
 	Obsérvese que el índice de fotograma no es el mismo número que se se usaría
 	en una instrucción "frame" de guiones. El índice 0 es siempre
 	el primer fotograma, el 1 el siguiente, etc. Si se cargan varios archivos, el tercer
@@ -1118,13 +1129,14 @@ Cada páginaCada página      </p>
 	el puntero se detiene sobre un átomo. Por ejemplo:
 	<pre>
 	function miFunc(a,mens) {
-	  var mensaje
-	  var s = mens + " // NUNCA operes sobre el 2º parámetro
-	  if (s.charAt(0) == 'C')
-	    mensaje = "Sí, eso es un carbono."
-	  else
-	    mensaje = "No, eso no es un carbono. Los carbonos son grises."
-	  jmolScript('hover "'+mensaje+'"')
+	  var mensaje;
+	  var s = "" + mens; // convierte el 2º parámetro en una variable JavaScript de texto
+	  if (s.charAt(0) == 'C') {
+	    mensaje = "Sí, eso es un carbono.";
+	  } else {
+	    mensaje = "No, eso no es un carbono. Los carbonos son grises.";
+	  }
+	  jmolScript('hover "'+mensaje+'"');
 	} </pre>
 	establece el mensaje que se mostrará dependiendo del átomo sobre el
 	que se detenga el puntero. 
@@ -1134,8 +1146,10 @@ Cada páginaCada página      </p>
 					<p>
 						<i>Se invoca:</i> tras la carga con éxito de un archivo. 
 	<br/><i>2º parámetro devuelto:</i> la dirección URL del archivo cargado.
+	<br/><i>3<sup>er</sup> parámetro devuelto:</i> el nombre del archivo cargado (sin la ruta).
+	<br/><i>4º parámetro devuelto:</i> el título interno del modelo en el archivo cargado.
 	<br/><i>Nota:</i> Si se cargan varios archivos con una sola instrucción "load", 
-	sólo se devuelve la URL del último.
+	sólo se devuelven los datos del último.
 				</p>
 				</section>
 				<section title="messageCallback">
@@ -1199,7 +1213,6 @@ Cada páginaCada página      </p>
 					</p>
 				</section>
 				<section title="language">
-					<p><i>(Nuevo en 11.1.31)</i></p>
 					<p>
 						Esta llamada es especial: no se invoca mediante un evento, sino tan
 	sólo intencionadamente, y no devuelve nada. 
@@ -1210,16 +1223,17 @@ Cada páginaCada página      </p>
 	desde el propio menú emergente.
 				</p>
 					<p>
-	El primer parámetro debe ser "language" y el segundo, el código de dos letras del idioma deseado
+	El primer parámetro debe ser "language" y el segundo, el código de dos letras (o de 2+2 letras) del idioma deseado
 	(siempre y cuando esa localización esté incluida en Jmol).
 	<br/>
 						<i>Ejemplos</i>:
 				</p>
 					<ul>
-						<li><code>jmolSetCallback("language", "de")</code> (Alemán)</li>
-						<li><code>jmolSetCallback("language", "en")</code> (Inglés)</li>
-						<li><code>jmolSetCallback("language", "es")</code> (Español)</li>
-						<li><code>jmolSetCallback("language", "fr")</code> (Francés)</li>
+						<li><code>jmolSetCallback("language", "de")</code> (alemán)</li>
+						<li><code>jmolSetCallback("language", "en")</code> (inglés)</li>
+						<li><code>jmolSetCallback("language", "es")</code> (español)</li>
+						<li><code>jmolSetCallback("language", "fr")</code> (francés)</li>
+						<li><code>jmolSetCallback("language", "pt_BR")</code> (portugués de Brasil)</li>
 					</ul>
 				</section>
 			</section>
@@ -1229,9 +1243,9 @@ Cada páginaCada página      </p>
 	Añade datos de parámetros a un texto HTML que define una miniaplicación, creado 
 	previamente mediante:
 	<pre>
-	jmolSetDocument(0)
-	var codigoA = jmolApplet(....)
-	codigoA = jmolAppletAddParam(codigoA, nombre, valor)</pre>
+	jmolSetDocument(0);
+	var codigoA = jmolApplet(....);
+	codigoA = jmolAppletAddParam(codigoA, nombre, valor);</pre>
 	para escribirlo luego a la página web mediante
 	<pre>document.write(codigoA)</pre>
 				</p>
@@ -1243,13 +1257,13 @@ Cada páginaCada página      </p>
 	es aplicable, o un texto javascript si no lo es.
 	<!--See the script 
 	documentation for a full discussion of key options and their return 
-	values.-->
+	values. -->
 	Un ejemplo:
 	<pre>
-	var atoms = jmolGetPropertyAsArray("atomInfo","all")
-	var atom1 = atoms[0]
-	var x = atom1.x
-	var info = atom1.info </pre>
+	var atoms = jmolGetPropertyAsArray("atomInfo","all");
+	var atom1 = atoms[0];
+	var x = atom1.x;
+	var info = atom1.info; </pre>
 				</p>
 			</section>
 			<section title="jmolGetPropertyAsString">

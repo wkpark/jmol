@@ -327,30 +327,36 @@ public class SmilesParser {
 
     // set the searches now that we know what's a bioAtom and what's not
 
-    if (isSmarts) {
+    if (isSmarts)
       for (int i = molecule.atomCount; --i >= 0;) {
         SmilesAtom atom = molecule.patternAtoms[i];
-        if (atom.iNested > 0) {
-          Object o = molecule.getNested(atom.iNested);
-          if (o instanceof String) {
-            String s = (String) o;
-            if (s.charAt(0) != '~' && atom.bioType != '\0')
-              s = "~" + atom.bioType + "~" + s;
-            SmilesSearch search = getSearch(molecule, s, noAromatic, ignoreStereochemistry);
-            if (search.atomCount > 0 && search.patternAtoms[0].selected)
-              atom.selected = true;
-            molecule.setNested(atom.iNested, search);
-          }
-        }
+        checkNested(molecule, atom, noAromatic, ignoreStereochemistry);
+        for (int k = 0; k < atom.nAtomsOr; k++)
+          checkNested(molecule, atom.atomsOr[k], noAromatic, ignoreStereochemistry);
       }
-    }
-
     if (!isSmarts && !isBioSequence)
       molecule.elementCounts[1] = molecule.getMissingHydrogenCount();
     fixChirality(molecule);
 
     return molecule;
   }
+  
+  private void checkNested(SmilesSearch molecule, SmilesAtom atom, 
+                           boolean noAromatic, boolean ignoreStereochemistry) throws InvalidSmilesException {
+    if (atom.iNested > 0) {
+      Object o = molecule.getNested(atom.iNested);
+      if (o instanceof String) {
+        String s = (String) o;
+        if (s.charAt(0) != '~' && atom.bioType != '\0')
+          s = "~" + atom.bioType + "~" + s;
+        SmilesSearch search = getSearch(molecule, s, noAromatic, ignoreStereochemistry);
+        if (search.atomCount > 0 && search.patternAtoms[0].selected)
+          atom.selected = true;
+        molecule.setNested(atom.iNested, search);
+      }
+    }
+  }
+
   private void fixChirality(SmilesSearch molecule)
       throws InvalidSmilesException {
     for (int i = molecule.atomCount; --i >= 0;) {

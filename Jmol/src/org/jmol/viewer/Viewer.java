@@ -8100,7 +8100,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     MepCalculationInterface m = (MepCalculationInterface) Interface.getOptionInterface("quantum.MlpCalculation");
     String data = (fileName == null ? null : getFileAsString(fileName));
     m.assignPotentials(modelSet.atoms, potentials, getSmartsMatch("a", bsSelected), 
-        getSmartsMatch("/noAromatic/[$(C=O),$(O=C), $(NC=O)]", bsSelected), bsIgnore, data);
+        getSmartsMatch("/noAromatic/[$(C=O),$(O=C),$(NC=O)]", bsSelected), bsIgnore, data);
     return potentials;
   }
 

@@ -8483,9 +8483,9 @@
   <fah_proj number="6508" name="p6508_proG_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="16027" preferred="13" deadline="20"
     credit="72" frames="100" code="G" contact="lan" contrib="Bas Couwenberg"/>
-  <fah_proj number="6509" name="p6509_TR574_predict" public="y"
+  <fah_proj number="6509" name="p6509_TR574_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="35411" preferred="35" deadline="53"
-    credit="192" frames="100" code="G" contact="lan"/>
+    credit="192" frames="100" code="G" contact="lan" contrib="Bas Couwenberg"/>
   <fah_proj number="6511" name="p6511_ubiq_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="25933" preferred="23" deadline="34"
     credit="123" frames="100" code="G" contact="lan" contrib="Boron,Bas Couwenberg,Bryan Spencer"/>

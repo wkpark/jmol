@@ -211,7 +211,10 @@ abstract public class __CartesianExporter extends ___Exporter {
   }
 
   void fillTriangle(short colix, Point3f ptA, Point3f ptB, Point3f ptC) {
-    outputTriangle(ptA, ptB, ptC, colix);
+    viewer.unTransformPoint(ptA, tempP1);
+    viewer.unTransformPoint(ptB, tempP2);
+    viewer.unTransformPoint(ptC, tempP3);
+    outputTriangle(tempP1, tempP2, tempP3, colix);
   }
 
   void plotImage(int x, int y, int z, Image image, short bgcolix, int width,

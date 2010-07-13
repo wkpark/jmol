@@ -7983,6 +7983,7 @@ public class ScriptEvaluator {
         isAppend, htParams, loadScript, tokType);
     if (os != null)
       try {
+        viewer.setFileInfo(new String[] { localName, localName, localName });
         Logger.info(GT._("file {0} created", localName));
         os.close();
       } catch (IOException e) {

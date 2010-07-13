@@ -923,6 +923,10 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           addTokenToPrefix(new Token(Token.data, "data"));
         else if (Parser.isOneOf(strFormat, LOAD_TYPES))
           addTokenToPrefix(new Token(Token.identifier, strFormat));
+        else if (strFormat.indexOf("=") !=0 && strFormat.indexOf("$") != 0)
+          return CONTINUE;
+        addTokenToPrefix(new Token(Token.string, strFormat));
+        iHaveQuotedString = true;
         return CONTINUE;
       }
       BitSet bs;
@@ -1480,6 +1484,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         addTokenToPrefix(Token.tokenDefineString);
         return CONTINUE;          
       }
+      if (theTok == Token.as)
+        iHaveQuotedString = false;
       break;
     case Token.display:
     case Token.hide:
@@ -1906,7 +1912,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         && (Character.isLetterOrDigit(ch = script.charAt(ichT)) || allchar
             && (!eol(ch) && !Character.isWhitespace(ch))))
       ++ichT;
-    if (ichT == ichToken || !eol(ch) && !isSpaceOrTab(ch))
+    if (!allchar && ichT == ichToken || !eol(ch) && !isSpaceOrTab(ch))
       return false;
     cchToken = ichT - ichToken;
     return true;

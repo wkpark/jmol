@@ -8471,9 +8471,9 @@
   <fah_proj number="6503" name="p6503_TR462_B_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="17092" preferred="14" deadline="21"
     credit="75" frames="100" code="G" contact="lan" contrib="Danny Nielsen,Leszek Dobrowolski,SandStar"/>
-  <fah_proj number="6504" name="p6504_TR568_predict" public="y"
+  <fah_proj number="6504" name="p6504_TR568_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="23881" preferred="21" deadline="31"
-    credit="112" frames="100" code="G" contact="lan"/>
+    credit="112" frames="100" code="G" contact="lan" contrib="Bas Couwenberg"/>
   <fah_proj number="6505" name="p6505_1CFC_A_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="16825" preferred="14" deadline="21"
     credit="74" frames="100" code="G" contact="lan" contrib="SandStar"/>
@@ -8495,6 +8495,9 @@
   <fah_proj number="6513" name="p6513_TR462B_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="17092" preferred="14" deadline="21"
     credit="75" frames="100" code="G" contact="lan" contrib="SandStar"/>
+  <fah_proj number="6515" name="p6515_1CFC_A_predict" public="n"
+    server="171.64.65.62" atoms="16825" preferred="14" deadline="21"
+    credit="74" frames="100" code="G" contact="lan"/>
 
   <!-- Projects 6600 to 6699 -->
   <fah_proj number="6600" name="p6600_CspTm_300K" public="y"
@@ -8524,10 +8527,10 @@
     server="171.64.65.56" atoms="28637" preferred="3" deadline="6"
     credit="511" frames="100" code="A3" contact="kasson" kfactor="2.3"/>
   <fah_proj number="6701" name="p6701_VSD in POPC and water, neutralized" public="y"
-    server="171.64.65.56" atoms="28637" preferred="3.2" deadline="6"
+    server="171.64.65.56" atoms="28637" preferred="4.9" deadline="6"
     credit="921" frames="100" code="A3" contact="kasson" kfactor="4.1"/>
   <fah_proj number="6702" name="p6702_VSD in POPC and water, neutralized" public="y"
-    server="171.64.65.56" atoms="28637" preferred="4" deadline="6"
+    server="171.64.65.56" atoms="28637" preferred="4.9" deadline="6"
     credit="921" frames="100" code="A3" contact="kasson" kfactor="4.1"/>
 
   <!-- Projects 9900 to 9999 -->

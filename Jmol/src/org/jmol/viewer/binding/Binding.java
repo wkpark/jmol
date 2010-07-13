@@ -24,6 +24,14 @@ abstract public class Binding {
   public final static int DOUBLE_CLICK = 2 << 8;
   public final static int SINGLE_CLICK = 1 << 8;
   public final static int DOWN = 4 << 8;
+  
+  // for status messages:
+  public final static int MOVED = 0;
+  public final static int DRAGGED = 1;
+  public final static int CLICKED = 2;
+  public final static int WHEELED = 3;
+  public final static int PRESSED = 4;
+  public final static int RELEASED = 5;
 
   private final static int BUTTON_MODIFIER_MASK = 
     CTRL_ALT | SHIFT | LEFT | MIDDLE | RIGHT | WHEEL;

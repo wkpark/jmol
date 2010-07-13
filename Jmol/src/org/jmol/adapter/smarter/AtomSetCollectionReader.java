@@ -157,7 +157,7 @@ public abstract class AtomSetCollectionReader {
   public int desiredVibrationNumber = Integer.MIN_VALUE;
   protected BitSet bsModels;
   protected BitSet bsFilter;
-  protected String filter;
+  public String filter;
   protected boolean haveAtomFilter;
   protected String spaceGroup;
   protected boolean havePartialChargeFilter;

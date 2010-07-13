@@ -7200,7 +7200,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     axesAreTainted = TF && refreshing;
   }
 
-  public int notifyMouseClicked(int x, int y, int action) {
+  public int notifyMouseClicked(int x, int y, int action, int mode) {
     // change y to 0 at bottom
     int modifiers = Binding.getModifiers(action);
     int clickCount = Binding.getClickCount(action);
@@ -7210,7 +7210,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     global.setParameterValue("_mouseModifiers", modifiers);
     global.setParameterValue("_clickCount", clickCount);
     return statusManager.setStatusClicked(x, dimScreen.height - y, action,
-        clickCount);
+        clickCount, mode);
   }
 
   Token checkObjectClicked(int x, int y, int modifiers) {

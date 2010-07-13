@@ -90,8 +90,10 @@ class SpartanArchive {
       } else if (line.indexOf("BASIS") == 0) {
         readBasis();
       } else if (line.indexOf("WAVEFUNC") == 0 || line.indexOf("BETA") == 0) {
-        readMolecularOrbital();
-        haveMOData = true;
+        if (filterMO()) {
+          readMolecularOrbital();
+          haveMOData = true;
+        }
       } else if (line.indexOf("ENERGY") == 0) {
         readEnergy();
       } else if (line.equals("ENDARCHIVE")
@@ -104,6 +106,15 @@ class SpartanArchive {
       r.setMOData(moData);
     return atomCount;
   }
+
+  private boolean filterMO() {
+    if (r.filter == null)
+      return true;
+    if (r.filter.indexOf("nomo") >= 0)
+      return false;
+    return true;
+  }
+
 
   private void readEnergy() throws Exception {
     String[] tokens = getTokens(readLine());

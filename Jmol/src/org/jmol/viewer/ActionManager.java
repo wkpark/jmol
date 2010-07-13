@@ -697,7 +697,7 @@ public class ActionManager {
     setCurrent(time, x, y, modifiers);
     moved.setCurrent();
     if (measurementPending != null || hoverActive)
-      checkPointOrAtomClicked(x, y, 0, 0, false);
+      checkPointOrAtomClicked(x, y, 0, 0, false, Binding.MOVED);
     else if (isZoomArea(x))
       checkMotionRotateZoom(Binding.getMouseAction(1, Binding.LEFT), 0, 0, 0, false);
     else if (viewer.getCursor() == Viewer.CURSOR_ZOOM)//if (dragSelectedMode)
@@ -710,7 +710,7 @@ public class ActionManager {
     // sun bug? noted by Charles Xie that wheeling on a Java page
     // effected inappropriate wheeling on this Java component
     setCurrent(time, current.x, current.y, mods);
-    checkAction(Binding.getMouseAction(0, mods), current.x, current.y, 0, rotation, time, 3);
+    checkAction(Binding.getMouseAction(0, mods), current.x, current.y, 0, rotation, time, Binding.WHEELED);
   }
 
   private boolean haveSelection;
@@ -727,7 +727,7 @@ public class ActionManager {
     int action = Binding.getMouseAction(pressedCount, mods);
     dragGesture.setAction(action, time);
     if (Binding.getModifiers(action) != 0) {
-      action = viewer.notifyMouseClicked(x, y, action);
+      action = viewer.notifyMouseClicked(x, y, action, Binding.PRESSED);
       if (action == 0)
         return;
     }
@@ -809,7 +809,7 @@ public class ActionManager {
       exitMeasurementMode();
     int action = Binding.getMouseAction(pressedCount, mods);
     dragGesture.add(action, x, y, time);
-    checkAction(action, x, y, deltaX, deltaY, time, 1);
+    checkAction(action, x, y, deltaX, deltaY, time, Binding.DRAGGED);
   }
 
   public void mouseReleased(long time, int x, int y, int mods) {
@@ -886,7 +886,7 @@ public class ActionManager {
     rubberbandSelectionMode = (binding.getName() == "drag");
     rectRubber.x = Integer.MAX_VALUE;
     if (dragRelease) {
-      viewer.notifyMouseClicked(x, y, Binding.getMouseAction(pressedCount, 0));
+      viewer.notifyMouseClicked(x, y, Binding.getMouseAction(pressedCount, 0), Binding.RELEASED);
     }
     if (drawMode
         && (isBound(action, ACTION_dragDrawObject) || isBound(action,
@@ -944,7 +944,7 @@ public class ActionManager {
     boolean isSelectAndDrag = isBound(Binding.getMouseAction(Integer.MIN_VALUE, mods), ACTION_selectAndDrag);
     if (isSelectAndDrag && atomPickingMode != PICKING_SELECT_ATOM)
       return;
-    checkPointOrAtomClicked(x, y, mods, clickedCount, false);
+    checkPointOrAtomClicked(x, y, mods, clickedCount, false, Binding.CLICKED);
   }
 
   private boolean isRubberBandSelect(int action) {
@@ -983,7 +983,7 @@ public class ActionManager {
     int mods = Binding.getModifiers(action);
     if (Binding.getModifiers(action) != 0) {
       int newAction = viewer.notifyMouseClicked(x, y, Binding.getMouseAction(
-          -pressedCount, mods));
+          -pressedCount, mods), mode);
       if (newAction == 0)
         return;
       if (newAction > 0)
@@ -1221,15 +1221,16 @@ public class ActionManager {
   }
 
   private boolean checkPointOrAtomClicked(int x, int y, int mods,
-                                          int clickedCount, boolean atomOnly) {
+                                          int clickedCount, boolean atomOnly,
+                                          int mode) {
     if (!viewer.haveModelSet())
       return false;
     // points are always picked up first, then atoms
     // so that atom picking can be superceded by draw picking
     int action = Binding.getMouseAction(clickedCount, mods);
-    if (action != 0) {
-      action = viewer.notifyMouseClicked(x, y, action);
-      if (action == 0)
+    if (action != Binding.MOVED) {
+      action = viewer.notifyMouseClicked(x, y, action, mode);
+      if (action == Binding.MOVED)
         return false;
     }
     Point3fi nearestPoint = null;
@@ -1897,7 +1898,6 @@ public class ActionManager {
             : isBound(action, ACTION_select) ? "" : null);
     if (s != null) {
       s += "(" + item + ")";
-      System.out.println(s);
       if (Logger.debugging)
         Logger.debug(s);
       BitSet bs = getSelectionSet(s);

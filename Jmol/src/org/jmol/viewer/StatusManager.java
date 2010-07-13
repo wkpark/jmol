@@ -331,12 +331,12 @@ class StatusManager {
           new Object[] { sJmol, strInfo, new Integer(atomIndex) });
   }
 
-  synchronized int setStatusClicked(int x, int y, int action, int clickCount) {
+  synchronized int setStatusClicked(int x, int y, int action, int clickCount, int mode) {
     String sJmol = jmolScriptCallback(JmolConstants.CALLBACK_CLICK);
     if (!notifyEnabled(JmolConstants.CALLBACK_CLICK))
       return action;
     // allows modification of action
-    int[] m = new int[] { action };
+    int[] m = new int[] { action, mode };
     jmolCallbackListener.notifyCallback(JmolConstants.CALLBACK_CLICK,
         new Object[] { sJmol, new Integer(x), new Integer(y), new Integer(action), new Integer(clickCount), m });
     return m[0];
@@ -372,7 +372,8 @@ class StatusManager {
     if (doCallback && notifyEnabled(JmolConstants.CALLBACK_LOADSTRUCT)) 
       jmolCallbackListener.notifyCallback(JmolConstants.CALLBACK_LOADSTRUCT,
           new Object[] { sJmol, 
-              fullPathName, fileName, modelName, errorMsg, new Integer(ptLoad) });
+              fullPathName, fileName, modelName, errorMsg, new Integer(ptLoad)
+          , viewer.getParameter("_modelNumber"), viewer.getModelNumberDotted(viewer.getModelCount() - 1) });
   }
 
   synchronized void setStatusFrameChanged(int frameNo, int fileNo, int modelNo,

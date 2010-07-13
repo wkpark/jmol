@@ -63,6 +63,7 @@ public class IsosurfaceMesh extends Mesh {
     super.clear(meshType);  
     nSets = 0;
     thisSet = -1;
+    vertexIncrement = 1;
     firstRealVertex = -1;
     hasGridPoints = iAddGridPoints;
     showPoints = iAddGridPoints;

@@ -278,18 +278,21 @@ public class FileManager {
   Object createAtomSeCollectionFromStrings(String[] arrayModels,
                                            StringBuffer loadScript,
                                            Hashtable htParams, boolean isAppend) {
-    String oldSep = "\"" + viewer.getDataSeparator() + "\"";
-    String tag = "\"" + (isAppend ? "append" : "model") + " inline\"";
-    StringBuffer sb = new StringBuffer(
-        "set dataSeparator \"~~~next file~~~\";\ndata ");
-    sb.append(tag);
-    for (int i = 0; i < arrayModels.length; i++) {
-      if (i > 0)
-        sb.append("~~~next file~~~");
-      sb.append(arrayModels[i]);
+    if (!htParams.containsKey("isData")) {
+      String oldSep = "\"" + viewer.getDataSeparator() + "\"";
+      String tag = "\"" + (isAppend ? "append" : "model") + " inline\"";
+      StringBuffer sb = new StringBuffer(
+          "set dataSeparator \"~~~next file~~~\";\ndata ");
+      sb.append(tag);
+      for (int i = 0; i < arrayModels.length; i++) {
+        if (i > 0)
+          sb.append("~~~next file~~~");
+        sb.append(arrayModels[i]);
+      }
+      sb.append("end ").append(tag).append(";set dataSeparator ")
+          .append(oldSep);
+      loadScript.append(sb);
     }
-    sb.append("end ").append(tag).append(";set dataSeparator ").append(oldSep);
-    loadScript.append(sb);
     setLoadState(htParams);
     Logger.info("FileManager.getAtomSetCollectionFromStrings(string[])");
     fullPathName = fileName = "string[]";
@@ -300,7 +303,7 @@ public class FileManager {
       readers[i] = new StringDataReader(arrayModels[i]);
     }
     FilesReader filesReader = new FilesReader(fullPathNames, fullPathNames,
-        null, readers, null);
+        null, readers, htParams);
     filesReader.run();
     return filesReader.atomSetCollection;
   }
@@ -1266,19 +1269,13 @@ public class FileManager {
     }
 
     void run() {
-      if (stringReaders != null) {
-        atomSetCollection = viewer.getModelAdapter()
-            .getAtomSetCollectionFromReaders(this, fullPathNamesIn,
-                fileTypesIn, null);
-        stringReaders = null;
-      } else {
-        htParamsSet = new Hashtable[fullPathNamesIn.length];
-        for (int i = 0; i < htParamsSet.length; i++)
-          htParamsSet[i] = htParams; // for now, just one common parameter set
-        atomSetCollection = viewer.getModelAdapter()
-            .getAtomSetCollectionFromReaders(this, fullPathNamesIn,
-                fileTypesIn, htParamsSet);
-      }
+      htParamsSet = new Hashtable[fullPathNamesIn.length];
+      for (int i = 0; i < htParamsSet.length; i++)
+        htParamsSet[i] = htParams; // for now, just one common parameter set
+      atomSetCollection = viewer.getModelAdapter()
+          .getAtomSetCollectionFromReaders(this, fullPathNamesIn, fileTypesIn,
+              htParamsSet);
+      stringReaders = null;
       if (atomSetCollection instanceof String)
         Logger.error("file ERROR: " + atomSetCollection);
     }

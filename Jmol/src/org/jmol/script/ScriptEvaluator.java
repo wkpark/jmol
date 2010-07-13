@@ -7362,43 +7362,13 @@ public class ScriptEvaluator {
     }
     String dataType = dataLabel + " ";
     dataType = dataType.substring(0, dataType.indexOf(" ")).toLowerCase();
-    boolean isDefault = (dataLabel.toLowerCase().indexOf("(default)") >= 0);
-    boolean isModel = dataType.equals("model");
-    boolean isAppend = dataType.equals("append");
-    boolean processModel = ((isModel || isAppend) && (!isSyntaxCheck || isCmdLine_C_Option));
-    if ((isModel || isAppend) && dataString == null)
-      error(ERROR_invalidArgument);
-    int userType = -1;
-    if (processModel) {
-      String filterOld = viewer.getDefaultLoadFilter();
-      String filter = null;
-      int pt = dataLabel.toLowerCase().indexOf("filter=");
-      if (pt >= 0) {
-        filter = dataLabel.substring(pt + 7);
-      } else if (filterOld.length() > 0) {
-        dataLabel = dataLabel + " filter=" + filterOld;
-      }
-      if (isAppend)
-        dataType = dataLabel; // because we might have different ones
-      // only if first character is "|" do we consider "|" to be new line
-      char newLine = viewer.getInlineChar();
-      if (dataString.length() > 0 && dataString.charAt(0) != newLine)
-        newLine = '\0';
-      int modelCount = viewer.getModelCount()
-          - (viewer.getFileName().equals("zapped") ? 1 : 0);
-      boolean appendNew = viewer.getAppendNew();
-      if (filter != null)
-        viewer.setStringProperty("defaultLoadFilter", filter);
-      viewer.loadInline(dataString, newLine, isAppend);
-      if (filter != null)
-        viewer.setStringProperty("defaultLoadFilter", filterOld);
-      if (isAppend && appendNew) {
-        viewer.setAnimationRange(-1, -1);
-        viewer.setCurrentModelIndex(modelCount);
-      }
-    }
-    if (isSyntaxCheck && !processModel)
+    if (dataType.equals("model") || dataType.equals("append")) {
+      load();
       return;
+    }
+    if (isSyntaxCheck)
+      return;
+    boolean isDefault = (dataLabel.toLowerCase().indexOf("(default)") >= 0);
     data = new Object[3];
     if (dataType.equals("element_vdw")) {
       // vdw for now
@@ -7487,7 +7457,7 @@ public class ScriptEvaluator {
           atomNumberFieldColumnCount, propertyField, propertyFieldColumnCount);
       return;
     }
-    userType = AtomCollection.getUserSettableType(dataType);
+    int userType = AtomCollection.getUserSettableType(dataType);
     if (userType >= 0) {
       // this is a known settable type or "property_xxxx"
       viewer.setAtomData(userType, dataType, dataString, isDefault);
@@ -7651,11 +7621,13 @@ public class ScriptEvaluator {
   }
 
   private void load() throws ScriptException {
+    boolean doLoadFiles = (!isSyntaxCheck || isCmdLine_C_Option);
     boolean isAppend = false;
-    boolean appendNew = viewer.getAppendNew();
     boolean isInline = false;
     boolean isSmiles = false;
-    boolean doLoadFiles = (!isSyntaxCheck || isCmdLine_C_Option);
+    boolean isData = false;
+    int i = (tokAt(0) == Token.data ? 0 : 1);
+    boolean appendNew = viewer.getAppendNew();
     String filter = null;
     Vector firstLastSteps = null;
     int modelCount = viewer.getModelCount()
@@ -7663,9 +7635,7 @@ public class ScriptEvaluator {
     StringBuffer loadScript = new StringBuffer("load");
     int nFiles = 1;
     Hashtable htParams = new Hashtable();
-    int i = 1;
     // ignore optional file format
-    // String filename = "";
     String modelName = null;
     String filename = null;
     String[] filenames = null;
@@ -7682,7 +7652,24 @@ public class ScriptEvaluator {
     } else {
       modelName = parameterAsString(i);
       tok = tokAt(i);
-      if (tok == Token.identifier || modelName.equalsIgnoreCase("fileset")) {
+      if (tok == Token.data) {
+        isData = true;
+        loadScript.append(" data");
+        String key = stringParameter(++i).toLowerCase();
+        loadScript.append(" ").append(Escape.escape(key));
+        String strModel = parameterAsString(++i);
+        htParams.put("fileData", strModel);
+        htParams.put("isData", Boolean.TRUE);
+        char newLine = viewer.getInlineChar();
+        //note: ScriptCompiler will remove an initial \n if present
+        
+        if (strModel.length() > 0 && strModel.charAt(0) != newLine)
+          loadScript.append('\n');
+        loadScript.append(strModel);
+        loadScript.append(" end ").append(Escape.escape(key));
+        i += 2; // skip END "key"
+        isAppend = key.startsWith("append");
+      } else if (tok == Token.identifier || modelName.equalsIgnoreCase("fileset")) {
         if (modelName.equals("menu")) {
           String m = parameterAsString(checkLast(2));
           if (!isSyntaxCheck)
@@ -7946,6 +7933,8 @@ public class ScriptEvaluator {
       filter = viewer.getDefaultLoadFilter();
     if (filter.length() > 0) {
       htParams.put("filter", filter);
+      if (filter.equalsIgnoreCase("2d"))
+        filter = "2D-noMin";
       sOptions += " FILTER " + Escape.escape(filter);
     }
     if (filenames == null) {
@@ -7977,7 +7966,7 @@ public class ScriptEvaluator {
       loadScript.append(" ");
       if (filename.startsWith("@") || isInline) {
         loadScript.append(Escape.escape(filename));
-      } else {
+      } else if (!isData) {
         if (!filename.equals("string") && !filename.equals("string[]"))
           loadScript.append("/*file*/");
         if (localName != null)

@@ -206,14 +206,6 @@ public class AtomSetCollection {
     }  
   }
   
-  /**
-   * Just sets the overall file type after the fact.
-   * @param type
-   */
-  public void setFileTypeName(String type) {
-    fileTypeName = type;
-  }
-  
   public void setTrajectory() {
     if (!isTrajectory)
       trajectorySteps = new Vector();

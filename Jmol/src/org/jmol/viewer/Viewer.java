@@ -1887,20 +1887,22 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         // 3) a file reader (not used by Jmol) 
 
         atomSetCollection = fileManager.createAtomSetCollectionFromReader(
-            fullPathName, fileName, (Reader) reader, setLoadParameters(null));
+            fullPathName, fileName, (Reader) reader, htParams = setLoadParameters(null));
       else
 
         // 3) a DOM reader (could be used by Jmol) 
 
         atomSetCollection = fileManager.createAtomSetCollectionFromDOM(
-            reader, setLoadParameters(null));
+            reader, htParams = setLoadParameters(null));
     }
     
     // OK, the file has been read and is now closed.
     
     if (tokType != 0)  // all we are doing is reading atom data
       return loadAtomDataAndReturnError(atomSetCollection, tokType);
-
+    
+    if (htParams.containsKey("isData"))
+      return null;
 
     // now we fix the load script (possibly) with the full path name
     if (loadScript != null) {
@@ -1947,8 +1949,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     String strModel = null;
     if (haveFileData) {
       strModel = (String) htParams.get("fileData");
-      htParams.remove("fileData");
-    } else if (isString) {
+      if (htParams.containsKey("isData")) {
+        // only if first character is "|" do we consider "|" to be new line
+        char newLine = getInlineChar();
+        if (strModel.length() > 0 && strModel.charAt(0) != newLine)
+          newLine = '\0';
+        loadInline(strModel, newLine, isAppend, htParams);
+        return null; //??
+      }
+   } else if (isString) {
       strModel = modelSet.getInlineData(-1);
       if (strModel == null)
         if (isModelKitMode())
@@ -1985,17 +1994,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public String loadInline(String strModel) {
     // jmolViewer interface
-    return loadInline(strModel, global.inlineNewlineChar, false);
+    return loadInline(strModel, global.inlineNewlineChar, false, null);
   }
 
   public String loadInline(String strModel, char newLine) {
     // JmolViewer interface
-    return loadInline(strModel, newLine, false);
+    return loadInline(strModel, newLine, false, null);
   }
 
   public String loadInline(String strModel, boolean isAppend) {
     // JmolViewer interface
-    return loadInline(strModel, (char) 0, isAppend);
+    return loadInline(strModel, (char) 0, isAppend, null);
   }
 
   public String loadInline(String[] arrayModels) {
@@ -2033,7 +2042,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return createModelSetAndReturnError(atomSetCollection, isAppend, null);
   }
 
-  public String loadInline(String strModel, char newLine, boolean isAppend) {
+  public String loadInline(String strModel, char newLine, boolean isAppend, Hashtable htParams) {
     // ScriptEvaluator DATA command uses this, but anyone could.
     if (strModel == null || strModel.length() == 0)
       return null;
@@ -2081,9 +2090,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         strModels[i] = strModel.substring(pt0, pt);
         pt0 = pt + datasep.length();
       }
-      return openStringsInline(strModels, null, isAppend);
+      return openStringsInline(strModels, htParams, isAppend);
     }
-    return openStringInline(strModel, null, isAppend);
+    return openStringInline(strModel, htParams, isAppend);
   }
 
   // everything funnels to these two inline methods: String and String[]
@@ -2100,11 +2109,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return "cannot open script inline";
     }
 
-    StringBuffer loadScript = new StringBuffer();
+    htParams = setLoadParameters(htParams);
+    StringBuffer loadScript = (StringBuffer) htParams.get("loadScript");
+    boolean isLoadCommand = htParams.containsKey("isData");
+    if (loadScript == null)
+      loadScript = new StringBuffer();
     if (!isAppend)
       zap(true, true, false);
     Object atomSetCollection = fileManager.createAtomSetCollectionFromString(
-        strModel, loadScript, setLoadParameters(htParams), isAppend, false);
+        strModel, loadScript, htParams, isAppend, isLoadCommand);
     return createModelSetAndReturnError(atomSetCollection, isAppend, loadScript);
   }
 
@@ -4334,7 +4347,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     for (int i = 0; i < pts.length; i++)
       sb.append("H ").append(pts[i].x).append(" ").append(pts[i].y).append(" ")
           .append(pts[i].z).append(" - - - - ").append(++atomno).append('\n');
-    loadInline(sb.toString(), '\n', true);
+    loadInline(sb.toString(), '\n', true, null);
     eval.runScript(sbConnect.toString(), null);
     BitSet bsB = getModelUndeletedAtomsBitSet(modelIndex);
     bsB.andNot(bsA);
@@ -7204,6 +7217,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // change y to 0 at bottom
     int modifiers = Binding.getModifiers(action);
     int clickCount = Binding.getClickCount(action);
+    //System.out.println(action + " " + clickCount + " " + modifiers + " " + mode);
     global.setParameterValue("_mouseX", x);
     global.setParameterValue("_mouseY", dimScreen.height - y);
     global.setParameterValue("_mouseAction", action);

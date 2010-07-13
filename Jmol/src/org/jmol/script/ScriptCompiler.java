@@ -897,10 +897,14 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       } else {
         str = getUnescapedStringLiteral();
       }
-      addTokenToPrefix(new Token(Token.string, str));
       iHaveQuotedString = true;
-      if (tokCommand == Token.data && str.indexOf("@") < 0 && !getData(str))
-        return ERROR(ERROR_missingEnd, "data");
+      if (tokCommand == Token.load && lastToken.tok == Token.data 
+          || tokCommand == Token.data && str.indexOf("@") < 0) {
+        if (!getData(str))
+          return ERROR(ERROR_missingEnd, "data");
+      } else {
+        addTokenToPrefix(new Token(Token.string, str));
+      }
       return CONTINUE;
     }
     if (tokCommand == Token.sync && nTokens == 1 && charToken()) {
@@ -915,7 +919,9 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       if (nTokens == 1 && lookingAtLoadFormat()) {
         String strFormat = script.substring(ichToken, ichToken + cchToken);
         strFormat = strFormat.toLowerCase();
-        if (Parser.isOneOf(strFormat, LOAD_TYPES))
+        if (strFormat.equals("data"))
+          addTokenToPrefix(new Token(Token.data, "data"));
+        else if (Parser.isOneOf(strFormat, LOAD_TYPES))
           addTokenToPrefix(new Token(Token.identifier, strFormat));
         return CONTINUE;
       }
@@ -1733,6 +1739,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   }
 
   private boolean getData(String key) {
+    addTokenToPrefix(new Token(Token.string, key));
     ichToken += key.length() + 2;
     if (script.length() > ichToken && script.charAt(ichToken) == '\r') {
       lineCurrent++;ichToken++;

@@ -1902,15 +1902,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return loadAtomDataAndReturnError(atomSetCollection, tokType);
     
     if (htParams.containsKey("isData"))
-      return null;
+      return (String) atomSetCollection;
 
     // now we fix the load script (possibly) with the full path name
     if (loadScript != null) {
       String fname = (String) htParams.get("fullPathName");
       if (fname == null)
         fname = "";
-      loadScript = new StringBuffer(TextFormat.simpleReplace(loadScript
-          .toString(), "$FILENAME$", fname));
+      // may have been modified.
+      if (htParams.containsKey("loadScript"))
+        loadScript = (StringBuffer) htParams.get("loadScript");
+      htParams.put("loadScript", loadScript = new StringBuffer(TextFormat.simpleReplace(loadScript
+          .toString(), "$FILENAME$", fname)));
     }
     
     // and finally to create the model set...
@@ -1950,12 +1953,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (haveFileData) {
       strModel = (String) htParams.get("fileData");
       if (htParams.containsKey("isData")) {
-        // only if first character is "|" do we consider "|" to be new line
-        char newLine = getInlineChar();
-        if (strModel.length() > 0 && strModel.charAt(0) != newLine)
-          newLine = '\0';
-        loadInline(strModel, newLine, isAppend, htParams);
-        return null; //??
+        return loadInline(strModel, '\0', isAppend, htParams);
       }
    } else if (isString) {
       strModel = modelSet.getInlineData(-1);
@@ -1964,6 +1962,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           strModel = JmolConstants.MODELKIT_ZAP_STRING;
         else
          return "cannot find string data";
+      if (loadScript != null)
+        htParams.put("loadScript", loadScript = new StringBuffer(TextFormat.simpleReplace(
+            loadScript.toString(), "\"$FILENAME$\"", 
+            "data \"model inline\"\n" + strModel + "end \"model inline\"")));
     }
     if (strModel != null) {
       if (!isAppend)
@@ -2050,31 +2052,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       script(strModel);
       return null;
     }
-    int i;
-    if (strModel.indexOf("\\/n") >= 0) {
-      // the problem is that when this string is passed to Jmol
-      // by the web page <embed> mechanism, browsers differ
-      // in how they handle CR and LF. Some will pass it,
-      // some will not.
-      strModel = TextFormat.simpleReplace(strModel, "\n", "");
-      strModel = TextFormat.simpleReplace(strModel, "\\/n", "\n");
-      newLine = 0;
-    }
+    strModel = fixInlineString(strModel, newLine);
     if (newLine != 0)
       Logger.info("loading model inline, " + strModel.length()
           + " bytes, with newLine character " + (int) newLine + " isAppend="
           + isAppend);
     Logger.debug(strModel);
-    String rep = (strModel.indexOf('\n') >= 0 ? "" : "\n");
-    if (newLine != 0 && newLine != '\n') {
-      int len = strModel.length();
-      for (i = 0; i < len && strModel.charAt(i) == ' '; ++i) {
-      }
-      if (i < len && strModel.charAt(i) == newLine)
-        strModel = strModel.substring(i + 1);
-      strModel = TextFormat.simpleReplace(strModel, "" + newLine, rep);
-    }
     String datasep = getDataSeparator();
+    int i;
     if (datasep != null && datasep != ""
         && (i = strModel.indexOf(datasep)) >= 0
         && strModel.indexOf("# Jmol state") < 0) {
@@ -2093,6 +2078,33 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return openStringsInline(strModels, htParams, isAppend);
     }
     return openStringInline(strModel, htParams, isAppend);
+  }
+
+  public String fixInlineString(String strModel, char newLine) {
+    // only if first character is "|" do we consider "|" to be new line
+    int i;
+    if (strModel.indexOf("\\/n") >= 0) {
+      // the problem is that when this string is passed to Jmol
+      // by the web page <embed> mechanism, browsers differ
+      // in how they handle CR and LF. Some will pass it,
+      // some will not.
+      strModel = TextFormat.simpleReplace(strModel, "\n", "");
+      strModel = TextFormat.simpleReplace(strModel, "\\/n", "\n");
+      newLine = 0;
+    }
+    if (newLine != 0 && newLine != '\n') {
+      boolean repEmpty = (strModel.indexOf('\n') >= 0);
+      int len = strModel.length();
+      for (i = 0; i < len && strModel.charAt(i) == ' '; ++i) {
+      }
+      if (i < len && strModel.charAt(i) == newLine)
+        strModel = strModel.substring(i + 1);
+      if (repEmpty)
+        strModel = TextFormat.simpleReplace(strModel, "" + newLine, "");
+      else
+        strModel = strModel.replace(newLine, '\n');
+    }
+    return strModel;
   }
 
   // everything funnels to these two inline methods: String and String[]

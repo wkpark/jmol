@@ -7658,13 +7658,11 @@ public class ScriptEvaluator {
         String key = stringParameter(++i).toLowerCase();
         loadScript.append(" ").append(Escape.escape(key));
         String strModel = parameterAsString(++i);
+        strModel = viewer.fixInlineString(strModel, viewer.getInlineChar());
         htParams.put("fileData", strModel);
         htParams.put("isData", Boolean.TRUE);
-        char newLine = viewer.getInlineChar();
         //note: ScriptCompiler will remove an initial \n if present
-        
-        if (strModel.length() > 0 && strModel.charAt(0) != newLine)
-          loadScript.append('\n');
+        loadScript.append('\n');
         loadScript.append(strModel);
         loadScript.append(" end ").append(Escape.escape(key));
         i += 2; // skip END "key"

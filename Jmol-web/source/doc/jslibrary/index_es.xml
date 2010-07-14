@@ -1148,6 +1148,14 @@ Cada páginaCada página      </p>
 	<br/><i>2º parámetro devuelto:</i> la dirección URL del archivo cargado.
 	<br/><i>3<sup>er</sup> parámetro devuelto:</i> el nombre del archivo cargado (sin la ruta).
 	<br/><i>4º parámetro devuelto:</i> el título interno del modelo en el archivo cargado.
+	<br/><i>5º parámetro devuelto:</i> mensajes de error que se hayan generado.
+	<br/><i>6º parámetro devuelto:</i> un código numérico: 3 si el archivo se cargó
+	correctamente, 0 si es modelo se borró, -1 si falló la carga.
+	<br/><i>7º parámetro devuelto:</i> un texto con el número de modelo o fotograma
+	anterior al carga de este modelo, en formato archivo.modelo (por ej., 
+	"3.1", o "1.1 - 3.31" si se cargó un grupo de modelos).
+	<br/><i>8º parámetro devuelto:</i> un texto con el número del último modelo o 
+	fotograma tras cargar el modelo actual, en formato archivo.modelo.
 	<br/><i>Nota:</i> Si se cargan varios archivos con una sola instrucción "load", 
 	sólo se devuelven los datos del último.
 				</p>

@@ -1168,8 +1168,10 @@ abstract public class ModelCollection extends BondCollection {
         iModelLast = a.modelIndex;
         sb.append("MODEL     " + (iModelLast + 1) + "\n");
       }
-      boolean leftJustify = (a.getElementSymbol().length() == 2 || a
-          .getAtomName().length() == 4);
+      String sa = a.getAtomName();
+      boolean leftJustify = (a.getElementSymbol().length() == 2 
+          || sa.length() == 4
+          || Character.isDigit(sa.charAt(0)));
       if (!models[a.modelIndex].isPDB)
         s = (leftJustify ? "HETATM%5i %-4a%1AUNK %1c   1%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]\n"
             : "HETATM%5i %-4a%1AUNK %1c   1%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]\n");

@@ -32,6 +32,7 @@ import java.util.BitSet;
 import org.jmol.g3d.*;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
+import org.jmol.modelset.Model;
 import org.jmol.modelset.ModelSet;
 import org.jmol.util.ColorEncoder;
 
@@ -180,6 +181,12 @@ class ColorManager {
       return ColorEncoder.getColorIndexFromPalette(
           atom.getSelectedGroupIndexWithinChain(), 0,
           atom.getSelectedGroupCountWithinChain() - 1,
+          ColorEncoder.BGYOR, false);
+    case JmolConstants.PALETTE_POLYMER:
+      Model m = viewer.getModelSet().getModels()[atom.modelIndex];
+      return ColorEncoder.getColorIndexFromPalette(
+          atom.getPolymerIndexInModel(), 
+          0, m.getBioPolymerCount() - 1,
           ColorEncoder.BGYOR, false);
     case JmolConstants.PALETTE_MONOMER:
       // viewer.calcSelectedMonomersCount() must be called first ...

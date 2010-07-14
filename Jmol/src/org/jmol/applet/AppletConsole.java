@@ -92,6 +92,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   }
 
   public void sendConsoleMessage(String strInfo) {
+    //System.out.println("AppletConsole.sendConsoleMessage " + strInfo);
     output(strInfo);
   }
 
@@ -127,7 +128,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
     jf.setJMenuBar(menubar);
     c.setLayout(new BoxLayout(c, BoxLayout.Y_AXIS));
 
-    System.out.println("Console " + this + " set(2)");
+    //System.out.println("Console " + this + " set(2)");
 
     JSplitPane jsp = new JSplitPane(JSplitPane.VERTICAL_SPLIT, jscrollOutput,
         jscrollInput);
@@ -167,7 +168,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
     jf.addWindowListener(this);
     GT.setDoTranslate(doTranslate);
 
-    System.out.println("Console " + this + " set(3)");
+    //System.out.println("Console " + this + " set(3)");
 
   }
   
@@ -235,7 +236,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   }
 
   private void setupInput() {
-    System.out.println("AppletConsole.setupOutput " + input);
+    //System.out.println("AppletConsole.setupOutput " + input);
     input.setLineWrap(true);
     input.setWrapStyleWord(true);
     input.setDragEnabled(true);
@@ -250,7 +251,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   }
 
   private void setupOutput() {
-    System.out.println("AppletConsole.setupOutput " + output);
+    //System.out.println("AppletConsole.setupOutput " + output);
     output.setEditable(false);
     output.setDragEnabled(true);
     //    output.setLineWrap(true);
@@ -259,7 +260,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   }
 
   public void setVisible(boolean visible) {
-    System.out.println("AppletConsole.setVisible(" + visible + ") " + jf);
+    //System.out.println("AppletConsole.setVisible(" + visible + ") " + jf);
     jf.setVisible(visible);
     input.requestFocus();
   }
@@ -284,18 +285,18 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   }
 
   public String getText() {
-    System.out.println("AppletConsole.getText()");
+    //System.out.println("AppletConsole.getText()");
     return output.getText(); 
   }
 
   protected void clearContent(String text) {
-    System.out.println("AppletConsole.clearContent()");
+    //System.out.println("AppletConsole.clearContent()");
     output.setText(text);
   }
   
   public void actionPerformed(ActionEvent e) {
     Object source = e.getSource();
-    System.out.println("AppletConsole.actionPerformed" +  source);
+    //System.out.println("AppletConsole.actionPerformed" +  source);
     if (source == clearInButton) {
       input.setText("");
       return;

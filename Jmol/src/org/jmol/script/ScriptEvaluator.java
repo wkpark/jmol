@@ -450,6 +450,7 @@ public class ScriptEvaluator {
       viewer.scriptStatus(strbufLog.toString());
     } else {
       String cmd = getCommand(pc, false, false);
+      if (cmd != "")
       viewer.scriptStatus(cmd);
     }
 
@@ -6815,30 +6816,31 @@ public class ScriptEvaluator {
       case Token.dollarsign:
         setObjectProperty();
         return;
-      case Token.none:
-      case Token.spacefill:
+      case Token.altloc:
       case Token.amino:
       case Token.chain:
-      case Token.group:
-      case Token.shapely:
-      case Token.structure:
-      case Token.temperature:
       case Token.fixedtemp:
       case Token.formalcharge:
-      case Token.partialcharge:
-      case Token.straightness:
-      case Token.surfacedistance:
-      case Token.vanderwaals:
-      case Token.monomer:
-      case Token.molecule:
-      case Token.altloc:
+      case Token.group:
       case Token.insertion:
-      case Token.translucent:
-      case Token.opaque:
       case Token.jmol:
-      case Token.rasmol:
-      case Token.user:
+      case Token.molecule:
+      case Token.monomer:
+      case Token.none:
+      case Token.opaque:
+      case Token.partialcharge:
+      case Token.polymer:
       case Token.property:
+      case Token.rasmol:
+      case Token.spacefill:
+      case Token.shapely:
+      case Token.straightness:
+      case Token.structure:
+      case Token.surfacedistance:
+      case Token.temperature:
+      case Token.translucent:
+      case Token.user:
+      case Token.vanderwaals:
         theTok = Token.atoms;
         i = 1;
         break;
@@ -7176,6 +7178,7 @@ public class ScriptEvaluator {
       case Token.group:
         viewer.calcSelectedGroupsCount();
         break;
+      case Token.polymer:
       case Token.monomer:
         viewer.calcSelectedMonomersCount();
         break;

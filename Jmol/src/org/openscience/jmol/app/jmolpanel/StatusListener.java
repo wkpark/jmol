@@ -94,6 +94,7 @@ class StatusListener implements JmolStatusListener {
   public void notifyCallback(int type, Object[] data) {
     String strInfo = (data == null || data[1] == null ? null : data[1]
         .toString());
+    System.out.println("statuslistener.notify message callback " + data + " and " + strInfo );
     switch (type) {
     case JmolConstants.CALLBACK_LOADSTRUCT:
       notifyFileLoaded(strInfo, (String) data[2], (String) data[3],
@@ -135,6 +136,7 @@ class StatusListener implements JmolStatusListener {
       }
       break;
     case JmolConstants.CALLBACK_MESSAGE:
+      System.out.println("statuslistener.notify message callback " + data + " or " + strInfo );
       sendConsoleMessage(data == null ? null : strInfo);
       break;
     case JmolConstants.CALLBACK_CLICK:
@@ -183,6 +185,7 @@ class StatusListener implements JmolStatusListener {
 
   public String eval(String strEval) {
    String msg = "# this funcationality is implemented only for the applet.\n" + strEval;
+   System.out.println("statuslistener.eval " + strEval);
    sendConsoleMessage(msg);
     return msg;
   }
@@ -234,11 +237,13 @@ class StatusListener implements JmolStatusListener {
   private void sendConsoleEcho(String strEcho) {
     JmolAppConsoleInterface appConsole = (JmolAppConsoleInterface) viewer
         .getProperty("DATA_API", "getAppConsole", null);
+    System.out.println("statuslistenere.sendConsoleEcho " + strEcho);
     if (appConsole != null)
       appConsole.sendConsoleEcho(strEcho);
   }
 
   private void sendConsoleMessage(String strStatus) {
+    System.out.println("statuslistenere.sendConsoleMessage " + strStatus);
     JmolAppConsoleInterface appConsole = (JmolAppConsoleInterface) viewer
         .getProperty("DATA_API", "getAppConsole", null);
     if (appConsole != null)

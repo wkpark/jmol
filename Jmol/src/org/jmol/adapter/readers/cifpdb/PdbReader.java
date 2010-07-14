@@ -29,6 +29,7 @@ import org.jmol.adapter.smarter.*;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
+import org.jmol.util.TextFormat;
 
 import java.util.Hashtable;
 import java.util.Vector;
@@ -65,7 +66,6 @@ public class PdbReader extends AtomSetCollectionReader {
   private Hashtable htHetero = null;
   private Hashtable htSites = null;
   private String currentGroup3;
-  private String compnd;
   private Hashtable htElementsInCurrentGroup;
   private int maxSerial;
   private int[] chainAtomCounts;
@@ -93,7 +93,8 @@ public class PdbReader extends AtomSetCollectionReader {
    "FORMUL  " + //16
    "REMARK  " + //17
    "HEADER  " + //18
-   "COMPND  ";  //19
+   "COMPND  " + //19
+   "SOURCE  ";  //20
 
  private int serial = 0;
  private StringBuffer pdbHeader;
@@ -203,7 +204,10 @@ public class PdbReader extends AtomSetCollectionReader {
       header();
       return true;
     case 19:
-      compnd();
+      compndSource(false);
+      return true;
+    case 20:
+      compndSource(true);
       return true;
     }
     return true;
@@ -222,6 +226,8 @@ public class PdbReader extends AtomSetCollectionReader {
       }
     }
     super.finalizeReader();
+    if (vCompnds != null)
+      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("compoundSource", vCompnds);
     if (htSites != null)// && atomSetCollection.getAtomSetCount() == 1)
       addSites(htSites);
     if (pdbHeader != null)
@@ -248,15 +254,64 @@ public class PdbReader extends AtomSetCollectionReader {
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("CLASSIFICATION", line.substring(7).trim());
   }
 
-  private void compnd() {
-    if (compnd == null)
-      compnd = "";
-    else
-      compnd += " ";
-    if (lineLength > 62)
-      line = line.substring(0, 62);
-    compnd += line.substring(10).trim();
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("COMPND", compnd);
+  private Vector vCompnds;
+  private Hashtable currentCompnd;
+  private String currentKey;
+  private Hashtable htMolIds;
+  private boolean resetKey = true;
+  
+  private void compndSource(boolean isSource) {
+    if (vCompnds == null) {
+      if (isSource)
+        return;
+      vCompnds = new Vector();
+      htMolIds = new Hashtable();
+      currentCompnd = new Hashtable();
+      currentCompnd.put("select", "(*)");
+      currentKey = "MOLECULE";
+      htMolIds.put("", currentCompnd);
+    }
+    if (isSource && resetKey) {
+      resetKey = false;
+      currentKey = "SOURCE";
+      currentCompnd = (Hashtable) htMolIds.get("");
+    }
+    line = line.substring(10, Math.min(lineLength, 72)).trim();
+    int pt = line.indexOf(":");
+    if (pt < 0 || pt > 0 && line.charAt(pt - 1) == '\\')
+      pt = line.length();
+    String key = line.substring(0, pt).trim();
+    String value = (pt < line.length() ? line.substring(pt + 1) : null);
+    if (key.equals("MOL_ID")) {
+      if (value == null)
+        return;
+      if (isSource) {
+        currentCompnd = (Hashtable) htMolIds.remove(value);
+        return;
+      }
+      currentCompnd = new Hashtable();
+      vCompnds.add(currentCompnd);
+      htMolIds.put(value, currentCompnd);
+    }
+    if (currentCompnd == null)
+      return;
+    if (value == null) {
+      value = (String) currentCompnd.get(currentKey);
+      if (value == null)
+        value = "";
+      value += key;
+      if (vCompnds.size() == 0)
+        vCompnds.add(currentCompnd);
+    } else {
+      currentKey = key;
+    }
+    if (value.endsWith(";"))
+      value = value.substring(0, value.length() - 1);
+    currentCompnd.put(currentKey, value);
+    if (currentKey.equals("CHAIN"))
+      currentCompnd.put("select", "(:"
+          + TextFormat.simpleReplace(TextFormat
+              .simpleReplace(value, ", ", ",:"), " ", "") + ")");
   }
 
   private void setBiomoleculeAtomCounts() {

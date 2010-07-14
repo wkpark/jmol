@@ -1159,6 +1159,7 @@ abstract public class ModelCollection extends BondCollection {
     int iModel = atoms[0].modelIndex;
     int iModelLast = -1;
     boolean showModels = (iModel != atoms[atomCount - 1].modelIndex);
+    String s = null;
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       Atom a = atoms[i];
       if (showModels && a.modelIndex != iModelLast) {
@@ -1167,27 +1168,18 @@ abstract public class ModelCollection extends BondCollection {
         iModelLast = a.modelIndex;
         sb.append("MODEL     " + (iModelLast + 1) + "\n");
       }
+      boolean leftJustify = (a.getElementSymbol().length() == 2 || a
+          .getAtomName().length() == 4);
       if (!models[a.modelIndex].isPDB)
-        sb
-            .append(LabelToken
-                .formatLabel(
-                    viewer,
-                    a,
-                    "HETATM%5i %-4a%1AUNK %1c   1%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]  \n"));
+        s = (leftJustify ? "HETATM%5i %-4a%1AUNK %1c   1%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]  \n"
+            : "HETATM%5i %-4a%1AUNK %1c   1%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]  \n");
       else if (a.isHetero())
-        sb
-            .append(LabelToken
-                .formatLabel(
-                    viewer,
-                    a,
-                    "HETATM%5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]  \n"));
-      else
-        sb
-            .append(LabelToken
-                .formatLabel(
-                    viewer,
-                    a,
-                    "ATOM  %5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]  \n"));
+        s = (leftJustify ? "HETATM%5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]  \n"
+            : "HETATM%5i  %-3a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]  \n");
+      else 
+        s = (leftJustify ? "ATOM  %5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]  \n"
+            : "ATOM  %5i  %-3a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]  \n");
+      sb.append(LabelToken.formatLabel(viewer, a, s));
     }
     if (showModels)
       sb.append("ENDMDL\n");

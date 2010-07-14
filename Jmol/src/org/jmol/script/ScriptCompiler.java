@@ -919,8 +919,10 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       if (nTokens == 1 && lookingAtLoadFormat()) {
         String strFormat = script.substring(ichToken, ichToken + cchToken);
         strFormat = strFormat.toLowerCase();
-        if (strFormat.equals("data"))
+        if (strFormat.equals("data")) {
           addTokenToPrefix(new Token(Token.data, "data"));
+          return CONTINUE;
+        }
         else if (Parser.isOneOf(strFormat, LOAD_TYPES))
           addTokenToPrefix(new Token(Token.identifier, strFormat));
         else if (strFormat.indexOf("=") !=0 && strFormat.indexOf("$") != 0)

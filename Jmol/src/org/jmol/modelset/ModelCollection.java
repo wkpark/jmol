@@ -1171,14 +1171,14 @@ abstract public class ModelCollection extends BondCollection {
       boolean leftJustify = (a.getElementSymbol().length() == 2 || a
           .getAtomName().length() == 4);
       if (!models[a.modelIndex].isPDB)
-        s = (leftJustify ? "HETATM%5i %-4a%1AUNK %1c   1%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]  \n"
-            : "HETATM%5i %-4a%1AUNK %1c   1%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]  \n");
+        s = (leftJustify ? "HETATM%5i %-4a%1AUNK %1c   1%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]\n"
+            : "HETATM%5i %-4a%1AUNK %1c   1%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]\n");
       else if (a.isHetero())
-        s = (leftJustify ? "HETATM%5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]  \n"
-            : "HETATM%5i  %-3a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]  \n");
+        s = (leftJustify ? "HETATM%5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]\n"
+            : "HETATM%5i  %-3a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]\n");
       else 
-        s = (leftJustify ? "ATOM  %5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]  \n"
-            : "ATOM  %5i  %-3a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]  \n");
+        s = (leftJustify ? "ATOM  %5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]\n"
+            : "ATOM  %5i  %-3a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]\n");
       sb.append(LabelToken.formatLabel(viewer, a, s));
     }
     if (showModels)

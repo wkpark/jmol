@@ -11,10 +11,10 @@ Where ever you want a popup color picker box include a script like
 
 <script type="text/javascript">
 var scriptStr2 = 'select carbon; color atom $COLOR$;';
-JmolColorPickerBox("colorBox1", "rgb(100,100,100)", scriptStr2, "0");
+jmolColorPickerBox("colorBox1", "rgb(100,100,100)", scriptStr2, "0");
 </script>
 
-The only function that will not change name or syntax is JmolColorPickerBox(scriptStr, rgb, boxIdStr,  appletId).
+The only function that will not change name or syntax is jmolColorPickerBox(scriptStr, rgb, boxIdStr,  appletId).
 
 USE OTHER FUNCTIONS IN THE JAVASCRIPT LIBRARY AT YOUR OWN RISK.
 All parameters are strings although appletId could potentially be a number, but it is used to make a string.
@@ -28,21 +28,21 @@ All parameters are strings although appletId could potentially be a number, but 
 
 //globals and their defaults
 
-var JmolColorPickerStatus = {
+var jmolColorPickerStatus = {
     lastPicked: '', //last picked color...not used at present
-    funcName: '', //where to pass to next after pickedColor()
+    funcName: '', //where to pass to next after _jmolColorPickerPickedColor()
     passThrough: '' //name of the global variable or structure containing information to be passed
     }
 
-var JmolColorPickerBoxes=new Array();//array of boxInfo
+var jmolColorPickerBoxes=new Array();//array of _jmolColorBoxInfo
 
-function boxInfo(boxID, appletID, scriptStr){//used when using a predefined colorPickerBox
+function _jmolColorBoxInfo(boxID, appletID, scriptStr){//used when using a predefined colorPickerBox
     this.boxID=boxID;
     this.appletID=appletID; //applet ID
     this.scriptStr=scriptStr; //script with $COLOR$ where the color should be placed.
     }
 
-function changeClass(someObj,someClassName) {
+function _jmolChangeClass(someObj,someClassName) {
     someObj.setAttribute("class",someClassName);
     someObj.setAttribute("className",someClassName);  // this is for IE
 }
@@ -57,7 +57,7 @@ function changeClass(someObj,someClassName) {
     }
     testImg64.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
 
-function makeColorPicker(){
+function _jmolMakeColorPicker(){
     JmolColorPickerDiv = document.getElementById("JmolColorPickerDiv");
     if(! JmolColorPickerDiv){
         var colorPickerCSS = document.createElement('style');
@@ -73,7 +73,7 @@ function makeColorPicker(){
         document.getElementsByTagName('head')[0].appendChild(colorPickerCSS);
         JmolColorPickerDiv = document.createElement("div");
         JmolColorPickerDiv.setAttribute("id", "JmolColorPickerDiv");
-        changeClass(JmolColorPickerDiv,"JmolColorPicker_hid");
+        _jmolChangeClass(JmolColorPickerDiv,"JmolColorPicker_hid");
         }
    var rgbs=[[255,0,0]
        ,[255,128,0]
@@ -103,9 +103,9 @@ function makeColorPicker(){
     var tempwidth = 8*(rgbs.length);
     var htmlStr = '<div id="JmolColorPickerHover" style="font-size:2px;width:'+tempwidth+'px;text-align:right;background-color:white;cursor:default;">';
     if (dataURIsupported) {
-        htmlStr += '<image id="JmolColorPickerCancel" onclick="pickedColor(\'cancel\');" src="data:image/bmp;base64,Qk3CAQAAAAAAADYAAAAoAAAACwAAAAsAAAABABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdnZ2j4+PoKCgqampqampoKCgj4+PAAAAAAAAAAAAAAAAAAAAAAAAsbGxwsLCysrKysrKwsLCAAAAAAAAAAAAAAAAZWVlAAAAAAAAAAAA29vb5OTk5OTkAAAAAAAAAAAAj4+PAAAAdnZ2oKCgAAAAAAAAAAAA9PT0AAAAAAAAAAAAwsLCoKCgAAAAfn5+qampysrKAAAAAAAAAAAAAAAAAAAA5OTkysrKqampAAAAfn5+qampysrK5OTkAAAAAAAAAAAA9PT05OTkysrKqampAAAAdnZ2oKCgwsLCAAAAAAAAAAAAAAAAAAAA29vbwsLCoKCgAAAAZWVlj4+PAAAAAAAAAAAA5OTkAAAAAAAAAAAAsbGxj4+PAAAATExMAAAAAAAAAAAAwsLCysrKysrKAAAAAAAAAAAAdnZ2AAAAAAAAAAAAAAAAj4+PoKCgqampqampoKCgAAAAAAAAAAAAAAAAAAAAAAAATExMZWVldnZ2fn5+fn5+dnZ2ZWVlAAAAAAAAAAAA">';
+        htmlStr += '<image id="JmolColorPickerCancel" onclick="_jmolColorPickerPickedColor(\'cancel\');" src="data:image/bmp;base64,Qk3CAQAAAAAAADYAAAAoAAAACwAAAAsAAAABABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdnZ2j4+PoKCgqampqampoKCgj4+PAAAAAAAAAAAAAAAAAAAAAAAAsbGxwsLCysrKysrKwsLCAAAAAAAAAAAAAAAAZWVlAAAAAAAAAAAA29vb5OTk5OTkAAAAAAAAAAAAj4+PAAAAdnZ2oKCgAAAAAAAAAAAA9PT0AAAAAAAAAAAAwsLCoKCgAAAAfn5+qampysrKAAAAAAAAAAAAAAAAAAAA5OTkysrKqampAAAAfn5+qampysrK5OTkAAAAAAAAAAAA9PT05OTkysrKqampAAAAdnZ2oKCgwsLCAAAAAAAAAAAAAAAAAAAA29vbwsLCoKCgAAAAZWVlj4+PAAAAAAAAAAAA5OTkAAAAAAAAAAAAsbGxj4+PAAAATExMAAAAAAAAAAAAwsLCysrKysrKAAAAAAAAAAAAdnZ2AAAAAAAAAAAAAAAAj4+PoKCgqampqampoKCgAAAAAAAAAAAAAAAAAAAAAAAATExMZWVldnZ2fn5+fn5+dnZ2ZWVlAAAAAAAAAAAA">';
     } else {
-        htmlStr += '<span id="JmolColorPickerCancel" onclick="pickedColor(\'cancel\');" style="font-size:10px; padding:0 2px; background-color:#A0A0A0; font-family:Verdana, Arial, Helvetica, sans-serif;">X</span>';
+        htmlStr += '<span id="JmolColorPickerCancel" onclick="_jmolColorPickerPickedColor(\'cancel\');" style="font-size:10px; padding:0 2px; background-color:#A0A0A0; font-family:Verdana, Arial, Helvetica, sans-serif;">X</span>';
     }
     htmlStr += '</div>';	 
     htmlStr += '<table cellspacing="0" cellpadding="0" border="0" style="font-size:2px; cursor:default;"><tbody>';
@@ -118,8 +118,8 @@ function makeColorPicker(){
        g = Math.min(Math.max(Math.round(rgbs[k][1] * f),Math.round(255-rgbs[k][1])*(f-1)^2),255);
        b = Math.min(Math.max(Math.round(rgbs[k][2] * f),Math.round(255-rgbs[k][2])*(f-1)^2),255);
           htmlStr +='<td style="background-color: rgb(' + r + "," + g + ","+ b + ');">';
-          htmlStr +='<div style="width: 8px; height: 8px;" onclick=\'pickedColor("rgb('+r+','+g+','+b+')");\' ';
-          htmlStr +='onmouseover=\'hoverColor("rgb('+r+','+g+','+b+')");\'></div>';
+          htmlStr +='<div style="width: 8px; height: 8px;" onclick=\'_jmolColorPickerPickedColor("rgb('+r+','+g+','+b+')");\' ';
+          htmlStr +='onmouseover=\'_jmolColorPickerHoverColor("rgb('+r+','+g+','+b+')");\'></div>';
           htmlStr +='</td>';
        }//for k
    htmlStr +='</tr>';
@@ -137,42 +137,42 @@ if (/MSIE (\d+\.\d+);/.test(navigator.userAgent)) { //test for MSIE x.x;
     IEversion=new Number(RegExp.$1); // capture x.x portion and store as a number
 }
 
-function pickedColor(colorStr){
-    changeClass(document.getElementById('JmolColorPickerDiv'), "JmolColorPicker_hid");
+function _jmolColorPickerPickedColor(colorStr){
+    _jmolChangeClass(document.getElementById('JmolColorPickerDiv'), "JmolColorPicker_hid");
     if(colorStr!='cancel'){
-        var evalStr = ''+ JmolColorPickerStatus.funcName+'("'+colorStr+'",'+ JmolColorPickerStatus.passThrough+');';
+        var evalStr = ''+ jmolColorPickerStatus.funcName+'("'+colorStr+'",'+ jmolColorPickerStatus.passThrough+');';
         eval(evalStr);
     }
     if (IEversion<7) { document.getElementById("StereoMode0").style.visibility='visible'; }
 }
 
-function hoverColor(colorStr){
+function _jmolColorPickerHoverColor(colorStr){
     document.getElementById("JmolColorPickerHover").style.background = colorStr;
 }
 
-function popUpPicker(whereID, funcName, passThrough){
+function _jmolPopUpPicker(whereID, funcName, passThrough){
     var pickerDiv = document.getElementById("JmolColorPickerDiv");
     if (!pickerDiv) {//make a new picker
-        JmolColorPickerDiv =  makeColorPicker();
+        JmolColorPickerDiv =  _jmolMakeColorPicker();
         document.body.appendChild(JmolColorPickerDiv);
         pickerDiv = document.getElementById("JmolColorPickerDiv");
         }
-    JmolColorPickerStatus.funcName = funcName;
-    JmolColorPickerStatus.passThrough = passThrough;
+    jmolColorPickerStatus.funcName = funcName;
+    jmolColorPickerStatus.passThrough = passThrough;
     var where = document.getElementById(whereID);
     where.appendChild(pickerDiv);
-    changeClass(pickerDiv,"JmolColorPicker_vis");
+    _jmolChangeClass(pickerDiv,"JmolColorPicker_vis");
     if (IEversion<7) { document.getElementById("StereoMode0").style.visibility='hidden'; }
 }
 
 
-function JmolColorPickerBox(scriptStr, startColor, boxID, appletID){
+function jmolColorPickerBox(scriptStr, startColor, boxID, appletID){
     if (!appletID) appletID = "0";
-    var boxNum = JmolColorPickerBoxes.length;
+    var boxNum = jmolColorPickerBoxes.length;
     if (!boxID) boxID = 'colorBox'+boxNum;
     if (!startColor) startColor = [127,127,127];
     var presentColor = 'rgb('+startColor[0]+','+startColor[1]+','+startColor[2]+')';
-    JmolColorPickerBoxes[boxNum]= new boxInfo(boxID, appletID, scriptStr);  
+    jmolColorPickerBoxes[boxNum]= new _jmolColorBoxInfo(boxID, appletID, scriptStr);  
     var boxDiv = document.createElement("div");
     boxDiv.setAttribute("id",boxID);
     content = document.createTextNode("building color box...");
@@ -180,8 +180,8 @@ function JmolColorPickerBox(scriptStr, startColor, boxID, appletID){
     boxDiv.style.background=presentColor;
     boxDiv.style.height='14px';
     boxDiv.style.width='28px';
-    htmlStr = '<table style="font-size:0px; cursor:default;" cellspacing="0" cellpadding="0" border="1" onclick=\'popUpPicker(';
-    htmlStr += '"'+boxID+'","colorBoxUpdate",'+boxNum+');\' ';
+    htmlStr = '<table style="font-size:0px; cursor:default;" cellspacing="0" cellpadding="0" border="1" onclick=\'_jmolPopUpPicker(';
+    htmlStr += '"'+boxID+'","_jmolColorBoxUpdate",'+boxNum+');\' ';
     htmlStr += '><tbody>';
     htmlStr += '<tr><td><div style="height: 12px; width: 12px;"></div></td><td>';
     var boxArrowName = 'colorBoxArrow'+boxNum;
@@ -201,11 +201,11 @@ function JmolColorPickerBox(scriptStr, startColor, boxID, appletID){
 }
 
 
-function colorBoxUpdate(pickedColor, boxNum){
-    document.getElementById(JmolColorPickerBoxes[boxNum].boxID).style.background = pickedColor;
-    changeClass(document.getElementById('JmolColorPickerDiv'), "JmolColorPicker_hid");
+function _jmolColorBoxUpdate(pickedColor, boxNum){
+    document.getElementById(jmolColorPickerBoxes[boxNum].boxID).style.background = pickedColor;
+    _jmolChangeClass(document.getElementById('JmolColorPickerDiv'), "JmolColorPicker_hid");
     var rgbCodes = pickedColor.replace(/rgb/i,'').replace('(','[').replace(')',']');
-    var scriptStr = JmolColorPickerBoxes[boxNum].scriptStr.replace('$COLOR$', rgbCodes);
-    jmolScript(scriptStr,JmolColorPickerBoxes[boxNum].appletID);
+    var scriptStr = jmolColorPickerBoxes[boxNum].scriptStr.replace('$COLOR$', rgbCodes);
+    jmolScript(scriptStr,jmolColorPickerBoxes[boxNum].appletID);
 }
 

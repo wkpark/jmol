@@ -8989,7 +8989,7 @@
   <fah_proj number="10890" name="Abeta42_mono_s" public="n" file="xyz"
     server="171.64.122.84" atoms="12222" preferred="5" deadline="20"
     credit="68" frames="100" code="G" contact="lin5"/>
-  <fah_proj number="10891" name="AbetaM1_mono" public="n"
+  <fah_proj number="10891" name="AbetaM1_mono" public="n" file="xyz"
     server="171.64.122.84" atoms="34361" preferred="40" deadline="59"
     credit="209" frames="100" code="G" contact="lin5"/>
   <fah_proj number="10892" name="AbetaM2_mono" public="n"

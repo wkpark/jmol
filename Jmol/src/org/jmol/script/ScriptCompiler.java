@@ -919,16 +919,14 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       if (nTokens == 1 && lookingAtLoadFormat()) {
         String strFormat = script.substring(ichToken, ichToken + cchToken);
         strFormat = strFormat.toLowerCase();
-        if (strFormat.equals("data")) {
-          addTokenToPrefix(new Token(Token.data, "data"));
-          return CONTINUE;
+        int tok = (strFormat.equals("data") ? Token.data 
+            : Parser.isOneOf(strFormat, LOAD_TYPES) ? Token.identifier 
+            : strFormat.indexOf("=") == 0 || strFormat.indexOf("$") == 0 ? Token.string 
+            : 0);
+        if (tok != 0) {
+          addTokenToPrefix(new Token(tok, strFormat));
+          iHaveQuotedString = (tok == Token.string);
         }
-        else if (Parser.isOneOf(strFormat, LOAD_TYPES))
-          addTokenToPrefix(new Token(Token.identifier, strFormat));
-        else if (strFormat.indexOf("=") !=0 && strFormat.indexOf("$") != 0)
-          return CONTINUE;
-        addTokenToPrefix(new Token(Token.string, strFormat));
-        iHaveQuotedString = true;
         return CONTINUE;
       }
       BitSet bs;

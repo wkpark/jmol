@@ -904,10 +904,10 @@ public class FileManager {
     return protocol + path;
   }
 
-  public String getFullPath(String name, boolean addUrlPrefix) {
+  public String getFilePath(String name, boolean addUrlPrefix, boolean asShortName) {
     String[] names = classifyName(name, false);
-    return (names == null ? "" : addUrlPrefix ? names[2] : names[0].replace(
-        '\\', '/'));
+    return (names == null ? "" : asShortName ? names[1] 
+        : addUrlPrefix ? names[2] : names[0].replace('\\', '/'));
   }
 
   private final static String[] urlPrefixPairs = { "http:", "http://", "www.",

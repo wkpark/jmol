@@ -1699,7 +1699,7 @@ public class ScriptEvaluator {
     data[1] = ScriptCompiler.getEmbeddedScript(data[1]);
     String script = fixScriptPath(data[1], data[0]);
     if (scriptPath == null) {
-      scriptPath = viewer.getFullPath(filename);
+      scriptPath = viewer.getFilePath(filename, false);
       scriptPath = scriptPath.substring(0, scriptPath.lastIndexOf("/"));
     }
     script = FileManager.setScriptFileReferences(script, localPath, remotePath,
@@ -7968,6 +7968,8 @@ public class ScriptEvaluator {
 
     OutputStream os = null;
     if (localName != null) {
+      if (localName.equals("."))
+        localName = viewer.getFilePath(filename, true);
       String[] fullPath = new String[] { localName };
       os = viewer.getOutputStream(localName, fullPath);
       if (os == null)
@@ -7985,7 +7987,7 @@ public class ScriptEvaluator {
         if (!filename.equals("string") && !filename.equals("string[]"))
           loadScript.append("/*file*/");
         if (localName != null)
-          localName = viewer.getFullPath(localName);
+          localName = viewer.getFilePath(localName, false);
         loadScript.append(Escape.escape((localName != null ? localName
             : "$FILENAME$")));
       }
@@ -8002,6 +8004,7 @@ public class ScriptEvaluator {
       try {
         viewer.setFileInfo(new String[] { localName, localName, localName });
         Logger.info(GT._("file {0} created", localName));
+        showString(viewer.getFilePath(localName, false) + " created");
         os.close();
       } catch (IOException e) {
         Logger.error("error closing file " + e.getMessage());
@@ -15400,7 +15403,7 @@ public class ScriptEvaluator {
             if (tokAt(i + 1) == Token.as)
               i += 2; // skip that
           } else if (tokAt(i + 1) == Token.as) {
-            localName = viewer.getFullPath(stringParameter(i = i + 2));
+            localName = viewer.getFilePath(stringParameter(i = i + 2), false);
             fullPathNameOrError = viewer.getFullPathNameOrError(localName);
             localName = fullPathNameOrError[0];
             addShapeProperty(propertyList, "localName", localName);

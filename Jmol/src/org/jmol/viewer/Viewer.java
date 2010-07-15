@@ -2333,8 +2333,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return data[1];
   }
 
-  public String getFullPath(String name) {
-    return fileManager.getFullPath(name, false);
+  public String getFilePath(String name, boolean asShortName) {
+    return fileManager.getFilePath(name, false, asShortName);
   }
 
   public boolean getFileAsString(String[] data, int nBytesMax,
@@ -8301,7 +8301,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         + (dir.equals("=") || dir.endsWith("/") ? "" : "/X"));
     if (dir.length() > 0)
       setStringProperty("defaultDirectory", dir);
-    String path = fileManager.getFullPath(dir + "/", true);
+    String path = fileManager.getFilePath(dir + "/", true, false);
     if (path.startsWith("file:/"))
       FileManager.setLocalPath(this, dir, false);
     return dir;

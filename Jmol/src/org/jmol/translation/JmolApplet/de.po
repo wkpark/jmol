@@ -14,13 +14,13 @@ msgstr ""
 "Project-Id-Version: JmolApplet 11\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-07-11 19:51+0200\n"
-"PO-Revision-Date: 2010-06-20 09:54+0000\n"
-"Last-Translator: Aleixo Sánchez <aleixosk@gmail.com>\n"
+"PO-Revision-Date: 2010-07-15 21:50+0000\n"
+"Last-Translator: Oliver Stueker <Unknown>\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-06-20 15:40+0000\n"
+"X-Launchpad-Export-Date: 2010-07-15 22:28+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/AppletConsole.java:109
@@ -150,7 +150,8 @@ msgid "Check"
 msgstr "Prüfen"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "An die Spitze"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -533,7 +534,7 @@ msgstr "minimieren"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:83
 msgid "fix hydrogens and minimize"
-msgstr ""
+msgstr "Wasserstoffe fixieren und minimieren"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:84
 msgid "clear"
@@ -549,7 +550,7 @@ msgstr "Zustand speichern"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:87
 msgid "invert ring stereochemistry"
-msgstr ""
+msgstr "invertiere Ring-Stereochemie"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:88
 msgid "delete atom"
@@ -561,19 +562,19 @@ msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:90
 msgid "drag atom"
-msgstr ""
+msgstr "Atom verschieben"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:91
 msgid "drag atom (and minimize)"
-msgstr ""
+msgstr "Atom verschieben (und minimieren)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:92
 msgid "drag molecule (SHIFT to rotate)"
-msgstr ""
+msgstr "Molekül verschieben (UMSCHALTEN zum rotieren)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:93
 msgid "drag and minimize molecule (docking)"
-msgstr ""
+msgstr "Molekül verschieben und minimieren (Docking)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:102
 msgid "increase charge"
@@ -601,19 +602,19 @@ msgstr "dreifach"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:108
 msgid "increase order"
-msgstr ""
+msgstr "Bindunggsgrad erhöhen"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:109
 msgid "decrease order"
-msgstr ""
+msgstr "Bindunggsgrad vermindern"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:110
 msgid "rotate bond (SHIFT-DRAG)"
-msgstr ""
+msgstr "Bindung rotieren (UMSCHALTEN-ZIEHEN)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:111
 msgid "exit modelkit mode"
-msgstr ""
+msgstr "ModelKit Modus verlassen"
 
 #: org/jmol/popup/JmolPopup.java:141
 #: org/jmol/popup/MainPopupResourceBundle.java:530
@@ -1635,7 +1636,7 @@ msgstr "optimiere Struktur"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:877
 msgid "Model kit"
-msgstr ""
+msgstr "Model Kit"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:881
 msgid "Extract MOL data"
@@ -1952,7 +1953,7 @@ msgstr "{0} erfordert, dass nur ein Modell angezeigt wird"
 #: org/jmol/script/ScriptEvaluator.java:2540
 #, java-format
 msgid "{0} requires that only one model be loaded"
-msgstr ""
+msgstr "{0} macht es erforderlich, dass nur ein Modell geladen wird"
 
 #: org/jmol/script/ScriptEvaluator.java:2543
 msgid "No data available"
@@ -2134,7 +2135,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:67
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:69
@@ -2373,12 +2375,12 @@ msgstr "Stelle Log Datei auf {0}"
 #~ msgid "About Jmol"
 #~ msgstr "Über Jmol"
 
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
-#~ "Dateierstellung mit diesem Applet ist nicht zulässig. Für das Base64 "
-#~ "Format, benutzen Sie {0}."
+#~ "Dateierstellung mit diesem Applet ist nicht zulässig. Für das Base64 Format, "
+#~ "benutzen Sie {0}."
 
 #~ msgid "File creation failed."
 #~ msgstr "Dateierstellung fehlgeschlagen."
@@ -2389,9 +2391,11 @@ msgstr "Stelle Log Datei auf {0}"
 #~ msgid "File from PDB"
 #~ msgstr "Datei aus PDB"
 
+#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "{0} Grafik"
 
+#, java-format
 #~ msgid "File {0}"
 #~ msgstr "Datei {0}"
 
@@ -2401,18 +2405,22 @@ msgstr "Stelle Log Datei auf {0}"
 #~ msgid "Script with state"
 #~ msgstr "Skript mit Zustand"
 
+#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "{0} 3D Modell"
 
 #~ msgid "JVXL Isosurface"
 #~ msgstr "JVXL Isofläche"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr "FEHLER: Kann boolschen Flag keinen numerischen Wert zuweisen: {0}"
 
+#, java-format
 #~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 #~ msgstr "FEHLER: Kann der Variable keinen Boolschen Wert zuweisen: {0}"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to string value: {0}"
 #~ msgstr ""
 #~ "Fehler: kann kein boolsches Kennzeichen zu einem variablen Wert setzen:{0}"

@@ -7751,10 +7751,8 @@ public class ScriptEvaluator {
 
     int filePt = i;
     String localName = null;
-    if (tokAt(filePt + 1) == Token.as) {
-      localName = stringParameter(i + 2);
-      i += 2;
-    }
+    if (tokAt(filePt + 1) == Token.as)
+      localName = stringParameter(i = i + 2);
     if (statementLength == i + 1) {
       if (i == 0 || (filename = parameterAsString(filePt)).length() == 0)
         filename = viewer.getFullPathName();
@@ -7970,6 +7968,9 @@ public class ScriptEvaluator {
     if (localName != null) {
       if (localName.equals("."))
         localName = viewer.getFilePath(filename, true);
+      if (localName.length() == 0  
+          || viewer.getFilePath(localName, false).equalsIgnoreCase(viewer.getFilePath(filename, false)))
+        error(ERROR_invalidArgument);
       String[] fullPath = new String[] { localName };
       os = viewer.getOutputStream(localName, fullPath);
       if (os == null)
@@ -15403,7 +15404,7 @@ public class ScriptEvaluator {
             if (tokAt(i + 1) == Token.as)
               i += 2; // skip that
           } else if (tokAt(i + 1) == Token.as) {
-            localName = viewer.getFilePath(stringParameter(i = i + 2), false);
+            localName = viewer.getFilePath(stringParameter(iToken = (i = i + 2)), false);
             fullPathNameOrError = viewer.getFullPathNameOrError(localName);
             localName = fullPathNameOrError[0];
             addShapeProperty(propertyList, "localName", localName);

@@ -308,8 +308,10 @@ public final class Model {
       for (int i = 0; i < bioPolymerCount; i++)
         if (bioPolymers[i].getType() == Polymer.TYPE_NOBONDING)
           bioPolymers[i].getRange(bs);
-    return (bs.nextSetBit(0) < 0 ? null : "select " + Escape.escape(bs)
+    String s = (bs.nextSetBit(0) < 0 ? "" : "select " + Escape.escape(bs)
         + ";backbone;");
+    s += "select " + Escape.escape(bsAtoms) + " and not visible;stars;";
+    return s;
   }
   
   public boolean isAtomHidden(int index) {

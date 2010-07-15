@@ -256,14 +256,21 @@ public class Resolver {
     Class atomSetCollectionReaderClass;
     String err = null;
     try {
-      className = getReaderClassBase(readerName);
-      atomSetCollectionReaderClass = Class.forName(className);
-      atomSetCollectionReader = (AtomSetCollectionReader) atomSetCollectionReaderClass
-          .newInstance();
+      try {
+        className = getReaderClassBase(readerName);
+        atomSetCollectionReaderClass = Class.forName(className);
+        atomSetCollectionReader = (AtomSetCollectionReader) atomSetCollectionReaderClass
+            .newInstance();
+      } catch (Exception e) {
+        err = "File reader was not found:" + readerName;
+        Logger.error(err);
+        return err;
+      }
       return atomSetCollectionReader.readData(fullName, htParams, bufferedReader);
     } catch (Exception e) {
-      err = "File reader was not found:" + className;
+      err = "uncaught error in file loading for " + className;
       Logger.error(err);
+      e.printStackTrace();
       return err;
     }
   }
@@ -399,7 +406,7 @@ public class Resolver {
       return specialTags[SPECIAL_ARGUS_DOM][0];
     if (namespaceURI.startsWith(CML_NAMESPACE_URI) || "cml".equals(localName))
       return specialTags[SPECIAL_CML_DOM][0];
-    return "unidentified " + specialTags[SPECIAL_CML_DOM][0];
+    return specialTags[SPECIAL_CML_DOM][0] + "(unidentified)";
   }
 
 
@@ -523,7 +530,7 @@ public class Resolver {
       return specialTags[SPECIAL_VASP_XML][0];
     }
     
-    return "unidentified " + specialTags[SPECIAL_CML_XML][0];
+    return specialTags[SPECIAL_CML_XML][0] + "(unidentified)";
   }
 
   private final static int SPECIAL_JME                = 0;

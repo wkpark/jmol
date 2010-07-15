@@ -4234,7 +4234,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     String f = name.substring(1);
     switch (type) {
     case '=':
-      return TextFormat.formatString(global.loadFormat, "FILE", f);
+      String s = global.loadFormat;
+      if (f.indexOf(".") > 0 && s.indexOf("%FILE.") >= 0)
+        s = s.substring(0, s.indexOf("%FILE") + 5);
+      return TextFormat.formatString(s, "FILE", f);
     case '$':
 
       try {

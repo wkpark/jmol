@@ -995,7 +995,7 @@ public class StateManager {
 //    String _fileCache = "";
     boolean forceAutoBond = false;
     char inlineNewlineChar = '|'; //pseudo static
-    String loadFormat = "http://www.rcsb.org/pdb/files/%FILE.pdb";
+    String loadFormat = "http://www.rcsb.org/pdb/files/%FILE.pdb.gz";
     String smilesUrlFormat = "http://cheminfov.informatics.indiana.edu/rest/thread/d3.py/SMILES/%FILE";
     String edsUrlFormat = "http://eds.bmc.uu.se/eds/dfs/%LC13/%LCFILE/%LCFILE.omap";
     String edsUrlCutoff = "load('http://eds.bmc.uu.se/eds/dfs/%LC13/%LCFILE/%LCFILE.sfdat').lines.find('MAP_SIGMA').split(' ')[2]";

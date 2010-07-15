@@ -1159,7 +1159,13 @@ abstract public class ModelCollection extends BondCollection {
     int iModel = atoms[0].modelIndex;
     int iModelLast = -1;
     boolean showModels = (iModel != atoms[atomCount - 1].modelIndex);
-    String s = null;
+    LabelToken[] t4x = null;
+    LabelToken[] t3x = null;
+    LabelToken[] t4h = null;
+    LabelToken[] t3h = null;
+    LabelToken[] t4a = null;
+    LabelToken[] t3a = null;
+    LabelToken[] tokens;
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       Atom a = atoms[i];
       if (showModels && a.modelIndex != iModelLast) {
@@ -1170,18 +1176,27 @@ abstract public class ModelCollection extends BondCollection {
       }
       String sa = a.getAtomName();
       boolean leftJustify = (a.getElementSymbol().length() == 2 
-          || sa.length() == 4
+          || sa.length() >= 4
           || Character.isDigit(sa.charAt(0)));
       if (!models[a.modelIndex].isPDB)
-        s = (leftJustify ? "HETATM%5i %-4a%1AUNK %1c   1%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]\n"
-            : "HETATM%5i %-4a%1AUNK %1c   1%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]\n");
+        tokens = (leftJustify ? 
+            (t4x == null ? LabelToken.compile(viewer, "HETATM%5.-5i %-4.4a%1AUNK %1c   1%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]\n", '\0', null)
+                : t4x)
+            : (t3x == null ? LabelToken.compile(viewer, "HETATM%5.-5i %-3.3a%1AUNK %1c   1%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]\n", '\0', null)
+                : t3x));
       else if (a.isHetero())
-        s = (leftJustify ? "HETATM%5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]\n"
-            : "HETATM%5i  %-3a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]\n");
+        tokens = (leftJustify ? 
+            (t4h == null ? LabelToken.compile(viewer, "HETATM%5.-5i %-4.4a%1A%3.-3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]\n", '\0', null)
+                : t4h)
+            : (t3h == null ? LabelToken.compile(viewer, "HETATM%5.-5i  %-3.3a%1A%3.-3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]\n", '\0', null)
+                : t3h));
       else 
-        s = (leftJustify ? "ATOM  %5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]\n"
-            : "ATOM  %5i  %-3a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]\n");
-      sb.append(LabelToken.formatLabel(viewer, a, s));
+        tokens = (leftJustify ?
+            (t4a == null ? LabelToken.compile(viewer, "ATOM  %5.-5i %-4.4a%1A%3.-3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]\n", '\0', null)
+                : t4a)
+            : (t3a == null ? LabelToken.compile(viewer, "ATOM  %5.-5i  %-3.3a%1A%3.-3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]\n", '\0', null)
+                : t3a));
+      sb.append(LabelToken.formatLabel(viewer, a, null, tokens, '\0', null));
     }
     if (showModels)
       sb.append("ENDMDL\n");

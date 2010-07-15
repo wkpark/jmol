@@ -253,7 +253,6 @@ public class LabelToken {
     boolean isNegative = false;
     if (strFormat.charAt(ich) == '.') {
       ++ich;
-      lt.intAsFloat = true;
       if ((ch = strFormat.charAt(ich)) == '-') {
         isNegative = true;
         ++ich;
@@ -503,7 +502,7 @@ public class LabelToken {
     return (label == null ? "" : label);
   }
 
-  public String format(float floatT, String strT, Tuple3f ptT) {
+  private String format(float floatT, String strT, Tuple3f ptT) {
     if (!Float.isNaN(floatT)) {
       return TextFormat.format(floatT, width, precision, alignLeft, zeroPad);
     } else if (strT != null) {

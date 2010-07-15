@@ -429,7 +429,7 @@ public class SmilesSearch extends JmolMolecule {
       // The atom has passed both the atom and the bond test.
       // Add this atom to the growing list.
 
-      if (Logger.debugging && !isSilent)
+      if (true || Logger.debugging && !isSilent)
         Logger.debug("pattern atom " + atomNum + " " + patternAtom);
       bsFound.set(iAtom);
       

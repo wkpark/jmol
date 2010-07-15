@@ -311,12 +311,13 @@ public class TestSmilesParser extends TestCase {
     atomO2.setSymbol("O");
     addHydrogen(molecule, atomO2);
     createBond(atomO1, atomC1, SmilesBond.TYPE_SINGLE, true);
-    createBond(atomC1, atomC6, SmilesBond.TYPE_SINGLE, true);
+    SmilesBond b = createBond(atomC1, null, SmilesBond.TYPE_SINGLE, true);
     createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE, true);
     createBond(atomC2, atomC3, SmilesBond.TYPE_SINGLE, true);
     createBond(atomC3, atomC4, SmilesBond.TYPE_SINGLE, true);
     createBond(atomC4, atomC5, SmilesBond.TYPE_SINGLE, true);
     createBond(atomC5, atomC6, SmilesBond.TYPE_SINGLE, true);
+    b.setAtom2(atomC6);
     createBond(atomC6, atomO2, SmilesBond.TYPE_SINGLE, true);
     checkMolecule("O[C@H]1CCCC[C@H]1O", molecule);
   }
@@ -1098,12 +1099,13 @@ public class TestSmilesParser extends TestCase {
     createBond(atomC1, atomC0, SmilesBond.TYPE_SINGLE, true);
     createBond(atomC1, atomC2, SmilesBond.TYPE_SINGLE, true);
     createBond(atomC2, atomC3, SmilesBond.TYPE_SINGLE, true);
-    createBond(atomC3, atomC8, SmilesBond.TYPE_SINGLE, true);
+    SmilesBond b = createBond(atomC3, null, SmilesBond.TYPE_SINGLE, true);
     createBond(atomC3, atomC4, SmilesBond.TYPE_SINGLE, true);
     createBond(atomC4, atomC5, SmilesBond.TYPE_SINGLE, true);
     createBond(atomC5, atomC6, SmilesBond.TYPE_SINGLE, true);
     createBond(atomC6, atomC7, SmilesBond.TYPE_SINGLE, true);
     createBond(atomC7, atomC8, SmilesBond.TYPE_SINGLE, true);
+    b.setAtom2(atomC8);
     createBond(atomC8, atomC9, SmilesBond.TYPE_SINGLE, true);
     createBond(atomC9, atomC0, SmilesBond.TYPE_SINGLE, true);
     checkMolecule("C1C[C@H]2CCCC[C@H]2CC1", molecule);
@@ -1260,7 +1262,7 @@ public class TestSmilesParser extends TestCase {
   
   public SmilesBond createBond(SmilesAtom atom1, SmilesAtom atom2, int bondType, boolean isExplicitH) {
     SmilesBond b = new SmilesBond(atom1, atom2, bondType, false);
-    if (!isExplicitH)
+    if (!isExplicitH || atom2 == null)
       return b;
     if (atom1.getElementNumber() == 1)
       addExplicitH(atom2);

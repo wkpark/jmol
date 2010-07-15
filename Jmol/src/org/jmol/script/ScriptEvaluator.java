@@ -1455,6 +1455,16 @@ public class ScriptEvaluator {
       case Token.min:
       case Token.max:
         return new Integer(ivMinMax);
+      case Token.sum2:
+      case Token.stddev:
+        break;
+      case Token.average:
+        if (sum/n == (int) (sum/n))
+          return new Integer((int)(sum/n));        
+      case Token.sum:
+      default:
+        if (sum == (int) sum)
+          return new Integer((int)sum);        
       }
     }
     switch (minmaxtype) {
@@ -3521,6 +3531,7 @@ public class ScriptEvaluator {
       }
       break;
     case Token.atomindex:
+      try{
       switch (tokOperator) {
       case Token.opLT:
         return BitSetUtil.newBitSet(0, comparisonValue);
@@ -3539,6 +3550,9 @@ public class ScriptEvaluator {
         if (comparisonValue >= 0)
           bs.clear(comparisonValue);
         return bs;
+      }
+      } catch (Exception e) {
+        return new BitSet();
       }
     }
     bs = new BitSet(atomCount);

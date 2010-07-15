@@ -466,6 +466,16 @@ includes:
 <pre> 
       # note: prior to parsing, all white space is removed
        
+   [smilesDef] == [preface] [smiles]
+   [preface] == { [flagDefs] | NULL } 
+   [flagDefs] == { [flagDef] || [flagDef] [flagDefs] }
+   [flagDef] == "/" [processingFlags] "/"
+   [processingFlags] == { [processingFlag] | [processingFlag] [processingFlags] }
+   [processingFlag] == { "noAromatic" | "noStereo" } (case-insensitive)
+      # note: the noAromatic flag indicates to not distinguish between
+      #       aromatic/aliphatic searches -- "C" and "c"
+      # note: the noStereo flag turns off all stereochemical testing
+      # note: thus, both "/noAromatic//noStereo/" and "/noAromatic noStereo/" are valid 
    [smiles] == { [entity] | [entity] "." [entity] }
    [entity] == { [bioSequence] | [molecularSequence] }
    [molecularSequence] = [node][connections] 

@@ -141,7 +141,7 @@ public class SmilesParser {
     pattern = cleanPattern(pattern, isSmarts);
     boolean noAromatic = false;
     boolean ignoreStereochemistry = false;
-    while (isSmarts && pattern.startsWith("/")) {
+    while (pattern.startsWith("/")) {
       String flags = getSubPattern(pattern, 0, '/').toUpperCase();
       pattern = pattern.substring(flags.length());
       if (flags.indexOf("NOAROMATIC") >= 0)

@@ -91,7 +91,7 @@ public class TextFormat {
   }
 
   public static String format(double value, int width, int precision,
-                              boolean alignLeft, boolean zeroPad) {
+                              boolean alignLeft, boolean zeroPad, boolean allowOverflow) {
     return format(formatDecimal((float)value, -1 - precision), width, 0, alignLeft, zeroPad);
   }
 
@@ -114,7 +114,7 @@ public class TextFormat {
         && precision < len)
       value = value.substring(0, precision);
     else if (precision < 0 && len + precision >= 0)
-      value = value.substring(len + precision);
+      value = value.substring(len + precision + 1);
 
     int padLength = width - value.length();
     if (padLength <= 0)
@@ -302,7 +302,7 @@ public class TextFormat {
               zeroPad);
         else if (!Double.isNaN(doubleT))
           strLabel += format(doubleT, width, precision, alignLeft,
-              zeroPad);
+              zeroPad, true);
         if (doOne)
           break;
       } catch (IndexOutOfBoundsException ioobe) {

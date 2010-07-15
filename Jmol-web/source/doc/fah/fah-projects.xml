@@ -8495,9 +8495,9 @@
   <fah_proj number="6513" name="p6513_TR462B_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="17092" preferred="14" deadline="21"
     credit="75" frames="100" code="G" contact="lan" contrib="SandStar"/>
-  <fah_proj number="6515" name="p6515_1CFC_A_predict" public="n"
+  <fah_proj number="6515" name="p6515_1CFC_A_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="16825" preferred="14" deadline="21"
-    credit="74" frames="100" code="G" contact="lan"/>
+    credit="74" frames="100" code="G" contact="lan" contrib="Bas Couwenberg"/>
 
   <!-- Projects 6600 to 6699 -->
   <fah_proj number="6600" name="p6600_CspTm_300K" public="y"

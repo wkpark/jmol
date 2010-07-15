@@ -15298,7 +15298,7 @@ public class ScriptEvaluator {
         sbCommand.append(" squared");
         break;
       case Token.variable:
-        propertyName = "property";
+        propertyName = (dataUse == null ? "property" : dataUse);
         String vname = parameterAsString(++i);
         int nAtoms = viewer.getAtomCount();
         if (vname.length() == 0) {

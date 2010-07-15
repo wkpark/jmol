@@ -28,6 +28,7 @@ package org.jmol.shape;
 import java.util.BitSet;
 
 import org.jmol.g3d.Graphics3D;
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
@@ -58,6 +59,12 @@ public class Halos extends AtomShape {
       bsHighlight = (BitSet) value;
       return;
     }
+
+    if (propertyName == "deleteModelAtoms") {
+      BitSetUtil.deleteBits(bsHighlight, bs);
+      // pass through to AtomShape
+    }
+    
     super.setProperty(propertyName, value, bs);
   }
 
@@ -81,4 +88,5 @@ public class Halos extends AtomShape {
           + getColorCommand("highlight", colixHighlight) + ";\n";
     return state;
   }
+ 
 }

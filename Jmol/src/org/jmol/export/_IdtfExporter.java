@@ -343,8 +343,9 @@ public class _IdtfExporter extends __CartesianExporter {
     tempP3.sub(center);
     tempP1.set(q.transform(tempP3));
     float zoom = viewer.getZoomPercentFloat() / 100f;
-    tempP1.scale(zoom);
-    String dxyz = tempP1.x + " " + tempP1.y + " " + tempP1.z;
+    //tempP1.scale(zoom);
+    tempP1.add(new Point3f(0.0001f, 0.0001f, 0.0001f));
+    String dxyz = round(tempP1);
     String scale = " " + zoom;
     scale = scale + scale + scale;
 
@@ -370,7 +371,7 @@ public class _IdtfExporter extends __CartesianExporter {
     output("\n            KEY_FRAME_TIME 1");
     output("\n            KEY_FRAME_DISPLACEMENT " + dxyz);
     output("\n            KEY_FRAME_ROTATION " + toString0123(q));
-    output("\n            KEY_FRAME_SCALE" + scale);
+    output("\n            KEY_FRAME_SCALE 1 1 1");
     output("\n          }");
     output("\n         }");
     output("\n      }");

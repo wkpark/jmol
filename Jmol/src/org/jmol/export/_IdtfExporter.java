@@ -45,6 +45,7 @@ import org.jmol.g3d.Graphics3D;
 import org.jmol.geodesic.Geodesic;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.Quaternion;
+import org.jmol.viewer.Viewer;
 
 public class _IdtfExporter extends __CartesianExporter {
 
@@ -243,6 +244,47 @@ public class _IdtfExporter extends __CartesianExporter {
     
   }
 
+  String finalizeOutput() {
+    super.finalizeOutput();
+    return getAuxiliaryFileData();
+  }
+
+  private String getAuxiliaryFileData() {
+    String fName = fileName.substring(fileName.lastIndexOf("/") + 1);    
+    fName = fName.substring(fName.lastIndexOf("\\") + 1);
+    String name = fName + ".";
+    name = name.substring(0, name.indexOf("."));
+    float rooScale = 4.0f * viewer.getRotationRadius() / (viewer.getZoomPercentFloat() / 100f);
+    return "% Created by: Jmol " + Viewer.getJmolVersion()
+        + "\n% Creation date: " + getExportDate() 
+        + "\n% File created: "  + fileName + " (" + nBytes + " bytes)\n\n" 
+        //"\n; Jmol state: (embedded in input file)" 
+        + "\n\\documentclass[12pt,a4paper]{article}" 
+        + "\n\\usepackage{hyperref}" 
+        + "\n\\usepackage[3D]{movie15}" 
+        + "\n\\pagestyle{empty}" 
+        + "\n\\begin{document}" 
+        + "\n \\begin{center}" 
+        + "\n  \\includemovie[" 
+        + "\n   label=" + name + "," 
+        + "\n    autoplay," 
+        + "\n    repeat=1," 
+        + "\n    toolbar=false," 
+        + "\n3Droo=" + rooScale + "," 
+        + "\n3Dcoo= " + round(center) + "," 
+        + "\n3Dc2c=0.0 0.0 1.0," 
+        + "\n% 3Droll=0.0," 
+        + "\n3Dbg=" + rgbFractionalFromColix(backgroundColix, ' ') + "," 
+        + "\n3Dlights=Headlamp," 
+        + "\ninline=true," 
+        + "\n  ]{0.9\\textwidth}{0.9\\textwidth}{" + name + ".u3d}" 
+        + "\n%  \\\\" 
+        + "\n%\\movieref[3Dcalculate]{" + name + "}{Click here!}" 
+        + "\n\\end{center}" 
+        + "\n\\end{document}";
+}
+
+
   private String getParentItem(String name, Matrix4f m) {
     StringBuffer sb= new StringBuffer();
     sb.append("PARENT_NAME \"" + name + "\"\n");
@@ -331,8 +373,8 @@ public class _IdtfExporter extends __CartesianExporter {
     viewpoint.set(q.getMatrix());
     if (viewpoint.angle == 0)
       viewpoint.z = 1;
-    Quaternion q0 = new Quaternion(0.6414883f, -0.5258319f, 0.3542887f, 0.43182528f);
-    q = q0.inv().mul(q);
+    // Quaternion q0 = new Quaternion(0.6414883f, -0.5258319f, 0.3542887f, 0.43182528f);
+    // q = q0.inv().mul(q);
     
     // the next is just an approximation of the true center of the drawing,
     // which DeepView or 3D-PDF will use as the default center of rotation
@@ -343,12 +385,10 @@ public class _IdtfExporter extends __CartesianExporter {
     tempP3.sub(center);
     tempP1.set(q.transform(tempP3));
     float zoom = viewer.getZoomPercentFloat() / 100f;
-    //tempP1.scale(zoom);
-    tempP1.add(new Point3f(0.0001f, 0.0001f, 0.0001f));
+    tempP1.scale(zoom);
+//    tempP1.add(new Point3f(0.0001f, 0.0001f, 0.0001f));
     String dxyz = round(tempP1);
-    String scale = " " + zoom;
-    scale = scale + scale + scale;
-
+    
     // the apparent default rotation in DeepView and 3D-PDF
 
     output("\nRESOURCE_LIST \"MOTION\" {");

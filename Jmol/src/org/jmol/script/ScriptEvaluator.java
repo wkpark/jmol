@@ -12779,19 +12779,18 @@ public class ScriptEvaluator {
       boolean doDefer = false;
       if (isExport) {
         // POV-Ray uses a BufferedWriter instead of a StringBuffer.
-        boolean isPovRay = type.equals("Povray");
         // todo -- there's no reason this data has to be done this way. 
         // we could send all of them out to file directly
-        data = viewer.generateOutput(data, fileName, width, height);
+        fullPath[0] = fileName;
+        data = viewer.generateOutput(data, fullPath, width, height);
         if (data == null || data.length() == 0)
           return "";
         if (!isCommand)
           return data;
-        if (isPovRay) {
-          fileName = data.substring(data.indexOf("File created: ") + 14);
-          fileName = fileName.substring(0, fileName.indexOf("\n"));
-          fileName = fileName.substring(0, fileName.lastIndexOf(" ("));
-          msg = viewer.createImage(fileName + ".ini", "ini", data,
+        if((type.equals("Povray") || type.equals("Idtf")) && fullPath[0] != null) {
+          String ext = (type.equals("Idtf") ? ".tex" : ".ini");
+          fileName = fullPath[0] + ext;
+          msg = viewer.createImage(fileName, ext, data,
               Integer.MIN_VALUE, 0, 0, null, fullPath);
           data = "Created " + fullPath[0] + ":\n\n" + data;
         } else {

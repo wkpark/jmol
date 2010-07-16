@@ -3698,14 +3698,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         : dimScreen.width);
   }
 
-  public String generateOutput(String type, String fileName, int width,
+  public String generateOutput(String type, String[] fileName, int width,
                                int height) {
     if (isDataOnly)
       return "";
+    String fName = null;
     if (fileName != null) {
-      fileName = getFileNameFromDialog(fileName, Integer.MIN_VALUE);
-      if (fileName == null)
+      fileName[0] = getFileNameFromDialog(fileName[0], Integer.MIN_VALUE);
+      if (fileName[0] == null)
         return null;
+      fName = fileName[0];
     }
     mustRender = true;
     int saveWidth = dimScreen.width;
@@ -3713,7 +3715,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     resizeImage(width, height, true, true, false);
     setModelVisibility();
     finalizeTransformParameters();
-    String data = repaintManager.generateOutput(type, g3d, modelSet, fileName);
+    String data = repaintManager.generateOutput(type, g3d, modelSet, fName);
     // mth 2003-01-09 Linux Sun JVM 1.4.2_02
     // Sun is throwing a NullPointerExceptions inside graphics routines
     // while the window is resized.

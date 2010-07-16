@@ -224,14 +224,18 @@ public class _IdtfExporter extends __CartesianExporter {
     */
 
     m.setIdentity();
-    
-    
-//    ptAtom.set(center);
-//    ptAtom.scale(-1);
-//    m.m03 = ptAtom.x;
-//    m.m13 = ptAtom.y;
-//    m.m23 = ptAtom.z;
-//    m.m33 = 1;
+    viewer.getAxisAngle(viewpoint);
+    Quaternion q = new Quaternion(viewpoint);
+    m.set(q.getMatrix());
+    viewer.transformPoint(center, tempP3);
+    tempP3.x = viewer.getScreenWidth() / 2;
+    tempP3.y = viewer.getScreenHeight() / 2;
+    viewer.unTransformPoint(tempP3, tempP3);
+    tempP1.set(q.transform(tempP3));
+    m.m03 = -tempP1.x;
+    m.m13 = -tempP1.y;
+    m.m23 = -tempP1.z;
+    m.m33 = 1;
 
     
 
@@ -255,6 +259,11 @@ public class _IdtfExporter extends __CartesianExporter {
     String name = fName + ".";
     name = name.substring(0, name.indexOf("."));
     float rooScale = 4.0f * viewer.getRotationRadius() / (viewer.getZoomPercentFloat() / 100f);
+    //viewer.getAxisAngle(viewpoint);
+    Quaternion q = new Quaternion();//viewpoint);
+    viewpoint.set(q.getMatrix());
+    if (viewpoint.angle == 0)
+      viewpoint.z = 1;
     return "% Created by: Jmol " + Viewer.getJmolVersion()
         + "\n% Creation date: " + getExportDate() 
         + "\n% File created: "  + fileName + " (" + nBytes + " bytes)\n\n" 
@@ -271,7 +280,7 @@ public class _IdtfExporter extends __CartesianExporter {
         + "\n    repeat=1," 
         + "\n    toolbar=false," 
         + "\n3Droo=" + rooScale + "," 
-        + "\n3Dcoo= " + round(center) + "," 
+        + "\n3Dcoo= 0.0 0.0 0.0,"// + round(center) + "," 
         + "\n3Dc2c=0.0 0.0 1.0," 
         + "\n% 3Droll=0.0," 
         + "\n3Dbg=" + rgbFractionalFromColix(backgroundColix, ' ') + "," 
@@ -381,6 +390,8 @@ public class _IdtfExporter extends __CartesianExporter {
     
     // the next is just an approximation of the true center of the drawing,
     // which DeepView or 3D-PDF will use as the default center of rotation
+    
+    /*
     tempP3.set(ptMax);
     tempP3.add(ptMin);
     tempP3.scale(0.5f);
@@ -391,9 +402,10 @@ public class _IdtfExporter extends __CartesianExporter {
     tempP1.scale(zoom);
 //    tempP1.add(new Point3f(0.0001f, 0.0001f, 0.0001f));
     String dxyz = round(tempP1);
-    
+    System.out.println("IDTF: dxyz = " + dxyz);
+    */
     // the apparent default rotation in DeepView and 3D-PDF
-
+/*
     output("\nRESOURCE_LIST \"MOTION\" {");
     output("\n  RESOURCE_COUNT 1");
     output("\n  RESOURCE 0 {");
@@ -402,7 +414,7 @@ public class _IdtfExporter extends __CartesianExporter {
     output("\n    MOTION_TRACK_LIST {");
     output("\n      MOTION_TRACK 0 {");
     output("\n        MOTION_TRACK_NAME \"M00\"");
-    output("\n        MOTION_TRACK_SAMPLE_COUNT 2");
+    output("\n        MOTION_TRACK_SAMPLE_COUNT 1");
     output("\n        KEY_FRAME_LIST {");
     output("\n          KEY_FRAME 0 {");
     output("\n            KEY_FRAME_TIME 0");
@@ -442,13 +454,13 @@ public class _IdtfExporter extends __CartesianExporter {
     output("\n    }");
     output("\n  }");
     output("\n}\n");
-
+*/
     output(modifiers.toString());    
   }
 
-  private static String toString0123(Quaternion q) {
-      return q.q0 + " " + q.q1  + " " + q.q2 + " " + q.q3;
-  }
+  //private static String toString0123(Quaternion q) {
+  //    return q.q0 + " " + q.q1  + " " + q.q2 + " " + q.q3;
+ // }
 
   private Hashtable htNodes = new Hashtable();
   

@@ -921,8 +921,16 @@ public class ScriptVariable extends Token {
     String[] format = TextFormat.split(TextFormat.simpleReplace(sValue(args[0]), "%%","\1"), '%');
     StringBuffer sb = new StringBuffer();
     sb.append(format[0]);
-    for (int i = 1; i < format.length; i++)
-      sb.append(sprintf(TextFormat.formatCheck("%" + format[i]), (i < args.length ? args[i] : null)));
+    for (int i = 1; i < format.length; i++) {
+      Object ret = sprintf(TextFormat.formatCheck("%" + format[i]), (i < args.length ? args[i] : null));
+      if (ret instanceof String[]) {
+        String[] list = (String[]) ret;
+        for (int j = 0; j < list.length; j++)
+          sb.append(list[j]).append("\n");
+        continue;
+      }
+      sb.append(ret);
+    }
     return sb.toString();
   }
   

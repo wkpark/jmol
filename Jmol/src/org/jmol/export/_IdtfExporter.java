@@ -258,10 +258,10 @@ public class _IdtfExporter extends __CartesianExporter {
     return "% Created by: Jmol " + Viewer.getJmolVersion()
         + "\n% Creation date: " + getExportDate() 
         + "\n% File created: "  + fileName + " (" + nBytes + " bytes)\n\n" 
-        //"\n; Jmol state: (embedded in input file)" 
-        + "\n\\documentclass[12pt,a4paper]{article}" 
+        + "\n\\documentclass[12pt,letter]{article}" 
         + "\n\\usepackage{hyperref}" 
         + "\n\\usepackage[3D]{movie15}" 
+        + "\n\\usepackage{verbatim}"
         + "\n\\pagestyle{empty}" 
         + "\n\\begin{document}" 
         + "\n \\begin{center}" 
@@ -281,7 +281,10 @@ public class _IdtfExporter extends __CartesianExporter {
         + "\n%  \\\\" 
         + "\n%\\movieref[3Dcalculate]{" + name + "}{Click here!}" 
         + "\n\\end{center}" 
-        + "\n\\end{document}";
+        + "\n\\end{document}"
+        +"\n\\begin{comment}"
+        + viewer.getWrappedState(true)
+        +"\n\\end{comment}";
 }
 
 

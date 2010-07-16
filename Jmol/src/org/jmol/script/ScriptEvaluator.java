@@ -12792,6 +12792,8 @@ public class ScriptEvaluator {
           fileName = fullPath[0] + ext;
           msg = viewer.createImage(fileName, ext, data,
               Integer.MIN_VALUE, 0, 0, null, fullPath);
+          if (type.equals("Idtf"))
+            data = data.substring(0, data.indexOf("\\begin{comment}"));
           data = "Created " + fullPath[0] + ":\n\n" + data;
         } else {
           msg = data;

@@ -12,9 +12,8 @@
 		<title>Guiones para la miniaplicación JmolApplet sin usar Jmol.js</title>
 		<header>
 			<p><i>
-	Ten en cuenta que estos métodos no utilizan la biblioteca Jmol.js, que es 
-	el método actualmente recomendado para comenzar a escribir guiones para 
-	la miniaplicaión JmolApplet.  
+	Ten en cuenta que <b>no se recomienda</b> usar los métodos descritos en esta 
+	página, pues no utilizan la biblioteca Jmol.js.  
 			</i></p>
 			<p>
         La descripción de la implementación de este lenguaje 
@@ -52,6 +51,19 @@
 			<p>
         Hay ejemplos adicionales y documentación sobre los guiones para Jmol 
 	en la <a href="../docs/">página de documentación</a>.
+      </p>
+      <p>
+      Los ejemplos a continuación se mantienen aquí como referencia, para
+programadores experimentados.
+Ten en cuenta que utilizan la etiqueta <code>applet</code>, que es obsoleta 
+desde HTML 4 y posiblemente deje de funcionar en navegadores modernos cuando
+HTML 5 se convierta en el formato predeterminado. La alternativa recomendada
+es usar en su lugar la etiqueta <code>object</code>, pero esta es delicada de
+implementar porque requiere código diferente para cada navegador.
+Por tanto, <b>se recomienda encarecidamente que hagas tus páginas con 
+miniaplicaciones Jmol utilizando la <a href="../jslibrary">biblioteca Jmol.js</a></b> 
+incluida en las distribuciones de Jmol, dado que ésta se encarga de insertar
+el código apropiado.
       </p>
 		</header>
 		<section title="Vistoso sin javascript">

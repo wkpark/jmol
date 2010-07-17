@@ -8,8 +8,9 @@
 		<title>Scripting JmolApplet Without Using Jmol.js</title>
 		<header>
 			<p><i>
-	Please, note that these methods do not use the Jmol.js library, which is 
-	the currently recommended method to start scripting JmolApplet.
+	Please, note that the methods in this page <b>are not recommended</b>, since they
+	do not use the Jmol.js library. They are kept here for reference, particularly
+	for experienced programmers.
   			</i></p>
 			<p>
         A description of the Jmol implementation of the scripting language
@@ -46,6 +47,16 @@
 			<p>
         For additional examples and documentation on Jmol applet scripting
 	see the <a href="../docs/">documentation page</a>.
+      </p>
+      <p>
+      The following examples are kept for reference by experienced programmers.
+Please, note that they use the <code>applet</code> tag, with is deprecated since 
+HTML 4 and may become nonfunctional in modern browsers when HTML 5 becomes the default.
+The recommended altenative is to use the <code>object</code> tag instead, but this 
+is tricky to implement because it requires different code for each browser. 
+Therefore, it is <b>strongly recommended that you make your pages with JmolApplets 
+using the <a href="../jslibrary">Jmol.js library</a></b> provided with Jmol 
+distributions, since that takes care of inserting the proper code.
       </p>
 		</header>
 		<section title="Eye Candy Without JavaScript">

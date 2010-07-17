@@ -44,7 +44,14 @@
 	<i>Please, note that <a href="../scripting/">these methods</a> are <b>not</b> recommended. 
 	You should use them only if you are	experienced and you know precisely what you need. 
 	Particularly, if you are learning how to use JmolApplet and
-	scripting, you are encouraged to use the JavaScript library only.</i>
+	scripting, you are encouraged to only use the JavaScript library.</i>
+				</p>
+				<p>
+	Do not insert the JmolApplet using the <code>&lt;applet&gt;</code> tag. With older browsers it
+  was possible to put an <code>&lt;applet&gt;</code> tag into the page, so creating an instance of
+  the Jmol applet. With newer browsers, particularly those implementing HTML5,
+  the <code>&lt;applet&gt;</code> tag is deprecated and should not be used.
+  Use the <code>&lt;object&gt;</code> tag instead.
 				</p>
 			</section>
 			<section title="Documentation for Surfaces">

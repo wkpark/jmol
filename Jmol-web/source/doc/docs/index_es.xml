@@ -55,6 +55,14 @@
 	En especial, si estás aprendiendo a usar la miniaplicación Jmol y a escribir 
 	guiones para ella, deberías usar sólo la biblioteca javascript.</i>
 				</p>
+				<p>
+	No insertes la miniaplicación Jmol usando la etiqueta <code>&lt;applet&gt;</code>. Con los
+	navegadores antiguos era posible poner una etiqueta <code>&lt;applet&gt;</code> en una página y 
+	así crear una miniaplicación Jmol. Con los navegadores más modernos, y en
+	particular los que implementan HTML5, la etiqueta <code>&lt;applet&gt;</code> es obsoleta 
+	y no debe usarse.
+	En su lugar, utiliza la etiqueta <code>&lt;object&gt;</code>.
+				</p>
 			</section>
 			<section title="Documentación de superficies">
 				<p>

@@ -195,7 +195,7 @@ public class CartoonRenderer extends RocketsRenderer {
       stepScreen = ring6Screens[2];//was 1
     }
     mad = (short) (thisMad > 1 ? thisMad / 2 : thisMad);
-    g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL,
+    g3d.fillCylinderScreen(Graphics3D.ENDCAPS_SPHERICAL,
                      viewer.scaleToScreen(backboneScreen.z,
                                           mad),
                      backboneScreen, stepScreen);
@@ -206,14 +206,14 @@ public class CartoonRenderer extends RocketsRenderer {
         --ring5Screens[i].z;
     }
     for (int i = 6; --i > 0; )
-      g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 3,
+      g3d.fillCylinderScreen(Graphics3D.ENDCAPS_SPHERICAL, 3,
                        ring6Screens[i], ring6Screens[i - 1]);
     if (hasRing5) {
       for (int i = 5; --i > 0; )
-        g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 3,
+        g3d.fillCylinderScreen(Graphics3D.ENDCAPS_SPHERICAL, 3,
                          ring5Screens[i], ring5Screens[i - 1]);
     } else {
-      g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 3,
+      g3d.fillCylinderScreen(Graphics3D.ENDCAPS_SPHERICAL, 3,
                        ring6Screens[5], ring6Screens[0]);
     }
   }
@@ -231,18 +231,18 @@ public class CartoonRenderer extends RocketsRenderer {
     viewer.transformPoints(ring6Points, ring6Screens);
     renderTriangle(ring6Points);
     mad = (short) (thisMad > 1 ? thisMad / 2 : thisMad);
-    g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 3,
+    g3d.fillCylinderScreen(Graphics3D.ENDCAPS_SPHERICAL, 3,
         ring6Screens[0], ring6Screens[1]);
-    g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 3,
+    g3d.fillCylinderScreen(Graphics3D.ENDCAPS_SPHERICAL, 3,
         ring6Screens[1], ring6Screens[2]);
     g3d.setColix(colixSugarEdge);
-    g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 3,
+    g3d.fillCylinderScreen(Graphics3D.ENDCAPS_SPHERICAL, 3,
         ring6Screens[2], ring6Screens[3]);
     g3d.setColix(colixWatsonCrickEdge);
-    g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 3,
+    g3d.fillCylinderScreen(Graphics3D.ENDCAPS_SPHERICAL, 3,
         ring6Screens[3], ring6Screens[4]);
     g3d.setColix(colixHoogsteenEdge);
-    g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 3,
+    g3d.fillCylinderScreen(Graphics3D.ENDCAPS_SPHERICAL, 3,
         ring6Screens[4], ring6Screens[5]);
    }
 

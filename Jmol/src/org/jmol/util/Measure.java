@@ -272,34 +272,27 @@ final public class Measure {
     a.add(vAC);
   }
 
-  public static void getNormalFromCenter(Point3f ptCenter, Point3f ptA, Point3f ptB,
+  /**
+   * 
+   * @param ptCenter
+   * @param ptA
+   * @param ptB
+   * @param ptC
+   * @param isOutward
+   * @param normal
+   * @return        true if winding is proper; false if not
+   */
+  public static boolean getNormalFromCenter(Point3f ptCenter, Point3f ptA, Point3f ptB,
                             Point3f ptC, boolean isOutward, Vector3f normal) {
     // for Polyhedra
-    Point3f ptT = new Point3f();
-    Point3f ptT2 = new Point3f();
     Vector3f vAB = new Vector3f();
     Vector3f vAC = new Vector3f();
-    calcNormalizedNormal(ptA, ptB, ptC, normal, vAB, vAC);
-    //but which way is it? add N to A and see who is closer to Center, A or N. 
-    ptT.set(ptA);
-    ptT.add(ptB);
-    ptT.add(ptC);
-    ptT.scale(1/3f);
-    ptT2.set(normal);
-    ptT2.scale(0.1f);
-    ptT2.add(ptT);
-    //              A      C         Bob Hanson 2006
-    //                \   /
-    //                 \ / 
-    //                  x pT is center of ABC; ptT2 is offset a bit from that
-    //                  |    either closer to x (ok if not opaque) or further
-    //                  |    from x (ok if opaque)
-    //                  B
-    // in the case of facet ABx, the "center" is really the OTHER point, C.
-    boolean doReverse = (isOutward && ptCenter.distance(ptT2) < ptCenter.distance(ptT)
-        || !isOutward && ptCenter.distance(ptT) < ptCenter.distance(ptT2));
-    if (doReverse)
+    float d = getNormalThroughPoints(ptA, ptB, ptC, normal, vAB, vAC);
+    boolean isReversed = (distanceToPlane(normal, d, ptCenter) > 0);
+    if (isReversed == isOutward)
       normal.scale(-1f);
+    //System.out.println("Draw v vector scale 2.0 " + Escape.escape(ptCenter) + Escape.escape(normal));
+    return !isReversed;
   }
 
   public static void calcXYNormalToLine(Point3f pointA, Point3f pointB,

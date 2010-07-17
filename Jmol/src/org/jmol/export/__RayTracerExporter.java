@@ -48,7 +48,7 @@ abstract class __RayTracerExporter extends ___Exporter {
   
   public __RayTracerExporter() {
     exportType = Graphics3D.EXPORT_RAYTRACER;
-    lineWidth = 2;
+    lineWidthMad = 2;
   }
 
   protected void outputVertex(Point3f pt, Point3f offset) {
@@ -178,7 +178,7 @@ abstract class __RayTracerExporter extends ___Exporter {
     outputCylinderConical(screenA, screenB, radius1, radius2, colix);
   }
 
-  void fillCylinder(short colix, byte endcaps, int diameter, 
+  void fillCylinderScreenMad(short colix, byte endcaps, int diameter, 
                                Point3f screenA, Point3f screenB) {
     float radius = diameter / 2f;
     if (radius == 0)
@@ -200,14 +200,14 @@ abstract class __RayTracerExporter extends ___Exporter {
   void fillCylinderScreen(short colix, byte endcaps, int screenDiameter, Point3f screenA, 
                                  Point3f screenB) {
           // vectors, polyhedra
-    fillCylinder(colix, endcaps, screenDiameter, screenA, screenB);
+    fillCylinderScreenMad(colix, endcaps, screenDiameter, screenA, screenB);
   }
 
   void fillSphere(short colix, int diameter, Point3f pt) {
     outputSphere(pt.x, pt.y, pt.z, diameter / 2f, colix);
   }
   
-  void fillTriangle(short colix, Point3f ptA, Point3f ptB, Point3f ptC) {
+  protected void fillTriangle(short colix, Point3f ptA, Point3f ptB, Point3f ptC, boolean twoSided) {
     outputTriangle(ptA, ptB, ptC, colix);
   }
 

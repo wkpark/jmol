@@ -77,7 +77,7 @@ final public class Export3D implements JmolRendererInterface {
     exportName = type;
     try {
       String name = "org.jmol.export._"
-          + (false && type.equals("Povray") ? "NewPovray" : type) + "Exporter";
+          + type + "Exporter";
       Class exporterClass = Class.forName(name);
       // Class exporterClass =
       // Class.forName("org.jmol.export.NewPovrayExporter");
@@ -442,7 +442,8 @@ final public class Export3D implements JmolRendererInterface {
 
   public void drawLine(short colixA, short colixB, int xA, int yA, int zA,
                        int xB, int yB, int zB) {
-    fillCylinder(colixA, colixB, Graphics3D.ENDCAPS_FLAT, exporter.lineWidth, xA, yA, zA,
+    // line bonds, line backbone, drawTriangle
+    fillCylinder(colixA, colixB, Graphics3D.ENDCAPS_FLAT, exporter.lineWidthMad, xA, yA, zA,
         xB, yB, zB);
   }
 
@@ -450,18 +451,21 @@ final public class Export3D implements JmolRendererInterface {
     // draw quadrilateral and hermite, stars
     ptA.set(pointA.x, pointA.y, pointA.z);
     ptB.set(pointB.x, pointB.y, pointB.z);
-    exporter.fillCylinder(colix, Graphics3D.ENDCAPS_FLAT, exporter.lineWidth, ptA, ptB);
+    exporter.fillCylinderScreenMad(colix, Graphics3D.ENDCAPS_FLAT, exporter.lineWidthMad, ptA, ptB);
   }
 
   public void drawBond(Atom atomA, Atom atomB, short colixA, short colixB,
-                       byte endcaps, short diameter) {
+                       byte endcaps, short mad) {
     // from SticksRenderer to allow for a direct
-    // writing of single bonds -- just for efficiency here - bondOrder == -1
-    exporter.drawCylinder(atomA, atomB, colixA, colixB, endcaps, diameter, -1);
+    // writing of single bonds -- just for efficiency here 
+    // bondOrder == -1 indicates we have cartesian coordinates
+    if (mad == 1)
+      mad = exporter.lineWidthMad;
+    exporter.drawCylinder(atomA, atomB, colixA, colixB, endcaps, mad, -1);
   }
 
   public void fillCylinder(short colixA, short colixB, byte endcaps,
-                                 int diameter, int xA, int yA, int zA, int xB,
+                                 int mad, int xA, int yA, int zA, int xB,
                                  int yB, int zB) {
     /*
      * from drawLine, Sticks, fillCylinder, backbone
@@ -469,7 +473,8 @@ final public class Export3D implements JmolRendererInterface {
      */
     ptA.set(xA, yA, zA);
     ptB.set(xB, yB, zB);
-    exporter.drawCylinder(ptA, ptB, colixA, colixB, endcaps, diameter, 1);
+    // bond order 1 here indicates that we have screen coordinates
+    exporter.drawCylinder(ptA, ptB, colixA, colixB, endcaps, mad, 1);
   }
 
   public void fillCylinderScreen(byte endcaps, int screenDiameter, int xA, int yA, int zA,
@@ -495,14 +500,14 @@ final public class Export3D implements JmolRendererInterface {
       return;
     ptA.set(pointA.x, pointA.y, pointA.z);
     ptB.set(pointB.x, pointB.y, pointB.z);
-    exporter.fillCylinder(colix, endcaps, diameter, ptA, ptB);
+    exporter.fillCylinderScreenMad(colix, endcaps, diameter, ptA, ptB);
   }
 
   public void fillCylinderBits(byte endcaps, int diameter, Point3f pointA,
                                Point3f pointB) {
     if (diameter <= 0)
       return;
-    exporter.fillCylinder(colix, endcaps, diameter, pointA,
+    exporter.fillCylinderScreenMad(colix, endcaps, diameter, pointA,
         pointB);
   }
 
@@ -592,31 +597,31 @@ final public class Export3D implements JmolRendererInterface {
     ptA.set(pointA.x, pointA.y, pointA.z);
     ptB.set(pointB.x, pointB.y, pointB.z);
     ptC.set(pointC.x, pointC.y, pointC.z);
-    exporter.fillTriangle(colixA, ptA, ptB, ptC);
+    exporter.fillTriangle(colixA, ptA, ptB, ptC, false);
   }
 
-  public void fillTriangle(short normix, int xpointA, int ypointA, int zpointA,
+  public void fillTriangleTwoSided(short normix, int xpointA, int ypointA, int zpointA,
                            int xpointB, int ypointB, int zpointB, int xpointC,
                            int ypointC, int zpointC) {
     // polyhedra
     ptA.set(xpointA, ypointA, zpointA);
     ptB.set(xpointB, ypointB, zpointB);
     ptC.set(xpointC, ypointC, zpointC);
-    exporter.fillTriangle(colix, ptA, ptB, ptC);
+    exporter.fillTriangle(colix, ptA, ptB, ptC, true);
   }
 
   public void fillTriangle(Point3f pointA, Point3f pointB, Point3f pointC) {
     // rockets
-    exporter.fillTriangle(colix, pointA, pointB, pointC);
+    exporter.fillTriangle(colix, pointA, pointB, pointC, false);
   }
 
   public void fillTriangle(Point3i pointA, Point3i pointB, Point3i pointC) {
-    // cartoon, hermite
+    // cartoon only, for nucleic acid bases
 
     ptA.set(pointA.x, pointA.y, pointA.z);
     ptB.set(pointB.x, pointB.y, pointB.z);
     ptC.set(pointC.x, pointC.y, pointC.z);
-    exporter.fillTriangle(colix, ptA, ptB, ptC);
+    exporter.fillTriangle(colix, ptA, ptB, ptC, true);
   }
 
   public void fillTriangle(Point3i pointA, short colixA, short normixA,
@@ -646,8 +651,8 @@ final public class Export3D implements JmolRendererInterface {
   public void fillQuadrilateral(Point3f pointA, Point3f pointB, Point3f pointC,
                                 Point3f pointD) {
     // hermite, rockets, cartoons
-    exporter.fillTriangle(colix, pointA, pointB, pointC);
-    exporter.fillTriangle(colix, pointA, pointC, pointD);
+    exporter.fillTriangle(colix, pointA, pointB, pointC, false);
+    exporter.fillTriangle(colix, pointA, pointC, pointD, false);
   }
 
   public void fillQuadrilateral(Point3i pointA, short colixA, short normixA,

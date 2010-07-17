@@ -100,6 +100,6 @@ public class PolyhedraRenderer extends ShapeRenderer {
   }
 
   private void fillFace(short normix, Point3i A, Point3i B, Point3i C) {
-    g3d.fillTriangle(normix, A.x, A.y, A.z, B.x, B.y, B.z, C.x, C.y, C.z);
+    g3d.fillTriangleTwoSided(normix, A.x, A.y, A.z, B.x, B.y, B.z, C.x, C.y, C.z);
   }
 }

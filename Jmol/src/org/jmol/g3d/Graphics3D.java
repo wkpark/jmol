@@ -1356,7 +1356,7 @@ final public class Graphics3D implements JmolRendererInterface {
     triangle3d.fillTriangle(screenA, screenB, screenC, useGouraud);
   }
 
-  public void fillTriangle(short normix,
+  public void fillTriangleTwoSided(short normix,
                            int xScreenA, int yScreenA, int zScreenA,
                            int xScreenB, int yScreenB, int zScreenB,
                            int xScreenC, int yScreenC, int zScreenC) {

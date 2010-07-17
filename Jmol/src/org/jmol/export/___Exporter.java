@@ -494,7 +494,7 @@ public abstract class ___Exporter {
   abstract void drawCylinder(Point3f atom1, Point3f atom2, short colix1, short colix2,
                              byte endcaps, int madBond, int bondOrder);
 
-  abstract void fillCylinder(short colix, byte endcaps, int diameter, 
+  abstract void fillCylinderScreenMad(short colix, byte endcaps, int diameter, 
                                         Point3f screenA, Point3f screenB);
 
   abstract void fillCylinderScreen(short colix, byte endcaps, int screenDiameter, 
@@ -515,13 +515,13 @@ public abstract class ___Exporter {
   //rockets:
   abstract void fillSphere(short colix, int diameter, Point3f pt);
   
-  //cartoons, rockets:
-  abstract void fillTriangle(short colix, Point3f ptA, Point3f ptB, Point3f ptC);
+  //cartoons, rockets, polyhedra:
+  protected abstract void fillTriangle(short colix, Point3f ptA, Point3f ptB, Point3f ptC, boolean twoSided);
   
   
   private int nText;
   private int nImage;
-  public int lineWidth;
+  public short lineWidthMad;
 
   void plotImage(int x, int y, int z, Image image, short bgcolix, int width,
                  int height) {

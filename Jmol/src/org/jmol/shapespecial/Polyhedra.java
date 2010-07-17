@@ -51,7 +51,7 @@ public class Polyhedra extends AtomShape {
   final static int EDGES_FRONT = 2;
   private final static int MAX_VERTICES = 150;
   private final static int FACE_COUNT_MAX = MAX_VERTICES - 3;
-  private Point3f[] otherAtoms = new Point3f[MAX_VERTICES];
+  private Point3f[] otherAtoms = new Point3f[MAX_VERTICES + 1];
 
   int polyhedronCount;
   Polyhedron[] polyhedrons = new Polyhedron[32];
@@ -330,8 +330,7 @@ public class Polyhedra extends AtomShape {
     float dAverage = 0;
 
     Point3f[] points = new Point3f[MAX_VERTICES * 3];
-    points[ptCenter] = centralAtom;
-    otherAtoms[ptCenter] = centralAtom;
+    points[ptCenter] = otherAtoms[ptCenter] = centralAtom;
     for (int i = 0; i < ptCenter; i++) {
       points[i] = otherAtoms[i];
       dAverage += points[ptCenter].distance(points[i]);
@@ -427,68 +426,70 @@ public class Polyhedra extends AtomShape {
                 + MAX_VERTICES + ") -- reduce RADIUS");
             return null;
           }
-          boolean isFaceCentered = (faceCatalog.indexOf(faceId(i, j, k)) >= 0);
+          boolean isFlat = (faceCatalog.indexOf(faceId(i, j, k)) >= 0);
           // if center is on the face, then we need a different point to 
           // define the normal
-          if (isFaceCentered)
+          System.out.println("# polyhedra\n");
+          boolean isWindingOK = 
+            (isFlat ?
             Measure.getNormalFromCenter(randomPoint, points[i], points[j],
-                points[k], false, normal);
-          else
+                points[k], false, normal) :
             Measure.getNormalFromCenter(points[ptCenter], points[i],
-                points[j], points[k], true, normal);
-          normal.scale(isCollapsed && !isFaceCentered ? faceCenterOffset
+                points[j], points[k], true, normal)
+                );
+          normal.scale(isCollapsed && !isFlat ? faceCenterOffset
               : 0.001f);
           int nRef = nPoints;
           ptRef.set(points[ptCenter]);
-          if (isCollapsed && !isFaceCentered) {
+          if (isCollapsed && !isFlat) {
             points[nPoints] = new Point3f(points[ptCenter]);
             points[nPoints].add(normal);
             otherAtoms[nPoints] = points[nPoints];
-          } else if (isFaceCentered) {
+          } else if (isFlat) {
             ptRef.sub(normal);
             nRef = ptCenter;
           }
           String facet;
           facet = faceId(i, j, -1);
-          if (isCollapsed || isFaceCentered && facetCatalog.indexOf(facet) < 0) {
+          if (isCollapsed || isFlat && facetCatalog.indexOf(facet) < 0) {
             facetCatalog += facet;
-            planesT[ipt++] = (byte) i;
-            planesT[ipt++] = (byte) j;
+            planesT[ipt++] = (byte) (isWindingOK ? i : j);
+            planesT[ipt++] = (byte) (isWindingOK ? j : i);
             planesT[ipt++] = (byte) nRef;
             Measure.getNormalFromCenter(points[k], points[i], points[j],
                 ptRef, false, normal);
-            normixesT[planeCount++] = (isFaceCentered ? Graphics3D
+            normixesT[planeCount++] = (isFlat ? Graphics3D
                 .get2SidedNormix(normal, bsTemp) : Graphics3D.getNormix(normal, bsTemp));
           }
           facet = faceId(i, k, -1);
-          if (isCollapsed || isFaceCentered && facetCatalog.indexOf(facet) < 0) {
+          if (isCollapsed || isFlat && facetCatalog.indexOf(facet) < 0) {
             facetCatalog += facet;
-            planesT[ipt++] = (byte) i;
+            planesT[ipt++] = (byte) (isWindingOK ? i : k);
             planesT[ipt++] = (byte) nRef;
-            planesT[ipt++] = (byte) k;
+            planesT[ipt++] = (byte) (isWindingOK ? k : i);
             Measure.getNormalFromCenter(points[j], points[i], ptRef,
                 points[k], false, normal);
-            normixesT[planeCount++] = (isFaceCentered ? Graphics3D
+            normixesT[planeCount++] = (isFlat ? Graphics3D
                 .get2SidedNormix(normal, bsTemp) : Graphics3D.getNormix(normal, bsTemp));
           }
           facet = faceId(j, k, -1);
-          if (isCollapsed || isFaceCentered && facetCatalog.indexOf(facet) < 0) {
+          if (isCollapsed || isFlat && facetCatalog.indexOf(facet) < 0) {
             facetCatalog += facet;
             planesT[ipt++] = (byte) nRef;
-            planesT[ipt++] = (byte) j;
-            planesT[ipt++] = (byte) k;
+            planesT[ipt++] = (byte) (isWindingOK ? j : k);
+            planesT[ipt++] = (byte) (isWindingOK ? k : j);
             Measure.getNormalFromCenter(points[i], ptRef, points[j],
                 points[k], false, normal);
-            normixesT[planeCount++] = (isFaceCentered ? Graphics3D
+            normixesT[planeCount++] = (isFlat ? Graphics3D
                 .get2SidedNormix(normal, bsTemp) : Graphics3D.getNormix(normal, bsTemp));
           }
-          if (!isFaceCentered) {
+          if (!isFlat) {
             if (isCollapsed) {
               nPoints++;
             } else {
               // finally, the standard face:
-              planesT[ipt++] = (byte) i;
-              planesT[ipt++] = (byte) j;
+              planesT[ipt++] = (byte) (isWindingOK ? i : j);
+              planesT[ipt++] = (byte) (isWindingOK ? j : i);
               planesT[ipt++] = (byte) k;
               normixesT[planeCount++] = Graphics3D.getNormix(normal, bsTemp);
             }
@@ -501,7 +502,7 @@ public class Polyhedra extends AtomShape {
   }
 
   private String faceId(int i, int j, int k) {
-    return "" + (new Point3i(i, j, k));
+    return (new Point3i(i, j, k)).toString();
   }
 
   private Vector3f align1 = new Vector3f();

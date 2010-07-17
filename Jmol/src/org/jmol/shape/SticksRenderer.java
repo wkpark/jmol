@@ -141,7 +141,7 @@ public class SticksRenderer extends ShapeRenderer {
     if (renderWireframe && width > 0)
       width = 1;
     lineBond = (width <= 1);
-    if (lineBond && (isAntialiased || exportType != Graphics3D.EXPORT_NOT)) {
+    if (lineBond && (isAntialiased)) {
       width = 3;
       lineBond = false;
     }

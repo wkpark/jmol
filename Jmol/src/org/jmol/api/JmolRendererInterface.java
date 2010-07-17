@@ -252,7 +252,7 @@ public interface JmolRendererInterface {
                                     Point3i screenC, short colixC, short normixC);
 
   // polyhedra
-  public abstract void fillTriangle(short normix, int xScreenA, int yScreenA,
+  public abstract void fillTriangleTwoSided(short normix, int xScreenA, int yScreenA,
                                     int zScreenA, int xScreenB, int yScreenB,
                                     int zScreenB, int xScreenC, int yScreenC,
                                     int zScreenC);

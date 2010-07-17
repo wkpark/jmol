@@ -48,10 +48,10 @@ abstract public class __CartesianExporter extends ___Exporter {
 
   public __CartesianExporter() {
     exportType = Graphics3D.EXPORT_CARTESIAN;
-    lineWidth = 50;
+    lineWidthMad = 100;
   }
 
-  private void untransformData(Point3f ptA, Point3f ptB,
+  private void setTempPoints(Point3f ptA, Point3f ptB,
                                 boolean isCartesian) {
     if (isCartesian) {
       // really first order -- but actual coord
@@ -166,7 +166,7 @@ abstract public class __CartesianExporter extends ___Exporter {
 
   void drawCylinder(Point3f ptA, Point3f ptB, short colix1, short colix2,
                     byte endcaps, int mad, int bondOrder) {
-    untransformData(ptA, ptB, bondOrder == -1);
+    setTempPoints(ptA, ptB, bondOrder == -1);
     float radius = mad / 2000f;
     if (colix1 == colix2) {
       outputCylinder(tempP1, tempP2, colix1, endcaps, radius);
@@ -184,10 +184,10 @@ abstract public class __CartesianExporter extends ___Exporter {
     }
   }
 
-  void fillCylinder(short colix, byte endcaps, int mad,
+  void fillCylinderScreenMad(short colix, byte endcaps, int mad,
                     Point3f screenA, Point3f screenB) {
     float radius = mad / 2000f;
-    untransformData(screenA, screenB, false);
+    setTempPoints(screenA, screenB, false);
     outputCylinder(tempP1, tempP2, colix, endcaps, radius);
   }
 
@@ -195,7 +195,7 @@ abstract public class __CartesianExporter extends ___Exporter {
                           Point3f screenB) {
    // vectors, polyhedra
   int mad = (int) (viewer.unscaleToScreen((screenA.z + screenB.z) / 2, screenDiameter) * 1000);
-  fillCylinder(colix, endcaps, mad, screenA, screenB);
+  fillCylinderScreenMad(colix, endcaps, mad, screenA, screenB);
   }
 
   void fillEllipsoid(Point3f center, Point3f[] points, short colix, int x,
@@ -210,11 +210,13 @@ abstract public class __CartesianExporter extends ___Exporter {
         colix);
   }
 
-  void fillTriangle(short colix, Point3f ptA, Point3f ptB, Point3f ptC) {
+  protected void fillTriangle(short colix, Point3f ptA, Point3f ptB, Point3f ptC, boolean twoSided) {
     viewer.unTransformPoint(ptA, tempP1);
     viewer.unTransformPoint(ptB, tempP2);
     viewer.unTransformPoint(ptC, tempP3);
     outputTriangle(tempP1, tempP2, tempP3, colix);
+    if (twoSided)
+      outputTriangle(tempP1, tempP3, tempP2, colix);
   }
 
   void plotImage(int x, int y, int z, Image image, short bgcolix, int width,

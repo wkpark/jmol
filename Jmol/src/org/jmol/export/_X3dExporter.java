@@ -41,7 +41,6 @@ import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.util.Escape;
 import org.jmol.util.Quaternion;
-import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
 
 public class _X3dExporter extends _VrmlExporter {
@@ -71,27 +70,16 @@ public class _X3dExporter extends _VrmlExporter {
     output("<Background skyColor='" 
       + rgbFractionalFromColix(backgroundColix, ' ') + "'/>\n");
     // next is an approximation only 
-    getViewpointPosition(tempP1);
-    adjustViewpointPosition(tempP1);
-    float angle = getFieldOfView();
+    float angle = (float) (aperatureAngle * Math.PI / 180);
     viewer.getAxisAngle(viewpoint);
     output("<Viewpoint fieldOfView='" + angle
-      + "' position='" + tempP1.x + " " + tempP1.y + " " + tempP1.z 
+      + "' position='" + round(cameraPosition)
       + "' orientation='" + viewpoint.x + " " + viewpoint.y + " " 
       + (viewpoint.angle == 0 ? 1 : viewpoint.z) + " " + -viewpoint.angle
       + "'\n jump='TRUE' description='v1'/>\n");
-    output("\n  <!-- Jmol perspective:\n");
-    output("  scalePixelsPerAngstrom: " + viewer.getScalePixelsPerAngstrom(false) + "\n");
-    output("  cameraDepth: " + viewer.getCameraDepth() + "\n");
-    output("  center: " + center + "\n");
-    output("  rotationRadius: " + viewer.getRotationRadius() + "\n");
-    output("  boundboxCenter: " + viewer.getBoundBoxCenter() + "\n");
-    output("  translationOffset: " + viewer.getTranslationScript() + "\n");
-    output("  zoom: " + viewer.getZoomPercentFloat() + "\n");
-    output("  moveto command: " + viewer.getOrientationText(Token.moveto, null) + "\n");
-    output("  screen width height dim: " + screenWidth + " " + screenHeight + " " 
-      + viewer.getScreenDim() 
-      + "\n  -->\n\n");
+    output("\n  <!-- ");
+    output(getJmolPerspective());
+    output("\n  -->\n\n");
 
     output("<Transform translation='");
     tempP1.set(center);
@@ -177,10 +165,6 @@ public class _X3dExporter extends _VrmlExporter {
     }
     output("</Billboard>\n");
     output("</Transform>\n");
-  }
-
-  protected void outputComment(String comment) {
-    // ignore
   }
 
   protected void outputCone(Point3f ptBase, Point3f ptTip, float radius,

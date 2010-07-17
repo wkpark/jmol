@@ -49,6 +49,10 @@ public class _TachyonExporter extends __RayTracerExporter {
   String phong;
   
   UseTable textures = new UseTable(" ");
+  
+  public _TachyonExporter() {
+    commentChar = "# ";
+  }
  
   boolean initializeOutput(Viewer viewer, Graphics3D g3d, Object output) {
     //wasPerspectiveDepth = viewer.getPerspectiveDepth();
@@ -86,7 +90,7 @@ public class _TachyonExporter extends __RayTracerExporter {
     output("#\n");
     output("# ******************************************************\n");
     output("\n");
-    outputJmolPerspective();
+    output(getJmolPerspective());
     output("\n");
     output("Begin_Scene\n");
     output("Resolution " + screenWidth + " " + screenHeight + "\n");
@@ -180,12 +184,6 @@ public class _TachyonExporter extends __RayTracerExporter {
     output(" Inner " + round((doFill ? 0 : radius * 0.95)));
     output(" Outer " + round(radius));
     outputTextureCode();
-  }
-
-  protected void outputComment(String comment) {
-    output("# ");
-    output(comment);
-    output("\n");
   }
 
   protected void outputCone(Point3f screenBase, Point3f screenTip, float radius,

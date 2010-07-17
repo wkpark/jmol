@@ -56,6 +56,8 @@ abstract class TransformManager {
   protected int perspectiveModel = DEFAULT_PERSPECTIVE_MODEL;
   protected float cameraScaleFactor;
   protected float referencePlaneOffset;
+  protected float aperatureAngle;
+  protected float cameraDistanceFromCenter;
   protected float modelCenterOffset;
   protected float modelRadius;
   protected float modelRadiusPixels;
@@ -1143,6 +1145,58 @@ abstract class TransformManager {
   protected float visualRange; // set in stateManager to 5f;
   protected float cameraDistance = 1000f; // prevent divide by zero on startup
 
+  /**
+   * This method returns data needed by the VRML, X3D, and IDTF/U3D exporters
+   * It also should serve as a valuable resource for anyone adapting Jmol and 
+   * wanting to know how the Jmol 11+ camera business works. 
+   * 
+   * @return a set of camera data
+   */
+  Point3f[] getCameraFactors() {
+    aperatureAngle = (float) (Math.atan2(screenPixelCount / 2f,
+        referencePlaneOffset) * 2 * 180 / Math.PI);
+    cameraDistanceFromCenter = referencePlaneOffset / scalePixelsPerAngstrom;
+    
+    Point3f ptRef = new Point3f(screenWidth / 2, screenHeight / 2,
+        referencePlaneOffset);
+    unTransformPoint(ptRef, ptRef);
+
+    // NOTE: Camera position will be approximate.
+    // when the model has been shifted with CTRL-ALT
+    // the center of distortion is not the screen center.
+    // The simpler perspective model in VRML and U3D 
+    // doesn't allow for that. (of course, one could argue,
+    // that's because they are more REALISTIC). We do it
+    // this way so that visual metrics in the model are preserved 
+    // when the model is shifted using CTRL-ALT, and it was found
+    // that if you didn't do that, moving the model was very odd
+    // in that a fish-eye distortion was present as you moved it.
+    
+    // note that navigation mode should be EXACTLY reproduced
+    // in these renderers. 
+    
+    
+    Point3f ptCamera = new Point3f(screenWidth / 2, screenHeight / 2, 0);
+    viewer.unTransformPoint(ptCamera, ptCamera);
+    ptCamera.sub(fixedRotationCenter);
+    Point3f pt = new Point3f(screenWidth / 2, screenHeight / 2, cameraDistanceFromCenter * scalePixelsPerAngstrom);
+    viewer.unTransformPoint(pt, pt);
+    pt.sub(fixedRotationCenter);
+    ptCamera.add(pt);
+/*
+    System.out.println("TM no " + navigationOffset + " rpo "
+        + referencePlaneOffset + " aa " + aperatureAngle + " sppa "
+        + scalePixelsPerAngstrom + " vr " + visualRange + " sw/vr "
+        + screenWidth / visualRange + " " + ptRef + " " + fixedRotationCenter);
+*/    
+    return new Point3f[] {
+        ptRef,
+        ptCamera,
+        fixedRotationCenter,
+        new Point3f(cameraDistanceFromCenter, aperatureAngle,
+            scalePixelsPerAngstrom) };
+  }
+  
   int getFrontPlane() {
     return (int) cameraDistance;
   }
@@ -1879,10 +1933,13 @@ abstract class TransformManager {
   }
 
   Quaternion getRotationQuaternion() {
+    return new Quaternion(matrixRotate);
+    /*
     axisangleT.set(matrixRotate);
     float degrees = (float) (axisangleT.angle * degreesPerRadian);
     vectorT.set(axisangleT.x, axisangleT.y, axisangleT.z);
     return new Quaternion(vectorT, degrees);
+    */
   }
   
   String getRotationText() {

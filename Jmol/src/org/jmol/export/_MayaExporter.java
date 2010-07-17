@@ -35,6 +35,10 @@ import javax.vecmath.Vector3f;
 
 
 public class _MayaExporter extends __CartesianExporter {
+  
+  public _MayaExporter() {
+    commentChar = "// ";
+  }
 
   /*
    * The Maya exporter was the first exporter -- really very crude
@@ -175,10 +179,6 @@ public class _MayaExporter extends __CartesianExporter {
                               short colix, boolean doFill) {
     // TODO
     
-  }
-
-  protected void outputComment(String comment) {
-    output("// " + comment + "/n");
   }
 
   protected void outputCone(Point3f ptBase, Point3f ptTip, float radius,

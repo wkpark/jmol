@@ -155,6 +155,14 @@ public abstract class ___Exporter {
   protected int slabZ;
   protected int depthZ;
   protected Point3f lightSource = Graphics3D.getLightSource();
+  protected Point3f fixedRotationCenter;
+  protected Point3f referenceCenter;
+  protected Point3f cameraPosition;
+  protected float cameraDistance;
+  protected float aperatureAngle;
+  protected float scalePixelsPerAngstrom;
+
+
 
   // Most exporters (Maya, X3D, VRML, IDTF) 
   // can manipulate actual 3D data.
@@ -199,6 +207,13 @@ public abstract class ___Exporter {
     }
     slabZ = g3d.getSlab();
     depthZ = g3d.getDepth();
+    Point3f[] cameraFactors = viewer.getCameraFactors();
+    referenceCenter = cameraFactors[0];
+    cameraPosition = cameraFactors[1];
+    fixedRotationCenter = cameraFactors[2];
+    cameraDistance = cameraFactors[3].x;
+    aperatureAngle = cameraFactors[3].y;
+    scalePixelsPerAngstrom = cameraFactors[3].z;
     isToFile = (output instanceof String);
     if (isToFile) {
       fileName = (String) output;
@@ -238,7 +253,11 @@ public abstract class ___Exporter {
     }
   }
 
-  abstract protected void outputComment(String comment);
+  protected void outputComment(String comment) {
+    if (commentChar != null)
+      output(commentChar + comment + "\n");
+  }
+  
 
   protected static void setTempVertex(Point3f pt, Point3f offset, Point3f ptTemp) {
     ptTemp.set(pt);
@@ -263,19 +282,28 @@ public abstract class ___Exporter {
   abstract protected void output(Tuple3f pt);
 
   protected void outputJmolPerspective() {
-    outputComment("Jmol perspective:");
-    outputComment("screen width height dim: " + screenWidth + " " + screenHeight + " " + viewer.getScreenDim());
-    outputComment("scalePixelsPerAngstrom: " + viewer.getScalePixelsPerAngstrom(false));
-    outputComment("perspectiveDepth: " + viewer.getPerspectiveDepth());
-    outputComment("cameraDepth: " + viewer.getCameraDepth());
-    outputComment("light source: " + lightSource);
-    outputComment("lighting: " + viewer.getSpecularState().replace('\n', ' '));
-    outputComment("center: " + center);
-    outputComment("rotationRadius: " + viewer.getRotationRadius());
-    outputComment("boundboxCenter: " + viewer.getBoundBoxCenter());
-    outputComment("translationOffset: " + viewer.getTranslationScript());
-    outputComment("zoom: " + viewer.getZoomPercentFloat());
-    outputComment("moveto command: " + viewer.getOrientationText(Token.moveto, null));
+    outputComment(getJmolPerspective());
+  }
+
+  protected String commentChar;
+  protected String getJmolPerspective() {
+    StringBuffer sb = new StringBuffer();
+    sb.append(commentChar).append("Jmol perspective:");
+    sb.append("\n").append(commentChar).append("screen width height dim: " + screenWidth + " " + screenHeight + " " + viewer.getScreenDim());
+    sb.append("\n").append(commentChar).append("perspectiveDepth: " + viewer.getPerspectiveDepth());
+    sb.append("\n").append(commentChar).append("cameraDistance(angstroms): " + cameraDistance);
+    sb.append("\n").append(commentChar).append("aperatureAngle(degrees): " + aperatureAngle);
+    sb.append("\n").append(commentChar).append("scalePixelsPerAngstrom: " + scalePixelsPerAngstrom);
+    sb.append("\n").append(commentChar).append("light source: " + lightSource);
+    sb.append("\n").append(commentChar).append("lighting: " + viewer.getSpecularState().replace('\n', ' '));
+    sb.append("\n").append(commentChar).append("center: " + center);
+    sb.append("\n").append(commentChar).append("rotationRadius: " + viewer.getRotationRadius());
+    sb.append("\n").append(commentChar).append("boundboxCenter: " + viewer.getBoundBoxCenter());
+    sb.append("\n").append(commentChar).append("translationOffset: " + viewer.getTranslationScript());
+    sb.append("\n").append(commentChar).append("zoom: " + viewer.getZoomPercentFloat());
+    sb.append("\n").append(commentChar).append("moveto command: " + viewer.getOrientationText(Token.moveto, null));
+    sb.append("\n");
+    return sb.toString();
   }
 
   protected void outputFooter() {
@@ -299,32 +327,6 @@ public abstract class ___Exporter {
 
   protected static String getExportDate() {
     return new SimpleDateFormat("yyyy-MM-dd', 'HH:mm").format(new Date());
-  }
-
-  protected float getFieldOfView() {
-    float zoffset = (viewer.getCameraDepth()+ 0.5f);
-    return (float) (2 * Math.atan(0.5 / zoffset));
-  }
-
-  protected void getViewpointPosition(Point3f ptAtom) {
-    tempP3.set(screenWidth / 2, screenHeight / 2, 0);
-    viewer.unTransformPoint(tempP3, ptAtom);
-    ptAtom.sub(center);
-  }
-
-  protected void adjustViewpointPosition(Point3f ptAtom) {
-    // this is NOT QUITE correct
-    float zoffset = (viewer.getCameraDepth()+ 0.5f);
-    float scalePixelsPerAngstrom = viewer.getScalePixelsPerAngstrom(false);
-    float rotationRadius = viewer.getRotationRadius();
-    float scale = viewer.getZoomPercentFloat() / 100f;
-    float z0 = zoffset * 2 * rotationRadius * scalePixelsPerAngstrom / scale;
-    //float offsetx = 0.5f + viewer.getTranslationXPercent() / 100f;
-    //float offsety = 0.5f + viewer.getTranslationYPercent() / 100f;
-    tempP3.set(screenWidth / 2, screenHeight / 2, z0);
-    viewer.unTransformPoint(tempP3, tempP3);
-    tempP3.sub(center);
-    ptAtom.add(tempP3);
   }
 
   protected String rgbFractionalFromColix(short colix, char sep) {

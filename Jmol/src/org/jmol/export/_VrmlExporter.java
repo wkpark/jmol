@@ -51,9 +51,8 @@ public class _VrmlExporter extends __CartesianExporter {
 
   public _VrmlExporter() {
     useTable = new UseTable("USE ");
+    commentChar = "# ";
   }
-  
-  protected AxisAngle4f viewpoint = new AxisAngle4f();
   
   protected void output(Tuple3f pt) {
     output(round(pt));
@@ -75,16 +74,14 @@ public class _VrmlExporter extends __CartesianExporter {
     // puts the viewer into model-rotation mode
     output("Background { skyColor ["
         + rgbFractionalFromColix(backgroundColix, ' ') + "] } \n");
-    // next is an approximation only 
-    getViewpointPosition(tempP1);
-    adjustViewpointPosition(tempP1);
-    float angle = getFieldOfView();
+    // next is an approximation only
+    float angle = (float) (aperatureAngle * Math.PI / 180);
     viewer.getAxisAngle(viewpoint);
     output("Viewpoint{fieldOfView " + angle 
-        + " position " + tempP1.x + " " + tempP1.y + " " + tempP1.z 
+        + " position " + cameraPosition.x + " " + cameraPosition.y + " " + cameraPosition.z 
         + " orientation " + viewpoint.x + " " + viewpoint.y + " " + (viewpoint.angle == 0 ? 1 : viewpoint.z) + " " + -viewpoint.angle);
     output("\n jump TRUE description \"v1\"\n}\n\n");
-    outputJmolPerspective();
+    output(getJmolPerspective());
     output("\nTransform{children Transform{translation ");
     tempP1.set(center);
     tempP1.scale(-1);
@@ -165,10 +162,6 @@ public class _VrmlExporter extends __CartesianExporter {
     output("}\n");
   }
 
-  protected void outputComment(String comment) {
-    output("# " + comment + "\n");
-  }
-  
   protected void outputCone(Point3f ptBase, Point3f ptTip, float radius,
                             short colix) {
     float height = tempP1.distance(tempP2);

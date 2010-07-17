@@ -163,6 +163,7 @@ class TransformManager11 extends TransformManager {
     // zoom setting
     zoomPercent = (zoomFactor == 0 ? MAXIMUM_ZOOM_PERSPECTIVE_DEPTH : offset100
         / modelCenterOffset * 100);
+    
   }
 
   protected float getPerspectiveFactor(float z) {

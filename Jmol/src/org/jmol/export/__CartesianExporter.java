@@ -30,6 +30,7 @@ import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
@@ -49,6 +50,49 @@ abstract public class __CartesianExporter extends ___Exporter {
   public __CartesianExporter() {
     exportType = Graphics3D.EXPORT_CARTESIAN;
     lineWidthMad = 100;
+  }
+
+  protected AxisAngle4f viewpoint = new AxisAngle4f();
+
+  protected Point3f getModelCenter() {
+    // "center" is the center of rotation, not
+    // necessary the screen center or the center of the model. 
+    // When the user uses ALT-CTRL-drag, Jmol is applying an 
+    // XY screen translation AFTER the matrix transformation. 
+    // Apparently, that's unusual in this business. 
+    // (The rotation center is generally directly
+    // in front of the observer -- not allowing, for example,
+    // holding the model in one's hand at waist level and rotating it.)
+    
+    // But there are good reasons to do it the Jmol way. If you don't, then
+    // what happens is that the distortion pans over the moving model
+    // and you get an odd lens effect rather than the desired smooth
+    // panning. So we must approximate.
+    
+    return referenceCenter;
+  }
+  
+  protected Point3f getCameraPosition() {
+    
+    // used for VRML/X3D only
+    
+    Point3f ptCamera = new Point3f();
+    Point3f pt = new Point3f(screenWidth / 2, screenHeight / 2, 0);
+    viewer.unTransformPoint(pt, ptCamera);
+    ptCamera.sub(center);
+    // this is NOT QUITE correct when the model has been shifted with CTRL-ALT
+    // because in that case the center of distortion is not the screen center,
+    // and these simpler perspective models don't allow for that.
+    tempP3.set(screenWidth / 2, screenHeight / 2, cameraDistance * scalePixelsPerAngstrom);
+    viewer.unTransformPoint(tempP3, tempP3);
+    tempP3.sub(center);
+    ptCamera.add(tempP3);
+    
+    System.out.println(ptCamera +  " " + cameraPosition);
+  //  return ptCamera;
+    
+    return cameraPosition;
+   
   }
 
   private void setTempPoints(Point3f ptA, Point3f ptB,

@@ -49,6 +49,11 @@ import org.jmol.viewer.Viewer;
 
 public class _IdtfExporter extends __CartesianExporter {
 
+  
+  public _IdtfExporter() {
+    commentChar = "% ";
+  }
+  
   /*
    * by Bob Hanson 8/6/2009 -- preliminary only -- needs testing
    * 
@@ -60,7 +65,14 @@ public class _IdtfExporter extends __CartesianExporter {
    * 
    * IDTFConverter.exe -input t.idtf -output t.u3d
    * 
-   * see http://sourceforge.net/projects/u3d/
+   * At this point, you have a file that can be inserted into a PDF file
+   * using pdfLatex and the movie15 option. See the Jmol wiki for details.
+   * 
+   * see also http://www.ctan.org/tex-archive/macros/latex/contrib/movie15/doc/movie15.pdf
+   * 
+   * 
+   * 
+   * for lurid details, see http://sourceforge.net/projects/u3d/
    * 
    *   especially http://u3d.svn.sourceforge.net/viewvc/u3d/trunk/Docs/IntermediateFormat/IDTF%20Format%20Description.pdf
    *   and in the downloadable zip file, see Bin/Win32/Release/IDTFConverter.exe
@@ -71,6 +83,41 @@ public class _IdtfExporter extends __CartesianExporter {
    * for the complete Windows package, see also http://chemapps.stolaf.edu/jmol/docs/misc/idtf.zip
    * 
    * Development comment:
+   * 
+   * MANY thanks to Arie van der Lee avderlee@univ-montp2.fr for 
+   * introducing me to MikTeX and pdfLatex, which allow reasonably simple
+   * introduction of U3D files into PDF documents. 
+   * 
+   * This solved the problems listed below; still to do is to 
+   * figure out how to do directional lighting that does not move with the model.
+   * 
+   * It turns out the solution is to rotate and shift the model to the desired
+   * center-screen point and simply not worry about the fact that Jmol can do 
+   * more than just rotate the model at the screen center. So all aspects of 
+   * this file format are now working, except two issues:
+   * 
+   * 1) Jmol's ALT-CTRL center-of-rotation shifting rendering will be approximate.
+   *    The issue here is that "perspective" is really a 2D illusion. It's created
+   *    by moving points closer to the center of perspective when zooming. 
+   *    Well, what Jmol does with ALT-CTRL is to apply an XY translation AFTER 
+   *    setting the perspective, and this rather unusual operation is just not 
+   *    supported in "real" virtual reality packages. The result is that
+   *    whenever the center of rotation in Jmol is not screen center, the
+   *    resultant U3D or VRML model view will be slightly different.
+   *    
+   *    But the good news is that if you don't move the center of rotation from
+   *    screen center, the U3D or VRML perspective will be PERFECT - an EXACT
+   *    replica of Jmol's perspective (provided you are using set perspectiveMode 11).
+   *    
+   * 2) Lighting. Looks like all LIGHT nodes are tied to a parent node and thus
+   *    rotate with the model. Perhaps there is a way to indicate that only
+   *    one model in a scene is to be rotated, but I haven't found that. 
+   *    
+   * So the note below is largely just kept for historical purposes.
+   * 
+   * Bob Hanson 7/17/2010 
+   * 
+   * (a year earlier...)
    * 
    * I have spent quite a bit of time now tearing my hair out trying to 
    * figure out how to do this right. The documentation is so opaque, 
@@ -131,6 +178,9 @@ public class _IdtfExporter extends __CartesianExporter {
    * 
    * Bob Hanson 8/15/2009
    * 
+   * (so the solution to that was to use pdfLatex to set up the zoom)
+   * 
+   * 
    */
   
   
@@ -160,7 +210,6 @@ public class _IdtfExporter extends __CartesianExporter {
 
    */
   
-  private AxisAngle4f viewpoint = new AxisAngle4f();
   private boolean haveSphere;
   private boolean haveCylinder;
   private boolean haveCone;
@@ -224,20 +273,13 @@ public class _IdtfExporter extends __CartesianExporter {
     */
 
     m.setIdentity();
-    viewer.getAxisAngle(viewpoint);
-    Quaternion q = new Quaternion(viewpoint);
+    Quaternion q = viewer.getRotationQuaternion();
     m.set(q.getMatrix());
-    viewer.transformPoint(center, tempP3);
-    tempP3.x = viewer.getScreenWidth() / 2;
-    tempP3.y = viewer.getScreenHeight() / 2;
-    viewer.unTransformPoint(tempP3, tempP3);
-    tempP1.set(q.transform(tempP3));
+    q.transform(referenceCenter, tempP1);
     m.m03 = -tempP1.x;
     m.m13 = -tempP1.y;
     m.m23 = -tempP1.z;
     m.m33 = 1;
-
-    
 
     output("NODE \"GROUP\" {\n");
     output("NODE_NAME \"Jmol\"\n");
@@ -258,12 +300,15 @@ public class _IdtfExporter extends __CartesianExporter {
     fName = fName.substring(fName.lastIndexOf("\\") + 1);
     String name = fName + ".";
     name = name.substring(0, name.indexOf("."));
-    float rooScale = 4.0f * viewer.getRotationRadius() / (viewer.getZoomPercentFloat() / 100f);
-    //viewer.getAxisAngle(viewpoint);
-    Quaternion q = new Quaternion();//viewpoint);
-    viewpoint.set(q.getMatrix());
-    if (viewpoint.angle == 0)
-      viewpoint.z = 1;
+    /*
+     * As far as I can tell, this viewing model is flawed because near
+     * the north pole, 3Droll would be undefined or of very low precision.
+     * 
+     * Instead, we opt to apply the rotation matrix at the stage of 
+     * the parent transform matrix in the U3D code itself and then
+     * just point the camera straight on here. 
+     * 
+     */
     return "% Created by: Jmol " + Viewer.getJmolVersion()
         + "\n% Creation date: " + getExportDate() 
         + "\n% File created: "  + fileName + " (" + nBytes + " bytes)\n\n" 
@@ -279,9 +324,10 @@ public class _IdtfExporter extends __CartesianExporter {
         + "\n    autoplay," 
         + "\n    repeat=1," 
         + "\n    toolbar=false," 
-        + "\n3Droo=" + rooScale + "," 
-        + "\n3Dcoo= 0.0 0.0 0.0,"// + round(center) + "," 
-        + "\n3Dc2c=0.0 0.0 1.0," 
+        + "\n3Droo=" + cameraDistance + "," 
+        + "\n3Dcoo= 0.0 0.0 0.0," 
+        + "\n3Dc2c=0.0 0.0 1.0,"
+        + "\n3Daac=" + aperatureAngle + ","
         + "\n% 3Droll=0.0," 
         + "\n3Dbg=" + rgbFractionalFromColix(backgroundColix, ' ') + "," 
         + "\n3Dlights=Headlamp," 
@@ -368,44 +414,9 @@ public class _IdtfExporter extends __CartesianExporter {
     output("\t}\n");
     output("}\n\n");
 
-    
-    // unfortunately, this next bit does not work. 
-    // there is something about "key frame displacements" that
-    // I can't make out. 
-    // The first (default) orientation frame has the correct orientation
-    // but the wrong zoom, and I simply cannot get the zoom to work out
-    // in the second key frame (end of animation). 
-    // instead, what happens is the center shifts. I can't figure out where
-    // it is going!
-    
-    //getViewpointPosition(ptAtom);
-    //adjustViewpointPosition(ptAtom);
-    viewer.getAxisAngle(viewpoint);
-    Quaternion q = new Quaternion(viewpoint);
-    viewpoint.set(q.getMatrix());
-    if (viewpoint.angle == 0)
-      viewpoint.z = 1;
-    // Quaternion q0 = new Quaternion(0.6414883f, -0.5258319f, 0.3542887f, 0.43182528f);
-    // q = q0.inv().mul(q);
-    
-    // the next is just an approximation of the true center of the drawing,
-    // which DeepView or 3D-PDF will use as the default center of rotation
-    
-    /*
-    tempP3.set(ptMax);
-    tempP3.add(ptMin);
-    tempP3.scale(0.5f);
-    // transform difference to true center -- we will be close unless there are other objects
-    tempP3.sub(center);
-    tempP1.set(q.transform(tempP3));
-    float zoom = viewer.getZoomPercentFloat() / 100f;
-    tempP1.scale(zoom);
-//    tempP1.add(new Point3f(0.0001f, 0.0001f, 0.0001f));
-    String dxyz = round(tempP1);
-    System.out.println("IDTF: dxyz = " + dxyz);
-    */
-    // the apparent default rotation in DeepView and 3D-PDF
 /*
+    // MOTION code -- here for reference; not used
+
     output("\nRESOURCE_LIST \"MOTION\" {");
     output("\n  RESOURCE_COUNT 1");
     output("\n  RESOURCE 0 {");
@@ -652,8 +663,7 @@ public class _IdtfExporter extends __CartesianExporter {
       outputCircle(pt1, pt2, colix, radius);
       return;
     }
-    if (true)
-      return;
+   /*
     // the halo edges really slow rendering and aren't that important.
     float rpd = 3.1415926f / 180;
     Point3f[] pts = new Point3f[73];
@@ -666,6 +676,7 @@ public class _IdtfExporter extends __CartesianExporter {
     for (int i = 0; i < 72; i++) {
       outputCylinder(pts[i], pts[i + 1], colix, Graphics3D.ENDCAPS_FLAT, radius);
     }
+    */
   }
 
   private void outputCircle(Point3f ptCenter, Point3f ptPerp, short colix, float radius) {
@@ -851,10 +862,6 @@ public class _IdtfExporter extends __CartesianExporter {
             .append(sbColors)
             .append(" }\n");
     models.append("}}}\n");
-  }
-
-  protected void outputComment(String comment) {
-    // no capability
   }
 
   protected void outputCone(Point3f ptBase, Point3f ptTip, float radius,

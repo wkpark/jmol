@@ -44,6 +44,10 @@ import org.jmol.viewer.Viewer;
  */
 
 public class _PovrayExporter extends __RayTracerExporter {
+  
+  public _PovrayExporter() {
+    commentChar = "// ";
+  }
 
   String finalizeOutput() {
     super.finalizeOutput();
@@ -326,12 +330,6 @@ public class _PovrayExporter extends __RayTracerExporter {
     output((doFill ? "b(" : "c(") + x + "," + y + "," + z + "," + radius + ","
         + x + "," + y + "," + (z + 1) + "," + (radius + (doFill ? 0 : 2)) + ","
         + color4(colix) + ")\n");
-  }
-
-  protected void outputComment(String comment) {
-    output("// ");
-    output(comment);
-    output("\n");
   }
 
   protected void outputCone(Point3f screenBase, Point3f screenTip, float radius,

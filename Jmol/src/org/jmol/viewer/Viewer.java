@@ -6612,8 +6612,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     transformManager.setFrameOffsets(frameOffsets);
   }
 
-  public float getCameraDepth() {
-    return global.cameraDepth;
+  public Point3f[] getCameraFactors() {
+    return transformManager.getCameraFactors();
   }
 
   boolean getZoomLarge() {

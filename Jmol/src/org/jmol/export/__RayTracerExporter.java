@@ -43,7 +43,6 @@ import org.jmol.modelset.Atom;
 abstract class __RayTracerExporter extends ___Exporter {
 
   protected boolean isSlabEnabled;
-  protected float zoom;
   protected int minScreenDimension;
   
   public __RayTracerExporter() {
@@ -96,9 +95,6 @@ abstract class __RayTracerExporter extends ___Exporter {
   protected void outputHeader() {
     nBytes = 0;
     isSlabEnabled = viewer.getSlabEnabled();
-    zoom = viewer.getRotationRadius() * 2;
-    zoom *= 1.1f; // for some reason I need a little more margin
-    zoom /= viewer.getZoomPercentFloat() / 100f;
     minScreenDimension = Math.min(screenWidth, screenHeight);
     // more specific next in PovRay and Tachyon
   }

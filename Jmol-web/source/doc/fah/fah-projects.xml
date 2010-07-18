@@ -5258,6 +5258,9 @@
   <fah_proj number="2684" name="p2684_SINGLE VESICLE in water" public="y"
     server="171.67.108.22" atoms="1096433" preferred="4" deadline="6"
     credit="8955" frames="100" code="A3" contact="kasson" kfactor="26.4"/>
+  <fah_proj number="2685" name="p2685_SINGLE VESICLE in water" public="y"
+    server="171.67.108.22" atoms="1089419" preferred="4" deadline="6"
+    credit="8955" frames="100" code="A3" contact="kasson" kfactor="26.4"/>
   <fah_proj number="2690" name="p2690_Fullha" public="n"
     server="171.64.65.53" atoms="1848374" preferred="6" deadline="8"
     credit="11251" frames="100" code="A3" contact="kasson" kfactor="25.0"/>

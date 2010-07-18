@@ -27,7 +27,10 @@ package org.openscience.jmol.app.webexport;
 import java.awt.BorderLayout;
 import java.awt.Insets;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 import org.jmol.i18n.GT;
 

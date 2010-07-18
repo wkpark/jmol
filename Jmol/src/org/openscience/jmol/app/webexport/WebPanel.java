@@ -457,7 +457,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
           : getInstanceName(-1));
       String name = JOptionPane.showInputDialog(GT
           ._("Give the occurrence of Jmol a name:"), label);
-      if (name == null)
+      if (name == null || name.length() == 0)
         return;
       DefaultListModel listModel = (DefaultListModel) instanceList.getModel();
       int width = 300;

@@ -1334,7 +1334,7 @@ class ScriptMathProcessor {
     String input = (args.length >= 2 ? ScriptVariable.sValue(args[1]) : "OK");
     boolean asButtons = (args.length == 1 || args.length == 3 && ScriptVariable.bValue(args[2]));
     String s = viewer.prompt(label, input, asButtons);
-    return (asButtons ? addX(Integer.parseInt(s)) : addX(s));
+    return (asButtons ? addX(Integer.parseInt(s) + 1) : addX(s));
   }
 
   private boolean evaluateReplace(ScriptVariable[] args) throws ScriptException {

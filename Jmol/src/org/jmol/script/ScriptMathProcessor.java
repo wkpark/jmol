@@ -623,87 +623,89 @@ class ScriptMathProcessor {
     if (isSyntaxCheck)
       return (op.tok == Token.propselector ? true : addX(true));
     switch (tok) {
-    case Token.dot:
-    case Token.distance:
-      if (op.tok == Token.propselector)
-        return evaluateDot(args, tok);
-      // fall through
-    case Token.measure:
-    case Token.angle:
-      return evaluateMeasure(args, op.tok);
-    case Token.volume:
-      return evaluateVolume(args);
-    case Token.function:
-      return evaluateUserFunction((String) op.value, args, op.intValue,
-          op.tok == Token.propselector);
-    case Token.find:
-      return evaluateFind(args);
-    case Token.replace:
-      return evaluateReplace(args);
-    case Token.row:
-    case Token.col:
-      return evaluateRowCol(args, tok);
-    case Token.array:
-      return evaluateArray(args);
-    case Token.now:
     case Token.abs:
     case Token.acos:
     case Token.cos:
+    case Token.now:
     case Token.sin:
     case Token.sqrt:
       return evaluateMath(args, tok);
-    case Token.compare:
-      return evaluateCompare(args, tok);
-    case Token.quaternion:
-    case Token.axisangle:
-      return evaluateQuaternion(args, tok);
-    case Token.cross:
-      return evaluateCross(args);
-    case Token.random:
-      return evaluateRandom(args);
-    case Token.split:
-    case Token.join:
-    case Token.trim:
-      return evaluateString(op.intValue, args);
     case Token.add:
-    case Token.sub:
-    case Token.mul:
     case Token.div:
+    case Token.mul:
+    case Token.sub:
       return evaluateList(op.intValue, args);
+    case Token.array:
+      return evaluateArray(args);
+    case Token.axisangle:
+    case Token.quaternion:
+      return evaluateQuaternion(args, tok);
     case Token.bin:
       return evaluateBin(args);
-    case Token.helix:
-      return evaluateHelix(args);
-    case Token.label:
-    case Token.format:
-      return evaluateLabel(op.intValue, args);
-    case Token.data:
-      return evaluateData(args);
-    case Token.load:
-    case Token.file:
-      return evaluateLoad(args, tok);
-    case Token.write:
-      return evaluateWrite(args);
-    case Token.script:
-    case Token.javascript:
-      return evaluateScript(args, tok);
-    case Token.within:
-      return evaluateWithin(args);
-    case Token.getproperty:
-      return evaluateGetProperty(args);
-    case Token.point:
-      return evaluatePoint(args);
-    case Token.plane:
-    case Token.hkl:
-      return evaluatePlane(args, tok);
+    case Token.col:
+    case Token.row:
+      return evaluateRowCol(args, tok);
+    case Token.compare:
+      return evaluateCompare(args, tok);
     case Token.connected:
       return evaluateConnected(args);
-    case Token.substructure:
-    case Token.smiles:
+    case Token.cross:
+      return evaluateCross(args);
+    case Token.data:
+      return evaluateData(args);
+    case Token.angle:
+    case Token.distance:
+    case Token.dot:
+    case Token.measure:
+      if ((tok == Token.distance || tok == Token.dot) 
+          && op.tok == Token.propselector)
+        return evaluateDot(args, tok);
+      return evaluateMeasure(args, op.tok);
+    case Token.file:
+    case Token.load:
+      return evaluateLoad(args, tok);
+    case Token.find:
+      return evaluateFind(args);
+    case Token.function:
+      return evaluateUserFunction((String) op.value, args, op.intValue,
+          op.tok == Token.propselector);
+    case Token.format:
+    case Token.label:
+      return evaluateLabel(op.intValue, args);
+    case Token.getproperty:
+      return evaluateGetProperty(args);
+    case Token.helix:
+      return evaluateHelix(args);
+    case Token.hkl:
+    case Token.plane:
+      return evaluatePlane(args, tok);
+    case Token.javascript:
+    case Token.script:
+      return evaluateScript(args, tok);
+    case Token.join:
+    case Token.split:
+    case Token.trim:
+      return evaluateString(op.intValue, args);
+    case Token.point:
+      return evaluatePoint(args);
+    case Token.prompt:
+      return evaluatePrompt(args);
+    case Token.random:
+      return evaluateRandom(args);
+    case Token.replace:
+      return evaluateReplace(args);
     case Token.search:
+    case Token.smiles:
+    case Token.substructure:
       return evaluateSubstructure(args, tok);
     case Token.symop:
       return evaluateSymop(args, op.tok == Token.propselector);
+    case Token.volume:
+      return evaluateVolume(args);
+    case Token.within:
+      return evaluateWithin(args);
+    case Token.write:
+      return evaluateWrite(args);
     }
     return false;
   }
@@ -1247,31 +1249,6 @@ class ScriptMathProcessor {
         .toReadable(property));
   }
 
-  private boolean evaluatePoint(ScriptVariable[] args) {
-    if (args.length != 1 && args.length != 3 && args.length != 4)
-      return false;
-    if (isSyntaxCheck) {
-      return addX(args.length == 4 ? (Object) new Point4f()
-          : (Object) new Point3f());
-    }
-
-    switch (args.length) {
-    case 1:
-      Object pt = Escape.unescapePoint(ScriptVariable.sValue(args[0]));
-      if (pt instanceof Point3f)
-        return addX((Point3f) pt);
-      return addX("" + pt);
-    case 3:
-      return addX(new Point3f(ScriptVariable.fValue(args[0]), ScriptVariable
-          .fValue(args[1]), ScriptVariable.fValue(args[2])));
-    case 4:
-      return addX(new Point4f(ScriptVariable.fValue(args[0]), ScriptVariable
-          .fValue(args[1]), ScriptVariable.fValue(args[2]), ScriptVariable
-          .fValue(args[3])));
-    }
-    return false;
-  }
-
   private boolean evaluatePlane(ScriptVariable[] args, int tok)
       throws ScriptException {
     if (args.length != 3 && tok == Token.hkl || tok != Token.hkl
@@ -1316,6 +1293,48 @@ class ScriptMathProcessor {
       }
     }
     return false;
+  }
+
+  private boolean evaluatePoint(ScriptVariable[] args) {
+    if (args.length != 1 && args.length != 3 && args.length != 4)
+      return false;
+    if (isSyntaxCheck) {
+      return addX(args.length == 4 ? (Object) new Point4f()
+          : (Object) new Point3f());
+    }
+
+    switch (args.length) {
+    case 1:
+      Object pt = Escape.unescapePoint(ScriptVariable.sValue(args[0]));
+      if (pt instanceof Point3f)
+        return addX((Point3f) pt);
+      return addX("" + pt);
+    case 3:
+      return addX(new Point3f(ScriptVariable.fValue(args[0]), ScriptVariable
+          .fValue(args[1]), ScriptVariable.fValue(args[2])));
+    case 4:
+      return addX(new Point4f(ScriptVariable.fValue(args[0]), ScriptVariable
+          .fValue(args[1]), ScriptVariable.fValue(args[2]), ScriptVariable
+          .fValue(args[3])));
+    }
+    return false;
+  }
+
+  private boolean evaluatePrompt(ScriptVariable[] args) {
+    //x = prompt("testing")
+    //x = prompt("testing","defaultInput")
+    //x = prompt("testing","yes|no|cancel", true)
+
+    if (args.length != 1 && args.length != 2 && args.length != 3)
+      return false;
+    if (isSyntaxCheck)
+      return addX("");
+
+    String label = ScriptVariable.sValue(args[0]);
+    String input = (args.length >= 2 ? ScriptVariable.sValue(args[1]) : "OK");
+    boolean asButtons = (args.length == 1 || args.length == 3 && ScriptVariable.bValue(args[2]));
+    String s = viewer.prompt(label, input, asButtons);
+    return (asButtons ? addX(Integer.parseInt(s)) : addX(s));
   }
 
   private boolean evaluateReplace(ScriptVariable[] args) throws ScriptException {

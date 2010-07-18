@@ -373,7 +373,7 @@ public class ScriptEvaluator {
    */
   public String getNextStatement() {
     return (pc < aatoken.length ? setErrorLineMessage(functionName, filename,
-        getLinenumber(null), pc, statementAsString(aatoken[pc], -9999)) : "");
+        getLinenumber(null), pc, statementAsString(aatoken[pc], -9999, logMessages)) : "");
   }
 
   /**
@@ -446,7 +446,7 @@ public class ScriptEvaluator {
       StringBuffer strbufLog = new StringBuffer(80);
       String s = (ifLevel > 0 ? "                          ".substring(0,
           ifLevel * 2) : "");
-      strbufLog.append(s).append(statementAsString(statement, iToken));
+      strbufLog.append(s).append(statementAsString(statement, iToken, logMessages));
       viewer.scriptStatus(strbufLog.toString());
     } else {
       String cmd = getCommand(pc, false, false);
@@ -1592,7 +1592,7 @@ public class ScriptEvaluator {
   private String filename;
   private String functionName;
   private boolean isStateScript;
-  private int scriptLevel;
+  int scriptLevel;
   private int scriptReportingLevel = 0;
   private int commandHistoryLevelMax = 0;
 
@@ -2170,7 +2170,7 @@ public class ScriptEvaluator {
     }
   }
 
-  private void popContext(boolean isPushPop) {
+  void popContext(boolean isPushPop) {
     if (isCmdLine_c_or_C_Option)
       Logger.info("--<<-------------".substring(0, scriptLevel + 5)
           + scriptLevel + " " + filename);
@@ -2267,7 +2267,7 @@ public class ScriptEvaluator {
       } else {
         sb.append(setErrorLineMessage(context.functionName, context.filename,
             getLinenumber(context), context.pc, statementAsString(
-                context.statement, -9999)));
+                context.statement, -9999, logMessages)));
       }
       context = context.parentContext;
     }
@@ -2278,7 +2278,7 @@ public class ScriptEvaluator {
       }
     } else {
       sb.append(setErrorLineMessage(functionName, filename,
-          getLinenumber(null), pc, statementAsString(statement, -9999)));
+          getLinenumber(null), pc, statementAsString(statement, -9999, logMessages)));
     }
 
     return sb.toString();
@@ -2650,19 +2650,6 @@ public class ScriptEvaluator {
     return msg;
   }
 
-  String getExceptionContextTrace() {
-    StringBuffer sb = new StringBuffer();
-    for (;;) {
-      sb.append(setErrorLineMessage(functionName, filename,
-          getLinenumber(null), pc, statementAsString(statement, iToken)));
-      if (scriptLevel > 0)
-        popContext(false);
-      else
-        break;
-    }
-    return sb.toString();
-  }
-
   static String setErrorLineMessage(String functionName, String filename,
                                     int lineCurrent, int pcCurrent,
                                     String lineInfo) {
@@ -2688,8 +2675,9 @@ public class ScriptEvaluator {
         message = "";
         return;
       }
-
-      String s = getExceptionContextTrace();
+      String s = getScriptContext().getContextTrace(null).toString();
+      while (scriptLevel > 0)
+        popContext(false);
       message += s;
       this.untranslated += s;
       if (isSyntaxCheck
@@ -2729,7 +2717,7 @@ public class ScriptEvaluator {
     return str.toString();
   }
 
-  private String statementAsString(Token[] statement, int iTok) {
+  static String statementAsString(Token[] statement, int iTok, boolean doLogMessages) {
     if (statement.length == 0)
       return "";
     StringBuffer sb = new StringBuffer();
@@ -2747,8 +2735,10 @@ public class ScriptEvaluator {
     // Token.atomExpressionCommand));
     boolean inBrace = false;
     boolean inClauseDefine = false;
-    boolean setEquals = (tok == Token.set
-        && ((String) statement[0].value) == "" && statement[0].intValue == '=' && tokAt(1) != Token.expressionBegin);
+    boolean setEquals = (statement.length > 1 && tok == Token.set
+        && statement[0].value.equals("")
+        && statement[0].intValue == '=' 
+        && statement[1].tok != Token.expressionBegin);
     int len = statement.length;
     for (int i = 0; i < len; ++i) {
       Token token = statement[i];
@@ -2773,7 +2763,7 @@ public class ScriptEvaluator {
           sb.append("{");
         continue;
       case Token.expressionEnd:
-        if (inClauseDefine && i == statementLength - 1)
+        if (inClauseDefine && i == statement.length - 1)
           useBraces = false;
         if (useBraces)
           sb.append("}");
@@ -2788,7 +2778,8 @@ public class ScriptEvaluator {
       case Token.define:
         if (i > 0 && ((String) token.value).equals("define")) {
           sb.append("@");
-          if (tokAt(i + 1) == Token.expressionBegin) {
+          if (i + 1 < statement.length 
+              && statement[i + 1].tok == Token.expressionBegin) {
             if (!useBraces)
               inClauseDefine = true;
             useBraces = true;
@@ -2888,7 +2879,7 @@ public class ScriptEvaluator {
           sb.append(Token.nameOf(token.intValue)).append(" ");
         break;
       default:
-        if (Token.tokAttr(token.tok, Token.identifier) || !logMessages)
+        if (Token.tokAttr(token.tok, Token.identifier) || !doLogMessages)
           break;
         sb.append('\n').append(token.toString()).append('\n');
         continue;
@@ -5031,6 +5022,9 @@ public class ScriptEvaluator {
           break;
         case Token.print:
           print();
+          break;
+        case Token.prompt:
+          prompt();
           break;
         case Token.refresh:
           refresh();
@@ -7575,35 +7569,6 @@ public class ScriptEvaluator {
       viewer.log(s);
   }
 
-  private void print() throws ScriptException {
-    if (statementLength == 1)
-      error(ERROR_badArgumentCount);
-    showString((String) parameterExpression(1, 0, "", false), true);
-  }
-
-  private boolean pause() throws ScriptException {
-    if (isSyntaxCheck)
-      return false;
-    String msg = optParameterAsString(1);
-    if (!viewer.getBooleanProperty("_useCommandThread")) {
-      // showString("Cannot pause thread when _useCommandThread = FALSE: " +
-      // msg);
-      // return;
-    }
-    if (viewer.autoExit || !viewer.haveDisplay)
-      return false;
-    if (scriptLevel == 0 && pc == aatoken.length - 1) {
-      viewer.scriptStatus("nothing to pause: " + msg);
-      return false;
-    }
-    msg = (msg.length() == 0 ? ": RESUME to continue." : ": "
-        + viewer.formatText(msg));
-    pauseExecution();
-    viewer.scriptStatus("script execution paused" + msg,
-        "script paused for RESUME");
-    return true;
-  }
-
   private void label(int index) throws ScriptException {
     if (isSyntaxCheck)
       return;
@@ -8613,6 +8578,47 @@ public class ScriptEvaluator {
         fmax = f;
     }
     return fmax;
+  }
+
+  private boolean pause() throws ScriptException {
+    if (isSyntaxCheck)
+      return false;
+    String msg = optParameterAsString(1);
+    if (!viewer.getBooleanProperty("_useCommandThread")) {
+      // showString("Cannot pause thread when _useCommandThread = FALSE: " +
+      // msg);
+      // return;
+    }
+    if (viewer.autoExit || !viewer.haveDisplay)
+      return false;
+    if (scriptLevel == 0 && pc == aatoken.length - 1) {
+      viewer.scriptStatus("nothing to pause: " + msg);
+      return false;
+    }
+    msg = (msg.length() == 0 ? ": RESUME to continue." : ": "
+        + viewer.formatText(msg));
+    pauseExecution();
+    viewer.scriptStatus("script execution paused" + msg,
+        "script paused for RESUME");
+    return true;
+  }
+
+  private void print() throws ScriptException {
+    if (statementLength == 1)
+      error(ERROR_badArgumentCount);
+    showString((String) parameterExpression(1, 0, "", false), true);
+  }
+
+  private void prompt() throws ScriptException {
+    String msg = null;
+    if (statementLength == 1) {
+      if (!isSyntaxCheck)
+        msg = getScriptContext().getContextTrace(null).toString();
+    } else {
+      msg = optParameterAsString(1);
+    }
+    if (!isSyntaxCheck)
+      viewer.prompt(msg, "OK", true);
   }
 
   private void refresh() {

@@ -62,4 +62,14 @@ public class ScriptContext {
 
   ScriptContext() {
   }
+
+  StringBuffer getContextTrace(StringBuffer sb) {
+    if (sb == null)
+      sb = new StringBuffer();
+    sb.append(ScriptEvaluator.setErrorLineMessage(functionName, filename,
+        lineNumbers[pc], pc, ScriptEvaluator.statementAsString(statement, iToken, false)));
+    if (parentContext != null)
+      parentContext.getContextTrace(sb);
+    return sb;
+  }
 }

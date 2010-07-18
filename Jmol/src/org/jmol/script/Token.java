@@ -317,6 +317,7 @@ public class Token {
   final static int plot         = scriptCommand | 37;
   final static int pop          = scriptCommand | 38 | noArgs; //internal only
   final static int process      = flowCommand   | 39;
+//  final static int prompt     see mathfunc
   final static int push         = scriptCommand | 40 | noArgs; //internal only
   final static int quit         = scriptCommand | 41 | noArgs;
   final static int ramachandran = scriptCommand | 42 | expression;
@@ -682,15 +683,17 @@ public class Token {
   public final static int volume = 7 | 1 << 9 | mathfunc | mathproperty | floatproperty;  
   final static int col           = 8 | 1 << 9 | mathfunc | mathproperty;
   final static int row           = 9 | 1 << 9 | mathfunc | mathproperty;
+
   // xxx(a,b)
   
   public final static int cross = 1 | 2 << 9 | mathfunc;
   final static int load         = 2 | 2 << 9 | mathfunc | scriptCommand;
-  final static int random       = 3 | 2 << 9 | mathfunc;
-  final static int script       = 4 | 2 << 9 | mathfunc | scriptCommand;
-  final static int substructure = 5 | 2 << 9 | mathfunc;
-  final static int search       = 6 | 2 << 9 | mathfunc;
-  final static int smiles       = 7 | 2 << 9 | mathfunc;
+  final static int random       = 4 | 2 << 9 | mathfunc;
+  final static int script       = 5 | 2 << 9 | mathfunc | scriptCommand;
+  final static int substructure = 6 | 2 << 9 | mathfunc;
+  final static int search       = 7 | 2 << 9 | mathfunc;
+  final static int smiles       = 8 | 2 << 9 | mathfunc;
+ 
 
   // ___.xxx(a,b)
 
@@ -702,13 +705,14 @@ public class Token {
   
   final static int add          = 1 | 2 << 9 | mathfunc | mathproperty;
   final static int distance     = 2 | 2 << 9 | mathfunc | mathproperty;
+  final static int find         = 4 | 3 << 9 | mathfunc | mathproperty;
   final static int replace      = 3 | 2 << 9 | mathfunc | mathproperty;
 
   // xxx(a,b,c)
   
-  final static int find         = 2 | 3 << 9 | mathfunc | mathproperty;
-  final static int hkl          = 3 | 3 << 9 | mathfunc;
-  final static int select       = 4 | 3 << 9 | mathfunc | atomExpressionCommand;
+  final static int hkl          = 1 | 3 << 9 | mathfunc;
+  final static int prompt       = 2 | 3 << 9 | mathfunc | scriptCommand;
+  final static int select       = 3 | 3 << 9 | mathfunc | atomExpressionCommand;
 
   // ___.xxx(a,b,c)
   
@@ -1508,6 +1512,7 @@ public class Token {
       "polyhedra",         new Token(polyhedra),
       "print",             new Token(print),
       "process",           new Token(process),
+      "prompt",            new Token(prompt),
       "quaternion",        new Token(quaternion),
       "quaternions",       null,
       "quit",              new Token(quit),

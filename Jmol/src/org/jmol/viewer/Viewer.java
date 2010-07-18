@@ -85,6 +85,7 @@ import java.util.BitSet;
 import java.util.Properties;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
 import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
@@ -9141,6 +9142,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void connect(float[][] connections) {
     modelSet.connect(connections);
+  }
+
+  public String prompt(String label, String data, boolean asButtons) {
+    if (!asButtons)
+      return JOptionPane.showInputDialog(label, data);
+    String[] list = TextFormat.split(data, "|");
+    int i = JOptionPane.showOptionDialog(null, label, "Jmol prompt",
+    JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,
+    null, list, list[0]);
+    return "" + i;
   }
 
 }

@@ -384,7 +384,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
             cchToken = 0;
             continue;
           }
-          if (lookingAtImpliedString()) {
+          if (lookingAtImpliedString(false)) {
             ichEnd = ichToken + cchToken;
           } 
         }
@@ -934,25 +934,15 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       } else if ((bs = lookingAtBitset()) != null) {
         addTokenToPrefix(new Token(Token.bitset, bs));
         return CONTINUE;
-      } else if (!iHaveQuotedString && lookingAtImpliedString()) {
+      } else if (!iHaveQuotedString && lookingAtImpliedString(false)) {
         String str = script.substring(ichToken, ichToken + cchToken);
-        int pt = str.indexOf(" ");
-        if (pt > 0) {
-          cchToken = pt;
-          str = str.substring(0, pt);
-        }
         addTokenToPrefix(new Token(Token.string, str));
         iHaveQuotedString = true;
         return CONTINUE;
       }
     } else if (tokCommand == Token.script || tokCommand == Token.getproperty) {
-      if (!iHaveQuotedString && lookingAtImpliedString()) {
+      if (!iHaveQuotedString && lookingAtImpliedString(false)) {
         String str = script.substring(ichToken, ichToken + cchToken);
-        int pt = str.indexOf(" ");
-        if (pt > 0) {
-          cchToken = pt;
-          str = str.substring(0, pt);
-        }
         addTokenToPrefix(new Token(Token.string, str));
         iHaveQuotedString = true;
         return CONTINUE;
@@ -966,7 +956,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       // write filename
       if (nTokens == 2 && lastToken.tok == Token.frame)
         iHaveQuotedString = true;
-      if (!iHaveQuotedString && lookingAtImpliedString()) {
+      if (!iHaveQuotedString && lookingAtImpliedString(true)) {
         String str = script.substring(ichToken, ichToken + cchToken);
         if (str.startsWith("@{")) {
           iHaveQuotedString = true;
@@ -980,7 +970,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     }
     if (Token.tokAttr(tokCommand, Token.implicitStringCommand)
         && !(tokCommand == Token.script && iHaveQuotedString)
-        && lookingAtImpliedString()) {
+        && lookingAtImpliedString(false)) {
       String str = script.substring(ichToken, ichToken + cchToken);
       if (tokCommand == Token.label 
           && Parser.isOneOf(str.toLowerCase(), "on;off;hide;display"))
@@ -1923,34 +1913,42 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
    * position in a command is implied to be a string. First we must exclude
    * @xxxx. Then we consume the entire math syntax @{......} or any set of
    * characters not involving white space.
+   * @param allowSpace TODO
    * 
    * @return true or false
    */
-  private boolean lookingAtImpliedString() {
+  private boolean lookingAtImpliedString(boolean allowSpace) {
     int ichT = ichToken;
+    int ptSpace = -1;
+    int ptLastChar = -1;
     char ch = ' ';
     // look ahead to \n, \r, terminal ;, or }
-    while (ichT < cchScript && !eol(ch = script.charAt(ichT)) && ch != '}')
+    while (ichT < cchScript && !eol(ch = script.charAt(ichT)) && ch != '}') {
+      if (Character.isWhitespace(ch)) {
+        if (ptSpace < 0)
+          ptSpace = ichT;
+      } else {
+        ptLastChar = ichT;
+      }
       ++ichT;
+    }
     boolean isMath = false;
     boolean isVariable = false;
     // if we have @xxx then this is not an implied string
     if (ichT > ichToken && 
-        ((isVariable = (script.charAt(ichToken) == '@')) || script.charAt(ichToken) == '%')) {
+        ((isVariable = (script.charAt(ichToken) == '@')) || script.charAt(ichToken) == '%'))
       isMath = (ichT > ichToken + 1 && script.charAt(ichToken + 1) == '{');
-      if (isVariable && !isMath)
-        return false;      
-      if (isMath) {
-        ichT = ichMathTerminator(script, ichToken + 1, cchScript);
-        return (ichT != cchScript && (cchToken = ichT + 1 - ichToken) > 0);
-      }
+    if (isMath) {
+      ichT = ichMathTerminator(script, ichToken + 1, cchScript);
+      return (ichT != cchScript && (cchToken = ichT + 1 - ichToken) > 0);
+    } else if (isVariable) {
+      return false;
     }
-    if (ch == '}')
-      while (ichT < cchScript && !eol(ch = script.charAt(ichT)))
-        ++ichT;
-    while (--ichT > ichToken && Character.isWhitespace(script.charAt(ichT))) {
-    }
-    return (cchToken = ++ichT - ichToken) > 0;
+    if (allowSpace)
+      ichT = ptLastChar + 1;
+    else if (ptSpace > 0)
+      ichT = ptSpace;
+    return (cchToken = ichT - ichToken) > 0;
   }
 
   /**

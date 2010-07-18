@@ -24,7 +24,8 @@
  */
 package org.openscience.jmol.app.webexport;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Insets;
 
 import javax.swing.*;
 

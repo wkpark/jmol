@@ -384,9 +384,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
             cchToken = 0;
             continue;
           }
-          if (lookingAtImpliedString(false)) {
+          if (lookingAtImpliedString(true))
             ichEnd = ichToken + cchToken;
-          } 
         }
         return commandExpected();
       }
@@ -970,7 +969,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     }
     if (Token.tokAttr(tokCommand, Token.implicitStringCommand)
         && !(tokCommand == Token.script && iHaveQuotedString)
-        && lookingAtImpliedString(false)) {
+        && lookingAtImpliedString(true)) {
       String str = script.substring(ichToken, ichToken + cchToken);
       if (tokCommand == Token.label 
           && Parser.isOneOf(str.toLowerCase(), "on;off;hide;display"))

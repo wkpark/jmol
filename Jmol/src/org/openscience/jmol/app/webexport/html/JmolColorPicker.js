@@ -1,7 +1,7 @@
 /* Jmol Simple JavaScript Color Picker
  by Jonathan Gutow
-V1.1
-June 15, 2010
+V1.2
+June 17, 2010
 
 requires
    Jmol.js
@@ -11,7 +11,7 @@ Where ever you want a popup color picker box include a script like
 
 <script type="text/javascript">
 var scriptStr2 = 'select carbon; color atom $COLOR$;';
-jmolColorPickerBox("colorBox1", "rgb(100,100,100)", scriptStr2, "0");
+jmolColorPickerBox(scriptStr2, "rgb(100,100,100)", "colorBox1", "0");
 </script>
 
 The only function that will not change name or syntax is jmolColorPickerBox(scriptStr, rgb, boxIdStr,  appletId).
@@ -22,7 +22,25 @@ All parameters are strings although appletId could potentially be a number, but 
   rgb is the browser standard 0-255 red-green-blue values specified as an array [red, green, blue] default = [127,127,127] a dark grey.
   boxIdStr should be a string that is unique to the web document, if not provided it will be set to colorBoxJ, J=0, 1, 2... in the order created.
   appletId is the standard Jmol id of applet you want the colorpicker to send the script to.  Default = "0".
-
+>>>>Advanced use<<<<<<<<
+To have the colorPickerBox pass the picked color to a function of your own so that you can modify the script after the colorBox 
+  has been defined, you can pass an array in place of scriptStr.  This behaves much the way functions in Jmol.js do.  The array
+  must have the following format [yourFunctionName, yourParam1, yourParam2,...]:
+      yourFunctionName should not be in quotes, just the exact character sequence used to name your function.
+      yourParamX can be anything you want.
+      
+      This array should be a variable with global scope on the page.  It is suggested that you declare and populate it with
+      default values in the header of the page.
+      
+  The declaration of your function must be exactly (choose your own name for the function and variables):
+  function yourFunctionName(rgbCodeStr, yourArray, appletID)
+      rgbCodeStr is the rgb code string to pass to Jmol as part of the script command.  Make sure to put spaces on either side
+          when adding it to the scriptStr.
+      yourArray should be your global array, which you can update based on your own criteria.  Remember that element 0 is the
+          name of your function.
+      appletID is the applet number of string name that should be passed through jmolScript type functions to make sure that the
+          correct applet gets the script.
+>>>>>>End Advanced Use<<<<<<<<<<
 
 */
 
@@ -39,7 +57,7 @@ var jmolColorPickerBoxes=new Array();//array of _jmolColorBoxInfo
 function _jmolColorBoxInfo(boxID, appletID, scriptStr){//used when using a predefined colorPickerBox
     this.boxID=boxID;
     this.appletID=appletID; //applet ID
-    this.scriptStr=scriptStr; //script with $COLOR$ where the color should be placed.
+    this.scriptStr=scriptStr; //script with $COLOR$ where the color should be placed.(((tentatively also a array to pass a function))).
     }
 
 function _jmolChangeClass(someObj,someClassName) {
@@ -205,7 +223,11 @@ function _jmolColorBoxUpdate(pickedColor, boxNum){
     document.getElementById(jmolColorPickerBoxes[boxNum].boxID).style.background = pickedColor;
     _jmolChangeClass(document.getElementById('JmolColorPickerDiv'), "JmolColorPicker_hid");
     var rgbCodes = pickedColor.replace(/rgb/i,'').replace('(','[').replace(')',']');
-    var scriptStr = jmolColorPickerBoxes[boxNum].scriptStr.replace('$COLOR$', rgbCodes);
-    jmolScript(scriptStr,jmolColorPickerBoxes[boxNum].appletID);
+    if (typeof(jmolColorPickerBoxes[boxNum].scriptStr) == "object"){
+        jmolColorPickerBoxes[boxNum].scriptStr[0](rgbCodes,jmolColorPickerBoxes[boxNum].scriptStr, jmolColorPickerBoxes[boxNum].appletID);
+    }else {
+    	var scriptStr = jmolColorPickerBoxes[boxNum].scriptStr.replace('$COLOR$', rgbCodes);
+    	jmolScript(scriptStr,jmolColorPickerBoxes[boxNum].appletID);
+    }
 }
 

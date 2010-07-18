@@ -98,7 +98,7 @@ class Widgets {
           + GT._("background color:")
           + "</td><td style=\"min-width:70px;\"><script type = 'text/javascript'>"
           + "var scriptStr = 'color background $COLOR$;';"
-          + "JmolColorPickerBox(scriptStr, [" 
+          + "jmolColorPickerBox(scriptStr, [" 
           + (int)ptRGB.x + "," + (int)ptRGB.y + "," + (int)ptRGB.z
           + "], 'backbox"
           + appletID + "',  '" + appletID + "');"

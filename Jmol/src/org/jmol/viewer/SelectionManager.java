@@ -52,6 +52,15 @@ class SelectionManager {
   BitSet bsSubset; // set in Eval and only pointed to here
   private BitSet bsDeleted;
 
+  public void deleteModelAtoms(int firstAtomIndex, int nAtoms, BitSet bsDeleted) {
+    BitSetUtil.deleteBits(bsHidden, bsDeleted);
+    BitSetUtil.deleteBits(bsSelection, bsDeleted);
+    BitSetUtil.deleteBits(bsSubset, bsDeleted);
+    BitSetUtil.deleteBits(bsFixed, bsDeleted);
+    BitSetUtil.deleteBits(this.bsDeleted, bsDeleted);
+  }
+
+
   // this is a tri-state. the value -1 means unknown
   private final static int TRUE = 1;
   private final static int FALSE = 0;
@@ -153,6 +162,28 @@ class SelectionManager {
     selectionChanged(isQuiet);
   }
 
+  public boolean isAtomSelected(int atomIndex) {
+    return (
+        (bsSubset == null || bsSubset.get(atomIndex))
+        && bsDeleted == null || !bsDeleted.get(atomIndex))
+        && bsSelection.get(atomIndex);
+  }
+  
+  public void setSelectedAtom(int atomIndex, boolean TF) {
+    if (atomIndex < 0) {
+      selectionChanged(true);
+      return;
+    }
+    if (bsSubset != null && !bsSubset.get(atomIndex)
+        || bsDeleted != null && bsDeleted.get(atomIndex))
+      return;
+    bsSelection.set(atomIndex, TF);
+    if (TF)
+      empty = FALSE;
+    else
+      empty = UNKNOWN;
+  }
+
   void setSelectionSet(BitSet set) {
     bsSelection.clear();
     if (set != null)
@@ -230,7 +261,7 @@ class SelectionManager {
 
   private void selectionChanged(boolean isQuiet) {
     if (hideNotSelected)
-      hide(BitSetUtil.copyInvert(bsSelection, viewer.getAtomCount()), false);
+      hide(BitSetUtil.copyInvert(bsSelection, viewer.getAtomCount()), isQuiet);
     if (isQuiet || listeners.length == 0)
       return;
     for (int i = listeners.length; --i >= 0;)
@@ -291,8 +322,13 @@ class SelectionManager {
     return bsDeleted;
   }
 
-  BitSet getSelectionSet() {
-    return bsSelection;
+  BitSet getSelectionSet(boolean includeDeleted) {
+    if (includeDeleted || bsDeleted == null && bsSubset == null)
+      return bsSelection;
+    BitSet bs = new BitSet();
+    bs.or(bsSelection);
+    excludeAtoms(bs, false);
+    return bs;
   }
 
   BitSet getSelectionSubset() {

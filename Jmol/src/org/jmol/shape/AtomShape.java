@@ -86,6 +86,7 @@ public abstract class AtomShape extends Shape {
         mads = new short[atomCount];
       Atom atom = atoms[i];
       mads[i] = atom.calculateMad(viewer, rd);
+//      System.out.println("atomSHape " + atom + " mad=" + mads[i]);
       bsSizeSet.set(i, isVisible);
       atom.setShapeVisibility(myVisibilityFlag, isVisible);
     }
@@ -172,7 +173,7 @@ public abstract class AtomShape extends Shape {
     String type = JmolConstants.shapeClassBases[shapeID];
     if (bsSizeSet != null)
       for (int i = bsSizeSet.nextSetBit(0); i >= 0; i = bsSizeSet.nextSetBit(i + 1))
-          setStateInfo(temp, i, type + " " + (mads[i] / 2000f));
+          setStateInfo(temp, i, type + (mads[i] < 0 ? " on" : " " + mads[i] / 2000f));
     if (bsColixSet != null)
       for (int i = bsColixSet.nextSetBit(0); i >= 0; i = bsColixSet.nextSetBit(i + 1))
           setStateInfo(temp2, i, getColorCommand(type, paletteIDs[i], colixes[i]));

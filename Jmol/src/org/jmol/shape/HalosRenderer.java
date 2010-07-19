@@ -43,7 +43,7 @@ public class HalosRenderer extends ShapeRenderer {
       return;
     isAntialiased = g3d.isAntialiased();
     Atom[] atoms = modelSet.atoms;
-    BitSet bsSelected = (selectDisplayTrue ? viewer.getSelectionSet() : null);
+    BitSet bsSelected = (selectDisplayTrue ? viewer.getSelectionSet(false) : null);
     for (int i = modelSet.getAtomCount(); --i >= 0;) {
       Atom atom = atoms[i];
       if ((atom.getShapeVisibilityFlags() & JmolConstants.ATOM_IN_FRAME) == 0)
@@ -96,22 +96,22 @@ public class HalosRenderer extends ShapeRenderer {
       diameter = viewer.scaleToScreen(z, mad);
     }
     float d = diameter;
+//    System.out.println(atom + "scaleToScreen(" + z + "," + mad +")=" + diameter);
     if (isAntialiased)
       d /= 2;
-    float haloDiameter = (d / 4);
+    float more = (d / 2);
     if (mad == -2)
-      haloDiameter /= 2;
-    if (haloDiameter < 4)
-      haloDiameter = 4;
-    if (haloDiameter > 10)
-      haloDiameter = 10;
-    haloDiameter = d + 2 * haloDiameter;
+      more /= 2;
+    if (more < 8)
+      more = 8;
+    if (more > 20)
+      more = 20;
+    d += more;
     if (isAntialiased)
-      haloDiameter *= 2;
-    int haloWidth = (int) haloDiameter;
-    if (haloWidth <= 0)
+      d *= 2;
+    if (d < 1)
       return;
-    g3d.drawFilledCircle(colix, colixFill, haloWidth,
+    g3d.drawFilledCircle(colix, colixFill, (int) d,
         atom.screenX, atom.screenY, atom.screenZ);
   }  
 }

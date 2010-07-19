@@ -70,7 +70,7 @@ public class Halos extends AtomShape {
 
  public void setVisibilityFlags(BitSet bs) {
     BitSet bsSelected = (viewer.getSelectionHaloEnabled() ? viewer
-        .getSelectionSet() : null);
+        .getSelectionSet(false) : null);
     for (int i = atomCount; --i >= 0;) {
       boolean isVisible = bsSelected != null && bsSelected.get(i)
           || (mads != null && mads[i] != 0);

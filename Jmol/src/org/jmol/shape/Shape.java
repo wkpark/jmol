@@ -164,7 +164,7 @@ public abstract class Shape {
                                BitSet bsSelected) {
     if (!setXmlProperty(propertyName, value, bsSelected))
       setProperty(propertyName, value, bsSelected == null ? 
-          viewer.getSelectionSet() : bsSelected);
+          viewer.getSelectionSet(false) : bsSelected);
   }
 
   /**

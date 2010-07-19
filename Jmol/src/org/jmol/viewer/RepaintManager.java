@@ -57,13 +57,18 @@ class RepaintManager {
     //System.out.println("repaintManager pushHoldRepaint holdRepaint=" + holdRepaint + " thread=" + Thread.currentThread().getName());
   }
 
-  void popHoldRepaint() {
+  //private int test = 0;
+
+  void popHoldRepaint(boolean andRepaint) {
     --holdRepaint;
     //System.out.println("repaintManager popHoldRepaint holdRepaint=" + holdRepaint + " thread=" + Thread.currentThread().getName());
     if (holdRepaint <= 0) {
       holdRepaint = 0;
-      repaintPending = true;
-      viewer.repaint();
+      if (andRepaint) {
+        repaintPending = true;
+        //System.out.println("RM popholdrepaint TRUE " + (test++));
+        viewer.repaint();
+      }
     }
   }
 
@@ -72,13 +77,14 @@ class RepaintManager {
       return false;
     repaintPending = true;
     if (holdRepaint == 0) {
-      //System.out.println("repaintManager refresh holdRepaint=" + holdRepaint + " thread=" + Thread.currentThread().getName());
+      //System.out.println("RM refresh() " + (test++));
       viewer.repaint();
     }
     return true;
   }
 
   synchronized void requestRepaintAndWait() {
+    //System.out.println("RM requestRepaintAndWait() " + (test++));
     viewer.repaint();
     try {
       //System.out.println("repaintManager requestRepaintAndWait I am waiting for a repaint: thread=" + Thread.currentThread().getName());
@@ -102,6 +108,7 @@ class RepaintManager {
   void render(Graphics3D g3d, ModelSet modelSet) {// , Rectangle rectClip
     if (!viewer.getRefreshing())
       return;
+    //System.out.println("render " + (test++));
     //System.out.println("repaintManager render thread=" + Thread.currentThread().getName());
     render1(g3d, modelSet); // , rectClip
     Rectangle band = viewer.getRubberBandSelection();

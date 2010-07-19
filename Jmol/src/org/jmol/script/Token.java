@@ -334,7 +334,6 @@ public class Token {
   final static int slab         = scriptCommand | 53 | defaultON;
   final static int spin         = scriptCommand | 55 | deprecatedparam | defaultON;
   public final static int ssbond       = scriptCommand | 56 | deprecatedparam | defaultON;
-  public final static int struts        = scriptCommand | 57 | defaultON | expression;
   final static int step         = scriptCommand | 58 | noArgs;
   final static int stereo       = scriptCommand | 59 | defaultON;
 //final static int structure    see intproperty
@@ -363,7 +362,8 @@ public class Token {
   public final static int plot3d       = shapeCommand | 39;
   public final static int polyhedra    = shapeCommand | 40;
   //public final static int spacefill see floatproperty
-  public final static int unitcell = shapeCommand | 64 | deprecatedparam | expression | predefinedset | defaultON;
+  public final static int struts       = shapeCommand | 57 | defaultON | expression;
+  public final static int unitcell     = shapeCommand | 64 | deprecatedparam | expression | predefinedset | defaultON;
   public final static int vector       = shapeCommand | 65;
   public final static int wireframe    = shapeCommand | 67 | defaultON;
 

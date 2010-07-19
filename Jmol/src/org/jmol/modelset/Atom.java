@@ -233,14 +233,14 @@ final public class Atom extends Point3fi implements JmolNode {
       if (rd.type == RadiusData.TYPE_FACTOR)
         f *= r;
       else
-        r += r;
+        f += r;
       break;
     default:
     case RadiusData.TYPE_ABSOLUTE:
       break;
     }
-    short mad = (short) (f * 2000);
-    if (mad < 0)
+    short mad = (short) (f < 0 ? f: f * 2000);
+    if (mad < 0 && f > 0)
       mad = 0;
     return mad; 
   }
@@ -1174,7 +1174,7 @@ final public class Atom extends Point3fi implements JmolNode {
     case Token.radius:
       return atom.getRadius();
     case Token.selected:
-      return (viewer.getSelectionSet().get(atom.index) ? 1 : 0);
+      return (viewer.isAtomSelected(atom.index) ? 1 : 0);
     case Token.surfacedistance:
       atom.group.chain.modelSet.getSurfaceDistanceMax();
       return atom.getSurfaceDistance100() / 100f;

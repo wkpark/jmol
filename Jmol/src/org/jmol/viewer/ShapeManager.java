@@ -96,7 +96,7 @@ public class ShapeManager {
       return;
     if (bsSelected == null && 
         (shapeID != JmolConstants.SHAPE_STICKS || size != Integer.MAX_VALUE))
-      bsSelected = viewer.getSelectionSet();
+      bsSelected = viewer.getSelectionSet(false);
     if (rd != null && rd.value != 0 && rd.vdwType == Token.temperature)
       modelSet.getBfactor100Lo();
     viewer.setShapeErrorState(shapeID, "set size");
@@ -393,6 +393,7 @@ public class ShapeManager {
       atom.screenZ = screen.z;
       atom.screenDiameter = viewer.scaleToScreen(screen.z, Math
           .abs(atom.madAtom));
+//      System.out.println("shapeman " + atom + " scaleToScreen(" + screen.z + "," + atom.madAtom + ")=" + atom.screenDiameter);
     }
     return bsOK;
   }

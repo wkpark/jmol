@@ -337,7 +337,7 @@ abstract public class AtomCollection {
     //ColorManager
     if (!hasBfactorRange) {
       if (viewer.isRangeSelected()) {
-        calcBfactorRange(viewer.getSelectionSet());
+        calcBfactorRange(viewer.getSelectionSet(false));
       } else {
         calcBfactorRange(null);
       }
@@ -515,9 +515,8 @@ abstract public class AtomCollection {
                               float fValue, String sValue, float[] values,
                               String[] list) {
     int n = 0;
-    if (values != null && values.length == 0)
+    if (values != null && values.length == 0 || bs == null)
       return;
-    if (bs != null)
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
         if (values != null) {
           if (n >= values.length)
@@ -601,7 +600,7 @@ abstract public class AtomCollection {
           atom.madAtom = ((short) (fValue * 2000));
           break;
         case Token.selected:
-          viewer.getSelectionSet().set(atom.index, (fValue != 0));
+          viewer.setSelectedAtom(atom.index, (fValue != 0));
           break;
         case Token.temperature:
           if (setBFactor(i, fValue))
@@ -622,6 +621,8 @@ abstract public class AtomCollection {
           break;
         }
       }
+      if (tok == Token.selected)
+        viewer.setSelectedAtom(-1, false);
   }
 
   protected void setElement(Atom atom, int atomicNumber) {
@@ -2172,11 +2173,6 @@ abstract public class AtomCollection {
 
   protected void deleteModelAtoms(int firstAtomIndex, int nAtoms, BitSet bs) {
     // all atoms in the model are being deleted here
-    BitSetUtil.deleteBits(bsHidden, bs);
-    BitSetUtil.deleteBits(viewer.getSelectionSet(), bs);
-    BitSetUtil.deleteBits(viewer.getSelectionSubset(), bs);
-    BitSetUtil.deleteBits(viewer.getFrameOffsets(), bs);
-    viewer.setFrameOffsets(viewer.getFrameOffsets());
     atoms = (Atom[]) ArrayUtil.deleteElements(atoms, firstAtomIndex, nAtoms);
     atomCount = atoms.length;
     for (int j = firstAtomIndex; j < atomCount; j++) {

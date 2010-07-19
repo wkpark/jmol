@@ -229,7 +229,7 @@ abstract class TransformManager {
     if (!spinOn)
       return s;
     String prefix = (isSpinSelected ? "\n  select "
-        + Escape.escape(viewer.getSelectionSet()) + ";\n  rotateSelected"
+        + Escape.escape(viewer.getSelectionSet(false)) + ";\n  rotateSelected"
         : "\n ");
     if (isSpinInternal) {
       Point3f pt = new Point3f(internalRotationCenter);

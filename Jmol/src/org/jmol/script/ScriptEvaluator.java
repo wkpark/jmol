@@ -4868,6 +4868,8 @@ public class ScriptEvaluator {
         case Token.pop:
           popContext(true, false);
           break;
+        case Token.colon:
+          break;
         case Token.breakcmd:
         case Token.continuecmd:
         case Token.elsecmd:
@@ -4877,6 +4879,9 @@ public class ScriptEvaluator {
         case Token.forcmd:
         case Token.gotocmd:
         case Token.ifcmd:
+        case Token.switchcmd:
+        case Token.casecmd:
+        case Token.defaultcmd:
         case Token.loop:
         case Token.process:
         case Token.whilecmd:
@@ -5383,6 +5388,30 @@ public class ScriptEvaluator {
       isDone = isOK = true;
       addProcess(pc, pt, true);
       break;
+    case Token.switchcmd:
+    case Token.defaultcmd:
+    case Token.casecmd:
+      ptNext = Math.abs(aatoken[Math.abs(pt)][0].intValue);
+      System.out.println(theToken + " pc=" + pc + " pt=" + pt + " ptNext=" + ptNext);
+      switch (isDone ? 0 : switchCmd((ContextToken) theToken, tok)) {
+      case 0:
+        // done
+        ptNext = -ptNext;
+        isOK = false;
+        break;
+      case -1:
+        // skip this case
+        isOK = false;
+        break;
+      case 1:
+        // do this one
+      }
+      System.out.println("..." + isOK + " " + ptNext);
+      aatoken[pc][0].intValue = Math.abs(pt);
+      theToken = aatoken[Math.abs(pt)][0];
+      if (theToken.tok != Token.end)
+        theToken.intValue = ptNext;
+      break;
     case Token.ifcmd:
     case Token.elseif:
       isOK = (!isDone && ifCmd());
@@ -5409,8 +5438,18 @@ public class ScriptEvaluator {
       if (theTok == Token.process) {
         addProcess(pt, pc, false);
         popContext(true, false);
+      } else if (theTok == Token.switchcmd && pt > 0) {
+        // we have a default
+        if (switchCmd((ContextToken) aatoken[pt][0], 0) == -1) {
+          for (; pt < pc; pt++)
+            if ((tok = aatoken[pt][0].tok) != Token.defaultcmd
+                && tok != Token.casecmd)
+              break;
+          isOK = (pc == pt);
+        }
+        break;
       }
-      isOK = (theTok == Token.process || theTok == Token.ifcmd);
+      isOK = (theTok == Token.process || theTok == Token.ifcmd || theTok == Token.switchcmd);
       isForCheck = (theTok == Token.forcmd || theTok == Token.whilecmd);
       break;
     case Token.whilecmd:
@@ -5424,8 +5463,17 @@ public class ScriptEvaluator {
       break;
     case Token.breakcmd:
       if (!isSyntaxCheck) {
-        pc = aatoken[pt][0].intValue;
-        popContext(true, false);
+        // pt is a backward reference
+        pc = Math.abs(aatoken[pt][0].intValue);
+        tok = aatoken[pt][0].tok;
+        if (tok == Token.casecmd || tok == Token.defaultcmd) {
+          theToken = aatoken[pc--][0];
+          ptNext = Math.abs(theToken.intValue);
+          if (theToken.tok != Token.end)
+            theToken.intValue = -ptNext;
+        } else {
+          popContext(true, false);
+        }
       }
       if (statementLength == 1)
         break;
@@ -5528,6 +5576,34 @@ public class ScriptEvaluator {
       parallelProcessor.addProcess("p" + (++iProcess), context);
       vProcess = null;
     }
+  }
+
+  private int switchCmd(ContextToken c, int tok)
+      throws ScriptException {
+    if (tok == Token.switchcmd)
+      c.addName("_var");
+    ScriptVariable var = (ScriptVariable) c.contextVariables.get("_var");
+    if (var == null)
+      return 1; // OK, case found -- no more testing
+    if (tok == 0) {
+      // end: remove variable and do default
+      //      this causes all other cases to
+      //      skip
+      c.contextVariables.remove("_var");
+      return -1;
+    }
+    if (tok == Token.defaultcmd) // never do the default one directly
+      return -1;
+    System.out.println("testing...");
+    Vector v = (Vector) parameterExpression(1, 0, null, true);
+    if (tok == Token.casecmd) {
+      boolean isOK = ScriptVariable.areEqual(var, (ScriptVariable) v.get(0));
+      if (isOK)
+        c.contextVariables.remove("_var");
+      return isOK ? 1 : -1;
+    }
+    c.contextVariables.put("_var", v.get(0));
+    return 1;
   }
 
   private boolean ifCmd() throws ScriptException {
@@ -12096,13 +12172,11 @@ public class ScriptEvaluator {
     Viewer.setUserScale(scale);
   }
 
-  private void setVariable(int pt, int ptMax, String key, int setType)
+  private void setVariable(int pt, int ptMax, String key, int xsetType)
       throws ScriptException {
 
-    // from SET, we are only here if a Jmol parameter has not been identified
     // from FOR or WHILE, no such check is made
 
-    // if both pt and ptMax are 0, then it indicates that
 
     BitSet bs = null;
     String propertyName = "";

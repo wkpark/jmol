@@ -200,7 +200,7 @@ public class Token {
   final static int mathExpressionCommand = (1 << 15) | scriptCommand;
   
   // program flow commands include:
-  // -- breakcmd, continuecmd, elsecmd, elseif, end, endifcmd,
+  // -- breakcmd, continuecmd, elsecmd, elseif, end, endifcmd, switch, case, 
   //    forcmd, function, ifcmd, whilecmd
   final static int flowCommand        = (1 << 16) | mathExpressionCommand;
 
@@ -276,6 +276,9 @@ public class Token {
   final static int breakcmd     = 7 | flowCommand;
   final static int continuecmd  = 8 | flowCommand;
   final static int end          = 9 | flowCommand | expression;
+  final static int switchcmd    = 10 | flowCommand;
+  final static int casecmd      = 11 | flowCommand;
+  final static int defaultcmd   = 12 | flowCommand;
   
   final static int animation    = scriptCommand | 1;
   final static int assign       = scriptCommand | 2;
@@ -1203,7 +1206,8 @@ public class Token {
   public final static Token tokenExpressionEnd   = new Token(expressionEnd, "expressionEnd");
   public final static Token tokenConnected       = new Token(connected, "connected");
   final static Token tokenCoordinateBegin = new Token(leftbrace, "{");
-  final static Token tokenCoordinateEnd   = new Token(rightbrace, "}");
+  final static Token tokenRightBrace = new Token(rightbrace, "}");
+  final static Token tokenCoordinateEnd = tokenRightBrace;
   final static Token tokenColon           = new Token(colon, ':');
   final static Token tokenSet             = new Token(set, '=', "");
   final static Token tokenSetArray        = new Token(set, '[', "");
@@ -1211,6 +1215,7 @@ public class Token {
   final static Token tokenSetVar          = new Token(set, '=', "var");
   final static Token tokenEquals          = new Token(opEQ, "=");
   final static Token tokenScript          = new Token(script, "script");
+  final static Token tokenSwitch          = new Token(switchcmd, "switch");
     
   private static Hashtable tokenMap = new Hashtable();
   public static void addToken(String ident, Token token) {
@@ -1417,6 +1422,7 @@ public class Token {
       "calculate",         new Token(calculate),
       "cartoon",           new Token(cartoon),
       "cartoons",          null,
+      "case",              new Token(casecmd),
       "center",            new Token(center),
       "centre",            null,
       "centerat",          new Token(centerAt),
@@ -1430,6 +1436,7 @@ public class Token {
       "console",           new Token(console),
       "continue",          new Token(continuecmd),
       "data",              new Token(data),
+      "default",           new Token(defaultcmd),
       "define",            new Token(define),
       "@",                 null,
       "delay",             new Token(delay),
@@ -1556,6 +1563,7 @@ public class Token {
       "struts",            new Token(struts),
       "strut",             null,
       "subset",            new Token(subset),
+      "switch",             new Token(switchcmd),
       "synchronize",       new Token(sync),
       "sync",              null,
       "trace",             new Token(trace),

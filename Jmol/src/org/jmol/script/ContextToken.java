@@ -34,12 +34,8 @@ class ContextToken extends Token {
 
   ContextToken(int tok, Object value) {
     super(tok, value);
-  }
-
-  ContextToken(Token token) {
-    tok = token.tok;
-    intValue = token.intValue;
-    value = token.value;
+    if (tok == Token.switchcmd)
+      addName("_var");      
   }
 
   void addName(String name) {

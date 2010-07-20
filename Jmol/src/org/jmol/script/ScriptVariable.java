@@ -948,4 +948,16 @@ public class ScriptVariable extends Token {
     return (allowNull ? null : new BitSet());
   }
 
+  public static boolean areEqual(ScriptVariable x1, ScriptVariable x2) {
+    if (x1.tok == Token.string && x2.tok == Token.string)
+      return ScriptVariable.sValue(x1).equalsIgnoreCase(
+          ScriptVariable.sValue(x2));
+    if (x1.tok == Token.point3f && x2.tok == Token.point3f)
+      return (((Point3f) x1.value).distance((Point3f) x2.value) < 0.000001);
+    if (x1.tok == Token.point4f && x2.tok == Token.point4f)
+      return (((Point4f) x1.value).distance((Point4f) x2.value) < 0.000001);
+    return (Math.abs(ScriptVariable.fValue(x1)
+        - ScriptVariable.fValue(x2)) < 0.000001);
+  }
+
 }

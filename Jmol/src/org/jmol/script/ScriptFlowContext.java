@@ -137,9 +137,11 @@ class ScriptFlowContext {
    */
   
   private ScriptCompiler compiler;
-  Token token;
-  private int pt0;
+  ContextToken token;
+  int pt0;
+  int ptDefault;
   ScriptFunction function;
+  ScriptVariable var;
   private ScriptFlowContext parent;
   int lineStart;
   int commandStart;
@@ -148,7 +150,7 @@ class ScriptFlowContext {
   boolean forceEndIf = true;
   String ident;
   
-  ScriptFlowContext(ScriptCompiler compiler, Token token, int pt0, ScriptFlowContext parent) {
+  ScriptFlowContext(ScriptCompiler compiler, ContextToken token, int pt0, ScriptFlowContext parent) {
     this.compiler = compiler;
     this.token = token;
     this.ident = (String)token.value;
@@ -161,8 +163,13 @@ class ScriptFlowContext {
 
   ScriptFlowContext getBreakableContext(int nLevelsUp) {
     ScriptFlowContext f = this;
-    while (f != null && (f.token.tok != Token.forcmd && f.token.tok != Token.process
-      && f.token.tok != Token.whilecmd || nLevelsUp-- > 0))
+    while (f != null 
+        && (f.token.tok != Token.forcmd 
+        && f.token.tok != Token.process
+        && f.token.tok != Token.whilecmd 
+        && f.token.tok != Token.casecmd 
+        && f.token.tok != Token.defaultcmd 
+        || nLevelsUp-- > 0))
       f = f.getParent();
     return f;
   }
@@ -177,12 +184,10 @@ class ScriptFlowContext {
     return test;
   }
 
-  int getPt0() {
-    return pt0;
-  }
-  
-  int setPt0(int pt0) {
+  int setPt0(int pt0, boolean isDefault) {
     this.pt0 = pt0;
+    if (isDefault)
+      ptDefault = pt0;
     setLine();
     return pt0;
   }

@@ -1523,8 +1523,6 @@ public class ActionManager {
       try {
         while (Thread.currentThread().equals(hoverWatcherThread) && (hoverDelay = viewer.getHoverDelay()) > 0) {
           Thread.sleep(hoverDelay);
-          if (!viewer.isHoverEnabled())
-            continue;
           if (current.x == moved.x && current.y == moved.y
               && current.time == moved.time) { // the last event was mouse
                                                   // move

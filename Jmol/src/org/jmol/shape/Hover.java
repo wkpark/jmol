@@ -69,8 +69,6 @@ public class Hover extends TextShape {
         atomIndex = -1;
       else {
         atomIndex = ((Integer) value).intValue();
-        viewer
-            .setStatusAtomHovered(atomIndex, viewer.getAtomInfoXYZ(atomIndex, false));
       }
       return;
     }

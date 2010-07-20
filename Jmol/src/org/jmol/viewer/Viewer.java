@@ -4404,14 +4404,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void hoverOn(int atomIndex, int action) {
+    setStatusAtomHovered(atomIndex, getAtomInfoXYZ(atomIndex, false));
+    if (!hoverEnabled)
+      return;
     if (isModelKitMode()) {
       if (isAtomAssignable(atomIndex))
           highlight(BitSetUtil.setBit(atomIndex));
       refresh(3, "hover on atom");
       return;
     }
-    if (!hoverEnabled)
-      return;
     if (eval != null && isScriptExecuting() || atomIndex == hoverAtomIndex
         || global.hoverDelayMs == 0)
       return;

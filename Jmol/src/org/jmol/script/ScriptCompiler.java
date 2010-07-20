@@ -631,15 +631,16 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         if (logMessages) {
           Logger.debug("-------------------------------------");
         }
+        boolean doEval = true;
         switch (tokCommand) {
-        case Token.parallel:
-        case Token.function:
-        case Token.end:
-        case Token.var:
-          doEval = (doEval || atokenInfix.length > 0 && atokenInfix[0].intValue <= 0);
+        case Token.parallel: 
+        case Token.function: // formerly "noeval"
+        case Token.end:          
+          // end switch may have - or + intValue, depending upon default or not
+          // end function and the function call itself has intValue 0,
+          // but the FUNCTION declaration itself will have MAX_VALUE intValue
+          doEval = (atokenInfix.length > 0 && atokenInfix[0].intValue != Integer.MAX_VALUE);
           break;
-        default:
-          doEval = true;
         }
         if (doEval) {
           if (iCommand == lnLength) {
@@ -807,7 +808,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
 
   private String getPrefixToken() {
     String ident = script.substring(ichToken, ichToken + cchToken);
-    System.out.println(ident);
+    //System.out.println(ident);
     // hack to support case sensitive alternate locations and chains
     // if an identifier is a single character long, then
     // allocate a new Token with the original character preserved
@@ -1251,8 +1252,6 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     return OK;
   }
 
-  private boolean doEval;
-
   private int parseCommandParameter(String ident) {
     // PART II:
     //
@@ -1263,7 +1262,6 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     switch (tokCommand) {
     case Token.nada:
       // first token in command
-      doEval = true;
       lastToken = Token.tokenOff;
       ichCurrentCommand = ichEnd = ichToken;
       setCommand(theToken);
@@ -1421,7 +1419,6 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       if (!checkFlowEnd(theTok, ident, ichCurrentCommand))
         return ERROR;
       if (theTok == Token.function || theTok == Token.parallel) {
-        doEval = false;
         return CONTINUE;
       }
       break;
@@ -1820,8 +1817,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       }
       thisFunction = null;
       tokenCommand.intValue = 0;
-      flowContext = flowContext.getParent();
-      return true;
+      break;
     default:
       return error(ERROR_unrecognizedToken, "end " + ident);
     }

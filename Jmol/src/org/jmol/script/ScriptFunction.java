@@ -121,6 +121,9 @@ public class ScriptFunction {
       function.lineIndices[i] = new int[] {lineIndices[cmdpt0 + i][0] - chpt0, lineIndices[cmdpt0 + i][1] - chpt0 };
       //System.out.println("Line " + i + ": " + function.script.substring(function.lineIndices[i][0], function.lineIndices[i][1]));
       aatoken[i] = (Token[]) lltoken.get(cmdpt0 + i);
+      // adjust intValues, which are pointers into the command stack,
+      // by the 0-point offset of the command pointer
+      // negative less negative;positive less positive
       if (aatoken[i].length > 0) {
         Token tokenCommand = aatoken[i][0];
         if (Token.tokAttr(tokenCommand.tok, Token.flowCommand))

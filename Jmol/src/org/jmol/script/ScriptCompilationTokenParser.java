@@ -1036,6 +1036,7 @@ abstract class ScriptCompilationTokenParser {
     case Token.comma:
     case Token.percent:
     case Token.rightparen:
+    case Token.rightbrace:
       return true;
     }
     return false;

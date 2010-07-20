@@ -146,7 +146,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
     if (mesh.showPoints)
       renderPoints();
     if (mesh.drawTriangles)
-      renderTriangles(false, false, false);
+      renderTriangles(false, mesh.showTriangles, false);
     if (mesh.fillTriangles)
       renderTriangles(true, mesh.showTriangles, generateSet);
   }

@@ -1344,7 +1344,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       if (!isPickable(m, bsVisible))
         continue;
       Vector[] vs = m.jvxlData.vContours;
-      if (vs != null) {
+      if (vs != null && vs.length > 0) {
         for (int j = 0; j < vs.length; j++) {
           Vector vc = vs[j];
           int n = vc.size() - 1;

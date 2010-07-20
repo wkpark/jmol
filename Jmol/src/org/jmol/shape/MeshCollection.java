@@ -454,8 +454,8 @@ public abstract class MeshCollection extends Shape {
           String s = "";
           for (int j = 0; j < m.title.length; j++)
             s += (j == 0 ? "; title:" : " | ") + m.title[j];
-          if (s.length() > 100)
-            s = s.substring(0, 100) + "...";
+          if (s.length() > 10000)
+            s = s.substring(0, 10000) + "...";
           sb.append(s);
         }
         sb.append('\n');

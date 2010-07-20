@@ -156,7 +156,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
 
   protected void renderPoints() {
     int incr = imesh.vertexIncrement;
-    int diam = 4;
+    int diam = 16;
     boolean showNumbers = viewer.getTestFlag3();
     int cX = (showNumbers ? viewer.getScreenWidth()/2 : 0);
     int cY = (showNumbers ? viewer.getScreenHeight()/2 : 0);
@@ -180,7 +180,6 @@ public class IsosurfaceRenderer extends MeshRenderer {
         g3d.drawStringNoSlab(s, null,
             screens[i].x, screens[i].y, screens[i].z);
       }
-      diam = (i == 1066 ? 8 : 4);
       g3d.fillSphere(diam, screens[i]);
     }
     if (incr != 3)
@@ -188,16 +187,18 @@ public class IsosurfaceRenderer extends MeshRenderer {
     g3d.setColix(isTranslucent ? Graphics3D.getColixTranslucent(
         Graphics3D.GRAY, true, 0.5f) : Graphics3D.GRAY);
     for (int i = 1; i < vertexCount; i += 3)
-      g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 1, screens[i],
+      g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, diam/4, screens[i],
           screens[i + 1]);
+
     g3d.setColix(isTranslucent ? Graphics3D.getColixTranslucent(
         Graphics3D.YELLOW, true, 0.5f) : Graphics3D.YELLOW);
     for (int i = 1; i < vertexCount; i += 3)
-      g3d.fillSphere(4, screens[i]);
+      g3d.fillSphere(diam, screens[i]);
+    
     g3d.setColix(isTranslucent ? Graphics3D.getColixTranslucent(
         Graphics3D.BLUE, true, 0.5f) : Graphics3D.BLUE);
     for (int i = 2; i < vertexCount; i += 3) {
-      g3d.fillSphere(4, screens[i]);
+      g3d.fillSphere(diam, screens[i]);
     }
   }
 
@@ -298,6 +299,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
         // mesh only
         // check: 1 (ab) | 2(bc) | 4(ac)
         check &= vertexIndexes[3];
+        if (iShowTriangles)
+          check = 7;
         if (check == 0)
           continue;
         pt1i.set(screens[iA]);

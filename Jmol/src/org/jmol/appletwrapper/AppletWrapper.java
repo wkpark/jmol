@@ -127,7 +127,7 @@ public class AppletWrapper extends Applet {
       wrappedApplet.update(g);
       return;
     }
-    Dimension dim = size(); // deprecated, but use it for old JVMs
+    Dimension dim = getSize(); // deprecated, but use it for old JVMs
 
     if (needToCompleteInitialization)
       completeInitialization(g, dim);

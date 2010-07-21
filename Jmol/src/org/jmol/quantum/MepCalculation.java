@@ -24,9 +24,9 @@
 package org.jmol.quantum;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.StringBufferInputStream;
 import java.net.URL;
 import java.util.BitSet;
 import java.util.Hashtable;
@@ -200,7 +200,7 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
         }
         is = (InputStream) url.getContent();
       } else {
-        is = new StringBufferInputStream(data);
+        is = new ByteArrayInputStream(data.getBytes());
       }
       //turns out from the Jar file
       // it's a sun.net.www.protocol.jar.JarURLConnection$JarURLInputStream

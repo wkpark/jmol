@@ -249,7 +249,7 @@ class StatusListener implements JmolStatusListener {
     try {
       Class c = Class.forName("java.awt.Desktop");
       Method getDesktop = c.getMethod("getDesktop", new Class[] {});
-      Object deskTop = getDesktop.invoke(null, new Class[] {});
+      Object deskTop = getDesktop.invoke(null, new Object[] {});
       Method browse = c.getMethod("browse", new Class[] { URI.class });
       Object arguments[] = { new URI(url) };
       browse.invoke(deskTop, arguments);

@@ -29,7 +29,6 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringBufferInputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Hashtable;
@@ -175,7 +174,7 @@ public class ZipUtil {
         }
         String str = ret.toString();
         if (asInputStream)
-          return new StringBufferInputStream(str);
+          return (InputStream) new ByteArrayInputStream(str.getBytes());
         return str;
       }
       boolean asBinaryString = false;

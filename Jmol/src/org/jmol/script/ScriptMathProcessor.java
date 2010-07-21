@@ -2888,14 +2888,14 @@ class ScriptMathProcessor {
       case Token.xyz:
         Point3f pt = new Point3f((Point3f) x2.value);
         // assumes a fractional coordinate
-        viewer.toCartesian(pt);
+        viewer.toCartesian(pt, true);
         return addX(pt);
       case Token.fracx:
       case Token.fracy:
       case Token.fracz:
       case Token.fracxyz:
         Point3f ptf = new Point3f((Point3f) x2.value);
-        viewer.toFractional(ptf);
+        viewer.toFractional(ptf, true);
         return (op.intValue == Token.fracxyz ? addX(ptf)
             : addX(op.intValue == Token.fracx ? ptf.x
                 : op.intValue == Token.fracy ? ptf.y : ptf.z));
@@ -2905,7 +2905,7 @@ class ScriptMathProcessor {
       case Token.unitxyz:
         Point3f ptu = new Point3f((Point3f) x2.value);
         viewer.toUnitCell(ptu, null);
-        viewer.toFractional(ptu);
+        viewer.toFractional(ptu, false);
         return (op.intValue == Token.unitxyz ? addX(ptu)
             : addX(op.intValue == Token.fracx ? ptu.x
                 : op.intValue == Token.fracy ? ptu.y : ptu.z));

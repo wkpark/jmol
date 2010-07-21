@@ -134,9 +134,9 @@ abstract class MapFileReader extends VolumeFileReader {
       vectors[0] = new Point3f(1, 0, 0);
     vectors[1] = new Point3f(0, 1, 0);
     vectors[2] = new Point3f(0, 0, 1);
-    unitCell.toCartesian(vectors[0]);
-    unitCell.toCartesian(vectors[1]);
-    unitCell.toCartesian(vectors[2]);
+    unitCell.toCartesian(vectors[0], false);
+    unitCell.toCartesian(vectors[1], false);
+    unitCell.toCartesian(vectors[2], false);
 
     Logger.info("Jmol unit cell vectors:");
     Logger.info("    a: " + vectors[0]);

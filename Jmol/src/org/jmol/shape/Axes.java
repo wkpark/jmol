@@ -114,8 +114,11 @@ public class Axes extends FontLineShape {
       if (unitcell != null && unitcell.haveUnitCell()) {
         Point3f[] vectors = unitcell.getUnitCellVertices();
         Point3f offset = unitcell.getCartesianOffset();
-        if (fixedOrigin == null)
+        if (fixedOrigin == null) {
           originPoint.set(offset);
+        } else {
+          offset = fixedOrigin;
+        }
         scale = viewer.getAxesScale() / 2f;
         // We must divide by 2 because that is the default for ALL axis types.
         // Not great, but it will have to do.
@@ -132,8 +135,10 @@ public class Axes extends FontLineShape {
   }
   
   public Object getProperty(String property, int index) {
-    if (property.equals("axisPoints"))
+    if (property == "axisPoints")
       return axisPoints;
+    if (property == "origin")
+      return fixedOrigin;
     if (property == "axesTypeXY")
       return (axisXY.z == 0 ? Boolean.FALSE : Boolean.TRUE);
     return null;

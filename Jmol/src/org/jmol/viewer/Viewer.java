@@ -2851,25 +2851,60 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.findAtomsInRectangle(rect, getVisibleFramesBitSet());
   }
 
-  public void toCartesian(Point3f pt) {
-    int modelIndex = animationManager.currentModelIndex;
-    if (modelIndex < 0)
-      return;
-    modelSet.toCartesian(modelIndex, pt);
+  
+  /**
+   * absolute or relative to origin of UNITCELL {x y z}
+   * @param pt
+   * @param asAbsolute TODO
+   * @param modelIndex
+   */
+  public void toCartesian(Point3f pt, boolean asAbsolute) {
+    SymmetryInterface unitCell = getCurrentUnitCell();
+    if (unitCell != null)
+      unitCell.toCartesian(pt, asAbsolute);
   }
 
+  /**
+   * absolute or relative to origin of UNITCELL {x y z}
+   * @param pt
+   * @param asAbsolute TODO
+   * @param modelIndex
+   */
+  public void toFractional(Point3f pt, boolean asAbsolute) {
+    SymmetryInterface unitCell = getCurrentUnitCell();
+    if (unitCell != null)
+      unitCell.toFractional(pt, asAbsolute);
+  }
+
+  /**
+   * relative to origin without regard to UNITCELL {x y z}
+   * @param modelIndex
+   * @param pt
+   * @param offset
+   */
   public void toUnitCell(Point3f pt, Point3f offset) {
-    int modelIndex = animationManager.currentModelIndex;
-    if (modelIndex < 0)
-      return;
-    modelSet.toUnitCell(modelIndex, pt, offset);
+    SymmetryInterface unitCell = getCurrentUnitCell();
+    if (unitCell != null)
+      unitCell.toUnitCell(pt, offset);
   }
 
-  public void toFractional(Point3f pt) {
-    int modelIndex = animationManager.currentModelIndex;
-    if (modelIndex < 0)
+  public void setCurrentUnitCellOffset(int ijk) {
+    SymmetryInterface unitCell = getCurrentUnitCell();
+    if (unitCell == null)
       return;
-    modelSet.toFractional(modelIndex, pt);
+    unitCell.setOffset(ijk);
+    global.setParameterValue("=frame " + getModelNumberDotted(animationManager.currentModelIndex)
+          + "; set unitcell ", ijk);
+  }
+
+  public void setCurrentUnitCellOffset(Point3f pt) {
+    // from "unitcell {i j k}" via uccage
+    SymmetryInterface unitCell = getCurrentUnitCell();
+    if (unitCell == null)
+      return;
+    unitCell.setUnitCellOffset(pt);
+    global.setParameterValue("=frame " + getModelNumberDotted(animationManager.currentModelIndex)
+          + "; set unitcell ", Escape.escape(pt));
   }
 
   public void setAtomData(int type, String name, String coordinateData,
@@ -2925,8 +2960,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public BitSet getAtomsWithin(float distance, Point3f coord) {
     BitSet bs = new BitSet();
     modelSet.getAtomsWithin(distance, coord, bs, -1);
-    if (distance < 0)
-      modelSet.getAtomsWithin(-distance, coord, bs, -1);
     return bs;
   }
 
@@ -3233,19 +3266,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getUnitCell(modelIndex);
   }
 
-  public void setCurrentUnitCellOffset(int offset) {
-    int modelIndex = animationManager.currentModelIndex;
-    if (modelSet.setUnitCellOffset(modelIndex, offset))
-      global.setParameterValue("=frame " + getModelNumberDotted(modelIndex)
-          + "; set unitcell ", offset);
-  }
-
-  public void setCurrentUnitCellOffset(Point3f pt) {
-    int modelIndex = animationManager.currentModelIndex;
-    if (modelSet.setUnitCellOffset(modelIndex, pt))
-      global.setParameterValue("=frame " + getModelNumberDotted(modelIndex)
-          + "; set unitcell ", Escape.escape(pt));
-  }
 
   /*
    * ****************************************************************************
@@ -6425,7 +6445,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return (getObjectMad(StateManager.OBJ_AXIS1) == 0
         || getAxesMode() != JmolConstants.AXES_MODE_UNITCELL
         || ((Boolean) getShapeProperty(JmolConstants.SHAPE_AXES, "axesTypeXY"))
-            .booleanValue() ? null : (Point3f[]) getShapeProperty(
+            .booleanValue() 
+        || getShapeProperty(JmolConstants.SHAPE_AXES, "origin") != null 
+            ? null : (Point3f[]) getShapeProperty(
         JmolConstants.SHAPE_AXES, "axisPoints"));
   }
 

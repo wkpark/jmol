@@ -359,14 +359,14 @@ abstract public class BondCollection extends AtomCollection {
         Atom a = atoms[i];
         if (a.bonds != null)
           for (int j = a.bonds.length; --j >= 0; )
-            bsBonds.set(a.bonds[j].index);
+            if (bsB.get(a.getBondedAtomIndex(j)))
+              bsBonds.set(a.bonds[j].index);
       }
     }
     for (int i = bsBonds.nextSetBit(0); i < bondCount && i >= 0; i = bsBonds.nextSetBit(i + 1)) {
       Bond bond = bonds[i];
       Atom atom1 = bond.atom1;
       Atom atom2 = bond.atom2;
-      if (isBonds || bsB.get(atom2.index) || bsB.get(atom1.index)) {
         float distanceSquared = atom1.distanceSquared(atom2);
         if (minDistanceIsFractionRadius || maxDistanceIsFractionRadius) {
           dAB = atom1.distance(atom2);
@@ -384,7 +384,6 @@ abstract public class BondCollection extends AtomCollection {
           bsDelete.set(i);
           nDeleted++;
         }
-      }
     }
     if (nDeleted > 0)
       deleteBonds(bsDelete, false);

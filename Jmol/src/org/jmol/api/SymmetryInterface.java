@@ -72,9 +72,11 @@ public interface SymmetryInterface {
                                          Vector3f[] axes, Point3f ptTemp1,
                                          Point3f ptTemp2);
 
+  public abstract void setUnitCellAllFractionalRelative(boolean TF);
+  
   public abstract void setUnitCell(float[] notionalUnitCell);
 
-  public abstract void toCartesian(Point3f pt);
+  public abstract void toCartesian(Point3f pt, boolean asAbsolue);
 
   public abstract Object[] getEllipsoid(float[] parBorU);
 

@@ -1,4 +1,4 @@
-/* $RCSfile$
+/* $RCSfiodelle$allrueFFFF
  * $Author: egonw $
  * $Date: 2005-11-10 09:52:44 -0600 (Thu, 10 Nov 2005) $
  * $Revision: 4255 $
@@ -208,10 +208,10 @@ public class Symmetry implements SymmetryInterface {
       unitCell.setOrientation(matUnitCellOrientation);
   }
 
-  public void toCartesian(Point3f pt) {
+  public void toCartesian(Point3f fpt, boolean isAbsolute) {
     if (unitCell == null)
       return;
-    unitCell.toCartesian(pt);
+    unitCell.toCartesian(fpt, isAbsolute);
   }
 
   public Object[] getEllipsoid(float[] parBorU) {
@@ -301,6 +301,8 @@ public class Symmetry implements SymmetryInterface {
       return;
     setUnitCell(notionalUnitcell);
     setUnitCellOffset((Point3f) modelAuxiliaryInfo.get("unitCellOffset"));
+    if (modelAuxiliaryInfo.containsKey("jmolData"))
+      setUnitCellAllFractionalRelative(true);
     Matrix3f matUnitCellOrientation = (Matrix3f) modelAuxiliaryInfo.get("matUnitCellOrientation");
     if (matUnitCellOrientation != null)
       setUnitCellOrientation(matUnitCellOrientation);
@@ -335,6 +337,11 @@ public class Symmetry implements SymmetryInterface {
   public void setMinMaxLatticeParameters(Point3i minXYZ, Point3i maxXYZ) {
     if (unitCell != null)
       unitCell.setMinMaxLatticeParameters(minXYZ, maxXYZ);
+  }
+
+  public void setUnitCellAllFractionalRelative(boolean TF) {
+    if (unitCell != null)
+      unitCell.setAllFractionalRelative(TF);
   }
 
 }  

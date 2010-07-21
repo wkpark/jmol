@@ -688,31 +688,38 @@ final public class Atom extends Point3fi implements JmolNode {
     return (group.chain.modelSet.getMoleculeIndex(index) + 1);
   }
    
-  public float getFractionalCoord(char ch) {
-    Point3f pt = getFractionalCoord();
+  private float getFractionalCoord(char ch) {
+    Point3f pt = getFractionalCoord(true);
     return (ch == 'X' ? pt.x : ch == 'Y' ? pt.y : pt.z);
   }
     
-  public float getFractionalUnitCoord(char ch) {
+  private float getFractionalUnitCoord(char ch) {
     Point3f pt = getFractionalUnitCoord(false);
     return (ch == 'X' ? pt.x : ch == 'Y' ? pt.y : pt.z);
   }
 
-  public Point3f getFractionalCoord() {
+  private Point3f getFractionalCoord(boolean asAbsolute) {
+    // asAbsolute TRUE uses the original unshifted matrix
     SymmetryInterface[] c = group.chain.modelSet.unitCells;
     Point3f pt = new Point3f(this);
-    if (c != null)
-      c[modelIndex].toFractional(pt, false);
+    if (c != null && c[modelIndex].haveUnitCell())
+      c[modelIndex].toFractional(pt, asAbsolute);
     return pt;
   }
   
   public Point3f getFractionalUnitCoord(boolean asCartesian) {
     SymmetryInterface[] c = group.chain.modelSet.unitCells;
     Point3f pt = new Point3f(this);
-    if (c != null) {
-      c[modelIndex].toUnitCell(pt, null);
-      if (!asCartesian)
+    if (c != null && c[modelIndex].haveUnitCell()) {
+      if (group.chain.model.isJmolDataFrame) {
         c[modelIndex].toFractional(pt, false);
+        if (asCartesian)
+          c[modelIndex].toCartesian(pt, false);
+      } else {
+        c[modelIndex].toUnitCell(pt, null);
+        if (!asCartesian)
+          c[modelIndex].toFractional(pt, false);
+      }
     }
     return pt;
   }
@@ -722,16 +729,21 @@ final public class Atom extends Point3fi implements JmolNode {
     if (c == null) 
       return distance(pt);
     ptTemp1.set(this);
-    c[modelIndex].toUnitCell(ptTemp1, null);
     ptTemp2.set(pt);
-    c[modelIndex].toUnitCell(ptTemp2, null);
+    if (group.chain.model.isJmolDataFrame) {
+      c[modelIndex].toFractional(ptTemp1, true);
+      c[modelIndex].toFractional(ptTemp2, true);
+    } else {
+      c[modelIndex].toUnitCell(ptTemp1, null);
+      c[modelIndex].toUnitCell(ptTemp2, null);
+    }
     return ptTemp1.distance(ptTemp2);
   }
   
   void setFractionalCoord(int tok, float fValue) {
     SymmetryInterface[] c = group.chain.modelSet.unitCells;
-    if (c != null)
-      c[modelIndex].toFractional(this, false);
+    if (c != null && c[modelIndex].haveUnitCell())
+      c[modelIndex].toFractional(this, true);
     switch (tok) {
     case Token.fracx:
       x = fValue;
@@ -743,15 +755,15 @@ final public class Atom extends Point3fi implements JmolNode {
       z = fValue;
       break;
     }
-    if (c != null)
-      c[modelIndex].toCartesian(this);
+    if (c != null && c[modelIndex].haveUnitCell())
+      c[modelIndex].toCartesian(this, true);
   }
   
   void setFractionalCoord(Point3f ptNew) {
     set(ptNew);
     SymmetryInterface[] c = group.chain.modelSet.unitCells;
-    if (c != null)
-      c[modelIndex].toCartesian(this);
+    if (c != null && c[modelIndex].haveUnitCell())
+      c[modelIndex].toCartesian(this, !group.chain.model.isJmolDataFrame);
   }
   
   boolean isCursorOnTopOf(int xCursor, int yCursor,
@@ -802,7 +814,7 @@ final public class Atom extends Point3fi implements JmolNode {
     if (useChimeFormat) {
       String group3 = getGroup3(true);
       char chainID = getChainID();
-      Point3f pt = (group.chain.modelSet.unitCells == null ? null : getFractionalCoord());
+      Point3f pt = (group.chain.modelSet.unitCells == null ? null : getFractionalCoord(true));
       return "Atom: " + (group3 == null ? getElementSymbol() : getAtomName()) + " " + getAtomNumber() 
           + (group3 != null && group3.length() > 0 ? 
               (isHetero() ? " Hetero: " : " Group: ") + group3 + " " + getResno() 
@@ -816,7 +828,7 @@ final public class Atom extends Point3fi implements JmolNode {
   }
 
   String getIdentityXYZ(boolean allInfo) {
-    Point3f pt = getFractionalCoord();
+    Point3f pt = (group.chain.model.isJmolDataFrame ? getFractionalCoord(false) : this);
     return getIdentity(allInfo) + " " + pt.x + " " + pt.y + " " + pt.z;  
   }
   
@@ -1300,9 +1312,10 @@ final public class Atom extends Point3fi implements JmolNode {
   public static Tuple3f atomPropertyTuple(Atom atom, int tok) {
     switch (tok) {
     case Token.fracxyz:
-      return atom.getFractionalCoord();
+      return atom.getFractionalCoord(!atom.group.chain.model.isJmolDataFrame);
     case Token.unitxyz:
-      return atom.getFractionalUnitCoord(false);
+      return (atom.group.chain.model.isJmolDataFrame ? atom.getFractionalCoord(false) 
+          : atom.getFractionalUnitCoord(false));
     case Token.vibxyz:
       Vector3f v = atom.getVibrationVector();
       if (v == null)

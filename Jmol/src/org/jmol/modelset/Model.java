@@ -172,7 +172,6 @@ public final class Model {
       String jmolData, Properties properties, Hashtable auxiliaryInfo) {
     this.modelSet = modelSet;
     dataSourceFrame = this.modelIndex = modelIndex;
-    this.jmolData = jmolData;
     isTrajectory = (trajectoryBaseIndex >= 0);
     this.trajectoryBaseIndex = (isTrajectory ? trajectoryBaseIndex : modelIndex);
     if (auxiliaryInfo == null)
@@ -184,6 +183,8 @@ public final class Model {
     if (jmolData == null) {
       jmolFrameType = "modelSet";
     } else {
+      this.jmolData = jmolData;
+      isJmolDataFrame = true;
       auxiliaryInfo.put("jmolData", jmolData);
       auxiliaryInfo.put("title", jmolData);
       jmolFrameType = (jmolData.indexOf("ramachandran") >= 0 ? "ramachandran"
@@ -212,6 +213,9 @@ public final class Model {
   }
 
   boolean structureTainted;
+  boolean isJmolDataFrame;
+  
+  
   void calculateStructures() {
     structureTainted = modelSet.proteinStructureTainted = true;
     for (int i = bioPolymerCount; --i >= 0; ) {

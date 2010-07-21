@@ -772,7 +772,7 @@ public class AtomSetCollection {
             Atom atom = atoms[iAtomFirst + pt];
             Point3f c = new Point3f(atom);
             op.transform(c);
-            symmetry.toCartesian(c);
+            symmetry.toCartesian(c, false);
             if (doPackUnitCell) {
               symmetry.toUnitCell(c, ptOffset);
               atom.set(c);
@@ -905,7 +905,7 @@ public class AtomSetCollection {
         symmetry.newSpaceGroupPoint(iSym, atoms[i], ptAtom, transX, transY, transZ);
         Atom special = null;
         Point3f cartesian = new Point3f(ptAtom);
-        symmetry.toCartesian(cartesian);
+        symmetry.toCartesian(cartesian, false);
         if (doPackUnitCell) {
           symmetry.toUnitCell(cartesian, ptOffset);
           ptAtom.set(cartesian);
@@ -960,7 +960,7 @@ public class AtomSetCollection {
                 ptTemp.set(cartesians[i - iAtomFirst]);
               } else {
                 ptTemp.set(atoms[i]);
-                symmetry.toCartesian(ptTemp);
+                symmetry.toCartesian(ptTemp, false);
               }
               axes = symmetry.rotateEllipsoid(iSym, ptTemp, (Vector3f[]) axes, ptTemp1, ptTemp2);
             }

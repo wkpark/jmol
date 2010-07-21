@@ -1317,11 +1317,11 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public boolean isJmolDataFrame(int modelIndex) {
-    return (modelIndex >= 0 && modelIndex < modelCount && models[modelIndex].jmolData != null);
+    return (modelIndex >= 0 && modelIndex < modelCount && models[modelIndex].isJmolDataFrame);
   }
   
   private boolean isJmolDataFrame(Atom atom) {
-    return (models[atom.modelIndex].jmolData != null);
+    return (models[atom.modelIndex].isJmolDataFrame);
   }
 
   public void setJmolDataFrame(String type, int modelIndex, int modelDataIndex) {
@@ -1580,41 +1580,6 @@ abstract public class ModelCollection extends BondCollection {
         : unitCell.getSymmetryInfoString());
   }
 
-  public void toCartesian(int modelIndex, Point3f pt) {
-    SymmetryInterface unitCell = getUnitCell(modelIndex);
-    if (unitCell != null)
-      unitCell.toCartesian(pt);
-  }
-
-  public void toFractional(int modelIndex, Point3f pt) {
-    SymmetryInterface unitCell = getUnitCell(modelIndex);
-    if (unitCell != null)
-      unitCell.toFractional(pt, false);
-  }
-
-  public void toUnitCell(int modelIndex, Point3f pt, Point3f offset) {
-    SymmetryInterface unitCell = getUnitCell(modelIndex);
-    if (unitCell != null)
-      unitCells[modelIndex].toUnitCell(pt, offset);
-  }
-
-  public boolean setUnitCellOffset(int modelIndex, Point3f pt) {
-    // from "unitcell {i j k}" via uccage
-    SymmetryInterface unitCell = getUnitCell(modelIndex);
-    if (unitCell == null)
-      return false;
-    unitCell.setUnitCellOffset(pt);
-    return true;
-  }
-
-  public boolean setUnitCellOffset(int modelIndex, int nnn) {
-    SymmetryInterface unitCell = getUnitCell(modelIndex);
-    if (unitCell == null)
-      return false;
-    unitCell.setOffset(nnn);
-    return true;
-  }
-  
   ///////// molecules /////////
 
 
@@ -2168,6 +2133,7 @@ abstract public class ModelCollection extends BondCollection {
               atomCount)
               : bsSymmetry);
     case Token.unitcell:
+      // select UNITCELL (a relative quantity)
       bs = new BitSet();
       SymmetryInterface unitcell = viewer.getCurrentUnitCell();
       if (unitcell == null)
@@ -2179,20 +2145,25 @@ abstract public class ModelCollection extends BondCollection {
           bs.set(i);
       return bs;
     case Token.cell:
+      // select cell=555 (an absolute quantity)
       bs = new BitSet();
       info = (int[]) specInfo;
       Point3f ptcell = new Point3f(info[0] / 1000f, info[1] / 1000f,
           info[2] / 1000f);
       pt = new Point3f();
       for (int i = atomCount; --i >= 0;)
-        if (isInLatticeCell(i, ptcell, pt, false))
+        if (isInLatticeCell(i, ptcell, pt, true))
           bs.set(i);
       return bs;
     }
   }
 
 
-  protected boolean isInLatticeCell(int i, Point3f cell, Point3f pt, boolean isAbsolute) {
+  private boolean isInLatticeCell(int i, Point3f cell, Point3f pt, boolean isAbsolute) {
+    // this is the one method that allows for an absolute fractional cell business
+    // but it is always called with isAbsolute FALSE.
+    // so then it is determining values for select UNITCELL and the like.
+    
     int iModel = atoms[i].modelIndex;
     SymmetryInterface uc = getUnitCell(iModel);
     if (uc == null)
@@ -2231,7 +2202,6 @@ abstract public class ModelCollection extends BondCollection {
           if (!bsCheck.get(iModel))
             continue;
           if (distance < 0) {
-            getAtomsWithin(-distance, atoms[i], bsResult, -1);
             getAtomsWithin(distance, atoms[i].getFractionalUnitCoord(true),
                 bsResult, -1);
             continue;
@@ -2243,7 +2213,6 @@ abstract public class ModelCollection extends BondCollection {
       bsResult.or(bs);
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
         if (distance < 0) {
-            getAtomsWithin(-distance, atoms[i], bsResult, atoms[i].modelIndex);
             getAtomsWithin(distance, atoms[i], bsResult, atoms[i].modelIndex);
             continue;
           }
@@ -2274,7 +2243,7 @@ abstract public class ModelCollection extends BondCollection {
      if (bsResult == null)
       bsResult = new BitSet();
 
-    if (distance < 0) { // just check all unitCell distances
+    if (distance < 0) { // check all unitCell distances
       distance = -distance;
       final Point3f ptTemp1 = new Point3f();
       final Point3f ptTemp2 = new Point3f();
@@ -3479,7 +3448,7 @@ abstract public class ModelCollection extends BondCollection {
         return "";
       Point3f sympt = new Point3f();
       symTemp.newSpaceGroupPoint(iSym, pt, sympt, 0, 0, 0);
-      symTemp.toCartesian(sympt);
+      symTemp.toCartesian(sympt, false);
       return sympt;
     }
     // null id means "array info only" but here we want the draw commands

@@ -280,8 +280,8 @@ public class CrystalReader extends AtomSetCollectionReader {
     float[] params = new float[6];
     fillFloatArray(params);
     SimpleUnitCell u = new SimpleUnitCell(params);
-    u.toCartesian(a);
-    u.toCartesian(b);
+    u.toCartesian(a, false);
+    u.toCartesian(b, false);
     matUnitCellOrientation = Quaternion.getQuaternionFrame(new Point3f(), a, b).getMatrix();
 
   }

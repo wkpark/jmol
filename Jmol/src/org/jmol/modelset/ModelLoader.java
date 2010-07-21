@@ -900,7 +900,7 @@ public final class ModelLoader extends ModelSet {
         int modelIndex = atoms[i].modelIndex;
         if (!unitCells[modelIndex].getCoordinatesAreFractional())
           continue;
-        unitCells[modelIndex].toCartesian(atoms[i]);
+        unitCells[modelIndex].toCartesian(atoms[i], false);
         //if (Logger.debugging)
           //Logger.debug("atom " + i + ": " + (Point3f) atoms[i]);
       }
@@ -1247,17 +1247,26 @@ public final class ModelLoader extends ModelSet {
     }
   }
   
-  public void createAtomDataSet(int tokType, Object atomSetCollection, BitSet bsSelected) {
-    if (atomSetCollection == null) 
-        return; 
+  public void createAtomDataSet(int tokType, Object atomSetCollection,
+                                BitSet bsSelected) {
+    if (atomSetCollection == null)
+      return;
     // must be one of JmolConstants.LOAD_ATOM_DATA_TYPES
     JmolAdapter adapter = viewer.getModelAdapter();
     Point3f pt = new Point3f();
     Point3f v = new Point3f();
     float tolerance = viewer.getLoadAtomDataTolerance();
+    if (unitCells != null)
+      for (int i = bsSelected.nextSetBit(0); i >= 0; i = bsSelected
+          .nextSetBit(i + 1))
+        if (atoms[i].getAtomSymmetry() != null) {
+          tolerance = -tolerance;
+          break;
+        }
     int i = -1;
     int n = 0;
-    boolean loadAllData = (BitSetUtil.cardinalityOf(bsSelected) == viewer.getAtomCount());
+    boolean loadAllData = (BitSetUtil.cardinalityOf(bsSelected) == viewer
+        .getAtomCount());
     for (JmolAdapter.AtomIterator iterAtom = adapter
         .getAtomIterator(atomSetCollection); iterAtom.hasNext();) {
       float x = iterAtom.getX();
@@ -1273,13 +1282,13 @@ public final class ModelLoader extends ModelSet {
           break;
         n++;
         if (Logger.debugging)
-          Logger.debug("atomIndex = " + i+ ": " + (Point3f)atoms[i] + " --> (" + x + "," + y + "," + z);
+          Logger.debug("atomIndex = " + i + ": " + (Point3f) atoms[i]
+              + " --> (" + x + "," + y + "," + z);
         setAtomCoord(i, x, y, z);
         continue;
       }
       pt.set(x, y, z);
       BitSet bs = new BitSet(atomCount);
-      getAtomsWithin(-tolerance, pt, bs, -1);
       getAtomsWithin(tolerance, pt, bs, -1);
       bs.and(bsSelected);
       if (loadAllData) {
@@ -1288,7 +1297,8 @@ public final class ModelLoader extends ModelSet {
           Logger.warn("createAtomDataSet: no atom found at position " + pt);
           continue;
         } else if (n > 1 && Logger.debugging) {
-          Logger.debug("createAtomDataSet: " + n + " atoms found at position " + pt);
+          Logger.debug("createAtomDataSet: " + n + " atoms found at position "
+              + pt);
         }
       }
       switch (tokType) {
@@ -1298,18 +1308,20 @@ public final class ModelLoader extends ModelSet {
         float vz = iterAtom.getVectorZ();
         if (Float.isNaN(vx + vy + vz))
           continue;
-          v.set(vx, vy, vz);
-          if (Logger.debugging)
-            Logger.info("xyz: " + pt + " vib: " + v);
-          setAtomCoord(bs,Token.vibxyz, v);
+        v.set(vx, vy, vz);
+        if (Logger.debugging)
+          Logger.info("xyz: " + pt + " vib: " + v);
+        setAtomCoord(bs, Token.vibxyz, v);
         break;
       case Token.occupancy:
         // [0 to 100], default 100
-        setAtomProperty(bs, tokType, iterAtom.getOccupancy(), 0, null, null, null);
+        setAtomProperty(bs, tokType, iterAtom.getOccupancy(), 0, null, null,
+            null);
         break;
       case Token.partialcharge:
         // anything but NaN, default NaN
-        setAtomProperty(bs, tokType, 0, iterAtom.getPartialCharge(), null, null, null);
+        setAtomProperty(bs, tokType, 0, iterAtom.getPartialCharge(), null,
+            null, null);
         break;
       case Token.temperature:
         // anything but NaN but rounded to 0.01 precision and stored as a short (-32000 - 32000), default NaN
@@ -1329,6 +1341,6 @@ public final class ModelLoader extends ModelSet {
       recalculateLeadMidpointsAndWingVectors(-1);
       break;
     }
-    
+
   }
 }

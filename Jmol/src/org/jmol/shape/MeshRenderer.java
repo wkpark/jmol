@@ -90,7 +90,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
               if (tx == 0 && ty == 0 && tz == 0)
                 continue;
               latticeOffset.set(tx, ty, tz);
-              unitcell.toCartesian(latticeOffset);
+              unitcell.toCartesian(latticeOffset, false);
               for (int i = vertexCount; --i >= 0;) {
                 vTemp.set(vertices[i]);
                 vTemp.add(latticeOffset);

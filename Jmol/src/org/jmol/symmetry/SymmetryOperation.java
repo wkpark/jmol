@@ -433,10 +433,11 @@ class SymmetryOperation extends Matrix4f {
     }
   }
 
+  // action of this method depends upon setting of unitcell
   private void transformCartesian(UnitCell unitcell, Point3f pt) {
     unitcell.toFractional(pt, false);
     transform(pt);
-    unitcell.toCartesian(pt);
+    unitcell.toCartesian(pt, false);
 
   }
   
@@ -506,7 +507,7 @@ class SymmetryOperation extends Matrix4f {
       uc.toUnitCell(pt02, ptemp);
       uc.toFractional(pt01, false);
       m.transform(pt01);
-      uc.toCartesian(pt01);
+      uc.toCartesian(pt01, false);
       uc.toUnitCell(pt01, ptemp);
       if (pt01.distance(pt02) > 0.1f)
         return null;
@@ -542,10 +543,10 @@ class SymmetryOperation extends Matrix4f {
     p2.add(vtrans);
     p3.add(vtrans);
     approx(vtrans);
-    uc.toCartesian(p0);
-    uc.toCartesian(p1);
-    uc.toCartesian(p2);
-    uc.toCartesian(p3);
+    uc.toCartesian(p0, false);
+    uc.toCartesian(p1, false);
+    uc.toCartesian(p2, false);
+    uc.toCartesian(p3, false);
 
     Vector3f v01 = new Vector3f();
     v01.sub(p1, p0);
@@ -755,7 +756,7 @@ class SymmetryOperation extends Matrix4f {
         ptemp.z = 0;
       }
       ftrans.set(ptemp);
-      uc.toCartesian(ptemp);
+      uc.toCartesian(ptemp, false);
       trans.set(ptemp);
     }
 

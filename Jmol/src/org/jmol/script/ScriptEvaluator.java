@@ -2215,9 +2215,11 @@ public class ScriptEvaluator {
     if (isCmdLine_c_or_C_Option)
       Logger.info("--<<-------------".substring(0, scriptLevel + 5)
           + scriptLevel + " " + filename);
-    if (scriptLevel == 0 || thisContext == null)
+    if (scriptLevel == 0)
       return;
     scriptLevel--;
+    if (thisContext == null)
+      return;
     // we must save (and thus NOT restore) the current statement
     // business when doing push/pop for commands like FOR and WHILE
     ScriptContext scTemp = (isFlowCommand ? getScriptContext() : null);
@@ -4310,9 +4312,10 @@ public class ScriptEvaluator {
     } else if (pt.z == 0) {
       pt3.set(pt1.x, 0, 1);
     }
-    viewer.toCartesian(pt1);
-    viewer.toCartesian(pt2);
-    viewer.toCartesian(pt3);
+    // base this one on the currently defined unit cell
+    viewer.toCartesian(pt1, false);
+    viewer.toCartesian(pt2, false);
+    viewer.toCartesian(pt3, false);
     Vector3f plane = new Vector3f();
     float w = Measure.getNormalThroughPoints(pt1, pt2, pt3, plane, vAB, vAC);
     return new Point4f(plane.x, plane.y, plane.z, w);
@@ -4586,7 +4589,7 @@ public class ScriptEvaluator {
     if (n == 3) {
       Point3f pt = new Point3f(coord[0], coord[1], coord[2]);
       if (coordinatesAreFractional && doConvert && !isSyntaxCheck)
-        viewer.toCartesian(pt);
+        viewer.toCartesian(pt, true);
       return pt;
     }
     if (n == 4) {

@@ -1,4 +1,4 @@
-/* Jmol 11.7 script library Jmol.js  12:17 AM 4/20/2009 Bob Hanson
+/* Jmol 11.7 script library Jmol.js  12:17 AM 4/20/2009 Bob Hanson 
 
  checkbox heirarchy -- see http://chemapps.stolaf.edu/jmol/docs/examples-11/check.htm
 

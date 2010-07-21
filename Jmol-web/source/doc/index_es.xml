@@ -224,6 +224,8 @@ turco (tr)
     <tr><td><a href="http://www.webmo.net/">WebMO</a></td><td>Interfaz WebMO para paquetes de química computacional</td></tr>
     <tr><td><a href="http://www.cmbi.ru.nl/molden/molden_format.html">Molden</a></td><td>Densidad electrónica / orbitales moleculares</td></tr>
     <tr><td><a href="http://www.psicode.org/">PSI3</a></td><td>Formato de salida del paquete de programas de química cuántica PSI3</td></tr>
+    <tr><td><a href="http://www.crystal.unito.it/">CRYSTAL</a></td><td>Formato de salida de CRYSTAL, una herramienta de
+    computación para química del estado sólido y física. Grupo de Química Teórica, Univ. Turín, Italia.</td></tr>
     </table>
 		<i>
 	    * Los archivos comprimidos con gzip se descomprimen automáticamente

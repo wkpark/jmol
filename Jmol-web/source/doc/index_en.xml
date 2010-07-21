@@ -218,6 +218,8 @@ Turkish (tr),
     <tr><td><a href="http://www.webmo.net/">WebMO</a></td><td>WebMO interface to computational chemistry packages</td></tr>
     <tr><td><a href="http://www.cmbi.ru.nl/molden/molden_format.html">Molden</a></td><td>Electron density / molecular orbitals</td></tr>
     <tr><td><a href="http://www.psicode.org/">PSI3</a></td><td>Output files from the PSI3 suite of quantum chemical programs</td></tr>
+    <tr><td><a href="http://www.crystal.unito.it/">CRYSTAL</a></td><td>Output files from CRYSTAL, a computational tool 
+    for solid state chemistry and physics. Theoretical Chemistry Group, Univ. Torino, Italy.</td></tr>
     </table>
 		<i>
 	    * Files which are compressed with gzip will automatically

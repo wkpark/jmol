@@ -7,13 +7,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-07-11 19:51+0200\n"
-"PO-Revision-Date: 2010-05-30 06:23+0000\n"
-"Last-Translator: Eleanor Chen <chenyueg@gmail.com>\n"
+"PO-Revision-Date: 2010-07-21 10:41+0000\n"
+"Last-Translator: 英华 <wantinghard@gmail.com>\n"
 "Language-Team: Simplified Chinese <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-05-30 07:48+0000\n"
+"X-Launchpad-Export-Date: 2010-07-21 17:52+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -1363,9 +1363,8 @@ msgid "A web page containing Jmol applets"
 msgstr "一个包含Jmol小程序的网页"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:152
-#, fuzzy
 msgid "click and drag to reorder"
-msgstr "双击并拖动可以重新排序"
+msgstr "点击并拖动来重新排序"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:157
 msgid "Add Present Jmol State as Instance..."
@@ -1437,7 +1436,7 @@ msgstr "选择建立一个目录或HTML文件以保存"
 #: org/openscience/jmol/app/webexport/WebPanel.java:518
 #, java-format
 msgid "file {0} created"
-msgstr ""
+msgstr "已创建文件  {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:520
 msgid "Call to FileWriter unsuccessful."
@@ -1458,9 +1457,9 @@ msgid "adding {0}"
 msgstr "正在加入 {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:656
-#, fuzzy, java-format
+#, java-format
 msgid "Unable to load resource {0}"
-msgstr "无法找到网址 \"{0}\"。"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:708
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
@@ -1541,68 +1540,59 @@ msgstr "红色 / 绿色"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:141
 msgid "Animation Control"
-msgstr ""
+msgstr "动画控制"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:165
-#, fuzzy
 msgid "Animation"
-msgstr "停止动画(&S)"
+msgstr "动画"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:166
 msgid "First Frame"
-msgstr ""
+msgstr "第一帧"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:168
-#, fuzzy
 msgid "Previous Frame"
-msgstr "转到上一帧"
+msgstr "前一帧"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:170
 msgid "Play"
-msgstr ""
+msgstr "播放"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:172
-#, fuzzy
 msgid "Next Frame"
-msgstr "转到下一帧"
+msgstr "下一帧"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:174
-#, fuzzy
 msgid "Pause"
-msgstr "粘贴(&P)"
+msgstr "暂停"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:176
-#, fuzzy
 msgid "Last Frame"
-msgstr "转到最后一帧"
+msgstr "最后一帧"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:178
-#, fuzzy
 msgid "Mode:"
-msgstr "方法: "
+msgstr "模式："
 
 #: org/openscience/jmol/app/webexport/Widgets.java:179
-#, fuzzy
 msgid "Loop"
-msgstr "循环(&L)"
+msgstr "循环"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:181
-#, fuzzy
 msgid "Palindrome"
-msgstr "回文(&A)"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:183
 msgid "Play Once"
-msgstr ""
+msgstr "播放一次"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:192
 msgid "Open Console Button"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:205
-#, fuzzy
 msgid "launch Jmol console"
-msgstr "Jmol控制台"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:212
 msgid "Download view"
@@ -1615,9 +1605,8 @@ msgstr "功能尚未实现"
 #~ msgid "Jmol Script Console"
 #~ msgstr "Jmol 脚本控制台"
 
-#, fuzzy
-#~ msgid "Stop"
-#~ msgstr "步进"
+#~ msgid "Show Selected"
+#~ msgstr "显示所选对象"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "正在增加 JmolPopIn.js"
@@ -1630,6 +1619,3 @@ msgstr "功能尚未实现"
 
 #~ msgid "stereo off"
 #~ msgstr "立体 关"
-
-#~ msgid "Show Selected"
-#~ msgstr "显示所选对象"

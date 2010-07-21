@@ -2856,7 +2856,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * absolute or relative to origin of UNITCELL {x y z}
    * @param pt
    * @param asAbsolute TODO
-   * @param modelIndex
    */
   public void toCartesian(Point3f pt, boolean asAbsolute) {
     SymmetryInterface unitCell = getCurrentUnitCell();
@@ -2868,7 +2867,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * absolute or relative to origin of UNITCELL {x y z}
    * @param pt
    * @param asAbsolute TODO
-   * @param modelIndex
    */
   public void toFractional(Point3f pt, boolean asAbsolute) {
     SymmetryInterface unitCell = getCurrentUnitCell();
@@ -2878,7 +2876,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   /**
    * relative to origin without regard to UNITCELL {x y z}
-   * @param modelIndex
    * @param pt
    * @param offset
    */

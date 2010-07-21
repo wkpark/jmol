@@ -513,11 +513,12 @@ final public class JmolConstants {
    * values are stored as MAR -- Milli Angstrom Radius
    * Used for spacefill rendering of atoms.
    * Values taken from OpenBabel.
-   * @see <a href="http://openbabel.sourceforge.net">openbabel.sourceforge.net</a>
-   * @see <a href="http://jmol.svn.sourceforge.net/viewvc/jmol/trunk/Jmol/src/org/jmol/_documents/vdw_comparison.xls">vdw_comparison.xls</a>
    * 
    * Note that AUTO_JMOL, AUTO_BABEL, and AUTO_RASMOL are 4, 5, and 6, respectively,
    * so their mod will be JMOL, BABEL, and RASMOL. AUTO is 8, so will default to Jmol
+   * 
+   * @see <a href="http://openbabel.sourceforge.net">openbabel.sourceforge.net</a>
+   * @see <a href="http://jmol.svn.sourceforge.net/viewvc/jmol/trunk/Jmol/src/org/jmol/_documents/vdw_comparison.xls">vdw_comparison.xls</a>
    */
   public final static short[] vanderwaalsMars = {
     // Jmol -- accounts for missing H atoms on PDB files -- source unknown

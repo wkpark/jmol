@@ -2001,8 +2001,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
 
   /**
    * An "implied string" is a parameter that is not quoted but because of its
-   * position in a command is implied to be a string. First we must exclude
-   * @xxxx. Then we consume the entire math syntax @{......} or any set of
+   * position in a command is implied to be a string. First we must exclude @xxxx.
+   * Then we consume the entire math syntax @{......} or any set of
    * characters not involving white space.
    * @param allowSpace TODO
    * 

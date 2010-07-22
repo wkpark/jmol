@@ -384,24 +384,21 @@ public class SmarterJmolAdapter extends JmolAdapter {
 
   public Object getAtomSetCollectionFromDOM(Object DOMNode, Hashtable htParams) {
     try {
-      Object atomSetCollectionOrErrorMessage = 
-        Resolver.DOMResolve(DOMNode, htParams);
-      if (atomSetCollectionOrErrorMessage instanceof String)
-        return atomSetCollectionOrErrorMessage;
-      if (atomSetCollectionOrErrorMessage instanceof AtomSetCollection) {
-        AtomSetCollection atomSetCollection =
-          (AtomSetCollection)atomSetCollectionOrErrorMessage;
-        if (atomSetCollection.errorMessage != null)
-          return atomSetCollection.errorMessage;
-        return atomSetCollection;
-      }
-      return "unknown DOM reader error";
-    } catch (Exception e) {
+      Object ret = Resolver.DOMResolve(DOMNode, htParams);
+      if (!(ret instanceof AtomSetCollectionReader))
+        return ret;
+      AtomSetCollectionReader a = (AtomSetCollectionReader) ret;
+      a.setup("DOM node", htParams, null);
+      ret = a.readData(DOMNode);
+      if (!(ret instanceof AtomSetCollection))
+        return ret;
+      AtomSetCollection asc = (AtomSetCollection) ret;
+      if (asc.errorMessage != null)
+        return asc.errorMessage;
+      return asc;
+    } catch (Throwable e) {
       Logger.error(null, e);
       return "" + e;
-    } catch (Error er) {
-      Logger.error(null, er);
-      return "" + er;
     }
   }
 

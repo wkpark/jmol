@@ -197,19 +197,18 @@ public abstract class AtomSetCollectionReader {
 
   Object readData() throws Exception {
     initialize();
-    readAtomSetCollection(reader);
-    reader.close();
-    return finish();
-  }  
-  
-  void setup(String fileName, Hashtable htParams) {
-    this.htParams = htParams; 
-    this.fileName = fileName;
-  }
-
-  Object readData(BufferedReader reader) throws Exception {
-    initialize();
-    readAtomSetCollection(reader);
+    atomSetCollection = new AtomSetCollection(readerName, this);
+    try {
+      initializeReader();
+      if (line == null && continuing)
+        readLine();
+      while (line != null && continuing)
+        if (checkLine())
+          readLine();
+      finalizeReader();
+    } catch (Exception e) {
+      setError(e);
+    }
     reader.close();
     return finish();
   }  
@@ -227,22 +226,6 @@ public abstract class AtomSetCollectionReader {
   public boolean continuing = true;
 
   protected JmolViewer viewer;
-  final public void readAtomSetCollection(BufferedReader reader) {
-    if (reader != null)
-      this.reader = reader;
-    atomSetCollection = new AtomSetCollection(readerName, this);
-    try {
-      initializeReader();
-      if (line == null && continuing)
-        readLine();
-      while (line != null && continuing)
-        if (checkLine())
-          readLine();
-      finalizeReader();
-    } catch (Exception e) {
-      setError(e);
-    }
-  }
   
   protected void initializeReader() throws Exception {
     // reader-dependent

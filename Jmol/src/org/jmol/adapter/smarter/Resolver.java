@@ -298,7 +298,6 @@ public class Resolver {
       className = classBase + "xml.XmlReader";
       atomSetCollectionReaderClass = Class.forName(className);
       atomSetCollectionReader = (AtomSetCollectionReader) atomSetCollectionReaderClass.newInstance();
-      atomSetCollectionReader.setup("DOM node", htParams);
       return atomSetCollectionReader;
     } catch (Exception e) {
       String err = "File reader was not found:" + className;

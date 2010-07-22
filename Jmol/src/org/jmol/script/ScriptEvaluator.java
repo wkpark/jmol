@@ -6995,7 +6995,8 @@ public class ScriptEvaluator {
     } else {
       int argb = 0;
       i = 2;
-      switch (getToken(1).tok) {
+      int tok = getToken(1).tok;
+      switch (tok) {
       case Token.dollarsign:
         setObjectProperty();
         return;
@@ -7073,7 +7074,7 @@ public class ScriptEvaluator {
         loadShape(JmolConstants.SHAPE_HALOS);
         setShapeProperty(
             JmolConstants.SHAPE_HALOS,
-            (theTok == Token.selectionhalos ? "argbSelection" : "argbHighlight"),
+            (tok == Token.selectionhalos ? "argbSelection" : "argbHighlight"),
             new Integer(argb));
         return;
       case Token.axes:

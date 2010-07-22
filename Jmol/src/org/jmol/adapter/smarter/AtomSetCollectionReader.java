@@ -206,7 +206,7 @@ public abstract class AtomSetCollectionReader {
         if (checkLine())
           readLine();
       finalizeReader();
-    } catch (Exception e) {
+    } catch (Throwable e) {
       setError(e);
     }
     reader.close();
@@ -310,7 +310,7 @@ public abstract class AtomSetCollectionReader {
     return atomSetCollection;
   }
 
-  private void setError(Exception e) {
+  private void setError(Throwable e) {
     e.printStackTrace();
     if (line == null)
       atomSetCollection.errorMessage = "Unexpected end of file after line "

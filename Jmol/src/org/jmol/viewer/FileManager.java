@@ -1279,7 +1279,6 @@ public class FileManager {
     private String[] fileTypesIn;
     Object atomSetCollection;
     private DataReader[] stringReaders;
-    private Hashtable[] htParamsSet;
     private Hashtable htParams;
     private boolean isAppend;
 
@@ -1298,16 +1297,13 @@ public class FileManager {
       if (!isAppend && viewer.displayLoadErrors)
         viewer.zap(false, true, false);
 
-      htParamsSet = new Hashtable[fullPathNamesIn.length];
       boolean getReadersOnly = !viewer.displayLoadErrors;
-      for (int i = 0; i < htParamsSet.length; i++)
-        htParamsSet[i] = htParams; // for now, just one common parameter set
       atomSetCollection = viewer.getModelAdapter().getAtomSetCollectionReaders(
-          this, fullPathNamesIn, fileTypesIn, htParamsSet, getReadersOnly);
+          this, fullPathNamesIn, fileTypesIn, htParams, getReadersOnly);
       stringReaders = null;
       if (getReadersOnly && !(atomSetCollection instanceof String)) {
         atomSetCollection = viewer.getModelAdapter()
-            .getAtomSetCollectionFromSet(atomSetCollection, null);
+            .getAtomSetCollectionFromSet(atomSetCollection, null, htParams);
       }
       if (atomSetCollection instanceof String) {
         Logger.error("file ERROR: " + atomSetCollection);
@@ -1334,7 +1330,6 @@ public class FileManager {
         return stringReaders[i].getBufferedReader();
       String name = fullPathNamesIn[i];
       String[] subFileList = null;
-      Hashtable htParams = htParamsSet[0]; // for now -- just reusing this
       htParams.remove("subFileList");
       if (name.indexOf("|") >= 0)
         name = (subFileList = TextFormat.split(name, "|"))[0];

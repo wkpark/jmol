@@ -50,6 +50,7 @@ import org.jmol.viewer.JmolConstants;
  * mapped to element 0 (Xx), which has color pink and a relatively large
  * covalent bonding radius. 
  * @see org.jmol.api.JmolViewer
+ * @see org.jmol.api.SmarterJmolAdapter
  ****************************************************************/
 public abstract class JmolAdapter {
   
@@ -170,9 +171,9 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
    */
 
   abstract public Object getAtomSetCollectionReaders(JmolFileReaderInterface fileReader, String[] names, String[] types,
-                                    Hashtable[] htParams, boolean getReadersOnly);
+                                    Hashtable htParams, boolean getReadersOnly);
 
-  abstract public Object getAtomSetCollectionFromSet(Object readers, Object atomSets);
+  abstract public Object getAtomSetCollectionFromSet(Object readers, Object atomSets, Hashtable htParams);
 
   abstract public Object getAtomSetCollectionOrBufferedReaderFromZip(InputStream is, String fileName, String[] zipDirectory,
                              Hashtable htParams, boolean asBufferedReader);

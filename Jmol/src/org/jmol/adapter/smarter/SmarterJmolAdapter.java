@@ -48,25 +48,43 @@ public class SmarterJmolAdapter extends JmolAdapter {
     super("SmarterJmolAdapter");
   }
 
-  /* **************************************************************
-   * the file related methods
+  /**************************************************************
+   * 
+   * AtomSetCollectionReader.readData() will close any BufferedReader
+   *  
    * **************************************************************/
 
   public final static String PATH_KEY = ".PATH";
   public final static String PATH_SEPARATOR =
     System.getProperty("path.separator");
-  
-  public void finish(Object atomSetCollection) {
-    ((AtomSetCollection)atomSetCollection).finish();
+
+  /**
+   * Just get the resolved file type; if a file, does NOT close the reader
+   * 
+   * @param atomSetCollectionOrReader 
+   * @return a file type or null
+   * 
+   */
+  public String getFileTypeName(Object atomSetCollectionOrReader) {
+    if (atomSetCollectionOrReader instanceof AtomSetCollection)
+      return ((AtomSetCollection)atomSetCollectionOrReader).getFileTypeName();
+    if (atomSetCollectionOrReader instanceof BufferedReader)
+      return Resolver.getFileType((BufferedReader)atomSetCollectionOrReader);
+    return null;
   }
 
-  public String[] specialLoad(String name, String type) {
-    return Resolver.specialLoad(name, type);  
-  }
-  
+  /**
+   * The primary file or string reader -- returns just the reader now
+   * 
+   * @param name 
+   * @param type 
+   * @param bufferedReader 
+   * @param htParams 
+   * @return        an AtomSetCollectionReader or an error string
+   * 
+   */
   public Object getAtomSetCollectionReader(String name, String type,
                                    BufferedReader bufferedReader, Hashtable htParams) {
-    //FileOpenThread, TesetSmarterJmolAdapter
     try {
       Object ret = Resolver.getAtomCollectionReader(name, type,
           bufferedReader, htParams, -1);
@@ -92,6 +110,13 @@ public class SmarterJmolAdapter extends JmolAdapter {
     }
   }
 
+  /**
+   * Create the AtomSetCollection and return it
+   * 
+   * @param atomSetCollectionReader 
+   * @return an AtomSetCollection or an error string
+   * 
+   */
   public Object getAtomSetCollection(Object atomSetCollectionReader) {
     BufferedReader br = null;
     try {
@@ -114,8 +139,22 @@ public class SmarterJmolAdapter extends JmolAdapter {
     }
   }
 
+  /**
+   * primary for String[] or File[] reading -- two options
+   * are implemented --- return a set of simultaneously open readers,
+   * or return one single collection using a single reader
+   * 
+   * @param fileReader 
+   * @param names 
+   * @param types 
+   * @param htParams 
+   * @param getReadersOnly  TRUE for a set of readers; FALSE for one atomSetCollection
+   * 
+   * @return a set of AtomSetCollectionReaders, a single AtomSetCollection, or an error string
+   * 
+   */
   public Object getAtomSetCollectionReaders(JmolFileReaderInterface fileReader, String[] names, String[] types,
-                                    Hashtable[] htparamsSet, boolean getReadersOnly) {
+                                    Hashtable htParams, boolean getReadersOnly) {
     //FilesOpenThread
     int size = names.length;
     AtomSetCollectionReader[] readers = (getReadersOnly ? new AtomSetCollectionReader[size] : null);
@@ -126,12 +165,11 @@ public class SmarterJmolAdapter extends JmolAdapter {
         if (!(reader instanceof BufferedReader))
           return reader;
         Object ret = Resolver.getAtomCollectionReader(names[i],
-            (types == null ? null : types[i]), (BufferedReader) reader, (htparamsSet == null ? null
-                : htparamsSet[i]), i);
+            (types == null ? null : types[i]), (BufferedReader) reader, htParams, i);
         if (!(ret instanceof AtomSetCollectionReader))
           return ret;
           AtomSetCollectionReader r = (AtomSetCollectionReader) ret;
-          r.setup(names[i], htparamsSet[i], (BufferedReader) reader);
+          r.setup(names[i], htParams, (BufferedReader) reader);
           if (getReadersOnly) {
             readers[i] = r;
           } else {
@@ -149,27 +187,40 @@ public class SmarterJmolAdapter extends JmolAdapter {
     }
     if (getReadersOnly)
       return readers;
-    return getAtomSetCollectionFromSet(readers, atomsets);
+    return getAtomSetCollectionFromSet(readers, atomsets, htParams);
   }
    
-  public Object getAtomSetCollectionFromSet(Object readerSet, Object atomsets) {
+  /**
+   * 
+   * needed to consolidate a set of models into one model; could start
+   * with AtomSetCollectionReader[] or with AtomSetCollection[]
+   * 
+   * @param readerSet 
+   * @param atomsets 
+   * @param htParams 
+   * @return a single AtomSetCollection or an error string
+   * 
+   */
+  public Object getAtomSetCollectionFromSet(Object readerSet, Object atomsets,
+                                            Hashtable htParams) {
     AtomSetCollectionReader[] readers = (AtomSetCollectionReader[]) readerSet;
-    AtomSetCollection[] asc = (atomsets == null ? new AtomSetCollection[readers.length] : (AtomSetCollection[]) atomsets);
-    Hashtable htParams = null;
-    for (int i = 0; i < readers.length; i++) {
-      try {
-      Object ret = readers[i].readData();
-      if (!(ret instanceof AtomSetCollection))
-        return ret;
-      asc[i] = (AtomSetCollection) ret;
-      if (asc[i].errorMessage != null)
-        return asc[i].errorMessage;
-      } catch (Throwable e) {
-        Logger.error(null, e);
-        return "" + e;
+    AtomSetCollection[] asc = (atomsets == null ? new AtomSetCollection[readers.length]
+        : (AtomSetCollection[]) atomsets);
+    if (atomsets == null) {
+      for (int i = 0; i < readers.length; i++) {
+        try {
+          Object ret = readers[i].readData();
+          if (!(ret instanceof AtomSetCollection))
+            return ret;
+          asc[i] = (AtomSetCollection) ret;
+          if (asc[i].errorMessage != null)
+            return asc[i].errorMessage;
+        } catch (Throwable e) {
+          Logger.error(null, e);
+          return "" + e;
+        }
       }
     }
-    htParams = readers[0].htParams;
     if (htParams.containsKey("trajectorySteps")) {
       // this is one model with a set of coordinates from a 
       // molecular dynamics calculation
@@ -181,18 +232,28 @@ public class SmarterJmolAdapter extends JmolAdapter {
     return (result.errorMessage == null ? result : (Object) result.errorMessage);
   }
 
+  /**
+   * A rather complicated means of reading a ZIP file, which could be a 
+   * single file, or it could be a manifest-organized file, or it could be
+   * a Spartan directory.
+   * 
+   * @param is 
+   * @param fileName 
+   * @param zipDirectory 
+   * @param htParams 
+   * @param asBufferedReader 
+   * @return a single atomSetCollection
+   * 
+   */
   public Object getAtomSetCollectionOrBufferedReaderFromZip(InputStream is, String fileName, String[] zipDirectory,
                              Hashtable htParams, boolean asBufferedReader) {
     return staticGetAtomSetCollectionOrBufferedReaderFromZip(is, fileName, zipDirectory, htParams, 1, asBufferedReader);
   }
 
   private static Object staticGetAtomSetCollectionOrBufferedReaderFromZip(
-                                                                          InputStream is,
-                                                                          String fileName,
-                                                                          String[] zipDirectory,
-                                                                          Hashtable htParams,
-                                                                          int subFilePtr,
-                                                                          boolean asBufferedReader) {
+                                    InputStream is, String fileName,
+                                    String[] zipDirectory, Hashtable htParams,
+                                    int subFilePtr, boolean asBufferedReader) {
 
     // we're here because user is using | in a load file name
     // or we are opening a zip file.
@@ -391,6 +452,14 @@ public class SmarterJmolAdapter extends JmolAdapter {
     }
   }
 
+  /**
+   * Direct DOM HTML4 page reading; Egon was interested in this at one point.
+   * 
+   * @param DOMNode 
+   * @param htParams 
+   * @return a single AtomSetCollection or an error string
+   * 
+   */
   public Object getAtomSetCollectionFromDOM(Object DOMNode, Hashtable htParams) {
     try {
       Object ret = Resolver.DOMResolve(DOMNode, htParams);
@@ -411,14 +480,16 @@ public class SmarterJmolAdapter extends JmolAdapter {
     }
   }
 
-  public String getFileTypeName(Object atomSetCollectionOrReader) {
-    if (atomSetCollectionOrReader instanceof AtomSetCollection)
-      return ((AtomSetCollection)atomSetCollectionOrReader).getFileTypeName();
-    if (atomSetCollectionOrReader instanceof BufferedReader)
-      return Resolver.getFileType((BufferedReader)atomSetCollectionOrReader);
-    return null;
+  public String[] specialLoad(String name, String type) {
+    return Resolver.specialLoad(name, type);  
+  }
+  
+  public void finish(Object atomSetCollection) {
+    ((AtomSetCollection)atomSetCollection).finish();
   }
 
+  ////////////////////////// post processing ////////////////////////////
+  
   public String getAtomSetCollectionName(Object atomSetCollection) {
     return ((AtomSetCollection)atomSetCollection).getCollectionName();
   }

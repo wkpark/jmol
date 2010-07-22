@@ -115,10 +115,11 @@ public class SmarterJmolAdapter extends JmolAdapter {
   }
 
   public Object getAtomSetCollectionReaders(JmolFileReaderInterface fileReader, String[] names, String[] types,
-                                    Hashtable[] htparamsSet) {
+                                    Hashtable[] htparamsSet, boolean getReadersOnly) {
     //FilesOpenThread
     int size = names.length;
-    AtomSetCollectionReader[] atomSetCollectionReaders = new AtomSetCollectionReader[size];
+    AtomSetCollectionReader[] readers = (getReadersOnly ? new AtomSetCollectionReader[size] : null);
+    AtomSetCollection[] atomsets = (getReadersOnly ? null : new AtomSetCollection[size]);
     for (int i = 0; i < size; i++) {
       try {
         Object reader = fileReader.getBufferedReader(i);
@@ -127,23 +128,33 @@ public class SmarterJmolAdapter extends JmolAdapter {
         Object ret = Resolver.getAtomCollectionReader(names[i],
             (types == null ? null : types[i]), (BufferedReader) reader, (htparamsSet == null ? null
                 : htparamsSet[i]), i);
-        if (ret instanceof String)
+        if (!(ret instanceof AtomSetCollectionReader))
           return ret;
-        if (ret instanceof AtomSetCollectionReader) {
-          atomSetCollectionReaders[i] = (AtomSetCollectionReader) ret;
-          atomSetCollectionReaders[i].setup(names[i], htparamsSet[i], (BufferedReader) reader);
-        }
+          AtomSetCollectionReader r = (AtomSetCollectionReader) ret;
+          r.setup(names[i], htparamsSet[i], (BufferedReader) reader);
+          if (getReadersOnly) {
+            readers[i] = r;
+          } else {
+            ret = r.readData();
+            if (!(ret instanceof AtomSetCollection))
+              return ret;
+            atomsets[i] = (AtomSetCollection) ret;
+            if (atomsets[i].errorMessage != null)
+              return atomsets[i].errorMessage;
+          }
       } catch (Throwable e) {
         Logger.error(null, e);
         return "" + e;
       }
     }
-    return atomSetCollectionReaders;
+    if (getReadersOnly)
+      return readers;
+    return getAtomSetCollectionFromSet(readers, atomsets);
   }
    
-  public Object getAtomSetCollectionFromSet(Object readerSet) {
+  public Object getAtomSetCollectionFromSet(Object readerSet, Object atomsets) {
     AtomSetCollectionReader[] readers = (AtomSetCollectionReader[]) readerSet;
-    AtomSetCollection[] asc = new AtomSetCollection[readers.length];
+    AtomSetCollection[] asc = (atomsets == null ? new AtomSetCollection[readers.length] : (AtomSetCollection[]) atomsets);
     Hashtable htParams = null;
     for (int i = 0; i < readers.length; i++) {
       try {
@@ -167,9 +178,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
       return asc[0];
     }
     AtomSetCollection result = new AtomSetCollection(asc);
-    if (result.errorMessage != null)
-      return result.errorMessage;
-    return result;
+    return (result.errorMessage == null ? result : (Object) result.errorMessage);
   }
 
   public Object getAtomSetCollectionOrBufferedReaderFromZip(InputStream is, String fileName, String[] zipDirectory,

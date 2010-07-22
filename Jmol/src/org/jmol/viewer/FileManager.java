@@ -1197,6 +1197,10 @@ public class FileManager {
     }
 
     void run() {
+
+      if (!isAppend && viewer.displayLoadErrors)
+        viewer.zap(false, true, false);
+
       String errorMessage = null;
       Object t = null;
       if (reader == null) {
@@ -1255,7 +1259,7 @@ public class FileManager {
       if (atomSetCollection instanceof String)
         return;
 
-      if (!isAppend)
+      if (!isAppend && !viewer.displayLoadErrors)
         viewer.zap(false, true, false);
 
       fullPathName = fullPathNameIn;
@@ -1290,21 +1294,28 @@ public class FileManager {
     }
 
     void run() {
+      
+      if (!isAppend && viewer.displayLoadErrors)
+        viewer.zap(false, true, false);
+
       htParamsSet = new Hashtable[fullPathNamesIn.length];
+      boolean getReadersOnly = !viewer.displayLoadErrors;
       for (int i = 0; i < htParamsSet.length; i++)
         htParamsSet[i] = htParams; // for now, just one common parameter set
       atomSetCollection = viewer.getModelAdapter().getAtomSetCollectionReaders(
-          this, fullPathNamesIn, fileTypesIn, htParamsSet);
+          this, fullPathNamesIn, fileTypesIn, htParamsSet, getReadersOnly);
       stringReaders = null;
-      if (!(atomSetCollection instanceof String))
+      if (getReadersOnly && !(atomSetCollection instanceof String)) {
         atomSetCollection = viewer.getModelAdapter()
-            .getAtomSetCollectionFromSet(atomSetCollection);
+            .getAtomSetCollectionFromSet(atomSetCollection, null);
+      }
       if (atomSetCollection instanceof String) {
         Logger.error("file ERROR: " + atomSetCollection);
         return;
       }
-      if (!isAppend)
+      if (!isAppend && !viewer.displayLoadErrors)
         viewer.zap(false, true, false);
+
 
       fullPathName = fileName = nameAsGiven = (stringReaders == null ? "file[]"
           : "String[]");

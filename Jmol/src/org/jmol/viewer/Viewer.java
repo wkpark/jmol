@@ -8845,7 +8845,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return executor;
   }
 
-  private boolean displayLoadErrors = true;
+  boolean displayLoadErrors = true;
   
   public boolean eval(ScriptContext context, ShapeManager shapeManager) {
     displayLoadErrors = false;

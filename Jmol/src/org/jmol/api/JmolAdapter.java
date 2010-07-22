@@ -165,13 +165,14 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
    * @param names File names, String or URL acting as the source of each reader
    * @param types File types, if known, or null
    * @param htParams  The input parameters for each file to load
+   * @param getReadersOnly 
    * @return The atomSetCollection or String with an error message
    */
 
   abstract public Object getAtomSetCollectionReaders(JmolFileReaderInterface fileReader, String[] names, String[] types,
-                                    Hashtable[] htParams);
+                                    Hashtable[] htParams, boolean getReadersOnly);
 
-  abstract public Object getAtomSetCollectionFromSet(Object atomSetCollectionReaders);
+  abstract public Object getAtomSetCollectionFromSet(Object readers, Object atomSets);
 
   abstract public Object getAtomSetCollectionOrBufferedReaderFromZip(InputStream is, String fileName, String[] zipDirectory,
                              Hashtable htParams, boolean asBufferedReader);

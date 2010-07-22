@@ -2695,7 +2695,7 @@ public class ScriptEvaluator {
     String err = "\n----";
     if (filename != null || functionName != null)
       err += "line " + lineCurrent + " command " + (pcCurrent + 1) + " of "
-          + (functionName == null ? filename : "function " + functionName)
+          + (functionName == null ? filename : functionName.equals("try") ? "try" : "function " + functionName)
           + ":";
     err += "\n         " + lineInfo;
     return err;
@@ -2714,7 +2714,7 @@ public class ScriptEvaluator {
         message = "";
         return;
       }
-      String s = getScriptContext().getContextTrace(null).toString();
+      String s = getScriptContext().getContextTrace(null, true).toString();
       while (scriptLevel > 0)
         popContext(false, false);
       message += s;
@@ -2916,6 +2916,11 @@ public class ScriptEvaluator {
         } else if (token.intValue != Integer.MAX_VALUE)
           sb.append(Token.nameOf(token.intValue)).append(" ");
         break;
+      case Token.trycmd:
+        continue;
+      case Token.end:
+        sb.append("try");
+        continue;
       default:
         if (Token.tokAttr(token.tok, Token.identifier) || !doLogMessages)
           break;
@@ -2923,10 +2928,9 @@ public class ScriptEvaluator {
         continue;
       }
       if (token.value != null)
-        // value SHOULD NEVER BE NULL, BUT JUST IN CASE...
         sb.append(token.value.toString());
     }
-    if (iTok >= len - 1)
+    if (iTok >= len - 1 && iTok != 9999)
       sb.append(" <<");
     return sb.toString();
   }
@@ -8793,7 +8797,7 @@ public class ScriptEvaluator {
     String msg = null;
     if (statementLength == 1) {
       if (!isSyntaxCheck)
-        msg = getScriptContext().getContextTrace(null).toString();
+        msg = getScriptContext().getContextTrace(null, true).toString();
     } else {
       msg = optParameterAsString(1);
     }

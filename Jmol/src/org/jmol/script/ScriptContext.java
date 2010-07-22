@@ -64,13 +64,13 @@ public class ScriptContext {
   ScriptContext() {
   }
 
-  StringBuffer getContextTrace(StringBuffer sb) {
+  StringBuffer getContextTrace(StringBuffer sb, boolean isTop) {
     if (sb == null)
       sb = new StringBuffer();
     sb.append(ScriptEvaluator.setErrorLineMessage(functionName, filename,
-        lineNumbers[pc], pc, ScriptEvaluator.statementAsString(statement, iToken, false)));
+        lineNumbers[pc], pc, ScriptEvaluator.statementAsString(statement, (isTop ? iToken : 9999), false)));
     if (parentContext != null)
-      parentContext.getContextTrace(sb);
+      parentContext.getContextTrace(sb, false);
     return sb;
   }
 }

@@ -1818,7 +1818,7 @@ public class ScriptEvaluator {
         if (isTry){
           String err = (String) viewer.getParameter("_errorMessage");
           if (err.length() > 0) {
-            contextVariables.put("_errorval", err);
+            contextVariables.put("_errorval", ScriptVariable.getVariable(err));
             viewer.resetError();
           }
           contextVariables.put("_tryret", contextVariables.get("_retval"));
@@ -5416,6 +5416,7 @@ public class ScriptEvaluator {
     switch (tok) {
     case Token.catchcmd:
       pushContext((ContextToken) theToken);
+      isOK = !isDone;
       break;
     case Token.process:
       pushContext((ContextToken) theToken);
@@ -5568,18 +5569,21 @@ public class ScriptEvaluator {
           returnCmd(ret);
           return false;
         }
-        String errMsg = (String)cv.get("_errorval");
+        String errMsg = (String)((ScriptVariable)cv.get("_errorval")).value;
         if (errMsg.length() == 0) {
           int iBreak = ((ScriptVariable)cv.get("_breakval")).intValue;
-          if (iBreak != Integer.MAX_VALUE)
+          if (iBreak != Integer.MAX_VALUE) {
             breakCmd(pc - iBreak);
-          // normal return will skip the catch
-        } else if (pc + 1 < aatoken.length
+            return false;
+          }
+        } 
+        // normal return will skip the catch
+        if (pc + 1 < aatoken.length
             && aatoken[pc + 1][0].tok == Token.catchcmd) {
           // set the intValue positive to indicate "not done" for the IF evaluation
           ContextToken ct = (ContextToken) aatoken[pc + 1][0];
           ct.contextVariables.put(ct.name0, ScriptVariable.getVariable(errMsg));
-          ct.intValue = Math.abs(ct.intValue);
+          ct.intValue = (errMsg.length() > 0 ? 1 : -1) * Math.abs(ct.intValue);
         }
         return false;
       case Token.catchcmd:

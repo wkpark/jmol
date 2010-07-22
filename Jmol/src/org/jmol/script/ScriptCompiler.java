@@ -1864,7 +1864,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       }
       thisFunction = null;
       tokenCommand.intValue = 0;
-      vPush.remove(--pushCount);
+      if (tok == Token.trycmd)
+        vPush.remove(--pushCount);
       break;
     default:
       return error(ERROR_unrecognizedToken, "end " + ident);

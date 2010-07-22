@@ -217,7 +217,7 @@ public class Resolver {
    * @return an AtomSetCollection or a String error
    * @throws Exception
    */
-  static Object getAtomCollectionAndCloseReader(String fullName, String type,
+  static Object getAtomCollectionReader(String fullName, String type,
                         BufferedReader bufferedReader, Hashtable htParams,
                         int ptFile) throws Exception {
     AtomSetCollectionReader atomSetCollectionReader = null;
@@ -266,7 +266,7 @@ public class Resolver {
         Logger.error(err);
         return err;
       }
-      return atomSetCollectionReader.readData(fullName, htParams, bufferedReader);
+      return atomSetCollectionReader;
     } catch (Exception e) {
       err = "uncaught error in file loading for " + className;
       Logger.error(err);
@@ -298,7 +298,8 @@ public class Resolver {
       className = classBase + "xml.XmlReader";
       atomSetCollectionReaderClass = Class.forName(className);
       atomSetCollectionReader = (AtomSetCollectionReader) atomSetCollectionReaderClass.newInstance();
-      return atomSetCollectionReader.readData("DOM node", htParams, DOMNode);
+      atomSetCollectionReader.setup("DOM node", htParams);
+      return atomSetCollectionReader;
     } catch (Exception e) {
       String err = "File reader was not found:" + className;
       Logger.error(err, e);

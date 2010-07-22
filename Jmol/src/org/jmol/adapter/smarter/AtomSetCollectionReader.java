@@ -186,21 +186,38 @@ public abstract class AtomSetCollectionReader {
     System.out.println(this + " finalized");
   }
 */  
+
+  String fileName;
   
-  public Object readData(String filename, Hashtable htParams, 
-                         BufferedReader reader) throws Exception {
-    this.htParams = htParams;
+  void setup(String fileName, Hashtable htParams, BufferedReader reader) {
+    this.htParams = htParams; 
+    this.fileName = fileName;
+    this.reader = reader;    
+  }
+
+  Object readData() throws Exception {
     initialize();
     readAtomSetCollection(reader);
     reader.close();
-    return finalize(filename);
+    return finish();
   }  
   
-  protected Object readData(String filename, Hashtable htParams, Object DOMNode) {
-    this.htParams = htParams;
+  void setup(String fileName, Hashtable htParams) {
+    this.htParams = htParams; 
+    this.fileName = fileName;
+  }
+
+  Object readData(BufferedReader reader) throws Exception {
+    initialize();
+    readAtomSetCollection(reader);
+    reader.close();
+    return finish();
+  }  
+  
+  protected Object readData(Object DOMNode) {
     initialize();
     readAtomSetCollectionFromDOM(DOMNode);
-    return finalize(filename);
+    return finish();
   }
 
   public void readAtomSetCollectionFromDOM(Object DOMNode) {
@@ -211,7 +228,8 @@ public abstract class AtomSetCollectionReader {
 
   protected JmolViewer viewer;
   final public void readAtomSetCollection(BufferedReader reader) {
-    this.reader = reader;
+    if (reader != null)
+      this.reader = reader;
     atomSetCollection = new AtomSetCollection(readerName, this);
     try {
       initializeReader();
@@ -276,7 +294,7 @@ public abstract class AtomSetCollectionReader {
 
   /////////////////////////////////////////////////////////////////////////////////////
   
-  private Object finalize(String filename) {
+  private Object finish() {
     String s = (String) htParams.get("loadState");
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("loadState", s == null ? "" : s);
     s = (String) htParams.get("smilesString");
@@ -297,15 +315,15 @@ public abstract class AtomSetCollectionReader {
     if (fileType.indexOf("(") >= 0)
       fileType = fileType.substring(0, fileType.indexOf("("));
     for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;) {
-      atomSetCollection.setAtomSetAuxiliaryInfo("fileName", filename, i);
+      atomSetCollection.setAtomSetAuxiliaryInfo("fileName", fileName, i);
       atomSetCollection.setAtomSetAuxiliaryInfo("fileType", fileType, i);
     }
     atomSetCollection.freeze();
     if (atomSetCollection.errorMessage != null)
-      return atomSetCollection.errorMessage + "\nfor file " + filename
+      return atomSetCollection.errorMessage + "\nfor file " + fileName
           + "\ntype " + name;
     if (atomSetCollection.getAtomCount() == 0)
-      return "No atoms found\nfor file " + filename + "\ntype " + name;
+      return "No atoms found\nfor file " + fileName + "\ntype " + name;
     return atomSetCollection;
   }
 

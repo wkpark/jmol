@@ -59,7 +59,7 @@ public class ScriptFunction {
   }
 
   ScriptVariable returnValue;
-  Token[][] aatoken;
+  public Token[][] aatoken;
   int[][] lineIndices;
   short[] lineNumbers;
   String script;

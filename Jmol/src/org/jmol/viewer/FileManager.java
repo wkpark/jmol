@@ -1200,24 +1200,17 @@ public class FileManager {
       String errorMessage = null;
       Object t = null;
       if (reader == null) {
-        t = getUnzippedBufferedReaderOrErrorMessageFromName(fullPathNameIn, true,
-            false, false, true);
+        t = getUnzippedBufferedReaderOrErrorMessageFromName(fullPathNameIn,
+            true, false, false, true);
         if (t == null || t instanceof String) {
           errorMessage = (t == null ? "error opening:" + nameAsGivenIn
               : (String) t);
-            if (!errorMessage.startsWith("NOTE:"))
-              Logger.error("file ERROR: " + fullPathNameIn + "\n" + errorMessage);
-            atomSetCollection = errorMessage;
-            return;
+          if (!errorMessage.startsWith("NOTE:"))
+            Logger.error("file ERROR: " + fullPathNameIn + "\n" + errorMessage);
+          atomSetCollection = errorMessage;
+          return;
         }
       }
-      
-      if (!isAppend)
-        viewer.zap(false, true, false);
-
-      fullPathName = fullPathNameIn;
-      nameAsGiven = nameAsGivenIn;
-      fileName = fileNameIn;
 
       if (reader == null) {
         if (t instanceof BufferedReader) {
@@ -1241,17 +1234,34 @@ public class FileManager {
           }
         }
       }
-      
+
       if (reader != null) {
         atomSetCollection = viewer.getModelAdapter()
-            .getAtomSetCollectionFromReader(fullPathNameIn, fileTypeIn, reader,
+            .getAtomSetCollectionReader(fullPathNameIn, fileTypeIn, reader,
                 htParams);
-        try {          
+
+        if (!(atomSetCollection instanceof String))
+          atomSetCollection = viewer.getModelAdapter().getAtomSetCollection(
+              atomSetCollection);
+      }
+
+      if (reader != null)
+        try {
           reader.close();
         } catch (IOException e) {
           // ignore
         }
-      }
+
+      if (atomSetCollection instanceof String)
+        return;
+
+      if (!isAppend)
+        viewer.zap(false, true, false);
+
+      fullPathName = fullPathNameIn;
+      nameAsGiven = nameAsGivenIn;
+      fileName = fileNameIn;
+
     }
   }
 
@@ -1283,17 +1293,21 @@ public class FileManager {
       htParamsSet = new Hashtable[fullPathNamesIn.length];
       for (int i = 0; i < htParamsSet.length; i++)
         htParamsSet[i] = htParams; // for now, just one common parameter set
-      atomSetCollection = viewer.getModelAdapter()
-          .getAtomSetCollectionFromReaders(this, fullPathNamesIn, fileTypesIn,
-              htParamsSet);
+      atomSetCollection = viewer.getModelAdapter().getAtomSetCollectionReaders(
+          this, fullPathNamesIn, fileTypesIn, htParamsSet);
       stringReaders = null;
+      if (!(atomSetCollection instanceof String))
+        atomSetCollection = viewer.getModelAdapter()
+            .getAtomSetCollectionFromSet(atomSetCollection);
       if (atomSetCollection instanceof String) {
         Logger.error("file ERROR: " + atomSetCollection);
         return;
       }
       if (!isAppend)
         viewer.zap(false, true, false);
-      fullPathName = fileName = nameAsGiven = (stringReaders == null ? "file[]" : "String[]");
+
+      fullPathName = fileName = nameAsGiven = (stringReaders == null ? "file[]"
+          : "String[]");
     }
 
     /**

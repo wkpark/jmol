@@ -140,10 +140,10 @@ public abstract class JmolAdapter {
  * @param htParams a hash table containing parameter information
  * @return The atomSetCollection or String with an error message
  */
-abstract public Object getAtomSetCollectionFromReader(String name, String type,
+abstract public Object getAtomSetCollectionReader(String name, String type,
                                  BufferedReader bufferedReader, Hashtable htParams);
 
-
+abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
   /**
    * Associate a atomSetCollection object with an array of BufferedReader.
    * 
@@ -167,26 +167,37 @@ abstract public Object getAtomSetCollectionFromReader(String name, String type,
    * @param htParams  The input parameters for each file to load
    * @return The atomSetCollection or String with an error message
    */
-  abstract public Object getAtomSetCollectionFromReaders(JmolFileReaderInterface fileReader, String[] names, String[] types,
+
+  abstract public Object getAtomSetCollectionReaders(JmolFileReaderInterface fileReader, String[] names, String[] types,
                                     Hashtable[] htParams);
+
+  abstract public Object getAtomSetCollectionFromSet(Object atomSetCollectionReaders);
 
   abstract public Object getAtomSetCollectionOrBufferedReaderFromZip(InputStream is, String fileName, String[] zipDirectory,
                              Hashtable htParams, boolean asBufferedReader);
   
- // alternative settings, for posterity:
+  // alternative settings, for posterity:
+
+  public Object openAtomSetCollectionFromReader(String name, String type,
+                                                           BufferedReader bufferedReader, Hashtable htParams) {
+   Object a = getAtomSetCollectionReader(name, type, bufferedReader, htParams); 
+   if (a instanceof String)
+     return a;
+   return getAtomSetCollection(a);
+  }
 
   public Object openBufferedReader(String name, BufferedReader bufferedReader) {
-    return getAtomSetCollectionFromReader(name, null, bufferedReader, null);
+    return openAtomSetCollectionFromReader(name, null, bufferedReader, null);
   }
 
   public Object openBufferedReader(String name, BufferedReader bufferedReader,
                                    Hashtable htParams) {
-    return getAtomSetCollectionFromReader(name, null, bufferedReader, htParams);
+    return openAtomSetCollectionFromReader(name, null, bufferedReader, htParams);
   }
 
   public Object openBufferedReader(String name, String type,
                                    BufferedReader bufferedReader) {
-    return getAtomSetCollectionFromReader(name, type, bufferedReader, null);
+    return openAtomSetCollectionFromReader(name, type, bufferedReader, null);
   }
 
   abstract public Object getAtomSetCollectionFromDOM(Object DOMNode, Hashtable htParams);

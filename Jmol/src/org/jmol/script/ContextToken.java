@@ -38,6 +38,7 @@ class ContextToken extends Token {
       addName("_var");      
   }
 
+  String name0 = null;
   void addName(String name) {
     if (contextVariables == null)
       contextVariables = new Hashtable();

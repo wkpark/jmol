@@ -1865,9 +1865,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
       long timeBegin = System.currentTimeMillis();
       
-      if (!isAppend)
-        zap(false, true, false);
-
       atomSetCollection = fileManager.createAtomSetCollectionFromFiles(fileNames,
             setLoadParameters(htParams), isAppend);
       long ms = System.currentTimeMillis() - timeBegin;
@@ -1987,8 +1984,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       // if the filename has a "?" at the beginning, we don't zap, 
       // because the user might cancel the operation.
       
-      if (!isAppend && fileName.charAt(0) != '?')
-        zap(false, true, false);
       atomSetCollection = fileManager.createAtomSetCollectionFromFile(fileName,
           htParams, loadScript, isAppend);
     }
@@ -2189,7 +2184,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       errMsg = (String) atomSetCollection;
       setFileLoadStatus(FILE_STATUS_NOT_LOADED, fullPathName, null, null,
           errMsg);
-      if (errMsg != null && !isAppend && !errMsg.equals("#CANCELED#"))
+      if (displayLoadErrors && errMsg != null && !isAppend && !errMsg.equals("#CANCELED#"))
         zap(errMsg);
       return errMsg;
     }
@@ -4858,6 +4853,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
   public void notifyError(String errType, String errMsg,
                           String errMsgUntranslated) {
+    global.setParameterValue("_errorMessage", errMsgUntranslated);
     statusManager.notifyError(errType, errMsg, errMsgUntranslated);
   }
 
@@ -6452,6 +6448,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.axesScale;
   }
 
+  public void resetError() {
+    global.removeJmolParameter("_errorMessage");  
+  }
+  
   private void setAxesModeMolecular(boolean TF) {
     global.axesMode = (TF ? JmolConstants.AXES_MODE_MOLECULAR
         : JmolConstants.AXES_MODE_BOUNDBOX);
@@ -8841,9 +8841,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return executor;
   }
 
+  private boolean displayLoadErrors = true;
+  
   public boolean eval(ScriptContext context, ShapeManager shapeManager) {
-    return ScriptEvaluator.evaluateContext(this, context,
+    displayLoadErrors = false;
+    boolean isOK = ScriptEvaluator.evaluateContext(this, context,
         (shapeManager == null ? this.shapeManager : shapeManager));
+    displayLoadErrors = true;
+    return isOK;
   }
 
   public Hashtable getShapeInfo() {

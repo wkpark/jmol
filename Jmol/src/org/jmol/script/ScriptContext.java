@@ -59,6 +59,7 @@ public class ScriptContext {
   public String scriptExtensions;
   public String contextPath = " >> ";
   public ScriptContext parentContext;
+  public ContextToken token;
 
   ScriptContext() {
   }

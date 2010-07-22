@@ -503,8 +503,9 @@ public class ScriptEvaluator {
       e.restoreScriptContext(context, true, false, false);
       e.instructionDispatchLoop(false);
     } catch (Exception ex) {
+      viewer.setStringProperty("_errorMessage", "" + ex);
       Logger.error("Error evaluating context");
-      ex.printStackTrace();
+      //ex.printStackTrace();
       return false;
     }
     return true;
@@ -1220,7 +1221,7 @@ public class ScriptEvaluator {
           switch (tok) {
           case Token.function:
             bsAtom.set(i);
-            fv = ScriptVariable.fValue(runFunction(userFunction, params,
+            fv = ScriptVariable.fValue(runFunction(null, userFunction, params,
                 tokenAtom, true));
             bsAtom.clear(i);
             break;
@@ -1784,12 +1785,16 @@ public class ScriptEvaluator {
 
   private ParallelProcessor parallelProcessor;
 
-  ScriptVariable runFunction(String name, Vector params, Token tokenAtom,
+  ScriptVariable runFunction(ScriptFunction function, String name, Vector params, Token tokenAtom,
                              boolean getReturn) throws ScriptException {
     pushContext(null);
-    contextPath += " >> function " + name;
     //System.out.println(contextPath);
-    ScriptFunction function = viewer.getFunction(name);
+    if (function == null) {
+      function = viewer.getFunction(name);
+      contextPath += " >> function " + name;
+    } else {
+      contextPath += " >> " + name;
+    }
     if (function == null)
       return null;
     functionName = name;
@@ -1800,7 +1805,25 @@ public class ScriptEvaluator {
         parallelProcessor = (ParallelProcessor) function;
         vProcess = null;
         runFunction(function, params, tokenAtom);
-        ((ParallelProcessor) function).runAllProcesses(viewer);
+
+        boolean isTry = (function.tok == Token.trycmd);
+        ScriptContext sc = getScriptContext();
+        if (isTry) {
+          contextVariables.put("_breakval", ScriptVariable.intVariable(Integer.MAX_VALUE));
+          contextVariables.put("_errorval", ScriptVariable.getVariable(""));
+          viewer.resetError();
+          parallelProcessor.addProcess("try", sc);
+        }
+        ((ParallelProcessor) function).runAllProcesses(viewer, !isTry);
+        if (isTry){
+          String err = (String) viewer.getParameter("_errorMessage");
+          if (err.length() > 0) {
+            contextVariables.put("_errorval", err);
+            viewer.resetError();
+          }
+          contextVariables.put("_tryret", contextVariables.get("_retval"));
+          contextVariables.put("_retval", new ScriptVariable(0, contextVariables));
+        }
       }
     } else {
       runFunction(function, params, tokenAtom);
@@ -1824,7 +1847,8 @@ public class ScriptEvaluator {
     }
     if (tokenAtom != null)
       contextVariables.put("_x", tokenAtom);
-    instructionDispatchLoop(false);
+    if (function.tok != Token.trycmd)
+      instructionDispatchLoop(false);
   }
 
   private void clearDefinedVariableAtomSets() {
@@ -2170,12 +2194,13 @@ public class ScriptEvaluator {
       error(ERROR_tooManyScriptLevels);
     scriptLevel++;
     thisContext = getScriptContext();
-    if (isCmdLine_c_or_C_Option)
-      Logger.info("-->>-------------".substring(0, scriptLevel + 5)
-          + scriptLevel + " " + filename);
+    thisContext.token = token;
     if (token != null) {
       contextVariables = token.contextVariables;
     }
+    if (isCmdLine_c_or_C_Option)
+      Logger.info("-->>-------------".substring(0, scriptLevel + 5)
+          + scriptLevel + " " + filename + " " + token + " " + thisContext);
   }
 
   public ScriptContext getScriptContext() {
@@ -2212,9 +2237,6 @@ public class ScriptEvaluator {
   }
 
   void popContext(boolean isFlowCommand, boolean statementOnly) {
-    if (isCmdLine_c_or_C_Option)
-      Logger.info("--<<-------------".substring(0, scriptLevel + 5)
-          + scriptLevel + " " + filename);
     if (scriptLevel == 0)
       return;
     scriptLevel--;
@@ -2225,6 +2247,9 @@ public class ScriptEvaluator {
     ScriptContext scTemp = (isFlowCommand ? getScriptContext() : null);
     restoreScriptContext(thisContext, true, isFlowCommand, statementOnly);
     restoreScriptContext(scTemp, true, false, true);
+    if (isCmdLine_c_or_C_Option)
+      Logger.info("--<<-------------".substring(0, scriptLevel + 5)
+          + scriptLevel + " " + filename + " " + (thisContext == null ? "" : "" + thisContext.token) + " " + thisContext);
   }
 
   private void restoreScriptContext(ScriptContext context,
@@ -2403,6 +2428,7 @@ public class ScriptEvaluator {
       // viewer.addCommand(s + CommandHistory.ERROR_FLAG);
       viewer.setCursor(Viewer.CURSOR_DEFAULT);
       viewer.setBooleanProperty("refreshing", true);
+      viewer.setStringProperty("_errorMessage", strUntranslated);
     }
     throw new ScriptException(message, strUntranslated);
   }
@@ -4873,6 +4899,7 @@ public class ScriptEvaluator {
           break;
         case Token.colon:
           break;
+        case Token.catchcmd:
         case Token.breakcmd:
         case Token.continuecmd:
         case Token.elsecmd:
@@ -5062,7 +5089,7 @@ public class ScriptEvaluator {
             resumePausedExecution();
           break;
         case Token.returncmd:
-          returnCmd();
+          returnCmd(null);
           break;
         case Token.rotate:
           rotate(false, false);
@@ -5360,6 +5387,7 @@ public class ScriptEvaluator {
         case Token.push:
         case Token.process:
         case Token.forcmd:
+        case Token.catchcmd:
         case Token.whilecmd:
           nPush++;
           break;
@@ -5386,6 +5414,9 @@ public class ScriptEvaluator {
     boolean isOK = true;
     int ptNext = 0;
     switch (tok) {
+    case Token.catchcmd:
+      pushContext((ContextToken) theToken);
+      break;
     case Token.process:
       pushContext((ContextToken) theToken);
       isDone = isOK = true;
@@ -5395,7 +5426,8 @@ public class ScriptEvaluator {
     case Token.defaultcmd:
     case Token.casecmd:
       ptNext = Math.abs(aatoken[Math.abs(pt)][0].intValue);
-      System.out.println(theToken + " pc=" + pc + " pt=" + pt + " ptNext=" + ptNext);
+      //System.out.println(theToken + " pc=" + pc + " pt=" + pt + " ptNext="
+      //  + ptNext);
       switch (isDone ? 0 : switchCmd((ContextToken) theToken, tok)) {
       case 0:
         // done
@@ -5423,6 +5455,8 @@ public class ScriptEvaluator {
       ptNext = Math.abs(aatoken[Math.abs(pt)][0].intValue);
       ptNext = (isDone || isOK ? -ptNext : ptNext);
       aatoken[Math.abs(pt)][0].intValue = ptNext;
+      if (tok == Token.catchcmd)
+        aatoken[pc][0].intValue = -pt; // reset to "done" state
       break;
     case Token.elsecmd:
       checkLength(1);
@@ -5431,29 +5465,6 @@ public class ScriptEvaluator {
       break;
     case Token.endifcmd:
       checkLength(1);
-      break;
-    case Token.end: // function, if, for, while
-      if (getToken(checkLast(1)).tok == Token.function
-          || theTok == Token.parallel) {
-        viewer.addFunction((ScriptFunction) theToken.value);
-        return isForCheck;
-      }
-      if (theTok == Token.process) {
-        addProcess(pt, pc, false);
-        popContext(true, false);
-      } else if (theTok == Token.switchcmd && pt > 0) {
-        // we have a default
-        if (switchCmd((ContextToken) aatoken[pt][0], 0) == -1) {
-          for (; pt < pc; pt++)
-            if ((tok = aatoken[pt][0].tok) != Token.defaultcmd
-                && tok != Token.casecmd)
-              break;
-          isOK = (pc == pt);
-        }
-        break;
-      }
-      isOK = (theTok == Token.process || theTok == Token.ifcmd || theTok == Token.switchcmd);
-      isForCheck = (theTok == Token.forcmd || theTok == Token.whilecmd);
       break;
     case Token.whilecmd:
       if (!isForCheck)
@@ -5466,17 +5477,8 @@ public class ScriptEvaluator {
       break;
     case Token.breakcmd:
       if (!isSyntaxCheck) {
-        // pt is a backward reference
-        pc = Math.abs(aatoken[pt][0].intValue);
-        tok = aatoken[pt][0].tok;
-        if (tok == Token.casecmd || tok == Token.defaultcmd) {
-          theToken = aatoken[pc--][0];
-          ptNext = Math.abs(theToken.intValue);
-          if (theToken.tok != Token.end)
-            theToken.intValue = -ptNext;
-        } else {
-          popContext(true, false);
-        }
+        breakCmd(pt);
+        break;
       }
       if (statementLength == 1)
         break;
@@ -5553,10 +5555,87 @@ public class ScriptEvaluator {
       if (!isOK)
         popContext(true, false);
       break;
+    case Token.end: // function, if, for, while, catch, switch
+      switch (getToken(checkLast(1)).tok) {
+      case Token.trycmd:
+        ScriptFunction trycmd = (ScriptFunction) getToken(1).value;
+        if (isSyntaxCheck)
+          return false;
+        Hashtable cv = (Hashtable) runFunction(trycmd, "try", null,
+            null, true).value;
+        ScriptVariable ret = (ScriptVariable) cv.get("_tryret");
+        if (ret.value != null || ret.intValue != Integer.MAX_VALUE) { 
+          returnCmd(ret);
+          return false;
+        }
+        String errMsg = (String)cv.get("_errorval");
+        if (errMsg.length() == 0) {
+          int iBreak = ((ScriptVariable)cv.get("_breakval")).intValue;
+          if (iBreak != Integer.MAX_VALUE)
+            breakCmd(pc - iBreak);
+          // normal return will skip the catch
+        } else if (pc + 1 < aatoken.length
+            && aatoken[pc + 1][0].tok == Token.catchcmd) {
+          // set the intValue positive to indicate "not done" for the IF evaluation
+          ContextToken ct = (ContextToken) aatoken[pc + 1][0];
+          ct.contextVariables.put(ct.name0, ScriptVariable.getVariable(errMsg));
+          ct.intValue = Math.abs(ct.intValue);
+        }
+        return false;
+      case Token.catchcmd:
+        popContext(true, false);
+        break;
+      case Token.function:
+      case Token.parallel:
+        viewer.addFunction((ScriptFunction) theToken.value);
+        return isForCheck;
+      case Token.process:
+        addProcess(pt, pc, false);
+        popContext(true, false);
+        break;
+      case Token.switchcmd:
+        if (pt > 0 && switchCmd((ContextToken) aatoken[pt][0], 0) == -1) {
+          // check for the default position
+          for (; pt < pc; pt++)
+            if ((tok = aatoken[pt][0].tok) != Token.defaultcmd
+                && tok != Token.casecmd)
+              break;
+          isOK = (pc == pt);
+        }
+        break;
+      }
+      isOK = (theTok == Token.catchcmd 
+          || theTok == Token.process 
+          || theTok == Token.ifcmd 
+          || theTok == Token.switchcmd);
+      isForCheck = (theTok == Token.forcmd || theTok == Token.whilecmd);
+      break;
     }
     if (!isOK && !isSyntaxCheck)
       pc = Math.abs(pt) - 1;
     return isForCheck;
+  }
+  
+  private void breakCmd(int pt) {
+    // pt is a backward reference
+    if (pt < 0) {
+      // this is a break within a try{...} block
+      getContextVariableAsVariable("_breakval").intValue = -pt;
+      pcEnd = pc;
+      return;
+    }
+    pc = Math.abs(aatoken[pt][0].intValue);
+    int tok = aatoken[pt][0].tok;
+    if (tok == Token.casecmd || tok == Token.defaultcmd) {
+      theToken = aatoken[pc--][0];
+      int ptNext = Math.abs(theToken.intValue);
+      if (theToken.tok != Token.end)
+        theToken.intValue = -ptNext;
+    } else {
+      while (thisContext != null && !ScriptCompiler.isBreakableContext(thisContext.token.tok))
+        popContext(true, false);
+      popContext(true, false);
+    }
   }
 
   private Vector vProcess;
@@ -5613,18 +5692,19 @@ public class ScriptEvaluator {
     return ((Boolean) parameterExpression(1, 0, null, false)).booleanValue();
   }
 
-  private void returnCmd() throws ScriptException {
+  private void returnCmd(ScriptVariable tv) throws ScriptException {
     ScriptVariable t = getContextVariableAsVariable("_retval");
     if (t == null) {
       if (!isSyntaxCheck)
-        interruptExecution = true;
+        pcEnd = pc;
       return;
     }
-    Vector v = (statementLength == 1 ? null : (Vector) parameterExpression(1,
+    Vector v = (tv != null || statementLength == 1 ? null : (Vector) parameterExpression(1,
         0, null, true));
     if (isSyntaxCheck)
       return;
-    ScriptVariable tv = (v == null || v.size() == 0 ? ScriptVariable
+    if (tv == null)
+      tv = (v == null || v.size() == 0 ? ScriptVariable
         .intVariable(0) : (ScriptVariable) v.get(0));
     t.value = tv.value;
     t.intValue = tv.intValue;
@@ -8091,8 +8171,8 @@ public class ScriptEvaluator {
           script(0, filename);
           return;
         }
-        String surfaceType = SurfaceFileTyper.determineSurfaceFileType(viewer
-            .getBufferedInputStream(filename));
+        String surfaceType = (errMsg.indexOf("java.io.FileNotFound") >= 0 ? null : SurfaceFileTyper.determineSurfaceFileType(viewer
+            .getBufferedInputStream(filename)));
         if (surfaceType != null) {
           runScript("isosurface " + Escape.escape(filename));
           return;
@@ -8116,7 +8196,7 @@ public class ScriptEvaluator {
     if (embeddedScript != null && viewer.getAllowEmbeddedScripts()) {
       msg += "\nAdding embedded #jmolscript: " + embeddedScript;
       script += ";" + embeddedScript;
-      viewer.setStringProperty("_loadScript", script);
+      setStringProperty("_loadScript", script);
       script = "allowEmbeddedScripts = false;" + script
           + ";allowEmbeddedScripts = true;";
     }
@@ -8733,6 +8813,9 @@ public class ScriptEvaluator {
     }
     // possibly "all"
     switch (tokAt(1)) {
+    case Token.error:
+      viewer.resetError();
+      return;
     case Token.function:
       viewer.clearFunctions();
       return;
@@ -9360,7 +9443,7 @@ public class ScriptEvaluator {
         : (Vector) parameterExpression(1, 0, null, true));
     if (isSyntaxCheck)
       return;
-    runFunction(name, params, null, false);
+    runFunction(null, name, params, null, false);
   }
 
   private void sync() throws ScriptException {

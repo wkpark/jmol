@@ -34,16 +34,14 @@ import org.jmol.viewer.Viewer;
 public class ParallelProcessor extends ScriptFunction {
 
   
+  ParallelProcessor(String name, int tok) {
+    super(name, tok);
+  }
+
   public static Object getExecutor() {
     return Executors.newCachedThreadPool();
   }
   
-  ParallelProcessor(String name) {
-    super(name);
-    typeName = "parallel";
-    tok = Token.parallel;
-  }
-
   /**
    * the idea here is that the process { ... } command would collect and
    * preprocess the scripts, then pass them here for storage until the end of
@@ -67,11 +65,11 @@ public class ParallelProcessor extends ScriptFunction {
   volatile Error error = null;
   Object lock = new Object() ;
   
-  public void runAllProcesses(Viewer viewer) {
+  public void runAllProcesses(Viewer viewer, boolean inParallel) {
     if (processes.size() == 0)
       return;
     this.viewer = viewer;
-    boolean allowParallel = !viewer.isParallel() && viewer.setParallel(true);
+    boolean allowParallel = inParallel && !viewer.isParallel() && viewer.setParallel(true);
     vShapeManagers = new Vector();
     error = null;
     counter = 0;
@@ -127,8 +125,9 @@ public class ParallelProcessor extends ScriptFunction {
   class RunProcess implements Runnable {
     Process process;
     Object processLock;
-
-    public RunProcess(Process process, Object lock) {
+    boolean inParallel;
+    
+    public RunProcess(Process process, Object lock, boolean inParallel) {
       this.process = process;
       processLock = lock;
     }
@@ -139,15 +138,18 @@ public class ParallelProcessor extends ScriptFunction {
           if (Logger.debugging)
             Logger.debug("Running process " + process.processName + " "
                 + process.context.pc + " - " + (process.context.pcEnd - 1));
-          ShapeManager shapeManager = new ShapeManager(viewer, viewer
-              .getModelSet());
-          vShapeManagers.add(shapeManager);
+          ShapeManager shapeManager = null;
+          if (inParallel) {
+            shapeManager = new ShapeManager(viewer, viewer.getModelSet());
+            vShapeManagers.add(shapeManager);
+          }
           viewer.eval(process.context, shapeManager);
           if (Logger.debugging)
             Logger.debug("Process " + process.processName + " complete");
         }
       } catch (Exception e) {
-        e.printStackTrace();
+        if (tok != Token.trycmd)
+          e.printStackTrace();
       } catch (Error er) {
         clearShapeManager(er);
       } finally {
@@ -160,7 +162,7 @@ public class ParallelProcessor extends ScriptFunction {
   }
 
   private void runProcess(final Process process, boolean allowParallel) {
-    RunProcess r = new RunProcess(process, lock);
+    RunProcess r = new RunProcess(process, lock, allowParallel);
     Executor exec = (allowParallel ? (Executor) viewer.getExecutor() : null);
     if (exec != null) {
       exec.execute(r);

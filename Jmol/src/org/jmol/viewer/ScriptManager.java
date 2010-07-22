@@ -103,7 +103,7 @@ class ScriptManager {
       try {
         Thread.sleep(100);
         if (((n++) % 10) == 0)
-          if (true || Logger.debugging) {
+          if (Logger.debugging) {
             Logger.info("...scriptManager waiting for queue: "
                 + scriptQueue.size() + " thread=" + Thread.currentThread().getName());
           }

@@ -39,6 +39,9 @@ public class ScriptFunction {
    * functions.
    * 
    * Bob Hanson -- 11.3.29
+   * 
+   * includes parallel, catch
+   * 
    */
 
   int pt0;
@@ -46,10 +49,6 @@ public class ScriptFunction {
   int cmdpt0 = -1;
   protected String typeName;
   public String name;
-  String script;
-  public Token[][] aatoken;
-  short[] lineNumbers;
-  int[][] lineIndices;
   int nParameters;
   Vector names = new Vector();
   int tok;
@@ -60,11 +59,15 @@ public class ScriptFunction {
   }
 
   ScriptVariable returnValue;
+  Token[][] aatoken;
+  int[][] lineIndices;
+  short[] lineNumbers;
+  String script;
 
-  ScriptFunction(String name) {
+  ScriptFunction(String name, int tok) {
     this.name = name;
-    typeName = "function";
-    tok = Token.function;
+    this.tok = tok;
+    typeName = Token.nameOf(tok);
   }
 
   void setVariables(Hashtable contextVariables, Vector params) {
@@ -78,7 +81,7 @@ public class ScriptFunction {
       contextVariables.put(name, (var == null ? 
           (new ScriptVariable(Token.string, "")).setName(name) : var));
     }
-    contextVariables.put("_retval", ScriptVariable.intVariable(0));
+    contextVariables.put("_retval", ScriptVariable.intVariable(tok == Token.trycmd ? Integer.MAX_VALUE : 0));
   }
 
   public void unsetVariables(Hashtable contextVariables, Vector params) {
@@ -163,5 +166,4 @@ public class ScriptFunction {
     s.append("}\n");
     return s.toString();
   }
-
 }

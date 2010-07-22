@@ -160,16 +160,10 @@ class ScriptFlowContext {
     commandStart = ptCommand = this.compiler.iCommand;
     //System.out.println ("FlowContext: init " + this);  
   }
-
+  
   ScriptFlowContext getBreakableContext(int nLevelsUp) {
     ScriptFlowContext f = this;
-    while (f != null 
-        && (f.token.tok != Token.forcmd 
-        && f.token.tok != Token.process
-        && f.token.tok != Token.whilecmd 
-        && f.token.tok != Token.casecmd 
-        && f.token.tok != Token.defaultcmd 
-        || nLevelsUp-- > 0))
+    while (f != null && (!ScriptCompiler.isBreakableContext(f.token.tok) || nLevelsUp-- > 0))
       f = f.getParent();
     return f;
   }

@@ -278,7 +278,9 @@ public class Token {
   final static int end          = 9 | flowCommand | expression;
   final static int switchcmd    = 10 | flowCommand;
   final static int casecmd      = 11 | flowCommand;
-  final static int defaultcmd   = 12 | flowCommand;
+  final static int catchcmd     = 12 | flowCommand;
+  final static int defaultcmd   = 13 | flowCommand;
+  final static int trycmd       = 14 | flowCommand | noArgs;
   
   final static int animation    = scriptCommand | 1;
   final static int assign       = scriptCommand | 2;
@@ -286,8 +288,8 @@ public class Token {
   final static int bind         = scriptCommand | 4;
   final static int bondorder    = scriptCommand | 5;
   final static int calculate    = scriptCommand | 6;
-  final static int cd           = scriptCommand | 7 | implicitStringCommand | expression;
-  final static int centerAt     = scriptCommand | 8;
+  final static int cd           = scriptCommand | 8 | implicitStringCommand | expression;
+  final static int centerAt     = scriptCommand | 9;
 //final static int color        see intproperty
 //final static int configuration see intproperty
   public final static int connect = scriptCommand | 10;
@@ -1045,7 +1047,8 @@ public class Token {
   final static int ed             = misc  | 108 | expression;// new
   final static int edges          = misc  | 110;// new
   final static int energy         = misc  | 111;// new
-  final static int facecenteroffset = misc  | 112;// new
+  final static int error          = misc  | 112; // new
+  final static int facecenteroffset = misc  | 113;// new
   public final static int fill    = misc  | 114;
   final static int filter         = misc  | 116;// new
   public final static int first   = misc  | 118;// new
@@ -1423,6 +1426,7 @@ public class Token {
       "cartoon",           new Token(cartoon),
       "cartoons",          null,
       "case",              new Token(casecmd),
+      "catch",             new Token(catchcmd),
       "center",            new Token(center),
       "centre",            null,
       "centerat",          new Token(centerAt),
@@ -1569,6 +1573,7 @@ public class Token {
       "trace",             new Token(trace),
       "translate",         new Token(translate),
       "translateSelected", new Token(translateSelected),
+      "try",               new Token(trycmd),
       "unbind",            new Token(unbind),
       "unitcell",          new Token(unitcell),
       "var",               new Token(var),
@@ -1670,6 +1675,7 @@ public class Token {
       "element",         new Token(element),
       "elemno",          new Token(elemno),
       "_e",              null,
+      "error",           new Token(error),
       "fill",            new Token(fill),
       "find",            new Token(find),
       "fixedTemperature",new Token(fixedtemp),

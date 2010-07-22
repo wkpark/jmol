@@ -300,7 +300,7 @@ msgstr "Ir al {0} anterior de la colección"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:368
 #, java-format
-msgid "Play the whole collection of {0}'s"
+msgid "Play the whole collection of {0}"
 msgstr "Reproducir toda la colección de {0}"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:369

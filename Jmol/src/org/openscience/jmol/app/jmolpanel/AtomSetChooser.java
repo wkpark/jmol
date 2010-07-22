@@ -357,15 +357,18 @@ ActionListener, ChangeListener, Runnable {
 //    String buttons[] = {REWIND,PREVIOUS,PLAY,PAUSE,NEXT,FF,SAVE};
     String buttons[] = {REWIND,PREVIOUS,PLAY,PAUSE,NEXT,FF};
     String insert = null;
+    String insertPlural = null;
     if (section.equals(COLLECTION)) {
         insert = GT._("atom set");
+        insertPlural = GT._("atom sets");
     } else if (section.equals(VECTOR)) {
         insert = GT._("vector");
+        insertPlural = GT._("vectors");
     }
     String tooltips[] = {
         GT._("Go to first {0} in the collection", insert),
         GT._("Go to previous {0} in the collection", insert),
-        GT._("Play the whole collection of {0}'s", insert),
+        GT._("Play the whole collection of {0}", insertPlural),
         GT._("Pause playing"),
         GT._("Go to next {0} in the collection", insert),
         GT._("Jump to last {0} in the collection", insert)

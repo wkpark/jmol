@@ -1853,7 +1853,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (htParams == null)
       htParams = setLoadParameters(null);
     Object atomSetCollection;
-
+    String[] saveInfo = fileManager.getFileInfo();
     if (fileNames != null) {
 
       // 1) a set of file names
@@ -1904,11 +1904,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     
     // OK, the file has been read and is now closed.
     
-    if (tokType != 0)  // all we are doing is reading atom data
+    if (tokType != 0) { // all we are doing is reading atom data
+      fileManager.setFileInfo(saveInfo);
       return loadAtomDataAndReturnError(atomSetCollection, tokType);
+    }
     
-    if (htParams.containsKey("isData"))
+    if (htParams.containsKey("isData")) {
+      fileManager.setFileInfo(saveInfo);
       return (String) atomSetCollection;
+    }
 
     // now we fix the load script (possibly) with the full path name
     if (loadScript != null) {

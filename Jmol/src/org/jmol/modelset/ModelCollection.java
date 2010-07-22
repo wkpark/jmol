@@ -2151,8 +2151,9 @@ abstract public class ModelCollection extends BondCollection {
       Point3f ptcell = new Point3f(info[0] / 1000f, info[1] / 1000f,
           info[2] / 1000f);
       pt = new Point3f();
+      boolean isAbsolute = !viewer.getFractionalRelative();
       for (int i = atomCount; --i >= 0;)
-        if (isInLatticeCell(i, ptcell, pt, true))
+        if (isInLatticeCell(i, ptcell, pt, isAbsolute))
           bs.set(i);
       return bs;
     }

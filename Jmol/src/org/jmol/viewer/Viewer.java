@@ -2903,6 +2903,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           + "; set unitcell ", Escape.escape(pt));
   }
 
+  public boolean getFractionalRelative() {
+    return global.fractionalRelative;
+  }
+  
+  public void addUnitCellOffset(Point3f pt) {
+    SymmetryInterface unitCell = getCurrentUnitCell();
+    if (unitCell == null)
+      return;
+    pt.add(unitCell.getCartesianOffset());
+  }
+
+
   public void setAtomData(int type, String name, String coordinateData,
                           boolean isDefault) {
     modelSet.setAtomData(type, name, coordinateData, isDefault);
@@ -6167,6 +6179,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case Token.forceautobond:
       doRepaint = false;
       global.forceAutoBond = value;
+      break;
+    case Token.fractionalrelative:
+      doRepaint = false;
+      global.fractionalRelative = value;
       break;
     case Token.nada:
     default:

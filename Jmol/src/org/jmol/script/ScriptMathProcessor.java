@@ -2899,6 +2899,15 @@ class ScriptMathProcessor {
         return (op.intValue == Token.fracxyz ? addX(ptf)
             : addX(op.intValue == Token.fracx ? ptf.x
                 : op.intValue == Token.fracy ? ptf.y : ptf.z));
+      case Token.fux:
+      case Token.fuy:
+      case Token.fuz:
+      case Token.fuxyz:
+        Point3f ptfu = new Point3f((Point3f) x2.value);
+        viewer.toFractional(ptfu, false);
+        return (op.intValue == Token.fracxyz ? addX(ptfu)
+            : addX(op.intValue == Token.fux ? ptfu.x
+                : op.intValue == Token.fuy ? ptfu.y : ptfu.z));
       case Token.unitx:
       case Token.unity:
       case Token.unitz:
@@ -2907,8 +2916,8 @@ class ScriptMathProcessor {
         viewer.toUnitCell(ptu, null);
         viewer.toFractional(ptu, false);
         return (op.intValue == Token.unitxyz ? addX(ptu)
-            : addX(op.intValue == Token.fracx ? ptu.x
-                : op.intValue == Token.fracy ? ptu.y : ptu.z));
+            : addX(op.intValue == Token.unitx ? ptu.x
+                : op.intValue == Token.unity ? ptu.y : ptu.z));
       }
       break;
     case Token.point4f:

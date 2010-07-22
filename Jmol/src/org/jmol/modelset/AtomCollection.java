@@ -468,7 +468,11 @@ abstract public class AtomCollection {
           setAtomCoord(i, xyz.x, xyz.y, xyz.z);
           break;
         case Token.fracxyz:
-          atoms[i].setFractionalCoord(xyz);
+          atoms[i].setFractionalCoord(xyz, true);
+          taint(i, TAINT_COORD);
+          break;
+        case Token.fuxyz:
+          atoms[i].setFractionalCoord(xyz, false);
           taint(i, TAINT_COORD);
           break;
         case Token.vibxyz:
@@ -515,6 +519,7 @@ abstract public class AtomCollection {
                               float fValue, String sValue, float[] values,
                               String[] list) {
     int n = 0;
+    
     if (values != null && values.length == 0 || bs == null)
       return;
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
@@ -562,7 +567,13 @@ abstract public class AtomCollection {
         case Token.fracx:
         case Token.fracy:
         case Token.fracz:
-          atom.setFractionalCoord(tok, fValue);
+          atom.setFractionalCoord(tok, fValue, true);
+          taint(i, TAINT_COORD);
+          break;
+        case Token.fux:
+        case Token.fuy:
+        case Token.fuz:
+          atom.setFractionalCoord(tok, fValue, false);
           taint(i, TAINT_COORD);
           break;
         case Token.elemno:

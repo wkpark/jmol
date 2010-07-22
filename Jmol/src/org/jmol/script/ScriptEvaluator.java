@@ -1090,6 +1090,7 @@ public class ScriptEvaluator {
     case Token.xyz:
     case Token.vibxyz:
     case Token.fracxyz:
+    case Token.fuxyz:
     case Token.unitxyz:
     case Token.color:
       isPt = true;
@@ -1509,6 +1510,7 @@ public class ScriptEvaluator {
     switch (tok) {
     case Token.xyz:
     case Token.fracxyz:
+    case Token.fuxyz:
     case Token.vibxyz:
       if (tokenValue.tok == Token.point3f) {
         viewer.setAtomCoord(bs, tok, tokenValue.value);
@@ -2896,8 +2898,7 @@ public class ScriptEvaluator {
       case Token.cell:
         if (token.value instanceof Point3f) {
           Point3f pt = (Point3f) token.value;
-          sb.append("cell={").append(pt.x).append(" ").append(pt.y).append(" ")
-              .append(pt.z).append("}");
+          sb.append("cell=").append(Escape.escape(pt));
           continue;
         }
         break;
@@ -4618,8 +4619,9 @@ public class ScriptEvaluator {
       error(ERROR_invalidArgument);
     if (n == 3) {
       Point3f pt = new Point3f(coord[0], coord[1], coord[2]);
-      if (coordinatesAreFractional && doConvert && !isSyntaxCheck)
-        viewer.toCartesian(pt, true);
+      if (coordinatesAreFractional && doConvert && !isSyntaxCheck) {
+        viewer.toCartesian(pt, !viewer.getFractionalRelative());
+      }
       return pt;
     }
     if (n == 4) {

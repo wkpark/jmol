@@ -688,8 +688,8 @@ final public class Atom extends Point3fi implements JmolNode {
     return (group.chain.modelSet.getMoleculeIndex(index) + 1);
   }
    
-  private float getFractionalCoord(char ch) {
-    Point3f pt = getFractionalCoord(true);
+  private float getFractionalCoord(char ch, boolean asAbsolute) {
+    Point3f pt = getFractionalCoord(asAbsolute);
     return (ch == 'X' ? pt.x : ch == 'Y' ? pt.y : pt.z);
   }
     
@@ -740,30 +740,33 @@ final public class Atom extends Point3fi implements JmolNode {
     return ptTemp1.distance(ptTemp2);
   }
   
-  void setFractionalCoord(int tok, float fValue) {
+  void setFractionalCoord(int tok, float fValue, boolean asAbsolute) {
     SymmetryInterface[] c = group.chain.modelSet.unitCells;
     if (c != null && c[modelIndex].haveUnitCell())
-      c[modelIndex].toFractional(this, true);
+      c[modelIndex].toFractional(this, asAbsolute);
     switch (tok) {
+    case Token.fux:
     case Token.fracx:
       x = fValue;
       break;
+    case Token.fuy:
     case Token.fracy:
       y = fValue;
       break;
+    case Token.fuz:
     case Token.fracz:
       z = fValue;
       break;
     }
     if (c != null && c[modelIndex].haveUnitCell())
-      c[modelIndex].toCartesian(this, true);
+      c[modelIndex].toCartesian(this, asAbsolute);
   }
   
-  void setFractionalCoord(Point3f ptNew) {
+  void setFractionalCoord(Point3f ptNew, boolean asAbsolute) {
     set(ptNew);
     SymmetryInterface[] c = group.chain.modelSet.unitCells;
     if (c != null && c[modelIndex].haveUnitCell())
-      c[modelIndex].toCartesian(this, !group.chain.model.isJmolDataFrame);
+      c[modelIndex].toCartesian(this, asAbsolute && !group.chain.model.isJmolDataFrame);
   }
   
   boolean isCursorOnTopOf(int xCursor, int yCursor,
@@ -1214,11 +1217,17 @@ final public class Atom extends Point3fi implements JmolNode {
     case Token.covalent:
       return atom.getCovalentRadiusFloat();
     case Token.fracx:
-      return atom.getFractionalCoord('X');
+      return atom.getFractionalCoord('X', true);
     case Token.fracy:
-      return atom.getFractionalCoord('Y');
+      return atom.getFractionalCoord('Y', true);
     case Token.fracz:
-      return atom.getFractionalCoord('Z');
+      return atom.getFractionalCoord('Z', true);
+    case Token.fux:
+      return atom.getFractionalCoord('X', false);
+    case Token.fuy:
+      return atom.getFractionalCoord('Y', false);
+    case Token.fuz:
+      return atom.getFractionalCoord('Z', false);
     case Token.ionic:
       return atom.getBondingRadiusFloat();
     case Token.occupancy:
@@ -1313,6 +1322,8 @@ final public class Atom extends Point3fi implements JmolNode {
     switch (tok) {
     case Token.fracxyz:
       return atom.getFractionalCoord(!atom.group.chain.model.isJmolDataFrame);
+    case Token.fuxyz:
+      return atom.getFractionalCoord(false);
     case Token.unitxyz:
       return (atom.group.chain.model.isJmolDataFrame ? atom.getFractionalCoord(false) 
           : atom.getFractionalUnitCoord(false));

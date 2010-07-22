@@ -517,9 +517,10 @@ public class Token {
   public final static int boundbox  = 9 | mathproperty | deprecatedparam | shapeCommand | defaultON;
   public final static int xyz       =10 | mathproperty | atomproperty | settable;
   public final static int fracxyz   =11 | mathproperty | atomproperty | settable;
-  public final static int unitxyz   =12 | mathproperty | atomproperty;
-  public final static int vibxyz    =13 | mathproperty | atomproperty | settable;
-  final static int w                =14 | mathproperty;// new
+  public final static int fuxyz     =12 | mathproperty | atomproperty | settable;
+  public final static int unitxyz   =13 | mathproperty | atomproperty;
+  public final static int vibxyz    =14 | mathproperty | atomproperty | settable;
+  final static int w                =15 | mathproperty;// new
   
   // occupancy, radius, and structure are odd, because they takes different meanings when compared
   
@@ -589,18 +590,21 @@ public class Token {
   public final static int fracx           = floatproperty | 4 | settable;
   public final static int fracy           = floatproperty | 5 | settable;
   public final static int fracz           = floatproperty | 6 | settable;
-  public final static int ionic           = floatproperty | 7 | settable;
-  public final static int partialcharge   = floatproperty | 8 | settable;
-  public final static int property        = floatproperty | 9 | mathproperty | setparam | settable;
-  public final static int selected        = floatproperty | 10 | settable | predefinedset;
-  public final static int temperature     = floatproperty | 11 | settable;
-  public final static int vanderwaals     = floatproperty | 12 | settable;
-  public final static int vibx            = floatproperty | 13 | settable;
-  public final static int viby            = floatproperty | 14 | settable;
-  public final static int vibz            = floatproperty | 15 | settable;
-  public final static int x               = floatproperty | 16 | settable;
-  public final static int y               = floatproperty | 17 | settable;
-  public final static int z               = floatproperty | 18 | settable;
+  public final static int fux             = floatproperty | 7 | settable;
+  public final static int fuy             = floatproperty | 8 | settable;
+  public final static int fuz             = floatproperty | 9 | settable;
+  public final static int ionic           = floatproperty | 10 | settable;
+  public final static int partialcharge   = floatproperty | 11| settable;
+  public final static int property        = floatproperty | 12| mathproperty | setparam | settable;
+  public final static int selected        = floatproperty | 13 | settable | predefinedset;
+  public final static int temperature     = floatproperty | 14 | settable;
+  public final static int vanderwaals     = floatproperty | 15 | settable;
+  public final static int vibx            = floatproperty | 16 | settable;
+  public final static int viby            = floatproperty | 17 | settable;
+  public final static int vibz            = floatproperty | 18 | settable;
+  public final static int x               = floatproperty | 19 | settable;
+  public final static int y               = floatproperty | 20 | settable;
+  public final static int z               = floatproperty | 21 | settable;
   
   public final static int backbone     = floatproperty | shapeCommand | 1 | predefinedset | defaultON | settable;
   public final static int cartoon      = floatproperty | shapeCommand | 2 | defaultON | settable;
@@ -904,6 +908,7 @@ public class Token {
   public final static int fontcaching                    = booleanparam | 68;
   public final static int fontscaling                    = booleanparam | 69;
   public final static int forceautobond                  = booleanparam | 70;
+  public final static int fractionalrelative             = booleanparam | 72;
 // see shapecommand public final static int frank                          = booleanparam | 72;
   public final static int greyscalerendering             = booleanparam | 74;
   public final static int hbondsbackbone                 = booleanparam | 76;
@@ -1690,6 +1695,10 @@ public class Token {
       "fy",              new Token(fracy),
       "fz",              new Token(fracz),
       "fxyz",            new Token(fracxyz),
+      "fux",             new Token(fux),
+      "fuy",             new Token(fuy),
+      "fuz",             new Token(fuz),
+      "fuxyz",           new Token(fuxyz),
       "group",           new Token(group),
       "groups",          null,
       "group1",          new Token(group1),
@@ -2148,6 +2157,7 @@ public class Token {
       "fontCaching",                              new Token(fontcaching),
       "fontScaling",                              new Token(fontscaling),
       "forceAutoBond",                            new Token(forceautobond),
+      "fractionalRelative",                       new Token(fractionalrelative),
 // see commands     "frank",                                    new Token(frank),
       "greyscaleRendering",                       new Token(greyscalerendering),
       "hbondsBackbone",                           new Token(hbondsbackbone),

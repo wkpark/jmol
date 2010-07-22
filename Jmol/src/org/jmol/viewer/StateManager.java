@@ -854,6 +854,7 @@ public class StateManager {
       setParameterValue("fontScaling", fontScaling);
       setParameterValue("fontCaching", fontCaching);
       setParameterValue("forceAutoBond", forceAutoBond);
+      setParameterValue("fractionalRelative", fractionalRelative);
       setParameterValue("greyscaleRendering", greyscaleRendering);
       setParameterValue("hbondsAngleMinimum", hbondsAngleMinimum);
       setParameterValue("hbondsDistanceMaximum", hbondsDistanceMaximum);
@@ -994,6 +995,7 @@ public class StateManager {
 //    boolean _fileCaching = false;
 //    String _fileCache = "";
     boolean forceAutoBond = false;
+    boolean fractionalRelative = false; // true: UNITCELL offset will change meaning of {1/2 1/2 1/2} 
     char inlineNewlineChar = '|'; //pseudo static
     String loadFormat = "http://www.rcsb.org/pdb/files/%FILE.pdb.gz";
     String smilesUrlFormat = "http://cheminfov.informatics.indiana.edu/rest/thread/d3.py/SMILES/%FILE";

@@ -185,6 +185,10 @@ public class LabelToken {
            Token.unitxyz,
            Token.fracxyz,
            Token.xyz,
+           Token.fuxyz,
+           Token.fux,
+           Token.fuy,
+           Token.fuz,
            
   };
 

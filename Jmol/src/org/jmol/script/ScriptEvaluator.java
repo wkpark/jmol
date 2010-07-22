@@ -10840,8 +10840,9 @@ public class ScriptEvaluator {
       value = 0;
       break;
     case Token.integer:
-      int dotsParam = intParameter(ipt++);
-      if (tokAt(ipt) == Token.radius) {
+      int dotsParam = intParameter(ipt);
+      if (tokAt(ipt + 1) == Token.radius) {
+        ipt++;
         setShapeProperty(iShape, "atom", new Integer(dotsParam));
         setShapeProperty(iShape, "radius", new Float(floatParameter(++ipt)));
         if (tokAt(++ipt) == Token.color) {

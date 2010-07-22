@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-07-11 19:51+0200\n"
+"POT-Creation-Date: 2010-07-23 00:09+0200\n"
 "PO-Revision-Date: 2010-04-27 10:16+0000\n"
 "Last-Translator: Joostkam <Unknown>\n"
 "Language-Team: Dutch <jmol-developer@lists.sf.net>\n"
@@ -278,41 +278,59 @@ msgstr "Periode"
 msgid "Controller"
 msgstr "Controller"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:361
-msgid "atom set"
-msgstr "atoomset"
-
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:363
-msgid "vector"
-msgstr "vector"
-
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:366
-#, java-format
-msgid "Go to first {0} in the collection"
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:362
+#, fuzzy
+msgid "Go to first atom set in the collection"
 msgstr "Ga naar de eerste {0} in de collectie"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:367
-#, java-format
-msgid "Go to previous {0} in the collection"
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:363
+#, fuzzy
+msgid "Go to previous atom set in the collection"
 msgstr "Ga naar de vorige {0} in de collectie"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:368
-#, java-format
-msgid "Play the whole collection of {0}'s"
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:364
+#, fuzzy
+msgid "Play the whole collection of atom sets"
 msgstr "Speel de hele collectie van {0}'s af"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:369
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:365
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:374
 msgid "Pause playing"
 msgstr "Pausseer het afspelen"
 
-#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:370
-#, java-format
-msgid "Go to next {0} in the collection"
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:366
+#, fuzzy
+msgid "Go to next atom set in the collection"
 msgstr "Ga naar de volgende {0} in de collectie"
 
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:367
+#, fuzzy
+msgid "Jump to last atom set in the collection"
+msgstr "Ga naar de laatste {0} in de collectie"
+
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:371
-#, java-format
-msgid "Jump to last {0} in the collection"
+#, fuzzy
+msgid "Go to first vector in the collection"
+msgstr "Ga naar de eerste {0} in de collectie"
+
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:372
+#, fuzzy
+msgid "Go to previous vector in the collection"
+msgstr "Ga naar de vorige {0} in de collectie"
+
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:373
+#, fuzzy
+msgid "Play the whole collection of vectors"
+msgstr "Speel de hele collectie van {0}'s af"
+
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
+#, fuzzy
+msgid "Go to next vecotr in the collection"
+msgstr "Ga naar de volgende {0} in de collectie"
+
+#: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:376
+#, fuzzy
+msgid "Jump to last vector in the collection"
 msgstr "Ga naar de laatste {0} in de collectie"
 
 #: org/openscience/jmol/app/jmolpanel/ConsoleTextArea.java:87
@@ -1074,7 +1092,7 @@ msgid "Image width"
 msgstr "Figuurbreedte"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:284
-#: org/openscience/jmol/app/webexport/PopInJmol.java:68
+#: org/openscience/jmol/app/webexport/PopInJmol.java:73
 msgid "height:"
 msgstr "hoogte:"
 
@@ -1254,37 +1272,37 @@ msgstr "Wat is nieuw in Jmol"
 msgid "Attempt to make scratch directory failed."
 msgstr "Poging om werkfolder te maken is gefaald."
 
-#: org/openscience/jmol/app/webexport/LogPanel.java:52
+#: org/openscience/jmol/app/webexport/LogPanel.java:56
 msgid "Log and Error Messages:"
 msgstr "Log en foutmeldingin:"
 
-#: org/openscience/jmol/app/webexport/LogPanel.java:60
+#: org/openscience/jmol/app/webexport/LogPanel.java:64
 msgid "Messages (see Log tab for full history):"
 msgstr "Berichten (zie de Log voor alle berichten):"
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:41
+#: org/openscience/jmol/app/webexport/PopInJmol.java:46
 msgid "These names will be used as filenames for the applets"
 msgstr "De namen worden gebruikt als bestandsnamen voor de applets."
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:66
+#: org/openscience/jmol/app/webexport/PopInJmol.java:71
 msgid "Applet width:"
 msgstr "Applet-breedte:"
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:99
+#: org/openscience/jmol/app/webexport/PopInJmol.java:104
 #, java-format
 msgid "insert a caption for {0} here."
 msgstr "voeg een titel voor {0} hier in."
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:102
+#: org/openscience/jmol/app/webexport/PopInJmol.java:107
 #, java-format
 msgid "insert a note for {0} here."
 msgstr "voeg een commentaar voor {0} hier in."
 
-#: org/openscience/jmol/app/webexport/ScriptButtons.java:39
+#: org/openscience/jmol/app/webexport/ScriptButtons.java:44
 msgid "These names will be used for button labels"
 msgstr "Deze namen worden gebruikt voor de labels van knoppen:"
 
-#: org/openscience/jmol/app/webexport/ScriptButtons.java:51
+#: org/openscience/jmol/app/webexport/ScriptButtons.java:56
 msgid "% of window for applet width:"
 msgstr "% van de applet-breedte:"
 
@@ -1369,121 +1387,121 @@ msgstr ""
 msgid "Insert more information for {0} here."
 msgstr "Voeg hier meer informatie voor {0} in."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:127
+#: org/openscience/jmol/app/webexport/WebPanel.java:151
 msgid "A web page containing Jmol applets"
 msgstr "Een webpagine die Jmol applets bevat"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:152
+#: org/openscience/jmol/app/webexport/WebPanel.java:176
 #, fuzzy
 msgid "click and drag to reorder"
 msgstr "Dubbelklik en sleep om de volgorde te wijzigen"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:157
+#: org/openscience/jmol/app/webexport/WebPanel.java:181
 msgid "Add Present Jmol State as Instance..."
 msgstr "Voeg de huidige Jmol Status als instantie toe..."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:164
+#: org/openscience/jmol/app/webexport/WebPanel.java:188
 msgid "Delete Selected"
 msgstr "Selectie verwijderen"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:196
+#: org/openscience/jmol/app/webexport/WebPanel.java:220
 msgid "Jmol Instances:"
 msgstr "Jmol instanties:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:202
+#: org/openscience/jmol/app/webexport/WebPanel.java:226
 msgid "Select widgets:"
 msgstr "Selecteer widgets"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:299
+#: org/openscience/jmol/app/webexport/WebPanel.java:323
 msgid "Help/Instructions"
 msgstr "Help/Instructies"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:306
-#: org/openscience/jmol/app/webexport/WebPanel.java:314
+#: org/openscience/jmol/app/webexport/WebPanel.java:330
+#: org/openscience/jmol/app/webexport/WebPanel.java:338
 msgid "Cartoon of Page"
 msgstr "Tekening van Pagina"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:320
+#: org/openscience/jmol/app/webexport/WebPanel.java:344
 msgid "Save HTML as..."
 msgstr "Opslaan HTML al&s..."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:330
+#: org/openscience/jmol/app/webexport/WebPanel.java:354
 msgid "Relative server path to jar files:"
 msgstr "Relatieve path naar de jar bestanden op de server:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:336
+#: org/openscience/jmol/app/webexport/WebPanel.java:360
 msgid "Relative local path to jar files:"
 msgstr "Relatieve path naar the jar bestanden lokaal:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:342
+#: org/openscience/jmol/app/webexport/WebPanel.java:366
 msgid "Author (your name):"
 msgstr "Auteur (uw naam):"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:349
+#: org/openscience/jmol/app/webexport/WebPanel.java:373
 msgid "Browser window title for this web page:"
 msgstr "Paginatitel van deze webpagine in de browser:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:433
+#: org/openscience/jmol/app/webexport/WebPanel.java:459
 msgid "Give the occurrence of Jmol a name:"
 msgstr "Geef de Jmol-instantie een naam:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:449
+#: org/openscience/jmol/app/webexport/WebPanel.java:475
 msgid "Error creating new instance containing script(s) and image."
 msgstr ""
 "Fout tijdens het maken van een nieuwe instantie met script(s) en plaatje."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:460
+#: org/openscience/jmol/app/webexport/WebPanel.java:486
 #, java-format
 msgid "added Instance {0}"
 msgstr "Instantie {0} toegevoegd"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:463
+#: org/openscience/jmol/app/webexport/WebPanel.java:489
 #, java-format
 msgid "updated Instance {0}"
 msgstr "Instantie {0} bijgewerkt"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:500
+#: org/openscience/jmol/app/webexport/WebPanel.java:526
 msgid "Select a directory to create or an HTML file to save"
 msgstr "Selecteer een folder of een HTML-bestand om naar te schrijven"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:518
+#: org/openscience/jmol/app/webexport/WebPanel.java:544
 #, java-format
 msgid "file {0} created"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:520
+#: org/openscience/jmol/app/webexport/WebPanel.java:546
 msgid "Call to FileWriter unsuccessful."
 msgstr "Aanroepen van FileWriter niet gelukt."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:595
+#: org/openscience/jmol/app/webexport/WebPanel.java:621
 #, java-format
 msgid "Using directory {0}"
 msgstr "Folder {0} wordt gebruikt."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:596
-#: org/openscience/jmol/app/webexport/WebPanel.java:605
-#: org/openscience/jmol/app/webexport/WebPanel.java:627
-#: org/openscience/jmol/app/webexport/WebPanel.java:641
-#: org/openscience/jmol/app/webexport/WebPanel.java:668
+#: org/openscience/jmol/app/webexport/WebPanel.java:622
+#: org/openscience/jmol/app/webexport/WebPanel.java:631
+#: org/openscience/jmol/app/webexport/WebPanel.java:653
+#: org/openscience/jmol/app/webexport/WebPanel.java:667
+#: org/openscience/jmol/app/webexport/WebPanel.java:694
 #, java-format
 msgid "adding {0}"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:656
+#: org/openscience/jmol/app/webexport/WebPanel.java:682
 #, fuzzy, java-format
 msgid "Unable to load resource {0}"
 msgstr "Kan de URL \"{0}\" niet vinden."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:708
+#: org/openscience/jmol/app/webexport/WebPanel.java:734
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
 msgstr "Gebasserd op een voorbeeld van A. Herr&#x00E1;ez en J. Gutow"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:711
+#: org/openscience/jmol/app/webexport/WebPanel.java:737
 #, java-format
 msgid "creating {0}"
 msgstr "aanmaken {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:745
+#: org/openscience/jmol/app/webexport/WebPanel.java:771
 #, java-format
 msgid ""
 "Could not find or open:\n"
@@ -1492,7 +1510,7 @@ msgstr ""
 "Kon het bestand niet vinden of openen:\n"
 "{0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:748
+#: org/openscience/jmol/app/webexport/WebPanel.java:774
 #, java-format
 msgid ""
 "copying\n"
@@ -1503,7 +1521,7 @@ msgstr ""
 "{0}\n"
 "         naar"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:755
+#: org/openscience/jmol/app/webexport/WebPanel.java:781
 msgid "compressing large data file to"
 msgstr "comprimeren groot bestand naar"
 
@@ -1623,6 +1641,20 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/Widgets.java:227
 msgid "unimplemented"
 msgstr "niet geimplementeerd"
+
+#~ msgid "atom set"
+#~ msgstr "atoomset"
+
+#, fuzzy
+#~ msgid "atom sets"
+#~ msgstr "atoomset"
+
+#~ msgid "vector"
+#~ msgstr "vector"
+
+#, fuzzy
+#~ msgid "vectors"
+#~ msgstr "vector"
 
 #~ msgid "Jmol Script Console"
 #~ msgstr "Jmol Script Console"

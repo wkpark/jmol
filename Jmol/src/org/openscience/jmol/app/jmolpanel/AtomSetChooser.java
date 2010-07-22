@@ -356,29 +356,34 @@ ActionListener, ChangeListener, Runnable {
 // take out the save functionality until the XYZ file can properly be created
 //    String buttons[] = {REWIND,PREVIOUS,PLAY,PAUSE,NEXT,FF,SAVE};
     String buttons[] = {REWIND,PREVIOUS,PLAY,PAUSE,NEXT,FF};
-    String insert = null;
-    String insertPlural = null;
+    String tooltips[] = null;
     if (section.equals(COLLECTION)) {
-        insert = GT._("atom set");
-        insertPlural = GT._("atom sets");
+      tooltips = new String[] {
+          GT._("Go to first atom set in the collection"),
+          GT._("Go to previous atom set in the collection"),
+          GT._("Play the whole collection of atom sets"),
+          GT._("Pause playing"),
+          GT._("Go to next atom set in the collection"),
+          GT._("Jump to last atom set in the collection")
+      };
     } else if (section.equals(VECTOR)) {
-        insert = GT._("vector");
-        insertPlural = GT._("vectors");
+      tooltips = new String[] {
+          GT._("Go to first vector in the collection"),
+          GT._("Go to previous vector in the collection"),
+          GT._("Play the whole collection of vectors"),
+          GT._("Pause playing"),
+          GT._("Go to next vecotr in the collection"),
+          GT._("Jump to last vector in the collection")
+      };
     }
-    String tooltips[] = {
-        GT._("Go to first {0} in the collection", insert),
-        GT._("Go to previous {0} in the collection", insert),
-        GT._("Play the whole collection of {0}", insertPlural),
-        GT._("Pause playing"),
-        GT._("Go to next {0} in the collection", insert),
-        GT._("Jump to last {0} in the collection", insert)
-    };
     for (int i=buttons.length, idx=0; --i>=0; idx++) {
       String action = buttons[idx];
       // the icon and tool tip come from 
       JButton btn = new JButton(
           JmolResourceHandler.getIconX("AtomSetChooser."+action+"Image"));
-      btn.setToolTipText(tooltips[idx]);
+      if ((tooltips != null) && (tooltips.length > idx)) {
+        btn.setToolTipText(tooltips[idx]);
+      }
       btn.setMargin(inset);
       btn.setActionCommand(section+"."+action);
       btn.addActionListener(this);

@@ -372,7 +372,7 @@ ActionListener, ChangeListener, Runnable {
           GT._("Go to previous vector in the collection"),
           GT._("Play the whole collection of vectors"),
           GT._("Pause playing"),
-          GT._("Go to next vecotr in the collection"),
+          GT._("Go to next vector in the collection"),
           GT._("Jump to last vector in the collection")
       };
     }

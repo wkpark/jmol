@@ -2492,6 +2492,10 @@ class ScriptMathProcessor {
       switch (x1.tok) {
       default:
         return addX(ScriptVariable.fValue(x1) - ScriptVariable.fValue(x2));
+      case Token.hash:
+        Hashtable ht = new Hashtable((Hashtable) x1.value);
+        ht.remove(ScriptVariable.sValue(x2));
+        return addX(ScriptVariable.getVariable(ht));
       case Token.matrix3f:
         switch (x2.tok) {
         default:

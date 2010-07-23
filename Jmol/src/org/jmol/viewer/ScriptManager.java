@@ -280,7 +280,7 @@ class ScriptManager {
   class CommandWatcher implements Runnable {
     public void run() {
       Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-      int commandDelay = 200;
+      int commandDelay = 50; // was 200
       while (commandWatcherThread != null) {
         try {
           Thread.sleep(commandDelay);

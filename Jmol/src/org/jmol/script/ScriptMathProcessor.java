@@ -151,6 +151,7 @@ class ScriptMathProcessor {
     if (logMessages) {
       Logger.info("\nputX: " + x);
     }
+
     xStack[xPt] = x;
     ptx = ++ptid;
   }
@@ -285,8 +286,8 @@ class ScriptMathProcessor {
 
     if (logMessages) {
 
-      dumpStacks("addOp entry\naddOp: " + op + " oPt=" + oPt + " ifPt = "
-          + ifPt + " skipping=" + skipping + " wasX=" + wasX);
+      Logger.info("addOp entry\naddOp: " + op ); //+ " oPt=" + oPt + " ifPt = "
+         // + ifPt + " skipping=" + skipping + " wasX=" + wasX);
     }
 
     // are we skipping due to a ( ? : ) construct?
@@ -586,7 +587,6 @@ class ScriptMathProcessor {
       Logger.info("o[" + i + "]: " + oStack[i] + " prec="
           + Token.getPrecedence(oStack[i].tok));
     Logger.info(" ifStack = " + (new String(ifStack)).substring(0, ifPt + 1));
-    System.out.flush();
   }
 
   private ScriptVariable getX() throws ScriptException {
@@ -2356,6 +2356,7 @@ class ScriptMathProcessor {
     if (isSyntaxCheck)
       return addX(new ScriptVariable(x1));
     switch (op.tok) {
+    case Token.opAND:
     case Token.opAnd:
       if (x1.tok == Token.bitset && x2.tok == Token.bitset) {
         BitSet bs = BitSetUtil.copy(ScriptVariable.bsSelect(x1));

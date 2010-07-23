@@ -2333,6 +2333,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           ++ichT;
           if (ch == '-' || ch == '+')
             break;
+          if (ch == '&' && ichT < cchScript && script.charAt(ichT) == ch)
+            ++ichT; // &&&
         } else if (script.charAt(ichT) == '=') {
           ++ichT;
         }

@@ -831,7 +831,7 @@ abstract class ScriptCompilationTokenParser {
 
   private boolean generateResidueSpecCode(Token token) {
     if (residueSpecCodeGenerated)
-      addTokenToPostfix(Token.tokenAnd);
+      addTokenToPostfix(Token.tokenAND);
     addTokenToPostfix(token);
     residueSpecCodeGenerated = true;
     return true;

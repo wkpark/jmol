@@ -453,31 +453,33 @@ public class Token {
   final static int opAnd        = 0 | mathop | 6 << 4;
  
   final static int opNot        = 0 | mathop | 7 << 4;
- 
-  final static int opGT         = 0 | comparator | 8 << 4;
-  final static int opGE         = 1 | comparator | 8 << 4;
-  final static int opLE         = 2 | comparator | 8 << 4;
-  final static int opLT         = 3 | comparator | 8 << 4;
-  public final static int opEQ  = 4 | comparator | 8 << 4;
-  final static int opNE         = 5 | comparator | 8 << 4;
-   
-  final static int minus        = 0 | mathop | 9 << 4;
-  final static int plus         = 1 | mathop | 9 << 4;
- 
-  final static int divide         = 0 | mathop | 10 << 4;
-  final static int times          = 1 | mathop | 10 << 4;
-  public final static int percent = 2 | mathop | 10 << 4;
-  final static int leftdivide     = 3 | mathop | 10 << 4;  //   quaternion1 \ quaternion2
-  
-  final static int unaryMinus   = 0 | mathop | 11 << 4;
-  final static int minusMinus   = 1 | mathop | 11 << 4;
-  final static int plusPlus     = 2 | mathop | 11 << 4;
-  final static int timestimes   = 3 | mathop | 11 << 4;
-  
-  
-  final static int propselector = 1 | mathop | 12 << 4;
 
-  final static int andequals    = 2 | mathop | 12 << 4;
+  final static int opAND        = 0 | mathop | 8 << 4;
+
+  final static int opGT         = 0 | comparator | 9 << 4;
+  final static int opGE         = 1 | comparator | 9 << 4;
+  final static int opLE         = 2 | comparator | 9 << 4;
+  final static int opLT         = 3 | comparator | 9 << 4;
+  public final static int opEQ  = 4 | comparator | 9 << 4;
+  final static int opNE         = 5 | comparator | 9 << 4;
+   
+  final static int minus        = 0 | mathop | 10 << 4;
+  final static int plus         = 1 | mathop | 10 << 4;
+ 
+  final static int divide         = 0 | mathop | 11 << 4;
+  final static int times          = 1 | mathop | 11 << 4;
+  public final static int percent = 2 | mathop | 11 << 4;
+  final static int leftdivide     = 3 | mathop | 11 << 4;  //   quaternion1 \ quaternion2
+  
+  final static int unaryMinus   = 0 | mathop | 12 << 4;
+  final static int minusMinus   = 1 | mathop | 12 << 4;
+  final static int plusPlus     = 2 | mathop | 12 << 4;
+  final static int timestimes   = 3 | mathop | 12 << 4;
+  
+  
+  final static int propselector = 1 | mathop | 13 << 4;
+
+  final static int andequals    = 2 | mathop | 13 << 4;
 
   // these atom and math properties are invoked after a ".":
   // x.atoms
@@ -1196,6 +1198,7 @@ public class Token {
   final static Token tokenAll = new Token(all, "all");
   final static Token tokenIf = new Token(ifcmd, "if");
   public final static Token tokenAnd = new Token(opAnd, "and");
+  public final static Token tokenAND = new Token(opAND, "");
   public final static Token tokenOr  = new Token(opOr, "or");
   public final static Token tokenOpIf  = new Token(opIf, "?");
   public final static Token tokenComma = new Token(comma, ",");

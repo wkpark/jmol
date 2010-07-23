@@ -26,6 +26,7 @@ package org.jmol.script;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 import java.util.regex.Matcher;
@@ -2310,6 +2311,17 @@ class ScriptMathProcessor {
         return addX(ScriptVariable.sizeOf(x2));
       case Token.type:
         return addX(ScriptVariable.typeOf(x2));
+      case Token.keys:
+        if (x2.tok != Token.hash)
+          return addX("");
+        Enumeration e = ((Hashtable)x2.value).keys();
+        Vector v = new Vector();
+        while (e.hasMoreElements())
+          v.add(e.nextElement());
+        String[] keys = new String[v.size()];
+        for (int i = 0; i < keys.length; i++)
+          keys[i] = (String) v.get(i);
+        return addX(keys);
       case Token.lines:
         switch (x2.tok) {
         case Token.matrix3f:

@@ -5413,39 +5413,7 @@ public class ScriptEvaluator {
     switch (tok) {
     case Token.gotocmd:
       String strTo = parameterAsString(checkLast(1));
-      int pcTo = -1;
-      for (int i = 0; i < aatoken.length; i++) {
-        Token[] tokens = aatoken[i];
-        if (tokens[0].tok == Token.message || tokens[0].tok == Token.nada)
-          if (tokens[tokens.length - 1].value.toString()
-              .equalsIgnoreCase(strTo)) {
-            pcTo = i;
-            break;
-          }
-      }
-      if (pcTo < 0)
-        error(ERROR_invalidArgument);
-      int di = (pcTo < pc ? 1 : -1);
-      int nPush = 0;
-      for (int i = pcTo; i != pc; i += di) {
-        switch (aatoken[i][0].tok) {
-        case Token.push:
-        case Token.process:
-        case Token.forcmd:
-        case Token.catchcmd:
-        case Token.whilecmd:
-          nPush++;
-          break;
-        case Token.pop:
-        case Token.end:
-          nPush--;
-          break;
-        }
-      }
-      if (nPush != 0)
-        error(ERROR_invalidArgument);
-      if (!isSyntaxCheck)
-        pc = pcTo - 1; // ... resetting the program counter
+      gotoCmd(strTo);
       return isForCheck;
     case Token.loop:
       // back to the beginning of this script
@@ -5665,6 +5633,49 @@ public class ScriptEvaluator {
     return isForCheck;
   }
   
+  private void gotoCmd(String strTo) throws ScriptException {
+    int pcTo = (strTo == null ? aatoken.length - 1 : -1);
+    for (int i = pcTo + 1; i < aatoken.length; i++) {
+      Token[] tokens = aatoken[i];
+      if (tokens[0].tok == Token.message || tokens[0].tok == Token.nada)
+        if (tokens[tokens.length - 1].value.toString()
+            .equalsIgnoreCase(strTo)) {
+          pcTo = i;
+          break;
+        }
+    }
+    if (pcTo < 0)
+      error(ERROR_invalidArgument);
+    if (strTo == null)
+      pcTo = 0;
+    int di = (pcTo < pc ? 1 : -1);
+    int nPush = 0;
+    for (int i = pcTo; i != pc; i += di) {
+      switch (aatoken[i][0].tok) {
+      case Token.push:
+      case Token.process:
+      case Token.forcmd:
+      case Token.catchcmd:
+      case Token.whilecmd:
+        nPush++;
+        break;
+      case Token.pop:
+      case Token.end:
+        nPush--;
+        break;
+      }
+    }
+    if (strTo == null) {
+      pcTo = Integer.MAX_VALUE;
+      for (; nPush > 0; --nPush)
+        popContext(false, false);    
+    }
+    if (nPush != 0)
+      error(ERROR_invalidArgument);
+    if (!isSyntaxCheck)
+      pc = pcTo - 1; // ... resetting the program counter
+  }
+
   private void breakCmd(int pt) {
     // pt is a backward reference
     if (pt < 0) {
@@ -5745,7 +5756,7 @@ public class ScriptEvaluator {
     ScriptVariable t = getContextVariableAsVariable("_retval");
     if (t == null) {
       if (!isSyntaxCheck)
-        pcEnd = pc;
+        gotoCmd(null);
       return;
     }
     Vector v = (tv != null || statementLength == 1 ? null : (Vector) parameterExpression(1,
@@ -5758,7 +5769,7 @@ public class ScriptEvaluator {
     t.value = tv.value;
     t.intValue = tv.intValue;
     t.tok = tv.tok;
-    pcEnd = pc;
+    gotoCmd(null);
   }
 
   private void help() throws ScriptException {

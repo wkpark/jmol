@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-07-11 19:51+0200\n"
-"PO-Revision-Date: 2009-12-30 15:21+0000\n"
-"Last-Translator: nanker <Unknown>\n"
+"PO-Revision-Date: 2010-07-23 12:47+0000\n"
+"Last-Translator: TLE <k.nielsen81@gmail.com>\n"
 "Language-Team: Danish <da@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-01-03 19:48+0000\n"
+"X-Launchpad-Export-Date: 2010-07-23 16:16+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/AppletConsole.java:109
@@ -139,7 +139,8 @@ msgid "Check"
 msgstr "Tjek"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -492,9 +493,8 @@ msgid "could not setup force field {0}"
 msgstr ""
 
 #: org/jmol/modelkit/ModelKitPopup.java:75
-#, fuzzy
 msgid "Element?"
-msgstr "Element"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:77
 msgid "new"
@@ -518,9 +518,8 @@ msgid "add hydrogens"
 msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:82
-#, fuzzy
 msgid "minimize"
-msgstr "Minimér"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:83
 msgid "fix hydrogens and minimize"
@@ -531,9 +530,8 @@ msgid "clear"
 msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:85
-#, fuzzy
 msgid "save file"
-msgstr "Gem"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:86
 msgid "save state"
@@ -544,23 +542,20 @@ msgid "invert ring stereochemistry"
 msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:88
-#, fuzzy
 msgid "delete atom"
-msgstr "Vælg atom"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:89
-#, fuzzy
 msgid "drag to bond"
-msgstr "Vælg atom"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:90
 msgid "drag atom"
 msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:91
-#, fuzzy
 msgid "drag atom (and minimize)"
-msgstr "Minimér"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:92
 msgid "drag molecule (SHIFT to rotate)"
@@ -579,9 +574,8 @@ msgid "decrease charge"
 msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:104
-#, fuzzy
 msgid "delete bond"
-msgstr "Vælg atom"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:105
 msgid "single"
@@ -1626,9 +1620,8 @@ msgid "Optimize structure"
 msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:877
-#, fuzzy
 msgid "Model kit"
-msgstr "Model"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:881
 msgid "Extract MOL data"
@@ -2070,9 +2063,9 @@ msgid "{0} hydrogen bonds"
 msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:10504
-#, fuzzy, java-format
+#, java-format
 msgid "{0} struts added"
-msgstr "{0} atomer gemt"
+msgstr ""
 
 #: org/jmol/shape/Frank.java:73
 msgid "Click for menu..."
@@ -2119,7 +2112,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:67
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:69
@@ -2344,14 +2338,6 @@ msgstr ""
 #, java-format
 msgid "Setting log file to {0}"
 msgstr ""
-
-#, fuzzy
-#~ msgid "atoms"
-#~ msgstr "Atomer"
-
-#, fuzzy
-#~ msgid "bonds"
-#~ msgstr "Binding"
 
 #~ msgid "About Jmol"
 #~ msgstr "Om Jmol"

@@ -2,20 +2,19 @@
 # Copyright (c) 2009 Rosetta Contributors and Canonical Ltd 2009
 # This file is distributed under the same license as the jmol package.
 #
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2009.
 # Yuri Chornoivan <yurchor@gmail.com>, 2010.
 msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-07-23 00:09+0200\n"
-"PO-Revision-Date: 2010-06-21 19:16+0000\n"
+"POT-Creation-Date: 2010-07-23 18:24+0200\n"
+"PO-Revision-Date: 2010-07-23 05:39+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@gmail.com>\n"
 "Language-Team: Ukrainian <translation@linux.org.ua>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-06-21 20:56+0000\n"
+"X-Launchpad-Export-Date: 2010-07-23 16:16+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -282,19 +281,16 @@ msgid "Controller"
 msgstr "Регулятор"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:362
-#, fuzzy
 msgid "Go to first atom set in the collection"
-msgstr "Перейти до першого {0} у збірці"
+msgstr "Перейти до першого набору атомів у збірці"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:363
-#, fuzzy
 msgid "Go to previous atom set in the collection"
-msgstr "Перейти до попереднього {0} у збірці"
+msgstr "Перейти до попереднього набору атомів у збірці"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:364
-#, fuzzy
 msgid "Play the whole collection of atom sets"
-msgstr "Відтворити усю збірку {0}"
+msgstr "Відтворити усю збірку наборів атомів"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:365
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:374
@@ -302,39 +298,33 @@ msgid "Pause playing"
 msgstr "Призупинити відтворення"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:366
-#, fuzzy
 msgid "Go to next atom set in the collection"
-msgstr "Перейти до наступного {0} у збірці"
+msgstr "Перейти до наступного набору атомів у збірці"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:367
-#, fuzzy
 msgid "Jump to last atom set in the collection"
-msgstr "Перейти до останнього {0} у збірці"
+msgstr "Перейти до останнього набору атомів у збірці"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:371
-#, fuzzy
 msgid "Go to first vector in the collection"
-msgstr "Перейти до першого {0} у збірці"
+msgstr "Перейти до першого вектора у збірці"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:372
-#, fuzzy
 msgid "Go to previous vector in the collection"
-msgstr "Перейти до попереднього {0} у збірці"
+msgstr "Перейти до попереднього вектора у збірці"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:373
-#, fuzzy
 msgid "Play the whole collection of vectors"
-msgstr "Відтворити усю збірку {0}"
+msgstr "Відтворити усю збірку векторів"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
 #, fuzzy
-msgid "Go to next vecotr in the collection"
-msgstr "Перейти до наступного {0} у збірці"
+msgid "Go to next vector in the collection"
+msgstr "Перейти до наступного вектора у збірці"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:376
-#, fuzzy
 msgid "Jump to last vector in the collection"
-msgstr "Перейти до останнього {0} у збірці"
+msgstr "Перейти до останнього вектора у збірці"
 
 #: org/openscience/jmol/app/jmolpanel/ConsoleTextArea.java:87
 #, java-format
@@ -1640,22 +1630,14 @@ msgstr "Звантажити перегляд"
 msgid "unimplemented"
 msgstr "не реалізовано"
 
-#~ msgid "atom set"
-#~ msgstr "набір атомів"
-
-#, fuzzy
-#~ msgid "atom sets"
-#~ msgstr "набір атомів"
-
 #~ msgid "vector"
-#~ msgstr "вектор"
-
-#, fuzzy
-#~ msgid "vectors"
 #~ msgstr "вектор"
 
 #~ msgid "Jmol Script Console"
 #~ msgstr "Скриптова консоль Jmol"
+
+#~ msgid "atom set"
+#~ msgstr "набір атомів"
 
 #~ msgid "Show Selected"
 #~ msgstr "Показати позначені"

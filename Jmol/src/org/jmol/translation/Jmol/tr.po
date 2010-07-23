@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-07-23 00:09+0200\n"
+"POT-Creation-Date: 2010-07-23 18:24+0200\n"
 "PO-Revision-Date: 2010-05-25 21:47+0000\n"
 "Last-Translator: Angel Spy <melissadilara@yahoo.com>\n"
 "Language-Team: Turkish <yerellestirme@kde.org.tr>\n"
@@ -322,7 +322,7 @@ msgstr "{0} elemanının tüm koleksiyonunu oynat"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
 #, fuzzy
-msgid "Go to next vecotr in the collection"
+msgid "Go to next vector in the collection"
 msgstr "Koleksiyondaki bir sonraki {0} elemanına git"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:376

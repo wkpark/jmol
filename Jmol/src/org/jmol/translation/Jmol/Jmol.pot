@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-07-23 00:09+0200\n"
+"POT-Creation-Date: 2010-07-23 18:24+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -309,7 +309,7 @@ msgid "Play the whole collection of vectors"
 msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
-msgid "Go to next vecotr in the collection"
+msgid "Go to next vector in the collection"
 msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:376

@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-07-23 00:09+0200\n"
-"PO-Revision-Date: 2010-07-22 15:19+0000\n"
+"POT-Creation-Date: 2010-07-23 18:24+0200\n"
+"PO-Revision-Date: 2010-07-23 12:21+0000\n"
 "Last-Translator: TLE <k.nielsen81@gmail.com>\n"
 "Language-Team: Danish <da@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-07-22 16:04+0000\n"
+"X-Launchpad-Export-Date: 2010-07-23 16:16+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -28,7 +28,7 @@ msgstr "gennemsigtig baggrund"
 
 #: org/openscience/jmol/app/JmolApp.java:140
 msgid "give this help page"
-msgstr ""
+msgstr "vis denne hjælpeside"
 
 #: org/openscience/jmol/app/JmolApp.java:142
 msgid "no display (and also exit when done)"
@@ -68,7 +68,7 @@ msgstr "send kun uddata fra udskrevne meddelelser til konsollen (medfører -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:158
 msgid "independent command thread"
-msgstr ""
+msgstr "uafhængig kommandotråd"
 
 #: org/openscience/jmol/app/JmolApp.java:160
 msgid "exit after script (implicit with -n)"
@@ -161,7 +161,7 @@ msgstr "O.k."
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:113
 msgid "Editor"
-msgstr "Editor"
+msgstr "Redigering"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:114
 msgid "Check"
@@ -177,7 +177,7 @@ msgstr "Trin"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:123
 msgid "Variables"
-msgstr "Variabler"
+msgstr "Variable"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:124
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:291
@@ -277,19 +277,16 @@ msgid "Controller"
 msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:362
-#, fuzzy
 msgid "Go to first atom set in the collection"
-msgstr "Gå til første {0} i samlingen"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:363
-#, fuzzy
 msgid "Go to previous atom set in the collection"
-msgstr "Gå til foregående {0} i samlingen"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:364
-#, fuzzy
 msgid "Play the whole collection of atom sets"
-msgstr "Afspil hele samlingen af {0}"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:365
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:374
@@ -297,44 +294,37 @@ msgid "Pause playing"
 msgstr "Sæt afspilning på pause"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:366
-#, fuzzy
 msgid "Go to next atom set in the collection"
-msgstr "Gå til næste {0} i samlingen"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:367
-#, fuzzy
 msgid "Jump to last atom set in the collection"
-msgstr "Gå til sidste {0} i samlingen"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:371
-#, fuzzy
 msgid "Go to first vector in the collection"
-msgstr "Gå til første {0} i samlingen"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:372
-#, fuzzy
 msgid "Go to previous vector in the collection"
-msgstr "Gå til foregående {0} i samlingen"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:373
-#, fuzzy
 msgid "Play the whole collection of vectors"
-msgstr "Afspil hele samlingen af {0}"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
-#, fuzzy
-msgid "Go to next vecotr in the collection"
-msgstr "Gå til næste {0} i samlingen"
+msgid "Go to next vector in the collection"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:376
-#, fuzzy
 msgid "Jump to last vector in the collection"
-msgstr "Gå til sidste {0} i samlingen"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/ConsoleTextArea.java:87
 #, java-format
 msgid "Error reading from BufferedReader: {0}"
-msgstr ""
+msgstr "Fejl ved læsning fra BufferedReader: {0}"
 
 #: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:206
 msgid "Delete atoms"
@@ -342,11 +332,11 @@ msgstr "Slet atomer"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:187
 msgid "Export Gaussian Input File"
-msgstr ""
+msgstr "Eksporter inputfil til Gaussian"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:194
 msgid "Basic"
-msgstr ""
+msgstr "Grundlæggende"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:196
 msgid "Advanced"
@@ -354,15 +344,15 @@ msgstr "Avanceret"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:224
 msgid "Checkpoint File: "
-msgstr ""
+msgstr "Kontrolpunktfil: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:229
 msgid "Amount of Memory:"
-msgstr ""
+msgstr "Mængde af hukommelse:"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:235
 msgid "Number of Processors:"
-msgstr ""
+msgstr "Antal processorer:"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:248
 msgid "Route"
@@ -374,7 +364,7 @@ msgstr "Metode: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:261
 msgid "Basis Set: "
-msgstr ""
+msgstr "Basissæt: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:269
 msgid "Density Fitting Basis Set (DFT Only): "
@@ -382,7 +372,7 @@ msgstr "Basissæt til densitetsfitning (kun ved DFT): "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:275
 msgid "Job Options: "
-msgstr ""
+msgstr "Valgmuligheder for job: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:288
 msgid "Molecular Properties"
@@ -390,7 +380,7 @@ msgstr "Molekylære egenskaber"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:294
 msgid "Total Charge: "
-msgstr ""
+msgstr "Samlet ladning: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:301
 msgid "Multiplicity: "
@@ -398,7 +388,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:308
 msgid "Selection: "
-msgstr "Valg: "
+msgstr "Udvalg: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:343
 msgid "Gaussian Input File Name"
@@ -418,7 +408,7 @@ msgstr "Gem"
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:169
 #: org/openscience/jmol/app/jmolpanel/RecentFilesDialog.java:70
 msgid "Cancel"
-msgstr "Fortryd"
+msgstr "Annullér"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:49
 msgid "&Macros"
@@ -438,7 +428,7 @@ msgstr "Å&bn"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:53
 msgid "Open a file."
-msgstr "Åbn en fil"
+msgstr "Åbn en fil."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:54
 msgid "Open &URL"
@@ -446,19 +436,19 @@ msgstr "Åbn &URL"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:55
 msgid "Scrip&t Editor..."
-msgstr ""
+msgstr "Scrip&tredigering..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:56
 msgid "Conso&le..."
-msgstr ""
+msgstr "Konso&l..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:57
 msgid "Jmol Java &Console"
-msgstr ""
+msgstr "Jmol Java-&konsol"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:58
 msgid "AtomSet&Chooser..."
-msgstr ""
+msgstr "Atomsæt_vælger..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:59
 msgid "&Save As..."
@@ -474,7 +464,7 @@ msgstr "&Eksporter billede..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:62
 msgid "Save current view as an image."
-msgstr ""
+msgstr "Gem den nuværende visning som et billede."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:63
 msgid "Export to &Web Page..."
@@ -495,11 +485,11 @@ msgstr "Render i POV-Ray"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:67
 msgid "Write &State..."
-msgstr ""
+msgstr "&Skriv tilstand..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:68
 msgid "Save current view as a Jmol state script."
-msgstr ""
+msgstr "Gem den nuværende visning som et Jmol-tilstandsscript."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:69
 msgid "&Print..."
@@ -532,11 +522,11 @@ msgstr "Vælg &alle"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:77
 msgid "Deselect All"
-msgstr "Fravælg alt"
+msgstr "Fravælg alle"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:78
 msgid "Copy &Image"
-msgstr "Kopiér &billed"
+msgstr "Kopiér &billede"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:79
 msgid "Copy Script"
@@ -592,7 +582,7 @@ msgstr "Svovl"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:92
 msgid "Amino"
-msgstr ""
+msgstr "Amino"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:93
 msgid "Nucleic"
@@ -604,7 +594,7 @@ msgstr "Vand"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:95
 msgid "Hetero"
-msgstr ""
+msgstr "Hetero"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:96
 msgid "&Display"
@@ -624,11 +614,11 @@ msgstr "{0}% van der Waals"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:103
 msgid "&Bond"
-msgstr ""
+msgstr "&Binding"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:105
 msgid "&Wireframe"
-msgstr ""
+msgstr "&Trådgitter"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:106
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:107
@@ -657,11 +647,11 @@ msgstr "&Nummer"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:114
 msgid "&Centered"
-msgstr ""
+msgstr "&Centreret"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:115
 msgid "&Upper right"
-msgstr ""
+msgstr "&Øverst til højre"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:116
 msgid "&Vector"
@@ -669,7 +659,7 @@ msgstr "&Vektor"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:118
 msgid "&On"
-msgstr ""
+msgstr "&Slået til"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:119
 #, java-format
@@ -683,7 +673,7 @@ msgstr "{0} pixels"
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:126
 #, java-format
 msgid "Scale {0}"
-msgstr "Skala {0}"
+msgstr "Skalér {0}"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:127
 msgid "&Zoom"
@@ -700,7 +690,7 @@ msgstr "{0}%"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:133
 msgid "&Perspective Depth"
-msgstr ""
+msgstr "&Perspektivdybde"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:134
 msgid "A&xes"
@@ -712,7 +702,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:136
 msgid "&Hydrogens"
-msgstr ""
+msgstr "&Hydrogener"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:137
 msgid "V&ectors"
@@ -769,11 +759,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:151
 msgid "&Nanometers 1E-9"
-msgstr ""
+msgstr "&Nanometre 1E-9"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:152
 msgid "&Angstroms 1E-10"
-msgstr ""
+msgstr "&Ångstrøm 1E-10"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:153
 msgid "&Picometers 1E-12"
@@ -781,11 +771,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:154
 msgid "&Animate..."
-msgstr ""
+msgstr "&Animer..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:155
 msgid "&Vibrate..."
-msgstr ""
+msgstr "&Vibrer..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:156
 msgid "&Graph..."
@@ -797,11 +787,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:158
 msgid "&Crystal Properties"
-msgstr "&Krystal egenskaber"
+msgstr "&Krystalegenskaber"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:159
 msgid "&Once"
-msgstr ""
+msgstr "&En gang"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:160
 msgid "&Loop"
@@ -813,7 +803,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:162
 msgid "&Stop animation"
-msgstr ""
+msgstr "&Stop animation"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:163
 msgid "&Rewind to first frame"
@@ -833,11 +823,11 @@ msgstr "Gå til næste ramme"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:167
 msgid "Go to &previous frame"
-msgstr "Gå til &foregående ramme"
+msgstr "Gå til &forrige billede"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:168
 msgid "Go to previous frame"
-msgstr "Gå til foregående ramme"
+msgstr "Gå til forrige billede"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:169
 msgid "All &frames"
@@ -853,7 +843,7 @@ msgstr "Gå til &sidste ramme"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:172
 msgid "Go to last frame"
-msgstr "Gå til næste ramme"
+msgstr "Gå til sidste billede"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:173
 msgid "Start &vibration"
@@ -869,11 +859,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:176
 msgid "&Next frequency"
-msgstr ""
+msgstr "&Næste frekvens"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:177
 msgid "&Previous frequency"
-msgstr ""
+msgstr "F&orrige frekvens"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:178
 msgid "&Help"
@@ -1126,7 +1116,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:367
 msgid "T - Uncompressed Targa-24"
-msgstr ""
+msgstr "T - Ukomprimeret Targa-24"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:383
 msgid "Alpha transparency"
@@ -1216,7 +1206,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:301
 msgid "(percentage of vanDerWaals radius)"
-msgstr ""
+msgstr "(procentdel af vanDerWaals-radius)"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:354
 msgid "Compute Bonds"
@@ -1300,7 +1290,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/ScriptButtons.java:56
 msgid "% of window for applet width:"
-msgstr ""
+msgstr "% af vindue bruges som appletbredde:"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:82
 #: org/openscience/jmol/app/webexport/WebExport.java:196
@@ -1582,7 +1572,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:174
 msgid "Pause"
-msgstr ""
+msgstr "Pause"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:176
 msgid "Last Frame"
@@ -1620,15 +1610,7 @@ msgstr ""
 msgid "unimplemented"
 msgstr ""
 
-#, fuzzy
-#~ msgid "atom sets"
-#~ msgstr "Ingen AtomSets"
-
 #~ msgid "vector"
-#~ msgstr "vektor"
-
-#, fuzzy
-#~ msgid "vectors"
 #~ msgstr "vektor"
 
 #~ msgid "Output Conso&le..."

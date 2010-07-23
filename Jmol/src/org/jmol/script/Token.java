@@ -1577,7 +1577,7 @@ public class Token {
       "struts",            new Token(struts),
       "strut",             null,
       "subset",            new Token(subset),
-      "switch",             new Token(switchcmd),
+      "switch",            tokenSwitch,
       "synchronize",       new Token(sync),
       "sync",              null,
       "trace",             new Token(trace),

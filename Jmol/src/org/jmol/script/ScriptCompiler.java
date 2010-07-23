@@ -362,7 +362,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       }
       if (lookingAtLookupToken(ichToken)) {
         String ident = getPrefixToken();
-        System.out.println(ident);
+        //System.out.println(ident);
         switch (parseKnownToken(ident)) {
         case CONTINUE:
           continue;

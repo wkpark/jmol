@@ -558,7 +558,7 @@ public class ScriptEvaluator {
 
   private Object parameterExpression(int pt, int ptMax, String key,
                                      boolean asVector) throws ScriptException {
-    return parameterExpression(pt, ptMax, key, asVector, -1, false, null, null);
+    return parameterExpression(pt, ptMax, key, true, asVector, -1, false, null, null);
   }
 
   /**
@@ -574,6 +574,7 @@ public class ScriptEvaluator {
    * @param key
    *          variable name for debugging reference only -- null indicates
    *          return Boolean -- "" indicates return String
+   * @param ignoreComma TODO
    * @param asVector
    *          a flag passed on to RPN;
    * @param ptAtom
@@ -590,9 +591,9 @@ public class ScriptEvaluator {
    *           errors are thrown directly to the Eval error system.
    */
   private Object parameterExpression(int pt, int ptMax, String key,
-                                     boolean asVector, int ptAtom,
-                                     boolean isArrayItem, Hashtable localVars,
-                                     String localVar) throws ScriptException {
+                                     boolean ignoreComma, boolean asVector,
+                                     int ptAtom, boolean isArrayItem,
+                                     Hashtable localVars, String localVar) throws ScriptException {
 
     /*
      * localVar is a variable designated at the beginning of the select(x,...)
@@ -611,6 +612,7 @@ public class ScriptEvaluator {
     boolean isOneExpressionOnly = (pt < 0);
     boolean returnBoolean = (key == null);
     boolean returnString = (key != null && key.length() == 0);
+    int nSquare = 0;
     if (isOneExpressionOnly)
       pt = -pt;
     int nParen = 0;
@@ -647,8 +649,8 @@ public class ScriptEvaluator {
           error(ERROR_invalidArgument);
         if (localVars == null)
           localVars = new Hashtable();
-        res = parameterExpression(++i, -1, null, false, -1, false, localVars,
-            localVar);
+        res = parameterExpression(++i, -1, null, ignoreComma, false, -1, false,
+            localVars, localVar);
         boolean TF = ((Boolean) res).booleanValue();
         int iT = iToken;
         if (getToken(iT++).tok != Token.semicolon)
@@ -657,12 +659,12 @@ public class ScriptEvaluator {
         int iF = iToken;
         if (tokAt(iF++) != Token.semicolon)
           error(ERROR_invalidArgument);
-        parameterExpression(-iF, -1, null, false, 1, false, localVars, localVar);
+        parameterExpression(-iF, -1, null, ignoreComma, false, 1, false, localVars, localVar);
         int iEnd = iToken;
         if (tokAt(iEnd) != Token.rightparen)
           error(ERROR_invalidArgument);
-        v = parameterExpression(TF ? iT : iF, TF ? iF : iEnd, "XXX", false, 1,
-            false, localVars, localVar);
+        v = parameterExpression(TF ? iT : iF, TF ? iF : iEnd, "XXX", ignoreComma, false,
+            1, false, localVars, localVar);
         i = iEnd;
         break;
       case Token.forcmd:
@@ -734,8 +736,8 @@ public class ScriptEvaluator {
             jlast = j;
             bsX.set(j);
             t.index = j;
-            res = parameterExpression(i, pt2, (isFor ? "XXX" : null), isFor, j,
-                false, localVars, isFunctionOfX ? null : dummy);
+            res = parameterExpression(i, pt2, (isFor ? "XXX" : null), ignoreComma, isFor,
+                j, false, localVars, isFunctionOfX ? null : dummy);
             if (isFor) {
               if (res == null || ((Vector) res).size() == 0)
                 error(ERROR_invalidArgument);
@@ -805,7 +807,10 @@ public class ScriptEvaluator {
         i = iToken;
         break;
       case Token.leftbrace:
-        v = getPointOrPlane(i, false, true, true, false, 3, 4);
+        if (tokAt(i + 1) == Token.string) 
+          v = getHash(i);
+        else
+          v = getPointOrPlane(i, false, true, true, false, 3, 4);
         i = iToken;
         break;
       case Token.expressionBegin:
@@ -834,9 +839,14 @@ public class ScriptEvaluator {
         i++;
         break out;
       case Token.rightbrace:
+        if (!ignoreComma && nParen == 0 && nSquare == 0)
+          break out;
         error(ERROR_invalidArgument);
         break;
       case Token.comma: // ignore commas
+        if (!ignoreComma && nParen == 0 && nSquare == 0) {
+          break out;
+        }
         if (!rpn.addOp(theToken))
           error(ERROR_invalidArgument);
         break;
@@ -886,13 +896,21 @@ public class ScriptEvaluator {
             }
             error(ERROR_invalidArgument);
           }
-          if (theTok == Token.leftparen)
+          switch (theTok) {
+          case Token.leftparen:
             nParen++;
-          else if (theTok == Token.rightparen) {
+            break;
+          case Token.rightparen:
             if (--nParen == 0 && isOneExpressionOnly) {
               iToken++;
               break out;
             }
+            break;
+          case Token.leftsquare:
+            nSquare++;
+            break;
+          case Token.rightsquare:
+            nSquare--;
           }
         } else if (Token.tokAttr(theTok, Token.identifier)
             && viewer.isFunction((String) theToken.value)) {
@@ -949,6 +967,27 @@ public class ScriptEvaluator {
     default:
       return result.value;
     }
+  }
+
+  private Hashtable getHash(int i) throws ScriptException {
+    Hashtable ht = new Hashtable();
+    for (i = i + 1; i < statementLength; i++) {
+      if (tokAt(i) == Token.rightbrace)
+        break;
+      String key = stringParameter(i++);
+      if (tokAt(i++) != Token.colon)
+        error(ERROR_invalidArgument);
+      Vector v = (Vector) 
+          parameterExpression(i, 0, null, false, true, -1, false, null, null);
+      ht.put(key, v.get(0));
+      i = iToken;
+      if (tokAt(i) != Token.comma)
+        break;
+    }
+    iToken = i;
+    if (tokAt(i) != Token.rightbrace)
+      error(ERROR_invalidArgument);
+    return ht;
   }
 
   Object bitsetVariableVector(Object v) {
@@ -12306,8 +12345,8 @@ public class ScriptEvaluator {
 
     // get value
 
-    Object v = parameterExpression(pt, ptMax, key, true, -1, isArrayItem, null,
-        null);
+    Object v = parameterExpression(pt, ptMax, key, true, true, -1, isArrayItem,
+        null, null);
     if (v == null)
       return;
     int nv = ((Vector) v).size();
@@ -12333,11 +12372,19 @@ public class ScriptEvaluator {
     }
 
     if (isArrayItem) {
-
+      ScriptVariable vv = (ScriptVariable) ((Vector) v).get(0);
       // stack is selector [ VALUE
-
-      int index = ScriptVariable.iValue((ScriptVariable) ((Vector) v).get(0));
-      t.setSelectedValue(index, tv);
+      if (t.tok == Token.hash || t.tok == Token.bitset) {
+        if (t.tok == Token.bitset) {
+          t.tok = Token.hash;
+          t.value = new Hashtable();
+        }
+        String hkey = ScriptVariable.sValue(vv);
+        ((Hashtable) t.value).put(hkey, tv);
+      } else {
+        int index = ScriptVariable.iValue(vv);
+        t.setSelectedValue(index, tv);
+      }
       return;
     }
     if (settingProperty) {

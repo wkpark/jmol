@@ -25,6 +25,8 @@
 package org.jmol.script;
 
 import java.util.BitSet;
+import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.vecmath.Matrix3f;
@@ -103,6 +105,7 @@ public class ScriptVariable extends Token {
         || x instanceof Quaternion // stored as point4f
         || x instanceof String
 
+        || x instanceof Hashtable  // stored as array
         || x instanceof Vector     // stored as list
         || x instanceof double[]   // stored as list
         || x instanceof float[]    // stored as list
@@ -125,6 +128,7 @@ public class ScriptVariable extends Token {
     case point4f:
     case string:
     case list:
+    case hash:
     case matrix3f:
     case matrix4f:
       return astrType[tok];
@@ -156,6 +160,8 @@ public class ScriptVariable extends Token {
     case list:
       return x.intValue == Integer.MAX_VALUE ? ((String[]) x.value).length
           : sizeOf(selectItem(x));
+    case hash:
+      return ((Hashtable) x.value).size();
     default:
       return 0;
     }
@@ -218,6 +224,8 @@ public class ScriptVariable extends Token {
       return new ScriptVariable(list, x);
     if (x instanceof Float[])
       return new ScriptVariable(listf, x);
+    if (x instanceof Hashtable)
+      return new ScriptVariable(hash, x);
     
     
     // all the rest are stored as list
@@ -268,12 +276,18 @@ public class ScriptVariable extends Token {
     index = v.index;
     intValue = v.intValue;
     tok = v.tok;
-    if (tok == list) {
+    switch (tok) {
+    case hash:
+      value = new Hashtable((Hashtable) v.value);
+      break;
+    case list:
       int n = ((String[])v.value).length;
       value = new String[n];
       System.arraycopy(v.value, 0, value, 0, n);
-    } else {
+      break;
+    default:
       value = v.value;
+      break;
     }
     return this;
   }
@@ -508,6 +522,17 @@ public class ScriptVariable extends Token {
       for (i = 0; i < list.length; i++)
         sb.append(list[i]).append("\n");
       return sb.toString();
+    case hash:
+      StringBuffer sbh = new StringBuffer();
+      Hashtable ht = (Hashtable) x.value;
+      Enumeration e = ht.keys();
+      while (e.hasMoreElements()) {
+        String key = (String) e.nextElement();
+        sbh.append(key).append("\t:\t").append(
+            ScriptVariable.sValue(ScriptVariable.getVariable(ht.get(key))))
+            .append("\n");
+      }
+      return sbh.toString();
     case string:
       String s = (String) x.value;
       i = x.intValue;

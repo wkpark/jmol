@@ -37,23 +37,10 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
 
+import org.jmol.script.ScriptVariable;
+
 
 public class Escape {
-
-  public static String escape(Object x) {
-    if (x instanceof String)
-      return escape("" + x);
-    if (x instanceof String[])
-      return escape((String[]) x, true);
-    if (x instanceof int[] 
-          || x instanceof float[]
-          || x instanceof float[][]
-          || x instanceof float[][][]) 
-      return toJSON(null, x);
-    if (x instanceof Point3f[])
-      return escapeArray(x);
-    return x.toString();
-  }
 
   public static String escapeColor(int argb) {
     return "[x" + getHexColorFromRGB(argb) + "]";
@@ -69,6 +56,23 @@ public class Escape {
     String b  = "00" + Integer.toHexString(argb & 0xFF);
     b = b.substring(b.length() - 2);
     return r + g + b;
+  }
+
+  public static String escape(Object x) {
+    if (x instanceof String)
+      return escape("" + x);
+    if (x instanceof String[])
+      return escape((String[]) x, true);
+    if (x instanceof int[] 
+          || x instanceof float[]
+          || x instanceof float[][]
+          || x instanceof float[][][]) 
+      return toJSON(null, x);
+    if (x instanceof Point3f[])
+      return escapeArray(x);
+    if (x instanceof Hashtable)
+      return escape((Hashtable) x);
+    return x.toString();
   }
 
   public static String escape(Point4f xyzw) {
@@ -176,22 +180,6 @@ public class Escape {
     return "\"" + str + "\"";
   }
 
-  private static String chop(String s) {
-    int len = s.length();
-    if (len < 512)
-      return s;
-    StringBuffer sb = new StringBuffer();
-    String sep = "\"\\\n    + \"";
-    int pt = 0;
-    for (int i = 72; i < len; pt = i, i += 72) {
-      while (s.charAt(i - 1) == '\\')
-        i++;
-      sb.append((pt == 0 ? "" : sep)).append(s.substring(pt, i));
-    }
-    sb.append(sep).append(s.substring(pt, len));
-    return sb.toString();
-  }
-
   static String ESCAPE_SET = " ,./;:_+-~=><?'!@#$%^&*";
   static int nEscape = ESCAPE_SET.length();
 
@@ -268,6 +256,22 @@ public class Escape {
   private static String unicode(char c) {
     String s = "0000" + Integer.toHexString(c);
     return "\\u" + s.substring(s.length() - 4);
+  }
+
+  private static String chop(String s) {
+    int len = s.length();
+    if (len < 512)
+      return s;
+    StringBuffer sb = new StringBuffer();
+    String sep = "\"\\\n    + \"";
+    int pt = 0;
+    for (int i = 72; i < len; pt = i, i += 72) {
+      while (s.charAt(i - 1) == '\\')
+        i++;
+      sb.append((pt == 0 ? "" : sep)).append(s.substring(pt, i));
+    }
+    sb.append(sep).append(s.substring(pt, len));
+    return sb.toString();
   }
 
   public static Object unescapePointOrBitsetOrMatrixOrArray(String s) {
@@ -479,6 +483,22 @@ public class Escape {
     .append(m4.m32).append(",")
     .append(m4.m33).append("]]");
    return sb.toString();
+  }
+
+  public static String escape(Hashtable ht) {
+    StringBuffer sb = new StringBuffer();
+    sb.append("{ ");
+    String sep = "";
+    Enumeration e = ((Hashtable) ht).keys();
+    while (e.hasMoreElements()) {
+      String key = (String) e.nextElement();
+      sb.append(sep).append(escape(key)).append(':');
+      Object val = ht.get(key);
+      sb.append(((ScriptVariable)val).escape());
+      sep = ","; 
+    }
+    sb.append(" }");
+    return sb.toString();
   }
   
   private static String packageJSON(String infoType, StringBuffer sb) {

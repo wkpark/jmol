@@ -74,22 +74,23 @@ public class Token {
   public final static int string     =  4;
   
   final static int seqcode           =  5;
-  public final static int list       =  6;
-  public final static int point3f    =  7;
-  public final static int point4f    =  8;  
-  public final static int bitset     =  9;
+  public final static int hash       =  6;  // associative array; Hashtable
+  public final static int list       =  7;
+  public final static int point3f    =  8;
+  public final static int point4f    =  9;  
+  public final static int bitset     =  10;
   
-  public final static int matrix3f   = 10;  
-  public final static int matrix4f   = 11;  
+  public final static int matrix3f   = 11;  
+  public final static int matrix4f   = 12;  
   // listf "list-float" is specifically for xxx.all.bin, 
   // but it could be developed further
-  final static int listf             = 12;     
-  final private static int keyword   = 13;
+  final static int listf             = 13;     
+  final private static int keyword   = 14;
   
 
   final static String[] astrType = {
     "nada", "identifier", "integer", "decimal", "string",
-    "seqcode", "array", "point", "point4", "bitset",
+    "seqcode", "hash", "array", "point", "point4", "bitset",
     "matrix3f",  "matrix4f", "listf", "keyword"
   };
 

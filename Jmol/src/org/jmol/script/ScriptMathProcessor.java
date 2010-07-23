@@ -26,6 +26,7 @@ package org.jmol.script;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -561,8 +562,17 @@ class ScriptMathProcessor {
     if (xPt < 0 || xPt == 0 && !isArrayItem) {
       return false;
     }
-    int i = ScriptVariable.iValue(xStack[xPt--]);
+    ScriptVariable var1 = xStack[xPt--];
     ScriptVariable var = xStack[xPt];
+    if (var.tok == Token.hash) {
+      ScriptVariable v = (ScriptVariable) ((Hashtable) var.value).get(ScriptVariable.sValue(var1));
+      if (v == null)
+        xStack[xPt] = ScriptVariable.getVariable("");
+      else
+        xStack[xPt] = v;
+      return true;
+    }      
+    int i = ScriptVariable.iValue(var1);
     switch (var.tok) {
     default:
       var = new ScriptVariable(Token.string, ScriptVariable.sValue(var));

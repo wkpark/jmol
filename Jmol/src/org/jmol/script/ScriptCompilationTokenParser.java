@@ -187,7 +187,10 @@ abstract class ScriptCompilationTokenParser {
   }
 
   private boolean isExpressionNext() {
-    return tokPeek(Token.leftbrace) || !isMathExpressionCommand && tokPeek(Token.leftparen);
+    return tokPeek(Token.leftbrace) 
+    && tokAt(itokenInfix + 2) != Token.string
+    && tokAt(itokenInfix + 2) != Token.rightbrace 
+    || !isMathExpressionCommand && tokPeek(Token.leftparen);
   }
 
   protected static boolean tokenAttr(Token token, int tok) {
@@ -394,7 +397,7 @@ abstract class ScriptCompilationTokenParser {
         return false;
       if (!addNextTokenIf(Token.rightparen))
         return error(ERROR_tokenExpected, ")");
-      return checkForItemSelector();
+      return checkForItemSelector(true, true);
     case Token.leftbrace:
       return checkForCoordinate(isMathExpressionCommand);
     default:
@@ -446,22 +449,38 @@ abstract class ScriptCompilationTokenParser {
     if (isImplicitExpression) {
       addTokenToPostfix(Token.tokenExpressionBegin);
       tokenNext();
-    }else if (isEmbeddedExpression) {
+    } else if (isEmbeddedExpression) {
       tokenNext();
       pt--;
     } else {
       addNextToken();
     }
-    if (!tokPeek(Token.rightbrace) && !clauseOr(false))
-      return false;
-    int n = 1;
-    while (!tokPeek(Token.rightbrace)) {
+    boolean isHash = tokPeek(Token.string);
+    if (isHash) {
+      isImplicitExpression = false;
+      returnToken();
+      ltokenPostfix.remove(ltokenPostfix.size() - 1);
+      addNextToken();
+      int nBrace = 1;
+      while (nBrace != 0) {
+        if (tokPeek(Token.leftbrace))
+          nBrace++;
+        if (tokPeek(Token.rightbrace))
+          nBrace--;
+        addNextToken();
+      }
+    } else {
+      if (!tokPeek(Token.rightbrace) && !clauseOr(false))
+        return false;
+      int n = 1;
+      while (!tokPeek(Token.rightbrace)) {
         boolean haveComma = addNextTokenIf(Token.comma);
         if (!clauseOr(false))
-          return (haveComma || n < 3? false : error(ERROR_tokenExpected, "}"));
+          return (haveComma || n < 3 ? false : error(ERROR_tokenExpected, "}"));
         n++;
+      }
+      isCoordinate = (n >= 2); // could be {1 -2 3}
     }
-    isCoordinate = (n >= 2); // could be {1 -2 3}
     if (isCoordinate && (isImplicitExpression || isEmbeddedExpression)) {
       ltokenPostfix.set(pt, Token.tokenCoordinateBegin);
       addTokenToPostfix(Token.tokenCoordinateEnd);
@@ -469,22 +488,23 @@ abstract class ScriptCompilationTokenParser {
     } else if (isImplicitExpression) {
       addTokenToPostfix(Token.tokenExpressionEnd);
       tokenNext();
-    } else if (isEmbeddedExpression)
+    } else if (isEmbeddedExpression && !isHash) {
       tokenNext();
-    else
+    } else {
       addNextToken();
-    return checkForItemSelector();
+    }
+    return checkForItemSelector(isHash, !isHash);
   }
   
-  private boolean checkForItemSelector() {
+  private boolean checkForItemSelector(boolean allowHash, boolean allowNumeric) {
     // {x[1]}  @{x}[1][3]  (atomno=3)[2][5]
     int tok;
     if ((tok = tokAt(itokenInfix + 1)) == Token.leftsquare
-        || tok == Token.leftbrace)
+        || allowNumeric && tok == Token.leftbrace)
       return true; // [[, as in a matrix or [{ ... not totally acceptable!
     
     // the real problem is that after an expression you can have
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < (allowNumeric ? 2 : 1); i++) {
       if (!addNextTokenIf(Token.leftsquare))
         break;
       if (!clauseItemSelector())
@@ -814,7 +834,7 @@ abstract class ScriptCompilationTokenParser {
     // we allow @x[1], which compiles as {@x}[1], not @{x[1]}
     // otherwise [1] gets read as a general atom name selector
     if (!addSubstituteTokenIf(Token.leftbrace, Token.tokenExpressionBegin))
-      return addNextToken() && checkForItemSelector();
+      return addNextToken() && checkForItemSelector(true, true);
     while (moreTokens() && !tokPeek(Token.rightbrace)) {
       if (tokPeek(Token.leftbrace)) {
         if (!checkForCoordinate(true))
@@ -824,7 +844,7 @@ abstract class ScriptCompilationTokenParser {
       }
     }
     return addSubstituteTokenIf(Token.rightbrace, Token.tokenExpressionEnd)
-        && checkForItemSelector();
+        && checkForItemSelector(true, true);
   }
 
   private boolean residueSpecCodeGenerated;

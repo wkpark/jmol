@@ -3318,7 +3318,7 @@ public class ScriptEvaluator {
           rpn.addXNum(ScriptVariable.intVariable(code[++pc].intValue));
           break;
         }
-        int chainID = (pc + 3 < code.length && code[pc + 2].tok == Token.opAnd
+        int chainID = (pc + 3 < code.length && code[pc + 2].tok == Token.opAND
             && code[pc + 3].tok == Token.spec_chain ? code[pc + 3].intValue
             : '\t');
         rpn.addX(getAtomBits(Token.spec_seqcode_range, new int[] {

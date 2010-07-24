@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-07-11 19:51+0200\n"
-"PO-Revision-Date: 2010-07-24 03:32+0000\n"
+"PO-Revision-Date: 2010-07-24 21:12+0000\n"
 "Last-Translator: TLE <k.nielsen81@gmail.com>\n"
 "Language-Team: Danish <da@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-07-24 08:48+0000\n"
+"X-Launchpad-Export-Date: 2010-07-24 21:56+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/AppletConsole.java:109
@@ -347,7 +347,7 @@ msgstr "Forhåndsvisning"
 
 #: org/jmol/export/dialog/FilePreview.java:91
 msgid "Append models"
-msgstr "Anvend model"
+msgstr "Vedhæft modeller"
 
 #: org/jmol/i18n/GT.java:118
 msgid "Arabic"
@@ -857,7 +857,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:581
 msgid "Nonpolar Residues"
-msgstr ""
+msgstr "Ikke-polære residier"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:582
 msgid "Basic Residues (+)"
@@ -1067,7 +1067,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:650
 msgid "Set SS-Bonds Backbone"
-msgstr ""
+msgstr "Indstil SS-bindingers rygrad"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:657
 #: org/jmol/popup/MainPopupResourceBundle.java:750
@@ -1143,7 +1143,7 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:690
 #: org/jmol/popup/MainPopupResourceBundle.java:757
 msgid "Labels"
-msgstr ""
+msgstr "Etiketter"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:693
 msgid "With Element Symbol"
@@ -1255,7 +1255,7 @@ msgstr "Hvid"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:726
 msgid "Cyan"
-msgstr "Turkis"
+msgstr "Cyan"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:728
 msgid "Red"

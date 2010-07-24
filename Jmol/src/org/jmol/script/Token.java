@@ -256,7 +256,8 @@ public class Token {
   final static int set          = 3 | mathExpressionCommand | expression;
   final static int var          = 4 | mathExpressionCommand;
   final static int log          = 5 | mathExpressionCommand;
-
+  //final static int prompt     see mathfunc
+  
   public final static int echo  = 1 | implicitStringCommand | shapeCommand | setparam;
   final static int help         = 2 | implicitStringCommand;
   public final static int hover = 3 | implicitStringCommand | defaultON;
@@ -724,7 +725,7 @@ public class Token {
   // xxx(a,b,c)
   
   final static int hkl          = 1 | 3 << 9 | mathfunc;
-  final static int prompt       = 2 | 3 << 9 | mathfunc | scriptCommand;
+  final static int prompt       = 2 | 3 << 9 | mathfunc | mathExpressionCommand;
   final static int select       = 3 | 3 << 9 | mathfunc | atomExpressionCommand;
 
   // ___.xxx(a,b,c)

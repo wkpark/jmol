@@ -8851,7 +8851,7 @@ public class ScriptEvaluator {
       if (!isSyntaxCheck)
         msg = getScriptContext().getContextTrace(null, true).toString();
     } else {
-      msg = optParameterAsString(1);
+        msg = (String) parameterExpression(1, 0, "", false);
     }
     if (!isSyntaxCheck)
       viewer.prompt(msg, "OK", null, true);

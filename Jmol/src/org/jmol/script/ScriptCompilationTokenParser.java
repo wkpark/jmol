@@ -188,8 +188,8 @@ abstract class ScriptCompilationTokenParser {
 
   private boolean isExpressionNext() {
     return tokPeek(Token.leftbrace) 
-    && tokAt(itokenInfix + 2) != Token.string
-    && tokAt(itokenInfix + 2) != Token.rightbrace 
+    && tokAt(itokenInfix + 1) != Token.string
+    && tokAt(itokenInfix + 1) != Token.rightbrace 
     || !isMathExpressionCommand && tokPeek(Token.leftparen);
   }
 
@@ -463,8 +463,19 @@ abstract class ScriptCompilationTokenParser {
       addNextToken();
       int nBrace = 1;
       while (nBrace != 0) {
-        if (tokPeek(Token.leftbrace))
-          nBrace++;
+        if (tokPeek(Token.leftbrace)) {
+          if (isExpressionNext()) {
+            addTokenToPostfix(new Token(Token.expressionBegin,
+                "implicitExpressionBegin"));
+            if (!clauseOr(true))
+              return false;
+            if (lastToken != Token.tokenCoordinateEnd) {
+              addTokenToPostfix(Token.tokenExpressionEnd);
+            }
+          } else {
+            nBrace++;
+          }
+        }
         if (tokPeek(Token.rightbrace))
           nBrace--;
         addNextToken();

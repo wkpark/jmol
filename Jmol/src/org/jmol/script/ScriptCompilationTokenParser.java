@@ -515,7 +515,7 @@ abstract class ScriptCompilationTokenParser {
       return true; // [[, as in a matrix or [{ ... not totally acceptable!
     
     // the real problem is that after an expression you can have
-    for (int i = 0; i < (allowNumeric ? 2 : 1); i++) {
+    while (true) {//for (int i = 0; i < (allowNumeric ? 2 : 1); i++) {
       if (!addNextTokenIf(Token.leftsquare))
         break;
       if (!clauseItemSelector())

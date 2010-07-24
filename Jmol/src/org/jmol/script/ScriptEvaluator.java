@@ -800,6 +800,7 @@ public class ScriptEvaluator {
       case Token.matrix3f:
       case Token.matrix4f:
       case Token.bitset:
+      case Token.hash:
         rpn.addX(new ScriptVariable(theToken));
         break;
       case Token.dollarsign:
@@ -2175,6 +2176,8 @@ public class ScriptEvaluator {
           fixed[j] = new Token(Token.matrix3f, v);
         } else if (v instanceof Matrix4f) {
           fixed[j] = new Token(Token.matrix4f, v);
+        } else if (v instanceof Hashtable) {
+          fixed[j] = new Token(Token.hash, v);
         } else if (v instanceof String[]) {
           String[] sv = (String[]) v;
           if (sv.length > 0 && sv[0].startsWith("{")
@@ -3471,6 +3474,7 @@ public class ScriptEvaluator {
             tokOperator, (String) val) : compareFloat(tokWhat, data,
             tokOperator, comparisonFloat));
         break;
+      case Token.hash:
       case Token.bitset:
       case Token.point3f:
       case Token.point4f:
@@ -3486,14 +3490,19 @@ public class ScriptEvaluator {
           break;
         }
         val = getParameter((String) value, false);
+        if (isInMath) {
+          rpn.addX(val);
+          break;
+        }
         if (val instanceof String)
           val = getStringObjectAsVariable((String) val, null);
         if (val instanceof String[]) {
           BitSet bs = Escape.unEscapeBitSetArray((String[]) val, true);
           if (bs != null)
             val = bs;
-        } else if (val instanceof String || val instanceof String[])
+        } else if (val instanceof String || val instanceof String[]) {
           val = lookupIdentifierValue((String) value);
+        }
         rpn.addX(val);
         break;
       }

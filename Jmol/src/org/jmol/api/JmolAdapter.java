@@ -50,7 +50,7 @@ import org.jmol.viewer.JmolConstants;
  * mapped to element 0 (Xx), which has color pink and a relatively large
  * covalent bonding radius. 
  * @see org.jmol.api.JmolViewer
- * @see org.jmol.api.SmarterJmolAdapter
+ * @see org.jmol.adapter.smarter.SmarterJmolAdapter
  ****************************************************************/
 public abstract class JmolAdapter {
   

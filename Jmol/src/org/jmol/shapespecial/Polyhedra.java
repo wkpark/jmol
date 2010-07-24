@@ -429,7 +429,7 @@ public class Polyhedra extends AtomShape {
           boolean isFlat = (faceCatalog.indexOf(faceId(i, j, k)) >= 0);
           // if center is on the face, then we need a different point to 
           // define the normal
-          System.out.println("# polyhedra\n");
+          //System.out.println("# polyhedra\n");
           boolean isWindingOK = 
             (isFlat ?
             Measure.getNormalFromCenter(randomPoint, points[i], points[j],

@@ -179,7 +179,7 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
                              Hashtable htParams, boolean asBufferedReader);
 
   /**
-   * all in one 
+   * all in one -- for TestSmarterJmolAdapter
    * 
    * @param name
    * @param type
@@ -190,6 +190,8 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
   public Object getAtomSetCollectionFromReader(String name, String type,
                                                BufferedReader bufferedReader,
                                                Hashtable htParams) {
+    if (htParams == null)
+      htParams = new Hashtable();
     Object a = getAtomSetCollectionReader(name, type, bufferedReader, htParams);
     if (a instanceof String)
       return a;

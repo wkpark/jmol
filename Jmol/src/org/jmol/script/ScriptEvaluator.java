@@ -8854,7 +8854,7 @@ public class ScriptEvaluator {
       msg = optParameterAsString(1);
     }
     if (!isSyntaxCheck)
-      viewer.prompt(msg, "OK", true);
+      viewer.prompt(msg, "OK", null, true);
   }
 
   private void refresh() {

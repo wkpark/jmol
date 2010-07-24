@@ -9192,14 +9192,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.connect(connections);
   }
 
-  public String prompt(String label, String data, boolean asButtons) {
+  public String prompt(String label, String data, String[] list,
+                       boolean asButtons) {
     if (!asButtons)
       return JOptionPane.showInputDialog(label, data);
-    String[] list = TextFormat.split(data, "|");
+    if (data != null)
+      list = TextFormat.split(data, "|");
     int i = JOptionPane.showOptionDialog(null, label, "Jmol prompt",
-    JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,
-    null, list, list[0]);
-    return "" + i;
+        JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null,
+        list, list[0]);
+    return (data != null ? list[i] : "" + i);
   }
 
 }

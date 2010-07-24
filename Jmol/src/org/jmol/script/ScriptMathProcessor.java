@@ -1335,6 +1335,7 @@ class ScriptMathProcessor {
     //x = prompt("testing")
     //x = prompt("testing","defaultInput")
     //x = prompt("testing","yes|no|cancel", true)
+    //x = prompt("testing",["button1", "button2", "button3"])
 
     if (args.length != 1 && args.length != 2 && args.length != 3)
       return false;
@@ -1342,10 +1343,11 @@ class ScriptMathProcessor {
       return addX("");
 
     String label = ScriptVariable.sValue(args[0]);
-    String input = (args.length >= 2 ? ScriptVariable.sValue(args[1]) : "OK");
-    boolean asButtons = (args.length == 1 || args.length == 3 && ScriptVariable.bValue(args[2]));
-    String s = viewer.prompt(label, input, asButtons);
-    return (asButtons ? addX(Integer.parseInt(s) + 1) : addX(s));
+    String[] buttonArray = (args.length > 1 && args[1].tok == Token.list ? (String[]) args[1].value : null);
+    boolean asButtons = (buttonArray != null || args.length == 1 || args.length == 3 && ScriptVariable.bValue(args[2]));
+    String input = (buttonArray != null ? null : args.length >= 2 ? ScriptVariable.sValue(args[1]) : "OK");
+    String s = viewer.prompt(label, input, buttonArray, asButtons);
+    return (asButtons && buttonArray != null ? addX(Integer.parseInt(s) + 1) : addX(s));
   }
 
   private boolean evaluateReplace(ScriptVariable[] args) throws ScriptException {

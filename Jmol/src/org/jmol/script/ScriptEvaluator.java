@@ -4606,8 +4606,8 @@ public class ScriptEvaluator {
       switch (getToken(i).tok) {
       case Token.leftbrace:
       case Token.comma:
-        // case Token.opOr:
       case Token.opAnd:
+      case Token.opAND:
         break;
       case Token.rightbrace:
         break out;

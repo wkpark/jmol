@@ -25,38 +25,12 @@
 
 package org.jmol.util;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 /**
  * Class for measuring performance of Jmol code.
  */
 public class Profiling {
 
   private static long start;
-  private final static Method method;
-  private final static String unit;
-
-  static {
-    Method tmpMethod = null;
-    String tmpUnit   = null;
-    try {
-      tmpMethod = System.class.getDeclaredMethod("nanoTime", null);
-      tmpUnit = "ns";
-    } catch (NoSuchMethodException e) {
-      // System.nanoTime() doesn't exist (pre 1.5 Java)
-    }
-    if (tmpMethod == null) {
-      try {
-        tmpMethod = System.class.getDeclaredMethod("currentTimeMillis", null);
-        tmpUnit = "ms";
-      } catch (NoSuchMethodException e) {
-        System.err.println("No System.currentTimeMillis() method");
-      }
-    }
-    method = tmpMethod;
-    unit = tmpUnit;
-  }
 
   public static void startProfiling() {
     start = getTime();
@@ -74,26 +48,10 @@ public class Profiling {
   }
 
   public static long getTime() {
-    if (method == null) {
-      return 0;
-    }
-    Object result = null;
-    try {
-      result = method.invoke(null, null);
-    } catch (IllegalArgumentException e) {
-      //
-    } catch (IllegalAccessException e) {
-      //
-    } catch (InvocationTargetException e) {
-      //
-    }
-    if (result instanceof Long) {
-      return ((Long) result).longValue();
-    }
-    return 0;
+    return System.nanoTime();
   }
 
   public static String getUnit() {
-    return unit;
+    return "ns";
   }
 }

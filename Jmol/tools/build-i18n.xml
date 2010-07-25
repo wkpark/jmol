@@ -1,10 +1,17 @@
-<project name="Jmol-i18n" default="main-i18n" basedir=".">
+<project name="Jmol-i18n" default="main-i18n" basedir="..">
 
   <!--
       DocumentId  $Id$
       Summary     Localization support for Jmol and Jmol applet
                   using the gettext suite
   -->
+  
+  <!-- <for list ...> construct needs ant-contrib.jar -->
+  <taskdef resource="net/sf/antcontrib/antlib.xml">
+    <classpath>
+      <pathelement location="tools/ant-contrib.jar"/>
+    </classpath>
+  </taskdef>
   
   <!-- our properties section -->
   
@@ -45,15 +52,6 @@
   </fileset>
   <fileset id="JmolApplet.java.files" dir="${basedir}/${src.dir}" includesfile="applet.classes">
   </fileset>
-
-  <!-- <for list ...> construct needs ant-contrib.jar -->
-  
-  <taskdef resource="net/sf/antcontrib/antlib.xml">
-    <classpath>
-      <pathelement location="${lib.dir}/ant-contrib.jar"/>
-    </classpath>
-  </taskdef>
-  
   
   <!-- the main target -->
 

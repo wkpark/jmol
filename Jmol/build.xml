@@ -3,6 +3,14 @@
       DocumentId  $Id$
   -->
 	
+  <!-- Contributions -->
+  <!-- <for list ...> construct needs ant-contrib.jar -->
+  <taskdef resource="net/sf/antcontrib/antlib.xml">
+    <classpath>
+      <pathelement location="tools/ant-contrib.jar" />
+    </classpath>
+  </taskdef>
+
   <!-- pull developer-specific settings from their home directory -->
   <property file="${user.home}/.jmol.build.properties" />
   <!-- compile options -->
@@ -43,7 +51,7 @@
 
   <property file="proxy.properties" />
 
-  <import file="build-i18n.xml"/>
+  <import file="tools/build-i18n.xml"/>
 
   <path id="project.class.path">
     <fileset dir="${lib.dir}">
@@ -64,13 +72,6 @@
       <include name="gnujaxp.jar" />
     </fileset>
   </path>
-
-  <!-- <for list ...> construct needs ant-contrib.jar -->
-  <taskdef resource="net/sf/antcontrib/antlib.xml">
-    <classpath>
-      <pathelement location="${lib.dir}/ant-contrib.jar"/>
-    </classpath>
-  </taskdef>
 
   <target name="main" id="main" depends="init,jar,applet-jar,signed-applet,smiles-applet-jar"/>
   
@@ -1540,10 +1541,10 @@ all support for previous versions removed
 
   <!-- i18n stuff -->
   <target name="main-i18n" depends="classes">
-    <ant antfile="build-i18n.xml" target="main-i18n"/>
+    <ant antfile="tools/build-i18n.xml" target="main-i18n"/>
   </target>
   <target name="spotless-i18n">
-    <ant antfile="build-i18n.xml" target="spotless-i18n"/>
+    <ant antfile="tools/build-i18n.xml" target="spotless-i18n"/>
   </target>
 
 </project>

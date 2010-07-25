@@ -1910,7 +1910,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     
     if (htParams.containsKey("isData")) {
-      fileManager.setFileInfo(saveInfo);
+//      fileManager.setFileInfo(saveInfo);
       return (String) atomSetCollection;
     }
 
@@ -2449,6 +2449,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void zap(boolean notify, boolean resetUndo, boolean zapModelKit) {
     stopAnimationThreads("zap");
+    System.out.println("zap notify resetundo zapmodelkit " + notify + " " + resetUndo + " " + zapModelKit);
     if (modelSet != null) {
       setBooleanProperty("appendNew", true);
       clearModelDependentObjects();
@@ -2487,7 +2488,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     initializeModel();
     if (notify)
       setFileLoadStatus(FILE_STATUS_ZAPPED, null, (resetUndo ? "resetUndo"
-          : "zapped"), null, null);
+          : getZapName()), null, null);
     if (Logger.debugging)
       Logger.checkMemory();
   }
@@ -4938,6 +4939,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         strError, ptLoad, doCallback);
   }
 
+  public String getZapName() {
+    return (getModelkitMode() ? JmolConstants.MODELKIT_ZAP_TITLE : "zapped");
+  }
+
+
   /*
    * measureCallback reports completed or pending measurements. Pending
    * measurements are measurements that the user has started but has not
@@ -6251,7 +6257,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   }
 
-  boolean getModelkitMode() {
+  public boolean getModelkitMode() {
     return global.modelKitMode;
   }
 
@@ -8999,6 +9005,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void undoAction(boolean isSave, int taintedAtom, int type) {
     int modelIndex = (taintedAtom >= 0 ? modelSet.atoms[taintedAtom].modelIndex 
         : modelSet.getModelCount() - 1);
+    System.out.println(isSave + " " + type  + " undoAction " + modelSet.getModels()[modelIndex].isModelkit());
     if (!modelSet.getModels()[modelIndex].isModelkit())
       return;
     if (!isSave) {
@@ -9044,7 +9051,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       bs = getModelUndeletedAtomsBitSet(modelIndex);
       sb.append("zap ");
       sb.append(Escape.escape(bs)).append(";");
-      DataManager.getInlineData(sb, modelSet.getModelExtract(bs, false, false), true, null);
+      DataManager.getInlineData(sb, modelSet.getModelExtract(bs, false, true), true, null);
       sb.append("set refreshing false;")
           .append(actionManager.getPickingState()).append(
               transformManager.getMoveToText(0, false)).append(

@@ -74,7 +74,7 @@ public class FileManager {
   }
 
   void clear() {
-    fullPathName = fileName = nameAsGiven = "zapped";
+    fullPathName = fileName = nameAsGiven = viewer.getZapName();
   }
 
   private void setLoadState(Hashtable htParams) {
@@ -263,7 +263,7 @@ public class FileManager {
     FileReader fileReader = new FileReader("string", "string", "string", null,
         getBufferedReaderForString(strModel), htParams, isAppend);
     fileReader.run();
-    if (!(fileReader.atomSetCollection instanceof String && !isAppend)) {
+    if (!isAppend && !(fileReader.atomSetCollection instanceof String)) {
       viewer.zap(false, true, false);
       fullPathName = fileName = (strModel == JmolConstants.MODELKIT_ZAP_STRING ? JmolConstants.MODELKIT_ZAP_TITLE : "string");
     }

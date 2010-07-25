@@ -84,7 +84,7 @@ public final class ModelLoader extends ModelSet {
     preserveState = viewer.getPreserveState();
     initializeInfo(name, null);
     createModelSet(null, null, null);
-    modelSetName = "zapped";
+    modelSetName = name;
     viewer.setStringProperty("_fileType", "");
   }
 
@@ -477,11 +477,11 @@ public final class ModelLoader extends ModelSet {
     models[modelIndex].setNAltLocs(codes == null ? 0 : codes.length());
     codes = (String) getModelAuxiliaryInfo(modelIndex, "insertionCodes");
     models[modelIndex].setNInsertions(codes == null ? 0 : codes.length());
-    models[modelIndex].isModelKit = (modelSetName != null 
+    boolean isModelKit = (modelSetName != null 
         && modelSetName.startsWith("Jmol Model Kit")
         || modelName.startsWith("Jmol Model Kit")
         || "Jme".equals(getModelAuxiliaryInfo(modelIndex,
-    "fileType")));
+    "fileType")));models[modelIndex].isModelKit = isModelKit;
     return models[modelIndex].isPDB = getModelAuxiliaryInfoBoolean(modelIndex,
         "isPDB");
   }

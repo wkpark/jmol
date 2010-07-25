@@ -363,7 +363,7 @@ class StatusManager {
       JmolAppConsoleInterface appConsole = (JmolAppConsoleInterface) viewer.getProperty("DATA_API", "getAppConsole", null);
       if (appConsole != null)
         appConsole.zap();
-      fileName = "zapped";
+      fileName = viewer.getZapName();
     }
     setStatusChanged("fileLoaded", ptLoad, fullPathName, false);
     if (errorMsg != null)

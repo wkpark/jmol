@@ -188,8 +188,8 @@ abstract class ScriptCompilationTokenParser {
 
   private boolean isExpressionNext() {
     return tokPeek(Token.leftbrace) 
-    && tokAt(itokenInfix + 1) != Token.string
-    //&& tokAt(itokenInfix + 1) != Token.rightbrace 
+    && !(tokAt(itokenInfix + 1) == Token.string
+         && tokAt(itokenInfix + 2) == Token.colon)
     || !isMathExpressionCommand && tokPeek(Token.leftparen);
   }
 

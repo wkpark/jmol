@@ -99,8 +99,10 @@ public class _MayaExporter extends __CartesianExporter {
         + pt.y + " " + pt.z + ";\n");
   }
 
-  protected void outputCylinder(Point3f pt1, Point3f pt2, short colix, byte endcaps,
-                      float radius) {
+  protected boolean outputCylinder(Point3f ptCenter, Point3f pt1, Point3f pt2, short colix,
+                      byte endcaps, float radius, Point3f ptX, Point3f ptY) {
+    if (ptX != null)
+      return false;
     nCyl++;
     name = "nurbsCylinder" + nCyl;
     id = "nurbsCylinderShape" + nCyl;
@@ -129,6 +131,7 @@ public class _MayaExporter extends __CartesianExporter {
     setAttr("s", 4);
     setAttr("hr", length / radius);
     addConnect();
+    return true;
   }
 
   static protected void getRotation(Vector3f v, Vector3f rot) {
@@ -179,6 +182,12 @@ public class _MayaExporter extends __CartesianExporter {
                               short colix, boolean doFill) {
     // TODO
     
+  }
+
+  boolean outputEllipse(Point3f ptCenter, Point3f ptX, Point3f ptY,
+                        short colix, boolean doFill) {
+    // TODO
+    return false;
   }
 
   protected void outputCone(Point3f ptBase, Point3f ptTip, float radius,

@@ -447,6 +447,17 @@ public abstract class ___Exporter {
     return m1;
   }
 
+  protected Matrix3f getRotationMatrix(Point3f pt1, Point3f ptZ, float radius, Point3f ptX, Point3f ptY) {    
+    Matrix3f m = new Matrix3f();
+    m.m00 = ptX.distance(pt1) * radius;
+    m.m11 = ptY.distance(pt1) * radius;
+    m.m22 = ptZ.distance(pt1) * 2;
+    Quaternion q = Quaternion.getQuaternionFrame(pt1, ptX, ptY);
+    Matrix3f m1 = q.getMatrix();
+    m1.mul(m);
+    return m1;
+  }
+
   // The following methods are called by a variety of shape renderers and 
   // Export3D, replacing methods in org.jmol.g3d. More will be added as needed. 
 
@@ -454,6 +465,9 @@ public abstract class ___Exporter {
 
   abstract void drawCircle(int x, int y, int z,
                                    int diameter, short colix, boolean doFill);  //draw circle 
+
+  abstract boolean drawEllipse(Point3f ptAtom, Point3f ptX, Point3f ptY,
+                             short colix, boolean doFill);
 
   void drawSurface(int nVertices, int nPolygons, int faceVertexMax,
                       Point3f[] vertices, Vector3f[] normals, short[] colixes,
@@ -544,6 +558,7 @@ public abstract class ___Exporter {
     g3d.plotText(x, y, z, g3d.getColorArgbOrGray(colix), text, font3d, jmolRenderer);
     outputComment("end text " + nText + ": " + text);
   }
+
 }
 
 class UseTable extends Hashtable {

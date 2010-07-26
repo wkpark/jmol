@@ -113,6 +113,12 @@ abstract class __RayTracerExporter extends ___Exporter {
     outputCircle(x, y, z, radius, colix, doFill);
   }
 
+  boolean drawEllipse(Point3f ptAtom, Point3f ptX, Point3f ptY,
+                      short colix, boolean doFill) {
+    // IDTF only for now
+    return false;
+  }
+
   void drawPixel(short colix, int x, int y, int z, int scale) {
     //measures, meshRibbon, dots
     outputSphere(x, y, z, 0.75f * scale, colix);

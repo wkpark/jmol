@@ -689,6 +689,12 @@ final public class Export3D implements JmolRendererInterface {
         mToEllipsoidal, coef, mDeriv, octantPoints);
   }
 
+  public boolean drawEllipse(Point3f ptAtom, Point3f ptX, Point3f ptY,
+                           boolean fillArc, boolean wireframeOnly) {
+    return exporter.drawEllipse(ptAtom, ptX, ptY, colix, fillArc); 
+  }
+
+
   /*
    * *************************************************************** g3d-relayed
    * info specifically needed for the renderers

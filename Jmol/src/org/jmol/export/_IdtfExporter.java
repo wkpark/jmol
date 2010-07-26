@@ -212,6 +212,7 @@ public class _IdtfExporter extends __CartesianExporter {
   
   private boolean haveSphere;
   private boolean haveCylinder;
+  private boolean haveCylinderIn;
   private boolean haveCone;
   private boolean haveCircle;
   
@@ -493,6 +494,8 @@ public class _IdtfExporter extends __CartesianExporter {
       int i = key.indexOf("_");
       if (i > 0)
         key = key.substring(0,i);
+      if (key.equals("Ellipse"))
+        key = "Circle";
       output("RESOURCE_NAME \"" + key + "_Mesh\"\n}\n");
     }
   }
@@ -516,7 +519,6 @@ public class _IdtfExporter extends __CartesianExporter {
     if (!haveSphere) {
       models.append(getSphereResource());
       haveSphere = true;
-      sphereMatrix = new Matrix4f();
     }
     checkPoint(center);
     addColix(colix, false);
@@ -625,36 +627,71 @@ public class _IdtfExporter extends __CartesianExporter {
            .append("SHADER_ID 0\n}}\n");
   }
 
-  protected void outputCylinder(Point3f pt1, Point3f pt2, short colix,
-                             byte endcaps, float radius) {
-    if (endcaps == Graphics3D.ENDCAPS_SPHERICAL) {
-      outputSphere(pt1, radius*1.01f, colix);
-      outputSphere(pt2, radius*1.01f, colix);
+  protected boolean outputCylinder(Point3f ptCenter, Point3f pt1, Point3f pt2,
+                                   short colix, byte endcaps, float radius,
+                                   Point3f ptX, Point3f ptY) {
+    if (ptX != null) {
+      tempV1.set(ptX);
+      tempV1.sub(ptCenter);
+      tempV2.set(ptY);
+      tempV2.sub(ptCenter);
+      tempV2.cross(tempV1, tempV2);
+      tempV2.normalize();
+      tempV2.scale(endcaps == Graphics3D.ENDCAPS_FLAT ? 0.002f : 0.005f);
+      tempP1.set(ptCenter);
+      tempP1.sub(tempV2);
+      pt1 = tempP1;
+      tempP2.set(ptCenter);
+      tempP2.add(tempV2);
+      pt2 = tempP2;
+      if (endcaps == Graphics3D.ENDCAPS_FLAT) {
+        outputEllipse(ptCenter, pt1, ptX, ptY, colix);
+        tempP3.set(ptCenter);
+        tempP3.sub(ptX);
+        tempP3.add(ptCenter);
+        outputEllipse(ptCenter, pt2, tempP3, ptY, colix);
+      }
+
+    } else if (endcaps == Graphics3D.ENDCAPS_SPHERICAL) {
+      outputSphere(pt1, radius * 1.01f, colix);
+      outputSphere(pt2, radius * 1.01f, colix);
     } else if (endcaps == Graphics3D.ENDCAPS_FLAT) {
-      outputCircle(pt1, pt2, colix, radius);      
-      outputCircle(pt2, pt1, colix, radius);      
+      outputCircle(pt1, pt2, colix, radius);
+      outputCircle(pt2, pt1, colix, radius);
     }
     if (!haveCylinder) {
-      models.append(getCylinderResource());
+      models.append(getCylinderResource(false));
       haveCylinder = true;
-      cylinderMatrix = new Matrix4f();
+    }
+    if (ptX != null && endcaps == Graphics3D.ENDCAPS_NONE && !haveCylinderIn) {
+      models.append(getCylinderResource(true));
+      haveCylinderIn = true;
     }
     checkPoint(pt1);
     checkPoint(pt2);
     addColix(colix, false);
-    String key = "Cylinder_" + colix;
-    Vector v = (Vector) htNodes.get(key);
-    if (v == null) {
-      v = new Vector();
-      htNodes.put(key, v);
-      addShader(key, colix);
+    int n = (ptX != null && endcaps == Graphics3D.ENDCAPS_NONE ? 2 : 1);
+    for (int i = 0; i < n; i++) {
+      String key = "Cylinder" + (i == 0 ? "_" : "In_") + colix;
+      Vector v = (Vector) htNodes.get(key);
+      if (v == null) {
+        v = new Vector();
+        htNodes.put(key, v);
+        addShader(key, colix);
+      }
+      if (ptX == null)
+        cylinderMatrix.set(getRotationMatrix(pt1, pt2, radius));
+      else
+        cylinderMatrix.set(getRotationMatrix(ptCenter, pt2, radius, ptX, ptY));
+      cylinderMatrix.m03 = pt1.x;
+      cylinderMatrix.m13 = pt1.y;
+      cylinderMatrix.m23 = pt1.z;
+      cylinderMatrix.m33 = 1;
+      v.add(getParentItem("Jmol", cylinderMatrix));
+      radius *= 0.95f;// in case they ever fix that IDTF bug
     }
-    cylinderMatrix.set(getRotationMatrix(pt1, pt2, radius));
-    cylinderMatrix.m03 = pt1.x;
-    cylinderMatrix.m13 = pt1.y;
-    cylinderMatrix.m23 = pt1.z;
-    cylinderMatrix.m33 = 1;
-    v.add(getParentItem("Jmol", cylinderMatrix));
+
+    return true;
   }
 
   protected void outputCircle(Point3f pt1, Point3f pt2, float radius,
@@ -677,6 +714,31 @@ public class _IdtfExporter extends __CartesianExporter {
       outputCylinder(pts[i], pts[i + 1], colix, Graphics3D.ENDCAPS_FLAT, radius);
     }
     */
+  }
+
+  private boolean outputEllipse(Point3f ptCenter, Point3f ptZ, Point3f ptX, Point3f ptY,
+                        short colix) {
+    if (!haveCircle) {
+      models.append(getCircleResource());
+      haveCircle = true;
+      cylinderMatrix = new Matrix4f();
+    }
+    addColix(colix, false);
+    String key = "Ellipse_" + colix;
+    Vector v = (Vector) htNodes.get(key);
+    if (v == null) {
+      v = new Vector();
+      htNodes.put(key, v);
+      addShader(key, colix);
+    }
+    checkPoint(ptCenter);
+    cylinderMatrix.set(getRotationMatrix(ptCenter, ptZ, 1, ptX, ptY));
+    cylinderMatrix.m03 = ptZ.x;
+    cylinderMatrix.m13 = ptZ.y;
+    cylinderMatrix.m23 = ptZ.z;
+    cylinderMatrix.m33 = 1;
+    v.add(getParentItem("Jmol", cylinderMatrix));
+    return true;
   }
 
   private void outputCircle(Point3f ptCenter, Point3f ptPerp, short colix, float radius) {
@@ -702,30 +764,45 @@ public class _IdtfExporter extends __CartesianExporter {
     v.add(getParentItem("Jmol", cylinderMatrix));
   }
 
-  private String getCylinderResource() {
+  private String getCylinderResource(boolean inSide) {
     int ndeg = 10;
     int vertexCount = 360 / ndeg * 2;
     int n = vertexCount / 2;
     int[][] faces = new int[vertexCount][];
     int fpt = -1;
     for (int i = 0; i < n; i++) {
-      faces[++fpt] = new int[] { i, (i + 1) % n, i + n };
-      faces[++fpt] = new int[] { (i + 1) % n, (i + 1) % n + n, i + n };
+      if (inSide) {
+        // Adobe 9 bug: 
+        // does not treat normals properly --
+        // if you have normals, you should use them to decide
+        // which faces to render - but NO, faces are rendered
+        // strictly on the basis of windings. What??!
+        
+        faces[++fpt] = new int[] { i + n, (i + 1) % n, i };
+        faces[++fpt] = new int[] { i + n , (i + 1) % n + n, (i + 1) % n}; 
+      } else {
+        faces[++fpt] = new int[] { i, (i + 1) % n, i + n };
+        faces[++fpt] = new int[] { (i + 1) % n, (i + 1) % n + n, i + n };
+      }
     }
     Point3f[] vertexes = new Point3f[vertexCount];
     Point3f[] normals = new Point3f[vertexCount];
     for (int i = 0; i < n; i++) {
       float x = (float) (Math.cos(i * ndeg / 180. * Math.PI)); 
       float y = (float) (Math.sin(i * ndeg / 180. * Math.PI)); 
-      normals[i] = vertexes[i] = new Point3f(x, y, 0);
+      vertexes[i] = new Point3f(x, y, 0);
+      normals[i] =  new Point3f(x, y, 0);
     }
     for (int i = 0; i < n; i++) {
       float x = (float) (Math.cos((i + 0.5) * ndeg / 180 * Math.PI)); 
       float y = (float) (Math.sin((i + 0.5) * ndeg / 180 * Math.PI)); 
       vertexes[i + n] = new Point3f(x, y, 1);
-      normals[i + n] = new Point3f(x, y, 0);
+      normals[i + n] = normals[i];
     }
-    return getMeshData("Cylinder", faces, vertexes, normals);
+    if (inSide)
+      for (int i = 0; i < n; i++)
+        normals[i].scale(-1);
+    return getMeshData(inSide ? "CylinderIn" : "Cylinder", faces, vertexes, normals);
   }
 
 

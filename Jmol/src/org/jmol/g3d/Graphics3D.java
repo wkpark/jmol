@@ -2911,4 +2911,9 @@ final public class Graphics3D implements JmolRendererInterface {
                            byte endcaps, short mad) {
   }
 
+  public boolean drawEllipse(Point3f ptAtom, Point3f ptX, Point3f ptY,
+                           boolean fillArc, boolean wireframeOnly) {
+    return false;
+  }
+
 }

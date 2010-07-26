@@ -316,4 +316,7 @@ public interface JmolRendererInterface {
   public abstract short[] getBgColixes(short[] bgcolixes);
 
   public abstract void setTranslucentCoverOnly(boolean TF);
+
+  public abstract boolean drawEllipse(Point3f ptAtom, Point3f ptX, Point3f ptY,
+                                    boolean fillArc, boolean wireframeOnly);
 }

@@ -143,6 +143,7 @@ abstract public class __CartesianExporter extends ___Exporter {
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsFaces.nextSetBit(i + 1))) 
       outputFace(indices[i], map, faceVertexMax);
   }
+  
 
   // these are elaborated in IDTF, MAYA, VRML, or X3D:
 
@@ -154,9 +155,9 @@ abstract public class __CartesianExporter extends ___Exporter {
   abstract protected void outputCone(Point3f ptBase, Point3f ptTip,
                                      float radius, short colix);
 
-  abstract protected void outputCylinder(Point3f pt1, Point3f pt2,
-                                         short colix1, byte endcaps,
-                                         float radius);
+  abstract protected boolean outputCylinder(Point3f ptCenter, Point3f pt1,
+                                         Point3f pt2, short colix1,
+                                         byte endcaps, float radius, Point3f ptX, Point3f ptY);
 
   abstract protected void outputEllipsoid(Point3f center, Point3f[] points,
                                           short colix);
@@ -182,6 +183,13 @@ abstract public class __CartesianExporter extends ___Exporter {
     tempP3.set(x, y, z + 1);
     viewer.unTransformPoint(tempP3, tempP3);
     outputCircle(tempP1, tempP3, radius, colix, doFill);
+  }
+
+  boolean drawEllipse(Point3f ptCenter, Point3f ptX, Point3f ptY, short colix,
+                      boolean doFill) {
+    return outputCylinder(ptCenter, null, null, colix,
+        doFill ? Graphics3D.ENDCAPS_FLAT : Graphics3D.ENDCAPS_NONE, 1.01f, ptX,
+        ptY);
   }
 
   void drawPixel(short colix, int x, int y, int z, int scale) {
@@ -213,14 +221,14 @@ abstract public class __CartesianExporter extends ___Exporter {
     setTempPoints(ptA, ptB, bondOrder == -1);
     float radius = mad / 2000f;
     if (colix1 == colix2) {
-      outputCylinder(tempP1, tempP2, colix1, endcaps, radius);
+      outputCylinder(null, tempP1, tempP2, colix1, endcaps, radius, null, null);
     } else {
       tempV2.set(tempP2);
       tempV2.add(tempP1);
       tempV2.scale(0.5f);
       tempP3.set(tempV2);
-      outputCylinder(tempP1, tempP3, colix1, Graphics3D.ENDCAPS_FLAT, radius);
-      outputCylinder(tempP3, tempP2, colix2, Graphics3D.ENDCAPS_FLAT, radius);
+      outputCylinder(null, tempP1, tempP3, colix1, Graphics3D.ENDCAPS_FLAT, radius, null, null);
+      outputCylinder(null, tempP3, tempP2, colix2, Graphics3D.ENDCAPS_FLAT, radius, null, null);
       if (endcaps == Graphics3D.ENDCAPS_SPHERICAL) {
         outputSphere(tempP1, radius * 1.01f, colix1);
         outputSphere(tempP2, radius * 1.01f, colix2);
@@ -232,7 +240,7 @@ abstract public class __CartesianExporter extends ___Exporter {
                     Point3f screenA, Point3f screenB) {
     float radius = mad / 2000f;
     setTempPoints(screenA, screenB, false);
-    outputCylinder(tempP1, tempP2, colix, endcaps, radius);
+    outputCylinder(null, tempP1, tempP2, colix, endcaps, radius, null, null);
   }
 
   void fillCylinderScreen(short colix, byte endcaps, int screenDiameter, Point3f screenA, 

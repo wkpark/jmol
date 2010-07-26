@@ -162,6 +162,12 @@ public class _VrmlExporter extends __CartesianExporter {
     output("}\n");
   }
 
+  boolean outputEllipse(Point3f ptCenter, Point3f ptX, Point3f ptY,
+                        short colix, boolean doFill) {
+    // TODO
+    return false;
+  }
+
   protected void outputCone(Point3f ptBase, Point3f ptTip, float radius,
                             short colix) {
     float height = tempP1.distance(tempP2);
@@ -186,8 +192,10 @@ public class _VrmlExporter extends __CartesianExporter {
     output("}\n");
   }
 
-  protected void outputCylinder(Point3f pt1, Point3f pt2, short colix,
-                             byte endcaps, float radius) {
+  protected boolean outputCylinder(Point3f ptCenter, Point3f pt1, Point3f pt2,
+                             short colix, byte endcaps, float radius, Point3f ptX, Point3f ptY) {
+    if (ptX != null)
+      return false;
     outputTransRot(pt1, pt2, 0, 1, 0);
     outputCylinderChild(pt1, pt2, colix, endcaps, radius);
     output("}\n");
@@ -195,6 +203,7 @@ public class _VrmlExporter extends __CartesianExporter {
       outputSphere(pt1, radius*1.01f, colix);
       outputSphere(pt2, radius*1.01f, colix);
     }
+    return true;
   }
 
   private void outputCylinderChild(Point3f pt1, Point3f pt2, short colix,

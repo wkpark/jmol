@@ -35,7 +35,6 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
-import org.jmol.util.Logger;
 import org.jmol.util.Quadric;
 import org.jmol.modelset.Atom;
 import org.jmol.shape.Shape;
@@ -280,25 +279,25 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       return;
     }
 
-    if (Logger.debugging) {
-      g3d.setColix(Graphics3D.RED);
+//    if (Logger.debugging) {
+//      g3d.setColix(Graphics3D.RED);
+//      g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, screens[0],
+//          screens[1]);
+//      g3d.setColix(Graphics3D.GREEN);
+//      g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, screens[2],
+//          screens[3]);
+//      g3d.setColix(Graphics3D.BLUE);
+//      g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, screens[4],
+//          screens[5]);
+//      g3d.setColix(colix);
+//    } else {
       g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, screens[0],
           screens[1]);
-      g3d.setColix(Graphics3D.GREEN);
-      g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, screens[2],
-          screens[3]);
-      g3d.setColix(Graphics3D.BLUE);
-      g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, screens[4],
-          screens[5]);
-      g3d.setColix(colix);
-    } else {
-      g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, screens[0],
-          screens[1]);
       g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, screens[2],
           screens[3]);
       g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, screens[4],
           screens[5]);
-    }
+//    }
 
   }
   
@@ -328,13 +327,17 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       int pt = i*3;
       renderArc(ptAtom, octants[pt], octants[pt + 1]);
       renderArc(ptAtom, octants[pt + 1], octants[pt + 2]);
-      renderArc(ptAtom, octants[pt + 2], octants[pt]);      
+      if (renderArc(ptAtom, octants[pt + 2], octants[pt]))
+        return;      
     }
   }
   
   private BitSet bsTemp = new BitSet();
   
-  private void renderArc(Point3f ptAtom, int ptA, int ptB) {
+  private boolean renderArc(Point3f ptAtom, int ptA, int ptB) {
+    boolean fillArc = drawFill && !drawBall;
+    if (g3d.drawEllipse(ptAtom, points[ptA], points[ptB], fillArc, wireframeOnly))
+      return true;
     v1.set(points[ptA]);
     v1.sub(ptAtom);
     v2.set(points[ptB]);
@@ -346,7 +349,6 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     v3.cross(v1, v2);
     pt1.set(points[ptA]);
     s1.set(screens[ptA]);
-    boolean fillArc = drawFill && !drawBall;
     short normix = Graphics3D.get2SidedNormix(v3, bsTemp);
     if (!fillArc && !wireframeOnly)
       screens[6].set(s1);
@@ -372,6 +374,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
             screens[i + 7], 
             screens[i == 17 ? i + 7 : i + 8]);
       }
+    return false;
   }
 
 

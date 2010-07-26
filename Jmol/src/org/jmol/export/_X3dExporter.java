@@ -193,8 +193,10 @@ public class _X3dExporter extends _VrmlExporter {
     output("</Transform>\n");
   }
 
-  protected void outputCylinder(Point3f pt1, Point3f pt2, short colix,
-                                byte endcaps, float radius) {
+  protected boolean outputCylinder(Point3f ptCenter, Point3f pt1, Point3f pt2,
+                                short colix, byte endcaps, float radius, Point3f ptX, Point3f ptY) {
+    if (ptX != null)
+      return false;
     output("<Transform");
     outputTransRot(pt1, pt2, 0, 1, 0);
     output(">\n");
@@ -204,6 +206,7 @@ public class _X3dExporter extends _VrmlExporter {
       outputSphere(pt1, radius * 1.01f, colix);
       outputSphere(pt2, radius * 1.01f, colix);
     }
+    return true;
   }
 
   private void outputCylinderChild(Point3f pt1, Point3f pt2, short colix,

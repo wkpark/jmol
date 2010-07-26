@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-07-11 19:51+0200\n"
-"PO-Revision-Date: 2010-07-26 16:14+0000\n"
+"PO-Revision-Date: 2010-07-26 20:22+0000\n"
 "Last-Translator: TLE <k.nielsen81@gmail.com>\n"
 "Language-Team: Danish <da@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-07-26 17:32+0000\n"
+"X-Launchpad-Export-Date: 2010-07-26 20:24+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/AppletConsole.java:109
@@ -142,8 +142,9 @@ msgid "Check"
 msgstr "Tjek"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
-msgstr ""
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgstr "Toppen"
 
 #: org/jmol/console/ScriptEditor.java:136
 msgid "Step"
@@ -605,7 +606,7 @@ msgstr "roter binding (SKIFT-TRÆK)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:111
 msgid "exit modelkit mode"
-msgstr ""
+msgstr "afslut modelkit-tilstand"
 
 #: org/jmol/popup/JmolPopup.java:141
 #: org/jmol/popup/MainPopupResourceBundle.java:530
@@ -654,7 +655,7 @@ msgstr "ukendt antal processorer"
 
 #: org/jmol/popup/JmolPopup.java:575
 msgid "Java version:"
-msgstr "Java version:"
+msgstr "Java-version:"
 
 #: org/jmol/popup/JmolPopup.java:579
 msgid "Java memory usage:"
@@ -699,7 +700,7 @@ msgstr "Sprog"
 #: org/jmol/popup/MainPopupResourceBundle.java:537
 #: org/jmol/popup/MainPopupResourceBundle.java:538
 msgid "By Residue Name"
-msgstr ""
+msgstr "Efter residuumnavn"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:539
 msgid "By HETATM"
@@ -721,7 +722,7 @@ msgstr "Skjul symmetri"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:544
 msgid "Model information"
-msgstr "Model information"
+msgstr "Modelinformation"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:545
 #, java-format
@@ -741,7 +742,7 @@ msgstr "Konfiguration ({0})"
 #: org/jmol/popup/MainPopupResourceBundle.java:548
 #, java-format
 msgid "Collection of {0} models"
-msgstr "Udvalg af {0} modeller"
+msgstr "Samling af {0} modeller"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:549
 #, java-format
@@ -947,7 +948,7 @@ msgstr "Skema"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:609
 msgid "CPK Spacefill"
-msgstr ""
+msgstr "CPK-rumfyldning"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:610
 msgid "Ball and Stick"
@@ -1052,11 +1053,11 @@ msgstr "Beregn"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:638
 msgid "Set H-Bonds Side Chain"
-msgstr ""
+msgstr "Indstil H-bindingers sidekæder"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:639
 msgid "Set H-Bonds Backbone"
-msgstr ""
+msgstr "Indstil H-bindingers rygrad"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:646
 #: org/jmol/popup/MainPopupResourceBundle.java:749
@@ -1065,7 +1066,7 @@ msgstr "Disulfidbindinger"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:649
 msgid "Set SS-Bonds Side Chain"
-msgstr ""
+msgstr "Indstil SS-bindingers sidekæder"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:650
 msgid "Set SS-Bonds Backbone"
@@ -1514,7 +1515,7 @@ msgstr "Vælg molekyle"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:837
 msgid "Select site"
-msgstr ""
+msgstr "Vælg sted"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:838
 msgid "Show symmetry operation"
@@ -1619,27 +1620,27 @@ msgstr "Beregning"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:876
 msgid "Optimize structure"
-msgstr ""
+msgstr "Optimer struktur"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:877
 msgid "Model kit"
-msgstr ""
+msgstr "Modelkit"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:881
 msgid "Extract MOL data"
-msgstr ""
+msgstr "Udtræk MOL-data"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:884
 msgid "Dot Surface"
-msgstr ""
+msgstr "Prikoverflade"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:885
 msgid "van der Waals Surface"
-msgstr ""
+msgstr "van Der Waals-overflade"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:886
 msgid "Molecular Surface"
-msgstr ""
+msgstr "Molekylæroverflade"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:887
 #, java-format
@@ -2119,7 +2120,8 @@ msgstr "klik på to punkter for at rotere rundt om akse med uret (kræver {0})"
 
 #: org/jmol/viewer/ActionManager.java:67
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr "klik på to punkter for at rotere rundt om akse mod uret (kræver {0})"
 
 #: org/jmol/viewer/ActionManager.java:69
@@ -2361,9 +2363,11 @@ msgstr "Sætter logfil til {0}"
 #~ msgid "Minimize"
 #~ msgstr "Minimér"
 
+#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "{0} 3D model"
 
+#, java-format
 #~ msgid "File {0}"
 #~ msgstr "Fil {0}"
 

@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-07-23 18:24+0200\n"
-"PO-Revision-Date: 2010-07-25 17:16+0000\n"
+"PO-Revision-Date: 2010-07-26 16:00+0000\n"
 "Last-Translator: TLE <k.nielsen81@gmail.com>\n"
 "Language-Team: Danish <da@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-07-25 17:49+0000\n"
+"X-Launchpad-Export-Date: 2010-07-26 17:32+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -32,7 +32,7 @@ msgstr "vis denne hjælpeside"
 
 #: org/openscience/jmol/app/JmolApp.java:142
 msgid "no display (and also exit when done)"
-msgstr ""
+msgstr "ingen visning (og afslut ved færdiggørelse)"
 
 #: org/openscience/jmol/app/JmolApp.java:144
 msgid "check script syntax only - no file loading"
@@ -64,8 +64,7 @@ msgstr "ingen konsol -- al udskrift til sysout"
 
 #: org/openscience/jmol/app/JmolApp.java:156
 msgid "send only output from print messages to console (implies -i)"
-msgstr ""
-"send kun uddata fra udskrevne meddelelser til konsollen (medfører -i)"
+msgstr "send kun uddata fra udskrevne meddelelser til konsollen (medfører -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:158
 msgid "independent command thread"
@@ -275,7 +274,7 @@ msgstr "Periode"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:354
 msgid "Controller"
-msgstr ""
+msgstr "Styring"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:362
 msgid "Go to first atom set in the collection"
@@ -316,7 +315,7 @@ msgstr "Afspil hele samlingen af vektorer"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
 msgid "Go to next vector in the collection"
-msgstr ""
+msgstr "Gå til næste vektor i samlingen"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:376
 msgid "Jump to last vector in the collection"
@@ -477,7 +476,7 @@ msgstr "Eksportér en eller flere visninger til en webside."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:65
 msgid "Render in POV-&Ray..."
-msgstr ""
+msgstr "Render i POV-&Ray..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:66
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:114
@@ -587,7 +586,7 @@ msgstr "Amino"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:93
 msgid "Nucleic"
-msgstr ""
+msgstr "Nuklein"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:94
 msgid "Water"
@@ -599,7 +598,7 @@ msgstr "Hetero"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:96
 msgid "&Display"
-msgstr "&Vis"
+msgstr "&Fremvisning"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:97
 msgid "&Atom"
@@ -720,7 +719,7 @@ msgstr "&Vis"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:140
 msgid "&Front"
-msgstr ""
+msgstr "&Front"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:141
 msgid "&Top"
@@ -768,7 +767,7 @@ msgstr "&Ångstrøm 1E-10"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:153
 msgid "&Picometers 1E-12"
-msgstr ""
+msgstr "&Pikometer 1E-12"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:154
 msgid "&Animate..."
@@ -784,7 +783,7 @@ msgstr "&Graf..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:157
 msgid "Calculate chemical &shifts..."
-msgstr ""
+msgstr "Beregn kemiske &forskydninger..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:158
 msgid "&Crystal Properties"
@@ -885,7 +884,7 @@ msgstr "Hydrogen"
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:183
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:66
 msgid "Measurements"
-msgstr "Mål"
+msgstr "Målinger"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:184
 msgid "Perspective Depth"
@@ -934,7 +933,7 @@ msgstr "Returner molekyle til hjemmeposition."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:201
 msgid "Open the model kit."
-msgstr ""
+msgstr "Åbn modelkittet."
 
 #: org/openscience/jmol/app/jmolpanel/HelpDialog.java:64
 msgid "Jmol Help"
@@ -958,7 +957,7 @@ msgstr "Initialiserer scriptvindue..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:182
 msgid "Building Command Hooks..."
-msgstr ""
+msgstr "Danner kommandokroge (hooks)..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:193
 msgid "Building Menubar..."
@@ -1064,11 +1063,11 @@ msgstr "Start POV-Ray indefra Jmol"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:242
 msgid "Display While Rendering"
-msgstr ""
+msgstr "Vis under rendering"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:244
 msgid "Should POV-Ray attempt to display while rendering?"
-msgstr ""
+msgstr "Skal POV-Ray prøve at fremvise under rendering?"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:267
 msgid "width:"
@@ -1125,7 +1124,7 @@ msgstr "Alphagennemsigtighed"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:385
 msgid "Output Alpha transparency data"
-msgstr ""
+msgstr "Skriv alphagennemsigtighedsdata"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:398
 msgid "Mosaic preview"
@@ -1133,7 +1132,7 @@ msgstr "Mosaik-forhåndsvisning"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:400
 msgid "Render the image in several passes"
-msgstr ""
+msgstr "Rendér billeder over flere gennemgange"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:410
 msgid "Start size : "
@@ -1175,7 +1174,7 @@ msgstr "Indstillinger"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:154
 msgid "Display"
-msgstr "Vis"
+msgstr "Fremvisning"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:155
 msgid "Atoms"
@@ -1309,11 +1308,11 @@ msgstr "Introduktion"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:134
 msgid "Pop-In Jmol"
-msgstr ""
+msgstr "Pop-In Jmol"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:135
 msgid "ScriptButton Jmol"
-msgstr ""
+msgstr "ScriptButton Jmol"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:152
 msgid "Log"
@@ -1325,6 +1324,8 @@ msgid ""
 "Page skeleton and JavaScript generated by export to web function using {0} "
 "on {1}."
 msgstr ""
+"Sideskelet og JavaScript genereret ved hjælp af funktionen eksporter til web "
+"ved brug af {0} på {1}."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:349
 #, java-format
@@ -1332,19 +1333,21 @@ msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
 msgstr ""
+"Klik {0}her{1} for at få en 3-D-model du kan manipulere. Hentning af denne "
+"applet kan tage lang tid første gang den indlæses."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:351
 msgid "Insert the page TITLE here."
-msgstr ""
+msgstr "Indsæt sideTITEL her."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:352
 msgid "Insert the page INTRODUCTION here."
-msgstr ""
+msgstr "Indsæt sideINTRODUKTION her."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:354
 #, java-format
 msgid "Insert a caption for {0} here."
-msgstr ""
+msgstr "Indsæt en figurtekst for {0} her."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:355
 #, java-format
@@ -1352,10 +1355,12 @@ msgid ""
 "Insert additional explanatory text here. Long text will wrap around Jmol "
 "model {0}."
 msgstr ""
+"Indsæt en ekstra forklarende tekst her. Længere tekst vil ombrydes omkring "
+"Jmol-model {0}."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:357
 msgid "Insert your TITLE and INTRODUCTION here."
-msgstr ""
+msgstr "Indsæt din TITEL og INTRODUKTION her."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:359
 #, java-format
@@ -1363,23 +1368,25 @@ msgid ""
 "The button {0} will appear in the box below.  Insert information for {0} "
 "here and below."
 msgstr ""
+"Knappen {0} vil være at finde i boksen nedenunder. Indsæt information for "
+"{0} her og nedenunder."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:360
 #, java-format
 msgid "Insert more information for {0} here."
-msgstr ""
+msgstr "Indsæt mere information om {0} her."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:151
 msgid "A web page containing Jmol applets"
-msgstr ""
+msgstr "En webside som indeholder Jmol-applets"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:176
 msgid "click and drag to reorder"
-msgstr ""
+msgstr "klik og træk for at omorganisere"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:181
 msgid "Add Present Jmol State as Instance..."
-msgstr ""
+msgstr "Tilføj den aktuelle Jmol-tilstand som instans..."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:188
 msgid "Delete Selected"
@@ -1387,20 +1394,20 @@ msgstr "Slet valgte"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:220
 msgid "Jmol Instances:"
-msgstr ""
+msgstr "Jmol-instanser:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:226
 msgid "Select widgets:"
-msgstr ""
+msgstr "Vælg kontroller:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:323
 msgid "Help/Instructions"
-msgstr ""
+msgstr "Hjælp/Instruktioner"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:330
 #: org/openscience/jmol/app/webexport/WebPanel.java:338
 msgid "Cartoon of Page"
-msgstr ""
+msgstr "Tegneserie af side"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:344
 msgid "Save HTML as..."
@@ -1408,11 +1415,11 @@ msgstr "Gem HTML som..."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:354
 msgid "Relative server path to jar files:"
-msgstr ""
+msgstr "Serversti relativt til jar-filerne:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:360
 msgid "Relative local path to jar files:"
-msgstr ""
+msgstr "Relativ lokal sti til jar-filerne:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:366
 msgid "Author (your name):"
@@ -1420,43 +1427,43 @@ msgstr "Forfatter (dit navn)"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:373
 msgid "Browser window title for this web page:"
-msgstr ""
+msgstr "Browservinduestitel for denne webside:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:459
 msgid "Give the occurrence of Jmol a name:"
-msgstr ""
+msgstr "Giv denne forekomst af Jmol et navn:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:475
 msgid "Error creating new instance containing script(s) and image."
-msgstr ""
+msgstr "Fejl ved dannelse af ny instans som indeholder scripts og billede."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:486
 #, java-format
 msgid "added Instance {0}"
-msgstr ""
+msgstr "tilføjede instans {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:489
 #, java-format
 msgid "updated Instance {0}"
-msgstr ""
+msgstr "opdaterede instans {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:526
 msgid "Select a directory to create or an HTML file to save"
-msgstr ""
+msgstr "Vælg en mappe som skal oprettes eller en HTML-fil som skal gemmes"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:544
 #, java-format
 msgid "file {0} created"
-msgstr ""
+msgstr "filen {0} oprettet"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:546
 msgid "Call to FileWriter unsuccessful."
-msgstr ""
+msgstr "Kald til FileWriter fejlede."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:621
 #, java-format
 msgid "Using directory {0}"
-msgstr ""
+msgstr "Bruger mappen {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:622
 #: org/openscience/jmol/app/webexport/WebPanel.java:631
@@ -1470,16 +1477,16 @@ msgstr "tilføjer {0}"
 #: org/openscience/jmol/app/webexport/WebPanel.java:682
 #, java-format
 msgid "Unable to load resource {0}"
-msgstr ""
+msgstr "Kunne ikke indlæse resourcen {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:734
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
-msgstr ""
+msgstr "Baseret på skabelon af A. Herr&#x00E1;ez, modificeret af J. Gutow"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:737
 #, java-format
 msgid "creating {0}"
-msgstr ""
+msgstr "opretter {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:771
 #, java-format
@@ -1501,19 +1508,19 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:781
 msgid "compressing large data file to"
-msgstr ""
+msgstr "komprimerer store datafiler til"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:60
 msgid "Spin on/off"
-msgstr ""
+msgstr "Rotation til/fra"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:75
 msgid "enable/disable spin"
-msgstr ""
+msgstr "slå rotation til/fra"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:77
 msgid "Spin on"
-msgstr ""
+msgstr "Rotation til"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:83
 msgid "Background Color"
@@ -1525,51 +1532,51 @@ msgstr "baggrundsfarve:"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:111
 msgid "Stereo Viewing"
-msgstr ""
+msgstr "Stereovisning"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:125
 msgid "select stereo type"
-msgstr ""
+msgstr "vælg typen af stereo"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:129
 msgid "Stereo Off"
-msgstr ""
+msgstr "Stereo fra"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:130
 msgid "Red/Blue"
-msgstr ""
+msgstr "Rød/Blå"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:132
 msgid "Red/Cyan"
-msgstr ""
+msgstr "Rød/Cyan"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:134
 msgid "Red/Green"
-msgstr ""
+msgstr "Rød/Grøn"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:141
 msgid "Animation Control"
-msgstr ""
+msgstr "Animationskontrol"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:165
 msgid "Animation"
-msgstr ""
+msgstr "Animation"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:166
 msgid "First Frame"
-msgstr ""
+msgstr "Første billede"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:168
 msgid "Previous Frame"
-msgstr ""
+msgstr "Forrige billede"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:170
 msgid "Play"
-msgstr ""
+msgstr "Afspil"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:172
 msgid "Next Frame"
-msgstr ""
+msgstr "Næste billede"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:174
 msgid "Pause"
@@ -1577,11 +1584,11 @@ msgstr "Pause"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:176
 msgid "Last Frame"
-msgstr ""
+msgstr "Sidste billede"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:178
 msgid "Mode:"
-msgstr ""
+msgstr "Tilstand:"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:179
 msgid "Loop"
@@ -1589,34 +1596,51 @@ msgstr "Løkke"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:181
 msgid "Palindrome"
-msgstr ""
+msgstr "Palindrom"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:183
 msgid "Play Once"
-msgstr ""
+msgstr "Afspil en gang"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:192
 msgid "Open Console Button"
-msgstr ""
+msgstr "Åbn konsol-knap"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:205
 msgid "launch Jmol console"
-msgstr ""
+msgstr "start Jmol-konsol"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:212
 msgid "Download view"
-msgstr ""
+msgstr "Hent visning"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:227
 msgid "unimplemented"
-msgstr ""
+msgstr "ikke implementeret"
 
 #~ msgid "vector"
 #~ msgstr "vektor"
 
+#~ msgid "Go to first {0} in the collection"
+#~ msgstr "Gå til første {0} i samlingen"
+
+#~ msgid "Play the whole collection of {0}'s"
+#~ msgstr "Afspil hele samlingen af {0}"
+
+#~ msgid "Go to next {0} in the collection"
+#~ msgstr "Gå til næste {0} i samlingen"
+
+#~ msgid "Jump to last {0} in the collection"
+#~ msgstr "Gå til sidste {0} i samlingen"
+
 #~ msgid "Output Conso&le..."
 #~ msgstr "Output Conso&le..."
 
-#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "tilføjer {0}.spt"
+
+#~ msgid "atom set"
+#~ msgstr "atomsæt"
+
+#~ msgid "Go to previous {0} in the collection"
+#~ msgstr "Gå til forrige {0} i samlingen"

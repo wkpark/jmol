@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-07-11 19:51+0200\n"
-"PO-Revision-Date: 2010-07-25 17:25+0000\n"
-"Last-Translator: Ask Hjorth Larsen <asklarsen@gmail.com>\n"
+"PO-Revision-Date: 2010-07-26 16:14+0000\n"
+"Last-Translator: TLE <k.nielsen81@gmail.com>\n"
 "Language-Team: Danish <da@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-07-25 17:49+0000\n"
+"X-Launchpad-Export-Date: 2010-07-26 17:32+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/AppletConsole.java:109
@@ -86,7 +86,7 @@ msgid ""
 msgstr ""
 "Jmol Applet version {0} {1}.\n"
 "\n"
-"Et OpenScience projekt.\n"
+"Et OpenScience-projekt.\n"
 "\n"
 "Se http://www.jmol.org for mere information"
 
@@ -100,6 +100,9 @@ msgid ""
 "console Help menu item for on-line help, which will appear in a new browser "
 "window."
 msgstr ""
+"Beskeder vil blive vist her. Indtast kommandoer i boksen nedenfor. Klik "
+"konsollens menupunkt Hjælp for at få hjælp på nettet - denne vil dukke op i "
+"et nyt browservindue."
 
 #: org/jmol/appletwrapper/AppletWrapper.java:91
 msgid "Loading Jmol applet ..."
@@ -139,8 +142,7 @@ msgid "Check"
 msgstr "Tjek"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid ""
-"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -327,7 +329,7 @@ msgstr "Opdatér"
 
 #: org/jmol/export/dialog/Dialog.java:467
 msgid "Update directory listing"
-msgstr ""
+msgstr "Opdater mappeoversigt"
 
 #: org/jmol/export/dialog/Dialog.java:468
 msgid "Up"
@@ -559,7 +561,7 @@ msgstr "træk atom (og minimer)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:92
 msgid "drag molecule (SHIFT to rotate)"
-msgstr ""
+msgstr "træk molekyle (SKIFT for at rotere)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:93
 msgid "drag and minimize molecule (docking)"
@@ -599,7 +601,7 @@ msgstr "formindsk orden"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:110
 msgid "rotate bond (SHIFT-DRAG)"
-msgstr ""
+msgstr "roter binding (SKIFT-TRÆK)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:111
 msgid "exit modelkit mode"
@@ -687,7 +689,7 @@ msgstr "Element"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:534
 msgid "Model/Frame"
-msgstr ""
+msgstr "Model/billede"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:535
 msgid "Language"
@@ -806,7 +808,7 @@ msgstr "Vis kun de valgte"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:566
 msgid "Invert Selection"
-msgstr ""
+msgstr "Omvend markering"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:568
 msgid "View"
@@ -917,7 +919,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:599
 msgid "Nonaqueous Solvent"
-msgstr ""
+msgstr "Ikke-vandigt opløsningsmiddel"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:600
 msgid "Nonaqueous HETATM"
@@ -957,7 +959,7 @@ msgstr "Pinde"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:612
 msgid "Wireframe"
-msgstr ""
+msgstr "Ståltrådsramme"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:613
 #: org/jmol/popup/MainPopupResourceBundle.java:660
@@ -1091,7 +1093,7 @@ msgstr "Raketter"
 #: org/jmol/popup/MainPopupResourceBundle.java:664
 #: org/jmol/popup/MainPopupResourceBundle.java:756
 msgid "Strands"
-msgstr ""
+msgstr "Strenge"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:667
 msgid "Vibration"
@@ -1122,11 +1124,11 @@ msgstr "Stereografisk"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:684
 msgid "Red+Cyan glasses"
-msgstr ""
+msgstr "Rød/cyan-briller"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:685
 msgid "Red+Blue glasses"
-msgstr ""
+msgstr "Rød/blå-briller"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:686
 msgid "Red+Green glasses"
@@ -1147,7 +1149,7 @@ msgstr "Etiketter"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:693
 msgid "With Element Symbol"
-msgstr ""
+msgstr "Med grundstofsymbol"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:694
 msgid "With Atom Name"
@@ -1316,7 +1318,7 @@ msgstr "Orkidé"
 #: org/jmol/popup/MainPopupResourceBundle.java:744
 #: org/jmol/popup/MainPopupResourceBundle.java:891
 msgid "Make Opaque"
-msgstr ""
+msgstr "Gør ugennemsigtig"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:745
 #: org/jmol/popup/MainPopupResourceBundle.java:892
@@ -1564,11 +1566,11 @@ msgstr "Genindlæs"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:857
 msgid "Open from PDB"
-msgstr ""
+msgstr "Åbn fra PDB"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:858
 msgid "Open file or URL"
-msgstr ""
+msgstr "Åbn fil eller URL"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:859
 msgid "Load full unit cell"
@@ -1576,7 +1578,7 @@ msgstr "Indlæs hele enhedscellen"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:860
 msgid "Open script"
-msgstr ""
+msgstr "Åbn script"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:862
 #, java-format
@@ -1589,7 +1591,7 @@ msgstr "Gem script med tilstand"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:864
 msgid "Save script with history"
-msgstr ""
+msgstr "Gem script med historik"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:865
 #: org/jmol/popup/MainPopupResourceBundle.java:866
@@ -1613,7 +1615,7 @@ msgstr "Eksporter {0}-3D-model"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:875
 msgid "Computation"
-msgstr ""
+msgstr "Beregning"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:876
 msgid "Optimize structure"
@@ -1647,11 +1649,11 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:889
 #, java-format
 msgid "Solvent-Accessible Surface (VDW + {0} Angstrom)"
-msgstr ""
+msgstr "Opløsningsmiddel-tilgængelig overflade (VDW + {0} Ångström)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:890
 msgid "Molecular Electrostatic Potential"
-msgstr ""
+msgstr "Molekylært elektrostatisk potential"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:896
 #: org/jmol/popup/MainPopupResourceBundle.java:897
@@ -1690,7 +1692,7 @@ msgstr "{0} px"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:915
 msgid "Angstrom Width"
-msgstr ""
+msgstr "Ångström-bredde"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:923
 msgid "Selection Halos"
@@ -1698,7 +1700,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:924
 msgid "Show Hydrogens"
-msgstr ""
+msgstr "Vis hydrogen"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:925
 msgid "Show Measurements"
@@ -1754,12 +1756,12 @@ msgstr "ugyldig atomspecifikation"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1185
 msgid "invalid chain specification"
-msgstr ""
+msgstr "ugyldig kædespecifikation"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1188
 #, java-format
 msgid "invalid expression token: {0}"
-msgstr ""
+msgstr "ugyldigt udtrykssymbol: {0}"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1191
 msgid "invalid model specification"
@@ -1777,7 +1779,7 @@ msgstr "nummer forventet"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1200
 msgid "number or variable name expected"
-msgstr ""
+msgstr "forventede tal eller variabelnavn"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1203
 msgid "residue specification (ALA, AL?, A*) expected"
@@ -1796,18 +1798,18 @@ msgstr "{0} ikke forventet"
 #: org/jmol/script/ScriptCompilationTokenParser.java:1212
 #, java-format
 msgid "unrecognized expression token: {0}"
-msgstr ""
+msgstr "ukendt udtrykssymbol: {0}"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1215
 #: org/jmol/script/ScriptEvaluator.java:2602
 #, java-format
 msgid "unrecognized {0} parameter"
-msgstr ""
+msgstr "ukendt {0}-parameter"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1218
 #, java-format
 msgid "unrecognized token: {0}"
-msgstr ""
+msgstr "ukendt symbol: {0}"
 
 #: org/jmol/script/ScriptCompiler.java:2283
 msgid "script compiler ERROR: "
@@ -1837,16 +1839,16 @@ msgstr "ugyldig [R,G,B]-farve"
 
 #: org/jmol/script/ScriptEvaluator.java:2462
 msgid "boolean expected"
-msgstr ""
+msgstr "forventede boolesk variabel"
 
 #: org/jmol/script/ScriptEvaluator.java:2465
 msgid "boolean or number expected"
-msgstr ""
+msgstr "forventede boolesk variabel eller tal"
 
 #: org/jmol/script/ScriptEvaluator.java:2468
 #, java-format
 msgid "boolean, number, or {0} expected"
-msgstr ""
+msgstr "forventede boolesk variabel, tal eller {0}"
 
 #: org/jmol/script/ScriptEvaluator.java:2471
 msgid "color expected"
@@ -1854,7 +1856,7 @@ msgstr "forventede farve"
 
 #: org/jmol/script/ScriptEvaluator.java:2474
 msgid "a color or palette name (Jmol, Rasmol) is required"
-msgstr ""
+msgstr "et farve- eller palet-navn (Jmol, Rasmol) er påkrævet"
 
 #: org/jmol/script/ScriptEvaluator.java:2480
 msgid "{x y z} or $name or (atom expression) required"
@@ -1949,6 +1951,8 @@ msgid ""
 "No partial charges were read from the file; Jmol needs these to render the "
 "MEP data."
 msgstr ""
+"Ingen delvise ladninger blev læst fra filen; Jmol kræver disse for at tegne "
+"MEP-dataene."
 
 #: org/jmol/script/ScriptEvaluator.java:2550
 msgid "No unit cell"
@@ -2106,7 +2110,7 @@ msgstr "parallelforskyd navigationspunkt (kræver {0} og {1})"
 
 #: org/jmol/viewer/ActionManager.java:65
 msgid "spin model (swipe and release button and stop motion simultaneously)"
-msgstr ""
+msgstr "rotér model (stryg og slip knap og stop bevægelse samtidig)"
 
 #: org/jmol/viewer/ActionManager.java:66
 #, java-format
@@ -2115,8 +2119,7 @@ msgstr "klik på to punkter for at rotere rundt om akse med uret (kræver {0})"
 
 #: org/jmol/viewer/ActionManager.java:67
 #, java-format
-msgid ""
-"click on two points to spin around axis counterclockwise (requires {0})"
+msgid "click on two points to spin around axis counterclockwise (requires {0})"
 msgstr "klik på to punkter for at rotere rundt om akse mod uret (kræver {0})"
 
 #: org/jmol/viewer/ActionManager.java:69
@@ -2155,7 +2158,7 @@ msgstr ""
 #: org/jmol/viewer/ActionManager.java:78
 #, java-format
 msgid "toggle selection (requires {0})"
-msgstr ""
+msgstr "omvend udvalg (kræver {0})"
 
 #: org/jmol/viewer/ActionManager.java:79
 #, java-format
@@ -2165,7 +2168,7 @@ msgstr "fravælg denne gruppe af atomer (kræver {0})"
 #: org/jmol/viewer/ActionManager.java:80
 #, java-format
 msgid "add this group of atoms to the set of selected atoms (requires {0})"
-msgstr ""
+msgstr "tilføj denne gruppe atomer til sættet af valgte atomer (kræver {0})"
 
 #: org/jmol/viewer/ActionManager.java:81
 #, java-format
@@ -2173,6 +2176,8 @@ msgid ""
 "if all are selected, unselect all, otherwise add this group of atoms to the "
 "set of selected atoms (requires {0})"
 msgstr ""
+"hvis alle er valgt, så fravælg alle, ellers tilføj denne gruppe af atomer "
+"til sættet af valgte atomer (kræver {0})"
 
 #: org/jmol/viewer/ActionManager.java:83
 #, java-format
@@ -2197,17 +2202,17 @@ msgstr "roter gren rundt om binding (kræver {0})"
 #: org/jmol/viewer/ActionManager.java:88
 #, java-format
 msgid "move atom (requires {0})"
-msgstr ""
+msgstr "flyt atom (kræver {0})"
 
 #: org/jmol/viewer/ActionManager.java:89
 #, java-format
 msgid "move atom and minimize molecule (requires {0})"
-msgstr ""
+msgstr "flyt atom og minimer molekyle (kræver {0})"
 
 #: org/jmol/viewer/ActionManager.java:90
 #, java-format
 msgid "move and minimize molecule (requires {0})"
-msgstr ""
+msgstr "flyt og minimer molekyle (kræver {0})"
 
 #: org/jmol/viewer/ActionManager.java:91
 #, java-format
@@ -2279,11 +2284,11 @@ msgstr "forbind atomer (kræver {0})"
 #: org/jmol/viewer/ActionManager.java:106
 #, java-format
 msgid "assign/new atom or bond (requires {0})"
-msgstr ""
+msgstr "tildel/opret atom eller binding (kræver {0})"
 
 #: org/jmol/viewer/ActionManager.java:108
 msgid "reset (when clicked off the model)"
-msgstr ""
+msgstr "nulstil (når der klikkes uden for modellen)"
 
 #: org/jmol/viewer/ActionManager.java:109
 #, java-format
@@ -2347,5 +2352,20 @@ msgstr "Sætter logfil til {0}"
 #~ msgid "About Jmol"
 #~ msgstr "Om Jmol"
 
+#~ msgid "File or URL"
+#~ msgstr "Fil eller URL"
+
 #~ msgid "File creation failed."
 #~ msgstr "Fil oprettelse mislykkedes."
+
+#~ msgid "Minimize"
+#~ msgstr "Minimér"
+
+#~ msgid "{0} 3D Model"
+#~ msgstr "{0} 3D model"
+
+#~ msgid "File {0}"
+#~ msgstr "Fil {0}"
+
+#~ msgid "File from PDB"
+#~ msgstr "Fil fra PDB"

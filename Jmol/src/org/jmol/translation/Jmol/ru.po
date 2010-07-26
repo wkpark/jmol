@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-07-23 18:24+0200\n"
-"PO-Revision-Date: 2010-07-21 08:16+0000\n"
-"Last-Translator: Oleg Koptev <koptev.oleg@gmail.com>\n"
+"PO-Revision-Date: 2010-07-26 15:49+0000\n"
+"Last-Translator: vasilisc <vasilisc@rambler.ru>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-07-21 17:48+0000\n"
+"X-Launchpad-Export-Date: 2010-07-26 17:32+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -60,7 +60,7 @@ msgstr "начать без заставки"
 
 #: org/openscience/jmol/app/JmolApp.java:154
 msgid "no console -- all output to sysout"
-msgstr ""
+msgstr "нет консоли - весь вывод в выходной поток"
 
 #: org/openscience/jmol/app/JmolApp.java:156
 msgid "send only output from print messages to console (implies -i)"
@@ -68,11 +68,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:158
 msgid "independent command thread"
-msgstr ""
+msgstr "независимый поток команд"
 
 #: org/openscience/jmol/app/JmolApp.java:160
 msgid "exit after script (implicit with -n)"
-msgstr ""
+msgstr "Выход после скрипта (неявно с -n)"
 
 #: org/openscience/jmol/app/JmolApp.java:164
 msgid "script file to execute or '-' for System.in"
@@ -80,15 +80,15 @@ msgstr "файл скрипта для выполнения или '-' для Sy
 
 #: org/openscience/jmol/app/JmolApp.java:170
 msgid "use multitouch interface (requires \"sparshui\" parameter"
-msgstr ""
+msgstr "используйте мультитач интерфейс (требуется параметр \"sparshui\""
 
 #: org/openscience/jmol/app/JmolApp.java:177
 msgid "Jmol script to execute BEFORE -s option"
-msgstr ""
+msgstr "Jmol скрипт выполняется ДО опции -s"
 
 #: org/openscience/jmol/app/JmolApp.java:183
 msgid "Jmol script to execute AFTER -s option"
-msgstr ""
+msgstr "Jmol скрипт выполняется ПОСЛЕ опции -s"
 
 #: org/openscience/jmol/app/JmolApp.java:192
 msgid "property=value"
@@ -101,13 +101,15 @@ msgstr "поддерживаемые опции приведены ниже"
 #: org/openscience/jmol/app/JmolApp.java:201
 #, java-format
 msgid "window width x height, e.g. {0}"
-msgstr ""
+msgstr "ширина x высота окна, напр. {0}"
 
 #: org/openscience/jmol/app/JmolApp.java:211
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
 msgstr ""
+"качество JPG (1-100; по умолчанию 75) или сжатие PNG  (0-9; по умолчанию 2, "
+"максимальное сжатие 9)"
 
 #: org/openscience/jmol/app/JmolApp.java:216
 #, java-format
@@ -273,19 +275,16 @@ msgid "Controller"
 msgstr "Контроллер"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:362
-#, fuzzy
 msgid "Go to first atom set in the collection"
-msgstr "Идти к первой {0} в коллекции"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:363
-#, fuzzy
 msgid "Go to previous atom set in the collection"
-msgstr "Идти к предыдущей {0} в коллекции"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:364
-#, fuzzy
 msgid "Play the whole collection of atom sets"
-msgstr "Смотреть всю коллекцию {0}"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:365
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:374
@@ -293,39 +292,32 @@ msgid "Pause playing"
 msgstr "Приостановить воспроизведение"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:366
-#, fuzzy
 msgid "Go to next atom set in the collection"
-msgstr "Перейти к следующему {0} в коллекции"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:367
-#, fuzzy
 msgid "Jump to last atom set in the collection"
-msgstr "Перейти к последней {0} в коллекции"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:371
-#, fuzzy
 msgid "Go to first vector in the collection"
-msgstr "Идти к первой {0} в коллекции"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:372
-#, fuzzy
 msgid "Go to previous vector in the collection"
-msgstr "Идти к предыдущей {0} в коллекции"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:373
-#, fuzzy
 msgid "Play the whole collection of vectors"
-msgstr "Смотреть всю коллекцию {0}"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
-#, fuzzy
 msgid "Go to next vector in the collection"
-msgstr "Перейти к следующему {0} в коллекции"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:376
-#, fuzzy
 msgid "Jump to last vector in the collection"
-msgstr "Перейти к последней {0} в коллекции"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/ConsoleTextArea.java:87
 #, java-format
@@ -1616,22 +1608,29 @@ msgstr ""
 msgid "unimplemented"
 msgstr ""
 
-#~ msgid "atom set"
-#~ msgstr "Набор атомов"
+#~ msgid "Jmol Script Console"
+#~ msgstr "Консоль сценариев Jmol"
 
-#, fuzzy
-#~ msgid "atom sets"
-#~ msgstr "Набор атомов"
+#~ msgid "Go to next {0} in the collection"
+#~ msgstr "Перейти к следующему {0} в коллекции"
 
 #~ msgid "vector"
 #~ msgstr "вектор"
 
-#, fuzzy
-#~ msgid "vectors"
-#~ msgstr "вектор"
+#~ msgid "atom set"
+#~ msgstr "Набор атомов"
 
-#~ msgid "Jmol Script Console"
-#~ msgstr "Консоль сценариев Jmol"
+#~ msgid "Go to first {0} in the collection"
+#~ msgstr "Идти к первой {0} в коллекции"
+
+#~ msgid "Go to previous {0} in the collection"
+#~ msgstr "Идти к предыдущей {0} в коллекции"
+
+#~ msgid "Play the whole collection of {0}'s"
+#~ msgstr "Смотреть всю коллекцию {0}"
+
+#~ msgid "Jump to last {0} in the collection"
+#~ msgstr "Перейти к последней {0} в коллекции"
 
 #~ msgid "Show Selected"
 #~ msgstr "Показать Выбранное"

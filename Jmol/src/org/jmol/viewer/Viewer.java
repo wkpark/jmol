@@ -4468,7 +4468,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void hoverOn(int x, int y, String text) {
-    if (!hoverEnabled)
+    if (!isHoverEnabled())
       return;
     // from draw for drawhover on
     if (eval != null && isScriptExecuting())
@@ -4486,7 +4486,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void hoverOff() {
     if (isModelKitMode())
       highlight(null);
-    if (!hoverEnabled)
+    if (!isHoverEnabled())
       return;
     boolean isHover = (hoverText != null || hoverAtomIndex >= 0);
     if (hoverAtomIndex >= 0) {
@@ -7617,7 +7617,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     movingSelected = false;
   }
 
-  public void highlightBond(int index) {
+  public void highlightBond(int index, boolean isHover) {
+    if (isHover && !isHoverEnabled())
+      return;
     BitSet bs = null;
     if (index >= 0) {
       Bond b = modelSet.getBonds()[index];
@@ -7648,7 +7650,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (index == Integer.MIN_VALUE)
       return;
     rotateBondIndex = index;
-    highlightBond(index);
+    highlightBond(index, false);
 
   }
 

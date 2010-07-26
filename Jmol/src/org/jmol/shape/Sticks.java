@@ -242,7 +242,7 @@ public class Sticks extends Shape {
     Bond bond = findPickedBond(x, y, bsVisible, pt);
     if (bond == null)
       return false;
-    viewer.highlightBond(bond.getIndex());
+    viewer.highlightBond(bond.getIndex(), true);
     return true;
   }
   

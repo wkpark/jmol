@@ -162,12 +162,6 @@ public class _VrmlExporter extends __CartesianExporter {
     output("}\n");
   }
 
-  boolean outputEllipse(Point3f ptCenter, Point3f ptX, Point3f ptY,
-                        short colix, boolean doFill) {
-    // TODO
-    return false;
-  }
-
   protected void outputCone(Point3f ptBase, Point3f ptTip, float radius,
                             short colix) {
     float height = tempP1.distance(tempP2);
@@ -187,16 +181,29 @@ public class _VrmlExporter extends __CartesianExporter {
       outputAppearance(colix, false);
       output("}");
     } else {
-      output(child);
+      output(child);  
     }
     output("}\n");
   }
 
   protected boolean outputCylinder(Point3f ptCenter, Point3f pt1, Point3f pt2,
                              short colix, byte endcaps, float radius, Point3f ptX, Point3f ptY) {
-    if (ptX != null)
-      return false;
-    outputTransRot(pt1, pt2, 0, 1, 0);
+    if (ptX == null) {
+      outputTransRot(pt1, pt2, 0, 1, 0);
+    } else {
+      output("Transform{translation ");
+      output(ptCenter);
+      AxisAngle4f a = Quaternion.getQuaternionFrame(ptCenter, ptY, pt1)
+          .toAxisAngle4f();
+      if (!Float.isNaN(a.x))
+        output(" rotation " + a.x + " " + a.y + " " + a.z + " " + a.angle);
+      float sx = ptY.distance(ptCenter);
+      float sy = pt1.distance(ptCenter) * 2;
+      float sz = ptX.distance(ptCenter);
+      output(" scale " + sx + " " + sy + " " + sz);
+      pt1.set(0, 0, -1);
+      pt2.set(0, 0, 1);
+    }
     outputCylinderChild(pt1, pt2, colix, endcaps, radius);
     output("}\n");
     if (endcaps == Graphics3D.ENDCAPS_SPHERICAL) {
@@ -230,25 +237,27 @@ public class _VrmlExporter extends __CartesianExporter {
     }
   }
 
-  protected void outputEllipsoid(Point3f center, Point3f[] points, short colix) {
+  protected void outputEllipsoid(Point3f ptCenter, Point3f[] points, short colix) {
     output("Transform{translation ");
-    output(center);
+    output(ptCenter);
 
     // Hey, hey -- quaternions to the rescue!
     // Just send three points to Quaternion to define a plane and return
     // the AxisAngle required to rotate to that position. That's all there is to
     // it.
 
-    AxisAngle4f a = Quaternion.getQuaternionFrame(center, points[1], points[3])
+    tempP1.set(points[1]);
+    tempP2.set(points[3]);
+    AxisAngle4f a = Quaternion.getQuaternionFrame(ptCenter, tempP1, tempP2)
         .toAxisAngle4f();
     if (!Float.isNaN(a.x))
       output(" rotation " + a.x + " " + a.y + " " + a.z + " " + a.angle);
     tempP3.set(0, 0, 0);
-    float sx = points[1].distance(center);
-    float sy = points[3].distance(center);
-    float sz = points[5].distance(center);
+    float sx = points[1].distance(ptCenter);
+    float sy = points[3].distance(ptCenter);
+    float sz = points[5].distance(ptCenter);
     output(" scale " + sx + " " + sy + " " + sz + " children ");
-    outputSphere(tempP3, 1.0f, colix);
+    outputSphereChild(tempP3, 1.0f, colix);
     output("}\n");
   }
 
@@ -351,15 +360,21 @@ public class _VrmlExporter extends __CartesianExporter {
   }
 
   private Hashtable htSpheresRendered = new Hashtable();
-  protected void outputSphere(Point3f center, float radius, short colix) {
+
+  protected void outputSphere(Point3f ptCenter, float radius, short colix) {
     int iRad = (int) (radius * 100);
-    String child = useTable.getDef("S" + colix + "_" + iRad);
-    String check = round(center) + " " + iRad;
+    String check = round(ptCenter) + " " + iRad;
     if (htSpheresRendered.get(check) != null)
       return;
     htSpheresRendered.put(check, Boolean.TRUE);
+    outputSphereChild(ptCenter, radius, colix);
+  }
+
+  private void outputSphereChild(Point3f ptCenter, float radius, short colix) {
+    int iRad = (int) (radius * 100);
+    String child = useTable.getDef("S" + colix + "_" + iRad);
     output("Transform{translation ");
-    output(center);
+    output(ptCenter);
     output(" children ");
     if (child.charAt(0) == '_') {
       output("DEF " + child);
@@ -371,7 +386,7 @@ public class _VrmlExporter extends __CartesianExporter {
     }
     output("}\n");
   }
-  
+
   protected void outputTextPixel(Point3f pt, int argb) {
     String color = rgbFractionalFromArgb(argb, ' ');
     output("Transform{translation ");

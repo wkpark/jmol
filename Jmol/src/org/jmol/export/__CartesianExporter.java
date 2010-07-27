@@ -187,7 +187,18 @@ abstract public class __CartesianExporter extends ___Exporter {
 
   boolean drawEllipse(Point3f ptCenter, Point3f ptX, Point3f ptY, short colix,
                       boolean doFill) {
-    return outputCylinder(ptCenter, null, null, colix,
+    tempV1.set(ptX);
+    tempV1.sub(ptCenter);
+    tempV2.set(ptY);
+    tempV2.sub(ptCenter);
+    tempV2.cross(tempV1, tempV2);
+    tempV2.normalize();
+    tempV2.scale(doFill ? 0.002f : 0.005f);
+    tempP1.set(ptCenter);
+    tempP1.sub(tempV2);
+    tempP2.set(ptCenter);
+    tempP2.add(tempV2);
+    return outputCylinder(ptCenter, tempP1, tempP2, colix,
         doFill ? Graphics3D.ENDCAPS_FLAT : Graphics3D.ENDCAPS_NONE, 1.01f, ptX,
         ptY);
   }

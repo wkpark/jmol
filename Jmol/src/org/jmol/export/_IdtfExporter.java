@@ -631,19 +631,6 @@ public class _IdtfExporter extends __CartesianExporter {
                                    short colix, byte endcaps, float radius,
                                    Point3f ptX, Point3f ptY) {
     if (ptX != null) {
-      tempV1.set(ptX);
-      tempV1.sub(ptCenter);
-      tempV2.set(ptY);
-      tempV2.sub(ptCenter);
-      tempV2.cross(tempV1, tempV2);
-      tempV2.normalize();
-      tempV2.scale(endcaps == Graphics3D.ENDCAPS_FLAT ? 0.002f : 0.005f);
-      tempP1.set(ptCenter);
-      tempP1.sub(tempV2);
-      pt1 = tempP1;
-      tempP2.set(ptCenter);
-      tempP2.add(tempV2);
-      pt2 = tempP2;
       if (endcaps == Graphics3D.ENDCAPS_FLAT) {
         outputEllipse(ptCenter, pt1, ptX, ptY, colix);
         tempP3.set(ptCenter);

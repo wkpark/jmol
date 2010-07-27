@@ -95,6 +95,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     drawBall = viewer.getBooleanProperty("ellipsoidBall") && !wireframeOnly;
     drawDots = viewer.getBooleanProperty("ellipsoidDots") && !wireframeOnly;
     drawFill = viewer.getBooleanProperty("ellipsoidFill") && !wireframeOnly;
+    fillArc = drawFill && !drawBall;
     diameter0 = (int) (((Float) viewer.getParameter("ellipsoidAxisDiameter"))
         .floatValue() * 1000);
     //perspectiveOn = viewer.getPerspectiveDepth();
@@ -323,21 +324,23 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   }
 
   private void renderArcs(Point3f ptAtom) {
+    if (g3d.drawEllipse(ptAtom, points[0], points[2], fillArc, wireframeOnly)) {
+      g3d.drawEllipse(ptAtom, points[2], points[5], fillArc, wireframeOnly);
+      g3d.drawEllipse(ptAtom, points[5], points[0], fillArc, wireframeOnly);
+      return;
+    }
     for (int i = 1; i < 8; i += 2) {
       int pt = i*3;
       renderArc(ptAtom, octants[pt], octants[pt + 1]);
       renderArc(ptAtom, octants[pt + 1], octants[pt + 2]);
-      if (renderArc(ptAtom, octants[pt + 2], octants[pt]))
-        return;      
+      renderArc(ptAtom, octants[pt + 2], octants[pt]);
     }
   }
   
+  private boolean fillArc;
   private BitSet bsTemp = new BitSet();
   
-  private boolean renderArc(Point3f ptAtom, int ptA, int ptB) {
-    boolean fillArc = drawFill && !drawBall;
-    if (g3d.drawEllipse(ptAtom, points[ptA], points[ptB], fillArc, wireframeOnly))
-      return true;
+  private void renderArc(Point3f ptAtom, int ptA, int ptB) {
     v1.set(points[ptA]);
     v1.sub(ptAtom);
     v2.set(points[ptB]);
@@ -374,7 +377,6 @@ public class EllipsoidsRenderer extends ShapeRenderer {
             screens[i + 7], 
             screens[i == 17 ? i + 7 : i + 8]);
       }
-    return false;
   }
 
 

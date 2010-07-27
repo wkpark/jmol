@@ -120,7 +120,7 @@ public class GT {
       new Language("zh_CN", GT._("Simplified Chinese"),       true),
       new Language("zh_TW", GT._("Traditional Chinese"),      true),
       new Language("cs",    GT._("Czech"),                    true),
-      new Language("da",    GT._("Danish"),                   false),
+      new Language("da",    GT._("Danish"),                   true),
       new Language("nl",    GT._("Dutch"),                    true),
       new Language("en_GB", GT._("British English"),          true),
       new Language("en_US", GT._("American English"),         true), // global default for "en" will be "en_US"
@@ -130,7 +130,7 @@ public class GT {
       new Language("de",    GT._("German"),                   true),
       new Language("el",    GT._("Greek"),                    false),
       new Language("hu",    GT._("Hungarian"),                true),
-      new Language("id",    GT._("Indonesian"),               false),
+      new Language("id",    GT._("Indonesian"),               true),
       new Language("it",    GT._("Italian"),                  true),
       new Language("ja",    GT._("Japanese"),                 false),
       new Language("ko",    GT._("Korean"),                   true),

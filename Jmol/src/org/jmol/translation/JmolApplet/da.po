@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-07-11 19:51+0200\n"
-"PO-Revision-Date: 2010-07-26 20:22+0000\n"
+"PO-Revision-Date: 2010-07-27 20:55+0000\n"
 "Last-Translator: TLE <k.nielsen81@gmail.com>\n"
 "Language-Team: Danish <da@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-07-26 20:24+0000\n"
+"X-Launchpad-Export-Date: 2010-07-27 22:24+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/AppletConsole.java:109
@@ -497,7 +497,7 @@ msgstr "kunne ikke sætte kraftfeltet {0} op"
 
 #: org/jmol/modelkit/ModelKitPopup.java:75
 msgid "Element?"
-msgstr ""
+msgstr "Grundstof?"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:77
 msgid "new"
@@ -542,7 +542,7 @@ msgstr "gem tilstand"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:87
 msgid "invert ring stereochemistry"
-msgstr ""
+msgstr "omvend ring-stereokemi"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:88
 msgid "delete atom"
@@ -629,7 +629,7 @@ msgstr "Alle"
 #: org/jmol/popup/JmolPopup.java:561
 #: org/jmol/popup/MainPopupResourceBundle.java:936
 msgid "Mouse Manual"
-msgstr ""
+msgstr "Musemanual"
 
 #: org/jmol/popup/JmolPopup.java:562
 #: org/jmol/popup/MainPopupResourceBundle.java:937
@@ -856,7 +856,7 @@ msgstr "Sidekæder"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:580
 msgid "Polar Residues"
-msgstr ""
+msgstr "Polære residier"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:581
 msgid "Nonpolar Residues"
@@ -864,19 +864,19 @@ msgstr "Ikke-polære residier"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:582
 msgid "Basic Residues (+)"
-msgstr ""
+msgstr "Basiske residier (+)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:583
 msgid "Acidic Residues (-)"
-msgstr ""
+msgstr "Sure residier (-)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:584
 msgid "Uncharged Residues"
-msgstr ""
+msgstr "Ikke-ladede residier"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:585
 msgid "Nucleic"
-msgstr ""
+msgstr "Nuklein"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:587
 msgid "DNA"
@@ -912,11 +912,11 @@ msgstr "Alle PDB \"HETATM\""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:596
 msgid "All Solvent"
-msgstr ""
+msgstr "Kun opløsningsmiddel"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:597
 msgid "All Water"
-msgstr ""
+msgstr "Kun vand"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:599
 msgid "Nonaqueous Solvent"
@@ -1137,11 +1137,11 @@ msgstr "Rød/grøn-briller"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:687
 msgid "Cross-eyed viewing"
-msgstr ""
+msgstr "Skeløjet metode"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:688
 msgid "Wall-eyed viewing"
-msgstr ""
+msgstr "Paralleløjet metode"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:690
 #: org/jmol/popup/MainPopupResourceBundle.java:757
@@ -1194,7 +1194,7 @@ msgstr "Efter skema"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:708
 msgid "Element (CPK)"
-msgstr ""
+msgstr "Grundstof (CPK)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:709
 msgid "Alternative Location"
@@ -1206,11 +1206,11 @@ msgstr "Molekyle"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:711
 msgid "Formal Charge"
-msgstr ""
+msgstr "Formel ladning"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:712
 msgid "Partial Charge"
-msgstr ""
+msgstr "Delvis ladning"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:713
 msgid "Temperature (Relative)"
@@ -1242,7 +1242,7 @@ msgstr "Monomer"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:721
 msgid "Shapely"
-msgstr ""
+msgstr "Velformet"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:723
 msgid "Inherit"
@@ -1439,7 +1439,7 @@ msgstr "Genstart"
 #: org/jmol/popup/MainPopupResourceBundle.java:815
 #: org/jmol/popup/MainPopupResourceBundle.java:847
 msgid "Measurements"
-msgstr "Mål"
+msgstr "Målinger"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:816
 msgid "Double-Click begins and ends all measurements"
@@ -1535,11 +1535,11 @@ msgstr "Filhoved"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:846
 msgid "Isosurface JVXL data"
-msgstr ""
+msgstr "JVXL-data til isooverflade"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:848
 msgid "Molecular orbital JVXL data"
-msgstr ""
+msgstr "JVXL-data til molekylær orbital"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:849
 msgid "Model"
@@ -1645,7 +1645,7 @@ msgstr "Molekylæroverflade"
 #: org/jmol/popup/MainPopupResourceBundle.java:887
 #, java-format
 msgid "Solvent Surface ({0}-Angstrom probe)"
-msgstr ""
+msgstr "Opløsningsmiddeloverflade ({0}-Ångström probe)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:889
 #, java-format
@@ -1665,11 +1665,11 @@ msgstr "Genindlæs {0}"
 #: org/jmol/popup/MainPopupResourceBundle.java:898
 #, java-format
 msgid "Reload {0} + Display {1}"
-msgstr ""
+msgstr "Genindlæs {0} + vis {1}"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:899
 msgid "Reload + Polyhedra"
-msgstr ""
+msgstr "Genindlæs + polyeder"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:906
 msgid "Hide"
@@ -1697,7 +1697,7 @@ msgstr "Ångström-bredde"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:923
 msgid "Selection Halos"
-msgstr ""
+msgstr "Markeringsfremhævning"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:924
 msgid "Show Hydrogens"
@@ -1749,7 +1749,7 @@ msgstr "forventede afslutning på udtryk"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1179
 msgid "identifier or residue specification expected"
-msgstr ""
+msgstr "forventede identifikator eller residuum"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1182
 msgid "invalid atom specification"
@@ -1784,12 +1784,12 @@ msgstr "forventede tal eller variabelnavn"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1203
 msgid "residue specification (ALA, AL?, A*) expected"
-msgstr ""
+msgstr "forventede residuumspecifikation (ALA, AL?, A*)"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1206
 #, java-format
 msgid "{0} expected"
-msgstr "{0} forventet"
+msgstr "forventede {0}"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1209
 #, java-format
@@ -1814,12 +1814,12 @@ msgstr "ukendt symbol: {0}"
 
 #: org/jmol/script/ScriptCompiler.java:2283
 msgid "script compiler ERROR: "
-msgstr ""
+msgstr "scriptkompileringsFEJL: "
 
 #: org/jmol/script/ScriptEvaluator.java:2309
 #: org/jmol/script/ScriptEvaluator.java:9206
 msgid "script ERROR: "
-msgstr "script FEJL: "
+msgstr "scriptFEJL: "
 
 #: org/jmol/script/ScriptEvaluator.java:2447
 msgid "x y z axis expected"
@@ -1877,7 +1877,7 @@ msgstr "(atomudtryk) eller heltal forventet"
 
 #: org/jmol/script/ScriptEvaluator.java:2495
 msgid "filename expected"
-msgstr "filnavn forventet"
+msgstr "forventede filnavn"
 
 #: org/jmol/script/ScriptEvaluator.java:2498
 msgid "file not found"
@@ -1910,7 +1910,7 @@ msgstr "ugyldig rækkefølge af parametre"
 
 #: org/jmol/script/ScriptEvaluator.java:2519
 msgid "keyword expected"
-msgstr "nøgleord forventet"
+msgstr "forventede nøgleord"
 
 #: org/jmol/script/ScriptEvaluator.java:2522
 msgid "no MO coefficient data available"
@@ -1967,7 +1967,7 @@ msgstr "nummer skal være ({0} eller {1})"
 #: org/jmol/script/ScriptEvaluator.java:2559
 #, java-format
 msgid "decimal number out of range ({0} - {1})"
-msgstr ""
+msgstr "decimaltal uden for interval ({0} - {1})"
 
 #: org/jmol/script/ScriptEvaluator.java:2562
 msgid "object name expected after '$'"
@@ -2021,7 +2021,7 @@ msgstr "ukendt kommando"
 
 #: org/jmol/script/ScriptEvaluator.java:2596
 msgid "runtime unrecognized expression"
-msgstr ""
+msgstr "ukendt udtryk ved kørsel"
 
 #: org/jmol/script/ScriptEvaluator.java:2599
 msgid "unrecognized object"
@@ -2127,7 +2127,7 @@ msgstr "klik på to punkter for at rotere rundt om akse mod uret (kræver {0})"
 #: org/jmol/viewer/ActionManager.java:69
 #, java-format
 msgid "adjust slab (front plane; requires {0})"
-msgstr ""
+msgstr "juster plade (slab) (forreste plan; kræver {0})"
 
 #: org/jmol/viewer/ActionManager.java:70
 #, java-format
@@ -2137,7 +2137,7 @@ msgstr "juster dybde (bagerste plan; kræver {0})"
 #: org/jmol/viewer/ActionManager.java:71
 #, java-format
 msgid "move slab/depth window (both planes; requires {0})"
-msgstr ""
+msgstr "flyt plade (slab)/dybde-vindue (begge planer; kræver {0})"
 
 #: org/jmol/viewer/ActionManager.java:73
 msgid "pop up the full context menu"
@@ -2145,7 +2145,7 @@ msgstr "pop den fulde kontekstmenu op"
 
 #: org/jmol/viewer/ActionManager.java:74
 msgid "pop up recent context menu (click on Jmol frank)"
-msgstr ""
+msgstr "pop den seneste kontekstmenu op (klik på Jmol-mærket)"
 
 #: org/jmol/viewer/ActionManager.java:76
 #, java-format
@@ -2155,7 +2155,7 @@ msgstr "vælg et atom (kræver {0})"
 #: org/jmol/viewer/ActionManager.java:77
 #, java-format
 msgid "select NONE (requires {0})"
-msgstr ""
+msgstr "vælg INGEN (kræver {0})"
 
 #: org/jmol/viewer/ActionManager.java:78
 #, java-format
@@ -2224,12 +2224,12 @@ msgstr "flyt etiket (kræver {0})"
 #: org/jmol/viewer/ActionManager.java:92
 #, java-format
 msgid "move specific DRAW point (requires {0})"
-msgstr ""
+msgstr "flyt specifikt DRAW-punkt (kræver {0})"
 
 #: org/jmol/viewer/ActionManager.java:93
 #, java-format
 msgid "move whole DRAW object (requires {0})"
-msgstr ""
+msgstr "flyt hele DRAW-objekt (kræver {0})"
 
 #: org/jmol/viewer/ActionManager.java:95
 msgid "pick an atom"
@@ -2238,7 +2238,7 @@ msgstr "vælg et atom"
 #: org/jmol/viewer/ActionManager.java:96
 #, java-format
 msgid "pick a DRAW point (for measurements) (requires {0}"
-msgstr ""
+msgstr "vælg et DRAW-punkt (til målinger) (kræver {0})"
 
 #: org/jmol/viewer/ActionManager.java:97
 #, java-format
@@ -2332,7 +2332,7 @@ msgstr "{0} atomer valgt"
 #: org/jmol/viewer/Viewer.java:4307
 #, java-format
 msgid "{0} hydrogens added"
-msgstr ""
+msgstr "{0} hydrogener tilføjet"
 
 #: org/jmol/viewer/Viewer.java:4385
 msgid "Drag to move label"

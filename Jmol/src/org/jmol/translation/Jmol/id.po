@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-07-23 18:24+0200\n"
-"PO-Revision-Date: 2010-06-26 16:23+0000\n"
+"PO-Revision-Date: 2010-07-27 14:52+0000\n"
 "Last-Translator: Waluyo Adi Siswanto <Unknown>\n"
 "Language-Team: Indonesian <id@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-06-28 15:24+0000\n"
+"X-Launchpad-Export-Date: 2010-07-27 16:44+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -278,19 +278,16 @@ msgid "Controller"
 msgstr "Pengendali"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:362
-#, fuzzy
 msgid "Go to first atom set in the collection"
-msgstr "Menuju yang pertama {0} dalam koleksi"
+msgstr "Ke atom set atom pertama dalam koleksi"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:363
-#, fuzzy
 msgid "Go to previous atom set in the collection"
-msgstr "Menuju ke sebelumnya {0} dalam koleksi"
+msgstr "Ke atom set atom sebelumnya dalam koleksi"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:364
-#, fuzzy
 msgid "Play the whole collection of atom sets"
-msgstr "Menjalankan seluruh koleksi dari {0}"
+msgstr "Mainkan semua koleksi set atom"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:365
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:374
@@ -298,39 +295,32 @@ msgid "Pause playing"
 msgstr "Berhenti menjalankan"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:366
-#, fuzzy
 msgid "Go to next atom set in the collection"
-msgstr "Ke selanjutnya {0} dalam koleksi"
+msgstr "Ke atom set atom berikutnya dalam koleksi"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:367
-#, fuzzy
 msgid "Jump to last atom set in the collection"
-msgstr "Loncat ke terakhir {0} dalam koleksi"
+msgstr "Lompat ke set atom terakhir dalam koleksi"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:371
-#, fuzzy
 msgid "Go to first vector in the collection"
-msgstr "Menuju yang pertama {0} dalam koleksi"
+msgstr "Ke vektor pertama dalam koleksi"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:372
-#, fuzzy
 msgid "Go to previous vector in the collection"
-msgstr "Menuju ke sebelumnya {0} dalam koleksi"
+msgstr "Ke vektor sebelumnya dalam koleksi"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:373
-#, fuzzy
 msgid "Play the whole collection of vectors"
-msgstr "Menjalankan seluruh koleksi dari {0}"
+msgstr "Mainkan seluruh koleksi vektor"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
-#, fuzzy
 msgid "Go to next vector in the collection"
-msgstr "Ke selanjutnya {0} dalam koleksi"
+msgstr "Ke vektor berikutnya dalam koleksi"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:376
-#, fuzzy
 msgid "Jump to last vector in the collection"
-msgstr "Loncat ke terakhir {0} dalam koleksi"
+msgstr "Lompat ke vektor terakhir dalam koleksi"
 
 #: org/openscience/jmol/app/jmolpanel/ConsoleTextArea.java:87
 #, java-format
@@ -1633,26 +1623,20 @@ msgstr "Tampilan Muaturun"
 msgid "unimplemented"
 msgstr "belum diimplementasi"
 
-#~ msgid "atom set"
-#~ msgstr "atom set"
-
-#, fuzzy
-#~ msgid "atom sets"
-#~ msgstr "atom set"
-
 #~ msgid "vector"
 #~ msgstr "vektor"
 
-#, fuzzy
-#~ msgid "vectors"
-#~ msgstr "vektor"
+#~ msgid "atom set"
+#~ msgstr "atom set"
 
 #~ msgid "Jmol Script Console"
 #~ msgstr "Konsul Skrip Jmol"
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "menambah {0}.spt"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "menambah {0}.png"
 

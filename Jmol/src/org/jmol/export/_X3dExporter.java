@@ -50,6 +50,7 @@ public class _X3dExporter extends _VrmlExporter {
 
   protected void outputHeader() {
     output("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n");
+    output("<!DOCTYPE X3D PUBLIC \"ISO//Web3D//DTD X3D 3.1//EN\" \"http://www.web3d.org/specifications/x3d-3.1.dtd\">\n");
     output("<X3D profile='Immersive' version='3.1' "
       + "xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' "
       + "xsd:noNamespaceSchemaLocation=' http://www.web3d.org/specifications/x3d-3.1.xsd '>"

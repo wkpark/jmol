@@ -62,7 +62,6 @@
 
     <!-- Do the copy using scp -->
     <echo message="Copying release files to Jmol website" level="info"/>
-    <echo message="${ssh.user},jmol:${ssh.password}@${web.host}:${web.dir}" />
     <scp todir="${ssh.user},jmol:${ssh.password}@${web.host}:${web.dir}"
          trust="yes" failonerror="true">
       <fileset dir="${temp.dir}">

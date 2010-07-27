@@ -49,13 +49,14 @@ public class _X3dExporter extends _VrmlExporter {
   
 
   protected void outputHeader() {
+    output("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n");
     output("<X3D profile='Immersive' version='3.1' "
       + "xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' "
       + "xsd:noNamespaceSchemaLocation=' http://www.web3d.org/specifications/x3d-3.1.xsd '>"
       + "\n");
     output("<head>\n");
-    output("<meta name='title' content=" + Escape.escape(viewer.getModelSetName()) + "/>\n");
-    output("<meta name='description' content=' '/>\n");
+    output("<meta name='title' content=" + Escape.escape(viewer.getModelSetName()).replace('<',' ').replace('>',' ').replace('&',' ') + "/>\n");
+    output("<meta name='description' content='Jmol rendering'/>\n");
     output("<meta name='creator' content=' '/>\n");
     output("<meta name='created' content='" + getExportDate() + "'/>\n");
     output("<meta name='generator' content='Jmol "+ Viewer.getJmolVersion() +", http://www.jmol.org'/>\n");

@@ -184,12 +184,6 @@ public class _MayaExporter extends __CartesianExporter {
     
   }
 
-  boolean outputEllipse(Point3f ptCenter, Point3f ptX, Point3f ptY,
-                        short colix, boolean doFill) {
-    // TODO
-    return false;
-  }
-
   protected void outputCone(Point3f ptBase, Point3f ptTip, float radius,
                             short colix) {
     // TODO

@@ -33,14 +33,12 @@ import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.util.Escape;
-import org.jmol.util.Quaternion;
 import org.jmol.viewer.Viewer;
 
 public class _X3dExporter extends _VrmlExporter {
@@ -110,6 +108,11 @@ public class _X3dExporter extends _VrmlExporter {
     else
       output(def +">");
     output("</Appearance>");
+  }
+  
+  private void outputTransRot(Point3f pt1, Point3f pt2, int x, int y, int z) {    
+    output(" ");
+    outputTransRot(pt1, pt2, x, y, z, "='", "'");
   }
   
   protected void outputCircle(Point3f pt1, Point3f pt2, float radius, short colix,
@@ -195,10 +198,17 @@ public class _X3dExporter extends _VrmlExporter {
 
   protected boolean outputCylinder(Point3f ptCenter, Point3f pt1, Point3f pt2,
                                 short colix, byte endcaps, float radius, Point3f ptX, Point3f ptY) {
-    if (ptX != null)
-      return false;
     output("<Transform");
-    outputTransRot(pt1, pt2, 0, 1, 0);
+    if (ptX == null) {
+      outputTransRot(pt1, pt2, 0, 1, 0);
+    } else {
+      output(" translation='");
+      output(ptCenter);
+      output("'");
+      outputQuaternionFrame(ptCenter, ptY, pt1, ptX, 2, "='", "'");
+      pt1.set(0, 0, -1);
+      pt2.set(0, 0, 1);
+    }
     output(">\n");
     outputCylinderChild(pt1, pt2, colix, endcaps, radius);
     output("\n</Transform>\n");
@@ -243,20 +253,26 @@ public class _X3dExporter extends _VrmlExporter {
     output("<Transform translation='");
     output(center);
     output("'");
-    
-    //Hey, hey -- quaternions to the rescue!
-    // Just send three points to Quaternion to define a plane and return
-    // the AxisAngle required to rotate to that position. That's all there is to it.
-    
-    AxisAngle4f a = Quaternion.getQuaternionFrame(center, points[1], points[3]).toAxisAngle4f();
-    if (!Float.isNaN(a.x)) 
-      output(" rotation='" + a.x + " " + a.y + " " + a.z + " " + a.angle + "'");
+    outputQuaternionFrame(center, points[1], points[3], points[5], 1, "='", "'");
+    output(">");
     tempP3.set(0, 0, 0);
-    float sx = points[1].distance(center);
-    float sy = points[3].distance(center);
-    float sz = points[5].distance(center);
-    output(" scale='" + sx + " " + sy + " " + sz + "'>");
-    outputSphere(tempP3, 1.0f, colix);
+    outputSphereChild(tempP3, 1.0f, colix);
+    output("</Transform>\n");
+  }
+
+  protected void outputSphereChild(Point3f center, float radius, short colix) {
+    output("<Transform translation='");
+    output(center);
+    output("'>\n<Shape ");
+    String child = useTable.getDef("S" + colix + "_" + (int) (radius * 100));
+    if (child.charAt(0) == '_') {
+      output("DEF='" + child + "'>");
+      output("<Sphere radius='" + radius + "'/>");
+      outputAppearance(colix, false);
+    } else {
+      output(child + ">");
+    }
+    output("</Shape>\n");
     output("</Transform>\n");
   }
 
@@ -331,27 +347,6 @@ public class _X3dExporter extends _VrmlExporter {
     
   }
 
-  protected void outputSphere(Point3f center, float radius, short colix) {
-    output("<Transform translation='");
-    output(center);
-    output("'>\n<Shape ");
-    String child = useTable.getDef("S" + colix + "_" + (int) (radius * 100));
-    if (child.charAt(0) == '_') {
-      output("DEF='" + child + "'>");
-      output("<Sphere radius='" + radius + "'/>");
-      outputAppearance(colix, false);
-    } else {
-      output(child + ">");
-    }
-    output("</Shape>\n");
-    output("</Transform>\n");
-  }
-
-  private void outputTransRot(Point3f pt1, Point3f pt2, int x, int y, int z) {    
-    output(" ");
-    outputTransRot(pt1, pt2, x, y, z, "='", "'");
-  }
-  
   protected void outputTriangle(Point3f pt1, Point3f pt2, Point3f pt3, short colix) {
     // nucleic base
     // cartoons

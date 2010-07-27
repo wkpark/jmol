@@ -193,14 +193,7 @@ public class _VrmlExporter extends __CartesianExporter {
     } else {
       output("Transform{translation ");
       output(ptCenter);
-      AxisAngle4f a = Quaternion.getQuaternionFrame(ptCenter, ptY, pt1)
-          .toAxisAngle4f();
-      if (!Float.isNaN(a.x))
-        output(" rotation " + a.x + " " + a.y + " " + a.z + " " + a.angle);
-      float sx = ptY.distance(ptCenter);
-      float sy = pt1.distance(ptCenter) * 2;
-      float sz = ptX.distance(ptCenter);
-      output(" scale " + sx + " " + sy + " " + sz);
+      outputQuaternionFrame(ptCenter, ptY, pt1, ptX, 2, " ", "");
       pt1.set(0, 0, -1);
       pt2.set(0, 0, 1);
     }
@@ -246,20 +239,43 @@ public class _VrmlExporter extends __CartesianExporter {
     // the AxisAngle required to rotate to that position. That's all there is to
     // it.
 
-    tempP1.set(points[1]);
-    tempP2.set(points[3]);
-    AxisAngle4f a = Quaternion.getQuaternionFrame(ptCenter, tempP1, tempP2)
-        .toAxisAngle4f();
-    if (!Float.isNaN(a.x))
-      output(" rotation " + a.x + " " + a.y + " " + a.z + " " + a.angle);
+    outputQuaternionFrame(ptCenter, points[1], points[3], points[5], 1, " ", "");
+    output(" children ");
     tempP3.set(0, 0, 0);
-    float sx = points[1].distance(ptCenter);
-    float sy = points[3].distance(ptCenter);
-    float sz = points[5].distance(ptCenter);
-    output(" scale " + sx + " " + sy + " " + sz + " children ");
     outputSphereChild(tempP3, 1.0f, colix);
     output("}\n");
   }
+
+  private Point3f tempQ1 = new Point3f();
+  private Point3f tempQ2 = new Point3f();
+
+  protected void outputQuaternionFrame(Point3f ptCenter, Point3f ptX,
+                                       Point3f ptY, Point3f ptZ, float yScale,
+                                       String pre, String post) {
+
+    //Hey, hey -- quaternions to the rescue!
+    // Just send three points to Quaternion to define a plane and return
+    // the AxisAngle required to rotate to that position. That's all there is to it.
+
+    tempQ1.set(ptX);
+    tempQ2.set(ptY);
+    AxisAngle4f a = Quaternion.getQuaternionFrame(ptCenter, tempQ1, tempQ2)
+        .toAxisAngle4f();
+    if (!Float.isNaN(a.x)) {
+      output(" rotation");
+      output(pre);
+      output(a.x + " " + a.y + " " + a.z + " " + a.angle);
+      output(post);
+    }
+    float sx = ptX.distance(ptCenter);
+    float sy = ptY.distance(ptCenter) * yScale;
+    float sz = ptZ.distance(ptCenter);
+    output(" scale");
+    output(pre);
+    output(sx + " " + sy + " " + sz);
+    output(post);
+  }
+
 
   protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
                                   short[] colixes, int[][] indices,
@@ -370,7 +386,7 @@ public class _VrmlExporter extends __CartesianExporter {
     outputSphereChild(ptCenter, radius, colix);
   }
 
-  private void outputSphereChild(Point3f ptCenter, float radius, short colix) {
+  protected void outputSphereChild(Point3f ptCenter, float radius, short colix) {
     int iRad = (int) (radius * 100);
     String child = useTable.getDef("S" + colix + "_" + iRad);
     output("Transform{translation ");

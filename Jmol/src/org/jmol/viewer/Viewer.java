@@ -2449,7 +2449,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void zap(boolean notify, boolean resetUndo, boolean zapModelKit) {
     stopAnimationThreads("zap");
-    System.out.println("zap notify resetundo zapmodelkit " + notify + " " + resetUndo + " " + zapModelKit);
     if (modelSet != null) {
       setBooleanProperty("appendNew", true);
       clearModelDependentObjects();

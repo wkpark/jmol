@@ -14399,7 +14399,7 @@ public class ScriptEvaluator {
 
   private Object getCapSlabObject(StringBuffer sb, int i)
       throws ScriptException {
-    Object propertyValue = null;
+    Object data = null;
     if (sb != null)
       sb.append(" ").append(getToken(i).value).append(" ");
     int tok = tokAt(i + 1);
@@ -14407,10 +14407,10 @@ public class ScriptEvaluator {
     switch (tok) {
     case Token.within:
       i++;
-      propertyValue = getPointArray(++i, 4);
+      data = getPointArray(++i, 4);
       break;
     case Token.boundbox:
-      propertyValue = BoxInfo.getCriticalPoints(viewer.getBoundBoxVertices(),
+      data = BoxInfo.getCriticalPoints(viewer.getBoundBoxVertices(),
           null);
       iToken = i + 1;
       break;
@@ -14418,8 +14418,33 @@ public class ScriptEvaluator {
       SymmetryInterface unitCell = viewer.getCurrentUnitCell();
       if (unitCell == null)
         error(ERROR_invalidArgument);
-      propertyValue = BoxInfo.getCriticalPoints(unitCell.getUnitCellVertices(),
+      Point3f[] pts = BoxInfo.getCriticalPoints(unitCell.getUnitCellVertices(),
           unitCell.getCartesianOffset());
+      int iType = (int) unitCell.getUnitCellInfo(JmolConstants.INFO_DIMENSIONS);
+      Vector3f v1 = null;
+      Vector3f v2 = null;
+      switch(iType) {
+      case 3:
+        break;
+      case 1: // polymer
+        v2 = new Vector3f(pts[2]);
+        v2.sub(pts[0]);
+        v2.scale(1000f);
+        // fall through
+      case 2: // slab
+        // "a b c" is really "z y x"
+        v1 = new Vector3f(pts[1]);
+        v1.sub(pts[0]);
+        v1.scale(1000f);
+        pts[0].sub(v1);
+        pts[1].scale(2000f);
+        if (iType == 1) {
+          pts[0].sub(v2);
+          pts[2].scale(2000f);
+        }
+        break;
+      }
+      data = pts;
       iToken = i + 1;
       break;
     default:
@@ -14428,15 +14453,15 @@ public class ScriptEvaluator {
           : Float.NaN);
       if (!Float.isNaN(off))
         plane.w -= off;
-      propertyValue = plane;
+      data = plane;
     }
     if (sb != null) {
       if (plane == null)
-        sb.append("within ").append(Escape.escape(propertyValue));
+        sb.append("within ").append(Escape.escape(data));
       else
         sb.append(Escape.escape(plane));
     }
-    return propertyValue;
+    return data;
   }
 
   private boolean mo(boolean isInitOnly) throws ScriptException {

@@ -427,7 +427,7 @@ public class ActionManager {
   protected int xyRange = 0;
   
   private float gestureSwipeFactor = DEFAULT_GESTURE_SWIPE_FACTOR;
-  private float mouseDragFactor = DEFAULT_MOUSE_DRAG_FACTOR;
+  protected float mouseDragFactor = DEFAULT_MOUSE_DRAG_FACTOR;
   protected float mouseWheelFactor = DEFAULT_MOUSE_WHEEL_FACTOR;
   
   void setGestureSwipeFactor(float factor) {
@@ -1152,10 +1152,11 @@ public class ActionManager {
     }
   }
 
-  private float getDegrees(int delta, int i) {
-    return ((float) delta)
-        / (i == 0 ? viewer.getScreenWidth() : viewer.getScreenHeight()) * 180
-        * mouseDragFactor;
+  protected float getDegrees(int delta, int i) {
+    int dim = (i == 0 ? viewer.getScreenWidth() : viewer.getScreenHeight());
+    if (dim > 500)
+      dim = 500;
+    return ((float) delta) / dim * 180 * mouseDragFactor;
   }
 
   protected void zoomByFactor(int dz, int x, int y) {

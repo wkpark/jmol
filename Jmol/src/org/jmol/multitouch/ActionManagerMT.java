@@ -372,4 +372,9 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
         dragGesture.getSpeedPixelsPerMillisecond(2, 1));
   }
 
+  protected float getDegrees(int delta, int i) {
+    int dim = (i == 0 ? viewer.getScreenWidth() : viewer.getScreenHeight());
+    return ((float) delta) / dim * 180 * mouseDragFactor;
+  }
+
 } 

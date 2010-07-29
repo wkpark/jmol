@@ -52,7 +52,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   public void setViewer(Viewer viewer, String commandOptions) {
     super.setViewer(viewer, commandOptions);
     groupID = ((int) (Math.random() * 0xFFFFFF)) << 4;
-    
+    mouseWheelFactor = 1.02f;
     boolean isSparsh = (commandOptions.indexOf("-multitouch-sparshui") >= 0);
     boolean isSimulated = (commandOptions.indexOf("-multitouch-sparshui-simulated") >= 0);
     boolean isJNI = (commandOptions.indexOf("-multitouch-jni") >= 0);

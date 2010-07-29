@@ -367,7 +367,7 @@ public class ActionManager {
   protected final static long MININUM_GESTURE_DELAY_MILLISECONDS = 5;
   private final static int SLIDE_ZOOM_X_PERCENT = 98;
   public final static float DEFAULT_MOUSE_DRAG_FACTOR = 1f;
-  public final static float DEFAULT_MOUSE_WHEEL_FACTOR = 1.02f;
+  public final static float DEFAULT_MOUSE_WHEEL_FACTOR = 1.15f;
   public final static float DEFAULT_GESTURE_SWIPE_FACTOR = 1f;
  
   protected Viewer viewer;
@@ -428,7 +428,7 @@ public class ActionManager {
   
   private float gestureSwipeFactor = DEFAULT_GESTURE_SWIPE_FACTOR;
   private float mouseDragFactor = DEFAULT_MOUSE_DRAG_FACTOR;
-  private float mouseWheelFactor = DEFAULT_MOUSE_WHEEL_FACTOR;
+  protected float mouseWheelFactor = DEFAULT_MOUSE_WHEEL_FACTOR;
   
   void setGestureSwipeFactor(float factor) {
     gestureSwipeFactor = factor;

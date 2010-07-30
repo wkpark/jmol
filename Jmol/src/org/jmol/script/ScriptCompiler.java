@@ -1264,7 +1264,6 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     // all command starts are handled by case Token.nada
 
     
-    System.out.println("parseCommandParam " + ident);
     nTokens = ltoken.size();
     switch (tokCommand) {
     case Token.nada:

@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-07-11 19:51+0200\n"
-"PO-Revision-Date: 2009-11-11 13:19+0000\n"
-"Last-Translator: Nicola Patruno <Unknown>\n"
+"PO-Revision-Date: 2010-07-30 21:28+0000\n"
+"Last-Translator: Emanuele Aiello <Unknown>\n"
 "Language-Team: Italian <it@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-11-11 17:12+0000\n"
+"X-Launchpad-Export-Date: 2010-07-30 21:56+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/AppletConsole.java:109
@@ -497,9 +497,8 @@ msgid "could not setup force field {0}"
 msgstr "impossibile impostare il campo di forze {0}"
 
 #: org/jmol/modelkit/ModelKitPopup.java:75
-#, fuzzy
 msgid "Element?"
-msgstr "Elemento"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:77
 msgid "new"
@@ -507,91 +506,80 @@ msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:78
 msgid "undo (CTRL-Z)"
-msgstr ""
+msgstr "annulla (CTRL-Z)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:79
 msgid "redo (CTRL-Y)"
-msgstr ""
+msgstr "ripeti (CTRL-Y)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:80
 #: org/jmol/viewer/ActionManager.java:56
-#, fuzzy
 msgid "center"
-msgstr "Al centro"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:81
-#, fuzzy
 msgid "add hydrogens"
-msgstr "Mostra Idrogeni"
+msgstr "aggiungi idrogeni"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:82
-#, fuzzy
 msgid "minimize"
-msgstr "Minimizza"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:83
-#, fuzzy
 msgid "fix hydrogens and minimize"
-msgstr "{0} legami idrogeno"
+msgstr "sistema gli idrogeni e minimizza"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:84
-#, fuzzy
 msgid "clear"
-msgstr "Pulisce"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:85
-#, fuzzy
 msgid "save file"
-msgstr "Salva"
+msgstr "salva file"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:86
-#, fuzzy
 msgid "save state"
-msgstr "Stato Attuale"
+msgstr "salva stato"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:87
 msgid "invert ring stereochemistry"
-msgstr ""
+msgstr "anello stereochimico invertito"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:88
-#, fuzzy
 msgid "delete atom"
-msgstr "Seleziona atomo"
+msgstr "elimina atomo"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:89
-#, fuzzy
 msgid "drag to bond"
-msgstr "Stato"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:90
 msgid "drag atom"
-msgstr ""
+msgstr "trascina atomo"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:91
-#, fuzzy
 msgid "drag atom (and minimize)"
-msgstr "Minimizza"
+msgstr "trascina atomo (e minimizza)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:92
 msgid "drag molecule (SHIFT to rotate)"
-msgstr ""
+msgstr "trascina molecola (SHIFT per ruotare)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:93
 msgid "drag and minimize molecule (docking)"
-msgstr ""
+msgstr "trascina e minimizza molecola (docking)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:102
 msgid "increase charge"
-msgstr ""
+msgstr "aumento di carica"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:103
 msgid "decrease charge"
-msgstr ""
+msgstr "diminuzione di carica"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:104
-#, fuzzy
 msgid "delete bond"
-msgstr "Seleziona atomo"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:105
 msgid "single"
@@ -607,16 +595,15 @@ msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:108
 msgid "increase order"
-msgstr ""
+msgstr "per aumentare"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:109
 msgid "decrease order"
-msgstr ""
+msgstr "per diminuire"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:110
-#, fuzzy
 msgid "rotate bond (SHIFT-DRAG)"
-msgstr "Stato"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:111
 msgid "exit modelkit mode"
@@ -630,7 +617,7 @@ msgstr "Nessun atomo caricato"
 #: org/jmol/popup/JmolPopup.java:357
 #: org/jmol/popup/MainPopupResourceBundle.java:542
 msgid "Space Group"
-msgstr ""
+msgstr "Gruppo Spazio"
 
 #: org/jmol/popup/JmolPopup.java:419 org/jmol/popup/JmolPopup.java:459
 #: org/jmol/popup/MainPopupResourceBundle.java:563
@@ -643,7 +630,7 @@ msgstr "Tutti"
 #: org/jmol/popup/JmolPopup.java:561
 #: org/jmol/popup/MainPopupResourceBundle.java:936
 msgid "Mouse Manual"
-msgstr ""
+msgstr "Manuale Mouse"
 
 #: org/jmol/popup/JmolPopup.java:562
 #: org/jmol/popup/MainPopupResourceBundle.java:937
@@ -665,7 +652,7 @@ msgstr "{0} processori"
 
 #: org/jmol/popup/JmolPopup.java:573
 msgid "unknown processor count"
-msgstr ""
+msgstr "conta dei processi sconosciuta"
 
 #: org/jmol/popup/JmolPopup.java:575
 msgid "Java version:"
@@ -732,7 +719,7 @@ msgstr "Simmetria"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:543
 msgid "Hide Symmetry"
-msgstr ""
+msgstr "Nascondi Simmetria"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:544
 msgid "Model information"
@@ -926,11 +913,11 @@ msgstr "Tutti gli \"HETATM\" PDB"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:596
 msgid "All Solvent"
-msgstr ""
+msgstr "Tutti i solventi"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:597
 msgid "All Water"
-msgstr ""
+msgstr "Tutta l'Acqua"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:599
 msgid "Nonaqueous Solvent"
@@ -1151,7 +1138,7 @@ msgstr "Lenti Rosso+Verde"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:687
 msgid "Cross-eyed viewing"
-msgstr ""
+msgstr "Visualizzazione Incrociata"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:688
 msgid "Wall-eyed viewing"
@@ -1256,7 +1243,7 @@ msgstr "Monomero"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:721
 msgid "Shapely"
-msgstr ""
+msgstr "Proporzionato"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:723
 msgid "Inherit"
@@ -1533,7 +1520,7 @@ msgstr "Seleziona sito"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:838
 msgid "Show symmetry operation"
-msgstr ""
+msgstr "Mostra simmetria operazione"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:841
 msgid "Show"
@@ -1549,7 +1536,7 @@ msgstr "Intestazione del File"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:846
 msgid "Isosurface JVXL data"
-msgstr ""
+msgstr "Isosuperficie dati JVXL"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:848
 msgid "Molecular orbital JVXL data"
@@ -1581,32 +1568,32 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:857
 msgid "Open from PDB"
-msgstr ""
+msgstr "Apri da PDB"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:858
 msgid "Open file or URL"
-msgstr ""
+msgstr "Apri file o URL"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:859
 msgid "Load full unit cell"
-msgstr ""
+msgstr "Unità di carico completo cella"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:860
 msgid "Open script"
-msgstr ""
+msgstr "Apri script"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:862
 #, java-format
 msgid "Save a copy of {0}"
-msgstr ""
+msgstr "Salva una copia di {0}"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:863
 msgid "Save script with state"
-msgstr ""
+msgstr "Salva script con stato"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:864
 msgid "Save script with history"
-msgstr ""
+msgstr "Salva script con cronologia"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:865
 #: org/jmol/popup/MainPopupResourceBundle.java:866
@@ -1614,11 +1601,11 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:868
 #, java-format
 msgid "Export {0} image"
-msgstr ""
+msgstr "Esporta {0} immagine"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:869
 msgid "Save JVXL isosurface"
-msgstr ""
+msgstr "Salva isosuperficie JVXL"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:870
 #: org/jmol/popup/MainPopupResourceBundle.java:871
@@ -1626,20 +1613,19 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:873
 #, java-format
 msgid "Export {0} 3D model"
-msgstr ""
+msgstr "Esporta {0} Modello 3D"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:875
 msgid "Computation"
-msgstr ""
+msgstr "Computo"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:876
 msgid "Optimize structure"
-msgstr ""
+msgstr "Ottimizza struttura"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:877
-#, fuzzy
 msgid "Model kit"
-msgstr "Modello"
+msgstr "Kit Modello"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:881
 msgid "Extract MOL data"
@@ -1680,11 +1666,11 @@ msgstr "Ricarica {0}"
 #: org/jmol/popup/MainPopupResourceBundle.java:898
 #, java-format
 msgid "Reload {0} + Display {1}"
-msgstr ""
+msgstr "Ricarica {0} + Mostra {1}"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:899
 msgid "Reload + Polyhedra"
-msgstr ""
+msgstr "Ricarica + Poliedri"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:906
 msgid "Hide"
@@ -1712,7 +1698,7 @@ msgstr "Ampiezza in Angstrom"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:923
 msgid "Selection Halos"
-msgstr ""
+msgstr "Selezione Aloni"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:924
 msgid "Show Hydrogens"
@@ -1732,7 +1718,7 @@ msgstr "Colori di RasMol"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:931
 msgid "About..."
-msgstr ""
+msgstr "A proposito di..."
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1161
 #: org/jmol/script/ScriptEvaluator.java:2453
@@ -1764,7 +1750,7 @@ msgstr "attesa fine dell'espressione"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1179
 msgid "identifier or residue specification expected"
-msgstr ""
+msgstr "specificazione identificativo o residui previsto"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1182
 msgid "invalid atom specification"
@@ -1777,7 +1763,7 @@ msgstr "specifica della catena laterale invalida"
 #: org/jmol/script/ScriptCompilationTokenParser.java:1188
 #, java-format
 msgid "invalid expression token: {0}"
-msgstr ""
+msgstr "espressione non valida simbolo: {0}"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1191
 msgid "invalid model specification"
@@ -1814,7 +1800,7 @@ msgstr "{0} inatteso"
 #: org/jmol/script/ScriptCompilationTokenParser.java:1212
 #, java-format
 msgid "unrecognized expression token: {0}"
-msgstr ""
+msgstr "espressione non riconosciuta simbolo : {0}"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1215
 #: org/jmol/script/ScriptEvaluator.java:2602
@@ -1825,7 +1811,7 @@ msgstr "parametro {0} inatteso"
 #: org/jmol/script/ScriptCompilationTokenParser.java:1218
 #, java-format
 msgid "unrecognized token: {0}"
-msgstr ""
+msgstr "simbolo sconosciuto: {0}"
 
 #: org/jmol/script/ScriptCompiler.java:2283
 msgid "script compiler ERROR: "
@@ -1876,7 +1862,7 @@ msgstr "si richiede un colore od una paletta (Jmol, Rasmol)"
 
 #: org/jmol/script/ScriptEvaluator.java:2480
 msgid "{x y z} or $name or (atom expression) required"
-msgstr ""
+msgstr "{x y z} or $nome o (espressione atomo) richiesta"
 
 #: org/jmol/script/ScriptEvaluator.java:2483
 msgid "draw object not defined"
@@ -1884,11 +1870,11 @@ msgstr "disegna gli oggetti non definiti"
 
 #: org/jmol/script/ScriptEvaluator.java:2489
 msgid "valid (atom expression) expected"
-msgstr ""
+msgstr "valido (espressione atomo) previsto"
 
 #: org/jmol/script/ScriptEvaluator.java:2492
 msgid "(atom expression) or integer expected"
-msgstr ""
+msgstr "(espressione atomo) o un numero intero previsto"
 
 #: org/jmol/script/ScriptEvaluator.java:2495
 msgid "filename expected"
@@ -1956,9 +1942,9 @@ msgid "{0} require that only one model be displayed"
 msgstr "{0} necessità uno o più modelli mostrati"
 
 #: org/jmol/script/ScriptEvaluator.java:2540
-#, fuzzy, java-format
+#, java-format
 msgid "{0} requires that only one model be loaded"
-msgstr "{0} necessità uno o più modelli mostrati"
+msgstr "{0} richiede che un solo modello sia caricato"
 
 #: org/jmol/script/ScriptEvaluator.java:2543
 msgid "No data available"
@@ -1969,6 +1955,8 @@ msgid ""
 "No partial charges were read from the file; Jmol needs these to render the "
 "MEP data."
 msgstr ""
+"Nessun cambiamento parziale è stato letto dal file; Jmol ha bisogno di "
+"questi dati per il rendering dei dati MEP."
 
 #: org/jmol/script/ScriptEvaluator.java:2550
 msgid "No unit cell"
@@ -1994,6 +1982,7 @@ msgid ""
 "plane expected -- either three points or atom expressions or {0} or {1} or "
 "{2}"
 msgstr ""
+"piano previsto - sia tre punti o espressioni di atomo o {0} o {1} o {2}"
 
 #: org/jmol/script/ScriptEvaluator.java:2569
 msgid "property name expected"
@@ -2006,11 +1995,11 @@ msgstr "il gruppo spaziale {0} non è stato trovato"
 
 #: org/jmol/script/ScriptEvaluator.java:2575
 msgid "quoted string expected"
-msgstr ""
+msgstr "stringa tra virgolette prevista"
 
 #: org/jmol/script/ScriptEvaluator.java:2578
 msgid "quoted string or identifier expected"
-msgstr ""
+msgstr "stringa tra virgolette o identificatore previsto"
 
 #: org/jmol/script/ScriptEvaluator.java:2581
 msgid "too many rotation points were specified"
@@ -2034,7 +2023,7 @@ msgstr "comando non riconosciuto"
 
 #: org/jmol/script/ScriptEvaluator.java:2596
 msgid "runtime unrecognized expression"
-msgstr ""
+msgstr "espressione runtime non riconosciuta"
 
 #: org/jmol/script/ScriptEvaluator.java:2599
 msgid "unrecognized object"
@@ -2043,7 +2032,7 @@ msgstr "oggetto non riconosciuto"
 #: org/jmol/script/ScriptEvaluator.java:2606
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
-msgstr ""
+msgstr "parametro {0} non riconosciuto in Jmol state script (imposta comunque)"
 
 #: org/jmol/script/ScriptEvaluator.java:2609
 #, java-format
@@ -2083,104 +2072,109 @@ msgid "{0} hydrogen bonds"
 msgstr "{0} legami idrogeno"
 
 #: org/jmol/script/ScriptEvaluator.java:10504
-#, fuzzy, java-format
+#, java-format
 msgid "{0} struts added"
-msgstr "{0} legami idrogeno"
+msgstr "{0} puntoni aggiunti"
 
 #: org/jmol/shape/Frank.java:73
 msgid "Click for menu..."
-msgstr ""
+msgstr "Clicca per i menu ..."
 
 #: org/jmol/viewer/ActionManager.java:57
-#, fuzzy
 msgid "translate"
-msgstr "Traduzioni"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:58
-#, fuzzy
 msgid "rotate"
-msgstr "Stato"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:59
-#, fuzzy
 msgid "rotate Z"
-msgstr "Stato"
+msgstr "ruotare Z"
 
 #: org/jmol/viewer/ActionManager.java:60
 msgid ""
 "rotate Z (horizontal motion of mouse) or zoom (vertical motion of mouse)"
 msgstr ""
+"ruotrare Z(movimento orizzontale del mouse) o zoom (movimento verticale del "
+"mouse)"
 
 #: org/jmol/viewer/ActionManager.java:61
-#, fuzzy
 msgid "zoom"
-msgstr "Ingrandimento"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:62
 msgid "zoom (along right edge of window)"
-msgstr ""
+msgstr "zoom (lungo il bordo destro della finestra)"
 
 #: org/jmol/viewer/ActionManager.java:63
 #, java-format
 msgid "translate navigation point (requires {0} and {1})"
-msgstr ""
+msgstr "tradurre punto di navigazione (richiede {0}) e {1})"
 
 #: org/jmol/viewer/ActionManager.java:65
 msgid "spin model (swipe and release button and stop motion simultaneously)"
 msgstr ""
+"modello di rotazione (colpire e rilasciare il pulsante e fermare il "
+"movimento simultaneamente)"
 
 #: org/jmol/viewer/ActionManager.java:66
 #, java-format
 msgid "click on two points to spin around axis clockwise (requires {0})"
 msgstr ""
+"cliccare su due punti a ruotare attorno al proprio asse in senso orario "
+"(richiede {0})"
 
 #: org/jmol/viewer/ActionManager.java:67
 #, java-format
 msgid "click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
+"cliccare su due punti a ruotare attorno al proprio asse in senso antiorario "
+"(richiede {0})"
 
 #: org/jmol/viewer/ActionManager.java:69
 #, java-format
 msgid "adjust slab (front plane; requires {0})"
-msgstr ""
+msgstr "regolare lastra (piano frontale, richiede {0})"
 
 #: org/jmol/viewer/ActionManager.java:70
 #, java-format
 msgid "adjust depth (back plane; requires {0})"
-msgstr ""
+msgstr "regolare la profondità (piano dietro, richiede {0})"
 
 #: org/jmol/viewer/ActionManager.java:71
 #, java-format
 msgid "move slab/depth window (both planes; requires {0})"
 msgstr ""
+"spostare lastra / finestra di profondità (entrambi i piani, richiede {0})"
 
 #: org/jmol/viewer/ActionManager.java:73
 msgid "pop up the full context menu"
-msgstr ""
+msgstr "mostra il menu contestuale completo"
 
 #: org/jmol/viewer/ActionManager.java:74
 msgid "pop up recent context menu (click on Jmol frank)"
-msgstr ""
+msgstr "mostra menu di contesto recente (clicca su Jmol frank)"
 
 #: org/jmol/viewer/ActionManager.java:76
 #, java-format
 msgid "select an atom (requires {0})"
-msgstr ""
+msgstr "seleziona un atomo (richiede {0})"
 
 #: org/jmol/viewer/ActionManager.java:77
 #, java-format
 msgid "select NONE (requires {0})"
-msgstr ""
+msgstr "selezionare NULLA (richiede{0})"
 
 #: org/jmol/viewer/ActionManager.java:78
 #, java-format
 msgid "toggle selection (requires {0})"
-msgstr ""
+msgstr "passa selezione (richiede {0})"
 
 #: org/jmol/viewer/ActionManager.java:79
 #, java-format
 msgid "unselect this group of atoms (requires {0})"
-msgstr ""
+msgstr "deseleziona questo gruppo di atomi (richiede {0})"
 
 #: org/jmol/viewer/ActionManager.java:80
 #, java-format
@@ -2193,21 +2187,23 @@ msgid ""
 "if all are selected, unselect all, otherwise add this group of atoms to the "
 "set of selected atoms (requires {0})"
 msgstr ""
+"se tutti sono selezionati, deselezionare tutti, altrimenti aggiungere questo "
+"gruppo di atomi a un insieme di atomi selezionati (richiede {0})"
 
 #: org/jmol/viewer/ActionManager.java:83
 #, java-format
 msgid "move selected atoms (requires {0})"
-msgstr ""
+msgstr "spostare gli atomi selezionati (richiede {0})"
 
 #: org/jmol/viewer/ActionManager.java:84
 #, java-format
 msgid "select and drag atoms (requires {0})"
-msgstr ""
+msgstr "seleziona e sposta gli atomi (richiede {0})"
 
 #: org/jmol/viewer/ActionManager.java:85
 #, java-format
 msgid "rotate selected atoms (requires {0})"
-msgstr ""
+msgstr "ruota gli atomi selezionati (richiede {0})"
 
 #: org/jmol/viewer/ActionManager.java:86
 #, java-format
@@ -2217,27 +2213,27 @@ msgstr ""
 #: org/jmol/viewer/ActionManager.java:88
 #, java-format
 msgid "move atom (requires {0})"
-msgstr ""
+msgstr "spostare atomo (richiede {0})"
 
 #: org/jmol/viewer/ActionManager.java:89
 #, java-format
 msgid "move atom and minimize molecule (requires {0})"
-msgstr ""
+msgstr "sposta atomo e minimizza molecole (richiede {0})"
 
 #: org/jmol/viewer/ActionManager.java:90
 #, java-format
 msgid "move and minimize molecule (requires {0})"
-msgstr ""
+msgstr "sposta e minimizza molecole (richiede {0})"
 
 #: org/jmol/viewer/ActionManager.java:91
 #, java-format
 msgid "move label (requires {0})"
-msgstr ""
+msgstr "muovi etichetta (richiede {0})"
 
 #: org/jmol/viewer/ActionManager.java:92
 #, java-format
 msgid "move specific DRAW point (requires {0})"
-msgstr ""
+msgstr "spostare il punto di DISEGNO specifico (richiede {0})"
 
 #: org/jmol/viewer/ActionManager.java:93
 #, java-format
@@ -2246,12 +2242,12 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:95
 msgid "pick an atom"
-msgstr ""
+msgstr "scegliere un atomo"
 
 #: org/jmol/viewer/ActionManager.java:96
-#, fuzzy, java-format
+#, java-format
 msgid "pick a DRAW point (for measurements) (requires {0}"
-msgstr "Clicca per misurare l'angolo torsionale (diedro)"
+msgstr "scegliere un punto di DISEGNO (per le misurazioni) (richiede {0}"
 
 #: org/jmol/viewer/ActionManager.java:97
 #, java-format
@@ -2264,71 +2260,73 @@ msgid ""
 "pick an atom to include it in a measurement (after starting a measurement or "
 "after {0})"
 msgstr ""
+"scegliere un atomo da includere in una misura (dopo aver iniziato una "
+"misurazione o dopo {0})"
 
 #: org/jmol/viewer/ActionManager.java:99
-#, fuzzy
 msgid "pick an atom to initiate or conclude a measurement"
-msgstr "Fare Clic per la misurazione della distanza"
+msgstr "scegliere un atomo di avviare o concludere una misura"
 
 #: org/jmol/viewer/ActionManager.java:100
-#, fuzzy, java-format
+#, java-format
 msgid "pick an ISOSURFACE point (requires {0}"
-msgstr "Clicca per misurare l'angolo torsionale (diedro)"
+msgstr "scegliere un punto isosuperficie (richiede {0}"
 
 #: org/jmol/viewer/ActionManager.java:101
 #, java-format
 msgid "pick a point or atom to navigate to (requires {0})"
-msgstr ""
+msgstr "scegliere un punto o atomo per la navigazione (richiede {0})"
 
 #: org/jmol/viewer/ActionManager.java:103
 #, java-format
 msgid "delete atom (requires {0})"
-msgstr ""
+msgstr "elimina atomo (richiede {0})"
 
 #: org/jmol/viewer/ActionManager.java:104
 #, java-format
 msgid "delete bond (requires {0})"
-msgstr ""
+msgstr "elimina legame (richiede {0})"
 
 #: org/jmol/viewer/ActionManager.java:105
 #, java-format
 msgid "connect atoms (requires {0})"
-msgstr ""
+msgstr "collega atomi (richiede {0})"
 
 #: org/jmol/viewer/ActionManager.java:106
 #, java-format
 msgid "assign/new atom or bond (requires {0})"
-msgstr ""
+msgstr "assegna/nuovo atomo o legame (richiede {0})"
 
 #: org/jmol/viewer/ActionManager.java:108
 msgid "reset (when clicked off the model)"
-msgstr ""
+msgstr "reset (quando si spense il modello)"
 
 #: org/jmol/viewer/ActionManager.java:109
 #, java-format
 msgid "stop motion (requires {0})"
-msgstr ""
+msgstr "stop motion (richiede {0})"
 
 #: org/jmol/viewer/ActionManager.java:110
 msgid "simulate multi-touch using the mouse)"
-msgstr ""
+msgstr "simulare il multi-touch con il mouse)"
 
 #: org/jmol/viewer/ActionManager.java:1862
 msgid "pick one more atom in order to spin the model around an axis"
 msgstr ""
+"scegliere un altro atomo, al fine di ruotare il modello attorno a un asse"
 
 #: org/jmol/viewer/ActionManager.java:1863
 msgid "pick two atoms in order to spin the model around an axis"
-msgstr ""
+msgstr "scegliere due atomi in modo da ruotare il modello intorno a un asse"
 
 #: org/jmol/viewer/ActionManager.java:1866
 msgid "pick one more atom in order to display the symmetry relationship"
-msgstr ""
+msgstr "scegliere un altro atomo per visualizzare il rapporto di simmetria"
 
 #: org/jmol/viewer/ActionManager.java:1867
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
-msgstr ""
+msgstr "scegliere due atomi per visualizzare il rapporto di simmetria fra loro"
 
 #: org/jmol/viewer/SelectionManager.java:79
 #: org/jmol/viewer/SelectionManager.java:95
@@ -2342,34 +2340,29 @@ msgid "{0} atoms selected"
 msgstr "{0} atomi selezionati"
 
 #: org/jmol/viewer/Viewer.java:4307
-#, fuzzy, java-format
+#, java-format
 msgid "{0} hydrogens added"
-msgstr "{0} legami idrogeno"
+msgstr "{0} idrogeni aggiunti"
 
 #: org/jmol/viewer/Viewer.java:4385
 msgid "Drag to move label"
-msgstr ""
+msgstr "Trascinare per spostare l'etichetta"
 
 #: org/jmol/viewer/Viewer.java:7800
 msgid "clipboard is not accessible -- use signed applet"
-msgstr ""
+msgstr "Gli appunti non sono accessibili - utilizzare applet firmati"
 
 #: org/jmol/viewer/Viewer.java:8545
 msgid "Cannot set log file path."
-msgstr ""
+msgstr "Impossibile impostare il percorso del file di registro."
 
 #: org/jmol/viewer/Viewer.java:8547
 #, java-format
 msgid "Setting log file to {0}"
-msgstr ""
+msgstr "Impostazione file di log su {0}"
 
-#, fuzzy
-#~ msgid "atoms"
-#~ msgstr "Atomi"
-
-#, fuzzy
-#~ msgid "bonds"
-#~ msgstr "Legami"
+#~ msgid "Java memory usage"
+#~ msgstr "Utilizzo di memoria Java"
 
 #~ msgid "About Jmol"
 #~ msgstr "Aproposito di Jmol"
@@ -2383,3 +2376,21 @@ msgstr ""
 #~ msgstr ""
 #~ "La creazione del file di questa applet non è consentita. Per il formato "
 #~ "Base64 JPEG, usa {0}."
+
+#~ msgid "Minimize"
+#~ msgstr "Minimizza"
+
+#~ msgid "{0} 3D Model"
+#~ msgstr "{0} Modello 3D"
+
+#~ msgid "{0} Image"
+#~ msgstr "{0} Immagine"
+
+#~ msgid "File {0}"
+#~ msgstr "File {0}"
+
+#~ msgid "File or URL"
+#~ msgstr "File o URL"
+
+#~ msgid "Script with history"
+#~ msgstr "Script con storia"

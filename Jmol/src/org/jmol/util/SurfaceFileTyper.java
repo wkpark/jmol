@@ -72,14 +72,13 @@ public class SurfaceFileTyper {
       return "Efvet";
     if ("\n\r".indexOf(line.charAt(0)) >= 0 && line.indexOf("ZYX") >= 0)
       return "Xplor";
-    if (line.indexOf(PMESH_BINARY_MAGIC_NUMBER) == 0)
-      return "Pmesh";
     // binary formats: problem here is that the buffered reader
     // may be translating byte sequences into unicode
     // and thus shifting the offset
     int pt0 = line.indexOf('\0');
     if (pt0 >= 0) {
-      // note that we are checking here for +n or -n where n <= 255
+      if (line.indexOf(PMESH_BINARY_MAGIC_NUMBER) == 0)
+        return "Pmesh";
       if (pt0 < 4 && line.indexOf("MAP ") > 0 && line.indexOf("MAP ") < 210)
         return "MRC";
       pt0 = line.indexOf("\0d\0"); // header19 (short)100

@@ -152,7 +152,7 @@ class Dsn6BinaryReader extends MapFileReader {
     //
     // where byteFactor = (M - m) / 255
     //
-    // Just seens simpler to me. Bob Hanson 2/2010
+    // Just seems simpler to me. Bob Hanson 2/2010
     
     dmin = (0 - header17) * header19 / header16;
     dmax = (255 - header17) * header19 / header16;

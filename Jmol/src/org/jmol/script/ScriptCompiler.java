@@ -680,18 +680,16 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       forPoint3 = -1;
       setEqualPt = Integer.MAX_VALUE;
 
-      if (endOfLine) {
-        if (flowContext != null && flowContext.checkForceEndIf(1)) {
-          forceFlowEnd(flowContext.token);
-          isEndOfCommand = true;
-          cchToken = 0;
-          ichCurrentCommand = ichToken;
-          lineCurrent--;
-          return CONTINUE;
-        }
-      }
     }
     if (endOfLine) {
+      if (flowContext != null && flowContext.checkForceEndIf(1)) {
+        forceFlowEnd(flowContext.token);
+        isEndOfCommand = true;
+        cchToken = 0;
+        ichCurrentCommand = ichToken;
+        lineCurrent--;
+        return CONTINUE;
+      }
       isShowCommand = false;
       ++lineCurrent;
     }
@@ -1265,6 +1263,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     // checking tokens based on the current command
     // all command starts are handled by case Token.nada
 
+    
+    System.out.println("parseCommandParam " + ident);
     nTokens = ltoken.size();
     switch (tokCommand) {
     case Token.nada:

@@ -69,6 +69,7 @@ import org.jmol.util.SurfaceFileTyper;
  * note that there is NO redundant extra vertex in this format 
  *
  *  4 bytes: P M \1 \0 
+ *  4 bytes: ignored
  *  4 bytes: (int) 1 -- first byte used to determine big(==0) or little(!=0) endian
  *  4 bytes: (int) nVertices
  *  4 bytes: (int) nPolygons

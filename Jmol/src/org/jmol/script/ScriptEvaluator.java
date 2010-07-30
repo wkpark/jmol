@@ -8238,6 +8238,7 @@ public class ScriptEvaluator {
     if (errMsg != null && !isCmdLine_c_or_C_Option) {
       if (statementLength == 2) {
         if (errMsg.indexOf("NOTE: file recognized as a script file:") == 0) {
+          filename = errMsg.substring(errMsg.indexOf("file:") + 5).trim(); 
           script(0, filename);
           return;
         }

@@ -388,8 +388,10 @@ public class SmarterJmolAdapter extends JmolAdapter {
           }
           ret = Resolver.getAtomCollectionReader(fileName + "|" + ze.getName(),
               null, reader, htParams, -1);
-          if (ret instanceof AtomSetCollectionReader)
+          if (ret instanceof AtomSetCollectionReader) {
+            ((AtomSetCollectionReader) ret).setup(fileName, htParams, reader);
             ret = ((AtomSetCollectionReader) ret).readData();
+          }
           if (!(ret instanceof AtomSetCollection)) {
             if (ignoreErrors)
               continue;

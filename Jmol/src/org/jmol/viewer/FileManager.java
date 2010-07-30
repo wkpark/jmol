@@ -741,15 +741,21 @@ public class FileManager {
       return "cannot read file name: " + name;
     Image image = null;
     //try {
-    fullPathName = names[0].replace('\\', '/');
-    if (urlTypeIndex(fullPathName) >= 0)
+    String fullPathName = names[0].replace('\\', '/');
+    if (fullPathName.indexOf("|") > 0) {
+      Object ret = getFileAsBytes(fullPathName, null);
+      if (!(ret instanceof byte[]))
+        return "" + ret;
+      image = Toolkit.getDefaultToolkit().createImage((byte[]) ret);
+    } else if (urlTypeIndex(fullPathName) >= 0) {
       try {
         image = Toolkit.getDefaultToolkit().createImage(new URL(fullPathName));
       } catch (Exception e) {
         return "bad URL: " + fullPathName;
       }
-    else
+    } else {
       image = Toolkit.getDefaultToolkit().createImage(fullPathName);
+    }
     try {
       MediaTracker mediaTracker = new MediaTracker(viewer.getDisplay());
       mediaTracker.addImage(image, 0);
@@ -1043,8 +1049,9 @@ public class FileManager {
       int itype = urlTypeIndex(name);
       boolean isLocal = (itype < 0 || itype == URL_LOCAL);
       if (isLocal || includeRemoteFiles) {
-        v.add(name);
-        String newName = "$SCRIPT_PATH$/" + name.substring(name.lastIndexOf("/") + 1);
+        v.add(name);  
+        int pt = Math.max(name.lastIndexOf("|"), name.lastIndexOf("/"));
+        String newName = "$SCRIPT_PATH$/" + name.substring(pt + 1);
         if (isLocal && name.indexOf("|") < 0) {
           v.add(null); // data will be gotten from disk
         } else {
@@ -1068,10 +1075,10 @@ public class FileManager {
     script = TextFormat.replaceQuotedStrings(script, fileNames, newFileNames);
     v.add(sname);
     v.add(script.getBytes());
-    Object bytes = viewer.getImageAs("JPEG", -1, -1, -1, null, null, 
+    Object bytes = viewer.getImageAs("PNG", -1, -1, -1, null, null, 
         JmolConstants.embedScript(script));
     if (bytes instanceof byte[]) {
-      v.add(fileRoot + ".jpg");
+      v.add(fileRoot + ".png");
       v.add((byte[]) bytes);
     }
     return writeZipFile(fileName, v, false, "OK JMOL");

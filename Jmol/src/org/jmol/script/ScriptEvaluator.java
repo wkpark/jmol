@@ -8512,7 +8512,7 @@ public class ScriptEvaluator {
     if (isReturnOnly)
       statement = args;
     int tokCmd = (isReturnOnly ? Token.show : args[0].tok);
-    int pt0 = (tokCmd == Token.quaternion || tokCmd == Token.ramachandran ? 0
+    int pt0 = (isReturnOnly || tokCmd == Token.quaternion || tokCmd == Token.ramachandran ? 0
         : 1);
     String filename = null;
     boolean makeNewFrame = true;
@@ -8531,9 +8531,9 @@ public class ScriptEvaluator {
       break;
     case Token.write:
       makeNewFrame = false;
-      if (tokAt(pt) == Token.string) {
+      if (tokAt(pt, args) == Token.string) {
         filename = stringParameter(pt--);
-      } else if (tokAt(pt - 1) == Token.per) {
+      } else if (tokAt(pt - 1, args) == Token.per) {
         filename = parameterAsString(pt - 2) + "." + parameterAsString(pt);
         pt -= 3;
       } else {
@@ -8557,7 +8557,10 @@ public class ScriptEvaluator {
     Point3f minXYZ = null;
     Point3f maxXYZ = null;
     int plotType = 0;
-    switch (tokAt(pt0)) {
+    int tok = tokAt(pt0, args);
+    if (tok == Token.string)
+      tok = Token.getTokFromName((String)args[pt0].value);
+    switch (tok) {
     case Token.quaternion:
     case Token.helix:
       plotType = JmolConstants.JMOL_DATA_QUATERNION;
@@ -12830,7 +12833,9 @@ public class ScriptEvaluator {
     case Token.quaternion:
     case Token.ramachandran:
     case Token.property:
-      msg = plot(statement);
+      msg = plot(args);
+      if (!isCommand)
+        return msg;
       break;
     case Token.pointgroup:
       type = "PGRP";

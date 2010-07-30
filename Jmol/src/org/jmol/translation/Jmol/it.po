@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-07-23 18:24+0200\n"
-"PO-Revision-Date: 2008-12-28 20:44+0000\n"
-"Last-Translator: Stefano <Unknown>\n"
+"PO-Revision-Date: 2010-07-30 17:12+0000\n"
+"Last-Translator: Emanuele Aiello <Unknown>\n"
 "Language-Team: Italian <it@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-01-10 16:00+0000\n"
+"X-Launchpad-Export-Date: 2010-07-30 18:40+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -48,7 +48,7 @@ msgstr "debug"
 
 #: org/openscience/jmol/app/JmolApp.java:148
 msgid "silent startup operation"
-msgstr ""
+msgstr "operazione di avvio silenziosa"
 
 #: org/openscience/jmol/app/JmolApp.java:150
 msgid "list commands during script execution"
@@ -56,7 +56,7 @@ msgstr "elenca i comandi durante l'esecuzione dello script"
 
 #: org/openscience/jmol/app/JmolApp.java:152
 msgid "start with no splash screen"
-msgstr ""
+msgstr "avvia senza schermata iniziale"
 
 #: org/openscience/jmol/app/JmolApp.java:154
 msgid "no console -- all output to sysout"
@@ -75,9 +75,8 @@ msgid "exit after script (implicit with -n)"
 msgstr "esci dopo l'esecuzione dello script (implicito con -n)"
 
 #: org/openscience/jmol/app/JmolApp.java:164
-#, fuzzy
 msgid "script file to execute or '-' for System.in"
-msgstr "file script da eseguire"
+msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:170
 msgid "use multitouch interface (requires \"sparshui\" parameter"
@@ -109,8 +108,8 @@ msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
 msgstr ""
-"Qualità delle immagini JPG (1-100; default 75) o compressione delle "
-"immagini  PNG (0-9; default e, compressione massima 9)"
+"Qualità delle immagini JPG (1-100; default 75) o compressione delle immagini "
+" PNG (0-9; default e, compressione massima 9)"
 
 #: org/openscience/jmol/app/JmolApp.java:216
 #, java-format
@@ -122,11 +121,10 @@ msgid "For example:"
 msgstr "Per esempio:"
 
 #: org/openscience/jmol/app/JmolApp.java:236
-#, fuzzy
 msgid ""
 "The -D options are as follows (defaults in parenthesis) and must be called "
 "preceding '-jar Jmol.jar':"
-msgstr "Le opzioni -D sono come segue (default in parentesi)"
+msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:466
 msgid "Executing script 1..."
@@ -160,23 +158,20 @@ msgid "OK"
 msgstr "OK"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:113
-#, fuzzy
 msgid "Editor"
-msgstr "&Modifica"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:114
 msgid "Check"
 msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:115
-#, fuzzy
 msgid "Top"
-msgstr "Al&to"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:116
-#, fuzzy
 msgid "Step"
-msgstr "Stato"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:123
 msgid "Variables"
@@ -280,19 +275,16 @@ msgid "Controller"
 msgstr "Controller"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:362
-#, fuzzy
 msgid "Go to first atom set in the collection"
-msgstr "Vai al primo {0} nella raccolta"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:363
-#, fuzzy
 msgid "Go to previous atom set in the collection"
-msgstr "Vai al precedente {0} nella raccolta"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:364
-#, fuzzy
 msgid "Play the whole collection of atom sets"
-msgstr "Riproduci la collezione completa di {0}"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:365
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:374
@@ -300,39 +292,32 @@ msgid "Pause playing"
 msgstr "Pausa riproduzione"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:366
-#, fuzzy
 msgid "Go to next atom set in the collection"
-msgstr "Vai al prossimo {0} nella raccolta"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:367
-#, fuzzy
 msgid "Jump to last atom set in the collection"
-msgstr "Vai al prossimo {0} nella raccolta"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:371
-#, fuzzy
 msgid "Go to first vector in the collection"
-msgstr "Vai al primo {0} nella raccolta"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:372
-#, fuzzy
 msgid "Go to previous vector in the collection"
-msgstr "Vai al precedente {0} nella raccolta"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:373
-#, fuzzy
 msgid "Play the whole collection of vectors"
-msgstr "Riproduci la collezione completa di {0}"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
-#, fuzzy
 msgid "Go to next vector in the collection"
-msgstr "Vai al prossimo {0} nella raccolta"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:376
-#, fuzzy
 msgid "Jump to last vector in the collection"
-msgstr "Vai al primo {0} nella raccolta"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/ConsoleTextArea.java:87
 #, java-format
@@ -452,14 +437,12 @@ msgid "Scrip&t Editor..."
 msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:56
-#, fuzzy
 msgid "Conso&le..."
-msgstr "Output Conso&le..."
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:57
-#, fuzzy
 msgid "Jmol Java &Console"
-msgstr "Jmol Java Console"
+msgstr "Jmol Java &Console"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:58
 msgid "AtomSet&Chooser..."
@@ -825,46 +808,40 @@ msgid "&Rewind to first frame"
 msgstr "&Ritorna al primo frame"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:164
-#, fuzzy
 msgid "Rewind to first frame"
-msgstr "&Ritorna al primo frame"
+msgstr "Riavvolgi al primo frame"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:165
 msgid "Go to &next frame"
 msgstr "Vai al &frame successivo"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:166
-#, fuzzy
 msgid "Go to next frame"
-msgstr "Vai al &frame successivo"
+msgstr "Vai all'ultimo frame"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:167
 msgid "Go to &previous frame"
 msgstr "Vai al frame &precedente"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:168
-#, fuzzy
 msgid "Go to previous frame"
-msgstr "Vai al frame &precedente"
+msgstr "Vai al frame precedente"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:169
-#, fuzzy
 msgid "All &frames"
-msgstr "Tutti i FIle"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:170
-#, fuzzy
 msgid "All frames"
-msgstr "Tutti i FIle"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:171
 msgid "Go to &last frame"
 msgstr "Vai all'ultimo frame"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:172
-#, fuzzy
 msgid "Go to last frame"
-msgstr "Vai all'ultimo frame"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:173
 msgid "Start &vibration"
@@ -941,9 +918,8 @@ msgid "Rotate molecule."
 msgstr "Ruota la molecola."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:197
-#, fuzzy
 msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
-msgstr "Seleziona un set di atimi usando SHIFT-LEFT- DRAG."
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:199
 msgid "Click atoms to measure distances"
@@ -999,9 +975,8 @@ msgstr "Avvio del frame principale..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:283
 #: org/openscience/jmol/app/webexport/Widgets.java:207
-#, fuzzy
 msgid "Jmol Console"
-msgstr "Jmol Java Console"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:305
 msgid "Could not create ConsoleTextArea: "
@@ -1397,9 +1372,8 @@ msgid "A web page containing Jmol applets"
 msgstr "Una pagina web contenente applets Jmol"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:176
-#, fuzzy
 msgid "click and drag to reorder"
-msgstr "doppoi click e trascina per riordinare"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:181
 msgid "Add Present Jmol State as Instance..."
@@ -1414,9 +1388,8 @@ msgid "Jmol Instances:"
 msgstr "Istanze Jmol:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:226
-#, fuzzy
 msgid "Select widgets:"
-msgstr "Seleziona Atomi"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:323
 msgid "Help/Instructions"
@@ -1488,14 +1461,14 @@ msgstr "Usando cartella {0}"
 #: org/openscience/jmol/app/webexport/WebPanel.java:653
 #: org/openscience/jmol/app/webexport/WebPanel.java:667
 #: org/openscience/jmol/app/webexport/WebPanel.java:694
-#, fuzzy, java-format
+#, java-format
 msgid "adding {0}"
-msgstr "aggiungendo {0}.png"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:682
-#, fuzzy, java-format
+#, java-format
 msgid "Unable to load resource {0}"
-msgstr "Impossibile trovare url \"{0}\"."
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:734
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
@@ -1579,52 +1552,44 @@ msgid "Animation Control"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:165
-#, fuzzy
 msgid "Animation"
-msgstr "&Ferma l'animazione"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:166
 msgid "First Frame"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:168
-#, fuzzy
 msgid "Previous Frame"
-msgstr "Vai al frame &precedente"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:170
 msgid "Play"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:172
-#, fuzzy
 msgid "Next Frame"
-msgstr "Vai al &frame successivo"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:174
-#, fuzzy
 msgid "Pause"
-msgstr "&Incolla"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:176
-#, fuzzy
 msgid "Last Frame"
-msgstr "Vai all'ultimo frame"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:178
-#, fuzzy
 msgid "Mode:"
-msgstr "Metodo: "
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:179
-#, fuzzy
 msgid "Loop"
-msgstr "&Loop"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:181
-#, fuzzy
 msgid "Palindrome"
-msgstr "P&alindromo"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:183
 msgid "Play Once"
@@ -1635,9 +1600,8 @@ msgid "Open Console Button"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:205
-#, fuzzy
 msgid "launch Jmol console"
-msgstr "Jmol Java Console"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:212
 msgid "Download view"
@@ -1650,168 +1614,19 @@ msgstr ""
 #~ msgid "atom set"
 #~ msgstr "atom set"
 
-#, fuzzy
-#~ msgid "atom sets"
-#~ msgstr "atom set"
-
 #~ msgid "vector"
-#~ msgstr "vettore"
-
-#, fuzzy
-#~ msgid "vectors"
 #~ msgstr "vettore"
 
 #~ msgid "Jmol Script Console"
 #~ msgstr "Jmol Script Console"
 
-#, fuzzy
-#~ msgid "Stop"
-#~ msgstr "Stato"
-
-#~ msgid "adding {0}.png"
-#~ msgstr "aggiungendo {0}.png"
-
-#~ msgid "adding {0}.spt"
-#~ msgstr "aggiungendo {0}.spt"
-
 #~ msgid "Show Selected"
 #~ msgstr "Mostra Selezionati."
 
-#, fuzzy
-#~ msgid "Initializing Script Editor..."
-#~ msgstr "Inizializzazione della Finestra degli Script..."
+#, java-format
+#~ msgid "adding {0}.spt"
+#~ msgstr "aggiungendo {0}.spt"
 
-#~ msgid "Initializing Measurements..."
-#~ msgstr "Inizializzazione Misurazioni..."
-
-#~ msgid "&Java Output Console"
-#~ msgstr "&Java Output Console"
-
-#~ msgid "Run"
-#~ msgstr "Esegui"
-
-#~ msgid "Preview"
-#~ msgstr "Anteprima"
-
-#~ msgid "Append models"
-#~ msgstr "Accoda modelli"
-
-#~ msgid "Make crystal..."
-#~ msgstr "Crea cristallo..."
-
-#~ msgid "Name"
-#~ msgstr "Nome"
-
-#~ msgid "Measurements..."
-#~ msgstr "Misure..."
-
-#~ msgid "Render in pov-ray."
-#~ msgstr "Effettua rendering in POV-RAY."
-
-#~ msgid "Select an atom or region."
-#~ msgstr "Seleziona un atomo od una regione."
-
-#~ msgid "View measurement table."
-#~ msgstr "Visualizza la tabella delle misurazioni."
-
-#~ msgid "Image Type"
-#~ msgstr "Tipo di Immagine"
-
-#~ msgid "JPEG Quality"
-#~ msgstr "Qualità JPEG"
-
-#~ msgid "Initializing AtomSetChooser Window..."
-#~ msgstr "Inizializzazione della finestra  AtomSetChooser..."
-
-#~ msgid "Setting up File Choosers..."
-#~ msgstr "Impostazione Selettori File..."
-
-#~ msgid "Details"
-#~ msgstr "Dettagli"
-
-#~ msgid "Directory"
-#~ msgstr "Cartella"
-
-#~ msgid "Open selected directory"
-#~ msgstr "Apri la cartella selezionata"
-
-#~ msgid "Attributes"
-#~ msgstr "Attributi"
-
-#~ msgid "Modified"
-#~ msgstr "Modificato"
-
-#~ msgid "Generic File"
-#~ msgstr "File Generico"
-
-#~ msgid "Size"
-#~ msgstr "Dimensione"
-
-#~ msgid "Files of Type:"
-#~ msgstr "File di Tipo:"
-
-#~ msgid "Type"
-#~ msgstr "Tipo"
-
-#~ msgid "FileChooser help"
-#~ msgstr "Aiuto di FileChooser"
-
-#~ msgid "Home"
-#~ msgstr "Home"
-
-#~ msgid "List"
-#~ msgstr "Elenco"
-
-#~ msgid "Look In:"
-#~ msgstr "Guarda in:"
-
-#~ msgid "Error creating new folder"
-#~ msgstr "Errore nella creazione della nuova cartella"
-
-#~ msgid "New Folder"
-#~ msgstr "Nuova Cartella"
-
-#~ msgid "Create New Folder"
-#~ msgstr "Crea una Nuova Cartella"
-
-#~ msgid "Open selected file"
-#~ msgstr "Apri il file selezionato"
-
-#~ msgid "Save selected file"
-#~ msgstr "Salva il file selezionato"
-
-#~ msgid "Save In:"
-#~ msgstr "Salva In:"
-
-#~ msgid "Update"
-#~ msgstr "Aggiorna"
-
-#~ msgid "Update directory listing"
-#~ msgstr "Aggiorna l'elenco delle cartelle"
-
-#~ msgid "Up"
-#~ msgstr "Su"
-
-#~ msgid "Up One Level"
-#~ msgstr "Livello superiore"
-
-#~ msgid "No"
-#~ msgstr "No"
-
-#~ msgid "Yes"
-#~ msgstr "Si"
-
-#~ msgid "Jmol-to-POV-Ray Conversion"
-#~ msgstr "Conversione Jmol-POV-Ray"
-
-#~ msgid "Filename"
-#~ msgstr "Nome file"
-
-#~ msgid "Height : "
-#~ msgstr "Altezza: "
-
-#~ msgid "POV-Ray Executable Location"
-#~ msgstr "Posizione dell'Eseguibile POV-Ray"
-
-#~ msgid "Failed to delete scratch file {0}."
-#~ msgstr "Tentativo di cancellare il file di scratch {0} fallito."
+#, java-format
+#~ msgid "adding {0}.png"
+#~ msgstr "aggiungendo {0}.png"

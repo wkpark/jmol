@@ -87,8 +87,9 @@ public class SurfaceFileTyper {
         return "Pmesh";
       if (pt0 < 4 && line.indexOf("MAP ") > 0 && line.indexOf("MAP ") < 210)
         return "MRC";
-      pt0 = line.indexOf("\0d\0"); // header19 (short)100
-      if (pt0 >= 0 && pt0 < 40) { 
+      if (line.length() > 37 && (line.charAt(36) == 0 && line.charAt(37) == 100 
+          || line.charAt(36) == 0 && line.charAt(37) == 100)) { 
+           // header19 (short)100
           return "DSN6";
       }
     }

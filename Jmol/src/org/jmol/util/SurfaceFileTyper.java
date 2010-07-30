@@ -27,6 +27,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 
 
 public class SurfaceFileTyper {
@@ -38,8 +39,13 @@ public class SurfaceFileTyper {
   public final static String PMESH_BINARY_MAGIC_NUMBER = "PM" + '\1' + '\0';
   
   public static String determineSurfaceFileType(InputStream is) {
-    BufferedReader br = new BufferedReader(new InputStreamReader(
-        new BufferedInputStream((InputStream) is, 8192)));
+    BufferedReader br;
+    try {
+      br = new BufferedReader(new InputStreamReader(
+          new BufferedInputStream((InputStream) is, 8192), "ISO-8859-1"));
+    } catch (UnsupportedEncodingException e) {
+      return null;
+    }
     return SurfaceFileTyper.determineSurfaceFileType(br);
   }
   

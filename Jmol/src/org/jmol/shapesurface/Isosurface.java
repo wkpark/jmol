@@ -112,6 +112,10 @@ import org.jmol.viewer.Viewer;
 import org.jmol.viewer.StateManager.Orientation;
 import org.jmol.jvxl.readers.Parameters;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -399,12 +403,18 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         // and open a BufferedReader for it. Or not. But that would be
         // unlikely since we have just checked it in ScriptEvaluator
         value = viewer.getBufferedReaderOrErrorMessageFromName(
-            sg.getFileName(), null, false);
+            sg.getFileName(), null, true);
         if (value instanceof String) {
           Logger.error("Isosurface: could not open file " + sg.getFileName()
               + " -- " + value);
           return;
         }
+        try {
+          value = new BufferedReader(new InputStreamReader((InputStream) value, "ISO-8859-1"));
+        } catch (UnsupportedEncodingException e) {
+          // ignore
+        }
+
       }
     }
     // surface Export3D only (return TRUE) or shared (return FALSE)

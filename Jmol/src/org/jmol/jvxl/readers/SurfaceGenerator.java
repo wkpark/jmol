@@ -1101,6 +1101,8 @@ public class SurfaceGenerator {
     String data = null;
     if (value instanceof String) {
       data = (String) value;
+      // this will be OK, because any string will be a simple string, 
+      // not a binary file.
       value = new BufferedReader(new StringReader((String) value));
     }
     BufferedReader br = (BufferedReader) value;

@@ -61,9 +61,9 @@ public class SurfaceFileTyper {
     if ((line = br.info()).length() == 0)
       return null;
 
-    for (int i = 0; i < 220; i++)
-      System.out.print(" " + i + ":" + (0 + line.charAt(i)));
-    System.out.println("");
+    //for (int i = 0; i < 220; i++)
+    //  System.out.print(" " + i + ":" + (0 + line.charAt(i)));
+    //System.out.println("");
     if (line.indexOf("Here is your gzipped map") >= 0)
       return "UPPSALA" + line;
     if (line.indexOf("<jvxl") >= 0 && line.indexOf("<?xml") >= 0)
@@ -85,7 +85,7 @@ public class SurfaceFileTyper {
     if (pt0 >= 0) {
       if (line.indexOf(PMESH_BINARY_MAGIC_NUMBER) == 0)
         return "Pmesh";
-      if (pt0 < 4 && line.indexOf("MAP ") > 0 && line.indexOf("MAP ") < 210)
+      if (line.indexOf("MAP ") == 208)
         return "MRC";
       if (line.length() > 37 && (line.charAt(36) == 0 && line.charAt(37) == 100 
           || line.charAt(36) == 0 && line.charAt(37) == 100)) { 

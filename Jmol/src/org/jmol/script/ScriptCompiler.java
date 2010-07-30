@@ -252,8 +252,10 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
 
   private int tokLastMath;
   
+  private Vector vFunctionStack;
+  
   private boolean compile0(boolean isFull) {
-    
+    vFunctionStack = new Vector();  
     script = script.replace('\u201C', '"').replace('\u201D', '"');
     script = cleanScriptComments(script);
     cchScript = this.script.length();
@@ -1382,6 +1384,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         return CONTINUE; // don't store name in stack
       }
       if (nTokens == 1) {
+        if (thisFunction != null)
+          vFunctionStack.add(0, thisFunction);
         thisFunction = (tokCommand == Token.parallel ? new ParallelProcessor(ident, tokCommand) : new ScriptFunction(ident, tokCommand));
         flowContext.setFunction(thisFunction);
         break; // function f
@@ -1796,6 +1800,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       switch (tokCommand) {
       case Token.trycmd:
         flowContext = new ScriptFlowContext(this, ct, pt, flowContext);
+        if (thisFunction != null)
+          vFunctionStack.add(0, thisFunction);
         thisFunction = new ParallelProcessor("", tokCommand);
         flowContext.setFunction(thisFunction);
         pushCount++;
@@ -1863,7 +1869,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         ScriptFunction.setFunction(thisFunction, script, pt1, lltoken.size(),
             lineNumbers, lineIndices, lltoken);
       }
-      thisFunction = null;
+      thisFunction = (vFunctionStack.size() == 0 ? null : (ScriptFunction) vFunctionStack.remove(0));
       tokenCommand.intValue = 0;
       if (tok == Token.trycmd)
         vPush.remove(--pushCount);

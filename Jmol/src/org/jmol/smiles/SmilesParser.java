@@ -333,6 +333,8 @@ public class SmilesParser {
         checkNested(molecule, atom, noAromatic, ignoreStereochemistry);
         for (int k = 0; k < atom.nAtomsOr; k++)
           checkNested(molecule, atom.atomsOr[k], noAromatic, ignoreStereochemistry);
+        for (int k = 0; k < atom.nPrimitives; k++)
+          checkNested(molecule, atom.primitives[k], noAromatic, ignoreStereochemistry);
       }
     if (!isSmarts && !isBioSequence)
       molecule.elementCounts[1] = molecule.getMissingHydrogenCount();

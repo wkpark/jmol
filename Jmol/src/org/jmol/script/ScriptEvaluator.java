@@ -503,7 +503,7 @@ public class ScriptEvaluator {
       e.restoreScriptContext(context, true, false, false);
       e.instructionDispatchLoop(false);
     } catch (Exception ex) {
-      viewer.setStringProperty("_errorMessage", "" + ex);
+      viewer.setStringProperty("_errormessage", "" + ex);
       Logger.error("Error evaluating context");
       //ex.printStackTrace();
       return false;
@@ -1858,7 +1858,7 @@ public class ScriptEvaluator {
         }
         ((ParallelProcessor) function).runAllProcesses(viewer, !isTry);
         if (isTry){
-          String err = (String) viewer.getParameter("_errorMessage");
+          String err = (String) viewer.getParameter("_errormessage");
           if (err.length() > 0) {
             contextVariables.put("_errorval", ScriptVariable.getVariable(err));
             viewer.resetError();
@@ -2242,7 +2242,7 @@ public class ScriptEvaluator {
     if (token != null) {
       contextVariables = token.contextVariables;
     }
-    if (isCmdLine_c_or_C_Option)
+    if (Logger.debugging || isCmdLine_c_or_C_Option)
       Logger.info("-->>-------------".substring(0, scriptLevel + 5)
           + scriptLevel + " " + filename + " " + token + " " + thisContext);
   }
@@ -2291,7 +2291,7 @@ public class ScriptEvaluator {
     ScriptContext scTemp = (isFlowCommand ? getScriptContext() : null);
     restoreScriptContext(thisContext, true, isFlowCommand, statementOnly);
     restoreScriptContext(scTemp, true, false, true);
-    if (isCmdLine_c_or_C_Option)
+    if (Logger.debugging || isCmdLine_c_or_C_Option)
       Logger.info("--<<-------------".substring(0, scriptLevel + 5)
           + scriptLevel + " " + filename + " " + (thisContext == null ? "" : "" + thisContext.token) + " " + thisContext);
   }
@@ -2472,7 +2472,7 @@ public class ScriptEvaluator {
       // viewer.addCommand(s + CommandHistory.ERROR_FLAG);
       viewer.setCursor(Viewer.CURSOR_DEFAULT);
       viewer.setBooleanProperty("refreshing", true);
-      viewer.setStringProperty("_errorMessage", strUntranslated);
+      viewer.setStringProperty("_errormessage", strUntranslated);
     }
     throw new ScriptException(message, strUntranslated);
   }
@@ -5647,8 +5647,7 @@ public class ScriptEvaluator {
     for (int i = pcTo + 1; i < aatoken.length; i++) {
       Token[] tokens = aatoken[i];
       if (tokens[0].tok == Token.message || tokens[0].tok == Token.nada)
-        if (tokens[tokens.length - 1].value.toString()
-            .equalsIgnoreCase(strTo)) {
+        if (tokens[tokens.length - 1].value.toString().equalsIgnoreCase(strTo)) {
           pcTo = i;
           break;
         }
@@ -5669,15 +5668,23 @@ public class ScriptEvaluator {
         nPush++;
         break;
       case Token.pop:
-      case Token.end:
         nPush--;
+        break;
+      case Token.end:
+        switch (aatoken[i][1].tok) {
+        case Token.process:
+        case Token.forcmd:
+        case Token.catchcmd:
+        case Token.whilecmd:
+          nPush--;
+        }
         break;
       }
     }
     if (strTo == null) {
       pcTo = Integer.MAX_VALUE;
       for (; nPush > 0; --nPush)
-        popContext(false, false);    
+        popContext(false, false);
     }
     if (nPush != 0)
       error(ERROR_invalidArgument);

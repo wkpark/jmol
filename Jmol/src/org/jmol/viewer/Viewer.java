@@ -4869,7 +4869,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
   public void notifyError(String errType, String errMsg,
                           String errMsgUntranslated) {
-    global.setParameterValue("_errorMessage", errMsgUntranslated);
+    global.setParameterValue("_errormessage", errMsgUntranslated);
     statusManager.notifyError(errType, errMsg, errMsgUntranslated);
   }
 
@@ -6474,7 +6474,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void resetError() {
-    global.removeJmolParameter("_errorMessage");  
+    global.removeJmolParameter("_errormessage");  
   }
   
   private void setAxesModeMolecular(boolean TF) {

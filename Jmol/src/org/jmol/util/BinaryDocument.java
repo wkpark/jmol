@@ -112,11 +112,11 @@ public class BinaryDocument {
     if (n > 0)
       nBytes += n;
     int nBytesRead = n;
-    if (n > 0 && n < b.length) {
+    if (n > 0 && n < len) {
       // apparently this is possible over the web
       // it occurred in getting a DNS6B format file from Uppsala
-      while (nBytesRead < b.length && n > 0) {
-        n = ioRead(b, nBytesRead, b.length - nBytesRead);
+      while (nBytesRead < len && n > 0) {
+        n = ioRead(b, nBytesRead, len - nBytesRead);
         if (n > 0) {
           nBytes += n;
           nBytesRead += n;

@@ -46,14 +46,18 @@ public class SurfaceFileTyper {
   public static String determineSurfaceFileType(BufferedReader bufferedReader) {
     // JVXL should be on the FIRST line of the file, but it may be 
     // after comments or missing.
-    
+
     // Apbs, Jvxl, or Cube, also efvet
-    
+
     String line;
     LimitedLineReader br = new LimitedLineReader(bufferedReader, 16000);
     //sure bets, but not REQUIRED:
     if ((line = br.info()).length() == 0)
       return null;
+
+    for (int i = 0; i < 220; i++)
+      System.out.print(" " + i + ":" + (0 + line.charAt(i)));
+    System.out.println("");
     if (line.indexOf("Here is your gzipped map") >= 0)
       return "UPPSALA" + line;
     if (line.indexOf("<jvxl") >= 0 && line.indexOf("<?xml") >= 0)
@@ -64,35 +68,39 @@ public class SurfaceFileTyper {
       return "Jvxl";
     if (line.indexOf("&plot") == 0)
       return "Jaguar";
-    if (line.indexOf("MAP ") == 208)
-      return "MRC" + (line.charAt(67) == '\0' ? "L" : "B");
     if (line.indexOf("<efvet ") >= 0)
       return "Efvet";
-    if (line.indexOf(PMESH_BINARY_MAGIC_NUMBER) == 0)
-      return "Pmesh";
     if ("\n\r".indexOf(line.charAt(0)) >= 0 && line.indexOf("ZYX") >= 0)
       return "Xplor";
-    if (line.length() > 37 && line.charAt(36) == 0 && line.charAt(37) == 100)
-      return "DSN6B";
-    if (line.length() > 37 && line.charAt(37) == 100 && line.charAt(36) == 0)
-      return "DSN6L";
-    
+    if (line.indexOf(PMESH_BINARY_MAGIC_NUMBER) == 0)
+      return "Pmesh";
+    // binary formats: problem here is that the buffered reader
+    // may be translating byte sequences into unicode
+    // and thus shifting the offset
+    int pt0 = line.indexOf('\0');
+    if (pt0 >= 0) {
+      // note that we are checking here for +n or -n where n <= 255
+      if (pt0 < 4 && line.indexOf("MAP ") > 0 && line.indexOf("MAP ") < 210)
+        return "MRC";
+      pt0 = line.indexOf("\0d\0"); // header19 (short)100
+      if (pt0 >= 0 && pt0 < 40) { 
+          return "DSN6";
+      }
+    }
     // Apbs, Jvxl, or Cube, maybe formatted Plt
 
     line = br.readNonCommentLine();
     if (line.indexOf("object 1 class gridpositions counts") == 0)
       return "Apbs";
 
-    String[] tokens = Parser.getTokens(line); 
+    String[] tokens = Parser.getTokens(line);
     line = br.readNonCommentLine();// second line
-    if (tokens.length == 2 
-        && Parser.parseInt(tokens[0]) == 3 
-        && Parser.parseInt(tokens[1])!= Integer.MIN_VALUE) {
+    if (tokens.length == 2 && Parser.parseInt(tokens[0]) == 3
+        && Parser.parseInt(tokens[1]) != Integer.MIN_VALUE) {
       tokens = Parser.getTokens(line);
-      if (tokens.length == 3 
-          && Parser.parseInt(tokens[0])!= Integer.MIN_VALUE 
-          && Parser.parseInt(tokens[1])!= Integer.MIN_VALUE
-          && Parser.parseInt(tokens[2])!= Integer.MIN_VALUE)
+      if (tokens.length == 3 && Parser.parseInt(tokens[0]) != Integer.MIN_VALUE
+          && Parser.parseInt(tokens[1]) != Integer.MIN_VALUE
+          && Parser.parseInt(tokens[2]) != Integer.MIN_VALUE)
         return "PltFormatted";
     }
     line = br.readNonCommentLine(); // third line
@@ -103,13 +111,13 @@ public class SurfaceFileTyper {
     if (nAtoms >= 0)
       return "Cube"; //Can't be a Jvxl file
     nAtoms = -nAtoms;
-    for (int i = 4 + nAtoms; --i >=0;)
+    for (int i = 4 + nAtoms; --i >= 0;)
       if ((line = br.readNonCommentLine()) == null)
         return null;
     int nSurfaces = Parser.parseInt(line);
     if (nSurfaces == Integer.MIN_VALUE)
       return null;
-    return (nSurfaces < 0 ?  "Jvxl" : "Cube"); //Final test looks at surface definition line
+    return (nSurfaces < 0 ? "Jvxl" : "Cube"); //Final test looks at surface definition line
   }
   
 }

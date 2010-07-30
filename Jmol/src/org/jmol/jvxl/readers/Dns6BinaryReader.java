@@ -43,11 +43,11 @@ class Dsn6BinaryReader extends MapFileReader {
    */
 
   
-  Dsn6BinaryReader(SurfaceGenerator sg, String fileName, String data, boolean isBigEndian) {
+  Dsn6BinaryReader(SurfaceGenerator sg, String fileName, String data) {
     super(sg, null);
     binarydoc = new BinaryDocument();
     if (data == null)
-      binarydoc.setStream(sg.getAtomDataServer().getBufferedInputStream(fileName), isBigEndian);
+      binarydoc.setStream(sg.getAtomDataServer().getBufferedInputStream(fileName), true);
     else 
       binarydoc.setStream(new DataInputStream(new ByteArrayInputStream(data.getBytes())));
     // data are HIGH on the inside and LOW on the outside
@@ -66,24 +66,38 @@ class Dsn6BinaryReader extends MapFileReader {
 
   protected void readParameters() throws Exception {
     
-    nxyzStart[0] = binarydoc.readShort();
-    nxyzStart[1] = binarydoc.readShort();
-    nxyzStart[2] = binarydoc.readShort();
+    short[] header = new short[19];
+    for (int i = 0; i < 19; i++)
+      header[i] = binarydoc.readShort();
+    if (header[18] != 100) {
+      binarydoc.setIsBigEndian(false);
+      for (int i = 0; i < 19; i++)
+        header[i] = BinaryDocument.swapBytes(header[i]);
+    }
+    
+    nxyzStart[0] = header[0];
+    nxyzStart[1] = header[1];
+    nxyzStart[2] = header[2];
 
-    nx = binarydoc.readShort(); // CCP4 "extent[0-2]"
-    ny = binarydoc.readShort();
-    nz = binarydoc.readShort();
+    nx = header[3]; // CCP4 "extent[0-2]"
+    ny = header[4];
+    nz = header[5];
 
-    na = binarydoc.readShort(); // CCP4 "grid[0-2]"
-    nb = binarydoc.readShort();
-    nc = binarydoc.readShort();
+    na = header[6]; // CCP4 "grid[0-2]"
+    nb = header[7];
+    nc = header[8];
 
-    a = binarydoc.readShort();
-    b = binarydoc.readShort();
-    c = binarydoc.readShort();
-    alpha = binarydoc.readShort();
-    beta = binarydoc.readShort();
-    gamma = binarydoc.readShort();
+    a = header[9];
+    b = header[10];
+    c = header[11];
+    alpha = header[12];
+    beta = header[13];
+    gamma = header[14];
+
+    float header16 = header[15]; // 100 * 255 / (dmax - dmin)
+    float header17 = header[16]; // -255dmin / (dmax - dmin)
+    float scalingFactor = header[17];
+    float header19 = header[18];
 
     maps = 3;
     mapr = 2;
@@ -140,10 +154,6 @@ class Dsn6BinaryReader extends MapFileReader {
     //
     // Just seens simpler to me. Bob Hanson 2/2010
     
-    float header16 = binarydoc.readShort(); // 100 * 255 / (dmax - dmin)
-    float header17 = binarydoc.readShort(); // -255dmin / (dmax - dmin)
-    float scalingFactor = binarydoc.readShort();
-    float header19 = binarydoc.readShort();
     dmin = (0 - header17) * header19 / header16;
     dmax = (255 - header17) * header19 / header16;
     drange = dmax - dmin;

@@ -41,11 +41,11 @@ class MrcBinaryReader extends MapFileReader {
    */
 
   
-  MrcBinaryReader(SurfaceGenerator sg, String fileName, String data, boolean isBigEndian) {
+  MrcBinaryReader(SurfaceGenerator sg, String fileName, String data) {
     super(sg, null);
     binarydoc = new BinaryDocument();
     if (data == null)
-      binarydoc.setStream(sg.getAtomDataServer().getBufferedInputStream(fileName), isBigEndian);
+      binarydoc.setStream(sg.getAtomDataServer().getBufferedInputStream(fileName), true);
     else 
       binarydoc.setStream(new DataInputStream(new ByteArrayInputStream(data.getBytes())));
     // data are HIGH on the inside and LOW on the outside
@@ -113,6 +113,14 @@ class MrcBinaryReader extends MapFileReader {
     nz = binarydoc.readInt();
 
     mode = binarydoc.readInt();
+
+    if (mode < 0 || mode > 6) {
+      binarydoc.setIsBigEndian(false);
+      nx = BinaryDocument.swapBytes(nx);
+      ny = BinaryDocument.swapBytes(ny);
+      nz = BinaryDocument.swapBytes(nz);
+      mode = BinaryDocument.swapBytes(mode);
+    }
 
     Logger.info("MRC header: mode: " + mode);
 

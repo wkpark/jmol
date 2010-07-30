@@ -1145,25 +1145,23 @@ public class SurfaceGenerator {
       return new XplorReader(this, br);
     if (fileType.equals("PltFormatted"))
       return new PltFormattedReader(this, br);
-    if (fileType.startsWith("MRC")) {
+    if (fileType.equals("MRC")) {
       try {
         br.close();
       } catch (IOException e) {
         // ignore
       }
       br = null;
-      return new MrcBinaryReader(this, params.fileName, data, fileType
-          .charAt(3) == 'B');
+      return new MrcBinaryReader(this, params.fileName, data);
     }
-    if (fileType.startsWith("DSN6")) {
+    if (fileType.equals("DSN6")) {
       try {
         br.close();
       } catch (IOException e) {
         // ignore
       }
       br = null;
-      return new Dsn6BinaryReader(this, params.fileName, data, fileType
-          .charAt(4) == 'B');
+      return new Dsn6BinaryReader(this, params.fileName, data);
     }
     if (fileType.equals("Efvet"))
       return new EfvetReader(this, br);

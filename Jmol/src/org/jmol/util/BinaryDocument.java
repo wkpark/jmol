@@ -78,6 +78,10 @@ public class BinaryDocument {
     this.isBigEndian = isBigEndian;
   }
   
+  public void setIsBigEndian(boolean TF) {
+    this.isBigEndian = TF;
+  }
+  
   public void setStream(DataInputStream stream) {
     this.stream = stream;
   }
@@ -172,6 +176,19 @@ public class BinaryDocument {
     os.write((byte) (i & 0xFF));
   }
 
+  public static int swapBytes(int n) {
+    return (((n >> 24) & 0xff)
+        | ((n >> 16) & 0xff) << 8
+        | ((n >> 8) & 0xff) << 16 
+        | (n & 0xff) << 24);
+  }
+
+  public static short swapBytes(short n) {
+    return (short) ((((n >> 8) & 0xff)
+        | (n & 0xff) << 8));
+  }
+
+  
   public int readUnsignedShort() throws Exception {
     nBytes += 2;
     int a = (((int) ioReadByte()) & 0xff);
@@ -275,6 +292,7 @@ public class BinaryDocument {
   public void setOutputStream(OutputStream os) {
     this.os = os;
   }
+
 
 /*  random access -- application only:
  * 

@@ -15623,7 +15623,7 @@ public class ScriptEvaluator {
           filename = info[0];
           String strCutoff = (!firstPass || !Float.isNaN(cutoff) ? null
               : info[1]);
-          if (strCutoff != null) {
+          if (strCutoff != null && !isSyntaxCheck) {
             cutoff = ScriptVariable.fValue(ScriptVariable.getVariable(viewer
                 .evaluateExpression(strCutoff)));
             if (cutoff > 0) {

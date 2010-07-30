@@ -505,12 +505,12 @@ public class Draw extends MeshCollection {
       // make just ONE copy 
       // arrows and curves simply can't be handled as
       // multiple frames yet
-      thisMesh.isFixed = (lineData == null);
       thisMesh.modelIndex = (lineData == null ? viewer.getCurrentModelIndex() : indicatedModelIndex);
-      if (thisMesh.modelIndex < 0)
-        thisMesh.modelIndex = 0;
+      thisMesh.isFixed = (isFixed || lineData == null && thisMesh.modelIndex < 0 && modelCount > 1);
       if (isFixed && modelCount > 1)
         thisMesh.modelIndex = -1;
+      else if (lineData == null && thisMesh.modelIndex < 0)
+        thisMesh.modelIndex = 0;
       thisMesh.ptCenters = null;
       thisMesh.modelFlags = null;
       thisMesh.drawTypes = null;

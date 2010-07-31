@@ -1081,7 +1081,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   public Vector getShapeDetail() {
     Vector V = new Vector();
     for (int i = 0; i < meshCount; i++) {
-      Hashtable info = new Hashtable();
+      Hashtable<String, Object> info = new Hashtable<String, Object>();
       IsosurfaceMesh mesh = isomeshes[i];
       if (mesh == null || mesh.vertices == null)
         continue;

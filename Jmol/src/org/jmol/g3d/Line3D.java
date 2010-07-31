@@ -93,13 +93,13 @@ final class Line3D {
     //if (--test > 0 || ((100-test) % 100 == 0)) System.out.println(test+" "+dx + " " + dy + " " + lineBits);
   }
   
-  Hashtable lineCache = new Hashtable();
+  Hashtable<Float, BitSet> lineCache = new Hashtable<Float, BitSet>();
   Float slopeKey;
   boolean getCachedLine() {
     slopeKey = new Float(slope);
     if (!lineCache.containsKey(slopeKey))
       return false;
-    lineBits = (BitSet) lineCache.get(slopeKey);
+    lineBits = lineCache.get(slopeKey);
     nFound++;
     if (nFound == 1000000)
       if (Logger.debugging) {

@@ -120,9 +120,10 @@ public class MdTopReader extends ForceFieldReader {
   }
 
   private String getDataBlock() throws Exception {
-    StringBuffer sb = new StringBuffer();
-    while (readLine() != null && line.indexOf("%FLAG") != 0)
+    StringBuilder sb = new StringBuilder();
+    while ((readLine() != null) && (line.indexOf("%FLAG") != 0)) {
       sb.append(line);
+    }
     return sb.toString();
   }
 

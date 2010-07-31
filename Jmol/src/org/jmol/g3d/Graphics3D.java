@@ -2082,8 +2082,7 @@ final public class Graphics3D implements JmolRendererInterface {
         return 0;
       }
     }
-    Integer boxedArgb = (Integer) mapJavaScriptColors.get(strColor
-        .toLowerCase());
+    Integer boxedArgb = mapJavaScriptColors.get(strColor.toLowerCase());
     return (boxedArgb == null ? 0 : boxedArgb.intValue());
   }
   
@@ -2823,7 +2822,7 @@ final public class Graphics3D implements JmolRendererInterface {
     0xFFF6F675, // yellowtint
   };
 
-  private static final Hashtable mapJavaScriptColors = new Hashtable();
+  private static final Hashtable<String, Integer> mapJavaScriptColors = new Hashtable<String, Integer>();
   static {
     for (int i = colorNames.length; --i >= 0; )
       mapJavaScriptColors.put(colorNames[i], Integer.valueOf(colorArgbs[i]));

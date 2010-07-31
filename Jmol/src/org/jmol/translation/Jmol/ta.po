@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-07-23 18:24+0200\n"
-"PO-Revision-Date: 2010-05-23 07:03+0000\n"
+"PO-Revision-Date: 2010-07-31 01:55+0000\n"
 "Last-Translator: Ramesh <rame20002007@yahoo.com>\n"
 "Language-Team: Tamil <ta@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-05-24 21:32+0000\n"
+"X-Launchpad-Export-Date: 2010-07-31 07:28+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -101,7 +101,7 @@ msgstr ""
 #: org/openscience/jmol/app/JmolApp.java:201
 #, java-format
 msgid "window width x height, e.g. {0}"
-msgstr ""
+msgstr "சாளரம் அகலம் x உயரம், எ+கா. {0}"
 
 #: org/openscience/jmol/app/JmolApp.java:211
 msgid ""
@@ -352,7 +352,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:248
 msgid "Route"
-msgstr ""
+msgstr "பாதை"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:254
 msgid "Method: "
@@ -578,7 +578,7 @@ msgstr "கந்தகம்"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:92
 msgid "Amino"
-msgstr ""
+msgstr "அமினோ"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:93
 msgid "Nucleic"
@@ -590,11 +590,11 @@ msgstr "நீர்"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:95
 msgid "Hetero"
-msgstr ""
+msgstr "பல்லின"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:96
 msgid "&Display"
-msgstr ""
+msgstr "&காட்சி"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:97
 msgid "&Atom"
@@ -635,7 +635,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:112
 msgid "&Name"
-msgstr ""
+msgstr "&பெயர்"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:113
 msgid "&Number"
@@ -673,7 +673,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:127
 msgid "&Zoom"
-msgstr ""
+msgstr "&பெரியதாக்கு"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:128
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:129
@@ -682,7 +682,7 @@ msgstr ""
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:132
 #, java-format
 msgid "{0}%"
-msgstr ""
+msgstr "{0}%"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:133
 msgid "&Perspective Depth"
@@ -711,7 +711,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:139
 msgid "&View"
-msgstr ""
+msgstr "&பார்வை"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:140
 msgid "&Front"
@@ -719,7 +719,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:141
 msgid "&Top"
-msgstr ""
+msgstr "&மேலே"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:142
 msgid "&Bottom"
@@ -727,11 +727,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:143
 msgid "&Right"
-msgstr ""
+msgstr "&வலது"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:144
 msgid "&Left"
-msgstr ""
+msgstr "&இடது"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:145
 msgid "Tr&ansform..."
@@ -743,7 +743,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:147
 msgid "&Tools"
-msgstr ""
+msgstr "&கருவிகள்"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:148
 msgid "&Gaussian..."
@@ -863,7 +863,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:178
 msgid "&Help"
-msgstr ""
+msgstr "&உதவி"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:180
 msgid "User Guide"
@@ -888,7 +888,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:185
 msgid "Axes"
-msgstr ""
+msgstr "அச்சுகள்"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:186
 msgid "Bounding Box"
@@ -913,7 +913,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:195
 msgid "Rotate molecule."
-msgstr ""
+msgstr "மூலக்கூற்றை சுழற்று"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:197
 msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
@@ -933,7 +933,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/HelpDialog.java:64
 msgid "Jmol Help"
-msgstr ""
+msgstr "Jmol உதவி"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:123
 msgid "Initializing 3D display..."
@@ -1564,18 +1564,16 @@ msgid "Next Frame"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:174
-#, fuzzy
 msgid "Pause"
-msgstr "&ஒட்டு"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:176
 msgid "Last Frame"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:178
-#, fuzzy
 msgid "Mode:"
-msgstr "முறை: "
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:179
 msgid "Loop"
@@ -1604,7 +1602,3 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/Widgets.java:227
 msgid "unimplemented"
 msgstr ""
-
-#, fuzzy
-#~ msgid "Stop"
-#~ msgstr "படி"

@@ -170,10 +170,10 @@ public class Elements {
    */
   public final static short elementNumberFromSymbol(String elementSymbol, boolean isSilent) {
     if (Elements.htElementMap == null) {
-      Hashtable map = new Hashtable();
+      Hashtable<String, Integer> map = new Hashtable<String, Integer>();
       for (int elementNumber = elementNumberMax; --elementNumber >= 0;) {
         String symbol = elementSymbols[elementNumber];
-        Integer boxed = new Integer(elementNumber);
+        Integer boxed = Integer.valueOf(elementNumber);
         map.put(symbol, boxed);
         if (symbol.length() == 2)
           map.put(symbol.toUpperCase(), boxed);
@@ -189,14 +189,14 @@ public class Elements {
     }
     if (elementSymbol == null)
       return 0;
-    Integer boxedAtomicNumber = (Integer) Elements.htElementMap.get(elementSymbol);
+    Integer boxedAtomicNumber = Elements.htElementMap.get(elementSymbol);
     if (boxedAtomicNumber != null)
       return (short) boxedAtomicNumber.intValue();
     if (!isSilent)
       Logger.error("'" + elementSymbol + "' is not a recognized symbol");
     return 0;
   }
-  public static Hashtable htElementMap;
+  public static Hashtable<String, Integer> htElementMap;
   /**
    * @param elementNumber may be atomicNumber + isotopeNumber*128
    * @return elementSymbol

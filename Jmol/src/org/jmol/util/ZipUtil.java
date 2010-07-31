@@ -25,14 +25,16 @@
 
 package org.jmol.util;
 
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -95,7 +97,7 @@ public class ZipUtil {
    */
   public static void getAllData(InputStream is, String[] subfileList,
                                 String name0, String binaryFileList,
-                                Hashtable fileData) {
+                                Hashtable<String, String> fileData) {
     ZipInputStream zis = getStream(is);
     ZipEntry ze;
     StringBuffer listing = new StringBuffer();
@@ -174,7 +176,7 @@ public class ZipUtil {
         }
         String str = ret.toString();
         if (asInputStream)
-          return (InputStream) new ByteArrayInputStream(str.getBytes());
+          return new ByteArrayInputStream(str.getBytes());
         return str;
       }
       boolean asBinaryString = false;
@@ -258,7 +260,7 @@ public class ZipUtil {
   }
   
   private static String[] getZipDirectoryOrErrorAndClose(InputStream is, boolean addManifest) throws IOException {
-    Vector v = new Vector();
+    List<String> v = new ArrayList<String>();
     ZipInputStream zis = new ZipInputStream(is);
     ZipEntry ze;
     String manifest = null;
@@ -267,7 +269,7 @@ public class ZipUtil {
       if (addManifest && isJmolManifest(fileName))
         manifest = getZipEntryAsString(zis);
       else if (!fileName.startsWith("__MACOS")) // resource fork not nec.
-        v.addElement(fileName);
+        v.add(fileName);
     }
     zis.close();
     if (addManifest)
@@ -275,7 +277,7 @@ public class ZipUtil {
     int len = v.size();
     String[] dirList = new String[len];
     for (int i = 0; i < len; i++)
-      dirList[i] = (String) v.elementAt(i);
+      dirList[i] = v.get(i);
     return dirList;
   }
   

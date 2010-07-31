@@ -1,6 +1,8 @@
 package org.jmol.util;
 
+import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.List;
 import java.util.Vector;
 
 import javax.vecmath.Point3f;
@@ -81,7 +83,7 @@ public class MeshSurface {
     if (vertexCount == 0)
       vertexValues = new float[SEED_COUNT];
     else if (vertexCount >= vertexValues.length)
-      vertexValues = (float[]) ArrayUtil.doubleLength(vertexValues);
+      vertexValues = ArrayUtil.doubleLength(vertexValues);
     vertexValues[vertexCount] = value;
     return addVertexCopy(vertex);
   }
@@ -119,7 +121,7 @@ public class MeshSurface {
     if (polygonColixes == null) {
       polygonColixes = new short[SEED_COUNT];
     } else if (index == polygonColixes.length) {
-      polygonColixes = (short[]) ArrayUtil.doubleLength(polygonColixes);
+      polygonColixes = ArrayUtil.doubleLength(polygonColixes);
     }
     polygonColixes[index] = colix;
   }
@@ -148,7 +150,7 @@ public class MeshSurface {
     if (slabbingObject instanceof Point3f[]) {
       Point4f[] faces = BoxInfo.getFacesFromCriticalPoints((Point3f[]) slabbingObject);
       for (int i = 0; i < faces.length; i++)
-        getIntersection((Point4f) faces[i], null, andCap);
+        getIntersection(faces[i], null, andCap);
       return; 
     }
   }
@@ -158,7 +160,7 @@ public class MeshSurface {
     Point3f[] pts;
     int iD, iE;
 
-    Vector iPts = (andCap ? new Vector() : null);
+    List<int[]> iPts = (andCap ? new ArrayList<int[]>() : null);
     for (int i = polygonIndexes.length; --i >= 0;) {
       if (!setABC(i))
         continue;
@@ -255,14 +257,14 @@ public class MeshSurface {
     if (andCap && iPts.size() > 0) {
       Point3f center = new Point3f();
       for (int i = iPts.size(); --i >= 0;) {
-        int[] ipts = (int[]) iPts.get(i);
+        int[] ipts = iPts.get(i);
         center.add(vertices[ipts[0]]);
         center.add(vertices[ipts[1]]);
       }
       center.scale(0.5f / iPts.size());
       int v0 = addVertexCopy(center);
       for (int i = iPts.size(); --i >= 0;) {
-        int[] ipts = (int[]) iPts.get(i);
+        int[] ipts = iPts.get(i);
         iD = addVertexCopy(vertices[ipts[0]], vertexValues[ipts[0]]);
         iE = addVertexCopy(vertices[ipts[1]], vertexValues[ipts[1]]);
         addTriangleCheck(iD, v0, iE, 0, 0, 0);

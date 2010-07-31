@@ -42,7 +42,7 @@ public class SurfaceFileTyper {
     BufferedReader br;
     try {
       br = new BufferedReader(new InputStreamReader(
-          new BufferedInputStream((InputStream) is, 8192), "ISO-8859-1"));
+          new BufferedInputStream(is, 8192), "ISO-8859-1"));
     } catch (UnsupportedEncodingException e) {
       return null;
     }

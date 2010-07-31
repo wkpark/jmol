@@ -185,14 +185,13 @@ public class Resolver {
     StringBuffer data = new StringBuffer();
     data.append("Zip File Directory: ").append("\n").append(
         Escape.escape(zipDirectory, true)).append("\n");
-    Hashtable fileData = new Hashtable();
+    Hashtable<String, String> fileData = new Hashtable<String, String>();
     ZipUtil.getAllData(is, new String[] {}, "",
         "Molecule", fileData);
     String prefix = "|";
-    String outputData = (String) fileData.get(prefix + "output");
+    String outputData = fileData.get(prefix + "output");
     if (outputData == null)
-      outputData = (String) fileData.get((prefix = "|" + zipDirectory[1])
-          + "output");
+      outputData = fileData.get((prefix = "|" + zipDirectory[1]) + "output");
     data.append(outputData);
     String[] files = getSpartanFileList(prefix, getSpartanDirs(outputData));
     for (int i = 2; i < files.length; i++) {

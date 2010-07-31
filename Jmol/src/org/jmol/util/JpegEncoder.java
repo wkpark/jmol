@@ -164,7 +164,7 @@ public class JpegEncoder extends Frame
         for (comp = 0; comp < JpegObj.NumberOfComponents; comp++) {
           //Width = JpegObj.BlockWidth[comp];
           //Height = JpegObj.BlockHeight[comp];
-          inputArray = (float[][]) JpegObj.Components[comp];
+          inputArray = JpegObj.Components[comp];
           int VsampF = JpegObj.VsampFactor[comp];
           int HsampF = JpegObj.HsampFactor[comp];
           int QNumber = JpegObj.QtableNumber[comp];

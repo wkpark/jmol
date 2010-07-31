@@ -473,19 +473,17 @@ public class FileManager {
         return info;
       if (info[2] != null) {
         String header = info[1];
-        Hashtable fileData = new Hashtable();
+        Hashtable<String, String> fileData = new Hashtable<String, String>();
         if (info.length == 3) {
           // we need information from the output file, info[2]
           String name0 = getObjectAsSections(info[2], header, fileData);
           fileData.put("OUTPUT", name0);
-          info = viewer.getModelAdapter().specialLoad(name,
-              (String) fileData.get(name0));
+          info = viewer.getModelAdapter().specialLoad(name, fileData.get(name0));
           if (info.length == 3) {
             // might have a second option
             name0 = getObjectAsSections(info[2], header, fileData);
             fileData.put("OUTPUT", name0);
-            info = viewer.getModelAdapter().specialLoad(info[1],
-                (String) fileData.get(name0));
+            info = viewer.getModelAdapter().specialLoad(info[1], fileData.get(name0));
           }
         }
         // load each file individually, but return files IN ORDER
@@ -495,7 +493,7 @@ public class FileManager {
           name = info[i];
           name = getObjectAsSections(name, header, fileData);
           Logger.info("reading " + name);
-          String s = (String) fileData.get(name);
+          String s = fileData.get(name);
           sb.append(s);
         }
         return getBufferedReaderForString(sb.toString());
@@ -558,7 +556,7 @@ public class FileManager {
    * @return name of entry
    */
   private String getObjectAsSections(String name, String header,
-                                     Hashtable fileData) {
+                                     Hashtable<String, String> fileData) {
     if (name == null)
       return null;
     String[] subFileList = null;

@@ -24,9 +24,11 @@
 
 package org.jmol.script;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
 
 import org.jmol.util.ArrayUtil;
@@ -1348,7 +1350,7 @@ public class Token {
       map = Token.tokenMap;
     else
       asCommand = false;
-    Vector v = new Vector();
+    List<String> v = new ArrayList<String>();
     Enumeration e = map.keys();
     String name;
     str = str.toLowerCase();

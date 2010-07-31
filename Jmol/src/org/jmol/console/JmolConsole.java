@@ -23,6 +23,7 @@
  */
 package org.jmol.console;
 
+
 import org.jmol.api.*;
 import org.jmol.i18n.GT;
 import org.jmol.script.ScriptCompiler;
@@ -36,7 +37,8 @@ import java.awt.Component;
 import java.awt.event.*;
 import java.io.File;
 import java.io.FilenameFilter;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.*;
 
@@ -150,7 +152,7 @@ public abstract class JmolConsole extends JDialog implements ActionListener, Win
 
   protected class FileChecker implements FilenameFilter {
     private String stub;
-    private Vector v = new Vector();
+    private List<String> v = new ArrayList<String>();
     
     protected FileChecker(String stub) {
       this.stub = stub.toLowerCase();

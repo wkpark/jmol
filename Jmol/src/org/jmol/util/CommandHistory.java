@@ -23,7 +23,9 @@
  */
 package org.jmol.util;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Implements a queue for a bash-like command history.
  */
@@ -38,7 +40,7 @@ final public class CommandHistory {
   /**
    * Array of commands.
    */
-  private Vector commandList = null;
+  private List<String> commandList = null;
   private int maxSize = DEFAULT_MAX_SIZE;
 
   /**
@@ -84,9 +86,9 @@ final public class CommandHistory {
    */
   public void reset(int maxSize) {
     this.maxSize = maxSize; 
-    commandList = new Vector();
+    commandList = new ArrayList<String>();
     nextCommand = 0;
-    commandList.addElement("");
+    commandList.add("");
     cursorPos = 0;
   }
 
@@ -101,7 +103,7 @@ final public class CommandHistory {
     if (maxSize < 2)
       maxSize = 2;
     while (nextCommand > maxSize) {
-      commandList.removeElementAt(0);
+      commandList.remove(0);
       nextCommand--;
     }
     if (nextCommand > maxSize)
@@ -146,7 +148,7 @@ final public class CommandHistory {
    * @return the String value of a command.
    */
   private String getCommand() {
-    return (String)commandList.get(cursorPos);
+    return commandList.get(cursorPos);
   }
 
   /**
@@ -220,8 +222,8 @@ final public class CommandHistory {
   public String removeCommand(int n) {
     if (n < 0 || n >= nextCommand)
       return "";
-    String str = (String) commandList.get(n);
-    commandList.removeElementAt(n);
+    String str = commandList.get(n);
+    commandList.remove(n);
     nextCommand--;
     return str; 
   }
@@ -237,13 +239,13 @@ final public class CommandHistory {
     if (command.endsWith(NOHISTORYLINE_FLAG))
       return;
     if (nextCommand >= maxSize) {
-      commandList.removeElementAt(0);
+      commandList.remove(0);
       nextCommand = maxSize - 1;
     }
-    commandList.insertElementAt(command, nextCommand);
+    commandList.add(nextCommand, command);
     nextCommand++;
     cursorPos = nextCommand;
-    commandList.insertElementAt("", nextCommand);
+    commandList.add(nextCommand, "");
     //for (int i = 0; i < nextCommand; i++)
     //System.out.println("HISTORY:" + i+" "+commandList.get(i));
   }

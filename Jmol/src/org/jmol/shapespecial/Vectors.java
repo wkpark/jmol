@@ -47,7 +47,7 @@ public void setProperty(String propertyName, Object value, BitSet bsSelected) {
  @Override
 public Object getProperty(String propertyName, int param) {
    if (propertyName == "mad")
-     return new Integer(mads == null || param < 0 || mads.length <= param ? 0 : mads[param]);
+     return Integer.valueOf(mads == null || param < 0 || mads.length <= param ? 0 : mads[param]);
    return super.getProperty(propertyName, param);
  }
 

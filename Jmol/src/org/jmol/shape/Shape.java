@@ -136,7 +136,7 @@ public abstract class Shape {
   protected Vector xmlProperties;
   
   public void setShapeSize(int size, RadiusData rd, BitSet bsSelected) {
-    setXmlProperty("size", (rd == null ? new Integer(size) : (Object) rd),
+    setXmlProperty("size", (rd == null ? Integer.valueOf(size) : (Object) rd),
           bsSelected);
     if (rd == null)
       setSize(size, bsSelected);

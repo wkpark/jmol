@@ -1000,7 +1000,7 @@ public class SmilesParser {
 
     // Ring management
 
-    Integer r = new Integer(ringNum);
+    Integer r = Integer.valueOf(ringNum);
     SmilesBond bond0 = ringBonds.get(r);
     if (bond0 == null) {
       ringBonds.put(r, bond);

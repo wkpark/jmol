@@ -327,7 +327,7 @@ protected boolean checkLine() throws Exception {
       for (int j = chain.length() - 1; --j >= 0;)
         if (chain.charAt(j) == ':')
           nAtoms += chainAtomCounts[chain.charAt(j + 1)];
-      biomolecule.put("atomCount", new Integer(nAtoms * nTransforms));
+      biomolecule.put("atomCount", Integer.valueOf(nAtoms * nTransforms));
     }
   }
 
@@ -395,7 +395,7 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
           biomts = new Vector();
           iMolecule = parseInt(line.substring(line.indexOf(":") + 1));
           title = line.trim();
-          info.put("molecule", new Integer(iMolecule));
+          info.put("molecule", Integer.valueOf(iMolecule));
           info.put("title", title);
           info.put("chains", "");
           info.put("biomts", biomts);
@@ -1001,7 +1001,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     if (htSite == null) {
       htSite = new Hashtable();
       //htSite.put("seqNum", "site_" + seqNum);
-      htSite.put("nResidues", new Integer(nResidues));
+      htSite.put("nResidues", Integer.valueOf(nResidues));
       htSite.put("groups", "");
       htSites.put(siteID, htSite);
     }

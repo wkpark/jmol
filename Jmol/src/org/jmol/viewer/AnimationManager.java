@@ -189,14 +189,14 @@ class AnimationManager {
 
   Hashtable getAnimationInfo(){
     Hashtable info = new Hashtable();
-    info.put("firstModelIndex", new Integer(firstModelIndex));
-    info.put("lastModelIndex", new Integer(lastModelIndex));
-    info.put("animationDirection", new Integer(animationDirection));
-    info.put("currentDirection", new Integer(currentDirection));
-    info.put("displayModelIndex", new Integer(currentModelIndex));
+    info.put("firstModelIndex", Integer.valueOf(firstModelIndex));
+    info.put("lastModelIndex", Integer.valueOf(lastModelIndex));
+    info.put("animationDirection", Integer.valueOf(animationDirection));
+    info.put("currentDirection", Integer.valueOf(currentDirection));
+    info.put("displayModelIndex", Integer.valueOf(currentModelIndex));
     info.put("displayModelNumber", viewer.getModelNumberDotted(currentModelIndex));
     info.put("displayModelName", (currentModelIndex >=0 ? viewer.getModelName(currentModelIndex) : ""));
-    info.put("animationFps", new Integer(animationFps));
+    info.put("animationFps", Integer.valueOf(animationFps));
     info.put("animationReplayMode", getAnimationModeName());
     info.put("firstFrameDelay", new Float(firstFrameDelay));
     info.put("lastFrameDelay", new Float(lastFrameDelay));

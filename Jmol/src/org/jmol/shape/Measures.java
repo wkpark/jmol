@@ -292,7 +292,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
     if ("pending".equals(property))
       return measurementPending;
     if ("count".equals(property))
-      return new Integer(measurementCount);
+      return Integer.valueOf(measurementCount);
     if ("countPlusIndices".equals(property))
       return (index < measurementCount ? 
           ((Measurement) measurements.get(index)).getCountPlusIndices() : null);
@@ -414,7 +414,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
     for (int i = 1; i <= nPoints; i++) {
       int atomIndex = m.getAtomIndex(i);
       points.addElement(atomIndex >= 0 ? (Object) viewer.getAtomBits(
-          Token.atomno, new Integer(atoms[atomIndex].getAtomNumber()))
+          Token.atomno, Integer.valueOf(atoms[atomIndex].getAtomNumber()))
           : (Object) m.getAtom(i));
     }
     MeasurementData md = new MeasurementData(points, 
@@ -527,11 +527,11 @@ public class Measures extends Shape implements JmolMeasurementClient {
     Measurement m = (Measurement) measurements.get(index);
     int count = m.getCount();
     Hashtable info = new Hashtable();
-    info.put("index", new Integer(index));
+    info.put("index", Integer.valueOf(index));
     info.put("type", (count == 2 ? "distance" : count == 3 ? "angle"
         : "dihedral"));
     info.put("strMeasurement", m.getString());
-    info.put("count", new Integer(count));
+    info.put("count", Integer.valueOf(count));
     info.put("value", new Float(m.getValue()));
     TickInfo tickInfo = m.getTickInfo();
     if (tickInfo != null) {
@@ -547,9 +547,9 @@ public class Measures extends Shape implements JmolMeasurementClient {
     for (int i = 1; i <= count; i++) {
       Hashtable atomInfo = new Hashtable();
       int atomIndex = m.getAtomIndex(i);
-      atomInfo.put("_ipt", new Integer(atomIndex));
+      atomInfo.put("_ipt", Integer.valueOf(atomIndex));
       atomInfo.put("coord", Escape.escape(m.getAtom(i)));
-      atomInfo.put("atomno", new Integer(atomIndex < 0 ? -1 : atoms[atomIndex].getAtomNumber()));
+      atomInfo.put("atomno", Integer.valueOf(atomIndex < 0 ? -1 : atoms[atomIndex].getAtomNumber()));
       atomInfo.put("info", (atomIndex < 0 ? "<point>" : atoms[atomIndex].getInfo()));
       atomsInfo.addElement(atomInfo);
     }

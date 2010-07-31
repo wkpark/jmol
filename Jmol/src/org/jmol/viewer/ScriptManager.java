@@ -79,7 +79,7 @@ class ScriptManager {
     scriptItem.addElement(returnType);
     scriptItem.addElement(isScriptFile ? Boolean.TRUE : Boolean.FALSE);
     scriptItem.addElement(isQuiet ? Boolean.TRUE : Boolean.FALSE);
-    scriptItem.addElement(new Integer(useCommandThread ? -1 : 1));
+    scriptItem.addElement(Integer.valueOf(useCommandThread ? -1 : 1));
     scriptQueue.addElement(scriptItem);
     //if (Logger.debugging)
     //  Logger.info("ScriptManager queue size=" + scriptQueue.size() + " scripts; added: " 
@@ -288,7 +288,7 @@ class ScriptManager {
             if (scriptQueue.size() > 0) {
               Vector scriptItem = getScriptItem(true, true);
               if (scriptItem != null) {
-                scriptItem.setElementAt(new Integer(0), 5);
+                scriptItem.setElementAt(Integer.valueOf(0), 5);
                 startScriptQueue(true);
               }
             }

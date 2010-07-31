@@ -985,7 +985,7 @@ class PointGroup {
         n = nUnique[i];
         String label = axes[i][0].getLabel();
         if (info != null)
-          info.put("n" + label, new Integer(nAxes[i]));
+          info.put("n" + label, Integer.valueOf(nAxes[i]));
         sb.append("\n\n" + name + "\tn" + label + "\t" + nAxes[i] + "\t" + n);
         n *= nAxes[i];
         nTotal += n;

@@ -231,7 +231,7 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
     }
 
     if ("hidden" == propertyName) {
-      value = new Integer(((Boolean)value).booleanValue() ? Token.off: Token.on);
+      value = Integer.valueOf(((Boolean)value).booleanValue() ? Token.off: Token.on);
       propertyName = "token";
       //continue
     }
@@ -441,7 +441,7 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
       for (int i = 0; i < meshCount; i++)
         if ((m = meshes[i]) != null && m.vertexCount > 0)
           n++;
-      return new Integer(n);
+      return Integer.valueOf(n);
     }
     if (property == "ID")
       return (currentMesh == null ? null : currentMesh.thisID);

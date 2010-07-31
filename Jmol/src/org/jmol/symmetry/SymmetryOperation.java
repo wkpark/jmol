@@ -1147,7 +1147,7 @@ class SymmetryOperation extends Matrix4f {
     }
     return new Object[] { xyz, xyzOriginal, info1, cmds, approx0(ftrans),
         approx0(trans), approx0(ipt), approx0(pa1), approx0(ax1),
-        new Integer(ang1), m2, vtrans };
+        Integer.valueOf(ang1), m2, vtrans };
   }
 
   private static void drawLine(StringBuffer s, String id, float diameter, Point3f pt0, Point3f pt1,

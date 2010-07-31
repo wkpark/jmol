@@ -552,7 +552,7 @@ public class ScriptEvaluator {
     Vector V = new Vector();
     BitSet bs = getAtomBitSet(e, atomExpression);
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
-      V.addElement(new Integer(i));
+      V.addElement(Integer.valueOf(i));
     return V;
   }
 
@@ -960,7 +960,7 @@ public class ScriptEvaluator {
     case Token.off:
       return Boolean.valueOf(result.intValue == 1);
     case Token.integer:
-      return new Integer(result.intValue);
+      return Integer.valueOf(result.intValue);
     case Token.bitset:
     case Token.decimal:
     case Token.string:
@@ -1360,7 +1360,7 @@ public class ScriptEvaluator {
               ivMinMax = iv;
             break;
           case Token.all:
-            vout.add(new Integer(iv));
+            vout.add(Integer.valueOf(iv));
             break;
           case Token.sum2:
           case Token.stddev:
@@ -1502,17 +1502,17 @@ public class ScriptEvaluator {
       switch (minmaxtype) {
       case Token.min:
       case Token.max:
-        return new Integer(ivMinMax);
+        return Integer.valueOf(ivMinMax);
       case Token.sum2:
       case Token.stddev:
         break;
       case Token.average:
         if (sum / n == (int) (sum / n))
-          return new Integer((int) (sum / n));
+          return Integer.valueOf((int) (sum / n));
       case Token.sum:
       default:
         if (sum == (int) sum)
-          return new Integer((int) sum);
+          return Integer.valueOf((int) sum);
       }
     }
     switch (minmaxtype) {
@@ -1590,8 +1590,7 @@ public class ScriptEvaluator {
         return;
       }
       setShapeProperty(JmolConstants.SHAPE_BALLS, "color",
-          tokenValue.tok == Token.string ? tokenValue.value : new Integer(
-              iValue), bs);
+          tokenValue.tok == Token.string ? tokenValue.value : Integer.valueOf(iValue), bs);
       return;
     case Token.label:
     case Token.format:
@@ -1786,8 +1785,7 @@ public class ScriptEvaluator {
   private Object getNumericParameter(String var) {
     if (var.equalsIgnoreCase("_modelNumber")) {
       int modelIndex = viewer.getCurrentModelIndex();
-      return new Integer(modelIndex < 0 ? 0 : viewer
-          .getModelFileNumber(modelIndex));
+      return Integer.valueOf(modelIndex < 0 ? 0 : viewer.getModelFileNumber(modelIndex));
     }
     ScriptVariable v = getContextVariableAsVariable(var);
     if (v == null) {
@@ -3293,7 +3291,7 @@ public class ScriptEvaluator {
           // from select */n
           iModel = ((Integer) value).intValue();
           if (!viewer.haveFileSet()) {
-            rpn.addX(getAtomBits(Token.spec_model, new Integer(iModel)));
+            rpn.addX(getAtomBits(Token.spec_model, Integer.valueOf(iModel)));
             break;
           }
           if (iModel < 1000)
@@ -6245,7 +6243,7 @@ public class ScriptEvaluator {
       }
     }
     setShapeProperty(JmolConstants.SHAPE_STICKS, "bondOrder",
-        new Integer(order));
+        Integer.valueOf(order));
   }
 
   private void console() throws ScriptException {
@@ -6925,7 +6923,7 @@ public class ScriptEvaluator {
         setShapeSize(JmolConstants.SHAPE_STICKS, (int) (radius * 2000), null);
       if (color != Integer.MIN_VALUE)
         setShapeProperty(JmolConstants.SHAPE_STICKS, "color",
-            new Integer(color), bsBonds);
+            Integer.valueOf(color), bsBonds);
       if (translucency != null) {
         if (translucentLevel == Float.MAX_VALUE)
           translucentLevel = viewer.getDefaultTranslucent();
@@ -6937,7 +6935,7 @@ public class ScriptEvaluator {
     }
     if (!(tQuiet || scriptLevel > scriptReportingLevel))
       scriptStatusOrBuffer(GT._("{0} new bonds; {1} modified", new Object[] {
-          new Integer(nNew), new Integer(nModified) }));
+          Integer.valueOf(nNew), Integer.valueOf(nModified) }));
   }
 
   private float getTranslucentLevel(int i) throws ScriptException {
@@ -7153,7 +7151,7 @@ public class ScriptEvaluator {
         setShapeProperty(
             JmolConstants.SHAPE_HALOS,
             (tok == Token.selectionhalos ? "argbSelection" : "argbHighlight"),
-            new Integer(argb));
+            Integer.valueOf(argb));
         return;
       case Token.axes:
       case Token.boundbox:
@@ -7270,7 +7268,7 @@ public class ScriptEvaluator {
       tok = getToken(index).tok;
       if (isColorParam(index)) {
         int argb = getArgbParam(index, false);
-        colorvalue = (argb == 0 ? null : new Integer(argb));
+        colorvalue = (argb == 0 ? null : Integer.valueOf(argb));
         if (translucency == null && tokAt(index = iToken + 1) != Token.nada) {
           getToken(index);
           isTranslucent = (theTok == Token.translucent);
@@ -7418,7 +7416,7 @@ public class ScriptEvaluator {
         bs = null;
       }
       shapeType = JmolConstants.SHAPE_STICKS;
-      setShapeProperty(shapeType, "type", new Integer(typeMask));
+      setShapeProperty(shapeType, "type", Integer.valueOf(typeMask));
     }
     if (isColor) {
       // ok, the following five options require precalculation.
@@ -7453,7 +7451,7 @@ public class ScriptEvaluator {
       setShapeTranslucency(shapeType, prefix, translucency, translucentLevel,
           bs);
     if (typeMask != 0)
-      setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
+      setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer.valueOf(
           JmolEdge.BOND_COVALENT_MASK));
   }
 
@@ -7462,13 +7460,13 @@ public class ScriptEvaluator {
 
     if (typeMask != 0) {
       setShapeProperty(shapeType = JmolConstants.SHAPE_STICKS, "type",
-          new Integer(typeMask));
+          Integer.valueOf(typeMask));
     }
-    setShapeProperty(shapeType, "color", new Integer(argb), bs);
+    setShapeProperty(shapeType, "color", Integer.valueOf(argb), bs);
     if (translucency != null)
       setShapeTranslucency(shapeType, "", translucency, translucentLevel, bs);
     if (typeMask != 0)
-      setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
+      setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer.valueOf(
           JmolEdge.BOND_COVALENT_MASK));
   }
 
@@ -7925,7 +7923,7 @@ public class ScriptEvaluator {
           // loading just some data here
           // xyz vxyz vibration temperature occupancy partialcharge
           htParams.put("atomDataOnly", Boolean.TRUE);
-          htParams.put("modelNumber", new Integer(1));
+          htParams.put("modelNumber", Integer.valueOf(1));
           if (tokType == Token.vibration)
             tokType = Token.vibxyz;
           tempFileInfo = viewer.getFileInfo();
@@ -8022,9 +8020,9 @@ public class ScriptEvaluator {
         int n = intParameter(i);
         sOptions += " " + n;
         if (n < 0)
-          htParams.put("vibrationNumber", new Integer(-n));
+          htParams.put("vibrationNumber", Integer.valueOf(-n));
         else
-          htParams.put("modelNumber", new Integer(n));
+          htParams.put("modelNumber", Integer.valueOf(n));
         tok = tokAt(++i);
       }
       Point3f lattice = null;
@@ -8107,7 +8105,7 @@ public class ScriptEvaluator {
         if (fparams != null && iGroup == Integer.MIN_VALUE)
           iGroup = -1;
         if (iGroup != Integer.MIN_VALUE)
-          htParams.put("spaceGroupIndex", new Integer(iGroup));
+          htParams.put("spaceGroupIndex", Integer.valueOf(iGroup));
       }
       if (tokAt(i) == Token.filter)
         filter = stringParameter(++i);
@@ -8944,11 +8942,9 @@ public class ScriptEvaluator {
     setShapeSize(JmolConstants.SHAPE_STICKS, 0, null);
     // wireframe will not operate on STRUTS even though they are
     // a form of bond order (see BondIteratoSelected)
-    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
-        JmolEdge.BOND_STRUT));
+    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer.valueOf(JmolEdge.BOND_STRUT));
     setShapeSize(JmolConstants.SHAPE_STICKS, 0, null);
-    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
-        JmolEdge.BOND_COVALENT_MASK));
+    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer.valueOf(JmolEdge.BOND_COVALENT_MASK));
     // also need to turn off backbones, ribbons, strands, cartoons
     for (int shapeType = JmolConstants.SHAPE_MAX_SIZE_ZERO_ON_RESTRICT; --shapeType >= 0;)
       if (shapeType != JmolConstants.SHAPE_MEASURES)
@@ -9362,8 +9358,8 @@ public class ScriptEvaluator {
   }
 
   private Point3f getObjectCenter(String axisID, int index, int modelIndex) {
-    Object[] data = new Object[] { axisID, new Integer(index),
-        new Integer(modelIndex) };
+    Object[] data = new Object[] { axisID, Integer.valueOf(index),
+        Integer.valueOf(modelIndex) };
     return (getShapeProperty(JmolConstants.SHAPE_DRAW, "getCenter", data)
         || getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "getCenter", data) ? (Point3f) data[2]
         : null);
@@ -9376,7 +9372,7 @@ public class ScriptEvaluator {
   }
 
   private Vector3f getDrawObjectAxis(String axisID, int index) {
-    Object[] data = new Object[] { axisID, new Integer(index), null };
+    Object[] data = new Object[] { axisID, Integer.valueOf(index), null };
     return (getShapeProperty(JmolConstants.SHAPE_DRAW, "getSpinAxis", data) ? (Vector3f) data[2]
         : null);
   }
@@ -10192,7 +10188,7 @@ public class ScriptEvaluator {
           }
           if (isColorParam(i)) {
             setShapeProperty(JmolConstants.SHAPE_ELLIPSOIDS, "color",
-                new Integer(getArgbParam(i)));
+                Integer.valueOf(getArgbParam(i)));
             i = iToken;
           }
           if (value == null)
@@ -10207,7 +10203,7 @@ public class ScriptEvaluator {
           checkLength(3);
           break;
         case Token.modelindex:
-          value = new Integer(intParameter(++i));
+          value = Integer.valueOf(intParameter(++i));
           break;
         case Token.on:
           value = Boolean.TRUE;
@@ -10429,8 +10425,7 @@ public class ScriptEvaluator {
       mad = getMadParameter();
     if (isSyntaxCheck)
       return;
-    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
-        JmolEdge.BOND_COVALENT_MASK));
+    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer.valueOf(JmolEdge.BOND_COVALENT_MASK));
     setShapeSize(
         JmolConstants.SHAPE_STICKS,
         mad == Integer.MIN_VALUE ? 2 * JmolConstants.DEFAULT_BOND_MILLIANGSTROM_RADIUS
@@ -10439,11 +10434,9 @@ public class ScriptEvaluator {
 
   private void ssbond() throws ScriptException {
     int mad = getMadParameter();
-    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
-        JmolEdge.BOND_SULFUR_MASK));
+    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer.valueOf(JmolEdge.BOND_SULFUR_MASK));
     setShapeSize(JmolConstants.SHAPE_STICKS, mad, null);
-    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
-        JmolEdge.BOND_COVALENT_MASK));
+    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer.valueOf(JmolEdge.BOND_COVALENT_MASK));
   }
 
   private void struts() throws ScriptException {
@@ -10451,11 +10444,9 @@ public class ScriptEvaluator {
     int mad = getMadParameter();
     if (defOn)
       mad = (int) (viewer.getStrutDefaultRadius() * 2000f);
-    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
-        JmolEdge.BOND_STRUT));
+    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer.valueOf(JmolEdge.BOND_STRUT));
     setShapeSize(JmolConstants.SHAPE_STICKS, mad, null);
-    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
-        JmolEdge.BOND_COVALENT_MASK));
+    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer.valueOf(JmolEdge.BOND_COVALENT_MASK));
   }
 
   private void hbond(boolean isCommand) throws ScriptException {
@@ -10473,10 +10464,10 @@ public class ScriptEvaluator {
       return;
     }
     int mad = getMadParameter();
-    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
+    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer.valueOf(
         JmolEdge.BOND_HYDROGEN_MASK));
     setShapeSize(JmolConstants.SHAPE_STICKS, mad, null);
-    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
+    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer.valueOf(
         JmolEdge.BOND_COVALENT_MASK));
   }
 
@@ -10499,7 +10490,7 @@ public class ScriptEvaluator {
     if (isSyntaxCheck)
       return;
     boolean addHbonds = viewer.hasCalculatedHBonds(bsAtoms);
-    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
+    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer.valueOf(
         JmolEdge.BOND_HYDROGEN_MASK));
     setShapeSize(JmolConstants.SHAPE_STICKS, 0, bsAtoms);
     if (addHbonds)
@@ -10619,7 +10610,7 @@ public class ScriptEvaluator {
         float v = floatParameter(++i);
         if (theTok == Token.integer) {
           propertyName = "offsetPercent";
-          propertyValue = new Integer((int) v);
+          propertyValue = Integer.valueOf((int) v);
         } else {
           propertyName = "offset";
           propertyValue = new Float(v);
@@ -10917,10 +10908,10 @@ public class ScriptEvaluator {
       int dotsParam = intParameter(ipt);
       if (tokAt(ipt + 1) == Token.radius) {
         ipt++;
-        setShapeProperty(iShape, "atom", new Integer(dotsParam));
+        setShapeProperty(iShape, "atom", Integer.valueOf(dotsParam));
         setShapeProperty(iShape, "radius", new Float(floatParameter(++ipt)));
         if (tokAt(++ipt) == Token.color) {
-          setShapeProperty(iShape, "colorRGB", new Integer(getArgbParam(++ipt)));
+          setShapeProperty(iShape, "colorRGB", Integer.valueOf(getArgbParam(++ipt)));
           ipt++;
         }
         if (getToken(ipt).tok != Token.bitset)
@@ -11869,7 +11860,7 @@ public class ScriptEvaluator {
       if (modelIndex >= viewer.getModelCount())
         error(ERROR_invalidArgument);
       propertyName = "model";
-      propertyValue = new Integer(modelIndex);
+      propertyValue = Integer.valueOf(modelIndex);
       len = 4;
       break;
     case Token.image:
@@ -11879,7 +11870,7 @@ public class ScriptEvaluator {
     case Token.depth:
       // set echo depth zzz
       propertyName = "%zpos";
-      propertyValue = new Integer((int) floatParameter(3));
+      propertyValue = Integer.valueOf((int) floatParameter(3));
       len = 4;
       break;
     case Token.string:
@@ -11926,7 +11917,7 @@ public class ScriptEvaluator {
         if (modelIndex >= viewer.getModelCount())
           error(ERROR_invalidArgument);
         propertyName = "model";
-        propertyValue = new Integer(modelIndex);
+        propertyValue = Integer.valueOf(modelIndex);
         break;
       case Token.left:
       case Token.right:
@@ -11960,7 +11951,7 @@ public class ScriptEvaluator {
         if (!isSyntaxCheck && modelIndex >= viewer.getModelCount())
           error(ERROR_invalidArgument);
         propertyName = "model";
-        propertyValue = new Integer(modelIndex);
+        propertyValue = Integer.valueOf(modelIndex);
         break;
       case Token.image:
         // set echo name image "xxx"
@@ -11968,7 +11959,7 @@ public class ScriptEvaluator {
         return;
       case Token.depth:
         propertyName = "%zpos";
-        propertyValue = new Integer((int) floatParameter(4));
+        propertyValue = Integer.valueOf((int) floatParameter(4));
         break;
       }
       if (propertyValue != null) {
@@ -11990,7 +11981,7 @@ public class ScriptEvaluator {
     String type = "xypos";
     if ((propertyValue = xypParameter(i)) == null) {
       int pos = intParameter(i++);
-      propertyValue = new Integer(pos);
+      propertyValue = Integer.valueOf(pos);
       if (tokAt(i) == Token.percent) {
         type = "%xpos";
         i++;
@@ -11999,7 +11990,7 @@ public class ScriptEvaluator {
       }
       setShapeProperty(JmolConstants.SHAPE_ECHO, type, propertyValue);
       pos = intParameter(i++);
-      propertyValue = new Integer(pos);
+      propertyValue = Integer.valueOf(pos);
       if (tokAt(i) == Token.percent) {
         type = "%ypos";
         i++;
@@ -12028,7 +12019,7 @@ public class ScriptEvaluator {
       if (str.equals("offset") || str.equals("offsetexact")) {
         int xOffset = intParameter(2, -127, 127);
         int yOffset = intParameter(3, -127, 127);
-        propertyValue = new Integer(Object2d.getOffset(xOffset, yOffset));
+        propertyValue = Integer.valueOf(Object2d.getOffset(xOffset, yOffset));
         break;
       }
       if (str.equals("alignment")) {
@@ -12058,7 +12049,7 @@ public class ScriptEvaluator {
         default:
           error(ERROR_invalidArgument);
         }
-        propertyValue = new Integer(flags);
+        propertyValue = Integer.valueOf(flags);
         break;
       }
       if (str.equals("toggle")) {
@@ -12330,7 +12321,7 @@ public class ScriptEvaluator {
     Vector v = new Vector();
     for (int i = 2; i < statementLength; i++) {
       int argb = getArgbParam(i);
-      v.addElement(new Integer(argb));
+      v.addElement(Integer.valueOf(argb));
       i = iToken;
     }
     if (isSyntaxCheck)
@@ -13661,7 +13652,7 @@ public class ScriptEvaluator {
       error(ERROR_moModelError);
     Integer n = (Integer) getShapeProperty(JmolConstants.SHAPE_MO, "moNumber");
     if (n == null || ((Integer) n).intValue() == 0) {
-      setShapeProperty(JmolConstants.SHAPE_MO, "init", new Integer(modelIndex));
+      setShapeProperty(JmolConstants.SHAPE_MO, "init", Integer.valueOf(modelIndex));
       setShapeProperty(JmolConstants.SHAPE_MO, "moData", moData);
     } else if (ptMO == Integer.MAX_VALUE) {
     }
@@ -13914,12 +13905,12 @@ public class ScriptEvaluator {
         break;
       case Token.modelindex:
         propertyName = "modelIndex";
-        propertyValue = new Integer(intParameter(++i));
+        propertyValue = Integer.valueOf(intParameter(++i));
         break;
       case Token.integer:
         if (isSavedState) {
           propertyName = "modelIndex";
-          propertyValue = new Integer(intParameter(i));
+          propertyValue = Integer.valueOf(intParameter(i));
         } else {
           intScale = intParameter(i);
         }
@@ -14056,8 +14047,7 @@ public class ScriptEvaluator {
       }
       idSeen = (theTok != Token.delete);
       if (havePoints && !isInitialized && !isFrame) {
-        setShapeProperty(JmolConstants.SHAPE_DRAW, "points", new Integer(
-            intScale));
+        setShapeProperty(JmolConstants.SHAPE_DRAW, "points", Integer.valueOf(intScale));
         isInitialized = true;
         intScale = 0;
       }
@@ -14071,12 +14061,12 @@ public class ScriptEvaluator {
     }
     if (colorArgb != Integer.MIN_VALUE)
       setShapeProperty(JmolConstants.SHAPE_DRAW, "color",
-          new Integer(colorArgb));
+          Integer.valueOf(colorArgb));
     if (isTranslucent)
       setShapeTranslucency(JmolConstants.SHAPE_DRAW, "", "translucent",
           translucentLevel, null);
     if (intScale != 0) {
-      setShapeProperty(JmolConstants.SHAPE_DRAW, "scale", new Integer(intScale));
+      setShapeProperty(JmolConstants.SHAPE_DRAW, "scale", Integer.valueOf(intScale));
     }
     if (iptDisplayProperty > 0) {
       if (!setMeshDisplayProperty(JmolConstants.SHAPE_DRAW, iptDisplayProperty,
@@ -14146,7 +14136,7 @@ public class ScriptEvaluator {
         if (theTok == Token.integer) {
           if (decimalPropertyName == "radius_") {
             propertyName = "nVertices";
-            propertyValue = new Integer(intParameter(i));
+            propertyValue = Integer.valueOf(intParameter(i));
             needsGenerating = true;
             break;
           }
@@ -14248,8 +14238,7 @@ public class ScriptEvaluator {
     if (needsGenerating)
       setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "generate", null);
     if (color != Integer.MIN_VALUE)
-      setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "colorThis", new Integer(
-          color));
+      setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "colorThis", Integer.valueOf(color));
     if (isTranslucent)
       setShapeTranslucency(JmolConstants.SHAPE_POLYHEDRA, "", "translucent",
           translucentLevel, null);
@@ -14497,7 +14486,7 @@ public class ScriptEvaluator {
       loadShape(JmolConstants.SHAPE_MO);
       if (tokAt(i) == Token.list && listIsosurface(JmolConstants.SHAPE_MO))
         return true;
-      setShapeProperty(JmolConstants.SHAPE_MO, "init", new Integer(iModel));
+      setShapeProperty(JmolConstants.SHAPE_MO, "init", Integer.valueOf(iModel));
       String title = null;
       int moNumber = ((Integer) getShapeProperty(JmolConstants.SHAPE_MO,
           "moNumber")).intValue();
@@ -14620,7 +14609,7 @@ public class ScriptEvaluator {
     for (int i = 0; i < nAllowed; i++) {
       if (isColorParam(iToken + 1)) {
         int color = getArgbParam(++iToken);
-        setShapeProperty(iShape, "colorRGB", new Integer(color));
+        setShapeProperty(iShape, "colorRGB", Integer.valueOf(color));
         if (sb != null)
           sb.append(" ").append(Escape.escapeColor(color));
       } else if (iToken < index) {
@@ -14697,13 +14686,13 @@ public class ScriptEvaluator {
       if (moNumber < 1 || moNumber > nOrb)
         error(ERROR_moIndex, "" + nOrb);
     }
-    moData.put("lastMoNumber", new Integer(moNumber));
+    moData.put("lastMoNumber", Integer.valueOf(moNumber));
     addShapeProperty(propertyList, "moData", moData);
     if (title != null)
       addShapeProperty(propertyList, "title", title);
     if (firstMoNumber < 0)
       addShapeProperty(propertyList, "charges", viewer.getAtomicCharges());
-    addShapeProperty(propertyList, "molecularOrbital", new Integer(
+    addShapeProperty(propertyList, "molecularOrbital", Integer.valueOf(
         firstMoNumber < 0 ? -moNumber : moNumber));
     addShapeProperty(propertyList, "clear", null);
   }
@@ -14925,7 +14914,7 @@ public class ScriptEvaluator {
           break;
         }
         propertyName = "modelIndex";
-        propertyValue = new Integer(modelIndex);
+        propertyValue = Integer.valueOf(modelIndex);
         break;
       case Token.select:
         bsSelect = atomExpression(++i);
@@ -14985,7 +14974,7 @@ public class ScriptEvaluator {
             sbCommand.append(" mesh");
             color = getArgbParam(++i);
             i = iToken;
-            addShapeProperty(propertyList, "colorMesh", new Integer(color));
+            addShapeProperty(propertyList, "colorMesh", Integer.valueOf(color));
             sbCommand.append(" ").append(Escape.escapeColor(color));
           }
           if ((theTok = tokAt(i + 1)) == Token.translucent
@@ -15016,14 +15005,14 @@ public class ScriptEvaluator {
         }
         if (isColorParam(i + 1)) {
           color = getArgbParam(++i);
-          addShapeProperty(propertyList, "colorRGB", new Integer(color));
+          addShapeProperty(propertyList, "colorRGB", Integer.valueOf(color));
           sbCommand.append(" ").append(Escape.escapeColor(color));
           i = iToken;
           idSeen = true;
           if (isColorParam(i + 1)) {
             color = getArgbParam(++i);
             i = iToken;
-            addShapeProperty(propertyList, "colorRGB", new Integer(color));
+            addShapeProperty(propertyList, "colorRGB", Integer.valueOf(color));
             sbCommand.append(" ").append(Escape.escapeColor(color));
           } else if (isSign) {
             error(ERROR_invalidParameterOrder);
@@ -15138,7 +15127,7 @@ public class ScriptEvaluator {
             modelIndex = viewer.getAtomModelIndex(atomIndex);
             pt = viewer.getAtomPoint3f(atomIndex);
           }
-          addShapeProperty(propertyList, "modelIndex", new Integer(modelIndex));
+          addShapeProperty(propertyList, "modelIndex", Integer.valueOf(modelIndex));
           Vector3f[] axes = { new Vector3f(), new Vector3f(), new Vector3f(pt),
               new Vector3f() };
           if (!isSyntaxCheck)
@@ -15187,7 +15176,7 @@ public class ScriptEvaluator {
         if (tokAt(i + 1) == Token.integer) {
           calcType = intParameter(++i);
           sbCommand.append(" " + calcType);
-          addShapeProperty(propertyList, "mepCalcType", new Integer(calcType));
+          addShapeProperty(propertyList, "mepCalcType", Integer.valueOf(calcType));
         }
         if (tokAt(i + 1) == Token.string) {
           fname = stringParameter(++i);
@@ -15331,7 +15320,7 @@ public class ScriptEvaluator {
           sbCommand.append(" increment ").append(Escape.escape(pt));
           break;
         default:
-          propertyValue = new Integer(
+          propertyValue = Integer.valueOf(
               tokAt(i + 1) == Token.integer ? intParameter(++i) : 0);
           sbCommand.append(" ").append(propertyValue);
         }
@@ -15349,7 +15338,7 @@ public class ScriptEvaluator {
         break;
       case Token.downsample:
         propertyName = "downsample";
-        propertyValue = new Integer(intParameter(++i));
+        propertyValue = Integer.valueOf(intParameter(++i));
         sbCommand.append(" downsample ").append(propertyValue);
         break;
       case Token.eccentricity:
@@ -15545,12 +15534,12 @@ public class ScriptEvaluator {
         break;
       case Token.maxset:
         propertyName = "maxset";
-        propertyValue = new Integer(intParameter(++i));
+        propertyValue = Integer.valueOf(intParameter(++i));
         sbCommand.append(" maxSet ").append(propertyValue);
         break;
       case Token.minset:
         propertyName = "minset";
-        propertyValue = new Integer(intParameter(++i));
+        propertyValue = Integer.valueOf(intParameter(++i));
         sbCommand.append(" minSet ").append(propertyValue);
         break;
       case Token.radical:
@@ -15699,7 +15688,7 @@ public class ScriptEvaluator {
         surfaceObjectSeen = true;
         int fileIndex = -1;
         if (tokAt(i + 1) == Token.integer)
-          addShapeProperty(propertyList, "fileIndex", new Integer(
+          addShapeProperty(propertyList, "fileIndex", Integer.valueOf(
               fileIndex = intParameter(++i)));
         if (filename.equalsIgnoreCase("INLINE")) {
           // inline PMESH data
@@ -15804,7 +15793,7 @@ public class ScriptEvaluator {
       surfaceObjectSeen = true;
     }
     if (thisSetNumber > 0)
-      addShapeProperty(propertyList, "getSurfaceSets", new Integer(
+      addShapeProperty(propertyList, "getSurfaceSets", Integer.valueOf(
           thisSetNumber - 1));
     if (discreteColixes != null)
       addShapeProperty(propertyList, "colorDiscrete", discreteColixes);
@@ -15817,9 +15806,9 @@ public class ScriptEvaluator {
     setShapeProperty(iShape, "setProperties", propertyList);
 
     if (defaultMesh) {
-      setShapeProperty(iShape, "token", new Integer(Token.mesh));
-      setShapeProperty(iShape, "token", new Integer(Token.nofill));
-      setShapeProperty(iShape, "token", new Integer(Token.frontonly));
+      setShapeProperty(iShape, "token", Integer.valueOf(Token.mesh));
+      setShapeProperty(iShape, "token", Integer.valueOf(Token.nofill));
+      setShapeProperty(iShape, "token", Integer.valueOf(Token.frontonly));
       sbCommand.append(" mesh nofill frontOnly");
     }
     if (iptDisplayProperty > 0) {
@@ -15988,7 +15977,7 @@ public class ScriptEvaluator {
     case Token.frontonly:
     case Token.notfrontonly:
       propertyName = "token";
-      propertyValue = new Integer(tok);
+      propertyValue = Integer.valueOf(tok);
       break;
     }
     if (propertyName == null)

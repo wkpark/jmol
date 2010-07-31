@@ -191,7 +191,7 @@ public void initShape() {
       indicatedModelIndex = ((Integer) value).intValue();
       if (indicatedModelIndex < 0 || indicatedModelIndex >= modelCount)
         return;
-      vData.add(new Object[] { new Integer(PT_MODEL_INDEX),
+      vData.add(new Object[] { Integer.valueOf(PT_MODEL_INDEX),
           (modelInfo = new int[] { indicatedModelIndex, 0 }) });
       return;
     }
@@ -202,7 +202,7 @@ public void initShape() {
         return;
      if (isCircle || isArc)
         isPlane = true;
-      vData.add(new Object[] { new Integer(PT_COORD), new Point3f(Float.NaN, Float.NaN, Float.NaN) });
+      vData.add(new Object[] { Integer.valueOf(PT_COORD), new Point3f(Float.NaN, Float.NaN, Float.NaN) });
       return;
     }
 
@@ -316,7 +316,7 @@ public void initShape() {
       String thisID = (String) value;
       int meshIndex = getIndexFromName(thisID);
       if (meshIndex >= 0) {
-        vData.add(new Object[] { new Integer(PT_IDENTIFIER),
+        vData.add(new Object[] { Integer.valueOf(PT_IDENTIFIER),
             new int[] { meshIndex, isReversed ? 1 : 0, isVertices ? 1 : 0 } });
         isReversed = isVertices = false;
         nidentifiers++;
@@ -333,7 +333,7 @@ public void initShape() {
     }
 
     if ("coord" == propertyName) {
-      vData.add(new Object[] { new Integer(PT_COORD), value });
+      vData.add(new Object[] { Integer.valueOf(PT_COORD), value });
       if (indicatedModelIndex >= 0)
         modelInfo[1]++; // counts vertices
       return;
@@ -350,7 +350,7 @@ public void initShape() {
       if (BitSetUtil.cardinalityOf((BitSet) value) == 0)
         return;
       BitSet bsAtoms = (BitSet) value;
-      vData.add(new Object[] { new Integer(PT_BITSET), bsAtoms });
+      vData.add(new Object[] { Integer.valueOf(PT_BITSET), bsAtoms });
       nbitsets++;
       if (isCircle && diameter == 0 && width == 0)
         width = viewer.calcRotationRadius(bsAtoms) * 2.0f;
@@ -358,7 +358,7 @@ public void initShape() {
     }
 
     if ("modelBasedPoints" == propertyName) {
-      vData.add(new Object[] { new Integer(PT_MODEL_BASED_POINTS), value });
+      vData.add(new Object[] { Integer.valueOf(PT_MODEL_BASED_POINTS), value });
       return;
     }
     
@@ -448,7 +448,7 @@ public void initShape() {
     if (property == "command")
       return getDrawCommand(thisMesh);
     if (property == "type")
-      return new Integer(thisMesh == null ? JmolConstants.DRAW_NONE : thisMesh.drawType);
+      return Integer.valueOf(thisMesh == null ? JmolConstants.DRAW_NONE : thisMesh.drawType);
     return super.getProperty(property, index);
   }
 
@@ -1380,7 +1380,7 @@ public void initShape() {
       info.put("ID", (mesh.thisID == null ? "<noid>" : mesh.thisID));
       info.put("drawType", JmolConstants.getDrawTypeName(mesh.drawType));
       if (mesh.diameter > 0)
-        info.put("diameter", new Integer(mesh.diameter));
+        info.put("diameter", Integer.valueOf(mesh.diameter));
       if (mesh.width != 0)
         info.put("width", new Float(mesh.width));
       info.put("scale", new Float(mesh.scale));
@@ -1391,11 +1391,11 @@ public void initShape() {
           if (mesh.ptCenters[k] == null)
             continue;            
           Hashtable mInfo = new Hashtable();
-          mInfo.put("modelIndex", new Integer(k));
+          mInfo.put("modelIndex", Integer.valueOf(k));
           mInfo.put("command", getDrawCommand(mesh, k));
           mInfo.put("center", mesh.ptCenters[k]);
           int nPoints = mesh.drawVertexCounts[k];
-          mInfo.put("vertexCount", new Integer(nPoints));
+          mInfo.put("vertexCount", Integer.valueOf(nPoints));
           if (nPoints > 1)
             mInfo.put("axis", mesh.axes[k]);
           Vector v = new Vector();

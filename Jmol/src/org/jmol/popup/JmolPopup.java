@@ -524,8 +524,8 @@ public class JmolPopup extends SimplePopup {
               : "save orientation;load \"\" FILTER \"biomolecule " + (i + 1) + "\";restore orientation;");
           int nAtoms = ((Integer) ((Hashtable) biomolecules.elementAt(i)).get("atomCount")).intValue();
           String entryName = GT._(getMenuText(isMultiFrame ? "biomoleculeText"
-              : "loadBiomoleculeText"), new Object[] { new Integer(i + 1),
-              new Integer(nAtoms) });
+              : "loadBiomoleculeText"), new Object[] { Integer.valueOf(i + 1),
+              Integer.valueOf(nAtoms) });
           addMenuItem(submenu, entryName, script, null);
         }
       }
@@ -691,7 +691,7 @@ public class JmolPopup extends SimplePopup {
       String strMenu = id.substring(i, iNew);
       Object menu = htMenus.get(strMenu);
       frankList[nFrankList++] = new Object[] { getParent(menu), menu,
-          new Integer(getPosition(menu)) };
+          Integer.valueOf(getPosition(menu)) };
       addMenuSubMenu(frankPopup, menu);
       i = iNew + 1;
     }

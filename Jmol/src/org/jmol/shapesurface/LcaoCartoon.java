@@ -277,7 +277,7 @@ public class LcaoCartoon extends Isosurface {
     if (lcaoScale != null)
       super.setProperty("scale", lcaoScale, null);
     if (isCpk) {
-      super.setProperty("colorRGB", new Integer(viewer.getAtomArgb(iAtom)), null);
+      super.setProperty("colorRGB", Integer.valueOf(viewer.getAtomArgb(iAtom)), null);
     } else if (lcaoColorNeg != null) {
       super.setProperty("colorRGB", lcaoColorNeg, null);
       super.setProperty("colorRGB", lcaoColorPos, null);
@@ -287,7 +287,7 @@ public class LcaoCartoon extends Isosurface {
     if (cappingObject != null)
       super.setProperty("cap", cappingObject, null);
     super.setProperty("lcaoType", thisType, null);
-    super.setProperty("atomIndex", new Integer(iAtom), null);
+    super.setProperty("atomIndex", Integer.valueOf(iAtom), null);
     Vector3f[] axes = { new Vector3f(), new Vector3f(),
         new Vector3f(modelSet.atoms[iAtom]), new Vector3f() };
     if (rotationAxis != null)

@@ -255,7 +255,7 @@ FORMAT(12i6)  NATOM,  NTYPES, NBONH,  MBONA,  NTHETH, MTHETA,
       htParams.put("isPeriodic", Boolean.TRUE);
     }
     Logger.info("Total number of atoms read=" + atomCount);
-    htParams.put("templateAtomCount", new Integer(atomCount));
+    htParams.put("templateAtomCount", Integer.valueOf(atomCount));
     for (int i = 0; i < atomCount; i++) 
       atomSetCollection.addAtom(new Atom());
   }

@@ -121,8 +121,8 @@ public class IsosurfaceMesh extends Mesh {
           assocGridPointMap = new Hashtable();
           assocGridPointNormals = new Hashtable();
         }
-        Integer key = new Integer(assocVertex);
-        assocGridPointMap.put(new Integer(vPt), key);
+        Integer key = Integer.valueOf(assocVertex);
+        assocGridPointMap.put(Integer.valueOf(vPt), key);
         if (!assocGridPointNormals.containsKey(key))
           assocGridPointNormals.put(key, new Vector3f(0, 0, 0));
       }
@@ -322,7 +322,7 @@ public class IsosurfaceMesh extends Mesh {
   public static void setContourVector(Vector v, int nPolygons,
                                       BitSet bsContour, float value, short colix,
                                       int color, StringBuffer fData) {
-    v.add(JvxlCoder.CONTOUR_NPOLYGONS, new Integer(nPolygons));
+    v.add(JvxlCoder.CONTOUR_NPOLYGONS, Integer.valueOf(nPolygons));
     v.add(JvxlCoder.CONTOUR_BITSET, bsContour);
     v.add(JvxlCoder.CONTOUR_VALUE, new Float(value));
     v.add(JvxlCoder.CONTOUR_COLIX, new short[] { colix });

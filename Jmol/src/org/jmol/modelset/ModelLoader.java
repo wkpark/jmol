@@ -594,8 +594,8 @@ public final class ModelLoader extends ModelSet {
     // this won't do in the case of trajectories
     for (int i = 0; i < modelCount; i++) {
       setModelAuxiliaryInfo(i, "modelName", modelNames[i]);
-      setModelAuxiliaryInfo(i, "modelNumber", new Integer(modelNumbers[i] % 1000000));
-      setModelAuxiliaryInfo(i, "modelFileNumber", new Integer(modelFileNumbers[i]));
+      setModelAuxiliaryInfo(i, "modelNumber", Integer.valueOf(modelNumbers[i] % 1000000));
+      setModelAuxiliaryInfo(i, "modelFileNumber", Integer.valueOf(modelFileNumbers[i]));
       setModelAuxiliaryInfo(i, "modelNumberDotted", getModelNumberDotted(i));
     }
   }

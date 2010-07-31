@@ -180,7 +180,7 @@ public class Elements {
       }
       for (int i = Elements.altElementMax; --i >= JmolConstants.firstIsotope;) {
         String symbol = Elements.altElementSymbols[i];
-        Integer boxed = new Integer(Elements.altElementNumbers[i]);
+        Integer boxed = Integer.valueOf(Elements.altElementNumbers[i]);
         map.put(symbol, boxed);
         if (symbol.length() == 2)
           map.put(symbol.toUpperCase(), boxed);

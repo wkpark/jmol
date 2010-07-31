@@ -1023,7 +1023,7 @@ abstract class ScriptCompilationTokenParser {
       // can have open-ended range  
       // select 3-
     }
-    return new Token(Token.spec_seqcode, seqvalue, new Integer(seqcode));
+    return new Token(Token.spec_seqcode, seqvalue, Integer.valueOf(seqcode));
   }
 
   private boolean clauseChainSpec(int tok) {
@@ -1101,7 +1101,7 @@ abstract class ScriptCompilationTokenParser {
     }
     switch (tokPeek()) {
     case Token.integer:
-      return generateResidueSpecCode(new Token(Token.spec_model, new Integer(
+      return generateResidueSpecCode(new Token(Token.spec_model, Integer.valueOf(
           getToken().intValue)));
     case Token.decimal:
             return generateResidueSpecCode(new Token(Token.spec_model,
@@ -1109,7 +1109,7 @@ abstract class ScriptCompilationTokenParser {
     case Token.comma:
     case Token.rightbrace:
     case Token.nada:
-      return generateResidueSpecCode(new Token(Token.spec_model, new Integer(1)));
+      return generateResidueSpecCode(new Token(Token.spec_model, Integer.valueOf(1)));
     }
     return error(ERROR_invalidModelSpecification);
   }

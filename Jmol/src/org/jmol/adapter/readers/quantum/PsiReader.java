@@ -248,7 +248,7 @@ public class PsiReader extends MOReader {
     int n = 0;
     while (readLine() != null && line.length() > 0) {
       String[] tokens = getTokens(); // get the tokens in the line
-      uniqueAtomMap.put(tokens[0], new Integer(n++));
+      uniqueAtomMap.put(tokens[0], Integer.valueOf(n++));
     }
     int atomCount = atomNames.size();
     for (int i = 0; i < atomCount; i++) {

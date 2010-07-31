@@ -271,7 +271,7 @@ public class PovrayDialog extends JDialog {
     imageSizeWidth.setToolTipText(text);
     imageSizeXYBox.add(imageSizeWidth);
     imageSizeTextWidth = new JFormattedTextField();
-    imageSizeTextWidth.setValue(new Integer(outputWidth));
+    imageSizeTextWidth.setValue(Integer.valueOf(outputWidth));
     imageSizeTextWidth.addPropertyChangeListener("value",
       new PropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent e) {
@@ -288,7 +288,7 @@ public class PovrayDialog extends JDialog {
     imageSizeHeight.setToolTipText(text);
     imageSizeXYBox.add(imageSizeHeight);
     imageSizeTextHeight = new JFormattedTextField();
-    imageSizeTextHeight.setValue(new Integer(outputHeight));
+    imageSizeTextHeight.setValue(Integer.valueOf(outputHeight));
     imageSizeTextHeight.addPropertyChangeListener("value",
       new PropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent e) {
@@ -671,15 +671,15 @@ public class PovrayDialog extends JDialog {
   	        break;
   	      case 1: // Jmol
   	        height = (int)(((double) width) * outputHeight / outputWidth);
-  	        imageSizeTextHeight.setValue(new Integer(height));
+  	        imageSizeTextHeight.setValue(Integer.valueOf(height));
   	        break;
   	      case 2: // 4/3
   	        height = (int)(((double) width) * 3 / 4);
-  	        imageSizeTextHeight.setValue(new Integer(height));
+  	        imageSizeTextHeight.setValue(Integer.valueOf(height));
   	        break;
   	      case 3: // 16/9
   	        height = (int)(((double) width) * 9 / 16);
-  	        imageSizeTextHeight.setValue(new Integer(height));
+  	        imageSizeTextHeight.setValue(Integer.valueOf(height));
   	        break;
   	      }
   	    }

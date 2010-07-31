@@ -244,7 +244,7 @@ public class PropertyManager {
         if (pt < 0)
           pt += ilist.length;
         if (pt >= 0 && pt < ilist.length)
-          return new Integer(ilist[pt]);
+          return Integer.valueOf(ilist[pt]);
         return "";
       }
       if (property instanceof float[][]) {

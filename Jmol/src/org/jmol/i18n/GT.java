@@ -352,7 +352,7 @@ public class GT {
 
   public static String _(String string, int item) {
     return getTextWrapper().getString(string,
-        new Object[] { new Integer(item) });
+        new Object[] { Integer.valueOf(item) });
   }
 
   public static String _(String string, Object[] objects) {
@@ -370,7 +370,7 @@ public class GT {
   }
 
   public static String _(String string, int item, boolean t) {
-    return _(string, new Object[] { new Integer(item) });
+    return _(string, new Object[] { Integer.valueOf(item) });
   }
 
   public static synchronized String _(String string, Object[] objects, boolean t) {

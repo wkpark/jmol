@@ -287,7 +287,7 @@ public class ShapeManager {
   }
 
   public void refreshShapeTrajectories(int baseModel, BitSet bs) {
-    Integer Imodel = new Integer(baseModel);
+    Integer Imodel = Integer.valueOf(baseModel);
     for (int i = 0; i < JmolConstants.SHAPE_MAX; i++)
       if (shapes[i] != null)
         setShapeProperty(i, "refreshTrajectories", Imodel, bs);    
@@ -312,7 +312,7 @@ public class ShapeManager {
     if (shapes == null)
       return;
     loadShape(JmolConstants.SHAPE_LABELS);
-    shapes[JmolConstants.SHAPE_LABELS].setProperty("label:"+strLabel, new Integer(i), null);
+    shapes[JmolConstants.SHAPE_LABELS].setProperty("label:"+strLabel, Integer.valueOf(i), null);
   }
   
   public void findNearestShapeAtomIndex(int x, int y, Atom[] closest, BitSet bsNot) {

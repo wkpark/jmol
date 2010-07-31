@@ -159,7 +159,7 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
         } else {
           int n = slaters.size();
           ptSlater[pt++] = n;
-          htFuncMap.put(key, new Integer(n));
+          htFuncMap.put(key, Integer.valueOf(n));
           //System.out.println(code + " " + key);
           addSlater(createSlaterData(iAtom, atoms[iAtom].elementSymbol, code), n);
         }

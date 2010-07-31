@@ -353,7 +353,7 @@ public class ScriptVariable extends Token {
   }
 
   public Object getValAsObj() {
-    return (tok == integer ? new Integer(intValue) : value);
+    return (tok == integer ? Integer.valueOf(intValue) : value);
   }
 
   // math-related Token static methods
@@ -374,7 +374,7 @@ public class ScriptVariable extends Token {
     case off:
       return Boolean.FALSE;
     case integer:
-      return new Integer(x.intValue);
+      return Integer.valueOf(x.intValue);
     default:
       return x.value;
     }
@@ -401,7 +401,7 @@ public class ScriptVariable extends Token {
     default:
       iValue = 0;
     }
-    return new Integer(iValue);
+    return Integer.valueOf(iValue);
   }
 
   // there are reasons to use Token here rather than ScriptVariable

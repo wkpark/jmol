@@ -289,7 +289,7 @@ public class Jvxl {
       sg.setParameter("plane", plane);
     else {
       if (fileIndex != Integer.MAX_VALUE)
-        sg.setParameter("fileIndex", new Integer(fileIndex));
+        sg.setParameter("fileIndex", Integer.valueOf(fileIndex));
       Object t = FileReader
       .getBufferedReaderOrErrorMessageFromName(inputFile);
       if (t instanceof String) {

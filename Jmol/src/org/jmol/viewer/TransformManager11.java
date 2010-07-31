@@ -631,7 +631,7 @@ class TransformManager11 extends TransformManager {
     if (viewer.isRepaintPending())
       return;
     viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "navigate",
-        new Integer(dz == Integer.MAX_VALUE ? 2 * multiplier : dz));
+        Integer.valueOf(dz == Integer.MAX_VALUE ? 2 * multiplier : dz));
     viewer.requestRepaintAndWait();
   }
 

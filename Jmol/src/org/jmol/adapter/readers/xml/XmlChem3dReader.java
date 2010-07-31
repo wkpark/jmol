@@ -170,7 +170,7 @@ In Chem3D, all grid data in following format:
       Hashtable surfaceInfo = new Hashtable();
       surfaceInfo.put("surfaceDataType", "mo");
       surfaceInfo.put("defaultCutoff", new Float(0.01));
-      surfaceInfo.put("nCubeData", new Integer(nData));
+      surfaceInfo.put("nCubeData", Integer.valueOf(nData));
       surfaceInfo.put("volumeData", atomSetCollection.getVolumeData());
       atomSetCollection.setAtomSetAuxiliaryInfo("jmolSurfaceInfo", surfaceInfo);
       Logger.debug("Chem3D molecular orbital data displayable using:  isosurface sign \"\" ");

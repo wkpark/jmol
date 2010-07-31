@@ -919,11 +919,11 @@ public class Jmol implements WrappedApplet {
          */
         if (doCallback) {
           data = new Object[] { htmlName,
-              new Integer(Math.max(frameNo, -2 - frameNo)),
-              new Integer(fileNo), new Integer(modelNo),
-              new Integer(Math.abs(firstNo)), new Integer(Math.abs(lastNo)),
-              new Integer(isAnimationRunning ? 1 : 0),
-              new Integer(animationDirection), new Integer(currentDirection) };
+              Integer.valueOf(Math.max(frameNo, -2 - frameNo)),
+              Integer.valueOf(fileNo), Integer.valueOf(modelNo),
+              Integer.valueOf(Math.abs(firstNo)), Integer.valueOf(Math.abs(lastNo)),
+              Integer.valueOf(isAnimationRunning ? 1 : 0),
+              Integer.valueOf(animationDirection), Integer.valueOf(currentDirection) };
         }
         break;
       case JmolConstants.CALLBACK_ECHO:
@@ -1136,11 +1136,11 @@ public class Jmol implements WrappedApplet {
           for (int i = 0; i < nX; i++)
             for (int j = 0; j < nY; j++) {
               fxy[i][j] = ((Double) jsoWindow.call(functionName, new Object[] {
-                  htmlName, new Integer(i), new Integer(j) })).floatValue();
+                  htmlName, Integer.valueOf(i), Integer.valueOf(j) })).floatValue();
             }
         } else if (nY > 0) { // fill with parsed values from a string (pretty fast)
           String data = (String) jsoWindow.call(functionName, new Object[] {
-              htmlName, new Integer(nX), new Integer(nY) });
+              htmlName, Integer.valueOf(nX), Integer.valueOf(nY) });
           //System.out.println(data);
           nX = Math.abs(nX);
           float[] fdata = new float[nX * nY];
@@ -1152,7 +1152,7 @@ public class Jmol implements WrappedApplet {
           }
         } else { // fill float[][] directly using JavaScript
           jsoWindow.call(functionName, new Object[] { htmlName,
-              new Integer(nX), new Integer(nY), fxy });
+              Integer.valueOf(nX), Integer.valueOf(nY), fxy });
         }
       } catch (Exception e) {
         Logger.error("Exception " + e.getMessage() + " with nX, nY: " + nX
@@ -1171,7 +1171,7 @@ public class Jmol implements WrappedApplet {
       try {
         JSObject jsoWindow = JSObject.getWindow(appletWrapper);
        jsoWindow.call(functionName, new Object[] { htmlName,
-              new Integer(nX), new Integer(nY), new Integer(nZ), fxyz }); 
+              Integer.valueOf(nX), Integer.valueOf(nY), Integer.valueOf(nZ), fxyz }); 
       } catch (Exception e) {
         Logger.error("Exception " + e.getMessage() + " for " + functionName + " with nX, nY, nZ: " + nX
             + " " + nY + " " + nZ);

@@ -190,7 +190,7 @@ public class XmlUtil {
         sb = new StringBuffer("\n");
         if (atts == null)
           atts = new Vector();
-        atts.add(new Object[] { "count", new Integer(v.size()) });
+        atts.add(new Object[] { "count", Integer.valueOf(v.size()) });
         for (int i = 0; i < v.size(); i++)
           sb.append(
               escape(null, null, v.get(i), true, indent + "  "));

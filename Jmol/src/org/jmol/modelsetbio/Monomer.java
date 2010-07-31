@@ -289,15 +289,15 @@ public abstract class Monomer extends Group {
     int seqNum = getSeqNumber();
     char insCode = getInsertionCode();
     if (seqNum > 0)      
-      info.put("sequenceNumber",new Integer(seqNum));
+      info.put("sequenceNumber", Integer.valueOf(seqNum));
     if (insCode != 0)      
       info.put("insertionCode","" + insCode);
     info.put("atomInfo1", chain.getAtom(firstAtomIndex).getInfo());
     info.put("atomInfo2", chain.getAtom(lastAtomIndex).getInfo());
-    info.put("_apt1", new Integer(firstAtomIndex));
-    info.put("_apt2", new Integer(lastAtomIndex));
-    info.put("atomIndex1", new Integer(firstAtomIndex));
-    info.put("atomIndex2", new Integer(lastAtomIndex));
+    info.put("_apt1", Integer.valueOf(firstAtomIndex));
+    info.put("_apt2", Integer.valueOf(lastAtomIndex));
+    info.put("atomIndex1", Integer.valueOf(firstAtomIndex));
+    info.put("atomIndex2", Integer.valueOf(lastAtomIndex));
     float f = getGroupParameter(Token.phi);
     if (!Float.isNaN(f))
       info.put("phi", new Float(f));
@@ -312,10 +312,10 @@ public abstract class Monomer extends Group {
       info.put("theta", new Float(f));
     ProteinStructure structure = getProteinStructure();
     if(structure != null) {
-      info.put("structureId", new Integer(structure.uniqueID));
+      info.put("structureId", Integer.valueOf(structure.uniqueID));
       info.put("structureType", JmolConstants.getProteinStructureName(structure.type, false));
     }
-    info.put("shapeVisibilityFlags", new Integer(shapeVisibilityFlags));
+    info.put("shapeVisibilityFlags", Integer.valueOf(shapeVisibilityFlags));
     return info;
   }
   
@@ -425,7 +425,7 @@ public abstract class Monomer extends Group {
         haveCrossLink = true;
         if (group != null)
           break;
-        vReturn.add(new Integer(g.getLeadAtomIndex()));
+        vReturn.add(Integer.valueOf(g.getLeadAtomIndex()));
       }
     }
     return haveCrossLink;

@@ -42,7 +42,7 @@ public class TestIntInt2ObjHash extends junit.framework.TestCase {
   public void testOne() {
     IntInt2ObjHash h = new IntInt2ObjHash(10);
     for (int i = 0; i < 10; ++i)
-      h.put(i, i, new Integer(i));
+      h.put(i, i, Integer.valueOf(i));
     for (int i = 0; i < 10; ++i)
       assertEquals(((Integer)h.get(i, i)).intValue(), i);
   }
@@ -50,7 +50,7 @@ public class TestIntInt2ObjHash extends junit.framework.TestCase {
   public void test256() {
     IntInt2ObjHash h = new IntInt2ObjHash(256);
     for (int i = 0; i < 256; ++i)
-      h.put(i, i, new Integer(i));
+      h.put(i, i, Integer.valueOf(i));
     for (int i = 0; i < 256; ++i)
       assertEquals(((Integer)h.get(i, i)).intValue(), i);
   }
@@ -58,7 +58,7 @@ public class TestIntInt2ObjHash extends junit.framework.TestCase {
   public void test257() {
     IntInt2ObjHash h = new IntInt2ObjHash(256);
     for (int i = 0; i < 257; ++i)
-      h.put(i, i, new Integer(i));
+      h.put(i, i, Integer.valueOf(i));
     for (int i = 0; i < 257; ++i)
       assertEquals(((Integer)h.get(i, i)).intValue(), i);
   }
@@ -71,7 +71,7 @@ public class TestIntInt2ObjHash extends junit.framework.TestCase {
   void tryOne(int count) {
     IntInt2ObjHash h = new IntInt2ObjHash(4);
     for (int i = 0; i < count; ++i)
-      h.put(i, i, new Integer(i));
+      h.put(i, i, Integer.valueOf(i));
     //    dumpHash(h);
     for (int i = 0; i < count; ++i)
       assertEquals(((Integer)h.get(i, i)).intValue(), i);
@@ -94,7 +94,7 @@ public class TestIntInt2ObjHash extends junit.framework.TestCase {
   public void test1000() {
     IntInt2ObjHash h = new IntInt2ObjHash();
     for (int i = 0; i < 1000; ++i)
-      h.put(i, -i, new Integer(i));
+      h.put(i, -i, Integer.valueOf(i));
     for (int i = 0; i < 1000; ++i)
       assertEquals(((Integer)h.get(i, -i)).intValue(), i);
   }

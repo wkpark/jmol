@@ -4569,8 +4569,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           ._("Drag to move label"));
     }
     setShapeProperty(JmolConstants.SHAPE_HOVER, "text", null);
-    setShapeProperty(JmolConstants.SHAPE_HOVER, "target",
-        new Integer(atomIndex));
+    setShapeProperty(JmolConstants.SHAPE_HOVER, "target", Integer.valueOf(atomIndex));
     hoverText = null;
     hoverAtomIndex = atomIndex;
     refresh(3, "hover on atom");
@@ -5128,7 +5127,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     Object step = getParameter("_minimizationStep");
     statusManager.notifyMinimizationStatus(
         (String) getParameter("_minimizationStatus"),
-        step instanceof String ? new Integer(0) : (Integer) step,
+        step instanceof String ? Integer.valueOf(0) : (Integer) step,
         (Float) getParameter("_minimizationEnergy"),
         (Float) getParameter("_minimizationEnergyDiff"));
   }
@@ -9324,7 +9323,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   @Override
   public void deleteMeasurement(int i) {
-    setShapeProperty(JmolConstants.SHAPE_MEASURES, "delete", new Integer(i));
+    setShapeProperty(JmolConstants.SHAPE_MEASURES, "delete", Integer.valueOf(i));
   }
 
   boolean haveModelKit() {

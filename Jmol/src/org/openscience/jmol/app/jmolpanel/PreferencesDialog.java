@@ -397,7 +397,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     for (int i = 0; i <= 250; i += 50) {
       String label = "" + (1000 + i);
       label = "0." + label.substring(1);
-      bwSlider.getLabelTable().put(new Integer(i),
+      bwSlider.getLabelTable().put(Integer.valueOf(i),
                                    new JLabel(label, SwingConstants.CENTER));
       bwSlider.setLabelTable(bwSlider.getLabelTable());
     }

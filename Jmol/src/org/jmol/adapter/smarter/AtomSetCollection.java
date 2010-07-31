@@ -278,8 +278,8 @@ public class AtomSetCollection {
   
   void finish() {
     for (int i = 0; i < atomSetCount; i++) {
-      setAtomSetAuxiliaryInfo("initialAtomCount", new Integer(atomSetAtomCounts[i]), i);
-      setAtomSetAuxiliaryInfo("initialBondCount", new Integer(atomSetBondCounts[i]), i);
+      setAtomSetAuxiliaryInfo("initialAtomCount", Integer.valueOf(atomSetAtomCounts[i]), i);
+      setAtomSetAuxiliaryInfo("initialBondCount", Integer.valueOf(atomSetBondCounts[i]), i);
     }
     atoms = null;
     atomSetAtomCounts = new int[16];
@@ -816,9 +816,8 @@ public class AtomSetCollection {
     if (iCell * noSymmetryCount == atomCount - iAtomFirst)
       appendAtomProperties(iCell);
     setSymmetryOps();
-    setAtomSetAuxiliaryInfo("presymmetryAtomIndex", new Integer(iAtomFirst));
-    setAtomSetAuxiliaryInfo("presymmetryAtomCount",
-        new Integer(noSymmetryCount));
+    setAtomSetAuxiliaryInfo("presymmetryAtomIndex", Integer.valueOf(iAtomFirst));
+    setAtomSetAuxiliaryInfo("presymmetryAtomCount", Integer.valueOf(noSymmetryCount));
     setAtomSetAuxiliaryInfo("latticeDesignation", symmetry
         .getLatticeDesignation());
     setAtomSetAuxiliaryInfo("unitCellRange", unitCells);
@@ -839,7 +838,7 @@ public class AtomSetCollection {
         symmetryList[i] = "" + symmetry.getSpaceGroupXyz(i, doNormalize);
       setAtomSetAuxiliaryInfo("symmetryOperations", symmetryList);
     }
-    setAtomSetAuxiliaryInfo("symmetryCount", new Integer(operationCount));
+    setAtomSetAuxiliaryInfo("symmetryCount", Integer.valueOf(operationCount));
   }
 
   Point3f[] cartesians;
@@ -1049,10 +1048,9 @@ public class AtomSetCollection {
       System.out.println("biomt " + i + " " + atomCount);
     }
     int noSymmetryCount = atomMax - iAtomFirst;
-    setAtomSetAuxiliaryInfo("presymmetryAtomIndex", new Integer(iAtomFirst));
-    setAtomSetAuxiliaryInfo("presymmetryAtomCount",
-        new Integer(noSymmetryCount));
-    setAtomSetAuxiliaryInfo("biosymmetryCount", new Integer(len));
+    setAtomSetAuxiliaryInfo("presymmetryAtomIndex", Integer.valueOf(iAtomFirst));
+    setAtomSetAuxiliaryInfo("presymmetryAtomCount", Integer.valueOf(noSymmetryCount));
+    setAtomSetAuxiliaryInfo("biosymmetryCount", Integer.valueOf(len));
     if (symmetry != null) {
       symmetry.setFinalOperations(atoms, iAtomFirst, noSymmetryCount, doNormalize);
       setSymmetryOps();
@@ -1073,7 +1071,7 @@ public class AtomSetCollection {
       int index = atomCount - 1;
       String atomName = atoms[index].atomName;
       if (atomName != null)
-        atomSymbolicMap.put(atomName, new Integer(index));
+        atomSymbolicMap.put(atomName, Integer.valueOf(index));
     }
   }
 
@@ -1090,7 +1088,7 @@ public class AtomSetCollection {
     int index = atomCount - 1;
     int atomSerial = atoms[index].atomSerial;
     if (atomSerial != Integer.MIN_VALUE)
-      atomSymbolicMap.put(new Integer(atomSerial), new Integer(index));
+      atomSymbolicMap.put(Integer.valueOf(atomSerial), Integer.valueOf(index));
     haveMappedSerials = true;
   }
 
@@ -1100,13 +1098,13 @@ public class AtomSetCollection {
     for (int i = getLastAtomSetAtomCount(); i < atomCount; i++) {
       int atomSerial = atoms[i].atomSerial;
       if (atomSerial != Integer.MIN_VALUE)
-        atomSymbolicMap.put(new Integer(atomSerial), new Integer(i));
+        atomSymbolicMap.put(Integer.valueOf(atomSerial), Integer.valueOf(i));
     }
     haveMappedSerials = true;
   }
 
   void mapAtomName(String atomName, int atomIndex) {
-    atomSymbolicMap.put(atomName, new Integer(atomIndex));
+    atomSymbolicMap.put(atomName, Integer.valueOf(atomIndex));
   }
 
   public int getAtomNameIndex(String atomName) {
@@ -1120,7 +1118,7 @@ public class AtomSetCollection {
 
   public int getAtomSerialNumberIndex(int serialNumber) {
     int index = -1;
-    Object value = atomSymbolicMap.get(new Integer(serialNumber));
+    Object value = atomSymbolicMap.get(Integer.valueOf(serialNumber));
     if (value != null)
       index = ((Integer)value).intValue();
     return index;

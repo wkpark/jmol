@@ -140,7 +140,7 @@ public class CsfReader extends MopacSlaterReader {
     while (line != null) {
       tokens = getTokens();
       if (line.indexOf("property ") == 0)
-        propertyItemCounts.put(tokens[1], new Integer((tokens[6].equals("STRING") ? 1 : parseInt(tokens[5]))));
+        propertyItemCounts.put(tokens[1], Integer.valueOf((tokens[6].equals("STRING") ? 1 : parseInt(tokens[5]))));
       else if (line.indexOf("ID") == 0)
         break;
       readLine();

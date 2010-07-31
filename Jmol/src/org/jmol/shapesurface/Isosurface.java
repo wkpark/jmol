@@ -511,7 +511,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       IsosurfaceMesh mesh = (IsosurfaceMesh) getMesh((String) data[0]);
       if (mesh == null)
         return false;
-      data[3] = new Integer(mesh.modelIndex);
+      data[3] = Integer.valueOf(mesh.modelIndex);
       return mesh.getIntersection((Point4f) data[1], (Vector) data[2], false);
     }
     if (property == "getBoundingBox") {
@@ -552,7 +552,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
           jvxlData.valueMappedToRed,
           jvxlData.valueMappedToBlue });
     if (property == "moNumber")
-      return new Integer(moNumber);
+      return Integer.valueOf(moNumber);
     if (property == "area")
       return (thisMesh == null ? new Float(Float.NaN) : thisMesh.calculateArea());
     if (property == "volume")
@@ -968,8 +968,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       explicitContours = true;
     if (explicitContours && thisMesh.jvxlData.jvxlPlane != null)
       thisMesh.havePlanarContours = true;
-    setPropertySuper("token", new Integer(explicitContours ? Token.nofill : Token.fill), null);
-    setPropertySuper("token", new Integer(explicitContours ? Token.contourlines : Token.nocontourlines), null);
+    setPropertySuper("token", Integer.valueOf(explicitContours ? Token.nofill : Token.fill), null);
+    setPropertySuper("token", Integer.valueOf(explicitContours ? Token.contourlines : Token.nocontourlines), null);
     // may not be the final color scheme, though.
     setColorCommand(schemeName, true);
     /*
@@ -1086,7 +1086,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       if (mesh == null || mesh.vertices == null)
         continue;
       info.put("ID", (mesh.thisID == null ? "<noid>" : mesh.thisID));
-      info.put("vertexCount", new Integer(mesh.vertexCount));
+      info.put("vertexCount", Integer.valueOf(mesh.vertexCount));
       if (mesh.ptCenter.x != Float.MAX_VALUE)
         info.put("center", mesh.ptCenter);
       info.put("offset", (mesh.ptOffset == null ? new Point3f() : mesh.ptOffset));
@@ -1097,7 +1097,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       String s = JvxlCoder.jvxlGetInfo(mesh.jvxlData);
       if (s != null)
         info.put("jvxlInfo", s.replace('\n', ' '));
-      info.put("modelIndex", new Integer(mesh.modelIndex));
+      info.put("modelIndex", Integer.valueOf(mesh.modelIndex));
       if (mesh.title != null)
         info.put("title", mesh.title);
       if (mesh.jvxlData.contourValues != null || mesh.jvxlData.contourValuesUsed != null)

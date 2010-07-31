@@ -163,7 +163,7 @@ abstract public class ForceField {
       if (done || currentStep % 10 == 0 || stepMax <= currentStep) {
         String s = TextFormat.sprintf(" Step %-4d E = %10.6f    dE = %8.6f ",
             new Object[] { new float[] { (float) e1, (float) (dE), (float) criterion },
-            new Integer(currentStep) });
+            Integer.valueOf(currentStep) });
         minimizer.report(s, false);
         calc.appendLogData(s);
       }

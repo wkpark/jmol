@@ -664,7 +664,7 @@ public class SmilesGenerator {
     String s = (o == null ? null : (String) o[0]);
     if (s == null) {
       ht.put(key, new Object[] {
-          s = SmilesParser.getRingPointer(++nPairs), new Integer(i1) });
+          s = SmilesParser.getRingPointer(++nPairs), Integer.valueOf(i1) });
       if (Logger.debugging)
         Logger.info("adding for " + i0 + " ring key " + nPairs + ": " + key);
     } else {

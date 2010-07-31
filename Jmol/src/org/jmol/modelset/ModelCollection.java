@@ -1339,11 +1339,11 @@ abstract public class ModelCollection extends BondCollection {
         model.dataFrames = new Hashtable();
       models[modelDataIndex].dataSourceFrame = modelIndex;
       models[modelDataIndex].jmolFrameType = type;
-      model.dataFrames.put(type, new Integer(modelDataIndex));
+      model.dataFrames.put(type, Integer.valueOf(modelDataIndex));
     }  
     if (type.startsWith("quaternion") && type.indexOf("deriv") < 0) { //generic quaternion
       type = type.substring(0, type.indexOf(" "));
-      model.dataFrames.put(type, new Integer(modelDataIndex));
+      model.dataFrames.put(type, Integer.valueOf(modelDataIndex));
     }
   }
 
@@ -1441,20 +1441,20 @@ abstract public class ModelCollection extends BondCollection {
   public Hashtable getModelInfo(BitSet bsModels) {
     Hashtable info = new Hashtable();
     info.put("modelSetName", modelSetName);
-    info.put("modelCount", new Integer(modelCount));
+    info.put("modelCount", Integer.valueOf(modelCount));
     info.put("modelSetHasVibrationVectors", Boolean
         .valueOf(modelSetHasVibrationVectors()));
     if (modelSetProperties != null)
       info.put("modelSetProperties", modelSetProperties);
-    info.put("modelCountSelected", new Integer(BitSetUtil.cardinalityOf(bsModels)));
+    info.put("modelCountSelected", Integer.valueOf(BitSetUtil.cardinalityOf(bsModels)));
     info.put("modelsSelected", bsModels);
     Vector vModels = new Vector();
     getMolecules();
     
     for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1)) {
       Hashtable model = new Hashtable();
-      model.put("_ipt", new Integer(i));
-      model.put("num", new Integer(getModelNumber(i)));
+      model.put("_ipt", Integer.valueOf(i));
+      model.put("num", Integer.valueOf(getModelNumber(i)));
       model.put("file_model", getModelNumberDotted(i));
       model.put("name", getModelName(i));
       String s = getModelTitle(i);
@@ -1465,18 +1465,18 @@ abstract public class ModelCollection extends BondCollection {
         model.put("file", s);
       model.put("vibrationVectors", Boolean
           .valueOf(modelHasVibrationVectors(i)));
-      model.put("atomCount", new Integer(models[i].atomCount));
-      model.put("bondCount", new Integer(models[i].getBondCount()));
-      model.put("groupCount", new Integer(models[i].getGroupCount()));
-      model.put("moleculeCount", new Integer(models[i].moleculeCount));
-      model.put("polymerCount", new Integer(models[i].bioPolymerCount));
-      model.put("chainCount", new Integer(getChainCountInModel(i, true)));
+      model.put("atomCount", Integer.valueOf(models[i].atomCount));
+      model.put("bondCount", Integer.valueOf(models[i].getBondCount()));
+      model.put("groupCount", Integer.valueOf(models[i].getGroupCount()));
+      model.put("moleculeCount", Integer.valueOf(models[i].moleculeCount));
+      model.put("polymerCount", Integer.valueOf(models[i].bioPolymerCount));
+      model.put("chainCount", Integer.valueOf(getChainCountInModel(i, true)));
       if (models[i].properties != null)
         model.put("modelProperties", models[i].properties);
       Float energy = (Float) getModelAuxiliaryInfo(i, "Energy");
       if (energy != null)
         model.put("energy", energy);        
-      model.put("atomCount", new Integer(models[i].atomCount));
+      model.put("atomCount", Integer.valueOf(models[i].atomCount));
       vModels.addElement(model);
     }
     info.put("models", vModels);
@@ -1597,11 +1597,11 @@ abstract public class ModelCollection extends BondCollection {
       bsTemp.and(m.atomList);
       if (bsTemp.length() > 0) {
         Hashtable info = new Hashtable();
-        info.put("number", new Integer(m.moleculeIndex + 1)); //for now
+        info.put("number", Integer.valueOf(m.moleculeIndex + 1)); //for now
         info.put("modelNumber", getModelNumberDotted(m.modelIndex));
-        info.put("numberInModel", new Integer(m.indexInModel + 1));
-        info.put("nAtoms", new Integer(m.atomCount));
-        info.put("nElements", new Integer(m.nElements));
+        info.put("numberInModel", Integer.valueOf(m.indexInModel + 1));
+        info.put("nAtoms", Integer.valueOf(m.atomCount));
+        info.put("nElements", Integer.valueOf(m.nElements));
         info.put("mf", m.getMolecularFormula(false));
         V.addElement(info);
       }
@@ -3163,9 +3163,9 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public void getAtomIdentityInfo(int i, Hashtable info) {
-    info.put("_ipt", new Integer(i));
-    info.put("atomIndex", new Integer(i));
-    info.put("atomno", new Integer(getAtomNumber(i)));
+    info.put("_ipt", Integer.valueOf(i));
+    info.put("atomIndex", Integer.valueOf(i));
+    info.put("atomno", Integer.valueOf(getAtomNumber(i)));
     info.put("info", getAtomInfo(i, null));
     info.put("sym", getElementSymbol(i));
   }
@@ -3175,7 +3175,7 @@ abstract public class ModelCollection extends BondCollection {
     Hashtable info = new Hashtable();
     getAtomIdentityInfo(i, info);
     info.put("element", getElementName(i));
-    info.put("elemno", new Integer(getElementNumber(i)));
+    info.put("elemno", Integer.valueOf(getElementNumber(i)));
     info.put("x", new Float(atoms[i].x));
     info.put("y", new Float(atoms[i].y));
     info.put("z", new Float(atoms[i].z));
@@ -3183,21 +3183,21 @@ abstract public class ModelCollection extends BondCollection {
     if (vibrationVectors != null && vibrationVectors[i] != null) {
       info.put("vibVector", new Vector3f(vibrationVectors[i]));
     }
-    info.put("bondCount", new Integer(atom.getCovalentBondCount()));
+    info.put("bondCount", Integer.valueOf(atom.getCovalentBondCount()));
     info.put("radius", new Float((atom.getRasMolRadius() / 120.0)));
     info.put("model", atom.getModelNumberForLabel());
     info.put("visible", Boolean.valueOf(atoms[i].isVisible(0)));
-    info.put("clickabilityFlags", new Integer(atom.clickabilityFlags));
-    info.put("visibilityFlags", new Integer(atom.shapeVisibilityFlags));
+    info.put("clickabilityFlags", Integer.valueOf(atom.clickabilityFlags));
+    info.put("visibilityFlags", Integer.valueOf(atom.shapeVisibilityFlags));
     info.put("spacefill", new Float(atom.getRadius()));
     String strColor = Escape.escapeColor(viewer.getColorArgbOrGray(atom.colixAtom));
     if (strColor != null)
       info.put("color", strColor);
-    info.put("colix", new Integer(atom.colixAtom));
+    info.put("colix", Integer.valueOf(atom.colixAtom));
     boolean isTranslucent = atom.isTranslucent();
     if (isTranslucent)
       info.put("translucent", Boolean.valueOf(isTranslucent));
-    info.put("formalCharge", new Integer(atom.getFormalCharge()));
+    info.put("formalCharge", Integer.valueOf(atom.getFormalCharge()));
     info.put("partialCharge", new Float(atom.getPartialCharge()));
     float d = atom.getSurfaceDistance100() / 100f;
     if (d >= 0)
@@ -3207,21 +3207,21 @@ abstract public class ModelCollection extends BondCollection {
       int seqNum = atom.getSeqNumber();
       char insCode = atom.getInsertionCode();
       if (seqNum > 0)
-        info.put("resno", new Integer(seqNum));
+        info.put("resno", Integer.valueOf(seqNum));
       if (insCode != 0)
         info.put("insertionCode", "" + insCode);
       char chainID = atom.getChainID();
       info.put("name", getAtomName(i));
       info.put("chain", (chainID == '\0' ? "" : "" + chainID));
-      info.put("atomID", new Integer(atom.atomID));
-      info.put("groupID", new Integer(atom.getGroupID()));
+      info.put("atomID", Integer.valueOf(atom.atomID));
+      info.put("groupID", Integer.valueOf(atom.getGroupID()));
       if (atom.alternateLocationID != '\0')
         info.put("altLocation", "" + atom.alternateLocationID);
-      info.put("structure", new Integer(atom.getProteinStructureType()));
-      info.put("polymerLength", new Integer(atom.getPolymerLength()));
-      info.put("occupancy", new Integer(atom.getOccupancy100()));
+      info.put("structure", Integer.valueOf(atom.getProteinStructureType()));
+      info.put("polymerLength", Integer.valueOf(atom.getPolymerLength()));
+      info.put("occupancy", Integer.valueOf(atom.getOccupancy100()));
       int temp = atom.getBfactor100();
-      info.put("temp", new Integer(temp / 100));
+      info.put("temp", Integer.valueOf(temp / 100));
     }
     return info;
   }  
@@ -3241,7 +3241,7 @@ abstract public class ModelCollection extends BondCollection {
     Atom atom1 = bond.atom1;
     Atom atom2 = bond.atom2;
     Hashtable info = new Hashtable();
-    info.put("_bpt", new Integer(i));
+    info.put("_bpt", Integer.valueOf(i));
     Hashtable infoA = new Hashtable();
     getAtomIdentityInfo(atom1.index, infoA);
     Hashtable infoB = new Hashtable();
@@ -3255,7 +3255,7 @@ abstract public class ModelCollection extends BondCollection {
     String strColor = Escape.escapeColor(viewer.getColorArgbOrGray(bond.colix));
     if (strColor != null) 
       info.put("color", strColor);
-    info.put("colix", new Integer(bond.colix));
+    info.put("colix", Integer.valueOf(bond.colix));
     boolean isTranslucent = bond.isTranslucent();
     if (isTranslucent)
       info.put("translucent", Boolean.valueOf(isTranslucent));
@@ -3269,8 +3269,8 @@ abstract public class ModelCollection extends BondCollection {
       Hashtable modelInfo = new Hashtable();
       Vector info = getChainInfo(i, bs);
       if (info.size() > 0) {
-        modelInfo.put("modelIndex",new Integer(i));
-        modelInfo.put("chains",info);
+        modelInfo.put("modelIndex", Integer.valueOf(i));
+        modelInfo.put("chains", info);
         modelVector.addElement(modelInfo);
       }
     }
@@ -3292,16 +3292,16 @@ abstract public class ModelCollection extends BondCollection {
         if (!bs.get(group.firstAtomIndex)) 
           continue;
         Hashtable infoGroup = new Hashtable();
-        infoGroup.put("groupIndex", new Integer(igroup));
+        infoGroup.put("groupIndex", Integer.valueOf(igroup));
         infoGroup.put("groupID", new Short(group.getGroupID()));
         String s = group.getSeqcodeString();
         if (s != null)
           infoGroup.put("seqCode", s);
-        infoGroup.put("_apt1", new Integer(group.firstAtomIndex));
-        infoGroup.put("_apt2", new Integer(group.lastAtomIndex));
+        infoGroup.put("_apt1", Integer.valueOf(group.firstAtomIndex));
+        infoGroup.put("_apt2", Integer.valueOf(group.lastAtomIndex));
         infoGroup.put("atomInfo1", getAtomInfo(group.firstAtomIndex, null));
         infoGroup.put("atomInfo2", getAtomInfo(group.lastAtomIndex, null));
-        infoGroup.put("visibilityFlags", new Integer(group.shapeVisibilityFlags));
+        infoGroup.put("visibilityFlags", Integer.valueOf(group.shapeVisibilityFlags));
         infoChain.addElement(infoGroup);
       }
       if (! infoChain.isEmpty()) { 
@@ -3325,8 +3325,8 @@ abstract public class ModelCollection extends BondCollection {
           info.addElement(polyInfo);
       }
       if (info.size() > 0) {
-        modelInfo.put("modelIndex",new Integer(i));
-        modelInfo.put("polymers",info);
+        modelInfo.put("modelIndex", Integer.valueOf(i));
+        modelInfo.put("polymers", info);
         modelVector.addElement(modelInfo);
       }
     }
@@ -3627,7 +3627,7 @@ abstract public class ModelCollection extends BondCollection {
           type += sym;
         sb.append(TextFormat.sprintf(
             "model %-2s;  mo %-2i # energy %-8.3f %s %s\n", new Object[] {
-                getModelNumberDotted(m), new Integer(i + 1),
+                getModelNumberDotted(m), Integer.valueOf(i + 1),
                 mo.get("energy"), units, type }));
       }
     }

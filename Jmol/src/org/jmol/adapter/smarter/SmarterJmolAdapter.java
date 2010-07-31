@@ -624,7 +624,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
     @Override
     public int getAtomSite() { return atom.atomSite + 1; }
     @Override
-    public Object getUniqueID() { return new Integer(atom.atomIndex); }
+    public Object getUniqueID() { return Integer.valueOf(atom.atomIndex); }
     @Override
     public String getElementSymbol() { return atom.getElementSymbol(); }
     @Override
@@ -697,11 +697,11 @@ public class SmarterJmolAdapter extends JmolAdapter {
     }
     @Override
     public Object getAtomUniqueID1() {
-      return new Integer(bond.atomIndex1);
+      return Integer.valueOf(bond.atomIndex1);
     }
     @Override
     public Object getAtomUniqueID2() {
-      return new Integer(bond.atomIndex2);
+      return Integer.valueOf(bond.atomIndex2);
     }
     @Override
     public int getEncodedOrder() {

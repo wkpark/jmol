@@ -427,14 +427,14 @@ public abstract class BioPolymer extends Polymer {
     for (int i = 0; i < monomerCount; i++) {
       if (bs.get(monomers[i].leadAtomIndex)) {
         Hashtable monomerInfo = monomers[i].getMyInfo();
-        monomerInfo.put("monomerIndex", new Integer(i));
+        monomerInfo.put("monomerIndex", Integer.valueOf(i));
         info.addElement(monomerInfo);
         if ((ps = getProteinStructure(i)) != null && ps != psLast) {
           Hashtable psInfo = new Hashtable();
           (psLast = ps).getInfo(psInfo);
           if (structureInfo == null)
             structureInfo = new Vector();
-          psInfo.put("index", new Integer(n++));
+          psInfo.put("index", Integer.valueOf(n++));
           structureInfo.addElement(psInfo);
         }
       }

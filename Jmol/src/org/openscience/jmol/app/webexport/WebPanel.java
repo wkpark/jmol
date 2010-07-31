@@ -569,9 +569,9 @@ abstract class WebPanel extends JPanel implements ActionListener,
     int width = instance.width;
     int height = instance.height;
     if (appletSizeSpinnerW != null)
-      appletSizeSpinnerW.getModel().setValue(new Integer(width));
+      appletSizeSpinnerW.getModel().setValue(Integer.valueOf(width));
     if (appletSizeSpinnerH != null)
-      appletSizeSpinnerH.getModel().setValue(new Integer(height));
+      appletSizeSpinnerH.getModel().setValue(Integer.valueOf(height));
     viewer.evalStringQuiet(")" + instance.script); //leading paren disabled history
     //Set the widget selections to match this instance
     for (int i = 0; i < nWidgets; i++)

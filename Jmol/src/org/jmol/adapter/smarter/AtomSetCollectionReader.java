@@ -284,11 +284,10 @@ public abstract class AtomSetCollectionReader {
     if (s != null)
       addJmolScript("smilesString = \"" + s + "\"");      
     if (!htParams.containsKey("templateAtomCount"))
-      htParams.put("templateAtomCount", new Integer(atomSetCollection
-          .getAtomCount()));
+      htParams.put("templateAtomCount", Integer.valueOf(atomSetCollection.getAtomCount()));
     if (htParams.containsKey("bsFilter"))
-      htParams.put("filteredAtomCount", new Integer(BitSetUtil
-          .cardinalityOf((BitSet) htParams.get("bsFilter"))));
+      htParams.put("filteredAtomCount", Integer.valueOf(
+          BitSetUtil.cardinalityOf((BitSet) htParams.get("bsFilter"))));
     if (!calculationType.equals("?"))
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo("calculationType",
           calculationType);

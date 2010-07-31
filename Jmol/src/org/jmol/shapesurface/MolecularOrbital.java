@@ -86,7 +86,7 @@ public class MolecularOrbital extends Isosurface {
       Logger.info("MO init " + strID);
       // overide bitset selection
       super.setProperty("init", null, null);
-      super.setProperty("modelIndex", new Integer(modelIndex), null);
+      super.setProperty("modelIndex", Integer.valueOf(modelIndex), null);
       if (htModels == null)
         htModels = new Hashtable();
       if (!htModels.containsKey(strID))
@@ -248,7 +248,7 @@ public class MolecularOrbital extends Isosurface {
       return viewer.getMoInfo(-1) + "\n" + s;
     }
     if (propertyName == "moNumber")
-      return new Integer(moNumber);
+      return Integer.valueOf(moNumber);
     if (propertyName == "showMO") {
       StringBuffer str = new StringBuffer();
       Vector mos = (Vector) (sg.getMoData().get("mos"));
@@ -350,7 +350,7 @@ public class MolecularOrbital extends Isosurface {
     }
     super.setProperty("title", moTitleFormat, null);
     super.setProperty("fileName", viewer.getFileName(), null);
-    super.setProperty("molecularOrbital", new Integer(moNumber), null);
+    super.setProperty("molecularOrbital", Integer.valueOf(moNumber), null);
     if (moPlane != null && moColorNeg != null)
       super.setProperty("colorRGB", moColorNeg, null);
     if (moPlane != null && moColorPos != null)
@@ -360,10 +360,10 @@ public class MolecularOrbital extends Isosurface {
       super.setProperty("translucenctLevel", moTranslucentLevel, null);
     if (moTranslucency != null)
       super.setProperty("translucency", moTranslucency, null);
-    super.setProperty("token", new Integer(moFill), null);
-    super.setProperty("token",  new Integer(moMesh), null);
-    super.setProperty("token",  new Integer(moDots), null);
-    super.setProperty("token",  new Integer(moFrontOnly), null);
+    super.setProperty("token", Integer.valueOf(moFill), null);
+    super.setProperty("token",  Integer.valueOf(moMesh), null);
+    super.setProperty("token",  Integer.valueOf(moDots), null);
+    super.setProperty("token",  Integer.valueOf(moFrontOnly), null);
     thisModel.put("mesh", currentMesh);
     return;
   }

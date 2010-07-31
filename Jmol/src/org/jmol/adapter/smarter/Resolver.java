@@ -246,7 +246,7 @@ public class Resolver {
     }
     if (htParams == null)
       htParams = new Hashtable();
-    htParams.put("ptFile", new Integer(ptFile));
+    htParams.put("ptFile", Integer.valueOf(ptFile));
     if (ptFile <= 0)
       htParams.put("readerName", readerName);
     if (readerName.indexOf("Xml") == 0)

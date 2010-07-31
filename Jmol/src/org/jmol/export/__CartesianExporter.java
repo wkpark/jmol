@@ -130,7 +130,7 @@ abstract public class __CartesianExporter extends ___Exporter {
       } else {
         normalMap[i] = vNormals.size();
         vNormals.add(s);
-        htNormals.put(s, new Integer(normalMap[i]));
+        htNormals.put(s, Integer.valueOf(normalMap[i]));
       }
     }
     return normalMap;

@@ -199,7 +199,7 @@ public class SpartanSmolReader extends SpartanInputReader {
     Float n = (Float) atomSetCollection
         .getAtomSetCollectionAuxiliaryInfo("HOMO_N");
     if (moData != null && n != null)
-      moData.put("HOMO", new Integer(n.intValue()));
+      moData.put("HOMO", Integer.valueOf(n.intValue()));
     readLine();
   }
   

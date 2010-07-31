@@ -151,9 +151,9 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     }
     
     if (ellipsoids.haveEllipsoids) {
-      Enumeration e = ellipsoids.htEllipsoids.elements();
+      Enumeration<Ellipsoid> e = ellipsoids.htEllipsoids.elements();
       while (e.hasMoreElements()) {
-        Ellipsoid ellipsoid = (Ellipsoid) e.nextElement();
+        Ellipsoid ellipsoid = e.nextElement();
         if (ellipsoid.visible && ellipsoid.isValid)
           renderEllipsoid(ellipsoid); 
       }

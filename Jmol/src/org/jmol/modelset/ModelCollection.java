@@ -3293,7 +3293,7 @@ abstract public class ModelCollection extends BondCollection {
           continue;
         Hashtable infoGroup = new Hashtable();
         infoGroup.put("groupIndex", Integer.valueOf(igroup));
-        infoGroup.put("groupID", new Short(group.getGroupID()));
+        infoGroup.put("groupID", Short.valueOf(group.getGroupID()));
         String s = group.getSeqcodeString();
         if (s != null)
           infoGroup.put("seqCode", s);

@@ -387,7 +387,7 @@ public abstract class ___Exporter {
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsSelected.nextSetBit(i + 1))) {
       color = "" + colixes[i];
       if (!htColixes.containsKey(color)) {
-        list.add(new Short(colixes[i]));
+        list.add(Short.valueOf(colixes[i]));
         htColixes.put(color, "" + (i00 + nColix++));
       }
     }

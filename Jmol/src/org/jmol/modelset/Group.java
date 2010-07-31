@@ -240,7 +240,7 @@ public class Group {
       group3Names = ArrayUtil.doubleLength(group3Names);
     short groupID = group3NameCount++;
     group3Names[groupID] = group3;
-    htGroup.put(group3, new Short(groupID));
+    htGroup.put(group3, Short.valueOf(groupID));
     return groupID;
   }
 

@@ -24,7 +24,9 @@
 
 package org.jmol.smiles;
 
-import java.util.Vector;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Hashtable;
 
 import org.jmol.util.Elements;
@@ -682,8 +684,8 @@ public class SmilesParser {
   }
 
   private String parseVariables(String pattern) throws InvalidSmilesException {
-    Vector keys = new Vector();
-    Vector values = new Vector();
+    List<String> keys = new ArrayList<String>();
+    List<String> values = new ArrayList<String>();
     int index;
     int ipt = 0;
     int iptLast = -1;

@@ -60,8 +60,10 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
 
 public class FileManager {
@@ -995,13 +997,13 @@ public class FileManager {
     if (dataPath == null)
       return script;
     boolean noPath = (dataPath.length() == 0);
-    Vector fileNames = new Vector();
+    List<String> fileNames = new ArrayList<String>();
     getFileReferences(script, fileNames, "");
-    Vector oldFileNames = new Vector();
-    Vector newFileNames = new Vector();
+    List<String> oldFileNames = new ArrayList<String>();
+    List<String> newFileNames = new ArrayList<String>();
     int nFiles = fileNames.size();
     for (int iFile = 0; iFile < nFiles; iFile++) {
-      String name0 = (String) fileNames.get(iFile);
+      String name0 = fileNames.get(iFile);
       String name = name0;
       int itype = urlTypeIndex(name);
       if (isLocal == (itype < 0 || itype == URL_LOCAL)) {
@@ -1025,7 +1027,7 @@ public class FileManager {
   }
 
   private static String[] scriptFilePrefixes = new String[] { "/*file*/\"", "FILE0=\"", "FILE1=\"" };
-  public static void getFileReferences(String script, Vector fileList, String flag) {
+  public static void getFileReferences(String script, List<String> fileList, String flag) {
     for (int ipt = 0; ipt < scriptFilePrefixes.length; ipt++) {
       String tag = scriptFilePrefixes[ipt];
       int i = -1;
@@ -1036,16 +1038,16 @@ public class FileManager {
 
   String createZipSet(String fileName, String script, boolean includeRemoteFiles) {
     Vector v = new Vector();
-    Vector fileNames = new Vector();
+    List<String> fileNames = new ArrayList<String>();
     getFileReferences(script, fileNames, "");
-    Vector newFileNames = new Vector();
+    List<String> newFileNames = new ArrayList<String>();
     int nFiles = fileNames.size();
     fileName = fileName.replace('\\', '/');
     String fileRoot = fileName.substring(fileName.lastIndexOf("/") + 1);
     if (fileRoot.indexOf(".") >= 0)
       fileRoot = fileRoot.substring(0, fileRoot.indexOf("."));
     for (int iFile = 0; iFile < nFiles; iFile++) {
-      String name = (String) fileNames.get(iFile);
+      String name = fileNames.get(iFile);
       int itype = urlTypeIndex(name);
       boolean isLocal = (itype < 0 || itype == URL_LOCAL);
       if (isLocal || includeRemoteFiles) {

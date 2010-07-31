@@ -24,6 +24,7 @@
  */
 package org.openscience.jmol.app.webexport;
 
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -41,7 +42,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Vector;
+import java.util.List;
 import java.util.zip.GZIPOutputStream;
 import java.util.BitSet;
 
@@ -634,22 +635,20 @@ abstract class WebPanel extends JPanel implements ActionListener,
         } catch (IOException IOe) {
           throw IOe;
         }
-        Vector filesToCopy = new Vector();
+        List<String> filesToCopy = new ArrayList<String>();
         String localPath = localAppletPath.getText();
         if (localPath.equals(".") || remoteAppletPath.getText().equals(".")) {
           filesToCopy.add(localPath + "/Jmol.js");
           filesToCopy.add(localPath + "/JmolApplet.jar");
         }
         FileManager.getFileReferences(script, filesToCopy, "");
-        Vector copiedFileNames = new Vector();
+        List<String> copiedFileNames = new ArrayList<String>();
         int nFiles = filesToCopy.size();
         for (int iFile = 0; iFile < nFiles; iFile++) {
-          String newName = copyBinaryFile((String) filesToCopy.get(iFile),
-              datadirPath);
+          String newName = copyBinaryFile(filesToCopy.get(iFile), datadirPath);
           copiedFileNames.add(newName.substring(newName.lastIndexOf('/') + 1));
         }
-        script = TextFormat.replaceQuotedStrings(script, filesToCopy,
-            copiedFileNames);
+        script = TextFormat.replaceQuotedStrings(script, filesToCopy, copiedFileNames);
         LogPanel.log("      ..." + GT._("adding {0}", javaname + ".spt"));
         viewer.writeTextFile(datadirPath + "/" + javaname + ".spt", script);
       }

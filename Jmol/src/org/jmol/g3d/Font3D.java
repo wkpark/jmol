@@ -26,7 +26,9 @@ package org.jmol.g3d;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.font.TextAttribute;
+import java.text.AttributedCharacterIterator.Attribute;
 import java.util.Hashtable;
+import java.util.Map;
 /**
  *<p>
  * Provides font support using a byte fid
@@ -120,8 +122,8 @@ final public class Font3D {
     return font3d;
   }
 
-  private static Hashtable getFontMap(String fontFace, int idFontStyle, float fontSize) {
-    Hashtable fontMap = new Hashtable();
+  private static Map<? extends Attribute, ?> getFontMap(String fontFace, int idFontStyle, float fontSize) {
+    Hashtable<Attribute, Object> fontMap = new Hashtable<Attribute, Object>();
     fontMap.put(TextAttribute.FAMILY, fontFace);
     if ((idFontStyle & 1) == 1)
       fontMap.put(TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD);

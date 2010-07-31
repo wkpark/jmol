@@ -1031,7 +1031,7 @@ public final class ModelLoader extends ModelSet {
     if (group3 != null && haveBioClasses) {
       if (jbr == null) {
         try {
-          Class shapeClass = Class.forName("org.jmol.modelsetbio.Resolver");
+          Class<?> shapeClass = Class.forName("org.jmol.modelsetbio.Resolver");
           jbr = (JmolBioResolver) shapeClass.newInstance();
           haveBioClasses = true;
         } catch (Exception e) {

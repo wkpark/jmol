@@ -24,6 +24,7 @@
 
 package org.jmol.symmetry;
 
+
 import java.util.Arrays;
 import java.util.Hashtable;
 
@@ -206,7 +207,7 @@ class SpaceGroup {
       if (sg == null) {
         sg = SpaceGroup.createSpaceGroup(spaceGroup, false);
       } else {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         while (sg != null) {
           sb.append(sg.dumpInfo(null));
           sg = SpaceGroup.determineSpaceGroup(spaceGroup, sg);
@@ -221,7 +222,7 @@ class SpaceGroup {
     Object info  = dumpCanonicalSeitzList();
     if (info instanceof SpaceGroup)
       return ((SpaceGroup)info).dumpInfo(null);
-    StringBuffer sb = new StringBuffer("\nHermann-Mauguin symbol: ");
+    StringBuilder sb = new StringBuilder("\nHermann-Mauguin symbol: ");
     sb.append(hmSymbol).append(hmSymbolExt.length() > 0 ? ":" + hmSymbolExt : "")
         .append("\ninternational table number: ").append(intlTableNumber)
         .append(intlTableNumberExt.length() > 0 ? ":" + intlTableNumberExt : "")
@@ -278,7 +279,7 @@ class SpaceGroup {
     for (int i = 0; i < operationCount; i++)
       list[i] = SymmetryOperation.dumpCanonicalSeitz(operations[i]);
     Arrays.sort(list, 0, operationCount);
-    StringBuffer sb = new StringBuffer("\n[");
+    StringBuilder sb = new StringBuilder("\n[");
     for (int i = 0; i < operationCount; i++)
       sb.append(list[i].replace('\t',' ').replace('\n',' ')).append("; ");
     sb.append("]");
@@ -298,14 +299,14 @@ class SpaceGroup {
   }
   
   private final static String dumpAll() {
-   StringBuffer sb = new StringBuffer();
+   StringBuilder sb = new StringBuilder();
    for (int i = 0; i < spaceGroupDefinitions.length; i++)
      sb.append("\n----------------------\n" + spaceGroupDefinitions[i].dumpInfo(null));
    return sb.toString();
   }
   
   private final static String dumpAllSeitz() {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     for (int i = 0; i < spaceGroupDefinitions.length; i++)
       sb.append("\n").append(spaceGroupDefinitions[i].dumpCanonicalSeitzList());
     return sb.toString();
@@ -341,16 +342,16 @@ class SpaceGroup {
     return sg;
   }
   
-  Hashtable xyzList = new Hashtable();
+  Hashtable<String, Integer> xyzList = new Hashtable<String, Integer>();
   private int addOperation(String xyz0, int opId) {
     if (xyz0 == null || xyz0.length() < 3) {
-      xyzList = new Hashtable();
+      xyzList = new Hashtable<String, Integer>();
       return -1;
     }
     boolean isSpecial = (xyz0.charAt(0) == '=');
     if (isSpecial) xyz0 = xyz0.substring(1);
     if (xyzList.containsKey(xyz0))
-      return ((Integer)xyzList.get(xyz0)).intValue();
+      return xyzList.get(xyz0).intValue();
 
     SymmetryOperation symmetryOperation = new SymmetryOperation(doNormalize, opId);
     if (!symmetryOperation.setMatrixFromXYZ(xyz0)) {
@@ -361,11 +362,11 @@ class SpaceGroup {
     if (!isSpecial) {
       // ! in character 0 indicates we are using the symop() function and want to be explicit
       if (xyzList.containsKey(xyz))
-        return ((Integer)xyzList.get(xyz)).intValue();
-      xyzList.put(xyz, new Integer(operationCount));
+        return xyzList.get(xyz).intValue();
+      xyzList.put(xyz, Integer.valueOf(operationCount));
     }
     if (!xyz.equals(xyz0))
-      xyzList.put(xyz0, new Integer(operationCount));
+      xyzList.put(xyz0, Integer.valueOf(operationCount));
     if (operations == null) {
       operations = new SymmetryOperation[4];
       operationCount = 0;

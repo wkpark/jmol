@@ -172,7 +172,7 @@ class RepaintManager {
   private ShapeRenderer allocateRenderer(int shapeID, Graphics3D g3d) {
     String className = JmolConstants.getShapeClassName(shapeID) + "Renderer";
     try {
-      Class shapeClass = Class.forName(className);
+      Class<?> shapeClass = Class.forName(className);
       ShapeRenderer renderer = (ShapeRenderer) shapeClass.newInstance();
       renderer.setViewerG3dShapeID(viewer, g3d, shapeID);
       return renderer;
@@ -194,7 +194,7 @@ class RepaintManager {
       } else {
         output = fileName;
       }
-      Class export3Dclass = Class.forName("org.jmol.export.Export3D");
+      Class<?> export3Dclass = Class.forName("org.jmol.export.Export3D");
       g3dExport = (JmolRendererInterface) export3Dclass.newInstance();
       isOK = g3dExport.initializeExporter(type, viewer, g3d, output);
     } catch (Exception e) {

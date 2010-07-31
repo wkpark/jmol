@@ -49,7 +49,7 @@ class WrappedAppletLoader extends Thread {
     tickerThread.start();
     WrappedApplet wrappedApplet = null;
     try {
-      Class wrappedAppletClass = Class.forName(wrappedAppletClassName);
+      Class<?> wrappedAppletClass = Class.forName(wrappedAppletClassName);
       wrappedApplet = (WrappedApplet)wrappedAppletClass.newInstance();
       wrappedApplet.setAppletWrapper(appletWrapper);
       wrappedApplet.init();

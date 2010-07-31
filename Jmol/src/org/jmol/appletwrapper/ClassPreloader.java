@@ -45,7 +45,7 @@ class ClassPreloader extends Thread {
         //System.out.println("ClassPreloader - " + className);
         if (constructOne)
           className = className.substring(0, lastCharIndex);
-        Class preloadClass = Class.forName(className);
+        Class<?> preloadClass = Class.forName(className);
         if (constructOne)
           preloadClass.newInstance();
       } catch (Exception e) {

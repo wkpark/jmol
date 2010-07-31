@@ -33,11 +33,11 @@ public class TestScripts extends TestSuite {
     super();
   }
 
-  public TestScripts(Class theClass, String name) {
+  public TestScripts(Class<?> theClass, String name) {
     super(theClass, name);
   }
 
-  public TestScripts(Class theClass) {
+  public TestScripts(Class<?> theClass) {
     super(theClass);
   }
 

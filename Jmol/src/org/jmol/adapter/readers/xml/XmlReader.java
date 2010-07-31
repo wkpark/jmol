@@ -174,7 +174,7 @@ public class XmlReader extends AtomSetCollectionReader {
 
   private Object getXmlReader() {    
     String className = null;
-    Class atomSetCollectionReaderClass;
+    Class<?> atomSetCollectionReaderClass;
     String err = null;
     XmlReader thisReader = null;
     try {
@@ -219,7 +219,7 @@ public void readAtomSetCollectionFromDOM(Object Node) {
   private Object processXml(JSObject DOMNode) {
     atomSetCollection = new AtomSetCollection(readerName, this);
     String className = null;
-    Class atomSetCollectionReaderClass;
+    Class<?> atomSetCollectionReaderClass;
     String err = null;
     XmlReader thisReader = null;
     String name = readerName.substring(0, readerName.indexOf("("));

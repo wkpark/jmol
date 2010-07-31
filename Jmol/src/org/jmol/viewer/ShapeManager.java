@@ -74,7 +74,7 @@ public class ShapeManager {
       return null;
     String className = JmolConstants.getShapeClassName(shapeID);
     try {
-      Class shapeClass = Class.forName(className);
+      Class<?> shapeClass = Class.forName(className);
       Shape shape = (Shape) shapeClass.newInstance();
       viewer.setShapeErrorState(shapeID, "allocate");
       shape.initializeShape(viewer, g3d, modelSet, shapeID);

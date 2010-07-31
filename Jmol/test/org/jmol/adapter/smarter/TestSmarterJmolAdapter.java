@@ -30,11 +30,11 @@ public class TestSmarterJmolAdapter extends TestSuite {
     super();
   }
 
-  public TestSmarterJmolAdapter(Class theClass, String name) {
+  public TestSmarterJmolAdapter(Class<?> theClass, String name) {
     super(theClass, name);
   }
 
-  public TestSmarterJmolAdapter(Class theClass) {
+  public TestSmarterJmolAdapter(Class<?> theClass) {
     super(theClass);
   }
 

@@ -25,7 +25,8 @@
 package org.jmol.smiles;
 
 import java.util.BitSet;
-import java.util.Vector;
+
+import java.util.List;
 
 import javax.vecmath.Point3f;
 
@@ -680,10 +681,10 @@ public class SmilesAtom extends Point3f implements JmolNode {
     return bond.isHydrogen();
   }
 
-  public boolean getCrossLinkLeadAtomIndexes(Vector vLinks) {
+  public boolean getCrossLinkLeadAtomIndexes(List<Integer> vLinks) {
     for (int k = 0; k < bonds.length; k++)
       if (bonds[k].bondType == SmilesBond.TYPE_BIO_PAIR)
-        vLinks.add(new Integer(bonds[k].getOtherAtom(this).index));
+        vLinks.add(Integer.valueOf(bonds[k].getOtherAtom(this).index));
     return true;
   }
 

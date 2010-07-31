@@ -121,7 +121,7 @@ public class SmilesAromatic {
     int nPoints = bs.cardinality();
     Vector3f[] vNorms = new Vector3f[nPoints * 2];
     int nNorms = 0;
-    float maxDev = (float) (1 - cutoff * 5);
+    float maxDev = (1 - cutoff * 5);
     //System.out.println("using maxDev=" + maxDev);
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       JmolNode ringAtom = atoms[i];

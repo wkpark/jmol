@@ -114,7 +114,7 @@ public class SmilesParser {
   private boolean isSmarts;
   private boolean isBioSequence;
   private char bioType;
-  private Hashtable ringBonds = new Hashtable();
+  private Hashtable<Integer, SmilesBond> ringBonds = new Hashtable<Integer, SmilesBond>();
   private int braceCount;
   private int branchLevel;
 
@@ -294,7 +294,7 @@ public class SmilesParser {
                                  boolean ignoreStereochemistry)
       throws InvalidSmilesException {
     // First pass
-    htMeasures = new Hashtable();
+    htMeasures = new Hashtable<String, SmilesMeasure>();
     SmilesSearch molecule = new SmilesSearch();
     molecule.setParent(parent);
     molecule.isSmarts = isSmarts;
@@ -583,7 +583,7 @@ public class SmilesParser {
     return index;
   }
 
-  Hashtable htMeasures = new Hashtable();
+  Hashtable<String, SmilesMeasure> htMeasures = new Hashtable<String, SmilesMeasure>();
   
   private void parseMeasure(SmilesSearch molecule, String strMeasure,
                             SmilesAtom currentAtom)
@@ -598,7 +598,7 @@ public class SmilesParser {
       int len = id.length();
       if (len == 1)
         id += "0";
-      SmilesMeasure m = (SmilesMeasure) htMeasures.get(id);
+      SmilesMeasure m = htMeasures.get(id);
       if ((m == null) == (pt < 0))
         break;
       try {
@@ -621,8 +621,8 @@ public class SmilesParser {
           float min = (pt + 1 == pt2 ? 0 : Float.parseFloat(s));
           s = strMeasure.substring(pt2 + 1);
           float max = (s.length() == 0 ? Float.MAX_VALUE : Float.parseFloat(s));
-          molecule.measures.add(m = new SmilesMeasure(molecule, index, type,
-              min, max, isNot));
+          m = new SmilesMeasure(molecule, index, type, min, max, isNot);
+          molecule.measures.add(m);
           if (index > 0)
             htMeasures.put(id, m);
           else if (index == 0 && Logger.debugging)
@@ -1001,7 +1001,7 @@ public class SmilesParser {
     // Ring management
 
     Integer r = new Integer(ringNum);
-    SmilesBond bond0 = (SmilesBond) ringBonds.get(r);
+    SmilesBond bond0 = ringBonds.get(r);
     if (bond0 == null) {
       ringBonds.put(r, bond);
       return;

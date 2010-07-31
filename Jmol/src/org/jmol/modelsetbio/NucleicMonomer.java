@@ -24,7 +24,8 @@
  */
 package org.jmol.modelsetbio;
 
-import java.util.Vector;
+
+import java.util.List;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
@@ -476,7 +477,7 @@ public boolean isCrossLinked(Group g) {
   }
  
   @Override
-  public boolean getCrossLinkLeadAtomIndexes(Vector vReturn) {
+  public boolean getCrossLinkLeadAtomIndexes(List<Integer> vReturn) {
     Atom N = (isPurine ? getN1() : getN3());
     //System.out.println(N.getInfo());
     Bond[] bonds = N.getBonds();

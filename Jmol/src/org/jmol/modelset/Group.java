@@ -23,6 +23,7 @@
  */
 package org.jmol.modelset;
 
+
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Quaternion;
@@ -31,7 +32,7 @@ import org.jmol.script.Token;
 
 import java.util.Hashtable;
 import java.util.BitSet;
-import java.util.Vector;
+import java.util.List;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -455,7 +456,7 @@ public class Group {
     return false;
   }
   
-  public boolean getCrossLinkLeadAtomIndexes(Vector vReturn) {
+  public boolean getCrossLinkLeadAtomIndexes(List<Integer> vReturn) {
     return false;
   }
 

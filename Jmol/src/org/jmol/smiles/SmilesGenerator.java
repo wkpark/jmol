@@ -24,8 +24,9 @@
 
 package org.jmol.smiles;
 
+import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Vector;
+import java.util.List;
 import java.util.Hashtable;
 import java.util.Enumeration;
 
@@ -69,8 +70,8 @@ public class SmilesGenerator {
   
   // outputs
 
-  private Hashtable htRingsSequence = new Hashtable();
-  private Hashtable htRings = new Hashtable();
+  private Hashtable<String, Object[]> htRingsSequence = new Hashtable<String, Object[]>();
+  private Hashtable<String, Object[]> htRings = new Hashtable<String, Object[]>();
   private BitSet bsIncludingH;
 
   // generation of SMILES strings
@@ -100,7 +101,7 @@ public class SmilesGenerator {
     BitSet bsIgnore = new BitSet();
     String lastComponent = null;
     String s;
-    Vector vLinks = new Vector();
+    List<Integer> vLinks = new ArrayList<Integer>();
     try {
       int len = 0;
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
@@ -151,7 +152,7 @@ public class SmilesGenerator {
           a.getCrossLinkLeadAtomIndexes(vLinks);
           for (int j = 0; j < vLinks.size(); j++) {
             sb.append(":");
-            s = getRingCache(i0, ((Integer) vLinks.get(j)).intValue(),
+            s = getRingCache(i0, vLinks.get(j).intValue(),
                 htRingsSequence);
             sb.append(s);
             len += 1 + s.length();
@@ -248,9 +249,9 @@ public class SmilesGenerator {
     }
     while (bsToDo.cardinality() > 0 || !htRings.isEmpty()) {
       //System.out.println(bsToDo);
-      Enumeration e = htRings.keys();
+      Enumeration<String> e = htRings.keys();
       if (e.hasMoreElements()) {
-        atom = atoms[((Integer) ((Object[]) htRings.get(e.nextElement()))[1])
+        atom = atoms[((Integer) (htRings.get(e.nextElement()))[1])
             .intValue()];
         if (!bsToDo.get(atom.getIndex()))
           break;
@@ -423,7 +424,7 @@ public class SmilesGenerator {
     int nBondAtoms = 0;
     int atomicNumber = atom.getElementNumber();
     int nH = 0;
-    Vector v = new Vector();
+    List<JmolEdge> v = new ArrayList<JmolEdge>();
     JmolEdge bond0 = null;
     JmolEdge bondPrev = null;
     JmolEdge[] bonds = atom.getEdges();
@@ -506,7 +507,7 @@ public class SmilesGenerator {
     BitSet bsBranches = new BitSet();
 
     for (int i = 0; i < v.size(); i++) {
-      JmolEdge bond = (JmolEdge) v.get(i);
+      JmolEdge bond = v.get(i);
       JmolNode a = bond.getOtherAtom(atom);
       int n = a.getCovalentBondCount() - a.getCovalentHydrogenCount();
       int order = bond.getCovalentOrder();
@@ -527,7 +528,7 @@ public class SmilesGenerator {
 
     StringBuffer sMore = new StringBuffer();
     for (int i = 0; i < v.size(); i++) {
-      JmolEdge bond = (JmolEdge) v.get(i);
+      JmolEdge bond = v.get(i);
       if (!bsBranches.get(bond.getIndex()))
         continue;
       JmolNode a = bond.getOtherAtom(atom);
@@ -545,7 +546,7 @@ public class SmilesGenerator {
       if (sMore.indexOf(s2.toString()) >= 0)
         stereoFlag = 10;
       sMore.append(s2);
-      v.removeElementAt(i--);
+      v.remove(i--);
       if (stereoFlag < 7)
         stereo[stereoFlag++] = a;
       if (nBondAtoms < 5)
@@ -581,7 +582,7 @@ public class SmilesGenerator {
     // now process any rings
 
     for (int i = v.size(); --i >= 0;) {
-      JmolEdge bond = (JmolEdge) v.get(i);
+      JmolEdge bond = v.get(i);
       if (bond == bond0)
         continue;
       JmolNode a = bond.getOtherAtom(atom);
@@ -657,9 +658,9 @@ public class SmilesGenerator {
     return atomNext;
   }
 
-  private String getRingCache(int i0, int i1, Hashtable ht) {
+  private String getRingCache(int i0, int i1, Hashtable<String, Object[]> ht) {
     String key = getRingKey(i0, i1);
-    Object[] o = (Object[]) ht.get(key);
+    Object[] o = ht.get(key);
     String s = (o == null ? null : (String) o[0]);
     if (s == null) {
       ht.put(key, new Object[] {
@@ -674,9 +675,9 @@ public class SmilesGenerator {
     return s;//  + " _" + key + "_ \n";
   }
 
-  private void dumpRingKeys(StringBuffer sb, Hashtable ht) {
+  private void dumpRingKeys(StringBuffer sb, Hashtable<String, Object[]> ht) {
     Logger.info(sb.toString() + "\n\n");
-    Enumeration e = ht.keys();
+    Enumeration<String> e = ht.keys();
     while (e.hasMoreElements()) {
       Logger.info("unmatched ring key: " + e.nextElement());
     }

@@ -25,6 +25,7 @@
 
 package org.jmol.modelset;
 
+
 import org.jmol.viewer.JmolConstants;
 import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
@@ -37,7 +38,7 @@ import org.jmol.util.Elements;
 import org.jmol.util.Point3fi;
 
 import java.util.BitSet;
-import java.util.Vector;
+import java.util.List;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
@@ -1356,7 +1357,7 @@ final public class Atom extends Point3fi implements JmolNode {
     return group.isCrossLinked(((Atom) node).getGroup());
   }
 
-  public boolean getCrossLinkLeadAtomIndexes(Vector vReturn) {
+  public boolean getCrossLinkLeadAtomIndexes(List<Integer> vReturn) {
     return group.getCrossLinkLeadAtomIndexes(vReturn);
   }
   

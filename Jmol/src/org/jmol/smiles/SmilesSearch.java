@@ -24,9 +24,11 @@
 
 package org.jmol.smiles;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
 
 import javax.vecmath.Point3f;
@@ -84,7 +86,7 @@ public class SmilesSearch extends JmolMolecule {
   boolean needAromatic;
   boolean needRingMemberships;
   int ringDataMax = Integer.MIN_VALUE;
-  Vector measures = new Vector();
+  List<SmilesMeasure> measures = new ArrayList<SmilesMeasure>();
   boolean noAromatic;
   boolean ignoreStereochemistry;
   StringBuffer ringSets;
@@ -104,7 +106,7 @@ public class SmilesSearch extends JmolMolecule {
   private int[] ringCounts;
   private int[] ringConnections;
   private BitSet bsFound = new BitSet(); 
-  private Hashtable htNested;
+  private Hashtable<String, Object> htNested;
   private int nNested;
   private SmilesBond nestedBond;
 
@@ -135,7 +137,7 @@ public class SmilesSearch extends JmolMolecule {
 
   int addNested(String pattern) {
     if (parent.htNested == null)
-      parent.htNested = new Hashtable();
+      parent.htNested = new Hashtable<String, Object>();
     setNested(++parent.nNested, pattern);
     return parent.nNested;
   }
@@ -533,13 +535,12 @@ public class SmilesSearch extends JmolMolecule {
         }
         return true;
       case SmilesBond.TYPE_BIO_PAIR:
-        Vector vLinks = new Vector();
+        List<Integer> vLinks = new ArrayList<Integer>();
         jmolAtom.getCrossLinkLeadAtomIndexes(vLinks);
         BitSet bs = BitSetUtil.copy(bsFound);
         jmolAtom.setGroupBits(bsFound);
         for (int j = 0; j < vLinks.size(); j++)
-          if (!checkMatch(newPatternAtom, atomNum, ((Integer) vLinks.get(j))
-              .intValue(), firstAtomOnly))
+          if (!checkMatch(newPatternAtom, atomNum, vLinks.get(j).intValue(), firstAtomOnly))
             return false;
         bsFound = bs;
         return true;
@@ -934,7 +935,7 @@ public class SmilesSearch extends JmolMolecule {
     // first, @ stereochemistry
 
     for (int i = 0; i < measures.size(); i++)
-      if (!((SmilesMeasure) measures.get(i)).check())
+      if (!measures.get(i).check())
         return false;
     if (haveAtomStereochemistry) {
 

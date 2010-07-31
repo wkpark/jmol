@@ -69,8 +69,8 @@ public class MolecularOrbital extends Isosurface {
   private int myColorPt;
   private String strID;
   private int moNumber;
-  private Hashtable htModels;
-  private Hashtable thisModel;
+  private Hashtable<String, Hashtable<String, Object>> htModels;
+  private Hashtable<String, Object> thisModel;
 
   @Override
   public void setProperty(String propertyName, Object value, BitSet bs) {
@@ -88,10 +88,10 @@ public class MolecularOrbital extends Isosurface {
       super.setProperty("init", null, null);
       super.setProperty("modelIndex", Integer.valueOf(modelIndex), null);
       if (htModels == null)
-        htModels = new Hashtable();
+        htModels = new Hashtable<String, Hashtable<String,Object>>();
       if (!htModels.containsKey(strID))
-        htModels.put(strID, new Hashtable());
-      thisModel = (Hashtable) htModels.get(strID);
+        htModels.put(strID, new Hashtable<String, Object>());
+      thisModel = htModels.get(strID);
       moNumber = (!thisModel.containsKey("moNumber") ? 0 : ((Integer) thisModel
           .get("moNumber")).intValue());
       return;
@@ -162,7 +162,7 @@ public class MolecularOrbital extends Isosurface {
       if (thisModel == null) {
         if (currentMesh == null)
           return;
-        thisModel = (Hashtable) htModels.get(currentMesh.thisID);
+        thisModel = htModels.get(currentMesh.thisID);
       }
       thisModel.put("moTranslucentLevel", value);
       //pass through
@@ -201,7 +201,7 @@ public class MolecularOrbital extends Isosurface {
       if (thisModel == null) {
         if (currentMesh == null)
           return;
-        thisModel = (Hashtable) htModels.get(currentMesh.thisID);
+        thisModel = htModels.get(currentMesh.thisID);
       }
       thisModel.put("moTranslucency", value);
       //pass through
@@ -209,7 +209,7 @@ public class MolecularOrbital extends Isosurface {
 
     if (propertyName == "deleteModelAtoms") {
       int modelIndex = ((int[]) ((Object[]) value)[2])[0];
-      Hashtable htModelsNew = new Hashtable();
+      Hashtable<String, Hashtable<String, Object>> htModelsNew = new Hashtable<String, Hashtable<String, Object>>();
       for (int i = meshCount; --i >= 0;) {
         if (meshes[i] == null)
           continue;
@@ -222,7 +222,7 @@ public class MolecularOrbital extends Isosurface {
           meshes = (IsosurfaceMesh[]) ArrayUtil.deleteElements(meshes, i, 1);
           continue;
         }
-        Hashtable htModel = (Hashtable) htModels.get(meshes[i].thisID);
+        Hashtable<String, Object> htModel = htModels.get(meshes[i].thisID);
         if (meshes[i].modelIndex > modelIndex) {
           meshes[i].modelIndex--;
           meshes[i].thisID = getId(meshes[i].modelIndex);
@@ -301,7 +301,7 @@ public class MolecularOrbital extends Isosurface {
   }
 
   private boolean getSettings(String strID) {
-    thisModel = (Hashtable) htModels.get(strID);
+    thisModel = htModels.get(strID);
     if (thisModel == null || thisModel.get("moNumber") == null)
       return false;
     moTranslucency = (String) thisModel.get("moTranslucency");
@@ -423,12 +423,12 @@ public class MolecularOrbital extends Isosurface {
   moColorPos = mo.moColorPos;
   moTranslucency = mo.moTranslucency;
   if (htModels == null)
-    htModels = new Hashtable();
-  Hashtable ht = mo.htModels;
+    htModels = new Hashtable<String, Hashtable<String, Object>>();
+  Hashtable<String, Hashtable<String, Object>> ht = mo.htModels;
   if (ht != null) {
-    Enumeration e = ht.keys();
+    Enumeration<String> e = ht.keys();
     while (e.hasMoreElements()) {
-      Object key = e.nextElement();
+      String key = e.nextElement();
       htModels.put(key, ht.get(key));
     }
   }

@@ -276,7 +276,7 @@ class SelectionManager {
       commands.append("function _setSelectionState() {\n");
     }
     StateManager.appendCmd(commands, viewer.getTrajectoryInfo());
-    Hashtable temp = new Hashtable();
+    Hashtable<String, BitSet> temp = new Hashtable<String, BitSet>();
     String cmd = null;
     addBs(commands, "hide ", bsHidden);
     addBs(commands, "subset ", bsSubset);

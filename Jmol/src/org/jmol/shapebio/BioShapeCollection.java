@@ -143,8 +143,8 @@ public abstract class BioShapeCollection extends Shape {
 
   @Override
   public String getShapeState() {
-    Hashtable temp = new Hashtable();
-    Hashtable temp2 = new Hashtable();    
+    Hashtable<String, BitSet> temp = new Hashtable<String, BitSet>();
+    Hashtable<String, BitSet> temp2 = new Hashtable<String, BitSet>();    
     for (int i = bioShapes.length; --i >= 0; ) {
       BioShape bioShape = bioShapes[i];
       if (bioShape.monomerCount > 0)

@@ -289,7 +289,8 @@ class BioShape {
     }
   }
 
-  void setShapeState(Hashtable temp, Hashtable temp2) {
+  void setShapeState(Hashtable<String, BitSet> temp,
+                     Hashtable<String, BitSet> temp2) {
     if (!isActive || bsSizeSet == null && bsColixSet == null)
       return;
     String type = JmolConstants.shapeClassBases[shape.shapeID];

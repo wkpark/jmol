@@ -144,7 +144,7 @@ public void setVisibilityFlags(BitSet bs) {
 
  @Override
 public String getShapeState() {
-    Hashtable temp = new Hashtable();
+    Hashtable<String, BitSet> temp = new Hashtable<String, BitSet>();
     float r = 0;
     for (int i = 0; i < atomCount; i++) {
       if (bsSizeSet != null && bsSizeSet.get(i)) {

@@ -1589,10 +1589,11 @@ public class StateManager {
 
   ///////// state serialization 
 
-  public static void setStateInfo(Hashtable ht, int i1, int i2, String key) {
+  public static void setStateInfo(Hashtable<String, BitSet> ht,
+                                  int i1, int i2, String key) {
     BitSet bs;
     if (ht.containsKey(key)) {
-      bs = (BitSet) ht.get(key);
+      bs = ht.get(key);
     } else {
       bs = new BitSet();
       ht.put(key, bs);
@@ -1609,15 +1610,17 @@ public class StateManager {
     return sv;
   }
 
-  public static String getCommands(Hashtable ht) {
+  public static String getCommands(Hashtable<String, BitSet> ht) {
     return getCommands(ht, null, "select");
   }
 
-  public static String getCommands(Hashtable htDefine, Hashtable htMore) {
+  public static String getCommands(Hashtable<String, BitSet> htDefine,
+                                   Hashtable<String, BitSet> htMore) {
     return getCommands(htDefine, htMore, "select");
   }
 
-  public static String getCommands(Hashtable htDefine, Hashtable htMore,
+  public static String getCommands(Hashtable<String, BitSet> htDefine,
+                                   Hashtable<String, BitSet> htMore,
                                    String selectCmd) {
     StringBuffer s = new StringBuffer();
     String setPrev = getCommands(htDefine, s, null, selectCmd);
@@ -1626,14 +1629,15 @@ public class StateManager {
     return s.toString();
   }
 
-  private static String getCommands(Hashtable ht, StringBuffer s,
-                                   String setPrev, String selectCmd) {
+  private static String getCommands(Hashtable<String, BitSet> ht,
+                                    StringBuffer s,
+                                    String setPrev, String selectCmd) {
     if (ht == null)
       return "";
-    Enumeration e = ht.keys();
+    Enumeration<String> e = ht.keys();
     while (e.hasMoreElements()) {
-      String key = (String) e.nextElement();
-      String set = Escape.escape((BitSet) ht.get(key));
+      String key = e.nextElement();
+      String set = Escape.escape(ht.get(key));
       if (set.length() < 5) // nothing selected
         continue;
       set = selectCmd + " " + set;

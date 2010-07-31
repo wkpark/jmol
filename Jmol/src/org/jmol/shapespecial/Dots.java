@@ -285,7 +285,7 @@ public class Dots extends AtomShape {
     if (dotsConvexMaps == null || ec.getDotsConvexMax() == 0)
       return "";
     StringBuffer s = new StringBuffer();
-    Hashtable temp = new Hashtable();
+    Hashtable<String, BitSet> temp = new Hashtable<String, BitSet>();
     int atomCount = viewer.getAtomCount();
     String type = (isSurface ? "geoSurface " : "dots ");
     for (int i = 0; i < atomCount; i++) {

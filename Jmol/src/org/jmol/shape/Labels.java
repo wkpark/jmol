@@ -44,7 +44,7 @@ public class Labels extends AtomShape {
   byte[] fids;
   int[] offsets;
 
-  private Hashtable atomLabels = new Hashtable();
+  private Hashtable<Integer, Text> atomLabels = new Hashtable<Integer, Text>();
   private Text text;
 
   private BitSet bsFontSet, bsBgColixSet;
@@ -317,7 +317,7 @@ public class Labels extends AtomShape {
     isActive = true;
     if (bsSizeSet == null)
       bsSizeSet = new BitSet();
-    String strLabel = (String) value;
+    String strLabel = value;
     boolean isScaled = viewer.getFontScaling();
     float scalePixelsPerMicron = (isScaled ? viewer
         .getScalePixelsPerAngstrom(false) * 10000f : 0);
@@ -330,7 +330,7 @@ public class Labels extends AtomShape {
     isActive = true;
     if (bsSizeSet == null)
       bsSizeSet = new BitSet();
-    String strLabel = (String) value;
+    String strLabel = value;
     boolean isScaled = viewer.getFontScaling();
     float scalePixelsPerMicron = (isScaled ? viewer
         .getScalePixelsPerAngstrom(false) * 10000f : 0);
@@ -388,13 +388,13 @@ public class Labels extends AtomShape {
 
   void putLabel(int i, Text text) {
     if (text == null)
-      atomLabels.remove(new Integer(i));
+      atomLabels.remove(Integer.valueOf(i));
     else
-      atomLabels.put(new Integer(i), text);
+      atomLabels.put(Integer.valueOf(i), text);
   }
 
   Text getLabel(int i) {
-    return (Text) atomLabels.get(new Integer(i));
+    return atomLabels.get(Integer.valueOf(i));
   }
 
   private void setColix(int i, short colix, byte pid) {
@@ -547,9 +547,9 @@ public class Labels extends AtomShape {
   public String getShapeState() {
     if (!isActive || bsSizeSet == null)
       return "";
-    Hashtable temp = new Hashtable();
-    Hashtable temp2 = new Hashtable();
-    Hashtable temp3 = new Hashtable();
+    Hashtable<String, BitSet> temp = new Hashtable<String, BitSet>();
+    Hashtable<String, BitSet> temp2 = new Hashtable<String, BitSet>();
+    Hashtable<String, BitSet> temp3 = new Hashtable<String, BitSet>();
     for (int i = bsSizeSet.nextSetBit(0); i >= 0; i = bsSizeSet
         .nextSetBit(i + 1)) {
       setStateInfo(temp, i, "label " + Escape.escape(formats[i]));

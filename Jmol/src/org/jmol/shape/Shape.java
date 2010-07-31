@@ -340,20 +340,24 @@ public abstract class Shape {
   public void setVisibilityFlags(BitSet bs) {
   }
 
-  static public void setStateInfo(Hashtable ht, int i, String key) {
+  static public void setStateInfo(Hashtable<String, BitSet> ht,
+                                  int i, String key) {
     setStateInfo(ht, i, i, key);
   }
 
-  static public void setStateInfo(Hashtable ht, int i1, int i2, String key) {
+  static public void setStateInfo(Hashtable<String, BitSet> ht,
+                                  int i1, int i2, String key) {
     StateManager.setStateInfo(ht, i1, i2, key);
   }
 
-  static public String getShapeCommands(Hashtable htDefine, Hashtable htMore) {
+  static public String getShapeCommands(Hashtable<String, BitSet> htDefine,
+                                        Hashtable<String, BitSet> htMore) {
     return StateManager.getCommands(htDefine, htMore);
   }
 
-  static public String getShapeCommands(Hashtable htDefine, Hashtable htMore,
-                                 String selectCmd) {
+  static public String getShapeCommands(Hashtable<String, BitSet> htDefine,
+                                        Hashtable<String, BitSet> htMore,
+                                        String selectCmd) {
     return StateManager.getCommands(htDefine, htMore, selectCmd);
   }
 

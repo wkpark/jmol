@@ -127,7 +127,7 @@ public class Hover extends TextShape {
 
   @Override
   public String getShapeState() {
-    Hashtable temp = new Hashtable();
+    Hashtable<String, BitSet> temp = new Hashtable<String, BitSet>();
     if (atomFormats != null)
       for (int i = viewer.getAtomCount(); --i >= 0;)
         if (atomFormats[i] != null)

@@ -202,8 +202,8 @@ public class Sticks extends Shape {
 
   @Override
   public String getShapeState() {
-    Hashtable temp = new Hashtable();
-    Hashtable temp2 = new Hashtable();
+    Hashtable<String, BitSet> temp = new Hashtable<String, BitSet>();
+    Hashtable<String, BitSet> temp2 = new Hashtable<String, BitSet>();
     boolean haveTainted = false;
     Bond[] bonds = modelSet.getBonds();
     short r;

@@ -593,7 +593,7 @@ public String getShapeState() {
     appendCmd(commands, "select *; set measures " + viewer.getMeasureDistanceUnits());
     appendCmd(commands, getFontCommand("measures", font3d));
     int nHidden = 0;
-    Hashtable temp = new Hashtable();
+    Hashtable<String, BitSet> temp = new Hashtable<String, BitSet>();
     BitSet bs = new BitSet(measurementCount);
     for (int i = 0; i < measurementCount; i++) {
       Measurement m = ((Measurement) measurements.get(i));

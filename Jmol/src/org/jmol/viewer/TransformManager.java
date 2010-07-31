@@ -903,6 +903,7 @@ abstract class TransformManager {
     slabPercentSetting += percentage;
     if (depthPercentSetting >= slabPercentSetting)
       depthPercentSetting = slabPercentSetting - 1;
+//    System.out.println("transformManager slab/depthpercentSetting: " + slabPercentSetting + " " + depthPercentSetting);
   }
 
   void depthByPercentagePoints(int percentage) {
@@ -910,6 +911,7 @@ abstract class TransformManager {
     depthPercentSetting += percentage;
     if (slabPercentSetting <= depthPercentSetting)
       slabPercentSetting = depthPercentSetting + 1;
+//    System.out.println("transformManager slab/depthpercentSetting: " + slabPercentSetting + " " + depthPercentSetting);
   }
 
   void slabDepthByPercentagePoints(int percentage) {
@@ -917,6 +919,7 @@ abstract class TransformManager {
     depthPlane = null;
     slabPercentSetting += percentage;
     depthPercentSetting += percentage;
+//    System.out.println("transformManager slab/depthpercentSetting: " + slabPercentSetting + " " + depthPercentSetting);
   }
 
   void slabToPercent(int percentSlab) {

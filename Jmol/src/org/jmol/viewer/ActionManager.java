@@ -1137,6 +1137,7 @@ public class ActionManager {
       return;
     }
     if (viewer.getSlabEnabled()) {
+      //System.out.println(Binding.getMouseActionName(action, false));
       if (isBound(action, ACTION_depth)) {
         viewer.depthByPixels(deltaY);
         return;

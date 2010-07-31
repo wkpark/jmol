@@ -5183,6 +5183,9 @@
   <fah_proj number="2631" name="p2631_CGVES" public="y"
     server="171.67.108.24" atoms="102731" preferred="3" deadline="4"
     credit="462" frames="100" code="A3" contact="kasson" kfactor="3.1"/>
+  <fah_proj number="2633" name="p2633_CGVES" public="n"
+    server="171.67.108.24" atoms="102731" preferred="1.2" deadline="2"
+    credit="235" frames="100" code="A3" contact="kasson" kfactor="3.1"/>
   <fah_proj number="2650" name="p2650_Protein" public="n" file="xyz"
     server="171.64.65.64" preferred="3" deadline="3"
     credit="1148" code="GS" contrib="7up1n3"/>
@@ -8935,7 +8938,7 @@
   <fah_proj number="10871" name="Abeta42_mono" public="n" file="xyz"
     server="171.64.122.84" atoms="34350" preferred="40" deadline="60"
     credit="207" frames="100" code="G" contact="lin5" contrib="SandStar"/>
-  <fah_proj number="10872" name="Abeta42_mono" public="n"
+  <fah_proj number="10872" name="Abeta42_mono" public="n" file="xyz"
     server="171.64.122.84" atoms="34350" preferred="40" deadline="60"
     credit="207" frames="100" code="G" contact="lin5"/>
   <fah_proj number="10873" name="Abeta42_mono" public="n" file="xyz"

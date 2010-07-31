@@ -7553,7 +7553,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.dipoleScale;
   }
 
-  public void getAtomIdentityInfo(int atomIndex, Hashtable info) {
+  public void getAtomIdentityInfo(int atomIndex, Hashtable<String, Object> info) {
     modelSet.getAtomIdentityInfo(atomIndex, info);
   }
 

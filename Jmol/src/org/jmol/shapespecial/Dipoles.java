@@ -565,19 +565,19 @@ public class Dipoles extends Shape {
   @Override
   public Vector getShapeDetail() {
     Vector V = new Vector();
-    Hashtable atomInfo;
+    Hashtable<String, Object> atomInfo;
     for (int i = 0; i < dipoleCount; i++) {
-      Hashtable info = new Hashtable();
+      Hashtable<String, Object> info = new Hashtable<String, Object>();
       Dipole dipole = dipoles[i];
       info.put("ID", dipole.thisID);
       info.put("vector", dipole.vector);
       info.put("origin", dipole.origin);
       if (dipole.atoms[0] != null) {
-        atomInfo = new Hashtable();
+        atomInfo = new Hashtable<String, Object>();
         viewer.getAtomIdentityInfo(dipole.atoms[0].getIndex(), atomInfo);
         Vector atoms = new Vector();
         atoms.addElement(atomInfo);
-        atomInfo = new Hashtable();
+        atomInfo = new Hashtable<String, Object>();
         viewer.getAtomIdentityInfo(dipole.atoms[1].getIndex(), atomInfo);
         atoms.addElement(atomInfo);
         info.put("atoms", atoms);

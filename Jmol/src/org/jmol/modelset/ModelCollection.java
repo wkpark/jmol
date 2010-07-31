@@ -3162,7 +3162,7 @@ abstract public class ModelCollection extends BondCollection {
     return V;
   }
 
-  public void getAtomIdentityInfo(int i, Hashtable info) {
+  public void getAtomIdentityInfo(int i, Hashtable<String, Object> info) {
     info.put("_ipt", Integer.valueOf(i));
     info.put("atomIndex", Integer.valueOf(i));
     info.put("atomno", Integer.valueOf(getAtomNumber(i)));
@@ -3172,7 +3172,7 @@ abstract public class ModelCollection extends BondCollection {
   
   private Hashtable getAtomInfoLong(int i) {
     Atom atom = atoms[i];
-    Hashtable info = new Hashtable();
+    Hashtable<String, Object> info = new Hashtable<String, Object>();
     getAtomIdentityInfo(i, info);
     info.put("element", getElementName(i));
     info.put("elemno", Integer.valueOf(getElementNumber(i)));
@@ -3242,9 +3242,9 @@ abstract public class ModelCollection extends BondCollection {
     Atom atom2 = bond.atom2;
     Hashtable info = new Hashtable();
     info.put("_bpt", Integer.valueOf(i));
-    Hashtable infoA = new Hashtable();
+    Hashtable<String, Object> infoA = new Hashtable<String, Object>();
     getAtomIdentityInfo(atom1.index, infoA);
-    Hashtable infoB = new Hashtable();
+    Hashtable<String, Object> infoB = new Hashtable<String, Object>();
     getAtomIdentityInfo(atom2.index, infoB);
     info.put("atom1",infoA);
     info.put("atom2",infoB);

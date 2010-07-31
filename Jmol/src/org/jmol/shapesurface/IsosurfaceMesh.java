@@ -97,8 +97,8 @@ public class IsosurfaceMesh extends Mesh {
     isColorSolid = false;
   }
 
-  Hashtable assocGridPointMap ;
-  Hashtable assocGridPointNormals;
+  Hashtable<Integer, Integer> assocGridPointMap;
+  Hashtable<Integer, Vector3f> assocGridPointNormals;
 
   int addVertexCopy(Point3f vertex, float value, int assocVertex, boolean associateNormals) {
     int vPt = addVertexCopy(vertex, value);
@@ -118,8 +118,8 @@ public class IsosurfaceMesh extends Mesh {
         firstRealVertex = vPt;
       if (associateNormals) {
         if (assocGridPointMap == null) {
-          assocGridPointMap = new Hashtable();
-          assocGridPointNormals = new Hashtable();
+          assocGridPointMap = new Hashtable<Integer, Integer>();
+          assocGridPointNormals = new Hashtable<Integer, Vector3f>();
         }
         Integer key = Integer.valueOf(assocVertex);
         assocGridPointMap.put(Integer.valueOf(vPt), key);
@@ -205,17 +205,15 @@ public class IsosurfaceMesh extends Mesh {
      *  
      */
     if (assocGridPointMap != null) {
-      Enumeration e = assocGridPointMap.keys();
+      Enumeration<Integer> e = assocGridPointMap.keys();
       while (e.hasMoreElements()) {
-        Integer I = (Integer) e.nextElement();
-        ((Vector3f) assocGridPointNormals.get(assocGridPointMap.get(I)))
-            .add(vectorSums[I.intValue()]);
+        Integer I = e.nextElement();
+        assocGridPointNormals.get(assocGridPointMap.get(I)).add(vectorSums[I.intValue()]);
       }
       e = assocGridPointMap.keys();
       while (e.hasMoreElements()) {
-        Integer I = (Integer) e.nextElement();
-        vectorSums[I.intValue()] = ((Vector3f) assocGridPointNormals
-            .get(assocGridPointMap.get(I)));
+        Integer I = e.nextElement();
+        vectorSums[I.intValue()] = assocGridPointNormals.get(assocGridPointMap.get(I));
       }
     }
   }
@@ -319,7 +317,7 @@ public class IsosurfaceMesh extends Mesh {
             vertexValues, iA, iB, iC, value);
   }
 
-  public static void setContourVector(Vector v, int nPolygons,
+  public static void setContourVector(Vector<Object> v, int nPolygons,
                                       BitSet bsContour, float value, short colix,
                                       int color, StringBuffer fData) {
     v.add(JvxlCoder.CONTOUR_NPOLYGONS, Integer.valueOf(nPolygons));
@@ -494,10 +492,10 @@ public class IsosurfaceMesh extends Mesh {
    * @return a Hashtable containing "values" and "colors"
    * 
    */
-  Hashtable getContourList(Viewer viewer) {
-    Hashtable ht = new Hashtable();
+  Hashtable<String, Object> getContourList(Viewer viewer) {
+    Hashtable<String, Object> ht = new Hashtable<String, Object>();
     ht.put("values", (jvxlData.contourValuesUsed == null ? jvxlData.contourValues : jvxlData.contourValuesUsed));
-    Vector colors = new Vector();
+    Vector<Point3f> colors = new Vector<Point3f>();
     if (jvxlData.contourColixes != null) {
       // set in SurfaceReader.colorData()
       for (int i = 0; i < jvxlData.contourColixes.length; i++) {

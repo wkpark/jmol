@@ -522,7 +522,7 @@ abstract public class MOReader extends BasisFunctionReader {
     }
   }
 
-  protected void addMOData(int nColumns, Vector[] data, Hashtable[] mos) {
+  protected void addMOData(int nColumns, Vector[] data, Hashtable<String, Object>[] mos) {
     for (int i = 0; i < nColumns; i++) {
       float[] coefs = new float[data[i].size()];
       for (int j = coefs.length; --j >= 0;)

@@ -387,7 +387,7 @@ but:
   private void readMolecularOrbitals() throws Exception {
     if (shells == null)
       return;
-    Hashtable[] mos = new Hashtable[5];
+    Hashtable<String, Object>[] mos = new Hashtable[5];
     Vector[] data = new Vector[5];
     int nThisLine = 0;
     while (readLine() != null
@@ -398,7 +398,7 @@ but:
         tokens = getTokens(readLine());
         nThisLine = tokens.length;
         for (int i = 0; i < nThisLine; i++) {
-          mos[i] = new Hashtable();
+          mos[i] = new Hashtable<String, Object>();
           data[i] = new Vector();
           String sym = tokens[i];
           mos[i].put("symmetry", sym);

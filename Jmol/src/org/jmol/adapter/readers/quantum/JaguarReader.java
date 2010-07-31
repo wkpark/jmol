@@ -311,7 +311,7 @@ public class JaguarReader extends MOReader {
       fillDataBlock(dataBlock);
       for (int iOrb = 0; iOrb < n; iOrb++) {
         float[] coefs = new float[moCount];
-        Hashtable mo = new Hashtable();
+        Hashtable<String, Object> mo = new Hashtable<String, Object>();
         float energy = parseFloat(eigenValues[iOrb + 1]);
         mo.put("energy", new Float(energy));
         if (Math.abs(energy - lumoEnergy) < 0.0001) {
@@ -325,7 +325,7 @@ public class JaguarReader extends MOReader {
           char ch = type.charAt(0);
           if (!isQuantumBasisSupported(ch))
             continue;
-          coefs[pt] = parseFloat((String) dataBlock[i][iOrb + 3]);
+          coefs[pt] = parseFloat(dataBlock[i][iOrb + 3]);
           pt++;
         }
         mo.put("coefficients", coefs);

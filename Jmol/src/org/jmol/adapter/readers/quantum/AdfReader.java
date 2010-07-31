@@ -66,8 +66,8 @@ import java.util.Vector;
 public class AdfReader extends SlaterReader {
 
   
-  private Hashtable htSymmetries;
-  private Vector vSymmetries;
+  private Hashtable<String, SymmetryData> htSymmetries;
+  private Vector<SymmetryData> vSymmetries;
   private String energy = null;
   private int nXX = 0;
   private String symLine;
@@ -228,8 +228,8 @@ OR
  B1
  B2
      */
-    vSymmetries = new Vector();
-    htSymmetries = new Hashtable();
+    vSymmetries = new Vector<SymmetryData>();
+    htSymmetries = new Hashtable<String, SymmetryData>();
     readLine();
     int index = 0;
     String syms = "";
@@ -249,7 +249,7 @@ OR
     int nSFO;
     int nBF;
     float[][] coefs;
-    Hashtable[] mos;
+    Hashtable<String, Object>[] mos;
     int[] basisFunctions;
     public SymmetryData(int index, String sym) {
       Logger.info("ADF reader creating SymmetryData " + sym + " " + index);
@@ -264,7 +264,7 @@ OR
       return;
     int nBF = 0;
     for (int i = 0; i < vSymmetries.size(); i++) {
-      SymmetryData sd = (SymmetryData) vSymmetries.get(i);
+      SymmetryData sd = vSymmetries.get(i);
       Logger.info(sd.sym);
       discardLinesUntilContains("=== " + sd.sym + " ===");
       if (line == null) {
@@ -363,7 +363,7 @@ OR
     2   -1.38294969376236E-01 -1.62913073678337E-02 -1.31464541737858E-01  5.35848303329039E-01
     3    3.86427624200707E-02  2.84046375688973E-02  3.66872765902448E-02 -2.21326610798233E-01
      */
-    SymmetryData sd = (SymmetryData) htSymmetries.get(sym);
+    SymmetryData sd = htSymmetries.get(sym);
     if (sd == null)
       return;
     int ptSym = sd.index;
@@ -385,7 +385,7 @@ OR
       }
     }
     for (int i = 0; i < sd.nSFO; i++) {
-      Hashtable mo = new Hashtable();
+      Hashtable<String, Object> mo = new Hashtable<String, Object>();
       mo.put("coefficients", sd.coefs[i]);
       //System.out.println(i + " " + Escape.escapeArray(sd.coefs[i]));
       mo.put("id", sym + " " + (i + 1));
@@ -412,13 +412,13 @@ OR
       // could be spin here?
       float occ = parseFloat(tokens[len - 3]);
       float energy = parseFloat(tokens[len - 1]); // eV
-      sd = (SymmetryData) htSymmetries.get(sym);
+      sd = htSymmetries.get(sym);
       if (sd == null) {
-        Enumeration e = htSymmetries.keys();
+        Enumeration<String> e = htSymmetries.keys();
         while (e.hasMoreElements()) {
-          String symfull = (String) e.nextElement();
+          String symfull = e.nextElement();
           if (symfull.startsWith(sym + ":"))
-            addMo((SymmetryData) htSymmetries.get(symfull), moPt, (occ > 2 ? 2 : occ), energy);            
+            addMo(htSymmetries.get(symfull), moPt, (occ > 2 ? 2 : occ), energy);            
         }
       } else {
         addMo(sd, moPt, occ, energy);
@@ -433,7 +433,7 @@ OR
   }
 
   private void addMo(SymmetryData sd, int moPt, float occ, float energy) {
-    Hashtable mo = sd.mos[moPt - 1];
+    Hashtable<String, Object> mo = sd.mos[moPt - 1];
     mo.put("occupancy", new Float(occ));
     mo.put("energy", new Float(energy)); //eV
     mo.put("symmetry", sd.sym + "_" + moPt);

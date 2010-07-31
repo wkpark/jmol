@@ -184,7 +184,7 @@ public class MopacGraphfReader extends MopacSlaterReader {
     // read MO energies and occupancies, and fill "coefficients" element
     float[] values = new float[2];
     for (int iMo = 0; iMo < nOrbitals; iMo++) {
-      Hashtable mo = new Hashtable();
+      Hashtable<String, Object> mo = new Hashtable<String, Object>();
       if (readLine() != null) {
         getTokensFloat(line, values, 2);
         mo.put("energy", new Float(values[0]));

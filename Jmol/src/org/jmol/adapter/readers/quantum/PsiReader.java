@@ -376,7 +376,7 @@ Orbital energies (a.u.):
     //TODO: This reader will fail for G orbitals
     //TODO: No way to check order
     
-    Hashtable[] mos = new Hashtable[5];
+    Hashtable<String, Object>[] mos = new Hashtable[5];
     Vector[] data = new Vector[5];
     int nThisLine = 0;
     while (readLine() != null && line.toUpperCase().indexOf("DENS") < 0) {
@@ -387,7 +387,7 @@ Orbital energies (a.u.):
         nThisLine = tokens.length;
         tokens = getTokens(readLine());
         for (int i = 0; i < nThisLine; i++) {
-          mos[i] = new Hashtable();
+          mos[i] = new Hashtable<String, Object>();
           data[i] = new Vector();
           mos[i].put("symmetry", tokens[i]);
         }

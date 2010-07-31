@@ -38,14 +38,14 @@ import java.util.Vector;
  */
 abstract class BasisFunctionReader extends AtomSetCollectionReader {
 
-  protected Hashtable moData = new Hashtable();
+  protected Hashtable<String, Object> moData = new Hashtable<String, Object>();
   protected Vector orbitals = new Vector();
   protected int nOrbitals = 0;
   
 
   protected int[][] dfCoefMaps;
   
-  protected void setMO(Hashtable mo) {
+  protected void setMO(Hashtable<String, Object> mo) {
     if (dfCoefMaps != null)
       mo.put("dfCoefMaps", dfCoefMaps);
     orbitals.add(mo);

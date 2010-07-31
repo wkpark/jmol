@@ -185,7 +185,7 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
           int pt = ptSlater[i];
           list[pt] = parseFloat(tokens[i]);
         }
-        Hashtable mo = new Hashtable();
+        Hashtable<String, Object> mo = new Hashtable<String, Object>();
         mo.put("energy", new Float(energy));
         mo.put("coefficients", list);
         mo.put("symmetry", symmetry + "_" + iOrb);

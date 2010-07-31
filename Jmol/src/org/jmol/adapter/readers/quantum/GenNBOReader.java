@@ -331,7 +331,7 @@ public class GenNBOReader extends MOReader {
     Logger.info(sb.toString());
     tokens = getTokens(sb.toString());
     for (int i = 0; i < tokens.length; i++) {
-      Hashtable mo = new Hashtable();
+      Hashtable<String, Object> mo = new Hashtable<String, Object>();
       setMO(mo);
     }
     if (ntype.equals("MO"))

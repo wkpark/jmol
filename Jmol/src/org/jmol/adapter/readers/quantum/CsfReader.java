@@ -23,7 +23,8 @@
  */
 package org.jmol.adapter.readers.quantum; 
 
-import org.jmol.adapter.smarter.*;
+import org.jmol.adapter.smarter.Atom;
+import org.jmol.adapter.smarter.Bond;
 import org.jmol.api.JmolAdapter;
 
 import java.util.Hashtable;
@@ -54,7 +55,7 @@ public class CsfReader extends MopacSlaterReader {
   private int nGaussians = 0;
   private int nSlaters = 0;
   
-  private Hashtable htBonds;
+  private Hashtable<String, Bond> htBonds;
   
   @Override
   protected boolean checkLine() throws Exception {
@@ -116,11 +117,11 @@ public class CsfReader extends MopacSlaterReader {
         );
   }
 
-  private Hashtable propertyItemCounts = new Hashtable();
+  private Hashtable<String, Integer> propertyItemCounts = new Hashtable<String, Integer>();
   private final int[] fieldTypes = new int[100]; // should be enough
   
   private int getPropertyCount(String what) {
-    Integer count = (Integer)(propertyItemCounts.get(what));
+    Integer count = propertyItemCounts.get(what);
     return (what.equals("ID") ? 1 : count == null ? 0 : count.intValue());
   }
   
@@ -196,10 +197,10 @@ public class CsfReader extends MopacSlaterReader {
     objCls1, objID1, objCls2, objID2
   };
   
-  private Hashtable connectors;
+  private Hashtable<String, int[]> connectors;
   
   private void processConnectorObject() throws Exception {
-    connectors = new Hashtable();
+    connectors = new Hashtable<String, int[]>();
     readLine();
     parseLineParameters(connectorFields, connectorFieldMap);
     out: for (; readLine() != null;) {
@@ -241,10 +242,10 @@ public class CsfReader extends MopacSlaterReader {
       }
       if (thisAtomID != Integer.MIN_VALUE && thisBondID != null) {
         if (connectors.containsKey(thisBondID)) {
-          int[] connect = (int[])connectors.get(thisBondID);
+          int[] connect = connectors.get(thisBondID);
           connect[1] = thisAtomID;
           if (htBonds != null) {
-            Bond bond = (Bond) htBonds.get(thisBondID);
+            Bond bond = htBonds.get(thisBondID);
             setBond(bond, connect);
           }
         } else {
@@ -372,10 +373,10 @@ public class CsfReader extends MopacSlaterReader {
           bond.order = order;
           if (connectors == null) {
             if (htBonds == null)
-              htBonds = new Hashtable();
+              htBonds = new Hashtable<String, Bond>();
             htBonds.put(thisBondID, bond);
           } else {
-            int[] connect = (int[]) connectors.get(thisBondID);
+            int[] connect = connectors.get(thisBondID);
             setBond(bond, connect);
           }
           break;
@@ -566,7 +567,7 @@ public class CsfReader extends MopacSlaterReader {
       for (int i = 0; i < nOrbitals; i++)
         if (Math.abs(list[iMo][i]) < MIN_COEF)
           list[iMo][i] = 0;
-      Hashtable mo = new Hashtable();
+      Hashtable<String, Object> mo = new Hashtable<String, Object>();
       mo.put("energy", new Float(energy[iMo]));
       mo.put("occupancy", new Float(occupancy[iMo]));
       mo.put("coefficients", list[iMo]);
@@ -638,8 +639,8 @@ public class CsfReader extends MopacSlaterReader {
       }
     }
     if (isGaussian) {
-      Vector sdata = new Vector();
-      Vector gdata = new Vector();
+      Vector<int[]> sdata = new Vector<int[]>();
+      Vector<float[]> gdata = new Vector<float[]>();
       int iShell = 0;
       int gaussianCount = 0;
       for (int ipt = 0; ipt < nGaussians; ipt++) {
@@ -647,8 +648,7 @@ public class CsfReader extends MopacSlaterReader {
           iShell = shells[ipt];
           int[] slater = new int[4];
           int iAtom = atomSetCollection
-              .getAtomSerialNumberIndex(((int[]) (connectors.get(sto_gto
-                  + "_basis_fxn" + (ipt + 1))))[0]);
+              .getAtomSerialNumberIndex((connectors.get(sto_gto + "_basis_fxn" + (ipt + 1)))[0]);
           slater[0] = iAtom;
           slater[1] = JmolAdapter.getQuantumShellTagID(types[ipt]
               .substring(0, 1));
@@ -660,13 +660,12 @@ public class CsfReader extends MopacSlaterReader {
           sdata.addElement(slater);
           gaussianCount += nZ;
           for (int i = 0; i < nZ; i++)
-            gdata.addElement(new float[] { zetas[ipt][i],
-                contractionCoefs[ipt][i] });
+            gdata.addElement(new float[] { zetas[ipt][i], contractionCoefs[ipt][i] });
         }
       }
       float[][] garray = new float[gaussianCount][];
       for (int i = 0; i < gaussianCount; i++)
-        garray[i] = (float[]) gdata.get(i);
+        garray[i] = gdata.get(i);
       moData.put("shells", sdata);
       moData.put("gaussians", garray);
     } else {

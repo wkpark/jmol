@@ -191,7 +191,7 @@ public class MoldenReader extends MopacSlaterReader {
     
     String[] tokens = getTokens();
     while (tokens != null &&  line.indexOf('[') < 0) {
-      Hashtable mo = new Hashtable();
+      Hashtable<String, Object> mo = new Hashtable<String, Object>();
       Vector data = new Vector();
       float energy = Float.NaN;
       float occupancy = Float.NaN;

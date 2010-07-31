@@ -159,7 +159,7 @@ public class IsosurfaceMesh extends Mesh {
     for (int i = 0; i < n; i++)
       v[i] /= 2;
     if (justOne)
-      return calculatedArea = new Float(v[0]);
+      return calculatedArea = Float.valueOf((float) v[0]);
     return calculatedArea = v;
   }
 
@@ -184,7 +184,7 @@ public class IsosurfaceMesh extends Mesh {
     for (int i = 0; i < n; i++)
       v[i] /= 6;
     if (justOne)
-      return calculatedVolume = new Float(v[0]);
+      return calculatedVolume = Float.valueOf((float) v[0]);
     return calculatedVolume = v;
   }
 

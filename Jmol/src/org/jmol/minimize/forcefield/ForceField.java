@@ -129,7 +129,7 @@ abstract public class ForceField {
     calc.setPreliminary(stepMax > 0);
     e0 = energyFull(false, false);
     s = TextFormat.sprintf(" Initial E = %10.3f " + calc.getUnit() + " criterion = %8.6f max steps = " + stepMax, 
-        new Object[] { new Float(e0), new Float(criterion) });
+        new Object[] { Float.valueOf((float) e0), Float.valueOf((float) criterion) });
     minimizer.report(s, false);
     calc.appendLogData(s);
   }
@@ -283,7 +283,7 @@ abstract public class ForceField {
 
     if (!isSilent && calc.loggingEnabled)      
       calc.appendLogData(TextFormat.sprintf("\nTOTAL ENERGY = %8.3f %s\n", 
-          new Object[] {new Float(energy), getUnits() }));
+          new Object[] {Float.valueOf((float) energy), getUnits() }));
     return energy;
   }
 

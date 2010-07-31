@@ -169,7 +169,7 @@ In Chem3D, all grid data in following format:
       atomSetCollection.setVoxelData(voxelData);
       Hashtable surfaceInfo = new Hashtable();
       surfaceInfo.put("surfaceDataType", "mo");
-      surfaceInfo.put("defaultCutoff", new Float(0.01));
+      surfaceInfo.put("defaultCutoff", Float.valueOf((float) 0.01));
       surfaceInfo.put("nCubeData", Integer.valueOf(nData));
       surfaceInfo.put("volumeData", atomSetCollection.getVolumeData());
       atomSetCollection.setAtomSetAuxiliaryInfo("jmolSurfaceInfo", surfaceInfo);

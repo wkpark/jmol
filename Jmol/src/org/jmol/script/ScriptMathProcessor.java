@@ -3058,7 +3058,7 @@ class ScriptMathProcessor {
         sum = sum2;
         break;
       }
-      return new Float(sum);
+      return Float.valueOf((float) sum);
     }
     return "NaN";
   }

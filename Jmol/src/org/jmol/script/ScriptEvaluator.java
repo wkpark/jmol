@@ -1536,7 +1536,7 @@ public class ScriptEvaluator {
       sum /= n;
       break;
     }
-    return new Float(sum);
+    return Float.valueOf((float) sum);
   }
 
   private void setBitsetProperty(BitSet bs, int tok, int iValue, float fValue,
@@ -15559,7 +15559,7 @@ public class ScriptEvaluator {
       case Token.molecular:
         surfaceObjectSeen = true;
         propertyName = "molecular";
-        propertyValue = new Float(1.4);
+        propertyValue = Float.valueOf((float) 1.4);
         sbCommand.append(" molecular");
         break;
       case Token.object:

@@ -1098,7 +1098,7 @@ class CalculationsUFF extends Calculations {
       break;
     }
     return TextFormat.sprintf("\n     TOTAL %s ENERGY = %8.3f %s\n", 
-        new Object[] { s, getUnit(), new Float(energy) });
+        new Object[] { s, getUnit(), Float.valueOf((float) energy) });
   }
 
 }

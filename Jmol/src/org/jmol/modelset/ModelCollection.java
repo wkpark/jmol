@@ -3184,7 +3184,7 @@ abstract public class ModelCollection extends BondCollection {
       info.put("vibVector", new Vector3f(vibrationVectors[i]));
     }
     info.put("bondCount", Integer.valueOf(atom.getCovalentBondCount()));
-    info.put("radius", new Float((atom.getRasMolRadius() / 120.0)));
+    info.put("radius", Float.valueOf((float) (atom.getRasMolRadius() / 120.0)));
     info.put("model", atom.getModelNumberForLabel());
     info.put("visible", Boolean.valueOf(atoms[i].isVisible(0)));
     info.put("clickabilityFlags", Integer.valueOf(atom.clickabilityFlags));
@@ -3248,9 +3248,9 @@ abstract public class ModelCollection extends BondCollection {
     getAtomIdentityInfo(atom2.index, infoB);
     info.put("atom1",infoA);
     info.put("atom2",infoB);
-    info.put("order", new Float(JmolConstants.getBondOrderNumberFromOrder(bonds[i].order)));
-    info.put("radius", new Float(bond.mad/2000.));
-    info.put("length_Ang",new Float(atom1.distance(atom2)));
+    info.put("order", Float.valueOf(JmolConstants.getBondOrderNumberFromOrder(bonds[i].order)));
+    info.put("radius", Float.valueOf((float) (bond.mad/2000.)));
+    info.put("length_Ang", Float.valueOf(atom1.distance(atom2)));
     info.put("visible", Boolean.valueOf(bond.shapeVisibilityFlags != 0));
     String strColor = Escape.escapeColor(viewer.getColorArgbOrGray(bond.colix));
     if (strColor != null) 

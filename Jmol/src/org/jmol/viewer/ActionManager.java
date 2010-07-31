@@ -340,10 +340,10 @@ public class ActionManager {
     return -1;
   }
 
-  public Hashtable getMouseInfo() {
-    Hashtable info = new Hashtable();
+  public Hashtable<String, Object> getMouseInfo() {
+    Hashtable<String, Object> info = new Hashtable<String, Object>();
     Vector vb = new Vector();
-    Enumeration e = binding.getBindings().elements();
+    Enumeration<Object> e = binding.getBindings().elements();
     while (e.hasMoreElements()) {
       Object obj = e.nextElement();
       if (obj instanceof Boolean)
@@ -1172,12 +1172,12 @@ public class ActionManager {
                                   int deltaX, int deltaY, long time, int mode) {
     if (!binding.isUserAction(action))
       return false;
-    Hashtable ht = binding.getBindings();
-    Enumeration e = ht.keys();
+    Hashtable<String, Object> ht = binding.getBindings();
+    Enumeration<String> e = ht.keys();
     boolean ret = false;
     Object obj;
     while (e.hasMoreElements()) {
-      String key = (String) e.nextElement();
+      String key = e.nextElement();
       if (key.indexOf(action + "\t") != 0 
           || !((obj = ht.get(key)) instanceof String[]))
         continue;

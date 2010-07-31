@@ -1935,17 +1935,17 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static byte ATOMID_HO3_PRIME       = 89;
   public final static byte ATOMID_HO5_PRIME       = 90;
 
-  private static Hashtable htSpecialAtoms = new Hashtable();
+  private static Hashtable<String, Integer> htSpecialAtoms = new Hashtable<String, Integer>();
   static {
     for (int i = specialAtomNames.length; --i >= 0; ) {
       String specialAtomName = specialAtomNames[i];
       if (specialAtomName != null)
-        htSpecialAtoms.put(specialAtomName,  new Integer(i));
+        htSpecialAtoms.put(specialAtomName,  Integer.valueOf(i));
     }
   }
 
   public static byte lookupSpecialAtomID(String atomName) {
-    Integer boxedAtomID = (Integer) htSpecialAtoms.get(atomName);
+    Integer boxedAtomID = htSpecialAtoms.get(atomName);
     if (boxedAtomID != null)
       return (byte) (boxedAtomID.intValue());
     return 0;

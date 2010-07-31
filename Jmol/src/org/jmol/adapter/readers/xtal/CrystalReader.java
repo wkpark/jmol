@@ -33,7 +33,9 @@ import org.jmol.util.Quaternion;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.TextFormat;
 
+import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.List;
 import java.util.Vector;
 
 import javax.vecmath.Matrix3f;
@@ -520,7 +522,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       primitiveToIndex[i] = -1;
 
     for (int i = vInputCoords.size(); --i >= 0;) {
-      line = (String) vInputCoords.get(i);
+      line = vInputCoords.get(i);
       int iConv = parseInt(line.substring(0, 4)) - 1;
       iPrim = indexToPrimitive[iConv];
       if (iPrim >= 0)
@@ -593,7 +595,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     return atomicNumber;
   }
 
-  private Vector vInputCoords;
+  private Vector<String> vInputCoords;
 
   /*
    * INPUT COORDINATES
@@ -606,7 +608,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     // we only store them, because we may want to delete some
     readLine();
     readLine();
-    vInputCoords = new Vector();
+    vInputCoords = new Vector<String>();
     while (readLine() != null && line.length() > 0)
       vInputCoords.add(line);
   }
@@ -616,7 +618,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     int atomCount = vInputCoords.size();
     for (int i = 0; i < atomCount; i++) {
       Atom atom = atomSetCollection.addNewAtom();
-      String[] tokens = getTokens((String) vInputCoords.get(i));
+      String[] tokens = getTokens(vInputCoords.get(i));
       int atomicNumber, offset;
       if (tokens.length == 7) {
         atomicNumber = getAtomicNumber(tokens[2]);
@@ -751,7 +753,7 @@ public class CrystalReader extends AtomSetCollectionReader {
   private void readFrequencies() throws Exception {
     discardLinesUntilContains(isVersion3 ? "MODES          EV" : "MODES         EIGV");
     readLine();
-    Vector vData = new Vector();
+    List<String[]> vData = new ArrayList<String[]>();
     int freqAtomCount = atomCount;
     while (readLine() != null && line.length() > 0) {
       int i0 = parseInt(line.substring(1, 5));
@@ -789,7 +791,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       boolean[] ignore = new boolean[frequencyCount];
       int iAtom0 = 0;
       for (int i = 0; i < frequencyCount; i++) {
-        data = (String[]) vData.get(vibrationNumber);
+        data = vData.get(vibrationNumber);
         ignore[i] = (!doGetVibration(++vibrationNumber) || data == null);
         if (ignore[i])
           continue;

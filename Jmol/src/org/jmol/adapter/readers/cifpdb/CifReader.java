@@ -66,7 +66,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   private String thisFormula = "";
   private boolean iHaveDesiredModel;
   private boolean isPDB = false;
-  private Hashtable htHetero;
+  private Hashtable<String, String> htHetero;
 
   @Override
   public void initializeReader() throws Exception {
@@ -397,7 +397,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   ////////////////////////////////////////////////////////////////
 
 
-  private Hashtable atomTypes;
+  private Hashtable<String, Float> atomTypes;
   
   final private static byte ATOM_TYPE_SYMBOL = 0;
   final private static byte ATOM_TYPE_OXIDATION_NUMBER = 1;
@@ -440,7 +440,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       if (atomTypeSymbol == null || Float.isNaN(oxidationNumber))
         continue;
       if (atomTypes == null)
-        atomTypes = new Hashtable();
+        atomTypes = new Hashtable<String, Float>();
       atomTypes.put(atomTypeSymbol, new Float(oxidationNumber));
     }
   }
@@ -611,7 +611,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           }
           atom.elementSymbol = elementSymbol;
           if (atomTypes != null && atomTypes.containsKey(field)) {
-            float charge = ((Float) atomTypes.get(field)).floatValue();
+            float charge = atomTypes.get(field).floatValue();
             atom.formalCharge = (int) (charge + (charge < 0 ? -0.5 : 0.5));
             //because otherwise -1.6 is rounded UP to -1, and  1.6 is rounded DOWN to 1
             if (Math.abs(atom.formalCharge - charge) > 0.1)
@@ -949,7 +949,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
     if (!JmolAdapter.isHetero(groupName))
       return;
     if (htHetero == null)
-      htHetero = new Hashtable();
+      htHetero = new Hashtable<String, String>();
     htHetero.put(groupName, hetName);
     if (Logger.debugging) {
       Logger.debug("hetero: " + groupName + " = " + hetName);
@@ -1147,7 +1147,7 @@ _struct_site_gen.details
 */
   
   //private int siteNum;
-  private Hashtable htSites;
+  private Hashtable<String, Hashtable<String, String>> htSites;
   
   /**
    * 
@@ -1169,22 +1169,22 @@ _struct_site_gen.details
     String chainID = "";
     String resID = "";
     String group = "";
-    Hashtable htSite = null;
-    htSites = new Hashtable();
+    Hashtable<String, String> htSite = null;
+    htSites = new Hashtable<String, Hashtable<String, String>>();
     while (tokenizer.getData()) {
       for (int i = 0; i < tokenizer.fieldCount; ++i) {
         switch (fieldProperty(i)) {
         case SITE_ID:
           if (group != "") {
-            String groups = (String) htSite.get("groups");
+            String groups = htSite.get("groups");
             groups += (groups.length() == 0 ? "" : ",") + group;
             group = "";
             htSite.put("groups", groups);
           }
           siteID = field;
-          htSite = (Hashtable)htSites.get(siteID);
+          htSite = htSites.get(siteID);
           if (htSite == null) {
-            htSite = new Hashtable();
+            htSite = new Hashtable<String, String>();
             //htSite.put("seqNum", "site_" + (++siteNum));
             htSite.put("groups", "");
             htSites.put(siteID, htSite);
@@ -1214,7 +1214,7 @@ _struct_site_gen.details
       }      
     }
     if (group != "") {
-      String groups = (String) htSite.get("groups");
+      String groups = htSite.get("groups");
       groups += (groups.length() == 0 ? "" : ",") + group;
       group = "";
       htSite.put("groups", groups);

@@ -1,10 +1,12 @@
 package org.jmol.viewer.binding;
 
+
 import java.awt.Event;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
@@ -37,8 +39,8 @@ abstract public class Binding {
     CTRL_ALT | SHIFT | LEFT | MIDDLE | RIGHT | WHEEL;
   
   private String name;
-  private Hashtable bindings = new Hashtable();
-  public Hashtable getBindings() {
+  private Hashtable<String, Object> bindings = new Hashtable<String, Object>();
+  public Hashtable<String, Object> getBindings() {
     return bindings;
   }
     
@@ -76,10 +78,10 @@ abstract public class Binding {
   }
   
   public final void unbindJmolAction(int jmolAction) {
-    Enumeration e = bindings.keys();
+    Enumeration<String> e = bindings.keys();
     String skey = "\t" + jmolAction;
     while (e.hasMoreElements()) {
-      String key = (String) e.nextElement();
+      String key = e.nextElement();
       if (key.endsWith(skey))
         removeBinding(key);
     }
@@ -97,20 +99,20 @@ abstract public class Binding {
   }
   
   public final void unbindUserAction(String script) {
-    Enumeration e = bindings.keys();
+    Enumeration<String> e = bindings.keys();
     String skey = "\t" + script;
     while (e.hasMoreElements()) {
-      String key = (String) e.nextElement();
+      String key = e.nextElement();
       if (key.endsWith(skey))
         removeBinding(key);
     }
   }
   
   public final void unbindMouseAction(int mouseAction) {
-    Enumeration e = bindings.keys();
+    Enumeration<String> e = bindings.keys();
     String skey = mouseAction + "\t";
     while (e.hasMoreElements()) {
-      String key = (String) e.nextElement();
+      String key = e.nextElement();
       if (key.startsWith(skey))
         removeBinding(key);
     }
@@ -180,14 +182,14 @@ abstract public class Binding {
     StringBuffer sb = new StringBuffer();
     String qlow = (qualifiers == null || qualifiers.equalsIgnoreCase("all") ? null
         : qualifiers.toLowerCase());
-    Vector[] names = new Vector[actionNames.length];
+    List<String>[] names = new ArrayList[actionNames.length];
     for (int i = 0; i < actionNames.length; i++)
       names[i] = (qlow == null
-          || actionNames[i].toLowerCase().indexOf(qlow) >= 0 ? new Vector()
+          || actionNames[i].toLowerCase().indexOf(qlow) >= 0 ? new ArrayList<String>()
           : null);
-    Enumeration e = bindings.keys();
+    Enumeration<String> e = bindings.keys();
     while (e.hasMoreElements()) {
-      Object obj = bindings.get((String) e.nextElement());
+      Object obj = bindings.get(e.nextElement());
       if (!(obj instanceof int[]))
         continue;
       int[] info = (int[]) obj;

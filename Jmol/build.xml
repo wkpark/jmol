@@ -234,7 +234,7 @@
       </fileset>
     </copy>
 
-    <property name="build.compiler" value="javac1.4" />
+    <property name="build.compiler" value="javac1.5" />
     <!-- mth 20040713 ... with the Sun Java 1.5 compiler the default
          source code version is 1.5. And one cannot generate code for
          a 1.1 virtual machine from 1.5 source. Therefore, in order to
@@ -273,7 +273,7 @@ all support for previous versions removed
     <javac srcdir="src" destdir="${applet.classes.dir}"
            debug="${debug}" deprecation="${deprecation}"
            optimize="${optimization}"
-           source="1.4" target="1.4"
+           source="1.5" target="1.5"
            includesfile="applet.classes"
            classpathref="applet-project.class.path" />
 

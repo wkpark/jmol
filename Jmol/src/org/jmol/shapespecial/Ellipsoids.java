@@ -41,7 +41,7 @@ import org.jmol.util.Quadric;
 public class Ellipsoids extends AtomShape {
   // most differences are in renderer
   
-  Hashtable htEllipsoids = new Hashtable();
+  Hashtable<String, Ellipsoid> htEllipsoids = new Hashtable<String, Ellipsoid>();
   boolean haveEllipsoids;
   
   static class Ellipsoid {
@@ -67,7 +67,7 @@ public class Ellipsoids extends AtomShape {
     
   @Override
   public int getIndexFromName(String thisID) {
-    return ((ellipsoid = (Ellipsoid) htEllipsoids.get(thisID))
+    return ((ellipsoid = htEllipsoids.get(thisID))
         == null ? -1 : 1);
   }
 
@@ -93,8 +93,7 @@ public class Ellipsoids extends AtomShape {
   @Override
   public void setProperty(String propertyName, Object value, BitSet bs) {
     if (propertyName == "thisID") {
-      ellipsoid = (value == null ? null : (Ellipsoid) htEllipsoids
-          .get((String) value));
+      ellipsoid = (value == null ? null : (Ellipsoid) htEllipsoids.get(value));
       if (value == null)
         return;
       if (ellipsoid == null) {
@@ -106,10 +105,10 @@ public class Ellipsoids extends AtomShape {
     }
     if (propertyName == "deleteModelAtoms") {
       int modelIndex = ((int[]) ((Object[]) value)[2])[0];
-      Enumeration e = htEllipsoids.keys();
+      Enumeration<String> e = htEllipsoids.keys();
       while (e.hasMoreElements()) {
-        String id = (String) e.nextElement();
-        Ellipsoid ellipsoid = (Ellipsoid) htEllipsoids.get(id);
+        String id = e.nextElement();
+        Ellipsoid ellipsoid = htEllipsoids.get(id);
         if (ellipsoid.modelIndex > modelIndex)
           ellipsoid.modelIndex--;
         else if (ellipsoid.modelIndex == modelIndex)
@@ -217,11 +216,11 @@ public class Ellipsoids extends AtomShape {
   
   @Override
   public String getShapeState() {
-    Enumeration e = htEllipsoids.elements();
+    Enumeration<Ellipsoid> e = htEllipsoids.elements();
     StringBuffer sb = new StringBuffer();
     Vector3f v1 = new Vector3f();
     while (e.hasMoreElements()) {
-      Ellipsoid ellipsoid = (Ellipsoid) e.nextElement();
+      Ellipsoid ellipsoid = e.nextElement();
       if (ellipsoid.axes == null || ellipsoid.lengths == null)
         continue;
       sb.append("  Ellipsoid ID ").append(ellipsoid.id).append(" modelIndex ")
@@ -260,9 +259,9 @@ public class Ellipsoids extends AtomShape {
      * set all fixed objects visible; others based on model being displayed
      *      
      */
-    Enumeration e = htEllipsoids.elements();
+    Enumeration<Ellipsoid> e = htEllipsoids.elements();
     while (e.hasMoreElements()) {
-      Ellipsoid ellipsoid = (Ellipsoid) e.nextElement();
+      Ellipsoid ellipsoid = e.nextElement();
       ellipsoid.visible = ellipsoid.isOn && (ellipsoid.modelIndex < 0 || bs.get(ellipsoid.modelIndex)); 
     }
   }

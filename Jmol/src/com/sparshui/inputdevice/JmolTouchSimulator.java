@@ -35,8 +35,8 @@ import com.sparshui.common.TouchState;
  */
 public class JmolTouchSimulator implements JmolTouchSimulatorInterface {
 
-  private TreeSet _events = new TreeSet(new TouchDataComparator());
-	protected HashMap _active = new HashMap();
+  private TreeSet<TouchData> _events = new TreeSet<TouchData>(new TouchDataComparator());
+	protected HashMap<Integer, TouchData> _active = new HashMap<Integer, TouchData>();
 	private boolean _recording = false;
 	private int _touchID = 0;
 	private long _when = 0;
@@ -164,9 +164,9 @@ public class JmolTouchSimulator implements JmolTouchSimulatorInterface {
 	}
 	
 	private void dispatchTouchEvents() {
-	  Iterator it = _events.iterator();
+	  Iterator<TouchData> it = _events.iterator();
 	  while (it.hasNext()) {
-		  TouchData e = (TouchData) it.next();
+		  TouchData e = it.next();
 			TouchTimerTask task = new TouchTimerTask(e);
 			_timer.schedule(task, e.delay + 250);
 		}
@@ -214,11 +214,9 @@ public class JmolTouchSimulator implements JmolTouchSimulatorInterface {
 		public long delay;
 	}
 	
-	protected class TouchDataComparator implements Comparator {
+	protected class TouchDataComparator implements Comparator<TouchData> {
 
-		public int compare(Object oo1, Object oo2) {
-      TouchData o1 = (TouchData) oo1;
-      TouchData o2 = (TouchData) oo2;
+		public int compare(TouchData o1, TouchData o2) {
       return (o1.delay == o2.delay ? (o1.when < o2.when ? -1 : 1) 
           : o1.delay < o2.delay ? -1 : 1);
     }
@@ -236,7 +234,7 @@ public class JmolTouchSimulator implements JmolTouchSimulatorInterface {
     public void run() {
 		  Thread.currentThread().setName("JmolTouchSimulator for type " + e.id);
 			dispatchTouchEvent(e);
-			Integer iid = new Integer(e.id);
+			Integer iid = Integer.valueOf(e.id);
 			if(e.type == TouchState.DEATH) {
         _active.remove(iid);
 			} else {

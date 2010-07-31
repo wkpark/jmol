@@ -113,10 +113,8 @@ abstract class SlaterReader extends BasisFunctionReader {
     atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
   }
 
-  class SlaterSorter implements Comparator {
-    public int compare(Object a, Object b) {
-      SlaterData sd1 = (SlaterData) a;
-      SlaterData sd2 = (SlaterData) b;
+  class SlaterSorter implements Comparator<SlaterData> {
+    public int compare(SlaterData sd1, SlaterData sd2) {
       return ( sd1.iAtom < sd2.iAtom ? -1 : sd1.iAtom > sd2.iAtom ? 1 : 0);
     }    
   }

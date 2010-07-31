@@ -414,8 +414,8 @@ public class Text3D {
     */
   }
 
-  private final static Hashtable htFont3d = new Hashtable();
-  private final static Hashtable htFont3dAntialias = new Hashtable();
+  private final static Hashtable<Font3D, Hashtable<String, Text3D>> htFont3d = new Hashtable<Font3D, Hashtable<String, Text3D>>();
+  private final static Hashtable<Font3D, Hashtable<String, Text3D>> htFont3dAntialias = new Hashtable<Font3D, Hashtable<String, Text3D>>();
   private static boolean working;
   
   public synchronized static void clearFontCache() {
@@ -436,15 +436,15 @@ public class Text3D {
                                                String text, Font3D font3d,
                                                boolean antialias) {
     working = true;
-    Hashtable ht = (antialias ? htFont3dAntialias : htFont3d);
-    Hashtable htForThisFont = (Hashtable) ht.get(font3d);
+    Hashtable<Font3D, Hashtable<String, Text3D>> ht = (antialias ? htFont3dAntialias : htFont3d);
+    Hashtable<String, Text3D> htForThisFont = ht.get(font3d);
     Text3D text3d = null;
     boolean newFont = false;
     boolean newText = false;
     if (htForThisFont != null) {
-      text3d = (Text3D) htForThisFont.get(text);
+      text3d = htForThisFont.get(text);
     } else {
-      htForThisFont = new Hashtable();
+      htForThisFont = new Hashtable<String, Text3D>();
       newFont = true;
     }
     if (text3d == null) {

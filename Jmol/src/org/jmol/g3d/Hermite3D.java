@@ -24,11 +24,14 @@
 
 package org.jmol.g3d;
 
+
 import javax.vecmath.Point3i;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
-import java.util.Vector;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.jmol.api.JmolRendererInterface;
 
@@ -312,7 +315,7 @@ public class Hermite3D {
     // only used for meshRibbon, so fill = false 
     Point3i[] endPoints = {p2, p1, p6, p5};
     // stores all points for top+bottom strands of 1 segment
-    Vector points = new Vector(10);
+    List<Point3i> points = new ArrayList<Point3i>(10);
     int whichPoint = 0;
 
     int numTopStrandPoints = 2; //first and last points automatically included
@@ -355,7 +358,7 @@ public class Hermite3D {
          sp = 0;
        }
 
-       points.addElement(endPoints[whichPoint++]);
+       points.add(endPoints[whichPoint++]);
        currentInt = interval;
        do {
          Point3i a = pLeft[sp];
@@ -375,7 +378,7 @@ public class Hermite3D {
            if (s < 1.0f - currentInt) { //if first point over the interval
              Point3i temp = new Point3i();
              temp.set(a);
-             points.addElement(temp); //store it
+             points.add(temp); //store it
              currentInt += interval; // increase to next interval
              if (strands == 2) {
                numTopStrandPoints++;
@@ -406,7 +409,7 @@ public class Hermite3D {
            sLeft[sp] = (float) s;
          }
        } while (sp >= 0);
-       points.addElement(endPoints[whichPoint++]);
+       points.add(endPoints[whichPoint++]);
      } //end of for loop - processed top and bottom strands
      int size = points.size();
    /*  
@@ -436,8 +439,8 @@ public class Hermite3D {
      */
        for (int top = 0;
             top < numTopStrandPoints && (top + numTopStrandPoints) < size; top++)
-         g3d.drawLine((Point3i) points.elementAt(top),
-             (Point3i) points.elementAt(top + numTopStrandPoints));
+         g3d.drawLine(points.get(top),
+             points.get(top + numTopStrandPoints));
      //}
 
   }

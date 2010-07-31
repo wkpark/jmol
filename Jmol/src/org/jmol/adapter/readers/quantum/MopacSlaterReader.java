@@ -87,6 +87,7 @@ abstract class MopacSlaterReader extends SlaterReader {
    * @param zeta
    * @return scaling factor
    */
+  @Override
   protected double scaleSlater(int ex, int ey, int ez, int er, double zeta) {
     if (ex >= 0 && ey >= 0) {
       // no need for special attention here

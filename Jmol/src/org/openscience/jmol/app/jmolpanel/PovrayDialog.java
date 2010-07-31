@@ -129,6 +129,7 @@ public class PovrayDialog extends JDialog {
       }
     };
     InputVerifier updateInputVerifier = new InputVerifier() {
+      @Override
       public boolean verify(JComponent component) {
         updateScreen();
         return true;
@@ -1035,6 +1036,7 @@ public class PovrayDialog extends JDialog {
      * Closes the dialog when window closing event occurs.
      * @param e Event
      */
+    @Override
     public void windowClosing(WindowEvent e) {
       cancelPressed();
       setVisible(false);

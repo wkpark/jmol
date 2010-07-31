@@ -47,6 +47,7 @@ public class AimsReader extends AtomSetCollectionReader {
   private int nLatticeVectors = 0;
   private Vector3f[] latticeVectors = new Vector3f[3];
 
+  @Override
   protected boolean checkLine() {
     String[] tokens = getTokens();
     float x, y, z;
@@ -117,6 +118,7 @@ public class AimsReader extends AtomSetCollectionReader {
     return true;
   }
 
+  @Override
   protected void finalizeReader() throws Exception {
     /*
      * translational symmetry in less than three directions is currently neither

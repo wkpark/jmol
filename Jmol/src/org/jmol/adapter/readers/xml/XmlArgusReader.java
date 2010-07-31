@@ -72,6 +72,7 @@ public class XmlArgusReader extends XmlReader {
   XmlArgusReader() {
   }
 
+  @Override
   protected void processXml(XmlReader parent,
                            AtomSetCollection atomSetCollection,
                            BufferedReader reader, XMLReader xmlReader) {
@@ -82,6 +83,7 @@ public class XmlArgusReader extends XmlReader {
     parseReaderXML(xmlReader);
   }
 
+  @Override
   protected void processXml(XmlReader parent,
                             AtomSetCollection atomSetCollection,
                             BufferedReader reader, JSObject DOMNode) {
@@ -91,6 +93,7 @@ public class XmlArgusReader extends XmlReader {
     ((ArgusHandler) (new ArgusHandler())).walkDOMTree(DOMNode);
   }
 
+  @Override
   public void processStartElement(String namespaceURI, String localName, String qName,
                            HashMap atts) {
     //System.out.println("open " + localName);
@@ -143,6 +146,7 @@ public class XmlArgusReader extends XmlReader {
     return 1;
   }
 
+  @Override
   public void processEndElement(String uri, String localName, String qName) {
     //System.out.println("close " + localName);
     if (chars != null && chars.length() > 0

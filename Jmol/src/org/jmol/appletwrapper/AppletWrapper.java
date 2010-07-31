@@ -70,6 +70,7 @@ public class AppletWrapper extends Applet {
   //private int fontDescent;
   private int fontHeight;
     
+  @Override
   public void destroy() {
     //System.out.println("AppletWrapper destroy called");
     try {
@@ -107,10 +108,12 @@ public class AppletWrapper extends Applet {
     return isSigned;
   }
   
+  @Override
   public String getAppletInfo() {
     return (wrappedApplet != null ? wrappedApplet.getAppletInfo() : null);
   }
 
+  @Override
   public void init() {
     startTime = System.currentTimeMillis();
     new WrappedAppletLoader(this, wrappedAppletClassName).start();
@@ -118,6 +121,7 @@ public class AppletWrapper extends Applet {
       new ClassPreloader(this).start();
   }
   
+  @Override
   public void update(Graphics g) {
     if (wrappedApplet != null) {
       mediaTracker = null;
@@ -173,6 +177,7 @@ public class AppletWrapper extends Applet {
     }
   }
   
+  @Override
   public void paint(Graphics g) {
     if (wrappedApplet != null) {
       wrappedApplet.paint(g);
@@ -280,6 +285,7 @@ public class AppletWrapper extends Applet {
     return grayscale < 128 ? Color.white : Color.black;
   }
   
+  @Override
   public boolean handleEvent(Event e) {
     if (wrappedApplet != null)
       return wrappedApplet.handleEvent(e);

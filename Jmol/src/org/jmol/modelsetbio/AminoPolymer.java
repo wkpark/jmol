@@ -55,10 +55,12 @@ public class AminoPolymer extends AlphaPolymer {
   }
 
   private boolean hasOAtoms;
+  @Override
   boolean hasWingPoints() { return hasOAtoms; }
 
   //boolean debugHbonds;
 
+  @Override
   public void calcRasmolHydrogenBonds(Polymer polymer, BitSet bsA, BitSet bsB, Vector vHBonds, int nMaxPerResidue) {
     Point3f pt = new Point3f();
     Vector3f vNH = new Vector3f();
@@ -219,6 +221,7 @@ public class AminoPolymer extends AlphaPolymer {
    *
    */
 
+  @Override
   public void calculateStructures() {
     //deprecated: calcHydrogenBonds();
     //System.out.println("calculateStructures for model " + this.model.getModelIndex());
@@ -309,6 +312,7 @@ public class AminoPolymer extends AlphaPolymer {
     }
   }
 
+  @Override
   protected void resetHydrogenPoints() {
     ProteinStructure ps;
     ProteinStructure psLast = null;
@@ -326,10 +330,12 @@ public class AminoPolymer extends AlphaPolymer {
     return true;
   }
   
+  @Override
   public void freeze() {
     hasOAtoms = checkWingAtoms();
   }
   
+  @Override
   protected boolean calcPhiPsiAngles() {
     for (int i = 0; i < monomerCount - 1; ++i)
       calcPhiPsiAngles((AminoMonomer) monomers[i], (AminoMonomer) monomers[i + 1]);
@@ -371,6 +377,7 @@ public class AminoPolymer extends AlphaPolymer {
 	        carbon1, nitrogen2, alphacarbon2, true));
   }
   
+  @Override
   protected float calculateRamachandranHelixAngle(int m, char qtype) {
     float psiLast = (m == 0 ? Float.NaN : monomers[m - 1].getGroupParameter(Token.psi));
     float psi = monomers[m].getGroupParameter(Token.psi);

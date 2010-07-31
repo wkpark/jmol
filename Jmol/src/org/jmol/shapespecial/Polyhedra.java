@@ -72,6 +72,7 @@ public class Polyhedra extends AtomShape {
   private BitSet bsVertices;
   private BitSet bsVertexCount;
 
+  @Override
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
     if ("init" == propertyName) {
@@ -581,6 +582,7 @@ public class Polyhedra extends AtomShape {
     }
   }
 
+  @Override
   public void setVisibilityFlags(BitSet bs) {
     /*
      * set all fixed objects visible; others based on model being displayed note
@@ -595,6 +597,7 @@ public class Polyhedra extends AtomShape {
     }
   }
 
+  @Override
   public String getShapeState() {
     Hashtable temp = new Hashtable();
     StringBuffer s = new StringBuffer();

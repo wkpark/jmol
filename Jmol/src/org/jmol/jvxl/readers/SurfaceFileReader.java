@@ -41,6 +41,7 @@ abstract class SurfaceFileReader extends SurfaceReader {
     this.br = br; 
   }
   
+  @Override
   protected void setOutputStream(OutputStream os) {
     if (binarydoc == null)
       this.os = os; 
@@ -48,6 +49,7 @@ abstract class SurfaceFileReader extends SurfaceReader {
       binarydoc.setOutputStream(os);
   }
   
+  @Override
   protected void closeReader() {
     if (br != null)
       try {
@@ -66,6 +68,7 @@ abstract class SurfaceFileReader extends SurfaceReader {
       binarydoc.close();
   }
   
+  @Override
   void discardTempData(boolean discardAll) {
     closeReader();
     super.discardTempData(discardAll);

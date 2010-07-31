@@ -101,6 +101,7 @@ public class JmolPopup extends SimplePopup {
     return (new MainPopupResourceBundle(strMenuStructure, null)).getMenu(title);
   }
   
+  @Override
   protected void checkSpecialMenu(String item, Object subMenu, String word) {
     // these will need tweaking:
     if ("aboutComputedMenu".equals(item)) {
@@ -146,6 +147,7 @@ public class JmolPopup extends SimplePopup {
     }
   }
 
+  @Override
   boolean checkBoolean(Hashtable info, String key) {
     if (info == null || !info.containsKey(key))
       return false;
@@ -629,6 +631,7 @@ public class JmolPopup extends SimplePopup {
    * @param what option to set
    * @param TF   true or false
    */
+  @Override
   protected void setCheckBoxValue(JMenuItem item, String what, boolean TF) {    
     super.setCheckBoxValue(item, what, TF);
     if (what.indexOf("#CONFIG") >= 0) {
@@ -639,6 +642,7 @@ public class JmolPopup extends SimplePopup {
     }
   }
 
+  @Override
   protected void updateForShow() {
     updateMode = UPDATE_SHOW;
     updateSelectMenu();
@@ -647,6 +651,7 @@ public class JmolPopup extends SimplePopup {
     updateAboutSubmenu();
   }
 
+  @Override
   public void show(int x, int y) {
     super.show(x, y, false);
     if (x < 0) {
@@ -710,6 +715,7 @@ public class JmolPopup extends SimplePopup {
     return -1;
   }
 
+  @Override
   void restorePopupMenu() {
     if (nFrankList < 2)
       return;

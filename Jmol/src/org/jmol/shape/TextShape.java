@@ -33,6 +33,7 @@ public abstract class TextShape extends Object2dShape {
 
   // echo, hover
   
+  @Override
   public void setProperty(String propertyName, Object value, BitSet bsSelected) {
 
     if ("text" == propertyName) {

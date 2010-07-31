@@ -154,6 +154,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
     return sAtom;
   }
 
+  @Override
   public String toString() {
     String s = (residueChar != null || residueName != null ? (residueChar == null ? residueName
         : residueChar)

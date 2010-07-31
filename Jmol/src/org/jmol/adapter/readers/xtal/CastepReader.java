@@ -64,6 +64,7 @@ public class CastepReader extends AtomSetCollectionReader {
   private Vector3f[] abc = new Vector3f[3];
   private boolean iHaveFractionalCoordinates;
 
+  @Override
   public void initializeReader() throws Exception {
     
     while (tokenizeCastepCell() > 0) {
@@ -127,6 +128,7 @@ ang
     continuing = false;
   }
   
+  @Override
   protected void finalizeReader() throws Exception {
       
     doApplySymmetry = true;

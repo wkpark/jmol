@@ -130,6 +130,7 @@ public class IsosurfaceMesh extends Mesh {
     return vPt;
   }
 
+  @Override
   public void setTranslucent(boolean isTranslucent, float iLevel) {
     super.setTranslucent(isTranslucent, iLevel);
     if (vertexColixes != null)
@@ -189,6 +190,7 @@ public class IsosurfaceMesh extends Mesh {
 
   int thisSet = -1;
   
+  @Override
   protected void sumVertexNormals(Point3f[] vertices, Vector3f[] vectorSums) {
     super.sumVertexNormals(vertices, vectorSums);
     /* 

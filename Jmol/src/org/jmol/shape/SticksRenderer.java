@@ -58,6 +58,7 @@ public class SticksRenderer extends ShapeRenderer {
   private boolean slabByAtom;
 
 
+  @Override
   protected void render() {
     slabbing = viewer.getSlabEnabled();
     slabByAtom = viewer.getSlabByAtom();          

@@ -80,6 +80,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
 
   protected abstract void renderBioShape(BioShape bioShape);
 
+  @Override
   protected void render() {
     if (shape == null)
       return;

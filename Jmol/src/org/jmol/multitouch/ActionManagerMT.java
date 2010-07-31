@@ -49,6 +49,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   /* (non-Javadoc)
    * @see org.jmol.viewer.ActionManagerInterface#setViewer(org.jmol.viewer.Viewer, java.lang.String)
    */
+  @Override
   public void setViewer(Viewer viewer, String commandOptions) {
     super.setViewer(viewer, commandOptions);
     groupID = ((int) (Math.random() * 0xFFFFFF)) << 4;
@@ -92,6 +93,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     }
   }
 
+  @Override
   protected void setBinding(Binding newBinding) {
     super.setBinding(newBinding);
     binding.unbindMouseAction(Binding.RIGHT);
@@ -102,6 +104,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     }
   }
 
+  @Override
   public void clear() {
     // per file load
     simulationPhase = 0;
@@ -111,6 +114,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   
   private boolean doneHere;
   
+  @Override
   public void dispose() {
     Logger.debug("ActionManagerMT -- dispose");
     // per applet/application instance
@@ -292,20 +296,24 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     }
   }
 
+  @Override
   public void mouseEntered(long time, int x, int y) {
     super.mouseEntered(time, x, y);    
   }
   
+  @Override
   public void mouseExited(long time, int x, int y) {
     super.mouseExited(time, x, y);    
   }
   
+  @Override
   public void mouseClicked(long time, int x, int y, int mods, int count) {
     if (haveMultiTouchInput)
       return;
     super.mouseClicked(time, x, y, mods, count);
   }
 
+  @Override
   public void mouseMoved(long time, int x, int y, int mods) {
     if (haveMultiTouchInput)
       return;
@@ -313,12 +321,14 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     super.mouseMoved(time, x, y, mods);
   }
 
+  @Override
   public void mouseWheel(long time, int rotation, int mods) {
     if (haveMultiTouchInput)
       return;
     super.mouseWheel(time, rotation, mods);
   }
 
+  @Override
   public void mousePressed(long time, int x, int y, int mods) {
     if (simulator != null) {
       int action = Binding.getMouseAction(1, mods);
@@ -337,6 +347,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     super.mousePressed(time, x, y, mods);
   }
 
+  @Override
   public void mouseDragged(long time, int x, int y, int mods) {
     if (simulator != null && simulationPhase > 0) {
       setCurrent(time, x, y, mods);
@@ -348,6 +359,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     super.mouseDragged(time, x, y, mods);
   }
 
+  @Override
   public void mouseReleased(long time, int x, int y, int mods) {
     if (simulator != null && simulationPhase > 0) {
       setCurrent(time, x, y, mods);
@@ -366,12 +378,14 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     super.mouseReleased(time, x, y, mods);
   }
 
+  @Override
   protected float getExitRate() {
     long dt = dragGesture.getTimeDifference(2);
     return (dt > (MININUM_GESTURE_DELAY_MILLISECONDS << 3) ? 0 :
         dragGesture.getSpeedPixelsPerMillisecond(2, 1));
   }
 
+  @Override
   protected float getDegrees(int delta, int i) {
     int dim = (i == 0 ? viewer.getScreenWidth() : viewer.getScreenHeight());
     return ((float) delta) / dim * 180 * mouseDragFactor;

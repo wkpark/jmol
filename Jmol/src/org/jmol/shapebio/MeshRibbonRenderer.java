@@ -27,6 +27,7 @@ package org.jmol.shapebio;
 
 public class MeshRibbonRenderer extends StrandsRenderer {
 
+  @Override
   protected void renderBioShape(BioShape bioShape) {
     if (!setStrandCount())
       return;

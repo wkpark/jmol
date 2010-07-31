@@ -65,6 +65,7 @@ public class Ellipsoids extends AtomShape {
 
   }
     
+  @Override
   public int getIndexFromName(String thisID) {
     return ((ellipsoid = (Ellipsoid) htEllipsoids.get(thisID))
         == null ? -1 : 1);
@@ -72,6 +73,7 @@ public class Ellipsoids extends AtomShape {
 
   Ellipsoid ellipsoid;
   
+  @Override
   public void setSize(int size, BitSet bsSelected) {
     super.setSize(size, bsSelected);
     if (size == 0)
@@ -88,6 +90,7 @@ public class Ellipsoids extends AtomShape {
       }
   }
 
+  @Override
   public void setProperty(String propertyName, Object value, BitSet bs) {
     if (propertyName == "thisID") {
       ellipsoid = (value == null ? null : (Ellipsoid) htEllipsoids
@@ -212,6 +215,7 @@ public class Ellipsoids extends AtomShape {
     ellipsoid.isValid = true;
   }
   
+  @Override
   public String getShapeState() {
     Enumeration e = htEllipsoids.elements();
     StringBuffer sb = new StringBuffer();
@@ -250,6 +254,7 @@ public class Ellipsoids extends AtomShape {
     return sb.toString();
   }
   
+  @Override
   public void setVisibilityFlags(BitSet bs) {
     /*
      * set all fixed objects visible; others based on model being displayed

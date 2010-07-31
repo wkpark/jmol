@@ -61,6 +61,7 @@ public class JmeReader extends AtomSetCollectionReader {
 
   private boolean doMinimize = true;
   
+  @Override
   public void initializeReader() throws Exception {
     atomSetCollection.setCollectionName("JME");
     atomSetCollection.newAtomSet();

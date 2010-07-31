@@ -109,6 +109,7 @@ public abstract class MeshCollection extends Shape {
    * @param shape 
    * 
    */
+  @Override
   public void merge(Shape shape) {
     MeshCollection mc = (MeshCollection) shape;
     for (int i = 0; i < mc.meshCount; i++) {
@@ -127,13 +128,15 @@ public abstract class MeshCollection extends Shape {
     currentMesh = null;
   }
 
+  @Override
   public void initShape() {
     super.initShape();
     colix = Graphics3D.ORANGE;
     modelCount = viewer.getModelCount();
   }
   
- public void setProperty(String propertyName, Object value, BitSet bs) {
+ @Override
+public void setProperty(String propertyName, Object value, BitSet bs) {
 
    if (propertyName == "setXml") {
      if (currentMesh != null)
@@ -401,6 +404,7 @@ public abstract class MeshCollection extends Shape {
     }
   }
  
+  @Override
   public boolean getProperty(String property, Object[] data) {
     if (property == "checkID") {
       String key = ((String) data[0]).toUpperCase();
@@ -429,6 +433,7 @@ public abstract class MeshCollection extends Shape {
     return false;
   }
 
+  @Override
   public Object getProperty(String property, int index) {
    Mesh m;
     if (property == "count") {
@@ -524,6 +529,7 @@ public abstract class MeshCollection extends Shape {
     return (i < 0 ? null : meshes[i]);
   }
   
+  @Override
   public int getIndexFromName(String thisID) {
     if (JmolConstants.PREVIOUS_MESH_ID.equals(thisID))
       return (previousMeshID == null ? meshCount - 1
@@ -563,7 +569,8 @@ public abstract class MeshCollection extends Shape {
     currentMesh.scriptCommand = script;
   }
 
- public String getShapeState() {
+ @Override
+public String getShapeState() {
     StringBuffer sb = new StringBuffer("\n");
     for (int i = 0; i < meshCount; i++)
       getMeshCommand(sb, i);
@@ -660,6 +667,7 @@ protected void getColorState(StringBuffer sb, Mesh mesh) {
     appendCmd(sb, getColorCommand(myType, mesh.colix));  
 }
 
+@Override
 public void setVisibilityFlags(BitSet bs) {
     /*
      * set all fixed objects visible; others based on model being displayed

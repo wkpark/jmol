@@ -65,6 +65,7 @@ public interface JmolAppletInterface {
    * @param strModel
    * @return         error or null
    */
+  @Deprecated
   public String loadInline(String strModel);
 
   /**
@@ -72,6 +73,7 @@ public interface JmolAppletInterface {
    * @param strModels
    * @return         error or null
    */ 
+  @Deprecated
   public String loadInline(String[] strModels);
 
   /**
@@ -80,6 +82,7 @@ public interface JmolAppletInterface {
    * @param script
    * @return         error or null
    */
+  @Deprecated
   public String loadInline(String strModel, String script);
 
   /**
@@ -88,5 +91,6 @@ public interface JmolAppletInterface {
    * @param script
    * @return         error or null
    */
+  @Deprecated
   public String loadInline(String[] strModels, String script);
 }

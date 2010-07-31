@@ -29,10 +29,12 @@ import org.jmol.viewer.StateManager;
 
 public class BbcageRenderer extends CageRenderer {
 
+  @Override
   protected void setEdges() {
     tickEdges = BoxInfo.bbcageTickEdges; 
   }
   
+  @Override
   protected void render() {
     Bbcage bbox = (Bbcage) shape;
     if (!bbox.isVisible 

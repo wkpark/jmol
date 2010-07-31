@@ -166,7 +166,7 @@ public class TouchPoint {
 		return _changed;
 	}
 	
-	//@override
+	@Override
 	public Object clone() {
 		return new TouchPoint(this);
 	}

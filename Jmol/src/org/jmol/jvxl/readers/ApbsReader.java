@@ -42,6 +42,7 @@ class ApbsReader extends VolumeFileReader {
     nSurfaces = 1;
   }
   
+  @Override
   protected void readParameters() throws Exception {
     jvxlFileHeaderBuffer = new StringBuffer(skipComments(false));
     while (line != null && line.length() == 0)

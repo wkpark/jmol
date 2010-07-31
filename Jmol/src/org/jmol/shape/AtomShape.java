@@ -48,6 +48,7 @@ public abstract class AtomShape extends Shape {
   public Atom[] atoms;
   public boolean isActive;
 
+  @Override
   protected void initModelSet() {
     atoms = modelSet.atoms;
     atomCount = modelSet.getAtomCount();
@@ -60,10 +61,12 @@ public abstract class AtomShape extends Shape {
       paletteIDs = ArrayUtil.setLength(paletteIDs, atomCount);
   }
 
+  @Override
   public int getSize(int atomIndex) {
     return (mads == null ? 0 : mads[atomIndex]);
   }
   
+  @Override
   public void setSize(int size, BitSet bsSelected) {
     if (size == 0)
       setSize(null, bsSelected);
@@ -71,6 +74,7 @@ public abstract class AtomShape extends Shape {
       setSize(new RadiusData(size, RadiusData.TYPE_SCREEN, 0), bsSelected);
   }
 
+  @Override
   public void setSize(RadiusData rd, BitSet bsSelected) {
     // Halos Stars Vectors only
     if (atoms == null)  // vector values are ignored if there are none for a model 
@@ -92,6 +96,7 @@ public abstract class AtomShape extends Shape {
     }
   }
 
+  @Override
   public void setProperty(String propertyName, Object value, BitSet bs) {
     if ("color" == propertyName) {
       isActive = true;
@@ -153,6 +158,7 @@ public abstract class AtomShape extends Shape {
     paletteIDs[atomIndex] = paletteID;
   }
 
+  @Override
   public void setModelClickability() {
     if (!isActive)
       return;
@@ -165,6 +171,7 @@ public abstract class AtomShape extends Shape {
     }
   }
 
+  @Override
   public String getShapeState() {
     if (!isActive)
       return "";

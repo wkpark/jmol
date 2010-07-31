@@ -20,7 +20,8 @@ public class MoldenReader extends MopacSlaterReader {
   protected float[] frequencies = null;
   protected AtomSetCollection freqAtomSet = null;
   
-	protected boolean checkLine() throws Exception {
+	@Override
+  protected boolean checkLine() throws Exception {
     if (line.indexOf("[Atoms]") >= 0 || line.indexOf("[ATOMS]") >= 0) {
       readAtoms();
       return false;

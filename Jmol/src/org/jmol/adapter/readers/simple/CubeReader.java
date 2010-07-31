@@ -56,6 +56,7 @@ public class CubeReader extends AtomSetCollectionReader {
   private int atomCount;
   private boolean isAngstroms = false;
   
+  @Override
   public void initializeReader() throws Exception {
     atomSetCollection.newAtomSet();
     readTitleLines();

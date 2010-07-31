@@ -68,6 +68,7 @@ import org.jmol.api.JmolAdapter;
  */
 public class GhemicalMMReader extends AtomSetCollectionReader {
     
+  @Override
   protected boolean checkLine() throws Exception {
     if (line.startsWith("!Header")) {
       processHeader();

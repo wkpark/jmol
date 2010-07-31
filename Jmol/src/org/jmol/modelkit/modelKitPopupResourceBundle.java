@@ -32,6 +32,7 @@ class ModelKitPopupResourceBundle extends PopupResource {
     super(null, null);
   }
 
+  @Override
   protected void buildStructure(String menuStructure) {
     addItems(menuContents);
     addItems(structureContents);
@@ -64,6 +65,7 @@ class ModelKitPopupResourceBundle extends PopupResource {
     { "exit", "set modelkitMode false" },
   };
   
+  @Override
   protected String[] getWordContents() {
     
     boolean wasTranslating = GT.getDoTranslate();

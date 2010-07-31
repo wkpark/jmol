@@ -47,6 +47,7 @@ public class Frank extends FontShape {
   int frankDescent;
   int x, y, dx, dy;
 
+  @Override
   public void initShape() {
     super.initShape();
     myType = "frank";
@@ -54,6 +55,7 @@ public class Frank extends FontShape {
     calcMetrics();
   }
 
+  @Override
   public boolean wasClicked(int x, int y) {
     int width = viewer.getScreenWidth();
     int height = viewer.getScreenHeight();
@@ -62,6 +64,7 @@ public class Frank extends FontShape {
         && y > height - frankAscent - frankMargin);
   }
 
+  @Override
   public boolean checkObjectHovered(int x, int y, BitSet bsVisible) {
     if (!wasClicked(x, y) || !viewer.menuEnabled())
       return false;

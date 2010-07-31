@@ -67,6 +67,7 @@ public class Labels extends AtomShape {
   
   //labels
 
+  @Override
   public void initShape() {
     super.initShape();
     defaultFontId = zeroFontId = g3d.getFont3D(JmolConstants.DEFAULT_FONTFACE,
@@ -78,6 +79,7 @@ public class Labels extends AtomShape {
     translucentAllowed = false;
   }
 
+  @Override
   public void setProperty(String propertyName, Object value, BitSet bsSelected) {
     isActive = true;
 
@@ -372,6 +374,7 @@ public class Labels extends AtomShape {
         setFont(i, defaultFontId);
  }
 
+  @Override
   public Object getProperty(String property, int index) {
     if (property.equals("offsets"))
       return offsets;
@@ -509,6 +512,7 @@ public class Labels extends AtomShape {
     }
   }
 
+  @Override
   public void setModelClickability() {
     if (strings == null)
       return;
@@ -539,6 +543,7 @@ public class Labels extends AtomShape {
     return s.toString();
   }
 
+  @Override
   public String getShapeState() {
     if (!isActive || bsSizeSet == null)
       return "";
@@ -592,6 +597,7 @@ public class Labels extends AtomShape {
 
   int pickedAtom = -1;
   int pickedOffset = 0;
+  @Override
   public synchronized boolean checkObjectDragged(int prevX, int prevY, int x,
                                                  int y, int modifiers,
                                                  BitSet bsVisible) {

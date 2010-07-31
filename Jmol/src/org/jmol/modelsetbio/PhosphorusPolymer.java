@@ -36,6 +36,7 @@ class PhosphorusPolymer extends BioPolymer {
     super(monomers);
   }
   
+  @Override
   public void getPdbData(Viewer viewer, char ctype, char qtype, int mStep, int derivType,
                          boolean isDraw, BitSet bsAtoms, 
                          OutputStringBuffer pdbATOM, StringBuffer pdbCONECT, 

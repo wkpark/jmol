@@ -34,12 +34,14 @@ import javax.vecmath.Point3f;
 
 public class GromacsReader extends AtomSetCollectionReader {
   
+  @Override
   protected void initializeReader() {
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("isPDB", Boolean.TRUE);
     atomSetCollection.newAtomSet();
     atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
   }
   
+  @Override
   protected boolean checkLine() throws Exception {
       checkLineForScript();
       atomSetCollection.setAtomSetName(line.trim());

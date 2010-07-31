@@ -74,6 +74,7 @@ abstract class AtomDataReader extends VolumeDataReader {
   protected boolean doUseIterator;
 
 
+  @Override
   protected void setup() {
     //CANNOT BE IN HERE IF atomDataServer is not valid
     params.iUseBitSets = true;

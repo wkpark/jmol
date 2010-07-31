@@ -39,6 +39,7 @@ public class UccageRenderer extends CageRenderer {
   byte fid;
   boolean doLocalize;
   
+  @Override
   protected void setEdges() {
     tickEdges = BoxInfo.uccageTickEdges;    
   }
@@ -50,11 +51,13 @@ public class UccageRenderer extends CageRenderer {
     }
   }
 
+  @Override
   protected void initRenderer() {
     super.initRenderer();
     draw000 = false;
   }
   
+  @Override
   protected void render() {
     imageFontScaling = viewer.getImageFontScaling();
     font3d = g3d.getFont3DScaled(((Uccage)shape).font3d, imageFontScaling);

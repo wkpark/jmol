@@ -49,11 +49,13 @@ public class _PovrayExporter extends __RayTracerExporter {
     commentChar = "// ";
   }
 
+  @Override
   String finalizeOutput() {
     super.finalizeOutput();
     return getAuxiliaryFileData();
   }
 
+  @Override
   protected void outputHeader() {
     super.outputHeader();
     output("// ******************************************************\n");
@@ -321,10 +323,12 @@ public class _PovrayExporter extends __RayTracerExporter {
 
   }
 
+  @Override
   protected void output(Tuple3f pt) {
     output(", <" + triad(pt) + ">");    
   }
   
+  @Override
   protected void outputCircle(int x, int y, int z, float radius, short colix,
                               boolean doFill) {
     output((doFill ? "b(" : "c(") + x + "," + y + "," + z + "," + radius + ","
@@ -332,12 +336,14 @@ public class _PovrayExporter extends __RayTracerExporter {
         + color4(colix) + ")\n");
   }
 
+  @Override
   protected void outputCone(Point3f screenBase, Point3f screenTip, float radius,
                             short colix) {
     output("b(" + triad(screenBase) + "," + radius + ","
         + triad(screenTip) + ",0" + "," + color4(colix) + ")\n");
   }
 
+  @Override
   protected void outputCylinder(Point3f screenA, Point3f screenB, float radius,
                               short colix, boolean withCaps) {
     String color = color4(colix);
@@ -346,12 +352,14 @@ public class _PovrayExporter extends __RayTracerExporter {
         + radius + "," + color + ")\n");
   }
   
+  @Override
   protected void outputCylinderConical(Point3f screenA, Point3f screenB,
                                        float radius1, float radius2, short colix) {
     output("b(" + triad(screenA) + "," + radius1 + "," + triad(screenB) + ","
         + radius2 + "," + color4(colix) + ")\n");
   }
 
+  @Override
   protected void outputEllipsoid(Point3f center, float radius, double[] coef, short colix) {
     // no quadrant cut-out here
     String s = coef[0] + "," + coef[1] + "," + coef[2] + "," + coef[3] + ","
@@ -360,6 +368,7 @@ public class _PovrayExporter extends __RayTracerExporter {
     output("q(" + s + ")\n");
   }
 
+  @Override
   protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
                                   short[] colixes, int[][] indices, 
                                   short[] polygonColixes,
@@ -475,18 +484,21 @@ public class _PovrayExporter extends __RayTracerExporter {
 
   }
 
+  @Override
   protected void outputSphere(float x, float y, float z, float radius,
                                   short colix) {
    output("a(" + x + "," + y + "," + z + "," + radius + ","
         + color4(colix) + ")\n");
   }
   
+  @Override
   protected void outputTextPixel(int x, int y, int z, int argb) {
     //text only
     output("p(" + x + "," + y + "," + z + "," + 
         rgbFractionalFromArgb(argb, ',') + ")\n");
   }
   
+  @Override
   protected void outputTriangle(Point3f ptA, Point3f ptB, Point3f ptC, short colix) {
     //cartoons, mesh, isosurface
     output("r(" + triad(ptA) + "," + triad(ptB) + "," + triad(ptC) + ","

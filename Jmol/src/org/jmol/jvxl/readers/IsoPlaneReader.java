@@ -30,6 +30,7 @@ class IsoPlaneReader extends AtomDataReader {
     precalculateVoxelData = false;
   }
 
+  @Override
   protected void setup() {
     super.setup();
     doAddHydrogens = false;
@@ -39,6 +40,7 @@ class IsoPlaneReader extends AtomDataReader {
     params.cutoff = 0;
   }
 
+  @Override
   public float getValue(int x, int y, int z, int ptyz) {    
     return  volumeData.calcVoxelPlaneDistance(x, y, z);
   }

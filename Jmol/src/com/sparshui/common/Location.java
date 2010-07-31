@@ -59,7 +59,8 @@ public class Location implements Serializable {
 		return _y;
 	}
 	
-	public String toString() {
+	@Override
+  public String toString() {
 		return "x = " + _x + ", y = " + _y 
 		        + (_x < 1 && _x > 0 ? "(" 
 		        + pixelLocation(this).getX() + " " + pixelLocation(this).getY() + ")"

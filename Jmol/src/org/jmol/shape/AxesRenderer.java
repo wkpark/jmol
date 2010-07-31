@@ -50,11 +50,13 @@ public class AxesRenderer extends FontLineShapeRenderer {
   
   private short[] colixes = new short[3];
 
+  @Override
   protected void initRenderer() {
     endcap = Graphics3D.ENDCAPS_FLAT; 
     draw000 = false;
   }
 
+  @Override
   protected void render() {
     Axes axes = (Axes) shape;
     int mad = viewer.getObjectMad(StateManager.OBJ_AXIS1);

@@ -74,6 +74,7 @@ public class PpmEncoder extends ImageEncoder {
     super(prod, out);
   }
 
+  @Override
   void encodeStart(int width, int height) throws IOException {
     writeString(out, "P6\n");
     writeString(out, width + " " + height + "\n");
@@ -85,6 +86,7 @@ public class PpmEncoder extends ImageEncoder {
     out.write(buf);
   }
 
+  @Override
   void encodePixels(int x, int y, int w, int h, int[] rgbPixels, int off,
                     int scansize) throws IOException {
     byte[] ppmPixels = new byte[w * 3];
@@ -101,6 +103,7 @@ public class PpmEncoder extends ImageEncoder {
     }
   }
 
+  @Override
   void encodeDone() throws IOException {
     // Nothing.
   }

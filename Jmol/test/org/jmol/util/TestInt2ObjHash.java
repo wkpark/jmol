@@ -31,9 +31,11 @@ public class TestInt2ObjHash extends junit.framework.TestCase {
   public TestInt2ObjHash() {
   }
 
+  @Override
   public void setUp() {
   }
 
+  @Override
   public void tearDown() {
   }
 

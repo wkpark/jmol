@@ -56,6 +56,7 @@ public class _MayaExporter extends __CartesianExporter {
   private String name;
   private String id;
 
+  @Override
   protected void outputHeader() {
     output("//  Maya ASCII 8.5 scene\n");
     output("//  Name: ball_stripped.ma\n");
@@ -99,6 +100,7 @@ public class _MayaExporter extends __CartesianExporter {
         + pt.y + " " + pt.z + ";\n");
   }
 
+  @Override
   protected boolean outputCylinder(Point3f ptCenter, Point3f pt1, Point3f pt2, short colix,
                       byte endcaps, float radius, Point3f ptX, Point3f ptY) {
     if (ptX != null)
@@ -137,6 +139,7 @@ public class _MayaExporter extends __CartesianExporter {
   static protected void getRotation(Vector3f v, Vector3f rot) {
   }
 
+  @Override
   protected void outputSphere(Point3f pt, float radius, short colix) {
     //String color = rgbFromColix(colix);
     nBalls++;
@@ -158,13 +161,16 @@ public class _MayaExporter extends __CartesianExporter {
 
   // not implemented: 
   
+  @Override
   void drawTextPixel(int argb, int x, int y, int z) {
     // override __CartesianExporter
   }
 
+  @Override
   protected void outputTextPixel(Point3f pt, int argb) {
   }
   
+  @Override
   protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
                                   short[] colixes, int[][] indices,
                                   short[] polygonColixes,
@@ -172,34 +178,40 @@ public class _MayaExporter extends __CartesianExporter {
                                   int faceVertexMax, short colix, Vector colorList, Hashtable htColixes, Point3f offset) {
   }
 
+  @Override
   protected void outputTriangle(Point3f pt1, Point3f pt2, Point3f pt3,
                                 short colix) {
     // TODO
     
   }
 
+  @Override
   protected void outputCircle(Point3f pt1, Point3f pt2, float radius,
                               short colix, boolean doFill) {
     // TODO
     
   }
 
+  @Override
   protected void outputCone(Point3f ptBase, Point3f ptTip, float radius,
                             short colix) {
     // TODO
     
   }
 
+  @Override
   protected void outputEllipsoid(Point3f center, Point3f[] points, short colix) {
     // TODO
     
   }
 
+  @Override
   protected void outputFace(int[] is, int[] coordMap, int faceVertexMax) {
     // TODO
     
   }
 
+  @Override
   protected void output(Tuple3f pt) {
     // TODO
     

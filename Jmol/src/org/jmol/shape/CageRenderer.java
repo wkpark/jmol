@@ -45,6 +45,7 @@ abstract class CageRenderer extends FontLineShapeRenderer {
   protected boolean isSlab;
   protected boolean isPolymer;
   
+  @Override
   protected void initRenderer() {
     setEdges();
   }

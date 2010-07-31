@@ -63,6 +63,7 @@ public class XmlOdysseyReader extends XmlReader {
   XmlOdysseyReader() {
   }
 
+  @Override
   protected void processXml(XmlReader parent,
                            AtomSetCollection atomSetCollection,
                            BufferedReader reader, XMLReader xmlReader) {
@@ -73,6 +74,7 @@ public class XmlOdysseyReader extends XmlReader {
     parseReaderXML(xmlReader);
   }
 
+  @Override
   protected void processXml(XmlReader parent,
                             AtomSetCollection atomSetCollection,
                             BufferedReader reader, JSObject DOMNode) {
@@ -82,6 +84,7 @@ public class XmlOdysseyReader extends XmlReader {
     ((OdysseyHandler) (new OdysseyHandler())).walkDOMTree(DOMNode);
   }
 
+  @Override
   protected void processStartElement(String namespaceURI, String localName, String qName,
                            HashMap atts) {
 
@@ -157,6 +160,7 @@ public class XmlOdysseyReader extends XmlReader {
       keepChars = true;
   }
 
+  @Override
   public void applySymmetryAndSetTrajectory() {
     try {
       parent.applySymmetryAndSetTrajectory();
@@ -183,6 +187,7 @@ public class XmlOdysseyReader extends XmlReader {
     return 1;
   }
 
+  @Override
   protected void processEndElement(String uri, String localName, String qName) {
     if ("atom".equals(localName)) {
       if (atom.elementSymbol != null && !Float.isNaN(atom.z)) {

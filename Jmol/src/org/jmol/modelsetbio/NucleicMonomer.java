@@ -174,16 +174,21 @@ public class NucleicMonomer extends PhosphorusMonomer {
 
   public boolean isNucleicMonomer() { return true; }
 
+  @Override
   public boolean isDna() { return !hasRnaO2Prime; }
 
+  @Override
   public boolean isRna() { return hasRnaO2Prime; }
 
+  @Override
   public boolean isPurine() { return isPurine; }
 
+  @Override
   public boolean isPyrimidine() { return isPyrimidine; }
 
   public boolean isGuanine() { return offsets[N2] != -1; }
 
+  @Override
   public byte getProteinStructureType() {
     return (hasRnaO2Prime
             ? JmolConstants.PROTEIN_STRUCTURE_RNA
@@ -236,6 +241,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
     return getAtomFromOffsetIndex(O6);
   }
 
+  @Override
   Atom getTerminatorAtom() {
     return getAtomFromOffsetIndex(offsets[H3T] != -1 ? H3T : O3Pr);
   }
@@ -269,6 +275,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
 
   ////////////////////////////////////////////////////////////////
 
+  @Override
   boolean isConnectedAfter(Monomer possiblyPreviousMonomer) {
     if (possiblyPreviousMonomer == null)
       return true;
@@ -285,6 +292,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
 
   ////////////////////////////////////////////////////////////////
 
+  @Override
   public void findNearestAtomIndex(int x, int y, Atom[] closest,
                             short madBegin, short madEnd) {
     Atom competitor = closest[0];
@@ -322,12 +330,14 @@ public class NucleicMonomer extends PhosphorusMonomer {
     return (getAtomFromOffsetIndex(isPurine ? N9 : N1));
   }
  
+  @Override
   public Object getHelixData(int tokType, char qType, int mStep) {
     return getHelixData2(tokType, qType, mStep);
   }
    
   Point3f baseCenter;  
 
+  @Override
   Point3f getQuaternionFrameCenter(char qType) {
     switch (qType) {
     case 'x':
@@ -356,6 +366,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
     }
   }
 
+  @Override
   public Quaternion getQuaternion(char qType) {
     // quaternionFrame 'c' from  
     // Sarver M, Zirbel CL, Stombaugh J, Mokdad A, Leontis NB. 
@@ -453,7 +464,8 @@ public class NucleicMonomer extends PhosphorusMonomer {
     return Quaternion.getQuaternionFrame(vA, vB, null, yBased);
   }
  
- public boolean isCrossLinked(Group g) {
+ @Override
+public boolean isCrossLinked(Group g) {
     if (!(g instanceof NucleicMonomer) || isPurine == g.isPurine())
       return false;
     NucleicMonomer otherNucleotide = (isPurine ? (NucleicMonomer) g : this);
@@ -463,6 +475,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
     return (myN1.isBonded(otherN3));
   }
  
+  @Override
   public boolean getCrossLinkLeadAtomIndexes(Vector vReturn) {
     Atom N = (isPurine ? getN1() : getN3());
     //System.out.println(N.getInfo());

@@ -41,10 +41,12 @@ public class JmolJniClientAdapter extends JmolMultiTouchClientAdapter implements
  
   native void nativeMethod(); // should report "In C\nIn Java\n"
   
+  @Override
   public void dispose() {
     //TODO
   }
 
+  @Override
   public boolean setMultiTouchClient(Viewer viewer, JmolMultiTouchClient client,
                                   boolean isSimulation) {
     try {

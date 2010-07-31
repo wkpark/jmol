@@ -50,8 +50,10 @@ public class NucleicPolymer extends BioPolymer {
     return monomers[monomerIndex].getLeadAtom();
   }
 
+  @Override
   boolean hasWingPoints() { return true; }
 
+  @Override
   protected boolean calcEtaThetaAngles() {
     //  Carlos M. Duarte, Leven M. Wadley, and Anna Marie Pyle
     // RNA structure comparison, motif search and discovery using a reduced 
@@ -85,6 +87,7 @@ public class NucleicPolymer extends BioPolymer {
     return true;
   }
   
+  @Override
   public void calcRasmolHydrogenBonds(Polymer polymer, BitSet bsA, BitSet bsB, Vector vAtoms, int nMaxPerResidue) {
     NucleicPolymer other = (NucleicPolymer)polymer;
     Vector3f vNorm = new Vector3f();
@@ -152,6 +155,7 @@ public class NucleicPolymer extends BioPolymer {
   }
 
 
+  @Override
   public void getPdbData(Viewer viewer, char ctype, char qtype, int mStep, int derivType,
                          boolean isDraw, BitSet bsAtoms, 
                          OutputStringBuffer pdbATOM, StringBuffer pdbCONECT, 

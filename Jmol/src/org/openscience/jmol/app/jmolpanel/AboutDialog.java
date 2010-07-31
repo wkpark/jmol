@@ -75,10 +75,12 @@ public class AboutDialog extends JDialog implements HyperlinkListener {
     }
     JScrollPane scroller = new JScrollPane() {
 
+      @Override
       public Dimension getPreferredSize() {
         return new Dimension(500, 400);
       }
 
+      @Override
       public float getAlignmentX() {
         return LEFT_ALIGNMENT;
       }

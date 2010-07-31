@@ -43,6 +43,7 @@ public class FileChooser extends JFileChooser {
   /* (non-Javadoc)
    * @see javax.swing.JFileChooser#createDialog(java.awt.Component)
    */
+  @Override
   protected JDialog createDialog(Component parent) {
     dialog = super.createDialog(parent);
     if (dialog != null) {

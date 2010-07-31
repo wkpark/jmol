@@ -48,6 +48,7 @@ public class _X3dExporter extends _VrmlExporter {
   }
   
 
+  @Override
   protected void outputHeader() {
     output("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n");
     output("<!DOCTYPE X3D PUBLIC \"ISO//Web3D//DTD X3D 3.1//EN\" \"http://www.web3d.org/specifications/x3d-3.1.dtd\">\n");
@@ -88,6 +89,7 @@ public class _X3dExporter extends _VrmlExporter {
     output("'>\n");
   }
 
+  @Override
   protected void outputFooter() {
     useTable = null;
     output("</Transform>\n");
@@ -95,6 +97,7 @@ public class _X3dExporter extends _VrmlExporter {
     output("</X3D>\n");
   }
 
+  @Override
   protected void outputAppearance(short colix, boolean isText) {  
     String def = useTable.getDef((isText ? "T" : "") + colix);
     output("<Appearance ");
@@ -117,6 +120,7 @@ public class _X3dExporter extends _VrmlExporter {
     outputTransRot(pt1, pt2, x, y, z, "='", "'");
   }
   
+  @Override
   protected void outputCircle(Point3f pt1, Point3f pt2, float radius, short colix,
                               boolean doFill) {
     if (doFill) {
@@ -172,6 +176,7 @@ public class _X3dExporter extends _VrmlExporter {
     output("</Transform>\n");
   }
 
+  @Override
   protected void outputCone(Point3f ptBase, Point3f ptTip, float radius,
                             short colix) {
     float height = ptBase.distance(ptTip);
@@ -198,6 +203,7 @@ public class _X3dExporter extends _VrmlExporter {
     output("</Transform>\n");
   }
 
+  @Override
   protected boolean outputCylinder(Point3f ptCenter, Point3f pt1, Point3f pt2,
                                 short colix, byte endcaps, float radius, Point3f ptX, Point3f ptY) {
     output("<Transform");
@@ -251,6 +257,7 @@ public class _X3dExporter extends _VrmlExporter {
     output("</Shape>");
   }
   
+  @Override
   protected void outputEllipsoid(Point3f center, Point3f[] points, short colix) {
     output("<Transform translation='");
     output(center);
@@ -262,6 +269,7 @@ public class _X3dExporter extends _VrmlExporter {
     output("</Transform>\n");
   }
 
+  @Override
   protected void outputSphereChild(Point3f center, float radius, short colix) {
     output("<Transform translation='");
     output(center);
@@ -278,6 +286,7 @@ public class _X3dExporter extends _VrmlExporter {
     output("</Transform>\n");
   }
 
+  @Override
   protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
                                   short[] colixes, int[][] indices,
                                   short[] polygonColixes,
@@ -349,6 +358,7 @@ public class _X3dExporter extends _VrmlExporter {
     
   }
 
+  @Override
   protected void outputTriangle(Point3f pt1, Point3f pt2, Point3f pt3, short colix) {
     // nucleic base
     // cartoons
@@ -367,6 +377,7 @@ public class _X3dExporter extends _VrmlExporter {
     output("\n</Shape>\n");
   }
 
+  @Override
   protected void outputTextPixel(Point3f pt, int argb) {
     // text only
     String color = rgbFractionalFromArgb(argb, ' ');
@@ -387,6 +398,7 @@ public class _X3dExporter extends _VrmlExporter {
     output("</Transform>\n");
   }
 
+  @Override
   void plotText(int x, int y, int z, short colix, String text, Font3D font3d) {
     if (z < 3)
       z = viewer.getFrontPlane();

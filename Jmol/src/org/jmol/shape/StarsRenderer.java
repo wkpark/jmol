@@ -29,6 +29,7 @@ import org.jmol.modelset.Atom;
 
 public class StarsRenderer extends ShapeRenderer {
 
+  @Override
   protected void render() {
     Stars stars = (Stars) shape;
     if (stars.mads == null)

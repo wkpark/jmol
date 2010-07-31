@@ -34,6 +34,7 @@ public class Backbone extends BioShapeCollection {
 
   BitSet bsSelected;
   
+  @Override
   public void initShape() {
     super.initShape();
     madOn = 1;
@@ -43,6 +44,7 @@ public class Backbone extends BioShapeCollection {
     isActive = true;
   }
   
+  @Override
   public void setProperty(String propertyName, Object value, BitSet bsSelected) {
     if ("bitset" == propertyName) {
       this.bsSelected = (BitSet) value;
@@ -51,6 +53,7 @@ public class Backbone extends BioShapeCollection {
     super.setProperty(propertyName, value, bsSelected);
   }
 
+  @Override
   public void setShapeSize(int size, RadiusData rd, BitSet bsSelected) {
     short mad = (short) size;
     initialize();
@@ -101,6 +104,7 @@ public class Backbone extends BioShapeCollection {
       this.bsSelected = null;
   }
   
+  @Override
   public void setModelClickability() {
     if (bioShapes == null)
       return;

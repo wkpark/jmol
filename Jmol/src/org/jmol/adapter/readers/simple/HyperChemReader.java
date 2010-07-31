@@ -44,6 +44,7 @@ import org.jmol.api.JmolAdapter;
  */
 public class HyperChemReader extends AtomSetCollectionReader {
   
+  @Override
   protected boolean checkLine() throws Exception {
     if (line.length() == 0 || line.charAt(0) == ';') // comment
       return true;

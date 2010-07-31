@@ -44,6 +44,7 @@ import org.jmol.util.Logger;
  */
 public class WebMOReader extends MopacSlaterReader {
 
+  @Override
   protected boolean checkLine() throws Exception {
     if (line.equals("[HEADER]")) {
       readHeader();
@@ -84,6 +85,7 @@ public class WebMOReader extends MopacSlaterReader {
     return true;
   }
 
+  @Override
   protected void finalizeReader() throws Exception {
     super.finalizeReader();
     if (nOrbitals > 0)

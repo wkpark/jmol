@@ -38,6 +38,7 @@ public class OutputStringBuffer {
     return (bw == null ? sb.length() : nBytes);
   }
   
+  @Override
   public String toString() {
     if (bw != null)
       try {

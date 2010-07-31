@@ -781,6 +781,7 @@ final public class Graphics3D implements JmolRendererInterface {
   }
   
   class ShadePixel extends Pixel {
+    @Override
     void addPixel(int offset, int z, int p) {
       if (z > zDepth)
         return;

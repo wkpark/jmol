@@ -54,6 +54,7 @@ public class _TachyonExporter extends __RayTracerExporter {
     commentChar = "# ";
   }
  
+  @Override
   boolean initializeOutput(Viewer viewer, Graphics3D g3d, Object output) {
     //wasPerspectiveDepth = viewer.getPerspectiveDepth();
     //viewer.setPerspectiveDepth(false);
@@ -76,6 +77,7 @@ public class _TachyonExporter extends __RayTracerExporter {
   }
   */
 
+  @Override
   protected void outputHeader() {
     super.outputHeader();
     output("# ******************************************************\n");
@@ -115,10 +117,12 @@ public class _TachyonExporter extends __RayTracerExporter {
     output("\n");
   }
 
+  @Override
   protected void outputFooter() {
     output("End_Scene\n");
   }
 
+  @Override
   protected void output(Tuple3f pt) {
     output(triad(pt));
   }
@@ -169,6 +173,7 @@ public class _TachyonExporter extends __RayTracerExporter {
     textureCode = " " + textureCode;
   }
 
+  @Override
   protected void outputCircle(int x, int y, int z, float radius, short colix,
                               boolean doFill) {
     tempV1.set(0,0,-1);
@@ -186,6 +191,7 @@ public class _TachyonExporter extends __RayTracerExporter {
     outputTextureCode();
   }
 
+  @Override
   protected void outputCone(Point3f screenBase, Point3f screenTip, float radius,
                             short colix) {
     
@@ -198,6 +204,7 @@ public class _TachyonExporter extends __RayTracerExporter {
     jmolRenderer.drawSurface(getConeMesh(tempP1, matRotateScale, colix), null, null);
   }
 
+  @Override
   protected void outputCylinder(Point3f screenA, Point3f screenB,
                                       float radius, short colix, boolean withCaps) {
     outputTexture(colix, true);
@@ -215,6 +222,7 @@ public class _TachyonExporter extends __RayTracerExporter {
     }
   }  
   
+  @Override
   protected void fillConicalCylinder(Point3f screenA, Point3f screenB,
                                      int madBond, short colix, byte endcaps) {
     // conic sections not implemented in Tachyon
@@ -223,17 +231,20 @@ public class _TachyonExporter extends __RayTracerExporter {
    }
 
 
+  @Override
   protected void outputCylinderConical(Point3f screenA, Point3f screenB,
                                        float radius1, float radius2, short colix) {
     //not applicable
   }
 
+  @Override
   protected void outputEllipsoid(Point3f center, float radius, double[] coef, short colix) {
     viewer.transformPoint(center, tempP1);
     // no support for ellipsoids -- just draw ball
     outputSphere(tempP1.x, tempP1.y, tempP1.z, radius, colix);
   }
 
+  @Override
   protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
                                   short[] colixes, int[][] indices,
                                   short[] polygonColixes, int nVertices,
@@ -279,6 +290,7 @@ public class _TachyonExporter extends __RayTracerExporter {
     output("\nEnd_VertexArray\n");
   }
 
+  @Override
   protected void outputSphere(float x, float y, float z, float radius,
                                   short colix) {
 
@@ -289,6 +301,7 @@ public class _TachyonExporter extends __RayTracerExporter {
     outputTextureCode();
   }
 
+  @Override
   protected void outputTextPixel(int x, int y, int z, int argb) {
     outputTexture(argb, true);
     output("Sphere Center ");
@@ -303,6 +316,7 @@ public class _TachyonExporter extends __RayTracerExporter {
     outputTextureCode();
   }
   
+  @Override
   protected void outputTriangle(Point3f ptA, Point3f ptB, Point3f ptC, short colix) {
     outputTexture(colix, true);
     output("TRI");

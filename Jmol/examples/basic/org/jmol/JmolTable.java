@@ -158,6 +158,7 @@ public class JmolTable {
             columns = cols;
         }
 
+        @Override
         public String getColumnName(int column) { 
             return columns[column];
         }
@@ -174,6 +175,7 @@ public class JmolTable {
             return rows[row][column];
         }
 
+        @Override
         public boolean isCellEditable(int row, int column) {
             if (column == STRUCTURE_COL) {
                 return true;
@@ -181,6 +183,7 @@ public class JmolTable {
             return false;
         }
 
+        @Override
         public Class getColumnClass(int column) {
             return getValueAt(0, column).getClass();
         }
@@ -196,9 +199,13 @@ public class JmolTable {
                 }
 
         // The following methods override the defaults for performance reasons
+        @Override
         public void validate() {}
+        @Override
         public void revalidate() {}
+        @Override
         protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {}
+        @Override
         public void firePropertyChange(String propertyName, boolean oldValue, boolean newValue) {}
     }
 
@@ -218,6 +225,7 @@ public class JmolTable {
             }
             return false;
         }
+        @Override
         public boolean stopCellEditing() {
             return true;
         }
@@ -244,6 +252,7 @@ class JmolPanel extends JPanel {
 
   final Dimension currentSize = new Dimension();
 
+  @Override
   public void paint(Graphics g) {
     viewer.setScreenDimension(getSize(currentSize));
     Rectangle rectClip = new Rectangle();

@@ -72,6 +72,7 @@ class IsoSolventReader extends AtomDataReader {
   private boolean isProperty;
   private boolean doSmoothProperty;
   
+  @Override
   protected void setup() {
     super.setup();
     cavityRadius = params.cavityRadius;
@@ -101,6 +102,7 @@ class IsoSolventReader extends AtomDataReader {
 
   //////////// meshData extensions ////////////
 
+  @Override
   public void selectPocket(boolean doExclude) {
     if (meshDataServer == null)
       return; //can't do this without help!
@@ -148,6 +150,7 @@ class IsoSolventReader extends AtomDataReader {
   /////////////// calculation methods //////////////
   
   
+  @Override
   protected void generateCube() {
     /*
      * 

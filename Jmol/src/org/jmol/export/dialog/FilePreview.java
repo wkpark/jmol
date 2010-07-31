@@ -162,6 +162,7 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
 
     final Dimension currentSize = new Dimension();
 
+    @Override
     public void paint(Graphics g) {
       viewer.setScreenDimension(getSize(currentSize));
       Rectangle rectClip = new Rectangle();

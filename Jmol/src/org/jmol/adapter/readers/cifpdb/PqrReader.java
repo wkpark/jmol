@@ -65,20 +65,24 @@ PDB files can be converted to PQR by the PDB2PQR software[3], which adds missing
 
 public class PqrReader extends PdbReader {
 
+  @Override
   protected int readOccupancy() {
     return 100;
   }
 
+  @Override
   protected float readBFactor() {
     return Float.MAX_VALUE; 
   }
   
   String[] tokens;
+  @Override
   protected float readPartialCharge() {
     tokens = getTokens();
     return parseFloat(tokens[tokens.length - 2]);
   }
   
+  @Override
   protected float readRadius() {
     return parseFloat(tokens[tokens.length - 1]);
   }

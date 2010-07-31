@@ -77,6 +77,7 @@ class JaguarReader extends VolumeFileReader {
    * 
    * @exception Exception -- generally a reader issue
    */
+  @Override
   protected void readParameters() throws Exception {
     jvxlFileHeaderBuffer = new StringBuffer();
     jvxlFileHeaderBuffer.append("Jaguar data\n");

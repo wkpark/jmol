@@ -68,6 +68,7 @@ public class MeasurementPending extends Measurement {
     return 0;
   }
 
+  @Override
   public void setCount(int count) {
     super.setCount(count);
     numSet = count;

@@ -39,6 +39,7 @@ import org.jmol.script.Token;
 
 abstract public class BondCollection extends AtomCollection {
 
+  @Override
   protected void releaseModelSet() {
     bonds = null;
     freeBonds = null;
@@ -754,6 +755,7 @@ abstract public class BondCollection extends AtomCollection {
       }
   }
 
+  @Override
   protected BitSet getAtomBits(int tokType, Object specInfo) {
     BitSet bs;
     switch (tokType) {

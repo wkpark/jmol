@@ -72,6 +72,7 @@ class Node extends Element {
     count = Bspt.leafCountMax;
   }
   
+  @Override
   Element addTuple(int level, Point3f tuple) {
     float dimValue = getDimensionValue(tuple, dim);
     ++count;
@@ -113,6 +114,7 @@ class Node extends Element {
     return this;
   }
   
+  @Override
   void dump(int level, StringBuffer sb) {
     sb.append("\nnode LEFT" + level);
     eleLeft.dump(level + 1, sb);
@@ -122,6 +124,7 @@ class Node extends Element {
     eleRight.dump(level + 1, sb);
     }
     
+    @Override
     public String toString() {
       return eleLeft.toString() + dim + ":" + "\n" + eleRight.toString();
     }

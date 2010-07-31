@@ -42,6 +42,7 @@ class TransformManager10 extends TransformManager {
   // -- applies cameraScaleFactor to scalePixelsPerAngstrom
   // -- no navigation 
 
+  @Override
   protected void calcCameraFactors() {
     //(m) model coordinates
     //(s) screen coordinates = (m) * screenPixelsPerAngstrom
@@ -81,6 +82,7 @@ class TransformManager10 extends TransformManager {
 
   }
   
+  @Override
   protected float getPerspectiveFactor(float z) {
     // all z's SHOULD be >= 0
     // so the more positive z is, the smaller the screen scale
@@ -95,6 +97,7 @@ class TransformManager10 extends TransformManager {
     return factor;
   }
 
+  @Override
   protected void adjustTemporaryScreenPoint() {
 
     //fixedRotation point is at the origin initially

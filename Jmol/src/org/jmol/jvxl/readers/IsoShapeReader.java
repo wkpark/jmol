@@ -62,6 +62,7 @@ class IsoShapeReader extends VolumeDataReader {
   private float ppa;
   private int maxGrid;
 
+  @Override
   protected void setup() {
     precalculateVoxelData = false;
     if (center.x == Float.MAX_VALUE)
@@ -118,6 +119,7 @@ class IsoShapeReader extends VolumeDataReader {
     setHeader(type + "\n");
   }
 
+  @Override
   public float getValue(int x, int y, int z, int ptyz) {
     volumeData.voxelPtToXYZ(x, y, z, ptPsi);
     ptPsi.sub(center);
@@ -245,6 +247,7 @@ class IsoShapeReader extends VolumeDataReader {
     return rnl * theta_lm * phi_m;
   }
   
+  @Override
   protected void readSurfaceData(boolean isMapData) throws Exception {
     switch (params.dataType) {
     case Parameters.SURFACE_LONEPAIR:

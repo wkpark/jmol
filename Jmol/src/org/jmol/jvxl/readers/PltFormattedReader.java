@@ -54,6 +54,7 @@ class PltFormattedReader extends VolumeFileReader {
   }
 
   
+  @Override
   protected void readParameters() throws Exception {
     int n1 = parseInt(readLine());
     int n2 = parseInt();

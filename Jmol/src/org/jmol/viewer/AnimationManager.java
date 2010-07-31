@@ -421,6 +421,7 @@ class AnimationManager {
       intThread = intAnimThread;
     }
 
+    @Override
     public void run() {
       long timeBegin = System.currentTimeMillis();
       int targetTime = 0;

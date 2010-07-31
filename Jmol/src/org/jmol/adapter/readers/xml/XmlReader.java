@@ -110,6 +110,7 @@ public class XmlReader extends AtomSetCollectionReader {
 
   /////////////// file reader option //////////////
 
+  @Override
   public void initializeReader() throws Exception {
     XMLReader xmlReader = getXMLReader();
     if (xmlReader == null) {
@@ -210,7 +211,8 @@ public class XmlReader extends AtomSetCollectionReader {
 
   /////////////// DOM option //////////////
 
- public void readAtomSetCollectionFromDOM(Object Node) {
+ @Override
+public void readAtomSetCollectionFromDOM(Object Node) {
     processXml((JSObject) Node);
   }
 
@@ -302,9 +304,11 @@ public class XmlReader extends AtomSetCollectionReader {
 
     }
 
+    @Override
     public void startDocument() {
     }
 
+    @Override
     public void endDocument() {
     }
 
@@ -315,6 +319,7 @@ public class XmlReader extends AtomSetCollectionReader {
 
     public HashMap atts;
 
+    @Override
     public void startElement(String namespaceURI, String localName,
                              String qName, Attributes attributes) {
       getAttributes(attributes);
@@ -328,6 +333,7 @@ public class XmlReader extends AtomSetCollectionReader {
       processStartElement(namespaceURI, localName, qName, atts);
     }
 
+    @Override
     public void endElement(String uri, String localName, String qName) {
       if (Logger.debugging) {
         Logger.debug("end " + localName);
@@ -337,6 +343,7 @@ public class XmlReader extends AtomSetCollectionReader {
 
     // Won't work for DOM? -- equivalent of "innerHTML"
 
+    @Override
     public void characters(char[] ch, int start, int length) {
       if (keepChars) {
         if (chars == null) {
@@ -363,6 +370,7 @@ public class XmlReader extends AtomSetCollectionReader {
       return null;
     }
 
+    @Override
     public InputSource resolveEntity(String publicId, String systemId) {
       if (Logger.debugging) {
         Logger.debug(
@@ -374,14 +382,17 @@ public class XmlReader extends AtomSetCollectionReader {
       return null;
     }
 
+    @Override
     public void error(SAXParseException exception) {
       Logger.error("SAX ERROR:" + exception.getMessage());
     }
 
+    @Override
     public void fatalError(SAXParseException exception) {
       Logger.error("SAX FATAL:" + exception.getMessage());
     }
 
+    @Override
     public void warning(SAXParseException exception) {
       Logger.warn("SAX WARNING:" + exception.getMessage());
     }

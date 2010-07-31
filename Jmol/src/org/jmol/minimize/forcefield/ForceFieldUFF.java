@@ -39,12 +39,14 @@ import org.jmol.util.Parser;
 public class ForceFieldUFF extends ForceField {
 
   
+  @Override
   public void setModel(Minimizer m) {
     super.setModel(m);
     calc = new CalculationsUFF(this, m.minAtoms, m.minBonds, 
         m.angles, m.torsions, m.partialCharges, m.constraints);
   }
 
+  @Override
   protected Hashtable getFFParameters() {
     FFParam ffParam;
 
@@ -131,6 +133,7 @@ public class ForceFieldUFF extends ForceField {
     return temp;
   }
 
+  @Override
   public Vector getAtomTypes() {
     Vector types = new Vector(); //!< external atom type rules
     URL url = null;

@@ -119,6 +119,7 @@ class PmeshReader extends PolygonFileReader {
     return false;
   }
 
+  @Override
   void getSurfaceData() throws Exception {
     if (readPmesh())
       Logger.info((isBinary ? "binary " : "") + "pmesh file contains "
@@ -234,6 +235,7 @@ class PmeshReader extends PolygonFileReader {
     return true;
   }
 
+  @Override
   public int addTriangleCheck(int iA, int iB, int iC, int check,
                                int check2, boolean isAbsolute, int color) {
     if (Logger.debugging)

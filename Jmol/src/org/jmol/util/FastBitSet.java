@@ -110,6 +110,7 @@ public class FastBitSet implements Cloneable {
     bitmapClearRange(bitmap, fromIndex, toIndex - fromIndex);
   }
 
+  @Override
   public Object clone() {
     int bitCount = bitmapGetSizeInBits(bitmap);
     FastBitSet result = new FastBitSet(bitCount);
@@ -117,6 +118,7 @@ public class FastBitSet implements Cloneable {
     return result;
   }
 
+  @Override
   public boolean equals(Object obj) {
     return (obj instanceof FastBitSet && bitmapIsEqual(bitmap,
         ((FastBitSet) obj).bitmap));
@@ -210,10 +212,12 @@ public class FastBitSet implements Cloneable {
     return bs;
   }
 
+  @Override
   public String toString() {
     return Escape.escape(toBitSet());
   }
 
+  @Override
   public int hashCode() {
     long h = 1234;
     for (int i = bitmap.length; --i >= 0;)

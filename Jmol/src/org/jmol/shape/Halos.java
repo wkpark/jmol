@@ -44,7 +44,8 @@ public class Halos extends AtomShape {
     translucentAllowed = false;
   }
   
- public void setProperty(String propertyName, Object value, BitSet bs) {
+ @Override
+public void setProperty(String propertyName, Object value, BitSet bs) {
     if ("translucency" == propertyName)
       return;
     if ("argbSelection" == propertyName) {
@@ -68,7 +69,8 @@ public class Halos extends AtomShape {
     super.setProperty(propertyName, value, bs);
   }
 
- public void setVisibilityFlags(BitSet bs) {
+ @Override
+public void setVisibilityFlags(BitSet bs) {
     BitSet bsSelected = (viewer.getSelectionHaloEnabled() ? viewer
         .getSelectionSet(false) : null);
     for (int i = atomCount; --i >= 0;) {
@@ -78,7 +80,8 @@ public class Halos extends AtomShape {
     }
   }
   
- public String getShapeState() {
+ @Override
+public String getShapeState() {
     String state = super.getShapeState()
         + (colixSelection == Graphics3D.USE_PALETTE ? ""
             : colixSelection == Graphics3D.INHERIT_ALL ? "  color SelectionHalos NONE;\n"

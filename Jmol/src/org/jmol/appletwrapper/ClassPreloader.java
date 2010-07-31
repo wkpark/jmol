@@ -34,6 +34,7 @@ class ClassPreloader extends Thread {
     this.appletWrapper = appletWrapper;
   }
     
+  @Override
   public void run() {
     String className;
     setPriority(getPriority() - 1);

@@ -36,6 +36,7 @@ import java.util.Hashtable;
 
 public class Balls extends AtomShape {
   
+  @Override
   public void setSize(RadiusData rd, BitSet bsSelected) {
     isActive = true;
     if (bsSizeSet == null)
@@ -49,6 +50,7 @@ public class Balls extends AtomShape {
     }
   }
 
+  @Override
   public void setProperty(String propertyName, Object value, BitSet bs) {
     if ("color" == propertyName) {
       short colix = Graphics3D.getColix(value);
@@ -104,7 +106,8 @@ public class Balls extends AtomShape {
     super.setProperty(propertyName, value, bs);
   }
 
- public void setModelClickability() {
+ @Override
+public void setModelClickability() {
    BitSet bs = viewer.getDeletedAtoms();
    if (bs == null)
      bs = new BitSet();
@@ -118,7 +121,8 @@ public class Balls extends AtomShape {
    }
  }
   
- public void setVisibilityFlags(BitSet bs) {
+ @Override
+public void setVisibilityFlags(BitSet bs) {
     boolean showHydrogens = viewer.getShowHydrogens();
     BitSet bsDeleted = viewer.getDeletedAtoms();
     for (int i = atomCount; --i >= 0; ) {
@@ -138,7 +142,8 @@ public class Balls extends AtomShape {
     }
   }
 
- public String getShapeState() {
+ @Override
+public String getShapeState() {
     Hashtable temp = new Hashtable();
     float r = 0;
     for (int i = 0; i < atomCount; i++) {

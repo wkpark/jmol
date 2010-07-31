@@ -78,6 +78,7 @@ public class JmolSparshClientAdapter extends JmolMultiTouchClientAdapter impleme
 
   boolean doneHere;
   
+  @Override
   public void dispose() {
     
     Logger.debug("JmolSparshClientAdapter -- dispose");
@@ -100,6 +101,7 @@ public class JmolSparshClientAdapter extends JmolMultiTouchClientAdapter impleme
   }
   
   private JmolGestureServerInterface gestureServer;
+  @Override
   public boolean setMultiTouchClient(Viewer viewer, JmolMultiTouchClient client,
                               boolean isSimulation) {
     super.setMultiTouchClient(viewer, client, isSimulation);

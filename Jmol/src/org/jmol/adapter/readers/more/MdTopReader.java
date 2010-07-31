@@ -56,10 +56,12 @@ public class MdTopReader extends ForceFieldReader {
   private int nAtoms = 0;
   private int atomCount = 0;
 
+  @Override
   protected void initializeReader() throws Exception {
     setUserAtomTypes();
   }
 
+  @Override
   protected boolean checkLine() throws Exception {
     if (line.indexOf("%FLAG ") != 0)
       return true;
@@ -81,6 +83,7 @@ public class MdTopReader extends ForceFieldReader {
     return false;
   }
   
+  @Override
   protected void finalizeReader() throws Exception {
     super.finalizeReader();
     Atom[] atoms = atomSetCollection.getAtoms();

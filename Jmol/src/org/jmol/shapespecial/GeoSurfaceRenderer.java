@@ -41,6 +41,7 @@ import javax.vecmath.Point3i;
 
 public class GeoSurfaceRenderer extends DotsRenderer {
   
+  @Override
   protected void render() {
     GeoSurface gs = (GeoSurface) shape;
     iShowSolid = !(viewer.getInMotion() && gs.ec.getDotsConvexMax() > 100);
@@ -51,7 +52,8 @@ public class GeoSurfaceRenderer extends DotsRenderer {
     render1(gs);
   }
   
- protected void renderConvex(short colix, FastBitSet visibilityMap, int nPoints) {
+ @Override
+protected void renderConvex(short colix, FastBitSet visibilityMap, int nPoints) {
     this.colix = colix;
     if (iShowSolid) {
       if (g3d.setColix(colix))       

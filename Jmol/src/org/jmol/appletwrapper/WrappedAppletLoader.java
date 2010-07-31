@@ -39,6 +39,7 @@ class WrappedAppletLoader extends Thread {
     this.wrappedAppletClassName = wrappedAppletClassName;
   }
     
+  @Override
   public void run() {
     long startTime = System.currentTimeMillis();
     if (Logger.debugging) {
@@ -90,6 +91,7 @@ class TickerThread extends Thread {
     this.setName("AppletLoaderTickerThread");
   }
 
+  @Override
   public void run() {
     do {
       try {

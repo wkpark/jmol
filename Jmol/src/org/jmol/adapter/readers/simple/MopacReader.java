@@ -39,6 +39,7 @@ public class MopacReader extends AtomSetCollectionReader {
   private boolean chargesFound = false;
   private boolean haveHeader;
   
+  @Override
   protected boolean checkLine() throws Exception {    
     if (!haveHeader) {
       if (line.trim().equals("CARTESIAN COORDINATES")) {

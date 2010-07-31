@@ -56,10 +56,12 @@ public class Mol2Reader extends ForceFieldReader {
   private int atomCount = 0;
   private boolean isPDB = false;
 
+  @Override
   protected void initializeReader() throws Exception {
     setUserAtomTypes();
   }
 
+  @Override
   public boolean checkLine() throws Exception {
     if (line.equals("@<TRIPOS>MOLECULE")) {
       if (doGetModel(++modelNumber)) {

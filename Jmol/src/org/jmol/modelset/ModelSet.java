@@ -70,6 +70,7 @@ abstract public class ModelSet extends ModelCollection {
 
   ////////////////////////////////////////////////////////////////
 
+  @Override
   protected void releaseModelSet() {
     models = null;
     closest[0] = null;
@@ -244,6 +245,7 @@ abstract public class ModelSet extends ModelCollection {
    * @param specInfo  
    * @return bitset; null only if we mess up with name
    */
+  @Override
   public BitSet getAtomBits(int tokType, Object specInfo) {
     switch (tokType) {
     case Token.spec_model:
@@ -294,6 +296,7 @@ abstract public class ModelSet extends ModelCollection {
 
   ////////////////// atomData filling ////////////
 
+  @Override
   public void fillAtomData(AtomData atomData, int mode) {
     if (mode == AtomData.MODE_GET_ATTACHED_HYDROGENS) {
       int[] nH = new int[1];
@@ -412,6 +415,7 @@ abstract public class ModelSet extends ModelCollection {
       shapeManager.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE, null, bsAromatic);
   }
 
+  @Override
   public int[] makeConnections(float minDistance, float maxDistance, int order,
                                int connectOperation, BitSet bsA, BitSet bsB,
                                BitSet bsBonds, boolean isBonds, float energy) {
@@ -472,6 +476,7 @@ abstract public class ModelSet extends ModelCollection {
     }
   }
   
+  @Override
   public void deleteAllBonds() {
     moleculeCount = 0;
     for (int i = stateScripts.size(); --i >= 0;) 
@@ -688,6 +693,7 @@ abstract public class ModelSet extends ModelCollection {
     return bsDeleted;
   }
 
+  @Override
   public void setAtomProperty(BitSet bs, int tok, int iValue, float fValue,
                               String sValue, float[] values, String[] list) {
     switch (tok) {
@@ -745,6 +751,7 @@ abstract public class ModelSet extends ModelCollection {
    * @param bs2
    * @return     number of struts found
    */
+  @Override
   public int calculateStruts(BitSet bs1, BitSet bs2) {
     viewer.setModelVisibility();
     return super.calculateStruts(bs1, bs2);
@@ -786,6 +793,7 @@ abstract public class ModelSet extends ModelCollection {
     recalculatePositionDependentQuantities(bs);
   }
 
+  @Override
   public void setAtomCoord(BitSet bs, int tokType, Object xyzValues) {
     super.setAtomCoord(bs, tokType, xyzValues);
     switch(tokType) {

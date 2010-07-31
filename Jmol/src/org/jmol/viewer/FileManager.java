@@ -1420,10 +1420,12 @@ public class FileManager {
       len = data.length;
     }
 
+    @Override
     public int read(char[] buf) throws IOException {
       return readBuf(buf);
     }
       
+    @Override
     public String readLine() {
       return (pt < len ? data[pt++] : null);
     }
@@ -1434,6 +1436,7 @@ public class FileManager {
       ptMark = pt;
     }
     
+    @Override
     public void reset() {
       pt = ptMark;
     }
@@ -1465,10 +1468,12 @@ public class FileManager {
       len = data.size();
     }
 
+    @Override
     public int read(char[] buf) throws IOException {
       return readBuf(buf);
     }
     
+    @Override
     public String readLine() {
       return (pt < len ? (String) data.get(pt++) : null);
     }
@@ -1479,6 +1484,7 @@ public class FileManager {
       ptMark = pt;
     }
     
+    @Override
     public void reset() {
       pt = ptMark;
     }

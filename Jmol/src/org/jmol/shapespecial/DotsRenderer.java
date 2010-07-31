@@ -45,6 +45,7 @@ public class DotsRenderer extends ShapeRenderer {
 
   private int dotScale;
   
+  @Override
   protected void initRenderer() {
     screenLevel = Dots.MAX_LEVEL;
     screenDotCount = Geodesic.getVertexCount(Dots.MAX_LEVEL);
@@ -54,6 +55,7 @@ public class DotsRenderer extends ShapeRenderer {
     screenCoordinates = new int[3 * screenDotCount];
   }
 
+  @Override
   protected void render() {
     Dots dots = (Dots) shape;
     render1(dots);

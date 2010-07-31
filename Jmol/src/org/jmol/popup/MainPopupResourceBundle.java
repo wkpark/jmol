@@ -33,6 +33,7 @@ class MainPopupResourceBundle extends PopupResource {
     super(menuStructure, menuText);
   }
 
+  @Override
   protected void buildStructure(String menuStructure) {
     addItems(menuContents);
     addItems(structureContents);
@@ -521,6 +522,7 @@ class MainPopupResourceBundle extends PopupResource {
       { "100a", "1.0" },
   };
   
+  @Override
   protected String[] getWordContents() {
     
     boolean wasTranslating = GT.getDoTranslate();
@@ -943,6 +945,7 @@ class MainPopupResourceBundle extends PopupResource {
     return words;
   }
   
+  @Override
   public String getMenu(String title) {
     return "# Jmol.mnu " + title + "\n\n" +
            "# Part I -- Menu Structure\n" +

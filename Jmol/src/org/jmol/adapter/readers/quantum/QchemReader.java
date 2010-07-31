@@ -75,6 +75,7 @@ public class QchemReader extends MOReader {
    * @throws Exception
    * 
    */
+  @Override
   protected boolean checkLine() throws Exception {
     if (line.indexOf("Standard Nuclear Orientation") >= 0) {
       readAtoms();

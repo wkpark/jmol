@@ -30,6 +30,7 @@ import org.jmol.modelset.Atom;
 
 public class BackboneRenderer extends BioShapeRenderer {
 
+  @Override
   protected void renderBioShape(BioShape bioShape) {
     boolean isDataFrame = viewer.isJmolDataFrame(bioShape.modelIndex);
     for (int i = bsVisible.nextSetBit(0); i >= 0; i = bsVisible.nextSetBit(i + 1)) {

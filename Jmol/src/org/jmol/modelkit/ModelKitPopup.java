@@ -42,6 +42,7 @@ class ModelKitPopup extends SimplePopup {
     super(viewer, title, bundle, false);
   }
 
+  @Override
   protected ImageIcon getIcon(String name) {
     String imageName = "org/jmol/modelkit/images/" + name;
     URL imageUrl = this.getClass().getClassLoader().getResource(imageName);
@@ -51,6 +52,7 @@ class ModelKitPopup extends SimplePopup {
     return null;
   }
 
+  @Override
   public void checkMenuClick(Object source, String script) {
     if (script.equals("clearQ")) {
       for (Enumeration keys = htCheckbox.keys(); keys.hasMoreElements();) {
@@ -70,6 +72,7 @@ class ModelKitPopup extends SimplePopup {
     super.checkMenuClick(source, script);  
   }
   
+  @Override
   protected String setCheckBoxOption(JMenuItem item, String name, String what) {
     // atom type
     String element = JOptionPane.showInputDialog(GT._("Element?"), "");

@@ -34,6 +34,7 @@ class CubeReader extends VolumeFileReader {
     super(sg, br);
   }
   
+  @Override
   protected void readParameters() throws Exception {
     jvxlFileHeaderBuffer = new StringBuffer();
     jvxlFileHeaderBuffer.append(readLine()).append('\n');

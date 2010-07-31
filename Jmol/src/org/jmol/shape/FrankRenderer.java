@@ -31,6 +31,7 @@ public class FrankRenderer extends ShapeRenderer {
   
   // no Frank export
     
+  @Override
   protected void render() {
     Frank frank = (Frank) shape;
     boolean allowKeys = viewer.getBooleanProperty("allowKeyStrokes");

@@ -49,6 +49,7 @@ public class JvxlReader extends JvxlXmlReader {
 
   // ///////////reading the format///////////
 
+  @Override
   protected void readParameters() throws Exception {
     jvxlFileHeaderBuffer = new StringBuffer(skipComments(false));
     if (line == null || line.length() == 0)
@@ -107,6 +108,7 @@ public class JvxlReader extends JvxlXmlReader {
 
   }
 
+  @Override
   protected String jvxlReadData(String type, int nPoints) {
     String str = "";
     try {
@@ -121,6 +123,7 @@ public class JvxlReader extends JvxlXmlReader {
     return str;
   }
 
+  @Override
   protected void gotoData(int n, int nPoints) throws Exception {
 
     //called by VolumeFileReader.readVoxelData
@@ -254,6 +257,7 @@ public class JvxlReader extends JvxlXmlReader {
     jvxlSetColorRanges(dataMin, dataMax, red, blue, insideOut);
   }
 
+  @Override
   protected void readSurfaceData(boolean isMapDataIgnored) throws Exception {
     thisInside = !params.isContoured;
     if (readSurfaceData())
@@ -261,6 +265,7 @@ public class JvxlReader extends JvxlXmlReader {
     readVolumeFileSurfaceData();
   }
 
+  @Override
   protected void jvxlSkipData(int nPoints, boolean doSkipColorData)
       throws Exception {
     // surfaceDataCount is quantitatively unreliable in pre-4/2007 versions (Jvxl 1.0)

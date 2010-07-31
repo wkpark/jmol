@@ -2775,11 +2775,13 @@ public class ScriptEvaluator {
       return untranslated;
     }
 
+    @Override
     public String toString() {
       return message;
     }
   }
 
+  @Override
   public String toString() {
     StringBuffer str = new StringBuffer();
     str.append("Eval\n pc:");

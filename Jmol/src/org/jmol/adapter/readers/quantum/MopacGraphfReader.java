@@ -38,6 +38,7 @@ public class MopacGraphfReader extends MopacSlaterReader {
     
   private int atomCount;
   
+  @Override
   protected boolean checkLine() throws Exception {
       readAtoms();
       readSlaterBasis();

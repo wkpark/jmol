@@ -37,6 +37,7 @@ class IsoMepReader extends AtomDataReader {
     
   /////// molecular electrostatic potential ///////
 
+  @Override
   protected void setup() {
     super.setup();
     doAddHydrogens = false;
@@ -45,6 +46,7 @@ class IsoMepReader extends AtomDataReader {
     setRangesAndAddAtoms(params.mep_ptsPerAngstrom, params.mep_gridMax, myAtomCount);    
   }
 
+  @Override
   protected void generateCube() {
     volumeData.voxelData = voxelData = new float[nPointsX][nPointsY][nPointsZ];
     MepCalculationInterface m = (MepCalculationInterface) Interface.getOptionInterface("quantum." + type + "Calculation");

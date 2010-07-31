@@ -40,6 +40,7 @@ public class AmpacReader extends AtomSetCollectionReader {
   private float[] partialCharges;
   private Point3f[] atomPositions;
     
+  @Override
   protected boolean checkLine() throws Exception {
     if (line.indexOf("CARTESIAN COORDINATES") >= 0) {
       if (!doGetModel(++modelNumber))

@@ -68,6 +68,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
     return menubar;
   }
   
+  @Override
   public void dispose() {
     jf.dispose();
     super.dispose();
@@ -186,8 +187,6 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
     item.addActionListener(this);
     item.setName("help ?search=?");
     m0.add(item);
-    if (m0 == null)
-      return;
     addHelpItems(m0, "commands", "command");
     addHelpItems(m0, "functions", "mathfunc");
     addHelpItems(m0, "parameters", "setparam");
@@ -259,6 +258,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
     StyleConstants.setBold(attributesCommand, true);
   }
 
+  @Override
   public void setVisible(boolean visible) {
     //System.out.println("AppletConsole.setVisible(" + visible + ") " + jf);
     jf.setVisible(visible);
@@ -289,11 +289,13 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
     return output.getText(); 
   }
 
+  @Override
   protected void clearContent(String text) {
     //System.out.println("AppletConsole.clearContent()");
     output.setText(text);
   }
   
+  @Override
   public void actionPerformed(ActionEvent e) {
     Object source = e.getSource();
     //System.out.println("AppletConsole.actionPerformed" +  source);
@@ -317,6 +319,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
     super.actionPerformed(e);
   }
 
+  @Override
   protected void execute(String strCommand) {
     String cmd = (strCommand == null ? input.getText() : strCommand);
     if (strCommand == null)
@@ -328,11 +331,13 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
       input.requestFocus();
   }
 
+  @Override
   protected String completeCommand(String thisCmd) {
     return super.completeCommand(thisCmd);
   }
   
   class ControlEnterTextArea extends JTextArea {
+    @Override
     public void processComponentKeyEvent(KeyEvent ke) {
       int kcode = ke.getKeyCode();
       switch (ke.getID()) {
@@ -379,6 +384,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   // window listener stuff to close when the window closes
   ////////////////////////////////////////////////////////////////
 
+  @Override
   public void windowClosed(WindowEvent we) {
     destroyConsole();
   }
@@ -387,6 +393,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
     viewer.getProperty("DATA_API", "getAppConsole", Boolean.FALSE);
   }
 
+  @Override
   public void windowClosing(WindowEvent we) {
     destroyConsole();
   }

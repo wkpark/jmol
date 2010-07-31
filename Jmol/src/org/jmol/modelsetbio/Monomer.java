@@ -62,10 +62,12 @@ public abstract class Monomer extends Group {
     monomerIndex = index;
   }
 
+  @Override
   public int getSelectedMonomerCount() {
     return bioPolymer.getSelectedMonomerCount();
   }
   
+  @Override
   public int getSelectedMonomerIndex() {
     return (monomerIndex >= 0 && bioPolymer.isMonomerSelected(monomerIndex) ? monomerIndex : -1);
   }
@@ -74,14 +76,17 @@ public abstract class Monomer extends Group {
     return bioPolymer;
   }
   
+  @Override
   public int getBioPolymerLength() {
     return bioPolymer == null ? 0 : bioPolymer.monomerCount;
   }
 
+  @Override
   public int getMonomerIndex() {
     return monomerIndex;
   }
 
+  @Override
   public int getBioPolymerIndexInModel() {
     return (bioPolymer == null ? -1 : bioPolymer.bioPolymerIndexInModel);
   }
@@ -138,20 +143,26 @@ public abstract class Monomer extends Group {
 
   ////////////////////////////////////////////////////////////////
 
+  @Override
   public boolean isDna() { return false; }
+  @Override
   public boolean isRna() { return false; }
+  @Override
   public boolean isProtein() {
     return isAmino;
   }
+  @Override
   public final boolean isNucleic() {return this instanceof PhosphorusMonomer;}
 
   ////////////////////////////////////////////////////////////////
 
   void setStructure(ProteinStructure proteinstructure) { }
   public ProteinStructure getProteinStructure() { return null; }
+  @Override
   public byte getProteinStructureType() { return JmolConstants.PROTEIN_STRUCTURE_NONE; }
   public boolean isHelix() { return false; }
   public boolean isSheet() { return false; }
+  @Override
   public void setProteinStructureId(int id) { }
 
   ////////////////////////////////////////////////////////////////
@@ -216,14 +227,17 @@ public abstract class Monomer extends Group {
   protected Point3f getAtomPoint(byte specialAtomID) { return null; }
 */
   
+  @Override
   public boolean isLeadAtom(int atomIndex) {
     return atomIndex == leadAtomIndex;
   }
 
+  @Override
   public final Atom getLeadAtom() {
     return getAtomFromOffsetIndex(0);
   }
 
+  @Override
   public int getLeadAtomIndex() {
     return getLeadAtom().index;
   }
@@ -256,14 +270,17 @@ public abstract class Monomer extends Group {
                             short madBegin, short madEnd) {
   }
 
+  @Override
   protected boolean calcBioParameters() {
     return bioPolymer.calcParameters();
   }
 
+  @Override
   public boolean haveParameters() {
     return bioPolymer.haveParameters;
   }
   
+  @Override
   public Hashtable getMyInfo() {
     Hashtable info = new Hashtable();
     char chainID = chain.getChainID();
@@ -301,6 +318,7 @@ public abstract class Monomer extends Group {
     return info;
   }
   
+  @Override
   public String getStructureId() {
     ProteinStructure structure = getProteinStructure();
     return (structure == null ? "" : JmolConstants.getProteinStructureName(structure.type, false));
@@ -360,6 +378,7 @@ public abstract class Monomer extends Group {
     return id;
   }
   
+  @Override
   public boolean isCrossLinked(Group g) {
     for (int i = firstAtomIndex; i <= lastAtomIndex; i++)
       if (getCrossLink(i, null, g))
@@ -367,6 +386,7 @@ public abstract class Monomer extends Group {
     return false;
   }
  
+  @Override
   public boolean getCrossLinkLeadAtomIndexes(Vector vReturn) {    
    for (int i = firstAtomIndex; i <= lastAtomIndex; i++)
       if (getCrossLink(i, vReturn) && vReturn == null)
@@ -410,6 +430,7 @@ public abstract class Monomer extends Group {
     return haveCrossLink;
   }
   
+  @Override
   public boolean isConnectedPrevious() {
     return true; // but not nec. for carbohydrates... see 1k7c
   }

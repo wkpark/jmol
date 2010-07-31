@@ -52,6 +52,7 @@ public class PsiReader extends MOReader {
    * @throws Exception
    * 
    */
+  @Override
   protected boolean checkLine() throws Exception {
     if (line
         .indexOf("-Geometry after Center-of-Mass shift and reorientation (a.u.):") >= 0) {

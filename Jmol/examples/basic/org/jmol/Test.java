@@ -37,6 +37,7 @@ public class Test extends JPanel {
   private Dimension currentSize = new Dimension();
   private Rectangle rectClip = new Rectangle();
 
+  @Override
   public void paint(Graphics g) {
     getSize(currentSize);
     g.getClipBounds(rectClip);

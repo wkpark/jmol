@@ -87,6 +87,7 @@ public class SpinEvent implements Event {
   }
 
   //@override
+  @Override
   public String toString() {
     return ("Spin Event - rotationX: " + _rotationX + ", rotationY: " + _rotationY + ", rotationZ: " + _rotationZ);
   }

@@ -133,6 +133,7 @@ public class DisplayPanel extends JPanel
     viewer.refresh(3, "updateSize");
   }
 
+  @Override
   public void paint(Graphics g) {
     if (showPaintTime)
       startPaintClock();

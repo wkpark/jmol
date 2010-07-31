@@ -44,6 +44,7 @@ public class FoldingXyzReader extends AtomSetCollectionReader {
   // Enable / Disable features of the reader
   private final static boolean useAutoBond = false;
   
+  @Override
   protected boolean checkLine() throws Exception {
       StringTokenizer tokens = new StringTokenizer(line, " \t");
       if (tokens.hasMoreTokens()) {

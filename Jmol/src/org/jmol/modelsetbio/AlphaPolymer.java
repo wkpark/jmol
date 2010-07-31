@@ -43,6 +43,7 @@ public class AlphaPolymer extends BioPolymer {
     //System.out.println("new AlphaPolymer " + monomers[0].getChainID() + " " + monomers[0].getSeqcodeString() + " " + monomers[monomers.length - 1].getSeqcodeString());
   }
 
+  @Override
   public void addSecondaryStructure(byte type,
                                     String structureID, int serialID, int strandCount,
                              char startChainID, int startSeqcode,
@@ -109,6 +110,7 @@ public class AlphaPolymer extends BioPolymer {
    * http://csb.stanford.edu/levitt/Levitt_JMB77_Secondary_structure.pdf
    * </a>
    */
+  @Override
   public void calculateStructures() {
     if (monomerCount < 4)
       return;
@@ -241,6 +243,7 @@ public class AlphaPolymer extends BioPolymer {
     }
   }
   
+  @Override
   public void getPdbData(Viewer viewer, char ctype, char qtype, int mStep, int derivType,
                          boolean isDraw, BitSet bsAtoms, 
                          OutputStringBuffer pdbATOM, StringBuffer pdbCONECT, 
@@ -298,6 +301,7 @@ public class AlphaPolymer extends BioPolymer {
    * @return vector of pairs of atoms
    * 
    */
+  @Override
   public Vector calculateStruts(ModelSet modelSet, Atom[] atoms, BitSet bs1,
                                 BitSet bs2, Vector vCA, float thresh, int delta, boolean allowMultiple) {
     Vector vStruts = new Vector(); // the output vector

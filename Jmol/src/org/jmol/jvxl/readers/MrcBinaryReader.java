@@ -98,6 +98,7 @@ class MrcBinaryReader extends MapFileReader {
     
   protected String[] labels;
 
+  @Override
   protected void readParameters() throws Exception {
 
     int ispg;
@@ -224,6 +225,7 @@ class MrcBinaryReader extends MapFileReader {
     jvxlFileHeaderBuffer.append("see http://ami.scripps.edu/software/mrctools/mrc_specification.php\n");
   }
   
+  @Override
   protected float nextVoxel() throws Exception {
     float voxelValue;
     /*
@@ -267,6 +269,7 @@ class MrcBinaryReader extends MapFileReader {
 
   private static byte[] b8 = new byte[8];
   
+  @Override
   protected void skipData(int nPoints) throws Exception {
     for (int i = 0; i < nPoints; i++)
       switch(mode) {

@@ -52,6 +52,7 @@ import org.jmol.util.Logger;
 
 public class XyzReader extends AtomSetCollectionReader {
 
+  @Override
   protected boolean checkLine() throws Exception {
     int modelAtomCount = parseInt(line);
     if (modelAtomCount == Integer.MIN_VALUE) {

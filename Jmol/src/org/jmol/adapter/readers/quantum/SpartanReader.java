@@ -41,6 +41,7 @@ import java.util.Hashtable;
 
 public class SpartanReader extends AtomSetCollectionReader {
 
+  @Override
   public void initializeReader() throws Exception {
     String cartesianHeader = "Cartesian Coordinates (Ang";
     if (isSpartanArchive(cartesianHeader)) {

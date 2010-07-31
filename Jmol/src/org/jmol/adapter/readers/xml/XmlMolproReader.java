@@ -55,6 +55,7 @@ public class XmlMolproReader extends XmlCmlReader {
   XmlMolproReader() {  
   }
   
+  @Override
   protected void processXml(XmlReader parent,
                            AtomSetCollection atomSetCollection,
                            BufferedReader reader, XMLReader xmlReader) {
@@ -65,6 +66,7 @@ public class XmlMolproReader extends XmlCmlReader {
     parseReaderXML(xmlReader);
   }
 
+  @Override
   protected void processXml(XmlReader parent,
                             AtomSetCollection atomSetCollection,
                             BufferedReader reader, JSObject DOMNode) {
@@ -134,12 +136,14 @@ public class XmlMolproReader extends XmlCmlReader {
       setHandler(xmlReader, this);
     }
 
+    @Override
     public void startElement(String namespaceURI, String localName,
                              String qName, Attributes attributes) {
       super.startElement(namespaceURI, localName, qName, attributes);
       processStartElement2(namespaceURI, localName, qName, atts);
     }
 
+    @Override
     public void endElement(String uri, String localName, String qName) {
       processEndElement2(uri, localName, qName);
       super.endElement(uri, localName, qName);

@@ -40,6 +40,7 @@ public class CartoonRenderer extends RocketsRenderer {
   private short colixWatsonCrickEdge;
   private short colixHoogsteenEdge;
   
+  @Override
   protected void renderBioShape(BioShape bioShape) {
     if (bioShape.wingVectors == null || isCarbohydrate)
       return;
@@ -101,6 +102,7 @@ public class CartoonRenderer extends RocketsRenderer {
     }
   }
 
+  @Override
   protected void render1() {
     boolean lastWasSheet = false;
     boolean lastWasHelix = false;

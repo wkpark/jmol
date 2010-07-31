@@ -55,10 +55,12 @@ public class ShelxReader extends AtomSetCollectionReader {
   private boolean isCmdf;
   String[] tokens;
   
+  @Override
   public void initializeReader() {
       setFractionalCoordinates(true);
   }
   
+  @Override
   protected boolean checkLine() throws Exception {
 
     int lineLength ;

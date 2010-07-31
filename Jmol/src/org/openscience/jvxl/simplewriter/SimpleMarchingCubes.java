@@ -118,6 +118,7 @@ public class SimpleMarchingCubes extends MarchingCubes {
     return edgeCount++;
   }
   
+  @Override
   protected void processTriangles(int insideMask) {
     if (doCalcArea)
       super.processTriangles(insideMask);
@@ -127,6 +128,7 @@ public class SimpleMarchingCubes extends MarchingCubes {
   private Vector3f vAC = new Vector3f();
   private Vector3f vAB = new Vector3f();
 
+  @Override
   protected void addTriangle(int ia, int ib, int ic, int edgeType) {
     
     // If you were doing something with the triangle vertices

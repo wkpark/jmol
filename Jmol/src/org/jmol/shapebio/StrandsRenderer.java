@@ -32,6 +32,7 @@ public class StrandsRenderer extends BioShapeRenderer {
   protected float strandSeparation;
   protected float baseOffset;
 
+  @Override
   protected void renderBioShape(BioShape bioShape) {
     if (!setStrandCount())
       return;

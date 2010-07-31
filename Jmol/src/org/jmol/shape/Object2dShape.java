@@ -26,6 +26,7 @@ public class Object2dShape extends Shape {
   boolean isHover;
   boolean isAll;
 
+  @Override
   public void setProperty(String propertyName, Object value, BitSet bsSelected) {
 
     if ("allOff" == propertyName) {
@@ -176,12 +177,14 @@ public class Object2dShape extends Shape {
     super.setProperty(propertyName, value, bsSelected);
   }
 
+  @Override
   protected void initModelSet() {
     currentObject = null;
     isAll = false;
   }
 
 
+  @Override
   public void setVisibilityFlags(BitSet bs) {
     if (isHover)
       return;
@@ -192,6 +195,7 @@ public class Object2dShape extends Shape {
     }
   }
 
+  @Override
   public Point3fi checkObjectClicked(int x, int y, int modifiers, BitSet bsVisible) {
     if (isHover)
       return null;
@@ -213,6 +217,7 @@ public class Object2dShape extends Shape {
     return null;
   }
 
+  @Override
   public boolean checkObjectHovered(int x, int y, BitSet bsVisible) {
     if (isHover)
       return false;

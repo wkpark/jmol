@@ -346,6 +346,7 @@ public class Group {
     return chain.getAtom(firstAtomIndex).isHetero();
   }
   
+  @Override
   public String toString() {
     return "[" + getGroup3() + "-" + getSeqcodeString() + "]";
   }

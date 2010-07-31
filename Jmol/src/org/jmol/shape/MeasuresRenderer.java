@@ -38,6 +38,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
 
   private Measurement measurement;
   private boolean doJustify;
+  @Override
   protected void render() {
     if (!g3d.checkTranslucent(false))
       return;
@@ -249,6 +250,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
   }  
  
   //TODO: I think the 20 here is the cutoff for pixels -- check this
+  @Override
   protected int drawLine(int x1, int y1, int z1, int x2, int y2, int z2,
                          int mad) {
     // small numbers refer to pixels already? 

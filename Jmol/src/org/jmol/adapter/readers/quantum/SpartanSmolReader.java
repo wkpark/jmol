@@ -38,11 +38,13 @@ public class SpartanSmolReader extends SpartanInputReader {
   private boolean iHaveModelStatement = false;
 
   boolean isCompoundDocument = false;
+  @Override
   protected void initializeReader() throws Exception {
     modelName = "Spartan file";
     isCompoundDocument = (readLine().indexOf("Compound Document File Directory") >= 0);
   }
 
+  @Override
   protected boolean checkLine() throws Exception {
     String lcline;
     if (isCompoundDocument && 
@@ -113,6 +115,7 @@ public class SpartanSmolReader extends SpartanInputReader {
     return true;
   }
   
+  @Override
   protected void finalizeReader() throws Exception {
     super.finalizeReader();
     // info out of order -- still a chance, at least for first model

@@ -34,6 +34,7 @@ import javax.vecmath.*;
 
 public class VectorsRenderer extends ShapeRenderer {
 
+  @Override
   protected void render() {
     Vectors vectors = (Vectors) shape;
     if (!vectors.isActive)

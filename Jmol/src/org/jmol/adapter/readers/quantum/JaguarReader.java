@@ -44,6 +44,7 @@ public class JaguarReader extends MOReader {
    * @throws Exception
    * 
    */
+  @Override
   protected boolean checkLine() throws Exception {
     if (line.startsWith(" Input geometry:")
         || line.startsWith(" Symmetrized geometry:")

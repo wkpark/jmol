@@ -47,6 +47,7 @@ public class Hover extends TextShape {
   String[] atomFormats;
   String specialLabel;
 
+  @Override
   public void initShape() {
     super.initShape();
     isHover = true;
@@ -58,6 +59,7 @@ public class Hover extends TextShape {
     hoverText.setAdjustForWindow(true);
   }
 
+  @Override
   public void setProperty(String propertyName, Object value, BitSet bsSelected) {
 
     //if (Logger.debugging) {
@@ -123,6 +125,7 @@ public class Hover extends TextShape {
 
   }
 
+  @Override
   public String getShapeState() {
     Hashtable temp = new Hashtable();
     if (atomFormats != null)

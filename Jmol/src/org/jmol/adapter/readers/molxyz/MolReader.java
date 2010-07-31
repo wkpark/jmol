@@ -75,10 +75,12 @@ public class MolReader extends AtomSetCollectionReader {
 
   boolean is2D;
   
+  @Override
   public void initializeReader() throws Exception {
     is2D = (filter != null && filter.toUpperCase().indexOf("2D") >= 0);
   }
 
+  @Override
   protected boolean checkLine() throws Exception {
     // reader-dependent
     boolean isMDL = (line.startsWith("$MDL"));
@@ -105,6 +107,7 @@ public class MolReader extends AtomSetCollectionReader {
     return true;
   }
   
+  @Override
   public void finalizeReader() throws Exception {
     if (is2D /* STILL! */)
       set2D(true);

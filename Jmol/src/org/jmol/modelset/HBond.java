@@ -46,6 +46,7 @@ public class HBond extends Bond {
       Logger.info("HBond energy = " + energy + " #" + getIdentity());
   }
 
+  @Override
   public float getEnergy() {
     return energy;
   }
@@ -54,6 +55,7 @@ public class HBond extends Bond {
     return paletteID;
   }
   
+  @Override
   public void setPaletteID(byte paletteID) {
     this.paletteID = paletteID;
   }

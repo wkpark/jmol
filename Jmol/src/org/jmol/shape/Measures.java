@@ -65,6 +65,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
   TickInfo tickInfo;
   TickInfo defaultTickInfo;
   
+  @Override
   protected void initModelSet() {
     for (int i = measurements.size(); --i >= 0; ) {
       Measurement m = (Measurement) measurements.get(i);
@@ -74,15 +75,18 @@ public class Measures extends Shape implements JmolMeasurementClient {
     atoms = modelSet.atoms;
   }
   
+  @Override
   public void initShape() {
     super.initShape();
     font3d = g3d.getFont3D(JmolConstants.MEASURE_DEFAULT_FONTSIZE);
   }
 
+  @Override
   public void setSize(int size, BitSet bsSelected) {
     mad = (short)size;
   }
 
+  @Override
   public void setProperty(String propertyName, Object value, BitSet bsIgnored) {
     // the following can be used with "select measures ({bitset})"
     
@@ -283,6 +287,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
     return new Measurement(modelSet, indices, points, tickInfo == null ? defaultTickInfo : tickInfo);
   }
 
+  @Override
   public Object getProperty(String property, int index) {
     if ("pending".equals(property))
       return measurementPending;
@@ -579,7 +584,8 @@ public class Measures extends Shape implements JmolMeasurementClient {
     }
   }
   
- public String getShapeState() {
+ @Override
+public String getShapeState() {
     StringBuffer commands = new StringBuffer("");
     appendCmd(commands, "measures delete");
     for (int i = 0; i < measurementCount; i++)

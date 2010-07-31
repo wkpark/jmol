@@ -49,6 +49,7 @@ class TransformManager11 extends TransformManager {
     setNavFps(10);
   }
 
+  @Override
   protected void setNavFps(int navFps) {
     this.navFps = navFps;
   }
@@ -58,6 +59,7 @@ class TransformManager11 extends TransformManager {
     setNavFps(10);
   }
 
+  @Override
   void zoomByFactor(float factor, int x, int y) {
     if (!zoomEnabled || factor <= 0 || mode != MODE_NAVIGATION) {
       super.zoomByFactor(factor, x, y);
@@ -88,6 +90,7 @@ class TransformManager11 extends TransformManager {
 */    
   }
 
+  @Override
   protected void calcCameraFactors() {
     // (m) model coordinates
     // (s) screen coordinates = (m) * screenPixelsPerAngstrom
@@ -166,12 +169,14 @@ class TransformManager11 extends TransformManager {
     
   }
 
+  @Override
   protected float getPerspectiveFactor(float z) {
     // System.out.println (z + " getPerspectiveFactor " + referencePlaneOffset +
     // " " + (z <= 0 ? referencePlaneOffset : referencePlaneOffset / z));
     return (z <= 0 ? referencePlaneOffset : referencePlaneOffset / z);
   }
 
+  @Override
   protected void adjustTemporaryScreenPoint() {
 
     // fixedRotation point is at the origin initially
@@ -255,6 +260,7 @@ class TransformManager11 extends TransformManager {
 
   private int navMode = NAV_MODE_RESET;
 
+  @Override
   void setScreenParameters(int screenWidth, int screenHeight,
                            boolean useZoomLarge, boolean antialias,
                            boolean resetSlab, boolean resetZoom) {
@@ -278,6 +284,7 @@ class TransformManager11 extends TransformManager {
    * All the magic happens here.
    * 
    */
+  @Override
   protected void calcNavigationPoint() {
     // called by finalize
     calcNavigationDepthPercent();
@@ -425,6 +432,7 @@ class TransformManager11 extends TransformManager {
     mode = MODE_NAVIGATION;
   }
 
+  @Override
   boolean canNavigate() {
     return true;
   }
@@ -432,6 +440,7 @@ class TransformManager11 extends TransformManager {
   private int nHits;
   private int multiplier = 1;
 
+  @Override
   protected void resetNavigationPoint(boolean doResetSlab) {
 
     // no release from navigation mode if too far zoomed in!
@@ -454,6 +463,7 @@ class TransformManager11 extends TransformManager {
     zoomPercentSetting = zoomPercent;
   }
 
+  @Override
   protected void setNavigationOffsetRelative(boolean navigatingSurface) {
     if (navigatingSurface) {
       navigateSurface(Integer.MAX_VALUE);
@@ -472,6 +482,7 @@ class TransformManager11 extends TransformManager {
     navigate(0, pt);
   }
 
+  @Override
   synchronized void navigate(int keyCode, int modifiers) {
     // 0 0 here means "key released"
     String key = null;
@@ -624,6 +635,7 @@ class TransformManager11 extends TransformManager {
     viewer.requestRepaintAndWait();
   }
 
+  @Override
   void navigate(float seconds, Point3f pt) {
     if (seconds > 0) {
       navigateTo(seconds, null, Float.NaN, pt, Float.NaN, Float.NaN, Float.NaN);
@@ -636,6 +648,7 @@ class TransformManager11 extends TransformManager {
     navigating = false;
   }
 
+  @Override
   void navigate(float seconds, Vector3f rotAxis, float degrees) {
     if (degrees == 0)
       return;
@@ -651,6 +664,7 @@ class TransformManager11 extends TransformManager {
     navigating = false;
   }
 
+  @Override
   void setNavigationDepthPercent(float timeSec, float percent) {
     if (timeSec > 0) {
       navigateTo(timeSec, null, Float.NaN, null, percent, Float.NaN, Float.NaN);
@@ -659,6 +673,7 @@ class TransformManager11 extends TransformManager {
     setNavigationDepthPercent(percent);
   }
 
+  @Override
   void navTranslate(float seconds, Point3f pt) {
     Point3f pt1 = new Point3f();
     transformPoint(pt, pt1);
@@ -669,6 +684,7 @@ class TransformManager11 extends TransformManager {
     navTranslatePercent(-1, pt1.x, pt1.y);
   }
 
+  @Override
   void navTranslatePercent(float seconds, float x, float y) {
     // if either is Float.NaN, then the other is RELATIVE to current
     transformPoint(navigationCenter, navigationOffset);
@@ -789,10 +805,12 @@ class TransformManager11 extends TransformManager {
     viewer.setInMotion(false);
   }
 
+  @Override
   void navigate(float seconds, Point3f[][] pathGuide) {
     navigate(seconds, pathGuide, null, null, 0, Integer.MAX_VALUE);
   }
 
+  @Override
   void navigate(float seconds, Point3f[] path, float[] theta, int indexStart,
                 int indexEnd) {
     navigate(seconds, null, path, theta, indexStart, indexEnd);
@@ -862,6 +880,7 @@ class TransformManager11 extends TransformManager {
     }
   }
 
+  @Override
   void navigateSurface(float timeSeconds, String name) {
   }
 
@@ -910,14 +929,17 @@ class TransformManager11 extends TransformManager {
     matrixRotate.transform(ptVectorWing, pt2s);
   }
 
+  @Override
   Point3f getNavigationCenter() {
     return navigationCenter;
   }
 
+  @Override
   float getNavigationDepthPercent() {
     return navigationDepth;
   }
 
+  @Override
   void setNavigationSlabOffsetPercent(float percent) {
     viewer.getGlobalSettings().setParameterValue("navigationSlab", percent);
     calcCameraFactors(); // current
@@ -929,6 +951,7 @@ class TransformManager11 extends TransformManager {
     return 50 * navigationSlabOffset / modelRadiusPixels;
   }
 
+  @Override
   Point3f getNavigationOffset() {
     transformPoint(navigationCenter, navigationOffset);
     return navigationOffset;
@@ -953,6 +976,7 @@ class TransformManager11 extends TransformManager {
             / modelRadiusPixels));
   }
 
+  @Override
   float getNavigationOffsetPercent(char XorY) {
     getNavigationOffset();
     if (width == 0 || height == 0)
@@ -961,6 +985,7 @@ class TransformManager11 extends TransformManager {
         : (navigationOffset.y - getNavPtHeight()) * 100f / height);
   }
 
+  @Override
   protected String getNavigationText(boolean addComments) {
     getNavigationOffset();
     return (addComments ? " /* navigation center, translation, depth */ " : " ")
@@ -971,6 +996,7 @@ class TransformManager11 extends TransformManager {
         + getNavigationOffsetPercent('Y') + " " + getNavigationDepthPercent();
   }
 
+  @Override
   protected String getNavigationState() {
     if (mode != MODE_NAVIGATION)
       return "";

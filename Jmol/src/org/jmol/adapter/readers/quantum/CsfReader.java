@@ -56,6 +56,7 @@ public class CsfReader extends MopacSlaterReader {
   
   private Hashtable htBonds;
   
+  @Override
   protected boolean checkLine() throws Exception {
     if (line.equals("local_transform")) {
       processLocalTransform();
@@ -94,6 +95,7 @@ public class CsfReader extends MopacSlaterReader {
     return true;
   }
  
+  @Override
   public void finalizeReader() throws Exception {
     super.finalizeReader();
   }

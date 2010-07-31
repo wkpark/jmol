@@ -45,6 +45,7 @@ class ScriptButtons extends WebPanel {
     //description = "Create a web page containing a text and button pane that scrolls next to a resizable Jmol applet";
   }
 
+  @Override
   JPanel appletParamPanel() {
     SpinnerNumberModel appletSizeModel = new SpinnerNumberModel(WebExport.getScriptButtonPercent(), //initial value
         20, //min
@@ -58,6 +59,7 @@ class ScriptButtons extends WebPanel {
     return (appletSizePPanel);
   }
 
+  @Override
   String fixHtml(String html) {
     int size = ((SpinnerNumberModel) (appletSizeSpinnerP.getModel()))
         .getNumber().intValue();
@@ -73,6 +75,7 @@ class ScriptButtons extends WebPanel {
     return html;
   }
 
+  @Override
   String getAppletDefs(int i, String html, StringBuffer appletDefs,
                        JmolInstance instance) {
     //TODO add widgets  Could have pure javascript update of widgets for each view.

@@ -40,6 +40,7 @@ public class LabelsRenderer extends ShapeRenderer {
 
   private final float[] boxXY = new float[2];
   
+  @Override
   protected void render() {
     fidPrevious = 0;
 

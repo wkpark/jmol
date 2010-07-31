@@ -39,6 +39,7 @@ class IsoMOReader extends AtomDataReader {
   
   /////// ab initio/semiempirical quantum mechanical orbitals ///////
 
+  @Override
   protected void setup() {
     super.setup();
     doAddHydrogens = false;
@@ -78,6 +79,7 @@ class IsoMOReader extends AtomDataReader {
     params.title[iLine] = (!isOptional ? line : rep > 0 && !line.trim().endsWith("=") ? line.substring(1) : "");
   }
   
+  @Override
   protected void generateCube() {
     volumeData.voxelData = voxelData = new float[nPointsX][nPointsY][nPointsZ];
     MOCalculationInterface q = (MOCalculationInterface) Interface.getOptionInterface("quantum.MOCalculation");

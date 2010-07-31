@@ -85,6 +85,7 @@ public class Integration {
   final static String strScript = "delay; move 360 0 0 0 0 0 0 0 4;";
 
   static class ApplicationCloser extends WindowAdapter {
+    @Override
     public void windowClosing(WindowEvent e) {
       System.exit(0);
     }
@@ -105,6 +106,7 @@ public class Integration {
     final Dimension currentSize = new Dimension();
     final Rectangle rectClip = new Rectangle();
 
+    @Override
     public void paint(Graphics g) {
       getSize(currentSize);
       g.getClipBounds(rectClip);

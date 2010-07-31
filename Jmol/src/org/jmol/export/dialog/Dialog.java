@@ -391,6 +391,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
       thisType = type.toLowerCase();
     }
 
+    @Override
     public boolean accept(File f) {
       if (f.isDirectory() || thisType == null) {
         return true;
@@ -400,6 +401,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
       return (pt >= 0 && ext.substring(pt + 1).toLowerCase().equals(thisType));
     }
 
+    @Override
     public String getDescription() {
       return thisType.toUpperCase() + " (*." + thisType + ")";
     }

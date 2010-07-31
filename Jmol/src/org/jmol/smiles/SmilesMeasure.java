@@ -53,6 +53,7 @@ public class SmilesMeasure  {
     this.isNot = isNot;
   }
   
+  @Override
   public String toString() {
     String s = "(." + TYPES.charAt(type) + index + ":" + min + "," + max + ") for";
     for (int i = 0; i < type; i++)

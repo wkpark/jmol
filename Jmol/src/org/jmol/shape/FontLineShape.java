@@ -35,6 +35,7 @@ public abstract class FontLineShape extends FontShape {
   
   TickInfo[] tickInfos = new TickInfo[4];
 
+  @Override
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
     if ("tickInfo" == propertyName) {
@@ -54,6 +55,7 @@ public abstract class FontLineShape extends FontShape {
     super.setProperty(propertyName, value, bs);
   }
 
+  @Override
   public String getShapeState() {
     String s = super.getShapeState();
     if (tickInfos == null)

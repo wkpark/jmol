@@ -70,6 +70,7 @@ public class GenNBOReader extends MOReader {
    * molname.36 PNBO molname.37 NBO molname.38 PNLMO molname.39 NLMO molname.40
    * MO molname.41 AO density matrix molname.46 Basis label file
    */
+  @Override
   protected void initializeReader() throws Exception {
     String line1 = readLine().trim();
     readLine();
@@ -101,6 +102,7 @@ public class GenNBOReader extends MOReader {
     continuing = false;
   }
 
+  @Override
   protected boolean checkLine() throws Exception {
     // for .nbo only
     return checkNboLine();

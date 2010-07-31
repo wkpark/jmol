@@ -97,7 +97,8 @@ public class ZoomEvent implements Event {
 	}
 	
 	//@override
-	public String toString() {
+	@Override
+  public String toString() {
 		return ("ZOOM Scale: " + _scale + ", Center: " + _center.toString());
 	}
 

@@ -1784,6 +1784,7 @@ abstract class TransformManager {
         run();
     }
 
+    @Override
     public void run() {
       if (totalSteps > 0)
         viewer.setInMotion(true);
@@ -2227,6 +2228,7 @@ abstract class TransformManager {
       this.isGesture = isGesture;
     }
 
+    @Override
     public void run() {
       float myFps = (isNav ? navFps : spinFps);
       viewer.getGlobalSettings().setParameterValue(isNav ? "_navigating" : "_spinning", true);
@@ -2417,6 +2419,7 @@ abstract class TransformManager {
       this.setName("VibrationThread");
     }
 
+    @Override
     public void run() {
       long startTime = System.currentTimeMillis();
       long lastRepaintTime = startTime;

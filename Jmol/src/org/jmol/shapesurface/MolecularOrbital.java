@@ -42,6 +42,7 @@ import org.jmol.jvxl.readers.Parameters;
 
 public class MolecularOrbital extends Isosurface {
 
+  @Override
   public void initShape() {
     super.initShape();
     myType = "molecularOrbital";
@@ -71,6 +72,7 @@ public class MolecularOrbital extends Isosurface {
   private Hashtable htModels;
   private Hashtable thisModel;
 
+  @Override
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
     // in the case of molecular orbitals, we just cache the information and
@@ -237,6 +239,7 @@ public class MolecularOrbital extends Isosurface {
     return "mo_model" + viewer.getModelNumber(modelIndex);
   }
 
+  @Override
   public Object getProperty(String propertyName, int param) {
     if (propertyName == "list") {
       String s = (String) super.getProperty("list", param);
@@ -292,6 +295,7 @@ public class MolecularOrbital extends Isosurface {
     return super.getProperty(propertyName, param);
   }
 
+  @Override
   protected void clearSg() {
     //sg = null; // not Molecular Orbitals
   }
@@ -364,6 +368,7 @@ public class MolecularOrbital extends Isosurface {
     return;
   }
 
+  @Override
   public String getShapeState() {
     if (htModels == null)
       return "";
@@ -406,6 +411,7 @@ public class MolecularOrbital extends Isosurface {
     return s.toString();
   }
   
+  @Override
   public void merge(Shape shape) {
   MolecularOrbital mo = (MolecularOrbital) shape;
   moCutoff = mo.moCutoff;

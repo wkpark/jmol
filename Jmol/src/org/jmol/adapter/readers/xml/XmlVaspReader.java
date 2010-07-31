@@ -58,6 +58,7 @@ public class XmlVaspReader extends XmlReader {
   XmlVaspReader() {
   }
   
+  @Override
   protected void processXml(XmlReader parent,
                            AtomSetCollection atomSetCollection,
                            BufferedReader reader, XMLReader xmlReader) {
@@ -69,6 +70,7 @@ public class XmlVaspReader extends XmlReader {
     parseReaderXML(xmlReader);
   }
 
+  @Override
   protected void processXml(XmlReader parent,
                             AtomSetCollection atomSetCollection,
                             BufferedReader reader, JSObject DOMNode) {
@@ -87,6 +89,7 @@ public class XmlVaspReader extends XmlReader {
   boolean modelRead = false;
   boolean readThisModel = true;
   
+  @Override
   public void processStartElement(String namespaceURI, String localName,
                                   String qName, HashMap atts) {
     if (Logger.debugging) 
@@ -143,6 +146,7 @@ public class XmlVaspReader extends XmlReader {
   float beta;
   float gamma;
   
+  @Override
   public void processEndElement(String uri, String localName, String qName) {
 
     if (Logger.debugging) 

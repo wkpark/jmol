@@ -59,14 +59,17 @@ class Widgets {
     SpinOnWidget() {
       name = GT._("Spin on/off");
     }
+    @Override
     String[] getSupportFileNames(){
       String[] fileNames = new String[0];
       return(fileNames);
     }
+    @Override
     String getJavaScriptFileName() {
       return "JmolSpin.js";
     }
 
+    @Override
     String getJavaScript(int appletID, JmolInstance instance) {
       return "<input type=\"checkbox\""
           + " id=\"JmolSpinWidget" + appletID + "\""
@@ -83,15 +86,18 @@ class Widgets {
       name = GT._("Background Color");
     }
 
+    @Override
     String getJavaScriptFileName() {
       return ("JmolColorPicker.js");
     }
     
+    @Override
     String[] getSupportFileNames(){
       String[] fileNames = new String[0];
       return(fileNames);
     }
     
+    @Override
     String getJavaScript(int appletID, JmolInstance instance) {
       Point3f ptRGB = Graphics3D.colorPointFromInt2(instance.bgColor);
       return "<table><tbody><tr><td style=\"min-width:70px;\">"
@@ -111,15 +117,18 @@ class Widgets {
       name = GT._("Stereo Viewing");
     }
 
+    @Override
     String getJavaScriptFileName() {
       return "none";
     }
     
+    @Override
     String[] getSupportFileNames(){
       String[] fileNames = new String[0];
       return(fileNames);
     }
     
+    @Override
     String getJavaScript(int appletID, JmolInstance instance) {
       return "<select id=\"StereoMode" + appletID + "\" title=\""
           + GT._("select stereo type") + "\""
@@ -141,10 +150,12 @@ class Widgets {
       name = GT._("Animation Control");
     }
 
+    @Override
     String getJavaScriptFileName() {
       return ("JmolAnimationCntrl.js");
     }
 
+    @Override
     String[] getSupportFileNames(){
       String[] fileNames = new String[9];
       String imagePath = "org/openscience/jmol/app/images/";
@@ -160,6 +171,7 @@ class Widgets {
       return(fileNames);
     }
     
+    @Override
     String getJavaScript(int appletID, JmolInstance instance) {
       String jsString ="<table id=\"AnimContrl\" class=\"AnimContrlCSS\">";
       jsString +="<tbody><tr><td>"+GT._("Animation")+"</td></tr><tr><td><table><tbody>";
@@ -192,15 +204,18 @@ class Widgets {
       name = GT._("Open Console Button");
     }
 
+    @Override
     String getJavaScriptFileName() {
       return ("none");
     }
     
+    @Override
     String[] getSupportFileNames(){
       String[] fileNames = new String[0];
       return(fileNames);
     }
 
+    @Override
     String getJavaScript(int appletID, JmolInstance instance) {
       return ("<button title=\"" + GT._("launch Jmol console")
           + "\" onclick=\"jmolScript(\'console\',"+appletID+");\">"
@@ -212,16 +227,19 @@ class Widgets {
       name = GT._("Download view");
     }
 
+    @Override
     String getJavaScriptFileName() {
       // TODO
       return ("none");
     }
     
+    @Override
     String[] getSupportFileNames(){
       String[] fileNames = new String[0];
       return(fileNames);
     }
 
+    @Override
     String getJavaScript(int appletID, JmolInstance instance) {
       // TODO
       return (GT._("unimplemented"));

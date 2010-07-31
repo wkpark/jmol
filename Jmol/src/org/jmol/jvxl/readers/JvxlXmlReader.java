@@ -66,6 +66,7 @@ public class JvxlXmlReader extends VolumeFileReader {
   
   /////////////reading the format///////////
 
+  @Override
   protected boolean readVolumeData(boolean isMapData) {
     if (!super.readVolumeData(isMapData))
       return false;
@@ -73,6 +74,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     fractionPtr = 0;
     return true;
   }
+  @Override
   protected boolean gotoAndReadVoxelData(boolean isMapData) {
     initializeVolumetricData();
     if (nPointsX < 0 || nPointsY < 0 || nPointsZ < 0) 
@@ -111,6 +113,7 @@ public class JvxlXmlReader extends VolumeFileReader {
   
   String tempDataXml; 
   
+  @Override
   protected void readParameters() throws Exception {
     String s = xr.getXmlData("jvxlFileTitle", null, false, false);
     jvxlFileHeaderBuffer = new StringBuffer(s);
@@ -141,6 +144,7 @@ public class JvxlXmlReader extends VolumeFileReader {
       setVectorAnisotropy(volumetricVectors[voxelVectorIndex]);
   }
 
+  @Override
   protected void gotoData(int n, int nPoints) throws Exception {
     if (n > 0)
       Logger.info("skipping " + n + " data sets, " + nPoints + " points each");
@@ -286,6 +290,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     params.insideOut = jvxlData.insideOut;
   }
 
+  @Override
   protected void readSurfaceData(boolean isMapDataIgnored) throws Exception {
     thisInside = !params.isContoured;
     if (readSurfaceData())
@@ -338,6 +343,7 @@ public class JvxlXmlReader extends VolumeFileReader {
   
   protected BitSet bsVoxelBitSet;
 
+  @Override
   protected BitSet getVoxelBitSet(int nPoints) throws Exception {
     if (bsVoxelBitSet != null)
       return bsVoxelBitSet;
@@ -369,6 +375,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     return bs;
   }
   
+  @Override
   protected float getSurfacePointAndFraction(float cutoff,
                                              boolean isCutoffAbsolute,
                                              float valueA, float valueB,
@@ -398,6 +405,7 @@ public class JvxlXmlReader extends VolumeFileReader {
         base, range, fracOffset);
   }
 
+  @Override
   protected String readColorData() {
     // overloads SurfaceReader
     // standard jvxl file read for color 

@@ -65,12 +65,14 @@ public abstract class BioShapeCollection extends Shape {
   
   BioShape[] bioShapes;
   
+  @Override
   public final void initModelSet() {
     isBioShape = true;
     atoms = modelSet.atoms;
     initialize();
   }
 
+  @Override
   public int getSize(Group group) {
     Monomer m = (Monomer) group;
     int groupIndex = m.getGroupIndex();
@@ -86,6 +88,7 @@ public abstract class BioShapeCollection extends Shape {
     return 0;
   }
   
+  @Override
   public void setShapeSize(int size, RadiusData rd, BitSet bsSelected) {
     short mad = (short) size;
     initialize();
@@ -96,6 +99,7 @@ public abstract class BioShapeCollection extends Shape {
     }
   }
 
+  @Override
   public void setProperty(String propertyName, Object value, BitSet bsSelected) {
 
     if (propertyName == "deleteModelAtoms") {
@@ -137,6 +141,7 @@ public abstract class BioShapeCollection extends Shape {
     super.setProperty(propertyName, value, bsSelected);
   }
 
+  @Override
   public String getShapeState() {
     Hashtable temp = new Hashtable();
     Hashtable temp2 = new Hashtable();    
@@ -162,11 +167,13 @@ public abstract class BioShapeCollection extends Shape {
     bioShapes = shapes;
   }
 
+  @Override
   public void findNearestAtomIndex(int xMouse, int yMouse, Atom[] closest, BitSet bsNot) {
     for (int i = bioShapes.length; --i >= 0; )
       bioShapes[i].findNearestAtomIndex(xMouse, yMouse, closest, bsNot);
   }
 
+  @Override
   public void setVisibilityFlags(BitSet bs) {
     if (bioShapes == null)
       return;
@@ -181,6 +188,7 @@ public abstract class BioShapeCollection extends Shape {
     }
   }
 
+  @Override
   public void setModelClickability() {
     if (bioShapes == null)
       return;

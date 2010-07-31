@@ -99,6 +99,7 @@ abstract public class ModelCollection extends BondCollection {
     }
   }
 
+  @Override
   protected void releaseModelSet() {
     /*
      * Probably unnecessary, but here for general accounting.
@@ -504,6 +505,7 @@ abstract public class ModelCollection extends BondCollection {
     return ptCenter;
   }
 
+  @Override
   public void setAtomProperty(BitSet bs, int tok, int iValue, float fValue,
                               String sValue, float[] values, String[] list) {
     super.setAtomProperty(bs, tok, iValue, fValue, sValue, values, list);
@@ -571,6 +573,7 @@ abstract public class ModelCollection extends BondCollection {
         && (bsAtoms2 == null || bsAtoms2.nextSetBit(0) >= 0);
     }
 
+    @Override
     public String toString() {
       if (!isValid())
         return "";
@@ -1961,6 +1964,7 @@ abstract public class ModelCollection extends BondCollection {
   
   ////////// bonds /////////
 
+  @Override
   public int getBondCountInModel(int modelIndex) {
     return (modelIndex < 0 ? bondCount : models[modelIndex].getBondCount());
   }
@@ -2065,6 +2069,7 @@ abstract public class ModelCollection extends BondCollection {
    * @param specInfo
    * @return BitSet; or null if we mess up the type
    */
+  @Override
   public BitSet getAtomBits(int tokType, Object specInfo) {
     int[] info;
     BitSet bs;
@@ -2345,6 +2350,7 @@ abstract public class ModelCollection extends BondCollection {
 
   // ////////// Bonding methods ////////////
 
+  @Override
   public void deleteBonds(BitSet bsBonds, boolean isFullModel) {
     if (!isFullModel) {
       BitSet bsA = new BitSet();
@@ -3055,6 +3061,7 @@ abstract public class ModelCollection extends BondCollection {
     s.append("  ").append(order).append("\n"); 
   }
   
+  @Override
   public String getChimeInfo(int tok, BitSet bs) {
     switch (tok) {
     case Token.info:

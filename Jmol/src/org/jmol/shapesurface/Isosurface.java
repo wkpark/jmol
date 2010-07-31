@@ -139,6 +139,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   private IsosurfaceMesh[] isomeshes = new IsosurfaceMesh[4];
   protected IsosurfaceMesh thisMesh;
 
+  @Override
   public void allocMesh(String thisID, Mesh m) {
     int index = meshCount++;
     meshes = isomeshes = (IsosurfaceMesh[]) ArrayUtil.ensureLength(isomeshes,
@@ -149,6 +150,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     sg.setJvxlData(jvxlData = thisMesh.jvxlData);
   }
 
+  @Override
   public void initShape() {
     super.initShape();
     myType = "isosurface";
@@ -184,6 +186,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   private float withinDistance;
   private Vector withinPoints;
 
+  @Override
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
     // //isosurface-only (no calculation required; no calculation parameters to
@@ -502,6 +505,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       sg.setJvxlData(jvxlData);
   }
 
+  @Override
   public boolean getProperty(String property, Object[] data) {
     if (property == "intersectPlane") {
       IsosurfaceMesh mesh = (IsosurfaceMesh) getMesh((String) data[0]);
@@ -537,6 +541,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     return super.getProperty(property, data);
   }
 
+  @Override
   public Object getProperty(String property, int index) {
     Object ret = super.getProperty(property, index);
     if (ret != null)
@@ -599,6 +604,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     return list1.toString();
   }
 
+  @Override
   protected void getColorState(StringBuffer sb, Mesh mesh) {
     boolean colorArrayed = (mesh.isColorSolid && ((IsosurfaceMesh) mesh).polygonColixes != null);
     if (mesh.isColorSolid && !colorArrayed)
@@ -1071,6 +1077,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       jvxlData = thisMesh.jvxlData = sg.getJvxlData();
   }
 
+  @Override
   public Vector getShapeDetail() {
     Vector V = new Vector();
     for (int i = 0; i < meshCount; i++) {
@@ -1100,6 +1107,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     return V;
   }
 
+  @Override
   protected void remapColors() {
     JvxlData jvxlData = thisMesh.jvxlData;
     float[] vertexValues = thisMesh.vertexValues;
@@ -1157,6 +1165,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     return 0;
   }
   
+  @Override
   public boolean checkObjectHovered(int x, int y, BitSet bsVisible) {
     if (!viewer.getDrawHover())
       return false;
@@ -1175,6 +1184,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   private final static int MAX_OBJECT_CLICK_DISTANCE_SQUARED = 10 * 10;
   private final Point3i ptXY = new Point3i();
 
+  @Override
   public Point3fi checkObjectClicked(int x, int y, int action, BitSet bsVisible) {
     if (!viewer.isBound(action, ActionManager.ACTION_pickIsosurface))
       return null;
@@ -1400,6 +1410,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     return null;
   }
 
+  @Override
   public void merge(Shape shape) {
     super.merge(shape);
   }

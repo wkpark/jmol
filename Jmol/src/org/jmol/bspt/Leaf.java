@@ -66,6 +66,7 @@ class Leaf extends Element {
     }
   }
 
+  @Override
   Element addTuple(int level, Point3f tuple) {
     if (count < Bspt.leafCountMax) {
       tuples[count++] = tuple;
@@ -76,6 +77,7 @@ class Leaf extends Element {
   }
     
  
+  @Override
   void dump(int level, StringBuffer sb) {
     for (int i = 0; i < count; ++i) {
       Point3f t = tuples[i];
@@ -85,9 +87,10 @@ class Leaf extends Element {
     }
   }
 
-    public String toString() {
+  @Override
+  public String toString() {
     return "leaf:" + count + "\n";
-    }
+  }
  
 
 }

@@ -34,6 +34,7 @@ public class DipolesRenderer extends ShapeRenderer {
 
   private float dipoleVectorScale;
 
+  @Override
   protected void render() {
     Dipoles dipoles = (Dipoles) shape;
     dipoleVectorScale = viewer.getDipoleScale();

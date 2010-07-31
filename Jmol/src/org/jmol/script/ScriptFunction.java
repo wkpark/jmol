@@ -158,6 +158,7 @@ public class ScriptFunction {
     return s.toString();
   }
 
+  @Override
   public String toString() {
     StringBuffer s = new StringBuffer("/*\n * ");
     s.append(name).append("\n */\n").append(getSignature()).append("{\n");

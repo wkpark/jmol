@@ -189,6 +189,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
     editor.setCaretPosition(editor.editorDoc.getLength());
   }
 
+  @Override
   public void setVisible(boolean b) {
     super.setVisible(b);
     viewer.getProperty("DATA_API", "scriptEditorState", b ? Boolean.TRUE : Boolean.FALSE);
@@ -209,6 +210,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
     editor.clearContent(message);
   }
 
+  @Override
   public void dispose() {
     super.dispose();
   }
@@ -435,6 +437,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
       parseScript(text);
     }
     
+    @Override
     protected void processKeyEvent(KeyEvent ke) {
       int kcode = ke.getKeyCode();
       int kid = ke.getID();

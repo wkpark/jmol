@@ -75,16 +75,9 @@ public class WhatsNewDialog extends JDialog implements HyperlinkListener {
     } catch (IOException e) {
       Logger.error("IOException", e);
     }
-    JScrollPane scroller = new JScrollPane() {
-
-      public Dimension getPreferredSize() {
-        return new Dimension(500, 400);
-      }
-
-      public float getAlignmentX() {
-        return LEFT_ALIGNMENT;
-      }
-    };
+    JScrollPane scroller = new JScrollPane();
+    scroller.setPreferredSize(new Dimension(500, 400));
+    scroller.setAlignmentX(LEFT_ALIGNMENT);
     scroller.getViewport().add(html);
 
     JPanel htmlWrapper = new JPanel(new BorderLayout());

@@ -173,6 +173,7 @@ class TestScriptsImpl extends TestCase {
   /* (non-Javadoc)
    * @see junit.framework.TestCase#runTest()
    */
+  @Override
   public void runTest() throws Throwable {
     testScript();
   }
@@ -291,6 +292,7 @@ class TestScriptsImpl extends TestCase {
   /* (non-Javadoc)
    * @see junit.framework.TestCase#getName()
    */
+  @Override
   public String getName() {
     if (file != null) {
       return super.getName() + " [" + file.getPath() + "]";
@@ -301,6 +303,7 @@ class TestScriptsImpl extends TestCase {
   /* (non-Javadoc)
    * @see junit.framework.TestCase#setUp()
    */
+  @Override
   protected void setUp() throws Exception {
     super.setUp();
     JUnitLogger.activateLogger();
@@ -310,6 +313,7 @@ class TestScriptsImpl extends TestCase {
   /* (non-Javadoc)
    * @see junit.framework.TestCase#tearDown()
    */
+  @Override
   protected void tearDown() throws Exception {
     super.tearDown();
     JUnitLogger.setInformation(null);

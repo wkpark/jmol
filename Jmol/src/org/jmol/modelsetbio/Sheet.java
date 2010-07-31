@@ -39,6 +39,7 @@ public class Sheet extends ProteinStructure {
     this.alphaPolymer = alphaPolymer;
   }
 
+  @Override
   public void calcAxis() {
     if (axisA != null)
       return;

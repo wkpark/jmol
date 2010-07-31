@@ -99,12 +99,14 @@ public class PdbReader extends AtomSetCollectionReader {
  private int serial = 0;
  private StringBuffer pdbHeader;
  
- protected void initializeReader() throws Exception {
+ @Override
+protected void initializeReader() throws Exception {
    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("isPDB", Boolean.TRUE);
    pdbHeader = (getHeader ? new StringBuffer() : null);
  }
 
- protected boolean checkLine() throws Exception {
+ @Override
+protected boolean checkLine() throws Exception {
     int ptOption = ((lineLength = line.length()) < 6 ? -1 : lineOptions
         .indexOf(line.substring(0, 6))) >> 3;
     boolean isAtom = (ptOption == 0 || ptOption == 1);
@@ -213,6 +215,7 @@ public class PdbReader extends AtomSetCollectionReader {
     return true;
   }
 
+  @Override
   protected void finalizeReader() throws Exception {
     checkNotPDB();
     atomSetCollection.connectAll(maxSerial);
@@ -235,6 +238,7 @@ public class PdbReader extends AtomSetCollectionReader {
           pdbHeader.toString());
   }
   
+  @Override
   public void applySymmetryAndSetTrajectory() throws Exception {
     // This speeds up calculation, because no crosschecking
     // No special-position atoms in mmCIF files, because there will
@@ -417,8 +421,6 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
             Logger.info("filter set to \"" + filter + "\"");
             this.biomts = biomts;
           }
-          if (info == null)
-            return; //bad file format
           info.put("chains", chainlist);
           continue;
         }

@@ -61,6 +61,7 @@ public class XmlXsdReader extends XmlReader {
   public XmlXsdReader() {
   }
 
+  @Override
   protected void processXml(XmlReader parent,
                            AtomSetCollection atomSetCollection,
                            BufferedReader reader, XMLReader xmlReader) {
@@ -71,6 +72,7 @@ public class XmlXsdReader extends XmlReader {
     fin();
   }
 
+  @Override
   protected void processXml(XmlReader parent,
                             AtomSetCollection atomSetCollection,
                             BufferedReader reader, JSObject DOMNode) {
@@ -94,6 +96,7 @@ public class XmlXsdReader extends XmlReader {
   private int iGroup = 0;
   private int iAtom = 0;
   
+  @Override
   public void processStartElement(String namespaceURI, String localName, String qName,
                            HashMap atts) {
     String[] tokens;
@@ -150,6 +153,7 @@ public class XmlXsdReader extends XmlReader {
     }
   }
 
+  @Override
   public void processEndElement(String uri, String localName, String qName) {
     if ("Atom3d".equals(localName)) {
       if (atom.elementSymbol != null && !Float.isNaN(atom.z)) {

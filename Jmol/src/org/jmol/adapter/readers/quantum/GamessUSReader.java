@@ -80,6 +80,7 @@ public class GamessUSReader extends GamessReader {
    * @throws Exception
    * 
    */
+  @Override
   protected boolean checkLine() throws Exception {
     boolean isBohr;
     if (line.indexOf("BASIS OPTIONS") >= 0){
@@ -163,6 +164,7 @@ public class GamessUSReader extends GamessReader {
     return checkNboLine();
   }
   
+  @Override
   protected void readMolecularOrbitals(int headerType) throws Exception {
     setCalculationType();
     super.readMolecularOrbitals(headerType);
@@ -230,6 +232,7 @@ public class GamessUSReader extends GamessReader {
     }
   }
   
+  @Override
   protected void readAtomsInBohrCoordinates() throws Exception {
 /*
  ATOM      ATOMIC                      COORDINATES (BOHR)
@@ -376,6 +379,7 @@ public class GamessUSReader extends GamessReader {
 
    */
   
+  @Override
   protected String fixShellTag(String tag) {
     return tag;
   }

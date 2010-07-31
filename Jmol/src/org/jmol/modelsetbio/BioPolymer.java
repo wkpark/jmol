@@ -47,6 +47,7 @@ public abstract class BioPolymer extends Polymer {
 
   Monomer[] monomers;
 
+  @Override
   public Group[] getGroups() {
     return monomers;
   }
@@ -61,6 +62,7 @@ public abstract class BioPolymer extends Polymer {
     model = monomers[0].getModel();
   }
 
+  @Override
   public void getRange(BitSet bs) {
     if (monomerCount == 0)
       return;
@@ -104,6 +106,7 @@ public abstract class BioPolymer extends Polymer {
     throw new NullPointerException();
   }
 
+  @Override
   public void clearStructures() {
     for (int i = 0; i < monomerCount; i++)
       monomers[i].setStructure(null);
@@ -191,6 +194,7 @@ public abstract class BioPolymer extends Polymer {
     return monomers[polymerIndex].getWingAtom();
   }
 
+  @Override
   public void setConformation(BitSet bsSelected, int nAltLocsInModel) {
     for (int i = monomerCount; --i >= 0;)
       monomers[i].updateOffsetsForAlternativeLocations(bsSelected,
@@ -201,6 +205,7 @@ public abstract class BioPolymer extends Polymer {
 
   private boolean invalidLead = false;
   private boolean invalidSheet = false;
+  @Override
   public void recalculateLeadMidpointsAndWingVectors() {
     invalidLead = invalidSheet = true;
     getLeadAtomIndices();
@@ -212,6 +217,7 @@ public abstract class BioPolymer extends Polymer {
     // amino polymer only
   }
   
+  @Override
   public Point3f[] getLeadMidpoints() {
     if (leadMidpoints == null)
       calcLeadMidpointsAndWingVectors();
@@ -363,6 +369,7 @@ public abstract class BioPolymer extends Polymer {
 
   BitSet bsSelectedMonomers;
 
+  @Override
   public void calcSelectedMonomersCount(BitSet bsSelected) {
     selectedMonomerCount = 0;
     if (bsSelectedMonomers == null)
@@ -380,6 +387,7 @@ public abstract class BioPolymer extends Polymer {
     return (i >= 0 && bsSelectedMonomers.get(i));
   }
 
+  @Override
   public int getPolymerPointsAndVectors(int last, BitSet bs, Vector vList,
                                         boolean isTraceAlpha,
                                         float sheetSmoothing) {
@@ -400,6 +408,7 @@ public abstract class BioPolymer extends Polymer {
     return last;
   }
 
+  @Override
   public String getSequence() {
     char[] buf = new char[monomerCount];
     for (int i = 0; i < monomerCount; i++)
@@ -407,6 +416,7 @@ public abstract class BioPolymer extends Polymer {
     return String.valueOf(buf);
   }
 
+  @Override
   public Hashtable getPolymerInfo(BitSet bs) {
     Hashtable returnInfo = new Hashtable();
     Vector info = new Vector();
@@ -438,6 +448,7 @@ public abstract class BioPolymer extends Polymer {
     return returnInfo;
   }
 
+  @Override
   public void getPolymerSequenceAtoms(int group1, int nGroups, BitSet bsInclude,
                                       BitSet bsResult) {
     int max = group1 + nGroups;
@@ -904,9 +915,12 @@ public abstract class BioPolymer extends Polymer {
     return (float) (1 - 2 * Math.acos(Math.abs(cosHalfTheta))/Math.PI);   
   }
 
+  @Override
   public boolean isDna() { return (monomerCount > 0 && monomers[0].isDna()); }
+  @Override
   public boolean isRna() { return (monomerCount > 0 && monomers[0].isRna()); }
 
+  @Override
   public void getRangeGroups(int nResidues, BitSet bsAtoms, BitSet bsResult) {
     BitSet bsTemp = new BitSet();
     for (int i = 0; i < monomerCount; i++) {

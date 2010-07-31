@@ -216,6 +216,7 @@ public class _IdtfExporter extends __CartesianExporter {
   private boolean haveCone;
   private boolean haveCircle;
   
+  @Override
   protected void output(Tuple3f pt) {
     output(pt, sbTemp, true);
   }
@@ -253,6 +254,7 @@ public class _IdtfExporter extends __CartesianExporter {
   final private StringBuffer resources = new StringBuffer();
   final private StringBuffer modifiers = new StringBuffer();
 
+  @Override
   protected void outputHeader() {
     // next is an approximation only 
     output("FILE_FORMAT \"IDTF\"\nFORMAT_VERSION 100\n");
@@ -291,6 +293,7 @@ public class _IdtfExporter extends __CartesianExporter {
     
   }
 
+  @Override
   String finalizeOutput() {
     super.finalizeOutput();
     return getAuxiliaryFileData();
@@ -396,6 +399,7 @@ public class _IdtfExporter extends __CartesianExporter {
     modifiers.append("}}}}}\n");
   }
 
+  @Override
   protected void outputFooter() {
     htDefs = null;
     outputNodes();
@@ -500,6 +504,7 @@ public class _IdtfExporter extends __CartesianExporter {
     }
   }
 
+  @Override
   protected void outputEllipsoid(Point3f center, Point3f[] points, short colix) {
     //Hey, hey -- quaternions to the rescue!
     // Just send three points to Quaternion to define a plane and return
@@ -627,6 +632,7 @@ public class _IdtfExporter extends __CartesianExporter {
            .append("SHADER_ID 0\n}}\n");
   }
 
+  @Override
   protected boolean outputCylinder(Point3f ptCenter, Point3f pt1, Point3f pt2,
                                    short colix, byte endcaps, float radius,
                                    Point3f ptX, Point3f ptY) {
@@ -681,6 +687,7 @@ public class _IdtfExporter extends __CartesianExporter {
     return true;
   }
 
+  @Override
   protected void outputCircle(Point3f pt1, Point3f pt2, float radius,
                               short colix, boolean doFill) {
     if (doFill) {
@@ -795,6 +802,7 @@ public class _IdtfExporter extends __CartesianExporter {
 
   private StringBuffer sbTemp;
   
+  @Override
   protected void outputFace(int[] face, int[] map, int faceVertexMax) {
     sbTemp.append(" " + map[face[0]] + " " + map[face[1]] + " "
         + map[face[2]]);
@@ -804,6 +812,7 @@ public class _IdtfExporter extends __CartesianExporter {
     }
   }
 
+  @Override
   protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
                                short[] colixes, int[][] indices,
                                short[] polygonColixes, int nVertices,
@@ -928,6 +937,7 @@ public class _IdtfExporter extends __CartesianExporter {
     models.append("}}}\n");
   }
 
+  @Override
   protected void outputCone(Point3f ptBase, Point3f ptTip, float radius,
                             short colix) {
     if (!haveCone) {
@@ -977,15 +987,18 @@ public class _IdtfExporter extends __CartesianExporter {
     return getMeshData("Circle", faces, vertexes, normals);
   }
   
+  @Override
   protected void outputSphere(Point3f center, float radius, short colix) {
     outputEllipsoid(center, radius, radius, radius, null, colix);
   }
 
+  @Override
   protected void outputTextPixel(Point3f pt, int argb) {    
     short colix = Graphics3D.getColix(argb); 
     outputSphere(pt, 0.02f, colix);
   }
 
+  @Override
   protected void outputTriangle(Point3f pt1, Point3f pt2, Point3f pt3, short colix) {
     addColix(colix, false);
     String key = "T" + (++iObj);

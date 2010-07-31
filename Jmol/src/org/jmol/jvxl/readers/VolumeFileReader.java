@@ -61,6 +61,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   }
   
   boolean readerClosed;
+  @Override
   protected void closeReader() {
     if (readerClosed)
       return;
@@ -73,6 +74,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     Logger.info("VolumeFileReader closing file: " + n + " points read \ndata min/max/mean = " + dataMin + ", " + dataMax + ", " + dataMean );
   }
   
+  @Override
   protected boolean readVolumeParameters() {
     endOfData = false;
     nSurfaces = readVolumetricHeader();
@@ -87,6 +89,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   }
   
   Point4f thePlane;
+  @Override
   protected boolean readVolumeData(boolean isMapData) {
     if (!gotoAndReadVoxelData(isMapData))
       return false;
@@ -163,6 +166,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   private int downsampleFactor;
   private int nSkipX, nSkipY, nSkipZ;
   
+  @Override
   protected void readSurfaceData(boolean isMapData) throws Exception {
     /*
      * possibilities:
@@ -278,6 +282,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   
   private float[][] yzPlanes;
   private int yzCount;
+  @Override
   public void getPlane(int x) {
     float[] plane;
     if (yzCount == 0) {
@@ -307,6 +312,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   
   protected Point3f[] boundingBox;
   
+  @Override
   public float getValue(int x, int y, int z, int ptyz) {
    // if (x == 0 && ptyz + 1 == yzCount) {
       //first value -- ALWAYS send
@@ -366,6 +372,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     return voxelValue;
   }
 
+  @Override
   protected void gotoData(int n, int nPoints) throws Exception {
     if (!params.blockCubeData)
       return;

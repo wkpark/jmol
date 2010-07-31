@@ -97,6 +97,7 @@ public class CrystalReader extends AtomSetCollectionReader {
   private int[] atomFrag;
   private boolean getLastConventional;
 
+  @Override
   protected void initializeReader() throws Exception {
     doProcessLines = false;
     if (filter != null)
@@ -108,6 +109,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     setFractionalCoordinates(readHeader());
   }
 
+  @Override
   protected boolean checkLine() throws Exception {
     
     if (line.indexOf("FRQFRQ") >= 0) {
@@ -376,6 +378,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     atomSetCollection.setAtomSetAuxiliaryProperty(name, data);
   }
 
+  @Override
   protected void finalizeReader() throws Exception {
     if (vInputCoords != null)
       processInputCoords();

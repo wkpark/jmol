@@ -34,6 +34,7 @@ public class EchoRenderer extends ShapeRenderer {
   float imageFontScaling;
   Atom ptAtom;
   Point3i pt = new Point3i();
+  @Override
   protected void render() {
     if (viewer.isPreviewOnly())
       return;

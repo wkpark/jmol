@@ -39,6 +39,7 @@ class IsoFxyReader extends VolumeDataReader {
   private float[][] data;
   private boolean isPlanarMapping;
   
+  @Override
   protected void setup() {
     isPlanarMapping = (params.thePlane != null || params.state == Parameters.STATE_DATA_COLORED);
     functionName = (String) params.functionXYinfo.get(0);
@@ -57,6 +58,7 @@ class IsoFxyReader extends VolumeDataReader {
     JvxlCoder.jvxlCreateHeaderWithoutTitleOrAtoms(volumeData, jvxlFileHeaderBuffer);
   }
 
+  @Override
   public float getValue(int x, int y, int z, int ptyz) {
     return (isPlanarMapping ? data[x][y] : data[x][y] - (volumeData.origin[2] + z * volumeData.volumetricVectors[2].z));
   }

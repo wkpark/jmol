@@ -36,6 +36,7 @@ public class Helix extends ProteinStructure {
           monomerIndex, monomerCount, id);
   }
 
+  @Override
   public void calcAxis() {
     if (axisA != null)
       return;

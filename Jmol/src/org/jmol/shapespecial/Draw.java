@@ -58,6 +58,7 @@ public class Draw extends MeshCollection {
   DrawMesh[] dmeshes = new DrawMesh[4];
   DrawMesh thisMesh;
   
+  @Override
   public void allocMesh(String thisID, Mesh m) {
     int index = meshCount++;
     meshes = dmeshes = (DrawMesh[]) ArrayUtil.ensureLength(dmeshes,
@@ -76,7 +77,8 @@ public class Draw extends MeshCollection {
     thisMesh = (DrawMesh)currentMesh;  
   }
   
- public void initShape() {
+ @Override
+public void initShape() {
     super.initShape();
     myType = "draw";
   }
@@ -123,6 +125,7 @@ public class Draw extends MeshCollection {
   private final static int PT_MODEL_INDEX = 4;
   private final static int PT_MODEL_BASED_POINTS = 5;
 
+  @Override
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
     if ("init" == propertyName) {
@@ -422,6 +425,7 @@ public class Draw extends MeshCollection {
     }    
   }
 
+  @Override
   public boolean getProperty(String property, Object[] data) {
     if (property == "getCenter") {
       String id = (String) data[0];
@@ -439,6 +443,7 @@ public class Draw extends MeshCollection {
     return super.getProperty(property, data);
   }
 
+  @Override
   public Object getProperty(String property, int index) {
     if (property == "command")
       return getDrawCommand(thisMesh);
@@ -1014,6 +1019,7 @@ public class Draw extends MeshCollection {
 
   private final BitSet bsTemp = new BitSet();
  
+  @Override
   public void setVisibilityFlags(BitSet bs) {
     /*
      * set all fixed objects visible; others based on model being displayed note
@@ -1044,6 +1050,7 @@ public class Draw extends MeshCollection {
   private final Point3i ptXY = new Point3i();
   private final Point3fi PT_NAN = new Point3fi(Float.NaN, 0.0f, 0.0f);
   
+  @Override
   public Point3fi checkObjectClicked(int x, int y, int action, BitSet bsVisible) {
     boolean isPickingMode = (viewer.getPickingMode() == ActionManager.PICKING_DRAW);
     boolean isSpinMode = (viewer.getPickingMode() == ActionManager.PICKING_SPIN);
@@ -1087,6 +1094,7 @@ public class Draw extends MeshCollection {
     return pt; 
   }
 
+  @Override
   public boolean checkObjectHovered(int x, int y, BitSet bsVisible) {
     if (Graphics3D.isColixTranslucent(colix))
       return false;
@@ -1105,6 +1113,7 @@ public class Draw extends MeshCollection {
     return true;
   }
 
+  @Override
   public synchronized boolean checkObjectDragged(int prevX, int prevY, int x,
                                                  int y, int action,
                                                  BitSet bsVisible) {
@@ -1359,6 +1368,7 @@ public class Draw extends MeshCollection {
     return str;
   }
   
+  @Override
   public Vector getShapeDetail() {
     Vector V = new Vector();
     for (int i = 0; i < meshCount; i++) {
@@ -1418,6 +1428,7 @@ public class Draw extends MeshCollection {
     return V;
   }
 
+  @Override
   public String getShapeState() {
     StringBuffer s = new StringBuffer("\n");
     appendCmd(s, "draw delete");

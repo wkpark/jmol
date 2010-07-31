@@ -57,17 +57,20 @@ public class Dots extends AtomShape {
 
   RadiusData rdLast = new RadiusData();
 
+  @Override
   public void initShape() {
     super.initShape();
     translucentAllowed = false; //except for geosurface
     ec = new EnvelopeCalculation(viewer, atomCount, mads, viewer.getTestFlag2());
   }
 
+  @Override
   public int getSize(int atomIndex) {
     // mads are actually radii not diameters
     return (mads == null ? (int) (ec.getRadius(atomIndex) * 2000) : mads[atomIndex]*2);
   }
   
+  @Override
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
     if ("init" == propertyName) {
@@ -155,6 +158,7 @@ public class Dots extends AtomShape {
       ec = new EnvelopeCalculation(viewer, atomCount, mads, viewer.getTestFlag2());
   }
 
+  @Override
   public void setSize(RadiusData rd, BitSet bsSelected) {
     if (rd == null)
       rd = new RadiusData(0, RadiusData.TYPE_ABSOLUTE, 0);
@@ -264,6 +268,7 @@ public class Dots extends AtomShape {
       Logger.checkTimer("dots generation time");
   }
 
+  @Override
   public void setModelClickability() {
     for (int i = atomCount; --i >= 0;) {
       Atom atom = atoms[i];
@@ -274,6 +279,7 @@ public class Dots extends AtomShape {
     }
   }
 
+  @Override
   public String getShapeState() {
     FastBitSet[] dotsConvexMaps = ec.getDotsConvexMaps();
     if (dotsConvexMaps == null || ec.getDotsConvexMax() == 0)

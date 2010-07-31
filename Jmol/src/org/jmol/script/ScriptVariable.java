@@ -959,6 +959,7 @@ public class ScriptVariable extends Token {
     return sb.toString();
   }
   
+  @Override
   public String toString() {
     return super.toString() + "[" + name + "] index =" + index + " hashcode=" + hashCode();
   }

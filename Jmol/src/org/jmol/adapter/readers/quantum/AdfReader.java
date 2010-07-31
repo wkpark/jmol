@@ -72,6 +72,7 @@ public class AdfReader extends SlaterReader {
   private int nXX = 0;
   private String symLine;
   
+  @Override
   protected boolean checkLine() throws Exception {
     
     if (line.indexOf("Irreducible Representations, including subspecies") >= 0) {

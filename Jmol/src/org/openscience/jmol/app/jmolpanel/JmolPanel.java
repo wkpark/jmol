@@ -412,6 +412,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
    */
   protected final class AppCloser extends WindowAdapter {
 
+    @Override
     public void windowClosing(WindowEvent e) {
       JmolPanel.this.doClose();
     }
@@ -1054,6 +1055,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
       super(openAction);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
       String fileName = getOpenFileNameFromDialog(null);
       if (fileName == null)
@@ -1076,6 +1078,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
       prompt = GT._("Enter URL of molecular model");
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
       String url = JOptionPane.showInputDialog(frame, prompt, title,
           JOptionPane.PLAIN_MESSAGE);

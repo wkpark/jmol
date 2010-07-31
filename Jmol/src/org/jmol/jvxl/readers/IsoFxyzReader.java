@@ -38,6 +38,7 @@ class IsoFxyzReader extends VolumeDataReader {
   private String functionName;
   private float[][][] data;
   
+  @Override
   protected void setup() {
     functionName = (String) params.functionXYinfo.get(0);
     jvxlFileHeaderBuffer = new StringBuffer();
@@ -54,6 +55,7 @@ class IsoFxyzReader extends VolumeDataReader {
     JvxlCoder.jvxlCreateHeaderWithoutTitleOrAtoms(volumeData, jvxlFileHeaderBuffer);
   }
 
+  @Override
   public float getValue(int x, int y, int z, int ptyz) {
     return data[x][y][z];
   }

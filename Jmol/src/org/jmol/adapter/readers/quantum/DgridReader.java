@@ -40,6 +40,7 @@ public class DgridReader extends SlaterReader {
 
   private String title;
 
+  @Override
   protected boolean checkLine() throws Exception {
     if (line.indexOf(":title") == 0) {
       title = readLine().substring(2);

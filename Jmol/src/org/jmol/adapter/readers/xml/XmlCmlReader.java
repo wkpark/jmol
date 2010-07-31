@@ -160,6 +160,7 @@ public class XmlCmlReader extends XmlReader {
   XmlCmlReader() {
   }
 
+  @Override
   protected void processXml(XmlReader parent,
                            AtomSetCollection atomSetCollection,
                            BufferedReader reader, XMLReader xmlReader) {
@@ -170,6 +171,7 @@ public class XmlCmlReader extends XmlReader {
     parseReaderXML(xmlReader);
   }
 
+  @Override
   protected void processXml(XmlReader parent,
                             AtomSetCollection atomSetCollection,
                             BufferedReader reader, JSObject DOMNode) {
@@ -195,6 +197,7 @@ public class XmlCmlReader extends XmlReader {
   private boolean embeddedCrystal = false;
   private Properties atomIdNames;
 
+  @Override
   public void processStartElement(String uri, String name, String qName,
                                   HashMap atts) {
     // if (!uri.equals(NAMESPACE_URI))
@@ -468,6 +471,7 @@ public class XmlCmlReader extends XmlReader {
     }
   }
 
+  @Override
   public void processEndElement(String uri, String name, String qName) {
     // if (!uri.equals(NAMESPACE_URI))
     // return;
@@ -749,6 +753,7 @@ public class XmlCmlReader extends XmlReader {
     }
   }
   
+  @Override
   public void applySymmetryAndSetTrajectory() {
     if (moduleNestingLevel > 0 || !haveMolecule)
       return;

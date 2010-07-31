@@ -751,6 +751,7 @@ public class Jmol implements WrappedApplet {
    * @param strModel
    * @return         error or null
    */
+  @Deprecated
   public String loadInline(String strModel) {
     return loadInlineString(strModel, "", false);
   }
@@ -761,6 +762,7 @@ public class Jmol implements WrappedApplet {
    * @param script
    * @return         error or null
    */
+  @Deprecated
   public String loadInline(String strModel, String script) {
     return loadInlineString(strModel, script, false);
   }
@@ -770,6 +772,7 @@ public class Jmol implements WrappedApplet {
    * @param strModels
    * @return         error or null
    */
+  @Deprecated
   public String loadInline(String[] strModels) {
     return loadInlineArray(strModels, "", false);
   }
@@ -780,6 +783,7 @@ public class Jmol implements WrappedApplet {
    * @param script
    * @return       error or null
    */
+  @Deprecated
   public String loadInline(String[] strModels, String script) {
     return loadInlineArray(strModels, script, false);
   }
@@ -1052,6 +1056,7 @@ public class Jmol implements WrappedApplet {
       consoleMessage("Available callbacks include: " + s);
     }
 
+    @Override
     protected void finalize() throws Throwable {
       Logger.debug("MyStatusListener finalize " + this);
       super.finalize();

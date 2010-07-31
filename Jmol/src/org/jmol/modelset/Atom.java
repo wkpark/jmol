@@ -1085,10 +1085,12 @@ final public class Atom extends Point3fi implements JmolNode {
     return group.getInsertionCode();
   }
   
+  @Override
   public boolean equals(Object obj) {
     return (this == obj);
   }
 
+  @Override
   public int hashCode() {
     //this overrides the Point3fi hashcode, which would
     //give a different hashcode for an atom depending upon
@@ -1358,6 +1360,7 @@ final public class Atom extends Point3fi implements JmolNode {
     return group.getCrossLinkLeadAtomIndexes(vReturn);
   }
   
+  @Override
   public String toString() {
     return getInfo();
   }

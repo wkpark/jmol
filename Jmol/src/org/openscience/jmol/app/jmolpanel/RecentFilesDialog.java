@@ -77,6 +77,7 @@ class RecentFilesDialog extends JDialog implements ActionListener,
     fileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
     MouseListener dblClickListener = new MouseAdapter() {
+        @Override
         public void mouseClicked(MouseEvent e) {
           if (e.getClickCount() == 2) {
             int dblClickIndex = fileList.locationToIndex(e.getPoint());

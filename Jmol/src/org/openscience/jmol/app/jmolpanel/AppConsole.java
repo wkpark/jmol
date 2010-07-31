@@ -196,6 +196,7 @@ public final class AppConsole extends JmolConsole implements JmolAppConsoleInter
       this.setName("appConsoleExecuteCommandThread");
     }
     
+    @Override
     public void run() {
       
       try {
@@ -217,6 +218,7 @@ public final class AppConsole extends JmolConsole implements JmolAppConsoleInter
    
   ExecuteCommandThread execThread;
   
+  @Override
   protected void execute(String strCommand) {
     //System.out.println("appConsole executing " + strCommand);
     executeCommandAsThread(strCommand);
@@ -378,10 +380,12 @@ public final class AppConsole extends JmolConsole implements JmolAppConsoleInter
       console.grabFocus();
   }
 
+  @Override
   protected void clearContent(String text) {
     console.clearContent(text);
   }
 
+  @Override
   public void actionPerformed(ActionEvent e) {
     console.grabFocus(); // always grab the focus (e.g., after clear)
     Object source = e.getSource();
@@ -511,6 +515,7 @@ public final class AppConsole extends JmolConsole implements JmolAppConsoleInter
      * 
      * @see java.awt.Component#processKeyEvent(java.awt.event.KeyEvent)
      */
+    @Override
     protected void processKeyEvent(KeyEvent ke) {
       // Id Control key is down, captures events does command
       // history recall and inhibits caret vertical shift.
@@ -604,6 +609,7 @@ public final class AppConsole extends JmolConsole implements JmolAppConsoleInter
     }
   }
 
+  @Override
   protected String completeCommand(String thisCmd) {
     return super.completeCommand(thisCmd);
   }
@@ -757,6 +763,7 @@ public final class AppConsole extends JmolConsole implements JmolAppConsoleInter
 
     // override the insertString to make sure everything typed ends up at the end
     // or in the 'command line' using the proper font, and the newline is processed.
+    @Override
     public void insertString(int offs, String str, AttributeSet a)
       throws BadLocationException {
       int ichNewline = str.indexOf('\n');
@@ -785,6 +792,7 @@ public final class AppConsole extends JmolConsole implements JmolAppConsoleInter
       return strCommand;
     }
 
+    @Override
     public void remove(int offs, int len)
       throws BadLocationException {
       if (offs < offsetAfterPrompt) {
@@ -797,6 +805,7 @@ public final class AppConsole extends JmolConsole implements JmolAppConsoleInter
 //      consoleTextPane.setCaretPosition(offs);
     }
 
+    @Override
     public void replace(int offs, int length, String str, AttributeSet attrs)
       throws BadLocationException {
       if (offs < offsetAfterPrompt) {

@@ -104,6 +104,7 @@ abstract public class MOReader extends BasisFunctionReader {
   final protected int HEADER_GAMESS_ORIGINAL = 1;
   final protected int HEADER_NONE = 0;
   
+  @Override
   protected void initializeReader() throws Exception {
     line = "\nNBOs in the AO basis:";
     getNBOs = filterMO();

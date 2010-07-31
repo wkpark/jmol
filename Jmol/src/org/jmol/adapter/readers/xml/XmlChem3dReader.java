@@ -62,6 +62,7 @@ public class XmlChem3dReader extends XmlReader {
 
   XmlChem3dReader() {
   }
+  @Override
   protected void processXml(XmlReader parent,
                            AtomSetCollection atomSetCollection,
                            BufferedReader reader, XMLReader xmlReader) {
@@ -72,6 +73,7 @@ public class XmlChem3dReader extends XmlReader {
     parseReaderXML(xmlReader);
   }
 
+  @Override
   protected void processXml(XmlReader parent,
                             AtomSetCollection atomSetCollection,
                             BufferedReader reader, JSObject DOMNode) {
@@ -81,6 +83,7 @@ public class XmlChem3dReader extends XmlReader {
     ((Chem3dHandler) (new Chem3dHandler())).walkDOMTree(DOMNode);
   }
 
+  @Override
   public void processStartElement(String namespaceURI, String localName, String qName,
                            HashMap atts) {
     String[] tokens;
@@ -175,6 +178,7 @@ In Chem3D, all grid data in following format:
     }
   }
 
+  @Override
   public void processEndElement(String uri, String localName, String qName) {
     //System.out.println("xmlchem3d: end " + localName);
     if ("atom".equals(localName)) {

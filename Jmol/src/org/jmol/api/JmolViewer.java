@@ -115,6 +115,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
    * @param jmolAdapter
    * @return             a viewer
    */
+  @Deprecated
   public static JmolViewer allocateViewer(Component awtComponent, JmolAdapter jmolAdapter) {
     return Viewer.allocateViewer(awtComponent, jmolAdapter, null, null, null, null, null);
   }

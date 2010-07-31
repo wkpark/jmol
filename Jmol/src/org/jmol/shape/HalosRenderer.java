@@ -34,6 +34,7 @@ import java.util.BitSet;
 public class HalosRenderer extends ShapeRenderer {
 
   boolean isAntialiased;
+  @Override
   protected void render() {
     Halos halos = (Halos) shape;
     boolean selectDisplayTrue = viewer.getSelectionHaloEnabled();

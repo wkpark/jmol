@@ -35,6 +35,7 @@ public class AlphaMonomer extends Monomer {
 
   final static byte[] alphaOffsets = { 0 };
 
+  @Override
   public boolean isProtein() {
     return true;
   }
@@ -64,35 +65,43 @@ public class AlphaMonomer extends Monomer {
   protected ProteinStructure proteinStructure;
   protected Point3f nitrogenHydrogenPoint;
   
+  @Override
   public ProteinStructure getProteinStructure() { return proteinStructure; }
 
+  @Override
   public Object getStructure() { return getProteinStructure(); }
 
+  @Override
   void setStructure(ProteinStructure proteinStructure) {
     this.proteinStructure = proteinStructure;
     if (proteinStructure == null)
       nitrogenHydrogenPoint = null;
   }
   
+  @Override
   public void setProteinStructureId(int id) {
     if (proteinStructure != null)
       proteinStructure.uniqueID = id;
   }
 
+  @Override
   public byte getProteinStructureType() {
     return proteinStructure == null ? JmolConstants.PROTEIN_STRUCTURE_NONE
         : proteinStructure.type;
   }
 
+  @Override
   public int getStrucNo() {
     return proteinStructure != null ? proteinStructure.uniqueID : 0;
   }
 
+  @Override
   public boolean isHelix() {
     return proteinStructure != null &&
       proteinStructure.type == JmolConstants.PROTEIN_STRUCTURE_HELIX;
   }
 
+  @Override
   public boolean isSheet() {
     return proteinStructure != null &&
       proteinStructure.type == JmolConstants.PROTEIN_STRUCTURE_SHEET;
@@ -104,6 +113,7 @@ public class AlphaMonomer extends Monomer {
    * @param monomerIndexCurrent   a pointer to the current ProteinStructure
    * @return                      a pointer to this ProteinStructure
    */
+  @Override
   public int setProteinStructureType(byte iType, int monomerIndexCurrent) {
     if (monomerIndexCurrent < 0 
         || monomerIndexCurrent > 0 && monomerIndex == 0) {
@@ -145,6 +155,7 @@ public class AlphaMonomer extends Monomer {
             : null);
   }
 
+  @Override
   boolean isConnectedAfter(Monomer possiblyPreviousMonomer) {
     if (possiblyPreviousMonomer == null)
       return true;
@@ -156,6 +167,7 @@ public class AlphaMonomer extends Monomer {
     // jan reichert in email to miguel on 10 May 2004 said 4.2 looked good
   }
   
+  @Override
   Point3f getQuaternionFrameCenter(char qType) {
     switch (qType) {
     case 'b':
@@ -173,10 +185,12 @@ public class AlphaMonomer extends Monomer {
     }
   }
 
+  @Override
   public Object getHelixData(int tokType, char qType, int mStep) {
     return getHelixData2(tokType, qType, mStep);
   }
   
+  @Override
   public Quaternion getQuaternion(char qType) {
     /*
      * also NucleicMonomer, AminoMonomer

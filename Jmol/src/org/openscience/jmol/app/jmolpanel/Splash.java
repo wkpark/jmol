@@ -77,6 +77,7 @@ public class Splash extends Window implements SplashInterface {
 
   }
 
+  @Override
   public void paint(Graphics g) {
 
     g.drawImage(splashImage, BORDERSIZE, BORDERSIZE, imgWidth, imgHeight,
@@ -104,6 +105,7 @@ public class Splash extends Window implements SplashInterface {
 
   class WindowListener extends WindowAdapter {
 
+    @Override
     public void windowActivated(WindowEvent we) {
       setVisible(false);
       dispose();

@@ -232,7 +232,8 @@ public class JmolTouchSimulator implements JmolTouchSimulatorInterface {
 		}
 
 		//@Override
-		public void run() {
+		@Override
+    public void run() {
 		  Thread.currentThread().setName("JmolTouchSimulator for type " + e.id);
 			dispatchTouchEvent(e);
 			Integer iid = new Integer(e.id);

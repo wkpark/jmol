@@ -171,11 +171,13 @@ abstract public class __CartesianExporter extends ___Exporter {
 
   // these are called by Export3D:
 
+  @Override
   void drawAtom(Atom atom) {
     outputSphere(atom, atom.madAtom / 2000f, atom.getColix());
   }
 
- void drawCircle(int x, int y, int z, int diameter, short colix, boolean doFill) {
+ @Override
+void drawCircle(int x, int y, int z, int diameter, short colix, boolean doFill) {
     // draw circle
     tempP3.set(x, y, z);
     viewer.unTransformPoint(tempP3, tempP1);
@@ -185,6 +187,7 @@ abstract public class __CartesianExporter extends ___Exporter {
     outputCircle(tempP1, tempP3, radius, colix, doFill);
   }
 
+  @Override
   boolean drawEllipse(Point3f ptCenter, Point3f ptX, Point3f ptY, short colix,
                       boolean doFill) {
     tempV1.set(ptX);
@@ -203,6 +206,7 @@ abstract public class __CartesianExporter extends ___Exporter {
         ptY);
   }
 
+  @Override
   void drawPixel(short colix, int x, int y, int z, int scale) {
     //measures, meshRibbon, dots
     tempP3.set(x, y, z);
@@ -210,6 +214,7 @@ abstract public class __CartesianExporter extends ___Exporter {
     outputSphere(tempP1, 0.02f * scale, colix);
   }
 
+  @Override
   void drawTextPixel(int argb, int x, int y, int z) {
     // text only
     tempP3.set(x, y, z);
@@ -217,6 +222,7 @@ abstract public class __CartesianExporter extends ___Exporter {
     outputTextPixel(tempP1, argb);
   }
 
+  @Override
   void fillConeScreen(short colix, byte endcap, int screenDiameter, Point3f screenBase,
                 Point3f screenTip) {
     viewer.unTransformPoint(screenBase, tempP1);
@@ -227,6 +233,7 @@ abstract public class __CartesianExporter extends ___Exporter {
     outputCone(tempP1, tempP2, radius, colix);
   }
 
+  @Override
   void drawCylinder(Point3f ptA, Point3f ptB, short colix1, short colix2,
                     byte endcaps, int mad, int bondOrder) {
     setTempPoints(ptA, ptB, bondOrder == -1);
@@ -247,6 +254,7 @@ abstract public class __CartesianExporter extends ___Exporter {
     }
   }
 
+  @Override
   void fillCylinderScreenMad(short colix, byte endcaps, int mad,
                     Point3f screenA, Point3f screenB) {
     float radius = mad / 2000f;
@@ -254,6 +262,7 @@ abstract public class __CartesianExporter extends ___Exporter {
     outputCylinder(null, tempP1, tempP2, colix, endcaps, radius, null, null);
   }
 
+  @Override
   void fillCylinderScreen(short colix, byte endcaps, int screenDiameter, Point3f screenA, 
                           Point3f screenB) {
    // vectors, polyhedra
@@ -261,18 +270,21 @@ abstract public class __CartesianExporter extends ___Exporter {
   fillCylinderScreenMad(colix, endcaps, mad, screenA, screenB);
   }
 
+  @Override
   void fillEllipsoid(Point3f center, Point3f[] points, short colix, int x,
                      int y, int z, int diameter, Matrix3f toEllipsoidal,
                      double[] coef, Matrix4f deriv, Point3i[] octantPoints) {
     outputEllipsoid(center, points, colix);
   }
 
+  @Override
   void fillSphere(short colix, int diameter, Point3f pt) {
     viewer.unTransformPoint(pt, tempP1);
     outputSphere(tempP1, viewer.unscaleToScreen(pt.z, diameter) / 2,
         colix);
   }
 
+  @Override
   protected void fillTriangle(short colix, Point3f ptA, Point3f ptB, Point3f ptC, boolean twoSided) {
     viewer.unTransformPoint(ptA, tempP1);
     viewer.unTransformPoint(ptB, tempP2);
@@ -282,11 +294,13 @@ abstract public class __CartesianExporter extends ___Exporter {
       outputTriangle(tempP1, tempP3, tempP2, colix);
   }
 
+  @Override
   void plotImage(int x, int y, int z, Image image, short bgcolix, int width,
                  int height) {
     g3d.plotImage(x, y, z, image, jmolRenderer, bgcolix, width, height);
   }
 
+  @Override
   void plotText(int x, int y, int z, short colix, String text, Font3D font3d) {
     // over-ridden in VRML and X3D
     // trick here is that we use Jmol's standard g3d package to construct

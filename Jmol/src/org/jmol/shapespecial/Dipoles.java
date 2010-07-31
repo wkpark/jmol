@@ -67,6 +67,7 @@ public class Dipoles extends Shape {
   private String wildID;
   
 
+  @Override
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
     if ("init" == propertyName) {
@@ -352,6 +353,7 @@ public class Dipoles extends Shape {
     Logger.error("Unkown dipole property! " + Token.nameOf(tok));
   }
 
+  @Override
   public boolean getProperty(String property, Object[] data) {
     if (property == "checkID") {
       String key = ((String) data[0]).toUpperCase();
@@ -369,6 +371,7 @@ public class Dipoles extends Shape {
     return false;
   }
   
+  @Override
   public Object getProperty(String property, int index) {
     if (property.equals("list")) {
       return getShapeState();
@@ -548,6 +551,7 @@ public class Dipoles extends Shape {
         deleteDipole(dipoles[i]);
   }
 
+  @Override
   public int getIndexFromName(String thisID) {
     if (thisID == null)
       return -1;
@@ -558,6 +562,7 @@ public class Dipoles extends Shape {
     return -1;
   }
 
+  @Override
   public Vector getShapeDetail() {
     Vector V = new Vector();
     Hashtable atomInfo;
@@ -590,6 +595,7 @@ public class Dipoles extends Shape {
     currentDipole.modelIndex = viewer.getCurrentModelIndex();
   }
 
+  @Override
   public void setVisibilityFlags(BitSet bs) {
     /*
      * set all fixed objects visible; others based on model being displayed
@@ -609,6 +615,7 @@ public class Dipoles extends Shape {
     //dumpDipoles("setVis");
   }
 
+  @Override
   public String getShapeState() {
     if (dipoleCount == 0)
       return "";

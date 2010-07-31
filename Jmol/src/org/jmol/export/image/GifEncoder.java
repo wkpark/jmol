@@ -173,12 +173,14 @@ public class GifEncoder extends ImageEncoder {
   int width, height;
   int[][] rgbPixels;
 
+  @Override
   void encodeStart(int width, int height) throws IOException {
     this.width = width;
     this.height = height;
     rgbPixels = new int[height][width];
   }
 
+  @Override
   void encodePixels(int x, int y, int w, int h, int[] rgbPixels, int off,
                     int scansize) throws IOException {
     // Save the pixels.
@@ -190,6 +192,7 @@ public class GifEncoder extends ImageEncoder {
   Hashtable colorHash;
   ColorVector colorVector;
 
+  @Override
   void encodeDone() throws IOException {
     int transparentIndex = -1;
     int transparentRgb = -1;

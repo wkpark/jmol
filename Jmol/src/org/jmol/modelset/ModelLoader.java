@@ -327,6 +327,7 @@ public final class ModelLoader extends ModelSet {
   }
 
 
+  @Override
   protected void releaseModelSet() {
     group3Lists = null;
     group3Counts = null;
@@ -830,6 +831,7 @@ public final class ModelLoader extends ModelSet {
   }
   
   private BitSet structuresDefinedInFile = new BitSet();
+  @Override
   protected void defineStructure(int modelIndex, String structureType,
                                  String structureID, int serialID, int strandCount, 
                                  char startChainID, int startSequenceNumber,

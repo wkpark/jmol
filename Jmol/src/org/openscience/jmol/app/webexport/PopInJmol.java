@@ -48,6 +48,7 @@ class PopInJmol extends WebPanel implements ChangeListener {
     // applets when a user clicks a link";
   }
 
+  @Override
   JPanel appletParamPanel() {
     // Create the appletSize spinner so the user can decide how big
     // the applet should be.
@@ -75,10 +76,12 @@ class PopInJmol extends WebPanel implements ChangeListener {
     return (appletSizeWHPanel);
   }
 
+  @Override
   String fixHtml(String html) {
     return html;
   }
 
+  @Override
   String getAppletDefs(int i, String html, StringBuffer appletDefs,
                        JmolInstance instance) {
     String divClass = (i % 2 == 0 ? "floatRightDiv" : "floatLeftDiv");

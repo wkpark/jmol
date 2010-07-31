@@ -188,6 +188,7 @@ public class MeasurementTable extends JDialog {
 
   class MeasurementListWindowListener extends WindowAdapter {
 
+    @Override
     public void windowClosing(WindowEvent e) {
       close();
     }
@@ -201,12 +202,14 @@ public class MeasurementTable extends JDialog {
       GT._("Value"),
       "a", "b", "c", "d", };
 
+    @Override
     public String getColumnName(int col) { 
       return measurementHeaders[col];
     } 
     public int getRowCount() { return viewer.getMeasurementCount(); }
     public int getColumnCount() { return 5; }
 
+    @Override
     public Class getColumnClass(int col) {
       return stringClass;
     }
@@ -223,6 +226,7 @@ public class MeasurementTable extends JDialog {
       return (viewer.getAtomInfo(atomIndex >= 0 ? atomIndex : -row * 10 - col));
     }
 
+    @Override
     public boolean isCellEditable(int row, int col) { return false; }
   }
 

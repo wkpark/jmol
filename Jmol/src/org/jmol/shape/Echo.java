@@ -47,11 +47,13 @@ public class Echo extends TextShape {
   private final static int FONTSIZE = 20;
   private final static short COLOR = Graphics3D.RED;
     
+  @Override
   public void initShape() {
     super.initShape();
     setProperty("target", "top", null);
   }
 
+  @Override
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
     if ("scalereference" == propertyName) {
@@ -153,6 +155,7 @@ public class Echo extends TextShape {
     super.setProperty(propertyName, value, null);
   }
 
+  @Override
   public boolean getProperty(String property, Object[] data) {
     if (property == "checkID") {
       String key = ((String) data[0]).toUpperCase();
@@ -171,6 +174,7 @@ public class Echo extends TextShape {
     return super.getProperty(property, data);
   }
 
+  @Override
   public String getShapeState() {
     StringBuffer s = new StringBuffer("\n  set echo off;\n");
     Enumeration e = objects.elements();

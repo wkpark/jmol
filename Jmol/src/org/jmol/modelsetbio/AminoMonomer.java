@@ -116,10 +116,12 @@ public class AminoMonomer extends AlphaMonomer {
     return getWingAtom();
   }
 
+  @Override
   Atom getInitiatorAtom() {
     return getNitrogenAtom();
   }
 
+  @Override
   Atom getTerminatorAtom() {
     return getAtomFromOffsetIndex(offsets[OT] != -1 ? OT : C);
   }
@@ -130,6 +132,7 @@ public class AminoMonomer extends AlphaMonomer {
   
   ////////////////////////////////////////////////////////////////
 
+  @Override
   boolean isConnectedAfter(Monomer possiblyPreviousMonomer) {
     if (possiblyPreviousMonomer == null)
       return true;
@@ -141,6 +144,7 @@ public class AminoMonomer extends AlphaMonomer {
 
   ////////////////////////////////////////////////////////////////
 
+  @Override
   void findNearestAtomIndex(int x, int y, Atom[] closest,
                             short madBegin, short madEnd) {
     
@@ -215,6 +219,7 @@ public class AminoMonomer extends AlphaMonomer {
   final private Point3f ptTemp = new Point3f();
   final private static float beta = (float) (17 * Math.PI/180);
   
+  @Override
   Point3f getQuaternionFrameCenter(char qType) {
     switch (qType) {
     default:
@@ -239,6 +244,7 @@ public class AminoMonomer extends AlphaMonomer {
     }
   }
 
+  @Override
   public Quaternion getQuaternion(char qType) {
     /*
      * also NucleicMonomer
@@ -341,17 +347,20 @@ public class AminoMonomer extends AlphaMonomer {
     return Quaternion.getQuaternionFrame(vA, vB, vC, false);
   }
   
+  @Override
   public boolean isWithinStructure(byte type) {
     ProteinStructure s = (ProteinStructure) getStructure();
     return (s != null && s.isWithin(monomerIndex) && s.type == type);
   }
   
+  @Override
   public String getStructureId() {
     if (proteinStructure == null || proteinStructure.structureID == null)
       return "";
     return proteinStructure.structureID;
   }
   
+  @Override
   public String getProteinStructureTag() {
     if (proteinStructure == null || proteinStructure.structureID == null)
       return null;

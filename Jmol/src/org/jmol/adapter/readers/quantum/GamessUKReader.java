@@ -36,6 +36,7 @@ public class GamessUKReader extends GamessReader {
    * @throws Exception
    * 
    */
+  @Override
   protected boolean checkLine() throws Exception {
     if (line.indexOf("BASIS OPTIONS") >= 0) {
       readBasisInfo();
@@ -79,6 +80,7 @@ public class GamessUKReader extends GamessReader {
     return checkNboLine();
   }
 
+  @Override
   protected void readAtomsInBohrCoordinates() throws Exception {
 /*
          *     atom   atomic                coordinates                 number of      *
@@ -165,6 +167,7 @@ public class GamessUKReader extends GamessReader {
 
    */
 
+  @Override
   protected String fixShellTag(String tag) {
     // 1s --> S; 2sp --> SP
     return tag.substring(1).toUpperCase();

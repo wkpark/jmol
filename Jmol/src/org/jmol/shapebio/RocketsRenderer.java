@@ -41,6 +41,7 @@ public class RocketsRenderer extends BioShapeRenderer {
 
   protected boolean renderArrowHeads;
 
+  @Override
   protected void renderBioShape(BioShape bioShape) {
     if (!(bioShape.bioPolymer instanceof AminoPolymer))
       return;

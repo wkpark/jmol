@@ -1265,6 +1265,7 @@ public class Token {
     return "0x"+Integer.toHexString(tok);
    }
    
+  @Override
   public String toString() {
     return "Token["
         + astrType[tok < keyword ? tok : keyword]

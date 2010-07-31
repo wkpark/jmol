@@ -42,6 +42,7 @@ public class MdCrdReader extends AtomSetCollectionReader {
 
   private Vector trajectorySteps;
 
+  @Override
   protected void initializeReader() {
     // add a dummy atom, just so not "no atoms found"
     atomSetCollection.addAtom(new Atom());
@@ -50,6 +51,7 @@ public class MdCrdReader extends AtomSetCollectionReader {
       htParams.put("trajectorySteps", trajectorySteps = new Vector());
   }
 
+  @Override
   protected boolean checkLine() throws Exception {
     readCoordinates();
     Logger.info("Total number of trajectory steps=" + trajectorySteps.size());

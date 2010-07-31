@@ -46,8 +46,9 @@ import org.jmol.util.Logger;
  */
 public class SmilesSearch extends JmolMolecule {
 
+  @Override
   public String toString() {
-    StringBuffer sb = new StringBuffer(pattern);
+    StringBuilder sb = new StringBuilder(pattern);
     sb.append("\nmolecular formula: " + getMolecularFormula(true));
     return sb.toString();    
   }

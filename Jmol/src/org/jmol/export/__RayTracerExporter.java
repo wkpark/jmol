@@ -50,6 +50,7 @@ abstract class __RayTracerExporter extends ___Exporter {
     lineWidthMad = 2;
   }
 
+  @Override
   protected void outputVertex(Point3f pt, Point3f offset) {
     setTempVertex(pt, offset, tempP1);
     viewer.transformPoint(tempP1, tempP1);
@@ -92,6 +93,7 @@ abstract class __RayTracerExporter extends ___Exporter {
     return tempP3;
   }
 
+  @Override
   protected void outputHeader() {
     nBytes = 0;
     isSlabEnabled = viewer.getSlabEnabled();
@@ -101,11 +103,13 @@ abstract class __RayTracerExporter extends ___Exporter {
 
   // called by Export3D:
   
+  @Override
   void drawAtom(Atom atom) {
     outputSphere(atom.screenX, atom.screenY, atom.screenZ,
         atom.screenDiameter / 2f, atom.getColix());
   }
 
+  @Override
   void drawCircle(int x, int y, int z,
                          int diameter, short colix, boolean doFill) {
     //draw circle
@@ -113,26 +117,31 @@ abstract class __RayTracerExporter extends ___Exporter {
     outputCircle(x, y, z, radius, colix, doFill);
   }
 
+  @Override
   boolean drawEllipse(Point3f ptAtom, Point3f ptX, Point3f ptY,
                       short colix, boolean doFill) {
     // IDTF only for now
     return false;
   }
 
+  @Override
   void drawPixel(short colix, int x, int y, int z, int scale) {
     //measures, meshRibbon, dots
     outputSphere(x, y, z, 0.75f * scale, colix);
   }
 
+  @Override
   void drawTextPixel(int argb, int x, int y, int z) {
     outputTextPixel(x, y, z, argb);
   }
     
+  @Override
   void fillConeScreen(short colix, byte endcap, int screenDiameter, Point3f screenBase,
                 Point3f screenTip) {
     outputCone(screenBase, screenTip, screenDiameter / 2f, colix);
   }
 
+  @Override
   void drawCylinder(Point3f screenA, Point3f screenB, short colix1,
                            short colix2, byte endcaps, int madBond,
                            int bondOrder) {
@@ -180,6 +189,7 @@ abstract class __RayTracerExporter extends ___Exporter {
     outputCylinderConical(screenA, screenB, radius1, radius2, colix);
   }
 
+  @Override
   void fillCylinderScreenMad(short colix, byte endcaps, int diameter, 
                                Point3f screenA, Point3f screenB) {
     float radius = diameter / 2f;
@@ -199,20 +209,24 @@ abstract class __RayTracerExporter extends ___Exporter {
 
   }
 
+  @Override
   void fillCylinderScreen(short colix, byte endcaps, int screenDiameter, Point3f screenA, 
                                  Point3f screenB) {
           // vectors, polyhedra
     fillCylinderScreenMad(colix, endcaps, screenDiameter, screenA, screenB);
   }
 
+  @Override
   void fillSphere(short colix, int diameter, Point3f pt) {
     outputSphere(pt.x, pt.y, pt.z, diameter / 2f, colix);
   }
   
+  @Override
   protected void fillTriangle(short colix, Point3f ptA, Point3f ptB, Point3f ptC, boolean twoSided) {
     outputTriangle(ptA, ptB, ptC, colix);
   }
 
+  @Override
   void fillEllipsoid(Point3f center, Point3f[] points, short colix, int x,
                        int y, int z, int diameter, Matrix3f toEllipsoidal,
                        double[] coef, Matrix4f deriv, Point3i[] octantPoints) {

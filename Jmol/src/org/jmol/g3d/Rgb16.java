@@ -86,6 +86,7 @@ final class Rgb16 {
            (bScaled >> 8));
   }
 
+  @Override
   public String toString() {
     return (new StringBuffer("Rgb16(")).append(rScaled).append(',')
     .append(gScaled).append(',')

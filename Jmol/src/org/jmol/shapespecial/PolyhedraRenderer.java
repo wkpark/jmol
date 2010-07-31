@@ -36,6 +36,7 @@ public class PolyhedraRenderer extends ShapeRenderer {
   private boolean isAll;
   private boolean frontOnly;
 
+  @Override
   protected void render() {
     Polyhedra polyhedra = (Polyhedra) shape;
     Polyhedra.Polyhedron[] polyhedrons = polyhedra.polyhedrons;

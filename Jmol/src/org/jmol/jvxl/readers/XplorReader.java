@@ -103,6 +103,7 @@ MRC header: mapc,mapr,maps: 2,1,3
 
   private int nBlock;
 
+  @Override
   protected void readParameters() throws Exception {
 
     jvxlFileHeaderBuffer = new StringBuffer();
@@ -156,6 +157,7 @@ MRC header: mapc,mapr,maps: 2,1,3
   private int linePt = Integer.MAX_VALUE;
   private int nRead;
   
+  @Override
   protected float nextVoxel() throws Exception {
     if (linePt >= line.length()) {
       readLine();

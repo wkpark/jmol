@@ -41,6 +41,7 @@ public class Wien2kReader extends AtomSetCollectionReader {
   private char latticeCode;
   private boolean doSymmetry = true;
   
+  @Override
   public void initializeReader() throws Exception {
     doSymmetry = !spaceGroup.equals("none");
     setFractionalCoordinates(true);

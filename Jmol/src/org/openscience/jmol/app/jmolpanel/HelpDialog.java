@@ -81,16 +81,9 @@ public class HelpDialog extends JDialog implements HyperlinkListener {
     } catch (IOException e) {
       Logger.error("IOException", e);
     }
-    JScrollPane scroller = new JScrollPane() {
-
-      public Dimension getPreferredSize() {
-        return new Dimension(300, 300);
-      }
-
-      public float getAlignmentX() {
-        return LEFT_ALIGNMENT;
-      }
-    };
+    JScrollPane scroller = new JScrollPane();
+    scroller.setPreferredSize(new Dimension(300, 300));
+    scroller.setAlignmentX(LEFT_ALIGNMENT);
     scroller.getViewport().add(html);
 
     JPanel htmlWrapper = new JPanel(new BorderLayout());

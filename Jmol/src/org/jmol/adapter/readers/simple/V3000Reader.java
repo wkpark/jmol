@@ -40,6 +40,7 @@ public class V3000Reader extends AtomSetCollectionReader {
   private int headerAtomCount;
   private int headerBondCount;
 
+  @Override
   protected boolean checkLine() throws Exception {
     if (!doGetModel(++modelNumber)) {
       discardLinesUntilContains("$$$$");

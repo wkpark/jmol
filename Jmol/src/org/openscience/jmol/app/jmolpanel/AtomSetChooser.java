@@ -732,6 +732,7 @@ ActionListener, ChangeListener, Runnable {
       return atomSetIndex;
     }
     
+    @Override
     public String toString() {
       return atomSetName;
     }

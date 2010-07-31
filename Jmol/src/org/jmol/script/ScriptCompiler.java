@@ -793,6 +793,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     return (Token) ltoken.get(i);
   }
 
+  @Override
   protected int tokAt(int i) {
     return (i < ltoken.size() ? tokenAt(i).tok : Token.nada);
   }

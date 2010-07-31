@@ -41,6 +41,7 @@ public class MinAtom {
   public String type;
   int[] bondedAtoms;
   
+  @Override
   public String toString() {
     return "#" + index + " " + type;
   }

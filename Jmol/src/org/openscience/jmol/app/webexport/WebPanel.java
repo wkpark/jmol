@@ -893,6 +893,7 @@ class ArrayListTransferHandler extends TransferHandler {
     serialArrayListFlavor = new DataFlavor(ArrayList.class, "ArrayList");
   }
 
+  @Override
   public boolean importData(JComponent c, Transferable t) {
     if (sourceIndices == null || !canImport(c, t.getTransferDataFlavors())) {
       return false;
@@ -974,6 +975,7 @@ class ArrayListTransferHandler extends TransferHandler {
     return objectName;
   }
 
+  @Override
   protected void exportDone(JComponent c, Transferable data, int action) {
     // System.out.println("action="+action + " " + addCount + " " +
     // sourceIndices);
@@ -1027,6 +1029,7 @@ class ArrayListTransferHandler extends TransferHandler {
     return false;
   }
 
+  @Override
   public boolean canImport(JComponent c, DataFlavor[] flavors) {
     if (hasLocalArrayListFlavor(flavors)) {
       return true;
@@ -1037,6 +1040,7 @@ class ArrayListTransferHandler extends TransferHandler {
     return false;
   }
 
+  @Override
   protected Transferable createTransferable(JComponent c) {
     if (c instanceof JList) {
       source = (JList) c;
@@ -1058,6 +1062,7 @@ class ArrayListTransferHandler extends TransferHandler {
     return null;
   }
 
+  @Override
   public int getSourceActions(JComponent c) {
     return COPY_OR_MOVE;
   }

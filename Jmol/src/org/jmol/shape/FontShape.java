@@ -35,10 +35,12 @@ public abstract class FontShape extends Shape {
   Font3D font3d;
   protected String myType;
 
+  @Override
   public void initShape() {
     translucentAllowed = false;
   }
 
+  @Override
   public void setProperty(String propertyName, Object value, BitSet bs) {
     if ("font" == propertyName) {
       font3d = (Font3D) value;
@@ -46,6 +48,7 @@ public abstract class FontShape extends Shape {
     }
   }
 
+  @Override
   public String getShapeState() {
     String s = viewer.getObjectState(myType);
     String fcmd = Shape.getFontCommand(myType, font3d);

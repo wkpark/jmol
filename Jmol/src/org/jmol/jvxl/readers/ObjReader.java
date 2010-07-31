@@ -84,6 +84,7 @@ class ObjReader extends PolygonFileReader {
         jvxlFileHeaderBuffer);
   }
 
+  @Override
   void getSurfaceData() throws Exception {
     if (readPmesh())
       Logger.info("obj file contains "

@@ -98,6 +98,7 @@ public class GaussianReader extends MOReader {
    * 
    **/
 
+  @Override
   protected boolean checkLine() throws Exception {
     if (line.startsWith(" Step number")) {
       equivalentAtomSets = 0;

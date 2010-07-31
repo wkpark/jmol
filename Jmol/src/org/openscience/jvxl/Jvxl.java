@@ -421,6 +421,7 @@ class MonitorInputStream extends FilterInputStream {
     timeBegin = System.currentTimeMillis();
   }
 
+  @Override
   public int read() throws IOException{
     ++readEventCount;
     int nextByte = super.read();
@@ -429,6 +430,7 @@ class MonitorInputStream extends FilterInputStream {
     return nextByte;
   }
 
+  @Override
   public int read(byte[] b) throws IOException {
     ++readEventCount;
     int cb = super.read(b);
@@ -437,6 +439,7 @@ class MonitorInputStream extends FilterInputStream {
     return cb;
   }
 
+  @Override
   public int read(byte[] b, int off, int len) throws IOException {
     ++readEventCount;
     int cb = super.read(b, off, len);
@@ -445,6 +448,7 @@ class MonitorInputStream extends FilterInputStream {
     return cb;
   }
 
+  @Override
   public long skip(long n) throws IOException {
     long cb = super.skip(n);
     // this will only work in relatively small files ... 2Gb
@@ -452,11 +456,13 @@ class MonitorInputStream extends FilterInputStream {
     return cb;
   }
 
+  @Override
   public void mark(int readlimit) {
     super.mark(readlimit);
     markPosition = position;
   }
 
+  @Override
   public void reset() throws IOException {
     position = markPosition;
     super.reset();

@@ -48,16 +48,20 @@ public class CarbohydrateMonomer extends Monomer {
           firstAtomIndex, lastAtomIndex, offsets);
   }
 
+  @Override
   public boolean isCarbohydrate() { return true; }
 
+  @Override
   public byte getProteinStructureType() {
     return JmolConstants.PROTEIN_STRUCTURE_CARBOHYDRATE;
   }
 
+  @Override
   boolean isConnectedAfter(Monomer possiblyPreviousMonomer) {
     return true;
   }
 
+  @Override
   void findNearestAtomIndex(int x, int y, Atom[] closest,
                             short madBegin, short madEnd) {    
     Atom competitor = closest[0];
@@ -74,6 +78,7 @@ public class CarbohydrateMonomer extends Monomer {
       closest[0] = anomericO;
   }
   
+  @Override
   public boolean isConnectedPrevious() {
     if (monomerIndex <= 0)
       return false;

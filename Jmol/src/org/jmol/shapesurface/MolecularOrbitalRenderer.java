@@ -33,6 +33,7 @@ public class MolecularOrbitalRenderer extends IsosurfaceRenderer {
 
   private NumberFormat nf;
 
+  @Override
   protected void render() {
     imageFontScaling = viewer.getImageFontScaling();
     MolecularOrbital mo = (MolecularOrbital) shape;

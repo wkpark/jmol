@@ -79,6 +79,7 @@ public class NWChemReader extends AtomSetCollectionReader {
    * @throws Exception
    * 
    */
+  @Override
   protected boolean checkLine() throws Exception {
     if (line.startsWith("          Step")) {
       init();

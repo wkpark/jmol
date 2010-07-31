@@ -37,6 +37,7 @@ public class LcaoCartoon extends Isosurface {
 
   // these are globals, stored here and only passed on when the they are needed. 
 
+  @Override
   public void initShape() {
     super.initShape();
     myType = "lcaoCartoon";
@@ -63,6 +64,7 @@ public class LcaoCartoon extends Isosurface {
   private Object slabbingObject;
   private String fullCommand;
 
+  @Override
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
     // in the case of molecular orbitals, we just cache the information and
@@ -331,6 +333,7 @@ public class LcaoCartoon extends Isosurface {
             (thisType.indexOf("-p") == 0 ? "" : "_")));
   }
 
+  @Override
   public String getShapeState() {
     StringBuffer sb = new StringBuffer();
     if (lcaoScale != null)
@@ -347,6 +350,7 @@ public class LcaoCartoon extends Isosurface {
     return super.getShapeState() + sb.toString();
   }
   
+  @Override
   public void merge(Shape shape) {
     LcaoCartoon lc = (LcaoCartoon) shape;
     lcaoScale = lc.lcaoScale;

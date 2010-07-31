@@ -226,6 +226,7 @@ class Platform3D {
       notify();
     }
 
+    @Override
     public void run() {
       /*
       Logger.debug("running clearing thread:" +

@@ -40,6 +40,7 @@ public class MlpCalculation extends MepCalculation {
     distanceMode = E_MINUS_D;  
   }  
 
+  @Override
   public void assignPotentials(Atom[] atoms, float[] potentials,
                                BitSet bsAromatic, BitSet bsCarbonyl,
                                BitSet bsIgnore, String data) {

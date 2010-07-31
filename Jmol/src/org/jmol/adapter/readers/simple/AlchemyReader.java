@@ -44,6 +44,7 @@ public class AlchemyReader extends AtomSetCollectionReader {
   private int atomCount;
   private int bondCount;
 
+  @Override
   public void initializeReader() throws Exception {
     atomSetCollection.newAtomSet();
     String[] tokens = getTokens(readLine());

@@ -46,7 +46,8 @@ public class ClientServerConnection extends Thread {
 	 * Begin processing requests.
 	 */
 	//@override
-	public void run() {
+	@Override
+  public void run() {
 	  Thread.currentThread().setName("SparshUI Client->ServerConnection");
 		while(_socket.isConnected()) {
 			if (!_protocol.processRequest(_client)) //BH -- must allow for server failure

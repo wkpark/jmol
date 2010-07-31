@@ -35,6 +35,7 @@ import org.jmol.util.TextFormat;
 
 public class Text extends Object2d {
 
+  @Override
   public void setScalePixelsPerMicron(float scalePixelsPerMicron) {    
     fontScale = 0;//fontScale * this.scalePixelsPerMicron / scalePixelsPerMicron;
     super.setScalePixelsPerMicron(scalePixelsPerMicron);    
@@ -145,6 +146,7 @@ public class Text extends Object2d {
     return text;
   }
 
+  @Override
   protected void recalc() {
     if (image != null) {
       textWidth = textHeight = 0;

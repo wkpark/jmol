@@ -64,6 +64,7 @@ public class Axes extends FontLineShape {
   
   private final static float MIN_AXIS_LEN = 1.5f;
 
+  @Override
   public void setProperty(String propertyName, Object value, BitSet bs) {
     if ("position" == propertyName) {
       axisXY = (Point3f) value;
@@ -99,6 +100,7 @@ public class Axes extends FontLineShape {
     super.setProperty(propertyName, value, bs);
   }
 
+  @Override
   public void initShape() {
     super.initShape();
     myType = "axes";
@@ -134,6 +136,7 @@ public class Axes extends FontLineShape {
     setScale(viewer.getAxesScale() / 2f);
   }
   
+  @Override
   public Object getProperty(String property, int index) {
     if (property == "axisPoints")
       return axisPoints;
@@ -171,7 +174,8 @@ public class Axes extends FontLineShape {
     }
   }
   
- public String getShapeState() {
+ @Override
+public String getShapeState() {
     StringBuffer sb = new StringBuffer();
     sb.append("  axes scale ").append(viewer.getAxesScale()).append(";\n"); 
     if (fixedOrigin != null)

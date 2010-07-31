@@ -26,6 +26,7 @@ package org.jmol.shapebio;
 
 public class Trace extends BioShapeCollection {
 
+  @Override
   public void initShape() {
     super.initShape();
     madOn = 600;

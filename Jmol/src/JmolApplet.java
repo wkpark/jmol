@@ -117,6 +117,7 @@ public class JmolApplet extends org.jmol.appletwrapper.AppletWrapper implements
    * @param strModel
    * @return         error or null
    */
+  @Deprecated
   public String loadInline(String strModel) {
     return (wrappedApplet == null ? null :
       wrappedApplet.loadInline("" + strModel));
@@ -128,6 +129,7 @@ public class JmolApplet extends org.jmol.appletwrapper.AppletWrapper implements
    * @param script
    * @return         error or null
    */
+  @Deprecated
   public String loadInline(String strModel, String script) {
     return (wrappedApplet == null ? null :
       wrappedApplet.loadInline("" + strModel, "" + script));
@@ -138,6 +140,7 @@ public class JmolApplet extends org.jmol.appletwrapper.AppletWrapper implements
    * @param strModels
    * @return         error or null
    */
+  @Deprecated
   public String loadInline(String[] strModels) {
     return (wrappedApplet == null ? null :
       wrappedApplet.loadInline(strModels));
@@ -149,6 +152,7 @@ public class JmolApplet extends org.jmol.appletwrapper.AppletWrapper implements
    * @param script
    * @return         error or null
    */
+  @Deprecated
   public String loadInline(String[] strModels, String script) {
     return (wrappedApplet == null ? null :
       wrappedApplet.loadInline(strModels, script));

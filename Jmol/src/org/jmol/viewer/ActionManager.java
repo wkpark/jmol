@@ -1464,11 +1464,13 @@ public class ActionManager {
         this.script = script; 
     }
 
+    @Override
     public String toString() {
       return "timeout name=" + name + " executions=" + status + " mSec=" + ms 
       + " secRemaining=" + (targetTime - System.currentTimeMillis())/1000f + " script=" + script + " thread=" + Thread.currentThread().getName();      
     }
     
+    @Override
     public void run() {
       if (script == null || script.length() == 0 || ms == 0)
         return;
@@ -1933,6 +1935,7 @@ public class ActionManager {
       this.time = time;
     }
     
+    @Override
     public String toString() {
       return "[x = " + x + " y = " + y + " time = " + time + " ]";
     }
@@ -2027,6 +2030,7 @@ public class ActionManager {
       return nodes[(i + nodes.length + nodes.length) % nodes.length];
     }
     
+    @Override
     public String toString() {
       if (nodes.length == 0) return "" + this;
       return Binding.getMouseActionName(action, false) + " nPoints = " + ptNext + " " + nodes[0];

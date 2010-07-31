@@ -66,12 +66,14 @@ class VolumeDataReader extends SurfaceReader {
     JvxlCoder.jvxlCreateHeaderWithoutTitleOrAtoms(volumeData, jvxlFileHeaderBuffer);
   }
   
+  @Override
   protected boolean readVolumeParameters() {
     setup();
     initializeVolumetricData();
     return true;
   }
 
+  @Override
   protected boolean readVolumeData(boolean isMapData) {
     try {
       readSurfaceData(isMapData);
@@ -149,6 +151,7 @@ class VolumeDataReader extends SurfaceReader {
     return voxelCounts[index];
   }
 
+  @Override
   protected void readSurfaceData(boolean isMapData) throws Exception {
     //precalculated -- just creating the JVXL equivalent
     if (precalculateVoxelData) 
@@ -166,6 +169,7 @@ class VolumeDataReader extends SurfaceReader {
         + " data points");
   }
 
+  @Override
   protected void closeReader() {
     // unnecessary -- no file opened
   }  

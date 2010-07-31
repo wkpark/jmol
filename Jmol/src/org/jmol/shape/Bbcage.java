@@ -30,6 +30,7 @@ import org.jmol.viewer.StateManager;
 
 public class Bbcage extends FontLineShape {
 
+  @Override
   public void initShape() {
     super.initShape();
     font3d = g3d.getFont3D(JmolConstants.AXES_DEFAULT_FONTSIZE);
@@ -39,6 +40,7 @@ public class Bbcage extends FontLineShape {
   boolean isVisible;
   int mad;
   
+  @Override
   public void setVisibilityFlags(BitSet bs) {
     isVisible = ((mad = viewer.getObjectMad(StateManager.OBJ_BOUNDBOX)) != 0);
     if (!isVisible)

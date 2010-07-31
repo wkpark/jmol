@@ -68,6 +68,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   private boolean isPDB = false;
   private Hashtable htHetero;
 
+  @Override
   public void initializeReader() throws Exception {
     int nAtoms = 0;
     /*
@@ -163,6 +164,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
     continuing = false;
   }
 
+  @Override
   protected void finalizeReader() throws Exception {
     super.finalizeReader();
     String header = tokenizer.getFileHeader();
@@ -171,6 +173,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           header);
   }
 
+  @Override
   public void applySymmetryAndSetTrajectory() throws Exception {
     // This speeds up calculation, because no crosschecking
     // No special-position atoms in mmCIF files, because there will
@@ -1306,6 +1309,7 @@ _struct_site_gen.details
       tokenizer.loopData = new String[tokenizer.fieldCount];
   }
 
+  @Override
   public String readLine() throws Exception {
     super.readLine();
     if (line.indexOf("#jmolscript:") >= 0)

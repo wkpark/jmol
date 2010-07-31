@@ -40,16 +40,19 @@ abstract class PolygonFileReader extends SurfaceFileReader {
     vertexDataOnly = true;
   }
 
+  @Override
   protected boolean readVolumeParameters() {
     // required by SurfaceReader
     return true;
   }
   
+  @Override
   protected boolean readVolumeData(boolean isMapData) {
     // required by SurfaceReader
     return true;
   }
 
+  @Override
   protected void readSurfaceData(boolean isMapData) throws Exception {
     getSurfaceData();
     // required by SurfaceReader

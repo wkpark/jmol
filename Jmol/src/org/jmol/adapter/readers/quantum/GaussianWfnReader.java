@@ -75,6 +75,7 @@ TYPE ASSIGNMENTS      3  4  5  6  7  8  9 10
 EXPONENTS  0.2068882D+04 0.3106496D+03 0.7068303D+02 0.1986108D+02 0.6299305D+01
    */
 
+  @Override
   protected void initializeReader() {
     continuing = false;
   }

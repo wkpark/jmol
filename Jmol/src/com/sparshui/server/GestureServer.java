@@ -41,6 +41,7 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
     Logger.info(this + " constructed");
   }
 
+  @Override
   public void finalize() {
     Logger.debug(this + " finalized");
   }

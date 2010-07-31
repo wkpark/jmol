@@ -34,6 +34,7 @@ import org.jmol.smiles.SmilesMatcher;
 
 public class JmolSmilesApplet extends Applet {
 
+  @Override
   public void init() {
     System.out.println("JmolSmilesApplet init");
   }
@@ -89,16 +90,21 @@ public class JmolSmilesApplet extends Applet {
     return ret;
   }
 
+  @Override
   public String getAppletInfo() {
     return "JmolSmilesApplet";
   }
   
+  @Override
   public void update(Graphics g) {}
+  @Override
   public void paint(Graphics g) {}
+  @Override
   public boolean handleEvent(Event e) {
     return false;
   }
   
+  @Override
   public void destroy() {
     System.out.println("JmolSmilesApplet destroyed");
   }

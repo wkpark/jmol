@@ -76,19 +76,26 @@ public class PhosphorusMonomer extends Monomer {
 
   boolean isPhosphorusMonomer() { return true; }
 
+  @Override
   public boolean isDna() { return chain.isDna(); }
 
+  @Override
   public boolean isRna() { return chain.isRna(); }
 
+  @Override
   public boolean isPurine() { return isPurine; }
+  @Override
   public boolean isPyrimidine() { return isPyrimidine; }
 
+  @Override
   public Object getStructure() { return chain; }
 
+  @Override
   public byte getProteinStructureType() {
     return JmolConstants.PROTEIN_STRUCTURE_NONE;
   }
 
+  @Override
   boolean isConnectedAfter(Monomer possiblyPreviousMonomer) {
     if (possiblyPreviousMonomer == null)
       return true;
@@ -101,6 +108,7 @@ public class PhosphorusMonomer extends Monomer {
     return distance <= MAX_ADJACENT_PHOSPHORUS_DISTANCE;
   }
   
+  @Override
   public Quaternion getQuaternion(char qType) {
     //vA = ptP(i+1) - ptP
     //vB = ptP(i-1) - ptP
@@ -120,10 +128,12 @@ public class PhosphorusMonomer extends Monomer {
     return Quaternion.getQuaternionFrame(vA, vB, null, false);
   }
   
+  @Override
   Point3f getQuaternionFrameCenter(char qType) {
     return getAtomFromOffsetIndex(P);
   }
   
+  @Override
   public Object getHelixData(int tokType, char qType, int mStep) {
     return getHelixData2(tokType, qType, mStep);
   }

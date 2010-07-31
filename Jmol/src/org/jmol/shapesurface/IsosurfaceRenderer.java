@@ -44,9 +44,11 @@ public class IsosurfaceRenderer extends MeshRenderer {
   protected float[] vertexValues;
   protected IsosurfaceMesh imesh;
 
+  @Override
   protected void initRenderer() {
     super.initRenderer();
   }
+  @Override
   protected void render() {
     iShowNormals = viewer.getTestFlag4();
     Isosurface isosurface = (Isosurface) shape;
@@ -78,6 +80,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     }
   }
   
+  @Override
   protected void render2(boolean isExport) {
     if (imesh.jvxlData.colorDensity) {
       renderPoints();
@@ -154,6 +157,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
   private final Point3f ptTemp = new Point3f();
   private final Point3i ptTempi = new Point3i();
 
+  @Override
   protected void renderPoints() {
     int incr = imesh.vertexIncrement;
     int diam = viewer.getScreenDim() / 100;
@@ -202,6 +206,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     }
   }
 
+  @Override
   protected void renderTriangles(boolean fill, boolean iShowTriangles,
                                  boolean isExport) {
     int[][] polygonIndexes = imesh.polygonIndexes;

@@ -85,6 +85,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   }
   
 
+  @Override
   protected void render() {
     ellipsoids = (Ellipsoids) shape;
     if (ellipsoids.mads == null && !ellipsoids.haveEllipsoids)

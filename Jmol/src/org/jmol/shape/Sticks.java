@@ -52,6 +52,7 @@ public class Sticks extends Shape {
   BitSet bsColixSet;
   BitSet selectedBonds;
 
+  @Override
   public void initShape() {
     super.initShape();
     myMask = JmolEdge.BOND_COVALENT_MASK;
@@ -64,6 +65,7 @@ public class Sticks extends Shape {
    * @param size
    * @param bsSelected
    */
+  @Override
   public void setSize(int size, BitSet bsSelected) {
     if (size == Integer.MAX_VALUE) {
       selectedBonds = (bsSelected == null ? null : BitSetUtil.copy(bsSelected));
@@ -86,6 +88,7 @@ public class Sticks extends Shape {
     }
   }
 
+  @Override
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
     if ("type" == propertyName) {
@@ -174,6 +177,7 @@ public class Sticks extends Shape {
     super.setProperty(propertyName, value, bs);
   }
 
+  @Override
   public Object getProperty(String property, int index) {
     if (property.equals("selectionState"))
       return (selectedBonds != null ? "select BONDS " + Escape.escape(selectedBonds) + "\n":"");
@@ -182,6 +186,7 @@ public class Sticks extends Shape {
     return null;
   }
 
+  @Override
   public void setModelClickability() {
     Bond[] bonds = modelSet.getBonds();
     for (int i = modelSet.getBondCount(); --i >= 0;) {
@@ -195,6 +200,7 @@ public class Sticks extends Shape {
     }
   }
 
+  @Override
   public String getShapeState() {
     Hashtable temp = new Hashtable();
     Hashtable temp2 = new Hashtable();
@@ -237,6 +243,7 @@ public class Sticks extends Shape {
             + "\n" : "");
   }
   
+  @Override
   public boolean checkObjectHovered(int x, int y, BitSet bsVisible) {
     Point3fi pt = new Point3fi();
     Bond bond = findPickedBond(x, y, bsVisible, pt);
@@ -247,6 +254,7 @@ public class Sticks extends Shape {
   }
   
 
+  @Override
   public Point3fi checkObjectClicked(int x, int y, int modifiers,
                                     BitSet bsVisible) {
     Point3fi pt = new Point3fi();

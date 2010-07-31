@@ -36,6 +36,7 @@ public class BallsRenderer extends ShapeRenderer {
 
   private int minX, minY, minZ, maxX, maxY, maxZ;
 
+  @Override
   protected void render() {
     // minX = rectClip.x;
     // maxX = minX + rectClip.width;

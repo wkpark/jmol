@@ -79,10 +79,12 @@ class CalculationsUFF extends Calculations {
     esCalc = new ESCalc();
   }
   
+  @Override
   String getUnit() {
     return "kJ/mol"; // Note that we convert from kcal/mol internally
   }
 
+  @Override
   boolean setupCalculations() {
 
     Vector calc;
@@ -176,6 +178,7 @@ class CalculationsUFF extends Calculations {
     }
   }
 
+  @Override
   boolean setupElectrostatics() {
 
     // Note that while the UFF paper mentions an electrostatic term,
@@ -204,6 +207,7 @@ class CalculationsUFF extends Calculations {
     return (ri + rj + rbo - ren);
   }
 
+  @Override
   double compute(int iType, Object[] dataIn) {
 
     switch (iType) {
@@ -241,6 +245,7 @@ class CalculationsUFF extends Calculations {
           new double[] { r0, kb, bondOrder } });
     }
 
+    @Override
     double compute(Object[] dataIn) {
       getPointers(dataIn);
       r0 = dData[0];
@@ -338,6 +343,7 @@ class CalculationsUFF extends Calculations {
           new double[] { ka, c0 - c2, c1, 2 * c2, theta0 * RAD_TO_DEG, preliminaryMagnification * ka } });
     }
 
+    @Override
     double compute(Object[] dataIn) {
       
       getPointers(dataIn);
@@ -519,6 +525,7 @@ class CalculationsUFF extends Calculations {
     }
 
     
+    @Override
     double compute(Object[] dataIn) {
        
       getPointers(dataIn);
@@ -751,6 +758,7 @@ class CalculationsUFF extends Calculations {
           new double[] { koop, a0, a1, a2, koop * 10 } });
     }
 
+    @Override
     double compute(Object[] dataIn) {
 
       getPointers(dataIn);
@@ -817,6 +825,7 @@ class CalculationsUFF extends Calculations {
   
   class VDWCalc extends PairCalc {
     
+    @Override
     void setData(Vector calc, int ia, int ib) {
       a = atoms[ia];
       b = atoms[ib];
@@ -845,6 +854,7 @@ class CalculationsUFF extends Calculations {
           new double[] { Xab, Dab } });
     }
 
+    @Override
     double compute(Object[] dataIn) {
 
       getPointers(dataIn);
@@ -889,6 +899,7 @@ class CalculationsUFF extends Calculations {
   
   class ESCalc extends PairCalc {
 
+    @Override
     void setData(Vector calc, int ia, int ib) {
       a = atoms[ia];
       b = atoms[ib];
@@ -900,6 +911,7 @@ class CalculationsUFF extends Calculations {
             new double[] { qq } });
     }
 
+    @Override
     double compute(Object[] dataIn) {
       
       getPointers(dataIn);
@@ -935,6 +947,7 @@ class CalculationsUFF extends Calculations {
   
   ///////// REPORTING /////////////
   
+  @Override
   String getAtomList(String title) {
     String trailer =
           "----------------------------------------"
@@ -964,6 +977,7 @@ class CalculationsUFF extends Calculations {
     return sb.toString();
   }
 
+  @Override
   String getDebugHeader(int iType) {
     switch (iType){
     case -1:
@@ -1060,6 +1074,7 @@ class CalculationsUFF extends Calculations {
     return "";
   }
 
+  @Override
   String getDebugFooter(int iType, double energy) {
     String s = "";
     switch (iType){

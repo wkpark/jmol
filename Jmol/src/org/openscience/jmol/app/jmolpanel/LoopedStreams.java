@@ -36,6 +36,7 @@ public class LoopedStreams {
   boolean keepRunning = true;
   ByteArrayOutputStream byteArrayOS = new ByteArrayOutputStream() {
 
+    @Override
     public void close() {
 
       keepRunning = false;
@@ -53,6 +54,7 @@ public class LoopedStreams {
 
   private PipedInputStream pipedIS = new PipedInputStream() {
 
+    @Override
     public void close() {
 
       keepRunning = false;

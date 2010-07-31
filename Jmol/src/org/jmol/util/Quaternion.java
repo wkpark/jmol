@@ -640,6 +640,7 @@ public class Quaternion {
    *   
    * @return  "{q1 q2 q3 q0}"
    */
+  @Override
   public String toString() {
     return "{" + q1 + " " + q2 + " " + q3 + " " + q0 + "}";
   }

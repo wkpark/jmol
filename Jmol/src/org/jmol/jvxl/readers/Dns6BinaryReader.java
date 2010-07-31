@@ -64,6 +64,7 @@ class Dsn6BinaryReader extends MapFileReader {
   private int brickRowByteCount;
   private byte[] brickLayer;
 
+  @Override
   protected void readParameters() throws Exception {
     
     short[] header = new short[19];
@@ -269,12 +270,14 @@ class Dsn6BinaryReader extends MapFileReader {
     return dmin + value * byteFactor;
   }
   
+  @Override
   protected float nextVoxel() throws Exception {
     if ((pt % brickLayerVoxelCount) == 0)
       readBrickLayer();
     return getBrickValue(pt++);
   }
 
+  @Override
   protected void skipData(int nPoints) throws Exception {
     for (int i = 0; i < nPoints; i++)
         binarydoc.readByte();

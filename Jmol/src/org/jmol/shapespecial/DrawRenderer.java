@@ -49,6 +49,7 @@ public class DrawRenderer extends MeshRenderer {
   private final Vector3f vTemp = new Vector3f();
   private final Vector3f vTemp2 = new Vector3f();
 
+  @Override
   protected void render() {
     /*
      * Each drawn object, draw.meshes[i], may consist of several polygons, one
@@ -63,11 +64,13 @@ public class DrawRenderer extends MeshRenderer {
         renderInfo();
   }
   
+  @Override
   protected boolean isPolygonDisplayable(int i) {
     return Draw.isPolygonDisplayable(dmesh, i) 
         && (dmesh.modelFlags == null || dmesh.bsMeshesVisible.get(i)); 
   }
   
+  @Override
   protected void render2(boolean isExport) {
     drawType = dmesh.drawType;
     diameter = dmesh.diameter;

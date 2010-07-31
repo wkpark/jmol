@@ -832,6 +832,7 @@ Token[keyword(0x880001) value=")"]
       this.setName("MinimizationThread");
     }
     
+    @Override
     public void run() {
       long startTime = System.currentTimeMillis();
       long lastRepaintTime = startTime;

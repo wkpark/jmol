@@ -27,6 +27,7 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.LabelToken;
 
 public class HoverRenderer extends ShapeRenderer {
+  @Override
   protected void render() {
     if (viewer.isNavigating())
       return;

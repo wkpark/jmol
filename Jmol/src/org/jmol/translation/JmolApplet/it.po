@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-07-11 19:51+0200\n"
-"PO-Revision-Date: 2010-07-30 21:28+0000\n"
+"PO-Revision-Date: 2010-08-01 16:14+0000\n"
 "Last-Translator: Emanuele Aiello <Unknown>\n"
 "Language-Team: Italian <it@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-07-30 21:56+0000\n"
+"X-Launchpad-Export-Date: 2010-08-02 16:00+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/AppletConsole.java:109
@@ -144,7 +144,8 @@ msgid "Check"
 msgstr "Verifica"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Sopra"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -227,7 +228,7 @@ msgstr "Annulla"
 
 #: org/jmol/export/dialog/Dialog.java:427
 msgid "Abort file chooser dialog"
-msgstr ""
+msgstr "Esci schermata selezione file"
 
 #: org/jmol/export/dialog/Dialog.java:429
 #: org/jmol/export/dialog/Dialog.java:430
@@ -395,7 +396,7 @@ msgstr "Estone"
 
 #: org/jmol/i18n/GT.java:128
 msgid "Faroese"
-msgstr ""
+msgstr "Faeroese"
 
 #: org/jmol/i18n/GT.java:129
 msgid "French"
@@ -415,7 +416,7 @@ msgstr "Ungherese"
 
 #: org/jmol/i18n/GT.java:133
 msgid "Indonesian"
-msgstr ""
+msgstr "Indonesiano"
 
 #: org/jmol/i18n/GT.java:134
 msgid "Italian"
@@ -423,7 +424,7 @@ msgstr "Italiano"
 
 #: org/jmol/i18n/GT.java:135
 msgid "Japanese"
-msgstr ""
+msgstr "Giapponese"
 
 #: org/jmol/i18n/GT.java:136
 msgid "Korean"
@@ -435,7 +436,7 @@ msgstr "Norvegese Bokmal"
 
 #: org/jmol/i18n/GT.java:138
 msgid "Occitan"
-msgstr ""
+msgstr "Occitana"
 
 #: org/jmol/i18n/GT.java:139
 msgid "Polish"
@@ -467,7 +468,7 @@ msgstr "Svedese"
 
 #: org/jmol/i18n/GT.java:146
 msgid "Tamil"
-msgstr ""
+msgstr "Tamil"
 
 #: org/jmol/i18n/GT.java:147
 msgid "Turkish"
@@ -498,11 +499,11 @@ msgstr "impossibile impostare il campo di forze {0}"
 
 #: org/jmol/modelkit/ModelKitPopup.java:75
 msgid "Element?"
-msgstr ""
+msgstr "Elemento?"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:77
 msgid "new"
-msgstr ""
+msgstr "nuovo"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:78
 msgid "undo (CTRL-Z)"
@@ -515,7 +516,7 @@ msgstr "ripeti (CTRL-Y)"
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:80
 #: org/jmol/viewer/ActionManager.java:56
 msgid "center"
-msgstr ""
+msgstr "centra"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:81
 msgid "add hydrogens"
@@ -523,7 +524,7 @@ msgstr "aggiungi idrogeni"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:82
 msgid "minimize"
-msgstr ""
+msgstr "minimizza"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:83
 msgid "fix hydrogens and minimize"
@@ -531,7 +532,7 @@ msgstr "sistema gli idrogeni e minimizza"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:84
 msgid "clear"
-msgstr ""
+msgstr "cancella"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:85
 msgid "save file"
@@ -551,7 +552,7 @@ msgstr "elimina atomo"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:89
 msgid "drag to bond"
-msgstr ""
+msgstr "trascina al legame"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:90
 msgid "drag atom"
@@ -579,19 +580,19 @@ msgstr "diminuzione di carica"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:104
 msgid "delete bond"
-msgstr ""
+msgstr "elimina legame"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:105
 msgid "single"
-msgstr ""
+msgstr "singolo"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:106
 msgid "double"
-msgstr ""
+msgstr "doppio"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:107
 msgid "triple"
-msgstr ""
+msgstr "triplo"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:108
 msgid "increase order"
@@ -603,11 +604,11 @@ msgstr "per diminuire"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:110
 msgid "rotate bond (SHIFT-DRAG)"
-msgstr ""
+msgstr "ruota legame (SITFT-TRASCINA)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:111
 msgid "exit modelkit mode"
-msgstr ""
+msgstr "esci dalla modalità modelkit"
 
 #: org/jmol/popup/JmolPopup.java:141
 #: org/jmol/popup/MainPopupResourceBundle.java:530
@@ -1054,11 +1055,11 @@ msgstr "Calcola"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:638
 msgid "Set H-Bonds Side Chain"
-msgstr ""
+msgstr "Imposta Legame Idrogeno lungo la catena"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:639
 msgid "Set H-Bonds Backbone"
-msgstr ""
+msgstr "Imposta Legame Idrogeno lungo la catena principale"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:646
 #: org/jmol/popup/MainPopupResourceBundle.java:749
@@ -1067,11 +1068,11 @@ msgstr "Legame Disulfuro"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:649
 msgid "Set SS-Bonds Side Chain"
-msgstr ""
+msgstr "Imposta Legami disolfuro accanto la catena"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:650
 msgid "Set SS-Bonds Backbone"
-msgstr ""
+msgstr "Imposta Legami disolfuro dietro la catena principale"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:657
 #: org/jmol/popup/MainPopupResourceBundle.java:750
@@ -1080,7 +1081,7 @@ msgstr "Strutture"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:661
 msgid "Cartoon Rockets"
-msgstr ""
+msgstr "Cartoon Rockets"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:662
 #: org/jmol/popup/MainPopupResourceBundle.java:754
@@ -1090,12 +1091,12 @@ msgstr "Nastri"
 #: org/jmol/popup/MainPopupResourceBundle.java:663
 #: org/jmol/popup/MainPopupResourceBundle.java:755
 msgid "Rockets"
-msgstr ""
+msgstr "Rockets"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:664
 #: org/jmol/popup/MainPopupResourceBundle.java:756
 msgid "Strands"
-msgstr ""
+msgstr "Trefoli"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:667
 msgid "Vibration"
@@ -1142,7 +1143,7 @@ msgstr "Visualizzazione Incrociata"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:688
 msgid "Wall-eyed viewing"
-msgstr ""
+msgstr "Visualizzazione 3D"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:690
 #: org/jmol/popup/MainPopupResourceBundle.java:757
@@ -1307,7 +1308,7 @@ msgstr "Grigio"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:740
 msgid "Slate Blue"
-msgstr ""
+msgstr "Slate Blue"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:741
 msgid "Gold"
@@ -1346,7 +1347,7 @@ msgstr "Assi"
 #: org/jmol/popup/MainPopupResourceBundle.java:903
 #: org/jmol/popup/MainPopupResourceBundle.java:927
 msgid "Boundbox"
-msgstr ""
+msgstr "Boundbox"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:763
 #: org/jmol/popup/MainPopupResourceBundle.java:880
@@ -1370,7 +1371,7 @@ msgstr "Riduci Ingrandimento"
 #: org/jmol/popup/MainPopupResourceBundle.java:775
 #: org/jmol/popup/MainPopupResourceBundle.java:839
 msgid "Spin"
-msgstr ""
+msgstr "Rotazione"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:779
 msgid "Set X Rate"
@@ -1480,7 +1481,7 @@ msgstr "Unità di distanza in picometri"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:826
 msgid "Set picking"
-msgstr ""
+msgstr "Imposta selezione"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:828
 msgid "Center"
@@ -1560,11 +1561,11 @@ msgstr "Stato Attuale"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:855
 msgid "File"
-msgstr ""
+msgstr "File"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:856
 msgid "Reload"
-msgstr ""
+msgstr "Ricarica"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:857
 msgid "Open from PDB"
@@ -2032,7 +2033,8 @@ msgstr "oggetto non riconosciuto"
 #: org/jmol/script/ScriptEvaluator.java:2606
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
-msgstr "parametro {0} non riconosciuto in Jmol state script (imposta comunque)"
+msgstr ""
+"parametro {0} non riconosciuto in Jmol state script (imposta comunque)"
 
 #: org/jmol/script/ScriptEvaluator.java:2609
 #, java-format
@@ -2057,7 +2059,7 @@ msgstr "{0} nuovi legami; {1} modificati"
 #: org/jmol/script/ScriptEvaluator.java:7992
 #, java-format
 msgid "file {0} created"
-msgstr ""
+msgstr "file {0} creato"
 
 #: org/jmol/script/ScriptEvaluator.java:9326
 #: org/jmol/script/ScriptEvaluator.java:9581
@@ -2082,11 +2084,11 @@ msgstr "Clicca per i menu ..."
 
 #: org/jmol/viewer/ActionManager.java:57
 msgid "translate"
-msgstr ""
+msgstr "tradurre"
 
 #: org/jmol/viewer/ActionManager.java:58
 msgid "rotate"
-msgstr ""
+msgstr "ruotare"
 
 #: org/jmol/viewer/ActionManager.java:59
 msgid "rotate Z"
@@ -2101,7 +2103,7 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:61
 msgid "zoom"
-msgstr ""
+msgstr "zoom"
 
 #: org/jmol/viewer/ActionManager.java:62
 msgid "zoom (along right edge of window)"
@@ -2127,7 +2129,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:67
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 "cliccare su due punti a ruotare attorno al proprio asse in senso antiorario "
 "(richiede {0})"
@@ -2180,6 +2183,8 @@ msgstr "deseleziona questo gruppo di atomi (richiede {0})"
 #, java-format
 msgid "add this group of atoms to the set of selected atoms (requires {0})"
 msgstr ""
+"aggiungere questo gruppo di atomi a un insieme di atomi selezionati "
+"(richiede {0})"
 
 #: org/jmol/viewer/ActionManager.java:81
 #, java-format
@@ -2208,7 +2213,7 @@ msgstr "ruota gli atomi selezionati (richiede {0})"
 #: org/jmol/viewer/ActionManager.java:86
 #, java-format
 msgid "rotate branch around bond (requires {0})"
-msgstr ""
+msgstr "ruotare il ramo intorno al legame (richiede {0})"
 
 #: org/jmol/viewer/ActionManager.java:88
 #, java-format
@@ -2238,7 +2243,7 @@ msgstr "spostare il punto di DISEGNO specifico (richiede {0})"
 #: org/jmol/viewer/ActionManager.java:93
 #, java-format
 msgid "move whole DRAW object (requires {0})"
-msgstr ""
+msgstr "sposta intero oggetto DISEGNO (richiede {0})"
 
 #: org/jmol/viewer/ActionManager.java:95
 msgid "pick an atom"
@@ -2253,6 +2258,7 @@ msgstr "scegliere un punto di DISEGNO (per le misurazioni) (richiede {0}"
 #, java-format
 msgid "pick a label to toggle it hidden/displayed (requires {0})"
 msgstr ""
+"scegliere una etichetta per attivarlo nascosto/visualizzato (richiede {0})"
 
 #: org/jmol/viewer/ActionManager.java:98
 #, java-format
@@ -2326,7 +2332,8 @@ msgstr "scegliere un altro atomo per visualizzare il rapporto di simmetria"
 #: org/jmol/viewer/ActionManager.java:1867
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
-msgstr "scegliere due atomi per visualizzare il rapporto di simmetria fra loro"
+msgstr ""
+"scegliere due atomi per visualizzare il rapporto di simmetria fra loro"
 
 #: org/jmol/viewer/SelectionManager.java:79
 #: org/jmol/viewer/SelectionManager.java:95
@@ -2370,9 +2377,9 @@ msgstr "Impostazione file di log su {0}"
 #~ msgid "File creation failed."
 #~ msgstr "Creazione file fallita"
 
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
 #~ "La creazione del file di questa applet non è consentita. Per il formato "
 #~ "Base64 JPEG, usa {0}."
@@ -2380,12 +2387,15 @@ msgstr "Impostazione file di log su {0}"
 #~ msgid "Minimize"
 #~ msgstr "Minimizza"
 
+#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "{0} Modello 3D"
 
+#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "{0} Immagine"
 
+#, java-format
 #~ msgid "File {0}"
 #~ msgstr "File {0}"
 

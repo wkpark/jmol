@@ -44,9 +44,10 @@ public class Parser {
    *  @param str     the string to parse
    *  @param bs      the atom positions to assign
    *  @param data    the (sparce) array to fill
+   * @return  number of floats
    */
-  public static void parseStringInfestedFloatArray(String str, BitSet bs, float[] data) {
-    parseFloatArray(getTokens(str), bs, data);
+  public static int parseStringInfestedFloatArray(String str, BitSet bs, float[] data) {
+    return parseFloatArray(getTokens(str), bs, data);
   }
 
   public static float[] parseFloatArray(String str) {
@@ -89,11 +90,12 @@ public class Parser {
     boolean haveBitSet = (bs != null);
     for (int i = (haveBitSet ? bs.nextSetBit(0) : 0); i >= 0 && i < len && n < nTokens; i = (haveBitSet ? bs.nextSetBit(i + 1) : i + 1)) {
       float f;
-      while (Float.isNaN(f = Parser.parseFloat(tokens[n++])) && n < nTokens) {
+      while (Float.isNaN(f = Parser.parseFloat(tokens[n++])) 
+          && n < nTokens) {
       }
+      data[(max = i)] = f;
       if (n == nTokens)
         break;
-      data[(max = i)] = f;
     }
     return max + 1;
   }

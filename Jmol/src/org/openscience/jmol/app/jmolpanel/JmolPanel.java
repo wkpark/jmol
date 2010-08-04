@@ -63,6 +63,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
   public AtomSetChooser atomSetChooser;
   private ExecuteScriptAction executeScriptAction;
   protected JFrame frame;
+  protected JFrame sizeFrame;
 
   // private CDKPluginManager pluginManager;
 
@@ -99,6 +100,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
     super(true);
     this.jmolApp = jmolApp;
     this.frame = frame;
+    this.sizeFrame = new JFrame();
     this.startupWidth = startupWidth;
     this.startupHeight = startupHeight;
     historyFile = jmolApp.historyFile;
@@ -119,7 +121,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
     setBorder(BorderFactory.createEtchedBorder());
     setLayout(new BorderLayout());
 
-    status = (StatusBar) createStatusBar();
+    status = new StatusBar();
     say(GT._("Initializing 3D display..."));
 
     // only the SmarterJmolAdapter is allowed -- just send it in as null
@@ -197,7 +199,9 @@ public class JmolPanel extends JPanel implements SplashInterface {
 
     JPanel panel = new JPanel();
     panel.setLayout(new BorderLayout());
-    panel.add("North", createToolbar());
+    
+    toolbar = createToolbar();
+    panel.add("North", toolbar);
 
     JPanel ip = new JPanel();
     ip.setLayout(new BorderLayout());
@@ -216,7 +220,9 @@ public class JmolPanel extends JPanel implements SplashInterface {
     // prevent new Jmol from covering old Jmol
     if (loc != null) {
       frame.setLocation(loc);
-    } else if (parent != null) {
+    } else if (parent == null) {
+      frame.setLocation(historyFile.getWindowPosition("Jmol"));
+    } else {
       Point location = parent.frame.getLocationOnScreen();
       int maxX = screenSize.width - 50;
       int maxY = screenSize.height - 50;
@@ -239,8 +245,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
 
     // Repositioning windows
 
-    historyFile.repositionWindow("Jmol", getFrame(), 300, 300);
-
+//    historyFile.repositionWindow("Jmol", getFrame(), 300, 300);
     Component c = (Component) viewer.getProperty("DATA_API","getAppConsole", null);
     if (c != null)
       historyFile.repositionWindow(SCRIPT_WINDOW_NAME, c, 200, 100);
@@ -412,7 +417,6 @@ public class JmolPanel extends JPanel implements SplashInterface {
    */
   protected final class AppCloser extends WindowAdapter {
 
-    @Override
     public void windowClosing(WindowEvent e) {
       JmolPanel.this.doClose();
     }
@@ -552,7 +556,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
    * resource file for the definition of the toolbars.
    * @return The toolbar
    */
-  private Component createToolbar() {
+  private JToolBar createToolbar() {
 
     toolbar = new JToolBar();
     String[] tool1Keys = tokenize(JmolResourceHandler.getStringX("toolbar"));
@@ -664,10 +668,6 @@ public class JmolPanel extends JPanel implements SplashInterface {
     }
 
     return cmd;
-  }
-
-  protected Component createStatusBar() {
-    return new StatusBar();
   }
 
   /**
@@ -837,7 +837,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
   private Hashtable commands;
   private Hashtable menuItems;
   private JMenuBar menubar;
-  private JToolBar toolbar;
+  protected JToolBar toolbar;
 
   // these correlate with items xxx in GuiMap.java 
   // that have no associated xxxScript property listed
@@ -867,6 +867,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
   private static final String copyScriptActionProperty = "copyScript";
   private static final String pasteClipboardActionProperty = "pasteClipboard";
   private static final String gaussianAction = "gauss";
+  private static final String resizeAction = "resize";
 
   // --- action implementations -----------------------------------
 
@@ -895,7 +896,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
       new RecentFilesAction(), povrayAction, writeAction, toWebAction, 
       new ScriptWindowAction(), new ScriptEditorAction(),
       new AtomSetChooserAction(), viewMeasurementTableAction, 
-      new GaussianAction() }
+      new GaussianAction(), new ResizeAction() }
   ;
 
   class CloseAction extends AbstractAction {
@@ -1055,7 +1056,6 @@ public class JmolPanel extends JPanel implements SplashInterface {
       super(openAction);
     }
 
-    @Override
     public void actionPerformed(ActionEvent e) {
       String fileName = getOpenFileNameFromDialog(null);
       if (fileName == null)
@@ -1078,7 +1078,6 @@ public class JmolPanel extends JPanel implements SplashInterface {
       prompt = GT._("Enter URL of molecular model");
     }
 
-    @Override
     public void actionPerformed(ActionEvent e) {
       String url = JOptionPane.showInputDialog(frame, prompt, title,
           JOptionPane.PLAIN_MESSAGE);
@@ -1332,4 +1331,31 @@ public class JmolPanel extends JPanel implements SplashInterface {
     }
   }
 
+  class ResizeAction extends AbstractAction {
+    public ResizeAction() {
+      super(resizeAction);
+    }
+    public void actionPerformed(ActionEvent e) {
+      resizeInnerPanel();
+    } 
+  }
+  
+  void resizeInnerPanel() {
+    String data = viewer.getScreenWidth() + " " + viewer.getScreenHeight();
+    String info = JOptionPane.showInputDialog(GT._("width height?"), data);
+    if (info == null)
+      return;
+    float[] dims = new float[2];
+    int n = Parser.parseStringInfestedFloatArray(info, null, dims);
+    if (n < 2)
+      return;
+    int width = (int) dims[0];
+    int height = (int) dims[1];
+    Dimension d = new Dimension(width, height);
+    display.setPreferredSize(d);
+    d = new Dimension(width, 30);
+    status.setPreferredSize(d);
+    toolbar.setPreferredSize(d);
+    getFrame().pack();
+  }
 }

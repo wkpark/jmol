@@ -136,6 +136,7 @@ class GuiMap {
     labels.put("hydrogensCheck", GT._("&Hydrogens"));
     labels.put("vectorsCheck", GT._("V&ectors"));
     labels.put("measurementsCheck", GT._("&Measurements"));
+    labels.put("resize", GT._("Resi&ze"));
     labels.put("view", GT._("&View"));
     labels.put("front", GT._("&Front"));
     labels.put("top", GT._("&Top"));

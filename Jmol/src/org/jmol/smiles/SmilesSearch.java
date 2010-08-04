@@ -37,7 +37,6 @@ import javax.vecmath.Vector3f;
 import org.jmol.api.JmolEdge;
 import org.jmol.api.JmolMolecule;
 import org.jmol.api.JmolNode;
-import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
 
 /**
@@ -469,7 +468,7 @@ public class SmilesSearch extends JmolMolecule {
         // run through all unmatched and unbonded-to-match
         // selected Jmol atoms to see if there is a match. 
 
-        BitSet bs = BitSetUtil.copy(bsFound);
+        BitSet bs = (BitSet) bsFound.clone();
         if (newPatternAtom.notBondedIndex >= 0) {
           SmilesAtom pa = patternAtoms[newPatternAtom.notBondedIndex];
           JmolNode a = jmolAtoms[pa.getMatchingAtom()];
@@ -524,7 +523,7 @@ public class SmilesSearch extends JmolMolecule {
         int nextGroupAtom = jmolAtom.getOffsetResidueAtom(
             newPatternAtom.atomName, 1);
         if (nextGroupAtom >= 0) {
-          BitSet bs = BitSetUtil.copy(bsFound);
+          BitSet bs = (BitSet) bsFound.clone();
           jmolAtom.setGroupBits(bsFound);
 
           // working here
@@ -537,7 +536,7 @@ public class SmilesSearch extends JmolMolecule {
       case SmilesBond.TYPE_BIO_PAIR:
         List<Integer> vLinks = new ArrayList<Integer>();
         jmolAtom.getCrossLinkLeadAtomIndexes(vLinks);
-        BitSet bs = BitSetUtil.copy(bsFound);
+        BitSet bs = (BitSet) bsFound.clone();
         jmolAtom.setGroupBits(bsFound);
         for (int j = 0; j < vLinks.size(); j++)
           if (!checkMatch(newPatternAtom, atomNum, vLinks.get(j).intValue(), firstAtomOnly))

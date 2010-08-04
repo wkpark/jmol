@@ -131,7 +131,7 @@ public abstract class AtomSetCollectionReader {
   protected AtomSetCollection atomSetCollection;
   protected BufferedReader reader;
   protected String readerName;
-  public Hashtable htParams;
+  public Hashtable<String, Object> htParams;
   //protected String parameterData;
 
   // buffer
@@ -189,7 +189,7 @@ public abstract class AtomSetCollectionReader {
 
   String fileName;
   
-  void setup(String fileName, Hashtable htParams, BufferedReader reader) {
+  void setup(String fileName, Hashtable<String, Object> htParams, BufferedReader reader) {
     this.htParams = htParams; 
     this.fileName = fileName;
     this.reader = reader;    
@@ -219,7 +219,7 @@ public abstract class AtomSetCollectionReader {
     return finish();
   }
 
-  public void readAtomSetCollectionFromDOM(Object DOMNode) {
+  public void readAtomSetCollectionFromDOM(@SuppressWarnings("unused") Object DOMNode) {
     // XML readers only
   }
   
@@ -360,8 +360,7 @@ public abstract class AtomSetCollectionReader {
         .get("ptFile")).intValue() : -1);
     isTrajectory = htParams.containsKey("isTrajectory");
     if (ptFile > 0 && htParams.containsKey("firstLastSteps")) {
-      Object val = ((Vector) htParams.get("firstLastSteps"))
-          .elementAt(ptFile - 1);
+      Object val = ((Vector<?>) htParams.get("firstLastSteps")).elementAt(ptFile - 1);
       if (val instanceof BitSet) {
         bsModels = (BitSet) val;
       } else {
@@ -683,19 +682,19 @@ public abstract class AtomSetCollectionReader {
     needToApplySymmetry = true;
   }
 
-  protected void addSites(Hashtable htSites) {
+  protected void addSites(Hashtable<String, Hashtable<String, String>> htSites) {
     atomSetCollection.setAtomSetAuxiliaryInfo("pdbSites", htSites);
-    Enumeration e = htSites.keys();
+    Enumeration<String> e = htSites.keys();
     String sites = "";
     while (e.hasMoreElements()) {
-      String name = (String) e.nextElement();
-      Hashtable htSite = (Hashtable) htSites.get(name);
+      String name = e.nextElement();
+      Hashtable<String, String> htSite = htSites.get(name);
       char ch;
       for (int i = name.length(); --i >= 0; )
         if (!Character.isLetterOrDigit(ch = name.charAt(i)) && ch != '\'')
           name = name.substring(0, i) + "_" + name.substring(i + 1);
       //String seqNum = (String) htSite.get("seqNum");
-      String groups = (String) htSite.get("groups");
+      String groups = htSite.get("groups");
       if (groups.length() == 0)
         continue;
       addSiteScript("@site_" + name + " " + groups);
@@ -737,9 +736,10 @@ public abstract class AtomSetCollectionReader {
         atomSetCollection.doNormalize);
   }
 
-  public void setMOData(Hashtable moData) {
+  @SuppressWarnings("unchecked")
+  public void setMOData(Hashtable<String, Object> moData) {
     atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
-    Vector orbitals = (Vector) moData.get("mos");
+    Vector<Hashtable<String, Object>> orbitals = (Vector<Hashtable<String, Object>>) moData.get("mos");
     if (orbitals != null)
       Logger.info(orbitals.size() + " molecular orbitals read in model " + atomSetCollection.getAtomSetCount());
   }

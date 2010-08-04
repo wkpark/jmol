@@ -136,7 +136,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   // DO NOT change parameters without first checking for the
   // same method in a subclass.
   
-  protected boolean isPolygonDisplayable(int i) {
+  protected boolean isPolygonDisplayable(@SuppressWarnings("unused") int i) {
     return true;
   }
 
@@ -284,7 +284,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
                           Point3f vA, Point3f vB, 
                           Point3i sA, Point3i sB) {
     byte endCap = (iA != iB  && !fill ? Graphics3D.ENDCAPS_NONE 
-        : width < 0 || iA != iB && isTranslucent ? Graphics3D.ENDCAPS_FLAT
+        : width < 0 || width == -0.0 || iA != iB && isTranslucent ? Graphics3D.ENDCAPS_FLAT
         : Graphics3D.ENDCAPS_SPHERICAL);
     if (width == 0) {
       if (diameter == 0)

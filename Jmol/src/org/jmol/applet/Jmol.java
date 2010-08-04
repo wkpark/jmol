@@ -34,6 +34,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
+import java.applet.Applet;
 import java.awt.*;
 import java.net.URL;
 import java.net.MalformedURLException;
@@ -512,7 +513,7 @@ public class Jmol implements WrappedApplet {
   protected Graphics gRight;
   protected boolean isStereoSlave;
   
-  private void update(Graphics g, String source) {
+  private void update(Graphics g, @SuppressWarnings("unused") String source) {
     if (viewer == null) // it seems that this can happen at startup sometimes
       return;
     if (isUpdating)
@@ -1246,7 +1247,7 @@ public class Jmol implements WrappedApplet {
           return "";
       }
 
-      Vector apps = new Vector();
+      Vector<String> apps = new Vector<String>();
       JmolAppletRegistry.findApplets(appletName, syncId, fullName, apps);
       int nApplets = apps.size();
       if (nApplets == 0) {
@@ -1260,7 +1261,7 @@ public class Jmol implements WrappedApplet {
       if (getGraphics)
         gRight = null;
       for (int i = 0; i < nApplets; i++) {
-        String theApplet = (String) apps.elementAt(i);
+        String theApplet = apps.elementAt(i);
         JmolAppletInterface app = (JmolAppletInterface) JmolAppletRegistry.htRegistry
             .get(theApplet);
         if (Logger.debugging)
@@ -1285,7 +1286,7 @@ public class Jmol implements WrappedApplet {
       return (isSync ? "" : sb.toString());
     }
 
-    public Hashtable getRegistryInfo() {
+    public Hashtable<String, Applet>  getRegistryInfo() {
       JmolAppletRegistry.checkIn(null, null); //cleans registry
       return JmolAppletRegistry.htRegistry;
     }

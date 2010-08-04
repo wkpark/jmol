@@ -7862,6 +7862,7 @@ public class ScriptEvaluator {
     boolean isInline = false;
     boolean isSmiles = false;
     boolean isData = false;
+    BitSet bsModels;
     int i = (tokAt(0) == Token.data ? 0 : 1);
     boolean appendNew = viewer.getAppendNew();
     String filter = null;
@@ -7874,6 +7875,7 @@ public class ScriptEvaluator {
     // ignore optional file format
     String modelName = null;
     String filename = null;
+    float[] models = null;
     String[] filenames = null;
     String[] tempFileInfo = null;
     String errMsg = null;
@@ -7951,9 +7953,13 @@ public class ScriptEvaluator {
                 (int) pt.z });
             loadScript.append(" " + Escape.escape(pt));
           } else if (tokAt(i) == Token.bitset) {
-            BitSet bsModels = (BitSet) getToken(i++).value;
+            bsModels = (BitSet) getToken(i++).value;
             htParams.put("bsModels", bsModels);
             loadScript.append(" " + Escape.escape(bsModels));
+          } else if (tok == Token.range) {
+            models = floatParameterSet(++i, 0, Integer.MAX_VALUE);
+            sOptions += " range " + Escape.escape(models);
+            i = iToken + 1;
           } else {
             htParams.put("firstLastStep", new int[] { 0, -1, 1 });
           }
@@ -7997,6 +8003,7 @@ public class ScriptEvaluator {
         filename = "$" + filename;
     } else if (getToken(i + 1).tok == Token.leftbrace
         || theTok == Token.point3f || theTok == Token.integer
+        || theTok == Token.range
         || theTok == Token.manifest || theTok == Token.packed
         || theTok == Token.filter && tokAt(i + 3) != Token.coord
         || theTok == Token.identifier && tokAt(i + 3) != Token.coord) {
@@ -8024,6 +8031,10 @@ public class ScriptEvaluator {
         else
           htParams.put("modelNumber", Integer.valueOf(n));
         tok = tokAt(++i);
+      } else if (tok == Token.range) {
+        models = floatParameterSet(++i, 0, Integer.MAX_VALUE);
+        tok = tokAt(i = iToken + 1);
+        sOptions += " range " + Escape.escape(models);
       }
       Point3f lattice = null;
       if (tok == Token.leftbrace || tok == Token.point3f) {
@@ -8162,6 +8173,13 @@ public class ScriptEvaluator {
     }
     if (!doLoadFiles)
       return;
+    if (models != null) {
+      bsModels = new BitSet();
+      for (int j = 0; j < models.length; j++)
+        if (models[j] >= 1)
+          bsModels.set((int)models[j] - 1);
+       htParams.put("bsModels", bsModels);
+    }
     if (filter == null)
       filter = viewer.getDefaultLoadFilter();
     if (filter.length() > 0) {

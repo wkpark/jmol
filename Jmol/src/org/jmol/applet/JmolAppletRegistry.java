@@ -38,7 +38,7 @@ import org.jmol.util.TextFormat;
 
 final class JmolAppletRegistry {
 
-  static Hashtable htRegistry = new Hashtable();
+  static Hashtable<String, Applet> htRegistry = new Hashtable<String, Applet>();
 
   synchronized static void checkIn(String name, Applet applet) {
     cleanRegistry();
@@ -47,9 +47,9 @@ final class JmolAppletRegistry {
       htRegistry.put(name, applet);
     }
     if (Logger.debugging) {
-      Enumeration keys = htRegistry.keys();
+      Enumeration<String> keys = htRegistry.keys();
       while (keys.hasMoreElements()) {
-        String theApplet = (String) keys.nextElement();
+        String theApplet = keys.nextElement();
         Logger.debug(theApplet + " " + htRegistry.get(theApplet));
       }
     }
@@ -60,11 +60,11 @@ final class JmolAppletRegistry {
   }
 
   synchronized private static void cleanRegistry() {
-    Enumeration keys = htRegistry.keys();
+    Enumeration<String> keys = htRegistry.keys();
     AppletWrapper app = null;
     boolean closed = true;
     while (keys.hasMoreElements()) {
-      String theApplet = (String) keys.nextElement();
+      String theApplet = keys.nextElement();
       try {
         app = (AppletWrapper) (htRegistry.get(theApplet));
         JSObject theWindow = JSObject.getWindow(app);
@@ -91,7 +91,7 @@ final class JmolAppletRegistry {
 
   synchronized public static void findApplets(String appletName,
                                               String mySyncId,
-                                              String excludeName, Vector apps) {
+                                              String excludeName, Vector<String> apps) {
     if (appletName != null && appletName.indexOf(",") >= 0) {
       String[] names = TextFormat.split(appletName, ",");
       for (int i = 0; i < names.length; i++)
@@ -100,9 +100,9 @@ final class JmolAppletRegistry {
     }
     String ext = "__" + mySyncId + "__";
     if (appletName == null || appletName.equals("*") || appletName.equals(">")) {
-      Enumeration keys = htRegistry.keys();
+      Enumeration<String> keys = htRegistry.keys();
       while (keys.hasMoreElements()) {
-        appletName = (String) keys.nextElement();
+        appletName =  keys.nextElement();
         if (!appletName.equals(excludeName) && appletName.indexOf(ext) > 0) {
           apps.addElement(appletName);
         }

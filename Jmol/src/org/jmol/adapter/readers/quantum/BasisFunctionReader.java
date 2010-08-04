@@ -39,7 +39,7 @@ import java.util.Vector;
 abstract class BasisFunctionReader extends AtomSetCollectionReader {
 
   protected Hashtable<String, Object> moData = new Hashtable<String, Object>();
-  protected Vector orbitals = new Vector();
+  protected Vector<Hashtable<String, Object>> orbitals = new Vector<Hashtable<String, Object>>();
   protected int nOrbitals = 0;
   
 
@@ -149,12 +149,13 @@ abstract class BasisFunctionReader extends AtomSetCollectionReader {
     return tag;
   }
   
+  @SuppressWarnings("unchecked")
   protected void fixSlaterTypes(int typeOld, int typeNew) {
     // in certain cases we assume Cartesian and then later have to 
     // correct that. 
-    Vector sdata = (Vector) moData.get("shells");
+    Vector<int[]> sdata = (Vector<int[]>) moData.get("shells");
     for (int i = sdata.size(); --i >=0 ;) {
-      int[] slater = (int[]) sdata.get(i);
+      int[] slater = sdata.get(i);
       if (slater[1] == typeOld)
         slater[1] = typeNew;
     }

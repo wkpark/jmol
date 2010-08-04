@@ -28,6 +28,7 @@ import org.jmol.script.ScriptEvaluator;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
+import java.applet.Applet;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -178,8 +179,8 @@ class StatusManager {
    * 
    */
   
-  private Hashtable messageQueue = new Hashtable();
-  Hashtable getMessageQueue() {
+  private Hashtable<String, Vector<Vector<Object>>> messageQueue = new Hashtable<String, Vector<Vector<Object>>>();
+  Hashtable<String, Vector<Vector<Object>>> getMessageQueue() {
     return messageQueue;
   }
   
@@ -198,8 +199,8 @@ class StatusManager {
     if (!recordStatus(statusName))
       return;
     statusPtr++;
-    Vector statusRecordSet;
-    Vector msgRecord = new Vector();
+    Vector<Vector<Object>> statusRecordSet;
+    Vector<Object> msgRecord = new Vector<Object>();
     msgRecord.addElement(Integer.valueOf(statusPtr));
     msgRecord.addElement(statusName);
     msgRecord.addElement(Integer.valueOf(intInfo));
@@ -208,9 +209,9 @@ class StatusManager {
       messageQueue.remove(statusName);
     }
     if (messageQueue.containsKey(statusName)) {
-      statusRecordSet = (Vector)messageQueue.remove(statusName);
+      statusRecordSet = messageQueue.remove(statusName);
     } else {
-      statusRecordSet = new Vector();
+      statusRecordSet = new Vector<Vector<Object>>();
     }
     if (statusRecordSet.size() == MAXIMUM_QUEUE_LENGTH)
       statusRecordSet.removeElementAt(0);
@@ -221,6 +222,7 @@ class StatusManager {
   
   private boolean asVector = true;
 
+  @SuppressWarnings("unchecked")
   synchronized Object getStatusChanged(String statusNameList) {
     /*
      * returns a Vector of statusRecordSets, one per status type,
@@ -243,10 +245,10 @@ class StatusManager {
       msgList = new Hashtable();
     if (resetMessageQueue(statusNameList))
       return msgList;
-    Enumeration e = messageQueue.keys();
+    Enumeration<String> e = messageQueue.keys();
     while (e.hasMoreElements()) {
-      String statusName = (String)e.nextElement();
-      Object record = messageQueue.remove(statusName);
+      String statusName = e.nextElement();
+      Vector<Vector<Object>> record = messageQueue.remove(statusName);
       if (asVector)
         ((Vector) msgList).addElement(record);
       else
@@ -261,7 +263,7 @@ class StatusManager {
     String oldList = this.statusList;
     if (isRemove) {
       this.statusList = TextFormat.simpleReplace(oldList, statusList.substring(1,statusList.length()), "");
-      messageQueue = new Hashtable();
+      messageQueue = new Hashtable<String, Vector<Vector<Object>>>();
       statusPtr = 0;
       return true;
     }
@@ -270,7 +272,7 @@ class StatusManager {
         || isAdd && oldList.indexOf(statusList) >= 0)
       return false;
     if (! isAdd) {
-      messageQueue = new Hashtable();
+      messageQueue = new Hashtable<String, Vector<Vector<Object>>>();
       statusPtr = 0;
       this.statusList = "";
     }
@@ -387,11 +389,12 @@ class StatusManager {
       f = -2 - f;
     setStatusChanged("frameChanged", frameNo, (f >= 0 ? viewer
         .getModelNumberDotted(f) : ""), false);
+    String entryName = viewer.getMenuName(f);
     String sJmol = jmolScriptCallback(JmolConstants.CALLBACK_ANIMFRAME);
     if (notifyEnabled(JmolConstants.CALLBACK_ANIMFRAME)) {
       jmolCallbackListener.notifyCallback(JmolConstants.CALLBACK_ANIMFRAME,
           new Object[] { sJmol,
-              new int[] { frameNo, fileNo, modelNo, firstNo, lastNo } });
+              new int[] { frameNo, fileNo, modelNo, firstNo, lastNo }, entryName });
     }
     
     if (viewer.jmolpopup != null && !isAnimationRunning)
@@ -646,7 +649,7 @@ class StatusManager {
       jmolStatusListener.createImage(fileNameOrError, type, text_or_bytes, quality));
   }
 
-  Hashtable getRegistryInfo() {
+  Hashtable<String, Applet> getRegistryInfo() {
     /* 
 
      //note that the following JavaScript retrieves the registry:

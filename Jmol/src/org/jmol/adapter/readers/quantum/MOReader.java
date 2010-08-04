@@ -82,7 +82,7 @@ abstract public class MOReader extends BasisFunctionReader {
     
   protected int shellCount = 0;
   protected int gaussianCount = 0;
-  protected Vector shells;
+  protected Vector<int[]> shells;
   protected float[][] gaussians;
 
   protected String energyUnits = "";
@@ -542,8 +542,8 @@ abstract public class MOReader extends BasisFunctionReader {
       setMOData(moData);
     }
     if (clearOrbitals) {
-      orbitals = new Vector();
-      moData = new Hashtable();
+      orbitals = new Vector<Hashtable<String, Object>>();
+      moData = new Hashtable<String, Object>();
       alphaBeta = "";
     }
   }

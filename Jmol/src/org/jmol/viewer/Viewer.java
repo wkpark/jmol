@@ -1884,7 +1884,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
   public String loadModelFromFile(String fullPathName, String fileName,
                                   String[] fileNames, Object reader,
-                                  boolean isAppend, Hashtable htParams, StringBuffer loadScript, int tokType) {
+                                  boolean isAppend, Hashtable htParams,
+                                  StringBuffer loadScript, int tokType) {
     if (htParams == null)
       htParams = setLoadParameters(null);
     Object atomSetCollection;
@@ -1892,16 +1893,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (fileNames != null) {
 
       // 1) a set of file names
-      
+
       if (loadScript == null) {
         loadScript = new StringBuffer("load files");
         for (int i = 0; i < fileNames.length; i++)
           loadScript.append(" /*file*/$FILENAME" + (i + 1) + "$");
       }
       long timeBegin = System.currentTimeMillis();
-      
-      atomSetCollection = fileManager.createAtomSetCollectionFromFiles(fileNames,
-            setLoadParameters(htParams), isAppend);
+
+      atomSetCollection = fileManager.createAtomSetCollectionFromFiles(
+          fileNames, setLoadParameters(htParams), isAppend);
       long ms = System.currentTimeMillis() - timeBegin;
       String msg = "";
       for (int i = 0; i < fileNames.length; i++)
@@ -1910,12 +1911,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       fileNames = (String[]) htParams.get("fullPathNames");
       String s = loadScript.toString();
       for (int i = 0; i < fileNames.length; i++)
-        s = TextFormat.simpleReplace(s, "$FILENAME" + (i + 1) + "$", Escape.escape(fileNames[i]));
+        s = TextFormat.simpleReplace(s, "$FILENAME" + (i + 1) + "$", Escape
+            .escape(fileNames[i].replace('\\', '/')));
+
       loadScript = new StringBuffer(s);
-    } else {      
+    } else {
       if (loadScript == null)
         loadScript = new StringBuffer("load /*file*/$FILENAME$");
-      
+
       if (reader == null)
 
         // 2) a standard, single file 
@@ -1928,24 +1931,25 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         // 3) a file reader (not used by Jmol) 
 
         atomSetCollection = fileManager.createAtomSetCollectionFromReader(
-            fullPathName, fileName, (Reader) reader, htParams = setLoadParameters(null));
+            fullPathName, fileName, (Reader) reader,
+            htParams = setLoadParameters(null));
       else
 
         // 3) a DOM reader (could be used by Jmol) 
 
-        atomSetCollection = fileManager.createAtomSetCollectionFromDOM(
-            reader, htParams = setLoadParameters(null));
+        atomSetCollection = fileManager.createAtomSetCollectionFromDOM(reader,
+            htParams = setLoadParameters(null));
     }
-    
+
     // OK, the file has been read and is now closed.
-    
+
     if (tokType != 0) { // all we are doing is reading atom data
       fileManager.setFileInfo(saveInfo);
       return loadAtomDataAndReturnError(atomSetCollection, tokType);
     }
-    
+
     if (htParams.containsKey("isData")) {
-//      fileManager.setFileInfo(saveInfo);
+      //      fileManager.setFileInfo(saveInfo);
       return (String) atomSetCollection;
     }
 
@@ -1957,12 +1961,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       // may have been modified.
       if (htParams.containsKey("loadScript"))
         loadScript = (StringBuffer) htParams.get("loadScript");
-      htParams.put("loadScript", loadScript = new StringBuffer(TextFormat.simpleReplace(loadScript
-          .toString(), "$FILENAME$", fname)));
+      htParams.put("loadScript", loadScript = new StringBuffer(TextFormat
+          .simpleReplace(loadScript.toString(), "$FILENAME$", fname)));
     }
-    
+
     // and finally to create the model set...
-    
+
     return createModelSetAndReturnError(atomSetCollection, isAppend, loadScript);
   }
 
@@ -9386,6 +9390,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null,
         list, list[0]);
     return (data != null ? list[i] : "" + i);
+  }
+
+  String getMenuName(int i) {
+    String script = "" + getModelNumberDotted(i);
+    String entryName = getModelName(i);
+    if (!entryName.equals(script))
+      entryName = script + ": " + entryName;
+    if (entryName.length() > 50)
+      entryName = entryName.substring(0, 45) + "...";
+    return entryName;
   }
 
 }

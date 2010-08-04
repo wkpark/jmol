@@ -104,7 +104,7 @@ abstract public class GamessReader extends MOReader {
     }
     int atomCount = atomNames.size();
     if (shells == null && atomCount > 0) {
-      shells = new Vector();
+      shells = new Vector<int[]>();
       for (int i = 0; i < atomCount; i++) {
         atomType = (String) atomNames.elementAt(i);
         Vector slaters = (Vector) shellsByAtomType.get(atomType);

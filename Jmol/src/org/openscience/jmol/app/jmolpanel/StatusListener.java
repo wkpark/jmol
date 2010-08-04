@@ -29,6 +29,7 @@ import org.jmol.util.*;
 import org.jmol.viewer.JmolConstants;
 import org.openscience.jmol.app.webexport.WebExport;
 
+import java.applet.Applet;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.*;
@@ -77,10 +78,10 @@ class StatusListener implements JmolStatusListener {
     case JmolConstants.CALLBACK_LOADSTRUCT:
     case JmolConstants.CALLBACK_MEASURE:
     case JmolConstants.CALLBACK_MESSAGE:
-    case JmolConstants.CALLBACK_CLICK:
     case JmolConstants.CALLBACK_PICK:
     case JmolConstants.CALLBACK_SCRIPT:
       return true;
+    case JmolConstants.CALLBACK_CLICK:
     case JmolConstants.CALLBACK_ERROR:
     case JmolConstants.CALLBACK_HOVER:
     case JmolConstants.CALLBACK_MINIMIZATION:
@@ -104,11 +105,12 @@ class StatusListener implements JmolStatusListener {
       int modelIndex = iData[0];
       if (modelIndex <= -2)
         modelIndex = -2 - modelIndex; // animation is running
-      int file = iData[1];
-      int model = iData[2];
+      //int file = iData[1];
+      //int model = iData[2];
       if (display.haveDisplay) {
-        display.status.setStatus(1, file + "." + model);
-        jmol.getFrame().setTitle("[" + file + "." + model + "] " + viewer.getModelFileName(modelIndex));
+        String menuName = (String) data[2];
+        display.status.setStatus(1, menuName);
+        jmol.getFrame().setTitle(menuName);
       }
       break;
     case JmolConstants.CALLBACK_SCRIPT:
@@ -137,13 +139,13 @@ class StatusListener implements JmolStatusListener {
     case JmolConstants.CALLBACK_MESSAGE:
       sendConsoleMessage(data == null ? null : strInfo);
       break;
-    case JmolConstants.CALLBACK_CLICK:
+//    case JmolConstants.CALLBACK_CLICK:
       // x, y, action, int[] {action}
       // the fourth parameter allows an application to change the action
-      if (display.haveDisplay)
-        display.status
-          .setStatus(1, "(" + data[1] + "," + data[2] + ")");
-      break;
+//      if (display.haveDisplay)
+//        display.status
+//          .setStatus(1, "(" + data[1] + "," + data[2] + ")");
+//      break;
     case JmolConstants.CALLBACK_PICK:
       notifyAtomPicked(strInfo);
       break;
@@ -287,7 +289,7 @@ class StatusListener implements JmolStatusListener {
       for (int j = nY; --j >= 0;) {
         float x = i / 5f; // / 15f - 1;
         float y = j / 5f; // / 15f - 1;
-        f[i][j] = (float) /* Math.sqrt */(x * x + y);
+        f[i][j] = /* (float) Math.sqrt */(x * x + y);
         if (Float.isNaN(f[i][j]))
           f[i][j] = -(float) Math.sqrt(-x * x - y);
         // f[i][j] = (isSecond ? (float) ((i + j - nX) / (2f)) : (float) Math
@@ -320,7 +322,7 @@ class StatusListener implements JmolStatusListener {
               // hanson)
   }
 
-  public Hashtable getRegistryInfo() {
+  public Hashtable<String, Applet> getRegistryInfo() {
     return null;
   }
 

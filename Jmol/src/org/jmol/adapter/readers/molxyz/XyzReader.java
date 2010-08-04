@@ -59,7 +59,7 @@ public class XyzReader extends AtomSetCollectionReader {
       continuing = false;
       return false;
     }
-      
+
     // models and vibrations are the same for XYZ files
     vibrationNumber = ++modelNumber;
     if (desiredVibrationNumber <= 0 ? doGetModel(modelNumber)
@@ -74,9 +74,17 @@ public class XyzReader extends AtomSetCollectionReader {
         continuing = false;
         return false;
       }
+    } else {
+      skipAtomSet(modelAtomCount);
     }
     discardLinesUntilNonBlank();
     return false;
+  }
+
+  private void skipAtomSet(int modelAtomCount) throws Exception {
+    readLine(); //comment
+    for (int i = modelAtomCount; --i >= 0;)
+      readLine(); //atoms
   }
 
   private void readAtoms(int modelAtomCount) throws Exception {

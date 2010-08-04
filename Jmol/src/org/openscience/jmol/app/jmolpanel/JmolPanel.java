@@ -40,6 +40,7 @@ import java.awt.print.*;
 import java.beans.*;
 import java.io.*;
 import java.util.*;
+import java.util.List;
 
 import javax.swing.*;
 
@@ -180,16 +181,16 @@ public class JmolPanel extends JPanel implements SplashInterface {
 
     // install the command table
     say(GT._("Building Command Hooks..."));
-    commands = new Hashtable();
+    commands = new Hashtable<String, Action>();
     if (display != null) {
       Action[] actions = getActions();
       for (int i = 0; i < actions.length; i++) {
         Action a = actions[i];
-        commands.put(a.getValue(Action.NAME), a);
+        commands.put(a.getValue(Action.NAME).toString(), a);
       }
     }
 
-    menuItems = new Hashtable();
+    menuItems = new Hashtable<String, JMenuItem>();
     say(GT._("Building Menubar..."));
     executeScriptAction = new ExecuteScriptAction();
     menubar = createMenubar();
@@ -400,11 +401,11 @@ public class JmolPanel extends JPanel implements SplashInterface {
    */
   public Action[] getActions() {
 
-    ArrayList actions = new ArrayList();
+    ArrayList<Action> actions = new ArrayList<Action>();
     actions.addAll(Arrays.asList(defaultActions));
     actions.addAll(Arrays.asList(display.getActions()));
     actions.addAll(Arrays.asList(preferencesDialog.getActions()));
-    return (Action[]) actions.toArray(new Action[0]);
+    return actions.toArray(new Action[0]);
   }
 
   /**
@@ -537,7 +538,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
    *  if one wasn't created.
    */
   protected JMenuItem getMenuItem(String cmd) {
-    return (JMenuItem) menuItems.get(cmd);
+    return menuItems.get(cmd);
   }
 
   /**
@@ -547,7 +548,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
    * @return The action
    */
   protected Action getAction(String cmd) {
-    return (Action) commands.get(cmd);
+    return commands.get(cmd);
   }
 
   /**
@@ -602,10 +603,12 @@ public class JmolPanel extends JPanel implements SplashInterface {
       if (isToggle) {
         b = new JToggleButton(ii);
         //System.out.println(key);
-        if (key.equals("rotateScript"))
-          display.buttonRotate = (JToggleButton) b;
-        if (key.equals("modelkitScript"))
-          display.buttonModelkit = (JToggleButton) b;
+        if (key.equals("rotateScript")) {
+          display.buttonRotate = b;
+        }
+        if (key.equals("modelkitScript")) {
+          display.buttonModelkit = b;
+        }
         display.toolbarButtonGroup.add(b);
         String isSelectedString = JmolResourceHandler.getStringX(key
             + "ToggleSelected");
@@ -654,16 +657,16 @@ public class JmolPanel extends JPanel implements SplashInterface {
    */
   protected String[] tokenize(String input) {
 
-    Vector v = new Vector();
+    List<String> v = new ArrayList<String>();
     StringTokenizer t = new StringTokenizer(input);
     String cmd[];
 
     while (t.hasMoreTokens()) {
-      v.addElement(t.nextToken());
+      v.add(t.nextToken());
     }
     cmd = new String[v.size()];
     for (int i = 0; i < cmd.length; i++) {
-      cmd[i] = (String) v.elementAt(i);
+      cmd[i] = v.get(i);
     }
 
     return cmd;
@@ -833,8 +836,8 @@ public class JmolPanel extends JPanel implements SplashInterface {
     }
   }
 
-  private Hashtable commands;
-  private Hashtable menuItems;
+  private Hashtable<String, Action> commands;
+  private Hashtable<String, JMenuItem> menuItems;
   private JMenuBar menubar;
   protected JToolBar toolbar;
 

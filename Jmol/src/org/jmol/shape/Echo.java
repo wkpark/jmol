@@ -75,9 +75,10 @@ public class Echo extends TextShape {
       Image image = (Image) value;
       if (currentObject == null) {
         if (isAll) {
-          Enumeration e = objects.elements();
-          while (e.hasMoreElements())
-            ((Text) e.nextElement()).setImage(image);
+          Enumeration<Text> e = objects.elements();
+          while (e.hasMoreElements()) {
+            e.nextElement().setImage(image);
+          }
         }
         return;
       }
@@ -86,7 +87,7 @@ public class Echo extends TextShape {
     }
     if ("thisID" == propertyName) {
       String target = (String) value;
-      currentObject = (Text) objects.get(target);
+      currentObject = objects.get(target);
       if (currentObject == null && TextFormat.isWild(target))
         thisID = target.toUpperCase();
       return;
@@ -96,9 +97,9 @@ public class Echo extends TextShape {
       boolean isHidden = ((Boolean) value).booleanValue();
       if (currentObject == null) {
         if (isAll || thisID != null) {
-          Enumeration e = objects.elements();
+          Enumeration<Text> e = objects.elements();
           while (e.hasMoreElements()) {
-            Text text = (Text) e.nextElement();
+            Text text = e.nextElement();
             if (isAll
                 || TextFormat.isMatch(text.target.toUpperCase(), thisID, true,
                     true))
@@ -120,7 +121,7 @@ public class Echo extends TextShape {
       if (target == "none" || target == "all") {
         // process in Object2dShape
       } else {
-        Text text = (Text) objects.get(target);
+        Text text = objects.get(target);
         if (text == null) {
           int valign = Object2d.VALIGN_XY;
           int halign = Object2d.ALIGN_LEFT;
@@ -160,9 +161,9 @@ public class Echo extends TextShape {
     if (property == "checkID") {
       String key = ((String) data[0]).toUpperCase();
       boolean isWild = TextFormat.isWild(key);
-      Enumeration e = objects.elements();
+      Enumeration<Text> e = objects.elements();
       while (e.hasMoreElements()) {
-        String id = ((Text) e.nextElement()).target;
+        String id = e.nextElement().target;
         if (id.equalsIgnoreCase(key) || isWild
             && TextFormat.isMatch(id.toUpperCase(), key, true, true)) {
           data[1] = id;
@@ -177,9 +178,9 @@ public class Echo extends TextShape {
   @Override
   public String getShapeState() {
     StringBuffer s = new StringBuffer("\n  set echo off;\n");
-    Enumeration e = objects.elements();
+    Enumeration<Text> e = objects.elements();
     while (e.hasMoreElements()) {
-      Text t = (Text) e.nextElement();
+      Text t = e.nextElement();
       s.append(t.getState());
       if (t.hidden)
         s.append("  set echo " + t.target + " hidden;\n");

@@ -40,9 +40,10 @@ public abstract class TextShape extends Object2dShape {
       String text = (String) value;
       if (currentObject == null) {
         if (isAll) {
-          Enumeration e = objects.elements();
-          while (e.hasMoreElements())
-            ((Text) e.nextElement()).setText(text);
+          Enumeration<Text> e = objects.elements();
+          while (e.hasMoreElements()) {
+            e.nextElement().setText(text);
+          }
         }
         return;
       }
@@ -54,9 +55,10 @@ public abstract class TextShape extends Object2dShape {
       currentFont = (Font3D) value;
       if (currentObject == null) {
         if (isAll) {
-          Enumeration e = objects.elements();
-          while (e.hasMoreElements())
-            ((Text) e.nextElement()).setFont(currentFont);
+          Enumeration<Text> e = objects.elements();
+          while (e.hasMoreElements()) {
+            e.nextElement().setFont(currentFont);
+          }
         }
         return;
       }

@@ -39,13 +39,14 @@ public class EchoRenderer extends ShapeRenderer {
     if (viewer.isPreviewOnly())
       return;
     Echo echo = (Echo)shape;
-    Enumeration e = echo.objects.elements();
+    Enumeration<Text> e = echo.objects.elements();
     float scalePixelsPerMicron = (viewer.getFontScaling() ? viewer.getScalePixelsPerAngstrom(true) * 10000 : 0);
     imageFontScaling = viewer.getImageFontScaling();
     while (e.hasMoreElements()) {
-      Text t = (Text)e.nextElement();
-      if (!t.visible || t.hidden)
+      Text t = e.nextElement();
+      if (!t.visible || t.hidden) {
         continue;
+      }
       if (t.valign == Object2d.VALIGN_XYZ) {
         viewer.transformPoint(t.xyz, pt);
         t.setXYZs(pt.x, pt.y, pt.z, pt.z);

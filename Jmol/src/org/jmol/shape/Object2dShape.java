@@ -14,7 +14,7 @@ public class Object2dShape extends Shape {
 
   // Echo, Hover, JmolImage
 
-  Hashtable objects = new Hashtable();
+  Hashtable<String, Text> objects = new Hashtable<String, Text>();
   Object2d currentObject;
   Font3D currentFont;
   Object currentColor;
@@ -32,20 +32,21 @@ public class Object2dShape extends Shape {
     if ("allOff" == propertyName) {
       currentObject = null;
       isAll = true;
-      objects = new Hashtable();
+      objects = new Hashtable<String, Text>();
       return;
     }
 
     if ("delete" == propertyName) {
       if (currentObject == null) {
         if (isAll || thisID != null) {
-          Enumeration e = objects.elements();
+          Enumeration<Text> e = objects.elements();
           while (e.hasMoreElements()) {
-            Text text = (Text) e.nextElement();
+            Text text = e.nextElement();
             if (isAll
                 || TextFormat.isMatch(text.target.toUpperCase(), thisID, true,
-                    true))
+                    true)) {
               objects.remove(text.target);
+            }
           }
         }
         return;
@@ -57,12 +58,13 @@ public class Object2dShape extends Shape {
 
     if ("off" == propertyName) {
       if (isAll) {
-        objects = new Hashtable();
+        objects = new Hashtable<String, Text>();
         isAll = false;
         currentObject = null;
       }
-      if (currentObject == null)
+      if (currentObject == null) {
         return;
+      }
 
       objects.remove(currentObject.target);
       currentObject = null;
@@ -73,9 +75,10 @@ public class Object2dShape extends Shape {
       int modelIndex = ((Integer) value).intValue();
       if (currentObject == null) {
         if (isAll) {
-          Enumeration e = objects.elements();
-          while (e.hasMoreElements())
-            ((Text) e.nextElement()).setModel(modelIndex);
+          Enumeration<Text> e = objects.elements();
+          while (e.hasMoreElements()) {
+            e.nextElement().setModel(modelIndex);
+          }
         }
         return;
       }
@@ -87,9 +90,10 @@ public class Object2dShape extends Shape {
       String align = (String) value;
       if (currentObject == null) {
         if (isAll) {
-          Enumeration e = objects.elements();
-          while (e.hasMoreElements())
-            ((Text) e.nextElement()).setAlignment(align);
+          Enumeration<Text> e = objects.elements();
+          while (e.hasMoreElements()) {
+            e.nextElement().setAlignment(align);
+          }
         }
         return;
       }
@@ -102,9 +106,10 @@ public class Object2dShape extends Shape {
       currentBgColor = value;
       if (currentObject == null) {
         if (isAll) {
-          Enumeration e = objects.elements();
-          while (e.hasMoreElements())
-            ((Text) e.nextElement()).setBgColix(value);
+          Enumeration<Text> e = objects.elements();
+          while (e.hasMoreElements()) {
+            e.nextElement().setBgColix(value);
+          }
         }
         return;
       }
@@ -116,13 +121,14 @@ public class Object2dShape extends Shape {
       currentColor = value;
       if (currentObject == null) {
         if (isAll || thisID != null) {
-          Enumeration e = objects.elements();
+          Enumeration<Text> e = objects.elements();
           while (e.hasMoreElements()) {
-            Text text = (Text) e.nextElement();
+            Text text = e.nextElement();
             if (isAll
                 || TextFormat.isMatch(text.target.toUpperCase(), thisID, true,
-                    true))
+                    true)) {
               text.setColix(value);
+            }
           }
         }
         return;
@@ -134,8 +140,9 @@ public class Object2dShape extends Shape {
     if ("target" == propertyName) {
       String target = (String) value;
       isAll = target.equals("all");
-      if (isAll || target.equals("none"))
+      if (isAll || target.equals("none")) {
         currentObject = null;
+      }
       //handled by individual types -- echo or hover
       return;
     }
@@ -150,10 +157,10 @@ public class Object2dShape extends Shape {
         currentTranslucentLevel = (isTranslucent ? translucentLevel : 0);
       if (currentObject == null) {
         if (isAll) {
-          Enumeration e = objects.elements();
-          while (e.hasMoreElements())
-            ((Text) e.nextElement()).setTranslucent(translucentLevel,
-                isBackground);
+          Enumeration<Text> e = objects.elements();
+          while (e.hasMoreElements()) {
+            e.nextElement().setTranslucent(translucentLevel, isBackground);
+          }
         }
         return;
       }
@@ -163,13 +170,14 @@ public class Object2dShape extends Shape {
 
     if (propertyName == "deleteModelAtoms") {
       int modelIndex = ((int[]) ((Object[]) value)[2])[0];
-      Enumeration e = objects.elements();
+      Enumeration<Text> e = objects.elements();
       while (e.hasMoreElements()) {
-        Text text = (Text) e.nextElement();
-        if (text.modelIndex == modelIndex)
+        Text text = e.nextElement();
+        if (text.modelIndex == modelIndex) {
           objects.remove(text.target);
-        else if (text.modelIndex > modelIndex)
+        } else if (text.modelIndex > modelIndex) {
           text.modelIndex--;
+        }
       }
       return;
     }
@@ -186,26 +194,29 @@ public class Object2dShape extends Shape {
 
   @Override
   public void setVisibilityFlags(BitSet bs) {
-    if (isHover)
+    if (isHover) {
       return;
-    Enumeration e = objects.elements();
+    }
+    Enumeration<Text> e = objects.elements();
     while (e.hasMoreElements()) {
-      Text t = (Text)e.nextElement();
+      Text t = e.nextElement();
       t.setVisibility(t.modelIndex < 0 || bs.get(t.modelIndex));
     }
   }
 
   @Override
   public Point3fi checkObjectClicked(int x, int y, int modifiers, BitSet bsVisible) {
-    if (isHover)
+    if (isHover) {
       return null;
-    Enumeration e = objects.elements();
+    }
+    Enumeration<Text> e = objects.elements();
     while (e.hasMoreElements()) {
-      Object2d obj = (Object2d) e.nextElement();
+      Object2d obj = e.nextElement();
       if (obj.checkObjectClicked(x, y, bsVisible)) {
         String s = obj.getScript();
-        if (s != null)
+        if (s != null) {
           viewer.evalStringQuiet(s);
+        }
         Point3fi pt = new Point3fi();
         if (obj.xyz != null) {
           pt.set(obj.xyz);
@@ -221,10 +232,10 @@ public class Object2dShape extends Shape {
   public boolean checkObjectHovered(int x, int y, BitSet bsVisible) {
     if (isHover)
       return false;
-    Enumeration e = objects.elements();
+    Enumeration<Text> e = objects.elements();
     boolean haveScripts = false;
     while (e.hasMoreElements()) {
-      Object2d obj = (Object2d) e.nextElement();
+      Object2d obj = e.nextElement();
       String s = obj.getScript();
       if (s != null) {
         haveScripts = true;

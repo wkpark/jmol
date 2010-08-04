@@ -63,7 +63,6 @@ public class JmolPanel extends JPanel implements SplashInterface {
   public AtomSetChooser atomSetChooser;
   private ExecuteScriptAction executeScriptAction;
   protected JFrame frame;
-  protected JFrame sizeFrame;
 
   // private CDKPluginManager pluginManager;
 
@@ -100,7 +99,6 @@ public class JmolPanel extends JPanel implements SplashInterface {
     super(true);
     this.jmolApp = jmolApp;
     this.frame = frame;
-    this.sizeFrame = new JFrame();
     this.startupWidth = startupWidth;
     this.startupHeight = startupHeight;
     historyFile = jmolApp.historyFile;
@@ -199,7 +197,6 @@ public class JmolPanel extends JPanel implements SplashInterface {
 
     JPanel panel = new JPanel();
     panel.setLayout(new BorderLayout());
-    
     toolbar = createToolbar();
     panel.add("North", toolbar);
 
@@ -245,7 +242,8 @@ public class JmolPanel extends JPanel implements SplashInterface {
 
     // Repositioning windows
 
-//    historyFile.repositionWindow("Jmol", getFrame(), 300, 300);
+    //historyFile.repositionWindow("Jmol", getFrame(), 300, 300);
+
     Component c = (Component) viewer.getProperty("DATA_API","getAppConsole", null);
     if (c != null)
       historyFile.repositionWindow(SCRIPT_WINDOW_NAME, c, 200, 100);
@@ -417,6 +415,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
    */
   protected final class AppCloser extends WindowAdapter {
 
+    @Override
     public void windowClosing(WindowEvent e) {
       JmolPanel.this.doClose();
     }
@@ -1056,6 +1055,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
       super(openAction);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
       String fileName = getOpenFileNameFromDialog(null);
       if (fileName == null)
@@ -1078,6 +1078,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
       prompt = GT._("Enter URL of molecular model");
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
       String url = JOptionPane.showInputDialog(frame, prompt, title,
           JOptionPane.PLAIN_MESSAGE);
@@ -1358,4 +1359,5 @@ public class JmolPanel extends JPanel implements SplashInterface {
     toolbar.setPreferredSize(d);
     getFrame().pack();
   }
+
 }

@@ -65,6 +65,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
    * @return a file type or null
    * 
    */
+  @Override
   public String getFileTypeName(Object atomSetCollectionOrReader) {
     if (atomSetCollectionOrReader instanceof AtomSetCollection)
       return ((AtomSetCollection)atomSetCollectionOrReader).getFileTypeName();
@@ -83,6 +84,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
    * @return        an AtomSetCollectionReader or an error string
    * 
    */
+  @Override
   public Object getAtomSetCollectionReader(String name, String type,
                                    BufferedReader bufferedReader, Hashtable htParams) {
     try {
@@ -117,15 +119,14 @@ public class SmarterJmolAdapter extends JmolAdapter {
    * @return an AtomSetCollection or an error string
    * 
    */
+  @Override
   public Object getAtomSetCollection(Object atomSetCollectionReader) {
     BufferedReader br = null;
     try {
       AtomSetCollectionReader a = (AtomSetCollectionReader) atomSetCollectionReader;
       br = a.reader;
-      Object ret = a.readData();
-      if (!(ret instanceof AtomSetCollection))
-        return ret;
-      AtomSetCollection atomSetCollection = (AtomSetCollection) ret;
+      Object atomSetCollectionOrError = a.readData();
+      AtomSetCollection atomSetCollection = (AtomSetCollection) atomSetCollectionOrError;
       if (atomSetCollection.errorMessage != null)
         return atomSetCollection.errorMessage;
       return atomSetCollection;
@@ -155,6 +156,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
    * @return a set of AtomSetCollectionReaders, a single AtomSetCollection, or an error string
    * 
    */
+  @Override
   public Object getAtomSetCollectionReaders(JmolFileReaderInterface fileReader, String[] names, String[] types,
                                     Hashtable htParams, boolean getReadersOnly) {
     //FilesOpenThread
@@ -203,6 +205,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
    * @return a single AtomSetCollection or an error string
    * 
    */
+  @Override
   public Object getAtomSetCollectionFromSet(Object readerSet, Object atomsets,
                                             Hashtable htParams) {
     AtomSetCollectionReader[] readers = (AtomSetCollectionReader[]) readerSet;
@@ -247,6 +250,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
    * @return a single atomSetCollection
    * 
    */
+  @Override
   public Object getAtomSetCollectionOrBufferedReaderFromZip(InputStream is, String fileName, String[] zipDirectory,
                              Hashtable htParams, boolean asBufferedReader) {
     return staticGetAtomSetCollectionOrBufferedReaderFromZip(is, fileName, zipDirectory, htParams, 1, asBufferedReader);
@@ -464,6 +468,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
    * @return a single AtomSetCollection or an error string
    * 
    */
+  @Override
   public Object getAtomSetCollectionFromDOM(Object DOMNode, Hashtable htParams) {
     try {
       Object ret = Resolver.DOMResolve(DOMNode, htParams);
@@ -484,36 +489,44 @@ public class SmarterJmolAdapter extends JmolAdapter {
     }
   }
 
+  @Override
   public String[] specialLoad(String name, String type) {
     return Resolver.specialLoad(name, type);  
   }
   
+  @Override
   public void finish(Object atomSetCollection) {
     ((AtomSetCollection)atomSetCollection).finish();
   }
 
   ////////////////////////// post processing ////////////////////////////
   
+  @Override
   public String getAtomSetCollectionName(Object atomSetCollection) {
     return ((AtomSetCollection)atomSetCollection).getCollectionName();
   }
   
+  @Override
   public Hashtable getAtomSetCollectionAuxiliaryInfo(Object atomSetCollection) {
     return ((AtomSetCollection)atomSetCollection).getAtomSetCollectionAuxiliaryInfo();
   }
 
+  @Override
   public int getAtomSetCount(Object atomSetCollection) {
     return ((AtomSetCollection)atomSetCollection).getAtomSetCount();
   }
 
+  @Override
   public int getAtomSetNumber(Object atomSetCollection, int atomSetIndex) {
     return ((AtomSetCollection)atomSetCollection).getAtomSetNumber(atomSetIndex);
   }
 
+  @Override
   public String getAtomSetName(Object atomSetCollection, int atomSetIndex) {
     return ((AtomSetCollection)atomSetCollection).getAtomSetName(atomSetIndex);
   }
   
+  @Override
   public Hashtable getAtomSetAuxiliaryInfo(Object atomSetCollection, int atomSetIndex) {
     return ((AtomSetCollection) atomSetCollection)
         .getAtomSetAuxiliaryInfo(atomSetIndex);
@@ -523,18 +536,22 @@ public class SmarterJmolAdapter extends JmolAdapter {
    * The frame related methods
    * **************************************************************/
 
+  @Override
   public int getAtomCount(Object atomSetCollection) {
     return ((AtomSetCollection)atomSetCollection).getAtomCount();
   }
 
+  @Override
   public boolean coordinatesAreFractional(Object atomSetCollection) {
     return ((AtomSetCollection)atomSetCollection).coordinatesAreFractional;
   }
 
+  @Override
   public float[] getNotionalUnitcell(Object atomSetCollection) {
     return ((AtomSetCollection)atomSetCollection).notionalUnitCell;
   }
 
+  @Override
   public float[] getPdbScaleMatrix(Object atomSetCollection) {
     float[] a = ((AtomSetCollection)atomSetCollection).notionalUnitCell;
     if (a.length < 22)
@@ -545,6 +562,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
     return b;
   }
 
+  @Override
   public float[] getPdbScaleTranslate(Object atomSetCollection) {
     float[] a = ((AtomSetCollection)atomSetCollection).notionalUnitCell;
     if (a.length < 22)
@@ -558,16 +576,19 @@ public class SmarterJmolAdapter extends JmolAdapter {
   
   ////////////////////////////////////////////////////////////////
 
+  @Override
   public JmolAdapter.AtomIterator
     getAtomIterator(Object atomSetCollection) {
     return new AtomIterator((AtomSetCollection)atomSetCollection);
   }
 
+  @Override
   public JmolAdapter.BondIterator
     getBondIterator(Object atomSetCollection) {
     return new BondIterator((AtomSetCollection)atomSetCollection);
   }
 
+  @Override
   public JmolAdapter.StructureIterator
     getStructureIterator(Object atomSetCollection) {
     return ((AtomSetCollection)atomSetCollection).getStructureCount() == 0 ? 
@@ -588,6 +609,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
       atoms = atomSetCollection.getAtoms();
       iatom = 0;
     }
+    @Override
     public boolean hasNext() {
       if (iatom == atomCount)
         return false;
@@ -595,35 +617,61 @@ public class SmarterJmolAdapter extends JmolAdapter {
       atoms[iatom++] = null; // single pass
       return true;
     }
+    @Override
     public int getAtomSetIndex() { return atom.atomSetIndex; }
+    @Override
     public BitSet getAtomSymmetry() { return atom.bsSymmetry; }
+    @Override
     public int getAtomSite() { return atom.atomSite + 1; }
-    public Object getUniqueID() { return new Integer(atom.atomIndex); }
+    @Override
+    public Object getUniqueID() { return Integer.valueOf(atom.atomIndex); }
+    @Override
     public String getElementSymbol() { return atom.getElementSymbol(); }
+    @Override
     public short getElementNumber() { 
       return (atom.elementNumber > 0 ?
         atom.elementNumber : JmolAdapter.getElementNumber(atom.getElementSymbol())); }
+    @Override
     public String getAtomName() { return atom.atomName; }
+    @Override
     public int getFormalCharge() { return atom.formalCharge; }
+    @Override
     public float getPartialCharge() { return atom.partialCharge; }
+    @Override
     public Object[] getEllipsoid() { return atom.ellipsoid; }
+    @Override
     public float getRadius() { return atom.radius; }
+    @Override
     public float getX() { return atom.x; }
+    @Override
     public float getY() { return atom.y; }
+    @Override
     public float getZ() { return atom.z; }
+    @Override
     public float getVectorX() { return atom.vectorX; }
+    @Override
     public float getVectorY() { return atom.vectorY; }
+    @Override
     public float getVectorZ() { return atom.vectorZ; }
+    @Override
     public float getBfactor() { return Float.isNaN(atom.bfactor) && atom.anisoBorU != null ?
         atom.anisoBorU[7] * 100f : atom.bfactor; }
+    @Override
     public int getOccupancy() { return atom.occupancy; }
+    @Override
     public boolean getIsHetero() { return atom.isHetero; }
+    @Override
     public int getAtomSerial() { return atom.atomSerial; }
+    @Override
     public char getChainID() { return canonizeChainID(atom.chainID); }
+    @Override
     public char getAlternateLocationID()
     { return canonizeAlternateLocationID(atom.alternateLocationID); }
+    @Override
     public String getGroup3() { return atom.group3; }
+    @Override
     public int getSequenceNumber() { return atom.sequenceNumber; }
+    @Override
     public char getInsertionCode()
     { return canonizeInsertionCode(atom.insertionCode); }
     
@@ -640,18 +688,22 @@ public class SmarterJmolAdapter extends JmolAdapter {
       bondCount = atomSetCollection.getBondCount();      
       ibond = 0;
     }
+    @Override
     public boolean hasNext() {
       if (ibond == bondCount)
         return false;
       bond = bonds[ibond++];
       return true;
     }
+    @Override
     public Object getAtomUniqueID1() {
-      return new Integer(bond.atomIndex1);
+      return Integer.valueOf(bond.atomIndex1);
     }
+    @Override
     public Object getAtomUniqueID2() {
-      return new Integer(bond.atomIndex2);
+      return Integer.valueOf(bond.atomIndex2);
     }
+    @Override
     public int getEncodedOrder() {
       return bond.order;
     }
@@ -669,6 +721,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
       istructure = 0;
     }
 
+    @Override
     public boolean hasNext() {
       if (istructure == structureCount)
         return false;
@@ -676,46 +729,57 @@ public class SmarterJmolAdapter extends JmolAdapter {
       return true;
     }
 
+    @Override
     public int getModelIndex() {
       return structure.modelIndex;
     }
 
+    @Override
     public String getStructureType() {
       return structure.structureType;
     }
 
+    @Override
     public String getStructureID() {
       return structure.structureID;
     }
 
+    @Override
     public int getSerialID() {
       return structure.serialID;
     }
 
+    @Override
     public char getStartChainID() {
       return canonizeChainID(structure.startChainID);
     }
     
+    @Override
     public int getStartSequenceNumber() {
       return structure.startSequenceNumber;
     }
     
+    @Override
     public char getStartInsertionCode() {
       return canonizeInsertionCode(structure.startInsertionCode);
     }
     
+    @Override
     public char getEndChainID() {
       return canonizeChainID(structure.endChainID);
     }
     
+    @Override
     public int getEndSequenceNumber() {
       return structure.endSequenceNumber;
     }
       
+    @Override
     public char getEndInsertionCode() {
       return structure.endInsertionCode;
     }
 
+    @Override
     public int getStrandCount() {
       return structure.strandCount;
     }

@@ -125,8 +125,10 @@ public class SmarterJmolAdapter extends JmolAdapter {
     try {
       AtomSetCollectionReader a = (AtomSetCollectionReader) atomSetCollectionReader;
       br = a.reader;
-      Object atomSetCollectionOrError = a.readData();
-      AtomSetCollection atomSetCollection = (AtomSetCollection) atomSetCollectionOrError;
+      Object ret = a.readData();
+      if (!(ret instanceof AtomSetCollection))
+        return ret;
+      AtomSetCollection atomSetCollection = (AtomSetCollection) ret;
       if (atomSetCollection.errorMessage != null)
         return atomSetCollection.errorMessage;
       return atomSetCollection;

@@ -71,17 +71,17 @@ public class StateManager {
   public final static int OBJ_MAX = 8;
   private final static String objectNameList = "background axis1      axis2      axis3      boundbox   unitcell   frank      ";
 
-  public static String getVariableList(Hashtable htVariables, int nMax,
+  public static String getVariableList(Hashtable<String, ScriptVariable> htVariables, int nMax,
                                        boolean withSites) {
     StringBuffer sb = new StringBuffer();
     // user variables only:
     int n = 0;
-    Enumeration e = htVariables.keys();
+    Enumeration<String> e = htVariables.keys();
 
     String[] list = new String[htVariables.size()];
     while (e.hasMoreElements()) {
-      String key = (String) e.nextElement();
-      ScriptVariable var = (ScriptVariable) htVariables.get(key);
+      String key = e.nextElement();
+      ScriptVariable var = htVariables.get(key);
       if (withSites || (!key.startsWith("@site_") && !key.startsWith("site_")))
         list[n++] = key
             + (key.charAt(0) == '@' ? " " + ScriptVariable.sValue(var) : " = "
@@ -110,7 +110,7 @@ public class StateManager {
   }
 
   Viewer viewer;
-  Hashtable saved = new Hashtable();
+  Hashtable<String, Object> saved = new Hashtable<String, Object>();
   String lastOrientation = "";
   String lastConnections = "";
   String lastSelected = "";
@@ -198,16 +198,16 @@ public class StateManager {
 
   String listSavedStates() {
     String names = "";
-    Enumeration e = saved.keys();
+    Enumeration<String> e = saved.keys();
     while (e.hasMoreElements())
       names += "\n" + e.nextElement();
     return names;
   }
 
   private void deleteSavedType(String type) {
-    Enumeration e = saved.keys();
+    Enumeration<String> e = saved.keys();
     while (e.hasMoreElements()) {
-      String name = (String) e.nextElement();
+      String name = e.nextElement();
       if (name.startsWith(type)) {
         saved.remove(name);
         Logger.debug("deleted " + name);
@@ -309,11 +309,12 @@ public class StateManager {
       return (o == null ? "" : o.getMoveToText(true));      
     } 
     StringBuffer sb = new StringBuffer();
-    Enumeration e = saved.keys();
+    Enumeration<String> e = saved.keys();
     while (e.hasMoreElements()) {
-       String name = (String) e.nextElement();
-       if (!name.startsWith("Orientation_"))
+       String name = e.nextElement();
+       if (!name.startsWith("Orientation_")) {
          continue;
+       }
        sb.append(((Orientation) saved.get(name)).getMoveToText(true));
     }
     return sb.toString(); 
@@ -497,10 +498,10 @@ public class StateManager {
         "angstroms;au;bohr;nanometers;nm;picometers;pm");
   }
 
-  private final static Hashtable staticFunctions = new Hashtable();
-  private Hashtable localFunctions = new Hashtable();
+  private final static Hashtable<String, ScriptFunction> staticFunctions = new Hashtable<String, ScriptFunction>();
+  private Hashtable<String, ScriptFunction> localFunctions = new Hashtable<String, ScriptFunction>();
 
-  Hashtable getFunctions(boolean isStatic) {
+  Hashtable<String, ScriptFunction> getFunctions(boolean isStatic) {
     return (isStatic ? staticFunctions : localFunctions);
   }
 
@@ -517,12 +518,12 @@ public class StateManager {
     if (isGeneric)
       selectedFunction = selectedFunction.substring(0, pt);
     selectedFunction = selectedFunction.toLowerCase();
-    Hashtable ht = getFunctions(isStatic);
+    Hashtable<String, ScriptFunction> ht = getFunctions(isStatic);
     String[] names = new String[ht.size()];
-    Enumeration e = ht.keys();
+    Enumeration<String> e = ht.keys();
     int n = 0;
     while (e.hasMoreElements()) {
-      String name = (String) e.nextElement();
+      String name = e.nextElement();
       if (selectedFunction.length() == 0 && !name.startsWith("_")
           || name.equalsIgnoreCase(selectedFunction) || isGeneric
           && name.toLowerCase().indexOf(selectedFunction) == 0)
@@ -530,7 +531,7 @@ public class StateManager {
     }
     Arrays.sort(names, 0, n);
     for (int i = 0; i < n; i++) {
-      ScriptFunction f = (ScriptFunction) ht.get(names[i]);
+      ScriptFunction f = ht.get(names[i]);
       s.append(namesOnly ? f.getSignature() : f.toString());
       s.append('\n');
     }
@@ -558,7 +559,7 @@ public class StateManager {
   ScriptFunction getFunction(String name) {
     if (name == null)
       return null;
-    ScriptFunction function = (ScriptFunction) (isStaticFunction(name) ? staticFunctions
+    ScriptFunction function = (isStaticFunction(name) ? staticFunctions
         : localFunctions).get(name);
     return (function == null || function.aatoken == null ? null : function);
   }
@@ -639,10 +640,10 @@ public class StateManager {
 
   class GlobalSettings {
 
-    Hashtable htNonbooleanParameterValues;
-    Hashtable htBooleanParameterFlags;
-    Hashtable htPropertyFlagsRemoved;
-    Hashtable htUserVariables = new Hashtable();
+    Hashtable<String, Object> htNonbooleanParameterValues;
+    Hashtable<String, Boolean> htBooleanParameterFlags;
+    Hashtable<String, Boolean> htPropertyFlagsRemoved;
+    Hashtable<String, ScriptVariable> htUserVariables = new Hashtable<String, ScriptVariable>();
 
     /*
      *  Mostly these are just saved and restored directly from Viewer.
@@ -660,9 +661,9 @@ public class StateManager {
     }
 
     void clear() {
-      Enumeration e = htUserVariables.keys();
+      Enumeration<String> e = htUserVariables.keys();
       while (e.hasMoreElements()) {
-        String key = (String) e.nextElement();
+        String key = e.nextElement();
         if (key.charAt(0) == '@' || key.startsWith("site_"))
           htUserVariables.remove(key);
       }
@@ -680,9 +681,9 @@ public class StateManager {
     }
 
     void registerAllValues(GlobalSettings g) {
-      htNonbooleanParameterValues = new Hashtable();
-      htBooleanParameterFlags = new Hashtable();
-      htPropertyFlagsRemoved = new Hashtable();
+      htNonbooleanParameterValues = new Hashtable<String, Object>();
+      htBooleanParameterFlags = new Hashtable<String, Boolean>();
+      htPropertyFlagsRemoved = new Hashtable<String, Boolean>();
 
       if (g != null) {
         //persistent values not reset with the "initialize" command
@@ -1392,7 +1393,7 @@ public class StateManager {
       if (name == null)
         return null;
       name = name.toLowerCase();
-      return (ScriptVariable) htUserVariables.get(name);
+      return htUserVariables.get(name);
     }
 
     String getParameterEscaped(String name, int nMax) {
@@ -1404,7 +1405,7 @@ public class StateManager {
       if (htBooleanParameterFlags.containsKey(name))
         return htBooleanParameterFlags.get(name).toString();
       if (htUserVariables.containsKey(name))
-        return ((ScriptVariable) htUserVariables.get(name)).escape();
+        return htUserVariables.get(name).escape();
       if (htPropertyFlagsRemoved.containsKey(name))
         return "false";
       return "<not defined>";
@@ -1456,7 +1457,7 @@ public class StateManager {
       if (htPropertyFlagsRemoved.containsKey(name))
         return Boolean.FALSE;
       if (htUserVariables.containsKey(name)) {
-        ScriptVariable v = (ScriptVariable) htUserVariables.get(name);
+        ScriptVariable v = htUserVariables.get(name);
         return (asVariable ? v : ScriptVariable.oValue(v));
       }
       return null;
@@ -1464,7 +1465,7 @@ public class StateManager {
 
     String getAllSettings(String prefix) {
       StringBuffer commands = new StringBuffer("");
-      Enumeration e;
+      Enumeration<String> e;
       String key;
       String[] list = new String[htBooleanParameterFlags.size()
           + htNonbooleanParameterValues.size()];
@@ -1473,7 +1474,7 @@ public class StateManager {
       String _prefix = "_" + prefix;
       e = htBooleanParameterFlags.keys();
       while (e.hasMoreElements()) {
-        key = (String) e.nextElement();
+        key = e.nextElement();
         if (prefix == null || key.indexOf(prefix) == 0
             || key.indexOf(_prefix) == 0)
           list[n++] = (key.indexOf("_") == 0 ? key + " = " : "set " + key + " ")
@@ -1482,7 +1483,7 @@ public class StateManager {
       //save as _xxxx if you don't want "set" to be there first
       e = htNonbooleanParameterValues.keys();
       while (e.hasMoreElements()) {
-        key = (String) e.nextElement();
+        key = e.nextElement();
         if (key.charAt(0) != '@'
             && (prefix == null || key.indexOf(prefix) == 0 || key
                 .indexOf(_prefix) == 0)) {
@@ -1511,18 +1512,18 @@ public class StateManager {
         commands.append("function _setVariableState() {\n\n");
       }
       int n = 0;
-      Enumeration e;
+      Enumeration<String> e;
       String key;
       //booleans
       e = htBooleanParameterFlags.keys();
       while (e.hasMoreElements()) {
-        key = (String) e.nextElement();
+        key = e.nextElement();
         if (doReportProperty(key))
           list[n++] = "set " + key + " " + htBooleanParameterFlags.get(key);
       }
       e = htNonbooleanParameterValues.keys();
       while (e.hasMoreElements()) {
-        key = (String) e.nextElement();
+        key = e.nextElement();
         if (key.charAt(0) != '@' && doReportProperty(key)) {
           Object value = htNonbooleanParameterValues.get(key);
           if (key.charAt(0) == '=') {
@@ -1553,7 +1554,7 @@ public class StateManager {
       //nonboolean variables:
       e = htNonbooleanParameterValues.keys();
       while (e.hasMoreElements()) {
-        key = (String) e.nextElement();
+        key = e.nextElement();
         if (key.charAt(0) == '@')
           list[n++] = key + " " + htNonbooleanParameterValues.get(key);
       }

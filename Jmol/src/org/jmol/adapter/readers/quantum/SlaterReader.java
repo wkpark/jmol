@@ -23,14 +23,15 @@
  */
 package org.jmol.adapter.readers.quantum;
 
+
 import org.jmol.quantum.SlaterData;
 import org.jmol.util.Logger;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Hashtable;
-
-import java.util.Vector;
+import java.util.List;
 
 /**
  * 
@@ -45,7 +46,7 @@ abstract class SlaterReader extends BasisFunctionReader {
    * 
    */
 
-  protected final Vector slaters = new Vector();
+  protected final List<SlaterData> slaters = new ArrayList<SlaterData>();
   protected SlaterData[] slaterArray;
   
   /**
@@ -73,12 +74,12 @@ abstract class SlaterReader extends BasisFunctionReader {
   protected final void addSlater(int iAtom, int a, int b, int c, int d, 
                         double zeta, float coef) {
     //System.out.println ("SlaterReader " + slaters.size() + ": " + iAtom + " " + a + " " + b +  " " + c + " " + d + " " + zeta + " " + coef);
-    slaters.addElement(new SlaterData(iAtom, a, b, c, d, zeta, coef));
+    slaters.add(new SlaterData(iAtom, a, b, c, d, zeta, coef));
   }
 
   protected void addSlater(SlaterData sd, int n) {
     sd.index = n;
-    slaters.addElement(sd);    
+    slaters.add(sd);    
   }
 
   /**
@@ -92,7 +93,7 @@ abstract class SlaterReader extends BasisFunctionReader {
       int nSlaters = slaters.size();
       slaterArray = new SlaterData[nSlaters];
       for (int i = 0; i < slaterArray.length; i++) 
-        slaterArray[i] = (SlaterData) slaters.get(i);
+        slaterArray[i] = slaters.get(i);
     }
     if (doScale)
       for (int i = 0; i < slaterArray.length; i++) {
@@ -133,7 +134,7 @@ abstract class SlaterReader extends BasisFunctionReader {
   protected void sortOrbitalCoefficients(int[] pointers) {
     // now sort the coefficients as well
     for (int i = orbitals.size(); --i >= 0; ) {
-      Hashtable mo = (Hashtable) orbitals.get(i);
+      Hashtable<String, Object> mo = orbitals.get(i);
       float[] coefs = (float[]) mo.get("coefficients");
       float[] sorted = new float[pointers.length];
       for (int j = 0; j < pointers.length; j++) {
@@ -153,17 +154,15 @@ abstract class SlaterReader extends BasisFunctionReader {
    */
   
   protected void sortOrbitals() {
-    Object[] array = orbitals.toArray();
+    Hashtable<String, Object>[] array = orbitals.toArray((Hashtable<String, Object>[]) new Hashtable[0]);
     Arrays.sort(array, new OrbitalSorter());
     orbitals.clear();
     for (int i = 0; i < array.length; i++)
       orbitals.add(array[i]);    
   }
   
-  class OrbitalSorter implements Comparator {
-    public int compare(Object a, Object b) {
-      Hashtable mo1 = (Hashtable) a;
-      Hashtable mo2 = (Hashtable) b;
+  class OrbitalSorter implements Comparator<Hashtable<String, Object>> {
+    public int compare(Hashtable<String, Object> mo1, Hashtable<String, Object> mo2) {
       float e1 = ((Float) mo1.get("energy")).floatValue();
       float e2 = ((Float) mo2.get("energy")).floatValue();
       return ( e1 < e2 ? -1 : e2 < e1 ? 1 : 0);

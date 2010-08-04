@@ -82,6 +82,7 @@ import java.awt.image.MemoryImageSource;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.BitSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -166,7 +167,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private ColorManager colorManager;
 
   public ScriptCompiler compiler;
-  public Hashtable definedAtomSets;
+  public Hashtable<String, Object> definedAtomSets;
 
   private SymmetryInterface symmetry;
 
@@ -312,7 +313,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     initialize();
     fileManager = new FileManager(this);
     compiler = new ScriptCompiler(this);
-    definedAtomSets = new Hashtable();
+    definedAtomSets = new Hashtable<String, Object>();
     eval = new ScriptEvaluator(this);
   }
 
@@ -547,8 +548,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * Graphics3D.flushCachedColors(); }
    */
 
-  Hashtable getAppletInfo() {
-    Hashtable info = new Hashtable();
+  Hashtable<String, Object> getAppletInfo() {
+    Hashtable<String, Object> info = new Hashtable<String, Object>();
     info.put("htmlName", htmlName);
     info.put("syncId", syncId);
     info.put("fullName", fullName);
@@ -8977,7 +8978,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.getAtomicPropertyState(commands, type, bs, name, data);
   }
 
-  public Point3f[][] getCenterAndPoints(Vector atomSets, boolean addCenter) {
+  public Point3f[][] getCenterAndPoints(List<BitSet[]> atomSets, boolean addCenter) {
     return modelSet.getCenterAndPoints(atomSets, addCenter);
   }
 

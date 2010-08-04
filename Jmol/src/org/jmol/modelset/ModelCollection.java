@@ -28,6 +28,7 @@ package org.jmol.modelset;
 import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -455,11 +456,11 @@ abstract public class ModelCollection extends BondCollection {
    * @return             array of two lists of points, centers first if desired
    */
 
-  public Point3f[][] getCenterAndPoints(Vector vAtomSets, boolean addCenters) {
+  public Point3f[][] getCenterAndPoints(List<BitSet[]> vAtomSets, boolean addCenters) {
     BitSet bsAtoms1, bsAtoms2;
     int n = (addCenters ? 1 : 0);
     for (int ii = vAtomSets.size(); --ii >= 0;) {
-      BitSet[] bss = (BitSet[]) vAtomSets.get(ii);
+      BitSet[] bss = vAtomSets.get(ii);
       bsAtoms1 = bss[0];
       bsAtoms2 = bss[1];
       n += Math.min(bsAtoms1.cardinality(), bsAtoms2.cardinality());
@@ -470,7 +471,7 @@ abstract public class ModelCollection extends BondCollection {
       points[1][0] = new Point3f();
     }
     for (int ii = vAtomSets.size(); --ii >= 0;) {
-      BitSet[] bss = (BitSet[]) vAtomSets.get(ii);
+      BitSet[] bss = vAtomSets.get(ii);
       bsAtoms1 = bss[0];
       bsAtoms2 = bss[1];
       for (int i = bsAtoms1.nextSetBit(0), j = bsAtoms2.nextSetBit(0); i >= 0 && j >= 0; i = bsAtoms1

@@ -595,7 +595,7 @@ public class ScriptVariable extends Token {
     if (var.index != Integer.MAX_VALUE || 
         var.tok == list && var.intValue == Integer.MAX_VALUE)
       return var;
-    return (ScriptVariable) selectItem(var, Integer.MIN_VALUE);
+    return selectItem(var, Integer.MIN_VALUE);
   }
 
   public static Token selectItem(Token var) {

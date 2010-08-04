@@ -26,9 +26,11 @@ package org.jmol.script;
 import java.awt.Image;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
 
 import javax.vecmath.AxisAngle4f;
@@ -547,9 +549,9 @@ public class ScriptEvaluator {
    * @param atomExpression
    * @return vector list of selected atoms
    */
-  public static Vector getAtomBitSetVector(ScriptEvaluator e, int atomCount,
+  public static Vector<Integer> getAtomBitSetVector(ScriptEvaluator e, int atomCount,
                                            Object atomExpression) {
-    Vector V = new Vector();
+    Vector<Integer> V = new Vector<Integer>();
     BitSet bs = getAtomBitSet(e, atomExpression);
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
       V.addElement(Integer.valueOf(i));
@@ -1293,7 +1295,7 @@ public class ScriptEvaluator {
               fvMinMax = fv;
             break;
           case Token.all:
-            vout.add(new Float(fv));
+            vout.add(Float.valueOf(fv));
             break;
           case Token.sum2:
           case Token.stddev:
@@ -1409,7 +1411,7 @@ public class ScriptEvaluator {
               fvMinMax = fv;
             break;
           case Token.all:
-            vout.add(new Float(fv));
+            vout.add(Float.valueOf(fv));
             break;
           case Token.sum2:
           case Token.stddev:
@@ -1632,7 +1634,7 @@ public class ScriptEvaluator {
   private Thread currentThread;
   protected Viewer viewer;
   protected ScriptCompiler compiler;
-  private Hashtable definedAtomSets;
+  private Hashtable<String, Object> definedAtomSets;
   private StringBuffer outputBuffer;
 
   private String contextPath = "";
@@ -1818,8 +1820,7 @@ public class ScriptEvaluator {
       return s;
     Object v = ScriptVariable.unescapePointOrBitsetAsVariable(s);
     if (v instanceof String && key != null)
-      v = viewer.setUserVariable(key, new ScriptVariable(Token.string,
-          (String) v));
+      v = viewer.setUserVariable(key, new ScriptVariable(Token.string, v));
     return v;
   }
 
@@ -2040,9 +2041,9 @@ public class ScriptEvaluator {
   }
 
   public void deleteAtomsInVariables(BitSet bsDeleted) {
-    Enumeration e = definedAtomSets.keys();
+    Enumeration<String> e = definedAtomSets.keys();
     while (e.hasMoreElements()) {
-      String key = (String) e.nextElement();
+      String key = e.nextElement();
       Object value = definedAtomSets.get(key);
       if (value instanceof BitSet)
         BitSetUtil.deleteBits((BitSet) value, bsDeleted);
@@ -2113,8 +2114,7 @@ public class ScriptEvaluator {
             // I can't remember why we have to be checking list variables
             // for atom names. 
             fixed[j] = new ScriptVariable(Token.bitset,
-                bs == null ? getAtomBitSet(this, ScriptVariable
-                    .sValue((ScriptVariable) fixed[j])) : bs);
+                bs == null ? getAtomBitSet(this, ScriptVariable.sValue(fixed[j])) : bs);
           }
         } else if (v instanceof Boolean) {
           fixed[j] = (((Boolean) v).booleanValue() ? Token.tokenOn
@@ -2994,7 +2994,7 @@ public class ScriptEvaluator {
     return shapeManager.getShapeProperty(shapeType, propertyName, index);
   }
 
-  private void addShapeProperty(Vector propertyList, String key, Object value) {
+  private void addShapeProperty(Vector<Object[]> propertyList, String key, Object value) {
     if (isSyntaxCheck)
       return;
     propertyList.add(new Object[] { key, value });
@@ -3178,7 +3178,7 @@ public class ScriptEvaluator {
         rpn.addOp(instruction);
         break;
       case Token.define:
-        rpn.addX(getAtomBitSet(this, (String) value));
+        rpn.addX(getAtomBitSet(this, value));
         break;
       case Token.hkl:
         rpn.addX(new ScriptVariable(instruction));
@@ -3263,7 +3263,7 @@ public class ScriptEvaluator {
         if (atomID > 0)
           rpn.addX(compareInt(Token.atomid, null, Token.opEQ, atomID));
         else
-          rpn.addX(getAtomBits(instruction.tok, (String) value));
+          rpn.addX(getAtomBits(instruction.tok, value));
         break;
       case Token.carbohydrate:
       case Token.dna:
@@ -3279,7 +3279,7 @@ public class ScriptEvaluator {
       case Token.specialposition:
       case Token.symmetry:
       case Token.unitcell:
-        rpn.addX(getAtomBits(instruction.tok, (String) value));
+        rpn.addX(getAtomBits(instruction.tok, value));
         break;
       case Token.spec_model:
         // from select */1002 or */1000002 or */1.2
@@ -3519,8 +3519,7 @@ public class ScriptEvaluator {
     if (expressionResult instanceof String
         && (mustBeBitSet || ((String) expressionResult).startsWith("({"))) {
       // allow for select @{x} where x is a string that can evaluate to a bitset
-      expressionResult = (isSyntaxCheck ? new BitSet() : getAtomBitSet(this,
-          (String) expressionResult));
+      expressionResult = (isSyntaxCheck ? new BitSet() : getAtomBitSet(this, expressionResult));
     }
     if (!mustBeBitSet && !(expressionResult instanceof BitSet))
       return null; // because result is in expressionResult in that case
@@ -3974,7 +3973,7 @@ public class ScriptEvaluator {
     boolean haveBrace = (tok == Token.leftbrace);
     boolean haveSquare = (tok == Token.leftsquare);
     float[] fparams = null;
-    Vector v = new Vector();
+    List<Float> v = new ArrayList<Float>();
     int n = 0;
     if (haveBrace || haveSquare)
       i++;
@@ -4028,7 +4027,7 @@ public class ScriptEvaluator {
     if (fparams == null) {
       fparams = new float[n];
       for (int j = 0; j < n; j++)
-        fparams[j] = ((Float) v.get(j)).floatValue();
+        fparams[j] = v.get(j).floatValue();
     }
     return fparams;
   }
@@ -4157,7 +4156,7 @@ public class ScriptEvaluator {
       error(ERROR_invalidArgument);
     }
     int tok;
-    Vector v = new Vector();
+    List<String> v = new ArrayList<String>();
     while ((tok = tokAt(i)) != Token.rightsquare) {
       switch (tok) {
       case Token.comma:
@@ -4174,8 +4173,9 @@ public class ScriptEvaluator {
     iToken = i;
     int n = v.size();
     String[] sParams = new String[n];
-    for (int j = 0; j < n; j++)
-      sParams[j] = (String) v.get(j);
+    for (int j = 0; j < n; j++) { 
+      sParams[j] = v.get(j);
+    }
     return sParams;
   }
 
@@ -4602,12 +4602,12 @@ public class ScriptEvaluator {
     coordinatesAreFractional = implicitFractional;
     if (tokAt(index) == Token.point3f) {
       if (minDim <= 3 && maxDim >= 3)
-        return (Point3f) getToken(index).value;
+        return /*Point3f*/ getToken(index).value;
       error(ERROR_invalidArgument);
     }
     if (tokAt(index) == Token.point4f) {
       if (minDim <= 4 && maxDim >= 4)
-        return (Point4f) getToken(index).value;
+        return /*Point4f*/ getToken(index).value;
       error(ERROR_invalidArgument);
     }
     int multiplier = 1;
@@ -5714,19 +5714,19 @@ public class ScriptEvaluator {
     }
   }
 
-  private Vector vProcess;
+  private Vector<Token[]> vProcess;
   static int iProcess;
 
   private void addProcess(int pc, int pt, boolean isStart) {
     if (parallelProcessor == null)
       return;
     if (isStart) {
-      vProcess = new Vector();
+      vProcess = new Vector<Token[]>();
     } else {
 
       Token[][] statements = new Token[pt][];
       for (int i = 0; i < vProcess.size(); i++)
-        statements[i + 1 - pc] = (Token[]) vProcess.get(i);
+        statements[i + 1 - pc] = vProcess.get(i);
       ScriptContext context = getScriptContext();
       context.aatoken = statements;
       context.pc = 1 - pc;
@@ -6203,15 +6203,15 @@ public class ScriptEvaluator {
             viewer.navigate(timeSec, path, theta, indexStart, indexEnd);
           continue;
         }
-        Vector v = new Vector();
+        List<Point3f> v = new ArrayList<Point3f>();
         while (isCenterParameter(i + 1)) {
-          v.addElement(centerParameter(++i));
+          v.add(centerParameter(++i));
           i = iToken;
         }
         if (v.size() > 0) {
           path = new Point3f[v.size()];
           for (int j = 0; j < v.size(); j++) {
-            path[j] = (Point3f) v.get(j);
+            path[j] = v.get(j);
           }
           if (!isSyntaxCheck)
             viewer.navigate(timeSec, path, theta, 0, Integer.MAX_VALUE);
@@ -6364,8 +6364,8 @@ public class ScriptEvaluator {
     float nSeconds = Float.NaN;
     Quaternion[] data1 = null, data2 = null;
     BitSet bsAtoms1 = null, bsAtoms2 = null;
-    Vector vAtomSets = null;
-    Vector vQuatSets = null;
+    List<BitSet[]> vAtomSets = null;
+    List<Object[]> vQuatSets = null;
     BitSet bsFrom = atomExpression(1);
     BitSet bsTo = atomExpression(++iToken);
     BitSet bsSubset = null;
@@ -6406,7 +6406,7 @@ public class ScriptEvaluator {
           bsAtoms2.and(bsSubset);
         }
         if (vAtomSets == null)
-          vAtomSets = new Vector();
+          vAtomSets = new ArrayList<BitSet[]>();
         vAtomSets.add(new BitSet[] { bsAtoms1, bsAtoms2 });
         i = iToken;
         break;
@@ -6420,7 +6420,7 @@ public class ScriptEvaluator {
         data2 = ScriptMathProcessor
             .getQuaternionArray((Object[]) theToken.value);
         if (vQuatSets == null)
-          vQuatSets = new Vector();
+          vQuatSets = new ArrayList<Object[]>();
         vQuatSets.add(new Object[] { data1, data2 });
         break;
       case Token.orientation:
@@ -6445,34 +6445,38 @@ public class ScriptEvaluator {
       return;
     float[] retStddev = new float[2]; // [0] final, [1] initial for atoms
     Quaternion q = null;
-    Vector vQ = new Vector();
+    List<Quaternion> vQ = new ArrayList<Quaternion>();
     Point3f[][] centerAndPoints = null;
     if (isQuaternion) {
       if (vAtomSets == null && vQuatSets == null) {
-        vAtomSets = new Vector();
+        vAtomSets = new ArrayList<BitSet[]>();
         vAtomSets.add(new BitSet[] { bsFrom, bsTo });
       }
       if (vQuatSets == null) {
         for (int i = 0; i < vAtomSets.size(); i++) {
-          BitSet[] bss = (BitSet[]) vAtomSets.get(i);
+          BitSet[] bss = vAtomSets.get(i);
           data1 = viewer.getAtomGroupQuaternions(bss[0], Integer.MAX_VALUE);
           data2 = viewer.getAtomGroupQuaternions(bss[1], Integer.MAX_VALUE);
-          for (int j = 0; j < data1.length && j < data2.length; j++)
+          for (int j = 0; j < data1.length && j < data2.length; j++) {
             vQ.add(data2[j].div(data1[j]));
+          }
         }
       } else {
-        for (int j = 0; j < data1.length && j < data2.length; j++)
+        for (int j = 0; j < data1.length && j < data2.length; j++) {
           vQ.add(data2[j].div(data1[j]));
+        }
       }
       retStddev[0] = 0;
       data1 = new Quaternion[vQ.size()];
-      for (int i = vQ.size(); --i >= 0;)
-        data1[i] = (Quaternion) vQ.get(i);
+      for (int i = vQ.size(); --i >= 0;) {
+        data1[i] = vQ.get(i);
+      }
       q = Quaternion.sphereMean(data1, retStddev, 0.0001f);
       showString("RMSD = " + retStddev[0] + " degrees");
     } else if (strSmiles != null) {
-      if (vAtomSets == null)
-        vAtomSets = new Vector();
+      if (vAtomSets == null) {
+        vAtomSets = new ArrayList<BitSet[]>();
+      }
       bsAtoms1 = BitSetUtil.copy(bsFrom);
       bsAtoms2 = BitSetUtil.copy(bsTo);
       vAtomSets.add(new BitSet[] { bsAtoms1, bsAtoms2 });
@@ -6498,7 +6502,7 @@ public class ScriptEvaluator {
           bsAtoms1.and(bsFrom);
           bsAtoms2.and(bsTo);
         }
-        vAtomSets = new Vector();
+        vAtomSets = new ArrayList<BitSet[]>();
         vAtomSets.add(new BitSet[] { bsAtoms1, bsAtoms2 });
       }
       centerAndPoints = viewer.getCenterAndPoints(vAtomSets, true);
@@ -7383,7 +7387,7 @@ public class ScriptEvaluator {
         } else {
           index++;
         }
-        colorvalue = new Byte((byte) pid);
+        colorvalue = new Byte(pid);
         checkLength(index);
       }
     }
@@ -7543,14 +7547,15 @@ public class ScriptEvaluator {
             : data3.length];
         bsOut = new BitSet();
         if (data1.length == data2.length) {
-          Hashtable ht = new Hashtable();
-          for (int i = 0; i < data1.length; i++)
-            ht.put(new Float(data2[i]), new Float(data1[i]));
+          Hashtable<Float, Float> ht = new Hashtable<Float, Float>();
+          for (int i = 0; i < data1.length; i++) {
+            ht.put(Float.valueOf(data2[i]), Float.valueOf(data1[i]));
+          }
           int pt = -1;
           int nOut = 0;
           for (int i = 0; i < data3.length; i++) {
             pt = bsTo.nextSetBit(pt + 1);
-            Float F = (Float) ht.get(new Float(data3[i]));
+            Float F = ht.get(Float.valueOf(data3[i]));
             if (F == null)
               continue;
             bsOut.set(pt);
@@ -7871,7 +7876,7 @@ public class ScriptEvaluator {
         - (viewer.getFileName().equals("zapped") ? 1 : 0);
     StringBuffer loadScript = new StringBuffer("load");
     int nFiles = 1;
-    Hashtable htParams = new Hashtable();
+    Hashtable<String, Object> htParams = new Hashtable<String, Object>();
     // ignore optional file format
     String modelName = null;
     String filename = null;
@@ -8127,7 +8132,7 @@ public class ScriptEvaluator {
       }
       Point3f pt = null;
       BitSet bs = null;
-      Vector fNames = new Vector();
+      List<String> fNames = new ArrayList<String>();
       while (i < statementLength) {
         switch (tokAt(i)) {
         case Token.filter:
@@ -8163,12 +8168,13 @@ public class ScriptEvaluator {
         }
         loadScript.append(" /*file*/$FILENAME" + fNames.size() + "$");
       }
-      if (firstLastSteps != null)
+      if (firstLastSteps != null) {
         htParams.put("firstLastSteps", firstLastSteps);
+      }
       nFiles = fNames.size();
       filenames = new String[nFiles];
       for (int j = 0; j < nFiles; j++)
-        filenames[j] = (String) fNames.get(j);
+        filenames[j] = fNames.get(j);
       filename = modelName;
     }
     if (!doLoadFiles)

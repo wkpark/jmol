@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-07-23 18:24+0200\n"
+"POT-Creation-Date: 2010-08-04 20:25+0200\n"
 "PO-Revision-Date: 2010-07-25 08:11+0000\n"
 "Last-Translator: iychiang <iychiang1809@gmail.com>\n"
 "Language-Team: Traditional Chinese <zh_TW@li.org>\n"
@@ -107,7 +107,9 @@ msgstr "視窗的 寬度 x 高度,例如 {0}"
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
-msgstr "JPG 影像壓縮品質(1-100;預設 75) 或 PNG 影像壓縮品質(0-9;預設 2,最大壓縮值為 9)"
+msgstr ""
+"JPG 影像壓縮品質(1-100;預設 75) 或 PNG 影像壓縮品質(0-9;預設 2,最大壓縮值為 "
+"9)"
 
 #: org/openscience/jmol/app/JmolApp.java:216
 #, java-format
@@ -137,7 +139,7 @@ msgid "Executing script 2..."
 msgstr "指令稿2執行中..."
 
 #: org/openscience/jmol/app/jmolpanel/AboutDialog.java:57
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:179
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:180
 msgid "About Jmol"
 msgstr "關於Jmol"
 
@@ -148,10 +150,10 @@ msgstr "關於Jmol"
 msgid "Unable to find url \"{0}\"."
 msgstr "無法找到網址\"{0}\""
 
-#: org/openscience/jmol/app/jmolpanel/AboutDialog.java:95
-#: org/openscience/jmol/app/jmolpanel/HelpDialog.java:102
+#: org/openscience/jmol/app/jmolpanel/AboutDialog.java:97
+#: org/openscience/jmol/app/jmolpanel/HelpDialog.java:95
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:177
-#: org/openscience/jmol/app/jmolpanel/WhatsNewDialog.java:96
+#: org/openscience/jmol/app/jmolpanel/WhatsNewDialog.java:89
 msgid "OK"
 msgstr "確定"
 
@@ -176,7 +178,7 @@ msgid "Variables"
 msgstr "變數"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:124
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:291
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:294
 msgid "Clear"
 msgstr "清除"
 
@@ -233,10 +235,10 @@ msgid "Info"
 msgstr "訊息"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:238
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:176
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:459
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:608
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:629
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:177
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:460
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:609
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:630
 msgid "Select"
 msgstr "選擇"
 
@@ -322,7 +324,7 @@ msgstr "跳到收集的最後一個向量 (vector)"
 msgid "Error reading from BufferedReader: {0}"
 msgstr "讀取 BufferedReader 錯誤：{0}"
 
-#: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:206
+#: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:207
 msgid "Delete atoms"
 msgstr "刪除原子"
 
@@ -395,12 +397,12 @@ msgid "File..."
 msgstr "檔案..."
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:360
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:759
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:760
 msgid "Save"
 msgstr "儲存"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:364
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:501
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:502
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:169
 #: org/openscience/jmol/app/jmolpanel/RecentFilesDialog.java:70
 msgid "Cancel"
@@ -705,229 +707,233 @@ msgid "V&ectors"
 msgstr "向量(&e)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:138
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:149
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:150
 msgid "&Measurements"
 msgstr "測量(&M)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:139
+msgid "Resi&ze"
+msgstr ""
+
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:140
 msgid "&View"
 msgstr "檢視(&V)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:140
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:141
 msgid "&Front"
 msgstr "前端(&F)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:141
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:142
 msgid "&Top"
 msgstr "頂端(&T)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:142
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:143
 msgid "&Bottom"
 msgstr "底端(&B)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:143
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:144
 msgid "&Right"
 msgstr "右端(&R)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:144
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:145
 msgid "&Left"
 msgstr "左端(&R)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:145
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:146
 msgid "Tr&ansform..."
 msgstr "轉換(&a)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:146
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:147
 msgid "Define &Center"
 msgstr "設定中心點(&C)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:147
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:148
 msgid "&Tools"
 msgstr "工具(&T)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:148
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:149
 msgid "&Gaussian..."
 msgstr "高斯(&G)..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:150
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:151
 msgid "Distance &Units"
 msgstr "距離的單位(&U)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:151
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:152
 msgid "&Nanometers 1E-9"
 msgstr "奈米(&N) 1E-9"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:152
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:153
 msgid "&Angstroms 1E-10"
 msgstr "埃(&A) 1E-10"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:153
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:154
 msgid "&Picometers 1E-12"
 msgstr "微微米(&P) 1E-12"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:154
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:155
 msgid "&Animate..."
 msgstr "動畫(&A)..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:155
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:156
 msgid "&Vibrate..."
 msgstr "振動(&V)..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:156
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:157
 msgid "&Graph..."
 msgstr "圖形(&G)..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:157
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:158
 msgid "Calculate chemical &shifts..."
 msgstr "計算化學位移(&s)..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:158
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:159
 msgid "&Crystal Properties"
 msgstr "晶體性質(&C)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:159
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:160
 msgid "&Once"
 msgstr "一次(&O)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:160
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:161
 msgid "&Loop"
 msgstr "環(&L)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:161
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:162
 msgid "P&alindrome"
 msgstr "回文結構(&a)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:162
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:163
 msgid "&Stop animation"
 msgstr "停止動畫(&S)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:163
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:164
 msgid "&Rewind to first frame"
 msgstr "倒回第一個畫面(&R)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:164
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:165
 msgid "Rewind to first frame"
 msgstr "倒回第一個畫面"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:165
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:166
 msgid "Go to &next frame"
 msgstr "跳到下個畫面(&n)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:166
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:167
 msgid "Go to next frame"
 msgstr "跳到下一個畫面"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:167
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:168
 msgid "Go to &previous frame"
 msgstr "跳到前個畫面(&p)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:168
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:169
 msgid "Go to previous frame"
 msgstr "跳到前個畫面"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:169
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:170
 msgid "All &frames"
 msgstr "所有的框架"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:170
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:171
 msgid "All frames"
 msgstr "所有的框架"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:171
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:172
 msgid "Go to &last frame"
 msgstr "跳到最後一個畫面(&l)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:172
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:173
 msgid "Go to last frame"
 msgstr "跳到最後一個畫面"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:173
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:174
 msgid "Start &vibration"
 msgstr "開始振動(&v)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:174
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:175
 msgid "&Stop vibration"
 msgstr "停止振動(&S)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:175
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:176
 msgid "&First frequency"
 msgstr "第一頻率(&F)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:176
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:177
 msgid "&Next frequency"
 msgstr "下一個頻率(&N)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:177
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:178
 msgid "&Previous frequency"
 msgstr "前一個頻率(&P)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:178
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:179
 msgid "&Help"
 msgstr "說明(&H)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:180
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:181
 msgid "User Guide"
 msgstr "使用者手冊"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:181
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:182
 msgid "What's New"
 msgstr "更新資訊"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:182
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:183
 msgid "Hydrogens"
 msgstr "氫"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:183
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:184
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:66
 msgid "Measurements"
 msgstr "測量"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:184
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:185
 msgid "Perspective Depth"
 msgstr "透視深度"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:185
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:186
 msgid "Axes"
 msgstr "軸"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:186
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:187
 msgid "Bounding Box"
 msgstr "邊界方塊"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:188
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:189
 msgid "RasMol/Chime compatible axes orientation/rotations"
 msgstr "相容於 RasMol/Chime 軸方向/轉動"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:190
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:191
 msgid "File Preview (requires restarting Jmol)"
 msgstr "檔案預視(Jmol須重新啟動)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:192
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:193
 msgid "Clear console button (requires restarting Jmol)"
 msgstr "清除主控台按鈕(Jmol須重新啟動)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:193
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:194
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:195
 msgid "Use Atom Color"
 msgstr "使用原子顏色"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:195
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:196
 msgid "Rotate molecule."
 msgstr "旋轉分子"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:197
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:198
 msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
 msgstr "使用 SHIFT-LEFT-DRAG 選擇一群原子"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:199
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:200
 msgid "Click atoms to measure distances"
 msgstr "按下原子來測量距離"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:200
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:201
 msgid "Return molecule to home position."
 msgstr "把原子搬回原點"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:201
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:202
 msgid "Open the model kit."
 msgstr "開啟模型組工具"
 
@@ -959,54 +965,59 @@ msgstr "建立指令關連..."
 msgid "Building Menubar..."
 msgstr "建定選單列..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:209
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:210
 msgid "Starting display..."
 msgstr "開始顯示..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:252
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:255
 msgid "Setting up Drag-and-Drop..."
 msgstr "設定拖放"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:254
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:257
 msgid "Launching main frame..."
 msgstr "開啟主要視框..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:283
-#: org/openscience/jmol/app/webexport/Widgets.java:207
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:286
+#: org/openscience/jmol/app/webexport/Widgets.java:222
 msgid "Jmol Console"
 msgstr "Jmol 主控台"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:305
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:308
 msgid "Could not create ConsoleTextArea: "
 msgstr "無法產生 ConsoleTextArea： "
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:322
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:325
 msgid "Creating main window..."
 msgstr "創立主要視窗..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:323
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:326
 msgid "Initializing Swing..."
 msgstr "啟始 Swing..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:335
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:338
 msgid "Initializing Jmol..."
 msgstr "啟始 Jmol..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:447
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:451
 msgid "Closing Jmol..."
 msgstr "關閉Jmol..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1075
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1077
 msgid "Open URL"
 msgstr "開啟網址(URL)"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1076
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1078
 msgid "Enter URL of molecular model"
 msgstr "輸入分子模型的網址(URL)"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1250
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1253
 msgid "IO Exception:"
 msgstr "輸出入錯誤："
+
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1346
+#, fuzzy
+msgid "width height?"
+msgstr "高度："
 
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:124
 msgid "Delete"
@@ -1020,148 +1031,148 @@ msgstr "全部刪除"
 msgid "Dismiss"
 msgstr "解除"
 
-#: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:201
+#: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:202
 msgid "Value"
 msgstr "數值"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:152
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:153
 msgid "Conversion from Jmol to POV-Ray"
 msgstr "把格式從Jmol轉成POV-Ray"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:156
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:157
 msgid "File Name:"
 msgstr "檔名："
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:158
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:159
 msgid ""
 "'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
 msgstr ""
 "'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:168
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:169
 msgid "Working Directory"
 msgstr "工作目錄"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:170
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:171
 msgid "Where the .pov files will be saved"
 msgstr "要把 .pov 檔存在那裡"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:190
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:191
 msgid "POV-Ray Runtime Options"
 msgstr "執行 POV-Ray 時的選項"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:195
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:196
 msgid "Run POV-Ray directly"
 msgstr "直接執行 POV-Ray"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:197
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:198
 msgid "Launch POV-Ray from within Jmol"
 msgstr "在Jmol中直接執行 POV-Ray"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:242
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:243
 msgid "Display While Rendering"
 msgstr "顯示描繪中的圖形"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:244
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:245
 msgid "Should POV-Ray attempt to display while rendering?"
 msgstr "POV-Ray是否顯示描繪中的圖形？"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:267
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:268
 msgid "width:"
 msgstr "寬度："
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:269
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:270
 msgid "Image width"
 msgstr "影像寬度"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:284
-#: org/openscience/jmol/app/webexport/PopInJmol.java:73
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:285
+#: org/openscience/jmol/app/webexport/PopInJmol.java:74
 msgid "height:"
 msgstr "高度："
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:286
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:287
 msgid "Image height"
 msgstr "影像高度"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:303
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:304
 msgid "Fixed ratio : "
 msgstr "固定比例： "
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:305
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:306
 msgid "Use a fixed ratio for width:height"
 msgstr "對 寬度：高度 使用固定比例"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:316
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:317
 msgid "User defined"
 msgstr "自訂"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:318
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:319
 msgid "Keep ratio of Jmol window"
 msgstr "保待Jmol視窗比例"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:358
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:359
 msgid "N - PNG"
 msgstr "N - PNG"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:361
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:362
 msgid "P - PPM"
 msgstr "P - PPM"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:364
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:365
 msgid "C - Compressed Targa-24"
 msgstr "C - Compressed Targa-24"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:367
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:368
 msgid "T - Uncompressed Targa-24"
 msgstr "T - Uncompressed Targa-24"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:383
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:384
 msgid "Alpha transparency"
 msgstr "Alpha 透明"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:385
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:386
 msgid "Output Alpha transparency data"
 msgstr "輸出 Alpha 透明資料"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:398
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:399
 msgid "Mosaic preview"
 msgstr "預覽合成的圖"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:400
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:401
 msgid "Render the image in several passes"
 msgstr "分多階段描繪圖形"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:410
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:411
 msgid "Start size : "
 msgstr "開始的大小： "
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:412
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:413
 msgid "Initial size of the tiles"
 msgstr "圖素 (tiles) 的啟始大小"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:428
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:429
 msgid "End size : "
 msgstr "最終的大小： "
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:430
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:431
 msgid "Final size of the tiles"
 msgstr "圖素(tiles) 的最終大小"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:451
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:453
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:452
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:454
 msgid "Location of the POV-Ray Executable"
 msgstr "POV-Ray可執行之處"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:490
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:757
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:491
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:758
 msgid "Go!"
 msgstr "開始！"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:492
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:493
 msgid "Save file and possibly launch POV-Ray"
 msgstr "儲存檔案並可能的話執行 POV-Ray"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:503
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:504
 msgid "Cancel this dialog without saving"
 msgstr "關閉對話框且不儲存檔案"
 
@@ -1267,16 +1278,16 @@ msgstr "訊息(請參照記錄標籤以獲取詳細記錄)："
 msgid "These names will be used as filenames for the applets"
 msgstr "這些名字將做為applets程式名"
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:71
+#: org/openscience/jmol/app/webexport/PopInJmol.java:72
 msgid "Applet width:"
 msgstr "Applet 寬度："
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:104
+#: org/openscience/jmol/app/webexport/PopInJmol.java:107
 #, java-format
 msgid "insert a caption for {0} here."
 msgstr "在{0}這裏加入標題"
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:107
+#: org/openscience/jmol/app/webexport/PopInJmol.java:110
 #, java-format
 msgid "insert a note for {0} here."
 msgstr "在{0}這裏加入注解"
@@ -1285,7 +1296,7 @@ msgstr "在{0}這裏加入注解"
 msgid "These names will be used for button labels"
 msgstr "這些名字將用來做為按扭標籤"
 
-#: org/openscience/jmol/app/webexport/ScriptButtons.java:56
+#: org/openscience/jmol/app/webexport/ScriptButtons.java:57
 msgid "% of window for applet width:"
 msgstr "applet視窗寬度百分比："
 
@@ -1327,7 +1338,8 @@ msgstr "輸出至在{1}上的網頁功能{0}可產生網頁架構及JavaScript�
 msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
-msgstr "可以手動取得3-D模型，按{0}中的{1}。第一次載入applet時，須要相當長的下載時間。"
+msgstr ""
+"可以手動取得3-D模型，按{0}中的{1}。第一次載入applet時，須要相當長的下載時間。"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:351
 msgid "Insert the page TITLE here."
@@ -1365,119 +1377,119 @@ msgstr "按扭{0}會出現在對話盒下。有關{0}資訊請加在這裡及以
 msgid "Insert more information for {0} here."
 msgstr "更多有關{0}資訊請加在這裡。"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:151
+#: org/openscience/jmol/app/webexport/WebPanel.java:152
 msgid "A web page containing Jmol applets"
 msgstr "一個包含Jmol applets的網頁"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:176
+#: org/openscience/jmol/app/webexport/WebPanel.java:177
 msgid "click and drag to reorder"
 msgstr "點選及拖曳以重新排序"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:181
+#: org/openscience/jmol/app/webexport/WebPanel.java:182
 msgid "Add Present Jmol State as Instance..."
 msgstr "加入現行的Jmol狀態當作實例..."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:188
+#: org/openscience/jmol/app/webexport/WebPanel.java:189
 msgid "Delete Selected"
 msgstr "刪除所選的"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:220
+#: org/openscience/jmol/app/webexport/WebPanel.java:221
 msgid "Jmol Instances:"
 msgstr "Jmol實例："
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:226
+#: org/openscience/jmol/app/webexport/WebPanel.java:227
 msgid "Select widgets:"
 msgstr "選擇圖形介面元素 (widgets)"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:323
+#: org/openscience/jmol/app/webexport/WebPanel.java:324
 msgid "Help/Instructions"
 msgstr "說明/指導"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:330
-#: org/openscience/jmol/app/webexport/WebPanel.java:338
+#: org/openscience/jmol/app/webexport/WebPanel.java:331
+#: org/openscience/jmol/app/webexport/WebPanel.java:339
 msgid "Cartoon of Page"
 msgstr "此頁的卡通漫畫"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:344
+#: org/openscience/jmol/app/webexport/WebPanel.java:345
 msgid "Save HTML as..."
 msgstr "儲存為HTML"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:354
+#: org/openscience/jmol/app/webexport/WebPanel.java:355
 msgid "Relative server path to jar files:"
 msgstr "jar 檔的相對伺服器目錄："
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:360
+#: org/openscience/jmol/app/webexport/WebPanel.java:361
 msgid "Relative local path to jar files:"
 msgstr "jar 檔的相對本機目錄："
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:366
+#: org/openscience/jmol/app/webexport/WebPanel.java:367
 msgid "Author (your name):"
 msgstr "作者(你的名字)："
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:373
+#: org/openscience/jmol/app/webexport/WebPanel.java:374
 msgid "Browser window title for this web page:"
 msgstr "網頁標題"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:459
+#: org/openscience/jmol/app/webexport/WebPanel.java:460
 msgid "Give the occurrence of Jmol a name:"
 msgstr "給現在的 Jmol 取一個名字："
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:475
+#: org/openscience/jmol/app/webexport/WebPanel.java:476
 msgid "Error creating new instance containing script(s) and image."
 msgstr "產生新的含有指令稿及圖形的實例時發生錯誤。"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:486
+#: org/openscience/jmol/app/webexport/WebPanel.java:487
 #, java-format
 msgid "added Instance {0}"
 msgstr "己加入實例{0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:489
+#: org/openscience/jmol/app/webexport/WebPanel.java:490
 #, java-format
 msgid "updated Instance {0}"
 msgstr "己更新實例{0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:526
+#: org/openscience/jmol/app/webexport/WebPanel.java:527
 msgid "Select a directory to create or an HTML file to save"
 msgstr "選擇新增或儲存HTML檔的目錄"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:544
+#: org/openscience/jmol/app/webexport/WebPanel.java:545
 #, java-format
 msgid "file {0} created"
 msgstr "檔案 {0} 新增完成"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:546
+#: org/openscience/jmol/app/webexport/WebPanel.java:547
 msgid "Call to FileWriter unsuccessful."
 msgstr "呼叫FileWriter失敗"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:621
+#: org/openscience/jmol/app/webexport/WebPanel.java:622
 #, java-format
 msgid "Using directory {0}"
 msgstr "目錄{0}使用中"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:622
-#: org/openscience/jmol/app/webexport/WebPanel.java:631
-#: org/openscience/jmol/app/webexport/WebPanel.java:653
-#: org/openscience/jmol/app/webexport/WebPanel.java:667
-#: org/openscience/jmol/app/webexport/WebPanel.java:694
+#: org/openscience/jmol/app/webexport/WebPanel.java:623
+#: org/openscience/jmol/app/webexport/WebPanel.java:632
+#: org/openscience/jmol/app/webexport/WebPanel.java:652
+#: org/openscience/jmol/app/webexport/WebPanel.java:666
+#: org/openscience/jmol/app/webexport/WebPanel.java:693
 #, java-format
 msgid "adding {0}"
 msgstr "加入 {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:682
+#: org/openscience/jmol/app/webexport/WebPanel.java:681
 #, java-format
 msgid "Unable to load resource {0}"
 msgstr "無法載入資源 {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:734
+#: org/openscience/jmol/app/webexport/WebPanel.java:733
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
 msgstr "根據 A. Herr&#x00E1;ez 發展的樣式及 J. Gutow 所做的修改。"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:737
+#: org/openscience/jmol/app/webexport/WebPanel.java:736
 #, java-format
 msgid "creating {0}"
 msgstr "正在產生{0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:771
+#: org/openscience/jmol/app/webexport/WebPanel.java:770
 #, java-format
 msgid ""
 "Could not find or open:\n"
@@ -1486,7 +1498,7 @@ msgstr ""
 "無法找到或開啓:\n"
 "{0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:774
+#: org/openscience/jmol/app/webexport/WebPanel.java:773
 #, java-format
 msgid ""
 "copying\n"
@@ -1497,7 +1509,7 @@ msgstr ""
 "{0}\n"
 "         到"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:781
+#: org/openscience/jmol/app/webexport/WebPanel.java:780
 msgid "compressing large data file to"
 msgstr "正在壓縮大的資料檔至"
 
@@ -1505,107 +1517,107 @@ msgstr "正在壓縮大的資料檔至"
 msgid "Spin on/off"
 msgstr "旋轉  開/關"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:75
+#: org/openscience/jmol/app/webexport/Widgets.java:78
 msgid "enable/disable spin"
 msgstr "開啟/關閉  旋轉"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:77
+#: org/openscience/jmol/app/webexport/Widgets.java:80
 msgid "Spin on"
 msgstr "開啟旋轉"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:83
+#: org/openscience/jmol/app/webexport/Widgets.java:86
 msgid "Background Color"
 msgstr "背景顏色"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:98
+#: org/openscience/jmol/app/webexport/Widgets.java:104
 msgid "background color:"
 msgstr "背景顏色:"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:111
+#: org/openscience/jmol/app/webexport/Widgets.java:117
 msgid "Stereo Viewing"
 msgstr "立體視覺"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:125
+#: org/openscience/jmol/app/webexport/Widgets.java:134
 msgid "select stereo type"
 msgstr "選擇立體視覺種類"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:129
+#: org/openscience/jmol/app/webexport/Widgets.java:138
 msgid "Stereo Off"
 msgstr "關閉立體視覺"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:130
+#: org/openscience/jmol/app/webexport/Widgets.java:139
 msgid "Red/Blue"
 msgstr "紅/藍"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:132
+#: org/openscience/jmol/app/webexport/Widgets.java:141
 msgid "Red/Cyan"
 msgstr "紅/靛"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:134
+#: org/openscience/jmol/app/webexport/Widgets.java:143
 msgid "Red/Green"
 msgstr "紅/綠"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:141
+#: org/openscience/jmol/app/webexport/Widgets.java:150
 msgid "Animation Control"
 msgstr "動畫控制"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:165
+#: org/openscience/jmol/app/webexport/Widgets.java:177
 msgid "Animation"
 msgstr "動畫"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:166
+#: org/openscience/jmol/app/webexport/Widgets.java:178
 msgid "First Frame"
 msgstr "第一格"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:168
+#: org/openscience/jmol/app/webexport/Widgets.java:180
 msgid "Previous Frame"
 msgstr "上一格"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:170
+#: org/openscience/jmol/app/webexport/Widgets.java:182
 msgid "Play"
 msgstr "播放"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:172
+#: org/openscience/jmol/app/webexport/Widgets.java:184
 msgid "Next Frame"
 msgstr "下一格"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:174
+#: org/openscience/jmol/app/webexport/Widgets.java:186
 msgid "Pause"
 msgstr "暫停"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:176
+#: org/openscience/jmol/app/webexport/Widgets.java:188
 msgid "Last Frame"
 msgstr "最後一格"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:178
+#: org/openscience/jmol/app/webexport/Widgets.java:190
 msgid "Mode:"
 msgstr "模式:"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:179
+#: org/openscience/jmol/app/webexport/Widgets.java:191
 msgid "Loop"
 msgstr "循環播放"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:181
+#: org/openscience/jmol/app/webexport/Widgets.java:193
 msgid "Palindrome"
 msgstr "迴文"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:183
+#: org/openscience/jmol/app/webexport/Widgets.java:195
 msgid "Play Once"
 msgstr "播放一次"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:192
+#: org/openscience/jmol/app/webexport/Widgets.java:204
 msgid "Open Console Button"
 msgstr "開啟指令列的按鍵"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:205
+#: org/openscience/jmol/app/webexport/Widgets.java:220
 msgid "launch Jmol console"
 msgstr "啟動 Jmol 指令列"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:212
+#: org/openscience/jmol/app/webexport/Widgets.java:227
 msgid "Download view"
 msgstr "下載觀看"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:227
+#: org/openscience/jmol/app/webexport/Widgets.java:245
 msgid "unimplemented"
 msgstr "未實作的"
 
@@ -1624,7 +1636,6 @@ msgstr "未實作的"
 #~ msgid "Jmol Script Console"
 #~ msgstr "Jmol Script 主控台"
 
-#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
@@ -1633,11 +1644,9 @@ msgstr "未實作的"
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "JmolPopIn.js加入中"
 
-#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "{0}.png加入中"
 
-#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "{0}.spt加入中"
 

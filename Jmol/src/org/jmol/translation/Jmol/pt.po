@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-07-23 18:24+0200\n"
+"POT-Creation-Date: 2010-08-04 20:25+0200\n"
 "PO-Revision-Date: 2010-07-09 10:42+0000\n"
 "Last-Translator: Frederico Tavares <Unknown>\n"
 "Language-Team: Portugal@Folding <Jmol-developers@lists.sourceforge.net>\n"
@@ -141,7 +141,7 @@ msgid "Executing script 2..."
 msgstr "Executando o script 2..."
 
 #: org/openscience/jmol/app/jmolpanel/AboutDialog.java:57
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:179
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:180
 msgid "About Jmol"
 msgstr "Acerca do Jmol"
 
@@ -152,10 +152,10 @@ msgstr "Acerca do Jmol"
 msgid "Unable to find url \"{0}\"."
 msgstr "Não consegue encontrar url \"{0}\"."
 
-#: org/openscience/jmol/app/jmolpanel/AboutDialog.java:95
-#: org/openscience/jmol/app/jmolpanel/HelpDialog.java:102
+#: org/openscience/jmol/app/jmolpanel/AboutDialog.java:97
+#: org/openscience/jmol/app/jmolpanel/HelpDialog.java:95
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:177
-#: org/openscience/jmol/app/jmolpanel/WhatsNewDialog.java:96
+#: org/openscience/jmol/app/jmolpanel/WhatsNewDialog.java:89
 msgid "OK"
 msgstr "OK"
 
@@ -180,7 +180,7 @@ msgid "Variables"
 msgstr "Variáveis"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:124
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:291
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:294
 msgid "Clear"
 msgstr "Limpar"
 
@@ -237,10 +237,10 @@ msgid "Info"
 msgstr "Info"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:238
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:176
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:459
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:608
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:629
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:177
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:460
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:609
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:630
 msgid "Select"
 msgstr "Seleccionar"
 
@@ -336,7 +336,7 @@ msgstr "Saltar para o último {0} na selecção"
 msgid "Error reading from BufferedReader: {0}"
 msgstr "Erro de leitura em \"BufferedReader\": {0}"
 
-#: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:206
+#: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:207
 msgid "Delete atoms"
 msgstr "Apagar átomos"
 
@@ -409,12 +409,12 @@ msgid "File..."
 msgstr "Ficheiro..."
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:360
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:759
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:760
 msgid "Save"
 msgstr "Gravar"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:364
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:501
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:502
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:169
 #: org/openscience/jmol/app/jmolpanel/RecentFilesDialog.java:70
 msgid "Cancel"
@@ -719,229 +719,233 @@ msgid "V&ectors"
 msgstr "V&ectores"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:138
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:149
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:150
 msgid "&Measurements"
 msgstr "&Medições"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:139
+msgid "Resi&ze"
+msgstr ""
+
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:140
 msgid "&View"
 msgstr "&Ver"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:140
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:141
 msgid "&Front"
 msgstr "&Frente"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:141
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:142
 msgid "&Top"
 msgstr "&Topo"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:142
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:143
 msgid "&Bottom"
 msgstr "&Fundo"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:143
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:144
 msgid "&Right"
 msgstr "&Direita"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:144
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:145
 msgid "&Left"
 msgstr "&Esquerda"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:145
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:146
 msgid "Tr&ansform..."
 msgstr "Tr&ansformar..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:146
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:147
 msgid "Define &Center"
 msgstr "Definir &Centro"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:147
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:148
 msgid "&Tools"
 msgstr "&Ferramentas"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:148
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:149
 msgid "&Gaussian..."
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:150
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:151
 msgid "Distance &Units"
 msgstr "&Unidades de Distância"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:151
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:152
 msgid "&Nanometers 1E-9"
 msgstr "&Nanometros 1E-9"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:152
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:153
 msgid "&Angstroms 1E-10"
 msgstr "&Angstroms 1E-10"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:153
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:154
 msgid "&Picometers 1E-12"
 msgstr "&Picometross 1E-12"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:154
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:155
 msgid "&Animate..."
 msgstr "&Animar..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:155
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:156
 msgid "&Vibrate..."
 msgstr "&Vibrar..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:156
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:157
 msgid "&Graph..."
 msgstr "&Gráfico"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:157
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:158
 msgid "Calculate chemical &shifts..."
 msgstr "Calcular &shifts químicos"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:158
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:159
 msgid "&Crystal Properties"
 msgstr "&Propriedades do Cristal"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:159
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:160
 msgid "&Once"
 msgstr "&Uma vez"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:160
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:161
 msgid "&Loop"
 msgstr "&Ciclo"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:161
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:162
 msgid "P&alindrome"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:162
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:163
 msgid "&Stop animation"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:163
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:164
 msgid "&Rewind to first frame"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:164
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:165
 msgid "Rewind to first frame"
 msgstr "Rebobinar até à 1ª frame"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:165
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:166
 msgid "Go to &next frame"
 msgstr "Ir para a &próxima frame"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:166
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:167
 msgid "Go to next frame"
 msgstr "Ir para a próxima frame"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:167
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:168
 msgid "Go to &previous frame"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:168
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:169
 msgid "Go to previous frame"
 msgstr "Ir para a frame anterior"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:169
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:170
 msgid "All &frames"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:170
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:171
 msgid "All frames"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:171
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:172
 msgid "Go to &last frame"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:172
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:173
 msgid "Go to last frame"
 msgstr "Ir para a última frame"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:173
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:174
 msgid "Start &vibration"
 msgstr "Iniciar &vibração"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:174
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:175
 msgid "&Stop vibration"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:175
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:176
 msgid "&First frequency"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:176
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:177
 msgid "&Next frequency"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:177
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:178
 msgid "&Previous frequency"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:178
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:179
 msgid "&Help"
 msgstr "&Ajuda"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:180
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:181
 msgid "User Guide"
 msgstr "Manual"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:181
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:182
 msgid "What's New"
 msgstr "O que há de novo"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:182
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:183
 msgid "Hydrogens"
 msgstr "Hidrogénios"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:183
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:184
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:66
 msgid "Measurements"
 msgstr "Medições"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:184
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:185
 msgid "Perspective Depth"
 msgstr "Profundidade da perpectiva"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:185
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:186
 msgid "Axes"
 msgstr "Eixos"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:186
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:187
 msgid "Bounding Box"
 msgstr "Caixa de ligação"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:188
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:189
 msgid "RasMol/Chime compatible axes orientation/rotations"
 msgstr "Eixos compatíveis RasMol/Chimeorientação/rotação"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:190
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:191
 msgid "File Preview (requires restarting Jmol)"
 msgstr "Pré-visualização do ficheiro (requer reiniciação do Jmol)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:192
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:193
 msgid "Clear console button (requires restarting Jmol)"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:193
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:194
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:195
 msgid "Use Atom Color"
 msgstr "Usar cor do átomo"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:195
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:196
 msgid "Rotate molecule."
 msgstr "Rodar molécula"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:197
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:198
 msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:199
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:200
 msgid "Click atoms to measure distances"
 msgstr "Clique nos átomos para medir a distância"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:200
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:201
 msgid "Return molecule to home position."
 msgstr "Recolocar a molécula na posição inicial"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:201
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:202
 msgid "Open the model kit."
 msgstr ""
 
@@ -973,54 +977,59 @@ msgstr "Construindo 'Command Hooks'..."
 msgid "Building Menubar..."
 msgstr "Construindo barra de menus..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:209
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:210
 msgid "Starting display..."
 msgstr "Iniciando a visualização..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:252
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:255
 msgid "Setting up Drag-and-Drop..."
 msgstr "Definir Drag-and-Drop..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:254
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:257
 msgid "Launching main frame..."
 msgstr "Lançando o frame (quadro) principal..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:283
-#: org/openscience/jmol/app/webexport/Widgets.java:207
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:286
+#: org/openscience/jmol/app/webexport/Widgets.java:222
 msgid "Jmol Console"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:305
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:308
 msgid "Could not create ConsoleTextArea: "
 msgstr "Não foi possível criar 'ConsoleTextArea': "
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:322
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:325
 msgid "Creating main window..."
 msgstr "Criando janela principal..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:323
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:326
 msgid "Initializing Swing..."
 msgstr "Inicializando 'swing' (balanço)..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:335
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:338
 msgid "Initializing Jmol..."
 msgstr "Inicializando Jmol..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:447
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:451
 msgid "Closing Jmol..."
 msgstr "Fechar Jmol..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1075
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1077
 msgid "Open URL"
 msgstr "Abrir URL"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1076
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1078
 msgid "Enter URL of molecular model"
 msgstr "Escrever URL de um modelo molecular"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1250
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1253
 msgid "IO Exception:"
 msgstr "Excepção IO:"
+
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1346
+#, fuzzy
+msgid "width height?"
+msgstr "altura:"
 
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:124
 msgid "Delete"
@@ -1034,147 +1043,147 @@ msgstr "Eliminar todos"
 msgid "Dismiss"
 msgstr "Rejeitar"
 
-#: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:201
+#: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:202
 msgid "Value"
 msgstr "Valor"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:152
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:153
 msgid "Conversion from Jmol to POV-Ray"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:156
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:157
 msgid "File Name:"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:158
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:159
 msgid ""
 "'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:168
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:169
 msgid "Working Directory"
 msgstr "Directoria de trabalho"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:170
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:171
 msgid "Where the .pov files will be saved"
 msgstr "Onde os ficheiro .pov irão ser gravados"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:190
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:191
 msgid "POV-Ray Runtime Options"
 msgstr "Opções de excecução POV-Ray"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:195
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:196
 msgid "Run POV-Ray directly"
 msgstr "Executar POV-Ray directamente"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:197
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:198
 msgid "Launch POV-Ray from within Jmol"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:242
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:243
 msgid "Display While Rendering"
 msgstr "Visualizar enquanto renderiza"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:244
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:245
 msgid "Should POV-Ray attempt to display while rendering?"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:267
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:268
 msgid "width:"
 msgstr "largura:"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:269
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:270
 msgid "Image width"
 msgstr "Largura da imagem"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:284
-#: org/openscience/jmol/app/webexport/PopInJmol.java:73
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:285
+#: org/openscience/jmol/app/webexport/PopInJmol.java:74
 msgid "height:"
 msgstr "altura:"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:286
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:287
 msgid "Image height"
 msgstr "Altura da imagem"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:303
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:304
 msgid "Fixed ratio : "
 msgstr "Razão fixa: "
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:305
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:306
 msgid "Use a fixed ratio for width:height"
 msgstr "Usar razão fixa para largura:altura"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:316
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:317
 msgid "User defined"
 msgstr "Definido pelo utilizador"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:318
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:319
 msgid "Keep ratio of Jmol window"
 msgstr "Manter razão da janela Jmol"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:358
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:359
 msgid "N - PNG"
 msgstr "N - PNG"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:361
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:362
 msgid "P - PPM"
 msgstr "N - PNG"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:364
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:365
 msgid "C - Compressed Targa-24"
 msgstr "C - Compressed Targa-24"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:367
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:368
 msgid "T - Uncompressed Targa-24"
 msgstr "T - Uncompressed Targa-24"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:383
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:384
 msgid "Alpha transparency"
 msgstr "Alpha transparency"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:385
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:386
 msgid "Output Alpha transparency data"
 msgstr "Dados de transparência Alpha de saída"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:398
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:399
 msgid "Mosaic preview"
 msgstr "Pré-visualização em mosaico"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:400
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:401
 msgid "Render the image in several passes"
 msgstr "Renderizar imagem em vários passos"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:410
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:411
 msgid "Start size : "
 msgstr "Tamanho inicial: "
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:412
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:413
 msgid "Initial size of the tiles"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:428
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:429
 msgid "End size : "
 msgstr "Tamanho final: "
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:430
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:431
 msgid "Final size of the tiles"
 msgstr "Tamanho final dos mosaicos"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:451
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:453
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:452
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:454
 msgid "Location of the POV-Ray Executable"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:490
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:757
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:491
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:758
 msgid "Go!"
 msgstr "Avançar"
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:492
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:493
 msgid "Save file and possibly launch POV-Ray"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:503
+#: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:504
 msgid "Cancel this dialog without saving"
 msgstr "Cancelar sem gravar"
 
@@ -1280,16 +1289,16 @@ msgstr ""
 msgid "These names will be used as filenames for the applets"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:71
+#: org/openscience/jmol/app/webexport/PopInJmol.java:72
 msgid "Applet width:"
 msgstr "Largura do Applet:"
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:104
+#: org/openscience/jmol/app/webexport/PopInJmol.java:107
 #, java-format
 msgid "insert a caption for {0} here."
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/PopInJmol.java:107
+#: org/openscience/jmol/app/webexport/PopInJmol.java:110
 #, java-format
 msgid "insert a note for {0} here."
 msgstr ""
@@ -1298,7 +1307,7 @@ msgstr ""
 msgid "These names will be used for button labels"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/ScriptButtons.java:56
+#: org/openscience/jmol/app/webexport/ScriptButtons.java:57
 msgid "% of window for applet width:"
 msgstr ""
 
@@ -1380,126 +1389,126 @@ msgstr ""
 msgid "Insert more information for {0} here."
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:151
+#: org/openscience/jmol/app/webexport/WebPanel.java:152
 msgid "A web page containing Jmol applets"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:176
+#: org/openscience/jmol/app/webexport/WebPanel.java:177
 msgid "click and drag to reorder"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:181
+#: org/openscience/jmol/app/webexport/WebPanel.java:182
 msgid "Add Present Jmol State as Instance..."
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:188
+#: org/openscience/jmol/app/webexport/WebPanel.java:189
 msgid "Delete Selected"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:220
+#: org/openscience/jmol/app/webexport/WebPanel.java:221
 msgid "Jmol Instances:"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:226
+#: org/openscience/jmol/app/webexport/WebPanel.java:227
 msgid "Select widgets:"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:323
+#: org/openscience/jmol/app/webexport/WebPanel.java:324
 msgid "Help/Instructions"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:330
-#: org/openscience/jmol/app/webexport/WebPanel.java:338
+#: org/openscience/jmol/app/webexport/WebPanel.java:331
+#: org/openscience/jmol/app/webexport/WebPanel.java:339
 msgid "Cartoon of Page"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:344
+#: org/openscience/jmol/app/webexport/WebPanel.java:345
 msgid "Save HTML as..."
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:354
+#: org/openscience/jmol/app/webexport/WebPanel.java:355
 msgid "Relative server path to jar files:"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:360
+#: org/openscience/jmol/app/webexport/WebPanel.java:361
 msgid "Relative local path to jar files:"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:366
+#: org/openscience/jmol/app/webexport/WebPanel.java:367
 msgid "Author (your name):"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:373
+#: org/openscience/jmol/app/webexport/WebPanel.java:374
 msgid "Browser window title for this web page:"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:459
+#: org/openscience/jmol/app/webexport/WebPanel.java:460
 msgid "Give the occurrence of Jmol a name:"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:475
+#: org/openscience/jmol/app/webexport/WebPanel.java:476
 msgid "Error creating new instance containing script(s) and image."
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:486
+#: org/openscience/jmol/app/webexport/WebPanel.java:487
 #, java-format
 msgid "added Instance {0}"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:489
+#: org/openscience/jmol/app/webexport/WebPanel.java:490
 #, java-format
 msgid "updated Instance {0}"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:526
+#: org/openscience/jmol/app/webexport/WebPanel.java:527
 msgid "Select a directory to create or an HTML file to save"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:544
+#: org/openscience/jmol/app/webexport/WebPanel.java:545
 #, java-format
 msgid "file {0} created"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:546
+#: org/openscience/jmol/app/webexport/WebPanel.java:547
 msgid "Call to FileWriter unsuccessful."
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:621
+#: org/openscience/jmol/app/webexport/WebPanel.java:622
 #, java-format
 msgid "Using directory {0}"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:622
-#: org/openscience/jmol/app/webexport/WebPanel.java:631
-#: org/openscience/jmol/app/webexport/WebPanel.java:653
-#: org/openscience/jmol/app/webexport/WebPanel.java:667
-#: org/openscience/jmol/app/webexport/WebPanel.java:694
+#: org/openscience/jmol/app/webexport/WebPanel.java:623
+#: org/openscience/jmol/app/webexport/WebPanel.java:632
+#: org/openscience/jmol/app/webexport/WebPanel.java:652
+#: org/openscience/jmol/app/webexport/WebPanel.java:666
+#: org/openscience/jmol/app/webexport/WebPanel.java:693
 #, java-format
 msgid "adding {0}"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:682
+#: org/openscience/jmol/app/webexport/WebPanel.java:681
 #, java-format
 msgid "Unable to load resource {0}"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:734
+#: org/openscience/jmol/app/webexport/WebPanel.java:733
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:737
+#: org/openscience/jmol/app/webexport/WebPanel.java:736
 #, java-format
 msgid "creating {0}"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:771
+#: org/openscience/jmol/app/webexport/WebPanel.java:770
 #, java-format
 msgid ""
 "Could not find or open:\n"
 "{0}"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:774
+#: org/openscience/jmol/app/webexport/WebPanel.java:773
 #, java-format
 msgid ""
 "copying\n"
@@ -1507,7 +1516,7 @@ msgid ""
 "         to"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:781
+#: org/openscience/jmol/app/webexport/WebPanel.java:780
 msgid "compressing large data file to"
 msgstr ""
 
@@ -1515,107 +1524,107 @@ msgstr ""
 msgid "Spin on/off"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:75
+#: org/openscience/jmol/app/webexport/Widgets.java:78
 msgid "enable/disable spin"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:77
+#: org/openscience/jmol/app/webexport/Widgets.java:80
 msgid "Spin on"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:83
+#: org/openscience/jmol/app/webexport/Widgets.java:86
 msgid "Background Color"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:98
+#: org/openscience/jmol/app/webexport/Widgets.java:104
 msgid "background color:"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:111
+#: org/openscience/jmol/app/webexport/Widgets.java:117
 msgid "Stereo Viewing"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:125
+#: org/openscience/jmol/app/webexport/Widgets.java:134
 msgid "select stereo type"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:129
+#: org/openscience/jmol/app/webexport/Widgets.java:138
 msgid "Stereo Off"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:130
+#: org/openscience/jmol/app/webexport/Widgets.java:139
 msgid "Red/Blue"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:132
+#: org/openscience/jmol/app/webexport/Widgets.java:141
 msgid "Red/Cyan"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:134
+#: org/openscience/jmol/app/webexport/Widgets.java:143
 msgid "Red/Green"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:141
+#: org/openscience/jmol/app/webexport/Widgets.java:150
 msgid "Animation Control"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:165
+#: org/openscience/jmol/app/webexport/Widgets.java:177
 msgid "Animation"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:166
+#: org/openscience/jmol/app/webexport/Widgets.java:178
 msgid "First Frame"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:168
+#: org/openscience/jmol/app/webexport/Widgets.java:180
 msgid "Previous Frame"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:170
+#: org/openscience/jmol/app/webexport/Widgets.java:182
 msgid "Play"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:172
+#: org/openscience/jmol/app/webexport/Widgets.java:184
 msgid "Next Frame"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:174
+#: org/openscience/jmol/app/webexport/Widgets.java:186
 msgid "Pause"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:176
+#: org/openscience/jmol/app/webexport/Widgets.java:188
 msgid "Last Frame"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:178
+#: org/openscience/jmol/app/webexport/Widgets.java:190
 msgid "Mode:"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:179
+#: org/openscience/jmol/app/webexport/Widgets.java:191
 msgid "Loop"
 msgstr "Curva"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:181
+#: org/openscience/jmol/app/webexport/Widgets.java:193
 msgid "Palindrome"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:183
+#: org/openscience/jmol/app/webexport/Widgets.java:195
 msgid "Play Once"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:192
+#: org/openscience/jmol/app/webexport/Widgets.java:204
 msgid "Open Console Button"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:205
+#: org/openscience/jmol/app/webexport/Widgets.java:220
 msgid "launch Jmol console"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:212
+#: org/openscience/jmol/app/webexport/Widgets.java:227
 msgid "Download view"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:227
+#: org/openscience/jmol/app/webexport/Widgets.java:245
 msgid "unimplemented"
 msgstr ""
 

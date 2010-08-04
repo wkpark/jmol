@@ -72,18 +72,18 @@ public class SimplePopup {
   protected Hashtable modelSetInfo, modelInfo;
   protected JPopupMenu frankPopup;
 
-  protected Hashtable htMenus = new Hashtable();
-  protected Vector NotPDB = new Vector();
-  protected Vector PDBOnly = new Vector();
-  protected Vector UnitcellOnly = new Vector();
-  protected Vector SingleModelOnly = new Vector();
-  protected Vector FramesOnly = new Vector();
-  protected Vector VibrationOnly = new Vector();
-  protected Vector SymmetryOnly = new Vector();
-  protected Vector SignedOnly = new Vector();
-  protected Vector AppletOnly = new Vector();
-  protected Vector ChargesOnly = new Vector();
-  protected Vector TemperatureOnly = new Vector();
+  protected Hashtable<String, Object> htMenus = new Hashtable<String, Object>();
+  protected Vector<Object> NotPDB = new Vector<Object>();
+  protected Vector<Object> PDBOnly = new Vector<Object>();
+  protected Vector<Object> UnitcellOnly = new Vector<Object>();
+  protected Vector<Object> SingleModelOnly = new Vector<Object>();
+  protected Vector<Object> FramesOnly = new Vector<Object>();
+  protected Vector<Object> VibrationOnly = new Vector<Object>();
+  protected Vector<Object> SymmetryOnly = new Vector<Object>();
+  protected Vector<Object> SignedOnly = new Vector<Object>();
+  protected Vector<Object> AppletOnly = new Vector<Object>();
+  protected Vector<Object> ChargesOnly = new Vector<Object>();
+  protected Vector<Object> TemperatureOnly = new Vector<Object>();
 
   protected boolean isPDB;
   protected boolean isSymmetry;
@@ -148,8 +148,8 @@ public class SimplePopup {
     thisx = x;
     thisy = y;
     updateForShow();
-    for (Enumeration keys = htCheckbox.keys(); keys.hasMoreElements();) {
-      String key = (String) keys.nextElement();
+    for (Enumeration<String> keys = htCheckbox.keys(); keys.hasMoreElements();) {
+      String key = keys.nextElement();
       Object item = htCheckbox.get(key);
       String basename = key.substring(0, key.indexOf(":"));
       boolean b = viewer.getBooleanProperty(basename);
@@ -353,7 +353,7 @@ public class SimplePopup {
     // special considerations here
   }
 
-  protected Hashtable htCheckbox = new Hashtable();
+  protected Hashtable<String, Object> htCheckbox = new Hashtable<String, Object>();
 
   void rememberCheckbox(String key, Object checkboxMenuItem) {
     htCheckbox.put(key + "::" + htCheckbox.size(), checkboxMenuItem);

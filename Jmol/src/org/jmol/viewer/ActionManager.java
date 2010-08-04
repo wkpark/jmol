@@ -1395,14 +1395,14 @@ public class ActionManager {
     exitMeasurementMode();
   }
 
-  Hashtable timeouts;
+  Hashtable<String, TimeoutThread> timeouts;
   
   public String showTimeout(String name) {
     StringBuffer sb = new StringBuffer();
     if (timeouts != null) {
-      Enumeration e = timeouts.elements();
+      Enumeration<TimeoutThread> e = timeouts.elements();
       while (e.hasMoreElements()) {
-        TimeoutThread t = (TimeoutThread) e.nextElement();
+        TimeoutThread t = e.nextElement();
         if (name == null || t.name.equalsIgnoreCase(name))
           sb.append(t.toString()).append("\n");
       }
@@ -1413,9 +1413,10 @@ public class ActionManager {
   public void clearTimeouts() {
     if (timeouts == null)
       return;
-    Enumeration e = timeouts.elements();
-    while (e.hasMoreElements())
-      ((Thread) e.nextElement()).interrupt();
+    Enumeration<TimeoutThread> e = timeouts.elements();
+    while (e.hasMoreElements()) {
+      e.nextElement().interrupt();
+    }
     timeouts.clear();    
   }
   
@@ -1424,17 +1425,18 @@ public class ActionManager {
       clearTimeouts();
       return;
     }
-    if (timeouts == null)
-      timeouts = new Hashtable();
+    if (timeouts == null) {
+      timeouts = new Hashtable<String, TimeoutThread>();
+    }
     if (mSec == 0) {
-      Thread t = (Thread) timeouts.get(name);
+      Thread t = timeouts.get(name);
       if (t != null) {
         t.interrupt();
         timeouts.remove(name);
       }
       return;
     }
-    TimeoutThread t = (TimeoutThread) timeouts.get(name);
+    TimeoutThread t = timeouts.get(name);
     if (t != null) {
       t.set(mSec, script);
       return;

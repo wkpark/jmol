@@ -1649,9 +1649,9 @@ public class ScriptEvaluator {
   private Token[][] aatoken;
   private short[] lineNumbers;
   private int[][] lineIndices;
-  private Hashtable contextVariables;
+  private Hashtable<String, ScriptVariable> contextVariables;
 
-  public Hashtable getContextVariables() {
+  public Hashtable<String, ScriptVariable> getContextVariables() {
     return contextVariables;
   }
 
@@ -1826,7 +1826,7 @@ public class ScriptEvaluator {
 
   private ParallelProcessor parallelProcessor;
 
-  ScriptVariable runFunction(ScriptFunction function, String name, List params, Token tokenAtom,
+  ScriptVariable runFunction(ScriptFunction function, String name, List params, ScriptVariable tokenAtom,
                              boolean getReturn) throws ScriptException {
     pushContext(null);
     //System.out.println(contextPath);
@@ -1876,14 +1876,14 @@ public class ScriptEvaluator {
   }
 
   private void runFunction(ScriptFunction function, List params,
-                           Token tokenAtom) throws ScriptException {
+                           ScriptVariable tokenAtom) throws ScriptException {
     aatoken = function.aatoken;
     lineNumbers = function.lineNumbers;
     lineIndices = function.lineIndices;
     script = function.script;
     pc = 0;
     if (function.names != null) {
-      contextVariables = new Hashtable();
+      contextVariables = new Hashtable<String, ScriptVariable>();
       function.setVariables(contextVariables, params);
     }
     if (tokenAtom != null)

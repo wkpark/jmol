@@ -71,7 +71,7 @@ public class ScriptFunction {
     typeName = Token.nameOf(tok);
   }
 
-  void setVariables(Hashtable<String, Object> contextVariables, List<ScriptVariable> params) {
+  void setVariables(Hashtable<String, ScriptVariable> contextVariables, List<ScriptVariable> params) {
     int nParams = (params == null ? 0 : params.size());
     for (int i = names.size(); --i >= 0;) {
       String name = names.get(i).toLowerCase();
@@ -84,7 +84,7 @@ public class ScriptFunction {
     contextVariables.put("_retval", ScriptVariable.intVariable(tok == Token.trycmd ? Integer.MAX_VALUE : 0));
   }
 
-  public void unsetVariables(Hashtable<String, Object> contextVariables, List<ScriptVariable> params) {
+  public void unsetVariables(Hashtable<String, ScriptVariable> contextVariables, List<ScriptVariable> params) {
     // set list values in case they have changed.
     int nParams = (params == null ? 0 : params.size());
     int nNames = names.size();
@@ -94,7 +94,7 @@ public class ScriptFunction {
       ScriptVariable global = params.get(i);
       if (global.tok != Token.list)
         continue;
-      ScriptVariable local = (ScriptVariable) contextVariables.get(names.get(i).toLowerCase());
+      ScriptVariable local = contextVariables.get(names.get(i).toLowerCase());
       if (local.tok != Token.list)
         continue;
       global.value = local.value;

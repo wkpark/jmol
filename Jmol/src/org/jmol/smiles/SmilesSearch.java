@@ -108,7 +108,7 @@ public class SmilesSearch extends JmolMolecule {
   private int nNested;
   private SmilesBond nestedBond;
 
-  private List vReturn;
+  private List<Object> vReturn;
   private BitSet bsReturn = new BitSet();
     
 
@@ -157,6 +157,7 @@ public class SmilesSearch extends JmolMolecule {
     return n;
   }
 
+  @SuppressWarnings("unchecked")
   void setRingData(BitSet bsA) throws InvalidSmilesException {
     needAromatic &= (bsA == null) & !noAromatic;
     // when using "xxx".find("search","....")
@@ -186,7 +187,7 @@ public class SmilesSearch extends JmolMolecule {
         continue;
       String smarts = "*1" + s.substring(0, i - 2) + "*1";
       SmilesSearch search = SmilesParser.getMolecule(smarts, true);
-      List v = (List) getBitSets(search, false, true);
+      List<Object> v = (List<Object>) getBitSets(search, false, true);
       if (needAromatic)
         for (int r = v.size(); --r >= 0;) {
           BitSet bs = (BitSet) v.get(r);
@@ -301,7 +302,7 @@ public class SmilesSearch extends JmolMolecule {
       Logger.debug("SmilesSearch processing " + pattern);
 
     if (vReturn == null && (asVector || getMaps))
-      vReturn = new ArrayList();
+      vReturn = new ArrayList<Object>();
     if (bsSelected == null) {
       bsSelected = new BitSet(jmolAtomCount);
       bsSelected.set(0, jmolAtomCount);
@@ -1013,16 +1014,16 @@ public class SmilesSearch extends JmolMolecule {
 
           if (isSmilesFind) {
             if (jn[1] == null)
-              getX(sAtom, sAtom2, jn, 1, false, isAllene);
+              getX(sAtom, jn, 1, false, isAllene);
             if (jn[3] == null)
-              getX(sAtom2, sAtom, jn, 3, false, false);
+              getX(sAtom2, jn, 3, false, false);
             if (!setSmilesCoordinates(atom0, sAtom, sAtom2, jn))
               return false;
           }
           if (jn[1] == null)
-            getX(sAtom, sAtom2, jn, 1, true, false);
+            getX(sAtom, jn, 1, true, false);
           if (jn[3] == null)
-            getX(sAtom2, sAtom, jn, 3, true, false);
+            getX(sAtom2, jn, 3, true, false);
           if (!checkStereochemistry(sAtom.not, atom0, chiralClass, order,
               jn[0], jn[1], jn[2], jn[3], null, null, v))
             return false;
@@ -1172,7 +1173,7 @@ public class SmilesSearch extends JmolMolecule {
 
   }
 
-  private void getX(SmilesAtom sAtom, SmilesAtom sAtom2, JmolNode[] jn, int pt,
+  private void getX(SmilesAtom sAtom, JmolNode[] jn, int pt,
                     boolean haveCoordinates, boolean needHSwitch) {
     JmolNode atom = getJmolAtom(sAtom.getMatchingAtom());
     boolean doSwitch = sAtom.isFirst || pt == 3;

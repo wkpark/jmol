@@ -247,6 +247,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
         firstMatchOnly, MODE_ARRAY);
   }
 
+  @SuppressWarnings({ "unchecked", "cast" })
   private Object match(String pattern, JmolNode[] atoms, int atomCount,
                        BitSet bsSelected, BitSet bsAromatic, boolean isSmarts,
                        boolean matchAllAtoms, boolean firstMatchOnly,
@@ -261,7 +262,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
       search.setSelected(bsSelected);
       search.bsRequired = null;//(bsRequired != null && bsRequired.cardinality() > 0 ? bsRequired : null);
       search.setRingData(bsAromatic);
-      List vSubstructures;
+      List<Object> vSubstructures;
       search.firstMatchOnly = firstMatchOnly;
       search.matchAllAtoms = matchAllAtoms;
       switch (mode) {

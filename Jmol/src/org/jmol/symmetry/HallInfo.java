@@ -380,7 +380,7 @@ class Translation {
     }
   }
 
-  private Translation(char translationCode, int order, 
+  private Translation(char translationCode, 
       Point3i vectorShift12ths) {
     this.translationCode = translationCode;
     this.rotationOrder = 0;
@@ -478,14 +478,14 @@ class Translation {
 
   final static Translation[] hallTranslationTerms = {
     // all units are 12ths
-    new Translation('a', 0, new Point3i(6, 0, 0))
-    , new Translation('b', 0, new Point3i(0, 6, 0))
-    , new Translation('c', 0, new Point3i(0, 0, 6))
-    , new Translation('n', 0, new Point3i(6, 6, 6))
-    , new Translation('u', 0, new Point3i(3, 0, 0))
-    , new Translation('v', 0, new Point3i(0, 3, 0))
-    , new Translation('w', 0, new Point3i(0, 0, 3))
-    , new Translation('d', 0, new Point3i(3, 3, 3))
+    new Translation('a', new Point3i(6, 0, 0))
+    , new Translation('b', new Point3i(0, 6, 0))
+    , new Translation('c', new Point3i(0, 0, 6))
+    , new Translation('n', new Point3i(6, 6, 6))
+    , new Translation('u', new Point3i(3, 0, 0))
+    , new Translation('v', new Point3i(0, 3, 0))
+    , new Translation('w', new Point3i(0, 0, 3))
+    , new Translation('d', new Point3i(3, 3, 3))
     , new Translation('1', 2, 6)
     , new Translation('1', 3, 4)
     , new Translation('2', 3, 8)
@@ -496,9 +496,9 @@ class Translation {
     , new Translation('4', 6, 8)
     , new Translation('5', 6, 10)
     // extension to handle rhombohedral lattice as primitive
-    , new Translation('r', 0, new Point3i(4, 8, 8))
-    , new Translation('s', 0, new Point3i(8, 8, 4))
-    , new Translation('t', 0, new Point3i(8, 4, 8))
+    , new Translation('r', new Point3i(4, 8, 8))
+    , new Translation('s', new Point3i(8, 8, 4))
+    , new Translation('t', new Point3i(8, 4, 8))
   };
 }
 

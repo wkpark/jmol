@@ -46,8 +46,7 @@ public interface SymmetryInterface {
 
   public abstract boolean createSpaceGroup(int desiredSpaceGroupIndex,
                                            String name,
-                                           float[] notionalUnitCell,
-                                           boolean doNormalize);
+                                           float[] notionalUnitCell);
 
   public abstract boolean haveSpaceGroup();
 
@@ -120,7 +119,7 @@ public interface SymmetryInterface {
 
   public abstract boolean isPeriodic();
 
-  public abstract void setSymmetryInfo(int modelIndex, Hashtable modelAuxiliaryInfo);
+  public abstract void setSymmetryInfo(int modelIndex, Hashtable<String, Object> modelAuxiliaryInfo);
 
   public abstract Object[] getSymmetryOperationDescription(int iSym,
                                                          SymmetryInterface cellInfo, 

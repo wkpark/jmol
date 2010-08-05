@@ -477,13 +477,13 @@ class SymmetryOperation extends Matrix4f {
    *              [9]      angle of rotation
    *              [10]      matrix representation
    */
-  public Object[] getDescription(int isym, SymmetryInterface uc, Point3f pt00, Point3f ptTarget, String id) {
+  public Object[] getDescription(SymmetryInterface uc, Point3f pt00, Point3f ptTarget, String id) {
     if (!isFinalized)
       doFinalize();
-    return getDescription(isym, this, xyzOriginal, uc, pt00, ptTarget, id);
+    return getDescription(this, xyzOriginal, uc, pt00, ptTarget, id);
   }
   
-  private static Object[] getDescription(int isym, SymmetryOperation m,
+  private static Object[] getDescription(SymmetryOperation m,
                                          String xyzOriginal,
                                          SymmetryInterface uc, Point3f pt00,
                                          Point3f ptTarget, String id) {

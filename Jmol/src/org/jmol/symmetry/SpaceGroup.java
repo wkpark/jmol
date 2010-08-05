@@ -107,7 +107,7 @@ class SpaceGroup {
 
   static SpaceGroup createSpaceGroup(int desiredSpaceGroupIndex,
                                                   String name,
-                                                  float[] notionalUnitcell, boolean doNormalize) {
+                                                  float[] notionalUnitcell) {
 
     SpaceGroup sg = null;
     if (desiredSpaceGroupIndex >= 0) {
@@ -115,7 +115,7 @@ class SpaceGroup {
     } else {
       sg = determineSpaceGroup(name, notionalUnitcell);
       if (sg == null)
-        sg = createSpaceGroup(name, doNormalize);
+        sg = createSpaceGroup(name);
     }
     if (sg != null)
       sg.generateAllOperators(null);
@@ -205,7 +205,7 @@ class SpaceGroup {
     } else {
       sg = SpaceGroup.determineSpaceGroup(spaceGroup);
       if (sg == null) {
-        sg = SpaceGroup.createSpaceGroup(spaceGroup, false);
+        sg = SpaceGroup.createSpaceGroup(spaceGroup);
       } else {
         StringBuilder sb = new StringBuilder();
         while (sg != null) {
@@ -218,6 +218,11 @@ class SpaceGroup {
     return sg == null ? "?" : sg.dumpInfo(cellInfo);
   }
   
+  /**
+   * 
+   * @param cellInfo
+   * @return detailed information
+   */
   String dumpInfo(SymmetryInterface cellInfo) {
     Object info  = dumpCanonicalSeitzList();
     if (info instanceof SpaceGroup)
@@ -319,7 +324,7 @@ class SpaceGroup {
       latticeParameter = -latticeParameter;
   }
   
-  private final static SpaceGroup createSpaceGroup(String name, boolean doNormalize) {
+  private final static SpaceGroup createSpaceGroup(String name) {
     name = name.trim();
     SpaceGroup sg = determineSpaceGroup(name);
     HallInfo hallInfo;

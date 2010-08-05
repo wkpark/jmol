@@ -761,7 +761,7 @@ class PointGroup {
         if (!isParallel(v1, v2)) {
           v3.cross(v1, v2);
           v3.normalize();
-          nPlanes = getPlane(nPlanes, v3, center);
+          nPlanes = getPlane(v3);
         }
 
         // second, look for planes perpendicular to the A -- B line
@@ -769,7 +769,7 @@ class PointGroup {
         v3.set(a2);
         v3.sub(a1);
         v3.normalize();
-        nPlanes = getPlane(nPlanes, v3, center);
+        nPlanes = getPlane(v3);
         if (nPlanes == axesMaxN[0])
           return nPlanes;
       }
@@ -779,11 +779,11 @@ class PointGroup {
     if (haveAxes)
       for (int i = c2; i < maxAxis; i++)
         for (int j = 0; j < nAxes[i]; j++)
-          nPlanes = getPlane(nPlanes, axes[i][j].normalOrAxis, center);
+          nPlanes = getPlane(axes[i][j].normalOrAxis);
     return nPlanes;
   }
 
-  private int getPlane(int nPlanes, Vector3f v3, Point3f center2) {
+  private int getPlane(Vector3f v3) {
     if (!haveAxis(0, v3)
         && checkOperation(new Quaternion(v3, 180), center,
             -1))
@@ -833,7 +833,6 @@ class PointGroup {
     int type;
     int order;
     int index;
-    int typeIndex;
     Vector3f normalOrAxis;
 
     Operation() {
@@ -993,7 +992,7 @@ class PointGroup {
         nType[axes[i][0].type][1] += n;
         List<Vector3f> vinfo = (info == null ? null : new ArrayList<Vector3f>());
         for (int j = 0; j < nAxes[i]; j++) {
-          axes[i][j].typeIndex = j + 1;
+          //axes[i][j].typeIndex = j + 1;
           if (vinfo != null) {
             vinfo.add(axes[i][j].normalOrAxis);
           }

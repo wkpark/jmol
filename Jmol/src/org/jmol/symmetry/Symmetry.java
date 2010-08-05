@@ -135,9 +135,9 @@ public class Symmetry implements SymmetryInterface {
   }
 
   public boolean createSpaceGroup(int desiredSpaceGroupIndex, String name,
-                                  float[] notionalUnitCell, boolean doNormalize) {
+                                  float[] notionalUnitCell) {
     spaceGroup = SpaceGroup.createSpaceGroup(desiredSpaceGroupIndex, name,
-        notionalUnitCell, doNormalize);
+        notionalUnitCell);
     if (spaceGroup != null && Logger.debugging)
       Logger.debug("using generated space group " + spaceGroup.dumpInfo(null));
     return spaceGroup != null;
@@ -293,7 +293,7 @@ public class Symmetry implements SymmetryInterface {
     return symmetryInfo.isPeriodic();
   }
 
-  public void setSymmetryInfo(int modelIndex, Hashtable modelAuxiliaryInfo) {
+  public void setSymmetryInfo(int modelIndex, Hashtable<String, Object> modelAuxiliaryInfo) {
     symmetryInfo = new SymmetryInfo();
     float[] notionalUnitcell = symmetryInfo.setSymmetryInfo(modelIndex,
         modelAuxiliaryInfo);
@@ -323,7 +323,7 @@ public class Symmetry implements SymmetryInterface {
   public Object[] getSymmetryOperationDescription(int isym,
                                                 SymmetryInterface cellInfo, 
                                                 Point3f pt1, Point3f pt2, String id) {
-    return spaceGroup.operations[isym].getDescription(isym, cellInfo, pt1, pt2, id);
+    return spaceGroup.operations[isym].getDescription(cellInfo, pt1, pt2, id);
   }
   
   public boolean isSlab() {

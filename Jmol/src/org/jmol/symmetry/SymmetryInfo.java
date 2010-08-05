@@ -46,7 +46,7 @@ class SymmetryInfo {
   SymmetryInfo() {    
   }
   
-  float[] setSymmetryInfo(int modelIndex, Hashtable info) {
+  float[] setSymmetryInfo(int modelIndex, Hashtable<String, Object> info) {
     this.modelIndex = modelIndex;
     cellRange = (int[]) info.get("unitCellRange");
     periodicOriginXyz = (Point3f) info.get("periodicOriginXyz");

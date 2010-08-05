@@ -732,8 +732,7 @@ public abstract class AtomSetCollectionReader {
 
   protected boolean createSpaceGroup() {
     return getSymmetry().createSpaceGroup(desiredSpaceGroupIndex, (spaceGroup
-        .indexOf("!") >= 0 ? "P1" : spaceGroup), notionalUnitCell,
-        atomSetCollection.doNormalize);
+        .indexOf("!") >= 0 ? "P1" : spaceGroup), notionalUnitCell);
   }
 
   @SuppressWarnings("unchecked")

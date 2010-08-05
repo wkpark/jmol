@@ -167,7 +167,7 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
     
   }
 
-  protected Hashtable htAtomicPotentials;
+  protected Hashtable<String, Object> htAtomicPotentials;
   
   protected float getTabulatedPotential(Atom atom) {
     String name = atom.getAtomType();
@@ -189,7 +189,7 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
   
   protected void getAtomicPotentials(String data, String resourceName) {
     BufferedReader br = null;
-    htAtomicPotentials = new Hashtable();
+    htAtomicPotentials = new Hashtable<String, Object>();
     try {
       InputStream is;
       if (data == null) {

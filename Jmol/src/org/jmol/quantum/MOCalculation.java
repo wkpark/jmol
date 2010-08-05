@@ -111,7 +111,7 @@ public class MOCalculation extends QuantumCalculation implements
   final float[] EZ = new float[MAX_GRID];
 
   private String calculationType;
-  private List shells;
+  private List<int[]> shells;
   private float[][] gaussians;
   //Hashtable aoOrdersDF;
   private SlaterData[] slaters;
@@ -135,7 +135,7 @@ public class MOCalculation extends QuantumCalculation implements
 
   public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
                         String calculationType, Point3f[] atomCoordAngstroms,
-                        int firstAtomOffset, List shells,
+                        int firstAtomOffset, List<int[]> shells,
                         float[][] gaussians, int[][] dfCoefMaps,
                         Object slaters,
                         float[] moCoefficients, float[] nuclearCharges, boolean doNormalize) {
@@ -223,7 +223,7 @@ public class MOCalculation extends QuantumCalculation implements
     moCoeff = 0;
     thisAtom = null;
     for (int i = 0; i < nShells; i++) {
-      int[] shell = (int[]) shells.get(i);
+      int[] shell = shells.get(i);
       int basisType = shell[1];
       gaussianPtr = shell[2];
       nGaussians = shell[3];
@@ -263,7 +263,7 @@ public class MOCalculation extends QuantumCalculation implements
   
   private void processShell(int iShell) {
     int lastAtom = atomIndex;
-    int[] shell = (int[]) shells.get(iShell);
+    int[] shell = shells.get(iShell);
     atomIndex = shell[0] + firstAtomOffset;
     int basisType = shell[1];
     gaussianPtr = shell[2];

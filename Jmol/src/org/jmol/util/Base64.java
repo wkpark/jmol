@@ -67,8 +67,8 @@ public class Base64 {
       if (i % 75 == 0 && i != 0)
         sout.append("\r\n");
       nPad = (i + 2 == nBytes ? 1 : i + 1 == nBytes ? 2 : 0);
-      int outbytes = (((int) (bytes[i++]) << 16) & 0xFF0000)
-          | ((nPad == 2 ? 0 : (int) (bytes[i++]) << 8) & 0x00FF00)
+      int outbytes = ((bytes[i++] << 16) & 0xFF0000)
+          | ((nPad == 2 ? 0 : bytes[i++] << 8) & 0x00FF00)
           | ((nPad >= 1 ? 0 : (int) bytes[i++]) & 0x0000FF);
       //System.out.println(Integer.toHexString(outbytes));
       sout.append(base64.charAt((outbytes >> 18) & 0x3F));

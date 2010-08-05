@@ -145,8 +145,8 @@ public class BinaryDocument {
   public short readShort() throws Exception {
     nBytes += 2;
     return (isBigEndian ? ioReadShort()
-        : (short) ((((int) ioReadByte()) & 0xff) 
-                 | (((int) ioReadByte()) & 0xff) << 8));
+        : (short) ((ioReadByte() & 0xff) 
+                 | (ioReadByte() & 0xff) << 8));
   }
 
   private short ioReadShort() throws Exception {
@@ -191,8 +191,8 @@ public class BinaryDocument {
   
   public int readUnsignedShort() throws Exception {
     nBytes += 2;
-    int a = (((int) ioReadByte()) & 0xff);
-    int b = (((int) ioReadByte()) & 0xff);
+    int a = (ioReadByte() & 0xff);
+    int b = (ioReadByte() & 0xff);
     return (isBigEndian ? (a << 8) + b : (b << 8) + a);
   }
   
@@ -247,10 +247,10 @@ public class BinaryDocument {
   }
 
   private int readLEInt() throws Exception {
-    return ((((int) ioReadByte()) & 0xff)
-          | (((int) ioReadByte()) & 0xff) << 8
-          | (((int) ioReadByte()) & 0xff) << 16 
-          | (((int) ioReadByte()) & 0xff) << 24);
+    return ((ioReadByte() & 0xff)
+          | (ioReadByte() & 0xff) << 8
+          | (ioReadByte() & 0xff) << 16 
+          | (ioReadByte() & 0xff) << 24);
   }
 
   private long readLELong() throws Exception {

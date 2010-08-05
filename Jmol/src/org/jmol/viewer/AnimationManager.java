@@ -187,8 +187,8 @@ class AnimationManager {
     initializePointers(0);
   }
 
-  Hashtable getAnimationInfo(){
-    Hashtable info = new Hashtable();
+  Hashtable<String, Object> getAnimationInfo(){
+    Hashtable<String, Object> info = new Hashtable<String, Object>();
     info.put("firstModelIndex", Integer.valueOf(firstModelIndex));
     info.put("lastModelIndex", Integer.valueOf(lastModelIndex));
     info.put("animationDirection", Integer.valueOf(animationDirection));
@@ -409,7 +409,7 @@ class AnimationManager {
     }
   }
 
-  class AnimationThread extends Thread implements Runnable {
+  class AnimationThread extends Thread {
     final int framePointer;
     final int framePointer2;
     int intThread;

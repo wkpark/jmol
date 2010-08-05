@@ -682,19 +682,19 @@ public abstract class AtomSetCollectionReader {
     needToApplySymmetry = true;
   }
 
-  protected void addSites(Hashtable<String, Hashtable<String, String>> htSites) {
+  protected void addSites(Hashtable<String, Hashtable<String, Object>> htSites) {
     atomSetCollection.setAtomSetAuxiliaryInfo("pdbSites", htSites);
     Enumeration<String> e = htSites.keys();
     String sites = "";
     while (e.hasMoreElements()) {
       String name = e.nextElement();
-      Hashtable<String, String> htSite = htSites.get(name);
+      Hashtable<String, Object> htSite = htSites.get(name);
       char ch;
       for (int i = name.length(); --i >= 0; )
         if (!Character.isLetterOrDigit(ch = name.charAt(i)) && ch != '\'')
           name = name.substring(0, i) + "_" + name.substring(i + 1);
       //String seqNum = (String) htSite.get("seqNum");
-      String groups = htSite.get("groups");
+      String groups = (String) htSite.get("groups");
       if (groups.length() == 0)
         continue;
       addSiteScript("@site_" + name + " " + groups);

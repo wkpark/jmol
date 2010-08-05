@@ -40,13 +40,14 @@ import javax.vecmath.Point3f;
 
 public class MdCrdReader extends AtomSetCollectionReader {
 
-  private Vector trajectorySteps;
+  private Vector<Point3f[]> trajectorySteps;
 
+  @SuppressWarnings("unchecked")
   @Override
   protected void initializeReader() {
     // add a dummy atom, just so not "no atoms found"
     atomSetCollection.addAtom(new Atom());
-    trajectorySteps = (Vector) htParams.get("trajectorySteps");
+    trajectorySteps = (Vector<Point3f[]>) htParams.get("trajectorySteps");
     if (trajectorySteps == null)
       htParams.put("trajectorySteps", trajectorySteps = new Vector());
   }

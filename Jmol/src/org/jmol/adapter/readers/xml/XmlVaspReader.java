@@ -79,7 +79,7 @@ public class XmlVaspReader extends XmlReader {
     this.atomSetCollection = atomSetCollection;
     implementedAttributes = vaspImplementedAttributes;
     
-    ((VaspHandler) (new VaspHandler())).walkDOMTree(DOMNode);
+    (new VaspHandler()).walkDOMTree(DOMNode);
   }
 
   StringBuffer data;
@@ -91,7 +91,7 @@ public class XmlVaspReader extends XmlReader {
   
   @Override
   public void processStartElement(String namespaceURI, String localName,
-                                  String qName, HashMap atts) {
+                                  String qName, @SuppressWarnings("unchecked")HashMap atts) {
     if (Logger.debugging) 
       Logger.debug("xmlvasp: start " + localName);
 

@@ -62,11 +62,11 @@ public class PdbReader extends AtomSetCollectionReader {
   private int lineLength;
   // index into atoms array + 1
   // so that 0 can be used for the null value
-  private final Hashtable htFormul = new Hashtable();
-  private Hashtable htHetero = null;
-  private Hashtable htSites = null;
+  private final Hashtable<String, Hashtable<String, Boolean>> htFormul = new Hashtable<String, Hashtable<String, Boolean>>();
+  private Hashtable<String, String> htHetero = null;
+  private Hashtable<String, Hashtable<String, Object>> htSites = null;
   private String currentGroup3;
-  private Hashtable htElementsInCurrentGroup;
+  private Hashtable<String, Boolean> htElementsInCurrentGroup;
   private int maxSerial;
   private int[] chainAtomCounts;
   private int nUNK;
@@ -258,19 +258,19 @@ protected boolean checkLine() throws Exception {
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("CLASSIFICATION", line.substring(7).trim());
   }
 
-  private Vector vCompnds;
-  private Hashtable currentCompnd;
+  private Vector<Hashtable<String, String>> vCompnds;
+  private Hashtable<String, String> currentCompnd;
   private String currentKey;
-  private Hashtable htMolIds;
+  private Hashtable<String, Hashtable<String, String>> htMolIds;
   private boolean resetKey = true;
   
   private void compndSource(boolean isSource) {
     if (vCompnds == null) {
       if (isSource)
         return;
-      vCompnds = new Vector();
-      htMolIds = new Hashtable();
-      currentCompnd = new Hashtable();
+      vCompnds = new Vector<Hashtable<String, String>>();
+      htMolIds = new Hashtable<String, Hashtable<String, String>>();
+      currentCompnd = new Hashtable<String, String>();
       currentCompnd.put("select", "(*)");
       currentKey = "MOLECULE";
       htMolIds.put("", currentCompnd);
@@ -278,7 +278,7 @@ protected boolean checkLine() throws Exception {
     if (isSource && resetKey) {
       resetKey = false;
       currentKey = "SOURCE";
-      currentCompnd = (Hashtable) htMolIds.get("");
+      currentCompnd = htMolIds.get("");
     }
     line = line.substring(10, Math.min(lineLength, 72)).trim();
     int pt = line.indexOf(":");
@@ -290,17 +290,17 @@ protected boolean checkLine() throws Exception {
       if (value == null)
         return;
       if (isSource) {
-        currentCompnd = (Hashtable) htMolIds.remove(value);
+        currentCompnd = htMolIds.remove(value);
         return;
       }
-      currentCompnd = new Hashtable();
+      currentCompnd = new Hashtable<String, String>();
       vCompnds.add(currentCompnd);
       htMolIds.put(value, currentCompnd);
     }
     if (currentCompnd == null)
       return;
     if (value == null) {
-      value = (String) currentCompnd.get(currentKey);
+      value = currentCompnd.get(currentKey);
       if (value == null)
         value = "";
       value += key;
@@ -318,11 +318,12 @@ protected boolean checkLine() throws Exception {
               .simpleReplace(value, ", ", ",:"), " ", "") + ")");
   }
 
+  @SuppressWarnings("unchecked")
   private void setBiomoleculeAtomCounts() {
     for (int i = biomolecules.size(); --i >= 0;) {
-      Hashtable biomolecule = (Hashtable) (biomolecules.elementAt(i));
+      Hashtable<String, Object> biomolecule = biomolecules.elementAt(i);
       String chain = (String) biomolecule.get("chains");
-      int nTransforms = ((Vector) biomolecule.get("biomts")).size();
+      int nTransforms = ((Vector<Matrix4f>) biomolecule.get("biomts")).size();
       int nAtoms = 0;
       for (int j = chain.length() - 1; --j >= 0;)
         if (chain.charAt(j) == ':')
@@ -364,18 +365,18 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
 
 */
  
-  private Vector biomolecules;
-  private Vector biomts;
+  private Vector<Hashtable<String, Object>> biomolecules;
+  private Vector<Matrix4f> biomts;
   
   private void remark350() throws Exception {
-    Vector biomts = null;
-    biomolecules = new Vector();
+    Vector<Matrix4f> biomts = null;
+    biomolecules = new Vector<Hashtable<String, Object>>();
     chainAtomCounts = new int[255];
     String title = "";
     String chainlist = "";
     int iMolecule = 0;
     boolean needLine = true;
-    Hashtable info = null;
+    Hashtable<String, Object> info = null;
     int nBiomt = 0;
     Matrix4f mIdent = new Matrix4f();
     mIdent.setIdentity();
@@ -391,8 +392,8 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
           if (nBiomt > 0)
             Logger.info("biomolecule " + iMolecule + ": number of transforms: "
                 + nBiomt);
-          info = new Hashtable();
-          biomts = new Vector();
+          info = new Hashtable<String, Object>();
+          biomts = new Vector<Matrix4f>();
           iMolecule = parseInt(line.substring(line.indexOf(":") + 1));
           title = line.trim();
           info.put("molecule", Integer.valueOf(iMolecule));
@@ -523,7 +524,7 @@ REMARK 290 REMARK: NULL
       htElementsInCurrentGroup = null;
     } else if (!group3.equals(currentGroup3)) {
       currentGroup3 = group3;
-      htElementsInCurrentGroup = (Hashtable) htFormul.get(group3);
+      htElementsInCurrentGroup = htFormul.get(group3);
       nRes++;
       if (group3.equals("UNK"))
         nUNK++;
@@ -834,9 +835,9 @@ SHEET    3   A 6 ARG A  22  ILE A  26  1  N  VAL A  23   O  GLU A  47
         return; // invalid formula;
       formula = parseTrimmed(formula, ichLeftParen + 1, ichRightParen);
     }
-    Hashtable htElementsInGroup = (Hashtable)htFormul.get(groupName);
+    Hashtable<String, Boolean> htElementsInGroup = htFormul.get(groupName);
     if (htElementsInGroup == null)
-      htFormul.put(groupName, htElementsInGroup = new Hashtable());
+      htFormul.put(groupName, htElementsInGroup = new Hashtable<String, Boolean>());
     // now, look for atom names in the formula
     next[0] = 0;
     String elementWithCount;
@@ -856,7 +857,7 @@ SHEET    3   A 6 ARG A  22  ILE A  26  1  N  VAL A  23   O  GLU A  47
     if (line.length() < 30)
       return;
     if (htHetero == null)
-      htHetero = new Hashtable();
+      htHetero = new Hashtable<String, String>();
     String groupName = parseToken(line, 7, 10);
     if (htHetero.containsKey(groupName))
       return;
@@ -866,14 +867,14 @@ SHEET    3   A 6 ARG A  22  ILE A  26  1  N  VAL A  23   O  GLU A  47
   
   private void hetnam() {
     if (htHetero == null)
-      htHetero = new Hashtable();
+      htHetero = new Hashtable<String, String>();
     String groupName = parseToken(line, 11, 14);
     String hetName = parseTrimmed(line, 15, 70);
     if (groupName == null) {
       Logger.error("ERROR: HETNAM record does not contain a group name: " + line);
       return;
     }
-    String htName = (String) htHetero.get(groupName);
+    String htName = htHetero.get(groupName);
     if (htName != null)
       hetName = htName + hetName;
     htHetero.put(groupName, hetName);
@@ -993,13 +994,13 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
   
   private void site() {
     if (htSites == null)
-      htSites = new Hashtable();
+      htSites = new Hashtable<String, Hashtable<String, Object>>();
     //int seqNum = parseInt(line, 7, 10);
     int nResidues = parseInt(line, 15, 17);
     String siteID = parseTrimmed(line, 11, 14);
-    Hashtable htSite = (Hashtable) htSites.get(siteID);
+    Hashtable<String, Object> htSite = htSites.get(siteID);
     if (htSite == null) {
-      htSite = new Hashtable();
+      htSite = new Hashtable<String, Object>();
       //htSite.put("seqNum", "site_" + seqNum);
       htSite.put("nResidues", Integer.valueOf(nResidues));
       htSite.put("groups", "");

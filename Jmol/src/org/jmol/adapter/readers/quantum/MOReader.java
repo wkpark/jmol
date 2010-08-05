@@ -87,7 +87,7 @@ abstract public class MOReader extends BasisFunctionReader {
 
   protected String energyUnits = "";
   
-  protected Vector moTypes;
+  protected Vector<String> moTypes;
   private boolean getNBOs;
   private boolean getNBOCharges;
   protected boolean haveNboCharges;
@@ -227,7 +227,7 @@ abstract public class MOReader extends BasisFunctionReader {
 
    */
   protected void getNboTypes() throws Exception {
-    moTypes = new Vector();
+    moTypes = new Vector<String>();
     readLine();
     readLine();
     int n = 0;
@@ -319,12 +319,12 @@ abstract public class MOReader extends BasisFunctionReader {
     // and these will replace previous results. 
     // we still need atom positions and bases functions.
     if (haveNboOrbitals) {
-      orbitals = new Vector();
+      orbitals = new Vector<Hashtable<String, Object>>();
       alphaBeta = "";
     }
     haveNboOrbitals = true;
-    Hashtable[] mos = null;
-    Vector[] data = null;
+    Hashtable<String, Object>[] mos = null;
+    Vector<String>[] data = null;
     String dCoeffLabels = "";
     String fCoeffLabels = "";
     int ptOffset = -1;
@@ -400,7 +400,7 @@ abstract public class MOReader extends BasisFunctionReader {
           float[] coefs = new float[data[iMo].size()];
           int iCoeff = 0;
           while (iCoeff < coefs.length) {
-            coefs[iCoeff] = parseFloat((String) data[iMo].get(iCoeff));
+            coefs[iCoeff] = parseFloat(data[iMo].get(iCoeff));
             iCoeff++;
           }
           haveMOs = true;
@@ -476,7 +476,7 @@ abstract public class MOReader extends BasisFunctionReader {
     dfCoefMaps = null;
   }
   
-  protected void getMOHeader(int headerType, String[] tokens, Hashtable[] mos, int nThisLine)
+  protected void getMOHeader(int headerType, String[] tokens, Hashtable<String, Object>[] mos, int nThisLine)
       throws Exception {
     readLine();
     switch (headerType) {
@@ -522,11 +522,11 @@ abstract public class MOReader extends BasisFunctionReader {
     }
   }
 
-  protected void addMOData(int nColumns, Vector[] data, Hashtable<String, Object>[] mos) {
+  protected void addMOData(int nColumns, Vector<String>[] data, Hashtable<String, Object>[] mos) {
     for (int i = 0; i < nColumns; i++) {
       float[] coefs = new float[data[i].size()];
       for (int j = coefs.length; --j >= 0;)
-        coefs[j] = parseFloat((String) data[i].get(j));
+        coefs[j] = parseFloat(data[i].get(j));
       mos[i].put("coefficients", coefs);
       setMO(mos[i]);
     }

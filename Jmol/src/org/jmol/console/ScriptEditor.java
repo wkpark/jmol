@@ -123,7 +123,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
   private JPanel buttonPanel = new JPanel();
 
   void layoutWindow(Container container) {
-    editor = new EditorTextPane(this);
+    editor = new EditorTextPane();
     editor.setDragEnabled(true);
     JScrollPane editorPane = new JScrollPane(editor);
 
@@ -420,7 +420,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
 
     boolean checking = false;
 
-    EditorTextPane(ScriptEditor scriptEditor) {
+    EditorTextPane() {
       super(new EditorDocument());
       editorDoc = (EditorDocument) getDocument();
       editorDoc.setEditorTextPane(this);

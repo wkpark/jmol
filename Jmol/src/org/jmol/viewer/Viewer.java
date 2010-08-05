@@ -1272,7 +1272,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         : stateManager.getSavedOrientationText(name));
   }
 
-  Hashtable getOrientationInfo() {
+  Hashtable<String, Object> getOrientationInfo() {
     return transformManager.getOrientationInfo();
   }
 
@@ -1739,9 +1739,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // fileManager.addLoadScript(script);
   }
 */
-  private Hashtable setLoadParameters(Hashtable htParams) {
+  private Hashtable<String, Object> setLoadParameters(Hashtable<String, Object> htParams) {
     if (htParams == null)
-      htParams = new Hashtable();
+      htParams = new Hashtable<String, Object>();
     htParams.put("viewer", this);
     if (global.atomTypes.length() > 0)
       htParams.put("atomTypes", global.atomTypes);
@@ -1885,7 +1885,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
   public String loadModelFromFile(String fullPathName, String fileName,
                                   String[] fileNames, Object reader,
-                                  boolean isAppend, Hashtable htParams,
+                                  boolean isAppend, Hashtable<String, Object> htParams,
                                   StringBuffer loadScript, int tokType) {
     if (htParams == null)
       htParams = setLoadParameters(null);
@@ -1982,7 +1982,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    *            an AtomSetCollection or a String (error)
    */
   private Object getAtomSetCollection(String fileName, boolean isAppend,
-                                      Hashtable htParams,
+                                      Hashtable<String, Object> htParams,
                                       StringBuffer loadScript) {
     if (fileName == null)
       return null;
@@ -2029,7 +2029,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       // because the user might cancel the operation.
       
       atomSetCollection = fileManager.createAtomSetCollectionFromFile(fileName,
-          htParams, loadScript, isAppend);
+          htParams, isAppend);
     }
     Logger.checkTimer("openFile(" + fileName + ")");
     return atomSetCollection;
@@ -2099,7 +2099,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return createModelSetAndReturnError(atomSetCollection, isAppend, null);
   }
 
-  public String loadInline(String strModel, char newLine, boolean isAppend, Hashtable htParams) {
+  public String loadInline(String strModel, char newLine, boolean isAppend, Hashtable<String, Object> htParams) {
     // ScriptEvaluator DATA command uses this, but anyone could.
     if (strModel == null || strModel.length() == 0)
       return null;
@@ -2164,7 +2164,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   // everything funnels to these two inline methods: String and String[]
   
-  private String openStringInline(String strModel, Hashtable htParams,
+  private String openStringInline(String strModel, Hashtable<String, Object> htParams,
                                   boolean isAppend) {
     // loadInline, openStringInline
 
@@ -2188,7 +2188,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return createModelSetAndReturnError(atomSetCollection, isAppend, loadScript);
   }
 
-  private String openStringsInline(String[] arrayModels, Hashtable htParams,
+  private String openStringsInline(String[] arrayModels, Hashtable<String, Object> htParams,
                                    boolean isAppend) {
     // loadInline
     StringBuffer loadScript = new StringBuffer();
@@ -3114,7 +3114,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getFileData(animationManager.currentModelIndex);
   }
 
-  public Hashtable getCifData(int modelIndex) {
+  public Hashtable<String, Object> getCifData(int modelIndex) {
     String name = getModelFileName(modelIndex);
     String data = getFileAsString(name);
     if (data == null)
@@ -4474,7 +4474,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     int modelIndex = modelSet.atoms[bsAtoms.nextSetBit(0)].modelIndex;
     if (modelIndex != modelSet.getModelCount() - 1)
       return bsB;
-    Vector vConnections = new Vector();
+    Vector<Atom> vConnections = new Vector<Atom>();
     Point3f[] pts = getAdditionalHydrogens(bsAtoms, doAll, false, vConnections);
     boolean wasAppendNew = false;
     wasAppendNew = getAppendNew();
@@ -8507,7 +8507,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return 0;
   }
 
-  public Object getFileAsImage(String pathName, Hashtable htParams) {
+  public Object getFileAsImage(String pathName, Hashtable<String, Object> htParams) {
     if (!haveDisplay)
       return "no display";
     Object obj = fileManager.getFileAsImage(pathName, htParams);

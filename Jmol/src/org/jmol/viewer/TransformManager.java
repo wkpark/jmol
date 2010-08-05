@@ -218,6 +218,10 @@ abstract class TransformManager {
     return commands.toString();
   }
 
+  /**
+   * @param isAll  
+   * @return spin state
+   */
   String getSpinState(boolean isAll) {
     String s = "  set spinX " + (int) spinX + "; set spinY " + (int) spinY
         + "; set spinZ " + (int) spinZ + "; set spinFps " + (int) spinFps + ";";
@@ -481,7 +485,7 @@ abstract class TransformManager {
                                  float degreesPerSecond, float endDegrees,
                                  boolean isClockwise, boolean isSpin,
                                  BitSet bsAtoms, boolean isGesture,
-                                 Vector3f translation, Vector finalPoints) {
+                                 Vector3f translation, Vector<Point3f> finalPoints) {
 
     // *THE* Viewer INTERNAL frame rotation entry point
 
@@ -702,8 +706,8 @@ abstract class TransformManager {
     }
   }
 
-  Hashtable getOrientationInfo() {
-    Hashtable info = new Hashtable();
+  Hashtable<String, Object> getOrientationInfo() {
+    Hashtable<String, Object> info = new Hashtable<String, Object>();
     info.put("moveTo", getMoveToText(1, false));
     info.put("center", "center " + getCenterText());
     info.put("centerPt", fixedRotationCenter);
@@ -1731,7 +1735,7 @@ abstract class TransformManager {
     setSpinOn(false);
   }
 
-  class MotionThread extends Thread implements Runnable {
+  class MotionThread extends Thread {
     private final Vector3f aaStepCenter = new Vector3f();
     private final Vector3f aaStepNavCenter = new Vector3f();
     private final AxisAngle4f aaStep = new AxisAngle4f();
@@ -2136,6 +2140,9 @@ abstract class TransformManager {
       navZ = z;
   }
 
+  /**
+   * @param value  
+   */
   protected void setNavFps(int value) {
     // see TransformManager11
   }
@@ -2164,7 +2171,7 @@ abstract class TransformManager {
     setSpinOn(spinOn, Float.MAX_VALUE, null, null, false);
   }
 
-  private void setSpinOn(boolean spinOn, float endDegrees, Vector endPositions, BitSet bsAtoms, boolean isGesture) {
+  private void setSpinOn(boolean spinOn, float endDegrees, Vector<Point3f> endPositions, BitSet bsAtoms, boolean isGesture) {
     if (navOn && spinOn)
       setNavOn(false);
     this.spinOn = spinOn;
@@ -2210,16 +2217,16 @@ abstract class TransformManager {
     }
   }
 
-  private class SpinThread extends Thread implements Runnable {
+  private class SpinThread extends Thread {
     float endDegrees;
-    Vector endPositions;
+    Vector<Point3f> endPositions;
     float nDegrees;
     BitSet bsAtoms;
     boolean isNav;
     boolean isGesture;
     boolean isReset;
     
-    SpinThread(float endDegrees, Vector endPositions, BitSet bsAtoms, boolean isNav, boolean isGesture) {
+    SpinThread(float endDegrees, Vector<Point3f> endPositions, BitSet bsAtoms, boolean isNav, boolean isGesture) {
       setName("SpinThread" + new Date());
       this.endDegrees = Math.abs(endDegrees);
       this.endPositions = endPositions;
@@ -2343,6 +2350,9 @@ abstract class TransformManager {
     vibrationScale = scale;
   }
 
+  /**
+   * @param navigatingSurface  
+   */
   protected void setNavigationOffsetRelative(boolean navigatingSurface) {
    // only in Transformmanager11
   }
@@ -2413,7 +2423,7 @@ abstract class TransformManager {
   }
 
   /*private -- removed for fixing warning*/
-  class VibrationThread extends Thread implements Runnable {
+  class VibrationThread extends Thread {
 
     VibrationThread() {
       this.setName("VibrationThread");
@@ -2693,7 +2703,7 @@ abstract class TransformManager {
     return Float.NaN;
   }
 
-  float getNavigationOffsetPercent(char XorY) {
+  float getNavigationOffsetPercent(@SuppressWarnings("unused") char XorY) {
     return 0;
   }
 
@@ -2701,6 +2711,10 @@ abstract class TransformManager {
     viewer.getGlobalSettings().setParameterValue("navigationSlab", offset);
   }
 
+  /**
+   * @param addComments  
+   * @return navigation text if in navigation mode
+   */
   String getNavigationText(boolean addComments) {
     return "";
   }
@@ -2718,6 +2732,10 @@ abstract class TransformManager {
     frameOffsets = offsets;
   }
 
+  /**
+   * @param timeSeconds  
+   * @param name 
+   */
   void navigateSurface(float timeSeconds, String name) {
   }
 

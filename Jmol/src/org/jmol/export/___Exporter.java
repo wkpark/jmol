@@ -377,11 +377,11 @@ public abstract class ___Exporter {
    * @param htColixes
    * @return Vector and HashTable
    */
-  protected Vector getColorList(int i00, short[] colixes, int nVertices,
-                                BitSet bsSelected, Hashtable htColixes) {
+  protected Vector<Short> getColorList(int i00, short[] colixes, int nVertices,
+                                BitSet bsSelected, Hashtable<String, String> htColixes) {
     String color;
     int nColix = 0;
-    Vector list = new Vector();
+    Vector<Short> list = new Vector<Short>();
     boolean isAll = (bsSelected == null);
     int i0 = (isAll ? nVertices - 1 : bsSelected.nextSetBit(0));
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsSelected.nextSetBit(i + 1))) {
@@ -482,8 +482,8 @@ public abstract class ___Exporter {
       nFaces += (faceVertexMax == 4 && indices[i].length == 4 ? 2 : 1);
     if (nFaces == 0)
       return;
-    Hashtable htColixes = new Hashtable();
-    Vector colorList = null;
+    Hashtable<String, String> htColixes = new Hashtable<String, String>();
+    Vector<Short> colorList = null;
     if (polygonColixes != null)
       colorList = getColorList(0, polygonColixes, nPolygons, bsFaces, htColixes);
     else if (colixes != null)
@@ -497,7 +497,9 @@ public abstract class ___Exporter {
                                 short[] colixes, int[][] indices,
                                 short[] polygonColixes,
                                 int nVertices, int nPolygons, int nFaces, BitSet bsFaces,
-                                int faceVertexMax, short colix, Vector colorList, Hashtable htColixes, Point3f offset);
+                                int faceVertexMax, short colix, 
+                                Vector<Short> colorList, Hashtable<String, String> htColixes, 
+                                Point3f offset);
 
   abstract void drawPixel(short colix, int x, int y, int z, int scale); //measures
   
@@ -561,7 +563,7 @@ public abstract class ___Exporter {
 
 }
 
-class UseTable extends Hashtable {
+class UseTable extends Hashtable<String, String> {
   private int iObj;
   private String keyword;
   private char term;

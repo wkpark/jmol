@@ -56,8 +56,8 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   private JMenuBar menubar; // requiring Swing here for now
   private JButton clearOutButton, clearInButton, loadButton;
 
-  protected Hashtable map = new Hashtable();
-  protected Hashtable labels = null;
+  protected Hashtable<String, JMenuItem> map = new Hashtable<String, JMenuItem>();
+  protected Hashtable<String, String> labels = null;
   
   
   static {
@@ -337,6 +337,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   }
   
   class ControlEnterTextArea extends JTextArea {
+    @SuppressWarnings("deprecation")
     @Override
     public void processComponentKeyEvent(KeyEvent ke) {
       int kcode = ke.getKeyCode();
@@ -400,8 +401,8 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
 
   /// Graphical User Interface for applet ///
   
-  private Hashtable setupLabels() {
-      Hashtable labels = new Hashtable();
+  private Hashtable<String, String> setupLabels() {
+      Hashtable<String, String> labels = new Hashtable<String, String>();
       labels.put("help", GT._("&Help"));
       labels.put("search", GT._("&Search..."));
       labels.put("commands", GT._("&Commands"));
@@ -415,7 +416,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
     if (labels == null) {
       labels = setupLabels();
     }
-    return (String)labels.get(key);
+    return labels.get(key);
   }
 
   private JMenu newJMenu(String key) {

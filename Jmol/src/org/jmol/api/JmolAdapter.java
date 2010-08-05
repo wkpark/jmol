@@ -142,7 +142,7 @@ public abstract class JmolAdapter {
  * @return The atomSetCollection or String with an error message
  */
 abstract public Object getAtomSetCollectionReader(String name, String type,
-                                 BufferedReader bufferedReader, Hashtable htParams);
+                                 BufferedReader bufferedReader, Hashtable<String, Object> htParams);
 
 abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
   /**
@@ -171,12 +171,12 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
    */
 
   abstract public Object getAtomSetCollectionReaders(JmolFileReaderInterface fileReader, String[] names, String[] types,
-                                    Hashtable htParams, boolean getReadersOnly);
+                                    Hashtable<String, Object>  htParams, boolean getReadersOnly);
 
-  abstract public Object getAtomSetCollectionFromSet(Object readers, Object atomSets, Hashtable htParams);
+  abstract public Object getAtomSetCollectionFromSet(Object readers, Object atomSets, Hashtable<String, Object>  htParams);
 
   abstract public Object getAtomSetCollectionOrBufferedReaderFromZip(InputStream is, String fileName, String[] zipDirectory,
-                             Hashtable htParams, boolean asBufferedReader);
+                             Hashtable<String, Object>  htParams, boolean asBufferedReader);
 
   /**
    * all in one -- for TestSmarterJmolAdapter
@@ -189,9 +189,9 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
    */
   public Object getAtomSetCollectionFromReader(String name, String type,
                                                BufferedReader bufferedReader,
-                                               Hashtable htParams) {
+                                               Hashtable<String, Object>  htParams) {
     if (htParams == null)
-      htParams = new Hashtable();
+      htParams = new Hashtable<String, Object> ();
     Object a = getAtomSetCollectionReader(name, type, bufferedReader, htParams);
     if (a instanceof String)
       return a;
@@ -206,7 +206,7 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
   }
 
   public Object openBufferedReader(String name, BufferedReader bufferedReader,
-                                   Hashtable htParams) {
+                                   Hashtable<String, Object>  htParams) {
     return getAtomSetCollectionFromReader(name, null, bufferedReader, htParams);
   }
 
@@ -215,8 +215,11 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
     return getAtomSetCollectionFromReader(name, type, bufferedReader, null);
   }
 
-  abstract public Object getAtomSetCollectionFromDOM(Object DOMNode, Hashtable htParams);
+  abstract public Object getAtomSetCollectionFromDOM(Object DOMNode, Hashtable<String, Object>  htParams);
 
+  /**
+   * @param atomSetCollection  
+   */
   public void finish(Object atomSetCollection) {}
 
   /**
@@ -246,7 +249,7 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
    * @return The auxiliaryInfo Hashtable that may be available for particular
    * filetypes for this atomSetCollection or <code>null</code>
    */
-  abstract public Hashtable getAtomSetCollectionAuxiliaryInfo(Object atomSetCollection);
+  abstract public Hashtable<String, Object> getAtomSetCollectionAuxiliaryInfo(Object atomSetCollection);
   
   /**
    * Get number of atomSets in the file.
@@ -291,7 +294,7 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
    * @return The auxiliaryInfo Hashtable that may be available for particular
    * filetypes for this atomSet or <code>null</code>
    */
-  abstract public Hashtable getAtomSetAuxiliaryInfo(Object atomSetCollection, int atomSetIndex);
+  abstract public Hashtable<String, Object>  getAtomSetAuxiliaryInfo(Object atomSetCollection, int atomSetIndex);
 
   /**
    * Get the estimated number of atoms contained in the file.
@@ -462,6 +465,11 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
     return canonizeAlphaDigit(altLoc);
   }
 
+  /**
+   * @param name 
+   * @param type  
+   * @return Special load array
+   */
   public String[] specialLoad(String name, String type) {
     return null;
   }

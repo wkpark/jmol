@@ -90,12 +90,12 @@ public class XmlArgusReader extends XmlReader {
     this.parent = parent;
     this.atomSetCollection = atomSetCollection;
     implementedAttributes = argusImplementedAttributes;
-    ((ArgusHandler) (new ArgusHandler())).walkDOMTree(DOMNode);
+    (new ArgusHandler()).walkDOMTree(DOMNode);
   }
 
   @Override
   public void processStartElement(String namespaceURI, String localName, String qName,
-                           HashMap atts) {
+                                  @SuppressWarnings("unchecked")HashMap atts) {
     //System.out.println("open " + localName);
     for (int i = keepCharsList.length; --i >= 0;)
       if (keepCharsList[i].equals(localName)) {

@@ -78,7 +78,7 @@ public class XmlXsdReader extends XmlReader {
                             BufferedReader reader, JSObject DOMNode) {
     init(parent, atomSetCollection);
     implementedAttributes = xsdImplementedAttributes;
-    ((XsdHandler) (new XsdHandler())).walkDOMTree(DOMNode);
+    (new XsdHandler()).walkDOMTree(DOMNode);
     fin();
   }
 
@@ -98,7 +98,7 @@ public class XmlXsdReader extends XmlReader {
   
   @Override
   public void processStartElement(String namespaceURI, String localName, String qName,
-                           HashMap atts) {
+                                  @SuppressWarnings("unchecked")HashMap atts) {
     String[] tokens;
     //System.out.println(namespaceURI + " " + localName + " " + atts);
     //System.out.println("xmlchem3d: start " + localName);
@@ -133,7 +133,7 @@ public class XmlXsdReader extends XmlReader {
         tokens = getTokens(xyz.replace(',',' '));
         atom.set(parseFloat(tokens[0]), parseFloat(tokens[1]), parseFloat(tokens[2]));
       }
-      boolean isBackbone = "1".equals((String) atts.get("IsBackboneAtom"));
+      boolean isBackbone = "1".equals(atts.get("IsBackboneAtom"));
       if (isBackbone)
         bsBackbone.set(iAtom);
       return;

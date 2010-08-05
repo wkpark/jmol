@@ -33,12 +33,12 @@ import org.jmol.util.TextFormat;
 
 abstract public class GamessReader extends MOReader {
 
-  protected Vector atomNames;
+  protected Vector<String> atomNames;
 
   abstract protected void readAtomsInBohrCoordinates() throws Exception;  
  
   protected void readGaussianBasis(String initiator, String terminator) throws Exception {
-    Vector gdata = new Vector();
+    Vector<String[]> gdata = new Vector<String[]>();
     gaussianCount = 0;
     int nGaussians = 0;
     shellCount = 0;
@@ -47,8 +47,8 @@ abstract public class GamessReader extends MOReader {
     discardLinesUntilContains(initiator);
     readLine();
     int[] slater = null;
-    Hashtable shellsByAtomType = new Hashtable();
-    Vector slatersByAtomType = new Vector();
+    Hashtable<String, Vector<int[]>> shellsByAtomType = new Hashtable<String, Vector<int[]>>();
+    Vector<int[]> slatersByAtomType = new Vector<int[]>();
     String atomType = null;
     
     while (readLine() != null && line.indexOf(terminator) < 0) {
@@ -66,7 +66,7 @@ abstract public class GamessReader extends MOReader {
           }
           shellsByAtomType.put(atomType, slatersByAtomType);
         }
-        slatersByAtomType = new Vector();
+        slatersByAtomType = new Vector<int[]>();
         atomType = tokens[0];
         break;
       case 0:
@@ -97,7 +97,7 @@ abstract public class GamessReader extends MOReader {
       shellsByAtomType.put(atomType, slatersByAtomType);
     gaussians = new float[gaussianCount][];
     for (int i = 0; i < gaussianCount; i++) {
-      tokens = (String[]) gdata.get(i);
+      tokens = gdata.get(i);
       gaussians[i] = new float[tokens.length - 3];
       for (int j = 3; j < tokens.length; j++)
         gaussians[i][j - 3] = parseFloat(tokens[j]);
@@ -106,8 +106,8 @@ abstract public class GamessReader extends MOReader {
     if (shells == null && atomCount > 0) {
       shells = new Vector<int[]>();
       for (int i = 0; i < atomCount; i++) {
-        atomType = (String) atomNames.elementAt(i);
-        Vector slaters = (Vector) shellsByAtomType.get(atomType);
+        atomType = atomNames.elementAt(i);
+        Vector<?> slaters = shellsByAtomType.get(atomType);
         if (slaters == null) {
           Logger.error("slater for atom " + i + " atomType " + atomType
               + " was not found in listing. Ignoring molecular orbitals");
@@ -232,27 +232,27 @@ $SYSTEM OPTIONS
 
 
 
-  private Hashtable calcOptions;
+  private Hashtable<String, String> calcOptions;
   private boolean isTypeSet;
 
   protected void setCalculationType() {
     if (calcOptions == null || isTypeSet)
       return;
     isTypeSet = true;
-    String SCFtype = (String) calcOptions.get("contrl_options_SCFTYP");
-    String Runtype = (String) calcOptions.get("contrl_options_RUNTYP");
-    String igauss = (String) calcOptions.get("basis_options_IGAUSS");
-    String gbasis = (String) calcOptions.get("basis_options_GBASIS");
-    boolean DFunc = !"0".equals((String) calcOptions
+    String SCFtype = calcOptions.get("contrl_options_SCFTYP");
+    String Runtype = calcOptions.get("contrl_options_RUNTYP");
+    String igauss = calcOptions.get("basis_options_IGAUSS");
+    String gbasis = calcOptions.get("basis_options_GBASIS");
+    boolean DFunc = !"0".equals(calcOptions
         .get("basis_options_NDFUNC"));
-    boolean PFunc = !"0".equals((String) calcOptions
+    boolean PFunc = !"0".equals(calcOptions
         .get("basis_options_NPFUNC"));
-    boolean FFunc = !"0".equals((String) calcOptions
+    boolean FFunc = !"0".equals(calcOptions
         .get("basis_options_NFFUNC"));
-    String DFTtype = (String) calcOptions.get("contrl_options_DFTTYP");
-    int perturb = parseInt((String) calcOptions.get("contrl_options_MPLEVL"));
-    String CItype = (String) calcOptions.get("contrl_options_CITYP");
-    String CCtype = (String) calcOptions.get("contrl_options_CCTYP");
+    String DFTtype = calcOptions.get("contrl_options_DFTTYP");
+    int perturb = parseInt(calcOptions.get("contrl_options_MPLEVL"));
+    String CItype = calcOptions.get("contrl_options_CITYP");
+    String CCtype = calcOptions.get("contrl_options_CCTYP");
 
     if (igauss == null && SCFtype == null)
       return;
@@ -301,9 +301,9 @@ $SYSTEM OPTIONS
           calculationType += " ";
         calculationType += igauss + "-"
             + TextFormat.simpleReplace(gbasis, "N", "");
-        if ("T".equals((String) calcOptions.get("basis_options_DIFFSP"))) {
+        if ("T".equals(calcOptions.get("basis_options_DIFFSP"))) {
           // check if we have diffuse S on H's too => "++" instead of "+"
-          if ("T".equals((String) calcOptions.get("basis_options_DIFFS")))
+          if ("T".equals(calcOptions.get("basis_options_DIFFS")))
             calculationType += "+";
           calculationType += "+";
         }
@@ -365,7 +365,7 @@ $SYSTEM OPTIONS
 
   private void readCalculationInfo(String type) throws Exception {
     if (calcOptions == null) {
-      calcOptions = new Hashtable();
+      calcOptions = new Hashtable<String, String>();
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo("calculationOptions",
           calcOptions);
     }

@@ -329,7 +329,7 @@ public abstract class Shape {
     
   }
   
-  public Vector getShapeDetail() {
+  public Vector<Hashtable<String, Object>> getShapeDetail() {
     return null;
   }
 

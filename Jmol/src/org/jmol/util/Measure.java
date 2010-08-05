@@ -436,19 +436,20 @@ final public class Measure {
     averagePoint.scale(1f / nPoints);
   }
 
-  public static Point3f[] getCenterAndPoints(Vector vPts) {
+  public static Point3f[] getCenterAndPoints(Vector<Point3f> vPts) {
     int n = vPts.size();
     Point3f[] pts = new Point3f[n + 1];
     pts[0] = new Point3f();
     if (n > 0) {
       for (int i = 0; i < n; i++)
-        pts[0].add(pts[i + 1] = (Point3f) vPts.get(i));
+        pts[0].add(pts[i + 1] = vPts.get(i));
       pts[0].scale(1f / n);
     }
     return pts;
   }
 
-  public static float getTransformMatrix4(Vector ptsA, Vector ptsB, Matrix4f m, Point3f centerA) {
+  public static float getTransformMatrix4(Vector<Point3f> ptsA, Vector<Point3f> ptsB, 
+                                          Matrix4f m, Point3f centerA) {
     Point3f[] cptsA = getCenterAndPoints(ptsA);
     Point3f[] cptsB = getCenterAndPoints(ptsB);
     float[] retStddev = new float[2];
@@ -573,10 +574,10 @@ final public class Measure {
     return (float) Math.sqrt((sum2 - sum * sum / n) / (n - 1));
   }
 
-  public static Vector transformPoints(Vector vPts, Matrix4f m4, Point3f center) {
-    Vector v = new Vector();
+  public static Vector<Point3f> transformPoints(Vector<Point3f> vPts, Matrix4f m4, Point3f center) {
+    Vector<Point3f> v = new Vector<Point3f>();
     for (int i = 0; i < vPts.size(); i++) {
-      Point3f pt = new Point3f((Point3f)vPts.get(i));
+      Point3f pt = new Point3f(vPts.get(i));
       pt.sub(center);
       m4.transform(pt, pt);
       pt.add(center);

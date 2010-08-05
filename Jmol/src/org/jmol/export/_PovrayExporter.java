@@ -119,9 +119,9 @@ public class _PovrayExporter extends __RayTracerExporter {
 
   private void writeMacros() {
     output("#default { finish {\n" + "  ambient "
-        + (float) Graphics3D.getAmbientPercent() / 100f + "\n" + "  diffuse "
-        + (float) Graphics3D.getDiffusePercent() / 100f + "\n" + "  specular "
-        + (float) Graphics3D.getSpecularPercent() / 100f + "\n"
+        + Graphics3D.getAmbientPercent() / 100f + "\n" + "  diffuse "
+        + Graphics3D.getDiffusePercent() / 100f + "\n" + "  specular "
+        + Graphics3D.getSpecularPercent() / 100f + "\n"
         + "  roughness .00001\n  metallic\n  phong 0.9\n  phong_size 120\n}}"
         + "\n\n");
 
@@ -190,9 +190,9 @@ public class _PovrayExporter extends __RayTracerExporter {
         + "  #declare shineFactor = 0;\n"
         + " #end\n"
         + " finish {\n" + "  ambient "
-        + (float) Graphics3D.getAmbientPercent() / 100f + "\n" + "  diffuse "
-        + (float) Graphics3D.getDiffusePercent() / 100f + "\n" + "  specular "
-        + (float) Graphics3D.getSpecularPercent() / 100f + "\n"
+        + Graphics3D.getAmbientPercent() / 100f + "\n" + "  diffuse "
+        + Graphics3D.getDiffusePercent() / 100f + "\n" + "  specular "
+        + Graphics3D.getSpecularPercent() / 100f + "\n"
         + "  roughness .00001\n"  
         + "  metallic shineFactor\n"  
         + "  phong 0.9*shineFactor\n"  
@@ -373,7 +373,9 @@ public class _PovrayExporter extends __RayTracerExporter {
                                   short[] colixes, int[][] indices, 
                                   short[] polygonColixes,
                                   int nVertices, int nPolygons, int nFaces, BitSet bsFaces,
-                                  int faceVertexMax, short colix, Vector colorList, Hashtable htColixes, Point3f offset) {
+                                  int faceVertexMax, short colix, 
+                                  Vector<Short> colorList, Hashtable<String, String> htColixes,
+                                  Point3f offset) {
     if (polygonColixes != null) {
       boolean isAll = (bsFaces == null);
       int i0 = (isAll ? nPolygons - 1 : bsFaces.nextSetBit(0));
@@ -418,7 +420,7 @@ public class _PovrayExporter extends __RayTracerExporter {
       String finish = ">}" + " translucentFinish("
         + translucencyFractionalFromColix(colixes[0]) + ")}";
       for (int i = 0; i < nColix; i++)
-        output("\n, texture{pigment{rgbt<" + color4(((Short)colorList.get(i)).shortValue()) + finish);
+        output("\n, texture{pigment{rgbt<" + color4(colorList.get(i).shortValue()) + finish);
       output("\n}\n");
     }
     output("face_indices { " + nFaces);

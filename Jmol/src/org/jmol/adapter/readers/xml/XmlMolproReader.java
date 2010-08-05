@@ -73,11 +73,10 @@ public class XmlMolproReader extends XmlCmlReader {
     this.parent = parent;
     this.atomSetCollection = atomSetCollection;
     implementedAttributes = molProImplementedAttributes;
-    ((MolproHandler) (new MolproHandler())).walkDOMTree(DOMNode);
+    (new MolproHandler()).walkDOMTree(DOMNode);
   }
 
-  public void processStartElement2(String namespaceURI, String localName,
-                                   String qName, HashMap atts) {
+  public void processStartElement2(String localName, @SuppressWarnings("unchecked")HashMap atts) {
     if (localName.equals("normalCoordinate")) {
       keepChars = false;
       if (!parent.doGetVibration(++vibrationNumber))
@@ -110,7 +109,7 @@ public class XmlMolproReader extends XmlCmlReader {
     }
   }
 
-  public void processEndElement2(String uri, String localName, String qName) {
+  public void processEndElement2(String localName) {
     if (localName.equals("normalCoordinate")) {
       if (!keepChars)
         return;
@@ -140,12 +139,12 @@ public class XmlMolproReader extends XmlCmlReader {
     public void startElement(String namespaceURI, String localName,
                              String qName, Attributes attributes) {
       super.startElement(namespaceURI, localName, qName, attributes);
-      processStartElement2(namespaceURI, localName, qName, atts);
+      processStartElement2(localName, atts);
     }
 
     @Override
     public void endElement(String uri, String localName, String qName) {
-      processEndElement2(uri, localName, qName);
+      processEndElement2(localName);
       super.endElement(uri, localName, qName);
     }
   }

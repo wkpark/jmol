@@ -109,7 +109,7 @@ public class Mol2Reader extends ForceFieldReader {
     int resCount = parseInt();
     readLine();//mol_type
     readLine();//charge_type
-    boolean iHaveCharges = (line.indexOf("NO_CHARGES") != 0);
+    //boolean iHaveCharges = (line.indexOf("NO_CHARGES") != 0);
     //optional SYBYL status
     if (readLine() != null && (line.length() == 0 || line.charAt(0) != '@')) {
       //optional comment -- but present if comment is present
@@ -134,7 +134,7 @@ public class Mol2Reader extends ForceFieldReader {
     newAtomSet(thisDataSetName);
     while (line != null && !line.equals("@<TRIPOS>MOLECULE")) {
       if (line.equals("@<TRIPOS>ATOM")) {
-        readAtoms(atomCount, iHaveCharges);
+        readAtoms(atomCount);
         atomSetCollection.setAtomSetName(thisDataSetName);
       } else if (line.equals("@<TRIPOS>BOND")) {
         readBonds(bondCount);
@@ -157,7 +157,7 @@ public class Mol2Reader extends ForceFieldReader {
   private int lastSequenceNumber = Integer.MAX_VALUE;
   private char chainID = 'A' - 1;
 
-  private void readAtoms(int atomCount, boolean iHaveCharges) throws Exception {
+  private void readAtoms(int atomCount) throws Exception {
     //     1 Cs       0.0000   4.1230   0.0000   Cs        1 RES1   0.0000
     //  1 C1          7.0053   11.3096   -1.5429 C.3       1 <0>        -0.1912
     // free format, but no blank lines

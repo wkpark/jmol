@@ -45,7 +45,7 @@ import org.jmol.util.Parser;
 
 class DataManager {
 
-  private Hashtable dataValues = new Hashtable();
+  private Hashtable<String, Object[]> dataValues = new Hashtable<String, Object[]>();
 
   Viewer viewer;
   DataManager(Viewer viewer) {
@@ -94,7 +94,7 @@ class DataManager {
     if (data[2] != null && atomCount > 0) {
       boolean createNew = (matchField != 0 || field != Integer.MIN_VALUE
           && field != Integer.MAX_VALUE);
-      Object[] oldData = (Object[]) dataValues.get(type);
+      Object[] oldData = dataValues.get(type);
       BitSet bs;
       float[] f = (oldData == null || createNew ? new float[atomCount]
           : ArrayUtil.ensureLength(((float[]) oldData[1]), atomCount));
@@ -169,12 +169,12 @@ class DataManager {
       info[0] = "types";
       info[1] = "";
       int n = 0;
-      Enumeration e = (dataValues.keys());
+      Enumeration<String> e = (dataValues.keys());
       while (e.hasMoreElements())
         info[1] += (n++ > 0 ? "\n" : "") + e.nextElement();
       return info;
     }
-    return (Object[]) dataValues.get(type);
+    return dataValues.get(type);
   }
 
   float[] getDataFloat(String label) {
@@ -219,16 +219,16 @@ class DataManager {
   void deleteModelAtoms(int firstAtomIndex, int nAtoms, BitSet bsDeleted) {
     if (dataValues == null)
       return;
-    Enumeration e = (dataValues.keys());
+    Enumeration<String> e = (dataValues.keys());
     while (e.hasMoreElements()) {
-      String name = (String) e.nextElement();
+      String name = e.nextElement();
       if (name.indexOf("property_") == 0) {
-        Object[] obj = (Object[]) dataValues.get(name);
+        Object[] obj = dataValues.get(name);
         BitSetUtil.deleteBits((BitSet) obj[2], bsDeleted);
         if (obj[1] instanceof float[]) {
-          obj[1] = ArrayUtil.deleteElements((float[]) obj[1], firstAtomIndex, nAtoms);
+          obj[1] = ArrayUtil.deleteElements(obj[1], firstAtomIndex, nAtoms);
         } else if (obj[1] instanceof float[][]){
-          obj[1] = ArrayUtil.deleteElements((float[][]) obj[1], firstAtomIndex, nAtoms);
+          obj[1] = ArrayUtil.deleteElements(obj[1], firstAtomIndex, nAtoms);
         } else {
           // is there anything else??
         }
@@ -239,7 +239,7 @@ class DataManager {
   void getDataState(StringBuffer state, StringBuffer sfunc, String atomProps) {
     if (dataValues == null)
       return;
-    Enumeration e = (dataValues.keys());
+    Enumeration<String> e = (dataValues.keys());
     StringBuffer sb = new StringBuffer();
     int n = 0;
     if (atomProps.length() > 0) {
@@ -247,10 +247,10 @@ class DataManager {
       sb.append(atomProps);
     }
     while (e.hasMoreElements()) {
-      String name = (String) e.nextElement();
+      String name = e.nextElement();
       if (name.indexOf("property_") == 0) {
         n++;
-        Object[] obj = (Object[]) dataValues.get(name);
+        Object[] obj = dataValues.get(name);
         Object data = obj[1];
         if (data instanceof float[]) {
           viewer.getAtomicPropertyState(sb, AtomCollection.TAINT_MAX, 
@@ -261,7 +261,7 @@ class DataManager {
           sb.append("\n").append(Escape.encapsulateData(name, data));
         }
       } else if (name.indexOf("data2d") == 0) {
-        Object data = ((Object[]) dataValues.get(name))[1];
+        Object data = dataValues.get(name)[1];
         if (data instanceof float[][]) {
           n++;
           sb.append("\n").append(Escape.encapsulateData(name, data));

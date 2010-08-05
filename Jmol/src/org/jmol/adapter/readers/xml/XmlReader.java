@@ -192,9 +192,10 @@ public class XmlReader extends AtomSetCollectionReader {
     return thisReader;
   }
   
+  @SuppressWarnings("unused")
   protected void processXml(XmlReader parent,
                          AtomSetCollection atomSetCollection,
-                         BufferedReader reader, XMLReader xmlReader) {
+                          BufferedReader reader, XMLReader xmlReader) {
   }
 
   protected void parseReaderXML(XMLReader xmlReader) {
@@ -237,13 +238,15 @@ public void readAtomSetCollectionFromDOM(Object Node) {
     return thisReader;
   }
 
+  @SuppressWarnings("unused")
   protected void processXml(XmlReader parent,
                             AtomSetCollection atomSetCollection,
                             BufferedReader reader, JSObject DOMNode) {
   }
 
+  @SuppressWarnings("unused")
   protected void processStartElement(String namespaceURI, String localName, String qName,
-                           HashMap atts) {
+                                     @SuppressWarnings("unchecked") HashMap atts) {
     /* 
      * specific to each xml reader
      */
@@ -262,6 +265,7 @@ public void readAtomSetCollectionFromDOM(Object Node) {
     chars = null;
   }
 
+  @SuppressWarnings("unused")
   protected void processEndElement(String uri, String localName, String qName) {
     /* 
      * specific to each xml reader
@@ -282,7 +286,7 @@ public void readAtomSetCollectionFromDOM(Object Node) {
     }
   }
   
-  public class JmolXmlHandler extends DefaultHandler implements ErrorHandler {
+  public class JmolXmlHandler extends DefaultHandler {
 
     public JmolXmlHandler() {
     }
@@ -317,6 +321,7 @@ public void readAtomSetCollectionFromDOM(Object Node) {
      * startElement and endElement should be extended in each reader
      */
 
+    @SuppressWarnings("unchecked")
     public HashMap atts;
 
     @Override
@@ -422,6 +427,7 @@ public void readAtomSetCollectionFromDOM(Object Node) {
 
     ////////////////////
 
+    @SuppressWarnings("unchecked")
     private void getAttributes(Attributes attributes) {
       int nAtts = attributes.getLength();
       atts = new HashMap(nAtts);
@@ -429,6 +435,7 @@ public void readAtomSetCollectionFromDOM(Object Node) {
         atts.put(attributes.getLocalName(i), attributes.getValue(i));
     }
 
+    @SuppressWarnings("unchecked")
     private void getAttributes(JSObject attributes) {
       if (attributes == null) {
         atts = new HashMap(0);

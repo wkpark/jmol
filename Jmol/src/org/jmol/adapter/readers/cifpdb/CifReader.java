@@ -1147,7 +1147,7 @@ _struct_site_gen.details
 */
   
   //private int siteNum;
-  private Hashtable<String, Hashtable<String, String>> htSites;
+  private Hashtable<String, Hashtable<String, Object>> htSites;
   
   /**
    * 
@@ -1169,14 +1169,14 @@ _struct_site_gen.details
     String chainID = "";
     String resID = "";
     String group = "";
-    Hashtable<String, String> htSite = null;
-    htSites = new Hashtable<String, Hashtable<String, String>>();
+    Hashtable<String, Object> htSite = null;
+    htSites = new Hashtable<String, Hashtable<String, Object>>();
     while (tokenizer.getData()) {
       for (int i = 0; i < tokenizer.fieldCount; ++i) {
         switch (fieldProperty(i)) {
         case SITE_ID:
           if (group != "") {
-            String groups = htSite.get("groups");
+            String groups = (String) htSite.get("groups");
             groups += (groups.length() == 0 ? "" : ",") + group;
             group = "";
             htSite.put("groups", groups);
@@ -1184,7 +1184,7 @@ _struct_site_gen.details
           siteID = field;
           htSite = htSites.get(siteID);
           if (htSite == null) {
-            htSite = new Hashtable<String, String>();
+            htSite = new Hashtable<String, Object>();
             //htSite.put("seqNum", "site_" + (++siteNum));
             htSite.put("groups", "");
             htSites.put(siteID, htSite);
@@ -1214,7 +1214,7 @@ _struct_site_gen.details
       }      
     }
     if (group != "") {
-      String groups = htSite.get("groups");
+      String groups = (String) htSite.get("groups");
       groups += (groups.length() == 0 ? "" : ",") + group;
       group = "";
       htSite.put("groups", groups);

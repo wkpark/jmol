@@ -46,6 +46,7 @@ import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 
+@SuppressWarnings("unchecked")
 public class AtomSetCollection {
 
   private String fileTypeName;
@@ -67,8 +68,8 @@ public class AtomSetCollection {
     }
   }
 
-  private Hashtable atomSetCollectionAuxiliaryInfo = new Hashtable();
-  public Hashtable getAtomSetCollectionAuxiliaryInfo() {
+  private Hashtable<String, Object> atomSetCollectionAuxiliaryInfo = new Hashtable<String, Object>();
+  public Hashtable<String, Object> getAtomSetCollectionAuxiliaryInfo() {
     return atomSetCollectionAuxiliaryInfo;
   }
   
@@ -136,7 +137,7 @@ public class AtomSetCollection {
   private int[] atomSetNumbers = new int[16];
   private int[] atomSetAtomCounts = new int[16];
   private int[] atomSetBondCounts = new int[16];
-  private Hashtable[] atomSetAuxiliaryInfo = new Hashtable[16];
+  private Hashtable<String, Object>[] atomSetAuxiliaryInfo = new Hashtable[16];
   private int[] latticeCells;
 
   public String errorMessage;
@@ -145,7 +146,7 @@ public class AtomSetCollection {
   private boolean isTrajectory;    
   private int trajectoryStepCount = 0;
   private Point3f[] trajectoryStep;
-  private Vector trajectorySteps;
+  private Vector<Point3f[]> trajectorySteps;
   boolean doFixPeriodic;
   public void setDoFixPeriodic() {
     doFixPeriodic = true;
@@ -307,7 +308,7 @@ public class AtomSetCollection {
   void freeze() {
     //Logger.debug("AtomSetCollection.freeze; atomCount = " + atomCount);
     if (isTrajectory)
-      finalizeTrajectory(true);
+      finalizeTrajectory();
     getAltLocLists();
     getInsertionLists();
   }
@@ -1185,17 +1186,17 @@ public class AtomSetCollection {
     return x;
   }
 
-  void finalizeTrajectory(Vector trajectorySteps) {
-    this.trajectorySteps = trajectorySteps;
-    trajectoryStepCount = trajectorySteps.size();
-    finalizeTrajectory(false);
+  void finalizeTrajectory(Vector<Point3f[]> vector) {
+    this.trajectorySteps = vector;
+    trajectoryStepCount = vector.size();
+    finalizeTrajectory();
   }
 
-  private void finalizeTrajectory(boolean addStep) {
+  private void finalizeTrajectory() {
     if (trajectoryStepCount == 0)
       return;
     //reset atom positions to original trajectory
-    Point3f[] trajectory = (Point3f[])trajectorySteps.get(0);
+    Point3f[] trajectory = trajectorySteps.get(0);
     for (int i = 0; i < atomCount; i++)
       atoms[i].set(trajectory[i]);
     setAtomSetCollectionAuxiliaryInfo("trajectorySteps", trajectorySteps);
@@ -1412,7 +1413,7 @@ public class AtomSetCollection {
     return (String) getAtomSetAuxiliaryInfo(atomSetIndex, "name");
   }
   
-  Hashtable getAtomSetAuxiliaryInfo(int atomSetIndex) {
+  Hashtable<String, Object> getAtomSetAuxiliaryInfo(int atomSetIndex) {
     if (atomSetIndex >= atomSetCount)
       atomSetIndex = atomSetCount - 1;
     return atomSetAuxiliaryInfo[atomSetIndex];

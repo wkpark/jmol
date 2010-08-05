@@ -291,7 +291,8 @@ public class _X3dExporter extends _VrmlExporter {
                                   short[] colixes, int[][] indices,
                                   short[] polygonColixes,
                                   int nVertices, int nPolygons, int nFaces, BitSet bsFaces,
-                                  int faceVertexMax, short colix, Vector colorList, Hashtable htColixes, Point3f offset) {
+                                  int faceVertexMax, short colix, 
+                                  Vector<Short> colorList, Hashtable<String, String> htColixes, Point3f offset) {
     output("<Shape>\n");
     outputAppearance(colix, false);
     output("<IndexedFaceSet \n");
@@ -309,9 +310,9 @@ public class _X3dExporter extends _VrmlExporter {
 
     // normals, part 1  
     
-    Vector vNormals = null;
+    Vector<String> vNormals = null;
     if (normals != null) {
-      vNormals = new Vector();
+      vNormals = new Vector<String>();
       map = getNormalMap(normals, nVertices, vNormals);
       output("  solid='FALSE'\n  normalPerVertex='TRUE'\n  normalIndex='\n");
       outputIndices(indices, map, nPolygons, bsFaces, faceVertexMax);

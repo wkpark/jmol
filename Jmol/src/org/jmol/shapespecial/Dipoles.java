@@ -563,8 +563,8 @@ public class Dipoles extends Shape {
   }
 
   @Override
-  public Vector getShapeDetail() {
-    Vector V = new Vector();
+  public Vector<Hashtable<String, Object>> getShapeDetail() {
+    Vector<Hashtable<String, Object>> V = new Vector<Hashtable<String, Object>>();
     Hashtable<String, Object> atomInfo;
     for (int i = 0; i < dipoleCount; i++) {
       Hashtable<String, Object> info = new Hashtable<String, Object>();
@@ -575,7 +575,7 @@ public class Dipoles extends Shape {
       if (dipole.atoms[0] != null) {
         atomInfo = new Hashtable<String, Object>();
         viewer.getAtomIdentityInfo(dipole.atoms[0].getIndex(), atomInfo);
-        Vector atoms = new Vector();
+        Vector<Hashtable<String, Object>> atoms = new Vector<Hashtable<String, Object>>();
         atoms.addElement(atomInfo);
         atomInfo = new Hashtable<String, Object>();
         viewer.getAtomIdentityInfo(dipole.atoms[1].getIndex(), atomInfo);

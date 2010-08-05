@@ -816,6 +816,14 @@ class TransformManager11 extends TransformManager {
     navigate(seconds, null, path, theta, indexStart, indexEnd);
   }
 
+  /**
+   * @param seconds 
+   * @param pathGuide 
+   * @param path 
+   * @param theta  
+   * @param indexStart 
+   * @param indexEnd 
+   */
   private void navigate(float seconds, Point3f[][] pathGuide, Point3f[] path,
                         float[] theta, int indexStart, int indexEnd) {
     if (seconds <= 0) // PER station

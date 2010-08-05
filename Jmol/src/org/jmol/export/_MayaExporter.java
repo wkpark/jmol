@@ -136,9 +136,6 @@ public class _MayaExporter extends __CartesianExporter {
     return true;
   }
 
-  static protected void getRotation(Vector3f v, Vector3f rot) {
-  }
-
   @Override
   protected void outputSphere(Point3f pt, float radius, short colix) {
     //String color = rgbFromColix(colix);
@@ -175,7 +172,9 @@ public class _MayaExporter extends __CartesianExporter {
                                   short[] colixes, int[][] indices,
                                   short[] polygonColixes,
                                   int nVertices, int nPolygons, int nFaces, BitSet bsFaces,
-                                  int faceVertexMax, short colix, Vector colorList, Hashtable htColixes, Point3f offset) {
+                                  int faceVertexMax, short colix, 
+                                  Vector<Short> colorList, Hashtable<String, String> htColixes, 
+                                  Point3f offset) {
   }
 
   @Override

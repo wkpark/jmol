@@ -175,7 +175,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     if (type != null)
       saveChooser.addChoosableFileFilter(new TypeFilter(type));
     saveChooser.setSelectedFile(file);
-    if ((file = showSaveDialog(this, this, saveChooser, file)) == null)
+    if ((file = showSaveDialog(this, saveChooser, file)) == null)
       return null;
     FileManager.setLocalPath(viewer, file.getParent(), true);
     return file.getAbsolutePath();
@@ -229,7 +229,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     }
     createExportPanel(imageChoices, imageExtensions, type);
     imageChooser.setSelectedFile(initialFile = file);
-    if ((file = showSaveDialog(this, this, imageChooser, file)) == null)
+    if ((file = showSaveDialog(this, imageChooser, file)) == null)
       return null;
     qualityJPG = qSliderJPEG.getValue();
     qualityPNG = qSliderPNG.getValue();
@@ -370,7 +370,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     return (opt == 0);
   }
 
-  private File showSaveDialog(Dialog sd, Component c,
+  private File showSaveDialog(Component c,
                                      JFileChooser chooser, File file) {
     while (true) {
       if (chooser.showSaveDialog(c) != JFileChooser.APPROVE_OPTION)

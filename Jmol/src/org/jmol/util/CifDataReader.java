@@ -91,7 +91,7 @@ public class CifDataReader {
     return fileHeader.toString();
   }
   
-  public static Hashtable readCifData(BufferedReader br) {
+  public static Hashtable<String, Object> readCifData(BufferedReader br) {
     CifDataReader cdr = new CifDataReader(br);
     return cdr.getAllCifData();
   }
@@ -102,16 +102,17 @@ public class CifDataReader {
    * 
    * @return Hashtable of models Vector of Hashtable data
    */
-  private Hashtable getAllCifData() {
+  private Hashtable<String, Object> getAllCifData() {
     line = "";
     String key;
-    allData = new Hashtable();
-    Vector models = new Vector();
+    allData = new Hashtable<String, Object>();
+    Vector<Hashtable<String, Object>> models = new Vector<Hashtable<String, Object>>();
     allData.put("models", models);
     try {
       while ((key = getNextToken()) != null) {
         if (key.startsWith("global_") || key.startsWith("data_")) {
-          models.add(data = new Hashtable());
+          data = new Hashtable<String, Object>();
+          models.add(data);
           data.put("name", key);
           continue;
         }
@@ -399,15 +400,16 @@ public class CifDataReader {
     return str.substring(pt0, pt1);
   }
 
-  Hashtable data;
-  Hashtable allData;
+  Hashtable<String, Object> data;
+  Hashtable<String, Object> allData;
+  @SuppressWarnings("unchecked")
   private void getCifLoopData() throws Exception {
     String str;
-    Vector keyWords = new Vector();
+    Vector<String> keyWords = new Vector<String>();
     while ((str = peekToken()) != null && str.charAt(0) == '_') {
       str  = getTokenPeeked();
       keyWords.add(str);
-      data.put(str, new Vector());
+      data.put(str, new Vector<String>());
     }
     fieldCount = keyWords.size();
     if (fieldCount == 0)
@@ -415,7 +417,7 @@ public class CifDataReader {
     loopData = new String[fieldCount];
     while (getData()) {
       for (int i = 0; i < fieldCount; i++) {
-        ((Vector)data.get(keyWords.get(i))).add(loopData[i]);
+        ((Vector<String>)data.get(keyWords.get(i))).add(loopData[i]);
       }
     }
   }  

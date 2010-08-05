@@ -171,7 +171,8 @@ abstract class __RayTracerExporter extends ___Exporter {
   }
 
   protected void fillConicalCylinder(Point3f screenA, Point3f screenB,
-                                    int madBond, short colix, byte endcaps) {
+                                    int madBond, short colix, 
+                                    @SuppressWarnings("unused") byte endcaps) {
     float radius1 = viewer.scaleToScreen((int) screenA.z, madBond) / 2f;
     if (radius1 == 0)
       return;

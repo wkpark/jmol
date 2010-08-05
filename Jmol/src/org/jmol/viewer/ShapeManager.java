@@ -259,15 +259,15 @@ public class ShapeManager {
     return false;
   }
 
-  public Hashtable getShapeInfo() {
-    Hashtable info = new Hashtable();
+  public Hashtable<String, Object> getShapeInfo() {
+    Hashtable<String, Object> info = new Hashtable<String, Object>();
     StringBuffer commands = new StringBuffer();
     if (shapes != null)
       for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
         Shape shape = shapes[i];
         if (shape != null) {
           String shapeType = JmolConstants.shapeClassBases[i];
-          Vector shapeDetail = shape.getShapeDetail();
+          Vector<Hashtable<String, Object>> shapeDetail = shape.getShapeDetail();
           if (shapeDetail != null)
             info.put(shapeType, shapeDetail);
         }

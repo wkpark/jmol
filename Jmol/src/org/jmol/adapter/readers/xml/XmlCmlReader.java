@@ -178,7 +178,7 @@ public class XmlCmlReader extends XmlReader {
     this.parent = parent;
     this.atomSetCollection = atomSetCollection;
     implementedAttributes = cmlImplementedAttributes;
-    ((CmlHandler) (new CmlHandler())).walkDOMTree(DOMNode);
+    (new CmlHandler()).walkDOMTree(DOMNode);
   }
 
   private String scalarDictRef;
@@ -199,7 +199,7 @@ public class XmlCmlReader extends XmlReader {
 
   @Override
   public void processStartElement(String uri, String name, String qName,
-                                  HashMap atts) {
+                                  @SuppressWarnings("unchecked")HashMap atts) {
     // if (!uri.equals(NAMESPACE_URI))
     // return;
 
@@ -463,6 +463,7 @@ public class XmlCmlReader extends XmlReader {
         atomSetCollection.addNewBond(a1, a2, order);
   }
 
+  @SuppressWarnings("unchecked")
   private void getDictRefValue(HashMap atts) {
     scalarDictRef = (String) atts.get("dictRef");
     if (scalarDictRef != null) {
@@ -741,7 +742,7 @@ public class XmlCmlReader extends XmlReader {
     }
   }
 
-  private void createNewAtomSet(HashMap atts) {
+  private void createNewAtomSet(@SuppressWarnings("unchecked")HashMap atts) {
     atomSetCollection.newAtomSet();
     String collectionName = null;
     if (atts.containsKey("title"))

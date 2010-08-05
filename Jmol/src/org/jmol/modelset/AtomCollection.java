@@ -106,8 +106,8 @@ abstract public class AtomCollection {
   public Atom[] atoms;
   int atomCount;
 
-  public Vector getAtomPointVector(BitSet bs) {
-    Vector v = new Vector();
+  public Vector<Point3f> getAtomPointVector(BitSet bs) {
+    Vector<Point3f> v = new Vector<Point3f>();
     if (bs != null)
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i+1))
         v.add(atoms[i]);
@@ -425,6 +425,7 @@ abstract public class AtomCollection {
     return points;
   }
 
+  @SuppressWarnings("unchecked")
   public void setAtomCoord(BitSet bs, int tokType, Object xyzValues) {
     Point3f xyz = null;
     Point3f[] values = null;
@@ -436,7 +437,7 @@ abstract public class AtomCollection {
       if (xyz == null)
         return;
     } else if (xyzValues instanceof Vector) {
-      v = (Vector) xyzValues;
+      v = (Vector<Point3f>) xyzValues;
       if (v == null || (nValues = v.size()) == 0)
         return;
       type = 1;
@@ -1213,7 +1214,7 @@ abstract public class AtomCollection {
    */
   public Point3f[][] getAdditionalHydrogens(BitSet bs, int[] nTotal,
                                             boolean doAll, boolean justCarbon,
-                                            Vector vConnect) {
+                                            Vector<Atom> vConnect) {
     Vector3f z = new Vector3f();
     Vector3f x = new Vector3f();
     Point3f[][] hAtoms = new Point3f[atomCount][];

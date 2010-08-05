@@ -42,6 +42,8 @@ import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import javax.vecmath.Point3f;
+
 public class SmarterJmolAdapter extends JmolAdapter {
 
   public SmarterJmolAdapter() {
@@ -86,7 +88,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
    */
   @Override
   public Object getAtomSetCollectionReader(String name, String type,
-                                   BufferedReader bufferedReader, Hashtable htParams) {
+                                   BufferedReader bufferedReader, Hashtable<String, Object> htParams) {
     try {
       Object ret = Resolver.getAtomCollectionReader(name, type,
           bufferedReader, htParams, -1);
@@ -160,7 +162,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
    */
   @Override
   public Object getAtomSetCollectionReaders(JmolFileReaderInterface fileReader, String[] names, String[] types,
-                                    Hashtable htParams, boolean getReadersOnly) {
+                                    Hashtable<String, Object>  htParams, boolean getReadersOnly) {
     //FilesOpenThread
     int size = names.length;
     AtomSetCollectionReader[] readers = (getReadersOnly ? new AtomSetCollectionReader[size] : null);
@@ -207,9 +209,10 @@ public class SmarterJmolAdapter extends JmolAdapter {
    * @return a single AtomSetCollection or an error string
    * 
    */
+  @SuppressWarnings("unchecked")
   @Override
   public Object getAtomSetCollectionFromSet(Object readerSet, Object atomsets,
-                                            Hashtable htParams) {
+                                            Hashtable<String, Object>  htParams) {
     AtomSetCollectionReader[] readers = (AtomSetCollectionReader[]) readerSet;
     AtomSetCollection[] asc = (atomsets == null ? new AtomSetCollection[readers.length]
         : (AtomSetCollection[]) atomsets);
@@ -232,7 +235,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
       // this is one model with a set of coordinates from a 
       // molecular dynamics calculation
       // all the htParams[] entries point to the same Hashtable
-      asc[0].finalizeTrajectory((Vector) htParams.get("trajectorySteps"));
+      asc[0].finalizeTrajectory((Vector<Point3f[]>) htParams.get("trajectorySteps"));
       return asc[0];
     }
     AtomSetCollection result = new AtomSetCollection(asc);
@@ -254,10 +257,11 @@ public class SmarterJmolAdapter extends JmolAdapter {
    */
   @Override
   public Object getAtomSetCollectionOrBufferedReaderFromZip(InputStream is, String fileName, String[] zipDirectory,
-                             Hashtable htParams, boolean asBufferedReader) {
+                             Hashtable<String, Object> htParams, boolean asBufferedReader) {
     return staticGetAtomSetCollectionOrBufferedReaderFromZip(is, fileName, zipDirectory, htParams, 1, asBufferedReader);
   }
 
+  @SuppressWarnings("unchecked")
   private static Object staticGetAtomSetCollectionOrBufferedReaderFromZip(
                                     InputStream is, String fileName,
                                     String[] zipDirectory, Hashtable htParams,
@@ -312,7 +316,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
 
     Object ret = Resolver.checkSpecialData(is, zipDirectory);
     if (ret instanceof String)
-      return (String) ret;
+      return ret;
     StringBuffer data = (StringBuffer) ret;
     try {
       if (data != null) {
@@ -471,7 +475,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
    * 
    */
   @Override
-  public Object getAtomSetCollectionFromDOM(Object DOMNode, Hashtable htParams) {
+  public Object getAtomSetCollectionFromDOM(Object DOMNode, Hashtable<String, Object> htParams) {
     try {
       Object ret = Resolver.DOMResolve(DOMNode, htParams);
       if (!(ret instanceof AtomSetCollectionReader))
@@ -509,7 +513,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
   }
   
   @Override
-  public Hashtable getAtomSetCollectionAuxiliaryInfo(Object atomSetCollection) {
+  public Hashtable<String, Object>  getAtomSetCollectionAuxiliaryInfo(Object atomSetCollection) {
     return ((AtomSetCollection)atomSetCollection).getAtomSetCollectionAuxiliaryInfo();
   }
 
@@ -529,7 +533,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
   }
   
   @Override
-  public Hashtable getAtomSetAuxiliaryInfo(Object atomSetCollection, int atomSetIndex) {
+  public Hashtable<String, Object> getAtomSetAuxiliaryInfo(Object atomSetCollection, int atomSetIndex) {
     return ((AtomSetCollection) atomSetCollection)
         .getAtomSetAuxiliaryInfo(atomSetIndex);
   }

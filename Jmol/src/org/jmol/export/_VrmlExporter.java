@@ -289,7 +289,9 @@ public class _VrmlExporter extends __CartesianExporter {
                                   short[] colixes, int[][] indices,
                                   short[] polygonColixes,
                                   int nVertices, int nPolygons, int nFaces, BitSet bsFaces,
-                                  int faceVertexMax, short colix, Vector colorList, Hashtable htColixes, Point3f offset) {
+                                  int faceVertexMax, short colix, 
+                                  Vector<Short> colorList, Hashtable<String, String> htColixes, 
+                                  Point3f offset) {
     output("Shape {\n");
     outputAppearance(colix, false);
     output(" geometry IndexedFaceSet {\n");
@@ -312,7 +314,7 @@ public class _VrmlExporter extends __CartesianExporter {
     // normals
 
     if (normals != null) {
-      Vector vNormals = new Vector();
+      Vector<String> vNormals = new Vector<String>();
       map = getNormalMap(normals, nVertices, vNormals);
       output("  solid FALSE\n  normalPerVertex TRUE\n   normal Normal {\n  vector [\n");
       outputNormals(vNormals);
@@ -347,16 +349,16 @@ public class _VrmlExporter extends __CartesianExporter {
       output(map[face[0]] + " " + map[face[2]] + " " + map[face[3]] + " -1\n");
   }
 
-  protected void outputNormals(Vector vNormals) {
+  protected void outputNormals(Vector<String> vNormals) {
     int n = vNormals.size();
     for (int i = 0; i < n; i++)
-      output((String) vNormals.get(i));
+      output(vNormals.get(i));
   }
 
-  protected void outputColors(Vector colorList) {
+  protected void outputColors(Vector<Short> colorList) {
     int nColors = colorList.size();
     for (int i = 0; i < nColors; i++) {
-      String color = rgbFractionalFromColix(((Short) colorList.get(i)).shortValue(),
+      String color = rgbFractionalFromColix(colorList.get(i).shortValue(),
           ' ');
       output(" ");
       output(color);
@@ -365,7 +367,7 @@ public class _VrmlExporter extends __CartesianExporter {
   }
 
   protected void outputColorIndices(int[][] indices, int nPolygons, BitSet bsFaces,
-                                  int faceVertexMax, Hashtable htColixes,
+                                  int faceVertexMax, Hashtable<String, String> htColixes,
                                   short[] colixes, short[] polygonColixes) {
     boolean isAll = (bsFaces == null);
     int i0 = (isAll ? nPolygons - 1 : bsFaces.nextSetBit(0));
@@ -384,7 +386,7 @@ public class _VrmlExporter extends __CartesianExporter {
     }
   }
 
-  private Hashtable htSpheresRendered = new Hashtable();
+  private Hashtable<String, Boolean> htSpheresRendered = new Hashtable<String, Boolean>();
 
   @Override
   protected void outputSphere(Point3f ptCenter, float radius, short colix) {

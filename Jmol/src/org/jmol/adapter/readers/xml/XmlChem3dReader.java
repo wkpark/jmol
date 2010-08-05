@@ -80,12 +80,12 @@ public class XmlChem3dReader extends XmlReader {
     this.parent = parent;
     this.atomSetCollection = atomSetCollection;
     implementedAttributes = chem3dImplementedAttributes;
-    ((Chem3dHandler) (new Chem3dHandler())).walkDOMTree(DOMNode);
+    (new Chem3dHandler()).walkDOMTree(DOMNode);
   }
 
   @Override
   public void processStartElement(String namespaceURI, String localName, String qName,
-                           HashMap atts) {
+                                  @SuppressWarnings("unchecked")HashMap atts) {
     String[] tokens;
     //System.out.println("xmlchem3d: start " + localName);
     if ("model".equals(localName)) {
@@ -167,7 +167,7 @@ In Chem3D, all grid data in following format:
           for (int x = 0; x < nPointsX; x++)
             voxelData[x][y][z] = parseFloat(tokens[pt++]);
       atomSetCollection.setVoxelData(voxelData);
-      Hashtable surfaceInfo = new Hashtable();
+      Hashtable<String, Object> surfaceInfo = new Hashtable<String, Object>();
       surfaceInfo.put("surfaceDataType", "mo");
       surfaceInfo.put("defaultCutoff", Float.valueOf((float) 0.01));
       surfaceInfo.put("nCubeData", Integer.valueOf(nData));

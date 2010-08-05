@@ -54,7 +54,7 @@ public class GamessUKReader extends GamessReader {
     if (line.indexOf("molecular geometry") >= 0) {
       if (!doGetModel(++modelNumber))
         return checkLastModel();
-      atomNames = new Vector();
+      atomNames = new Vector<String>();
       readAtomsInBohrCoordinates();
       return true;
     }
@@ -188,13 +188,13 @@ public class GamessUKReader extends GamessReader {
    ======================================================================================
 
    */
-  private Vector symmetries;
-  private Vector occupancies;
+  private Vector<String> symmetries;
+  private Vector<Float> occupancies;
    
    private void readOrbitalSymmetryAndOccupancy() throws Exception {
      discardLines(4);
-     symmetries = new Vector();
-     occupancies = new Vector();
+     symmetries = new Vector<String>();
+     occupancies = new Vector<Float>();
      while (readLine() != null && line.indexOf("====") < 0) {
        String[] tokens = getTokens(line.substring(20));
        symmetries.addElement(tokens[0] + " " + tokens[1]);
@@ -207,7 +207,7 @@ public class GamessUKReader extends GamessReader {
      if (symmetries.size() < orbitals.size())
        return;
      for (int i = orbitals.size(); --i >= 0; ) {
-       Hashtable mo = (Hashtable)orbitals.elementAt(i);
+       Hashtable<String, Object> mo = orbitals.elementAt(i);
        mo.put("symmetry", symmetries.elementAt(i));
        mo.put("occupancy", occupancies.elementAt(i));
      }

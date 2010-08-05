@@ -216,6 +216,7 @@ public class Resolver {
    * @return an AtomSetCollection or a String error
    * @throws Exception
    */
+  @SuppressWarnings("unchecked")
   static Object getAtomCollectionReader(String fullName, String type,
                         BufferedReader bufferedReader, Hashtable htParams,
                         int ptFile) throws Exception {
@@ -284,7 +285,8 @@ public class Resolver {
    * @return an AtomSetCollection or a String error
    * @throws Exception
    */
-  static Object DOMResolve(Object DOMNode, Hashtable htParams) throws Exception {
+  @SuppressWarnings("unchecked")
+  static Object DOMResolve(Object DOMNode, Hashtable<String, Object> htParams) throws Exception {
     String className = null;
     Class atomSetCollectionReaderClass;
     AtomSetCollectionReader atomSetCollectionReader; 
@@ -350,7 +352,7 @@ public class Resolver {
         || outputFileData.startsWith("FILE NOT FOUND")
         || outputFileData.indexOf("<html") >= 0)
       return new String[] { "M0001" };
-    Vector v = new Vector();
+    Vector<String> v = new Vector<String>();
     String token;
     String lasttoken = "";
     try {
@@ -388,7 +390,7 @@ public class Resolver {
     }
     String[] dirs = new String[v.size()];
     for (int i = 0; i < v.size(); i++)
-      dirs[i] = (String) v.get(i);
+      dirs[i] = v.get(i);
     return dirs;
   }
   

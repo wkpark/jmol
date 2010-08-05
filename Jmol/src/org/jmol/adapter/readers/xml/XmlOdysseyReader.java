@@ -81,12 +81,12 @@ public class XmlOdysseyReader extends XmlReader {
     this.parent = parent;
     this.atomSetCollection = atomSetCollection;
     implementedAttributes = odysseyImplementedAttributes;
-    ((OdysseyHandler) (new OdysseyHandler())).walkDOMTree(DOMNode);
+    (new OdysseyHandler()).walkDOMTree(DOMNode);
   }
 
   @Override
   protected void processStartElement(String namespaceURI, String localName, String qName,
-                           HashMap atts) {
+                                     @SuppressWarnings("unchecked")HashMap atts) {
 
     if ("structure".equals(localName)) {
       atomSetCollection.newAtomSet();

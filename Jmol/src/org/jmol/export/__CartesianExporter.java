@@ -117,8 +117,8 @@ abstract public class __CartesianExporter extends ___Exporter {
     return n;
   }
 
-  protected int[] getNormalMap(Vector3f[] normals, int nNormals, Vector vNormals) {
-    Hashtable htNormals = new Hashtable();
+  protected int[] getNormalMap(Vector3f[] normals, int nNormals, Vector<String> vNormals) {
+    Hashtable<String, Integer> htNormals = new Hashtable<String, Integer>();
     int[] normalMap = new int[nNormals];
     for (int i = 0; i < nNormals; i++) {
       String s;
@@ -126,7 +126,7 @@ abstract public class __CartesianExporter extends ___Exporter {
         continue;
       s = (round(normals[i].x) + " " + round(normals[i].y) + " " + round(normals[i].z) + "\n");
       if (htNormals.containsKey(s)) {
-        normalMap[i] = ((Integer) htNormals.get(s)).intValue();
+        normalMap[i] = htNormals.get(s).intValue();
       } else {
         normalMap[i] = vNormals.size();
         vNormals.add(s);

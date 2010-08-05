@@ -336,8 +336,9 @@ abstract public class ModelSet extends ModelCollection {
         false, false, null, 0, 0);
   }
 
-  public Hashtable getPointGroupInfo(BitSet bsAtoms) {
-    return (Hashtable) calculatePointGroupForFirstModel(bsAtoms, false,
+  @SuppressWarnings("unchecked")
+  public Hashtable<String, Object> getPointGroupInfo(BitSet bsAtoms) {
+    return (Hashtable<String, Object>) calculatePointGroupForFirstModel(bsAtoms, false,
         false, true, null, 0, 0);
   }
   
@@ -434,11 +435,12 @@ abstract public class ModelSet extends ModelCollection {
         connectOperation, bsA, bsB, bsBonds, isBonds, energy);
   }
   
+  @SuppressWarnings("unchecked")
   public void setPdbConectBonding(int baseAtomIndex, int baseModelIndex,
                                   BitSet bsExclude) {
     short mad = viewer.getMadBond();
     for (int i = baseModelIndex; i < modelCount; i++) {
-      Vector vConnect = (Vector) getModelAuxiliaryInfo(i, "PDB_CONECT_bonds");
+      Vector<int[]> vConnect = (Vector<int[]>) getModelAuxiliaryInfo(i, "PDB_CONECT_bonds");
       if (vConnect == null)
         continue;
       int nConnect = vConnect.size();
@@ -453,7 +455,7 @@ abstract public class ModelSet extends ModelCollection {
         if ((iSerial = atomSerials[iAtom]) > 0)
           serialMap[iSerial] = iAtom + 1;
       for (int iConnect = 0; iConnect < nConnect; iConnect++) {
-        int[] pair = (int[]) vConnect.get(iConnect);
+        int[] pair = vConnect.get(iConnect);
         int sourceSerial = pair[0];
         int targetSerial = pair[1];
         short order = (short) pair[2];
@@ -729,10 +731,11 @@ abstract public class ModelSet extends ModelCollection {
     super.setAtomProperty(bs, tok, iValue, fValue, sValue, values, list);
   }
   
+  @SuppressWarnings("unchecked")
   public Object getFileData(int modelIndex) {
     if (modelIndex < 0)
       return "";
-    Hashtable fileData = (Hashtable) getModelAuxiliaryInfo(modelIndex, "fileData");
+    Hashtable<String, Object> fileData = (Hashtable<String, Object>) getModelAuxiliaryInfo(modelIndex, "fileData");
     if (fileData != null)
       return fileData;
     if (!getModelAuxiliaryInfoBoolean(modelIndex, "isCIF"))
@@ -765,7 +768,7 @@ abstract public class ModelSet extends ModelCollection {
    * @param pts
    * @return            BitSet of new atoms
    */
-  public BitSet addHydrogens(Vector vConnections, Point3f[] pts) {
+  public BitSet addHydrogens(Vector<Atom> vConnections, Point3f[] pts) {
     int modelIndex = modelCount - 1;
     BitSet bs = new BitSet();
     if (models[modelIndex].isTrajectory || models[modelIndex].getGroupCount() > 1)
@@ -774,7 +777,7 @@ abstract public class ModelSet extends ModelCollection {
     RadiusData rd = viewer.getDefaultRadiusData();
     short mad = getDefaultMadFromOrder(1);
     for (int i = 0, n = models[modelIndex].atomCount + 1; i < vConnections.size(); i++, n++) {
-      Atom atom1 = (Atom) vConnections.get(i);
+      Atom atom1 = vConnections.get(i);
       // hmm. atom1.group will not be expanded, though...
       // something like within(group,...) will not select these atoms!
       Atom atom2 = addAtom(modelIndex, atom1.group, (short) 1, "H"

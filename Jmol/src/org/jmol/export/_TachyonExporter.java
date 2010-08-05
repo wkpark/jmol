@@ -249,7 +249,9 @@ public class _TachyonExporter extends __RayTracerExporter {
                                   short[] colixes, int[][] indices,
                                   short[] polygonColixes, int nVertices,
                                   int nPolygons, int nFaces, BitSet bsFaces,
-                                  int faceVertexMax, short colix, Vector colorList, Hashtable htColixes, Point3f offset) {
+                                  int faceVertexMax, short colix, 
+                                  Vector<Short> colorList, Hashtable<String, String> htColixes,
+                                  Point3f offset) {
     if (polygonColixes != null) {
       boolean isAll = (bsFaces == null);
       int i0 = (isAll ? nPolygons - 1 : bsFaces.nextSetBit(0));

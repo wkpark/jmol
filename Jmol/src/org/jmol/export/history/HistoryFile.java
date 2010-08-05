@@ -75,7 +75,7 @@ public class HistoryFile {
    */
   public void addProperties(Properties properties) {
 
-    Enumeration keys = properties.keys();
+    Enumeration<Object> keys = properties.keys();
     boolean modified = false;
     while (keys.hasMoreElements()) {
       String key = (String) keys.nextElement();

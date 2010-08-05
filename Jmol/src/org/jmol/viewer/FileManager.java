@@ -305,6 +305,7 @@ public class FileManager {
     return filesReader.atomSetCollection;
   }
 
+  @SuppressWarnings("unchecked")
   Object createAtomSeCollectionFromArrayData(List<Object> arrayData,
                                              Hashtable<String, Object> htParams,
                                              boolean isAppend) {
@@ -1486,7 +1487,7 @@ public class FileManager {
     
     @Override
     public String readLine() {
-      return (pt < len ? (String) data.get(pt++) : null);
+      return (pt < len ? data.get(pt++) : null);
     }
     
     int ptMark;

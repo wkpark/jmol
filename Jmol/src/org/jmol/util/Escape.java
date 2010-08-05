@@ -59,6 +59,7 @@ public class Escape {
     return r + g + b;
   }
 
+  @SuppressWarnings("unchecked")
   public static String escape(Object x) {
     if (x instanceof String)
       return escape("" + x);
@@ -90,6 +91,12 @@ public class Escape {
     return "{" + xyz.x + " " + xyz.y + " " + xyz.z + "}";
   }
 
+  /**
+   * 
+   * @param f
+   * @param asArray IGNORED
+   * @return tabular string
+   */
   public static String escape(float[] f, boolean asArray) {
     StringBuffer sb = new StringBuffer();
     for (int i = 0; i < f.length; i++) {
@@ -520,6 +527,7 @@ public class Escape {
     return "\"" + s + "\"";
   }
 
+  @SuppressWarnings("unchecked")
   public static String toJSON(String infoType, Object info) {
 
     //Logger.debug(infoType+" -- "+info);
@@ -652,6 +660,7 @@ public class Escape {
     return toReadable(null, info);
   }
   
+  @SuppressWarnings("unchecked")
   public static String toReadable(String name, Object info) {
     StringBuffer sb =new StringBuffer();
     String sep = "";

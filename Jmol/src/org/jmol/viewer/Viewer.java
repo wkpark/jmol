@@ -85,6 +85,7 @@ import java.util.Hashtable;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Vector;
 
 import javax.swing.JOptionPane;
 import javax.vecmath.Point3f;
@@ -2085,7 +2086,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    *  
    */
   @Override
-  public String loadInline(List arrayData, boolean isAppend) {
+  public String loadInline(Vector<Object> arrayData, boolean isAppend) {
     // NO STATE SCRIPT -- HERE WE ARE TRYING TO CONSERVE SPACE
     
     // loadInline
@@ -2602,7 +2603,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getSpaceGroupInfo(-1, spaceGroup, 0, null, null, null);
   }
 
-  public void getPolymerPointsAndVectors(BitSet bs, List vList) {
+  public void getPolymerPointsAndVectors(BitSet bs, List<Point3f[]> vList) {
     modelSet.getPolymerPointsAndVectors(bs, vList);
   }
 
@@ -3082,7 +3083,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   @Override
-  public Hashtable getHeteroList(int modelIndex) {
+  public Hashtable<String, String> getHeteroList(int modelIndex) {
     return modelSet.getHeteroList(modelIndex);
   }
 

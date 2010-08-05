@@ -34,9 +34,10 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.net.URL;
 import java.util.BitSet;
-import java.util.List;
 import java.util.Properties;
 import java.util.Hashtable;
+import java.util.Vector;
+
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 
@@ -270,7 +271,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
    * @param isAppend TRUE to append models (no ZAP)
    * @return null or error message
    */
-  abstract public String loadInline(List arrayData, boolean isAppend);
+  abstract public String loadInline(Vector<Object> arrayData, boolean isAppend);
 
   abstract public String evalStringQuiet(String script);
   abstract public boolean isScriptExecuting();
@@ -312,7 +313,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
 
   abstract public void homePosition();
 
-  abstract public Hashtable getHeteroList(int modelIndex);
+  abstract public Hashtable<String, String> getHeteroList(int modelIndex);
 
 
   abstract public boolean getPerspectiveDepth();
@@ -368,6 +369,11 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public void notifyViewerRepaintDone();
 
   abstract public boolean getBooleanProperty(String propertyName);
+  /**
+   * @param key 
+   * @param doICare IGNORED  
+   * @return T/F
+   */
   public boolean getBooleanProperty(String key, boolean doICare) {
     return getBooleanProperty(key); // don't ask for what doesn't exist; you should care!
   }
@@ -463,6 +469,10 @@ abstract public class JmolViewer extends JmolSimpleViewer {
 
   abstract public String getModelFileName(int modelIndex);
 
+  /**
+   * @param privateKey  
+   * @return T/F
+   */
   public boolean checkPrivateKey(double privateKey) {
     return false;
   }

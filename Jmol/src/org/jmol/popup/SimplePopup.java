@@ -70,7 +70,7 @@ public class SimplePopup {
   protected String nullModelSetName, modelSetName;
   protected String modelSetFileName, modelSetRoot;
   
-  protected Hashtable modelSetInfo, modelInfo;
+  protected Hashtable<String, Object> modelSetInfo, modelInfo;
   protected JPopupMenu frankPopup;
 
   protected Hashtable<String, Object> htMenus = new Hashtable<String, Object>();
@@ -145,6 +145,11 @@ public class SimplePopup {
     // depends upon implementation
   }
   
+  /**
+   * @param x 
+   * @param y 
+   * @param doPopup  
+   */
   public void show(int x, int y, boolean doPopup) {
     thisx = x;
     thisy = y;
@@ -181,7 +186,7 @@ public class SimplePopup {
     return (str == null ? key : str);
   }
 
-  boolean checkBoolean(Hashtable info, String key) {
+  boolean checkBoolean(Hashtable<String, Object> info, String key) {
     if (info == null || !info.containsKey(key))
       return false;
     return ((Boolean) (info.get(key))).booleanValue();
@@ -207,7 +212,7 @@ public class SimplePopup {
     modelSetInfo = viewer.getModelSetAuxiliaryInfo();
     modelInfo = viewer.getModelAuxiliaryInfo(modelIndex);
     if (modelInfo == null)
-      modelInfo = new Hashtable();
+      modelInfo = new Hashtable<String, Object>();
     isPDB = checkBoolean(modelSetInfo, "isPDB");
     isSymmetry = checkBoolean(modelSetInfo, "someModelsHaveSymmetry");
     isUnitCell = checkBoolean(modelSetInfo, "someModelsHaveUnitcells");
@@ -350,6 +355,11 @@ public class SimplePopup {
     }
   }
 
+  /**
+   * @param item  
+   * @param subMenu 
+   * @param word 
+   */
   protected void checkSpecialMenu(String item, Object subMenu, String word) {
     // special considerations here
   }
@@ -401,6 +411,12 @@ public class SimplePopup {
     viewer.evalStringQuiet(what);
   }
 
+  /**
+   * @param item  
+   * @param name 
+   * @param what 
+   * @return   option
+   */
   protected String setCheckBoxOption(JMenuItem item, String name, String what) {
     return null;
   }
@@ -550,6 +566,10 @@ public class SimplePopup {
     ((JMenuItem) item).setSelected(state);
   }
 
+  /**
+   * @param name  
+   * @return  icon
+   */
   protected ImageIcon getIcon(String name) {
     return null; // subclassed
   }
@@ -591,6 +611,10 @@ public class SimplePopup {
     return jm;
   }
 
+  /**
+   * @param menu  
+   * @return new menu
+   */
   Object cloneMenu(Object menu) {
     return null;
   }

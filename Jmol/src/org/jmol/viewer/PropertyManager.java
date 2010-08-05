@@ -196,6 +196,7 @@ public class PropertyManager {
     return extractProperty(getProperty(viewer, null, propertyName, propertyValue), args, 1);
   }
 
+  @SuppressWarnings("unchecked")
   public static Object extractProperty(Object property, ScriptVariable[] args, int ptr) {
     if (ptr >= args.length)
       return property;
@@ -421,6 +422,7 @@ public class PropertyManager {
     return info;
   }
   
+  @SuppressWarnings("unchecked")
   static Object getFileInfo(Object objHeader, String type) {
     Hashtable ht = new Hashtable();
     if (objHeader == null)

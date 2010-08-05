@@ -12,7 +12,7 @@ public interface MOCalculationInterface {
   public abstract void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
                                  String calculationType,
                                  Point3f[] atomCoordAngstroms,
-                                 int firstAtomOffset, List shells,
+                                 int firstAtomOffset, List<int[]> shells,
                                  float[][] gaussians, int[][] dfCoefMaps,
                                  Object slaters,
                                  float[] moCoefficients, float[] nuclearCharges, boolean doNormalize);

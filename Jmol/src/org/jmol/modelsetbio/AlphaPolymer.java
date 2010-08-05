@@ -303,9 +303,9 @@ public class AlphaPolymer extends BioPolymer {
    * 
    */
   @Override
-  public List<Object[]> calculateStruts(ModelSet modelSet, Atom[] atoms, BitSet bs1,
+  public List<Atom[]> calculateStruts(ModelSet modelSet, Atom[] atoms, BitSet bs1,
                                 BitSet bs2, List<Atom> vCA, float thresh, int delta, boolean allowMultiple) {
-    List<Object[]> vStruts = new ArrayList<Object[]>(); // the output vector
+    List<Atom[]> vStruts = new ArrayList<Atom[]>(); // the output vector
     float thresh2 = thresh * thresh; // use distance squared for speed
 
     //TODO  CHECK IMPLEMENT BITSETS
@@ -377,7 +377,7 @@ public class AlphaPolymer extends BioPolymer {
           if (!bsNotAvailable.get(ipt) && !bsNearbyResidues.get(ipt)
               && (allowMultiple || !bsStruts.get(j)) && d2[ipt] <= thresh2)
             setStrut(i, j, n, vCA, bs1, bs2, vStruts, bsStruts, bsNotAvailable,
-                bsNearbyResidues, atoms, delta);
+                bsNearbyResidues, delta);
         }
     }
 
@@ -439,10 +439,10 @@ public class AlphaPolymer extends BioPolymer {
         }
       if (okN)
         setStrut(iN, jN, n, vCA, bs1, bs2, vStruts, bsStruts, bsNotAvailable,
-            bsNearbyResidues, atoms, delta);
+            bsNearbyResidues, delta);
       if (okC)
         setStrut(iC, jC, n, vCA, bs1, bs2, vStruts, bsStruts, bsNotAvailable,
-            bsNearbyResidues, atoms, delta);
+            bsNearbyResidues, delta);
     }
     return vStruts;
   }
@@ -453,14 +453,14 @@ public class AlphaPolymer extends BioPolymer {
   }
 
   private void setStrut(int i, int j, int n, List<Atom> vCA, BitSet bs1, BitSet bs2, 
-                        List<Object[]> vStruts,
+                        List<Atom[]> vStruts,
                         BitSet bsStruts, BitSet bsNotAvailable,
-                        BitSet bsNearbyResidues, Atom[] atoms, int delta) {
+                        BitSet bsNearbyResidues, int delta) {
     Atom a1 = vCA.get(i);
     Atom a2 = vCA.get(j);
     if (!bs1.get(a1.index) || !bs2.get(a2.index))
       return;
-    vStruts.add(new Object[] { a1, a2 });
+    vStruts.add(new Atom[] { a1, a2 });
     bsStruts.set(i);
     bsStruts.set(j);
     for (int k1 = Math.max(0, i - delta); k1 <= i + delta && k1 < n; k1++) {

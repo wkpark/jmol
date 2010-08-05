@@ -6158,7 +6158,7 @@ public class ScriptEvaluator {
         continue;
       case Token.trace:
         Point3f[][] pathGuide;
-        List vp = new ArrayList();
+        List<Point3f[]> vp = new ArrayList<Point3f[]>();
         BitSet bs = atomExpression(++i);
         i = iToken;
         if (isSyntaxCheck)
@@ -6168,7 +6168,7 @@ public class ScriptEvaluator {
         if ((n = vp.size()) > 0) {
           pathGuide = new Point3f[n][];
           for (int j = 0; j < n; j++) {
-            pathGuide[j] = (Point3f[]) vp.get(j);
+            pathGuide[j] = vp.get(j);
           }
           viewer.navigate(timeSec, pathGuide);
           continue;

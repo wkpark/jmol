@@ -112,6 +112,7 @@ public class JmolPopup extends SimplePopup {
     }
   }
 
+  @SuppressWarnings("unchecked")
   public void updateComputedMenus() {
     updateMode = UPDATE_ALL;
     getViewerData();
@@ -120,7 +121,7 @@ public class JmolPopup extends SimplePopup {
     updateFileMenu();
     updateElementsComputedMenu(viewer.getElementsPresentBitSet(modelIndex));
     updateHeteroComputedMenu(viewer.getHeteroList(modelIndex));
-    updateSurfMoComputedMenu((Hashtable) modelInfo.get("moData"));
+    updateSurfMoComputedMenu((Hashtable<String, Object>) modelInfo.get("moData"));
     updateFileTypeDependentMenus();
     updatePDBComputedMenus();
     updateMode = UPDATE_CONFIG;
@@ -148,7 +149,7 @@ public class JmolPopup extends SimplePopup {
   }
 
   @Override
-  boolean checkBoolean(Hashtable info, String key) {
+  boolean checkBoolean(Hashtable<String, Object> info, String key) {
     if (info == null || !info.containsKey(key))
       return false;
     return ((Boolean) (info.get(key))).booleanValue();
@@ -190,7 +191,7 @@ public class JmolPopup extends SimplePopup {
     enableMenu(menu, true);
   }
 
-  void updateHeteroComputedMenu(Hashtable htHetero) {
+  void updateHeteroComputedMenu(Hashtable<String, String> htHetero) {
     Object menu = htMenus.get("PDBheteroComputedMenu");
     if (menu == null)
       return;
@@ -198,11 +199,11 @@ public class JmolPopup extends SimplePopup {
     enableMenu(menu, false);
     if (htHetero == null)
       return;
-    Enumeration e = htHetero.keys();
+    Enumeration<String> e = htHetero.keys();
     int n = 0;
     while (e.hasMoreElements()) {
-      String heteroCode = (String) e.nextElement();
-      String heteroName = (String) htHetero.get(heteroCode);
+      String heteroCode = e.nextElement();
+      String heteroName = htHetero.get(heteroCode);
       if (heteroName.length() > 20)
         heteroName = heteroName.substring(0, 20) + "...";
       String entryName = heteroCode + " - " + heteroName;
@@ -212,7 +213,8 @@ public class JmolPopup extends SimplePopup {
     enableMenu(menu, (n > 0));
   }
 
-  void updateSurfMoComputedMenu(Hashtable moData) {
+  @SuppressWarnings("unchecked")
+  void updateSurfMoComputedMenu(Hashtable<String, Object> moData) {
     Object menu = htMenus.get("surfMoComputedMenu");
     if (menu == null)
       return;
@@ -220,7 +222,7 @@ public class JmolPopup extends SimplePopup {
     removeAll(menu);
     if (moData == null)
       return;
-    List mos = (List) (moData.get("mos"));
+    List<Hashtable<String, Object>> mos = (List<Hashtable<String, Object>>) (moData.get("mos"));
     int nOrb = (mos == null ? 0 : mos.size());
     if (nOrb == 0)
       return;
@@ -241,7 +243,7 @@ public class JmolPopup extends SimplePopup {
         htMenus.put(id, subMenu);
         pt = 1;
       }
-      Hashtable mo = (Hashtable) mos.get(i);
+      Hashtable<String, Object> mo = mos.get(i);
       String entryName = "#" + (i + 1) + " " 
           + (mo.containsKey("type") ? (String)mo.get("type") + " " : "")
           + (mo.containsKey("symmetry") ? (String)mo.get("symmetry") + " ": "")
@@ -341,6 +343,7 @@ public class JmolPopup extends SimplePopup {
     updateSYMMETRYShowComputedMenu();
   }
 
+  @SuppressWarnings("unchecked")
   private void updateSYMMETRYShowComputedMenu() {
     Object menu = htMenus.get("SYMMETRYShowComputedMenu");
     if (menu == null)
@@ -349,7 +352,7 @@ public class JmolPopup extends SimplePopup {
     enableMenu(menu, false);
     if (!isSymmetry || modelIndex < 0)
       return;
-    Hashtable info = (Hashtable) viewer.getProperty("DATA_API", "spaceGroupInfo", null);
+    Hashtable<String, Object> info = (Hashtable<String, Object>) viewer.getProperty("DATA_API", "spaceGroupInfo", null);
     if (info == null)
       return;
     Object[][] infolist = (Object[][]) info.get("operations");
@@ -468,6 +471,7 @@ public class JmolPopup extends SimplePopup {
     }
   }
 
+  @SuppressWarnings("unchecked")
   private void updateModelSetComputedMenu() {
     Object menu = htMenus.get("modelSetMenu");
     if (menu == null)
@@ -522,7 +526,7 @@ public class JmolPopup extends SimplePopup {
         for (int i = 0; i < nBiomolecules; i++) {
           String script = (isMultiFrame ? ""
               : "save orientation;load \"\" FILTER \"biomolecule " + (i + 1) + "\";restore orientation;");
-          int nAtoms = ((Integer) ((Hashtable) biomolecules.get(i)).get("atomCount")).intValue();
+          int nAtoms = ((Integer) ((Hashtable<String, Object>) biomolecules.get(i)).get("atomCount")).intValue();
           String entryName = GT._(getMenuText(isMultiFrame ? "biomoleculeText"
               : "loadBiomoleculeText"), new Object[] { Integer.valueOf(i + 1),
               Integer.valueOf(nAtoms) });

@@ -735,12 +735,13 @@ abstract public class ModelCollection extends BondCollection {
     return bs;
   }
 
-  public Hashtable getHeteroList(int modelIndex) {
-    Hashtable<String, Object> htFull = new Hashtable<String, Object>();
+  @SuppressWarnings("unchecked")
+  public Hashtable<String, String> getHeteroList(int modelIndex) {
+    Hashtable<String, String> htFull = new Hashtable<String, String>();
     boolean ok = false;
     for (int i = modelCount; --i >= 0;)
       if (modelIndex < 0 || i == modelIndex) {
-        Hashtable<String, Object> ht = (Hashtable<String, Object>) getModelAuxiliaryInfo(i, "hetNames");
+        Hashtable<String, String> ht = (Hashtable<String, String>) getModelAuxiliaryInfo(i, "hetNames");
         if (ht == null)
           continue;
         ok = true;
@@ -750,7 +751,7 @@ abstract public class ModelCollection extends BondCollection {
           htFull.put(key, ht.get(key));
         }
       }
-    return (ok ? htFull : (Hashtable) getModelSetAuxiliaryInfo("hetNames"));
+    return (ok ? htFull : (Hashtable<String, String>) getModelSetAuxiliaryInfo("hetNames"));
   }
 
   public Properties getModelSetProperties() {
@@ -788,7 +789,7 @@ abstract public class ModelCollection extends BondCollection {
   }
 */
 
-  protected List trajectorySteps;
+  protected List<Point3f[]> trajectorySteps;
 
   protected int getTrajectoryCount() {
     return (trajectorySteps == null ? 0 : trajectorySteps.size());
@@ -972,7 +973,7 @@ abstract public class ModelCollection extends BondCollection {
     return models[modelIndex].getBioPolymerCount();
   }
 
-  public void getPolymerPointsAndVectors(BitSet bs, List vList) {
+  public void getPolymerPointsAndVectors(BitSet bs, List<Point3f[]> vList) {
     boolean isTraceAlpha = viewer.getTraceAlpha();
     float sheetSmoothing = viewer.getSheetSmoothing();
     int last = Integer.MAX_VALUE - 1;
@@ -2029,11 +2030,11 @@ abstract public class ModelCollection extends BondCollection {
     short mad = (short) (viewer.getStrutDefaultRadius() * 2000);
     int delta = viewer.getStrutSpacingMinimum();
     boolean strutsMultiple = viewer.getStrutsMultiple();
-    List<Object[]> struts = model.getBioPolymer(a1.getPolymerIndexInModel())
+    List<Atom[]> struts = model.getBioPolymer(a1.getPolymerIndexInModel())
         .calculateStruts((ModelSet) this, atoms, bs1, bs2, vCA, thresh, delta, strutsMultiple);
     for (int i = 0; i < struts.size(); i++) {
-      Object[] o = struts.get(i);
-      bondAtoms((Atom) o[0], (Atom) o[1], JmolEdge.BOND_STRUT, mad, null, 0, true);
+      Atom[] o = struts.get(i);
+      bondAtoms(o[0], o[1], JmolEdge.BOND_STRUT, mad, null, 0, true);
     }
     return struts.size();
   }
@@ -2407,7 +2408,7 @@ abstract public class ModelCollection extends BondCollection {
           isBonds, matchNull, minDistanceSquared, maxDistanceSquared);
     case JmolConstants.CONNECT_AUTO_BOND:
       if (order != JmolEdge.BOND_AROMATIC)
-        return autoBond(order, bsA, bsB, bsBonds, isBonds, matchHbond);
+        return autoBond(bsA, bsB, bsBonds, isBonds, matchHbond);
       modifyOnly = true;
       autoAromatize = true;
       break;
@@ -2587,7 +2588,7 @@ abstract public class ModelCollection extends BondCollection {
     return nNew;
   }
 
-  private int[] autoBond(int order, BitSet bsA, BitSet bsB, BitSet bsBonds,
+  private int[] autoBond(BitSet bsA, BitSet bsB, BitSet bsBonds,
                          boolean isBonds, boolean matchHbond) {
     if (isBonds) {
       BitSet bs = bsA;
@@ -2706,11 +2707,11 @@ abstract public class ModelCollection extends BondCollection {
         }
         if (minAttachedAngle > 0) {
           v1.sub(atom, atomNear);
-          if ((D = checkMinAttachedAngle(atom, atomNear, minAttachedAngle, v1,
+          if ((D = checkMinAttachedAngle(atom, minAttachedAngle, v1,
               v2, haveHAtoms)) == null)
             continue;
           v1.scale(-1);
-          if ((C = checkMinAttachedAngle(atomNear, atom, minAttachedAngle, v1,
+          if ((C = checkMinAttachedAngle(atomNear, minAttachedAngle, v1,
               v2, haveHAtoms)) == null)
             continue;
         }
@@ -2745,7 +2746,7 @@ abstract public class ModelCollection extends BondCollection {
     return (haveHAtoms ? nNew : -nNew);
   }
 
-  private static Point3f checkMinAttachedAngle(Atom atom1, Atom atom2,
+  private static Point3f checkMinAttachedAngle(Atom atom1,
                                                float minAngle, Vector3f v1,
                                                Vector3f v2, boolean haveHAtoms) {
     Bond[] bonds = atom1.getBonds();
@@ -2941,7 +2942,7 @@ abstract public class ModelCollection extends BondCollection {
     if (modelSetProperties == null) {
       sb.append("\nProperties: null");
     } else {
-      Enumeration e = modelSetProperties.propertyNames();
+      Enumeration<?> e = modelSetProperties.propertyNames();
       sb.append("\nProperties:");
       while (e.hasMoreElements()) {
         String propertyName = (String)e.nextElement();
@@ -3336,10 +3337,10 @@ abstract public class ModelCollection extends BondCollection {
     List<Hashtable<String, Object>> modelVector = new ArrayList<Hashtable<String,Object>>();
     for (int i = 0; i < modelCount; ++i) {
       Hashtable<String, Object> modelInfo = new Hashtable<String, Object>();
-      List<Hashtable> info = new ArrayList<Hashtable>();
+      List<Hashtable<String, Object>> info = new ArrayList<Hashtable<String, Object>>();
       int polymerCount = models[i].getBioPolymerCount();
       for (int ip = 0; ip < polymerCount; ip++) {
-        Hashtable polyInfo = models[i].getBioPolymer(ip).getPolymerInfo(bs); 
+        Hashtable<String, Object> polyInfo = models[i].getBioPolymer(ip).getPolymerInfo(bs); 
         if (! polyInfo.isEmpty())
           info.add(polyInfo);
       }
@@ -3364,6 +3365,7 @@ abstract public class ModelCollection extends BondCollection {
 
   private SymmetryInterface symTemp;
 
+  @SuppressWarnings("unchecked")
   public Hashtable<String, Object> getSpaceGroupInfo(int modelIndex, String spaceGroup, 
                                      int symOp, Point3f pt1, Point3f pt2, String drawID) {
     String strOperations = null;
@@ -3623,6 +3625,7 @@ abstract public class ModelCollection extends BondCollection {
     viewer.deleteModelAtoms(firstAtomIndex, nAtoms, bsAtoms);
   }
 
+  @SuppressWarnings("unchecked")
   public String getMoInfo(int modelIndex) {
     StringBuffer sb = new StringBuffer();
     for (int m = 0; m < modelCount; m++) {

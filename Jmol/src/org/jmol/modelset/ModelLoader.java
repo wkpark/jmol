@@ -102,7 +102,7 @@ public final class ModelLoader extends ModelSet {
     }
     preserveState = viewer.getPreserveState();
 
-    Hashtable info = adapter.getAtomSetCollectionAuxiliaryInfo(atomSetCollection);
+    Hashtable<String, Object> info = adapter.getAtomSetCollectionAuxiliaryInfo(atomSetCollection);
     info.put("loadScript", loadScript);
     initializeInfo(adapter.getFileTypeName(atomSetCollection).toLowerCase().intern(), info);
     createModelSet(adapter, atomSetCollection, bsNew);
@@ -131,6 +131,7 @@ public final class ModelLoader extends ModelSet {
   private boolean doMinimize;
   private String fileHeader;
 
+  @SuppressWarnings("unchecked")
   private void initializeInfo(String name, Hashtable<String, Object> info) {
     g3d = viewer.getGraphics3D();
     //long timeBegin = System.currentTimeMillis();
@@ -142,7 +143,7 @@ public final class ModelLoader extends ModelSet {
     isPDB = getModelSetAuxiliaryInfoBoolean("isPDB");
     jmolData = (String) getModelSetAuxiliaryInfo("jmolData");
     fileHeader = (String) getModelSetAuxiliaryInfo("fileHeader");
-    trajectorySteps = (List) getModelSetAuxiliaryInfo("trajectorySteps");
+    trajectorySteps = (List<Point3f[]>) getModelSetAuxiliaryInfo("trajectorySteps");
     isTrajectory = (trajectorySteps != null);
     noAutoBond = getModelSetAuxiliaryInfoBoolean("noAutoBond");
     is2D = getModelSetAuxiliaryInfoBoolean("is2D");
@@ -227,7 +228,7 @@ public final class ModelLoader extends ModelSet {
       bsNew.set(baseAtomIndex, baseAtomIndex + nAtoms);
     }
     if (adapter == null) {
-      setModelNameNumberProperties(0, -1, "", 1, null, null, false, null);
+      setModelNameNumberProperties(0, -1, "", 1, null, null, null);
     } else {
       if (adapterModelCount > 0) {
         Logger.info("ModelSet: haveSymmetry:" + someModelsHaveSymmetry
@@ -248,7 +249,7 @@ public final class ModelLoader extends ModelSet {
       iterateOverAllNewBonds(adapter, atomSetCollection);
       iterateOverAllNewStructures(adapter, atomSetCollection);
       if (adapter != null) {
-        Hashtable info = (merging && !appendNew ? 
+        Hashtable<String, Object> info = (merging && !appendNew ? 
             adapter.getAtomSetAuxiliaryInfo(atomSetCollection, 0) : null);      
         adapter.finish(atomSetCollection);
         if (info != null) {
@@ -313,6 +314,7 @@ public final class ModelLoader extends ModelSet {
     modelSetAuxiliaryInfo.put("jmolscript", sb.toString());
   }
 
+  @SuppressWarnings("unchecked")
   private void setAtomProperties() {
     int atomIndex = baseAtomIndex;
     int modelAtomCount = 0;
@@ -435,7 +437,7 @@ public final class ModelLoader extends ModelSet {
             : modelNumber == Integer.MAX_VALUE ? "" : ""
                 + (modelNumber % 1000000));
       boolean isPDBModel = setModelNameNumberProperties(ipt, iTrajectory,
-          modelName, modelNumber, modelProperties, modelAuxiliaryInfo, isPDB,
+          modelName, modelNumber, modelProperties, modelAuxiliaryInfo,
           jmolData);
       if (isPDBModel) {
         group3Lists[ipt + 1] = JmolConstants.group3List;
@@ -472,8 +474,8 @@ public final class ModelLoader extends ModelSet {
   private boolean setModelNameNumberProperties(int modelIndex, int trajectoryBaseIndex,
                                        String modelName, int modelNumber,
                                        Properties modelProperties,
-                                       Hashtable<String, Object> modelAuxiliaryInfo,
-                                       boolean isPDB, String jmolData) {
+                                       Hashtable<String, Object> modelAuxiliaryInfo, 
+                                       String jmolData) {
     if (modelNumber != Integer.MAX_VALUE) {
       models[modelIndex] = new Model(this, modelIndex, trajectoryBaseIndex, jmolData,
           modelProperties, modelAuxiliaryInfo);
@@ -1203,6 +1205,16 @@ public final class ModelLoader extends ModelSet {
   }
   
   
+  /**
+   * @param atomIndex 
+   * @param atomIndexNot 
+   * @param bs0 
+   * @param bsBranch  
+   * @param v 
+   * @param v0 
+   * @param v1 
+   * @return   atom bitset
+   */
   private BitSet getBranch2dZ(int atomIndex, int atomIndexNot, BitSet bs0, 
                               BitSet bsBranch, Vector3f v, Vector3f v0, Vector3f v1) {
     BitSet bs = new BitSet(atomCount);

@@ -71,15 +71,18 @@ abstract public class Polymer {
     return type;
   }
 
+  @SuppressWarnings("unused")
   public void getRange(BitSet bs) {
   }
   
+  @SuppressWarnings("unused")
   public int getPolymerPointsAndVectors(int last, BitSet bs, List<Point3f[]> vList,
                                         boolean isTraceAlpha,
                                         float sheetSmoothing) {
     return 0;
   }
 
+  @SuppressWarnings("unused")
   public void addSecondaryStructure(byte type, 
                                     String structureID, int serialID, int strandCount,
                                     char startChainID,
@@ -100,20 +103,45 @@ abstract public class Polymer {
     return "";
   }
 
+  @SuppressWarnings("unused")
   public Hashtable<String, Object> getPolymerInfo(BitSet bs) {
     return null;
   }
 
+  /**
+   * 
+   * @param bsConformation
+   * @param nAltLocs
+   */
   public void setConformation(BitSet bsConformation, int nAltLocs) {
   }
 
+  /**
+   * 
+   * @param polymer
+   * @param bsA
+   * @param bsB
+   * @param vHBonds
+   * @param nMaxPerResidue
+   */
   public void calcRasmolHydrogenBonds(Polymer polymer, BitSet bsA, BitSet bsB, List<Bond> vHBonds, int nMaxPerResidue) {
     // subclasses should override if they know how to calculate hbonds
   }
   
+  /**
+   * 
+   * @param bsSelected
+   */
   public void calcSelectedMonomersCount(BitSet bsSelected) {
   }
 
+  /**
+   * 
+   * @param group1
+   * @param nGroups
+   * @param bsInclude
+   * @param bsResult
+   */
   public void getPolymerSequenceAtoms(int group1,
                                       int nGroups, BitSet bsInclude,
                                       BitSet bsResult) {
@@ -126,6 +154,22 @@ abstract public class Polymer {
   public void recalculateLeadMidpointsAndWingVectors() {  
   }
   
+  /**
+   * 
+   * @param viewer
+   * @param ctype
+   * @param qtype
+   * @param mStep
+   * @param derivType
+   * @param isDraw
+   * @param bsAtoms
+   * @param pdbATOM
+   * @param pdbCONECT
+   * @param bsSelected
+   * @param addHeader
+   * @param bothEnds
+   * @param bsWritten
+   */
   public void getPdbData(Viewer viewer, char ctype, char qtype, int mStep, int derivType, 
               boolean isDraw, BitSet bsAtoms, OutputStringBuffer pdbATOM, 
               StringBuffer pdbCONECT, BitSet bsSelected, boolean addHeader, 
@@ -133,7 +177,19 @@ abstract public class Polymer {
     return;
   }
 
-  public List<Object[]> calculateStruts(ModelSet modelSet, Atom[] atoms, BitSet bs1, BitSet bs2,
+  /**
+   * 
+   * @param modelSet
+   * @param atoms
+   * @param bs1
+   * @param bs2
+   * @param vCA
+   * @param thresh
+   * @param delta
+   * @param allowMultiple
+   * @return List [ {atom1, atom2}, {atom1, atom2}...]
+   */
+  public List<Atom[]> calculateStruts(ModelSet modelSet, Atom[] atoms, BitSet bs1, BitSet bs2,
       List<Atom> vCA, float thresh, int delta, boolean allowMultiple) {
     return null;
   }
@@ -141,6 +197,12 @@ abstract public class Polymer {
   public boolean isDna() { return false; }
   public boolean isRna() { return false; }
 
+  /**
+   * 
+   * @param residues
+   * @param bs
+   * @param bsResult
+   */
   public void getRangeGroups(int residues, BitSet bs, BitSet bsResult) {
   }
 

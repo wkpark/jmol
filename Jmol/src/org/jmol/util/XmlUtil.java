@@ -171,6 +171,7 @@ public class XmlUtil {
     }
   }
 
+  @SuppressWarnings("unchecked")
   public static Object escape(String name, List<Object[]> atts, Object value,
                               boolean asString, String indent) {
 
@@ -187,7 +188,7 @@ public class XmlUtil {
       } else if (value instanceof BitSet) {
         value = Escape.escape((BitSet) value);
       } else if (value instanceof List) {
-        List v = (List) value;
+        List<Object> v = (List<Object>) value;
         sb = new StringBuffer("\n");
         if (atts == null)
           atts = new ArrayList<Object[]>();
@@ -197,13 +198,13 @@ public class XmlUtil {
               escape(null, null, v.get(i), true, indent + "  "));
         value = sb.toString();
       } else if (value instanceof Hashtable) {
-        Hashtable ht = (Hashtable) value;
+        Hashtable<String, Object> ht = (Hashtable<String, Object>) value;
         sb = new StringBuffer("\n");
-        Enumeration e = ht.keys();
+        Enumeration<String> e = ht.keys();
         int n = 0;
         while (e.hasMoreElements()) {
           n++;
-          String name2 = (String) e.nextElement();
+          String name2 = e.nextElement();
           sb.append(
               escape(name2, null, ht.get(name2), true, indent + "  "));
         }

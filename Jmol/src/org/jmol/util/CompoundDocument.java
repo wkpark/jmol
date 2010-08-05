@@ -469,7 +469,7 @@ public class CompoundDocument extends BinaryDocument {
     readByteArray(byteBuf);
     if (asBinaryString) {
       for (int i = 0; i < nSectorBytes; i++) {
-        data.append(Integer.toHexString(((int)byteBuf[i]) & 0xFF)).append(' ');
+        data.append(Integer.toHexString(byteBuf[i] & 0xFF)).append(' ');
         if (--nBytes < 1)
           break;
       }

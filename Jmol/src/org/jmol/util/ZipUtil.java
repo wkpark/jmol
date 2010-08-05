@@ -139,7 +139,7 @@ public class ZipUtil {
   public static String getBinaryStringForBytes(byte[] bytes) {
     StringBuffer ret = new StringBuffer();
     for (int i = 0; i < bytes.length; i++)
-      ret.append(Integer.toHexString(((int) bytes[i]) & 0xFF))
+      ret.append(Integer.toHexString(bytes[i] & 0xFF))
           .append(' ');
     return ret.toString();
   }
@@ -197,7 +197,7 @@ public class ZipUtil {
         if (asBinaryString) {
           ret = new StringBuffer();
           for (int i = 0; i < bytes.length; i++)
-            ret.append(Integer.toHexString(((int)bytes[i]) & 0xFF)).append(' ');
+            ret.append(Integer.toHexString(bytes[i] & 0xFF)).append(' ');
           return ret.toString();
         }
       return new String(bytes);

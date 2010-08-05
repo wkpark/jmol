@@ -91,6 +91,16 @@ public class TextFormat {
     return format(formatDecimal(value, precision), width, 0, alignLeft, zeroPad);
   }
 
+  /**
+   * 
+   * @param value
+   * @param width
+   * @param precision
+   * @param alignLeft
+   * @param zeroPad
+   * @param allowOverflow IGNORED
+   * @return formatted string
+   */
   public static String format(double value, int width, int precision,
                               boolean alignLeft, boolean zeroPad, boolean allowOverflow) {
     return format(formatDecimal((float)value, -1 - precision), width, 0, alignLeft, zeroPad);

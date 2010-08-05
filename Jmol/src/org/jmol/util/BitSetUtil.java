@@ -39,7 +39,7 @@ final public class BitSetUtil {
     return (a == null || b == null ? a == null && b == null : a.equals(b));
   }
 
-  public static boolean haveCommon(BitSet a, BitSet b, BitSet bsTemp) {
+  public static boolean haveCommon(BitSet a, BitSet b) {
     return (a == null || b == null ? false : a.intersects(b));
   }
 

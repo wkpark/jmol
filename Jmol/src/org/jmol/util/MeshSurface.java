@@ -154,7 +154,7 @@ public class MeshSurface {
     }
   }
 
-  public boolean getIntersection(Point4f plane, List vData, boolean andCap) {
+  public boolean getIntersection(Point4f plane, List<Point3f[]> vData, boolean andCap) {
     boolean isSlab = (vData == null);
     Point3f[] pts;
     int iD, iE;

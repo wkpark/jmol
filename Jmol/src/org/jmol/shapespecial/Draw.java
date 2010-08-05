@@ -1035,7 +1035,7 @@ public void initShape() {
       }
       m.visibilityFlags = (m.isValid && m.visible ? myVisibilityFlag : 0);
       if (m.modelIndex >= 0 && !bs.get(m.modelIndex) || m.modelFlags != null
-          && !BitSetUtil.haveCommon(bs, m.modelFlags, bsTemp)) {
+          && !BitSetUtil.haveCommon(bs, m.modelFlags)) {
         m.visibilityFlags = 0;
       } else if (m.modelFlags != null) {
         m.bsMeshesVisible.clear();

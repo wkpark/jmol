@@ -506,6 +506,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       sg.setJvxlData(jvxlData);
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public boolean getProperty(String property, Object[] data) {
     if (property == "intersectPlane") {
@@ -513,7 +514,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       if (mesh == null)
         return false;
       data[3] = Integer.valueOf(mesh.modelIndex);
-      return mesh.getIntersection((Point4f) data[1], (List) data[2], false);
+      return mesh.getIntersection((Point4f) data[1], (List<Point3f[]>) data[2], false);
     }
     if (property == "getBoundingBox") {
       String id = (String) data[0];

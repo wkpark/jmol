@@ -402,6 +402,7 @@ public class CifDataReader {
 
   Hashtable<String, Object> data;
   Hashtable<String, Object> allData;
+  @SuppressWarnings("unchecked")
   private void getCifLoopData() throws Exception {
     String str;
     List<String> keyWords = new ArrayList<String>();

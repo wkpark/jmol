@@ -27,7 +27,7 @@ package org.jmol.script;
 import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
@@ -106,7 +106,7 @@ public class ScriptVariable extends Token {
         || x instanceof String
 
         || x instanceof Hashtable  // stored as array
-        || x instanceof Vector     // stored as list
+        || x instanceof List       // stored as list
         || x instanceof double[]   // stored as list
         || x instanceof float[]    // stored as list
         || x instanceof Float[]    // stored as list
@@ -251,13 +251,13 @@ public class ScriptVariable extends Token {
         s[i] = "" + f[i];
       return new ScriptVariable(list, s);
     }
-    if (x instanceof Vector) {
+    if (x instanceof List) {
         // will be turned into list
-        Vector v = (Vector) x;
+        List<Object> v = (List<Object>) x;
         int len = v.size();
         String[] list = new String[len];
         for (int i = 0; i < len; i++) {
-          Object o = v.elementAt(i);
+          Object o = v.get(i);
           if (o instanceof String)
             list[i] = (String) o;
           else

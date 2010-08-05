@@ -191,8 +191,9 @@ public class MopacGraphfReader extends MopacSlaterReader {
         mo.put("occupancy", new Float(values[1]));
       }
       mo.put("coefficients", list2[iMo]);
-      if (isBeta)
+      if (isBeta) {
         mo.put("type", "beta");
+      }
       setMO(mo);
     }
     setMOs("eV");
@@ -203,9 +204,11 @@ public class MopacGraphfReader extends MopacSlaterReader {
       return false;
     moData.put("calculationType", calculationType = line.substring(11).trim());
     boolean isUHF = (line.indexOf("UHF") >= 0);
-    if (isUHF)
-      for (int i = orbitals.size(); --i >= 0;)
-        ((Hashtable)orbitals.get(i)).put("type", "alpha");
+    if (isUHF) {
+      for (int i = orbitals.size(); --i >= 0;) {
+        orbitals.get(i).put("type", "alpha");
+      }
+    }
     return isUHF;
   }
 }

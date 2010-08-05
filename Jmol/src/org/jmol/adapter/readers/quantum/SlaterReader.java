@@ -154,7 +154,7 @@ abstract class SlaterReader extends BasisFunctionReader {
    */
   
   protected void sortOrbitals() {
-    Hashtable<String, Object>[] array = orbitals.toArray((Hashtable<String, Object>[]) new Hashtable[0]);
+    Hashtable<String, Object>[] array = orbitals.toArray(new Hashtable[0]);
     Arrays.sort(array, new OrbitalSorter());
     orbitals.clear();
     for (int i = 0; i < array.length; i++)

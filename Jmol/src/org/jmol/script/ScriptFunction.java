@@ -23,8 +23,9 @@
 
 package org.jmol.script;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 public class ScriptFunction {
 
@@ -50,10 +51,10 @@ public class ScriptFunction {
   protected String typeName;
   public String name;
   int nParameters;
-  Vector names = new Vector();
+  List<String> names = new ArrayList<String>();
   int tok;
 
-  Hashtable variables = new Hashtable();
+  Hashtable<String, String> variables = new Hashtable<String, String>();
   public boolean isVariable(String ident) {
     return variables.containsKey(ident);
   }
@@ -70,12 +71,11 @@ public class ScriptFunction {
     typeName = Token.nameOf(tok);
   }
 
-  void setVariables(Hashtable contextVariables, Vector params) {
+  void setVariables(Hashtable<String, Object> contextVariables, List<ScriptVariable> params) {
     int nParams = (params == null ? 0 : params.size());
     for (int i = names.size(); --i >= 0;) {
-      String name = ((String) names.get(i)).toLowerCase();
-      ScriptVariable var = (i < nParameters && i < nParams ?
-          (ScriptVariable) params.get(i) : null);
+      String name = names.get(i).toLowerCase();
+      ScriptVariable var = (i < nParameters && i < nParams ? params.get(i) : null);
       if (var != null && var.tok != Token.list)
         var = new ScriptVariable(var);
       contextVariables.put(name, (var == null ? 
@@ -84,17 +84,17 @@ public class ScriptFunction {
     contextVariables.put("_retval", ScriptVariable.intVariable(tok == Token.trycmd ? Integer.MAX_VALUE : 0));
   }
 
-  public void unsetVariables(Hashtable contextVariables, Vector params) {
+  public void unsetVariables(Hashtable<String, Object> contextVariables, List<ScriptVariable> params) {
     // set list values in case they have changed.
     int nParams = (params == null ? 0 : params.size());
     int nNames = names.size();
     if (nParams == 0 || nNames == 0)
       return;
     for (int i = 0; i < nNames && i < nParams; i++) {
-      ScriptVariable global = (ScriptVariable) params.get(i);
+      ScriptVariable global = params.get(i);
       if (global.tok != Token.list)
         continue;
-      ScriptVariable local = (ScriptVariable) contextVariables.get(((String) names.get(i)).toLowerCase());
+      ScriptVariable local = (ScriptVariable) contextVariables.get(names.get(i).toLowerCase());
       if (local.tok != Token.list)
         continue;
       global.value = local.value;
@@ -110,7 +110,7 @@ public class ScriptFunction {
 
   static void setFunction(ScriptFunction function, String script,
                           int ichCurrentCommand, int pt, short[] lineNumbers,
-                          int[][] lineIndices, Vector lltoken) {
+                          int[][] lineIndices, List<Token[]> lltoken) {
     int cmdpt0 = function.cmdpt0;
     int chpt0 = function.chpt0;
     int nCommands = pt - cmdpt0;
@@ -123,7 +123,7 @@ public class ScriptFunction {
       function.lineNumbers[i] = (short) (lineNumbers[cmdpt0 + i] - line0);
       function.lineIndices[i] = new int[] {lineIndices[cmdpt0 + i][0] - chpt0, lineIndices[cmdpt0 + i][1] - chpt0 };
       //System.out.println("Line " + i + ": " + function.script.substring(function.lineIndices[i][0], function.lineIndices[i][1]));
-      aatoken[i] = (Token[]) lltoken.get(cmdpt0 + i);
+      aatoken[i] = lltoken.get(cmdpt0 + i);
       // adjust intValues, which are pointers into the command stack,
       // by the 0-point offset of the command pointer
       // negative less negative;positive less positive

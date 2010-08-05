@@ -25,9 +25,11 @@
 
 package org.jmol.export;
 
+
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Point3f;
@@ -286,12 +288,11 @@ public class _VrmlExporter extends __CartesianExporter {
 
   @Override
   protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
-                                  short[] colixes, int[][] indices,
-                                  short[] polygonColixes,
-                                  int nVertices, int nPolygons, int nFaces, BitSet bsFaces,
-                                  int faceVertexMax, short colix, 
-                                  Vector<Short> colorList, Hashtable<String, String> htColixes, 
-                                  Point3f offset) {
+                               short[] colixes, int[][] indices,
+                               short[] polygonColixes,
+                               int nVertices, int nPolygons, int nFaces, BitSet bsFaces,
+                               int faceVertexMax, short colix,
+                               List<Short> colorList, Hashtable<String, String> htColixes, Point3f offset) {
     output("Shape {\n");
     outputAppearance(colix, false);
     output(" geometry IndexedFaceSet {\n");
@@ -314,7 +315,7 @@ public class _VrmlExporter extends __CartesianExporter {
     // normals
 
     if (normals != null) {
-      Vector<String> vNormals = new Vector<String>();
+      List<String> vNormals = new ArrayList<String>();
       map = getNormalMap(normals, nVertices, vNormals);
       output("  solid FALSE\n  normalPerVertex TRUE\n   normal Normal {\n  vector [\n");
       outputNormals(vNormals);
@@ -349,17 +350,17 @@ public class _VrmlExporter extends __CartesianExporter {
       output(map[face[0]] + " " + map[face[2]] + " " + map[face[3]] + " -1\n");
   }
 
-  protected void outputNormals(Vector<String> vNormals) {
+  protected void outputNormals(List<String> vNormals) {
     int n = vNormals.size();
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < n; i++) {
       output(vNormals.get(i));
+    }
   }
 
-  protected void outputColors(Vector<Short> colorList) {
+  protected void outputColors(List<Short> colorList) {
     int nColors = colorList.size();
     for (int i = 0; i < nColors; i++) {
-      String color = rgbFractionalFromColix(colorList.get(i).shortValue(),
-          ' ');
+      String color = rgbFractionalFromColix(colorList.get(i).shortValue(), ' ');
       output(" ");
       output(color);
       output("\n");

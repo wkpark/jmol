@@ -23,8 +23,9 @@
  */
 package org.jmol.modelset;
 
+import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Vector;
+import java.util.List;
 
 import org.jmol.api.JmolMeasurementClient;
 import org.jmol.util.Point3fi;
@@ -39,14 +40,14 @@ public class MeasurementData implements JmolMeasurementClient {
    */
   
   private JmolMeasurementClient client;
-  private Vector measurementStrings;
+  private List<String> measurementStrings;
 
   private Atom[] atoms;
   public boolean mustBeConnected;
   public boolean mustNotBeConnected;
   public TickInfo tickInfo;
   public int tokAction;
-  public Vector points;
+  public List<Object> points;
   public float[] rangeMinMax;
   public String strFormat;
   public boolean isAll;
@@ -57,7 +58,7 @@ public class MeasurementData implements JmolMeasurementClient {
    * the general constructor. tokAction is not used here, but simply
    * passed back to the 
    */
-  public MeasurementData(Vector points, int tokAction,
+  public MeasurementData(List<Object> points, int tokAction,
                  float[] rangeMinMax, String strFormat, String units,
                  TickInfo tickInfo,
                  boolean mustBeConnected, boolean mustNotBeConnected,
@@ -97,9 +98,9 @@ public class MeasurementData implements JmolMeasurementClient {
    * @return Vector of formatted Strings
    * 
    */
-  public Vector getMeasurements(Viewer viewer) {
+  public List<String> getMeasurements(Viewer viewer) {
     this.viewer = viewer;
-    measurementStrings = new Vector();
+    measurementStrings = new ArrayList<String>();
     define(null, viewer.getModelSet());
     return measurementStrings;
   }

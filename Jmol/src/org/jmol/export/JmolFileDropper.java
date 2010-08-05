@@ -158,7 +158,7 @@ public class JmolFileDropper implements DropTargetListener {
           List<File> fileList = (List<File>) o;
           final int length = fileList.size();
           if (length == 1) {
-            String fileName = (fileList.get(0)).getAbsolutePath();
+            String fileName = fileList.get(0).getAbsolutePath();
             if (fileName.endsWith(".bmp"))
               break; // try another flavor -- Mozilla bug
             loadFile(fileName);

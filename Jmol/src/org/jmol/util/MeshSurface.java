@@ -3,7 +3,6 @@ package org.jmol.util;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
-import java.util.Vector;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
@@ -155,7 +154,7 @@ public class MeshSurface {
     }
   }
 
-  public boolean getIntersection(Point4f plane, Vector vData, boolean andCap) {
+  public boolean getIntersection(Point4f plane, List vData, boolean andCap) {
     boolean isSlab = (vData == null);
     Point3f[] pts;
     int iD, iE;

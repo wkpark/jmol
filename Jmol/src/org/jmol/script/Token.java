@@ -29,7 +29,6 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Vector;
 
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
@@ -1233,13 +1232,13 @@ public class Token {
   final static Token tokenScript          = new Token(script, "script");
   final static Token tokenSwitch          = new Token(switchcmd, "switch");
     
-  private static Hashtable tokenMap = new Hashtable();
+  private static Hashtable<String, Token> tokenMap = new Hashtable<String, Token>();
   public static void addToken(String ident, Token token) {
     tokenMap.put(ident, token);
   }
   
   public static Token getTokenFromName(String name) {
-    return (Token) tokenMap.get(name);  
+    return tokenMap.get(name);
   }
   
   public static int getTokFromName(String name) {
@@ -1258,9 +1257,9 @@ public class Token {
    * @return     the name of the token or 0xAAAAAA
    */
   public static String nameOf(int tok) {
-    Enumeration e = tokenMap.elements();
+    Enumeration<Token> e = tokenMap.elements();
     while (e.hasMoreElements()) {
-      Token token = (Token)e.nextElement();
+      Token token = e.nextElement();
       if (token.tok == tok)
         return "" + token.value;
     }
@@ -1293,15 +1292,15 @@ public class Token {
    */
   public static String getCommandSet(String strBegin) {
     String cmds = "";
-    Hashtable htSet = new Hashtable();
+    Hashtable<String, Boolean> htSet = new Hashtable<String, Boolean>();
     int nCmds = 0;
     String s = (strBegin == null || strBegin.length() == 0 ? null : strBegin
         .toLowerCase());
     boolean isMultiCharacter = (s != null && s.length() > 1);
-    Enumeration e = tokenMap.keys();
+    Enumeration<String> e = tokenMap.keys();
     while (e.hasMoreElements()) {
-      String name = (String) e.nextElement();
-      Token token = (Token) tokenMap.get(name);
+      String name = e.nextElement();
+      Token token = tokenMap.get(name);
       if ((token.tok & scriptCommand) != 0
           && (s == null || name.indexOf(s) == 0)
           && (isMultiCharacter || ((String) token.value).equals(name)))
@@ -1309,7 +1308,7 @@ public class Token {
     }
     e = htSet.keys();
     while (e.hasMoreElements()) {
-      String name = (String) e.nextElement();
+      String name = e.nextElement();
       if (name.charAt(name.length() - 1) != 's'
           || !htSet.containsKey(name.substring(0, name.length() - 1)))
         cmds += (nCmds++ == 0 ? "" : ";") + name;
@@ -1322,17 +1321,17 @@ public class Token {
         : type.equals("misc") ? misc 
         : type.equals("mathfunc") ? mathfunc : scriptCommand);
     int notattr = (attr == setparam ? deprecatedparam : nada);
-    Vector v = new Vector();
-    Enumeration e = tokenMap.keys();
+    List<String> v = new ArrayList<String>();
+    Enumeration<String> e = tokenMap.keys();
     while (e.hasMoreElements()) {
-      String name = (String) e.nextElement();
-      Token token = (Token) tokenMap.get(name);
+      String name = e.nextElement();
+      Token token = tokenMap.get(name);
       if (tokAttr(token.tok, attr) && (notattr == nada || !tokAttr(token.tok, notattr)))
         v.add(name);
     }
     String[] a = new String[v.size()];
     for (int i = 0; i < a.length; i++)
-      a[i] = (String) v.get(i);
+      a[i] = v.get(i);
     Arrays.sort(a);
     return a;
   }

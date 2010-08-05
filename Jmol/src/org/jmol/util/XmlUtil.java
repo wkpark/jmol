@@ -25,10 +25,11 @@
 
 package org.jmol.util;
 
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import org.jmol.script.Token;
 
@@ -163,14 +164,14 @@ public class XmlUtil {
     sb.append(" ").append(name).append("=\"").append(value).append("\"");
   }
 
-  public static void toXml(StringBuffer sb, String name, Vector properties) {
+  public static void toXml(StringBuffer sb, String name, List<Object[]> properties) {
     for (int i = 0; i < properties.size(); i++) {
-      Object[] o = (Object[]) properties.get(i);
+      Object[] o = properties.get(i);
       appendTag(sb, name, (Object[]) o[0], o[1]);
     }
   }
 
-  public static Object escape(String name, Vector atts, Object value,
+  public static Object escape(String name, List<Object[]> atts, Object value,
                               boolean asString, String indent) {
 
     StringBuffer sb;
@@ -185,11 +186,11 @@ public class XmlUtil {
         value = wrapCdata(value);
       } else if (value instanceof BitSet) {
         value = Escape.escape((BitSet) value);
-      } else if (value instanceof Vector) {
-        Vector v = (Vector) value;
+      } else if (value instanceof List) {
+        List v = (List) value;
         sb = new StringBuffer("\n");
         if (atts == null)
-          atts = new Vector();
+          atts = new ArrayList<Object[]>();
         atts.add(new Object[] { "count", Integer.valueOf(v.size()) });
         for (int i = 0; i < v.size(); i++)
           sb.append(
@@ -207,7 +208,7 @@ public class XmlUtil {
               escape(name2, null, ht.get(name2), true, indent + "  "));
         }
         if (atts == null)
-          atts = new Vector();
+          atts = new ArrayList<Object[]>();
         atts.add(new Object[] { "count", new Integer(n) });
         value = sb.toString();
       } else if (type.startsWith("[")) {
@@ -215,7 +216,7 @@ public class XmlUtil {
           float[] f = (float[]) value;
           sb = new StringBuffer("\n");
           if (atts == null)
-            atts = new Vector();
+            atts = new ArrayList<Object[]>();
           atts.add(new Object[] { "count", new Integer(f.length) });
           for (int i = 0; i < f.length; i++)
             sb.append(escape(null, null, new Float(f[i]), true, indent + "  "));
@@ -224,7 +225,7 @@ public class XmlUtil {
           int[] iv = (int[]) value;
           sb = new StringBuffer("\n");
           if (atts == null)
-            atts = new Vector();
+            atts = new ArrayList<Object[]>();
           atts.add(new Object[] { "count", new Integer(iv.length) });
           for (int i = 0; i < iv.length; i++)
             sb.append(escape(null, null, new Integer(iv[i]), true, indent + "  "));
@@ -234,7 +235,7 @@ public class XmlUtil {
           Object[] o = (Object[]) value;
           sb = new StringBuffer("\n");
           if (atts == null)
-            atts = new Vector();
+            atts = new ArrayList<Object[]>();
           atts.add(new Object[] { "count", new Integer(o.length) });
           for (int i = 0; i < o.length; i++)
             sb.append(escape(null, null, o[i], true, indent + "  "));
@@ -246,7 +247,7 @@ public class XmlUtil {
           
       }
     }
-    Vector attributes = new Vector();
+    List<Object[]> attributes = new ArrayList<Object[]>();
     attributes.add(new Object[] { "name", name });
     attributes.add(new Object[] { "type", type });
     if (atts != null)

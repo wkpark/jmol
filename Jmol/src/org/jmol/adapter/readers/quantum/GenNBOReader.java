@@ -30,8 +30,8 @@ import org.jmol.util.Logger;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Vector;
 
 /**
  * NBO file nn reader will pull in other files as necessary
@@ -214,7 +214,7 @@ public class GenNBOReader extends MOReader {
     }
 
     // read basis functions
-    shells = new Vector();
+    shells = new ArrayList<int[]>();
     gaussians = new float[gaussianCount][];
     for (int i = 0; i < gaussianCount; i++)
       gaussians[i] = new float[5];
@@ -264,7 +264,7 @@ public class GenNBOReader extends MOReader {
       }
       slater[2] = parseInt(tokens[2]) - 1; // gaussian list pointer
       slater[3] = parseInt(tokens[3]);     // number of gaussians
-      shells.addElement(slater);
+      shells.add(slater);
     }
 
     // get alphas and exponents
@@ -337,7 +337,7 @@ public class GenNBOReader extends MOReader {
     if (ntype.equals("MO"))
       return true; // no labels here
     for (int i = 0; i < tokens.length; i++) {
-      Hashtable mo = (Hashtable) orbitals.get(i);
+      Hashtable<String, Object> mo = orbitals.get(i);
       String type = tokens[i];
       mo.put("type", moType + " " + type);
       // TODO: does not account for SOMO
@@ -352,7 +352,7 @@ public class GenNBOReader extends MOReader {
     int nAOs = nOrbitals;
     nOrbitals = orbitals.size();
     for (int i = 0; i < nOrbitals; i++) {
-      Hashtable mo = (Hashtable) orbitals.get(i);
+      Hashtable<String, Object> mo = orbitals.get(i);
       float[] coefs = new float[nAOs];
       mo.put("coefficients", coefs);
       if (isMO)

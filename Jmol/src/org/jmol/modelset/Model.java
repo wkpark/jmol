@@ -114,7 +114,7 @@ public final class Model {
   int selectedTrajectory = -1;
   boolean hasRasmolHBonds;
   
-  Hashtable dataFrames;
+  Hashtable<String, Integer> dataFrames;
   int dataSourceFrame = -1;
   String jmolData; // from a PDB remark "Jmol PDB-encoded data"
   String jmolFrameType;
@@ -162,20 +162,21 @@ public final class Model {
 
   int biosymmetryCount;
 
-  Hashtable auxiliaryInfo;
+  Hashtable<String, Object> auxiliaryInfo;
   Properties properties;
   float defaultRotationRadius;
 
   Orientation orientation;
 
   Model(ModelSet modelSet, int modelIndex, int trajectoryBaseIndex, 
-      String jmolData, Properties properties, Hashtable auxiliaryInfo) {
+      String jmolData, Properties properties, Hashtable<String, Object> auxiliaryInfo) {
     this.modelSet = modelSet;
     dataSourceFrame = this.modelIndex = modelIndex;
     isTrajectory = (trajectoryBaseIndex >= 0);
     this.trajectoryBaseIndex = (isTrajectory ? trajectoryBaseIndex : modelIndex);
-    if (auxiliaryInfo == null)
-      auxiliaryInfo = new Hashtable();
+    if (auxiliaryInfo == null) {
+      auxiliaryInfo = new Hashtable<String, Object>();
+    }
     this.auxiliaryInfo = auxiliaryInfo;
     if (auxiliaryInfo.containsKey("biosymmetryCount"))
       biosymmetryCount = ((Integer)auxiliaryInfo.get("biosymmetryCount")).intValue();

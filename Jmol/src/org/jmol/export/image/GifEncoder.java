@@ -44,11 +44,11 @@
 package org.jmol.export.image;
 
 import java.io.*;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Vector;
 import java.awt.Image;
 import java.awt.image.*;
 
@@ -130,16 +130,14 @@ public class GifEncoder extends ImageEncoder {
     }
   }
 
-  static class ColorVector extends Vector {
+  static class ColorVector extends ArrayList<ColorItem> {
     void sort() {
       CountComparator comparator = new CountComparator();
-      Arrays.sort(elementData, comparator);
+      Collections.sort(this, comparator);
     }
     
-    static class CountComparator implements Comparator {
-      public int compare(Object arg0, Object arg1) {
-        ColorItem a = (ColorItem)arg0;
-        ColorItem b = (ColorItem)arg1;
+    static class CountComparator implements Comparator<ColorItem> {
+      public int compare(ColorItem a, ColorItem b) {
         return (a == null ? 1 : b == null ? -1 : a.count < b.count ? -1 : a.count > b.count ? 1 : 0);
       }    
     }
@@ -217,8 +215,7 @@ public class GifEncoder extends ImageEncoder {
             rgbPixels[row][col] = rgb = transparentRgb;
           }
         }
-        ColorItem item = (ColorItem) colorHash
-            .get(srgb = getKey(rgb));
+        ColorItem item = (ColorItem) colorHash.get(srgb = getKey(rgb));
         if (item == null) {
           if (index < 0)
             throw new IOException("too many colors for a GIF");
@@ -249,10 +246,10 @@ public class GifEncoder extends ImageEncoder {
     Logger.debug("# colors = " + nTotal);
     while (true) {
       nTotal = index;
-      colorHash = new Hashtable();
+      colorHash = new Hashtable<String, ColorItem>();
       AdaptiveColorCollection acc;
       for (int i = 0; i < nMax; i++) {
-        ColorItem item = (ColorItem) colorVector.get(i);
+        ColorItem item = colorVector.get(i);
         int rgb = (nTotal <= 256 ? item.rgb : item.rgb & ~mask);
         item.rgb2 = rgb;
         srgb = getKey(rgb);
@@ -283,9 +280,9 @@ public class GifEncoder extends ImageEncoder {
     byte[] reds = new byte[mapSize];
     byte[] grns = new byte[mapSize];
     byte[] blus = new byte[mapSize];
-    Hashtable ht = new Hashtable();
+    Hashtable<String, AdaptiveColorCollection> ht = new Hashtable<String, AdaptiveColorCollection>();
     for (int i = 0; i < index; i++) {
-      ColorItem item = (ColorItem) colorVector.get(i);
+      ColorItem item = colorVector.get(i);
       int rgb = item.rgb;
       int count = item.count;
       srgb = getKey(rgb);

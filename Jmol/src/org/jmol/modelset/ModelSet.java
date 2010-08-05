@@ -39,7 +39,7 @@ import org.jmol.shape.Shape;
 
 import java.util.BitSet;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
@@ -440,37 +440,43 @@ abstract public class ModelSet extends ModelCollection {
                                   BitSet bsExclude) {
     short mad = viewer.getMadBond();
     for (int i = baseModelIndex; i < modelCount; i++) {
-      Vector<int[]> vConnect = (Vector<int[]>) getModelAuxiliaryInfo(i, "PDB_CONECT_bonds");
-      if (vConnect == null)
+      List<int[]> vConnect = (List<int[]>) getModelAuxiliaryInfo(i, "PDB_CONECT_bonds");
+      if (vConnect == null) {
         continue;
+      }
       int nConnect = vConnect.size();
-      int[] atomInfo = (int[]) getModelAuxiliaryInfo(i,
-          "PDB_CONECT_firstAtom_count_max");
+      int[] atomInfo = (int[]) getModelAuxiliaryInfo(i, "PDB_CONECT_firstAtom_count_max");
       int firstAtom = atomInfo[0] + baseAtomIndex;
       int atomMax = firstAtom + atomInfo[1];
       int max = atomInfo[2];
       int[] serialMap = new int[max + 1];
       int iSerial;
-      for (int iAtom = firstAtom; iAtom < atomMax; iAtom++)
-        if ((iSerial = atomSerials[iAtom]) > 0)
+      for (int iAtom = firstAtom; iAtom < atomMax; iAtom++) {
+        if ((iSerial = atomSerials[iAtom]) > 0) {
           serialMap[iSerial] = iAtom + 1;
+        }
+      }
       for (int iConnect = 0; iConnect < nConnect; iConnect++) {
         int[] pair = vConnect.get(iConnect);
         int sourceSerial = pair[0];
         int targetSerial = pair[1];
         short order = (short) pair[2];
         if (sourceSerial < 0 || targetSerial < 0 || sourceSerial > max
-            || targetSerial > max)
+            || targetSerial > max) {
           continue;
+        }
         int sourceIndex = serialMap[sourceSerial] - 1;
         int targetIndex = serialMap[targetSerial] - 1;
-        if (sourceIndex < 0 || targetIndex < 0)
+        if (sourceIndex < 0 || targetIndex < 0) {
           continue;
+        }
         if (bsExclude != null) {
-          if (atoms[sourceIndex].isHetero())
+          if (atoms[sourceIndex].isHetero()) {
             bsExclude.set(sourceIndex);
-          if (atoms[targetIndex].isHetero())
+          }
+          if (atoms[targetIndex].isHetero()) {
             bsExclude.set(targetIndex);
+          }
         }
         checkValencesAndBond(atoms[sourceIndex], atoms[targetIndex], order,
             (order == JmolEdge.BOND_H_REGULAR ? 1 : mad), null);
@@ -481,9 +487,11 @@ abstract public class ModelSet extends ModelCollection {
   @Override
   public void deleteAllBonds() {
     moleculeCount = 0;
-    for (int i = stateScripts.size(); --i >= 0;) 
-      if (((StateScript) stateScripts.get(i)).isConnect())
-        stateScripts.removeElementAt(i);
+    for (int i = stateScripts.size(); --i >= 0;) { 
+      if (stateScripts.get(i).isConnect()) {
+        stateScripts.remove(i);
+      }
+    }
     super.deleteAllBonds();
   }
 
@@ -502,7 +510,7 @@ abstract public class ModelSet extends ModelCollection {
     StringBuffer commands = new StringBuffer();
     String cmd;
     for (int i = 0; i < len; i++) {
-      StateScript ss = (StateScript) stateScripts.get(i); 
+      StateScript ss = stateScripts.get(i); 
       if (!ss.postDefinitions && (cmd = ss.toString()).length() > 0) {
         commands.append("  ").append(cmd).append("\n");
         haveDefs = true;
@@ -536,12 +544,13 @@ abstract public class ModelSet extends ModelCollection {
 
       int len = stateScripts.size();
       for (int i = 0; i < len; i++) {
-        StateScript ss = (StateScript) stateScripts.get(i);
-        if (ss.postDefinitions && (cmd = ss.toString()).length() > 0)
+        StateScript ss = stateScripts.get(i);
+        if (ss.postDefinitions && (cmd = ss.toString()).length() > 0) {
           commands.append("  ").append(cmd).append("\n");
+        }
       }
 
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
       for (int i = 0; i < bondCount; i++)
         if (!models[bonds[i].atom1.modelIndex].isModelKit)
           if (bonds[i].isHydrogen()
@@ -768,11 +777,12 @@ abstract public class ModelSet extends ModelCollection {
    * @param pts
    * @return            BitSet of new atoms
    */
-  public BitSet addHydrogens(Vector<Atom> vConnections, Point3f[] pts) {
+  public BitSet addHydrogens(List<Atom> vConnections, Point3f[] pts) {
     int modelIndex = modelCount - 1;
     BitSet bs = new BitSet();
-    if (models[modelIndex].isTrajectory || models[modelIndex].getGroupCount() > 1)
+    if (models[modelIndex].isTrajectory || models[modelIndex].getGroupCount() > 1) {
       return bs; // can't add atoms to a trajectory or a system with multiple groups!
+    }
     growAtomArrays(atomCount + pts.length);
     RadiusData rd = viewer.getDefaultRadiusData();
     short mad = getDefaultMadFromOrder(1);

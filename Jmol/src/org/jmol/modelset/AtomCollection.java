@@ -26,8 +26,9 @@
 package org.jmol.modelset;
 
 import java.awt.Rectangle;
+import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Vector;
+import java.util.List;
 
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
@@ -106,11 +107,13 @@ abstract public class AtomCollection {
   public Atom[] atoms;
   int atomCount;
 
-  public Vector<Point3f> getAtomPointVector(BitSet bs) {
-    Vector<Point3f> v = new Vector<Point3f>();
-    if (bs != null)
-      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i+1))
+  public List<Point3f> getAtomPointVector(BitSet bs) {
+    List<Point3f> v = new ArrayList<Point3f>();
+    if (bs != null) {
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i+1)) {
         v.add(atoms[i]);
+      }
+    }
     return v;
   }
 
@@ -429,15 +432,13 @@ abstract public class AtomCollection {
   public void setAtomCoord(BitSet bs, int tokType, Object xyzValues) {
     Point3f xyz = null;
     Point3f[] values = null;
-    Vector v = null;
+    List v = null;
     int type = 0;
     int nValues = 1;
     if (xyzValues instanceof Point3f) {
       xyz = (Point3f) xyzValues;
-      if (xyz == null)
-        return;
-    } else if (xyzValues instanceof Vector) {
-      v = (Vector<Point3f>) xyzValues;
+    } else if (xyzValues instanceof List) {
+      v = (List) xyzValues;
       if (v == null || (nValues = v.size()) == 0)
         return;
       type = 1;
@@ -1214,7 +1215,7 @@ abstract public class AtomCollection {
    */
   public Point3f[][] getAdditionalHydrogens(BitSet bs, int[] nTotal,
                                             boolean doAll, boolean justCarbon,
-                                            Vector<Atom> vConnect) {
+                                            List<Atom> vConnect) {
     Vector3f z = new Vector3f();
     Vector3f x = new Vector3f();
     Point3f[][] hAtoms = new Point3f[atomCount][];

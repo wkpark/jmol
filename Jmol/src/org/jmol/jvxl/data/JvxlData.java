@@ -61,8 +61,9 @@
 
 package org.jmol.jvxl.data;
 
+
 import java.util.BitSet;
-import java.util.Vector;
+import java.util.List;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
@@ -127,7 +128,7 @@ public class JvxlData {
   // sometimes it comes from the file or marching squares
   // directly. 
   
-  public Vector[] vContours;
+  public List<Object>[] vContours;
   public short[] contourColixes;
   public String contourColors;
   public float[] contourValues;

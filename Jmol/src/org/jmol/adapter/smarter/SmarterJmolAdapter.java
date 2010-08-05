@@ -36,9 +36,10 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.BitSet;
-import java.util.Vector;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -162,7 +163,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
    */
   @Override
   public Object getAtomSetCollectionReaders(JmolFileReaderInterface fileReader, String[] names, String[] types,
-                                    Hashtable<String, Object>  htParams, boolean getReadersOnly) {
+                                    Hashtable<String, Object> htParams, boolean getReadersOnly) {
     //FilesOpenThread
     int size = names.length;
     AtomSetCollectionReader[] readers = (getReadersOnly ? new AtomSetCollectionReader[size] : null);
@@ -212,7 +213,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
   @SuppressWarnings("unchecked")
   @Override
   public Object getAtomSetCollectionFromSet(Object readerSet, Object atomsets,
-                                            Hashtable<String, Object>  htParams) {
+                                            Hashtable<String, Object> htParams) {
     AtomSetCollectionReader[] readers = (AtomSetCollectionReader[]) readerSet;
     AtomSetCollection[] asc = (atomsets == null ? new AtomSetCollection[readers.length]
         : (AtomSetCollection[]) atomsets);
@@ -235,7 +236,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
       // this is one model with a set of coordinates from a 
       // molecular dynamics calculation
       // all the htParams[] entries point to the same Hashtable
-      asc[0].finalizeTrajectory((Vector<Point3f[]>) htParams.get("trajectorySteps"));
+      asc[0].finalizeTrajectory((List<Point3f[]>) htParams.get("trajectorySteps"));
       return asc[0];
     }
     AtomSetCollection result = new AtomSetCollection(asc);
@@ -264,7 +265,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
   @SuppressWarnings("unchecked")
   private static Object staticGetAtomSetCollectionOrBufferedReaderFromZip(
                                     InputStream is, String fileName,
-                                    String[] zipDirectory, Hashtable htParams,
+                                    String[] zipDirectory, Hashtable<String, Object> htParams,
                                     int subFilePtr, boolean asBufferedReader) {
 
     // we're here because user is using | in a load file name
@@ -304,8 +305,8 @@ public class SmarterJmolAdapter extends JmolAdapter {
     boolean exceptFiles = (manifest.indexOf("EXCEPT_FILES") >= 0);
     if (selectAll || subFileName != null)
       haveManifest = false;
-    Vector vCollections = new Vector();
-    Hashtable htCollections = (haveManifest ? new Hashtable() : null);
+    List vCollections = new ArrayList();
+    Hashtable<String, Object> htCollections = (haveManifest ? new Hashtable<String, Object>() : null);
     int nFiles = 0;
     // 0 entry is manifest
 
@@ -315,13 +316,13 @@ public class SmarterJmolAdapter extends JmolAdapter {
     // running in FileManager now.
 
     Object ret = Resolver.checkSpecialData(is, zipDirectory);
-    if (ret instanceof String)
+    if (ret instanceof String) {
       return ret;
+    }
     StringBuffer data = (StringBuffer) ret;
     try {
       if (data != null) {
-        BufferedReader reader = new BufferedReader(new StringReader(data
-            .toString()));
+        BufferedReader reader = new BufferedReader(new StringReader(data.toString()));
         if (asBufferedReader) {
           return reader;
         }
@@ -370,11 +371,11 @@ public class SmarterJmolAdapter extends JmolAdapter {
               continue;
             return atomSetCollections;
           } else if (atomSetCollections instanceof AtomSetCollection
-              || atomSetCollections instanceof Vector) {
+              || atomSetCollections instanceof List) {
             if (haveManifest && !exceptFiles)
               htCollections.put(thisEntry, atomSetCollections);
             else
-              vCollections.addElement(atomSetCollections);
+              vCollections.add(atomSetCollections);
           } else if (atomSetCollections instanceof BufferedReader) {
             if (doCombine)
               zis.close();
@@ -413,7 +414,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
           if (haveManifest && !exceptFiles)
             htCollections.put(thisEntry, ret);
           else
-            vCollections.addElement(ret);
+            vCollections.add(ret);
           AtomSetCollection a = (AtomSetCollection) ret;
           if (a.errorMessage != null) {
             if (ignoreErrors)
@@ -452,7 +453,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
       if (nFiles == 1)
         selectedFile = 1;
       if (selectedFile > 0 && selectedFile <= vCollections.size())
-        return vCollections.elementAt(selectedFile - 1);
+        return vCollections.get(selectedFile - 1);
       return result;
 
     } catch (Exception e) {
@@ -513,7 +514,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
   }
   
   @Override
-  public Hashtable<String, Object>  getAtomSetCollectionAuxiliaryInfo(Object atomSetCollection) {
+  public Hashtable<String, Object> getAtomSetCollectionAuxiliaryInfo(Object atomSetCollection) {
     return ((AtomSetCollection)atomSetCollection).getAtomSetCollectionAuxiliaryInfo();
   }
 

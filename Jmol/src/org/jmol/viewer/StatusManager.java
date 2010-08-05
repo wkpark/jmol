@@ -29,9 +29,10 @@ import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
 import java.applet.Applet;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import javax.swing.SwingUtilities;
 
@@ -179,8 +180,8 @@ class StatusManager {
    * 
    */
   
-  private Hashtable<String, Vector<Vector<Object>>> messageQueue = new Hashtable<String, Vector<Vector<Object>>>();
-  Hashtable<String, Vector<Vector<Object>>> getMessageQueue() {
+  private Hashtable<String, List<List<Object>>> messageQueue = new Hashtable<String, List<List<Object>>>();
+  Hashtable<String, List<List<Object>>> getMessageQueue() {
     return messageQueue;
   }
   
@@ -199,24 +200,24 @@ class StatusManager {
     if (!recordStatus(statusName))
       return;
     statusPtr++;
-    Vector<Vector<Object>> statusRecordSet;
-    Vector<Object> msgRecord = new Vector<Object>();
-    msgRecord.addElement(Integer.valueOf(statusPtr));
-    msgRecord.addElement(statusName);
-    msgRecord.addElement(Integer.valueOf(intInfo));
-    msgRecord.addElement(statusInfo);
+    List<List<Object>> statusRecordSet;
+    List<Object> msgRecord = new ArrayList<Object>();
+    msgRecord.add(Integer.valueOf(statusPtr));
+    msgRecord.add(statusName);
+    msgRecord.add(Integer.valueOf(intInfo));
+    msgRecord.add(statusInfo);
     if (isReplace && messageQueue.containsKey(statusName)) {
       messageQueue.remove(statusName);
     }
     if (messageQueue.containsKey(statusName)) {
       statusRecordSet = messageQueue.remove(statusName);
     } else {
-      statusRecordSet = new Vector<Vector<Object>>();
+      statusRecordSet = new ArrayList<List<Object>>();
     }
     if (statusRecordSet.size() == MAXIMUM_QUEUE_LENGTH)
-      statusRecordSet.removeElementAt(0);
+      statusRecordSet.remove(0);
     
-    statusRecordSet.addElement(msgRecord);
+    statusRecordSet.add(msgRecord);
     messageQueue.put(statusName, statusRecordSet);
   }
   
@@ -239,20 +240,23 @@ class StatusManager {
       return statusNameList;
     }
     Object msgList;
-    if (asVector)
-      msgList = new Vector();
-    else
-      msgList = new Hashtable();
-    if (resetMessageQueue(statusNameList))
+    if (asVector) {
+      msgList = new ArrayList<List<List<Object>>>();
+    } else {
+      msgList = new Hashtable<String, List<List<Object>>>();
+    }
+    if (resetMessageQueue(statusNameList)) {
       return msgList;
+    }
     Enumeration<String> e = messageQueue.keys();
     while (e.hasMoreElements()) {
       String statusName = e.nextElement();
-      Vector<Vector<Object>> record = messageQueue.remove(statusName);
-      if (asVector)
-        ((Vector) msgList).addElement(record);
-      else
+      List<List<Object>> record = messageQueue.remove(statusName);
+      if (asVector) {
+        ((List) msgList).add(record);
+      } else {
         ((Hashtable)msgList).put(statusName, record);
+      }
     }
     return msgList;
   }
@@ -263,7 +267,7 @@ class StatusManager {
     String oldList = this.statusList;
     if (isRemove) {
       this.statusList = TextFormat.simpleReplace(oldList, statusList.substring(1,statusList.length()), "");
-      messageQueue = new Hashtable<String, Vector<Vector<Object>>>();
+      messageQueue = new Hashtable<String, List<List<Object>>>();
       statusPtr = 0;
       return true;
     }
@@ -272,7 +276,7 @@ class StatusManager {
         || isAdd && oldList.indexOf(statusList) >= 0)
       return false;
     if (! isAdd) {
-      messageQueue = new Hashtable<String, Vector<Vector<Object>>>();
+      messageQueue = new Hashtable<String, List<List<Object>>>();
       statusPtr = 0;
       this.statusList = "";
     }

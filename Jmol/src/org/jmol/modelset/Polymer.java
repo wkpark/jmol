@@ -24,7 +24,7 @@
 package org.jmol.modelset;
 
 import java.util.BitSet;
-import java.util.Vector;
+import java.util.List;
 import java.util.Hashtable;
 
 import javax.vecmath.Point3f;
@@ -74,7 +74,7 @@ abstract public class Polymer {
   public void getRange(BitSet bs) {
   }
   
-  public int getPolymerPointsAndVectors(int last, BitSet bs, Vector vList,
+  public int getPolymerPointsAndVectors(int last, BitSet bs, List<Point3f[]> vList,
                                         boolean isTraceAlpha,
                                         float sheetSmoothing) {
     return 0;
@@ -100,14 +100,14 @@ abstract public class Polymer {
     return "";
   }
 
-  public Hashtable getPolymerInfo(BitSet bs) {
+  public Hashtable<String, Object> getPolymerInfo(BitSet bs) {
     return null;
   }
 
   public void setConformation(BitSet bsConformation, int nAltLocs) {
   }
 
-  public void calcRasmolHydrogenBonds(Polymer polymer, BitSet bsA, BitSet bsB, Vector vHBonds, int nMaxPerResidue) {
+  public void calcRasmolHydrogenBonds(Polymer polymer, BitSet bsA, BitSet bsB, List<Bond> vHBonds, int nMaxPerResidue) {
     // subclasses should override if they know how to calculate hbonds
   }
   
@@ -133,7 +133,8 @@ abstract public class Polymer {
     return;
   }
 
-  public Vector calculateStruts(ModelSet modelSet, Atom[] atoms, BitSet bs1, BitSet bs2, Vector vCA, float thresh, int delta, boolean allowMultiple) {
+  public List<Object[]> calculateStruts(ModelSet modelSet, Atom[] atoms, BitSet bs1, BitSet bs2,
+      List<Atom> vCA, float thresh, int delta, boolean allowMultiple) {
     return null;
   }
 

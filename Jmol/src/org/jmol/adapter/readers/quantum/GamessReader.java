@@ -24,8 +24,9 @@
 
 package org.jmol.adapter.readers.quantum;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
@@ -33,12 +34,12 @@ import org.jmol.util.TextFormat;
 
 abstract public class GamessReader extends MOReader {
 
-  protected Vector<String> atomNames;
+  protected List<String> atomNames;
 
   abstract protected void readAtomsInBohrCoordinates() throws Exception;  
  
   protected void readGaussianBasis(String initiator, String terminator) throws Exception {
-    Vector<String[]> gdata = new Vector<String[]>();
+    List<String[]> gdata = new ArrayList<String[]>();
     gaussianCount = 0;
     int nGaussians = 0;
     shellCount = 0;
@@ -47,8 +48,8 @@ abstract public class GamessReader extends MOReader {
     discardLinesUntilContains(initiator);
     readLine();
     int[] slater = null;
-    Hashtable<String, Vector<int[]>> shellsByAtomType = new Hashtable<String, Vector<int[]>>();
-    Vector<int[]> slatersByAtomType = new Vector<int[]>();
+    Hashtable<String, List<int[]>> shellsByAtomType = new Hashtable<String, List<int[]>>();
+    List<int[]> slatersByAtomType = new ArrayList<int[]>();
     String atomType = null;
     
     while (readLine() != null && line.indexOf(terminator) < 0) {
@@ -61,12 +62,12 @@ abstract public class GamessReader extends MOReader {
         if (atomType != null) {
           if (slater != null) {
             slater[2] = nGaussians;
-            slatersByAtomType.addElement(slater);
+            slatersByAtomType.add(slater);
             slater = null;
           }
           shellsByAtomType.put(atomType, slatersByAtomType);
         }
-        slatersByAtomType = new Vector<int[]>();
+        slatersByAtomType = new ArrayList<int[]>();
         atomType = tokens[0];
         break;
       case 0:
@@ -75,7 +76,7 @@ abstract public class GamessReader extends MOReader {
         if (!tokens[0].equals(thisShell)) {
           if (slater != null) {
             slater[2] = nGaussians;
-            slatersByAtomType.addElement(slater);
+            slatersByAtomType.add(slater);
           }
           thisShell = tokens[0];
           shellCount++;
@@ -86,12 +87,12 @@ abstract public class GamessReader extends MOReader {
         }
         ++nGaussians;
         ++gaussianCount;
-        gdata.addElement(tokens);
+        gdata.add(tokens);
       }
     }
     if (slater != null) {
       slater[2] = nGaussians;
-      slatersByAtomType.addElement(slater);
+      slatersByAtomType.add(slater);
     }
     if (atomType != null)
       shellsByAtomType.put(atomType, slatersByAtomType);
@@ -104,18 +105,18 @@ abstract public class GamessReader extends MOReader {
     }
     int atomCount = atomNames.size();
     if (shells == null && atomCount > 0) {
-      shells = new Vector<int[]>();
+      shells = new ArrayList<int[]>();
       for (int i = 0; i < atomCount; i++) {
-        atomType = atomNames.elementAt(i);
-        Vector<?> slaters = shellsByAtomType.get(atomType);
+        atomType = atomNames.get(i);
+        List<int[]> slaters = shellsByAtomType.get(atomType);
         if (slaters == null) {
           Logger.error("slater for atom " + i + " atomType " + atomType
               + " was not found in listing. Ignoring molecular orbitals");
           return;
         }
         for (int j = 0; j < slaters.size(); j++) {
-          slater = (int[]) slaters.elementAt(j);
-          shells.addElement(new int[] { i, slater[0], slater[1], slater[2] });
+          slater = slaters.get(j);
+          shells.add(new int[] { i, slater[0], slater[1], slater[2] });
         }
       }
     }
@@ -243,12 +244,9 @@ $SYSTEM OPTIONS
     String Runtype = calcOptions.get("contrl_options_RUNTYP");
     String igauss = calcOptions.get("basis_options_IGAUSS");
     String gbasis = calcOptions.get("basis_options_GBASIS");
-    boolean DFunc = !"0".equals(calcOptions
-        .get("basis_options_NDFUNC"));
-    boolean PFunc = !"0".equals(calcOptions
-        .get("basis_options_NPFUNC"));
-    boolean FFunc = !"0".equals(calcOptions
-        .get("basis_options_NFFUNC"));
+    boolean DFunc = !"0".equals(calcOptions.get("basis_options_NDFUNC"));
+    boolean PFunc = !"0".equals(calcOptions.get("basis_options_NPFUNC"));
+    boolean FFunc = !"0".equals(calcOptions.get("basis_options_NFFUNC"));
     String DFTtype = calcOptions.get("contrl_options_DFTTYP");
     int perturb = parseInt(calcOptions.get("contrl_options_MPLEVL"));
     String CItype = calcOptions.get("contrl_options_CITYP");

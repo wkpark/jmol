@@ -24,9 +24,10 @@
 
 package org.jmol.symmetry;
 
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -878,12 +879,12 @@ class PointGroup {
   String drawInfo;
   String drawType = "";
   int drawIndex;
-  Hashtable info;
+  Hashtable<String, Object> info;
   String textInfo;
   
   Object getInfo(int modelIndex, boolean asDraw, boolean asInfo, String type,
                  int index, float scaleFactor) {
-    info = (asInfo ? new Hashtable() : null);
+    info = (asInfo ? new Hashtable<String, Object>() : null);
     Vector3f v = new Vector3f();
     Operation op;
     if (scaleFactor == 0)
@@ -990,7 +991,7 @@ class PointGroup {
         n *= nAxes[i];
         nTotal += n;
         nType[axes[i][0].type][1] += n;
-        Vector vinfo = (info == null ? null : new Vector());
+        List<Vector3f> vinfo = (info == null ? null : new ArrayList<Vector3f>());
         for (int j = 0; j < nAxes[i]; j++) {
           axes[i][j].typeIndex = j + 1;
           if (vinfo != null) {

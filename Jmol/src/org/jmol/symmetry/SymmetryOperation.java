@@ -24,7 +24,8 @@
 
 package org.jmol.symmetry;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
@@ -268,7 +269,7 @@ class SymmetryOperation extends Matrix4f {
             this.xyz = strOut;
           }
           if (Logger.debugging)
-            Logger.debug("" + (Matrix4f)this);
+            Logger.debug("" + this);
           rowPt = 0;
           return true;
         }
@@ -1013,7 +1014,7 @@ class SymmetryOperation extends Matrix4f {
         // so if a point is in the plane, then N dot X = -d
         float w = -vtemp.x * pa1.x - vtemp.y * pa1.y - vtemp.z * pa1.z;
         Point4f plane = new Point4f(vtemp.x, vtemp.y, vtemp.z, w);
-        Vector v = new Vector();
+        List<Object> v = new ArrayList<Object>();
         v.add(uc.getCanonicalCopy(1.05f));
         TriangleData.intersectPlane(plane, v, 3);
 

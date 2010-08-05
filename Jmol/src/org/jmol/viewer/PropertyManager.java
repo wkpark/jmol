@@ -23,9 +23,10 @@
  */
 package org.jmol.viewer;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import javax.vecmath.Matrix3f;
 
@@ -203,12 +204,12 @@ public class PropertyManager {
     switch (arg.tok) {
     case Token.integer:
       pt = ScriptVariable.iValue(arg) - 1;  //one-based, as for array selectors
-      if (property instanceof Vector) {
-        Vector v = (Vector) property;
+      if (property instanceof List) {
+        List v = (List) property;
         if (pt < 0)
           pt += v.size();
         if (pt >= 0 && pt < v.size())
-          return extractProperty(v.elementAt(pt), args, ptr);
+          return extractProperty(v.get(pt), args, ptr);
         return "";
       }
       if (property instanceof String[]) {
@@ -277,10 +278,10 @@ public class PropertyManager {
       if (property instanceof Hashtable) {
         Hashtable h = (Hashtable) property;
         if (key.equalsIgnoreCase("keys")) {
-          Vector keys = new Vector();
+          List<Object> keys = new ArrayList<Object>();
           Enumeration e = h.keys();
           while (e.hasMoreElements())
-            keys.addElement(e.nextElement()); 
+            keys.add(e.nextElement()); 
           return extractProperty(keys, args, ptr);
         }
         if (!h.containsKey(key)) {

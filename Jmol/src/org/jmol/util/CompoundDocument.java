@@ -27,9 +27,9 @@ package org.jmol.util;
 import java.io.DataInputStream;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
-//import java.io.RandomAccessFile;
+import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 
 /* a simple compound document reader. 
@@ -50,7 +50,7 @@ public class CompoundDocument extends BinaryDocument {
 
 //  RandomAccessFile file;
   CmpDocHeader header = new CmpDocHeader();
-  Vector directory = new Vector(); //i.e.  CmpDocDirectoryEntry[]
+  List<CmpDocDirectoryEntry> directory = new ArrayList<CmpDocDirectoryEntry>();
   CmpDocDirectoryEntry rootEntry;
 
   int[] SAT;
@@ -102,14 +102,14 @@ public class CompoundDocument extends BinaryDocument {
   }
   
 
-  public Vector getDirectory() {
+  public List<CmpDocDirectoryEntry> getDirectory() {
     return directory;
   }
 
   public String getDirectoryListing(String separator) {
     String str = "";
     for (int i = 0; i < directory.size(); i++) {
-      CmpDocDirectoryEntry thisEntry = (CmpDocDirectoryEntry) directory.get(i);
+      CmpDocDirectoryEntry thisEntry = directory.get(i);
       if (!thisEntry.isEmpty)
         str += separator
             + thisEntry.entryName
@@ -144,18 +144,18 @@ public class CompoundDocument extends BinaryDocument {
    * @param fileData
    */
   public void getAllData(String prefix, 
-                         String binaryFileList, Hashtable fileData) {
+                         String binaryFileList, Hashtable<String, String> fileData) {
     fileData.put("#Directory_Listing", getDirectoryListing("|"));
     binaryFileList = "|" + binaryFileList + "|";
     for (int i = 0; i < directory.size(); i++) {
-      CmpDocDirectoryEntry thisEntry = (CmpDocDirectoryEntry) directory.get(i);
+      CmpDocDirectoryEntry thisEntry = directory.get(i);
       String name = thisEntry.entryName;
       Logger.info("reading " + name);
       if (!thisEntry.isEmpty && thisEntry.entryType != 5) {
         boolean isBinary = (binaryFileList != null && binaryFileList.indexOf("|" + thisEntry.entryName + "|") >= 0);
         if (isBinary)
           name += ":asBinaryString";
-        StringBuffer data = new StringBuffer();
+        StringBuilder data = new StringBuilder();
         data.append("BEGIN Directory Entry ").append(name).append("\n"); 
         data.append(getFileAsString(thisEntry, isBinary));
         data.append("\nEND Directory Entry ").append(name).append("\n");
@@ -172,7 +172,7 @@ public class CompoundDocument extends BinaryDocument {
     data.append("\n");
     binaryFileList = "|" + binaryFileList + "|";
     for (int i = 0; i < directory.size(); i++) {
-      CmpDocDirectoryEntry thisEntry = (CmpDocDirectoryEntry) directory.get(i);
+      CmpDocDirectoryEntry thisEntry = directory.get(i);
       Logger.info("reading " + thisEntry.entryName);
       if (!thisEntry.isEmpty && thisEntry.entryType != 5) {
         data.append("BEGIN Directory Entry ").append(thisEntry.entryName).append("\n");            
@@ -187,7 +187,7 @@ public class CompoundDocument extends BinaryDocument {
 
   public StringBuffer getFileAsString(String entryName) {
     for (int i = 0; i < directory.size(); i++) {
-      CmpDocDirectoryEntry thisEntry = (CmpDocDirectoryEntry) directory.get(i);
+      CmpDocDirectoryEntry thisEntry = directory.get(i);
       if (thisEntry.entryName.equals(entryName))
         return getFileAsString(thisEntry, false);
     }
@@ -420,7 +420,7 @@ public class CompoundDocument extends BinaryDocument {
           thisEntry = new CmpDocDirectoryEntry();
           thisEntry.readData();
           if (thisEntry.lenStream > 0) {
-            directory.addElement(thisEntry);
+            directory.add(thisEntry);
             //System.out.println(thisEntry.entryName);
           }
           if (thisEntry.entryType == 5)

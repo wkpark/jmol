@@ -24,8 +24,9 @@
 
 package org.jmol.minimize.forcefield;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import javax.vecmath.Vector3d;
 
@@ -49,8 +50,8 @@ abstract class Calculations {
   final static int CALC_MAX = 6;
 
   ForceField ff;
-  Vector[] calculations = new Vector[CALC_MAX];
-  public Hashtable ffParams;
+  List<Object[]>[] calculations = new ArrayList[CALC_MAX];
+  public Hashtable<String, FFParam> ffParams;
   
   int atomCount;
   int bondCount;
@@ -60,16 +61,16 @@ abstract class Calculations {
   int[][] torsions;
   double[] partialCharges;
   boolean havePartialCharges;
-  Vector constraints;
+  List constraints;
   boolean isPreliminary;
 
-  public void setConstraints(Vector constraints) {
+  public void setConstraints(List constraints) {
     this.constraints = constraints;
   }
 
   Calculations(ForceField ff, MinAtom[] minAtoms, MinBond[] minBonds, 
       int[][] angles, int[][] torsions, double[] partialCharges, 
-      Vector constraints) {
+      List constraints) {
     this.ff = ff;
     atoms = minAtoms;
     bonds = minBonds;
@@ -93,12 +94,12 @@ abstract class Calculations {
     return (ffParams != null);
   }
 
-  void setParams(Hashtable temp) {
+  void setParams(Hashtable<String, FFParam> temp) {
     ffParams = temp;
   }
 
-  static FFParam getParameter(String a, Hashtable ffParams) {
-    return (FFParam) ffParams.get(a);
+  static FFParam getParameter(String a, Hashtable<String, FFParam> ffParams) {
+    return ffParams.get(a);
   }
 
   abstract boolean setupCalculations();
@@ -154,7 +155,7 @@ abstract class Calculations {
   private double calc(int iType, boolean gradients) {
     logging = loggingEnabled && !silent;
     this.gradients = gradients;
-    Vector calc = calculations[iType];
+    List<Object[]> calc = calculations[iType];
     int nCalc;
     double energy = 0;
     if (calc == null || (nCalc = calc.size()) == 0)
@@ -162,8 +163,7 @@ abstract class Calculations {
     if (logging)
       appendLogData(getDebugHeader(iType));
     for (int ii = 0; ii < nCalc; ii++)
-      energy += compute(iType, (Object[]) calculations[iType]
-          .get(ii));
+      energy += compute(iType, calculations[iType].get(ii));
     if (logging)
       appendLogData(getDebugFooter(iType, energy));
     if (constraints != null && iType <= CALC_TORSION)
@@ -219,7 +219,7 @@ abstract class Calculations {
     double energy = 0;
 
     for (int i = constraints.size(); --i >= 0; ) {
-      Object[] c = (Object[])constraints.elementAt(i);
+      Object[] c = (Object[])constraints.get(i);
       int nAtoms = ((int[]) c[0])[0];
       if (nAtoms != iType + 2)
         continue;

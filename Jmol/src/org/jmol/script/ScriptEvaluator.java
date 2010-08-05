@@ -31,7 +31,6 @@ import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Vector;
 
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
@@ -549,12 +548,13 @@ public class ScriptEvaluator {
    * @param atomExpression
    * @return vector list of selected atoms
    */
-  public static Vector<Integer> getAtomBitSetVector(ScriptEvaluator e, int atomCount,
+  public static List<Integer> getAtomBitSetVector(ScriptEvaluator e, int atomCount,
                                            Object atomExpression) {
-    Vector<Integer> V = new Vector<Integer>();
+    List<Integer> V = new ArrayList<Integer>();
     BitSet bs = getAtomBitSet(e, atomExpression);
-    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
-      V.addElement(Integer.valueOf(i));
+    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+      V.add(Integer.valueOf(i));
+    }
     return V;
   }
 
@@ -741,10 +741,9 @@ public class ScriptEvaluator {
             res = parameterExpression(i, pt2, (isFor ? "XXX" : null), ignoreComma, isFor,
                 j, false, localVars, isFunctionOfX ? null : dummy);
             if (isFor) {
-              if (res == null || ((Vector) res).size() == 0)
+              if (res == null || ((List) res).size() == 0)
                 error(ERROR_invalidArgument);
-              sout[p++] = ScriptVariable.sValue((ScriptVariable) ((Vector) res)
-                  .elementAt(0));
+              sout[p++] = ScriptVariable.sValue((ScriptVariable) ((List) res).get(0));
             } else if (((Boolean) res).booleanValue()) {
               bsSelect.set(j);
             }
@@ -972,15 +971,15 @@ public class ScriptEvaluator {
     }
   }
 
-  private Hashtable getHash(int i) throws ScriptException {
-    Hashtable ht = new Hashtable();
+  private Hashtable<String, Object> getHash(int i) throws ScriptException {
+    Hashtable<String, Object> ht = new Hashtable<String, Object>();
     for (i = i + 1; i < statementLength; i++) {
       if (tokAt(i) == Token.rightbrace)
         break;
       String key = stringParameter(i++);
       if (tokAt(i++) != Token.colon)
         error(ERROR_invalidArgument);
-      Vector v = (Vector) 
+      List v = (List) 
           parameterExpression(i, 0, null, false, true, -1, false, null, null);
       ht.put(key, v.get(0));
       i = iToken;
@@ -993,10 +992,11 @@ public class ScriptEvaluator {
     return ht;
   }
 
-  Object bitsetVariableVector(Object v) {
-    Vector resx = new Vector();
-    if (v instanceof BitSet)
-      resx.addElement(new ScriptVariable(Token.bitset, v));
+  List<ScriptVariable> bitsetVariableVector(Object v) {
+    List<ScriptVariable> resx = new ArrayList<ScriptVariable>();
+    if (v instanceof BitSet) {
+      resx.add(new ScriptVariable(Token.bitset, v));
+    }
     return resx;
   }
 
@@ -1153,11 +1153,11 @@ public class ScriptEvaluator {
     Point3f pt = (isPt || !isAtoms ? new Point3f() : null);
     if (isString || isExplicitlyAll)
       minmaxtype = Token.all;
-    Vector vout = (minmaxtype == Token.all ? new Vector() : null);
+    List<Object> vout = (minmaxtype == Token.all ? new ArrayList<Object>() : null);
 
     BitSet bsNew = null;
     String userFunction = null;
-    Vector params = null;
+    List params = null;
     BitSet bsAtom = null;
     ScriptVariable tokenAtom = null;
     Point3f ptT = null;
@@ -1200,7 +1200,7 @@ public class ScriptEvaluator {
       return "";
     case Token.function:
       userFunction = (String) ((Object[]) opValue)[0];
-      params = (Vector) ((Object[]) opValue)[1];
+      params = (List) ((Object[]) opValue)[1];
       bsAtom = new BitSet(viewer.getAtomCount());
       tokenAtom = new ScriptVariable(Token.bitset, bsAtom);
       break;
@@ -1826,7 +1826,7 @@ public class ScriptEvaluator {
 
   private ParallelProcessor parallelProcessor;
 
-  ScriptVariable runFunction(ScriptFunction function, String name, Vector params, Token tokenAtom,
+  ScriptVariable runFunction(ScriptFunction function, String name, List params, Token tokenAtom,
                              boolean getReturn) throws ScriptException {
     pushContext(null);
     //System.out.println(contextPath);
@@ -1875,7 +1875,7 @@ public class ScriptEvaluator {
     return v;
   }
 
-  private void runFunction(ScriptFunction function, Vector params,
+  private void runFunction(ScriptFunction function, List params,
                            Token tokenAtom) throws ScriptException {
     aatoken = function.aatoken;
     lineNumbers = function.lineNumbers;
@@ -2095,11 +2095,11 @@ public class ScriptEvaluator {
         String var = parameterAsString(++i);
         boolean isClauseDefine = (tokAt(i) == Token.expressionBegin);
         if (isClauseDefine) {
-          Vector val = (Vector) parameterExpression(++i, 0, "_var", true);
+          List val = (List) parameterExpression(++i, 0, "_var", true);
           if (val == null || val.size() == 0)
             error(ERROR_invalidArgument);
           i = iToken;
-          ScriptVariable vt = (ScriptVariable) val.elementAt(0);
+          ScriptVariable vt = (ScriptVariable) val.get(0);
           v = (vt.tok == Token.list ? vt : ScriptVariable.oValue(vt));
         } else {
           v = getParameter(var, false);
@@ -2994,9 +2994,10 @@ public class ScriptEvaluator {
     return shapeManager.getShapeProperty(shapeType, propertyName, index);
   }
 
-  private void addShapeProperty(Vector<Object[]> propertyList, String key, Object value) {
-    if (isSyntaxCheck)
-      return;
+  private void addShapeProperty(List<Object[]> propertyList, String key, Object value) {
+    if (isSyntaxCheck) {
+      ;
+    }
     propertyList.add(new Object[] { key, value });
   }
 
@@ -4720,10 +4721,10 @@ public class ScriptEvaluator {
   private int intSetting(int pt) throws ScriptException {
     if (pt == statementLength)
       return Integer.MIN_VALUE;
-    Vector v = (Vector) parameterExpression(pt, -1, "XXX", true);
+    List v = (List) parameterExpression(pt, -1, "XXX", true);
     if (v == null || v.size() == 0)
       error(ERROR_invalidArgument);
-    return ScriptVariable.iValue((ScriptVariable) v.elementAt(0));
+    return ScriptVariable.iValue((ScriptVariable) v.get(0));
   }
 
   private float floatSetting(int pt, float min, float max)
@@ -4737,27 +4738,27 @@ public class ScriptEvaluator {
   }
 
   private float floatSetting(int pt) throws ScriptException {
-    Vector v = (Vector) parameterExpression(pt, -1, "XXX", true);
+    List v = (List) parameterExpression(pt, -1, "XXX", true);
     if (v == null || v.size() == 0)
       error(ERROR_invalidArgument);
-    return ScriptVariable.fValue((ScriptVariable) v.elementAt(0));
+    return ScriptVariable.fValue((ScriptVariable) v.get(0));
   }
 
   private String stringSetting(int pt, boolean isJmolSet)
       throws ScriptException {
     if (isJmolSet && statementLength == pt + 1)
       return parameterAsString(pt);
-    Vector v = (Vector) parameterExpression(pt, -1, "XXX", true);
+    List v = (List) parameterExpression(pt, -1, "XXX", true);
     if (v == null || v.size() == 0)
       error(ERROR_invalidArgument);
-    return ScriptVariable.sValue((ScriptVariable) v.elementAt(0));
+    return ScriptVariable.sValue((ScriptVariable) v.get(0));
   }
 
   private ScriptVariable tokenSetting(int pt) throws ScriptException {
-    Vector v = (Vector) parameterExpression(pt, -1, "XXX", true);
+    List v = (List) parameterExpression(pt, -1, "XXX", true);
     if (v == null || v.size() == 0)
       error(ERROR_invalidArgument);
-    return (ScriptVariable) v.elementAt(0);
+    return (ScriptVariable) v.get(0);
   }
 
   /*
@@ -5714,14 +5715,14 @@ public class ScriptEvaluator {
     }
   }
 
-  private Vector<Token[]> vProcess;
+  private List<Token[]> vProcess;
   static int iProcess;
 
   private void addProcess(int pc, int pt, boolean isStart) {
     if (parallelProcessor == null)
       return;
     if (isStart) {
-      vProcess = new Vector<Token[]>();
+      vProcess = new ArrayList<Token[]>();
     } else {
 
       Token[][] statements = new Token[pt][];
@@ -5753,7 +5754,7 @@ public class ScriptEvaluator {
     if (tok == Token.defaultcmd) // never do the default one directly
       return -1;
     System.out.println("testing...");
-    Vector v = (Vector) parameterExpression(1, 0, null, true);
+    List v = (List) parameterExpression(1, 0, null, true);
     if (tok == Token.casecmd) {
       boolean isOK = ScriptVariable.areEqual(var, (ScriptVariable) v.get(0));
       if (isOK)
@@ -5775,7 +5776,7 @@ public class ScriptEvaluator {
         gotoCmd(null);
       return;
     }
-    Vector v = (tv != null || statementLength == 1 ? null : (Vector) parameterExpression(1,
+    List v = (tv != null || statementLength == 1 ? null : (List) parameterExpression(1,
         0, null, true));
     if (isSyntaxCheck)
       return;
@@ -6157,7 +6158,7 @@ public class ScriptEvaluator {
         continue;
       case Token.trace:
         Point3f[][] pathGuide;
-        Vector vp = new Vector();
+        List vp = new ArrayList();
         BitSet bs = atomExpression(++i);
         i = iToken;
         if (isSyntaxCheck)
@@ -6538,9 +6539,9 @@ public class ScriptEvaluator {
     }
     if (Float.isNaN(endDegrees) || Float.isNaN(pt1.x))
       return;
-    Vector ptsB = null;
+    List<Point3f> ptsB = null;
     if (doRotate && doTranslate && nSeconds != 0) {
-      Vector ptsA = viewer.getAtomPointVector(bsFrom);
+      List<Point3f> ptsA = viewer.getAtomPointVector(bsFrom);
       Matrix4f m4 = ScriptMathProcessor.getMatrix4f(q.getMatrix(), translation);
       ptsB = Measure.transformPoints(ptsA, m4, centerAndPoints[0][0]);
     }
@@ -6549,14 +6550,14 @@ public class ScriptEvaluator {
   }
 
   float getSmilesCorrelation(BitSet bsA, BitSet bsB, String smiles,
-                             Vector ptsA, Vector ptsB, Matrix4f m,
-                             Vector vReturn, boolean isSmarts)
+                             List<Point3f> ptsA, List<Point3f> ptsB, Matrix4f m,
+                             List<BitSet> vReturn, boolean isSmarts)
       throws ScriptException {
     float tolerance = 0.1f; // TODO
     try {
       if (ptsA == null) {
-        ptsA = new Vector();
-        ptsB = new Vector();
+        ptsA = new ArrayList<Point3f>();
+        ptsB = new ArrayList<Point3f>();
       }
       if (m == null)
         m = new Matrix4f();
@@ -6650,7 +6651,7 @@ public class ScriptEvaluator {
 
       // getting a correlation
 
-      Vector vReturn = new Vector();
+      List<BitSet> vReturn = new ArrayList<BitSet>();
       float stddev = getSmilesCorrelation(bsMatch3D, bsSelected, pattern, null,
           null, null, vReturn, isSmarts);
       if (Float.isNaN(stddev)) {
@@ -6660,8 +6661,9 @@ public class ScriptEvaluator {
       }
       showString("RMSD " + stddev + " Angstroms");
       b = new BitSet[vReturn.size()];
-      for (int j = 0; j < b.length; j++)
-        b[j] = (BitSet) vReturn.get(j);
+      for (int j = 0; j < b.length; j++) {
+        b[j] = vReturn.get(j);
+      }
     }
     if (asOneBitset) {
       // sum total of all now, not just first
@@ -7871,7 +7873,7 @@ public class ScriptEvaluator {
     int i = (tokAt(0) == Token.data ? 0 : 1);
     boolean appendNew = viewer.getAppendNew();
     String filter = null;
-    Vector firstLastSteps = null;
+    List<Object> firstLastSteps = null;
     int modelCount = viewer.getModelCount()
         - (viewer.getFileName().equals("zapped") ? 1 : 0);
     StringBuffer loadScript = new StringBuffer("load");
@@ -8142,7 +8144,7 @@ public class ScriptEvaluator {
         case Token.coord:
           htParams.remove("isTrajectory");
           if (firstLastSteps == null) {
-            firstLastSteps = new Vector();
+            firstLastSteps = new ArrayList<Object>();
             pt = new Point3f(0, -1, 1);
           }
           if (isPoint3f(++i)) {
@@ -8159,11 +8161,11 @@ public class ScriptEvaluator {
         }
         fNames.add(filename = parameterAsString(i++));
         if (pt != null) {
-          firstLastSteps.addElement(new int[] { (int) pt.x, (int) pt.y,
+          firstLastSteps.add(new int[] { (int) pt.x, (int) pt.y,
               (int) pt.z });
           loadScript.append(" COORD " + Escape.escape(pt));
         } else if (bs != null) {
-          firstLastSteps.addElement(bs);
+          firstLastSteps.add(bs);
           loadScript.append(" COORD " + Escape.escape(bs));
         }
         loadScript.append(" /*file*/$FILENAME" + fNames.size() + "$");
@@ -8386,7 +8388,7 @@ public class ScriptEvaluator {
     boolean isRange = true;
     int tokAction = Token.opToggle;
     String strFormat = null;
-    Vector points = new Vector();
+    List<Object> points = new ArrayList<Object>();
     BitSet bs = new BitSet();
     Object value = null;
     TickInfo tickInfo = null;
@@ -8488,7 +8490,7 @@ public class ScriptEvaluator {
         }
         if ((nAtoms = ++expressionCount) > 4)
           error(ERROR_badArgumentCount);
-        points.addElement(value);
+        points.add(value);
         i = iToken;
         break;
       }
@@ -9057,7 +9059,7 @@ public class ScriptEvaluator {
     float endDegrees = Float.MAX_VALUE;
     boolean isMolecular = false;
     boolean haveRotation = false;
-    Vector ptsA = null;
+    List<Point3f> ptsA = null;
     Point3f[] points = new Point3f[2];
     Vector3f rotAxis = new Vector3f(0, 1, 0);
     Vector3f translation = null;
@@ -9067,7 +9069,7 @@ public class ScriptEvaluator {
     int tok;
     Quaternion q = null;
     boolean helicalPath = false;
-    Vector ptsB = null;
+    List<Point3f> ptsB = null;
     BitSet bsCompare = null;
     Point3f invPoint = null;
     Point4f invPlane = null;
@@ -9200,7 +9202,7 @@ public class ScriptEvaluator {
         int symop = intParameter(++i);
         if (isSyntaxCheck)
           continue;
-        Hashtable info = viewer.getSpaceGroupInfo(null);
+        Hashtable<String, Object> info = viewer.getSpaceGroupInfo(null);
         Object[] op = (info == null ? null : (Object[]) info.get("operations"));
         if (symop == 0 || op == null || op.length < Math.abs(symop))
           error(ERROR_invalidArgument);
@@ -9371,7 +9373,7 @@ public class ScriptEvaluator {
           isSpin, bsAtoms, translation, ptsB);
   }
 
-  Vector getPointVector(Object value, int i) throws ScriptException {
+  List<Point3f> getPointVector(Object value, int i) throws ScriptException {
     if (value instanceof BitSet)
       return viewer.getAtomPointVector((BitSet) value);
     if (value instanceof String[])
@@ -9541,9 +9543,9 @@ public class ScriptEvaluator {
     String name = (String) getToken(0).value;
     if (!viewer.isFunction(name))
       error(ERROR_commandExpected);
-    Vector params = (statementLength == 1 || statementLength == 3
+    List params = (statementLength == 1 || statementLength == 3
         && tokAt(1) == Token.leftparen && tokAt(2) == Token.rightparen ? null
-        : (Vector) parameterExpression(1, 0, null, true));
+        : (List) parameterExpression(1, 0, null, true));
     if (isSyntaxCheck)
       return;
     runFunction(null, name, params, null, false);
@@ -11537,10 +11539,10 @@ public class ScriptEvaluator {
     case Token.defaultlattice:
       if (statementLength > 2) {
         Point3f pt;
-        Vector v = (Vector) parameterExpression(2, 0, "XXX", true);
+        List v = (List) parameterExpression(2, 0, "XXX", true);
         if (v == null || v.size() == 0)
           error(ERROR_invalidArgument);
-        ScriptVariable var = (ScriptVariable) v.elementAt(0);
+        ScriptVariable var = (ScriptVariable) v.get(0);
         if (var.tok == Token.point3f)
           pt = (Point3f) var.value;
         else {
@@ -12342,10 +12344,10 @@ public class ScriptEvaluator {
   }
 
   private void setUserColors() throws ScriptException {
-    Vector v = new Vector();
+    List<Integer> v = new ArrayList<Integer>();
     for (int i = 2; i < statementLength; i++) {
       int argb = getArgbParam(i);
-      v.addElement(Integer.valueOf(argb));
+      v.add(Integer.valueOf(argb));
       i = iToken;
     }
     if (isSyntaxCheck)
@@ -12353,7 +12355,7 @@ public class ScriptEvaluator {
     int n = v.size();
     int[] scale = new int[n];
     for (int i = n; --i >= 0;)
-      scale[i] = ((Integer) v.elementAt(i)).intValue();
+      scale[i] = v.get(i).intValue();
     Viewer.setUserScale(scale);
   }
 
@@ -12397,12 +12399,12 @@ public class ScriptEvaluator {
         null, null);
     if (v == null)
       return;
-    int nv = ((Vector) v).size();
+    int nv = ((List) v).size();
     if (nv == 0 || !isArrayItem && nv > 1 || isArrayItem && nv != 3)
       error(ERROR_invalidArgument);
     if (isSyntaxCheck)
       return;
-    ScriptVariable tv = (ScriptVariable) ((Vector) v).get(isArrayItem ? 2 : 0);
+    ScriptVariable tv = (ScriptVariable) ((List) v).get(isArrayItem ? 2 : 0);
 
     // create user variable if needed for list now, so we can do the copying
 
@@ -12420,7 +12422,7 @@ public class ScriptEvaluator {
     }
 
     if (isArrayItem) {
-      ScriptVariable vv = (ScriptVariable) ((Vector) v).get(0);
+      ScriptVariable vv = (ScriptVariable) ((List) v).get(0);
       // stack is selector [ VALUE
       if (t.tok == Token.hash || t.tok == Token.bitset) {
         if (t.tok == Token.bitset) {
@@ -13473,7 +13475,7 @@ public class ScriptEvaluator {
       }
       break;
     case Token.spacegroup:
-      Hashtable info = null;
+      Hashtable<String, Object> info = null;
       if ((len = statementLength) == 2) {
         if (!isSyntaxCheck) {
           info = viewer.getSpaceGroupInfo(null);
@@ -13675,7 +13677,7 @@ public class ScriptEvaluator {
     if (moData == null)
       error(ERROR_moModelError);
     Integer n = (Integer) getShapeProperty(JmolConstants.SHAPE_MO, "moNumber");
-    if (n == null || ((Integer) n).intValue() == 0) {
+    if (n == null || n.intValue() == 0) {
       setShapeProperty(JmolConstants.SHAPE_MO, "init", Integer.valueOf(modelIndex));
       setShapeProperty(JmolConstants.SHAPE_MO, "moData", moData);
     } else if (ptMO == Integer.MAX_VALUE) {
@@ -13729,8 +13731,7 @@ public class ScriptEvaluator {
       case Token.boundbox:
         if (isSyntaxCheck)
           break;
-        Vector vp = viewer.getPlaneIntersection(theTok, null, intScale / 100f,
-            0);
+        List<Object> vp = viewer.getPlaneIntersection(theTok, null, intScale / 100f, 0);
         intScale = 0;
         if (vp == null)
           continue;
@@ -13761,7 +13762,7 @@ public class ScriptEvaluator {
         Point3f[] points = new Point3f[nVertices];
         for (int j = 0; j < nVertices; j++, i = iToken)
           points[j] = getPoint3f(++iToken, true);
-        Vector v = new Vector();
+        List v = new ArrayList();
         v.add(points);
         int nTriangles = intParameter(++i);
         int[][] polygons = new int[nTriangles][];
@@ -13855,7 +13856,7 @@ public class ScriptEvaluator {
         if (tokIntersect != 0) {
           if (isSyntaxCheck)
             break;
-          Vector vpc = viewer.getPlaneIntersection(tokIntersect, plane,
+          List<Object> vpc = viewer.getPlaneIntersection(tokIntersect, plane,
               intScale / 100f, 0);
           intScale = 0;
           if (vpc == null)
@@ -13977,7 +13978,7 @@ public class ScriptEvaluator {
       case Token.width:
         propertyValue = new Float(floatParameter(++i));
         propertyName = "width";
-        swidth = (String) propertyName + " " + propertyValue;
+        swidth = propertyName + " " + propertyValue;
         break;
       case Token.line:
         propertyName = "line";
@@ -14014,7 +14015,7 @@ public class ScriptEvaluator {
         float f = floatParameter(++i);
         propertyValue = new Float(f);
         propertyName = (tokAt(i) == Token.decimal ? "width" : "diameter");
-        swidth = (String) propertyName
+        swidth = propertyName
             + (tokAt(i) == Token.decimal ? " " + f : " " + ((int) f));
         break;
       case Token.dollarsign:
@@ -14495,7 +14496,7 @@ public class ScriptEvaluator {
   private boolean mo(boolean isInitOnly) throws ScriptException {
     int offset = Integer.MAX_VALUE;
     BitSet bsModels = viewer.getVisibleFramesBitSet();
-    Vector propertyList = new Vector();
+    List<Object[]> propertyList = new ArrayList<Object[]>();
     int i = 1;
     if (tokAt(1) == Token.model || tokAt(1) == Token.frame) {
       i = modelNumberParameter(2);
@@ -14658,7 +14659,7 @@ public class ScriptEvaluator {
     return offset;
   }
 
-  private void setMoData(Vector propertyList, int moNumber, int offset,
+  private void setMoData(List<Object[]> propertyList, int moNumber, int offset,
                          int modelIndex, String title) throws ScriptException {
     if (isSyntaxCheck)
       return;
@@ -14684,7 +14685,7 @@ public class ScriptEvaluator {
         moNumber = lastMoNumber - 1;
       else if (moNumber == Token.next)
         moNumber = lastMoNumber + 1;
-      Vector mos = (Vector) (moData.get("mos"));
+      List mos = (List) (moData.get("mos"));
       int nOrb = (mos == null ? 0 : mos.size());
       if (nOrb == 0)
         error(ERROR_moCoefficients);
@@ -14808,7 +14809,7 @@ public class ScriptEvaluator {
     String colorScheme = null;
     String dataUse = null;
     short[] discreteColixes = null;
-    Vector propertyList = new Vector();
+    List<Object[]> propertyList = new ArrayList<Object[]>();
     boolean defaultMesh = false;
     if (isPmesh || isPlot3d)
       addShapeProperty(propertyList, "fileType", "Pmesh");
@@ -15102,7 +15103,7 @@ public class ScriptEvaluator {
           propertyValue = floatParameterSet(i, 6, 6);
           i = iToken;
           sbCommand.append(" ellipsoid ").append(
-              Escape.escape((float[]) propertyValue));
+              Escape.escape(propertyValue));
           break;
         } catch (ScriptException e) {
         }
@@ -15401,7 +15402,7 @@ public class ScriptEvaluator {
         // isosurface functionXY "functionName"|"data2d_xxxxx"
         // isosurface functionXYZ "functionName"|"data3d_xxxxx"
         // {origin} {ni ix iy iz} {nj jx jy jz} {nk kx ky kz}
-        Vector vxy = new Vector();
+        List<Object> vxy = new ArrayList<Object>();
         i++;
         String name = parameterAsString(i++);
         // override of function or data name when saved as a state
@@ -15414,20 +15415,20 @@ public class ScriptEvaluator {
         boolean isXYZ = (name.indexOf("data2d_") == 0);
         boolean isXYZV = (name.indexOf("data3d_") == 0);
         boolean isInline = name.equals("inline");
-        vxy.addElement(name); // (0) = name
+        vxy.add(name); // (0) = name
         Point3f pt3 = getPoint3f(i, false);
         sbCommand.append(" ").append(Escape.escape(pt3));
-        vxy.addElement(pt3); // (1) = {origin}
+        vxy.add(pt3); // (1) = {origin}
         Point4f pt4;
         ptX = ++iToken;
-        vxy.addElement(pt4 = getPoint4f(ptX)); // (2) = {ni ix iy iz}
+        vxy.add(pt4 = getPoint4f(ptX)); // (2) = {ni ix iy iz}
         sbCommand.append(" ").append(Escape.escape(pt4));
         nX = (int) pt4.x;
         ptY = ++iToken;
-        vxy.addElement(pt4 = getPoint4f(ptY)); // (3) = {nj jx jy jz}
+        vxy.add(pt4 = getPoint4f(ptY)); // (3) = {nj jx jy jz}
         sbCommand.append(" ").append(Escape.escape(pt4));
         nY = (int) pt4.x;
-        vxy.addElement(pt4 = getPoint4f(++iToken)); // (4) = {nk kx ky kz}
+        vxy.add(pt4 = getPoint4f(++iToken)); // (4) = {nk kx ky kz}
         sbCommand.append(" ").append(Escape.escape(pt4));
         nZ = (int) pt4.x;
 
@@ -15461,7 +15462,7 @@ public class ScriptEvaluator {
                   + xyzdata[0].length + "][" + xyzdata[0][0].length
                   + "] is not of size [" + nX + "][" + nY + "][" + nZ + "]");
             }
-            vxy.addElement(xyzdata); // (5) = float[][][] data
+            vxy.add(xyzdata); // (5) = float[][][] data
             sbCommand.append(" ").append(Escape.escape(xyzdata));
           } else {
             if (isInline) {
@@ -15497,7 +15498,7 @@ public class ScriptEvaluator {
                     + fdata[j].length + " " + nY + ".");
               }
             }
-            vxy.addElement(fdata); // (5) = float[][] data
+            vxy.add(fdata); // (5) = float[][] data
             sbCommand.append(" ").append(Escape.escape(fdata));
           }
         }
@@ -15902,9 +15903,9 @@ public class ScriptEvaluator {
   private static Object testData; // for isosurface
   private static Object testData2; // for isosurface
 
-  private void getWithinDistanceVector(Vector propertyList, float distance,
+  private void getWithinDistanceVector(List<Object[]> propertyList, float distance,
                                        Point3f ptc, BitSet bs) {
-    Vector v = new Vector();
+    List<Point3f> v = new ArrayList<Point3f>();
     Point3f[] pts = new Point3f[2];
     if (bs == null) {
       Point3f pt1 = new Point3f(distance, distance, distance);
@@ -15925,7 +15926,7 @@ public class ScriptEvaluator {
     }
     if (v.size() == 1) {
       addShapeProperty(propertyList, "withinDistance", new Float(distance));
-      addShapeProperty(propertyList, "withinPoint", (Point3f) v.get(0));
+      addShapeProperty(propertyList, "withinPoint", v.get(0));
     }
     addShapeProperty(propertyList, "withinPoints", new Object[] {
         new Float(distance), pts, bs, v });

@@ -25,8 +25,10 @@
 
 package org.jmol.modelset;
 
+
+import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Vector;
+import java.util.List;
 
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
@@ -229,13 +231,14 @@ abstract public class BondCollection extends AtomCollection {
   
   protected BitSet bsHBondsRasmol;
 
-  void getRasmolHydrogenBonds(Model m, BitSet bsA, BitSet bsB, Vector vHBonds,
+  void getRasmolHydrogenBonds(Model m, BitSet bsA, BitSet bsB, List<Bond> vHBonds,
                          boolean nucleicOnly, int nMax) {
 
     boolean doAdd = (vHBonds == null);
     Polymer bp, bp1;
-    if (doAdd)
-      vHBonds = new Vector();
+    if (doAdd) {
+      vHBonds = new ArrayList<Bond>();
+    }
     if (nMax < 0)
       nMax = Integer.MAX_VALUE;
     for (int i = m.bioPolymerCount; --i >= 0;) {
@@ -246,15 +249,19 @@ abstract public class BondCollection extends AtomCollection {
         continue;
       boolean isRNA = bp.isRna();
       boolean isAmino = (type == Polymer.TYPE_AMINO);
-      if (isAmino)
+      if (isAmino) {
         bp.calcRasmolHydrogenBonds(null, bsA, bsB, vHBonds, nMax);
-      for (int j = m.bioPolymerCount; --j >= 0;)
+      }
+      for (int j = m.bioPolymerCount; --j >= 0;) {
         if ((bp1 = m.bioPolymers[j]) != null && (isRNA || i != j)
-            && type == bp1.getType())
+            && type == bp1.getType()) {
           bp1.calcRasmolHydrogenBonds(bp, bsA, bsB, vHBonds, nMax);
+        }
+      }
     }
-    if (vHBonds.size() == 0 || !doAdd)
+    if (vHBonds.size() == 0 || !doAdd) {
       return;
+    }
     m.hasRasmolHBonds = true;
     for (int i = 0; i < vHBonds.size(); i++) {
       HBond bond = (HBond) vHBonds.get(i);

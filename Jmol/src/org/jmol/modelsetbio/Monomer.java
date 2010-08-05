@@ -282,8 +282,8 @@ public abstract class Monomer extends Group {
   }
   
   @Override
-  public Hashtable getMyInfo() {
-    Hashtable info = new Hashtable();
+  public Hashtable<String, Object> getMyInfo() {
+    Hashtable<String, Object> info = new Hashtable<String, Object>();
     char chainID = chain.getChainID();
     info.put("chain", (chainID == '\0' ? "" : "" + chainID));
     int seqNum = getSeqNumber();
@@ -365,7 +365,7 @@ public abstract class Monomer extends Group {
     if (a == null || b == null)
       return super.getHelixData(tokType, qType, mStep);
     return Measure.computeHelicalAxis(tokType == Token.draw ? "helixaxis" + getUniqueID() : null, 
-        tokType, (Point3f) a, (Point3f) b, q2.div(q1));
+        tokType, a, b, q2.div(q1));
   }
 
   public String getUniqueID() {

@@ -36,7 +36,6 @@ import org.jmol.util.TextFormat;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
-import java.util.Vector;
 
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
@@ -595,7 +594,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     return atomicNumber;
   }
 
-  private Vector<String> vInputCoords;
+  private List<String> vInputCoords;
 
   /*
    * INPUT COORDINATES
@@ -608,7 +607,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     // we only store them, because we may want to delete some
     readLine();
     readLine();
-    vInputCoords = new Vector<String>();
+    vInputCoords = new ArrayList<String>();
     while (readLine() != null && line.length() > 0)
       vInputCoords.add(line);
   }

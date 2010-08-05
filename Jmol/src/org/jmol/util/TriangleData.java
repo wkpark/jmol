@@ -1,7 +1,8 @@
 package org.jmol.util;
 
+
 import java.util.BitSet;
-import java.util.Vector;
+import java.util.List;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
@@ -309,7 +310,7 @@ public class TriangleData {
    */
 
 
-  public static Vector intersectPlane(Point4f plane, Vector v, int flags) {
+  public static List<Object> intersectPlane(Point4f plane, List<Object> v, int flags) {
     if (plane == null) {
       v.add(fullCubePolygon);
       return v;

@@ -94,7 +94,7 @@ public class DgridReader extends SlaterReader {
     }
   }
 
-  Hashtable htExponents = new Hashtable();
+  Hashtable<String, Float> htExponents = new Hashtable<String, Float>();
   private void readSlaterBasis() throws Exception {
      /*
 :                           +--------------------------+
@@ -123,11 +123,11 @@ public class DgridReader extends SlaterReader {
         code += "_" + ch++;
       }
       String exp = line.substring(34);
-      htExponents.put(code, new Float(parseFloat(exp)));
+      htExponents.put(code, Float.valueOf(parseFloat(exp)));
     }
   }
 
-  private Hashtable htFuncMap;
+  private Hashtable<String, Integer> htFuncMap;
   private void readMolecularOrbitals() throws Exception {
     /*
 sym: A1                 1 1s            2 1s            3 1s            4 1s            5 1s         
@@ -135,7 +135,7 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
                        11 1s            1 2s            1 2s_a          1 2s_b          1 2pz        
                         1 2pz_a         1 2pz_b         1 3dz2          1 3dx2          1 3dy2       
      */
-    htFuncMap = new Hashtable();
+    htFuncMap = new Hashtable<String, Integer>();
     discardLines(3);
     while (line != null && line.indexOf(":") != 0) {
       discardLinesUntilContains("sym: ");
@@ -155,7 +155,7 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
         String code = tokens[i++];
         String key = iAtom + "_" + code;
         if (htFuncMap.containsKey(key)) {
-          ptSlater[pt++] = ((Integer) htFuncMap.get(key)).intValue();
+          ptSlater[pt++] = htFuncMap.get(key).intValue();
         } else {
           int n = slaters.size();
           ptSlater[pt++] = n;
@@ -213,7 +213,7 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
     for (int i = 0; i < orbitals.size(); i++) {
       readLine();
       float occupancy = parseFloat(line.substring(31, 45)) + parseFloat(line.substring(47, 61));
-      ((Hashtable) orbitals.get(i)).put("occupancy", new Float(occupancy));
+      orbitals.get(i).put("occupancy", Float.valueOf(occupancy));
     }
     sortOrbitals();
     // System.out.println(Escape.escape(list, false));
@@ -268,7 +268,7 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
     String code = atomSymbol + xyz.substring(0, 2);
     if (type != ' ')
       code += "_" + type;
-    Float f = (Float) htExponents.get(code);
+    Float f = htExponents.get(code);
     float zeta = 0;
     if (f == null)
       Logger.error("Exponent for " + code + " not found");

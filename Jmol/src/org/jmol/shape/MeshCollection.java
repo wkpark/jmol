@@ -89,7 +89,7 @@ public abstract class MeshCollection extends Shape {
     return currentMesh;
   }
 
-  protected Hashtable htObjects;
+  protected Hashtable<String, Mesh> htObjects;
   
   public void allocMesh(String thisID, Mesh m) {
     // this particular version is only run from privately;
@@ -543,7 +543,7 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
       }
     } else {
       if (htObjects != null) {
-        Mesh m = (Mesh)(htObjects.get(thisID.toUpperCase()));
+        Mesh m = htObjects.get(thisID.toUpperCase());
         return (m == null ? -1 : m.index);
       }
       for (int i = meshCount; --i >= 0;) {
@@ -649,7 +649,7 @@ public String getShapeState() {
     }
   }
 /*
-private String encapsulateData(String cmd, Vector data, String ext) {
+private String encapsulateData(String cmd, List data, String ext) {
   String name = ((String) data.elementAt(0)).toLowerCase();
   Object array = data.elementAt(5);
   if (array instanceof float[][] && name.indexOf("data2d_") != 0)

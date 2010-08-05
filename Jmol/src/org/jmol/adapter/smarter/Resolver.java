@@ -26,9 +26,10 @@ package org.jmol.adapter.smarter;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import netscape.javascript.JSObject;
 
@@ -218,7 +219,7 @@ public class Resolver {
    */
   @SuppressWarnings("unchecked")
   static Object getAtomCollectionReader(String fullName, String type,
-                        BufferedReader bufferedReader, Hashtable htParams,
+                        BufferedReader bufferedReader, Hashtable<String, Object> htParams,
                         int ptFile) throws Exception {
     AtomSetCollectionReader atomSetCollectionReader = null;
     String readerName;
@@ -246,14 +247,14 @@ public class Resolver {
       return errMsg;
     }
     if (htParams == null)
-      htParams = new Hashtable();
+      htParams = new Hashtable<String, Object>();
     htParams.put("ptFile", Integer.valueOf(ptFile));
     if (ptFile <= 0)
       htParams.put("readerName", readerName);
     if (readerName.indexOf("Xml") == 0)
       readerName = "Xml";
     String className = null;
-    Class atomSetCollectionReaderClass;
+    Class<?> atomSetCollectionReaderClass;
     String err = null;
     try {
       try {
@@ -285,10 +286,9 @@ public class Resolver {
    * @return an AtomSetCollection or a String error
    * @throws Exception
    */
-  @SuppressWarnings("unchecked")
   static Object DOMResolve(Object DOMNode, Hashtable<String, Object> htParams) throws Exception {
     String className = null;
-    Class atomSetCollectionReaderClass;
+    Class<?> atomSetCollectionReaderClass;
     AtomSetCollectionReader atomSetCollectionReader; 
     String atomSetCollectionReaderName = getXmlType((JSObject) DOMNode);
     if (Logger.debugging) {
@@ -352,7 +352,7 @@ public class Resolver {
         || outputFileData.startsWith("FILE NOT FOUND")
         || outputFileData.indexOf("<html") >= 0)
       return new String[] { "M0001" };
-    Vector<String> v = new Vector<String>();
+    List<String> v = new ArrayList<String>();
     String token;
     String lasttoken = "";
     try {

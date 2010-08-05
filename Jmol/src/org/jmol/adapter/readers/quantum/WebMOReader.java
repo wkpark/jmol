@@ -24,10 +24,12 @@
 
 package org.jmol.adapter.readers.quantum;
 
+
 import org.jmol.adapter.smarter.*;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
@@ -246,8 +248,8 @@ public class WebMOReader extends MopacSlaterReader {
 
      */
 
-    Vector sdata = new Vector();
-    Vector gdata = new Vector();
+    List<int[]> sdata = new ArrayList<int[]>();
+    List<float[]> gdata = new ArrayList<float[]>();
     int atomIndex = 0;
     int gaussianPtr = 0;
 
@@ -269,16 +271,18 @@ public class WebMOReader extends MopacSlaterReader {
         String[] strData = getTokens(readLine());
         int nData = strData.length;
         float[] data = new float[nData];
-        for (int d = 0; d < nData; d++)
+        for (int d = 0; d < nData; d++) {
           data[d] = parseFloat(strData[d]);
-        gdata.addElement(data);
+        }
+        gdata.add(data);
         gaussianPtr++;
       }
-      sdata.addElement(slater);
+      sdata.add(slater);
     }
     float[][] garray = new float[gaussianPtr][];
-    for (int i = 0; i < gaussianPtr; i++)
-      garray[i]=(float[])gdata.get(i);
+    for (int i = 0; i < gaussianPtr; i++) {
+      garray[i] = gdata.get(i);
+    }
     moData.put("shells", sdata);
     moData.put("gaussians", garray);
     if (Logger.debugging) {
@@ -322,23 +326,25 @@ public class WebMOReader extends MopacSlaterReader {
       }
       return;
     }
-    Hashtable mo = new Hashtable();
-    Vector data = new Vector();
+    Hashtable<String, Object> mo = new Hashtable<String, Object>();
+    List<String> data = new ArrayList<String>();
     float energy = parseFloat(readLine());
     float occupancy = parseFloat(readLine());
     while (getLine()) {
       String[] tokens = getTokens();
-      if (tokens.length == 0)
+      if (tokens.length == 0) {
         continue;
-      data.addElement(tokens[1]);
+      }
+      data.add(tokens[1]);
     }
     float[] coefs = new float[data.size()];
-    for (int i = data.size(); --i >= 0;)
-      coefs[i] = parseFloat((String) data.get(i));
-    mo.put("energy", new Float(energy));
-    mo.put("occupancy", new Float(occupancy));
+    for (int i = data.size(); --i >= 0;) {
+      coefs[i] = parseFloat(data.get(i));
+    }
+    mo.put("energy", Float.valueOf(energy));
+    mo.put("occupancy", Float.valueOf(occupancy));
     mo.put("coefficients", coefs);
-    orbitals.addElement(mo);
+    orbitals.add(mo);
     nOrbitals++;
   }
 }

@@ -2,8 +2,9 @@ package org.jmol.adapter.readers.quantum;
 
 import org.jmol.adapter.smarter.*;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.jmol.api.JmolAdapter;
@@ -100,8 +101,8 @@ public class MoldenReader extends MopacSlaterReader {
        0.1285000000D+00  0.2384999379D-02
       s   10 1.00
      */
-    Vector sdata = new Vector();
-    Vector gdata = new Vector();
+    List<int[]> sdata = new ArrayList<int[]>();
+    List<float[]> gdata = new ArrayList<float[]>();
     int atomIndex = 0;
     int gaussianPtr = 0;
     
@@ -135,17 +136,18 @@ public class MoldenReader extends MopacSlaterReader {
           
           for (int d = 0; d < nTokens; d++)
             orbData[d] = parseFloat(primTokens[d]);
-          gdata.addElement(orbData);
+          gdata.add(orbData);
           gaussianPtr++;
         }
-        sdata.addElement(slater);
+        sdata.add(slater);
       }      
       // Next atom
     }
 
     float [][] garray = new float[gaussianPtr][];
-    for (int i = 0; i < gaussianPtr; i++)
-      garray[i] = (float[]) gdata.get(i);
+    for (int i = 0; i < gaussianPtr; i++) {
+      garray[i] = gdata.get(i);
+    }
     moData.put("shells", sdata);
     moData.put("gaussians", garray);
     if (Logger.debugging) {
@@ -192,7 +194,7 @@ public class MoldenReader extends MopacSlaterReader {
     String[] tokens = getTokens();
     while (tokens != null &&  line.indexOf('[') < 0) {
       Hashtable<String, Object> mo = new Hashtable<String, Object>();
-      Vector data = new Vector();
+      List<String> data = new ArrayList<String>();
       float energy = Float.NaN;
       float occupancy = Float.NaN;
       
@@ -215,13 +217,13 @@ public class MoldenReader extends MopacSlaterReader {
         if (tokens.length != 2)
           throw new Exception("invalid MO coefficient specification");
         // tokens[0] is the function number, and tokens[1] is the coefficient
-        data.addElement(tokens[1]);
+        data.add(tokens[1]);
         tokens = getTokens(readLine());
       }
       
       float[] coefs = new float[data.size()];
       for (int i = data.size(); --i >= 0;) {
-        coefs[i] = parseFloat((String) data.get(i));
+        coefs[i] = parseFloat(data.get(i));
       }
       mo.put("energy", new Float(energy));
       mo.put("occupancy", new Float(occupancy));
@@ -237,7 +239,7 @@ public class MoldenReader extends MopacSlaterReader {
   
   void readFreqsAndModes() throws Exception {
     String[] tokens;
-    Vector frequencies = new Vector();
+    List<String> frequencies = new ArrayList<String>();
     while (readLine() != null && line.indexOf('[') < 0) {
       frequencies.add(getTokens()[0]);
     }

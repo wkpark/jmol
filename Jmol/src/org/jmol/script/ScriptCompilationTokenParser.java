@@ -23,13 +23,14 @@
 
 package org.jmol.script;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.api.JmolEdge;
 import org.jmol.i18n.GT;
-
-import java.util.Vector;
 
 import javax.vecmath.Point3f;
 
@@ -83,7 +84,7 @@ abstract class ScriptCompilationTokenParser {
   protected boolean isMathExpressionCommand;
   protected boolean isSetOrDefine;
 
-  private Vector ltokenPostfix;
+  private List<Token> ltokenPostfix;
 
   protected boolean isEmbeddedExpression;
   protected boolean isCommaAsOrAllowed;
@@ -136,7 +137,7 @@ abstract class ScriptCompilationTokenParser {
 
   protected boolean compileExpression() {
     int firstToken = (isSetOrDefine && !isSetBrace ? 2 : 1);
-    ltokenPostfix = new Vector();
+    ltokenPostfix = new ArrayList<Token>();
     itokenInfix = 0;
     Token tokenBegin = null;
     if (tokCommand == Token.restrict && tokAt(1) == Token.bonds) {
@@ -182,7 +183,9 @@ abstract class ScriptCompilationTokenParser {
       }
     }
     atokenInfix = new Token[ltokenPostfix.size()];
-    ltokenPostfix.copyInto(atokenInfix);
+    for (int i = 0; i < ltokenPostfix.size(); i++) {
+      atokenInfix[i] = ltokenPostfix.get(i);
+    }
     return true;
   }
 
@@ -283,7 +286,7 @@ abstract class ScriptCompilationTokenParser {
       return false;
     if (logMessages)
         Logger.debug("addTokenToPostfix" + token);
-    ltokenPostfix.addElement(token);
+    ltokenPostfix.add(token);
     lastToken = token;
     return true;
   }

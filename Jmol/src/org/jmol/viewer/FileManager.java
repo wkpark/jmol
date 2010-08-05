@@ -64,7 +64,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Vector;
 
 public class FileManager {
 
@@ -205,8 +204,9 @@ public class FileManager {
    */
   Object createAtomSetCollectionFromFile(String name, Hashtable<String, Object> htParams,
                                     boolean isAppend) {
-    if (htParams.get("atomDataOnly") == null)
+    if (htParams.get("atomDataOnly") == null) {
       setLoadState(htParams);
+    }
     if (name.indexOf('=') == 0 || name.indexOf('$') == 0)
       name = (String) viewer.setLoadFormat(name, name.charAt(0), true);
     int pt = name.indexOf("::");
@@ -255,7 +255,8 @@ public class FileManager {
     return filesReader.atomSetCollection;
   }
 
-  Object createAtomSetCollectionFromString(String strModel, StringBuffer loadScript, Hashtable<String, Object> htParams,
+  Object createAtomSetCollectionFromString(String strModel, StringBuffer loadScript,
+                                           Hashtable<String, Object> htParams,
                                            boolean isAppend,
                                            boolean isLoadVariable) {
     if (!isLoadVariable)
@@ -304,10 +305,9 @@ public class FileManager {
     return filesReader.atomSetCollection;
   }
 
-  @SuppressWarnings("unchecked")
-  Object createAtomSeCollectionFromArrayData(Vector<Object> arrayData,
-                                               Hashtable<String, Object> htParams,
-                                               boolean isAppend) {
+  Object createAtomSeCollectionFromArrayData(List<Object> arrayData,
+                                             Hashtable<String, Object> htParams,
+                                             boolean isAppend) {
     // NO STATE SCRIPT -- HERE WE ARE TRYING TO CONSERVE SPACE
     Logger.info("FileManager.getAtomSetCollectionFromArrayData(Vector)");
     int nModels = arrayData.size();
@@ -320,8 +320,8 @@ public class FileManager {
         readers[i] = new StringDataReader((String) arrayData.get(i));
       else if (data instanceof String[])
         readers[i] = new ArrayDataReader((String[]) arrayData.get(i));
-      else if (data instanceof Vector)
-        readers[i] = new VectorDataReader((Vector<String>) arrayData.get(i));
+      else if (data instanceof List)
+        readers[i] = new VectorDataReader((List<String>) arrayData.get(i));
     }
     FilesReader filesReader = new FilesReader(fullPathNames, fullPathNames,
         null, readers, htParams, isAppend);
@@ -345,7 +345,7 @@ public class FileManager {
    * @return fileData
    */
   Object createAtomSetCollectionFromReader(String fullPathName, String name,
-                                      Reader reader, Hashtable<String, Object>  htParams) {
+                                      Reader reader, Hashtable<String, Object> htParams) {
     FileReader fileReader = new FileReader(name, fullPathName, name,
         null, new BufferedReader(reader), htParams, false);
     fileReader.run();
@@ -527,8 +527,7 @@ public class FileManager {
         if (allowZipStream)
           return new ZipInputStream(bis);
         if (asInputStream)
-          return ZipUtil.getZipFileContents(is, subFileList, 1,
-              true);
+          return ZipUtil.getZipFileContents(is, subFileList, 1, true);
         // danger -- converting bytes to String here.
         // we lose 128-156 or so.
         String s = (String) ZipUtil.getZipFileContents(is, subFileList, 1,
@@ -604,8 +603,7 @@ public class FileManager {
           sb.append("BEGIN Directory Entry " + name0 + "\n");
         try {
           while (true)
-            sb.append(Integer.toHexString(bd.readByte() & 0xFF))
-                .append(' ');
+            sb.append(Integer.toHexString((bd.readByte()) & 0xFF)).append(' ');
         } catch (Exception e1) {
           sb.append('\n');
         }
@@ -740,7 +738,7 @@ public class FileManager {
     }
   }
 
-  Object getFileAsImage(String name, Hashtable<String, Object>  htParams) {
+  Object getFileAsImage(String name, Hashtable<String, Object> htParams) {
     if (name == null)
       return "";
     String[] names = classifyName(name, true);
@@ -1042,7 +1040,7 @@ public class FileManager {
   }
 
   String createZipSet(String fileName, String script, boolean includeRemoteFiles) {
-    Vector<Object> v = new Vector<Object>();
+    List<Object> v = new ArrayList<Object>();
     List<String> fileNames = new ArrayList<String>();
     getFileReferences(script, fileNames, "");
     List<String> newFileNames = new ArrayList<String>();
@@ -1103,8 +1101,8 @@ public class FileManager {
    * @return msg bytes filename or errorMessage
    */
   private static String writeZipFile(String outFileName,
-                                    Vector<Object> fileNamesAndByteArrays,
-                                    boolean preservePath, String msg) {
+                                     List<Object> fileNamesAndByteArrays,
+                                     boolean preservePath, String msg) {
     byte[] buf = new byte[1024];
     long nBytesOut = 0;
     long nBytes = 0;
@@ -1173,9 +1171,9 @@ public class FileManager {
   private class DOMReader {
     private Object aDOMNode;
     Object atomSetCollection;
-    Hashtable<String, Object>  htParams;
+    Hashtable<String, Object> htParams;
 
-    DOMReader(Object DOMNode, Hashtable<String, Object>  htParams) {
+    DOMReader(Object DOMNode, Hashtable<String, Object> htParams) {
       this.aDOMNode = DOMNode;
       this.htParams = htParams;
     }
@@ -1197,11 +1195,11 @@ public class FileManager {
     private String fileTypeIn;
     Object atomSetCollection;
     private BufferedReader reader;
-    private Hashtable<String, Object>  htParams;
+    private Hashtable<String, Object> htParams;
     private boolean isAppend;
 
     FileReader(String fileName, String fullPathName, String nameAsGiven, String type,
-        BufferedReader reader, Hashtable<String, Object>  htParams, boolean isAppend) {
+        BufferedReader reader, Hashtable<String, Object> htParams, boolean isAppend) {
       fileNameIn = fileName;
       fullPathNameIn = fullPathName;
       nameAsGivenIn = nameAsGiven;
@@ -1296,11 +1294,11 @@ public class FileManager {
     private String[] fileTypesIn;
     Object atomSetCollection;
     private DataReader[] stringReaders;
-    private Hashtable<String, Object>  htParams;
+    private Hashtable<String, Object> htParams;
     private boolean isAppend;
 
     FilesReader(String[] name, String[] nameAsGiven, String[] types,
-        DataReader[] readers, Hashtable<String, Object>  htParams, boolean isAppend) {
+        DataReader[] readers, Hashtable<String, Object> htParams, boolean isAppend) {
       fullPathNamesIn = name;
       namesAsGivenIn = nameAsGiven;
       fileTypesIn = types;
@@ -1365,8 +1363,9 @@ public class FileManager {
             .getAtomSetCollectionOrBufferedReaderFromZip(is, name,
                 zipDirectory, htParams, true);
       }
-      if (t instanceof BufferedReader)
+      if (t instanceof BufferedReader) {
         return t;
+      }
       return (t == null ? "error opening:" + namesAsGivenIn[i]
           : (String) t);
     }
@@ -1470,11 +1469,11 @@ public class FileManager {
    */
 
   class VectorDataReader extends DataReader {
-    private Vector<String> data;
+    private List<String> data;
     private int pt;
     private int len;
     
-    VectorDataReader(Vector<String> data) {
+    VectorDataReader(List<String> data) {
       super(new StringReader(""));
       this.data = data;
       len = data.size();

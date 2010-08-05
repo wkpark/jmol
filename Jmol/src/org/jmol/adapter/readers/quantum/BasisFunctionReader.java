@@ -27,10 +27,11 @@ import org.jmol.adapter.smarter.*;
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
+import java.util.List;
 
-import java.util.Vector;
 
 /**
  * 
@@ -39,7 +40,7 @@ import java.util.Vector;
 abstract class BasisFunctionReader extends AtomSetCollectionReader {
 
   protected Hashtable<String, Object> moData = new Hashtable<String, Object>();
-  protected Vector<Hashtable<String, Object>> orbitals = new Vector<Hashtable<String, Object>>();
+  protected List<Hashtable<String, Object>> orbitals = new ArrayList<Hashtable<String, Object>>();
   protected int nOrbitals = 0;
   
 
@@ -153,7 +154,7 @@ abstract class BasisFunctionReader extends AtomSetCollectionReader {
   protected void fixSlaterTypes(int typeOld, int typeNew) {
     // in certain cases we assume Cartesian and then later have to 
     // correct that. 
-    Vector<int[]> sdata = (Vector<int[]>) moData.get("shells");
+    List<int[]> sdata = (List<int[]>) moData.get("shells");
     for (int i = sdata.size(); --i >=0 ;) {
       int[] slater = sdata.get(i);
       if (slater[1] == typeOld)

@@ -25,8 +25,10 @@
 
 package org.jmol.modelset;
 
+
+import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
@@ -77,8 +79,8 @@ public class BoxInfo {
    * @return    a set of points
    * 
    */
-  public Vector intersectPlane(Point4f plane, float scale, int flags) {
-    Vector v = new Vector();
+  public List<Object> intersectPlane(Point4f plane, float scale, int flags) {
+    List<Object> v = new ArrayList<Object>();
     v.add(getCanonicalCopy(scale));
     return TriangleData.intersectPlane(plane, v, flags);
   }
@@ -231,8 +233,8 @@ public class BoxInfo {
     return bbVertices;
   }
   
-  Hashtable getBoundBoxInfo() {
-    Hashtable info = new Hashtable();
+  Hashtable<String, Object> getBoundBoxInfo() {
+    Hashtable<String, Object> info = new Hashtable<String, Object>();
     info.put("center", new Point3f(bbCenter));
     info.put("vector", new Vector3f(bbVector));
     info.put("corner0", new Point3f(bbCorner0));

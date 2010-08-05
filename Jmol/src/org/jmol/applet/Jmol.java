@@ -38,8 +38,8 @@ import java.applet.Applet;
 import java.awt.*;
 import java.net.URL;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Vector;
 
 import javax.swing.UIManager;
 
@@ -1247,7 +1247,7 @@ public class Jmol implements WrappedApplet {
           return "";
       }
 
-      Vector<String> apps = new Vector<String>();
+      java.util.List<String> apps = new ArrayList<String>();
       JmolAppletRegistry.findApplets(appletName, syncId, fullName, apps);
       int nApplets = apps.size();
       if (nApplets == 0) {
@@ -1261,7 +1261,7 @@ public class Jmol implements WrappedApplet {
       if (getGraphics)
         gRight = null;
       for (int i = 0; i < nApplets; i++) {
-        String theApplet = apps.elementAt(i);
+        String theApplet = apps.get(i);
         JmolAppletInterface app = (JmolAppletInterface) JmolAppletRegistry.htRegistry
             .get(theApplet);
         if (Logger.debugging)

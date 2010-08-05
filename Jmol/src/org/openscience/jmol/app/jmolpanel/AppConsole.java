@@ -30,6 +30,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.*;
 import java.net.URL;
+import java.util.List;
+
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JFrame;
@@ -43,8 +45,6 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.JScrollPane;
-
-import java.util.Vector;
 
 import org.jmol.api.JmolAppConsoleInterface;
 import org.jmol.api.JmolViewer;
@@ -345,7 +345,7 @@ public final class AppConsole extends JmolConsole implements JmolAppConsoleInter
     doWait = (strCommand.indexOf("WAITTEST ") == 0);
     if (doWait) { //for testing, mainly
       // demonstrates using the statusManager system; probably hangs application.
-      Vector info = (Vector) viewer
+      List info = (List) viewer
           .scriptWaitStatus(strCommand.substring(5),
               "+fileLoaded,+scriptStarted,+scriptStatus,+scriptEcho,+scriptTerminated");
       /*
@@ -354,9 +354,9 @@ public final class AppConsole extends JmolConsole implements JmolAppConsoleInter
        * statusRecord = [int msgPtr, String statusName, int intInfo, String msg]    
        */
       for (int i = 0; i < info.size(); i++) {
-        Vector statusRecordSet = (Vector) info.get(i);
+        List statusRecordSet = (List) info.get(i);
         for (int j = 0; j < statusRecordSet.size(); j++) {
-          Vector statusRecord = (Vector) statusRecordSet.get(j);
+          List statusRecord = (List) statusRecordSet.get(j);
           Logger.info("msg#=" + statusRecord.get(0) + " " + statusRecord.get(1)
               + " intInfo=" + statusRecord.get(2) + " stringInfo="
               + statusRecord.get(3));
@@ -456,7 +456,7 @@ public final class AppConsole extends JmolConsole implements JmolAppConsoleInter
       super(new ConsoleDocument());
       consoleDoc = (ConsoleDocument)getDocument();
       consoleDoc.setConsoleTextPane(this);
-      this.enterListener = (EnterListener) appConsole;
+      this.enterListener = appConsole;
     }
 
     public String getCommandString() {

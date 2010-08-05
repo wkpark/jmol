@@ -24,7 +24,8 @@
 package org.jmol.jvxl.readers;
 
 import java.util.Hashtable;
-import java.util.Vector;
+
+import java.util.List;
 
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
@@ -83,18 +84,18 @@ class IsoMOReader extends AtomDataReader {
   protected void generateCube() {
     volumeData.voxelData = voxelData = new float[nPointsX][nPointsY][nPointsZ];
     MOCalculationInterface q = (MOCalculationInterface) Interface.getOptionInterface("quantum.MOCalculation");
-    Hashtable moData = params.moData;
+    Hashtable<String, Object> moData = params.moData;
     float[] coef = params.moCoefficients; 
     int[][] dfCoefMaps = params.dfCoefMaps;
 
     if (coef == null) {
       // electron density calc
-      Vector mos = (Vector) (moData.get("mos"));
+      List<Hashtable<String, Object>> mos = (List<Hashtable<String, Object>>) moData.get("mos");
       if (mos == null)
         return;
       for (int i = params.qm_moNumber; --i >= 0; ) {
         Logger.info(" generating isosurface data for MO " + (i + 1));
-        Hashtable mo = (Hashtable) mos.get(i);
+        Hashtable<String, Object> mo = mos.get(i);
         coef = (float[]) mo.get("coefficients");
         dfCoefMaps = (int[][]) mo.get("dfCoefMaps");
         getData(q, moData, coef, dfCoefMaps, params.theProperty);
@@ -105,19 +106,21 @@ class IsoMOReader extends AtomDataReader {
     }
   }
   
-  private void getData(MOCalculationInterface q, Hashtable moData,
+  private void getData(MOCalculationInterface q, Hashtable<String, Object> moData,
                        float[] coef, int[][] dfCoefMaps, float[] nuclearCharges) {
     switch (params.qmOrbitalType) {
     case Parameters.QM_TYPE_GAUSSIAN:
-      q.calculate(volumeData, bsMySelected, (String) moData
-          .get("calculationType"), atomData.atomXyz, atomData.firstAtomIndex,
-          (Vector) moData.get("shells"), (float[][]) moData.get("gaussians"),
+      q.calculate(
+          volumeData, bsMySelected, (String) moData.get("calculationType"),
+          atomData.atomXyz, atomData.firstAtomIndex,
+          (List) moData.get("shells"), (float[][]) moData.get("gaussians"),
           dfCoefMaps, null, coef,
           nuclearCharges, moData.get("isNormalized") == null);
       break;
     case Parameters.QM_TYPE_SLATER:
-      q.calculate(volumeData, bsMySelected, (String) moData
-          .get("calculationType"), atomData.atomXyz, atomData.firstAtomIndex,
+      q.calculate(
+          volumeData, bsMySelected, (String) moData.get("calculationType"),
+          atomData.atomXyz, atomData.firstAtomIndex,
           null, null, null, moData.get("slaters"), coef, nuclearCharges, true);
       break;
     default:

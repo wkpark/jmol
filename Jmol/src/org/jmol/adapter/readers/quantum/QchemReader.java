@@ -24,13 +24,15 @@
 
 package org.jmol.adapter.readers.quantum;
 
+
 import org.jmol.adapter.smarter.*;
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 /**
  * A reader for Q-Chem 2.1 and 3.2
@@ -262,13 +264,13 @@ $end
 
   private void readBasis() throws Exception {
     // initialize the 'global' variables
-    moData = new Hashtable();
+    moData = new Hashtable<String, Object>();
     int atomCount = 0;
     int shellCount = 0;
     int gaussianCount = 0;
     // local variables
-    Vector sdata = new Vector();
-    Vector gdata = new Vector();
+    List<int[]> sdata = new ArrayList<int[]>();
+    List<String[]> gdata = new ArrayList<String[]>();
     String[] tokens;
 
     discardLinesUntilStartsWith("$basis");
@@ -287,15 +289,16 @@ $end
       slater[2] = gaussianCount;
       int nGaussians = parseInt(tokens[1]);
       slater[3] = nGaussians;
-      sdata.addElement(slater);
+      sdata.add(slater);
       gaussianCount += nGaussians;
-      for (int i = 0; i < nGaussians; i++)
-        gdata.addElement(getTokens(readLine()));     
+      for (int i = 0; i < nGaussians; i++) {
+        gdata.add(getTokens(readLine()));
+      }
     }
     // now rearrange the gaussians (direct copy from GaussianReader)
     float[][] garray = new float[gaussianCount][];
     for (int i = 0; i < gaussianCount; i++) {
-      tokens = (String[]) gdata.get(i);
+      tokens = gdata.get(i);
       garray[i] = new float[tokens.length];
       for (int j = 0; j < tokens.length; j++)
         garray[i][j] = parseFloat(tokens[j]);
@@ -570,7 +573,7 @@ $end
      * 
      */
     int nMOs; // total number of MOs that were read
-    Vector orbitals = new Vector();
+    List<Hashtable<String, Object>> orbitals = new ArrayList<Hashtable<String,Object>>();
     String orbitalType = getTokens(line)[0]; // is RESTRICTED or ALPHA
     nMOs = readMOs(orbitalType.equals("RESTRICTED"), orbitals, alphas);
     if (orbitalType.equals("ALPHA")) { // we also have BETA orbitals....
@@ -612,8 +615,8 @@ $end
   boolean fSpherical = false;
   
   private int readMOs(boolean restricted,
-                      Vector orbitals, MOInfo[] moInfos) throws Exception {
-    Hashtable[] mos = new Hashtable[6];  // max 6 MO's per line
+                      List<Hashtable<String, Object>> orbitals, MOInfo[] moInfos) throws Exception {
+    Hashtable<String, Object>[] mos = new Hashtable[6];  // max 6 MO's per line
     float[][] mocoef = new float[6][];   // coefficients for each MO
     int[] moid = new int[6];             // mo numbers
     String[] tokens, energy;
@@ -626,7 +629,7 @@ $end
       for (int i = 0; i < nMO; i++) {
         moid[i] = parseInt(tokens[i])-1;
         mocoef[i] = new float[nBasis];
-        mos[i] = new Hashtable();
+        mos[i] = new Hashtable<String, Object>();
       }
       for (int i = 0, pt = 0; i < nBasis; i++) {
         tokens = getTokens(readLine());
@@ -681,7 +684,7 @@ $end
           else label = "V"+label; // keep spin information for the orbital
         }
         mos[i].put("symmetry", moInfo.moSymmetry+" "+label +"("+(moid[i]+1)+")");
-        orbitals.addElement(mos[i]);
+        orbitals.add(mos[i]);
       }
       nMOs += nMO;
     }

@@ -26,7 +26,6 @@
 package org.jmol.modelset;
 
 import org.jmol.util.BitSetUtil;
-
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.Logger;
@@ -45,11 +44,13 @@ import org.jmol.atomdata.RadiusData;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
+
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Properties;
-import java.util.Vector;
 
 /* 
  * 
@@ -96,15 +97,14 @@ public final class ModelLoader extends ModelSet {
     this.modelSetName = modelSetName;
     this.mergeModelSet = mergeModelSet;
     merging = (mergeModelSet != null && mergeModelSet.atomCount > 0);
-    if (!merging)
+    if (!merging) {
       viewer.resetShapes();
+    }
     preserveState = viewer.getPreserveState();
 
-    Hashtable info = adapter
-        .getAtomSetCollectionAuxiliaryInfo(atomSetCollection);
+    Hashtable info = adapter.getAtomSetCollectionAuxiliaryInfo(atomSetCollection);
     info.put("loadScript", loadScript);
-    initializeInfo(adapter.getFileTypeName(atomSetCollection).toLowerCase()
-        .intern(), info);
+    initializeInfo(adapter.getFileTypeName(atomSetCollection).toLowerCase().intern(), info);
     createModelSet(adapter, atomSetCollection, bsNew);
     // dumpAtomSetNameDiagnostics(adapter, atomSetCollection);
   }
@@ -131,7 +131,7 @@ public final class ModelLoader extends ModelSet {
   private boolean doMinimize;
   private String fileHeader;
 
-  private void initializeInfo(String name, Hashtable info) {
+  private void initializeInfo(String name, Hashtable<String, Object> info) {
     g3d = viewer.getGraphics3D();
     //long timeBegin = System.currentTimeMillis();
     modelSetTypeName = name;
@@ -142,7 +142,7 @@ public final class ModelLoader extends ModelSet {
     isPDB = getModelSetAuxiliaryInfoBoolean("isPDB");
     jmolData = (String) getModelSetAuxiliaryInfo("jmolData");
     fileHeader = (String) getModelSetAuxiliaryInfo("fileHeader");
-    trajectorySteps = (Vector) getModelSetAuxiliaryInfo("trajectorySteps");
+    trajectorySteps = (List) getModelSetAuxiliaryInfo("trajectorySteps");
     isTrajectory = (trajectorySteps != null);
     noAutoBond = getModelSetAuxiliaryInfoBoolean("noAutoBond");
     is2D = getModelSetAuxiliaryInfoBoolean("is2D");
@@ -159,7 +159,7 @@ public final class ModelLoader extends ModelSet {
     }
   }
 
-  private final Hashtable htAtomMap = new Hashtable();
+  private final Hashtable<Object, Atom> htAtomMap = new Hashtable<Object, Atom>();
 
   private final static int defaultGroupCount = 32;
   private Chain[] chainOf;
@@ -215,16 +215,17 @@ public final class ModelLoader extends ModelSet {
       baseTrajectoryCount = mergeModelSet.getTrajectoryCount();
       if (baseTrajectoryCount > 0) {
         if (isTrajectory) {
-          for (int i = 0; i < trajectorySteps.size(); i++)
-            mergeModelSet.trajectorySteps.addElement(trajectorySteps
-                .elementAt(i));
+          for (int i = 0; i < trajectorySteps.size(); i++) {
+            mergeModelSet.trajectorySteps.add(trajectorySteps.get(i));
+          }
         }
         trajectorySteps = mergeModelSet.trajectorySteps;
       }
     }
     initializeAtomBondModelCounts(nAtoms);
-    if (bsNew != null && doMinimize)
+    if (bsNew != null && doMinimize) {
       bsNew.set(baseAtomIndex, baseAtomIndex + nAtoms);
+    }
     if (adapter == null) {
       setModelNameNumberProperties(0, -1, "", 1, null, null, false, null);
     } else {
@@ -269,36 +270,45 @@ public final class ModelLoader extends ModelSet {
     // only now can we access all of the atom's properties
 
     RadiusData rd = (isLargeModel ? null : viewer.getDefaultRadiusData());
-    for (int i = baseAtomIndex; i < atomCount; i++)
+    for (int i = baseAtomIndex; i < atomCount; i++) {
       atoms[i].setMadAtom(viewer, rd);
-    for (int i = models[baseModelIndex].firstAtomIndex; i < atomCount; i++)
+    }
+    for (int i = models[baseModelIndex].firstAtomIndex; i < atomCount; i++) {
       models[atoms[i].modelIndex].bsAtoms.set(i);
-    if (isLargeModel)
+    }
+    if (isLargeModel) {
       setDefaultRendering();
+    }
     freeze();
     calcBoundBoxDimensions(null, 1);
 
-    if (is2D)
+    if (is2D) {
       applyStereochemistry();
+    }
 
     finalizeShapes();
-    if (mergeModelSet != null)
+    if (mergeModelSet != null) {
       mergeModelSet.releaseModelSet();
+    }
     mergeModelSet = null;
   }
 
   private void setDefaultRendering() {
     StringBuffer sb = new StringBuffer();
     String s;
-    for (int i = baseModelIndex; i < modelCount; i++)
-      if ((s = models[i].getDefaultRendering()) != null)
+    for (int i = baseModelIndex; i < modelCount; i++) {
+      if ((s = models[i].getDefaultRendering()) != null) {
         sb.append(s);
-    if (sb.length() == 0)
+      }
+    }
+    if (sb.length() == 0) {
       return;
+    }
     sb.append("select *;");
     String script = (String) getModelSetAuxiliaryInfo("jmolscript");
-    if (script == null)
+    if (script == null) {
       script = "";
+    }
     sb.append(script);
     modelSetAuxiliaryInfo.put("jmolscript", sb.toString());
   }
@@ -308,14 +318,14 @@ public final class ModelLoader extends ModelSet {
     int modelAtomCount = 0;
     for (int i = baseModelIndex; i < modelCount; atomIndex += modelAtomCount, i++) {
       modelAtomCount = models[i].bsAtoms.cardinality();
-      Hashtable atomProperties = (Hashtable) getModelAuxiliaryInfo(i,
+      Hashtable<String, String> atomProperties = (Hashtable<String, String>) getModelAuxiliaryInfo(i,
           "atomProperties");
       if (atomProperties == null)
         continue;
-      Enumeration e = atomProperties.keys();
+      Enumeration<String> e = atomProperties.keys();
       while (e.hasMoreElements()) {
-        String key = (String) e.nextElement();
-        String value = (String) atomProperties.get(key);
+        String key = e.nextElement();
+        String value = atomProperties.get(key);
         // no deletions yet...
         BitSet bs = getModelAtomBitSetIncludingDeleted(i, false);
         key = "property_" + key.toLowerCase();
@@ -362,17 +372,17 @@ public final class ModelLoader extends ModelSet {
     if (trajectoryCount > 1)
       modelCount += trajectoryCount - 1;
     models = (Model[]) ArrayUtil.setLength(models, modelCount);
-    modelFileNumbers =(int[])ArrayUtil.setLength(modelFileNumbers, modelCount);
-    modelNumbers =(int[])ArrayUtil.setLength(modelNumbers, modelCount);
-    modelNumbersForAtomLabel = (String[])ArrayUtil.setLength(modelNumbersForAtomLabel, modelCount);
-    modelNames = (String[])ArrayUtil.setLength(modelNames, modelCount);
-    frameTitles = (String[])ArrayUtil.setLength(frameTitles, modelCount);
+    modelFileNumbers = ArrayUtil.setLength(modelFileNumbers, modelCount);
+    modelNumbers = ArrayUtil.setLength(modelNumbers, modelCount);
+    modelNumbersForAtomLabel = ArrayUtil.setLength(modelNumbersForAtomLabel, modelCount);
+    modelNames = ArrayUtil.setLength(modelNames, modelCount);
+    frameTitles = ArrayUtil.setLength(frameTitles, modelCount);
     if (merging)
       mergeModels(mergeModelSet);
   }
 
   private void mergeGroups() {
-    Hashtable info = mergeModelSet.getAuxiliaryInfo(null);
+    Hashtable<String, Object> info = mergeModelSet.getAuxiliaryInfo(null);
     String[] mergeGroup3Lists = (String[]) info.get("group3Lists");
     int[][] mergeGroup3Counts = (int[][]) info.get("group3Counts");
     if (mergeGroup3Lists != null) {
@@ -414,7 +424,7 @@ public final class ModelLoader extends ModelSet {
       int modelNumber = (appendNew ? adapter.getAtomSetNumber(atomSetCollection, i)
           : Integer.MAX_VALUE);
       String modelName = adapter.getAtomSetName(atomSetCollection, i);
-      Hashtable modelAuxiliaryInfo = adapter.getAtomSetAuxiliaryInfo(
+      Hashtable<String, Object> modelAuxiliaryInfo = adapter.getAtomSetAuxiliaryInfo(
           atomSetCollection, i);
       Properties modelProperties = (Properties) modelAuxiliaryInfo.get("modelProperties");
       viewer.setStringProperty("_fileType", (String) modelAuxiliaryInfo
@@ -462,10 +472,10 @@ public final class ModelLoader extends ModelSet {
   private boolean setModelNameNumberProperties(int modelIndex, int trajectoryBaseIndex,
                                        String modelName, int modelNumber,
                                        Properties modelProperties,
-                                       Hashtable modelAuxiliaryInfo,
+                                       Hashtable<String, Object> modelAuxiliaryInfo,
                                        boolean isPDB, String jmolData) {
     if (modelNumber != Integer.MAX_VALUE) {
-      models[modelIndex] = new Model((ModelSet) this, modelIndex, trajectoryBaseIndex, jmolData,
+      models[modelIndex] = new Model(this, modelIndex, trajectoryBaseIndex, jmolData,
           modelProperties, modelAuxiliaryInfo);
       modelNumbers[modelIndex] = modelNumber;
       modelNames[modelIndex] = modelName;
@@ -746,14 +756,14 @@ public final class ModelLoader extends ModelSet {
     defaultCovalentMad = mad;
   }
   
-  private Vector vStereo;
+  private List<Bond> vStereo;
   private void bondAtoms(Object atomUid1, Object atomUid2, short order) {
-    Atom atom1 = (Atom) htAtomMap.get(atomUid1);
+    Atom atom1 = htAtomMap.get(atomUid1);
     if (atom1 == null) {
       Logger.error("bondAtoms cannot find atomUid1?:" + atomUid1);
       return;
     }
-    Atom atom2 = (Atom) htAtomMap.get(atomUid2);
+    Atom atom2 = htAtomMap.get(atomUid2);
     if (atom2 == null) {
       Logger.error("bondAtoms cannot find atomUid2?:" + atomUid2);
       return;
@@ -768,16 +778,19 @@ public final class ModelLoader extends ModelSet {
     Bond bond;
     if (isNear || isFar) {
       bond = bondMutually(atom1, atom2, (is2D ? order : 1), getDefaultMadFromOrder(1), 0);
-      if (vStereo == null)
-        vStereo = new Vector();
+      if (vStereo == null) {
+        vStereo = new ArrayList<Bond>();
+      }
       vStereo.add(bond);
     } else {
       bond = bondMutually(atom1, atom2, order, getDefaultMadFromOrder(order), 0);
-      if (bond.isAromatic())
+      if (bond.isAromatic()) {
         someModelsHaveAromaticBonds = true;
+      }
     }
-    if (bondCount == bonds.length)
+    if (bondCount == bonds.length) {
       bonds = (Bond[]) ArrayUtil.setLength(bonds, bondCount + BOND_GROWTH_INCREMENT);
+    }
     setBond(bondCount++, bond);
   }
 
@@ -1079,7 +1092,7 @@ public final class ModelLoader extends ModelSet {
     if (pt < 0) {
       group3Lists[ptm] += ",[" + g3code + "]";
       pt = group3Lists[ptm].indexOf(g3code);
-      group3Counts[ptm] = (int[]) ArrayUtil.setLength(
+      group3Counts[ptm] = ArrayUtil.setLength(
           group3Counts[ptm], group3Counts[ptm].length + 10);
     }
     group3Counts[ptm][pt / 6]++;
@@ -1153,7 +1166,7 @@ public final class ModelLoader extends ModelSet {
       BitSet bsToTest = new BitSet();
       bsToTest.set(baseAtomIndex, atomCount);
       for (int i = vStereo.size(); --i >= 0;) {
-        Bond b = (Bond) vStereo.get(i);
+        Bond b = vStereo.get(i);
         float dz2 = (b.order == JmolEdge.BOND_STEREO_NEAR ? 3 : -3);
         b.order = 1;
         if (b.atom2.z != b.atom1.z && (dz2 < 0) == (b.atom2.z < b.atom1.z))
@@ -1284,7 +1297,7 @@ public final class ModelLoader extends ModelSet {
           break;
         n++;
         if (Logger.debugging)
-          Logger.debug("atomIndex = " + i + ": " + (Point3f) atoms[i]
+          Logger.debug("atomIndex = " + i + ": " + atoms[i]
               + " --> (" + x + "," + y + "," + z);
         setAtomCoord(i, x, y, z);
         continue;

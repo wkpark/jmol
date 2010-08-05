@@ -29,10 +29,12 @@
  
 package org.jmol.export;
 
+
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
@@ -478,13 +480,13 @@ public class _IdtfExporter extends __CartesianExporter {
   //    return q.q0 + " " + q.q1  + " " + q.q2 + " " + q.q3;
  // }
 
-  private Hashtable<String, Vector<String>> htNodes = new Hashtable<String, Vector<String>>();
+  private Hashtable<String, List<String>> htNodes = new Hashtable<String, List<String>>();
   
   private void outputNodes() {
     Enumeration<String> e = htNodes.keys();
     while (e.hasMoreElements()) {
       String key = e.nextElement();
-      Vector<String> v = htNodes.get(key);
+      List<String> v = htNodes.get(key);
       output("NODE \"MODEL\" {\n");
       output("NODE_NAME \"" + key + "\"\n");
       int n = v.size();
@@ -496,10 +498,12 @@ public class _IdtfExporter extends __CartesianExporter {
       }
       output("}\n");
       int i = key.indexOf("_");
-      if (i > 0)
+      if (i > 0) {
         key = key.substring(0,i);
-      if (key.equals("Ellipse"))
+      }
+      if (key.equals("Ellipse")) {
         key = "Circle";
+      }
       output("RESOURCE_NAME \"" + key + "_Mesh\"\n}\n");
     }
   }
@@ -528,9 +532,9 @@ public class _IdtfExporter extends __CartesianExporter {
     checkPoint(center);
     addColix(colix, false);
     String key = "Sphere_" + colix;
-    Vector<String> v = htNodes.get(key);
+    List<String> v = htNodes.get(key);
     if (v == null) {
-      v = new Vector<String>();
+      v = new ArrayList<String>();
       htNodes.put(key, v);
       addShader(key, colix);
     }
@@ -666,9 +670,9 @@ public class _IdtfExporter extends __CartesianExporter {
     int n = (ptX != null && endcaps == Graphics3D.ENDCAPS_NONE ? 2 : 1);
     for (int i = 0; i < n; i++) {
       String key = "Cylinder" + (i == 0 ? "_" : "In_") + colix;
-      Vector<String> v = htNodes.get(key);
+      List<String> v = htNodes.get(key);
       if (v == null) {
-        v = new Vector<String>();
+        v = new ArrayList<String>();
         htNodes.put(key, v);
         addShader(key, colix);
       }
@@ -719,9 +723,9 @@ public class _IdtfExporter extends __CartesianExporter {
     }
     addColix(colix, false);
     String key = "Ellipse_" + colix;
-    Vector<String> v = htNodes.get(key);
+    List<String> v = htNodes.get(key);
     if (v == null) {
-      v = new Vector<String>();
+      v = new ArrayList<String>();
       htNodes.put(key, v);
       addShader(key, colix);
     }
@@ -743,9 +747,9 @@ public class _IdtfExporter extends __CartesianExporter {
     }
     addColix(colix, false);
     String key = "Circle_" + colix;
-    Vector<String> v = htNodes.get(key);
+    List<String> v = htNodes.get(key);
     if (v == null) {
-      v = new Vector<String>();
+      v = new ArrayList<String>();
       htNodes.put(key, v);
       addShader(key, colix);
     }
@@ -818,7 +822,7 @@ public class _IdtfExporter extends __CartesianExporter {
                                short[] polygonColixes, int nVertices,
                                int nPolygons, int nFaces, BitSet bsFaces,
                                int faceVertexMax, short colix,
-                               Vector<Short> colorList, Hashtable<String, String> htColixes,
+                               List<Short> colorList, Hashtable<String, String> htColixes,
                                Point3f offset) {
     addColix(colix, polygonColixes != null || colixes != null);
     if (polygonColixes != null) {
@@ -836,9 +840,9 @@ public class _IdtfExporter extends __CartesianExporter {
     // normals, part 1
 
     StringBuffer sbFaceNormalIndices = sbTemp = new StringBuffer();
-    Vector<String> vNormals = null;
+    List<String> vNormals = null;
     if (normals != null) {
-      vNormals = new Vector<String>();
+      vNormals = new ArrayList<String>();
       map = getNormalMap(normals, nVertices, vNormals);
       outputIndices(indices, map, nPolygons, bsFaces, faceVertexMax);
     }
@@ -900,7 +904,7 @@ public class _IdtfExporter extends __CartesianExporter {
     String key = "mesh" + (++iObj);
     addMeshData(key, nFaces, nCoord, nNormals, nColors, sbFaceCoordIndices,
         sbFaceNormalIndices, sbColorIndexes, sbCoords, sbNormals, sbColors);
-    Vector<String> v = new Vector<String>();
+    List<String> v = new ArrayList<String>();
     htNodes.put(key, v);
     addShader(key, colix);
     cylinderMatrix.setIdentity();
@@ -948,9 +952,9 @@ public class _IdtfExporter extends __CartesianExporter {
     checkPoint(ptTip);
     addColix(colix, false);
     String key = "Cone_" + colix;
-    Vector<String> v = htNodes.get(key);
+    List<String> v = htNodes.get(key);
     if (v == null) {
-      v = new Vector<String>();
+      v = new ArrayList<String>();
       htNodes.put(key, v);
       addShader(key, colix);
     }
@@ -1003,7 +1007,7 @@ public class _IdtfExporter extends __CartesianExporter {
     addColix(colix, false);
     String key = "T" + (++iObj);
     models.append(getTriangleResource(key, pt1, pt2, pt3));
-    Vector<String> v = new Vector<String>();
+    List<String> v = new ArrayList<String>();
     htNodes.put(key, v);
     addShader(key, colix);
     if (cylinderMatrix == null)

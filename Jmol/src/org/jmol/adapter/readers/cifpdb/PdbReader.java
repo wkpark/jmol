@@ -27,12 +27,14 @@ package org.jmol.adapter.readers.cifpdb;
 import org.jmol.adapter.smarter.*;
 
 
+
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import javax.vecmath.Matrix4f;
 
@@ -231,8 +233,9 @@ protected boolean checkLine() throws Exception {
     super.finalizeReader();
     if (vCompnds != null)
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo("compoundSource", vCompnds);
-    if (htSites != null)// && atomSetCollection.getAtomSetCount() == 1)
+    if (htSites != null) { // && atomSetCollection.getAtomSetCount() == 1)
       addSites(htSites);
+    }
     if (pdbHeader != null)
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo("fileHeader",
           pdbHeader.toString());
@@ -258,7 +261,7 @@ protected boolean checkLine() throws Exception {
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("CLASSIFICATION", line.substring(7).trim());
   }
 
-  private Vector<Hashtable<String, String>> vCompnds;
+  private List<Hashtable<String, String>> vCompnds;
   private Hashtable<String, String> currentCompnd;
   private String currentKey;
   private Hashtable<String, Hashtable<String, String>> htMolIds;
@@ -268,8 +271,8 @@ protected boolean checkLine() throws Exception {
     if (vCompnds == null) {
       if (isSource)
         return;
-      vCompnds = new Vector<Hashtable<String, String>>();
-      htMolIds = new Hashtable<String, Hashtable<String, String>>();
+      vCompnds = new ArrayList<Hashtable<String,String>>();
+      htMolIds = new Hashtable<String, Hashtable<String,String>>();
       currentCompnd = new Hashtable<String, String>();
       currentCompnd.put("select", "(*)");
       currentKey = "MOLECULE";
@@ -321,9 +324,9 @@ protected boolean checkLine() throws Exception {
   @SuppressWarnings("unchecked")
   private void setBiomoleculeAtomCounts() {
     for (int i = biomolecules.size(); --i >= 0;) {
-      Hashtable<String, Object> biomolecule = biomolecules.elementAt(i);
+      Hashtable<String, Object> biomolecule = biomolecules.get(i);
       String chain = (String) biomolecule.get("chains");
-      int nTransforms = ((Vector<Matrix4f>) biomolecule.get("biomts")).size();
+      int nTransforms = ((List<Matrix4f>) biomolecule.get("biomts")).size();
       int nAtoms = 0;
       for (int j = chain.length() - 1; --j >= 0;)
         if (chain.charAt(j) == ':')
@@ -365,12 +368,12 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
 
 */
  
-  private Vector<Hashtable<String, Object>> biomolecules;
-  private Vector<Matrix4f> biomts;
+  private List<Hashtable<String, Object>> biomolecules;
+  private List<Matrix4f> biomts;
   
   private void remark350() throws Exception {
-    Vector<Matrix4f> biomts = null;
-    biomolecules = new Vector<Hashtable<String, Object>>();
+    List<Matrix4f> biomts = null;
+    biomolecules = new ArrayList<Hashtable<String,Object>>();
     chainAtomCounts = new int[255];
     String title = "";
     String chainlist = "";
@@ -393,7 +396,7 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
             Logger.info("biomolecule " + iMolecule + ": number of transforms: "
                 + nBiomt);
           info = new Hashtable<String, Object>();
-          biomts = new Vector<Matrix4f>();
+          biomts = new ArrayList<Matrix4f>();
           iMolecule = parseInt(line.substring(line.indexOf(":") + 1));
           title = line.trim();
           info.put("molecule", Integer.valueOf(iMolecule));
@@ -854,20 +857,24 @@ SHEET    3   A 6 ARG A  22  ILE A  26  1  N  VAL A  23   O  GLU A  47
   }
   
   private void het() {
-    if (line.length() < 30)
+    if (line.length() < 30) {
       return;
-    if (htHetero == null)
+    }
+    if (htHetero == null) {
       htHetero = new Hashtable<String, String>();
+    }
     String groupName = parseToken(line, 7, 10);
-    if (htHetero.containsKey(groupName))
+    if (htHetero.containsKey(groupName)) {
       return;
+    }
     String hetName = parseTrimmed(line, 30, 70);
     htHetero.put(groupName, hetName);
   }
   
   private void hetnam() {
-    if (htHetero == null)
+    if (htHetero == null) {
       htHetero = new Hashtable<String, String>();
+    }
     String groupName = parseToken(line, 11, 14);
     String hetName = parseTrimmed(line, 15, 70);
     if (groupName == null) {
@@ -875,8 +882,9 @@ SHEET    3   A 6 ARG A  22  ILE A  26  1  N  VAL A  23   O  GLU A  47
       return;
     }
     String htName = htHetero.get(groupName);
-    if (htName != null)
+    if (htName != null) {
       hetName = htName + hetName;
+    }
     htHetero.put(groupName, hetName);
     //Logger.debug("hetero: "+groupName+" "+hetName);
   }
@@ -993,8 +1001,9 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
    */
   
   private void site() {
-    if (htSites == null)
+    if (htSites == null) {
       htSites = new Hashtable<String, Hashtable<String, Object>>();
+    }
     //int seqNum = parseInt(line, 7, 10);
     int nResidues = parseInt(line, 15, 17);
     String siteID = parseTrimmed(line, 11, 14);

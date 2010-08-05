@@ -112,6 +112,7 @@
 
 package org.jmol.jvxl.readers;
 
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -120,7 +121,7 @@ import java.io.OutputStream;
 import java.io.StringReader;
 import java.util.BitSet;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
@@ -255,7 +256,7 @@ public class SurfaceGenerator {
     return params.bsIgnore;
   }
   
-  public Vector getFunctionXYinfo() {
+  public List getFunctionXYinfo() {
     return params.functionXYinfo;
   }
 
@@ -305,7 +306,7 @@ public class SurfaceGenerator {
     return params.cutoff;
   }
   
-  public Hashtable getMoData() {
+  public Hashtable<String, Object> getMoData() {
     return params.moData;
   }
   
@@ -810,7 +811,7 @@ public class SurfaceGenerator {
     }
 
     if ("functionXY" == propertyName) {
-      params.setFunctionXY((Vector) value);
+      params.setFunctionXY((List) value);
       if (params.isContoured)
         volumeData.setPlaneParameters(new Point4f(0, 0, 1, 0)); // xy plane
                                                                 // through
@@ -822,7 +823,7 @@ public class SurfaceGenerator {
     }
 
     if ("functionXYZ" == propertyName) {
-      params.setFunctionXYZ((Vector) value);
+      params.setFunctionXYZ((List) value);
       processState();
       return true;
     }
@@ -851,7 +852,7 @@ public class SurfaceGenerator {
     }
 
     if ("moData" == propertyName) {
-      params.moData = (Hashtable) value;
+      params.moData = (Hashtable<String, Object>) value;
       return true;
     }
 
@@ -1095,7 +1096,7 @@ public class SurfaceGenerator {
       return new VolumeDataReader(this);
     }
     if (value instanceof Hashtable) {
-      volumeData = (VolumeData) ((Hashtable) value).get("volumeData");
+      volumeData = (VolumeData) ((Hashtable<String, Object>) value).get("volumeData");
       return new VolumeDataReader(this);
     }
     String data = null;
@@ -1234,7 +1235,7 @@ public class SurfaceGenerator {
         data2[i][j] = pt.z;
         //System.out.println("draw pt"+(++n)+" " + Escape.escape(pt) + " color red");
       }
-    params.functionXYinfo.setElementAt(data2, 5);
+    params.functionXYinfo.set(5, data2);
   }
 
   final Vector3f vAC = new Vector3f();

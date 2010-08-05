@@ -29,8 +29,9 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 /**
  * General methods for reading molecular orbital data,
@@ -82,12 +83,12 @@ abstract public class MOReader extends BasisFunctionReader {
     
   protected int shellCount = 0;
   protected int gaussianCount = 0;
-  protected Vector<int[]> shells;
+  protected List<int[]> shells;
   protected float[][] gaussians;
 
   protected String energyUnits = "";
   
-  protected Vector<String> moTypes;
+  protected List<String> moTypes;
   private boolean getNBOs;
   private boolean getNBOCharges;
   protected boolean haveNboCharges;
@@ -227,7 +228,7 @@ abstract public class MOReader extends BasisFunctionReader {
 
    */
   protected void getNboTypes() throws Exception {
-    moTypes = new Vector<String>();
+    moTypes = new ArrayList<String>();
     readLine();
     readLine();
     int n = 0;
@@ -319,12 +320,12 @@ abstract public class MOReader extends BasisFunctionReader {
     // and these will replace previous results. 
     // we still need atom positions and bases functions.
     if (haveNboOrbitals) {
-      orbitals = new Vector<Hashtable<String, Object>>();
+      orbitals = new ArrayList<Hashtable<String,Object>>();
       alphaBeta = "";
     }
     haveNboOrbitals = true;
     Hashtable<String, Object>[] mos = null;
-    Vector<String>[] data = null;
+    List<String>[] data = null;
     String dCoeffLabels = "";
     String fCoeffLabels = "";
     int ptOffset = -1;
@@ -430,11 +431,11 @@ abstract public class MOReader extends BasisFunctionReader {
         }
         if (mos == null || nThisLine > mos.length) {
           mos = new Hashtable[nThisLine];
-          data = new Vector[nThisLine];
+          data = new ArrayList[nThisLine];
         }
         for (int i = 0; i < nThisLine; i++) {
-          mos[i] = new Hashtable();
-          data[i] = new Vector();
+          mos[i] = new Hashtable<String, Object>();
+          data[i] = new ArrayList<String>();
         }
         getMOHeader(headerType, tokens, mos, nThisLine);
         continue;
@@ -460,11 +461,11 @@ abstract public class MOReader extends BasisFunctionReader {
       if (isQuantumBasisSupported(ch)) {
         if (ptOffset < 0) {
           for (int i = 0; i < nThisLine; i++)
-            data[i].addElement(tokens[i + nSkip]);
+            data[i].add(tokens[i + nSkip]);
         } else {
           int pt = ptOffset;
           for (int i = 0; i < nThisLine; i++, pt += fieldSize)
-            data[i].addElement(line.substring(pt, pt + fieldSize).trim());
+            data[i].add(line.substring(pt, pt + fieldSize).trim());
         }
       }
       line = "";
@@ -522,7 +523,7 @@ abstract public class MOReader extends BasisFunctionReader {
     }
   }
 
-  protected void addMOData(int nColumns, Vector<String>[] data, Hashtable<String, Object>[] mos) {
+  protected void addMOData(int nColumns, List<String>[] data, Hashtable<String, Object>[] mos) {
     for (int i = 0; i < nColumns; i++) {
       float[] coefs = new float[data[i].size()];
       for (int j = coefs.length; --j >= 0;)
@@ -542,7 +543,7 @@ abstract public class MOReader extends BasisFunctionReader {
       setMOData(moData);
     }
     if (clearOrbitals) {
-      orbitals = new Vector<Hashtable<String, Object>>();
+      orbitals = new ArrayList<Hashtable<String, Object>>();
       moData = new Hashtable<String, Object>();
       alphaBeta = "";
     }

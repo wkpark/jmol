@@ -23,6 +23,7 @@
  */
 package org.jmol.modelsetbio;
 
+
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.LabelToken;
@@ -39,9 +40,11 @@ import org.jmol.script.Token;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
+
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 public abstract class BioPolymer extends Polymer {
 
@@ -388,7 +391,7 @@ public abstract class BioPolymer extends Polymer {
   }
 
   @Override
-  public int getPolymerPointsAndVectors(int last, BitSet bs, Vector vList,
+  public int getPolymerPointsAndVectors(int last, BitSet bs, List<Point3f[]> vList,
                                         boolean isTraceAlpha,
                                         float sheetSmoothing) {
     Point3f[] points = getControlPoints(isTraceAlpha, sheetSmoothing, false);
@@ -396,14 +399,14 @@ public abstract class BioPolymer extends Polymer {
     int count = monomerCount;
     for (int j = 0; j < count; j++)
       if (bs.get(monomers[j].leadAtomIndex)) {
-        vList.addElement(new Point3f[] { points[j], new Point3f(vectors[j]) });
+        vList.add(new Point3f[] { points[j], new Point3f(vectors[j]) });
         last = j;
       } else if (last != Integer.MAX_VALUE - 1) {
-        vList.addElement(new Point3f[] { points[j], new Point3f(vectors[j]) });
+        vList.add(new Point3f[] { points[j], new Point3f(vectors[j]) });
         last = Integer.MAX_VALUE - 1;
       }
     if (last + 1 < count)
-      vList.addElement(new Point3f[] { points[last + 1],
+      vList.add(new Point3f[] { points[last + 1],
           new Point3f(vectors[last + 1]) });
     return last;
   }
@@ -417,25 +420,26 @@ public abstract class BioPolymer extends Polymer {
   }
 
   @Override
-  public Hashtable getPolymerInfo(BitSet bs) {
-    Hashtable returnInfo = new Hashtable();
-    Vector info = new Vector();
-    Vector structureInfo = null;
+  public Hashtable<String, Object> getPolymerInfo(BitSet bs) {
+    Hashtable<String, Object> returnInfo = new Hashtable<String, Object>();
+    List<Hashtable<String, Object>> info = new ArrayList<Hashtable<String,Object>>();
+    List<Hashtable<String, Object>> structureInfo = null;
     ProteinStructure ps;
     ProteinStructure psLast = null;
     int n = 0;
     for (int i = 0; i < monomerCount; i++) {
       if (bs.get(monomers[i].leadAtomIndex)) {
-        Hashtable monomerInfo = monomers[i].getMyInfo();
+        Hashtable<String, Object> monomerInfo = monomers[i].getMyInfo();
         monomerInfo.put("monomerIndex", Integer.valueOf(i));
-        info.addElement(monomerInfo);
+        info.add(monomerInfo);
         if ((ps = getProteinStructure(i)) != null && ps != psLast) {
-          Hashtable psInfo = new Hashtable();
+          Hashtable<String, Object> psInfo = new Hashtable<String, Object>();
           (psLast = ps).getInfo(psInfo);
-          if (structureInfo == null)
-            structureInfo = new Vector();
+          if (structureInfo == null) {
+            structureInfo = new ArrayList<Hashtable<String,Object>>();
+          }
           psInfo.put("index", Integer.valueOf(n++));
-          structureInfo.addElement(psInfo);
+          structureInfo.add(psInfo);
         }
       }
     }
@@ -638,12 +642,12 @@ public abstract class BioPolymer extends Polymer {
             AminoMonomer aa = (AminoMonomer) monomer;
             pdbATOM.append("draw phi" + id + " ARROW ARC ").append(
                 Escape.escape(aa.getNitrogenAtom())).append(
-                Escape.escape((Point3f) a)).append(
+                Escape.escape(a)).append(
                 Escape.escape(aa.getCarbonylCarbonAtom())).append(
                 "{" + (-x) + " " + x + " 0.5} \"phi = " + (int) x + "\"")
                 .append(" color ").append(qColor[2]).append('\n');
             pdbATOM.append("draw psi" + id + " ARROW ARC ").append(
-                Escape.escape((Point3f) a)).append(
+                Escape.escape(a)).append(
                 Escape.escape(aa.getCarbonylCarbonAtom())).append(
                 Escape.escape(aa.getNitrogenAtom())).append(
                 "{0 " + y + " 0.5} \"psi = " + (int) y + "\"")

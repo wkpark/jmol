@@ -25,10 +25,11 @@ package org.jmol.viewer;
 
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import javax.vecmath.Point3f;
 
@@ -342,7 +343,7 @@ public class ActionManager {
 
   public Hashtable<String, Object> getMouseInfo() {
     Hashtable<String, Object> info = new Hashtable<String, Object>();
-    Vector vb = new Vector();
+    List<Object> vb = new ArrayList<Object>();
     Enumeration<Object> e = binding.getBindings().elements();
     while (e.hasMoreElements()) {
       Object obj = e.nextElement();

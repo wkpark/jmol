@@ -35,7 +35,8 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.AxisAngle4f;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Measurement {
 
@@ -372,11 +373,11 @@ public class Measurement {
     return sameAs(countPlusIndices, pts, i, j);
   }
 
-  public Vector toVector() {
-    Vector V = new Vector();
+  public List<String> toVector() {
+    List<String> V = new ArrayList<String>();
     for (int i = 1; i <= count; i++ )
-      V.addElement(getLabel(i, false, false));
-    V.addElement(strMeasurement);
+      V.add(getLabel(i, false, false));
+    V.add(strMeasurement);
     return V;  
   }
   
@@ -432,11 +433,11 @@ public class Measurement {
     return !(sameAs(1,2) || count > 2 && sameAs(1,3) || count == 4 && sameAs(2,4));
   }
 
-  public static int find(Vector measurements, Measurement m) {
+  public static int find(List<Measurement> measurements, Measurement m) {
     int[] indices = m.getCountPlusIndices();
     Point3fi[] points = m.getPoints();
     for (int i = measurements.size(); --i >= 0; )
-      if (((Measurement) measurements.get(i)).sameAs(indices, points))
+      if (measurements.get(i).sameAs(indices, points))
         return i;
     return -1;
   }

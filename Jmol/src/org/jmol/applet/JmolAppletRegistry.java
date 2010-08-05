@@ -29,7 +29,7 @@ import org.jmol.appletwrapper.AppletWrapper;
 import java.applet.Applet;
 import java.util.Hashtable;
 import java.util.Enumeration;
-import java.util.Vector;
+import java.util.List;
 
 import netscape.javascript.JSObject;
 
@@ -91,7 +91,7 @@ final class JmolAppletRegistry {
 
   synchronized public static void findApplets(String appletName,
                                               String mySyncId,
-                                              String excludeName, Vector<String> apps) {
+                                              String excludeName, List<String> apps) {
     if (appletName != null && appletName.indexOf(",") >= 0) {
       String[] names = TextFormat.split(appletName, ",");
       for (int i = 0; i < names.length; i++)
@@ -104,7 +104,7 @@ final class JmolAppletRegistry {
       while (keys.hasMoreElements()) {
         appletName =  keys.nextElement();
         if (!appletName.equals(excludeName) && appletName.indexOf(ext) > 0) {
-          apps.addElement(appletName);
+          apps.add(appletName);
         }
       }
       return;
@@ -114,7 +114,7 @@ final class JmolAppletRegistry {
     if (!htRegistry.containsKey(appletName))
       appletName = "jmolApplet" + appletName;
     if (!appletName.equals(excludeName) && htRegistry.containsKey(appletName)) {
-      apps.addElement(appletName);
+      apps.add(appletName);
     }
   }
 }

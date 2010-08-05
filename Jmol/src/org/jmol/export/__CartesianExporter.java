@@ -25,10 +25,11 @@
 
 package org.jmol.export;
 
+
 import java.awt.Image;
 import java.util.BitSet;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
@@ -117,13 +118,14 @@ abstract public class __CartesianExporter extends ___Exporter {
     return n;
   }
 
-  protected int[] getNormalMap(Vector3f[] normals, int nNormals, Vector<String> vNormals) {
+  protected int[] getNormalMap(Vector3f[] normals, int nNormals, List<String> vNormals) {
     Hashtable<String, Integer> htNormals = new Hashtable<String, Integer>();
     int[] normalMap = new int[nNormals];
     for (int i = 0; i < nNormals; i++) {
       String s;
-      if (Float.isNaN(normals[i].x))
+      if (Float.isNaN(normals[i].x)) {
         continue;
+      }
       s = (round(normals[i].x) + " " + round(normals[i].y) + " " + round(normals[i].z) + "\n");
       if (htNormals.containsKey(s)) {
         normalMap[i] = htNormals.get(s).intValue();

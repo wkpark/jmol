@@ -29,7 +29,6 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Vector;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -109,7 +108,7 @@ public class SmilesSearch extends JmolMolecule {
   private int nNested;
   private SmilesBond nestedBond;
 
-  private Vector vReturn;
+  private List vReturn;
   private BitSet bsReturn = new BitSet();
     
 
@@ -187,7 +186,7 @@ public class SmilesSearch extends JmolMolecule {
         continue;
       String smarts = "*1" + s.substring(0, i - 2) + "*1";
       SmilesSearch search = SmilesParser.getMolecule(smarts, true);
-      Vector v = (Vector) getBitSets(search, false, true);
+      List v = (List) getBitSets(search, false, true);
       if (needAromatic)
         for (int r = v.size(); --r >= 0;) {
           BitSet bs = (BitSet) v.get(r);
@@ -302,7 +301,7 @@ public class SmilesSearch extends JmolMolecule {
       Logger.debug("SmilesSearch processing " + pattern);
 
     if (vReturn == null && (asVector || getMaps))
-      vReturn = new Vector();
+      vReturn = new ArrayList();
     if (bsSelected == null) {
       bsSelected = new BitSet(jmolAtomCount);
       bsSelected.set(0, jmolAtomCount);

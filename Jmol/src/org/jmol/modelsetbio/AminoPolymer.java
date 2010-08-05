@@ -25,6 +25,7 @@ package org.jmol.modelsetbio;
 
 import org.jmol.api.JmolEdge;
 import org.jmol.modelset.Atom;
+import org.jmol.modelset.Bond;
 import org.jmol.modelset.HBond;
 import org.jmol.modelset.Polymer;
 import org.jmol.script.Token;
@@ -33,7 +34,7 @@ import org.jmol.util.Measure;
 import org.jmol.viewer.JmolConstants;
 
 import java.util.BitSet;
-import java.util.Vector;
+import java.util.List;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -61,7 +62,7 @@ public class AminoPolymer extends AlphaPolymer {
   //boolean debugHbonds;
 
   @Override
-  public void calcRasmolHydrogenBonds(Polymer polymer, BitSet bsA, BitSet bsB, Vector vHBonds, int nMaxPerResidue) {
+  public void calcRasmolHydrogenBonds(Polymer polymer, BitSet bsA, BitSet bsB, List<Bond> vHBonds, int nMaxPerResidue) {
     Point3f pt = new Point3f();
     Vector3f vNH = new Vector3f();
     boolean intraChain = (polymer == null);
@@ -86,7 +87,7 @@ public class AminoPolymer extends AlphaPolymer {
   private final static float minimumHbondDistance2 = 0.5f; // note: RasMol is 1/2 this. RMH
 
   private void checkRasmolHydrogenBond(AminoMonomer source, int indexDonor, Point3f hydrogenPoint,
-                         BitSet bsB, Vector vHBonds, int nMaxPerResidue) {
+                         BitSet bsB, List<Bond> vHBonds, int nMaxPerResidue) {
     Point3f sourceAlphaPoint = source.getLeadAtom();
     Point3f sourceNitrogenPoint = source.getNitrogenAtom();
     Atom nitrogen = source.getNitrogenAtom();
@@ -177,7 +178,7 @@ public class AminoPolymer extends AlphaPolymer {
 
   private void addResidueHydrogenBond(Atom nitrogen, Atom oxygen, int indexAminoGroup,
                                       int indexCarbonylGroup, float energy,
-                                      Vector vHBonds) {
+                                      List<Bond> vHBonds) {
     int order;
     switch (indexAminoGroup - indexCarbonylGroup) {
     case 2:

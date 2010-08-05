@@ -28,8 +28,9 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import org.jmol.minimize.Minimizer;
 import org.jmol.util.Logger;
@@ -47,10 +48,10 @@ public class ForceFieldUFF extends ForceField {
   }
 
   @Override
-  protected Hashtable getFFParameters() {
+  protected Hashtable<String, FFParam> getFFParameters() {
     FFParam ffParam;
 
-    Hashtable temp = new Hashtable();
+    Hashtable<String, FFParam> temp = new Hashtable<String, FFParam>();
 
     // open UFF.txt
     URL url = null;
@@ -134,8 +135,8 @@ public class ForceFieldUFF extends ForceField {
   }
 
   @Override
-  public Vector getAtomTypes() {
-    Vector types = new Vector(); //!< external atom type rules
+  public List<String[]> getAtomTypes() {
+    List<String[]> types = new ArrayList<String[]>(); //!< external atom type rules
     URL url = null;
     String fileName = "UFF.txt";
     try {
@@ -155,7 +156,7 @@ public class ForceFieldUFF extends ForceField {
         if (line.length() > 4 && line.substring(0, 4).equals("atom")) {
           String[] vs = Parser.getTokens(line);
           String[] info = new String[] { vs[1], vs[2] };
-          types.addElement(info);
+          types.add(info);
         }
       }
 

@@ -27,8 +27,9 @@ package org.jmol.adapter.readers.quantum;
 import org.jmol.adapter.smarter.*;
 import org.jmol.util.Logger;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 /**
  * Jaguar reader tested for the two samples files in CVS. Both
@@ -165,7 +166,7 @@ public class JaguarReader extends MOReader {
     String lastAtom = "";
     int iAtom = -1;
     int[][] sdata = new int[moCount][4];
-    Vector[] sgdata = new Vector[moCount];
+    List<float[]>[] sgdata = new ArrayList[moCount];
     String[] tokens;
     gaussianCount = 0;
 
@@ -187,31 +188,32 @@ public class JaguarReader extends MOReader {
           sdata[iFunc][1] = iType;
           sdata[iFunc][2] = 0; //pointer
           sdata[iFunc][3] = 0; //count
-          sgdata[iFunc] = new Vector();
+          sgdata[iFunc] = new ArrayList<float[]>();
         }
         float factor = 1;//(iType == 3 ? 1.73205080756887729f : 1);
         //System.out.println("slater: " + iAtom + " " + iType + " " + gaussianCount + " " + nGaussians);
-        sgdata[iFunc].addElement(new float[] { parseFloat(tokens[6]),
+        sgdata[iFunc].add(new float[] { parseFloat(tokens[6]),
             parseFloat(tokens[8]) * factor });
         gaussianCount += jCont;
         for (int i = jCont - 1; --i >= 0;) {
           tokens = getTokens(readLine());
-          sgdata[iFunc].addElement(new float[] { parseFloat(tokens[6]),
+          sgdata[iFunc].add(new float[] { parseFloat(tokens[6]),
               parseFloat(tokens[8]) * factor });
         }
       }
     }
     float[][] garray = new float[gaussianCount][];
-    Vector sarray = new Vector();
+    List<int[]> sarray = new ArrayList<int[]>();
     gaussianCount = 0;
     for (int i = 0; i < moCount; i++)
       if (sgdata[i] != null) {
         int n = sgdata[i].size();
         sdata[i][2] = gaussianCount;
         sdata[i][3] = n;
-        for (int j = 0; j < n; j++)
-          garray[gaussianCount++] = (float[]) sgdata[i].get(j);
-        sarray.addElement(sdata[i]);
+        for (int j = 0; j < n; j++) {
+          garray[gaussianCount++] = sgdata[i].get(j);
+        }
+        sarray.add(sdata[i]);
       }
     moData.put("shells", sarray);
     moData.put("gaussians", garray);

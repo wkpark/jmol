@@ -23,7 +23,8 @@
  */
 package org.openscience.jvxl.simplewriter;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -54,13 +55,13 @@ public class SimpleMarchingCubes extends MarchingCubes {
   private boolean doSaveSurfacePoints;
   private float calculatedArea = Float.NaN;
   private float calculatedVolume = Float.NaN;
-  private Vector surfacePoints;  
+  private List<Point3f> surfacePoints;  
   private VoxelDataCreator vdc;
 
 
   public SimpleMarchingCubes(VoxelDataCreator vdc, VolumeData volumeData,
       Parameters params, JvxlData jvxlData, 
-      Vector surfacePointsReturn, float[] areaVolumeReturn) {
+      List<Point3f> surfacePointsReturn, float[] areaVolumeReturn) {
 
     // when just creating a JVXL file all you really need are:
     //
@@ -82,7 +83,7 @@ public class SimpleMarchingCubes extends MarchingCubes {
     doCalcArea = (areaVolumeReturn != null);
     surfacePoints = surfacePointsReturn;
     if (surfacePoints == null && doCalcArea)
-      surfacePoints = new Vector();
+      surfacePoints = new ArrayList<Point3f>();
     doSaveSurfacePoints = (surfacePoints != null);
     jvxlData.jvxlEdgeData = getEdgeData();
     jvxlData.nPointsX = volumeData.voxelCounts[0];
@@ -113,7 +114,7 @@ public class SimpleMarchingCubes extends MarchingCubes {
     if (doSaveSurfacePoints) {
       Point3f pt = new Point3f();
       pt.scaleAdd(f, edgeVector, pointA);
-      surfacePoints.addElement(pt);
+      surfacePoints.add(pt);
     }
     return edgeCount++;
   }
@@ -135,9 +136,9 @@ public class SimpleMarchingCubes extends MarchingCubes {
     // you would do it here.    
     // In this example we are just computing the area and volume
    
-    Point3f pta = (Point3f) surfacePoints.get(edgePointIndexes[ia]);
-    Point3f ptb = (Point3f) surfacePoints.get(edgePointIndexes[ib]);
-    Point3f ptc = (Point3f) surfacePoints.get(edgePointIndexes[ic]);
+    Point3f pta = surfacePoints.get(edgePointIndexes[ia]);
+    Point3f ptb = surfacePoints.get(edgePointIndexes[ib]);
+    Point3f ptc = surfacePoints.get(edgePointIndexes[ic]);
     
     vAB.sub(ptb, pta);
     vAC.sub(ptc, pta);

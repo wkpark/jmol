@@ -24,9 +24,10 @@
 
 package org.jmol.minimize;
 
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import org.jmol.api.JmolEdge;
 import org.jmol.api.MinimizerInterface;
@@ -63,7 +64,7 @@ public class Minimizer implements MinimizerInterface {
   private int steps = 50;
   private double crit = 1e-3;
 
-  private static Vector atomTypes;
+  private static List<String[]> atomTypes;
   private ForceField pFF;
   private String ff = "UFF";
   private BitSet bsTaint, bsSelected, bsAtoms;
@@ -71,7 +72,7 @@ public class Minimizer implements MinimizerInterface {
   private BitSet bsFixed;
   private BitSet bsAromatic;
   
-  public Vector constraints;
+  public List<Object[]> constraints;
   
   private boolean isSilent;
   
@@ -115,7 +116,7 @@ public class Minimizer implements MinimizerInterface {
     return null;
   }
   
-  private Hashtable constraintMap;
+  private Hashtable<String, Object[]> constraintMap;
 
   private void addConstraint(Object[] c) {
     if (c == null)
@@ -127,8 +128,8 @@ public class Minimizer implements MinimizerInterface {
       return;
     }
     if (constraints == null) {
-      constraints = new Vector();
-      constraintMap = new Hashtable();
+      constraints = new ArrayList<Object[]>();
+      constraintMap = new Hashtable<String, Object[]>();
     }
     if (atoms[1] > atoms[nAtoms]) {
         ArrayUtil.swap(atoms, 1, nAtoms);
@@ -136,13 +137,13 @@ public class Minimizer implements MinimizerInterface {
           ArrayUtil.swap(atoms, 2, 3);
     }
     String id = Escape.escape(atoms);
-    Object[] c1 = (Object[]) constraintMap.get(id);
+    Object[] c1 = constraintMap.get(id);
     if (c1 != null) {
       c1[2] = c[2]; // just set target value
       return;
     }
     constraintMap.put(id, c);
-    constraints.addElement(c);
+    constraints.add(c);
   }
     
   private void clear() {
@@ -234,7 +235,7 @@ public class Minimizer implements MinimizerInterface {
 
     if (constraints != null) {
       for (int i = constraints.size(); --i >= 0;) {
-        Object[] constraint = (Object[]) constraints.elementAt(i);
+        Object[] constraint = constraints.get(i);
         int[] aList = (int[]) constraint[0];
         int[] minList = (int[]) constraint[1];
         int nAtoms = aList[0] = Math.abs(aList[0]);
@@ -285,7 +286,7 @@ public class Minimizer implements MinimizerInterface {
     Logger.info("minimize: creating bonds...");
 
     // add all bonds
-    Vector bondInfo = new Vector();
+    List<int[]> bondInfo = new ArrayList<int[]>();
     bondCount = 0;
     for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
       Bond[] bonds = atoms[i].getBonds();
@@ -306,8 +307,7 @@ public class Minimizer implements MinimizerInterface {
               bondOrder = 1;
             }
             bondCount++;
-            bondInfo
-                .addElement(new int[] { atomMap[i], atomMap[i2], bondOrder });
+            bondInfo.add(new int[] { atomMap[i], atomMap[i2], bondOrder });
           }
         }
     }
@@ -315,12 +315,11 @@ public class Minimizer implements MinimizerInterface {
 
     minBonds = new MinBond[bondCount];
     for (int i = 0; i < bondCount; i++) {
-      MinBond bond = minBonds[i] = new MinBond(atomIndexes = (int[]) bondInfo
-          .elementAt(i), false, false);
+      MinBond bond = minBonds[i] = new MinBond(atomIndexes = bondInfo.get(i), false, false);
       int atom1 = atomIndexes[0];
       int atom2 = atomIndexes[1];
-      minAtoms[atom1].bonds.addElement(bond);
-      minAtoms[atom2].bonds.addElement(bond);
+      minAtoms[atom1].bonds.add(bond);
+      minAtoms[atom2].bonds.add(bond);
       minAtoms[atom1].nBonds++;
       minAtoms[atom2].nBonds++;
     }
@@ -339,7 +338,7 @@ public class Minimizer implements MinimizerInterface {
     int nElements = atomTypes.size();
     bsElements.clear(0);
     for (int i = 0; i < nElements; i++) {
-      String[] data = ((String[]) atomTypes.get(i));
+      String[] data = atomTypes.get(i);
       String smarts = data[0];
       if (smarts == null)
         continue;
@@ -586,7 +585,7 @@ Token[keyword(0x880001) value=")"]
   
   public void getAngles() {
 
-    Vector vAngles = new Vector();
+    List<int[]> vAngles = new ArrayList<int[]>();
 
     for (int ib = 0; ib < atomCount; ib++) {
       MinAtom atomB = minAtoms[ib];
@@ -598,7 +597,7 @@ Token[keyword(0x880001) value=")"]
       for (int ia = 0; ia < n - 1; ia++)
         for (int ic = ia + 1; ic < n; ic++) {
           // note! center in center; ia < ic  (not like OpenBabel)
-          vAngles.addElement(new int[] { atomList[ia], ib, atomList[ic] });
+          vAngles.add(new int[] { atomList[ia], ib, atomList[ic] });
 /*          System.out.println (" " 
               + minAtoms[atomList[ia]].getIdentity() + " -- " 
               + minAtoms[ib].getIdentity() + " -- " 
@@ -608,13 +607,13 @@ Token[keyword(0x880001) value=")"]
     
     angles = new int[vAngles.size()][];
     for (int i = vAngles.size(); --i >= 0; )
-      angles[i] = (int[]) vAngles.elementAt(i);
+      angles[i] = vAngles.get(i);
     Logger.info(angles.length + " angles");
   }
 
   public void getTorsions() {
 
-    Vector vTorsions = new Vector();
+    List<int[]> vTorsions = new ArrayList<int[]>();
 
     // extend all angles a-b-c by one, but only
     // when when c > b -- other possibility will be found
@@ -629,7 +628,7 @@ Token[keyword(0x880001) value=")"]
         for (int j = 0; j < atomList.length; j++) {
           int id = atomList[j];
           if (id != ia && id != ib) {
-            vTorsions.addElement(new int[] { ia, ib, ic, id });
+            vTorsions.add(new int[] { ia, ib, ic, id });
 /*            System.out.println(" " + minAtoms[ia].getIdentity() + " -- "
                 + minAtoms[ib].getIdentity() + " -- "
                 + minAtoms[ic].getIdentity() + " -- "
@@ -643,7 +642,7 @@ Token[keyword(0x880001) value=")"]
         for (int j = 0; j < atomList.length; j++) {
           int id = atomList[j];
           if (id != ic && id != ib) {
-            vTorsions.addElement(new int[] { ic, ib, ia, id });
+            vTorsions.add(new int[] { ic, ib, ia, id });
 /*            System.out.println(" " + minAtoms[ic].getIdentity() + " -- "
                 + minAtoms[ib].getIdentity() + " -- "
                 + minAtoms[ia].getIdentity() + " -- "
@@ -656,7 +655,7 @@ Token[keyword(0x880001) value=")"]
 
     torsions = new int[vTorsions.size()][];
     for (int i = vTorsions.size(); --i >= 0;)
-      torsions[i] = (int[]) vTorsions.elementAt(i);
+      torsions[i] = vTorsions.get(i);
 
     Logger.info(torsions.length + " torsions");
 
@@ -684,7 +683,7 @@ Token[keyword(0x880001) value=")"]
     return pFF;
   }
   
-  public Vector getAtomTypes() {
+  public List<String[]> getAtomTypes() {
     getForceField();
     return (pFF == null ? null : pFF.getAtomTypes());
   }

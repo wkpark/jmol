@@ -37,8 +37,9 @@ import org.jmol.modelset.TickInfo;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.script.Token;
 
+import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Vector;
+import java.util.List;
 import java.util.Hashtable;
 
 
@@ -54,7 +55,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
   private Atom[] atoms;
 
   int measurementCount = 0;
-  final Vector measurements = new Vector();
+  final List<Measurement> measurements = new ArrayList<Measurement>();
   MeasurementPending measurementPending;
   
   short mad = (short)-1;
@@ -68,7 +69,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
   @Override
   protected void initModelSet() {
     for (int i = measurements.size(); --i >= 0; ) {
-      Measurement m = (Measurement) measurements.get(i);
+      Measurement m = measurements.get(i);
       if (m != null)
         m.modelSet = modelSet;
     }
@@ -93,7 +94,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
     Measurement mt;
     if ("clearModelIndex" == propertyName) {
       for (int i = 0; i < measurementCount; i++)
-        ((Measurement) measurements.get(i)).setModelIndex((short) 0);
+        measurements.get(i).setModelIndex((short) 0);
       return;
     }
     
@@ -127,7 +128,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
     if ((isRefresh = ("refresh" == propertyName)) 
         || "refreshTrajectories" == propertyName) {
       for (int i = measurements.size(); --i >= 0;)
-        if ((mt = (Measurement) measurements.get(i)) != null 
+        if ((mt = measurements.get(i)) != null 
             && (isRefresh || mt.isTrajectory()))
           mt.refresh();
       return;
@@ -162,7 +163,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
         int[] v = new int[len + 1];
         v[0] = len;
         System.arraycopy(maps[i], 0, v, 1, len);
-        toggleOn((int[]) v);
+        toggleOn(v);
       }
     } else if ("measure" == propertyName) {
       MeasurementData md = (MeasurementData) value;
@@ -217,7 +218,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
       int nAtomsDeleted = ((int[])((Object[])value)[2])[2];
       int atomMax = firstAtomDeleted + nAtomsDeleted;
       for (int i = measurementCount; --i >= 0;) {
-        mt = (Measurement) measurements.get(i);
+        mt = measurements.get(i);
         int[] indices = mt.getCountPlusIndices();
         for (int j = 1; j <= indices[0]; j++) {
           int iAtom = indices[j];
@@ -268,7 +269,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
     
   }
 
-  private Measurement setSingleItem(Vector vector) {
+  private Measurement setSingleItem(List<Object> vector) {
     Point3fi[] points = new Point3fi[4];
     int[] indices = new int[5];
     indices[0] = vector.size();
@@ -295,11 +296,11 @@ public class Measures extends Shape implements JmolMeasurementClient {
       return Integer.valueOf(measurementCount);
     if ("countPlusIndices".equals(property))
       return (index < measurementCount ? 
-          ((Measurement) measurements.get(index)).getCountPlusIndices() : null);
+          measurements.get(index).getCountPlusIndices() : null);
     if ("stringValue".equals(property))
-      return (index < measurementCount ? ((Measurement) measurements.get(index)).getString() : null);
+      return (index < measurementCount ? measurements.get(index).getString() : null);
     if ("pointInfo".equals(property))
-      return ((Measurement) measurements.get(index / 10)).getLabel(index % 10, false, false);
+      return measurements.get(index / 10).getLabel(index % 10, false, false);
     if ("info".equals(property))
       return getAllInfo();
     if ("infostring".equals(property))
@@ -322,7 +323,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
         this.colix = colix;
     Measurement mt;
     for (int i = measurements.size(); --i >= 0; )
-      if ((mt = (Measurement) measurements.get(i)) != null
+      if ((mt = measurements.get(i)) != null
           && (bsSelected != null && bsSelected.get(i) || bsSelected == null
               && (colix == Graphics3D.INHERIT_ALL || mt.getColix() == Graphics3D.INHERIT_ALL))) {
         mt.setColix(colix);
@@ -335,19 +336,19 @@ public class Measures extends Shape implements JmolMeasurementClient {
       format = null;
     for (int i = measurements.size(); --i >= 0;)
       if (bsSelected == null || bsSelected.get(i))
-        ((Measurement) measurements.get(i)).formatMeasurement(format, null, false);
+        measurements.get(i).formatMeasurement(format, null, false);
   }
   
   private void showHide(boolean isHide) {
     for (int i = measurements.size(); --i >= 0;)
       if (bsSelected == null || bsSelected.get(i))
-        ((Measurement) measurements.get(i)).setHidden(isHide);
+        measurements.get(i).setHidden(isHide);
   }
 
   private void showHide(Measurement m, boolean isHide) {
     int i = find(m);
     if (i >= 0)
-      ((Measurement) measurements.get(i)).setHidden(isHide);
+      measurements.get(i).setHidden(isHide);
   }
   
   private void toggle(Measurement m) {
@@ -355,7 +356,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
     //toggling one that is hidden should be interpreted as DEFINE
     int i = find(m);
     Measurement mt;
-    if (i >= 0 && !(mt = (Measurement) measurements.get(i)).isHidden()) // delete it and all like it
+    if (i >= 0 && !(mt = measurements.get(i)).isHidden()) // delete it and all like it
       define(i, mt, true, false, false);
     else // define OR turn on if measureAllModels
       define(-1, m, false, true, false);
@@ -376,7 +377,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
     //toggling one that is hidden should be interpreted as DEFINE
     int i = find(m);
     if (i >= 0)
-      define(i, (Measurement) measurements.get(i), true, false, false);
+      define(i, measurements.get(i), true, false, false);
     setIndices();
   }
 
@@ -409,11 +410,11 @@ public class Measures extends Shape implements JmolMeasurementClient {
     }
     // we create a set of atoms involving all atoms with the
     // same atom number in each model
-    Vector points = new Vector();
+    List<Object> points = new ArrayList<Object>();
     int nPoints = m.getCount();
     for (int i = 1; i <= nPoints; i++) {
       int atomIndex = m.getAtomIndex(i);
-      points.addElement(atomIndex >= 0 ? (Object) viewer.getAtomBits(
+      points.add(atomIndex >= 0 ? (Object) viewer.getAtomBits(
           Token.atomno, Integer.valueOf(atoms[atomIndex].getAtomNumber()))
           : (Object) m.getAtom(i));
     }
@@ -436,7 +437,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
 
   private void setIndices() {
     for (int i = 0; i < measurementCount; i++)
-      ((Measurement) measurements.get(i)).setIndex(i);
+      measurements.get(i).setIndex(i);
   }
   
   private int tokAction;
@@ -454,11 +455,10 @@ public class Measures extends Shape implements JmolMeasurementClient {
       if (tokAction == Token.delete) {
         deleteMeasurement(iThis);
       } else if (strFormat != null) {
-        ((Measurement) measurements.get(iThis)).formatMeasurement(strFormat,
+        measurements.get(iThis).formatMeasurement(strFormat,
             null, true);
       } else {
-        ((Measurement) measurements.get(iThis))
-            .setHidden(tokAction == Token.off);
+        measurements.get(iThis).setHidden(tokAction == Token.off);
       }
     } else if (tokAction == Token.define || tokAction == Token.opToggle) {
       m.tickInfo = (tickInfo == null ? defaultTickInfo : tickInfo);
@@ -474,7 +474,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
     if (i == Integer.MIN_VALUE)
       i = find(m);
     if (i >= 0) {
-      ((Measurement) measurements.get(i)).setHidden(false);
+      measurements.get(i).setHidden(false);
       if (doSelect)
         bsSelected.set(i);
       return;
@@ -487,7 +487,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
   }
 
   private void deleteMeasurement(int i) {
-    String msg = ((Measurement) measurements.get(i)).toVector().toString();
+    String msg = measurements.get(i).toVector().toString();
     measurements.remove(i);
     measurementCount--;
     viewer.setStatusMeasuring("measureDeleted", i, msg);
@@ -504,13 +504,13 @@ public class Measures extends Shape implements JmolMeasurementClient {
 
   private void reformatDistances() {
     for (int i = measurementCount; --i >= 0; )
-      ((Measurement) measurements.get(i)).reformatDistanceIfSelected();    
+      measurements.get(i).reformatDistanceIfSelected();    
   }
   
-  private Vector getAllInfo() {
-    Vector info = new Vector();
+  private List<Hashtable<String, Object>> getAllInfo() {
+    List<Hashtable<String, Object>> info = new ArrayList<Hashtable<String,Object>>();
     for (int i = 0; i< measurementCount; i++) {
-      info.addElement(getInfo(i));
+      info.add(getInfo(i));
     }
     return info;
   }
@@ -523,10 +523,10 @@ public class Measures extends Shape implements JmolMeasurementClient {
     return info;
   }
   
-  private Hashtable getInfo(int index) {
-    Measurement m = (Measurement) measurements.get(index);
+  private Hashtable<String, Object> getInfo(int index) {
+    Measurement m = measurements.get(index);
     int count = m.getCount();
-    Hashtable info = new Hashtable();
+    Hashtable<String, Object> info = new Hashtable<String, Object>();
     info.put("index", Integer.valueOf(index));
     info.put("type", (count == 2 ? "distance" : count == 3 ? "angle"
         : "dihedral"));
@@ -543,29 +543,29 @@ public class Measures extends Shape implements JmolMeasurementClient {
       if (!Float.isNaN(tickInfo.first))
         info.put("tickStart", new Float(tickInfo.first));
     }
-    Vector atomsInfo = new Vector();
+    List<Hashtable<String, Object>> atomsInfo = new ArrayList<Hashtable<String,Object>>();
     for (int i = 1; i <= count; i++) {
-      Hashtable atomInfo = new Hashtable();
+      Hashtable<String, Object> atomInfo = new Hashtable<String, Object>();
       int atomIndex = m.getAtomIndex(i);
       atomInfo.put("_ipt", Integer.valueOf(atomIndex));
       atomInfo.put("coord", Escape.escape(m.getAtom(i)));
       atomInfo.put("atomno", Integer.valueOf(atomIndex < 0 ? -1 : atoms[atomIndex].getAtomNumber()));
       atomInfo.put("info", (atomIndex < 0 ? "<point>" : atoms[atomIndex].getInfo()));
-      atomsInfo.addElement(atomInfo);
+      atomsInfo.add(atomInfo);
     }
     info.put("atoms", atomsInfo);
     return info;
   }
 
   private String getInfoAsString(int index) {
-    return ((Measurement) measurements.get(index)).getInfoAsString(null);
+    return measurements.get(index).getInfoAsString(null);
   }
   
   void setVisibilityInfo() {
     BitSet bsModels = viewer.getVisibleFramesBitSet();
     out:
     for (int i = measurementCount; --i >= 0; ) {
-      Measurement m = ((Measurement) measurements.get(i));
+      Measurement m = measurements.get(i);
       m.setVisible(false);
       if(mad == 0 || m.isHidden())
         continue;
@@ -596,7 +596,7 @@ public String getShapeState() {
     Hashtable<String, BitSet> temp = new Hashtable<String, BitSet>();
     BitSet bs = new BitSet(measurementCount);
     for (int i = 0; i < measurementCount; i++) {
-      Measurement m = ((Measurement) measurements.get(i));
+      Measurement m = measurements.get(i);
       if (m.isHidden()) {
         nHidden++;
         bs.set(i);
@@ -631,7 +631,7 @@ public String getShapeState() {
   }
   
   private String getState(int index) {
-    Measurement m = ((Measurement) measurements.get(index));
+    Measurement m = measurements.get(index);
     int count = m.getCount();
     StringBuffer sb = new StringBuffer("measure");
     TickInfo tickInfo = m.getTickInfo();

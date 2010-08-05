@@ -26,13 +26,6 @@ package org.jmol.adapter.readers.quantum;
 
 import org.jmol.adapter.smarter.*;
 
-//import java.util.Hashtable;
-//import java.util.Vector;
-
-//import javax.vecmath.Vector3f;
-
-//import org.jmol.util.Logger;
-
 /**
  * Reader for Gaussian Wfn files -- not implemented yet
  *
@@ -42,7 +35,7 @@ public class GaussianWfnReader extends AtomSetCollectionReader {
 //  int shellCount = 0;
 //  int gaussianCount = 0;
 //  Hashtable moData = new Hashtable();
-//  Vector orbitals = new Vector();
+//  List orbitals = new ArrayList();
 
   
   /* I thought perhaps this would be enough, but now I'm not so sure.
@@ -138,8 +131,8 @@ EXPONENTS  0.2068882D+04 0.3106496D+03 0.7068303D+02 0.1986108D+02 0.6299305D+01
   }
   
   private void readBasis() throws Exception {
-    Vector sdata = new Vector();
-    Vector gdata = new Vector();
+    List sdata = new ArrayList();
+    List gdata = new ArrayList();
     gaussianCount = 0;
     shellCount = 0;
     int[] centers = getIntArray(nPrimitive, 2);

@@ -62,13 +62,13 @@ public class SpartanSmolReader extends SpartanInputReader {
       if (!doGetModel(modelNumber))
         return checkLastModel();
       atomSetCollection.newAtomSet();
-      moData = new Hashtable();
+      moData = new Hashtable<String, Object>();
       moData.put("isNormalized", Boolean.TRUE);
       if (modelNo == Integer.MIN_VALUE) {
         modelNo = modelNumber;
         title = "Model " + modelNo;
       } else  {
-        title = (String) titles.get("Title" + modelNo);
+        title = titles.get("Title" + modelNo);
         title = "Profile " + modelNo + (title == null ? "" : ": " + title);
       }
       Logger.info(title);
@@ -156,16 +156,16 @@ public class SpartanSmolReader extends SpartanInputReader {
     }
 
   private String endCheck = "END Directory Entry ";
-  private Hashtable moData = new Hashtable();
+  private Hashtable<String, Object> moData = new Hashtable<String, Object>();
   private String title;
 
   SpartanArchive spartanArchive;
 
 
-  Hashtable titles;
+  Hashtable<String, String> titles;
   
   private void readOutput() throws Exception {
-    titles = new Hashtable();
+    titles = new Hashtable<String, String>();
     String header = "";
     int pt;
     while (readLine() != null && !line.startsWith("END ")) {

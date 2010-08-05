@@ -116,9 +116,10 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
@@ -184,7 +185,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   private ColorEncoder colorEncoder = new ColorEncoder();
   private float withinDistance;
-  private Vector withinPoints;
+  private List withinPoints;
 
   @Override
   public void setProperty(String propertyName, Object value, BitSet bs) {
@@ -307,7 +308,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       }
     }
     if ("title" == propertyName) {
-      if (value instanceof String && "-".equals((String) value))
+      if (value instanceof String && "-".equals(value))
         value = null;
       setPropertySuper(propertyName, value, bs);
       value = title;
@@ -317,7 +318,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       Object[] o = (Object[]) value;
       withinDistance = ((Float) o[0]).floatValue();
       BitSet bsAtoms = (BitSet) o[2];
-      withinPoints = (Vector) o[3];
+      withinPoints = (List) o[3];
       if (withinPoints.size() == 0)
         withinPoints = viewer.getAtomPointVector(bsAtoms);
     }
@@ -493,7 +494,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   private void setPropertySuper(String propertyName, Object value, BitSet bs) {
     if (propertyName == "thisID" && currentMesh != null 
-        && currentMesh.thisID.equals((String) value)) {
+        && currentMesh.thisID.equals(value)) {
       checkExplicit((String) value);
       return;
     }
@@ -512,7 +513,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       if (mesh == null)
         return false;
       data[3] = Integer.valueOf(mesh.modelIndex);
-      return mesh.getIntersection((Point4f) data[1], (Vector) data[2], false);
+      return mesh.getIntersection((Point4f) data[1], (List) data[2], false);
     }
     if (property == "getBoundingBox") {
       String id = (String) data[0];
@@ -1078,8 +1079,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   }
 
   @Override
-  public Vector getShapeDetail() {
-    Vector V = new Vector();
+  public List<Hashtable<String, Object>> getShapeDetail() {
+    List<Hashtable<String, Object>> V = new ArrayList<Hashtable<String,Object>>();
     for (int i = 0; i < meshCount; i++) {
       Hashtable<String, Object> info = new Hashtable<String, Object>();
       IsosurfaceMesh mesh = isomeshes[i];
@@ -1102,7 +1103,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         info.put("title", mesh.title);
       if (mesh.jvxlData.contourValues != null || mesh.jvxlData.contourValuesUsed != null)
         info.put("contours", mesh.getContourList(viewer));
-      V.addElement(info);
+      V.add(info);
     }
     return V;
   }
@@ -1125,7 +1126,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       if (isTranslucent)
         vertexColixes[i] = Graphics3D.getColixTranslucent(vertexColixes[i], true, translucentLevel);
     }
-    Vector[] contours = thisMesh.getContours();
+    List<Object>[] contours = thisMesh.getContours();
     if (contours != null) {
       for (int i = contours.length; --i >= 0; ) {
         float value = ((Float)contours[i].get(JvxlCoder.CONTOUR_VALUE)).floatValue();
@@ -1358,15 +1359,15 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       y <<= 1;
       dmin2 <<= 1;
     }
-    Vector pickedContour = null;
+    List<Object> pickedContour = null;
     for (int i = 0; i < meshCount; i++) {
       IsosurfaceMesh m = isomeshes[i];
       if (!isPickable(m, bsVisible))
         continue;
-      Vector[] vs = m.jvxlData.vContours;
+      List<Object>[] vs = m.jvxlData.vContours;
       if (vs != null && vs.length > 0) {
         for (int j = 0; j < vs.length; j++) {
-          Vector vc = vs[j];
+          List<Object> vc = vs[j];
           int n = vc.size() - 1;
           for (int k = JvxlCoder.CONTOUR_POINTS; k < n; k++) {
             Point3f v = (Point3f) vc.get(k);

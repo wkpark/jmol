@@ -26,10 +26,7 @@ package org.jmol.minimize.forcefield;
 
 import java.util.BitSet;
 import java.util.Hashtable;
-import java.util.Vector;
-
-//import javax.vecmath.Point3f;
-//import javax.vecmath.Vector3d;
+import java.util.List;
 
 import org.jmol.minimize.MinAtom;
 import org.jmol.minimize.MinBond;
@@ -59,9 +56,9 @@ abstract public class ForceField {
     return calc.getUnit();
   }
 
-  public abstract Vector getAtomTypes();
+  public abstract List<String[]> getAtomTypes();
 
-  protected abstract Hashtable getFFParameters();
+  protected abstract Hashtable<String, FFParam> getFFParameters();
 
   private double criterion, e0, dE; 
   int currentStep;
@@ -98,7 +95,7 @@ abstract public class ForceField {
   public boolean setup() {
     if (calc.haveParams())
       return true;
-    Hashtable temp = getFFParameters();
+    Hashtable<String, FFParam> temp = getFFParameters();
     if (temp == null)
       return false;
     calc.setParams(temp);

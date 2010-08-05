@@ -23,7 +23,8 @@
 
 package org.jmol.script;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -60,7 +61,7 @@ public class ParallelProcessor extends ScriptFunction {
   }
 
   Viewer viewer;
-  volatile Vector vShapeManagers = null;
+  volatile List<ShapeManager> vShapeManagers = null;
   volatile int counter = 0;
   volatile Error error = null;
   Object lock = new Object() ;
@@ -70,7 +71,7 @@ public class ParallelProcessor extends ScriptFunction {
       return;
     this.viewer = viewer;
     boolean allowParallel = inParallel && !viewer.isParallel() && viewer.setParallel(true);
-    vShapeManagers = new Vector();
+    vShapeManagers = new ArrayList<ShapeManager>();
     error = null;
     counter = 0;
     if (Logger.debugging)
@@ -79,7 +80,7 @@ public class ParallelProcessor extends ScriptFunction {
 
     counter = processes.size();
     for (int i = processes.size(); --i >= 0;) {
-      runProcess((Process) processes.remove(0), allowParallel);
+      runProcess(processes.remove(0), allowParallel);
     }
 
     synchronized (lock) {
@@ -99,7 +100,7 @@ public class ParallelProcessor extends ScriptFunction {
   void mergeResults() {
     try {
       for (int i = 0; i < vShapeManagers.size(); i++)
-        viewer.mergeShapes(((ShapeManager) vShapeManagers.get(i)).getShapes());
+        viewer.mergeShapes(vShapeManagers.get(i).getShapes());
     } catch (Error e) {
       throw e;
     } finally {
@@ -116,7 +117,7 @@ public class ParallelProcessor extends ScriptFunction {
     }
   }
 
-  Vector processes = new Vector();
+  List<Process> processes = new ArrayList<Process>();
 
   void addProcess(String name, ScriptContext context) {
     processes.add(new Process(name, context));

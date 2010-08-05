@@ -23,12 +23,13 @@
  */
 package org.jmol.script;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -119,9 +120,9 @@ class ScriptMathProcessor {
         // asVector will be true;
       }
       if (asVector) {
-        Vector result = new Vector();
+        List<ScriptVariable> result = new ArrayList<ScriptVariable>();
         for (int i = 0; i <= xPt; i++)
-          result.addElement(ScriptVariable.selectItem(xStack[i]));
+          result.add(ScriptVariable.selectItem(xStack[i]));
         return new ScriptVariable(Token.vector, result);
       }
       if (xPt == 0) {
@@ -741,10 +742,10 @@ class ScriptMathProcessor {
       stddev = 0;
     } else {
       stddev = Float.NaN;
-      Vector ptsA, ptsB;
+      List<Point3f> ptsA, ptsB;
       if (isSmiles) {
-        ptsA = new Vector();
-        ptsB = new Vector();
+        ptsA = new ArrayList<Point3f>();
+        ptsB = new ArrayList<Point3f>();
         sOpt = ScriptVariable.sValue(args[2]);
         isSmiles = sOpt.equalsIgnoreCase("SMILES");
         boolean isSearch = sOpt.equalsIgnoreCase("SMARTS");
@@ -1020,7 +1021,7 @@ class ScriptMathProcessor {
       // measure({a},{b},{c}, min, max, format, units)
       // measure({a},{b}, min, max, format, units)
       // measure({a},{b},{c},{d}, min, max, format, units)
-      Vector points = new Vector();
+      List<Object> points = new ArrayList<Object>();
       float[] rangeMinMax = new float[] { Float.MAX_VALUE, Float.MAX_VALUE };
       String strFormat = null;
       String units = null;
@@ -1106,10 +1107,11 @@ class ScriptMathProcessor {
     }
     wasX = false;
     if (isSyntaxCheck)
-      return addX((int) 1);
-    Vector params = new Vector();
-    for (int i = 0; i < args.length; i++)
-      params.addElement(args[i]);
+      return addX(1);
+    List<ScriptVariable> params = new ArrayList<ScriptVariable>();
+    for (int i = 0; i < args.length; i++) {
+      params.add(args[i]);
+    }
     if (isSelector) {
       return addX(eval.getBitsetProperty(ScriptVariable.bsSelect(x1), tok,
           null, null, x1.value, new Object[] { name, params }, false, x1.index,
@@ -1123,7 +1125,7 @@ class ScriptMathProcessor {
     if (args.length == 0)
       return false;
     if (isSyntaxCheck)
-      return addX((int) 1);
+      return addX(1);
 
     // {*}.find("SMARTS", "CCCC")
     // "CCCC".find("SMARTS", "CC")
@@ -1173,8 +1175,8 @@ class ScriptMathProcessor {
       }
       if (ret == null)
         eval.error(ScriptEvaluator.ERROR_invalidArgument); 
-      return (ret instanceof String[] ? addX((String[]) ret)
-          : ret instanceof String ? addX((String) ret) : addX((BitSet) ret));
+      return (ret instanceof String[] ? addX(ret)
+          : ret instanceof String ? addX(ret) : addX((BitSet) ret));
     }
     boolean isReverse = (flags.indexOf("v") >= 0);
     boolean isCaseInsensitive = (flags.indexOf("i") >= 0);
@@ -1197,7 +1199,7 @@ class ScriptMathProcessor {
       int ipt = 0;
       int n = 0;
       Matcher matcher = null;
-      Vector v = (asMatch ? new Vector() : null);
+      List<String> v = (asMatch ? new ArrayList<String>() : null);
       for (int i = 0; i < list.length; i++) {
         String what = list[i];
         matcher = pattern.matcher(what);
@@ -1272,7 +1274,7 @@ class ScriptMathProcessor {
     case 1:
       Object pt = Escape.unescapePoint(ScriptVariable.sValue(args[0]));
       if (pt instanceof Point4f)
-        return addX((Point4f) pt);
+        return addX(pt);
       return addX("" + pt);
     case 3:
       if (tok == Token.hkl) {
@@ -1928,7 +1930,7 @@ class ScriptMathProcessor {
       float[] f2 = (type.indexOf("property_") == 0 ? viewer.getDataFloat(type)
           : null);
       if (f2 != null) {
-        f1 = (float[]) f1.clone();
+        f1 = f1.clone();
         for (int i = Math.min(f1.length, f2.length); --i >= 0;)
           f1[i] += f2[i];
       }
@@ -2317,7 +2319,7 @@ class ScriptMathProcessor {
         if (x2.tok != Token.hash)
           return addX("");
         Enumeration e = ((Hashtable)x2.value).keys();
-        Vector v = new Vector();
+        List<Object> v = new ArrayList<Object>();
         while (e.hasMoreElements())
           v.add(e.nextElement());
         String[] keys = new String[v.size()];
@@ -2719,7 +2721,7 @@ class ScriptMathProcessor {
       case Token.integer:
       default:
         if (n == 0)
-          return addX((int) 0);
+          return addX(0);
         return addX(ScriptVariable.iValue(x1) % n);
       case Token.decimal:
         f = ScriptVariable.fValue(x1);

@@ -30,7 +30,8 @@ import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 
 import javax.vecmath.Point3f;
-import java.util.Vector;
+
+import java.util.List;
 import java.util.BitSet;
 
 /*
@@ -110,7 +111,7 @@ public class MOCalculation extends QuantumCalculation implements
   final float[] EZ = new float[MAX_GRID];
 
   private String calculationType;
-  private Vector shells;
+  private List shells;
   private float[][] gaussians;
   //Hashtable aoOrdersDF;
   private SlaterData[] slaters;
@@ -134,7 +135,7 @@ public class MOCalculation extends QuantumCalculation implements
 
   public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
                         String calculationType, Point3f[] atomCoordAngstroms,
-                        int firstAtomOffset, Vector shells,
+                        int firstAtomOffset, List shells,
                         float[][] gaussians, int[][] dfCoefMaps,
                         Object slaters,
                         float[] moCoefficients, float[] nuclearCharges, boolean doNormalize) {

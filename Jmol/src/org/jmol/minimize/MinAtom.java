@@ -24,7 +24,8 @@
 
 package org.jmol.minimize;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.jmol.modelset.Atom;
 
@@ -34,7 +35,7 @@ public class MinAtom {
   public Atom atom;
   public double[] coord = new double[3];
   public double[] force = new double[3];
-  public Vector bonds = new Vector();
+  public List<MinBond> bonds = new ArrayList<MinBond>();
   public int nBonds;
   public int hCount;
   
@@ -63,7 +64,7 @@ public class MinAtom {
     getBondedAtomIndexes();
     for (int i = 0; i < nBonds; i++)
       if (bondedAtoms[i] == iAtom)
-        return (MinBond) bonds.elementAt(i);
+        return bonds.get(i);
     return null;
   }
 
@@ -71,7 +72,7 @@ public class MinAtom {
     if (bondedAtoms == null) {
       bondedAtoms = new int[nBonds];
       for (int i = nBonds; --i >= 0;)
-        bondedAtoms[i] = ((MinBond) bonds.elementAt(i)).getOtherAtom(index);
+        bondedAtoms[i] = bonds.get(i).getOtherAtom(index);
     }
     return bondedAtoms;
   }

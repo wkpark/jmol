@@ -23,9 +23,12 @@
  */
 package org.jmol.jvxl.data;
 
+
 import javax.vecmath.Point3f;
+
+import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Vector;
+import java.util.List;
 
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
@@ -230,7 +233,7 @@ public class JvxlCoder {
   public static String jvxlGetInfo(JvxlData jvxlData, boolean verticesOnly, boolean notVersion1) {
     if (jvxlData.jvxlSurfaceData == null)
       return "";
-    Vector attribs = new Vector();
+    List<String[]> attribs = new ArrayList<String[]>();
      
     int nSurfaceInts = jvxlData.nSurfaceInts;// jvxlData.jvxlSurfaceData.length();
     int bytesUncompressedEdgeData = (verticesOnly ? 0
@@ -325,7 +328,7 @@ public class JvxlCoder {
     return info.toString();
   }
   
-  private static void addAttrib(Vector attribs, String name, String value) {
+  private static void addAttrib(List<String[]> attribs, String name, String value) {
     attribs.add(new String[] { name, value });
   }
 
@@ -368,13 +371,13 @@ public class JvxlCoder {
    * @param contours
    * @param sb
    */
-  private static void jvxlEncodeContourData(Vector[] contours, StringBuffer sb) {
+  private static void jvxlEncodeContourData(List<Object>[] contours, StringBuffer sb) {
     XmlUtil.openTag(sb, "jvxlContourData", new String[] { "count", "" + contours.length });
     for (int i = 0; i < contours.length; i++) {
-      if (contours[i].size() < CONTOUR_POINTS)
+      if (contours[i].size() < CONTOUR_POINTS) {
         continue;
-      int nPolygons = ((Integer) contours[i]
-          .get(CONTOUR_NPOLYGONS)).intValue();
+      }
+      int nPolygons = ((Integer) contours[i].get(CONTOUR_NPOLYGONS)).intValue();
       StringBuffer sb1 = new StringBuffer("\n");
       BitSet bs = (BitSet) contours[i].get(CONTOUR_BITSET);
       jvxlEncodeBitSet(bs, nPolygons, sb1);
@@ -401,7 +404,7 @@ public class JvxlCoder {
    * @param polygonIndexes
    * @param vertices
    */
-  public static void set3dContourVector(Vector v, int[][] polygonIndexes, Point3f[] vertices) {
+  public static void set3dContourVector(List<Object> v, int[][] polygonIndexes, Point3f[] vertices) {
     // we must add points only after the MarchingCubes process has completed.
     if (v.size() < CONTOUR_POINTS)
       return;

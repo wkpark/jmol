@@ -24,10 +24,12 @@
 
 package org.jmol.adapter.readers.quantum;
 
+
 import org.jmol.adapter.smarter.*;
 import org.jmol.api.JmolAdapter;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Hashtable;
 import javax.vecmath.Vector3f;
 
@@ -52,23 +54,23 @@ class SpartanArchive {
 
   private AtomSetCollection atomSetCollection;
   private AtomSetCollectionReader r;
-  private Hashtable moData;
-  private Vector orbitals = new Vector();
+  private Hashtable<String, Object> moData;
+  private List<Hashtable<String, Object>> orbitals = new ArrayList<Hashtable<String,Object>>();
 
   SpartanArchive(AtomSetCollectionReader r,
-      AtomSetCollection atomSetCollection, Hashtable moData) {
+      AtomSetCollection atomSetCollection, Hashtable<String, Object> moData) {
     initialize(r, atomSetCollection, moData, "");
   }
 
   SpartanArchive(AtomSetCollectionReader r,
-      AtomSetCollection atomSetCollection, Hashtable moData, String bondData, String endCheck) {
+      AtomSetCollection atomSetCollection, Hashtable<String, Object> moData, String bondData, String endCheck) {
     initialize(r, atomSetCollection, moData, bondData);
     this.endCheck = endCheck;
   }
 
   private void initialize(AtomSetCollectionReader r,
                           AtomSetCollection atomSetCollection,
-                          Hashtable moData, String bondData) {
+                          Hashtable<String, Object> moData, String bondData) {
     this.r = r;
     this.atomSetCollection = atomSetCollection;
     this.moData = moData;
@@ -229,7 +231,7 @@ class SpartanArchive {
 
      */
 
-    Vector sdata = new Vector();
+    List<int[]> sdata = new ArrayList<int[]>();
     float[][] garray = new float[gaussianCount][];
     int[] typeArray = new int[gaussianCount];
     for (int i = 0; i < shellCount; i++) {
@@ -241,9 +243,10 @@ class SpartanArchive {
       slater[1] = (iBasis == 0 ? 0 : iBasis + 1);//0 = S, 1 = P, 2 = SP, 3 = D, 4 = F
       int gaussianPtr = slater[2] = parseInt(tokens[2]) - 1;
       int nGaussians = slater[3] = parseInt(tokens[1]);
-      for (int j = 0; j < nGaussians; j++)
+      for (int j = 0; j < nGaussians; j++) {
         typeArray[gaussianPtr + j] = iBasis;
-      sdata.addElement(slater);
+      }
+      sdata.add(slater);
     }
     for (int i = 0; i < gaussianCount; i++) {
       float alpha = parseFloat(readLine());
@@ -299,11 +302,11 @@ class SpartanArchive {
       }
     }
     for (int i = 0; i < moCount; i++) {
-      Hashtable mo = new Hashtable();
-      mo.put("energy", new Float(energies[i]));
+      Hashtable<String, Object> mo = new Hashtable<String, Object>();
+      mo.put("energy", Float.valueOf(energies[i]));
       //mo.put("occupancy", new Float(-1));
       mo.put("coefficients", coefficients[i]);
-      orbitals.addElement(mo);
+      orbitals.add(mo);
     }
     if (Logger.debugging) {
       Logger.debug(orbitals.size() + " molecular orbitals read");
@@ -351,7 +354,7 @@ class SpartanArchive {
     String keyName = tokens[2];
     boolean isDipole = (keyName.equals("DIPOLE_VEC"));
     Object value = new Object();
-    Vector vector = new Vector();
+    List<Object> vector = new ArrayList<Object>();
     if (tokens[3].equals("=")) {
       if (isString) {
         value = getQuotedString(tokens[4].substring(0, 1));
@@ -363,27 +366,27 @@ class SpartanArchive {
       if (nValues == 0)
         nValues = 1;
       boolean isArray = (tokens.length == 6);
-      Vector atomInfo = new Vector();
+      List<Float> atomInfo = new ArrayList<Float>();
       int ipt = 0;
       while (readLine() != null
           && !line.substring(0, 3).equals("END")) {
         if (isString) {
           value = getQuotedString("\"");
-          vector.addElement(value);
+          vector.add(value);
         } else {
           String tokens2[] = getTokens();
           if (isDipole)
             setDipole(tokens2);
           for (int i = 0; i < tokens2.length; i++, ipt++) {
             if (isArray) {
-              atomInfo.addElement(new Float(parseFloat(tokens2[i])));
+              atomInfo.add(Float.valueOf(parseFloat(tokens2[i])));
               if ((ipt + 1) % nValues == 0) {
-                vector.addElement(atomInfo);
-                atomInfo = new Vector();
+                vector.add(atomInfo);
+                atomInfo = new ArrayList<Float>();
               }
             } else {
-              value = new Float(parseFloat(tokens2[i]));
-              vector.addElement(value);
+              value = Float.valueOf(parseFloat(tokens2[i]));
+              vector.add(value);
             }
           }
         }
@@ -407,8 +410,8 @@ class SpartanArchive {
     readLine();
     String label = "";
     int frequencyCount = parseInt(line);
-    Vector vibrations = new Vector();
-    Vector freqs = new Vector();
+    List<List<List<Float>>> vibrations = new ArrayList<List<List<Float>>>();
+    List<Hashtable<String, Object>> freqs = new ArrayList<Hashtable<String,Object>>();
     if (Logger.debugging) {
       Logger.debug("reading VIBFREQ vibration records: frequencyCount = "
           + frequencyCount);
@@ -422,20 +425,21 @@ class SpartanArchive {
         addBonds(bondData, atomCount0);
       }
       readLine();
-      Hashtable info = new Hashtable();
+      Hashtable<String, Object> info = new Hashtable<String, Object>();
       float freq = parseFloat(line);
       info.put("freq", new Float(freq));
       if (line.length() > 15
           && !(label = line.substring(15, line.length())).equals("???"))
         info.put("label", label);
-      freqs.addElement(info);
-      if (!ignore[i])
+      freqs.add(info);
+      if (!ignore[i]) {
         atomSetCollection.setAtomSetFrequency(null, label, "" + freq, null);
+      }
     }
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("VibFreqs", freqs);
     int atomCount = atomSetCollection.getFirstAtomSetAtomCount();
-    Vector vib = new Vector();
-    Vector vibatom = new Vector();
+    List<List<Float>> vib = new ArrayList<List<Float>>();
+    List<Float> vibatom = new ArrayList<Float>();
     int ifreq = 0;
     int iatom = atomCount;
     int nValues = 3;
@@ -445,58 +449,59 @@ class SpartanArchive {
       for (int i = 0; i < tokens2.length; i++) {
         float f = parseFloat(tokens2[i]);
         atomInfo[i % nValues] = f;
-        vibatom.addElement(new Float(f));
+        vibatom.add(Float.valueOf(f));
         if ((i + 1) % nValues == 0) {
           if (!ignore[ifreq]) {
-            atomSetCollection.addVibrationVector(iatom, atomInfo[0], atomInfo[1],
-                atomInfo[2]);
-            vib.addElement(vibatom);
-            vibatom = new Vector();
+            atomSetCollection.addVibrationVector(iatom, atomInfo[0], atomInfo[1], atomInfo[2]);
+            vib.add(vibatom);
+            vibatom = new ArrayList<Float>();
           }
           ++iatom;
         }
       }
       if (iatom % atomCount == 0) {
-        if (!ignore[ifreq])
-          vibrations.addElement(vib);
-        vib = new Vector();
-        if (++ifreq == frequencyCount)
+        if (!ignore[ifreq]) {
+          vibrations.add(vib);
+        }
+        vib = new ArrayList<List<Float>>();
+        if (++ifreq == frequencyCount) {
           break; // /loop exit
+        }
       }
     }
-    atomSetCollection
-        .setAtomSetCollectionAuxiliaryInfo("vibration", vibrations);
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("vibration", vibrations);
   }
 
   private void setVibrationsFromProperties() throws Exception {
-    Vector freq_modes = (Vector) atomSetCollection.getAtomSetCollectionAuxiliaryInfo("FREQ_MODES");
-    if (freq_modes == null)
+    List<List<Float>> freq_modes = (List<List<Float>>) atomSetCollection.getAtomSetCollectionAuxiliaryInfo("FREQ_MODES");
+    if (freq_modes == null) {
       return;
-    Vector freq_lab = (Vector) atomSetCollection.getAtomSetCollectionAuxiliaryInfo("FREQ_LAB");
-    Vector freq_val = (Vector) atomSetCollection.getAtomSetCollectionAuxiliaryInfo("FREQ_VAL");
+    }
+    List<String> freq_lab = (List<String>) atomSetCollection.getAtomSetCollectionAuxiliaryInfo("FREQ_LAB");
+    List<Float> freq_val = (List<Float>) atomSetCollection.getAtomSetCollectionAuxiliaryInfo("FREQ_VAL");
     int frequencyCount = freq_val.size();
-    Vector vibrations = new Vector();
-    Vector freqs = new Vector();
+    List<List<List<Float>>> vibrations = new ArrayList<List<List<Float>>>();
+    List<Hashtable<String, Object>> freqs = new ArrayList<Hashtable<String,Object>>();
     if (Logger.debugging) {
       Logger.debug(
           "reading PROP VALUE:VIB FREQ_MODE vibration records: frequencyCount = " + frequencyCount);
     }
-    Object v;
+    Float v;
     for (int i = 0; i < frequencyCount; ++i) {
       int atomCount0 = atomSetCollection.getAtomCount();
       atomSetCollection.cloneLastAtomSet();
       addBonds(bondData, atomCount0);
-      Hashtable info = new Hashtable();
+      Hashtable<String, Object> info = new Hashtable<String, Object>();
       info.put("freq", (v = freq_val.get(i)));
-      float freq = ((Float) v).floatValue();
-      String label = (String) freq_lab.get(i);
-      if (!label.equals("???"))
+      float freq = v.floatValue();
+      String label = freq_lab.get(i);
+      if (!label.equals("???")) {
         info.put("label", label);
-      freqs.addElement(info);
+      }
+      freqs.add(info);
       atomSetCollection.setAtomSetName(label + " " + freq + " cm^-1");
       atomSetCollection.setAtomSetProperty("Frequency", freq + " cm^-1");
-      atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
-          "Frequencies");
+      atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY, "Frequencies");
     }
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("VibFreqs", freqs);
     int atomCount = atomSetCollection.getFirstAtomSetAtomCount();
@@ -505,20 +510,20 @@ class SpartanArchive {
       if (!r.doGetVibration(i + 1))
         continue;
       int ipt = 0;
-      Vector vib = new Vector();
-      Vector mode = (Vector) freq_modes.get(i);
+      List<List<Float>> vib = new ArrayList<List<Float>>();
+      List<Float> mode = freq_modes.get(i);
       for (int ia = 0; ia < atomCount; ia++, iatom++) {
-        Vector vibatom = new Vector();
-        float vx = ((Float)(v = mode.get(ipt++))).floatValue();
-        vibatom.addElement(v);
-        float vy = ((Float)(v = mode.get(ipt++))).floatValue();
-        vibatom.addElement(v);
-        float vz = ((Float)(v = mode.get(ipt++))).floatValue();
-        vibatom.addElement(v);
+        List<Float> vibatom = new ArrayList<Float>();
+        float vx = (v = mode.get(ipt++)).floatValue();
+        vibatom.add(v);
+        float vy = (v = mode.get(ipt++)).floatValue();
+        vibatom.add(v);
+        float vz = (v = mode.get(ipt++)).floatValue();
+        vibatom.add(v);
         atomSetCollection.addVibrationVector(iatom, vx, vy, vz);
-        vib.addElement(vibatom);
+        vib.add(vibatom);
       }
-      vibrations.addElement(vib);
+      vibrations.add(vib);
     }
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("vibration", vibrations);
   }

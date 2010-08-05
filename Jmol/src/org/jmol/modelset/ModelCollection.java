@@ -25,12 +25,12 @@
 
 package org.jmol.modelset;
 
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
-import java.util.Vector;
 
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
@@ -165,7 +165,7 @@ abstract public class ModelCollection extends BondCollection {
    *          1 -- edges only 2 -- triangles only 3 -- both
    * @return Vector
    */
-  public Vector getPlaneIntersection(int type, Point4f plane, float scale,
+  public List<Object> getPlaneIntersection(int type, Point4f plane, float scale,
                                      int flags, int modelIndex) {
     Point3f[] pts = null;
     switch (type) {
@@ -179,7 +179,7 @@ abstract public class ModelCollection extends BondCollection {
       pts = boxInfo.getCanonicalCopy(scale);
       break;
     }
-    Vector v = new Vector();
+    List<Object> v = new ArrayList<Object>();
     v.add(pts);
     return TriangleData.intersectPlane(plane, v, flags);
   }
@@ -224,7 +224,7 @@ abstract public class ModelCollection extends BondCollection {
   protected boolean isPDB;
 
   protected Properties modelSetProperties;
-  protected Hashtable modelSetAuxiliaryInfo;
+  protected Hashtable<String, Object> modelSetAuxiliaryInfo;
 
   protected Group[] groups;
   protected int groupCount;
@@ -321,7 +321,7 @@ abstract public class ModelCollection extends BondCollection {
     return boxInfo.getBboxVertices();
   }
 
-  public Hashtable getBoundBoxInfo() {
+  public Hashtable<String, Object> getBoundBoxInfo() {
     return boxInfo.getBoundBoxInfo();
   }
 
@@ -515,7 +515,7 @@ abstract public class ModelCollection extends BondCollection {
       assignAromaticBonds();
   }
   
-  protected Vector stateScripts = new Vector();
+  protected List<StateScript> stateScripts = new ArrayList<StateScript>();
   /*
    * stateScripts are connect commands that must be executed in sequence.
    * 
@@ -542,8 +542,9 @@ abstract public class ModelCollection extends BondCollection {
     }
     StateScript stateScript = new StateScript(thisStateModel, script1, bsBonds, bsAtoms1,
         bsAtoms2, script2, postDefinitions);
-    if (stateScript.isValid())
-      stateScripts.addElement(stateScript);
+    if (stateScript.isValid()) {
+      stateScripts.add(stateScript);
+    }
     return stateScript;
   }
 
@@ -735,17 +736,17 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public Hashtable getHeteroList(int modelIndex) {
-    Hashtable htFull = new Hashtable();
+    Hashtable<String, Object> htFull = new Hashtable<String, Object>();
     boolean ok = false;
     for (int i = modelCount; --i >= 0;)
       if (modelIndex < 0 || i == modelIndex) {
-        Hashtable ht = (Hashtable) getModelAuxiliaryInfo(i, "hetNames");
+        Hashtable<String, Object> ht = (Hashtable<String, Object>) getModelAuxiliaryInfo(i, "hetNames");
         if (ht == null)
           continue;
         ok = true;
-        Enumeration e = ht.keys();
+        Enumeration<String> e = ht.keys();
         while (e.hasMoreElements()) {
-          String key = (String) e.nextElement();
+          String key = e.nextElement();
           htFull.put(key, ht.get(key));
         }
       }
@@ -756,7 +757,7 @@ abstract public class ModelCollection extends BondCollection {
     return modelSetProperties;
   }
 
-  public Hashtable getModelSetAuxiliaryInfo() {
+  public Hashtable<String, Object> getModelSetAuxiliaryInfo() {
     return modelSetAuxiliaryInfo;
   }
 
@@ -768,8 +769,7 @@ abstract public class ModelCollection extends BondCollection {
 
   public Object getModelSetAuxiliaryInfo(String keyName) {
     // the preferred method now
-    return (modelSetAuxiliaryInfo == null ? null : modelSetAuxiliaryInfo
-        .get(keyName));
+    return (modelSetAuxiliaryInfo == null ? null : modelSetAuxiliaryInfo.get(keyName));
   }
 
   protected boolean getModelSetAuxiliaryInfoBoolean(String keyName) {
@@ -788,7 +788,7 @@ abstract public class ModelCollection extends BondCollection {
   }
 */
 
-  protected Vector trajectorySteps;
+  protected List trajectorySteps;
 
   protected int getTrajectoryCount() {
     return (trajectorySteps == null ? 0 : trajectorySteps.size());
@@ -883,28 +883,29 @@ abstract public class ModelCollection extends BondCollection {
     return props == null ? null : props.getProperty(property);
   }
 
-  public Hashtable getModelAuxiliaryInfo(int modelIndex) {
+  public Hashtable<String, Object> getModelAuxiliaryInfo(int modelIndex) {
     return (modelIndex < 0 ? null : models[modelIndex].auxiliaryInfo);
   }
 
   public void setModelAuxiliaryInfo(int modelIndex, Object key, Object value) {
-    models[modelIndex].auxiliaryInfo.put(key, value);
+    models[modelIndex].auxiliaryInfo.put((String) key, value);
   }
 
   public Object getModelAuxiliaryInfo(int modelIndex, String key) {
-    if (modelIndex < 0)
+    if (modelIndex < 0) {
       return null;
+    }
     return models[modelIndex].auxiliaryInfo.get(key);
   }
 
   protected boolean getModelAuxiliaryInfoBoolean(int modelIndex, String keyName) {
-    Hashtable info = models[modelIndex].auxiliaryInfo;
+    Hashtable<String, Object> info = models[modelIndex].auxiliaryInfo;
     return (info != null && info.containsKey(keyName) && ((Boolean) info
         .get(keyName)).booleanValue());
   }
 
   protected int getModelAuxiliaryInfoInt(int modelIndex, String keyName) {
-    Hashtable info = models[modelIndex].auxiliaryInfo;
+    Hashtable<String, Object> info = models[modelIndex].auxiliaryInfo;
     if (info != null && info.containsKey(keyName)) {
       return ((Integer) info.get(keyName)).intValue();
     }
@@ -971,7 +972,7 @@ abstract public class ModelCollection extends BondCollection {
     return models[modelIndex].getBioPolymerCount();
   }
 
-  public void getPolymerPointsAndVectors(BitSet bs, Vector vList) {
+  public void getPolymerPointsAndVectors(BitSet bs, List vList) {
     boolean isTraceAlpha = viewer.getTraceAlpha();
     float sheetSmoothing = viewer.getSheetSmoothing();
     int last = Integer.MAX_VALUE - 1;
@@ -1041,7 +1042,7 @@ abstract public class ModelCollection extends BondCollection {
    * @param nMax 
    */
 
-  public void calcRasmolHydrogenBonds(BitSet bsA, BitSet bsB, Vector vHBonds, 
+  public void calcRasmolHydrogenBonds(BitSet bsA, BitSet bsB, List<Bond> vHBonds, 
                                       boolean nucleicOnly, int nMax) {
     boolean isSame = bsA.equals(bsB);
     for (int i = modelCount; --i >= 0;)
@@ -1079,7 +1080,7 @@ abstract public class ModelCollection extends BondCollection {
     // go ahead and take first three atoms
     // for PDB files, do not include NON-protein groups.
     int n = 0;
-    Vector v = new Vector();
+    List<Quaternion> v = new ArrayList<Quaternion>();
     for (int i = bsAtoms.nextSetBit(0); i >= 0 && n < nMax; i = bsAtoms.nextSetBit(i + 1)) {
       Group g = atoms[i].group;
       Quaternion q = g.getQuaternion(qtype);
@@ -1094,8 +1095,9 @@ abstract public class ModelCollection extends BondCollection {
       i = g.lastAtomIndex;
     }
     Quaternion[] qs = new Quaternion[v.size()];
-    for (int i = 0; i < qs.length; i++) 
-      qs[i] = (Quaternion) v.get(i);
+    for (int i = 0; i < qs.length; i++) {
+      qs[i] = v.get(i);
+    }
     return qs;
   }
 
@@ -1336,8 +1338,9 @@ abstract public class ModelCollection extends BondCollection {
       type = models[modelDataIndex].jmolFrameType;
     }
     if (modelIndex >= 0) {
-      if (model.dataFrames == null)
-        model.dataFrames = new Hashtable();
+      if (model.dataFrames == null) {
+        model.dataFrames = new Hashtable<String, Integer>();
+      }
       models[modelDataIndex].dataSourceFrame = modelIndex;
       models[modelDataIndex].jmolFrameType = type;
       model.dataFrames.put(type, Integer.valueOf(modelDataIndex));
@@ -1349,22 +1352,26 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public int getJmolDataFrameIndex(int modelIndex, String type) {
-    if (models[modelIndex].dataFrames == null)
+    if (models[modelIndex].dataFrames == null) {
       return -1;
-    Integer index = (Integer) models[modelIndex].dataFrames.get(type);
+    }
+    Integer index = models[modelIndex].dataFrames.get(type);
     return (index == null ? -1 : index.intValue());
   }
 
   protected void clearDataFrameReference(int modelIndex) {
     for (int i = 0; i < modelCount; i++) { 
-      Hashtable df = models[i].dataFrames;
-      if (df == null)
+      Hashtable<String, Integer> df = models[i].dataFrames;
+      if (df == null) {
         continue;
+      }
       Object key;
-      Enumeration e = df.keys();
-      while (e.hasMoreElements())
-        if (((Integer)(df.get(key = e.nextElement()))).intValue() == modelIndex)
+      Enumeration<String> e = df.keys();
+      while (e.hasMoreElements()) {
+        if ((df.get(key = e.nextElement())).intValue() == modelIndex) {
           df.remove(key);
+        }
+      }
     }  
   }
   
@@ -1439,46 +1446,50 @@ abstract public class ModelCollection extends BondCollection {
     return "no header information found";
   }
 
-  public Hashtable getModelInfo(BitSet bsModels) {
-    Hashtable info = new Hashtable();
+  public Hashtable<String, Object> getModelInfo(BitSet bsModels) {
+    Hashtable<String, Object> info = new Hashtable<String, Object>();
     info.put("modelSetName", modelSetName);
     info.put("modelCount", Integer.valueOf(modelCount));
     info.put("modelSetHasVibrationVectors", Boolean
         .valueOf(modelSetHasVibrationVectors()));
-    if (modelSetProperties != null)
+    if (modelSetProperties != null) {
       info.put("modelSetProperties", modelSetProperties);
+    }
     info.put("modelCountSelected", Integer.valueOf(BitSetUtil.cardinalityOf(bsModels)));
     info.put("modelsSelected", bsModels);
-    Vector vModels = new Vector();
+    List<Hashtable<String, Object>> vModels = new ArrayList<Hashtable<String,Object>>();
     getMolecules();
     
     for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1)) {
-      Hashtable model = new Hashtable();
+      Hashtable<String, Object> model = new Hashtable<String, Object>();
       model.put("_ipt", Integer.valueOf(i));
       model.put("num", Integer.valueOf(getModelNumber(i)));
       model.put("file_model", getModelNumberDotted(i));
       model.put("name", getModelName(i));
       String s = getModelTitle(i);
-      if (s != null)
+      if (s != null) {
         model.put("title", s);
+      }
       s = getModelFileName(i);
-      if (s != null)
+      if (s != null) {
         model.put("file", s);
-      model.put("vibrationVectors", Boolean
-          .valueOf(modelHasVibrationVectors(i)));
+      }
+      model.put("vibrationVectors", Boolean.valueOf(modelHasVibrationVectors(i)));
       model.put("atomCount", Integer.valueOf(models[i].atomCount));
       model.put("bondCount", Integer.valueOf(models[i].getBondCount()));
       model.put("groupCount", Integer.valueOf(models[i].getGroupCount()));
       model.put("moleculeCount", Integer.valueOf(models[i].moleculeCount));
       model.put("polymerCount", Integer.valueOf(models[i].bioPolymerCount));
       model.put("chainCount", Integer.valueOf(getChainCountInModel(i, true)));
-      if (models[i].properties != null)
+      if (models[i].properties != null) {
         model.put("modelProperties", models[i].properties);
+      }
       Float energy = (Float) getModelAuxiliaryInfo(i, "Energy");
-      if (energy != null)
+      if (energy != null) {
         model.put("energy", energy);        
+      }
       model.put("atomCount", Integer.valueOf(models[i].atomCount));
-      vModels.addElement(model);
+      vModels.add(model);
     }
     info.put("models", vModels);
     return info;
@@ -1487,11 +1498,13 @@ abstract public class ModelCollection extends BondCollection {
   //////////////  individual models ////////////////
 
   public int getAltLocIndexInModel(int modelIndex, char alternateLocationID) {
-    if (alternateLocationID == '\0')
+    if (alternateLocationID == '\0') {
       return 0;
+    }
     String altLocList = getAltLocListInModel(modelIndex);
-    if (altLocList.length() == 0)
+    if (altLocList.length() == 0) {
       return 0;
+    }
     return altLocList.indexOf(alternateLocationID) + 1;
   }
 
@@ -1527,7 +1540,7 @@ abstract public class ModelCollection extends BondCollection {
   public String getSymmetryOperation(int modelIndex, String spaceGroup, 
                                      int symOp, Point3f pt1, Point3f pt2, 
                                      String drawID, boolean labelOnly) {
-    Hashtable sginfo = getSpaceGroupInfo(modelIndex, spaceGroup, symOp, pt1, pt2, drawID); 
+    Hashtable<String, Object> sginfo = getSpaceGroupInfo(modelIndex, spaceGroup, symOp, pt1, pt2, drawID); 
     if (sginfo == null)
       return "";
     Object[][] infolist = (Object[][]) sginfo.get("operations");
@@ -1587,24 +1600,25 @@ abstract public class ModelCollection extends BondCollection {
   ///////// molecules /////////
 
 
-  public Vector getMoleculeInfo(BitSet bsAtoms) {
-    if (moleculeCount == 0)
+  public List<Hashtable<String, Object>> getMoleculeInfo(BitSet bsAtoms) {
+    if (moleculeCount == 0) {
       getMolecules();
-    Vector V = new Vector();
+    }
+    List<Hashtable<String, Object>> V = new ArrayList<Hashtable<String,Object>>();
     BitSet bsTemp = new BitSet();
     for (int i = 0; i < moleculeCount; i++) {
       bsTemp = BitSetUtil.copy(bsAtoms);
       JmolMolecule m = molecules[i];
       bsTemp.and(m.atomList);
       if (bsTemp.length() > 0) {
-        Hashtable info = new Hashtable();
+        Hashtable<String, Object> info = new Hashtable<String, Object>();
         info.put("number", Integer.valueOf(m.moleculeIndex + 1)); //for now
         info.put("modelNumber", getModelNumberDotted(m.modelIndex));
         info.put("numberInModel", Integer.valueOf(m.indexInModel + 1));
         info.put("nAtoms", Integer.valueOf(m.atomCount));
         info.put("nElements", Integer.valueOf(m.nElements));
         info.put("mf", m.getMolecularFormula(false));
-        V.addElement(info);
+        V.add(info);
       }
     }
     return V;
@@ -1720,7 +1734,7 @@ abstract public class ModelCollection extends BondCollection {
       if (bonds == null)
         return;
       BitSet bsAtoms = new BitSet();
-      Vector vNot = new Vector();
+      List<Point3f> vNot = new ArrayList<Point3f>();
       BitSet bsModel = viewer.getModelUndeletedAtomsBitSet(thisAtom.modelIndex);
       for (int i = 0; i < bonds.length; i++) {
         Atom a = bonds[i].getOtherAtom(thisAtom);
@@ -1994,7 +2008,7 @@ abstract public class ModelCollection extends BondCollection {
       return 0;
 
     // only check the atoms in THIS model
-    Vector vCA = new Vector();
+    List<Atom> vCA = new ArrayList<Atom>();
     Atom a1 = null;
     BitSet bsCheck;
     if (bs1.equals(bs2)) {
@@ -2015,10 +2029,10 @@ abstract public class ModelCollection extends BondCollection {
     short mad = (short) (viewer.getStrutDefaultRadius() * 2000);
     int delta = viewer.getStrutSpacingMinimum();
     boolean strutsMultiple = viewer.getStrutsMultiple();
-    Vector struts = model.getBioPolymer(a1.getPolymerIndexInModel())
+    List<Object[]> struts = model.getBioPolymer(a1.getPolymerIndexInModel())
         .calculateStruts((ModelSet) this, atoms, bs1, bs2, vCA, thresh, delta, strutsMultiple);
     for (int i = 0; i < struts.size(); i++) {
-      Object[] o = (Object[]) struts.get(i);
+      Object[] o = struts.get(i);
       bondAtoms((Atom) o[0], (Atom) o[1], JmolEdge.BOND_STRUT, mad, null, 0, true);
     }
     return struts.size();
@@ -2280,10 +2294,10 @@ abstract public class ModelCollection extends BondCollection {
  
   private String getBasePairInfo(BitSet bs) {
     StringBuffer info = new StringBuffer();
-    Vector vHBonds = new Vector();
+    List<Bond> vHBonds = new ArrayList<Bond>();
     calcRasmolHydrogenBonds(bs, bs, vHBonds, true, 1);      
     for (int i = vHBonds.size(); --i >= 0;) {
-      Bond b = (Bond) vHBonds.get(i);
+      Bond b = vHBonds.get(i);
       getAtomResidueInfo(info, b.atom1);
       info.append(" - ");
       getAtomResidueInfo(info, b.atom2);
@@ -2305,7 +2319,7 @@ abstract public class ModelCollection extends BondCollection {
       return bs;
     BitSet bsA = null;
     BitSet bsB = null;
-    Vector vHBonds = new Vector();
+    List<Bond> vHBonds = new ArrayList<Bond>();
     if (specInfo.length() == 0) {
       bsA = bsB = viewer.getModelUndeletedAtomsBitSet(-1);
       calcRasmolHydrogenBonds(bsA, bsB, vHBonds, true, 1);      
@@ -2322,7 +2336,7 @@ abstract public class ModelCollection extends BondCollection {
     }
     BitSet bsAtoms = new BitSet();
     for (int i = vHBonds.size(); --i >= 0;) {
-      Bond b = (Bond) vHBonds.get(i);
+      Bond b = vHBonds.get(i);
       bsAtoms.set(b.atom1.index);
       bsAtoms.set(b.atom2.index);
     }
@@ -3141,25 +3155,27 @@ abstract public class ModelCollection extends BondCollection {
     return sb.toString();
   }
   
-  public Hashtable getAuxiliaryInfo(BitSet bsModels) {
-    Hashtable info = modelSetAuxiliaryInfo;
+  public Hashtable<String, Object> getAuxiliaryInfo(BitSet bsModels) {
+    Hashtable<String, Object> info = modelSetAuxiliaryInfo;
     if (info == null)
       return info;
-    Vector models = new Vector();
+    List<Hashtable<String, Object>> models = new ArrayList<Hashtable<String, Object>>();
     for (int i = 0; i < modelCount; ++i) {
-      if (bsModels != null && !bsModels.get(i))
+      if (bsModels != null && !bsModels.get(i)) {
         continue;
-      Hashtable modelinfo = getModelAuxiliaryInfo(i);
-      models.addElement(modelinfo);
+      }
+      Hashtable<String, Object> modelinfo = getModelAuxiliaryInfo(i);
+      models.add(modelinfo);
     }
     info.put("models",models);
     return info;
   }
 
-  public Vector getAllAtomInfo(BitSet bs) {
-    Vector V = new Vector();
-    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
-      V.addElement(getAtomInfoLong(i));
+  public List<Hashtable<String, Object>> getAllAtomInfo(BitSet bs) {
+    List<Hashtable<String, Object>> V = new ArrayList<Hashtable<String,Object>>();
+    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+      V.add(getAtomInfoLong(i));
+    }
     return V;
   }
 
@@ -3171,7 +3187,7 @@ abstract public class ModelCollection extends BondCollection {
     info.put("sym", getElementSymbol(i));
   }
   
-  private Hashtable getAtomInfoLong(int i) {
+  private Hashtable<String, Object> getAtomInfoLong(int i) {
     Atom atom = atoms[i];
     Hashtable<String, Object> info = new Hashtable<String, Object>();
     getAtomIdentityInfo(i, info);
@@ -3227,21 +3243,23 @@ abstract public class ModelCollection extends BondCollection {
     return info;
   }  
 
-  public Vector getAllBondInfo(BitSet bs) {
-    Vector V = new Vector();
+  public List<Hashtable<String, Object>> getAllBondInfo(BitSet bs) {
+    List<Hashtable<String, Object>> V = new ArrayList<Hashtable<String,Object>>();
     int thisAtom = (bs.cardinality() == 1 ? bs.nextSetBit(0) : -1);
-    for (int i = 0; i < bondCount; i++)
+    for (int i = 0; i < bondCount; i++) {
       if (thisAtom >= 0? (bonds[i].atom1.index == thisAtom || bonds[i].atom2.index == thisAtom) 
-          : bs.get(bonds[i].atom1.index) && bs.get(bonds[i].atom2.index)) 
-        V.addElement(getBondInfo(i));
+          : bs.get(bonds[i].atom1.index) && bs.get(bonds[i].atom2.index)) {
+        V.add(getBondInfo(i));
+      }
+    }
     return V;
   }
 
-  private Hashtable getBondInfo(int i) {
+  private Hashtable<String, Object> getBondInfo(int i) {
     Bond bond = bonds[i];
     Atom atom1 = bond.atom1;
     Atom atom2 = bond.atom2;
-    Hashtable info = new Hashtable();
+    Hashtable<String, Object> info = new Hashtable<String, Object>();
     info.put("_bpt", Integer.valueOf(i));
     Hashtable<String, Object> infoA = new Hashtable<String, Object>();
     getAtomIdentityInfo(atom1.index, infoA);
@@ -3263,36 +3281,36 @@ abstract public class ModelCollection extends BondCollection {
    return info;
   }  
   
-  public Hashtable getAllChainInfo(BitSet bs) {
-    Hashtable finalInfo = new Hashtable();
-    Vector modelVector = new Vector();
+  public Hashtable<String, List<Hashtable<String, Object>>> getAllChainInfo(BitSet bs) {
+    Hashtable<String, List<Hashtable<String, Object>>> finalInfo = new Hashtable<String, List<Hashtable<String,Object>>>();
+    List<Hashtable<String, Object>> modelVector = new ArrayList<Hashtable<String,Object>>();
     for (int i = 0; i < modelCount; ++i) {
-      Hashtable modelInfo = new Hashtable();
-      Vector info = getChainInfo(i, bs);
+      Hashtable<String, Object> modelInfo = new Hashtable<String, Object>();
+      List<Hashtable<String, List<Hashtable<String, Object>>>> info = getChainInfo(i, bs);
       if (info.size() > 0) {
         modelInfo.put("modelIndex", Integer.valueOf(i));
         modelInfo.put("chains", info);
-        modelVector.addElement(modelInfo);
+        modelVector.add(modelInfo);
       }
     }
     finalInfo.put("models",modelVector);
     return finalInfo;
   }
 
-  private Vector getChainInfo(int modelIndex, BitSet bs) {
+  private List<Hashtable<String, List<Hashtable<String, Object>>>> getChainInfo(int modelIndex, BitSet bs) {
     Model model = models[modelIndex];
     int nChains = model.getChainCount(true);
-    Vector infoChains = new Vector();    
+    List<Hashtable<String, List<Hashtable<String, Object>>>> infoChains = new ArrayList<Hashtable<String,List<Hashtable<String,Object>>>>();
     for(int i = 0; i < nChains; i++) {
       Chain chain = model.getChain(i);
-      Vector infoChain = new Vector();
+      List<Hashtable<String, Object>> infoChain = new ArrayList<Hashtable<String,Object>>();
       int nGroups = chain.getGroupCount();
-      Hashtable arrayName = new Hashtable();
+      Hashtable<String, List<Hashtable<String, Object>>> arrayName = new Hashtable<String, List<Hashtable<String,Object>>>();
       for (int igroup = 0; igroup < nGroups; igroup++) {
         Group group = chain.getGroup(igroup);
         if (!bs.get(group.firstAtomIndex)) 
           continue;
-        Hashtable infoGroup = new Hashtable();
+        Hashtable<String, Object> infoGroup = new Hashtable<String, Object>();
         infoGroup.put("groupIndex", Integer.valueOf(igroup));
         infoGroup.put("groupID", Short.valueOf(group.getGroupID()));
         String s = group.getSeqcodeString();
@@ -3303,35 +3321,35 @@ abstract public class ModelCollection extends BondCollection {
         infoGroup.put("atomInfo1", getAtomInfo(group.firstAtomIndex, null));
         infoGroup.put("atomInfo2", getAtomInfo(group.lastAtomIndex, null));
         infoGroup.put("visibilityFlags", Integer.valueOf(group.shapeVisibilityFlags));
-        infoChain.addElement(infoGroup);
+        infoChain.add(infoGroup);
       }
       if (! infoChain.isEmpty()) { 
-        arrayName.put("residues",infoChain);
-        infoChains.addElement(arrayName);
+        arrayName.put("residues", infoChain);
+        infoChains.add(arrayName);
       }
     }
     return infoChains;
   }  
   
-  public Hashtable getAllPolymerInfo(BitSet bs) {
-    Hashtable finalInfo = new Hashtable();
-    Vector modelVector = new Vector();
+  public Hashtable<String, List<Hashtable<String, Object>>> getAllPolymerInfo(BitSet bs) {
+    Hashtable<String, List<Hashtable<String, Object>>> finalInfo = new Hashtable<String, List<Hashtable<String,Object>>>();
+    List<Hashtable<String, Object>> modelVector = new ArrayList<Hashtable<String,Object>>();
     for (int i = 0; i < modelCount; ++i) {
-      Hashtable modelInfo = new Hashtable();
-      Vector info = new Vector();
+      Hashtable<String, Object> modelInfo = new Hashtable<String, Object>();
+      List<Hashtable> info = new ArrayList<Hashtable>();
       int polymerCount = models[i].getBioPolymerCount();
       for (int ip = 0; ip < polymerCount; ip++) {
         Hashtable polyInfo = models[i].getBioPolymer(ip).getPolymerInfo(bs); 
         if (! polyInfo.isEmpty())
-          info.addElement(polyInfo);
+          info.add(polyInfo);
       }
       if (info.size() > 0) {
         modelInfo.put("modelIndex", Integer.valueOf(i));
         modelInfo.put("polymers", info);
-        modelVector.addElement(modelInfo);
+        modelVector.add(modelInfo);
       }
     }
-    finalInfo.put("models",modelVector);
+    finalInfo.put("models", modelVector);
     return finalInfo;
   }
 
@@ -3346,31 +3364,35 @@ abstract public class ModelCollection extends BondCollection {
 
   private SymmetryInterface symTemp;
 
-  public Hashtable getSpaceGroupInfo(int modelIndex, String spaceGroup, 
+  public Hashtable<String, Object> getSpaceGroupInfo(int modelIndex, String spaceGroup, 
                                      int symOp, Point3f pt1, Point3f pt2, String drawID) {
     String strOperations = null;
-    Hashtable info = null;
+    Hashtable<String, Object> info = null;
     SymmetryInterface cellInfo = null;
     Object[][] infolist = null;
     if (spaceGroup == null) {
-      if (modelIndex <= 0)
+      if (modelIndex <= 0) {
         modelIndex = (pt1 instanceof Atom ? ((Atom) pt1).modelIndex 
             : viewer.getCurrentModelIndex());
-      if (modelIndex < 0)
+      }
+      if (modelIndex < 0) {
         strOperations = "no single current model";
-      else if (unitCells == null || unitCells[modelIndex] == null)
+      } else if (unitCells == null || unitCells[modelIndex] == null) {
         strOperations = "not applicable";
+      }
       if (strOperations != null) {
-        info = new Hashtable();
+        info = new Hashtable<String, Object>();
         info.put("spaceGroupInfo", strOperations);
         info.put("symmetryInfo", "");
         return info;
       }
-      if (pt1 == null && drawID == null && symOp != 0)
-        info = (Hashtable) getModelAuxiliaryInfo(modelIndex, "spaceGroupInfo");
-      if (info != null)
+      if (pt1 == null && drawID == null && symOp != 0) {
+        info = (Hashtable<String, Object>) getModelAuxiliaryInfo(modelIndex, "spaceGroupInfo");
+      }
+      if (info != null) {
         return info;
-      info = new Hashtable();
+      }
+      info = new Hashtable<String, Object>();
       if (pt1 == null && drawID == null && symOp == 0)
         setModelAuxiliaryInfo(modelIndex, "spaceGroupInfo", info);
       cellInfo = unitCells[modelIndex];
@@ -3395,7 +3417,7 @@ abstract public class ModelCollection extends BondCollection {
         }
       }
     } else {
-      info = new Hashtable();
+      info = new Hashtable<String, Object>();
     }
     info.put("spaceGroupName", spaceGroup);
     getSymTemp(true);
@@ -3583,17 +3605,18 @@ abstract public class ModelCollection extends BondCollection {
 
     //fix cellInfos array
     if (unitCells != null) {
-      for (int i = modelCount; --i > modelIndex;)
+      for (int i = modelCount; --i > modelIndex;) {
         unitCells[i].setModelIndex(unitCells[i].getModelIndex() - 1);
-      unitCells = (SymmetryInterface[]) ArrayUtil.deleteElements(unitCells, modelIndex,
-          1);
+      }
+      unitCells = (SymmetryInterface[]) ArrayUtil.deleteElements(unitCells, modelIndex, 1);
     }
 
     // correct stateScripts, particularly CONNECT scripts
-    for (int i = stateScripts.size(); --i >= 0;)
-      if (!((StateScript) stateScripts.get(i)).deleteAtoms(modelIndex, bsBonds,
-          bsAtoms))
-        stateScripts.removeElementAt(i);
+    for (int i = stateScripts.size(); --i >= 0;) {
+      if (!stateScripts.get(i).deleteAtoms(modelIndex, bsBonds, bsAtoms)) {
+        stateScripts.remove(i);
+      }
+    }
     
     // set to recreate bounding box
     deleteModelAtoms(firstAtomIndex, nAtoms, bsAtoms);
@@ -3603,29 +3626,36 @@ abstract public class ModelCollection extends BondCollection {
   public String getMoInfo(int modelIndex) {
     StringBuffer sb = new StringBuffer();
     for (int m = 0; m < modelCount; m++) {
-      if (modelIndex >= 0 && m != modelIndex)
+      if (modelIndex >= 0 && m != modelIndex) {
         continue;
-      Hashtable moData = (Hashtable) viewer.getModelAuxiliaryInfo(m, "moData");
-      if (moData == null)
+      }
+      Hashtable<String, Object> moData = (Hashtable<String, Object>) viewer.getModelAuxiliaryInfo(m, "moData");
+      if (moData == null) {
         continue;
-      Vector mos = (Vector) (moData.get("mos"));
+      }
+      List<Hashtable<String, Object>> mos = (List<Hashtable<String, Object>>) (moData.get("mos"));
       int nOrb = (mos == null ? 0 : mos.size());
-      if (nOrb == 0)
+      if (nOrb == 0) {
         continue;
+      }
       for (int i = nOrb; --i >= 0; ) {
-        Hashtable mo = (Hashtable) mos.get(i);
+        Hashtable<String, Object> mo = mos.get(i);
         String type = (String) mo.get("type");
-        if (type == null)
+        if (type == null) {
           type = "";
+        }
         String units = (String) mo.get("energyUnits");
-        if (units == null)
+        if (units == null) {
           units = "";
+        }
         Float occ = (Float) mo.get("occupancy");
-        if (occ != null)
+        if (occ != null) {
           type = "occupancy " + occ.floatValue() + " " + type;
+        }
         String sym = (String) mo.get("symmetry");
-        if (sym != null) 
+        if (sym != null) {
           type += sym;
+        }
         sb.append(TextFormat.sprintf(
             "model %-2s;  mo %-2i # energy %-8.3f %s %s\n", new Object[] {
                 getModelNumberDotted(m), Integer.valueOf(i + 1),

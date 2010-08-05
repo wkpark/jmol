@@ -42,7 +42,7 @@ import org.jmol.util.Quaternion;
 import java.util.BitSet;
 import java.util.Date;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 abstract class TransformManager {
 
@@ -485,7 +485,7 @@ abstract class TransformManager {
                                  float degreesPerSecond, float endDegrees,
                                  boolean isClockwise, boolean isSpin,
                                  BitSet bsAtoms, boolean isGesture,
-                                 Vector3f translation, Vector<Point3f> finalPoints) {
+                                 Vector3f translation, List<Point3f> finalPoints) {
 
     // *THE* Viewer INTERNAL frame rotation entry point
 
@@ -2171,7 +2171,7 @@ abstract class TransformManager {
     setSpinOn(spinOn, Float.MAX_VALUE, null, null, false);
   }
 
-  private void setSpinOn(boolean spinOn, float endDegrees, Vector<Point3f> endPositions, BitSet bsAtoms, boolean isGesture) {
+  private void setSpinOn(boolean spinOn, float endDegrees, List<Point3f> endPositions, BitSet bsAtoms, boolean isGesture) {
     if (navOn && spinOn)
       setNavOn(false);
     this.spinOn = spinOn;
@@ -2219,14 +2219,14 @@ abstract class TransformManager {
 
   private class SpinThread extends Thread {
     float endDegrees;
-    Vector<Point3f> endPositions;
+    List<Point3f> endPositions;
     float nDegrees;
     BitSet bsAtoms;
     boolean isNav;
     boolean isGesture;
     boolean isReset;
     
-    SpinThread(float endDegrees, Vector<Point3f> endPositions, BitSet bsAtoms, boolean isNav, boolean isGesture) {
+    SpinThread(float endDegrees, List<Point3f> endPositions, BitSet bsAtoms, boolean isNav, boolean isGesture) {
       setName("SpinThread" + new Date());
       this.endDegrees = Math.abs(endDegrees);
       this.endPositions = endPositions;

@@ -23,9 +23,11 @@
  */
 package org.jmol.jvxl.readers;
 
+
 import java.io.BufferedReader;
+import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Vector;
+import java.util.List;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
@@ -589,7 +591,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     int[] nextc = new int[1];
     int ilast = 0;
     int p = 0;
-    int b0 = (int) '\\';
+    int b0 = '\\';
     for (int i = 0, pt = -1; i < nData;) {
       char ch = s.charAt(++pt);
       int idiff;
@@ -645,7 +647,7 @@ public class JvxlXmlReader extends VolumeFileReader {
   }
 
   protected void jvxlDecodeContourData(JvxlData jvxlData, String data) throws Exception {
-    Vector vs = new Vector();
+    List<List<Object>> vs = new ArrayList<List<Object>>();
     StringBuffer values = new StringBuffer();
     StringBuffer colors = new StringBuffer();
     int pt = -1;
@@ -653,7 +655,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     if (data == null)
       return;
     while ((pt = data.indexOf("<jvxlContour", pt + 1)) >= 0) {
-      Vector v = new Vector();
+      List<Object> v = new ArrayList<Object>();
       String s = xr.getXmlData("jvxlContour", data.substring(pt), true, false);
       float value = parseFloat(XmlReader.getXmlAttrib(s, "value"));
       values.append(" ").append(value);
@@ -670,12 +672,12 @@ public class JvxlXmlReader extends VolumeFileReader {
     }
     int n = vs.size();
     if (n > 0)
-      jvxlData.vContours = new Vector[n];
+      jvxlData.vContours = new List[n];
     // 3D contour values and colors
     jvxlData.contourColixes = params.contourColixes = new short[n];
     jvxlData.contourValues = params.contoursDiscrete = new float[n];
     for (int i = 0; i < n; i++) {
-      jvxlData.vContours[i] = (Vector) vs.get(i);
+      jvxlData.vContours[i] = vs.get(i);
       jvxlData.contourValues[i] = ((Float) jvxlData.vContours[i].get(2)).floatValue();
       jvxlData.contourColixes[i] = ((short[]) jvxlData.vContours[i].get(3))[0];
     }

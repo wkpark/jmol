@@ -39,7 +39,7 @@ import java.io.OutputStream;
 import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
@@ -360,7 +360,7 @@ public abstract class AtomSetCollectionReader {
         .get("ptFile")).intValue() : -1);
     isTrajectory = htParams.containsKey("isTrajectory");
     if (ptFile > 0 && htParams.containsKey("firstLastSteps")) {
-      Object val = ((Vector<?>) htParams.get("firstLastSteps")).elementAt(ptFile - 1);
+      Object val = ((List) htParams.get("firstLastSteps")).get(ptFile - 1);
       if (val instanceof BitSet) {
         bsModels = (BitSet) val;
       } else {
@@ -739,7 +739,7 @@ public abstract class AtomSetCollectionReader {
   @SuppressWarnings("unchecked")
   public void setMOData(Hashtable<String, Object> moData) {
     atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
-    Vector<Hashtable<String, Object>> orbitals = (Vector<Hashtable<String, Object>>) moData.get("mos");
+    List<Hashtable<String, Object>> orbitals = (List<Hashtable<String, Object>>) moData.get("mos");
     if (orbitals != null)
       Logger.info(orbitals.size() + " molecular orbitals read in model " + atomSetCollection.getAtomSetCount());
   }

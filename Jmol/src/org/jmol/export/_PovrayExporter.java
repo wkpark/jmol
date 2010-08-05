@@ -25,9 +25,10 @@
 
 package org.jmol.export;
 
+
 import java.util.BitSet;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
@@ -373,9 +374,8 @@ public class _PovrayExporter extends __RayTracerExporter {
                                   short[] colixes, int[][] indices, 
                                   short[] polygonColixes,
                                   int nVertices, int nPolygons, int nFaces, BitSet bsFaces,
-                                  int faceVertexMax, short colix, 
-                                  Vector<Short> colorList, Hashtable<String, String> htColixes,
-                                  Point3f offset) {
+                                  int faceVertexMax, short colix,
+                                  List<Short> colorList, Hashtable<String, String> htColixes, Point3f offset) {
     if (polygonColixes != null) {
       boolean isAll = (bsFaces == null);
       int i0 = (isAll ? nPolygons - 1 : bsFaces.nextSetBit(0));

@@ -30,7 +30,8 @@
 
 package org.jmol.adapter.readers.quantum;
 
-import java.util.Vector;
+
+import java.util.ArrayList;
 
 import javax.vecmath.Vector3f;
 
@@ -99,7 +100,7 @@ public class GamessUSReader extends GamessReader {
         || line.indexOf("COORDINATES OF ALL ATOMS ARE (ANGS)") >= 0) {
       if (!doGetModel(++modelNumber))
         return checkLastModel();
-      atomNames = new Vector();
+      atomNames = new ArrayList<String>();
       if (isBohr)
         readAtomsInBohrCoordinates();
       else
@@ -228,7 +229,7 @@ public class GamessUSReader extends GamessReader {
       atom.atomName = atomName + (++atomCountInFirstModel);
       atom.set(x, y, z);
       atom.scale(ANGSTROMS_PER_BOHR);
-      atomNames.addElement(atomName);
+      atomNames.add(atomName);
     }
   }
   
@@ -259,7 +260,7 @@ public class GamessUSReader extends GamessReader {
       atom.atomName = atomName + (++n);
       atom.set(x, y, z);
       atom.scale(ANGSTROMS_PER_BOHR);
-      atomNames.addElement(atomName);
+      atomNames.add(atomName);
     }
   }
 
@@ -289,7 +290,7 @@ public class GamessUSReader extends GamessReader {
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = atomName + (++n);
       atom.set(x, y, z);
-      atomNames.addElement(atomName);
+      atomNames.add(atomName);
     }
     
     /*
@@ -339,7 +340,7 @@ public class GamessUSReader extends GamessReader {
               Atom atom = atomSetCollection.addNewAtom();
               atom.atomName = atomName + (++n);
               atom.set(x, y, z);
-              atomNames.addElement(atomName);
+              atomNames.add(atomName);
         } 
           
     }

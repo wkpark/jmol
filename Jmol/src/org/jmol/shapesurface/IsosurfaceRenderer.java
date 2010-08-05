@@ -23,7 +23,7 @@
  */
 package org.jmol.shapesurface;
 
-import java.util.Vector;
+import java.util.List;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
@@ -130,11 +130,11 @@ public class IsosurfaceRenderer extends MeshRenderer {
   }
   
   private void renderContourLines() {
-    Vector[] vContours = imesh.getContours();
+    List<Object>[] vContours = imesh.getContours();
     if (vContours == null)
       return;
     for (int i = vContours.length; --i >= 0;) {
-      Vector v = vContours[i];
+      List<Object> v = vContours[i];
       if (v.size() < JvxlCoder.CONTOUR_POINTS)
         continue;
       if (!g3d.setColix(((short[]) v.get(JvxlCoder.CONTOUR_COLIX))[0]))

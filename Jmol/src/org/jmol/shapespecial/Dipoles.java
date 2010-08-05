@@ -38,9 +38,11 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.BondIterator;
 
+import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Vector;
 import java.util.Hashtable;
+import java.util.List;
+
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
@@ -563,8 +565,8 @@ public class Dipoles extends Shape {
   }
 
   @Override
-  public Vector<Hashtable<String, Object>> getShapeDetail() {
-    Vector<Hashtable<String, Object>> V = new Vector<Hashtable<String, Object>>();
+  public List<Hashtable<String, Object>> getShapeDetail() {
+    List<Hashtable<String, Object>> V = new ArrayList<Hashtable<String,Object>>();
     Hashtable<String, Object> atomInfo;
     for (int i = 0; i < dipoleCount; i++) {
       Hashtable<String, Object> info = new Hashtable<String, Object>();
@@ -575,15 +577,15 @@ public class Dipoles extends Shape {
       if (dipole.atoms[0] != null) {
         atomInfo = new Hashtable<String, Object>();
         viewer.getAtomIdentityInfo(dipole.atoms[0].getIndex(), atomInfo);
-        Vector<Hashtable<String, Object>> atoms = new Vector<Hashtable<String, Object>>();
-        atoms.addElement(atomInfo);
+        List<Hashtable<String, Object>> atoms = new ArrayList<Hashtable<String,Object>>();
+        atoms.add(atomInfo);
         atomInfo = new Hashtable<String, Object>();
         viewer.getAtomIdentityInfo(dipole.atoms[1].getIndex(), atomInfo);
-        atoms.addElement(atomInfo);
+        atoms.add(atomInfo);
         info.put("atoms", atoms);
         info.put("magnitude", new Float(dipole.vector.length()));
       }
-      V.addElement(info);
+      V.add(info);
     }
     return V;
   }

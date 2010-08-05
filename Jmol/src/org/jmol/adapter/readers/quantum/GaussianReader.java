@@ -27,8 +27,9 @@ package org.jmol.adapter.readers.quantum;
 import org.jmol.adapter.smarter.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import javax.vecmath.Vector3f;
 
@@ -319,8 +320,8 @@ public class GaussianReader extends MOReader {
    */
 
   private void readBasis() throws Exception {
-    shells = new Vector();
-    Vector gdata = new Vector();
+    shells = new ArrayList<int[]>();
+    List<String[]> gdata = new ArrayList<String[]>();
     int atomCount = 0;
     gaussianCount = 0;
     shellCount = 0;
@@ -346,16 +347,17 @@ public class GaussianReader extends MOReader {
       int nGaussians = parseInt(tokens[5]);
       slater[2] = gaussianCount; // or parseInt(tokens[7]) - 1
       slater[3] = nGaussians;
-      shells.addElement(slater);
+      shells.add(slater);
       gaussianCount += nGaussians;
-      for (int i = 0; i < nGaussians; i++)
-        gdata.addElement(getTokens(readLine()));
+      for (int i = 0; i < nGaussians; i++) {
+        gdata.add(getTokens(readLine()));
+      }
     }
     if (atomCount == 0)
       atomCount = 1;
     gaussians = new float[gaussianCount][];
     for (int i = 0; i < gaussianCount; i++) {
-      tokens = (String[]) gdata.get(i);
+      tokens = gdata.get(i);
       gaussians[i] = new float[tokens.length];
       for (int j = 0; j < tokens.length; j++)
         gaussians[i][j] = parseFloat(tokens[j]);
@@ -388,7 +390,7 @@ but:
     if (shells == null)
       return;
     Hashtable<String, Object>[] mos = new Hashtable[5];
-    Vector[] data = new Vector[5];
+    List<String>[] data = new ArrayList[5];
     int nThisLine = 0;
     while (readLine() != null
         && line.toUpperCase().indexOf("DENS") < 0) {
@@ -399,7 +401,7 @@ but:
         nThisLine = tokens.length;
         for (int i = 0; i < nThisLine; i++) {
           mos[i] = new Hashtable<String, Object>();
-          data[i] = new Vector();
+          data[i] = new ArrayList<String>();
           String sym = tokens[i];
           mos[i].put("symmetry", sym);
           if (sym.indexOf("--O") >= 0)
@@ -427,7 +429,7 @@ but:
           continue;
         tokens = getStrings(line.substring(21), nThisLine, 10);
         for (int i = 0; i < nThisLine; i++)
-          data[i].addElement(tokens[i]);
+          data[i].add(tokens[i]);
       } catch (Exception e) {
         Logger.error("Error reading Gaussian file Molecular Orbitals at line: "
             + line);

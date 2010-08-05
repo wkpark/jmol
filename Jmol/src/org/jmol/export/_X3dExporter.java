@@ -29,9 +29,11 @@
  
 package org.jmol.export;
 
+
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -288,11 +290,11 @@ public class _X3dExporter extends _VrmlExporter {
 
   @Override
   protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
-                                  short[] colixes, int[][] indices,
-                                  short[] polygonColixes,
-                                  int nVertices, int nPolygons, int nFaces, BitSet bsFaces,
-                                  int faceVertexMax, short colix, 
-                                  Vector<Short> colorList, Hashtable<String, String> htColixes, Point3f offset) {
+                               short[] colixes, int[][] indices,
+                               short[] polygonColixes,
+                               int nVertices, int nPolygons, int nFaces, BitSet bsFaces,
+                               int faceVertexMax, short colix,
+                               List<Short> colorList, Hashtable<String, String> htColixes, Point3f offset) {
     output("<Shape>\n");
     outputAppearance(colix, false);
     output("<IndexedFaceSet \n");
@@ -310,9 +312,9 @@ public class _X3dExporter extends _VrmlExporter {
 
     // normals, part 1  
     
-    Vector<String> vNormals = null;
+    List<String> vNormals = null;
     if (normals != null) {
-      vNormals = new Vector<String>();
+      vNormals = new ArrayList<String>();
       map = getNormalMap(normals, nVertices, vNormals);
       output("  solid='FALSE'\n  normalPerVertex='TRUE'\n  normalIndex='\n");
       outputIndices(indices, map, nPolygons, bsFaces, faceVertexMax);

@@ -27,8 +27,9 @@ import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.Bond;
 import org.jmol.api.JmolAdapter;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
@@ -639,8 +640,8 @@ public class CsfReader extends MopacSlaterReader {
       }
     }
     if (isGaussian) {
-      Vector<int[]> sdata = new Vector<int[]>();
-      Vector<float[]> gdata = new Vector<float[]>();
+      List<int[]> sdata = new ArrayList<int[]>();
+      List<float[]> gdata = new ArrayList<float[]>();
       int iShell = 0;
       int gaussianCount = 0;
       for (int ipt = 0; ipt < nGaussians; ipt++) {
@@ -657,10 +658,10 @@ public class CsfReader extends MopacSlaterReader {
           }
           slater[2] = gaussianCount; //pointer
           slater[3] = nZ;
-          sdata.addElement(slater);
+          sdata.add(slater);
           gaussianCount += nZ;
           for (int i = 0; i < nZ; i++)
-            gdata.addElement(new float[] { zetas[ipt][i], contractionCoefs[ipt][i] });
+            gdata.add(new float[] { zetas[ipt][i], contractionCoefs[ipt][i] });
         }
       }
       float[][] garray = new float[gaussianCount][];
@@ -670,8 +671,8 @@ public class CsfReader extends MopacSlaterReader {
       moData.put("gaussians", garray);
     } else {
       for (int ipt = 0; ipt < nSlaters; ipt++) {
-        int iAtom = atomSetCollection.getAtomSerialNumberIndex(((int[]) (connectors
-            .get(sto_gto + "_basis_fxn" + (ipt + 1))))[0]);
+        int iAtom = atomSetCollection.getAtomSerialNumberIndex((connectors
+            .get(sto_gto + "_basis_fxn" + (ipt + 1)))[0]);
         for (int i = 0; i < nZetas; i++) {
           if (zetas[ipt][i] == 0)
             break;

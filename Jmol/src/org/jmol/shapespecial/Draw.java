@@ -24,9 +24,10 @@
 
 package org.jmol.shapespecial;
 
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
@@ -112,13 +113,13 @@ public void initShape() {
   private int nbitsets;
   private Point4f plane;
   private BitSet bsAllModels;
-  private Vector polygon;
+  private List polygon;
   
-  private Vector vData;
+  private List<Object[]> vData;
   private String intersectID;
   private Point3f[] boundBox;
   
-  private Vector lineData;
+  private List<Point3f[]> lineData;
   private final static int PT_COORD = 1;
   private final static int PT_IDENTIFIER = 2;
   private final static int PT_BITSET = 3;
@@ -143,7 +144,7 @@ public void initShape() {
       plane = null;
       polygon = null;
       nidentifiers = nbitsets = 0;
-      vData = new Vector();
+      vData = new ArrayList<Object[]>();
       modelCount = viewer.getModelCount();
       bsAllModels = null;
       intersectID = null;
@@ -173,7 +174,7 @@ public void initShape() {
     }
     
     if ("lineData" == propertyName) {
-      lineData = new Vector();
+      lineData = new ArrayList<Point3f[]>();
       if (indicatedModelIndex < 0)
         indicatedModelIndex = viewer.getCurrentModelIndex();
       float[] fdata = (float[]) value;
@@ -328,7 +329,7 @@ public void initShape() {
     }
 
     if ("polygon" == propertyName) {
-      polygon = (Vector) value;
+      polygon = (List) value;
       return;
     }
 
@@ -591,7 +592,7 @@ public void initShape() {
         
       }
     } else if (plane != null && intersectID != null) {
-      Vector vData = new Vector();
+      List<Point3f[]> vData = new ArrayList<Point3f[]>();
       Object[] data = new Object[] { intersectID, plane, vData, null };
       viewer.getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "intersectPlane",
           data);
@@ -639,7 +640,7 @@ public void initShape() {
     BitSet bs;
     BitSet bsModel = (iModel < 0 ? null : viewer.getModelUndeletedAtomsBitSet(iModel));
     for (int i = 0; i < nData; i++) {
-      Object[] info = (Object[]) vData.elementAt(i);
+      Object[] info = vData.get(i);
       switch (((Integer) info[0]).intValue()) {
       case PT_MODEL_INDEX:
         // from the saved state
@@ -651,7 +652,7 @@ public void initShape() {
         if (nPoints > 0) {
           int[] p = thisMesh.polygonIndexes[modelIndex] = new int[nVertices];
           for (int j = 0; j < nPoints; j++) {
-            info = (Object[]) vData.elementAt(++i);
+            info = vData.get(++i);
             p[j] = thisMesh.addVertexCopy((Point3f) info[1]);
           }
           for (int j = nPoints; j < 3; j++) {
@@ -1369,13 +1370,13 @@ public void initShape() {
   }
   
   @Override
-  public Vector getShapeDetail() {
-    Vector V = new Vector();
+  public List<Hashtable<String, Object>> getShapeDetail() {
+    List<Hashtable<String, Object>> V = new ArrayList<Hashtable<String,Object>>();
     for (int i = 0; i < meshCount; i++) {
       DrawMesh mesh = dmeshes[i];
       if (mesh.vertexCount == 0)
         continue;
-      Hashtable info = new Hashtable();
+      Hashtable<String, Object> info = new Hashtable<String, Object>();
       info.put("fixed", mesh.ptCenters == null ? Boolean.TRUE : Boolean.FALSE);
       info.put("ID", (mesh.thisID == null ? "<noid>" : mesh.thisID));
       info.put("drawType", JmolConstants.getDrawTypeName(mesh.drawType));
@@ -1385,12 +1386,12 @@ public void initShape() {
         info.put("width", new Float(mesh.width));
       info.put("scale", new Float(mesh.scale));
       if (mesh.drawType == JmolConstants.DRAW_MULTIPLE) {
-        Vector m = new Vector();
+        List<Hashtable<String, Object>> m = new ArrayList<Hashtable<String,Object>>();
         modelCount = viewer.getModelCount();
         for (int k = 0; k < modelCount; k++) {
           if (mesh.ptCenters[k] == null)
-            continue;            
-          Hashtable mInfo = new Hashtable();
+            continue;
+          Hashtable<String, Object> mInfo = new Hashtable<String, Object>();
           mInfo.put("modelIndex", Integer.valueOf(k));
           mInfo.put("command", getDrawCommand(mesh, k));
           mInfo.put("center", mesh.ptCenters[k]);
@@ -1398,16 +1399,16 @@ public void initShape() {
           mInfo.put("vertexCount", Integer.valueOf(nPoints));
           if (nPoints > 1)
             mInfo.put("axis", mesh.axes[k]);
-          Vector v = new Vector();
+          List<Point3f> v = new ArrayList<Point3f>();
           for (int ipt = 0; ipt < nPoints; ipt++)
-            v.addElement(mesh.vertices[mesh.polygonIndexes[k][ipt]]);
+            v.add(mesh.vertices[mesh.polygonIndexes[k][ipt]]);
           mInfo.put("vertices", v);
           if (mesh.drawTypes[k] == JmolConstants.DRAW_LINE) {
             float d = mesh.vertices[mesh.polygonIndexes[k][0]]
                 .distance(mesh.vertices[mesh.polygonIndexes[k][1]]);
             mInfo.put("length_Ang", new Float(d));
           }
-          m.addElement(mInfo);
+          m.add(mInfo);
         }
         info.put("models", m);
       } else {
@@ -1415,15 +1416,15 @@ public void initShape() {
         info.put("center", mesh.ptCenter);
         if (mesh.drawVertexCount > 1)
           info.put("axis", mesh.axis);
-        Vector v = new Vector();
+        List<Point3f> v = new ArrayList<Point3f>();
         for (int j = 0; j < mesh.vertexCount; j++)
-          v.addElement(mesh.vertices[j]);
+          v.add(mesh.vertices[j]);
         info.put("vertices", v);
         if (mesh.drawType == JmolConstants.DRAW_LINE)
           info.put("length_Ang", new Float(mesh.vertices[0]
               .distance(mesh.vertices[1])));
       }
-      V.addElement(info);
+      V.add(info);
     }
     return V;
   }

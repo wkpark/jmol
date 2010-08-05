@@ -23,9 +23,11 @@
  */
 
 package org.jmol.adapter.smarter;
+
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 import java.util.Properties;
 import java.util.BitSet;
 
@@ -146,7 +148,7 @@ public class AtomSetCollection {
   private boolean isTrajectory;    
   private int trajectoryStepCount = 0;
   private Point3f[] trajectoryStep;
-  private Vector<Point3f[]> trajectorySteps;
+  private List<Point3f[]> trajectorySteps;
   boolean doFixPeriodic;
   public void setDoFixPeriodic() {
     doFixPeriodic = true;
@@ -190,26 +192,27 @@ public class AtomSetCollection {
    * @param list Vector of AtomSetCollection
    */
   
-  public AtomSetCollection(Vector list) {
+  public AtomSetCollection(List<?> list) {
     this("Array", null);
     setAtomSetCollectionAuxiliaryInfo("isMultiFile", Boolean.TRUE);
     appendAtomSetCollection(list);
   }
 
-  private void appendAtomSetCollection(Vector list) {
+  private void appendAtomSetCollection(List<?> list) {
     int n = list.size();
     for (int i = 0; i < n; i++) {
-      Object o = list.elementAt(i);
-      if (o instanceof Vector)
-        appendAtomSetCollection((Vector) o);
+      Object o = list.get(i);
+      if (o instanceof List)
+        appendAtomSetCollection((List<?>) o);
       else
         appendAtomSetCollection(i, (AtomSetCollection) o);
     }  
   }
   
   public void setTrajectory() {
-    if (!isTrajectory)
-      trajectorySteps = new Vector();
+    if (!isTrajectory) {
+      trajectorySteps = new ArrayList<Point3f[]>();
+    }
     isTrajectory = true;
     addTrajectoryStep();
   }
@@ -285,10 +288,10 @@ public class AtomSetCollection {
     atoms = null;
     atomSetAtomCounts = new int[16];
     atomSetAuxiliaryInfo = new Hashtable[16];
-    atomSetCollectionAuxiliaryInfo = new Hashtable();
+    atomSetCollectionAuxiliaryInfo = new Hashtable<String, Object>();
     atomSetCount = 0;
     atomSetNumbers = new int[16];
-    atomSymbolicMap = new Hashtable();
+    atomSymbolicMap = new Hashtable<Object, Integer>();
     bonds = null;
     cartesians = null;
     connectLast = null;
@@ -453,7 +456,7 @@ public class AtomSetCollection {
   }
 
 
-  Vector vConnect;
+  List<int[]> vConnect;
   int connectNextAtomIndex = 0;
   int connectNextAtomSet = 0;
   int[] connectLast;
@@ -461,7 +464,7 @@ public class AtomSetCollection {
   public void addConnection(int[] is) {
     if (vConnect == null) {
       connectLast = null;
-      vConnect = new Vector();
+      vConnect = new ArrayList<int[]>();
     }
     if (connectLast != null) {
       if (is[0] == connectLast[0] 
@@ -471,12 +474,13 @@ public class AtomSetCollection {
         return;
       }
     }
-    vConnect.addElement(connectLast = is);
+    vConnect.add(connectLast = is);
   }
 
   public void connectAll(int maxSerial) {
-    if (vConnect == null)
+    if (vConnect == null) {
       return;
+    }
     int firstAtom = connectNextAtomIndex;
     for (int i = connectNextAtomSet; i < atomSetCount; i++) {
       setAtomSetCollectionAuxiliaryInfo("someModelsHaveCONECT", Boolean.TRUE);
@@ -982,7 +986,7 @@ public class AtomSetCollection {
     return pt;
   }
   
-  public void applySymmetry(Vector biomts, float[] notionalUnitCell, boolean applySymmetryToBonds, String filter) {
+  public void applySymmetry(List<Matrix4f> biomts, float[] notionalUnitCell, boolean applySymmetryToBonds, String filter) {
     if (latticeCells != null && latticeCells[0] != 0) {
       Logger.error("Cannot apply biomolecule when lattice cells are indicated");
       return;
@@ -1015,7 +1019,7 @@ public class AtomSetCollection {
           && filter.toUpperCase().indexOf("#" + (i + 1) + ";") < 0) {
         continue;
       }
-      Matrix4f mat = (Matrix4f) biomts.get(i);
+      Matrix4f mat = biomts.get(i);
       //Vector3f trans = new Vector3f();    
       for (int iAtom = iAtomFirst; iAtom < atomMax; iAtom++) {
         try {
@@ -1064,7 +1068,7 @@ public class AtomSetCollection {
     //TODO: need to clone bonds
   }
   
-  Hashtable atomSymbolicMap = new Hashtable();
+  Hashtable<Object, Integer> atomSymbolicMap = new Hashtable<Object, Integer>();
 
   void mapMostRecentAtomName() {
     //from ?? 
@@ -1137,11 +1141,13 @@ public class AtomSetCollection {
    */
 
   public boolean setAtomSetCollectionPartialCharges(String auxKey) {
-    if (! atomSetCollectionAuxiliaryInfo.containsKey(auxKey))
+    if (! atomSetCollectionAuxiliaryInfo.containsKey(auxKey)) {
       return false;
-    Vector atomData = (Vector) atomSetCollectionAuxiliaryInfo.get(auxKey);
-    for (int i = atomData.size(); --i >= 0;) 
-      atoms[i].partialCharge = ((Float)atomData.get(i)).floatValue();
+    }
+    List<Float> atomData = (List<Float>) atomSetCollectionAuxiliaryInfo.get(auxKey);
+    for (int i = atomData.size(); --i >= 0;) {
+      atoms[i].partialCharge = atomData.get(i).floatValue();
+    }
     return true;
   }
   
@@ -1167,7 +1173,7 @@ public class AtomSetCollection {
         pt = fixPeriodic(pt, prevSteps[i]);
       trajectoryStep[i] = pt;
     }
-    trajectorySteps.addElement(trajectoryStep);
+    trajectorySteps.add(trajectoryStep);
     trajectoryStepCount++;
   }
   
@@ -1179,26 +1185,30 @@ public class AtomSetCollection {
   }
 
   private float fixPoint(float x, float x0) {
-    while (x - x0 > 0.9)
+    while (x - x0 > 0.9) {
       x -= 1;
-    while (x - x0 < -0.9)
+    }
+    while (x - x0 < -0.9) {
       x += 1;
+    }
     return x;
   }
 
-  void finalizeTrajectory(Vector<Point3f[]> vector) {
-    this.trajectorySteps = vector;
-    trajectoryStepCount = vector.size();
+  void finalizeTrajectory(List<Point3f[]> trajectorySteps) {
+    this.trajectorySteps = trajectorySteps;
+    trajectoryStepCount = trajectorySteps.size();
     finalizeTrajectory();
   }
 
   private void finalizeTrajectory() {
-    if (trajectoryStepCount == 0)
+    if (trajectoryStepCount == 0) {
       return;
+    }
     //reset atom positions to original trajectory
     Point3f[] trajectory = trajectorySteps.get(0);
-    for (int i = 0; i < atomCount; i++)
+    for (int i = 0; i < atomCount; i++) {
       atoms[i].set(trajectory[i]);
+    }
     setAtomSetCollectionAuxiliaryInfo("trajectorySteps", trajectorySteps);
   }
  
@@ -1213,8 +1223,7 @@ public class AtomSetCollection {
     if (atomSetCount > atomSetNumbers.length) {
       atomSetAtomCounts = ArrayUtil.doubleLength(atomSetAtomCounts);
       atomSetBondCounts = ArrayUtil.doubleLength(atomSetBondCounts);
-      atomSetAuxiliaryInfo = (Hashtable[]) ArrayUtil
-          .doubleLength(atomSetAuxiliaryInfo);
+      atomSetAuxiliaryInfo = (Hashtable<String, Object>[]) ArrayUtil.doubleLength(atomSetAuxiliaryInfo);
     }
     if (atomSetCount + trajectoryStepCount > atomSetNumbers.length) {
       atomSetNumbers = ArrayUtil.doubleLength(atomSetNumbers);
@@ -1295,22 +1304,25 @@ public class AtomSetCollection {
 
 
   public void setAtomSetAuxiliaryProperty(String key, String data) {
-    if (!data.endsWith("\n"))
+    if (!data.endsWith("\n")) {
       data += "\n";
+    }
     Hashtable p = (Hashtable) getAtomSetAuxiliaryInfo(currentAtomSetIndex, "atomProperties");
-    if (p == null)
+    if (p == null) {
       setAtomSetAuxiliaryInfo("atomProperties", p = new Hashtable());
+    }
     p.put(key, data);
   }
 
   private void appendAtomProperties(int nTimes) {
-    Hashtable p = (Hashtable) getAtomSetAuxiliaryInfo(currentAtomSetIndex, "atomProperties");
-    if (p == null)
+    Hashtable<String, String> p = (Hashtable<String, String>) getAtomSetAuxiliaryInfo(currentAtomSetIndex, "atomProperties");
+    if (p == null) {
       return;
-    Enumeration e = p.keys();
+    }
+    Enumeration<String> e = p.keys();
     while (e.hasMoreElements()) {
-      String key = (String) e.nextElement();
-      String data = (String) p.get(key);
+      String key = e.nextElement();
+      String data = p.get(key);
       StringBuffer s = new StringBuffer();
       for (int i = nTimes; --i >= 0; )
         s.append(data);   
@@ -1337,11 +1349,13 @@ public class AtomSetCollection {
    */
 
   boolean setAtomSetPartialCharges(String auxKey) {
-    if (!atomSetAuxiliaryInfo[currentAtomSetIndex].containsKey(auxKey))
+    if (!atomSetAuxiliaryInfo[currentAtomSetIndex].containsKey(auxKey)) {
       return false;
-    Vector atomData = (Vector) getAtomSetAuxiliaryInfo(currentAtomSetIndex, auxKey);
-    for (int i = atomData.size(); --i >= 0;)
-      atoms[i].partialCharge = ((Float) atomData.get(i)).floatValue();
+    }
+    List<Float> atomData = (List<Float>) getAtomSetAuxiliaryInfo(currentAtomSetIndex, auxKey);
+    for (int i = atomData.size(); --i >= 0;) {
+      atoms[i].partialCharge = atomData.get(i).floatValue();
+    }
     return true;
   }
   
@@ -1359,11 +1373,13 @@ public class AtomSetCollection {
   void setAtomSetAuxiliaryInfo(String key, Object value, int atomSetIndex) {
     if (atomSetIndex < 0)
       return;
-    if (atomSetAuxiliaryInfo[atomSetIndex] == null)
-      atomSetAuxiliaryInfo[atomSetIndex] = new Hashtable();
+    if (atomSetAuxiliaryInfo[atomSetIndex] == null) {
+      atomSetAuxiliaryInfo[atomSetIndex] = new Hashtable<String, Object>();
+    }
     //Logger.debug(atomSetIndex + " key="+ key + " value="+ value);
-    if (value == null)
+    if (value == null) {
       return;
+    }
     atomSetAuxiliaryInfo[atomSetIndex].put(key, value);
   }
 
@@ -1414,8 +1430,9 @@ public class AtomSetCollection {
   }
   
   Hashtable<String, Object> getAtomSetAuxiliaryInfo(int atomSetIndex) {
-    if (atomSetIndex >= atomSetCount)
+    if (atomSetIndex >= atomSetCount) {
       atomSetIndex = atomSetCount - 1;
+    }
     return atomSetAuxiliaryInfo[atomSetIndex];
   }
 

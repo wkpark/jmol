@@ -112,6 +112,7 @@
 
 package org.jmol.jvxl.readers;
 
+
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
@@ -120,7 +121,7 @@ import javax.vecmath.Vector3f;
 
 import java.util.Hashtable;
 import java.util.BitSet;
-import java.util.Vector;
+import java.util.List;
 
 import org.jmol.atomdata.RadiusData;
 import org.jmol.util.Escape;
@@ -528,18 +529,18 @@ public class Parameters {
     }
   }
   
-  public Vector functionXYinfo;
+  public List functionXYinfo;
   
-  void setFunctionXY(Vector value) {
+  void setFunctionXY(List value) {
     dataType = SURFACE_FUNCTIONXY;
-    functionXYinfo = (Vector) value;
+    functionXYinfo = value;
     cutoff = Float.MIN_VALUE;
     isEccentric = isAnisotropic = false;
   }
 
-  void setFunctionXYZ(Vector value) {
+  void setFunctionXYZ(List value) {
     dataType = SURFACE_FUNCTIONXYZ;
-    functionXYinfo = (Vector) value;
+    functionXYinfo = value;
     cutoff = Float.MIN_VALUE;
     isEccentric = isAnisotropic = false;
   }
@@ -615,7 +616,8 @@ public class Parameters {
   final static int QM_TYPE_GAUSSIAN = 1;
   final static int QM_TYPE_SLATER = 2;
   
-  Hashtable moData, mo;
+  Hashtable<String, Object> moData;
+  Hashtable<String, Object> mo;
   float[] moCoefficients;
   int[][] dfCoefMaps;
   public final static int MO_MAX_GRID = 80;
@@ -638,7 +640,7 @@ public class Parameters {
       mo = null;
       title = new String[] {"no basis functions found in file"};
     } else {
-      Vector mos = (Vector) (moData.get("mos"));
+      List<Object> mos = (List<Object>) moData.get("mos");
       qmOrbitalCount = mos.size();
       calculationType = (String) moData.get("calculationType");
       calculationType = "Molecular orbital #" + qm_moNumber + "/"
@@ -655,7 +657,7 @@ public class Parameters {
           title[3] = "?Symmetry = %S";
           title[4] = "?Occupancy = %O";
         }
-        mo = (Hashtable) mos.get(qm_moNumber - 1);
+        mo = (Hashtable<String, Object>) mos.get(qm_moNumber - 1);
         moCoefficients = (float[]) mo.get("coefficients");
         dfCoefMaps = (int[][]) mo.get("dfCoefMaps");
       }

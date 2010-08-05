@@ -23,8 +23,9 @@
  */
 package org.jmol.modelsetbio;
 
+import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Vector;
+import java.util.List;
 
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.ModelSet;
@@ -302,9 +303,9 @@ public class AlphaPolymer extends BioPolymer {
    * 
    */
   @Override
-  public Vector calculateStruts(ModelSet modelSet, Atom[] atoms, BitSet bs1,
-                                BitSet bs2, Vector vCA, float thresh, int delta, boolean allowMultiple) {
-    Vector vStruts = new Vector(); // the output vector
+  public List<Object[]> calculateStruts(ModelSet modelSet, Atom[] atoms, BitSet bs1,
+                                BitSet bs2, List<Atom> vCA, float thresh, int delta, boolean allowMultiple) {
+    List<Object[]> vStruts = new ArrayList<Object[]>(); // the output vector
     float thresh2 = thresh * thresh; // use distance squared for speed
 
     //TODO  CHECK IMPLEMENT BITSETS
@@ -323,12 +324,12 @@ public class AlphaPolymer extends BioPolymer {
     // check for a strut. We are going to set struts within 3 residues
     // of the ends of biopolymers, so we track those positions as well.
     
-    Atom a1 = (Atom) vCA.get(0);
+    Atom a1 = vCA.get(0);
     Atom a2;
     int nBiopolymers = modelSet.getBioPolymerCountInModel(a1.modelIndex);
     int[][] biopolymerStartsEnds = new int[nBiopolymers][nEndMin * 2];
     for (int i = 0; i < n; i++) {
-      a1 = (Atom) vCA.get(i);
+      a1 = vCA.get(i);
       int polymerIndex = a1.getPolymerIndexInModel();
       int monomerIndex = a1.getMonomerIndex();
       int bpt = monomerIndex;
@@ -348,17 +349,17 @@ public class AlphaPolymer extends BioPolymer {
 
     float[] d2 = new float[n * (n - 1) / 2];
     for (int i = 0; i < n; i++) {
-      a1 = (Atom) vCA.get(i);
+      a1 = vCA.get(i);
       for (int j = i + 1; j < n; j++) {
         int ipt = strutPoint(i, j, n);
-        a2 = (Atom) vCA.get(j);
+        a2 = vCA.get(j);
         int resno1 = a1.getResno();
         int polymerIndex1 = a1.getPolymerIndexInModel();
         int resno2 = a2.getResno();
         int polymerIndex2 = a2.getPolymerIndexInModel();
         if (polymerIndex1 == polymerIndex2 && Math.abs(resno2 - resno1) < delta)
           bsNearbyResidues.set(ipt);
-        float d = d2[ipt] = a1.distanceSquared((Atom) vCA.get(j));
+        float d = d2[ipt] = a1.distanceSquared(vCA.get(j));
         if (d >= thresh2)
           bsNotAvailable.set(ipt);
       }
@@ -451,24 +452,27 @@ public class AlphaPolymer extends BioPolymer {
      : i * (2 * n - i - 1) / 2 + j - i - 1);
   }
 
-  private void setStrut(int i, int j, int n, Vector vCA, BitSet bs1, BitSet bs2, 
-                        Vector vStruts,
+  private void setStrut(int i, int j, int n, List<Atom> vCA, BitSet bs1, BitSet bs2, 
+                        List<Object[]> vStruts,
                         BitSet bsStruts, BitSet bsNotAvailable,
                         BitSet bsNearbyResidues, Atom[] atoms, int delta) {
-    Atom a1 = (Atom) vCA.get(i);
-    Atom a2 = (Atom) vCA.get(j);
+    Atom a1 = vCA.get(i);
+    Atom a2 = vCA.get(j);
     if (!bs1.get(a1.index) || !bs2.get(a2.index))
       return;
     vStruts.add(new Object[] { a1, a2 });
     bsStruts.set(i);
     bsStruts.set(j);
-    for (int k1 = Math.max(0, i - delta); k1 <= i + delta && k1 < n; k1++)
+    for (int k1 = Math.max(0, i - delta); k1 <= i + delta && k1 < n; k1++) {
       for (int k2 = Math.max(0, j - delta); k2 <= j + delta && k2 < n; k2++) {
-        if (k1 == k2)
+        if (k1 == k2) {
           continue;
+        }
         int ipt = strutPoint(k1, k2, n);
-        if (!bsNearbyResidues.get(ipt))
+        if (!bsNearbyResidues.get(ipt)) {
           bsNotAvailable.set(ipt);
+        }
       }
+    }
   }
 }

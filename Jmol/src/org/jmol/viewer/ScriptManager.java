@@ -23,7 +23,8 @@
  */
 package org.jmol.viewer;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
@@ -33,7 +34,7 @@ class ScriptManager {
   Viewer viewer;
   Thread[] queueThreads = new Thread[2];
   boolean[] scriptQueueRunning = new boolean[2];
-  Vector scriptQueue = new Vector();
+  List scriptQueue = new ArrayList();
   Thread commandWatcherThread;
 
   ScriptManager(Viewer viewer) {
@@ -73,14 +74,14 @@ class ScriptManager {
         (strScript.indexOf("javascript") < 0 
             || strScript.indexOf("#javascript ") >= 0));
     // scripts with #javascript will be processed at the browser end
-    Vector scriptItem = new Vector();
-    scriptItem.addElement(strScript);
-    scriptItem.addElement(statusList);
-    scriptItem.addElement(returnType);
-    scriptItem.addElement(isScriptFile ? Boolean.TRUE : Boolean.FALSE);
-    scriptItem.addElement(isQuiet ? Boolean.TRUE : Boolean.FALSE);
-    scriptItem.addElement(Integer.valueOf(useCommandThread ? -1 : 1));
-    scriptQueue.addElement(scriptItem);
+    List<Object> scriptItem = new ArrayList<Object>();
+    scriptItem.add(strScript);
+    scriptItem.add(statusList);
+    scriptItem.add(returnType);
+    scriptItem.add(isScriptFile ? Boolean.TRUE : Boolean.FALSE);
+    scriptItem.add(isQuiet ? Boolean.TRUE : Boolean.FALSE);
+    scriptItem.add(Integer.valueOf(useCommandThread ? -1 : 1));
+    scriptQueue.add(scriptItem);
     //if (Logger.debugging)
     //  Logger.info("ScriptManager queue size=" + scriptQueue.size() + " scripts; added: " 
       //    + strScript + " " + Thread.currentThread().getName());
@@ -114,10 +115,9 @@ class ScriptManager {
 
   public synchronized void flushQueue(String command) {
     for (int i = scriptQueue.size(); --i >= 0;) {
-      String strScript = (String) (((Vector) scriptQueue.elementAt(i))
-          .elementAt(0));
+      String strScript = (String) (((List) scriptQueue.get(i)).get(0));
       if (strScript.indexOf(command) == 0) {
-        scriptQueue.removeElementAt(i);
+        scriptQueue.remove(i);
         if (Logger.debugging)
           Logger.debug(scriptQueue.size() + " scripts; removed: " + strScript);
       }
@@ -137,9 +137,9 @@ class ScriptManager {
     queueThreads[pt].start();
   }
 
-  Vector getScriptItem(boolean watching, boolean isByCommandWatcher) {
-    Vector scriptItem = (Vector) scriptQueue.elementAt(0);
-    int flag = (((Integer) scriptItem.elementAt(5)).intValue());
+  List getScriptItem(boolean watching, boolean isByCommandWatcher) {
+    List scriptItem = (List) scriptQueue.get(0);
+    int flag = (((Integer) scriptItem.get(5)).intValue());
     boolean isOK = (watching ? flag < 0 
         : isByCommandWatcher ? flag == 0
         : flag == 1);
@@ -188,20 +188,20 @@ class ScriptManager {
       if (scriptQueue.size() == 0)
         return false;
       //Logger.info("SCRIPT QUEUE BUSY" +  scriptQueue.size());
-      Vector scriptItem = getScriptItem(false, startedByCommandThread);
+      List scriptItem = getScriptItem(false, startedByCommandThread);
       if (scriptItem == null)
         return false;
-      String script = (String) scriptItem.elementAt(0);
-      String statusList = (String) scriptItem.elementAt(1);
-      String returnType = (String) scriptItem.elementAt(2);
-      boolean isScriptFile = ((Boolean) scriptItem.elementAt(3)).booleanValue();
-      boolean isQuiet = ((Boolean) scriptItem.elementAt(4)).booleanValue();
+      String script = (String) scriptItem.get(0);
+      String statusList = (String) scriptItem.get(1);
+      String returnType = (String) scriptItem.get(2);
+      boolean isScriptFile = ((Boolean) scriptItem.get(3)).booleanValue();
+      boolean isQuiet = ((Boolean) scriptItem.get(4)).booleanValue();
       if (Logger.debugging) {
         Logger.info("Queue[" + pt + "][" + scriptQueue.size()
             + "] scripts; running: " + script);
       }
       //System.out.println("removing: " + scriptItem);
-      scriptQueue.removeElementAt(0);
+      scriptQueue.remove(0);
       //System.out.println("removed: " + scriptItem);
       runScript(returnType, script, statusList, isScriptFile, isQuiet);
       if (scriptQueue.size() == 0) {// might have been cleared with an exit
@@ -286,9 +286,9 @@ class ScriptManager {
           Thread.sleep(commandDelay);
           if (commandWatcherThread != null) {
             if (scriptQueue.size() > 0) {
-              Vector scriptItem = getScriptItem(true, true);
+              List scriptItem = getScriptItem(true, true);
               if (scriptItem != null) {
-                scriptItem.setElementAt(Integer.valueOf(0), 5);
+                scriptItem.set(5, Integer.valueOf(0));
                 startScriptQueue(true);
               }
             }

@@ -33,7 +33,7 @@ import java.awt.Component;
 import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Enumeration;
-import java.util.Vector;
+import java.util.List;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
@@ -59,7 +59,7 @@ public class JmolPopup extends SimplePopup {
     GT.setDoTranslate(true);
     JmolPopup popup;
     try {
-      popup = (JmolPopup) new JmolPopup(viewer, asPopup);
+      popup = new JmolPopup(viewer, asPopup);
     } catch (Exception e) {
       Logger.error("JmolPopup not loaded");
       GT.setDoTranslate(doTranslate);
@@ -220,7 +220,7 @@ public class JmolPopup extends SimplePopup {
     removeAll(menu);
     if (moData == null)
       return;
-    Vector mos = (Vector) (moData.get("mos"));
+    List mos = (List) (moData.get("mos"));
     int nOrb = (mos == null ? 0 : mos.size());
     if (nOrb == 0)
       return;
@@ -513,16 +513,16 @@ public class JmolPopup extends SimplePopup {
       }
       removeAll(submenu);
       enableMenu(submenu, false);
-      Vector biomolecules;
+      List biomolecules;
       if (modelIndex >= 0
-          && (biomolecules = (Vector) viewer.getModelAuxiliaryInfo(modelIndex,
+          && (biomolecules = (List) viewer.getModelAuxiliaryInfo(modelIndex,
               "biomolecules")) != null) {
         enableMenu(submenu, true);
         int nBiomolecules = biomolecules.size();
         for (int i = 0; i < nBiomolecules; i++) {
           String script = (isMultiFrame ? ""
               : "save orientation;load \"\" FILTER \"biomolecule " + (i + 1) + "\";restore orientation;");
-          int nAtoms = ((Integer) ((Hashtable) biomolecules.elementAt(i)).get("atomCount")).intValue();
+          int nAtoms = ((Integer) ((Hashtable) biomolecules.get(i)).get("atomCount")).intValue();
           String entryName = GT._(getMenuText(isMultiFrame ? "biomoleculeText"
               : "loadBiomoleculeText"), new Object[] { Integer.valueOf(i + 1),
               Integer.valueOf(nAtoms) });

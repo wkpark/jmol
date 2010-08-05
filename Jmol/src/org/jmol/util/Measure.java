@@ -23,7 +23,9 @@
  */
 package org.jmol.util;
 
-import java.util.Vector;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
@@ -436,20 +438,20 @@ final public class Measure {
     averagePoint.scale(1f / nPoints);
   }
 
-  public static Point3f[] getCenterAndPoints(Vector<Point3f> vPts) {
+  public static Point3f[] getCenterAndPoints(List<Point3f> vPts) {
     int n = vPts.size();
     Point3f[] pts = new Point3f[n + 1];
     pts[0] = new Point3f();
     if (n > 0) {
-      for (int i = 0; i < n; i++)
+      for (int i = 0; i < n; i++) {
         pts[0].add(pts[i + 1] = vPts.get(i));
+      }
       pts[0].scale(1f / n);
     }
     return pts;
   }
 
-  public static float getTransformMatrix4(Vector<Point3f> ptsA, Vector<Point3f> ptsB, 
-                                          Matrix4f m, Point3f centerA) {
+  public static float getTransformMatrix4(List<Point3f> ptsA, List<Point3f> ptsB, Matrix4f m, Point3f centerA) {
     Point3f[] cptsA = getCenterAndPoints(ptsA);
     Point3f[] cptsB = getCenterAndPoints(ptsB);
     float[] retStddev = new float[2];
@@ -574,8 +576,8 @@ final public class Measure {
     return (float) Math.sqrt((sum2 - sum * sum / n) / (n - 1));
   }
 
-  public static Vector<Point3f> transformPoints(Vector<Point3f> vPts, Matrix4f m4, Point3f center) {
-    Vector<Point3f> v = new Vector<Point3f>();
+  public static List<Point3f> transformPoints(List<Point3f> vPts, Matrix4f m4, Point3f center) {
+    List<Point3f> v = new ArrayList<Point3f>();
     for (int i = 0; i < vPts.size(); i++) {
       Point3f pt = new Point3f(vPts.get(i));
       pt.sub(center);

@@ -25,7 +25,7 @@
 package org.jmol.shape;
 
 import java.util.BitSet;
-import java.util.Vector;
+import java.util.List;
 
 import org.jmol.util.Escape;
 import org.jmol.util.Measure;
@@ -47,7 +47,7 @@ public class Mesh extends MeshSurface {
   public short[] normixes;
   private int normixCount;
   public BitSet[] bitsets; // [0]bsSelected [1]bsIgnore [2]bsTrajectory
-  public Vector lineData;
+  public List<Point3f[]> lineData;
   public String thisID;
   public boolean isValid = true;
   public String scriptCommand;
@@ -188,7 +188,7 @@ public class Mesh extends MeshSurface {
 
   //public Vector data1;
   //public Vector data2;
-  public Vector xmlProperties;
+  public List xmlProperties;
   public boolean colorDensity;
   public Object cappingObject;
   public Object slabbingObject;

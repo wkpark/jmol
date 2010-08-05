@@ -33,11 +33,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.Hashtable;
-import java.util.Vector;
 
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
@@ -73,17 +74,17 @@ public class SimplePopup {
   protected JPopupMenu frankPopup;
 
   protected Hashtable<String, Object> htMenus = new Hashtable<String, Object>();
-  protected Vector<Object> NotPDB = new Vector<Object>();
-  protected Vector<Object> PDBOnly = new Vector<Object>();
-  protected Vector<Object> UnitcellOnly = new Vector<Object>();
-  protected Vector<Object> SingleModelOnly = new Vector<Object>();
-  protected Vector<Object> FramesOnly = new Vector<Object>();
-  protected Vector<Object> VibrationOnly = new Vector<Object>();
-  protected Vector<Object> SymmetryOnly = new Vector<Object>();
-  protected Vector<Object> SignedOnly = new Vector<Object>();
-  protected Vector<Object> AppletOnly = new Vector<Object>();
-  protected Vector<Object> ChargesOnly = new Vector<Object>();
-  protected Vector<Object> TemperatureOnly = new Vector<Object>();
+  protected List<Object> NotPDB = new ArrayList<Object>();
+  protected List<Object> PDBOnly = new ArrayList<Object>();
+  protected List<Object> UnitcellOnly = new ArrayList<Object>();
+  protected List<Object> SingleModelOnly = new ArrayList<Object>();
+  protected List<Object> FramesOnly = new ArrayList<Object>();
+  protected List<Object> VibrationOnly = new ArrayList<Object>();
+  protected List<Object> SymmetryOnly = new ArrayList<Object>();
+  protected List<Object> SignedOnly = new ArrayList<Object>();
+  protected List<Object> AppletOnly = new ArrayList<Object>();
+  protected List<Object> ChargesOnly = new ArrayList<Object>();
+  protected List<Object> TemperatureOnly = new ArrayList<Object>();
 
   protected boolean isPDB;
   protected boolean isSymmetry;

@@ -25,6 +25,7 @@
 
 package org.jmol.export;
 
+
 import java.awt.Image;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -33,10 +34,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Date;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
@@ -377,11 +379,11 @@ public abstract class ___Exporter {
    * @param htColixes
    * @return Vector and HashTable
    */
-  protected Vector<Short> getColorList(int i00, short[] colixes, int nVertices,
+  protected List<Short> getColorList(int i00, short[] colixes, int nVertices,
                                 BitSet bsSelected, Hashtable<String, String> htColixes) {
     String color;
     int nColix = 0;
-    Vector<Short> list = new Vector<Short>();
+    List<Short> list = new ArrayList<Short>();
     boolean isAll = (bsSelected == null);
     int i0 = (isAll ? nVertices - 1 : bsSelected.nextSetBit(0));
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsSelected.nextSetBit(i + 1))) {
@@ -483,7 +485,7 @@ public abstract class ___Exporter {
     if (nFaces == 0)
       return;
     Hashtable<String, String> htColixes = new Hashtable<String, String>();
-    Vector<Short> colorList = null;
+    List<Short> colorList = null;
     if (polygonColixes != null)
       colorList = getColorList(0, polygonColixes, nPolygons, bsFaces, htColixes);
     else if (colixes != null)
@@ -497,9 +499,8 @@ public abstract class ___Exporter {
                                 short[] colixes, int[][] indices,
                                 short[] polygonColixes,
                                 int nVertices, int nPolygons, int nFaces, BitSet bsFaces,
-                                int faceVertexMax, short colix, 
-                                Vector<Short> colorList, Hashtable<String, String> htColixes, 
-                                Point3f offset);
+                                int faceVertexMax, short colix, List<Short> colorList,
+                                Hashtable<String, String> htColixes, Point3f offset);
 
   abstract void drawPixel(short colix, int x, int y, int z, int scale); //measures
   

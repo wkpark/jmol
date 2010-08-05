@@ -25,10 +25,11 @@
 
 package org.jmol.util;
 
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
@@ -485,13 +486,13 @@ public class Escape {
    return sb.toString();
   }
 
-  public static String escape(Hashtable ht) {
+  public static String escape(Hashtable<String, Object> ht) {
     StringBuffer sb = new StringBuffer();
     sb.append("{ ");
     String sep = "";
-    Enumeration e = ((Hashtable) ht).keys();
+    Enumeration<String> e = ht.keys();
     while (e.hasMoreElements()) {
-      String key = (String) e.nextElement();
+      String key = e.nextElement();
       sb.append(sep).append(escape(key)).append(':');
       Object val = ht.get(key);
       sb.append(((ScriptVariable)val).escape());
@@ -591,11 +592,11 @@ public class Escape {
       sb.append("]");
       return packageJSON(infoType, sb);
     }
-    if (info instanceof Vector) {
+    if (info instanceof List) {
       sb.append("[ ");
-      int imax = ((Vector) info).size();
+      int imax = ((List) info).size();
       for (int i = 0; i < imax; i++) {
-        sb.append(sep).append(toJSON(null, ((Vector) info).get(i)));
+        sb.append(sep).append(toJSON(null, ((List) info).get(i)));
         sep = ",";
       }
       sb.append(" ]");
@@ -708,10 +709,10 @@ public class Escape {
       sb.append("]");
       return packageReadable(name, "float[][]", sb);
     }
-    if (info instanceof Vector) {
-      int imax = ((Vector) info).size();
+    if (info instanceof List) {
+      int imax = ((List) info).size();
       for (int i = 0; i < imax; i++) {
-        sb.append(toReadable(name + "[" + (i + 1) + "]", ((Vector) info).get(i)));
+        sb.append(toReadable(name + "[" + (i + 1) + "]", ((List) info).get(i)));
       }
       return packageReadable(name, "Vector[" + imax + "]", sb);
     }
@@ -778,13 +779,13 @@ public class Escape {
     return XmlUtil.wrapCdata(toReadable(null, value));
   }
 
-  public static Vector unescapePointVector(String[] pts) {
-    Vector data = new Vector();
+  public static List<Point3f> unescapePointVector(String[] pts) {
+    List<Point3f> data = new ArrayList<Point3f>();
     for (int i = 0; i < pts.length; i++) {
       Object pt = Escape.unescapePoint(pts[i]);
       if (!(pt instanceof Point3f))
         return null;
-      data.add(pt);
+      data.add((Point3f) pt);
     }
     return data;
   }
@@ -834,7 +835,7 @@ public class Escape {
     //TODO -- should recognize '..' as well as "..." ?
     if (data == null || !data.startsWith("[") || !data.endsWith("]"))
       return null;
-    Vector v = new Vector();
+    List<String> v = new ArrayList<String>();
     int[] next = new int[1];
     next[0] = 1;
     while (next[0] < data.length()) {
@@ -846,8 +847,9 @@ public class Escape {
         next[0]++;
     }    
     String[] array = new String[v.size()];
-    for (int i = 0; i < array.length; i++)
-      array[i] = (String) v.get(i);
+    for (int i = 0; i < array.length; i++) {
+      array[i] = v.get(i);
+    }
     return array;
   }
 

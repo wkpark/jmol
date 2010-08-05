@@ -171,12 +171,12 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
    */
 
   abstract public Object getAtomSetCollectionReaders(JmolFileReaderInterface fileReader, String[] names, String[] types,
-                                    Hashtable<String, Object>  htParams, boolean getReadersOnly);
+                                    Hashtable<String, Object> htParams, boolean getReadersOnly);
 
-  abstract public Object getAtomSetCollectionFromSet(Object readers, Object atomSets, Hashtable<String, Object>  htParams);
+  abstract public Object getAtomSetCollectionFromSet(Object readers, Object atomSets, Hashtable<String, Object> htParams);
 
   abstract public Object getAtomSetCollectionOrBufferedReaderFromZip(InputStream is, String fileName, String[] zipDirectory,
-                             Hashtable<String, Object>  htParams, boolean asBufferedReader);
+                             Hashtable<String, Object> htParams, boolean asBufferedReader);
 
   /**
    * all in one -- for TestSmarterJmolAdapter
@@ -189,12 +189,14 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
    */
   public Object getAtomSetCollectionFromReader(String name, String type,
                                                BufferedReader bufferedReader,
-                                               Hashtable<String, Object>  htParams) {
-    if (htParams == null)
-      htParams = new Hashtable<String, Object> ();
+                                               Hashtable<String, Object> htParams) {
+    if (htParams == null) {
+      htParams = new Hashtable<String, Object>();
+    }
     Object a = getAtomSetCollectionReader(name, type, bufferedReader, htParams);
-    if (a instanceof String)
+    if (a instanceof String) {
       return a;
+    }
     return getAtomSetCollection(a);
   }
 
@@ -206,7 +208,7 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
   }
 
   public Object openBufferedReader(String name, BufferedReader bufferedReader,
-                                   Hashtable<String, Object>  htParams) {
+                                   Hashtable<String, Object> htParams) {
     return getAtomSetCollectionFromReader(name, null, bufferedReader, htParams);
   }
 
@@ -215,7 +217,7 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
     return getAtomSetCollectionFromReader(name, type, bufferedReader, null);
   }
 
-  abstract public Object getAtomSetCollectionFromDOM(Object DOMNode, Hashtable<String, Object>  htParams);
+  abstract public Object getAtomSetCollectionFromDOM(Object DOMNode, Hashtable<String, Object> htParams);
 
   /**
    * @param atomSetCollection  

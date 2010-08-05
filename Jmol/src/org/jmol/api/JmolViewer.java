@@ -34,10 +34,9 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.net.URL;
 import java.util.BitSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.Hashtable;
-import java.util.Vector;
-//import java.io.Reader;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 
@@ -271,7 +270,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
    * @param isAppend TRUE to append models (no ZAP)
    * @return null or error message
    */
-  abstract public String loadInline(Vector arrayData, boolean isAppend);
+  abstract public String loadInline(List arrayData, boolean isAppend);
 
   abstract public String evalStringQuiet(String script);
   abstract public boolean isScriptExecuting();
@@ -282,13 +281,13 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public String getFileAsString(String filename);
   abstract public boolean getFileAsString(String[] data, int nBytesMax, boolean doSpecialLoad);
   abstract public Properties getModelSetProperties();
-  abstract public Hashtable getModelSetAuxiliaryInfo();
+  abstract public Hashtable<String, Object> getModelSetAuxiliaryInfo();
   abstract public int getModelNumber(int modelIndex);
   abstract public String getModelName(int modelIndex);
   abstract public String getModelNumberDotted(int modelIndex);
   abstract public Properties getModelProperties(int modelIndex);
   abstract public String getModelProperty(int modelIndex, String propertyName);
-  abstract public Hashtable getModelAuxiliaryInfo(int modelIndex);
+  abstract public Hashtable<String, Object> getModelAuxiliaryInfo(int modelIndex);
   abstract public Object getModelAuxiliaryInfo(int modelIndex, String keyName);
   abstract public boolean modelHasVibrationVectors(int modelIndex);
 

@@ -27,8 +27,8 @@ package org.jmol.shapesurface;
 
 import java.util.BitSet;
 import java.util.Enumeration;
-import java.util.Vector;
 import java.util.Hashtable;
+import java.util.List;
 
 import javax.vecmath.Point4f;
 
@@ -251,7 +251,7 @@ public class MolecularOrbital extends Isosurface {
       return Integer.valueOf(moNumber);
     if (propertyName == "showMO") {
       StringBuffer str = new StringBuffer();
-      Vector mos = (Vector) (sg.getMoData().get("mos"));
+      List mos = (List) (sg.getMoData().get("mos"));
       int nOrb = (mos == null ? 0 : mos.size());
       int thisMO = param;
       int currentMO = moNumber;

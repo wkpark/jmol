@@ -25,10 +25,8 @@
 
 package org.jmol.shape;
 
-//import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Point3fi;
-//import org.jmol.util.XmlUtil;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.StateManager;
 import org.jmol.viewer.Viewer;
@@ -43,7 +41,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
 import java.util.BitSet;
-import java.util.Vector;
+import java.util.List;
 import java.util.Hashtable;
 
 /**
@@ -133,7 +131,7 @@ public abstract class Shape {
     // shape-dependent Jmol 12.0.RC6
   }
   
-  protected Vector xmlProperties;
+  protected List xmlProperties;
   
   public void setShapeSize(int size, RadiusData rd, BitSet bsSelected) {
     setXmlProperty("size", (rd == null ? Integer.valueOf(size) : (Object) rd),
@@ -248,7 +246,7 @@ public abstract class Shape {
     }
 */
     if (propertyName == "setProperties") {
-      Vector propertyList = (Vector) value;
+      List propertyList = (List) value;
       while (propertyList.size() > 0) {
         Object[] data = (Object[]) propertyList.remove(0);
         setShapeProperty(((String) data[0]).intern(), data[1], null);
@@ -329,7 +327,7 @@ public abstract class Shape {
     
   }
   
-  public Vector<Hashtable<String, Object>> getShapeDetail() {
+  public List<Hashtable<String, Object>> getShapeDetail() {
     return null;
   }
 

@@ -969,7 +969,7 @@ public class PovrayDialog extends JDialog {
   	
     //Parsing command line
     String commandLine = commandLineField.getText();
-    Vector vector = new Vector();
+    List vector = new ArrayList();
     int begin = 0;
     int end = 0;
     int doubleQuoteCount = 0;

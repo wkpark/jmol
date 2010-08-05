@@ -23,8 +23,7 @@
  */
 package org.jmol.shapespecial;
 
-
-import java.util.Vector;
+import java.util.List;
 
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
@@ -227,11 +226,11 @@ public class DrawRenderer extends MeshRenderer {
     }
   }
   
-  private void drawLineData(Vector lineData) {
+  private void drawLineData(List<Point3f[]> lineData) {
     if (diameter == 0)
       diameter = 3;
     for (int i = lineData.size(); --i >= 0;) {
-      Point3f[] pts = (Point3f[]) lineData.get(i);
+      Point3f[] pts = lineData.get(i);
       viewer.transformPoint(pts[0], pt1i);
       viewer.transformPoint(pts[1], pt2i);
       drawLine(-1, -2, true, pts[0], pts[1], pt1i, pt2i);

@@ -4,13 +4,14 @@
 
 package org.jmol.api;
 
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.Vector;
+import java.util.List;
 
 import javax.swing.JFrame;
 
@@ -217,15 +218,15 @@ class TestScriptsImpl extends TestCase {
             }
             line = s;
           }
-          Vector info = (Vector) viewer.scriptWaitStatus(line, "scriptTerminated");
+          List<?> info = (List<?>) viewer.scriptWaitStatus(line, "scriptTerminated");
           long end = Profiling.getTime();
           if ((info != null) && (info.size() > 0)) {
             String error = info.get(0).toString();
-            if (info.get(0) instanceof Vector) {
-              Vector vector = (Vector) info.get(0);
+            if (info.get(0) instanceof List) {
+              List<?> vector = (List<?>) info.get(0);
               if (vector.size() > 0) {
-                if (vector.get(0) instanceof Vector) {
-                  vector = (Vector) vector.get(0);
+                if (vector.get(0) instanceof List) {
+                  vector = (List<?>) vector.get(0);
                   error = vector.get(vector.size() - 1).toString();
                 }
               }

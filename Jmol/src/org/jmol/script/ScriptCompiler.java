@@ -33,9 +33,10 @@ import org.jmol.i18n.GT;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.Bond.BondSet;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Vector;
 import java.util.BitSet;
+import java.util.List;
 
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
@@ -211,9 +212,9 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   }
 
   private ScriptFlowContext flowContext;
-  private Vector ltoken;
-  private Vector lltoken;
-  private Vector vBraces;
+  private List<Token> ltoken;
+  private List<Token[]> lltoken;
+  private List<Token> vBraces;
 
 
   private int ichBrace;
@@ -240,7 +241,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   private void addTokenToPrefix(Token token) {
     if (logMessages)
       Logger.debug("addTokenToPrefix" + token);
-    ltoken.addElement(token);
+    ltoken.add(token);
     lastToken = token;
   }
 
@@ -252,10 +253,10 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
 
   private int tokLastMath;
   
-  private Vector vFunctionStack;
+  private List<ScriptFunction> vFunctionStack;
   
   private boolean compile0(boolean isFull) {
-    vFunctionStack = new Vector();  
+    vFunctionStack = new ArrayList<ScriptFunction>();  
     script = script.replace('\u201C', '"').replace('\u201D', '"');
     script = cleanScriptComments(script);
     cchScript = this.script.length();
@@ -281,8 +282,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     iCommand = 0;
     tokLastMath = 0;
     lastToken = Token.tokenOff;
-    vBraces = new Vector();
-    vPush = new Vector();
+    vBraces = new ArrayList<Token>();
+    vPush = new ArrayList<Token>();
     pushCount = 0;
     iBrace = 0;
     braceCount = 0;
@@ -296,8 +297,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     ptNewSetModifier = 1;
     isShowScriptOutput = false;    
     iHaveQuotedString = false;
-    lltoken = new Vector();
-    ltoken = new Vector();
+    lltoken = new ArrayList<Token[]>();
+    ltoken = new ArrayList<Token>();
     tokCommand = Token.nada;
     lastFlowCommand = null;
     tokenAndEquals = null;
@@ -400,7 +401,9 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   
   private void setAaTokenCompiled() {
     aatokenCompiled = new Token[lltoken.size()][];
-    lltoken.copyInto(aatokenCompiled);
+    for (int i = 0; i < lltoken.size(); i++) {
+      aatokenCompiled[i] = lltoken.get(i);
+    }
   }
 
   private boolean lookingAtLeadingWhitespace() {
@@ -605,7 +608,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         // ...{...
         if (lastFlowCommand == null) {
           parenCount = setBraceCount = braceCount = 0;
-          ltoken.removeElementAt(0);
+          ltoken.remove(0);
           iBrace++;
           Token t = new ContextToken(Token.push, 0, "{");
           addTokenToPrefix(setCommand(t));
@@ -617,7 +620,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           setCommand(lastFlowCommand);
           if (lastFlowCommand.tok != Token.process 
               && (tokAt(0) == Token.leftbrace))
-            ltoken.removeElementAt(0);
+            ltoken.remove(0);
           lastFlowCommand = null;
         }
       }
@@ -664,7 +667,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           lineIndices[iCommand][0] = ichCurrentCommand;
           lineIndices[iCommand][1] = Math.max(ichCurrentCommand, Math.min(
               cchScript, ichEnd == ichCurrentCommand ? ichToken : ichEnd));
-          lltoken.addElement(atokenInfix);
+          lltoken.add(atokenInfix);
           iCommand = lltoken.size();
         }
         if (tokCommand == Token.set)
@@ -675,7 +678,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       tokCommand = Token.nada;
       iHaveQuotedString = isNewSet = isSetBrace = needRightParen = false;
       ptNewSetModifier = 1;
-      ltoken.setSize(0);
+      ltoken.clear();
       nTokens = nSemiSkip = 0;
       tokenAndEquals = null;
       ptSemi = -10;
@@ -717,7 +720,6 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     if (ltoken.size() == 0) {
       // comment
       atokenInfix = new Token[0];
-      ltoken.copyInto(atokenInfix);
       return true;
     }
     if (isNewSet && setEqualPt == Integer.MAX_VALUE && tokAt(2) == Token.per && ltoken.size() == 4) {
@@ -739,7 +741,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           || tok == Token.minusMinus
           || (tok = tokAt(pt = 1)) == Token.plusPlus 
           || tok == Token.minusMinus) {
-        ltoken.removeElementAt(pt);
+        ltoken.remove(pt);
         addTokenToPrefix(Token.tokenEquals);
         for (int i = 1; i < size - 1; i++)
           addTokenToPrefix(tokenAt(i));
@@ -747,7 +749,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
             : Token.tokenPlus);
         addTokenToPrefix(Token.intToken(1));
         if (tokAt(2) == Token.leftsquare)
-          ltoken.setElementAt(Token.tokenSetArray, 0);
+          ltoken.set(0, Token.tokenSetArray);
       }
     }
     if (tokenAndEquals != null) {
@@ -763,16 +765,18 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         Logger.error("COMPILER ERROR! - andEquals ");
       } else {
         for (j = 1; j < size; j++, i++)
-          ltoken.insertElementAt(tokenAt(j), i);
-        ltoken.setElementAt(Token.tokenEquals, size);
-        ltoken.insertElementAt(tokenAndEquals, i);
-        ltoken.insertElementAt(Token.tokenLeftParen, ++i);
+          ltoken.add(i, tokenAt(j));
+        ltoken.set(size, Token.tokenEquals);
+        ltoken.add(i, tokenAndEquals);
+        ltoken.add(++i, Token.tokenLeftParen);
         addTokenToPrefix(Token.tokenRightParen);
       }
     }
 
     atokenInfix = new Token[size = ltoken.size()];
-    ltoken.copyInto(atokenInfix);
+    for (int i = 0; i < ltoken.size(); i++) {
+      atokenInfix[i] = ltoken.get(i);
+    }
     
     if (logMessages) {
       Logger.debug("token list:");
@@ -790,7 +794,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   }
 
   private Token tokenAt(int i) {
-    return (Token) ltoken.get(i);
+    return ltoken.get(i);
   }
 
   @Override
@@ -857,7 +861,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
             || (isNewSet || isSetBrace) && (isAndEquals || ch == '.' || ch == '[')) {
           setCommand(isAndEquals ? Token.tokenSet
               : ch == '[' && !isSetBrace ? Token.tokenSetArray : Token.tokenSetProperty);
-          ltoken.insertElementAt(tokenCommand, 0);
+          ltoken.add(0, tokenCommand);
           cchToken = 1;
           switch (ch) {
           case '[':
@@ -1175,7 +1179,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         addTokenToPrefix(Token.tokenEquals);
         setEqualPt = 0;
         for (int i = 1; i < nTokens; i++)
-          addTokenToPrefix((Token)ltoken.elementAt(i));
+          addTokenToPrefix(ltoken.get(i));
         addTokenToPrefix(theTok == Token.minusMinus ? Token.tokenMinus : Token.tokenPlus);
         addTokenToPrefix(Token.intToken(1));
         return CONTINUE;  
@@ -1194,9 +1198,9 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       break;
     case Token.per:
       if (tokCommand == Token.set && parenCount == 0 && bracketCount == 0 && ichToken < setEqualPt) {
-        ltoken.insertElementAt(Token.tokenExpressionBegin, 1);
+        ltoken.add(1, Token.tokenExpressionBegin);
         addTokenToPrefix(Token.tokenExpressionEnd);
-        ltoken.setElementAt(Token.tokenSetProperty, 0);
+        ltoken.set(0, Token.tokenSetProperty);
         setEqualPt = 0;
       }            
       break;
@@ -1432,16 +1436,16 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       }
       if (nTokens != 1 || theTok != Token.ifcmd && theTok != Token.leftbrace)
         return ERROR(ERROR_badArgumentCount);
-      ltoken.removeElementAt(0);
-      ltoken.addElement(flowContext.token = new ContextToken(Token.elseif, "elseif"));
+      ltoken.remove(0);
+      ltoken.add(flowContext.token = new ContextToken(Token.elseif, "elseif"));
       tokCommand = Token.elseif;
       return CONTINUE;
     case Token.var:
       if (nTokens != 1)
         break;
       addContextVariable(ident);
-      ltoken.removeElementAt(0);
-      ltoken.addElement(Token.tokenSetVar);
+      ltoken.remove(0);
+      ltoken.add(Token.tokenSetVar);
       tokCommand = Token.set;
       break;
     case Token.end:
@@ -1508,8 +1512,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         if (theTok == Token.leftparen) {
           // mysub(xxx,xxx,xxx)
           Token token = tokenAt(0);
-          ltoken.setElementAt(setCommand(new Token(Token.function, 0,
-              token.value)), 0);
+          ltoken.set(0, setCommand(new Token(Token.function, 0, token.value)));
           break;
         }
         if (theTok != Token.identifier && theTok != Token.andequals
@@ -1526,8 +1529,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           // theTok = Token.leftsquare;
         } else if (nTokens == 1
             && (lastToken.tok == Token.plusPlus || lastToken.tok == Token.minusMinus)) {
-          ltoken.removeElementAt(0);
-          ltoken.insertElementAt(setCommand(Token.tokenSet), 0);
+          ltoken.remove(0);
+          ltoken.add(0, setCommand(Token.tokenSet));
           addTokenToPrefix(lastToken);
           break;
         }
@@ -1582,7 +1585,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           if (theTok == Token.opEQ) {
             // we are looking at @x =.... just insert a SET command
             // and ignore the =. It's the same as set @x ...
-            ltoken.insertElementAt(Token.tokenSet, 0);
+            ltoken.add(0, Token.tokenSet);
             return CONTINUE;
           }
         }
@@ -1640,17 +1643,17 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     return true;
   }
 
-  Vector vPush = new Vector();
+  List<Token> vPush = new ArrayList<Token>();
   int pushCount;
   
   private int checkFlowEndBrace() {
     
     if (iBrace <= 0
-        || ((Token) vBraces.get(iBrace - 1)).tok != Token.rightbrace)
+        || vBraces.get(iBrace - 1).tok != Token.rightbrace)
       return OK;
     // time to execute end
     vBraces.remove(--iBrace);
-    Token token = (Token) vBraces.remove(--iBrace);
+    Token token = vBraces.remove(--iBrace);
     if (theTok == Token.leftbrace) {
       braceCount--;
       parenCount--;

@@ -16019,20 +16019,20 @@ public class ScriptEvaluator {
 
   private void bind() throws ScriptException {
     /*
-     * bind "MOUSE-ACTION" actionName bind "MOUSE-ACTION" "script" range
-     * [xyrange] [xyrange]
+     * bind "MOUSE-ACTION" actionName bind "MOUSE-ACTION" "script" 
+     *   not implemented: range [xyrange] [xyrange]
      */
     String mouseAction = stringParameter(1);
     String name = parameterAsString(2);
     Point3f range1 = null;
     Point3f range2 = null;
-    if (tokAt(3) == Token.range) {
-      range1 = xypParameter(4);
-      range2 = xypParameter(++iToken);
-      checkLast(iToken);
-    } else {
+    //if (tokAt(3) == Token.range) {
+    //  range1 = xypParameter(4);
+    //  range2 = xypParameter(++iToken);
+    //  checkLast(iToken);
+    //} else {
       checkLength(3);
-    }
+    //}
     if (!isSyntaxCheck)
       viewer.bindAction(mouseAction, name, range1, range2);
   }

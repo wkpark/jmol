@@ -380,6 +380,11 @@ public class ActionManager {
   Binding rasmolBinding;
   Binding predragBinding;
 
+  /**
+   * 
+   * @param viewer
+   * @param commandOptions
+   */
   public void setViewer(Viewer viewer, String commandOptions) {
     this.viewer = viewer;
     setBinding(jmolBinding = new JmolBinding());   
@@ -389,6 +394,13 @@ public class ActionManager {
     return binding.isBound(gesture, action);
   }
 
+  /**
+   * 
+   * @param desc
+   * @param name
+   * @param range1  currently ignored
+   * @param range2  currently ignored
+   */
   void bindAction(String desc, String name, Point3f range1,
                          Point3f range2) {
     int jmolAction = getActionFromName(name);

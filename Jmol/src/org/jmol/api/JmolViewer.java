@@ -36,7 +36,7 @@ import java.net.URL;
 import java.util.BitSet;
 import java.util.Properties;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
@@ -271,7 +271,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
    * @param isAppend TRUE to append models (no ZAP)
    * @return null or error message
    */
-  abstract public String loadInline(Vector<Object> arrayData, boolean isAppend);
+  abstract public String loadInline(List<Object> arrayData, boolean isAppend);
 
   abstract public String evalStringQuiet(String script);
   abstract public boolean isScriptExecuting();

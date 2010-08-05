@@ -85,7 +85,6 @@ import java.util.Hashtable;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Properties;
-import java.util.Vector;
 
 import javax.swing.JOptionPane;
 import javax.vecmath.Point3f;
@@ -2086,7 +2085,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    *  
    */
   @Override
-  public String loadInline(Vector<Object> arrayData, boolean isAppend) {
+  public String loadInline(List<Object> arrayData, boolean isAppend) {
     // NO STATE SCRIPT -- HERE WE ARE TRYING TO CONSERVE SPACE
     
     // loadInline
@@ -3391,8 +3390,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return str;
   }
 
-  List getMeasurementInfo() {
-    return (List) getShapeProperty(JmolConstants.SHAPE_MEASURES, "info");
+  @SuppressWarnings("unchecked")
+  List<Hashtable<String, Object>> getMeasurementInfo() {
+    return (List<Hashtable<String, Object>>) getShapeProperty(JmolConstants.SHAPE_MEASURES, "info");
   }
 
   public String getMeasurementInfoAsString() {
@@ -3649,6 +3649,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     pushHoldRepaint(null);
   }
 
+  /**
+   * 
+   * @param why
+   */
   public void pushHoldRepaint(String why) {
     // System.out.println("viewer pushHoldRepaint " + why);
     repaintManager.pushHoldRepaint();
@@ -6719,6 +6723,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.navigationPeriodic;
   }
 
+  /**
+   * 
+   * @param fromWhere
+   */
   private void stopAnimationThreads(String fromWhere) {
     setVibrationOff();
     setSpinOn(false);
@@ -8353,6 +8361,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getPartialCharges();
   }
 
+  /**
+   * 
+   * @param isMep
+   * @param bsSelected
+   * @param bsIgnore
+   * @param fileName
+   * @return calculated atom potentials
+   */
   public float[] getAtomicPotentials(boolean isMep, BitSet bsSelected, BitSet bsIgnore, String fileName) {
     float[] potentials = new float[getAtomCount()];
     MepCalculationInterface m = (MepCalculationInterface) Interface.getOptionInterface("quantum.MlpCalculation");
@@ -8487,7 +8503,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.calculatePointGroup(getSelectionSet(false));
   }
 
-  public Hashtable getPointGroupInfo(Object atomExpression) {
+  public Hashtable<String, Object> getPointGroupInfo(Object atomExpression) {
     return modelSet.getPointGroupInfo(getAtomBitSet(atomExpression));
   }
 
@@ -8641,7 +8657,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return repaintManager.repaintPending;
   }
 
-  public Hashtable getContextVariables() {
+  public Hashtable<String, ScriptVariable> getContextVariables() {
     return eval.getContextVariables();
   }
 

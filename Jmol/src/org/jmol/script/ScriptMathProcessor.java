@@ -27,9 +27,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -568,7 +569,7 @@ class ScriptMathProcessor {
     ScriptVariable var1 = xStack[xPt--];
     ScriptVariable var = xStack[xPt];
     if (var.tok == Token.hash) {
-      ScriptVariable v = ((Hashtable<String, ScriptVariable>) var.value).get(ScriptVariable.sValue(var1));
+      ScriptVariable v = ((Map<String, ScriptVariable>) var.value).get(ScriptVariable.sValue(var1));
       if (v == null)
         xStack[xPt] = ScriptVariable.getVariable("");
       else
@@ -2320,11 +2321,11 @@ class ScriptMathProcessor {
       case Token.keys:
         if (x2.tok != Token.hash)
           return addX("");
-        Enumeration<String> e = ((Hashtable<String, ScriptVariable>) x2.value)
-            .keys();
+        Iterator<String> e = ((Map<String, ScriptVariable>) x2.value).keySet().iterator();
         List<String> v = new ArrayList<String>();
-        while (e.hasMoreElements())
-          v.add(e.nextElement());
+        while (e.hasNext()) {
+          v.add(e.next());
+        }
         String[] keys = new String[v.size()];
         for (int i = 0; i < keys.length; i++)
           keys[i] = v.get(i);
@@ -2512,8 +2513,8 @@ class ScriptMathProcessor {
       default:
         return addX(ScriptVariable.fValue(x1) - ScriptVariable.fValue(x2));
       case Token.hash:
-        Hashtable<String, ScriptVariable> ht = new Hashtable<String, ScriptVariable>(
-            (Hashtable<String, ScriptVariable>) x1.value);
+        Map<String, ScriptVariable> ht = new Hashtable<String, ScriptVariable>(
+            (Map<String, ScriptVariable>) x1.value);
         ht.remove(ScriptVariable.sValue(x2));
         return addX(ScriptVariable.getVariable(ht));
       case Token.matrix3f:

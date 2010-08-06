@@ -26,9 +26,9 @@ package org.jmol.script;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
@@ -1232,7 +1232,7 @@ public class Token {
   final static Token tokenScript          = new Token(script, "script");
   final static Token tokenSwitch          = new Token(switchcmd, "switch");
     
-  private static Hashtable<String, Token> tokenMap = new Hashtable<String, Token>();
+  private static Map<String, Token> tokenMap = new Hashtable<String, Token>();
   public static void addToken(String ident, Token token) {
     tokenMap.put(ident, token);
   }
@@ -1257,9 +1257,7 @@ public class Token {
    * @return     the name of the token or 0xAAAAAA
    */
   public static String nameOf(int tok) {
-    Enumeration<Token> e = tokenMap.elements();
-    while (e.hasMoreElements()) {
-      Token token = e.nextElement();
+    for (Token token : tokenMap.values()) {
       if (token.tok == tok)
         return "" + token.value;
     }
@@ -1292,23 +1290,21 @@ public class Token {
    */
   public static String getCommandSet(String strBegin) {
     String cmds = "";
-    Hashtable<String, Boolean> htSet = new Hashtable<String, Boolean>();
+    Map<String, Boolean> htSet = new Hashtable<String, Boolean>();
     int nCmds = 0;
     String s = (strBegin == null || strBegin.length() == 0 ? null : strBegin
         .toLowerCase());
     boolean isMultiCharacter = (s != null && s.length() > 1);
-    Enumeration<String> e = tokenMap.keys();
-    while (e.hasMoreElements()) {
-      String name = e.nextElement();
-      Token token = tokenMap.get(name);
+    for (Map.Entry<String, Token> entry : tokenMap.entrySet()) {
+      String name = entry.getKey();
+      Token token = entry.getValue();
       if ((token.tok & scriptCommand) != 0
           && (s == null || name.indexOf(s) == 0)
           && (isMultiCharacter || ((String) token.value).equals(name)))
         htSet.put(name, Boolean.TRUE);
     }
-    e = htSet.keys();
-    while (e.hasMoreElements()) {
-      String name = e.nextElement();
+    for (Map.Entry<String, Boolean> entry : htSet.entrySet()) {
+      String name = entry.getKey();
       if (name.charAt(name.length() - 1) != 's'
           || !htSet.containsKey(name.substring(0, name.length() - 1)))
         cmds += (nCmds++ == 0 ? "" : ";") + name;
@@ -1322,10 +1318,9 @@ public class Token {
         : type.equals("mathfunc") ? mathfunc : scriptCommand);
     int notattr = (attr == setparam ? deprecatedparam : nada);
     List<String> v = new ArrayList<String>();
-    Enumeration<String> e = tokenMap.keys();
-    while (e.hasMoreElements()) {
-      String name = e.nextElement();
-      Token token = tokenMap.get(name);
+    for (Map.Entry<String, Token> entry : tokenMap.entrySet()) {
+      String name = entry.getKey();
+      Token token = entry.getValue();
       if (tokAttr(token.tok, attr) && (notattr == nada || !tokAttr(token.tok, notattr)))
         v.add(name);
     }
@@ -1342,7 +1337,7 @@ public class Token {
           && !tokAttr(tok, mathproperty) ? tok : nada);
   }
 
-  public static String completeCommand(Hashtable<String, Token> map, boolean isSet, 
+  public static String completeCommand(Map<String, Token> map, boolean isSet, 
                                        boolean asCommand, 
                                        String str, int n) {
     if (map == null)
@@ -1350,11 +1345,8 @@ public class Token {
     else
       asCommand = false;
     List<String> v = new ArrayList<String>();
-    Enumeration<String> e = map.keys();
-    String name;
     str = str.toLowerCase();
-    while (e.hasMoreElements()) {
-      name = e.nextElement();
+    for (String name : map.keySet()) {
       if (!name.startsWith(str))
         continue;
       int tok = getTokFromName(name);

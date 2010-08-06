@@ -606,7 +606,7 @@ public class ScriptEvaluator {
   private Object parameterExpression(int pt, int ptMax, String key,
                                      boolean ignoreComma, boolean asVector,
                                      int ptAtom, boolean isArrayItem,
-                                     Hashtable localVars, String localVar) throws ScriptException {
+                                     Map localVars, String localVar) throws ScriptException {
 
     /*
      * localVar is a variable designated at the beginning of the select(x,...)
@@ -983,8 +983,8 @@ public class ScriptEvaluator {
   }
 
   @SuppressWarnings("unchecked")
-  private Hashtable<String, Object> getHash(int i) throws ScriptException {
-    Hashtable<String, Object> ht = new Hashtable<String, Object>();
+  private Map<String, Object> getHash(int i) throws ScriptException {
+    Map<String, Object> ht = new Hashtable<String, Object>();
     for (i = i + 1; i < statementLength; i++) {
       if (tokAt(i) == Token.rightbrace)
         break;
@@ -1035,7 +1035,7 @@ public class ScriptEvaluator {
     if (indices == null && label != null && label.indexOf("%D") > 0)
       indices = viewer.getAtomIndices(bs);
     boolean asIdentity = (label == null || label.length() == 0);
-    Hashtable<String, Object> htValues = (isAtoms || asIdentity ? null : LabelToken
+    Map<String, Object> htValues = (isAtoms || asIdentity ? null : LabelToken
         .getBondLabelValues());
     LabelToken[] tokens = (asIdentity ? null : isAtoms ? LabelToken.compile(
         viewer, label, '\0', null) : LabelToken.compile(viewer, label, '\1',
@@ -2186,7 +2186,7 @@ public class ScriptEvaluator {
           fixed[j] = new Token(Token.matrix3f, v);
         } else if (v instanceof Matrix4f) {
           fixed[j] = new Token(Token.matrix4f, v);
-        } else if (v instanceof Hashtable<?,?>) {
+        } else if (v instanceof Map<?,?>) {
           fixed[j] = new Token(Token.hash, v);
         } else if (v instanceof String[]) {
           String[] sv = (String[]) v;
@@ -5618,7 +5618,7 @@ public class ScriptEvaluator {
         ScriptFunction trycmd = (ScriptFunction) getToken(1).value;
         if (isSyntaxCheck)
           return false;
-        Hashtable<String, ScriptVariable> cv = (Hashtable<String, ScriptVariable>) runFunction(trycmd, "try", null,
+        Map<String, ScriptVariable> cv = (Map<String, ScriptVariable>) runFunction(trycmd, "try", null,
             null, true).value;
         ScriptVariable ret = cv.get("_tryret");
         if (ret.value != null || ret.intValue != Integer.MAX_VALUE) { 
@@ -7581,7 +7581,7 @@ public class ScriptEvaluator {
             : data3.length];
         bsOut = new BitSet();
         if (data1.length == data2.length) {
-          Hashtable<Float, Float> ht = new Hashtable<Float, Float>();
+          Map<Float, Float> ht = new Hashtable<Float, Float>();
           for (int i = 0; i < data1.length; i++) {
             ht.put(Float.valueOf(data2[i]), Float.valueOf(data1[i]));
           }
@@ -7909,7 +7909,7 @@ public class ScriptEvaluator {
         - (viewer.getFileName().equals("zapped") ? 1 : 0);
     StringBuffer loadScript = new StringBuffer("load");
     int nFiles = 1;
-    Hashtable<String, Object> htParams = new Hashtable<String, Object>();
+    Map<String, Object> htParams = new Hashtable<String, Object>();
     // ignore optional file format
     String modelName = null;
     String filename = null;
@@ -12470,7 +12470,7 @@ public class ScriptEvaluator {
           t.value = new Hashtable<String, ScriptVariable>();
         }
         String hkey = ScriptVariable.sValue(vv);
-        ((Hashtable<String, ScriptVariable>) t.value).put(hkey, tv);
+        ((Map<String, ScriptVariable>) t.value).put(hkey, tv);
       } else {
         int index = ScriptVariable.iValue(vv);
         t.setSelectedValue(index, tv);
@@ -13722,8 +13722,7 @@ public class ScriptEvaluator {
     int modelIndex = viewer.getCurrentModelIndex();
     if (modelIndex < 0)
       error(ERROR_multipleModelsDisplayedNotOK, "MO isosurfaces");
-    Hashtable<String, Object> moData = (Hashtable<String, Object>) viewer.getModelAuxiliaryInfo(modelIndex,
-        "moData");
+    Map<String, Object> moData = (Map<String, Object>) viewer.getModelAuxiliaryInfo(modelIndex, "moData");
     if (moData == null)
       error(ERROR_moModelError);
     Integer n = (Integer) getShapeProperty(JmolConstants.SHAPE_MO, "moNumber");
@@ -14719,14 +14718,13 @@ public class ScriptEvaluator {
       if (modelIndex < 0)
         error(ERROR_multipleModelsDisplayedNotOK, "MO isosurfaces");
     }
-    Hashtable moData = (Hashtable) viewer.getModelAuxiliaryInfo(modelIndex,
-        "jmolSurfaceInfo");
+    Map moData = (Map) viewer.getModelAuxiliaryInfo(modelIndex, "jmolSurfaceInfo");
     int firstMoNumber = moNumber;
     if (moData != null && ((String) moData.get("surfaceDataType")).equals("mo")) {
       // loadShape(shape);
       // setShapeProperty(shape, "init", new Integer(modelIndex));
     } else {
-      moData = (Hashtable) viewer.getModelAuxiliaryInfo(modelIndex, "moData");
+      moData = (Map) viewer.getModelAuxiliaryInfo(modelIndex, "moData");
       if (moData == null)
         error(ERROR_moModelError);
       int lastMoNumber = (moData.containsKey("lastMoNumber") ? ((Integer) moData
@@ -14736,7 +14734,7 @@ public class ScriptEvaluator {
         moNumber = lastMoNumber - 1;
       else if (moNumber == Token.next)
         moNumber = lastMoNumber + 1;
-      List<Hashtable<String, Object>> mos = (List<Hashtable<String, Object>>) (moData.get("mos"));
+      List<Map<String, Object>> mos = (List<Map<String, Object>>) (moData.get("mos"));
       int nOrb = (mos == null ? 0 : mos.size());
       if (nOrb == 0)
         error(ERROR_moCoefficients);
@@ -14748,7 +14746,7 @@ public class ScriptEvaluator {
           moNumber = ((Integer) moData.get("HOMO")).intValue() + offset;
         } else {
           for (int i = 0; i < nOrb; i++) {
-            Hashtable<String, Object> mo = mos.get(i);
+            Map<String, Object> mo = mos.get(i);
             if (!mo.containsKey("occupancy"))
               error(ERROR_moOccupancy);
             if (((Float) mo.get("occupancy")).floatValue() == 0) {

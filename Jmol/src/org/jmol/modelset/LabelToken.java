@@ -25,8 +25,9 @@
 
 package org.jmol.modelset;
 
-import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
 
 import javax.vecmath.Tuple3f;
 
@@ -217,7 +218,7 @@ public class LabelToken {
 
   public static LabelToken[] compile(Viewer viewer, String strFormat,
                                      char chAtom,
-                                     Hashtable<String, Object> htValues) {
+                                     Map<String, Object> htValues) {
     if (strFormat.indexOf("%") < 0 || strFormat.length() < 2)
       return new LabelToken[] { new LabelToken(strFormat) };
     int n = 0;
@@ -242,7 +243,7 @@ public class LabelToken {
 
   private static int setToken(Viewer viewer, String strFormat, LabelToken lt,
                               int cch, int chAtom,
-                              Hashtable<String, Object> htValues) {
+                              Map<String, Object> htValues) {
     int ich = lt.pt + 1;
     char ch;
     if (strFormat.charAt(ich) == '-') {
@@ -273,9 +274,9 @@ public class LabelToken {
       }
     }
     if (htValues != null) {
-      Enumeration<String> keys = htValues.keys();
-      while (keys.hasMoreElements()) {
-        String key = keys.nextElement();
+      Iterator<String> keys = htValues.keySet().iterator();
+      while (keys.hasNext()) {
+        String key = keys.next();
         if (strFormat.indexOf(key) == ich) {
           lt.key = key;
           return ich + key.length();
@@ -469,8 +470,8 @@ public class LabelToken {
   }
 
   
-  public static Hashtable<String, Object> getBondLabelValues() {
-    Hashtable<String, Object> htValues = new Hashtable<String, Object>();
+  public static Map<String, Object> getBondLabelValues() {
+    Map<String, Object> htValues = new Hashtable<String, Object>();
     htValues.put("#", "");
     htValues.put("ORDER", "");
     htValues.put("TYPE", "");
@@ -480,7 +481,7 @@ public class LabelToken {
   }
 
   public static String formatLabel(Viewer viewer, Bond bond,
-                                   LabelToken[] tokens, Hashtable<String, Object> values,
+                                   LabelToken[] tokens, Map<String, Object> values,
                                    int[] indices) {
     values.put("#", "" + (bond.index + 1));
     values.put("ORDER", "" + bond.getOrderNumberAsString());
@@ -529,7 +530,7 @@ public class LabelToken {
     }
   }
 
-  public static void setValues(LabelToken[] tokens, Hashtable<String, Object> values) {
+  public static void setValues(LabelToken[] tokens, Map<String, Object> values) {
     for (int i = 0; i < tokens.length; i++) {
       LabelToken lt = tokens[i];
       if (lt == null)

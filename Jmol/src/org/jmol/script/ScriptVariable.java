@@ -25,9 +25,9 @@
 package org.jmol.script;
 
 import java.util.BitSet;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
@@ -104,7 +104,7 @@ public class ScriptVariable extends Token {
         || x instanceof Point4f    // stored as point4f
         || x instanceof Quaternion // stored as point4f
         || x instanceof String
-        || x instanceof Hashtable<?, ?>  // stored as Hashtable<String, ScriptVariable>
+        || x instanceof Map<?, ?>  // stored as Map<String, ScriptVariable>
         || x instanceof List<?>    // stored as list
         || x instanceof double[]   // stored as list
         || x instanceof float[]    // stored as list
@@ -161,7 +161,7 @@ public class ScriptVariable extends Token {
       return x.intValue == Integer.MAX_VALUE ? ((String[]) x.value).length
           : sizeOf(selectItem(x));
     case hash:
-      return ((Hashtable<String, ScriptVariable>) x.value).size();
+      return ((Map<String, ScriptVariable>) x.value).size();
     default:
       return 0;
     }
@@ -225,7 +225,7 @@ public class ScriptVariable extends Token {
       return new ScriptVariable(list, x);
     if (x instanceof Float[])
       return new ScriptVariable(listf, x);
-    if (x instanceof Hashtable)
+    if (x instanceof Map)
       return new ScriptVariable(hash, x);
     
     
@@ -280,7 +280,7 @@ public class ScriptVariable extends Token {
     tok = v.tok;
     switch (tok) {
     case hash:
-      value = new Hashtable<String, ScriptVariable>((Hashtable<String, ScriptVariable>) v.value);
+      value = new Hashtable<String, ScriptVariable>((Map<String, ScriptVariable>) v.value);
       break;
     case list:
       int n = ((String[])v.value).length;
@@ -527,12 +527,11 @@ public class ScriptVariable extends Token {
       return sb.toString();
     case hash:
       StringBuffer sbh = new StringBuffer();
-      Hashtable<String, ScriptVariable> ht = (Hashtable<String, ScriptVariable>) x.value;
-      Enumeration<String> e = ht.keys();
-      while (e.hasMoreElements()) {
-        String key = e.nextElement();
+      Map<String, ScriptVariable> ht = (Map<String, ScriptVariable>) x.value;
+      for (Map.Entry<String, ScriptVariable> entry : ht.entrySet()) {
+        String key = entry.getKey();
         sbh.append(key).append("\t:\t").append(
-            ScriptVariable.sValue(ScriptVariable.getVariable(ht.get(key))))
+            ScriptVariable.sValue(ScriptVariable.getVariable(entry.getValue())))
             .append("\n");
       }
       return sbh.toString();

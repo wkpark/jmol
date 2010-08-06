@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.BitSet;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
@@ -74,7 +75,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
 
   // returns:
   
-  private Hashtable<String, ScriptVariable> contextVariables;
+  private Map<String, ScriptVariable> contextVariables;
   private Token[][] aatokenCompiled;
   private short[] lineNumbers;
   private int[][] lineIndices;
@@ -156,7 +157,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     }
   }
   
-  static void addContextVariable(Hashtable<String, ScriptVariable> contextVariables, String ident) {
+  static void addContextVariable(Map<String, ScriptVariable> contextVariables, String ident) {
     contextVariables.put(ident, (new ScriptVariable(Token.string, "")).setName(ident));
   }
 

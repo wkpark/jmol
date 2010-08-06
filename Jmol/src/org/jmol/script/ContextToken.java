@@ -24,9 +24,10 @@
 package org.jmol.script;
 
 import java.util.Hashtable;
+import java.util.Map;
 
 class ContextToken extends Token {
-  Hashtable<String, ScriptVariable> contextVariables;
+  Map<String, ScriptVariable> contextVariables;
 
   ContextToken(int tok, int intValue, Object value) {
     super(tok, intValue, value);

@@ -55,7 +55,7 @@ public class ScriptFunction {
   List<String> names = new ArrayList<String>();
   int tok;
 
-  Hashtable<String, String> variables = new Hashtable<String, String>();
+  Map<String, String> variables = new Hashtable<String, String>();
   public boolean isVariable(String ident) {
     return variables.containsKey(ident);
   }

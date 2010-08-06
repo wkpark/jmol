@@ -143,6 +143,13 @@ public final class EnvelopeCalculation {
   private int atomCount;
   private FastBitSet emptySet;
   
+  /**
+   * 
+   * @param viewer
+   * @param atomCount
+   * @param mads
+   * @param asJavaBitSet
+   */
   public EnvelopeCalculation(AtomDataServer viewer, int atomCount, short[] mads, boolean asJavaBitSet) {
     this.viewer = viewer;
     this.atomCount = atomCount; //preliminary, for setFromBits()
@@ -540,7 +547,12 @@ public final class EnvelopeCalculation {
     return iter;
   }
   
-  public void deleteAtoms(int firstAtomDeleted, int nAtomsDeleted, BitSet bsAtoms) {
+  /**
+   * 
+   * @param firstAtomDeleted
+   * @param nAtomsDeleted
+   */
+  public void deleteAtoms(int firstAtomDeleted, int nAtomsDeleted) {
     dotsConvexMaps = (FastBitSet[]) ArrayUtil.deleteElements(dotsConvexMaps, firstAtomDeleted, nAtomsDeleted);
     dotsConvexMax = dotsConvexMaps.length;
     if (mads != null)

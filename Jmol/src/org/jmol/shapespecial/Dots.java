@@ -143,7 +143,7 @@ public class Dots extends AtomShape {
       int firstAtomDeleted = ((int[])((Object[])value)[2])[1];
       int nAtomsDeleted = ((int[])((Object[])value)[2])[2];
       BitSetUtil.deleteBits(bsOn, bs);
-      ec.deleteAtoms(firstAtomDeleted, nAtomsDeleted, bs);
+      ec.deleteAtoms(firstAtomDeleted, nAtomsDeleted);
       // pass to AtomShape via super
     }
 

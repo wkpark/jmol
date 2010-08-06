@@ -30,8 +30,8 @@ import org.jmol.util.TextFormat;
 
 import java.applet.Applet;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -181,8 +181,8 @@ class StatusManager {
    * 
    */
   
-  private Hashtable<String, List<List<Object>>> messageQueue = new Hashtable<String, List<List<Object>>>();
-  Hashtable<String, List<List<Object>>> getMessageQueue() {
+  private Map<String, List<List<Object>>> messageQueue = new Hashtable<String, List<List<Object>>>();
+  Map<String, List<List<Object>>> getMessageQueue() {
     return messageQueue;
   }
   
@@ -249,14 +249,14 @@ class StatusManager {
     if (resetMessageQueue(statusNameList)) {
       return msgList;
     }
-    Enumeration<String> e = messageQueue.keys();
-    while (e.hasMoreElements()) {
-      String statusName = e.nextElement();
+    Iterator<String> e = messageQueue.keySet().iterator();
+    while (e.hasNext()) {
+      String statusName = e.next();
       List<List<Object>> record = messageQueue.remove(statusName);
       if (asVector) {
         ((List) msgList).add(record);
       } else {
-        ((Hashtable)msgList).put(statusName, record);
+        ((Map) msgList).put(statusName, record);
       }
     }
     return msgList;

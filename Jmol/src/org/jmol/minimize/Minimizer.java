@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import org.jmol.api.JmolEdge;
 import org.jmol.api.MinimizerInterface;
@@ -116,7 +117,7 @@ public class Minimizer implements MinimizerInterface {
     return null;
   }
   
-  private Hashtable<String, Object[]> constraintMap;
+  private Map<String, Object[]> constraintMap;
 
   private void addConstraint(Object[] c) {
     if (c == null)

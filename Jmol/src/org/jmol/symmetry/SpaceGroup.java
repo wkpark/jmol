@@ -27,6 +27,7 @@ package org.jmol.symmetry;
 
 import java.util.Arrays;
 import java.util.Hashtable;
+import java.util.Map;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Matrix4f;
@@ -347,7 +348,7 @@ class SpaceGroup {
     return sg;
   }
   
-  Hashtable<String, Integer> xyzList = new Hashtable<String, Integer>();
+  Map<String, Integer> xyzList = new Hashtable<String, Integer>();
   private int addOperation(String xyz0, int opId) {
     if (xyz0 == null || xyz0.length() < 3) {
       xyzList = new Hashtable<String, Integer>();

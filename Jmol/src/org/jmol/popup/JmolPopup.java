@@ -121,7 +121,7 @@ public class JmolPopup extends SimplePopup {
     updateFileMenu();
     updateElementsComputedMenu(viewer.getElementsPresentBitSet(modelIndex));
     updateHeteroComputedMenu(viewer.getHeteroList(modelIndex));
-    updateSurfMoComputedMenu((Hashtable<String, Object>) modelInfo.get("moData"));
+    updateSurfMoComputedMenu((Map<String, Object>) modelInfo.get("moData"));
     updateFileTypeDependentMenus();
     updatePDBComputedMenus();
     updateMode = UPDATE_CONFIG;
@@ -213,7 +213,7 @@ public class JmolPopup extends SimplePopup {
   }
 
   @SuppressWarnings("unchecked")
-  void updateSurfMoComputedMenu(Hashtable<String, Object> moData) {
+  void updateSurfMoComputedMenu(Map<String, Object> moData) {
     Object menu = htMenus.get("surfMoComputedMenu");
     if (menu == null)
       return;
@@ -221,7 +221,7 @@ public class JmolPopup extends SimplePopup {
     removeAll(menu);
     if (moData == null)
       return;
-    List<Hashtable<String, Object>> mos = (List<Hashtable<String, Object>>) (moData.get("mos"));
+    List<Map<String, Object>> mos = (List<Map<String, Object>>) (moData.get("mos"));
     int nOrb = (mos == null ? 0 : mos.size());
     if (nOrb == 0)
       return;
@@ -242,7 +242,7 @@ public class JmolPopup extends SimplePopup {
         htMenus.put(id, subMenu);
         pt = 1;
       }
-      Hashtable<String, Object> mo = mos.get(i);
+      Map<String, Object> mo = mos.get(i);
       String entryName = "#" + (i + 1) + " " 
           + (mo.containsKey("type") ? (String)mo.get("type") + " " : "")
           + (mo.containsKey("symmetry") ? (String)mo.get("symmetry") + " ": "")
@@ -351,7 +351,7 @@ public class JmolPopup extends SimplePopup {
     enableMenu(menu, false);
     if (!isSymmetry || modelIndex < 0)
       return;
-    Hashtable<String, Object> info = (Hashtable<String, Object>) viewer.getProperty("DATA_API", "spaceGroupInfo", null);
+    Map<String, Object> info = (Map<String, Object>) viewer.getProperty("DATA_API", "spaceGroupInfo", null);
     if (info == null)
       return;
     Object[][] infolist = (Object[][]) info.get("operations");
@@ -525,7 +525,7 @@ public class JmolPopup extends SimplePopup {
         for (int i = 0; i < nBiomolecules; i++) {
           String script = (isMultiFrame ? ""
               : "save orientation;load \"\" FILTER \"biomolecule " + (i + 1) + "\";restore orientation;");
-          int nAtoms = ((Integer) ((Hashtable<String, Object>) biomolecules.get(i)).get("atomCount")).intValue();
+          int nAtoms = ((Integer) ((Map<String, Object>) biomolecules.get(i)).get("atomCount")).intValue();
           String entryName = GT._(getMenuText(isMultiFrame ? "biomoleculeText"
               : "loadBiomoleculeText"), new Object[] { Integer.valueOf(i + 1),
               Integer.valueOf(nAtoms) });

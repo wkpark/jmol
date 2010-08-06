@@ -122,6 +122,7 @@ import java.io.StringReader;
 import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
@@ -306,7 +307,7 @@ public class SurfaceGenerator {
     return params.cutoff;
   }
   
-  public Hashtable<String, Object> getMoData() {
+  public Map<String, Object> getMoData() {
     return params.moData;
   }
   
@@ -852,7 +853,7 @@ public class SurfaceGenerator {
     }
 
     if ("moData" == propertyName) {
-      params.moData = (Hashtable<String, Object>) value;
+      params.moData = (Map<String, Object>) value;
       return true;
     }
 
@@ -1095,8 +1096,8 @@ public class SurfaceGenerator {
       volumeData = (VolumeData) value;
       return new VolumeDataReader(this);
     }
-    if (value instanceof Hashtable) {
-      volumeData = (VolumeData) ((Hashtable<String, Object>) value).get("volumeData");
+    if (value instanceof Map) {
+      volumeData = (VolumeData) ((Map<String, Object>) value).get("volumeData");
       return new VolumeDataReader(this);
     }
     String data = null;

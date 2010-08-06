@@ -27,6 +27,7 @@ import java.awt.Component;
 import java.awt.Image;
 import java.util.BitSet;
 import java.util.Hashtable;
+import java.util.Map;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3i;
@@ -2822,7 +2823,7 @@ final public class Graphics3D implements JmolRendererInterface {
     0xFFF6F675, // yellowtint
   };
 
-  private static final Hashtable<String, Integer> mapJavaScriptColors = new Hashtable<String, Integer>();
+  private static final Map<String, Integer> mapJavaScriptColors = new Hashtable<String, Integer>();
   static {
     for (int i = colorNames.length; --i >= 0; )
       mapJavaScriptColors.put(colorNames[i], Integer.valueOf(colorArgbs[i]));

@@ -38,7 +38,6 @@ import org.jmol.atomdata.RadiusData;
 import org.jmol.shape.Shape;
 
 import java.util.BitSet;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -283,7 +282,7 @@ abstract public class ModelSet extends ModelCollection {
   }
 
   /*
-  private Hashtable userProperties;
+  private Map userProperties;
 
   void putUserProperty(String name, Object property) {
     if (userProperties == null)
@@ -338,8 +337,8 @@ abstract public class ModelSet extends ModelCollection {
   }
 
   @SuppressWarnings("unchecked")
-  public Hashtable<String, Object> getPointGroupInfo(BitSet bsAtoms) {
-    return (Hashtable<String, Object>) calculatePointGroupForFirstModel(bsAtoms, false,
+  public Map<String, Object> getPointGroupInfo(BitSet bsAtoms) {
+    return (Map<String, Object>) calculatePointGroupForFirstModel(bsAtoms, false,
         false, true, null, 0, 0);
   }
   

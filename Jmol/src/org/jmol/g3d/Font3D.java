@@ -123,7 +123,7 @@ final public class Font3D {
   }
 
   private static Map<? extends Attribute, ?> getFontMap(String fontFace, int idFontStyle, float fontSize) {
-    Hashtable<Attribute, Object> fontMap = new Hashtable<Attribute, Object>();
+    Map<Attribute, Object> fontMap = new Hashtable<Attribute, Object>();
     fontMap.put(TextAttribute.FAMILY, fontFace);
     if ((idFontStyle & 1) == 1)
       fontMap.put(TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD);

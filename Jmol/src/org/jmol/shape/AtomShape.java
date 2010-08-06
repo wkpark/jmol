@@ -27,6 +27,7 @@ package org.jmol.shape;
 
 import java.util.BitSet;
 import java.util.Hashtable;
+import java.util.Map;
 
 import org.jmol.atomdata.RadiusData;
 import org.jmol.g3d.Graphics3D;
@@ -175,8 +176,8 @@ public abstract class AtomShape extends Shape {
   public String getShapeState() {
     if (!isActive)
       return "";
-    Hashtable<String, BitSet> temp = new Hashtable<String, BitSet>();
-    Hashtable<String, BitSet> temp2 = new Hashtable<String, BitSet>();
+    Map<String, BitSet> temp = new Hashtable<String, BitSet>();
+    Map<String, BitSet> temp2 = new Hashtable<String, BitSet>();
     String type = JmolConstants.shapeClassBases[shapeID];
     if (bsSizeSet != null)
       for (int i = bsSizeSet.nextSetBit(0); i >= 0; i = bsSizeSet.nextSetBit(i + 1))

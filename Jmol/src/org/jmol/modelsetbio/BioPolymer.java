@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 public abstract class BioPolymer extends Polymer {
 
@@ -420,23 +421,23 @@ public abstract class BioPolymer extends Polymer {
   }
 
   @Override
-  public Hashtable<String, Object> getPolymerInfo(BitSet bs) {
-    Hashtable<String, Object> returnInfo = new Hashtable<String, Object>();
-    List<Hashtable<String, Object>> info = new ArrayList<Hashtable<String,Object>>();
-    List<Hashtable<String, Object>> structureInfo = null;
+  public Map<String, Object> getPolymerInfo(BitSet bs) {
+    Map<String, Object> returnInfo = new Hashtable<String, Object>();
+    List<Map<String, Object>> info = new ArrayList<Map<String,Object>>();
+    List<Map<String, Object>> structureInfo = null;
     ProteinStructure ps;
     ProteinStructure psLast = null;
     int n = 0;
     for (int i = 0; i < monomerCount; i++) {
       if (bs.get(monomers[i].leadAtomIndex)) {
-        Hashtable<String, Object> monomerInfo = monomers[i].getMyInfo();
+        Map<String, Object> monomerInfo = monomers[i].getMyInfo();
         monomerInfo.put("monomerIndex", Integer.valueOf(i));
         info.add(monomerInfo);
         if ((ps = getProteinStructure(i)) != null && ps != psLast) {
-          Hashtable<String, Object> psInfo = new Hashtable<String, Object>();
+          Map<String, Object> psInfo = new Hashtable<String, Object>();
           (psLast = ps).getInfo(psInfo);
           if (structureInfo == null) {
-            structureInfo = new ArrayList<Hashtable<String,Object>>();
+            structureInfo = new ArrayList<Map<String,Object>>();
           }
           psInfo.put("index", Integer.valueOf(n++));
           structureInfo.add(psInfo);

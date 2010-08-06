@@ -120,6 +120,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
@@ -1081,10 +1082,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   }
 
   @Override
-  public List<Hashtable<String, Object>> getShapeDetail() {
-    List<Hashtable<String, Object>> V = new ArrayList<Hashtable<String,Object>>();
+  public List<Map<String, Object>> getShapeDetail() {
+    List<Map<String, Object>> V = new ArrayList<Map<String,Object>>();
     for (int i = 0; i < meshCount; i++) {
-      Hashtable<String, Object> info = new Hashtable<String, Object>();
+      Map<String, Object> info = new Hashtable<String, Object>();
       IsosurfaceMesh mesh = isomeshes[i];
       if (mesh == null || mesh.vertices == null)
         continue;

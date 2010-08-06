@@ -307,7 +307,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
     if (selectAll || subFileName != null)
       haveManifest = false;
     List vCollections = new ArrayList();
-    Hashtable<String, Object> htCollections = (haveManifest ? new Hashtable<String, Object>() : null);
+    Map<String, Object> htCollections = (haveManifest ? new Hashtable<String, Object>() : null);
     int nFiles = 0;
     // 0 entry is manifest
 

@@ -1,12 +1,12 @@
 package org.jmol.viewer.binding;
 
-
 import java.awt.Event;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
@@ -39,8 +39,8 @@ abstract public class Binding {
     CTRL_ALT | SHIFT | LEFT | MIDDLE | RIGHT | WHEEL;
   
   private String name;
-  private Hashtable<String, Object> bindings = new Hashtable<String, Object>();
-  public Hashtable<String, Object> getBindings() {
+  private Map<String, Object> bindings = new Hashtable<String, Object>();
+  public Map<String, Object> getBindings() {
     return bindings;
   }
     
@@ -78,10 +78,10 @@ abstract public class Binding {
   }
   
   public final void unbindJmolAction(int jmolAction) {
-    Enumeration<String> e = bindings.keys();
+    Iterator<String> e = bindings.keySet().iterator();
     String skey = "\t" + jmolAction;
-    while (e.hasMoreElements()) {
-      String key = e.nextElement();
+    while (e.hasNext()) {
+      String key = e.next();
       if (key.endsWith(skey))
         removeBinding(key);
     }
@@ -99,20 +99,20 @@ abstract public class Binding {
   }
   
   public final void unbindUserAction(String script) {
-    Enumeration<String> e = bindings.keys();
+    Iterator<String> e = bindings.keySet().iterator();
     String skey = "\t" + script;
-    while (e.hasMoreElements()) {
-      String key = e.nextElement();
+    while (e.hasNext()) {
+      String key = e.next();
       if (key.endsWith(skey))
         removeBinding(key);
     }
   }
   
   public final void unbindMouseAction(int mouseAction) {
-    Enumeration<String> e = bindings.keys();
+    Iterator<String> e = bindings.keySet().iterator();
     String skey = mouseAction + "\t";
-    while (e.hasMoreElements()) {
-      String key = e.nextElement();
+    while (e.hasNext()) {
+      String key = e.next();
       if (key.startsWith(skey))
         removeBinding(key);
     }
@@ -187,9 +187,9 @@ abstract public class Binding {
       names[i] = (qlow == null
           || actionNames[i].toLowerCase().indexOf(qlow) >= 0 ? new ArrayList<String>()
           : null);
-    Enumeration<String> e = bindings.keys();
-    while (e.hasMoreElements()) {
-      Object obj = bindings.get(e.nextElement());
+    Iterator<String> e = bindings.keySet().iterator();
+    while (e.hasNext()) {
+      Object obj = bindings.get(e.next());
       if (!(obj instanceof int[]))
         continue;
       int[] info = (int[]) obj;

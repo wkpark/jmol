@@ -43,6 +43,7 @@ import java.util.BitSet;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 abstract class TransformManager {
 
@@ -706,8 +707,8 @@ abstract class TransformManager {
     }
   }
 
-  Hashtable<String, Object> getOrientationInfo() {
-    Hashtable<String, Object> info = new Hashtable<String, Object>();
+  Map<String, Object> getOrientationInfo() {
+    Map<String, Object> info = new Hashtable<String, Object>();
     info.put("moveTo", getMoveToText(1, false));
     info.put("center", "center " + getCenterText());
     info.put("centerPt", fixedRotationCenter);

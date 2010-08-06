@@ -23,8 +23,8 @@
  */
 package org.jmol.util;
 
-import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Map;
 
 import org.jmol.viewer.JmolConstants;
 import org.jmol.g3d.Graphics3D;
@@ -85,7 +85,7 @@ import org.jmol.util.ArrayUtil;
   private static int[] thisScale = new int[] {0xFF808080};
   private static String thisName = "scheme";
   private static boolean isColorIndex;
-  private static Hashtable<String, int[]> schemes = new Hashtable<String, int[]>();
+  private static Map<String, int[]> schemes = new Hashtable<String, int[]>();
   private static int[] rasmolScale = new int[JmolConstants.argbsCpk.length];
   private static int[] argbsCpk = JmolConstants.argbsCpk;
   private static int[] argbsRoygb = JmolConstants.argbsRoygbScale;
@@ -264,12 +264,11 @@ import org.jmol.util.ArrayUtil;
   
   public final static String getState(StringBuffer sfunc) {
     StringBuffer s = new StringBuffer();
-    Enumeration<String> e = schemes.keys();
     int n = 0;
-    while (e.hasMoreElements()) {
-      String name = e.nextElement();
+    for (Map.Entry<String, int[]> entry : schemes.entrySet()) {
+      String name = entry.getKey();
       if (name.length() > 0 & n++ >= 0) 
-        s.append("color \"" + name + "=" + getColorSchemeList(schemes.get(name)) + "\";\n");
+        s.append("color \"" + name + "=" + getColorSchemeList(entry.getValue()) + "\";\n");
     }
     //String colors = getColorSchemeList(getColorSchemeArray(USER));
     //if (colors.length() > 0)

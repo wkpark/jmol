@@ -28,6 +28,7 @@ package org.jmol.smiles;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Hashtable;
+import java.util.Map;
 
 import org.jmol.util.Elements;
 import org.jmol.util.TextFormat;
@@ -114,7 +115,7 @@ public class SmilesParser {
   private boolean isSmarts;
   private boolean isBioSequence;
   private char bioType;
-  private Hashtable<Integer, SmilesBond> ringBonds = new Hashtable<Integer, SmilesBond>();
+  private Map<Integer, SmilesBond> ringBonds = new Hashtable<Integer, SmilesBond>();
   private int braceCount;
   private int branchLevel;
 
@@ -583,7 +584,7 @@ public class SmilesParser {
     return index;
   }
 
-  Hashtable<String, SmilesMeasure> htMeasures = new Hashtable<String, SmilesMeasure>();
+  Map<String, SmilesMeasure> htMeasures = new Hashtable<String, SmilesMeasure>();
   
   private void parseMeasure(SmilesSearch molecule, String strMeasure,
                             SmilesAtom currentAtom)

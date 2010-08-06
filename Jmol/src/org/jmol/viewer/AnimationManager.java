@@ -30,6 +30,7 @@ import org.jmol.modelset.ModelSet;
 
 import java.util.Hashtable;
 import java.util.BitSet;
+import java.util.Map;
 
 class AnimationManager {
 
@@ -187,8 +188,8 @@ class AnimationManager {
     initializePointers(0);
   }
 
-  Hashtable<String, Object> getAnimationInfo(){
-    Hashtable<String, Object> info = new Hashtable<String, Object>();
+  Map<String, Object> getAnimationInfo(){
+    Map<String, Object> info = new Hashtable<String, Object>();
     info.put("firstModelIndex", Integer.valueOf(firstModelIndex));
     info.put("lastModelIndex", Integer.valueOf(lastModelIndex));
     info.put("animationDirection", Integer.valueOf(animationDirection));

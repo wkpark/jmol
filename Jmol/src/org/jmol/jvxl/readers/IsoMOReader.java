@@ -23,7 +23,7 @@
  */
 package org.jmol.jvxl.readers;
 
-import java.util.Hashtable;
+import java.util.Map;
 
 import java.util.List;
 
@@ -51,7 +51,7 @@ class IsoMOReader extends AtomDataReader {
       fixTitleLine(i, params.mo);
   }
   
-  private void fixTitleLine(int iLine, Hashtable<String, Object> mo) {
+  private void fixTitleLine(int iLine, Map<String, Object> mo) {
     // see Parameters.Java for defaults here. 
     if (!fixTitleLine(iLine))
        return;
@@ -85,18 +85,18 @@ class IsoMOReader extends AtomDataReader {
   protected void generateCube() {
     volumeData.voxelData = voxelData = new float[nPointsX][nPointsY][nPointsZ];
     MOCalculationInterface q = (MOCalculationInterface) Interface.getOptionInterface("quantum.MOCalculation");
-    Hashtable<String, Object> moData = params.moData;
+    Map<String, Object> moData = params.moData;
     float[] coef = params.moCoefficients; 
     int[][] dfCoefMaps = params.dfCoefMaps;
 
     if (coef == null) {
       // electron density calc
-      List<Hashtable<String, Object>> mos = (List<Hashtable<String, Object>>) moData.get("mos");
+      List<Map<String, Object>> mos = (List<Map<String, Object>>) moData.get("mos");
       if (mos == null)
         return;
       for (int i = params.qm_moNumber; --i >= 0; ) {
         Logger.info(" generating isosurface data for MO " + (i + 1));
-        Hashtable<String, Object> mo = mos.get(i);
+        Map<String, Object> mo = mos.get(i);
         coef = (float[]) mo.get("coefficients");
         dfCoefMaps = (int[][]) mo.get("dfCoefMaps");
         getData(q, moData, coef, dfCoefMaps, params.theProperty);
@@ -108,7 +108,7 @@ class IsoMOReader extends AtomDataReader {
   }
   
   @SuppressWarnings("unchecked")
-  private void getData(MOCalculationInterface q, Hashtable<String, Object> moData,
+  private void getData(MOCalculationInterface q, Map<String, Object> moData,
                        float[] coef, int[][] dfCoefMaps, float[] nuclearCharges) {
     switch (params.qmOrbitalType) {
     case Parameters.QM_TYPE_GAUSSIAN:

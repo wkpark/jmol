@@ -31,7 +31,7 @@ import org.jmol.script.ScriptVariable;
 import org.jmol.script.Token;
 
 import java.util.BitSet;
-import java.util.Hashtable;
+import java.util.Map;
 
 import javax.vecmath.Point3f;
 
@@ -90,7 +90,7 @@ public abstract class MeshCollection extends Shape {
     return currentMesh;
   }
 
-  protected Hashtable<String, Mesh> htObjects;
+  protected Map<String, Mesh> htObjects;
   
   public void allocMesh(String thisID, Mesh m) {
     // this particular version is only run from privately;
@@ -165,7 +165,7 @@ public abstract class MeshCollection extends Shape {
     if ("variables" == propertyName) {
       if (currentMesh != null && currentMesh.scriptCommand != null && !currentMesh.scriptCommand.startsWith("{"))
         currentMesh.scriptCommand = "{\n" 
-          + StateManager.getVariableList((Hashtable<String, ScriptVariable>) value, 0, false) + "\n" + currentMesh.scriptCommand;
+          + StateManager.getVariableList((Map<String, ScriptVariable>) value, 0, false) + "\n" + currentMesh.scriptCommand;
       return;
     }
     if ("commandOption" == propertyName) {

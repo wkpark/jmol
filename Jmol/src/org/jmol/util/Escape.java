@@ -27,9 +27,9 @@ package org.jmol.util;
 
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
@@ -72,8 +72,8 @@ public class Escape {
       return toJSON(null, x);
     if (x instanceof Point3f[])
       return escapeArray(x);
-    if (x instanceof Hashtable)
-      return escape((Hashtable) x);
+    if (x instanceof Map)
+      return escape((Map) x);
     return x.toString();
   }
 
@@ -493,15 +493,14 @@ public class Escape {
    return sb.toString();
   }
 
-  public static String escape(Hashtable<String, Object> ht) {
+  public static String escape(Map<String, Object> ht) {
     StringBuffer sb = new StringBuffer();
     sb.append("{ ");
     String sep = "";
-    Enumeration<String> e = ht.keys();
-    while (e.hasMoreElements()) {
-      String key = e.nextElement();
+    for (Map.Entry<String, Object> entry : ht.entrySet()) {
+      String key = entry.getKey();
       sb.append(sep).append(escape(key)).append(':');
-      Object val = ht.get(key);
+      Object val = entry.getValue();
       sb.append(((ScriptVariable)val).escape());
       sep = ","; 
     }
@@ -641,13 +640,13 @@ public class Escape {
         .append(((Point4f) info).w).append("]");
       return packageJSON(infoType, sb);
     }
-    if (info instanceof Hashtable) {
+    if (info instanceof Map) {
       sb.append("{ ");
-      Enumeration e = ((Hashtable) info).keys();
-      while (e.hasMoreElements()) {
-        String key = (String) e.nextElement();
+      Iterator e = ((Map) info).keySet().iterator();
+      while (e.hasNext()) {
+        String key = (String) e.next();
         sb.append(sep)
-            .append(packageJSON(key, toJSON(null, ((Hashtable) info).get(key))));
+            .append(packageJSON(key, toJSON(null, ((Map) info).get(key))));
         sep = ",";
       }
       sb.append(" }");
@@ -741,12 +740,12 @@ public class Escape {
       sb.append(escape((AxisAngle4f) info));
       return packageReadable(name, null, sb);
     }
-    if (info instanceof Hashtable) {
-      Enumeration e = ((Hashtable) info).keys();
-      while (e.hasMoreElements()) {
-        String key = (String) e.nextElement();
+    if (info instanceof Map) {
+      Iterator e = ((Map) info).keySet().iterator();
+      while (e.hasNext()) {
+        String key = (String) e.next();
         sb.append(toReadable((name == null ? "" : name + ".") + key,
-            ((Hashtable) info).get(key)));
+            ((Map) info).get(key)));
       }
       return sb.toString();
     }

@@ -30,6 +30,7 @@ import org.jmol.i18n.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Hashtable;
+import java.util.Map;
 
 import javax.swing.*;
 import javax.swing.text.*;
@@ -56,8 +57,8 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   private JMenuBar menubar; // requiring Swing here for now
   private JButton clearOutButton, clearInButton, loadButton;
 
-  protected Hashtable<String, JMenuItem> map = new Hashtable<String, JMenuItem>();
-  protected Hashtable<String, String> labels = null;
+  protected Map<String, JMenuItem> map = new Hashtable<String, JMenuItem>();
+  protected Map<String, String> labels = null;
   
   
   static {
@@ -401,8 +402,8 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
 
   /// Graphical User Interface for applet ///
   
-  private Hashtable<String, String> setupLabels() {
-      Hashtable<String, String> labels = new Hashtable<String, String>();
+  private Map<String, String> setupLabels() {
+      Map<String, String> labels = new Hashtable<String, String>();
       labels.put("help", GT._("&Help"));
       labels.put("search", GT._("&Search..."));
       labels.put("commands", GT._("&Commands"));

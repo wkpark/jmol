@@ -47,7 +47,6 @@ import javax.vecmath.Vector3f;
 
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -161,7 +160,7 @@ public final class ModelLoader extends ModelSet {
     }
   }
 
-  private final Hashtable<Object, Atom> htAtomMap = new Hashtable<Object, Atom>();
+  private final Map<Object, Atom> htAtomMap = new Hashtable<Object, Atom>();
 
   private final static int defaultGroupCount = 32;
   private Chain[] chainOf;
@@ -321,14 +320,13 @@ public final class ModelLoader extends ModelSet {
     int modelAtomCount = 0;
     for (int i = baseModelIndex; i < modelCount; atomIndex += modelAtomCount, i++) {
       modelAtomCount = models[i].bsAtoms.cardinality();
-      Hashtable<String, String> atomProperties = (Hashtable<String, String>) getModelAuxiliaryInfo(i,
+      Map<String, String> atomProperties = (Hashtable<String, String>) getModelAuxiliaryInfo(i,
           "atomProperties");
       if (atomProperties == null)
         continue;
-      Enumeration<String> e = atomProperties.keys();
-      while (e.hasMoreElements()) {
-        String key = e.nextElement();
-        String value = atomProperties.get(key);
+      for (Map.Entry<String, String> entry : atomProperties.entrySet()) {
+        String key = entry.getKey();
+        String value = entry.getValue();
         // no deletions yet...
         BitSet bs = getModelAtomBitSetIncludingDeleted(i, false);
         key = "property_" + key.toLowerCase();

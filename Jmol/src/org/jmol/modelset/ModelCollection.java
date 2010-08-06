@@ -1139,7 +1139,7 @@ abstract public class ModelCollection extends BondCollection {
     }
 
     /*    Hashtable toHashtable() {
-     Hashtable info = new Hashtable();
+     Map info = new Hashtable();
      info.put("type", typeName);
      info.put("startChainID", startChainID + "");
      info.put("startSeqcode", new Integer(startSeqcode));

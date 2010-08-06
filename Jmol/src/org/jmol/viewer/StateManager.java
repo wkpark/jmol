@@ -28,7 +28,7 @@ import javax.vecmath.Matrix3f;
 
 import java.util.Hashtable;
 import java.util.BitSet;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.jmol.g3d.Graphics3D;
@@ -110,7 +110,7 @@ public class StateManager {
   }
 
   Viewer viewer;
-  Hashtable<String, Object> saved = new Hashtable<String, Object>();
+  Map<String, Object> saved = new Hashtable<String, Object>();
   String lastOrientation = "";
   String lastConnections = "";
   String lastSelected = "";
@@ -198,16 +198,16 @@ public class StateManager {
 
   String listSavedStates() {
     String names = "";
-    Enumeration<String> e = saved.keys();
-    while (e.hasMoreElements())
-      names += "\n" + e.nextElement();
+    Iterator<String> e = saved.keySet().iterator();
+    while (e.hasNext())
+      names += "\n" + e.next();
     return names;
   }
 
   private void deleteSavedType(String type) {
-    Enumeration<String> e = saved.keys();
-    while (e.hasMoreElements()) {
-      String name = e.nextElement();
+    Iterator<String> e = saved.keySet().iterator();
+    while (e.hasNext()) {
+      String name = e.next();
       if (name.startsWith(type)) {
         saved.remove(name);
         Logger.debug("deleted " + name);
@@ -309,9 +309,9 @@ public class StateManager {
       return (o == null ? "" : o.getMoveToText(true));      
     } 
     StringBuffer sb = new StringBuffer();
-    Enumeration<String> e = saved.keys();
-    while (e.hasMoreElements()) {
-       String name = e.nextElement();
+    Iterator<String> e = saved.keySet().iterator();
+    while (e.hasNext()) {
+       String name = e.next();
        if (!name.startsWith("Orientation_")) {
          continue;
        }
@@ -498,10 +498,10 @@ public class StateManager {
         "angstroms;au;bohr;nanometers;nm;picometers;pm");
   }
 
-  private final static Hashtable<String, ScriptFunction> staticFunctions = new Hashtable<String, ScriptFunction>();
-  private Hashtable<String, ScriptFunction> localFunctions = new Hashtable<String, ScriptFunction>();
+  private final static Map<String, ScriptFunction> staticFunctions = new Hashtable<String, ScriptFunction>();
+  private Map<String, ScriptFunction> localFunctions = new Hashtable<String, ScriptFunction>();
 
-  Hashtable<String, ScriptFunction> getFunctions(boolean isStatic) {
+  Map<String, ScriptFunction> getFunctions(boolean isStatic) {
     return (isStatic ? staticFunctions : localFunctions);
   }
 
@@ -518,12 +518,12 @@ public class StateManager {
     if (isGeneric)
       selectedFunction = selectedFunction.substring(0, pt);
     selectedFunction = selectedFunction.toLowerCase();
-    Hashtable<String, ScriptFunction> ht = getFunctions(isStatic);
+    Map<String, ScriptFunction> ht = getFunctions(isStatic);
     String[] names = new String[ht.size()];
-    Enumeration<String> e = ht.keys();
+    Iterator<String> e = ht.keySet().iterator();
     int n = 0;
-    while (e.hasMoreElements()) {
-      String name = e.nextElement();
+    while (e.hasNext()) {
+      String name = e.next();
       if (selectedFunction.length() == 0 && !name.startsWith("_")
           || name.equalsIgnoreCase(selectedFunction) || isGeneric
           && name.toLowerCase().indexOf(selectedFunction) == 0)
@@ -640,10 +640,10 @@ public class StateManager {
 
   class GlobalSettings {
 
-    Hashtable<String, Object> htNonbooleanParameterValues;
-    Hashtable<String, Boolean> htBooleanParameterFlags;
-    Hashtable<String, Boolean> htPropertyFlagsRemoved;
-    Hashtable<String, ScriptVariable> htUserVariables = new Hashtable<String, ScriptVariable>();
+    Map<String, Object> htNonbooleanParameterValues;
+    Map<String, Boolean> htBooleanParameterFlags;
+    Map<String, Boolean> htPropertyFlagsRemoved;
+    Map<String, ScriptVariable> htUserVariables = new Hashtable<String, ScriptVariable>();
 
     /*
      *  Mostly these are just saved and restored directly from Viewer.
@@ -661,9 +661,9 @@ public class StateManager {
     }
 
     void clear() {
-      Enumeration<String> e = htUserVariables.keys();
-      while (e.hasMoreElements()) {
-        String key = e.nextElement();
+      Iterator<String> e = htUserVariables.keySet().iterator();
+      while (e.hasNext()) {
+        String key = e.next();
         if (key.charAt(0) == '@' || key.startsWith("site_"))
           htUserVariables.remove(key);
       }
@@ -1465,25 +1465,25 @@ public class StateManager {
 
     String getAllSettings(String prefix) {
       StringBuffer commands = new StringBuffer("");
-      Enumeration<String> e;
+      Iterator<String> e;
       String key;
       String[] list = new String[htBooleanParameterFlags.size()
           + htNonbooleanParameterValues.size()];
       //booleans
       int n = 0;
       String _prefix = "_" + prefix;
-      e = htBooleanParameterFlags.keys();
-      while (e.hasMoreElements()) {
-        key = e.nextElement();
+      e = htBooleanParameterFlags.keySet().iterator();
+      while (e.hasNext()) {
+        key = e.next();
         if (prefix == null || key.indexOf(prefix) == 0
             || key.indexOf(_prefix) == 0)
           list[n++] = (key.indexOf("_") == 0 ? key + " = " : "set " + key + " ")
               + htBooleanParameterFlags.get(key);
       }
       //save as _xxxx if you don't want "set" to be there first
-      e = htNonbooleanParameterValues.keys();
-      while (e.hasMoreElements()) {
-        key = e.nextElement();
+      e = htNonbooleanParameterValues.keySet().iterator();
+      while (e.hasNext()) {
+        key = e.next();
         if (key.charAt(0) != '@'
             && (prefix == null || key.indexOf(prefix) == 0 || key
                 .indexOf(_prefix) == 0)) {
@@ -1512,18 +1512,18 @@ public class StateManager {
         commands.append("function _setVariableState() {\n\n");
       }
       int n = 0;
-      Enumeration<String> e;
+      Iterator<String> e;
       String key;
       //booleans
-      e = htBooleanParameterFlags.keys();
-      while (e.hasMoreElements()) {
-        key = e.nextElement();
+      e = htBooleanParameterFlags.keySet().iterator();
+      while (e.hasNext()) {
+        key = e.next();
         if (doReportProperty(key))
           list[n++] = "set " + key + " " + htBooleanParameterFlags.get(key);
       }
-      e = htNonbooleanParameterValues.keys();
-      while (e.hasMoreElements()) {
-        key = e.nextElement();
+      e = htNonbooleanParameterValues.keySet().iterator();
+      while (e.hasNext()) {
+        key = e.next();
         if (key.charAt(0) != '@' && doReportProperty(key)) {
           Object value = htNonbooleanParameterValues.get(key);
           if (key.charAt(0) == '=') {
@@ -1552,9 +1552,9 @@ public class StateManager {
       }
 
       //nonboolean variables:
-      e = htNonbooleanParameterValues.keys();
-      while (e.hasMoreElements()) {
-        key = e.nextElement();
+      e = htNonbooleanParameterValues.keySet().iterator();
+      while (e.hasNext()) {
+        key = e.next();
         if (key.charAt(0) == '@')
           list[n++] = key + " " + htNonbooleanParameterValues.get(key);
       }
@@ -1590,7 +1590,7 @@ public class StateManager {
 
   ///////// state serialization 
 
-  public static void setStateInfo(Hashtable<String, BitSet> ht,
+  public static void setStateInfo(Map<String, BitSet> ht,
                                   int i1, int i2, String key) {
     BitSet bs;
     if (ht.containsKey(key)) {
@@ -1611,17 +1611,17 @@ public class StateManager {
     return sv;
   }
 
-  public static String getCommands(Hashtable<String, BitSet> ht) {
+  public static String getCommands(Map<String, BitSet> ht) {
     return getCommands(ht, null, "select");
   }
 
-  public static String getCommands(Hashtable<String, BitSet> htDefine,
-                                   Hashtable<String, BitSet> htMore) {
+  public static String getCommands(Map<String, BitSet> htDefine,
+                                   Map<String, BitSet> htMore) {
     return getCommands(htDefine, htMore, "select");
   }
 
-  public static String getCommands(Hashtable<String, BitSet> htDefine,
-                                   Hashtable<String, BitSet> htMore,
+  public static String getCommands(Map<String, BitSet> htDefine,
+                                   Map<String, BitSet> htMore,
                                    String selectCmd) {
     StringBuffer s = new StringBuffer();
     String setPrev = getCommands(htDefine, s, null, selectCmd);
@@ -1630,15 +1630,14 @@ public class StateManager {
     return s.toString();
   }
 
-  private static String getCommands(Hashtable<String, BitSet> ht,
+  private static String getCommands(Map<String, BitSet> ht,
                                     StringBuffer s,
                                     String setPrev, String selectCmd) {
     if (ht == null)
       return "";
-    Enumeration<String> e = ht.keys();
-    while (e.hasMoreElements()) {
-      String key = e.nextElement();
-      String set = Escape.escape(ht.get(key));
+    for (Map.Entry<String, BitSet> entry : ht.entrySet()) {
+      String key = entry.getKey();
+      String set = Escape.escape(entry.getValue());
       if (set.length() < 5) // nothing selected
         continue;
       set = selectCmd + " " + set;

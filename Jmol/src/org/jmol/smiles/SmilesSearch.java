@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -104,7 +105,7 @@ public class SmilesSearch extends JmolMolecule {
   private int[] ringCounts;
   private int[] ringConnections;
   private BitSet bsFound = new BitSet(); 
-  private Hashtable<String, Object> htNested;
+  private Map<String, Object> htNested;
   private int nNested;
   private SmilesBond nestedBond;
 

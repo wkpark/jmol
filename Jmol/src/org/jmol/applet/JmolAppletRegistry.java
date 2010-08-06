@@ -28,8 +28,8 @@ import org.jmol.appletwrapper.AppletWrapper;
 
 import java.applet.Applet;
 import java.util.Hashtable;
-import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
 
 import netscape.javascript.JSObject;
 
@@ -38,7 +38,7 @@ import org.jmol.util.TextFormat;
 
 final class JmolAppletRegistry {
 
-  static Hashtable<String, Applet> htRegistry = new Hashtable<String, Applet>();
+  static Map<String, Applet> htRegistry = new Hashtable<String, Applet>();
 
   synchronized static void checkIn(String name, Applet applet) {
     cleanRegistry();
@@ -47,10 +47,9 @@ final class JmolAppletRegistry {
       htRegistry.put(name, applet);
     }
     if (Logger.debugging) {
-      Enumeration<String> keys = htRegistry.keys();
-      while (keys.hasMoreElements()) {
-        String theApplet = keys.nextElement();
-        Logger.debug(theApplet + " " + htRegistry.get(theApplet));
+      for (Map.Entry<String, Applet> entry : htRegistry.entrySet()) {
+        String theApplet = entry.getKey();
+        Logger.debug(theApplet + " " + entry.getValue());
       }
     }
   }
@@ -60,13 +59,12 @@ final class JmolAppletRegistry {
   }
 
   synchronized private static void cleanRegistry() {
-    Enumeration<String> keys = htRegistry.keys();
     AppletWrapper app = null;
     boolean closed = true;
-    while (keys.hasMoreElements()) {
-      String theApplet = keys.nextElement();
+    for (Map.Entry<String, Applet> entry : htRegistry.entrySet()) {
+      String theApplet = entry.getKey();
       try {
-        app = (AppletWrapper) (htRegistry.get(theApplet));
+        app = (AppletWrapper) (entry.getValue());
         JSObject theWindow = JSObject.getWindow(app);
         //System.out.print("checking " + app + " window : ");
         closed = ((Boolean) theWindow.getMember("closed")).booleanValue();
@@ -100,11 +98,9 @@ final class JmolAppletRegistry {
     }
     String ext = "__" + mySyncId + "__";
     if (appletName == null || appletName.equals("*") || appletName.equals(">")) {
-      Enumeration<String> keys = htRegistry.keys();
-      while (keys.hasMoreElements()) {
-        appletName =  keys.nextElement();
-        if (!appletName.equals(excludeName) && appletName.indexOf(ext) > 0) {
-          apps.add(appletName);
+      for (String appletName2 : htRegistry.keySet()) {
+        if (!appletName2.equals(excludeName) && appletName2.indexOf(ext) > 0) {
+          apps.add(appletName2);
         }
       }
       return;

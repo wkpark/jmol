@@ -115,7 +115,7 @@ public final class Model {
   int selectedTrajectory = -1;
   boolean hasRasmolHBonds;
   
-  Hashtable<String, Integer> dataFrames;
+  Map<String, Integer> dataFrames;
   int dataSourceFrame = -1;
   String jmolData; // from a PDB remark "Jmol PDB-encoded data"
   String jmolFrameType;

@@ -187,7 +187,7 @@ public class Resolver {
     StringBuffer data = new StringBuffer();
     data.append("Zip File Directory: ").append("\n").append(
         Escape.escape(zipDirectory, true)).append("\n");
-    Hashtable<String, String> fileData = new Hashtable<String, String>();
+    Map<String, String> fileData = new Hashtable<String, String>();
     ZipUtil.getAllData(is, new String[] {}, "",
         "Molecule", fileData);
     String prefix = "|";

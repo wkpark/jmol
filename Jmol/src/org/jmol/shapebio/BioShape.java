@@ -26,7 +26,7 @@
 package org.jmol.shapebio;
 
 import java.util.BitSet;
-import java.util.Hashtable;
+import java.util.Map;
 
 import javax.vecmath.Vector3f;
 
@@ -289,8 +289,8 @@ class BioShape {
     }
   }
 
-  void setShapeState(Hashtable<String, BitSet> temp,
-                     Hashtable<String, BitSet> temp2) {
+  void setShapeState(Map<String, BitSet> temp,
+                     Map<String, BitSet> temp2) {
     if (!isActive || bsSizeSet == null && bsColixSet == null)
       return;
     String type = JmolConstants.shapeClassBases[shape.shapeID];

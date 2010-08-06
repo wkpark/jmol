@@ -26,8 +26,9 @@
 package org.jmol.shapespecial;
 
 import java.util.BitSet;
-import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
 
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
@@ -41,7 +42,7 @@ import org.jmol.util.Quadric;
 public class Ellipsoids extends AtomShape {
   // most differences are in renderer
   
-  Hashtable<String, Ellipsoid> htEllipsoids = new Hashtable<String, Ellipsoid>();
+  Map<String, Ellipsoid> htEllipsoids = new Hashtable<String, Ellipsoid>();
   boolean haveEllipsoids;
   
   static class Ellipsoid {
@@ -105,10 +106,9 @@ public class Ellipsoids extends AtomShape {
     }
     if (propertyName == "deleteModelAtoms") {
       int modelIndex = ((int[]) ((Object[]) value)[2])[0];
-      Enumeration<String> e = htEllipsoids.keys();
-      while (e.hasMoreElements()) {
-        String id = e.nextElement();
-        Ellipsoid ellipsoid = htEllipsoids.get(id);
+      for (Map.Entry<String, Ellipsoid> entry : htEllipsoids.entrySet()) {
+        String id = entry.getKey();
+        Ellipsoid ellipsoid = entry.getValue();
         if (ellipsoid.modelIndex > modelIndex)
           ellipsoid.modelIndex--;
         else if (ellipsoid.modelIndex == modelIndex)
@@ -216,11 +216,11 @@ public class Ellipsoids extends AtomShape {
   
   @Override
   public String getShapeState() {
-    Enumeration<Ellipsoid> e = htEllipsoids.elements();
+    Iterator<Ellipsoid> e = htEllipsoids.values().iterator();
     StringBuffer sb = new StringBuffer();
     Vector3f v1 = new Vector3f();
-    while (e.hasMoreElements()) {
-      Ellipsoid ellipsoid = e.nextElement();
+    while (e.hasNext()) {
+      Ellipsoid ellipsoid = e.next();
       if (ellipsoid.axes == null || ellipsoid.lengths == null)
         continue;
       sb.append("  Ellipsoid ID ").append(ellipsoid.id).append(" modelIndex ")
@@ -237,8 +237,8 @@ public class Ellipsoids extends AtomShape {
       sb.append(";\n");
     }
     if (isActive) {
-      Hashtable<String, BitSet> temp = new Hashtable<String, BitSet>();
-      Hashtable<String, BitSet> temp2 = new Hashtable<String, BitSet>();
+      Map<String, BitSet> temp = new Hashtable<String, BitSet>();
+      Map<String, BitSet> temp2 = new Hashtable<String, BitSet>();
       if (bsSizeSet != null)
         for (int i = bsSizeSet.nextSetBit(0); i >= 0; i = bsSizeSet
             .nextSetBit(i + 1))
@@ -259,9 +259,9 @@ public class Ellipsoids extends AtomShape {
      * set all fixed objects visible; others based on model being displayed
      *      
      */
-    Enumeration<Ellipsoid> e = htEllipsoids.elements();
-    while (e.hasMoreElements()) {
-      Ellipsoid ellipsoid = e.nextElement();
+    Iterator<Ellipsoid> e = htEllipsoids.values().iterator();
+    while (e.hasNext()) {
+      Ellipsoid ellipsoid = e.next();
       ellipsoid.visible = ellipsoid.isOn && (ellipsoid.modelIndex < 0 || bs.get(ellipsoid.modelIndex)); 
     }
   }

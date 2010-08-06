@@ -29,7 +29,7 @@ import org.jmol.g3d.*;
 
 import java.awt.Image;
 import java.util.BitSet;
-import java.util.Enumeration;
+import java.util.Iterator;
 
 public class Echo extends TextShape {
 
@@ -75,9 +75,9 @@ public class Echo extends TextShape {
       Image image = (Image) value;
       if (currentObject == null) {
         if (isAll) {
-          Enumeration<Text> e = objects.elements();
-          while (e.hasMoreElements()) {
-            e.nextElement().setImage(image);
+          Iterator<Text> e = objects.values().iterator();
+          while (e.hasNext()) {
+            e.next().setImage(image);
           }
         }
         return;
@@ -97,9 +97,9 @@ public class Echo extends TextShape {
       boolean isHidden = ((Boolean) value).booleanValue();
       if (currentObject == null) {
         if (isAll || thisID != null) {
-          Enumeration<Text> e = objects.elements();
-          while (e.hasMoreElements()) {
-            Text text = e.nextElement();
+          Iterator<Text> e = objects.values().iterator();
+          while (e.hasNext()) {
+            Text text = e.next();
             if (isAll
                 || TextFormat.isMatch(text.target.toUpperCase(), thisID, true,
                     true))
@@ -161,9 +161,9 @@ public class Echo extends TextShape {
     if (property == "checkID") {
       String key = ((String) data[0]).toUpperCase();
       boolean isWild = TextFormat.isWild(key);
-      Enumeration<Text> e = objects.elements();
-      while (e.hasMoreElements()) {
-        String id = e.nextElement().target;
+      Iterator<Text> e = objects.values().iterator();
+      while (e.hasNext()) {
+        String id = e.next().target;
         if (id.equalsIgnoreCase(key) || isWild
             && TextFormat.isMatch(id.toUpperCase(), key, true, true)) {
           data[1] = id;
@@ -178,9 +178,9 @@ public class Echo extends TextShape {
   @Override
   public String getShapeState() {
     StringBuffer s = new StringBuffer("\n  set echo off;\n");
-    Enumeration<Text> e = objects.elements();
-    while (e.hasMoreElements()) {
-      Text t = e.nextElement();
+    Iterator<Text> e = objects.values().iterator();
+    while (e.hasNext()) {
+      Text t = e.next();
       s.append(t.getState());
       if (t.hidden)
         s.append("  set echo " + t.target + " hidden;\n");

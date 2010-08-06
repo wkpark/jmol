@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
@@ -1377,13 +1378,13 @@ public void initShape() {
   }
   
   @Override
-  public List<Hashtable<String, Object>> getShapeDetail() {
-    List<Hashtable<String, Object>> V = new ArrayList<Hashtable<String,Object>>();
+  public List<Map<String, Object>> getShapeDetail() {
+    List<Map<String, Object>> V = new ArrayList<Map<String,Object>>();
     for (int i = 0; i < meshCount; i++) {
       DrawMesh mesh = dmeshes[i];
       if (mesh.vertexCount == 0)
         continue;
-      Hashtable<String, Object> info = new Hashtable<String, Object>();
+      Map<String, Object> info = new Hashtable<String, Object>();
       info.put("fixed", mesh.ptCenters == null ? Boolean.TRUE : Boolean.FALSE);
       info.put("ID", (mesh.thisID == null ? "<noid>" : mesh.thisID));
       info.put("drawType", JmolConstants.getDrawTypeName(mesh.drawType));
@@ -1393,12 +1394,12 @@ public void initShape() {
         info.put("width", new Float(mesh.width));
       info.put("scale", new Float(mesh.scale));
       if (mesh.drawType == JmolConstants.DRAW_MULTIPLE) {
-        List<Hashtable<String, Object>> m = new ArrayList<Hashtable<String,Object>>();
+        List<Map<String, Object>> m = new ArrayList<Map<String,Object>>();
         modelCount = viewer.getModelCount();
         for (int k = 0; k < modelCount; k++) {
           if (mesh.ptCenters[k] == null)
             continue;
-          Hashtable<String, Object> mInfo = new Hashtable<String, Object>();
+          Map<String, Object> mInfo = new Hashtable<String, Object>();
           mInfo.put("modelIndex", Integer.valueOf(k));
           mInfo.put("command", getDrawCommand(mesh, k));
           mInfo.put("center", mesh.ptCenters[k]);

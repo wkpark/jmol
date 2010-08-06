@@ -25,6 +25,7 @@
 package org.jmol.util;
 
 import java.util.Hashtable;
+import java.util.Map;
 
 import org.jmol.viewer.JmolConstants;
 
@@ -170,7 +171,7 @@ public class Elements {
    */
   public final static short elementNumberFromSymbol(String elementSymbol, boolean isSilent) {
     if (Elements.htElementMap == null) {
-      Hashtable<String, Integer> map = new Hashtable<String, Integer>();
+      Map<String, Integer> map = new Hashtable<String, Integer>();
       for (int elementNumber = elementNumberMax; --elementNumber >= 0;) {
         String symbol = elementSymbols[elementNumber];
         Integer boxed = Integer.valueOf(elementNumber);
@@ -196,7 +197,7 @@ public class Elements {
       Logger.error("'" + elementSymbol + "' is not a recognized symbol");
     return 0;
   }
-  public static Hashtable<String, Integer> htElementMap;
+  public static Map<String, Integer> htElementMap;
   /**
    * @param elementNumber may be atomicNumber + isotopeNumber*128
    * @return elementSymbol

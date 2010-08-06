@@ -25,7 +25,7 @@ package org.jmol.modelset;
 
 import java.util.BitSet;
 import java.util.List;
-import java.util.Hashtable;
+import java.util.Map;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -130,7 +130,7 @@ abstract public class Polymer {
    * @param bs
    * @return info
    */
-  public Hashtable<String, Object> getPolymerInfo(BitSet bs) {
+  public Map<String, Object> getPolymerInfo(BitSet bs) {
     return null;
   }
 

@@ -496,7 +496,7 @@ public class LabelToken {
 
   public static String formatLabel(Viewer viewer, Measurement measurement,
                                    String label, float value, String units) {
-    Hashtable<String, Object> htValues = new Hashtable<String, Object>();
+    Map<String, Object> htValues = new Hashtable<String, Object>();
     htValues.put("#", "" + (measurement.getIndex() + 1));
     htValues.put("VALUE", new Float(value));
     htValues.put("UNITS", units);

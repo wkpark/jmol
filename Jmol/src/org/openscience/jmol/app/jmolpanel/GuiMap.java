@@ -48,7 +48,7 @@ class GuiMap {
   // Actions created in DisplayPanel.java
   
   private Map<String, String> setupLabels() {
-    Hashtable<String, String> labels = new Hashtable<String, String>();
+    Map<String, String> labels = new Hashtable<String, String>();
     labels.put("macros", GT._("&Macros"));
     labels.put("file", GT._("&File"));
     labels.put("newwin", GT._("&New"));

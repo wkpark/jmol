@@ -26,6 +26,7 @@ package org.jmol.viewer;
 import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
@@ -259,15 +260,15 @@ public class ShapeManager {
     return false;
   }
 
-  public Hashtable<String, Object> getShapeInfo() {
-    Hashtable<String, Object> info = new Hashtable<String, Object>();
+  public Map<String, Object> getShapeInfo() {
+    Map<String, Object> info = new Hashtable<String, Object>();
     StringBuffer commands = new StringBuffer();
     if (shapes != null)
       for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
         Shape shape = shapes[i];
         if (shape != null) {
           String shapeType = JmolConstants.shapeClassBases[i];
-          List<Hashtable<String, Object>> shapeDetail = shape.getShapeDetail();
+          List<Map<String, Object>> shapeDetail = shape.getShapeDetail();
           if (shapeDetail != null)
             info.put(shapeType, shapeDetail);
         }

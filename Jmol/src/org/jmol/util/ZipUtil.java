@@ -33,8 +33,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -97,7 +97,7 @@ public class ZipUtil {
    */
   public static void getAllData(InputStream is, String[] subfileList,
                                 String name0, String binaryFileList,
-                                Hashtable<String, String> fileData) {
+                                Map<String, String> fileData) {
     ZipInputStream zis = getStream(is);
     ZipEntry ze;
     StringBuffer listing = new StringBuffer();

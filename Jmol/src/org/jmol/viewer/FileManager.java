@@ -476,7 +476,7 @@ public class FileManager {
         return info;
       if (info[2] != null) {
         String header = info[1];
-        Hashtable<String, String> fileData = new Hashtable<String, String>();
+        Map<String, String> fileData = new Hashtable<String, String>();
         if (info.length == 3) {
           // we need information from the output file, info[2]
           String name0 = getObjectAsSections(info[2], header, fileData);
@@ -561,7 +561,7 @@ public class FileManager {
    * @return name of entry
    */
   private String getObjectAsSections(String name, String header,
-                                     Hashtable<String, String> fileData) {
+                                     Map<String, String> fileData) {
     if (name == null)
       return null;
     String[] subFileList = null;

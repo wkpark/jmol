@@ -26,9 +26,9 @@
 package org.jmol.shapesurface;
 
 import java.util.BitSet;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.Point4f;
 
@@ -69,8 +69,8 @@ public class MolecularOrbital extends Isosurface {
   private int myColorPt;
   private String strID;
   private int moNumber;
-  private Hashtable<String, Hashtable<String, Object>> htModels;
-  private Hashtable<String, Object> thisModel;
+  private Map<String, Map<String, Object>> htModels;
+  private Map<String, Object> thisModel;
 
   @Override
   public void setProperty(String propertyName, Object value, BitSet bs) {
@@ -88,7 +88,7 @@ public class MolecularOrbital extends Isosurface {
       super.setProperty("init", null, null);
       super.setProperty("modelIndex", Integer.valueOf(modelIndex), null);
       if (htModels == null)
-        htModels = new Hashtable<String, Hashtable<String,Object>>();
+        htModels = new Hashtable<String, Map<String,Object>>();
       if (!htModels.containsKey(strID))
         htModels.put(strID, new Hashtable<String, Object>());
       thisModel = htModels.get(strID);
@@ -209,7 +209,7 @@ public class MolecularOrbital extends Isosurface {
 
     if (propertyName == "deleteModelAtoms") {
       int modelIndex = ((int[]) ((Object[]) value)[2])[0];
-      Hashtable<String, Hashtable<String, Object>> htModelsNew = new Hashtable<String, Hashtable<String, Object>>();
+      Map<String, Map<String, Object>> htModelsNew = new Hashtable<String, Map<String, Object>>();
       for (int i = meshCount; --i >= 0;) {
         if (meshes[i] == null)
           continue;
@@ -222,7 +222,7 @@ public class MolecularOrbital extends Isosurface {
           meshes = (IsosurfaceMesh[]) ArrayUtil.deleteElements(meshes, i, 1);
           continue;
         }
-        Hashtable<String, Object> htModel = htModels.get(meshes[i].thisID);
+        Map<String, Object> htModel = htModels.get(meshes[i].thisID);
         if (meshes[i].modelIndex > modelIndex) {
           meshes[i].modelIndex--;
           meshes[i].thisID = getId(meshes[i].modelIndex);
@@ -252,7 +252,7 @@ public class MolecularOrbital extends Isosurface {
       return Integer.valueOf(moNumber);
     if (propertyName == "showMO") {
       StringBuffer str = new StringBuffer();
-      List<Hashtable<String, Object>> mos = (List<Hashtable<String, Object>>) (sg.getMoData().get("mos"));
+      List<Map<String, Object>> mos = (List<Map<String, Object>>) (sg.getMoData().get("mos"));
       int nOrb = (mos == null ? 0 : mos.size());
       int thisMO = param;
       int currentMO = moNumber;
@@ -424,13 +424,12 @@ public class MolecularOrbital extends Isosurface {
   moColorPos = mo.moColorPos;
   moTranslucency = mo.moTranslucency;
   if (htModels == null)
-    htModels = new Hashtable<String, Hashtable<String, Object>>();
-  Hashtable<String, Hashtable<String, Object>> ht = mo.htModels;
+    htModels = new Hashtable<String, Map<String, Object>>();
+  Map<String, Map<String, Object>> ht = mo.htModels;
   if (ht != null) {
-    Enumeration<String> e = ht.keys();
-    while (e.hasMoreElements()) {
-      String key = e.nextElement();
-      htModels.put(key, ht.get(key));
+    for (Map.Entry<String, Map<String, Object>> entry : ht.entrySet()) {
+      String key = entry.getKey();
+      htModels.put(key, entry.getValue());
     }
   }
   super.merge(shape);

@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Hashtable;
+import java.util.Map;
 
 
 public class Measures extends Shape implements JmolMeasurementClient {
@@ -507,8 +508,8 @@ public class Measures extends Shape implements JmolMeasurementClient {
       measurements.get(i).reformatDistanceIfSelected();    
   }
   
-  private List<Hashtable<String, Object>> getAllInfo() {
-    List<Hashtable<String, Object>> info = new ArrayList<Hashtable<String,Object>>();
+  private List<Map<String, Object>> getAllInfo() {
+    List<Map<String, Object>> info = new ArrayList<Map<String,Object>>();
     for (int i = 0; i< measurementCount; i++) {
       info.add(getInfo(i));
     }
@@ -523,10 +524,10 @@ public class Measures extends Shape implements JmolMeasurementClient {
     return info;
   }
   
-  private Hashtable<String, Object> getInfo(int index) {
+  private Map<String, Object> getInfo(int index) {
     Measurement m = measurements.get(index);
     int count = m.getCount();
-    Hashtable<String, Object> info = new Hashtable<String, Object>();
+    Map<String, Object> info = new Hashtable<String, Object>();
     info.put("index", Integer.valueOf(index));
     info.put("type", (count == 2 ? "distance" : count == 3 ? "angle"
         : "dihedral"));
@@ -543,9 +544,9 @@ public class Measures extends Shape implements JmolMeasurementClient {
       if (!Float.isNaN(tickInfo.first))
         info.put("tickStart", new Float(tickInfo.first));
     }
-    List<Hashtable<String, Object>> atomsInfo = new ArrayList<Hashtable<String,Object>>();
+    List<Map<String, Object>> atomsInfo = new ArrayList<Map<String,Object>>();
     for (int i = 1; i <= count; i++) {
-      Hashtable<String, Object> atomInfo = new Hashtable<String, Object>();
+      Map<String, Object> atomInfo = new Hashtable<String, Object>();
       int atomIndex = m.getAtomIndex(i);
       atomInfo.put("_ipt", Integer.valueOf(atomIndex));
       atomInfo.put("coord", Escape.escape(m.getAtom(i)));
@@ -593,7 +594,7 @@ public String getShapeState() {
     appendCmd(commands, "select *; set measures " + viewer.getMeasureDistanceUnits());
     appendCmd(commands, getFontCommand("measures", font3d));
     int nHidden = 0;
-    Hashtable<String, BitSet> temp = new Hashtable<String, BitSet>();
+    Map<String, BitSet> temp = new Hashtable<String, BitSet>();
     BitSet bs = new BitSet(measurementCount);
     for (int i = 0; i < measurementCount; i++) {
       Measurement m = measurements.get(i);

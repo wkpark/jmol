@@ -44,6 +44,7 @@ package org.jmol.g3d;
 
 import java.util.BitSet;
 import java.util.Hashtable;
+import java.util.Map;
 
 import org.jmol.util.Logger;
 
@@ -93,7 +94,7 @@ final class Line3D {
     //if (--test > 0 || ((100-test) % 100 == 0)) System.out.println(test+" "+dx + " " + dy + " " + lineBits);
   }
   
-  Hashtable<Float, BitSet> lineCache = new Hashtable<Float, BitSet>();
+  Map<Float, BitSet> lineCache = new Hashtable<Float, BitSet>();
   Float slopeKey;
   boolean getCachedLine() {
     slopeKey = new Float(slope);

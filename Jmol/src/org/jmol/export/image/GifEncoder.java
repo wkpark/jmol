@@ -49,6 +49,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
 import java.awt.Image;
 import java.awt.image.*;
 
@@ -187,7 +189,7 @@ public class GifEncoder extends ImageEncoder {
           this.rgbPixels[y + row], x, w);
   }
 
-  Hashtable colorHash;
+  Map colorHash;
   ColorVector colorVector;
 
   @Override
@@ -280,7 +282,7 @@ public class GifEncoder extends ImageEncoder {
     byte[] reds = new byte[mapSize];
     byte[] grns = new byte[mapSize];
     byte[] blus = new byte[mapSize];
-    Hashtable<String, AdaptiveColorCollection> ht = new Hashtable<String, AdaptiveColorCollection>();
+    Map<String, AdaptiveColorCollection> ht = new Hashtable<String, AdaptiveColorCollection>();
     for (int i = 0; i < index; i++) {
       ColorItem item = colorVector.get(i);
       int rgb = item.rgb;
@@ -292,8 +294,8 @@ public class GifEncoder extends ImageEncoder {
       ht.put(srgb, item.acc);
     }
     int iindex = 0;
-    for (Enumeration e = colorHash.elements(); e.hasMoreElements();) {
-      AdaptiveColorCollection acc = (AdaptiveColorCollection) e.nextElement();
+    for (Iterator e = colorHash.values().iterator(); e.hasNext();) {
+      AdaptiveColorCollection acc = (AdaptiveColorCollection) e.next();
       acc.index = iindex++;
       acc.setRgb(reds, grns, blus);
     }

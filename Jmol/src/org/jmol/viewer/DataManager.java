@@ -24,8 +24,9 @@
 package org.jmol.viewer;
 
 import java.util.BitSet;
-import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.jmol.modelset.AtomCollection;
 import org.jmol.script.Token;
@@ -45,7 +46,7 @@ import org.jmol.util.Parser;
 
 class DataManager {
 
-  private Hashtable<String, Object[]> dataValues = new Hashtable<String, Object[]>();
+  private Map<String, Object[]> dataValues = new Hashtable<String, Object[]>();
 
   Viewer viewer;
   DataManager(Viewer viewer) {
@@ -169,9 +170,9 @@ class DataManager {
       info[0] = "types";
       info[1] = "";
       int n = 0;
-      Enumeration<String> e = (dataValues.keys());
-      while (e.hasMoreElements())
-        info[1] += (n++ > 0 ? "\n" : "") + e.nextElement();
+      Iterator<String> e = dataValues.keySet().iterator();
+      while (e.hasNext())
+        info[1] += (n++ > 0 ? "\n" : "") + e.next();
       return info;
     }
     return dataValues.get(type);
@@ -219,9 +220,9 @@ class DataManager {
   void deleteModelAtoms(int firstAtomIndex, int nAtoms, BitSet bsDeleted) {
     if (dataValues == null)
       return;
-    Enumeration<String> e = (dataValues.keys());
-    while (e.hasMoreElements()) {
-      String name = e.nextElement();
+    Iterator<String> e = dataValues.keySet().iterator();
+    while (e.hasNext()) {
+      String name = e.next();
       if (name.indexOf("property_") == 0) {
         Object[] obj = dataValues.get(name);
         BitSetUtil.deleteBits((BitSet) obj[2], bsDeleted);
@@ -239,15 +240,15 @@ class DataManager {
   void getDataState(StringBuffer state, StringBuffer sfunc, String atomProps) {
     if (dataValues == null)
       return;
-    Enumeration<String> e = (dataValues.keys());
+    Iterator<String> e = dataValues.keySet().iterator();
     StringBuffer sb = new StringBuffer();
     int n = 0;
     if (atomProps.length() > 0) {
       n = 1;
       sb.append(atomProps);
     }
-    while (e.hasMoreElements()) {
-      String name = e.nextElement();
+    while (e.hasNext()) {
+      String name = e.next();
       if (name.indexOf("property_") == 0) {
         n++;
         Object[] obj = dataValues.get(name);

@@ -32,8 +32,8 @@ package org.jmol.export;
 
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -294,7 +294,7 @@ public class _X3dExporter extends _VrmlExporter {
                                short[] polygonColixes,
                                int nVertices, int nPolygons, int nFaces, BitSet bsFaces,
                                int faceVertexMax, short colix,
-                               List<Short> colorList, Hashtable<String, String> htColixes, Point3f offset) {
+                               List<Short> colorList, Map<String, String> htColixes, Point3f offset) {
     output("<Shape>\n");
     outputAppearance(colix, false);
     output("<IndexedFaceSet \n");

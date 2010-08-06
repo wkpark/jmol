@@ -42,7 +42,7 @@ import javax.vecmath.Point3i;
 
 import java.util.BitSet;
 import java.util.List;
-import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * Shape now encompasses:
@@ -402,7 +402,7 @@ public abstract class Shape {
     
   }
   
-  public List<Hashtable<String, Object>> getShapeDetail() {
+  public List<Map<String, Object>> getShapeDetail() {
     return null;
   }
 
@@ -417,23 +417,23 @@ public abstract class Shape {
   public void setVisibilityFlags(BitSet bs) {
   }
 
-  static public void setStateInfo(Hashtable<String, BitSet> ht,
+  static public void setStateInfo(Map<String, BitSet> ht,
                                   int i, String key) {
     setStateInfo(ht, i, i, key);
   }
 
-  static public void setStateInfo(Hashtable<String, BitSet> ht,
+  static public void setStateInfo(Map<String, BitSet> ht,
                                   int i1, int i2, String key) {
     StateManager.setStateInfo(ht, i1, i2, key);
   }
 
-  static public String getShapeCommands(Hashtable<String, BitSet> htDefine,
-                                        Hashtable<String, BitSet> htMore) {
+  static public String getShapeCommands(Map<String, BitSet> htDefine,
+                                        Map<String, BitSet> htMore) {
     return StateManager.getCommands(htDefine, htMore);
   }
 
-  static public String getShapeCommands(Hashtable<String, BitSet> htDefine,
-                                        Hashtable<String, BitSet> htMore,
+  static public String getShapeCommands(Map<String, BitSet> htDefine,
+                                        Map<String, BitSet> htMore,
                                         String selectCmd) {
     return StateManager.getCommands(htDefine, htMore, selectCmd);
   }

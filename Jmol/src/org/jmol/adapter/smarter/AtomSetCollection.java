@@ -25,9 +25,9 @@
 package org.jmol.adapter.smarter;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.BitSet;
 
@@ -70,8 +70,8 @@ public class AtomSetCollection {
     }
   }
 
-  private Hashtable<String, Object> atomSetCollectionAuxiliaryInfo = new Hashtable<String, Object>();
-  public Hashtable<String, Object> getAtomSetCollectionAuxiliaryInfo() {
+  private Map<String, Object> atomSetCollectionAuxiliaryInfo = new Hashtable<String, Object>();
+  public Map<String, Object> getAtomSetCollectionAuxiliaryInfo() {
     return atomSetCollectionAuxiliaryInfo;
   }
   
@@ -139,7 +139,7 @@ public class AtomSetCollection {
   private int[] atomSetNumbers = new int[16];
   private int[] atomSetAtomCounts = new int[16];
   private int[] atomSetBondCounts = new int[16];
-  private Hashtable<String, Object>[] atomSetAuxiliaryInfo = new Hashtable[16];
+  private Map<String, Object>[] atomSetAuxiliaryInfo = new Hashtable[16];
   private int[] latticeCells;
 
   public String errorMessage;
@@ -1068,7 +1068,7 @@ public class AtomSetCollection {
     //TODO: need to clone bonds
   }
   
-  Hashtable<Object, Integer> atomSymbolicMap = new Hashtable<Object, Integer>();
+  Map<Object, Integer> atomSymbolicMap = new Hashtable<Object, Integer>();
 
   void mapMostRecentAtomName() {
     //from ?? 
@@ -1223,7 +1223,7 @@ public class AtomSetCollection {
     if (atomSetCount > atomSetNumbers.length) {
       atomSetAtomCounts = ArrayUtil.doubleLength(atomSetAtomCounts);
       atomSetBondCounts = ArrayUtil.doubleLength(atomSetBondCounts);
-      atomSetAuxiliaryInfo = (Hashtable<String, Object>[]) ArrayUtil.doubleLength(atomSetAuxiliaryInfo);
+      atomSetAuxiliaryInfo = (Map<String, Object>[]) ArrayUtil.doubleLength(atomSetAuxiliaryInfo);
     }
     if (atomSetCount + trajectoryStepCount > atomSetNumbers.length) {
       atomSetNumbers = ArrayUtil.doubleLength(atomSetNumbers);
@@ -1307,7 +1307,7 @@ public class AtomSetCollection {
     if (!data.endsWith("\n")) {
       data += "\n";
     }
-    Hashtable p = (Hashtable) getAtomSetAuxiliaryInfo(currentAtomSetIndex, "atomProperties");
+    Map p = (Map) getAtomSetAuxiliaryInfo(currentAtomSetIndex, "atomProperties");
     if (p == null) {
       setAtomSetAuxiliaryInfo("atomProperties", p = new Hashtable());
     }
@@ -1315,15 +1315,14 @@ public class AtomSetCollection {
   }
 
   private void appendAtomProperties(int nTimes) {
-    Hashtable<String, String> p = (Hashtable<String, String>) getAtomSetAuxiliaryInfo(currentAtomSetIndex, "atomProperties");
+    Map<String, String> p = (Map<String, String>) getAtomSetAuxiliaryInfo(currentAtomSetIndex, "atomProperties");
     if (p == null) {
       return;
     }
-    Enumeration<String> e = p.keys();
-    while (e.hasMoreElements()) {
-      String key = e.nextElement();
-      String data = p.get(key);
-      StringBuffer s = new StringBuffer();
+    for (Map.Entry<String, String> entry : p.entrySet()) {
+      String key = entry.getKey();
+      String data = entry.getValue();
+      StringBuilder s = new StringBuilder();
       for (int i = nTimes; --i >= 0; )
         s.append(data);   
       p.put(key, s.toString());
@@ -1429,7 +1428,7 @@ public class AtomSetCollection {
     return (String) getAtomSetAuxiliaryInfo(atomSetIndex, "name");
   }
   
-  Hashtable<String, Object> getAtomSetAuxiliaryInfo(int atomSetIndex) {
+  Map<String, Object> getAtomSetAuxiliaryInfo(int atomSetIndex) {
     if (atomSetIndex >= atomSetCount) {
       atomSetIndex = atomSetCount - 1;
     }

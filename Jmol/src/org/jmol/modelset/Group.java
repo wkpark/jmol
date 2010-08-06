@@ -33,6 +33,7 @@ import org.jmol.script.Token;
 import java.util.Hashtable;
 import java.util.BitSet;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -226,7 +227,7 @@ public class Group {
   // static stuff for group ids
   ////////////////////////////////////////////////////////////////
 
-  private static Hashtable<String, Short> htGroup = new Hashtable<String, Short>();
+  private static Map<String, Short> htGroup = new Hashtable<String, Short>();
 
   static String[] group3Names = new String[128];
   static short group3NameCount = 0;

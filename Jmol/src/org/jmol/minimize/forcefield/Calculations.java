@@ -25,8 +25,8 @@
 package org.jmol.minimize.forcefield;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.Vector3d;
 
@@ -51,7 +51,7 @@ abstract class Calculations {
 
   ForceField ff;
   List<Object[]>[] calculations = new ArrayList[CALC_MAX];
-  public Hashtable<String, FFParam> ffParams;
+  public Map<String, FFParam> ffParams;
   
   int atomCount;
   int bondCount;
@@ -61,16 +61,16 @@ abstract class Calculations {
   int[][] torsions;
   double[] partialCharges;
   boolean havePartialCharges;
-  List constraints;
+  List<Object[]> constraints;
   boolean isPreliminary;
 
-  public void setConstraints(List constraints) {
+  public void setConstraints(List<Object[]> constraints) {
     this.constraints = constraints;
   }
 
   Calculations(ForceField ff, MinAtom[] minAtoms, MinBond[] minBonds, 
       int[][] angles, int[][] torsions, double[] partialCharges, 
-      List constraints) {
+      List<Object[]> constraints) {
     this.ff = ff;
     atoms = minAtoms;
     bonds = minBonds;
@@ -94,11 +94,11 @@ abstract class Calculations {
     return (ffParams != null);
   }
 
-  void setParams(Hashtable<String, FFParam> temp) {
+  void setParams(Map<String, FFParam> temp) {
     ffParams = temp;
   }
 
-  static FFParam getParameter(String a, Hashtable<String, FFParam> ffParams) {
+  static FFParam getParameter(String a, Map<String, FFParam> ffParams) {
     return ffParams.get(a);
   }
 
@@ -219,7 +219,7 @@ abstract class Calculations {
     double energy = 0;
 
     for (int i = constraints.size(); --i >= 0; ) {
-      Object[] c = (Object[])constraints.get(i);
+      Object[] c = constraints.get(i);
       int nAtoms = ((int[]) c[0])[0];
       if (nAtoms != iType + 2)
         continue;

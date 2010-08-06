@@ -26,7 +26,7 @@
 package org.jmol.shapespecial;
 
 import java.util.BitSet;
-import java.util.Enumeration;
+import java.util.Iterator;
 
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
@@ -151,9 +151,9 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     }
     
     if (ellipsoids.haveEllipsoids) {
-      Enumeration<Ellipsoid> e = ellipsoids.htEllipsoids.elements();
-      while (e.hasMoreElements()) {
-        Ellipsoid ellipsoid = e.nextElement();
+      Iterator<Ellipsoid> e = ellipsoids.htEllipsoids.values().iterator();
+      while (e.hasNext()) {
+        Ellipsoid ellipsoid = e.next();
         if (ellipsoid.visible && ellipsoid.isValid)
           renderEllipsoid(ellipsoid); 
       }

@@ -23,7 +23,8 @@
  */
 package org.jmol.shape;
 
-import java.util.Enumeration;
+import java.util.Iterator;
+
 import javax.vecmath.Point3i;
 
 import org.jmol.g3d.Graphics3D;
@@ -39,11 +40,11 @@ public class EchoRenderer extends ShapeRenderer {
     if (viewer.isPreviewOnly())
       return;
     Echo echo = (Echo)shape;
-    Enumeration<Text> e = echo.objects.elements();
+    Iterator<Text> e = echo.objects.values().iterator();
     float scalePixelsPerMicron = (viewer.getFontScaling() ? viewer.getScalePixelsPerAngstrom(true) * 10000 : 0);
     imageFontScaling = viewer.getImageFontScaling();
-    while (e.hasMoreElements()) {
-      Text t = e.nextElement();
+    while (e.hasNext()) {
+      Text t = e.next();
       if (!t.visible || t.hidden) {
         continue;
       }

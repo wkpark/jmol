@@ -31,6 +31,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import org.jmol.minimize.Minimizer;
 import org.jmol.util.Logger;
@@ -48,10 +49,10 @@ public class ForceFieldUFF extends ForceField {
   }
 
   @Override
-  protected Hashtable<String, FFParam> getFFParameters() {
+  protected Map<String, FFParam> getFFParameters() {
     FFParam ffParam;
 
-    Hashtable<String, FFParam> temp = new Hashtable<String, FFParam>();
+    Map<String, FFParam> temp = new Hashtable<String, FFParam>();
 
     // open UFF.txt
     URL url = null;

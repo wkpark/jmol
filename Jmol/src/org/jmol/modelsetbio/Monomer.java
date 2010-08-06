@@ -38,6 +38,7 @@ import org.jmol.script.Token;
 import java.util.Hashtable;
 import java.util.BitSet;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.Point3f;
 
@@ -286,8 +287,8 @@ public abstract class Monomer extends Group {
     return bioPolymer.haveParameters;
   }
   
-  public Hashtable<String, Object> getMyInfo() {
-    Hashtable<String, Object> info = new Hashtable<String, Object>();
+  public Map<String, Object> getMyInfo() {
+    Map<String, Object> info = new Hashtable<String, Object>();
     char chainID = chain.getChainID();
     info.put("chain", (chainID == '\0' ? "" : "" + chainID));
     int seqNum = getSeqNumber();

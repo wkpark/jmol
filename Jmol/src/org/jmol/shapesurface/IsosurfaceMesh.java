@@ -26,9 +26,9 @@ package org.jmol.shapesurface;
 
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
@@ -98,8 +98,8 @@ public class IsosurfaceMesh extends Mesh {
     isColorSolid = false;
   }
 
-  Hashtable<Integer, Integer> assocGridPointMap;
-  Hashtable<Integer, Vector3f> assocGridPointNormals;
+  Map<Integer, Integer> assocGridPointMap;
+  Map<Integer, Vector3f> assocGridPointNormals;
 
   int addVertexCopy(Point3f vertex, float value, int assocVertex, boolean associateNormals) {
     int vPt = addVertexCopy(vertex, value);
@@ -206,15 +206,13 @@ public class IsosurfaceMesh extends Mesh {
      *  
      */
     if (assocGridPointMap != null) {
-      Enumeration<Integer> e = assocGridPointMap.keys();
-      while (e.hasMoreElements()) {
-        Integer I = e.nextElement();
-        assocGridPointNormals.get(assocGridPointMap.get(I)).add(vectorSums[I.intValue()]);
+      for (Map.Entry<Integer, Integer> entry : assocGridPointMap.entrySet()) {
+        Integer I = entry.getKey();
+        assocGridPointNormals.get(entry.getValue()).add(vectorSums[I.intValue()]);
       }
-      e = assocGridPointMap.keys();
-      while (e.hasMoreElements()) {
-        Integer I = e.nextElement();
-        vectorSums[I.intValue()] = assocGridPointNormals.get(assocGridPointMap.get(I));
+      for (Map.Entry<Integer, Integer> entry : assocGridPointMap.entrySet()) {
+        Integer I = entry.getKey();
+        vectorSums[I.intValue()] = assocGridPointNormals.get(entry.getValue());
       }
     }
   }
@@ -495,8 +493,8 @@ public class IsosurfaceMesh extends Mesh {
    * @return a Hashtable containing "values" and "colors"
    * 
    */
-  Hashtable<String, Object> getContourList(Viewer viewer) {
-    Hashtable<String, Object> ht = new Hashtable<String, Object>();
+  Map<String, Object> getContourList(Viewer viewer) {
+    Map<String, Object> ht = new Hashtable<String, Object>();
     ht.put("values", (jvxlData.contourValuesUsed == null ? jvxlData.contourValues : jvxlData.contourValuesUsed));
     List<Point3f> colors = new ArrayList<Point3f>();
     if (jvxlData.contourColixes != null) {

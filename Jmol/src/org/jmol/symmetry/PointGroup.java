@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -878,7 +879,7 @@ class PointGroup {
   String drawInfo;
   String drawType = "";
   int drawIndex;
-  Hashtable<String, Object> info;
+  Map<String, Object> info;
   String textInfo;
   
   Object getInfo(int modelIndex, boolean asDraw, boolean asInfo, String type,

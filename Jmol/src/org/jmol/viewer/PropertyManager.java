@@ -23,10 +23,12 @@
  */
 package org.jmol.viewer;
 
+
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.Matrix3f;
 
@@ -276,20 +278,20 @@ public class PropertyManager {
       break;
     case Token.string:
       String key = ScriptVariable.sValue(arg);
-      if (property instanceof Hashtable) {
-        Hashtable h = (Hashtable) property;
+      if (property instanceof Map) {
+        Map h = (Map) property;
         if (key.equalsIgnoreCase("keys")) {
           List<Object> keys = new ArrayList<Object>();
-          Enumeration e = h.keys();
-          while (e.hasMoreElements())
-            keys.add(e.nextElement()); 
+          Iterator e = h.keySet().iterator();
+          while (e.hasNext())
+            keys.add(e.next()); 
           return extractProperty(keys, args, ptr);
         }
         if (!h.containsKey(key)) {
-          Enumeration e = h.keys();
+          Iterator e = h.keySet().iterator();
           String newKey = "";
-          while (e.hasMoreElements())
-            if ((newKey = ((String) e.nextElement())).equalsIgnoreCase(key)) {
+          while (e.hasNext())
+            if ((newKey = ((String) e.next())).equalsIgnoreCase(key)) {
               key = newKey;
               break;
             }
@@ -424,16 +426,16 @@ public class PropertyManager {
   
   @SuppressWarnings("unchecked")
   static Object getFileInfo(Object objHeader, String type) {
-    Hashtable ht = new Hashtable();
+    Map ht = new Hashtable();
     if (objHeader == null)
       return ht;
     boolean haveType = (type != null && type.length() > 0);
-    if (objHeader instanceof Hashtable) {
-      return (haveType ? ((Hashtable) objHeader).get(type) : objHeader);
+    if (objHeader instanceof Map) {
+      return (haveType ? ((Map) objHeader).get(type) : objHeader);
     }
     String[] lines = TextFormat.split((String)objHeader, '\n');
     String keyLast = "";
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     if (haveType)
       type = type.toUpperCase();
     String key = "";
@@ -450,7 +452,7 @@ public class PropertyManager {
           return sb.toString();
         if (sb != null && !haveType) {
           ht.put(keyLast, sb.toString());
-          sb = new StringBuffer();
+          sb = new StringBuilder();
         }
         keyLast = key;
       }

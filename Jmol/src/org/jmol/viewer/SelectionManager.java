@@ -34,6 +34,7 @@ import org.jmol.modelset.ModelSet;
 
 import java.util.BitSet;
 import java.util.Hashtable;
+import java.util.Map;
 
 class SelectionManager {
 
@@ -276,7 +277,7 @@ class SelectionManager {
       commands.append("function _setSelectionState() {\n");
     }
     StateManager.appendCmd(commands, viewer.getTrajectoryInfo());
-    Hashtable<String, BitSet> temp = new Hashtable<String, BitSet>();
+    Map<String, BitSet> temp = new Hashtable<String, BitSet>();
     String cmd = null;
     addBs(commands, "hide ", bsHidden);
     addBs(commands, "subset ", bsSubset);

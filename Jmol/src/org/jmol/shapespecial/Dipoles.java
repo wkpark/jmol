@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -565,11 +566,11 @@ public class Dipoles extends Shape {
   }
 
   @Override
-  public List<Hashtable<String, Object>> getShapeDetail() {
-    List<Hashtable<String, Object>> V = new ArrayList<Hashtable<String,Object>>();
-    Hashtable<String, Object> atomInfo;
+  public List<Map<String, Object>> getShapeDetail() {
+    List<Map<String, Object>> V = new ArrayList<Map<String,Object>>();
+    Map<String, Object> atomInfo;
     for (int i = 0; i < dipoleCount; i++) {
-      Hashtable<String, Object> info = new Hashtable<String, Object>();
+      Map<String, Object> info = new Hashtable<String, Object>();
       Dipole dipole = dipoles[i];
       info.put("ID", dipole.thisID);
       info.put("vector", dipole.vector);
@@ -577,7 +578,7 @@ public class Dipoles extends Shape {
       if (dipole.atoms[0] != null) {
         atomInfo = new Hashtable<String, Object>();
         viewer.getAtomIdentityInfo(dipole.atoms[0].getIndex(), atomInfo);
-        List<Hashtable<String, Object>> atoms = new ArrayList<Hashtable<String,Object>>();
+        List<Map<String, Object>> atoms = new ArrayList<Map<String,Object>>();
         atoms.add(atomInfo);
         atomInfo = new Hashtable<String, Object>();
         viewer.getAtomIdentityInfo(dipole.atoms[1].getIndex(), atomInfo);

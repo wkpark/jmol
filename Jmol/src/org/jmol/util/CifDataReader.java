@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import org.jmol.api.JmolLineReader;
 
@@ -92,7 +93,7 @@ public class CifDataReader {
     return fileHeader.toString();
   }
   
-  public static Hashtable<String, Object> readCifData(BufferedReader br) {
+  public static Map<String, Object> readCifData(BufferedReader br) {
     CifDataReader cdr = new CifDataReader(br);
     return cdr.getAllCifData();
   }
@@ -103,11 +104,11 @@ public class CifDataReader {
    * 
    * @return Hashtable of models Vector of Hashtable data
    */
-  private Hashtable<String, Object> getAllCifData() {
+  private Map<String, Object> getAllCifData() {
     line = "";
     String key;
     allData = new Hashtable<String, Object>();
-    List<Hashtable<String, Object>> models = new ArrayList<Hashtable<String,Object>>();
+    List<Map<String, Object>> models = new ArrayList<Map<String,Object>>();
     allData.put("models", models);
     try {
       while ((key = getNextToken()) != null) {
@@ -400,8 +401,8 @@ public class CifDataReader {
     return str.substring(pt0, pt1);
   }
 
-  Hashtable<String, Object> data;
-  Hashtable<String, Object> allData;
+  Map<String, Object> data;
+  Map<String, Object> allData;
   @SuppressWarnings("unchecked")
   private void getCifLoopData() throws Exception {
     String str;

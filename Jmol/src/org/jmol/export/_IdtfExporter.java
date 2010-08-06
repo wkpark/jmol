@@ -29,12 +29,11 @@
  
 package org.jmol.export;
 
-
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
@@ -248,7 +247,7 @@ public class _IdtfExporter extends __CartesianExporter {
   }
   
   private int iObj;
-  private Hashtable<String, Boolean> htDefs = new Hashtable<String, Boolean>();
+  private Map<String, Boolean> htDefs = new Hashtable<String, Boolean>();
   
   final private Matrix4f m = new Matrix4f();
 
@@ -480,13 +479,12 @@ public class _IdtfExporter extends __CartesianExporter {
   //    return q.q0 + " " + q.q1  + " " + q.q2 + " " + q.q3;
  // }
 
-  private Hashtable<String, List<String>> htNodes = new Hashtable<String, List<String>>();
+  private Map<String, List<String>> htNodes = new Hashtable<String, List<String>>();
   
   private void outputNodes() {
-    Enumeration<String> e = htNodes.keys();
-    while (e.hasMoreElements()) {
-      String key = e.nextElement();
-      List<String> v = htNodes.get(key);
+    for (Map.Entry<String, List<String>> entry : htNodes.entrySet()) {
+      String key = entry.getKey();
+      List<String> v = entry.getValue();
       output("NODE \"MODEL\" {\n");
       output("NODE_NAME \"" + key + "\"\n");
       int n = v.size();
@@ -822,7 +820,7 @@ public class _IdtfExporter extends __CartesianExporter {
                                short[] polygonColixes, int nVertices,
                                int nPolygons, int nFaces, BitSet bsFaces,
                                int faceVertexMax, short colix,
-                               List<Short> colorList, Hashtable<String, String> htColixes,
+                               List<Short> colorList, Map<String, String> htColixes,
                                Point3f offset) {
     addColix(colix, polygonColixes != null || colixes != null);
     if (polygonColixes != null) {

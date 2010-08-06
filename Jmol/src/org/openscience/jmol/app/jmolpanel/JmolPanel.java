@@ -836,8 +836,8 @@ public class JmolPanel extends JPanel implements SplashInterface {
     }
   }
 
-  private Hashtable<String, Action> commands;
-  private Hashtable<String, JMenuItem> menuItems;
+  private Map<String, Action> commands;
+  private Map<String, JMenuItem> menuItems;
   private JMenuBar menubar;
   protected JToolBar toolbar;
 

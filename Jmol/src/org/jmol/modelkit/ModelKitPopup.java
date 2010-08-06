@@ -24,7 +24,6 @@
 package org.jmol.modelkit;
 
 import java.net.URL;
-import java.util.Enumeration;
 
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
@@ -55,9 +54,7 @@ class ModelKitPopup extends SimplePopup {
   @Override
   public void checkMenuClick(Object source, String script) {
     if (script.equals("clearQ")) {
-      for (Enumeration keys = htCheckbox.keys(); keys.hasMoreElements();) {
-        String key = (String) keys.nextElement();
-        JMenuItem item = (JMenuItem) htCheckbox.get(key);
+      for (JMenuItem item : htCheckbox.values()) {
         if (item.getActionCommand().indexOf(":??") < 0)
           continue;
         

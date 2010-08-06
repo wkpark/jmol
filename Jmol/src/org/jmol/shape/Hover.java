@@ -30,6 +30,7 @@ import org.jmol.util.Escape;
 
 import java.util.BitSet;
 import java.util.Hashtable;
+import java.util.Map;
 
 import javax.vecmath.Point3i;
 
@@ -127,7 +128,7 @@ public class Hover extends TextShape {
 
   @Override
   public String getShapeState() {
-    Hashtable<String, BitSet> temp = new Hashtable<String, BitSet>();
+    Map<String, BitSet> temp = new Hashtable<String, BitSet>();
     if (atomFormats != null)
       for (int i = viewer.getAtomCount(); --i >= 0;)
         if (atomFormats[i] != null)

@@ -27,8 +27,8 @@ package org.jmol.export;
 
 
 import java.util.BitSet;
-import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
@@ -251,7 +251,7 @@ public class _TachyonExporter extends __RayTracerExporter {
                                short[] polygonColixes, int nVertices,
                                int nPolygons, int nFaces, BitSet bsFaces,
                                int faceVertexMax, short colix,
-                               List<Short> colorList, Hashtable<String, String> htColixes, Point3f offset) {
+                               List<Short> colorList, Map<String, String> htColixes, Point3f offset) {
     if (polygonColixes != null) {
       boolean isAll = (bsFaces == null);
       int i0 = (isAll ? nPolygons - 1 : bsFaces.nextSetBit(0));

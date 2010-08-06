@@ -30,6 +30,7 @@ import java.awt.Image;
 import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
@@ -119,7 +120,7 @@ abstract public class __CartesianExporter extends ___Exporter {
   }
 
   protected int[] getNormalMap(Vector3f[] normals, int nNormals, List<String> vNormals) {
-    Hashtable<String, Integer> htNormals = new Hashtable<String, Integer>();
+    Map<String, Integer> htNormals = new Hashtable<String, Integer>();
     int[] normalMap = new int[nNormals];
     for (int i = 0; i < nNormals; i++) {
       String s;

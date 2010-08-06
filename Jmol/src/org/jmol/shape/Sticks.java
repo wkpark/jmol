@@ -32,6 +32,7 @@ import org.jmol.viewer.JmolConstants;
 
 import java.util.BitSet;
 import java.util.Hashtable;
+import java.util.Map;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
@@ -202,8 +203,8 @@ public class Sticks extends Shape {
 
   @Override
   public String getShapeState() {
-    Hashtable<String, BitSet> temp = new Hashtable<String, BitSet>();
-    Hashtable<String, BitSet> temp2 = new Hashtable<String, BitSet>();
+    Map<String, BitSet> temp = new Hashtable<String, BitSet>();
+    Map<String, BitSet> temp2 = new Hashtable<String, BitSet>();
     boolean haveTainted = false;
     Bond[] bonds = modelSet.getBonds();
     short r;

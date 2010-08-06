@@ -29,6 +29,7 @@ package org.jmol.modelset;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
@@ -233,8 +234,8 @@ public class BoxInfo {
     return bbVertices;
   }
   
-  Hashtable<String, Object> getBoundBoxInfo() {
-    Hashtable<String, Object> info = new Hashtable<String, Object>();
+  Map<String, Object> getBoundBoxInfo() {
+    Map<String, Object> info = new Hashtable<String, Object>();
     info.put("center", new Point3f(bbCenter));
     info.put("vector", new Vector3f(bbVector));
     info.put("corner0", new Point3f(bbCorner0));

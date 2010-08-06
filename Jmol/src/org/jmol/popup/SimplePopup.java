@@ -34,7 +34,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -75,7 +74,7 @@ public class SimplePopup {
   protected Map<String, Object> modelInfo;
   protected JPopupMenu frankPopup;
 
-  protected Hashtable<String, Object> htMenus = new Hashtable<String, Object>();
+  protected Map<String, Object> htMenus = new Hashtable<String, Object>();
   protected List<Object> NotPDB = new ArrayList<Object>();
   protected List<Object> PDBOnly = new ArrayList<Object>();
   protected List<Object> UnitcellOnly = new ArrayList<Object>();
@@ -156,9 +155,9 @@ public class SimplePopup {
     thisx = x;
     thisy = y;
     updateForShow();
-    for (Enumeration<String> keys = htCheckbox.keys(); keys.hasMoreElements();) {
-      String key = keys.nextElement();
-      Object item = htCheckbox.get(key);
+    for (Map.Entry<String, JMenuItem> entry : htCheckbox.entrySet()) {
+      String key = entry.getKey();
+      Object item = entry.getValue();
       String basename = key.substring(0, key.indexOf(":"));
       boolean b = viewer.getBooleanProperty(basename);
       setCheckBoxState(item, b);
@@ -366,9 +365,9 @@ public class SimplePopup {
     // special considerations here
   }
 
-  protected Hashtable<String, Object> htCheckbox = new Hashtable<String, Object>();
+  protected Map<String, JMenuItem> htCheckbox = new Hashtable<String, JMenuItem>();
 
-  void rememberCheckbox(String key, Object checkboxMenuItem) {
+  void rememberCheckbox(String key, JMenuItem checkboxMenuItem) {
     htCheckbox.put(key + "::" + htCheckbox.size(), checkboxMenuItem);
   }
 
@@ -495,9 +494,9 @@ public class SimplePopup {
     return addMenuItem(menuItem, entry, "", null);
   }
 
-  Object addCheckboxMenuItem(Object menu, String entry, String basename,
+  JMenuItem addCheckboxMenuItem(Object menu, String entry, String basename,
                              String id, boolean isRadio) {
-    Object item = addCheckboxMenuItem(menu, entry, basename, id, false, isRadio);
+    JMenuItem item = addCheckboxMenuItem(menu, entry, basename, id, false, isRadio);
     rememberCheckbox(basename, item);
     return item;
   }
@@ -592,7 +591,7 @@ public class SimplePopup {
       b.setActionCommand(script);
   }
   
-  Object addCheckboxMenuItem(Object menu, String entry, String basename,
+  JMenuItem addCheckboxMenuItem(Object menu, String entry, String basename,
                              String id, boolean state, boolean isRadio) {
     JMenuItem jm;
     if (isRadio) {

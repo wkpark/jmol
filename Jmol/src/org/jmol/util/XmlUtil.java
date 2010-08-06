@@ -27,9 +27,9 @@ package org.jmol.util;
 
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.jmol.script.Token;
 
@@ -197,14 +197,14 @@ public class XmlUtil {
           sb.append(
               escape(null, null, v.get(i), true, indent + "  "));
         value = sb.toString();
-      } else if (value instanceof Hashtable) {
-        Hashtable<String, Object> ht = (Hashtable<String, Object>) value;
+      } else if (value instanceof Map) {
+        Map<String, Object> ht = (Map<String, Object>) value;
         sb = new StringBuffer("\n");
-        Enumeration<String> e = ht.keys();
+        Iterator<String> e = ht.keySet().iterator();
         int n = 0;
-        while (e.hasMoreElements()) {
+        while (e.hasNext()) {
           n++;
-          String name2 = e.nextElement();
+          String name2 = e.next();
           sb.append(
               escape(name2, null, ht.get(name2), true, indent + "  "));
         }

@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Point3f;
@@ -292,7 +293,7 @@ public class _VrmlExporter extends __CartesianExporter {
                                short[] polygonColixes,
                                int nVertices, int nPolygons, int nFaces, BitSet bsFaces,
                                int faceVertexMax, short colix,
-                               List<Short> colorList, Hashtable<String, String> htColixes, Point3f offset) {
+                               List<Short> colorList, Map<String, String> htColixes, Point3f offset) {
     output("Shape {\n");
     outputAppearance(colix, false);
     output(" geometry IndexedFaceSet {\n");
@@ -368,7 +369,7 @@ public class _VrmlExporter extends __CartesianExporter {
   }
 
   protected void outputColorIndices(int[][] indices, int nPolygons, BitSet bsFaces,
-                                  int faceVertexMax, Hashtable<String, String> htColixes,
+                                  int faceVertexMax, Map<String, String> htColixes,
                                   short[] colixes, short[] polygonColixes) {
     boolean isAll = (bsFaces == null);
     int i0 = (isAll ? nPolygons - 1 : bsFaces.nextSetBit(0));
@@ -387,7 +388,7 @@ public class _VrmlExporter extends __CartesianExporter {
     }
   }
 
-  private Hashtable<String, Boolean> htSpheresRendered = new Hashtable<String, Boolean>();
+  private Map<String, Boolean> htSpheresRendered = new Hashtable<String, Boolean>();
 
   @Override
   protected void outputSphere(Point3f ptCenter, float radius, short colix) {

@@ -30,6 +30,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.BitSet;
 import java.util.Hashtable;
+import java.util.Map;
 
 import javax.vecmath.Point3f;
 
@@ -167,7 +168,7 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
     
   }
 
-  protected Hashtable<String, Object> htAtomicPotentials;
+  protected Map<String, Object> htAtomicPotentials;
   
   protected float getTabulatedPotential(Atom atom) {
     String name = atom.getAtomType();

@@ -27,7 +27,7 @@ package org.jmol.shape;
 import org.jmol.g3d.*;
 
 import java.util.BitSet;
-import java.util.Enumeration;
+import java.util.Iterator;
 
 public abstract class TextShape extends Object2dShape {
 
@@ -40,9 +40,9 @@ public abstract class TextShape extends Object2dShape {
       String text = (String) value;
       if (currentObject == null) {
         if (isAll) {
-          Enumeration<Text> e = objects.elements();
-          while (e.hasMoreElements()) {
-            e.nextElement().setText(text);
+          Iterator<Text> e = objects.values().iterator();
+          while (e.hasNext()) {
+            e.next().setText(text);
           }
         }
         return;
@@ -55,9 +55,9 @@ public abstract class TextShape extends Object2dShape {
       currentFont = (Font3D) value;
       if (currentObject == null) {
         if (isAll) {
-          Enumeration<Text> e = objects.elements();
-          while (e.hasMoreElements()) {
-            e.nextElement().setFont(currentFont);
+          Iterator<Text> e = objects.values().iterator();
+          while (e.hasNext()) {
+            e.next().setFont(currentFont);
           }
         }
         return;

@@ -18,25 +18,25 @@ public class GraphCharacteristics{
 	private static final String INTEGRATION_DELIM = ",";
 	private static final int MAX_DECIMALS = 2;
 
-    private boolean _zoomIn; /* Parameter to indicate if "Zoom In" is desired on the graph */
-	private boolean _integrate; /* Parameter to indicate if "Integration" is desired on the graph */
-    private boolean _grid; /* Parameter to indicate if "Grid" is desired on the graph */
-    private boolean _reverse; /* Parameter to indicate if "Reverse" is desired on the graph */
-    private String _allIntegrationValues = null;
-	private Hashtable _integrationValues = null; /* Sorted mapping of integration curve values to be printed */
-    private ArrayList _unsortedIntegrationValues = null; /* Unsorted integration curve value strings */
+  private boolean _zoomIn; /* Parameter to indicate if "Zoom In" is desired on the graph */
+  private boolean _integrate; /* Parameter to indicate if "Integration" is desired on the graph */
+  private boolean _grid; /* Parameter to indicate if "Grid" is desired on the graph */
+  private boolean _reverse; /* Parameter to indicate if "Reverse" is desired on the graph */
+  private String _allIntegrationValues = null;
+  private Map _integrationValues = null; /* Sorted mapping of integration curve values to be printed */
+  private ArrayList _unsortedIntegrationValues = null; /* Unsorted integration curve value strings */
 
 	//Variables to control the various colors in the elements of the graph
-	private String _textColor = null;
-    private String _axisColor = null;
-    private String _axisTextColor = null;
-    private String _integrateCurveColor = null;
-    private String _integrateTextColor = null;
-	private String _graphCurveColor = null;
-	private DecimalFormat _decForm = null;
-	private String _lastPoint = null;
+  private String _textColor = null;
+  private String _axisColor = null;
+  private String _axisTextColor = null;
+  private String _integrateCurveColor = null;
+  private String _integrateTextColor = null;
+  private String _graphCurveColor = null;
+  private DecimalFormat _decForm = null;
+  private String _lastPoint = null;
 
-	public GraphCharacteristics(){
+  public GraphCharacteristics(){
 		this._zoomIn = false;
 		this._integrate = false;
 		this._grid = false;
@@ -73,7 +73,7 @@ public class GraphCharacteristics{
 	public void setIntegrationValues(ArrayList unsortedIntegrationValues){
 		String[] _temp = null; // Output of the String split operation
 		String _tempString = new String();
-		Hashtable _tempTable = new Hashtable(); // Temp Storage for values extracted from the integration values string
+		Map _tempTable = new Hashtable(); // Temp Storage for values extracted from the integration values string
 
 		for(int i=0;i<unsortedIntegrationValues.size();i++){
 			_tempString = (String) unsortedIntegrationValues.get(i);

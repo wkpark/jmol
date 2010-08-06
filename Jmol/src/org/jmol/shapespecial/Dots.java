@@ -38,6 +38,7 @@ import org.jmol.modelset.Atom;
 
 import java.util.BitSet;
 import java.util.Hashtable;
+import java.util.Map;
 
 public class Dots extends AtomShape {
 
@@ -285,7 +286,7 @@ public class Dots extends AtomShape {
     if (dotsConvexMaps == null || ec.getDotsConvexMax() == 0)
       return "";
     StringBuffer s = new StringBuffer();
-    Hashtable<String, BitSet> temp = new Hashtable<String, BitSet>();
+    Map<String, BitSet> temp = new Hashtable<String, BitSet>();
     int atomCount = viewer.getAtomCount();
     String type = (isSurface ? "geoSurface " : "dots ");
     for (int i = 0; i < atomCount; i++) {

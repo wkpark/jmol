@@ -26,6 +26,7 @@
 package org.jmol.shape;
 
 import java.util.BitSet;
+import java.util.Map;
 
 import org.jmol.atomdata.RadiusData;
 import org.jmol.g3d.Graphics3D;
@@ -144,7 +145,7 @@ public void setVisibilityFlags(BitSet bs) {
 
  @Override
 public String getShapeState() {
-    Hashtable<String, BitSet> temp = new Hashtable<String, BitSet>();
+    Map<String, BitSet> temp = new Hashtable<String, BitSet>();
     float r = 0;
     for (int i = 0; i < atomCount; i++) {
       if (bsSizeSet != null && bsSizeSet.get(i)) {

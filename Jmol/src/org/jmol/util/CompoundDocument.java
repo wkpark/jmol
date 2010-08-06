@@ -28,8 +28,8 @@ import java.io.DataInputStream;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 
 /* a simple compound document reader. 
@@ -144,7 +144,7 @@ public class CompoundDocument extends BinaryDocument {
    * @param fileData
    */
   public void getAllData(String prefix, 
-                         String binaryFileList, Hashtable<String, String> fileData) {
+                         String binaryFileList, Map<String, String> fileData) {
     fileData.put("#Directory_Listing", getDirectoryListing("|"));
     binaryFileList = "|" + binaryFileList + "|";
     for (int i = 0; i < directory.size(); i++) {

@@ -32,6 +32,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.PixelGrabber;
 import java.util.Hashtable;
+import java.util.Map;
 
 import org.jmol.api.JmolRendererInterface;
 
@@ -414,8 +415,8 @@ public class Text3D {
     */
   }
 
-  private final static Hashtable<Font3D, Hashtable<String, Text3D>> htFont3d = new Hashtable<Font3D, Hashtable<String, Text3D>>();
-  private final static Hashtable<Font3D, Hashtable<String, Text3D>> htFont3dAntialias = new Hashtable<Font3D, Hashtable<String, Text3D>>();
+  private final static Map<Font3D, Map<String, Text3D>> htFont3d = new Hashtable<Font3D, Map<String, Text3D>>();
+  private final static Map<Font3D, Map<String, Text3D>> htFont3dAntialias = new Hashtable<Font3D, Map<String, Text3D>>();
   private static boolean working;
   
   public synchronized static void clearFontCache() {
@@ -436,8 +437,8 @@ public class Text3D {
                                                String text, Font3D font3d,
                                                boolean antialias) {
     working = true;
-    Hashtable<Font3D, Hashtable<String, Text3D>> ht = (antialias ? htFont3dAntialias : htFont3d);
-    Hashtable<String, Text3D> htForThisFont = ht.get(font3d);
+    Map<Font3D, Map<String, Text3D>> ht = (antialias ? htFont3dAntialias : htFont3d);
+    Map<String, Text3D> htForThisFont = ht.get(font3d);
     Text3D text3d = null;
     boolean newFont = false;
     boolean newText = false;

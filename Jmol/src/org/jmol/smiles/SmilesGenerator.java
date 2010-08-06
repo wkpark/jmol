@@ -26,9 +26,10 @@ package org.jmol.smiles;
 
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Hashtable;
-import java.util.Enumeration;
+import java.util.Map;
 
 import org.jmol.api.JmolMolecule;
 import org.jmol.api.JmolNode;
@@ -70,8 +71,8 @@ public class SmilesGenerator {
   
   // outputs
 
-  private Hashtable<String, Object[]> htRingsSequence = new Hashtable<String, Object[]>();
-  private Hashtable<String, Object[]> htRings = new Hashtable<String, Object[]>();
+  private Map<String, Object[]> htRingsSequence = new Hashtable<String, Object[]>();
+  private Map<String, Object[]> htRings = new Hashtable<String, Object[]>();
   private BitSet bsIncludingH;
 
   // generation of SMILES strings
@@ -249,9 +250,9 @@ public class SmilesGenerator {
     }
     while (bsToDo.cardinality() > 0 || !htRings.isEmpty()) {
       //System.out.println(bsToDo);
-      Enumeration<String> e = htRings.keys();
-      if (e.hasMoreElements()) {
-        atom = atoms[((Integer) (htRings.get(e.nextElement()))[1])
+      Iterator<String> e = htRings.keySet().iterator();
+      if (e.hasNext()) {
+        atom = atoms[((Integer) (htRings.get(e.next()))[1])
             .intValue()];
         if (!bsToDo.get(atom.getIndex()))
           break;
@@ -658,7 +659,7 @@ public class SmilesGenerator {
     return atomNext;
   }
 
-  private String getRingCache(int i0, int i1, Hashtable<String, Object[]> ht) {
+  private String getRingCache(int i0, int i1, Map<String, Object[]> ht) {
     String key = getRingKey(i0, i1);
     Object[] o = ht.get(key);
     String s = (o == null ? null : (String) o[0]);
@@ -675,11 +676,11 @@ public class SmilesGenerator {
     return s;//  + " _" + key + "_ \n";
   }
 
-  private void dumpRingKeys(StringBuffer sb, Hashtable<String, Object[]> ht) {
+  private void dumpRingKeys(StringBuffer sb, Map<String, Object[]> ht) {
     Logger.info(sb.toString() + "\n\n");
-    Enumeration<String> e = ht.keys();
-    while (e.hasMoreElements()) {
-      Logger.info("unmatched ring key: " + e.nextElement());
+    Iterator<String> e = ht.keySet().iterator();
+    while (e.hasNext()) {
+      Logger.info("unmatched ring key: " + e.next());
     }
   }
 

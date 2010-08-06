@@ -27,6 +27,7 @@ package org.jmol.shapebio;
 
 import java.util.BitSet;
 import java.util.Hashtable;
+import java.util.Map;
 
 import org.jmol.atomdata.RadiusData;
 import org.jmol.g3d.Graphics3D;
@@ -143,8 +144,8 @@ public abstract class BioShapeCollection extends Shape {
 
   @Override
   public String getShapeState() {
-    Hashtable<String, BitSet> temp = new Hashtable<String, BitSet>();
-    Hashtable<String, BitSet> temp2 = new Hashtable<String, BitSet>();    
+    Map<String, BitSet> temp = new Hashtable<String, BitSet>();
+    Map<String, BitSet> temp2 = new Hashtable<String, BitSet>();    
     for (int i = bioShapes.length; --i >= 0; ) {
       BioShape bioShape = bioShapes[i];
       if (bioShape.monomerCount > 0)

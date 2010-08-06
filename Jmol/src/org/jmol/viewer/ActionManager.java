@@ -27,9 +27,10 @@ import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.Point3f;
 
@@ -341,12 +342,12 @@ public class ActionManager {
     return -1;
   }
 
-  public Hashtable<String, Object> getMouseInfo() {
-    Hashtable<String, Object> info = new Hashtable<String, Object>();
+  public Map<String, Object> getMouseInfo() {
+    Map<String, Object> info = new Hashtable<String, Object>();
     List<Object> vb = new ArrayList<Object>();
-    Enumeration<Object> e = binding.getBindings().elements();
-    while (e.hasMoreElements()) {
-      Object obj = e.nextElement();
+    Iterator<Object> e = binding.getBindings().values().iterator();
+    while (e.hasNext()) {
+      Object obj = e.next();
       if (obj instanceof Boolean)
         continue;
       if (obj instanceof int[]) {
@@ -1185,12 +1186,12 @@ public class ActionManager {
                                   int deltaX, int deltaY, long time, int mode) {
     if (!binding.isUserAction(action))
       return false;
-    Hashtable<String, Object> ht = binding.getBindings();
-    Enumeration<String> e = ht.keys();
+    Map<String, Object> ht = binding.getBindings();
+    Iterator<String> e = ht.keySet().iterator();
     boolean ret = false;
     Object obj;
-    while (e.hasMoreElements()) {
-      String key = e.nextElement();
+    while (e.hasNext()) {
+      String key = e.next();
       if (key.indexOf(action + "\t") != 0 
           || !((obj = ht.get(key)) instanceof String[]))
         continue;
@@ -1417,14 +1418,14 @@ public class ActionManager {
     exitMeasurementMode();
   }
 
-  Hashtable<String, TimeoutThread> timeouts;
+  Map<String, TimeoutThread> timeouts;
   
   public String showTimeout(String name) {
     StringBuffer sb = new StringBuffer();
     if (timeouts != null) {
-      Enumeration<TimeoutThread> e = timeouts.elements();
-      while (e.hasMoreElements()) {
-        TimeoutThread t = e.nextElement();
+      Iterator<TimeoutThread> e = timeouts.values().iterator();
+      while (e.hasNext()) {
+        TimeoutThread t = e.next();
         if (name == null || t.name.equalsIgnoreCase(name))
           sb.append(t.toString()).append("\n");
       }
@@ -1435,9 +1436,9 @@ public class ActionManager {
   public void clearTimeouts() {
     if (timeouts == null)
       return;
-    Enumeration<TimeoutThread> e = timeouts.elements();
-    while (e.hasMoreElements()) {
-      e.nextElement().interrupt();
+    Iterator<TimeoutThread> e = timeouts.values().iterator();
+    while (e.hasNext()) {
+      e.next().interrupt();
     }
     timeouts.clear();    
   }

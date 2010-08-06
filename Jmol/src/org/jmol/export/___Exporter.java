@@ -39,6 +39,7 @@ import java.util.BitSet;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
@@ -380,7 +381,7 @@ public abstract class ___Exporter {
    * @return Vector and HashTable
    */
   protected List<Short> getColorList(int i00, short[] colixes, int nVertices,
-                                BitSet bsSelected, Hashtable<String, String> htColixes) {
+                                BitSet bsSelected, Map<String, String> htColixes) {
     String color;
     int nColix = 0;
     List<Short> list = new ArrayList<Short>();
@@ -484,7 +485,7 @@ public abstract class ___Exporter {
       nFaces += (faceVertexMax == 4 && indices[i].length == 4 ? 2 : 1);
     if (nFaces == 0)
       return;
-    Hashtable<String, String> htColixes = new Hashtable<String, String>();
+    Map<String, String> htColixes = new Hashtable<String, String>();
     List<Short> colorList = null;
     if (polygonColixes != null)
       colorList = getColorList(0, polygonColixes, nPolygons, bsFaces, htColixes);
@@ -500,7 +501,7 @@ public abstract class ___Exporter {
                                 short[] polygonColixes,
                                 int nVertices, int nPolygons, int nFaces, BitSet bsFaces,
                                 int faceVertexMax, short colix, List<Short> colorList,
-                                Hashtable<String, String> htColixes, Point3f offset);
+                                Map<String, String> htColixes, Point3f offset);
 
   abstract void drawPixel(short colix, int x, int y, int z, int scale); //measures
   

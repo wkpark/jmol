@@ -112,16 +112,15 @@
 
 package org.jmol.jvxl.readers;
 
-
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
-import java.util.Hashtable;
 import java.util.BitSet;
 import java.util.List;
+import java.util.Map;
 
 import org.jmol.atomdata.RadiusData;
 import org.jmol.util.Escape;
@@ -616,8 +615,8 @@ public class Parameters {
   final static int QM_TYPE_GAUSSIAN = 1;
   final static int QM_TYPE_SLATER = 2;
   
-  Hashtable<String, Object> moData;
-  Hashtable<String, Object> mo;
+  Map<String, Object> moData;
+  Map<String, Object> mo;
   float[] moCoefficients;
   int[][] dfCoefMaps;
   public final static int MO_MAX_GRID = 80;
@@ -657,7 +656,7 @@ public class Parameters {
           title[3] = "?Symmetry = %S";
           title[4] = "?Occupancy = %O";
         }
-        mo = (Hashtable<String, Object>) mos.get(qm_moNumber - 1);
+        mo = (Map<String, Object>) mos.get(qm_moNumber - 1);
         moCoefficients = (float[]) mo.get("coefficients");
         dfCoefMaps = (int[][]) mo.get("dfCoefMaps");
       }

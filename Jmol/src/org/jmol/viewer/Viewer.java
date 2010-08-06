@@ -168,7 +168,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private ColorManager colorManager;
 
   public ScriptCompiler compiler;
-  public Hashtable<String, Object> definedAtomSets;
+  public Map<String, Object> definedAtomSets;
 
   private SymmetryInterface symmetry;
 

@@ -28,9 +28,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
@@ -1647,7 +1647,7 @@ public class ScriptEvaluator {
   private Thread currentThread;
   protected Viewer viewer;
   protected ScriptCompiler compiler;
-  private Hashtable<String, Object> definedAtomSets;
+  private Map<String, Object> definedAtomSets;
   private StringBuffer outputBuffer;
 
   private String contextPath = "";
@@ -2054,12 +2054,11 @@ public class ScriptEvaluator {
   }
 
   public void deleteAtomsInVariables(BitSet bsDeleted) {
-    Enumeration<String> e = definedAtomSets.keys();
-    while (e.hasMoreElements()) {
-      String key = e.nextElement();
-      Object value = definedAtomSets.get(key);
-      if (value instanceof BitSet)
+    for (Map.Entry<String, Object> entry : definedAtomSets.entrySet()) {
+      Object value = entry.getValue();
+      if (value instanceof BitSet) {
         BitSetUtil.deleteBits((BitSet) value, bsDeleted);
+      }
     }
   }
 

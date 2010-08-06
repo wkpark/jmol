@@ -34,7 +34,7 @@ class ScriptManager {
   Viewer viewer;
   Thread[] queueThreads = new Thread[2];
   boolean[] scriptQueueRunning = new boolean[2];
-  List scriptQueue = new ArrayList();
+  List<List<Object>> scriptQueue = new ArrayList<List<Object>>();
   Thread commandWatcherThread;
 
   ScriptManager(Viewer viewer) {
@@ -115,7 +115,7 @@ class ScriptManager {
 
   public synchronized void flushQueue(String command) {
     for (int i = scriptQueue.size(); --i >= 0;) {
-      String strScript = (String) (((List) scriptQueue.get(i)).get(0));
+      String strScript = (String) (scriptQueue.get(i).get(0));
       if (strScript.indexOf(command) == 0) {
         scriptQueue.remove(i);
         if (Logger.debugging)
@@ -137,8 +137,8 @@ class ScriptManager {
     queueThreads[pt].start();
   }
 
-  List getScriptItem(boolean watching, boolean isByCommandWatcher) {
-    List scriptItem = (List) scriptQueue.get(0);
+  List<Object> getScriptItem(boolean watching, boolean isByCommandWatcher) {
+    List<Object> scriptItem = scriptQueue.get(0);
     int flag = (((Integer) scriptItem.get(5)).intValue());
     boolean isOK = (watching ? flag < 0 
         : isByCommandWatcher ? flag == 0
@@ -188,7 +188,7 @@ class ScriptManager {
       if (scriptQueue.size() == 0)
         return false;
       //Logger.info("SCRIPT QUEUE BUSY" +  scriptQueue.size());
-      List scriptItem = getScriptItem(false, startedByCommandThread);
+      List<Object> scriptItem = getScriptItem(false, startedByCommandThread);
       if (scriptItem == null)
         return false;
       String script = (String) scriptItem.get(0);
@@ -286,7 +286,7 @@ class ScriptManager {
           Thread.sleep(commandDelay);
           if (commandWatcherThread != null) {
             if (scriptQueue.size() > 0) {
-              List scriptItem = getScriptItem(true, true);
+              List<Object> scriptItem = getScriptItem(true, true);
               if (scriptItem != null) {
                 scriptItem.set(5, Integer.valueOf(0));
                 startScriptQueue(true);

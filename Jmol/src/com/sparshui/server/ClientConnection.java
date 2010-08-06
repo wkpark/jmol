@@ -2,7 +2,7 @@ package com.sparshui.server;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 
 import com.sparshui.gestures.GestureType;
@@ -23,7 +23,7 @@ class ClientConnection {
 	/**
 	 * 
 	 */
-	private HashMap<Integer, Group> _groups;
+	private Hashtable<Integer, Group> _groups;
 
 	/**
 	 * Instantiate the connection on the specified socket.
@@ -35,7 +35,7 @@ class ClientConnection {
 	 */
 	ClientConnection(Socket socket) throws IOException {
 		_protocol = new ServerToClientProtocol(socket);
-		_groups = new HashMap<Integer, Group>();
+		_groups = new Hashtable<Integer, Group>();
 	}
 
 	/**
@@ -55,7 +55,7 @@ class ClientConnection {
       switch (jmolFlags) {
       case 0x10000000:
         // reset flag
-        _groups = new HashMap<Integer, Group>();
+        _groups = new Hashtable<Integer, Group>();
         break;
       }
       groupID &= ~jmolFlags;

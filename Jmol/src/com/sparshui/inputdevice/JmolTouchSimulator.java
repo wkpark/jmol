@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -36,7 +36,7 @@ import com.sparshui.common.TouchState;
 public class JmolTouchSimulator implements JmolTouchSimulatorInterface {
 
   private TreeSet<TouchData> _events = new TreeSet<TouchData>(new TouchDataComparator());
-	protected HashMap<Integer, TouchData> _active = new HashMap<Integer, TouchData>();
+	protected Hashtable<Integer, TouchData> _active = new Hashtable<Integer, TouchData>();
 	private boolean _recording = false;
 	private int _touchID = 0;
 	private long _when = 0;
@@ -166,9 +166,9 @@ public class JmolTouchSimulator implements JmolTouchSimulatorInterface {
 	private void dispatchTouchEvents() {
 	  Iterator<TouchData> it = _events.iterator();
 	  while (it.hasNext()) {
-		  TouchData e = it.next();
-			TouchTimerTask task = new TouchTimerTask(e);
-			_timer.schedule(task, e.delay + 250);
+		  TouchData data = it.next();
+			TouchTimerTask task = new TouchTimerTask(data);
+			_timer.schedule(task, data.delay + 250);
 		}
 		_events.clear();
 		_touchID = 0;
@@ -182,21 +182,21 @@ public class JmolTouchSimulator implements JmolTouchSimulatorInterface {
 	 * server return == (byte) 1 --> do consume this event
 	 * server return == (byte) 0 --> do not consume this event
 	 * 
-	 * @param e
+	 * @param data
 	 */
-	protected void dispatchTouchEvent(TouchData e) {
+	protected void dispatchTouchEvent(TouchData data) {
     Toolkit tk = Toolkit.getDefaultToolkit();
     Dimension dim = tk.getScreenSize();
     if (Logger.debugging)
-      Logger.debug("[JmolTouchSimulator] dispatchTouchEvent("+e.id+", "+e.x+", "+e.y+", "+e.type+")");
+      Logger.debug("[JmolTouchSimulator] dispatchTouchEvent("+data.id+", "+data.x+", "+data.y+", "+data.type+")");
     try {
       _out.writeInt(-1);
       _out.writeInt(21);
-      _out.writeInt(e.id);
-      _out.writeFloat(((float) e.x / (float) dim.width));
-      _out.writeFloat(((float) e.y / (float) dim.height));
-      _out.writeByte((byte) e.type);
-      _out.writeLong(e.when);
+      _out.writeInt(data.id);
+      _out.writeFloat(((float) data.x / (float) dim.width));
+      _out.writeFloat(((float) data.y / (float) dim.height));
+      _out.writeByte((byte) data.type);
+      _out.writeLong(data.when);
       //boolean doConsume = (_in.readByte() == 1);
       //if (Logger.debugging)
        // System.out.println("[JmolTouchSimulator] doConsume=" + doConsume);
@@ -223,22 +223,22 @@ public class JmolTouchSimulator implements JmolTouchSimulatorInterface {
 	}
 	
 	private class TouchTimerTask extends TimerTask {
-		private TouchData e;
+		private TouchData data;
 		
-		TouchTimerTask(TouchData e) {
-			this.e = e;
+		TouchTimerTask(TouchData data) {
+			this.data = data;
 		}
 
 		//@Override
 		@Override
     public void run() {
-		  Thread.currentThread().setName("JmolTouchSimulator for type " + e.id);
-			dispatchTouchEvent(e);
-			Integer iid = Integer.valueOf(e.id);
-			if(e.type == TouchState.DEATH) {
+		  Thread.currentThread().setName("JmolTouchSimulator for type " + data.id);
+			dispatchTouchEvent(data);
+			Integer iid = Integer.valueOf(data.id);
+			if(data.type == TouchState.DEATH) {
         _active.remove(iid);
 			} else {
-        _active.put(iid, e);
+        _active.put(iid, data);
 			}
       Thread.currentThread().setName("JmolTouchSimulator idle");
 		}

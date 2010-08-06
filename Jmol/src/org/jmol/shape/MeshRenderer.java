@@ -136,7 +136,12 @@ public abstract class MeshRenderer extends ShapeRenderer {
   // DO NOT change parameters without first checking for the
   // same method in a subclass.
   
-  protected boolean isPolygonDisplayable(@SuppressWarnings("unused") int i) {
+  /**
+   * @param i 
+   * @return T/F
+   * 
+   */
+  protected boolean isPolygonDisplayable(int i) {
     return true;
   }
 

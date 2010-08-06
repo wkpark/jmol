@@ -1172,7 +1172,13 @@ public class FileManager {
     return msg + " " + nBytes + " " + fullFilePath;
   }
 
-  @SuppressWarnings("unused") 
+  /**
+   * not implemented 
+   * @param outFileName
+   * @param bytes
+   * @return posted results
+   * 
+   */
   private static String postByteArray(String outFileName, byte[] bytes) {
     //getInputStreamOrPost(outFileName, false, bytes, false, null, null);
     return null;
@@ -1453,7 +1459,11 @@ public class FileManager {
     }
     
     int ptMark;
-    public void mark(@SuppressWarnings("unused") long ptr) {
+    /**
+     * 
+     * @param ptr
+     */
+    public void mark(long ptr) {
       //ignore ptr.
       ptMark = pt;
     }
@@ -1501,7 +1511,11 @@ public class FileManager {
     }
     
     int ptMark;
-    public void mark(@SuppressWarnings("unused") long ptr) {
+    /**
+     * 
+     * @param ptr
+     */
+    public void mark(long ptr) {
       //ignore ptr.
       ptMark = pt;
     }

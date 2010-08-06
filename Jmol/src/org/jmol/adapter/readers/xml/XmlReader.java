@@ -30,7 +30,7 @@ import org.xml.sax.*;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.io.*;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 
 import netscape.javascript.JSObject;
@@ -72,7 +72,7 @@ import org.jmol.util.Logger;
  * Note that the tag processing routines are shared between SAX 
  * and DOM processors. This means that attributes must be
  * transformed from either Attributes (SAX) or JSObjects (DOM)
- * to HashMap name:value pairs. This is taken care of in JmolXmlHandler
+ * to Hashtable name:value pairs. This is taken care of in JmolXmlHandler
  * for all readers. 
  * 
  * TODO 27/8/06:
@@ -429,21 +429,21 @@ public void readAtomSetCollectionFromDOM(Object Node) {
 
     private void getAttributes(Attributes attributes) {
       int nAtts = attributes.getLength();
-      atts = new HashMap<String, String>(nAtts);
+      atts = new Hashtable<String, String>(nAtts);
       for (int i = nAtts; --i >= 0;)
         atts.put(attributes.getLocalName(i), attributes.getValue(i));
     }
 
     private void getAttributes(JSObject attributes) {
       if (attributes == null) {
-        atts = new HashMap<String, String>(0);
+        atts = new Hashtable<String, String>(0);
         return;
       }
 
       // load up only the implemented attributes
 
       int nAtts = ((Number) attributes.getMember("length")).intValue();
-      atts = new HashMap<String, String>(nAtts);
+      atts = new Hashtable<String, String>(nAtts);
       for (int i = implementedAttributes.length; --i >= 0;) {
         Object[] attArgs = { implementedAttributes[i] };
         JSObject attNode = (JSObject) attributes.call("getNamedItem", attArgs);

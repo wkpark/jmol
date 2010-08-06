@@ -43,7 +43,7 @@ public class AlphaMonomer extends Monomer {
   static Monomer
     validateAndAllocate(Chain chain, String group3, int seqcode,
                         int firstIndex, int lastIndex,
-                        int[] specialAtomIndexes, Atom[] atoms) {
+                        int[] specialAtomIndexes) {
     if (firstIndex != lastIndex ||
         specialAtomIndexes[JmolConstants.ATOMID_ALPHA_CARBON] != firstIndex)
       return null;

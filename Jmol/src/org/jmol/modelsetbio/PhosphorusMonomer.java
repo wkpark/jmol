@@ -45,7 +45,7 @@ public class PhosphorusMonomer extends Monomer {
   static Monomer
     validateAndAllocate(Chain chain, String group3, int seqcode,
                         int firstIndex, int lastIndex,
-                        int[] specialAtomIndexes, Atom[] atoms) {
+                        int[] specialAtomIndexes) {
     //Logger.debug("PhosphorusMonomer.validateAndAllocate");
     if (firstIndex != lastIndex ||
         specialAtomIndexes[JmolConstants.ATOMID_NUCLEIC_PHOSPHORUS]

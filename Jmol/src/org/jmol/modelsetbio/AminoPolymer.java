@@ -106,7 +106,7 @@ public class AminoPolymer extends AlphaPolymer {
       float dist2 = sourceAlphaPoint.distanceSquared(targetAlphaPoint);
       if (dist2 > maxHbondAlphaDistance2)
         continue;
-      int energy = calcHbondEnergy(source.getNitrogenAtom(), sourceNitrogenPoint, hydrogenPoint, target);
+      int energy = calcHbondEnergy(sourceNitrogenPoint, hydrogenPoint, target);
       if (energy < energyMin1) {
         energyMin2 = energyMin1;
         indexMin2 = indexMin1;
@@ -126,7 +126,7 @@ public class AminoPolymer extends AlphaPolymer {
   }
 
   //private int hPtr = 0;
-  private int calcHbondEnergy(Atom nitrogen, Point3f nitrogenPoint,
+  private int calcHbondEnergy(Point3f nitrogenPoint,
                       Point3f hydrogenPoint, AminoMonomer target) {
     Point3f targetOxygenPoint = target.getCarbonylOxygenAtom();
 

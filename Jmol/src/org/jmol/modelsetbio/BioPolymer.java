@@ -579,6 +579,30 @@ public abstract class BioPolymer extends Polymer {
           pdbATOM, pdbCONECT);
   }
   
+  /**
+   * 
+   * @param viewer
+   * @param m0
+   * @param mStep
+   * @param p
+   * @param ctype
+   * @param qtype
+   * @param derivType
+   * @param bsAtoms
+   * @param bsSelected
+   * @param bsWritten
+   * @param isDraw
+   * @param isRamachandran
+   * @param calcRamachandranStraightness
+   * @param useQuaternionStraightness
+   * @param writeRamachandranStraightness
+   * @param quaternionStraightness          NOT USED
+   * @param factor
+   * @param isAmino
+   * @param isRelativeAlias
+   * @param pdbATOM
+   * @param pdbCONECT
+   */
   private static void getData(Viewer viewer, int m0, int mStep, BioPolymer p,
                               char ctype, char qtype, int derivType,
                               BitSet bsAtoms, BitSet bsSelected,
@@ -890,12 +914,25 @@ public abstract class BioPolymer extends Polymer {
     }
   }
 
+  /**
+   * 
+   * @param m
+   * @param qtype
+   * @return  calculated value
+   */
   protected float calculateRamachandranHelixAngle(int m, char qtype) {
     return Float.NaN;
   }
 
   // starting with Jmol 11.7.47, dq is defined so as to LEAD TO
   // the target atom, not LEAD FROM it. 
+  /**
+   * @param id for debugging only
+   * @param dq 
+   * @param dqnext 
+   * @return  calculated straightness
+   * 
+   */
   private static float get3DStraightness(String id, Quaternion dq,
                                        Quaternion dqnext) {
     // 
@@ -904,6 +941,13 @@ public abstract class BioPolymer extends Polymer {
     return dq.getNormal().dot(dqnext.getNormal());
   }
 
+  /**
+   * 
+   * @param id  for debugging only
+   * @param dq
+   * @param dqnext
+   * @return straightness
+   */
   private static float getQuaternionStraightness(String id, Quaternion dq,
                                                  Quaternion dqnext) {
     // 

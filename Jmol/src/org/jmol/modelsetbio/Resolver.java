@@ -93,16 +93,16 @@ public final class Resolver implements JmolBioResolver {
           firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms);
     if (distinguishingBits == JmolConstants.ATOMID_ALPHA_ONLY_MASK)
       return AlphaMonomer.validateAndAllocate(chain, group3, seqcode,
-          firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms);
+          firstAtomIndex, lastAtomIndex, specialAtomIndexes);
     if (((distinguishingBits & JmolConstants.ATOMID_NUCLEIC_MASK) == JmolConstants.ATOMID_NUCLEIC_MASK))
       return NucleicMonomer.validateAndAllocate(chain, group3, seqcode,
-          firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms);
+          firstAtomIndex, lastAtomIndex, specialAtomIndexes);
     if (distinguishingBits == JmolConstants.ATOMID_PHOSPHORUS_ONLY_MASK)
       return PhosphorusMonomer.validateAndAllocate(chain, group3, seqcode,
-          firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms);
+          firstAtomIndex, lastAtomIndex, specialAtomIndexes);
     if (JmolConstants.checkCarbohydrate(group3))
       return CarbohydrateMonomer.validateAndAllocate(chain, group3, seqcode,
-          firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms);
+          firstAtomIndex, lastAtomIndex);
     return null;
   }   
   

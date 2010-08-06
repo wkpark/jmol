@@ -33,8 +33,7 @@ public class CarbohydrateMonomer extends Monomer {
 
   static Monomer
     validateAndAllocate(Chain chain, String group3, int seqcode,
-                        int firstIndex, int lastIndex,
-                        int[] specialAtomIndexes, Atom[] atoms) {
+                        int firstIndex, int lastIndex) {
     return new CarbohydrateMonomer(chain, group3, seqcode,
                             firstIndex, lastIndex, alphaOffsets);
   }

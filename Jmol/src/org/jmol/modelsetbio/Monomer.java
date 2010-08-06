@@ -157,7 +157,12 @@ public abstract class Monomer extends Group {
 
   ////////////////////////////////////////////////////////////////
 
+  /**
+   * @param proteinstructure 
+   * 
+   */
   void setStructure(ProteinStructure proteinstructure) { }
+
   public ProteinStructure getProteinStructure() { return null; }
   @Override
   public byte getProteinStructureType() { return JmolConstants.PROTEIN_STRUCTURE_NONE; }
@@ -280,7 +285,7 @@ public abstract class Monomer extends Group {
   public boolean haveParameters() {
     return bioPolymer.haveParameters;
   }
-
+  
   public Hashtable<String, Object> getMyInfo() {
     Hashtable<String, Object> info = new Hashtable<String, Object>();
     char chainID = chain.getChainID();
@@ -347,6 +352,11 @@ public abstract class Monomer extends Group {
     return true;
   }
 
+  /**
+   * 
+   * @param qtype
+   * @return center
+   */
   Point3f getQuaternionFrameCenter(char qtype) {
     return null; 
   }

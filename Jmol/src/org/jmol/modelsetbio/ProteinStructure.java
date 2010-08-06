@@ -48,6 +48,14 @@ public abstract class ProteinStructure {
   public int serialID;
   public int strandCount;
   
+  /**
+   * 
+   * @param apolymer
+   * @param type
+   * @param monomerIndex
+   * @param monomerCount
+   * @param id              UNUSED
+   */
   ProteinStructure(AlphaPolymer apolymer, byte type,
                    int monomerIndex, int monomerCount, int id) {
     uniqueID = ++globalSerialID;

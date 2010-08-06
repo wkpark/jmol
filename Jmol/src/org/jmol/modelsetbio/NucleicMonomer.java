@@ -128,7 +128,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
   public static Monomer
     validateAndAllocate(Chain chain, String group3, int seqcode,
                         int firstAtomIndex, int lastAtomIndex,
-                        int[] specialAtomIndexes, Atom[] atoms) {
+                        int[] specialAtomIndexes) {
 
     byte[] offsets = scanForOffsets(firstAtomIndex,
                                     specialAtomIndexes,

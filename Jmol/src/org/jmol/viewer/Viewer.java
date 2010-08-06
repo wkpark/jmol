@@ -8523,13 +8523,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return 0;
   }
 
-  public Object getFileAsImage(String pathName, Hashtable<String, Object> htParams) {
-    if (!haveDisplay)
-      return "no display";
-    Object obj = fileManager.getFileAsImage(pathName, htParams);
-    if (obj instanceof String)
-      return obj;
-    Image image = (Image) obj;
+  public Image getFileAsImage(String pathName, String[] retFileNameOrError) {
+    if (!haveDisplay) {
+      retFileNameOrError[0] = "no display";
+      return null;
+    }
+    Image image = fileManager.getFileAsImage(pathName, retFileNameOrError);
+    if (image == null)
+      return null;
     MediaTracker tracker = new MediaTracker(display);
     tracker.addImage(image, 0);
     try {

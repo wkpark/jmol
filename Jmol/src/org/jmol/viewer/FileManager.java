@@ -739,25 +739,32 @@ public class FileManager {
     }
   }
 
-  Object getFileAsImage(String name, Hashtable<String, Object> htParams) {
-    if (name == null)
-      return "";
+  Image getFileAsImage(String name, String[] retFileNameOrError) {
+    if (name == null) {
+      retFileNameOrError[0] = "";
+      return null;
+    }
     String[] names = classifyName(name, true);
-    if (names == null)
-      return "cannot read file name: " + name;
+    if (names == null) {
+      retFileNameOrError[0] = "cannot read file name: " + name;
+      return null;
+    }
     Image image = null;
     //try {
     String fullPathName = names[0].replace('\\', '/');
     if (fullPathName.indexOf("|") > 0) {
       Object ret = getFileAsBytes(fullPathName, null);
-      if (!(ret instanceof byte[]))
-        return "" + ret;
+      if (!(ret instanceof byte[])) {
+        retFileNameOrError[0] = "" + ret;
+        return null;
+      }
       image = Toolkit.getDefaultToolkit().createImage((byte[]) ret);
     } else if (urlTypeIndex(fullPathName) >= 0) {
       try {
         image = Toolkit.getDefaultToolkit().createImage(new URL(fullPathName));
       } catch (Exception e) {
-        return "bad URL: " + fullPathName;
+        retFileNameOrError[0] = "bad URL: " + fullPathName;
+        return null;
       }
     } else {
       image = Toolkit.getDefaultToolkit().createImage(fullPathName);
@@ -779,11 +786,14 @@ public class FileManager {
        at sun.awt.image.ImageFetcher.run(Unknown Source)
        */
     } catch (Exception e) {
-      return e.getMessage() + " opening " + fullPathName;
+      retFileNameOrError[0] = e.getMessage() + " opening " + fullPathName;
+      return null;
     }
-    if (image.getWidth(null) < 1)
-      return "invalid or missing image " + fullPathName;
-    htParams.put("fullPathName", fullPathName);
+    if (image.getWidth(null) < 1) {
+      retFileNameOrError[0] = "invalid or missing image " + fullPathName;
+      return null;
+    }
+    retFileNameOrError[0] = fullPathName;
     return image;
   }
 

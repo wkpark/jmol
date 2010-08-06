@@ -86,7 +86,7 @@ public class XmlOdysseyReader extends XmlReader {
 
   @Override
   protected void processStartElement(String namespaceURI, String localName, String qName,
-                                     @SuppressWarnings("unchecked")HashMap atts) {
+                                     HashMap<String, String> atts) {
 
     if ("structure".equals(localName)) {
       atomSetCollection.newAtomSet();
@@ -96,33 +96,33 @@ public class XmlOdysseyReader extends XmlReader {
     if ("atom".equals(localName)) {
       atom = new Atom();
       if (atts.containsKey("label"))
-        atom.atomName = (String) atts.get("label");
+        atom.atomName = atts.get("label");
       else
-        atom.atomName = (String) atts.get("id");
+        atom.atomName = atts.get("id");
       if (atts.containsKey("xyz")) {
-        String xyz = (String) atts.get("xyz");
+        String xyz = atts.get("xyz");
         String[] tokens = getTokens(xyz);
         parent.setAtomCoord(atom, parseFloat(tokens[0]), parseFloat(tokens[1]),
             parseFloat(tokens[2]));
       }
       if (atts.containsKey("element")) {
-        atom.elementSymbol = (String) atts.get("element");
+        atom.elementSymbol = atts.get("element");
       }
 
       return;
     }
     if ("bond".equals(localName)) {
-      String atom1 = (String) atts.get("a");
-      String atom2 = (String) atts.get("b");
+      String atom1 = atts.get("a");
+      String atom2 = atts.get("b");
       int order = 1;
       if (atts.containsKey("order"))
-        order = parseBondToken((String) atts.get("order"));
+        order = parseBondToken(atts.get("order"));
       atomSetCollection.addNewBond(atom1, atom2, order);
       return;
     }
 
     if ("boundary".equals(localName)) {
-      String[] boxDim = getTokens((String) atts.get("box"));
+      String[] boxDim = getTokens(atts.get("box"));
       float x = parseFloat(boxDim[0]);
       float y = parseFloat(boxDim[1]);
       float z = parseFloat(boxDim[2]);

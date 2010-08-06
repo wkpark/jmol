@@ -85,7 +85,7 @@ public class XmlChem3dReader extends XmlReader {
 
   @Override
   public void processStartElement(String namespaceURI, String localName, String qName,
-                                  @SuppressWarnings("unchecked")HashMap atts) {
+                                  HashMap<String, String> atts) {
     String[] tokens;
     //System.out.println("xmlchem3d: start " + localName);
     if ("model".equals(localName)) {
@@ -95,28 +95,28 @@ public class XmlChem3dReader extends XmlReader {
 
     if ("atom".equals(localName)) {
       atom = new Atom();
-      atom.atomName = (String) atts.get("id");
-      atom.elementSymbol = (String) atts.get("symbol");
+      atom.atomName = atts.get("id");
+      atom.elementSymbol = atts.get("symbol");
       if (atts.containsKey("cartCoords")) {
-        String xyz = (String) atts.get("cartCoords");
+        String xyz = atts.get("cartCoords");
         tokens = getTokens(xyz);
         atom.set(parseFloat(tokens[0]), parseFloat(tokens[1]), parseFloat(tokens[2]));
       }
       return;
     }
     if ("bond".equals(localName)) {
-      String atom1 = (String) atts.get("bondAtom1");
-      String atom2 = (String) atts.get("bondAtom2");
+      String atom1 = atts.get("bondAtom1");
+      String atom2 = atts.get("bondAtom2");
       int order = 1;
       if (atts.containsKey("bondOrder"))
-        order = parseInt((String) atts.get("bondOrder"));
+        order = parseInt(atts.get("bondOrder"));
       atomSetCollection.addNewBond(atom1, atom2, order);
       return;
     }
 
     if ("electronicStructureCalculation".equals(localName)) {
-      tokens = getTokens((String) atts.get("calcPartialCharges"));
-      String[] tokens2 = getTokens((String) atts.get("calcAtoms"));
+      tokens = getTokens(atts.get("calcPartialCharges"));
+      String[] tokens2 = getTokens(atts.get("calcAtoms"));
       for (int i = parseInt(tokens[0]); --i >= 0;)
         atomSetCollection.mapPartialCharge(tokens2[i + 1],
             parseFloat(tokens[i + 1]));
@@ -124,24 +124,24 @@ public class XmlChem3dReader extends XmlReader {
 
     if ("gridData".equals(localName)) {
       atomSetCollection.newVolumeData();
-      int nPointsX = parseInt((String) atts.get("gridDatXDim"));
-      int nPointsY = parseInt((String) atts.get("gridDatYDim"));
-      int nPointsZ = parseInt((String) atts.get("gridDatZDim"));
+      int nPointsX = parseInt(atts.get("gridDatXDim"));
+      int nPointsY = parseInt(atts.get("gridDatYDim"));
+      int nPointsZ = parseInt(atts.get("gridDatZDim"));
       atomSetCollection.setVoxelCounts(nPointsX, nPointsY, nPointsZ);
-      float xStep = parseFloat((String) atts.get("gridDatXSize"))
+      float xStep = parseFloat(atts.get("gridDatXSize"))
           / (nPointsX);
-      float yStep = parseFloat((String) atts.get("gridDatYSize"))
+      float yStep = parseFloat(atts.get("gridDatYSize"))
           / (nPointsY);
-      float zStep = parseFloat((String) atts.get("gridDatZSize"))
+      float zStep = parseFloat(atts.get("gridDatZSize"))
           / (nPointsZ);
       atomSetCollection.setVolumetricVector(0, xStep, 0, 0);
       atomSetCollection.setVolumetricVector(1, 0, yStep, 0);
       atomSetCollection.setVolumetricVector(2, 0, 0, zStep);
 
-      tokens = getTokens((String) atts.get("gridDatOrigin"));
+      tokens = getTokens(atts.get("gridDatOrigin"));
       atomSetCollection.setVolumetricOrigin(parseFloat(tokens[0]), parseFloat(tokens[1]), parseFloat(tokens[2]));
       
-      tokens = getTokens((String) atts.get("gridDatData"));
+      tokens = getTokens(atts.get("gridDatData"));
       int nData = parseInt(tokens[0]);
       int pt = 1;
       float[][][] voxelData = new float[nPointsX][nPointsY][nPointsZ];

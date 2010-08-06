@@ -76,7 +76,7 @@ public class XmlMolproReader extends XmlCmlReader {
     (new MolproHandler()).walkDOMTree(DOMNode);
   }
 
-  public void processStartElement2(String localName, @SuppressWarnings("unchecked")HashMap atts) {
+  public void processStartElement2(String localName, HashMap<String, String> atts) {
     if (localName.equals("normalCoordinate")) {
       keepChars = false;
       if (!parent.doGetVibration(++vibrationNumber))
@@ -90,10 +90,10 @@ public class XmlMolproReader extends XmlCmlReader {
         return;
       }
       if (atts.containsKey("wavenumber")) {
-        String wavenumber = (String) atts.get("wavenumber");
+        String wavenumber = atts.get("wavenumber");
         String units = "cm^-1";
         if (atts.containsKey("units")) {
-          units = (String) atts.get("units");
+          units = atts.get("units");
           if (units.startsWith("inverseCent"))
             units = "cm^-1";
         }

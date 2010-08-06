@@ -246,7 +246,7 @@ public void readAtomSetCollectionFromDOM(Object Node) {
 
   @SuppressWarnings("unused")
   protected void processStartElement(String namespaceURI, String localName, String qName,
-                                     @SuppressWarnings("unchecked") HashMap atts) {
+                                     HashMap<String, String> atts) {
     /* 
      * specific to each xml reader
      */
@@ -321,8 +321,7 @@ public void readAtomSetCollectionFromDOM(Object Node) {
      * startElement and endElement should be extended in each reader
      */
 
-    @SuppressWarnings("unchecked")
-    public HashMap atts;
+    public HashMap<String, String> atts;
 
     @Override
     public void startElement(String namespaceURI, String localName,
@@ -427,25 +426,23 @@ public void readAtomSetCollectionFromDOM(Object Node) {
 
     ////////////////////
 
-    @SuppressWarnings("unchecked")
     private void getAttributes(Attributes attributes) {
       int nAtts = attributes.getLength();
-      atts = new HashMap(nAtts);
+      atts = new HashMap<String, String>(nAtts);
       for (int i = nAtts; --i >= 0;)
         atts.put(attributes.getLocalName(i), attributes.getValue(i));
     }
 
-    @SuppressWarnings("unchecked")
     private void getAttributes(JSObject attributes) {
       if (attributes == null) {
-        atts = new HashMap(0);
+        atts = new HashMap<String, String>(0);
         return;
       }
 
       // load up only the implemented attributes
 
       int nAtts = ((Number) attributes.getMember("length")).intValue();
-      atts = new HashMap(nAtts);
+      atts = new HashMap<String, String>(nAtts);
       for (int i = implementedAttributes.length; --i >= 0;) {
         Object[] attArgs = { implementedAttributes[i] };
         JSObject attNode = (JSObject) attributes.call("getNamedItem", attArgs);

@@ -95,7 +95,7 @@ public class XmlArgusReader extends XmlReader {
 
   @Override
   public void processStartElement(String namespaceURI, String localName, String qName,
-                                  @SuppressWarnings("unchecked")HashMap atts) {
+                                  HashMap<String, String> atts) {
     //System.out.println("open " + localName);
     for (int i = keepCharsList.length; --i >= 0;)
       if (keepCharsList[i].equals(localName)) {
@@ -116,7 +116,7 @@ public class XmlArgusReader extends XmlReader {
       elementContext = BOND;
       atomName1 = null;
       atomName2 = null;
-      bondOrder = parseBondToken((String) atts.get("order"));
+      bondOrder = parseBondToken(atts.get("order"));
       return;
     }
   }

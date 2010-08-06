@@ -98,13 +98,13 @@ public class XmlXsdReader extends XmlReader {
   
   @Override
   public void processStartElement(String namespaceURI, String localName, String qName,
-                                  @SuppressWarnings("unchecked")HashMap atts) {
+                                  HashMap<String, String> atts) {
     String[] tokens;
     //System.out.println(namespaceURI + " " + localName + " " + atts);
     //System.out.println("xmlchem3d: start " + localName);
     if ("Molecule".equals(localName)) {
       atomSetCollection.newAtomSet();
-      atomSetCollection.setAtomSetName((String) atts.get("Name"));      
+      atomSetCollection.setAtomSetName(atts.get("Name"));      
       return;
     }
     
@@ -119,8 +119,8 @@ public class XmlXsdReader extends XmlReader {
 
     if ("Atom3d".equals(localName)) {
       atom = new Atom();
-      atom.elementSymbol = (String) atts.get("Components");
-      atom.atomName = (String) atts.get("ID");
+      atom.elementSymbol = atts.get("Components");
+      atom.atomName = atts.get("ID");
       atom.atomSerial = ++iAtom;
       if (iChain >= 0)
         atom.chainID = (char) ((iChain - 1)%26 + 'A');
@@ -128,7 +128,7 @@ public class XmlXsdReader extends XmlReader {
       if (iGroup == 0)
         iGroup = 1;
       atom.sequenceNumber = iGroup;
-      String xyz = (String) atts.get("XYZ");
+      String xyz = atts.get("XYZ");
       if (xyz != null) {
         tokens = getTokens(xyz.replace(',',' '));
         atom.set(parseFloat(tokens[0]), parseFloat(tokens[1]), parseFloat(tokens[2]));
@@ -139,10 +139,10 @@ public class XmlXsdReader extends XmlReader {
       return;
     }
     if ("Bond".equals(localName)) {
-      String[] atoms = TextFormat.split((String) atts.get("Connects"), ',');
+      String[] atoms = TextFormat.split(atts.get("Connects"), ',');
       int order = 1;
       if (atts.containsKey("Type")) {
-        String type = (String) atts.get("Type");
+        String type = atts.get("Type");
         if (type.equals("Double"))
           order = 2;
         else if (type.equals("Triple"))

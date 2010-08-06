@@ -91,7 +91,7 @@ public class XmlVaspReader extends XmlReader {
   
   @Override
   public void processStartElement(String namespaceURI, String localName,
-                                  String qName, @SuppressWarnings("unchecked")HashMap atts) {
+                                  String qName, HashMap<String, String> atts) {
     if (Logger.debugging) 
       Logger.debug("xmlvasp: start " + localName);
 
@@ -121,7 +121,7 @@ public class XmlVaspReader extends XmlReader {
     }
 
     if ("varray".equals(localName)) {
-      name = (String) atts.get("name");
+      name = atts.get("name");
       if (name != null && Parser.isOneOf(name, "basis;positions;forces"))
         data = new StringBuffer();
       return;

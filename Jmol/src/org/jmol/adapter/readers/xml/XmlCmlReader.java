@@ -199,7 +199,7 @@ public class XmlCmlReader extends XmlReader {
 
   @Override
   public void processStartElement(String uri, String name, String qName,
-                                  @SuppressWarnings("unchecked")HashMap atts) {
+                                  HashMap<String, String> atts) {
     // if (!uri.equals(NAMESPACE_URI))
     // return;
 
@@ -223,7 +223,7 @@ public class XmlCmlReader extends XmlReader {
       } else if (name.equals("symmetry")) {
         state = SYMMETRY;
         if (atts.containsKey("spaceGroup")) {
-          localSpaceGroupName = (String) atts.get("spaceGroup");
+          localSpaceGroupName = atts.get("spaceGroup");
         } else {
           localSpaceGroupName = "P1";
           parent.clearLatticeParameters();
@@ -241,12 +241,12 @@ public class XmlCmlReader extends XmlReader {
       if (name.equals("scalar")) {
         state = CRYSTAL_SCALAR;
         setKeepChars(true);
-        scalarTitle = (String) atts.get("title");
+        scalarTitle = atts.get("title");
         getDictRefValue(atts);
       } else if (name.equals("symmetry")) {
         state = CRYSTAL_SYMMETRY;
         if (atts.containsKey("spaceGroup")) {
-          localSpaceGroupName = (String) atts.get("spaceGroup");
+          localSpaceGroupName = atts.get("spaceGroup");
           for (int i = 0; i < localSpaceGroupName.length(); i++)
             if (localSpaceGroupName.charAt(i) == '_')
               localSpaceGroupName = localSpaceGroupName.substring(0, i)
@@ -254,7 +254,7 @@ public class XmlCmlReader extends XmlReader {
         }
       } else if (name.equals("cellParameter")) {
         if (atts.containsKey("parameterType")) {
-          cellParameterType = (String) atts.get("parameterType");
+          cellParameterType = atts.get("parameterType");
           setKeepChars(true);
         }
       }
@@ -293,18 +293,18 @@ public class XmlCmlReader extends XmlReader {
         state = MOLECULE_BOND_ARRAY;
         bondCount = 0;
         if (atts.containsKey("order")) {
-          breakOutBondTokens((String) atts.get("order"));
+          breakOutBondTokens(atts.get("order"));
           for (int i = tokenCount; --i >= 0;)
             bondArray[i].order = parseBondToken(tokens[i]);
         }
         if (atts.containsKey("atomRef1")) {
-          breakOutBondTokens((String) atts.get("atomRef1"));
+          breakOutBondTokens(atts.get("atomRef1"));
           for (int i = tokenCount; --i >= 0;)
             bondArray[i].atomIndex1 = atomSetCollection
                 .getAtomNameIndex(tokens[i]);
         }
         if (atts.containsKey("atomRef2")) {
-          breakOutBondTokens((String) atts.get("atomRef2"));
+          breakOutBondTokens(atts.get("atomRef2"));
           for (int i = tokenCount; --i >= 0;)
             bondArray[i].atomIndex2 = atomSetCollection
                 .getAtomNameIndex(tokens[i]);
@@ -315,38 +315,38 @@ public class XmlCmlReader extends XmlReader {
         atomCount = 0;
         boolean coords3D = false;
         if (atts.containsKey("atomID")) {
-          breakOutAtomTokens((String) atts.get("atomID"));
+          breakOutAtomTokens(atts.get("atomID"));
           for (int i = tokenCount; --i >= 0;)
             atomArray[i].atomName = tokens[i];
         }
         if (atts.containsKey("x3")) {
           coords3D = true;
-          breakOutAtomTokens((String) atts.get("x3"));
+          breakOutAtomTokens(atts.get("x3"));
           for (int i = tokenCount; --i >= 0;)
             atomArray[i].x = parseFloat(tokens[i]);
         }
         if (atts.containsKey("y3")) {
-          breakOutAtomTokens((String) atts.get("y3"));
+          breakOutAtomTokens(atts.get("y3"));
           for (int i = tokenCount; --i >= 0;)
             atomArray[i].y = parseFloat(tokens[i]);
         }
         if (atts.containsKey("z3")) {
-          breakOutAtomTokens((String) atts.get("z3"));
+          breakOutAtomTokens(atts.get("z3"));
           for (int i = tokenCount; --i >= 0;)
             atomArray[i].z = parseFloat(tokens[i]);
         }
         if (atts.containsKey("x2")) {
-          breakOutAtomTokens((String) atts.get("x2"));
+          breakOutAtomTokens(atts.get("x2"));
           for (int i = tokenCount; --i >= 0;)
             atomArray[i].x = parseFloat(tokens[i]);
         }
         if (atts.containsKey("y2")) {
-          breakOutAtomTokens((String) atts.get("y2"));
+          breakOutAtomTokens(atts.get("y2"));
           for (int i = tokenCount; --i >= 0;)
             atomArray[i].y = parseFloat(tokens[i]);
         }
         if (atts.containsKey("elementType")) {
-          breakOutAtomTokens((String) atts.get("elementType"));
+          breakOutAtomTokens(atts.get("elementType"));
           for (int i = tokenCount; --i >= 0;)
             atomArray[i].elementSymbol = tokens[i];
         }
@@ -368,9 +368,9 @@ public class XmlCmlReader extends XmlReader {
         int order = -1;
         tokenCount = 0;
         if (atts.containsKey("atomRefs2"))
-          breakOutTokens((String) atts.get("atomRefs2"));
+          breakOutTokens(atts.get("atomRefs2"));
         if (atts.containsKey("order"))
-          order = parseBondToken((String) atts.get("order"));
+          order = parseBondToken(atts.get("order"));
         if (tokenCount == 2 && order > 0) {
           addNewBond(tokens[0], tokens[1], order);
         }
@@ -381,13 +381,13 @@ public class XmlCmlReader extends XmlReader {
         state = MOLECULE_ATOM;
         atom = new Atom();
         parent.setFractionalCoordinates(false);
-        String id = (String) atts.get("id");
+        String id = atts.get("id");
         if (atts.containsKey("name"))
-          atom.atomName = (String) atts.get("name");
+          atom.atomName = atts.get("name");
         else if (atts.containsKey("title"))
-          atom.atomName = (String) atts.get("title");
+          atom.atomName = atts.get("title");
         else if (atts.containsKey("label"))
-          atom.atomName = (String) atts.get("label");
+          atom.atomName = atts.get("label");
         else
           atom.atomName = id;
         if (!checkedSerial) {
@@ -402,26 +402,23 @@ public class XmlCmlReader extends XmlReader {
         if (atts.containsKey("xFract")
             && (parent.iHaveUnitCell || !atts.containsKey("x3"))) {
           parent.setFractionalCoordinates(true);
-          parent.setAtomCoord(atom, parseFloat((String) atts.get("xFract")),
-              parseFloat((String) atts.get("yFract")), parseFloat((String) atts
-                  .get("zFract")));
+          parent.setAtomCoord(atom, parseFloat(atts.get("xFract")),
+              parseFloat(atts.get("yFract")), parseFloat(atts.get("zFract")));
         } else if (atts.containsKey("x3")) {
-          parent.setAtomCoord(atom, parseFloat((String) atts.get("x3")),
-              parseFloat((String) atts.get("y3")), parseFloat((String) atts
-                  .get("z3")));
+          parent.setAtomCoord(atom, parseFloat(atts.get("x3")),
+              parseFloat(atts.get("y3")), parseFloat(atts.get("z3")));
         } else if (atts.containsKey("x2")) {
-          parent.setAtomCoord(atom, parseFloat((String) atts.get("x2")),
-              parseFloat((String) atts.get("y2")), 0);
+          parent.setAtomCoord(atom, parseFloat(atts.get("x2")),
+              parseFloat(atts.get("y2")), 0);
         }
         if (atts.containsKey("elementType")) {
-          String sym = (String) atts.get("elementType");
+          String sym = atts.get("elementType");
           if (atts.containsKey("isotope"))
-            atom.elementNumber = (short) ((parseInt((String) atts
-                .get("isotope")) << 7) + JmolAdapter.getElementNumber(sym));
+            atom.elementNumber = (short) ((parseInt(atts.get("isotope")) << 7) + JmolAdapter.getElementNumber(sym));
           atom.elementSymbol = sym;
         }
         if (atts.containsKey("formalCharge"))
-          atom.formalCharge = parseInt((String) atts.get("formalCharge"));
+          atom.formalCharge = parseInt(atts.get("formalCharge"));
       }
 
       break;
@@ -429,19 +426,19 @@ public class XmlCmlReader extends XmlReader {
       if (atts.containsKey("builtin")) {
         setKeepChars(true);
         state = MOLECULE_BOND_BUILTIN;
-        scalarDictValue = (String) atts.get("builtin");
+        scalarDictValue = atts.get("builtin");
       }
       break;
     case MOLECULE_ATOM:
       if (name.equals("scalar")) {
         state = MOLECULE_ATOM_SCALAR;
         setKeepChars(true);
-        scalarTitle = (String) atts.get("title");
+        scalarTitle = atts.get("title");
         getDictRefValue(atts);
       } else if (atts.containsKey("builtin")) {
         setKeepChars(true);
         state = MOLECULE_ATOM_BUILTIN;
-        scalarDictValue = (String) atts.get("builtin");
+        scalarDictValue = atts.get("builtin");
       }
       break;
     case MOLECULE_ATOM_SCALAR:
@@ -463,9 +460,8 @@ public class XmlCmlReader extends XmlReader {
         atomSetCollection.addNewBond(a1, a2, order);
   }
 
-  @SuppressWarnings("unchecked")
-  private void getDictRefValue(HashMap atts) {
-    scalarDictRef = (String) atts.get("dictRef");
+  private void getDictRefValue(HashMap<String, String> atts) {
+    scalarDictRef = atts.get("dictRef");
     if (scalarDictRef != null) {
       int iColon = scalarDictRef.indexOf(":");
       scalarDictValue = scalarDictRef.substring(iColon + 1);
@@ -742,13 +738,13 @@ public class XmlCmlReader extends XmlReader {
     }
   }
 
-  private void createNewAtomSet(@SuppressWarnings("unchecked")HashMap atts) {
+  private void createNewAtomSet(HashMap<String, String> atts) {
     atomSetCollection.newAtomSet();
     String collectionName = null;
     if (atts.containsKey("title"))
-      collectionName = (String) atts.get("title");
+      collectionName = atts.get("title");
     else if (atts.containsKey("id"))
-      collectionName = (String) atts.get("id");
+      collectionName = atts.get("id");
     if (collectionName != null) {
       atomSetCollection.setAtomSetName(collectionName);
     }

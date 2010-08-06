@@ -273,16 +273,16 @@ public class JpegEncoder extends Frame
     DHT4[1] = (byte) 0xC4;
     for (i = 0; i < 4; i++ ) {
       bytes = 0;
-      DHT1[index++ - oldindex] = (byte) ((int[]) Huf.bits.elementAt(i))[0];
+      DHT1[index++ - oldindex] = (byte) Huf.bits.elementAt(i)[0];
       for (j = 1; j < 17; j++) {
-        temp = ((int[]) Huf.bits.elementAt(i))[j];
+        temp = Huf.bits.elementAt(i)[j];
         DHT1[index++ - oldindex] =(byte) temp;
         bytes += temp;
       }
       intermediateindex = index;
       DHT2 = new byte[bytes];
       for (j = 0; j < bytes; j++) {
-        DHT2[index++ - intermediateindex] = (byte) ((int[]) Huf.val.elementAt(i))[j];
+        DHT2[index++ - intermediateindex] = (byte) Huf.val.elementAt(i)[j];
       }
       DHT3 = new byte[index];
       java.lang.System.arraycopy(DHT4, 0, DHT3, 0, oldindex);
@@ -846,8 +846,8 @@ class Huffman
       0xe2, 0xe3, 0xe4, 0xe5, 0xe6, 0xe7, 0xe8, 0xe9, 
       0xea, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7, 0xf8,
       0xf9, 0xfa };
-  public Vector bits;
-  public Vector val;
+  public Vector<int[]> bits;
+  public Vector<int[]> val;
   
   /*
    * jpegNaturalOrder[i] is the natural-order position of the i'th element
@@ -869,12 +869,12 @@ class Huffman
   public Huffman(int Width,int Height)
   {
     
-    bits = new Vector();
+    bits = new Vector<int[]>();
     bits.addElement(bitsDCluminance);
     bits.addElement(bitsACluminance);
     bits.addElement(bitsDCchrominance);
     bits.addElement(bitsACchrominance);
-    val = new Vector();
+    val = new Vector<int[]>();
     val.addElement(valDCluminance);
     val.addElement(valACluminance);
     val.addElement(valDCchrominance);

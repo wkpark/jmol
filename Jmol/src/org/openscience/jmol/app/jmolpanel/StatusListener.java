@@ -322,7 +322,7 @@ class StatusListener implements JmolStatusListener {
               // hanson)
   }
 
-  public Hashtable<String, Applet> getRegistryInfo() {
+  public Map<String, Applet> getRegistryInfo() {
     return null;
   }
 

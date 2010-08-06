@@ -30,6 +30,7 @@ import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.vecmath.Matrix3f;
@@ -224,7 +225,7 @@ abstract public class ModelCollection extends BondCollection {
   protected boolean isPDB;
 
   protected Properties modelSetProperties;
-  protected Hashtable<String, Object> modelSetAuxiliaryInfo;
+  protected Map<String, Object> modelSetAuxiliaryInfo;
 
   protected Group[] groups;
   protected int groupCount;
@@ -758,7 +759,7 @@ abstract public class ModelCollection extends BondCollection {
     return modelSetProperties;
   }
 
-  public Hashtable<String, Object> getModelSetAuxiliaryInfo() {
+  public Map<String, Object> getModelSetAuxiliaryInfo() {
     return modelSetAuxiliaryInfo;
   }
 
@@ -884,7 +885,7 @@ abstract public class ModelCollection extends BondCollection {
     return props == null ? null : props.getProperty(property);
   }
 
-  public Hashtable<String, Object> getModelAuxiliaryInfo(int modelIndex) {
+  public Map<String, Object> getModelAuxiliaryInfo(int modelIndex) {
     return (modelIndex < 0 ? null : models[modelIndex].auxiliaryInfo);
   }
 
@@ -900,13 +901,13 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   protected boolean getModelAuxiliaryInfoBoolean(int modelIndex, String keyName) {
-    Hashtable<String, Object> info = models[modelIndex].auxiliaryInfo;
+    Map<String, Object> info = models[modelIndex].auxiliaryInfo;
     return (info != null && info.containsKey(keyName) && ((Boolean) info
         .get(keyName)).booleanValue());
   }
 
   protected int getModelAuxiliaryInfoInt(int modelIndex, String keyName) {
-    Hashtable<String, Object> info = models[modelIndex].auxiliaryInfo;
+    Map<String, Object> info = models[modelIndex].auxiliaryInfo;
     if (info != null && info.containsKey(keyName)) {
       return ((Integer) info.get(keyName)).intValue();
     }
@@ -3156,16 +3157,16 @@ abstract public class ModelCollection extends BondCollection {
     return sb.toString();
   }
   
-  public Hashtable<String, Object> getAuxiliaryInfo(BitSet bsModels) {
-    Hashtable<String, Object> info = modelSetAuxiliaryInfo;
+  public Map<String, Object> getAuxiliaryInfo(BitSet bsModels) {
+    Map<String, Object> info = modelSetAuxiliaryInfo;
     if (info == null)
       return info;
-    List<Hashtable<String, Object>> models = new ArrayList<Hashtable<String, Object>>();
+    List<Map<String, Object>> models = new ArrayList<Map<String, Object>>();
     for (int i = 0; i < modelCount; ++i) {
       if (bsModels != null && !bsModels.get(i)) {
         continue;
       }
-      Hashtable<String, Object> modelinfo = getModelAuxiliaryInfo(i);
+      Map<String, Object> modelinfo = getModelAuxiliaryInfo(i);
       models.add(modelinfo);
     }
     info.put("models",models);

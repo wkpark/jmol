@@ -41,8 +41,9 @@ import javax.vecmath.Point3f;
 import java.awt.*;
 import java.awt.event.*;
 
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
-import java.util.Hashtable;
 import java.util.Enumeration;
 
 import org.jmol.i18n.GT;
@@ -624,13 +625,13 @@ ActionListener, ChangeListener, Runnable {
    * AtomSetChooser window
    * @param auxiliaryInfo Hashtable to be shown.
    */
-  protected void showAuxiliaryInfo(Hashtable auxiliaryInfo) {
+  protected void showAuxiliaryInfo(Map<String, Object> auxiliaryInfo) {
     String separator = " ";
     //propertiesTextArea.setText(""); AFTER properties
     if (auxiliaryInfo != null) {
-      Enumeration e = auxiliaryInfo.keys();
-      while (e.hasMoreElements()) {
-        String keyName = (String) e.nextElement();
+      Iterator<String> e = auxiliaryInfo.keySet().iterator();
+      while (e.hasNext()) {
+        String keyName = e.next();
         if (keyName.startsWith("."))
           continue; // skip the 'hidden' ones
         //won't show objects properly, of course

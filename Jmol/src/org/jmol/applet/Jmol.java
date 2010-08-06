@@ -39,7 +39,7 @@ import java.awt.*;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.Map;
 
 import javax.swing.UIManager;
 
@@ -1286,7 +1286,7 @@ public class Jmol implements WrappedApplet {
       return (isSync ? "" : sb.toString());
     }
 
-    public Hashtable<String, Applet>  getRegistryInfo() {
+    public Map<String, Applet>  getRegistryInfo() {
       JmolAppletRegistry.checkIn(null, null); //cleans registry
       return JmolAppletRegistry.htRegistry;
     }

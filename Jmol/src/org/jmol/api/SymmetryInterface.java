@@ -1,7 +1,7 @@
 package org.jmol.api;
 
 import java.util.BitSet;
-import java.util.Hashtable;
+import java.util.Map;
 
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
@@ -119,7 +119,7 @@ public interface SymmetryInterface {
 
   public abstract boolean isPeriodic();
 
-  public abstract void setSymmetryInfo(int modelIndex, Hashtable<String, Object> modelAuxiliaryInfo);
+  public abstract void setSymmetryInfo(int modelIndex, Map<String, Object> modelAuxiliaryInfo);
 
   public abstract Object[] getSymmetryOperationDescription(int iSym,
                                                          SymmetryInterface cellInfo, 

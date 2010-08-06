@@ -26,7 +26,8 @@
 package org.jmol.symmetry;
 
 import javax.vecmath.Point3f;
-import java.util.Hashtable;
+
+import java.util.Map;
 
 class SymmetryInfo {
 
@@ -46,7 +47,7 @@ class SymmetryInfo {
   SymmetryInfo() {    
   }
   
-  float[] setSymmetryInfo(int modelIndex, Hashtable<String, Object> info) {
+  float[] setSymmetryInfo(int modelIndex, Map<String, Object> info) {
     this.modelIndex = modelIndex;
     cellRange = (int[]) info.get("unitCellRange");
     periodicOriginXyz = (Point3f) info.get("periodicOriginXyz");

@@ -34,8 +34,8 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.net.URL;
 import java.util.BitSet;
+import java.util.Map;
 import java.util.Properties;
-import java.util.Hashtable;
 import java.util.List;
 
 import javax.vecmath.Matrix4f;
@@ -282,13 +282,13 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public String getFileAsString(String filename);
   abstract public boolean getFileAsString(String[] data, int nBytesMax, boolean doSpecialLoad);
   abstract public Properties getModelSetProperties();
-  abstract public Hashtable<String, Object> getModelSetAuxiliaryInfo();
+  abstract public Map<String, Object> getModelSetAuxiliaryInfo();
   abstract public int getModelNumber(int modelIndex);
   abstract public String getModelName(int modelIndex);
   abstract public String getModelNumberDotted(int modelIndex);
   abstract public Properties getModelProperties(int modelIndex);
   abstract public String getModelProperty(int modelIndex, String propertyName);
-  abstract public Hashtable<String, Object> getModelAuxiliaryInfo(int modelIndex);
+  abstract public Map<String, Object> getModelAuxiliaryInfo(int modelIndex);
   abstract public Object getModelAuxiliaryInfo(int modelIndex, String keyName);
   abstract public boolean modelHasVibrationVectors(int modelIndex);
 
@@ -313,7 +313,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
 
   abstract public void homePosition();
 
-  abstract public Hashtable<String, String> getHeteroList(int modelIndex);
+  abstract public Map<String, String> getHeteroList(int modelIndex);
 
 
   abstract public boolean getPerspectiveDepth();

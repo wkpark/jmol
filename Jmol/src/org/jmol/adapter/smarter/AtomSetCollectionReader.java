@@ -40,6 +40,7 @@ import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
@@ -131,7 +132,7 @@ public abstract class AtomSetCollectionReader {
   protected AtomSetCollection atomSetCollection;
   protected BufferedReader reader;
   protected String readerName;
-  public Hashtable<String, Object> htParams;
+  public Map<String, Object> htParams;
   //protected String parameterData;
 
   // buffer
@@ -189,7 +190,7 @@ public abstract class AtomSetCollectionReader {
 
   String fileName;
   
-  void setup(String fileName, Hashtable<String, Object> htParams, BufferedReader reader) {
+  void setup(String fileName, Map<String, Object> htParams, BufferedReader reader) {
     this.htParams = htParams; 
     this.fileName = fileName;
     this.reader = reader;    

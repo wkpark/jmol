@@ -31,7 +31,8 @@ package org.jmol;
  *  ran with: java -classpath `pwd`:/where/ever/jmol-10.2.0/Jmol.jar JmolExportExample
  * */
 
-import java.util.Hashtable;
+import java.applet.Applet;
+import java.util.Map;
 
 import javax.swing.JFrame;
 import javax.swing.JTextField;
@@ -202,7 +203,7 @@ class MyStatusListener implements JmolStatusListener {
   }
 
 
-  public Hashtable getRegistryInfo() {
+  public Map<String, Applet> getRegistryInfo() {
     return null;
   }
 

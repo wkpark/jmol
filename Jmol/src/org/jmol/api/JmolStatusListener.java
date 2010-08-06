@@ -25,7 +25,7 @@
 package org.jmol.api;
 
 import java.applet.Applet;
-import java.util.Hashtable;
+import java.util.Map;
 
 public interface JmolStatusListener extends JmolCallbackListener {
 /*
@@ -75,7 +75,7 @@ public interface JmolStatusListener extends JmolCallbackListener {
    */
   public String createImage(String fileName, String type, Object text_or_bytes, int quality);
 
-  public Hashtable<String, Applet> getRegistryInfo();
+  public Map<String, Applet> getRegistryInfo();
 
   public void showUrl(String url);
 

@@ -84,6 +84,7 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.BitSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.swing.JOptionPane;
@@ -2758,7 +2759,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   @Override
-  public Hashtable<String, Object> getModelSetAuxiliaryInfo() {
+  public Map<String, Object> getModelSetAuxiliaryInfo() {
     return modelSet.getModelSetAuxiliaryInfo();
   }
 
@@ -2805,7 +2806,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   @Override
-  public Hashtable<String, Object> getModelAuxiliaryInfo(int modelIndex) {
+  public Map<String, Object> getModelAuxiliaryInfo(int modelIndex) {
     return modelSet.getModelAuxiliaryInfo(modelIndex);
   }
 
@@ -3082,7 +3083,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   @Override
-  public Hashtable<String, String> getHeteroList(int modelIndex) {
+  public Map<String, String> getHeteroList(int modelIndex) {
     return modelSet.getHeteroList(modelIndex);
   }
 
@@ -3132,7 +3133,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         false));
   }
 
-  public Hashtable<String, Object> getAuxiliaryInfo(Object atomExpression) {
+  public Map<String, Object> getAuxiliaryInfo(Object atomExpression) {
     return modelSet.getAuxiliaryInfo(getModelBitSet(
         getAtomBitSet(atomExpression), false));
   }

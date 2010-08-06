@@ -26,7 +26,7 @@
 package org.jmol.symmetry;
 
 import java.util.BitSet;
-import java.util.Hashtable;
+import java.util.Map;
 
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
@@ -293,7 +293,7 @@ public class Symmetry implements SymmetryInterface {
     return symmetryInfo.isPeriodic();
   }
 
-  public void setSymmetryInfo(int modelIndex, Hashtable<String, Object> modelAuxiliaryInfo) {
+  public void setSymmetryInfo(int modelIndex, Map<String, Object> modelAuxiliaryInfo) {
     symmetryInfo = new SymmetryInfo();
     float[] notionalUnitcell = symmetryInfo.setSymmetryInfo(modelIndex,
         modelAuxiliaryInfo);

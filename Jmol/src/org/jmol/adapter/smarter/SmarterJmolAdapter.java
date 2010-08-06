@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.BitSet;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -89,7 +90,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
    */
   @Override
   public Object getAtomSetCollectionReader(String name, String type,
-                                   BufferedReader bufferedReader, Hashtable<String, Object> htParams) {
+                                   BufferedReader bufferedReader, Map<String, Object> htParams) {
     try {
       Object ret = Resolver.getAtomCollectionReader(name, type,
           bufferedReader, htParams, -1);
@@ -163,7 +164,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
    */
   @Override
   public Object getAtomSetCollectionReaders(JmolFileReaderInterface fileReader, String[] names, String[] types,
-                                    Hashtable<String, Object> htParams, boolean getReadersOnly) {
+                                    Map<String, Object> htParams, boolean getReadersOnly) {
     //FilesOpenThread
     int size = names.length;
     AtomSetCollectionReader[] readers = (getReadersOnly ? new AtomSetCollectionReader[size] : null);
@@ -213,7 +214,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
   @SuppressWarnings("unchecked")
   @Override
   public Object getAtomSetCollectionFromSet(Object readerSet, Object atomsets,
-                                            Hashtable<String, Object> htParams) {
+                                            Map<String, Object> htParams) {
     AtomSetCollectionReader[] readers = (AtomSetCollectionReader[]) readerSet;
     AtomSetCollection[] asc = (atomsets == null ? new AtomSetCollection[readers.length]
         : (AtomSetCollection[]) atomsets);
@@ -258,14 +259,14 @@ public class SmarterJmolAdapter extends JmolAdapter {
    */
   @Override
   public Object getAtomSetCollectionOrBufferedReaderFromZip(InputStream is, String fileName, String[] zipDirectory,
-                             Hashtable<String, Object> htParams, boolean asBufferedReader) {
+                             Map<String, Object> htParams, boolean asBufferedReader) {
     return staticGetAtomSetCollectionOrBufferedReaderFromZip(is, fileName, zipDirectory, htParams, 1, asBufferedReader);
   }
 
   @SuppressWarnings("unchecked")
   private static Object staticGetAtomSetCollectionOrBufferedReaderFromZip(
                                     InputStream is, String fileName,
-                                    String[] zipDirectory, Hashtable<String, Object> htParams,
+                                    String[] zipDirectory, Map<String, Object> htParams,
                                     int subFilePtr, boolean asBufferedReader) {
 
     // we're here because user is using | in a load file name
@@ -476,7 +477,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
    * 
    */
   @Override
-  public Object getAtomSetCollectionFromDOM(Object DOMNode, Hashtable<String, Object> htParams) {
+  public Object getAtomSetCollectionFromDOM(Object DOMNode, Map<String, Object> htParams) {
     try {
       Object ret = Resolver.DOMResolve(DOMNode, htParams);
       if (!(ret instanceof AtomSetCollectionReader))
@@ -514,7 +515,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
   }
   
   @Override
-  public Hashtable<String, Object> getAtomSetCollectionAuxiliaryInfo(Object atomSetCollection) {
+  public Map<String, Object> getAtomSetCollectionAuxiliaryInfo(Object atomSetCollection) {
     return ((AtomSetCollection)atomSetCollection).getAtomSetCollectionAuxiliaryInfo();
   }
 
@@ -534,7 +535,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
   }
   
   @Override
-  public Hashtable<String, Object> getAtomSetAuxiliaryInfo(Object atomSetCollection, int atomSetIndex) {
+  public Map<String, Object> getAtomSetAuxiliaryInfo(Object atomSetCollection, int atomSetIndex) {
     return ((AtomSetCollection) atomSetCollection)
         .getAtomSetAuxiliaryInfo(atomSetIndex);
   }

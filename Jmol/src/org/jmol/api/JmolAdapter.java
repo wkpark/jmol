@@ -28,6 +28,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.util.Hashtable;
 import java.util.BitSet;
+import java.util.Map;
 
 import org.jmol.modelset.Group;
 import org.jmol.util.Elements;
@@ -142,7 +143,7 @@ public abstract class JmolAdapter {
  * @return The atomSetCollection or String with an error message
  */
 abstract public Object getAtomSetCollectionReader(String name, String type,
-                                 BufferedReader bufferedReader, Hashtable<String, Object> htParams);
+                                 BufferedReader bufferedReader, Map<String, Object> htParams);
 
 abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
   /**
@@ -171,12 +172,12 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
    */
 
   abstract public Object getAtomSetCollectionReaders(JmolFileReaderInterface fileReader, String[] names, String[] types,
-                                    Hashtable<String, Object> htParams, boolean getReadersOnly);
+                                    Map<String, Object> htParams, boolean getReadersOnly);
 
-  abstract public Object getAtomSetCollectionFromSet(Object readers, Object atomSets, Hashtable<String, Object> htParams);
+  abstract public Object getAtomSetCollectionFromSet(Object readers, Object atomSets, Map<String, Object> htParams);
 
   abstract public Object getAtomSetCollectionOrBufferedReaderFromZip(InputStream is, String fileName, String[] zipDirectory,
-                             Hashtable<String, Object> htParams, boolean asBufferedReader);
+                             Map<String, Object> htParams, boolean asBufferedReader);
 
   /**
    * all in one -- for TestSmarterJmolAdapter
@@ -189,7 +190,7 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
    */
   public Object getAtomSetCollectionFromReader(String name, String type,
                                                BufferedReader bufferedReader,
-                                               Hashtable<String, Object> htParams) {
+                                               Map<String, Object> htParams) {
     if (htParams == null) {
       htParams = new Hashtable<String, Object>();
     }
@@ -208,7 +209,7 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
   }
 
   public Object openBufferedReader(String name, BufferedReader bufferedReader,
-                                   Hashtable<String, Object> htParams) {
+                                   Map<String, Object> htParams) {
     return getAtomSetCollectionFromReader(name, null, bufferedReader, htParams);
   }
 
@@ -217,7 +218,7 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
     return getAtomSetCollectionFromReader(name, type, bufferedReader, null);
   }
 
-  abstract public Object getAtomSetCollectionFromDOM(Object DOMNode, Hashtable<String, Object> htParams);
+  abstract public Object getAtomSetCollectionFromDOM(Object DOMNode, Map<String, Object> htParams);
 
   /**
    * @param atomSetCollection  
@@ -251,7 +252,7 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
    * @return The auxiliaryInfo Hashtable that may be available for particular
    * filetypes for this atomSetCollection or <code>null</code>
    */
-  abstract public Hashtable<String, Object> getAtomSetCollectionAuxiliaryInfo(Object atomSetCollection);
+  abstract public Map<String, Object> getAtomSetCollectionAuxiliaryInfo(Object atomSetCollection);
   
   /**
    * Get number of atomSets in the file.
@@ -296,7 +297,7 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
    * @return The auxiliaryInfo Hashtable that may be available for particular
    * filetypes for this atomSet or <code>null</code>
    */
-  abstract public Hashtable<String, Object>  getAtomSetAuxiliaryInfo(Object atomSetCollection, int atomSetIndex);
+  abstract public Map<String, Object>  getAtomSetAuxiliaryInfo(Object atomSetCollection, int atomSetIndex);
 
   /**
    * Get the estimated number of atoms contained in the file.

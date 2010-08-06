@@ -36,6 +36,7 @@ import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.Hashtable;
@@ -70,7 +71,8 @@ public class SimplePopup {
   protected String nullModelSetName, modelSetName;
   protected String modelSetFileName, modelSetRoot;
   
-  protected Hashtable<String, Object> modelSetInfo, modelInfo;
+  protected Map<String, Object> modelSetInfo;
+  protected Map<String, Object> modelInfo;
   protected JPopupMenu frankPopup;
 
   protected Hashtable<String, Object> htMenus = new Hashtable<String, Object>();
@@ -186,7 +188,7 @@ public class SimplePopup {
     return (str == null ? key : str);
   }
 
-  boolean checkBoolean(Hashtable<String, Object> info, String key) {
+  boolean checkBoolean(Map<String, Object> info, String key) {
     if (info == null || !info.containsKey(key))
       return false;
     return ((Boolean) (info.get(key))).booleanValue();

@@ -50,6 +50,7 @@ import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 /* 
@@ -102,7 +103,7 @@ public final class ModelLoader extends ModelSet {
     }
     preserveState = viewer.getPreserveState();
 
-    Hashtable<String, Object> info = adapter.getAtomSetCollectionAuxiliaryInfo(atomSetCollection);
+    Map<String, Object> info = adapter.getAtomSetCollectionAuxiliaryInfo(atomSetCollection);
     info.put("loadScript", loadScript);
     initializeInfo(adapter.getFileTypeName(atomSetCollection).toLowerCase().intern(), info);
     createModelSet(adapter, atomSetCollection, bsNew);
@@ -132,7 +133,7 @@ public final class ModelLoader extends ModelSet {
   private String fileHeader;
 
   @SuppressWarnings("unchecked")
-  private void initializeInfo(String name, Hashtable<String, Object> info) {
+  private void initializeInfo(String name, Map<String, Object> info) {
     g3d = viewer.getGraphics3D();
     //long timeBegin = System.currentTimeMillis();
     modelSetTypeName = name;
@@ -249,7 +250,7 @@ public final class ModelLoader extends ModelSet {
       iterateOverAllNewBonds(adapter, atomSetCollection);
       iterateOverAllNewStructures(adapter, atomSetCollection);
       if (adapter != null) {
-        Hashtable<String, Object> info = (merging && !appendNew ? 
+        Map<String, Object> info = (merging && !appendNew ? 
             adapter.getAtomSetAuxiliaryInfo(atomSetCollection, 0) : null);      
         adapter.finish(atomSetCollection);
         if (info != null) {
@@ -384,7 +385,7 @@ public final class ModelLoader extends ModelSet {
   }
 
   private void mergeGroups() {
-    Hashtable<String, Object> info = mergeModelSet.getAuxiliaryInfo(null);
+    Map<String, Object> info = mergeModelSet.getAuxiliaryInfo(null);
     String[] mergeGroup3Lists = (String[]) info.get("group3Lists");
     int[][] mergeGroup3Counts = (int[][]) info.get("group3Counts");
     if (mergeGroup3Lists != null) {
@@ -426,7 +427,7 @@ public final class ModelLoader extends ModelSet {
       int modelNumber = (appendNew ? adapter.getAtomSetNumber(atomSetCollection, i)
           : Integer.MAX_VALUE);
       String modelName = adapter.getAtomSetName(atomSetCollection, i);
-      Hashtable<String, Object> modelAuxiliaryInfo = adapter.getAtomSetAuxiliaryInfo(
+      Map<String, Object> modelAuxiliaryInfo = adapter.getAtomSetAuxiliaryInfo(
           atomSetCollection, i);
       Properties modelProperties = (Properties) modelAuxiliaryInfo.get("modelProperties");
       viewer.setStringProperty("_fileType", (String) modelAuxiliaryInfo
@@ -474,7 +475,7 @@ public final class ModelLoader extends ModelSet {
   private boolean setModelNameNumberProperties(int modelIndex, int trajectoryBaseIndex,
                                        String modelName, int modelNumber,
                                        Properties modelProperties,
-                                       Hashtable<String, Object> modelAuxiliaryInfo, 
+                                       Map<String, Object> modelAuxiliaryInfo, 
                                        String jmolData) {
     if (modelNumber != Integer.MAX_VALUE) {
       models[modelIndex] = new Model(this, modelIndex, trajectoryBaseIndex, jmolData,

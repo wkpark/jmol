@@ -32,8 +32,8 @@ import org.jmol.viewer.JmolConstants;
 import java.awt.Component;
 import java.util.BitSet;
 import java.util.Hashtable;
-import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
@@ -149,7 +149,7 @@ public class JmolPopup extends SimplePopup {
   }
 
   @Override
-  boolean checkBoolean(Hashtable<String, Object> info, String key) {
+  boolean checkBoolean(Map<String, Object> info, String key) {
     if (info == null || !info.containsKey(key))
       return false;
     return ((Boolean) (info.get(key))).booleanValue();
@@ -191,7 +191,7 @@ public class JmolPopup extends SimplePopup {
     enableMenu(menu, true);
   }
 
-  void updateHeteroComputedMenu(Hashtable<String, String> htHetero) {
+  void updateHeteroComputedMenu(Map<String, String> htHetero) {
     Object menu = htMenus.get("PDBheteroComputedMenu");
     if (menu == null)
       return;
@@ -199,11 +199,10 @@ public class JmolPopup extends SimplePopup {
     enableMenu(menu, false);
     if (htHetero == null)
       return;
-    Enumeration<String> e = htHetero.keys();
     int n = 0;
-    while (e.hasMoreElements()) {
-      String heteroCode = e.nextElement();
-      String heteroName = htHetero.get(heteroCode);
+    for (Map.Entry<String, String> hetero : htHetero.entrySet()) {
+      String heteroCode = hetero.getKey();
+      String heteroName = hetero.getValue();
       if (heteroName.length() > 20)
         heteroName = heteroName.substring(0, 20) + "...";
       String entryName = heteroCode + " - " + heteroName;

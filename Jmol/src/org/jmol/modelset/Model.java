@@ -25,6 +25,7 @@ package org.jmol.modelset;
 
 import java.util.BitSet;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Properties;
 
 import org.jmol.util.BitSetUtil;
@@ -162,14 +163,14 @@ public final class Model {
 
   int biosymmetryCount;
 
-  Hashtable<String, Object> auxiliaryInfo;
+  Map<String, Object> auxiliaryInfo;
   Properties properties;
   float defaultRotationRadius;
 
   Orientation orientation;
 
   Model(ModelSet modelSet, int modelIndex, int trajectoryBaseIndex, 
-      String jmolData, Properties properties, Hashtable<String, Object> auxiliaryInfo) {
+      String jmolData, Properties properties, Map<String, Object> auxiliaryInfo) {
     this.modelSet = modelSet;
     dataSourceFrame = this.modelIndex = modelIndex;
     isTrajectory = (trajectoryBaseIndex >= 0);

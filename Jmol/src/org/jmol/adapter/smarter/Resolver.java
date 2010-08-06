@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import netscape.javascript.JSObject;
@@ -217,9 +218,8 @@ public class Resolver {
    * @return an AtomSetCollection or a String error
    * @throws Exception
    */
-  @SuppressWarnings("unchecked")
   static Object getAtomCollectionReader(String fullName, String type,
-                        BufferedReader bufferedReader, Hashtable<String, Object> htParams,
+                        BufferedReader bufferedReader, Map<String, Object> htParams,
                         int ptFile) throws Exception {
     AtomSetCollectionReader atomSetCollectionReader = null;
     String readerName;
@@ -286,7 +286,7 @@ public class Resolver {
    * @return an AtomSetCollection or a String error
    * @throws Exception
    */
-  static Object DOMResolve(Object DOMNode, Hashtable<String, Object> htParams) throws Exception {
+  static Object DOMResolve(Object DOMNode, Map<String, Object> htParams) throws Exception {
     String className = null;
     Class<?> atomSetCollectionReaderClass;
     AtomSetCollectionReader atomSetCollectionReader; 

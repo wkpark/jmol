@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.SwingUtilities;
 
@@ -653,7 +654,7 @@ class StatusManager {
       jmolStatusListener.createImage(fileNameOrError, type, text_or_bytes, quality));
   }
 
-  Hashtable<String, Applet> getRegistryInfo() {
+  Map<String, Applet> getRegistryInfo() {
     /* 
 
      //note that the following JavaScript retrieves the registry:

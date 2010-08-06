@@ -1,6 +1,7 @@
 package org.jmol.multitouch.sparshui;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.vecmath.Vector3f;
 
@@ -60,8 +61,8 @@ public class TwoPointGesture implements Gesture /*extends StandardDynamicGesture
   protected Location _offset = null;
 
   protected Location _offsetCentroid = null;
-  private Vector _traces1 = new Vector();
-  private Vector _traces2 = new Vector();
+  private ArrayList<Location> _traces1 = new ArrayList<Location>();
+  private ArrayList<Location> _traces2 = new ArrayList<Location>();
   private int _id1 = -1;
   private int _id2 = -1;
   private int _nTraces = 0;
@@ -82,13 +83,13 @@ public class TwoPointGesture implements Gesture /*extends StandardDynamicGesture
   }
 
   //@override
-  public Vector processChange(Vector touchPoints,
+  public List<Event> processChange(List<TouchPoint> touchPoints,
       TouchPoint changedPoint) {
-    return processChangeSync(touchPoints, changedPoint);
+    return processChangeSync(changedPoint);
   }
-  private synchronized Vector processChangeSync(Vector touchPoints,
-                                        TouchPoint changedPoint) {
-    Vector events = null;
+  
+  private synchronized List<Event> processChangeSync(TouchPoint changedPoint) {
+    List<Event> events = null;
     time = changedPoint.getTime();
     switch(changedPoint.getState()) {
       case TouchState.BIRTH:
@@ -101,11 +102,11 @@ public class TwoPointGesture implements Gesture /*extends StandardDynamicGesture
         events = processDeath(changedPoint);
         break;
     }
-    return (events != null) ? events : new Vector();
+    return (events != null) ? events : new ArrayList<Event>();
   }
   
   // @override
-  protected Vector processBirth(TouchPoint touchPoint) {
+  protected List<Event> processBirth(TouchPoint touchPoint) {
     Location location = touchPoint.getLocation();
     int id = touchPoint.getID();
     switch (_nTraces) {
@@ -119,7 +120,7 @@ public class TwoPointGesture implements Gesture /*extends StandardDynamicGesture
       _traces2.clear();
       _traces2.add(Location.pixelLocation(location));
       _id2 = id;
-      Object o = _traces1.lastElement();
+      Location o = _traces1.get(_traces1.size() - 1);
       _traces1.clear();
       _traces1.add(o);
       _nTraces = 2;
@@ -131,7 +132,7 @@ public class TwoPointGesture implements Gesture /*extends StandardDynamicGesture
   }
 
   // @override
-  protected Vector processDeath(TouchPoint touchPoint) {
+  protected List<Event> processDeath(TouchPoint touchPoint) {
     int id = touchPoint.getID();
     switch (_nTraces) {
     case 0:
@@ -143,7 +144,7 @@ public class TwoPointGesture implements Gesture /*extends StandardDynamicGesture
     case 2:
       if (id == _id1) {
         _id1 = _id2;
-        Vector v = _traces1;
+        ArrayList<Location> v = _traces1;
         _traces1 = _traces2;
         _traces2 = v;
         _traces2.clear();
@@ -171,9 +172,9 @@ public class TwoPointGesture implements Gesture /*extends StandardDynamicGesture
   }
 
   // @override
-  protected Vector processMove(TouchPoint touchPoint) {
+  protected ArrayList<Event> processMove(TouchPoint touchPoint) {
     //System.out.println("TwoPointGesture move type:" + _myType + " ntraces:" + _nTraces + " ids:" + _id1+","+_id2+ " id:" + touchPoint.getID()  + " sizes: " + _traces1.size() + " " + _traces2.size());
-    Vector events = new Vector();
+    ArrayList<Event> events = new ArrayList<Event>();
     if (!updateLocations(touchPoint))
       return events;
     if (_myType == ActionManagerMT.INVALID_GESTURE)
@@ -210,14 +211,14 @@ public class TwoPointGesture implements Gesture /*extends StandardDynamicGesture
     if (id == _id1) {
       if (_traces1.size() > 2) {
         while (_traces1.size() > 2) {
-          _traces1.removeElementAt(0);
+          _traces1.remove(0);
         }
       }
       _traces1.add(location);
     } else if (id == _id2) {
       if (_traces2.size() > 2) {
         while (_traces2.size() > 2) {
-         _traces2.removeElementAt(0);
+         _traces2.remove(0);
         }
       }
       _traces2.add(location);
@@ -229,12 +230,12 @@ public class TwoPointGesture implements Gesture /*extends StandardDynamicGesture
   }
   
   private void checkType() {
-    Location loc10 = (Location) _traces1.firstElement();
-    Location loc11 = (Location) _traces1.lastElement();
+    Location loc10 = _traces1.get(0);
+    Location loc11 = _traces1.get(_traces1.size() - 1);
     Vector3f v1 = loc10.getVector(loc11);
     float d1 = v1.length();
-    Location loc20 = (Location) _traces2.firstElement();
-    Location loc21 = (Location) _traces2.lastElement();
+    Location loc20 = _traces2.get(0);
+    Location loc21 = _traces2.get(_traces2.size() - 1);
     Vector3f v2 = loc20.getVector(loc21);
     float d2 = v2.length();
     // rooted finger --> zoom (at this position, perhaps?)
@@ -263,10 +264,10 @@ public class TwoPointGesture implements Gesture /*extends StandardDynamicGesture
   }
 
   private boolean updateParameters() {
-    Location loc10 = (Location) _traces1.firstElement();
-    Location loc20 = (Location) _traces2.firstElement();
-    Location loc11 = (Location) _traces1.lastElement();
-    Location loc21 = (Location) _traces2.lastElement();
+    Location loc10 = _traces1.get(0);
+    Location loc20 = _traces2.get(0);
+    Location loc11 = _traces1.get(_traces1.size() - 1);
+    Location loc21 = _traces2.get(_traces2.size() - 1);
     float d1 = loc10.getDistance(loc11);
     float d2 = loc20.getDistance(loc21);
     float d12 = loc11.getDistance(loc21);

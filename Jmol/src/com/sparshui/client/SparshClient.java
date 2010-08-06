@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.sparshui.common.Event;
 import com.sparshui.common.Location;
+import com.sparshui.gestures.GestureType;
 
 /**
  * The Client interface must be implemented in all clients wishing
@@ -43,7 +44,7 @@ public interface SparshClient {
 	 * @return
 	 * 		A list of allowed Gesture IDs
 	 */
-	public List getAllowedGestures(int groupID);
+	public List<GestureType> getAllowedGestures(int groupID);
 	
 	/**
 	 * This method processes events from the Gesture Server.  It

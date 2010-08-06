@@ -27,15 +27,20 @@ public class FlickEvent implements Event {
 		speedLevel = 0;
 	}
 	
+	/**
+	 * 
+	 * @param absx
+	 * @param absy
+	 */
 	public FlickEvent(float absx, float absy) {
 //		_absx = absx;
 //		_absy = absy;
 	}
 	
 	public FlickEvent(int _speedLevel, int _xDirection, int _yDirection){
-		speedLevel =(float) _speedLevel;
-		xDirection =(float) _xDirection;
-		yDirection =(float) _yDirection;
+		speedLevel = _speedLevel;
+		xDirection = _xDirection;
+		yDirection = _yDirection;
 	}
 	
 

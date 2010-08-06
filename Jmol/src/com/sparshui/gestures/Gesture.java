@@ -1,7 +1,8 @@
 package com.sparshui.gestures;
 
-import java.util.Vector;
+import java.util.List;
 
+import com.sparshui.common.Event;
 import com.sparshui.server.TouchPoint;
 
 /**
@@ -20,10 +21,10 @@ public interface Gesture {
 	 * @param changedTouchPoint
 	 * 		The touch point that has changed.
 	 * @return
-	 * 		A vector of events that will be delivered to the client.
+	 * 		An ArrayList of events that will be delivered to the client.
 	 * 		
 	 */
-	public abstract Vector processChange(Vector touchPoints,
+	public abstract List<Event> processChange(List<TouchPoint> touchPoints,
 			TouchPoint changedTouchPoint);
 
 	/**

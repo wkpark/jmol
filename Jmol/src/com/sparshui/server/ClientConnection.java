@@ -3,7 +3,9 @@ package com.sparshui.server;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.List;
+
+import com.sparshui.gestures.GestureType;
 
 /**
  * Represents a network connection to a client.
@@ -21,7 +23,7 @@ class ClientConnection {
 	/**
 	 * 
 	 */
-	private HashMap _groups;
+	private HashMap<Integer, Group> _groups;
 
 	/**
 	 * Instantiate the connection on the specified socket.
@@ -33,7 +35,7 @@ class ClientConnection {
 	 */
 	ClientConnection(Socket socket) throws IOException {
 		_protocol = new ServerToClientProtocol(socket);
-		_groups = new HashMap();
+		_groups = new HashMap<Integer, Group>();
 	}
 
 	/**
@@ -53,7 +55,7 @@ class ClientConnection {
       switch (jmolFlags) {
       case 0x10000000:
         // reset flag
-        _groups = new HashMap();
+        _groups = new HashMap<Integer, Group>();
         break;
       }
       groupID &= ~jmolFlags;
@@ -78,7 +80,7 @@ class ClientConnection {
 	 * @return Vector
 	 * @throws IOException
 	 */
-	private Vector getGestures(int groupID) throws IOException {
+	private List<GestureType> getGestures(int groupID) throws IOException {
 		return _protocol.getGestures(groupID);
 	}
 
@@ -104,15 +106,15 @@ class ClientConnection {
 		Group group = null;
 		Integer gid = new Integer(groupID);
 		if (_groups.containsKey(gid)) {
-			group = (Group) _groups.get(gid);
+			group = _groups.get(gid);
 		} else {
 			// This is a new group, so get its allowed gestures and construct
 
 			// System.out.println("[ClientConnection] Getting Group Gestures ID:
 			// " + groupID);
 		  // gestureID may be a string indicating a user-defined class to load.
-			Vector gestureIDs = getGestures(groupID);
-			group = new Group(groupID, gestureIDs, _protocol);
+			List<GestureType> gestureTypes = getGestures(groupID);
+			group = new Group(groupID, gestureTypes, _protocol);
 			_groups.put(gid, group);
 		}
 

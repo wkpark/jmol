@@ -7,11 +7,25 @@ package com.sparshui.gestures;
  * this enum value to a 4-byte network-ordered integer before attempting
  * to transmit this value over the network.
  * 
+ * Adapted by Bob Hanson as an implementable class
+ * 
  * @author Jay Roltgen
  *
  */
 public class GestureType {
 
+  public String sType = null;
+  public int iType = Integer.MAX_VALUE;
+  public GestureType(String type) {
+    // class name, such as "org.jmol.multitouch.sparshui.TwoPointGesture"
+    sType = type;    
+  }
+  
+  public GestureType(int type) {
+    // built-in SparshUI gestures; not implemented for Jmol
+    iType = type;
+  }
+  
   public final static int DRAG_GESTURE = 0;
   public final static int MULTI_POINT_DRAG_GESTURE = 1;
   public final static int ROTATE_GESTURE = 2;

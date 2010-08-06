@@ -1,10 +1,13 @@
 package com.sparshui.server;
 
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.sparshui.common.Event;
 import com.sparshui.common.TouchState;
 import com.sparshui.gestures.Gesture;
+import com.sparshui.gestures.GestureType;
 
 /**
  * Represents a group of touch points 
@@ -16,9 +19,9 @@ import com.sparshui.gestures.Gesture;
 public class Group {
 
 	private int _id;
-	private Vector _gestureIDs;
-	private Vector _gestures;
-	private Vector _touchPoints;
+	private List<GestureType> _gestureTypes;
+	private ArrayList<Gesture> _gestures;
+	private ArrayList<TouchPoint> _touchPoints;
 	private ServerToClientProtocol _clientProtocol;
 
 	/**
@@ -27,21 +30,21 @@ public class Group {
 	 * with one client only.
 	 * @param id 
 	 * 
-	 * @param gestureIDs
-	 * 		The list of gesture IDs or String class names 
+	 * @param gestureTypes
+	 * 		The list of gesture types (integer or String class name) 
 	 *    that this group should process.
 	 * @param clientProtocol
 	 * 		Represents the connection to the client.
 	 */
-	public Group(int id, Vector gestureIDs,
+	public Group(int id, List<GestureType> gestureTypes,
 			ServerToClientProtocol clientProtocol) {
 		_id = id;
-		_gestureIDs = gestureIDs;
-		_gestures = new Vector();
-		_touchPoints = new Vector();
+		_gestureTypes = gestureTypes;
+		_gestures = new ArrayList<Gesture>();
+		_touchPoints = new ArrayList<TouchPoint>();
 		_clientProtocol = clientProtocol;
-		for (int i = 0; i < _gestureIDs.size(); i++) {
-		  Gesture gesture = GestureFactory.createGesture(_gestureIDs.get(i));
+		for (int i = 0; i < _gestureTypes.size(); i++) {
+		  Gesture gesture = GestureFactory.createGesture(_gestureTypes.get(i));
 		  if (gesture != null)
   			_gestures.add(gesture);
 		}
@@ -63,7 +66,7 @@ public class Group {
    *          The changed touch point.
    */
   public synchronized void update(TouchPoint changedPoint) {
-    Vector events = new Vector();
+    ArrayList<Event> events = new ArrayList<Event>();
     
     int state = changedPoint.getState();
 
@@ -78,7 +81,7 @@ public class Group {
     System.out.println();
     */
     
-    Vector clonedPoints = null;
+    ArrayList<TouchPoint> clonedPoints = null;
     /*
      * // until this is implemented somewhere, why go to the trouble? -- BH
      * 
@@ -88,7 +91,7 @@ public class Group {
      * clonedPoints.add(clonedPoint); } }
      */
     for (int i = 0; i < _gestures.size(); i++) {
-      Gesture gesture = (Gesture) _gestures.get(i);
+      Gesture gesture = _gestures.get(i);
       // System.out.println(_gestures.size());
       // System.out.println("Gesture allowed: " + gesture.getName());
       events.addAll(gesture.processChange(clonedPoints == null ? _touchPoints

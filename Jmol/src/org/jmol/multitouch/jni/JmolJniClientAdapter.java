@@ -23,13 +23,11 @@
  */
 package org.jmol.multitouch.jni;
 
-import org.jmol.multitouch.JmolMultiTouchAdapter;
 import org.jmol.multitouch.JmolMultiTouchClient;
 import org.jmol.multitouch.JmolMultiTouchClientAdapter;
 import org.jmol.viewer.Viewer;
 
-public class JmolJniClientAdapter extends JmolMultiTouchClientAdapter implements
-    JmolMultiTouchAdapter {
+public class JmolJniClientAdapter extends JmolMultiTouchClientAdapter {
 
   // not implemented. A stub only for a potential Java Native Interface.
   // not currently in applet.classes

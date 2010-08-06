@@ -23,8 +23,8 @@
  */
 package org.jmol.multitouch;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import javax.vecmath.Point3f;
 
@@ -34,6 +34,8 @@ import org.jmol.util.Logger;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.Viewer;
 import org.jmol.viewer.binding.Binding;
+
+import com.sparshui.gestures.GestureType;
 
 public class ActionManagerMT extends ActionManager implements JmolMultiTouchClient {
 
@@ -141,10 +143,11 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   
   // adaptation to allow user-defined gesture types
   
-  private final static String TWO_POINT_GESTURE = "org.jmol.multitouch.sparshui.TwoPointGesture";
-  private final static String SINGLE_POINT_GESTURE = "org.jmol.multitouch.sparshui.SinglePointGesture";
+  private final static GestureType TWO_POINT_GESTURE = new GestureType("org.jmol.multitouch.sparshui.TwoPointGesture");
+  private final static GestureType SINGLE_POINT_GESTURE = new GestureType("org.jmol.multitouch.sparshui.SinglePointGesture");
 
-  //these must match those in com.sparshui.common.messages.events.EventType
+  // these must match those in com.sparshui.common.messages.events.EventType
+  // and would have to be implemented in com.sparshui.server.GestureFactory
   // reproduced here so there are no references to that code in applet module
   
   public static final int DRIVER_NONE = -2;
@@ -180,11 +183,11 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     }
   }
   
-  public List getAllowedGestures(int groupID) {
+  public List<GestureType> getAllowedGestures(int groupID) {
     //System.out.println("ActionManagerMT getAllowedGestures " + groupID);
     if (groupID != this.groupID || !viewer.allowMultiTouch())
       return null;
-    Vector list = new Vector();
+    ArrayList<GestureType> list = new ArrayList<GestureType>();
     //list.add(new Integer(DRAG_GESTURE));
     //list.add(new Integer(MULTI_POINT_DRAG_GESTURE));
     //list.add(new Integer(SPIN_GESTURE));

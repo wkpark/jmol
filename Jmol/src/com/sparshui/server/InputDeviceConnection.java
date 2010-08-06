@@ -4,8 +4,8 @@ import java.io.DataInputStream;
 //import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.Hashtable;
 
 import com.sparshui.common.Location;
 import com.sparshui.common.NetworkConfiguration;
@@ -39,9 +39,9 @@ public class InputDeviceConnection implements Runnable {
 	/**
 	 * 
 	 */
-	private HashMap _touchPoints;
+	private Hashtable<Integer, TouchPoint>  _touchPoints;
 
-	private Vector _flaggedids;
+	private ArrayList<Integer> _flaggedids;
 
 	/**
 	 * Create a new input device connection with the given
@@ -58,8 +58,8 @@ public class InputDeviceConnection implements Runnable {
 		_socket = socket;
     _in = new DataInputStream(socket.getInputStream());
     //_out = new DataOutputStream(socket.getOutputStream());
-		_touchPoints = new HashMap();
-		_flaggedids = new Vector();
+		_touchPoints = new Hashtable<Integer, TouchPoint>();
+		_flaggedids = new ArrayList<Integer>();
 		startListening();
 	}
 	
@@ -68,7 +68,7 @@ public class InputDeviceConnection implements Runnable {
 	 */
 	private void removeDeadTouchPoints() {
 		for (int i = 0; i < _flaggedids.size(); i++) {
-		  Integer id = (Integer)_flaggedids.get(i);
+		  Integer id = _flaggedids.get(i);
 		_touchPoints.remove(id);
 		}
 		_flaggedids.clear();
@@ -141,7 +141,7 @@ public class InputDeviceConnection implements Runnable {
     int id = _in.readInt();
     float x = _in.readFloat();
     float y = _in.readFloat();
-    int state = (int) _in.readByte();
+    int state = _in.readByte();
     long time = (len >= 21 ? _in.readLong() : System.currentTimeMillis());
     if (len > 21) 
       _in.read(new byte[len - 21]);

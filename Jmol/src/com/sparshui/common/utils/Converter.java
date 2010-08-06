@@ -72,7 +72,7 @@ public class Converter {
   
   public static long byteArrayToLong(byte[] data, int i) {
     return (((long) byteArrayToInt(data, i)) << 32)
-        | ((long) byteArrayToInt(data, i + 4)) & 0xFFFFFFFFL;
+        | byteArrayToInt(data, i + 4) & 0xFFFFFFFFL;
   }
 
   public static String byteArrayToString(byte[] bytes) {

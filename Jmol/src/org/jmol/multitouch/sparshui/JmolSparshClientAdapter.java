@@ -45,6 +45,7 @@ import com.sparshui.common.messages.events.DragEvent;
 import com.sparshui.common.messages.events.RotateEvent;
 import com.sparshui.common.messages.events.TouchEvent;
 import com.sparshui.common.messages.events.ZoomEvent;
+import com.sparshui.gestures.GestureType;
 
 public class JmolSparshClientAdapter extends JmolMultiTouchClientAdapter implements SparshClient {
 
@@ -155,7 +156,7 @@ public class JmolSparshClientAdapter extends JmolMultiTouchClientAdapter impleme
   
   // methods the Sparsh server needs -- from com.sparshui.client.ClientToServerProtocol
   
-  public List getAllowedGestures(int groupID) {
+  public List<GestureType> getAllowedGestures(int groupID) {
     return (actionManager == null ? null : actionManager.getAllowedGestures(groupID));
   }
 

@@ -3,6 +3,7 @@ package com.sparshui.server;
 import org.jmol.util.Logger;
 
 import com.sparshui.gestures.Gesture;
+import com.sparshui.gestures.GestureType;
 
 //import com.sparshui.gestures.Flick;
 //import com.sparshui.gestures.GestureType;
@@ -24,23 +25,21 @@ class GestureFactory {
    * 
    * adapted by Bob Hanson for Jmol 11/29/2009
    * 
-   * @param gid an Integer or String
+   * @param gType a GestureType (iType or sType)
    * 
    * @return A new Gesture of type gestureID
    */
-  static Gesture createGesture(Object gid) {
-   if (gid instanceof String) {
-     String name = (String) gid;
+  static Gesture createGesture(GestureType gType) {
+   if (gType.sType != null) {
      try {
-       return (Gesture) Class.forName(name).newInstance();
+       return (Gesture) Class.forName(gType.sType).newInstance();
      } catch (Exception e) {
-       Logger.error("[GestureFactory] Error creating instance for " + name + ": \n" + e.getMessage());
-       return null;
+       Logger.error("[GestureFactory] Error creating instance for " + gType.sType + ": \n" + e.getMessage());
      }
+     return null;
    }
-   int gestureID = ((Integer) gid).intValue();
    /* unused in Jmol
-	  switch (gestureID) {
+	  switch (gType.iType) {
 	  case GestureType.DRAG_GESTURE:
 			return new SinglePointDragGesture();
 		case GestureType.MULTI_POINT_DRAG_GESTURE:
@@ -61,8 +60,8 @@ class GestureFactory {
 			return new RelativeDragGesture();
 	  }
 	  */
-	  Logger.error("[GestureFactory] Gesture not recognized: " + gestureID);
-		return null;
+   Logger.error("[GestureFactory] Gesture not recognized: " + gType.iType);
+   return null;
 	}
 
 }

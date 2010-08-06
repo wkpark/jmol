@@ -4,11 +4,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.sparshui.common.ClientProtocol;
 import com.sparshui.common.Event;
 import com.sparshui.common.utils.Converter;
+import com.sparshui.gestures.GestureType;
 
 /**
  * Represents the server to client connection.
@@ -47,8 +49,8 @@ public class ServerToClientProtocol extends ClientProtocol {
    * @throws IOException
    *           If an error occurs while communication with the client.
    */
-  public Vector getGestures(int groupID) throws IOException {
-    Vector gestures = new Vector();
+  public List<GestureType> getGestures(int groupID) throws IOException {
+    ArrayList<GestureType> gestures = new ArrayList<GestureType>();
     _bufferOut.writeInt(groupID);
     sendBuffer(MessageType.GET_ALLOWED_GESTURES);
 
@@ -58,10 +60,10 @@ public class ServerToClientProtocol extends ClientProtocol {
         // this is a string descriptor for a class
         byte[] bytes = new byte[-gestureID];
         _in.read(bytes);
-        gestures.add(Converter.byteArrayToString(bytes));
+        gestures.add(new GestureType(Converter.byteArrayToString(bytes)));
         length -= bytes.length;
       } else {
-        gestures.add(new Integer(gestureID));
+        gestures.add(new GestureType(gestureID));
       }
     }
     return gestures;
@@ -106,10 +108,10 @@ public class ServerToClientProtocol extends ClientProtocol {
    * @throws IOException
    *           If there is a communication error.
    */
-  public void processEvents(int groupID, Vector events) throws IOException {
+  public void processEvents(int groupID, ArrayList<Event> events) throws IOException {
     for (int i = 0; i < events.size(); i++) {
       _bufferOut.writeInt(groupID);
-      _bufferOut.write(((Event) events.get(i)).serialize());
+      _bufferOut.write(events.get(i).serialize());
       sendBuffer(MessageType.EVENT);
     }
   }

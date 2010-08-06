@@ -1,9 +1,10 @@
 package org.jmol.multitouch.sparshui;
 
-import java.util.Vector;
-
+import java.util.ArrayList;
+import java.util.List;
 import org.jmol.util.Logger;
 
+import com.sparshui.common.Event;
 import com.sparshui.common.TouchState;
 import com.sparshui.common.messages.events.TouchEvent;
 import com.sparshui.gestures.Gesture;
@@ -44,8 +45,9 @@ public class SinglePointGesture implements Gesture {
    * 
    */
   // @override
-  public Vector processChange(Vector touchPoints, TouchPoint changedTouchPoint) {
-    Vector retEvents = new Vector();
+  
+  public List<Event> processChange(List<TouchPoint> touchPoints, TouchPoint changedTouchPoint) {
+    ArrayList<Event> retEvents = new ArrayList<Event>();
     int nPoints = touchPoints.size();
     if (Logger.debugging) {
       Logger.info("\nSinglePointGesture " + _myId + " nPoints: " + nPoints);
@@ -97,7 +99,7 @@ public class SinglePointGesture implements Gesture {
     return retEvents;
   }
 
-  private boolean checkClick(TouchPoint tpNew, Vector retEvents, boolean isDeath) {
+  private boolean checkClick(TouchPoint tpNew, ArrayList<Event> retEvents, boolean isDeath) {
     TouchPoint tp;
     long dt = tpNew.getTime() - _birth.getTime();
     boolean isSingleClick = (isDeath && dt < MAXIMUM_CLICK_TIME);
@@ -122,4 +124,5 @@ public class SinglePointGesture implements Gesture {
     retEvents.add(new TouchEvent(tp));
     return true;
   }
+
 }

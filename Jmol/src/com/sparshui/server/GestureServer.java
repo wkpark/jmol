@@ -3,8 +3,8 @@ package com.sparshui.server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.Hashtable;
 
 import org.jmol.api.JmolGestureServerInterface;
 import org.jmol.util.Logger;
@@ -31,7 +31,7 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
   ServerSocket _clientSocket;
   ServerSocket _deviceSocket;
   ServerSocket _mySocket;
-  private Vector _clients = new Vector();
+  private ArrayList<ClientConnection> _clients = new ArrayList<ClientConnection>();
   private int port;
 
   InputDeviceConnection ic = null;
@@ -219,7 +219,7 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
    * @param state
    * @return whether a client has claimed this touchPoint;
    */
-  boolean processTouchPoint(HashMap inputDeviceTouchPoints, int id,
+  boolean processTouchPoint(Hashtable<Integer, TouchPoint> inputDeviceTouchPoints, int id,
                             Location location, long time, int state) {
     if (Logger.debugging) {
       Logger.info("[GestureServer] processTouchPoint id=" + id + " state=" + state + " " + location
@@ -227,7 +227,7 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
     }
     Integer iid = new Integer(id);
     if (inputDeviceTouchPoints.containsKey(iid)) {
-      TouchPoint touchPoint = (TouchPoint) inputDeviceTouchPoints.get(iid);
+      TouchPoint touchPoint = inputDeviceTouchPoints.get(iid);
       if (!touchPoint.isClaimed())
         return false;
       Logger.debug("[GestureServer] OK");
@@ -251,10 +251,10 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
    * 
    */
   private boolean processBirth(TouchPoint touchPoint) {
-    Vector clients_to_remove = null;
+    ArrayList<ClientConnection> clients_to_remove = null;
     boolean isClaimed = false;
     for (int i = 0; i < main._clients.size(); i++) {
-      ClientConnection client = (ClientConnection) main._clients.get(i);
+      ClientConnection client = main._clients.get(i);
       // Return if the client claims the touch point
       try {
         if (touchPoint == null)
@@ -268,13 +268,13 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
         // with the client. In this case, we will want
         // to remove the client.
         if (clients_to_remove == null)
-          clients_to_remove = new Vector();
+          clients_to_remove = new ArrayList<ClientConnection>();
         clients_to_remove.add(client);
       }
     }
     if (clients_to_remove != null)
       for (int i = 0; i < clients_to_remove.size(); i++) {
-        main._clients.remove(clients_to_remove.elementAt(i));
+        main._clients.remove(clients_to_remove.get(i));
         Logger.info("[GestureServer] Client Disconnected");
       }
     return isClaimed;

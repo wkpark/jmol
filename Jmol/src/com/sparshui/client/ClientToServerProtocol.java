@@ -9,6 +9,7 @@ import com.sparshui.common.Event;
 import com.sparshui.common.Location;
 import com.sparshui.common.messages.events.*;
 import com.sparshui.common.utils.Converter;
+import com.sparshui.gestures.GestureType;
 
 /**
  * ClientToServerProtocol implements the Client side protocol. It is the
@@ -179,26 +180,27 @@ public class ClientToServerProtocol extends ClientProtocol {
    */
   private void handleGetAllowedGestures(SparshClient client, byte[] data)
       throws IOException {
-    List gestureIDs = client.getAllowedGestures(Converter.byteArrayToInt(data));
-    int length = (gestureIDs == null ? 0 : gestureIDs.size());
+    GestureType gType;
+    List<GestureType> gestureTypes = client.getAllowedGestures(Converter.byteArrayToInt(data));
+    int length = (gestureTypes == null ? 0 : gestureTypes.size());
     int blen = length * 4;
     for (int i = 0; i < length; i++) {
-      Object gid = gestureIDs.get(i);
-      if (gid instanceof String)
-        blen += ((String) gid).length();
+      gType = gestureTypes.get(i);
+      if (gType.sType != null)
+        blen += gType.sType.length();
     }
     _out.writeInt(blen);
 
     // Write the gesture IDs
     for (int i = 0; i < length; i++) {
-      Object gid = gestureIDs.get(i);
-      if (gid instanceof Integer) {
-        _out.writeInt(((Integer) gid).intValue());
-      } else if (gid instanceof String) {
-        int len = ((String) gid).length();
+      gType = gestureTypes.get(i);
+      if (gType.sType == null) {
+        _out.writeInt(gType.iType);
+      } else {
+        int len = gType.sType.length();
         if (len > 0) {
           _out.writeInt(-len);
-          _out.write(Converter.stringToByteArray((String) gid));
+          _out.write(Converter.stringToByteArray(gType.sType));
         }
       }
     }

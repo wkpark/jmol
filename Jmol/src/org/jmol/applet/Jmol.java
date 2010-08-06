@@ -513,7 +513,12 @@ public class Jmol implements WrappedApplet {
   protected Graphics gRight;
   protected boolean isStereoSlave;
   
-  private void update(Graphics g, @SuppressWarnings("unused") String source) {
+  /**
+   * 
+   * @param g
+   * @param source  for debugging only
+   */
+  private void update(Graphics g, String source) {
     if (viewer == null) // it seems that this can happen at startup sometimes
       return;
     if (isUpdating)

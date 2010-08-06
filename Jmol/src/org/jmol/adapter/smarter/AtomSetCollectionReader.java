@@ -220,7 +220,11 @@ public abstract class AtomSetCollectionReader {
     return finish();
   }
 
-  public void readAtomSetCollectionFromDOM(@SuppressWarnings("unused") Object DOMNode) {
+  /**
+   * 
+   * @param DOMNode
+   */
+  public void readAtomSetCollectionFromDOM(Object DOMNode) {
     // XML readers only
   }
   
@@ -320,6 +324,7 @@ public abstract class AtomSetCollectionReader {
           + ":\n" + line + "\n" + e.getMessage();
   }
   
+  @SuppressWarnings("unchecked")
   private void initialize() {
 
     initializeSymmetry();
@@ -361,7 +366,7 @@ public abstract class AtomSetCollectionReader {
         .get("ptFile")).intValue() : -1);
     isTrajectory = htParams.containsKey("isTrajectory");
     if (ptFile > 0 && htParams.containsKey("firstLastSteps")) {
-      Object val = ((List) htParams.get("firstLastSteps")).get(ptFile - 1);
+      Object val = ((List<Object>) htParams.get("firstLastSteps")).get(ptFile - 1);
       if (val instanceof BitSet) {
         bsModels = (BitSet) val;
       } else {

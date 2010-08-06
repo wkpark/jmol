@@ -71,18 +71,39 @@ abstract public class Polymer {
     return type;
   }
 
-  @SuppressWarnings("unused")
+  /**
+   * 
+   * @param bs
+   */
   public void getRange(BitSet bs) {
   }
-  
-  @SuppressWarnings("unused")
+
+  /**
+   * 
+   * @param last
+   * @param bs
+   * @param vList
+   * @param isTraceAlpha
+   * @param sheetSmoothing
+   * @return number of points
+   */
   public int getPolymerPointsAndVectors(int last, BitSet bs, List<Point3f[]> vList,
                                         boolean isTraceAlpha,
                                         float sheetSmoothing) {
     return 0;
   }
 
-  @SuppressWarnings("unused")
+  /**
+   * 
+   * @param type
+   * @param structureID
+   * @param serialID
+   * @param strandCount
+   * @param startChainID
+   * @param startSeqcode
+   * @param endChainID
+   * @param endSeqcode
+   */
   public void addSecondaryStructure(byte type, 
                                     String structureID, int serialID, int strandCount,
                                     char startChainID,
@@ -103,7 +124,12 @@ abstract public class Polymer {
     return "";
   }
 
-  @SuppressWarnings("unused")
+  
+  /**
+   * 
+   * @param bs
+   * @return info
+   */
   public Hashtable<String, Object> getPolymerInfo(BitSet bs) {
     return null;
   }

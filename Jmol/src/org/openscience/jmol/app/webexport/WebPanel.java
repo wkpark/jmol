@@ -898,13 +898,13 @@ class ArrayListTransferHandler extends TransferHandler {
       return false;
     }
     JList target = null;
-    ArrayList alist = null;
+    List alist = null;
     try {
       target = (JList) c;
       if (hasLocalArrayListFlavor(t.getTransferDataFlavors())) {
-        alist = (ArrayList) t.getTransferData(localArrayListFlavor);
+        alist = (List) t.getTransferData(localArrayListFlavor);
       } else if (hasSerialArrayListFlavor(t.getTransferDataFlavors())) {
-        alist = (ArrayList) t.getTransferData(serialArrayListFlavor);
+        alist = (List) t.getTransferData(serialArrayListFlavor);
       } else {
         return false;
       }
@@ -1048,7 +1048,7 @@ class ArrayListTransferHandler extends TransferHandler {
       if (values == null || values.length == 0) {
         return null;
       }
-      ArrayList alist = new ArrayList(values.length);
+      List<String> alist = new ArrayList<String>(values.length);
       for (int i = 0; i < values.length; i++) {
         Object o = values[i];
         String str = o.toString();
@@ -1067,9 +1067,9 @@ class ArrayListTransferHandler extends TransferHandler {
   }
 
   class ArrayListTransferable implements Transferable {
-    ArrayList data;
+    List<String> data;
 
-    ArrayListTransferable(ArrayList alist) {
+    ArrayListTransferable(List<String> alist) {
       data = alist;
     }
 

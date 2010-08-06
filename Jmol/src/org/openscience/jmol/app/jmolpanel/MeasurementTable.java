@@ -194,7 +194,7 @@ public class MeasurementTable extends JDialog {
     }
   }
 
-  final Class stringClass = "".getClass();
+  final Class<? extends String> stringClass = "".getClass();
 
   class MeasurementTableModel extends AbstractTableModel {
 
@@ -210,7 +210,7 @@ public class MeasurementTable extends JDialog {
     public int getColumnCount() { return 5; }
 
     @Override
-    public Class getColumnClass(int col) {
+    public Class<? extends String> getColumnClass(int col) {
       return stringClass;
     }
     public Object getValueAt(int row, int col) {

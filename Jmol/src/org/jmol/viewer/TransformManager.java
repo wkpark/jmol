@@ -2703,7 +2703,11 @@ abstract class TransformManager {
     return Float.NaN;
   }
 
-  float getNavigationOffsetPercent(@SuppressWarnings("unused") char XorY) {
+  /**
+   * @param XorY 
+   * @return percent
+   */
+  float getNavigationOffsetPercent(char XorY) {
     return 0;
   }
 

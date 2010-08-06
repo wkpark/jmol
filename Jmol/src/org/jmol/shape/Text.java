@@ -210,7 +210,7 @@ public class Text extends Object2d {
 
     // draw the box if necessary
     if (image == null && bgcolix != 0 && g3d.setColix(bgcolix))
-      showBox(g3d, colix, bgcolix, (int) boxX, (int) boxY, z + 2, zSlab,
+      showBox(g3d, colix, (int) boxX, (int) boxY, z + 2, zSlab,
           (int) boxWidth, (int) boxHeight, fontScale, isLabelOrHover);
     if (g3d.setColix(colix)) {
 
@@ -335,7 +335,7 @@ public class Text extends Object2d {
   }
   
   private static void showBox(JmolRendererInterface g3d, short colix,
-                              short bgcolix, int x, int y, int z, int zSlab,
+                              int x, int y, int z, int zSlab,
                               int boxWidth, int boxHeight,
                               float imageFontScaling, boolean atomBased) {
     g3d.fillRect(x, y, z, zSlab, boxWidth, boxHeight);
@@ -371,7 +371,7 @@ public class Text extends Object2d {
     float x = boxXY[0];
     float y = boxXY[1];
     if (bgcolix != 0 && g3d.setColix(bgcolix))
-      showBox(g3d, colix, bgcolix, (int) x, (int) y, z, zSlab, (int) boxWidth,
+      showBox(g3d, colix, (int) x, (int) y, z, zSlab, (int) boxWidth,
           (int) boxHeight, 1, true);
     else
       g3d.setColix(colix);

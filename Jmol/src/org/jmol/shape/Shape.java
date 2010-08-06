@@ -127,11 +127,15 @@ public abstract class Shape {
   public void initShape() {
   }
 
+  /**
+   * 
+   * @param shape
+   */
   public void merge(Shape shape) {
     // shape-dependent Jmol 12.0.RC6
   }
   
-  protected List xmlProperties;
+  protected List<Object> xmlProperties;
   
   public void setShapeSize(int size, RadiusData rd, BitSet bsSelected) {
     setXmlProperty("size", (rd == null ? Integer.valueOf(size) : (Object) rd),
@@ -142,10 +146,20 @@ public abstract class Shape {
       setSize(rd, bsSelected);
   }
 
+  /**
+   * 
+   * @param size
+   * @param bsSelected
+   */
   public void setSize(int size, BitSet bsSelected) {
     // not for atoms except to turn off -- size = 0
   }
 
+  /**
+   * 
+   * @param rd
+   * @param bsSelected
+   */
   public void setSize(RadiusData rd, BitSet bsSelected) {
     // balls, dots, other atomshapes
   }
@@ -238,6 +252,7 @@ public abstract class Shape {
    * @param value
    * @param bsSelected
    */
+  @SuppressWarnings("unchecked")
   public void setProperty(String propertyName, Object value, BitSet bsSelected) {
 /*    if (propertyName == "setXml") {
       // some states mignt also check this in order to preseve their state
@@ -246,9 +261,9 @@ public abstract class Shape {
     }
 */
     if (propertyName == "setProperties") {
-      List propertyList = (List) value;
+      List<Object[]> propertyList = (List<Object[]>) value;
       while (propertyList.size() > 0) {
-        Object[] data = (Object[]) propertyList.remove(0);
+        Object[] data = propertyList.remove(0);
         setShapeProperty(((String) data[0]).intern(), data[1], null);
       }
       return;
@@ -265,39 +280,99 @@ public abstract class Shape {
     Logger.warn("unassigned " + JmolConstants.shapeClassBases[shapeID] + " + shape setProperty:" + propertyName + ":" + value);
   }
 
+  /**
+   * 
+   * @param property
+   * @param data
+   * @return true if serviced
+   */
   public boolean getProperty(String property, Object[] data) {
     return false;
   }
 
+  /**
+   * 
+   * @param property
+   * @param index
+   * @return true if serviced
+   */
   public Object getProperty(String property, int index) {
     return null;
   }
 
+  /**
+   * 
+   * @param thisID
+   * @return index
+   */
   public int getIndexFromName(String thisID) {
     return -1;
   }
 
+  /**
+   * 
+   * @param x
+   * @param y
+   * @return T/F
+   */
   public boolean wasClicked(int x, int y) {
     return false;
   }
 
+  /**
+   * 
+   * @param xMouse
+   * @param yMouse
+   * @param closest
+   * @param bsNot
+   */
   public void findNearestAtomIndex(int xMouse, int yMouse, Atom[] closest, BitSet bsNot) {
   }
 
+  /**
+   * 
+   * @param pointMin
+   * @param pointMax
+   */
   public void checkBoundsMinMax(Point3f pointMin, Point3f pointMax) {
   }
 
   public void setModelClickability() {
   }
 
+  /**
+   * 
+   * @param x
+   * @param y
+   * @param modifiers
+   * @param bsVisible
+   * @return pt clicked
+   */
   public Point3fi checkObjectClicked(int x, int y, int modifiers, BitSet bsVisible) {
     return null;
   }
 
+  /**
+   * 
+   * @param x
+   * @param y
+   * @param bsVisible
+   * @return T/F
+   */
   public boolean checkObjectHovered(int x, int y, BitSet bsVisible) {
     return false;
   }
 
+  /**
+   * 
+   * @param prevX
+   * @param prevY
+   * @param x
+   * @param y
+   * @param modifiers
+   * @param bsVisible
+   * @return T/F
+   */
   public boolean checkObjectDragged(int prevX, int prevY, int x, int y,
                              int modifiers, BitSet bsVisible) {
     return false;
@@ -335,6 +410,10 @@ public abstract class Shape {
     return null;
   }
 
+  /**
+   * 
+   * @param bs
+   */
   public void setVisibilityFlags(BitSet bs) {
   }
 
@@ -415,10 +494,20 @@ public abstract class Shape {
             : colixes[i]), atom.getColix());
   }
 
+  /**
+   * 
+   * @param atomIndex
+   * @return size
+   */
   public int getSize(int atomIndex) {
     return 0;
   }
 
+  /**
+   * 
+   * @param group
+   * @return size
+   */
   public int getSize(Group group) {
     return 0;
   }

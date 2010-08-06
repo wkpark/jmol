@@ -269,6 +269,14 @@ public class Sticks extends Shape {
   private final static int MAX_BOND_CLICK_DISTANCE_SQUARED = 10 * 10;
   private final Point3i ptXY = new Point3i();
 
+  /**
+   * 
+   * @param x
+   * @param y
+   * @param bsVisible  UNUSED?
+   * @param pt
+   * @return picked bond or null
+   */
   private Bond findPickedBond(int x, int y, BitSet bsVisible, Point3fi pt) {
     int dmin2 = MAX_BOND_CLICK_DISTANCE_SQUARED;
     if (g3d.isAntialiased()) {

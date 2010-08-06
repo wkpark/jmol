@@ -62,19 +62,19 @@ public abstract class FontLineShape extends FontShape {
       return s;
     StringBuffer sb = new StringBuffer(s);
     if (tickInfos[0] != null)
-      appendTickInfo(sb, "", 0);
+      appendTickInfo(sb, 0);
     if (tickInfos[1] != null)
-      appendTickInfo(sb, " x", 1);
+      appendTickInfo(sb, 1);
     if (tickInfos[2] != null)
-      appendTickInfo(sb, " y", 2);
+      appendTickInfo(sb, 2);
     if (tickInfos[3] != null)
-      appendTickInfo(sb, " z", 3);
+      appendTickInfo(sb, 3);
     if (s.indexOf(" off") >= 0)
       sb.append("  " + myType + " off;\n");
     return sb.toString();
   }
   
-  private void appendTickInfo(StringBuffer sb, String type, int i) {
+  private void appendTickInfo(StringBuffer sb, int i) {
     sb.append("  ");
     sb.append(myType);
     addTickInfo(sb, tickInfos[i], false);

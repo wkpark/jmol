@@ -86,6 +86,13 @@ public class Mesh extends MeshSurface {
   public boolean isTwoSided = true;
   public boolean havePlanarContours = false;
   
+  /**
+   * 
+   * @param thisID
+   * @param g3d     IGNORED
+   * @param colix
+   * @param index
+   */
   public Mesh(String thisID, JmolRendererInterface g3d, short colix, int index) {
     if (PREVIOUS_MESH_ID.equals(thisID))
       thisID = null;
@@ -188,7 +195,7 @@ public class Mesh extends MeshSurface {
 
   //public Vector data1;
   //public Vector data2;
-  public List xmlProperties;
+  public List<Object> xmlProperties;
   public boolean colorDensity;
   public Object cappingObject;
   public Object slabbingObject;

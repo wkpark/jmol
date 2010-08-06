@@ -137,8 +137,8 @@ public abstract class MeshCollection extends Shape {
   }
   
  @SuppressWarnings("unchecked")
-@Override
-public void setProperty(String propertyName, Object value, BitSet bs) {
+ @Override
+ public void setProperty(String propertyName, Object value, BitSet bs) {
 
    if (propertyName == "setXml") {
      if (currentMesh != null)

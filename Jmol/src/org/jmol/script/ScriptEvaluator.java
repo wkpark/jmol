@@ -6971,6 +6971,7 @@ public class ScriptEvaluator {
         setShapeProperty(JmolConstants.SHAPE_STICKS, "translucency",
             translucency, bsBonds);
       }
+      viewer.selectBonds(null);
     }
     if (!(tQuiet || scriptLevel > scriptReportingLevel))
       scriptStatusOrBuffer(GT._("{0} new bonds; {1} modified", new Object[] {

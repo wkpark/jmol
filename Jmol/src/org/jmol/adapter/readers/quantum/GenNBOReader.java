@@ -32,6 +32,7 @@ import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * NBO file nn reader will pull in other files as necessary
@@ -331,13 +332,13 @@ public class GenNBOReader extends MOReader {
     Logger.info(sb.toString());
     tokens = getTokens(sb.toString());
     for (int i = 0; i < tokens.length; i++) {
-      Hashtable<String, Object> mo = new Hashtable<String, Object>();
+      Map<String, Object> mo = new Hashtable<String, Object>();
       setMO(mo);
     }
     if (ntype.equals("MO"))
       return true; // no labels here
     for (int i = 0; i < tokens.length; i++) {
-      Hashtable<String, Object> mo = orbitals.get(i);
+      Map<String, Object> mo = orbitals.get(i);
       String type = tokens[i];
       mo.put("type", moType + " " + type);
       // TODO: does not account for SOMO
@@ -352,7 +353,7 @@ public class GenNBOReader extends MOReader {
     int nAOs = nOrbitals;
     nOrbitals = orbitals.size();
     for (int i = 0; i < nOrbitals; i++) {
-      Hashtable<String, Object> mo = orbitals.get(i);
+      Map<String, Object> mo = orbitals.get(i);
       float[] coefs = new float[nAOs];
       mo.put("coefficients", coefs);
       if (isMO)

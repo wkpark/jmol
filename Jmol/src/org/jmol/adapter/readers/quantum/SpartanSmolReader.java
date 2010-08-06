@@ -25,6 +25,7 @@
 package org.jmol.adapter.readers.quantum;
 
 import java.util.Hashtable;
+import java.util.Map;
 
 import org.jmol.util.Logger;
 
@@ -156,13 +157,13 @@ public class SpartanSmolReader extends SpartanInputReader {
     }
 
   private String endCheck = "END Directory Entry ";
-  private Hashtable<String, Object> moData = new Hashtable<String, Object>();
+  private Map<String, Object> moData = new Hashtable<String, Object>();
   private String title;
 
   SpartanArchive spartanArchive;
 
 
-  Hashtable<String, String> titles;
+  Map<String, String> titles;
   
   private void readOutput() throws Exception {
     titles = new Hashtable<String, String>();

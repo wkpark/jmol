@@ -28,6 +28,7 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolLineReader;
 
 import java.util.Hashtable;
+import java.util.Map;
 
 import org.jmol.util.CifDataReader;
 import org.jmol.util.Logger;
@@ -66,7 +67,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   private String thisFormula = "";
   private boolean iHaveDesiredModel;
   private boolean isPDB = false;
-  private Hashtable<String, String> htHetero;
+  private Map<String, String> htHetero;
 
   @Override
   public void initializeReader() throws Exception {
@@ -397,7 +398,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   ////////////////////////////////////////////////////////////////
 
 
-  private Hashtable<String, Float> atomTypes;
+  private Map<String, Float> atomTypes;
   
   final private static byte ATOM_TYPE_SYMBOL = 0;
   final private static byte ATOM_TYPE_OXIDATION_NUMBER = 1;
@@ -1147,7 +1148,7 @@ _struct_site_gen.details
 */
   
   //private int siteNum;
-  private Hashtable<String, Hashtable<String, Object>> htSites;
+  private Map<String, Map<String, Object>> htSites;
   
   /**
    * 
@@ -1169,8 +1170,8 @@ _struct_site_gen.details
     String chainID = "";
     String resID = "";
     String group = "";
-    Hashtable<String, Object> htSite = null;
-    htSites = new Hashtable<String, Hashtable<String, Object>>();
+    Map<String, Object> htSite = null;
+    htSites = new Hashtable<String, Map<String, Object>>();
     while (tokenizer.getData()) {
       for (int i = 0; i < tokenizer.fieldCount; ++i) {
         switch (fieldProperty(i)) {

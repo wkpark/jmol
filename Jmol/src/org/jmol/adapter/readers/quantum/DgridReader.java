@@ -29,6 +29,7 @@ import org.jmol.quantum.SlaterData;
 import org.jmol.util.Logger;
 
 import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * A reader for Dgrid BASISFILE data. http://www.scm.com/News/DGrid.html
@@ -94,7 +95,7 @@ public class DgridReader extends SlaterReader {
     }
   }
 
-  Hashtable<String, Float> htExponents = new Hashtable<String, Float>();
+  Map<String, Float> htExponents = new Hashtable<String, Float>();
   private void readSlaterBasis() throws Exception {
      /*
 :                           +--------------------------+
@@ -127,7 +128,7 @@ public class DgridReader extends SlaterReader {
     }
   }
 
-  private Hashtable<String, Integer> htFuncMap;
+  private Map<String, Integer> htFuncMap;
   private void readMolecularOrbitals() throws Exception {
     /*
 sym: A1                 1 1s            2 1s            3 1s            4 1s            5 1s         
@@ -185,7 +186,7 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
           int pt = ptSlater[i];
           list[pt] = parseFloat(tokens[i]);
         }
-        Hashtable<String, Object> mo = new Hashtable<String, Object>();
+        Map<String, Object> mo = new Hashtable<String, Object>();
         mo.put("energy", new Float(energy));
         mo.put("coefficients", list);
         mo.put("symmetry", symmetry + "_" + iOrb);

@@ -31,9 +31,9 @@ import org.jmol.util.Logger;
 //import org.jmol.util.Escape;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -67,7 +67,7 @@ import java.util.List;
 public class AdfReader extends SlaterReader {
 
   
-  private Hashtable<String, SymmetryData> htSymmetries;
+  private Map<String, SymmetryData> htSymmetries;
   private List<SymmetryData> vSymmetries;
   private String energy = null;
   private int nXX = 0;
@@ -250,7 +250,7 @@ OR
     int nSFO;
     int nBF;
     float[][] coefs;
-    Hashtable<String, Object>[] mos;
+    Map<String, Object>[] mos;
     int[] basisFunctions;
     public SymmetryData(int index, String sym) {
       Logger.info("ADF reader creating SymmetryData " + sym + " " + index);
@@ -386,7 +386,7 @@ OR
       }
     }
     for (int i = 0; i < sd.nSFO; i++) {
-      Hashtable<String, Object> mo = new Hashtable<String, Object>();
+      Map<String, Object> mo = new Hashtable<String, Object>();
       mo.put("coefficients", sd.coefs[i]);
       //System.out.println(i + " " + Escape.escapeArray(sd.coefs[i]));
       mo.put("id", sym + " " + (i + 1));
@@ -415,11 +415,10 @@ OR
       float energy = parseFloat(tokens[len - 1]); // eV
       sd = htSymmetries.get(sym);
       if (sd == null) {
-        Enumeration<String> e = htSymmetries.keys();
-        while (e.hasMoreElements()) {
-          String symfull = e.nextElement();
+        for (Map.Entry<String, SymmetryData> entry : htSymmetries.entrySet()) {
+          String symfull = entry.getKey();
           if (symfull.startsWith(sym + ":"))
-            addMo(htSymmetries.get(symfull), moPt, (occ > 2 ? 2 : occ), energy);            
+            addMo(entry.getValue(), moPt, (occ > 2 ? 2 : occ), energy);            
         }
       } else {
         addMo(sd, moPt, occ, energy);
@@ -434,7 +433,7 @@ OR
   }
 
   private void addMo(SymmetryData sd, int moPt, float occ, float energy) {
-    Hashtable<String, Object> mo = sd.mos[moPt - 1];
+    Map<String, Object> mo = sd.mos[moPt - 1];
     mo.put("occupancy", new Float(occ));
     mo.put("energy", new Float(energy)); //eV
     mo.put("symmetry", sd.sym + "_" + moPt);

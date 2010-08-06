@@ -37,8 +37,6 @@ import java.io.BufferedReader;
 import java.io.OutputStream;
 
 import java.util.BitSet;
-import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -688,13 +686,12 @@ public abstract class AtomSetCollectionReader {
     needToApplySymmetry = true;
   }
 
-  protected void addSites(Hashtable<String, Hashtable<String, Object>> htSites) {
+  protected void addSites(Map<String, Map<String, Object>> htSites) {
     atomSetCollection.setAtomSetAuxiliaryInfo("pdbSites", htSites);
-    Enumeration<String> e = htSites.keys();
     String sites = "";
-    while (e.hasMoreElements()) {
-      String name = e.nextElement();
-      Hashtable<String, Object> htSite = htSites.get(name);
+    for (Map.Entry<String, Map<String, Object>> entry : htSites.entrySet()) {
+      String name = entry.getKey();
+      Map<String, Object> htSite = entry.getValue();
       char ch;
       for (int i = name.length(); --i >= 0; )
         if (!Character.isLetterOrDigit(ch = name.charAt(i)) && ch != '\'')
@@ -742,9 +739,9 @@ public abstract class AtomSetCollectionReader {
   }
 
   @SuppressWarnings("unchecked")
-  public void setMOData(Hashtable<String, Object> moData) {
+  public void setMOData(Map<String, Object> moData) {
     atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
-    List<Hashtable<String, Object>> orbitals = (List<Hashtable<String, Object>>) moData.get("mos");
+    List<Map<String, Object>> orbitals = (List<Map<String, Object>>) moData.get("mos");
     if (orbitals != null)
       Logger.info(orbitals.size() + " molecular orbitals read in model " + atomSetCollection.getAtomSetCount());
   }

@@ -5,6 +5,7 @@ import org.jmol.adapter.smarter.*;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.jmol.api.JmolAdapter;
@@ -193,7 +194,7 @@ public class MoldenReader extends MopacSlaterReader {
     
     String[] tokens = getTokens();
     while (tokens != null &&  line.indexOf('[') < 0) {
-      Hashtable<String, Object> mo = new Hashtable<String, Object>();
+      Map<String, Object> mo = new Hashtable<String, Object>();
       List<String> data = new ArrayList<String>();
       float energy = Float.NaN;
       float occupancy = Float.NaN;

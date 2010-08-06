@@ -30,6 +30,7 @@ import org.jmol.api.JmolAdapter;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
@@ -56,7 +57,7 @@ public class CsfReader extends MopacSlaterReader {
   private int nGaussians = 0;
   private int nSlaters = 0;
   
-  private Hashtable<String, Bond> htBonds;
+  private Map<String, Bond> htBonds;
   
   @Override
   protected boolean checkLine() throws Exception {
@@ -118,7 +119,7 @@ public class CsfReader extends MopacSlaterReader {
         );
   }
 
-  private Hashtable<String, Integer> propertyItemCounts = new Hashtable<String, Integer>();
+  private Map<String, Integer> propertyItemCounts = new Hashtable<String, Integer>();
   private final int[] fieldTypes = new int[100]; // should be enough
   
   private int getPropertyCount(String what) {
@@ -198,7 +199,7 @@ public class CsfReader extends MopacSlaterReader {
     objCls1, objID1, objCls2, objID2
   };
   
-  private Hashtable<String, int[]> connectors;
+  private Map<String, int[]> connectors;
   
   private void processConnectorObject() throws Exception {
     connectors = new Hashtable<String, int[]>();
@@ -568,7 +569,7 @@ public class CsfReader extends MopacSlaterReader {
       for (int i = 0; i < nOrbitals; i++)
         if (Math.abs(list[iMo][i]) < MIN_COEF)
           list[iMo][i] = 0;
-      Hashtable<String, Object> mo = new Hashtable<String, Object>();
+      Map<String, Object> mo = new Hashtable<String, Object>();
       mo.put("energy", new Float(energy[iMo]));
       mo.put("occupancy", new Float(occupancy[iMo]));
       mo.put("coefficients", list[iMo]);

@@ -27,8 +27,8 @@ package org.jmol.adapter.readers.quantum;
 import org.jmol.adapter.smarter.*;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 public class GamessUKReader extends GamessReader {
 
@@ -208,7 +208,7 @@ public class GamessUKReader extends GamessReader {
      if (symmetries.size() < orbitals.size())
        return;
      for (int i = orbitals.size(); --i >= 0; ) {
-       Hashtable<String, Object> mo = orbitals.get(i);
+       Map<String, Object> mo = orbitals.get(i);
        mo.put("symmetry", symmetries.get(i));
        mo.put("occupancy", occupancies.get(i));
      }

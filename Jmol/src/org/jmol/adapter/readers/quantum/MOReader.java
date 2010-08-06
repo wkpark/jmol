@@ -32,6 +32,7 @@ import org.jmol.util.TextFormat;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * General methods for reading molecular orbital data,
@@ -320,11 +321,11 @@ abstract public class MOReader extends BasisFunctionReader {
     // and these will replace previous results. 
     // we still need atom positions and bases functions.
     if (haveNboOrbitals) {
-      orbitals = new ArrayList<Hashtable<String,Object>>();
+      orbitals = new ArrayList<Map<String,Object>>();
       alphaBeta = "";
     }
     haveNboOrbitals = true;
-    Hashtable<String, Object>[] mos = null;
+    Map<String, Object>[] mos = null;
     List<String>[] data = null;
     String dCoeffLabels = "";
     String fCoeffLabels = "";
@@ -477,7 +478,7 @@ abstract public class MOReader extends BasisFunctionReader {
     dfCoefMaps = null;
   }
   
-  protected void getMOHeader(int headerType, String[] tokens, Hashtable<String, Object>[] mos, int nThisLine)
+  protected void getMOHeader(int headerType, String[] tokens, Map<String, Object>[] mos, int nThisLine)
       throws Exception {
     readLine();
     switch (headerType) {
@@ -523,7 +524,7 @@ abstract public class MOReader extends BasisFunctionReader {
     }
   }
 
-  protected void addMOData(int nColumns, List<String>[] data, Hashtable<String, Object>[] mos) {
+  protected void addMOData(int nColumns, List<String>[] data, Map<String, Object>[] mos) {
     for (int i = 0; i < nColumns; i++) {
       float[] coefs = new float[data[i].size()];
       for (int j = coefs.length; --j >= 0;)
@@ -543,7 +544,7 @@ abstract public class MOReader extends BasisFunctionReader {
       setMOData(moData);
     }
     if (clearOrbitals) {
-      orbitals = new ArrayList<Hashtable<String, Object>>();
+      orbitals = new ArrayList<Map<String, Object>>();
       moData = new Hashtable<String, Object>();
       alphaBeta = "";
     }

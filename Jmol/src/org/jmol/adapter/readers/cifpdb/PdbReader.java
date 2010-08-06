@@ -35,6 +35,7 @@ import org.jmol.util.TextFormat;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.Matrix4f;
 
@@ -64,11 +65,11 @@ public class PdbReader extends AtomSetCollectionReader {
   private int lineLength;
   // index into atoms array + 1
   // so that 0 can be used for the null value
-  private final Hashtable<String, Hashtable<String, Boolean>> htFormul = new Hashtable<String, Hashtable<String, Boolean>>();
-  private Hashtable<String, String> htHetero = null;
-  private Hashtable<String, Hashtable<String, Object>> htSites = null;
+  private final Map<String, Map<String, Boolean>> htFormul = new Hashtable<String, Map<String, Boolean>>();
+  private Map<String, String> htHetero = null;
+  private Map<String, Map<String, Object>> htSites = null;
   private String currentGroup3;
-  private Hashtable<String, Boolean> htElementsInCurrentGroup;
+  private Map<String, Boolean> htElementsInCurrentGroup;
   private int maxSerial;
   private int[] chainAtomCounts;
   private int nUNK;
@@ -261,18 +262,18 @@ protected boolean checkLine() throws Exception {
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("CLASSIFICATION", line.substring(7).trim());
   }
 
-  private List<Hashtable<String, String>> vCompnds;
-  private Hashtable<String, String> currentCompnd;
+  private List<Map<String, String>> vCompnds;
+  private Map<String, String> currentCompnd;
   private String currentKey;
-  private Hashtable<String, Hashtable<String, String>> htMolIds;
+  private Map<String, Map<String, String>> htMolIds;
   private boolean resetKey = true;
   
   private void compndSource(boolean isSource) {
     if (vCompnds == null) {
       if (isSource)
         return;
-      vCompnds = new ArrayList<Hashtable<String,String>>();
-      htMolIds = new Hashtable<String, Hashtable<String,String>>();
+      vCompnds = new ArrayList<Map<String,String>>();
+      htMolIds = new Hashtable<String, Map<String,String>>();
       currentCompnd = new Hashtable<String, String>();
       currentCompnd.put("select", "(*)");
       currentKey = "MOLECULE";
@@ -324,7 +325,7 @@ protected boolean checkLine() throws Exception {
   @SuppressWarnings("unchecked")
   private void setBiomoleculeAtomCounts() {
     for (int i = biomolecules.size(); --i >= 0;) {
-      Hashtable<String, Object> biomolecule = biomolecules.get(i);
+      Map<String, Object> biomolecule = biomolecules.get(i);
       String chain = (String) biomolecule.get("chains");
       int nTransforms = ((List<Matrix4f>) biomolecule.get("biomts")).size();
       int nAtoms = 0;
@@ -368,18 +369,18 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
 
 */
  
-  private List<Hashtable<String, Object>> biomolecules;
+  private List<Map<String, Object>> biomolecules;
   private List<Matrix4f> biomts;
   
   private void remark350() throws Exception {
     List<Matrix4f> biomts = null;
-    biomolecules = new ArrayList<Hashtable<String,Object>>();
+    biomolecules = new ArrayList<Map<String,Object>>();
     chainAtomCounts = new int[255];
     String title = "";
     String chainlist = "";
     int iMolecule = 0;
     boolean needLine = true;
-    Hashtable<String, Object> info = null;
+    Map<String, Object> info = null;
     int nBiomt = 0;
     Matrix4f mIdent = new Matrix4f();
     mIdent.setIdentity();
@@ -838,7 +839,7 @@ SHEET    3   A 6 ARG A  22  ILE A  26  1  N  VAL A  23   O  GLU A  47
         return; // invalid formula;
       formula = parseTrimmed(formula, ichLeftParen + 1, ichRightParen);
     }
-    Hashtable<String, Boolean> htElementsInGroup = htFormul.get(groupName);
+    Map<String, Boolean> htElementsInGroup = htFormul.get(groupName);
     if (htElementsInGroup == null)
       htFormul.put(groupName, htElementsInGroup = new Hashtable<String, Boolean>());
     // now, look for atom names in the formula
@@ -1002,12 +1003,12 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
   
   private void site() {
     if (htSites == null) {
-      htSites = new Hashtable<String, Hashtable<String, Object>>();
+      htSites = new Hashtable<String, Map<String, Object>>();
     }
     //int seqNum = parseInt(line, 7, 10);
     int nResidues = parseInt(line, 15, 17);
     String siteID = parseTrimmed(line, 11, 14);
-    Hashtable<String, Object> htSite = htSites.get(siteID);
+    Map<String, Object> htSite = htSites.get(siteID);
     if (htSite == null) {
       htSite = new Hashtable<String, Object>();
       //htSite.put("seqNum", "site_" + seqNum);

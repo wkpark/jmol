@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -39,14 +40,14 @@ import java.util.List;
  */
 abstract class BasisFunctionReader extends AtomSetCollectionReader {
 
-  protected Hashtable<String, Object> moData = new Hashtable<String, Object>();
-  protected List<Hashtable<String, Object>> orbitals = new ArrayList<Hashtable<String, Object>>();
+  protected Map<String, Object> moData = new Hashtable<String, Object>();
+  protected List<Map<String, Object>> orbitals = new ArrayList<Map<String, Object>>();
   protected int nOrbitals = 0;
   
 
   protected int[][] dfCoefMaps;
   
-  protected void setMO(Hashtable<String, Object> mo) {
+  protected void setMO(Map<String, Object> mo) {
     if (dfCoefMaps != null)
       mo.put("dfCoefMaps", dfCoefMaps);
     orbitals.add(mo);

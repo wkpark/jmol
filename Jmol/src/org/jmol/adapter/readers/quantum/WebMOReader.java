@@ -30,6 +30,7 @@ import org.jmol.adapter.smarter.*;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
@@ -326,7 +327,7 @@ public class WebMOReader extends MopacSlaterReader {
       }
       return;
     }
-    Hashtable<String, Object> mo = new Hashtable<String, Object>();
+    Map<String, Object> mo = new Hashtable<String, Object>();
     List<String> data = new ArrayList<String>();
     float energy = parseFloat(readLine());
     float occupancy = parseFloat(readLine());

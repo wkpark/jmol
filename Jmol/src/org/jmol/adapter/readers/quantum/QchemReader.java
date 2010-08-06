@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A reader for Q-Chem 2.1 and 3.2
@@ -573,7 +574,7 @@ $end
      * 
      */
     int nMOs; // total number of MOs that were read
-    List<Hashtable<String, Object>> orbitals = new ArrayList<Hashtable<String,Object>>();
+    List<Map<String, Object>> orbitals = new ArrayList<Map<String,Object>>();
     String orbitalType = getTokens(line)[0]; // is RESTRICTED or ALPHA
     nMOs = readMOs(orbitalType.equals("RESTRICTED"), orbitals, alphas);
     if (orbitalType.equals("ALPHA")) { // we also have BETA orbitals....
@@ -615,8 +616,8 @@ $end
   boolean fSpherical = false;
   
   private int readMOs(boolean restricted,
-                      List<Hashtable<String, Object>> orbitals, MOInfo[] moInfos) throws Exception {
-    Hashtable<String, Object>[] mos = new Hashtable[6];  // max 6 MO's per line
+                      List<Map<String, Object>> orbitals, MOInfo[] moInfos) throws Exception {
+    Map<String, Object>[] mos = new Hashtable[6];  // max 6 MO's per line
     float[][] mocoef = new float[6][];   // coefficients for each MO
     int[] moid = new int[6];             // mo numbers
     String[] tokens, energy;

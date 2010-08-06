@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.Vector3f;
 
@@ -389,7 +390,7 @@ but:
   private void readMolecularOrbitals() throws Exception {
     if (shells == null)
       return;
-    Hashtable<String, Object>[] mos = new Hashtable[5];
+    Map<String, Object>[] mos = new Hashtable[5];
     List<String>[] data = new ArrayList[5];
     int nThisLine = 0;
     while (readLine() != null

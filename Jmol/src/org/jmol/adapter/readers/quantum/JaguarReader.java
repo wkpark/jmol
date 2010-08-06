@@ -30,6 +30,7 @@ import org.jmol.util.Logger;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Jaguar reader tested for the two samples files in CVS. Both
@@ -313,7 +314,7 @@ public class JaguarReader extends MOReader {
       fillDataBlock(dataBlock);
       for (int iOrb = 0; iOrb < n; iOrb++) {
         float[] coefs = new float[moCount];
-        Hashtable<String, Object> mo = new Hashtable<String, Object>();
+        Map<String, Object> mo = new Hashtable<String, Object>();
         float energy = parseFloat(eigenValues[iOrb + 1]);
         mo.put("energy", new Float(energy));
         if (Math.abs(energy - lumoEnergy) < 0.0001) {

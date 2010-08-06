@@ -26,6 +26,7 @@ package org.jmol.adapter.readers.quantum;
 import org.jmol.adapter.smarter.*;
 
 import java.util.Hashtable;
+import java.util.Map;
 
 
 /**
@@ -184,7 +185,7 @@ public class MopacGraphfReader extends MopacSlaterReader {
     // read MO energies and occupancies, and fill "coefficients" element
     float[] values = new float[2];
     for (int iMo = 0; iMo < nOrbitals; iMo++) {
-      Hashtable<String, Object> mo = new Hashtable<String, Object>();
+      Map<String, Object> mo = new Hashtable<String, Object>();
       if (readLine() != null) {
         getTokensFloat(line, values, 2);
         mo.put("energy", new Float(values[0]));

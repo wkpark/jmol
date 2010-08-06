@@ -30,8 +30,8 @@ import org.jmol.util.Logger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -134,7 +134,7 @@ abstract class SlaterReader extends BasisFunctionReader {
   protected void sortOrbitalCoefficients(int[] pointers) {
     // now sort the coefficients as well
     for (int i = orbitals.size(); --i >= 0; ) {
-      Hashtable<String, Object> mo = orbitals.get(i);
+      Map<String, Object> mo = orbitals.get(i);
       float[] coefs = (float[]) mo.get("coefficients");
       float[] sorted = new float[pointers.length];
       for (int j = 0; j < pointers.length; j++) {
@@ -154,15 +154,15 @@ abstract class SlaterReader extends BasisFunctionReader {
    */
   
   protected void sortOrbitals() {
-    Hashtable<String, Object>[] array = orbitals.toArray(new Hashtable[0]);
+    Map<String, Object>[] array = orbitals.toArray(new Map[0]);
     Arrays.sort(array, new OrbitalSorter());
     orbitals.clear();
     for (int i = 0; i < array.length; i++)
       orbitals.add(array[i]);    
   }
   
-  class OrbitalSorter implements Comparator<Hashtable<String, Object>> {
-    public int compare(Hashtable<String, Object> mo1, Hashtable<String, Object> mo2) {
+  class OrbitalSorter implements Comparator<Map<String, Object>> {
+    public int compare(Map<String, Object> mo1, Map<String, Object> mo2) {
       float e1 = ((Float) mo1.get("energy")).floatValue();
       float e2 = ((Float) mo2.get("energy")).floatValue();
       return ( e1 < e2 ? -1 : e2 < e1 ? 1 : 0);

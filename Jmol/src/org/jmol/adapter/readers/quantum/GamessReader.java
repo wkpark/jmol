@@ -27,6 +27,7 @@ package org.jmol.adapter.readers.quantum;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
@@ -48,7 +49,7 @@ abstract public class GamessReader extends MOReader {
     discardLinesUntilContains(initiator);
     readLine();
     int[] slater = null;
-    Hashtable<String, List<int[]>> shellsByAtomType = new Hashtable<String, List<int[]>>();
+    Map<String, List<int[]>> shellsByAtomType = new Hashtable<String, List<int[]>>();
     List<int[]> slatersByAtomType = new ArrayList<int[]>();
     String atomType = null;
     
@@ -233,7 +234,7 @@ $SYSTEM OPTIONS
 
 
 
-  private Hashtable<String, String> calcOptions;
+  private Map<String, String> calcOptions;
   private boolean isTypeSet;
 
   protected void setCalculationType() {

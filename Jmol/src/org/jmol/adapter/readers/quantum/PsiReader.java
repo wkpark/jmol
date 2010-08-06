@@ -30,6 +30,7 @@ import org.jmol.adapter.smarter.*;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
@@ -246,7 +247,7 @@ public class PsiReader extends MOReader {
 
  */
   
-  Hashtable<String, Integer> uniqueAtomMap = new Hashtable<String, Integer>();
+  Map<String, Integer> uniqueAtomMap = new Hashtable<String, Integer>();
   private void readUniqueAtoms() throws Exception {
     List<int[]> sdata = new ArrayList<int[]>();
     discardLinesUntilContains("----");
@@ -381,7 +382,7 @@ Orbital energies (a.u.):
     //TODO: This reader will fail for G orbitals
     //TODO: No way to check order
     
-    Hashtable<String, Object>[] mos = new Hashtable[5];
+    Map<String, Object>[] mos = new Hashtable[5];
     List<String>[] data = new ArrayList[5];
     int nThisLine = 0;
     while (readLine() != null && line.toUpperCase().indexOf("DENS") < 0) {

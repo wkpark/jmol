@@ -167,7 +167,7 @@ In Chem3D, all grid data in following format:
           for (int x = 0; x < nPointsX; x++)
             voxelData[x][y][z] = parseFloat(tokens[pt++]);
       atomSetCollection.setVoxelData(voxelData);
-      Hashtable<String, Object> surfaceInfo = new Hashtable<String, Object>();
+      Map<String, Object> surfaceInfo = new Hashtable<String, Object>();
       surfaceInfo.put("surfaceDataType", "mo");
       surfaceInfo.put("defaultCutoff", Float.valueOf((float) 0.01));
       surfaceInfo.put("nCubeData", Integer.valueOf(nData));

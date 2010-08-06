@@ -31,6 +31,8 @@ import org.jmol.api.JmolAdapter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Hashtable;
+import java.util.Map;
+
 import javax.vecmath.Vector3f;
 
 import org.jmol.util.Logger;
@@ -54,23 +56,23 @@ class SpartanArchive {
 
   private AtomSetCollection atomSetCollection;
   private AtomSetCollectionReader r;
-  private Hashtable<String, Object> moData;
-  private List<Hashtable<String, Object>> orbitals = new ArrayList<Hashtable<String,Object>>();
+  private Map<String, Object> moData;
+  private List<Map<String, Object>> orbitals = new ArrayList<Map<String,Object>>();
 
   SpartanArchive(AtomSetCollectionReader r,
-      AtomSetCollection atomSetCollection, Hashtable<String, Object> moData) {
+      AtomSetCollection atomSetCollection, Map<String, Object> moData) {
     initialize(r, atomSetCollection, moData, "");
   }
 
   SpartanArchive(AtomSetCollectionReader r,
-      AtomSetCollection atomSetCollection, Hashtable<String, Object> moData, String bondData, String endCheck) {
+      AtomSetCollection atomSetCollection, Map<String, Object> moData, String bondData, String endCheck) {
     initialize(r, atomSetCollection, moData, bondData);
     this.endCheck = endCheck;
   }
 
   private void initialize(AtomSetCollectionReader r,
                           AtomSetCollection atomSetCollection,
-                          Hashtable<String, Object> moData, String bondData) {
+                          Map<String, Object> moData, String bondData) {
     this.r = r;
     this.atomSetCollection = atomSetCollection;
     this.moData = moData;
@@ -302,7 +304,7 @@ class SpartanArchive {
       }
     }
     for (int i = 0; i < moCount; i++) {
-      Hashtable<String, Object> mo = new Hashtable<String, Object>();
+      Map<String, Object> mo = new Hashtable<String, Object>();
       mo.put("energy", Float.valueOf(energies[i]));
       //mo.put("occupancy", new Float(-1));
       mo.put("coefficients", coefficients[i]);
@@ -411,7 +413,7 @@ class SpartanArchive {
     String label = "";
     int frequencyCount = parseInt(line);
     List<List<List<Float>>> vibrations = new ArrayList<List<List<Float>>>();
-    List<Hashtable<String, Object>> freqs = new ArrayList<Hashtable<String,Object>>();
+    List<Map<String, Object>> freqs = new ArrayList<Map<String,Object>>();
     if (Logger.debugging) {
       Logger.debug("reading VIBFREQ vibration records: frequencyCount = "
           + frequencyCount);
@@ -425,7 +427,7 @@ class SpartanArchive {
         addBonds(bondData, atomCount0);
       }
       readLine();
-      Hashtable<String, Object> info = new Hashtable<String, Object>();
+      Map<String, Object> info = new Hashtable<String, Object>();
       float freq = parseFloat(line);
       info.put("freq", new Float(freq));
       if (line.length() > 15
@@ -481,7 +483,7 @@ class SpartanArchive {
     List<Float> freq_val = (List<Float>) atomSetCollection.getAtomSetCollectionAuxiliaryInfo("FREQ_VAL");
     int frequencyCount = freq_val.size();
     List<List<List<Float>>> vibrations = new ArrayList<List<List<Float>>>();
-    List<Hashtable<String, Object>> freqs = new ArrayList<Hashtable<String,Object>>();
+    List<Map<String, Object>> freqs = new ArrayList<Map<String,Object>>();
     if (Logger.debugging) {
       Logger.debug(
           "reading PROP VALUE:VIB FREQ_MODE vibration records: frequencyCount = " + frequencyCount);
@@ -491,7 +493,7 @@ class SpartanArchive {
       int atomCount0 = atomSetCollection.getAtomCount();
       atomSetCollection.cloneLastAtomSet();
       addBonds(bondData, atomCount0);
-      Hashtable<String, Object> info = new Hashtable<String, Object>();
+      Map<String, Object> info = new Hashtable<String, Object>();
       info.put("freq", (v = freq_val.get(i)));
       float freq = v.floatValue();
       String label = freq_lab.get(i);

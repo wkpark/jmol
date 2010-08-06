@@ -74,7 +74,7 @@ public class JmolTable {
     Object[][] data = new Object[nobject][ncol];
     for (int i = 0; i < nobject; i++) {
       data[i][0] = new JmolPanel();
-      JmolViewer v = (JmolViewer) ((JmolPanel) data[i][0]).getViewer();
+      JmolViewer v = ((JmolPanel) data[i][0]).getViewer();
       String strError = v.openFile(args[i]);
       if (strError != null) {
         Logger.error(strError);
@@ -184,7 +184,7 @@ public class JmolTable {
         }
 
         @Override
-        public Class getColumnClass(int column) {
+        public Class<? extends Object> getColumnClass(int column) {
             return getValueAt(0, column).getClass();
         }
     }

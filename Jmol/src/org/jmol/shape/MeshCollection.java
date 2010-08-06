@@ -27,6 +27,7 @@ package org.jmol.shape;
 import org.jmol.g3d.*;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.StateManager;
+import org.jmol.script.ScriptVariable;
 import org.jmol.script.Token;
 
 import java.util.BitSet;
@@ -135,7 +136,8 @@ public abstract class MeshCollection extends Shape {
     modelCount = viewer.getModelCount();
   }
   
- @Override
+ @SuppressWarnings("unchecked")
+@Override
 public void setProperty(String propertyName, Object value, BitSet bs) {
 
    if (propertyName == "setXml") {
@@ -162,7 +164,8 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
 
     if ("variables" == propertyName) {
       if (currentMesh != null && currentMesh.scriptCommand != null && !currentMesh.scriptCommand.startsWith("{"))
-        currentMesh.scriptCommand = "{\n" + StateManager.getVariableList((Hashtable) value, 0, false) + "\n" + currentMesh.scriptCommand;
+        currentMesh.scriptCommand = "{\n" 
+          + StateManager.getVariableList((Hashtable<String, ScriptVariable>) value, 0, false) + "\n" + currentMesh.scriptCommand;
       return;
     }
     if ("commandOption" == propertyName) {
@@ -259,8 +262,8 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
         break;
       case Token.nocontourlines:
         test = false;
-        // TODO leave this as is for now; probably TRUE is correct...
-        tok = (true || allowContourLines ? Token.contourlines : Token.mesh);
+        // TODO leave this as is for now; probably correct...
+        tok = Token.contourlines;//(allowContourLines ? Token.contourlines : Token.mesh);
         tok2 = Token.mesh;
         break;
       case Token.mesh:

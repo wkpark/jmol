@@ -312,7 +312,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       float fz = (float) Math.sqrt(1 - fx * fx - fy * fy);
       if (Float.isNaN(fz))
         continue;
-      fz = (float) (Math.random() > 0.5 ? -1 : 1) * fz;
+      fz = (Math.random() > 0.5 ? -1 : 1) * fz;
       pt1.scaleAdd(fx * factoredLengths[0], axes[0], ptAtom);
       pt1.scaleAdd(fy * factoredLengths[1], axes[1], pt1);
       pt1.scaleAdd(fz * factoredLengths[2], axes[2], pt1);

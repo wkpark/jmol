@@ -53,7 +53,7 @@ public class Draw extends MeshCollection {
   // bob hanson hansonr@stolaf.edu 3/2006
   
   public Draw() {
-    htObjects = new Hashtable();
+    htObjects = new Hashtable<String, Mesh>();
   }
 
   DrawMesh[] dmeshes = new DrawMesh[4];
@@ -113,7 +113,7 @@ public void initShape() {
   private int nbitsets;
   private Point4f plane;
   private BitSet bsAllModels;
-  private List polygon;
+  private List<Object> polygon;
   
   private List<Object[]> vData;
   private String intersectID;
@@ -126,6 +126,7 @@ public void initShape() {
   private final static int PT_MODEL_INDEX = 4;
   private final static int PT_MODEL_BASED_POINTS = 5;
 
+  @SuppressWarnings("unchecked")
   @Override
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
@@ -329,7 +330,7 @@ public void initShape() {
     }
 
     if ("polygon" == propertyName) {
-      polygon = (List) value;
+      polygon = (List<Object>) value;
       return;
     }
 
@@ -1018,8 +1019,6 @@ public void initShape() {
     m.axis.scale(1f / n);
   }
 
-  private final BitSet bsTemp = new BitSet();
- 
   @Override
   public void setVisibilityFlags(BitSet bs) {
     /*
@@ -1184,6 +1183,14 @@ public void initShape() {
     viewer.refresh(3, "draw");
   }
   
+  /**
+   * 
+   * @param x
+   * @param y
+   * @param isPicking IGNORED
+   * @param bsVisible
+   * @return  true if found
+   */
   private boolean findPickedObject(int x, int y, boolean isPicking, BitSet bsVisible) {
     int dmin2 = MAX_OBJECT_CLICK_DISTANCE_SQUARED;
     if (g3d.isAntialiased()) {
@@ -1267,7 +1274,7 @@ public void initShape() {
       str.append("  lineData [");
       int n = mesh.lineData.size();
       for (int j = 0; j < n;) {
-        Point3f[] pts = (Point3f[]) mesh.lineData.get(j);
+        Point3f[] pts = mesh.lineData.get(j);
         str.append(Escape.escape(pts[0]));
         str.append(" ");
         str.append(Escape.escape(pts[1]));

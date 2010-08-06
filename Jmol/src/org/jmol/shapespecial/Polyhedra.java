@@ -34,7 +34,6 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 
 import java.util.BitSet;
-import java.util.Hashtable;
 import javax.vecmath.Point3i;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -568,7 +567,7 @@ public class Polyhedra extends AtomShape {
         this.planes[i] = planes[i];
     }
 
-    protected String getState(Hashtable temp) {
+    protected String getState() {
       BitSet bs = new BitSet();
       for (int i = 0; i < ptCenter; i++)
         bs.set(((Atom) vertices[i]).getIndex());
@@ -599,10 +598,9 @@ public class Polyhedra extends AtomShape {
 
   @Override
   public String getShapeState() {
-    Hashtable temp = new Hashtable();
     StringBuffer s = new StringBuffer();
     for (int i = 0; i < polyhedronCount; i++)
-      s.append(polyhedrons[i].getState(temp));
+      s.append(polyhedrons[i].getState());
     if (drawEdges == EDGES_FRONT)
       appendCmd(s, "polyhedra frontedges");
     else if (drawEdges == EDGES_ALL)

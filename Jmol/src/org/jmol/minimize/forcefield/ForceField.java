@@ -25,7 +25,6 @@
 package org.jmol.minimize.forcefield;
 
 import java.util.BitSet;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 

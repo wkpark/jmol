@@ -120,7 +120,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.util.BitSet;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 

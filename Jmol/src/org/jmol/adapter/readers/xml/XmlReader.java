@@ -193,7 +193,13 @@ public class XmlReader extends AtomSetCollectionReader {
     return thisReader;
   }
   
-  @SuppressWarnings("unused")
+  /**
+   * 
+   * @param parent
+   * @param atomSetCollection
+   * @param reader
+   * @param xmlReader
+   */
   protected void processXml(XmlReader parent,
                          AtomSetCollection atomSetCollection,
                           BufferedReader reader, XMLReader xmlReader) {
@@ -239,13 +245,25 @@ public void readAtomSetCollectionFromDOM(Object Node) {
     return thisReader;
   }
 
-  @SuppressWarnings("unused")
+  /**
+   * 
+   * @param parent
+   * @param atomSetCollection
+   * @param reader
+   * @param DOMNode
+   */
   protected void processXml(XmlReader parent,
                             AtomSetCollection atomSetCollection,
                             BufferedReader reader, JSObject DOMNode) {
   }
 
-  @SuppressWarnings("unused")
+  /**
+   * 
+   * @param namespaceURI
+   * @param localName
+   * @param qName
+   * @param atts
+   */
   protected void processStartElement(String namespaceURI, String localName, String qName,
                                      Map<String, String> atts) {
     /* 
@@ -266,7 +284,12 @@ public void readAtomSetCollectionFromDOM(Object Node) {
     chars = null;
   }
 
-  @SuppressWarnings("unused")
+  /**
+   * 
+   * @param uri
+   * @param localName
+   * @param qName
+   */
   protected void processEndElement(String uri, String localName, String qName) {
     /* 
      * specific to each xml reader

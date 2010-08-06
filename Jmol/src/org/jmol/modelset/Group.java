@@ -204,12 +204,14 @@ public class Group {
     return JmolConstants.PROTEIN_STRUCTURE_NOT;
   }
 
+  /**
+   * 
+   * @param iType
+   * @param monomerIndexCurrent
+   * @return type
+   */
   public int setProteinStructureType(byte iType, int monomerIndexCurrent) {
     return -1;
-  }
-
-  public Hashtable getMyInfo() {
-    return null;
   }
 
   public boolean isProtein() { return false; }
@@ -390,6 +392,11 @@ public class Group {
     return selectedIndex;
   }
   
+  /**
+   * 
+   * @param atomIndex
+   * @return T/F
+   */
   public boolean isLeadAtom(int atomIndex) {
     return false;
   }
@@ -407,6 +414,11 @@ public class Group {
     return -1; // but see Monomer class
   }
 
+  /**
+   * 
+   * @param qType
+   * @return quaternion
+   */
   public Quaternion getQuaternion(char qType) {
     return null;
   }
@@ -418,9 +430,20 @@ public class Group {
     return Quaternion.getQuaternionFrame(atoms[pt], atoms[++pt], atoms[++pt]);
   }
 
+  /**
+   * 
+   * @param i
+   */
   public void setProteinStructureId(int i) {
   }
 
+  /**
+   * 
+   * @param tokType
+   * @param qType
+   * @param mStep
+   * @return helix data of some sort
+   */
   public Object getHelixData(int tokType, char qType, int mStep) {
         switch (tokType) {
         case Token.point:
@@ -436,6 +459,11 @@ public class Group {
     return "";
   }
 
+  /**
+   * 
+   * @param type
+   * @return T/F
+   */
   public boolean isWithinStructure(byte type) {
     return false;
   }
@@ -452,10 +480,20 @@ public class Group {
     return -1;
   }
 
+  /**
+   * 
+   * @param g
+   * @return T/F
+   */
   public boolean isCrossLinked(Group g) {
     return false;
   }
-  
+
+  /**
+   * 
+   * @param vReturn
+   * @return T/F
+   */
   public boolean getCrossLinkLeadAtomIndexes(List<Integer> vReturn) {
     return false;
   }

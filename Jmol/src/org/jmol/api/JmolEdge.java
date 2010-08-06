@@ -26,24 +26,26 @@ package org.jmol.api;
 
 public interface JmolEdge {
 
-  // abstracts out the essential pieces for SMILES processing
   
   /**
    * Extended Bond Definition Types
    *
    */
 
-  // | new connection              1 << 15
-  //  ||| | Hydrogen bond 0x3800   F << 11
-  //       |Stereo 0x400           1 << 10  
-  //        |Aromatic 0x200        1 << 9
-  //         |Sulfur-Sulfur 0x100  1 << 8
-  //           ||| Partial n       7 << 5
-  //              | |||| Partial m 0x1F
-  //       ||| |||| |||| Covalent 0x3FF
-  // 0011 1111 1111 1111 ANY
-  // 0111 1111 1111 1111 NULL
-  
+  // 11 1111 1100 0000 0000
+  // 76 5432 1098 7654 3210
+  // | new connection                 1 << 17  0x20000
+  //    | strut                       1 << 15  0x08000
+  //     ||| | Hydrogen bond 0x3800   F << 11
+  //          |Stereo 0x400           1 << 10  
+  //           |Aromatic 0x200        1 << 9
+  //            |Sulfur-Sulfur 0x100  1 << 8
+  //              ||| Partial n       7 << 5
+  //                 | |||| Partial m 0x1F
+  //          ||| |||| |||| Covalent 0x3FF
+  // 00 0000 0000 0001 0001 UNSPECIFIED
+  // 00 1111 1111 1111 1111 ANY
+  // 01 1111 1111 1111 1111 NULL
   
   public final static int BOND_STEREO_MASK   = 0x400; // 1 << 10
   public final static int BOND_STEREO_NEAR   = 0x401; // for JME reader

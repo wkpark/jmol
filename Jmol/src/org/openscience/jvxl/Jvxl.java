@@ -457,13 +457,13 @@ class MonitorInputStream extends FilterInputStream {
   }
 
   @Override
-  public void mark(int readlimit) {
+  public synchronized void mark(int readlimit) {
     super.mark(readlimit);
     markPosition = position;
   }
 
   @Override
-  public void reset() throws IOException {
+  public synchronized void reset() throws IOException {
     position = markPosition;
     super.reset();
   }

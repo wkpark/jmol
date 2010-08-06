@@ -396,13 +396,13 @@ abstract class BioShapeRenderer extends MeshRenderer {
       }
     }
 
-    calc1Screen(controlPoints[i], wingVectors[i], (short) madBeg, .0007f,
+    calc1Screen(controlPoints[i], wingVectors[i], madBeg, .0007f,
         screenArrowTop);
-    calc1Screen(controlPoints[i], wingVectors[i], (short) madBeg, -.0007f,
+    calc1Screen(controlPoints[i], wingVectors[i], madBeg, -.0007f,
         screenArrowBot);
-    calc1Screen(controlPoints[i], wingVectors[i], (short) madBeg, 0.001f,
+    calc1Screen(controlPoints[i], wingVectors[i], madBeg, 0.001f,
         screenArrowTopPrev);
-    calc1Screen(controlPoints[i], wingVectors[i], (short) madBeg, -0.001f,
+    calc1Screen(controlPoints[i], wingVectors[i], madBeg, -0.001f,
         screenArrowBotPrev);
     g3d.drawHermite(true, ribbonBorder, isNucleic ? 4 : 7,
         screenArrowTopPrev, screenArrowTop, controlPointScreens[iNext],
@@ -417,6 +417,14 @@ abstract class BioShapeRenderer extends MeshRenderer {
   }
 
   //  rockets --not satisfactory yet
+  /**
+   * @param i            IGNORED 
+   * @param pointBegin   IGNORED
+   * @param pointEnd     IGNORED
+   * @param screenPtBegin 
+   * @param screenPtEnd 
+   * 
+   */
   protected void renderCone(int i, Point3f pointBegin, Point3f pointEnd,
                   Point3f screenPtBegin, Point3f screenPtEnd) {
     int coneDiameter = mad + (mad >> 2);

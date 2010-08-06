@@ -181,7 +181,7 @@ public class CartoonRenderer extends RocketsRenderer {
   private void renderNucleicBaseStep(NucleicMonomer nucleotide,
                              short thisMad, Point3i backboneScreen) {
     if (renderEdges) {
-      renderLenotisWesthofEdges(nucleotide, thisMad, backboneScreen);
+      renderLenotisWesthofEdges(nucleotide, thisMad);
       return;
     }
     nucleotide.getBaseRing6Points(ring6Points);
@@ -221,7 +221,7 @@ public class CartoonRenderer extends RocketsRenderer {
   }
 
   private void renderLenotisWesthofEdges(NucleicMonomer nucleotide,
-                                         short thisMad, Point3i backboneScreen) {
+                                         short thisMad) {
     //                Nasalean L, Strombaugh J, Zirbel CL, and Leontis NB in 
     //                Non-Protein Coding RNAs, 
     //                Nils G. Walter, Sarah A. Woodson, Robert T. Batey, Eds.
@@ -231,7 +231,7 @@ public class CartoonRenderer extends RocketsRenderer {
     if (!nucleotide.getEdgePoints(ring6Points))
       return;
     viewer.transformPoints(ring6Points, ring6Screens);
-    renderTriangle(ring6Points);
+    renderTriangle();
     mad = (short) (thisMad > 1 ? thisMad / 2 : thisMad);
     g3d.fillCylinderScreen(Graphics3D.ENDCAPS_SPHERICAL, 3,
         ring6Screens[0], ring6Screens[1]);
@@ -248,7 +248,7 @@ public class CartoonRenderer extends RocketsRenderer {
         ring6Screens[4], ring6Screens[5]);
    }
 
-  private void renderTriangle(Point3f[] ring6Points2) {
+  private void renderTriangle() {
     g3d.setNoisySurfaceShade(ring6Screens[2], ring6Screens[3], ring6Screens[4]);
     g3d.fillTriangle(ring6Screens[2], ring6Screens[3], ring6Screens[4]);
   }

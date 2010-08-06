@@ -99,7 +99,7 @@ public class JmolMolecule {
         molecules = addMolecule(molecules, moleculeCount++, atoms, i, bsBranch,
             modelIndex, indexInModel++, bsExclude);
       }
-    return (JmolMolecule[]) allocateArray(molecules, moleculeCount);
+    return allocateArray(molecules, moleculeCount);
   }
   
   /**

@@ -481,7 +481,7 @@ public class ScriptEvaluator {
         if (e.compileScript(null, EXPRESSION_KEY + " = " + expr, false)) {
           e.contextVariables = viewer.getContextVariables();
           e.setStatement(0);
-          return e.parameterExpression(2, 0, "", false);
+          return e.parameterExpressionString(2, 0);
         }
       } else if (expr instanceof Token[]) {
         e.contextVariables = viewer.getContextVariables();
@@ -558,9 +558,19 @@ public class ScriptEvaluator {
     return V;
   }
 
-  private Object parameterExpression(int pt, int ptMax, String key,
-                                     boolean asVector) throws ScriptException {
-    return parameterExpression(pt, ptMax, key, true, asVector, -1, false, null, null);
+  @SuppressWarnings("unchecked")
+  private List<ScriptVariable> parameterExpressionList(int pt, int ptMax) throws ScriptException {
+    return (List<ScriptVariable>) parameterExpression(pt, ptMax, null, true, true, -1, false, null, null);
+  }
+
+  private String parameterExpressionString(int pt, int ptMax) throws ScriptException {
+    return (String) parameterExpression(pt, ptMax, "", true, false, -1, false, null, null);
+  }
+
+  private boolean parameterExpressionBoolean(int pt, int ptMax)
+      throws ScriptException {
+    return ((Boolean) parameterExpression(pt, ptMax, null, true, false, -1,
+        false, null, null)).booleanValue();
   }
 
   /**
@@ -613,8 +623,8 @@ public class ScriptEvaluator {
     Object v, res;
     boolean isImplicitAtomProperty = (localVar != null);
     boolean isOneExpressionOnly = (pt < 0);
-    boolean returnBoolean = (key == null);
-    boolean returnString = (key != null && key.length() == 0);
+    boolean returnBoolean = (!asVector && key == null);
+    boolean returnString = (!asVector && key != null && key.length() == 0);
     int nSquare = 0;
     if (isOneExpressionOnly)
       pt = -pt;
@@ -658,7 +668,7 @@ public class ScriptEvaluator {
         int iT = iToken;
         if (getToken(iT++).tok != Token.semicolon)
           error(ERROR_invalidArgument);
-        parameterExpression(iT, -1, null, false);
+        parameterExpressionBoolean(iT, -1);
         int iF = iToken;
         if (tokAt(iF++) != Token.semicolon)
           error(ERROR_invalidArgument);
@@ -1103,6 +1113,7 @@ public class ScriptEvaluator {
     return data;
   }
 
+  @SuppressWarnings("unchecked")
   protected Object getBitsetProperty(BitSet bs, int tok, Point3f ptRef,
                                      Point4f planeRef, Object tokenValue,
                                      Object opValue, boolean useAtomMap,
@@ -2097,11 +2108,11 @@ public class ScriptEvaluator {
         String var = parameterAsString(++i);
         boolean isClauseDefine = (tokAt(i) == Token.expressionBegin);
         if (isClauseDefine) {
-          List<Object> val = (List<Object>) parameterExpression(++i, 0, "_var", true);
+          List<ScriptVariable> val = parameterExpressionList(++i, 0);
           if (val == null || val.size() == 0)
             error(ERROR_invalidArgument);
           i = iToken;
-          ScriptVariable vt = (ScriptVariable) val.get(0);
+          ScriptVariable vt = val.get(0);
           v = (vt.tok == Token.list ? vt : ScriptVariable.oValue(vt));
         } else {
           v = getParameter(var, false);
@@ -2176,7 +2187,7 @@ public class ScriptEvaluator {
           fixed[j] = new Token(Token.matrix3f, v);
         } else if (v instanceof Matrix4f) {
           fixed[j] = new Token(Token.matrix4f, v);
-        } else if (v instanceof Hashtable) {
+        } else if (v instanceof Hashtable<?,?>) {
           fixed[j] = new Token(Token.hash, v);
         } else if (v instanceof String[]) {
           String[] sv = (String[]) v;
@@ -2534,6 +2545,15 @@ public class ScriptEvaluator {
   final static int ERROR_writeWhat = 54;
   final static int ERROR_multipleModelsNotOK = 55;
 
+  /**
+   * @param iError 
+   * @param value 
+   * @param more 
+   * @param more2 
+   * @param translated 
+   * @return constructed error string
+   * 
+   */
   static String errorString(int iError, String value, String more,
                             String more2, boolean translated) {
     boolean doTranslate = false;
@@ -2997,9 +3017,8 @@ public class ScriptEvaluator {
   }
 
   private void addShapeProperty(List<Object[]> propertyList, String key, Object value) {
-    if (isSyntaxCheck) {
-      ;
-    }
+    if (isSyntaxCheck)
+      return;
     propertyList.add(new Object[] { key, value });
   }
 
@@ -3107,6 +3126,17 @@ public class ScriptEvaluator {
     return atomExpression(statement, index, 0, true, false, true, true);
   }
 
+  /**
+   * @param code 
+   * @param pcStart 
+   * @param pcStop 
+   * @param allowRefresh 
+   * @param allowUnderflow 
+   * @param mustBeBitSet 
+   * @param andNotDeleted IGNORED 
+   * @return atom bitset
+   * @throws ScriptException 
+   */
   private BitSet atomExpression(Token[] code, int pcStart, int pcStop,
                                 boolean allowRefresh, boolean allowUnderflow,
                                 boolean mustBeBitSet, boolean andNotDeleted)
@@ -4723,10 +4753,10 @@ public class ScriptEvaluator {
   private int intSetting(int pt) throws ScriptException {
     if (pt == statementLength)
       return Integer.MIN_VALUE;
-    List v = (List) parameterExpression(pt, -1, "XXX", true);
+    List<ScriptVariable> v = parameterExpressionList(pt, -1);
     if (v == null || v.size() == 0)
       error(ERROR_invalidArgument);
-    return ScriptVariable.iValue((ScriptVariable) v.get(0));
+    return ScriptVariable.iValue(v.get(0));
   }
 
   private float floatSetting(int pt, float min, float max)
@@ -4740,27 +4770,27 @@ public class ScriptEvaluator {
   }
 
   private float floatSetting(int pt) throws ScriptException {
-    List v = (List) parameterExpression(pt, -1, "XXX", true);
+    List<ScriptVariable> v = parameterExpressionList(pt, -1);
     if (v == null || v.size() == 0)
       error(ERROR_invalidArgument);
-    return ScriptVariable.fValue((ScriptVariable) v.get(0));
+    return ScriptVariable.fValue(v.get(0));
   }
 
   private String stringSetting(int pt, boolean isJmolSet)
       throws ScriptException {
     if (isJmolSet && statementLength == pt + 1)
       return parameterAsString(pt);
-    List v = (List) parameterExpression(pt, -1, "XXX", true);
+    List<ScriptVariable> v = parameterExpressionList(pt, -1);
     if (v == null || v.size() == 0)
       error(ERROR_invalidArgument);
-    return ScriptVariable.sValue((ScriptVariable) v.get(0));
+    return ScriptVariable.sValue(v.get(0));
   }
 
   private ScriptVariable tokenSetting(int pt) throws ScriptException {
-    List v = (List) parameterExpression(pt, -1, "XXX", true);
+    List<ScriptVariable> v = parameterExpressionList(pt, -1);
     if (v == null || v.size() == 0)
       error(ERROR_invalidArgument);
-    return (ScriptVariable) v.get(0);
+    return v.get(0);
   }
 
   /*
@@ -5576,8 +5606,7 @@ public class ScriptEvaluator {
           setVariable(j + 2, statementLength - 1, key, 0);
         }
       }
-      isOK = ((Boolean) parameterExpression(pts[0] + 1, pts[1], null, false))
-          .booleanValue();
+      isOK = parameterExpressionBoolean(pts[0] + 1, pts[1]);
       pt++;
       if (!isOK)
         popContext(true, false);
@@ -5758,19 +5787,19 @@ public class ScriptEvaluator {
     if (tok == Token.defaultcmd) // never do the default one directly
       return -1;
     System.out.println("testing...");
-    List<Object> v = (List<Object>) parameterExpression(1, 0, null, true);
+    List<ScriptVariable> v = parameterExpressionList(1, 0);
     if (tok == Token.casecmd) {
-      boolean isOK = ScriptVariable.areEqual(var, (ScriptVariable) v.get(0));
+      boolean isOK = ScriptVariable.areEqual(var, v.get(0));
       if (isOK)
         c.contextVariables.remove("_var");
       return isOK ? 1 : -1;
     }
-    c.contextVariables.put("_var", (ScriptVariable) v.get(0));
+    c.contextVariables.put("_var", v.get(0));
     return 1;
   }
 
   private boolean ifCmd() throws ScriptException {
-    return ((Boolean) parameterExpression(1, 0, null, false)).booleanValue();
+    return parameterExpressionBoolean(1, 0);
   }
 
   private void returnCmd(ScriptVariable tv) throws ScriptException {
@@ -5780,8 +5809,8 @@ public class ScriptEvaluator {
         gotoCmd(null);
       return;
     }
-    List v = (tv != null || statementLength == 1 ? null : (List) parameterExpression(1,
-        0, null, true));
+    List<ScriptVariable> v = (tv != null || statementLength == 1 ? null : parameterExpressionList(1,
+        0));
     if (isSyntaxCheck)
       return;
     if (tv == null)
@@ -7827,7 +7856,7 @@ public class ScriptEvaluator {
       error(ERROR_badArgumentCount);
     if (isSyntaxCheck)
       return;
-    String s = (String) parameterExpression(1, 0, "", false);
+    String s = parameterExpressionString(1, 0);
     if (tokAt(1) == Token.off)
       setStringProperty("logFile", "");
     else
@@ -8892,7 +8921,7 @@ public class ScriptEvaluator {
   private void print() throws ScriptException {
     if (statementLength == 1)
       error(ERROR_badArgumentCount);
-    showString((String) parameterExpression(1, 0, "", false), true);
+    showString(parameterExpressionString(1, 0), true);
   }
 
   private void prompt() throws ScriptException {
@@ -8901,7 +8930,7 @@ public class ScriptEvaluator {
       if (!isSyntaxCheck)
         msg = getScriptContext().getContextTrace(null, true).toString();
     } else {
-        msg = (String) parameterExpression(1, 0, "", false);
+        msg = parameterExpressionString(1, 0);
     }
     if (!isSyntaxCheck)
       viewer.prompt(msg, "OK", null, true);
@@ -9434,7 +9463,7 @@ public class ScriptEvaluator {
       if (filename.equalsIgnoreCase("applet")) {
         // script APPLET x "....."
         String appID = parameterAsString(2);
-        theScript = parameterExpression(3, 0, "_script", false).toString();
+        theScript = parameterExpressionString(3, 0); // had _script variable??
         checkLast(iToken);
         if (isSyntaxCheck)
           return;
@@ -9449,8 +9478,8 @@ public class ScriptEvaluator {
         tok = tokAt(statementLength - 1);
         doStep = (tok == Token.step);
         if (filename.equalsIgnoreCase("inline")) {
-          theScript = parameterExpression(2,
-              (doStep ? statementLength - 1 : 0), "_script", false).toString();
+          theScript = parameterExpressionString(2,
+              (doStep ? statementLength - 1 : 0));
           i = iToken + 1;
         }
         while (filename.equalsIgnoreCase("localPath")
@@ -9547,9 +9576,9 @@ public class ScriptEvaluator {
     String name = (String) getToken(0).value;
     if (!viewer.isFunction(name))
       error(ERROR_commandExpected);
-    List params = (statementLength == 1 || statementLength == 3
+    List<ScriptVariable> params = (statementLength == 1 || statementLength == 3
         && tokAt(1) == Token.leftparen && tokAt(2) == Token.rightparen ? null
-        : (List) parameterExpression(1, 0, null, true));
+        : parameterExpressionList(1, 0));
     if (isSyntaxCheck)
       return;
     runFunction(null, name, params, null, false);
@@ -11543,7 +11572,7 @@ public class ScriptEvaluator {
     case Token.defaultlattice:
       if (statementLength > 2) {
         Point3f pt;
-        List<ScriptVariable> v = (List<ScriptVariable>) parameterExpression(2, 0, "XXX", true);
+        List<ScriptVariable> v = parameterExpressionList(2, 0);
         if (v == null || v.size() == 0)
           error(ERROR_invalidArgument);
         ScriptVariable var = v.get(0);

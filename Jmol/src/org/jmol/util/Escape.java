@@ -98,7 +98,7 @@ public class Escape {
    * @return tabular string
    */
   public static String escape(float[] f, boolean asArray) {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     for (int i = 0; i < f.length; i++) {
       if (i > 0)
         sb.append('\n');
@@ -108,7 +108,7 @@ public class Escape {
   }
 
   public static String escape(float[][] f, boolean addSemi) {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     String eol = (addSemi ? ";\n" : "\n");
     for (int i = 0; i < f.length; i++)
       if (f[i] != null) {
@@ -121,7 +121,7 @@ public class Escape {
   }
 
   public static String escape(float[][][] f, boolean addSemi) {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     String eol = (addSemi ? ";\n" : "\n");
     if (f[0] == null || f[0][0] == null)
       return "0 0 0" + eol;
@@ -142,7 +142,7 @@ public class Escape {
   }
 
   public static String escape(int[] f) {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     for (int i = 0; i < f.length; i++) {
       if (i > 0)
         sb.append('\n');
@@ -201,7 +201,7 @@ public class Escape {
   public static String escape(String[] list, boolean nicely) {
     if (list == null)
       return escape("");
-    StringBuffer s = new StringBuffer();
+    StringBuilder s = new StringBuilder();
     s.append("[");
     for (int i = 0; i < list.length; i++) {
       if (i > 0)
@@ -218,7 +218,7 @@ public class Escape {
       return escape("");
     if (x instanceof Float)
       return "" + x;
-    StringBuffer s = new StringBuffer();
+    StringBuilder s = new StringBuilder();
     s.append("[");
     if (x instanceof double[]) {
       double[] dlist = (double[]) x;
@@ -243,7 +243,7 @@ public class Escape {
       }
     } else if (x instanceof Point3f[]) {
       Point3f[] plist = (Point3f[]) x;
-      s = new StringBuffer("[");
+      s = new StringBuilder("[");
       for (int i = 0; i < plist.length; i++) {
         if (i > 0)
           s.append(", ");
@@ -270,7 +270,7 @@ public class Escape {
     int len = s.length();
     if (len < 512)
       return s;
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     String sep = "\"\\\n    + \"";
     int pt = 0;
     for (int i = 72; i < len; pt = i, i += 72) {
@@ -428,7 +428,7 @@ public class Escape {
     char chClose = (isAtoms ? ')' : ']');
     if (bs == null)
       return chOpen + "{}" + chClose;
-    StringBuffer s = new StringBuffer(chOpen + "{");
+    StringBuilder s = new StringBuilder(chOpen + "{");
     int imax = bs.length();
     int iLast = -1;
     int iFirst = -2;
@@ -459,7 +459,7 @@ public class Escape {
   }
 
   public static String escape(Matrix3f m3) {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     sb.append("[[").append(m3.m00).append(",")
     .append(m3.m01).append(",")
     .append(m3.m02).append("]")
@@ -473,7 +473,7 @@ public class Escape {
   }
   
   public static String escape(Matrix4f m4) {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     sb.append("[[").append(m4.m00).append(",")
     .append(m4.m01).append(",")
     .append(m4.m02).append(",")
@@ -494,7 +494,7 @@ public class Escape {
   }
 
   public static String escape(Map<String, Object> ht) {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     sb.append("{ ");
     String sep = "";
     for (Map.Entry<String, Object> entry : ht.entrySet()) {
@@ -508,7 +508,7 @@ public class Escape {
     return sb.toString();
   }
   
-  private static String packageJSON(String infoType, StringBuffer sb) {
+  private static String packageJSON(String infoType, StringBuilder sb) {
     return packageJSON(infoType, sb.toString());
   }
 
@@ -526,12 +526,11 @@ public class Escape {
     return "\"" + s + "\"";
   }
 
-  @SuppressWarnings("unchecked")
   public static String toJSON(String infoType, Object info) {
 
     //Logger.debug(infoType+" -- "+info);
 
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     String sep = "";
     if (info == null)
       return packageJSON(infoType, (String) null);
@@ -659,9 +658,8 @@ public class Escape {
     return toReadable(null, info);
   }
   
-  @SuppressWarnings("unchecked")
   public static String toReadable(String name, Object info) {
-    StringBuffer sb =new StringBuffer();
+    StringBuilder sb =new StringBuilder();
     String sep = "";
     if (info == null)
       return "null";
@@ -753,7 +751,7 @@ public class Escape {
   }
 
   private static String packageReadable(String infoName, String infoType,
-                                        StringBuffer sb) {
+                                        StringBuilder sb) {
     return packageReadable(infoName, infoType, sb.toString());
   }
   
@@ -800,7 +798,7 @@ public class Escape {
 
   public static String unescapeUnicode(String s) {
     int ichMax = s.length();
-    StringBuffer sb = new StringBuffer(ichMax);
+    StringBuilder sb = new StringBuilder(ichMax);
     int ich = 0;
     while (ich < ichMax) {
       char ch = s.charAt(ich++);

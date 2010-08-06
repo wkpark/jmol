@@ -24,6 +24,9 @@
 package org.openscience.jmol.app.jmolpanel;
 
 import java.util.Hashtable;
+import java.util.Map;
+
+import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.AbstractButton;
@@ -36,16 +39,16 @@ import org.jmol.util.Logger;
 
 class GuiMap {
 
-  Hashtable map = new Hashtable();
+  Map<String, JComponent> map = new Hashtable<String, JComponent>();
   
-  Hashtable labels = null;
+  Map<String, String> labels = null;
   
   // keys here refer to keys listed in org.openscience.jmol.Properties.Jmol-resources.properties
   // actions are either defined there, as xxxScript=, or by 
   // Actions created in DisplayPanel.java
   
-  private Hashtable setupLabels() {
-    Hashtable labels = new Hashtable();
+  private Map<String, String> setupLabels() {
+    Hashtable<String, String> labels = new Hashtable<String, String>();
     labels.put("macros", GT._("&Macros"));
     labels.put("file", GT._("&File"));
     labels.put("newwin", GT._("&New"));
@@ -208,7 +211,7 @@ class GuiMap {
     if (labels == null) {
       labels = setupLabels();
     }
-    String label = (String)labels.get(key);
+    String label = labels.get(key);
     // Use the previous system as backup
     if (label == null) {
       Logger.warn("Missing i18n menu resource, trying old scheme for: " +key);

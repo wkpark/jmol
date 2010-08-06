@@ -224,7 +224,7 @@ public class Group {
   // static stuff for group ids
   ////////////////////////////////////////////////////////////////
 
-  private static Hashtable htGroup = new Hashtable();
+  private static Hashtable<String, Short> htGroup = new Hashtable<String, Short>();
 
   static String[] group3Names = new String[128];
   static short group3NameCount = 0;
@@ -253,7 +253,7 @@ public class Group {
 
   public static short lookupGroupID(String group3) {
     if (group3 != null) {
-      Short boxedGroupID = (Short)htGroup.get(group3);
+      Short boxedGroupID = htGroup.get(group3);
       if (boxedGroupID != null)
         return boxedGroupID.shortValue();
     }

@@ -39,6 +39,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Hashtable;
 import java.io.FileInputStream;
@@ -95,7 +96,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   // The actions:
 
   private PrefsAction prefsAction = new PrefsAction();
-  private Hashtable commands;
+  private Map<String, Action> commands;
 
   final static String[] jmolDefaults  = {
     "jmolDefaults",                   "true",
@@ -137,11 +138,12 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     this.setTitle(GT._("Preferences"));
 
     initVariables();
-    commands = new Hashtable();
+    commands = new Hashtable<String, Action>();
     Action[] actions = getActions();
     for (int i = 0; i < actions.length; i++) {
       Action a = actions[i];
-      commands.put(a.getValue(Action.NAME), a);
+      Object name = a.getValue(Action.NAME);
+      commands.put((name != null) ? name.toString() : null, a);
     }
     JPanel container = new JPanel();
     container.setLayout(new BorderLayout());
@@ -433,22 +435,22 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     btSlider.setMajorTickSpacing(20);
     btSlider.setMinorTickSpacing(10);
     btSlider.setPaintLabels(true);
-    btSlider.getLabelTable().put(new Integer(0),
+    btSlider.getLabelTable().put(Integer.valueOf(0),
         new JLabel("0.0", SwingConstants.CENTER));
     btSlider.setLabelTable(btSlider.getLabelTable());
-    btSlider.getLabelTable().put(new Integer(20),
+    btSlider.getLabelTable().put(Integer.valueOf(20),
         new JLabel("0.2", SwingConstants.CENTER));
     btSlider.setLabelTable(btSlider.getLabelTable());
-    btSlider.getLabelTable().put(new Integer(40),
+    btSlider.getLabelTable().put(Integer.valueOf(40),
         new JLabel("0.4", SwingConstants.CENTER));
     btSlider.setLabelTable(btSlider.getLabelTable());
-    btSlider.getLabelTable().put(new Integer(60),
+    btSlider.getLabelTable().put(Integer.valueOf(60),
         new JLabel("0.6", SwingConstants.CENTER));
     btSlider.setLabelTable(btSlider.getLabelTable());
-    btSlider.getLabelTable().put(new Integer(80),
+    btSlider.getLabelTable().put(Integer.valueOf(80),
         new JLabel("0.8", SwingConstants.CENTER));
     btSlider.setLabelTable(btSlider.getLabelTable());
-    btSlider.getLabelTable().put(new Integer(100),
+    btSlider.getLabelTable().put(Integer.valueOf(100),
         new JLabel("1.0", SwingConstants.CENTER));
     btSlider.setLabelTable(btSlider.getLabelTable());
 
@@ -484,22 +486,22 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     bdSlider.setMajorTickSpacing(20);
     bdSlider.setMinorTickSpacing(10);
     bdSlider.setPaintLabels(true);
-    bdSlider.getLabelTable().put(new Integer(0),
+    bdSlider.getLabelTable().put(Integer.valueOf(0),
         new JLabel("0.0", SwingConstants.CENTER));
     bdSlider.setLabelTable(bdSlider.getLabelTable());
-    bdSlider.getLabelTable().put(new Integer(20),
+    bdSlider.getLabelTable().put(Integer.valueOf(20),
         new JLabel("0.2", SwingConstants.CENTER));
     bdSlider.setLabelTable(bdSlider.getLabelTable());
-    bdSlider.getLabelTable().put(new Integer(40),
+    bdSlider.getLabelTable().put(Integer.valueOf(40),
         new JLabel("0.4", SwingConstants.CENTER));
     bdSlider.setLabelTable(bdSlider.getLabelTable());
-    bdSlider.getLabelTable().put(new Integer(60),
+    bdSlider.getLabelTable().put(Integer.valueOf(60),
         new JLabel("0.6", SwingConstants.CENTER));
     bdSlider.setLabelTable(bdSlider.getLabelTable());
-    bdSlider.getLabelTable().put(new Integer(80),
+    bdSlider.getLabelTable().put(Integer.valueOf(80),
         new JLabel("0.8", SwingConstants.CENTER));
     bdSlider.setLabelTable(bdSlider.getLabelTable());
-    bdSlider.getLabelTable().put(new Integer(100),
+    bdSlider.getLabelTable().put(Integer.valueOf(100),
         new JLabel("1.0", SwingConstants.CENTER));
     bdSlider.setLabelTable(bdSlider.getLabelTable());
 
@@ -669,7 +671,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   }
 
   protected Action getAction(String cmd) {
-    return (Action) commands.get(cmd);
+    return commands.get(cmd);
   }
 
   ItemListener checkBoxListener = new ItemListener() {

@@ -23,7 +23,7 @@
  */
 package org.jmol.modelsetbio;
 
-import java.util.Hashtable;
+import java.util.Map;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -178,7 +178,7 @@ public abstract class ProteinStructure {
     return segments[index];
   }
 
-  public void getInfo(Hashtable info) {
+  public void getInfo(Map<String, Object> info) {
     info.put("type", JmolConstants.getProteinStructureName(type, false));
     int[] leadAtomIndices = apolymer.getLeadAtomIndices();
     int[] iArray = new int[monomerCount];

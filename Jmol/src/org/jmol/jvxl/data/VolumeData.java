@@ -112,7 +112,7 @@
 
 package org.jmol.jvxl.data;
 
-import java.util.Hashtable;
+import java.util.Map;
 
 import javax.vecmath.Point3i;
 import javax.vecmath.Point3f;
@@ -133,7 +133,7 @@ public class VolumeData implements VolumeDataInterface {
   public final int[] voxelCounts = new int[3];
   public int nPoints;
   public float[][][] voxelData;  
-  public Hashtable voxelMap; // alternative to voxelData for sparse (plane interesected) data
+  public Map<String, Float> voxelMap; // alternative to voxelData for sparse (plane interesected) data
   public final float[] volumetricVectorLengths = new float[3];
   private float maxVectorLength;
   private float minToPlaneDistance;
@@ -193,11 +193,11 @@ public class VolumeData implements VolumeDataInterface {
     this.voxelData = voxelData;
   }
 
-  public Hashtable getVoxelMap() {
+  public Map<String, Float> getVoxelMap() {
     return voxelMap;
   }
   
-  public void setVoxelMap(Hashtable voxelMap) {
+  public void setVoxelMap(Map<String, Float> voxelMap) {
     this.voxelMap = voxelMap;
   }
   
@@ -308,7 +308,7 @@ public class VolumeData implements VolumeDataInterface {
   public float getVoxelValue(int x, int y, int z) {
     if (voxelMap == null)
       return voxelData[x][y][z];
-    Float f = (Float) voxelMap.get(x + "_" + y + "_" + z);
+    Float f = voxelMap.get(x + "_" + y + "_" + z);
     return (f == null ? Float.NaN : f.floatValue());
   }
 
@@ -411,7 +411,7 @@ public class VolumeData implements VolumeDataInterface {
   public void setVoxelMapValue(int x, int y, int z, float v) {
     if (voxelMap == null)
       return;
-    voxelMap.put(x+"_" + y + "_" + z, new Float(v));    
+    voxelMap.put(x+"_" + y + "_" + z, Float.valueOf(v));    
   }
 
 }

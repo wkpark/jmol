@@ -26,6 +26,7 @@ package org.jmol.geodesic;
 
 import javax.vecmath.Vector3f;
 import java.util.Hashtable;
+import java.util.Map;
 
   /**
    * 
@@ -259,12 +260,12 @@ public class Geodesic {
 */
 
   private static short vertexNext;
-  private static Hashtable htVertex;
+  private static Map<Integer, Short> htVertex;
     
   private final static boolean VALIDATE = true;
 
   private static void quadruple(int level, short[] counts) {
-    htVertex = new Hashtable();
+    htVertex = new Hashtable<Integer, Short>();
     int oldVertexCount = vertexVectors.length;
     short[] oldFaceVertexes = faceVertexesArrays[level];
     int oldFaceVertexesLength = oldFaceVertexes.length;
@@ -403,9 +404,10 @@ public class Geodesic {
       v2 = t;
     }
     Integer hashKey = Integer.valueOf((v1 << 16) + v2);
-    Short iv = (Short)htVertex.get(hashKey);
-    if (iv != null)
+    Short iv = htVertex.get(hashKey);
+    if (iv != null) {
       return iv.shortValue();
+    }
     Vector3f newVertexVector = new Vector3f(vertexVectors[v1]);
     vertexVectors[vertexNext] = newVertexVector;
     newVertexVector.add(vertexVectors[v2]);

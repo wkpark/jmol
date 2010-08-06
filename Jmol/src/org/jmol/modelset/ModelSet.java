@@ -168,7 +168,7 @@ abstract public class ModelSet extends ModelCollection {
       return;
     int baseModel = models[modelIndex].trajectoryBaseIndex;
     models[baseModel].selectedTrajectory = modelIndex;
-    Point3f[] trajectory = (Point3f[]) trajectorySteps.get(modelIndex);
+    Point3f[] trajectory = trajectorySteps.get(modelIndex);
     BitSet bs = new BitSet();
     int iMax = iFirst + getAtomCountInModel(baseModel);
     for (int pt = 0, i = iFirst; i < iMax && pt < trajectory.length && trajectory[pt]!= null; i++) {
@@ -840,7 +840,9 @@ abstract public class ModelSet extends ModelCollection {
       int index2 = (int) f[1];
       if (index1 < 0 || index2 < 0 || index1 >= atomCount || index2 >= atomCount)
         continue;
-      short order = (f.length > 2 ? (short) f[2] : JmolEdge.BOND_COVALENT_SINGLE);
+      int order = (f.length > 2 ? (int) f[2] : JmolEdge.BOND_COVALENT_SINGLE);
+      if (order < 0)
+        order &= 0xFFFF; // 12.0.1 was saving struts as negative numbers
       short mad = (f.length > 3 ? (short) (1000f * connections[i][3]) : getDefaultMadFromOrder(order));
       if (order == 0 || mad == 0) {
         Bond b = atoms[index1].getBond(atoms[index2]);

@@ -45,13 +45,13 @@ import org.jmol.modelset.BondIterator;
 
 public class Sticks extends Shape {
 
-  short myMask;
-  boolean reportAll;
+  private int myMask;
+  private boolean reportAll;
   
-  BitSet bsOrderSet;
-  BitSet bsSizeSet;
-  BitSet bsColixSet;
-  BitSet selectedBonds;
+  private BitSet bsOrderSet;
+  private BitSet bsSizeSet;
+  private BitSet bsColixSet;
+  private BitSet selectedBonds;
 
   @Override
   public void initShape() {
@@ -93,7 +93,7 @@ public class Sticks extends Shape {
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
     if ("type" == propertyName) {
-      myMask = ((Integer) value).shortValue();
+      myMask = ((Integer) value).intValue();
       return;
     }
     if ("reportAll" == propertyName) {

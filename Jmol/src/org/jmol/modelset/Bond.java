@@ -120,6 +120,10 @@ public class Bond implements JmolEdge {
     return (order & JmolEdge.BOND_AROMATIC_MASK) != 0;
   }
 
+  /**
+   * 
+   * @param pid
+   */
   public void setPaletteID(byte pid) {
     // hbonds only
   }

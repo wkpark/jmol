@@ -8480,7 +8480,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void deleteModelAtoms(int firstAtomIndex, int nAtoms, BitSet bsDeleted) {
     // called from ModelCollection.deleteModel
-    selectionManager.deleteModelAtoms(firstAtomIndex, nAtoms, bsDeleted);
+    selectionManager.deleteModelAtoms(bsDeleted);
     BitSetUtil.deleteBits(getFrameOffsets(), bsDeleted);
     setFrameOffsets(getFrameOffsets());
     dataManager.deleteModelAtoms(firstAtomIndex, nAtoms, bsDeleted);

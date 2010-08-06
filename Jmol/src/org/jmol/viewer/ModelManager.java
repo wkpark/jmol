@@ -44,7 +44,7 @@ class ModelManager {
   ModelSet zap() {
     fullPathName = fileName = null;
     modelLoader = new ModelLoader(viewer, viewer.getZapName());
-    return (ModelSet) modelLoader;
+    return modelLoader;
   }
   
   String getModelSetFileName() {
@@ -85,7 +85,7 @@ class ModelManager {
     }
     if (modelLoader.getAtomCount() == 0)
       zap();
-    return (ModelSet) modelLoader;
+    return modelLoader;
   }
 
   private static String reduceFilename(String fileName) {

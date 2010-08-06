@@ -187,6 +187,14 @@ class MouseManager14 implements MouseWheelListener, MouseListener,
     actionManager.setMouseMode();
   }
 
+  /**
+   * 
+   * @param time
+   * @param x
+   * @param y
+   * @param modifiers
+   * @param clickCount
+   */
   void mouseClicked(long time, int x, int y, int modifiers, int clickCount) {
     clearKeyBuffer();
     // clickedCount is not reliable on some platforms
@@ -204,6 +212,14 @@ class MouseManager14 implements MouseWheelListener, MouseListener,
     actionManager.mouseWheel(time, rotation, modifiers);
   }
 
+  /**
+   * 
+   * @param time
+   * @param x
+   * @param y
+   * @param modifiers
+   * @param isPopupTrigger
+   */
   void mousePressed(long time, int x, int y, int modifiers,
                     boolean isPopupTrigger) {
     clearKeyBuffer();

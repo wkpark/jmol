@@ -52,7 +52,7 @@ class SelectionManager {
   BitSet bsSubset; // set in Eval and only pointed to here
   private BitSet bsDeleted;
 
-  public void deleteModelAtoms(int firstAtomIndex, int nAtoms, BitSet bsDeleted) {
+  void deleteModelAtoms(BitSet bsDeleted) {
     BitSetUtil.deleteBits(bsHidden, bsDeleted);
     BitSetUtil.deleteBits(bsSelection, bsDeleted);
     BitSetUtil.deleteBits(bsSubset, bsDeleted);

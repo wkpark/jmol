@@ -1208,6 +1208,15 @@ public class ActionManager {
     return ret;
   }
 
+  /**
+   * 
+   * @param action
+   * @param x
+   * @param deltaX
+   * @param deltaY
+   * @param inMotion
+   * @return TRUE if motion was a zoom
+   */
   private boolean checkMotionRotateZoom(int action, int x, 
                                         int deltaX, int deltaY,
                                         boolean inMotion) {

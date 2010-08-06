@@ -263,7 +263,6 @@ public class SmarterJmolAdapter extends JmolAdapter {
     return staticGetAtomSetCollectionOrBufferedReaderFromZip(is, fileName, zipDirectory, htParams, 1, asBufferedReader);
   }
 
-  @SuppressWarnings("unchecked")
   private static Object staticGetAtomSetCollectionOrBufferedReaderFromZip(
                                     InputStream is, String fileName,
                                     String[] zipDirectory, Map<String, Object> htParams,
@@ -306,7 +305,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
     boolean exceptFiles = (manifest.indexOf("EXCEPT_FILES") >= 0);
     if (selectAll || subFileName != null)
       haveManifest = false;
-    List vCollections = new ArrayList();
+    List<Object> vCollections = new ArrayList<Object>();
     Map<String, Object> htCollections = (haveManifest ? new Hashtable<String, Object>() : null);
     int nFiles = 0;
     // 0 entry is manifest

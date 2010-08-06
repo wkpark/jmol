@@ -901,7 +901,7 @@ class ScriptMathProcessor {
       }
     } else {
       BitSet bs = (args[0].value instanceof BitSet ? (BitSet) args[0].value
-          : eval.compareInt(Token.resno, null, Token.opEQ, ScriptVariable
+          : eval.compareInt(Token.resno, Token.opEQ, ScriptVariable
               .iValue(args[0])));
       switch (tok) {
       case Token.point:

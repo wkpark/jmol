@@ -3294,7 +3294,7 @@ public class ScriptEvaluator {
       case Token.spec_atom:
         int atomID = instruction.intValue;
         if (atomID > 0)
-          rpn.addX(compareInt(Token.atomid, null, Token.opEQ, atomID));
+          rpn.addX(compareInt(Token.atomid, Token.opEQ, atomID));
         else
           rpn.addX(getAtomBits(instruction.tok, value));
         break;
@@ -3502,8 +3502,7 @@ public class ScriptEvaluator {
         }
         float[] data = (tokWhat == Token.property ? viewer
             .getDataFloat(property) : null);
-        rpn.addX(isIntProperty ? compareInt(tokWhat, data, tokOperator,
-            comparisonValue) : isStringProperty ? compareString(tokWhat,
+        rpn.addX(isIntProperty ? compareInt(tokWhat, tokOperator, comparisonValue) : isStringProperty ? compareString(tokWhat,
             tokOperator, (String) val) : compareFloat(tokWhat, data,
             tokOperator, comparisonFloat));
         break;
@@ -3615,8 +3614,7 @@ public class ScriptEvaluator {
     return bs;
   }
 
-  protected BitSet compareInt(int tokWhat, float[] data, int tokOperator,
-                              int comparisonValue) {
+  protected BitSet compareInt(int tokWhat, int tokOperator, int comparisonValue) {
     int propertyValue = Integer.MAX_VALUE;
     BitSet propertyBitSet = null;
     int bitsetComparator = tokOperator;
@@ -3766,8 +3764,28 @@ public class ScriptEvaluator {
         if (!match || propertyValue == Integer.MAX_VALUE)
           tokOperator = Token.none;
       }
-      if (tokOperator != Token.none)
-        match = compareInt(tokOperator, propertyValue, comparisonValue);
+      switch (tokOperator) {
+      case Token.none:
+        break;
+      case Token.opLT:
+        match = (propertyValue < comparisonValue);
+        break;
+      case Token.opLE:
+        match = (propertyValue <= comparisonValue);
+        break;
+      case Token.opGE:
+        match = (propertyValue >= comparisonValue);
+        break;
+      case Token.opGT:
+        match = (propertyValue > comparisonValue);
+        break;
+      case Token.opEQ:
+        match = (propertyValue == comparisonValue);
+        break;
+      case Token.opNE:
+        match = (propertyValue != comparisonValue);
+        break;
+      }
       if (match)
         bs.set(i);
     }
@@ -3782,25 +3800,6 @@ public class ScriptEvaluator {
       return (TextFormat.isMatch(propertyValue, comparisonValue, true, true) == (tokOperator == Token.opEQ));
     default:
       error(ERROR_invalidArgument);
-    }
-    return false;
-  }
-
-  private static boolean compareInt(int tokOperator, int propertyValue,
-                                    int comparisonValue) {
-    switch (tokOperator) {
-    case Token.opLT:
-      return propertyValue < comparisonValue;
-    case Token.opLE:
-      return propertyValue <= comparisonValue;
-    case Token.opGE:
-      return propertyValue >= comparisonValue;
-    case Token.opGT:
-      return propertyValue > comparisonValue;
-    case Token.opEQ:
-      return propertyValue == comparisonValue;
-    case Token.opNE:
-      return propertyValue != comparisonValue;
     }
     return false;
   }
@@ -4670,8 +4669,11 @@ public class ScriptEvaluator {
         multiplier = 1;
         break;
       case Token.divide:
-        getToken(++i);
       case Token.spec_model: // after a slash
+        if (!allowFractional)
+          error(ERROR_invalidArgument);
+        if (theTok == Token.divide)
+          getToken(++i);
         n--;
         if (n < 0 || integerOnly)
           error(ERROR_invalidArgument);
@@ -5104,7 +5106,7 @@ public class ScriptEvaluator {
           display(false);
           break;
         case Token.hbond:
-          hbond(true);
+          hbond();
           break;
         case Token.history:
           history(1);
@@ -5769,12 +5771,11 @@ public class ScriptEvaluator {
     }
   }
 
-  @SuppressWarnings("unchecked")
   private int switchCmd(ContextToken c, int tok)
       throws ScriptException {
     if (tok == Token.switchcmd)
       c.addName("_var");
-    ScriptVariable var = (ScriptVariable) c.contextVariables.get("_var");
+    ScriptVariable var = c.contextVariables.get("_var");
     if (var == null)
       return 1; // OK, case found -- no more testing
     if (tok == 0) {
@@ -7024,14 +7025,13 @@ public class ScriptEvaluator {
       String file = parameterAsString(checkLast(++i));
       if (isSyntaxCheck)
         return;
-      Hashtable htParams = new Hashtable();
-      Object image = null;
+      String[] retFileName = new String[1];
+      Image image = null;
       if (!file.equalsIgnoreCase("none") && file.length() > 0)
-        image = viewer.getFileAsImage(file, htParams);
-      if (image instanceof String)
-        evalError((String) image, null);
-      viewer.setBackgroundImage((String) htParams.get("fullPathName"),
-          (Image) image);
+        image = viewer.getFileAsImage(file, retFileName);
+      if (image == null)
+        evalError(retFileName[0], null);
+      viewer.setBackgroundImage(retFileName[0], image);
       return;
     }
     if (isColorParam(i) || theTok == Token.none) {
@@ -7818,13 +7818,12 @@ public class ScriptEvaluator {
     String text = optParameterAsString(index);
     if (viewer.getEchoStateActive()) {
       if (isImage) {
-        Hashtable htParams = new Hashtable();
-        Object image = viewer.getFileAsImage(text, htParams);
-        if (image instanceof String) {
-          text = (String) image;
+        String[] retFileName = new String[1];
+        Image image = viewer.getFileAsImage(text, retFileName);
+        if (image == null) {
+          text = retFileName[0];
         } else {
-          setShapeProperty(JmolConstants.SHAPE_ECHO, "text", htParams
-              .get("fullPathName"));
+          setShapeProperty(JmolConstants.SHAPE_ECHO, "text", retFileName[0]);
           setShapeProperty(JmolConstants.SHAPE_ECHO, "image", image);
           text = null;
         }
@@ -10508,7 +10507,7 @@ public class ScriptEvaluator {
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer.valueOf(JmolEdge.BOND_COVALENT_MASK));
   }
 
-  private void hbond(boolean isCommand) throws ScriptException {
+  private void hbond() throws ScriptException {
     if (statementLength == 2 && getToken(1).tok == Token.calculate) {
       if (isSyntaxCheck)
         return;
@@ -11053,7 +11052,7 @@ public class ScriptEvaluator {
       setIntProperty("animationFps", intParameter(checkLast(2)));
       break;
     default:
-      frameControl(1, true);
+      frameControl(1);
     }
   }
 
@@ -11200,7 +11199,7 @@ public class ScriptEvaluator {
         isRange = true;
         break;
       default:
-        frameControl(offset, false);
+        frameControl(offset);
         return;
       }
     }
@@ -11304,7 +11303,7 @@ public class ScriptEvaluator {
     return bs;
   }
 
-  private void frameControl(int i, boolean isSubCmd) throws ScriptException {
+  private void frameControl(int i) throws ScriptException {
     switch (getToken(checkLast(i)).tok) {
     case Token.playrev:
     case Token.play:

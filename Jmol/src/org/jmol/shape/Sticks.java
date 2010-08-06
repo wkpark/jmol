@@ -69,7 +69,7 @@ public class Sticks extends Shape {
   @Override
   public void setSize(int size, BitSet bsSelected) {
     if (size == Integer.MAX_VALUE) {
-      selectedBonds = (bsSelected == null ? null : BitSetUtil.copy(bsSelected));
+      selectedBonds = BitSetUtil.copy(bsSelected);
       return;
     }
     if (size == Integer.MIN_VALUE) { // smartaromatic has set the orders directly 

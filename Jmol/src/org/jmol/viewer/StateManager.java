@@ -29,6 +29,7 @@ import javax.vecmath.Matrix3f;
 import java.util.Hashtable;
 import java.util.BitSet;
 import java.util.Enumeration;
+import java.util.Map;
 
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Bond;
@@ -71,17 +72,16 @@ public class StateManager {
   public final static int OBJ_MAX = 8;
   private final static String objectNameList = "background axis1      axis2      axis3      boundbox   unitcell   frank      ";
 
-  public static String getVariableList(Hashtable<String, ScriptVariable> htVariables, int nMax,
+  public static String getVariableList(Map<String, ScriptVariable> htVariables, int nMax,
                                        boolean withSites) {
     StringBuffer sb = new StringBuffer();
     // user variables only:
     int n = 0;
-    Enumeration<String> e = htVariables.keys();
 
     String[] list = new String[htVariables.size()];
-    while (e.hasMoreElements()) {
-      String key = e.nextElement();
-      ScriptVariable var = htVariables.get(key);
+    for (Map.Entry<String, ScriptVariable> entry : htVariables.entrySet()) {
+      String key = entry.getKey();
+      ScriptVariable var = entry.getValue();
       if (withSites || (!key.startsWith("@site_") && !key.startsWith("site_")))
         list[n++] = key
             + (key.charAt(0) == '@' ? " " + ScriptVariable.sValue(var) : " = "

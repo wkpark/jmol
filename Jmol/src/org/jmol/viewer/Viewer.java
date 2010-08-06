@@ -549,8 +549,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * Graphics3D.flushCachedColors(); }
    */
 
-  Hashtable<String, Object> getAppletInfo() {
-    Hashtable<String, Object> info = new Hashtable<String, Object>();
+  Map<String, Object> getAppletInfo() {
+    Map<String, Object> info = new Hashtable<String, Object>();
     info.put("htmlName", htmlName);
     info.put("syncId", syncId);
     info.put("fullName", fullName);
@@ -1273,7 +1273,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         : stateManager.getSavedOrientationText(name));
   }
 
-  Hashtable<String, Object> getOrientationInfo() {
+  Map<String, Object> getOrientationInfo() {
     return transformManager.getOrientationInfo();
   }
 
@@ -1740,7 +1740,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // fileManager.addLoadScript(script);
   }
 */
-  private Hashtable<String, Object> setLoadParameters(Hashtable<String, Object> htParams) {
+  private Map<String, Object> setLoadParameters(Map<String, Object> htParams) {
     if (htParams == null)
       htParams = new Hashtable<String, Object>();
     htParams.put("viewer", this);
@@ -1886,7 +1886,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
   public String loadModelFromFile(String fullPathName, String fileName,
                                   String[] fileNames, Object reader,
-                                  boolean isAppend, Hashtable<String, Object> htParams,
+                                  boolean isAppend, Map<String, Object> htParams,
                                   StringBuffer loadScript, int tokType) {
     if (htParams == null)
       htParams = setLoadParameters(null);
@@ -1983,7 +1983,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    *            an AtomSetCollection or a String (error)
    */
   private Object getAtomSetCollection(String fileName, boolean isAppend,
-                                      Hashtable<String, Object> htParams,
+                                      Map<String, Object> htParams,
                                       StringBuffer loadScript) {
     if (fileName == null)
       return null;
@@ -2100,7 +2100,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return createModelSetAndReturnError(atomSetCollection, isAppend, null);
   }
 
-  public String loadInline(String strModel, char newLine, boolean isAppend, Hashtable<String, Object> htParams) {
+  public String loadInline(String strModel, char newLine, boolean isAppend, Map<String, Object> htParams) {
     // ScriptEvaluator DATA command uses this, but anyone could.
     if (strModel == null || strModel.length() == 0)
       return null;
@@ -2165,7 +2165,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   // everything funnels to these two inline methods: String and String[]
   
-  private String openStringInline(String strModel, Hashtable<String, Object> htParams,
+  private String openStringInline(String strModel, Map<String, Object> htParams,
                                   boolean isAppend) {
     // loadInline, openStringInline
 
@@ -2189,7 +2189,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return createModelSetAndReturnError(atomSetCollection, isAppend, loadScript);
   }
 
-  private String openStringsInline(String[] arrayModels, Hashtable<String, Object> htParams,
+  private String openStringsInline(String[] arrayModels, Map<String, Object> htParams,
                                    boolean isAppend) {
     // loadInline
     StringBuffer loadScript = new StringBuffer();
@@ -2599,7 +2599,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return symmetry.getUnitCellInfo(infoType);
   }
 
-  public Hashtable<String, Object> getSpaceGroupInfo(String spaceGroup) {
+  public Map<String, Object> getSpaceGroupInfo(String spaceGroup) {
     return modelSet.getSpaceGroupInfo(-1, spaceGroup, 0, null, null, null);
   }
 
@@ -2717,7 +2717,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getBboxVertices();
   }
 
-  Hashtable<String, Object> getBoundBoxInfo() {
+  Map<String, Object> getBoundBoxInfo() {
     return modelSet.getBoundBoxInfo();
   }
 
@@ -3115,7 +3115,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getFileData(animationManager.currentModelIndex);
   }
 
-  public Hashtable<String, Object> getCifData(int modelIndex) {
+  public Map<String, Object> getCifData(int modelIndex) {
     String name = getModelFileName(modelIndex);
     String data = getFileAsString(name);
     if (data == null)
@@ -3128,7 +3128,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getPDBHeader(animationManager.currentModelIndex);
   }
 
-  public Hashtable<String, Object> getModelInfo(Object atomExpression) {
+  public Map<String, Object> getModelInfo(Object atomExpression) {
     return modelSet.getModelInfo(getModelBitSet(getAtomBitSet(atomExpression),
         false));
   }
@@ -3138,15 +3138,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         getAtomBitSet(atomExpression), false));
   }
 
-  List<Hashtable<String, Object>> getAllAtomInfo(Object atomExpression) {
+  List<Map<String, Object>> getAllAtomInfo(Object atomExpression) {
     return modelSet.getAllAtomInfo(getAtomBitSet(atomExpression));
   }
 
-  List<Hashtable<String, Object>> getAllBondInfo(Object atomExpression) {
+  List<Map<String, Object>> getAllBondInfo(Object atomExpression) {
     return modelSet.getAllBondInfo(getAtomBitSet(atomExpression));
   }
 
-  List<Hashtable<String, Object>> getMoleculeInfo(Object atomExpression) {
+  List<Map<String, Object>> getMoleculeInfo(Object atomExpression) {
     return modelSet.getMoleculeInfo(getAtomBitSet(atomExpression));
   }
 
@@ -3154,11 +3154,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getChimeInfo(tok, getSelectionSet(true));
   }
 
-  public Hashtable<String, List<Hashtable<String, Object>>> getAllChainInfo(Object atomExpression) {
+  public Map<String, List<Map<String, Object>>> getAllChainInfo(Object atomExpression) {
     return modelSet.getAllChainInfo(getAtomBitSet(atomExpression));
   }
 
-  public Hashtable<String, List<Hashtable<String, Object>>> getAllPolymerInfo(Object atomExpression) {
+  public Map<String, List<Map<String, Object>>> getAllPolymerInfo(Object atomExpression) {
     return modelSet.getAllPolymerInfo(getAtomBitSet(atomExpression));
   }
 
@@ -3392,8 +3392,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   @SuppressWarnings("unchecked")
-  List<Hashtable<String, Object>> getMeasurementInfo() {
-    return (List<Hashtable<String, Object>>) getShapeProperty(JmolConstants.SHAPE_MEASURES, "info");
+  List<Map<String, Object>> getMeasurementInfo() {
+    return (List<Map<String, Object>>) getShapeProperty(JmolConstants.SHAPE_MEASURES, "info");
   }
 
   public String getMeasurementInfoAsString() {
@@ -3477,7 +3477,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return animationManager.animationDirection;
   }
 
-  Hashtable<String, Object> getAnimationInfo() {
+  Map<String, Object> getAnimationInfo() {
     return animationManager.getAnimationInfo();
   }
 
@@ -4795,7 +4795,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     statusManager.setJmolStatusListener(jmolStatusListener, null);
   }
 
-  public Hashtable<String, List<List<Object>>> getMessageQueue() {
+  public Map<String, List<List<Object>>> getMessageQueue() {
     // called by PropertyManager.getPropertyAsObject for "messageQueue"
     return statusManager.getMessageQueue();
   }
@@ -7567,7 +7567,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.dipoleScale;
   }
 
-  public void getAtomIdentityInfo(int atomIndex, Hashtable<String, Object> info) {
+  public void getAtomIdentityInfo(int atomIndex, Map<String, Object> info) {
     modelSet.getAtomIdentityInfo(atomIndex, info);
   }
 
@@ -8504,7 +8504,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.calculatePointGroup(getSelectionSet(false));
   }
 
-  public Hashtable<String, Object> getPointGroupInfo(Object atomExpression) {
+  public Map<String, Object> getPointGroupInfo(Object atomExpression) {
     return modelSet.getPointGroupInfo(getAtomBitSet(atomExpression));
   }
 
@@ -8659,7 +8659,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return repaintManager.repaintPending;
   }
 
-  public Hashtable<String, ScriptVariable> getContextVariables() {
+  public Map<String, ScriptVariable> getContextVariables() {
     return eval.getContextVariables();
   }
 
@@ -9076,7 +9076,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return isOK;
   }
 
-  public Hashtable<String, Object> getShapeInfo() {
+  public Map<String, Object> getShapeInfo() {
     return shapeManager.getShapeInfo();
   }
 

@@ -26,6 +26,7 @@ package org.jmol.script;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 public class ScriptFunction {
 
@@ -71,7 +72,7 @@ public class ScriptFunction {
     typeName = Token.nameOf(tok);
   }
 
-  void setVariables(Hashtable<String, ScriptVariable> contextVariables, List<ScriptVariable> params) {
+  void setVariables(Map<String, ScriptVariable> contextVariables, List<ScriptVariable> params) {
     int nParams = (params == null ? 0 : params.size());
     for (int i = names.size(); --i >= 0;) {
       String name = names.get(i).toLowerCase();
@@ -84,7 +85,7 @@ public class ScriptFunction {
     contextVariables.put("_retval", ScriptVariable.intVariable(tok == Token.trycmd ? Integer.MAX_VALUE : 0));
   }
 
-  public void unsetVariables(Hashtable<String, ScriptVariable> contextVariables, List<ScriptVariable> params) {
+  public void unsetVariables(Map<String, ScriptVariable> contextVariables, List<ScriptVariable> params) {
     // set list values in case they have changed.
     int nParams = (params == null ? 0 : params.size());
     int nNames = names.size();

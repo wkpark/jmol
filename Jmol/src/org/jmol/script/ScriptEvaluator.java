@@ -1662,9 +1662,9 @@ public class ScriptEvaluator {
   private Token[][] aatoken;
   private short[] lineNumbers;
   private int[][] lineIndices;
-  private Hashtable<String, ScriptVariable> contextVariables;
+  private Map<String, ScriptVariable> contextVariables;
 
-  public Hashtable<String, ScriptVariable> getContextVariables() {
+  public Map<String, ScriptVariable> getContextVariables() {
     return contextVariables;
   }
 
@@ -9233,7 +9233,7 @@ public class ScriptEvaluator {
         int symop = intParameter(++i);
         if (isSyntaxCheck)
           continue;
-        Hashtable<String, Object> info = viewer.getSpaceGroupInfo(null);
+        Map<String, Object> info = viewer.getSpaceGroupInfo(null);
         Object[] op = (info == null ? null : (Object[]) info.get("operations"));
         if (symop == 0 || op == null || op.length < Math.abs(symop))
           error(ERROR_invalidArgument);
@@ -13524,7 +13524,7 @@ public class ScriptEvaluator {
       }
       break;
     case Token.spacegroup:
-      Hashtable<String, Object> info = null;
+      Map<String, Object> info = null;
       if ((len = statementLength) == 2) {
         if (!isSyntaxCheck) {
           info = viewer.getSpaceGroupInfo(null);

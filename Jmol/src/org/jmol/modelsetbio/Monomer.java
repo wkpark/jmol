@@ -280,8 +280,7 @@ public abstract class Monomer extends Group {
   public boolean haveParameters() {
     return bioPolymer.haveParameters;
   }
-  
-  @Override
+
   public Hashtable<String, Object> getMyInfo() {
     Hashtable<String, Object> info = new Hashtable<String, Object>();
     char chainID = chain.getChainID();

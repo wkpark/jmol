@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -322,7 +323,7 @@ abstract public class ModelCollection extends BondCollection {
     return boxInfo.getBboxVertices();
   }
 
-  public Hashtable<String, Object> getBoundBoxInfo() {
+  public Map<String, Object> getBoundBoxInfo() {
     return boxInfo.getBoundBoxInfo();
   }
 
@@ -737,22 +738,21 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   @SuppressWarnings("unchecked")
-  public Hashtable<String, String> getHeteroList(int modelIndex) {
-    Hashtable<String, String> htFull = new Hashtable<String, String>();
+  public Map<String, String> getHeteroList(int modelIndex) {
+    Map<String, String> htFull = new Hashtable<String, String>();
     boolean ok = false;
     for (int i = modelCount; --i >= 0;)
       if (modelIndex < 0 || i == modelIndex) {
-        Hashtable<String, String> ht = (Hashtable<String, String>) getModelAuxiliaryInfo(i, "hetNames");
+        Map<String, String> ht = (Map<String, String>) getModelAuxiliaryInfo(i, "hetNames");
         if (ht == null)
           continue;
         ok = true;
-        Enumeration<String> e = ht.keys();
-        while (e.hasMoreElements()) {
-          String key = e.nextElement();
-          htFull.put(key, ht.get(key));
+        for (Map.Entry<String, String> entry : ht.entrySet()) {
+          String key = entry.getKey();
+          htFull.put(key, entry.getValue());
         }
       }
-    return (ok ? htFull : (Hashtable<String, String>) getModelSetAuxiliaryInfo("hetNames"));
+    return (ok ? htFull : (Map<String, String>) getModelSetAuxiliaryInfo("hetNames"));
   }
 
   public Properties getModelSetProperties() {
@@ -1363,14 +1363,14 @@ abstract public class ModelCollection extends BondCollection {
 
   protected void clearDataFrameReference(int modelIndex) {
     for (int i = 0; i < modelCount; i++) { 
-      Hashtable<String, Integer> df = models[i].dataFrames;
+      Map<String, Integer> df = models[i].dataFrames;
       if (df == null) {
         continue;
       }
       Object key;
-      Enumeration<String> e = df.keys();
-      while (e.hasMoreElements()) {
-        if ((df.get(key = e.nextElement())).intValue() == modelIndex) {
+      Iterator<String> e = df.keySet().iterator();
+      while (e.hasNext()) {
+        if ((df.get(key = e.next())).intValue() == modelIndex) {
           df.remove(key);
         }
       }
@@ -1448,8 +1448,8 @@ abstract public class ModelCollection extends BondCollection {
     return "no header information found";
   }
 
-  public Hashtable<String, Object> getModelInfo(BitSet bsModels) {
-    Hashtable<String, Object> info = new Hashtable<String, Object>();
+  public Map<String, Object> getModelInfo(BitSet bsModels) {
+    Map<String, Object> info = new Hashtable<String, Object>();
     info.put("modelSetName", modelSetName);
     info.put("modelCount", Integer.valueOf(modelCount));
     info.put("modelSetHasVibrationVectors", Boolean
@@ -1459,11 +1459,11 @@ abstract public class ModelCollection extends BondCollection {
     }
     info.put("modelCountSelected", Integer.valueOf(BitSetUtil.cardinalityOf(bsModels)));
     info.put("modelsSelected", bsModels);
-    List<Hashtable<String, Object>> vModels = new ArrayList<Hashtable<String,Object>>();
+    List<Map<String, Object>> vModels = new ArrayList<Map<String,Object>>();
     getMolecules();
     
     for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1)) {
-      Hashtable<String, Object> model = new Hashtable<String, Object>();
+      Map<String, Object> model = new Hashtable<String, Object>();
       model.put("_ipt", Integer.valueOf(i));
       model.put("num", Integer.valueOf(getModelNumber(i)));
       model.put("file_model", getModelNumberDotted(i));
@@ -1542,7 +1542,7 @@ abstract public class ModelCollection extends BondCollection {
   public String getSymmetryOperation(int modelIndex, String spaceGroup, 
                                      int symOp, Point3f pt1, Point3f pt2, 
                                      String drawID, boolean labelOnly) {
-    Hashtable<String, Object> sginfo = getSpaceGroupInfo(modelIndex, spaceGroup, symOp, pt1, pt2, drawID); 
+    Map<String, Object> sginfo = getSpaceGroupInfo(modelIndex, spaceGroup, symOp, pt1, pt2, drawID); 
     if (sginfo == null)
       return "";
     Object[][] infolist = (Object[][]) sginfo.get("operations");
@@ -1602,18 +1602,18 @@ abstract public class ModelCollection extends BondCollection {
   ///////// molecules /////////
 
 
-  public List<Hashtable<String, Object>> getMoleculeInfo(BitSet bsAtoms) {
+  public List<Map<String, Object>> getMoleculeInfo(BitSet bsAtoms) {
     if (moleculeCount == 0) {
       getMolecules();
     }
-    List<Hashtable<String, Object>> V = new ArrayList<Hashtable<String,Object>>();
+    List<Map<String, Object>> V = new ArrayList<Map<String,Object>>();
     BitSet bsTemp = new BitSet();
     for (int i = 0; i < moleculeCount; i++) {
       bsTemp = BitSetUtil.copy(bsAtoms);
       JmolMolecule m = molecules[i];
       bsTemp.and(m.atomList);
       if (bsTemp.length() > 0) {
-        Hashtable<String, Object> info = new Hashtable<String, Object>();
+        Map<String, Object> info = new Hashtable<String, Object>();
         info.put("number", Integer.valueOf(m.moleculeIndex + 1)); //for now
         info.put("modelNumber", getModelNumberDotted(m.modelIndex));
         info.put("numberInModel", Integer.valueOf(m.indexInModel + 1));
@@ -3173,15 +3173,15 @@ abstract public class ModelCollection extends BondCollection {
     return info;
   }
 
-  public List<Hashtable<String, Object>> getAllAtomInfo(BitSet bs) {
-    List<Hashtable<String, Object>> V = new ArrayList<Hashtable<String,Object>>();
+  public List<Map<String, Object>> getAllAtomInfo(BitSet bs) {
+    List<Map<String, Object>> V = new ArrayList<Map<String,Object>>();
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       V.add(getAtomInfoLong(i));
     }
     return V;
   }
 
-  public void getAtomIdentityInfo(int i, Hashtable<String, Object> info) {
+  public void getAtomIdentityInfo(int i, Map<String, Object> info) {
     info.put("_ipt", Integer.valueOf(i));
     info.put("atomIndex", Integer.valueOf(i));
     info.put("atomno", Integer.valueOf(getAtomNumber(i)));
@@ -3189,9 +3189,9 @@ abstract public class ModelCollection extends BondCollection {
     info.put("sym", getElementSymbol(i));
   }
   
-  private Hashtable<String, Object> getAtomInfoLong(int i) {
+  private Map<String, Object> getAtomInfoLong(int i) {
     Atom atom = atoms[i];
-    Hashtable<String, Object> info = new Hashtable<String, Object>();
+    Map<String, Object> info = new Hashtable<String, Object>();
     getAtomIdentityInfo(i, info);
     info.put("element", getElementName(i));
     info.put("elemno", Integer.valueOf(getElementNumber(i)));
@@ -3245,8 +3245,8 @@ abstract public class ModelCollection extends BondCollection {
     return info;
   }  
 
-  public List<Hashtable<String, Object>> getAllBondInfo(BitSet bs) {
-    List<Hashtable<String, Object>> V = new ArrayList<Hashtable<String,Object>>();
+  public List<Map<String, Object>> getAllBondInfo(BitSet bs) {
+    List<Map<String, Object>> V = new ArrayList<Map<String,Object>>();
     int thisAtom = (bs.cardinality() == 1 ? bs.nextSetBit(0) : -1);
     for (int i = 0; i < bondCount; i++) {
       if (thisAtom >= 0? (bonds[i].atom1.index == thisAtom || bonds[i].atom2.index == thisAtom) 
@@ -3257,15 +3257,15 @@ abstract public class ModelCollection extends BondCollection {
     return V;
   }
 
-  private Hashtable<String, Object> getBondInfo(int i) {
+  private Map<String, Object> getBondInfo(int i) {
     Bond bond = bonds[i];
     Atom atom1 = bond.atom1;
     Atom atom2 = bond.atom2;
-    Hashtable<String, Object> info = new Hashtable<String, Object>();
+    Map<String, Object> info = new Hashtable<String, Object>();
     info.put("_bpt", Integer.valueOf(i));
-    Hashtable<String, Object> infoA = new Hashtable<String, Object>();
+    Map<String, Object> infoA = new Hashtable<String, Object>();
     getAtomIdentityInfo(atom1.index, infoA);
-    Hashtable<String, Object> infoB = new Hashtable<String, Object>();
+    Map<String, Object> infoB = new Hashtable<String, Object>();
     getAtomIdentityInfo(atom2.index, infoB);
     info.put("atom1",infoA);
     info.put("atom2",infoB);
@@ -3283,12 +3283,12 @@ abstract public class ModelCollection extends BondCollection {
    return info;
   }  
   
-  public Hashtable<String, List<Hashtable<String, Object>>> getAllChainInfo(BitSet bs) {
-    Hashtable<String, List<Hashtable<String, Object>>> finalInfo = new Hashtable<String, List<Hashtable<String,Object>>>();
-    List<Hashtable<String, Object>> modelVector = new ArrayList<Hashtable<String,Object>>();
+  public Map<String, List<Map<String, Object>>> getAllChainInfo(BitSet bs) {
+    Map<String, List<Map<String, Object>>> finalInfo = new Hashtable<String, List<Map<String,Object>>>();
+    List<Map<String, Object>> modelVector = new ArrayList<Map<String,Object>>();
     for (int i = 0; i < modelCount; ++i) {
-      Hashtable<String, Object> modelInfo = new Hashtable<String, Object>();
-      List<Hashtable<String, List<Hashtable<String, Object>>>> info = getChainInfo(i, bs);
+      Map<String, Object> modelInfo = new Hashtable<String, Object>();
+      List<Map<String, List<Map<String, Object>>>> info = getChainInfo(i, bs);
       if (info.size() > 0) {
         modelInfo.put("modelIndex", Integer.valueOf(i));
         modelInfo.put("chains", info);
@@ -3299,20 +3299,20 @@ abstract public class ModelCollection extends BondCollection {
     return finalInfo;
   }
 
-  private List<Hashtable<String, List<Hashtable<String, Object>>>> getChainInfo(int modelIndex, BitSet bs) {
+  private List<Map<String, List<Map<String, Object>>>> getChainInfo(int modelIndex, BitSet bs) {
     Model model = models[modelIndex];
     int nChains = model.getChainCount(true);
-    List<Hashtable<String, List<Hashtable<String, Object>>>> infoChains = new ArrayList<Hashtable<String,List<Hashtable<String,Object>>>>();
+    List<Map<String, List<Map<String, Object>>>> infoChains = new ArrayList<Map<String,List<Map<String,Object>>>>();
     for(int i = 0; i < nChains; i++) {
       Chain chain = model.getChain(i);
-      List<Hashtable<String, Object>> infoChain = new ArrayList<Hashtable<String,Object>>();
+      List<Map<String, Object>> infoChain = new ArrayList<Map<String,Object>>();
       int nGroups = chain.getGroupCount();
-      Hashtable<String, List<Hashtable<String, Object>>> arrayName = new Hashtable<String, List<Hashtable<String,Object>>>();
+      Map<String, List<Map<String, Object>>> arrayName = new Hashtable<String, List<Map<String,Object>>>();
       for (int igroup = 0; igroup < nGroups; igroup++) {
         Group group = chain.getGroup(igroup);
         if (!bs.get(group.firstAtomIndex)) 
           continue;
-        Hashtable<String, Object> infoGroup = new Hashtable<String, Object>();
+        Map<String, Object> infoGroup = new Hashtable<String, Object>();
         infoGroup.put("groupIndex", Integer.valueOf(igroup));
         infoGroup.put("groupID", Short.valueOf(group.getGroupID()));
         String s = group.getSeqcodeString();
@@ -3333,15 +3333,15 @@ abstract public class ModelCollection extends BondCollection {
     return infoChains;
   }  
   
-  public Hashtable<String, List<Hashtable<String, Object>>> getAllPolymerInfo(BitSet bs) {
-    Hashtable<String, List<Hashtable<String, Object>>> finalInfo = new Hashtable<String, List<Hashtable<String,Object>>>();
-    List<Hashtable<String, Object>> modelVector = new ArrayList<Hashtable<String,Object>>();
+  public Map<String, List<Map<String, Object>>> getAllPolymerInfo(BitSet bs) {
+    Map<String, List<Map<String, Object>>> finalInfo = new Hashtable<String, List<Map<String,Object>>>();
+    List<Map<String, Object>> modelVector = new ArrayList<Map<String,Object>>();
     for (int i = 0; i < modelCount; ++i) {
-      Hashtable<String, Object> modelInfo = new Hashtable<String, Object>();
-      List<Hashtable<String, Object>> info = new ArrayList<Hashtable<String, Object>>();
+      Map<String, Object> modelInfo = new Hashtable<String, Object>();
+      List<Map<String, Object>> info = new ArrayList<Map<String, Object>>();
       int polymerCount = models[i].getBioPolymerCount();
       for (int ip = 0; ip < polymerCount; ip++) {
-        Hashtable<String, Object> polyInfo = models[i].getBioPolymer(ip).getPolymerInfo(bs); 
+        Map<String, Object> polyInfo = models[i].getBioPolymer(ip).getPolymerInfo(bs); 
         if (! polyInfo.isEmpty())
           info.add(polyInfo);
       }
@@ -3367,10 +3367,10 @@ abstract public class ModelCollection extends BondCollection {
   private SymmetryInterface symTemp;
 
   @SuppressWarnings("unchecked")
-  public Hashtable<String, Object> getSpaceGroupInfo(int modelIndex, String spaceGroup, 
+  public Map<String, Object> getSpaceGroupInfo(int modelIndex, String spaceGroup, 
                                      int symOp, Point3f pt1, Point3f pt2, String drawID) {
     String strOperations = null;
-    Hashtable<String, Object> info = null;
+    Map<String, Object> info = null;
     SymmetryInterface cellInfo = null;
     Object[][] infolist = null;
     if (spaceGroup == null) {
@@ -3390,7 +3390,7 @@ abstract public class ModelCollection extends BondCollection {
         return info;
       }
       if (pt1 == null && drawID == null && symOp != 0) {
-        info = (Hashtable<String, Object>) getModelAuxiliaryInfo(modelIndex, "spaceGroupInfo");
+        info = (Map<String, Object>) getModelAuxiliaryInfo(modelIndex, "spaceGroupInfo");
       }
       if (info != null) {
         return info;
@@ -3633,17 +3633,17 @@ abstract public class ModelCollection extends BondCollection {
       if (modelIndex >= 0 && m != modelIndex) {
         continue;
       }
-      Hashtable<String, Object> moData = (Hashtable<String, Object>) viewer.getModelAuxiliaryInfo(m, "moData");
+      Map<String, Object> moData = (Map<String, Object>) viewer.getModelAuxiliaryInfo(m, "moData");
       if (moData == null) {
         continue;
       }
-      List<Hashtable<String, Object>> mos = (List<Hashtable<String, Object>>) (moData.get("mos"));
+      List<Map<String, Object>> mos = (List<Map<String, Object>>) (moData.get("mos"));
       int nOrb = (mos == null ? 0 : mos.size());
       if (nOrb == 0) {
         continue;
       }
       for (int i = nOrb; --i >= 0; ) {
-        Hashtable<String, Object> mo = mos.get(i);
+        Map<String, Object> mo = mos.get(i);
         String type = (String) mo.get("type");
         if (type == null) {
           type = "";

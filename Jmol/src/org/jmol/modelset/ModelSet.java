@@ -40,6 +40,7 @@ import org.jmol.shape.Shape;
 import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
@@ -744,7 +745,7 @@ abstract public class ModelSet extends ModelCollection {
   public Object getFileData(int modelIndex) {
     if (modelIndex < 0)
       return "";
-    Hashtable<String, Object> fileData = (Hashtable<String, Object>) getModelAuxiliaryInfo(modelIndex, "fileData");
+    Map<String, Object> fileData = (Map<String, Object>) getModelAuxiliaryInfo(modelIndex, "fileData");
     if (fileData != null)
       return fileData;
     if (!getModelAuxiliaryInfoBoolean(modelIndex, "isCIF"))

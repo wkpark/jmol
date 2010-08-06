@@ -64,6 +64,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 public class FileManager {
 
@@ -78,7 +79,7 @@ public class FileManager {
     fullPathName = fileName = nameAsGiven = viewer.getZapName();
   }
 
-  private void setLoadState(Hashtable<String, Object> htParams) {
+  private void setLoadState(Map<String, Object> htParams) {
     if (viewer.getPreserveState()) {
       htParams.put("loadState", viewer.getLoadState());
     }
@@ -202,7 +203,7 @@ public class FileManager {
    * was more generalizable or understandable. 
    * 
    */
-  Object createAtomSetCollectionFromFile(String name, Hashtable<String, Object> htParams,
+  Object createAtomSetCollectionFromFile(String name, Map<String, Object> htParams,
                                     boolean isAppend) {
     if (htParams.get("atomDataOnly") == null) {
       setLoadState(htParams);
@@ -230,7 +231,7 @@ public class FileManager {
   }
 
   Object createAtomSetCollectionFromFiles(String[] fileNames,
-                                     Hashtable<String, Object> htParams,
+                                     Map<String, Object> htParams,
                                      boolean isAppend) {
     setLoadState(htParams);
     String[] fullPathNames = new String[fileNames.length];
@@ -256,7 +257,7 @@ public class FileManager {
   }
 
   Object createAtomSetCollectionFromString(String strModel, StringBuffer loadScript,
-                                           Hashtable<String, Object> htParams,
+                                           Map<String, Object> htParams,
                                            boolean isAppend,
                                            boolean isLoadVariable) {
     if (!isLoadVariable)
@@ -275,7 +276,7 @@ public class FileManager {
 
   Object createAtomSeCollectionFromStrings(String[] arrayModels,
                                            StringBuffer loadScript,
-                                           Hashtable<String, Object> htParams, boolean isAppend) {
+                                           Map<String, Object> htParams, boolean isAppend) {
     if (!htParams.containsKey("isData")) {
       String oldSep = "\"" + viewer.getDataSeparator() + "\"";
       String tag = "\"" + (isAppend ? "append" : "model") + " inline\"";
@@ -307,7 +308,7 @@ public class FileManager {
 
   @SuppressWarnings("unchecked")
   Object createAtomSeCollectionFromArrayData(List<Object> arrayData,
-                                             Hashtable<String, Object> htParams,
+                                             Map<String, Object> htParams,
                                              boolean isAppend) {
     // NO STATE SCRIPT -- HERE WE ARE TRYING TO CONSERVE SPACE
     Logger.info("FileManager.getAtomSetCollectionFromArrayData(Vector)");
@@ -330,7 +331,7 @@ public class FileManager {
     return filesReader.atomSetCollection;
   }
 
-  Object createAtomSetCollectionFromDOM(Object DOMNode, Hashtable<String, Object> htParams) {
+  Object createAtomSetCollectionFromDOM(Object DOMNode, Map<String, Object> htParams) {
     DOMReader aDOMReader = new DOMReader(DOMNode, htParams);
     aDOMReader.run();
     return aDOMReader.atomSetCollection;
@@ -346,7 +347,7 @@ public class FileManager {
    * @return fileData
    */
   Object createAtomSetCollectionFromReader(String fullPathName, String name,
-                                      Reader reader, Hashtable<String, Object> htParams) {
+                                      Reader reader, Map<String, Object> htParams) {
     FileReader fileReader = new FileReader(name, fullPathName, name,
         null, new BufferedReader(reader), htParams, false);
     fileReader.run();
@@ -1188,9 +1189,9 @@ public class FileManager {
   private class DOMReader {
     private Object aDOMNode;
     Object atomSetCollection;
-    Hashtable<String, Object> htParams;
+    Map<String, Object> htParams;
 
-    DOMReader(Object DOMNode, Hashtable<String, Object> htParams) {
+    DOMReader(Object DOMNode, Map<String, Object> htParams) {
       this.aDOMNode = DOMNode;
       this.htParams = htParams;
     }
@@ -1212,11 +1213,11 @@ public class FileManager {
     private String fileTypeIn;
     Object atomSetCollection;
     private BufferedReader reader;
-    private Hashtable<String, Object> htParams;
+    private Map<String, Object> htParams;
     private boolean isAppend;
 
     FileReader(String fileName, String fullPathName, String nameAsGiven, String type,
-        BufferedReader reader, Hashtable<String, Object> htParams, boolean isAppend) {
+        BufferedReader reader, Map<String, Object> htParams, boolean isAppend) {
       fileNameIn = fileName;
       fullPathNameIn = fullPathName;
       nameAsGivenIn = nameAsGiven;
@@ -1311,11 +1312,11 @@ public class FileManager {
     private String[] fileTypesIn;
     Object atomSetCollection;
     private DataReader[] stringReaders;
-    private Hashtable<String, Object> htParams;
+    private Map<String, Object> htParams;
     private boolean isAppend;
 
     FilesReader(String[] name, String[] nameAsGiven, String[] types,
-        DataReader[] readers, Hashtable<String, Object> htParams, boolean isAppend) {
+        DataReader[] readers, Map<String, Object> htParams, boolean isAppend) {
       fullPathNamesIn = name;
       namesAsGivenIn = nameAsGiven;
       fileTypesIn = types;

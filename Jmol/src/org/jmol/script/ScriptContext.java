@@ -25,7 +25,7 @@
 
 package org.jmol.script;
 
-import java.util.Hashtable;
+import java.util.Map;
 
 public class ScriptContext {
   /**
@@ -46,7 +46,7 @@ public class ScriptContext {
   public int lineEnd = Integer.MAX_VALUE;
   public int iToken;
   public StringBuffer outputBuffer;
-  public Hashtable<String, ScriptVariable> contextVariables;
+  public Map<String, ScriptVariable> contextVariables;
   public boolean isStateScript;
   public String errorMessage;
   public String errorMessageUntranslated;

@@ -168,7 +168,7 @@ class ScriptFlowContext {
     return f;
   }
   
-  boolean checkForceEndIf(int pt) {
+  boolean checkForceEndIf() {
     boolean test = forceEndIf 
         && ptCommand < this.compiler.iCommand 
         && ptLine == this.compiler.lineCurrent;

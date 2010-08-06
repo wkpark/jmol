@@ -215,7 +215,9 @@ public class LabelToken {
     this.pt = pt;
   }
 
-  public static LabelToken[] compile(Viewer viewer, String strFormat, char chAtom, Hashtable htValues) {
+  public static LabelToken[] compile(Viewer viewer, String strFormat,
+                                     char chAtom,
+                                     Hashtable<String, Object> htValues) {
     if (strFormat.indexOf("%") < 0 || strFormat.length() < 2)
       return new LabelToken[] { new LabelToken(strFormat) };
     int n = 0;
@@ -238,7 +240,9 @@ public class LabelToken {
     return tokens;
   }
 
-  private static int setToken(Viewer viewer, String strFormat, LabelToken lt, int cch, int chAtom, Hashtable htValues) {
+  private static int setToken(Viewer viewer, String strFormat, LabelToken lt,
+                              int cch, int chAtom,
+                              Hashtable<String, Object> htValues) {
     int ich = lt.pt + 1;
     char ch;
     if (strFormat.charAt(ich) == '-') {
@@ -269,9 +273,9 @@ public class LabelToken {
       }
     }
     if (htValues != null) {
-      Enumeration keys = htValues.keys();
+      Enumeration<String> keys = htValues.keys();
       while (keys.hasMoreElements()) {
-        String key = (String) keys.nextElement();
+        String key = keys.nextElement();
         if (strFormat.indexOf(key) == ich) {
           lt.key = key;
           return ich + key.length();
@@ -292,7 +296,7 @@ public class LabelToken {
       if (propertyName.startsWith("property_")) {
         lt.text = propertyName;
         lt.tok = Token.data;
-        lt.data = viewer.getDataFloat(lt.text);   
+        lt.data = viewer.getDataFloat(lt.text);
       } else {
         Token token = Token.getTokenFromName(propertyName);
         if (token != null && isLabelPropertyTok(token.tok))
@@ -312,9 +316,9 @@ public class LabelToken {
       ich = ichCloseBracket + 1;
       break;
     default:
-      int i, i1;
-      if (ich < cch 
-          && (i = twoCharLabelTokenParams.indexOf(ch)) >= 0
+      int i,
+      i1;
+      if (ich < cch && (i = twoCharLabelTokenParams.indexOf(ch)) >= 0
           && (i1 = "xyz".indexOf(strFormat.charAt(ich))) >= 0) {
         lt.tok = twoCharLabelTokenIds[i * 3 + i1];
         ich++;
@@ -323,7 +327,8 @@ public class LabelToken {
       }
     }
     lt.text = strFormat.substring(lt.pt, ich);
-    if (chAtom != '\0' && ich < cch && Character.isDigit(ch = strFormat.charAt(ich))) {
+    if (chAtom != '\0' && ich < cch
+        && Character.isDigit(ch = strFormat.charAt(ich))) {
       ich++;
       lt.ch1 = ch;
       if (ch != chAtom && chAtom != '\1')
@@ -464,8 +469,8 @@ public class LabelToken {
   }
 
   
-  public static Hashtable getBondLabelValues() {
-    Hashtable htValues = new Hashtable();
+  public static Hashtable<String, Object> getBondLabelValues() {
+    Hashtable<String, Object> htValues = new Hashtable<String, Object>();
     htValues.put("#", "");
     htValues.put("ORDER", "");
     htValues.put("TYPE", "");
@@ -475,7 +480,7 @@ public class LabelToken {
   }
 
   public static String formatLabel(Viewer viewer, Bond bond,
-                                   LabelToken[] tokens, Hashtable values,
+                                   LabelToken[] tokens, Hashtable<String, Object> values,
                                    int[] indices) {
     values.put("#", "" + (bond.index + 1));
     values.put("ORDER", "" + bond.getOrderNumberAsString());
@@ -490,7 +495,7 @@ public class LabelToken {
 
   public static String formatLabel(Viewer viewer, Measurement measurement,
                                    String label, float value, String units) {
-    Hashtable htValues = new Hashtable();
+    Hashtable<String, Object> htValues = new Hashtable<String, Object>();
     htValues.put("#", "" + (measurement.getIndex() + 1));
     htValues.put("VALUE", new Float(value));
     htValues.put("UNITS", units);
@@ -524,7 +529,7 @@ public class LabelToken {
     }
   }
 
-  public static void setValues(LabelToken[] tokens, Hashtable values) {
+  public static void setValues(LabelToken[] tokens, Hashtable<String, Object> values) {
     for (int i = 0; i < tokens.length; i++) {
       LabelToken lt = tokens[i];
       if (lt == null)

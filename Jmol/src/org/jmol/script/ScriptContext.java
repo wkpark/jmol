@@ -46,7 +46,7 @@ public class ScriptContext {
   public int lineEnd = Integer.MAX_VALUE;
   public int iToken;
   public StringBuffer outputBuffer;
-  public Hashtable contextVariables;
+  public Hashtable<String, ScriptVariable> contextVariables;
   public boolean isStateScript;
   public String errorMessage;
   public String errorMessageUntranslated;

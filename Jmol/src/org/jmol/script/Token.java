@@ -1342,7 +1342,7 @@ public class Token {
           && !tokAttr(tok, mathproperty) ? tok : nada);
   }
 
-  public static String completeCommand(Hashtable map, boolean isSet, 
+  public static String completeCommand(Hashtable<String, Token> map, boolean isSet, 
                                        boolean asCommand, 
                                        String str, int n) {
     if (map == null)
@@ -1350,11 +1350,11 @@ public class Token {
     else
       asCommand = false;
     List<String> v = new ArrayList<String>();
-    Enumeration e = map.keys();
+    Enumeration<String> e = map.keys();
     String name;
     str = str.toLowerCase();
     while (e.hasMoreElements()) {
-      name = (String) e.nextElement();
+      name = e.nextElement();
       if (!name.startsWith(str))
         continue;
       int tok = getTokFromName(name);

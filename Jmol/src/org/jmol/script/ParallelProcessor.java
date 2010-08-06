@@ -128,6 +128,12 @@ public class ParallelProcessor extends ScriptFunction {
     Object processLock;
     boolean inParallel;
     
+    /**
+     * 
+     * @param process
+     * @param lock
+     * @param inParallel  IGNORED
+     */
     public RunProcess(Process process, Object lock, boolean inParallel) {
       this.process = process;
       processLock = lock;

@@ -104,9 +104,8 @@ public class ScriptVariable extends Token {
         || x instanceof Point4f    // stored as point4f
         || x instanceof Quaternion // stored as point4f
         || x instanceof String
-
-        || x instanceof Hashtable  // stored as array
-        || x instanceof List       // stored as list
+        || x instanceof Hashtable<?, ?>  // stored as Hashtable<String, ScriptVariable>
+        || x instanceof List<?>    // stored as list
         || x instanceof double[]   // stored as list
         || x instanceof float[]    // stored as list
         || x instanceof Float[]    // stored as list
@@ -136,6 +135,7 @@ public class ScriptVariable extends Token {
     return "?";
   }
 
+  @SuppressWarnings("unchecked")
   public static int sizeOf(Token x) {
     switch (x == null ? nada : x.tok) {
     case bitset:
@@ -161,7 +161,7 @@ public class ScriptVariable extends Token {
       return x.intValue == Integer.MAX_VALUE ? ((String[]) x.value).length
           : sizeOf(selectItem(x));
     case hash:
-      return ((Hashtable) x.value).size();
+      return ((Hashtable<String, ScriptVariable>) x.value).size();
     default:
       return 0;
     }
@@ -176,6 +176,7 @@ public class ScriptVariable extends Token {
    * @return  a ScriptVariable of the input type, or if x is null, then a new ScriptVariable,
    *     or, if the type is not found, null
    */
+  @SuppressWarnings("unchecked")
   public static ScriptVariable getVariable(Object x) {
     if (x == null)
       return new ScriptVariable();
@@ -272,13 +273,14 @@ public class ScriptVariable extends Token {
     return null;
   }
 
+  @SuppressWarnings("unchecked")
   public ScriptVariable set(ScriptVariable v) {
     index = v.index;
     intValue = v.intValue;
     tok = v.tok;
     switch (tok) {
     case hash:
-      value = new Hashtable((Hashtable) v.value);
+      value = new Hashtable<String, ScriptVariable>((Hashtable<String, ScriptVariable>) v.value);
       break;
     case list:
       int n = ((String[])v.value).length;
@@ -490,6 +492,7 @@ public class ScriptVariable extends Token {
     }
   }
 
+  @SuppressWarnings("unchecked")
   public static String sValue(Token x) {
     if (x == null)
       return "";
@@ -524,10 +527,10 @@ public class ScriptVariable extends Token {
       return sb.toString();
     case hash:
       StringBuffer sbh = new StringBuffer();
-      Hashtable ht = (Hashtable) x.value;
-      Enumeration e = ht.keys();
+      Hashtable<String, ScriptVariable> ht = (Hashtable<String, ScriptVariable>) x.value;
+      Enumeration<String> e = ht.keys();
       while (e.hasMoreElements()) {
-        String key = (String) e.nextElement();
+        String key = e.nextElement();
         sbh.append(key).append("\t:\t").append(
             ScriptVariable.sValue(ScriptVariable.getVariable(ht.get(key))))
             .append("\n");

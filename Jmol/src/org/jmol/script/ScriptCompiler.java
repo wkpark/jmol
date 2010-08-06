@@ -74,7 +74,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
 
   // returns:
   
-  private Hashtable contextVariables;
+  private Hashtable<String, ScriptVariable> contextVariables;
   private Token[][] aatokenCompiled;
   private short[] lineNumbers;
   private int[][] lineIndices;
@@ -149,7 +149,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     }
     if (thisFunction == null) {
       if (contextVariables == null)
-        contextVariables = new Hashtable();
+        contextVariables = new Hashtable<String, ScriptVariable>();
       addContextVariable(contextVariables, ident);
     } else {
       thisFunction.addVariable(ident, false);
@@ -687,7 +687,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
 
     }
     if (endOfLine) {
-      if (flowContext != null && flowContext.checkForceEndIf(1)) {
+      if (flowContext != null && flowContext.checkForceEndIf()) {
         forceFlowEnd(flowContext.token);
         isEndOfCommand = true;
         cchToken = 0;

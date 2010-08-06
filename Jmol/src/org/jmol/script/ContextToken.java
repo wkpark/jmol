@@ -26,7 +26,7 @@ package org.jmol.script;
 import java.util.Hashtable;
 
 class ContextToken extends Token {
-  Hashtable contextVariables;
+  Hashtable<String, ScriptVariable> contextVariables;
 
   ContextToken(int tok, int intValue, Object value) {
     super(tok, intValue, value);
@@ -41,7 +41,7 @@ class ContextToken extends Token {
   String name0 = null;
   void addName(String name) {
     if (contextVariables == null)
-      contextVariables = new Hashtable();
+      contextVariables = new Hashtable<String, ScriptVariable>();
     ScriptCompiler.addContextVariable(contextVariables, name);
   }
   

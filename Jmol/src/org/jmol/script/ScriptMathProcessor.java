@@ -107,7 +107,7 @@ class ScriptMathProcessor {
       Logger.info("initialize RPN");
   }
 
-  ScriptVariable getResult(boolean allowUnderflow, String key)
+  ScriptVariable getResult(boolean allowUnderflow)
       throws ScriptException {
     boolean isOK = true;
     ScriptVariable x = null;
@@ -560,6 +560,7 @@ class ScriptMathProcessor {
     return true;
   }
 
+  @SuppressWarnings("unchecked")
   private boolean doBitsetSelect() {
     if (xPt < 0 || xPt == 0 && !isArrayItem) {
       return false;
@@ -567,7 +568,7 @@ class ScriptMathProcessor {
     ScriptVariable var1 = xStack[xPt--];
     ScriptVariable var = xStack[xPt];
     if (var.tok == Token.hash) {
-      ScriptVariable v = (ScriptVariable) ((Hashtable) var.value).get(ScriptVariable.sValue(var1));
+      ScriptVariable v = ((Hashtable<String, ScriptVariable>) var.value).get(ScriptVariable.sValue(var1));
       if (v == null)
         xStack[xPt] = ScriptVariable.getVariable("");
       else
@@ -658,7 +659,7 @@ class ScriptMathProcessor {
     case Token.row:
       return evaluateRowCol(args, tok);
     case Token.compare:
-      return evaluateCompare(args, tok);
+      return evaluateCompare(args);
     case Token.connected:
       return evaluateConnected(args);
     case Token.cross:
@@ -722,7 +723,7 @@ class ScriptMathProcessor {
     return false;
   }
 
-  private boolean evaluateCompare(ScriptVariable[] args, int tok)
+  private boolean evaluateCompare(ScriptVariable[] args)
       throws ScriptException {
     // compare({bitset} or [{positions}],{bitset} or [{positions}] [,"stddev"])
     // compare({bitset},{bitset}[,"SMARTS"|"SMILES"],smilesString [,"stddev"])
@@ -2248,6 +2249,7 @@ class ScriptMathProcessor {
     return addX(bs);
   }
 
+  @SuppressWarnings("unchecked")
   private boolean operate() throws ScriptException {
 
     Token op = oStack[oPt--];
@@ -2318,13 +2320,14 @@ class ScriptMathProcessor {
       case Token.keys:
         if (x2.tok != Token.hash)
           return addX("");
-        Enumeration e = ((Hashtable)x2.value).keys();
-        List<Object> v = new ArrayList<Object>();
+        Enumeration<String> e = ((Hashtable<String, ScriptVariable>) x2.value)
+            .keys();
+        List<String> v = new ArrayList<String>();
         while (e.hasMoreElements())
           v.add(e.nextElement());
         String[] keys = new String[v.size()];
         for (int i = 0; i < keys.length; i++)
-          keys[i] = (String) v.get(i);
+          keys[i] = v.get(i);
         return addX(keys);
       case Token.lines:
         switch (x2.tok) {
@@ -2509,7 +2512,8 @@ class ScriptMathProcessor {
       default:
         return addX(ScriptVariable.fValue(x1) - ScriptVariable.fValue(x2));
       case Token.hash:
-        Hashtable ht = new Hashtable((Hashtable) x1.value);
+        Hashtable<String, ScriptVariable> ht = new Hashtable<String, ScriptVariable>(
+            (Hashtable<String, ScriptVariable>) x1.value);
         ht.remove(ScriptVariable.sValue(x2));
         return addX(ScriptVariable.getVariable(ht));
       case Token.matrix3f:
@@ -2805,7 +2809,7 @@ class ScriptMathProcessor {
           return addX(pt4);
         }
       case Token.matrix4f:
-        Matrix4f m4 = (Matrix4f) x1.value; 
+        Matrix4f m4 = (Matrix4f) x1.value;
         switch (n) {
         case 1:
           Matrix3f m3 = new Matrix3f();

@@ -400,7 +400,7 @@ abstract class ScriptCompilationTokenParser {
         return false;
       if (!addNextTokenIf(Token.rightparen))
         return error(ERROR_tokenExpected, ")");
-      return checkForItemSelector(true, true);
+      return checkForItemSelector(true);
     case Token.leftbrace:
       return checkForCoordinate(isMathExpressionCommand);
     default:
@@ -507,10 +507,10 @@ abstract class ScriptCompilationTokenParser {
     } else {
       addNextToken();
     }
-    return checkForItemSelector(isHash, !isHash);
+    return checkForItemSelector(!isHash);
   }
   
-  private boolean checkForItemSelector(boolean allowHash, boolean allowNumeric) {
+  private boolean checkForItemSelector(boolean allowNumeric) {
     // {x[1]}  @{x}[1][3]  (atomno=3)[2][5]
     int tok;
     if ((tok = tokAt(itokenInfix + 1)) == Token.leftsquare
@@ -848,7 +848,7 @@ abstract class ScriptCompilationTokenParser {
     // we allow @x[1], which compiles as {@x}[1], not @{x[1]}
     // otherwise [1] gets read as a general atom name selector
     if (!addSubstituteTokenIf(Token.leftbrace, Token.tokenExpressionBegin))
-      return addNextToken() && checkForItemSelector(true, true);
+      return addNextToken() && checkForItemSelector(true);
     while (moreTokens() && !tokPeek(Token.rightbrace)) {
       if (tokPeek(Token.leftbrace)) {
         if (!checkForCoordinate(true))
@@ -858,7 +858,7 @@ abstract class ScriptCompilationTokenParser {
       }
     }
     return addSubstituteTokenIf(Token.rightbrace, Token.tokenExpressionEnd)
-        && checkForItemSelector(true, true);
+        && checkForItemSelector(true);
   }
 
   private boolean residueSpecCodeGenerated;

@@ -592,6 +592,7 @@ public class ScriptEvaluator {
    * @throws ScriptException
    *           errors are thrown directly to the Eval error system.
    */
+  @SuppressWarnings("unchecked")
   private Object parameterExpression(int pt, int ptMax, String key,
                                      boolean ignoreComma, boolean asVector,
                                      int ptAtom, boolean isArrayItem,
@@ -709,7 +710,7 @@ public class ScriptEvaluator {
             : null);
         ScriptVariable t = null;
         if (localVars == null)
-          localVars = new Hashtable();
+          localVars = new Hashtable<String, ScriptVariable>();
         bsX.set(0);
         localVars.put(dummy, t = ScriptVariable.getVariableSelected(0, bsX)
             .setName(dummy));
@@ -941,7 +942,7 @@ public class ScriptEvaluator {
           rpn.addX(v);
       }
     }
-    ScriptVariable result = rpn.getResult(false, key);
+    ScriptVariable result = rpn.getResult(false);
     if (result == null) {
       if (!isSyntaxCheck)
         rpn.dumpStacks("null result");
@@ -971,6 +972,7 @@ public class ScriptEvaluator {
     }
   }
 
+  @SuppressWarnings("unchecked")
   private Hashtable<String, Object> getHash(int i) throws ScriptException {
     Hashtable<String, Object> ht = new Hashtable<String, Object>();
     for (i = i + 1; i < statementLength; i++) {
@@ -979,7 +981,7 @@ public class ScriptEvaluator {
       String key = stringParameter(i++);
       if (tokAt(i++) != Token.colon)
         error(ERROR_invalidArgument);
-      List v = (List) 
+      List<ScriptVariable>v = (List<ScriptVariable>) 
           parameterExpression(i, 0, null, false, true, -1, false, null, null);
       ht.put(key, v.get(0));
       i = iToken;
@@ -1023,7 +1025,7 @@ public class ScriptEvaluator {
     if (indices == null && label != null && label.indexOf("%D") > 0)
       indices = viewer.getAtomIndices(bs);
     boolean asIdentity = (label == null || label.length() == 0);
-    Hashtable htValues = (isAtoms || asIdentity ? null : LabelToken
+    Hashtable<String, Object> htValues = (isAtoms || asIdentity ? null : LabelToken
         .getBondLabelValues());
     LabelToken[] tokens = (asIdentity ? null : isAtoms ? LabelToken.compile(
         viewer, label, '\0', null) : LabelToken.compile(viewer, label, '\1',
@@ -1157,7 +1159,7 @@ public class ScriptEvaluator {
 
     BitSet bsNew = null;
     String userFunction = null;
-    List params = null;
+    List<ScriptVariable> params = null;
     BitSet bsAtom = null;
     ScriptVariable tokenAtom = null;
     Point3f ptT = null;
@@ -1200,7 +1202,7 @@ public class ScriptEvaluator {
       return "";
     case Token.function:
       userFunction = (String) ((Object[]) opValue)[0];
-      params = (List) ((Object[]) opValue)[1];
+      params = (List<ScriptVariable>) ((Object[]) opValue)[1];
       bsAtom = new BitSet(viewer.getAtomCount());
       tokenAtom = new ScriptVariable(Token.bitset, bsAtom);
       break;
@@ -1804,12 +1806,12 @@ public class ScriptEvaluator {
       return null;
     var = var.toLowerCase();
     if (contextVariables != null && contextVariables.containsKey(var))
-      return (ScriptVariable) contextVariables.get(var);
+      return contextVariables.get(var);
     ScriptContext context = thisContext;
     while (context != null) {
       if (context.contextVariables != null
           && context.contextVariables.containsKey(var))
-        return (ScriptVariable) context.contextVariables.get(var);
+        return context.contextVariables.get(var);
       context = context.parentContext;
     }
     return null;
@@ -1826,7 +1828,7 @@ public class ScriptEvaluator {
 
   private ParallelProcessor parallelProcessor;
 
-  ScriptVariable runFunction(ScriptFunction function, String name, List params, ScriptVariable tokenAtom,
+  ScriptVariable runFunction(ScriptFunction function, String name, List<ScriptVariable> params, ScriptVariable tokenAtom,
                              boolean getReturn) throws ScriptException {
     pushContext(null);
     //System.out.println(contextPath);
@@ -1875,7 +1877,7 @@ public class ScriptEvaluator {
     return v;
   }
 
-  private void runFunction(ScriptFunction function, List params,
+  private void runFunction(ScriptFunction function, List<ScriptVariable> params,
                            ScriptVariable tokenAtom) throws ScriptException {
     aatoken = function.aatoken;
     lineNumbers = function.lineNumbers;
@@ -2095,7 +2097,7 @@ public class ScriptEvaluator {
         String var = parameterAsString(++i);
         boolean isClauseDefine = (tokAt(i) == Token.expressionBegin);
         if (isClauseDefine) {
-          List val = (List) parameterExpression(++i, 0, "_var", true);
+          List<Object> val = (List<Object>) parameterExpression(++i, 0, "_var", true);
           if (val == null || val.size() == 0)
             error(ERROR_invalidArgument);
           i = iToken;
@@ -3508,7 +3510,7 @@ public class ScriptEvaluator {
         break;
       }
     }
-    expressionResult = rpn.getResult(allowUnderflow, null);
+    expressionResult = rpn.getResult(allowUnderflow);
     if (expressionResult == null) {
       if (allowUnderflow)
         return null;
@@ -5418,6 +5420,7 @@ public class ScriptEvaluator {
     }
   }
 
+  @SuppressWarnings("unchecked")
   private boolean flowControl(int tok, boolean isForCheck)
       throws ScriptException {
     switch (tok) {
@@ -5585,16 +5588,16 @@ public class ScriptEvaluator {
         ScriptFunction trycmd = (ScriptFunction) getToken(1).value;
         if (isSyntaxCheck)
           return false;
-        Hashtable cv = (Hashtable) runFunction(trycmd, "try", null,
+        Hashtable<String, ScriptVariable> cv = (Hashtable<String, ScriptVariable>) runFunction(trycmd, "try", null,
             null, true).value;
-        ScriptVariable ret = (ScriptVariable) cv.get("_tryret");
+        ScriptVariable ret = cv.get("_tryret");
         if (ret.value != null || ret.intValue != Integer.MAX_VALUE) { 
           returnCmd(ret);
           return false;
         }
-        String errMsg = (String)((ScriptVariable)cv.get("_errorval")).value;
+        String errMsg = (String)(cv.get("_errorval")).value;
         if (errMsg.length() == 0) {
-          int iBreak = ((ScriptVariable)cv.get("_breakval")).intValue;
+          int iBreak = (cv.get("_breakval")).intValue;
           if (iBreak != Integer.MAX_VALUE) {
             breakCmd(pc - iBreak);
             return false;
@@ -5737,6 +5740,7 @@ public class ScriptEvaluator {
     }
   }
 
+  @SuppressWarnings("unchecked")
   private int switchCmd(ContextToken c, int tok)
       throws ScriptException {
     if (tok == Token.switchcmd)
@@ -5754,14 +5758,14 @@ public class ScriptEvaluator {
     if (tok == Token.defaultcmd) // never do the default one directly
       return -1;
     System.out.println("testing...");
-    List v = (List) parameterExpression(1, 0, null, true);
+    List<Object> v = (List<Object>) parameterExpression(1, 0, null, true);
     if (tok == Token.casecmd) {
       boolean isOK = ScriptVariable.areEqual(var, (ScriptVariable) v.get(0));
       if (isOK)
         c.contextVariables.remove("_var");
       return isOK ? 1 : -1;
     }
-    c.contextVariables.put("_var", v.get(0));
+    c.contextVariables.put("_var", (ScriptVariable) v.get(0));
     return 1;
   }
 
@@ -11539,10 +11543,10 @@ public class ScriptEvaluator {
     case Token.defaultlattice:
       if (statementLength > 2) {
         Point3f pt;
-        List v = (List) parameterExpression(2, 0, "XXX", true);
+        List<ScriptVariable> v = (List<ScriptVariable>) parameterExpression(2, 0, "XXX", true);
         if (v == null || v.size() == 0)
           error(ERROR_invalidArgument);
-        ScriptVariable var = (ScriptVariable) v.get(0);
+        ScriptVariable var = v.get(0);
         if (var.tok == Token.point3f)
           pt = (Point3f) var.value;
         else {
@@ -12359,6 +12363,15 @@ public class ScriptEvaluator {
     Viewer.setUserScale(scale);
   }
 
+  /**
+   * 
+   * @param pt
+   * @param ptMax
+   * @param key
+   * @param xsetType
+   * @throws ScriptException
+   */
+  @SuppressWarnings("unchecked")
   private void setVariable(int pt, int ptMax, String key, int xsetType)
       throws ScriptException {
 
@@ -12395,16 +12408,16 @@ public class ScriptEvaluator {
 
     // get value
 
-    Object v = parameterExpression(pt, ptMax, key, true, true, -1, isArrayItem,
+    List<ScriptVariable> v = (List<ScriptVariable>) parameterExpression(pt, ptMax, key, true, true, -1, isArrayItem,
         null, null);
     if (v == null)
       return;
-    int nv = ((List) v).size();
+    int nv = v.size();
     if (nv == 0 || !isArrayItem && nv > 1 || isArrayItem && nv != 3)
       error(ERROR_invalidArgument);
     if (isSyntaxCheck)
       return;
-    ScriptVariable tv = (ScriptVariable) ((List) v).get(isArrayItem ? 2 : 0);
+    ScriptVariable tv = v.get(isArrayItem ? 2 : 0);
 
     // create user variable if needed for list now, so we can do the copying
 
@@ -12422,15 +12435,15 @@ public class ScriptEvaluator {
     }
 
     if (isArrayItem) {
-      ScriptVariable vv = (ScriptVariable) ((List) v).get(0);
+      ScriptVariable vv = (v).get(0);
       // stack is selector [ VALUE
       if (t.tok == Token.hash || t.tok == Token.bitset) {
         if (t.tok == Token.bitset) {
           t.tok = Token.hash;
-          t.value = new Hashtable();
+          t.value = new Hashtable<String, ScriptVariable>();
         }
         String hkey = ScriptVariable.sValue(vv);
-        ((Hashtable) t.value).put(hkey, tv);
+        ((Hashtable<String, ScriptVariable>) t.value).put(hkey, tv);
       } else {
         int index = ScriptVariable.iValue(vv);
         t.setSelectedValue(index, tv);
@@ -12460,38 +12473,38 @@ public class ScriptEvaluator {
       return;
     }
 
-    v = ScriptVariable.oValue(tv);
+    Object vv = ScriptVariable.oValue(tv);
 
     if (key.startsWith("property_")) {
       int n = viewer.getAtomCount();
-      if (v instanceof String[])
-        v = TextFormat.join((String[]) v, '\n', 0);
-      viewer.setData(key, new Object[] { key, "" + v,
+      if (vv instanceof String[])
+        vv = TextFormat.join((String[]) vv, '\n', 0);
+      viewer.setData(key, new Object[] { key, "" + vv,
           BitSetUtil.copy(viewer.getSelectionSet(false)) }, n, 0, 0,
           Integer.MIN_VALUE, 0);
       return;
     }
     String str;
-    if (v instanceof Boolean) {
-      setBooleanProperty(key, ((Boolean) v).booleanValue());
-    } else if (v instanceof Integer) {
-      setIntProperty(key, ((Integer) v).intValue());
-    } else if (v instanceof Float) {
-      setFloatProperty(key, ((Float) v).floatValue());
-    } else if (v instanceof String) {
-      setStringProperty(key, (String) v);
-    } else if (v instanceof BondSet) {
-      setStringProperty(key, Escape.escape((BitSet) v, false));
-    } else if (v instanceof BitSet) {
-      setStringProperty(key, Escape.escape((BitSet) v));
-    } else if (v instanceof Point3f) {
-      str = Escape.escape((Point3f) v);
+    if (vv instanceof Boolean) {
+      setBooleanProperty(key, ((Boolean) vv).booleanValue());
+    } else if (vv instanceof Integer) {
+      setIntProperty(key, ((Integer) vv).intValue());
+    } else if (vv instanceof Float) {
+      setFloatProperty(key, ((Float) vv).floatValue());
+    } else if (vv instanceof String) {
+      setStringProperty(key, (String) vv);
+    } else if (vv instanceof BondSet) {
+      setStringProperty(key, Escape.escape((BitSet) vv, false));
+    } else if (vv instanceof BitSet) {
+      setStringProperty(key, Escape.escape((BitSet) vv));
+    } else if (vv instanceof Point3f) {
+      str = Escape.escape((Point3f) vv);
       setStringProperty(key, str);
-    } else if (v instanceof Point4f) {
-      str = Escape.escape((Point4f) v);
+    } else if (vv instanceof Point4f) {
+      str = Escape.escape((Point4f) vv);
       setStringProperty(key, str);
     } else {
-      Logger.error("ERROR -- return from propertyExpression was " + v);
+      Logger.error("ERROR -- return from propertyExpression was " + vv);
     }
   }
 
@@ -12617,6 +12630,15 @@ public class ScriptEvaluator {
     setObjectMad(JmolConstants.SHAPE_BBCAGE, "boundbox", mad);
   }
 
+  /**
+   * 
+   * @param index
+   * @param allowUnitCell  IGNORED
+   * @param allowScale
+   * @param allowFirst
+   * @return TickInfo
+   * @throws ScriptException
+   */
   private TickInfo checkTicks(int index, boolean allowUnitCell,
                               boolean allowScale, boolean allowFirst)
       throws ScriptException {
@@ -13666,13 +13688,14 @@ public class ScriptEvaluator {
         : "jvxlDataXml");
   }
 
+  @SuppressWarnings("unchecked")
   private String getMoJvxl(int ptMO) throws ScriptException {
     // 0: all; Integer.MAX_VALUE: current;
     loadShape(JmolConstants.SHAPE_MO);
     int modelIndex = viewer.getCurrentModelIndex();
     if (modelIndex < 0)
       error(ERROR_multipleModelsDisplayedNotOK, "MO isosurfaces");
-    Hashtable moData = (Hashtable) viewer.getModelAuxiliaryInfo(modelIndex,
+    Hashtable<String, Object> moData = (Hashtable<String, Object>) viewer.getModelAuxiliaryInfo(modelIndex,
         "moData");
     if (moData == null)
       error(ERROR_moModelError);
@@ -13762,7 +13785,7 @@ public class ScriptEvaluator {
         Point3f[] points = new Point3f[nVertices];
         for (int j = 0; j < nVertices; j++, i = iToken)
           points[j] = getPoint3f(++iToken, true);
-        List v = new ArrayList();
+        List<Object> v = new ArrayList<Object>();
         v.add(points);
         int nTriangles = intParameter(++i);
         int[][] polygons = new int[nTriangles][];
@@ -14659,6 +14682,7 @@ public class ScriptEvaluator {
     return offset;
   }
 
+  @SuppressWarnings("unchecked")
   private void setMoData(List<Object[]> propertyList, int moNumber, int offset,
                          int modelIndex, String title) throws ScriptException {
     if (isSyntaxCheck)
@@ -14680,12 +14704,12 @@ public class ScriptEvaluator {
         error(ERROR_moModelError);
       int lastMoNumber = (moData.containsKey("lastMoNumber") ? ((Integer) moData
           .get("lastMoNumber")).intValue()
-          : 0);
+          : 0);  
       if (moNumber == Token.prev)
         moNumber = lastMoNumber - 1;
       else if (moNumber == Token.next)
         moNumber = lastMoNumber + 1;
-      List mos = (List) (moData.get("mos"));
+      List<Hashtable<String, Object>> mos = (List<Hashtable<String, Object>>) (moData.get("mos"));
       int nOrb = (mos == null ? 0 : mos.size());
       if (nOrb == 0)
         error(ERROR_moCoefficients);
@@ -14697,7 +14721,7 @@ public class ScriptEvaluator {
           moNumber = ((Integer) moData.get("HOMO")).intValue() + offset;
         } else {
           for (int i = 0; i < nOrb; i++) {
-            Hashtable mo = (Hashtable) mos.get(i);
+            Hashtable<String, Object> mo = mos.get(i);
             if (!mo.containsKey("occupancy"))
               error(ERROR_moOccupancy);
             if (((Float) mo.get("occupancy")).floatValue() == 0) {

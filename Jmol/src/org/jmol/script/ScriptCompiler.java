@@ -156,7 +156,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     }
   }
   
-  static void addContextVariable(Hashtable contextVariables, String ident) {
+  static void addContextVariable(Hashtable<String, ScriptVariable> contextVariables, String ident) {
     contextVariables.put(ident, (new ScriptVariable(Token.string, "")).setName(ident));
   }
 

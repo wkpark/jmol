@@ -51,7 +51,7 @@ class IsoMOReader extends AtomDataReader {
       fixTitleLine(i, params.mo);
   }
   
-  private void fixTitleLine(int iLine, Hashtable mo) {
+  private void fixTitleLine(int iLine, Hashtable<String, Object> mo) {
     // see Parameters.Java for defaults here. 
     if (!fixTitleLine(iLine))
        return;
@@ -80,6 +80,7 @@ class IsoMOReader extends AtomDataReader {
     params.title[iLine] = (!isOptional ? line : rep > 0 && !line.trim().endsWith("=") ? line.substring(1) : "");
   }
   
+  @SuppressWarnings("unchecked")
   @Override
   protected void generateCube() {
     volumeData.voxelData = voxelData = new float[nPointsX][nPointsY][nPointsZ];
@@ -106,6 +107,7 @@ class IsoMOReader extends AtomDataReader {
     }
   }
   
+  @SuppressWarnings("unchecked")
   private void getData(MOCalculationInterface q, Hashtable<String, Object> moData,
                        float[] coef, int[][] dfCoefMaps, float[] nuclearCharges) {
     switch (params.qmOrbitalType) {
@@ -113,7 +115,7 @@ class IsoMOReader extends AtomDataReader {
       q.calculate(
           volumeData, bsMySelected, (String) moData.get("calculationType"),
           atomData.atomXyz, atomData.firstAtomIndex,
-          (List) moData.get("shells"), (float[][]) moData.get("gaussians"),
+          (List<int[]>) moData.get("shells"), (float[][]) moData.get("gaussians"),
           dfCoefMaps, null, coef,
           nuclearCharges, moData.get("isNormalized") == null);
       break;

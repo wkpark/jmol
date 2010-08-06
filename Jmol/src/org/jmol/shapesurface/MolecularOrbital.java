@@ -239,6 +239,7 @@ public class MolecularOrbital extends Isosurface {
     return "mo_model" + viewer.getModelNumber(modelIndex);
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public Object getProperty(String propertyName, int param) {
     if (propertyName == "list") {
@@ -251,7 +252,7 @@ public class MolecularOrbital extends Isosurface {
       return Integer.valueOf(moNumber);
     if (propertyName == "showMO") {
       StringBuffer str = new StringBuffer();
-      List mos = (List) (sg.getMoData().get("mos"));
+      List<Hashtable<String, Object>> mos = (List<Hashtable<String, Object>>) (sg.getMoData().get("mos"));
       int nOrb = (mos == null ? 0 : mos.size());
       int thisMO = param;
       int currentMO = moNumber;

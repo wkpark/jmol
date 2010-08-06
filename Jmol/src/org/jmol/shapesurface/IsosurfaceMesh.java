@@ -260,6 +260,7 @@ public class IsosurfaceMesh extends Mesh {
    * 
    * @return contour vector set
    */
+  @SuppressWarnings("unchecked")
   List<Object>[] getContours() {
     int n = jvxlData.nContours;
     if (n == 0 || polygonIndexes == null)

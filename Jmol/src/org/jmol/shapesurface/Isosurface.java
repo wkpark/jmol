@@ -185,8 +185,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   private ColorEncoder colorEncoder = new ColorEncoder();
   private float withinDistance;
-  private List withinPoints;
+  private List<Point3f> withinPoints;
 
+  @SuppressWarnings("unchecked")
   @Override
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
@@ -318,7 +319,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       Object[] o = (Object[]) value;
       withinDistance = ((Float) o[0]).floatValue();
       BitSet bsAtoms = (BitSet) o[2];
-      withinPoints = (List) o[3];
+      withinPoints = (List<Point3f>) o[3];
       if (withinPoints.size() == 0)
         withinPoints = viewer.getAtomPointVector(bsAtoms);
     }
@@ -1024,7 +1025,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   private boolean checkWithin(Point3f pti) {
     for (int i = withinPoints.size(); --i >= 0; )
-      if (pti.distance((Point3f) withinPoints.get(i)) <= withinDistance) {
+      if (pti.distance(withinPoints.get(i)) <= withinDistance) {
         return true; 
       }
     return false;
@@ -1353,6 +1354,14 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       ptRet.set(m.centers[imin]);
   }
 
+  /**
+   * 
+   * @param x
+   * @param y
+   * @param isPicking IGNORED
+   * @param bsVisible
+   * @return  value found 
+   */
   private String findValue(int x, int y, boolean isPicking, BitSet bsVisible) {
     int dmin2 = MAX_OBJECT_CLICK_DISTANCE_SQUARED;
     if (g3d.isAntialiased()) {

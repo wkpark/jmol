@@ -27,7 +27,7 @@ import org.jmol.adapter.smarter.*;
 
 
 import java.io.BufferedReader;
-import java.util.HashMap;
+import java.util.Map;
 
 import netscape.javascript.JSObject;
 
@@ -95,7 +95,7 @@ public class XmlArgusReader extends XmlReader {
 
   @Override
   public void processStartElement(String namespaceURI, String localName, String qName,
-                                  HashMap<String, String> atts) {
+                                  Map<String, String> atts) {
     //System.out.println("open " + localName);
     for (int i = keepCharsList.length; --i >= 0;)
       if (keepCharsList[i].equals(localName)) {

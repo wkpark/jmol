@@ -27,7 +27,7 @@ import org.jmol.adapter.smarter.*;
 
 import java.io.BufferedReader;
 import java.util.BitSet;
-import java.util.HashMap;
+import java.util.Map;
 
 import netscape.javascript.JSObject;
 
@@ -98,7 +98,7 @@ public class XmlXsdReader extends XmlReader {
   
   @Override
   public void processStartElement(String namespaceURI, String localName, String qName,
-                                  HashMap<String, String> atts) {
+                                  Map<String, String> atts) {
     String[] tokens;
     //System.out.println(namespaceURI + " " + localName + " " + atts);
     //System.out.println("xmlchem3d: start " + localName);

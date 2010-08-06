@@ -25,9 +25,8 @@ package org.jmol.adapter.readers.xml;
 
 import org.jmol.adapter.smarter.*;
 
-
 import java.io.BufferedReader;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -199,7 +198,7 @@ public class XmlCmlReader extends XmlReader {
 
   @Override
   public void processStartElement(String uri, String name, String qName,
-                                  HashMap<String, String> atts) {
+                                  Map<String, String> atts) {
     // if (!uri.equals(NAMESPACE_URI))
     // return;
 
@@ -460,7 +459,7 @@ public class XmlCmlReader extends XmlReader {
         atomSetCollection.addNewBond(a1, a2, order);
   }
 
-  private void getDictRefValue(HashMap<String, String> atts) {
+  private void getDictRefValue(Map<String, String> atts) {
     scalarDictRef = atts.get("dictRef");
     if (scalarDictRef != null) {
       int iColon = scalarDictRef.indexOf(":");
@@ -738,7 +737,7 @@ public class XmlCmlReader extends XmlReader {
     }
   }
 
-  private void createNewAtomSet(HashMap<String, String> atts) {
+  private void createNewAtomSet(Map<String, String> atts) {
     atomSetCollection.newAtomSet();
     String collectionName = null;
     if (atts.containsKey("title"))

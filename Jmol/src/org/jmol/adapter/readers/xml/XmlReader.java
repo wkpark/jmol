@@ -31,6 +31,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.Map;
 
 import netscape.javascript.JSObject;
 
@@ -246,7 +247,7 @@ public void readAtomSetCollectionFromDOM(Object Node) {
 
   @SuppressWarnings("unused")
   protected void processStartElement(String namespaceURI, String localName, String qName,
-                                     HashMap<String, String> atts) {
+                                     Map<String, String> atts) {
     /* 
      * specific to each xml reader
      */
@@ -321,7 +322,7 @@ public void readAtomSetCollectionFromDOM(Object Node) {
      * startElement and endElement should be extended in each reader
      */
 
-    public HashMap<String, String> atts;
+    public Map<String, String> atts;
 
     @Override
     public void startElement(String namespaceURI, String localName,

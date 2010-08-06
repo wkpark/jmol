@@ -24,9 +24,9 @@ package org.jmol.adapter.readers.xml;
 
 import org.jmol.adapter.smarter.*;
 
-
 import java.io.BufferedReader;
-import java.util.HashMap;
+import java.util.Map;
+
 import netscape.javascript.JSObject;
 import org.xml.sax.*;
 
@@ -76,7 +76,7 @@ public class XmlMolproReader extends XmlCmlReader {
     (new MolproHandler()).walkDOMTree(DOMNode);
   }
 
-  public void processStartElement2(String localName, HashMap<String, String> atts) {
+  public void processStartElement2(String localName, Map<String, String> atts) {
     if (localName.equals("normalCoordinate")) {
       keepChars = false;
       if (!parent.doGetVibration(++vibrationNumber))

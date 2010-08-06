@@ -28,7 +28,8 @@ import org.jmol.adapter.smarter.*;
 
 
 import java.io.BufferedReader;
-import java.util.HashMap;
+import java.util.Map;
+
 import javax.vecmath.Point3f;
 
 import netscape.javascript.JSObject;
@@ -86,7 +87,7 @@ public class XmlOdysseyReader extends XmlReader {
 
   @Override
   protected void processStartElement(String namespaceURI, String localName, String qName,
-                                     HashMap<String, String> atts) {
+                                     Map<String, String> atts) {
 
     if ("structure".equals(localName)) {
       atomSetCollection.newAtomSet();

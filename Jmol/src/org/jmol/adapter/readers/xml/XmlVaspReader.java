@@ -25,7 +25,7 @@
 package org.jmol.adapter.readers.xml;
 
 import java.io.BufferedReader;
-import java.util.HashMap;
+import java.util.Map;
 
 import javax.vecmath.Vector3f;
 
@@ -91,7 +91,7 @@ public class XmlVaspReader extends XmlReader {
   
   @Override
   public void processStartElement(String namespaceURI, String localName,
-                                  String qName, HashMap<String, String> atts) {
+                                  String qName, Map<String, String> atts) {
     if (Logger.debugging) 
       Logger.debug("xmlvasp: start " + localName);
 

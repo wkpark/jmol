@@ -40,6 +40,11 @@ public abstract class PopupResource {
     localize(menuStructure != null, menuText);
   }
   
+  /**
+   * 
+   * @param title
+   * @return menu string -- see MainPopupResourceBundle 
+   */
   public String getMenu(String title) {
     return null;
   }
@@ -115,6 +120,11 @@ public abstract class PopupResource {
     }
   }
   
+  /**
+   * 
+   * @param haveUserMenu NOT USED
+   * @param menuText
+   */
   private void localize(boolean haveUserMenu, Properties menuText) {
     String[] wordContents = getWordContents();
     for (int i = 0; i < wordContents.length;) {

@@ -26,7 +26,6 @@ package org.jmol.viewer;
 import javax.vecmath.Point3f;
 import javax.vecmath.Matrix3f;
 
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.BitSet;
 import java.util.Iterator;
@@ -111,7 +110,7 @@ public class StateManager {
   }
 
   Viewer viewer;
-  Hashtable<String, Object> saved = new Hashtable<String, Object>();
+  Map<String, Object> saved = new Hashtable<String, Object>();
   String lastOrientation = "";
   String lastConnections = "";
   String lastSelected = "";
@@ -206,12 +205,11 @@ public class StateManager {
   }
 
   private void deleteSavedType(String type) {
-    
-    Enumeration<String> e = saved.keys();
-    while (e.hasMoreElements()) {
-      String name = e.nextElement();
+    Iterator<String> e = saved.keySet().iterator();
+    while (e.hasNext()) {
+      String name = e.next();
       if (name.startsWith(type)) {
-        saved.remove(name);
+        e.remove();
         Logger.debug("deleted " + name);
       }
     }
@@ -645,7 +643,7 @@ public class StateManager {
     Map<String, Object> htNonbooleanParameterValues;
     Map<String, Boolean> htBooleanParameterFlags;
     Map<String, Boolean> htPropertyFlagsRemoved;
-    Hashtable<String, ScriptVariable> htUserVariables = new Hashtable<String, ScriptVariable>();
+    Map<String, ScriptVariable> htUserVariables = new Hashtable<String, ScriptVariable>();
 
     /*
      *  Mostly these are just saved and restored directly from Viewer.
@@ -663,11 +661,11 @@ public class StateManager {
     }
 
     void clear() {
-      Enumeration<String> e = htUserVariables.keys();
-      while (e.hasMoreElements()) {
-        String key = e.nextElement();
+      Iterator<String> e = htUserVariables.keySet().iterator();
+      while (e.hasNext()) {
+        String key = e.next();
         if (key.charAt(0) == '@' || key.startsWith("site_"))
-          htUserVariables.remove(key);
+          e.remove();
       }
 
       // PER-zap settings made

@@ -1655,5 +1655,4 @@ public class StateManager {
       return;
     s.append("  ").append(cmd).append(";\n");
   }
-  
 }

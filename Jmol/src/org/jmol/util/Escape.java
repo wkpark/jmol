@@ -526,6 +526,7 @@ public class Escape {
     return "\"" + s + "\"";
   }
 
+  @SuppressWarnings("unchecked")
   public static String toJSON(String infoType, Object info) {
 
     //Logger.debug(infoType+" -- "+info);
@@ -641,9 +642,9 @@ public class Escape {
     }
     if (info instanceof Map) {
       sb.append("{ ");
-      Iterator e = ((Map) info).keySet().iterator();
+      Iterator<String> e = ((Map) info).keySet().iterator();
       while (e.hasNext()) {
-        String key = (String) e.next();
+        String key = e.next();
         sb.append(sep)
             .append(packageJSON(key, toJSON(null, ((Map) info).get(key))));
         sep = ",";
@@ -658,6 +659,7 @@ public class Escape {
     return toReadable(null, info);
   }
   
+  @SuppressWarnings("unchecked")
   public static String toReadable(String name, Object info) {
     StringBuilder sb =new StringBuilder();
     String sep = "";

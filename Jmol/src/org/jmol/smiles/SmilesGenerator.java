@@ -250,10 +250,9 @@ public class SmilesGenerator {
     }
     while (bsToDo.cardinality() > 0 || !htRings.isEmpty()) {
       //System.out.println(bsToDo);
-      Iterator<String> e = htRings.keySet().iterator();
+      Iterator<Object[]> e = htRings.values().iterator();
       if (e.hasNext()) {
-        atom = atoms[((Integer) (htRings.get(e.next()))[1])
-            .intValue()];
+        atom = atoms[((Integer) e.next()[1]).intValue()];
         if (!bsToDo.get(atom.getIndex()))
           break;
       } else {

@@ -1553,6 +1553,7 @@ public class Token {
       "selectionHalo",     null,
       "showSelections",    null,
       "set",               new Token(set),
+      "sheet",             new Token(sheet),
       "show",              new Token(show),
       "slab",              new Token(slab),
       "spacefill",         new Token(spacefill),

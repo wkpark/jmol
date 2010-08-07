@@ -5120,7 +5120,7 @@ public class ScriptEvaluator {
           invertSelected();
           break;
         case Token.javascript:
-          script(Token.javascript, null);
+          script(Token.javascript, null, false);
           break;
         case Token.load:
           load();
@@ -5192,7 +5192,7 @@ public class ScriptEvaluator {
           set();
           break;
         case Token.script:
-          script(Token.script, null);
+          script(Token.script, null, doList);
           break;
         case Token.select:
           select(1);
@@ -8304,7 +8304,7 @@ public class ScriptEvaluator {
       if (statementLength == 2) {
         if (errMsg.indexOf("NOTE: file recognized as a script file:") == 0) {
           filename = errMsg.substring(errMsg.indexOf("file:") + 5).trim(); 
-          script(0, filename);
+          script(0, filename, false);
           return;
         }
         String surfaceType = (errMsg.indexOf("java.io.FileNotFound") >= 0 ? null : SurfaceFileTyper.determineSurfaceFileType(viewer
@@ -9435,7 +9435,7 @@ public class ScriptEvaluator {
         : null);
   }
 
-  private void script(int tok, String filename) throws ScriptException {
+  private void script(int tok, String filename, boolean listCommands) throws ScriptException {
     boolean loadCheck = true;
     boolean isCheck = false;
     boolean doStep = false;
@@ -9550,7 +9550,7 @@ public class ScriptEvaluator {
       boolean saveLoadCheck = isCmdLine_C_Option;
       isCmdLine_C_Option &= loadCheck;
       executionStepping |= doStep;
-      instructionDispatchLoop(isCheck);
+      instructionDispatchLoop(isCheck || listCommands);
       if (debugScript && viewer.getMessageStyleChime())
         viewer.scriptStatus("script <exiting>");
       isCmdLine_C_Option = saveLoadCheck;

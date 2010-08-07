@@ -3067,6 +3067,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public BitSet getBranchBitSet(int atomIndex, int atomIndexNot) {
+    if (atomIndex < 0)
+      return new BitSet();
     return JmolMolecule.getBranchBitSet(modelSet.atoms,
         getModelUndeletedAtomsBitSet(modelSet.atoms[atomIndex].modelIndex),
         atomIndex, atomIndexNot, true, true);

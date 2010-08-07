@@ -1971,7 +1971,7 @@ class ScriptMathProcessor {
           x1.value, true, x1.index, asArray));
   }
 
-  private boolean evaluateWithin(ScriptVariable[] args) {
+  private boolean evaluateWithin(ScriptVariable[] args) throws ScriptException {
     if (args.length < 1 || args.length > 5)
       return false;
     int i = args.length;
@@ -1993,7 +1993,6 @@ class ScriptMathProcessor {
       return addX(viewer.getBranchBitSet(
           ((BitSet) args[2].value).nextSetBit(0), ((BitSet) args[1].value)
               .nextSetBit(0)));
-    /* unnecessary -- see select smiles(), select smarts()
     case Token.smiles:
     case Token.search:
       // within("smiles", "...", {bitset})
@@ -2014,10 +2013,9 @@ class ScriptMathProcessor {
       if (!isOK)
         eval.error(ScriptEvaluator.ERROR_invalidArgument);
       if (isSyntaxCheck)
-        return (asBitSet ? addX(new BitSet()) : addX(new Vector()));
+        return (asBitSet ? addX(new BitSet()) : addX(new ArrayList<Object>()));
       return addX(eval.getSmilesMatches(ScriptVariable
           .sValue(args[1]), null, bsSelected, null, tok == Token.search, asBitSet));
-    */
     }
     if (withinSpec instanceof String) {
       if (tok == Token.nada) {

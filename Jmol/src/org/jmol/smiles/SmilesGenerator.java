@@ -249,7 +249,6 @@ public class SmilesGenerator {
     while ((atom = getSmiles(sb, atom, allowConnectionsToOutsideWorld)) != null) {
     }
     while (bsToDo.cardinality() > 0 || !htRings.isEmpty()) {
-      //System.out.println(bsToDo);
       Iterator<Object[]> e = htRings.values().iterator();
       if (e.hasNext()) {
         atom = atoms[((Integer) e.next()[1]).intValue()];
@@ -481,18 +480,9 @@ public class SmilesGenerator {
     if (bondAtoms == null)
       bondAtoms = new JmolNode[5];
     if (bondPrev == null) {
-      stereoShown = true;
+      //stereoShown = true;
     } else {
       strBond = SmilesBond.getBondOrderString(bondPrev.getCovalentOrder());
-      if (stereoFlag < 7) {
-        if (bondPrev.getCovalentOrder() == 2 && prevBondAtoms != null && prevBondAtoms[1] != null) {
-          // allene continuation
-          stereo[stereoFlag++] = prevBondAtoms[0];
-          stereo[stereoFlag++] = prevBondAtoms[1];
-        } else {
-          stereo[stereoFlag++] = prevAtom;
-        }
-      }
       if (prevBondAtoms == null)
         bondAtoms[nBondAtoms++] = prevAtom;
       else
@@ -521,6 +511,17 @@ public class SmilesGenerator {
     }
     JmolNode atomNext = (bond0 == null ? null : bond0.getOtherAtom(atom));
     int orderNext = (bond0 == null ? 0 : bond0.getCovalentOrder());
+    
+    if (stereoFlag < 7 && bondPrev != null) {
+      if (bondPrev.getCovalentOrder() == 2 && orderNext == 2 && prevBondAtoms != null && prevBondAtoms[1] != null) {
+        // allene continuation
+        stereo[stereoFlag++] = prevBondAtoms[0];
+        stereo[stereoFlag++] = prevBondAtoms[1];
+      } else {
+        stereo[stereoFlag++] = prevAtom;
+      }
+    }
+
     boolean deferStereo = (orderNext == 1 && prevBondAtoms == null);
     char chBond = getBondStereochemistry(bondPrev, prevAtom);
 
@@ -536,11 +537,11 @@ public class SmilesGenerator {
       s2.append("(");
       prevAtom = atom;
       prevBondAtoms = null;
-      boolean b = stereoShown;
+      //boolean b = stereoShown;
       JmolEdge bond0t = bond0;
-      stereoShown = true;
+      //stereoShown = false;
       getSmiles(s2, a, allowConnectionsToOutsideWorld);
-      stereoShown = b;
+      //stereoShown = true;
       bond0 = bond0t;
       s2.append(")");
       if (sMore.indexOf(s2.toString()) >= 0)
@@ -566,18 +567,23 @@ public class SmilesGenerator {
     if (nBondAtoms < 0) {
       bondAtoms = null;
     } else {
-      stereoShown = false;
+//      stereoShown = false;
     }
 
     // output section
 
-    if (strBond != null) {
+    if (strBond != null || !stereoShown && chBond != '\0') {
+      // stereoShown is never turned TRUE now, because all it does
+      // is allow for a more concise SMILES string without the 
+      // optional second stereo bond indicator / or \
+      // but it is such a headache to get right...
       if (!stereoShown && chBond != '\0') {
         strBond = "" + chBond;
-        stereoShown = true;
+        //stereoShown = true;
       }
       sb.append(strBond);
     }
+
 
     // now process any rings
 
@@ -592,7 +598,7 @@ public class SmilesGenerator {
         chBond = getBondStereochemistry(bond, atom);
         if (chBond != '\0') {
           strBond = "" + chBond;
-          stereoShown = true;
+          //stereoShown = true;
         }
       }
 
@@ -645,7 +651,7 @@ public class SmilesGenerator {
     if (nBondAtoms != 1 && nBondAtoms != 2) {
       bondAtoms = null;
       nBondAtoms = 0;
-      stereoShown = true;
+      //stereoShown = true;
     } else {
       if (bondAtoms[0] == null)
         bondAtoms[0] = atom; // CN= , for example. close enough!
@@ -653,6 +659,9 @@ public class SmilesGenerator {
         bondAtoms[1] = atom; // .C3=
       stereoShown = false;
     }
+    if (orderNext == 2)
+      stereoShown = false;
+      
     prevBondAtoms = bondAtoms;
     prevAtom = atom;
     return atomNext;

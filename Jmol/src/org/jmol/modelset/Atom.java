@@ -882,7 +882,9 @@ final public class Atom extends Point3fi implements JmolNode {
   
   public String getGroup3(boolean allowNull) {
     String group3 = group.getGroup3();
-    return (allowNull || group3 != null || group3.length() > 0 ? group3 : "UNK");
+    return (allowNull 
+        || group3 != null && group3.length() > 0 
+        ? group3 : "UNK");
   }
 
   public String getGroup1(char c0) {

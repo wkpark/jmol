@@ -1861,8 +1861,9 @@ abstract public class ModelCollection extends BondCollection {
         bsBranch = new BitSet();
         m.getBioPolymer(j).getRange(bsBranch);
         int iAtom = bsBranch.nextSetBit(0);
-        molecules = JmolMolecule.addMolecule(molecules, moleculeCount++, atoms,
-            iAtom, bsBranch, m.modelIndex, count++, bsExclude);
+        if (iAtom >= 0)
+          molecules = JmolMolecule.addMolecule(molecules, moleculeCount++, atoms,
+              iAtom, bsBranch, m.modelIndex, count++, bsExclude);
       }
     }
     molecules = JmolMolecule.getMolecules(atoms, bsModelAtoms, molecules,

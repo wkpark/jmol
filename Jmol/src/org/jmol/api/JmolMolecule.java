@@ -88,6 +88,10 @@ public class JmolMolecule {
       bsExclude = new BitSet();
     for (int i = 0; i < atoms.length; i++)
       if (!bsExclude.get(i) && !bsBranch.get(i)) {
+        if (atoms[i].isDeleted()) {
+          bsExclude.set(i);
+          continue;
+        }          
         int modelIndex = atoms[i].getModelIndex();
         if (modelIndex != thisModelIndex) {
           thisModelIndex = modelIndex;
@@ -96,8 +100,9 @@ public class JmolMolecule {
             bsToTest = bsModelAtoms[modelIndex];
         }
         bsBranch = getBranchBitSet(atoms, bsToTest, i, -1, true, true);
-        molecules = addMolecule(molecules, moleculeCount++, atoms, i, bsBranch,
-            modelIndex, indexInModel++, bsExclude);
+        if (bsBranch.nextSetBit(0) >= 0)
+          molecules = addMolecule(molecules, moleculeCount++, atoms, i, bsBranch,
+              modelIndex, indexInModel++, bsExclude);
       }
     return allocateArray(molecules, moleculeCount);
   }

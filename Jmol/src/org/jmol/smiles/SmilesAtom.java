@@ -739,4 +739,8 @@ public class SmilesAtom extends Point3f implements JmolNode {
         && "CTUI".indexOf(residueChar) >= 0;
   }
 
+  public boolean isDeleted() {
+    return false;
+  }
+
 }

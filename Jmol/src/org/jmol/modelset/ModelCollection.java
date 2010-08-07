@@ -1367,11 +1367,10 @@ abstract public class ModelCollection extends BondCollection {
       if (df == null) {
         continue;
       }
-      Object key;
-      Iterator<String> e = df.keySet().iterator();
+      Iterator<Integer> e = df.values().iterator();
       while (e.hasNext()) {
-        if ((df.get(key = e.next())).intValue() == modelIndex) {
-          df.remove(key);
+        if ((e.next()).intValue() == modelIndex) {
+          e.remove();
         }
       }
     }  

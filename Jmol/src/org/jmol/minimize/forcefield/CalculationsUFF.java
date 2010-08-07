@@ -70,7 +70,7 @@ class CalculationsUFF extends Calculations {
     
   CalculationsUFF(ForceField ff, MinAtom[] minAtoms, MinBond[] minBonds, 
       int[][] angles, int[][] torsions, double[] partialCharges,
-      List constraints) {
+      List<Object[]> constraints) {
     super(ff, minAtoms, minBonds, angles, torsions, partialCharges, constraints);    
     bondCalc = new DistanceCalc();
     angleCalc = new AngleCalc();

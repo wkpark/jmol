@@ -106,13 +106,13 @@ public class Ellipsoids extends AtomShape {
     }
     if (propertyName == "deleteModelAtoms") {
       int modelIndex = ((int[]) ((Object[]) value)[2])[0];
-      for (Map.Entry<String, Ellipsoid> entry : htEllipsoids.entrySet()) {
-        String id = entry.getKey();
-        Ellipsoid ellipsoid = entry.getValue();
+      Iterator<Ellipsoid> e = htEllipsoids.values().iterator();
+      while (e.hasNext()) {
+        Ellipsoid ellipsoid = e.next();
         if (ellipsoid.modelIndex > modelIndex)
           ellipsoid.modelIndex--;
         else if (ellipsoid.modelIndex == modelIndex)
-          htEllipsoids.remove(id);
+          e.remove();
       }
       ellipsoid = null;
       return;

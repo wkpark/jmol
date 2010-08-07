@@ -459,7 +459,6 @@ class SymmetryOperation extends Matrix4f {
   
   /**
    * 
-   * @param isym 
    * @param uc
    * @param pt00
    * @param ptTarget 

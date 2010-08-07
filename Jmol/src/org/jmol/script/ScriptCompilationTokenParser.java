@@ -366,6 +366,7 @@ abstract class ScriptCompilationTokenParser {
     case Token.helix:
     case Token.isaromatic:
     case Token.none:
+    case Token.sheet:
       // nothing special
       return addNextToken();
     case Token.string:
@@ -599,6 +600,7 @@ abstract class ScriptCompilationTokenParser {
     case Token.molecule:
     case Token.polymer:
     case Token.sequence:
+    case Token.sheet:
     case Token.site:
     case Token.structure:
     case Token.string:

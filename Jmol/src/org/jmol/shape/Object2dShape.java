@@ -46,7 +46,7 @@ public class Object2dShape extends Shape {
             if (isAll
                 || TextFormat.isMatch(text.target.toUpperCase(), thisID, true,
                     true)) {
-              objects.remove(text.target);
+              e.remove();
             }
           }
         }
@@ -175,7 +175,7 @@ public class Object2dShape extends Shape {
       while (e.hasNext()) {
         Text text = e.next();
         if (text.modelIndex == modelIndex) {
-          objects.remove(text.target);
+          e.remove();
         } else if (text.modelIndex > modelIndex) {
           text.modelIndex--;
         }

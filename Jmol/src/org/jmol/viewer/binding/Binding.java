@@ -67,14 +67,14 @@ abstract public class Binding {
     if (mouseAction == 0)
       unbindJmolAction(jmolAction);
     else
-      removeBinding(mouseAction + "\t" + jmolAction);
+      removeBinding(null, mouseAction + "\t" + jmolAction);
   }
   
   public final void unbind(int mouseAction, String name) {
     if (name == null)
       unbindMouseAction(mouseAction);
     else
-      removeBinding(mouseAction + "\t" + name);
+      removeBinding(null, mouseAction + "\t" + name);
   }
   
   public final void unbindJmolAction(int jmolAction) {
@@ -83,7 +83,7 @@ abstract public class Binding {
     while (e.hasNext()) {
       String key = e.next();
       if (key.endsWith(skey))
-        removeBinding(key);
+        removeBinding(e, key);
     }
   }
   
@@ -92,10 +92,13 @@ abstract public class Binding {
       Logger.debug("adding binding " + key + "\t==\t" + Escape.escape(value));
     bindings.put(key, value);
   }
-  private void removeBinding(String key) {
+  private void removeBinding(Iterator<String> e, String key) {
     if (Logger.debugging)
       Logger.debug("removing binding " + key);
-    bindings.remove(key); 
+    if (e == null)
+      bindings.remove(key); 
+    else
+      e.remove();
   }
   
   public final void unbindUserAction(String script) {
@@ -104,7 +107,7 @@ abstract public class Binding {
     while (e.hasNext()) {
       String key = e.next();
       if (key.endsWith(skey))
-        removeBinding(key);
+        removeBinding(e, key);
     }
   }
   
@@ -114,7 +117,7 @@ abstract public class Binding {
     while (e.hasNext()) {
       String key = e.next();
       if (key.startsWith(skey))
-        removeBinding(key);
+        removeBinding(e, key);
     }
   }
   
@@ -178,6 +181,7 @@ abstract public class Binding {
     return mouseAction >> 8;
   }
 
+  @SuppressWarnings("unchecked")
   public String getBindingInfo(String[] actionNames, String qualifiers) {
     StringBuffer sb = new StringBuffer();
     String qlow = (qualifiers == null || qualifiers.equalsIgnoreCase("all") ? null

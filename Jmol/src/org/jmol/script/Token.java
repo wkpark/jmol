@@ -1204,6 +1204,8 @@ public class Token {
   public final static Token tokenAnd = new Token(opAnd, "and");
   public final static Token tokenAND = new Token(opAND, "");
   public final static Token tokenOr  = new Token(opOr, "or");
+  public final static Token tokenAndFALSE = new Token(opAnd, "and");
+  public final static Token tokenOrTRUE = new Token(opOr, "or");
   public final static Token tokenOpIf  = new Token(opIf, "?");
   public final static Token tokenComma = new Token(comma, ",");
   final static Token tokenDefineString = new Token(Token.define, Token.string, "@");

@@ -73,6 +73,7 @@ class ScriptMathProcessor {
    */
 
   private boolean isSyntaxCheck;
+  private boolean wasSyntaxCheck;
   private boolean logMessages;
   private ScriptEvaluator eval;
   private Viewer viewer;
@@ -99,7 +100,7 @@ class ScriptMathProcessor {
     this.eval = eval;
     this.viewer = eval.viewer;
     this.logMessages = eval.logMessages;
-    this.isSyntaxCheck = eval.isSyntaxCheck;
+    this.isSyntaxCheck = wasSyntaxCheck = eval.isSyntaxCheck;
     this.isArrayItem = isArrayItem;
     this.asVector = asVector || isArrayItem;
     this.asBitSet = asBitSet;
@@ -544,6 +545,23 @@ class ScriptMathProcessor {
     case Token.rightbrace:
       if (braceCount-- <= 0)
         return false;
+      wasX = false;
+      break;
+    case Token.opAnd:
+    case Token.opOr:
+      if (!wasSyntaxCheck && xStack[xPt].tok != Token.bitset) {
+        // check to see if we need to evaluate the second operand or not
+        // if not, then set this to syntax check in order to skip :)
+        // Jmol 12.0.4, Jmol 12.1.2
+        boolean tf = ScriptVariable.bValue(getX());
+        addX(ScriptVariable.getBoolean(tf));
+        if (tf == (op.tok == Token.opOr)) { // TRUE or.. FALSE and...
+          isSyntaxCheck = true;
+          op = (op.tok == Token.opOr ? Token.tokenOrTRUE : Token.tokenAndFALSE);
+        }
+      }
+      wasX = false;
+      break;
     default:
       wasX = false;
     }
@@ -593,7 +611,7 @@ class ScriptMathProcessor {
   }
 
   void dumpStacks(String message) {
-    Logger.info("\n\nRPN stacks: " + message + "\n");
+    Logger.info("\n\n------------------\nRPN stacks: " + message + "\n");
     for (int i = 0; i <= xPt; i++)
       Logger.info("x[" + i + "]: " + xStack[i]);
     Logger.info("\n");
@@ -1625,8 +1643,8 @@ class ScriptMathProcessor {
     }
     if (args.length != 1)
       return false;
-    if (isSyntaxCheck)
-      return addX(1);
+    //if (isSyntaxCheck)
+     // return addX(1);
     if (tok == Token.abs) {
       if (args[0].tok == Token.integer)
         return addX(Math.abs(ScriptVariable.iValue(args[0])));
@@ -1715,8 +1733,8 @@ class ScriptMathProcessor {
     default:
       return false;
     }
-    if (isSyntaxCheck)
-      return addX(new Point4f(0, 0, 0, 1));
+    //if (isSyntaxCheck)
+      //return addX(new Point4f(0, 0, 0, 1));
     Quaternion q = null;
     Quaternion[] qs = null;
     Point4f p4 = null;
@@ -1807,8 +1825,8 @@ class ScriptMathProcessor {
   private boolean evaluateRandom(ScriptVariable[] args) {
     if (args.length > 2)
       return false;
-    if (isSyntaxCheck)
-      return addX(1);
+    //if (isSyntaxCheck)
+      //return addX(1);
     float lower = (args.length < 2 ? 0 : ScriptVariable.fValue(args[0]));
     float range = (args.length == 0 ? 1 : ScriptVariable
         .fValue(args[args.length - 1]));
@@ -1823,8 +1841,8 @@ class ScriptMathProcessor {
     ScriptVariable x2 = args[1];
     if (x1.tok != Token.point3f || x2.tok != Token.point3f)
       return false;
-    if (isSyntaxCheck)
-      return addX(new Point3f());
+    //if (isSyntaxCheck)
+      //return addX(new Point3f());
     Vector3f a = new Vector3f((Point3f) x1.value);
     Vector3f b = new Vector3f((Point3f) x2.value);
     a.cross(a, b);
@@ -1834,8 +1852,8 @@ class ScriptMathProcessor {
   private boolean evaluateLoad(ScriptVariable[] args, int tok) {
     if (args.length > 2 || args.length < 1)
       return false;
-    if (isSyntaxCheck)
-      return addX("");
+    //if (isSyntaxCheck)
+      //return addX("");
     String file = ScriptVariable.sValue(args[0]);
     int nBytesMax = (args.length == 2 ? ScriptVariable.iValue(args[1])
         : Integer.MAX_VALUE);
@@ -1846,8 +1864,8 @@ class ScriptMathProcessor {
   private boolean evaluateWrite(ScriptVariable[] args) throws ScriptException {
     if (args.length == 0)
       return false;
-    if (isSyntaxCheck)
-      return addX("");
+    //if (isSyntaxCheck)
+      //return addX("");
     return addX(eval.write(args));
   }
 
@@ -1856,8 +1874,8 @@ class ScriptMathProcessor {
     if (tok == Token.javascript && args.length != 1 || args.length == 0
         || args.length > 2)
       return false;
-    if (isSyntaxCheck)
-      return addX("");
+    //if (isSyntaxCheck)
+      //return addX("");
     String s = ScriptVariable.sValue(args[0]);
     StringBuffer sb = new StringBuffer();
     switch (tok) {
@@ -1894,8 +1912,8 @@ class ScriptMathProcessor {
     // 0)
     if (args.length != 1 && args.length != 2 && args.length != 4)
       return false;
-    if (isSyntaxCheck)
-      return addX("");
+    //if (isSyntaxCheck)
+      //return addX("");
     String selected = ScriptVariable.sValue(args[0]);
     String type = (args.length == 2 ? ScriptVariable.sValue(args[1]) : "");
 
@@ -1958,8 +1976,8 @@ class ScriptMathProcessor {
     // format("....",a,b,c...)
 
     ScriptVariable x1 = (args.length < 2 ? getX() : null);
-    if (isSyntaxCheck)
-      return addX("");
+    //if (isSyntaxCheck)
+      //return addX("");
     String format = (args.length == 0 ? "%U" : ScriptVariable.sValue(args[0]));
     boolean asArray = Token.tokAttr(intValue, Token.minmaxmask);
     if (x1 == null)
@@ -2012,8 +2030,8 @@ class ScriptMathProcessor {
       }
       if (!isOK)
         eval.error(ScriptEvaluator.ERROR_invalidArgument);
-      if (isSyntaxCheck)
-        return (asBitSet ? addX(new BitSet()) : addX(new ArrayList<Object>()));
+      //if (isSyntaxCheck)
+        //return (asBitSet ? addX(new BitSet()) : addX(new ArrayList<Object>()));
       return addX(eval.getSmilesMatches(ScriptVariable
           .sValue(args[1]), null, bsSelected, null, tok == Token.search, asBitSet));
     }
@@ -2054,11 +2072,11 @@ class ScriptMathProcessor {
       case Token.helix:
       case Token.sheet:
       case Token.boundbox:
-        return addX(isSyntaxCheck ? bs : viewer.getAtomBits(tok, null));
+        return addX(viewer.getAtomBits(tok, null));
       case Token.basepair:
-        return addX(isSyntaxCheck ? bs : viewer.getAtomBits(tok, ""));
+        return addX(viewer.getAtomBits(tok, ""));
       case Token.spec_seqcode:
-        return addX(isSyntaxCheck ? bs : viewer.getAtomBits(Token.sequence,
+        return addX(viewer.getAtomBits(Token.sequence,
             withinStr));
       }
       return false;
@@ -2072,7 +2090,7 @@ class ScriptMathProcessor {
       case Token.atomtype:
       case Token.basepair:
       case Token.sequence:
-        return addX(isSyntaxCheck ? bs : viewer.getAtomBits(tok, ScriptVariable
+        return addX(viewer.getAtomBits(tok, ScriptVariable
             .sValue(args[args.length - 1])));
       }
       break;
@@ -2103,15 +2121,14 @@ class ScriptMathProcessor {
       plane = (Point4f) args[i].value;
     } else if (args[i].value instanceof Point3f) {
       pt = (Point3f) args[i].value;
-      if (!isSyntaxCheck
-          && ScriptVariable.sValue(args[1]).equalsIgnoreCase("hkl"))
+      if (ScriptVariable.sValue(args[1]).equalsIgnoreCase("hkl"))
         plane = eval.getHklPlane(pt);
     }
     if (i > 0 && plane == null && pt == null
         && !(args[i].value instanceof BitSet))
       return false;
-    if (isSyntaxCheck)
-      return addX(bs);
+    //if (isSyntaxCheck)
+      //return addX(bs);
     if (plane != null)
       return addX(viewer.getAtomsWithin(distance, plane));
     if (pt != null)
@@ -2211,8 +2228,8 @@ class ScriptMathProcessor {
       atoms2 = atoms1;
     if (atoms2 != null) {
       BitSet bsBonds = new BitSet();
-      if (isSyntaxCheck)
-        return addX(new ScriptVariable(Token.bitset, new BondSet(bsBonds)));
+      //if (isSyntaxCheck)
+        //return addX(new ScriptVariable(Token.bitset, new BondSet(bsBonds)));
       viewer
           .makeConnections(fmin, fmax, order,
               JmolConstants.CONNECT_IDENTIFY_ONLY, atoms1, atoms2, bsBonds,
@@ -2220,8 +2237,8 @@ class ScriptMathProcessor {
       return addX(new ScriptVariable(Token.bitset, new BondSet(bsBonds, viewer
           .getAtomIndices(viewer.getAtomBits(Token.bonds, bsBonds)))));
     }
-    if (isSyntaxCheck)
-      return addX(atoms1);
+    //if (isSyntaxCheck)
+      //return addX(atoms1);
     return addX(viewer.getAtomsConnected(min, max, order, atoms1));
   }
 
@@ -2233,7 +2250,7 @@ class ScriptMathProcessor {
     if (args.length == 0)
       return false;
     BitSet bs = new BitSet();
-    String pattern = (isSyntaxCheck ? "" : ScriptVariable.sValue(args[0]));
+    String pattern = ScriptVariable.sValue(args[0]);
     if (pattern.length() > 0)
       try {
         BitSet bsSelected = (args.length == 2 && args[1].tok == Token.bitset ? ScriptVariable
@@ -2381,8 +2398,11 @@ class ScriptMathProcessor {
 
     // binary:
     ScriptVariable x1 = getX();
-    if (isSyntaxCheck)
+    if (isSyntaxCheck) {
+      if (op == Token.tokenAndFALSE || op == Token.tokenOrTRUE)
+        isSyntaxCheck = false;
       return addX(new ScriptVariable(x1));
+    }
     switch (op.tok) {
     case Token.opAND:
     case Token.opAnd:

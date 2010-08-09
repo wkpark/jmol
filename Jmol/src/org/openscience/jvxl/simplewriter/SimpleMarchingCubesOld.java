@@ -252,7 +252,9 @@ public class SimpleMarchingCubesOld {
 
   BitSet bsValues = new BitSet();
 
-  private float getValue(int i, int x, int y, int z, int pt, float[] tempValues) {
+  private float getValue(@SuppressWarnings("unused") int i,
+                         int x, int y, int z,
+                         int pt, float[] tempValues) {
     //if (bsValues.get(pt))
       //return tempValues[pt % yzCount];
     bsValues.set(pt);
@@ -267,7 +269,8 @@ public class SimpleMarchingCubesOld {
   private final int[] nullNeighbor = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
       -1, -1 };
 
-  private int[] propagateNeighborPointIndexes(int x, int y, int z, int pt,
+  private int[] propagateNeighborPointIndexes(int x, int y, int z,
+                                              @SuppressWarnings("unused") int pt,
                                               int[][] isoPointIndexes,
                                               int cellIndex) {
     /*
@@ -388,7 +391,10 @@ public class SimpleMarchingCubesOld {
     256, 512, 1024, 2048 };
 
   private boolean processOneCubical(int insideMask, int[] voxelPointIndexes,
-                                    int x, int y, int z, int pt) {
+                                    @SuppressWarnings("unused") int x,
+                                    @SuppressWarnings("unused") int y,
+                                    @SuppressWarnings("unused") int z,
+                                    @SuppressWarnings("unused") int pt) {
     
     // the key to the algorithm is that we have a catalog that
     // maps the inside-vertex mask to an edge mask. 

@@ -96,14 +96,18 @@ public class SimpleMarchingCubes extends MarchingCubes {
     }    
   }
 
-  protected float getValue(int i, int x, int y, int z, int pt, float[] tempValues) {
-    if (bsValues.get(pt))
+  protected float getValue(@SuppressWarnings("unused") int i,
+                           int x, int y, int z,
+                           int pt, float[] tempValues) {
+    if (bsValues.get(pt)) {
       return tempValues[pt % yzCount];
+    }
     bsValues.set(pt);
     float value = vdc.getValue(x, y, z);
     tempValues[pt % yzCount] = value;
-    if (isInside(value, cutoff, isCutoffAbsolute))
+    if (isInside(value, cutoff, isCutoffAbsolute)) {
       bsVoxels.set(pt);
+    }
     return value;
   }
 

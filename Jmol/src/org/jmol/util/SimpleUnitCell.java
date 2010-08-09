@@ -118,10 +118,10 @@ public class SimpleUnitCell {
         return;
       }
     }
-    if (b == -1) {
+    if (b <= 0) {
       b = c = 1;
       isPolymer = true;
-    } else if (c == -1) {
+    } else if (c <= 0) {
       c = 1;
       isSlab = true;
     }

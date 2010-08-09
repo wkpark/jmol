@@ -807,7 +807,7 @@ class ScriptMathProcessor {
           }
           // remove all stereochemistry from SMILES string
           if (bs2 == null) {
-            check = (viewer.getSmilesMatcher().areEqual(smiles2, "/nostereo/" + smiles1) > 0);
+            check = (viewer.getSmilesMatcher().areEqual("/nostereo/" + smiles2, smiles1) > 0);
           } else {
             Object ret = eval.getSmilesMatches("/nostereo/" + smiles1, null, bs2, null,
                 false, true);

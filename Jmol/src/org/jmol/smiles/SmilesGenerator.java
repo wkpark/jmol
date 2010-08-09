@@ -631,11 +631,6 @@ public class SmilesGenerator {
     } else if (atomNext != null && stereoFlag < 7) {
       stereo[stereoFlag++] = atomNext;
     }
-    //for (int jj = 0; jj < 7; jj++)
-      //System.out.print(stereo[jj] + " ");
-    //System.out.println(" " + atom);
-    String s = (stereoFlag > 6 ? "" : SmilesSearch.getStereoFlag(atom, stereo,
-        stereoFlag, vTemp));
     int valence = atom.getValence();
     int charge = atom.getFormalCharge();
     int isotope = atom.getIsotopeNumber();
@@ -645,12 +640,12 @@ public class SmilesGenerator {
     // present. For example, in 1BLU we have 
     // .[CYS.SG#16] could match either the atom number or the element number 
     if (Logger.debugging)
-      sb.append("\n//* " + atom  + " *//\t");
+      sb.append("\n//* " + atom  + " *//\t");    
     if (isExtension && groupType.length() != 0 && atomName.length() != 0)
       addBracketedBioName(sb, atom, "." + atomName);
     else
       sb.append(SmilesAtom.getAtomLabel(atomicNumber, isotope, valence, charge,
-          nH, isAromatic, s));
+          nH, isAromatic, checkStereoPairs(atom, atomIndex, stereo, stereoFlag)));
     sb.append(sMore);
 
     // check the next bond
@@ -678,6 +673,49 @@ public class SmilesGenerator {
     prevSp2Atoms = sp2Atoms;
     prevAtom = atom;
     return atomNext;
+  }
+
+  private String checkStereoPairs(JmolNode atom, int atomIndex,
+                                  JmolNode[] stereo, int stereoFlag) {
+    //for (int jj = 0; jj < 7; jj++)
+    //System.out.print(stereo[jj] + " ");
+    //System.out.println(" " + atom);
+    if (stereoFlag == 4 && (atom.getElementNumber()) == 6) {
+      String s = "";
+      // do a quick check for two of the same group.
+      for (int i = 0; i < 4; i++) {
+        int n = stereo[i].getAtomicAndIsotopeNumber();
+        int nx = stereo[i].getCovalentBondCount();
+        if (n != 6 && nx > 1)
+          continue;
+        int nh = (n == 6 ? stereo[i].getCovalentHydrogenCount() : 0);
+        // for C we use nh -- CH3, for example.
+        // for other atoms, we use number of bonds.
+        // just checking for 1 bond (to this atom, or 3 hydrogens)
+        if (nh > 0 && (nx != 4 || nh != 3))
+          continue;
+        String sa = ";" + n + "/" + nh + "/" + nx + ",";
+        if (s.indexOf(sa) >= 0) {
+          if (nh == 3) {
+            // must check isotopes for CH3
+            int ndt = 0;
+            for (int j = 0; j < nx && ndt < 3; j++) {
+              int ia = stereo[i].getBondedAtomIndex(j);
+              if (ia == atomIndex)
+                continue;
+              ndt += atoms[ia].getAtomicAndIsotopeNumber();
+            }
+            if (ndt > 3)
+              continue;
+          }
+          stereoFlag = 10;
+          break;
+        }
+        s += sa;
+      }
+    }
+    return (stereoFlag > 6 ? "" : SmilesSearch.getStereoFlag(atom, stereo,
+        stereoFlag, vTemp));
   }
 
   private String getRingCache(int i0, int i1, Map<String, Object[]> ht) {

@@ -1794,7 +1794,6 @@ public class ActionManager {
       return;
     case PICKING_INVERT_STEREO:
       if (isBound(action, ACTION_assignNew)) {
-        // only for rings
         bs = viewer.getAtomBitSet("connected(atomIndex=" + atomIndex
             + ") and !within(SMARTS,'[r50,R]')");
         int nb = bs.cardinality();

@@ -48,18 +48,6 @@ public final class TypeConversion {
   }
 
   /**
-   * Helper method for converting a List<T> to a T[]
-   * 
-   * @param <T> Type of objects in the list.
-   * @param list List of objects.
-   * @return Array of objects.
-   */
-  @SuppressWarnings("unchecked")
-  public static <T> T[] convertListToArray(List<T> list) {
-    return (T[]) list.toArray();
-  }
-
-  /**
    * Helper method for creating a Hashtable<K, V>[] without warnings.
    * 
    * @param <K> Type of object for the keys in the map.

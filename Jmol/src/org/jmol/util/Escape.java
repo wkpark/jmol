@@ -658,8 +658,7 @@ public class Escape {
   public static String toReadable(Object info) {
     return toReadable(null, info);
   }
-  
-  @SuppressWarnings("unchecked")
+
   public static String toReadable(String name, Object info) {
     StringBuilder sb =new StringBuilder();
     String sep = "";

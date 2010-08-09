@@ -28,6 +28,7 @@ import org.jmol.adapter.smarter.*;
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
+import org.jmol.util.TypeConversion;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -431,8 +432,8 @@ abstract public class MOReader extends BasisFunctionReader {
           // NBOs
         }
         if (mos == null || nThisLine > mos.length) {
-          mos = new Hashtable[nThisLine];
-          data = new ArrayList[nThisLine];
+          mos = TypeConversion.createArrayOfHashtable(nThisLine);
+          data = TypeConversion.createArrayOfArrayList(nThisLine);
         }
         for (int i = 0; i < nThisLine; i++) {
           mos[i] = new Hashtable<String, Object>();

@@ -41,6 +41,7 @@ import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
+import org.jmol.util.TypeConversion;
 import org.jmol.util.XmlReader;
 
 public class JvxlXmlReader extends VolumeFileReader {
@@ -158,7 +159,8 @@ public class JvxlXmlReader extends VolumeFileReader {
     jvxlReadSurfaceInfo();
   }
 
-  protected void jvxlSkipData(int nPoints, boolean doSkipColorData)
+  protected void jvxlSkipData(@SuppressWarnings("unused") int nPoints,
+                              @SuppressWarnings("unused") boolean doSkipColorData)
       throws Exception {
     readLine();
     xr.skipTag("jvxlSurface");
@@ -326,7 +328,8 @@ public class JvxlXmlReader extends VolumeFileReader {
     super.readSurfaceData(false);
   }
 
-  protected String jvxlReadData(String type, int nPoints) {
+  protected String jvxlReadData(String type,
+                                @SuppressWarnings("unused") int nPoints) {
     String str;
     try {
       if (type.equals("edge")) {
@@ -623,7 +626,7 @@ public class JvxlXmlReader extends VolumeFileReader {
         pt = nextp[0] - 1;
         break;
       default:
-        idiff = (int) ch - b0;
+        idiff = ch - b0;
       }
       ilast += idiff;
       triangle[p] = ilast;
@@ -672,7 +675,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     }
     int n = vs.size();
     if (n > 0)
-      jvxlData.vContours = new List[n];
+      jvxlData.vContours = TypeConversion.createArrayOfArrayList(n);
     // 3D contour values and colors
     jvxlData.contourColixes = params.contourColixes = new short[n];
     jvxlData.contourValues = params.contoursDiscrete = new float[n];

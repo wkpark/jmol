@@ -24,7 +24,6 @@
 
 package org.jmol.minimize.forcefield;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +32,7 @@ import javax.vecmath.Vector3d;
 import org.jmol.minimize.MinAtom;
 import org.jmol.minimize.MinBond;
 import org.jmol.minimize.Util;
+import org.jmol.util.TypeConversion;
 
 abstract class Calculations {
 
@@ -50,7 +50,7 @@ abstract class Calculations {
   final static int CALC_MAX = 6;
 
   ForceField ff;
-  List<Object[]>[] calculations = new ArrayList[CALC_MAX];
+  List<Object[]>[] calculations = TypeConversion.createArrayOfArrayList(CALC_MAX);
   public Map<String, FFParam> ffParams;
   
   int atomCount;
@@ -171,7 +171,7 @@ abstract class Calculations {
     return energy;
   }
 
-  double energyStrBnd(boolean gradients) {
+  double energyStrBnd(@SuppressWarnings("unused") boolean gradients) {
     return 0.0f;
   }
 

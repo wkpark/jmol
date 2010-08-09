@@ -428,7 +428,6 @@ abstract public class AtomCollection {
     return points;
   }
 
-  @SuppressWarnings("unchecked")
   public void setAtomCoord(BitSet bs, int tokType, Object xyzValues) {
     Point3f xyz = null;
     Point3f[] values = null;

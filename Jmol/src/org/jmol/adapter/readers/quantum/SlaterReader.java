@@ -26,6 +26,7 @@ package org.jmol.adapter.readers.quantum;
 
 import org.jmol.quantum.SlaterData;
 import org.jmol.util.Logger;
+import org.jmol.util.TypeConversion;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -154,7 +155,7 @@ abstract class SlaterReader extends BasisFunctionReader {
    */
   
   protected void sortOrbitals() {
-    Map<String, Object>[] array = orbitals.toArray(new Map[0]);
+    Map<String, Object>[] array = TypeConversion.convertListToArray(orbitals);
     Arrays.sort(array, new OrbitalSorter());
     orbitals.clear();
     for (int i = 0; i < array.length; i++)

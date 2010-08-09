@@ -34,6 +34,7 @@ import java.util.Map;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
+import org.jmol.util.TypeConversion;
 
 /**
  * Reader for Psi3 output files. -- http://www.psicode.org/
@@ -382,8 +383,8 @@ Orbital energies (a.u.):
     //TODO: This reader will fail for G orbitals
     //TODO: No way to check order
     
-    Map<String, Object>[] mos = new Hashtable[5];
-    List<String>[] data = new ArrayList[5];
+    Map<String, Object>[] mos = TypeConversion.createArrayOfHashtable(5);
+    List<String>[] data = TypeConversion.createArrayOfArrayList(5);
     int nThisLine = 0;
     while (readLine() != null && line.toUpperCase().indexOf("DENS") < 0) {
       String[] tokens = getTokens();

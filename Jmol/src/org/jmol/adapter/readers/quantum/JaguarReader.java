@@ -26,6 +26,7 @@ package org.jmol.adapter.readers.quantum;
 
 import org.jmol.adapter.smarter.*;
 import org.jmol.util.Logger;
+import org.jmol.util.TypeConversion;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -167,7 +168,7 @@ public class JaguarReader extends MOReader {
     String lastAtom = "";
     int iAtom = -1;
     int[][] sdata = new int[moCount][4];
-    List<float[]>[] sgdata = new ArrayList[moCount];
+    List<float[]>[] sgdata = TypeConversion.createArrayOfArrayList(moCount);
     String[] tokens;
     gaussianCount = 0;
 

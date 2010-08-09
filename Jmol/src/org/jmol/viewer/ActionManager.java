@@ -1753,10 +1753,10 @@ public class ActionManager {
         return;
       if (atomPickingMode == PICKING_MEASURE_SEQUENCE)
         getSequence();
-      else 
-        viewer.setStatusMeasuring("measurePicked", n, 
-            measurementQueued.getStringDetail());
-      if (atomPickingMode == PICKING_MEASURE 
+      else
+        viewer.setStatusMeasuring("measurePicked", n, measurementQueued
+            .getStringDetail());
+      if (atomPickingMode == PICKING_MEASURE
           || pickingStyleMeasure == PICKINGSTYLE_MEASURE_ON) {
         viewer.script("measure "
             + measurementQueued.getMeasurementScript(" ", true));
@@ -1797,15 +1797,38 @@ public class ActionManager {
         // only for rings
         bs = viewer.getAtomBitSet("connected(atomIndex=" + atomIndex
             + ") and !within(SMARTS,'[r50,R]')");
-        switch (bs.cardinality()) {
+        int nb = bs.cardinality();
+        switch (nb) {
         case 0:
         case 1:
-          break;
+          // not enough non-ring atoms
+          return;
         case 2:
-          viewer.undoAction(true, atomIndex, AtomCollection.TAINT_COORD);
-          viewer.invertSelected(null, null, atomIndex, bs);
           break;
+        case 3:
+        case 4:
+          // three or four are not in a ring. So let's find the shortest two
+          // branches and invert them.
+          int[] lengths = new int[nb];
+          int[] points = new int[nb];
+          int ni = 0;
+          for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1), ni++) {
+            lengths[ni] = viewer.getBranchBitSet(i, atomIndex).cardinality();
+            points[ni] = i;
+          }
+          for (int j = 0; j < nb - 2; j++) {
+            int max = Integer.MIN_VALUE;
+            int imax = 0;
+            for (int i = 0; i < nb; i++)
+              if (lengths[i] >= max && bs.get(points[i])) {
+                imax = points[i];
+                max = lengths[i];
+              }
+            bs.clear(imax);
+          }
         }
+        viewer.undoAction(true, atomIndex, AtomCollection.TAINT_COORD);
+        viewer.invertSelected(null, null, atomIndex, bs);
       }
       return;
     case PICKING_DELETE_ATOM:

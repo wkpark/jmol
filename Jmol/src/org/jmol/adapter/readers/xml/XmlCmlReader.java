@@ -547,7 +547,7 @@ public class XmlCmlReader extends XmlReader {
     case LATTICE_VECTOR:
       float[] values = new float[3];
       getTokensFloat(chars, values, 3);
-      parent.addPrimitiveLatticeVector(latticeVectorPtr, values);
+      parent.addPrimitiveLatticeVector(latticeVectorPtr, values, 0);
       latticeVectorPtr = (latticeVectorPtr + 1) % 3;
       setKeepChars(false);
       state = START;

@@ -180,7 +180,7 @@ public class AimsReader extends AtomSetCollectionReader {
     float[] lv = new float[3];
     for (int n = 0; n < 3; n++) {
       abc[n].get(lv);
-      addPrimitiveLatticeVector(n, lv);
+      addPrimitiveLatticeVector(n, lv, 0);
     }
   }
 }

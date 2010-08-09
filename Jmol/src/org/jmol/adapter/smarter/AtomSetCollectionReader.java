@@ -435,8 +435,15 @@ public abstract class AtomSetCollectionReader {
     }
     if (htParams.containsKey("unitcell")) {
       float[] fParams = (float[]) htParams.get("unitcell");
-      setUnitCell(fParams[0], fParams[1], fParams[2], fParams[3], fParams[4],
-          fParams[5]);
+      if (fParams.length == 9) {
+        // these are vectors
+        addPrimitiveLatticeVector(0, fParams, 0);
+        addPrimitiveLatticeVector(1, fParams, 3);
+        addPrimitiveLatticeVector(2, fParams, 6);
+      } else {
+        setUnitCell(fParams[0], fParams[1], fParams[2], fParams[3], fParams[4],
+            fParams[5]);
+      }
       ignoreFileUnitCell = iHaveUnitCell;
     }
     
@@ -577,12 +584,18 @@ public abstract class AtomSetCollectionReader {
     iHaveUnitCell = checkUnitCell(6);
   }
   
-  public void addPrimitiveLatticeVector(int i, float[] xyz) {
+  public void addPrimitiveLatticeVector(int i, float[] xyz, int i0) {
+    if (ignoreFileUnitCell)
+      return;
     i = 6 + i * 3;
-    notionalUnitCell[i++] = xyz[0];
-    notionalUnitCell[i++] = xyz[1];
-    notionalUnitCell[i++] = xyz[2];
-    checkUnitCell(15);
+    notionalUnitCell[i++] = xyz[i0++];
+    notionalUnitCell[i++] = xyz[i0++];
+    notionalUnitCell[i] = xyz[i0];
+    if (Float.isNaN(notionalUnitCell[0])) {
+      for (i = 0; i < 6; i++)
+        notionalUnitCell[i] = -1;
+    }
+    iHaveUnitCell = checkUnitCell(15);
   }
 
   private boolean checkUnitCell(int n) {

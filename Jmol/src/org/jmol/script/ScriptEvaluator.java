@@ -8141,7 +8141,7 @@ public class ScriptEvaluator {
         }
         if (tokAt(i) == Token.unitcell) {
           ++i;
-          fparams = floatParameterSet(i, 6, 6);
+          fparams = floatParameterSet(i, 6, 9); // allow for specific vectors
           i = iToken;
           sOptions += " unitcell {";
           for (int j = 0; j < 6; j++)

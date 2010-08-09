@@ -27,6 +27,7 @@ package org.jmol.util;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 import org.jmol.viewer.JmolConstants;
 
@@ -70,6 +71,53 @@ public class SimpleUnitCell {
     beta = parameters[4];
     gamma = parameters[5];
 
+    if (a <= 0) {
+      if (parameters.length > 14 && !Float.isNaN(parameters[14])) {
+        // must calculate a, b, c alpha beta gamma from vectors;
+        Vector3f va = new Vector3f(parameters[6], parameters[7], parameters[8]);
+        Vector3f vb = new Vector3f(parameters[9], parameters[10], parameters[11]);
+        Vector3f vc = new Vector3f(parameters[12], parameters[13], parameters[14]);
+        a = va.length();
+        b = vb.length();
+        c = vc.length();
+        if (b == 0)
+          b = c = -1;  //polymer
+        else if (c == 0)
+          c = -1; //slab
+        alpha = (b < 0 || c < 0 ? 90 : vb.angle(vc) / toRadians);
+        beta = (c < 0 ? 90 : va.angle(vc) / toRadians);
+        gamma = (b < 0 ? 90 : va.angle(vb) / toRadians);
+        if (c < 0) {
+          float[] n = parameters.clone();
+          n[0] = a;
+          n[1] = b;
+          n[2] = c;
+          n[3] = alpha;
+          n[4] = beta;
+          n[5] = gamma;
+          if (b < 0) {
+            vb.set(0, 0, 1);
+            vb.cross(vb, va);
+            if (vb.length() < 0.001f)
+              vb.set(0, 1, 0);
+            vb.normalize();
+            n[9] = vb.x;
+            n[10] = vb.y;
+            n[11] = vb.z;
+          }
+          if (c < 0) {
+            vc.cross(va, vb);
+            vc.normalize();
+            n[12] = vc.x;
+            n[13] = vc.y;
+            n[14] = vc.z;
+          }
+          parameters = n;
+        }
+      } else {
+        return;
+      }
+    }
     if (b == -1) {
       b = c = 1;
       isPolymer = true;
@@ -94,20 +142,24 @@ public class SimpleUnitCell {
     b_ = a * c * sinBeta / volume;
     c_ = a * b * sinGamma / volume;
 
-    if (parameters.length > 6 && !Float.isNaN(parameters[21])) {
+    if (parameters.length > 21 && !Float.isNaN(parameters[21])) {
+      // parameters with a 3x4 matrix
+      // [a b c alpha beta gamma m00 m01 m02 m03 m10 m11.... m20...]
+      // this is for PDB and CIF reader
       float[] scaleMatrix = new float[16];
       for (int i = 0; i < 16; i++)
         scaleMatrix[i] = parameters[6 + i];
       matrixCartesianToFractional = new Matrix4f(scaleMatrix);
       matrixFractionalToCartesian = new Matrix4f();
       matrixFractionalToCartesian.invert(matrixCartesianToFractional);
-    } else if (parameters.length > 6 && !Float.isNaN(parameters[14])) {
+    } else if (parameters.length > 14 && !Float.isNaN(parameters[14])) {
+      // parameters with a 3 vectors
+      // [a b c alpha beta gamma ax ay az bx by bz cx cy cz...]
       isPrimitive = true;
       Matrix4f m = matrixFractionalToCartesian = new Matrix4f();
-      float[] n = parameters;
-      m.setColumn(0, n[6], n[7], n[8], 0);
-      m.setColumn(1, n[9], n[10], n[11], 0);
-      m.setColumn(2, n[12], n[13], n[14], 0);
+      m.setColumn(0, parameters[6], parameters[7], parameters[8], 0);
+      m.setColumn(1, parameters[9], parameters[10], parameters[11], 0);
+      m.setColumn(2, parameters[12], parameters[13], parameters[14], 0);
       m.setColumn(3, 0, 0, 0, 1);
       matrixCartesianToFractional = new Matrix4f();
       matrixCartesianToFractional.invert(matrixFractionalToCartesian);

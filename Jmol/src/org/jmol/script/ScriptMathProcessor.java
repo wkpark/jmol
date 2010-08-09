@@ -806,13 +806,12 @@ class ScriptMathProcessor {
               return addX("ENANTIOMERS");
           }
           // remove all stereochemistry from SMILES string
-          smiles1 = TextFormat.replaceAllCharacters(smiles1, "/\\@", ' ');
           if (bs2 == null) {
-            smiles2 = TextFormat.replaceAllCharacters(smiles2, "/\\@", ' ');
-            check = (viewer.getSmilesMatcher().areEqual(smiles2, smiles1) > 0);
+            check = (viewer.getSmilesMatcher().areEqual(smiles2, "/nostereo/" + smiles1) > 0);
           } else {
-            check = (((BitSet) eval.getSmilesMatches(smiles1, null, bs2, null,
-                false, true)).nextSetBit(0) >= 0);
+            Object ret = eval.getSmilesMatches("/nostereo/" + smiles1, null, bs2, null,
+                false, true);
+            check = (((BitSet) ret).nextSetBit(0) >= 0);
           }
           if (check)
             return addX("DIASTERIOMERS");

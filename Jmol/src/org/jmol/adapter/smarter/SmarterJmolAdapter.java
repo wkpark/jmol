@@ -263,6 +263,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
     return staticGetAtomSetCollectionOrBufferedReaderFromZip(is, fileName, zipDirectory, htParams, 1, asBufferedReader);
   }
 
+  @SuppressWarnings("unchecked")
   private static Object staticGetAtomSetCollectionOrBufferedReaderFromZip(
                                     InputStream is, String fileName,
                                     String[] zipDirectory, Map<String, Object> htParams,

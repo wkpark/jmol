@@ -232,7 +232,7 @@ public class ShelxReader extends AtomSetCollectionReader {
     float x = parseFloat(tokens[2]);
     float y = parseFloat(tokens[3]);
     float z = parseFloat(tokens[4]);
-    if (elementIndex == Integer.MAX_VALUE || Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z)) {
+    if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z)) {
       Logger.error("skipping line " + line);
       return;
     }

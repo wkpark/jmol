@@ -959,7 +959,7 @@ public class SmilesSearch extends JmolMolecule {
           return false;
         atom4 = null;
         if (Logger.debugging)
-          Logger.debug("...type " + chiralClass);
+          Logger.debug("...type " + chiralClass + " for pattern atom " + sAtom + " " + atom0);
         switch (chiralClass) {
         //        case SmilesAtom.STEREOCHEMISTRY_DOUBLE_BOND:
         case SmilesAtom.STEREOCHEMISTRY_ALLENE:
@@ -1566,15 +1566,15 @@ public class SmilesSearch extends JmolMolecule {
    * @param c
    * @param pt
    * @param v
-   * @return   1 for "@", -1 for "@@"  
+   * @return   1 for "@", 2 for "@@"  
    */
   private static int getHandedness(JmolNode a, JmolNode b, JmolNode c, JmolNode pt, VTemp v) {
     float d = SmilesAromatic.getNormalThroughPoints(a, b, c, v.vTemp, v.vA, v.vB);
     //System.out.println("draw p1 @{point" + new Point3f((Point3f)a) +"} color red");
     //System.out.println("draw p2 @{point" + new Point3f((Point3f)b)+"} color green");
     //System.out.println("draw p3 @{point" + new Point3f((Point3f)c)+"} color blue");
-    //System.out.println("draw p plane @{point" + new Point3f((Point3f)a) +"} @{point" + new Point3f((Point3f)b)+"} @{point" + new Point3f((Point3f)c)+"}");
-    //System.out.println("draw v vector {0 0 0} @{point" + v.vTemp+"}");
+    //System.out.println("draw p @{point" + new Point3f((Point3f)a) +"} @{point" + new Point3f((Point3f)b)+"} @{point" + new Point3f((Point3f)c)+"}");
+    //System.out.println("draw v vector @{point" + new Point3f((Point3f)pt) + "} @{point" + v.vTemp+"}");
     return (distanceToPlane(v.vTemp, d, (Point3f) pt) > 0 ? 1 : 2);
   }
 

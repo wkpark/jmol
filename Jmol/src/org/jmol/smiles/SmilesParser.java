@@ -1332,6 +1332,12 @@ public class SmilesParser {
     return (i < 10 ? "" + i : i < 100 ? "%" + i : "%(" + i + ")");
   }
 
+  /**
+   * 
+   * @param pattern
+   * @param isSmarts
+   * @return  comments and white space removed, also ^^ to '
+   */
   private static String cleanPattern(String pattern, boolean isSmarts) {
     pattern = pattern.replaceAll("\\s", "").replaceAll("\\^\\^","'");
     int i = 0;

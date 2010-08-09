@@ -66,7 +66,7 @@ public class SmilesGenerator {
   private BitSet bsBondsDn = new BitSet();
   private BitSet bsToDo;
   private JmolNode prevAtom;
-  private JmolNode[] prevBondAtoms;
+  private JmolNode[] prevSp2Atoms;
   private boolean stereoShown;
   
   // outputs
@@ -258,7 +258,7 @@ public class SmilesGenerator {
         atom = atoms[bsToDo.nextSetBit(0)];
       }
       sb.append(".");
-      prevBondAtoms = null;
+      prevSp2Atoms = null;
       prevAtom = null;
       while ((atom = getSmiles(sb, atom, allowConnectionsToOutsideWorld)) != null) {
       }
@@ -416,11 +416,12 @@ public class SmilesGenerator {
       return null;
     bsToDo.clear(atomIndex);
     boolean isExtension = (!bsSelected.get(atomIndex));
-    boolean havePreviousBondAtoms = (prevBondAtoms != null);
     int prevIndex = (prevAtom == null ? -1 : prevAtom.getIndex());
     boolean isAromatic = bsAromatic.get(atomIndex);
-    JmolNode[] bondAtoms = prevBondAtoms;
-    int nBondAtoms = 0;
+    // prevSp2Atoms is for allene ABC=C=CDE
+    boolean havePreviousSp2Atoms = (prevSp2Atoms != null);
+    JmolNode[] sp2Atoms = prevSp2Atoms;
+    int nSp2Atoms = 0;
     int atomicNumber = atom.getElementNumber();
     int nH = 0;
     List<JmolEdge> v = new ArrayList<JmolEdge>();
@@ -476,21 +477,21 @@ public class SmilesGenerator {
     
     // add the bond to the previous atom
 
+    //System.out.println(" " + atom);
+
     String strBond = null;
-    if (bondAtoms == null)
-      bondAtoms = new JmolNode[5];
+    if (sp2Atoms == null)
+      sp2Atoms = new JmolNode[5];
     if (bondPrev == null) {
       //stereoShown = true;
     } else {
       strBond = SmilesBond.getBondOrderString(bondPrev.getCovalentOrder());
-      if (prevBondAtoms == null)
-        bondAtoms[nBondAtoms++] = prevAtom;
+      if (prevSp2Atoms == null)
+        sp2Atoms[nSp2Atoms++] = prevAtom;
       else
-        nBondAtoms = 2;
+        nSp2Atoms = 2;
     }
-    if (stereoFlag < 7 && nH == 1)
-      stereo[stereoFlag++] = aH;
-    nBondAtoms += nH;
+    nSp2Atoms += nH;
 
     // get bond0 
     int nMax = 0;
@@ -513,16 +514,21 @@ public class SmilesGenerator {
     int orderNext = (bond0 == null ? 0 : bond0.getCovalentOrder());
     
     if (stereoFlag < 7 && bondPrev != null) {
-      if (bondPrev.getCovalentOrder() == 2 && orderNext == 2 && prevBondAtoms != null && prevBondAtoms[1] != null) {
+      if (bondPrev.getCovalentOrder() == 2 
+          && orderNext == 2 && prevSp2Atoms != null 
+          && prevSp2Atoms[1] != null) {
         // allene continuation
-        stereo[stereoFlag++] = prevBondAtoms[0];
-        stereo[stereoFlag++] = prevBondAtoms[1];
+        stereo[stereoFlag++] = prevSp2Atoms[0];
+        stereo[stereoFlag++] = prevSp2Atoms[1];
       } else {
         stereo[stereoFlag++] = prevAtom;
       }
     }
 
-    boolean deferStereo = (orderNext == 1 && prevBondAtoms == null);
+    if (stereoFlag < 7 && nH == 1)
+      stereo[stereoFlag++] = aH;
+
+    boolean deferStereo = (orderNext == 1 && prevSp2Atoms == null);
     char chBond = getBondStereochemistry(bondPrev, prevAtom);
 
     // now construct the branches part
@@ -536,7 +542,7 @@ public class SmilesGenerator {
       StringBuffer s2 = new StringBuffer();
       s2.append("(");
       prevAtom = atom;
-      prevBondAtoms = null;
+      prevSp2Atoms = null;
       //boolean b = stereoShown;
       JmolEdge bond0t = bond0;
       //stereoShown = false;
@@ -550,8 +556,8 @@ public class SmilesGenerator {
       v.remove(i--);
       if (stereoFlag < 7)
         stereo[stereoFlag++] = a;
-      if (nBondAtoms < 5)
-        bondAtoms[nBondAtoms++] = a;
+      if (nSp2Atoms < 5)
+        sp2Atoms[nSp2Atoms++] = a;
     }
 
     // from here on, prevBondAtoms and prevAtom must not be used.    
@@ -560,12 +566,12 @@ public class SmilesGenerator {
     // and cancel any double bond stereochemistry if nec.
 
     int index2 = (orderNext == 2 ? atomNext.getIndex() : -1);
-    if (nH > 1 || isAromatic
+    if (nH > 1 || isAromatic || index2 < 0
         || SmilesSearch.isRingBond(ringSets, atomIndex, index2)) {
-      nBondAtoms = -1;
+      nSp2Atoms = -1;
     }
-    if (nBondAtoms < 0) {
-      bondAtoms = null;
+    if (nSp2Atoms < 0) {
+      sp2Atoms = null;
     } else {
 //      stereoShown = false;
     }
@@ -606,25 +612,28 @@ public class SmilesGenerator {
       sMore.append(s);
       if (stereoFlag < 7)
         stereo[stereoFlag++] = a;
-      if (bondAtoms != null && nBondAtoms < 5)
-        bondAtoms[nBondAtoms++] = a;
+      if (sp2Atoms != null && nSp2Atoms < 5)
+        sp2Atoms[nSp2Atoms++] = a;
     }
 
     // now the atom symbol or bracketed expression
     // we allow for charge, hydrogen count, isotope number,
     // and stereochemistry 
 
-    if (havePreviousBondAtoms && stereoFlag == 2 && orderNext == 2 && atomNext.getCovalentBondCount() == 3) {
-      // NOT cumulenes.
+    if (havePreviousSp2Atoms && stereoFlag == 2 && orderNext == 2 && atomNext.getCovalentBondCount() == 3) {
+      // this is for allenes only, not cumulenes
       bonds = atomNext.getEdges();
       for (int k = 0; k < bonds.length; k++) {
         if (bonds[k].isCovalent() && atomNext.getBondedAtomIndex(k) != atomIndex)
           stereo[stereoFlag++] = atoms[atomNext.getBondedAtomIndex(k)]; 
       }
-      nBondAtoms = 0;
+      nSp2Atoms = 0;
     } else if (atomNext != null && stereoFlag < 7) {
       stereo[stereoFlag++] = atomNext;
     }
+    //for (int jj = 0; jj < 7; jj++)
+      //System.out.print(stereo[jj] + " ");
+    //System.out.println(" " + atom);
     String s = (stereoFlag > 6 ? "" : SmilesSearch.getStereoFlag(atom, stereo,
         stereoFlag, vTemp));
     int valence = atom.getValence();
@@ -635,12 +644,13 @@ public class SmilesGenerator {
     // for bioSMARTS we provide the connecting atom if 
     // present. For example, in 1BLU we have 
     // .[CYS.SG#16] could match either the atom number or the element number 
+    if (Logger.debugging)
+      sb.append("\n//* " + atom  + " *//\t");
     if (isExtension && groupType.length() != 0 && atomName.length() != 0)
       addBracketedBioName(sb, atom, "." + atomName);
     else
       sb.append(SmilesAtom.getAtomLabel(atomicNumber, isotope, valence, charge,
           nH, isAromatic, s));
-    //sb.append("{" + atomIndex  + "}");
     sb.append(sMore);
 
     // check the next bond
@@ -648,21 +658,24 @@ public class SmilesGenerator {
     if (bond0 == null)
       return null;
 
-    if (nBondAtoms != 1 && nBondAtoms != 2) {
-      bondAtoms = null;
-      nBondAtoms = 0;
-      //stereoShown = true;
-    } else {
-      if (bondAtoms[0] == null)
-        bondAtoms[0] = atom; // CN= , for example. close enough!
-      if (bondAtoms[1] == null)
-        bondAtoms[1] = atom; // .C3=
+    if (orderNext == 2 && (nSp2Atoms == 1 || nSp2Atoms == 2)) {
+      if (sp2Atoms[0] == null)
+        sp2Atoms[0] = atom; // CN=C= , for example. close enough!
+      if (sp2Atoms[1] == null)
+        sp2Atoms[1] = atom; // .C3=C=
       stereoShown = false;
+    } else {
+      sp2Atoms = null;
+      nSp2Atoms = 0;
+      //stereoShown = true;
     }
     if (orderNext == 2)
       stereoShown = false;
-      
-    prevBondAtoms = bondAtoms;
+
+    // prevSp2Atoms is only so that we can track
+    // ABC=C=CDE  systems
+    
+    prevSp2Atoms = sp2Atoms;
     prevAtom = atom;
     return atomNext;
   }

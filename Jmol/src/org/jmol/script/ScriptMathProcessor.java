@@ -742,53 +742,114 @@ class ScriptMathProcessor {
     return false;
   }
 
-  private boolean evaluateCompare(ScriptVariable[] args)
-      throws ScriptException {
+  private boolean evaluateCompare(ScriptVariable[] args) throws ScriptException {
     // compare({bitset} or [{positions}],{bitset} or [{positions}] [,"stddev"])
     // compare({bitset},{bitset}[,"SMARTS"|"SMILES"],smilesString [,"stddev"])
     // returns matrix4f for rotation/translation or stddev
+    // compare({bitset},{bitset},"ISOMER")  12.1.5
+
     if (args.length < 2 || args.length > 5)
       return false;
     float stddev;
     String sOpt = ScriptVariable.sValue(args[args.length - 1]);
     boolean isStdDev = sOpt.equalsIgnoreCase("stddev");
-    boolean isSmiles = (args.length > (isStdDev ? 3 : 2));
-    if (isSmiles
-        && (args[0].tok != Token.bitset || args[1].tok != Token.bitset))
-      return false;
+    boolean isIsomer = sOpt.equalsIgnoreCase("ISOMER");
+    boolean isSmiles = (!isIsomer && args.length > (isStdDev ? 3 : 2));
+    BitSet bs1 = (args[0].tok == Token.bitset ? (BitSet) args[0].value : null);
+    BitSet bs2 = (args[1].tok == Token.bitset ? (BitSet) args[1].value : null);
+    String smiles1 = (bs1 == null ? ScriptVariable.sValue(args[0]) : "");
+    String smiles2 = (bs2 == null ? ScriptVariable.sValue(args[1]) : "");
     Matrix4f m = new Matrix4f();
-    if (isSyntaxCheck) {
-      m.setIdentity();
-      stddev = 0;
-    } else {
-      stddev = Float.NaN;
-      List<Point3f> ptsA, ptsB;
-      if (isSmiles) {
-        ptsA = new ArrayList<Point3f>();
-        ptsB = new ArrayList<Point3f>();
-        sOpt = ScriptVariable.sValue(args[2]);
-        isSmiles = sOpt.equalsIgnoreCase("SMILES");
-        boolean isSearch = sOpt.equalsIgnoreCase("SMARTS");
-        if (isSmiles || isSearch)
-          sOpt = (args.length > 3 ? ScriptVariable.sValue(args[3]) : null);
-        if (sOpt == null)
-          return false;
-        stddev = eval.getSmilesCorrelation((BitSet) args[0].value, 
-            (BitSet) args[1].value, sOpt, ptsA, ptsB, m, null, !isSmiles);
+    stddev = Float.NaN;
+    List<Point3f> ptsA, ptsB;
+    if (isSmiles) {
+      if (bs1 == null || bs2 == null)
+        return false;
+    }
+    if (isIsomer) {
+      if (args.length != 3)
+        return false;
+      String mf1 = (bs1 == null ? viewer.getSmilesMatcher()
+          .getMolecularFormula(smiles1, false) : JmolMolecule.getMolecularFormula(
+          viewer.getModelSet().atoms, bs1, false));
+      String mf2 = (bs2 == null ? viewer.getSmilesMatcher()
+          .getMolecularFormula(smiles2, false) : JmolMolecule.getMolecularFormula(
+          viewer.getModelSet().atoms, bs2, false));
+      if (!mf1.equals(mf2))
+        return addX("NONE");
+      if (bs1 != null)
+        smiles1 = (String) eval.getSmilesMatches("", null, bs1, null, false, true);
+      boolean check;
+      if (bs2 == null) {
+        // note: find smiles1 IN smiles2 here
+        check = (viewer.getSmilesMatcher().areEqual(smiles2, smiles1) > 0);
       } else {
-        ptsA = eval.getPointVector(args[0].value, 0);
-        ptsB = eval.getPointVector(args[1].value, 0);
-        if (ptsA != null && ptsB != null)
-          stddev = Measure.getTransformMatrix4(ptsA, ptsB, m, null);
+        check = (((BitSet) eval.getSmilesMatches(smiles1, null, bs2, null,
+            false, true)).nextSetBit(0) >= 0);
       }
+      if (!check) {
+        // MF matched, but didn't match SMILES
+        String s = smiles1 + smiles2;
+        if (s.indexOf("/") >= 0 || s.indexOf("\\") >= 0 || s.indexOf("@") >= 0) {
+          if (smiles1.indexOf("@") >= 0 && (bs2 != null || smiles2.indexOf("@") >= 0)) {
+            // reverse chirality centers
+            smiles1 = TextFormat.simpleReplace(smiles1, "@@", "!@");
+            smiles1 = TextFormat.simpleReplace(smiles1, "@", "@@");
+            smiles1 = TextFormat.simpleReplace(smiles1, "!@@", "@");
+            if (bs2 == null) {
+              check = (viewer.getSmilesMatcher().areEqual(smiles1, smiles2) > 0);
+            } else {
+              check = (((BitSet) eval.getSmilesMatches(smiles1, null, bs2,
+                  null, false, true)).nextSetBit(0) >= 0);
+            }
+            if (check)
+              return addX("ENANTIOMERS");
+          }
+          // remove all stereochemistry from SMILES string
+          smiles1 = TextFormat.replaceAllCharacters(smiles1, "/\\@", ' ');
+          if (bs2 == null) {
+            smiles2 = TextFormat.replaceAllCharacters(smiles2, "/\\@", ' ');
+            check = (viewer.getSmilesMatcher().areEqual(smiles2, smiles1) > 0);
+          } else {
+            check = (((BitSet) eval.getSmilesMatches(smiles1, null, bs2, null,
+                false, true)).nextSetBit(0) >= 0);
+          }
+          if (check)
+            return addX("DIASTERIOMERS");
+        }
+        // MF matches, but not enantiomers or diasteriomers
+        return addX("CONSTITUTIONAL ISOMERS");
+      }
+      //identical or conformational 
+      if (bs1 == null || bs2 == null)
+        return addX("IDENTICAL");
+      stddev = eval.getSmilesCorrelation(bs1, bs2, smiles1, null, null, null,
+          null, false);
+      return addX(stddev < 0.2f ? "IDENTICAL"
+          : "IDENTICAL or CONFORMATIONAL ISOMERS (RMSD=" + stddev + ")");
+    } else if (isSmiles) {
+      ptsA = new ArrayList<Point3f>();
+      ptsB = new ArrayList<Point3f>();
+      sOpt = ScriptVariable.sValue(args[2]);
+      isSmiles = sOpt.equalsIgnoreCase("SMILES");
+      boolean isSearch = sOpt.equalsIgnoreCase("SMARTS");
+      if (isSmiles || isSearch)
+        sOpt = (args.length > 3 ? ScriptVariable.sValue(args[3]) : null);
+      if (sOpt == null)
+        return false;
+      stddev = eval.getSmilesCorrelation(bs1, bs2, sOpt, ptsA, ptsB, m, null,
+          !isSmiles);
+    } else {
+      ptsA = eval.getPointVector(args[0].value, 0);
+      ptsB = eval.getPointVector(args[1].value, 0);
+      if (ptsA != null && ptsB != null)
+        stddev = Measure.getTransformMatrix4(ptsA, ptsB, m, null);
     }
     return (isStdDev || Float.isNaN(stddev) ? addX(stddev) : addX(m));
   }
 
   private boolean evaluateVolume(ScriptVariable[] args) throws ScriptException {
     ScriptVariable x1 = getX();
-    if (isSyntaxCheck)
-      return addX(0.0f);
     if (x1.tok != Token.bitset)
       return false;
     String type = (args.length == 0 ? null : ScriptVariable.sValue(args[0]));
@@ -800,8 +861,6 @@ class ScriptMathProcessor {
     if (args.length == 0)
       return false;
     ScriptVariable x1 = (haveBitSet ? getX() : null);
-    if (isSyntaxCheck)
-      return addX(new Point3f());
     if (x1 != null && x1.tok != Token.bitset)
       return false;
     BitSet bs = (x1 != null ? (BitSet) x1.value : args.length > 2
@@ -855,7 +914,7 @@ class ScriptMathProcessor {
       return false;
     ScriptVariable x1 = getX();
     boolean isListf = (x1.tok == Token.listf);
-    if (isSyntaxCheck || !isListf && x1.tok != Token.list)
+    if (!isListf && x1.tok != Token.list)
       return addX(x1);
     float f0 = ScriptVariable.fValue(args[0]);
     float f1 = ScriptVariable.fValue(args[1]);
@@ -924,20 +983,20 @@ class ScriptMathProcessor {
               .iValue(args[0])));
       switch (tok) {
       case Token.point:
-        return addX(isSyntaxCheck ? new Point3f() : (Point3f) viewer
+        return addX(viewer
             .getHelixData(bs, Token.point));
       case Token.axis:
-        return addX(isSyntaxCheck ? new Vector3f() : (Vector3f) viewer
+        return addX(viewer
             .getHelixData(bs, Token.axis));
       case Token.radius:
-        return addX(isSyntaxCheck ? new Vector3f() : (Vector3f) viewer
+        return addX(viewer
             .getHelixData(bs, Token.radius));
       case Token.angle:
-        return addX(isSyntaxCheck ? 0 : ((Float) viewer.getHelixData(bs,
+        return addX(((Float) viewer.getHelixData(bs,
             Token.angle)).floatValue());
       case Token.draw:
       case Token.measure:
-        return addX(isSyntaxCheck ? "" : (String) viewer
+        return addX(viewer
             .getHelixData(bs, tok));
       case Token.array:
         String[] data = (String[]) viewer.getHelixData(bs, Token.list);
@@ -953,8 +1012,6 @@ class ScriptMathProcessor {
       throws ScriptException {
     if (args.length != 1)
       return false;
-    if (isSyntaxCheck)
-      return addX(1f);
     ScriptVariable x1 = getX();
     ScriptVariable x2 = args[0];
     Point3f pt2 = ptValue(x2, true);
@@ -1144,8 +1201,6 @@ class ScriptMathProcessor {
   private boolean evaluateFind(ScriptVariable[] args) throws ScriptException {
     if (args.length == 0)
       return false;
-    if (isSyntaxCheck)
-      return addX(1);
 
     // {*}.find("SMARTS", "CCCC")
     // "CCCC".find("SMARTS", "CC")
@@ -1172,8 +1227,8 @@ class ScriptMathProcessor {
         if (bs2 != null)
           return false;
         if (flags.equalsIgnoreCase("mf")) {
-          ret = (isSyntaxCheck ? "" : viewer.getSmilesMatcher()
-              .getMolecularFormula(smiles, isSearch));
+          ret = viewer.getSmilesMatcher()
+              .getMolecularFormula(smiles, isSearch);
           if (ret == null)
             eval.evalError(viewer.getSmilesMatcher().getLastException(), null);
         } else {
@@ -1195,8 +1250,7 @@ class ScriptMathProcessor {
       }
       if (ret == null)
         eval.error(ScriptEvaluator.ERROR_invalidArgument); 
-      return (ret instanceof String[] ? addX(ret)
-          : ret instanceof String ? addX(ret) : addX((BitSet) ret));
+      return addX(ret);
     }
     boolean isReverse = (flags.indexOf("v") >= 0);
     boolean isCaseInsensitive = (flags.indexOf("i") >= 0);

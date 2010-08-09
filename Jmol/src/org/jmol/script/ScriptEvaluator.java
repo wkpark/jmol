@@ -6678,7 +6678,7 @@ public class ScriptEvaluator {
 
       if (b == null) {
         showString(viewer.getSmilesMatcher().getLastException(), false);
-        return "";
+        return "?";
       }
     } else {
 
@@ -6705,7 +6705,11 @@ public class ScriptEvaluator {
         bs.or(b[j]);
       if (asAtoms)
         return bs;
-      return new BondSet(bs); // not a bondset, but this prevents subset business
+      int[] iarray = new int[bs.cardinality()];
+      int pt = 0;
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
+        iarray[pt++] = i + 1;
+      return iarray;
     }
     String[] matches = new String[b.length];
     for (int j = 0; j < b.length; j++)

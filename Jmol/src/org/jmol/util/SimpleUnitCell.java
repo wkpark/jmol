@@ -118,6 +118,8 @@ public class SimpleUnitCell {
         return;
       }
     }
+    if (a <= 0)
+      return;
     if (b <= 0) {
       b = c = 1;
       isPolymer = true;

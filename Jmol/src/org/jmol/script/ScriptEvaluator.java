@@ -6678,6 +6678,8 @@ public class ScriptEvaluator {
 
       if (b == null) {
         showString(viewer.getSmilesMatcher().getLastException(), false);
+        if (!asAtoms && !isSmarts)
+          return Integer.valueOf(-1);
         return "?";
       }
     } else {
@@ -6705,6 +6707,8 @@ public class ScriptEvaluator {
         bs.or(b[j]);
       if (asAtoms)
         return bs;
+      if (!isSmarts)
+        return Integer.valueOf(bs.cardinality());
       int[] iarray = new int[bs.cardinality()];
       int pt = 0;
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))

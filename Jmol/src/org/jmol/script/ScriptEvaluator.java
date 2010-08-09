@@ -4009,12 +4009,16 @@ public class ScriptEvaluator {
     if (haveBrace || haveSquare)
       i++;
     Point3f pt;
-    if (tokAt(i) == Token.string) {
-      String s = stringParameter(i);
+    String s = null;
+    switch (tokAt(i)) {
+      case Token.string:
+      case Token.list:
+      s = ScriptVariable.sValue(statement[i]);
       s = TextFormat.replaceAllCharacters(s, "{},[]\"'", ' ');
       fparams = Parser.parseFloatArray(s);
       n = fparams.length;
-    } else {
+      break;
+    default:
       while (n < nMax) {
         tok = tokAt(i);
         if (haveBrace && tok == Token.rightbrace || haveSquare
@@ -4045,6 +4049,8 @@ public class ScriptEvaluator {
         default:
           v.add(new Float(floatParameter(i)));
           n++;
+          if (n == nMax && haveSquare && tokAt(i+1) == Token.rightbrace)
+            i++;
         }
         i++;
       }
@@ -8141,7 +8147,9 @@ public class ScriptEvaluator {
         }
         if (tokAt(i) == Token.unitcell) {
           ++i;
-          fparams = floatParameterSet(i, 6, 9); // allow for specific vectors
+          fparams = floatParameterSet(i, 6, 9); 
+          if (fparams.length != 6 && fparams.length != 9)
+            error(ERROR_invalidArgument);
           i = iToken;
           sOptions += " unitcell {";
           for (int j = 0; j < 6; j++)

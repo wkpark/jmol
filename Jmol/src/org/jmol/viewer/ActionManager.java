@@ -644,7 +644,7 @@ public class ActionManager {
       moved.modifiers |= Binding.CTRL;
     }
     int action = Binding.LEFT+Binding.SINGLE_CLICK+moved.modifiers;
-    if(!labelMode && !binding.isUserAction(action))
+    if(!labelMode && !binding.isUserAction(action) && !isSelectAction(action))
       checkMotionRotateZoom(action, current.x, 0, 0, false);
     if (viewer.getNavigationMode()) {
       int m = ke.getModifiers();
@@ -1362,8 +1362,7 @@ public class ActionManager {
     boolean isDragSelected = (dragSelectedMode && (isBound(action,
         ACTION_rotateSelected) || isBound(action, ACTION_dragSelected)));
     
-    if (isBound(action, ACTION_pickAtom) || isBound(action, ACTION_pickPoint)
-        || isDragSelected) {
+    if (isDragSelected || isSelectAction(action)) {
       // TODO: in drawMode the binding changes
         if (tokType != Token.isosurface)
           atomOrPointPicked(nearestAtomIndex, nearestPoint, isDragSelected ? 0 : action);
@@ -1375,6 +1374,16 @@ public class ActionManager {
       return false;
     }
     return (nearestAtomIndex >= 0);
+  }
+
+  private boolean isSelectAction(int action) {
+    return (isBound(action, ACTION_pickAtom) 
+        || isBound(action, ACTION_pickPoint)
+        || isBound(action, ACTION_selectToggle)
+        || isBound(action, ACTION_selectAndNot)
+        || isBound(action, ACTION_selectOr)
+        || isBound(action, ACTION_selectToggleExtended)
+        || isBound(action, ACTION_select));
   }
 
   protected void checkMotion(int cursor) {

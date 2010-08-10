@@ -26,7 +26,6 @@ package org.jmol.adapter.readers.quantum;
 
 import org.jmol.quantum.SlaterData;
 import org.jmol.util.Logger;
-import org.jmol.util.TypeConversion;
 
 import java.util.ArrayList;
 import java.util.Arrays;

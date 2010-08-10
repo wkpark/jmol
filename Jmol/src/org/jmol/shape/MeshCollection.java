@@ -229,12 +229,12 @@ public abstract class MeshCollection extends Shape {
       if (value == null)
         return;
       colix = Graphics3D.getColix(value);
-      setProperty(Token.color, false);
+      setTokenProperty(Token.color, false);
       return;
     }
 
     if ("translucency" == propertyName) {
-      setProperty(Token.translucent, (((String) value).equals("translucent")));
+      setTokenProperty(Token.translucent, (((String) value).equals("translucent")));
       return;
     }
 
@@ -299,10 +299,10 @@ public abstract class MeshCollection extends Shape {
       default:
         Logger.error("PROBLEM IN MESHCOLLECTION: token? " + Token.nameOf(tok));
       }
-      setProperty(tok, test);
+      setTokenProperty(tok, test);
       if (tok2 != 0) {
         if (currentMesh.havePlanarContours && currentMesh.drawTriangles != currentMesh.showContourLines)
-          setProperty(tok2, test);
+          setTokenProperty(tok2, test);
       }
       return;
     }
@@ -317,22 +317,22 @@ public abstract class MeshCollection extends Shape {
       previousMeshID = id;
   } 
   
-  private void setProperty(int tokProp, boolean bProp) {
-    if (currentMesh != null) {
+  private void setTokenProperty(int tokProp, boolean bProp) {
+    if (currentMesh == null) {
+      String key = (explicitID && previousMeshID != null
+          && TextFormat.isWild(previousMeshID) ? previousMeshID.toUpperCase()
+          : null);
+      if (key != null && key.length() == 0)
+        key = null;
+      for (int i = 0; i < meshCount; i++)
+        if (key == null
+            || TextFormat.isMatch(meshes[i].thisID.toUpperCase(), key, true, true))
+          setMeshTokenProperty(meshes[i], tokProp, bProp);
+    } else {
       setMeshTokenProperty(currentMesh, tokProp, bProp);
       if (linkedMesh != null)
         setMeshTokenProperty(linkedMesh, tokProp, bProp);
-      return;
     }
-    String key = (explicitID && previousMeshID != null
-        && TextFormat.isWild(previousMeshID) ? previousMeshID.toUpperCase()
-        : null);
-    if (key != null && key.length() == 0)
-      key = null;
-    for (int i = 0; i < meshCount; i++)
-      if (key == null
-          || TextFormat.isMatch(meshes[i].thisID.toUpperCase(), key, true, true))
-        setMeshTokenProperty(meshes[i], tokProp, bProp);
   }
  
   private void setMeshTokenProperty(Mesh m, int tokProp, boolean bProp) {

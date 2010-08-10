@@ -80,8 +80,9 @@ public abstract class MeshRenderer extends ShapeRenderer {
     latticeOffset.set(0, 0, 0);
     for (int i = vertexCount; --i >= 0;)
       viewer.transformPoint(vertices[i], screens[i]);
-    render2(exportType != Graphics3D.EXPORT_NOT);
-    if (mesh.lattice != null && mesh.modelIndex >= 0) {
+    if (mesh.lattice == null || mesh.modelIndex < 0) {
+      render2(exportType != Graphics3D.EXPORT_NOT);
+    } else {
       SymmetryInterface unitcell = viewer.getModelUnitCell(mesh.modelIndex);
       if (unitcell != null) {
         Point3f vTemp = new Point3f();
@@ -92,8 +93,6 @@ public abstract class MeshRenderer extends ShapeRenderer {
         for (int tx = minXYZ.x; tx < maxXYZ.x; tx++)
           for (int ty = minXYZ.y; ty < maxXYZ.y; ty++)
             for (int tz = minXYZ.z; tz < maxXYZ.z; tz++) {
-              if (tx == 0 && ty == 0 && tz == 0)
-                continue;
               latticeOffset.set(tx, ty, tz);
               unitcell.toCartesian(latticeOffset, false);
               for (int i = vertexCount; --i >= 0;) {

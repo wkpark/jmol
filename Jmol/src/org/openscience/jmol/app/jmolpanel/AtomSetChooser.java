@@ -445,7 +445,7 @@ ActionListener, ChangeListener, Runnable {
   protected void setIndexes(DefaultMutableTreeNode node) {
     int atomSetCount = node.getLeafCount();
     indexes = new int[atomSetCount];
-    Enumeration e = node.depthFirstEnumeration();
+    Enumeration<?> e = node.depthFirstEnumeration();
     int idx=0;
     while (e.hasMoreElements()) {
       node = (DefaultMutableTreeNode) e.nextElement();
@@ -608,7 +608,7 @@ ActionListener, ChangeListener, Runnable {
     boolean needLF = false;
     propertiesTextArea.setText("");
     if (properties != null) {
-      Enumeration e = properties.propertyNames();
+      Enumeration<?> e = properties.propertyNames();
       while (e.hasMoreElements()) {
         String propertyName = (String)e.nextElement();
         if (propertyName.startsWith("."))

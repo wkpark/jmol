@@ -244,7 +244,7 @@ public class Token {
   public final static int center       = 1 | atomExpressionCommand;
   public final static int define       = 2 | atomExpressionCommand | expression;
   public final static int delete       = 3 | atomExpressionCommand;
-  final static int display      = 4 | atomExpressionCommand | deprecatedparam;
+  public final static int display      = 4 | atomExpressionCommand | deprecatedparam;
   final static int fixed        = 5 | atomExpressionCommand | expression; // Jmol 12.0.RC15
   final static int hide         = 6 | atomExpressionCommand;
   final static int restrict     = 7 | atomExpressionCommand;

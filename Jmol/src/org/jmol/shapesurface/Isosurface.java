@@ -299,6 +299,19 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return;
     }
 
+    if ("bsDisplay" == propertyName) {
+      bsDisplay = (BitSet) value;
+      return;
+    }
+    if ("displayWithin" == propertyName) {
+      Object[] o = (Object[]) value;
+      displayWithinDistance = ((Float) o[0]).floatValue();
+      displayWithinPoints = (List<Point3f>) o[3];
+      if (displayWithinPoints.size() == 0)
+        displayWithinPoints = viewer.getAtomPointVector((BitSet) o[2]);
+      return;
+    }
+
     // Isosurface / SurfaceGenerator both interested
 
     if ("setColorScheme" == propertyName) {
@@ -319,10 +332,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if ("withinPoints" == propertyName) {
       Object[] o = (Object[]) value;
       withinDistance = ((Float) o[0]).floatValue();
-      BitSet bsAtoms = (BitSet) o[2];
       withinPoints = (List<Point3f>) o[3];
       if (withinPoints.size() == 0)
-        withinPoints = viewer.getAtomPointVector(bsAtoms);
+        withinPoints = viewer.getAtomPointVector((BitSet) o[2]);
     }
 
     if ("scale3d" == propertyName) {
@@ -701,6 +713,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     offset = null;
     scale3d = 0;
     withinPoints = null;
+    displayWithinPoints = null;
+    bsDisplay = null;
     linkedMesh = null;
     initState();
   }
@@ -1019,17 +1033,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   private boolean associateNormals;
 
   public int addVertexCopy(Point3f vertexXYZ, float value, int assocVertex) {
-    return (withinPoints != null && !checkWithin(vertexXYZ) ? -1
+    return (withinPoints != null && !Mesh.checkWithin(vertexXYZ, withinPoints, withinDistance) ? -1
         : thisMesh.addVertexCopy(vertexXYZ, value, assocVertex,
         associateNormals));
-  }
-
-  private boolean checkWithin(Point3f pti) {
-    for (int i = withinPoints.size(); --i >= 0; )
-      if (pti.distance(withinPoints.get(i)) <= withinDistance) {
-        return true; 
-      }
-    return false;
   }
 
   public int addTriangleCheck(int iA, int iB, int iC, int check,

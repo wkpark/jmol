@@ -76,7 +76,9 @@ public class Mesh extends MeshSurface {
   public void setVisibilityFlags(int n) {
     visibilityFlags = n;//set to 1 in mps
   }
-  
+
+  public BitSet bsDisplay;
+
   public boolean showContourLines = false;
   public boolean showPoints = false;
   public boolean drawTriangles = false;
@@ -108,6 +110,7 @@ public class Mesh extends MeshSurface {
   
 
   public void clear(String meshType) {
+    bsDisplay = null;
     vertexCount = polygonCount = 0;
     scale = 1;
     havePlanarContours = false;
@@ -253,6 +256,12 @@ public class Mesh extends MeshSurface {
         : lighting == JmolConstants.FULLYLIT ? " fullylit" : " frontlit");
     if (!visible)
       s.append(" hidden");
+    if (bsDisplay != null) {
+      s.append(";\n  ").append(type);
+      if (!type.equals("mo"))
+        s.append(" ID ").append(Escape.escape(thisID));
+      s.append(" display " + Escape.escape(bsDisplay));
+    }
     return s.toString();
   }
 
@@ -281,4 +290,29 @@ public class Mesh extends MeshSurface {
     initialize(lighting, offsetVertices);
     return offsetVertices;
   }
+
+  /**
+   * 
+   * @param showWithinPoints
+   * @param showWithinDistance
+   */
+  public void setShowWithin(List<Point3f> showWithinPoints,
+                            float showWithinDistance) {
+    if (showWithinPoints.size() == 0) {
+      bsDisplay = null;
+      return;
+    }
+    bsDisplay = new BitSet();
+    for (int i = 0; i < vertexCount; i++)
+      if (checkWithin(vertices[i], showWithinPoints, showWithinDistance))
+        bsDisplay.set(i);
+  }
+
+  public static boolean checkWithin(Point3f pti, List<Point3f> withinPoints, float withinDistance) {
+    for (int i = withinPoints.size(); --i >= 0; )
+      if (pti.distance(withinPoints.get(i)) <= withinDistance)
+        return true; 
+    return false;
+  }
+
 }

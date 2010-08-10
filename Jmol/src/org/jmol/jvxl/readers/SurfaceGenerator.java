@@ -256,10 +256,6 @@ public class SurfaceGenerator {
     return params.bsIgnore;
   }
   
-  public List getFunctionXYinfo() {
-    return params.functionXYinfo;
-  }
-
   VolumeData getVolumeData() {
     return volumeData;
   }
@@ -332,6 +328,14 @@ public class SurfaceGenerator {
     return setParameter(propertyName, value, null);
   }
 
+  /**
+   * 
+   * @param propertyName
+   * @param value
+   * @param bs
+   * @return TRUE if done processing
+   */
+  @SuppressWarnings("unchecked")
   public boolean setParameter(String propertyName, Object value, BitSet bs) {
 
     if ("debug" == propertyName) {
@@ -392,8 +396,7 @@ public class SurfaceGenerator {
     }
 
     if ("withinPoints" == propertyName) {
-      Object[] o = (Object[]) value;
-      params.boundingBox = (Point3f[]) o[1];
+      params.boundingBox = (Point3f[]) ((Object[]) value)[1];
       return true;
     }
     
@@ -1088,6 +1091,7 @@ public class SurfaceGenerator {
     return null;
   }
 
+  @SuppressWarnings("unchecked")
   private SurfaceReader setFileData(Object value) {
     String fileType = this.fileType;
     this.fileType = null;
@@ -1196,6 +1200,7 @@ public class SurfaceGenerator {
   }
 
   
+  @SuppressWarnings("unchecked")
   private void getFunctionZfromXY() {
     Point3f origin = (Point3f) params.functionXYinfo.get(1);
     int[] counts = new int[3];

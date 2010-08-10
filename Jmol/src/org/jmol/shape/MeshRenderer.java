@@ -35,19 +35,23 @@ import org.jmol.g3d.Graphics3D;
 
 public abstract class MeshRenderer extends ShapeRenderer {
 
-  protected float imageFontScaling;
-  protected float scalePixelsPerMicron;
+  protected Mesh mesh;
   protected Point3f[] vertices;
   protected short[] normixes;
   protected Point3i[] screens;
   protected Vector3f[] transformedVectors;
   protected int vertexCount;
-  protected boolean frontOnly;
-  protected boolean antialias;
-  protected Mesh mesh;
+  
+  protected float imageFontScaling;
+  protected float scalePixelsPerMicron;
   protected int diameter;
   protected float width;
+
   protected boolean isTranslucent;
+  protected boolean frontOnly;
+  protected boolean antialias;
+  protected boolean haveBsDisplay;
+
   protected Point4f thePlane;
   protected Point3f latticeOffset = new Point3f();
 
@@ -124,6 +128,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
       // this can happen when user switches windows
       // during a surface calculation
 
+      haveBsDisplay = (mesh.bsDisplay != null);
       frontOnly = !viewer.getSlabEnabled() && mesh.frontOnly && !mesh.isTwoSided;
       screens = viewer.allocTempScreens(vertexCount);
       transformedVectors = g3d.getTransformedVertexVectors();
@@ -160,7 +165,11 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected void renderPoints() {
     if (mesh.isPolygonSet) {
       int[][] polygonIndexes = mesh.polygonIndexes;
-      BitSet bsPoints = new BitSet();
+      BitSet bsPoints = new BitSet(mesh.vertexCount);
+      if (haveBsDisplay) {
+        bsPoints.set(0, mesh.vertexCount);
+        bsPoints.andNot(mesh.bsDisplay);
+      }
       for (int i = mesh.polygonCount; --i >= 0;) {
         int[] p = polygonIndexes[i];
         if (frontOnly && transformedVectors[normixes[i]].z < 0)
@@ -201,6 +210,8 @@ public abstract class MeshRenderer extends ShapeRenderer {
       int iA = vertexIndexes[0];
       int iB = vertexIndexes[1];
       int iC = vertexIndexes[2];
+      if (haveBsDisplay && (!mesh.bsDisplay.get(iA) || !mesh.bsDisplay.get(iB) || !mesh.bsDisplay.get(iC)))
+        continue;
       if (iB == iC) {
         // line or point
         drawLine(iA, iB, fill, vertices[iA], vertices[iB], screens[iA],

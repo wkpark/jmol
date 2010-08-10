@@ -130,6 +130,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
   }
   
   private void renderContourLines() {
+    // no check here for within distance
     List<Object>[] vContours = imesh.getContours();
     if (vContours == null)
       return;
@@ -174,6 +175,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
         continue;
       if (imesh.vertexColixes != null && !g3d.setColix(imesh.vertexColixes[i]))
           continue;
+      if (haveBsDisplay && !imesh.bsDisplay.get(i))
+        continue;
       if (showNumbers && screens[i].z > 10
          && Math.abs(screens[i].x - cX) < 50
          && Math.abs(screens[i].y - cY) < 50
@@ -250,6 +253,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
       int iC = vertexIndexes[2];
       if (imesh.thisSet >= 0 && imesh.vertexSets[iA] != imesh.thisSet)
         continue;
+      if (haveBsDisplay && (!imesh.bsDisplay.get(iA) || !imesh.bsDisplay.get(iB) || !imesh.bsDisplay.get(iC)))
+          continue;
       short nA = normixes[iA];
       short nB = normixes[iB];
       short nC = normixes[iC];

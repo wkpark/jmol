@@ -31,6 +31,7 @@ import org.jmol.script.ScriptVariable;
 import org.jmol.script.Token;
 
 import java.util.BitSet;
+import java.util.List;
 import java.util.Map;
 
 import javax.vecmath.Point3f;
@@ -62,6 +63,10 @@ public abstract class MeshCollection extends Shape {
   protected boolean allowContourLines;
   protected boolean haveContours = false;
   
+  protected float displayWithinDistance;
+  protected List<Point3f> displayWithinPoints;
+  protected BitSet bsDisplay;
+
   public String[] title;
   protected boolean allowMesh = true;
   
@@ -244,6 +249,7 @@ public abstract class MeshCollection extends Shape {
       int tok2 = 0;
       boolean test = true;
       switch (tok) {
+      case Token.display:
       case Token.on:
       case Token.frontlit:
       case Token.backlit:
@@ -313,58 +319,9 @@ public abstract class MeshCollection extends Shape {
   
   private void setProperty(int tokProp, boolean bProp) {
     if (currentMesh != null) {
-      switch (tokProp) {
-      case Token.on:
-        currentMesh.visible = bProp;
-        return;
-      case Token.color:
-        currentMesh.colix = colix;
-        if (linkedMesh != null)
-          linkedMesh.colix = colix;
-        return;
-      case Token.translucent:
-        currentMesh.setTranslucent(bProp, translucentLevel);
-        if (linkedMesh != null)
-          linkedMesh.setTranslucent(bProp, translucentLevel);
-        return;
-      case Token.frontlit:
-      case Token.backlit:
-      case Token.fullylit:
-        currentMesh.setLighting(tokProp);
-        if (linkedMesh != null)
-          linkedMesh.setLighting(tokProp);
-        return;
-      case Token.contourlines:
-        currentMesh.showContourLines = bProp;
-        if (linkedMesh != null)
-          linkedMesh.showContourLines = bProp;
-        return;
-      case Token.mesh:
-        currentMesh.drawTriangles = bProp;
-        if (linkedMesh != null)
-          linkedMesh.drawTriangles = bProp;
-        return;
-      case Token.dots:
-        currentMesh.showPoints = bProp;
-        if (linkedMesh != null)
-          linkedMesh.showPoints = bProp;
-        return;
-      case Token.fill:
-        currentMesh.fillTriangles = bProp;
-        if (linkedMesh != null)
-          linkedMesh.fillTriangles = bProp;
-        return;
-      case Token.triangles:
-        currentMesh.showTriangles = bProp;
-        if (linkedMesh != null)
-          linkedMesh.showTriangles = bProp;
-        return;
-      case Token.frontonly:
-        currentMesh.frontOnly = bProp;
-        if (linkedMesh != null)
-          linkedMesh.frontOnly = bProp;
-        return;
-      }
+      setMeshTokenProperty(currentMesh, tokProp, bProp);
+      if (linkedMesh != null)
+        setMeshTokenProperty(linkedMesh, tokProp, bProp);
       return;
     }
     String key = (explicitID && previousMeshID != null
@@ -372,41 +329,54 @@ public abstract class MeshCollection extends Shape {
         : null);
     if (key != null && key.length() == 0)
       key = null;
-    for (int i = 0; i < meshCount; i++) {
-      Mesh m = meshes[i];
+    for (int i = 0; i < meshCount; i++)
       if (key == null
-          || TextFormat.isMatch(m.thisID.toUpperCase(), key, true, true))
-        switch (tokProp) {
-        case Token.on:
-          m.visible = bProp;
-          break;
-        case Token.color:
-          m.colix = colix;
-          break;
-        case Token.translucent:
-          m.setTranslucent(bProp, translucentLevel);
-          break;
-        case Token.frontlit:
-        case Token.backlit:
-        case Token.fullylit:
-          m.setLighting(tokProp);
-          break;
-        case Token.dots:
-          m.showPoints = bProp;
-          break;
-        case Token.mesh:
-          m.drawTriangles = bProp;
-          break;
-        case Token.fill:
-          m.fillTriangles = bProp;
-          break;
-        case Token.triangles:
-          m.showTriangles = bProp;
-          break;
-        }
-    }
+          || TextFormat.isMatch(meshes[i].thisID.toUpperCase(), key, true, true))
+        setMeshTokenProperty(meshes[i], tokProp, bProp);
   }
  
+  private void setMeshTokenProperty(Mesh m, int tokProp, boolean bProp) {
+    switch (tokProp) {
+    case Token.display:
+      m.bsDisplay = bsDisplay;
+      if (bsDisplay == null && displayWithinPoints != null) 
+        m.setShowWithin(displayWithinPoints, displayWithinDistance);
+      return;
+    case Token.on:
+      m.visible = bProp;
+      return;
+    case Token.color:
+      m.colix = colix;
+      return;
+    case Token.translucent:
+      m.setTranslucent(bProp, translucentLevel);
+      return;
+    case Token.frontlit:
+    case Token.backlit:
+    case Token.fullylit:
+      m.setLighting(tokProp);
+      return;
+    case Token.dots:
+      m.showPoints = bProp;
+      return;
+    case Token.mesh:
+      m.drawTriangles = bProp;
+      return;
+    case Token.fill:
+      m.fillTriangles = bProp;
+      return;
+    case Token.triangles:
+      m.showTriangles = bProp;
+      return;
+    case Token.contourlines:
+      m.showContourLines = bProp;
+      return;
+    case Token.frontonly:
+      m.frontOnly = bProp;
+      return;
+    }
+  }
+
   @Override
   public boolean getProperty(String property, Object[] data) {
     if (property == "checkID") {

@@ -500,13 +500,14 @@ public class ScriptEvaluator {
     ScriptEvaluator e = new ScriptEvaluator(viewer);
     e.compiler = new ScriptCompiler(e.compiler);
     e.shapeManager = shapeManager;
+    //System.out.println("ScriptEvaluator evaluating context for " + shapeManager);
     try {
       e.restoreScriptContext(context, true, false, false);
       e.instructionDispatchLoop(false);
     } catch (Exception ex) {
       viewer.setStringProperty("_errormessage", "" + ex);
       Logger.error("Error evaluating context");
-      //ex.printStackTrace();
+      ex.printStackTrace();
       return false;
     }
     return true;
@@ -3019,10 +3020,6 @@ public class ScriptEvaluator {
     if (isSyntaxCheck)
       return;
     propertyList.add(new Object[] { key, value });
-  }
-
-  private void loadShape(int iShape) {
-    shapeManager.loadShape(iShape);
   }
 
   private void setObjectMad(int iShape, String name, int mad) {
@@ -7200,7 +7197,7 @@ public class ScriptEvaluator {
         argb = getArgbParamLast(i, true);
         if (isSyntaxCheck)
           return;
-        loadShape(JmolConstants.SHAPE_HALOS);
+        shapeManager.loadShape(JmolConstants.SHAPE_HALOS);
         setShapeProperty(
             JmolConstants.SHAPE_HALOS,
             (tok == Token.selectionhalos ? "argbSelection" : "argbHighlight"),
@@ -7459,7 +7456,7 @@ public class ScriptEvaluator {
       typeMask = 0;
     }
     if (typeMask == 0) {
-      loadShape(shapeType);
+      shapeManager.loadShape(shapeType);
       if (shapeType == JmolConstants.SHAPE_LABELS)
         setShapeProperty(JmolConstants.SHAPE_LABELS, "setDefaults", viewer
             .getNoneSelected());
@@ -7879,7 +7876,7 @@ public class ScriptEvaluator {
   private void label(int index) throws ScriptException {
     if (isSyntaxCheck)
       return;
-    loadShape(JmolConstants.SHAPE_LABELS);
+    shapeManager.loadShape(JmolConstants.SHAPE_LABELS);
     String strLabel = null;
     switch (getToken(index).tok) {
     case Token.on:
@@ -8879,7 +8876,7 @@ public class ScriptEvaluator {
     runScript(script + preSelected);
     ss.setModelIndex(viewer.getCurrentModelIndex());
     viewer.setRotationRadius(150f, true);
-    loadShape(JmolConstants.SHAPE_ECHO);
+    shapeManager.loadShape(JmolConstants.SHAPE_ECHO);
     showString("frame " + viewer.getModelNumberDotted(modelCount - 1)
         + " created: " + type + (isQuaternion ? qFrame : ""));
     return "";
@@ -10225,7 +10222,7 @@ public class ScriptEvaluator {
     case Token.id:
     case Token.times:
     case Token.identifier:
-      loadShape(JmolConstants.SHAPE_ELLIPSOIDS);
+      shapeManager.loadShape(JmolConstants.SHAPE_ELLIPSOIDS);
       if (theTok == Token.id)
         i++;
       setShapeId(JmolConstants.SHAPE_ELLIPSOIDS, i, false);
@@ -10617,7 +10614,7 @@ public class ScriptEvaluator {
     boolean iHaveCoord = false;
     boolean idSeen = false;
 
-    loadShape(JmolConstants.SHAPE_DIPOLES);
+    shapeManager.loadShape(JmolConstants.SHAPE_DIPOLES);
     if (tokAt(1) == Token.list && listIsosurface(JmolConstants.SHAPE_DIPOLES))
       return;
     setShapeProperty(JmolConstants.SHAPE_DIPOLES, "init", null);
@@ -10960,7 +10957,7 @@ public class ScriptEvaluator {
 
   private void dots(int iShape) throws ScriptException {
     if (!isSyntaxCheck)
-      loadShape(iShape);
+      shapeManager.loadShape(iShape);
     setShapeProperty(iShape, "init", null);
     float value = Float.NaN;
     int type = 0;
@@ -11036,7 +11033,7 @@ public class ScriptEvaluator {
       break;
     case Token.bitset:
       if (!isSyntaxCheck)
-        loadShape(shapeType);
+        shapeManager.loadShape(shapeType);
       setShapeProperty(shapeType, "bitset", theToken.value);
       return;
     default:
@@ -11402,7 +11399,7 @@ public class ScriptEvaluator {
     if (isSyntaxCheck)
       return;
     Font3D font3d = viewer.getFont3D(fontface, fontstyle, fontsize);
-    loadShape(shapeType);
+    shapeManager.loadShape(shapeType);
     setShapeProperty(shapeType, "font", font3d);
     if (scaleAngstromsPerPixel >= 0)
       setShapeProperty(shapeType, "scalereference", new Float(
@@ -11474,7 +11471,7 @@ public class ScriptEvaluator {
       unitcell(2);
       return;
     case Token.highlight:
-      loadShape(JmolConstants.SHAPE_HALOS);
+      shapeManager.loadShape(JmolConstants.SHAPE_HALOS);
       setShapeProperty(JmolConstants.SHAPE_HALOS, "highlight",
           (tokAt(2) == Token.off ? null : atomExpression(2)));
       return;
@@ -11958,7 +11955,7 @@ public class ScriptEvaluator {
     }
     if (!isSyntaxCheck) {
       viewer.setEchoStateActive(echoShapeActive);
-      loadShape(JmolConstants.SHAPE_ECHO);
+      shapeManager.loadShape(JmolConstants.SHAPE_ECHO);
       setShapeProperty(JmolConstants.SHAPE_ECHO, propertyName, propertyValue);
     }
     if (statementLength == len)
@@ -12076,7 +12073,7 @@ public class ScriptEvaluator {
   }
 
   private boolean setLabel(String str) throws ScriptException {
-    loadShape(JmolConstants.SHAPE_LABELS);
+    shapeManager.loadShape(JmolConstants.SHAPE_LABELS);
     Object propertyValue = null;
     setShapeProperty(JmolConstants.SHAPE_LABELS, "setDefaults", viewer
         .getNoneSelected());
@@ -12208,7 +12205,7 @@ public class ScriptEvaluator {
 
   private void setSsbond() throws ScriptException {
     boolean ssbondsBackbone = false;
-    // loadShape(JmolConstants.SHAPE_SSSTICKS);
+    // shapeManager.loadShape(JmolConstants.SHAPE_SSSTICKS);
     switch (tokAt(checkLast(2))) {
     case Token.backbone:
       ssbondsBackbone = true;
@@ -13735,7 +13732,7 @@ public class ScriptEvaluator {
   @SuppressWarnings("unchecked")
   private String getMoJvxl(int ptMO) throws ScriptException {
     // 0: all; Integer.MAX_VALUE: current;
-    loadShape(JmolConstants.SHAPE_MO);
+    shapeManager.loadShape(JmolConstants.SHAPE_MO);
     int modelIndex = viewer.getCurrentModelIndex();
     if (modelIndex < 0)
       error(ERROR_multipleModelsDisplayedNotOK, "MO isosurfaces");
@@ -13757,7 +13754,7 @@ public class ScriptEvaluator {
   }
 
   private void draw() throws ScriptException {
-    loadShape(JmolConstants.SHAPE_DRAW);
+    shapeManager.loadShape(JmolConstants.SHAPE_DRAW);
     switch (tokAt(1)) {
     case Token.list:
       if (listIsosurface(JmolConstants.SHAPE_DRAW))
@@ -14183,7 +14180,7 @@ public class ScriptEvaluator {
     boolean edgeParameterSeen = false;
     boolean isDesignParameter = false;
     int nAtomSets = 0;
-    loadShape(JmolConstants.SHAPE_POLYHEDRA);
+    shapeManager.loadShape(JmolConstants.SHAPE_POLYHEDRA);
     setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "init", null);
     String setPropertyName = "centers";
     String decimalPropertyName = "radius_";
@@ -14336,7 +14333,7 @@ public class ScriptEvaluator {
   }
 
   private void lcaoCartoon() throws ScriptException {
-    loadShape(JmolConstants.SHAPE_LCAOCARTOON);
+    shapeManager.loadShape(JmolConstants.SHAPE_LCAOCARTOON);
     if (tokAt(1) == Token.list
         && listIsosurface(JmolConstants.SHAPE_LCAOCARTOON))
       return;
@@ -14574,7 +14571,7 @@ public class ScriptEvaluator {
     }
     for (int iModel = bsModels.nextSetBit(0); iModel >= 0; iModel = bsModels
         .nextSetBit(iModel + 1)) {
-      loadShape(JmolConstants.SHAPE_MO);
+      shapeManager.loadShape(JmolConstants.SHAPE_MO);
       if (tokAt(i) == Token.list && listIsosurface(JmolConstants.SHAPE_MO))
         return true;
       setShapeProperty(JmolConstants.SHAPE_MO, "init", Integer.valueOf(iModel));
@@ -14738,7 +14735,7 @@ public class ScriptEvaluator {
     Map moData = (Map) viewer.getModelAuxiliaryInfo(modelIndex, "jmolSurfaceInfo");
     int firstMoNumber = moNumber;
     if (moData != null && ((String) moData.get("surfaceDataType")).equals("mo")) {
-      // loadShape(shape);
+      // shapeManager.loadShape(shape);
       // setShapeProperty(shape, "init", new Integer(modelIndex));
     } else {
       moData = (Map) viewer.getModelAuxiliaryInfo(modelIndex, "moData");
@@ -14835,7 +14832,7 @@ public class ScriptEvaluator {
 
   private void isosurface(int iShape) throws ScriptException {
     // also called by lcaoCartoon
-    loadShape(iShape);
+    shapeManager.loadShape(iShape);
     if (tokAt(1) == Token.list && listIsosurface(iShape))
       return;
     int iptDisplayProperty = 0;
@@ -14908,8 +14905,32 @@ public class ScriptEvaluator {
         addShapeProperty(propertyList, "fileType", "Pmesh");
         sbCommand.append(" pmesh");
         continue;
+      case Token.display:
       case Token.within:
-        ptWithin = i;
+        boolean isDisplay = (theTok == Token.display);
+        if (isDisplay) {
+          iptDisplayProperty = i;
+          sbCommand.append(" display");
+          int tok = tokAt(++i);
+          if (tok == Token.nada)
+            continue;
+          if (tok == Token.bitset || tok == Token.all) {
+            propertyName = "bsDisplay";
+            if (tok == Token.all) {
+              sbCommand.append(" all");
+            } else {
+              propertyValue = statement[i].value;
+              sbCommand.append(" ").append(Escape.escape(propertyValue));
+            }
+            checkLast(i);
+            break;
+          } else if (tok != Token.within) {
+            iToken = i;
+            error(ERROR_invalidArgument);
+          }
+        } else {
+          ptWithin = i;
+        }
         float distance;
         Point3f ptc;
         bs = null;
@@ -14936,6 +14957,8 @@ public class ScriptEvaluator {
           distance = floatParameter(++i);
           ptc = centerParameter(++i);
         }
+        if (isDisplay)
+          checkLast(iToken);
         i = iToken;
         if (fullCommand.indexOf("# WITHIN=") >= 0)
           bs = Escape.unescapeBitset(extractCommandOption("# WITHIN"));
@@ -14943,7 +14966,7 @@ public class ScriptEvaluator {
           bs = (expressionResult instanceof BitSet ? (BitSet) expressionResult
               : null);
         if (!isSyntaxCheck) {
-          getWithinDistanceVector(propertyList, distance, ptc, bs);
+          getWithinDistanceVector(propertyList, distance, ptc, bs, isDisplay);
           sbCommand.append(" within ").append(distance).append(" ").append(
               bs == null ? Escape.escape(ptc) : Escape.escape(bs));
         }
@@ -15733,7 +15756,7 @@ public class ScriptEvaluator {
           }
           if (ptWithin == 0) {
             bs = viewer.getModelUndeletedAtomsBitSet(modelIndex);
-            getWithinDistanceVector(propertyList, 2.0f, null, bs);
+            getWithinDistanceVector(propertyList, 2.0f, null, bs, false);
             sbCommand.append(" within 2.0 ").append(Escape.escape(bs));
           }
           if (firstPass)
@@ -15970,7 +15993,7 @@ public class ScriptEvaluator {
   private static Object testData2; // for isosurface
 
   private void getWithinDistanceVector(List<Object[]> propertyList, float distance,
-                                       Point3f ptc, BitSet bs) {
+                                       Point3f ptc, BitSet bs, boolean isShow) {
     List<Point3f> v = new ArrayList<Point3f>();
     Point3f[] pts = new Point3f[2];
     if (bs == null) {
@@ -15990,12 +16013,12 @@ public class ScriptEvaluator {
       if (bs.cardinality() == 1)
         v.add(viewer.getAtomPoint3f(bs.nextSetBit(0)));
     }
-    if (v.size() == 1) {
+    if (v.size() == 1 && !isShow) {
       addShapeProperty(propertyList, "withinDistance", new Float(distance));
       addShapeProperty(propertyList, "withinPoint", v.get(0));
     }
-    addShapeProperty(propertyList, "withinPoints", new Object[] {
-        new Float(distance), pts, bs, v });
+    addShapeProperty(propertyList, (isShow ? "displayWithin" : "withinPoints"), 
+        new Object[] {new Float(distance), pts, bs, v });
   }
 
   /**
@@ -16043,15 +16066,23 @@ public class ScriptEvaluator {
         return (iToken == 1);
       if (checkOnly)
         return true;
-      if (tok == Token.delete) {
+      switch (tok) {
+      case Token.delete:
         setShapeProperty(shape, "delete", null);
         return true;
-      }
-      if (tok == Token.hidden || tok == Token.hide)
+      case Token.hidden:
+      case Token.hide:
         tok = Token.off;
-      else if (tok == Token.displayed || tok == Token.display)
+        break;
+      case Token.displayed:
         tok = Token.on;
-      // fall through for on/off
+        break;
+      case Token.display:
+        if (i + 1 == statementLength)
+          tok = Token.on;
+        break;
+      }
+      // fall through for on/off/display
     case Token.frontlit:
     case Token.backlit:
     case Token.fullylit:

@@ -471,35 +471,32 @@ class IsoSolventReader extends AtomDataReader {
     /*
      * Checking here for voxels that are in the situation:
      * 
-     * A------)-- V ---((--))-- S --(------B
-     *            |----d--------|     
-     *  or
+     * A------)(-----S-----)(------B  (not actually linear)
+     * |-----rAS-----|-----rBS-----|
+     * |-----------dAB-------------|
+     *         ptV
+     * |--dAV---|---------dBV------|
      *
-     * B------)-- V ---((--))-- S --(------A
-     *            |----d--------|     
-     *
-     * A and B are the two atom centers; V is the voxel; S is a hypothetical
-     * PROJECTED solvent center based on the position of V in relation to 
-     * first A, then B; ( and ) are atom radii and (( )) are the overlapping
-     * atom+solvent radii.
+     * A and B are the two atom centers; S is a hypothetical
+     * PROJECTED solvent center based on the position of ptV 
+     * in relation to first A, then B.
      * 
-     * That is, where the projected solvent location for one voxel is 
+     * Where the projected solvent location for one voxel is 
      * within the solvent radius sphere of another, this voxel should
      * be checked in relation to solvent distance, not atom distance.
      * 
      * 
-     *        S
-     *++    /   \    ++
-     *  ++ /  |  \ ++
-     *    +   V   +      x     want V such that angle ASV < angle ASB
-     *   / ******  \
-     *  A --+--+----B
+     *         S
+     *+++    /   \    +++
+     *   ++ /  |  \ ++
+     *     +   V   +     x     want V such that angle ASV < angle ASB
+     *    / ******  \
+     *   A --+--+----B
      *        b
      * 
-     * A, B are atoms; S is solvent center; V is voxel point 
-     * objective is to calculate dSV. ++ Here represents the van der Waals 
-     * radius for each atom. ***** is the key "trough" location.
-     * 
+     *  ++ Here represents the van der Waals radius for each atom. 
+     *  ***** is the key "trough" location. The objective is to calculate dSV.
+     *  
      * Getting dVS:
      * 
      * Known: rAB, rAS, rBS, giving angle BAS (theta)
@@ -522,46 +519,51 @@ class IsoSolventReader extends AtomDataReader {
      */
     float dAV = ptA.distance(ptV);
     float dBV = ptB.distance(ptV);
-    float dVS = Float.NaN;
+    float dVS;
     float f = rAS / dAV;
     if (f > 1) {
+      // within solvent sphere of atom A
+      // calculate point on solvent sphere A projected through ptV
       ptS.set(ptA.x + (ptV.x - ptA.x) * f, ptA.y + (ptV.y - ptA.y) * f, ptA.z
           + (ptV.z - ptA.z) * f);
-      if (ptB.distance(ptS) < rBS) {
-        dVS = solventDistance(ptV, ptA, ptB, rAS, rBS, dAB, dAV, dBV);
-        if (!voxelIsInTrough(dVS, rAS * rAS, rBS, dAB, dAV, dBV))
-          return Float.NaN;
-      }
-      return dVS;
+      // If the distance of this point to B is less than the distance
+      // of S to B, then we need to check this point
+      if (ptB.distance(ptS) >= rBS)
+        return Float.NaN;
+      // we are somewhere in the triangle ASB, within the solvent sphere of A
+      dVS = solventDistance(rAS, rBS, dAB, dAV, dBV);
+      return (voxelIsInTrough(dVS, rAS * rAS, rBS, dAB, dAV) ? dVS : Float.NaN);
     }
     f = rBS / dBV;
     if (f <= 1)
-      return dVS;
+      return Float.NaN; // not within solvent sphere of A or B
+    // calculate point on solvent sphere B projected through ptV
     ptS.set(ptB.x + (ptV.x - ptB.x) * f, ptB.y + (ptV.y - ptB.y) * f, ptB.z
         + (ptV.z - ptB.z) * f);
-    if (ptA.distance(ptS) < rAS) {
-      dVS = solventDistance(ptV, ptB, ptA, rBS, rAS, dAB, dBV, dAV);
-      if (!voxelIsInTrough(dVS, rAS * rAS, rBS, dAB, dAV, dBV))
-        return Float.NaN;
-    }
-    return dVS;
+    if (ptA.distance(ptS) >= rAS)
+      return Float.NaN;
+    // we are somewhere in the triangle ASB, within the solvent sphere of B
+    dVS = solventDistance(rBS, rAS, dAB, dBV, dAV);
+    return (voxelIsInTrough(dVS, rAS * rAS, rBS, dAB, dAV) ? dVS : Float.NaN);
   }
 
-  boolean voxelIsInTrough(float dVS, float rAS2, float rBS, float dAB,
-                          float dAV, float dBV) {
+  private boolean voxelIsInTrough(float dVS, float rAS2, float rBS, float dAB,
+                          float dAV) {
     //only calculate what we need -- a factor proportional to cos
     float cosASBf = (rAS2 + rBS * rBS - dAB * dAB) / rBS; //  /2 /rAS);
     float cosASVf = (rAS2 + dVS * dVS - dAV * dAV) / dVS; //  /2 /rAS);
     return (cosASBf < cosASVf);
   }
 
-  float solventDistance(Point3f ptV, Point3f ptA, Point3f ptB, float rAS,
-                        float rBS, float dAB, float dAV, float dBV) {
-    double angleVAB = Math.acos((dAV * dAV + dAB * dAB - dBV * dBV)
+  private float solventDistance(float rAS, float rBS, float dAB, float dAV, float dBV) {
+    double dAV2 = dAV * dAV;
+    double rAS2 = rAS * rAS;
+    double dAB2 = dAB * dAB;
+    double angleVAB = Math.acos((dAV2 + dAB2 - dBV * dBV)
         / (2 * dAV * dAB));
-    double angleBAS = Math.acos((dAB * dAB + rAS * rAS - rBS * rBS)
+    double angleBAS = Math.acos((dAB2 + rAS2 - rBS * rBS)
         / (2 * dAB * rAS));
-    float dVS = (float) Math.sqrt(rAS * rAS + dAV * dAV - 2 * rAS * dAV
+    float dVS = (float) Math.sqrt(rAS2 + dAV2 - 2 * rAS * dAV
         * Math.cos(angleBAS - angleVAB));
     return dVS;
   }

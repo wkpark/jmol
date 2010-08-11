@@ -221,7 +221,7 @@ abstract class AtomDataReader extends VolumeDataReader {
     int nAtoms = myAtomCount;
     if (nearbyAtomCount != 0) {
       nAtoms += nearbyAtomCount;
-      atomRadius = (float[]) ArrayUtil.setLength(atomRadius, nAtoms);
+      atomRadius = ArrayUtil.setLength(atomRadius, nAtoms);
       atomXyz = (Point3f[]) ArrayUtil.setLength(atomXyz, nAtoms);
       for (int i = bsNearby.nextSetBit(0); i >= 0; i = bsNearby
           .nextSetBit(i + 1)) {

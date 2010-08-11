@@ -30,14 +30,14 @@ package org.jmol.adapter.readers.xtal;
 import org.jmol.adapter.smarter.*;
 import org.jmol.util.Logger;
 import org.jmol.util.Quaternion;
-import org.jmol.util.SimpleUnitCell;
+//import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.TextFormat;
 
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 
-import javax.vecmath.Matrix3f;
+//import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
 
 /**
@@ -97,14 +97,12 @@ public class CrystalReader extends AtomSetCollectionReader {
   private int atomCount;
   private int[] atomFrag;
   private boolean getLastConventional;
-  private boolean test;
 
   @Override
   protected void initializeReader() throws Exception {
     doProcessLines = false;
     if (filter != null)
       filter = filter.toLowerCase();
-    test = (filter != null && filter.indexOf("test") >= 0);
     inputOnly = (filter != null && filter.indexOf("input") >= 0);
     addVibrations = !inputOnly && (filter == null || filter.indexOf("novib") < 0);
     isPrimitive = !inputOnly && (filter == null || filter.indexOf("conv") < 0);
@@ -152,6 +150,10 @@ public class CrystalReader extends AtomSetCollectionReader {
       return true;
     }
     
+    if (line.startsWith(" DIRECT LATTICE VECTORS CARTESIAN COMPONENTS (ANGSTROM)")) {
+      setDirect();
+      return true;
+    }
     
     if (line.startsWith(" LATTICE PARAMETER")) {
       boolean isConvLattice = (line.indexOf("- CONVENTIONAL") >= 0);
@@ -256,6 +258,34 @@ public class CrystalReader extends AtomSetCollectionReader {
     return true;
   }
 
+  /*
+ DIRECT LATTICE VECTORS CARTESIAN COMPONENTS (ANGSTROM)
+          X                    Y                    Z
+   0.290663292155E+01   0.000000000000E+00   0.460469095849E+01
+  -0.145331646077E+01   0.251721794953E+01   0.460469095849E+01
+  -0.145331646077E+01  -0.251721794953E+01   0.460469095849E+01
+   */
+  private void setDirect() throws Exception {
+    readLine();
+    float[] f = new float[3];
+
+    fillFloatArray(f);
+    Point3f a = new Point3f(f[0], f[1], f[2]);
+    if (Logger.debugging)
+      addJmolScript("draw va vector {0 0 0} {" + f[0] + " " + f[1] + " " + f[2] + "} color red");
+
+    fillFloatArray(f);
+    Point3f b = new Point3f(f[0], f[1], f[2]);
+    if (Logger.debugging && !isPolymer)
+      addJmolScript("draw vb vector {0 0 0} {" + f[0] + " " + f[1] + " " + f[2] + "} color green");
+
+    fillFloatArray(f);
+    if (Logger.debugging && !isSlab && !isPolymer)
+      addJmolScript("draw vc vector {0 0 0} {" + f[0] + " " + f[1] + " " + f[2] + "} color blue");
+
+    matUnitCellOrientation = Quaternion.getQuaternionFrame(new Point3f(), a, b).getMatrix();
+}
+
   /**
    * get the matrix that reorients the primitive coordinate axes
    * to their correct orientation in relation to the conventional cell
@@ -265,10 +295,21 @@ public class CrystalReader extends AtomSetCollectionReader {
   private void getOrientationMatrix() throws Exception {
     if (!isPrimitive || isSlab || isPolymer)
       return;    
+/*
+ * 
+ * setDirect works better
+ * 
     float[] data = new float[9];
     fillFloatArray(data);
     Matrix3f m = new Matrix3f(data);
+    System.out.println(m);
+    
+    Point3f a = new Point3f();
+
     m.invert();
+
+    System.out.println(m);
+
     // now get conventional cell info so we can 
     // convert from conventional to cartesian
     discardLinesUntilContains("GAMMA");
@@ -280,7 +321,8 @@ public class CrystalReader extends AtomSetCollectionReader {
 
     // find the conventional equivalents of the primitive a and b axes (sort of). 
 
-    Point3f a = new Point3f();
+    
+    
     if (test)
       a.set(0, 0, 1);
     else 
@@ -305,7 +347,8 @@ public class CrystalReader extends AtomSetCollectionReader {
     // the following will align the primitive a axis such that it 
     // projects onto the Cartesian X axis.
     // Honestly, I don't know why.
-    matUnitCellOrientation = Quaternion.getQuaternionFrame(new Point3f(), a, b).getMatrix();
+    //matUnitCellOrientation = Quaternion.getQuaternionFrame(new Point3f(), a, b).getMatrix();
+*/
   }
 
   private Point3f ptOriginShift = new Point3f();
@@ -386,7 +429,9 @@ public class CrystalReader extends AtomSetCollectionReader {
     setData("magneticMoment", data, 0, 1);
   }
 
-  private void setData(String name, String data, int pt, int dp) {
+  private void setData(String name, String data, int pt, int dp) throws Exception {
+    if (atomCount == 0 && vInputCoords != null)
+      processInputCoords();
     String[] s = new String[atomCount];
     String[] tokens = getTokens(data);
     for (int i = 0, j = 0; i < atomCount; i++, pt += dp) {
@@ -633,7 +678,7 @@ public class CrystalReader extends AtomSetCollectionReader {
   
   private void processInputCoords() throws Exception {
     // here we may have deleted unnecessary input coordinates
-    int atomCount = vInputCoords.size();
+    atomCount = vInputCoords.size();
     for (int i = 0; i < atomCount; i++) {
       Atom atom = atomSetCollection.addNewAtom();
       String[] tokens = getTokens(vInputCoords.get(i));

@@ -39,6 +39,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Dictionary;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Hashtable;
@@ -340,6 +341,11 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     return atomPanel;
   }
 
+  @SuppressWarnings("unchecked")
+  private Dictionary<Object, Object> getJSliderLabelTable(JSlider slider) {
+    return slider.getLabelTable();
+  }
+
   public JPanel buildBondPanel() {
 
     JPanel bondPanel = new JPanel();
@@ -399,9 +405,10 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     for (int i = 0; i <= 250; i += 50) {
       String label = "" + (1000 + i);
       label = "0." + label.substring(1);
-      bwSlider.getLabelTable().put(Integer.valueOf(i),
-                                   new JLabel(label, SwingConstants.CENTER));
-      bwSlider.setLabelTable(bwSlider.getLabelTable());
+      Dictionary<Object, Object> labelTable = getJSliderLabelTable(bwSlider);
+      labelTable.put(Integer.valueOf(i),
+          new JLabel(label, SwingConstants.CENTER));
+      bwSlider.setLabelTable(labelTable);
     }
     bwSlider.addChangeListener(new ChangeListener() {
 
@@ -435,24 +442,19 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     btSlider.setMajorTickSpacing(20);
     btSlider.setMinorTickSpacing(10);
     btSlider.setPaintLabels(true);
-    btSlider.getLabelTable().put(Integer.valueOf(0),
-        new JLabel("0.0", SwingConstants.CENTER));
-    btSlider.setLabelTable(btSlider.getLabelTable());
-    btSlider.getLabelTable().put(Integer.valueOf(20),
-        new JLabel("0.2", SwingConstants.CENTER));
-    btSlider.setLabelTable(btSlider.getLabelTable());
-    btSlider.getLabelTable().put(Integer.valueOf(40),
-        new JLabel("0.4", SwingConstants.CENTER));
-    btSlider.setLabelTable(btSlider.getLabelTable());
-    btSlider.getLabelTable().put(Integer.valueOf(60),
-        new JLabel("0.6", SwingConstants.CENTER));
-    btSlider.setLabelTable(btSlider.getLabelTable());
-    btSlider.getLabelTable().put(Integer.valueOf(80),
-        new JLabel("0.8", SwingConstants.CENTER));
-    btSlider.setLabelTable(btSlider.getLabelTable());
-    btSlider.getLabelTable().put(Integer.valueOf(100),
-        new JLabel("1.0", SwingConstants.CENTER));
-    btSlider.setLabelTable(btSlider.getLabelTable());
+    Dictionary<Object, Object> labelTable = getJSliderLabelTable(btSlider);
+    labelTable.put(Integer.valueOf(0), new JLabel("0.0", SwingConstants.CENTER));
+    btSlider.setLabelTable(labelTable);
+    labelTable.put(Integer.valueOf(20), new JLabel("0.2", SwingConstants.CENTER));
+    btSlider.setLabelTable(labelTable);
+    labelTable.put(Integer.valueOf(40), new JLabel("0.4", SwingConstants.CENTER));
+    btSlider.setLabelTable(labelTable);
+    labelTable.put(Integer.valueOf(60), new JLabel("0.6", SwingConstants.CENTER));
+    btSlider.setLabelTable(labelTable);
+    labelTable.put(Integer.valueOf(80), new JLabel("0.8", SwingConstants.CENTER));
+    btSlider.setLabelTable(labelTable);
+    labelTable.put(Integer.valueOf(100), new JLabel("1.0", SwingConstants.CENTER));
+    btSlider.setLabelTable(labelTable);
 
     btSlider.addChangeListener(new ChangeListener() {
 
@@ -486,24 +488,19 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     bdSlider.setMajorTickSpacing(20);
     bdSlider.setMinorTickSpacing(10);
     bdSlider.setPaintLabels(true);
-    bdSlider.getLabelTable().put(Integer.valueOf(0),
-        new JLabel("0.0", SwingConstants.CENTER));
-    bdSlider.setLabelTable(bdSlider.getLabelTable());
-    bdSlider.getLabelTable().put(Integer.valueOf(20),
-        new JLabel("0.2", SwingConstants.CENTER));
-    bdSlider.setLabelTable(bdSlider.getLabelTable());
-    bdSlider.getLabelTable().put(Integer.valueOf(40),
-        new JLabel("0.4", SwingConstants.CENTER));
-    bdSlider.setLabelTable(bdSlider.getLabelTable());
-    bdSlider.getLabelTable().put(Integer.valueOf(60),
-        new JLabel("0.6", SwingConstants.CENTER));
-    bdSlider.setLabelTable(bdSlider.getLabelTable());
-    bdSlider.getLabelTable().put(Integer.valueOf(80),
-        new JLabel("0.8", SwingConstants.CENTER));
-    bdSlider.setLabelTable(bdSlider.getLabelTable());
-    bdSlider.getLabelTable().put(Integer.valueOf(100),
-        new JLabel("1.0", SwingConstants.CENTER));
-    bdSlider.setLabelTable(bdSlider.getLabelTable());
+    labelTable = getJSliderLabelTable(bdSlider);
+    labelTable.put(Integer.valueOf(0), new JLabel("0.0", SwingConstants.CENTER));
+    bdSlider.setLabelTable(labelTable);
+    labelTable.put(Integer.valueOf(20), new JLabel("0.2", SwingConstants.CENTER));
+    bdSlider.setLabelTable(labelTable);
+    labelTable.put(Integer.valueOf(40), new JLabel("0.4", SwingConstants.CENTER));
+    bdSlider.setLabelTable(labelTable);
+    labelTable.put(Integer.valueOf(60), new JLabel("0.6", SwingConstants.CENTER));
+    bdSlider.setLabelTable(labelTable);
+    labelTable.put(Integer.valueOf(80), new JLabel("0.8", SwingConstants.CENTER));
+    bdSlider.setLabelTable(labelTable);
+    labelTable.put(Integer.valueOf(100), new JLabel("1.0", SwingConstants.CENTER));
+    bdSlider.setLabelTable(labelTable);
 
     bdSlider.addChangeListener(new ChangeListener() {
 

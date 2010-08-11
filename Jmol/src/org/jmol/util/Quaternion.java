@@ -309,7 +309,7 @@ public class Quaternion {
     q3 *= -1;
   }
 
-  public static final Quaternion getQuaternionFrame(Point3f center, Point3f x, Point3f xy) {
+  public static final Quaternion getQuaternionFrame(Point3f center, Tuple3f x, Tuple3f xy) {
     Vector3f vA = new Vector3f(x);
     vA.sub(center);
     Vector3f vB = new Vector3f(xy);

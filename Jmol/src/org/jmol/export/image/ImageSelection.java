@@ -126,6 +126,7 @@ public class ImageSelection implements Transferable {
    * @return any text found on the Clipboard; if none found, return an
    * empty String.
    */
+  @SuppressWarnings("unchecked")
   public static String getClipboardText() {
     String result = null;
     Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -136,13 +137,13 @@ public class ImageSelection implements Transferable {
         if (contents.isDataFlavorSupported(DataFlavor.stringFlavor)) {
         result = (String) contents.getTransferData(DataFlavor.stringFlavor);
         } else if (contents.isDataFlavorSupported(DataFlavor.javaFileListFlavor)){
-          List fileList = (List) contents.getTransferData(DataFlavor.javaFileListFlavor);
+          List<File> fileList = (List<File>) contents.getTransferData(DataFlavor.javaFileListFlavor);
           final int length = fileList.size();
           if (length == 0)
             return null;
           result = "LOAD files ";
           for (int i = 0; i < length; i++)
-            result += " \"" + ((File) fileList.get(i)).getAbsolutePath().replace('\\','/') + "\"";
+            result += " \"" + (fileList.get(i)).getAbsolutePath().replace('\\','/') + "\"";
         }
       } catch (UnsupportedFlavorException ex) {
         //highly unlikely since we are using a standard DataFlavor

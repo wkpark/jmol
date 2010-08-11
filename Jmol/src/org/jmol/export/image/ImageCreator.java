@@ -132,7 +132,7 @@ public class ImageCreator implements JmolImageCreatorInterface {
         Object bytesOrError = getImageBytes(type, quality, fileName, 
             (appendText ? text_or_bytes :  null ), null);
         if (bytesOrError instanceof String)
-          return (String) bytesOrError;
+          return bytesOrError;
         byte[] bytes = (byte[]) bytesOrError;
         if (bytes != null)
           return new String(bytes);

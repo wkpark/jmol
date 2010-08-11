@@ -152,7 +152,8 @@ public abstract class ImageEncoder implements ImageConsumer {
     this.height = height;
   }
 
-  public void setProperties(@SuppressWarnings("rawtypes") Hashtable props) {
+  @SuppressWarnings("unchecked")
+  public void setProperties(Hashtable props) {
     // Ignore.
   }
 

@@ -188,15 +188,16 @@ public class GifEncoder extends ImageEncoder {
           this.rgbPixels[y + row], x, w);
   }
 
-  Map colorHash;
-  ColorVector colorVector;
+  Map<String, AdaptiveColorCollection>colorHash;
 
   @Override
   void encodeDone() throws IOException {
+    Map<String, ColorItem> ciHash;
+    ColorVector colorVector;
     int transparentIndex = -1;
     int transparentRgb = -1;
     // Put all the pixels into a hash table.
-    colorHash = new Hashtable();
+    ciHash = new Hashtable<String, ColorItem>();
     colorVector = new ColorVector();
     int index = 0;
     String srgb;
@@ -216,7 +217,7 @@ public class GifEncoder extends ImageEncoder {
             rgbPixels[row][col] = rgb = transparentRgb;
           }
         }
-        ColorItem item = (ColorItem) colorHash.get(srgb = getKey(rgb));
+        ColorItem item = ciHash.get(srgb = getKey(rgb));
         if (item == null) {
           if (index < 0)
             throw new IOException("too many colors for a GIF");
@@ -224,19 +225,17 @@ public class GifEncoder extends ImageEncoder {
           //index = 255;
           item = new ColorItem(rgb, 1, index, isTransparent);
           ++index;
-          colorHash.put(srgb, item);
+          ciHash.put(srgb, item);
           colorVector.add(item);
         } else
           ++item.count;
       }
     }
-    
+    ciHash = null;    
     colorVector.sort();
     
     int mask = 0x010101;
-    colorHash = null;
-    int nTotal = index;
-  
+    int nTotal = index;  
     int nMax = Math.max(index - 1, 0); // leave top 1 untouched
 
 //    for (int i = 0; i < index; i++) {
@@ -247,14 +246,14 @@ public class GifEncoder extends ImageEncoder {
     Logger.debug("# colors = " + nTotal);
     while (true) {
       nTotal = index;
-      colorHash = new Hashtable<String, ColorItem>();
+      colorHash = new Hashtable<String, AdaptiveColorCollection>();
       AdaptiveColorCollection acc;
       for (int i = 0; i < nMax; i++) {
         ColorItem item = colorVector.get(i);
         int rgb = (nTotal <= 256 ? item.rgb : item.rgb & ~mask);
         item.rgb2 = rgb;
         srgb = getKey(rgb);
-        if ((acc = (AdaptiveColorCollection) colorHash.get(srgb)) == null) {
+        if ((acc = colorHash.get(srgb)) == null) {
           colorHash.put(srgb, acc = new AdaptiveColorCollection(rgb));
         } else {
           nTotal--;
@@ -293,8 +292,8 @@ public class GifEncoder extends ImageEncoder {
       ht.put(srgb, item.acc);
     }
     int iindex = 0;
-    for (Iterator e = colorHash.values().iterator(); e.hasNext();) {
-      AdaptiveColorCollection acc = (AdaptiveColorCollection) e.next();
+    for (Iterator<AdaptiveColorCollection> e = colorHash.values().iterator(); e.hasNext();) {
+      AdaptiveColorCollection acc = e.next();
       acc.index = iindex++;
       acc.setRgb(reds, grns, blus);
     }
@@ -313,7 +312,7 @@ public class GifEncoder extends ImageEncoder {
     int rgb = rgbPixels[y][x];
     int iindex;
     try{
-      iindex = ((AdaptiveColorCollection) colorHash.get(getKey(rgb))).index;
+      iindex = (colorHash.get(getKey(rgb))).index;
     } catch (Exception e) {
       iindex = 0;
     }

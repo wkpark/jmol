@@ -365,15 +365,21 @@ public class GT {
     return _(string, (Object[]) null, t);
   }
 
-  public static String _(String string, String item, boolean t) {
+  public static String _(String string,
+                         String item,
+                         @SuppressWarnings("unused") boolean t) {
     return _(string, new Object[] { item });
   }
 
-  public static String _(String string, int item, boolean t) {
+  public static String _(String string,
+                         int item,
+                         @SuppressWarnings("unused") boolean t) {
     return _(string, new Object[] { Integer.valueOf(item) });
   }
 
-  public static synchronized String _(String string, Object[] objects, boolean t) {
+  public static synchronized String _(String string,
+                                      Object[] objects,
+                                      @SuppressWarnings("unused") boolean t) {
     boolean wasTranslating;
     if (!(wasTranslating = getTextWrapper().doTranslate))
       setDoTranslate(true);
@@ -432,7 +438,7 @@ public class GT {
     return msg;   
   }
 
-  public static void setLanguagePath(String languagePath) {
+  public static void setLanguagePath(@SuppressWarnings("unused") String languagePath) {
     //GT.languagePath = languagePath;
   }
 }

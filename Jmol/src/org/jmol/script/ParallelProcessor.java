@@ -134,7 +134,6 @@ public class ParallelProcessor extends ScriptFunction {
      * 
      * @param process
      * @param lock
-     * @param inParallel
      * @param shapeManager 
      */
     public RunProcess(Process process, Object lock, ShapeManager shapeManager) {

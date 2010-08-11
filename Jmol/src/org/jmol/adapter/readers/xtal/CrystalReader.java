@@ -97,12 +97,14 @@ public class CrystalReader extends AtomSetCollectionReader {
   private int atomCount;
   private int[] atomFrag;
   private boolean getLastConventional;
+  private boolean test;
 
   @Override
   protected void initializeReader() throws Exception {
     doProcessLines = false;
     if (filter != null)
       filter = filter.toLowerCase();
+    test = (filter != null && filter.indexOf("test") >= 0);
     inputOnly = (filter != null && filter.indexOf("input") >= 0);
     addVibrations = !inputOnly && (filter == null || filter.indexOf("novib") < 0);
     isPrimitive = !inputOnly && (filter == null || filter.indexOf("conv") < 0);
@@ -267,26 +269,43 @@ public class CrystalReader extends AtomSetCollectionReader {
     fillFloatArray(data);
     Matrix3f m = new Matrix3f(data);
     m.invert();
-    // find the conventional equivalents of the primitive a and b axes. 
-    Point3f a = new Point3f();
-    Point3f b = new Point3f();
-    a.set(1, 0, 0);
-    m.transform(a);
-    b.set(0, 1, 0);
-    m.transform(b);
-    System.out.println(a);
-    System.out.println(b);
-    
     // now get conventional cell info so we can 
     // convert from conventional to cartesian
     discardLinesUntilContains("GAMMA");
     float[] params = new float[6];
     fillFloatArray(params);
     SimpleUnitCell u = new SimpleUnitCell(params);
-    u.toCartesian(a, false);
-    u.toCartesian(b, false);
-    matUnitCellOrientation = Quaternion.getQuaternionFrame(new Point3f(), a, b).getMatrix();
 
+    Quaternion q = new Quaternion(new Point3f(0, 0, 1), (test ? 90 : 0));
+
+    // find the conventional equivalents of the primitive a and b axes (sort of). 
+
+    Point3f a = new Point3f();
+    if (test)
+      a.set(0, 0, 1);
+    else 
+      a.set(1, 0, 0);
+    
+    m.transform(a);
+    u.toCartesian(a, false);
+    a = q.transform(a);
+    
+    Point3f b = new Point3f();
+    if (test)
+      b.set(1, 0, 0);
+    else 
+      b.set(0, 1, 0);
+    
+    m.transform(b);
+    u.toCartesian(b, false);
+    b = q.transform(b);
+
+    System.out.println("CrystalReader a = " + a);
+    System.out.println("CrystalReader b = " + b);
+    // the following will align the primitive a axis such that it 
+    // projects onto the Cartesian X axis.
+    // Honestly, I don't know why.
+    matUnitCellOrientation = Quaternion.getQuaternionFrame(new Point3f(), a, b).getMatrix();
   }
 
   private Point3f ptOriginShift = new Point3f();

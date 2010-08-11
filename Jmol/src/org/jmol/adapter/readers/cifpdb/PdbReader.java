@@ -209,6 +209,7 @@ protected boolean checkLine() throws Exception {
       header();
       return true;
     case 19:
+      compndOld();
       compndSource(false);
       return true;
     case 20:
@@ -321,6 +322,20 @@ protected boolean checkLine() throws Exception {
           + TextFormat.simpleReplace(TextFormat
               .simpleReplace(value, ", ", ",:"), " ", "") + ")");
   }
+
+  String compnd = null;
+  private void compndOld() {
+    if (compnd == null)
+      compnd = "";
+    else
+      compnd += " ";
+    String s = line;
+    if (lineLength > 62)
+      s = s.substring(0, 62);
+    compnd += s.substring(10).trim();
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("COMPND", compnd);
+  }
+
 
   @SuppressWarnings("unchecked")
   private void setBiomoleculeAtomCounts() {

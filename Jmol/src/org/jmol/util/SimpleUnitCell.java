@@ -181,6 +181,8 @@ public class SimpleUnitCell {
       matrixCartesianToFractional = new Matrix4f();
       matrixCartesianToFractional.invert(matrixFractionalToCartesian);
     }
+    matrixCtoFAbsolute = matrixCartesianToFractional;
+    matrixFtoCAbsolute = matrixFractionalToCartesian;
   }
 
   protected Matrix4f matrixCtoFAbsolute;

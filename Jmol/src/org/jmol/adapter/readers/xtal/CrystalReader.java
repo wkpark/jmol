@@ -284,6 +284,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       addJmolScript("draw vc vector {0 0 0} {" + f[0] + " " + f[1] + " " + f[2] + "} color blue");
 
     matUnitCellOrientation = Quaternion.getQuaternionFrame(new Point3f(), a, b).getMatrix();
+    Logger.info("oriented unit cell is in model " + (atomSetCollection.getAtomSetCount() + 1));
 }
 
   /**

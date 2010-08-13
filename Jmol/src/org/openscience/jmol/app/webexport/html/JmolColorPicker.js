@@ -11,7 +11,7 @@ Where ever you want a popup color picker box include a script like
 
 <script type="text/javascript">
 var scriptStr2 = 'select carbon; color atom $COLOR$;';
-jmolColorPickerBox(scriptStr2, "rgb[100,100,100]", "colorBox1", "0");
+jmolColorPickerBox(scriptStr2, [100,100,100], "colorBox1", "0");
 </script>
 
 The only function that will not change name or syntax is jmolColorPickerBox(scriptStr, rgb, boxIdStr,  appletId).

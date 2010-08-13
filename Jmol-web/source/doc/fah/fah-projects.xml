@@ -8516,7 +8516,7 @@
   <fah_proj number="6515" name="p6515_1CFC_A_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="16825" preferred="14" deadline="21"
     credit="74" frames="100" code="G" contact="lan" contrib="Bas Couwenberg"/>
-  <fah_proj number="6516" name="p6516_proA_predict" public="n"
+  <fah_proj number="6516" name="p6516_proA_predict" public="y"
     server="171.64.65.62" atoms="23935" preferred="21" deadline="31"
     credit="112" frames="100" code="G" contact="lan"/>
   <fah_proj number="6518" name="p6518_proG_predict" public="n"
@@ -8725,9 +8725,9 @@
   <fah_proj number="10045" name="p10045" public="y"
     server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
     credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
-  <fah_proj number="10046" name="p10046" public="y"
+  <fah_proj number="10046" name="p10046" public="y" file="xyz"
     server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
-    credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
+    credit="126.25" frames="100" code="PM" contact="abdulwahidc" contrib="Fernando Dias"/>
   <fah_proj number="10047" name="p10047" public="y"
     server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
     credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
@@ -9108,5 +9108,23 @@
   <fah_proj number="10901" name="Abeta40_mono" public="n"
     server="171.64.122.84" atoms="34321" preferred="40" deadline="59"
     credit="209" frames="100" code="G" contact="lin5"/>
+  <fah_proj number="10910" name="Abeta42_mono_L" public="n"
+    server="171.67.108.33" atoms="98250" preferred="28" deadline="41"
+    credit="145" frames="100" code="G" contact="lin5"/>
+  <fah_proj number="10911" name="AbetaM1_mono_L" public="n"
+    server="171.67.108.33" atoms="98252" preferred="28" deadline="41"
+    credit="145" frames="100" code="G" contact="lin5"/>
+  <fah_proj number="10912" name="AbetaM2_mono_L" public="n"
+    server="171.67.108.33" atoms="98235" preferred="28" deadline="41"
+    credit="145" frames="100" code="G" contact="lin5"/>
+  <fah_proj number="10913" name="AbetaM3_mono_L" public="n"
+    server="171.67.108.33" atoms="98245" preferred="28" deadline="41"
+    credit="145" frames="100" code="G" contact="lin5"/>
+  <fah_proj number="10914" name="AbetaM4_mono_L" public="n"
+    server="171.67.108.33" atoms="98245" preferred="28" deadline="41"
+    credit="145" frames="100" code="G" contact="lin5"/>
+  <fah_proj number="10915" name="Abeta40_mono_L" public="n"
+    server="171.67.108.33" atoms="98212" preferred="28" deadline="41"
+    credit="145" frames="100" code="G" contact="lin5"/>
 
 </fah_projects>

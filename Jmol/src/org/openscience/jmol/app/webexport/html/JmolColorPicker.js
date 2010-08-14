@@ -1,7 +1,7 @@
 /* Jmol Simple JavaScript Color Picker
- by Jonathan Gutow
-V1.2
-June 17, 2010
+ by Jonathan Gutow, Angel Herráez
+V1.3
+August 14, 2010
 
 requires
    Jmol.js
@@ -14,16 +14,24 @@ var scriptStr2 = 'select carbon; color atom $COLOR$;';
 jmolColorPickerBox(scriptStr2, [100,100,100], "colorBox1", "0");
 </script>
 
+Or the alternatve syntax for specifying color:
+
+jmolColorPickerBox(scriptStr2, "#646464", "colorBox1", "0");
+
+
 The only function that will not change name or syntax is jmolColorPickerBox(scriptStr, rgb, boxIdStr,  appletId).
 
 USE OTHER FUNCTIONS IN THE JAVASCRIPT LIBRARY AT YOUR OWN RISK.
-All parameters are strings although appletId could potentially be a number, but it is used to make a string.
+All parameters except rgb are strings, although appletId could potentially be a number, but it is used to make a string.
   scriptStr should contain $COLOR$ where you wish the color string to be passed to Jmol in the script you provide.
-  rgb is the browser standard 0-255 red-green-blue values specified as an array [red, green, blue] default = [127,127,127] a dark grey.
+  rgb is the browser standard 0-255 red-green-blue values specified as an array [red, green, blue],
+    or alternatively as a string with red-green-blue hex values: "#RRGGBB" (as in HTML tag format);
+	 defaults to [127,127,127] a dark grey.
   boxIdStr should be a string that is unique to the web document, if not provided it will be set to colorBoxJ, J=0, 1, 2... in the order created.
   appletId is the standard Jmol id of applet you want the colorpicker to send the script to.  Default = "0".
+  
 >>>>Advanced use<<<<<<<<
-To have the colorPickerBox pass the picked color to a function of your own so that you can modify the script after the colorBox 
+  To have the colorPickerBox pass the picked color to a function of your own so that you can modify the script after the colorBox 
   has been defined, you can pass an array in place of scriptStr.  This behaves much the way functions in Jmol.js do.  The array
   must have the following format [yourFunctionName, yourParam1, yourParam2,...]:
       yourFunctionName should not be in quotes, just the exact character sequence used to name your function.
@@ -189,7 +197,11 @@ function jmolColorPickerBox(scriptStr, startColor, boxID, appletID){
     var boxNum = jmolColorPickerBoxes.length;
     if (!boxID) boxID = 'colorBox'+boxNum;
     if (!startColor) startColor = [127,127,127];
-    var presentColor = 'rgb('+startColor[0]+','+startColor[1]+','+startColor[2]+')';
+ 	 if (typeof startColor==='object' && startColor instanceof Array && startColor.length==3) {
+    	var presentColor = 'rgb('+startColor[0]+','+startColor[1]+','+startColor[2]+')';
+ 	 } else if (startColor.toString().charAt(0)==="#" && startColor.length==7) {
+ 		var presentColor = startColor;
+ 	 } else { alert('startColor format is wrong');	} 
     jmolColorPickerBoxes[boxNum]= new _jmolColorBoxInfo(boxID, appletID, scriptStr);  
     var boxDiv = document.createElement("div");
     boxDiv.setAttribute("id",boxID);

@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-08-04 20:25+0200\n"
-"PO-Revision-Date: 2010-08-13 18:42+0000\n"
+"PO-Revision-Date: 2010-08-14 12:48+0000\n"
 "Last-Translator: Nicolas Delvaux <Unknown>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-08-13 19:24+0000\n"
+"X-Launchpad-Export-Date: 2010-08-14 20:16+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: France\n"
 "X-Poedit-Language: French\n"
@@ -1578,35 +1578,35 @@ msgstr "Rouge/Vert"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:150
 msgid "Animation Control"
-msgstr ""
+msgstr "Contrôle de l'animation"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:177
 msgid "Animation"
-msgstr ""
+msgstr "Animation"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:178
 msgid "First Frame"
-msgstr ""
+msgstr "Première image"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:180
 msgid "Previous Frame"
-msgstr ""
+msgstr "Image précédente"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:182
 msgid "Play"
-msgstr ""
+msgstr "Lecture"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:184
 msgid "Next Frame"
-msgstr ""
+msgstr "Image suivante"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:186
 msgid "Pause"
-msgstr ""
+msgstr "Pause"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:188
 msgid "Last Frame"
-msgstr ""
+msgstr "Dernière image"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:190
 msgid "Mode:"

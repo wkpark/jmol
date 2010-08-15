@@ -8519,7 +8519,7 @@
   <fah_proj number="6516" name="p6516_proA_predict" public="y"
     server="171.64.65.62" atoms="23935" preferred="21" deadline="31"
     credit="112" frames="100" code="G" contact="lan"/>
-  <fah_proj number="6518" name="p6518_proG_predict" public="n"
+  <fah_proj number="6518" name="p6518_proG_predict" public="n" file="xyz"
     server="171.64.65.62" atoms="16027" preferred="13" deadline="20"
     credit="72" frames="100" code="G" contact="lan"/>
 

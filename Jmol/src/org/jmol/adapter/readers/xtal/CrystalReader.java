@@ -773,7 +773,11 @@ public class CrystalReader extends AtomSetCollectionReader {
       return true;
     atomFrag = new int[numAtomsFrag];
     String Sfrag = "";
-    while (readLine() != null && line.indexOf("INFORMATION **** INPFREQ") < 0)
+    
+
+    //reading GCALCO - MAX INDICES  makes the reader more compatible with the many versions of CRYSTAL instead of reading 
+    //while (readLine() != null && line.indexOf("INFORMATION **** INPFREQ") < 0)
+    while (readLine() != null && line.indexOf("GCALCO - MAX INDICES") < 0) 
       Sfrag += line;
     Sfrag = TextFormat.simpleReplace(Sfrag, "(", " (");
     String[] tokens = getTokens(Sfrag);

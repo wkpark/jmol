@@ -267,7 +267,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
         if (transformedVectors[nC].z < 0)
           check ^= 4;
       }
-      if (fill && check != 7)
+      if (fill && check == 0)
         continue;
       short colixA, colixB, colixC;
       if (colorSolid) {

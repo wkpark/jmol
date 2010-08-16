@@ -1389,8 +1389,6 @@ final public class Graphics3D implements JmolRendererInterface {
     if (colix == colixCurrent && currentShadeIndex == shadeIndex)
       return;
     currentShadeIndex = -1;
-    if ((colix & TRANSLUCENT_MASK) == 0)
-      colix |= (1 << TRANSLUCENT_SHIFT);
     setColix(colix);
     setColorNoisy(shadeIndex);
   }

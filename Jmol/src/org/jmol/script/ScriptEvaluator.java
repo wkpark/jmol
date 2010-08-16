@@ -15332,17 +15332,13 @@ public class ScriptEvaluator {
         i = iToken;
         break;
       case Token.colorscheme:
-        sbCommand.append(" colorScheme");
-        // either order OK -- documented for "rwb" TRANSLUCENT
+        // either order NOT OK -- documented for TRANSLUCENT "rwb" 
         if (tokAt(i + 1) == Token.translucent) {
           isColorSchemeTranslucent = true;
           i++;
         }
         colorScheme = parameterAsString(++i);
-        if (tokAt(i + 1) == Token.translucent) {
-          isColorSchemeTranslucent = true;
-          i++;
-        }
+        sbCommand.append(" colorScheme");
         if (isColorSchemeTranslucent)
           sbCommand.append(" translucent");
         sbCommand.append(" ").append(Escape.escape(colorScheme));

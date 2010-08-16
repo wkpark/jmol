@@ -294,14 +294,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
           g3d.fillTriangle(screens[iA], colixA, nA, screens[iB], colixB, nB,
               screens[iC], colixC, nC, 0.1f);
         } else {
-/*          
-          if (colorSolid && isPlane) {
-            g3d.fillTriangle(screens[iA], screens[iB], screens[iC]);
-          } else {
-*/
             g3d.fillTriangle(screens[iA], colixA, nA, screens[iB], colixB, nB,
                 screens[iC], colixC, nC);
-//          }
         }
         if (iShowNormals)
           renderNormals();

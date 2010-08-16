@@ -253,8 +253,10 @@ public abstract class SurfaceReader implements VertexDataServer {
   
   abstract protected void closeReader();
   
-//  boolean mustCalcPoint = true; // for now
-
+  /**
+   * 
+   * @param os
+   */
   protected void setOutputStream(OutputStream os) {
     // only for file readers
   }
@@ -449,6 +451,12 @@ public abstract class SurfaceReader implements VertexDataServer {
     return true;
   }
 
+  /**
+   * 
+   * @param n
+   * @param nPoints
+   * @throws Exception
+   */
   protected void gotoData(int n, int nPoints) throws Exception {
     //only for file reader
   }
@@ -819,19 +827,17 @@ public abstract class SurfaceReader implements VertexDataServer {
   }
 
   protected short getColorIndexFromPalette(float value) {
-    if (params.isColorReversed)
-      return colorEncoder.getColorIndexFromPalette(-value,
-          -params.valueMappedToBlue, -params.valueMappedToRed);
-    return colorEncoder.getColorIndexFromPalette(value,
-        params.valueMappedToRed, params.valueMappedToBlue);
+    return (params.isColorReversed ? colorEncoder.getColorIndexFromPalette(
+        -value, -params.valueMappedToBlue, -params.valueMappedToRed)
+        : colorEncoder.getColorIndexFromPalette(value, params.valueMappedToRed,
+            params.valueMappedToBlue));
   }
 
   protected int getArgbFromPalette(float value) {
-    if (params.isColorReversed)
-      return colorEncoder.getArgbFromPalette(-value,
-          -params.valueMappedToBlue, -params.valueMappedToRed);
-    return colorEncoder.getArgbFromPalette(value,
-        params.valueMappedToRed, params.valueMappedToBlue);
+    return (params.isColorReversed ? colorEncoder.getArgbFromPalette(-value,
+          -params.valueMappedToBlue, -params.valueMappedToRed)
+          : colorEncoder.getArgbFromPalette(value,
+        params.valueMappedToRed, params.valueMappedToBlue));
   }
 
   void updateTriangles() {
@@ -848,6 +854,10 @@ public abstract class SurfaceReader implements VertexDataServer {
         meshData.vertexCount, meshData.vertexIncrement, cJvxlEdgeNaN);
   }
 
+  /**
+   * 
+   * @param doExclude
+   */
   public void selectPocket(boolean doExclude) {
     // solvent reader implements this
   }

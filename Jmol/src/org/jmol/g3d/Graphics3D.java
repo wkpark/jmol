@@ -215,7 +215,7 @@ final public class Graphics3D implements JmolRendererInterface {
   short colixCurrent;
   int[] shadesCurrent;
   int argbCurrent;
-  boolean isTranslucent;
+  //boolean isTranslucent;
   boolean isScreened;
   int translucencyMask;
   int argbNoisyUp, argbNoisyDn;
@@ -708,16 +708,7 @@ final public class Graphics3D implements JmolRendererInterface {
   }
 
   private int currentShadeIndex;
-  
-  private void setColixAndShadeIndex(short colix, int shadeIndex) {
-    if (colix == colixCurrent && currentShadeIndex == shadeIndex)
-      return;
-    currentShadeIndex = -1;
-    setColix(colix);
-    setColorNoisy(shadeIndex);
-  }
-
-  
+    
   /**
    * sets current color from colix color index
    * @param colix the color index
@@ -729,7 +720,7 @@ final public class Graphics3D implements JmolRendererInterface {
     int mask = colix & TRANSLUCENT_MASK;
     if (mask == TRANSPARENT)
       return false;
-    isTranslucent = mask != 0;
+    boolean isTranslucent = mask != 0;
     isScreened = isTranslucent && mask == TRANSLUCENT_SCREENED;
     if (!checkTranslucent(isTranslucent && !isScreened))
       return false;
@@ -737,9 +728,6 @@ final public class Graphics3D implements JmolRendererInterface {
     if (isPass2) {
       translucencyMask = (mask << ALPHA_SHIFT) | 0xFFFFFF;
     }
-//    if (isPass2) {
-  //    System.out.println("G3d mask " + Integer.toHexString(mask)+ " " +Integer.toHexString(TRANSPARENT)+ " " +Integer.toHexString(TRANSLUCENT_SCREENED));
-    //}
     colixCurrent = colix;
     shadesCurrent = getShades(colix);
     currentShadeIndex = -1; 
@@ -1332,32 +1320,6 @@ final public class Graphics3D implements JmolRendererInterface {
     triangle3d.fillTriangle(xA, yA, zA, xB, yB, zB, xC, yC, zC, false);
   }
   */
-  public void fillTriangle(Point3i screenA, short colixA, short normixA,
-                           Point3i screenB, short colixB, short normixB,
-                           Point3i screenC, short colixC, short normixC) {
-    // mesh, isosurface
-    boolean useGouraud;
-    if (normixA == normixB && normixA == normixC &&
-        colixA == colixB && colixA == colixC) {
-      setColixAndShadeIndex(colixA, normix3d.getShadeIndex(normixA));
-      useGouraud = false;
-    } else {
-      triangle3d.setGouraud(getShades(colixA)[normix3d.getShadeIndex(normixA)],
-                            getShades(colixB)[normix3d.getShadeIndex(normixB)],
-                            getShades(colixC)[normix3d.getShadeIndex(normixC)]);
-      int translucentCount = 0;
-      if (isColixTranslucent(colixA))
-        ++translucentCount;
-      if (isColixTranslucent(colixB))
-        ++translucentCount;
-      if (isColixTranslucent(colixC))
-        ++translucentCount;
-      isTranslucent = translucentCount >= 2;
-      useGouraud = true;
-    }
-    triangle3d.fillTriangle(screenA, screenB, screenC, useGouraud);
-  }
-
   public void fillTriangleTwoSided(short normix,
                            int xScreenA, int yScreenA, int zScreenA,
                            int xScreenB, int yScreenB, int zScreenB,
@@ -1387,26 +1349,67 @@ final public class Graphics3D implements JmolRendererInterface {
                                    short normixC, float factor) {
     // isosurface test showing triangles
     boolean useGouraud;
-    if (normixA == normixB && normixA == normixC && colixA == colixB
+    if (!isPass2 && normixA == normixB && normixA == normixC && colixA == colixB
         && colixA == colixC) {
-      setColixAndShadeIndex(colixA, normix3d.getShadeIndex(normixA));
+      setTriangleColixAndShadeIndex(colixA, normix3d.getShadeIndex(normixA));
       useGouraud = false;
     } else {
+      if (!setTriangleTranslucency(colixA, colixB, colixC))
+        return;
       triangle3d.setGouraud(getShades(colixA)[normix3d.getShadeIndex(normixA)],
           getShades(colixB)[normix3d.getShadeIndex(normixB)],
           getShades(colixC)[normix3d.getShadeIndex(normixC)]);
-      int translucentCount = 0;
-      if (isColixTranslucent(colixA))
-        ++translucentCount;
-      if (isColixTranslucent(colixB))
-        ++translucentCount;
-      if (isColixTranslucent(colixC))
-        ++translucentCount;
-      isTranslucent = translucentCount >= 2;
       useGouraud = true;
     }
     triangle3d.fillTriangle(screenA, screenB, screenC, factor,
         useGouraud);
+  }
+
+  public void fillTriangle(Point3i screenA, short colixA, short normixA,
+                           Point3i screenB, short colixB, short normixB,
+                           Point3i screenC, short colixC, short normixC) {
+    // mesh, isosurface
+    boolean useGouraud;
+    if (!isPass2 && normixA == normixB && normixA == normixC &&
+        colixA == colixB && colixA == colixC) {
+      setTriangleColixAndShadeIndex(colixA, normix3d.getShadeIndex(normixA));
+      useGouraud = false;
+    } else {
+      if (!setTriangleTranslucency(colixA, colixB, colixC))
+        return;
+      triangle3d.setGouraud(getShades(colixA)[normix3d.getShadeIndex(normixA)],
+                            getShades(colixB)[normix3d.getShadeIndex(normixB)],
+                            getShades(colixC)[normix3d.getShadeIndex(normixC)]);
+      useGouraud = true;
+    }
+    triangle3d.fillTriangle(screenA, screenB, screenC, useGouraud);
+  }
+
+  private void setTriangleColixAndShadeIndex(short colix, int shadeIndex) {
+    if (colix == colixCurrent && currentShadeIndex == shadeIndex)
+      return;
+    currentShadeIndex = -1;
+    if ((colix & TRANSLUCENT_MASK) == 0)
+      colix |= (1 << TRANSLUCENT_SHIFT);
+    setColix(colix);
+    setColorNoisy(shadeIndex);
+  }
+
+  private boolean setTriangleTranslucency(short colixA, short colixB, short colixC) {
+    if (!isPass2)
+      return true;
+    int maskA = colixA & TRANSLUCENT_MASK;
+    int maskB = colixB & TRANSLUCENT_MASK;
+    int maskC = colixC & TRANSLUCENT_MASK;
+    maskA &= ~TRANSPARENT;
+    maskB &= ~TRANSPARENT;
+    maskC &= ~TRANSPARENT;
+    //if (maskA == 0 && maskB == 0 && maskC == 0)
+      //return false;
+    int mask = ((maskA + maskB + maskC) / 3) & TRANSLUCENT_MASK;
+   // System.out.println(mask >> TRANSLUCENT_SHIFT);
+    translucencyMask = (mask << ALPHA_SHIFT) | 0xFFFFFF;
+    return true;
   }
 
   /* ***************************************************************
@@ -2159,31 +2162,23 @@ final public class Graphics3D implements JmolRendererInterface {
     if (colix == INHERIT_ALL)
       colix = INHERIT_COLOR;
     colix &= ~TRANSLUCENT_MASK;
-    if (!isTranslucent)
-      return colix;
-    return applyColorTranslucencyLevel(colix, translucentLevel);
+    return (isTranslucent ? applyColorTranslucencyLevel(colix, translucentLevel) : colix);
   }
 
   public int getColorArgbOrGray(short colix) {
     if (colix < 0)
       colix = changeableColixMap[colix & UNMASK_CHANGEABLE_TRANSLUCENT];
-    if (! inGreyscaleMode)
-      return Colix3D.getArgb(colix);
-    return Colix3D.getArgbGreyscale(colix);
+    return (inGreyscaleMode ? Colix3D.getArgbGreyscale(colix) : Colix3D.getArgb(colix));
   }
 
   int[] getShades(short colix) {
     if (colix < 0)
       colix = changeableColixMap[colix & UNMASK_CHANGEABLE_TRANSLUCENT];
-    if (! inGreyscaleMode)
-      return Colix3D.getShades(colix);
-    return Colix3D.getShadesGreyscale(colix);
+    return (inGreyscaleMode ? Colix3D.getShadesGreyscale(colix) : Colix3D.getShades(colix));
   }
 
   public final static short getChangeableColixIndex(short colix) {
-    if (colix >= 0)
-      return -1;
-    return (short)(colix & UNMASK_CHANGEABLE_TRANSLUCENT);
+    return (colix >= 0 ? -1 : (short)(colix & UNMASK_CHANGEABLE_TRANSLUCENT));
   }
 
   public final static boolean isColixTranslucent(short colix) {

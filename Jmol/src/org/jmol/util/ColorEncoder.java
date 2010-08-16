@@ -195,6 +195,10 @@ import org.jmol.util.ArrayUtil;
     return getColorSchemeName(currentPalette);  
   }
   
+  public boolean isTranslucent() {
+    return currentTranslucent;
+  }
+  
   public final static String getColorSchemeName(int i) {
     int absi = Math.abs(i);
     return (i == -1 ? thisName : absi < colorSchemes.length && absi >= 0 ? colorSchemes[absi] : null);  
@@ -367,8 +371,14 @@ import org.jmol.util.ArrayUtil;
                                                      float hi, int palette,
                                                      boolean isTranslucent) {
     short colix = getColorIndex(getArgbFromPalette(val, lo, hi, palette));
-    if (isTranslucent)
-      colix = Graphics3D.getColixTranslucent(colix, true, (hi - val) / (hi - lo));
+    if (isTranslucent) {
+      float f = (hi - val) / (hi - lo); 
+      if (f > 1)
+        f = 1; // transparent
+      else if (f < 0.125f) // never fully opaque
+        f = 0.125f;
+      colix = Graphics3D.getColixTranslucent(colix, true, f);
+    }
     return colix;
   }
 

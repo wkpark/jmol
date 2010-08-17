@@ -529,16 +529,16 @@ public class Parameters {
     }
   }
   
-  public List functionXYinfo;
+  public List<Object> functionXYinfo;
   
-  void setFunctionXY(List value) {
+  void setFunctionXY(List<Object> value) {
     dataType = SURFACE_FUNCTIONXY;
     functionXYinfo = value;
     cutoff = Float.MIN_VALUE;
     isEccentric = isAnisotropic = false;
   }
 
-  void setFunctionXYZ(List value) {
+  void setFunctionXYZ(List<Object> value) {
     dataType = SURFACE_FUNCTIONXYZ;
     functionXYinfo = value;
     cutoff = Float.MIN_VALUE;
@@ -582,7 +582,7 @@ public class Parameters {
   float mep_marginAngstroms = 1f; // may have to adjust this
   public int mep_calcType = -1;
 
-  void setMep(float[] charges, boolean isRangeDefined, boolean isMLP) {
+  void setMep(float[] charges, boolean isMLP) {
     dataType = (isMLP ? SURFACE_MLP : SURFACE_MEP);
     theProperty = charges;
     isEccentric = isAnisotropic = false;
@@ -627,7 +627,8 @@ public class Parameters {
   int qm_nAtoms;
   int qm_moNumber = Integer.MAX_VALUE;
   
-  void setMO(int iMo, boolean isRangeDefined) {
+  @SuppressWarnings("unchecked")
+  void setMO(int iMo) {
     iUseBitSets = true;
     qm_moNumber = Math.abs(iMo);
     qmOrbitalType = (moData.containsKey("gaussians") ? QM_TYPE_GAUSSIAN
@@ -734,7 +735,7 @@ public class Parameters {
   public BitSet[] bsExcluded;
   public int contourType;
   public boolean colorSchemeTranslucent;
-  public String colorKey;
+  public Map<String, Object> colorKey;
   
   void setMapRanges(SurfaceReader surfaceReader) {
     if (!colorDensity)

@@ -1113,9 +1113,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       if (s != null)
         info.put("jvxlInfo", s.replace('\n', ' '));
       info.put("modelIndex", Integer.valueOf(mesh.modelIndex));
-      info.put("colorKey", (mesh.colorKey == null ? Escape.escape(Graphics3D
-              .colorPointFromInt2(Graphics3D.getArgb(mesh.colix)))
-              : mesh.colorKey));
+      if (mesh.colorKey == null)
+        mesh.colorKey = new Hashtable<String, Object>();
+      mesh.colorKey.put("color", Graphics3D
+              .colorPointFromInt2(Graphics3D.getArgb(mesh.colix)));
+      info.put("colorKey", mesh.colorKey);
       if (mesh.title != null)
         info.put("title", mesh.title);
       if (mesh.jvxlData.contourValues != null

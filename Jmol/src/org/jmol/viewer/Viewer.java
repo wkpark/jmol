@@ -1498,10 +1498,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return colorManager.getColixBondPalette(bond, pid);
   }
 
-  public int[] getColorSchemeArray(String colorScheme) {
-    return colorManager.getColorSchemeArray(colorScheme);
-  }
-
   public String getColorSchemeList(String colorScheme, boolean ifDefault) {
     return colorManager.getColorSchemeList(colorScheme, ifDefault);
   }
@@ -1515,10 +1511,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return colorManager.getColixForPropertyValue(val);
   }
   
-  public String getColorKey() {
-    return colorManager.getColorKey();
-  }
-
   public Point3f getColorPointForPropertyValue(float val) {
     // x = {atomno=3}.partialcharge.color
     return Graphics3D.colorPointFromInt2(g3d.getColorArgbOrGray(colorManager

@@ -441,7 +441,7 @@ public class IsosurfaceMesh extends Mesh {
   float[] contourValues;
   short[] contourColixes;
   short meshColix;
-  String colorKey;
+  Map<String, Object> colorKey;
   
   public void setDiscreteColixes(float[] values, short[] colixes) {
     if (values != null)

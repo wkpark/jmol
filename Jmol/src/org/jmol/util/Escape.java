@@ -73,7 +73,7 @@ public class Escape {
     if (x instanceof Point3f[])
       return escapeArray(x);
     if (x instanceof Map)
-      return escape((Map) x);
+      return escape((Map<String, Object>) x);
     return x.toString();
   }
 
@@ -659,6 +659,7 @@ public class Escape {
     return toReadable(null, info);
   }
 
+  @SuppressWarnings("unchecked")
   public static String toReadable(String name, Object info) {
     StringBuilder sb =new StringBuilder();
     String sep = "";
@@ -721,7 +722,7 @@ public class Escape {
       for (int i = 0; i < imax; i++) {
         sb.append(toReadable(name + "[" + (i + 1) + "]", ((List) info).get(i)));
       }
-      return packageReadable(name, "Vector[" + imax + "]", sb);
+      return packageReadable(name, "List[" + imax + "]", sb);
     }
     if (info instanceof Matrix3f) {
       sb.append(escape((Matrix3f) info));

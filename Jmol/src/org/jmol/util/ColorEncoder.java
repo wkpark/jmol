@@ -23,8 +23,12 @@
  */
 package org.jmol.util;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
+
+import javax.vecmath.Point3f;
 
 import org.jmol.viewer.JmolConstants;
 import org.jmol.g3d.Graphics3D;
@@ -61,14 +65,13 @@ import org.jmol.util.ArrayUtil;
   public final static int RASMOL = 9;
   public final static int SHAPELY = 10;
   public final static int AMINO = 11;
-  public final static int COLOR_RGB = 12;
-  public final static int USER = -13;
-  public final static int RESU = -14;
+  public final static int USER = -12;
+  public final static int RESU = -13;
 
   private final static String[] colorSchemes = {
     "roygb", "bgyor", "rwb", "bwr", "low", "high", "bw", "wb",  
     BYELEMENT_JMOL, BYELEMENT_RASMOL, BYRESIDUE_SHAPELY, 
-    BYRESIDUE_AMINO, "colorRGB", "user", "resu"};
+    BYRESIDUE_AMINO, "user", "resu"};
 
   private final static int schemeIndex(String colorScheme) {
     for (int i = 0; i < colorSchemes.length; i++)
@@ -339,8 +342,6 @@ import org.jmol.util.ArrayUtil;
       return ArrayUtil.arrayCopy(argbsShapely, 0, -1, false);
     case AMINO:
       return ArrayUtil.arrayCopy(argbsAmino, 0, -1, false);
-    case COLOR_RGB:
-      return new int[0];
     case USER:
       return ArrayUtil.arrayCopy(userScale, 0, -1, false);
     case RESU:
@@ -438,83 +439,81 @@ import org.jmol.util.ArrayUtil;
       return JmolConstants.argbsShapely[colorIndex((int)val, JmolConstants.argbsShapely.length)];
     case AMINO:
       return JmolConstants.argbsAmino[colorIndex((int)val, JmolConstants.argbsAmino.length)];
-    case COLOR_RGB:
-      return (int)val;
     default:
       return GRAY;
     }
   }
   
-  public String getColorKey() {
-    return getColorKeyFromPalette(lo, hi, currentPalette, isReversed);
-  }
-  
-  public static String getColorKeyFromPalette(float lo, float hi, int palette, boolean isReversed) {
-   int nSeg = 0;
-   switch (palette) {
+  public Map<String, Object> getColorKey() {
+   Hashtable<String, Object> info = new Hashtable<String, Object>();
+   boolean isReverse = isReversed;
+   int segmentCount = 0;
+   switch (currentPalette) {
    case BW:
-     nSeg = palletBW.length;
+     segmentCount = palletBW.length;
      break;
    case WB:
-     nSeg = palletWB.length;
+     segmentCount = palletWB.length;
      break;
    case ROYGB:
-     nSeg = JmolConstants.argbsRoygbScale.length;
+     segmentCount = JmolConstants.argbsRoygbScale.length;
      break;
    case BGYOR:
-     isReversed = !isReversed;
-     nSeg = JmolConstants.argbsRoygbScale.length;
+     isReverse = !isReverse;
+     segmentCount = JmolConstants.argbsRoygbScale.length;
      break;
    case LOW:
-     nSeg = ihalf;
+     segmentCount = ihalf;
      break;
    case HIGH:
-     nSeg = ihalf;
+     segmentCount = ihalf;
      break;
    case RWB:
-     nSeg = JmolConstants.argbsRwbScale.length;
+     segmentCount = JmolConstants.argbsRwbScale.length;
      break;
    case BWR:
-     isReversed = !isReversed;
-     nSeg = JmolConstants.argbsRwbScale.length;
+     isReverse = !isReverse;
+     segmentCount = JmolConstants.argbsRwbScale.length;
      break;
    case USER:
-     nSeg = userScale.length;
+     segmentCount = userScale.length;
      break;
    case RESU:
-     isReversed = !isReversed;
-     nSeg = userScale.length;
+     isReverse = !isReverse;
+     segmentCount = userScale.length;
      break;
    case JMOL:
-     nSeg = argbsCpk.length;
+     segmentCount = argbsCpk.length;
      break;
    case RASMOL:
-     nSeg = rasmolScale.length;
+     segmentCount = rasmolScale.length;
      break;
    case SHAPELY:
-     nSeg = JmolConstants.argbsShapely.length;
+     segmentCount = JmolConstants.argbsShapely.length;
      break;
    case AMINO:
-     nSeg = JmolConstants.argbsAmino.length;
+     segmentCount = JmolConstants.argbsAmino.length;
      break;
-   case COLOR_RGB:
    default:
-     return "";
+     return info;
    }
-   StringBuffer sb = new StringBuffer();
-   sb.append("[");
-   for (int i = 0; i < nSeg; i++) {
-     float val = (isReversed ? -unquantize(i, -hi, -lo, nSeg) : unquantize(i, lo, hi, nSeg));
-     sb.append(val).append(",");
-     sb.append(Escape.escape(Graphics3D.colorPointFromInt2(getArgbFromPalette(val, lo, hi, palette)))).append(",");
+   List<Point3f> colors = new ArrayList<Point3f>(segmentCount);
+   float[] values = new float[segmentCount + 1]; 
+   float quanta = (hi - lo) / segmentCount;
+   
+   for (int i = 0; i < segmentCount; i++) {     
+     values[i] = (isReversed ? hi - i * quanta : lo + i * quanta);
+     colors.add(Graphics3D.colorPointFromInt2(getArgb(values[i] + quanta / 2)));
    } 
-   sb.append(isReversed ? lo : hi).append("]");
-   return sb.toString();
+   values[segmentCount] = (isReversed ? lo : hi);
+   info.put("values", values);
+   info.put("colors", colors);
+   return info;
  }
 
   public final static short getColorIndex(int c) {
     return Graphics3D.getColix(c);
-  }
+  }    
 
   public final static int quantize(float val, float lo, float hi, int segmentCount) {
     /* oy! Say you have an array with 10 values, so segmentCount=10
@@ -570,75 +569,18 @@ import org.jmol.util.ArrayUtil;
     return q;
   }
 
-  public final static float unquantize(int q, float lo, float hi, int segmentCount) {
-    float range = hi - lo;
-    float quanta = range / segmentCount;
-    return q * quanta + lo;
-  }
-
-  public final static int colorIndex(int q, int segmentCount) {
+  private final static int colorIndex(int q, int segmentCount) {
     return (q <= 0 | q >= segmentCount ? 0 : q);
   }
-
-
 /*  
-  //an idea that didn't work
-  public short getColorIndexFromPalette(float val, float lo, float hi) {
-    return getColorIndexFromPalette(val, lo, hi, palette, rgbRed, rgbGreen, rgbBlue);
-  }
-  private final static int RGB   = 6;
-  private final static String[] colorSchemes = {"roygb", "bgyor", "rwb", "bwr", "low", "high", "rgb"}; 
-  private int rgbRed = 0xFFFF0000;
-  private int rgbGreen = 0xFF008000;
-  private int rgbBlue = 0xFF0000FF;
-  
-  public void setRgbRed(int color) {
-    rgbRed = color;
-  }
-  
-  public void setRgbGreen(int color) {
-    rgbGreen = color;
-  }
-  
-  public void setRgbBlue(int color) {
-    rgbBlue = color;
-  }
-  
-  public int getColorLow() {
-    return rgbRed;
-  }
-
-  public int getColorCentral() {
-    return rgbGreen;
-  }
-
-  public int getColorHigh() {
-    return rgbBlue;
-  }
-  
-  public final static int quantizeRgb(float val, float lo, float hi,
-                                      int rgbLow, int rgbMid, int rgbHigh) {
-    int pt = quantize(val, lo, hi, 256);
-    int r, g, b;
-    if (pt < 128) {
-      r = interpolate(pt, (rgbLow & 0xFF0000) >> 16, (rgbMid & 0xFF0000) >> 16);
-      g = interpolate(pt, (rgbLow & 0xFF00) >> 8, (rgbMid & 0xFF00) >> 8);
-      b = interpolate(pt, (rgbLow & 0xFF), (rgbMid & 0xFF));
-    } else {
-      r = interpolate(pt - 128, (rgbMid & 0xFF0000) >> 16,
-          (rgbHigh & 0xFF0000) >> 16);
-      g = interpolate(pt - 128, (rgbMid & 0xFF00) >> 8, (rgbHigh & 0xFF00) >> 8);
-      b = interpolate(pt - 128, (rgbMid & 0xFF), (rgbHigh & 0xFF));
+  static {
+    for (int i = 0; i < 10; i++) {
+      System.out.println(i + " " + quantize(i, 0, 10, 10));
     }
-    System.out.println(Integer.toHexString(0xFF000000 | r << 16 | g << 8 | b));
-    return 0xFF000000 | r << 16 | g << 8 | b;
+    for (int i = -10; i < 0; i++) {
+      System.out.println((i) + " " + quantize(i, -10, 0, 10));
+    }
+    System.out.println("ColorEncoder test");
   }
-  
-  private final static int interpolate(int pt, int a, int b) {
-    if (pt >= 127)
-      return b; //corrects for FF being the upper limit; all others truncated
-    return ((int) (pt / 128.0 * (b - a) + a) * 2) & 0xFF;
-  }
-  
 */
 }

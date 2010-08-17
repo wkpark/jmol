@@ -305,15 +305,15 @@ class ColorManager {
   }  
 
   void setCurrentColorRange(float min, float max) {
-    colorHi = max;
     colorLo = min;
-    Logger.info("color \"" + ColorEncoder.getColorSchemeName(currentPalette) + "\" range " + colorLo + " " + colorHi);
+    colorHi = max;
+    Logger.info("ColorManager: color \"" + ColorEncoder.getColorSchemeName(currentPalette) + "\" range " + colorLo + " " + colorHi);
   }
 
   int setColorScheme(String colorScheme, boolean isTranslucent, boolean isOverloaded) {
     currentTranslucent = isTranslucent;
     currentPalette = ColorEncoder.getColorScheme(colorScheme, isOverloaded);
-    Logger.info("ColorManager: color scheme now \"" + ColorEncoder.getColorSchemeName(currentPalette) + "\" color value range: " + colorLo + " to " + colorHi);
+    setCurrentColorRange(colorLo, colorHi);
     return currentPalette;
   }
 
@@ -325,14 +325,10 @@ class ColorManager {
     ColorEncoder.setUserScale(scale);
   }
   
-  int[] getColorSchemeArray(String colorScheme) {
-    return ColorEncoder.getColorSchemeArray(colorScheme == null || colorScheme.length() == 0 ? currentPalette : ColorEncoder.getColorScheme(colorScheme, false));  
-  }
-  
   String getColorSchemeList(String colorScheme, boolean ifDefault) {
-    if (!ifDefault && ColorEncoder.getColorScheme(colorScheme, false) >= 0)
-      return "";
-    return ColorEncoder.getColorSchemeList(getColorSchemeArray(colorScheme));
+    return (ifDefault || ColorEncoder.getColorScheme(colorScheme, false) < 0
+        ? ColorEncoder.getColorSchemeList(ColorEncoder.getColorSchemeArray(colorScheme == null || colorScheme.length() == 0 ? currentPalette : ColorEncoder.getColorScheme(colorScheme, false)))
+            : "");
   }
   
   short getColixForPropertyValue(float val) {
@@ -340,10 +336,4 @@ class ColorManager {
         ColorEncoder.getColorIndexFromPalette(val, colorLo, colorHi, currentPalette, currentTranslucent)
         :ColorEncoder.getColorIndexFromPalette(-val, -colorLo, -colorHi, currentPalette, currentTranslucent));    
   }
-
-  String getColorKey() {
-    return ColorEncoder.getColorKeyFromPalette(colorLo, colorHi, currentPalette, colorLo >= colorHi);
-  }
-
-
 }

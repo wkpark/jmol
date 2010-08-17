@@ -313,7 +313,6 @@ public class SurfaceGenerator {
   //////////////////////////////////////////////////////////////
 
   int colorPtr;
-  private boolean rangeDefined;
 
   /**
    * setParameter is the main interface for surface generation. 
@@ -871,13 +870,13 @@ public class SurfaceGenerator {
     }
 
     if ("mep" == propertyName) {
-      params.setMep((float[]) value, rangeDefined, false); // mep charges
+      params.setMep((float[]) value, false); // mep charges
       processState();
       return true;
     }
 
     if ("mlp" == propertyName) {
-      params.setMep((float[]) value, rangeDefined, true); // mlp charges
+      params.setMep((float[]) value, true); // mlp charges
       processState();
       return true;
     }
@@ -889,7 +888,7 @@ public class SurfaceGenerator {
 
     if ("molecularOrbital" == propertyName) {
       int iMo = ((Integer) value).intValue();
-      params.setMO(iMo, rangeDefined);
+      params.setMO(iMo);
       Logger.info(params.calculationType);
       processState();
       return true;
@@ -1205,8 +1204,6 @@ public class SurfaceGenerator {
 
   }
 
-  
-  @SuppressWarnings("unchecked")
   private void getFunctionZfromXY() {
     Point3f origin = (Point3f) params.functionXYinfo.get(1);
     int[] counts = new int[3];

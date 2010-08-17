@@ -325,9 +325,14 @@ public abstract class SurfaceReader implements VertexDataServer {
     if (!readAndSetVolumeParameters())
       return false;
     if (!justForPlane && !Float.isNaN(params.sigma) && !allowSigma) {
-      Logger.error("Reader does not support SIGMA option -- using cutoff 1.6");
+      if (params.sigma > 0)
+        Logger.error("Reader does not support SIGMA option -- using cutoff 1.6");
       params.cutoff = 1.6f;
     }
+    // negative sigma just ignores the error message
+    // and means it was inserted by Jmol as a default option
+    if (params.sigma < 0)
+      params.sigma = -params.sigma;
     nPointsX = voxelCounts[0];
     nPointsY = voxelCounts[1];
     nPointsZ = voxelCounts[2];
@@ -709,7 +714,9 @@ public abstract class SurfaceReader implements VertexDataServer {
     float valueRed = jvxlData.valueMappedToRed;
     short minColorIndex = jvxlData.minColorIndex;
     short maxColorIndex = jvxlData.maxColorIndex;
-
+    colorEncoder.setRange(params.valueMappedToRed,
+        params.valueMappedToBlue, params.isColorReversed);
+    params.colorKey = colorEncoder.getColorKey();
     for (int i = meshData.vertexCount; --i >= 0;) {
       float value = vertexValues[i];
       if (minColorIndex >= 0) {
@@ -723,7 +730,7 @@ public abstract class SurfaceReader implements VertexDataServer {
         if (value >= valueBlue)
           value = valueBlue;
           
-        vertexColixes[i] = getColorIndexFromPalette(value);
+        vertexColixes[i] = colorEncoder.getColorIndex(value);
       }
     }
 
@@ -733,10 +740,12 @@ public abstract class SurfaceReader implements VertexDataServer {
       jvxlData.contourValuesUsed = (jvxlData.contourValues == null ? new float[n] : jvxlData.contourValues);
       float dv = (valueBlue - valueRed) / (n + 1);
       // n + 1 because we want n lines between n + 1 slices
+      colorEncoder.setRange(params.valueMappedToRed,
+          params.valueMappedToBlue, params.isColorReversed);
       for (int i = 0; i < n; i++) {
         float v = (jvxlData.contourValues == null ? valueRed + (i + 1) * dv : jvxlData.contourValues[i]);
         jvxlData.contourValuesUsed[i] = v;
-        colors[i] = Graphics3D.getColixTranslucent(getArgbFromPalette(v));
+        colors[i] = Graphics3D.getColixTranslucent(colorEncoder.getArgb(v));
       }
       //TODO -- this strips translucency
       jvxlData.contourColors = Graphics3D.getHexCodes(colors);
@@ -824,20 +833,6 @@ public abstract class SurfaceReader implements VertexDataServer {
         max = challenger;
     }
     return max;
-  }
-
-  protected short getColorIndexFromPalette(float value) {
-    return (params.isColorReversed ? colorEncoder.getColorIndexFromPalette(
-        -value, -params.valueMappedToBlue, -params.valueMappedToRed)
-        : colorEncoder.getColorIndexFromPalette(value, params.valueMappedToRed,
-            params.valueMappedToBlue));
-  }
-
-  protected int getArgbFromPalette(float value) {
-    return (params.isColorReversed ? colorEncoder.getArgbFromPalette(-value,
-          -params.valueMappedToBlue, -params.valueMappedToRed)
-          : colorEncoder.getArgbFromPalette(value,
-        params.valueMappedToRed, params.valueMappedToBlue));
   }
 
   void updateTriangles() {

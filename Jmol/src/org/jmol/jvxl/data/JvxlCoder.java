@@ -303,11 +303,14 @@ public class JvxlCoder {
     //TODO: again, these really should not be necessary here
     float min = (jvxlData.mappedDataMin == Float.MAX_VALUE ? 0f
         : jvxlData.mappedDataMin);
+    float blue = (jvxlData.isColorReversed ? jvxlData.valueMappedToRed : jvxlData.valueMappedToBlue);
+    float red = (jvxlData.isColorReversed ? jvxlData.valueMappedToBlue : jvxlData.valueMappedToRed);
+
     if (jvxlData.jvxlColorData != null && jvxlData.jvxlColorData.length() > 0 && !jvxlData.isBicolorMap) {
       addAttrib(attribs, "\n  dataMinimum", "" + min);
       addAttrib(attribs, "\n  dataMaximum", "" + jvxlData.mappedDataMax);
-      addAttrib(attribs, "\n  valueMappedToRed", "" + jvxlData.valueMappedToRed);
-      addAttrib(attribs, "\n  valueMappedToBlue", "" + jvxlData.valueMappedToBlue);
+      addAttrib(attribs, "\n  valueMappedToRed", "" + red);
+      addAttrib(attribs, "\n  valueMappedToBlue", "" + blue);
     }
     //TODO: confusing flag insideOut:
     if (jvxlData.insideOut)

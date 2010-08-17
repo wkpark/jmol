@@ -398,10 +398,6 @@ public abstract class Shape {
         paletteID) : colix);
   }
 
-  protected void remapColors() {
-    
-  }
-  
   public List<Map<String, Object>> getShapeDetail() {
     return null;
   }

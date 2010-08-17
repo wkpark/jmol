@@ -1514,6 +1514,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // isosurface
     return colorManager.getColixForPropertyValue(val);
   }
+  
+  public String getColorKey() {
+    return colorManager.getColorKey();
+  }
 
   public Point3f getColorPointForPropertyValue(float val) {
     // x = {atomno=3}.partialcharge.color
@@ -3273,10 +3277,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void setCurrentColorRange(float min, float max) {
     colorManager.setCurrentColorRange(min, max);
-  }
-
-  public float[] getCurrentColorRange() {
-    return colorManager.getCurrentColorRange();
   }
 
   public void setData(String type, Object[] data, int atomCount,

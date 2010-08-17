@@ -568,6 +568,12 @@ public class SurfaceGenerator {
 
     if ("blue" == propertyName) {
       params.valueMappedToBlue = ((Float) value).floatValue();
+      if (params.valueMappedToRed > params.valueMappedToBlue) {
+        float f = params.valueMappedToRed;
+        params.valueMappedToRed = params.valueMappedToBlue;
+        params.valueMappedToBlue = f;
+        params.isColorReversed = !params.isColorReversed;
+      }
       params.rangeDefined = true;
       params.rangeAll = false;
       return true;
@@ -1287,4 +1293,5 @@ public class SurfaceGenerator {
     result[2] = i3;
     return dist1;
   }
+
 }

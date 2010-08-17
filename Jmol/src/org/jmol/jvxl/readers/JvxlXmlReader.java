@@ -273,8 +273,9 @@ public class JvxlXmlReader extends VolumeFileReader {
           red = -1;
           blue = 1;
         }
-        params.valueMappedToRed = red;
-        params.valueMappedToBlue = blue;
+        params.valueMappedToRed = Math.min(red, blue);
+        params.valueMappedToBlue = Math.max(red, blue);
+        params.isColorReversed = (red > blue);
         params.rangeDefined = true;
       } else {
         params.valueMappedToRed = 0f;
@@ -288,6 +289,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     jvxlData.valueMappedToBlue = params.valueMappedToBlue;
     jvxlData.mappedDataMin = params.mappedDataMin;
     jvxlData.mappedDataMax = params.mappedDataMax;
+    jvxlData.isColorReversed = params.isColorReversed;
     jvxlData.insideOut = insideOut;
     if (params.insideOut)
       jvxlData.insideOut = !jvxlData.insideOut;
@@ -425,11 +427,15 @@ public class JvxlXmlReader extends VolumeFileReader {
           .error("You cannot use JVXL data to map onto OTHER data, because it only contains the data for one surface. Use ISOSURFACE \"file.jvxl\" not ISOSURFACE .... MAP \"file.jvxl\".");
       return "";
     }
+    colorEncoder.setColorScheme(null, false);
+    colorEncoder.setRange(params.valueMappedToRed, params.valueMappedToBlue,
+        params.isColorReversed);
+    params.colorKey = colorEncoder.getColorKey();
     fractionPtr = 0;
-    Logger.info("JVXL reading color data mapped min/max: " + params.mappedDataMin
-        + "/" + params.mappedDataMax + " for " + vertexCount + " vertices."
-        + " using encoding keys " + colorFractionBase + " "
-        + colorFractionRange);
+    Logger.info("JVXL reading color data mapped min/max: "
+        + params.mappedDataMin + "/" + params.mappedDataMax + " for "
+        + vertexCount + " vertices." + " using encoding keys "
+        + colorFractionBase + " " + colorFractionRange);
     Logger.info("mapping red-->blue for " + params.valueMappedToRed + " to "
         + params.valueMappedToBlue + " colorPrecision:"
         + jvxlData.isJvxlPrecisionColor);
@@ -457,8 +463,8 @@ public class JvxlXmlReader extends VolumeFileReader {
               : params.colorNeg);
     }
     int vertexIncrement = meshData.vertexIncrement;
-    
-    for (int i = 0; i < vertexCount; i+= vertexIncrement) {
+    boolean needContourMinMax = (params.mappedDataMin == Float.MAX_VALUE);
+    for (int i = 0; i < vertexCount; i += vertexIncrement) {
       float fraction, value;
       if (jvxlData.isJvxlPrecisionColor) {
         // this COULD be an option for mapped surfaces; 
@@ -467,8 +473,8 @@ public class JvxlXmlReader extends VolumeFileReader {
         // treatment of JVXL files as though they were CUBE files.
         // the two parts of the "double-character-precision" value
         // are in separate lines, separated by n characters.
-        fraction = JvxlCoder.jvxlFractionFromCharacter2(data.charAt(cpt), data.charAt(cpt
-            + vertexCount), colorFractionBase, colorFractionRange);
+        fraction = JvxlCoder.jvxlFractionFromCharacter2(data.charAt(cpt), data
+            .charAt(cpt + vertexCount), colorFractionBase, colorFractionRange);
         value = min + fraction * range;
       } else {
         // my original encoding scheme
@@ -479,11 +485,21 @@ public class JvxlXmlReader extends VolumeFileReader {
       }
       vertexValues[i] = value;
       ++cpt;
-      if (value < contourPlaneMinimumValue)
-        contourPlaneMinimumValue = value;
-      if (value > contourPlaneMaximumValue)
-        contourPlaneMaximumValue = value;
-      
+      if (needContourMinMax) {
+        if (value < contourPlaneMinimumValue)
+          contourPlaneMinimumValue = value;
+        if (value > contourPlaneMaximumValue)
+          contourPlaneMaximumValue = value;
+      }
+    }
+
+    if (needContourMinMax) {
+      params.mappedDataMin = contourPlaneMinimumValue;
+      params.mappedDataMax = contourPlaneMaximumValue;
+    }
+
+    for (int i = 0; i < vertexCount; i += vertexIncrement) {
+      float value = vertexValues[i];
       //note: these are just default colorings
       //orbital color had a bug through 11.2.6/11.3.6
       if (marchingSquares != null && params.isContoured) {
@@ -492,12 +508,8 @@ public class JvxlXmlReader extends VolumeFileReader {
         colixes[i] = ((params.isColorReversed ? value > 0 : value <= 0) ? colixNeg
             : colixPos);
       } else {
-        colixes[i] = getColorIndexFromPalette(value);
+        colixes[i] = colorEncoder.getColorIndex(value);
       }
-    }
-    if (params.mappedDataMin == Float.MAX_VALUE) {
-      params.mappedDataMin = contourPlaneMinimumValue;
-      params.mappedDataMax = contourPlaneMaximumValue;
     }
     return data + "\n";
   }

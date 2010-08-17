@@ -1557,6 +1557,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   };
 
   public final static int[] argbsRoygbScale = {
+    // must be multiple of THREE for high/low
     0xFFFF0000,
     0xFFFF2000,
     0xFFFF4000,

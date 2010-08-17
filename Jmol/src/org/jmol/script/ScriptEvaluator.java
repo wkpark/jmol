@@ -7289,6 +7289,7 @@ public class ScriptEvaluator {
     BitSet bs = null;
     String prefix = "";
     boolean isColor = false;
+    boolean isIsosurface = (shapeType == JmolConstants.SHAPE_ISOSURFACE);
     int typeMask = 0;
     float translucentLevel = Float.MAX_VALUE;
     if (index < 0) {
@@ -7342,7 +7343,7 @@ public class ScriptEvaluator {
         boolean isByElement = (name.indexOf(ColorEncoder.BYELEMENT_PREFIX) == 0);
         boolean isColorIndex = (isByElement || name
             .indexOf(ColorEncoder.BYRESIDUE_PREFIX) == 0);
-        byte pid = (isColorIndex || shapeType == JmolConstants.SHAPE_ISOSURFACE ? JmolConstants.PALETTE_PROPERTY
+        byte pid = (isColorIndex || isIsosurface ? JmolConstants.PALETTE_PROPERTY
             : tok == Token.spacefill ? JmolConstants.PALETTE_CPK
                 : JmolConstants.getPaletteID(name));
         // color atoms "cpkScheme"
@@ -7362,7 +7363,7 @@ public class ScriptEvaluator {
                   Integer.MAX_VALUE, false);
             }
           } else {
-            if (!isColorIndex && shapeType != JmolConstants.SHAPE_ISOSURFACE)
+            if (!isColorIndex && !isIsosurface)
               index++;
             if (name.equals("property")
                 && Token.tokAttr((tok = getToken(index).tok),
@@ -7395,9 +7396,9 @@ public class ScriptEvaluator {
         if (pid == JmolConstants.PALETTE_PROPERTY) {
           String scheme = (tokAt(index) == Token.string ? parameterAsString(
               index++).toLowerCase() : null);
-          if (scheme != null) {
+          if (scheme != null && !isIsosurface) {
             setStringProperty("propertyColorScheme",
-                (isTranslucent ? "translucent " : "") + scheme);
+                (isTranslucent && translucentLevel == Float.MAX_VALUE ? "translucent " : "") + scheme);
             isColorIndex = (scheme.indexOf(ColorEncoder.BYELEMENT_PREFIX) == 0 || scheme
                 .indexOf(ColorEncoder.BYRESIDUE_PREFIX) == 0);
           }
@@ -7408,33 +7409,40 @@ public class ScriptEvaluator {
             min = floatParameter(index + 1);
             max = floatParameter(index + 2);
             index += 3;
-            if (min == max && shapeType == JmolConstants.SHAPE_ISOSURFACE) {
+            if (min == max && isIsosurface) {
               float[] range = (float[]) getShapeProperty(shapeType, "dataRange");
               if (range != null) {
                 min = range[0];
                 max = range[1];
               }
-            } else if (min == max)
+            } else if (min == max) {
               max = Float.MAX_VALUE;
+            }
           }
           if (!isSyntaxCheck) {
-            if (shapeType != JmolConstants.SHAPE_ISOSURFACE
-                && max != -Float.MAX_VALUE) {
-              if (data == null)
+            if (isIsosurface) {
+            } else if (data == null) {
                 viewer.setCurrentColorRange(name);
-              else
+            } else {
                 viewer.setCurrentColorRange((float[]) data, null);
             }
-            if (max != Float.MAX_VALUE)
-              viewer.setCurrentColorRange(min, max);
+            if (isIsosurface) {
+              checkLength(index);
+              isColor = false;
+              data = new Object[] {scheme, Boolean.valueOf(isTranslucent && translucentLevel == Float.MAX_VALUE), new float[] {min, max} };
+              setShapeProperty(shapeType, "remapcolor", data);
+              showString(getIsosurfaceDataRange(shapeType, ""));
+              if (translucentLevel == Float.MAX_VALUE)
+                return;
+            } else if (max != Float.MAX_VALUE) {
+                viewer.setCurrentColorRange(min, max);
+            }
           }
-          if (shapeType == JmolConstants.SHAPE_ISOSURFACE)
-            prefix = "remap";
         } else {
           index++;
         }
-        colorvalue = new Byte(pid);
         checkLength(index);
+        colorvalue = new Byte(pid);
       }
     }
     if (isSyntaxCheck || shapeType < 0)
@@ -15760,8 +15768,9 @@ public class ScriptEvaluator {
         }
         if (firstPass && viewer.getParameter("_fileType").equals("Pdb")
             && Float.isNaN(sigma) && Float.isNaN(cutoff)) {
-          addShapeProperty(propertyList, "sigma", new Float(1));
-          sbCommand.append(" sigma 1.0");
+          // negative sigma just indicates that 
+          addShapeProperty(propertyList, "sigma", new Float(-1));
+          sbCommand.append(" sigma -1.0");
         }
         propertyName = (firstPass ? "readFile" : "mapColor");
         /*
@@ -15951,8 +15960,6 @@ public class ScriptEvaluator {
         bsSelect = viewer.getSelectionSet(false);
       setShapeProperty(iShape, "finalize", " select " + Escape.escape(bsSelect)
           + sbCommand.toString());
-      Integer n = (Integer) getShapeProperty(iShape, "count");
-      float[] dataRange = (float[]) getShapeProperty(iShape, "dataRange");
       String s = (String) getShapeProperty(iShape, "ID");
       if (s != null) {
         cutoff = ((Float) getShapeProperty(iShape, "cutoff")).floatValue();
@@ -15963,11 +15970,8 @@ public class ScriptEvaluator {
         float[] minMax = (float[]) getShapeProperty(iShape, "minMaxInfo");
         if (minMax[0] != Float.MAX_VALUE)
           s += " min=" + minMax[0] + " max=" + minMax[1];
-        s += "; number of isosurfaces = " + n;
-        if (dataRange != null && dataRange[0] != Float.MAX_VALUE
-            && dataRange[0] != dataRange[1])
-          s += "\ncolor range " + dataRange[2] + " " + dataRange[3]
-              + "; mapped data range " + dataRange[0] + " to " + dataRange[1];
+        s += "; number of isosurfaces = " + getShapeProperty(iShape, "count");
+        s += getIsosurfaceDataRange(iShape, "\n");
         if (doCalcArea)
           s += "\nisosurfaceArea = " + Escape.escapeArray(area);
         if (doCalcVolume)
@@ -15983,6 +15987,15 @@ public class ScriptEvaluator {
     if (translucency != null)
       setShapeProperty(iShape, "translucency", translucency);
     setShapeProperty(iShape, "clear", null);
+  }
+
+  private String getIsosurfaceDataRange(int iShape, String sep) {
+    float[] dataRange = (float[]) getShapeProperty(iShape, "dataRange");
+    return (dataRange != null && dataRange[0] != Float.MAX_VALUE
+        && dataRange[0] != dataRange[1] ? sep + "isosurface"
+            + " full data range " + dataRange[0] + " to " + dataRange[1]
+            + " with color scheme spanning " + dataRange[2] + " to " + dataRange[3]
+         : "");
   }
 
   private static Object testData; // for isosurface

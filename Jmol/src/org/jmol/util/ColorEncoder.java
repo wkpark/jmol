@@ -188,9 +188,21 @@ import org.jmol.util.ArrayUtil;
   
   public int setColorScheme(String colorScheme, boolean isTranslucent) {
     currentTranslucent = isTranslucent;
-    return currentPalette = getColorScheme(colorScheme, false);
+    if (colorScheme != null)
+      currentPalette = getColorScheme(colorScheme, false);
+    return currentPalette;
   }
 
+  private float lo;
+  private float hi;
+  private boolean isReversed;
+
+  public void setRange(float lo, float hi, boolean isReversed) {
+    this.lo = Math.min(lo, hi);
+    this.hi = Math.max(lo, hi);
+    this.isReversed = isReversed;
+  }
+  
   public String getColorSchemeName() {
     return getColorSchemeName(currentPalette);  
   }
@@ -363,10 +375,16 @@ import org.jmol.util.ArrayUtil;
 
   private final static int GRAY = 0xFF808080;
   
-  public final int getArgbFromPalette(float val, float lo, float hi) {
-    return getArgbFromPalette(val, lo, hi, currentPalette);
+  public final int getArgb(float val) {
+    return (isReversed ? getArgbFromPalette(-val, -hi, -lo, currentPalette)
+        : getArgbFromPalette(val, lo, hi, currentPalette));
   }
   
+  public short getColorIndex(float val) {
+    return (isReversed ? getColorIndexFromPalette(-val, -hi, -lo, currentPalette, currentTranslucent)
+        : getColorIndexFromPalette(val, lo, hi, currentPalette, currentTranslucent));
+  }
+
   public final static short getColorIndexFromPalette(float val, float lo,
                                                      float hi, int palette,
                                                      boolean isTranslucent) {
@@ -426,6 +444,73 @@ import org.jmol.util.ArrayUtil;
       return GRAY;
     }
   }
+  
+  public String getColorKey() {
+    return getColorKeyFromPalette(lo, hi, currentPalette, isReversed);
+  }
+  
+  public static String getColorKeyFromPalette(float lo, float hi, int palette, boolean isReversed) {
+   int nSeg = 0;
+   switch (palette) {
+   case BW:
+     nSeg = palletBW.length;
+     break;
+   case WB:
+     nSeg = palletWB.length;
+     break;
+   case ROYGB:
+     nSeg = JmolConstants.argbsRoygbScale.length;
+     break;
+   case BGYOR:
+     isReversed = !isReversed;
+     nSeg = JmolConstants.argbsRoygbScale.length;
+     break;
+   case LOW:
+     nSeg = ihalf;
+     break;
+   case HIGH:
+     nSeg = ihalf;
+     break;
+   case RWB:
+     nSeg = JmolConstants.argbsRwbScale.length;
+     break;
+   case BWR:
+     isReversed = !isReversed;
+     nSeg = JmolConstants.argbsRwbScale.length;
+     break;
+   case USER:
+     nSeg = userScale.length;
+     break;
+   case RESU:
+     isReversed = !isReversed;
+     nSeg = userScale.length;
+     break;
+   case JMOL:
+     nSeg = argbsCpk.length;
+     break;
+   case RASMOL:
+     nSeg = rasmolScale.length;
+     break;
+   case SHAPELY:
+     nSeg = JmolConstants.argbsShapely.length;
+     break;
+   case AMINO:
+     nSeg = JmolConstants.argbsAmino.length;
+     break;
+   case COLOR_RGB:
+   default:
+     return "";
+   }
+   StringBuffer sb = new StringBuffer();
+   sb.append("[");
+   for (int i = 0; i < nSeg; i++) {
+     float val = (isReversed ? -unquantize(i, -hi, -lo, nSeg) : unquantize(i, lo, hi, nSeg));
+     sb.append(val).append(",");
+     sb.append(Escape.escape(Graphics3D.colorPointFromInt2(getArgbFromPalette(val, lo, hi, palette)))).append(",");
+   } 
+   sb.append(isReversed ? lo : hi).append("]");
+   return sb.toString();
+ }
 
   public final static short getColorIndex(int c) {
     return Graphics3D.getColix(c);
@@ -485,13 +570,16 @@ import org.jmol.util.ArrayUtil;
     return q;
   }
 
+  public final static float unquantize(int q, float lo, float hi, int segmentCount) {
+    float range = hi - lo;
+    float quanta = range / segmentCount;
+    return q * quanta + lo;
+  }
+
   public final static int colorIndex(int q, int segmentCount) {
     return (q <= 0 | q >= segmentCount ? 0 : q);
   }
 
-  public short getColorIndexFromPalette(float val, float lo, float hi) {
-    return getColorIndexFromPalette(val, lo, hi, currentPalette, currentTranslucent);
-  }
 
 /*  
   //an idea that didn't work

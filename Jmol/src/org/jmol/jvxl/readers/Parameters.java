@@ -191,6 +191,7 @@ public class Parameters {
     cappingObject= null;
     colorBySign = colorByPhase = colorBySets = false;
     colorDensity = false;
+    colorKey = null;
     colorNeg = defaultColorNegative;
     colorNegLCAO = defaultColorNegativeLCAO;
     colorPos = defaultColorPositive;
@@ -733,6 +734,7 @@ public class Parameters {
   public BitSet[] bsExcluded;
   public int contourType;
   public boolean colorSchemeTranslucent;
+  public String colorKey;
   
   void setMapRanges(SurfaceReader surfaceReader) {
     if (!colorDensity)

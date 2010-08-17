@@ -73,6 +73,7 @@ public class IsosurfaceMesh extends Mesh {
     jvxlData.jvxlColorData = "";
     jvxlData.jvxlVolumeDataXml = "";
     isColorSolid = true;
+    colorKey = null;
     vertexColixes = null;
     vertexValues = null;
     polygonColixes = null;
@@ -440,6 +441,7 @@ public class IsosurfaceMesh extends Mesh {
   float[] contourValues;
   short[] contourColixes;
   short meshColix;
+  String colorKey;
   
   public void setDiscreteColixes(float[] values, short[] colixes) {
     if (values != null)

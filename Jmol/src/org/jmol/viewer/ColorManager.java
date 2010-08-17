@@ -42,9 +42,11 @@ class ColorManager {
   private Graphics3D g3d;
   private int[] argbsCpk;
   private int[] altArgbsCpk;
+  private int currentPalette = 0;
+  private boolean currentTranslucent = false;
   private float colorHi, colorLo;
   private float[] colorData;  
-  private int palette = 0;
+
   
 
   ColorManager(Viewer viewer, Graphics3D g3d) {
@@ -283,22 +285,9 @@ class ColorManager {
     g3d.changeColixArgb((short) (Elements.elementNumberMax + id), argb);
   }
   
-  boolean currentTranslucent = false;
-
-  int setColorScheme(String colorScheme, boolean isTranslucent, boolean isOverloaded) {
-    currentTranslucent = isTranslucent;
-    palette = ColorEncoder.getColorScheme(colorScheme, isOverloaded);
-    Logger.info("ColorManager: color scheme now \"" + ColorEncoder.getColorSchemeName(palette) + "\" color value range: " + colorLo + " to " + colorHi);
-    return palette;
-  }
-
-  float[] getCurrentColorRange() {
-    return new float[] {colorLo, colorHi};
-  }
-
   void setCurrentColorRange(float[] data, BitSet bs, String colorScheme) {
     colorData = data;
-    palette = ColorEncoder.getColorScheme(colorScheme, false);
+    currentPalette = ColorEncoder.getColorScheme(colorScheme, false);
     colorHi = Float.MIN_VALUE;
     colorLo = Float.MAX_VALUE;
     if (data == null)
@@ -318,7 +307,14 @@ class ColorManager {
   void setCurrentColorRange(float min, float max) {
     colorHi = max;
     colorLo = min;
-    Logger.info("color \"" + ColorEncoder.getColorSchemeName(palette) + "\" range " + colorLo + " " + colorHi);
+    Logger.info("color \"" + ColorEncoder.getColorSchemeName(currentPalette) + "\" range " + colorLo + " " + colorHi);
+  }
+
+  int setColorScheme(String colorScheme, boolean isTranslucent, boolean isOverloaded) {
+    currentTranslucent = isTranslucent;
+    currentPalette = ColorEncoder.getColorScheme(colorScheme, isOverloaded);
+    Logger.info("ColorManager: color scheme now \"" + ColorEncoder.getColorSchemeName(currentPalette) + "\" color value range: " + colorLo + " to " + colorHi);
+    return currentPalette;
   }
 
   static String getState(StringBuffer sfunc) {
@@ -330,7 +326,7 @@ class ColorManager {
   }
   
   int[] getColorSchemeArray(String colorScheme) {
-    return ColorEncoder.getColorSchemeArray(colorScheme == null || colorScheme.length() == 0 ? palette : ColorEncoder.getColorScheme(colorScheme, false));  
+    return ColorEncoder.getColorSchemeArray(colorScheme == null || colorScheme.length() == 0 ? currentPalette : ColorEncoder.getColorScheme(colorScheme, false));  
   }
   
   String getColorSchemeList(String colorScheme, boolean ifDefault) {
@@ -341,8 +337,13 @@ class ColorManager {
   
   short getColixForPropertyValue(float val) {
     return (colorLo < colorHi ? 
-        ColorEncoder.getColorIndexFromPalette(val, colorLo, colorHi, palette, currentTranslucent)
-        :ColorEncoder.getColorIndexFromPalette(-val, -colorLo, -colorHi, palette, currentTranslucent));    
+        ColorEncoder.getColorIndexFromPalette(val, colorLo, colorHi, currentPalette, currentTranslucent)
+        :ColorEncoder.getColorIndexFromPalette(-val, -colorLo, -colorHi, currentPalette, currentTranslucent));    
   }
+
+  String getColorKey() {
+    return ColorEncoder.getColorKeyFromPalette(colorLo, colorHi, currentPalette, colorLo >= colorHi);
+  }
+
 
 }

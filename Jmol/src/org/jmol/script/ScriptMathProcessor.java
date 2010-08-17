@@ -51,6 +51,7 @@ import org.jmol.modelset.Bond.BondSet;
 import org.jmol.script.ScriptEvaluator.ScriptException;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
@@ -677,6 +678,8 @@ class ScriptMathProcessor {
     case Token.col:
     case Token.row:
       return evaluateRowCol(args, tok);
+    case Token.color:
+      return evaluateColor(args);
     case Token.compare:
       return evaluateCompare(args);
     case Token.connected:
@@ -2195,6 +2198,39 @@ class ScriptMathProcessor {
     if (isWithinGroup)
       return addX(viewer.getGroupsWithin((int) distance, bs));
     return addX(viewer.getAtomsWithin(distance, bs, isWithinModelSet));
+  }
+
+  private boolean evaluateColor(ScriptVariable[] args) {
+    /*
+     * color() -- colorKey for property
+     */
+    String colorScheme = (args.length > 0 ? ScriptVariable.sValue(args[0])
+        : (String) viewer.getParameter("propertyColorScheme"));
+    if (colorScheme.length() > 0 && ColorEncoder.getColorScheme(colorScheme, false, true) == Integer.MAX_VALUE)
+      return addX("");
+    float lo = (args.length > 1 ? ScriptVariable.fValue(args[1])
+        : Float.MAX_VALUE);
+    float hi = (args.length > 2 ? ScriptVariable.fValue(args[2])
+        : Float.MAX_VALUE);
+    float value = (args.length > 3 ? ScriptVariable.fValue(args[3])
+        : Float.MAX_VALUE);
+    ColorEncoder ce = new ColorEncoder();
+    ce.setColorScheme(colorScheme, false);
+    ce.setRange(lo, hi, lo > hi);
+    Map<String, Object> key = ce.getColorKey();
+    if (value != Float.MAX_VALUE || lo != Float.MAX_VALUE
+        && hi == Float.MAX_VALUE)
+      return addX(Graphics3D.colorPointFromInt2(ce
+          .getArgb(hi == Float.MAX_VALUE ? lo : value)));
+    Map<String, ScriptVariable> ret = new Hashtable<String, ScriptVariable>();
+    Iterator<String> e = key.keySet().iterator();
+    while (e.hasNext()) {
+      String k = e.next();
+      if (hi != Float.MAX_VALUE && !k.equals("colors") && !k.equals("values"))
+        continue;
+      ret.put(k, ScriptVariable.getVariable(key.get(k)));
+    }
+    return addX(ScriptVariable.getVariable(ret));
   }
 
   private boolean evaluateConnected(ScriptVariable[] args) {

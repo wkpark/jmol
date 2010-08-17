@@ -24,6 +24,7 @@
 
 package org.jmol.script;
 
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
@@ -528,11 +529,13 @@ public class ScriptVariable extends Token {
     case hash:
       StringBuffer sbh = new StringBuffer();
       Map<String, ScriptVariable> ht = (Map<String, ScriptVariable>) x.value;
-      for (Map.Entry<String, ScriptVariable> entry : ht.entrySet()) {
-        String key = entry.getKey();
-        sbh.append(key).append("\t:\t").append(
-            ScriptVariable.sValue(ScriptVariable.getVariable(entry.getValue())))
-            .append("\n");
+      Object[] keys = ht.keySet().toArray();
+      Arrays.sort(keys);
+      for (i = 0; i < keys.length; i++) {
+        sbh.append(keys[i]).append("\t:");
+        String value = ScriptVariable.sValue(ScriptVariable.getVariable(ht.get(keys[i])));
+        sbh.append(value.indexOf("\n") >= 0 ? "\n" : "\t");
+        sbh.append(value).append("\n");
       }
       return sbh.toString();
     case string:

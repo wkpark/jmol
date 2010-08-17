@@ -557,7 +557,7 @@ public class Token {
   public final static int bondcount     = intproperty | 4;
   public final static int cell          = intproperty | 5;
   public final static int configuration = intproperty | 6 | scriptCommand;
-  public final static int color         = intproperty | 7 | scriptCommand | deprecatedparam | settable;
+  //color: see xxx(a, b, c, d)
   public final static int elemno        = intproperty | 8 | settable;
   //file: see xxx(a)
   public final static int formalcharge  = intproperty | 9 | setparam | settable;
@@ -643,33 +643,25 @@ public class Token {
 
   // xxx(a,b,c,d,e,...)
   
-  public final static int array  = 1 | 0 << 9 | mathfunc;
-  public final static int format = 2 | 0 << 9 | mathfunc | mathproperty | strproperty | settable;
-  public final static int label  = 3 | 0 << 9 | mathfunc | mathproperty | strproperty | settable | implicitStringCommand | shapeCommand | defaultON | deprecatedparam;
-  final static int function      = 4 | 0 << 9 | mathfunc | flowCommand;
-  final static int getproperty   = 5 | 0 << 9 | mathfunc | scriptCommand;
-  final static int write         = 6 | 0 << 9 | mathfunc | scriptCommand;
-  public final static int measure = 7 | 0 << 9| mathfunc | shapeCommand | deprecatedparam | defaultON;
-
-  // xxx(a,b,c,d)
-  
-  public final static int angle = 7 | 0 << 9 | mathfunc;
-  public final static int data  = 8 | 0 << 9 | mathfunc | scriptCommand;
-  public final static int plane = 9 | 0 << 9 | mathfunc;
-  public final static int point = 10 | 0 << 9 | mathfunc;
-  final static int quaternion   = 11 | 0 << 9 | mathfunc | scriptCommand;
-  final static int axisangle    = 12 | 0 << 9 | mathfunc;
-  final static int compare      = 13 | 0 << 9 | mathfunc | scriptCommand;
-
-  // xxx(a,b,c,d,e)
-  
-  final static int within           = 14 | 0 << 9 | mathfunc;
-  public final static int connected = 15 | 0 << 9 | mathfunc;
-  public final static int helix     = 16 | 0 << 9 | mathfunc | predefinedset;
-
-  // xxx()
-  
-  final static int now          = 17 | 0 << 9 | mathfunc;
+  public final static int angle     = 1 | 0 << 9 | mathfunc;
+  public final static int array     = 2 | 0 << 9 | mathfunc;
+  final static int axisangle        = 3 | 0 << 9 | mathfunc;
+  public final static int color     = 4 | 0 << 9 | mathfunc | intproperty | scriptCommand | deprecatedparam | settable;
+  final static int compare          = 5 | 0 << 9 | mathfunc | scriptCommand;
+  public final static int connected = 6 | 0 << 9 | mathfunc;
+  public final static int data      = 7 | 0 << 9 | mathfunc | scriptCommand;
+  public final static int format    = 8 | 0 << 9 | mathfunc | mathproperty | strproperty | settable;
+  final static int function         = 9 | 0 << 9 | mathfunc | flowCommand;
+  final static int getproperty      = 10 | 0 << 9 | mathfunc | scriptCommand;
+  public final static int helix     = 11 | 0 << 9 | mathfunc | predefinedset;
+  public final static int label     = 12 | 0 << 9 | mathfunc | mathproperty | strproperty | settable | implicitStringCommand | shapeCommand | defaultON | deprecatedparam;
+  public final static int measure   = 13 | 0 << 9| mathfunc | shapeCommand | deprecatedparam | defaultON;
+  final static int now              = 14 | 0 << 9 | mathfunc;
+  public final static int plane     = 15 | 0 << 9 | mathfunc;
+  public final static int point     = 16 | 0 << 9 | mathfunc;
+  final static int quaternion       = 17 | 0 << 9 | mathfunc | scriptCommand;
+  final static int within           = 18 | 0 << 9 | mathfunc;
+  final static int write            = 19 | 0 << 9 | mathfunc | scriptCommand;
 
   // xxx(a)
   

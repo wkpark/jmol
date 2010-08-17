@@ -73,14 +73,13 @@ import org.jmol.util.ArrayUtil;
     BYELEMENT_JMOL, BYELEMENT_RASMOL, BYRESIDUE_SHAPELY, 
     BYRESIDUE_AMINO, "user", "resu"};
 
-  private final static int schemeIndex(String colorScheme) {
+  private final static int getSchemeIndex(String colorScheme) {
     for (int i = 0; i < colorSchemes.length; i++)
       if (colorSchemes[i].equalsIgnoreCase(colorScheme))
         return (i < -USER ? i : -i);
     return -1;
   }
   
-
   private int currentPalette = ROYGB;
   private boolean currentTranslucent = false;
 
@@ -201,6 +200,10 @@ import org.jmol.util.ArrayUtil;
   private boolean isReversed;
 
   public void setRange(float lo, float hi, boolean isReversed) {
+    if (hi == Float.MAX_VALUE) {
+      lo = 1; 
+      hi = getSegmentCount(currentPalette) + 1;
+    }
     this.lo = Math.min(lo, hi);
     this.hi = Math.max(lo, hi);
     this.isReversed = isReversed;
@@ -223,7 +226,7 @@ import org.jmol.util.ArrayUtil;
     return getColorScheme(colorScheme, true, isOverloaded);
   }
 
-  private final static int getColorScheme(String colorScheme,
+  public final static int getColorScheme(String colorScheme,
                                           boolean defaultToRoygb,
                                           boolean isOverloaded) {
     colorScheme = colorScheme.toLowerCase();
@@ -264,7 +267,7 @@ import org.jmol.util.ArrayUtil;
       return makeColorScheme(name, scale, isOverloaded);
     }
     colorScheme = fixName(colorScheme);
-    int ipt = schemeIndex(colorScheme) ;
+    int ipt = getSchemeIndex(colorScheme) ;
     if (schemes.containsKey(colorScheme)) {
       thisName = colorScheme;
       thisScale = schemes.get(colorScheme);
@@ -275,7 +278,6 @@ import org.jmol.util.ArrayUtil;
         : Integer.MAX_VALUE);
   }
 
-  
   public final static void setUserScale(int[] scale) {
     userScale = scale;  
     makeColorScheme("user", scale, false);
@@ -447,55 +449,15 @@ import org.jmol.util.ArrayUtil;
   public Map<String, Object> getColorKey() {
    Hashtable<String, Object> info = new Hashtable<String, Object>();
    boolean isReverse = isReversed;
-   int segmentCount = 0;
+   int segmentCount = getSegmentCount(currentPalette);
    switch (currentPalette) {
-   case BW:
-     segmentCount = palletBW.length;
-     break;
-   case WB:
-     segmentCount = palletWB.length;
-     break;
-   case ROYGB:
-     segmentCount = JmolConstants.argbsRoygbScale.length;
-     break;
    case BGYOR:
-     isReverse = !isReverse;
-     segmentCount = JmolConstants.argbsRoygbScale.length;
-     break;
-   case LOW:
-     segmentCount = ihalf;
-     break;
-   case HIGH:
-     segmentCount = ihalf;
-     break;
-   case RWB:
-     segmentCount = JmolConstants.argbsRwbScale.length;
-     break;
    case BWR:
-     isReverse = !isReverse;
-     segmentCount = JmolConstants.argbsRwbScale.length;
-     break;
-   case USER:
-     segmentCount = userScale.length;
-     break;
    case RESU:
      isReverse = !isReverse;
-     segmentCount = userScale.length;
-     break;
-   case JMOL:
-     segmentCount = argbsCpk.length;
-     break;
-   case RASMOL:
-     segmentCount = rasmolScale.length;
-     break;
-   case SHAPELY:
-     segmentCount = JmolConstants.argbsShapely.length;
-     break;
-   case AMINO:
-     segmentCount = JmolConstants.argbsAmino.length;
      break;
    default:
-     return info;
+     break;
    }
    List<Point3f> colors = new ArrayList<Point3f>(segmentCount);
    float[] values = new float[segmentCount + 1]; 
@@ -508,8 +470,44 @@ import org.jmol.util.ArrayUtil;
    values[segmentCount] = (isReversed ? lo : hi);
    info.put("values", values);
    info.put("colors", colors);
+   info.put("min", Float.valueOf(lo));
+   info.put("max", Float.valueOf(hi));
+   info.put("reversed", Boolean.valueOf(isReversed));
+   info.put("name", getColorSchemeName());
    return info;
  }
+
+  private static int getSegmentCount(int palette) {
+    switch (palette) {
+    case -1:
+      return thisScale.length;
+    case BW:
+    case WB:
+      return palletWB.length;
+    case ROYGB:
+    case BGYOR:
+      return JmolConstants.argbsRoygbScale.length;
+    case LOW:
+    case HIGH:
+      return ihalf;
+    case RWB:
+    case BWR:
+      return JmolConstants.argbsRwbScale.length;
+    case USER:
+    case RESU:
+      return userScale.length;
+    case JMOL:
+      return argbsCpk.length;
+    case RASMOL:
+      return rasmolScale.length;
+    case SHAPELY:
+      return JmolConstants.argbsShapely.length;
+    case AMINO:
+      return JmolConstants.argbsAmino.length;
+    default:
+      return 0;
+    }
+  }
 
   public final static short getColorIndex(int c) {
     return Graphics3D.getColix(c);

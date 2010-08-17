@@ -430,7 +430,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     colorEncoder.setColorScheme(null, false);
     colorEncoder.setRange(params.valueMappedToRed, params.valueMappedToBlue,
         params.isColorReversed);
-    params.colorKey = colorEncoder.getColorKey();
+    params.colorEncoder = colorEncoder;
     fractionPtr = 0;
     Logger.info("JVXL reading color data mapped min/max: "
         + params.mappedDataMin + "/" + params.mappedDataMax + " for "

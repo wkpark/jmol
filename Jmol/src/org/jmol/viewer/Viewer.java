@@ -1297,6 +1297,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // delegated to ColorManager
   // ///////////////////////////////////////////////////////////////
 
+  public float[] getCurrentColorRange() {
+    return colorManager.getCurrentColorRange();
+  }
+
   private void setDefaultColors(String colorScheme) {
     colorManager.setDefaultColors(colorScheme);
     global.setParameterValue("colorRasmol", (colorScheme

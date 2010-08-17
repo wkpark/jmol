@@ -123,6 +123,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.jmol.atomdata.RadiusData;
+import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
@@ -191,7 +192,7 @@ public class Parameters {
     cappingObject= null;
     colorBySign = colorByPhase = colorBySets = false;
     colorDensity = false;
-    colorKey = null;
+    colorEncoder = null;
     colorNeg = defaultColorNegative;
     colorNegLCAO = defaultColorNegativeLCAO;
     colorPos = defaultColorPositive;
@@ -735,7 +736,7 @@ public class Parameters {
   public BitSet[] bsExcluded;
   public int contourType;
   public boolean colorSchemeTranslucent;
-  public Map<String, Object> colorKey;
+  public ColorEncoder colorEncoder;
   
   void setMapRanges(SurfaceReader surfaceReader) {
     if (!colorDensity)

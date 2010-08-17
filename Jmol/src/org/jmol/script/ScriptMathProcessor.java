@@ -2206,7 +2206,9 @@ class ScriptMathProcessor {
      */
     String colorScheme = (args.length > 0 ? ScriptVariable.sValue(args[0])
         : (String) viewer.getParameter("propertyColorScheme"));
-    if (colorScheme.length() > 0 && ColorEncoder.getColorScheme(colorScheme, false, true) == Integer.MAX_VALUE)
+    boolean isIsosurface = false;
+    if (colorScheme.length() > 0 && !(isIsosurface = colorScheme.startsWith("$"))
+        && ColorEncoder.getColorScheme(colorScheme, false, true) == Integer.MAX_VALUE)
       return addX("");
     float lo = (args.length > 1 ? ScriptVariable.fValue(args[1])
         : Float.MAX_VALUE);
@@ -2214,23 +2216,34 @@ class ScriptMathProcessor {
         : Float.MAX_VALUE);
     float value = (args.length > 3 ? ScriptVariable.fValue(args[3])
         : Float.MAX_VALUE);
-    ColorEncoder ce = new ColorEncoder();
-    ce.setColorScheme(colorScheme, false);
-    ce.setRange(lo, hi, lo > hi);
+    boolean getValue = (value != Float.MAX_VALUE || lo != Float.MAX_VALUE
+        && hi == Float.MAX_VALUE);
+    boolean haveRange = (hi != Float.MAX_VALUE);
+    if (!haveRange && colorScheme.length() == 0) {
+      value = lo;
+      float[] range = viewer.getCurrentColorRange();
+      lo = range[0];
+      hi = range[1];
+    }
+    ColorEncoder ce = null;
+    if (isIsosurface) {
+      // isosurface color scheme      
+      String id = colorScheme.substring(1);
+      Object[] data = new Object[] { id, null};
+      if (!viewer.getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "colorEncoder", data))
+        return addX("");
+      ce = (ColorEncoder) data[1];
+    }
+    if (ce == null) {
+      ce = new ColorEncoder();
+      ce.setColorScheme(colorScheme, false);
+      ce.setRange(lo, hi, lo > hi);
+    }
     Map<String, Object> key = ce.getColorKey();
-    if (value != Float.MAX_VALUE || lo != Float.MAX_VALUE
-        && hi == Float.MAX_VALUE)
+    if (getValue)
       return addX(Graphics3D.colorPointFromInt2(ce
           .getArgb(hi == Float.MAX_VALUE ? lo : value)));
-    Map<String, ScriptVariable> ret = new Hashtable<String, ScriptVariable>();
-    Iterator<String> e = key.keySet().iterator();
-    while (e.hasNext()) {
-      String k = e.next();
-      if (hi != Float.MAX_VALUE && !k.equals("colors") && !k.equals("values"))
-        continue;
-      ret.put(k, ScriptVariable.getVariable(key.get(k)));
-    }
-    return addX(ScriptVariable.getVariable(ret));
+    return addX(ScriptVariable.getVariable(key));
   }
 
   private boolean evaluateConnected(ScriptVariable[] args) {

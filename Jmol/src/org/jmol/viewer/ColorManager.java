@@ -47,7 +47,9 @@ class ColorManager {
   private float colorHi, colorLo;
   private float[] colorData;  
 
-  
+  float[] getCurrentColorRange() {
+    return new float[] { colorLo, colorHi };
+  }
 
   ColorManager(Viewer viewer, Graphics3D g3d) {
     this.viewer = viewer;

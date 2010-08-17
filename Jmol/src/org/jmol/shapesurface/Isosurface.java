@@ -231,13 +231,13 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         // thisMesh.vertexColixes = null;
         thisMesh.isColorSolid = true;
         thisMesh.polygonColixes = null;
-        thisMesh.colorKey = null;
+        thisMesh.colorEncoder = null;
       } else if (!TextFormat.isWild(previousMeshID)) {
         for (int i = meshCount; --i >= 0;) {
           // isomeshes[i].vertexColixes = null;
           isomeshes[i].isColorSolid = true;
           isomeshes[i].polygonColixes = null;
-          isomeshes[i].colorKey = null;
+          isomeshes[i].colorEncoder = null;
         }
       }
       setPropertySuper(propertyName, value, bs);
@@ -528,6 +528,12 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   @SuppressWarnings("unchecked")
   @Override
   public boolean getProperty(String property, Object[] data) {
+    if (property == "colorEncoder") {
+      IsosurfaceMesh mesh = (IsosurfaceMesh) getMesh((String) data[0]);
+      if (mesh == null || (data[1] = mesh.colorEncoder) == null)
+        return false;
+      return true;
+    }
     if (property == "intersectPlane") {
       IsosurfaceMesh mesh = (IsosurfaceMesh) getMesh((String) data[0]);
       if (mesh == null)
@@ -985,7 +991,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     //viewer.setPropertyColorScheme(schemeName, sg.getParams().colorSchemeTranslucent, false);
     thisMesh.isColorSolid = false;
     thisMesh.colorDensity = jvxlData.colorDensity;
-    thisMesh.colorKey = sg.getParams().colorKey;
+    thisMesh.colorEncoder = sg.getParams().colorEncoder;
     thisMesh.getContours();
     if (thisMesh.jvxlData.jvxlPlane != null)
       allowContourLines = false;
@@ -1113,11 +1119,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       if (s != null)
         info.put("jvxlInfo", s.replace('\n', ' '));
       info.put("modelIndex", Integer.valueOf(mesh.modelIndex));
-      if (mesh.colorKey == null)
-        mesh.colorKey = new Hashtable<String, Object>();
-      mesh.colorKey.put("color", Graphics3D
-              .colorPointFromInt2(Graphics3D.getArgb(mesh.colix)));
-      info.put("colorKey", mesh.colorKey);
+      info.put("color", Graphics3D.colorPointFromInt2(Graphics3D
+          .getArgb(mesh.colix)));
+      if (mesh.colorEncoder != null)
+        info.put("colorKey", mesh.colorEncoder.getColorKey());
       if (mesh.title != null)
         info.put("title", mesh.title);
       if (mesh.jvxlData.contourValues != null
@@ -1167,7 +1172,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       if (isTranslucent)
         vertexColixes[i] = Graphics3D.getColixTranslucent(vertexColixes[i], true, translucentLevel);
     }
-    thisMesh.colorKey = ce.getColorKey();
+    thisMesh.colorEncoder = ce;
     List<Object>[] contours = thisMesh.getContours();
     if (contours != null) {
       for (int i = contours.length; --i >= 0; ) {

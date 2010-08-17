@@ -35,6 +35,7 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
+import org.jmol.util.ColorEncoder;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.viewer.Viewer;
@@ -73,7 +74,7 @@ public class IsosurfaceMesh extends Mesh {
     jvxlData.jvxlColorData = "";
     jvxlData.jvxlVolumeDataXml = "";
     isColorSolid = true;
-    colorKey = null;
+    colorEncoder = null;
     vertexColixes = null;
     vertexValues = null;
     polygonColixes = null;
@@ -441,7 +442,7 @@ public class IsosurfaceMesh extends Mesh {
   float[] contourValues;
   short[] contourColixes;
   short meshColix;
-  Map<String, Object> colorKey;
+  ColorEncoder colorEncoder;
   
   public void setDiscreteColixes(float[] values, short[] colixes) {
     if (values != null)

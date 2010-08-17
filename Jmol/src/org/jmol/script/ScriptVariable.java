@@ -27,6 +27,7 @@ package org.jmol.script;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -226,8 +227,20 @@ public class ScriptVariable extends Token {
       return new ScriptVariable(list, x);
     if (x instanceof Float[])
       return new ScriptVariable(listf, x);
-    if (x instanceof Map)
+    if (x instanceof Map) {
+      Map<String, Object> ht = (Map<String, Object>)x; 
+      Iterator<String> e = ht.keySet().iterator();
+      while (e.hasNext()) {
+        if (!(ht.get(e.next()) instanceof ScriptVariable)) {
+          Map<String, ScriptVariable> x2 = new Hashtable<String, ScriptVariable>();
+          for (Map.Entry<String, Object> entry: ht.entrySet())
+            x2.put(entry.getKey(), ScriptVariable.getVariable(entry.getValue()));
+          x = x2;
+          break;
+        }
+      }
       return new ScriptVariable(hash, x);
+    }
     
     
     // all the rest are stored as list

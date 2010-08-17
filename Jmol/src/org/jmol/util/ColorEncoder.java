@@ -462,10 +462,11 @@ import org.jmol.util.ArrayUtil;
    List<Point3f> colors = new ArrayList<Point3f>(segmentCount);
    float[] values = new float[segmentCount + 1]; 
    float quanta = (hi - lo) / segmentCount;
+   float f = quanta * (isReversed ? -0.5f : 0.5f);
    
    for (int i = 0; i < segmentCount; i++) {     
      values[i] = (isReversed ? hi - i * quanta : lo + i * quanta);
-     colors.add(Graphics3D.colorPointFromInt2(getArgb(values[i] + quanta / 2)));
+     colors.add(Graphics3D.colorPointFromInt2(getArgb(values[i] + f)));
    } 
    values[segmentCount] = (isReversed ? lo : hi);
    info.put("values", values);

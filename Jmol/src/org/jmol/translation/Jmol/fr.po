@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-08-04 20:25+0200\n"
-"PO-Revision-Date: 2010-08-14 12:48+0000\n"
-"Last-Translator: Nicolas Delvaux <Unknown>\n"
+"PO-Revision-Date: 2010-08-17 08:31+0000\n"
+"Last-Translator: Emilien Klein <emilien+ubuntu@klein.st>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-08-14 20:16+0000\n"
+"X-Launchpad-Export-Date: 2010-08-17 16:04+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: France\n"
 "X-Poedit-Language: French\n"
@@ -944,7 +944,7 @@ msgstr "Ramener la molécule à sa position d'origine."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:202
 msgid "Open the model kit."
-msgstr ""
+msgstr "Ouvrir le kit de modèles."
 
 #: org/openscience/jmol/app/jmolpanel/HelpDialog.java:64
 msgid "Jmol Help"
@@ -1554,15 +1554,15 @@ msgstr "couleur d'arrière-plan :"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:117
 msgid "Stereo Viewing"
-msgstr ""
+msgstr "Affichage stéréo"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:134
 msgid "select stereo type"
-msgstr ""
+msgstr "sélectionner le type stéréo"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:138
 msgid "Stereo Off"
-msgstr ""
+msgstr "Stéréo inactif"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:139
 msgid "Red/Blue"
@@ -1626,7 +1626,7 @@ msgstr "Lire une seule fois"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:204
 msgid "Open Console Button"
-msgstr ""
+msgstr "Bouton d'ouverture de console"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:220
 msgid "launch Jmol console"
@@ -1634,7 +1634,7 @@ msgstr "lancer la console Jmol"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:227
 msgid "Download view"
-msgstr ""
+msgstr "Affichage de téléchargement"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:245
 msgid "unimplemented"

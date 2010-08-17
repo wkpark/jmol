@@ -28,7 +28,6 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Date;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -2438,15 +2437,12 @@ class ScriptMathProcessor {
       case Token.keys:
         if (x2.tok != Token.hash)
           return addX("");
-        Iterator<String> e = ((Map<String, ScriptVariable>) x2.value).keySet().iterator();
-        List<String> v = new ArrayList<String>();
-        while (e.hasNext()) {
-          v.add(e.next());
-        }
-        String[] keys = new String[v.size()];
+        Object[] keys = ((Map<String, ScriptVariable>) x2.value).keySet().toArray();
+        Arrays.sort(keys);
+        String[] ret = new String[keys.length];
         for (int i = 0; i < keys.length; i++)
-          keys[i] = v.get(i);
-        return addX(keys);
+          ret[i] = (String) keys[i];
+        return addX(ret);
       case Token.lines:
         switch (x2.tok) {
         case Token.matrix3f:

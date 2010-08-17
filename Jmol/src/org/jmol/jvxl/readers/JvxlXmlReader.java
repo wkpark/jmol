@@ -37,11 +37,11 @@ import org.jmol.g3d.Graphics3D;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.JvxlData;
 import org.jmol.shapesurface.IsosurfaceMesh;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.TypeConversion;
 import org.jmol.util.XmlReader;
 
 public class JvxlXmlReader extends VolumeFileReader {
@@ -687,7 +687,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     }
     int n = vs.size();
     if (n > 0)
-      jvxlData.vContours = TypeConversion.createArrayOfArrayList(n);
+      jvxlData.vContours = ArrayUtil.createArrayOfArrayList(n);
     // 3D contour values and colors
     jvxlData.contourColixes = params.contourColixes = new short[n];
     jvxlData.contourValues = params.contoursDiscrete = new float[n];

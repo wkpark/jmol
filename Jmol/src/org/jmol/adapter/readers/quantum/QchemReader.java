@@ -27,8 +27,8 @@ package org.jmol.adapter.readers.quantum;
 
 import org.jmol.adapter.smarter.*;
 import org.jmol.api.JmolAdapter;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
-import org.jmol.util.TypeConversion;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -618,7 +618,7 @@ $end
   
   private int readMOs(boolean restricted,
                       List<Map<String, Object>> orbitals, MOInfo[] moInfos) throws Exception {
-    Map<String, Object>[] mos = TypeConversion.createArrayOfHashtable(6);  // max 6 MO's per line
+    Map<String, Object>[] mos = ArrayUtil.createArrayOfHashtable(6);  // max 6 MO's per line
     float[][] mocoef = new float[6][];   // coefficients for each MO
     int[] moid = new int[6];             // mo numbers
     String[] tokens, energy;

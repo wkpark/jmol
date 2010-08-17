@@ -27,8 +27,8 @@ package org.jmol.adapter.readers.quantum;
 import org.jmol.adapter.smarter.*;
 import org.jmol.api.JmolAdapter;
 import org.jmol.quantum.SlaterData;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
-import org.jmol.util.TypeConversion;
 //import org.jmol.util.Escape;
 
 import java.util.ArrayList;
@@ -377,7 +377,7 @@ OR
       readLine();
       int nLine = getTokens(readLine()).length;
       readLine();
-      sd.mos = TypeConversion.createArrayOfHashtable(sd.nSFO);
+      sd.mos = ArrayUtil.createArrayOfHashtable(sd.nSFO);
       String[][] data = new String[sd.nSFO][];
       fillDataBlock(data);
       for (int j = 1; j < nLine; j++) {

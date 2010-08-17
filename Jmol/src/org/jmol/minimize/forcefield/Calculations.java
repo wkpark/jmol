@@ -32,7 +32,7 @@ import javax.vecmath.Vector3d;
 import org.jmol.minimize.MinAtom;
 import org.jmol.minimize.MinBond;
 import org.jmol.minimize.Util;
-import org.jmol.util.TypeConversion;
+import org.jmol.util.ArrayUtil;
 
 abstract class Calculations {
 
@@ -50,7 +50,7 @@ abstract class Calculations {
   final static int CALC_MAX = 6;
 
   ForceField ff;
-  List<Object[]>[] calculations = TypeConversion.createArrayOfArrayList(CALC_MAX);
+  List<Object[]>[] calculations = ArrayUtil.createArrayOfArrayList(CALC_MAX);
   public Map<String, FFParam> ffParams;
   
   int atomCount;

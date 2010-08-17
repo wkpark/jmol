@@ -35,8 +35,8 @@ import java.util.Map;
 import javax.vecmath.Vector3f;
 
 import org.jmol.api.JmolAdapter;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
-import org.jmol.util.TypeConversion;
 
 /**
  * Reader for Gaussian 94/98/03/09 output files.
@@ -391,8 +391,8 @@ but:
   private void readMolecularOrbitals() throws Exception {
     if (shells == null)
       return;
-    Map<String, Object>[] mos = TypeConversion.createArrayOfHashtable(5);
-    List<String>[] data = TypeConversion.createArrayOfArrayList(5);
+    Map<String, Object>[] mos = ArrayUtil.createArrayOfHashtable(5);
+    List<String>[] data = ArrayUtil.createArrayOfArrayList(5);
     int nThisLine = 0;
     while (readLine() != null
         && line.toUpperCase().indexOf("DENS") < 0) {

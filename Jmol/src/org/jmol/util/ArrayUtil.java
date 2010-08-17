@@ -25,8 +25,11 @@ package org.jmol.util;
 
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 final public class ArrayUtil {
 
@@ -251,6 +254,31 @@ final public class ArrayUtil {
       keys[i] = v.get(i);
     Arrays.sort(keys);
     return keys[n % keys.length];
+  }
+
+  /**
+   * Helper method for creating a ArrayList<T>[] without warnings.
+   * 
+   * @param <T> Type of objects in the list.
+   * @param size Array size.
+   * @return Array of ArrayList<T>
+   */
+  @SuppressWarnings("unchecked")
+  public static <T> List<T>[] createArrayOfArrayList(int size) {
+    return new ArrayList[size];
+  }
+
+  /**
+   * Helper method for creating a Hashtable<K, V>[] without warnings.
+   * 
+   * @param <K> Type of object for the keys in the map.
+   * @param <V> Type of object for the values in the map.
+   * @param size Array size.
+   * @return Array of Hashtable<K, V>
+   */
+  @SuppressWarnings("unchecked")
+  public static <K, V> Map<K, V>[] createArrayOfHashtable(int size) {
+    return new Hashtable[size];
   }
 
 }

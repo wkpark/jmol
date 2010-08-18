@@ -5270,7 +5270,8 @@ public class ScriptEvaluator {
   }
 
   private void setCursorWait(boolean TF) {
-    viewer.setCursor(TF ? Viewer.CURSOR_WAIT : Viewer.CURSOR_DEFAULT);
+    if (!isSyntaxCheck)
+      viewer.setCursor(TF ? Viewer.CURSOR_WAIT : Viewer.CURSOR_DEFAULT);
   }
   
   private void processShapeCommand(int tok) throws ScriptException {

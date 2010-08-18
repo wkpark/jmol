@@ -9201,7 +9201,7 @@ public class ScriptEvaluator {
       case Token.point4f:
       case Token.quaternion:
         if (tok == Token.quaternion)
-          i++;
+          i++;        
         haveRotation = true;
         if (tokAt(i) == Token.list) {
           String[] s = (String[]) getToken(i).value;
@@ -9341,11 +9341,13 @@ public class ScriptEvaluator {
             : degreesPerSecond);
 
     if (q != null) {
-      if (nPoints == 0)
+      // only when there is a translation (4x4 matrix or TRANSLATE)
+      // do we set the rotation to be the center of the selected atoms or model
+      if (nPoints == 0 && translation != null)
         points[0] = viewer.getAtomSetCenter(bsAtoms != null ? bsAtoms
             : isSelected ? viewer.getSelectionSet(false) : viewer
                 .getModelUndeletedAtomsBitSet(-1));
-      if (helicalPath) {
+      if (helicalPath && translation != null) {
         points[1] = new Point3f(points[0]);
         points[1].add(translation);
         Object[] ret = (Object[]) Measure.computeHelicalAxis(null, Token.array,
@@ -9362,7 +9364,8 @@ public class ScriptEvaluator {
       }
       if (isSpin && m4 == null)
         m4 = ScriptMathProcessor.getMatrix4f(q.getMatrix(), translation);
-      nPoints = 1;
+      if (points[0] != null)
+        nPoints = 1;
     }
     if (invPoint != null) {
       viewer.invertAtomCoord(invPoint, bsAtoms);

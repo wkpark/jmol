@@ -4673,7 +4673,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void setCursor(int cursor) {
-    if (multiTouch || currentCursor == cursor || display == null)
+    if (currentCursor == cursor || multiTouch || display == null)
       return;
     int c;
     switch (currentCursor = cursor) {

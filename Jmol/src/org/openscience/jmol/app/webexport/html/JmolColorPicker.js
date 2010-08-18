@@ -1,7 +1,7 @@
 /* Jmol Simple JavaScript Color Picker
  by Jonathan Gutow, Angel Herráez
-V1.3
-August 14, 2010
+V1.4
+August 17, 2010
 
 requires
    Jmol.js
@@ -14,7 +14,7 @@ var scriptStr2 = 'select carbon; color atom $COLOR$;';
 jmolColorPickerBox(scriptStr2, [100,100,100], "colorBox1", "0");
 </script>
 
-Or the alternatve syntax for specifying color:
+Or the alternative syntax for specifying color:
 
 jmolColorPickerBox(scriptStr2, "#646464", "colorBox1", "0");
 
@@ -73,30 +73,29 @@ function _jmolChangeClass(someObj,someClassName) {
     someObj.setAttribute("className",someClassName);  // this is for IE
 }
 
+// detect if browser supports data:URI   (IE6 & IE7 do not)
+var jmolDataURIsupported = true;
+var jmolTestImg64 = new Image();
+jmolTestImg64.onload = jmolTestImg64.onerror = function() {
+  if(this.width!=1 || this.height!=1) { jmolDataURIsupported=false; }
+}
+jmolTestImg64.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
+
+/* This is only needed and used when there are both a colorPicker and a stereoMode selector (widgets from Jmol Export to Web).
+		IE6 puts the SELECT control on top of the popup colorpicker DIV, so we play a trick in that case:
+*/
+var jmolFixSelectOnTop=false;
+if (/MSIE (\d+\.\d+);/.test(navigator.userAgent)) { //test for MSIE x.x;
+    var jmolIEversion=new Number(RegExp.$1); // capture x.x portion and store as a number
+	 if (jmolIEversion<7) { jmolFixSelectOnTop=true; }
+}
+
+
 //Build the ColorPicker Div.
 
-// detect if browser supports data:URI   (IE6 & IE7 do not)
-    var dataURIsupported = true;
-    var testImg64 = new Image();
-    testImg64.onload = testImg64.onerror = function() {
-        if(this.width != 1 || this.height != 1) { dataURIsupported = false; }
-    }
-    testImg64.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
-
 function _jmolMakeColorPicker(){
-    JmolColorPickerDiv = document.getElementById("JmolColorPickerDiv");
-    if(! JmolColorPickerDiv){
-        var colorPickerCSS = document.createElement('style');
-        colorPickerCSS.type = 'text/css';
-        CSSStr ='.JmolColorPicker_vis {border-style:solid;border-width:thin;clear:both;display:block;overflow:visible;position:absolute;margin-left:-52px;width:104px;z-index:2;}'
-        CSSStr +='.JmolColorPicker_hid {height:0;min-height:0;display:none;overflow:hidden;z-index:0;}';
-        if (colorPickerCSS.styleSheet) { // IE
-            colorPickerCSS.styleSheet.cssText = CSSStr;
-        } else { // W3C
-            content = document.createTextNode(CSSStr); 
-            colorPickerCSS.appendChild(content);
-        }
-        document.getElementsByTagName('head')[0].appendChild(colorPickerCSS);
+    var JmolColorPickerDiv = document.getElementById("JmolColorPickerDiv");
+	 if(! JmolColorPickerDiv){
         JmolColorPickerDiv = document.createElement("div");
         JmolColorPickerDiv.setAttribute("id", "JmolColorPickerDiv");
         _jmolChangeClass(JmolColorPickerDiv,"JmolColorPicker_hid");
@@ -126,73 +125,79 @@ function _jmolMakeColorPicker(){
              [50,20],
              [35,0]
      ];
-    var tempwidth = 8*(rgbs.length);
-    var htmlStr = '<div id="JmolColorPickerHover" style="font-size:2px;width:'+tempwidth+'px;text-align:right;background-color:white;cursor:default;">';
-    if (dataURIsupported) {
+    var htmlStr = '<div id="JmolColorPickerHover" style="width:'+ 8*(rgbs.length) +'px;">';
+    if (jmolDataURIsupported) {
         htmlStr += '<image id="JmolColorPickerCancel" onclick="_jmolColorPickerPickedColor(\'cancel\');" src="data:image/bmp;base64,Qk3CAQAAAAAAADYAAAAoAAAACwAAAAsAAAABABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdnZ2j4+PoKCgqampqampoKCgj4+PAAAAAAAAAAAAAAAAAAAAAAAAsbGxwsLCysrKysrKwsLCAAAAAAAAAAAAAAAAZWVlAAAAAAAAAAAA29vb5OTk5OTkAAAAAAAAAAAAj4+PAAAAdnZ2oKCgAAAAAAAAAAAA9PT0AAAAAAAAAAAAwsLCoKCgAAAAfn5+qampysrKAAAAAAAAAAAAAAAAAAAA5OTkysrKqampAAAAfn5+qampysrK5OTkAAAAAAAAAAAA9PT05OTkysrKqampAAAAdnZ2oKCgwsLCAAAAAAAAAAAAAAAAAAAA29vbwsLCoKCgAAAAZWVlj4+PAAAAAAAAAAAA5OTkAAAAAAAAAAAAsbGxj4+PAAAATExMAAAAAAAAAAAAwsLCysrKysrKAAAAAAAAAAAAdnZ2AAAAAAAAAAAAAAAAj4+PoKCgqampqampoKCgAAAAAAAAAAAAAAAAAAAAAAAATExMZWVldnZ2fn5+fn5+dnZ2ZWVlAAAAAAAAAAAA">';
     } else {
-        htmlStr += '<span id="JmolColorPickerCancel" onclick="_jmolColorPickerPickedColor(\'cancel\');" style="font-size:10px; padding:0 2px; background-color:#A0A0A0; font-family:Verdana, Arial, Helvetica, sans-serif;">X</span>';
+        htmlStr += '<span id="JmolColorPickerCancel" onclick="_jmolColorPickerPickedColor(\'cancel\');" class="JmolColorPickerFakeBtn">X</span>';
     }
     htmlStr += '</div>';	 
-    htmlStr += '<table cellspacing="0" cellpadding="0" border="0" style="font-size:2px; cursor:default;"><tbody>';
-    for (j = 0; j < hues.length;j++){
-    htmlStr += '<tr>'
-    var f = (hues[j][0])/100.0;
-       for (k = 0; k < rgbs.length; k++){
-       if(rgbs[k][0]==255&&rgbs[k][1]==255&&rgbs[k][2]==255) f =(hues[j][1])/100.0;; 
-       r = Math.min(Math.max(Math.round(rgbs[k][0] * f),Math.round(255-rgbs[k][0])*(f-1)^2),255);
-       g = Math.min(Math.max(Math.round(rgbs[k][1] * f),Math.round(255-rgbs[k][1])*(f-1)^2),255);
-       b = Math.min(Math.max(Math.round(rgbs[k][2] * f),Math.round(255-rgbs[k][2])*(f-1)^2),255);
-          htmlStr +='<td style="background-color: rgb(' + r + "," + g + ","+ b + ');">';
-          htmlStr +='<div style="width: 8px; height: 8px;" onclick=\'_jmolColorPickerPickedColor("rgb('+r+','+g+','+b+')");\' ';
-          htmlStr +='onmouseover=\'_jmolColorPickerHoverColor("rgb('+r+','+g+','+b+')");\'></div>';
+    htmlStr += '<table cellspacing="0" cellpadding="0" border="0"><tbody>';
+	 var r,g,b,rgb;
+    for (var j = 0; j < hues.length;j++){
+    	 htmlStr += '<tr>';
+   	 var f = (hues[j][0])/100.0;
+       for (var k = 0; k < rgbs.length; k++){
+			 if(rgbs[k][0]==255&&rgbs[k][1]==255&&rgbs[k][2]==255) f =(hues[j][1])/100.0;
+			 r = Math.min(Math.max(Math.round(rgbs[k][0] * f),Math.round(255-rgbs[k][0])*(f-1)^2),255);
+			 g = Math.min(Math.max(Math.round(rgbs[k][1] * f),Math.round(255-rgbs[k][1])*(f-1)^2),255);
+			 b = Math.min(Math.max(Math.round(rgbs[k][2] * f),Math.round(255-rgbs[k][2])*(f-1)^2),255);
+			 rgb = 'rgb(' + r + ',' + g + ',' + b + ')';
+          htmlStr +='<td style="background-color:' + rgb + ';" ';
+          htmlStr +='onclick="_jmolColorPickerPickedColor(\'' + rgb + '\')" ';
+          htmlStr +='onmouseover="_jmolColorPickerHoverColor(\'' + rgb + '\')">';
           htmlStr +='</td>';
        }//for k
    htmlStr +='</tr>';
    }//for j
    htmlStr += '</tbody></table>'; 
-    content = document.createTextNode("loading color picker...");
-    JmolColorPickerDiv.appendChild(content);
-    JmolColorPickerDiv.innerHTML = htmlStr;
-    return(JmolColorPickerDiv);   
+   JmolColorPickerDiv.appendChild(document.createTextNode("loading color picker..."));
+   JmolColorPickerDiv.innerHTML = htmlStr;
+   return(JmolColorPickerDiv);   
 }
 
-// IE6 puts the SELECT control on top of the popup colorpicker DIV, so we trick that:
-var IEversion = 999;
-if (/MSIE (\d+\.\d+);/.test(navigator.userAgent)) { //test for MSIE x.x;
-    IEversion=new Number(RegExp.$1); // capture x.x portion and store as a number
-}
 
 function _jmolColorPickerPickedColor(colorStr){
+		// hide the color picker:
     _jmolChangeClass(document.getElementById('JmolColorPickerDiv'), "JmolColorPicker_hid");
+		// apply the new color:
     if(colorStr!='cancel'){
         var evalStr = ''+ jmolColorPickerStatus.funcName+'("'+colorStr+'",'+ jmolColorPickerStatus.passThrough+');';
         eval(evalStr);
     }
-    if (IEversion<7) { document.getElementById("StereoMode0").style.visibility='visible'; }
+		// if needed, redisplay the select for stereo (passThrough holds the applet ID number):
+    if (jmolFixSelectOnTop) {
+		 var x = document.getElementById("StereoMode"+jmolColorPickerStatus.passThrough);
+		 if (x) { x.style.visibility='visible'; }
+	 }
 }
 
 function _jmolColorPickerHoverColor(colorStr){
-    document.getElementById("JmolColorPickerHover").style.background = colorStr;
+    document.getElementById("JmolColorPickerHover").style.backgroundColor = colorStr;
 }
 
 function _jmolPopUpPicker(whereID, funcName, passThrough){
+	 // define & display, or redisplay, the color picker:
     var pickerDiv = document.getElementById("JmolColorPickerDiv");
     if (!pickerDiv) {//make a new picker
-        JmolColorPickerDiv =  _jmolMakeColorPicker();
+        JmolColorPickerDiv = _jmolMakeColorPicker();
         document.body.appendChild(JmolColorPickerDiv);
         pickerDiv = document.getElementById("JmolColorPickerDiv");
-        }
+    }
     jmolColorPickerStatus.funcName = funcName;
     jmolColorPickerStatus.passThrough = passThrough;
-    var where = document.getElementById(whereID);
-    where.appendChild(pickerDiv);
+    document.getElementById(whereID).appendChild(pickerDiv);
     _jmolChangeClass(pickerDiv,"JmolColorPicker_vis");
-    if (IEversion<7) { document.getElementById("StereoMode0").style.visibility='hidden'; }
+	 // if needed, hide the select for stereo (passThrough holds the applet ID number):
+    if (jmolFixSelectOnTop) {
+		 var x = document.getElementById("StereoMode"+passThrough);
+		 if (x) { x.style.visibility='hidden'; }
+	}
 }
 
 
 function jmolColorPickerBox(scriptStr, startColor, boxID, appletID){
+	 _jmolColorPickerSetCSS();
     if (!appletID) appletID = "0";
     var boxNum = jmolColorPickerBoxes.length;
     if (!boxID) boxID = 'colorBox'+boxNum;
@@ -205,34 +210,32 @@ function jmolColorPickerBox(scriptStr, startColor, boxID, appletID){
     jmolColorPickerBoxes[boxNum]= new _jmolColorBoxInfo(boxID, appletID, scriptStr);  
     var boxDiv = document.createElement("div");
     boxDiv.setAttribute("id",boxID);
-    content = document.createTextNode("building color box...");
-    boxDiv.appendChild(content);
-    boxDiv.style.background=presentColor;
+    boxDiv.appendChild(document.createTextNode("building color box..."));
+    boxDiv.style.backgroundColor=presentColor;
     boxDiv.style.height='14px';
     boxDiv.style.width='28px';
-    htmlStr = '<table style="font-size:0px; cursor:default;" cellspacing="0" cellpadding="0" border="1" onclick=\'_jmolPopUpPicker(';
+    var htmlStr = '<table class="JmolColorPickerBox" cellspacing="0" cellpadding="0" border="1" onclick=\'_jmolPopUpPicker(';
     htmlStr += '"'+boxID+'","_jmolColorBoxUpdate",'+boxNum+');\' ';
     htmlStr += '><tbody>';
-    htmlStr += '<tr><td><div style="height: 12px; width: 12px;"></div></td><td>';
-    var boxArrowName = 'colorBoxArrow'+boxNum;
-    if (dataURIsupported) {
+    htmlStr += '<tr><td>&nbsp;</td><td>';
+    if (jmolDataURIsupported) {
         // up arrowhead:   "data:image/bmp;base64,Qk3mAQAAAAAAADYAAAAoAAAACwAAAAwAAAABABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIAAAAAAAAAAAAAAAAAAAAAAAAAAAAyMjIyMjIAAAAyMjIyMjIyMjIAAAAAAAAAAAAAAAAAAAAyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIAAAAAAAAAAAAyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAA"
         // down arrowhead: "data:image/bmp;base64,Qk3mAQAAAAAAADYAAAAoAAAACwAAAAwAAAABABgAAAAAALABAAAAAAAAAAAAAAAAAAAAAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIAAAAAAAAAAAAyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIAAAAAAAAAAAAAAAAAAAAyMjIyMjIyMjIAAAAyMjIyMjIAAAAAAAAAAAAAAAAAAAAAAAAAAAAyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAA"
-        htmlStr += '<image id="'+ boxArrowName+'" src="data:image/bmp;base64,Qk3mAQAAAAAAADYAAAAoAAAACwAAAAwAAAABABgAAAAAALABAAAAAAAAAAAAAAAAAAAAAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIAAAAAAAAAAAAyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIAAAAAAAAAAAAAAAAAAAAyMjIyMjIyMjIAAAAyMjIyMjIAAAAAAAAAAAAAAAAAAAAAAAAAAAAyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAA">';
+        htmlStr += '<image src="data:image/bmp;base64,Qk3mAQAAAAAAADYAAAAoAAAACwAAAAwAAAABABgAAAAAALABAAAAAAAAAAAAAAAAAAAAAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIAAAAAAAAAAAAyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIAAAAAAAAAAAAAAAAAAAAyMjIyMjIyMjIAAAAyMjIyMjIAAAAAAAAAAAAAAAAAAAAAAAAAAAAyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAAyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIAAAA">';
     } else {
-        htmlStr += '<span id="'+ boxArrowName+'" style="font-size:10px; padding:0 2px; background-color:#A0A0A0; font-family:Verdana, Arial, Helvetica, sans-serif;">V</span>';
+        htmlStr += '<span class="JmolColorPickerFakeBtn">V</span>';
     }
     htmlStr += '</td></tr></tbody></table>';
     boxDiv.innerHTML = htmlStr;
-    scripts = document.getElementsByTagName("script");
-    scriptNode = scripts.item(scripts.length-1);
-    parentNode = scriptNode.parentNode;
+    var scripts = document.getElementsByTagName("script");
+    var scriptNode = scripts.item(scripts.length-1);
+    var parentNode = scriptNode.parentNode;
     parentNode.appendChild(boxDiv);
 }
 
 
 function _jmolColorBoxUpdate(pickedColor, boxNum){
-    document.getElementById(jmolColorPickerBoxes[boxNum].boxID).style.background = pickedColor;
+    document.getElementById(jmolColorPickerBoxes[boxNum].boxID).style.backgroundColor = pickedColor;
     _jmolChangeClass(document.getElementById('JmolColorPickerDiv'), "JmolColorPicker_hid");
     var rgbCodes = pickedColor.replace(/rgb/i,'').replace('(','[').replace(')',']');
     if (typeof(jmolColorPickerBoxes[boxNum].scriptStr) == "object"){
@@ -243,3 +246,21 @@ function _jmolColorBoxUpdate(pickedColor, boxNum){
     }
 }
 
+function _jmolColorPickerSetCSS() {
+	if (jmolColorPickerBoxes.length>0) { return; } //only the first time
+	var colorPickerCSS = document.createElement('style');
+	colorPickerCSS.type = 'text/css';
+	var CSSStr ='.JmolColorPicker_vis {border-style:solid;border-width:thin;clear:both;display:block;overflow:visible;position:absolute;margin-left:-52px;width:104px;z-index:2;} '+
+	 '.JmolColorPicker_hid {height:0;min-height:0;display:none;overflow:hidden;z-index:0;} '+
+	 '#JmolColorPickerDiv table td {font-size:2px;width:8px;height:8px;padding:0;cursor:default;} '+
+	 '#JmolColorPickerHover {font-size:2px;text-align:right;background-color:white;cursor:default;} '+
+	 '.JmolColorPickerBox {font-size:0px; cursor:default;} '+
+	 '.JmolColorPickerBox td {height:12px; width:11px;} '+
+	 '.JmolColorPickerFakeBtn {font-size:10px;font-weight:bold;padding:0 2px;background-color:#A0A0A0;font-family:Verdana, Arial, Helvetica, sans-serif;} ';
+	if (colorPickerCSS.styleSheet) { // IE
+		colorPickerCSS.styleSheet.cssText = CSSStr;
+	} else { // W3C
+		colorPickerCSS.appendChild(document.createTextNode(CSSStr));
+	}
+	document.getElementsByTagName('head')[0].appendChild(colorPickerCSS);	
+}

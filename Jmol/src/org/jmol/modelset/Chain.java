@@ -152,6 +152,14 @@ public final class Chain {
     return selectedGroupCount;
   }
 
+  /**
+   * 
+   * @param bsSelected
+   * @param nAltLocInModel 
+   * @param offsets
+   * @param firstAtomIndex
+   * @param lastAtomIndex
+   */
   public final void updateOffsetsForAlternativeLocations(BitSet bsSelected,
                                                   int nAltLocInModel,
                                                   byte[] offsets,

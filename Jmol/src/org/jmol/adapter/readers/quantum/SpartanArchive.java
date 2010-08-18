@@ -474,6 +474,7 @@ class SpartanArchive {
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("vibration", vibrations);
   }
 
+  @SuppressWarnings("unchecked")
   private void setVibrationsFromProperties() throws Exception {
     List<List<Float>> freq_modes = (List<List<Float>>) atomSetCollection.getAtomSetCollectionAuxiliaryInfo("FREQ_MODES");
     if (freq_modes == null) {

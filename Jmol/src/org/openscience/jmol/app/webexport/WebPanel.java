@@ -318,7 +318,13 @@ abstract class WebPanel extends JPanel implements ActionListener,
     return buf;
   }*/
 
-
+  
+  /**
+   * @param w UNUSED
+   * @param h UNUSED 
+   * @return   left panel
+   * 
+   */
   private JPanel getLeftPanel(int w, int h) {
 
     helpButton = new JButton(GT._("Help/Instructions"));
@@ -898,13 +904,13 @@ class ArrayListTransferHandler extends TransferHandler {
       return false;
     }
     JList target = null;
-    List alist = null;
+    List<?> alist = null;
     try {
       target = (JList) c;
       if (hasLocalArrayListFlavor(t.getTransferDataFlavors())) {
-        alist = (List) t.getTransferData(localArrayListFlavor);
+        alist = (List<?>) t.getTransferData(localArrayListFlavor);
       } else if (hasSerialArrayListFlavor(t.getTransferDataFlavors())) {
-        alist = (List) t.getTransferData(serialArrayListFlavor);
+        alist = (List<?>) t.getTransferData(serialArrayListFlavor);
       } else {
         return false;
       }

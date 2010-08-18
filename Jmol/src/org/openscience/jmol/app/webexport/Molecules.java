@@ -452,7 +452,6 @@ class Molecules extends JPanel implements ActionListener {
           }
 
           }
-          break;
         }
         out.println("		]);");
         out.println("		</script>");

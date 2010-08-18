@@ -7355,78 +7355,77 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // Jmol 11.7.45 also uses this method as a general API
     // for getting and returning script data from the console and editor
 
-    if ("DATA_API".equals(returnType)) {
-      switch (("scriptCheck........." // 0
-          + "scriptContext......." // 20
-          + "scriptEditor........" // 40
-          + "scriptEditorState..." // 60
-          + "getAppConsole......." // 80
-          + "getScriptEditor....." // 100
-          + "setMenu............." // 120
-          + "spaceGroupInfo......" // 140
-          + "disablePopupMenu...." // 160
-          + "defaultDirectory...." // 180
-      ).indexOf(infoType)) {
+    if (!("DATA_API".equals(returnType)))
+      return PropertyManager.getProperty(this, returnType, infoType, paramInfo);
 
-      case 0:
-        return scriptCheck((String) paramInfo, true);
-      case 20:
-        return eval.getScriptContext();
-      case 40:
-        showEditor((String[]) paramInfo);
-        return null;
-      case 60:
-        scriptEditorVisible = ((Boolean) paramInfo).booleanValue();
-        return null;
-      case 80:
-        if (paramInfo instanceof JmolAppConsoleInterface) {
-          appConsole = (JmolAppConsoleInterface) paramInfo;
-        } else if (paramInfo != null && !((Boolean) paramInfo).booleanValue()) {
-          appConsole = null;
-        } else if (appConsole == null && paramInfo != null
-            && ((Boolean) paramInfo).booleanValue()) {
-          for (int i = 0; i < 4 && appConsole == null; i++) {
-            appConsole = (isApplet ? (JmolAppConsoleInterface) Interface
-                .getOptionInterface("applet.AppletConsole")
-                : (JmolAppConsoleInterface) Interface
-                    .getApplicationInterface("jmolpanel.AppConsole"))
-                .getAppConsole(this, display);
-            if (appConsole == null)
-              try {
-                Thread.currentThread().wait(100);
-              } catch (InterruptedException e) {
-                //
-              }
-          }
+    switch (
+         ("scriptCheck........." // 0
+        + "scriptContext......." // 20
+        + "scriptEditor........" // 40
+        + "scriptEditorState..." // 60
+        + "getAppConsole......." // 80
+        + "getScriptEditor....." // 100
+        + "setMenu............." // 120
+        + "spaceGroupInfo......" // 140
+        + "disablePopupMenu...." // 160
+        + "defaultDirectory...." // 180
+    ).indexOf(infoType)) {
+
+    case 0:
+      return scriptCheck((String) paramInfo, true);
+    case 20:
+      return eval.getScriptContext();
+    case 40:
+      showEditor((String[]) paramInfo);
+      return null;
+    case 60:
+      scriptEditorVisible = ((Boolean) paramInfo).booleanValue();
+      return null;
+    case 80:
+      if (paramInfo instanceof JmolAppConsoleInterface) {
+        appConsole = (JmolAppConsoleInterface) paramInfo;
+      } else if (paramInfo != null && !((Boolean) paramInfo).booleanValue()) {
+        appConsole = null;
+      } else if (appConsole == null && paramInfo != null
+          && ((Boolean) paramInfo).booleanValue()) {
+        for (int i = 0; i < 4 && appConsole == null; i++) {
+          appConsole = (isApplet ? (JmolAppConsoleInterface) Interface
+              .getOptionInterface("applet.AppletConsole")
+              : (JmolAppConsoleInterface) Interface
+                  .getApplicationInterface("jmolpanel.AppConsole"))
+              .getAppConsole(this, display);
+          if (appConsole == null)
+            try {
+              Thread.currentThread().wait(100);
+            } catch (InterruptedException e) {
+              //
+            }
         }
+      }
+      scriptEditor = (appConsole == null ? null : appConsole.getScriptEditor());
+      return appConsole;
+    case 100:
+      if (appConsole == null && paramInfo != null
+          && ((Boolean) paramInfo).booleanValue()) {
+        getProperty("DATA_API", "appConsole", Boolean.TRUE);
         scriptEditor = (appConsole == null ? null : appConsole
             .getScriptEditor());
-        return appConsole;
-      case 100:
-        if (appConsole == null && paramInfo != null
-            && ((Boolean) paramInfo).booleanValue()) {
-          getProperty("DATA_API", "appConsole", Boolean.TRUE);
-          scriptEditor = (appConsole == null ? null : appConsole
-              .getScriptEditor());
-        }
-        return scriptEditor;
-      case 120:
-        return menuStructure = (String) paramInfo;
-      case 140:
-        return getSpaceGroupInfo(null);
-      case 160:
-        global.disablePopupMenu = true; // no false here, because it's a
-        // one-time setting
-        return null;
-      case 180:
-        return global.defaultDirectory;
-      default:
-        Logger.error("ERROR in getProperty DATA_API: " + infoType);
-        return null;
       }
-
+      return scriptEditor;
+    case 120:
+      return menuStructure = (String) paramInfo;
+    case 140:
+      return getSpaceGroupInfo(null);
+    case 160:
+      global.disablePopupMenu = true; // no false here, because it's a
+      // one-time setting
+      return null;
+    case 180:
+      return global.defaultDirectory;
+    default:
+      Logger.error("ERROR in getProperty DATA_API: " + infoType);
+      return null;
     }
-    return PropertyManager.getProperty(this, returnType, infoType, paramInfo);
   }
 
   void showEditor(String[] file_text) {

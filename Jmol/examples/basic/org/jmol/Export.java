@@ -140,8 +140,12 @@ class MyStatusListener implements JmolStatusListener {
     }
   }  
 
-  private void notifyAtomPicked(@SuppressWarnings("unused") int atomIndex, String strInfo) {
-    System.out.println(strInfo);
+  /**
+   * 
+   * @param atomIndex
+   * @param strInfo
+   */
+  private void notifyAtomPicked(int atomIndex, String strInfo) {
     monitor.setText(strInfo);
   }
 
@@ -156,9 +160,13 @@ class MyStatusListener implements JmolStatusListener {
   /* (non-Javadoc)
    * @see org.jmol.api.JmolStatusListener#createImage(java.lang.String, java.lang.String, int)
    */
-  public void createImage(@SuppressWarnings("unused") String file,
-                          @SuppressWarnings("unused") String type,
-                          @SuppressWarnings("unused") int quality) {
+  /**
+   * @param file 
+   * @param type 
+   * @param quality 
+   * 
+   */
+  public void createImage(String file, String type, int quality) {
     //
   }
 
@@ -179,14 +187,20 @@ class MyStatusListener implements JmolStatusListener {
   /* (non-Javadoc)
    * @see org.jmol.api.JmolStatusListener#sendConsoleEcho(java.lang.String)
    */
-  private void sendConsoleEcho(@SuppressWarnings("unused") String strEcho) {
+  /**
+   * @param strEcho  
+   */
+  private void sendConsoleEcho(String strEcho) {
     //
   }
 
   /* (non-Javadoc)
    * @see org.jmol.api.JmolStatusListener#sendConsoleMessage(java.lang.String)
    */
-  private void sendConsoleMessage(@SuppressWarnings("unused") String strStatus) {
+  /**
+   * @param strStatus  
+   */
+  private void sendConsoleMessage(String strStatus) {
     //
   }
 
@@ -213,7 +227,12 @@ class MyStatusListener implements JmolStatusListener {
     return null;
   }
 
-  public String dialogAsk(@SuppressWarnings("unused") String type, @SuppressWarnings("unused") String data) {
+  /**
+   * @param type  
+   * @param data 
+   * @return response
+   */
+  public String dialogAsk(String type, String data) {
     return null;
   }
 }

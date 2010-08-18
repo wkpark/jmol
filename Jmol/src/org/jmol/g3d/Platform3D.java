@@ -187,12 +187,16 @@ class Platform3D {
     return false;
   }
 
-  class ClearingThread extends Thread implements Runnable {
+  class ClearingThread extends Thread {
 
 
     boolean bufferHasBeenCleared = false;
     boolean clientHasBuffer = false;
 
+    /**
+     * 
+     * @param argbBackground
+     */
     synchronized void notifyBackgroundChange(int argbBackground) {
       //Logger.debug("notifyBackgroundChange");
       bufferHasBeenCleared = false;
@@ -247,16 +251,16 @@ class Platform3D {
 
   private final static int[] sampleModelBitMasks =
   { 0x00FF0000, 0x0000FF00, 0x000000FF };
-
+/*
   private final static DirectColorModel rgbColorModelT =
     new DirectColorModel(32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
 
   private final static int[] sampleModelBitMasksT =
   { 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000 };
-
+*/
   Image allocateImage() {
     //backgroundTransparent not working with antialiasDisplay. I have no idea why. BH 9/24/08
-    if (false && backgroundTransparent)
+/* DEAD CODE   if (false && backgroundTransparent)
       return new BufferedImage(
           rgbColorModelT,
           Raster.createWritableRaster(
@@ -269,6 +273,7 @@ class Platform3D {
               null),
           false, 
           null);
+*/
     return new BufferedImage(
         rgbColorModel,
         Raster.createWritableRaster(

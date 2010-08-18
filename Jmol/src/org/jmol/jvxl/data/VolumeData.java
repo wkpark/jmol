@@ -142,6 +142,11 @@ public class VolumeData implements VolumeDataInterface {
   private final Matrix3f volumetricMatrix = new Matrix3f();
   private final Matrix3f inverseMatrix = new Matrix3f();
   private Point4f thePlane;
+  
+  public boolean hasPlane() {
+    return (thePlane != null);
+  }
+  
   private float thePlaneNormalMag;
   private final Point3f ptXyzTemp = new Point3f();
   public String xmlData;
@@ -229,19 +234,15 @@ public class VolumeData implements VolumeDataInterface {
 
   public float calcVoxelPlaneDistance(int x, int y, int z) {
     voxelPtToXYZ(x, y, z, ptXyzTemp);
-    return (thePlane.x * ptXyzTemp.x + thePlane.y * ptXyzTemp.y + thePlane.z
-        * ptXyzTemp.z + thePlane.w)
-        / thePlaneNormalMag;
+    return distancePointToPlane(ptXyzTemp);
   }
 
-  Point4f mappingPlane;
-  public float getToPlaneParameter(Point4f plane) {
-    mappingPlane = plane;
-    return (float) (Math.sqrt(plane.x * plane.x
-        + plane.y * plane.y + plane.z * plane.z) * minToPlaneDistance);
+  public float getToPlaneParameter() {
+    return (float) (Math.sqrt(thePlane.x * thePlane.x
+        + thePlane.y * thePlane.y + thePlane.z * thePlane.z) * minToPlaneDistance);
   }
   
-  public boolean isNearPlane(int x, int y, int z, Point4f plane, float toPlaneParameter) {
+  public boolean isNearPlane(int x, int y, int z, float toPlaneParameter) {
     voxelPtToXYZ(x, y, z, ptXyzTemp);
     return ((thePlane.x * ptXyzTemp.x + thePlane.y * ptXyzTemp.y
         + thePlane.z * ptXyzTemp.z + thePlane.w) < toPlaneParameter);

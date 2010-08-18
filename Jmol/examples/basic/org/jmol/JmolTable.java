@@ -86,9 +86,13 @@ public class JmolTable {
     showMolecules(colNames, data, nobject);
   }
 
-    public static void showMolecules(String[] colNames,
-                                     Object[][] data,
-                                     @SuppressWarnings("unused") int nmol) {
+    /**
+     * 
+     * @param colNames
+     * @param data
+     * @param nmol  NOT USED
+     */
+    public static void showMolecules(String[] colNames, Object[][] data, int nmol) {
 
         // set up the toplevel frame
         JFrame frame = new JFrame("Structure Viewer");
@@ -221,8 +225,13 @@ public class JmolTable {
         public Object getCellEditorValue() {
             return new Object();
         }
-        public boolean isCellEditable(@SuppressWarnings("unused") int row,
-                                      int column) {
+        /**
+         * 
+         * @param row
+         * @param column
+         * @return  whether editable
+         */
+        public boolean isCellEditable(int row, int column) {
             if (column == STRUCTURE_COL) {
                 return true;
             }
@@ -242,11 +251,12 @@ class JmolPanel extends JPanel {
   JmolViewer viewer;
   JmolAdapter adapter;
 
+  @SuppressWarnings("deprecation")
   JmolPanel() {
     adapter = new SmarterJmolAdapter();
     viewer = JmolViewer.allocateViewer(this, adapter);
-    viewer.scriptWait(
-        "frank off;set defaultDirectory 'http://chemapps.stolaf.edu/jmol/docs/examples-11/data/'");
+    viewer
+        .scriptWait("frank off;set defaultDirectory 'http://chemapps.stolaf.edu/jmol/docs/examples-11/data/'");
   }
 
   public JmolViewer getViewer() {

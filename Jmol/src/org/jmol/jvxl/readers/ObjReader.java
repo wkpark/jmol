@@ -76,7 +76,12 @@ class ObjReader extends PolygonFileReader {
   private int nPolygons;
   String pmeshError;
 
-  ObjReader(SurfaceGenerator sg, String fileName, BufferedReader br) {
+  /**
+   * 
+   * @param sg
+   * @param br
+   */
+  ObjReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg, br);
     jvxlFileHeaderBuffer
         .append("pmesh file format\nvertices and triangles only\n");

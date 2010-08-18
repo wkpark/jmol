@@ -222,10 +222,10 @@ class TestScriptsImpl extends TestCase {
           long end = Profiling.getTime();
           if ((info != null) && (info.size() > 0)) {
             String error = info.get(0).toString();
-            if (info.get(0) instanceof List) {
+            if (info.get(0) instanceof List<?>) {
               List<?> vector = (List<?>) info.get(0);
               if (vector.size() > 0) {
-                if (vector.get(0) instanceof List) {
+                if (vector.get(0) instanceof List<?>) {
                   vector = (List<?>) vector.get(0);
                   error = vector.get(vector.size() - 1).toString();
                 }

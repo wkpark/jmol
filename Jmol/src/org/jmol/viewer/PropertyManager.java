@@ -198,6 +198,7 @@ public class PropertyManager {
     return extractProperty(getProperty(viewer, null, propertyName, propertyValue), args, 1);
   }
 
+  @SuppressWarnings("unchecked")
   public static Object extractProperty(Object property, ScriptVariable[] args, int ptr) {
     if (ptr >= args.length)
       return property;
@@ -206,8 +207,8 @@ public class PropertyManager {
     switch (arg.tok) {
     case Token.integer:
       pt = ScriptVariable.iValue(arg) - 1;  //one-based, as for array selectors
-      if (property instanceof List) {
-        List v = (List) property;
+      if (property instanceof List<?>) {
+        List<Object> v = (List<Object>) property;
         if (pt < 0)
           pt += v.size();
         if (pt >= 0 && pt < v.size())
@@ -277,20 +278,20 @@ public class PropertyManager {
       break;
     case Token.string:
       String key = ScriptVariable.sValue(arg);
-      if (property instanceof Map) {
-        Map h = (Map) property;
+      if (property instanceof Map<?,?>) {
+        Map<String, Object> h = (Map<String, Object>) property;
         if (key.equalsIgnoreCase("keys")) {
           List<Object> keys = new ArrayList<Object>();
-          Iterator e = h.keySet().iterator();
+          Iterator<String> e = h.keySet().iterator();
           while (e.hasNext())
             keys.add(e.next()); 
           return extractProperty(keys, args, ptr);
         }
         if (!h.containsKey(key)) {
-          Iterator e = h.keySet().iterator();
+          Iterator<String> e = h.keySet().iterator();
           String newKey = "";
           while (e.hasNext())
-            if ((newKey = ((String) e.next())).equalsIgnoreCase(key)) {
+            if ((newKey = e.next()).equalsIgnoreCase(key)) {
               key = newKey;
               break;
             }

@@ -281,7 +281,7 @@ abstract public class BondCollection extends AtomCollection {
     return setBond(bondCount++, bondMutually(atom1, atom2, order, (short) 1, energy)).index;
   }
 
-  protected short getBondOrder(Atom atomA, float bondingRadiusA, Atom atomB,
+  protected short getBondOrder(float bondingRadiusA,
                              float bondingRadiusB, float distance2,
                              float minBondDistance2, float bondTolerance) {
     if (bondingRadiusA == 0 || bondingRadiusB == 0 || distance2 < minBondDistance2)

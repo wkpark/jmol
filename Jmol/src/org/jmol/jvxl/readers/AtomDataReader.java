@@ -88,6 +88,12 @@ abstract class AtomDataReader extends VolumeDataReader {
       volumeData.setPlaneParameters(params.thePlane);
   }
 
+  /**
+   * 
+   * @param marginAtoms
+   * @param doGetAllAtoms UNUSED
+   * @param addNearbyAtoms
+   */
   protected void getAtoms(float marginAtoms, boolean doGetAllAtoms,
                           boolean addNearbyAtoms) {
 

@@ -73,7 +73,7 @@ public class Splash extends Window implements SplashInterface {
     setBounds(x, y, w, h);
     statusTop = BORDERSIZE + imgHeight;
     textY = BORDERSIZE + STATUSSIZE + imgHeight + 1;
-    show();
+    setVisible(true);
 
   }
 

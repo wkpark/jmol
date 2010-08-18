@@ -428,16 +428,17 @@ abstract public class AtomCollection {
     return points;
   }
 
+  @SuppressWarnings("unchecked")
   public void setAtomCoord(BitSet bs, int tokType, Object xyzValues) {
     Point3f xyz = null;
     Point3f[] values = null;
-    List v = null;
+    List<Point3f> v = null;
     int type = 0;
     int nValues = 1;
     if (xyzValues instanceof Point3f) {
       xyz = (Point3f) xyzValues;
-    } else if (xyzValues instanceof List) {
-      v = (List) xyzValues;
+    } else if (xyzValues instanceof List<?>) {
+      v = (List<Point3f>) xyzValues;
       if (v == null || (nValues = v.size()) == 0)
         return;
       type = 1;
@@ -456,7 +457,7 @@ abstract public class AtomCollection {
         case 1:
           if (n >= nValues)
             return;
-          xyz = (Point3f) v.get(n++);
+          xyz = v.get(n++);
           break;
         case 2:
           if (n >= nValues)

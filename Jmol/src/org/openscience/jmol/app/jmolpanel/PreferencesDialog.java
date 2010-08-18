@@ -656,7 +656,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      show();
+      setVisible(true);
     }
   }
 

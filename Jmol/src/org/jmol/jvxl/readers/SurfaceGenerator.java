@@ -1068,11 +1068,11 @@ public class SurfaceGenerator {
         return;
       }
       params.mappedDataMin = Float.MAX_VALUE;
-      surfaceReader.readTheVolumeData(true, params.thePlane);
+      surfaceReader.readVolumeData(true);
     } else if (!params.colorBySets) {
       surfaceReader.readAndSetVolumeParameters();
       params.mappedDataMin = Float.MAX_VALUE;
-      surfaceReader.readTheVolumeData(true, null);
+      surfaceReader.readVolumeData(true);
     }
     colorIsosurface();
     surfaceReader.closeReader();
@@ -1180,7 +1180,7 @@ public class SurfaceGenerator {
     if (fileType.equals("Pmesh"))
       return new PmeshReader(this, params.fileName, br);
     if (fileType.equals("Obj"))
-      return new ObjReader(this, params.fileName, br);
+      return new ObjReader(this, br);
     return null;
   }
 

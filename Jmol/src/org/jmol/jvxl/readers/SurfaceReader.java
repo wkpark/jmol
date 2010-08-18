@@ -277,11 +277,6 @@ public abstract class SurfaceReader implements VertexDataServer {
 
   protected abstract boolean readVolumeData(boolean isMapData);
 
-  boolean readTheVolumeData(boolean isMapData, Point4f plane) {
-    mappingPlane = plane;
-    return readVolumeData(isMapData);  
-  }
-  
   ////////////////////////////////////////////////////////////////
   // CUBE/APBS/JVXL file reading stuff
   ////////////////////////////////////////////////////////////////
@@ -352,7 +347,7 @@ public abstract class SurfaceReader implements VertexDataServer {
       generateSurfaceData();
       volumeData.voxelData = voxelDataTemp;
     } else {
-      if (!readTheVolumeData(false, null))
+      if (!readVolumeData(false))
         return false;
       generateSurfaceData();
     }

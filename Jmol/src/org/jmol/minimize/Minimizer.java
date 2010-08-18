@@ -826,7 +826,7 @@ Token[keyword(0x880001) value=")"]
     endMinimization();
   }
   
-  class MinimizationThread extends Thread implements Runnable {
+  class MinimizationThread extends Thread {
     
     MinimizationThread() {
       this.setName("MinimizationThread");

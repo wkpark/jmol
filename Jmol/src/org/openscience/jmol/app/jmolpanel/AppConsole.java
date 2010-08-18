@@ -325,6 +325,7 @@ public final class AppConsole extends JmolConsole implements JmolAppConsoleInter
     undoSaved = true;
   }
   
+  @SuppressWarnings("unchecked")
   void executeCommand(String strCommand) {
     boolean doWait;
     console.appendNewline();
@@ -333,7 +334,8 @@ public final class AppConsole extends JmolConsole implements JmolAppConsoleInter
       console.grabFocus();
       return;
     }
-    if (strCommand.charAt(0) != '!' && viewer.getBooleanProperty("executionPaused"))
+    if (strCommand.charAt(0) != '!'
+        && viewer.getBooleanProperty("executionPaused"))
       strCommand = "!" + strCommand;
     if (strCommand.charAt(0) != '!' && !isError) {
       undoSave();
@@ -345,21 +347,25 @@ public final class AppConsole extends JmolConsole implements JmolAppConsoleInter
     doWait = (strCommand.indexOf("WAITTEST ") == 0);
     if (doWait) { //for testing, mainly
       // demonstrates using the statusManager system; probably hangs application.
-      List info = (List) viewer
+      Object o = viewer
           .scriptWaitStatus(strCommand.substring(5),
               "+fileLoaded,+scriptStarted,+scriptStatus,+scriptEcho,+scriptTerminated");
-      /*
-       * info = [ statusRecortSet0, statusRecortSet1, statusRecortSet2, ...]
-       * statusRecordSet = [ statusRecord0, statusRecord1, statusRecord2, ...]
-       * statusRecord = [int msgPtr, String statusName, int intInfo, String msg]    
-       */
-      for (int i = 0; i < info.size(); i++) {
-        List statusRecordSet = (List) info.get(i);
-        for (int j = 0; j < statusRecordSet.size(); j++) {
-          List statusRecord = (List) statusRecordSet.get(j);
-          Logger.info("msg#=" + statusRecord.get(0) + " " + statusRecord.get(1)
-              + " intInfo=" + statusRecord.get(2) + " stringInfo="
-              + statusRecord.get(3));
+      if (o instanceof List) {
+
+        List<List<List<Object>>> info = (List<List<List<Object>>>) o;
+        /*
+         * info = [ statusRecortSet0, statusRecortSet1, statusRecortSet2, ...]
+         * statusRecordSet = [ statusRecord0, statusRecord1, statusRecord2, ...]
+         * statusRecord = [int msgPtr, String statusName, int intInfo, String msg]    
+         */
+        for (int i = 0; i < info.size(); i++) {
+          List<List<Object>> statusRecordSet = info.get(i);
+          for (int j = 0; j < statusRecordSet.size(); j++) {
+            List<Object> statusRecord = statusRecordSet.get(j);
+            Logger.info("msg#=" + statusRecord.get(0) + " "
+                + statusRecord.get(1) + " intInfo=" + statusRecord.get(2)
+                + " stringInfo=" + statusRecord.get(3));
+          }
         }
       }
       console.appendNewline();
@@ -373,7 +379,9 @@ public final class AppConsole extends JmolConsole implements JmolAppConsoleInter
       if (strErrorMessage.length() > 0) {
         console.outputError(strErrorMessage);
       } else {
-        viewer.script(strCommand + (strCommand.indexOf("\1##") >= 0 ? "" : JmolConstants.SCRIPT_EDITOR_IGNORE));
+        viewer.script(strCommand
+            + (strCommand.indexOf("\1##") >= 0 ? ""
+                : JmolConstants.SCRIPT_EDITOR_IGNORE));
       }
     }
     if (strCommand.indexOf("\1##") < 0)

@@ -371,7 +371,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
               continue;
             return atomSetCollections;
           } else if (atomSetCollections instanceof AtomSetCollection
-              || atomSetCollections instanceof List) {
+              || atomSetCollections instanceof List<?>) {
             if (haveManifest && !exceptFiles)
               htCollections.put(thisEntry, atomSetCollections);
             else

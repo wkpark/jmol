@@ -177,7 +177,7 @@ class RecentFilesDialog extends JDialog implements ActionListener,
   }
 
   void close() {
-    hide();
+    setVisible(false);
   }
 
   public void actionPerformed(java.awt.event.ActionEvent e) {

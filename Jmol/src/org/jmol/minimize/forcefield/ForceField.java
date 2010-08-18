@@ -284,6 +284,11 @@ abstract public class ForceField {
     return energy;
   }
 
+  /**
+   * 
+   * @param gradients
+   * @return energy
+   */
   double energyStrBnd(boolean gradients) {
     return 0.0f;
   }

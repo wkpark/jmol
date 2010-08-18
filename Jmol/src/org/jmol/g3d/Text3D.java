@@ -113,6 +113,19 @@ public class Text3D {
     return text3d.width;
   }
 
+  /**
+   * 
+   * @param x
+   * @param y
+   * @param z
+   * @param image
+   * @param g3d
+   * @param jmolRenderer
+   * @param antialias  UNUSED
+   * @param argbBackground
+   * @param width
+   * @param height
+   */
   public static void plotImage(int x, int y, int z, Image image,
                                Graphics3D g3d,
                                JmolRendererInterface jmolRenderer,
@@ -341,6 +354,12 @@ public class Text3D {
     }
   }
 
+  /**
+   * 
+   * @param text
+   * @param font3d
+   * @param antialias UNUSED
+   */
   private Text3D(String text, Font3D font3d,
                  boolean antialias) {
     FontMetrics fontMetrics = font3d.fontMetrics;
@@ -354,6 +373,13 @@ public class Text3D {
     size = mapWidth * height;
   }
 
+  /**
+   * 
+   * @param text
+   * @param font3d
+   * @param platform
+   * @param antialias UNUSED
+   */
   private void renderOffscreen(String text, Font3D font3d, Platform3D platform,
                                boolean antialias) {
     Graphics g = platform.gOffscreen;
@@ -364,6 +390,11 @@ public class Text3D {
     g.drawString(text, 0, ascent);
   }
 
+  /**
+   * 
+   * @param platform
+   * @param antialias UNUSED
+   */
   private void rasterize(Platform3D platform, boolean antialias) {
     
     PixelGrabber pixelGrabber = new PixelGrabber(platform.imageOffscreen, 0, 0, 

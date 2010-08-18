@@ -266,7 +266,7 @@ class Dsn6BinaryReader extends MapFileReader {
     else
       bPt--;
     // bytes read can be negative
-    float value = ((int) brickLayer[bPt] + 256) % 256; 
+    float value = (brickLayer[bPt] + 256) % 256; 
     return dmin + value * byteFactor;
   }
   

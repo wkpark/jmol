@@ -306,6 +306,19 @@ public class Hermite3D {
     }
   }
  
+  /**
+   * 
+   * @param fill   NOT USED
+   * @param tension
+   * @param p0
+   * @param p1
+   * @param p2
+   * @param p3
+   * @param p4
+   * @param p5
+   * @param p6
+   * @param p7
+   */
   private void renderParallelPair(boolean fill, int tension,
                 //top strand segment
                 Point3i p0, Point3i p1, Point3i p2, Point3i p3,

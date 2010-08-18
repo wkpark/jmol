@@ -114,7 +114,7 @@ public class JvxlCoder {
     if (jvxlData.jvxlColorData != null && jvxlData.jvxlColorData.length() > 0)
       type = "mapped " + type;
     XmlUtil.openTag(data, "jvxlSurface", new String[] { "type", type });
-    data.append(jvxlGetInfo(jvxlData, verticesOnly, true));
+    data.append(jvxlGetInfo(jvxlData, verticesOnly));
     jvxlAppendCommandState(data, comment, state);
     if (title != null || msg != null && msg.length() > 0) {
       sb = new StringBuffer();
@@ -227,10 +227,10 @@ public class JvxlCoder {
 
   
   public static String jvxlGetInfo(JvxlData jvxlData) {
-    return jvxlGetInfo(jvxlData, jvxlData.vertexDataOnly, true);
+    return jvxlGetInfo(jvxlData, jvxlData.vertexDataOnly);
   }
 
-  public static String jvxlGetInfo(JvxlData jvxlData, boolean verticesOnly, boolean notVersion1) {
+  public static String jvxlGetInfo(JvxlData jvxlData, boolean verticesOnly) {
     if (jvxlData.jvxlSurfaceData == null)
       return "";
     List<String[]> attribs = new ArrayList<String[]>();
@@ -424,7 +424,7 @@ public class JvxlCoder {
       while (pt < nBuf && !Character.isDigit(c1 = fData.charAt(pt++))) {
         // skip non-digit data
       }
-      type = ((int) c1) - 48;
+      type = c1 - 48;
       while (pt < nBuf && Character.isWhitespace(c1 = fData.charAt(pt++))) {
         // skip whitespace
       }

@@ -153,6 +153,7 @@ abstract class SlaterReader extends BasisFunctionReader {
    * 
    */
   
+  @SuppressWarnings("unchecked")
   protected void sortOrbitals() {
     Map<String, Object>[] array = orbitals.toArray(new Map[0]);
     Arrays.sort(array, new OrbitalSorter());

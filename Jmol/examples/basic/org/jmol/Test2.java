@@ -16,6 +16,7 @@ public class Test2 extends JPanel {
     new Test2(strXyzHOH);
   }
 
+  @SuppressWarnings("deprecation")
   public Test2() {
     adapter = new SmarterJmolAdapter();
     viewer = JmolViewer.allocateViewer(this, adapter);
@@ -25,6 +26,7 @@ public class Test2 extends JPanel {
     newFrame.setVisible(true);
   }
 
+  @SuppressWarnings("deprecation")
   public Test2(String model) {
     adapter = new SmarterJmolAdapter();
     viewer = JmolViewer.allocateViewer(this, adapter);

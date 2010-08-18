@@ -329,6 +329,13 @@ public class WebExport extends JPanel implements WindowListener {
     return url;
   }
 
+
+  /**
+   * @param object   UNUSED
+   * @param fileName 
+   * @param flagError 
+   * @return URL 
+   */
   static URL getResource(Object object, String fileName, boolean flagError) {
     URL url = null;
     if (!fileName.contains("/"))fileName="org/openscience/jmol/app/webexport/html/"+fileName;
@@ -415,12 +422,21 @@ public class WebExport extends JPanel implements WindowListener {
   public void windowDeactivated(WindowEvent e) {
   }
 
+  /**
+   * @param e  
+   */
   public void windowGainedFocus(WindowEvent e) {
   }
 
+  /**
+   * @param e  
+   */
   public void windowLostFocus(WindowEvent e) {
   }
 
+  /**
+   * @param e  
+   */
   public void windowStateChanged(WindowEvent e) {
   }
 

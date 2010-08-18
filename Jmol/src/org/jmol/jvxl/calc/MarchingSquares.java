@@ -99,7 +99,7 @@ public class MarchingSquares {
     nContoursSpecified = nContours;
     this.contourFromZero = contourFromZero; //set false for MEP to complete the plane
     if (contoursDiscrete == null) {
-      int i = (true ? 0 : contourFromZero ? 1  : is3DContour ? 1 : 2);
+      int i = 0;// DEAD CODE (true ? 0 : contourFromZero ? 1  : is3DContour ? 1 : 2);
       nContourSegments = (nContours == 0 ? defaultContourCount : nContours) + i;
       if (nContourSegments > nContourMax)
         nContourSegments = nContourMax;
@@ -457,7 +457,7 @@ public class MarchingSquares {
     int nInside;
     int nOutside;
     int nThrough;
-    int index;
+    //int index;
     //int x, y;
     //Point3f origin;
     final int[] vertexes = new int[] {-1, -1, -1, -1 };
@@ -467,8 +467,13 @@ public class MarchingSquares {
     int[][] intersectionPoints;
     int iOption;
 
+    /**
+     * 
+     * @param index  IGNORED
+     * @param nContourSegments
+     */
     PlanarSquare(int index, int nContourSegments) {
-      this.index = index;
+      //this.index = index;
       edgeMask12 = new int[nContourSegments];
       intersectionPoints = new int[nContourSegments][4];
       fractions = new float[nContourSegments][4];
@@ -602,6 +607,11 @@ public class MarchingSquares {
     return centerIsLow;
   }
 
+  /**
+   * @param iContour  
+   * @param contourCutoff 
+   * @return insideCount
+   */
   private int generateContourData(int iContour, float contourCutoff) {
 
     /*
@@ -780,9 +790,9 @@ public class MarchingSquares {
   private float calcContourPoint(float cutoff, float valueA, float valueB,
                          Point3f contourPoint) {
     //TODO - re-enable? problem is that this causes many overlapping triangles on edge of surface
-    float fraction = (false && Float.isNaN(valueA) ? 1 
+    float fraction = (/*false && Float.isNaN(valueA) ? 1 
         : false && Float.isNaN(valueB) ? 0 
-        : (cutoff - valueA) / (valueB - valueA));
+        : DEAD CODE */ (cutoff - valueA) / (valueB - valueA));
     edgeVector.sub(pointB, pointA);
     contourPoint.scaleAdd(fraction, edgeVector, pointA);
     return fraction;
@@ -974,6 +984,15 @@ public class MarchingSquares {
   private final BitSet bsMesh0 = new BitSet();
   private final BitSet bsMesh1 = new BitSet();
   private final BitSet bsMesh2 = new BitSet();
+  /**
+   * 
+   * @param square
+   * @param squareIndex  NOT USED
+   * @param contourIndex
+   * @param edgeMask
+   * @param lowerFirst
+   * @param offset
+   */
   private void fillSquare(PlanarSquare square, int squareIndex, int contourIndex, int edgeMask,
                   boolean lowerFirst, int offset) {
     int nIntersect = 0;

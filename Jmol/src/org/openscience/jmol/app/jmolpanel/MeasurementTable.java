@@ -178,7 +178,7 @@ public class MeasurementTable extends JDialog {
 
   public void activate() {
     updateMeasurementTableData();
-    show();
+    setVisible(true);
   }
 
   void updateMeasurementTableData() {

@@ -2501,7 +2501,8 @@ abstract public class ModelCollection extends BondCollection {
     return new int[] { nNew, nModified };
   }
 
-  public int autoBond(BitSet bsA, BitSet bsB, BitSet bsExclude, BitSet bsBonds, short mad) {
+  public int autoBond(BitSet bsA, BitSet bsB, BitSet bsExclude, BitSet bsBonds,
+                      short mad) {
     if (atomCount == 0)
       return 0;
     if (mad == 0)
@@ -2540,7 +2541,8 @@ abstract public class ModelCollection extends BondCollection {
       i0 = bsCheck.nextSetBit(0);
     }
     AtomIndexIterator iter = getSelectedAtomIterator(null, false, false, true);
-    for (int i = i0; i >= 0 && i < atomCount; i = (isAll ? i + 1 : bsCheck.nextSetBit(i + 1))) {
+    for (int i = i0; i >= 0 && i < atomCount; i = (isAll ? i + 1 : bsCheck
+        .nextSetBit(i + 1))) {
       boolean isAtomInSetA = (isAll || bsA.get(i));
       boolean isAtomInSetB = (isAll || bsB.get(i));
       Atom atom = atoms[i];
@@ -2551,7 +2553,8 @@ abstract public class ModelCollection extends BondCollection {
       if (modelIndex != lastModelIndex) {
         lastModelIndex = modelIndex;
         if (isJmolDataFrame(modelIndex)) {
-          i = models[modelIndex].firstAtomIndex + models[modelIndex].atomCount - 1;
+          i = models[modelIndex].firstAtomIndex + models[modelIndex].atomCount
+              - 1;
           continue;
         }
       }
@@ -2570,11 +2573,11 @@ abstract public class ModelCollection extends BondCollection {
         boolean isNearInSetA = (isAll || bsA.get(atomIndexNear));
         boolean isNearInSetB = (isAll || bsB.get(atomIndexNear));
         // BOTH must be excluded in order to ignore bonding
-        if (!isNearInSetA && !isNearInSetB 
+        if (!isNearInSetA && !isNearInSetB
             || !(isAtomInSetA && isNearInSetB || isAtomInSetB && isNearInSetA)
             || isFirstExcluded && bsExclude.get(atomIndexNear))
           continue;
-        short order = getBondOrder(atom, myBondingRadius, atomNear, atomNear
+        short order = getBondOrder(myBondingRadius, atomNear
             .getBondingRadiusFloat(), iter.foundDistance2(), minBondDistance2,
             bondTolerance);
         if (order > 0) {

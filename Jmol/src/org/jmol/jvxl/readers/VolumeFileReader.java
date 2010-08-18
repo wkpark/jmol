@@ -228,14 +228,14 @@ abstract class VolumeFileReader extends SurfaceFileReader {
       voxelData = null;
       if (isJvxl)
         jvxlVoxelBitSet = getVoxelBitSet(nDataPoints);
-    } else if (isMapData && mappingPlane != null){
+    } else if (isMapData && volumeData.hasPlane()){
       volumeData.setVoxelMap(new Hashtable<String, Float>());
-      float f = volumeData.getToPlaneParameter(mappingPlane);
+      float f = volumeData.getToPlaneParameter(); // was mappingPlane
       for (int x = 0; x < nPointsX; ++x) {
         for (int y = 0; y < nPointsY; ++y) {
           for (int z = 0; z < nPointsZ; ++z) {
-            float v = recordData(getNextVoxelValue());
-            if (volumeData.isNearPlane(x, y, z, mappingPlane, f))
+            float v = recordData(getNextVoxelValue()); // was mappingPlane
+            if (volumeData.isNearPlane(x, y, z, f))
               volumeData.setVoxelMapValue(x, y, z, v);          
             if (nSkipX != 0)
               skipVoxels(nSkipX);
@@ -336,6 +336,12 @@ abstract class VolumeFileReader extends SurfaceFileReader {
       getNextVoxelValue();
   }
   
+  /**
+   * 
+   * @param nPoints
+   * @return  JVXL bitset
+   * @throws Exception
+   */
   protected BitSet getVoxelBitSet(int nPoints) throws Exception {
     // jvxlReader will use this to read the surface voxel data
     return null;  

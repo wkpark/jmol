@@ -141,6 +141,12 @@ public class NWChemReader extends AtomSetCollectionReader {
     equivalentAtomSets = 0;
   }
   
+  /**
+   * 
+   * @param key
+   * @param value
+   * @param nAtomSets NOT USED
+   */
   private void setEnergies(String key, String value, int nAtomSets) {
     energyKey = key;
     energyValue = value;

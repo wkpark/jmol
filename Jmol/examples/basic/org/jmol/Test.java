@@ -16,6 +16,7 @@ public class Test extends JPanel {
     (new Test()).viewer.loadInline(strXyzHOH);
   }
 
+  @SuppressWarnings("deprecation")
   public Test() {
     adapter = new SmarterJmolAdapter();
     viewer = JmolViewer.allocateViewer(this, adapter);

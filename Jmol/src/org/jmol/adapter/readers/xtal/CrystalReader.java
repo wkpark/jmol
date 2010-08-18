@@ -34,6 +34,7 @@ import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 
@@ -778,6 +779,8 @@ public class CrystalReader extends AtomSetCollectionReader {
     String[] tokens = getTokens(Sfrag);
     for (int i = 0, pos = 0; i < numAtomsFrag; i++, pos += 5)
       atomFrag[i] = getAtomIndexFromPrimitiveIndex(parseInt(tokens[pos]) - 1);
+    
+    Arrays.sort(atomFrag); // the frequency module needs these sorted
 
     // note: atomFrag[i] will be -1 if this atom is being ignored due to FILTER "conventional"
 

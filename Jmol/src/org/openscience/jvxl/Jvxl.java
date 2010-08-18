@@ -138,7 +138,7 @@ public class Jvxl {
 
     OptionBuilder.withLongOpt("colorScheme");
     OptionBuilder
-        .withDescription("VMRL color scheme: roygb, bgyor, rwb, bwr, low, high");
+        .withDescription("VRML color scheme: bw, wb, roygb, bgyor, rwb, bwr, low, high");
     OptionBuilder.withValueSeparator('=');
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("s"));
@@ -310,7 +310,7 @@ public class Jvxl {
     //color scheme is only for VMRL
 
     if (colorScheme != null)
-      sg.setParameter("colorScheme", colorScheme);
+      sg.setParameter("colorScheme", new Object[] { colorScheme, Boolean.FALSE } );
     if (!Float.isNaN(min))
       sg.setParameter("red", new Float(min));
     if (!Float.isNaN(max))

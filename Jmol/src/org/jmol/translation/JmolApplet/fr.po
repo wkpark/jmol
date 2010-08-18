@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-07-11 19:51+0200\n"
-"PO-Revision-Date: 2010-08-17 08:48+0000\n"
-"Last-Translator: Emilien Klein <emilien+ubuntu@klein.st>\n"
+"PO-Revision-Date: 2010-08-18 10:34+0000\n"
+"Last-Translator: computerhelp <Unknown>\n"
 "Language-Team: French <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-08-17 16:04+0000\n"
+"X-Launchpad-Export-Date: 2010-08-18 16:28+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: France\n"
 "X-Poedit-Language: French\n"
@@ -519,7 +519,7 @@ msgstr "Rétablir (CTRL-Y)"
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:80
 #: org/jmol/viewer/ActionManager.java:56
 msgid "center"
-msgstr ""
+msgstr "centre"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:81
 msgid "add hydrogens"
@@ -531,7 +531,7 @@ msgstr "réduire"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:83
 msgid "fix hydrogens and minimize"
-msgstr ""
+msgstr "fixer les hydrogènes et réduire"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:84
 msgid "clear"
@@ -2159,7 +2159,7 @@ msgstr "afficher le menu contextuel complet"
 
 #: org/jmol/viewer/ActionManager.java:74
 msgid "pop up recent context menu (click on Jmol frank)"
-msgstr ""
+msgstr "afficher le menu contextuel récent ( cliquez sur frank Jmol )"
 
 #: org/jmol/viewer/ActionManager.java:76
 #, java-format

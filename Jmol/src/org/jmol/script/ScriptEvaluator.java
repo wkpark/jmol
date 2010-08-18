@@ -12413,7 +12413,7 @@ public class ScriptEvaluator {
     int[] scale = new int[n];
     for (int i = n; --i >= 0;)
       scale[i] = v.get(i).intValue();
-    Viewer.setUserScale(scale);
+    viewer.setUserScale(scale);
   }
 
   /**

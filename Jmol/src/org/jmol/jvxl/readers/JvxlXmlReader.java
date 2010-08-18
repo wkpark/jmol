@@ -38,7 +38,6 @@ import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.JvxlData;
 import org.jmol.shapesurface.IsosurfaceMesh;
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
@@ -455,11 +454,9 @@ public class JvxlXmlReader extends VolumeFileReader {
     int cpt = 0;
     short colixNeg = 0, colixPos = 0;
     if (params.colorBySign) {
-      colixPos = ColorEncoder
-          .getColorIndex(params.isColorReversed ? params.colorNeg
+      colixPos = Graphics3D.getColix(params.isColorReversed ? params.colorNeg
               : params.colorPos);
-      colixNeg = ColorEncoder
-          .getColorIndex(params.isColorReversed ? params.colorPos
+      colixNeg = Graphics3D.getColix(params.isColorReversed ? params.colorPos
               : params.colorNeg);
     }
     int vertexIncrement = meshData.vertexIncrement;

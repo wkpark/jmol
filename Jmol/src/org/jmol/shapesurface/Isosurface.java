@@ -1016,10 +1016,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   private void setColorCommand(String schemeName, boolean isTranslucent) {
     if (thisMesh == null)
       return;
-    String colors = viewer.getColorSchemeList(schemeName, false);
     thisMesh.colorCommand = "color $" + thisMesh.thisID
         + (isTranslucent ? " translucent " : " ")
-        + Escape.escape(colors.length() == 0 ? schemeName : colors) + " range ";
+        + Escape.escape(viewer.getColorSchemeList(schemeName, false)) + " range ";
     thisMesh.colorCommand += (jvxlData.isColorReversed ? jvxlData.valueMappedToBlue
         + " " + jvxlData.valueMappedToRed
         : jvxlData.valueMappedToRed + " " + jvxlData.valueMappedToBlue);

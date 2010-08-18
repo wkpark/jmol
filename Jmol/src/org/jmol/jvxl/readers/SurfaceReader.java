@@ -660,11 +660,9 @@ public abstract class SurfaceReader implements VertexDataServer {
     jvxlData.isColorReversed = params.isColorReversed;
     if (!params.colorDensity)
     if (params.isBicolorMap && !params.isContoured || params.colorBySign) {
-      jvxlData.minColorIndex = ColorEncoder
-          .getColorIndex(params.isColorReversed ? params.colorPos
+      jvxlData.minColorIndex = Graphics3D.getColix(params.isColorReversed ? params.colorPos
               : params.colorNeg);
-      jvxlData.maxColorIndex = ColorEncoder
-          .getColorIndex(params.isColorReversed ? params.colorNeg
+      jvxlData.maxColorIndex = Graphics3D.getColix(params.isColorReversed ? params.colorNeg
               : params.colorPos);
     }
     jvxlData.isTruncated = (jvxlData.minColorIndex >= 0 && !params.isContoured);

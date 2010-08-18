@@ -1301,10 +1301,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return colorManager.getCurrentColorRange();
   }
 
-  private void setDefaultColors(String colorScheme) {
-    colorManager.setDefaultColors(colorScheme);
-    global.setParameterValue("colorRasmol", (colorScheme
-        .equalsIgnoreCase("rasmol")));
+  private void setDefaultColors(boolean isRasmol) {
+    colorManager.setDefaultColors(isRasmol);
+    global.setParameterValue("colorRasmol", isRasmol);
   }
 
   public float getDefaultTranslucent() {
@@ -1506,8 +1505,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return colorManager.getColorSchemeList(colorScheme, ifDefault);
   }
 
-  public static void setUserScale(int[] scale) {
-    ColorManager.setUserScale(scale);
+  public void setUserScale(int[] scale) {
+    colorManager.setUserScale(scale);
   }
 
   public short getColixForPropertyValue(float val) {
@@ -3220,7 +3219,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       s.append(modelSet.getState(sfunc, true));
     // color scheme
     if (isAll || type.equalsIgnoreCase("colorState"))
-      s.append(ColorManager.getState(sfunc));
+      s.append(colorManager.getState(sfunc));
     // frame information
     if (isAll || type.equalsIgnoreCase("frameState"))
       s.append(animationManager.getState(sfunc));
@@ -5512,7 +5511,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setDefaults(value);
       break;
     case Token.defaultcolorscheme:
-      setDefaultColors(value);
+      // only two are possible: "jmol" and "rasmol"
+      setDefaultColors(value.equals("rasmol"));
       break;
     case Token.picking:
       setPickingMode(value, 0);
@@ -6253,7 +6253,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setAxesOrientationRasmol(value);
       return true;
     case Token.colorrasmol:
-      setDefaultColors(value ? "rasmol" : "jmol");
+      setStringProperty("defaultcolorscheme", Token.defaultcolorscheme,value ? "rasmol" : "jmol");
       return true;
     case Token.debugscript:
       setDebugScript(value);

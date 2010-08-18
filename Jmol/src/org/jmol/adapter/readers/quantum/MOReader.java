@@ -362,6 +362,7 @@ abstract public class MOReader extends BasisFunctionReader {
       if (str.length() == 0 || str.indexOf("--") >= 0
           || str.indexOf(".....") >= 0 || str.indexOf("NBO BASIS") >= 0 // reading NBOs
           || str.indexOf("CI EIGENVECTORS WILL BE LABELED") >= 0 //this happens when doing MCSCF optimizations
+          || str.indexOf("LZ VALUE") >= 0 //open-shelled 
           || str.indexOf("   THIS LOCALIZATION HAD") >= 0) { //this happens with certain localization methods
         if (str.length() == 0)
           nBlank++;
@@ -369,7 +370,8 @@ abstract public class MOReader extends BasisFunctionReader {
           nBlank = 0;
         if (nBlank == 2)
           break;
-
+        if (str.indexOf("LZ VALUE") >= 0)
+          discardLinesUntilBlank();
         if (!haveCoeffMap) {
           haveCoeffMap = true;
           boolean isOK = true;

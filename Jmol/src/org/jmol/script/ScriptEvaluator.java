@@ -2481,7 +2481,7 @@ public class ScriptEvaluator {
     if (!isSyntaxCheck) {
       // String s = viewer.getSetHistory(1);
       // viewer.addCommand(s + CommandHistory.ERROR_FLAG);
-      viewer.setCursor(Viewer.CURSOR_DEFAULT);
+      setCursorWait(false);
       viewer.setBooleanProperty("refreshing", true);
       viewer.setStringProperty("_errormessage", strUntranslated);
     }
@@ -5261,8 +5261,7 @@ public class ScriptEvaluator {
         default:
           error(ERROR_unrecognizedCommand);
         }
-      if (!isSyntaxCheck && !tQuiet)
-        viewer.setCursor(Viewer.CURSOR_DEFAULT);
+      setCursorWait(false);
       // at end because we could use continue to avoid it
       if (executionStepping) {
         executionPaused = (isCommandDisplayable(pc + 1));
@@ -5270,6 +5269,10 @@ public class ScriptEvaluator {
     }
   }
 
+  private void setCursorWait(boolean TF) {
+    viewer.setCursor(TF ? Viewer.CURSOR_WAIT : Viewer.CURSOR_DEFAULT);
+  }
+  
   private void processShapeCommand(int tok) throws ScriptException {
     int iShape = 0;
     switch (tok) {
@@ -8295,10 +8298,7 @@ public class ScriptEvaluator {
       loadScript.append(sOptions);
       htParams.put("loadScript", loadScript);
     }
-
-    if (!isSyntaxCheck)
-      viewer.setCursor(Viewer.CURSOR_WAIT);
-
+    setCursorWait(true);
     errMsg = viewer.loadModelFromFile(null, filename, filenames, null,
         isAppend, htParams, loadScript, tokType);
     if (os != null)
@@ -14665,8 +14665,7 @@ public class ScriptEvaluator {
       if (moNumber != Integer.MAX_VALUE) {
         if (tokAt(i + 1) == Token.string)
           title = parameterAsString(i + 1);
-        if (!isSyntaxCheck)
-          viewer.setCursor(Viewer.CURSOR_WAIT);
+        setCursorWait(true);
         setMoData(propertyList, moNumber, offset, iModel, title);
         addShapeProperty(propertyList, "finalize", null);
       }
@@ -14871,8 +14870,7 @@ public class ScriptEvaluator {
     Point3f[] pts;
     String str = null;
     int modelIndex = (isSyntaxCheck ? 0 : viewer.getCurrentModelIndex());
-    if (!isSyntaxCheck)
-      viewer.setCursor(Viewer.CURSOR_WAIT);
+    setCursorWait(true);
     boolean idSeen = (initIsosurface(iShape) != null);
     boolean isWild = (idSeen && getShapeProperty(iShape, "ID") == null);
     boolean isColorSchemeTranslucent = false;

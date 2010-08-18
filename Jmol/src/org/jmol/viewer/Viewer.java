@@ -7072,7 +7072,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private void setDefaults(String type) {
-    if (type.equalsIgnoreCase("RasMol:")) {
+    if (type.equalsIgnoreCase("RasMol")) {
       stateManager.setRasMolDefaults();
       return;
     }

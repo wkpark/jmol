@@ -139,7 +139,6 @@ import org.jmol.jvxl.calc.MarchingSquares;
 
 public class SurfaceGenerator {
 
-  private ColorEncoder colorEncoder;
   private JvxlData jvxlData;
   private MeshData meshData;
   private Parameters params;
@@ -162,22 +161,20 @@ public class SurfaceGenerator {
 
   public SurfaceGenerator() {
     // for Jvxl.java
-    setup(null, null, null, null, null);
+    setup(null, null, null, null);
   }
 
   public SurfaceGenerator(AtomDataServer atomDataServer, MeshDataServer meshDataServer,
-                          ColorEncoder colorEncoder, MeshData meshData, JvxlData jvxlData) {
+                          MeshData meshData, JvxlData jvxlData) {
     // for Jmol.java
-    setup(atomDataServer, meshDataServer, colorEncoder, meshData, jvxlData);
+    setup(atomDataServer, meshDataServer, meshData, jvxlData);
   }
 
   private void setup(AtomDataServer atomDataServer, MeshDataServer meshDataServer,
-      ColorEncoder colorEncoder, MeshData meshData, JvxlData jvxlData) {
+      MeshData meshData, JvxlData jvxlData) {
     this.atomDataServer = atomDataServer;
     this.meshDataServer = meshDataServer;
     params = new Parameters();
-    this.colorEncoder = (colorEncoder == null ? new ColorEncoder()
-        : colorEncoder);
     this.meshData = (meshData == null ? new MeshData() : meshData);
     //System.out.println("SurfaceGenerator setup vertexColixs =" + this.meshData.vertexColixes);
     this.jvxlData = (jvxlData == null ? new JvxlData() : jvxlData);
@@ -206,7 +203,7 @@ public class SurfaceGenerator {
   }
 
   ColorEncoder getColorEncoder() {
-    return colorEncoder;
+    return params.colorEncoder;
   }
 
   public void setJvxlData(JvxlData jvxlData) {
@@ -584,22 +581,19 @@ public class SurfaceGenerator {
     }
 
     if ("setColorScheme" == propertyName) {
-      Object[] o = (Object[]) value;
-      String colorScheme = (String) o[0];
-      boolean isTranslucent = ((Boolean)o[1]).booleanValue();
-      if (colorScheme.equals("sets")) {
+      if (value instanceof String) { // "sets"
         getSurfaceSets();
         params.colorBySets = true;
         mapSurface();
         return true;
       }
+      params.colorEncoder = (ColorEncoder) value;
+      boolean isTranslucent = params.colorEncoder.isTranslucent;
       params.colorSchemeTranslucent = isTranslucent;
-      colorEncoder.setColorScheme(colorScheme, isTranslucent);
       if (surfaceReader != null
           && params.state == Parameters.STATE_DATA_COLORED)
         surfaceReader.applyColorScale();
       return false; // still need to save this
-
     }
 
     if ("center" == propertyName) {

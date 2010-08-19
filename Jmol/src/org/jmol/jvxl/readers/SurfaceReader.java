@@ -186,8 +186,6 @@ public abstract class SurfaceReader implements VertexDataServer {
   protected SurfaceGenerator sg;
   protected MeshDataServer meshDataServer;
 
-  protected ColorEncoder colorEncoder;
-
   protected Parameters params;
   protected MeshData meshData;
   protected JvxlData jvxlData;
@@ -219,7 +217,6 @@ public abstract class SurfaceReader implements VertexDataServer {
 
   SurfaceReader(SurfaceGenerator sg) {
     this.sg = sg;
-    colorEncoder = sg.getColorEncoder();
     params = sg.getParams();
     marchingSquares = sg.getMarchingSquares();
     assocCutoff = params.assocCutoff;
@@ -707,9 +704,10 @@ public abstract class SurfaceReader implements VertexDataServer {
     float valueRed = jvxlData.valueMappedToRed;
     short minColorIndex = jvxlData.minColorIndex;
     short maxColorIndex = jvxlData.maxColorIndex;
-    colorEncoder.setRange(params.valueMappedToRed,
+    if (params.colorEncoder == null)
+      params.colorEncoder = new ColorEncoder(null);
+    params.colorEncoder.setRange(params.valueMappedToRed,
         params.valueMappedToBlue, params.isColorReversed);
-    params.colorEncoder = colorEncoder;
     for (int i = meshData.vertexCount; --i >= 0;) {
       float value = vertexValues[i];
       if (minColorIndex >= 0) {
@@ -723,7 +721,7 @@ public abstract class SurfaceReader implements VertexDataServer {
         if (value >= valueBlue)
           value = valueBlue;
           
-        vertexColixes[i] = colorEncoder.getColorIndex(value);
+        vertexColixes[i] = params.colorEncoder.getColorIndex(value);
       }
     }
 
@@ -733,12 +731,12 @@ public abstract class SurfaceReader implements VertexDataServer {
       jvxlData.contourValuesUsed = (jvxlData.contourValues == null ? new float[n] : jvxlData.contourValues);
       float dv = (valueBlue - valueRed) / (n + 1);
       // n + 1 because we want n lines between n + 1 slices
-      colorEncoder.setRange(params.valueMappedToRed,
+      params.colorEncoder.setRange(params.valueMappedToRed,
           params.valueMappedToBlue, params.isColorReversed);
       for (int i = 0; i < n; i++) {
         float v = (jvxlData.contourValues == null ? valueRed + (i + 1) * dv : jvxlData.contourValues[i]);
         jvxlData.contourValuesUsed[i] = v;
-        colors[i] = Graphics3D.getColixTranslucent(colorEncoder.getArgb(v));
+        colors[i] = Graphics3D.getColixTranslucent(params.colorEncoder.getArgb(v));
       }
       //TODO -- this strips translucency
       jvxlData.contourColors = Graphics3D.getHexCodes(colors);

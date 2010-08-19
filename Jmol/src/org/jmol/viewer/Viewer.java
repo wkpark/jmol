@@ -52,6 +52,7 @@ import org.jmol.g3d.*;
 import org.jmol.util.Base64;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.CifDataReader;
+import org.jmol.util.ColorEncoder;
 import org.jmol.util.CommandHistory;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
@@ -1298,7 +1299,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // ///////////////////////////////////////////////////////////////
 
   public float[] getCurrentColorRange() {
-    return colorManager.getCurrentColorRange();
+    return colorManager.getPropertyColorRange();
   }
 
   private void setDefaultColors(boolean isRasmol) {
@@ -1478,7 +1479,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       isTranslucent = true;
       scheme = scheme.substring(12).trim();
     }
-    colorManager.setColorScheme(scheme, isTranslucent, isOverloaded);
+    colorManager.setPropertyColorScheme(scheme, isTranslucent, isOverloaded);
   }
 
   public String getPropertyColorScheme() {
@@ -1501,8 +1502,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return colorManager.getColixBondPalette(bond, pid);
   }
 
-  public String getColorSchemeList(String colorScheme, boolean ifDefault) {
-    return colorManager.getColorSchemeList(colorScheme, ifDefault);
+  public String getColorSchemeList(String colorScheme) {
+    return colorManager.getColorSchemeList(colorScheme);
   }
 
   public void setUserScale(int[] scale) {
@@ -3267,11 +3268,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void setCurrentColorRange(float[] data, BitSet bs) {
-    colorManager.setCurrentColorRange(data, bs, global.propertyColorScheme);
+    colorManager.setPropertyColorRange(data, bs, global.propertyColorScheme);
   }
 
   public void setCurrentColorRange(float min, float max) {
-    colorManager.setCurrentColorRange(min, max);
+    colorManager.setPropertyColorRange(min, max);
   }
 
   public void setData(String type, Object[] data, int atomCount,
@@ -9417,6 +9418,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (entryName.length() > 50)
       entryName = entryName.substring(0, 45) + "...";
     return entryName;
+  }
+
+  public ColorEncoder getColorEncoder(String colorScheme) {
+    return colorManager.getColorEncoder(colorScheme);
   }
 
 }

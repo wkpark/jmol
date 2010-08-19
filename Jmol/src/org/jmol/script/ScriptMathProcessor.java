@@ -2200,14 +2200,11 @@ class ScriptMathProcessor {
   }
 
   private boolean evaluateColor(ScriptVariable[] args) {
-    /*
-     * color() -- colorKey for property
-     */
     String colorScheme = (args.length > 0 ? ScriptVariable.sValue(args[0])
-        : (String) viewer.getParameter("propertyColorScheme"));
-    boolean isIsosurface = false;
-    if (colorScheme.length() > 0 && !(isIsosurface = colorScheme.startsWith("$"))
-        && ColorEncoder.getColorScheme(colorScheme, false, true) == Integer.MAX_VALUE)
+        : "");
+    boolean isIsosurface = colorScheme.startsWith("$");
+    ColorEncoder ce = (isIsosurface ? null : viewer.getColorEncoder(colorScheme));
+    if (!isIsosurface && ce == null)
       return addX("");
     float lo = (args.length > 1 ? ScriptVariable.fValue(args[1])
         : Float.MAX_VALUE);
@@ -2224,7 +2221,6 @@ class ScriptMathProcessor {
       lo = range[0];
       hi = range[1];
     }
-    ColorEncoder ce = null;
     if (isIsosurface) {
       // isosurface color scheme      
       String id = colorScheme.substring(1);
@@ -2232,10 +2228,7 @@ class ScriptMathProcessor {
       if (!viewer.getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "colorEncoder", data))
         return addX("");
       ce = (ColorEncoder) data[1];
-    }
-    if (ce == null) {
-      ce = new ColorEncoder();
-      ce.setColorScheme(colorScheme, false);
+    } else {
       ce.setRange(lo, hi, lo > hi);
     }
     Map<String, Object> key = ce.getColorKey();

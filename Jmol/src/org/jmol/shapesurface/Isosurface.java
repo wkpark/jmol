@@ -160,7 +160,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   }
 
   private void newSg() {
-    sg = new SurfaceGenerator(viewer, this, colorEncoder, null, jvxlData = new JvxlData());
+    sg = new SurfaceGenerator(viewer, this, null, jvxlData = new JvxlData());
     sg.setVersion("Jmol " + Viewer.getJmolVersion());
   }
   
@@ -184,7 +184,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   protected SurfaceGenerator sg;
   protected JvxlData jvxlData;
 
-  private ColorEncoder colorEncoder = new ColorEncoder();
   private float withinDistance;
   private List<Point3f> withinPoints;
 
@@ -208,8 +207,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     if ("remapcolor" == propertyName) {
       if (thisMesh != null) {
-        Object[] o = (Object[]) value;
-        remapColors((String) o[0], ((Boolean) o[1]).booleanValue(), (float[]) o[2]);
+        remapColors((ColorEncoder) value);
       }
       return;
     }
@@ -319,13 +317,19 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     // Isosurface / SurfaceGenerator both interested
 
     if ("setColorScheme" == propertyName) {
-      Object[] o = (Object[]) value;
-      boolean isTranslucent = ((Boolean) o[1]).booleanValue();
-      if (thisMesh != null) {
+      if (thisMesh == null) {
+        boolean isTranslucent;
+        if (value instanceof ColorEncoder) {
+          ColorEncoder ce = (ColorEncoder) value;
+          isTranslucent = ce.isTranslucent;
+        } else { // "sets"
+          isTranslucent = false;
+        }
         thisMesh.colix = Graphics3D.getColixTranslucent(thisMesh.colix,
             isTranslucent, isTranslucent ? 0.5f : 0);
       }
     }
+
     if ("title" == propertyName) {
       if (value instanceof String && "-".equals(value))
         value = null;
@@ -432,7 +436,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
           return;
         }
         try {
-          value = new BufferedReader(new InputStreamReader((InputStream) value, "ISO-8859-1"));
+          value = new BufferedReader(new InputStreamReader((InputStream) value,
+              "ISO-8859-1"));
         } catch (UnsupportedEncodingException e) {
           // ignore
         }
@@ -501,9 +506,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     }
 
     if ("setColorScheme" == propertyName) {
-      String schemeName = ((String) ((Object[]) value)[0]);
-      boolean isTranslucent = ((Boolean)((Object[]) value)[1]).booleanValue();
-      setColorCommand(schemeName, isTranslucent);
+      setColorCommand((ColorEncoder) value);
       return;
     }
 
@@ -984,8 +987,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   public void notifySurfaceMappingCompleted() {
     setModelIndex();
-    String schemeName = colorEncoder.getColorSchemeName();
-    boolean isTranslucentScheme = colorEncoder.isTranslucent();
     //viewer.setCurrentColorRange(jvxlData.valueMappedToRed,
       //  jvxlData.valueMappedToBlue);
     //viewer.setPropertyColorScheme(schemeName, sg.getParams().colorSchemeTranslucent, false);
@@ -1002,7 +1003,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     setPropertySuper("token", Integer.valueOf(explicitContours ? Token.nofill : Token.fill), null);
     setPropertySuper("token", Integer.valueOf(explicitContours ? Token.contourlines : Token.nocontourlines), null);
     // may not be the final color scheme, though.
-    setColorCommand(schemeName, isTranslucentScheme);
+    setColorCommand(thisMesh.colorEncoder);
     /*
      viewer.setCurrentColorRange(jvxlData.mappedDataMin, jvxlData.mappedDataMax);
      thisMesh.isColorSolid = false;
@@ -1013,12 +1014,15 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
      */
   }
 
-  private void setColorCommand(String schemeName, boolean isTranslucent) {
+  private void setColorCommand(ColorEncoder ce) {
+    String schemeName = ce.getColorSchemeName();
+    boolean isTranslucentScheme = ce.isTranslucent;
     if (thisMesh == null)
       return;
+    String list = (ce.currentPalette < 0 ? ColorEncoder.getColorSchemeList(ce.getColorSchemeArray(ce.currentPalette)) : schemeName);
     thisMesh.colorCommand = "color $" + thisMesh.thisID
-        + (isTranslucent ? " translucent " : " ")
-        + Escape.escape(viewer.getColorSchemeList(schemeName, false)) + " range ";
+        + (isTranslucentScheme ? " translucent " : " ")
+        + Escape.escape(list) + " range ";
     thisMesh.colorCommand += (jvxlData.isColorReversed ? jvxlData.valueMappedToBlue
         + " " + jvxlData.valueMappedToRed
         : jvxlData.valueMappedToRed + " " + jvxlData.valueMappedToBlue);
@@ -1132,14 +1136,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     return V;
   }
 
-  private void remapColors(String scheme, boolean isTranslucentScheme, float[] range) {
-    if (scheme == null) {
-      scheme = viewer.getPropertyColorScheme();
-      if (scheme.startsWith("translucent ")) {
-        isTranslucentScheme = true;
-        scheme = scheme.substring(12).trim();
-      }
-    }
+  private void remapColors(ColorEncoder ce) {
+    float min = ce.lo;
+    float max = ce.hi;
+    
     JvxlData jvxlData = thisMesh.jvxlData;
     float[] vertexValues = thisMesh.vertexValues;
     short[] vertexColixes = thisMesh.vertexColixes;
@@ -1149,20 +1149,18 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return;
     if (vertexColixes == null)
       vertexColixes = thisMesh.vertexColixes = new short[thisMesh.vertexCount];
-    thisMesh.jvxlData.isColorReversed = (range[0] > range[1]); 
-    if (range[1] != Float.MAX_VALUE) {
-      jvxlData.valueMappedToRed = Math.min(range[0], range[1]);
-      jvxlData.valueMappedToBlue = Math.max(range[0], range[1]);
+    thisMesh.jvxlData.isColorReversed = ce.isReversed; 
+    if (max != Float.MAX_VALUE) {
+      jvxlData.valueMappedToRed = min;
+      jvxlData.valueMappedToBlue = max;
     }
-    ColorEncoder ce = new ColorEncoder();
-    ce.setColorScheme(scheme, isTranslucentScheme);
     ce.setRange(jvxlData.valueMappedToRed, jvxlData.valueMappedToBlue, thisMesh.jvxlData.isColorReversed);
     // thisMesh.colix must be translucent if the scheme is translucent
     // but may be translucent if the scheme is not translucent
     boolean isTranslucent = Graphics3D.isColixTranslucent(thisMesh.colix);
-    if (isTranslucentScheme) {
+    if (ce.isTranslucent) {
       if (!isTranslucent)
-        thisMesh.colix = Graphics3D.getColixTranslucent(thisMesh.colix, isTranslucentScheme, 0.5f);
+        thisMesh.colix = Graphics3D.getColixTranslucent(thisMesh.colix, true, 0.5f);
       // still, if the scheme is translucent, we don't want to color the vertices translucent
       isTranslucent = false;
     }
@@ -1191,7 +1189,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     }
     jvxlData.isJvxlPrecisionColor = true;
     JvxlCoder.jvxlCreateColorData(jvxlData, vertexValues);
-    setColorCommand(scheme, isTranslucentScheme);
+    setColorCommand(thisMesh.colorEncoder);
     thisMesh.isColorSolid = false;
   }
 

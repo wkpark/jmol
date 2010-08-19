@@ -38,6 +38,7 @@ import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.JvxlData;
 import org.jmol.shapesurface.IsosurfaceMesh;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
@@ -426,10 +427,11 @@ public class JvxlXmlReader extends VolumeFileReader {
           .error("You cannot use JVXL data to map onto OTHER data, because it only contains the data for one surface. Use ISOSURFACE \"file.jvxl\" not ISOSURFACE .... MAP \"file.jvxl\".");
       return "";
     }
-    colorEncoder.setColorScheme(null, false);
-    colorEncoder.setRange(params.valueMappedToRed, params.valueMappedToBlue,
+    if (params.colorEncoder == null)
+      params.colorEncoder = new ColorEncoder(null);
+    params.colorEncoder.setColorScheme(null, false);
+    params.colorEncoder.setRange(params.valueMappedToRed, params.valueMappedToBlue,
         params.isColorReversed);
-    params.colorEncoder = colorEncoder;
     fractionPtr = 0;
     Logger.info("JVXL reading color data mapped min/max: "
         + params.mappedDataMin + "/" + params.mappedDataMax + " for "
@@ -505,7 +507,7 @@ public class JvxlXmlReader extends VolumeFileReader {
         colixes[i] = ((params.isColorReversed ? value > 0 : value <= 0) ? colixNeg
             : colixPos);
       } else {
-        colixes[i] = colorEncoder.getColorIndex(value);
+        colixes[i] = params.colorEncoder.getColorIndex(value);
       }
     }
     return data + "\n";

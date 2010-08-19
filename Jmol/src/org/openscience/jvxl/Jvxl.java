@@ -309,8 +309,11 @@ public class Jvxl {
 
     //color scheme is only for VMRL
 
-    if (colorScheme != null)
-      sg.setParameter("colorScheme", new Object[] { colorScheme, Boolean.FALSE } );
+    if (colorScheme != null) {
+      ColorEncoder ce = new ColorEncoder(null);
+      ce.setColorScheme(colorScheme, false);
+      sg.setParameter("colorScheme", ce);
+    }
     if (!Float.isNaN(min))
       sg.setParameter("red", new Float(min));
     if (!Float.isNaN(max))

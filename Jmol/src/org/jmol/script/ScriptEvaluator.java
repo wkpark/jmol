@@ -7433,8 +7433,12 @@ public class ScriptEvaluator {
             if (isIsosurface) {
               checkLength(index);
               isColor = false;
-              data = new Object[] {scheme, Boolean.valueOf(isTranslucent && translucentLevel == Float.MAX_VALUE), new float[] {min, max} };
-              setShapeProperty(shapeType, "remapcolor", data);
+              ColorEncoder ce = viewer.getColorEncoder(scheme);
+              ce.isTranslucent = (isTranslucent && translucentLevel == Float.MAX_VALUE);
+              ce.setRange(min, max, min > max);
+              if (max == Float.MAX_VALUE)
+                ce.hi = max;
+              setShapeProperty(shapeType, "remapcolor", ce);
               showString(getIsosurfaceDataRange(shapeType, ""));
               if (translucentLevel == Float.MAX_VALUE)
                 return;
@@ -13406,7 +13410,7 @@ public class ScriptEvaluator {
       if (name.length() > 0)
         len = 3;
       if (!isSyntaxCheck)
-        value = viewer.getColorSchemeList(name, true);
+        value = viewer.getColorSchemeList(name);
       break;
     case Token.variables:
       if (!isSyntaxCheck)
@@ -15347,7 +15351,9 @@ public class ScriptEvaluator {
           isColorSchemeTranslucent = true;
           i++;
         }
-        colorScheme = parameterAsString(++i);
+        colorScheme = parameterAsString(++i).toLowerCase();
+        if (colorScheme.equals("sets"))
+          isColorSchemeTranslucent = false;
         sbCommand.append(" colorScheme");
         if (isColorSchemeTranslucent)
           sbCommand.append(" translucent");
@@ -15916,13 +15922,17 @@ public class ScriptEvaluator {
     if (thisSetNumber > 0)
       addShapeProperty(propertyList, "getSurfaceSets", Integer.valueOf(
           thisSetNumber - 1));
-    if (discreteColixes != null)
+    if (discreteColixes != null) {
       addShapeProperty(propertyList, "colorDiscrete", discreteColixes);
-    else if (colorScheme != null)
-      addShapeProperty(propertyList, "setColorScheme",
-          new Object[] { colorScheme,
-              isColorSchemeTranslucent ? Boolean.TRUE : Boolean.FALSE });
-
+    } else if (colorScheme != null) {
+      if (colorScheme.equals("sets")) {
+        addShapeProperty(propertyList, "setColorScheme", "sets");
+      } else {
+        ColorEncoder ce = viewer.getColorEncoder(colorScheme);
+        ce.isTranslucent = isColorSchemeTranslucent;
+        addShapeProperty(propertyList, "setColorScheme", ce);
+      }
+    }
     // OK, now send them all
     setShapeProperty(iShape, "setProperties", propertyList);
 

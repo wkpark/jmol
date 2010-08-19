@@ -113,13 +113,11 @@ public class QchemReader extends MOReader {
     if (moData == null)
       return true;
     if (line.indexOf("Orbital Energies (a.u.) and Symmetries") >= 0) {
-      if (filterMO())
-        readESym(true);
+      readESym(true);
       return true;
     }
     if (line.indexOf("Orbital Energies (a.u.)") >= 0) {
-      if (filterMO())
-        readESym(false);
+      readESym(false);
       return true;
     }
     if (line.indexOf("MOLECULAR ORBITAL COEFFICIENTS") >= 0) {
@@ -616,20 +614,20 @@ $end
   boolean dSpherical = false;
   boolean fSpherical = false;
   
-  private int readMOs(boolean restricted,
-                      List<Map<String, Object>> orbitals, MOInfo[] moInfos) throws Exception {
-    Map<String, Object>[] mos = ArrayUtil.createArrayOfHashtable(6);  // max 6 MO's per line
-    float[][] mocoef = new float[6][];   // coefficients for each MO
-    int[] moid = new int[6];             // mo numbers
+  private int readMOs(boolean restricted, List<Map<String, Object>> orbitals,
+                      MOInfo[] moInfos) throws Exception {
+    Map<String, Object>[] mos = ArrayUtil.createArrayOfHashtable(6); // max 6 MO's per line
+    float[][] mocoef = new float[6][]; // coefficients for each MO
+    int[] moid = new int[6]; // mo numbers
     String[] tokens, energy;
     int nMOs = 0;
-    
+
     while (readLine().length() > 2) {
       tokens = getTokens(line);
-      int nMO = tokens.length;    // number of MO columns
+      int nMO = tokens.length; // number of MO columns
       energy = getTokens(readLine().substring(13));
       for (int i = 0; i < nMO; i++) {
-        moid[i] = parseInt(tokens[i])-1;
+        moid[i] = parseInt(tokens[i]) - 1;
         mocoef[i] = new float[nBasis];
         mos[i] = new Hashtable<String, Object>();
       }
@@ -641,10 +639,11 @@ $end
         case 'd':
           s = s.substring(s.length() - 3).toUpperCase();
           if (s.startsWith("D ")) {
-             if (!dFixed)
-               fixSlaterTypes(JmolAdapter.SHELL_D_CARTESIAN, JmolAdapter.SHELL_D_SPHERICAL);
-             s = "D" + s.charAt(2);
-             dSpherical = true;
+            if (!dFixed)
+              fixSlaterTypes(JmolAdapter.SHELL_D_CARTESIAN,
+                  JmolAdapter.SHELL_D_SPHERICAL);
+            s = "D" + s.charAt(2);
+            dSpherical = true;
           }
           if (dList.indexOf(s) < 0)
             dList += s + " ";
@@ -653,10 +652,11 @@ $end
         case 'f':
           s = s.substring(s.length() - 3).toUpperCase();
           if (s.startsWith("F ")) {
-             if (!fFixed)
-               fixSlaterTypes(JmolAdapter.SHELL_F_CARTESIAN, JmolAdapter.SHELL_F_SPHERICAL);
-             s = "F" + s.charAt(2);
-             fSpherical = true;
+            if (!fFixed)
+              fixSlaterTypes(JmolAdapter.SHELL_F_CARTESIAN,
+                  JmolAdapter.SHELL_F_SPHERICAL);
+            s = "F" + s.charAt(2);
+            fSpherical = true;
           }
           if (fList.indexOf(s) < 0)
             fList += s + " ";
@@ -667,25 +667,35 @@ $end
             continue;
           break;
         }
-        for (int j = tokens.length-nMO, k=0; k < nMO; j++, k++)
+        for (int j = tokens.length - nMO, k = 0; k < nMO; j++, k++)
           mocoef[k][pt] = parseFloat(tokens[j]);
         pt++;
       }
       // we have all the info we need 
-      for (int i = 0; i < nMO; i++ ) {
+      for (int i = 0; i < nMO; i++) {
         MOInfo moInfo = moInfos[moid[i]];
         mos[i].put("energy", new Float(energy[i]));
-        mos[i].put("coefficients",mocoef[i]);
+        mos[i].put("coefficients", mocoef[i]);
         String label = moInfo.label;
         int ne = moInfo.ne;
-        if (restricted) ne = alphas[moid[i]].ne + betas[moid[i]].ne;
+        if (restricted)
+          ne = alphas[moid[i]].ne + betas[moid[i]].ne;
         mos[i].put("occupancy", new Float(ne));
-        if (ne == 2) label = "AB";
-        if (ne == 0) {
-          if (restricted) label = "V";
-          else label = "V"+label; // keep spin information for the orbital
+        switch (ne) {
+        case 2:
+          label = "AB";
+          break;
+        case 1:
+          break;
+        case 0:
+          if (restricted)
+            label = "V";
+          else
+            label = "V" + label; // keep spin information for the orbital
+          break;
         }
-        mos[i].put("symmetry", moInfo.moSymmetry+" "+label +"("+(moid[i]+1)+")");
+        mos[i].put("symmetry", moInfo.moSymmetry + " " + label + "("
+            + (moid[i] + 1) + ")");
         orbitals.add(mos[i]);
       }
       nMOs += nMO;
@@ -697,7 +707,7 @@ $end
   // orbital energies and symmetrys block
   protected class MOInfo {
     int ne = 0;      // 0 or 1
-    String label = "???";
-    String moSymmetry = "???";
+    String label = "";
+    String moSymmetry = "";
   }
 }

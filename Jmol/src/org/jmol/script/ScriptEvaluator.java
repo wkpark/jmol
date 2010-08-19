@@ -2905,6 +2905,8 @@ public class ScriptEvaluator {
       case Token.point3f:
       case Token.point4f:
       case Token.bitset:
+      case Token.list:
+      case Token.hash:
         sb.append(ScriptVariable.sValue(token));
         continue;
       case Token.seqcode:
@@ -3502,19 +3504,22 @@ public class ScriptEvaluator {
             tokOperator, (String) val) : compareFloat(tokWhat, data,
             tokOperator, comparisonFloat));
         break;
-      case Token.hash:
-      case Token.bitset:
-      case Token.point3f:
-      case Token.point4f:
-        rpn.addX(value);
-        break;
       case Token.decimal:
       case Token.integer:
         rpn.addXNum(new ScriptVariable(instruction));
         break;
+      case Token.bitset:
+      case Token.point3f:
+        rpn.addX(value);
+        break;
       default:
         if (Token.tokAttr(instruction.tok, Token.mathop)) {
           rpn.addOp(instruction);
+          break;
+        }
+        if (!(value instanceof String)) {
+          // catch-all: point4f, hash, list, etc.
+          rpn.addX(value);
           break;
         }
         val = getParameter((String) value, false);

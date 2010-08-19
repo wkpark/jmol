@@ -76,8 +76,7 @@ public class QchemReader extends MOReader {
   
   @Override
   protected void initializeReader() {
-    energyUnits = "au";
-    
+    energyUnits = "au";   
   }
   
   /**
@@ -275,7 +274,7 @@ $end
     int shellCount = 0;
     int gaussianCount = 0;
     // local variables
-    List<int[]> sdata = new ArrayList<int[]>();
+    shells = new ArrayList<int[]>();
     List<String[]> gdata = new ArrayList<String[]>();
     String[] tokens;
 
@@ -295,25 +294,20 @@ $end
       slater[2] = gaussianCount;
       int nGaussians = parseInt(tokens[1]);
       slater[3] = nGaussians;
-      sdata.add(slater);
+      shells.add(slater);
       gaussianCount += nGaussians;
       for (int i = 0; i < nGaussians; i++) {
         gdata.add(getTokens(readLine()));
       }
     }
     // now rearrange the gaussians (direct copy from GaussianReader)
-    float[][] garray = new float[gaussianCount][];
+    gaussians = new float[gaussianCount][];
     for (int i = 0; i < gaussianCount; i++) {
       tokens = gdata.get(i);
-      garray[i] = new float[tokens.length];
+      gaussians[i] = new float[tokens.length];
       for (int j = 0; j < tokens.length; j++)
-        garray[i][j] = parseFloat(tokens[j]);
+        gaussians[i][j] = parseFloat(tokens[j]);
     }
-    shells = sdata;
-    gaussians = garray;
-    
-    moData.put("shells", sdata);
-    moData.put("gaussians", garray);
     if (Logger.debugging) {
       Logger.debug(shellCount + " slater shells read");
       Logger.debug(gaussianCount + " gaussian primitives read");
@@ -322,7 +316,6 @@ $end
     tokens = getTokens(line);
     //nShell = parseInt(tokens[2]);
     nBasis = parseInt(tokens[5]);
-    moData.put("calculationType", calculationType);
   }
 
   // since the orbital coefficients don't show the symmetry, I will read them here
@@ -452,7 +445,6 @@ $end
    * 
    */
   private void readESym(boolean haveSym) throws Exception {
-    String[] tokens;
     alphas = new MOInfo[nBasis];
     betas = new MOInfo[nBasis];
     MOInfo[] moInfos;
@@ -460,7 +452,7 @@ $end
     boolean readBetas = false;
 
     discardLinesUntilStartsWith(" Alpha");
-    tokens = getTokens(line); // initialize tokens for later as well
+    String[] tokens = getTokens(line); // initialize tokens for later as well
     moInfos = alphas;
     for (int e = 0; e < 2; e++) { // do for A and B electrons
       int nMO = 0;

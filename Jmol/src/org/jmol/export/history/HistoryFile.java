@@ -344,6 +344,8 @@ public class HistoryFile {
    * Loads properties from the history file.
    */
   private void load() {
+    if (file == null)
+      return;
 
     try {
       FileInputStream input = new FileInputStream(file);
@@ -358,7 +360,8 @@ public class HistoryFile {
    * Saves properties to the history file.
    */
   private void save() {
-
+    if (file == null)
+      return;
     try {
       FileOutputStream output = new FileOutputStream(file);
       properties.store(output, header);

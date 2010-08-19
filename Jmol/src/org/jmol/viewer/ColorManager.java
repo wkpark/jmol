@@ -333,12 +333,13 @@ class ColorManager {
 
   void setPropertyColorScheme(String colorScheme, boolean isTranslucent,
                              boolean isOverloaded) {
-    if (colorScheme.length() == 0)
-      colorScheme = "roygb";
+     boolean isReset = (colorScheme.length() == 0);
+      colorScheme = "="; // reset roygb
     float[] range = getPropertyColorRange();
     propertyColorEncoder.currentPalette = propertyColorEncoder.getColorScheme(
         colorScheme, true, isOverloaded);
-    setPropertyColorRange(range[0], range[1]);
+    if (!isReset)
+      setPropertyColorRange(range[0], range[1]);
     propertyColorEncoder.isTranslucent = isTranslucent;
   }
 

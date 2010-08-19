@@ -74,6 +74,12 @@ public class QchemReader extends MOReader {
   private int nBasis = 0;          // # of basis according to qchem
 
   
+  @Override
+  protected void initializeReader() {
+    energyUnits = "au";
+    
+  }
+  
   /**
    * @return true if need to read new line
    * @throws Exception
@@ -142,7 +148,7 @@ public class QchemReader extends MOReader {
 
   private void readAtoms() throws Exception {
     atomSetCollection.newAtomSet();
-    
+    setMOData(true);
     discardLines(2);
     String[] tokens;
     while (readLine() != null && !line.startsWith(" --")) {
@@ -303,6 +309,9 @@ $end
       for (int j = 0; j < tokens.length; j++)
         garray[i][j] = parseFloat(tokens[j]);
     }
+    shells = sdata;
+    gaussians = garray;
+    
     moData.put("shells", sdata);
     moData.put("gaussians", garray);
     if (Logger.debugging) {
@@ -443,7 +452,7 @@ $end
    * 
    */
   private void readESym(boolean haveSym) throws Exception {
-    String[] tokens, spin = {"A","B"};
+    String[] tokens;
     alphas = new MOInfo[nBasis];
     betas = new MOInfo[nBasis];
     MOInfo[] moInfos;
@@ -478,7 +487,6 @@ $end
         for (int i=0, j=0; i < nOrbs; i++, j+=2) {
           MOInfo info = new MOInfo();
           info.ne = ne;
-          info.label = spin[e];
           if (haveSym) info.moSymmetry = tokens[j]+tokens[j+1];
           moInfos[nMO] = info;
           nMO++;
@@ -558,9 +566,10 @@ $end
   private static String FC_LIST = CANONICAL_FC_LIST;
   private static String FS_LIST = "F4    F5    F3    F6    F2    F7    F1";
   
- 
+//  private List<Map<String, Object>> orbitals;
+  
   private void readQchemMolecularOrbitals() throws Exception {
-    
+
     /* 
      * Jmol:   XX, YY, ZZ, XY, XZ, YZ 
      * qchem: dxx, dxy, dyy, dxz, dyz, dzz : VERIFIED
@@ -573,12 +582,13 @@ $end
      * 
      */
     int nMOs; // total number of MOs that were read
-    List<Map<String, Object>> orbitals = new ArrayList<Map<String,Object>>();
     String orbitalType = getTokens(line)[0]; // is RESTRICTED or ALPHA
-    nMOs = readMOs(orbitalType.equals("RESTRICTED"), orbitals, alphas);
+    alphaBeta = (orbitalType.equals("RESTRICTTED") ? "" : "A");
+    nMOs = readMOs(orbitalType.equals("RESTRICTED"), alphas);
     if (orbitalType.equals("ALPHA")) { // we also have BETA orbitals....
       discardLinesUntilContains("BETA");
-      nMOs += readMOs(false, orbitals, betas);
+      alphaBeta = "B";
+      nMOs += readMOs(false, betas);
     }
     boolean isOK = true;
     if (dList.length() > 0) {
@@ -588,8 +598,7 @@ $end
         isOK = getDFMap(dList, JmolAdapter.SHELL_D_CARTESIAN, DC_LIST, 3);
       if (!isOK) {
         Logger.error("atomic orbital order is unrecognized -- skipping reading of MOs. dList=" + dList);
-        orbitals = null;
-        return;
+        shells = null;
       }
     }
     if (fList.length() > 0) {
@@ -599,14 +608,11 @@ $end
         isOK = getDFMap(fList, JmolAdapter.SHELL_F_CARTESIAN, FC_LIST, 3);
       if (!isOK) {
         Logger.error("atomic orbital order is unrecognized -- skipping reading of MOs. fList=" + fList);
-        orbitals = null;
-        return;
+        shells = null;
       }
     }
-
-    moData.put("mos", orbitals);
-    moData.put("energyUnits", "au");
-    setMOData(moData);
+    setMOData(shells == null);
+    shells = null; // clears mo data upon next model loading
   }
 
   String dList = "";
@@ -614,8 +620,7 @@ $end
   boolean dSpherical = false;
   boolean fSpherical = false;
   
-  private int readMOs(boolean restricted, List<Map<String, Object>> orbitals,
-                      MOInfo[] moInfos) throws Exception {
+  private int readMOs(boolean restricted, MOInfo[] moInfos) throws Exception {
     Map<String, Object>[] mos = ArrayUtil.createArrayOfHashtable(6); // max 6 MO's per line
     float[][] mocoef = new float[6][]; // coefficients for each MO
     int[] moid = new int[6]; // mo numbers
@@ -676,7 +681,7 @@ $end
         MOInfo moInfo = moInfos[moid[i]];
         mos[i].put("energy", new Float(energy[i]));
         mos[i].put("coefficients", mocoef[i]);
-        String label = moInfo.label;
+        String label = alphaBeta;
         int ne = moInfo.ne;
         if (restricted)
           ne = alphas[moid[i]].ne + betas[moid[i]].ne;
@@ -707,7 +712,6 @@ $end
   // orbital energies and symmetrys block
   protected class MOInfo {
     int ne = 0;      // 0 or 1
-    String label = "";
     String moSymmetry = "";
   }
 }

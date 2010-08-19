@@ -206,7 +206,7 @@ class MainPopupResourceBundle extends PopupResource {
 
 
       {   "surfaceMenu",
-          "surfDots surfVDW surfSolventAccessible14 surfSolvent14 surfMolecular CHARGEsurfMEP surfMoComputedMenu - surfOpaque surfTranslucent surfOff" },
+          "surfDots surfVDW surfSolventAccessible14 surfSolvent14 surfMolecular CHARGEsurfMEP surfMoComputedMenuText - surfOpaque surfTranslucent surfOff" },
 
       {   "SYMMETRYUNITCELLMenu",
           "SYMMETRYShowComputedMenu SYMMETRYhide UNITCELLone UNITCELLnine UNITCELLnineRestricted UNITCELLninePoly" },
@@ -539,7 +539,7 @@ class MainPopupResourceBundle extends PopupResource {
         "PDBnucleicResiduesComputedMenu", GT._("By Residue Name"),
         "PDBcarboResiduesComputedMenu", GT._("By Residue Name"),
         "PDBheteroComputedMenu", GT._("By HETATM"),
-        "surfMoComputedMenu", GT._("Molecular Orbitals"),
+        "surfMoComputedMenuText", GT._("Molecular Orbitals ({0})"),
         "SYMMETRYSelectComputedMenu", GT._("Symmetry"),
         "SYMMETRYShowComputedMenu", GT._("Space Group"),
         "SYMMETRYhide", GT._("Hide Symmetry"),

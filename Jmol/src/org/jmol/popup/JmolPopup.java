@@ -213,17 +213,19 @@ public class JmolPopup extends SimplePopup {
 
   @SuppressWarnings("unchecked")
   void updateSurfMoComputedMenu(Map<String, Object> moData) {
-    Object menu = htMenus.get("surfMoComputedMenu");
+    Object menu = htMenus.get("surfMoComputedMenuText");
     if (menu == null)
       return;
-    enableMenu(menu, false);
     removeAll(menu);
-    if (moData == null)
-      return;
-    List<Map<String, Object>> mos = (List<Map<String, Object>>) (moData.get("mos"));
+    List<Map<String, Object>> mos = (moData == null ? null : (List<Map<String, Object>>) (moData.get("mos")));
     int nOrb = (mos == null ? 0 : mos.size());
-    if (nOrb == 0)
+    String text = getMenuText("surfMoComputedMenuText");
+    if (nOrb == 0) {
+      setLabel(menu, GT._(text, ""));
+      enableMenu(menu, false);
       return;
+    }
+    setLabel(menu, GT._(text, nOrb));
     enableMenu(menu, true);
     Object subMenu = menu;
     int nmod = (nOrb % MAX_ITEMS);

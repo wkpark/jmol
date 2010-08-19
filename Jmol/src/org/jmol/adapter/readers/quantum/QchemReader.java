@@ -325,129 +325,129 @@ $end
     moData.put("calculationType", calculationType);
   }
 
-// since the orbital coefficients don't show the symmetry, I will read them here
+  // since the orbital coefficients don't show the symmetry, I will read them here
   /* 
    * sample output for an unrestricted calculation
    * 
- --------------------------------------------------------------
+  --------------------------------------------------------------
              Orbital Energies (a.u.) and Symmetries
- --------------------------------------------------------------
- Warning : Irrep of orbital(   1) could not be determined
-....
- Warning : Irrep of orbital(  86) could not be determined
- 
- Alpha MOs, Unrestricted
- -- Occupied --                  
--10.446 -10.446 -10.446 -10.446 -10.412 -10.412  -1.100  -0.998
+  --------------------------------------------------------------
+  Warning : Irrep of orbital(   1) could not be determined
+  ....
+  Warning : Irrep of orbital(  86) could not be determined
+  
+  Alpha MOs, Unrestricted
+  -- Occupied --                  
+  -10.446 -10.446 -10.446 -10.446 -10.412 -10.412  -1.100  -0.998
   0 xxx   0 xxx   0 xxx   0 xxx   0 xxx   0 xxx   1 A1g   1 E1u                
-....
- -0.611  -0.571  -0.569  -0.512  -0.479
+  ....
+  -0.611  -0.571  -0.569  -0.512  -0.479
   1 A2u   1 E2g   1 E2g   1 E1g   1 E1g                                        
- -- Virtual --                   
- -0.252  -0.226  -0.102  -0.076  -0.049  -0.039  -0.015  -0.006
+  -- Virtual --                   
+  -0.252  -0.226  -0.102  -0.076  -0.049  -0.039  -0.015  -0.006
   1 E2u   1 E2u   2 A1g   1 B2g   0 xxx   0 xxx   2 E2g   2 E2g                
-....
+  ....
   4.427
   5 B1u                                                                        
- Warning : Irrep of orbital(   1) could not be determined
-....
- Warning : Irrep of orbital(  57) could not be determined
- 
- Beta MOs, Unrestricted
- -- Occupied --                  
--10.442 -10.442 -10.441 -10.441 -10.413 -10.413  -1.088  -0.978
-....
- -0.577  -0.569  -0.566  -0.473
+  Warning : Irrep of orbital(   1) could not be determined
+  ....
+  Warning : Irrep of orbital(  57) could not be determined
+  
+  Beta MOs, Unrestricted
+  -- Occupied --                  
+  -10.442 -10.442 -10.441 -10.441 -10.413 -10.413  -1.088  -0.978
+  ....
+  -0.577  -0.569  -0.566  -0.473
   1 A2u   2 E2g   2 E2g   1 E1g                                                
- -- Virtual --                   
- -0.416  -0.214  -0.211  -0.100  -0.053  -0.047  -0.039  -0.008
+  -- Virtual --                   
+  -0.416  -0.214  -0.211  -0.100  -0.053  -0.047  -0.039  -0.008
   1 E1g   1 E2u   1 E2u   3 A1g   1 B2g   0 xxx   0 xxx   3 E2g                
- ....
+  ....
   4.100   4.433
- 10 E2g   6 B1u                                                                
- --------------------------------------------------------------
- 
+  10 E2g   6 B1u                                                                
+  --------------------------------------------------------------
+  
 
    * 
    * For a restricted open shell
    * 
- --------------------------------------------------------------
+  --------------------------------------------------------------
              Orbital Energies (a.u.) and Symmetries
- --------------------------------------------------------------
- Warning : Irrep of orbital(   1) could not be determined
-....
- Warning : Irrep of orbital(  86) could not be determined
- 
- Alpha MOs, Restricted
- -- Doubly Occupied --           
--10.446 -10.446 -10.445 -10.445 -10.413 -10.413  -1.099  -0.996
+  --------------------------------------------------------------
+  Warning : Irrep of orbital(   1) could not be determined
+  ....
+  Warning : Irrep of orbital(  86) could not be determined
+  
+  Alpha MOs, Restricted
+  -- Doubly Occupied --           
+  -10.446 -10.446 -10.445 -10.445 -10.413 -10.413  -1.099  -0.996
   0 xxx   0 xxx   0 xxx   0 xxx   0 xxx   0 xxx   1 A1g   1 E1u                
-....
- -0.609  -0.572  -0.570  -0.481
+  ....
+  -0.609  -0.572  -0.570  -0.481
   1 A2u   2 E2g   2 E2g   1 E1g                                                
- -- Singly Occupied (Occupied) --
- -0.507
+  -- Singly Occupied (Occupied) --
+  -0.507
   1 E1g                                                                        
- -- Virtual --                   
- -0.248  -0.230  -0.102  -0.076  -0.049  -0.039  -0.015  -0.007
+  -- Virtual --                   
+  -0.248  -0.230  -0.102  -0.076  -0.049  -0.039  -0.015  -0.007
   1 E2u   1 E2u   2 A1g   1 B2g   0 xxx   0 xxx   3 E2g   3 E2g                
-....
+  ....
   4.427
   6 B1u                                                                        
- 
- Beta MOs, Restricted
- -- Doubly Occupied --           
--10.443 -10.443 -10.442 -10.442 -10.413 -10.413  -1.088  -0.980
+  
+  Beta MOs, Restricted
+  -- Doubly Occupied --           
+  -10.443 -10.443 -10.442 -10.442 -10.413 -10.413  -1.088  -0.980
   0 xxx   0 xxx   0 xxx   0 xxx   0 xxx   0 xxx   1 A1g   1 E1u                
-....
- -0.578  -0.569  -0.566  -0.470
+  ....
+  -0.578  -0.569  -0.566  -0.470
   1 A2u   2 E2g   2 E2g   1 E1g                                                
- -- Singly Occupied (Vacant) --  
- -0.421
+  -- Singly Occupied (Vacant) --  
+  -0.421
   1 E1g                                                                        
- -- Virtual --                   
- -0.215  -0.212  -0.100  -0.055  -0.047  -0.038  -0.008  -0.004
+  -- Virtual --                   
+  -0.215  -0.212  -0.100  -0.055  -0.047  -0.038  -0.008  -0.004
   1 E2u   1 E2u   2 A1g   1 B2g   0 xxx   0 xxx   3 E2g   3 E2g                
-....
+  ....
   4.433
   6 B1u                                                                        
- --------------------------------------------------------------
+  --------------------------------------------------------------
 
    * 
    * For a restricted one : only need to read the alpha ones....
    * 
- --------------------------------------------------------------
+  --------------------------------------------------------------
              Orbital Energies (a.u.) and Symmetries
- --------------------------------------------------------------
- 
- Alpha MOs, Restricted
- -- Occupied --                  
--10.187 -10.187 -10.187 -10.186 -10.186 -10.186  -0.847  -0.740
+  --------------------------------------------------------------
+  
+  Alpha MOs, Restricted
+  -- Occupied --                  
+  -10.187 -10.187 -10.187 -10.186 -10.186 -10.186  -0.847  -0.740
   1 A1g   1 E1u   1 E1u   1 E2g   1 E2g   1 B1u   2 A1g   2 E1u                
-....
- -0.360  -0.340  -0.340  -0.247  -0.246
+  ....
+  -0.360  -0.340  -0.340  -0.247  -0.246
   1 A2u   3 E2g   3 E2g   1 E1g   1 E1g                                        
- -- Virtual --                   
+  -- Virtual --                   
   0.004   0.004   0.091   0.145   0.145   0.165   0.182   0.182
   1 E2u   1 E2u   4 A1g   4 E1u   4 E1u   1 B2g   4 E2g   4 E2g                
-....
+  ....
   4.668
- 10 B1u                                                                        
- 
- Beta MOs, Restricted
- -- Occupied --                  
--10.187 -10.187 -10.187 -10.186 -10.186 -10.186  -0.847  -0.740
+  10 B1u                                                                        
+  
+  Beta MOs, Restricted
+  -- Occupied --                  
+  -10.187 -10.187 -10.187 -10.186 -10.186 -10.186  -0.847  -0.740
   1 A1g   1 E1u   1 E1u   1 E2g   1 E2g   1 B1u   2 A1g   2 E1u                
-....
- -0.360  -0.340  -0.340  -0.247  -0.246
+  ....
+  -0.360  -0.340  -0.340  -0.247  -0.246
   1 A2u   3 E2g   3 E2g   1 E1g   1 E1g                                        
- -- Virtual --                   
+  -- Virtual --                   
   0.004   0.004   0.091   0.145   0.145   0.165   0.182   0.182
   1 E2u   1 E2u   4 A1g   4 E1u   4 E1u   1 B2g   4 E2g   4 E2g                
-....
+  ....
   4.668
- 10 B1u                                                                        
- --------------------------------------------------------------
+  10 B1u                                                                        
+  --------------------------------------------------------------
 
    * 
    */
@@ -456,7 +456,7 @@ $end
     alphas = new MOInfo[nBasis];
     betas = new MOInfo[nBasis];
     MOInfo[] moInfos;
-    int ne=0;  // number of electrons for a particular series of orbitals
+    int ne = 0; // number of electrons for a particular series of orbitals
     boolean readBetas = false;
 
     discardLinesUntilStartsWith(" Alpha");
@@ -468,7 +468,8 @@ $end
         if (line.startsWith(" -- ")) {
           ne = 0;
           if (line.indexOf("Vacant") < 0) {
-            if (line.indexOf("Occupied") > 0) ne = 1;
+            if (line.indexOf("Occupied") > 0)
+              ne = 1;
           }
           readLine();
         }
@@ -477,23 +478,26 @@ $end
           break; // done....
         }
         int nOrbs = getTokens(line).length;
-        if (nOrbs == 0 || line.startsWith(" Warning")) { 
+        if (nOrbs == 0 || line.startsWith(" Warning")) {
           discardLinesUntilStartsWith(" Beta"); // now the beta ones.
           readBetas = true;
           moInfos = betas;
           break;
         }
-        if (haveSym) tokens = getTokens(readLine());
-        for (int i=0, j=0; i < nOrbs; i++, j+=2) {
+        if (haveSym)
+          tokens = getTokens(readLine());
+        for (int i = 0, j = 0; i < nOrbs; i++, j += 2) {
           MOInfo info = new MOInfo();
           info.ne = ne;
-          if (haveSym) info.moSymmetry = tokens[j]+tokens[j+1];
+          if (haveSym)
+            info.moSymmetry = tokens[j] + tokens[j + 1] + " ";
           moInfos[nMO] = info;
           nMO++;
         }
       }
     }
-    if (!readBetas) betas=alphas; // no beta symmetry info: Restricted no sym
+    if (!readBetas)
+      betas = alphas; // no beta symmetry info: Restricted no sym
   }
 
 /* Restricted orbitals cartesian see H2O-B3LYP-631Gd.out:
@@ -565,8 +569,6 @@ $end
   private static String DS_LIST = "D3    D4    D2    D5    D1";
   private static String FC_LIST = CANONICAL_FC_LIST;
   private static String FS_LIST = "F4    F5    F3    F6    F2    F7    F1";
-  
-//  private List<Map<String, Object>> orbitals;
   
   private void readQchemMolecularOrbitals() throws Exception {
 
@@ -699,7 +701,7 @@ $end
             label = "V" + label; // keep spin information for the orbital
           break;
         }
-        mos[i].put("symmetry", moInfo.moSymmetry + " " + label + "("
+        mos[i].put("symmetry", moInfo.moSymmetry + label + "("
             + (moid[i] + 1) + ")");
         orbitals.add(mos[i]);
       }

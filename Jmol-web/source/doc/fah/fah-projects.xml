@@ -9120,7 +9120,7 @@
   <fah_proj number="10913" name="AbetaM3_mono_L" public="n"
     server="171.67.108.33" atoms="98245" preferred="28" deadline="41"
     credit="145" frames="100" code="G" contact="lin5"/>
-  <fah_proj number="10914" name="AbetaM4_mono_L" public="n"
+  <fah_proj number="10914" name="AbetaM4_mono_L" public="n" file="xyz"
     server="171.67.108.33" atoms="98245" preferred="28" deadline="41"
     credit="145" frames="100" code="G" contact="lin5"/>
   <fah_proj number="10915" name="Abeta40_mono_L" public="n" file="xyz"

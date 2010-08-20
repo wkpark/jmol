@@ -23,6 +23,8 @@
  */
 package org.jmol.export.dialog;
 
+import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import javax.swing.JFileChooser;
@@ -99,8 +101,12 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     }
 
     if (historyFile != null) {
-      openChooser.setDialogSize(historyFile.getWindowSize(windowName));
-      openChooser.setDialogLocation(historyFile.getWindowPosition(windowName));
+      Dimension dim = historyFile.getWindowSize(windowName);
+      if (dim != null)
+        openChooser.setDialogSize(dim);
+      Point loc = historyFile.getWindowPosition(windowName);
+      if (loc != null)
+        openChooser.setDialogLocation(loc);
     }
 
     openChooser.resetChoosableFileFilters();

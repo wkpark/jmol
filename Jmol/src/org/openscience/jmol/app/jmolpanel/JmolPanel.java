@@ -211,10 +211,18 @@ public class JmolPanel extends JPanel implements SplashInterface {
     say(GT._("Starting display..."));
     display.start();
 
-    if (jmolApp.menuFile != null)
+    if (jmolApp.menuFile != null) {
       viewer.getProperty("DATA_API", "setMenu", viewer.getFileAsString(jmolApp.menuFile));
+    }
+
     // prevent new Jmol from covering old Jmol
-    if (loc == null && (parent != null || (loc = historyFile.getWindowPosition("Jmol")) == null)) {
+    if (loc != null) {
+      frame.setLocation(loc);
+    } else if (parent == null) {
+      loc = historyFile.getWindowPosition("Jmol");
+      if (loc != null)
+        frame.setLocation(loc);
+    } else {
       loc = parent.frame.getLocationOnScreen();
       int maxX = screenSize.width - 50;
       int maxY = screenSize.height - 50;
@@ -222,8 +230,9 @@ public class JmolPanel extends JPanel implements SplashInterface {
       loc.y += 40;
       if (loc.x > maxX || loc.y > maxY)
         loc.setLocation(0, 0);
+      frame.setLocation(loc);
     }
-    frame.setLocation(loc);
+
     frame.getContentPane().add("Center", this);
 
     frame.addWindowListener(new JmolPanel.AppCloser());

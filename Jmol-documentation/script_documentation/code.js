@@ -8,9 +8,12 @@
 
 lastupdate = ""
 startmessage ="See an error? Something missing? Please <a href=\"mailto:hansonr@stolaf.edu?subject=Jmol applet documentation\">let us know</a>. For a wide variety of interactive examples, see <a href=examples-11/new.htm>new.htm</a>."
-defaultversion = "11.8" //could be 11.0 or 10.2 or 11.2
-versionlist = ";11.8;11.6;11.4;11.2;11.0;10.2;" //semis on BOTH SIDES
+defaultversion = "12.0"
+versionlist = ";12.2;12.0;11.8;11.6;11.4;11.2;11.0;10.2;" //semis on BOTH SIDES
 removelist = versionlist.substring(0, versionlist.length-1).replace(/\;/g, ";*v-")
+
+versionlist = ";12.2;12.0;11.8;11.6;" //semis on BOTH SIDES
+
 exampledir = "examples/" //will be ignored if the example has a / in the name
 datadir = "examples/"
 jmoljs = "Jmol.js"
@@ -18,7 +21,6 @@ jmolSite = "http://www.stolaf.edu/academics/chemapps/jmol"
 popupscript = "popupscript.js"
 //popup-example display did not work with the multi-file archive path
 
-isxhtmltest=0
 
 /* startup URL options:
 
@@ -77,7 +79,7 @@ if(document.location.href.indexOf("#")<0){
  thesearch=(thesearch?unescape(thesearch):"")
  if (thesearch == "?") {
 	thesearch = ""
-	setTimeout("setsearch()",1000)
+//	setTimeout("setsearch()",1000)
  }
 }
 root = document.location.href.split("#")[0];
@@ -86,6 +88,8 @@ onlycommand=(docsearch+"command=").split("command=")[1].split("&")[0]
 onlyid = idof(onlycommand)
 
 dowritexml=(docsearch.indexOf("xml")>=0)
+
+isxhtmltest=(docsearch.indexOf("html")>=0)
 dowritedocbook=(docsearch.indexOf("docbook")>=0)
 doshowunimplemented=(docsearch.indexOf("unimplemented")>=0)
 xrefbase=(dowritexml||dowritedocbook?"":docbase)
@@ -116,7 +120,8 @@ function displayOneCommand(iCmd) {
 function gotoCmd(cmdId, sublink) {
   if (!sublink)sublink = "";
   var C = CmdFromId[cmdId];
-  document.getElementById("cmddiv").innerHTML = "<table width='600'>"+C.html+"</table>"
+  var d = document.getElementById("cmddiv");
+  if (d)d.innerHTML = "<table width='600'>"+C.html+"</table>"
   document.location = (sublink.length > 0 ? sublink : "#top")
 }
 
@@ -135,6 +140,7 @@ themodel=(docsearch+"model=").split("model=")[1].split("&")[0]
 
 function setVersion(ver) {
  thisSubversion=(docsearch+"ver="+(ver ? ver : defaultversion)).split("ver=")[1].split("&")[0]
+ if (thisSubversion == "11.10")thisSubversion = "12.0"
  thisVersion = thisSubversion.substring(0,2);
  thisVrefNew = "*v+"+thisSubversion
  if(!dowritexml && !dowritedocbook) {
@@ -222,19 +228,19 @@ function thesep(tr, ikey, isSet){
 HeadList=[]
 
 function fixlinks(){
+ return // this was to avoid "target=" is all
  if(!document.getElementsByTagName) return;
  var anchors = document.getElementsByTagName("a")
  for(var i=0; i<anchors.length; i++){
 	var anchor = anchors[i]
 	var h=anchor.getAttribute("href")
 	if(h && anchor.getAttribute("rel"))anchor.target = anchor.getAttribute("rel")
-	if(h && h.indexOf("personal_disclaimer")>=0)anchor.innerHTML=""
  }
 }
 
 function doinit(){
  fixlinks()
- if(HeadList.length > 0)gotoCmd(idof(firstcmd? firstcmd : HeadList[0]))
+ if(asdivs && HeadList.length > 0)gotoCmd(idof(firstcmd? firstcmd : HeadList[0]))
  if(theexample||themodel)showModel(theexample,themodel)
 }
 
@@ -269,8 +275,22 @@ function newVar(name,vtype) {
 }
 
 mylist = "</br>"
-textParamCount = 0
 tpc0 = 0
+
+function newToken(text,preferred){
+ if (!text) {
+  var S = doCapitalize.split(" ");
+  for (var i = 0; i < S.length; i++)if (S[i])newToken(S[i], 1)
+ }
+
+ if(preferred){
+	thistoken="."+text.toLowerCase()
+	Toks[thistoken]={}
+	Toks[thistoken].Namelist=[]
+ }
+ Toks[thistoken].Namelist.push(text)
+}
+
 
 function newCmd(command,examples,xref,description,nparams,param1,param2,param3,param4){
  // *v+10.2 means added in 10.2 -- highlight if thisSubversion and remove from previous versions
@@ -285,7 +305,7 @@ function newCmd(command,examples,xref,description,nparams,param1,param2,param3,p
  if (xref.substring(0,3)=="*v+") {
 	var ref = (xref.substring(0, 10) + " ").split(" ")[0].split(";")[0].replace(/\+/,"-")
 	var pt = removelist.indexOf(ref)
-	if(pt < 0)alert("missing " + ref + " in removelist for " + xref)
+	if(pt < 0)alert("missing " + ref + " in removelist for " + xref + " " + command)
 	xref+=removelist.substring(pt + ref.length)
  }
 
@@ -332,17 +352,19 @@ function newCmd(command,examples,xref,description,nparams,param1,param2,param3,p
 	description=""
 	descr=""
 	Cmdlist[Cmdlist.length]=Cmd.name=command
+	Cmd.keyname = keyof(Cmd.name,0,1)
+ 	Cmd.keynote = (Cmd.keyname == Cmd.keyname.toUpperCase() ? "The " + Cmd.keyname + " command does not require @{ ... } around Jmol math expressions." : "")
 	Cmd.idof=thisid
 	CmdFromId[thisid]=Cmd
  }else{
 	Cmd = Cmds[command]
  }
  if(nparams == "TEXT"){
-	textParamCount++;
-	Cmd.description+="<br /><br /><b><a name=\"text"+textParamCount+"\">"+param1+"</a></b>&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"#"
+	var paramid = thisid + idof(param1);
+	Cmd.description+="<br /><br /><b><a name=\""+paramid+"\">"+param1+"</a></b>&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"#"
 		+(asdivs ? "top" : Cmd.idof) +"\">back</a>"
 		+"<br /><br /> "+descr
-	Cmd.textParams[Cmd.textParams.length] = "&nbsp;&nbsp;&nbsp;<a class=\"textParam\" href=\"#text" + textParamCount + "\">" + param1 + "</a><br />"
+	Cmd.textParams[Cmd.textParams.length] = "&nbsp;&nbsp;&nbsp;<a class=\"textParam\" href=\"#" + paramid + "\">" + param1 + "</a><br />"
 	return	
  }
  if(examples)addCmdExample(command,examples.replace(/\~/,""))
@@ -362,17 +384,22 @@ function newCmd(command,examples,xref,description,nparams,param1,param2,param3,p
 	}
  }
 
+ var n=Cmd.list.length
+ var C=Cmd.list[n]={}
+
  if (command.indexOf(".set")==0) {
    var p = (command.indexOf("(")>=0 ? param1 : command.split(" ")[1]+"").toLowerCase()
    if (mylist.indexOf(" "+p+" ")<0) {
      //if(thevars.indexOf(" " +p+" ")<0)alert(p)
      s = "<a id=\"set_"+p+"\">&nbsp;</a>"
      mylist+= " "+p+" "
+     if (command.indexOf("(") >= 0) {
+       C.key = "set_" + p
+       s = "<a id=\"set_"+p+"_top\">&nbsp;</a>"
+     }
      Cmd.key +=s
    }
  }
- var n=Cmd.list.length
- var C=Cmd.list[n]={}
 
  if(examples.charAt(0)!="~")C.examples=examples
  C.xref=xref
@@ -425,17 +452,6 @@ function addCmdExample(cmd,name){
 	CmdExamples[cmd]=name
 }
 
-function newToken(text,isnull,description){
- if(isnull){
- }else{
- 	thistoken="."+text
-	Toks[thistoken]={}
-	Toks[thistoken].Namelist=[]
- }
- Toks[thistoken].Namelist[Toks[thistoken].Namelist.length]=text
-}
-
-
 ///////////////////////////
 
 function TABLE1(isReservedOnly,isNotVariableX, isDeprecatedOnly, caption) {
@@ -448,6 +464,7 @@ function TABLE1(isReservedOnly,isNotVariableX, isDeprecatedOnly, caption) {
 
  var s = '<a id="table1'+(isReservedOnly ? "A" : isNotVariableX ? "B" : isDeprecatedOnly ? "C" : "")+'">&nbsp;</a>' + caption + '<br /><br /><table border="0" cellspacing="2"><tr>'
  var n = 0;
+ var nTotal = 0;
  for (var i = 0; i < Vars.length; i++) {
   var isOK = false;
   var vtype = Vars[i].vtype
@@ -469,32 +486,46 @@ function TABLE1(isReservedOnly,isNotVariableX, isDeprecatedOnly, caption) {
 	  var p = data.toLowerCase()
 	  s+="<td class=\"tbl\">"
           if (haverefalready) {
+            nTotal++
 	    data = "<a href=\""+vtype+"\">"+data+"</a>"
 	  } else if (mylist.indexOf(" "+p+" ")>=0 && !isDeprecated) {
+            nTotal++
             if(isNotVariableX)data = "set " + data
 	    data = "<a href=\"#set_"+p+"\">"+data+"</a>"
 	  } else if(isDeprecated) {
+            nTotal++
 	    data = "set " + data + "</td><td class=\"tbl\">"
 	    if (vtype.indexOf("_see ")==0)
 	      data += marksearch(vtype.substring(1),true)+"</a>"
 	    else
 	      data += "see <a href=\"#set"+vtype.toLowerCase()+"\">set "+vtype.substring(1)+"</a>"
-	  }
+	  } else {
+	    nTotal++
+          }
 	  if (isDeprecatedOnly || isNotVariableX || isReservedOnly)n+=nColumns-1;
 	  s+=data + "</td>"
   }
  }
  s += '</tr></table>'
- return s
+ return s.replace(/following/,"following " + nTotal)
 }
 
 function sorton0(A,B){
 	return(A[0]>B[0]?1:A[0]<B[0]?-1:0)
 }
 
+function getVersionHTML() {
+ var s ="<select onchange=eval(value)>"
+ var List=versionlist.split(";")
+ for (var l=1;l<List.length-1;l++)s+="<option "+(List[l]==thisSubversion?" selected=\"1\" ":"")+"value=\"showVersion('"+List[l]+"')\">version "+List[l]+"</option>"
+ s+="</select>"
+ return s
+}
+
 function getExamplesHTML(){
  var cmd=""
- var s="<select onchange=eval(value)><option value=\"0\">Examples</option>"
+ var s=""
+ s += "<select onchange=eval(value)><option value=\"0\">Examples</option>"
  var S=[]
  var List=[]
  var j=0
@@ -517,12 +548,6 @@ function getExamplesHTML(){
  for(var i=0;i<S.length;i++)s+="<option value=\"showModel('"+S[i][1]+"')\">"+S[i][0]+"</option>"
  s+="</select>"
 
- s+="<select onchange=eval(value)>"
- var List=versionlist.split(";")
- var j=0
- var name=""
- for (var l=1;l<List.length-1;l++)s+="<option "+(List[l]==thisSubversion?" selected=\"1\" ":"")+"value=\"showVersion('"+List[l]+"')\">version "+List[l]+"</option>"
- s+="</select>"
  return s 
 }
 
@@ -558,7 +583,7 @@ function writelastupdate() {
 
 function writeheader(){
  if(dowritexml||dowritedocbook)return
- var s="<a id=\"top\">&nbsp;</a><br /><h2><a rel=\"_blank\" href=\""+jmolSite+"\">Jmol</a> interactive scripting documentation</h2>"
+ var s="<a id=\"top\"><table><tr><td valign=top><span style='font-size:24pt;font-face:bold'><a target=\"_blank\" href=\""+jmolSite+"\">Jmol</a> interactive scripting documentation</span></td><td valign=center>" + getVersionHTML() + "</td></tr></table></a>"
 
  if(onlycommand){
 	s+="<p><br /><br /><a href=\"javascript:setsearch()\"><img class=\"nf\" src=\"img/q.gif\" border=\"0\" />Search</a> "
@@ -572,7 +597,7 @@ function writeheader(){
  }else{
 	theindex="<h3><a id=\"index\">Index</a></h3>"
 	s+="<form action=\"\"><table width=\"700\"><tr><td>"+startmessage+"<br /><br />"
-	s+="<table width=\"750\"><tr><td><a href=\"javascript:setsearch()\"><img class=\"nf\" src=\"img/q.gif\" border=\"0\" />Search the Database</a> &nbsp; &nbsp; &nbsp;<a class=\"chimenote\" href=\"javascript:setsearch('chime note')\"><img  class=\"nf\" src=\"img/c.gif\" border=\"0\" />Chime Notes</a> &nbsp; &nbsp; &nbsp; <a href=\"#index\"><img class=\"nf\" src=\"img/i.gif\" border=\"0\" />Index</a>&nbsp;&nbsp; &nbsp; &nbsp;"+getExamplesHTML()+"</td><td><a href=\"javascript:alert('These images mark places in the documentation where you \\ncan click on a link to pull up a working example in a new window.')\"><img src=\"img/ex.jpg\" border=\"0\" title=\"look for this icon throughout this document to pop up specific examples.\" /></td></tr></table></td></tr>"+thesep()+"</table></form>"
+	s+="<table width=\"750\"><tr><td><a href=\"javascript:setsearch()\"><img class=\"nf\" src=\"img/q.gif\" border=\"0\" />Search the Database</a> &nbsp; &nbsp; &nbsp; <a href=\"#index\"><img class=\"nf\" src=\"img/i.gif\" border=\"0\" />Index</a>&nbsp;&nbsp; &nbsp; &nbsp;"+getExamplesHTML()+"</td><td><a href=\"javascript:alert('These images mark places in the documentation where you \\ncan click on a link to pull up a working example in a new window.')\"><img src=\"img/ex.jpg\" border=\"0\" title=\"look for this icon throughout this document to pop up specific examples.\" /></td></tr></table></td></tr>"+thesep()+"</table></form>"
  } 
  if(asdivs)return s
  docwrite(s)
@@ -594,7 +619,7 @@ function writefooter() {
  }else if(dowritexml){
 	s=("<p>&lt;/document></p>")
  }else{
-	s=("<p><a href=\"index.htm?xml\">xml</a> <a href=\"index.htm?docbook\">docbook</a></p>")
+	s=("<p><a href=\"index.htm?html\">html</a> <p><a href=\"index.htm?xml\">xml</a> <a href=\"index.htm?docbook\">docbook</a></p>")
  }
  if (asdivs)return s
  docwrite(s)
@@ -636,7 +661,7 @@ function writecmds(){
 	}
 	if(!dowritedocbook && !dowritexml)shead+="<tr ><td colspan=6 ><span class=new>&nbsp;<br /><br />* indicates  new or modified in version "+thisSubversion+"</span> </td ></tr ><tr ><td >&nbsp;</td ></tr >"+thesep()
 	shead+=(dowritedocbook?"\n</informaltable>":"</table xml=/headlist=xml>")
-        if (asdivs) {
+       if (asdivs) {
 		s = "<table><tr><td valign='top'><div id='cmdlistdiv' style='overflow:auto;height:400px'>" + shead + "</td><td valign='top'><div id='cmddiv'></div></td></tr></table>"
 	} else {
 		s=shead+s
@@ -787,12 +812,11 @@ function getcmdhtml(C){
  var ihavedesc=0
  var isunimplemented=(!C.isimplemented || C.name.indexOf("implemented")>0)
  var shead=""
- var s=keyof(C.name,0,1)
+ var s=C.keyname
  var cmdoptionreal=""
  var spreal=""
  if(isunimplemented && (dowritexml||dowritedocbook))return ""
  ikey=getIndexKey(s)
- var keyname=s
  shead="<a id=>"+marksearch(s)+"</a><a id=\"k"+ikey+"\">&nbsp;</a>"
  var tr = "<tr name='tr_" + C.idof+"'>"// + "<td valign='top'>" + C.idof+"</td>"
  if(dowritedocbook){
@@ -840,7 +864,7 @@ function getcmdhtml(C){
 				sline+=" "+marksearch(C.list[i].Param[1].replace(/\./,""))+" <i>--not implemented</i></p></td xml=/cmdlisti=xml></tr>"
 			}
 		}else if(C.list[i].Nparams.length==1 && C.list[i].Nparams[0]!="0"){
-			cmdoption=sname.replace(/\./,"")
+			cmdoption=(sname.charAt(0) == '.' ? sname.substring(1) : sname)
 			cmdoptionreal=cmdoption.split(" ")[0]
 			for(var p=1;p<=C.list[i].lastparam;p++){
 				sp=C.list[i].Param[p]
@@ -863,7 +887,7 @@ function getcmdhtml(C){
 					spreal=sp
 					if(ihavedesc && !asdivs)sp=(dowritedocbook?"<xref linkend=''d"+getIndexKey(sp+ikey)+"''/>":"<a href='#d"+getIndexKey(sp+ikey)+"'>"+sp+"</a>")
 				}else{
-					sp=sp.replace(/\./,"")
+					if (sp.charAt(0) == '.')sp = sp.substring(1)
 					spreal=sp
 				}
 				sp+=sdefault
@@ -875,13 +899,15 @@ function getcmdhtml(C){
 				cmdoption+=" "+sp
 				cmdoptionreal+=" "+spreal
 			}
-
 			skey=(C.list[i].Nparams[0].charAt(0)=="*"?C.list[i].Nparams[0]:"")+cmdoption.replace(/ /g,"~")
 			if(dowritedocbook){
 				sline+="\n<varlistentry><term><command id=\"k"+getIndexKey(skey)+"\" xreflabel=\""+cmdoptionreal+"\">"+marksearch(icandoxrefincommand?cmdoption:cmdoptionreal)+"</command></term>"
 			}else{
 				if(dowritexml)sline+="<cmdexample>"
-				sline+=tr +"<td xml=cmdoption=xml valign=\"top\"><a id=\"k"+getIndexKey(skey)+"\">&nbsp;</a>"+marksearch(cmdoption)+"</td xml=/cmdoption=xml></tr>"
+				sline+=tr +"<td xml=cmdoption=xml valign=\"top\"><a " 
+	+ (C.list[i].key ? "name=\"" + C.list[i].key + "\" " : "") 
+	+ " id=\"k"+getIndexKey(skey)+"\">&nbsp;</a>"+marksearch(cmdoption)+"</td xml=/cmdoption=xml></tr>"
+
 			}
 
 			if(C.list[i].description){
@@ -901,7 +927,7 @@ function getcmdhtml(C){
 			if(dowritexml)sline+="</cmdexample>"
 
 		}
-		if(foundsearch(shead+sline+definfo+" "+cmdoption+" "+(C.chimenote?"chime note: "+C.chimenote:"")+getexamples(tr, C.examples))){
+		if(foundsearch(shead+sline+definfo+" "+cmdoption+" "+(C.chimenote?"chime note: "+C.chimenote:"")+C.keynote+getexamples(tr, C.examples))){
 			LineList[LineList.length]=skey+"|:|"+sline
 			deflist+=newdefs
 			includethis=true
@@ -1044,7 +1070,7 @@ function getexample(tr,swhat,iusenoheader){
 	s+=(dowritexml?"<cmdhtml>":tr + "<td><img border=\"0\" src=\"img/ex.jpg\" title=\"example page\" /></a><br />&nbsp;&nbsp;&nbsp;See ")
 	S=Examples[swhat].html.split(",")
 	for(var i=0;i<S.length;i++){
-		s+="<a rel=\"_blank\" href=\""+(S[i].indexOf("/")>=0?"":exampledir) + S[i]+"\">"+S[i]+"</a>&nbsp;"
+		s+="<a target=\"_blank\" href=\""+(S[i].indexOf("/")>=0?"":exampledir) + S[i]+"\">"+S[i]+"</a>&nbsp;"
 	}
 	s+=(dowritexml?"</cmdhtml>":"</td></tr>")
  }
@@ -1117,9 +1143,9 @@ function showModel(swhat_ext,smodel){
 	+"\n</applet>"
  }
  s+=sapp
- s+="<br><a href=\"javascript:getModel('X')\">load a different PDB file or one of my own molecules</a>"
- s+=" <a href=\"javascript:loadModel('X')\">(reload)</a>"
- s+=" <a href=\"javascript:showModelText('X')\">(text)</a>"
+ s+="<br><a href=\"javascript:void(getModel('X'))\">load a different PDB file or one of my own molecules</a>"
+ s+=" <a href=\"javascript:void(loadModel('X'))\">(reload)</a>"
+ s+=" <a href=\"javascript:void(showModelText('X'))\">(text)</a>"
  s+='\n</td><td>\n'
 	+sdata
 	+'\n</td></tr></table>\n</form>\n<p>'
@@ -1171,9 +1197,9 @@ function showModel(swhat_ext,smodel){
 }
 
 
-function getchimenote(tr, swhat){
+function getchimenote(tr, swhat, label){
  var s=""
- if(!dowritexml && !dowritedocbook)s+=tr + "<td class=\"chimenote\"><p><br /><i>Chime Note:</i></p></td></tr>"
+ if(!dowritexml && !dowritedocbook)s+=tr + "<td class=\"chimenote\"><p><br /><i>" + label + "</i></p></td></tr>"
  if(dowritedocbook){
 	swhat="<para>"+swhat+"</para>"
  }else if(dowritexml){
@@ -1186,7 +1212,7 @@ function getchimenote(tr, swhat){
 
 
 function getlinkhtml(tr, C){
- if(!C.examples && !C.xrefs && !C.chimenote)return ""
+ if(!C.examples && !C.xrefs && !C.chimenote && !C.keynote)return ""
  var slist=""
  var xref=""
  var sout=""
@@ -1200,8 +1226,12 @@ function getlinkhtml(tr, C){
  var S=[]
  var L=[]
  if(C.chimenote){
-	sout+=getchimenote(tr, C.chimenote)
+	sout+=getchimenote(tr, C.chimenote, "Chime Note:")
  }
+ if(C.keynote){
+	sout+=getchimenote(tr, C.keynote, "Note:")
+ }
+
  if(!C.xrefs)return sout
  L=C.xrefs.split(",")
  for(var i=1;i<L.length;i++)slist+=","+Xrefs[L[i]]
@@ -1236,7 +1266,7 @@ function marksearch(s,isdescr){
  if(!s)return s
  r=(thesearch?new RegExp("("+thesearch+")","gi"):"")
  if(!isdescr||s.indexOf("{")<0)return (r?s.replace(r,"<span class=\"found\">$1</span>"):s)
- // see {.set mode~set mode} etc. 
+ // see {#.set mode~set mode} etc. 
  //  0     1         2        3
  var S=s.replace(/(\}|\~)/g,"{").split("{")
  s=""
@@ -1245,11 +1275,14 @@ function marksearch(s,isdescr){
 	s+=(r?S[i].replace(r,"<font color=red>$1</font>"):S[i])
 	if(i+2<S.length){
 		st=S[i+2]
-		if(st=="")st=S[i+1].replace(/(\#|\.)/g,"")
+		if(st==""){
+			st=S[i+1]
+			if (st.indexOf("#") == 0)st = st.replace(/(\#|\.)/g,"").replace(/\_/, " ")
+		}
 		if(dowritedocbook){
 			s+=unescape(st)  //bold here?
 		}else{
-			s+="<a class=\"xref\" href=\""+(S[i+1].indexOf("#")!=0?S[i+1]+"\" rel=\"_blank"
+			s+="<a class=\"xref\" href=\""+(S[i+1].indexOf("#")!=0?S[i+1]+"\" target=\"_blank"
 				: asdivs ? getCmdLink(S[i+1].substring(1)) : xrefbase+"?ver="+thisSubversion+idof(S[i+1]))+"\">"+unescape(st)+"</a>"
 		}
 	}

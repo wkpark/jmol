@@ -166,7 +166,7 @@ thistarget="0"
 defaultloadscript=""
 
 function loadModel(targetSuffix,Adata){
-alert(Adata)
+//alert(Adata)
  if(!targetSuffix)targetSuffix=thistarget
  if(!Adata)Adata=A
  thistarget=targetSuffix

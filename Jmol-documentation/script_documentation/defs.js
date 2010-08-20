@@ -18,7 +18,7 @@ newDef('._color_or_none','(color name), [r,g,b],[xRRGGBB],NONE','color-none-CPK'
 newDef('._color_or_none_or_CPK','(color name), [r,g,b],[xRRGGBB],CPK,NONE','color-none-CPK','is')
 newDef('._color_name_or_scheme','(color name), [r,g,b],[xRRGGBB],ALTLOC,AMINO,CHAIN,CPK,FIXEDTEMPERATURE,FORMALCHARGE,GROUP,INSERTION,JMOL,MOLECULE,MONOMER,NONE,PARTIALCHARGE,RASMOL,RELATIVETEMPERATURE,SHAPELY,STRUCTURE,SURFACEDISTANCE','color-scheme','to color based on a {http://jmol.sourceforge.net/jscolors/~[Jmol color scheme]}. (CPK and NONE are synonymous here)')
 newDef('._element_name','(element name)','element-name','to color specific elements such as CARBON or HYDROGEN')
-newDef('._atom_object','ATOM,BACKBONE,CARTOON,DOTS,ELLIPSOID,HALOS, LABELS,MESHRIBBON,POLYHEDRA,RIBBONS,ROCKETS, SELECTIONHALOS, STARS,STRANDS,TRACE,VECTORS','atom-associated-object','an object related to an atom')
+newDef('._atom_object','ATOM,BACKBONE,CARTOON,DOTS,ELLIPSOID,HALOS, LABELS,MESHRIBBON,POLYHEDRA,RIBBONS,ROCKETS, SELECTIONHALOS, STARS,STRANDS,STRUTS,TRACE,VECTORS','atom-associated-object','an object related to an atom')
 newDef('._degrees','(integer)','number-of-degrees','the number of degrees')
 newDef('._diameter_pixels','(integer, 1 to 19)','diameter-pixels','a scaling factor')
 newDef('._dots_param','(integer, 0 to 1000)','dots-parameter','???')
@@ -36,8 +36,8 @@ newDef('._floatSecondsTotal','(decimal)','seconds-total','the amount of time to 
 newDef('._fontstyle','PLAIN, BOLD, ITALIC, or BOLDITALIC','font-style','is')
 newDef('._fontface','SERIF, SANSSERIF, or MONOSPACED ','font-face','is')
 newDef('._fontsize','(integer, JmolConstants.LABEL_MINIMUM_FONTSIZE to JmolConstants.LABEL_MAXIMUM_FONTSIZE)','font-size','approximately the same as Rasmol')
-
-
+newDef('._mouse_action','any double-quoted combination of a control code (CTRL, ALT, or SHIFT) with a mouse button (LEFT, MIDDLE, RIGHT, or WHEEL) and a click type (SINGLE or DOUBLE)','mouse-action','is')
+newDef('._jmol_action','_clickFrank,  _depth,  _dragDrawObject,  _dragDrawPoint,  _dragLabel,  _dragSelected,  _navTranslate,  _pickAtom,  _pickIsosurface,  _pickLabel,  _pickMeasure,  _pickNavigate,  _pickPoint,  _popupMenu,  _reset,  _rotate,  _rotateSelected,  _rotateZ,  _rotateZorZoom,  _select,  _selectAndNot,  _selectNone,  _selectOr,  _selectToggle,  _selectToggleOr,  _setMeasure,  _slab,  _slabAndDepth,  _slideZoom,  _spinDrawObjectCCW,  _spinDrawObjectCW,  _swipe,  _translate,  or _wheelZoom','jmol-action','is one of ')
 
 newDef('._hbond_type','(string)','"TYPE','to indicate that the hydrogen bonds should be colored based on their type (proteins only)')
 newDef('._hbond_width_angstroms','(decimal, <2.0)','width-in-angstroms','a')
@@ -68,7 +68,7 @@ newDef('._script_filename','(string)','file-name','any valid filename or URL')
 newDef('._select_all','(string)','"ALL','all atoms (not hydrogens or heteros if they are turned off')
 newDef('._model_object','AXIS1*, AXIS2*, AXIS3*, AXES,BOUNDBOX,DRAW,ECHO,GEOSURFACE,HOVER,ISOSURFACE,LABEL,MEASUREMENTS,MO,PMESH,POLYHEDRA,SELECTIONHALOS,UNITCELL (*starting with Jmol 11.1.20)','model-object','is')
 newDef('._object_with_background','HOVER,LABEL','object-with-background','is')
-newDef('._object_with_text','AXES,ECHO,HOVER, or LABEL','object-with-text','is')
+newDef('._object_with_text','AXES,ECHO,HOVER, LABEL, or MEASURE','object-with-text','is')
 newDef('._rasmol_structure','BACKBONE,CARTOON,MESHRIBBON,RIBBON,ROCKET,STRANDS, or TRACE','Rasmol-structure','is')
 
 newDef('._specular_power','(integer)','specular-power','an')

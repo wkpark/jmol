@@ -161,10 +161,14 @@ function showfunction(i){
 }
 
 function getfunctions(){
- if((navigator.appName+navigator.appVersion).indexOf("afari")>=0)return ""
  var S=new Array()
  for(var i in window){
-	if(typeof(window[i])=="function" && window[i].toString().indexOf("native")<0)S[S.length]="<option value=\""+i+"\">"+i+"()</option>"
+	try {
+		if(typeof(window[i])=="function" && window[i].toString().indexOf("native")<0)S[S.length]="<option value=\""+i+"\">"+i+"()</option>"
+	}
+	catch(e) {
+		// ignore
+	}
  }
  if(!S)return ""
  return "functions on this page:<select name=\"myfunctions\" onchange=\"showfunction(this.value)\"><option value=\"0\"></option>"+S.sort().join("")+"</select>"

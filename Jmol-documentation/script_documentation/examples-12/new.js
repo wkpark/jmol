@@ -31,7 +31,7 @@ isAnimationRunning, animationDirection, currentDirection) {
 }
 
 function scriptCallback(app, status, message, millisec, errorUntranslated) {
-if(message)document.title=message
+//if(message)document.title=message
   // this filters out the "script completed" messages and only passes the real messages along
   millisec = parseInt("" + millisec)
   errorUntranslated = "" + errorUntranslated
@@ -263,7 +263,7 @@ function getinfo(){
 theref = (model.length==8 && model.indexOf(".pdb")==4?"<a target=_blank href=http://www.rcsb.org/pdb/files/"+model+">["+model.substring(0,4)+"]</a>":
 model.indexOf('"')<0?"<a target=_blank href="+model.split(";")[0]+">"+model+"</a>":model)
 
- if(model)s+=" The script run in this case was <b>"+(model.indexOf(";") == 0 ? "" : "load ")+theref+"</b>."
+ if(model)s+=" The script run in this case was <b>"+ model+"</b>."
  if(defaultloadscript != "")s+=" The default load script used here is \""+defaultloadscript+"\"."
  return "<p>"+s+"</p><table><tr height=1000><td></td></tr></table>"
 }

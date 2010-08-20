@@ -3,8 +3,9 @@
 <script type="text/javascript" src="Jmol.js"></script>
 <script type="text/javascript">
 function myCallback(a, b, c, d) {
-alert("myCallback a="+a+" b="+b+" c="+c+" d="+d)
+ alert("myCallback a="+a+" b="+b+" c="+c+" d="+d)
 }
+
 </script>
 </head>
 <body>
@@ -16,14 +17,13 @@ alert("myCallback a="+a+" b="+b+" c="+c+" d="+d)
 
 <script type="text/javascript">
 //jmolInitialize(".","http://chemapps.stolaf.edu/pe/protexpl/molview/JmolAppletSigned.jar")
-jmolInitialize(".","JmolAppletSigned0.jar")
-
+jmolInitialize(".","JmolAppletSigned.jar")
+jmolSetCallback("multiTouchSparshUI",true)
 
 var xxxx = document.location.search
 if (xxxx.length == 5 || xxxx.length == 0) {
 	xxxx = (xxxx + "?1crn").substring(1,5)
-	script = 'set animframecallback "jmolscript:select model=_modelNumber";'
-	+'set errorCallback "myCallback";'
+	script = 'set antialiasdisplay;set animframecallback "jmolscript:select model=_modelNumber";'
 	+'set zoomlarge false;set echo top left;echo loading XXXX...;refresh;'
 	+'load "http://www.rcsb.org/pdb/files/XXXX.pdb";set echo top center;echo XXXX;'
 	+'spacefill off;wireframe off;cartoons on;color structure;'
@@ -32,6 +32,7 @@ if (xxxx.length == 5 || xxxx.length == 0) {
 	script = unescape(xxxx.substring(1))
 }
 
+jmolApplet(["450","450"],script)
 jmolApplet(["450","450"],script)
 
 </script>
@@ -69,16 +70,15 @@ jmolBr()
 
 <script type="text/javascript">
 jmolBr()
-_jmol.buttonCssText="style='width:120'"
 jmolButton("color cpk")
 jmolButton("color group")
-jmolButton("color amino")
 jmolButton("color structure")
 jmolBr()
+_jmol.buttonCssText="style='width:120'"
 jmolButton("trace only")
 jmolButton("cartoon only")
 jmolButton("backbone only")
-jmolButton("spacefill only;spacefill 23%;wireframe 0.15","ball&stick")
+jmolButton("spacefill only;spacefill 30%","spacefill 30%")
 jmolBr()
 _jmol.buttonCssText="style='width:160'"
 jmolButton("Model")

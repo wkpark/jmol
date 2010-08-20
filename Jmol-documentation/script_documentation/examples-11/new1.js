@@ -1,16 +1,13 @@
-//new.js by Bob Hanson hansonr@stolaf.edu 10:13 PM 6/29/2010
+//examples.js by Bob Hanson hansonr@stolaf.edu 6:17 AM 6/14/2004
 isxhtmltest=0/1
-
 isinitialized=0
-
-//isinitialized=1;jmolInitialize(".","JmolApplet.jar")
-
 MAXMSG=100000
 msglog=""
 height=350
 width=350
 
 //height=width=1600
+eval("a=function(j,c,z) {alert(j)}")
 
 loadstructcallback="loadStructCallback"
 animcallback="animFrameCallback"
@@ -20,25 +17,6 @@ msgcallback="showmsg"
 //msgcallback="ignoreit"
 errorcallback = "errorCallback"
 measurecallback = "measureCallback"
-
-function animFrameCallback(app, frameNo, fileNo, modelNo, firstNo, lastNo, 
-isAnimationRunning, animationDirection, currentDirection) {
- showmsg("","animation running, range = " + isAnimationRunning + " " + firstNo + " " + lastNo
-	+"\ncurrent direction = " + currentDirection
-	+"\ncurrent frame,file,model = " + frameNo + " " + fileNo + " " + modelNo
-	)
-
-}
-
-function scriptCallback(app, status, message, millisec, errorUntranslated) {
-//if(message)document.title=message
-  // this filters out the "script completed" messages and only passes the real messages along
-  millisec = parseInt("" + millisec)
-  errorUntranslated = "" + errorUntranslated
-  if (errorUntranslated != "null" && errorUntranslated != "undefined" /*safari*/)
-	alert(errorUntranslated + "\n\n" + message)
-  if (millisec == 0) showmsg(app, status, message, 0)
-}
 
 function measureCallback(app, strMeasure,intInfo, strStatus) {
 showmsg(app, strStatus + ":" + strMeasure, "", 0)
@@ -71,27 +49,13 @@ function resizeCSS(n)
 function newAppletWindow() {
  var sm=""+Math.random()
  sm=sm.substring(2,10)
- var newwin=open("JmolPopup.htm","jmol_"+sm,woptions2)
-}
-
-function newJmeWindow(file) {
- var jmeString = (file == "JME" ? jmolEvaluate('jmeString') : "")
- if (file == "JME" && !jmeString) {
-	alert("No JME data in file. Use the 2D-to-3D link to create JME data.")
-	return
- }
- var data = (jmeString ? "?load=" + escape(jmeString)
-	: file ? "?load=" + escape(jmolEvaluate("load('" + file + "')")) : "")
- var sm=""+Math.random()
- sm=sm.substring(2,10)
- var newwin=open("JmeToJmol.htm" + data,"jmol_"+sm,woptions2)
+ var newwin=open("JmolPopup.htm","jmol_"+sm,woptions)
 }
 
 
 /// this next code is all you need in 11.1.17 to open a new resizable applet window
 
 woptions="menubar=yes,resizable=1,scrollbars,alwaysRaised,width=600,height=600,left=50"
-woptions2="menubar=yes,resizable=1,scrollbars,alwaysRaised,width=400,height=450,left=270"
 
 function dowritenew(s){
  var sm=""+Math.random()
@@ -201,24 +165,19 @@ function showref(n){
 }
 
 
-function doalertme(x){
-alert(x)
-}
-
-
 function getapplet(name, model, codebase, height, width, script) {
   if (!isinitialized && useSigned) {
 	jmolInitialize(".", useSigned) //signed
 	isinitialized = true
   }
 
+jmolInitialize(".","JmolApplet0.jar")
 
 //   jmolSetCallback("menuFile", "data/myfix.mnu")
 
-//   jmolSetCallback("useCommandThread", "true")
-
   if(force_useHtml4Object)_jmol.useHtml4Object=1
   if(force_useIEObject)_jmol.useIEObject=1
+
   if (!isinitialized) jmolInitialize(".")
   isinitialized = 1
   jmolSetDocument(0)
@@ -249,10 +208,9 @@ function getapplet(name, model, codebase, height, width, script) {
   //jmolSetCallback("debug", true)
   if (language)jmolSetCallback("language",language)
 
-
-  var s = jmolApplet([width,height], script)
+  var s = jmolApplet([width,height], script, "myname")
 // alert("not allowing scripting");s=s.replace(/mayscript/,"maynotscript")
-// alert(s)
+ alert(s)
   return s
 }
 
@@ -263,7 +221,7 @@ function getinfo(){
 theref = (model.length==8 && model.indexOf(".pdb")==4?"<a target=_blank href=http://www.rcsb.org/pdb/files/"+model+">["+model.substring(0,4)+"]</a>":
 model.indexOf('"')<0?"<a target=_blank href="+model.split(";")[0]+">"+model+"</a>":model)
 
- if(model)s+=" The script run in this case was <b>"+ model+"</b>."
+ if(model)s+=" The script run in this case was <b>"+(model.indexOf(";") == 0 ? "" : "load ")+theref+"</b>."
  if(defaultloadscript != "")s+=" The default load script used here is \""+defaultloadscript+"\"."
  return "<p>"+s+"</p><table><tr height=1000><td></td></tr></table>"
 }
@@ -288,7 +246,7 @@ function getscriptlink(i,isul,addNumber){
 	} else if(S[j].length == 1){
 		s+="<br>"
 	} else {
-		if (S[j].indexOf("#")==0 && S[j].indexOf("# #") < 0)isul=false
+		if (S[j].indexOf("#")==0)isul=false
 		s+=(isul?"\n<li>":"")
 		if (addNumber)s+=i+":"
 	}
@@ -301,7 +259,7 @@ function getscriptlink(i,isul,addNumber){
 		+st.replace(/\</g,isxhtmltest?"&amp;lt;":"&lt;")
 		+(isLoad?"</font>":"")
 		+"</a>")
-        if (S[j].indexOf("#")>0 && S[j].indexOf("# #") < 0)
+        if (S[j].indexOf("#")>0)
 		st = st.substring(0, st.indexOf("#")) + "<font color=black>" + st.substring(st.indexOf("#") + (st.indexOf("#") == 9 ? 1 : 0)) + "</font>"
 	s+=st + (isul?"</li>":"")
 	if (S[j].indexOf("<span")<0 && S[j].indexOf("<a href")<0 
@@ -409,9 +367,26 @@ function showjsoninfo(){
  showmsg("",what,"")
 }
 
+function animFrameCallback(app, frameNo, fileNo, modelNo, firstNo, lastNo, 
+isAnimationRunning, animationDirection, currentDirection) {
+ showmsg("","animation running, range = " + isAnimationRunning + " " + firstNo + " " + lastNo
+	+"\ncurrent direction = " + currentDirection
+	+"\ncurrent frame,file,model = " + frameNo + " " + fileNo + " " + modelNo
+	)
+
+}
+
+function scriptCallback(app, status, message, millisec, errorUntranslated) {
+  // this filters out the "script completed" messages and only passes the real messages along
+  millisec = parseInt("" + millisec)
+  errorUntranslated = "" + errorUntranslated
+  if (errorUntranslated != "null" && errorUntranslated != "undefined" /*safari*/)
+	alert(errorUntranslated + "\n\n" + message)
+  if (millisec == 0) showmsg(app, status, message, 0)
+}
+
 ttest2=""
 function showmsg(n,objwhat,moreinfo,moreinfo2){
-
 ttest2 += "<br>showmsg:" + objwhat
 //alert("showmsg" + objwhat)
  var d = document.getElementById("msg");
@@ -498,14 +473,6 @@ function winHeight(){
   return myHeight
 }
 
-function getDragState() {
- return ";set picking " + (document.getElementById("chkDrag").checked ? "dragMinimize;" : "identify;")
-}
-
-function checkDragMode() {
-  jmolScript(getDragState())
-}
-
 function getpage(){
  var s=gettitle()+getremark()+getinfo()
 
@@ -531,16 +498,11 @@ function getpage(){
 	+'(images not available with MSIE)<br />'
 	+'<a href="javascript:jmolScript(\'save state\')">save</a>/<a href="javascript:jmolScript(\'console;show state\')">show</a>/<a href="javascript:jmolScript(\'restore state\')">restore</a> state'
 	+' <a href="javascript:newAppletWindow()">new resizable Window</a>'
-	+' <a style="color:red" href="javascript:newJmeWindow()" title="open a new JME window">2D-to-3D</a>'
-	+' <a style="color:red" href="javascript:jmolScript(\'minimize\')">minimize</a>'
-	+' <br/><a href="javascript:jmolScript(\'antialiasDisplay = true;set hermiteLevel 5\')">higher quality</a> '
-	+'&nbsp;&nbsp;<a href="javascript:jmolScript(\'antialiasDisplay = false;set hermiteLevel 0\')">faster performance</a> '
-	+' <a style="color:red" href="javascript:newJmeWindow(\'JME\')" title="open a JME window if 2D data are present">original 2D</a>'
-	+' <label style="color:red" href="javascript:jmolScript(\'minimize\')" title="drag an atom to minimize structure (small molecules only!)"><input type="checkbox" id="chkDrag" onclick="checkDragMode()">drag-minimize</label>'
+	+' antialias <a href="javascript:jmolScript(\'antialiasDisplay = true\')">ON</a> '
+	+'<a href="javascript:jmolScript(\'antialiasDisplay = false\')">OFF</a> '
 	+'\n<form action="javascript:showcmd()">'
 	+'\n<br /><a href="javascript:jmolScript(\'console\')" title="Jmol popup console">cmd</a>: <input autocomplete="off" id="cmd" type="text" size="50" value="" />'
 	+'\n<a href="javascript:showmsgbox()">popup</a>'
-	+'\n<a href="javascript:jmolScript(\'save state;zap;delay 0.2;restore state\')">??</a>'
  	+'\n<br /><textarea autocomplete="off" id="msg" cols="'+ncolsfortextarea+'" rows="6" wrap="off">'
 	+'\n</textarea>'
 	+'\n<center>Java Console Log level: '+jmolGetLogLevelRadios()+'</center>'

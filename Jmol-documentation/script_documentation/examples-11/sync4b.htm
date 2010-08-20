@@ -5,14 +5,9 @@
 
 jmolInitialize(".")
 
-function callback(a,b) {
- document.title=[a,b,b.charCodeAt(8)]
- return b
-}
-
 function sync() {
  var syncing = document.getElementById("drive").checked
- var s = (syncing ? 'sync * on;sync * "set syncMouse on;set syncScript off";sync jmolAppletC SLAVE;sync jmolAppletD SLAVE': 'sync * off')
+ var s = (syncing ? 'sync * on;sync * "set syncMouse on;set syncScript true";sync jmolAppletC SLAVE;sync jmolAppletD SLAVE': 'sync * off')
  jmolScript(s, "A");
 }
 

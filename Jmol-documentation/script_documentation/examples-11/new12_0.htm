@@ -37,9 +37,9 @@ model='load caffeine.xyz'
 docsearch = document.location.search.substring(1)
 if(docsearch.indexOf("model=")>=0)model=unescape(docsearch.split("model=")[1].split("&")[0])
 
-header = 'This page lists all features in Jmol 12.0, released 7/29/2010, that were not in Jmol 11.8. For a categorized listing, see <a href=../examples-12/new12.htm>new12.htm</a>. New features being added in Jmol 12 are at <a href=../examples-12/new.htm>../examples-12/new.htm</a>. Features introduced in Jmol 11.8 (with links there to previous versions) are described in <a href=new8.htm>new8.htm</a> Documentation for all commands can be found in the <a href=../index.htm?ver=12.0>Interactive Documentation for Jmol 12.0</a>. For the complete change log development summary, see <a href=http://jmol.svn.sourceforge.net/viewvc/jmol/branches/v12_0/Jmol/src/org/jmol/viewer/Jmol.properties?view=markup>Jmol.properties</a>. Comments? Suggestions? <a href=mailto:hansonr@stolaf.edu>Bob Hanson</a>'
+header = 'This page lists all new features in the current development version of Jmol (12.0.RCx) and to be introduced in Jmol 12.0. Features new to Jmol 11.8 (with links there to previous versions) are described in <a href=new8.htm>new8.htm</a> Documentation for all commands can be found in the <a href=../index.htm?ver=12.0>Interactive Documentation for Jmol 12.0</a>. For the complete change log development summary, see <a href=http://jmol.svn.sourceforge.net/viewvc/jmol/trunk/Jmol/src/org/jmol/viewer/Jmol.properties?view=markup>Jmol.properties</a>. Comments? Suggestions? <a href=mailto:hansonr@stolaf.edu>Bob Hanson</a>'
 
-latestVersion = '### Be sure you have the <a href=http://jmol.sourceforge.net/files>Latest version</a>. Very latest may appear as <a href=http://chemapps.stolaf.edu/jmol/docs/examples-12/Jmol-12.zip>Jmol-12.zip</a> prior to release at SourceForge. <br /><br /><a href=../index.htm?ver=12.0>documentation</a>&nbsp;&nbsp;&nbsp;<a href=http://jmol.svn.sourceforge.net/viewvc/jmol/trunk/Jmol-datafiles/>sample model files</a>&nbsp;&nbsp;&nbsp; <a href=https://sourceforge.net/tracker/?func=add&group_id=23629&atid=379136>feature request</a>&nbsp;&nbsp;&nbsp; <a href=https://sourceforge.net/tracker/?func=add&group_id=23629&atid=379133>bug report</a> ###'
+latestVersion = '### Be sure you have the <a href=http://jmol.sourceforge.net/files>Latest version</a>. Very latest may appear as <a href=http://chemapps.stolaf.edu/jmol/docs/examples-11/Jmol-11.zip>Jmol-11.zip</a> prior to release at SourceForge. <br /><br /><a href=../index.htm?ver=12.0>documentation</a>&nbsp;&nbsp;&nbsp;<a href=http://jmol.svn.sourceforge.net/viewvc/jmol/trunk/Jmol-datafiles/>sample model files</a>&nbsp;&nbsp;&nbsp; <a href=https://sourceforge.net/tracker/?func=add&group_id=23629&atid=379136>feature request</a>&nbsp;&nbsp;&nbsp; <a href=https://sourceforge.net/tracker/?func=add&group_id=23629&atid=379133>bug report</a> ###'
 
 function myClickCallback(app, x, y, modifiers, clickCount, Modifiers) {
 	document.title = [app, "x=" + x, "y=" + y, "modifiers=" + modifiers, "clickCount=" +clickCount]
@@ -125,7 +125,7 @@ Scripts=new Array(" ",header,latestVersion
 
 ,'### load DATA ###'
 ,'# Jmol 12.0.RC25 merges the DATA "model..." and DATA "append..." methods with the LOAD command, thus extending all of the options to the LOAD command to the DATA command.'
-,';set minimizationSteps 25;load data "model molfile"|line1|line2|line3|  5  4  0  0  0|0.0       0.0       0.00000000 C|0.0       1.0225207 0.00000000 H|0.8855288 -0.511260 0.00000000 H|-0.885528 -0.511260 0.00000000 H|1.0       0.0       0.00000000 Cl|  5  1  1|  4  1  1|  2  1  1|  1  3  1|end "model molfile" FILTER "2D" # Here we are adding 2D-to-3D minimization -- the vertical bars are only necessary here because of the JavaScript being used. Generally one would use new-line characters'
+,'load data "model molfile"|line1|line2|line3|  5  4  0  0  0|0.0       0.0       0.00000000 C|0.0       1.0225207 0.00000000 H|0.8855288 -0.511260 0.00000000 H|-0.885528 -0.511260 0.00000000 H|1.0       0.0       0.00000000 Cl|  5  1  1|  4  1  1|  2  1  1|  1  3  1|end "model molfile" FILTER "2D" # Here we are adding 2D-to-3D minimization -- the vertical bars are only necessary here because of the JavaScript being used. Generally one would use new-line characters'
 ,'load "" # same file loaded again, this time with no 2D conversion'
 
 ,'### set dotScale ###'
@@ -526,7 +526,7 @@ not ready for prime time?
 ,'compare {2.1} {1.1} SUBSET {spine} ATOMS {77-82} {936-941}, {92-93 or 97-100} {1025-1026 or 1031-1034}  ROTATE TRANSLATE 3'
 
 ,'### ROTATE options ###'
-,'# Jmol 11.9.37 introduces a number of new options for the ROTATE command. <b>rotateSelected</b> is deprecated. The SELECTED option for the <b>rotate</b> command takes care of this need. '
+,'# Jmol 11.9.37 introduces a number of new options for the ROTATE command. First, <b>rotateSelected</b> is deprecated. The SELECTED option for the <b>rotate</b> command takes care of this need. More significantly, '
 
 
 ,'### rotateSelected deprecated ###'
@@ -572,12 +572,12 @@ not ready for prime time?
 
 ,'### quaternion arrays, differences, means, and standard deviations ###'
 ,'# Quaterions can be used in Jmol to characterize the orientation of groups. In particular, Jmol can assign quaternion frames to amino acid and nucleic acid residues automatically. This suggests the possibility of manipulating arrays of quaternions and investigating their properties. Jmol 11.9.35 adds the capability to create arrays of quaternions, find the mean, and determine their standard deviation. In addition, Jmol 11.9.35 adds the capability to calculate the quaternion differences of an array of quaternions. Quaternion differences are intersting in the area of protein-protein alignment and in quantifying the regularity of structure in helixes, strands, and other secondary structure motifs.'
-,'load 1crn.pdb;cartoons only;select within(helix);x = quaternion({selected}, -1)'
+,'load 1crn.pdb;cartoons only;select within(helix);x = quaternion({selected})'
 ,'print x # an array of quaternions'
 ,'print quaternion(x) # mean quaternion'
 ,'print x.average # mean quaternion'
 ,'print x.stddev # standard deviation'
-,'dq = quaternion({8-18}, {9-19}, -1);print "helicalAxis/angle = " + (dq.average)%-6 + "\\nhelicalError = " + dq.stddev'
+,'dq = quaternion({8-18}, {9-19});print "helicalAxis/angle = " + (dq.average)%-6 + "\\nhelicalError = " + dq.stddev'
 ,'draw scale 10.0 VECTOR {8-18.CA} @{(dq.average)%-1}'
 
 
@@ -598,7 +598,7 @@ not ready for prime time?
 ,'translateselected x 10'
 ,'translateselected y 10 # note that on the screen a positive y direction is downward.'
 ,'translateselected x 2 Angstroms'
-,'translateselected Z 100'
+,'translateselected Z 10'
  
 ,'### connect XX% YY% ... ###'
 ,'# Jmol 11.9.32 adds the option to connect atoms based on ranges of percentage of bonding/ionic radii instead of fixed values.'
@@ -621,7 +621,8 @@ not ready for prime time?
 
 ,'### specialized file data atom properties ###'
 ,'# Jmol 11.9.33 allows readers to create atom-based property data that is unique to their specific reader. For example, the Crystal09 reader can read atomic spin and magnetic moment properties.'
-,'load full_PBE40.out;reset;center {1.2758056 2.209848 -1.3375282E-4}; rotate z -114.4; rotate y 82.07; rotate z 95.48; translate x 0.13; translate y 0.13;select *; font labels 35'
+,'load full_PBE40.out;reset;center {1.2758056 2.209848 -1.3375282E-4}; rotate z -114.4; rotate y 82.07; rotate z 95.48; translate x 0.13; translate y 0.13;'
+,'select *; font labels 35'
 ,'select property_spin = 1;label "\u2191"  # up arrow'
 ,'select property_spin = -1;label "\u2193"  # down arrow'
 ,'color {*} property_spin'
@@ -724,7 +725,10 @@ not ready for prime time?
 ,'# This option, introduced in Jmol 11.9.23, turns off many memory-consuming features of Jmol that are necessary for preserving the state. It can be used in situations where memory is at a premium and there is no desire to write or save the current Jmol state.'
 
 ,'### write MESH ###'
-,'# Jmol 11.9.23 will generate a relatively compact JVXL XML "vertex-only" mesh surface file from an isosurface. A typical command, after creation of an isosurface, would be <b>write MESH t.jvxl</b>. Note that standard JVXL files are considerably smaller, however. (Jmol application and signed applet only.)'
+,'# Jmol 11.9.23 will generate a relatively compact JVXL XML "vertex-only" mesh surface file from an isosurface. A typical command, after creation of an isosurface, would be <b>write MESH t.jvxl</b>. Note that standard JVXL files are considerably smaller, however.'
+,'load caffeine.xyz'
+,'isosurface molecular'
+,'write MESH'
 
 ,'### simple PDB trajectories ###'
 ,'# Jmol 11.9.23 allows reading of PDB files that contain no MODEL line and are instead simply concatentated versions of the same atoms as trajectories using the TRAJECTORY keyword. Each model must start with atom number 1 for this to work.'
@@ -897,9 +901,9 @@ not ready for prime time?
 ,'isosurface mesh nofill'
 
 ,'### write PMESH ###'
-,'# Jmol 11.9.14 adds the PMESH option to the write command, creating XJVXL files. (Jmol application and signed applet only.)'
-//,'zap;pmesh "pmesh.bin"'
-//,'write PMESH'
+,'# Jmol 11.9.14 adds the PMESH option to the write command, creating XJVXL files.'
+,'zap;pmesh "pmesh.bin"'
+,'write PMESH'
 
 ,'### getproperty SHAPEINFO ###'
 ,'# Jmol 11.9.14 expands the getproperty command to include information about an isosurface extent'

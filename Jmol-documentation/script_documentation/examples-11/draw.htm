@@ -119,8 +119,8 @@ Scripts=new Array(" "
 	,'spin off'
 
 ,'### drawing lines in multiple frames ###'
-
-	,'load cyclohexane_movie.xyz;draw line1 250 (atomno=2) (atomno=5);draw line2 200 (atomno=4 or atomno=3) (atomno=1 or atomno=6);'
+,'# When atom sets are indicated, if multiple models are being displayed with the FRAME command, the lines drawn will be on a per-model basis. Note that this feature is only available for simple drawn lines, not arrows, curves, or arcs.'
+	,'load cyclohexane_movie.xyz;frame 0;draw line1 250 (atomno=2) (atomno=5);draw line2 200 (atomno=4 or atomno=3) (atomno=1 or atomno=6);'
 	,'animation on'
 	,'animation off;spin  $line1 30'
 	,'animation off;spin  $line2 30'

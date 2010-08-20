@@ -1,6 +1,0 @@
-4
-test #jmolscript:connect (*) (*);set perspectivedepth off;spacefill 200%;set testflag1;
-C 0 0 0
-C 100 0 0
-C 50 0 50
-C 50 0 -50

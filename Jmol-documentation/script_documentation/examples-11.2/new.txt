@@ -1,8 +1,0 @@
-Complete list of new Jmol script/JavaScript functionality planned for 11.2 relative to 11.0. 
-See http://www.stolaf.edu/academics/chemapps/jmol/docs for details. Some of these 
-commands are not documented because they are intended for serialization only -- for the
-construction of a Jmol script describing the precise state of the applet or application.
-
-write MO filename
-write ISOSURFACE filename
-

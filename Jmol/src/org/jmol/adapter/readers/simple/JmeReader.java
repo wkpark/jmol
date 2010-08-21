@@ -84,17 +84,13 @@ public class JmeReader extends AtomSetCollectionReader {
       int indexColon = strAtom.indexOf(':');
       String elementSymbol = (indexColon > 0 ? strAtom.substring(0, indexColon)
           : strAtom);
-      if (elementSymbol.length() > 1)
-        switch (elementSymbol.charAt(1)) {
-        case '+':
-          elementSymbol = TextFormat.trim(elementSymbol, "+");
-          atom.formalCharge = 1;
-          break;
-        case '-':
-          elementSymbol = TextFormat.trim(elementSymbol, "-");
-          atom.formalCharge = -1;
-          break;
-        }
+      if (elementSymbol.indexOf("+") >= 0) {
+        elementSymbol = TextFormat.trim(elementSymbol, "+");
+        atom.formalCharge = 1;
+      } else if (elementSymbol.indexOf("-") >= 0) {
+        elementSymbol = TextFormat.trim(elementSymbol, "-");
+        atom.formalCharge = -1;
+      }
       atom.elementSymbol = elementSymbol;
     }
     /*

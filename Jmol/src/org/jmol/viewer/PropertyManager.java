@@ -305,8 +305,11 @@ public class PropertyManager {
         List<Object> v = (List<Object>) property;
         List<Object> v2 = new ArrayList<Object>();
         ptr--;
-        for (pt = 0; pt < v.size(); pt++)
-          v2.add(extractProperty(v.get(pt), args, ptr));
+        for (pt = 0; pt < v.size(); pt++) {
+          Object o = v.get(pt);
+          if (o instanceof Map<?,?>)
+            v2.add(extractProperty(o, args, ptr));
+        }
         return v2;
       }
       break;

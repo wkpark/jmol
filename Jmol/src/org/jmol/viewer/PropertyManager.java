@@ -300,6 +300,14 @@ public class PropertyManager {
           return extractProperty(h.get(key), args, ptr);
         return "";
       }
+      if (property instanceof List<?>) {
+        List<Object> v = (List<Object>) property;
+        List<Object> v2 = new ArrayList<Object>();
+        ptr--;
+        for (pt = 0; pt < v.size(); pt++)
+          v2.add(extractProperty(v.get(pt), args, ptr));
+        return v2;
+      }
       break;
     }
     return property;

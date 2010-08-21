@@ -1194,15 +1194,15 @@ abstract public class ModelCollection extends BondCollection {
                 : t3x));
       else if (a.isHetero())
         tokens = (leftJustify ? 
-            (t4h == null ? LabelToken.compile(viewer, "HETATM%5.-5i %-4.4a%1A%3.-3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]\n", '\0', null)
+            (t4h == null ? LabelToken.compile(viewer, "HETATM%5.-5i %-4.4a%1A%3.-3n %1c%4.-4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]\n", '\0', null)
                 : t4h)
-            : (t3h == null ? LabelToken.compile(viewer, "HETATM%5.-5i  %-3.3a%1A%3.-3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]\n", '\0', null)
+            : (t3h == null ? LabelToken.compile(viewer, "HETATM%5.-5i  %-3.3a%1A%3.-3n %1c%4.-4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]\n", '\0', null)
                 : t3h));
       else 
         tokens = (leftJustify ?
-            (t4a == null ? LabelToken.compile(viewer, "ATOM  %5.-5i %-4.4a%1A%3.-3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]\n", '\0', null)
+            (t4a == null ? LabelToken.compile(viewer, "ATOM  %5.-5i %-4.4a%1A%3.-3n %1c%4.-4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]\n", '\0', null)
                 : t4a)
-            : (t3a == null ? LabelToken.compile(viewer, "ATOM  %5.-5i  %-3.3a%1A%3.-3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]\n", '\0', null)
+            : (t3a == null ? LabelToken.compile(viewer, "ATOM  %5.-5i  %-3.3a%1A%3.-3n %1c%4.-4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]\n", '\0', null)
                 : t3a));
       sb.append(LabelToken.formatLabel(viewer, a, null, tokens, '\0', null));
     }

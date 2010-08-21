@@ -5186,7 +5186,7 @@
   <fah_proj number="2632" name="p2632_CGVES" public="y"
     server="171.67.108.24" atoms="205884" preferred="5.8" deadline="10"
     credit="1626" frames="100" code="A3" contact="kasson" kfactor="2.88"/>
-  <fah_proj number="2633" name="p2633_CGVES" public="n"
+  <fah_proj number="2633" name="p2633_CGVES" public="y"
     server="171.67.108.24" atoms="102731" preferred="1.2" deadline="2"
     credit="235" frames="100" code="A3" contact="kasson" kfactor="3.1"/>
   <fah_proj number="2650" name="p2650_Protein" public="n" file="xyz"
@@ -8519,6 +8519,9 @@
   <fah_proj number="6516" name="p6516_proA_predict" public="y"
     server="171.64.65.62" atoms="23935" preferred="21" deadline="31"
     credit="112" frames="100" code="G" contact="lan"/>
+  <fah_proj number="6517" name="p6517_1CFC_B_predict" public="n"
+    server="171.64.65.62" atoms="21293" preferred="18" deadline="27"
+    credit="99" frames="100" code="G" contact="lan"/>
   <fah_proj number="6518" name="p6518_proG_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="16027" preferred="13" deadline="20"
     credit="72" frames="100" code="G" contact="lan"/>
@@ -8802,6 +8805,11 @@
   <fah_proj number="10108" name="p10108" public="y"
     server="171.64.65.71" atoms="1254" preferred="2" deadline="3"
     credit="548" frames="100" code="GG2" contact="gbowman"/>
+
+  <!-- Projects 10200 to 10299 -->
+  <fah_proj number="10203" name="b2AR conformational space sampling" public="n"
+    server="171.67.108.39" atoms="58794" preferred="92" deadline="136"
+    credit="493" frames="100" code="A4" contact="kohlhoff"/>
 
   <!-- Projects 10300 to 10399 -->
   <fah_proj number="10300" name="p10300" public="n" file="xyz"

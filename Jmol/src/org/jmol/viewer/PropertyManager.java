@@ -301,6 +301,7 @@ public class PropertyManager {
         return "";
       }
       if (property instanceof List<?>) {
+        // drill down into vectors for this key
         List<Object> v = (List<Object>) property;
         List<Object> v2 = new ArrayList<Object>();
         ptr--;

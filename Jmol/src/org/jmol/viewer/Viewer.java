@@ -1098,16 +1098,20 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void slabByPixels(int pixels) {
     // MouseManager.mouseSinglePressDrag
     transformManager.slabByPercentagePoints(pixels);
+    refresh(3, "slabByPixels");
   }
 
   void depthByPixels(int pixels) {
     // MouseManager.mouseDoublePressDrag
     transformManager.depthByPercentagePoints(pixels);
+    refresh(3, "depthByPixels");
+
   }
 
   void slabDepthByPixels(int pixels) {
     // MouseManager.mouseSinglePressDrag
     transformManager.slabDepthByPercentagePoints(pixels);
+    refresh(3, "slabDepthByPixels");
   }
 
   public void slabToPercent(int percentSlab) {

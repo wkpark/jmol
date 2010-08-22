@@ -517,16 +517,16 @@ public class JmolPopup extends SimplePopup {
       }
       removeAll(submenu);
       enableMenu(submenu, false);
-      List biomolecules;
+      List<Map<String, Object>> biomolecules;
       if (modelIndex >= 0
-          && (biomolecules = (List) viewer.getModelAuxiliaryInfo(modelIndex,
+          && (biomolecules = (List<Map<String, Object>>) viewer.getModelAuxiliaryInfo(modelIndex,
               "biomolecules")) != null) {
         enableMenu(submenu, true);
         int nBiomolecules = biomolecules.size();
         for (int i = 0; i < nBiomolecules; i++) {
           String script = (isMultiFrame ? ""
               : "save orientation;load \"\" FILTER \"biomolecule " + (i + 1) + "\";restore orientation;");
-          int nAtoms = ((Integer) ((Map<String, Object>) biomolecules.get(i)).get("atomCount")).intValue();
+          int nAtoms = ((Integer) biomolecules.get(i).get("atomCount")).intValue();
           String entryName = GT._(getMenuText(isMultiFrame ? "biomoleculeText"
               : "loadBiomoleculeText"), new Object[] { Integer.valueOf(i + 1),
               Integer.valueOf(nAtoms) });

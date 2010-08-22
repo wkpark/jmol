@@ -753,9 +753,9 @@ public class ScriptEvaluator {
             res = parameterExpression(i, pt2, (isFor ? "XXX" : null), ignoreComma, isFor,
                 j, false, localVars, isFunctionOfX ? null : dummy);
             if (isFor) {
-              if (res == null || ((List) res).size() == 0)
+              if (res == null || ((List<?>) res).size() == 0)
                 error(ERROR_invalidArgument);
-              sout[p++] = ScriptVariable.sValue((ScriptVariable) ((List) res).get(0));
+              sout[p++] = ScriptVariable.sValue((ScriptVariable) ((List<?>) res).get(0));
             } else if (((Boolean) res).booleanValue()) {
               bsSelect.set(j);
             }

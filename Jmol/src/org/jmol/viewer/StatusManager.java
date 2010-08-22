@@ -224,7 +224,6 @@ class StatusManager {
   
   private boolean asVector = true;
 
-  @SuppressWarnings("unchecked")
   synchronized Object getStatusChanged(String statusNameList) {
     /*
      * returns a Vector of statusRecordSets, one per status type,
@@ -240,12 +239,20 @@ class StatusManager {
       asVector = (statusNameList.indexOf("VECTOR") == 3);
       return statusNameList;
     }
-    Object msgList;
     if (asVector) {
-      msgList = new ArrayList<List<List<Object>>>();
-    } else {
-      msgList = new Hashtable<String, List<List<Object>>>();
+      List<List<List<Object>>> msgList = new ArrayList<List<List<Object>>>();
+      if (resetMessageQueue(statusNameList)) {
+        return msgList;
+      }
+      Iterator<String> e = messageQueue.keySet().iterator();
+      while (e.hasNext()) {
+        String statusName = e.next();
+        List<List<Object>> record = messageQueue.remove(statusName);
+        msgList.add(record);
+      }
+      return msgList;
     }
+    Map<String, List<List<Object>>>msgList = new Hashtable<String, List<List<Object>>>();
     if (resetMessageQueue(statusNameList)) {
       return msgList;
     }
@@ -253,11 +260,7 @@ class StatusManager {
     while (e.hasNext()) {
       String statusName = e.next();
       List<List<Object>> record = messageQueue.remove(statusName);
-      if (asVector) {
-        ((List) msgList).add(record);
-      } else {
-        ((Map) msgList).put(statusName, record);
-      }
+      msgList.put(statusName, record);
     }
     return msgList;
   }

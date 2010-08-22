@@ -813,7 +813,7 @@ public class SurfaceGenerator {
     }
 
     if ("functionXY" == propertyName) {
-      params.setFunctionXY((List) value);
+      params.setFunctionXY((List<Object>) value);
       if (params.isContoured)
         volumeData.setPlaneParameters(new Point4f(0, 0, 1, 0)); // xy plane
                                                                 // through
@@ -825,7 +825,7 @@ public class SurfaceGenerator {
     }
 
     if ("functionXYZ" == propertyName) {
-      params.setFunctionXYZ((List) value);
+      params.setFunctionXYZ((List<Object>) value);
       processState();
       return true;
     }

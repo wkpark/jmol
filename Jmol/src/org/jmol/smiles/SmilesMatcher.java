@@ -271,14 +271,14 @@ public class SmilesMatcher implements SmilesMatcherInterface {
         return (BitSet) search.search(false);
       case MODE_ARRAY:
         search.asVector = true;
-        vSubstructures = (List) search.search(false);
+        vSubstructures = (List<Object>) search.search(false);
         BitSet[] bitsets = new BitSet[vSubstructures.size()];
         for (int i = 0; i < bitsets.length; i++)
           bitsets[i] = (BitSet) vSubstructures.get(i);
         return bitsets;
       case MODE_MAP:
         search.getMaps = true;
-        vSubstructures = (List) search.search(false);
+        vSubstructures = (List<Object>) search.search(false);
         int[][] maps = new int[vSubstructures.size()][];
         for (int i = 0; i < maps.length; i++)
           maps[i] = (int[]) vSubstructures.get(i);

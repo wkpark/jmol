@@ -601,9 +601,9 @@ public class Escape {
     }
     if (info instanceof List) {
       sb.append("[ ");
-      int imax = ((List) info).size();
+      int imax = ((List<?>) info).size();
       for (int i = 0; i < imax; i++) {
-        sb.append(sep).append(toJSON(null, ((List) info).get(i)));
+        sb.append(sep).append(toJSON(null, ((List<?>) info).get(i)));
         sep = ",";
       }
       sb.append(" ]");
@@ -642,11 +642,11 @@ public class Escape {
     }
     if (info instanceof Map) {
       sb.append("{ ");
-      Iterator<String> e = ((Map) info).keySet().iterator();
+      Iterator<String> e = ((Map<String, ?>) info).keySet().iterator();
       while (e.hasNext()) {
         String key = e.next();
         sb.append(sep)
-            .append(packageJSON(key, toJSON(null, ((Map) info).get(key))));
+            .append(packageJSON(key, toJSON(null, ((Map<?, ?>) info).get(key))));
         sep = ",";
       }
       sb.append(" }");
@@ -659,7 +659,6 @@ public class Escape {
     return toReadable(null, info);
   }
 
-  @SuppressWarnings("unchecked")
   public static String toReadable(String name, Object info) {
     StringBuilder sb =new StringBuilder();
     String sep = "";
@@ -718,9 +717,9 @@ public class Escape {
       return packageReadable(name, "float[][]", sb);
     }
     if (info instanceof List) {
-      int imax = ((List) info).size();
+      int imax = ((List<?>) info).size();
       for (int i = 0; i < imax; i++) {
-        sb.append(toReadable(name + "[" + (i + 1) + "]", ((List) info).get(i)));
+        sb.append(toReadable(name + "[" + (i + 1) + "]", ((List<?>) info).get(i)));
       }
       return packageReadable(name, "List[" + imax + "]", sb);
     }
@@ -741,11 +740,11 @@ public class Escape {
       return packageReadable(name, null, sb);
     }
     if (info instanceof Map) {
-      Iterator e = ((Map) info).keySet().iterator();
+      Iterator<?> e = ((Map<?, ?>) info).keySet().iterator();
       while (e.hasNext()) {
         String key = (String) e.next();
         sb.append(toReadable((name == null ? "" : name + ".") + key,
-            ((Map) info).get(key)));
+            ((Map<?, ?>) info).get(key)));
       }
       return sb.toString();
     }

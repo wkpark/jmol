@@ -9116,7 +9116,7 @@
   <fah_proj number="10901" name="Abeta40_mono" public="n"
     server="171.64.122.84" atoms="34321" preferred="40" deadline="59"
     credit="209" frames="100" code="G" contact="lin5"/>
-  <fah_proj number="10910" name="Abeta42_mono_L" public="n"
+  <fah_proj number="10910" name="Abeta42_mono_L" public="n" file="xyz"
     server="171.67.108.33" atoms="98250" preferred="28" deadline="41"
     credit="145" frames="100" code="G" contact="lin5"/>
   <fah_proj number="10911" name="AbetaM1_mono_L" public="n" file="xyz"

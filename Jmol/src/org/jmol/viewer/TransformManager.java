@@ -1733,7 +1733,7 @@ abstract class TransformManager {
   
   public void stopMotion() {
     motion = null;
-    setSpinOn(false);
+    //setSpinOn(false);// trouble here with Viewer.checkHalt
   }
 
   class MotionThread extends Thread {
@@ -2172,25 +2172,26 @@ abstract class TransformManager {
     setSpinOn(spinOn, Float.MAX_VALUE, null, null, false);
   }
 
-  private void setSpinOn(boolean spinOn, float endDegrees, List<Point3f> endPositions, BitSet bsAtoms, boolean isGesture) {
+  private void setSpinOn(boolean spinOn, float endDegrees,
+                         List<Point3f> endPositions, BitSet bsAtoms,
+                         boolean isGesture) {
     if (navOn && spinOn)
       setNavOn(false);
     this.spinOn = spinOn;
     viewer.getGlobalSettings().setParameterValue("_spinning", spinOn);
     if (spinOn) {
       if (spinThread == null) {
-        spinThread = new SpinThread(endDegrees, endPositions, bsAtoms, false, isGesture);
+        spinThread = new SpinThread(endDegrees, endPositions, bsAtoms, false,
+            isGesture);
         if (bsAtoms == null)
           spinThread.start();
-        else 
+        else
           spinThread.run();
       }
-    } else {
-      if (spinThread != null) {
-        spinThread.isReset = true;
-        spinThread.interrupt();
-        spinThread = null;
-      }
+    } else if (spinThread != null) {
+      spinThread.isReset = true;
+      spinThread.interrupt();
+      spinThread = null;
     }
   }
 

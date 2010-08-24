@@ -4215,27 +4215,32 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return true;
     }
     str = str.toLowerCase();
-    boolean ret = false;
-    String info = null;
+    boolean exitScript = false;
+    String haltType = null;
     if (str.startsWith("exit")) {
       haltScriptExecution();
       clearScriptQueue();
       clearTimeout(null);
-      ret = str.equals(info = "exit");
+      exitScript = str.equals(haltType = "exit");
     } else if (str.startsWith("quit")) {
       haltScriptExecution();
-      ret = str.equals(info = "quit");
+      exitScript = str.equals(haltType = "quit");
     }
-    if (info != null) {
-      if (isInterrupt) { // i.e. from the console
-        stopMinimization();
-        transformManager.stopMotion();
-      }
-      Logger.info(isCmdLine_c_or_C_Option ? info + " -- stops script checking" 
-          : (isInterrupt ? "!" : "") + info + " received");
-      isCmdLine_c_or_C_Option = false;      
+    if (haltType == null)
+      return false;
+    // !quit or !halt
+    if (isInterrupt) {
+      transformManager.setSpinOn(false);
+      stopMinimization();
     }
-    return ret;
+    if (isInterrupt || waitForMoveTo()) {
+      stopMotion();
+    }
+    Logger.info(isCmdLine_c_or_C_Option ? haltType
+        + " -- stops script checking" : (isInterrupt ? "!" : "") + haltType
+        + " received");
+    isCmdLine_c_or_C_Option = false;
+    return exitScript;
   }
 
   // / direct no-queue use:

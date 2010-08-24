@@ -372,7 +372,11 @@ public final class AppConsole extends JmolConsole implements JmolAppConsoleInter
     } else {
       boolean isScriptExecuting = viewer.isScriptExecuting();
       strErrorMessage = "";
-      if (viewer.checkHalt(strCommand, true))
+      String str = strCommand;
+      boolean isInterrupt = (str.charAt(0) == '!');
+      if (isInterrupt)
+        str = str.substring(1);
+      if (viewer.checkHalt(str, isInterrupt))
         strErrorMessage = (isScriptExecuting ? "script execution halted with "
             + strCommand : "no script was executing");
       //the problem is that scriptCheck is synchronized, so these might get backed up. 

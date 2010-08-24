@@ -153,11 +153,11 @@ public class ZipUtil {
    * @param is
    * @param list
    * @param listPtr
-   * @param asInputStream  for Pmesh
+   * @param asBufferedInputStream  for Pmesh
    * @return  directory listing or subfile contents
    */
   static public Object getZipFileContents(InputStream is, String[] list,
-                                          int listPtr, boolean asInputStream) {
+                                          int listPtr, boolean asBufferedInputStream) {
     StringBuffer ret;
     if (list == null || listPtr >= list.length)
       return getZipDirectoryAsStringAndClose(is);
@@ -175,8 +175,8 @@ public class ZipUtil {
             ret.append(name).append('\n');
         }
         String str = ret.toString();
-        if (asInputStream)
-          return new ByteArrayInputStream(str.getBytes());
+        if (asBufferedInputStream)
+          return new BufferedInputStream(new ByteArrayInputStream(str.getBytes()));
         return str;
       }
       boolean asBinaryString = false;
@@ -191,9 +191,9 @@ public class ZipUtil {
         //System.out.println("ZipUtil::ZipEntry.name = " + ze.getName() + " " + bytes.length);
         if (isZipFile(bytes))
           return getZipFileContents(new BufferedInputStream(
-              new ByteArrayInputStream(bytes)), list, ++listPtr, asInputStream);
-        if (asInputStream)
-          return new ByteArrayInputStream(bytes);
+              new ByteArrayInputStream(bytes)), list, ++listPtr, asBufferedInputStream);
+        if (asBufferedInputStream)
+          return new BufferedInputStream(new ByteArrayInputStream(bytes));
         if (asBinaryString) {
           ret = new StringBuffer();
           for (int i = 0; i < bytes.length; i++)

@@ -314,96 +314,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return;
     }
 
-    // Isosurface / SurfaceGenerator both interested
-
-    if ("setColorScheme" == propertyName) {
-      if (thisMesh == null) {
-        boolean isTranslucent;
-        if (value instanceof ColorEncoder) {
-          ColorEncoder ce = (ColorEncoder) value;
-          isTranslucent = ce.isTranslucent;
-        } else { // "sets"
-          isTranslucent = false;
-        }
-        thisMesh.colix = Graphics3D.getColixTranslucent(thisMesh.colix,
-            isTranslucent, isTranslucent ? 0.5f : 0);
-      }
-    }
-
-    if ("title" == propertyName) {
-      if (value instanceof String && "-".equals(value))
-        value = null;
-      setPropertySuper(propertyName, value, bs);
-      value = title;
-    }
-
-    if ("withinPoints" == propertyName) {
-      Object[] o = (Object[]) value;
-      withinDistance = ((Float) o[0]).floatValue();
-      withinPoints = (List<Point3f>) o[3];
-      if (withinPoints.size() == 0)
-        withinPoints = viewer.getAtomPointVector((BitSet) o[2]);
-    }
-
-    if ("scale3d" == propertyName) {
-      scale3d = ((Float) value).floatValue();
-      if (thisMesh != null) {
-        thisMesh.scale3d = thisMesh.jvxlData.scale3d = scale3d;
-        thisMesh.offsetVertices = null;
-      }
-    }
-
-    if ("getSurfaceSets" == propertyName) {
-      if (thisMesh != null)
-        thisMesh.thisSet = ((Integer) value).intValue();
-    }
-
-    if ("contour" == propertyName) {
-      explicitContours = true;
-    }
-
-    if ("atomIndex" == propertyName) {
-      atomIndex = ((Integer) value).intValue();
-    }
-
-    if ("pocket" == propertyName) {
-      Boolean pocket = (Boolean) value;
-      lighting = (pocket.booleanValue() ? JmolConstants.FULLYLIT
-          : JmolConstants.FRONTLIT);
-    }
-
-    if ("colorRGB" == propertyName) {
-      int rgb = ((Integer) value).intValue();
-      defaultColix = Graphics3D.getColix(rgb);
-    }
-
-    if ("molecularOrbital" == propertyName) {
-      moNumber = ((Integer) value).intValue();
-      if (!isColorExplicit)
-        isPhaseColored = true;
-    }
-
-    if (propertyName == "functionXY") {
-      if (sg.isStateDataRead())
-        setScriptInfo(null); // for script DATA1
-    }
-
-    if ("center" == propertyName) {
-      center.set((Point3f) value);
-    }
-
-    if ("phase" == propertyName) {
-      isPhaseColored = true;
-    }
-
-    if ("plane" == propertyName) {
-      allowContourLines = false;
-    }
-
-    if ("functionXY" == propertyName) {
-      allowContourLines = false;
-    }
-
     if ("finalize" == propertyName) {
       thisMesh.setDiscreteColixes(sg.getParams().contoursDiscrete, sg
           .getParams().contourColixes);
@@ -413,14 +323,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return;
     }
 
-    if ("init" == propertyName) {
-      newSg();
-    }
-
-    if ("localName" == propertyName) {
-      value = viewer.getOutputStream((String) value, null);
-      propertyName = "outputStream";
-    }
+    // Isosurface / SurfaceGenerator both interested
 
     if ("mapColor" == propertyName || "readFile" == propertyName) {
       if (value == null) {
@@ -443,7 +346,70 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         }
 
       }
+    } else if ("atomIndex" == propertyName) {
+      atomIndex = ((Integer) value).intValue();
+    } else if ("center" == propertyName) {
+      center.set((Point3f) value);
+    } else if ("colorRGB" == propertyName) {
+      int rgb = ((Integer) value).intValue();
+      defaultColix = Graphics3D.getColix(rgb);
+    } else if ("contour" == propertyName) {
+      explicitContours = true;
+    } else if ("functionXY" == propertyName) {
+      allowContourLines = false;
+      if (sg.isStateDataRead())
+        setScriptInfo(null); // for script DATA1
+    } else if ("init" == propertyName) {
+      newSg();
+    } else if ("getSurfaceSets" == propertyName) {
+      if (thisMesh != null)
+        thisMesh.thisSet = ((Integer) value).intValue();
+    } else if ("localName" == propertyName) {
+      value = viewer.getOutputStream((String) value, null);
+      propertyName = "outputStream";
+    } else if ("molecularOrbital" == propertyName) {
+      moNumber = ((Integer) value).intValue();
+      if (!isColorExplicit)
+        isPhaseColored = true;
+    } else if ("phase" == propertyName) {
+      isPhaseColored = true;
+    } else if ("plane" == propertyName) {
+      allowContourLines = false;
+    } else if ("pocket" == propertyName) {
+      Boolean pocket = (Boolean) value;
+      lighting = (pocket.booleanValue() ? JmolConstants.FULLYLIT
+          : JmolConstants.FRONTLIT);
+    } else if ("scale3d" == propertyName) {
+      scale3d = ((Float) value).floatValue();
+      if (thisMesh != null) {
+        thisMesh.scale3d = thisMesh.jvxlData.scale3d = scale3d;
+        thisMesh.offsetVertices = null;
+      }
+    } else if ("setColorScheme" == propertyName) {
+      if (thisMesh == null) {
+        boolean isTranslucent;
+        if (value instanceof ColorEncoder) {
+          ColorEncoder ce = (ColorEncoder) value;
+          isTranslucent = ce.isTranslucent;
+        } else { // "sets"
+          isTranslucent = false;
+        }
+        thisMesh.colix = Graphics3D.getColixTranslucent(thisMesh.colix,
+            isTranslucent, isTranslucent ? 0.5f : 0);
+      }
+    } else if ("title" == propertyName) {
+      if (value instanceof String && "-".equals(value))
+        value = null;
+      setPropertySuper(propertyName, value, bs);
+      value = title;
+    } else if ("withinPoints" == propertyName) {
+      Object[] o = (Object[]) value;
+      withinDistance = ((Float) o[0]).floatValue();
+      withinPoints = (List<Point3f>) o[3];
+      if (withinPoints.size() == 0)
+        withinPoints = viewer.getAtomPointVector((BitSet) o[2]);
     }
+
     // surface Export3D only (return TRUE) or shared (return FALSE)
 
     if (sg != null && sg.setParameter(propertyName, value, bs))

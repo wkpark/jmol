@@ -58,7 +58,7 @@ public class BinaryDocument {
   public void close() {
     try {
       stream.close();
-    } catch (IOException e) {
+    } catch (Exception e) {
       // ignore
     }
     if (os != null) {

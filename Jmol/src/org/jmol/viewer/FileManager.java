@@ -517,29 +517,28 @@ public class FileManager {
       return t;
     try {
       BufferedInputStream bis = new BufferedInputStream((InputStream) t, 8192);
-      InputStream is = bis;
-      if (CompoundDocument.isCompoundDocument(is)) {
+      if (CompoundDocument.isCompoundDocument(bis)) {
         CompoundDocument doc = new CompoundDocument(bis);
         return getBufferedReaderForString(doc.getAllData("Molecule").toString());
-      } else if (ZipUtil.isGzip(is)) {
+      } else if (ZipUtil.isGzip(bis)) {
         do {
-          is = new BufferedInputStream(new GZIPInputStream(is));
-        } while (ZipUtil.isGzip(is));
-      } else if (ZipUtil.isZipFile(is)) {
+          bis = new BufferedInputStream(new GZIPInputStream(bis));
+        } while (ZipUtil.isGzip(bis));
+      } else if (ZipUtil.isZipFile(bis)) {
         if (allowZipStream)
           return new ZipInputStream(bis);
         if (asInputStream)
-          return ZipUtil.getZipFileContents(is, subFileList, 1, true);
+          return ZipUtil.getZipFileContents(bis, subFileList, 1, true);
         // danger -- converting bytes to String here.
         // we lose 128-156 or so.
-        String s = (String) ZipUtil.getZipFileContents(is, subFileList, 1,
+        String s = (String) ZipUtil.getZipFileContents(bis, subFileList, 1,
             false);
-        is.close();
+        bis.close();
         return getBufferedReaderForString(s);
       }
       if (asInputStream)
-        return is;
-      return new BufferedReader(new InputStreamReader(is));
+        return bis;
+      return new BufferedReader(new InputStreamReader(bis));
     } catch (Exception ioe) {
       return ioe.getMessage();
     }

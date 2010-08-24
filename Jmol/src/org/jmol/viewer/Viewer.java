@@ -1114,13 +1114,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     refresh(3, "slabDepthByPixels");
   }
 
+  public void slabInternal(Point4f plane, boolean isDepth) {
+    transformManager.slabInternal(plane, isDepth);
+  }
+
   public void slabToPercent(int percentSlab) {
     // Eval.slab
     transformManager.slabToPercent(percentSlab);
-  }
-
-  public void slabInternal(Point4f plane, boolean isDepth) {
-    transformManager.slabInternal(plane, isDepth);
   }
 
   public void depthToPercent(int percentDepth) {
@@ -5838,6 +5838,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       break;
     case Token.ambientpercent:
       Graphics3D.setAmbientPercent(value);
+      break;
+    case Token.zdepth:
+      transformManager.zDepthToPercent(value);
+      break;
+    case Token.zslab:
+      transformManager.zSlabToPercent(value);
+      break;
+    case Token.depth:
+      transformManager.depthToPercent(value);
+      break;
+    case Token.slab:
+      transformManager.slabToPercent(value);
       break;
     case Token.zshadepower:
       Graphics3D.setZShadePower(Math.max(value, 1));

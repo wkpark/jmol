@@ -584,7 +584,7 @@ public class StateManager {
         + ";loadformat;smilesurlformat;edsurlformat;edsurlcutoff;multiprocessor;navigationmode;"
         + ";perspectivedepth;phongexponent;perspectivemodel;preservestate;refreshing;repaintwaitms;rotationradius"
         + ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showunitcell"
-        + ";slabenabled;zshade;zshadepower;specular;specularexponent;specularpercent;specularpower;stateversion"
+        + ";slabenabled;slab;depth;zshade;zshadepower;specular;specularexponent;specularpercent;specularpower;stateversion"
         + ";statusreporting;stereo;stereostate;vibrationperiod"
         + ";unitcellcolor;visualrange;windowcentered;zerobasedxyzrasmol;zoomenabled;mousedragfactor;mousewheelfactor"
         //    saved in the hash table but not considered part of the state:
@@ -747,6 +747,8 @@ public class StateManager {
       setParameterValue("showfrank", false);         // maintained by Viewer
       setParameterValue("showUnitcell", false);      // maintained by Uccage
       setParameterValue("slabEnabled", false);       // maintained by TransformManager     
+      setParameterValue("depth", 0);                 // maintained by TransformManager
+      setParameterValue("slab", 100);                // maintained by TransformManager
       setParameterValue("spinX", 0);                 // maintained by TransformManager
       setParameterValue("spinY", TransformManager.DEFAULT_SPIN_Y);
       setParameterValue("spinZ", 0);                 // maintained by TransformManager
@@ -956,9 +958,11 @@ public class StateManager {
       setParameterValue("vibrationScale", vibrationScale);
       setParameterValue("visualRange", visualRange);
       setParameterValue("wireframeRotation", wireframeRotation);
+      setParameterValue("zDepth", zDepth);
+      setParameterValue("zeroBasedXyzRasmol", zeroBasedXyzRasmol);
       setParameterValue("zoomLarge", zoomLarge);
       setParameterValue("zShadePower", zShadePower);
-      setParameterValue("zeroBasedXyzRasmol", zeroBasedXyzRasmol);
+      setParameterValue("zSlab", zSlab);  
     }
 
     //lighting (see Graphics3D.Shade3D
@@ -970,7 +974,9 @@ public class StateManager {
     int phongExponent = 64;    // 2^specularExponent
     int specularPercent = 22;
     int specularPower = 40;
+    int zDepth = 0;
     int zShadePower = 1;
+    int zSlab = 0;
     
     boolean slabByMolecule = false;
     boolean slabByAtom = false;

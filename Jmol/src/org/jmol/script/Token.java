@@ -299,7 +299,7 @@ public class Token {
   final static int console      = scriptCommand | 11 | defaultON;
 //final static int data         see mathfunc
   final static int delay        = scriptCommand | 12 | defaultON;
-  final static int depth        = scriptCommand | 13 | defaultON;
+  public final static int depth = scriptCommand | 13 | intparam | defaultON;
   final static int exit         = scriptCommand | 14 | noArgs;
   final static int exitjmol     = scriptCommand | 17 | noArgs;
 //final static int file         see intproperty
@@ -307,7 +307,7 @@ public class Token {
   final static int frame        = scriptCommand | 20;
 //final static int getproperty  see mathfunc
   final static int gotocmd      = scriptCommand | 21 | implicitStringCommand;
-  public final static int hbond        = scriptCommand | 22 | deprecatedparam | expression | defaultON;
+  public final static int hbond = scriptCommand | 22 | deprecatedparam | expression | defaultON;
   final static int history      = scriptCommand | 23 | deprecatedparam;
   final static int initialize   = scriptCommand | 24 | noArgs;
   final static int invertSelected = scriptCommand | 25;
@@ -318,8 +318,8 @@ public class Token {
 //final static int model        see mathfunc
 //final static int measure      see mathfunc
   final static int move         = scriptCommand | 32;
-  public final static int moveto       = scriptCommand | 34;
-  public final static int navigate     = scriptCommand | 35;
+  public final static int moveto = scriptCommand | 34;
+  public final static int navigate = scriptCommand | 35;
 //final static int quaternion   see mathfunc
   final static int parallel     = flowCommand   | 36;
   final static int plot         = scriptCommand | 37;
@@ -332,16 +332,16 @@ public class Token {
   final static int refresh      = scriptCommand | 43 | noArgs;
   final static int reset        = scriptCommand | 44;
   final static int restore      = scriptCommand | 45;
-  public final static int resume       = scriptCommand | 46 | noArgs;
+  public final static int resume = scriptCommand | 46 | noArgs;
   final static int rotate       = scriptCommand | 48 | defaultON;
   final static int rotateSelected = scriptCommand | 49;
   final static int save         = scriptCommand | 50;
 //final static int script   see mathfunc
   public final static int selectionhalos = scriptCommand | 51 | deprecatedparam | defaultON;
   final static int show         = scriptCommand | 52;
-  final static int slab         = scriptCommand | 53 | defaultON;
+  public final static int slab  = scriptCommand | 53 | intparam | defaultON;
   final static int spin         = scriptCommand | 55 | deprecatedparam | defaultON;
-  public final static int ssbond       = scriptCommand | 56 | deprecatedparam | defaultON;
+  public final static int ssbond = scriptCommand | 56 | deprecatedparam | defaultON;
   final static int step         = scriptCommand | 58 | noArgs;
   final static int stereo       = scriptCommand | 59 | defaultON;
 //final static int structure    see intproperty
@@ -860,7 +860,9 @@ public class Token {
   public final static int strandcountformeshribbon       = intparam | 52;
   public final static int strandcountforstrands          = intparam | 54;
   public final static int strutspacing                   = intparam | 56;
-  public final static int zshadepower                    = intparam | 58;
+  public final static int zdepth                         = intparam | 58;
+  public final static int zslab                          = intparam | 60;
+  public final static int zshadepower                    = intparam | 62;
 
   public final static int allowembeddedscripts           = booleanparam | 2;
   public final static int allowgestures                  = booleanparam | 4;
@@ -2104,6 +2106,8 @@ public class Token {
       "strandCountForMeshRibbon",                 new Token(strandcountformeshribbon),
       "strandCountForStrands",                    new Token(strandcountforstrands),
       "strutSpacing",                             new Token(strutspacing),
+      "zDepth",                                   new Token(zdepth),
+      "zSlab",                                    new Token(zslab),
       "zshadePower",                              new Token(zshadepower),
 
       // boolean

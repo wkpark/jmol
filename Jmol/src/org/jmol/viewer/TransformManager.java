@@ -869,7 +869,9 @@ abstract class TransformManager {
 
   int slabPercentSetting;
   int depthPercentSetting;
-
+  int zSlabPercentSetting; // from global.zSlab
+  int zDepthPercentSetting;// from global.zDepth
+  
   int slabValue;
   int depthValue;
   int zSlabValue;
@@ -890,6 +892,9 @@ abstract class TransformManager {
     viewer.getGlobalSettings().setParameterValue("zoomEnabled", zoomEnabled);
   }
 
+  Point4f slabPlane = null;
+  Point4f depthPlane = null;
+
   void slabReset() {
     slabToPercent(100);
     depthToPercent(0);
@@ -906,9 +911,15 @@ abstract class TransformManager {
   void slabByPercentagePoints(int percentage) {
     slabPlane = null;
     slabPercentSetting += percentage;
+    slabDepthChanged();
     if (depthPercentSetting >= slabPercentSetting)
       depthPercentSetting = slabPercentSetting - 1;
 //    System.out.println("transformManager slab/depthpercentSetting: " + slabPercentSetting + " " + depthPercentSetting);
+  }
+
+  private void slabDepthChanged() {
+    viewer.getGlobalSettings().setParameterValue("slab", slabPercentSetting);
+    viewer.getGlobalSettings().setParameterValue("depth", depthPercentSetting);
   }
 
   void depthByPercentagePoints(int percentage) {
@@ -916,6 +927,7 @@ abstract class TransformManager {
     depthPercentSetting += percentage;
     if (slabPercentSetting <= depthPercentSetting)
       slabPercentSetting = depthPercentSetting + 1;
+    slabDepthChanged();
 //    System.out.println("transformManager slab/depthpercentSetting: " + slabPercentSetting + " " + depthPercentSetting);
   }
 
@@ -924,6 +936,7 @@ abstract class TransformManager {
     depthPlane = null;
     slabPercentSetting += percentage;
     depthPercentSetting += percentage;
+    slabDepthChanged();
 //    System.out.println("transformManager slab/depthpercentSetting: " + slabPercentSetting + " " + depthPercentSetting);
   }
 
@@ -932,15 +945,27 @@ abstract class TransformManager {
     slabPlane = null;
     if (depthPercentSetting >= slabPercentSetting)
       depthPercentSetting = slabPercentSetting - 1;
+    slabDepthChanged();
   }
 
-  Point4f slabPlane = null;
-  Point4f depthPlane = null;
-
   void depthToPercent(int percentDepth) {
+    viewer.getGlobalSettings().setParameterValue("depth", percentDepth);
     depthPercentSetting = percentDepth;
     if (slabPercentSetting <= depthPercentSetting)
       slabPercentSetting = depthPercentSetting + 1;
+    slabDepthChanged();
+  }
+
+  void zSlabToPercent(int percentSlab) {
+    zSlabPercentSetting = percentSlab;
+    if (zDepthPercentSetting > zSlabPercentSetting)
+      zDepthPercentSetting = percentSlab;
+  }
+
+  void zDepthToPercent(int percentDepth) {
+    zDepthPercentSetting = percentDepth;
+    if (zDepthPercentSetting > zSlabPercentSetting)
+      zSlabPercentSetting = percentDepth;
   }
 
   void slabInternal(Point4f plane, boolean isDepth) {
@@ -1430,8 +1455,15 @@ abstract class TransformManager {
    */
 
   protected void calcSlabAndDepthValues() {
-    zSlabValue = slabValue = zValueFromPercent(slabPercentSetting);
-    zDepthValue = depthValue = zValueFromPercent(depthPercentSetting);
+    slabValue = zValueFromPercent(slabPercentSetting);
+    depthValue = zValueFromPercent(depthPercentSetting);
+    if (zSlabPercentSetting == zDepthPercentSetting) {
+      zSlabValue = slabValue;
+      zDepthValue = depthValue;
+    } else {
+      zSlabValue = zValueFromPercent(zSlabPercentSetting);
+      zDepthValue = zValueFromPercent(zDepthPercentSetting);
+    }
     viewer.getGlobalSettings().setParameterValue("_slabPlane",
         Escape.escape(getSlabDepthPlane(false)));
     viewer.getGlobalSettings().setParameterValue("_depthPlane",

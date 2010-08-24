@@ -362,7 +362,7 @@ class TransformManager11 extends TransformManager {
     transformPoint(navigationCenter, navigationOffset);
     navigationOffset.z = referencePlaneOffset;
     navMode = NAV_MODE_NONE;
-    calcNavigationSlabAndDepth();
+    calcNavSlabAndDepthValues();
   }
 
   private float getNavPtHeight() {
@@ -370,19 +370,14 @@ class TransformManager11 extends TransformManager {
     return height / (navigateSurface ? 1f : 2f);
   }
 
-  protected void calcNavigationSlabAndDepth() {
-    slabValue = 0;
-    depthValue = Integer.MAX_VALUE;
-    if (!slabEnabled)
-      return;
-    zSlabValue = slabValue = (mode == MODE_NAVIGATION ? -100 : 0)
-        + (int) (referencePlaneOffset - navigationSlabOffset);
-    zDepthValue = depthValue = zValueFromPercent(depthPercentSetting);
-
-    viewer.getGlobalSettings().setParameterValue("navigationDepth",
-        getNavigationDepthPercent());
-    viewer.getGlobalSettings().setParameterValue("navigationSlab",
-        getNavigationSlabOffsetPercent());
+  protected void calcNavSlabAndDepthValues() {
+    calcSlabAndDepthValues();
+    if (slabEnabled) {
+      slabValue = (mode == MODE_NAVIGATION ? -100 : 0)
+          + (int) (referencePlaneOffset - navigationSlabOffset);
+      if (zSlabPercentSetting == zDepthPercentSetting)
+        zSlabValue = slabValue;
+    }
 
     if (Logger.debugging)
       Logger.debug("\n" + "\nperspectiveScale: " + referencePlaneOffset

@@ -692,7 +692,7 @@ public class CrystalReader extends AtomSetCollectionReader {
   private void readEnergy() {
     line = TextFormat.simpleReplace(line, "( ", "(");
     String[] tokens = getTokens();
-    energy = new Double(Double.parseDouble(tokens[2]));
+    energy = Double.valueOf(Double.parseDouble(tokens[2]));
     setEnergy();
   }
 

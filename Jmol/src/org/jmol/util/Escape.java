@@ -66,6 +66,7 @@ public class Escape {
     if (x instanceof String[])
       return escape((String[]) x, true);
     if (x instanceof int[] 
+          || x instanceof int[][]
           || x instanceof float[]
           || x instanceof float[][]
           || x instanceof float[][][]) 
@@ -257,6 +258,8 @@ public class Escape {
   }
 
   private static String escapeNice(String s) {
+    if (s == null)
+      return "null";
     float f = Parser.parseFloatStrict(s);
     return (Float.isNaN(f) ? escape(s) : s);
   }

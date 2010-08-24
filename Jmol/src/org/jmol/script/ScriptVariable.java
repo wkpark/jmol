@@ -233,8 +233,11 @@ public class ScriptVariable extends Token {
       while (e.hasNext()) {
         if (!(ht.get(e.next()) instanceof ScriptVariable)) {
           Map<String, ScriptVariable> x2 = new Hashtable<String, ScriptVariable>();
-          for (Map.Entry<String, Object> entry: ht.entrySet())
-            x2.put(entry.getKey(), ScriptVariable.getVariable(entry.getValue()));
+          for (Map.Entry<String, Object> entry: ht.entrySet()) {
+            String key = entry.getKey();
+            Object o = entry.getValue();
+            x2.put(key, getVariable(isVariableType(o) ? o : Escape.toReadable(key, o)));
+          }
           x = x2;
           break;
         }
@@ -266,6 +269,7 @@ public class ScriptVariable extends Token {
         s[i] = "" + f[i];
       return new ScriptVariable(list, s);
     }
+    
     if (x instanceof List) {
         // will be turned into list
         List<Object> v = (List<Object>) x;
@@ -280,11 +284,7 @@ public class ScriptVariable extends Token {
         }
         return getVariable(list);
     }
-
-    // shouldn't ever be here
-    Logger.error("ScriptVariable: unrecognized type for " + x.toString());
-
-    return null;
+    return new ScriptVariable(string, Escape.toReadable(x));
   }
 
   @SuppressWarnings("unchecked")

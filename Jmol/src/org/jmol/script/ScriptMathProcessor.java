@@ -1334,7 +1334,7 @@ class ScriptMathProcessor {
     if (pt < args.length)
       property = PropertyManager.extractProperty(property, args, pt);
     return addX(ScriptVariable.isVariableType(property) ? property : Escape
-        .toReadable(property));
+        .toReadable(propertyName, property));
   }
 
   private boolean evaluatePlane(ScriptVariable[] args, int tok)

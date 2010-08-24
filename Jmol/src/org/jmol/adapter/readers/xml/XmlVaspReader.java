@@ -125,12 +125,15 @@ public class XmlVaspReader extends XmlReader {
       parent.setFractionalCoordinates(true);
       atomSetCollection.setDoFixPeriodic();
       atomSetCollection.newAtomSet();
-      if (enthalpy != null)
+      if (enthalpy != null) {
         atomSetCollection.setAtomSetAuxiliaryInfo("enthalpy", Double.valueOf(enthalpy));
-      if (gibbsEnergy != null)
+      }
+      if (gibbsEnergy != null) {
+        atomSetCollection.setAtomSetEnergy("" + gibbsEnergy, parseFloat(gibbsEnergy));
         atomSetCollection.setAtomSetAuxiliaryInfo("gibbsEnergy", Double.valueOf(gibbsEnergy));
+      }
       if (enthalpy != null && gibbsEnergy != null)
-        atomSetCollection.setAtomSetName(" Enthalpy = " + enthalpy + " Gibbs Energy = " + gibbsEnergy);
+        atomSetCollection.setAtomSetName("Enthalpy = " + enthalpy + " Gibbs Energy = " + gibbsEnergy);
       return;
     }
     if (!parent.doProcessLines)

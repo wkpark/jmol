@@ -697,9 +697,9 @@ public class CrystalReader extends AtomSetCollectionReader {
   }
 
   private void setEnergy() {
+    atomSetCollection.setAtomSetEnergy("" + energy, energy.floatValue());
     atomSetCollection.setAtomSetAuxiliaryInfo("Energy", energy);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Energy", energy);
-    atomSetCollection.setAtomSetEnergy("" + energy, energy.floatValue());
     atomSetCollection.setAtomSetName("Energy = " + energy + " Hartree");
   }
 

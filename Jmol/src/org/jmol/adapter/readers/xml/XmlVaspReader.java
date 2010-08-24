@@ -126,6 +126,10 @@ public class XmlVaspReader extends XmlReader {
       atomSetCollection.setDoFixPeriodic();
       atomSetCollection.newAtomSet();
       if (enthalpy != null)
+        atomSetCollection.setAtomSetAuxiliaryInfo("enthalpy", Float.valueOf(enthalpy));
+      if (gibbsEnergy != null)
+        atomSetCollection.setAtomSetAuxiliaryInfo("gibbsEnergy", Float.valueOf(gibbsEnergy));
+      if (enthalpy != null && gibbsEnergy != null)
         atomSetCollection.setAtomSetName(" Enthalpy = " + enthalpy + " Gibbs Energy = " + gibbsEnergy);
       return;
     }

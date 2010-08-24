@@ -88,7 +88,10 @@ public class XmlVaspReader extends XmlReader {
   int iAtom;
   boolean modelRead = false;
   boolean readThisModel = true;
-  
+  boolean isE_wo_entrp = false;
+  boolean isE_fr_energy = false;
+  String enthalpy = null;
+  String gibbsEnergy = null;
   @Override
   public void processStartElement(String namespaceURI, String localName,
                                   String qName, Map<String, String> atts) {
@@ -97,6 +100,23 @@ public class XmlVaspReader extends XmlReader {
 
     if (!parent.continuing)
       return;
+
+    if ("calculation".equals(localName)) {
+      enthalpy = null;
+      gibbsEnergy = null;
+      return;
+    }
+        
+    if ("i".equals(localName)) {
+      String s = atts.get("name");
+      if (s.charAt(0) != 'e')
+        return;
+      isE_wo_entrp = s.equals("e_wo_entrp");
+      isE_fr_energy = s.equals("e_fr_energy");
+      keepChars = (isE_wo_entrp || isE_fr_energy);
+      return;
+    }
+
     if ("structure".equals(localName)) {
       if (!parent.doGetModel(++parent.modelNumber)) {
         parent.checkLastModel();
@@ -105,6 +125,8 @@ public class XmlVaspReader extends XmlReader {
       parent.setFractionalCoordinates(true);
       atomSetCollection.setDoFixPeriodic();
       atomSetCollection.newAtomSet();
+      if (enthalpy != null)
+        atomSetCollection.setAtomSetName(" Enthalpy = " + enthalpy + " Gibbs Energy = " + gibbsEnergy);
       return;
     }
     if (!parent.doProcessLines)
@@ -131,7 +153,7 @@ public class XmlVaspReader extends XmlReader {
       keepChars = true;
       return;
     }
-
+    
   }
 
   boolean haveUnitCell = false;
@@ -150,12 +172,24 @@ public class XmlVaspReader extends XmlReader {
   public void processEndElement(String uri, String localName, String qName) {
 
     if (Logger.debugging) 
-      Logger.debug("xmlvasp: end " + localName + " " + name);
+      Logger.debug("xmlvasp: end " + localName);
 
     while (true) {
 
       if (!parent.doProcessLines)
         break;
+
+      if (isE_wo_entrp) {
+        isE_wo_entrp = false;
+        enthalpy = chars.trim();
+        break;
+      }
+
+      if (isE_fr_energy) {
+        isE_fr_energy = false;
+        gibbsEnergy = chars.trim();
+        break;
+      }
 
       if ("v".equals(localName) && data != null) {
         data.append(chars);

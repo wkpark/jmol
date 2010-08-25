@@ -937,11 +937,9 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       }
       if (nTokens == 1 && lookingAtLoadFormat()) {
         String strFormat = script.substring(ichToken, ichToken + cchToken);
-        strFormat = strFormat.toLowerCase();
-        int tok = (strFormat.equals("data") ? Token.data 
-            : Parser.isOneOf(strFormat, LOAD_TYPES) ? Token.identifier 
-            : strFormat.indexOf("=") == 0 || strFormat.indexOf("$") == 0 ? Token.string 
-            : 0);
+        int tok = (strFormat.indexOf("=") == 0 || strFormat.indexOf("$") == 0 ? Token.string
+            : (strFormat = strFormat.toLowerCase()).equals("data") ? Token.data 
+            : Parser.isOneOf(strFormat, LOAD_TYPES) ? Token.identifier : 0);
         if (tok != 0) {
           addTokenToPrefix(new Token(tok, strFormat));
           iHaveQuotedString = (tok == Token.string);
@@ -2064,7 +2062,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         && (Character.isLetterOrDigit(ch = script.charAt(ichT)) || allchar
             && (!eol(ch) && !Character.isWhitespace(ch))))
       ++ichT;
-    if (!allchar && ichT == ichToken || !eol(ch) && !isSpaceOrTab(ch))
+    if (!allchar && ichT == ichToken || !isSpaceOrTab(ch))
       return false;
     cchToken = ichT - ichToken;
     return true;

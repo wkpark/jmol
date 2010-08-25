@@ -1051,6 +1051,8 @@ public class SurfaceGenerator {
     //if (params.dataType == Parameters.SURFACE_FUNCTIONXY)
       //params.thePlane = new Point4f(0, 0, 1, 0);
     if (params.thePlane != null) {
+      boolean isSquared = params.isSquared;
+      params.isSquared = false;
       params.cutoff = 0;
       surfaceReader.setMappingPlane(params.thePlane);
       surfaceReader.createIsosurface(true);//but don't read volume data yet
@@ -1061,6 +1063,7 @@ public class SurfaceGenerator {
         surfaceReader.discardTempData(true);
         return;
       }
+      params.isSquared = isSquared;
       params.mappedDataMin = Float.MAX_VALUE;
       surfaceReader.readVolumeData(true);
     } else if (!params.colorBySets) {

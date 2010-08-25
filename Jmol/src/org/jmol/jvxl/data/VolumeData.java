@@ -356,7 +356,7 @@ public class VolumeData implements VolumeDataInterface {
       for (int x = 0; x < nx; x++)
         for (int y = 0; y < ny; y++)
           for (int z = 0; z < nz; z++)
-            voxelData[x][y][z] = voxelData[x][y][z] * voxelData[x][y][z];
+            voxelData[x][y][z] *= voxelData[x][y][z];
     if (doInvert) 
       for (int x = 0; x < nx; x++)
         for (int y = 0; y < ny; y++)

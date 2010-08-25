@@ -784,8 +784,9 @@ public class Token {
   public final static int picklabel                      = strparam | 52;
   public final static int propertycolorscheme            = strparam | 54;
   public final static int quaternionframe                = strparam | 58;
-  public final static int unitcellcolor                  = strparam | 60;
-
+  public final static int smilesurlformat                = strparam | 60;
+  public final static int unitcellcolor                  = strparam | 62;
+  
   public final static int axesscale                      = floatparam | 2;
   public final static int bondtolerance                  = floatparam | 4;
   public final static int cameradepth                    = floatparam | 6;
@@ -979,8 +980,9 @@ public class Token {
   public final static int testflag2                      = booleanparam | 186;
   public final static int testflag3                      = booleanparam | 188;
   public final static int testflag4                      = booleanparam | 190;
-  public final static int tracealpha                     = booleanparam | 192;
-  public final static int usearcball                     = booleanparam | 191;
+  public final static int tracealpha                     = booleanparam | 191;
+  public final static int undo                           = booleanparam | 192;
+  public final static int usearcball                     = booleanparam | 193;
   public final static int useminimizationthread          = booleanparam | 194;
   public final static int usenumberlocalization          = booleanparam | 196;
   public final static int waitformoveto                  = booleanparam | 197;
@@ -2018,6 +2020,7 @@ public class Token {
       "pickLabel",                                new Token(picklabel),
       "propertyColorScheme",                      new Token(propertycolorscheme),
       "quaternionFrame",                          new Token(quaternionframe),
+      "smilesUrlFormat",                          new Token(smilesurlformat),
       "unitCellColor",                            new Token(unitcellcolor),
 
       // float
@@ -2232,6 +2235,7 @@ public class Token {
       "testFlag3",                                new Token(testflag3),
       "testFlag4",                                new Token(testflag4),
       "traceAlpha",                               new Token(tracealpha),
+      "undo",                                     new Token(undo),
       "useArcBall",                               new Token(usearcball),
       "useMinimizationThread",                    new Token(useminimizationthread),
       "useNumberLocalization",                    new Token(usenumberlocalization),

@@ -1005,7 +1005,9 @@ public class StateManager {
     boolean fractionalRelative = false; // true: UNITCELL offset will change meaning of {1/2 1/2 1/2} 
     char inlineNewlineChar = '|'; //pseudo static
     String loadFormat = "http://www.rcsb.org/pdb/files/%FILE.pdb.gz";
-    String smilesUrlFormat = "http://cheminfov.informatics.indiana.edu/rest/thread/d3.py/SMILES/%FILE";
+    String smilesUrlFormat = "http://cactus.nci.nih.gov/chemical/structure/%FILE/file?format=sdf&get3d=True"; 
+      
+    //  "http://cheminfov.informatics.indiana.edu/rest/thread/d3.py/SMILES/%FILE";
     String edsUrlFormat = "http://eds.bmc.uu.se/eds/dfs/%LC13/%LCFILE/%LCFILE.omap";
     String edsUrlCutoff = "load('http://eds.bmc.uu.se/eds/dfs/%LC13/%LCFILE/%LCFILE.sfdat').lines.find('MAP_SIGMA').split(' ')[2]";
     String edsUrlOptions = "within 2.0 {*}";

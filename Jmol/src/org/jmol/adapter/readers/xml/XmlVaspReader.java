@@ -133,7 +133,7 @@ public class XmlVaspReader extends XmlReader {
         atomSetCollection.setAtomSetAuxiliaryInfo("gibbsEnergy", Double.valueOf(gibbsEnergy));
       }
       if (enthalpy != null && gibbsEnergy != null)
-        atomSetCollection.setAtomSetName("Enthalpy = " + enthalpy + " Gibbs Energy = " + gibbsEnergy);
+        atomSetCollection.setAtomSetName("Enthalpy = " + enthalpy + " eV Gibbs Energy = " + gibbsEnergy + " eV");
       return;
     }
     if (!parent.doProcessLines)

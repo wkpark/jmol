@@ -818,6 +818,11 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     return token;
   }
 
+  private void replaceCommand(Token token) {
+    ltoken.remove(0);
+    ltoken.add(0, setCommand(token));
+  }
+
   private String getPrefixToken() {
     String ident = script.substring(ichToken, ichToken + cchToken);
     //System.out.println(ident);
@@ -1138,6 +1143,13 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           setEqualPt = ichToken;
           return OK;
         }
+        if (tokCommand == Token.slab || tokCommand == Token.depth) {
+          addTokenToPrefix(tokenCommand);
+          replaceCommand(Token.tokenSet);
+          tokenAndEquals = Token.getTokenFromName(ident.substring(0, 1));
+          setEqualPt = ichToken;
+          return OK;          
+        }
         // otherwise ignore
         return CONTINUE;
       }
@@ -1437,16 +1449,14 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       }
       if (nTokens != 1 || theTok != Token.ifcmd && theTok != Token.leftbrace)
         return ERROR(ERROR_badArgumentCount);
-      ltoken.remove(0);
-      ltoken.add(flowContext.token = new ContextToken(Token.elseif, "elseif"));
+      replaceCommand(flowContext.token = new ContextToken(Token.elseif, "elseif"));
       tokCommand = Token.elseif;
       return CONTINUE;
     case Token.var:
       if (nTokens != 1)
         break;
       addContextVariable(ident);
-      ltoken.remove(0);
-      ltoken.add(Token.tokenSetVar);
+      replaceCommand(Token.tokenSetVar);
       tokCommand = Token.set;
       break;
     case Token.end:
@@ -1530,8 +1540,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           // theTok = Token.leftsquare;
         } else if (nTokens == 1
             && (lastToken.tok == Token.plusPlus || lastToken.tok == Token.minusMinus)) {
-          ltoken.remove(0);
-          ltoken.add(0, setCommand(Token.tokenSet));
+          replaceCommand(Token.tokenSet);
           addTokenToPrefix(lastToken);
           break;
         }

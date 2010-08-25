@@ -26,6 +26,7 @@ package org.jmol.jvxl.readers;
 import javax.vecmath.Point3f;
 
 import org.jmol.jvxl.data.JvxlCoder;
+import org.jmol.util.Logger;
 
 class IsoShapeReader extends VolumeDataReader {
 
@@ -61,6 +62,8 @@ class IsoShapeReader extends VolumeDataReader {
   private float radius;
   private float ppa;
   private int maxGrid;
+  private final Point3f ptPsi = new Point3f();
+
 
   @Override
   protected void setup() {
@@ -71,7 +74,7 @@ class IsoShapeReader extends VolumeDataReader {
     switch (dataType) {
     case Parameters.SURFACE_ATOMICORBITAL:
       calcFactors(psi_n, psi_l, psi_m);
-      radius = autoScaleOrbital();
+      autoScaleOrbital();
       ppa = 5f;
       maxGrid = 40;
       type = "hydrogen-like orbital";
@@ -149,7 +152,7 @@ class IsoShapeReader extends VolumeDataReader {
           - (float) Math.sqrt(ptPsi.x * ptPsi.x + ptPsi.y * ptPsi.y + ptPsi.z
               * ptPsi.z);
     }
-    float value = (float) hydrogenAtomPsiAt(ptPsi, psi_n, psi_l, psi_m);
+    float value = (float) hydrogenAtomPsi();
     return (allowNegative || value >= 0 ? value : 0);
   }
   
@@ -172,22 +175,6 @@ class IsoShapeReader extends VolumeDataReader {
     JvxlCoder.jvxlCreateHeaderWithoutTitleOrAtoms(volumeData, jvxlFileHeaderBuffer);
   }
   
-  private float autoScaleOrbital() {
-    float w = (psi_n * (psi_n + 3) - 5f) / psi_Znuc;
-    if (w < 1)
-      w = 1;
-    if (psi_n < 3)
-      w += 1;
-    float aMax = 0;
-    if (!isAnisotropic)
-      return w;
-    for (int i = 3; --i >= 0;)
-      if (anisotropy[i] > aMax)
-        aMax = anisotropy[i];
-    return w * aMax;
-  }
-
-
   private final static float[] fact = new float[20];
   static {
     fact[0] = 1;
@@ -211,37 +198,54 @@ class IsoShapeReader extends VolumeDataReader {
           / fact[el - p] / fact[p - abm];
   }
 
-  private final Point3f ptPsi = new Point3f();
+  private void autoScaleOrbital() {
+    double min = params.cutoff / 2;
+    for (radius = 100; radius > 0; radius--) {
+      //System.out.println(radius + " " + radialPart(radius));
+      if (radialPart(radius) >= min)
+        break;
+    }
+    radius += 1;
+    if (isAnisotropic) {
+      float aMax = 0;
+      for (int i = 3; --i >= 0;)
+        if (anisotropy[i] > aMax)
+          aMax = anisotropy[i];
+      radius *= aMax;
+    }
+    Logger.info("radial extent set to " + radius + " for cutoff "
+        + params.cutoff);
+  }
 
-  private double hydrogenAtomPsiAt(Point3f pt, int n, int el, int m) {
-    // ref: http://www.stolaf.edu/people/hansonr/imt/concept/schroed.pdf
-    int abm = Math.abs(m);
-    double x2y2 = pt.x * pt.x + pt.y * pt.y;
-    double r2 = x2y2 + pt.z * pt.z;
-    double r = Math.sqrt(r2);
-    double rho = 2d * psi_Znuc * r / n / A0;
-    double ph, th, cth, sth;
-    double theta_lm = 0;
-    double phi_m = 0;
+  private double radialPart(double r) {
+    double rho = 2d * psi_Znuc * r / psi_n / A0;
     double sum = 0;
-    for (int p = 0; p <= n - el - 1; p++)
+    for (int p = 0; p <= psi_n - psi_l - 1; p++)
       sum += Math.pow(-rho, p) * rfactor[p];
-    double rnl = Math.exp(-rho / 2) * Math.pow(rho, el) * sum;
-    ph = Math.atan2(pt.y, pt.x);
-    th = Math.atan2(Math.sqrt(x2y2), pt.z);
-    cth = Math.cos(th);
-    sth = Math.sin(th);
-    sum = 0;
-    for (int p = abm; p <= el; p++)
-      sum += Math.pow(1 + cth, p - abm) * Math.pow(1 - cth, el - p)
+    return Math.exp(-rho / 2) * Math.pow(rho, psi_l) * sum;    
+  }
+  
+  private double hydrogenAtomPsi() {
+    // ref: http://www.stolaf.edu/people/hansonr/imt/concept/schroed.pdf
+    double x2y2 = ptPsi.x * ptPsi.x + ptPsi.y * ptPsi.y;
+    double rnl = radialPart(Math.sqrt(x2y2 + ptPsi.z * ptPsi.z));    
+    double ph = Math.atan2(ptPsi.y, ptPsi.x);
+    double th = Math.atan2(Math.sqrt(x2y2), ptPsi.z);
+    double cth = Math.cos(th);
+    double sth = Math.sin(th);
+    int abm = Math.abs(psi_m);
+    double sum = 0;
+    for (int p = abm; p <= psi_l; p++)
+      sum += Math.pow(1 + cth, p - abm) * Math.pow(1 - cth, psi_l - p)
           * pfactor[p];
-    theta_lm = Math.abs(Math.pow(sth, abm)) * sum;
-    if (m == 0)
+    double theta_lm = Math.abs(Math.pow(sth, abm)) * sum;
+    double phi_m;
+    if (psi_m == 0)
       phi_m = 1;
-    else if (m > 0)
-      phi_m = Math.cos(m * ph) * ROOT2;
+    else if (psi_m > 0)
+      phi_m = Math.cos(psi_m * ph) * ROOT2;
     else
-      phi_m = Math.sin(-m * ph) * ROOT2;
+      phi_m = Math.sin(-psi_m * ph) * ROOT2;
     if (Math.abs(phi_m) < 0.0000000001)
       phi_m = 0;
     return rnl * theta_lm * phi_m;

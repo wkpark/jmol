@@ -170,7 +170,7 @@ public class Parameters {
   final static int SURFACE_SOLVENT = 11 | IS_SOLVENTTYPE | NO_ANISOTROPY;
   final static int SURFACE_SASURFACE = 12 | IS_SOLVENTTYPE | NO_ANISOTROPY;
   final static int SURFACE_MOLECULARORBITAL = 13 | NO_ANISOTROPY | HAS_MAXGRID;
-  final static int SURFACE_ATOMICORBITAL = 14;
+  final static int SURFACE_ATOMICORBITAL = 14 | HAS_MAXGRID;
   final static int SURFACE_MEP = 16 | NO_ANISOTROPY | HAS_MAXGRID;
   final static int SURFACE_MLP = 17 | NO_ANISOTROPY | HAS_MAXGRID;
   final static int SURFACE_MOLECULAR = 19 | IS_SOLVENTTYPE | NO_ANISOTROPY;
@@ -566,13 +566,8 @@ public class Parameters {
         cutoff = cutoff * cutoff;
     }
     isCutoffAbsolute = true;
-    if (state < STATE_DATA_READ && thePlane == null) {
-      if (colorBySign) {
-        isBicolorMap = true;
-      }
-      if (resolution == Float.MAX_VALUE)
-        resolution = 6;
-    }
+    if (state < STATE_DATA_READ && thePlane == null && colorBySign)
+      isBicolorMap = true;
     return (psi_Znuc > 0 && Math.abs(psi_m) <= psi_l && psi_l < psi_n);
   }  
   

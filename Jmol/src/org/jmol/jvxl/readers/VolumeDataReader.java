@@ -118,9 +118,12 @@ class VolumeDataReader extends SurfaceReader {
     int nGrid = (int) (range * ptsPerAngstrom) + 1;
     if (nGrid > gridMax) {
       if ((dataType & Parameters.HAS_MAXGRID) > 0) {
-        if (resolution != Float.MAX_VALUE)
-          Logger.info("Maximum number of voxels for index=" + index);
-        nGrid = gridMax;
+        if (resolution == Float.MAX_VALUE) {
+          Logger.info("Maximum number of voxels for index=" + index + " exceeded (" + nGrid + ") -- set to " + gridMax);
+          nGrid = gridMax;
+        } else {
+          Logger.info("Warning -- high number of grid points: " + nGrid);
+        }
       } else if (resolution == Float.MAX_VALUE) {
         nGrid = gridMax;
       }

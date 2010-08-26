@@ -201,8 +201,8 @@ class IsoShapeReader extends VolumeDataReader {
   private void autoScaleOrbital() {
     double min = params.cutoff / 2;
     for (radius = 100; radius > 0; radius--) {
-      //System.out.println(radius + " " + radialPart(radius));
-      if (radialPart(radius) >= min)
+      //System.out.println(min + " " + radius + " " + radialPart(radius));
+      if (Math.abs(radialPart(radius)) >= min)
         break;
     }
     radius += 1;

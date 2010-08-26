@@ -67,6 +67,7 @@ class IsoShapeReader extends VolumeDataReader {
 
   @Override
   protected void setup() {
+    volumeData.sr = this;
     precalculateVoxelData = false;
     if (center.x == Float.MAX_VALUE)
       center.set(0, 0, 0);
@@ -125,34 +126,39 @@ class IsoShapeReader extends VolumeDataReader {
   @Override
   public float getValue(int x, int y, int z, int ptyz) {
     volumeData.voxelPtToXYZ(x, y, z, ptPsi);
-    ptPsi.sub(center);
+    return getValueAtPoint(ptPsi);
+  }
+  
+  @Override
+  public float getValueAtPoint(Point3f pt) {
+    pt.sub(center);
     if (isEccentric)
-      eccentricityMatrixInverse.transform(ptPsi);
+      eccentricityMatrixInverse.transform(pt);
     if (isAnisotropic) {
-      ptPsi.x /= anisotropy[0];
-      ptPsi.y /= anisotropy[1];
-      ptPsi.z /= anisotropy[2];
+      pt.x /= anisotropy[0];
+      pt.y /= anisotropy[1];
+      pt.z /= anisotropy[2];
     }
     if (sphere_radiusAngstroms > 0) {
       if (params.anisoB != null) {
         
         return sphere_radiusAngstroms - 
         
-        (float) Math.sqrt(ptPsi.x * ptPsi.x + ptPsi.y * ptPsi.y + ptPsi.z
-            * ptPsi.z) /
+        (float) Math.sqrt(pt.x * pt.x + pt.y * pt.y + pt.z
+            * pt.z) /
         (float) (Math.sqrt(
-            params.anisoB[0] * ptPsi.x * ptPsi.x +
-            params.anisoB[1] * ptPsi.y * ptPsi.y +
-            params.anisoB[2] * ptPsi.z * ptPsi.z +
-            params.anisoB[3] * ptPsi.x * ptPsi.y +
-            params.anisoB[4] * ptPsi.x * ptPsi.z +
-            params.anisoB[5] * ptPsi.y * ptPsi.z));
+            params.anisoB[0] * pt.x * pt.x +
+            params.anisoB[1] * pt.y * pt.y +
+            params.anisoB[2] * pt.z * pt.z +
+            params.anisoB[3] * pt.x * pt.y +
+            params.anisoB[4] * pt.x * pt.z +
+            params.anisoB[5] * pt.y * pt.z));
       }
       return sphere_radiusAngstroms
-          - (float) Math.sqrt(ptPsi.x * ptPsi.x + ptPsi.y * ptPsi.y + ptPsi.z
-              * ptPsi.z);
+          - (float) Math.sqrt(pt.x * pt.x + pt.y * pt.y + pt.z
+              * pt.z);
     }
-    float value = (float) hydrogenAtomPsi();
+    float value = (float) hydrogenAtomPsi(pt);
     return (allowNegative || value >= 0 ? value : 0);
   }
   
@@ -199,7 +205,7 @@ class IsoShapeReader extends VolumeDataReader {
   }
 
   private void autoScaleOrbital() {
-    double min = params.cutoff / 2;
+    double min = (params.cutoff == 0 ? 0.01f : Math.abs(params.cutoff / 2));
     for (radius = 100; radius > 0; radius--) {
       //System.out.println(min + " " + radius + " " + radialPart(radius));
       if (Math.abs(radialPart(radius)) >= min)
@@ -225,12 +231,12 @@ class IsoShapeReader extends VolumeDataReader {
     return Math.exp(-rho / 2) * Math.pow(rho, psi_l) * sum;    
   }
   
-  private double hydrogenAtomPsi() {
+  private double hydrogenAtomPsi(Point3f pt) {
     // ref: http://www.stolaf.edu/people/hansonr/imt/concept/schroed.pdf
-    double x2y2 = ptPsi.x * ptPsi.x + ptPsi.y * ptPsi.y;
-    double rnl = radialPart(Math.sqrt(x2y2 + ptPsi.z * ptPsi.z));    
-    double ph = Math.atan2(ptPsi.y, ptPsi.x);
-    double th = Math.atan2(Math.sqrt(x2y2), ptPsi.z);
+    double x2y2 = pt.x * pt.x + pt.y * pt.y;
+    double rnl = radialPart(Math.sqrt(x2y2 + pt.z * pt.z));    
+    double ph = Math.atan2(pt.y, pt.x);
+    double th = Math.atan2(Math.sqrt(x2y2), pt.z);
     double cth = Math.cos(th);
     double sth = Math.sin(th);
     int abm = Math.abs(psi_m);
@@ -249,6 +255,7 @@ class IsoShapeReader extends VolumeDataReader {
     if (Math.abs(phi_m) < 0.0000000001)
       phi_m = 0;
     return rnl * theta_lm * phi_m;
+    
   }
   
   @Override

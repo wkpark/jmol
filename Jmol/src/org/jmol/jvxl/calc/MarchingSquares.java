@@ -69,7 +69,6 @@ public class MarchingSquares {
   private final Vector3f pointVector = new Vector3f();
   private final Point3f pointA = new Point3f();
   private final Point3f pointB = new Point3f();
-  private final Vector3f edgeVector = new Vector3f();
 
   private final Point3f planarOrigin = new Point3f();
   private final Vector3f[] planarVectors = new Vector3f[3];
@@ -595,6 +594,7 @@ public class MarchingSquares {
       if (contoursDiscrete == null && Math.abs(cutoff) < 0.0001)
         cutoff = (cutoff < 0 ? -0.0001f : 0.0001f);
       contourValuesUsed[i] = cutoff;
+      System.out.println("MarchingSquares contourValuesUsed  " + i + " " + cutoff);
       int insideCount = generateContourData(i, cutoff);
       Logger.debug("contour " + (i + 1) + " cutoff=" + cutoff + " insideCount=" + insideCount + " centerIsLow=" + centerIsLow);
       if (lastInside < 0)
@@ -787,20 +787,15 @@ public class MarchingSquares {
     return -1;
   }
 
+  
   private float calcContourPoint(float cutoff, float valueA, float valueB,
                          Point3f contourPoint) {
-    //TODO - re-enable? problem is that this causes many overlapping triangles on edge of surface
-    float fraction = (/*false && Float.isNaN(valueA) ? 1 
-        : false && Float.isNaN(valueB) ? 0 
-        : DEAD CODE */ (cutoff - valueA) / (valueB - valueA));
-    edgeVector.sub(pointB, pointA);
-    contourPoint.scaleAdd(fraction, edgeVector, pointA);
-    return fraction;
+    return volumeData.calculateFractionalPoint(cutoff, pointA, pointB, valueA, valueB, contourPoint);
   }
 
-    private Vector3f[] pixelVertexVectors = new Vector3f[4];
+  private Vector3f[] pixelVertexVectors = new Vector3f[4];
   
-    private void calcPixelVertexVectors() {
+  private void calcPixelVertexVectors() {
     for (int i = 4; --i >= 0;) {
       pixelVertexVectors[i] = new Vector3f();
       planarMatrix.transform(squareVertexVectors[i],pixelVertexVectors[i]);

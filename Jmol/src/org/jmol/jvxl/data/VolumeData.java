@@ -121,6 +121,7 @@ import javax.vecmath.Vector3f;
 import javax.vecmath.Matrix3f;
 
 import org.jmol.api.VolumeDataInterface;
+import org.jmol.jvxl.readers.SurfaceReader;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.XmlUtil;
@@ -283,27 +284,27 @@ public class VolumeData implements VolumeDataInterface {
     pt3i.set((int) ptXyzTemp.x, (int) ptXyzTemp.y, (int) ptXyzTemp.z);
   }
 
+  public SurfaceReader sr;
+  
   public float lookupInterpolatedVoxelValue(Point3f point) {
+    if (sr != null)
+      return sr.getValueAtPoint(point);
     ptXyzTemp.sub(point, volumetricOrigin);
     inverseMatrix.transform(ptXyzTemp);
-    return getInterpolatedVoxelValue(ptXyzTemp);
-  }
-
-  private float getInterpolatedVoxelValue(Point3f pt) {
     int iMax;
-    int xDown = indexDown(pt.x, iMax = voxelCounts[0] - 1);
-    int xUp = xDown + (pt.x < 0 || xDown == iMax ? 0 : 1);
-    int yDown = indexDown(pt.y, iMax = voxelCounts[1] - 1);
-    int yUp = yDown + (pt.y < 0 || yDown == iMax ? 0 : 1);
-    int zDown = indexDown(pt.z, iMax = voxelCounts[2] - 1);
-    int zUp = zDown + (pt.z < 0 || zDown == iMax ? 0 : 1);
-    float v1 = getFractional2DValue(pt.x - xDown, pt.y - yDown,
+    int xDown = indexDown(ptXyzTemp.x, iMax = voxelCounts[0] - 1);
+    int xUp = xDown + (ptXyzTemp.x < 0 || xDown == iMax ? 0 : 1);
+    int yDown = indexDown(ptXyzTemp.y, iMax = voxelCounts[1] - 1);
+    int yUp = yDown + (ptXyzTemp.y < 0 || yDown == iMax ? 0 : 1);
+    int zDown = indexDown(ptXyzTemp.z, iMax = voxelCounts[2] - 1);
+    int zUp = zDown + (ptXyzTemp.z < 0 || zDown == iMax ? 0 : 1);
+    float v1 = getFractional2DValue(ptXyzTemp.x - xDown, ptXyzTemp.y - yDown,
         getVoxelValue(xDown, yDown, zDown), getVoxelValue(xUp, yDown, zDown),
         getVoxelValue(xDown, yUp, zDown), getVoxelValue(xUp, yUp, zDown));
-    float v2 = getFractional2DValue(pt.x - xDown, pt.y - yDown,
+    float v2 = getFractional2DValue(ptXyzTemp.x - xDown, ptXyzTemp.y - yDown,
         getVoxelValue(xDown, yDown, zUp), getVoxelValue(xUp, yDown, zUp),
         getVoxelValue(xDown, yUp, zUp), getVoxelValue(xUp, yUp, zUp));
-    return v1 + (pt.z - zDown) * (v2 - v1);
+    return v1 + (ptXyzTemp.z - zDown) * (v2 - v1);
   }
 
   public float getVoxelValue(int x, int y, int z) {
@@ -413,6 +414,36 @@ public class VolumeData implements VolumeDataInterface {
     if (voxelMap == null)
       return;
     voxelMap.put(x+"_" + y + "_" + z, Float.valueOf(v));    
+  }
+
+  private final Vector3f edgeVector = new Vector3f();
+  
+  public float calculateFractionalPoint(float cutoff, Point3f pointA,
+                                        Point3f pointB, float valueA,
+                                        float valueB, Point3f contourPoint) {
+    float fraction = (/*false && Float.isNaN(valueA) ? 1 
+                      : false && Float.isNaN(valueB) ? 0 
+                      : DEAD CODE */(cutoff - valueA) / (valueB - valueA));
+    edgeVector.sub(pointB, pointA);
+    contourPoint.scaleAdd(fraction, edgeVector, pointA);
+    float dist;
+    if (sr == null || valueB == valueA 
+        || fraction < 0.01f || fraction > 0.99f 
+        || (dist = edgeVector.length()) < 0.01f)
+      return fraction;
+    // if the surfaceReader is present, it means we can
+    // do a nonlinear interpolation here and get a better value
+    // such is the case for atomic orbitals.
+    float diff = 0;
+    int n = 0;
+    while (++n < 10 && Math.abs((diff = (cutoff 
+        - sr.getValueAtPoint(contourPoint)) / (valueB - valueA))) > 0.005f) {
+      contourPoint.scaleAdd(diff, edgeVector, contourPoint);
+    }
+    fraction = contourPoint.distance(pointA) / dist;
+    if (fraction > 1)
+      System.out.println("volumeData ohoh");
+    return fraction;
   }
 
 }

@@ -89,7 +89,7 @@ class VolumeDataReader extends SurfaceReader {
       return; //not applicable
     voxelData = (isMapData ? new float[nPointsX][nPointsY][nPointsZ] : null);
     volumeData.setVoxelData(voxelData);
-    if (!isMapData) 
+    if (!isMapData || volumeData.sr != null) 
       return;
     for (int x = 0; x < nPointsX; ++x) {
       float[][] plane = new float[nPointsY][];

@@ -728,13 +728,17 @@ public abstract class SurfaceReader implements VertexDataServer {
     if ((params.nContours > 0 || jvxlData.contourValues != null) && jvxlData.contourColixes == null) {
       int n = (jvxlData.contourValues == null ? params.nContours : jvxlData.contourValues.length);
       short[] colors = jvxlData.contourColixes = new short[n];
-      jvxlData.contourValuesUsed = (jvxlData.contourValues == null ? new float[n] : jvxlData.contourValues);
+      float[] values = jvxlData.contourValues;
+      if (values == null)
+        values = jvxlData.contourValuesUsed;
+      if (jvxlData.contourValuesUsed == null)
+        jvxlData.contourValuesUsed = (values == null ? new float[n] : values);
       float dv = (valueBlue - valueRed) / (n + 1);
       // n + 1 because we want n lines between n + 1 slices
       params.colorEncoder.setRange(params.valueMappedToRed,
           params.valueMappedToBlue, params.isColorReversed);
       for (int i = 0; i < n; i++) {
-        float v = (jvxlData.contourValues == null ? valueRed + (i + 1) * dv : jvxlData.contourValues[i]);
+        float v = (values == null ? valueRed + (i + 1) * dv : values[i]);
         jvxlData.contourValuesUsed[i] = v;
         colors[i] = Graphics3D.getColixTranslucent(params.colorEncoder.getArgb(v));
       }
@@ -947,6 +951,16 @@ public abstract class SurfaceReader implements VertexDataServer {
 
   public void setMappingPlane(Point4f thePlane) {
     mappingPlane = thePlane;
+  }
+
+  /**
+   * 
+   * @param pt
+   * @return   value
+   */
+  public float getValueAtPoint(Point3f pt) {
+    // only for readers that can support it (isoShapeReader)
+    return 0;
   }
 
 }

@@ -8807,6 +8807,9 @@
     credit="548" frames="100" code="GG2" contact="gbowman"/>
 
   <!-- Projects 10200 to 10299 -->
+  <fah_proj number="10200" name="b2AR conformational space sampling" public="n"
+    server="171.67.108.39" atoms="58794" preferred="92" deadline="136"
+    credit="493" frames="100" code="A4" contact="kohlhoff"/>
   <fah_proj number="10203" name="b2AR conformational space sampling" public="n"
     server="171.67.108.39" atoms="58794" preferred="92" deadline="136"
     credit="493" frames="100" code="A4" contact="kohlhoff"/>
@@ -9269,9 +9272,9 @@
   <fah_proj number="10900" name="Abeta40_mono_s" public="n" file="xyz"
     server="171.64.122.84" atoms="12193" preferred="14" deadline="21"
     credit="69" frames="100" code="G" contact="lin5"/>
-  <fah_proj number="10901" name="Abeta40_mono" public="n"
+  <fah_proj number="10901" name="Abeta40_mono" public="n" file="xyz"
     server="171.64.122.84" atoms="34321" preferred="40" deadline="59"
-    credit="209" frames="100" code="G" contact="lin5"/>
+    credit="209" frames="100" code="G" contact="lin5" contrib="Bas Couwenberg"/>
   <fah_proj number="10910" name="Abeta42_mono_L" public="n" file="xyz"
     server="171.67.108.33" atoms="98250" preferred="28" deadline="41"
     credit="145" frames="100" code="G" contact="lin5"/>

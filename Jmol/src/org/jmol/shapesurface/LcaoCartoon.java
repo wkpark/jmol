@@ -192,11 +192,9 @@ public class LcaoCartoon extends Isosurface {
 
     if ("slab" == propertyName) {
       slabbingObject = value;
-      return;
     }
     if ("cap" == propertyName) {
       cappingObject = value;
-      return;
     }
     
     //from the state:

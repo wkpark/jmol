@@ -391,8 +391,7 @@ public class Parameters {
     cutoff = Float.MIN_VALUE;
     isCutoffAbsolute = false;
     isSilent = !logMessages;
-    script = " center " + Escape.escape(center) + (Float.isNaN(scale) ? "" : " scale " + scale) 
-        + " SPHERE " + radius + ";";
+    script = getScriptParams() + " SPHERE " + radius + ";";
   }
   
   void setEllipsoid(Point4f v) {
@@ -434,11 +433,19 @@ public class Parameters {
         cutoff = cutoff * cutoff;
     }
     isSilent = !logMessages;
-    script = " center " + Escape.escape(center)
-        + (Float.isNaN(scale) ? "" : " scale " + scale) + " LOBE {" + v.x + " "
+    script = getScriptParams() + " LOBE {" + v.x + " "
         + v.y + " " + v.z + " " + v.w + "};";
   }
   
+  private String getScriptParams() {
+    return (slabbingObject == null ? "" : " slab within "
+        + Escape.escape(slabbingObject))
+        + (cappingObject == null ? "" : " cap within "
+            + Escape.escape(cappingObject))
+        + " center "
+        + Escape.escape(center) + (Float.isNaN(scale) ? "" : " scale " + scale);
+  }
+
   void setLp(Point4f v) {
     dataType = SURFACE_LONEPAIR;
     setEccentricity(v);

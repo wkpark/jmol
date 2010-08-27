@@ -719,7 +719,7 @@ public class Escape {
       sb.append("]");
       return packageReadable(name, "float[][]", sb);
     }
-    if (info instanceof List) {
+    if (info instanceof List<?>) {
       int imax = ((List<?>) info).size();
       for (int i = 0; i < imax; i++) {
         sb.append(toReadable(name + "[" + (i + 1) + "]", ((List<?>) info).get(i)));
@@ -742,7 +742,7 @@ public class Escape {
       sb.append(escape((AxisAngle4f) info));
       return packageReadable(name, null, sb);
     }
-    if (info instanceof Map) {
+    if (info instanceof Map<?, ?>) {
       Iterator<?> e = ((Map<?, ?>) info).keySet().iterator();
       while (e.hasNext()) {
         String key = (String) e.next();

@@ -685,21 +685,21 @@ public class JvxlXmlReader extends VolumeFileReader {
       vs.add(v);
     }
     int n = vs.size();
-    if (n > 0)
+    if (n > 0) {
       jvxlData.vContours = ArrayUtil.createArrayOfArrayList(n);
-    // 3D contour values and colors
-    jvxlData.contourColixes = params.contourColixes = new short[n];
-    jvxlData.contourValues = params.contoursDiscrete = new float[n];
-    for (int i = 0; i < n; i++) {
-      jvxlData.vContours[i] = vs.get(i);
-      jvxlData.contourValues[i] = ((Float) jvxlData.vContours[i].get(2)).floatValue();
-      jvxlData.contourColixes[i] = ((short[]) jvxlData.vContours[i].get(3))[0];
+      // 3D contour values and colors
+      jvxlData.contourColixes = params.contourColixes = new short[n];
+      jvxlData.contourValues = params.contoursDiscrete = new float[n];
+      for (int i = 0; i < n; i++) {
+        jvxlData.vContours[i] = vs.get(i);
+        jvxlData.contourValues[i] = ((Float) jvxlData.vContours[i].get(2))
+            .floatValue();
+        jvxlData.contourColixes[i] = ((short[]) jvxlData.vContours[i].get(3))[0];
+      }
+      jvxlData.contourColors = Graphics3D.getHexCodes(jvxlData.contourColixes);
+      Logger.info("JVXL read: " + n + " discrete contours");
+      Logger.info("JVXL read: contour values: " + values);
+      Logger.info("JVXL read: contour colors: " + colors);
     }
-    Logger.info("JVXL read: " + n + " discrete contours");
-    Logger.info("JVXL read: contour values: " + values);
-    Logger.info("JVXL read: contour colors: " + colors);
-    jvxlData.contourColors = Graphics3D.getHexCodes(jvxlData.contourColixes);
   }
-
-
 }

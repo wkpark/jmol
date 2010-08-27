@@ -272,12 +272,6 @@ public class SmarterJmolAdapter extends JmolAdapter {
     // or we are opening a zip file.
 
     boolean doCombine = (subFilePtr == 1);
-    int selectedFile = 0;
-    if (htParams != null && htParams.containsKey("modelNumber")) {
-      selectedFile = ((Integer) htParams.get("modelNumber")).intValue();
-      if (selectedFile > 0 && doCombine)
-        htParams.remove("modelNumber");
-    }
     String[] subFileList = (htParams == null ? null : (String[]) htParams
         .get("subFileList"));
     if (subFileList == null)
@@ -288,6 +282,13 @@ public class SmarterJmolAdapter extends JmolAdapter {
     if (subFileName != null
         && (subFileName.startsWith("/") || subFileName.startsWith("\\")))
       subFileName = subFileName.substring(1);
+    int selectedFile = 0;
+    if (subFileName == null && htParams != null
+        && htParams.containsKey("modelNumber")) {
+      selectedFile = ((Integer) htParams.get("modelNumber")).intValue();
+      if (selectedFile > 0 && doCombine)
+        htParams.remove("modelNumber");
+    }
 
     // zipDirectory[0] is the manifest if present
     String manifest = (htParams == null ? null : (String) htParams

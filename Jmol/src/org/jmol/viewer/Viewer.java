@@ -1807,6 +1807,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
               + Escape.escape(fileName) + "}");
           return;
         }
+      } else if (type.equals("Jmol")) {
+        cmd = "load ";
       } else if (!type.equals("spt")) {
         evalString("zap; load "
             + Escape.escape(fileName)

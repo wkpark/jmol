@@ -8516,9 +8516,9 @@
   <fah_proj number="6515" name="p6515_1CFC_A_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="16825" preferred="14" deadline="21"
     credit="74" frames="100" code="G" contact="lan" contrib="Bas Couwenberg"/>
-  <fah_proj number="6516" name="p6516_proA_predict" public="y"
+  <fah_proj number="6516" name="p6516_proA_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="23935" preferred="21" deadline="31"
-    credit="112" frames="100" code="G" contact="lan"/>
+    credit="112" frames="100" code="G" contact="lan" contrib="Bas Couwenberg"/>
   <fah_proj number="6517" name="p6517_1CFC_B_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="21293" preferred="18" deadline="27"
     credit="99" frames="100" code="G" contact="lan"/>

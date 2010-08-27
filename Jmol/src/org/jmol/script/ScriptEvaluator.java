@@ -15106,9 +15106,10 @@ public class ScriptEvaluator {
             i++;
             sbCommand.append(" mesh");
             color = getArgbParam(++i);
-            i = iToken;
             addShapeProperty(propertyList, "colorMesh", Integer.valueOf(color));
             sbCommand.append(" ").append(Escape.escapeColor(color));
+            i = iToken;
+            continue;
           }
           if ((theTok = tokAt(i + 1)) == Token.translucent
               || theTok == Token.opaque) {

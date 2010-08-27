@@ -714,7 +714,7 @@ public class Parameters {
   boolean isBicolorMap;
   public boolean isSquared;
 
-  Point4f thePlane;
+  public Point4f thePlane;
   public boolean isContoured;
   
   int nContours;

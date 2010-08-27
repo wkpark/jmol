@@ -121,7 +121,7 @@ public class MarchingCubes extends TriangleData {
   protected void setParameters(VolumeData volumeData, Parameters params) {
     this.volumeData = volumeData;
     colorDensity = params.colorDensity;
-    isContoured = params.isContoured && !colorDensity;
+    isContoured = params.thePlane == null && params.isContoured && !colorDensity;
     cutoff = params.cutoff;
     isCutoffAbsolute = params.isCutoffAbsolute;
     contourType = params.contourType;

@@ -68,18 +68,6 @@ public class IsosurfaceRenderer extends MeshRenderer {
     }
   }
 
-  protected void transform() {
-    vertexValues = imesh.vertexValues;
-    for (int i = vertexCount; --i >= 0;) {
-      if (Float.isNaN(vertices[i].x))
-        continue;
-      if (vertexValues == null || !Float.isNaN(vertexValues[i])
-          || imesh.hasGridPoints) {
-          viewer.transformPoint(vertices[i], screens[i]);
-      }
-    }
-  }
-  
   @Override
   protected void render2(boolean isExport) {
     if (imesh.jvxlData.colorDensity) {
@@ -138,7 +126,9 @@ public class IsosurfaceRenderer extends MeshRenderer {
       List<Object> v = vContours[i];
       if (v.size() < JvxlCoder.CONTOUR_POINTS)
         continue;
-      if (!g3d.setColix(((short[]) v.get(JvxlCoder.CONTOUR_COLIX))[0]))
+      colix = (imesh.meshColix == 0 ? ((short[]) v.get(JvxlCoder.CONTOUR_COLIX))[0]
+          : imesh.meshColix);
+      if (!g3d.setColix(colix))
         return;
       int n = v.size() - 1;
       for (int j = JvxlCoder.CONTOUR_POINTS; j < n; j++) {
@@ -214,7 +204,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
                                  boolean isExport) {
     int[][] polygonIndexes = imesh.polygonIndexes;
     colix = (!fill && imesh.meshColix != 0 ? imesh.meshColix : imesh.colix);
-    short[] vertexColixes = imesh.vertexColixes;
+    short[] vertexColixes = (!fill && imesh.meshColix != 0 ? null : imesh.vertexColixes);
     g3d.setColix(colix);
     boolean generateSet = isExport;
     if (generateSet) {
@@ -241,6 +231,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
     }
 */
     boolean colorArrayed = (colorSolid && imesh.polygonColixes != null);
+    if (colorArrayed && !fill && imesh.fillTriangles)
+      colorArrayed = false;
     short[] contourColixes = imesh.jvxlData.contourColixes;
     // two-sided means like a plane, with no front/back distinction
     

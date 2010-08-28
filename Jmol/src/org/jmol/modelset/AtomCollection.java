@@ -1720,6 +1720,8 @@ abstract public class AtomCollection {
     if (lcaoType.startsWith("sp3d"))
       lcaoType = "dsp3"
           + (lcaoType.length() == 4 ? "a" : lcaoType.substring(4));
+    if (lcaoType.equals("d2sp3") || lcaoType.equals("dsp3"))
+      lcaoType += "a";
     boolean isTrigonal = lcaoType.startsWith("dsp3");
     int pt = lcaoType.charAt(lcaoType.length() - 1) - 'a';
     if (!isTrigonal && (pt > 5 || !lcaoType.startsWith("d2sp3"))
@@ -1755,8 +1757,9 @@ abstract public class AtomCollection {
       for (int j = i + 1; j < nAttached; j++) {
         float angle = Measure
             .computeAngle(attached[i], atom, attached[j], true);
-        int itype = (angle >= 85 && angle <= 95 ? _90 : angle >= 115
-            && angle <= 125 ? _120 : angle >= 170 ? _180 : -1);
+        // cutoffs determined empirically and meant to be generous
+        int itype = (angle >= 75 && angle <= 100 ? _90 : angle >= 105
+            && angle <= 135 ? _120 : angle >= 160 ? _180 : -1);
         if (itype < 0)
           return null;
         typePtrs[itype][ntypes[itype]] = n;

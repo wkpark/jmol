@@ -1769,6 +1769,7 @@ abstract public class AtomCollection {
     // categorization is done simply by listing 
     // the number of 90, 120, and 180 angles.
     n = ntypes[_90] * 100 + ntypes[_120] * 10 + ntypes[_180];
+    Logger.info("lcaoCartoon type is " + n);
     switch (n) {
     default:
       return null;

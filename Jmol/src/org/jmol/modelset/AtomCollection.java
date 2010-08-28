@@ -1734,6 +1734,8 @@ abstract public class AtomCollection {
     if (attached == null)
       return null;
     int nAttached = attached.length;
+    if (nAttached < 3)
+      return null;
     boolean isLP = (pt >= nAttached);
 
     // determine geometry
@@ -1754,7 +1756,7 @@ abstract public class AtomCollection {
         float angle = Measure
             .computeAngle(attached[i], atom, attached[j], true);
         int itype = (angle >= 85 && angle <= 95 ? _90 : angle >= 115
-            && angle <= 125 ? _120 : angle >= 175 ? _180 : -1);
+            && angle <= 125 ? _120 : angle >= 170 ? _180 : -1);
         if (itype < 0)
           return null;
         typePtrs[itype][ntypes[itype]] = n;
@@ -1764,6 +1766,8 @@ abstract public class AtomCollection {
     // categorization is done simply by listing 
     // the number of 90, 120, and 180 angles. 
     switch (ntypes[_90] * 100 + ntypes[_120] * 10 + ntypes[_180]) {
+    default:
+      return null;
     case 201:
       // 201 T-shaped -- could be either
       break;

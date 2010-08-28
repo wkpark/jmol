@@ -1767,8 +1767,9 @@ abstract public class AtomCollection {
         angles[n++] = new int[] { i, j };
       }
     // categorization is done simply by listing 
-    // the number of 90, 120, and 180 angles. 
-    switch (ntypes[_90] * 100 + ntypes[_120] * 10 + ntypes[_180]) {
+    // the number of 90, 120, and 180 angles.
+    n = ntypes[_90] * 100 + ntypes[_120] * 10 + ntypes[_180];
+    switch (n) {
     default:
       return null;
     case 201:
@@ -1776,9 +1777,11 @@ abstract public class AtomCollection {
       break;
     case 210:
     case 330:
+    case 411:
     case 631:
       // 210 no name (90-90-120)
-      // 330 see-saw
+      // 411 see-saw
+      // 330 trigonal pyramid
       // 631 trigonal bipyramidal 
      if (!isTrigonal)
        return null;

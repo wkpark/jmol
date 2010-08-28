@@ -1378,12 +1378,13 @@ abstract public class AtomCollection {
                                         boolean hybridizationCompatible,
                                         boolean doAlignZ) {
 
-    if (lcaoTypeRaw.indexOf("d") >= 0 && !lcaoTypeRaw.equals("sp3d"))
-      return getHybridizationAndAxesD(atomIndex, z, x, lcaoTypeRaw);
-
     String lcaoType = (lcaoTypeRaw.length() > 0 && lcaoTypeRaw.charAt(0) == '-' ? lcaoTypeRaw
         .substring(1)
         : lcaoTypeRaw);
+
+    if (lcaoTypeRaw.indexOf("d") >= 0 && !lcaoTypeRaw.equals("sp3d"))
+      return getHybridizationAndAxesD(atomIndex, z, x, lcaoType);
+
     Atom atom = atoms[atomIndex];
     Atom[] attached = getAttached(atom, 4, hybridizationCompatible);
     int nAttached = attached.length;
@@ -1707,14 +1708,11 @@ abstract public class AtomCollection {
    * @param atomIndex  
    * @param z 
    * @param x 
-   * @param lcaoTypeRaw 
+   * @param lcaoType
    * @return valid hybridization or null
    */
   private String getHybridizationAndAxesD(int atomIndex, Vector3f z, Vector3f x,
-                                         String lcaoTypeRaw) {
-    String lcaoType = (lcaoTypeRaw.length() > 0 && lcaoTypeRaw.charAt(0) == '-' ? lcaoTypeRaw
-        .substring(1)
-        : lcaoTypeRaw);
+                                         String lcaoType) {
     // note -- d2sp3, not sp3d2; dsp3, not sp3d
     if (lcaoType.startsWith("sp3d2"))
       lcaoType = "d2sp3"
@@ -1723,18 +1721,28 @@ abstract public class AtomCollection {
       lcaoType = "dsp3"
           + (lcaoType.length() == 4 ? "a" : lcaoType.substring(4));
     boolean isTrigonal = lcaoType.startsWith("dsp3");
-    if (!isTrigonal && !lcaoType.startsWith("d2sp3"))
-      return null;
     int pt = lcaoType.charAt(lcaoType.length() - 1) - 'a';
+    if (!isTrigonal && (pt > 5 || !lcaoType.startsWith("d2sp3"))
+        || isTrigonal && pt > 4)
+      return null;
+    String hybridization = (isTrigonal ? "dsp3" : "d2sp3");
+    
+    // pt: a 0   b 1   c 2   d 3   e 4   f 5
+    
     Atom atom = atoms[atomIndex];
     Atom[] attached = getAttached(atom, 6, true);
-    if (attached == null || pt > 5)
+    if (attached == null)
       return null;
     int nAttached = attached.length;
-    // verify hybridization
+    boolean isLP = (pt >= nAttached);
+
+    // determine geometry
+    
     int nAngles = nAttached * (nAttached - 1) / 2;
     int[][] angles = new int[nAngles][];
+    
     // all attached angles must be around 180, 120, or 90 degrees
+    
     int n = 0;
     int[] ntypes = new int[3];
     int[][] typePtrs = new int[3][nAngles];
@@ -1753,27 +1761,37 @@ abstract public class AtomCollection {
         ntypes[itype]++;
         angles[n++] = new int[] { i, j };
       }
-    // trigonal must have at least one 120; others must have none
-    String sType = "" + ntypes[_90] + ntypes[_120] + ntypes[_180];
-    if (isTrigonal) {
-      // 201 see-saw
+    // categorization is done simply by listing 
+    // the number of 90, 120, and 180 angles. 
+    switch (ntypes[_90] * 100 + ntypes[_120] * 10 + ntypes[_180]) {
+    case 201:
+      // 201 T-shaped -- could be either
+      break;
+    case 210:
+    case 330:
+    case 631:
+      // 210 no name (90-90-120)
       // 330 see-saw
       // 631 trigonal bipyramidal 
-      if (pt > 4 || !Parser.isOneOf(sType, "201;330;631"))
+     if (!isTrigonal)
+       return null;
+     break;
+    case 300:
+    case 402:
+    case 501:
+    case 802:
+    case 1203:
+     // 300 no name (90-90-90)   
+     // 402 square planar
+     // 501 no name (see-saw like, but with 90o angle)
+     // 802 square pyramidal
+     // 1203 octahedral
+      if (isTrigonal)
         return null;
-    } else {
-      // 201 T-shaped
-      // 300 no name "corner"
-      // 402 square planar
-      // 501 no name "see-saw-like"
-      // 802 square pyramidal
-      // 1203 octahedral
-      if (!Parser.isOneOf(sType, "201;300;402;501;802;1203"))
-        return null;
+     break;
     }
     // if subType a-f is pointing to an attached atom, use it
     // otherwise, we need to find the position
-    boolean isLP = (pt >= nAttached);
     if (isLP) {
       int[] a;
       BitSet bs;
@@ -1781,10 +1799,15 @@ abstract public class AtomCollection {
         switch (ntypes[_120]) {
         case 1:
           // see-saw
-          a = angles[typePtrs[_120][0]];
-          z.add(attached[a[0]], attached[a[1]]);
-          z.scaleAdd(-2, atom, z);
-          pt = -1;
+          if (pt == 4) {
+            a = angles[typePtrs[_120][0]];
+            z.add(attached[a[0]], attached[a[1]]);
+            z.scaleAdd(-2, atom, z);
+            pt = -1;
+          } else {
+            bs = findNotAttached(nAttached, angles, typePtrs[_120], ntypes[_120]);
+            pt = bs.nextSetBit(0);            
+          }
           break;
         case 0:
           z.sub(attached[angles[typePtrs[_90][0]][0]], atom);
@@ -1852,7 +1875,7 @@ abstract public class AtomCollection {
     if (isLP)
       z.scale(-1);
     z.normalize();
-    return lcaoType;
+    return hybridization;
   }
 
   private Atom[] getAttached(Atom atom, int nMax, boolean doSort) {

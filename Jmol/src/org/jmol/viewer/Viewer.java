@@ -2646,10 +2646,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getHybridizationAndAxes(int atomIndex, Vector3f z, Vector3f x,
-                                        String lcaoType,
-                                        boolean hybridizationCompatible) {
+                                        String lcaoType) {
     return modelSet.getHybridizationAndAxes(atomIndex, z, x, lcaoType,
-        hybridizationCompatible, true, -1);
+        true, true);
   }
 
   public BitSet getMoleculeBitSet(int atomIndex) {

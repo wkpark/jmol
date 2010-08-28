@@ -306,8 +306,7 @@ public class LcaoCartoon extends Isosurface {
     }
     if (isMolecular || isCpk
         || thisType.equalsIgnoreCase("s")
-        || viewer.getHybridizationAndAxes(iAtom, axes[0], axes[1], thisType,
-            true) != null) {
+        || viewer.getHybridizationAndAxes(iAtom, axes[0], axes[1], thisType) != null) {
       super.setProperty((isRadical ? "radical" : isLonePair ? "lonePair" : "lcaoCartoon"), axes, null);
     }
     if (isCpk) {

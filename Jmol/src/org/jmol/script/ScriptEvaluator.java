@@ -15264,9 +15264,12 @@ public class ScriptEvaluator {
           addShapeProperty(propertyList, "modelIndex", Integer.valueOf(modelIndex));
           Vector3f[] axes = { new Vector3f(), new Vector3f(), new Vector3f(pt),
               new Vector3f() };
-          if (!isSyntaxCheck)
-            viewer.getHybridizationAndAxes(atomIndex, axes[0], axes[1],
-                lcaoType, false);
+          if (!isSyntaxCheck) {
+            if (!lcaoType.equalsIgnoreCase("s")
+                && viewer.getHybridizationAndAxes(atomIndex, axes[0], axes[1], lcaoType) 
+                == null)
+            return;
+          }
           propertyValue = axes;
           break;
         default:

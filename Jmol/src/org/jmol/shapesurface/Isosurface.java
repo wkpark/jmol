@@ -825,6 +825,17 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       linkedMesh = thisMesh.linkedMesh = meshA;
       return;
     }
+    if (lcaoCartoon.equals("pza") 
+        || lcaoCartoon.indexOf("sp") == 0 
+        || lcaoCartoon.indexOf("d") == 0 
+        || lcaoCartoon.indexOf("lp") == 0) {
+      createLcaoLobe(z, sense, nElectrons);
+      return;
+    }
+    if (lcaoCartoon.equals("pzb")) {
+      createLcaoLobe(z, -sense, nElectrons);
+      return;
+    }
     if (lcaoCartoon.equals("pxa")) {
       createLcaoLobe(x, sense, nElectrons);
       return;
@@ -839,18 +850,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     }
     if (lcaoCartoon.equals("pyb")) {
       createLcaoLobe(y, -sense, nElectrons);
-      return;
-    }
-    if (lcaoCartoon.equals("pza")) {
-      createLcaoLobe(z, sense, nElectrons);
-      return;
-    }
-    if (lcaoCartoon.equals("pzb")) {
-      createLcaoLobe(z, -sense, nElectrons);
-      return;
-    }
-    if (lcaoCartoon.indexOf("sp") == 0 || lcaoCartoon.indexOf("lp") == 0) {
-      createLcaoLobe(z, sense, nElectrons);
       return;
     }
     if (lcaoCartoon.equals("spacefill") || lcaoCartoon.equals("cpk")) {

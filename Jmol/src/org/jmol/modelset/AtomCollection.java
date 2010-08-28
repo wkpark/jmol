@@ -1776,7 +1776,7 @@ abstract public class AtomCollection {
       // 201 T-shaped -- could be either
       break;
     case 210:
-    case 330:
+    case 330: 
     case 411:
     case 631:
       // 210 no name (90-90-120)

@@ -1449,7 +1449,7 @@ abstract public class AtomCollection {
         }
         switch (attached[0].getCovalentBondCount()) {
         case 1:
-          if (attached[0].getValence() == 3) {
+          if (attached[0].getValence() != 2) {
             // C-t-C
             hybridization = "sp";
             break;
@@ -1573,8 +1573,10 @@ abstract public class AtomCollection {
       // not "sp3" -- sp2 or lone pair
       switch (attached[0].getCovalentBondCount()) {
       case 1:
-        if (attached[0].getValence() == 3) // C-t-C
+        if (attached[0].getValence() != 2) {
+          // C-t-C
           break;
+        }
         // C=C, no other atoms
         // fall through
       case 2:

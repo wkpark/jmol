@@ -2374,6 +2374,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     case ']':
     case '}':
     case '.':
+    case '%': // not a continuation -- set echo myecho 10% 20%
       break;
     case '@':
     case '{':
@@ -2386,7 +2387,6 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     case ',':
     case '$':
     case ';':
-    case '%':
     case '[':
       tokLastMath = 1;
       break;

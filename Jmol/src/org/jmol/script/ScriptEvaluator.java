@@ -1388,7 +1388,7 @@ public class ScriptEvaluator {
           }
           break;
         case 2: // isString
-          vout.add(Atom.atomPropertyString(atom, tok));
+          vout.add(Atom.atomPropertyString(viewer, atom, tok));
           break;
         case 3: // isPt
           Tuple3f t = Atom.atomPropertyTuple(atom, tok);
@@ -3606,7 +3606,7 @@ public class ScriptEvaluator {
     if (!isCaseSensitive)
       comparisonString = comparisonString.toLowerCase();
     for (int i = atomCount; --i >= 0;) {
-      String propertyString = Atom.atomPropertyString(atoms[i], tokWhat);
+      String propertyString = Atom.atomPropertyString(viewer, atoms[i], tokWhat);
       if (!isCaseSensitive)
         propertyString = propertyString.toLowerCase();
       if (compareString(tokOperator, propertyString, comparisonString))

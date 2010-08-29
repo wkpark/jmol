@@ -1726,32 +1726,32 @@ abstract public class AtomCollection {
       lcaoType += "a";
     boolean isTrigonal = lcaoType.startsWith("dsp3");
     int pt = lcaoType.charAt(lcaoType.length() - 1) - 'a';
-    if (!isTrigonal && (pt > 5 || !lcaoType.startsWith("d2sp3"))
-        || isTrigonal && pt > 4)
+    if (z != null && (!isTrigonal && (pt > 5 || !lcaoType.startsWith("d2sp3"))
+        || isTrigonal && pt > 4))
       return null;
-    String hybridization = (isTrigonal ? "dsp3" : "d2sp3");
     
     // pt: a 0   b 1   c 2   d 3   e 4   f 5
     
     Atom atom = atoms[atomIndex];
     Atom[] attached = getAttached(atom, 6, true);
     if (attached == null)
-      return null;
+      return (z == null ? null : "?");
     int nAttached = attached.length;
-    if (nAttached < 3)
+    if (nAttached < 3 && z != null)
       return null;
     boolean isLP = (pt >= nAttached);
 
     // determine geometry
-    
+
     int nAngles = nAttached * (nAttached - 1) / 2;
     int[][] angles = new int[nAngles][];
     
     // all attached angles must be around 180, 120, or 90 degrees
     
-    int n = 0;
     int[] ntypes = new int[3];
     int[][] typePtrs = new int[3][nAngles];
+    
+    int n = 0;
     int _90 = 0;
     int _120 = 1;
     int _180 = 2;
@@ -1760,10 +1760,7 @@ abstract public class AtomCollection {
         float angle = Measure
             .computeAngle(attached[i], atom, attached[j], true);
         // cutoffs determined empirically and meant to be generous
-        int itype = (angle >= 75 && angle <= 100 ? _90 : angle >= 105
-            && angle <= 135 ? _120 : angle >= 160 ? _180 : -1);
-        if (itype < 0)
-          return null;
+        int itype = (angle < 105 ? _90 : angle >= 150 ? _180 : _120);
         typePtrs[itype][ntypes[itype]] = n;
         ntypes[itype]++;
         angles[n++] = new int[] { i, j };
@@ -1772,6 +1769,44 @@ abstract public class AtomCollection {
     // the number of 90, 120, and 180 angles.
     n = ntypes[_90] * 100 + ntypes[_120] * 10 + ntypes[_180];
     Logger.info("lcaoCartoon type is " + n);
+ 
+    if (z == null) {
+      // just return geometry
+      switch (n) {
+      default:
+        return "?";
+      case 0:
+        return (atom.getElementNumber() == 1 ? "s" : "?");
+      case 100:
+      case 10:
+      case 1:
+        return "bent";
+      case 201:
+        return "T-shaped -- AX3E or AX3E2 or AX3E3";
+      case 30:
+        return "trigonal planar -- AX3";
+      case 120:
+      case 300:
+      case 210:
+        return "trigonal pyramidal -- AX3E";
+      case 330: 
+        return "uncapped trigonal pyramid -- AX4E";
+      case 60:
+        return "tetrahedral -- AX4";
+      case 402:
+        return "square planar -- AX4E2";
+      case 411:
+      case 501:
+        return "see-saw -- AX4E";
+      case 631:
+        return "trigonal bipyramidal -- AX5";
+      case 802:
+        return "uncapped square pyramid -- AX5E";
+      case 1203:
+        return "octahedral -- AX6";
+      }
+    }
+
     switch (n) {
     default:
       return null;
@@ -1888,7 +1923,7 @@ abstract public class AtomCollection {
     if (isLP)
       z.scale(-1);
     z.normalize();
-    return hybridization;
+    return (isTrigonal ? "dsp3" : "d2sp3");
   }
 
   private Atom[] getAttached(Atom atom, int nMax, boolean doSort) {

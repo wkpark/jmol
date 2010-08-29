@@ -1279,7 +1279,7 @@ final public class Atom extends Point3fi implements JmolNode {
     return atomPropertyInt(atom, tokWhat);
   }
 
-  public static String atomPropertyString(Atom atom, int tokWhat) {
+  public static String atomPropertyString(Viewer viewer, Atom atom, int tokWhat) {
     char ch;
     switch (tokWhat) {
     case Token.altloc:
@@ -1315,6 +1315,8 @@ final public class Atom extends Point3fi implements JmolNode {
       return JmolConstants.getProteinStructureName(atom.getProteinStructureType(), false);
     case Token.strucid:
       return atom.getStructureId();
+    case Token.shape:
+      return viewer.getHybridizationAndAxes(atom.index, null, null, "d");
     case Token.symbol:
       return atom.getElementSymbol(false);
     case Token.symmetry:

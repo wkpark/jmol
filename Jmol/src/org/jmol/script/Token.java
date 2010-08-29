@@ -145,7 +145,7 @@ public class Token {
    *           x                     expression
    *          xx                     predefined set
    * x       x x                     atomproperty
-   * x      xx x                     stringproperty
+   * x      xx x                     strproperty
    * x     x x x                     intproperty
    * x    x  x x                     floatproperty
    * x   x     x                     mathproperty
@@ -547,9 +547,10 @@ public class Token {
   public final static int sequence      = strproperty | 8;
   public final static int identify      = strproperty | 9;
   public final static int insertion     = strproperty |10;
-  public final static int strucid       = strproperty |11;
-  public final static int symbol        = strproperty |12 | settable;
-  public final static int symmetry      = strproperty |13 | predefinedset;
+  public final static int shape         = strproperty |11;
+  public final static int strucid       = strproperty |12;
+  public final static int symbol        = strproperty |13 | settable;
+  public final static int symmetry      = strproperty |14 | predefinedset;
 
   public final static int atomno        = intproperty | 1 | settable;
   public final static int atomid        = intproperty | 2;
@@ -1160,7 +1161,6 @@ public class Token {
   final static int sasurface      = misc  | 312;
   final static int scale          = misc  | 314;
   final static int selection      = misc  | 316;// new
-  final static int shape          = misc  | 318;
   final static int shapely        = misc  | 320;
   final static int sigma          = misc  | 322;// new
   final static int sign           = misc  | 323;// new

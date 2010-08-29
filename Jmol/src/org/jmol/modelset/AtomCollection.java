@@ -1782,13 +1782,16 @@ abstract public class AtomCollection {
       case 100:
       case 10:
         return "bent";
+      case 111:
       case 201:
         return "T-shaped";// -- AX3E or AX3E2 or AX3E3";
       case 30:
-        return "trigonal planar";// -- AX3";
       case 120:
       case 210:
       case 300:
+        System.out.println((Measure.computeTorsion(attached[0], atom, attached[1], attached[2], true)));
+        if (Math.abs(Measure.computeTorsion(attached[0], atom, attached[1], attached[2], true)) > 162)
+            return "trigonal planar";// -- AX3";
         return "trigonal pyramidal";// -- AX3E";
       case 330: 
         return "uncapped trigonal pyramid";// -- AX4E";
@@ -1813,6 +1816,7 @@ abstract public class AtomCollection {
     switch (n) {
     default:
       return null;
+      // 111 is also possible, but quite odd
     case 201:
       // 201 T-shaped -- could be either
       break;
@@ -1848,19 +1852,8 @@ abstract public class AtomCollection {
       BitSet bs;
       if (isTrigonal) {
         switch (ntypes[_120]) {
-        case 1:
-          // see-saw
-          if (pt == 4) {
-            a = angles[typePtrs[_120][0]];
-            z.add(attached[a[0]], attached[a[1]]);
-            z.scaleAdd(-2, atom, z);
-            pt = -1;
-          } else {
-            bs = findNotAttached(nAttached, angles, typePtrs[_120], ntypes[_120]);
-            pt = bs.nextSetBit(0);            
-          }
-          break;
         case 0:
+          // T-shaped
           z.sub(attached[angles[typePtrs[_90][0]][0]], atom);
           x.sub(attached[angles[typePtrs[_90][0]][1]], atom);
           z.cross(z, x);
@@ -1875,18 +1868,30 @@ abstract public class AtomCollection {
           z.scaleAdd(sqrt3_2, z, x);
           pt = -1;
           break;
+        case 1:
+          // see-saw
+          if (pt == 4) {
+            a = angles[typePtrs[_120][0]];
+            z.add(attached[a[0]], attached[a[1]]);
+            z.scaleAdd(-2, atom, z);
+            pt = -1;
+          } else {
+            bs = findNotAttached(nAttached, angles, typePtrs[_120], ntypes[_120]);
+            pt = bs.nextSetBit(0);            
+          }
+          break;
         default:
-          // T-shaped
+          // unobserved nor-apical trigonal bipyramid
+          // or highly distorted trigonal pyramid (PH3)
           bs = findNotAttached(nAttached, angles, typePtrs[_120], ntypes[_120]);
           pt = bs.nextSetBit(0);
         }
       } else {
         boolean isPlanar = false;
-        switch (nAttached) {
-        case 4:
+        if (nAttached == 4) {
           switch (ntypes[_180]) {
           case 1:
-            // square pyramidal
+            // unobserved cis-nor-octahedron
             bs = findNotAttached(nAttached, angles, typePtrs[_180],
                 ntypes[_180]);
             int i = bs.nextSetBit(0);
@@ -1896,10 +1901,11 @@ abstract public class AtomCollection {
               pt = bs.nextSetBit(i + 1);
             break;
           default:
+            // square planar
             isPlanar = true;
           }
-          break;
-        default:
+        } else {
+          // square pyramidal
           bs = findNotAttached(nAttached, angles, typePtrs[_180], ntypes[_180]);
           int i = bs.nextSetBit(0);
           for (int j = nAttached; j < pt && i >= 0; j++)
@@ -1908,7 +1914,6 @@ abstract public class AtomCollection {
             isPlanar = true;
           else
             pt = i;
-          break;
         }
         if (isPlanar) {
           // square planar or T-shaped

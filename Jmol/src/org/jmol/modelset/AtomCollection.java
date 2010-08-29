@@ -1774,36 +1774,39 @@ abstract public class AtomCollection {
       // just return geometry
       switch (n) {
       default:
-        return "?";
+        return "";
       case 0:
         return "";// just ignore atoms with only one bond? (atom.getElementNumber() == 1 ? "s" : "");
+      case 1:
+        return "linear";
       case 100:
       case 10:
-      case 1:
         return "bent";
       case 201:
-        return "T-shaped -- AX3E or AX3E2 or AX3E3";
+        return "T-shaped";// -- AX3E or AX3E2 or AX3E3";
       case 30:
-        return "trigonal planar -- AX3";
+        return "trigonal planar";// -- AX3";
       case 120:
-      case 300:
       case 210:
-        return "trigonal pyramidal -- AX3E";
+      case 300:
+        return "trigonal pyramidal";// -- AX3E";
       case 330: 
-        return "uncapped trigonal pyramid -- AX4E";
+        return "uncapped trigonal pyramid";// -- AX4E";
       case 60:
-        return "tetrahedral -- AX4";
+      case 150:
+      case 240:
+        return "tetrahedral";// -- AX4";
       case 402:
-        return "square planar -- AX4E2";
+        return "square planar";// -- AX4E2";
       case 411:
       case 501:
-        return "see-saw -- AX4E";
+        return "see-saw";// -- AX4E";
       case 631:
-        return "trigonal bipyramidal -- AX5";
+        return "trigonal bipyramidal";// -- AX5";
       case 802:
-        return "uncapped square pyramid -- AX5E";
+        return "uncapped square pyramid";// -- AX5E";
       case 1203:
-        return "octahedral -- AX6";
+        return "octahedral";// -- AX6";
       }
     }
 

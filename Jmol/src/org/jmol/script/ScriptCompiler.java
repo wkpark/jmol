@@ -431,7 +431,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       return false;
     if (parenCount > 0 || bracketCount > 0)
       return true;
-    if (tokCommand != Token.set && tokCommand != Token.print && tokCommand != Token.log)
+    if ((tokCommand != Token.set || !isNewSet) && tokCommand != Token.print && tokCommand != Token.log)
         return false;
     if (lastToken.tok == tokLastMath)
       return true;
@@ -2374,7 +2374,6 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     case ']':
     case '}':
     case '.':
-    case '%': // not a continuation -- set echo myecho 10% 20%
       break;
     case '@':
     case '{':
@@ -2388,6 +2387,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     case '$':
     case ';':
     case '[':
+    case '%':
       tokLastMath = 1;
       break;
     case '<':

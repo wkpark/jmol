@@ -4464,7 +4464,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (bsAtoms == null)
       bsAtoms = getSelectionSet(false);
     int[] nTotal = new int[1];
-    Point3f[][] pts = modelSet.getAdditionalHydrogens(bsAtoms, nTotal, doAll,
+    Point3f[][] pts = modelSet.calculateHydrogens(bsAtoms, nTotal, doAll,
         justCarbon, vConnections);
     Point3f[] points = new Point3f[nTotal[0]];
     for (int i = 0, pt = 0; i < pts.length; i++)

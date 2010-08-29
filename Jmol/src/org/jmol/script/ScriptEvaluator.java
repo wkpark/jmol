@@ -12901,18 +12901,15 @@ public class ScriptEvaluator {
   }
 
   String write(Token[] args) throws ScriptException {
-    String[] fullPath = new String[1];
     int pt = 0, pt0 = 0;
-    boolean isApplet = viewer.isApplet();
-    boolean isCommand = false;
-    boolean isShow = false;
-    boolean isImage = false;
-    String driverList = viewer.getExportDriverList();
+    boolean isCommand, isShow;
     if (args == null) {
       args = statement;
-      isCommand = true;
       pt = pt0 = 1;
+      isCommand = true;
+      isShow = (viewer.isApplet() && !viewer.isSignedApplet());
     } else {
+      isCommand = false;
       isShow = true;
     }
     int argCount = (isCommand ? statementLength : args.length);
@@ -12921,18 +12918,21 @@ public class ScriptEvaluator {
     int len = 0;
     int width = -1;
     int height = -1;
+    int quality = Integer.MIN_VALUE;
+    String driverList = viewer.getExportDriverList();
     String type = "SPT";
     String data = "";
     String type2 = "";
     String fileName = null;
-    boolean isCoord = false;
-    boolean isExport = false;
-    BitSet bsFrames = null;
     String localPath = null;
     String remotePath = null;
     String val = null;
     String msg = null;
-    int quality = Integer.MIN_VALUE;
+    String[] fullPath = new String[1];
+    boolean isCoord = false;
+    boolean isExport = false;
+    boolean isImage = false;
+    BitSet bsFrames = null;
     if (tok == Token.string) {
       Token t = Token.getTokenFromName(ScriptVariable.sValue(args[pt])
           .toLowerCase());
@@ -13085,6 +13085,8 @@ public class ScriptEvaluator {
       }
       switch (tokAt(pt, args)) {
       case Token.nada:
+        isShow = true;
+        break;
       case Token.clipboard:
         break;
       case Token.identifier:
@@ -13147,9 +13149,7 @@ public class ScriptEvaluator {
           type = "XYZ";
       }
       isImage = Parser.isOneOf(type, "GIF;JPEG64;JPEG;JPG64;JPG;PPM;PNG");
-      if (isImage && fileName == null)
-        type = "[image to clipboard]";
-      else if (isImage && (isApplet && !viewer.isSignedApplet() || isShow))
+      if (isImage && isShow)
         type = "JPG64";
       else if (!isImage
           && !isExport

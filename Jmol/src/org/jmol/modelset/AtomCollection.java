@@ -1214,7 +1214,7 @@ abstract public class AtomCollection {
    * @param vConnect 
    * @return     array of arrays of points added to specific atoms
    */
-  public Point3f[][] getAdditionalHydrogens(BitSet bs, int[] nTotal,
+  public Point3f[][] calculateHydrogens(BitSet bs, int[] nTotal,
                                             boolean doAll, boolean justCarbon,
                                             List<Atom> vConnect) {
     Vector3f z = new Vector3f();
@@ -1331,7 +1331,7 @@ abstract public class AtomCollection {
             case 1:
               // sp3 or Boron sp2
               if (getHybridizationAndAxes(i, z, x, (atomicNumber == 5 ? "sp2c"
-                  : targetValence == 2 ? "sp3d" : "sp3b"), true, false) != null) {
+                  : "sp3d"), true, false) != null) {
                 pt = new Point3f(z);
                 pt.scaleAdd(1.1f, z, atom);
                 hAtoms[i][hPt++] = pt;

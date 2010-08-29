@@ -1776,7 +1776,7 @@ abstract public class AtomCollection {
       default:
         return "?";
       case 0:
-        return (atom.getElementNumber() == 1 ? "s" : "?");
+        return "";// just ignore atoms with only one bond? (atom.getElementNumber() == 1 ? "s" : "");
       case 100:
       case 10:
       case 1:

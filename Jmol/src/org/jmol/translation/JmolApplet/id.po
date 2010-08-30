@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-08-20 23:53+0200\n"
-"PO-Revision-Date: 2010-06-26 16:30+0000\n"
+"PO-Revision-Date: 2010-08-29 13:21+0000\n"
 "Last-Translator: Waluyo Adi Siswanto <Unknown>\n"
 "Language-Team: Indonesian <id@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-06-28 15:24+0000\n"
+"X-Launchpad-Export-Date: 2010-08-30 09:00+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/AppletConsole.java:112
@@ -143,7 +143,8 @@ msgid "Check"
 msgstr "Periksa"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Paling Atas"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -707,9 +708,9 @@ msgid "By HETATM"
 msgstr "Menurut HETATM"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:542
-#, fuzzy, java-format
+#, java-format
 msgid "Molecular Orbitals ({0})"
-msgstr "Orbit Molekuler"
+msgstr "Orbit molekuler ({0})"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:543
 #: org/jmol/popup/MainPopupResourceBundle.java:854
@@ -2031,7 +2032,8 @@ msgstr "obyek tidak dikenal"
 #: org/jmol/script/ScriptEvaluator.java:2727
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
-msgstr "parameter {0} tidak dikenal dalam status skrip Jmol (ditetapkan saja)"
+msgstr ""
+"parameter {0} tidak dikenal dalam status skrip Jmol (ditetapkan saja)"
 
 #: org/jmol/script/ScriptEvaluator.java:2730
 #, java-format
@@ -2124,7 +2126,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:69
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 "klik dua titik untuk memutar pada sumbu berlawanan arah jarum jam "
 "(memerlukan {0})"
@@ -2175,7 +2178,8 @@ msgstr "lepaskan pilihan kelompok atom ini (memerlukan {0})"
 #: org/jmol/viewer/ActionManager.java:82
 #, java-format
 msgid "add this group of atoms to the set of selected atoms (requires {0})"
-msgstr "tambahkan kelompok atom pada atom yang sudah dipilih (memerlukan {0})"
+msgstr ""
+"tambahkan kelompok atom pada atom yang sudah dipilih (memerlukan {0})"
 
 #: org/jmol/viewer/ActionManager.java:83
 #, java-format

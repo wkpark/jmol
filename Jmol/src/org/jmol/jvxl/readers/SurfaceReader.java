@@ -620,6 +620,7 @@ public abstract class SurfaceReader implements VertexDataServer {
       meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
     }
 
+    jvxlData.saveVertexCount = 0;
     if (params.isContoured && marchingSquares != null) {
       initializeMapping();
       params.setMapRanges(this);

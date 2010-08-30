@@ -8556,9 +8556,9 @@
   <fah_proj number="6701" name="p6701_VSD in POPC and water, neutralized" public="y"
     server="171.64.65.56" atoms="28637" preferred="4.9" deadline="6"
     credit="921" frames="100" code="A3" contact="kasson" kfactor="4.1"/>
-  <fah_proj number="6702" name="p6702_VSD in POPC and water, neutralized" public="y"
+  <fah_proj number="6702" name="p6702_VSD in POPC and water, neutralized" public="y" file="xyz"
     server="171.64.65.56" atoms="28637" preferred="4.9" deadline="6"
-    credit="921" frames="100" code="A3" contact="kasson" kfactor="4.1"/>
+    credit="921" frames="100" code="A3" contact="kasson" kfactor="4.1" contrib="Leszek Dobrowolski"/>
 
   <!-- Projects 9900 to 9999 -->
   <fah_proj number="9900" name="p9900_supervillin_e1" public="y"
@@ -9451,5 +9451,23 @@
   <fah_proj number="11152" name="Fs_03" public="n"
     server="171.67.108.32" atoms="264" preferred="14" deadline="20"
     credit="912" frames="100" code="OG" contact="lin5"/>
+  <fah_proj number="11153" name="Ab42gb" public="n"
+    server="171.67.108.31" atoms="627" preferred="20" deadline="29"
+    credit="1352" frames="100" code="OG" contact="lin5"/>
+  <fah_proj number="11154" name="Ab42M1gb" public="n"
+    server="171.67.108.31" atoms="634" preferred="20" deadline="29"
+    credit="1358" frames="100" code="OG" contact="lin5"/>
+  <fah_proj number="11155" name="Ab42M2gb" public="n"
+    server="171.67.108.31" atoms="619" preferred="20" deadline="29"
+    credit="1349" frames="100" code="OG" contact="lin5"/>
+  <fah_proj number="11156" name="Ab42M3gb" public="n"
+    server="171.67.108.31" atoms="629" preferred="20" deadline="29"
+    credit="1352" frames="100" code="OG" contact="lin5"/>
+  <fah_proj number="11157" name="Ab40gb" public="n"
+    server="171.67.108.31" atoms="629" preferred="20" deadline="29"
+    credit="1352" frames="100" code="OG" contact="lin5"/>
+  <fah_proj number="11158" name="Ab40gb" public="n"
+    server="171.67.108.31" atoms="598" preferred="19" deadline="28"
+    credit="1241" frames="100" code="OG" contact="lin5"/>
 
 </fah_projects>

@@ -146,6 +146,7 @@ public class JvxlData {
   public boolean colorDensity;
   public String moleculeXml;
   public float dataMin, dataMax;
+  public int saveVertexCount;
   
   public void setSurfaceInfo(Point4f thePlane, int nSurfaceInts, String surfaceData) {
     jvxlSurfaceData = surfaceData;

@@ -44,6 +44,7 @@ import org.jmol.jvxl.data.JvxlCoder;
 abstract class AtomDataReader extends VolumeDataReader {
 
   protected AtomDataServer atomDataServer;
+  protected float maxDistance;
 
   AtomDataReader(SurfaceGenerator sg) {
     super(sg);
@@ -67,7 +68,7 @@ abstract class AtomDataReader extends VolumeDataReader {
   protected int myAtomCount;
   protected int nearbyAtomCount;
   protected int firstNearbyAtom;
-  protected BitSet bsMySelected, bsMyIgnored;
+  protected BitSet bsMySelected, bsMyIgnored, bsNearby;
 
   protected boolean doAddHydrogens;
   protected boolean doUsePlane;
@@ -136,6 +137,7 @@ abstract class AtomDataReader extends VolumeDataReader {
     BitSet atomSet = BitSetUtil.copy(bsMySelected);
     int nH = 0;
     atomProp = null;
+    float[] props = params.theProperty;
     if (myAtomCount > 0) {
       Point3f[] hAtoms = null;
       if (doAddHydrogens) {
@@ -172,7 +174,6 @@ abstract class AtomDataReader extends VolumeDataReader {
         // + hAtoms[i].z + "};");
       }
       myAtomCount = nH;
-      float[] props = params.theProperty;
       for (int i = atomSet.nextSetBit(0); i >= 0; i = atomSet.nextSetBit(i + 1)) {
         if (atomProp != null)
           atomProp[myAtomCount] = (props != null && i < props.length ? props[i]
@@ -208,7 +209,7 @@ abstract class AtomDataReader extends VolumeDataReader {
       return;
     Point3f pt = new Point3f();
 
-    BitSet bsNearby = new BitSet();
+    bsNearby = new BitSet();
     for (int i = 0; i < atomCount; i++) {
       if (atomSet.get(i) || bsMyIgnored.get(i))
         continue;
@@ -216,6 +217,8 @@ abstract class AtomDataReader extends VolumeDataReader {
       if (params.thePlane != null
           && Math.abs(volumeData.distancePointToPlane(atomData.atomXyz[i])) > 2 * rA)
         continue;
+      if (params.theProperty != null)
+        rA += maxDistance;
       pt = atomData.atomXyz[i];
       if (pt.x + rA > xyzMin.x && pt.x - rA < xyzMax.x && pt.y + rA > xyzMin.y
           && pt.y - rA < xyzMax.y && pt.z + rA > xyzMin.z
@@ -229,8 +232,14 @@ abstract class AtomDataReader extends VolumeDataReader {
       nAtoms += nearbyAtomCount;
       atomRadius = ArrayUtil.setLength(atomRadius, nAtoms);
       atomXyz = (Point3f[]) ArrayUtil.setLength(atomXyz, nAtoms);
+      if (props != null)
+        atomProp = ArrayUtil.setLength(atomProp, nAtoms);
       for (int i = bsNearby.nextSetBit(0); i >= 0; i = bsNearby
           .nextSetBit(i + 1)) {
+        if (props != null) {
+          atomProp[myAtomCount] = props[i];
+          myIndex[i] = myAtomCount;
+        }
         atomXyz[myAtomCount] = atomData.atomXyz[i];
         atomRadius[myAtomCount++] = atomData.atomRadius[i];
       }

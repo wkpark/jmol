@@ -42,8 +42,6 @@ class IsoSolventReader extends AtomDataReader {
 
   ///// solvent-accessible, solvent-excluded surface //////
 
-  //// also creates a map for properties ////
-  
   /*
    * The surface fragment idea:
    * 
@@ -69,8 +67,6 @@ class IsoSolventReader extends AtomDataReader {
   private boolean doCalculateTroughs;
   private boolean isCavity, isPocket;
   private float solventRadius;
-  private boolean isProperty;
-  private boolean doSmoothProperty;
   
   @Override
   protected void setup() {
@@ -82,9 +78,6 @@ class IsoSolventReader extends AtomDataReader {
 
     isCavity = (params.isCavity && meshDataServer != null); // Jvxl cannot do this calculation on its own.
     isPocket = (params.pocket != null && meshDataServer != null);
-
-    isProperty = (dataType == Parameters.SURFACE_PROPERTY);
-    doSmoothProperty = isProperty && params.propertySmoothing;
 
     doCalculateTroughs = (atomDataServer != null && !isCavity // Jvxl needs an atom iterator to do this.
         && solventRadius > 0 && (dataType == Parameters.SURFACE_SOLVENT || dataType == Parameters.SURFACE_MOLECULAR));
@@ -275,7 +268,7 @@ class IsoSolventReader extends AtomDataReader {
     Point3f ptA;
     Point3f ptY0 = new Point3f(), ptZ0 = new Point3f();
     Point3i pt0 = new Point3i(), pt1 = new Point3i();
-    float value = (doSmoothProperty ? Float.NaN : Float.MAX_VALUE);
+    float value = Float.MAX_VALUE;
     if (Logger.debugging)
       Logger.startTimer();
     for (int x = 0; x < nPointsX; ++x)
@@ -285,16 +278,6 @@ class IsoSolventReader extends AtomDataReader {
     if (dataType == Parameters.SURFACE_NOMAP)
       return;
     int atomCount = myAtomCount;
-    float property[][][] = null;
-    if (isProperty) {
-      atomCount = firstNearbyAtom;
-      property = new float[nPointsX][nPointsY][nPointsZ];
-      value = (doSmoothProperty ? 0 : Float.NaN);
-      for (int x = 0; x < nPointsX; ++x)
-        for (int y = 0; y < nPointsY; ++y)
-          for (int z = 0; z < nPointsZ; ++z)
-            property[x][y][z] = value;
-    }
     float maxRadius = 0;
     float r0 = (isFirstPass && isCavity ? cavityRadius : 0);
     boolean isWithin = (isFirstPass && distance != Float.MAX_VALUE && point != null);
@@ -316,20 +299,9 @@ class IsoSolventReader extends AtomDataReader {
           ptZ0.set(ptXyzTemp);
           for (int k = pt0.z; k < pt1.z; k++) {
             float v = ptXyzTemp.distance(ptA) - rA;
-            if (doSmoothProperty) {
-              v = 1 / (v + rA);
-              v *= v;
-              v *= v;
-              if (Float.isNaN(voxelData[i][j][k]))
-                voxelData[i][j][k] = 0;
-              if (!Float.isNaN(atomProp[iAtom]))
-                property[i][j][k] += atomProp[iAtom] * v;
-              voxelData[i][j][k] += v;
-            } else if (v < voxelData[i][j][k]) {
+            if (v < voxelData[i][j][k]) {
               voxelData[i][j][k] = (isNearby || isWithin
                   && ptXyzTemp.distance(point) > distance ? Float.NaN : v);
-              if (isProperty)
-                property[i][j][k] = atomProp[iAtom];
             }
             ptXyzTemp.add(volumetricVectors[2]);
           }
@@ -407,18 +379,6 @@ class IsoSolventReader extends AtomDataReader {
       iter.release();
       iter = null;
     }
-    if (doSmoothProperty) {
-      for (int x = 0; x < nPointsX; ++x)
-        for (int y = 0; y < nPointsY; ++y)
-          for (int z = 0; z < nPointsZ; ++z)
-            if (!Float.isNaN(voxelData[x][y][z]))
-                voxelData[x][y][z] = property[x][y][z] / voxelData[x][y][z];
-      return;
-    } else if (isProperty) {
-      volumeData.voxelData = property;
-      setVolumeData(volumeData);
-      initializeVolumetricData();
-    }
     if (params.thePlane == null) {
       for (int x = 0; x < nPointsX; ++x)
         for (int y = 0; y < nPointsY; ++y)
@@ -441,7 +401,7 @@ class IsoSolventReader extends AtomDataReader {
   }
 
   void setGridLimitsForAtom(Point3f ptA, float rA, Point3i pt0, Point3i pt1) {
-    int n = (isProperty ? 4 : 1);
+    int n = 1;
     volumeData.xyzToVoxelPt(ptA.x - rA, ptA.y - rA, ptA.z - rA, pt0);
     pt0.x -= n;
     pt0.y -= n;

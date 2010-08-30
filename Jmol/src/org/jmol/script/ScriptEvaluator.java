@@ -14997,17 +14997,43 @@ public class ScriptEvaluator {
           error(ERROR_invalidArgument);
         continue;
       case Token.property:
-        if (dataUse == null) { // mlp or mep
+      case Token.variable:
+        if (modelIndex < 0)
+          error(ERROR_multipleModelsDisplayedNotOK, "ISOSURFACE "
+              + theToken.value);
+        if (isCavity)
+          error(ERROR_invalidArgument);
+        boolean isVariable = (theTok == Token.variable);
+        if (dataUse == null) { // not mlp or mep
+          if (bsSelect == null) {
+            bsSelect = viewer.getSelectionSet(false);
+            bsSelect.and(viewer.getModelUndeletedAtomsBitSet(modelIndex));
+            addShapeProperty(propertyList, "select", bsSelect);
+          }
+          if (surfaceObjectSeen) {
+              // not for overall surface, just this mapping
+              sbCommand.append(" select " + Escape.escape(bsSelect));
+              bsSelect = null;
+          } else {
+            surfaceObjectSeen = true;
+            addShapeProperty(propertyList, "sasurface", new Float(0));
+            sbCommand.append(" vdw");
+          }
+          propertyName = "property";
           if (smoothing == null)
             smoothing = viewer.getIsosurfacePropertySmoothing() ? Boolean.TRUE
                 : Boolean.FALSE;
           addShapeProperty(propertyList, "propertySmoothing", smoothing);
           sbCommand.append(" isosurfacePropertySmoothing " + smoothing);
+          if (viewer.isRangeSelected())
+            addShapeProperty(propertyList, "rangeSelected", Boolean.TRUE);
+        } else {
+          propertyName = dataUse;
         }
         str = parameterAsString(i);
         sbCommand.append(" ").append(str);
-        propertyName = (dataUse == null ? "property" : dataUse);
-        if (!isCavity && str.toLowerCase().indexOf("property_") == 0) {
+
+        if (str.toLowerCase().indexOf("property_") == 0) {
           data = new float[viewer.getAtomCount()];
           if (isSyntaxCheck)
             continue;
@@ -15017,23 +15043,35 @@ public class ScriptEvaluator {
           addShapeProperty(propertyList, propertyName, data);
           continue;
         }
-        int tokProperty = getToken(++i).tok;
-        sbCommand.append(" " + theToken.value);
+
         int atomCount = viewer.getAtomCount();
-        data = (isCavity ? new float[0] : new float[atomCount]);
-        if (isCavity)// not implemented: && tokProperty !=
-          // Token.surfacedistance)
-          error(ERROR_invalidArgument);
-        if (!isSyntaxCheck && !isCavity) {
-          Atom[] atoms = viewer.getModelSet().atoms;
-          viewer.autoCalculate(tokProperty);
-          for (int iAtom = atomCount; --iAtom >= 0;) {
-            data[iAtom] = Atom.atomPropertyFloat(viewer, atoms[iAtom],
-                tokProperty);
+        data = new float[atomCount];
+
+        if (isVariable) {
+          String vname = parameterAsString(++i);
+          if (vname.length() == 0) {
+            data = floatParameterSet(i, atomCount, atomCount);
+          } else {
+            data = new float[atomCount];
+            if (!isSyntaxCheck)
+              Parser.parseStringInfestedFloatArray(""
+                  + getParameter(vname, false), null, data);
           }
+          if (!isSyntaxCheck)
+            sbCommand.append(" \"\" ").append(Escape.escape(data));
+        } else {
+          int tokProperty = getToken(++i).tok;
+          if (!isSyntaxCheck) {
+            sbCommand.append(" " + theToken.value);
+            Atom[] atoms = viewer.getModelSet().atoms;
+            viewer.autoCalculate(tokProperty);
+            for (int iAtom = atomCount; --iAtom >= 0;)
+              data[iAtom] = Atom.atomPropertyFloat(viewer, atoms[iAtom],
+                  tokProperty);
+          }
+          if (tokProperty == Token.color)
+            colorScheme = "colorRGB";
         }
-        if (tokProperty == Token.color)
-          colorScheme = "colorRGB";
         propertyValue = data;
         break;
       case Token.model:
@@ -15211,8 +15249,7 @@ public class ScriptEvaluator {
           propertyName = "ellipsoid";
           propertyValue = floatParameterSet(i, 6, 6);
           i = iToken;
-          sbCommand.append(" ellipsoid ").append(
-              Escape.escape(propertyValue));
+          sbCommand.append(" ellipsoid ").append(Escape.escape(propertyValue));
           break;
         } catch (ScriptException e) {
         }
@@ -15261,12 +15298,14 @@ public class ScriptEvaluator {
             modelIndex = viewer.getAtomModelIndex(atomIndex);
             pt = viewer.getAtomPoint3f(atomIndex);
           }
-          addShapeProperty(propertyList, "modelIndex", Integer.valueOf(modelIndex));
+          addShapeProperty(propertyList, "modelIndex", Integer
+              .valueOf(modelIndex));
           Vector3f[] axes = { new Vector3f(), new Vector3f(), new Vector3f(pt),
               new Vector3f() };
-          if (!isSyntaxCheck && !lcaoType.equalsIgnoreCase("s")
-                && viewer.getHybridizationAndAxes(atomIndex, axes[0], axes[1], lcaoType) 
-                == null)
+          if (!isSyntaxCheck
+              && !lcaoType.equalsIgnoreCase("s")
+              && viewer.getHybridizationAndAxes(atomIndex, axes[0], axes[1],
+                  lcaoType) == null)
             return;
           propertyValue = axes;
           break;
@@ -15311,7 +15350,8 @@ public class ScriptEvaluator {
         if (tokAt(i + 1) == Token.integer) {
           calcType = intParameter(++i);
           sbCommand.append(" " + calcType);
-          addShapeProperty(propertyList, "mepCalcType", Integer.valueOf(calcType));
+          addShapeProperty(propertyList, "mepCalcType", Integer
+              .valueOf(calcType));
         }
         if (tokAt(i + 1) == Token.string) {
           fname = stringParameter(++i);
@@ -15330,18 +15370,6 @@ public class ScriptEvaluator {
         if (!isSyntaxCheck && data == null)
           error(ERROR_noPartialCharges);
         propertyValue = data;
-        break;
-      case Token.sasurface:
-      case Token.solvent:
-        surfaceObjectSeen = true;
-        addShapeProperty(propertyList, "bsSolvent",
-            lookupIdentifierValue("solvent"));
-        propertyName = (theTok == Token.sasurface ? "sasurface" : "solvent");
-        sbCommand.append(" ").append(theToken.value);
-        float radius = (isFloatParameter(i + 1) ? floatParameter(++i) : viewer
-            .getSolventProbeRadius());
-        propertyValue = new Float(radius);
-        sbCommand.append(" ").append(radius);
         break;
       case Token.volume:
         doCalcVolume = !isSyntaxCheck;
@@ -15453,8 +15481,8 @@ public class ScriptEvaluator {
           sbCommand.append(" increment ").append(Escape.escape(pt));
           break;
         default:
-          propertyValue = Integer.valueOf(
-              tokAt(i + 1) == Token.integer ? intParameter(++i) : 0);
+          propertyValue = Integer
+              .valueOf(tokAt(i + 1) == Token.integer ? intParameter(++i) : 0);
           sbCommand.append(" ").append(propertyValue);
         }
         break;
@@ -15690,10 +15718,32 @@ public class ScriptEvaluator {
         sbCommand.append(" modelBased");
         break;
       case Token.molecular:
+      case Token.sasurface:
+      case Token.solvent:
+        if (modelIndex < 0)
+          error(ERROR_multipleModelsDisplayedNotOK, "ISOSURFACE "
+              + theToken.value);
+        if (bsSelect == null) {
+          bsSelect = viewer.getSelectionSet(false);
+          bsSelect.and(viewer.getModelUndeletedAtomsBitSet(modelIndex));
+          addShapeProperty(propertyList, "select", bsSelect);
+        }
         surfaceObjectSeen = true;
-        propertyName = "molecular";
-        propertyValue = Float.valueOf((float) 1.4);
-        sbCommand.append(" molecular");
+        float radius;
+        if (theTok == Token.molecular) {
+          propertyName = "molecular";
+          sbCommand.append(" molecular");
+          radius = 1.4f;
+        } else {
+          addShapeProperty(propertyList, "bsSolvent",
+              lookupIdentifierValue("solvent"));
+          propertyName = (theTok == Token.sasurface ? "sasurface" : "solvent");
+          sbCommand.append(" ").append(theToken.value);
+          radius = (isFloatParameter(i + 1) ? floatParameter(++i) : viewer
+              .getSolventProbeRadius());
+          sbCommand.append(" ").append(radius);
+        }
+        propertyValue = Float.valueOf(radius);
         break;
       case Token.object:
       case Token.obj:
@@ -15735,21 +15785,6 @@ public class ScriptEvaluator {
         propertyName = "squareData";
         propertyValue = Boolean.TRUE;
         sbCommand.append(" squared");
-        break;
-      case Token.variable:
-        propertyName = (dataUse == null ? "property" : dataUse);
-        String vname = parameterAsString(++i);
-        int nAtoms = viewer.getAtomCount();
-        if (vname.length() == 0) {
-          data = floatParameterSet(i, nAtoms, nAtoms);
-        } else {
-          data = new float[nAtoms];
-          if (!isSyntaxCheck)
-            Parser.parseStringInfestedFloatArray(""
-                + getParameter(vname, false), null, data);
-        }
-        propertyValue = data;
-        sbCommand.append(" variable \"\" ").append(Escape.escape(data));
         break;
       case Token.string:
         String filename = parameterAsString(i);
@@ -15822,8 +15857,8 @@ public class ScriptEvaluator {
         surfaceObjectSeen = true;
         int fileIndex = -1;
         if (tokAt(i + 1) == Token.integer)
-          addShapeProperty(propertyList, "fileIndex", Integer.valueOf(
-              fileIndex = intParameter(++i)));
+          addShapeProperty(propertyList, "fileIndex", Integer
+              .valueOf(fileIndex = intParameter(++i)));
         if (filename.equalsIgnoreCase("INLINE")) {
           // inline PMESH data
           if (tokAt(i + 1) != Token.string)
@@ -15927,8 +15962,8 @@ public class ScriptEvaluator {
       surfaceObjectSeen = true;
     }
     if (thisSetNumber > 0)
-      addShapeProperty(propertyList, "getSurfaceSets", Integer.valueOf(
-          thisSetNumber - 1));
+      addShapeProperty(propertyList, "getSurfaceSets", Integer
+          .valueOf(thisSetNumber - 1));
     if (discreteColixes != null) {
       addShapeProperty(propertyList, "colorDiscrete", discreteColixes);
     } else if (colorScheme != null) {

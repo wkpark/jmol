@@ -103,7 +103,7 @@ public class MarchingSquares {
     this.valueMax = valueMax;
   }
 
-  private int contourVertexCount;
+  public int contourVertexCount;
   ContourVertex[] contourVertexes = new ContourVertex[1000];
 
   private static class ContourVertex extends Point3f {
@@ -263,7 +263,7 @@ public class MarchingSquares {
     }
 
     void setValidity(float min, float max) {
-      isValid = (contourVertexes[pts[0]].value <= max
+      isValid &= (contourVertexes[pts[0]].value <= max
           && contourVertexes[pts[1]].value <= max
           && contourVertexes[pts[2]].value <= max
           && contourVertexes[pts[0]].value >= min

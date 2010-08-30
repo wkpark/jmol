@@ -225,10 +225,13 @@ public class IsosurfaceMesh extends Mesh {
       return centers;
     centers = new Point3f[polygonCount];
     for (int i = 0; i < polygonCount; i++) {
+      int[] pi = polygonIndexes[i];
+      if (pi == null)
+        continue;
       Point3f pt = centers[i] = new Point3f();
-      pt.add(vertices[polygonIndexes[i][0]]);
-      pt.add(vertices[polygonIndexes[i][1]]);
-      pt.add(vertices[polygonIndexes[i][2]]);
+      pt.add(vertices[pi[0]]);
+      pt.add(vertices[pi[1]]);
+      pt.add(vertices[pi[2]]);
       pt.scale(1/3f);
     }
     return centers;
@@ -475,6 +478,8 @@ public class IsosurfaceMesh extends Mesh {
     polygonColixes = new short[polygonCount];
     for (int i = 0; i < polygonCount; i++) {
       int[] pi = polygonIndexes[i];
+      if (pi == null)
+        continue;
       polygonColixes[i] = defaultColix;
       float v = (vertexValues[pi[0]] + vertexValues[pi[1]] + vertexValues[pi[2]])/3;
       //System.out.println(i + " " + v);

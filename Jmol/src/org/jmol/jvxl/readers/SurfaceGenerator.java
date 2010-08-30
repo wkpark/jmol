@@ -557,6 +557,11 @@ public class SurfaceGenerator {
       return true;
     }
 
+    if ("rangeSelected" == propertyName) {
+      params.rangeSelected = true;
+      return true;
+    }
+
     if ("red" == propertyName) {
       params.valueMappedToRed = ((Float) value).floatValue();
       return true;
@@ -959,10 +964,12 @@ public class SurfaceGenerator {
     case Parameters.SURFACE_NOMAP:
       surfaceReader = new IsoPlaneReader(this);
       break;
+    case Parameters.SURFACE_PROPERTY:
+      surfaceReader = new AtomPropertyMapper(this);
+      break;
     case Parameters.SURFACE_SOLVENT:
     case Parameters.SURFACE_MOLECULAR:
     case Parameters.SURFACE_SASURFACE:
-    case Parameters.SURFACE_PROPERTY:
       surfaceReader = new IsoSolventReader(this);
       break;
     case Parameters.SURFACE_MOLECULARORBITAL:

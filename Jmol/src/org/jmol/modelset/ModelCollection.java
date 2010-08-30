@@ -1955,6 +1955,12 @@ abstract public class ModelCollection extends BondCollection {
     bspf.initialize(modelIndex, atoms, viewer.getModelUndeletedAtomsBitSet(modelIndex));
   }
  
+  public void setIteratorForPoint(AtomIndexIterator iterator, int modelIndex,
+                                  Point3f pt, float distance) {
+    initializeBspt(modelIndex);
+    iterator.set(modelIndex, models[modelIndex].firstAtomIndex, Integer.MAX_VALUE, pt, distance);    
+  }
+
   public void setIteratorForAtom(AtomIndexIterator iterator, int modelIndex,
                                    int atomIndex, float distance) {
     if (modelIndex < 0)

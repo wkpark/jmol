@@ -1208,6 +1208,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       Point3f[] centers = m.getCenters();
       for (int j = centers.length; --j >= 0; ) {
           Point3f v = centers[j];
+          if (v == null)
+            continue;
           int d2 = coordinateInRange(x, y, v, dmin2, ptXY);
           if (d2 >= 0) {
             if (ptXY.z < minz) {

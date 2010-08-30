@@ -246,6 +246,7 @@ public class Parameters {
     title = null;
     atomRadiusData = null;
     rangeAll = false;
+    rangeSelected = false;
   }
   
   String calculationType = "";
@@ -713,6 +714,7 @@ public class Parameters {
   boolean isPositiveOnly;
   
   boolean rangeAll;
+  boolean rangeSelected;
   public boolean rangeDefined;
   float valueMappedToRed, valueMappedToBlue;
   float mappedDataMin;
@@ -747,8 +749,9 @@ public class Parameters {
       mappedDataMax = 1;
     }
     if (mappedDataMin == Float.MAX_VALUE || mappedDataMin == mappedDataMax) {
-      mappedDataMin = surfaceReader.getMinMappedValue();
-      mappedDataMax = surfaceReader.getMaxMappedValue();
+      float[] minMax = surfaceReader.getMinMaxMappedValues();
+      mappedDataMin = minMax[0];
+      mappedDataMax = minMax[1];
     }
     if (mappedDataMin == 0 && mappedDataMax == 0) {
       //just set default -1/1 if there is no obvious data

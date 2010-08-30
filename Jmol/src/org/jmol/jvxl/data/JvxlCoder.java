@@ -507,7 +507,8 @@ public class JvxlCoder {
     int colorFractionRange = jvxlData.colorFractionRange;
     float valueBlue = jvxlData.valueMappedToBlue;
     float valueRed = jvxlData.valueMappedToRed;
-    int vertexCount = jvxlData.vertexCount;
+    int vertexCount = (jvxlData.saveVertexCount > 0 ? jvxlData.saveVertexCount
+        : jvxlData.vertexCount);
     float min = jvxlData.mappedDataMin;
     float max = jvxlData.mappedDataMax;
     StringBuffer list1 = new StringBuffer();

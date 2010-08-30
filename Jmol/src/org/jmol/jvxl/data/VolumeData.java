@@ -128,6 +128,9 @@ import org.jmol.util.XmlUtil;
 
 public class VolumeData implements VolumeDataInterface {
 
+  public SurfaceReader sr;
+  public boolean doIterate = true;
+  
   public final Point3f volumetricOrigin = new Point3f();
   public final float[] origin = new float[3];
   public final Vector3f[] volumetricVectors = new Vector3f[3];
@@ -284,8 +287,6 @@ public class VolumeData implements VolumeDataInterface {
     pt3i.set((int) ptXyzTemp.x, (int) ptXyzTemp.y, (int) ptXyzTemp.z);
   }
 
-  public SurfaceReader sr;
-  
   public float lookupInterpolatedVoxelValue(Point3f point) {
     if (sr != null)
       return sr.getValueAtPoint(point);
@@ -427,7 +428,7 @@ public class VolumeData implements VolumeDataInterface {
     edgeVector.sub(pointB, pointA);
     contourPoint.scaleAdd(fraction, edgeVector, pointA);
     float dist;
-    if (sr == null || valueB == valueA 
+    if (sr == null || !doIterate || valueB == valueA 
         || fraction < 0.01f || fraction > 0.99f 
         || (dist = edgeVector.length()) < 0.01f)
       return fraction;
@@ -440,10 +441,8 @@ public class VolumeData implements VolumeDataInterface {
         - sr.getValueAtPoint(contourPoint)) / (valueB - valueA))) > 0.005f) {
       contourPoint.scaleAdd(diff, edgeVector, contourPoint);
     }
-    fraction = contourPoint.distance(pointA) / dist;
-    if (fraction > 1)
-      System.out.println("volumeData ohoh");
-    return fraction;
+    dist = contourPoint.distance(pointA) / dist;
+    return (dist > 1 || dist < 0 ? fraction : dist);
   }
 
 }

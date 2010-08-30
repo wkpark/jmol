@@ -2476,6 +2476,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.setIteratorForAtom(iterator, -1, atomIndex, distance);
   }
 
+  public void setIteratorForPoint(AtomIndexIterator iterator, int modelIndex, Point3f pt,
+                                  float distance) {
+    modelSet.setIteratorForPoint(iterator, modelIndex, pt, distance);
+  }
+  
   public void fillAtomData(AtomData atomData, int mode) {
     atomData.programInfo = "Jmol Version " + getJmolVersion();
     atomData.fileName = getFileName();

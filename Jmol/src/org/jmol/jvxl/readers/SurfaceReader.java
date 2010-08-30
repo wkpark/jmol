@@ -308,9 +308,13 @@ public abstract class SurfaceReader implements VertexDataServer {
   }
 
   boolean readAndSetVolumeParameters() {
-    return (readVolumeParameters() && (vertexDataOnly || volumeData.setUnitVectors()));
+    return (readVolumeParameters() && (vertexDataOnly || setUnitVectors()));
   }
 
+  protected boolean setUnitVectors() {
+    return volumeData.setUnitVectors();
+  }
+  
   boolean createIsosurface(boolean justForPlane) {
     resetIsosurface();
     jvxlData.cutoff = Float.NaN;
@@ -342,7 +346,8 @@ public abstract class SurfaceReader implements VertexDataServer {
         meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
       params.setMapRanges(this);
       generateSurfaceData();
-      volumeData.voxelData = voxelDataTemp;
+      if (volumeData != null)
+        volumeData.voxelData = voxelDataTemp;
     } else {
       if (!readVolumeData(false))
         return false;
@@ -603,7 +608,7 @@ public abstract class SurfaceReader implements VertexDataServer {
   ////////////////////////////////////////////////////////////////
 
   void colorIsosurface() {
-    if (params.isSquared)
+    if (params.isSquared && volumeData != null)
       volumeData.filterData(true, Float.NaN);
 /*    if (params.isContoured && marchingSquares == null) {
       //    if (params.isContoured && !(jvxlDataIs2dContour || params.thePlane != null)) {
@@ -616,14 +621,17 @@ public abstract class SurfaceReader implements VertexDataServer {
     }
 
     if (params.isContoured && marchingSquares != null) {
+      initializeMapping();
       params.setMapRanges(this);
       marchingSquares.setMinMax(params.valueMappedToRed,
           params.valueMappedToBlue);
+      jvxlData.saveVertexCount = marchingSquares.contourVertexCount;
       contourVertexCount = marchingSquares
-          .generateContourData(jvxlDataIs2dContour);
+          .generateContourData(jvxlDataIs2dContour);      
       jvxlData.contourValuesUsed = marchingSquares.getContourValues();
       if (meshDataServer != null)
         meshDataServer.notifySurfaceGenerationCompleted();
+      finalizeMapping();
     }
 
     applyColorScale();
@@ -644,16 +652,11 @@ public abstract class SurfaceReader implements VertexDataServer {
       meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
       meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_COLOR_INDEXES, null);
     }
-    params.setMapRanges(this);
     //colorBySign is true when colorByPhase is true, but not vice-versa
     //old: boolean saveColorData = !(params.colorByPhase && !params.isBicolorMap && !params.colorBySign); //sorry!
     boolean saveColorData = (params.colorDensity || params.isBicolorMap || params.colorBySign || !params.colorByPhase);
     // colors mappable always now
     jvxlData.isJvxlPrecisionColor = true;//(jvxlDataIsPrecisionColor || params.isContoured || params.remappable);
-    jvxlData.valueMappedToRed = params.valueMappedToRed;
-    jvxlData.valueMappedToBlue = params.valueMappedToBlue;
-    jvxlData.mappedDataMin = params.mappedDataMin;
-    jvxlData.mappedDataMax = params.mappedDataMax;
     jvxlData.vertexCount = (contourVertexCount > 0 ? contourVertexCount
         : meshData.vertexCount);
     jvxlData.minColorIndex = -1;
@@ -671,15 +674,19 @@ public abstract class SurfaceReader implements VertexDataServer {
     boolean useMeshDataValues = jvxlDataIs2dContour ||
     //      !jvxlDataIs2dContour && (params.isContoured && jvxlData.jvxlPlane != null || 
     vertexDataOnly || params.colorDensity || params.isBicolorMap && !params.isContoured;
-    float value;
-    if (!useMeshDataValues)
+    if (!useMeshDataValues) {
+      
+      float min = Float.MAX_VALUE;
+      float max = -Float.MAX_VALUE;
+      float value;
+      initializeMapping();
       for (int i = meshData.vertexCount; --i >= 0;) {
         /* right, so what we are doing here is setting a range within the 
          * data for which we want red-->blue, but returning the actual
          * number so it can be encoded more precisely. This turned out to be
          * the key to making the JVXL contours work.
          *  
-         */
+         */        
         if (params.colorBySets)
           value = meshData.vertexSets[i];
         else if (params.colorByPhase)
@@ -687,10 +694,25 @@ public abstract class SurfaceReader implements VertexDataServer {
         //else if (jvxlDataIs2dContour)
         //marchingSquares
           //    .getInterpolatedPixelValue(meshData.vertices[i]);
+        else if (volumeData == null)
+          value = getValueAtPoint(meshData.vertices[i]);
         else
           value = volumeData.lookupInterpolatedVoxelValue(meshData.vertices[i]);
+        if (value < min)
+          min = value;
+        if (value > max && value != Float.MAX_VALUE)
+          max = value;
         meshData.vertexValues[i] = value;
       }
+      if (params.rangeSelected && minMax == null)
+        minMax = new float[] { min, max };
+      finalizeMapping();
+    }
+    params.setMapRanges(this);
+    jvxlData.mappedDataMin = params.mappedDataMin;
+    jvxlData.mappedDataMax = params.mappedDataMax;
+    jvxlData.valueMappedToRed = params.valueMappedToRed;
+    jvxlData.valueMappedToBlue = params.valueMappedToBlue;
     colorData();
 
     JvxlCoder.jvxlCreateColorData(jvxlData,
@@ -789,46 +811,45 @@ public abstract class SurfaceReader implements VertexDataServer {
     return 1;
   }
 
-  float getMinMappedValue() {
-    if (params.colorBySets)
-      return 0;
-    int vertexCount = (contourVertexCount > 0 ? contourVertexCount
-        : meshData.vertexCount);
-    Point3f[] vertexes = meshData.vertices;
-    float min = Float.MAX_VALUE;
-    boolean useVertexValue = (jvxlDataIs2dContour || vertexDataOnly || params.colorDensity);
-    for (int i = 0; i < vertexCount; i++) {
-      float challenger;
-      if (useVertexValue)
-        challenger = meshData.vertexValues[i];
-      else
-        challenger = volumeData.lookupInterpolatedVoxelValue(vertexes[i]);
-      if (challenger < min)
-        min = challenger;
-    }
-    return min;
-  }
+  protected float[] minMax;
 
-  float getMaxMappedValue() {
+  public float[] getMinMaxMappedValues() {
+    if (minMax != null && minMax[0] != Float.MAX_VALUE)
+      return minMax;
     if (params.colorBySets)
-      return Math.max(meshData.nSets - 1, 0);
+      return (minMax = new float[] { 0, Math.max(meshData.nSets - 1, 0) });
+    float min = Float.MAX_VALUE;
+    float max = -Float.MAX_VALUE;
+    if (params.theProperty != null) {
+      for (int i = 0; i < params.theProperty.length; i++) {
+        if (params.rangeSelected && !params.bsSelected.get(i))
+          continue;
+        float p = params.theProperty[i];
+        if (Float.isNaN(p))
+          continue;
+        if (p < min)
+          min = p;
+        if (p > max)
+          max = p;
+      }
+      return (minMax = new float[] { min, max });
+    }
     int vertexCount = (contourVertexCount > 0 ? contourVertexCount
         : meshData.vertexCount);
     Point3f[] vertexes = meshData.vertices;
-    float max = -Float.MAX_VALUE;
     boolean useVertexValue = (jvxlDataIs2dContour || vertexDataOnly || params.colorDensity);
     for (int i = 0; i < vertexCount; i++) {
-      float challenger;
+      float v;
       if (useVertexValue)
-        challenger = meshData.vertexValues[i];
+        v = meshData.vertexValues[i];
       else
-        challenger = volumeData.lookupInterpolatedVoxelValue(vertexes[i]);
-      if (challenger == Float.MAX_VALUE)
-        challenger = 0; //for now TESTING ONLY
-      if (challenger > max && challenger != Float.MAX_VALUE)
-        max = challenger;
+        v = volumeData.lookupInterpolatedVoxelValue(vertexes[i]);
+      if (v < min)
+        min = v;
+      if (v > max && v != Float.MAX_VALUE)
+        max = v;
     }
-    return max;
+    return (minMax = new float[] { min, max });
   }
 
   void updateTriangles() {
@@ -960,8 +981,16 @@ public abstract class SurfaceReader implements VertexDataServer {
    * @return   value
    */
   public float getValueAtPoint(Point3f pt) {
-    // only for readers that can support it (isoShapeReader)
+    // only for readers that can support it (IsoShapeReader, AtomPropertyMapper)
     return 0;
+  }
+
+  protected void initializeMapping() {
+    // initiate any iterators
+  }
+
+  protected void finalizeMapping() {
+    // release any iterators
   }
 
 }

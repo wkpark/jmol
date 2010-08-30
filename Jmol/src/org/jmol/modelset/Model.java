@@ -98,9 +98,6 @@ public final class Model {
 
   int hydrogenCount;
   boolean isPDB;
-  public boolean isPDB() {
-    return isPDB;
-  }
   
   String loadState = "";
   StringBuffer loadScript = new StringBuffer();

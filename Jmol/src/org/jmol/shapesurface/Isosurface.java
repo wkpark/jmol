@@ -1375,6 +1375,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       if (!isPickable(m, bsVisible))
         continue;
       List<Object>[] vs = m.jvxlData.vContours;
+      int ilast = (m.firstRealVertex < 0 ? 0 : m.firstRealVertex);
       if (vs != null && vs.length > 0) {
         for (int j = 0; j < vs.length; j++) {
           List<Object> vc = vs[j];
@@ -1392,10 +1393,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
           return pickedContour.get(JvxlCoder.CONTOUR_VALUE).toString();
       } else if (m.jvxlData.jvxlPlane != null && m.vertexValues != null) {
         int pickedVertex = -1;
-        for (int k = m.vertexCount; --k >= m.firstRealVertex;) {
-          if (Float.isNaN(m.firstRealVertex))
-            continue;
-          Point3f v = m.vertices[k];
+        Point3f[] vertices = (m.ptOffset == null && m.scale3d == 0 
+            ? m.vertices : m.getOffsetVertices(m.jvxlData.jvxlPlane)); 
+        for (int k = m.vertexCount; --k >= ilast;) {
+          Point3f v = vertices[k];
           int d2 = coordinateInRange(x, y, v, dmin2, ptXY);
           if (d2 >= 0) {
             dmin2 = d2;
@@ -1406,7 +1407,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
           return "v" + pickedVertex + ": " + m.vertexValues[pickedVertex];
       } else if (m.vertexValues != null) {
         int pickedVertex = -1;
-        for (int k = m.vertexCount; --k >= m.firstRealVertex;) {
+        for (int k = m.vertexCount; --k >= ilast;) {
           Point3f v = m.vertices[k];
           int d2 = coordinateInRange(x, y, v, dmin2, ptXY);
           if (d2 >= 0) {

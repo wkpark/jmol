@@ -15474,8 +15474,10 @@ public class ScriptEvaluator {
           break;
         case Token.increment:
           Point3f pt = getPoint3f(i + 2, false);
-          if (pt.z <= 0)
+          if (pt.z <= 0 || pt.y < pt.x)
             error(ERROR_invalidArgument); // from to step
+          if (pt.z == (int) pt.z && pt.z > (pt.y - pt.x))
+            pt.z = (pt.y - pt.x) / pt.z;
           propertyValue = pt;
           i = iToken;
           sbCommand.append(" increment ").append(Escape.escape(pt));

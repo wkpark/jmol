@@ -300,7 +300,7 @@ public void initShape() {
       if (thisMesh != null) {
         // no points in this script statement
         scaleDrawing(thisMesh, newScale);
-        thisMesh.initialize(JmolConstants.FULLYLIT, null);
+        thisMesh.initialize(JmolConstants.FULLYLIT, null, null);
       }
       return;
     }
@@ -376,7 +376,7 @@ public void initShape() {
             && newScale == 1)
           newScale = length;
         scaleDrawing(thisMesh, newScale);
-        thisMesh.initialize(JmolConstants.FULLYLIT, null);
+        thisMesh.initialize(JmolConstants.FULLYLIT, null, null);
         setAxes(thisMesh);
         thisMesh.title = title;
         thisMesh.visible = true;

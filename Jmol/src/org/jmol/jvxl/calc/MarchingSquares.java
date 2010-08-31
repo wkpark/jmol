@@ -155,10 +155,12 @@ public class MarchingSquares {
          : voxelValue < max;
    }
   */
+  
   float calcContourPoint(float cutoff, float valueA, float valueB,
-                         Point3f contourPoint) {
+                         Point3f pt) {
+    
     return volumeData.calculateFractionalPoint(cutoff, pointA, pointB, valueA,
-        valueB, contourPoint);
+        valueB, pt);
   }
 
   final Point3f ptTemp = new Point3f();
@@ -216,9 +218,14 @@ public class MarchingSquares {
         if (f >= 0 && f <= 1) {
           pointA.set(contourVertexes[iA]);
           pointB.set(contourVertexes[iB]);
-          calcContourPoint(value, valueA, valueB, ptTemp);
-          iPt = addContourVertex(0, 0, 0, null, ptTemp, value);
-          contourVertexes[iPt].setValue(value);
+          value = calcContourPoint(value, valueA, valueB, ptTemp);
+          if (!Float.isNaN(value)) {
+            iPt = addContourVertex(0, 0, 0, null, ptTemp, value);
+            contourVertexes[iPt].setValue(value);
+          } else {
+            System.out.println("#MarchingSquares nonlinear problem for contour " + (i + 1) + " at " + ptTemp + " " + valueA + " " + valueB 
+                + "\ndraw ID \"pt" + ptTemp + "\" scale 5.0 @{point" + ptTemp + "}" );
+          }
         }
       }
       htPts.put(key, Integer.valueOf(iPt));
@@ -226,7 +233,9 @@ public class MarchingSquares {
     }
 
     protected void checkContour(int i, float value) {
-      //System.out.println("   " + contourVertexes[pts[0]].value + " " + contourVertexes[pts[1]].value + " " + contourVertexes[pts[2]].value + " " + value);
+     // System.out.println(" ms  i=" + i + " " + contourVertexes[pts[0]].value + " " + contourVertexes[pts[1]].value + " " + contourVertexes[pts[2]].value + " " + value);
+     // System.out.println(pts[0] + " " + pts[1] + " " + pts[2]);
+     // System.out.println(contourVertexes[pts[0]] + "\n" + contourVertexes[pts[1]] + "\n" + contourVertexes[pts[2]]);
       int ipt0 = intercept(0, value);
       int ipt1 = intercept(1, value);
       int ipt2 = intercept(2, value);
@@ -240,9 +249,6 @@ public class MarchingSquares {
       if (ipt2 >= 0) {
         mode += 4;
       }
-      if (mode == 0)
-        return;
-      isValid = false;
       switch (mode) {
       case 3:
         addTriangle(pts[0], ipt0, ipt1, 2 | (check & 1), i);
@@ -259,15 +265,16 @@ public class MarchingSquares {
         addTriangle(ipt2, pts[1], ipt1, 4 | (check & 2), i);
         addTriangle(ipt2, ipt1, pts[2], 1 | (check & 6), i);
         break;
+      default:
+        return;
       }
+      isValid = false;
     }
 
-    void setValidity(float min, float max) {
-      isValid &= (contourVertexes[pts[0]].value <= max
-          && contourVertexes[pts[1]].value <= max
-          && contourVertexes[pts[2]].value <= max
-          && contourVertexes[pts[0]].value >= min
-          && contourVertexes[pts[1]].value >= min && contourVertexes[pts[2]].value >= min);
+    void setValidity() {
+      isValid &= (!Float.isNaN(contourVertexes[pts[0]].value)
+          && !Float.isNaN(contourVertexes[pts[1]].value)
+          && !Float.isNaN(contourVertexes[pts[2]].value));
     }
   }
 
@@ -308,8 +315,11 @@ public class MarchingSquares {
 
     float maxCutoff = Float.MAX_VALUE;
     float minCutoff = -Float.MAX_VALUE;
+    //float lastCutoff = 0;
+    float cutoff = minCutoff;
     for (int i = 0; i < nContourSegments; i++) {
-      float cutoff = (contoursDiscrete != null ? contoursDiscrete[i]
+      //lastCutoff = cutoff;
+      cutoff = (contoursDiscrete != null ? contoursDiscrete[i]
           : contourFromZero ? min + (i * 1f / nContourSegments) * diff
               : i == 0 ? -Float.MAX_VALUE
                   : i == nContourSegments - 1 ? Float.MAX_VALUE : min
@@ -322,7 +332,7 @@ public class MarchingSquares {
         cutoff = (cutoff < 0 ? -0.0001f : 0.0001f);
       contourValuesUsed[i] = cutoff;
 
-      Logger.info("contour " + i + " " + cutoff);
+      Logger.info("#contour " + (i + 1)+ " " + cutoff);
       int n = 0;
       htPts.clear();
       for (int ii = triangleCount; --ii >= 0;) {
@@ -345,16 +355,29 @@ public class MarchingSquares {
       minCutoff = contoursDiscrete[0];
       maxCutoff = contoursDiscrete[contoursDiscrete.length - 1];
     }
-    if (contourFromZero || contoursDiscrete != null)
+    valueMin = contourValuesUsed[0];
+    valueMax = (contourValuesUsed.length == 0 ?
+        valueMin : contourValuesUsed[contourValuesUsed.length - 1]);
+    if (contourFromZero || contoursDiscrete != null) {
+      for (int i = 0; i < contourVertexCount; i++) {
+        float v = contourVertexes[i].value;
+        if (v > maxCutoff || v < minCutoff)
+          contourVertexes[i].value = Float.NaN;
+      }
       for (int i = triangleCount; --i >= 0;)
-        triangles[i].setValidity(minCutoff, maxCutoff);
+        triangles[i].setValidity();
+    }
     return true;
   }
 
+  public float[] getMinMax() {
+    return new float[] { valueMin, valueMax };
+  }
   private void addAllTriangles() {
     for (int i = 0; i < triangleCount; i++)
       if (triangles[i].isValid) {
         Triangle t = triangles[i];
+        //System.out.println(contourVertexes[t.pts[0]].value + " " + contourVertexes[t.pts[1]].value + " "  + contourVertexes[t.pts[2]].value + " "  );
         surfaceReader.addTriangleCheck(t.pts[0], t.pts[1], t.pts[2], t.check,
             t.contourIndex, false, -1);
       }

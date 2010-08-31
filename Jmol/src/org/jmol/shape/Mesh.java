@@ -137,10 +137,10 @@ public class Mesh extends MeshSurface {
     this.meshType = meshType;
   }
 
-  public void initialize(int lighting, Point3f[] vertices) {
+  public void initialize(int lighting, Point3f[] vertices, Point4f plane) {
     if (vertices == null)
       vertices = this.vertices;
-    Vector3f[] normals = getNormals(vertices);
+    Vector3f[] normals = getNormals(vertices, plane);
     normixes = new short[normixCount];
     isTwoSided = (lighting == JmolConstants.FULLYLIT);
     BitSet bsTemp = new BitSet();
@@ -156,12 +156,18 @@ public class Mesh extends MeshSurface {
     setLighting(lighting);
   }
 
-  public Vector3f[] getNormals(Point3f[] vertices) {
+  public Vector3f[] getNormals(Point3f[] vertices, Point4f plane) {
     normixCount = (isPolygonSet ? polygonCount : vertexCount);
     Vector3f[] normals = new Vector3f[normixCount];
     for (int i = normixCount; --i >= 0;)
       normals[i] = new Vector3f();
-    sumVertexNormals(vertices, normals);
+    if (plane == null) {
+      sumVertexNormals(vertices, normals);
+    }else {
+      Vector3f normal = new Vector3f(plane.x, plane.y, plane.z); 
+      for (int i = normixCount; --i >= 0;)
+        normals[i] = normal;
+    }
     if (!isPolygonSet)
       for (int i = normixCount; --i >= 0;)
         normals[i].normalize();
@@ -287,7 +293,7 @@ public class Mesh extends MeshSurface {
       if (normal != null && val != 0)
         pt.scaleAdd(val, normal, pt);
     }
-    initialize(lighting, offsetVertices);
+    initialize(lighting, offsetVertices, null);
     return offsetVertices;
   }
 

@@ -333,7 +333,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   }
 
   protected void exportSurface() {
-    mesh.vertexNormals = mesh.getNormals(vertices);
+    mesh.vertexNormals = mesh.getNormals(vertices, null);
     mesh.bsFaces = bsFaces;
     g3d.drawSurface(mesh, mesh.offsetVertices, latticeOffset);
     mesh.vertexNormals = null;

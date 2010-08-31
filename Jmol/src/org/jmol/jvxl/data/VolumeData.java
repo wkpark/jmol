@@ -419,30 +419,46 @@ public class VolumeData implements VolumeDataInterface {
 
   private final Vector3f edgeVector = new Vector3f();
   
+  private Point3f ptTemp = new Point3f();
+  
   public float calculateFractionalPoint(float cutoff, Point3f pointA,
                                         Point3f pointB, float valueA,
-                                        float valueB, Point3f contourPoint) {
-    float fraction = (/*false && Float.isNaN(valueA) ? 1 
-                      : false && Float.isNaN(valueB) ? 0 
-                      : DEAD CODE */(cutoff - valueA) / (valueB - valueA));
+                                        float valueB, Point3f pt) {
+    float d = (valueB - valueA);
+    float fraction = (cutoff - valueA) / d;
     edgeVector.sub(pointB, pointA);
-    contourPoint.scaleAdd(fraction, edgeVector, pointA);
-    float dist;
+    pt.scaleAdd(fraction, edgeVector, pointA);
     if (sr == null || !doIterate || valueB == valueA 
         || fraction < 0.01f || fraction > 0.99f 
-        || (dist = edgeVector.length()) < 0.01f)
-      return fraction;
-    // if the surfaceReader is present, it means we can
-    // do a nonlinear interpolation here and get a better value
+        || (edgeVector.length()) < 0.01f)
+      return cutoff;
+    // Do a nonlinear interpolation here and get a better value
     // such is the case for atomic orbitals.
-    float diff = 0;
+    // In some cases we will find that we cannot get there, either
+    // because the actual point is not between valueA and valueB
+    // or because the projected point is not between pointA and pointB
+    // In that case we invalidate the point.
     int n = 0;
-    while (++n < 10 && Math.abs((diff = (cutoff 
-        - sr.getValueAtPoint(contourPoint)) / (valueB - valueA))) > 0.005f) {
-      contourPoint.scaleAdd(diff, edgeVector, contourPoint);
+    ptTemp.set(pt);
+    float v = sr.getValueAtPoint(ptTemp);
+    float v0 = Float.NaN;
+    
+    while (++n < 10) {
+      float fnew = (v - valueA) / d;
+      if (fnew < 0 || fnew > 1)
+        break;
+      float diff = (cutoff - v) / d / 2;
+      fraction += diff;
+      if (fraction < 0 || fraction > 1)
+        break;
+      pt.set(ptTemp);
+      v0 = v;
+      if (Math.abs(diff) < 0.005f)
+        break;
+      ptTemp.scaleAdd(diff, edgeVector, pt);
+      v = sr.getValueAtPoint(pt);
     }
-    dist = contourPoint.distance(pointA) / dist;
-    return (dist > 1 || dist < 0 ? fraction : dist);
+    return v0;
   }
 
 }

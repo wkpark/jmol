@@ -591,7 +591,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
       for (int k = hermiteLevel * 2; --k >= 0;)
         mesh.addQuad(nPoints - k - 1, nPoints - nPer + (nPer - k) % nPer,
             nPoints - nPer + k + 1, nPoints - nPer + k + 2);
-    mesh.initialize(JmolConstants.FRONTLIT, null);
+    mesh.initialize(JmolConstants.FRONTLIT, null, null);
     //System.out.sprintln("mesh "+ mesh.thisID + " " + mesh.vertexCount+" "+mesh.vertices.length + " " + mesh.polygonCount + " " + mesh.polygonIndexes.length);
     mesh.setVisibilityFlags(1);
     return (meshReady[i] = true);

@@ -337,7 +337,7 @@ public class MarchingSquares {
       htPts.clear();
       for (int ii = triangleCount; --ii >= 0;) {
         if (triangles[ii].isValid)
-          triangles[ii].checkContour(i + 1, cutoff);
+          triangles[ii].checkContour(i, cutoff);
         else
           n++;
       }

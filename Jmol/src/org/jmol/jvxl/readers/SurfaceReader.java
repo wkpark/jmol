@@ -696,8 +696,6 @@ public abstract class SurfaceReader implements VertexDataServer {
         //else if (jvxlDataIs2dContour)
         //marchingSquares
           //    .getInterpolatedPixelValue(meshData.vertices[i]);
-        else if (volumeData == null)
-          value = getValueAtPoint(meshData.vertices[i]);
         else
           value = volumeData.lookupInterpolatedVoxelValue(meshData.vertices[i]);
         if (value < min)
@@ -748,8 +746,7 @@ public abstract class SurfaceReader implements VertexDataServer {
         if (value < valueRed)
           value = valueRed;
         if (value >= valueBlue)
-          value = valueBlue;
-          
+          value = valueBlue;         
         vertexColixes[i] = params.colorEncoder.getColorIndex(value);
       }
     }

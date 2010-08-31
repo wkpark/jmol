@@ -543,7 +543,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           continue;
         break;
       }
-      if (ichFirstSharp > 0)
+      if (ichFirstSharp >= 0)
         continue;
       if (ch == '#')
         ichFirstSharp = ichT;

@@ -1389,7 +1389,7 @@ abstract public class AtomCollection {
     Atom[] attached = getAttached(atom, 4, hybridizationCompatible);
     int nAttached = attached.length;
     int pt = lcaoType.charAt(lcaoType.length() - 1) - 'a';
-    if (pt < 0)
+    if (pt < 0 || pt > 6)
       pt = 0;
     Vector3f vTemp = new Vector3f();
     z.set(0, 0, 0);
@@ -1457,7 +1457,7 @@ abstract public class AtomCollection {
           // C=C, no other atoms
           // fall through
         case 2:
-          hybridization = "sp2";
+          hybridization = (isSp ? "sp" : "sp2");
           break;
         case 3:
           // special case, for example R2C=O oxygen
@@ -1571,6 +1571,7 @@ abstract public class AtomCollection {
         break;
       }
       // not "sp3" -- sp2 or lone pair
+      vTemp.cross(x, z); //x and vTemp are now perpendicular to z
       switch (attached[0].getCovalentBondCount()) {
       case 1:
         if (attached[0].getValence() != 2) {
@@ -1584,50 +1585,65 @@ abstract public class AtomCollection {
         // get third atom
         boolean isCumulated = false;
         Atom a0 = attached[0];
-        while (a0 != null) {
+        x.set(z);
+        vTemp.set(vRef);        
+        while (a0 != null && a0.getCovalentBondCount() == 2) {
           Bond[] bonds = a0.bonds;
           Atom a = null;
-          vTemp.set(vRef);        
+          isCumulated = !isCumulated;
           for (int i = 0; i < bonds.length; i++)
             if (bonds[i].isCovalent()) {
               a = bonds[i].getOtherAtom(a0);
               if (a != atom) {
                 vTemp.sub(a, a0);
-                if (!isCumulated)
-                  vTemp.cross(vTemp, x);
                 break;
               }
             }
-          if (a0.getValence() != 4
-              || a0.getCovalentBondCount() != 2)
+          vTemp.cross(vTemp, x);
+          if (vTemp.length() > 0.1f || a.getCovalentBondCount() != 2)
             break;
-          isCumulated = !isCumulated;
           atom = a0;
           a0 = a;
         }
-        // C=C or RC=C
-        z.cross(vTemp, x); // perp
-        z.normalize();
-        if (pt == 1)
-          z.scale(-1);
-        z.scale(sqrt3_2);
-        z.scaleAdd(0.5f, x, z);
-        break;
-      case 3:
-        // special case, for example R2C=O oxygen
-        getHybridizationAndAxes(attached[0].index, z, x, "pz", false,
-            doAlignZ);
-        vTemp.set(x);
-        if (isSp2) { // align z as sp2 orbital
-          z.cross(x, z);
+        if (vTemp.length() > 0.1f) {
+          z.cross(vTemp, x);
+          // C=C or RC=C
+          z.normalize();
           if (pt == 1)
             z.scale(-1);
           z.scale(sqrt3_2);
-          z.scaleAdd(-0.5f, x, z);
+          z.scaleAdd(0.5f, x, z);
+          if (isP) {
+            vTemp.cross(z, x);
+            z.set(vTemp);
+            vTemp.set(x);
+          } 
+          x.cross(vTemp, z);
+        } else {
+          z.set(x);
+          x.cross(vRef, x);
         }
         break;
+      case 3:
+        // special case, for example R2C=O oxygen
+        getHybridizationAndAxes(attached[0].index, x, vTemp, "pz", false,
+            doAlignZ);
+        vTemp.set(x);
+        if (isSp2) { // align z as sp2 orbital
+          //System.out.println("draw v1 vector @{ {_O}[1]} @{point" + x + "}");
+          //System.out.println("draw v2 vector @{ {_O}[1]} @{point" + z + "} color red");
+          x.cross(x, z);
+          if (pt == 1)
+            x.scale(-1);
+          x.scale(sqrt3_2);
+          z.scaleAdd(0.5f, z, x);
+        } else {
+          vTemp.set(z);
+          z.set(x);
+        }
+        x.cross(vTemp, z);
+        break;
       }
-      x.cross(vTemp, z);
       break;
     case 2:
       // two attached atoms -- check for linearity
@@ -1645,6 +1661,10 @@ abstract public class AtomCollection {
               x.scale(-1);
             break;
           }
+          // O-C*-O
+          vTemp.set(vRef);    
+          z.cross(vTemp, x);
+          vTemp.cross(z, x);
         }
         z.set(x);
         x.cross(vTemp, z);
@@ -1789,7 +1809,7 @@ abstract public class AtomCollection {
       case 120:
       case 210:
       case 300:
-        System.out.println((Measure.computeTorsion(attached[0], atom, attached[1], attached[2], true)));
+        //System.out.println((Measure.computeTorsion(attached[0], atom, attached[1], attached[2], true)));
         if (Math.abs(Measure.computeTorsion(attached[0], atom, attached[1], attached[2], true)) > 162)
             return "trigonal planar";// -- AX3";
         return "trigonal pyramidal";// -- AX3E";

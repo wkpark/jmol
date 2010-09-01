@@ -137,7 +137,8 @@ class ColorManager {
     float lo, hi;
     switch (pid) {
     case JmolConstants.PALETTE_PROPERTY:
-      return getPropertyColix(atom.getIndex());
+      return (colorData == null || atom.index >= colorData.length
+          ? Graphics3D.GRAY : getColixForPropertyValue(colorData[atom.index]));
     case JmolConstants.PALETTE_NONE:
     case JmolConstants.PALETTE_CPK:
       // Note that CPK colors can be changed based upon user preference
@@ -251,12 +252,6 @@ class ColorManager {
       break;
     }
     return (argb == 0 ? Graphics3D.HOTPINK : Graphics3D.getColix(argb));
-  }
-
-  private short getPropertyColix(int iAtom) {
-    if (colorData == null || iAtom >= colorData.length)
-      return Graphics3D.GRAY;
-    return getColixForPropertyValue(colorData[iAtom]);
   }
 
   private int getJmolOrRasmolArgb(int id, int argb) {

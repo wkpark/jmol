@@ -159,7 +159,8 @@ public class Token {
    *                        x        sum
    *                        x x      sum2
    *                        xx       stddev
-   *                        xxx      allfloat
+   *                        xxx      selectedfloat  (including just the atoms selected)
+   *                       x         fullfloat (including all atoms, not just selected)
    *                       x???      [available] 
    *                       xxxx      minmaxmask (all)
    *                     xx          maximum number of parameters for function
@@ -492,17 +493,20 @@ public class Token {
   // are bitfields added to a preceding property selector
   // for example, x.atoms.max, x.atoms.all
   // .all gets incorporated as minmaxmask
-  // .allfloat is a special flag used by Jmol to pass
-  // temporary float arrays to the .bin() function
+  // .selectedfloat is a special flag used by mapPropety() and plot()
+  // to pass temporary float arrays to the .bin() function
+  // .allfloat is a special flag for colorShape() to get a full
+  // atom float array
   
   final static int minmaxmask /*all*/ = 0xF << 5; 
-  public final static int min         = 1 << 5;
-  public final static int max         = 2 << 5;
-  public final static int average     = 3 << 5;
-  public final static int sum         = 4 << 5;
-  public final static int sum2        = 5 << 5;
-  public final static int stddev      = 6 << 5;
-  public final static int allfloat    = 7 << 5; //not user-selectable
+  public final static int min           = 1 << 5;
+  public final static int max           = 2 << 5;
+  public final static int average       = 3 << 5;
+  public final static int sum           = 4 << 5;
+  public final static int sum2          = 5 << 5;
+  public final static int stddev        = 6 << 5;
+  public final static int selectedfloat = 7 << 5; //not user-selectable
+  public final static int allfloat      = 8 << 5; //not user-selectable
 
   final static int settable           = 1 << 11;
   

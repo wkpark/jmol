@@ -878,7 +878,7 @@ public class ScriptEvaluator {
             tok2 = Token.minmaxmask;
             if (tokAt(iToken + 3) == Token.per
                 && tokAt(iToken + 4) == Token.bin)
-              tok2 = Token.allfloat;
+              tok2 = Token.selectedfloat;
             // fall through
           case Token.min:
           case Token.max:
@@ -886,7 +886,7 @@ public class ScriptEvaluator {
           case Token.sum:
           case Token.sum2:
           case Token.average:
-            allowMathFunc = (isUserFunction || tok2 == Token.minmaxmask || tok2 == Token.allfloat);
+            allowMathFunc = (isUserFunction || tok2 == Token.minmaxmask || tok2 == Token.selectedfloat);
             token.intValue |= tok2;
             getToken(iToken + 2);
           }
@@ -1101,7 +1101,7 @@ public class ScriptEvaluator {
 
   private float[] getBitsetPropertyFloat(BitSet bs, int tok, float min,
                                          float max) throws ScriptException {
-    float[] data = (float[]) getBitsetProperty(bs, tok | Token.allfloat, null,
+    float[] data = (float[]) getBitsetProperty(bs, tok, null,
         null, null, null, false, Integer.MAX_VALUE, false);
     if (!Float.isNaN(min))
       for (int i = 0; i < data.length; i++)
@@ -1131,8 +1131,10 @@ public class ScriptEvaluator {
     // check minmax flags:
 
     int minmaxtype = tok & Token.minmaxmask;
-    boolean allFloat = (minmaxtype == Token.allfloat);
-    boolean isExplicitlyAll = (minmaxtype == Token.minmaxmask || allFloat);
+    boolean selectedFloat = (minmaxtype == Token.selectedfloat);
+    int atomCount = viewer.getAtomCount();
+    float[] fout = (minmaxtype == Token.allfloat ? new float[atomCount] : null);
+    boolean isExplicitlyAll = (minmaxtype == Token.minmaxmask || selectedFloat);
     tok &= ~Token.minmaxmask;
     if (tok == Token.nada)
       tok = (isAtoms ? Token.atoms : Token.bonds);
@@ -1164,11 +1166,11 @@ public class ScriptEvaluator {
 
     // preliminarty checks we only want to do once:
 
+    Point3f zero = (minmaxtype == Token.allfloat ? new Point3f() : null);
     Point3f pt = (isPt || !isAtoms ? new Point3f() : null);
-    if (isString || isExplicitlyAll)
+    if (isExplicitlyAll || isString && minmaxtype != Token.allfloat)
       minmaxtype = Token.all;
     List<Object> vout = (minmaxtype == Token.all ? new ArrayList<Object>() : null);
-
     BitSet bsNew = null;
     String userFunction = null;
     List<ScriptVariable> params = null;
@@ -1215,7 +1217,7 @@ public class ScriptEvaluator {
     case Token.function:
       userFunction = (String) ((Object[]) opValue)[0];
       params = (List<ScriptVariable>) ((Object[]) opValue)[1];
-      bsAtom = new BitSet(viewer.getAtomCount());
+      bsAtom = new BitSet(atomCount);
       tokenAtom = new ScriptVariable(Token.bitset, bsAtom);
       break;
     case Token.straightness:
@@ -1261,10 +1263,10 @@ public class ScriptEvaluator {
         i1 = index + 1;
       } else if (haveBitSet) {
         i0 = bs.nextSetBit(0);
-        i1 = Math.min(viewer.getAtomCount(), bs.length());
+        i1 = Math.min(atomCount, bs.length());
       } else {
         i0 = 0;
-        i1 = viewer.getAtomCount();
+        i1 = atomCount;
       }
       if (isSyntaxCheck)
         i1 = 0;
@@ -1307,6 +1309,9 @@ public class ScriptEvaluator {
           case Token.max:
             if (fv > fvMinMax)
               fvMinMax = fv;
+            break;
+          case Token.allfloat:
+            fout[i] = fv;
             break;
           case Token.all:
             vout.add(Float.valueOf(fv));
@@ -1375,6 +1380,9 @@ public class ScriptEvaluator {
             if (iv > ivMinMax)
               ivMinMax = iv;
             break;
+          case Token.allfloat:
+            fout[i] = iv;
+            break;
           case Token.all:
             vout.add(Integer.valueOf(iv));
             break;
@@ -1388,16 +1396,28 @@ public class ScriptEvaluator {
           }
           break;
         case 2: // isString
-          vout.add(Atom.atomPropertyString(viewer, atom, tok));
+          String s = Atom.atomPropertyString(viewer, atom, tok); 
+          switch (minmaxtype) {
+          case Token.allfloat:
+            fout[i] = Parser.parseFloat(s);
+            break;
+          default:
+            vout.add(s);
+          }
           break;
         case 3: // isPt
           Tuple3f t = Atom.atomPropertyTuple(atom, tok);
           if (t == null)
             error(ERROR_unrecognizedAtomProperty, Token.nameOf(tok));
-          pt.add(t);
-          if (minmaxtype == Token.all) {
-            vout.add(new Point3f(pt));
-            pt.set(0, 0, 0);
+          switch (minmaxtype) {
+          case Token.allfloat:
+            fout[i] = (float) Math.sqrt(t.x * t.x + t.y * t.y + t.z * t.z);
+            break;
+          case Token.all:
+            vout.add(new Point3f(t));
+            break;
+          default:
+            pt.add(t);
           }
           break;
         }
@@ -1466,21 +1486,16 @@ public class ScriptEvaluator {
         }
       }
     }
+    if (minmaxtype == Token.allfloat)
+      return fout;
     if (minmaxtype == Token.all) {
       if (asVector)
         return vout;
       int len = vout.size();
       if (isString && !isExplicitlyAll && len == 1)
         return vout.get(0);
-      if (tok == Token.sequence) {
-        StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < len; i++)
-          sb.append((String) vout.get(i));
-        return sb.toString();
-      }
-      if (allFloat) {
-        float[] fout = new float[len];
-        Point3f zero = (len > 0 && isPt ? new Point3f() : null);
+      if (selectedFloat) {
+        fout = new float[len];
         for (int i = len; --i >= 0;) {
           Object v = vout.get(i);
           switch (mode) {
@@ -1499,6 +1514,12 @@ public class ScriptEvaluator {
           }
         }
         return fout;
+      }
+      if (tok == Token.sequence) {
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < len; i++)
+          sb.append((String) vout.get(i));
+        return sb.toString();
       }
       String[] sout = new String[len];
       for (int i = len; --i >= 0;) {
@@ -7361,15 +7382,15 @@ public class ScriptEvaluator {
             && shapeType != JmolConstants.SHAPE_HSTICKS)
           error(ERROR_invalidArgument);
         Object data = null;
+        BitSet bsSelected = (pid != JmolConstants.PALETTE_PROPERTY 
+            && pid != JmolConstants.PALETTE_VARIABLE 
+            || !viewer.isRangeSelected() ? null : viewer
+                .getSelectionSet(false));
         if (pid == JmolConstants.PALETTE_PROPERTY) {
-          BitSet bsSelected = (viewer.isRangeSelected() ? viewer
-              .getSelectionSet(false) : null);
           if (isColorIndex) {
             if (!isSyntaxCheck) {
-              data = getBitsetProperty(bsSelected, (isByElement ? Token.elemno
-                  : Token.groupid)
-                  | Token.minmaxmask, null, null, null, null, false,
-                  Integer.MAX_VALUE, false);
+              data = getBitsetPropertyFloat(bsSelected, (isByElement ? Token.elemno
+                  : Token.groupid) | Token.allfloat, Float.NaN, Float.NaN);
             }
           } else {
             if (!isColorIndex && !isIsosurface)
@@ -7379,19 +7400,9 @@ public class ScriptEvaluator {
                     Token.atomproperty)
                 && !Token.tokAttr(tok, Token.strproperty)) {
               if (!isSyntaxCheck) {
-                data = getBitsetProperty(bsSelected, getToken(index++).tok
-                    | Token.minmaxmask, null, null, null, null, false,
-                    Integer.MAX_VALUE, false);
+                data = getBitsetPropertyFloat(bsSelected,
+                    getToken(index++).tok | Token.allfloat, Float.NaN, Float.NaN);
               }
-            }
-          }
-          if (data != null && !(data instanceof float[])) {
-            if (data instanceof String[]) {
-              float[] fdata = new float[((String[]) data).length];
-              Parser.parseFloatArray((String[]) data, null, fdata);
-              data = fdata;
-            } else {
-              error(ERROR_invalidArgument);
             }
           }
         } else if (pid == JmolConstants.PALETTE_VARIABLE) {
@@ -7406,8 +7417,9 @@ public class ScriptEvaluator {
           String scheme = (tokAt(index) == Token.string ? parameterAsString(
               index++).toLowerCase() : null);
           if (scheme != null && !isIsosurface) {
-            setStringProperty("propertyColorScheme",
-                (isTranslucent && translucentLevel == Float.MAX_VALUE ? "translucent " : "") + scheme);
+            setStringProperty("propertyColorScheme", (isTranslucent
+                && translucentLevel == Float.MAX_VALUE ? "translucent " : "")
+                + scheme);
             isColorIndex = (scheme.indexOf(ColorEncoder.BYELEMENT_PREFIX) == 0 || scheme
                 .indexOf(ColorEncoder.BYRESIDUE_PREFIX) == 0);
           }
@@ -7431,9 +7443,9 @@ public class ScriptEvaluator {
           if (!isSyntaxCheck) {
             if (isIsosurface) {
             } else if (data == null) {
-                viewer.setCurrentColorRange(name);
+              viewer.setCurrentColorRange(name);
             } else {
-                viewer.setCurrentColorRange((float[]) data, null);
+              viewer.setCurrentColorRange((float[]) data, bsSelected);
             }
             if (isIsosurface) {
               checkLength(index);
@@ -7448,7 +7460,7 @@ public class ScriptEvaluator {
               if (translucentLevel == Float.MAX_VALUE)
                 return;
             } else if (max != Float.MAX_VALUE) {
-                viewer.setCurrentColorRange(min, max);
+              viewer.setCurrentColorRange(min, max);
             }
           }
         } else {
@@ -7522,8 +7534,8 @@ public class ScriptEvaluator {
       setShapeTranslucency(shapeType, prefix, translucency, translucentLevel,
           bs);
     if (typeMask != 0)
-      setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer.valueOf(
-          JmolEdge.BOND_COVALENT_MASK));
+      setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer
+          .valueOf(JmolEdge.BOND_COVALENT_MASK));
   }
 
   private void colorShape(int shapeType, int typeMask, int argb,
@@ -7603,11 +7615,11 @@ public class ScriptEvaluator {
       if (Token.tokAttrOr(tokProp1, Token.intproperty, Token.floatproperty)
           && Token.tokAttrOr(tokProp2, Token.intproperty, Token.floatproperty)
           && Token.tokAttrOr(tokKey, Token.intproperty, Token.floatproperty)) {
-        float[] data1 = getBitsetPropertyFloat(bsFrom, tokProp1, Float.NaN,
+        float[] data1 = getBitsetPropertyFloat(bsFrom, tokProp1 | Token.selectedfloat, Float.NaN,
             Float.NaN);
-        float[] data2 = getBitsetPropertyFloat(bsFrom, tokKey, Float.NaN,
+        float[] data2 = getBitsetPropertyFloat(bsFrom, tokKey | Token.selectedfloat, Float.NaN,
             Float.NaN);
-        float[] data3 = getBitsetPropertyFloat(bsTo, tokKey, Float.NaN,
+        float[] data3 = getBitsetPropertyFloat(bsTo, tokKey | Token.selectedfloat, Float.NaN,
             Float.NaN);
         boolean isProperty = (tokProp2 == Token.property);
         float[] dataOut = new float[isProperty ? viewer.getAtomCount()
@@ -8759,12 +8771,12 @@ public class ScriptEvaluator {
     float[] dataX = null, dataY = null, dataZ = null;
     Point3f factors = new Point3f(1, 1, 1);
     if (plotType == JmolConstants.JMOL_DATA_OTHER) {
-      dataX = getBitsetPropertyFloat(bs, propertyX, (minXYZ == null ? Float.NaN
+      dataX = getBitsetPropertyFloat(bs, propertyX | Token.selectedfloat, (minXYZ == null ? Float.NaN
           : minXYZ.x), (maxXYZ == null ? Float.NaN : maxXYZ.x));
-      dataY = getBitsetPropertyFloat(bs, propertyY, (minXYZ == null ? Float.NaN
+      dataY = getBitsetPropertyFloat(bs, propertyY | Token.selectedfloat, (minXYZ == null ? Float.NaN
           : minXYZ.y), (maxXYZ == null ? Float.NaN : maxXYZ.y));
       if (propertyZ != 0)
-        dataZ = getBitsetPropertyFloat(bs, propertyZ,
+        dataZ = getBitsetPropertyFloat(bs, propertyZ | Token.selectedfloat,
             (minXYZ == null ? Float.NaN : minXYZ.z),
             (maxXYZ == null ? Float.NaN : maxXYZ.z));
       if (minXYZ == null)

@@ -93,7 +93,8 @@ public class Parser {
       while (Float.isNaN(f = Parser.parseFloat(tokens[n++])) 
           && n < nTokens) {
       }
-      data[(max = i)] = f;
+      if (!Float.isNaN(f))
+        data[(max = i)] = f;
       if (n == nTokens)
         break;
     }

@@ -3274,6 +3274,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setCurrentColorRange(String label) {
     float[] data = getDataFloat(label);
     BitSet bs = (data == null ? null : (BitSet) (dataManager.getData(label))[2]);
+    if (bs != null && isRangeSelected())
+      bs.and(getSelectionSet(false));
     setCurrentColorRange(data, bs);
   }
 

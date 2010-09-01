@@ -288,8 +288,10 @@ public class VolumeData implements VolumeDataInterface {
   }
 
   public float lookupInterpolatedVoxelValue(Point3f point) {
-    if (sr != null)
-      return sr.getValueAtPoint(point);
+    if (sr != null) {
+      float v = sr.getValueAtPoint(point);
+      return (isSquared ? v * v : v);
+    }
     ptXyzTemp.sub(point, volumetricOrigin);
     inverseMatrix.transform(ptXyzTemp);
     int iMax;
@@ -349,8 +351,13 @@ public class VolumeData implements VolumeDataInterface {
           voxelData[x][y][z] = calcVoxelPlaneDistance(x, y, z);
   }
 
+  private boolean isSquared;
   public void filterData(boolean isSquared, float invertCutoff) {
     boolean doInvert = (!Float.isNaN(invertCutoff));
+    if (sr != null) {
+      this.isSquared = isSquared;
+      return;
+    }
     int nx = voxelCounts[0];
     int ny = voxelCounts[1];
     int nz = voxelCounts[2];
@@ -440,7 +447,7 @@ public class VolumeData implements VolumeDataInterface {
     // In that case we invalidate the point.
     int n = 0;
     ptTemp.set(pt);
-    float v = sr.getValueAtPoint(ptTemp);
+    float v = lookupInterpolatedVoxelValue(ptTemp);
     float v0 = Float.NaN;
     
     while (++n < 10) {
@@ -456,7 +463,7 @@ public class VolumeData implements VolumeDataInterface {
       if (Math.abs(diff) < 0.005f)
         break;
       ptTemp.scaleAdd(diff, edgeVector, pt);
-      v = sr.getValueAtPoint(pt);
+      v = lookupInterpolatedVoxelValue(ptTemp);
     }
     return v0;
   }

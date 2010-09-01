@@ -628,7 +628,7 @@ public abstract class SurfaceReader implements VertexDataServer {
           params.valueMappedToBlue);
       jvxlData.saveVertexCount = marchingSquares.contourVertexCount;
       contourVertexCount = marchingSquares
-          .generateContourData(jvxlDataIs2dContour);      
+          .generateContourData(jvxlDataIs2dContour, (params.isSquared ? 1e-8f : 1e-4f));      
       jvxlData.contourValuesUsed = marchingSquares.getContourValues();
       minMax = marchingSquares.getMinMax();
       if (meshDataServer != null)

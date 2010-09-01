@@ -205,9 +205,16 @@ class IsoShapeReader extends VolumeDataReader {
   }
 
   private void autoScaleOrbital() {
-    double min = (params.cutoff == 0 ? 0.01f : Math.abs(params.cutoff / 2));
+    double min;
+    if (params.cutoff == 0) {
+      min = 0.01f;
+    } else {
+      min = Math.abs(params.cutoff / 2);
+      // ISSQUARED means cutoff is in terms of psi*2, not psi
+      if (params.isSquared)
+        min = Math.sqrt(min / 2);
+    }
     for (radius = 100; radius > 0; radius--) {
-      //System.out.println(min + " " + radius + " " + radialPart(radius));
       if (Math.abs(radialPart(radius)) >= min)
         break;
     }

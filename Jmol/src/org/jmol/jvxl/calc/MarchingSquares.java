@@ -278,10 +278,10 @@ public class MarchingSquares {
     }
   }
 
-  public int generateContourData(boolean haveData) {
+  public int generateContourData(boolean haveData, float zeroOffset) {
     Logger.info("generateContours: " + nContourSegments + " segments");
     getVertexValues(haveData);
-    createContours(valueMin, valueMax);
+    createContours(valueMin, valueMax, zeroOffset);
     addAllTriangles();
     return contourVertexCount;
   }
@@ -307,7 +307,7 @@ public class MarchingSquares {
     }
   }
 
-  private boolean createContours(float min, float max) {
+  private boolean createContours(float min, float max, float zeroOffset) {
     float diff = max - min;
     contourValuesUsed = new float[nContourSegments];
     for (int i = triangleCount; --i >= 0;)
@@ -328,8 +328,8 @@ public class MarchingSquares {
        * cutoffs right near zero cause problems, so we adjust just a tad
        * 
        */
-      if (contoursDiscrete == null && Math.abs(cutoff) < 0.0001)
-        cutoff = (cutoff < 0 ? -0.0001f : 0.0001f);
+      if (contoursDiscrete == null && Math.abs(cutoff) < zeroOffset)
+        cutoff = (cutoff < 0 ? -zeroOffset : zeroOffset);
       contourValuesUsed[i] = cutoff;
 
       Logger.info("#contour " + (i + 1)+ " " + cutoff);

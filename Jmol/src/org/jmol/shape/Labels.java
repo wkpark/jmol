@@ -400,8 +400,8 @@ public class Labels extends AtomShape {
 
   private void setColix(int i, short colix, byte pid) {
     setColixAndPalette(colix, pid, i);
-    text = getLabel(i);
-    if (text != null)
+    // text is only created by labelsRenderer
+    if (colixes != null && ((text = getLabel(i)) != null))
       text.setColix(colixes[i]);
   }
 

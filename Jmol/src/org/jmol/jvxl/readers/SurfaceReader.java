@@ -743,7 +743,7 @@ public abstract class SurfaceReader implements VertexDataServer {
         else if (value > 0)
           vertexColixes[i] = maxColorIndex;
       } else {
-        if (value < valueRed)
+        if (value <= valueRed)
           value = valueRed;
         if (value >= valueBlue)
           value = valueBlue;         

@@ -15985,8 +15985,10 @@ public class ScriptEvaluator {
         addShapeProperty(propertyList, "setColorScheme", "sets");
       } else {
         ColorEncoder ce = viewer.getColorEncoder(colorScheme);
-        ce.isTranslucent = isColorSchemeTranslucent;
-        addShapeProperty(propertyList, "setColorScheme", ce);
+        if (ce != null) {
+          ce.isTranslucent = isColorSchemeTranslucent;
+          addShapeProperty(propertyList, "setColorScheme", ce);
+        }
       }
     }
     // OK, now send them all

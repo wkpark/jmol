@@ -444,6 +444,8 @@ import org.jmol.util.ArrayUtil;
   private void setThisScheme(String name, int[] scale) {
     thisName = name;
     thisScale = scale;
+    if (name.equals("user"))
+      userScale = scale;
     isColorIndex = (name.indexOf(BYELEMENT_PREFIX) == 0 
         || name.indexOf(BYRESIDUE_PREFIX) == 0);
   }

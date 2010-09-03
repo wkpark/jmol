@@ -317,7 +317,7 @@ public final class ModelLoader extends ModelSet {
         String key = entry.getKey();
         String value = entry.getValue();
         // no deletions yet...
-        BitSet bs = getModelAtomBitSetIncludingDeleted(i, false);
+        BitSet bs = getModelAtomBitSetIncludingDeleted(i, true);
         key = "property_" + key.toLowerCase();
         Logger.info("creating " + key + " for model " + getModelName(i));
         viewer.setData(key, new Object[] { key, value, bs }, atomCount, 0,

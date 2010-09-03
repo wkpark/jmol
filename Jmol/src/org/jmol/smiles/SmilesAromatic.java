@@ -128,16 +128,18 @@ public class SmilesAromatic {
       JmolEdge[] bonds = ringAtom.getEdges();
       if (bonds.length < 3)
         continue;
-      for (int n = 0, k = bonds.length; --k >= 0;) {
+      if (bonds.length > 3)
+        return false;
+/*      
+      // uncomment these next lines to exclude quinone and nucleic acid bases
+      for (int k = bonds.length; --k >= 0;) {
         int iAtom = ringAtom.getBondedAtomIndex(k);
         if (!bsSelected.get(iAtom))
           continue;
-        if (++n > 3)
+        if (!bs.get(iAtom) && bonds[k].getOrder() == JmolConstants.BOND_COVALENT_DOUBLE)
           return false;
-        // uncomment these two lines to exclude quinone and nucleic acid bases
-        // if (!bs.get(iAtom) && bonds[k].getOrder() == JmolConstants.BOND_COVALENT_DOUBLE)
-        //   return false;
       }
+*/
     }
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       JmolNode ringAtom = atoms[i];

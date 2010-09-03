@@ -303,18 +303,39 @@ public final class Model {
     return bioPolymers[polymerIndex];
   }
 
-  String getDefaultRendering() {
+  void getDefaultLargePDBRendering(StringBuffer sb, int maxAtoms) {
     BitSet bs = new BitSet();
-    if (isPDB && getBondCount() == 0)
+    if (getBondCount() == 0)
       bs = bsAtoms;
-    else
+    // all biopolymer atoms...
+    if (bs != bsAtoms)
+      for (int i = 0; i < bioPolymerCount; i++)
+        bioPolymers[i].getRange(bs);
+    if (bs.nextSetBit(0) < 0)
+      return;
+    // ...and not connected to backbone:
+    BitSet bs2 = new BitSet();
+    if (bs == bsAtoms) {
+      bs2 = bs;
+    } else {
       for (int i = 0; i < bioPolymerCount; i++)
         if (bioPolymers[i].getType() == Polymer.TYPE_NOBONDING)
-          bioPolymers[i].getRange(bs);
-    String s = (bs.nextSetBit(0) < 0 ? "" : "select " + Escape.escape(bs)
-        + ";backbone;");
-    s += "select " + Escape.escape(bsAtoms) + " and not visible;stars;";
-    return s;
+          bioPolymers[i].getRange(bs2);
+    }
+    if (bs2.nextSetBit(0) >= 0)
+      sb.append("select ").append(Escape.escape(bs2)).append(";backbone only;");
+    if (atomCount <= maxAtoms)
+      return;
+    // ...and it's a large model, to wireframe:
+      sb.append("select ").append(Escape.escape(bs)).append(" & connected; wireframe only;");
+    // ... and all non-biopolymer and not connected to stars...
+    if (bs != bsAtoms) {
+      bs2.clear();
+      bs2.or(bsAtoms);
+      bs2.andNot(bs);
+      if (bs2.nextSetBit(0) >= 0)
+        sb.append("select " + Escape.escape(bs2) + " & !connected;stars 0.5;");
+    }
   }
   
   public boolean isAtomHidden(int index) {

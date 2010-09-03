@@ -8086,10 +8086,10 @@ public class ScriptEvaluator {
         filename = "$" + filename;
     } else if (getToken(i + 1).tok == Token.leftbrace
         || theTok == Token.point3f || theTok == Token.integer
-        || theTok == Token.range
-        || theTok == Token.manifest || theTok == Token.packed
-        || theTok == Token.filter && tokAt(i + 3) != Token.coord
-        || theTok == Token.identifier && tokAt(i + 3) != Token.coord) {
+        || theTok == Token.range || theTok == Token.manifest
+        || theTok == Token.packed || theTok == Token.filter
+        && tokAt(i + 3) != Token.coord || theTok == Token.identifier
+        && tokAt(i + 3) != Token.coord) {
       if ((filename = parameterAsString(filePt)).length() == 0)
         filename = viewer.getFullPathName();
       if (filePt == i)
@@ -8177,7 +8177,7 @@ public class ScriptEvaluator {
         }
         if (tokAt(i) == Token.unitcell) {
           ++i;
-          fparams = floatParameterSet(i, 6, 9); 
+          fparams = floatParameterSet(i, 6, 9);
           if (fparams.length != 6 && fparams.length != 9)
             error(ERROR_invalidArgument);
           i = iToken;
@@ -8239,8 +8239,7 @@ public class ScriptEvaluator {
         }
         fNames.add(filename = parameterAsString(i++));
         if (pt != null) {
-          firstLastSteps.add(new int[] { (int) pt.x, (int) pt.y,
-              (int) pt.z });
+          firstLastSteps.add(new int[] { (int) pt.x, (int) pt.y, (int) pt.z });
           loadScript.append(" COORD " + Escape.escape(pt));
         } else if (bs != null) {
           firstLastSteps.add(bs);
@@ -8263,8 +8262,8 @@ public class ScriptEvaluator {
       bsModels = new BitSet();
       for (int j = 0; j < models.length; j++)
         if (models[j] >= 1)
-          bsModels.set((int)models[j] - 1);
-       htParams.put("bsModels", bsModels);
+          bsModels.set((int) models[j] - 1);
+      htParams.put("bsModels", bsModels);
     }
     if (filter == null)
       filter = viewer.getDefaultLoadFilter();
@@ -8346,12 +8345,13 @@ public class ScriptEvaluator {
     if (errMsg != null && !isCmdLine_c_or_C_Option) {
       if (statementLength == 2) {
         if (errMsg.indexOf("NOTE: file recognized as a script file:") == 0) {
-          filename = errMsg.substring(errMsg.indexOf("file:") + 5).trim(); 
+          filename = errMsg.substring(errMsg.indexOf("file:") + 5).trim();
           script(0, filename, false);
           return;
         }
-        String surfaceType = (errMsg.indexOf("java.io.FileNotFound") >= 0 ? null : SurfaceFileTyper.determineSurfaceFileType(viewer
-            .getBufferedInputStream(filename)));
+        String surfaceType = (errMsg.indexOf("java.io.FileNotFound") >= 0 ? null
+            : SurfaceFileTyper.determineSurfaceFileType(viewer
+                .getBufferedInputStream(filename)));
         if (surfaceType != null) {
           runScript("isosurface " + Escape.escape(filename));
           return;
@@ -8370,14 +8370,16 @@ public class ScriptEvaluator {
     String msg = "";
     if (script.length() > 0)
       msg += "\nUsing defaultLoadScript: " + script;
-    String embeddedScript = (String) viewer.getModelSetAuxiliaryInfo().remove(
-        "jmolscript");
-    if (embeddedScript != null && viewer.getAllowEmbeddedScripts()) {
-      msg += "\nAdding embedded #jmolscript: " + embeddedScript;
-      script += ";" + embeddedScript;
-      setStringProperty("_loadScript", script);
-      script = "allowEmbeddedScripts = false;" + script
-          + ";allowEmbeddedScripts = true;";
+    if (viewer.getAllowEmbeddedScripts()) {
+      String embeddedScript = (String) viewer.getModelSetAuxiliaryInfo()
+          .remove("jmolscript");
+      if (embeddedScript != null && embeddedScript.length() > 0) {
+        msg += "\nAdding embedded #jmolscript: " + embeddedScript;
+        script += ";" + embeddedScript;
+        setStringProperty("_loadScript", script);
+        script = "allowEmbeddedScripts = false;try{" + script
+            + "} allowEmbeddedScripts = true;";
+      }
     }
     if (msg.length() > 0)
       Logger.info(msg);

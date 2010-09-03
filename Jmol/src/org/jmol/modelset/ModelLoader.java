@@ -185,7 +185,6 @@ public final class ModelLoader extends ModelSet {
   private boolean appendNew;
   private int adapterModelCount = 0;
   private int adapterTrajectoryCount = 0;
-  private boolean isLargeModel;
   private boolean noAutoBond;
   private boolean is2D;
   
@@ -194,7 +193,6 @@ public final class ModelLoader extends ModelSet {
     int nAtoms = (adapter == null ? 0 : adapter.getAtomCount(atomSetCollection));
     if (nAtoms > 0)
       Logger.info("reading " + nAtoms + " atoms");
-    isLargeModel = (nAtoms > viewer.getSmallMoleculeMaxAtoms());
     adapterModelCount = (adapter == null ? 1 : adapter
         .getAtomSetCount(atomSetCollection));
     // cannot append a trajectory into a previous model
@@ -270,16 +268,12 @@ public final class ModelLoader extends ModelSet {
     calculatePolymers(null);
     // only now can we access all of the atom's properties
 
-    RadiusData rd = (isLargeModel ? null : viewer.getDefaultRadiusData());
-    for (int i = baseAtomIndex; i < atomCount; i++) {
+    RadiusData rd = viewer.getDefaultRadiusData();
+    for (int i = baseAtomIndex; i < atomCount; i++)
       atoms[i].setMadAtom(viewer, rd);
-    }
-    for (int i = models[baseModelIndex].firstAtomIndex; i < atomCount; i++) {
+    for (int i = models[baseModelIndex].firstAtomIndex; i < atomCount; i++)
       models[atoms[i].modelIndex].bsAtoms.set(i);
-    }
-    if (isLargeModel) {
-      setDefaultRendering();
-    }
+    setDefaultRendering(viewer.getSmallMoleculeMaxAtoms());
     freeze();
     calcBoundBoxDimensions(null, 1);
 
@@ -294,22 +288,17 @@ public final class ModelLoader extends ModelSet {
     mergeModelSet = null;
   }
 
-  private void setDefaultRendering() {
+  private void setDefaultRendering(int maxAtoms) {
     StringBuffer sb = new StringBuffer();
-    String s;
-    for (int i = baseModelIndex; i < modelCount; i++) {
-      if ((s = models[i].getDefaultRendering()) != null) {
-        sb.append(s);
-      }
-    }
-    if (sb.length() == 0) {
+    for (int i = baseModelIndex; i < modelCount; i++)
+      if (models[i].isPDB)
+          models[i].getDefaultLargePDBRendering(sb, maxAtoms);
+    if (sb.length() == 0)
       return;
-    }
     sb.append("select *;");
     String script = (String) getModelSetAuxiliaryInfo("jmolscript");
-    if (script == null) {
+    if (script == null)
       script = "";
-    }
     sb.append(script);
     modelSetAuxiliaryInfo.put("jmolscript", sb.toString());
   }
@@ -742,7 +731,7 @@ public final class ModelLoader extends ModelSet {
     JmolAdapter.BondIterator iterBond = adapter.getBondIterator(atomSetCollection);
     if (iterBond == null)
       return;
-    short mad = (isLargeModel ? 1 : viewer.getMadBond());
+    short mad = viewer.getMadBond();
     short order;
     defaultCovalentMad = (jmolData == null ? mad : 0);
     boolean haveMultipleBonds = false;

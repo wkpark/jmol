@@ -54,7 +54,7 @@ public class ParallelProcessor extends ScriptFunction {
     ScriptContext context;
 
     Process(String name, ScriptContext context) {
-      System.out.println("Creating process " + name);
+      //System.out.println("Creating process " + name);
       processName = name;
       this.context = context;
     }

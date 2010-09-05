@@ -5577,6 +5577,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                   boolean isInt) {
     boolean found = true;
     switch (tok) {
+    case Token.slabrange:
+      transformManager.setSlabRange(value);
+      break;
     case Token.minimizationcriterion:
       global.minimizationCriterion = value;
       break;

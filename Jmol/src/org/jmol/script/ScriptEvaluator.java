@@ -5532,7 +5532,6 @@ public class ScriptEvaluator {
       case 1:
         // do this one
       }
-      System.out.println("..." + isOK + " " + ptNext);
       aatoken[pc][0].intValue = Math.abs(pt);
       theToken = aatoken[Math.abs(pt)][0];
       if (theToken.tok != Token.end)
@@ -5819,7 +5818,6 @@ public class ScriptEvaluator {
     }
     if (tok == Token.defaultcmd) // never do the default one directly
       return -1;
-    System.out.println("testing...");
     List<ScriptVariable> v = parameterExpressionList(1, 0);
     if (tok == Token.casecmd) {
       boolean isOK = ScriptVariable.areEqual(var, v.get(0));
@@ -6651,7 +6649,7 @@ public class ScriptEvaluator {
         for (int j = 0; j < maps[i].length; j++)
           ptsB.add(atoms[maps[i][j]]);
         float stddev = Measure.getTransformMatrix4(ptsA, ptsB, m, null);
-        System.out.println("getSmilesCorrelation stddev=" + stddev);
+        Logger.info("getSmilesCorrelation stddev=" + stddev);
         if (vReturn != null) {
           if (stddev < tolerance) {
             BitSet bs = new BitSet();
@@ -11840,7 +11838,6 @@ public class ScriptEvaluator {
       if (lckey.indexOf("callback") >= 0)
         tok = Token.setparam;
     }
-
     if (isJmolSet && !Token.tokAttr(tok, Token.setparam)) {
       iToken = 1;
       if (!isStateScript)

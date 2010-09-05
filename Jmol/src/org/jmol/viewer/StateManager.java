@@ -584,7 +584,7 @@ public class StateManager {
         + ";loadformat;smilesurlformat;edsurlformat;edsurlcutoff;multiprocessor;navigationmode;"
         + ";perspectivedepth;phongexponent;perspectivemodel;preservestate;refreshing;repaintwaitms;rotationradius"
         + ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showunitcell"
-        + ";slabenabled;slab;depth;zshade;zshadepower;specular;specularexponent;specularpercent;specularpower;stateversion"
+        + ";slabenabled;slab;slabrange;depth;zshade;zshadepower;specular;specularexponent;specularpercent;specularpower;stateversion"
         + ";statusreporting;stereo;stereostate;vibrationperiod"
         + ";unitcellcolor;visualrange;windowcentered;zerobasedxyzrasmol;zoomenabled;mousedragfactor;mousewheelfactor"
         //    saved in the hash table but not considered part of the state:
@@ -749,6 +749,7 @@ public class StateManager {
       setParameterValue("slabEnabled", false);       // maintained by TransformManager     
       setParameterValue("depth", 0);                 // maintained by TransformManager
       setParameterValue("slab", 100);                // maintained by TransformManager
+      setParameterValue("slabrange", 0f);            // maintained by TransformManager
       setParameterValue("spinX", 0);                 // maintained by TransformManager
       setParameterValue("spinY", TransformManager.DEFAULT_SPIN_Y);
       setParameterValue("spinZ", 0);                 // maintained by TransformManager

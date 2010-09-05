@@ -199,6 +199,7 @@ abstract class TransformManager {
     commands.append("  slab ").append(slabPercentSetting).append(";depth ")
         .append(depthPercentSetting).append(
             slabEnabled && mode != MODE_NAVIGATION ? ";slab on" : "").append(";\n");
+    commands.append("  set slabRange ").append(slabRange).append(";\n");
     if (zShadeEnabled)
       commands.append("  set zShade;\n");
     if (slabPlane != null)
@@ -877,7 +878,13 @@ abstract class TransformManager {
   int depthValue;
   int zSlabValue;
   int zDepthValue;
-  
+
+  float slabRange = 0f;
+
+  public void setSlabRange(float value) {
+    slabRange = value;    
+  }
+
   void setSlabEnabled(boolean slabEnabled) {
     this.slabEnabled = slabEnabled;
     viewer.getGlobalSettings().setParameterValue("slabEnabled", slabEnabled);
@@ -942,6 +949,7 @@ abstract class TransformManager {
   }
 
   void slabToPercent(int percentSlab) {
+    slabRange = 0f;
     slabPercentSetting = percentSlab;
     slabPlane = null;
     if (depthPercentSetting >= slabPercentSetting)
@@ -1178,7 +1186,7 @@ abstract class TransformManager {
   protected float cameraDepthSetting = 3f;
   protected float visualRange; // set in stateManager to 5f;
   protected float cameraDistance = 1000f; // prevent divide by zero on startup
-
+  
   /**
    * This method returns data needed by the VRML, X3D, and IDTF/U3D exporters
    * It also should serve as a valuable resource for anyone adapting Jmol and 
@@ -1456,7 +1464,10 @@ abstract class TransformManager {
    */
 
   protected void calcSlabAndDepthValues() {
-    slabValue = zValueFromPercent(slabPercentSetting);
+    if (slabRange < 1)
+      slabValue = zValueFromPercent(slabPercentSetting);
+    else
+      slabValue = (int) (modelCenterOffset * slabRange / (2 * modelRadius) * (zoomPercentSetting / 100));
     depthValue = zValueFromPercent(depthPercentSetting);
     if (zSlabPercentSetting == zDepthPercentSetting) {
       zSlabValue = slabValue;
@@ -2778,5 +2789,6 @@ abstract class TransformManager {
    */
   void navigateSurface(float timeSeconds, String name) {
   }
+
 
 }

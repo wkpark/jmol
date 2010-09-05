@@ -820,6 +820,7 @@ public class Token {
   public final static int rotationradius                 = floatparam | 44;
   public final static int scaleangstromsperinch          = floatparam | 46;
   public final static int sheetsmoothing                 = floatparam | 48;
+  public final static int slabrange                      = floatparam | 49;
   public final static int solventproberadius             = floatparam | 50;
   public final static int spinfps                        = floatparam | 52;
   public final static int spinx                          = floatparam | 54;
@@ -2059,6 +2060,7 @@ public class Token {
       "rotationRadius",                           new Token(rotationradius),
       "scaleAngstromsPerInch",                    new Token(scaleangstromsperinch),
       "sheetSmoothing",                           new Token(sheetsmoothing),
+      "slabRange",                                new Token(slabrange),
       "solventProbeRadius",                       new Token(solventproberadius),
       "spinFPS",                                  new Token(spinfps),
       "spinX",                                    new Token(spinx),

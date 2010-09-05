@@ -8992,7 +8992,7 @@ public class ScriptEvaluator {
     if (isSyntaxCheck)
       return;
     if (statementLength == 1) {
-      viewer.reset();
+      viewer.reset(false);
       return;
     }
     // possibly "all"
@@ -9008,6 +9008,9 @@ public class ScriptEvaluator {
       return;
     case Token.aromatic:
       viewer.resetAromatic();
+      return;
+    case Token.spin:
+      viewer.reset(true);
       return;
     }
     String var = parameterAsString(1);

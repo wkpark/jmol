@@ -524,18 +524,19 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return mouseManager.handleOldJvm10Event(e);
   }
 
-  public void reset() {
+  public void reset(boolean includingSpin) {
     // Eval.reset()
     // initializeModel
     modelSet.calcBoundBoxDimensions(null, 1);
     axesAreTainted = true;
-    transformManager.homePosition();
+    transformManager.homePosition(includingSpin);
     if (modelSet.setCrystallographicDefaults())
       stateManager.setCrystallographicDefaults();
     else
       setAxesModeMolecular(false);
     prevFrame = Integer.MIN_VALUE;
-    refresh(1, "Viewer:homePosition()");
+    if (!getSpinOn())
+      refresh(1, "Viewer:homePosition()");
   }
 
   @Override
@@ -2569,7 +2570,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private void initializeModel() {
     stopAnimationThreads("stop from init model");
-    reset();
+    reset(true);
     selectAll();
     rotatePrev1 = rotateBondIndex = -1;
     movingSelected = false;
@@ -6314,7 +6315,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case Token.zerobasedxyzrasmol:
       doRepaint = false;
       global.zeroBasedXyzRasmol = value;
-      reset();
+      reset(true);
       break;
     case Token.rangeselected:
       doRepaint = false;
@@ -6608,7 +6609,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
      */
     global.setParameterValue("axesOrientationRasmol", TF);
     global.axesOrientationRasmol = TF;
-    reset();
+    reset(true);
   }
 
   @Override
@@ -6780,7 +6781,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       stopAnimationThreads("setNavigationMode");
       transformManager = transformManager.getNavigationManager(this,
           dimScreen.width, dimScreen.height);
-      transformManager.homePosition();
+      transformManager.homePosition(true);
     }
     transformManager.setNavigationMode(TF);
   }
@@ -6803,7 +6804,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     this.transformManager = transformManager;
     transformManager.setViewer(this, dimScreen.width, dimScreen.height);
     setTransformManagerDefaults();
-    transformManager.homePosition();
+    transformManager.homePosition(true);
   }
 
   private void setPerspectiveModel(int mode) {
@@ -6820,7 +6821,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           dimScreen.width, dimScreen.height);
     }
     setTransformManagerDefaults();
-    transformManager.homePosition();
+    transformManager.homePosition(true);
   }
 
   private void setTransformManagerDefaults() {

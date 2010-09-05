@@ -504,7 +504,7 @@ class TransformManager11 extends TransformManager {
     switch (keyCode) {
     case KeyEvent.VK_PERIOD:
       navX = navY = navZ = 0;
-      homePosition();
+      homePosition(true);
       return;
     case KeyEvent.VK_SPACE:
       if (!navOn)

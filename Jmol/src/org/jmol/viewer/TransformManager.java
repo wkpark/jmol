@@ -116,9 +116,10 @@ abstract class TransformManager {
    * GENERAL METHODS
    ***************************************************************/
 
-  void homePosition() {
+  void homePosition(boolean resetSpin) {
     // reset, setNavigationMode, setPerspectiveModel
-    setSpinOn(false);
+    if (resetSpin)
+      setSpinOn(false);
     setNavOn(false);
     navFps = DEFAULT_NAV_FPS;
     navX = navY = navZ = 0;
@@ -2230,6 +2231,7 @@ abstract class TransformManager {
   protected void setNavOn(boolean navOn) {
     if (Float.isNaN(navFps))
       return;
+    boolean wasOn = this.navOn;
     if (navOn && spinOn)
       setSpinOn(false, 0, null, null, false);
     this.navOn = navOn;
@@ -2243,7 +2245,7 @@ abstract class TransformManager {
         spinThread = new SpinThread(0, null, null, true, false);
         spinThread.start();
       }
-    } else {
+    } else if (wasOn) {
       if (spinThread != null) {
         spinThread.interrupt();
         spinThread = null;

@@ -949,7 +949,7 @@ abstract class TransformManager {
   }
 
   void slabToPercent(int percentSlab) {
-    slabRange = 0f;
+    viewer.setFloatProperty("slabRange", 0);
     slabPercentSetting = percentSlab;
     slabPlane = null;
     if (depthPercentSetting >= slabPercentSetting)

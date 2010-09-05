@@ -448,13 +448,12 @@ class TransformManager11 extends TransformManager {
     if (mode == MODE_NAVIGATION) {
       navMode = NAV_MODE_RESET;
       slabPercentSetting = 0;
-      slabRange = 0;
       perspectiveDepth = true;
     } else if (doResetSlab) {
       slabPercentSetting = 100;
     }
+    viewer.setFloatProperty("slabRange", 0);
     if (doResetSlab) {
-      slabRange = 0;
       slabEnabled = (mode == MODE_NAVIGATION);
     }
     zoomFactor = Float.MAX_VALUE;

@@ -541,7 +541,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   @Override
   public void homePosition() {
-    evalString("reset");
+    evalString("reset spin");
   }
 
   /*

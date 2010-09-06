@@ -1358,8 +1358,16 @@ final public class JmolConstants {
     0xFFFF0080, // PROTEIN_STRUCTURE_HELIX
     0xFFAE00FE, // PROTEIN_STRUCTURE_DNA
     0xFFFD0162, // PROTEIN_STRUCTURE_RNA
+    0xFFA6A6FA, // PROTEIN_STRUCTURE_CARBOHYDRATE
   };
 
+  static {
+    if (proteinStructureNames.length != argbsStructure.length - 1) {
+      System.out.println("protineStructureNames.length != argbsStructure.length");
+      throw new NullPointerException();
+    }
+  }
+  
   public final static int[] argbsAmino = {
     0xFFBEA06E, // default tan
     // note that these are the rasmol colors and names, not xwindows

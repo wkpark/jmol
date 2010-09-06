@@ -344,7 +344,7 @@ public abstract class SurfaceReader implements VertexDataServer {
       volumeData.setDataDistanceToPlane(params.thePlane);
       if (meshDataServer != null)
         meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
-      params.setMapRanges(this);
+      params.setMapRanges(this, false);
       generateSurfaceData();
       if (volumeData != null)
         volumeData.voxelData = voxelDataTemp;
@@ -623,7 +623,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     jvxlData.saveVertexCount = 0;
     if (params.isContoured && marchingSquares != null) {
       initializeMapping();
-      params.setMapRanges(this);
+      params.setMapRanges(this, false);
       marchingSquares.setMinMax(params.valueMappedToRed,
           params.valueMappedToBlue);
       jvxlData.saveVertexCount = marchingSquares.contourVertexCount;
@@ -708,7 +708,7 @@ public abstract class SurfaceReader implements VertexDataServer {
         minMax = new float[] { min, max };
       finalizeMapping();
     }
-    params.setMapRanges(this);
+    params.setMapRanges(this, true);
     jvxlData.mappedDataMin = params.mappedDataMin;
     jvxlData.mappedDataMax = params.mappedDataMax;
     jvxlData.valueMappedToRed = params.valueMappedToRed;
@@ -812,14 +812,14 @@ public abstract class SurfaceReader implements VertexDataServer {
 
   protected float[] minMax;
 
-  public float[] getMinMaxMappedValues() {
+  public float[] getMinMaxMappedValues(boolean haveData) {
     if (minMax != null && minMax[0] != Float.MAX_VALUE)
       return minMax;
     if (params.colorBySets)
       return (minMax = new float[] { 0, Math.max(meshData.nSets - 1, 0) });
     float min = Float.MAX_VALUE;
     float max = -Float.MAX_VALUE;
-    if (params.theProperty != null) {
+    if (params.usePropertyForColorRange && params.theProperty != null) {
       for (int i = 0; i < params.theProperty.length; i++) {
         if (params.rangeSelected && !params.bsSelected.get(i))
           continue;
@@ -836,7 +836,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     int vertexCount = (contourVertexCount > 0 ? contourVertexCount
         : meshData.vertexCount);
     Point3f[] vertexes = meshData.vertices;
-    boolean useVertexValue = (jvxlDataIs2dContour || vertexDataOnly || params.colorDensity);
+    boolean useVertexValue = (haveData || jvxlDataIs2dContour || vertexDataOnly || params.colorDensity);
     for (int i = 0; i < vertexCount; i++) {
       float v;
       if (useVertexValue)

@@ -241,6 +241,7 @@ public class Parameters {
     state = STATE_INITIALIZED;
     thePlane = null;
     theProperty = null;
+    usePropertyForColorRange = true; // except for MEP and MLP
     thisContour = -1;
     contourFromZero = true;
     title = null;
@@ -589,6 +590,7 @@ public class Parameters {
   void setMep(float[] charges, boolean isMLP) {
     dataType = (isMLP ? SURFACE_MLP : SURFACE_MEP);
     theProperty = charges;
+    usePropertyForColorRange = false;
     isEccentric = isAnisotropic = false;
     if (cutoff == Float.MAX_VALUE) {
       cutoff = defaultMepCutoff;
@@ -741,15 +743,16 @@ public class Parameters {
   public int contourType;
   public boolean colorSchemeTranslucent;
   public ColorEncoder colorEncoder;
+  public boolean usePropertyForColorRange = true;
   
-  void setMapRanges(SurfaceReader surfaceReader) {
+  void setMapRanges(SurfaceReader surfaceReader, boolean haveData) {
     if (!colorDensity)
       if (colorByPhase || colorBySign || (thePlane != null || isBicolorMap) && !isContoured) {
       mappedDataMin = -1;
       mappedDataMax = 1;
     }
     if (mappedDataMin == Float.MAX_VALUE || mappedDataMin == mappedDataMax) {
-      float[] minMax = surfaceReader.getMinMaxMappedValues();
+      float[] minMax = surfaceReader.getMinMaxMappedValues(haveData);
       mappedDataMin = minMax[0];
       mappedDataMax = minMax[1];
     }

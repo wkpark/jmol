@@ -1145,9 +1145,9 @@ public class AtomSetCollection {
       return false;
     }
     List<Float> atomData = (List<Float>) atomSetCollectionAuxiliaryInfo.get(auxKey);
-    for (int i = atomData.size(); --i >= 0;) {
+    for (int i = atomData.size(); --i >= 0;)
       atoms[i].partialCharge = atomData.get(i).floatValue();
-    }
+    Logger.info("Setting partial charges type " + auxKey);
     return true;
   }
   

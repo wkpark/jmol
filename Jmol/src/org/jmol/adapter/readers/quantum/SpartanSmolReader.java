@@ -194,7 +194,10 @@ public class SpartanSmolReader extends SpartanInputReader {
       return;
     }
     spartanArchive.readProperties();
-    if (!atomSetCollection
+    boolean haveCharges = false;
+    if (filter != null && filter.toLowerCase().indexOf("espcharges") >= 0)
+      haveCharges = atomSetCollection.setAtomSetCollectionPartialCharges("ESPCHARGES");
+    if (!haveCharges && !atomSetCollection
         .setAtomSetCollectionPartialCharges("MULCHARGES"))
       atomSetCollection.setAtomSetCollectionPartialCharges("Q1_CHARGES");
     Float n = (Float) atomSetCollection

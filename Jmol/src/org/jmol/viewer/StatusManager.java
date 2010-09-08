@@ -30,8 +30,8 @@ import org.jmol.util.TextFormat;
 
 import java.applet.Applet;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -200,31 +200,20 @@ class StatusManager {
       int intInfo, Object statusInfo, boolean isReplace) {
     if (!recordStatus(statusName))
       return;
-    statusPtr++;
-    List<List<Object>> statusRecordSet;
     List<Object> msgRecord = new ArrayList<Object>();
-    msgRecord.add(Integer.valueOf(statusPtr));
+    msgRecord.add(Integer.valueOf(++statusPtr));
     msgRecord.add(statusName);
     msgRecord.add(Integer.valueOf(intInfo));
     msgRecord.add(statusInfo);
-    if (isReplace && messageQueue.containsKey(statusName)) {
-      messageQueue.remove(statusName);
-    }
-    if (messageQueue.containsKey(statusName)) {
-      statusRecordSet = messageQueue.remove(statusName);
-    } else {
-      statusRecordSet = new ArrayList<List<Object>>();
-    }
-    if (statusRecordSet.size() == MAXIMUM_QUEUE_LENGTH)
-      statusRecordSet.remove(0);
-    
+    List<List<Object>> statusRecordSet = (isReplace ? null : messageQueue.get(statusName));
+    if (statusRecordSet == null)
+      messageQueue.put(statusName, statusRecordSet = new ArrayList<List<Object>>());
+    else if (statusRecordSet.size() == MAXIMUM_QUEUE_LENGTH)
+      statusRecordSet.remove(0);    
     statusRecordSet.add(msgRecord);
-    messageQueue.put(statusName, statusRecordSet);
   }
   
-  private boolean asVector = true;
-
-  synchronized Object getStatusChanged(String statusNameList) {
+  synchronized List<List<List<Object>>> getStatusChanged(String newStatusList) {
     /*
      * returns a Vector of statusRecordSets, one per status type,
      * where each statusRecordSet is itself a vector of vectors:
@@ -234,61 +223,32 @@ class StatusManager {
      * by time overall.
      * 
      */
-    
-    if (statusNameList.indexOf("AS_") == 0) {
-      asVector = (statusNameList.indexOf("VECTOR") == 3);
-      return statusNameList;
-    }
-    if (asVector) {
-      List<List<List<Object>>> msgList = new ArrayList<List<List<Object>>>();
-      if (resetMessageQueue(statusNameList)) {
-        return msgList;
-      }
-      Iterator<String> e = messageQueue.keySet().iterator();
-      while (e.hasNext()) {
-        String statusName = e.next();
-        List<List<Object>> record = messageQueue.remove(statusName);
-        msgList.add(record);
-      }
-      return msgList;
-    }
-    Map<String, List<List<Object>>>msgList = new Hashtable<String, List<List<Object>>>();
-    if (resetMessageQueue(statusNameList)) {
-      return msgList;
-    }
-    Iterator<String> e = messageQueue.keySet().iterator();
-    while (e.hasNext()) {
-      String statusName = e.next();
-      List<List<Object>> record = messageQueue.remove(statusName);
-      msgList.put(statusName, record);
-    }
-    return msgList;
-  }
 
-  private synchronized boolean resetMessageQueue(String statusList) {
-    boolean isRemove = (statusList.length() > 0 && statusList.charAt(0) == '-');
-    boolean isAdd = (statusList.length() > 0 && statusList.charAt(0) == '+');
-    String oldList = this.statusList;
+    boolean isRemove = (newStatusList.length() > 0 && newStatusList.charAt(0) == '-');
+    boolean isAdd = (newStatusList.length() > 0 && newStatusList.charAt(0) == '+');
+    boolean getList = false;
     if (isRemove) {
-      this.statusList = TextFormat.simpleReplace(oldList, statusList.substring(1,statusList.length()), "");
-      messageQueue = new Hashtable<String, List<List<Object>>>();
-      statusPtr = 0;
-      return true;
+      statusList = TextFormat.simpleReplace(statusList, newStatusList
+          .substring(1, newStatusList.length()), "");
+    } else {
+      newStatusList = TextFormat.simpleReplace(newStatusList, "+", "");
+      if (statusList.equals(newStatusList) || isAdd
+          && statusList.indexOf(newStatusList) >= 0) {
+        getList = true;
+      } else {
+        if (!isAdd)
+          statusList = "";
+        statusList += newStatusList;
+        if (Logger.debugging)
+          Logger.debug("StatusManager messageQueue = " + statusList);
+      }
     }
-    statusList = TextFormat.simpleReplace(statusList, "+", "");
-    if(oldList.equals(statusList) 
-        || isAdd && oldList.indexOf(statusList) >= 0)
-      return false;
-    if (! isAdd) {
-      messageQueue = new Hashtable<String, List<List<Object>>>();
-      statusPtr = 0;
-      this.statusList = "";
-    }
-    this.statusList += statusList;
-    if (Logger.debugging) {
-      Logger.debug(oldList + "\nmessageQueue = " + this.statusList);
-    }
-    return true;
+    List<List<List<Object>>> msgList = (getList ? Collections.list(Collections
+        .enumeration(messageQueue.values()))
+        : new ArrayList<List<List<Object>>>());
+    messageQueue.clear();
+    statusPtr = 0;
+    return msgList;
   }
 
   synchronized void setJmolStatusListener(JmolStatusListener jmolStatusListener, JmolCallbackListener jmolCallbackListener) {

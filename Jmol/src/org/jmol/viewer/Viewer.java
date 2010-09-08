@@ -4813,7 +4813,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return statusManager.getMessageQueue();
   }
 
-  Object getStatusChanged(String statusNameList) {
+  List<List<List<Object>>> getStatusChanged(String statusNameList) {
     return statusManager.getStatusChanged(statusNameList);
   }
 

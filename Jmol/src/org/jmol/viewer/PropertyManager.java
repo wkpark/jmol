@@ -382,7 +382,7 @@ public class PropertyManager {
         return viewer.getFileAsString(myParam.toString());
       return viewer.getCurrentFileAsString();
     case PROP_JMOL_STATUS:
-      return viewer.getStatusChanged(myParam.toString());
+      return viewer.getStatusChanged(myParam.toString()); 
     case PROP_JMOL_VIEWER:
       return viewer;
     case PROP_MEASUREMENT_INFO:

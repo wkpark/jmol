@@ -383,12 +383,10 @@ public class SticksRenderer extends ShapeRenderer {
                               int yB, int zB) {
     if (lineBond)
       g3d.drawLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
-    else {
-      if (exportType != Graphics3D.EXPORT_NOT && mad != 1)
-        diameter = mad;
-      g3d.fillCylinder(colixA, colixB, endcaps, diameter, xA, yA, zA, xB, yB,
-          zB);
-    }
+    else
+      g3d.fillCylinder(colixA, colixB, endcaps, 
+          (exportType == Graphics3D.EXPORT_NOT || mad == 1 ? diameter : mad), 
+          xA, yA, zA, xB, yB, zB);
   }
 
 }

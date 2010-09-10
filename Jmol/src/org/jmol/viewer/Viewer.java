@@ -359,17 +359,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return viewer;
   }
 
-  /**
-   * 
-   * @param display
-   * @param modelAdapter
-   * @return a viewer instance
-   */
-  public static JmolViewer allocateViewer(Component display,
-                                          JmolAdapter modelAdapter) {
-    return allocateViewer(display, modelAdapter, null, null, null, null, null);
-  }
-
   private boolean isSilent = false;
   private boolean isApplet = false;
 

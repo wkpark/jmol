@@ -804,11 +804,11 @@ public class Token {
   public final static int hbondsdistancemaximum          = floatparam | 17;
   public final static int hoverdelay                     = floatparam | 18;
   public final static int loadatomdatatolerance          = floatparam | 19;  
-  public final static int lockmultiplebonds              = floatparam | 20;
-  public final static int minbonddistance                = floatparam | 21;
-  public final static int minimizationcriterion          = floatparam | 22;
-  public final static int mousedragfactor                = floatparam | 23;
-  public final static int mousewheelfactor               = floatparam | 24;
+  public final static int minbonddistance                = floatparam | 20;
+  public final static int minimizationcriterion          = floatparam | 21;
+  public final static int mousedragfactor                = floatparam | 22;
+  public final static int mousewheelfactor               = floatparam | 23;
+  public final static int multiplebondspacing            = floatparam | 24;
   public final static int navfps                         = floatparam | 25;
   public final static int navigationdepth                = floatparam | 26;
   public final static int navigationslab                 = floatparam | 28;
@@ -2185,7 +2185,6 @@ public class Token {
       "isosurfacePropertySmoothing",              new Token(isosurfacepropertysmoothing),
       "justifyMeasurements",                      new Token(justifymeasurements),
       "languageTranslation",                      new Token(languagetranslation),
-      "lockMultipleBonds",                        new Token(lockmultiplebonds),
       "logCommands",                              new Token(logcommands),
       "logGestures",                              new Token(loggestures),
       "measureAllModels",                         new Token(measureallmodels),
@@ -2196,6 +2195,7 @@ public class Token {
       "minimizationSilent",                       new Token(minimizationsilent),
       "modelkitMode",                             new Token(modelkitmode),
       "monitorEnergy",                            new Token(monitorenergy),
+      "multipleBondSpacing",                      new Token(multiplebondspacing),
       "multiProcessor",                           new Token(multiprocessor),
       "navigateSurface",                          new Token(navigatesurface),
       "navigationMode",                           new Token(navigationmode),

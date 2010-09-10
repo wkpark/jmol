@@ -5577,9 +5577,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                   boolean isInt) {
     boolean found = true;
     switch (tok) {
-    case Token.lockmultiplebonds:
+    case Token.multiplebondspacing:
       // 12.1.13
-      global.lockMultipleBonds = value;
+      global.multipleBondSpacing = value;
       break;
     case Token.slabrange:
       transformManager.setSlabRange(value);
@@ -6978,8 +6978,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.showMultipleBonds;
   }
 
-  public float getLockMultipleBonds() {
-    return global.lockMultipleBonds;
+  public float getMultipleBondSpacing() {
+    return global.multipleBondSpacing;
   }
 
   @Override

@@ -38,7 +38,7 @@ import org.jmol.viewer.JmolConstants;
 public class SticksRenderer extends ShapeRenderer {
 
   protected boolean showMultipleBonds;
-  protected float lockMultipleBonds;
+  protected float multipleBondSpacing;
   protected byte modeMultipleBond;
   //boolean showHydrogens;
   protected byte endcaps;
@@ -68,8 +68,17 @@ public class SticksRenderer extends ShapeRenderer {
     slabbing = viewer.getSlabEnabled();
     slabByAtom = viewer.getSlabByAtom();          
     endcaps = Graphics3D.ENDCAPS_SPHERICAL;
-    lockMultipleBonds = viewer.getLockMultipleBonds();
-    showMultipleBonds = viewer.getShowMultipleBonds();
+    multipleBondSpacing = viewer.getMultipleBondSpacing();
+    if (multipleBondSpacing > 0) {
+      z = new Vector3f();
+      x = new Vector3f();
+      y = new Vector3f();
+      p1 = new Point3f();
+      p2 = new Point3f();
+      s1 = new Point3i();
+      s2 = new Point3i();
+    }
+    showMultipleBonds = multipleBondSpacing != 0 && viewer.getShowMultipleBonds();
     modeMultipleBond = viewer.getModeMultipleBond();
     renderWireframe = viewer.getInMotion() && viewer.getWireframeRotation();
     ssbondsBackbone = viewer.getSsbondsBackbone();
@@ -222,83 +231,68 @@ public class SticksRenderer extends ShapeRenderer {
       g3d.drawBond(atomA, atomB, colixA, colixB, endcaps, mad);
       return;
     }
-    if (dx == 0 && dy == 0) {
+    boolean isEndOn = (dx == 0 && dy == 0);
+    if (isEndOn && lineBond)
+      return;
+    boolean doFixedSpacing = (bondOrder > 1
+        && multipleBondSpacing > 0
+        && (viewer.getHybridizationAndAxes(atomA.index, z, x, "pz") != null 
+            || viewer.getHybridizationAndAxes(atomB.index, z, x, "pz") != null) 
+        && !Float.isNaN(x.x));
+    if (isEndOn && !doFixedSpacing) {
       // end-on view
-      if (!lineBond) {
-        int space = width / 8 + 3;
-        int step = width + space;
-        int y = yA - (bondOrder - 1) * step / 2;
-        do {
-          fillCylinder(colixA, colixA, endcaps,
-                           width, xA, y, zA, xA, y, zA);
-          y += step;
-        } while (--bondOrder > 0);
-      }
+      int space = width / 8 + 3;
+      int step = width + space;
+      int y = yA - (bondOrder - 1) * step / 2;
+      do {
+        fillCylinder(colixA, colixA, endcaps, width, xA, y, zA, xA, y, zA);
+        y += step;
+      } while (--bondOrder > 0);
       return;
     }
     if (bondOrder == 1) {
       if ((dottedMask & 1) != 0)
         drawDashed(xA, yA, zA, xB, yB, zB);
       else
-        fillCylinder(colixA, colixB, endcaps,
-                           width, xA, yA, zA, xB, yB, zB);
+        fillCylinder(colixA, colixB, endcaps, width, xA, yA, zA, xB, yB, zB);
       return;
     }
-    if (lockMultipleBonds != 0) {
-      if (z == null) {
-        z = new Vector3f();
-        x = new Vector3f();
-        y = new Vector3f();
-        p1 = new Point3f();
-        p2 = new Point3f();
-        s1 = new Point3i();
-        s2 = new Point3i();
+    if (doFixedSpacing) {
+      x.sub(atomB, atomA);
+      y.cross(x, z);
+      y.normalize();
+      y.scale(multipleBondSpacing);
+      x.set(y);
+      x.scale((bondOrder - 1) / 2f);
+      p1.sub(atomA, x);
+      p2.sub(atomB, x);
+      while (true) {
+        viewer.transformPoint(p1, s1);
+        viewer.transformPoint(p2, s2);
+        p1.add(y);
+        p2.add(y);
+        if ((dottedMask & 1) != 0)
+          drawDashed(s1.x, s1.y, s1.z, s2.x, s2.y, s2.z);
+        else
+          fillCylinder(colixA, colixB, endcaps, width, s1.x, s1.y, s1.z, s2.x,
+              s2.y, s2.z);
+        dottedMask >>= 1;
+        if (--bondOrder <= 0)
+          break;
+        stepAxisCoordinates();
       }
-      if ((viewer.getHybridizationAndAxes(atomA.index, z, x, "pz") != null 
-          || viewer.getHybridizationAndAxes(atomB.index, z, x, "pz") != null
-          ) && !Float.isNaN(x.x)) {
-        x.sub(atomB, atomA);
-        y.cross(x, z);
-        y.normalize();
-        y.scale(lockMultipleBonds);
-        x.set(y);
-        x.scale((bondOrder - 1) / 2f);
-        p1.sub(atomA, x);
-        p2.sub(atomB, x);
-        while (true) {
-          viewer.transformPoint(p1, s1);
-          viewer.transformPoint(p2, s2);
-          p1.add(y);
-          p2.add(y);
-          if ((dottedMask & 1) != 0)
-            drawDashed(s1.x, s1.y, s1.z, s2.x, s2.y, s2.z);
-          else
-            fillCylinder(colixA, colixB, endcaps, width,
-                s1.x, s1.y, s1.z, s2.x, s2.y, s2.z);
-          dottedMask >>= 1;
-          if (--bondOrder <= 0)
-            break;
-          stepAxisCoordinates();
-        }
- 
-        
-        return;
-        
-      }
+      return;
     }
     int dxB = dx * dx;
     int dyB = dy * dy;
-    int mag2d2 = dxB + dyB;
-    //if (bondOrder == 4)
-      //mag2d2 *= 4;
-    mag2d = (int)(Math.sqrt(mag2d2) + 0.5);
+    mag2d = (int) (Math.sqrt(dxB + dyB) + 0.5);
     resetAxisCoordinates();
     while (true) {
       if ((dottedMask & 1) != 0)
         drawDashed(xAxis1, yAxis1, zA, xAxis2, yAxis2, zB);
       else
-        fillCylinder(colixA, colixB, endcaps, width,
-                           xAxis1, yAxis1, zA, xAxis2, yAxis2, zB);
+        fillCylinder(colixA, colixB, endcaps, width, xAxis1, yAxis1, zA,
+            xAxis2, yAxis2, zB);
       dottedMask >>= 1;
       if (--bondOrder <= 0)
         break;
@@ -312,115 +306,31 @@ public class SticksRenderer extends ShapeRenderer {
 
   void resetAxisCoordinates() {
     int space = mag2d >> 3;
+    if (multipleBondSpacing != -1)
+      space *= -multipleBondSpacing;
     int step = width + space;
-    dxStep = step * dy / mag2d; dyStep = step * -dx / mag2d;
-
-    xAxis1 = xA; yAxis1 = yA; 
-    xAxis2 = xB; yAxis2 = yB; 
-
-    if (bondOrder > 1) {
-      int f = (bondOrder - 1);
-      xAxis1 -= dxStep * f / 2; yAxis1 -= dyStep * f / 2;
-      xAxis2 -= dxStep * f / 2; yAxis2 -= dyStep * f / 2;
-    }
+    dxStep = step * dy / mag2d;
+    dyStep = step * -dx / mag2d;
+    xAxis1 = xA;
+    yAxis1 = yA;
+    xAxis2 = xB;
+    yAxis2 = yB;
+    int f = (bondOrder - 1);
+    xAxis1 -= dxStep * f / 2;
+    yAxis1 -= dyStep * f / 2;
+    xAxis2 -= dxStep * f / 2;
+    yAxis2 -= dyStep * f / 2;
   }
-
 
   void stepAxisCoordinates() {
     xAxis1 += dxStep; yAxis1 += dyStep;
     xAxis2 += dxStep; yAxis2 += dyStep;
   }
 
-  /*private boolean isClipVisible(int xA, int yA, int xB, int yB) {
-    // this is not actually correct, but quick & dirty
-    int xMin, width, yMin, height;
-    if (xA < xB) {
-      xMin = xA;
-      width = xB - xA;
-    } else if (xB < xA) {
-      xMin = xB;
-      width = xA - xB;
-    } else {
-      xMin = xA;
-      width = 1;
-    }
-    if (yA < yB) {
-      yMin = yA;
-      height = yB - yA;
-    } else if (yB < yA) {
-      yMin = yB;
-      height = yA - yB;
-    } else {
-      yMin = yA;
-      height = 1;
-    }
-    // there are some problems with this quick&dirty implementation
-    // so I am going to throw in some slop
-    xMin -= 5;
-    yMin -= 5;
-    width += 10;
-    height += 10;
-    rectTemp.x = xMin;
-    rectTemp.y = yMin;
-    rectTemp.width = width;
-    rectTemp.height = height;
-    boolean visible = rectClip.intersects(rectTemp);
-    return visible;
-  }*/
-
-  /*private void renderDotted() {
-    if (dx == 0 && dy == 0)
-      return;
-    g3d.drawDashedLine(colixA, colixB, 8, 4, xA, yA, zA, xB, yB, zB);
-  }*/
-
-  /*  no longer implemented 
-  private static int wideWidthMilliAngstroms = 400;
-
-  private void renderTriangle(Bond bond) {
-    // for now, always solid, always opaque
-    if (!g3d.checkTranslucent(false))
-      return;
-    int mag2d = (int)Math.sqrt(dx*dx + dy*dy);
-    int wideWidthPixels = viewer.scaleToScreen(zB, wideWidthMilliAngstroms);
-    int dxWide, dyWide;
-    if (mag2d == 0) {
-      dxWide = 0;
-      dyWide = wideWidthPixels;
-    } else {
-      dxWide = wideWidthPixels * -dy / mag2d;
-      dyWide = wideWidthPixels * dx / mag2d;
-    }
-    int xWideUp = xB + dxWide/2;
-    int xWideDn = xWideUp - dxWide;
-    int yWideUp = yB + dyWide/2;
-    int yWideDn = yWideUp - dyWide;
-    g3d.setColix(colixA);
-    if (colixA == colixB) {
-      g3d.drawfillTriangle(xA, yA, zA,
-                           xWideUp, yWideUp, zB, xWideDn, yWideDn, zB);
-    } else {
-      int xMidUp = (xA + xWideUp) / 2;
-      int yMidUp = (yA + yWideUp) / 2;
-      int zMid = (zA + zB) / 2;
-      int xMidDn = (xA + xWideDn) / 2;
-      int yMidDn = (yA + yWideDn) / 2;
-      g3d.drawfillTriangle(xA, yA, zA,
-                           xMidUp, yMidUp, zMid, xMidDn, yMidDn, zMid);
-      g3d.setColix(colixB);
-      g3d.drawfillTriangle(xMidUp, yMidUp, zMid,
-                           xMidDn, yMidDn, zMid, xWideDn, yWideDn, zB);
-      g3d.drawfillTriangle(xMidUp, yMidUp, zMid,
-                           xWideUp, yWideUp, zB, xWideDn, yWideDn, zB);
-    }
-  }
-  */
-  
   private int getAromaticDottedBondMask() {
     Atom atomC = atomB.findAromaticNeighbor(atomA.getIndex());
     if (atomC == null)
       return 1;
-    //System.out.println("SticksRenderer atomA " + atomA.getInfo() + " atomB " + atomB.getInfo() + " atomC " + atomC.getInfo());
     int dxAC = atomC.screenX - xA;
     int dyAC = atomC.screenY - yA;
     return ((dx * dyAC - dy * dxAC) < 0 ? 2 : 1);

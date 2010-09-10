@@ -254,8 +254,9 @@ public class SticksRenderer extends ShapeRenderer {
         s1 = new Point3i();
         s2 = new Point3i();
       }
-      if (viewer.getHybridizationAndAxes(atomA.index, z, x, "pz") != null 
-          || viewer.getHybridizationAndAxes(atomB.index, z, x, "pz") != null) {
+      if ((viewer.getHybridizationAndAxes(atomA.index, z, x, "pz") != null 
+          || viewer.getHybridizationAndAxes(atomB.index, z, x, "pz") != null
+          ) && !Float.isNaN(x.x)) {
         x.sub(atomB, atomA);
         y.cross(x, z);
         y.normalize();

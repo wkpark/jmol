@@ -25,6 +25,10 @@
 
 package org.jmol.shape;
 
+import javax.vecmath.Point3f;
+import javax.vecmath.Point3i;
+import javax.vecmath.Vector3f;
+
 import org.jmol.api.JmolEdge;
 import org.jmol.g3d.*;
 import org.jmol.modelset.Atom;
@@ -34,6 +38,7 @@ import org.jmol.viewer.JmolConstants;
 public class SticksRenderer extends ShapeRenderer {
 
   protected boolean showMultipleBonds;
+  protected float lockMultipleBonds;
   protected byte modeMultipleBond;
   //boolean showHydrogens;
   protected byte endcaps;
@@ -63,6 +68,7 @@ public class SticksRenderer extends ShapeRenderer {
     slabbing = viewer.getSlabEnabled();
     slabByAtom = viewer.getSlabByAtom();          
     endcaps = Graphics3D.ENDCAPS_SPHERICAL;
+    lockMultipleBonds = viewer.getLockMultipleBonds();
     showMultipleBonds = viewer.getShowMultipleBonds();
     modeMultipleBond = viewer.getModeMultipleBond();
     renderWireframe = viewer.getInMotion() && viewer.getWireframeRotation();
@@ -206,7 +212,11 @@ public class SticksRenderer extends ShapeRenderer {
     return order;
   }
 
-  protected void drawBond(int dottedMask) {
+  Vector3f x, y, z;
+  Point3f p1, p2;
+  Point3i s1, s2;
+  
+  private void drawBond(int dottedMask) {
     if (exportType == Graphics3D.EXPORT_CARTESIAN && bondOrder == 1) {
       // bypass screen rendering and just use the atoms themselves
       g3d.drawBond(atomA, atomB, colixA, colixB, endcaps, mad);
@@ -214,7 +224,7 @@ public class SticksRenderer extends ShapeRenderer {
     }
     if (dx == 0 && dy == 0) {
       // end-on view
-      if (! lineBond) {
+      if (!lineBond) {
         int space = width / 8 + 3;
         int step = width + space;
         int y = yA - (bondOrder - 1) * step / 2;
@@ -233,6 +243,47 @@ public class SticksRenderer extends ShapeRenderer {
         fillCylinder(colixA, colixB, endcaps,
                            width, xA, yA, zA, xB, yB, zB);
       return;
+    }
+    if (lockMultipleBonds != 0) {
+      if (z == null) {
+        z = new Vector3f();
+        x = new Vector3f();
+        y = new Vector3f();
+        p1 = new Point3f();
+        p2 = new Point3f();
+        s1 = new Point3i();
+        s2 = new Point3i();
+      }
+      if (viewer.getHybridizationAndAxes(atomA.index, z, x, "pz") != null 
+          || viewer.getHybridizationAndAxes(atomB.index, z, x, "pz") != null) {
+        x.sub(atomB, atomA);
+        y.cross(x, z);
+        y.normalize();
+        y.scale(lockMultipleBonds);
+        x.set(y);
+        x.scale((bondOrder - 1) / 2f);
+        p1.sub(atomA, x);
+        p2.sub(atomB, x);
+        while (true) {
+          viewer.transformPoint(p1, s1);
+          viewer.transformPoint(p2, s2);
+          p1.add(y);
+          p2.add(y);
+          if ((dottedMask & 1) != 0)
+            drawDashed(s1.x, s1.y, s1.z, s2.x, s2.y, s2.z);
+          else
+            fillCylinder(colixA, colixB, endcaps, width,
+                s1.x, s1.y, s1.z, s2.x, s2.y, s2.z);
+          dottedMask >>= 1;
+          if (--bondOrder <= 0)
+            break;
+          stepAxisCoordinates();
+        }
+ 
+        
+        return;
+        
+      }
     }
     int dxB = dx * dx;
     int dyB = dy * dy;

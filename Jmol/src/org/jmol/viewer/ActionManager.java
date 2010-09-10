@@ -994,6 +994,10 @@ public class ActionManager {
 
   private void checkAction(int action, int x, int y, int deltaX, int deltaY,
                            long time, int mode) {
+    if (viewer.getTestFlag3()) {
+      // Rich and Eric test
+      Logger.info("ActionManager checkAction(" + Integer.toHexString(action) + "," + mode + ")");
+    }
     int mods = Binding.getModifiers(action);
     if (Binding.getModifiers(action) != 0) {
       int newAction = viewer.notifyMouseClicked(x, y, Binding.getMouseAction(

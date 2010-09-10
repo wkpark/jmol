@@ -4511,9 +4511,10 @@ public class ScriptEvaluator {
 
   private boolean isColorParam(int i) {
     int tok = tokAt(i);
-    return (tok == Token.leftsquare || tok == Token.point3f || isPoint3f(i) || (tok == Token.string || Token
-        .tokAttr(tok, Token.identifier))
-        && Graphics3D.getArgbFromString((String) statement[i].value) != 0);
+    return (tok == Token.navy || tok == Token.leftsquare 
+        || tok == Token.point3f || isPoint3f(i) 
+        || (tok == Token.string || Token.tokAttr(tok, Token.identifier))
+          && Graphics3D.getArgbFromString((String) statement[i].value) != 0);
   }
 
   private int getArgbParam(int index) throws ScriptException {
@@ -4532,8 +4533,11 @@ public class ScriptEvaluator {
     if (checkToken(index)) {
       switch (getToken(index).tok) {
       default:
-        if (theTok != Token.string && !Token.tokAttr(theTok, Token.identifier))
+        if (!Token.tokAttr(theTok, Token.identifier))
           break;
+        // fall through
+      case Token.navy:
+      case Token.string:
         return Graphics3D.getArgbFromString(parameterAsString(index));
       case Token.leftsquare:
         return getColorTriad(++index);

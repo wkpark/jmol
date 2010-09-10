@@ -1190,7 +1190,7 @@ abstract public class ModelCollection extends BondCollection {
         tokens = (leftJustify ? 
             (t4x == null ? LabelToken.compile(viewer, "HETATM%5.-5i %-4.4a%1AUNK %1c   1%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]\n", '\0', null)
                 : t4x)
-            : (t3x == null ? LabelToken.compile(viewer, "HETATM%5.-5i %-3.3a%1AUNK %1c   1%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]\n", '\0', null)
+            : (t3x == null ? LabelToken.compile(viewer, "HETATM%5.-5i  %-3.3a%1AUNK %1c   1%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2[symbol]\n", '\0', null)
                 : t3x));
       else if (a.isHetero())
         tokens = (leftJustify ? 

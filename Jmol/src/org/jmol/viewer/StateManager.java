@@ -878,6 +878,7 @@ public class StateManager {
       setParameterValue("justifyMeasurements", justifyMeasurements);
       setParameterValue("loadAtomDataTolerance", loadAtomDataTolerance);
       setParameterValue("loadFormat", loadFormat);
+      setParameterValue("lockMultipleBonds", lockMultipleBonds);
       setParameterValue("logCommands", logCommands);
       setParameterValue("logGestures", logGestures);
       setParameterValue("measureAllModels", measureAllModels);
@@ -1146,6 +1147,7 @@ public class StateManager {
     boolean showHydrogens = true;
     boolean showMultipleBonds = true;
     boolean ssbondsBackbone = false;
+    float lockMultipleBonds = 0;
 
     //secondary structure + Rasmol
 

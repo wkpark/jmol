@@ -804,11 +804,12 @@ public class Token {
   public final static int hbondsdistancemaximum          = floatparam | 17;
   public final static int hoverdelay                     = floatparam | 18;
   public final static int loadatomdatatolerance          = floatparam | 19;  
-  public final static int minbonddistance                = floatparam | 20;
-  public final static int minimizationcriterion          = floatparam | 21;
-  public final static int mousedragfactor                = floatparam | 22;
-  public final static int mousewheelfactor               = floatparam | 23;
-  public final static int navfps                         = floatparam | 24;
+  public final static int lockmultiplebonds              = floatparam | 20;
+  public final static int minbonddistance                = floatparam | 21;
+  public final static int minimizationcriterion          = floatparam | 22;
+  public final static int mousedragfactor                = floatparam | 23;
+  public final static int mousewheelfactor               = floatparam | 24;
+  public final static int navfps                         = floatparam | 25;
   public final static int navigationdepth                = floatparam | 26;
   public final static int navigationslab                 = floatparam | 28;
   public final static int navigationspeed                = floatparam | 30;
@@ -931,7 +932,7 @@ public class Token {
   public static final int iskiosk                        = booleanparam | 93;// new 11.9.29
   public final static int isosurfacepropertysmoothing    = booleanparam | 94;
   public final static int justifymeasurements            = booleanparam | 96;
-  public final static int languagetranslation            = booleanparam | 98;
+  public final static int languagetranslation            = booleanparam | 97;
   public final static int logcommands                    = booleanparam | 99;
   public final static int loggestures                    = booleanparam | 100;
   public final static int measureallmodels               = booleanparam | 101;
@@ -2184,6 +2185,7 @@ public class Token {
       "isosurfacePropertySmoothing",              new Token(isosurfacepropertysmoothing),
       "justifyMeasurements",                      new Token(justifymeasurements),
       "languageTranslation",                      new Token(languagetranslation),
+      "lockMultipleBonds",                        new Token(lockmultiplebonds),
       "logCommands",                              new Token(logcommands),
       "logGestures",                              new Token(loggestures),
       "measureAllModels",                         new Token(measureallmodels),

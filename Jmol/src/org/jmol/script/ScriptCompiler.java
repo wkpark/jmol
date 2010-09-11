@@ -2154,29 +2154,25 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     if (ichToken == cchScript)
       return Float.NaN; //end
     int ichT = ichToken;
-    boolean isNegative = (script.charAt(ichT) == '-');
-    if (isNegative)
-      ++ichT;
     int pt0 = ichT;
-    boolean digitSeen = false;
+    if (script.charAt(ichT) == '-')
+      ++ichT;
+    boolean isOK = false;
     char ch = 'X';
     while (ichT < cchScript && Character.isDigit(ch = script.charAt(ichT))) {
       ++ichT;
-      digitSeen = true;
+      isOK = true;
     }
     if (ichT < cchScript && ch == '.')
       ++ichT;
     while (ichT < cchScript && Character.isDigit(ch = script.charAt(ichT))) {
       ++ichT;
-      digitSeen = true;
+      isOK = true;
     }
-    if (ichT == cchScript || !digitSeen)
+    if (ichT == cchScript || !isOK)
       return Float.NaN; //integer
-    int ptE = ichT;
-    int factor = 1;
-    int exp = 0;
-    boolean isExponential = (ch == 'E' || ch == 'e');
-    if (!isExponential || ++ichT == cchScript)
+    isOK = (ch != 'E' && ch != 'e');
+    if (isOK || ++ichT == cchScript)
       return Float.NaN;
     ch = script.charAt(ichT);
     // I THOUGHT we only should allow "E+" or "E-" here, not "2E1" because
@@ -2184,20 +2180,16 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     // any HET group starting with a number is unacceptable and must
     // be given as [nXm], in brackets.
 
-    if (ch == '-' || ch == '+') {
+    if (ch == '-' || ch == '+')
       ichT++;
-      factor = (ch == '-' ? -1 : 1);
-    }
     while (ichT < cchScript && Character.isDigit(ch = script.charAt(ichT))) {
       ichT++;
-      exp = (exp * 10 + ch - '0');
+      isOK = true;
     }
-    if (exp == 0)
+    if (!isOK)
       return Float.NaN;
     cchToken = ichT - ichToken;
-    double value = Float.valueOf(script.substring(pt0, ptE)).doubleValue();
-    value *= (isNegative ? -1 : 1) * Math.pow(10, factor * exp);
-    return (float) value;
+    return (float) Double.valueOf(script.substring(pt0, ichT)).doubleValue();
   }
 
   private boolean lookingAtDecimal() {

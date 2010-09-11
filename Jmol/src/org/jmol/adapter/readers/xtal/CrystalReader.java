@@ -127,8 +127,6 @@ public class CrystalReader extends AtomSetCollectionReader {
           return true; // just for properties
         // no input coordinates -- continue;
       }
-      if (!doGetModel(++modelNumber))
-        return checkLastModel();
       if (isPrimitive) {
         readCellParams(true);
       } else {
@@ -148,8 +146,13 @@ public class CrystalReader extends AtomSetCollectionReader {
           //Logger.error("Ignoring structure " + modelNumber + " due to FILTER \"conventional\"");
           //return true;
         }
-        if (!getLastConventional)
+        if (!getLastConventional) {
+          if (!doGetModel(++modelNumber)) {
+            vInputCoords = null;
+            checkLastModel();
+          }
           processInputCoords();
+        }
       }
       return true;
     }
@@ -192,11 +195,14 @@ public class CrystalReader extends AtomSetCollectionReader {
       return true;
     }
     
+    if (isPrimitive && line.startsWith(" ATOMS IN THE ASYMMETRIC UNIT")) {
+      if (!doGetModel(++modelNumber))
+        return checkLastModel();
+       return readFractionalCoords();
+    }
+
     if (!doProcessLines)
       return true;
-
-    if (isPrimitive && line.startsWith(" ATOMS IN THE ASYMMETRIC UNIT"))
-       return readFractionalCoords();
 
     if (line.startsWith(" TOTAL ENERGY")) {
       readEnergy();
@@ -286,7 +292,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       mp.getColumn(1, b);
     }
     matUnitCellOrientation = Quaternion.getQuaternionFrame(new Point3f(), a, b).getMatrix();
-    Logger.info("oriented unit cell is in model " + (atomSetCollection.getAtomSetCount() + 1));
+    Logger.info("oriented unit cell is in model " + atomSetCollection.getAtomSetCount());
     return true;
   }
 

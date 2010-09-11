@@ -2,6 +2,7 @@ package org.jmol.api;
 
 import java.awt.Component;
 
+
 import org.jmol.viewer.Viewer;
 
 public interface JmolAppConsoleInterface {

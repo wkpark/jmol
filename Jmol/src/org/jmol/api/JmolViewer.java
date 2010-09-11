@@ -94,6 +94,24 @@ abstract public class JmolViewer extends JmolSimpleViewer {
         htmlName, documentBase, codeBase, commandOptions, statusListener);
   }
 
+  /**
+   * sets a custom console -- should be called IMMEDIATELY following allocateViewer
+   * 
+   * create your console with, perhaps:
+   * 
+   * new org.openscience.jmol.app.jmolPanel.AppConsole(viewer, displayFrame, 
+   *                               externalJPanel, buttonsEnabled);
+   * 
+   * (see examples/basic/org/jmol/Integration.java
+   * 
+   * @param console        the console to use  
+   * 
+   * @param externalPanel
+   */
+  public void setConsole(JmolAppConsoleInterface console) {
+    getProperty("DATA_API", "getAppConsole", console); 
+  }
+
   abstract public BitSet getSmartsMatch(String smarts, BitSet bsSelected);
   
   /**

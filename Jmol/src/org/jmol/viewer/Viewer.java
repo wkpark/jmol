@@ -358,7 +358,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     viewer.setJmolStatusListener(statusListener);
     return viewer;
   }
-
+  
   private boolean isSilent = false;
   private boolean isApplet = false;
 
@@ -2016,7 +2016,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     if (strModel != null) {
       if (!isAppend)
-        zap(true, true, false);
+        zap(true, false/*true*/, false);
       atomSetCollection = fileManager.createAtomSetCollectionFromString(
           strModel, loadScript, htParams, isAppend, isLoadVariable
               || haveFileData && !isString);
@@ -2089,7 +2089,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (arrayData == null || arrayData.size() == 0)
       return null;
     if (!isAppend)
-      zap(true, true, false);
+      zap(true, false/*true*/, false);
     setBooleanProperty("preserveState", false);
     Object atomSetCollection = fileManager.createAtomSeCollectionFromArrayData(
         arrayData, setLoadParameters(null), isAppend);
@@ -2179,7 +2179,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (loadScript == null)
       loadScript = new StringBuffer();
     if (!isAppend)
-      zap(true, true, false);
+      zap(true, false/*true*/, false);
     Object atomSetCollection = fileManager.createAtomSetCollectionFromString(
         strModel, loadScript, htParams, isAppend, isLoadCommand);
     return createModelSetAndReturnError(atomSetCollection, isAppend, loadScript);
@@ -2190,7 +2190,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // loadInline
     StringBuffer loadScript = new StringBuffer();
     if (!isAppend)
-      zap(true, true, false);
+      zap(true, false/*true*/, false);
     Object atomSetCollection = fileManager.createAtomSeCollectionFromStrings(
         arrayModels, loadScript, setLoadParameters(htParams), isAppend);
     return createModelSetAndReturnError(atomSetCollection, isAppend, loadScript);
@@ -7383,7 +7383,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // Jmol 11.7.45 also uses this method as a general API
     // for getting and returning script data from the console and editor
 
-    if (!("DATA_API".equals(returnType)))
+    if (!"DATA_API".equals(returnType))
       return PropertyManager.getProperty(this, returnType, infoType, paramInfo);
 
     switch (
@@ -7465,6 +7465,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     String msg = file_text[1];
     JmolScriptEditorInterface scriptEditor = (JmolScriptEditorInterface) getProperty(
         "DATA_API", "getScriptEditor", Boolean.TRUE);
+    if (scriptEditor == null)
+      return;
     if (msg != null) {
       scriptEditor.setFilename(filename);
       scriptEditor.output(ScriptCompiler.getEmbeddedScript(msg));

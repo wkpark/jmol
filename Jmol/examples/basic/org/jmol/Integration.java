@@ -1,4 +1,5 @@
 package org.jmol;
+
 /* $RCSfile$
  * $Author$
  * $Date$
@@ -24,6 +25,7 @@ package org.jmol;
  *  02111-1307  USA.
  */
 
+import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -35,12 +37,12 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
-import org.jmol.api.JmolAdapter;
-import org.jmol.api.JmolSimpleViewer;
+import org.jmol.api.JmolViewer;
 import org.jmol.util.Logger;
+import org.openscience.jmol.app.jmolpanel.AppConsole;
 
 /**
- * A example of integrating the Jmol viewer into a java application.
+ * A example of integrating the Jmol viewer into a java application, with optional console.
  *
  * <p>I compiled/ran this code directly in the examples directory by doing:
  * <pre>
@@ -53,34 +55,57 @@ import org.jmol.util.Logger;
 
 public class Integration {
 
+  /*
+   * Demonstrates a simple way to include an optional console along with the applet.
+   * 
+   */
   public static void main(String[] argv) {
     JFrame frame = new JFrame("Hello");
     frame.addWindowListener(new ApplicationCloser());
+    frame.setSize(410, 700);
     Container contentPane = frame.getContentPane();
     JmolPanel jmolPanel = new JmolPanel();
-    contentPane.add(jmolPanel);
-    frame.setSize(300, 300);
+    jmolPanel.setPreferredSize(new Dimension(400, 400));
+
+    // main panel -- Jmol panel on top
+
+    JPanel panel = new JPanel();
+    panel.setLayout(new BorderLayout());
+    panel.add(jmolPanel);
+    
+    // main panel -- console panel on bottom
+    
+    JPanel panel2 = new JPanel();
+    panel2.setLayout(new BorderLayout());
+    panel2.setPreferredSize(new Dimension(400, 300));
+    AppConsole console = new AppConsole(jmolPanel.viewer, null, panel2,
+        "History State Clear");
+    
+    // You can use a different JmolStatusListener or JmolCallbackListener interface
+    // if you want to, but AppConsole itself should take care of any console-related callbacks
+    jmolPanel.viewer.setJmolCallbackListener(console);
+    
+    panel.add("South", panel2);
+    
+    contentPane.add(panel);
     frame.setVisible(true);
 
-    JmolSimpleViewer viewer = jmolPanel.getViewer();
-    // this initial ZAP command was required in Jmol 11.4.
-    // viewer.evalString("zap");
-    //    viewer.openFile("../samples/caffeine.xyz");
+    // sample start-up script
     
-    String strError = viewer.openFile("http://chemapps.stolaf.edu/jmol/docs/examples-11/data/caffeine.xyz");
+    String strError = jmolPanel.viewer
+        .openFile("http://chemapps.stolaf.edu/jmol/docs/examples-11/data/caffeine.xyz");
     //viewer.openStringInline(strXyzHOH);
     if (strError == null)
-      viewer.evalString(strScript);
+      jmolPanel.viewer.evalString(strScript);
     else
       Logger.error(strError);
   }
 
-  final static String strXyzHOH = 
-    "3\n" +
-    "water\n" +
-    "O  0.0 0.0 0.0\n" +
-    "H  0.76923955 -0.59357141 0.0\n" +
-    "H -0.76923955 -0.59357141 0.0\n";
+  final static String strXyzHOH = "3\n" 
+    + "water\n" 
+    + "O  0.0 0.0 0.0\n"
+    + "H  0.76923955 -0.59357141 0.0\n" 
+    + "H -0.76923955 -0.59357141 0.0\n";
 
   final static String strScript = "delay; move 360 0 0 0 0 0 0 0 4;";
 
@@ -92,19 +117,16 @@ public class Integration {
   }
 
   static class JmolPanel extends JPanel {
-    JmolSimpleViewer viewer;
-    JmolAdapter adapter;
+
+    JmolViewer viewer;
+    
+    private final Dimension currentSize = new Dimension();
+    private final Rectangle rectClip = new Rectangle(); // ignored by Jmol
+    
     JmolPanel() {
-      adapter = new SmarterJmolAdapter();
-      viewer = JmolSimpleViewer.allocateSimpleViewer(this, adapter);
+      viewer = JmolViewer.allocateViewer(this, new SmarterJmolAdapter(), 
+          null, null, null, null, null);
     }
-
-    public JmolSimpleViewer getViewer() {
-      return viewer;
-    }
-
-    final Dimension currentSize = new Dimension();
-    final Rectangle rectClip = new Rectangle();
 
     @Override
     public void paint(Graphics g) {
@@ -113,4 +135,5 @@ public class Integration {
       viewer.renderScreenImage(g, currentSize, rectClip);
     }
   }
+
 }

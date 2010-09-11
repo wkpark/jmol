@@ -246,7 +246,8 @@ public class JmolPanel extends JPanel implements SplashInterface {
 
     //historyFile.repositionWindow("Jmol", getFrame(), 300, 300);
 
-    Component c = (Component) viewer.getProperty("DATA_API","getAppConsole", null);
+    AppConsole console = (AppConsole) viewer.getProperty("DATA_API","getAppConsole", null);
+    Component c = (console == null ? null : console.jcd);
     if (c != null)
       historyFile.repositionWindow(SCRIPT_WINDOW_NAME, c, 200, 100);
     // this just causes problems
@@ -438,7 +439,8 @@ public class JmolPanel extends JPanel implements SplashInterface {
       //System.out.println("doClose border: " + border);
       //historyFile.addWindowInfo(CONSOLE_WINDOW_NAME, consoleframe);
     }
-    Component c = (Component) viewer.getProperty("DATA_API","getAppConsole", null);
+    AppConsole console = (AppConsole) viewer.getProperty("DATA_API","getAppConsole", null);
+    Component c = (console == null ? null : console.jcd);
     if (c != null)
       historyFile.addWindowInfo(SCRIPT_WINDOW_NAME, c, null);
     c = (Component) viewer.getProperty("DATA_API","getScriptEditor", null);

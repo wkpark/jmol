@@ -306,7 +306,7 @@ public class SticksRenderer extends ShapeRenderer {
 
   void resetAxisCoordinates() {
     int space = mag2d >> 3;
-    if (multipleBondSpacing != -1)
+    if (multipleBondSpacing != -1 && multipleBondSpacing < 0)
       space *= -multipleBondSpacing;
     int step = width + space;
     dxStep = step * dy / mag2d;

@@ -69,10 +69,9 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
     return menubar;
   }
   
-  @Override
   public void dispose() {
     jf.dispose();
-    super.dispose();
+    jcd.dispose();
   }
 
   public AppletConsole() {

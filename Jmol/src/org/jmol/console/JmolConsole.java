@@ -42,10 +42,17 @@ import java.util.List;
 
 import javax.swing.*;
 
-public abstract class JmolConsole extends JDialog implements ActionListener, WindowListener {
+public abstract class JmolConsole implements ActionListener, WindowListener {
 
   public JmolViewer viewer;
   protected Component display;
+  public JmolConsoleDialog jcd;
+  protected JButton editButton, runButton, historyButton, stateButton;
+  
+  public void setVisible(boolean isVisible) {
+    if (jcd != null)
+      jcd.setVisible(isVisible);
+  }
 
   static {
     System.out.println("JmolConsole is initializing");
@@ -64,8 +71,6 @@ public abstract class JmolConsole extends JDialog implements ActionListener, Win
         : scriptEditor);
   }
   
-  protected JButton editButton, runButton, historyButton, stateButton;
-
   JmolViewer getViewer() {
     return viewer;
   }
@@ -77,8 +82,8 @@ public abstract class JmolConsole extends JDialog implements ActionListener, Win
   public JmolConsole() {
   }
   
-  public JmolConsole(JmolViewer viewer, JFrame frame) {
-    super(frame, getTitleText(), false);
+  public JmolConsole(JmolViewer viewer, JFrame frame, boolean createDialog) {
+    jcd = (createDialog ? new JmolConsoleDialog(this, frame) : null);
     this.viewer = viewer;
     display = frame;
   }
@@ -171,6 +176,11 @@ public abstract class JmolConsole extends JDialog implements ActionListener, Win
     }
   }
   
+  protected void setEnabled(JButton button, boolean TF) {
+    if (button != null)
+      button.setEnabled(TF);
+  }
+
   public void actionPerformed(ActionEvent e) {
     Object source = e.getSource();
     if (source == runButton) {
@@ -187,29 +197,56 @@ public abstract class JmolConsole extends JDialog implements ActionListener, Win
     }
   }
 
-
   ////////////////////////////////////////////////////////////////
   // window listener stuff to close when the window closes
   ////////////////////////////////////////////////////////////////
 
+  /**
+   * @param we 
+   * 
+   */
   public void windowActivated(WindowEvent we) {
   }
 
+  /**
+   * @param we 
+   * 
+   */
   public void windowClosed(WindowEvent we) {
   }
 
+  /**
+   * @param we 
+   * 
+   */
   public void windowClosing(WindowEvent we) {
   }
 
+  /**
+   * @param we 
+   * 
+   */
   public void windowDeactivated(WindowEvent we) {
   }
 
+  /**
+   * @param we 
+   * 
+   */
   public void windowDeiconified(WindowEvent we) {
   }
 
+  /**
+   * @param we 
+   * 
+   */
   public void windowIconified(WindowEvent we) {
   }
 
+  /**
+   * @param we 
+   * 
+   */
   public void windowOpened(WindowEvent we) {
   }
 

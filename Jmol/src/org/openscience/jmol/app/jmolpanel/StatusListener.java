@@ -206,10 +206,8 @@ class StatusListener implements JmolStatusListener {
   private void notifyAtomPicked(String info) {
     JmolAppConsoleInterface appConsole = (JmolAppConsoleInterface) viewer
         .getProperty("DATA_API", "getAppConsole", null);
-    if (appConsole != null) {
+    if (appConsole != null)
       appConsole.sendConsoleMessage(info);
-      appConsole.sendConsoleMessage("\n");
-    }
     if (display.haveDisplay)
       display.status.setStatus(1, info);
   }

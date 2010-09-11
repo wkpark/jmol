@@ -137,11 +137,11 @@ public class DisplayPanel extends JPanel
   public void paint(Graphics g) {
     if (showPaintTime)
       startPaintClock();
-    g.getClipBounds(rectClip);
     if (dimSize.width == 0)
       return;
     //System.out.println("DisplayPanel:paint");System.out.flush();
 
+    g.getClipBounds(rectClip);
     viewer.renderScreenImage(g, dimSize, rectClip);
     if (border == null)
       border = new Point();

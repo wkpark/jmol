@@ -30,6 +30,7 @@ import org.jmol.i18n.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.swing.*;
@@ -184,6 +185,18 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
     label1.setText(getLabel("label1"));
     jf.setTitle(getTitleText());
     defaultMessage = getLabel("default");
+    Iterator<String> e = map.keySet().iterator();
+    while (e.hasNext()) {
+      String key = e.next();
+      JMenuItem m = map.get(key);
+      String label = getLabel(key);
+      char mnemonic = getMnemonic(label);
+      if (mnemonic != ' ')
+        m.setMnemonic(mnemonic);
+      label = getLabelWithoutMnemonic(label);
+      m.setText(label);
+      System.out.println("testing applet console key=" + key + " label=" + label + " " + m);
+    }
     GT.setDoTranslate(doTranslate);
   }
 
@@ -502,9 +515,8 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
     String key;
     KeyJMenu(String key, String label, char mnemonic) {
       super(label);
-      if (mnemonic != ' ') {
-          setMnemonic(mnemonic);
-      }
+      if (mnemonic != ' ')
+        setMnemonic(mnemonic);
       this.key = key;
       map.put(key, this);
     }

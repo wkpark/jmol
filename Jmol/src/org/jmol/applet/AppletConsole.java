@@ -58,8 +58,6 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   private JButton clearOutButton, clearInButton, loadButton;
 
   protected Map<String, JMenuItem> map = new Hashtable<String, JMenuItem>();
-  protected Map<String, String> labels = null;
-  
   
   static {
     System.out.println("AppletConsole initialized");
@@ -82,40 +80,43 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   }
 
   private AppletConsole(Viewer viewer, Component display) {
-
     this.display = display;
     set(viewer);
-
+    output(defaultMessage);
   }
 
+  private String defaultMessage;
+  
+  @Override
   public void sendConsoleEcho(String strEcho) {
+    if (strEcho == null) {
+      // null here means "display default message"
+      labels = null;
+      setLabels();
+      strEcho = defaultMessage;
+    }
     output(strEcho);
   }
 
+  @Override
   public void sendConsoleMessage(String strInfo) {
-    //System.out.println("AppletConsole.sendConsoleMessage " + strInfo);
+    // null here indicates "clear console"
+    if (strInfo != null && getText().startsWith(defaultMessage))
+      output(null);
     output(strInfo);
   }
 
   public void zap() {
   }
 
+  private JLabel label1;
+  
   private void set(JmolViewer viewer) {
     //Logger.debug("Console constructor");
     this.viewer = viewer;
-    boolean doTranslate = GT.getDoTranslate();
-    GT.setDoTranslate(true);
-
-    jf = new JFrame(getTitleText());
+    jf = new JFrame();
     jf.setSize(600, 400);
-    editButton = new JButton(GT._("Editor"));
-    stateButton = new JButton(GT._("State"));
-    runButton = new JButton(GT._("Run"));
-    clearOutButton = new JButton(GT._("Clear Output"));
-    clearInButton = new JButton(GT._("Clear Input"));
-    historyButton = new JButton(GT._("History"));
-    loadButton = new JButton(GT._("Load"));
-
+    setLabels();
     setupInput();
     setupOutput();
 
@@ -151,28 +152,41 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
     c2.add(stateButton);
     c2.add(Box.createGlue());
     c.add(c2);
-
-    JLabel label1 = new JLabel(
-        GT._("press CTRL-ENTER for new line or paste model data and press Load"),
-        SwingConstants.CENTER);
     label1.setAlignmentX(Component.CENTER_ALIGNMENT);
-    c.add(label1);
-    
-    editButton.addActionListener(this);
-    runButton.addActionListener(this);
-    clearInButton.addActionListener(this);
-    clearOutButton.addActionListener(this);
-    historyButton.addActionListener(this);
-    stateButton.addActionListener(this);
-    loadButton.addActionListener(this);
-
+    c.add(label1);    
     jf.addWindowListener(this);
-    GT.setDoTranslate(doTranslate);
 
     //System.out.println("Console " + this + " set(3)");
 
   }
-  
+
+  private JButton setButton(JButton button, String text) {
+    if (button == null) {
+      button = new JButton();
+      button.addActionListener(this);
+    }
+    button.setText(getLabel(text));
+    return button;
+  }
+
+  private void setLabels() {
+    boolean doTranslate = GT.getDoTranslate();
+    GT.setDoTranslate(true);
+    editButton = setButton(editButton, "Editor");
+    stateButton = setButton(stateButton, "State");
+    runButton = setButton(runButton, "Run");
+    clearOutButton = setButton(clearOutButton, "Clear Output");
+    clearInButton = setButton(clearInButton, "Clear Input");
+    historyButton = setButton(historyButton, "History");
+    loadButton = setButton(loadButton, "Load");
+    if (label1 == null)
+      label1 = new JLabel("", SwingConstants.CENTER);
+    label1.setText(getLabel("label1"));
+    jf.setTitle(getTitleText());
+    defaultMessage = getLabel("default");
+    GT.setDoTranslate(doTranslate);
+  }
+
   protected JMenuBar createMenubar() {
     JMenuBar mb = new JMenuBar();
     //addNormalMenuBar(mb);
@@ -270,7 +284,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   }
 
   private void output(String message, AttributeSet att) {
-    System.out.println("AppletConsole.output " + message + " " + att);
+    //System.out.println("AppletConsole.output " + message + " " + att);
     if (message == null || message.length() == 0) {
       output.setText("");
       return;
@@ -400,23 +414,32 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   }
 
   /// Graphical User Interface for applet ///
-  
-  private Map<String, String> setupLabels() {
-      Map<String, String> labels = new Hashtable<String, String>();
-      labels.put("help", GT._("&Help"));
-      labels.put("search", GT._("&Search..."));
-      labels.put("commands", GT._("&Commands"));
-      labels.put("functions", GT._("Math &Functions"));
-      labels.put("parameters", GT._("Set &Parameters"));
-      labels.put("more", GT._("&More"));
-      return labels;
-  }
 
-  private String getLabel(String key) {
-    if (labels == null) {
-      labels = setupLabels();
-    }
-    return labels.get(key);
+  @Override
+  protected Map<String, String> setupLabels() {
+    if (labels == null)
+      labels = new Hashtable<String, String>();
+    labels.put("help", GT._("&Help"));
+    labels.put("search", GT._("&Search..."));
+    labels.put("commands", GT._("&Commands"));
+    labels.put("functions", GT._("Math &Functions"));
+    labels.put("parameters", GT._("Set &Parameters"));
+    labels.put("more", GT._("&More"));
+    labels.put("Editor", GT._("Editor"));
+    labels.put("State", GT._("State"));
+    labels.put("Run", GT._("Run"));
+    labels.put("Clear Output", GT._("Clear Output"));
+    labels.put("Clear Input", GT._("Clear Input"));
+    labels.put("History", GT._("History"));
+    labels.put("Load", GT._("Load"));
+    labels.put("label1", GT
+        ._("press CTRL-ENTER for new line or paste model data and press Load"));
+    labels
+        .put(
+            "default",
+            GT
+                ._("Messages will appear here. Enter commands in the box below. Click the console Help menu item for on-line help, which will appear in a new browser window."));
+    return labels;
   }
 
   private JMenu newJMenu(String key) {

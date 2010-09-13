@@ -879,6 +879,7 @@ public class Jmol implements WrappedApplet {
 
       String callback = (type < callbacks.length ? callbacks[type] : null);
       boolean doCallback = (callback != null && (data == null || data[0] == null));
+      boolean toConsole = false;
       if (data != null)
         data[0] = htmlName;
       String strInfo = (data == null || data[1] == null ? null : data[1]
@@ -933,24 +934,24 @@ public class Jmol implements WrappedApplet {
         }
         break;
       case JmolConstants.CALLBACK_ECHO:
-        boolean isScriptQueued = (((Integer) data[2]).intValue() == 1);
-        boolean doOutput = true;
+        boolean isPrivate = (data.length == 2);
+        boolean isScriptQueued = (isPrivate || ((Integer) data[2]).intValue() == 1);
         if (!doCallback) {
-          if (isScriptQueued) {
-            consoleMessage(strInfo);
-            doOutput = false;
-          }
-          doCallback = ((callback = callbacks[type = JmolConstants.CALLBACK_MESSAGE]) != null);
+          if (isScriptQueued)
+            toConsole = true;
+          doCallback = (!isPrivate && 
+              (callback = callbacks[type = JmolConstants.CALLBACK_MESSAGE]) != null);
         }
-        if (doOutput)
+        if (!toConsole)
           output(strInfo);
         break;
       case JmolConstants.CALLBACK_LOADSTRUCT:
         String errorMsg = (String) data[4];
         if (errorMsg != null) {
-          showStatusAndConsole((errorMsg.indexOf("NOTE:") >= 0 ? "" : GT
-              ._("File Error:"))
-              + errorMsg, true);
+          errorMsg = (errorMsg.indexOf("NOTE:") >= 0 ? "" : GT
+              ._("File Error:")) + errorMsg;
+          showStatus(errorMsg);
+          notifyCallback(JmolConstants.CALLBACK_MESSAGE, new Object[] { "", errorMsg });
           return;
         }
         break;
@@ -960,22 +961,22 @@ public class Jmol implements WrappedApplet {
           doCallback = ((callback = callbacks[type = JmolConstants.CALLBACK_MESSAGE]) != null);
         String status = (String) data[3];
         if (status.indexOf("Picked") >= 0) {// picking mode
-          showStatusAndConsole(strInfo, true); // set picking measure distance
+          showStatus(strInfo); // set picking measure distance
+          toConsole = true;
         } else if (status.indexOf("Completed") >= 0) {
           strInfo = status + ": " + strInfo;
-          consoleMessage(strInfo);
+          toConsole = true;
         }
         break;
       case JmolConstants.CALLBACK_MESSAGE:
-        if (doCallback)
+        toConsole = !doCallback;
+        doCallback &= (strInfo != null);
+        if (!toConsole)
           output(strInfo);
-        else
-          consoleMessage(strInfo);
-        if (strInfo == null)
-          return;
         break;
       case JmolConstants.CALLBACK_PICK:
-        showStatusAndConsole(strInfo, true);
+        showStatus(strInfo);
+        toConsole = true;
         break;
       case JmolConstants.CALLBACK_SCRIPT:
         int msWalltime = ((Integer) data[3]).intValue();
@@ -991,11 +992,20 @@ public class Jmol implements WrappedApplet {
           // for compatibility reasons
           doCallback = ((callback = callbacks[type = JmolConstants.CALLBACK_MESSAGE]) != null);
         }
-        showStatusAndConsole(strInfo, false);
+        output(strInfo);
+        showStatus(strInfo);
         break;
       case JmolConstants.CALLBACK_SYNC:
         sendScript(strInfo, (String) data[2], true, doCallback);
         return;
+      }
+      if (toConsole) {
+        JmolCallbackListener appConsole = (JmolCallbackListener) viewer.getProperty("DATA_API", "getAppConsole", null);
+        if (appConsole != null) {
+          appConsole.notifyCallback(type, data);
+          output(strInfo);
+          sendJsTextareaStatus(strInfo);
+        }
       }
       if (!doCallback || !mayScript)
         return;
@@ -1049,7 +1059,9 @@ public class Jmol implements WrappedApplet {
         return;
       //also serves to change language for callbacks and menu
       if (callbackName.equalsIgnoreCase("language")) {
-        clearDefaultConsoleMessage();
+        consoleMessage(""); // clear
+        consoleMessage(null); // show default message
+        return;
       }
       int id = JmolConstants.getCallbackId(callbackName);
       if (id >= 0 && (loading || id != JmolConstants.CALLBACK_EVAL)) {
@@ -1198,48 +1210,22 @@ public class Jmol implements WrappedApplet {
           URL url = new URL(urlString);
           appletWrapper.getAppletContext().showDocument(url, "_blank");
         } catch (MalformedURLException mue) {
-          showStatusAndConsole("Malformed URL:" + urlString, true);
+          consoleMessage("Malformed URL:" + urlString);
         }
       }
     }
 
-    private void showStatusAndConsole(String message, boolean toConsole) {
+    private void showStatus(String message) {
       try {
         appletWrapper.showStatus(message);
         sendJsTextStatus(message);
-        if (toConsole)
-          consoleMessage(message);
-        else
-          output(message);
       } catch (Exception e) {
         //ignore if page is closing
       }
     }
 
-    private String defaultMessage;
-
-    private void clearDefaultConsoleMessage() {
-      defaultMessage = null;
-    }
-
     private void consoleMessage(String message) {
-      JmolAppConsoleInterface appConsole = (JmolAppConsoleInterface) viewer.getProperty("DATA_API", "getAppConsole", null);
-      if (appConsole != null) {
-        if (defaultMessage == null) {
-          GT.setDoTranslate(true);
-          defaultMessage = GT
-              ._("Messages will appear here. Enter commands in the box below. Click the console Help menu item for on-line help, which will appear in a new browser window.");
-          GT.setDoTranslate(doTranslate);
-        }
-        if (appConsole.getText().startsWith(defaultMessage))
-          appConsole.sendConsoleMessage("");
-        appConsole.sendConsoleMessage(message);
-        if (message == null) {
-          appConsole.sendConsoleMessage(defaultMessage);
-        }
-      }
-      output(message);
-      sendJsTextareaStatus(message);
+      notifyCallback(JmolConstants.CALLBACK_ECHO, new Object[] {"", message });
     }
 
     private String sendScript(String script, String appletName, boolean isSync,

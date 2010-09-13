@@ -7435,7 +7435,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case 100:
       if (appConsole == null && paramInfo != null
           && ((Boolean) paramInfo).booleanValue()) {
-        getProperty("DATA_API", "appConsole", Boolean.TRUE);
+        getProperty("DATA_API", "getAppConsole", Boolean.TRUE);
         scriptEditor = (appConsole == null ? null : appConsole
             .getScriptEditor());
       }

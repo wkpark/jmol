@@ -6325,7 +6325,6 @@ public class ScriptEvaluator {
       if (isSyntaxCheck)
         break;
       viewer.showConsole(true);
-      viewer.clearConsole();
       break;
     default:
       error(ERROR_invalidArgument);

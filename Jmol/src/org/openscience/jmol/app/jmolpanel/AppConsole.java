@@ -31,7 +31,11 @@ import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.ActionEvent;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -47,7 +51,6 @@ import javax.swing.text.StyleConstants;
 import javax.swing.JScrollPane;
 
 import org.jmol.api.JmolAppConsoleInterface;
-import org.jmol.api.JmolCallbackListener;
 import org.jmol.api.JmolViewer;
 import org.jmol.console.JmolConsole;
 import org.jmol.i18n.GT;
@@ -59,7 +62,7 @@ import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 
 public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
-    JmolCallbackListener, EnterListener {
+    EnterListener {
 
   protected static final String ALL_BUTTONS = "Editor Check Top Step Variables Clear History State Help Close UndoRedo";
   protected ConsoleTextPane console;
@@ -105,14 +108,18 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
     }
   }
 
-  JButton setButton(String s) {
-    JButton b = new JButton(s);
-    b.addActionListener(this);
+  JPanel buttonPanel = new JPanel();
+  protected Map<String, JButton> buttons = new HashMap<String, JButton>();
+  
+  JButton setButton(JButton b, String s) {
+    if (b == null) {
+      b = new JButton(getLabel(s));
+      b.addActionListener(this);
+      buttons.put(s, b);
+    }
     buttonPanel.add(b);
     return b;
   }
-
-  JPanel buttonPanel = new JPanel();
 
   void layoutWindow(Container container, String enableButtons) {
     console = new ConsoleTextPane(this);
@@ -149,6 +156,26 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
 
   }
 
+  @Override
+  protected Map<String, String> setupLabels() {
+    if (labels == null)
+      labels = new Hashtable<String, String>();
+    labels.put("Check", GT._("Check"));
+    labels.put("Clear", GT._("Clear"));
+    labels.put("Close", GT._("Close"));
+    labels.put("Halt", GT._("Halt"));
+    labels.put("Help", GT._("Help"));
+    labels.put("Editor", GT._("Editor"));
+    labels.put("History", GT._("History"));
+    labels.put("State", GT._("State"));
+    labels.put("Step", GT._("Step"));
+    labels.put("Top", GT._("Top"));
+    labels.put("Undo", GT._("Undo"));
+    labels.put("Redo", GT._("Redo"));
+    labels.put("Variables", GT._("Variables"));
+    return labels;
+  }
+
   private void enableButton(String name) {
     switch((
         "Check     " +
@@ -164,47 +191,63 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
     		"UndoRedo  " +
     		"Variables ").indexOf(name)) {
     case 0:
-      checkButton = setButton(GT._("Check"));
+       checkButton = setButton(checkButton,"Check");
       break;
     case 10:
-      clearButton = setButton(GT._("Clear"));
+       clearButton = setButton(clearButton,"Clear");
       break;
     case 20:
-      closeButton = setButton(GT._("Close"));
+       closeButton = setButton(closeButton,"Close");
       break;
     case 30:
-      editButton = setButton(GT._("Editor"));
+       editButton = setButton(editButton,"Editor");
       break;
     case 40:
-        haltButton = setButton(GT._("Halt"));
+       haltButton = setButton(haltButton, "Halt");
      break;
     case 50:
-      helpButton = setButton(GT._("Help"));
+       helpButton = setButton(helpButton,"Help");
       break;
     case 60:
-      historyButton = setButton(GT._("History"));
+       historyButton = setButton(historyButton,"History");
       break;
     case 70:
-      stateButton = setButton(GT._("State"));
+       stateButton = setButton(stateButton,"State");
       break;
     case 80:
-      stepButton = setButton(GT._("Step"));
+       stepButton = setButton(stepButton,"Step");
       break;
     case 90:
-      topButton = setButton(GT._("Top"));
+       topButton = setButton(topButton,"Top");
       break;
     case 100:
-      undoButton = setButton(GT._("Undo"));
-      redoButton = setButton(GT._("Redo"));
+       undoButton = setButton(undoButton,"Undo");
+       redoButton = setButton(redoButton,"Redo");
       break;
     case 110:
-      varButton = setButton(GT._("Variables"));
+       varButton = setButton(varButton, "Variables");
       break;
     }
   }
 
+  private void setLabels() {
+    boolean doTranslate = GT.getDoTranslate();
+    GT.setDoTranslate(true);
+    Iterator<String> e = buttons.keySet().iterator(); 
+    while (e.hasNext()) {
+      String label = e.next();
+      buttons.get(label).setText(getLabel(label));
+    }
+    GT.setDoTranslate(doTranslate);
+  }
+  
+  @Override
   public void sendConsoleEcho(String strEcho) {
-    if (strEcho != null) {
+    if (strEcho == null) {
+      // new language
+      labels = null;
+      setLabels();
+    } else {
       console.outputEcho(strEcho);
     }
     setError(false);
@@ -216,6 +259,7 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
     isError = TF;
   }
 
+  @Override
   public void sendConsoleMessage(String strStatus) {
     if (strStatus == null) {
       console.clearContent(null);
@@ -920,54 +964,6 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
           getLength() - offsetAfterPrompt, att, true);
     }
   }
-
-  ///////////// JmolCallbackListener interface
-
-  // Allowing for just the callbacks needed to provide status feedback to the console.
-  // Not used in Jmol application itself; here to provide basic callback capability
-  // for applications that embed Jmol -- see the example application Integration.java.
-  // 
-  // See org.openscience.jmol.app.jmolpanel.StatusListener.java for a complete list
-
-  public boolean notifyEnabled(int type) {
-    switch (type) {
-    case JmolConstants.CALLBACK_ECHO:
-    case JmolConstants.CALLBACK_MEASURE:
-    case JmolConstants.CALLBACK_MESSAGE:
-    case JmolConstants.CALLBACK_PICK:
-      return true;
-    }
-    return false;
-  }
-
-  public void notifyCallback(int type, Object[] data) {
-    String strInfo = (data == null || data[1] == null ? null : data[1]
-        .toString());
-    switch (type) {
-    case JmolConstants.CALLBACK_ECHO:
-      sendConsoleEcho(strInfo);
-      break;
-    case JmolConstants.CALLBACK_MEASURE:
-      String mystatus = (String) data[3];
-      if (mystatus.indexOf("Picked") >= 0) // picking mode
-        sendConsoleMessage(strInfo);
-      else if (mystatus.indexOf("Completed") >= 0)
-        sendConsoleEcho(strInfo.substring(strInfo.lastIndexOf(",") + 2, strInfo
-            .length() - 1));
-      break;
-    case JmolConstants.CALLBACK_MESSAGE:
-      sendConsoleMessage(data == null ? null : strInfo);
-      break;
-    case JmolConstants.CALLBACK_PICK:
-      sendConsoleMessage(strInfo);
-      break;
-    }
-  }
-
-  public void setCallbackFunction(String callbackType, String callbackFunction) {
-    // application-dependent option
-  }
-
 }
 
 interface EnterListener {

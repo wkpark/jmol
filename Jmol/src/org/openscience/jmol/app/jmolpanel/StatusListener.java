@@ -99,7 +99,7 @@ class StatusListener implements JmolStatusListener {
     case JmolConstants.CALLBACK_LOADSTRUCT:
       notifyFileLoaded(strInfo, (String) data[2], (String) data[3],
           (String) data[4]);
-      break;
+      return;
     case JmolConstants.CALLBACK_ANIMFRAME:
       int[] iData = (int[]) data[1];
       int modelIndex = iData[0];
@@ -112,32 +112,28 @@ class StatusListener implements JmolStatusListener {
         display.status.setStatus(1, menuName);
         jmol.getFrame().setTitle(menuName);
       }
-      break;
+      return;
     case JmolConstants.CALLBACK_SCRIPT:
       int msWalltime = ((Integer) data[3]).intValue();
       if (msWalltime == 0) {
         if (data[2] != null && display.haveDisplay)
           display.status.setStatus(1, (String) data[2]);
       }
-      break;
+      return;
     case JmolConstants.CALLBACK_ECHO:
-      sendConsoleEcho(strInfo);
       break;
     case JmolConstants.CALLBACK_MEASURE:
       String mystatus = (String) data[3];
+      if (mystatus.indexOf("Pending") < 0 && display.haveDisplay) {
+        display.measurementTable.updateTables();
+        return;
+      }
       if (mystatus.indexOf("Picked") >= 0) // picking mode
         notifyAtomPicked(strInfo);
-      else if (mystatus.indexOf("Completed") >= 0)
-        sendConsoleEcho(strInfo.substring(strInfo.lastIndexOf(",") + 2, strInfo
-            .length() - 1));
-      if (mystatus.indexOf("Pending") < 0) {
-        // System.out.println("jmol callback measure" + status);
-        if (display.haveDisplay)
-          display.measurementTable.updateTables();
-      }
+      else if (mystatus.indexOf("Completed") < 0)
+        return;
       break;
     case JmolConstants.CALLBACK_MESSAGE:
-      sendConsoleMessage(data == null ? null : strInfo);
       break;
 //    case JmolConstants.CALLBACK_CLICK:
       // x, y, action, int[] {action}
@@ -155,14 +151,19 @@ class StatusListener implements JmolStatusListener {
     case JmolConstants.CALLBACK_RESIZE:
     case JmolConstants.CALLBACK_SYNC:
       // applet only (but you could change this for your listener)
-      break;
+      return;
     }
+    // cases that fail to return are sent to the console for processing
+    JmolStatusListener appConsole = (JmolStatusListener) viewer
+        .getProperty("DATA_API", "getAppConsole", null);
+    if (appConsole != null)
+      appConsole.notifyCallback(type, data);
   }
 
   public void setCallbackFunction(String callbackType, String callbackFunction) {
     if (callbackType.equals("modelkit")) {
       jmol.setButtonMode(callbackFunction.equals("ON") ? "modelkit" : "rotate");
-      return; 
+      return;
     }
     if (callbackType.equalsIgnoreCase("menu")) {
       jmol.setupNewFrame(viewer.getStateInfo());
@@ -177,6 +178,10 @@ class StatusListener implements JmolStatusListener {
         jmol.createWebExport();
       }
       jmol.setupNewFrame(viewer.getStateInfo());
+      AppConsole appConsole = (AppConsole) viewer.getProperty("DATA_API",
+          "getAppConsole", null);
+      if (appConsole != null)
+        appConsole.sendConsoleEcho(null);
       return;
     }
   }
@@ -204,10 +209,6 @@ class StatusListener implements JmolStatusListener {
   }
 
   private void notifyAtomPicked(String info) {
-    JmolAppConsoleInterface appConsole = (JmolAppConsoleInterface) viewer
-        .getProperty("DATA_API", "getAppConsole", null);
-    if (appConsole != null)
-      appConsole.sendConsoleMessage(info);
     if (display.haveDisplay)
       display.status.setStatus(1, info);
   }
@@ -229,13 +230,6 @@ class StatusListener implements JmolStatusListener {
     else if (modelName != null)
       title = modelName;
     jmol.notifyFileOpen(fullPathName, title);
-  }
-
-  private void sendConsoleEcho(String strEcho) {
-    JmolAppConsoleInterface appConsole = (JmolAppConsoleInterface) viewer
-        .getProperty("DATA_API", "getAppConsole", null);
-    if (appConsole != null)
-      appConsole.sendConsoleEcho(strEcho);
   }
 
   private void sendConsoleMessage(String strStatus) {

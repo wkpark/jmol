@@ -23,71 +23,100 @@
  */
 package org.jmol.applet;
 
-import org.jmol.api.*;
+import org.jmol.api.JmolAppConsoleInterface;
+import org.jmol.api.JmolViewer;
 import org.jmol.console.JmolConsole;
 import org.jmol.console.KeyJMenu;
 import org.jmol.console.KeyJMenuItem;
-import org.jmol.i18n.*;
+import org.jmol.i18n.GT;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javax.swing.*;
-import javax.swing.text.*;
+import javax.swing.AbstractButton;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextPane;
+import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.Keymap;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
 
 import org.jmol.viewer.JmolConstants;
-import org.jmol.viewer.Viewer;
 
 public class AppletConsole extends JmolConsole implements JmolAppConsoleInterface {
-  
-  final JTextArea input = new ControlEnterTextArea();
-  
-  private final JTextPane output = new JTextPane();
-  
-  private final Document outputDocument = output.getDocument();
-  
-  private JFrame jf;
 
-  private final SimpleAttributeSet attributesCommand = new SimpleAttributeSet();
+  /**
+   * general entry point
+   * 
+   * @param viewer
+   * @param display             parent JFrame or DisplayPanel of viewer
+   * @param externalContainer   a JFrame or JPanel or null
+   * 
+   */
+  public AppletConsole(JmolViewer viewer, Container externalContainer) {
+    this.viewer = viewer;
+    Component display = viewer.getDisplay();
+    this.viewerFrame = (display instanceof JFrame ? (JFrame) display : null);
+    if (externalContainer == null) {
+      JFrame jf = new JFrame();
+      jf.setSize(600, 400);
+      externalContainer = jf;
+      jf.setTitle("testing123");
+    }
+    this.externalContainer = externalContainer;      
+    set();
+    output(defaultMessage);
+  }
+
+  public AppletConsole() {
+    // required for Class.forName  
+  }
+  
+  /**
+   * don't delete! used by Viewer after it gets the class by name
+   * 
+   * @param viewer
+   * @param display
+   * @return          AppletConsole
+   */
+  public JmolAppConsoleInterface getAppConsole(JmolViewer viewer) {
+    return new AppletConsole(viewer, null);
+  }
 
   //public void finalize() {
   //  System.out.println("Console " + this + " finalize");
   //}
 
-  private JMenuBar menubar; // requiring Swing here for now
-  private JButton clearOutButton, clearInButton, loadButton;
-
   protected Map<String, AbstractButton> menuMap = new Hashtable<String, AbstractButton>();
-   
-  static {
-    System.out.println("AppletConsole initialized");
-  }
   
-  public Object getMyMenuBar() {
-    return menubar;
-  }
-  
-  public void dispose() {
-    jf.dispose();
-    jcd.dispose();
-  }
-
-  public AppletConsole() {
-  }
-  
-  public JmolAppConsoleInterface getAppConsole(Viewer viewer, Component display) {
-    return new AppletConsole(viewer, display);
-  }
-
-  private AppletConsole(Viewer viewer, Component display) {
-    this.display = display;
-    set(viewer);
-    output(defaultMessage);
-  }
-
+  protected final JTextArea input = new ControlEnterTextArea();
+  private JButton clearOutButton, clearInButton, loadButton;
+  private final JTextPane output = new JTextPane();
+  private final Document outputDocument = output.getDocument();
+  private final SimpleAttributeSet attributesCommand = new SimpleAttributeSet();
   private String defaultMessage;
+
   
   @Override
   public void sendConsoleEcho(String strEcho) {
@@ -103,7 +132,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   @Override
   public void sendConsoleMessage(String strInfo) {
     // null here indicates "clear console"
-    if (strInfo != null && getText().startsWith(defaultMessage))
+    if (strInfo != null && output.getText().startsWith(defaultMessage))
       output(null);
     output(strInfo);
   }
@@ -113,11 +142,8 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
 
   private JLabel label1;
   
-  private void set(JmolViewer viewer) {
+  private void set() {
     //Logger.debug("Console constructor");
-    this.viewer = viewer;
-    jf = new JFrame();
-    jf.setSize(600, 400);
     setLabels();
     setupInput();
     setupOutput();
@@ -127,9 +153,8 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
 
     JScrollPane jscrollOutput = new JScrollPane(output);
     jscrollOutput.setMinimumSize(new Dimension(2, 100));
-    Container c = jf.getContentPane();
-    menubar = createMenubar();
-    jf.setJMenuBar(menubar);
+    Container c = (externalContainer instanceof JFrame ? ((JFrame) externalContainer)
+        .getContentPane() : externalContainer);
     c.setLayout(new BoxLayout(c, BoxLayout.Y_AXIS));
 
     //System.out.println("Console " + this + " set(2)");
@@ -155,8 +180,12 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
     c2.add(Box.createGlue());
     c.add(c2);
     label1.setAlignmentX(Component.CENTER_ALIGNMENT);
-    c.add(label1);    
-    jf.addWindowListener(this);
+    c.add(label1);
+    if (externalContainer instanceof JFrame) {
+      JFrame jf = (JFrame) externalContainer;
+      jf.setJMenuBar(createMenubar());
+      jf.addWindowListener(this);
+    }
 
     //System.out.println("Console " + this + " set(3)");
 
@@ -184,7 +213,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
     if (label1 == null)
       label1 = new JLabel("", SwingConstants.CENTER);
     label1.setText(getLabel("label1"));
-    jf.setTitle(getTitleText());
+    setTitle();
     defaultMessage = getLabel("default");
     KeyJMenuItem.setLabels(menuMap, labels);
     GT.setDoTranslate(doTranslate);
@@ -277,8 +306,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
 
   @Override
   public void setVisible(boolean visible) {
-    //System.out.println("AppletConsole.setVisible(" + visible + ") " + jf);
-    jf.setVisible(visible);
+    super.setVisible(visible);
     input.requestFocus();
   }
 
@@ -299,11 +327,6 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
     } catch (BadLocationException ble) {
     }
     output.setCaretPosition(outputDocument.getLength());
-  }
-
-  public String getText() {
-    //System.out.println("AppletConsole.getText()");
-    return output.getText(); 
   }
 
   @Override
@@ -419,9 +442,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   /// Graphical User Interface for applet ///
 
   @Override
-  protected Map<String, String> setupLabels() {
-    if (labels == null)
-      labels = new Hashtable<String, String>();
+  protected void setupLabels() {
     labels.put("help", GT._("&Help"));
     labels.put("search", GT._("&Search..."));
     labels.put("commands", GT._("&Commands"));
@@ -437,12 +458,8 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
     labels.put("Load", GT._("Load"));
     labels.put("label1", GT
         ._("press CTRL-ENTER for new line or paste model data and press Load"));
-    labels
-        .put(
-            "default",
-            GT
-                ._("Messages will appear here. Enter commands in the box below. Click the console Help menu item for on-line help, which will appear in a new browser window."));
-    return labels;
+    labels.put("default",
+        GT._("Messages will appear here. Enter commands in the box below. Click the console Help menu item for on-line help, which will appear in a new browser window."));
   }
 
 }

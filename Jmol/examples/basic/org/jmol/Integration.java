@@ -78,7 +78,7 @@ public class Integration {
     JPanel panel2 = new JPanel();
     panel2.setLayout(new BorderLayout());
     panel2.setPreferredSize(new Dimension(400, 300));
-    AppConsole console = new AppConsole(jmolPanel.viewer, null, panel2,
+    AppConsole console = new AppConsole(jmolPanel.viewer, panel2,
         "History State Clear");
     
     // You can use a different JmolStatusListener or JmolCallbackListener interface

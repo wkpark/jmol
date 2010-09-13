@@ -1,29 +1,19 @@
 package org.jmol.api;
 
-import java.awt.Component;
-
-
-import org.jmol.viewer.Viewer;
-
 public interface JmolAppConsoleInterface {
 
-  JmolScriptEditorInterface getScriptEditor();
+  public void setVisible(boolean b);
 
-  JmolAppConsoleInterface getAppConsole(Viewer viewer, Component display);
+  public void sendConsoleEcho(String strEcho);
 
-  String getText();
+  public void sendConsoleMessage(String strInfo);
 
-  Object getMyMenuBar();
+  public JmolScriptEditorInterface getScriptEditor();
 
-  void setVisible(boolean b);
+  public JmolAppConsoleInterface getAppConsole(JmolViewer viewer);
 
-  void sendConsoleEcho(String strEcho);
+  public void zap();
 
-  void sendConsoleMessage(String strInfo);
-
-  void zap();
-
-  void dispose();
-
+  public void dispose();
 
 }

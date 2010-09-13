@@ -24,7 +24,9 @@
 package org.jmol.console;
 
 
-import org.jmol.api.*;
+import org.jmol.api.JmolCallbackListener;
+import org.jmol.api.JmolScriptEditorInterface;
+import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
 import org.jmol.script.ScriptCompiler;
 import org.jmol.script.Token;
@@ -34,44 +36,61 @@ import org.jmol.viewer.FileManager;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 
-import java.awt.Component;
-import java.awt.event.*;
+import java.awt.Container;
+import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
 
 public abstract class JmolConsole implements JmolCallbackListener, ActionListener, WindowListener {
 
   public JmolViewer viewer;
-  protected Component display;
-  public JmolConsoleDialog jcd;
+  protected JFrame viewerFrame;
+  protected Container externalContainer;
+
   protected JButton editButton, runButton, historyButton, stateButton;
   protected Map<String, String> labels;
   
-  abstract protected Map<String, String> setupLabels();
+  abstract protected void setupLabels();
   
+  public void dispose() {
+    if (externalContainer instanceof Window)
+      ((Window) externalContainer).dispose();
+    else
+      externalContainer.setVisible(false);
+  }
 
   protected String getLabel(String key) {
     if (labels == null) {
-      labels = setupLabels();
+      labels = new Hashtable<String, String>();
+      labels.put("title", GT._("Jmol Script Console") + " " + Viewer.getJmolVersion());
+      setupLabels();
     }
     return labels.get(key);
   }
 
-  public void setVisible(boolean isVisible) {
-    if (jcd != null)
-      jcd.setVisible(isVisible);
+  protected void setTitle() {
+    if (externalContainer instanceof JFrame)
+      ((JFrame) this.externalContainer).setTitle(getLabel("title"));
+    else if (externalContainer instanceof JDialog)
+      ((JDialog) externalContainer).setTitle(getLabel("title"));
   }
 
-  static {
-    System.out.println("JmolConsole is initializing");
+  public void setVisible(boolean isVisible) {
+    externalContainer.setVisible(isVisible);
   }
-  // common:
-  
+
   protected ScriptEditor scriptEditor;
   
   void setScriptEditor(ScriptEditor se) {
@@ -80,36 +99,18 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
   
   public JmolScriptEditorInterface getScriptEditor() {
     return (scriptEditor == null ? 
-        (scriptEditor = new ScriptEditor(viewer, display instanceof JFrame ? (JFrame) display : null, this))
-        : scriptEditor);
+        (scriptEditor = new ScriptEditor(viewer, viewerFrame, this)) : scriptEditor);
   }
   
-  JmolViewer getViewer() {
-    return viewer;
-  }
-
   //public void finalize() {
   //  System.out.println("Console " + this + " finalize");
   //}
-
-  public JmolConsole() {
-  }
   
-  public JmolConsole(JmolViewer viewer, JFrame frame, boolean createDialog) {
-    jcd = (createDialog ? new JmolConsoleDialog(this, frame) : null);
-    this.viewer = viewer;
-    display = frame;
-  }
-
   abstract protected void clearContent(String text);
   abstract protected void execute(String strCommand);
   
   public int nTab = 0;
   private String incompleteCmd;
-  
-  protected static String getTitleText() {
-    return GT._("Jmol Script Console") + " " + Viewer.getJmolVersion();
-  }
   
   protected String completeCommand(String thisCmd) {
     if (thisCmd.length() == 0)
@@ -310,6 +311,7 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
   public void setCallbackFunction(String callbackType, String callbackFunction) {
     // application-dependent option
   }
+
 
   /////////////// Keyed menu items for on-the-fly language switching
   

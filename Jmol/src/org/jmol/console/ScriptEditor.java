@@ -197,10 +197,6 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
       editor.grabFocus();
   }
   
-  public Object getMyMenuBar() {
-    return null;
-  }
-
   public String getText() {
     return editor.getText();
   }

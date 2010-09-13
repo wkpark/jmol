@@ -7421,7 +7421,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
               .getOptionInterface("applet.AppletConsole")
               : (JmolAppConsoleInterface) Interface
                   .getApplicationInterface("jmolpanel.AppConsole"))
-              .getAppConsole(this, display);
+              .getAppConsole(this);
           if (appConsole == null)
             try {
               Thread.currentThread().wait(100);

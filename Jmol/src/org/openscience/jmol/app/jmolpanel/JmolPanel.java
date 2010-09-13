@@ -247,7 +247,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
     //historyFile.repositionWindow("Jmol", getFrame(), 300, 300);
 
     AppConsole console = (AppConsole) viewer.getProperty("DATA_API","getAppConsole", null);
-    if (console != null)
+    if (console != null && console.jcd != null)
       historyFile.repositionWindow(SCRIPT_WINDOW_NAME, console.jcd, 200, 100);
     // this just causes problems
     //c = (Component) viewer.getProperty("DATA_API","getScriptEditor", null);
@@ -437,7 +437,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
       //historyFile.addWindowInfo(CONSOLE_WINDOW_NAME, consoleframe);
     }
     AppConsole console = (AppConsole) viewer.getProperty("DATA_API","getAppConsole", null);
-    if (console != null)
+    if (console != null && console.jcd != null)
       historyFile.addWindowInfo(SCRIPT_WINDOW_NAME, console.jcd, null);
     Component c = (Component) viewer.getProperty("DATA_API","getScriptEditor", null);
     if (c != null)
@@ -1181,7 +1181,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
     public void actionPerformed(ActionEvent e) {
       AppConsole console = (AppConsole) viewer.getProperty("DATA_API","getAppConsole", null);
       if (console != null)
-        console.jcd.setVisible(true);
+        console.setVisible(true);
     }
   }
 

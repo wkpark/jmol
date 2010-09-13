@@ -106,7 +106,6 @@ abstract public class JmolViewer extends JmolSimpleViewer {
    * 
    * @param console        the console to use  
    * 
-   * @param externalPanel
    */
   public void setConsole(JmolAppConsoleInterface console) {
     getProperty("DATA_API", "getAppConsole", console); 

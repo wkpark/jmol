@@ -32,12 +32,12 @@ import java.awt.event.KeyEvent;
 import java.awt.event.ActionEvent;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JFrame;
 import javax.swing.JSplitPane;
@@ -59,22 +59,40 @@ import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
-import org.jmol.viewer.Viewer;
 
 public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
     EnterListener {
 
-  protected static final String ALL_BUTTONS = "Editor Check Top Step Variables Clear History State Help Close UndoRedo";
-  protected ConsoleTextPane console;
-  private JButton varButton, haltButton, closeButton, clearButton, 
-      helpButton, undoButton, redoButton, checkButton, topButton;
-  protected JButton stepButton;
+  protected static final String ALL_BUTTONS = "Editor Variables Clear History State UndoRedo Close Help";
 
-  /*
-   * methods sendConsoleEcho, sendConsoleMessage(strStatus), notifyScriptStart(), notifyScriptTermination()
-   * are public in case developers want to use appConsole separate from the Jmol application.
+  // note:  "Check" "Top" "Step" not included in 12.1
+
+  /**
+   * general entry point
    * 
+   * @param viewer
+   * @param display             parent from of viewer
+   * @param externalContainer   a JFrame or JPanel or JDialog
+   * @param enabledButtons
    */
+  public AppConsole(JmolViewer viewer,
+      Container externalContainer, String enabledButtons) {
+    this.viewer = viewer;
+    Component display = viewer.getDisplay();
+    viewerFrame = (display instanceof DisplayPanel ? ((DisplayPanel) display)
+        .getFrame() : display instanceof JFrame ? (JFrame) display : null);
+    if (externalContainer == null) {
+      this.externalContainer = jcd = new JDialog(viewerFrame, null, false);
+      jcd.setSize(645, 400);
+      layoutWindow(jcd.getContentPane(), enabledButtons);
+      jcd.setLocationRelativeTo(viewerFrame);
+    } else {
+      this.externalContainer = externalContainer;
+      layoutWindow(externalContainer, enabledButtons);
+      viewer.setConsole(this);
+    }
+    setTitle();
+  }
 
   public AppConsole() {
     // required for Class.forName  
@@ -83,35 +101,80 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
     //       .getApplicationInterface("jmolpanel.AppConsole")).getAppConsole(viewer, display);
   }
 
-  public JmolAppConsoleInterface getAppConsole(Viewer viewer,
-                                               Component display) {
-    return new AppConsole(viewer, display instanceof JFrame ? (JFrame) display
-        : display instanceof DisplayPanel ? ((DisplayPanel) display).getFrame()
-            : null, null, null);
+  /**
+   * don't delete! used by Viewer after it gets the class by name
+   * 
+   * @param viewer
+   * @param display
+   * @return         AppConsole or AppletConsole
+   */
+  public JmolAppConsoleInterface getAppConsole(JmolViewer viewer) {
+    // used after reflection gets the class
+    return new AppConsole(viewer, null, null);
   }
 
-  public void dispose() {
-    if (jcd != null)
-      jcd.dispose();
-  }
 
-  public AppConsole(JmolViewer viewer, JFrame frame, 
-                    Container externalPanel, String enableButtons) {
-    super(viewer, frame, (externalPanel == null));
-    layoutWindow(externalPanel == null ? jcd.getContentPane() : externalPanel, 
-        enableButtons);
-    if (jcd == null) {
-      viewer.setConsole(this);
+  JDialog jcd;
+
+  protected ConsoleTextPane console;
+  protected JButton stepButton;
+  protected Map<String, JButton> buttons = new HashMap<String, JButton>();
+
+  private JButton varButton, haltButton, closeButton, clearButton;
+  private JButton helpButton, undoButton, redoButton, checkButton, topButton;
+  private JPanel buttonPanel = new JPanel();
+
+  /*
+   * methods sendConsoleEcho and sendConsoleMessage(strStatus)
+   * are public in case developers want to use appConsole separate from the Jmol application.
+   * 
+   */
+
+
+  @Override
+  public void sendConsoleEcho(String strEcho) {
+    if (strEcho == null) {
+      // new language
+      labels = null;
+      setLabels();
     } else {
-      jcd.setSize(645, 400);
-      jcd.setLocationRelativeTo(frame);
+      console.outputEcho(strEcho);
+    }
+    setError(false);
+  }
+
+  @Override
+  public void sendConsoleMessage(String strStatus) {
+    if (strStatus == null) {
+      console.clearContent(null);
+      console.outputStatus("");
+    } else if (strStatus.indexOf("ERROR:") >= 0) {
+      console.outputError(strStatus);
+      setError(true);
+    } else {
+      console.outputStatus(strStatus);
+      isError = false;
     }
   }
 
-  JPanel buttonPanel = new JPanel();
-  protected Map<String, JButton> buttons = new HashMap<String, JButton>();
-  
-  JButton setButton(JButton b, String s) {
+  @Override
+  protected void setupLabels() {
+    labels.put("Check", GT._("Check"));
+    labels.put("Clear", GT._("Clear"));
+    labels.put("Close", GT._("Close"));
+    labels.put("Halt", GT._("Halt"));
+    labels.put("Help", GT._("Help"));
+    labels.put("Editor", GT._("Editor"));
+    labels.put("History", GT._("History"));
+    labels.put("State", GT._("State"));
+    labels.put("Step", GT._("Step"));
+    labels.put("Top", GT._("Top"));
+    labels.put("Undo", GT._("Undo"));
+    labels.put("Redo", GT._("Redo"));
+    labels.put("Variables", GT._("Variables"));
+  }
+
+  private JButton setButton(JButton b, String s) {
     if (b == null) {
       b = new JButton(getLabel(s));
       b.addActionListener(this);
@@ -121,14 +184,14 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
     return b;
   }
 
-  void layoutWindow(Container container, String enableButtons) {
+  private void layoutWindow(Container container, String enabledButtons) {
     console = new ConsoleTextPane(this);
     console.setPrompt();
     console.setDragEnabled(true);
-    if (enableButtons == null)
-      enableButtons = ALL_BUTTONS;
+    if (enabledButtons == null)
+      enabledButtons = ALL_BUTTONS;
     JScrollPane consolePane = new JScrollPane(console);
-    String[] tokens = Parser.getTokens(enableButtons);
+    String[] tokens = Parser.getTokens(enabledButtons);
     for (int i = 0; i < tokens.length; i++)
       enableButton(tokens[i]);
     setEnabled(undoButton, false);
@@ -154,26 +217,6 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
     //  container.add(consolePane,BorderLayout.CENTER);
     //container.add(buttonPanelWrapper,BorderLayout.SOUTH);
 
-  }
-
-  @Override
-  protected Map<String, String> setupLabels() {
-    if (labels == null)
-      labels = new Hashtable<String, String>();
-    labels.put("Check", GT._("Check"));
-    labels.put("Clear", GT._("Clear"));
-    labels.put("Close", GT._("Close"));
-    labels.put("Halt", GT._("Halt"));
-    labels.put("Help", GT._("Help"));
-    labels.put("Editor", GT._("Editor"));
-    labels.put("History", GT._("History"));
-    labels.put("State", GT._("State"));
-    labels.put("Step", GT._("Step"));
-    labels.put("Top", GT._("Top"));
-    labels.put("Undo", GT._("Undo"));
-    labels.put("Redo", GT._("Redo"));
-    labels.put("Variables", GT._("Variables"));
-    return labels;
   }
 
   private void enableButton(String name) {
@@ -241,36 +284,10 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
     GT.setDoTranslate(doTranslate);
   }
   
-  @Override
-  public void sendConsoleEcho(String strEcho) {
-    if (strEcho == null) {
-      // new language
-      labels = null;
-      setLabels();
-    } else {
-      console.outputEcho(strEcho);
-    }
-    setError(false);
-  }
-
   boolean isError = false;
 
   private void setError(boolean TF) {
     isError = TF;
-  }
-
-  @Override
-  public void sendConsoleMessage(String strStatus) {
-    if (strStatus == null) {
-      console.clearContent(null);
-      console.outputStatus("");
-    } else if (strStatus.indexOf("ERROR:") >= 0) {
-      console.outputError(strStatus);
-      setError(true);
-    } else {
-      console.outputStatus(strStatus);
-      isError = false;
-    }
   }
 
   public void enterPressed() {
@@ -732,10 +749,6 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
   @Override
   protected String completeCommand(String thisCmd) {
     return super.completeCommand(thisCmd);
-  }
-
-  public Object getMyMenuBar() {
-    return null;
   }
 
   public String getText() {

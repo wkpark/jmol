@@ -25,12 +25,13 @@ package org.jmol.applet;
 
 import org.jmol.api.*;
 import org.jmol.console.JmolConsole;
+import org.jmol.console.KeyJMenu;
+import org.jmol.console.KeyJMenuItem;
 import org.jmol.i18n.*;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.swing.*;
@@ -58,8 +59,8 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   private JMenuBar menubar; // requiring Swing here for now
   private JButton clearOutButton, clearInButton, loadButton;
 
-  protected Map<String, JMenuItem> map = new Hashtable<String, JMenuItem>();
-  
+  protected Map<String, AbstractButton> menuMap = new Hashtable<String, AbstractButton>();
+   
   static {
     System.out.println("AppletConsole initialized");
   }
@@ -185,18 +186,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
     label1.setText(getLabel("label1"));
     jf.setTitle(getTitleText());
     defaultMessage = getLabel("default");
-    Iterator<String> e = map.keySet().iterator();
-    while (e.hasNext()) {
-      String key = e.next();
-      JMenuItem m = map.get(key);
-      String label = getLabel(key);
-      char mnemonic = getMnemonic(label);
-      if (mnemonic != ' ')
-        m.setMnemonic(mnemonic);
-      label = getLabelWithoutMnemonic(label);
-      m.setText(label);
-      System.out.println("testing applet console key=" + key + " label=" + label + " " + m);
-    }
+    KeyJMenuItem.setLabels(menuMap, labels);
     GT.setDoTranslate(doTranslate);
   }
 
@@ -209,8 +199,8 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   }
   
   protected void addHelpMenuBar(JMenuBar menuBar) {
-    JMenu m0 = newJMenu("help");
-    JMenuItem item = newJMenuItem("search");
+    JMenu m0 = new KeyJMenu("help", getLabel("help"), menuMap);
+    JMenuItem item = createMenuItem("search");
     item.addActionListener(this);
     item.setName("help ?search=?");
     m0.add(item);
@@ -222,7 +212,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   }
 
   private void addHelpItems(JMenu m0, String key, String attr) {
-    JMenu m = newJMenu(key);
+    JMenu m = new KeyJMenu(key, getLabel(key), menuMap);
     String[] commands = (String[]) viewer.getProperty(null, "tokenList", attr);
     m0.add(m);
     JMenu m2 = null;
@@ -258,7 +248,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   }
 
   protected JMenuItem createMenuItem(String cmd) {
-    return newJMenuItem(cmd);
+    return new KeyJMenuItem(cmd, getLabel(cmd), menuMap);
   }
 
   private void setupInput() {
@@ -453,91 +443,6 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
             GT
                 ._("Messages will appear here. Enter commands in the box below. Click the console Help menu item for on-line help, which will appear in a new browser window."));
     return labels;
-  }
-
-  private JMenu newJMenu(String key) {
-    String label = getLabel(key);
-    return new KeyJMenu(key, getLabelWithoutMnemonic(label), getMnemonic(label));
-  }
-  
-  private JMenuItem newJMenuItem(String key) {
-    String label = getLabel(key);
-    return new KeyJMenuItem(key, getLabelWithoutMnemonic(label), getMnemonic(label));
-  }
-/*
-  private Object get(String key) {
-    return map.get(key);
-  }
-
-  private static String getKey(Object obj) {
-    return (((GetKey)obj).getKey());
-  }
-*/
-
-  private static String getLabelWithoutMnemonic(String label) {
-    if (label == null) {
-      return null;
-    }
-    int index = label.indexOf('&');
-    if (index == -1) {
-      return label;
-    }
-    return label.substring(0, index) +
-      ((index < label.length() - 1) ? label.substring(index + 1) : "");
-  }
-  
-  private static char getMnemonic(String label) {
-    if (label == null) {
-      return ' ';
-    }
-    int index = label.indexOf('&');
-    if ((index == -1) || (index == label.length() - 1)){
-      return ' ';
-    }
-    return label.charAt(index + 1);
-  }
-  
-  /*
-  private void setSelected(String key, boolean b) {
-    ((AbstractButton)get(key)).setSelected(b);
-  }
-
-  private boolean isSelected(String key) {
-    return ((AbstractButton)get(key)).isSelected();
-  }
-  */
-
-  private interface GetKey {
-    public String getKey();
-  }
-
-  private class KeyJMenu extends JMenu implements GetKey {
-    String key;
-    KeyJMenu(String key, String label, char mnemonic) {
-      super(label);
-      if (mnemonic != ' ')
-        setMnemonic(mnemonic);
-      this.key = key;
-      map.put(key, this);
-    }
-    public String getKey() {
-      return key;
-    }
-  }
-
-  private class KeyJMenuItem extends JMenuItem implements GetKey {
-    String key;
-    KeyJMenuItem(String key, String label, char mnemonic) {
-      super(label);
-      if (mnemonic != ' ') {
-          setMnemonic(mnemonic);
-      }
-      this.key = key;
-      map.put(key, this);
-    }
-    public String getKey() {
-      return key;
-    }
   }
 
 }

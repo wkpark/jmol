@@ -24,6 +24,7 @@
 package org.openscience.jmol.app.jmolpanel;
 
 import org.jmol.api.*;
+import org.jmol.console.KeyJMenuItem;
 import org.jmol.i18n.GT;
 import org.openscience.jmol.app.jmolpanel.GuiMap;
 import org.openscience.jmol.app.jmolpanel.JmolPanel;
@@ -301,7 +302,7 @@ public class DisplayPanel extends JPanel
 
   private MenuListener menuListener = new MenuListener() {
       public void menuSelected(MenuEvent e) {
-        String menuKey = GuiMap.getKey(e.getSource());
+        String menuKey = KeyJMenuItem.getKey(e.getSource());
         if (menuKey.equals("display")) {
           setDisplayMenuState();
         }

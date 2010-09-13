@@ -26,7 +26,6 @@ package org.openscience.jmol.app.jmolpanel;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.AbstractButton;
@@ -34,14 +33,18 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JCheckBox;
 
+import org.jmol.console.KeyJMenu;
+import org.jmol.console.KeyJMenuItem;
+import org.jmol.console.KeyJCheckBox;
+import org.jmol.console.KeyJCheckBoxMenuItem;
+import org.jmol.console.KeyJRadioButtonMenuItem;
 import org.jmol.i18n.GT;
-import org.jmol.util.Logger;
 
 class GuiMap {
 
-  Map<String, JComponent> map = new Hashtable<String, JComponent>();
+  Map<String, AbstractButton> map = new Hashtable<String, AbstractButton>();
   
-  Map<String, String> labels = null;
+  Map<String, String> labels;
   
   // keys here refer to keys listed in org.openscience.jmol.Properties.Jmol-resources.properties
   // actions are either defined there, as xxxScript=, or by 
@@ -203,7 +206,6 @@ class GuiMap {
         ._("Click atoms to measure distances"));
     labels.put("homeTip", GT._("Return molecule to home position."));
     labels.put("modelkitScriptTip", GT._("Open the model kit."));
-
     return labels;
   }
 
@@ -212,156 +214,34 @@ class GuiMap {
       labels = setupLabels();
     }
     String label = labels.get(key);
-    // Use the previous system as backup
-    if (label == null) {
-      Logger.warn("Missing i18n menu resource, trying old scheme for: " +key);
-      JmolResourceHandler.getStringX(key+"Label");
-    }
     return label;
   }
 
   JMenu newJMenu(String key) {
-    String label = getLabel(key);
-    return new KeyJMenu(key, getLabelWithoutMnemonic(label), getMnemonic(label));
+    return new KeyJMenu(key, getLabel(key), map);
   }
   
   JMenuItem newJMenuItem(String key) {
-    String label = getLabel(key);
-    return new KeyJMenuItem(key, getLabelWithoutMnemonic(label), getMnemonic(label));
+    return new KeyJMenuItem(key, getLabel(key), map);
   }
   JCheckBoxMenuItem newJCheckBoxMenuItem(String key, boolean isChecked) {
-    String label = getLabel(key);
-    return new KeyJCheckBoxMenuItem(key, getLabelWithoutMnemonic(label), getMnemonic(label), isChecked);
+    return new KeyJCheckBoxMenuItem(key, getLabel(key), map, isChecked);
   }
   JRadioButtonMenuItem newJRadioButtonMenuItem(String key) {
-    String label = getLabel(key);
-    return new KeyJRadioButtonMenuItem(key, getLabelWithoutMnemonic(label), getMnemonic(label));
+    return new KeyJRadioButtonMenuItem(key, getLabel(key), map);
   }
   JCheckBox newJCheckBox(String key, boolean isChecked) {
-    String label = getLabel(key);
-    return new KeyJCheckBox(key, getLabelWithoutMnemonic(label), getMnemonic(label), isChecked);
+    return new KeyJCheckBox(key, getLabel(key), map, isChecked);
   }
 
   Object get(String key) {
     return map.get(key);
   }
 
-  static String getKey(Object obj) {
-    return (((GetKey)obj).getKey());
-  }
-
-  private static String getLabelWithoutMnemonic(String label) {
-    if (label == null) {
-      return null;
-    }
-    int index = label.indexOf('&');
-    if (index == -1) {
-      return label;
-    }
-    return label.substring(0, index) +
-      ((index < label.length() - 1) ? label.substring(index + 1) : "");
-  }
-  
-  private static char getMnemonic(String label) {
-    if (label == null) {
-      return ' ';
-    }
-    int index = label.indexOf('&');
-    if ((index == -1) || (index == label.length() - 1)){
-      return ' ';
-    }
-    return label.charAt(index + 1);
-  }
-  
   void setSelected(String key, boolean b) {
     ((AbstractButton)get(key)).setSelected(b);
   }
-/*
-  boolean isSelected(String key) {
-    return ((AbstractButton)get(key)).isSelected();
-  }
-*/
 
-  interface GetKey {
-    public String getKey();
-  }
 
-  class KeyJMenu extends JMenu implements GetKey {
-    String key;
-    KeyJMenu(String key, String label, char mnemonic) {
-      super(label);
-      if (mnemonic != ' ') {
-          setMnemonic(mnemonic);
-      }
-      this.key = key;
-      map.put(key, this);
-    }
-    public String getKey() {
-      return key;
-    }
-  }
-
-  class KeyJMenuItem extends JMenuItem implements GetKey {
-    String key;
-    KeyJMenuItem(String key, String label, char mnemonic) {
-      super(label);
-      if (mnemonic != ' ') {
-          setMnemonic(mnemonic);
-      }
-      this.key = key;
-      map.put(key, this);
-    }
-    public String getKey() {
-      return key;
-    }
-  }
-
-  class KeyJCheckBoxMenuItem
-    extends JCheckBoxMenuItem implements GetKey {
-    String key;
-    KeyJCheckBoxMenuItem(String key, String label, char mnemonic, boolean isChecked) {
-      super(label, isChecked);
-      if (mnemonic != ' ') {
-          setMnemonic(mnemonic);
-      }
-      this.key = key;
-      map.put(key, this);
-    }
-    public String getKey() {
-      return key;
-    }
-  }
-
-  class KeyJRadioButtonMenuItem
-    extends JRadioButtonMenuItem implements GetKey {
-    String key;
-    KeyJRadioButtonMenuItem(String key, String label, char mnemonic) {
-      super(label);
-      if (mnemonic != ' ') {
-          setMnemonic(mnemonic);
-      }
-      this.key = key;
-      map.put(key, this);
-    }
-    public String getKey() {
-      return key;
-    }
-  }
-
-  class KeyJCheckBox
-    extends JCheckBox implements GetKey {
-    String key;
-    KeyJCheckBox(String key, String label, char mnemonic, boolean isChecked) {
-      super(label, isChecked);
-      if (mnemonic != ' ') {
-          setMnemonic(mnemonic);
-      }
-      this.key = key;
-      map.put(key, this);
-    }
-    public String getKey() {
-      return key;
-    }
-  }
 }
 

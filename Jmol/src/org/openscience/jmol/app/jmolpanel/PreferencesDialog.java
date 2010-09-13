@@ -24,6 +24,7 @@
 package org.openscience.jmol.app.jmolpanel;
 
 import org.jmol.api.*;
+import org.jmol.console.KeyJMenuItem;
 import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
 import org.openscience.jmol.app.jmolpanel.GuiMap;
@@ -679,7 +680,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     public void itemStateChanged(ItemEvent e) {
 
       JCheckBox cb = (JCheckBox) e.getSource();
-      String key = GuiMap.getKey(cb);
+      String key = KeyJMenuItem.getKey(cb);
       boolean isSelected = cb.isSelected();
       String strSelected = isSelected ? "true" : "false";
       if (key.equals("Prefs.showHydrogens")) {

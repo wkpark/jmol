@@ -311,5 +311,6 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
     // application-dependent option
   }
 
-
+  /////////////// Keyed menu items for on-the-fly language switching
+  
 }

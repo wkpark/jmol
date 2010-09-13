@@ -285,23 +285,21 @@ public class JmolPanel extends JPanel implements SplashInterface {
 
     if (jmolApp.haveConsole) {
       // Adding console frame to grab System.out & System.err
-      jmol.consoleframe = new JFrame(GT._("Jmol Console"));
+      jmol.consoleframe = new JFrame(GT._("Jmol Java Console"));
       jmol.consoleframe.setIconImage(jmol.frame.getIconImage());
       try {
         final ConsoleTextArea consoleTextArea = new ConsoleTextArea(true);
         consoleTextArea.setFont(java.awt.Font.decode("monospaced"));
         jmol.consoleframe.getContentPane().add(new JScrollPane(consoleTextArea),
             java.awt.BorderLayout.CENTER);
-        if (Boolean.getBoolean("clearConsoleButton")) {
           JButton buttonClear = new JButton(GT._("Clear"));
           buttonClear.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-              consoleTextArea.setText("");
-            }
+          public void actionPerformed(ActionEvent e) {
+            consoleTextArea.setText("");
+          }
           });
           jmol.consoleframe.getContentPane().add(buttonClear,
               java.awt.BorderLayout.SOUTH);
-        }
       } catch (IOException e) {
         JTextArea errorTextArea = new JTextArea();
         errorTextArea.setFont(java.awt.Font.decode("monospaced"));

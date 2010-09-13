@@ -23,26 +23,71 @@
  */
 package org.openscience.jmol.app.jmolpanel;
 
-import org.jmol.api.*;
+import org.jmol.api.JmolAdapter;
+import org.jmol.api.JmolViewer;
 import org.jmol.export.JmolFileDropper;
 import org.jmol.export.dialog.Dialog;
 import org.jmol.export.history.HistoryFile;
 import org.jmol.export.image.ImageCreator;
 import org.jmol.i18n.GT;
-import org.jmol.util.*;
+import org.jmol.util.Logger;
+import org.jmol.util.Parser;
 import org.jmol.viewer.JmolConstants;
-import org.openscience.jmol.app.*;
+import org.openscience.jmol.app.Jmol;
+import org.openscience.jmol.app.JmolApp;
+import org.openscience.jmol.app.SplashInterface;
 import org.openscience.jmol.app.webexport.WebExport;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.print.*;
-import java.beans.*;
-import java.io.*;
-import java.util.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.StringTokenizer;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.AbstractButton;
+import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 
 public class JmolPanel extends JPanel implements SplashInterface {
 
@@ -65,7 +110,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
   private ExecuteScriptAction executeScriptAction;
   protected JFrame frame;
 
-  // private CDKPluginManager pluginManager;
+  protected // private CDKPluginManager pluginManager;
 
   GuiMap guimap = new GuiMap();
 
@@ -153,10 +198,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
     
     if (!jmolApp.haveDisplay)
       return;
-    say(GT._("Initializing Preferences..."));
-    preferencesDialog = new PreferencesDialog(this, frame, guimap, viewer);
-    say(GT._("Initializing Recent Files..."));
-    recentFiles = new RecentFilesDialog(frame);
+    getDialogs();
     say(GT._("Initializing Script Window..."));
     viewer.getProperty("DATA_API", "getAppConsole", Boolean.TRUE);
 
@@ -259,6 +301,18 @@ public class JmolPanel extends JPanel implements SplashInterface {
     say(GT._("Launching main frame..."));
   }
 
+  private void getDialogs() {
+    say(GT._("Initializing Preferences..."));
+    preferencesDialog = new PreferencesDialog(this, frame, guimap, viewer);
+    say(GT._("Initializing Recent Files..."));
+    recentFiles = new RecentFilesDialog(frame);
+    if (jmolApp.haveDisplay) {
+      if (display.measurementTable != null)
+        display.measurementTable.dispose();
+      display.measurementTable = new MeasurementTable(viewer, frame);
+    }
+  }
+
   protected static void startJmol(JmolApp jmolApp) {
     
     Dialog.setupUIManager();
@@ -292,7 +346,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
         consoleTextArea.setFont(java.awt.Font.decode("monospaced"));
         jmol.consoleframe.getContentPane().add(new JScrollPane(consoleTextArea),
             java.awt.BorderLayout.CENTER);
-          JButton buttonClear = new JButton(GT._("Clear"));
+          JButton buttonClear = jmol.guimap.newJButton("JavaConsole.Clear");
           buttonClear.addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent e) {
             consoleTextArea.setText("");
@@ -1361,5 +1415,22 @@ public class JmolPanel extends JPanel implements SplashInterface {
     toolbar.setPreferredSize(d);
     getFrame().pack();
   }
+
+  void updateLabels() {
+    if (atomSetChooser != null) {
+      atomSetChooser.dispose();
+      atomSetChooser = null;
+    }
+    if (gaussianDialog != null) {
+      gaussianDialog.dispose();
+      gaussianDialog = null;
+    }
+    boolean doTranslate = GT.getDoTranslate();
+    GT.setDoTranslate(true);
+    getDialogs();
+    GT.setDoTranslate(doTranslate);
+    guimap.updateLabels();
+  }
+  
 
 }

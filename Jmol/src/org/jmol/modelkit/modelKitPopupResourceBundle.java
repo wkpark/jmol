@@ -69,8 +69,7 @@ class ModelKitPopupResourceBundle extends PopupResource {
   protected String[] getWordContents() {
     
     boolean wasTranslating = GT.getDoTranslate();
-    if (!wasTranslating)
-      GT.setDoTranslate(true);
+    GT.setDoTranslate(true);
     String[] words = new String[] {
         "atomMenu", "<atoms.png>",//GT._("atoms"),
         "moreAtomMenu", "<dotdotdot.png>",//GT._("more..."),
@@ -113,8 +112,7 @@ class ModelKitPopupResourceBundle extends PopupResource {
         "exit", GT._("exit modelkit mode"),
     };
  
-    if (!wasTranslating)
-      GT.setDoTranslate(wasTranslating);
+    GT.setDoTranslate(wasTranslating);
 
     return words;
   }

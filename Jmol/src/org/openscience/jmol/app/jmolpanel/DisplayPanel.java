@@ -49,6 +49,7 @@ public class DisplayPanel extends JPanel
   Point border;
   boolean haveBorder;
   MeasurementTable measurementTable;
+  JmolPanel jmolPanel;
 
   private JFrame frame;
   
@@ -57,6 +58,7 @@ public class DisplayPanel extends JPanel
   }
   
   DisplayPanel(JmolPanel jmol) {
+    jmolPanel = jmol;
     frame = jmol.frame;
     status = jmol.status;
     guimap = jmol.guimap;
@@ -75,11 +77,10 @@ public class DisplayPanel extends JPanel
 
   void setViewer(JmolViewer viewer) {
     this.viewer = viewer;
-    if (haveDisplay)
-      measurementTable = new MeasurementTable(viewer, frame);
     viewer.setScreenDimension(haveDisplay? getSize(dimSize) : startupDimension);
   }
 
+ 
   // for now, default to true
   private boolean showPaintTime = true;
 
@@ -396,6 +397,7 @@ public class DisplayPanel extends JPanel
       status.setStatus(3, viewer.getParameter("_memory")+" Mb; " + fmt(timeLast) + "/" + timeAverage + " ms");
     }
   }
+
 }
 
 

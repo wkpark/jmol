@@ -53,7 +53,8 @@ public class JmolPopup extends SimplePopup {
   final private static int MAX_ITEMS = 25;
   final private static int TITLE_MAX_WIDTH = 20;
 
-  static public JmolPopup newJmolPopup(JmolViewer viewer, boolean doTranslate, String menu, boolean asPopup) {
+  static public JmolPopup newJmolPopup(JmolViewer viewer, boolean doTranslate,
+                                       String menu, boolean asPopup) {
     strMenuStructure = menu;
     GT.setDoTranslate(true);
     JmolPopup popup;
@@ -61,15 +62,15 @@ public class JmolPopup extends SimplePopup {
       popup = new JmolPopup(viewer, asPopup);
     } catch (Exception e) {
       Logger.error("JmolPopup not loaded");
-      GT.setDoTranslate(doTranslate);
-      return null;
+      popup = null;
     }
-    try {
-      popup.updateComputedMenus();
-    } catch (NullPointerException e) {
-      // ignore -- the frame just wasn't ready yet;
-      // updateComputedMenus() will be called again when the frame is ready; 
-    }
+    if (popup != null)
+      try {
+        popup.updateComputedMenus();
+      } catch (NullPointerException e) {
+        // ignore -- the frame just wasn't ready yet;
+        // updateComputedMenus() will be called again when the frame is ready; 
+      }
     GT.setDoTranslate(doTranslate);
     return popup;
   }

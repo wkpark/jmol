@@ -154,7 +154,7 @@ class StatusListener implements JmolStatusListener {
       return;
     }
     // cases that fail to return are sent to the console for processing
-    JmolStatusListener appConsole = (JmolStatusListener) viewer
+    JmolCallbackListener appConsole = (JmolCallbackListener) viewer
         .getProperty("DATA_API", "getAppConsole", null);
     if (appConsole != null)
       appConsole.notifyCallback(type, data);
@@ -177,11 +177,11 @@ class StatusListener implements JmolStatusListener {
         WebExport.dispose();
         jmol.createWebExport();
       }
-      jmol.setupNewFrame(viewer.getStateInfo());
       AppConsole appConsole = (AppConsole) viewer.getProperty("DATA_API",
           "getAppConsole", null);
       if (appConsole != null)
         appConsole.sendConsoleEcho(null);
+      display.jmolPanel.updateLabels();
       return;
     }
   }

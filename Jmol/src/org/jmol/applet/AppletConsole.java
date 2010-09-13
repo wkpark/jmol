@@ -37,10 +37,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
-import java.util.Hashtable;
-import java.util.Map;
 
-import javax.swing.AbstractButton;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -108,22 +105,19 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   //  System.out.println("Console " + this + " finalize");
   //}
 
-  protected Map<String, AbstractButton> menuMap = new Hashtable<String, AbstractButton>();
-  
   protected final JTextArea input = new ControlEnterTextArea();
   private JButton clearOutButton, clearInButton, loadButton;
   private final JTextPane output = new JTextPane();
   private final Document outputDocument = output.getDocument();
   private final SimpleAttributeSet attributesCommand = new SimpleAttributeSet();
-  private String defaultMessage;
 
   
   @Override
   public void sendConsoleEcho(String strEcho) {
     if (strEcho == null) {
-      // null here means "display default message"
-      labels = null;
-      setLabels();
+      // null here means new language
+      updateLabels();
+      output(null);
       strEcho = defaultMessage;
     }
     output(strEcho);
@@ -140,8 +134,6 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   public void zap() {
   }
 
-  private JLabel label1;
-  
   private void set() {
     //Logger.debug("Console constructor");
     setLabels();
@@ -191,32 +183,41 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
 
   }
 
-  private JButton setButton(JButton button, String text) {
-    if (button == null) {
-      button = new JButton();
-      button.addActionListener(this);
-    }
-    button.setText(getLabel(text));
-    return button;
-  }
-
   private void setLabels() {
     boolean doTranslate = GT.getDoTranslate();
     GT.setDoTranslate(true);
-    editButton = setButton(editButton, "Editor");
-    stateButton = setButton(stateButton, "State");
-    runButton = setButton(runButton, "Run");
-    clearOutButton = setButton(clearOutButton, "Clear Output");
-    clearInButton = setButton(clearInButton, "Clear Input");
-    historyButton = setButton(historyButton, "History");
-    loadButton = setButton(loadButton, "Load");
-    if (label1 == null)
-      label1 = new JLabel("", SwingConstants.CENTER);
-    label1.setText(getLabel("label1"));
-    setTitle();
+    editButton = setButton("Editor");
+    stateButton = setButton("State");
+    runButton = setButton("Run");
+    clearOutButton = setButton("Clear Output");
+    clearInButton = setButton("Clear Input");
+    historyButton = setButton("History");
+    loadButton = setButton("Load");
+    label1 = new JLabel(getLabel("label1"), SwingConstants.CENTER);
     defaultMessage = getLabel("default");
-    KeyJMenuItem.setLabels(menuMap, labels);
+    setTitle();
     GT.setDoTranslate(doTranslate);
+  }
+
+  @Override
+  protected void setupLabels() {
+    labels.put("help", GT._("&Help"));
+    labels.put("search", GT._("&Search..."));
+    labels.put("commands", GT._("&Commands"));
+    labels.put("functions", GT._("Math &Functions"));
+    labels.put("parameters", GT._("Set &Parameters"));
+    labels.put("more", GT._("&More"));
+    labels.put("Editor", GT._("Editor"));
+    labels.put("State", GT._("State"));
+    labels.put("Run", GT._("Run"));
+    labels.put("Clear Output", GT._("Clear Output"));
+    labels.put("Clear Input", GT._("Clear Input"));
+    labels.put("History", GT._("History"));
+    labels.put("Load", GT._("Load"));
+    labels.put("label1", GT
+        ._("press CTRL-ENTER for new line or paste model data and press Load"));
+    labels.put("default",
+        GT._("Messages will appear here. Enter commands in the box below. Click the console Help menu item for on-line help, which will appear in a new browser window."));
   }
 
   protected JMenuBar createMenubar() {
@@ -437,29 +438,6 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   @Override
   public void windowClosing(WindowEvent we) {
     destroyConsole();
-  }
-
-  /// Graphical User Interface for applet ///
-
-  @Override
-  protected void setupLabels() {
-    labels.put("help", GT._("&Help"));
-    labels.put("search", GT._("&Search..."));
-    labels.put("commands", GT._("&Commands"));
-    labels.put("functions", GT._("Math &Functions"));
-    labels.put("parameters", GT._("Set &Parameters"));
-    labels.put("more", GT._("&More"));
-    labels.put("Editor", GT._("Editor"));
-    labels.put("State", GT._("State"));
-    labels.put("Run", GT._("Run"));
-    labels.put("Clear Output", GT._("Clear Output"));
-    labels.put("Clear Input", GT._("Clear Input"));
-    labels.put("History", GT._("History"));
-    labels.put("Load", GT._("Load"));
-    labels.put("label1", GT
-        ._("press CTRL-ENTER for new line or paste model data and press Load"));
-    labels.put("default",
-        GT._("Messages will appear here. Enter commands in the box below. Click the console Help menu item for on-line help, which will appear in a new browser window."));
   }
 
 }

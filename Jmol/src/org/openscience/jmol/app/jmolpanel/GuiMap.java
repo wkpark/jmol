@@ -26,6 +26,7 @@ package org.openscience.jmol.app.jmolpanel;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javax.swing.JButton;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.AbstractButton;
@@ -50,8 +51,8 @@ class GuiMap {
   // actions are either defined there, as xxxScript=, or by 
   // Actions created in DisplayPanel.java
   
-  private Map<String, String> setupLabels() {
-    Map<String, String> labels = new Hashtable<String, String>();
+  private void setupLabels() {
+    labels = new Hashtable<String, String>();
     labels.put("macros", GT._("&Macros"));
     labels.put("file", GT._("&File"));
     labels.put("newwin", GT._("&New"));
@@ -206,13 +207,12 @@ class GuiMap {
         ._("Click atoms to measure distances"));
     labels.put("homeTip", GT._("Return molecule to home position."));
     labels.put("modelkitScriptTip", GT._("Open the model kit."));
-    return labels;
+    labels.put("JavaConsole.clear", GT._("Clear"));
   }
 
   String getLabel(String key) {
-    if (labels == null) {
-      labels = setupLabels();
-    }
+    if (labels == null)
+      setupLabels();
     String label = labels.get(key);
     return label;
   }
@@ -233,6 +233,11 @@ class GuiMap {
   JCheckBox newJCheckBox(String key, boolean isChecked) {
     return new KeyJCheckBox(key, getLabel(key), map, isChecked);
   }
+  JButton newJButton(String key) {
+    JButton jb = new JButton(getLabel(key));
+    map.put(key, jb);
+    return jb;
+  }
 
   Object get(String key) {
     return map.get(key);
@@ -240,6 +245,14 @@ class GuiMap {
 
   void setSelected(String key, boolean b) {
     ((AbstractButton)get(key)).setSelected(b);
+  }
+
+  public void updateLabels() {
+    boolean doTranslate = GT.getDoTranslate();
+    GT.setDoTranslate(true);
+    setupLabels();
+    KeyJMenuItem.setAbstractButtonLabels(map, labels);
+    GT.setDoTranslate(doTranslate);
   }
 
 

@@ -47,7 +47,7 @@ public class KeyJMenuItem extends JMenuItem implements GetKey {
     map(this, key, label, menuMap);
   }
   
-  public static void setLabels(Map<String, AbstractButton> menuMap,
+  public static void setAbstractButtonLabels(Map<String, AbstractButton> menuMap,
                                Map<String, String> labels) {
     Iterator<String> e = menuMap.keySet().iterator();
     while (e.hasNext()) {

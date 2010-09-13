@@ -32,10 +32,10 @@ import java.awt.event.KeyEvent;
 import java.awt.event.ActionEvent;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -118,7 +118,7 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
 
   protected ConsoleTextPane console;
   protected JButton stepButton;
-  protected Map<String, JButton> buttons = new HashMap<String, JButton>();
+  protected Map<String, AbstractButton> buttons = new HashMap<String, AbstractButton>();
 
   private JButton varButton, haltButton, closeButton, clearButton;
   private JButton helpButton, undoButton, redoButton, checkButton, topButton;
@@ -133,13 +133,10 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
 
   @Override
   public void sendConsoleEcho(String strEcho) {
-    if (strEcho == null) {
-      // new language
-      labels = null;
-      setLabels();
-    } else {
+    if (strEcho == null)  // new language
+      updateLabels();
+    else
       console.outputEcho(strEcho);
-    }
     setError(false);
   }
 
@@ -158,6 +155,13 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
   }
 
   @Override
+  protected JButton setButton(String label) {
+    JButton b = super.setButton(label);
+    buttonPanel.add(b);
+    return b;
+  }
+
+  @Override
   protected void setupLabels() {
     labels.put("Check", GT._("Check"));
     labels.put("Clear", GT._("Clear"));
@@ -172,16 +176,6 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
     labels.put("Undo", GT._("Undo"));
     labels.put("Redo", GT._("Redo"));
     labels.put("Variables", GT._("Variables"));
-  }
-
-  private JButton setButton(JButton b, String s) {
-    if (b == null) {
-      b = new JButton(getLabel(s));
-      b.addActionListener(this);
-      buttons.put(s, b);
-    }
-    buttonPanel.add(b);
-    return b;
   }
 
   private void layoutWindow(Container container, String enabledButtons) {
@@ -234,54 +228,43 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
     		"UndoRedo  " +
     		"Variables ").indexOf(name)) {
     case 0:
-       checkButton = setButton(checkButton,"Check");
+       checkButton = setButton("Check");
       break;
     case 10:
-       clearButton = setButton(clearButton,"Clear");
+       clearButton = setButton("Clear");
       break;
     case 20:
-       closeButton = setButton(closeButton,"Close");
+       closeButton = setButton("Close");
       break;
     case 30:
-       editButton = setButton(editButton,"Editor");
+       editButton = setButton("Editor");
       break;
     case 40:
-       haltButton = setButton(haltButton, "Halt");
+       haltButton = setButton("Halt");
      break;
     case 50:
-       helpButton = setButton(helpButton,"Help");
+       helpButton = setButton("Help");
       break;
     case 60:
-       historyButton = setButton(historyButton,"History");
+       historyButton = setButton("History");
       break;
     case 70:
-       stateButton = setButton(stateButton,"State");
+       stateButton = setButton("State");
       break;
     case 80:
-       stepButton = setButton(stepButton,"Step");
+       stepButton = setButton("Step");
       break;
     case 90:
-       topButton = setButton(topButton,"Top");
+       topButton = setButton("Top");
       break;
     case 100:
-       undoButton = setButton(undoButton,"Undo");
-       redoButton = setButton(redoButton,"Redo");
+       undoButton = setButton("Undo");
+       redoButton = setButton("Redo");
       break;
     case 110:
-       varButton = setButton(varButton, "Variables");
+       varButton = setButton("Variables");
       break;
     }
-  }
-
-  private void setLabels() {
-    boolean doTranslate = GT.getDoTranslate();
-    GT.setDoTranslate(true);
-    Iterator<String> e = buttons.keySet().iterator(); 
-    while (e.hasNext()) {
-      String label = e.next();
-      buttons.get(label).setText(getLabel(label));
-    }
-    GT.setDoTranslate(doTranslate);
   }
   
   boolean isError = false;

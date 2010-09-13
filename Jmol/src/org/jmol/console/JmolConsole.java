@@ -49,9 +49,11 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 public abstract class JmolConsole implements JmolCallbackListener, ActionListener, WindowListener {
 
@@ -63,6 +65,8 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
   protected Map<String, String> labels;
   
   abstract protected void setupLabels();
+  
+  protected Map<String, AbstractButton> menuMap = new Hashtable<String, AbstractButton>();
   
   public void dispose() {
     if (externalContainer instanceof Window)
@@ -195,6 +199,29 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
       button.setEnabled(TF);
   }
 
+  protected JButton setButton(String s) {
+    JButton b = new JButton(getLabel(s));
+    b.addActionListener(this);
+    menuMap.put(s, b);
+    return b;
+  }
+
+  protected String defaultMessage;
+  protected JLabel label1;
+  
+
+  protected void updateLabels() {
+    boolean doTranslate = GT.getDoTranslate();
+    labels = null;
+    GT.setDoTranslate(true);
+    defaultMessage = getLabel("default");
+    KeyJMenuItem.setAbstractButtonLabels(menuMap, labels);
+    setTitle();
+    if (label1 != null)
+      label1.setText(getLabel("label1"));
+    GT.setDoTranslate(doTranslate);
+  }
+
   public void actionPerformed(ActionEvent e) {
     Object source = e.getSource();
     if (source == runButton) {
@@ -311,8 +338,5 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
   public void setCallbackFunction(String callbackType, String callbackFunction) {
     // application-dependent option
   }
-
-
-  /////////////// Keyed menu items for on-the-fly language switching
   
 }

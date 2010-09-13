@@ -526,8 +526,7 @@ class MainPopupResourceBundle extends PopupResource {
   protected String[] getWordContents() {
     
     boolean wasTranslating = GT.getDoTranslate();
-    if (!wasTranslating)
-      GT.setDoTranslate(true);
+    GT.setDoTranslate(true);
     String[] words = new String[] {
         "modelSetMenu", GT._("No atoms loaded"),
         
@@ -939,9 +938,7 @@ class MainPopupResourceBundle extends PopupResource {
         "APPLETtranslationUrl", GT._("Translations")
     };
  
-    if (!wasTranslating)
-      GT.setDoTranslate(wasTranslating);
-
+    GT.setDoTranslate(wasTranslating);
     return words;
   }
   

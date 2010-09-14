@@ -71,7 +71,6 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
    * general entry point
    * 
    * @param viewer
-   * @param display             parent from of viewer
    * @param externalContainer   a JFrame or JPanel or JDialog
    * @param enabledButtons
    */
@@ -104,7 +103,6 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
    * don't delete! used by Viewer after it gets the class by name
    * 
    * @param viewer
-   * @param display
    * @return         AppConsole or AppletConsole
    */
   public JmolAppConsoleInterface getAppConsole(JmolViewer viewer) {

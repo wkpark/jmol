@@ -75,6 +75,10 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
       externalContainer.setVisible(false);
   }
 
+  protected Container getPane() {
+    return (externalContainer instanceof JFrame ? ((JFrame) externalContainer)
+        .getContentPane() : externalContainer);
+  }
   protected String getLabel(String key) {
     if (labels == null) {
       labels = new Hashtable<String, String>();

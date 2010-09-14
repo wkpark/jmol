@@ -82,16 +82,15 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
     viewerFrame = (display instanceof DisplayPanel ? ((DisplayPanel) display)
         .getFrame() : display instanceof JFrame ? (JFrame) display : null);
     if (externalContainer == null) {
-      this.externalContainer = jcd = new JDialog(viewerFrame, null, false);
+      jcd = new JDialog(viewerFrame, null, false);
       jcd.setSize(645, 400);
-      layoutWindow(jcd.getContentPane(), enabledButtons);
       jcd.setLocationRelativeTo(viewerFrame);
+      this.externalContainer = jcd;
     } else {
       this.externalContainer = externalContainer;
-      layoutWindow(externalContainer, enabledButtons);
       viewer.setConsole(this);
     }
-    setTitle();
+    layoutWindow(enabledButtons);
   }
 
   public AppConsole() {
@@ -178,7 +177,8 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
     labels.put("Variables", GT._("Variables"));
   }
 
-  private void layoutWindow(Container container, String enabledButtons) {
+  private void layoutWindow(String enabledButtons) {
+    setTitle();
     console = new ConsoleTextPane(this);
     console.setPrompt();
     console.setDragEnabled(true);
@@ -206,7 +206,7 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
     buttonPanelWrapper.setPreferredSize(new Dimension(60, 60));
     spane.setDividerSize(0);
     spane.setResizeWeight(0.95);
-    container.add(spane);
+    getPane().add(spane);
     //    container.setLayout(new BorderLayout());
     //  container.add(consolePane,BorderLayout.CENTER);
     //container.add(buttonPanelWrapper,BorderLayout.SOUTH);

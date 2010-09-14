@@ -78,11 +78,12 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
     if (externalContainer == null) {
       JFrame jf = new JFrame();
       jf.setSize(600, 400);
-      externalContainer = jf;
-      jf.setTitle("testing123");
+      this.externalContainer = jf;
+    } else {
+      this.externalContainer = externalContainer;      
+      viewer.setConsole(this);
     }
-    this.externalContainer = externalContainer;      
-    set();
+    layoutWindow();
     output(defaultMessage);
   }
 
@@ -134,7 +135,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
   public void zap() {
   }
 
-  private void set() {
+  private void layoutWindow() {
     //Logger.debug("Console constructor");
     setLabels();
     setupInput();
@@ -145,8 +146,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
 
     JScrollPane jscrollOutput = new JScrollPane(output);
     jscrollOutput.setMinimumSize(new Dimension(2, 100));
-    Container c = (externalContainer instanceof JFrame ? ((JFrame) externalContainer)
-        .getContentPane() : externalContainer);
+    Container c = getPane();
     c.setLayout(new BoxLayout(c, BoxLayout.Y_AXIS));
 
     //System.out.println("Console " + this + " set(2)");

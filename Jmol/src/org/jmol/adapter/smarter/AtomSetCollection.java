@@ -710,7 +710,7 @@ public class AtomSetCollection {
     if (needEllipsoids)
       for (int i = iAtomFirst; i < atomCount; i++)
         atoms[i].ellipsoid = symmetry.getEllipsoid(atoms[i].anisoBorU);
-    
+
     bondCount0 = bondCount;
 
     symmetry
@@ -719,29 +719,34 @@ public class AtomSetCollection {
     minXYZ = new Point3i();
     maxXYZ = new Point3i(maxX, maxY, maxZ);
     getSymmetry().setMinMaxLatticeParameters(minXYZ, maxXYZ);
-    int dims = (int) getSymmetry().getUnitCellInfo(
-        JmolConstants.INFO_DIMENSIONS);
-    if (doPackUnitCell) {
-      minXYZ.x--;
-      maxXYZ.x++;
-      if (dims > 1) { // not polymer
+    if (doPackUnitCell || symmetryRange != 0 && maxXYZ.x - minXYZ.x == 1
+        && maxXYZ.y - minXYZ.y == 1 && maxXYZ.z - minXYZ.z == 1)
+      switch ((int) getSymmetry()
+          .getUnitCellInfo(JmolConstants.INFO_DIMENSIONS)) {
+      case 3:
+        // standard
+        minXYZ.z--;
+        maxXYZ.z++;
+        // fall through;
+      case 2:
+        // slab or standard
         minXYZ.y--;
         maxXYZ.y++;
-        if (dims > 2) { // not polymer or slab
-          minXYZ.z--;
-          maxXYZ.z++;
-        }
+        // fall through;
+      case 1:
+        // slab, polymer, or standard
+        minXYZ.x--;
+        maxXYZ.x++;
       }
-    }
     int nCells = (maxXYZ.x - minXYZ.x) * (maxXYZ.y - minXYZ.y)
         * (maxXYZ.z - minXYZ.z);
     int cartesianCount = (checkSpecial ? noSymmetryCount * operationCount
         * nCells : symmetryRange > 0 ? noSymmetryCount * operationCount // checking
-                                                                        // against
-                                                                        // {1 1
-                                                                        // 1}
-    : symmetryRange < 0 ? 1 // checking against symop=1555 set; just a box
-        : 1 // not checking
+    // against
+        // {1 1
+        // 1}
+        : symmetryRange < 0 ? 1 // checking against symop=1555 set; just a box
+            : 1 // not checking
     );
     cartesians = new Point3f[cartesianCount];
     for (int i = 0; i < noSymmetryCount; i++)
@@ -822,7 +827,8 @@ public class AtomSetCollection {
       appendAtomProperties(iCell);
     setSymmetryOps();
     setAtomSetAuxiliaryInfo("presymmetryAtomIndex", Integer.valueOf(iAtomFirst));
-    setAtomSetAuxiliaryInfo("presymmetryAtomCount", Integer.valueOf(noSymmetryCount));
+    setAtomSetAuxiliaryInfo("presymmetryAtomCount", Integer
+        .valueOf(noSymmetryCount));
     setAtomSetAuxiliaryInfo("latticeDesignation", symmetry
         .getLatticeDesignation());
     setAtomSetAuxiliaryInfo("unitCellRange", unitCells);

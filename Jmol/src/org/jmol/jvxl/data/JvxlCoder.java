@@ -509,6 +509,8 @@ public class JvxlCoder {
     float valueRed = jvxlData.valueMappedToRed;
     int vertexCount = (jvxlData.saveVertexCount > 0 ? jvxlData.saveVertexCount
         : jvxlData.vertexCount);
+    if(vertexCount >= vertexValues.length)
+      System.out.println("JVXLCODER ERROR");
     float min = jvxlData.mappedDataMin;
     float max = jvxlData.mappedDataMax;
     StringBuffer list1 = new StringBuffer();

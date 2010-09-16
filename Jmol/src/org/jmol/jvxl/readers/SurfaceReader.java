@@ -386,6 +386,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     jvxlData.jvxlDataIsColorMapped = jvxlDataIsColorMapped;
     jvxlData.isXLowToHigh = isXLowToHigh;
     jvxlData.vertexDataOnly = vertexDataOnly;
+    jvxlData.saveVertexCount = 0;
 
     if (jvxlDataIsColorMapped) {
       if (meshDataServer != null) {

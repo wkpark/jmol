@@ -644,8 +644,6 @@ public abstract class SurfaceReader implements VertexDataServer {
   }
 
   void applyColorScale() {
-    if (jvxlData.wasJvxl)
-      return;
     colorFractionBase = jvxlData.colorFractionBase = JvxlCoder.defaultColorFractionBase;
     colorFractionRange = jvxlData.colorFractionRange = JvxlCoder.defaultColorFractionRange;
     if (params.colorPhase == 0)

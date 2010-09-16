@@ -651,7 +651,7 @@ public final class ModelLoader extends ModelSet {
         models[iLast].firstAtomIndex = i;
         int vdwtype = getDefaultVdwType(iLast);
         if (vdwtype != vdwtypeLast) {
-          Logger.info("Default Van der Waal type for model" + " set to " + JmolConstants.getVdwLabel(vdwtype));
+          Logger.info("Default Van der Waals type for model" + " set to " + JmolConstants.getVdwLabel(vdwtype));
           vdwtypeLast = vdwtype;
         }
       }

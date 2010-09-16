@@ -352,13 +352,13 @@ public class SmarterJmolAdapter extends JmolAdapter {
           && (selectedFile <= 0 || vCollections.size() < selectedFile)) {
         if (ze.isDirectory())
           continue;
-        byte[] bytes = ZipUtil.getZipEntryAsBytes(zis);
         String thisEntry = ze.getName();
         if (subFileName != null && !thisEntry.equals(subFileName))
           continue;
         if (ZipUtil.isJmolManifest(thisEntry) || haveManifest
             && exceptFiles == manifest.indexOf("|" + thisEntry + "|") >= 0)
           continue;
+        byte[] bytes = ZipUtil.getZipEntryAsBytes(zis);
         if (ZipUtil.isZipFile(bytes)) {
           BufferedInputStream bis = new BufferedInputStream(
               new ByteArrayInputStream(bytes));

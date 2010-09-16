@@ -641,7 +641,8 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
       int kcode = ke.getKeyCode();
       int kid = ke.getID();
       if (kid == KeyEvent.KEY_PRESSED) {
-        if (kcode == KeyEvent.VK_TAB) {
+        switch (kcode) {
+        case KeyEvent.VK_TAB:
           ke.consume();
           if (consoleDoc.isAtEnd()) {
             String cmd = completeCommand(consoleDoc.getCommandString());
@@ -655,6 +656,15 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
             //checkCommand();
             return;
           }
+          break;
+        case KeyEvent.VK_ESCAPE:
+          ke.consume();
+          try {
+            consoleDoc.replaceCommand("", false);
+          } catch (BadLocationException e) {
+            //
+          }
+          break;
         }
         nTab = 0;
       }

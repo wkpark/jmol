@@ -77,31 +77,46 @@ import org.jmol.util.ArrayUtil;
   
   public final static int ROYGB = 0;
   public final static int BGYOR = 1;
-  public final static int RWB   = 2;
-  public final static int BWR   = 3;
-  public final static int LOW   = 4;
-  public final static int HIGH  = 5;
-  public final static int BW  = 6;
-  public final static int WB  = 7;
-  public final static int JMOL = 8;
-  public final static int RASMOL = 9;
-  public final static int SHAPELY = 10;
-  public final static int AMINO = 11;
+  public final static int JMOL = 2;
+  public final static int RASMOL = 3;
+  public final static int SHAPELY = 4;
+  public final static int AMINO = 5;
+  public final static int RWB   = 6;
+  public final static int BWR   = 7;
+  public final static int LOW   = 8;
+  public final static int HIGH  = 9;
+  public final static int BW  = 10;
+  public final static int WB  = 11;
   public final static int USER = -12;
   public final static int RESU = -13;
+  public final static int ALT = 14; // == 0
 
   private final static String[] colorSchemes = {
-    "roygb", "bgyor", "rwb", "bwr", "low", "high", "bw", "wb",  
+    "roygb", "bgyor", 
     BYELEMENT_JMOL, BYELEMENT_RASMOL, BYRESIDUE_SHAPELY, 
-    BYRESIDUE_AMINO, "user", "resu"};
+    BYRESIDUE_AMINO, 
+    "rwb", "bwr", "low", "high", "bw", "wb",
+    // custom
+    "user", "resu", 
+    // ALT_NAMES:
+    "rgb", "bgr", 
+    "jmol", "rasmol", BYRESIDUE_PREFIX 
+  };
 
   private final static int getSchemeIndex(String colorScheme) {
     for (int i = 0; i < colorSchemes.length; i++)
       if (colorSchemes[i].equalsIgnoreCase(colorScheme))
-        return (i < -USER ? i : -i);
+        return (i >= ALT ? i - ALT : i < -USER ? i : -i);
     return -1;
   }
 
+  private final static String fixName(String name) {
+    if (name.equalsIgnoreCase(BYELEMENT_PREFIX)) 
+        return BYELEMENT_JMOL;
+    int ipt = getSchemeIndex(name);
+    return (ipt >= 0 ? colorSchemes[ipt] : name.toLowerCase());
+  }
+  
   // these are only implemented in the MASTER colorEncoder
   private int[] paletteBW;
   private int[] paletteWB;
@@ -285,7 +300,7 @@ import org.jmol.util.ArrayUtil;
     // wasn't a definition. 
     
     colorScheme = fixName(colorScheme);
-    int ipt = getSchemeIndex(colorScheme) ;
+    int ipt = getSchemeIndex(colorScheme);
     if (schemes.containsKey(colorScheme)) {
       setThisScheme(colorScheme, schemes.get(colorScheme));
       return ipt; // -1 means custom -- use "thisScale", otherwise a scheme number
@@ -527,19 +542,6 @@ import org.jmol.util.ArrayUtil;
 
   // legitimate static methods:
   
-  private final static String fixName(String name) {
-    name = name.toLowerCase();
-    if (name.equals(BYELEMENT_PREFIX))
-      return BYELEMENT_JMOL;
-    if (name.equals("jmol"))
-      return BYELEMENT_JMOL;
-    if (name.equals("rasmol"))
-      return BYELEMENT_RASMOL;
-    if (name.equals(BYRESIDUE_PREFIX))
-      return BYRESIDUE_SHAPELY;
-    return name;  
-  }
-  
   public final static String getColorSchemeList(int[] scheme) {
     if (scheme == null)
       return "";
@@ -550,14 +552,15 @@ import org.jmol.util.ArrayUtil;
   }
 
   public final static synchronized int[] getRasmolScale() {
-    if (rasmolScale == null) {
-      int argb = JmolConstants.argbsCpkRasmol[0] | 0xFF000000;
-      for (int i = rasmolScale.length; --i >= 0; )
-        rasmolScale[i] = argb;
-      for (int i = JmolConstants.argbsCpkRasmol.length; --i >= 0; ) {
-        argb = JmolConstants.argbsCpkRasmol[i];
-        rasmolScale[argb >> 24] = argb | 0xFF000000;
-      }
+    if (rasmolScale != null)
+      return rasmolScale;
+    rasmolScale = new int[JmolConstants.argbsCpk.length];
+    int argb = JmolConstants.argbsCpkRasmol[0] | 0xFF000000;
+    for (int i = rasmolScale.length; --i >= 0;)
+      rasmolScale[i] = argb;
+    for (int i = JmolConstants.argbsCpkRasmol.length; --i >= 0;) {
+      argb = JmolConstants.argbsCpkRasmol[i];
+      rasmolScale[argb >> 24] = argb | 0xFF000000;
     }
     return rasmolScale;
   }

@@ -37,26 +37,28 @@ import org.jmol.viewer.JmolConstants;
 
 public class SticksRenderer extends ShapeRenderer {
 
-  protected boolean showMultipleBonds;
-  protected float multipleBondSpacing;
-  protected byte modeMultipleBond;
+  private boolean showMultipleBonds;
+  private float multipleBondSpacing;
+  private float multipleBondRadiusFactor;
+  private byte modeMultipleBond;
   //boolean showHydrogens;
-  protected byte endcaps;
+  private byte endcaps;
 
-  protected boolean ssbondsBackbone;
-  protected boolean hbondsBackbone;
-  protected boolean bondsBackbone;
-  protected boolean hbondsSolid;
+  private boolean ssbondsBackbone;
+  private boolean hbondsBackbone;
+  private boolean bondsBackbone;
+  private boolean hbondsSolid;
   
-  protected Atom atomA, atomB;
-  protected Bond bond;
-  int xA, yA, zA;
-  int xB, yB, zB;
-  int dx, dy;
-  int mag2d;
-  protected short colixA, colixB;
-  protected int width;
-  protected int bondOrder;
+  private Atom atomA, atomB;
+  private Bond bond;
+  private int xA, yA, zA;
+  private int xB, yB, zB;
+  private int dx, dy;
+  private int mag2d;
+  private short colixA, colixB;
+  private int width;
+  private boolean lineBond;
+  private int bondOrder;
   private boolean renderWireframe;
   private boolean isAntialiased;
   private boolean slabbing;
@@ -69,6 +71,7 @@ public class SticksRenderer extends ShapeRenderer {
     slabByAtom = viewer.getSlabByAtom();          
     endcaps = Graphics3D.ENDCAPS_SPHERICAL;
     multipleBondSpacing = viewer.getMultipleBondSpacing();
+    multipleBondRadiusFactor = viewer.getMultipleBondRadiusFactor();
     if (multipleBondSpacing > 0) {
       z = new Vector3f();
       x = new Vector3f();
@@ -94,8 +97,7 @@ public class SticksRenderer extends ShapeRenderer {
     }
   }
 
-  protected void renderBond() {
-    mad = bond.getMad();
+  private void renderBond() {
     atomA = bond.getAtom1();
     atomB = bond.getAtom2();
     int order = bond.getOrder() & ~JmolEdge.BOND_NEW;
@@ -151,6 +153,60 @@ public class SticksRenderer extends ShapeRenderer {
     zB = atomB.screenZ;
     if (zA == 1 || zB == 1)
       return;
+    
+    // set the rendered bond order
+    
+    bondOrder = order & ~JmolEdge.BOND_NEW;
+    if ((bondOrder & JmolEdge.BOND_PARTIAL_MASK) == 0) {
+      if ((bondOrder & JmolEdge.BOND_SULFUR_MASK) != 0)
+        bondOrder &= ~JmolEdge.BOND_SULFUR_MASK;
+      if ((bondOrder & JmolEdge.BOND_COVALENT_MASK) != 0) {
+        if (!showMultipleBonds
+            || modeMultipleBond == JmolConstants.MULTIBOND_NEVER
+            || (modeMultipleBond == JmolConstants.MULTIBOND_NOTSMALL && mad > JmolConstants.madMultipleBondSmallMaximum)) {
+          bondOrder = 1;
+        }
+      }
+    }
+    
+    // set the mask
+    
+    int mask = 0;
+    switch (bondOrder) {
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+      break;
+    case JmolEdge.BOND_ORDER_UNSPECIFIED:
+    case JmolEdge.BOND_AROMATIC_SINGLE:
+      bondOrder = 1;
+      mask = (order == JmolEdge.BOND_AROMATIC_SINGLE ? 0 : 1);
+      break;
+    case JmolEdge.BOND_AROMATIC:
+    case JmolEdge.BOND_AROMATIC_DOUBLE:
+      bondOrder = 2;
+      mask = (order == JmolEdge.BOND_AROMATIC ? getAromaticDottedBondMask()
+          : 0);
+      break;
+    default:
+      if ((bondOrder & JmolEdge.BOND_PARTIAL_MASK) != 0) {
+        bondOrder = JmolConstants.getPartialBondOrder(order);
+        mask = JmolConstants.getPartialBondDotted(order);
+      } else if ((bondOrder & JmolEdge.BOND_HYDROGEN_MASK) != 0) {
+        bondOrder = 1;
+        if (!hbondsSolid)
+          mask = -1;
+      } else if (bondOrder == JmolEdge.BOND_STRUT) {
+        bondOrder = 1;
+      }
+    }
+    
+    // set the diameter
+    
+    mad = bond.getMad();
+    if (multipleBondRadiusFactor > 0 && bondOrder > 1)
+      mad *= multipleBondRadiusFactor;
     dx = xB - xA;
     dy = yB - yA;
     width = viewer.scaleToScreen((zA + zB) / 2, mad);
@@ -161,69 +217,22 @@ public class SticksRenderer extends ShapeRenderer {
       width = 3;
       lineBond = false;
     }
-    bondOrder = getRenderBondOrder(order);
-    switch (bondOrder) {
-    case 1:
-    case 2:
-    case 3:
-    case 4:
-      drawBond(0);
+    
+    // draw the bond
+    
+    switch (mask) {
+    case -1:
+      renderHbondDashed();
       break;
-    case JmolEdge.BOND_ORDER_UNSPECIFIED:
-    case JmolEdge.BOND_AROMATIC_SINGLE:
-      bondOrder = 1;
-      drawBond(order == JmolEdge.BOND_AROMATIC_SINGLE ? 0 : 1);
-      break;
-    case JmolEdge.BOND_AROMATIC:
-    case JmolEdge.BOND_AROMATIC_DOUBLE:
-      bondOrder = 2;
-      drawBond(order == JmolEdge.BOND_AROMATIC ? getAromaticDottedBondMask()
-          : 0);
-      break;
-    //case JmolConstants.BOND_STEREO_NEAR:
-    //case JmolConstants.BOND_STEREO_FAR:
-      //renderTriangle(bond);
-      //break;
     default:
-      if ((bondOrder & JmolEdge.BOND_PARTIAL_MASK) != 0) {
-        bondOrder = JmolConstants.getPartialBondOrder(order);
-        drawBond(JmolConstants.getPartialBondDotted(order));
-      } else if ((bondOrder & JmolEdge.BOND_HYDROGEN_MASK) != 0) {
-        if (hbondsSolid) {
-          bondOrder = 1;
-          drawBond(0);
-        } else {
-          renderHbondDashed();
-        }
-        break;
-      } else if (bondOrder == JmolEdge.BOND_STRUT) {
-        bondOrder = 1;
-        drawBond(0);
-      }
+      drawBond(mask);
+      break;
     }
   }
     
-  int getRenderBondOrder(int order) {
-    
-    order &= ~JmolEdge.BOND_NEW; 
-    if ((order & JmolEdge.BOND_PARTIAL_MASK) != 0)
-      return order;
-    if ((order & JmolEdge.BOND_SULFUR_MASK) != 0)
-      order &= ~JmolEdge.BOND_SULFUR_MASK;
-    if ((order & JmolEdge.BOND_COVALENT_MASK) != 0) {
-      if (!showMultipleBonds ||
-          modeMultipleBond == JmolConstants.MULTIBOND_NEVER ||
-          (modeMultipleBond == JmolConstants.MULTIBOND_NOTSMALL &&
-           mad > JmolConstants.madMultipleBondSmallMaximum)) {
-        return 1;
-      }
-    }
-    return order;
-  }
-
-  Vector3f x, y, z;
-  Point3f p1, p2;
-  Point3i s1, s2;
+  private Vector3f x, y, z;
+  private Point3f p1, p2;
+  private Point3i s1, s2;
   
   private void drawBond(int dottedMask) {
     if (exportType == Graphics3D.EXPORT_CARTESIAN && bondOrder == 1) {
@@ -300,11 +309,9 @@ public class SticksRenderer extends ShapeRenderer {
     }
   }
 
-  private boolean lineBond;
+  private int xAxis1, yAxis1, xAxis2, yAxis2, dxStep, dyStep;
 
-  int xAxis1, yAxis1, xAxis2, yAxis2, dxStep, dyStep;
-
-  void resetAxisCoordinates() {
+  private void resetAxisCoordinates() {
     int space = mag2d >> 3;
     if (multipleBondSpacing != -1 && multipleBondSpacing < 0)
       space *= -multipleBondSpacing;
@@ -322,7 +329,7 @@ public class SticksRenderer extends ShapeRenderer {
     yAxis2 -= dyStep * f / 2;
   }
 
-  void stepAxisCoordinates() {
+  private void stepAxisCoordinates() {
     xAxis1 += dxStep; yAxis1 += dyStep;
     xAxis2 += dxStep; yAxis2 += dyStep;
   }
@@ -336,7 +343,7 @@ public class SticksRenderer extends ShapeRenderer {
     return ((dx * dyAC - dy * dxAC) < 0 ? 2 : 1);
   }
 
-  void drawDashed(int xA, int yA, int zA, int xB, int yB, int zB) {
+  private void drawDashed(int xA, int yA, int zA, int xB, int yB, int zB) {
     int dx = xB - xA;
     int dy = yB - yA;
     int dz = zB - zA;
@@ -355,7 +362,7 @@ public class SticksRenderer extends ShapeRenderer {
     }
   }
 
-  void renderHbondDashed() {
+  private void renderHbondDashed() {
     int dx = xB - xA;
     int dy = yB - yA;
     int dz = zB - zA;
@@ -375,10 +382,8 @@ public class SticksRenderer extends ShapeRenderer {
                          xS, yS, zS, xE, yE, zE);
     }
   }
-  
-  ////////////////////////
-  
-  protected void fillCylinder(short colixA, short colixB, byte endcaps,
+    
+  private void fillCylinder(short colixA, short colixB, byte endcaps,
                               int diameter, int xA, int yA, int zA, int xB,
                               int yB, int zB) {
     if (lineBond)

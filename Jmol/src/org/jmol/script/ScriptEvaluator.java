@@ -7452,6 +7452,8 @@ public class ScriptEvaluator {
               checkLength(index);
               isColor = false;
               ColorEncoder ce = viewer.getColorEncoder(scheme);
+              if (ce == null)
+                return;
               ce.isTranslucent = (isTranslucent && translucentLevel == Float.MAX_VALUE);
               ce.setRange(min, max, min > max);
               if (max == Float.MAX_VALUE)
@@ -10446,7 +10448,7 @@ public class ScriptEvaluator {
     case Token.jmol:
       value = 1;
       type = RadiusData.TYPE_FACTOR;
-      --index;
+      iToken = index - 1;
       break;
     case Token.plus:
     case Token.decimal:
@@ -13344,7 +13346,7 @@ public class ScriptEvaluator {
       if (token != null)
         tok = token.tok;
     }
-    if (tok != Token.symop)
+    if (tok != Token.symop && tok != Token.state)
       checkLength(-3);
     if (statementLength == 2 && str.indexOf("?") >= 0) {
       showString(viewer.getAllSettings(str.substring(0, str.indexOf("?"))));
@@ -13549,6 +13551,19 @@ public class ScriptEvaluator {
         break;
       }
       name = parameterAsString(2);
+      if (name.equals("/") && (len = statementLength) == 4) {
+        name = parameterAsString(3);
+        if (!isSyntaxCheck) {
+          String[] info = TextFormat.split(viewer.getStateInfo(), '\n');
+          StringBuffer sb = new StringBuffer();
+          for (int i = 0; i < info.length; i++)
+            if (info[i].indexOf(name) >= 0)
+              sb.append(info[i]).append('\n');
+          msg = sb.toString();
+        }
+        break;
+      }
+      len = 3;
       if (!isSyntaxCheck)
         msg = viewer.getSavedState(name);
       break;
@@ -14893,6 +14908,7 @@ public class ScriptEvaluator {
     float cutoff = Float.NaN;
     int ptWithin = 0;
     Boolean smoothing = null;
+    int smoothingPower = Integer.MAX_VALUE;
     BitSet bs;
     BitSet bsSelect = null;
     BitSet bsIgnore = null;
@@ -14920,6 +14936,10 @@ public class ScriptEvaluator {
           && (str = parameterAsString(i)).equalsIgnoreCase("inline"))
         theTok = Token.string;
       switch (theTok) {
+      case Token.period:
+        sbCommand.append(" periodic");
+        propertyName = "periodic";
+        break;
       case Token.boundbox:
         if (fullCommand.indexOf("# BBOX=") >= 0) {
           String[] bbox = TextFormat.split(extractCommandOption("# BBOX"), ',');
@@ -15013,6 +15033,9 @@ public class ScriptEvaluator {
         if (smoothing == null)
           error(ERROR_invalidArgument);
         continue;
+      case Token.isosurfacepropertysmoothingpower:
+        smoothingPower = intParameter(++i);
+        continue;
       case Token.property:
       case Token.variable:
         if (modelIndex < 0)
@@ -15022,26 +15045,23 @@ public class ScriptEvaluator {
           error(ERROR_invalidArgument);
         boolean isVariable = (theTok == Token.variable);
         if (dataUse == null) { // not mlp or mep
-          if (bsSelect == null) {
-            bsSelect = viewer.getSelectionSet(false);
-            bsSelect.and(viewer.getModelUndeletedAtomsBitSet(modelIndex));
-            addShapeProperty(propertyList, "select", bsSelect);
-          }
-          if (surfaceObjectSeen) {
-              // not for overall surface, just this mapping
-              sbCommand.append(" select " + Escape.escape(bsSelect));
-              bsSelect = null;
-          } else {
+          if (!surfaceObjectSeen) {
             surfaceObjectSeen = true;
             addShapeProperty(propertyList, "sasurface", new Float(0));
             sbCommand.append(" vdw");
           }
           propertyName = "property";
           if (smoothing == null)
-            smoothing = viewer.getIsosurfacePropertySmoothing() ? Boolean.TRUE
+            smoothing = viewer.getIsosurfacePropertySmoothing(false) == 1 ? Boolean.TRUE
                 : Boolean.FALSE;
           addShapeProperty(propertyList, "propertySmoothing", smoothing);
           sbCommand.append(" isosurfacePropertySmoothing " + smoothing);
+          if (smoothingPower == Integer.MAX_VALUE)
+            smoothingPower = viewer.getIsosurfacePropertySmoothing(true);
+          addShapeProperty(propertyList, "propertySmoothingPower", Integer
+              .valueOf(smoothingPower));
+          sbCommand.append(" isosurfacePropertySmoothingPower "
+              + smoothingPower);
           if (viewer.isRangeSelected())
             addShapeProperty(propertyList, "rangeSelected", Boolean.TRUE);
         } else {
@@ -15105,11 +15125,13 @@ public class ScriptEvaluator {
         propertyValue = Integer.valueOf(modelIndex);
         break;
       case Token.select:
-        bsSelect = atomExpression(++i);
         propertyName = "select";
-        propertyValue = bsSelect;
+        propertyValue = atomExpression(++i);
         i = iToken;
-        // don't set sbCommand here because at finalize we will do that
+        if (surfaceObjectSeen)
+          sbCommand.append(" select " + Escape.escape(propertyValue));
+        else
+          bsSelect = (BitSet) propertyValue;
         break;
       case Token.set:
         thisSetNumber = intParameter(++i);
@@ -15742,11 +15764,6 @@ public class ScriptEvaluator {
         if (modelIndex < 0)
           error(ERROR_multipleModelsDisplayedNotOK, "ISOSURFACE "
               + theToken.value);
-        if (bsSelect == null) {
-          bsSelect = viewer.getSelectionSet(false);
-          bsSelect.and(viewer.getModelUndeletedAtomsBitSet(modelIndex));
-          addShapeProperty(propertyList, "select", bsSelect);
-        }
         surfaceObjectSeen = true;
         float radius;
         if (theTok == Token.molecular) {
@@ -16033,8 +16050,9 @@ public class ScriptEvaluator {
     if (surfaceObjectSeen && !isLcaoCartoon && !isSyntaxCheck) {
       if (bsSelect == null)
         bsSelect = viewer.getSelectionSet(false);
-      setShapeProperty(iShape, "finalize", " select " + Escape.escape(bsSelect)
-          + sbCommand.toString());
+      bsSelect.and(viewer.getModelUndeletedAtomsBitSet(modelIndex));
+      setShapeProperty(iShape, "finalize", " select " + Escape.escape(bsSelect) + " "
+          + sbCommand);
       String s = (String) getShapeProperty(iShape, "ID");
       if (s != null) {
         cutoff = ((Float) getShapeProperty(iShape, "cutoff")).floatValue();

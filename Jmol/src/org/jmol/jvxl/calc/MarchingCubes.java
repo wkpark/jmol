@@ -93,6 +93,8 @@ public class MarchingCubes extends TriangleData {
 
   protected StringBuffer edgeData = new StringBuffer();
   
+  private boolean excludePartialCubes = true; // original way
+  
   public BitSet getBsVoxels() {
     return bsVoxels;
   }
@@ -106,6 +108,10 @@ public class MarchingCubes extends TriangleData {
 
     // If just creating a JVXL file, see org.openscience.jmol.jvxl.simplewriter.SimpleMarchingCubes.java
     //
+  
+    // setting this false could upset reading 
+    // older Jmol version files -- will need a flag IN the file for this if we do it
+    excludePartialCubes = true; 
     
     this.surfaceReader = surfaceReader;
     this.bsVoxels = bsVoxels;
@@ -286,9 +292,7 @@ public class MarchingCubes extends TriangleData {
             case MODE_BITSET:
               isInside = bsVoxels.get(pti);
               v = vertexValues[i] = (bsExcludedVertices.get(pti) ? Float.NaN
-                  : isInside 
-                  ? 1 
-                      : 0);
+                  : isInside ? 1 : 0);
               break;
             default:
             case MODE_CUBE:
@@ -493,7 +497,9 @@ public class MarchingCubes extends TriangleData {
       int index = edgePointIndexes[iEdge] = isoPointIndexPlanes[iPlane][iPt][iType];
       if (index != Integer.MIN_VALUE) {
         if (index == -1)
-          isNaN = true;
+          isNaN = excludePartialCubes; // -- problem with older Jmol files? 
+          // this says, "If any point on the cube is NaN, then 
+          //don't process the cube. 
         continue; // propagated from neighbor
       }
       // here's an edge that has to be checked.
@@ -537,15 +543,13 @@ public class MarchingCubes extends TriangleData {
       // for example because it is outside the limits of the box.
       
       if (Float.isNaN(fReturn[0]) || i < 0)
-        isNaN = true;
+        isNaN = excludePartialCubes;
     }
     return !isNaN;
   }
 
   protected void addEdgeData(float f) {
     char ch = JvxlCoder.jvxlFractionAsCharacter(f);
-    //if (edgeData.length() < 1000)
-    //System.out.print("" + ch + " " + f + " ");
     edgeData.append(ch);
   }
 

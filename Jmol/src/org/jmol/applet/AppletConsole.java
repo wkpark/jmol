@@ -382,7 +382,8 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
       int kcode = ke.getKeyCode();
       switch (ke.getID()) {
       case KeyEvent.KEY_PRESSED:
-        if (kcode == KeyEvent.VK_TAB) {
+        switch (kcode) {
+        case KeyEvent.VK_TAB:
           ke.consume();
           if (input.getCaretPosition() == input.getText().length()) {
             String cmd = completeCommand(getText());
@@ -391,6 +392,11 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
             nTab++;
             return;
           }
+          break;
+        case KeyEvent.VK_ESCAPE:
+          ke.consume();
+          setText("");
+          break;
         }
         nTab = 0;
         if (kcode == KeyEvent.VK_ENTER && !ke.isControlDown()) {

@@ -5566,8 +5566,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                   boolean isInt) {
     boolean found = true;
     switch (tok) {
+    case Token.multiplebondradiusfactor:
+      // 12.1.11
+      global.multipleBondRadiusFactor = value;
+      break;
     case Token.multiplebondspacing:
-      // 12.1.13
+      // 12.1.11
       global.multipleBondSpacing = value;
       break;
     case Token.slabrange:
@@ -5746,6 +5750,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setIntProperty(String key, int tok, int value) {
     boolean found = true;
     switch (tok) {
+    case Token.isosurfacepropertysmoothingpower:
+      // 12.1.11
+      global.isosurfacePropertySmoothingPower = value;
+      break;
     case Token.repaintwaitms:
       // 12.0.RC4
       global.repaintWaitMs = value;
@@ -6519,9 +6527,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.rangeSelected;
   }
 
-  public boolean getIsosurfacePropertySmoothing() {
+  public int getIsosurfacePropertySmoothing(boolean asPower) {
     // Eval
-    return global.isosurfacePropertySmoothing;
+    return (asPower ? global.isosurfacePropertySmoothingPower : global.isosurfacePropertySmoothing ? 1 : 0);
   }
 
   public boolean getWireframeRotation() {
@@ -6969,6 +6977,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public float getMultipleBondSpacing() {
     return global.multipleBondSpacing;
+  }
+
+  public float getMultipleBondRadiusFactor() {
+    return global.multipleBondRadiusFactor;
   }
 
   @Override

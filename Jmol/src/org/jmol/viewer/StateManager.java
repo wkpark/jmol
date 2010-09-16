@@ -875,6 +875,8 @@ public class StateManager {
       setParameterValue("imageState", imageState);
       setParameterValue("isosurfacePropertySmoothing",
           isosurfacePropertySmoothing);
+      setParameterValue("isosurfacePropertySmoothingPower",
+          isosurfacePropertySmoothingPower);
       setParameterValue("justifyMeasurements", justifyMeasurements);
       setParameterValue("loadAtomDataTolerance", loadAtomDataTolerance);
       setParameterValue("loadFormat", loadFormat);
@@ -891,6 +893,7 @@ public class StateManager {
       setParameterValue("minimizationCriterion", minimizationCriterion);
       setParameterValue("modelKitMode", modelKitMode);
       setParameterValue("monitorEnergy", monitorEnergy);
+      setParameterValue("multipleBondRadiusFactor", multipleBondRadiusFactor);
       setParameterValue("multipleBondSpacing", multipleBondSpacing);
       setParameterValue("multiProcessor", multiProcessor && (Viewer.nProcessors > 1));
       setParameterValue("navigationMode", navigationMode);
@@ -1128,6 +1131,7 @@ public class StateManager {
     boolean dynamicMeasurements = false;
     boolean greyscaleRendering = false;
     boolean isosurfacePropertySmoothing = true;
+    int isosurfacePropertySmoothingPower = 7;
     int repaintWaitMs = 1000;
     boolean showHiddenSelectionHalos = false;
     boolean showKeyStrokes = true;
@@ -1147,7 +1151,8 @@ public class StateManager {
     boolean showHydrogens = true;
     boolean showMultipleBonds = true;
     boolean ssbondsBackbone = false;
-    float multipleBondSpacing = -1;
+    float multipleBondSpacing = -1;     // 0.35?
+    float multipleBondRadiusFactor = 0; // 0.75?
 
     //secondary structure + Rasmol
 

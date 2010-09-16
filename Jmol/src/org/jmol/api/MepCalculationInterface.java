@@ -14,4 +14,6 @@ public interface MepCalculationInterface {
 
   public abstract void assignPotentials(Atom[] atoms, float[] potentials, BitSet bsAromatic, BitSet bsCarbonyl, BitSet bsIgnore, String data);
 
+  public abstract float valueFor(float x, float d2, int distanceMode);
+
 }

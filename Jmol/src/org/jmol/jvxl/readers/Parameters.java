@@ -231,6 +231,8 @@ public class Parameters {
     contourColixes = null;
     mep_calcType = -1;
     pocket = null;
+    propertySmoothing = false;
+    propertySmoothingPower = 4;
     rangeDefined = false;
     resolution = Float.MAX_VALUE;
     scale = Float.NaN;
@@ -248,6 +250,7 @@ public class Parameters {
     atomRadiusData = null;
     rangeAll = false;
     rangeSelected = false;
+    isPeriodic = false;
   }
   
   String calculationType = "";
@@ -258,6 +261,7 @@ public class Parameters {
   float solventRadius;
   float solventExtendedAtomRadius;
   boolean propertySmoothing;
+  int propertySmoothingPower = 4;
   float envelopeRadius;
   float cavityRadius;
   boolean isCavity;
@@ -744,6 +748,7 @@ public class Parameters {
   public boolean colorSchemeTranslucent;
   public ColorEncoder colorEncoder;
   public boolean usePropertyForColorRange = true;
+  public boolean isPeriodic;
   
   void setMapRanges(SurfaceReader surfaceReader, boolean haveData) {
     if (!colorDensity)

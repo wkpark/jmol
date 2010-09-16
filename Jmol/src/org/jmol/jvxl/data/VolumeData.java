@@ -287,6 +287,8 @@ public class VolumeData implements VolumeDataInterface {
     pt3i.set((int) ptXyzTemp.x, (int) ptXyzTemp.y, (int) ptXyzTemp.z);
   }
 
+  public boolean isPeriodic;
+  
   public float lookupInterpolatedVoxelValue(Point3f point) {
     if (sr != null) {
       float v = sr.getValueAtPoint(point);

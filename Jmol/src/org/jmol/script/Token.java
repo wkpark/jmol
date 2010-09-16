@@ -808,9 +808,10 @@ public class Token {
   public final static int minimizationcriterion          = floatparam | 21;
   public final static int mousedragfactor                = floatparam | 22;
   public final static int mousewheelfactor               = floatparam | 23;
-  public final static int multiplebondspacing            = floatparam | 24;
-  public final static int navfps                         = floatparam | 25;
-  public final static int navigationdepth                = floatparam | 26;
+  public final static int multiplebondradiusfactor       = floatparam | 24;
+  public final static int multiplebondspacing            = floatparam | 25;
+  public final static int navfps                         = floatparam | 26;
+  public final static int navigationdepth                = floatparam | 27;
   public final static int navigationslab                 = floatparam | 28;
   public final static int navigationspeed                = floatparam | 30;
   public final static int navx                           = floatparam | 32;
@@ -845,8 +846,9 @@ public class Token {
   public final static int dotscale                       = intparam | 16;
   public final static int ellipsoiddotcount              = intparam | 17;  
   public final static int helixstep                      = intparam | 18;
-  public final static int hermitelevel                   = intparam | 20;
-  public final static int historylevel                   = intparam | 21;
+  public final static int hermitelevel                   = intparam | 19;
+  public final static int historylevel                   = intparam | 20;
+  public final static int isosurfacepropertysmoothingpower=intparam | 21;
   public final static int loglevel                       = intparam | 22;
   public final static int minimizationsteps              = intparam | 23;
   public final static int percentvdwatom                 = intparam | 24;
@@ -1946,6 +1948,7 @@ public class Token {
       "path",            new Token(path),
       "pdb",             new Token(pdb),
       "period",          new Token(period),
+      "periodic",        null,
       "perpendicular",   new Token(perpendicular),
       "perp",            null,
       "phase",           new Token(phase),
@@ -2183,6 +2186,7 @@ public class Token {
       "imageState",                               new Token(imagestate),
       "isKiosk",                                  new Token(iskiosk),
       "isosurfacePropertySmoothing",              new Token(isosurfacepropertysmoothing),
+      "isosurfacePropertySmoothingPower",         new Token(isosurfacepropertysmoothingpower),
       "justifyMeasurements",                      new Token(justifymeasurements),
       "languageTranslation",                      new Token(languagetranslation),
       "logCommands",                              new Token(logcommands),
@@ -2195,6 +2199,7 @@ public class Token {
       "minimizationSilent",                       new Token(minimizationsilent),
       "modelkitMode",                             new Token(modelkitmode),
       "monitorEnergy",                            new Token(monitorenergy),
+      "multipleBondRadiusFactor",                 new Token(multiplebondradiusfactor),
       "multipleBondSpacing",                      new Token(multiplebondspacing),
       "multiProcessor",                           new Token(multiprocessor),
       "navigateSurface",                          new Token(navigatesurface),

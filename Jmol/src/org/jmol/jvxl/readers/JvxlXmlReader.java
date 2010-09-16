@@ -381,7 +381,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     }
     return bs;
   }
-  
+
   @Override
   protected float getSurfacePointAndFraction(float cutoff,
                                              boolean isCutoffAbsolute,
@@ -394,10 +394,60 @@ public class JvxlXmlReader extends VolumeFileReader {
           valueB, pointA, edgeVector, fReturn, ptReturn);
     ptReturn.scaleAdd(fReturn[0] = jvxlGetNextFraction(edgeFractionBase,
         edgeFractionRange, 0.5f), edgeVector, pointA);
-    return fReturn[0];
+    if (Float.isNaN(valueMin))
+      setValueMinMax();      
+    if (includeValueNaN && Float.isNaN(fReturn[0]))
+      return Float.NaN;
+    return getNextValue();
   }
 
+  private float getNextValue() {
+    float fraction = Float.NaN;
+    if (colorPtr >= valueCount)
+      System.out.println("JvxlXmlREader test 1243 " + colorPtr + " " + valueCount);
+    while (colorPtr < valueCount && Float.isNaN(fraction)) {
+      if (jvxlData.isJvxlPrecisionColor) {
+        // this COULD be an option for mapped surfaces; 
+        // necessary for planes; used for vertex/triangle 2.0 style
+        // precision is used for FULL-data range encoding, allowing full
+        // treatment of JVXL files as though they were CUBE files.
+        // the two parts of the "double-character-precision" value
+        // are in separate lines, separated by n characters.
+        fraction = JvxlCoder.jvxlFractionFromCharacter2(jvxlColorDataRead
+            .charAt(colorPtr), jvxlColorDataRead.charAt((colorPtr++)
+            + valueCount), colorFractionBase, colorFractionRange);
+      } else {
+        // my original encoding scheme
+        // low precision only allows for mapping relative to the defined color range
+        fraction = JvxlCoder.jvxlFractionFromCharacter(jvxlColorDataRead
+            .charAt(colorPtr++), colorFractionBase, colorFractionRange, 0.5f);
+      }
+      break;
+    }
+    return valueMin + fraction * valueRange;
+  }
+  
+  private void setValueMinMax() {
+    valueCount = jvxlColorDataRead.length();
+    if (jvxlData.isJvxlPrecisionColor)
+      valueCount /= 2;
+    includeValueNaN = (valueCount != jvxlEdgeDataRead.length());
+    valueMin = (!jvxlData.isJvxlPrecisionColor ? params.valueMappedToRed
+        : params.mappedDataMin == Float.MAX_VALUE ? defaultMappedDataMin
+            : params.mappedDataMin);
+    valueRange = (!jvxlData.isJvxlPrecisionColor ? params.valueMappedToBlue
+        : params.mappedDataMin == Float.MAX_VALUE ? defaultMappedDataMax
+            : params.mappedDataMax)
+        - valueMin;
+    haveReadColorData = true;
+  }
+
+  private boolean includeValueNaN = true;
+  private int valueCount;
+  private float valueMin = Float.NaN;
+  private float valueRange = Float.NaN;
   private int fractionPtr;
+  private int colorPtr;
   private String strFractionTemp = "";
 
   private float jvxlGetNextFraction(int base, int range, float fracOffset) {
@@ -412,27 +462,34 @@ public class JvxlXmlReader extends VolumeFileReader {
         base, range, fracOffset);
   }
 
+  boolean haveReadColorData;
+  
   @Override
   protected String readColorData() {
     // overloads SurfaceReader
     // standard jvxl file read for color 
 
-    fractionPtr = 0;
     int vertexCount = jvxlData.vertexCount = meshData.vertexCount;
+    // the problem is that the new way to read data in Marching Cubes
+    // is to ignore all points that are NaN. But then we also have to
+    // remove those points from the color string. 
+
     short[] colixes = meshData.vertexColixes;
     float[] vertexValues = meshData.vertexValues;
-    strFractionTemp = (isJvxl ? jvxlColorDataRead : "");
-    if (isJvxl && strFractionTemp.length() == 0) {
+    /*
+     * haveReadColorData?
+     = (isJvxl ? jvxlColorDataRead : "");
+    if (isJvxl && strValueTemp.length() == 0) {
       Logger
           .error("You cannot use JVXL data to map onto OTHER data, because it only contains the data for one surface. Use ISOSURFACE \"file.jvxl\" not ISOSURFACE .... MAP \"file.jvxl\".");
       return "";
     }
+    */
     if (params.colorEncoder == null)
       params.colorEncoder = new ColorEncoder(null);
     params.colorEncoder.setColorScheme(null, false);
-    params.colorEncoder.setRange(params.valueMappedToRed, params.valueMappedToBlue,
-        params.isColorReversed);
-    fractionPtr = 0;
+    params.colorEncoder.setRange(params.valueMappedToRed,
+        params.valueMappedToBlue, params.isColorReversed);
     Logger.info("JVXL reading color data mapped min/max: "
         + params.mappedDataMin + "/" + params.mappedDataMax + " for "
         + vertexCount + " vertices." + " using encoding keys "
@@ -440,50 +497,30 @@ public class JvxlXmlReader extends VolumeFileReader {
     Logger.info("mapping red-->blue for " + params.valueMappedToRed + " to "
         + params.valueMappedToBlue + " colorPrecision:"
         + jvxlData.isJvxlPrecisionColor);
-
-    float min = (params.mappedDataMin == Float.MAX_VALUE ? defaultMappedDataMin
-        : params.mappedDataMin);
-    float range = (params.mappedDataMin == Float.MAX_VALUE ? defaultMappedDataMax
-        : params.mappedDataMax)
-        - min;
-    float colorRange = params.valueMappedToBlue - params.valueMappedToRed;
+    boolean getValues = (Float.isNaN(valueMin));
+    if (getValues)
+      setValueMinMax();
     float contourPlaneMinimumValue = Float.MAX_VALUE;
     float contourPlaneMaximumValue = -Float.MAX_VALUE;
     if (colixes == null || colixes.length < vertexCount)
       meshData.vertexColixes = colixes = new short[vertexCount];
-    String data = jvxlColorDataRead;
     //hasColorData = true;
-    int cpt = 0;
     short colixNeg = 0, colixPos = 0;
     if (params.colorBySign) {
       colixPos = Graphics3D.getColix(params.isColorReversed ? params.colorNeg
-              : params.colorPos);
+          : params.colorPos);
       colixNeg = Graphics3D.getColix(params.isColorReversed ? params.colorPos
-              : params.colorNeg);
+          : params.colorNeg);
     }
     int vertexIncrement = meshData.vertexIncrement;
+    // here's the problem: we are assuming here that vertexCount == nPointsRead
     boolean needContourMinMax = (params.mappedDataMin == Float.MAX_VALUE);
     for (int i = 0; i < vertexCount; i += vertexIncrement) {
-      float fraction, value;
-      if (jvxlData.isJvxlPrecisionColor) {
-        // this COULD be an option for mapped surfaces; 
-        // necessary for planes; used for vertex/triangle 2.0 style
-        // precision is used for FULL-data range encoding, allowing full
-        // treatment of JVXL files as though they were CUBE files.
-        // the two parts of the "double-character-precision" value
-        // are in separate lines, separated by n characters.
-        fraction = JvxlCoder.jvxlFractionFromCharacter2(data.charAt(cpt), data
-            .charAt(cpt + vertexCount), colorFractionBase, colorFractionRange);
-        value = min + fraction * range;
-      } else {
-        // my original encoding scheme
-        // low precision only allows for mapping relative to the defined color range
-        fraction = JvxlCoder.jvxlFractionFromCharacter(data.charAt(cpt),
-            colorFractionBase, colorFractionRange, 0.5f);
-        value = params.valueMappedToRed + fraction * colorRange;
-      }
-      vertexValues[i] = value;
-      ++cpt;
+      float value;
+      if(getValues)
+        value = vertexValues[i] = getNextValue();
+      else
+        value = vertexValues[i];
       if (needContourMinMax) {
         if (value < contourPlaneMinimumValue)
           contourPlaneMinimumValue = value;
@@ -491,7 +528,6 @@ public class JvxlXmlReader extends VolumeFileReader {
           contourPlaneMaximumValue = value;
       }
     }
-
     if (needContourMinMax) {
       params.mappedDataMin = contourPlaneMinimumValue;
       params.mappedDataMax = contourPlaneMaximumValue;
@@ -510,7 +546,7 @@ public class JvxlXmlReader extends VolumeFileReader {
         colixes[i] = params.colorEncoder.getColorIndex(value);
       }
     }
-    return data + "\n";
+    return jvxlColorDataRead + "\n";
   }
 
   /**

@@ -87,6 +87,9 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
   protected final static int E_MINUS_D = 3;
   
   protected int distanceMode = ONE_OVER_D;
+  private float[] potentials;
+  private Point3f[] atomCoordAngstroms;
+  private BitSet bsSelected;
   
   public MepCalculation() {
     rangeBohrOrAngstroms = 8; // Angstroms
@@ -113,20 +116,39 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
     }
   }
 
+  public void setup(int calcType, float[] potentials,
+                    Point3f[] atomCoordAngstroms, BitSet bsSelected) {
+    if (calcType >= 0)
+      distanceMode = calcType;
+    this.potentials = potentials;
+    this.atomCoordAngstroms = atomCoordAngstroms;
+    this.bsSelected = bsSelected;
+  }
+  
   public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
                         Point3f[] atomCoordAngstroms, float[] potentials,
                         int calcType) {
-    if (calcType >= 0)
-      distanceMode = calcType;
+    setup(calcType, potentials, atomCoordAngstroms, bsSelected);
     voxelData = volumeData.getVoxelData();
     int[] countsXYZ = volumeData.getVoxelCounts();
     initialize(countsXYZ[0], countsXYZ[1], countsXYZ[2]);
     setupCoordinates(volumeData.getOriginFloat(), volumeData
         .getVolumetricVectorLengths(), bsSelected, atomCoordAngstroms);
-    processMep(potentials);
+    processMep();
+  }
+
+  public float getValueAtPoint(Point3f pt) {
+    float value = 0;
+    for (int i = bsSelected.nextSetBit(0); i >= 0; i = bsSelected
+        .nextSetBit(i + 1)) {
+      float x = potentials[i];
+      float d2 = pt.distanceSquared(atomCoordAngstroms[i]);
+      value += valueFor(x, d2, distanceMode);
+    }
+    return value;
   }
   
-  private void processMep(float[] potentials) {
+  private void processMep() {
     for (int atomIndex = qmAtoms.length; --atomIndex >= 0;) {
       if ((thisAtom = qmAtoms[atomIndex]) == null)
         continue;
@@ -139,33 +161,26 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
         for (int iy = yMax; --iy >= yMin;) {
           float dXY = dX + Y2[iy];
           for (int iz = zMax; --iz >= zMin;) {
-            float d2 = dXY + Z2[iz];
-            float x = x0;
-            switch (distanceMode) {
-            case ONE_OVER_D:
-              if (d2 == 0)
-                x *= Float.POSITIVE_INFINITY;
-              else
-                x /= (float) Math.sqrt(d2);
-              break;
-            case ONE_OVER_ONE_PLUS_D:
-              x /= (1 + (float) Math.sqrt(d2));
-              break;
-            case E_MINUS_D_OVER_2:
-              x *= (float) Math.exp(-Math.sqrt(d2) / 2);
-              break;
-            case E_MINUS_D:
-              x *= (float) Math.exp(-Math.sqrt(d2));
-              break;
-            default:
-              x = 0;
-            }
-            voxelData[ix][iy][iz] += x;
+            voxelData[ix][iy][iz] += valueFor(x0, dXY + Z2[iz], distanceMode);
           }
         }
       }
     }
     
+  }
+
+  public float valueFor(float x0, float d2, int distanceMode) {
+    switch (distanceMode) {
+    case ONE_OVER_D:
+      return (d2 == 0 ? x0 * Float.POSITIVE_INFINITY : x0 / (float) Math.sqrt(d2));
+    case ONE_OVER_ONE_PLUS_D:
+      return  x0 / (1 + (float) Math.sqrt(d2));
+    case E_MINUS_D_OVER_2:
+      return x0 * (float) Math.exp(-Math.sqrt(d2) / 2);
+    case E_MINUS_D:
+      return x0 * (float) Math.exp(-Math.sqrt(d2));
+    }
+    return x0;
   }
 
   protected Map<String, Object> htAtomicPotentials;

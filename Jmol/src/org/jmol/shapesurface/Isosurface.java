@@ -619,7 +619,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     int j = script.indexOf("})", i);
     if (j < 0)
       return false;
-    BitSet bs = Escape.unescapeBitset(script.substring(i + 3, j + 1));
+    BitSet bs = Escape.unescapeBitset(script.substring(i + 2, j + 2));
     if (bsCmd == null)
       sg.setParameter("select", bs);
     else
@@ -980,6 +980,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   }
 
   private void setColorCommand(ColorEncoder ce) {
+    if (ce == null)
+      return;
     String schemeName = ce.getColorSchemeName();
     boolean isTranslucentScheme = ce.isTranslucent;
     if (thisMesh == null)
@@ -1369,9 +1371,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       y <<= 1;
       dmin2 <<= 1;
     }
+    int pickedVertex = -1;
     List<Object> pickedContour = null;
+    IsosurfaceMesh m = null;
     for (int i = 0; i < meshCount; i++) {
-      IsosurfaceMesh m = isomeshes[i];
+      m = isomeshes[i];
       if (!isPickable(m, bsVisible))
         continue;
       List<Object>[] vs = m.jvxlData.vContours;
@@ -1392,7 +1396,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         if (pickedContour != null)
           return pickedContour.get(JvxlCoder.CONTOUR_VALUE).toString();
       } else if (m.jvxlData.jvxlPlane != null && m.vertexValues != null) {
-        int pickedVertex = -1;
         Point3f[] vertices = (m.ptOffset == null && m.scale3d == 0 
             ? m.vertices : m.getOffsetVertices(m.jvxlData.jvxlPlane)); 
         for (int k = m.vertexCount; --k >= ilast;) {
@@ -1404,9 +1407,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
           }
         }
         if (pickedVertex != -1)
-          return "v" + pickedVertex + ": " + m.vertexValues[pickedVertex];
+          break;
       } else if (m.vertexValues != null) {
-        int pickedVertex = -1;
         for (int k = m.vertexCount; --k >= ilast;) {
           Point3f v = m.vertices[k];
           int d2 = coordinateInRange(x, y, v, dmin2, ptXY);
@@ -1416,10 +1418,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
           }
         }
         if (pickedVertex != -1)
-          return "v" + pickedVertex + ": " + m.vertexValues[pickedVertex];
+          break;
       }
     }
-    return null;
+    return (pickedVertex == -1 ? null 
+        : (Logger.debugging ? "v" + pickedVertex + " "  + m.vertices[pickedVertex] + ": " : "") + m.vertexValues[pickedVertex]);
   }
 
   @Override

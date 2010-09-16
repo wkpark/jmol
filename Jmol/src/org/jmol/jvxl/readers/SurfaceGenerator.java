@@ -422,6 +422,11 @@ public class SurfaceGenerator {
       return true;
     }
 
+    if ("propertySmoothingPower" == propertyName) {
+      params.propertySmoothingPower = ((Integer) value).intValue();
+      return true;
+    }
+
     if ("title" == propertyName) {
       if (value == null) {
         params.title = null;
@@ -932,6 +937,10 @@ public class SurfaceGenerator {
       mapSurface();
       return true;
     }
+    
+    if ("periodic" == propertyName) {
+      params.isPeriodic = true;
+    }
 
     // continue with operations in calling class...
     return false;
@@ -965,7 +974,7 @@ public class SurfaceGenerator {
       surfaceReader = new IsoPlaneReader(this);
       break;
     case Parameters.SURFACE_PROPERTY:
-      surfaceReader = new AtomPropertyMapper(this);
+      surfaceReader = new AtomPropertyMapper(this, null);
       break;
     case Parameters.SURFACE_SOLVENT:
     case Parameters.SURFACE_MOLECULAR:
@@ -982,10 +991,16 @@ public class SurfaceGenerator {
       surfaceReader = new IsoFxyzReader(this);
       break;
     case Parameters.SURFACE_MEP:
-      surfaceReader = new IsoMepReader(this);
+      if (params.state == Parameters.STATE_DATA_COLORED)
+        surfaceReader = new AtomPropertyMapper(this, "Mep");
+      else
+        surfaceReader = new IsoMepReader(this);
       break;
     case Parameters.SURFACE_MLP:
-      surfaceReader = new IsoMlpReader(this);
+      if (params.state == Parameters.STATE_DATA_COLORED)
+        surfaceReader = new AtomPropertyMapper(this, "Mlp");
+      else
+        surfaceReader = new IsoMlpReader(this);
       break;
     }
     return true;
@@ -1057,12 +1072,14 @@ public class SurfaceGenerator {
       return;    
     //if (params.dataType == Parameters.SURFACE_FUNCTIONXY)
       //params.thePlane = new Point4f(0, 0, 1, 0);
+    if (params.isPeriodic)
+      volumeData.isPeriodic = true;
     if (params.thePlane != null) {
       boolean isSquared = params.isSquared;
       params.isSquared = false;
       params.cutoff = 0;
       surfaceReader.setMappingPlane(params.thePlane);
-      surfaceReader.createIsosurface(true);//but don't read volume data yet
+      surfaceReader.createIsosurface(!params.isPeriodic);//but don't read volume data yet
       if (meshDataServer != null)
         meshDataServer.notifySurfaceGenerationCompleted();
       if (params.dataType == Parameters.SURFACE_NOMAP) {

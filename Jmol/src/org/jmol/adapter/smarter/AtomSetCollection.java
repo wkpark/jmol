@@ -200,6 +200,11 @@ public class AtomSetCollection {
 
   private void appendAtomSetCollection(List<?> list) {
     int n = list.size();
+    if (n == 0) {
+      errorMessage = "No file found!";
+      return;
+    }
+      
     for (int i = 0; i < n; i++) {
       Object o = list.get(i);
       if (o instanceof List)

@@ -1353,7 +1353,7 @@ abstract public class AtomCollection {
               break;
             case 3:
               // sp
-              getHybridizationAndAxes(i, z, x, "sp", false, true);
+              getHybridizationAndAxes(i, z, x, "spb", false, true);
               pt = new Point3f(z);
               pt.scaleAdd(1.1f, z, atom);
               hAtoms[i][hPt++] = pt;

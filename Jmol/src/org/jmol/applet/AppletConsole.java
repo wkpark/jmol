@@ -33,10 +33,10 @@ import org.jmol.i18n.GT;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.awt.event.WindowEvent;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -82,6 +82,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
       this.externalContainer = externalContainer;      
       viewer.setConsole(this);
     }
+    addWindowListener();
     layoutWindow();
     output(defaultMessage);
   }
@@ -171,11 +172,8 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
     c.add(c2);
     label1.setAlignmentX(Component.CENTER_ALIGNMENT);
     c.add(label1);
-    if (externalContainer instanceof JFrame) {
-      JFrame jf = (JFrame) externalContainer;
-      jf.setJMenuBar(createMenubar());
-      jf.addWindowListener(this);
-    }
+    if (externalContainer instanceof JFrame)
+      ((JFrame) externalContainer).setJMenuBar(createMenubar());
 
     //System.out.println("Console " + this + " set(3)");
 
@@ -425,23 +423,4 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
       setText(cmd);
     }
   }
-
-  ////////////////////////////////////////////////////////////////
-  // window listener stuff to close when the window closes
-  ////////////////////////////////////////////////////////////////
-
-  @Override
-  public void windowClosed(WindowEvent we) {
-    destroyConsole();
-  }
-
-  private void destroyConsole() {
-    viewer.getProperty("DATA_API", "getAppConsole", Boolean.FALSE);
-  }
-
-  @Override
-  public void windowClosing(WindowEvent we) {
-    destroyConsole();
-  }
-
 }

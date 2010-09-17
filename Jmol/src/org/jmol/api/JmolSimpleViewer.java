@@ -23,7 +23,7 @@
  */
 package org.jmol.api;
 
-import java.awt.Component;
+import java.awt.Container;
 import java.awt.Graphics;
 import java.awt.Dimension;
 import java.awt.Rectangle;
@@ -40,13 +40,13 @@ abstract public class JmolSimpleViewer {
    *  This is the main access point for creating an application
    *  or applet viewer. 
    *    
-   * @param awtComponent
+   * @param container
    * @param jmolAdapter
    * @return              a JmolViewer object
    */
   static public JmolSimpleViewer
-    allocateSimpleViewer(Component awtComponent, JmolAdapter jmolAdapter) {
-    return Viewer.allocateViewer(awtComponent, jmolAdapter, 
+    allocateSimpleViewer(Container container, JmolAdapter jmolAdapter) {
+    return Viewer.allocateViewer(container, jmolAdapter, 
         null, null, null, null, null);
   }
 

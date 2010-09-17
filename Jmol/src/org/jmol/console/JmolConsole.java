@@ -37,6 +37,7 @@ import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 
 import java.awt.Container;
+import java.awt.Frame;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -246,6 +247,13 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
   // window listener stuff to close when the window closes
   ////////////////////////////////////////////////////////////////
 
+  protected void addWindowListener() {
+    Window w = getWindow(externalContainer);
+    if (w != null)
+      w.addWindowListener(this);
+  }
+
+
   /**
    * @param we 
    * 
@@ -253,18 +261,19 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
   public void windowActivated(WindowEvent we) {
   }
 
-  /**
-   * @param we 
-   * 
-   */
   public void windowClosed(WindowEvent we) {
+    destroyConsole();
   }
 
-  /**
-   * @param we 
-   * 
-   */
   public void windowClosing(WindowEvent we) {
+    destroyConsole();
+  }
+
+  private void destroyConsole() {
+    // if the viewer is an applet, when we close the console
+    // we 
+    if (viewer.isApplet())
+      viewer.getProperty("DATA_API", "getAppConsole", Boolean.FALSE);
   }
 
   /**
@@ -342,5 +351,21 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
   public void setCallbackFunction(String callbackType, String callbackFunction) {
     // application-dependent option
   }
+
+  /**
+   * @param p 
+   * @return The hosting frame or JDialog.
+   */
+  static public Window getWindow(Container p) {
+    while (p != null) {
+      if (p instanceof Frame)
+        return (Frame) p;
+      else if (p instanceof JDialog)
+        return (JDialog) p;
+      p = p.getParent();
+    }
+    return null;
+  }
+
   
 }

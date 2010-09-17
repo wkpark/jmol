@@ -110,7 +110,8 @@ class StatusListener implements JmolStatusListener {
       if (display.haveDisplay) {
         String menuName = (String) data[2];
         display.status.setStatus(1, menuName);
-        jmol.getFrame().setTitle(menuName);
+        if (jmol.frame != null)
+          jmol.frame.setTitle(menuName);
       }
       return;
     case JmolConstants.CALLBACK_SCRIPT:

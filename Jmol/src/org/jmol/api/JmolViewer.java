@@ -24,7 +24,7 @@
 
 package org.jmol.api;
 
-import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Event;
 import java.awt.Graphics;
@@ -74,7 +74,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
    *    all at once.
    *    
    * 
-   * @param awtComponent
+   * @param container
    * @param jmolAdapter
    * @param htmlName 
    * @param documentBase 
@@ -83,17 +83,28 @@ abstract public class JmolViewer extends JmolSimpleViewer {
    * @param statusListener 
    * @return              a JmolViewer object
    */
-  static public JmolViewer allocateViewer(Component awtComponent,
+  static public JmolViewer allocateViewer(Container container,
                                           JmolAdapter jmolAdapter,
                                           String htmlName, URL documentBase, 
                                           URL codeBase,
                                           String commandOptions, 
                                           JmolStatusListener statusListener) {
     
-    return Viewer.allocateViewer(awtComponent, jmolAdapter,
+    return Viewer.allocateViewer(container, jmolAdapter,
         htmlName, documentBase, codeBase, commandOptions, statusListener);
   }
 
+  /**
+   * default null htmlName, URL bases, comandOptions, and statusListener.
+   * 
+   * @param container
+   * @param jmolAdapter
+   * @return             a viewer
+   */
+  public static JmolViewer allocateViewer(Container container, JmolAdapter jmolAdapter) {
+    return Viewer.allocateViewer(container, jmolAdapter, null, null, null, null, null);
+  }
+  
   /**
    * sets a custom console -- should be called IMMEDIATELY following allocateViewer
    * 
@@ -124,19 +135,6 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public void renderScreenImage(Graphics gLeft, Graphics gRight, Dimension size,
                                          Rectangle clip);
 
-  /**
-   * OK, but safer to assign htmlName, URL bases, comandOptions, and statusListener now.
-   * 
-   * @deprecated
-   * @param awtComponent
-   * @param jmolAdapter
-   * @return             a viewer
-   */
-  @Deprecated
-  public static JmolViewer allocateViewer(Component awtComponent, JmolAdapter jmolAdapter) {
-    return Viewer.allocateViewer(awtComponent, jmolAdapter, null, null, null, null, null);
-  }
-  
   static public String getJmolVersion() {
     return Viewer.getJmolVersion();
   }
@@ -256,7 +254,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public String getMeasurementStringValue(int i);
   abstract public int[] getMeasurementCountPlusIndices(int i);
 
-  abstract public Component getDisplay();
+  abstract public Container getDisplay();
 
   abstract public BitSet getElementsPresentBitSet(int modelIndex);
 

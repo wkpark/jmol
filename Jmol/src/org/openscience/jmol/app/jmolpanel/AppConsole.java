@@ -28,6 +28,7 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Window;
 import java.awt.event.KeyEvent;
 import java.awt.event.ActionEvent;
 import java.net.URL;
@@ -77,9 +78,8 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
   public AppConsole(JmolViewer viewer,
       Container externalContainer, String enabledButtons) {
     this.viewer = viewer;
-    Component display = viewer.getDisplay();
-    viewerFrame = (display instanceof DisplayPanel ? ((DisplayPanel) display)
-        .getFrame() : display instanceof JFrame ? (JFrame) display : null);
+    Window w = getWindow(viewer.getDisplay());
+    viewerFrame = (w instanceof JFrame ? (JFrame) w : null);
     if (externalContainer == null) {
       jcd = new JDialog(viewerFrame, null, false);
       jcd.setSize(645, 400);
@@ -89,6 +89,7 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
       this.externalContainer = externalContainer;
       viewer.setConsole(this);
     }
+    addWindowListener();
     layoutWindow(enabledButtons);
   }
 

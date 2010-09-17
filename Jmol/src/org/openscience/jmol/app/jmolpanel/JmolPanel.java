@@ -25,6 +25,7 @@ package org.openscience.jmol.app.jmolpanel;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolViewer;
+import org.jmol.console.JmolConsole;
 import org.jmol.export.JmolFileDropper;
 import org.jmol.export.dialog.Dialog;
 import org.jmol.export.history.HistoryFile;
@@ -41,10 +42,8 @@ import org.openscience.jmol.app.webexport.WebExport;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Frame;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
@@ -277,7 +276,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
 
     frame.getContentPane().add("Center", this);
 
-    frame.addWindowListener(new JmolPanel.AppCloser());
+    frame.addWindowListener(new AppCloser());
     frame.pack();
     frame.setSize(startupWidth, startupHeight);
     ImageIcon jmolIcon = JmolResourceHandler.getIconX("icon");
@@ -482,10 +481,10 @@ public class JmolPanel extends JPanel implements SplashInterface {
   private void dispose(JFrame f) {
     // Save window positions and status in the history
     if (historyFile != null) {
-      if (display != null) {
-        jmolApp.border.x = this.getFrame().getWidth() - display.dimSize.width;
-        jmolApp.border.y = this.getFrame().getHeight() - display.dimSize.height;
-        historyFile.addWindowInfo("Jmol", this.getFrame(), jmolApp.border);
+      if (frame != null) {
+        jmolApp.border.x = frame.getWidth() - display.dimSize.width;
+        jmolApp.border.y = frame.getHeight() - display.dimSize.height;
+        historyFile.addWindowInfo("Jmol", frame, jmolApp.border);
       }
       //System.out.println("doClose border: " + border);
       //historyFile.addWindowInfo(CONSOLE_WINDOW_NAME, consoleframe);
@@ -527,19 +526,6 @@ public class JmolPanel extends JPanel implements SplashInterface {
       dispose(f);
       j.viewer.evalStringQuiet(state);
     }
-  }
-
-  /**
-   * @return The hosting frame, for the file-chooser dialog.
-   */
-  protected Frame getFrame() {
-
-    for (Container p = getParent(); p != null; p = p.getParent()) {
-      if (p instanceof Frame) {
-        return (Frame) p;
-      }
-    }
-    return null;
   }
 
   /**
@@ -1413,7 +1399,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
     d = new Dimension(width, 30);
     status.setPreferredSize(d);
     toolbar.setPreferredSize(d);
-    getFrame().pack();
+    JmolConsole.getWindow(this).pack();
   }
 
   void updateLabels() {

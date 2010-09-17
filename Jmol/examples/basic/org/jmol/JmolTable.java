@@ -28,6 +28,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.JFrame;
@@ -96,6 +98,8 @@ public class JmolTable {
 
         // set up the toplevel frame
         JFrame frame = new JFrame("Structure Viewer");
+        frame.addWindowListener(new AppCloser());
+
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
       
         // create a JTable with an AbstractTableModel
@@ -251,7 +255,6 @@ class JmolPanel extends JPanel {
   JmolViewer viewer;
   JmolAdapter adapter;
 
-  @SuppressWarnings("deprecation")
   JmolPanel() {
     adapter = new SmarterJmolAdapter();
     viewer = JmolViewer.allocateViewer(this, adapter);
@@ -272,7 +275,21 @@ class JmolPanel extends JPanel {
     g.getClipBounds(rectClip);
     viewer.renderScreenImage(g, currentSize, rectClip);
   }
-
+ 
 }
+
+/**
+ * To shutdown when run as an application.  This is a
+ * fairly lame implementation.   A more self-respecting
+ * implementation would at least check to see if a save
+ * was needed.
+ */
+class AppCloser extends WindowAdapter {
+  @Override
+  public void windowClosing(WindowEvent e) {
+    System.exit(0);
+  }
+}
+
 
 

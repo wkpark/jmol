@@ -69,6 +69,7 @@ import org.jmol.util.TextFormat;
 import org.jmol.viewer.StateManager.Orientation;
 import org.jmol.viewer.binding.Binding;
 
+import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -76,7 +77,6 @@ import java.awt.Dimension;
 import java.awt.MediaTracker;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.Component;
 import java.awt.Event;
 import java.awt.Toolkit;
 import java.awt.image.MemoryImageSource;
@@ -154,7 +154,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // these are all private now so we are certain they are not
   // being accesed by any other classes
 
-  private Component display;
+  private Container display;
   private Graphics3D g3d;
   private JmolAdapter modelAdapter;
 
@@ -255,7 +255,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // private boolean jvm14orGreater = false;
   private boolean multiTouch = false;
 
-  private Viewer(Component display, JmolAdapter modelAdapter,
+  private Viewer(Container display, JmolAdapter modelAdapter,
       String commandOptions) {
     // use allocateViewer
     if (Logger.debugging) {
@@ -348,7 +348,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * @return a viewer instance
    */
 
-  public static JmolViewer allocateViewer(Component display,
+  public static JmolViewer allocateViewer(Container display,
                                           JmolAdapter modelAdapter,
                                           String fullName, URL documentBase,
                                           URL codeBase, String commandOptions,
@@ -504,7 +504,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   @Override
-  public Component getDisplay() {
+  public Container getDisplay() {
     return display;
   }
 

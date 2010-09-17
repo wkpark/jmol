@@ -396,9 +396,8 @@ public class JvxlXmlReader extends VolumeFileReader {
         edgeFractionRange, 0.5f), edgeVector, pointA);
     if (Float.isNaN(valueMin))
       setValueMinMax();      
-    if (includeValueNaN && Float.isNaN(fReturn[0]))
-      return Float.NaN;
-    return getNextValue();
+    return (valueCount == 0 || includeValueNaN && Float.isNaN(fReturn[0]) 
+        ? fReturn[0] : getNextValue());
   }
 
   private float getNextValue() {

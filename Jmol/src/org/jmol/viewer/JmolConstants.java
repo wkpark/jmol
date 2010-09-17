@@ -1332,6 +1332,14 @@ final public class JmolConstants {
     return (itype < 0 || itype > 6 ? "" : isGeneric && itype < 4 ? "protein" : proteinStructureNames[itype]);
   }
   
+  public final static byte getProteinStructureType(String type) {
+    for (byte i = 0; i < 4; i++)
+      if (type.equalsIgnoreCase(proteinStructureNames[i]))
+        return i;
+    return -1;
+  }
+
+
   /****************************************************************
    * In DRuMS, RasMol, and Chime, quoting from
    * http://www.umass.edu/microbio/rasmol/rascolor.htm

@@ -224,6 +224,8 @@ public class AminoPolymer extends AlphaPolymer {
 
   @Override
   public void calculateStructures() {
+    if (structureList == null)
+      structureList = model.getModelSet().getStructureList();
     //deprecated: calcHydrogenBonds();
     //System.out.println("calculateStructures for model " + this.model.getModelIndex());
     char[] structureTags = new char[monomerCount];
@@ -426,28 +428,40 @@ public class AminoPolymer extends AlphaPolymer {
       return  (psi - psiLast + phiNext - phi);
     }
   }
-  
+
+  private float[][] structureList; // kept in StateManager.globalSettings
+
+  @Override
+  public void setStructureList(float[][] structureList) {
+    this.structureList = structureList;
+  }
+
   /**
    * 
    * @param psi N-C-CA-N torsion for NEXT group
    * @param phi C-CA-N-C torsion for THIS group
    * @return whether this corresponds to a helix
    */
-  private static boolean isHelix(float psi, float phi) {
-    return (phi >= -160) && (phi <= 0) && (psi >= -100) && (psi <= 45);
+  private boolean isTurn(float psi, float phi) {
+    return checkPhiPsi(structureList[JmolConstants.PROTEIN_STRUCTURE_TURN], psi, phi);
   }
 
-  private static boolean isSheet(float psi, float phi) {
-    return
-      ( (phi >= -180) && (phi <= -10) && (psi >= 70) && (psi <= 180) ) || 
-      ( (phi >= -180) && (phi <= -45) && (psi >= -180) && (psi <= -130) ) ||
-      ( (phi >= 140) && (phi <= 180) && (psi >= 90) && (psi <= 180) );
+
+  private boolean isSheet(float psi, float phi) {
+    return checkPhiPsi(structureList[JmolConstants.PROTEIN_STRUCTURE_SHEET], psi, phi);
   }
 
-  private static boolean isTurn(float psi, float phi) {
-    return (phi >= 30) && (phi <= 90) && (psi >= -15) && (psi <= 95);
+  private boolean isHelix(float psi, float phi) {
+    return checkPhiPsi(structureList[JmolConstants.PROTEIN_STRUCTURE_HELIX], psi, phi);
   }
 
+  private static boolean checkPhiPsi(float[] list, float psi, float phi) {
+    for (int i = 0; i < list.length; )
+      if (phi >= list[i++] && phi <= list[i++] 
+         && psi >= list[i++] && psi <= list[i++])
+        return true;
+    return false;
+  }
 
   /* 
    * old code for assigning SS

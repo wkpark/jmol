@@ -10501,19 +10501,10 @@ public class ScriptEvaluator {
   }
 
   private void structure() throws ScriptException {
-    String type = parameterAsString(1).toLowerCase();
-    byte iType = 0;
-    BitSet bs = null;
-    if (type.equals("helix"))
-      iType = JmolConstants.PROTEIN_STRUCTURE_HELIX;
-    else if (type.equals("sheet"))
-      iType = JmolConstants.PROTEIN_STRUCTURE_SHEET;
-    else if (type.equals("turn"))
-      iType = JmolConstants.PROTEIN_STRUCTURE_TURN;
-    else if (type.equals("none"))
-      iType = JmolConstants.PROTEIN_STRUCTURE_NONE;
-    else
+    byte iType = JmolConstants.getProteinStructureType(parameterAsString(1));
+    if (iType < 0)
       error(ERROR_invalidArgument);
+    BitSet bs = null;
     switch (tokAt(2)) {
     case Token.bitset:
     case Token.expressionBegin:
@@ -10953,8 +10944,6 @@ public class ScriptEvaluator {
         bs = (statementLength == 2 ? null : atomExpression(2));
         if (isSyntaxCheck)
           return;
-        if (bs == null)
-          bs = viewer.getAtomBitSet(null);
         viewer.calculateStructures(bs);
         viewer.addStateScript(thisCommand, false, true);
         return;
@@ -11532,6 +11521,16 @@ public class ScriptEvaluator {
     // anything in this block MUST RETURN
 
     switch (tok) {
+    case Token.structure:
+      byte iType = JmolConstants.getProteinStructureType(parameterAsString(2));
+      if (iType < 1)
+        error(ERROR_invalidArgument);
+      float[] data = floatParameterSet(3, 0, Integer.MAX_VALUE);
+      if (data.length % 4 != 0)
+        error(ERROR_invalidArgument);
+      viewer.setStructureList(data, iType);
+      checkLast(iToken);
+      return;
     case Token.axescolor:
       ival = getArgbParam(2);
       if (!isSyntaxCheck)

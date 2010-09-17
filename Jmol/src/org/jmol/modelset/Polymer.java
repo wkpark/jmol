@@ -235,4 +235,10 @@ abstract public class Polymer {
   public Group[] getGroups() {
     return null;
   }
+
+  /**
+   * @param structureList  protein only -- helix, sheet, turn definitions
+   */
+  public void setStructureList(float[][] structureList) {
+  }
 }

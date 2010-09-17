@@ -706,6 +706,21 @@ abstract public class ModelCollection extends BondCollection {
     }
   }
   
+  public float[][] getStructureList() {
+    return viewer.getStructureList();
+  }
+
+  public void setStructureList(float[][] structureList) {
+    for (int iModel = modelCount; --iModel >= 0;) {
+      Model m = models[iModel];
+      m.bioPolymers = (Polymer[])ArrayUtil.setLength(m.bioPolymers, m.bioPolymerCount);
+      for (int i = m.bioPolymerCount; --i >= 0; ) {
+        m.bioPolymers[i].setStructureList(structureList);
+      }
+    }
+  }
+
+
   public BitSet setConformation(BitSet bsAtoms) {
     BitSet bsModels = getModelBitSet(bsAtoms, false);
     for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1))

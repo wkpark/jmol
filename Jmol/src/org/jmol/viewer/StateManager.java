@@ -1588,6 +1588,13 @@ public class StateManager {
       commands.append(viewer.getShapeProperty(JmolConstants.SHAPE_LABELS,
           "defaultState"));
 
+      // structure defaults
+      
+      if (haveSetStructureList) {
+        commands.append("struture HELIX set " + Escape.escape(structureList[JmolConstants.PROTEIN_STRUCTURE_HELIX], true));
+        commands.append("struture SHEET set " + Escape.escape(structureList[JmolConstants.PROTEIN_STRUCTURE_SHEET], true));
+        commands.append("struture TURN set " + Escape.escape(structureList[JmolConstants.PROTEIN_STRUCTURE_TURN], true));
+      }
       if (sfunc != null)
         commands.append("\n}\n\n");
       return commands.toString();
@@ -1602,6 +1609,32 @@ public class StateManager {
       return StateManager.getVariableList(htUserVariables, 0, true);
     }
 
+    // static because we don't plan to be changing these
+    private float[][] structureList = new float[][] {
+      null, // none
+      new float[] { // turn
+          30, 90, -15, 95,
+        },
+      new float[] { // sheet
+          -180, -10,   70,  180, 
+          -180, -45, -180, -130, 
+           140, 180,   90, 180, 
+        },
+      new float[] {  // helix
+        -160, 0, -100, 45,
+      },
+    };
+    
+    private boolean haveSetStructureList;
+    
+    public void setStructureList(float[] list, int type) {
+      haveSetStructureList = true;
+      structureList[type] = list;
+    }
+    
+    public float[][] getStructureList() {
+      return structureList;
+    }
   }
 
   ///////// state serialization 

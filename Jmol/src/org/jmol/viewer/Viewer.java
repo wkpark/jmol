@@ -2451,6 +2451,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void calculateStructures(BitSet bsAtoms) {
     // Eval
+    if (bsAtoms == null)
+      bsAtoms = getModelUndeletedAtomsBitSet(-1);
     modelSet.calculateStructures(bsAtoms);
   }
 
@@ -9464,5 +9466,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public ColorEncoder getColorEncoder(String colorScheme) {
     return colorManager.getColorEncoder(colorScheme);
   }
+
+  public float[][] getStructureList() {     
+    return global.getStructureList();
+  }
+
+  public void setStructureList(float[] list, int type) {
+    // none, turn, sheet, helix
+    global.setStructureList(list, type);
+    modelSet.setStructureList(getStructureList());
+  }
+  
 
 }

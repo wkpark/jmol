@@ -534,9 +534,9 @@ public class Token {
   
   // occupancy, radius, and structure are odd, because they takes different meanings when compared
   
-  public final static int occupancy     = intproperty | floatproperty | 2 | settable;
-  public final static int radius        = intproperty | floatproperty | 1 | deprecatedparam | settable;
-  public final static int structure     = intproperty | strproperty   | 3 | scriptCommand;
+  public final static int occupancy     = intproperty | floatproperty | 1 | settable;
+  public final static int radius        = intproperty | floatproperty | 2 | deprecatedparam | settable;
+  public final static int structure     = intproperty | strproperty   | 3 | setparam | scriptCommand;
 
   // any new int, float, or string property should be added also to LabelToken.labelTokenIds
   // and the appropriate Atom.atomPropertyXXXX() method

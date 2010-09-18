@@ -7324,12 +7324,15 @@ public class ScriptEvaluator {
     boolean isColor = false;
     boolean isIsosurface = (shapeType == JmolConstants.SHAPE_ISOSURFACE);
     int typeMask = 0;
+    boolean doClearBondSet = false;
     float translucentLevel = Float.MAX_VALUE;
     if (index < 0) {
       bs = atomExpression(-index);
       index = iToken + 1;
-      if (isBondSet)
+      if (isBondSet) {
+        doClearBondSet = true;
         shapeType = JmolConstants.SHAPE_STICKS;
+      }
     }
     if (isBackground)
       getToken(index);
@@ -7541,6 +7544,8 @@ public class ScriptEvaluator {
     if (typeMask != 0)
       setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer
           .valueOf(JmolEdge.BOND_COVALENT_MASK));
+    if (doClearBondSet)
+      viewer.selectBonds(null);
   }
 
   private void colorShape(int shapeType, int typeMask, int argb,

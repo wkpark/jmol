@@ -1961,7 +1961,7 @@ abstract public class AtomCollection {
       return null;
     Atom[] attached = new Atom[nAttached];
     if (nAttached > 0) {
-      Bond[] bonds = atom.getBonds();
+      Bond[] bonds = atom.bonds;
       int n = 0;
       for (int i = 0; i < bonds.length; i++)
         if (bonds[i].isCovalent())

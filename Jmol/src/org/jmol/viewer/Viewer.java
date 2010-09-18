@@ -7905,7 +7905,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         bsBranch = getBranchBitSet(atom2.index, atom1.index);
       }
       if (bsBranch != null)
-        for (int n = 0, i = 0; i < atom1.bonds.length; i++) {
+        for (int n = 0, i = atom1.getBonds().length; --i >= 0;) {
           if (bsBranch.get(atom1.getBondedAtomIndex(i)) && ++n == 2) {
             bsBranch = null;
             break;
@@ -9354,19 +9354,21 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void moveAtomWithHydrogens(int atomIndex, int deltaX, int deltaY,
-                                    BitSet bsAtoms) {
+                             BitSet bsAtoms) {
     stopMinimization();
     Atom atom = modelSet.atoms[atomIndex];
     if (bsAtoms == null) {
       bsAtoms = BitSetUtil.setBit(atomIndex);
-      Bond[] bonds = atom.bonds;
-      for (int i = 0; i < bonds.length; i++) {
-        Atom atom2 = atom.bonds[i].getOtherAtom(atom);
-        if (atom2.getElementNumber() == 1)
-          bsAtoms.set(atom2.index);
-      }
+      Bond[] bonds = atom.getBonds();
+      if (bonds != null)
+        for (int i = 0; i < bonds.length; i++) {
+          Atom atom2 = bonds[i].getOtherAtom(atom);
+          if (atom2.getElementNumber() == 1)
+            bsAtoms.set(atom2.index);
+        }
     }
-    moveSelected(deltaX, deltaY, Integer.MIN_VALUE, Integer.MIN_VALUE, bsAtoms, true);
+    moveSelected(deltaX, deltaY, Integer.MIN_VALUE, Integer.MIN_VALUE, bsAtoms,
+        true);
   }
 
   void appendLoadStates(StringBuffer commands) {

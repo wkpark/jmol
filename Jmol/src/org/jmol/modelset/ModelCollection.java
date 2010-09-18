@@ -2701,7 +2701,9 @@ abstract public class ModelCollection extends BondCollection {
       float min2, max2, dmax;
       boolean firstIsCO;
       if (isH) {
-        Bond[] b = atom.getBonds();
+        Bond[] b = atom.bonds;
+        if (b == null)
+          continue;
         boolean isOK = false;
         for (int j = 0; j < b.length && !isOK; j++) {
           Atom a2 = b[j].getOtherAtom(atom);
@@ -2774,11 +2776,11 @@ abstract public class ModelCollection extends BondCollection {
   private static Point3f checkMinAttachedAngle(Atom atom1,
                                                float minAngle, Vector3f v1,
                                                Vector3f v2, boolean haveHAtoms) {
-    Bond[] bonds = atom1.getBonds();
-    Atom X = null;
-    float dMin = Float.MAX_VALUE;
+    Bond[] bonds = atom1.bonds;
     if (bonds == null || bonds.length == 0)
       return new Point3f(Float.NaN, 0, 0);
+    Atom X = null;
+    float dMin = Float.MAX_VALUE;
     for (int i = bonds.length; --i >= 0;)
       if (bonds[i].isCovalent()) {
         Atom atomA = bonds[i].getOtherAtom(atom1);

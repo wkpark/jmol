@@ -5674,7 +5674,8 @@ public class ScriptEvaluator {
             && aatoken[pc + 1][0].tok == Token.catchcmd) {
           // set the intValue positive to indicate "not done" for the IF evaluation
           ContextToken ct = (ContextToken) aatoken[pc + 1][0];
-          ct.contextVariables.put(ct.name0, ScriptVariable.getVariable(errMsg));
+          if (ct.contextVariables != null)
+            ct.contextVariables.put(ct.name0, ScriptVariable.getVariable(errMsg));
           ct.intValue = (errMsg.length() > 0 ? 1 : -1) * Math.abs(ct.intValue);
         }
         return false;

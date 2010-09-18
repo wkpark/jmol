@@ -71,8 +71,17 @@ final public class Atom extends Point3fi implements JmolNode {
   short colixAtom;
   byte paletteID = JmolConstants.PALETTE_CPK;
 
-  public Bond[] bonds;
+  Bond[] bonds;
   
+  /**
+   * 
+   * @return  bonds -- WHICH MAY BE NULL
+   * 
+   */
+  public Bond[] getBonds() {
+    return bonds;
+  }
+
   public void setBonds(Bond[] bonds) {
     this.bonds = bonds;  // for Smiles equating
   }
@@ -287,10 +296,6 @@ final public class Atom extends Point3fi implements JmolNode {
     return bonds;
   }
   
-  public Bond[] getBonds() {
-    return bonds;
-  }
-
   public void setColixAtom(short colixAtom) {
     this.colixAtom = colixAtom;
   }

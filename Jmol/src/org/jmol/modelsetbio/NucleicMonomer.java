@@ -418,6 +418,8 @@ public class NucleicMonomer extends PhosphorusMonomer {
       Atom p1 = getAtomFromOffsetIndex(O1P);
       Atom p2 = getAtomFromOffsetIndex(O2P);
       Bond[] bonds = ptNorP.getBonds();
+      if (bonds == null)
+        return null;
       Group g = ptNorP.getGroup();
       for (int i = 0; i < bonds.length; i++) {
         Atom atom = bonds[i].getOtherAtom(ptNorP);
@@ -481,6 +483,8 @@ public boolean isCrossLinked(Group g) {
     Atom N = (isPurine ? getN1() : getN3());
     //System.out.println(N.getInfo());
     Bond[] bonds = N.getBonds();
+    if (bonds == null)
+      return false;
     boolean haveCrossLinks = false;
     for (int i = 0; i < bonds.length; i++) {
       //System.out.println(bonds[i].getOtherAtom(N).getInfo());

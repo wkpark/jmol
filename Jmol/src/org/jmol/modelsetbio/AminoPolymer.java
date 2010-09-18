@@ -456,9 +456,9 @@ public class AminoPolymer extends AlphaPolymer {
   }
 
   private static boolean checkPhiPsi(float[] list, float psi, float phi) {
-    for (int i = 0; i < list.length; )
-      if (phi >= list[i++] && phi <= list[i++] 
-         && psi >= list[i++] && psi <= list[i++])
+    for (int i = 0; i < list.length; i+= 4 )
+      if (phi >= list[i] && phi <= list[i + 1] 
+         && psi >= list[i + 2] && psi <= list[i + 3])
         return true;
     return false;
   }

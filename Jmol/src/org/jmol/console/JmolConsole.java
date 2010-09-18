@@ -25,6 +25,7 @@ package org.jmol.console;
 
 
 import org.jmol.api.JmolCallbackListener;
+import org.jmol.api.JmolFrame;
 import org.jmol.api.JmolScriptEditorInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
@@ -362,6 +363,8 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
         return (Frame) p;
       else if (p instanceof JDialog)
         return (JDialog) p;
+      else if (p instanceof JmolFrame)
+        return ((JmolFrame) p).getFrame();
       p = p.getParent();
     }
     return null;

@@ -42,13 +42,14 @@ public class JvxlCoder {
   //TODO -- need to escapeXml for text data
   
   final public static String JVXL_VERSION1 = "2.0";
-  final public static String JVXL_VERSION_XML = "2.1";
+  final public static String JVXL_VERSION_XML = "2.2";
   
   // 1.4 adds -nContours to indicate contourFromZero for MEP data mapped onto planes
   // 2.0 adds vertex/triangle compression when no grid is present 
   // Jmol 11.7.25 -- recoded so that we do not create voxelData[nx][ny][nz] and instead
   //                 simply create a BitSet of length nx * ny * nz. This saves memory hugely.
   // 2.1 adds JvxlXmlReader
+  // 2.2 adds color density Jmol 12.0.15/12.1.13
   
   public static String jvxlGetFile(VolumeData volumeData, JvxlData jvxlData,
                                    String[] title) {

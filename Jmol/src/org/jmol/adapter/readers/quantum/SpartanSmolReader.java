@@ -93,6 +93,10 @@ public class SpartanSmolReader extends SpartanInputReader {
         }
         if (title != null)
           atomSetCollection.setAtomSetName(title);
+        if (filter != null && filter.toLowerCase().indexOf("input") >= 0) {
+          continuing = false;
+          return false;
+        }
       } else if (lcline.endsWith("_output")) {
         return true;
       } else if (lcline.endsWith("output")) {
@@ -167,15 +171,15 @@ public class SpartanSmolReader extends SpartanInputReader {
   
   private void readOutput() throws Exception {
     titles = new Hashtable<String, String>();
-    String header = "";
+    StringBuffer header = new StringBuffer();
     int pt;
     while (readLine() != null && !line.startsWith("END ")) {
-      header += line + "\n";
+      header.append(line).append("\n");
       if ((pt = line.indexOf(")")) > 0)
         titles.put("Title"+parseInt(line.substring(0, pt))
             , (line.substring(pt + 1).trim()));
     }
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("fileHeader", header);
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("fileHeader", header.toString());
   }
 
   private void readArchive() throws Exception {

@@ -99,6 +99,8 @@ public class Escape {
    * @return tabular string
    */
   public static String escape(float[] f, boolean asArray) {
+    if (asArray)
+      return toJSON(null, f);
     StringBuilder sb = new StringBuilder();
     for (int i = 0; i < f.length; i++) {
       if (i > 0)

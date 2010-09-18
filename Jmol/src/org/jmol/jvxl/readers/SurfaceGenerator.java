@@ -361,17 +361,6 @@ public class SurfaceGenerator {
       return true;
     }
 
-    if ("commandOption" == propertyName) {
-      String s = " # " + (String) value;
-      // System.out.println("sg commandOption0  " + params.script + " and " +
-      // propertyName);
-      if (params.script.indexOf(s) < 0)
-        params.script += s;
-      // System.out.println("sg commandOption1  " + params.script);
-
-      return true;
-    }
-
     if ("clear" == propertyName) {
       if (surfaceReader != null)
         surfaceReader.discardTempData(true);
@@ -857,7 +846,8 @@ public class SurfaceGenerator {
         || "sasurface" == propertyName || "nomap" == propertyName) {
       params.setSolvent(propertyName, ((Float) value).floatValue());
       Logger.info(params.calculationType);
-      if (params.state < Parameters.STATE_DATA_READ)
+      if (params.state < Parameters.STATE_DATA_READ && 
+          (params.cutoffAutomatic || !params.colorDensity))
         params.cutoff = 0.0f;
       processState();
       return true;

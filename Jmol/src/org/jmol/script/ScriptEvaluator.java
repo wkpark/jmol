@@ -13585,7 +13585,7 @@ public class ScriptEvaluator {
             + data[0]
             + "\"\n"
             + (data[1] instanceof float[] ? Escape.escape((float[]) data[1],
-                true) : data[1] instanceof float[][] ? Escape.escape(
+                false) : data[1] instanceof float[][] ? Escape.escape(
                 (float[][]) data[1], false) : "" + data[1]) + "\nend \""
             + data[0] + "\";");
       }
@@ -14988,7 +14988,7 @@ public class ScriptEvaluator {
           ptWithin = i;
         }
         float distance;
-        Point3f ptc;
+        Point3f ptc = null;
         bs = null;
         boolean havePt = false;
         if (tokAt(i + 1) == Token.expressionBegin) {
@@ -15007,7 +15007,6 @@ public class ScriptEvaluator {
                 false, true);
             if (bs == null)
               error(ERROR_invalidArgument);
-            ptc = viewer.getAtomSetCenter(bs);
           }
         } else {
           distance = floatParameter(++i);
@@ -15022,6 +15021,11 @@ public class ScriptEvaluator {
           bs = (expressionResult instanceof BitSet ? (BitSet) expressionResult
               : null);
         if (!isSyntaxCheck) {
+          if (bs != null)
+            bs.and(viewer.getModelUndeletedAtomsBitSet(modelIndex));
+          if (ptc == null)
+            ptc = viewer.getAtomSetCenter(bs);
+
           getWithinDistanceVector(propertyList, distance, ptc, bs, isDisplay);
           sbCommand.append(" within ").append(distance).append(" ").append(
               bs == null ? Escape.escape(ptc) : Escape.escape(bs));
@@ -15528,14 +15532,21 @@ public class ScriptEvaluator {
         }
         break;
       case Token.cutoff:
-        if (++i < statementLength && getToken(i).tok == Token.plus) {
+        if (tokAt(++i) == Token.plus) {
           propertyName = "cutoffPositive";
           propertyValue = new Float(cutoff = floatParameter(++i));
           sbCommand.append(" cutoff +").append(propertyValue);
-        } else {
+        } else if (isFloatParameter(i)){
           propertyName = "cutoff";
           propertyValue = new Float(cutoff = floatParameter(i));
           sbCommand.append(" cutoff ").append(propertyValue);
+        } else {
+          propertyName = "cutoffRange";
+          propertyValue = floatParameterSet(i, 2, 2);
+          addShapeProperty(propertyList, "cutoff", Float.valueOf(0));
+          addShapeProperty(propertyList, "colorDensity", null);
+          sbCommand.append(" cutoff ").append(Escape.escape((float[]) propertyValue, true));
+          i = iToken;
         }
         break;
       case Token.downsample:
@@ -15932,8 +15943,6 @@ public class ScriptEvaluator {
           addShapeProperty(propertyList, "fileName", filename);
           if (localName != null)
             filename = localName;
-          //addShapeProperty(propertyList, "commandOption", "FILE" + (nFiles++)
-          //  + "=" + Escape.escape(filename));
           sbCommand.append(" /*file*/").append(Escape.escape(filename));
           propertyValue = null;
           // null value indicates that we need a reader based on the fileName
@@ -16107,8 +16116,6 @@ public class ScriptEvaluator {
       pts[1] = pt1;
       v.add(ptc);
     } else {
-      //addShapeProperty(propertyList, "commandOption", "WITHIN=\""
-      //  + Escape.escape(bs) + "\"");
       BoxInfo bbox = viewer.getBoxInfo(bs, -distance);
       pts[0] = bbox.getBboxVertices()[0];
       pts[1] = bbox.getBboxVertices()[7];

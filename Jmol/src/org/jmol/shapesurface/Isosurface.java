@@ -184,8 +184,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   protected SurfaceGenerator sg;
   protected JvxlData jvxlData;
 
-  private float withinDistance;
+  private float withinDistance2;
+  private boolean isWithinNot;
   private List<Point3f> withinPoints;
+  private float[] cutoffRange;
 
   @SuppressWarnings("unchecked")
   @Override
@@ -307,7 +309,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     }
     if ("displayWithin" == propertyName) {
       Object[] o = (Object[]) value;
-      displayWithinDistance = ((Float) o[0]).floatValue();
+      displayWithinDistance2 = ((Float) o[0]).floatValue();
+      isDisplayWithinNot = (displayWithinDistance2 < 0);
+      displayWithinDistance2 *= displayWithinDistance2;
       displayWithinPoints = (List<Point3f>) o[3];
       if (displayWithinPoints.size() == 0)
         displayWithinPoints = viewer.getAtomPointVector((BitSet) o[2]);
@@ -404,10 +408,14 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       value = title;
     } else if ("withinPoints" == propertyName) {
       Object[] o = (Object[]) value;
-      withinDistance = ((Float) o[0]).floatValue();
+      withinDistance2 = ((Float) o[0]).floatValue();
+      isWithinNot = (withinDistance2 < 0);
+      withinDistance2 *= withinDistance2;
       withinPoints = (List<Point3f>) o[3];
       if (withinPoints.size() == 0)
         withinPoints = viewer.getAtomPointVector((BitSet) o[2]);
+    } else if ("cutoffRange" == propertyName) {
+      cutoffRange = (float[]) value;
     }
 
     // surface Export3D only (return TRUE) or shared (return FALSE)
@@ -693,6 +701,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     offset = null;
     scale3d = 0;
     withinPoints = null;
+    cutoffRange = null;
     displayWithinPoints = null;
     bsDisplay = null;
     linkedMesh = null;
@@ -1013,7 +1022,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   private boolean associateNormals;
 
   public int addVertexCopy(Point3f vertexXYZ, float value, int assocVertex) {
-    return (withinPoints != null && !Mesh.checkWithin(vertexXYZ, withinPoints, withinDistance) ? -1
+    if (cutoffRange != null && (value < cutoffRange[0] || value > cutoffRange[1]))
+      return -1;
+    return (withinPoints != null && !Mesh.checkWithin(vertexXYZ, withinPoints, withinDistance2, isWithinNot) ? -1
         : thisMesh.addVertexCopy(vertexXYZ, value, assocVertex,
         associateNormals));
   }

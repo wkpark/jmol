@@ -357,7 +357,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     BitSet bs = new BitSet();
     int bsVoxelPtr = 0;
     if (surfaceDataCount <= 0)
-      return bs; //unnecessary -- probably a plane
+      return bs; //unnecessary -- probably a plane or color density
     int nThisValue = 0;
     while (bsVoxelPtr < nPoints) {
       nThisValue = parseInt();

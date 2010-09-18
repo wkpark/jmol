@@ -212,7 +212,6 @@ abstract class VolumeFileReader extends SurfaceFileReader {
           * (nSkipZ = (nPointsZ * downsampleFactor + downsampleRemainders[2]));
       nSkipZ = downsampleRemainders[1] * nSkipZ + (downsampleFactor - 1)
           * nSkipZ * (nPointsY * downsampleFactor + downsampleRemainders[1]);
-      //System.out.println(nSkipX + " " + nSkipY + " " + nSkipZ);
     }
 
     if (params.thePlane != null) {

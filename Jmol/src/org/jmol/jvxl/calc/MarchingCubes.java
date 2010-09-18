@@ -239,6 +239,7 @@ public class MarchingCubes extends TriangleData {
 
     float v = 0;
     int pti = 0;
+    boolean allInside = (colorDensity && (cutoff == 0 || bsVoxels.cardinality() == 0));
 
     for (int x = x0; x != x1; x += xStep, ptX += ptStep, pt = ptX, cellIndex = cellIndex0) {
 
@@ -266,8 +267,6 @@ public class MarchingCubes extends TriangleData {
       if (bsExcludedPlanes.get(x) && bsExcludedPlanes.get(x + xStep))
         continue;
       int xCount = 0;
-      boolean allInside = (cutoff == 0 && colorDensity);
-
       for (int y = cubeCountY; --y >= 0; pt--) {        
         for (int z = cubeCountZ; --z >= 0; pt--, cellIndex--) {
 
@@ -290,7 +289,7 @@ public class MarchingCubes extends TriangleData {
               isInside = bsVoxels.get(pti);
               break;
             case MODE_BITSET:
-              isInside = bsVoxels.get(pti);
+              isInside = (allInside || bsVoxels.get(pti));
               v = vertexValues[i] = (bsExcludedVertices.get(pti) ? Float.NaN
                   : isInside ? 1 : 0);
               break;

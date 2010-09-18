@@ -85,7 +85,7 @@ public class MeshSurface {
       vertexValues = ArrayUtil.doubleLength(vertexValues);
     vertexValues[vertexCount] = value;
     return addVertexCopy(vertex);
-  }
+  } 
 
   public int addTriangleCheck(int vertexA, int vertexB, int vertexC, int check,
                               int check2, int color) {

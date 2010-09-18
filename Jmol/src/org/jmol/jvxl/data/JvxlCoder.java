@@ -879,8 +879,7 @@ public class JvxlCoder {
   
     
   public static int jvxlEncodeBitSet(BitSet bs, int nPoints, StringBuffer sb) {
-    //if (false)
-      //return jvxlEncodeBitSet0(bs, nPoints, sb);
+    //System.out.println("jvxlcoder " + Escape.escape(bs));
     int dataCount = 0;
     int n = 0;
     boolean isset = false;
@@ -906,7 +905,9 @@ public class JvxlCoder {
 
   public static void jvxlAppendEncodedNumber(StringBuffer sb, int n, int base, int range) {
     boolean isInRange = (n < range);
-    if (!isInRange)
+    if (n == 0)
+      sb.append((char) base);
+    else if (!isInRange)
       sb.append((char)(base + range));
     while (n > 0) {
       int n1 = n / range;

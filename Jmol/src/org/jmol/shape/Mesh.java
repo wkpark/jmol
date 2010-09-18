@@ -27,6 +27,7 @@ package org.jmol.shape;
 import java.util.BitSet;
 import java.util.List;
 
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Measure;
 import org.jmol.util.MeshSurface;
@@ -300,24 +301,34 @@ public class Mesh extends MeshSurface {
   /**
    * 
    * @param showWithinPoints
-   * @param showWithinDistance
+   * @param showWithinDistance2
+   * @param isWithinNot
    */
   public void setShowWithin(List<Point3f> showWithinPoints,
-                            float showWithinDistance) {
+                            float showWithinDistance2, boolean isWithinNot) {
     if (showWithinPoints.size() == 0) {
-      bsDisplay = null;
+      bsDisplay = (isWithinNot ? BitSetUtil.newBitSet(0, vertexCount) : null);
       return;
     }
     bsDisplay = new BitSet();
     for (int i = 0; i < vertexCount; i++)
-      if (checkWithin(vertices[i], showWithinPoints, showWithinDistance))
+      if (checkWithin(vertices[i], showWithinPoints, showWithinDistance2, isWithinNot))
         bsDisplay.set(i);
   }
 
-  public static boolean checkWithin(Point3f pti, List<Point3f> withinPoints, float withinDistance) {
-    for (int i = withinPoints.size(); --i >= 0; )
-      if (pti.distance(withinPoints.get(i)) <= withinDistance)
-        return true; 
+  public static boolean checkWithin(Point3f pti, List<Point3f> withinPoints,
+                                    float withinDistance2, boolean isWithinNot) {
+    if (withinPoints.size() == 0)
+      return isWithinNot;
+    if (isWithinNot) {
+      for (int i = withinPoints.size(); --i >= 0;)
+        if (pti.distanceSquared(withinPoints.get(i)) > withinDistance2)
+          return true;
+    } else {
+      for (int i = withinPoints.size(); --i >= 0;)
+        if (pti.distanceSquared(withinPoints.get(i)) <= withinDistance2)
+          return true;
+    }
     return false;
   }
 

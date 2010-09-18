@@ -221,8 +221,7 @@ public abstract class Shape {
     if (xmlProperties == null)
       return false;
 
-    if (propertyName == "setProperties" || propertyName == "thisID"
-        || propertyName == "commandOption")
+    if (propertyName == "setProperties" || propertyName == "thisID")
       return false;
     Vector attributes = new Vector();
     attributes.add(new Object[] { "select",

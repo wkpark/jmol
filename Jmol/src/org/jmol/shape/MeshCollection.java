@@ -63,7 +63,8 @@ public abstract class MeshCollection extends Shape {
   protected boolean allowContourLines;
   protected boolean haveContours = false;
   
-  protected float displayWithinDistance;
+  protected float displayWithinDistance2;
+  protected boolean isDisplayWithinNot;
   protected List<Point3f> displayWithinPoints;
   protected BitSet bsDisplay;
 
@@ -171,12 +172,6 @@ public abstract class MeshCollection extends Shape {
       if (currentMesh != null && currentMesh.scriptCommand != null && !currentMesh.scriptCommand.startsWith("{"))
         currentMesh.scriptCommand = "{\n" 
           + StateManager.getVariableList((Map<String, ScriptVariable>) value, 0, false) + "\n" + currentMesh.scriptCommand;
-      return;
-    }
-    if ("commandOption" == propertyName) {
-      String s = "# " + (String) value;
-      if (script.indexOf(s) < 0)
-        script += " " + s;
       return;
     }
 
@@ -340,7 +335,7 @@ public abstract class MeshCollection extends Shape {
     case Token.display:
       m.bsDisplay = bsDisplay;
       if (bsDisplay == null && displayWithinPoints != null) 
-        m.setShowWithin(displayWithinPoints, displayWithinDistance);
+        m.setShowWithin(displayWithinPoints, displayWithinDistance2, isDisplayWithinNot);
       return;
     case Token.on:
       m.visible = bProp;

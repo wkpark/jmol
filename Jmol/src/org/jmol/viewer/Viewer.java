@@ -41,6 +41,7 @@ import org.jmol.modelset.Group;
 import org.jmol.modelset.MeasurementPending;
 import org.jmol.modelset.ModelLoader;
 import org.jmol.modelset.ModelSet;
+import org.jmol.modelset.Bond.BondSet;
 import org.jmol.modelset.ModelCollection.StateScript;
 
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
@@ -9477,6 +9478,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // none, turn, sheet, helix
     global.setStructureList(list, type);
     modelSet.setStructureList(getStructureList());
+  }
+
+  public void displayBonds(BondSet bs, boolean isDisplay) {
+    modelSet.displayBonds(bs, isDisplay);    
   }
   
 

@@ -29,6 +29,7 @@ import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 
 import org.jmol.viewer.JmolConstants;
+import org.jmol.modelset.Bond.BondSet;
 import org.jmol.script.Token;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolEdge;
@@ -556,18 +557,31 @@ abstract public class ModelSet extends ModelCollection {
           if (bonds[i].isHydrogen()
               || (bonds[i].order & JmolEdge.BOND_NEW) != 0) {
             Bond bond = bonds[i];
-            sb.append(bond.atom1.index)
-                .append('\t').append(bond.atom2.index)
-                .append('\t').append(bond.order & ~JmolEdge.BOND_NEW)
-                .append('\t').append(bond.mad / 1000f)
-                .append('\t').append(bond.getEnergy())
-                .append('\t').append(JmolConstants.getBondOrderNameFromOrder(bond.order))
+            sb.append(bond.atom1.index).append('\t').append(bond.atom2.index)
+                .append('\t').append(bond.order & ~JmolEdge.BOND_NEW).append(
+                    '\t').append(bond.mad / 1000f).append('\t').append(
+                    bond.getEnergy()).append('\t').append(
+                    JmolConstants.getBondOrderNameFromOrder(bond.order))
                 .append(";\n");
           }
       if (sb.length() > 0)
-        commands.append("data \"connect_atoms\"\n")
-            .append(sb).append("end \"connect_atoms\";\n");
+        commands.append("data \"connect_atoms\"\n").append(sb).append(
+            "end \"connect_atoms\";\n");
       commands.append("\n");
+    }
+
+    // bond visibility
+
+    if (haveHiddenBonds) {
+      BondSet bs = new BondSet();
+      for (int i = bondCount; --i >= 0;)
+        if (bonds[i].mad != 0
+            && (bonds[i].shapeVisibilityFlags & Bond.myVisibilityFlag) == 0)
+          bs.set(i);
+      if (bs.isEmpty())
+        haveHiddenBonds = false;
+      else
+        commands.append("  hide ").append(Escape.escape(bs, false)).append(";\n");
     }
 
     // shape construction

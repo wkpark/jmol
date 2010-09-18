@@ -5594,6 +5594,7 @@ public class ScriptEvaluator {
       // for (var i = 1; i < 3; i = i + 1);
       // for (;;;);
       // for (var x in {...}) { xxxxx }
+      Token token = theToken;
       int[] pts = new int[2];
       int j = 0;
       BitSet bsIn = null;
@@ -5620,7 +5621,7 @@ public class ScriptEvaluator {
         j = pts[1] + 1;
         isForCheck = false;
       } else {
-        pushContext((ContextToken) theToken);
+        pushContext((ContextToken) token);
         j = 2;
         if (tokAt(j) == Token.var)
           j++;
@@ -9704,13 +9705,26 @@ public class ScriptEvaluator {
   }
 
   private void display(boolean isDisplay) throws ScriptException {
-    if (tokAt(1) == Token.dollarsign) {
+    BitSet bs = null;
+    switch (tokAt(1)) {
+    case Token.dollarsign:
       setObjectProperty();
       return;
-    }
-    BitSet bs = (statementLength == 1 ? null : atomExpression(1));
+    case Token.nada:
+      break;
+    default:
+      if (statementLength == 4 && tokAt(2) == Token.bonds)
+        bs = new BondSet(BitSetUtil.newBitSet(0, viewer.getModelSet().getBondCount()));
+      else
+        bs = atomExpression(1);
+    }    
     if (isSyntaxCheck)
       return;
+    if (bs instanceof BondSet) {
+      viewer.displayBonds((BondSet) bs, isDisplay);
+      return;
+    }
+      
     if (isDisplay)
       viewer.display(bs, tQuiet);
     else

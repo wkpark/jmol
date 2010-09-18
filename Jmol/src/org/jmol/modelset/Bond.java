@@ -37,6 +37,10 @@ import org.jmol.viewer.JmolConstants;
 public class Bond implements JmolEdge {
 
   public static class BondSet extends BitSet {
+
+    public BondSet() {
+    }
+
     private int[] associatedAtoms;
     
     public int[] getAssociatedAtoms() {
@@ -51,6 +55,7 @@ public class Bond implements JmolEdge {
       this(bs);
       associatedAtoms = atoms;
     }
+
   }
 
   Atom atom1;
@@ -73,15 +78,6 @@ public class Bond implements JmolEdge {
     return index;
   }
   
-  int shapeVisibilityFlags;
-  
-  public int getShapeVisibilityFlags() {
-    return shapeVisibilityFlags;
-  }
-
-  
-  final static int myVisibilityFlag = JmolConstants.getShapeVisibilityFlag(JmolConstants.SHAPE_STICKS);
-
   public Bond(Atom atom1, Atom atom2, int order,
               short mad, short colix) {
     this.atom1 = atom1;
@@ -94,6 +90,36 @@ public class Bond implements JmolEdge {
     this.colix = colix;
     setMad(mad);
   }
+
+  public void setMad(short mad) {
+    this.mad = mad;
+    setShapeVisibility(mad != 0);
+  }
+
+  int shapeVisibilityFlags;
+  
+  public void setShapeVisibilityFlags(int shapeVisibilityFlags) {
+    this.shapeVisibilityFlags = shapeVisibilityFlags;
+  }
+
+  public int getShapeVisibilityFlags() {
+    return shapeVisibilityFlags;
+  }
+
+  void setShapeVisibility(boolean isVisible) {
+    boolean wasVisible = ((shapeVisibilityFlags & myVisibilityFlag) != 0);
+    if (wasVisible == isVisible)
+      return;
+    atom1.addDisplayedBond(myVisibilityFlag, isVisible);
+    atom2.addDisplayedBond(myVisibilityFlag, isVisible);
+    if (isVisible)
+      shapeVisibilityFlags |= myVisibilityFlag;
+    else
+      shapeVisibilityFlags &= ~myVisibilityFlag;
+  }
+            
+  
+  final static int myVisibilityFlag = JmolConstants.getShapeVisibilityFlag(JmolConstants.SHAPE_STICKS);
 
   public String getIdentity() {
     return (index + 1) + " "+ getOrderNumberAsString() + " " + atom1.getInfo() + " -- "
@@ -147,25 +173,6 @@ public class Bond implements JmolEdge {
     atom1 = atom2 = null;
   }
 
-  public void setMad(short mad) {
-    boolean wasVisible = (this.mad != 0); 
-    boolean isVisible = (mad != 0);
-    if (wasVisible != isVisible) {
-      atom1.addDisplayedBond(myVisibilityFlag, isVisible);
-      atom2.addDisplayedBond(myVisibilityFlag, isVisible);    
-    }
-    this.mad = mad;
-    setShapeVisibility(myVisibilityFlag, isVisible);
-  }
-
-  final void setShapeVisibility(int shapeVisibilityFlag, boolean isVisible) {
-    if(isVisible) {
-      shapeVisibilityFlags |= shapeVisibilityFlag;        
-    } else {
-      shapeVisibilityFlags &=~shapeVisibilityFlag;
-    }
-  }
-      
   public void setColix(short colix) {
     this.colix = colix;
   }
@@ -233,10 +240,6 @@ public class Bond implements JmolEdge {
   
   ////////////////////////////////////////////////////////////////
   
-  public void setShapeVisibilityFlags(int shapeVisibilityFlags) {
-    this.shapeVisibilityFlags = shapeVisibilityFlags;
-  }
-
   public void setIndex(int i) {
     index = i;
   }

@@ -37,6 +37,7 @@ import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.api.JmolEdge;
 import org.jmol.api.JmolMolecule;
+import org.jmol.modelset.Bond.BondSet;
 import org.jmol.script.Token;
 
 abstract public class BondCollection extends AtomCollection {
@@ -850,5 +851,16 @@ abstract public class BondCollection extends AtomCollection {
     if (bs.nextSetBit(0) >= 0)
       viewer.deleteAtoms(bs, false);
   }
+  
+  protected boolean haveHiddenBonds;
+  
+  public void displayBonds(BondSet bs, boolean isDisplay) {
+    if (!isDisplay)
+      haveHiddenBonds = true;
+    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
+      if (i < bondCount && bonds[i].mad != 0)
+        bonds[i].setShapeVisibility(isDisplay);
+  }
+
 }
 

@@ -496,7 +496,7 @@ class MainPopupResourceBundle extends PopupResource {
       { "surfSolventAccessible14",
           "isosurface delete resolution 0 sasurface 1.4 translucent" },
       { "CHARGEsurfMEP",
-          "isosurface delete resolution 0 molecular color range all map MEP translucent" },
+          "isosurface delete resolution 0 vdw color range all map MEP translucent" },
       { "surfOpaque", "mo opaque;isosurface opaque" },
       { "surfTranslucent", "mo translucent;isosurface translucent" },
       { "surfOff", "mo delete;isosurface delete;select *;dots off" },

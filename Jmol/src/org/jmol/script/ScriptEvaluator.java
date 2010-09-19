@@ -15551,20 +15551,21 @@ public class ScriptEvaluator {
         }
         break;
       case Token.cutoff:
+        sbCommand.append(" cutoff ");
         if (tokAt(++i) == Token.plus) {
           propertyName = "cutoffPositive";
           propertyValue = new Float(cutoff = floatParameter(++i));
-          sbCommand.append(" cutoff +").append(propertyValue);
+          sbCommand.append("+").append(propertyValue);
         } else if (isFloatParameter(i)){
           propertyName = "cutoff";
           propertyValue = new Float(cutoff = floatParameter(i));
-          sbCommand.append(" cutoff ").append(propertyValue);
+          sbCommand.append(propertyValue);
         } else {
           propertyName = "cutoffRange";
           propertyValue = floatParameterSet(i, 2, 2);
           addShapeProperty(propertyList, "cutoff", Float.valueOf(0));
-          addShapeProperty(propertyList, "colorDensity", null);
-          sbCommand.append(" cutoff ").append(Escape.escape((float[]) propertyValue, true));
+          //addShapeProperty(propertyList, "colorDensity", null);
+          sbCommand.append(Escape.escape((float[]) propertyValue, true));
           i = iToken;
         }
         break;

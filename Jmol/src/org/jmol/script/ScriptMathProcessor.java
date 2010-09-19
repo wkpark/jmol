@@ -2200,6 +2200,12 @@ class ScriptMathProcessor {
   }
 
   private boolean evaluateColor(ScriptVariable[] args) {
+    // color("rwb")                  # "" for most recently used scheme for coloring by property
+    // color("rwb", min, max)        # min/max default to most recent property mapping 
+    // color("rwb", min, max, value) # returns color
+    // color("$isosurfaceId")        # info for a given isosurface
+    // color("$isosurfaceId", value) # color for a given mapped isosurface value
+    
     String colorScheme = (args.length > 0 ? ScriptVariable.sValue(args[0])
         : "");
     boolean isIsosurface = colorScheme.startsWith("$");

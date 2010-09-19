@@ -100,6 +100,7 @@ import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
 
 import java.net.URL;
+import java.net.URLEncoder;
 //import java.net.URLEncoder;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -112,6 +113,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
 //import java.io.UnsupportedEncodingException;
+import java.io.UnsupportedEncodingException;
 
 /*
  * 
@@ -4406,16 +4408,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         s = s.substring(0, s.indexOf("%FILE") + 5);
       return TextFormat.formatString(s, "FILE", f);
     case '$':
-
-      //      try {
-      //        f = URLEncoder.encode(f, "US-ASCII");
-      //        f = TextFormat.simpleReplace(f, "%2F", "/");
-      //      } catch (UnsupportedEncodingException e) {
-      // required only for 
-      // http://cheminfov.informatics.indiana.edu/rest/thread/d3.py/SMILES/%FILE
-      // 
-      //      }
-
+      f = TextFormat.simpleReplace(f, " ", "%20");
       return (withPrefix ? "MOL::" : "")
           + TextFormat.formatString(global.smilesUrlFormat, "FILE", f);
     case '_': // isosurface "=...", but we code that type as '-'

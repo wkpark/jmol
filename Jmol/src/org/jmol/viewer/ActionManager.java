@@ -431,7 +431,7 @@ public class ActionManager {
     int mouseAction = Binding.getMouseAction(desc);
     if (jmolAction >= 0)
       binding.unbind(mouseAction, jmolAction);
-    else
+    else if (mouseAction != 0)
       binding.unbind(mouseAction, name);
     if (name == null)
       binding.unbindUserAction(desc);    

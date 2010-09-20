@@ -159,7 +159,7 @@ abstract public class Binding {
     
     if (desc.indexOf("DOUBLE") >= 0)
       action |= DOUBLE_CLICK;
-    else if ((action & WHEEL) == 0 || desc.indexOf("SINGLE") >= 0)
+    else if (action > 0 && (action & WHEEL) == 0 || desc.indexOf("SINGLE") >= 0)
       action |= SINGLE_CLICK;
     else if (desc.indexOf("DOWN") >= 0)
       action |= DOWN;

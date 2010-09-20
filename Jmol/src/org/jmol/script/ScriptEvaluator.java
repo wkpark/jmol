@@ -902,7 +902,7 @@ public class ScriptEvaluator {
         break;
       default:
         if (Token.tokAttr(theTok, Token.mathop)
-            || Token.tokAttr(theTok, Token.mathfunc)) {
+            || Token.tokAttr(theTok, Token.mathfunc) && tokAt(iToken + 1) == Token.leftparen) {
           if (!rpn.addOp(theToken)) {
             if (ptAtom >= 0) {
               // this is expected -- the right parenthesis

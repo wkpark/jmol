@@ -1991,7 +1991,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     htParams = setLoadParameters(htParams);
     boolean isLoadVariable = fileName.startsWith("@");
     boolean haveFileData = (htParams.containsKey("fileData"));
-    htParams.put("smilesString", (fileName.indexOf('$') == 0 ? fileName.substring(1) : ""));
+    if (fileName.indexOf('$') == 0)
+      htParams.put("smilesString", fileName.substring(1));
     boolean isString = (fileName.equalsIgnoreCase("string") || fileName
         .equals(JmolConstants.MODELKIT_ZAP_TITLE));
     String strModel = null;

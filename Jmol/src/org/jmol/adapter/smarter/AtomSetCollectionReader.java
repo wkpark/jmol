@@ -285,7 +285,7 @@ public abstract class AtomSetCollectionReader {
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("loadState", s == null ? "" : s);
     s = (String) htParams.get("smilesString");
     if (s != null)
-      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("smilesScript", s);
+      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("smilesString", s);
     if (!htParams.containsKey("templateAtomCount"))
       htParams.put("templateAtomCount", Integer.valueOf(atomSetCollection.getAtomCount()));
     if (htParams.containsKey("bsFilter"))

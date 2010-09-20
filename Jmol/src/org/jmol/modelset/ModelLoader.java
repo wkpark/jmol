@@ -439,8 +439,8 @@ public final class ModelLoader extends ModelSet {
         someModelsHaveSymmetry = true;
     }
     Model m = models[baseModelIndex];
+    viewer.setSmilesString((String) modelSetAuxiliaryInfo.get("smilesString"));
     String loadState = (String) modelSetAuxiliaryInfo.remove("loadState");
-    viewer.setSmilesString((String) modelSetAuxiliaryInfo.get("smilesScript"));
     StringBuffer loadScript = (StringBuffer)modelSetAuxiliaryInfo.remove("loadScript");
     if (loadScript.indexOf("Viewer.AddHydrogens") < 0 || !m.isModelKit) {
       m.loadState += m.loadScript + loadState;

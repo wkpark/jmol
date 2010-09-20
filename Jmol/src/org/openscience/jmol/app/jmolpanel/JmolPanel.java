@@ -680,6 +680,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
 
     String tip = guimap.getLabel(key + "Tip");
     if (tip != null) {
+      guimap.map.put(key + "Tip", b);
       b.setToolTipText(tip);
     }
 
@@ -887,6 +888,8 @@ public class JmolPanel extends JPanel implements SplashInterface {
   private static final String newwinAction = "newwin";
   private static final String openAction = "open";
   private static final String openurlAction = "openurl";
+  private static final String openpdbAction = "openpdb";
+  private static final String openmolAction = "openmol";
   private static final String newAction = "new";
   //private static final String saveasAction = "saveas";
   private static final String exportActionProperty = "export";
@@ -930,7 +933,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
    * Actions defined by the Jmol class
    */
   private Action[] defaultActions = { new NewAction(), new NewwinAction(),
-      new OpenAction(), new OpenUrlAction(), printAction, exportAction,
+      new OpenAction(), new OpenUrlAction(), new OpenPdbAction(), new OpenMolAction(), printAction, exportAction,
       new CloseAction(), new ExitAction(), copyImageAction, copyScriptAction,
       pasteClipboardAction, new AboutAction(), new WhatsNewAction(),
       new UguideAction(), new ConsoleAction(),  
@@ -1133,6 +1136,42 @@ public class JmolPanel extends JPanel implements SplashInterface {
         }
         viewer.openFileAsynchronously(url);
       }
+    }
+  }
+
+  class OpenPdbAction extends NewAction {
+
+    String title;
+    String prompt;
+
+    OpenPdbAction() {
+      super(openpdbAction);
+      title = GT._("Get PDB file");
+      prompt = GT._("Enter a four-digit PDB ID");
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      String script = "var xid = _modelTitle; if (xid.length != 4) { xid = '1crn'};xid = prompt('" + prompt + "',xid);if (!xid) { quit }; load @{'=' + xid}";
+      viewer.script(script);
+    }
+  }
+
+  class OpenMolAction extends NewAction {
+
+    String title;
+    String prompt;
+
+    OpenMolAction() {
+      super(openmolAction);
+      title = GT._("Get MOL file by compound name or ID");
+      prompt = GT._("Enter the name or identifier (SMILES, InChI, CAS) of a molecule");
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      String script = "var xid = _smilesString; if (!xid) { xid = 'tylenol'};xid = prompt('Enter the name or identifier (SMILES, InChI, CAS) of a compound',xid);if (!xid) { quit }; load @{'$' + xid}";
+      viewer.script(script);
     }
   }
 

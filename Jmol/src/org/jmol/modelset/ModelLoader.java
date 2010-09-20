@@ -292,7 +292,7 @@ public final class ModelLoader extends ModelSet {
     StringBuffer sb = new StringBuffer();
     for (int i = baseModelIndex; i < modelCount; i++)
       if (models[i].isPDB)
-          models[i].getDefaultLargePDBRendering(sb, maxAtoms);
+        models[i].getDefaultLargePDBRendering(sb, maxAtoms);
     if (sb.length() == 0)
       return;
     sb.append("select *;");
@@ -440,6 +440,7 @@ public final class ModelLoader extends ModelSet {
     }
     Model m = models[baseModelIndex];
     String loadState = (String) modelSetAuxiliaryInfo.remove("loadState");
+    viewer.setSmilesString((String) modelSetAuxiliaryInfo.get("smilesScript"));
     StringBuffer loadScript = (StringBuffer)modelSetAuxiliaryInfo.remove("loadScript");
     if (loadScript.indexOf("Viewer.AddHydrogens") < 0 || !m.isModelKit) {
       m.loadState += m.loadScript + loadState;

@@ -339,11 +339,15 @@ class StatusManager {
     if (errorMsg != null)
       setStatusChanged("fileLoadError", ptLoad, errorMsg, false);
     String sJmol = jmolScriptCallback(JmolConstants.CALLBACK_LOADSTRUCT);
-    if (doCallback && notifyEnabled(JmolConstants.CALLBACK_LOADSTRUCT)) 
+    if (doCallback && notifyEnabled(JmolConstants.CALLBACK_LOADSTRUCT)) {
+      String name = (String) viewer.getParameter("_smilesString");
+      if (name != null)
+        fileName = name;
       jmolCallbackListener.notifyCallback(JmolConstants.CALLBACK_LOADSTRUCT,
           new Object[] { sJmol, 
               fullPathName, fileName, modelName, errorMsg, Integer.valueOf(ptLoad)
           , viewer.getParameter("_modelNumber"), viewer.getModelNumberDotted(viewer.getModelCount() - 1) });
+    }
   }
 
   synchronized void setStatusFrameChanged(int frameNo, int fileNo, int modelNo,

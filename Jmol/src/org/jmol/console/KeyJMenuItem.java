@@ -54,11 +54,15 @@ public class KeyJMenuItem extends JMenuItem implements GetKey {
       String key = e.next();
       AbstractButton m = menuMap.get(key);
       String label = labels.get(key);
-      char mnemonic = KeyJMenuItem.getMnemonic(label);
-      if (mnemonic != ' ')
-        m.setMnemonic(mnemonic);
-      label = KeyJMenuItem.getLabelWithoutMnemonic(label);
-      m.setText(label);
+      if (key.indexOf("Tip") == key.length() - 3) {
+        m.setToolTipText(labels.get(key));
+      } else {
+        char mnemonic = KeyJMenuItem.getMnemonic(label);
+        if (mnemonic != ' ')
+          m.setMnemonic(mnemonic);
+        label = KeyJMenuItem.getLabelWithoutMnemonic(label);
+        m.setText(label);
+      }
     }
   }
   

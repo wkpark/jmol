@@ -100,8 +100,6 @@ import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
 
 import java.net.URL;
-import java.net.URLEncoder;
-//import java.net.URLEncoder;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -112,8 +110,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
-//import java.io.UnsupportedEncodingException;
-import java.io.UnsupportedEncodingException;
 
 /*
  * 
@@ -1995,8 +1991,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     htParams = setLoadParameters(htParams);
     boolean isLoadVariable = fileName.startsWith("@");
     boolean haveFileData = (htParams.containsKey("fileData"));
-    if (fileName.indexOf('$') == 0)
-      htParams.put("smilesString", fileName.substring(1));
+    htParams.put("smilesString", (fileName.indexOf('$') == 0 ? fileName.substring(1) : ""));
     boolean isString = (fileName.equalsIgnoreCase("string") || fileName
         .equals(JmolConstants.MODELKIT_ZAP_TITLE));
     String strModel = null;
@@ -6425,6 +6420,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public String getLanguage() {
     return language;
+  }
+
+  public void setSmilesString(String s) {
+    if (s == null)
+      global.removeJmolParameter("_smilesString");
+    else
+      global.setParameterValue("_smilesString", s);
   }
 
   public void removeUserVariable(String key) {

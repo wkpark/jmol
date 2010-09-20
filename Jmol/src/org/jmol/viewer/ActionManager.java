@@ -461,6 +461,14 @@ public class ActionManager {
     protected int y = -1000;
     protected int modifiers = 0;
     protected long time = -1;
+    //private int type;
+    
+    /**
+     * @param type  -- for debugging 
+     */
+    protected Mouse(int type) {
+      //this.type = type;
+    }
     
     protected void set(long time, int x, int y, int modifiers) {
       this.time = time;
@@ -469,7 +477,10 @@ public class ActionManager {
       this.modifiers = modifiers;
     }
 
-    protected void setCurrent() {
+    /**
+     * @param why  - for debugging purposes 
+     */
+    protected void setCurrent(int why) {
       time = current.time;
       x = current.x;
       y = current.y;
@@ -485,11 +496,11 @@ public class ActionManager {
     }
   }
   
-  protected final Mouse current = new Mouse();
-  protected final Mouse moved = new Mouse();
-  private final Mouse clicked = new Mouse();
-  private final Mouse pressed = new Mouse();
-  private final Mouse dragged = new Mouse();
+  protected final Mouse current = new Mouse(0);
+  protected final Mouse moved = new Mouse(1);
+  private final Mouse clicked = new Mouse(2);
+  private final Mouse pressed = new Mouse(3);
+  private final Mouse dragged = new Mouse(4);
 
   protected void setCurrent(long time, int x, int y, int mods) {
     hoverOff();
@@ -709,7 +720,7 @@ public class ActionManager {
 
   public void mouseMoved(long time, int x, int y, int modifiers) {
     setCurrent(time, x, y, modifiers);
-    moved.setCurrent();
+    moved.setCurrent(Binding.MOVED);
     if (measurementPending != null || hoverActive)
       checkPointOrAtomClicked(x, y, 0, 0, false, Binding.MOVED);
     else if (isZoomArea(x))
@@ -733,8 +744,8 @@ public class ActionManager {
     setCurrent(time, x, y, mods);
     pressedCount = (pressed.check(x, y, mods, time, MAX_DOUBLE_CLICK_MILLIS) ? pressedCount + 1
         : 1);
-    pressed.setCurrent();
-    dragged.setCurrent();
+    pressed.setCurrent(Binding.PRESSED);
+    dragged.setCurrent(Binding.PRESSED);
     viewer.setFocus();
     boolean isSelectAndDrag = isBound(Binding.getMouseAction(Integer.MIN_VALUE,
         mods), ACTION_selectAndDrag);
@@ -818,7 +829,7 @@ public class ActionManager {
     int deltaX = x - dragged.x;
     int deltaY = y - dragged.y;
     setCurrent(time, x, y, mods);
-    dragged.setCurrent();
+    dragged.setCurrent(Binding.DRAGGED);
     if (atomPickingMode != PICKING_ASSIGN_ATOM)
       exitMeasurementMode();
     int action = Binding.getMouseAction(pressedCount, mods);
@@ -953,7 +964,7 @@ public class ActionManager {
     setCurrent(time, x, y, mods);
     clickedCount = (count > 1 ? count : clicked.check(x, y, mods, time,
         MAX_DOUBLE_CLICK_MILLIS) ? clickedCount + 1 : 1);
-    clicked.setCurrent();
+    clicked.setCurrent(Binding.CLICKED);
     viewer.setFocus();
     boolean isSelectAndDrag = isBound(Binding.getMouseAction(Integer.MIN_VALUE, mods), ACTION_selectAndDrag);
     if (isSelectAndDrag && atomPickingMode != PICKING_SELECT_ATOM)
@@ -1230,18 +1241,14 @@ public class ActionManager {
     boolean isRotateZorZoom = isBound(action, ACTION_rotateZorZoom);
     if (!isSlideZoom && !isRotateXY && !isRotateZorZoom) 
       return false;
-    boolean isZoom = false;
-    if (isRotateZorZoom)
-      isZoom = (deltaX == 0 || Math.abs(deltaY) > 5 * Math.abs(deltaX));
-    if (isSlideZoom)
-      isZoom = isZoomArea(moved.x);
-    int cursor = (isZoom || isBound(action, ACTION_wheelZoom) ? Viewer.CURSOR_ZOOM 
+    boolean isZoom = (isRotateZorZoom && (deltaX == 0 || Math.abs(deltaY) > 5 * Math.abs(deltaX)));
+    int cursor = (isZoom || isZoomArea(moved.x) || isBound(action, ACTION_wheelZoom) ? Viewer.CURSOR_ZOOM 
         : isRotateXY || isRotateZorZoom ? Viewer.CURSOR_MOVE : Viewer.CURSOR_DEFAULT);
     if (viewer.getCursor() != Viewer.CURSOR_WAIT)
       viewer.setCursor(cursor);
     if (inMotion)
       viewer.setInMotion(true);
-    return isZoom;
+    return (isZoom || isSlideZoom && isZoomArea(pressed.x));
   }
 
   private boolean isZoomArea(int x) {

@@ -146,22 +146,16 @@ abstract public class Binding {
     int action = 0;
     desc = desc.toUpperCase();
 
-    if (desc.indexOf("CTRL") >= 0)
-      action |= CTRL;
-    if (desc.indexOf("ALT") >= 0)
-      action |= ALT;
-    if (desc.indexOf("SHIFT") >= 0)
-      action |= SHIFT;
-          
     if (desc.indexOf("MIDDLE") >= 0)
       action |= MIDDLE;
     else if (desc.indexOf("RIGHT") >= 0)
       action |= RIGHT;
     else if (desc.indexOf("WHEEL") >= 0)
       action |= WHEEL;
-    else
+    else if (desc.indexOf("LEFT") >= 0)
       action |= LEFT;
-      
+
+    boolean isDefaultButton = (action == 0);
     
     if (desc.indexOf("DOUBLE") >= 0)
       action |= DOUBLE_CLICK;
@@ -169,7 +163,17 @@ abstract public class Binding {
       action |= SINGLE_CLICK;
     else if (desc.indexOf("DOWN") >= 0)
       action |= DOWN;
+    
+    if (desc.indexOf("CTRL") >= 0)
+      action |= CTRL;
+    if (desc.indexOf("ALT") >= 0)
+      action |= ALT;
+    if (desc.indexOf("SHIFT") >= 0)
+      action |= SHIFT;          
 
+    if (isDefaultButton && action != 0)
+      action |= LEFT;
+    
     return action;
   }
 

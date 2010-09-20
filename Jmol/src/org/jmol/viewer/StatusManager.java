@@ -341,7 +341,7 @@ class StatusManager {
     String sJmol = jmolScriptCallback(JmolConstants.CALLBACK_LOADSTRUCT);
     if (doCallback && notifyEnabled(JmolConstants.CALLBACK_LOADSTRUCT)) {
       String name = (String) viewer.getParameter("_smilesString");
-      if (name != null)
+      if (name.length() != 0)
         fileName = name;
       jmolCallbackListener.notifyCallback(JmolConstants.CALLBACK_LOADSTRUCT,
           new Object[] { sJmol, 

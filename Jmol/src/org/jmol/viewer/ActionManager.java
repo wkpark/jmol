@@ -406,6 +406,8 @@ public class ActionManager {
                          Point3f range2) {
     int jmolAction = getActionFromName(name);
     int mouseAction = Binding.getMouseAction(desc);
+    if (mouseAction == 0)
+      return;
     if (jmolAction >= 0) {
       binding.bind(mouseAction, jmolAction);
     } else {

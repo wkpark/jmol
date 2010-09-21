@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-09-14 20:21+0200\n"
+"POT-Creation-Date: 2010-09-21 17:23+0200\n"
 "PO-Revision-Date: 2008-08-04 20:46+0000\n"
 "Last-Translator: Ivo Sarak <Unknown>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
@@ -147,7 +147,7 @@ msgid "Executing script 2..."
 msgstr "Käivitan skripti..."
 
 #: org/openscience/jmol/app/jmolpanel/AboutDialog.java:57
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:187
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:189
 msgid "About Jmol"
 msgstr "Jmol'ist"
 
@@ -170,7 +170,7 @@ msgid "Check"
 msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:165
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:210
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:212
 msgid "Clear"
 msgstr "Puhasta"
 
@@ -461,568 +461,576 @@ msgid "Open &URL"
 msgstr "Ava &URL"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:62
-msgid "Scrip&t Editor..."
+msgid "&Get PDB"
 msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:63
+msgid "Get &MOL"
+msgstr ""
+
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:64
+msgid "Scrip&t Editor..."
+msgstr ""
+
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:65
 #, fuzzy
 msgid "Conso&le..."
 msgstr "Skrip&t..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:64
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:66
 #, fuzzy
 msgid "Jmol Java &Console"
 msgstr "Jmol Java konsool"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:65
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:67
 #, fuzzy
 msgid "AtomSet&Chooser..."
 msgstr "AtomSetChooser..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:66
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:68
 msgid "&Save As..."
 msgstr "&Salvesta kui..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:67
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:69
 msgid "&Export"
 msgstr "&Ekspordi"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:68
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:70
 #, fuzzy
 msgid "Export &Image..."
 msgstr "Ekspordi &pilt või skript..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:69
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:71
 msgid "Save current view as an image."
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:70
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:72
 msgid "Export to &Web Page..."
 msgstr "Ekspordi &veebileheks..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:71
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:73
 msgid "Export one or more views to a web page."
 msgstr "Ekspordi üks või rohkem vaateid veebileheks."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:72
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:74
 msgid "Render in POV-&Ray..."
 msgstr "Renderda POV-&Ray's"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:73
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:75
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:114
 msgid "Render in POV-Ray"
 msgstr "Renderda POV-Ray's"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:74
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:76
 msgid "Write &State..."
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:75
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:77
 msgid "Save current view as a Jmol state script."
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:76
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:78
 msgid "&Print..."
 msgstr "&Prindi..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:77
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:79
 msgid "Print view."
 msgstr "Prindi vaade."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:78
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:80
 #, fuzzy
 msgid "&Close"
 msgstr "Sulge"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:79
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:81
 msgid "E&xit"
 msgstr "&Välju"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:80
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:82
 #, fuzzy
 msgid "Recent &Files..."
 msgstr "Hiljutised failid..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:81
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:83
 msgid "&Edit"
 msgstr "&Muuda"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:83
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:89
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:85
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:91
 #, fuzzy
 msgid "Select &All"
 msgstr "Vali kõik"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:84
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:86
 msgid "Deselect All"
 msgstr "Eemalda kõik valikust"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:85
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:87
 #, fuzzy
 msgid "Copy &Image"
 msgstr "Kopeeri pilt"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:86
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:88
 msgid "Copy Script"
 msgstr "Kopeeri skript"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:87
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:89
 #, fuzzy
 msgid "Pr&eferences..."
 msgstr "&Eelistused..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:88
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:90
 msgid "&Paste"
 msgstr "&Kleebi"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:90
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:92
 #, fuzzy
 msgid "&Select"
 msgstr "Vali"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:91
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:93
 #, fuzzy
 msgid "&All"
 msgstr "Kõik"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:92
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:105
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:111
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:117
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:124
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:94
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:107
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:113
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:119
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:126
 #, fuzzy
 msgid "&None"
 msgstr "Mitte midagi"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:93
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:95
 msgid "Hydrogen"
 msgstr "Vesinik"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:94
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:96
 msgid "Carbon"
 msgstr "Süsinik"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:95
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:97
 msgid "Nitrogen"
 msgstr "Lämmastik"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:96
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:98
 msgid "Oxygen"
 msgstr "Hapnik"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:97
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:99
 msgid "Phosphorus"
 msgstr "Fosfor"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:98
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:100
 #, fuzzy
 msgid "Sulfur"
 msgstr "Väävel"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:99
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:101
 msgid "Amino"
 msgstr "Amiino"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:100
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:102
 msgid "Nucleic"
 msgstr "Nuklei"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:101
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:103
 msgid "Water"
 msgstr "Vesi"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:102
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:104
 msgid "Hetero"
 msgstr "Hetero"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:103
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:105
 msgid "&Display"
 msgstr "&Kuva"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:104
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:106
 #, fuzzy
 msgid "&Atom"
 msgstr "Aatom"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:106
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:107
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:108
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:109
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:110
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:111
 #, fuzzy, java-format
 msgid "{0}% van der Waals"
 msgstr "{0}% vanderWaals"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:110
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:112
 #, fuzzy
 msgid "&Bond"
 msgstr "Side"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:112
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:114
 #, fuzzy
 msgid "&Wireframe"
 msgstr "Tugiraamistik"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:113
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:114
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:115
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:127
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:128
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:116
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:117
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:129
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:130
 #, java-format
 msgid "{0} Å"
 msgstr "{0} Å"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:116
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:118
 #, fuzzy
 msgid "&Label"
 msgstr "Lipik"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:118
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:120
 #, fuzzy
 msgid "&Symbol"
 msgstr "Sümbol"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:119
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:121
 #, fuzzy
 msgid "&Name"
 msgstr "Nimi"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:120
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:122
 #, fuzzy
 msgid "&Number"
 msgstr "Number"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:121
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:123
 #, fuzzy
 msgid "&Centered"
 msgstr "Tsentreeritud"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:122
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:124
 #, fuzzy
 msgid "&Upper right"
 msgstr "Ülemine-parem"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:123
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:125
 #, fuzzy
 msgid "&Vector"
 msgstr "&Vektorid"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:125
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:127
 #, fuzzy
 msgid "&On"
 msgstr "Sees"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:126
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:128
 #, java-format
 msgid "{0} pixels"
 msgstr "{0} pikselit"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:129
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:130
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:131
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:132
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:133
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:134
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:135
 #, java-format
 msgid "Scale {0}"
 msgstr "Skaala {0}"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:134
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:136
 #, fuzzy
 msgid "&Zoom"
 msgstr "Suurenda"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:135
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:136
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:137
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:138
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:139
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:140
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:141
 #, java-format
 msgid "{0}%"
 msgstr "{0}%"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:140
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:142
 #, fuzzy
 msgid "&Perspective Depth"
 msgstr "Perspektiivi sügavus"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:141
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:143
 #, fuzzy
 msgid "A&xes"
 msgstr "Teljed"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:142
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:144
 #, fuzzy
 msgid "B&ounding Box"
 msgstr "Bounding Box"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:143
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:145
 msgid "&Hydrogens"
 msgstr "&Vesinikud"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:144
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:146
 #, fuzzy
 msgid "V&ectors"
 msgstr "Vektorid"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:145
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:157
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:147
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:159
 msgid "&Measurements"
 msgstr "&Mõõtmed"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:146
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:148
 msgid "Resi&ze"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:147
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:149
 msgid "&View"
 msgstr "&Vaade"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:148
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:150
 #, fuzzy
 msgid "&Front"
 msgstr "Ees"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:149
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:151
 #, fuzzy
 msgid "&Top"
 msgstr "Peal"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:150
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:152
 #, fuzzy
 msgid "&Bottom"
 msgstr "All"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:151
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:153
 #, fuzzy
 msgid "&Right"
 msgstr "Parem"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:152
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:154
 #, fuzzy
 msgid "&Left"
 msgstr "Vasak"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:153
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:155
 #, fuzzy
 msgid "Tr&ansform..."
 msgstr "Muudan..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:154
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:156
 #, fuzzy
 msgid "Define &Center"
 msgstr "Defineeri keskpaik"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:155
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:157
 msgid "&Tools"
 msgstr "&Tööriistad"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:156
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:158
 msgid "&Gaussian..."
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:158
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:160
 #, fuzzy
 msgid "Distance &Units"
 msgstr "Vahemaa ühikud"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:159
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:161
 #, fuzzy
 msgid "&Nanometers 1E-9"
 msgstr "Nanomeetrid 1E-9"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:160
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:162
 #, fuzzy
 msgid "&Angstroms 1E-10"
 msgstr "Angstromid 1E-10"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:161
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:163
 #, fuzzy
 msgid "&Picometers 1E-12"
 msgstr "Picomeetrid 1E-12"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:162
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:164
 #, fuzzy
 msgid "&Animate..."
 msgstr "Animeeri..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:163
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:165
 #, fuzzy
 msgid "&Vibrate..."
 msgstr "Värista..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:164
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:166
 msgid "&Graph..."
 msgstr "&Joonista..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:165
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:167
 msgid "Calculate chemical &shifts..."
 msgstr "Arvuta keemilised &nihked..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:166
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:168
 msgid "&Crystal Properties"
 msgstr "&Kristalli omadused"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:167
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:169
 #, fuzzy
 msgid "&Once"
 msgstr "Üks kord"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:168
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:170
 #, fuzzy
 msgid "&Loop"
 msgstr "Tagasiside"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:169
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:171
 #, fuzzy
 msgid "P&alindrome"
 msgstr "Palindroom"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:170
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:172
 #, fuzzy
 msgid "&Stop animation"
 msgstr "Seiska animatsioon"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:171
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:173
 #, fuzzy
 msgid "&Rewind to first frame"
 msgstr "Keri tagasi esimese kaadrini"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:172
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:174
 #, fuzzy
 msgid "Rewind to first frame"
 msgstr "Keri tagasi esimese kaadrini"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:173
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:175
 #, fuzzy
 msgid "Go to &next frame"
 msgstr "Mine järgmise kaadri juurde"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:174
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:176
 #, fuzzy
 msgid "Go to next frame"
 msgstr "Mine järgmise kaadri juurde"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:175
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:177
 #, fuzzy
 msgid "Go to &previous frame"
 msgstr "Mine eelmise kaadri juurde"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:176
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:178
 #, fuzzy
 msgid "Go to previous frame"
 msgstr "Mine eelmise kaadri juurde"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:177
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:179
 #, fuzzy
 msgid "All &frames"
 msgstr "Renderda kõik kaadrid"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:178
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:180
 #, fuzzy
 msgid "All frames"
 msgstr "Renderda kõik kaadrid"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:179
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:181
 #, fuzzy
 msgid "Go to &last frame"
 msgstr "Mine järgmise kaadri juurde"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:180
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:182
 #, fuzzy
 msgid "Go to last frame"
 msgstr "Mine järgmise kaadri juurde"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:181
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:183
 #, fuzzy
 msgid "Start &vibration"
 msgstr "Käivita vibratsioon"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:182
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:184
 #, fuzzy
 msgid "&Stop vibration"
 msgstr "Seiska vibratsioon"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:183
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:185
 #, fuzzy
 msgid "&First frequency"
 msgstr "Esimene sagedus"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:184
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:186
 #, fuzzy
 msgid "&Next frequency"
 msgstr "Järgmine sagedus"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:185
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:187
 #, fuzzy
 msgid "&Previous frequency"
 msgstr "Eelmine sagedus"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:186
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:188
 msgid "&Help"
 msgstr "&Abi"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:188
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:190
 msgid "User Guide"
 msgstr "Kasutusjuhend"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:189
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:191
 msgid "What's New"
 msgstr "Mida on uut?"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:190
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:192
 msgid "Hydrogens"
 msgstr "Vesinikud"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:191
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:193
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:66
 msgid "Measurements"
 msgstr "Mõõtmised"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:192
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:194
 msgid "Perspective Depth"
 msgstr "Perspektiivi sügavus"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:193
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:195
 msgid "Axes"
 msgstr "Teljed"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:194
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:196
 msgid "Bounding Box"
 msgstr "Bounding Box"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:196
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:198
 msgid "RasMol/Chime compatible axes orientation/rotations"
 msgstr "RasMol/Chime ühilduvate telgede suund/pöörded"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:198
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:200
 msgid "File Preview (requires restarting Jmol)"
 msgstr "Faili eelvaade (vajab Jmol'i taaskäivitust)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:200
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:202
 msgid "Clear console button (requires restarting Jmol)"
 msgstr "Konsooli puhastuse nupp (vajab Jmol'i taaskäivitust)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:201
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:202
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:203
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:204
 msgid "Use Atom Color"
 msgstr "Aatomi värvi kasutamine"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:203
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:205
 msgid "Rotate molecule."
 msgstr "Keera molekuli"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:205
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:207
 msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:207
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:209
 msgid "Click atoms to measure distances"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:208
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:210
 msgid "Return molecule to home position."
 msgstr "Taasta molekuli lähtepositsioon."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:209
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:211
 msgid "Open the model kit."
 msgstr ""
 
@@ -1030,80 +1038,96 @@ msgstr ""
 msgid "Jmol Help"
 msgstr "Jmol abi"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:169
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:168
 msgid "Initializing 3D display..."
 msgstr "Algväärtustan 3D ekraani..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:202
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:201
 msgid "Initializing Script Window..."
 msgstr "Algväärtustan skripti akent..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:225
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:224
 msgid "Building Command Hooks..."
 msgstr "Koostan Command Hooks..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:236
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:235
 msgid "Building Menubar..."
 msgstr "Koostan menüüriba..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:253
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:252
 msgid "Starting display..."
 msgstr "Käivitan ekraani..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:299
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:298
 msgid "Setting up Drag-and-Drop..."
 msgstr "Seadistan Drag-ja-Drop'i..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:301
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:300
 msgid "Launching main frame..."
 msgstr "Käivitan peafreimi..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:305
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:304
 msgid "Initializing Preferences..."
 msgstr "Algväärtustan eelistusi..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:307
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:306
 msgid "Initializing Recent Files..."
 msgstr "Algväärtustan hiljutisi faile..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:342
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:341
 #, fuzzy
 msgid "Jmol Java Console"
 msgstr "Jmol Java konsool"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:362
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:361
 msgid "Could not create ConsoleTextArea: "
 msgstr "Ei saa luua ConsoleTextArea: "
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:379
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:378
 msgid "Creating main window..."
 msgstr "Loon peaakna..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:380
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:379
 msgid "Initializing Swing..."
 msgstr "Algväärtustan Swing'i..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:392
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:391
 msgid "Initializing Jmol..."
 msgstr "Algväärtustan Jmol'i..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:505
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:504
 msgid "Closing Jmol..."
 msgstr "Jmol sulgemine..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1133
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1122
 msgid "Open URL"
 msgstr "Ava URL"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1134
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1123
 msgid "Enter URL of molecular model"
 msgstr "Sisesta molekulaarmudeli URL"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1309
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1149
+msgid "Get PDB file"
+msgstr ""
+
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1150
+msgid "Enter a four-digit PDB ID"
+msgstr ""
+
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1167
+msgid "Get MOL file by compound name or ID"
+msgstr ""
+
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1168
+msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
+msgstr ""
+
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1334
 msgid "IO Exception:"
 msgstr "IO eriolukord:"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1402
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1427
 #, fuzzy
 msgid "width height?"
 msgstr "Kõrgus : "

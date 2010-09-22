@@ -9455,10 +9455,10 @@
 
   <!-- Projects 11000 to 11099 -->
   <fah_proj number="11000" name="p11000" public="n"
-    server="171.64.65.55" atoms="24001" preferred="30" deadline="45"
+    server="171.64.65.55" atoms="24001" preferred="31" deadline="46"
     credit="162" frames="100" code="A4" contact="dvanatta"/>
   <fah_proj number="11001" name="p11001" public="n"
-    server="171.64.65.55" atoms="24001" preferred="30" deadline="45"
+    server="171.64.65.55" atoms="24001" preferred="31" deadline="46"
     credit="162" frames="100" code="A4" contact="dvanatta"/>
 
   <!-- Projects 11100 to 11199 -->
@@ -9887,9 +9887,9 @@
   <fah_proj number="11275" name="AbetaM2_mono" public="y" file="xyz"
     server="171.67.108.33" atoms="34344" preferred="40" deadline="59"
     credit="209" frames="100" code="G" contact="lin5" contrib="Jesse Hathaway"/>
-  <fah_proj number="11276" name="AbetaM3_mono" public="y"
+  <fah_proj number="11276" name="AbetaM3_mono" public="y" file="xyz"
     server="171.67.108.33" atoms="34354" preferred="40" deadline="59"
-    credit="209" frames="100" code="G" contact="lin5"/>
+    credit="209" frames="100" code="G" contact="lin5" contrib="Danny Nielsen"/>
   <fah_proj number="11277" name="AbetaM4_mono" public="y" file="xyz"
     server="171.67.108.33" atoms="34354" preferred="40" deadline="59"
     credit="209" frames="100" code="G" contact="lin5"/>

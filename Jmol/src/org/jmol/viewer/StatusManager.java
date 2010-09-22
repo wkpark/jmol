@@ -386,7 +386,7 @@ class StatusManager {
           new Object[] { sJmol, strEcho, Integer.valueOf(isScriptQueued ? 1 : 0) });
   }
 
-  synchronized void setStatusMeasuring(String status, int intInfo, String strMeasure) {
+  synchronized void setStatusMeasuring(String status, int intInfo, String strMeasure, float value) {
     setStatusChanged(status, intInfo, strMeasure, false);
     String sJmol = null;
     if(status.equals("measureCompleted")) { 
@@ -396,10 +396,9 @@ class StatusManager {
         setStatusChanged("measurePicked", intInfo, strMeasure, false);
         Logger.info("measurePicked " + intInfo + " " + strMeasure);
     }
-        
     if (notifyEnabled(JmolConstants.CALLBACK_MEASURE))
       jmolCallbackListener.notifyCallback(JmolConstants.CALLBACK_MEASURE, 
-          new Object[] { sJmol, strMeasure,  Integer.valueOf(intInfo), status });
+          new Object[] { sJmol, strMeasure,  Integer.valueOf(intInfo), status , Float.valueOf(value)});
   }
   
   synchronized void notifyError(String errType, String errMsg,

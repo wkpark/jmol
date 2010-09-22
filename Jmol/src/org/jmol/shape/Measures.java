@@ -314,7 +314,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
       return;
     measurementCount = 0;
     measurements.clear();
-    viewer.setStatusMeasuring("measureDeleted", -1, "all");
+    viewer.setStatusMeasuring("measureDeleted", -1, "all", 0);
   }
 
   private void setColor(short colix) {
@@ -484,14 +484,14 @@ public class Measures extends Shape implements JmolMeasurementClient {
         strFormat, measurementCount);
     measurements.add(measureNew);
     viewer.setStatusMeasuring("measureCompleted", measurementCount++,
-        measureNew.toVector().toString());
+        measureNew.toVector().toString(), measureNew.getValue());
   }
 
   private void deleteMeasurement(int i) {
     String msg = measurements.get(i).toVector().toString();
     measurements.remove(i);
     measurementCount--;
-    viewer.setStatusMeasuring("measureDeleted", i, msg);
+    viewer.setStatusMeasuring("measureDeleted", i, msg, 0);
   }
 
   private void pending(MeasurementPending measurementPending) {
@@ -500,7 +500,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
       return;
     if (measurementPending.getCount() > 1)
       viewer.setStatusMeasuring("measurePending",
-          measurementPending.getCount(), measurementPending.toVector().toString());
+          measurementPending.getCount(), measurementPending.toVector().toString(), measurementPending.getValue());
   }
 
   private void reformatDistances() {

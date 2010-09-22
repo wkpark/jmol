@@ -5100,7 +5100,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * Measures.deleteMeasurement Measures.pending actionManager.atomPicked
    */
 
-  public void setStatusMeasuring(String status, int intInfo, String strMeasure) {
+  public void setStatusMeasuring(String status, int intInfo, String strMeasure, float value) {
     
     // status           intInfo 
 
@@ -5109,7 +5109,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // measurePending   atom count
     // measureDeleted   -1 (all) or index
     // measureSequence  -2
-    statusManager.setStatusMeasuring(status, intInfo, strMeasure);
+    statusManager.setStatusMeasuring(status, intInfo, strMeasure, value);
   }
 
   /*

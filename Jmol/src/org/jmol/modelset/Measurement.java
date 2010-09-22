@@ -290,8 +290,9 @@ public class Measurement {
     if (units == null)
       units = viewer.getMeasureDistanceUnits();
     units = fixUnits(units);
-    float f = fixValue(value, units);
-    return formatString(f, units);
+    String label = getLabelString();
+    float f = fixValue(value, units, (label.indexOf("%V") >= 0));
+    return formatString(f, units, label);
   }
 
   private static String fixUnits(String units) {
@@ -304,30 +305,35 @@ public class Measurement {
     return units;
   }
   
-  private static float fixValue(float dist, String units) {
+  private static float fixValue(float dist, String units, boolean andRound) {
     if (units != null) {
       if (units.equals("nm"))
-        return (int) (dist * 100 + 0.5f) / 1000f;
+        return (andRound ? (int) (dist * 100 + 0.5f) / 1000f : dist / 10);
       if (units.equals("pm"))
-        return (int) ((dist * 1000 + 0.5)) / 10f;
+        return (andRound? (int) ((dist * 1000 + 0.5)) / 10f : dist * 100);
       if (units.equals("au"))
-        return (int) (dist / JmolConstants.ANGSTROMS_PER_BOHR * 1000 + 0.5f) / 1000f;
+        return (andRound ? (int) (dist / JmolConstants.ANGSTROMS_PER_BOHR * 1000 + 0.5f) / 1000f : dist / JmolConstants.ANGSTROMS_PER_BOHR);
     }
-    return (int) (dist * 100 + 0.5f) / 100f;
+    return (andRound ? (int) (dist * 100 + 0.5f) / 100f : dist);
   }
   
   private String formatAngle(float angle) {
-    angle = (int)(angle * 10 + (angle >= 0 ? 0.5f : -0.5f));
-    angle /= 10;
-    return formatString(angle, "\u00B0");
+    String label = getLabelString();
+    if (label.indexOf("%V") >= 0)
+      angle = ((int)(angle * 10 + (angle >= 0 ? 0.5f : -0.5f))) / 10f;
+    return formatString(angle, "\u00B0", label);
   }
 
-  private String formatString(float value, String units) {
+  private String getLabelString() {
     String s = countPlusIndices[0]+":" + "";
     String label = (strFormat != null && strFormat.indexOf(s)==0? strFormat : viewer
         .getDefaultMeasurementLabel(countPlusIndices[0]));
     if (label.indexOf(s)==0)
       label = label.substring(2);
+    return label;
+  }
+
+  private String formatString(float value, String units, String label) {
     return LabelToken.formatLabel(viewer, this, label, value, units);
   }
 
@@ -457,7 +463,7 @@ public class Measurement {
   }
 
   public String getInfoAsString(String units) {
-    float f = (count == 2 ? fixValue(value, units) : value);
+    float f = (count == 2 ? fixValue(value, units, true) : value);
     StringBuffer sb = new StringBuffer();
     sb.append(count == 2 ? "distance" : count == 3 ? "angle" : "dihedral");
     sb.append(" \t").append(f);

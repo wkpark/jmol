@@ -1777,7 +1777,7 @@ public class ActionManager {
         getSequence();
       else
         viewer.setStatusMeasuring("measurePicked", n, measurementQueued
-            .getStringDetail());
+            .getStringDetail(), measurementQueued.getValue());
       if (atomPickingMode == PICKING_MEASURE
           || pickingStyleMeasure == PICKINGSTYLE_MEASURE_ON) {
         viewer.script("measure "
@@ -1902,7 +1902,7 @@ public class ActionManager {
     if (a1 < 0 || a2 < 0)
       return;
     String sequence = viewer.getSmiles(a1, a2, null, true, false, false, false);
-    viewer.setStatusMeasuring("measureSequence", -2, sequence);
+    viewer.setStatusMeasuring("measureSequence", -2, sequence, 0);
   }
 
   private void checkTwoAtomAction(int action, Point3fi ptClicked, int atomIndex) {

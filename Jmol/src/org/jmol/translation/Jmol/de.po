@@ -14,13 +14,13 @@ msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-09-21 17:23+0200\n"
-"PO-Revision-Date: 2010-09-15 12:20+0000\n"
-"Last-Translator: Garve <Unknown>\n"
+"PO-Revision-Date: 2010-09-23 05:34+0000\n"
+"Last-Translator: cmdrhenner <cmdrhenner@gmail.com>\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-09-15 21:20+0000\n"
+"X-Launchpad-Export-Date: 2010-09-23 18:24+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -88,7 +88,8 @@ msgstr "Skript Datei zum Ausführen oder '-' für System.in"
 
 #: org/openscience/jmol/app/JmolApp.java:170
 msgid "use multitouch interface (requires \"sparshui\" parameter"
-msgstr "benutze die Multitouch Schnittstelle (benötigt \"sparshui\" Parameter"
+msgstr ""
+"benutze die Multitouch Schnittstelle (benötigt \"sparshui\" Parameter"
 
 #: org/openscience/jmol/app/JmolApp.java:177
 msgid "Jmol script to execute BEFORE -s option"
@@ -286,15 +287,15 @@ msgstr "Steuerung"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:363
 msgid "Go to first atom set in the collection"
-msgstr ""
+msgstr "Gehe zur ersten Atommenge in der Sammlung"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:364
 msgid "Go to previous atom set in the collection"
-msgstr ""
+msgstr "Gehe nur vorherigen Atommenge in der Sammlung"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:365
 msgid "Play the whole collection of atom sets"
-msgstr ""
+msgstr "Zeige die gesamte Sammlung von Atommengen"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:366
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
@@ -303,27 +304,27 @@ msgstr "Abspielen anhalten"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:367
 msgid "Go to next atom set in the collection"
-msgstr ""
+msgstr "Gehe zur nächsten Atommenge in der Sammlung"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:368
 msgid "Jump to last atom set in the collection"
-msgstr ""
+msgstr "Springe zur letzten Atommenge in der Sammlung"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:372
 msgid "Go to first vector in the collection"
-msgstr ""
+msgstr "Gehe zum ersten Vektor in der Sammlung"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:373
 msgid "Go to previous vector in the collection"
-msgstr ""
+msgstr "Gehe zum vorherigen Vektor in der Sammlung"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:374
 msgid "Play the whole collection of vectors"
-msgstr ""
+msgstr "Zeige die gesamte Sammlung von Vektoren"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:376
 msgid "Go to next vector in the collection"
-msgstr ""
+msgstr "Gehe zum nächsten Vektor in der Sammlung"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:377
 msgid "Jump to last vector in the collection"
@@ -446,11 +447,11 @@ msgstr "&URL öffnen"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:62
 msgid "&Get PDB"
-msgstr ""
+msgstr "&Beziehe PDB"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:63
 msgid "Get &MOL"
-msgstr ""
+msgstr "Beziehe &MOL"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:64
 msgid "Scrip&t Editor..."
@@ -733,7 +734,7 @@ msgstr "&Messungen"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:148
 msgid "Resi&ze"
-msgstr ""
+msgstr "&Größe ändern"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:149
 msgid "&View"
@@ -1031,19 +1032,21 @@ msgstr "URL eines Molekül-Modells eingeben"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1149
 msgid "Get PDB file"
-msgstr ""
+msgstr "Hole PDB-Datei"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1150
 msgid "Enter a four-digit PDB ID"
-msgstr ""
+msgstr "Trage eine vierstellige PDB ID ein"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1167
 msgid "Get MOL file by compound name or ID"
-msgstr ""
+msgstr "Hole MOL-Datei per zusammengesetzten Namen oder ID"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1168
 msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
 msgstr ""
+"Trage den Namen oder die Identifikation (SMILE, InCHI, CAS) eines Moleküls "
+"ein"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1334
 msgid "IO Exception:"
@@ -1051,7 +1054,7 @@ msgstr "IO-Fehler:"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1427
 msgid "width height?"
-msgstr ""
+msgstr "Breite Höhe?"
 
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:124
 msgid "Delete"
@@ -1680,12 +1683,14 @@ msgstr "nicht implementiert"
 #~ msgid "Show Selected"
 #~ msgstr "Auswahl anzeigen"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "hinzufügen von {0}.png"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "hinzufügen von JmolPopIn.js"
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "hinzufügen von {0}.spt"
 

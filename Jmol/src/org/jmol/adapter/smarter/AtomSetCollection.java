@@ -43,6 +43,7 @@ import org.jmol.api.SymmetryInterface;
 import org.jmol.api.VolumeDataInterface;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
@@ -581,7 +582,7 @@ public class AtomSetCollection {
   }
   
   void setLatticeCells(int[] latticeCells, boolean applySymmetryToBonds, 
-                       boolean doPackUnitCell) {
+                       boolean doPackUnitCell, String supercell) {
     //set when unit cell is determined
     // x <= 555 and y >= 555 indicate a range of cells to load
     // AROUND the central cell 555 and that
@@ -598,8 +599,22 @@ public class AtomSetCollection {
     doNormalize = latticeCells[0] != 0 && (!isLatticeRange || latticeCells[2] == 1);
     this.applySymmetryToBonds = applySymmetryToBonds;
     this.doPackUnitCell = doPackUnitCell;
+    if (supercell != null)
+      setSuperCell(supercell);
   }
   
+  private float[] scTemp;
+  private void setSuperCell(String supercell) {
+    if (scTemp != null)
+      return;
+    scTemp = new float[16];
+    if (getSymmetry().getMatrixFromString(supercell, scTemp, true) == null) {
+      scTemp = null;
+      return;
+    }
+    Logger.info("Using supercell \n" + new Matrix4f(scTemp));
+  }
+ 
   SymmetryInterface symmetry;
   private SymmetryInterface getSymmetry() {
     if (symmetry == null)
@@ -659,8 +674,72 @@ public class AtomSetCollection {
   boolean doPackUnitCell = false;
    
   private void applySymmetry(int maxX, int maxY, int maxZ) throws Exception {
-    if (coordinatesAreFractional && getSymmetry().haveSpaceGroup())
-      applyAllSymmetry(maxX, maxY, maxZ);
+    if (!coordinatesAreFractional || !getSymmetry().haveSpaceGroup())
+      return;
+    if (scTemp != null) {
+
+      // supercell:
+
+      // 1) get all atoms for cells necessary
+
+      rminx = Float.MAX_VALUE;
+      rminy = Float.MAX_VALUE;
+      rminz = Float.MAX_VALUE;
+      rmaxx = -Float.MAX_VALUE;
+      rmaxy = -Float.MAX_VALUE;
+      rmaxz = -Float.MAX_VALUE;
+
+      Point3f ptx = setSym(0, 1, 2);
+      Point3f pty = setSym(4, 5, 6);
+      Point3f ptz = setSym(8, 9, 10);
+
+      minXYZ = new Point3i((int) rminx, (int) rminy, (int) rminz);
+      maxXYZ = new Point3i((int) rmaxx, (int) rmaxy, (int) rmaxz);
+      applyAllSymmetry();
+
+      // 2) set all atom coordinates to Cartesians
+
+      int iAtomFirst = getLastAtomSetAtomIndex();
+      for (int i = iAtomFirst; i < atomCount; i++)
+        symmetry.toCartesian(atoms[i], true);
+
+      // 3) create the supercell unit cell
+
+      symmetry = null;
+      setNotionalUnitCell(new float[] { 0, 0, 0, 0, 0, 0, ptx.x, ptx.y, ptx.z,
+          pty.x, pty.y, pty.z, ptz.x, ptz.y, ptz.z }, null,
+          (Point3f) getAtomSetAuxiliaryInfo(currentAtomSetIndex,
+              "unitCellOffset"));
+      setAtomSetSpaceGroupName("P1");
+      getSymmetry().setSpaceGroup(doNormalize);
+      symmetry.addSpaceGroupOperation("x,y,z", 0);
+
+      // 4) reset atoms to fractional values
+
+      for (int i = iAtomFirst; i < atomCount; i++)
+        symmetry.toFractional(atoms[i], true);
+
+      // 5) apply the full lattice symmetry now
+      
+      needEllipsoids = false;
+      
+      // ?? TODO
+      atomSetAuxiliaryInfo[currentAtomSetIndex].remove("matUnitCellOrientation");
+
+    }
+
+    minXYZ = new Point3i();
+    maxXYZ = new Point3i(maxX, maxY, maxZ);
+    applyAllSymmetry();
+    scTemp = null;
+  }
+
+  private Point3f setSym(int i, int j, int k) {
+    Point3f pt = new Point3f();
+    pt.set(scTemp[i], scTemp[j], scTemp[k]);
+    setSymmetryMinMax(pt);
+    symmetry.toCartesian(pt, false);
+    return pt;
   }
 
   private float rminx, rminy, rminz, rmaxx, rmaxy, rmaxz;
@@ -709,7 +788,7 @@ public class AtomSetCollection {
     return atom.anisoBorU;
   }
   
-  private void applyAllSymmetry(int maxX, int maxY, int maxZ) throws Exception {
+  private void applyAllSymmetry() throws Exception {
     int noSymmetryCount = getLastAtomSetAtomCount();
     int iAtomFirst = getLastAtomSetAtomIndex();
     if (needEllipsoids)
@@ -721,8 +800,6 @@ public class AtomSetCollection {
     symmetry
         .setFinalOperations(atoms, iAtomFirst, noSymmetryCount, doNormalize);
     int operationCount = symmetry.getSpaceGroupOperationCount();
-    minXYZ = new Point3i();
-    maxXYZ = new Point3i(maxX, maxY, maxZ);
     getSymmetry().setMinMaxLatticeParameters(minXYZ, maxXYZ);
     if (doPackUnitCell || symmetryRange != 0 && maxXYZ.x - minXYZ.x == 1
         && maxXYZ.y - minXYZ.y == 1 && maxXYZ.z - minXYZ.z == 1)
@@ -819,6 +896,12 @@ public class AtomSetCollection {
       rmaxy += absRange;
       rmaxz += absRange;
     }
+    
+    if (scTemp != null) {
+      
+    }
+    // now apply all the translations
+    
     iCell = 0;
     for (int tx = minXYZ.x; tx < maxXYZ.x; tx++)
       for (int ty = minXYZ.y; ty < maxXYZ.y; ty++)

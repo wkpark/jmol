@@ -27,6 +27,8 @@ package org.jmol.symmetry;
 
 import javax.vecmath.Point3f;
 
+import org.jmol.util.SimpleUnitCell;
+
 import java.util.Map;
 
 class SymmetryInfo {
@@ -74,7 +76,7 @@ class SymmetryInfo {
         : false;    
     isMultiCell = (coordinatesAreFractional && symmetryOperations != null);
     float[] notionalUnitcell = (float[]) info.get("notionalUnitcell");
-    return (notionalUnitcell == null || notionalUnitcell[0] == 0 ? null : notionalUnitcell);
+    return (SimpleUnitCell.isValid(notionalUnitcell) ? notionalUnitcell : null);
   }
 }
 

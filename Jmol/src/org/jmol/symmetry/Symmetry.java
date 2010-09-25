@@ -344,4 +344,8 @@ public class Symmetry implements SymmetryInterface {
       unitCell.setAllFractionalRelative(TF);
   }
 
+  public String getMatrixFromString(String xyz, float[] temp, boolean allowScaling) {
+    return SymmetryOperation.getMatrixFromString(xyz, temp, false, allowScaling);
+  }
+
 }  

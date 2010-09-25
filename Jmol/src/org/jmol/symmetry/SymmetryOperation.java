@@ -141,21 +141,9 @@ class SymmetryOperation extends Matrix4f {
     xyzOriginal = xyz;
     xyz = xyz.toLowerCase();
     float[] temp = new float[16];
-    boolean isDenominator = false;
-    boolean isDecimal = false;
-    boolean isNegative = false;
     boolean isReverse = (xyz.startsWith("!"));
     if (isReverse)
       xyz = xyz.substring(1);
-    char ch;
-    int x = 0;
-    int y = 0;
-    int z = 0;
-    float iValue = 0;
-    String strOut = "";
-    String strT;
-    int rowPt = -1;
-    float decimalMultiplier = 1f;
     if (xyz.indexOf("xyz matrix:") == 0) {
       /* note: these terms must in unit cell fractional coordinates!
        * CASTEP CML matrix is in fractional coordinates, but do not take into accout
@@ -183,7 +171,7 @@ class SymmetryOperation extends Matrix4f {
         if (Math.abs(v) < 0.00001f)
           v = 0;
         if (i % 4 == 3)
-          v = normalizeTwelfths((v < 0 ? -1 : 1) * Math.round(Math.abs(v * 12)));
+          v = normalizeTwelfths((v < 0 ? -1 : 1) * Math.round(Math.abs(v * 12)), doNormalize);
         temp[i] = v;
       }
       temp[15] = 1;
@@ -209,6 +197,35 @@ class SymmetryOperation extends Matrix4f {
       //System.out.println("SymmetryOperation: " + xyz + "\n" + (Matrix4f)this + "\n" + this.xyz);
       return true;
     }
+    String strOut = getMatrixFromString(xyz, temp, doNormalize, false);
+    if (strOut == null)
+      return false;
+    set(temp);
+    if (isReverse) {
+      invert(this);
+      this.xyz = getXYZFromMatrix(this, true, false, false);
+    } else {
+      this.xyz = strOut;
+    }
+    if (Logger.debugging)
+      Logger.debug("" + this);
+    return true;
+  }
+
+  static String getMatrixFromString(String xyz, float[] temp,
+                                    boolean doNormalize, boolean allowScaling) {
+    boolean isDenominator = false;
+    boolean isDecimal = false;
+    boolean isNegative = false;
+    char ch;
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    float iValue = 0;
+    String strOut = "";
+    String strT;
+    int rowPt = -1;
+    float decimalMultiplier = 1f;
     xyz += ",";
     for (int i = 0; i < xyz.length(); i++) {
       ch = xyz.charAt(i);
@@ -231,23 +248,35 @@ class SymmetryOperation extends Matrix4f {
       case 'X':
       case 'x':
         x = (isNegative ? -1 : 1);
+        if (allowScaling && iValue != 0) {
+          x *= iValue;
+          iValue = 0;
+        }
         break;
       case 'Y':
       case 'y':
         y = (isNegative ? -1 : 1);
+        if (allowScaling && iValue != 0) {
+          y *= iValue;
+          iValue = 0;
+        }
         break;
       case 'Z':
       case 'z':
         z = (isNegative ? -1 : 1);
+        if (allowScaling && iValue != 0) {
+          z *= iValue;
+          iValue = 0;
+        }
         break;
       case ',':
         if (++rowPt > 2) {
           Logger.warn("Symmetry Operation? " + xyz);
-          return false;
+          return null;
         }
         int tpt = rowPt * 4;
         // put translation into 12ths
-        iValue = normalizeTwelfths(iValue);
+        iValue = normalizeTwelfths(iValue, doNormalize);
         temp[tpt++] = x;
         temp[tpt++] = y;
         temp[tpt++] = z;
@@ -260,18 +289,8 @@ class SymmetryOperation extends Matrix4f {
         strOut += (strOut == "" ? "" : ",") + strT;
         //note: when ptLatt[3] = -1, ptLatt[rowPt] MUST be 0.
         if (rowPt == 2) {
-          temp[15] = 1;    
-          set(temp);
-          if (isReverse) {
-            invert(this);
-            this.xyz = getXYZFromMatrix(this, true, false, false);
-          } else {
-            this.xyz = strOut;
-          }
-          if (Logger.debugging)
-            Logger.debug("" + this);
-          rowPt = 0;
-          return true;
+          temp[15] = 1;
+          return strOut;
         }
         x = y = z = 0;
         iValue = 0;
@@ -281,9 +300,9 @@ class SymmetryOperation extends Matrix4f {
         decimalMultiplier = 1f;
         continue;
       case '0':
-        if (!isDecimal)
+        if (!isDecimal && (isDenominator || !allowScaling))
           continue;
-      //allow to pass through
+        //allow to pass through
       default:
         //Logger.debug(isDecimal + " " + ch + " " + iValue);
         int ich = ch - '0';
@@ -294,11 +313,12 @@ class SymmetryOperation extends Matrix4f {
           iValue += decimalMultiplier * ich * (isNegative ? -1 : 1);
           continue;
         }
-        if (ich >= 1 && ich <= 9) {
+        if (ich >= 0 && ich <= 9) {
           if (isDenominator) {
             iValue /= ich;
           } else {
-            iValue = (isNegative ? -1f : 1f) * ich;
+            iValue = iValue * 10 + (isNegative ? -1 : 1) * ich;
+            isNegative = false;
           }
         } else {
           Logger.warn("symmetry character?" + ch);
@@ -306,10 +326,10 @@ class SymmetryOperation extends Matrix4f {
       }
       isDecimal = isDenominator = isNegative = false;
     }
-    return false;
+    return null;
   }
 
-  private float normalizeTwelfths(float iValue) {
+  private static float normalizeTwelfths(float iValue, boolean doNormalize) {
     iValue *= 12f;
     if (doNormalize) {
       while (iValue > 6)

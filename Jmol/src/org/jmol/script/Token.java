@@ -1180,6 +1180,7 @@ public class Token {
   final static int state          = misc  | 334;
   final static int steps          = misc  | 336;// new
   final static int stop           = misc  | 338;// new
+  final static int supercell      = misc  | 339;//
   final static int ticks          = misc  | 340; // new
   final static int title          = misc  | 342;// new
   final static int titleformat    = misc  | 344;// new
@@ -1816,6 +1817,7 @@ public class Token {
       "stddev",          new Token(stddev),
       "straightness",    new Token(straightness),
       "structureId",     new Token(strucid),
+      "supercell",       new Token(supercell),
       "sub",             new Token(sub),
       "sum",             new Token(sum), // sum
       "sum2",            new Token(sum2), // sum of squares

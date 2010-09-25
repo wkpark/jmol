@@ -135,4 +135,6 @@ public interface SymmetryInterface {
 
   public abstract void setUnitCellOrientation(Matrix3f matUnitCellOrientation);
 
+  public abstract String getMatrixFromString(String xyz, float[] temp, boolean allowScaling);
+
 }

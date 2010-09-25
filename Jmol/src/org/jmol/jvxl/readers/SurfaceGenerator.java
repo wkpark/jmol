@@ -649,6 +649,7 @@ public class SurfaceGenerator {
      */
 
     if ("radius" == propertyName) {
+      Logger.info("solvent probe radius set to " + value);
       params.setRadius((RadiusData) value);
       return true;
     }

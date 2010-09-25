@@ -229,6 +229,8 @@ public abstract class AtomSetCollectionReader {
   public boolean continuing = true;
 
   protected JmolViewer viewer;
+
+  private String supercell;
   
   protected void initializeReader() throws Exception {
     // reader-dependent
@@ -406,6 +408,8 @@ public abstract class AtomSetCollectionReader {
       latticeCells[2] = (int) pt.z;
       doPackUnitCell = (htParams.containsKey("packed") || latticeCells[2] < 0);
     }
+    if (htParams.containsKey("supercell"))
+      supercell = (String) htParams.get("supercell");
     doApplySymmetry = (latticeCells[0] > 0 && latticeCells[1] > 0);
     //allows for {1 1 1} or {1 1 -1} or {555 555 0|1|-1} (-1  being "packed")
     if (!doApplySymmetry) {
@@ -523,7 +527,7 @@ public abstract class AtomSetCollectionReader {
   public void setSymmetryOperator(String xyz) {
     if (ignoreFileSymmetryOperators)
       return;
-    atomSetCollection.setLatticeCells(latticeCells, applySymmetryToBonds, doPackUnitCell);
+    atomSetCollection.setLatticeCells(latticeCells, applySymmetryToBonds, doPackUnitCell, supercell);
     if (!atomSetCollection.addSpaceGroupOperation(xyz))
       Logger.warn("Skipping symmetry operation " + xyz);
     iHaveSymmetryOperators = true;
@@ -729,7 +733,7 @@ public abstract class AtomSetCollectionReader {
       atomSetCollection.setSymmetryRange(symmetryRange);
       if (doConvertToFractional || fileCoordinatesAreFractional) {
         atomSetCollection.setLatticeCells(latticeCells, applySymmetryToBonds,
-            doPackUnitCell);
+            doPackUnitCell, supercell);
         if (ignoreFileSpaceGroupName || !iHaveSymmetryOperators) {
           if (createSpaceGroup()) {
             atomSetCollection.setAtomSetSpaceGroupName(symmetry
@@ -994,7 +998,7 @@ public abstract class AtomSetCollectionReader {
           fileScaling.z = 1;
         setFractionalCoordinates(true);
         latticeCells = new int[3];
-        atomSetCollection.setLatticeCells(latticeCells, true, false);
+        atomSetCollection.setLatticeCells(latticeCells, true, false, supercell);
         setUnitCell(plotScale.x * 2 / (maxXYZ.x - minXYZ.x), 
             plotScale.y * 2 / (maxXYZ.y - minXYZ.y), 
             plotScale.z * 2 / (maxXYZ.z == minXYZ.z ? 1 : maxXYZ.z - minXYZ.z),

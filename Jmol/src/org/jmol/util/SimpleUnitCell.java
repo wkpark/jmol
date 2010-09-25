@@ -60,8 +60,13 @@ public class SimpleUnitCell {
   protected double a_;
   protected double b_, c_;
     
+  public static boolean isValid(float[] parameters) {
+    return (parameters != null && (parameters[0] > 0 || parameters.length > 14
+        && !Float.isNaN(parameters[14])));
+  }
+
   public SimpleUnitCell(float[] parameters) {
-    if (parameters == null || parameters[0] == 0)
+    if (!isValid(parameters))
       return;
     this.notionalUnitcell = parameters;
     a = parameters[0];
@@ -72,54 +77,50 @@ public class SimpleUnitCell {
     gamma = parameters[5];
 
     if (a <= 0) {
-      if (parameters.length > 14 && !Float.isNaN(parameters[14])) {
-        // must calculate a, b, c alpha beta gamma from vectors;
-        Vector3f va = new Vector3f(parameters[6], parameters[7], parameters[8]);
-        Vector3f vb = new Vector3f(parameters[9], parameters[10], parameters[11]);
-        Vector3f vc = new Vector3f(parameters[12], parameters[13], parameters[14]);
-        a = va.length();
-        b = vb.length();
-        c = vc.length();
-        if (b == 0)
-          b = c = -1;  //polymer
-        else if (c == 0)
-          c = -1; //slab
-        alpha = (b < 0 || c < 0 ? 90 : vb.angle(vc) / toRadians);
-        beta = (c < 0 ? 90 : va.angle(vc) / toRadians);
-        gamma = (b < 0 ? 90 : va.angle(vb) / toRadians);
-        if (c < 0) {
-          float[] n = parameters.clone();
-          n[0] = a;
-          n[1] = b;
-          n[2] = c;
-          n[3] = alpha;
-          n[4] = beta;
-          n[5] = gamma;
-          if (b < 0) {
-            vb.set(0, 0, 1);
-            vb.cross(vb, va);
-            if (vb.length() < 0.001f)
-              vb.set(0, 1, 0);
-            vb.normalize();
-            n[9] = vb.x;
-            n[10] = vb.y;
-            n[11] = vb.z;
-          }
-          if (c < 0) {
-            vc.cross(va, vb);
-            vc.normalize();
-            n[12] = vc.x;
-            n[13] = vc.y;
-            n[14] = vc.z;
-          }
-          parameters = n;
-        }
-      } else {
+      // must calculate a, b, c alpha beta gamma from vectors;
+      Vector3f va = new Vector3f(parameters[6], parameters[7], parameters[8]);
+      Vector3f vb = new Vector3f(parameters[9], parameters[10], parameters[11]);
+      Vector3f vc = new Vector3f(parameters[12], parameters[13], parameters[14]);
+      a = va.length();
+      b = vb.length();
+      c = vc.length();
+      if (a == 0)
         return;
+      if (b == 0)
+        b = c = -1; //polymer
+      else if (c == 0)
+        c = -1; //slab
+      alpha = (b < 0 || c < 0 ? 90 : vb.angle(vc) / toRadians);
+      beta = (c < 0 ? 90 : va.angle(vc) / toRadians);
+      gamma = (b < 0 ? 90 : va.angle(vb) / toRadians);
+      if (c < 0) {
+        float[] n = parameters.clone();
+        n[0] = a;
+        n[1] = b;
+        n[2] = c;
+        n[3] = alpha;
+        n[4] = beta;
+        n[5] = gamma;
+        if (b < 0) {
+          vb.set(0, 0, 1);
+          vb.cross(vb, va);
+          if (vb.length() < 0.001f)
+            vb.set(0, 1, 0);
+          vb.normalize();
+          n[9] = vb.x;
+          n[10] = vb.y;
+          n[11] = vb.z;
+        }
+        if (c < 0) {
+          vc.cross(va, vb);
+          vc.normalize();
+          n[12] = vc.x;
+          n[13] = vc.y;
+          n[14] = vc.z;
+        }
+        parameters = n;
       }
     }
-    if (a <= 0)
-      return;
     if (b <= 0) {
       b = c = 1;
       isPolymer = true;
@@ -127,7 +128,7 @@ public class SimpleUnitCell {
       c = 1;
       isSlab = true;
     }
-    
+
     cosAlpha = Math.cos(toRadians * alpha);
     sinAlpha = Math.sin(toRadians * alpha);
     cosBeta = Math.cos(toRadians * beta);
@@ -170,13 +171,12 @@ public class SimpleUnitCell {
       // 1. align the a axis with x axis
       m.setColumn(0, a, 0, 0, 0);
       // 2. place the b is in xy plane making a angle gamma with a
-      m.setColumn(1, (float) (b * cosGamma), 
-          (float) (b * sinGamma), 0, 0);
+      m.setColumn(1, (float) (b * cosGamma), (float) (b * sinGamma), 0, 0);
       // 3. now the c axis,
       // http://server.ccl.net/cca/documents/molecular-modeling/node4.html
-      m.setColumn(2, (float) (c * cosBeta), 
-          (float) (c * (cosAlpha - cosBeta * cosGamma) / sinGamma), 
-          (float) (volume / (a * b * sinGamma)), 0);
+      m.setColumn(2, (float) (c * cosBeta), (float) (c
+          * (cosAlpha - cosBeta * cosGamma) / sinGamma), (float) (volume / (a
+          * b * sinGamma)), 0);
       m.setColumn(3, 0, 0, 0, 1);
       matrixCartesianToFractional = new Matrix4f();
       matrixCartesianToFractional.invert(matrixFractionalToCartesian);

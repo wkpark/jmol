@@ -8097,9 +8097,10 @@ public class ScriptEvaluator {
     } else if (getToken(i + 1).tok == Token.leftbrace
         || theTok == Token.point3f || theTok == Token.integer
         || theTok == Token.range || theTok == Token.manifest
-        || theTok == Token.packed || theTok == Token.filter
-        && tokAt(i + 3) != Token.coord || theTok == Token.identifier
-        && tokAt(i + 3) != Token.coord) {
+        || theTok == Token.packed || theTok == Token.supercell 
+        || theTok == Token.filter
+          && tokAt(i + 3) != Token.coord || theTok == Token.identifier
+          && tokAt(i + 3) != Token.coord) {
       if ((filename = parameterAsString(filePt)).length() == 0)
         filename = viewer.getFullPathName();
       if (filePt == i)
@@ -8135,22 +8136,32 @@ public class ScriptEvaluator {
         i = iToken + 1;
         tok = tokAt(i);
       }
-      boolean isPacked = false;
-      if (tok == Token.packed) {
+      if (tok == Token.packed || tok == Token.supercell) {
         if (lattice == null)
           lattice = new Point3f(555, 555, -1);
-        isPacked = true;
-        iToken++;
-        i++;
+        iToken = i - 1;
       }
       if (lattice != null) {
         i = iToken + 1;
         htParams.put("lattice", lattice);
         sOptions += " {" + (int) lattice.x + " " + (int) lattice.y + " "
             + (int) lattice.z + "}";
-        if (isPacked) {
+        if (tokAt(i) == Token.packed) {
           htParams.put("packed", Boolean.TRUE);
           sOptions += " PACKED";
+          i++;
+        } 
+        if(tokAt(i) == Token.supercell) {
+          String supercell;
+          if (isPoint3f(++i)) {
+            Point3f sc = getPoint3f(i, false);
+            supercell = (int)sc.x + "x," + (int)sc.y + "y," + (int)sc.z + "z";
+            i = iToken + 1;
+          } else {
+            supercell = stringParameter(i++);
+          }
+          htParams.put("supercell", supercell);
+          sOptions += " supercell " + Escape.escape(supercell);
         }
         float distance = 0;
         /*

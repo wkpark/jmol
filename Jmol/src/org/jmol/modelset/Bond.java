@@ -82,12 +82,8 @@ public class Bond implements JmolEdge {
               short mad, short colix) {
     this.atom1 = atom1;
     this.atom2 = atom2;
-    if (atom1.getElementNumber() == 16 && atom2.getElementNumber() == 16)
-      order |= JmolEdge.BOND_SULFUR_MASK;
-    if (order == JmolEdge.BOND_AROMATIC_MASK)
-      order = JmolEdge.BOND_AROMATIC;
-    this.order = order;
     this.colix = colix;
+    setOrder(order);
     setMad(mad);
   }
 
@@ -187,6 +183,10 @@ public class Bond implements JmolEdge {
   }
 
   public void setOrder(int order) {
+    if (atom1.getElementNumber() == 16 && atom2.getElementNumber() == 16)
+      order |= JmolEdge.BOND_SULFUR_MASK;
+    if (order == JmolEdge.BOND_AROMATIC_MASK)
+      order = JmolEdge.BOND_AROMATIC;
     this.order = order | (this.order & JmolEdge.BOND_NEW);
   }
 

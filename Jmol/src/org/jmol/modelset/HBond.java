@@ -29,7 +29,7 @@ import org.jmol.util.Logger;
 
 public class HBond extends Bond {
 
-  private float energy;
+  float energy;
   private byte paletteID;
   
   public HBond(Atom atom1, Atom atom2, int order, short mad, short colix, float energy) {

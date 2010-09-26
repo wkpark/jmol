@@ -136,7 +136,7 @@ abstract public class BondCollection extends AtomCollection {
 
   public Bond bondAtoms(Atom atom1, Atom atom2, int order, short mad, BitSet bsBonds, float energy, boolean isNew) {
     // this method used when a bond must be flagged as new
-    Bond bond = getOrAddBond(atom1, atom2, order, mad, bsBonds, false, energy);
+    Bond bond = getOrAddBond(atom1, atom2, order, mad, bsBonds, energy, true);
     if (isNew)
       bond.order |= JmolEdge.BOND_NEW;
     return bond;
@@ -144,28 +144,29 @@ abstract public class BondCollection extends AtomCollection {
 
   protected final static int BOND_GROWTH_INCREMENT = 250;
 
-  protected Bond getOrAddBond(Atom atom, Atom atomOther, int order, short mad,
-                            BitSet bsBonds, boolean unBonded, float energy) {
+  private Bond getOrAddBond(Atom atom, Atom atomOther, int order, short mad,
+                            BitSet bsBonds, float energy, boolean overrideBonding) {
     int i;
-    if (!unBonded && atom.isBonded(atomOther)) {
+    if (order == JmolEdge.BOND_ORDER_NULL || order == JmolEdge.BOND_ORDER_ANY)
+      order = 1;
+    if (atom.isBonded(atomOther)) {
       i = atom.getBond(atomOther).index;
+      if (overrideBonding) {
+        bonds[i].setOrder(order);
+        bonds[i].setMad(mad);
+        if (bonds[i] instanceof HBond)
+          ((HBond) bonds[i]).energy = energy;
+      }
     } else {
-      order = checkBond(order);
-      i = setBond(bondCount++, bondMutually(atom, atomOther, order, mad, energy)).index;
+      if (bondCount == bonds.length)
+        bonds = (Bond[]) ArrayUtil.setLength(bonds, bondCount
+            + BOND_GROWTH_INCREMENT);
+      i = setBond(bondCount++,
+          bondMutually(atom, atomOther, order, mad, energy)).index;
     }
     if (bsBonds != null)
       bsBonds.set(i);
     return bonds[i];
-  }
-
-  private int checkBond(int order) {
-    if (bondCount == bonds.length)
-      bonds = (Bond[]) ArrayUtil.setLength(bonds, bondCount
-          + BOND_GROWTH_INCREMENT);
-    if (order == JmolEdge.BOND_ORDER_NULL
-        || order == JmolEdge.BOND_ORDER_ANY)
-      order = 1;
-    return order;
   }
 
   protected Bond setBond(int index, Bond bond) {
@@ -278,7 +279,9 @@ abstract public class BondCollection extends AtomCollection {
   
   protected int addHBond(Atom atom1, Atom atom2, int order, float energy) {
     // from autoHbond
-    order = checkBond(order);
+    if (bondCount == bonds.length)
+      bonds = (Bond[]) ArrayUtil.setLength(bonds, bondCount
+          + BOND_GROWTH_INCREMENT);
     return setBond(bondCount++, bondMutually(atom1, atom2, order, (short) 1, energy)).index;
   }
 
@@ -313,7 +316,7 @@ abstract public class BondCollection extends AtomCollection {
     if (atomA.alternateLocationID != atomB.alternateLocationID
         && atomA.alternateLocationID != '\0' && atomB.alternateLocationID != '\0')
       return false;
-    getOrAddBond(atomA, atomB, order, mad, bsBonds, false, 0);
+    getOrAddBond(atomA, atomB, order, mad, bsBonds, 0, false);
     return true;
   }
 

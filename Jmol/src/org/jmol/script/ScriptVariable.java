@@ -60,6 +60,7 @@ public class ScriptVariable extends Token {
 
   private int flags = ~FLAG_CANINCREMENT & FLAG_LOCALVAR;
   private String name;
+  private ScriptVariable[] objects;
 
   public ScriptVariable() {
     tok = string;
@@ -92,28 +93,10 @@ public class ScriptVariable extends Token {
     tok = theToken.tok;
     intValue = theToken.intValue;
     value = theToken.value;
+    if (tok == Token.list)
+      objects = ((ScriptVariable) theToken).objects;
   }
   
-  static public boolean isVariableType(Object x) {
-    return (x instanceof ScriptVariable
-        || x instanceof BitSet
-        || x instanceof Boolean
-        || x instanceof Float
-        || x instanceof Integer
-        || x instanceof Point3f    // stored as point3f
-        || x instanceof Vector3f   // stored as point3f
-        || x instanceof Point4f    // stored as point4f
-        || x instanceof Quaternion // stored as point4f
-        || x instanceof String
-        || x instanceof Map<?, ?>  // stored as Map<String, ScriptVariable>
-        || x instanceof List<?>    // stored as list
-        || x instanceof double[]   // stored as list
-        || x instanceof float[]    // stored as list
-        || x instanceof Float[]    // stored as list
-        || x instanceof int[]      // stored as list
-        || x instanceof String[]); // stored as list
-  }
-
   static public String typeOf(ScriptVariable x) {
     int tok = (x == null ? nada : x.tok);
     switch (tok) {
@@ -172,6 +155,27 @@ public class ScriptVariable extends Token {
     return new ScriptVariable(integer, intValue);
   }
 
+  static public boolean isVariableType(Object x) {
+    return (x instanceof ScriptVariable
+        || x instanceof BitSet
+        || x instanceof Boolean
+        || x instanceof Float
+        || x instanceof Integer
+        || x instanceof Point3f    // stored as point3f
+        || x instanceof Vector3f   // stored as point3f
+        || x instanceof Point4f    // stored as point4f
+        || x instanceof Quaternion // stored as point4f
+        || x instanceof String
+        || x instanceof Map<?, ?>  // stored as Map<String, ScriptVariable>
+        || x instanceof List<?>    // stored as list
+        || x instanceof double[]   // stored as list
+        || x instanceof float[]    // stored as list
+        || x instanceof Float[]    // stored as list
+        || x instanceof int[]      // stored as list
+        || x instanceof int[][]    // stored as list
+        || x instanceof String[]); // stored as list
+  }
+
   /**
    * @param x
    * @return  a ScriptVariable of the input type, or if x is null, then a new ScriptVariable,
@@ -183,25 +187,25 @@ public class ScriptVariable extends Token {
       return new ScriptVariable();
     if (x instanceof ScriptVariable)
       return (ScriptVariable) x;
-    
+
     // the eight basic types are:
     // boolean, integer, decimal, string, point3f, point4f, bitset, and list
     // listf is a special temporary type for storing results
     // of .all in preparation for .bin in the case of xxx.all.bin
     // but with some work, this could be developed into a storage class
-    
+
     if (x instanceof Boolean)
-      return getBoolean(((Boolean)x).booleanValue());
+      return getBoolean(((Boolean) x).booleanValue());
     if (x instanceof Integer)
       return new ScriptVariable(integer, ((Integer) x).intValue());
     if (x instanceof Float)
       return new ScriptVariable(decimal, x);
     if (x instanceof String) {
       x = unescapePointOrBitsetAsVariable((String) x);
-      if (x instanceof ScriptVariable)
-        return (ScriptVariable) x;
       return new ScriptVariable(string, x);
     }
+    if (x instanceof ScriptVariable)
+      return (ScriptVariable) x;
     if (x instanceof Point3f)
       return new ScriptVariable(point3f, x);
     if (x instanceof Vector3f)
@@ -217,25 +221,24 @@ public class ScriptVariable extends Token {
     // the fourth then gives us offset to {0,0,0} (plane), 
     // rotation angle (axisangle), and cos(theta/2) (quaternion).
     if (x instanceof Quaternion)
-      return new ScriptVariable(point4f, ((Quaternion)x).toPoint4f());
+      return new ScriptVariable(point4f, ((Quaternion) x).toPoint4f());
     if (x instanceof Matrix3f)
       return new ScriptVariable(matrix3f, x);
     if (x instanceof Matrix4f)
       return new ScriptVariable(matrix4f, x);
-    if (x instanceof String[])
-      return new ScriptVariable(list, x);
     if (x instanceof Float[])
       return new ScriptVariable(listf, x);
     if (x instanceof Map) {
-      Map<String, Object> ht = (Map<String, Object>)x; 
+      Map<String, Object> ht = (Map<String, Object>) x;
       Iterator<String> e = ht.keySet().iterator();
       while (e.hasNext()) {
         if (!(ht.get(e.next()) instanceof ScriptVariable)) {
           Map<String, ScriptVariable> x2 = new Hashtable<String, ScriptVariable>();
-          for (Map.Entry<String, Object> entry: ht.entrySet()) {
+          for (Map.Entry<String, Object> entry : ht.entrySet()) {
             String key = entry.getKey();
             Object o = entry.getValue();
-            x2.put(key, getVariable(isVariableType(o) ? o : Escape.toReadable(key, o)));
+            x2.put(key, getVariable(isVariableType(o) ? o : Escape.toReadable(
+                key, o)));
           }
           x = x2;
           break;
@@ -243,45 +246,77 @@ public class ScriptVariable extends Token {
       }
       return new ScriptVariable(hash, x);
     }
-    
-    
+
     // all the rest are stored as list
+    // at least for now, still saving as a string, 
+    // but ultimately, that should not be necessary
     
-    if (x instanceof int[]) {
+    ScriptVariable sv = null;
+    ScriptVariable[] objects = null;
+    if (x instanceof ScriptVariable[]) {
+      objects = (ScriptVariable[]) x; 
+      String[] s = new String[objects.length];
+      for (int i = 0; i < objects.length; i++)
+        s[i] = sValue(objects[i]);
+      sv = new ScriptVariable(list, s);
+    } else if (x instanceof String[]) {
+      String[] s = (String[]) x;
+      objects = new ScriptVariable[s.length];
+      for (int i = s.length; --i >= 0;)
+        objects[i] = getVariable(s[i]);
+      sv = new ScriptVariable(list, s);
+    } if (x instanceof int[]) {
       int[] ix = (int[]) x;
       String[] s = new String[ix.length];
-      for (int i = ix.length; --i >= 0; )
+      objects = new ScriptVariable[ix.length];
+      for (int i = ix.length; --i >= 0;) {
+        objects[i] = getVariable(Integer.valueOf(ix[i]));
         s[i] = "" + ix[i];
-      return new ScriptVariable(list, s);
-    }
-    if (x instanceof float[]) {
+      }
+      sv = new ScriptVariable(list, s);
+    } else if (x instanceof int[][]) {
+      int[][] ix = (int[][]) x;
+      String[] s = new String[ix.length];
+      objects = new ScriptVariable[ix.length];
+      for (int i = ix.length; --i >= 0;) {
+        objects[i] = getVariable(ix[i]);
+        s[i] = "" + Escape.escape((Object)ix[i]);
+      }
+      sv = new ScriptVariable(list, s);
+    } else if (x instanceof float[]) {
       float[] f = (float[]) x;
       String[] s = new String[f.length];
-      for (int i = f.length; --i >= 0; )
+      objects = new ScriptVariable[f.length];
+      for (int i = f.length; --i >= 0;) {
+        objects[i] = getVariable(Float.valueOf(f[i]));
         s[i] = "" + f[i];
-      return new ScriptVariable(list, s);
-    }
-    if (x instanceof double[]) {
+      }
+      sv = new ScriptVariable(list, s);
+    } else if (x instanceof double[]) {
       double[] f = (double[]) x;
       String[] s = new String[f.length];
-      for (int i = f.length; --i >= 0; )
+      objects = new ScriptVariable[f.length];
+      for (int i = f.length; --i >= 0;) {
+        objects[i] = getVariable(Float.valueOf((float) f[i]));
         s[i] = "" + f[i];
-      return new ScriptVariable(list, s);
+      }
+      sv = new ScriptVariable(list, s);
+    } else if (x instanceof List) {
+      // will be turned into list
+      List<Object> v = (List<Object>) x;
+      int len = v.size();
+      String[] s = new String[len];
+      objects = new ScriptVariable[len];
+      for (int i = 0; i < len; i++) {
+        Object o = v.get(i);
+        s[i] = (o instanceof String ? (String) o : Escape.toReadable(o));
+        objects[i] = getVariable(o);
+      }
+      sv = new ScriptVariable(list, s);
     }
-    
-    if (x instanceof List) {
-        // will be turned into list
-        List<Object> v = (List<Object>) x;
-        int len = v.size();
-        String[] list = new String[len];
-        for (int i = 0; i < len; i++) {
-          Object o = v.get(i);
-          if (o instanceof String)
-            list[i] = (String) o;
-          else
-            list[i] = Escape.toReadable(o);
-        }
-        return getVariable(list);
+    if (sv != null) {
+      sv.objects = objects;
+      return sv;
     }
     return new ScriptVariable(string, Escape.toReadable(x));
   }
@@ -299,6 +334,11 @@ public class ScriptVariable extends Token {
       int n = ((String[])v.value).length;
       value = new String[n];
       System.arraycopy(v.value, 0, value, 0, n);
+      if (v.objects != null) {
+        objects = new ScriptVariable[n];
+        System.arraycopy(v.objects, 0, objects, 0, n);
+      }
+      
       break;
     default:
       value = v.value;
@@ -545,7 +585,7 @@ public class ScriptVariable extends Token {
       Arrays.sort(keys);
       for (i = 0; i < keys.length; i++) {
         sbh.append(keys[i]).append("\t:");
-        String value = ScriptVariable.sValue(ScriptVariable.getVariable(ht.get(keys[i])));
+        String value = sValue(getVariable(ht.get(keys[i])));
         sbh.append(value.indexOf("\n") >= 0 ? "\n" : "\t");
         sbh.append(value).append("\n");
       }
@@ -649,7 +689,10 @@ public class ScriptVariable extends Token {
       // the selected value or "ALL" (max_value)
       if (i2 == Integer.MIN_VALUE)
         i2 = i1;
-      return new ScriptVariable(tokenIn.tok, i2, tokenIn.value);
+      ScriptVariable v = new ScriptVariable(tokenIn.tok, i2, tokenIn.value);
+      if (tokenIn.tok == Token.list)
+        v.objects = ((ScriptVariable)tokenIn).objects;
+      return v;
     }
     int len = 0;
     boolean isInputSelected = (tokenIn instanceof ScriptVariable && ((ScriptVariable) tokenIn).index != Integer.MAX_VALUE);
@@ -761,10 +804,13 @@ public class ScriptVariable extends Token {
       if (i1 < 1 || i1 > len || i2 > len)
         return new ScriptVariable(string, "");
       if (i2 == i1)
-        return fromString(st[i1 - 1]);
+        return ((ScriptVariable) tokenIn).objects[i1 - 1];//fromString(st[i1 - 1]);
       String[] list = new String[i2 - i1 + 1];
-      for (int i = 0; i < list.length; i++)
+      ScriptVariable[] objects = new ScriptVariable[i2 - i1 + 1];
+      for (int i = 0; i < list.length; i++) {
         list[i] = st[i + i1 - 1];
+        objects[i] = new ScriptVariable(((ScriptVariable) tokenIn).objects[i + i1 - 1]);
+      }
       tokenOut.value = list;
       break;
     }
@@ -872,7 +918,16 @@ public class ScriptVariable extends Token {
     case bitset:
       return Escape.escape((BitSet)value);
     case list:
-      return Escape.escape((String[])value, true);
+      StringBuffer sb = new StringBuffer();
+      sb.append("[");
+      for (int i = 0; i < objects.length; i++) {
+        if (i > 0)
+          sb.append(",");
+        sb.append(objects[i].escape());
+      }
+      sb.append("]");
+      return sb.toString();      
+      //return Escape.escape((String[])value, true);
     case point3f:
       return Escape.escape((Point3f)value);
     case point4f:
@@ -993,14 +1048,14 @@ public class ScriptVariable extends Token {
 
   public static boolean areEqual(ScriptVariable x1, ScriptVariable x2) {
     if (x1.tok == Token.string && x2.tok == Token.string)
-      return ScriptVariable.sValue(x1).equalsIgnoreCase(
-          ScriptVariable.sValue(x2));
+      return sValue(x1).equalsIgnoreCase(
+          sValue(x2));
     if (x1.tok == Token.point3f && x2.tok == Token.point3f)
       return (((Point3f) x1.value).distance((Point3f) x2.value) < 0.000001);
     if (x1.tok == Token.point4f && x2.tok == Token.point4f)
       return (((Point4f) x1.value).distance((Point4f) x2.value) < 0.000001);
-    return (Math.abs(ScriptVariable.fValue(x1)
-        - ScriptVariable.fValue(x2)) < 0.000001);
+    return (Math.abs(fValue(x1)
+        - fValue(x2)) < 0.000001);
   }
 
 }

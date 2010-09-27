@@ -994,6 +994,8 @@ public class ScriptEvaluator {
         error(ERROR_invalidArgument);
       List<ScriptVariable>v = (List<ScriptVariable>) 
           parameterExpression(i, 0, null, false, true, -1, false, null, null);
+      if (v.size() == 0)
+        error(ERROR_invalidArgument);
       ht.put(key, v.get(0));
       i = iToken;
       if (tokAt(i) != Token.comma)
@@ -1591,7 +1593,7 @@ public class ScriptEvaluator {
     case Token.vibxyz:
       if (tokenValue.tok == Token.point3f) {
         viewer.setAtomCoord(bs, tok, tokenValue.value);
-      } else if (tokenValue.tok == Token.list) {
+      } else if (tokenValue.tok == Token.list) { // TODO: list type?
         list = (String[]) tokenValue.value;
         if ((nValues = list.length) == 0)
           return;
@@ -1608,7 +1610,7 @@ public class ScriptEvaluator {
     case Token.color:
       if (tokenValue.tok == Token.point3f)
         iValue = Graphics3D.colorPtToInt((Point3f) tokenValue.value);
-      else if (tokenValue.tok == Token.list) {
+      else if (tokenValue.tok == Token.list) {  // TODO: list type?
         list = (String[]) tokenValue.value;
         if ((nValues = list.length) == 0)
           return;
@@ -1631,7 +1633,7 @@ public class ScriptEvaluator {
       return;
     case Token.label:
     case Token.format:
-      if (tokenValue.tok == Token.list)
+      if (tokenValue.tok == Token.list)  // TODO: list type?
         list = (String[]) tokenValue.value;
       else
         sValue = ScriptVariable.sValue(tokenValue);
@@ -1642,7 +1644,7 @@ public class ScriptEvaluator {
       clearDefinedVariableAtomSets();
       break;
     }
-    if (tokenValue.tok == Token.list || tokenValue.tok == Token.string) {
+    if (tokenValue.tok == Token.list || tokenValue.tok == Token.string) {  // TODO: list type?
       list = (tokenValue.tok == Token.list ? (String[]) tokenValue.value
           : Parser.getTokens(ScriptVariable.sValue(tokenValue)));
       if ((nValues = list.length) == 0)
@@ -2134,7 +2136,7 @@ public class ScriptEvaluator {
             error(ERROR_invalidArgument);
           i = iToken;
           ScriptVariable vt = val.get(0);
-          v = (vt.tok == Token.list ? vt : ScriptVariable.oValue(vt));
+          v = (vt.tok == Token.list ? vt : ScriptVariable.oValue(vt));  // TODO: list type?
         } else {
           v = getParameter(var, false);
         }
@@ -2851,8 +2853,7 @@ public class ScriptEvaluator {
     int tok = statement[0].tok;
     switch (tok) {
     case Token.nada:
-      String s = (String) statement[0].value;
-      return (s.startsWith("/") ? "/" : "#") + s;
+      return (String) statement[0].value;
     case Token.end:
       if (statement.length == 2
           && (statement[1].tok == Token.function || statement[1].tok == Token.parallel))
@@ -2928,7 +2929,7 @@ public class ScriptEvaluator {
       case Token.bitset:
       case Token.list:
       case Token.hash:
-        sb.append(ScriptVariable.sValue(token));
+        sb.append(ScriptVariable.sValue(token));  // TODO: list type?
         continue;
       case Token.seqcode:
         sb.append('^');
@@ -4035,7 +4036,7 @@ public class ScriptEvaluator {
     String s = null;
     switch (tokAt(i)) {
       case Token.string:
-      case Token.list:
+      case Token.list: //TODO -- could be generic list?
       s = ScriptVariable.sValue(statement[i]);
       s = TextFormat.replaceAllCharacters(s, "{},[]\"'", ' ');
       fparams = Parser.parseFloatArray(s);
@@ -4095,7 +4096,7 @@ public class ScriptEvaluator {
   private Point3f[] getPointArray(int i, int nPoints) throws ScriptException {
     int tok = getToken(i++).tok;
     Point3f[] points = new Point3f[nPoints];
-    if (tok == Token.list) {
+    if (tok == Token.list) { // TODO: could be generic list?
       String[] list = (String[]) theToken.value;
       if (list.length != nPoints)
         error(ERROR_invalidArgument);
@@ -5009,7 +5010,7 @@ public class ScriptEvaluator {
           if (s == null)
             break;
           if (outputBuffer == null)
-            viewer.showMessage(s = "#" + s);
+            viewer.showMessage(s);
           scriptStatusOrBuffer(s);
           break;
         case Token.push:
@@ -5716,13 +5717,24 @@ public class ScriptEvaluator {
   
   private void gotoCmd(String strTo) throws ScriptException {
     int pcTo = (strTo == null ? aatoken.length - 1 : -1);
+    String s = null;
     for (int i = pcTo + 1; i < aatoken.length; i++) {
       Token[] tokens = aatoken[i];
-      if (tokens[0].tok == Token.message || tokens[0].tok == Token.nada)
-        if (tokens[tokens.length - 1].value.toString().equalsIgnoreCase(strTo)) {
-          pcTo = i;
-          break;
-        }
+      int tok = tokens[0].tok;
+      switch (tok) {
+      case Token.message:
+      case Token.nada:
+        s = (String) tokens[tokens.length - 1].value;
+        if (tok == Token.nada)
+          s = s.substring(s.startsWith("#") ? 1 : 2);
+        break;
+      default:
+        continue;
+      }
+      if (s.equalsIgnoreCase(strTo)) {
+        pcTo = i;
+        break;
+      }
     }
     if (pcTo < 0)
       error(ERROR_invalidArgument);
@@ -5940,7 +5952,7 @@ public class ScriptEvaluator {
         bsCenter = (BitSet) expressionResult;
         q = (isSyntaxCheck ? new Quaternion() : viewer
             .getAtomQuaternion(bsCenter.nextSetBit(0)));
-      } else if (tokAt(i) == Token.list) {
+      } else if (tokAt(i) == Token.list) { // TODO: list type?
         String[] s = (String[]) getToken(i).value;
         if (s.length == 0)
           error(ERROR_invalidArgument);
@@ -9250,7 +9262,7 @@ public class ScriptEvaluator {
         if (tok == Token.quaternion)
           i++;        
         haveRotation = true;
-        if (tokAt(i) == Token.list) {
+        if (tokAt(i) == Token.list) {  // TODO: list type?
           String[] s = (String[]) getToken(i).value;
           if (s.length == 0)
             error(ERROR_invalidArgument);
@@ -12570,7 +12582,7 @@ public class ScriptEvaluator {
       if (propertyName.startsWith("property_")) {
         viewer.setData(propertyName, new Object[] { propertyName,
             ScriptVariable.sValue(tv), BitSetUtil.copy(bs) }, viewer
-            .getAtomCount(), 0, 0, tv.tok == Token.list ? Integer.MAX_VALUE
+            .getAtomCount(), 0, 0, tv.tok == Token.list ? Integer.MAX_VALUE  // TODO: list type?
             : Integer.MIN_VALUE, 0);
         return;
       }
@@ -15576,7 +15588,7 @@ public class ScriptEvaluator {
           propertyValue = floatParameterSet(i, 2, 2);
           addShapeProperty(propertyList, "cutoff", Float.valueOf(0));
           //addShapeProperty(propertyList, "colorDensity", null);
-          sbCommand.append(Escape.escape((float[]) propertyValue, true));
+          sbCommand.append(Escape.escape(propertyValue));
           i = iToken;
         }
         break;
@@ -16089,7 +16101,7 @@ public class ScriptEvaluator {
     }
     if (surfaceObjectSeen && !isLcaoCartoon && !isSyntaxCheck) {
       if (bsSelect == null)
-        bsSelect = viewer.getSelectionSet(false);
+        bsSelect = BitSetUtil.copy(viewer.getSelectionSet(false));
       bsSelect.and(viewer.getModelUndeletedAtomsBitSet(modelIndex));
       setShapeProperty(iShape, "finalize", " select " + Escape.escape(bsSelect) + " "
           + sbCommand);

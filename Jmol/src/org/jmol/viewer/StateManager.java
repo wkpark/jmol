@@ -1591,9 +1591,9 @@ public class StateManager {
       // structure defaults
       
       if (haveSetStructureList) {
-        commands.append("struture HELIX set " + Escape.escape(structureList[JmolConstants.PROTEIN_STRUCTURE_HELIX], true));
-        commands.append("struture SHEET set " + Escape.escape(structureList[JmolConstants.PROTEIN_STRUCTURE_SHEET], true));
-        commands.append("struture TURN set " + Escape.escape(structureList[JmolConstants.PROTEIN_STRUCTURE_TURN], true));
+        commands.append("struture HELIX set " + Escape.escape(structureList[JmolConstants.PROTEIN_STRUCTURE_HELIX]));
+        commands.append("struture SHEET set " + Escape.escape(structureList[JmolConstants.PROTEIN_STRUCTURE_SHEET]));
+        commands.append("struture TURN set " + Escape.escape(structureList[JmolConstants.PROTEIN_STRUCTURE_TURN]));
       }
       if (sfunc != null)
         commands.append("\n}\n\n");

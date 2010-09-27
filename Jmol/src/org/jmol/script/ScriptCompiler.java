@@ -595,8 +595,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         // just a comment
         ichCurrentCommand = ichToken;
         if (comment != null)
-          addTokenToPrefix(new Token(Token.nada,
-              (comment.length() == 1 ? comment : comment.substring(1))));
+          addTokenToPrefix(new Token(Token.nada, comment));
       } else if (setBraceCount > 0 && endOfLine && ichToken < cchScript) {
         return CONTINUE;
       }

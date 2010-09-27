@@ -77,7 +77,7 @@ public class ScriptFunction {
     for (int i = names.size(); --i >= 0;) {
       String name = names.get(i).toLowerCase();
       ScriptVariable var = (i < nParameters && i < nParams ? params.get(i) : null);
-      if (var != null && var.tok != Token.list)
+      if (var != null && var.tok != Token.list)  // TODO: list type?
         var = new ScriptVariable(var);
       contextVariables.put(name, (var == null ? 
           (new ScriptVariable(Token.string, "")).setName(name) : var));
@@ -93,10 +93,10 @@ public class ScriptFunction {
       return;
     for (int i = 0; i < nNames && i < nParams; i++) {
       ScriptVariable global = params.get(i);
-      if (global.tok != Token.list)
+      if (global.tok != Token.list)  // TODO: list type?
         continue;
       ScriptVariable local = contextVariables.get(names.get(i).toLowerCase());
-      if (local.tok != Token.list)
+      if (local.tok != Token.list)  // TODO: list type?
         continue;
       global.value = local.value;
     }

@@ -1683,10 +1683,7 @@ class ScriptMathProcessor {
         }
       }
     }
-    String[] array = new String[len];
-    for (int i = 0; i < args.length; i++)
-      array[i] = ScriptVariable.sValue(args[i]);
-    return addX(array);
+    return addX(ScriptVariable.getVariable(args));
   }
 
   private boolean evaluateMath(ScriptVariable[] args, int tok) {

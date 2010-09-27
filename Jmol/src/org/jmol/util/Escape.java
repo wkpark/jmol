@@ -75,7 +75,7 @@ public class Escape {
       return escapeArray(x);
     if (x instanceof Map)
       return escape((Map<String, Object>) x);
-    return x.toString();
+    return (x == null ? "null" : x.toString());
   }
 
   public static String escape(Point4f xyzw) {
@@ -95,12 +95,12 @@ public class Escape {
   /**
    * 
    * @param f
-   * @param asArray IGNORED
+   * @param asArray -- FALSE allows bypassing of escape(Object f); TRUE: unnecssary
    * @return tabular string
    */
   public static String escape(float[] f, boolean asArray) {
     if (asArray)
-      return toJSON(null, f);
+      return toJSON(null, f); // or just use escape(f)
     StringBuilder sb = new StringBuilder();
     for (int i = 0; i < f.length; i++) {
       if (i > 0)

@@ -202,10 +202,10 @@ public class ScriptVariable extends Token {
       return new ScriptVariable(decimal, x);
     if (x instanceof String) {
       x = unescapePointOrBitsetAsVariable((String) x);
+      if (x instanceof ScriptVariable)
+        return (ScriptVariable) x;
       return new ScriptVariable(string, x);
     }
-    if (x instanceof ScriptVariable)
-      return (ScriptVariable) x;
     if (x instanceof Point3f)
       return new ScriptVariable(point3f, x);
     if (x instanceof Vector3f)

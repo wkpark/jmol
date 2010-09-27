@@ -8306,13 +8306,15 @@ public class ScriptEvaluator {
         filter = "2D-noMin";
       sOptions += " FILTER " + Escape.escape(filter);
     }
+    boolean isVariable = false;
     if (filenames == null) {
       // standard file loading here
       if (filename.startsWith("@") && filename.length() > 1) {
+        isVariable = true;
         String s = getStringParameter(filename.substring(1), false);
         htParams.put("fileData", s);
-        loadScript = new StringBuffer("{\nvar " + filename.substring(1) + " = "
-            + Escape.escape(s) + ";\n  " + loadScript + "\n}\n");
+        loadScript = new StringBuffer("{\n    var " + filename.substring(1) + " = "
+            + Escape.escape(s) + ";\n    " + loadScript);
       } else if (isInline) {
         htParams.put("fileData", filename);
       }
@@ -8339,8 +8341,10 @@ public class ScriptEvaluator {
     if (filenames == null && tokType == 0) {
       // a single file or string -- complete the loadScript
       loadScript.append(" ");
-      if (filename.startsWith("@") || isInline) {
+      if (isVariable || isInline) {
         loadScript.append(Escape.escape(filename));
+        if (isVariable)
+          sOptions += "\n  }";
       } else if (!isData) {
         if (!filename.equals("string") && !filename.equals("string[]"))
           loadScript.append("/*file*/");

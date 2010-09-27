@@ -243,38 +243,37 @@ public class LabelToken {
   }
 
   private static int setToken(Viewer viewer, String strFormat, LabelToken lt,
-                              int cch, int chAtom,
-                              Map<String, Object> htValues) {
+                              int cch, int chAtom, Map<String, Object> htValues) {
     int ich = lt.pt + 1;
     char ch;
     if (strFormat.charAt(ich) == '-') {
       lt.alignLeft = true;
       ++ich;
     }
-    if (strFormat.charAt(ich) == '0') {
+    if (ich < cch && strFormat.charAt(ich) == '0') {
       lt.zeroPad = true;
       ++ich;
     }
-    while (Character.isDigit(ch = strFormat.charAt(ich))) {
+    while (ich < cch && Character.isDigit(ch = strFormat.charAt(ich))) {
       lt.width = (10 * lt.width) + (ch - '0');
       ++ich;
     }
     lt.precision = Integer.MAX_VALUE;
     boolean isNegative = false;
-    if (strFormat.charAt(ich) == '.') {
+    if (ich < cch && strFormat.charAt(ich) == '.') {
       ++ich;
-      if ((ch = strFormat.charAt(ich)) == '-') {
+      if (ich < cch && (ch = strFormat.charAt(ich)) == '-') {
         isNegative = true;
         ++ich;
       }
-      if (Character.isDigit(ch = strFormat.charAt(ich))) {
+      if (ich < cch && Character.isDigit(ch = strFormat.charAt(ich))) {
         lt.precision = ch - '0';
         if (isNegative)
           lt.precision = -1 - lt.precision;
         ++ich;
       }
     }
-    if (htValues != null) {
+    if (ich < cch && htValues != null) {
       Iterator<String> keys = htValues.keySet().iterator();
       while (keys.hasNext()) {
         String key = keys.next();
@@ -284,52 +283,53 @@ public class LabelToken {
         }
       }
     }
-    switch (ch = strFormat.charAt(ich++)) {
-    case '%':
-      lt.text = "%";
-      return ich;
-    case '[':
-      int ichClose = strFormat.indexOf(']', ich);
-      if (ichClose < ich) {
-        ich = cch;
+    if (ich < cch)
+      switch (ch = strFormat.charAt(ich++)) {
+      case '%':
+        lt.text = "%";
+        return ich;
+      case '[':
+        int ichClose = strFormat.indexOf(']', ich);
+        if (ichClose < ich) {
+          ich = cch;
+          break;
+        }
+        String propertyName = strFormat.substring(ich, ichClose).toLowerCase();
+        if (propertyName.startsWith("property_")) {
+          lt.text = propertyName;
+          lt.tok = Token.data;
+          lt.data = viewer.getDataFloat(lt.text);
+        } else {
+          Token token = Token.getTokenFromName(propertyName);
+          if (token != null && isLabelPropertyTok(token.tok))
+            lt.tok = token.tok;
+        }
+        ich = ichClose + 1;
         break;
-      }
-      String propertyName = strFormat.substring(ich, ichClose).toLowerCase();
-      if (propertyName.startsWith("property_")) {
-        lt.text = propertyName;
+      case '{': // client property name
+        int ichCloseBracket = strFormat.indexOf('}', ich);
+        if (ichCloseBracket < ich) {
+          ich = cch;
+          break;
+        }
+        lt.text = strFormat.substring(ich, ichCloseBracket);
         lt.tok = Token.data;
         lt.data = viewer.getDataFloat(lt.text);
-      } else {
-        Token token = Token.getTokenFromName(propertyName);
-        if (token != null && isLabelPropertyTok(token.tok))
-          lt.tok = token.tok;
-      }
-      ich = ichClose + 1;
-      break;
-    case '{': // client property name
-      int ichCloseBracket = strFormat.indexOf('}', ich);
-      if (ichCloseBracket < ich) {
-        ich = cch;
+        ich = ichCloseBracket + 1;
         break;
+      default:
+        int i,
+        i1;
+        if (ich < cch && (i = twoCharLabelTokenParams.indexOf(ch)) >= 0
+            && (i1 = "xyz".indexOf(strFormat.charAt(ich))) >= 0) {
+          lt.tok = twoCharLabelTokenIds[i * 3 + i1];
+          ich++;
+        } else if ((i = labelTokenParams.indexOf(ch)) >= 0) {
+          lt.tok = labelTokenIds[i];
+        }
       }
-      lt.text = strFormat.substring(ich, ichCloseBracket);
-      lt.tok = Token.data;
-      lt.data = viewer.getDataFloat(lt.text);
-      ich = ichCloseBracket + 1;
-      break;
-    default:
-      int i,
-      i1;
-      if (ich < cch && (i = twoCharLabelTokenParams.indexOf(ch)) >= 0
-          && (i1 = "xyz".indexOf(strFormat.charAt(ich))) >= 0) {
-        lt.tok = twoCharLabelTokenIds[i * 3 + i1];
-        ich++;
-      } else if ((i = labelTokenParams.indexOf(ch)) >= 0) {
-        lt.tok = labelTokenIds[i];
-      }
-    }
     lt.text = strFormat.substring(lt.pt, ich);
-    if (chAtom != '\0' && ich < cch
+    if (ich < cch && chAtom != '\0'
         && Character.isDigit(ch = strFormat.charAt(ich))) {
       ich++;
       lt.ch1 = ch;

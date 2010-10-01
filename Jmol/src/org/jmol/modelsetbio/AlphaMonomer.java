@@ -91,6 +91,12 @@ public class AlphaMonomer extends Monomer {
   }
 
   @Override
+  public byte getProteinStructureSubType() {
+    return proteinStructure == null ? JmolConstants.PROTEIN_STRUCTURE_NONE
+        : proteinStructure.subtype;
+  }
+
+  @Override
   public int getStrucNo() {
     return proteinStructure != null ? proteinStructure.uniqueID : 0;
   }
@@ -124,10 +130,10 @@ public class AlphaMonomer extends Monomer {
       }
       switch (iType) {
       case JmolConstants.PROTEIN_STRUCTURE_HELIX:
-        setStructure(new Helix((AlphaPolymer) bioPolymer, monomerIndex, 1, 0));
+        setStructure(new Helix((AlphaPolymer) bioPolymer, monomerIndex, 1, 0, iType));
         break;
       case JmolConstants.PROTEIN_STRUCTURE_SHEET:
-        setStructure(new Sheet((AlphaPolymer) bioPolymer, monomerIndex, 1, 0));
+        setStructure(new Sheet((AlphaPolymer) bioPolymer, monomerIndex, 1, 0, iType));
         break;
       case JmolConstants.PROTEIN_STRUCTURE_TURN:
         setStructure(new Turn((AlphaPolymer) bioPolymer, monomerIndex, 1, 0));

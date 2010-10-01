@@ -235,7 +235,7 @@ abstract public class BondCollection extends AtomCollection {
 
   void getRasmolHydrogenBonds(Model m, BitSet bsA, BitSet bsB, List<Bond> vHBonds,
                          boolean nucleicOnly, int nMax) {
-
+    boolean isDssp = viewer.getTestFlag3();
     boolean doAdd = (vHBonds == null);
     Polymer bp, bp1;
     if (doAdd) {
@@ -252,12 +252,12 @@ abstract public class BondCollection extends AtomCollection {
       boolean isRNA = bp.isRna();
       boolean isAmino = (type == Polymer.TYPE_AMINO);
       if (isAmino) {
-        bp.calcRasmolHydrogenBonds(null, bsA, bsB, vHBonds, nMax);
+        bp.calcRasmolHydrogenBonds(null, bsA, bsB, vHBonds, nMax, null, !isDssp);
       }
       for (int j = m.bioPolymerCount; --j >= 0;) {
         if ((bp1 = m.bioPolymers[j]) != null && (isRNA || i != j)
             && type == bp1.getType()) {
-          bp1.calcRasmolHydrogenBonds(bp, bsA, bsB, vHBonds, nMax);
+          bp1.calcRasmolHydrogenBonds(bp, bsA, bsB, vHBonds, nMax, null, !isDssp);
         }
       }
     }

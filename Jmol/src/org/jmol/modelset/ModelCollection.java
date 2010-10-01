@@ -645,9 +645,10 @@ abstract public class ModelCollection extends BondCollection {
    */
   protected void calculateStructuresAllExcept(BitSet alreadyDefined, boolean addFileData) {
     freezeModels();
+    boolean asDssp = viewer.getTestFlag3();
     for (int i = modelCount; --i >= 0;)
       if (models[i].isPDB && !alreadyDefined.get(i))
-        models[i].calculateStructures();
+        models[i].calculateStructures(asDssp);
     setStructureIds();
      if (addFileData)
       propagateSecondaryStructure();

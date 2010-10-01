@@ -195,7 +195,7 @@ public class AminoMonomer extends AlphaMonomer {
     return nitrogenHydrogenPoint;
   }
   
-  public boolean getNHPoint(Point3f aminoHydrogenPoint, Vector3f vNH) {
+  public boolean getNHPoint(Point3f aminoHydrogenPoint, Vector3f vNH, boolean jmolHPoint) {
     if (monomerIndex == 0 || groupID == JmolConstants.GROUPID_PROLINE) 
       return false;      
     Point3f nitrogenPoint = getNitrogenAtom();
@@ -205,9 +205,17 @@ public class AminoMonomer extends AlphaMonomer {
       aminoHydrogenPoint.set(nhPoint);
       return true;
     }
-    vNH.sub(nitrogenPoint, getLeadAtom());
-    vNH.add(nitrogenPoint);
-    vNH.sub(((AminoMonomer)bioPolymer.monomers[monomerIndex - 1]).getCarbonylCarbonAtom());
+    AminoMonomer prev = (AminoMonomer)bioPolymer.monomers[monomerIndex - 1]; 
+    if (jmolHPoint) {
+      // Jmol: based on trigonal planar C-NH-Ca
+      vNH.sub(nitrogenPoint, getLeadAtom());
+      vNH.add(nitrogenPoint);
+      vNH.sub(prev.getCarbonylCarbonAtom());
+    } else {
+      // Rasmol def -- just use C=O vector, so this does not account for cis-amino acids
+      // but I guess if those are just proline...
+      vNH.sub(prev.getCarbonylCarbonAtom(), prev.getCarbonylOxygenAtom());
+    }
     vNH.normalize();
     aminoHydrogenPoint.add(nitrogenPoint, vNH);
     this.nitrogenHydrogenPoint = new Point3f(aminoHydrogenPoint);
@@ -304,7 +312,7 @@ public class AminoMonomer extends AlphaMonomer {
       if (monomerIndex == 0 || groupID == JmolConstants.GROUPID_PROLINE)
         return null;
       vC = new Vector3f();
-      getNHPoint(ptTemp, vC);
+      getNHPoint(ptTemp, vC, true);
       vB.sub(ptCa, getNitrogenAtom());
       vB.cross(vC, vB);
       Matrix3f mat = new Matrix3f();

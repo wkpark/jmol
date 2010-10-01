@@ -1065,6 +1065,10 @@ final public class Atom extends Point3fi implements JmolNode {
     return group.getProteinStructureType();
   }
   
+  public byte getProteinStructureSubType() {
+    return group.getProteinStructureSubType();
+  }
+  
   public int getStrucNo() {
     return group.getStrucNo();
   }

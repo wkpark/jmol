@@ -29,10 +29,12 @@ import org.jmol.modelset.Bond;
 import org.jmol.modelset.HBond;
 import org.jmol.modelset.Polymer;
 import org.jmol.script.Token;
+//import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.viewer.JmolConstants;
 
+//import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 
@@ -56,78 +58,100 @@ public class AminoPolymer extends AlphaPolymer {
   }
 
   private boolean hasOAtoms;
-  @Override
-  boolean hasWingPoints() { return hasOAtoms; }
-
-  //boolean debugHbonds;
 
   @Override
-  public void calcRasmolHydrogenBonds(Polymer polymer, BitSet bsA, BitSet bsB, List<Bond> vHBonds, int nMaxPerResidue) {
+  boolean hasWingPoints() {
+    return hasOAtoms;
+  }
+
+  //boolean Logger.debugging;
+
+  @Override
+  public void calcRasmolHydrogenBonds(Polymer polymer, BitSet bsA, BitSet bsB,
+                                      List<Bond> vHBonds, int nMaxPerResidue,
+                                      int[][][] min, boolean checkDistances) {
+    if (polymer == null)
+      polymer = this;
+    if (!(polymer instanceof AminoPolymer))
+      return;
     Point3f pt = new Point3f();
     Vector3f vNH = new Vector3f();
-    boolean intraChain = (polymer == null);
-    if (intraChain)
-      polymer = this;
+    boolean intraChain = (polymer == this);
     AminoMonomer source;
-    AminoPolymer p = (AminoPolymer)polymer;
-    for (int i = 1; i < p.monomerCount; ++i) { //not first N
-      if ((source = ((AminoMonomer)p.monomers[i])).getNHPoint(pt, vNH)) {
-        boolean isInA = (bsA.get(source.getNitrogenAtom().index));
+    int[][] min1 = (min == null ? new int[2][4] : null);
+    for (int i = 1; i < monomerCount; ++i) { //not first N
+      if (min == null) {
+        min1[0][0] = min1[1][0] = -100;
+        min1[0][1] = min1[1][1] = 0;
+        min1[0][2] = min1[1][2] = bioPolymerIndexInModel;
+        min1[0][3] = min1[1][3] = monomers[i].leadAtomIndex;
+      } else {
+        min1 = min[i];
+      }
+      if ((source = ((AminoMonomer) monomers[i])).getNHPoint(pt, vNH,
+          checkDistances)) {
+        boolean isInA = (bsA == null || bsA.get(source.getNitrogenAtom().index));
         if (!isInA)
           continue;
-        checkRasmolHydrogenBond(source, (intraChain ? i : -100), pt, (isInA ? bsB : bsA), 
-            vHBonds, nMaxPerResidue);
+        checkRasmolHydrogenBond(source, polymer, (intraChain ? i : -100), pt,
+            (isInA ? bsB : bsA), vHBonds, min1, checkDistances);
       }
     }
   }
 
   private final static float maxHbondAlphaDistance = 9;
-  private final static float maxHbondAlphaDistance2 =
-    maxHbondAlphaDistance * maxHbondAlphaDistance;
+  private final static float maxHbondAlphaDistance2 = maxHbondAlphaDistance
+      * maxHbondAlphaDistance;
   private final static float minimumHbondDistance2 = 0.5f; // note: RasMol is 1/2 this. RMH
 
-  private void checkRasmolHydrogenBond(AminoMonomer source, int indexDonor, Point3f hydrogenPoint,
-                         BitSet bsB, List<Bond> vHBonds, int nMaxPerResidue) {
+  private void checkRasmolHydrogenBond(AminoMonomer source, Polymer polymer,
+                                       int indexDonor, Point3f hydrogenPoint,
+                                       BitSet bsB, List<Bond> vHBonds,
+                                       int[][] min, boolean checkDistances) {
     Point3f sourceAlphaPoint = source.getLeadAtom();
     Point3f sourceNitrogenPoint = source.getNitrogenAtom();
     Atom nitrogen = source.getNitrogenAtom();
-    int energyMin1 = 0;
-    int energyMin2 = 0;
-    int indexMin1 = -1;
-    int indexMin2 = -1;
-    for (int i = monomerCount; --i >= 0; ) {
-      if ((i == indexDonor || (i+1) == indexDonor) || (i-1) == indexDonor)
+    int[] m;
+    for (int i = polymer.monomerCount; --i >= 0;) {
+      if (polymer == this
+          && (i == indexDonor || i + 1 == indexDonor || i - 1 == indexDonor))
         continue;
-      AminoMonomer target = (AminoMonomer)monomers[i];
+      AminoMonomer target = (AminoMonomer) ((BioPolymer) polymer).monomers[i];
       Atom oxygen = target.getCarbonylOxygenAtom();
-      if (!bsB.get(oxygen.index))
+      if (bsB != null && !bsB.get(oxygen.index))
         continue;
       Point3f targetAlphaPoint = target.getLeadAtom();
       float dist2 = sourceAlphaPoint.distanceSquared(targetAlphaPoint);
       if (dist2 > maxHbondAlphaDistance2)
         continue;
-      int energy = calcHbondEnergy(sourceNitrogenPoint, hydrogenPoint, target);
-      if (energy < energyMin1) {
-        energyMin2 = energyMin1;
-        indexMin2 = indexMin1;
-        energyMin1 = energy;
-        indexMin1 = i;
-      } else if (energy < energyMin2) {
-        energyMin2 = energy;
-        indexMin2 = i;
+      int energy = calcHbondEnergy(sourceNitrogenPoint, hydrogenPoint, target,
+          checkDistances);
+      if (energy < min[0][1]) {
+        m = min[1];
+        min[1] = min[0];
+        min[0] = m;
+      } else if (energy < min[1][1]) {
+        m = min[1];
+      } else {
+        continue;
       }
+      m[0] = i;
+      m[1] = energy;
+      m[2] = polymer.bioPolymerIndexInModel;
+      m[3] = target.leadAtomIndex;
     }
-    if (indexMin1 >= 0) {
-      addResidueHydrogenBond(nitrogen, ((AminoMonomer)monomers[indexMin1]).getCarbonylOxygenAtom(), indexDonor, indexMin1, energyMin1/1000f, vHBonds);
-      if (indexMin2 >= 0 && nMaxPerResidue > 1) {
-        addResidueHydrogenBond(nitrogen,((AminoMonomer)monomers[indexMin2]).getCarbonylOxygenAtom(), indexDonor, indexMin2, energyMin2/1000f, vHBonds);
-      }
-    }
+    if (vHBonds != null)
+      for (int i = 0; i < 2; i++)
+        if (min[i][0] >= 0)
+          addResidueHydrogenBond(nitrogen,
+              ((AminoMonomer) ((AminoPolymer) polymer).monomers[min[i][0]])
+                  .getCarbonylOxygenAtom(), indexDonor, min[i][0],
+              min[i][1] / 1000f, vHBonds);
   }
 
   //private int hPtr = 0;
-  private int calcHbondEnergy(Point3f nitrogenPoint,
-                      Point3f hydrogenPoint, AminoMonomer target) {
+  private int calcHbondEnergy(Point3f nitrogenPoint, Point3f hydrogenPoint,
+                              AminoMonomer target, boolean checkDistances) {
     Point3f targetOxygenPoint = target.getCarbonylOxygenAtom();
 
     /*
@@ -152,11 +176,11 @@ public class AminoPolymer extends AlphaPolymer {
     float distCN2 = targetCarbonPoint.distanceSquared(nitrogenPoint);
     if (distCN2 < minimumHbondDistance2)
       return 0;
-    
+
     /*
      * I'm adding these two because they just makes sense -- Bob Hanson
      */
-    
+
     double distOH = Math.sqrt(distOH2);
     double distCH = Math.sqrt(distCH2);
     double distCN = Math.sqrt(distCN2);
@@ -164,7 +188,8 @@ public class AminoPolymer extends AlphaPolymer {
 
     int energy = HBond.getEnergy(distOH, distCH, distCN, distON);
 
-    boolean isHbond = (distCN2 > distCH2 && distOH <= 3.0f && energy <= -500);
+    boolean isHbond = (energy < -500 && (!checkDistances || distCN2 > distCH2
+        && distOH <= 3.0f));
     /*
     if (isHbond)
       Logger.info("draw calcHydrogen"+ " ("+nitrogen.getInfo()+") {" + hydrogenPoint.x + " "
@@ -176,7 +201,8 @@ public class AminoPolymer extends AlphaPolymer {
     return (!isHbond ? 0 : energy < -9900 ? -9900 : energy);
   }
 
-  private void addResidueHydrogenBond(Atom nitrogen, Atom oxygen, int indexAminoGroup,
+  private void addResidueHydrogenBond(Atom nitrogen, Atom oxygen,
+                                      int indexAminoGroup,
                                       int indexCarbonylGroup, float energy,
                                       List<Bond> vHBonds) {
     int order;
@@ -206,17 +232,8 @@ public class AminoPolymer extends AlphaPolymer {
   }
 
   /*
-   * If someone wants to work on this code for secondary structure
-   * recognition that would be great
-   *
-   * miguel 2004 06 16
-   */
-
-  /*
    * New code for assigning secondary structure based on 
    * phi-psi angles instead of hydrogen bond patterns.
-   *
-   * old code is commented below the new.
    *
    * molvisions 2005 10 12
    *
@@ -226,8 +243,6 @@ public class AminoPolymer extends AlphaPolymer {
   public void calculateStructures() {
     if (structureList == null)
       structureList = model.getModelSet().getStructureList();
-    //deprecated: calcHydrogenBonds();
-    //System.out.println("calculateStructures for model " + this.model.getModelIndex());
     char[] structureTags = new char[monomerCount];
     for (int i = 0; i < monomerCount - 1; ++i) {
       AminoMonomer leadingResidue = (AminoMonomer) monomers[i];
@@ -249,10 +264,10 @@ public class AminoPolymer extends AlphaPolymer {
       }
 
       if (Logger.debugging)
-        Logger.debug((0+this.monomers[0].getChainID()) + " aminopolymer:" + i
-            + " " + trailingResidue.getGroupParameter(Token.phi) 
-            + "," + leadingResidue.getGroupParameter(Token.psi) 
-            + " " + structureTags[i]);
+        Logger.debug((0 + this.monomers[0].getChainID()) + " aminopolymer:" + i
+            + " " + trailingResidue.getGroupParameter(Token.phi) + ","
+            + leadingResidue.getGroupParameter(Token.psi) + " "
+            + structureTags[i]);
     }
 
     // build alpha helix stretches
@@ -263,8 +278,8 @@ public class AminoPolymer extends AlphaPolymer {
         }
         end--;
         if (end >= start + 3) {
-          addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_HELIX, null, 0, 0, start,
-              end);
+          addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_HELIX, null, 0,
+              0, start, end);
         }
         start = end;
       }
@@ -277,8 +292,8 @@ public class AminoPolymer extends AlphaPolymer {
         }
         end--;
         if (end >= start + 3) {
-          addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_HELIX, null, 0, 0, start,
-              end);
+          addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_HELIX, null, 0,
+              0, start, end);
         }
         start = end;
       }
@@ -292,8 +307,8 @@ public class AminoPolymer extends AlphaPolymer {
         }
         end--;
         if (end >= start + 2) {
-          addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_SHEET, null, 0, 0, start,
-              end);
+          addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_SHEET, null, 0,
+              0, start, end);
         }
         start = end;
       }
@@ -307,8 +322,8 @@ public class AminoPolymer extends AlphaPolymer {
         }
         end--;
         if (end >= start + 2) {
-          addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_TURN, null, 0, 0, start,
-              end);
+          addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_TURN, null, 0,
+              0, start, end);
         }
         start = end;
       }
@@ -332,22 +347,22 @@ public class AminoPolymer extends AlphaPolymer {
         return false;
     return true;
   }
-  
+
   @Override
   public void freeze() {
     hasOAtoms = checkWingAtoms();
   }
-  
+
   @Override
   protected boolean calcPhiPsiAngles() {
     for (int i = 0; i < monomerCount - 1; ++i)
-      calcPhiPsiAngles((AminoMonomer) monomers[i], (AminoMonomer) monomers[i + 1]);
+      calcPhiPsiAngles((AminoMonomer) monomers[i],
+          (AminoMonomer) monomers[i + 1]);
     return true;
   }
-  
-  private void calcPhiPsiAngles(AminoMonomer residue1,
-                        AminoMonomer residue2) {
-    
+
+  private void calcPhiPsiAngles(AminoMonomer residue1, AminoMonomer residue2) {
+
     /*
      * G N Ramachandran and V. Sasisekharan,
      * "Conformation of Polypeptides and Proteins" 
@@ -370,25 +385,26 @@ public class AminoPolymer extends AlphaPolymer {
     Point3f alphacarbon2 = residue2.getLeadAtom();
     Point3f carbon2 = residue2.getCarbonylCarbonAtom();
 
-    residue2.setGroupParameter(Token.phi, Measure.computeTorsion(carbon1, nitrogen2,
-                                            alphacarbon2, carbon2, true));
-    residue1.setGroupParameter(Token.psi, Measure.computeTorsion(nitrogen1, alphacarbon1,
-      carbon1, nitrogen2, true));
+    residue2.setGroupParameter(Token.phi, Measure.computeTorsion(carbon1,
+        nitrogen2, alphacarbon2, carbon2, true));
+    residue1.setGroupParameter(Token.psi, Measure.computeTorsion(nitrogen1,
+        alphacarbon1, carbon1, nitrogen2, true));
     // to offset omega so cis-prolines show up off the plane, 
     // we would have to use residue2 here:
-    residue1.setGroupParameter(Token.omega, Measure.computeTorsion(alphacarbon1,
-	        carbon1, nitrogen2, alphacarbon2, true));
+    residue1.setGroupParameter(Token.omega, Measure.computeTorsion(
+        alphacarbon1, carbon1, nitrogen2, alphacarbon2, true));
   }
-  
+
   @Override
   protected float calculateRamachandranHelixAngle(int m, char qtype) {
-    float psiLast = (m == 0 ? Float.NaN : monomers[m - 1].getGroupParameter(Token.psi));
+    float psiLast = (m == 0 ? Float.NaN : monomers[m - 1]
+        .getGroupParameter(Token.psi));
     float psi = monomers[m].getGroupParameter(Token.psi);
     float phi = monomers[m].getGroupParameter(Token.phi);
-    float phiNext = (m == monomerCount - 1 ? Float.NaN
-        : monomers[m + 1].getGroupParameter(Token.phi));
-    float psiNext = (m == monomerCount - 1 ? Float.NaN
-        : monomers[m + 1].getGroupParameter(Token.psi));
+    float phiNext = (m == monomerCount - 1 ? Float.NaN : monomers[m + 1]
+        .getGroupParameter(Token.phi));
+    float psiNext = (m == monomerCount - 1 ? Float.NaN : monomers[m + 1]
+        .getGroupParameter(Token.psi));
     switch (qtype) {
     default:
     case 'p':
@@ -411,10 +427,12 @@ public class AminoPolymer extends AlphaPolymer {
        *   dPhi = phi[i+1] - phi[i]
        *   dPsi = psi[i+1] - psi[i]
        * 
-       */ 
+       */
       float dPhi = (float) ((phiNext - phi) / 2 * Math.PI / 180);
       float dPsi = (float) ((psiNext - psi) / 2 * Math.PI / 180);
-      return (float) (180 / Math.PI * 2 * Math.acos(Math.cos(dPsi) * Math.cos(dPhi) - Math.cos(70*Math.PI/180)* Math.sin(dPsi) * Math.sin(dPhi)));
+      return (float) (180 / Math.PI * 2 * Math.acos(Math.cos(dPsi)
+          * Math.cos(dPhi) - Math.cos(70 * Math.PI / 180) * Math.sin(dPsi)
+          * Math.sin(dPhi)));
     case 'c':
     case 'C':
       /* an approximation by Bob Hanson and Dan Kohler, 7/2008
@@ -425,7 +443,7 @@ public class AminoPolymer extends AlphaPolymer {
        *  psi[i] - psi[i-1] + phi[i+1] - phi[i]
        *
        */
-      return  (psi - psiLast + phiNext - phi);
+      return (psi - psiLast + phiNext - phi);
     }
   }
 
@@ -443,153 +461,55 @@ public class AminoPolymer extends AlphaPolymer {
    * @return whether this corresponds to a helix
    */
   private boolean isTurn(float psi, float phi) {
-    return checkPhiPsi(structureList[JmolConstants.PROTEIN_STRUCTURE_TURN], psi, phi);
+    return checkPhiPsi(structureList[JmolConstants.PROTEIN_STRUCTURE_TURN],
+        psi, phi);
   }
 
-
   private boolean isSheet(float psi, float phi) {
-    return checkPhiPsi(structureList[JmolConstants.PROTEIN_STRUCTURE_SHEET], psi, phi);
+    return checkPhiPsi(structureList[JmolConstants.PROTEIN_STRUCTURE_SHEET],
+        psi, phi);
   }
 
   private boolean isHelix(float psi, float phi) {
-    return checkPhiPsi(structureList[JmolConstants.PROTEIN_STRUCTURE_HELIX], psi, phi);
+    return checkPhiPsi(structureList[JmolConstants.PROTEIN_STRUCTURE_HELIX],
+        psi, phi);
   }
 
   private static boolean checkPhiPsi(float[] list, float psi, float phi) {
-    for (int i = 0; i < list.length; i+= 4 )
-      if (phi >= list[i] && phi <= list[i + 1] 
-         && psi >= list[i + 2] && psi <= list[i + 3])
+    for (int i = 0; i < list.length; i += 4)
+      if (phi >= list[i] && phi <= list[i + 1] && psi >= list[i + 2]
+          && psi <= list[i + 3])
         return true;
     return false;
   }
 
-  /* 
-   * old code for assigning SS
-   *
+  void setStructure(BitSet bs, byte type) {
+    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+      int i2 = bs.nextClearBit(i);
+      if (i2 < 0)
+        i2 = monomerCount;
+      addSecondaryStructure(type, null, 0, 0, i, i2 - 1);
+      i = i2;
+    }
+  }
 
-   void calculateStructures() {
-   calcHydrogenBonds();
-   char[] structureTags = new char[monomerCount];
-
-   findHelixes(structureTags);
-   for (int iStart = 0; iStart < monomerCount; ++iStart) {
-   if (structureTags[iStart] != 'n') {
-   int iMax;
-   for (iMax = iStart + 1;
-   iMax < monomerCount && structureTags[iMax] != 'n';
-   ++iMax)
-   {}
-   int iLast = iMax - 1;
-   addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_HELIX,
-   iStart, iLast);
-   iStart = iLast;
-   }
-   }
-
-   // reset structureTags
-   // for some reason if these are not reset, all helices are classified
-   // as sheets. - tim 2205 10 12
-   for (int i = monomerCount; --i >= 0; )
-   structureTags[i] = 'n';
-
-   findSheets(structureTags);
-   
-   if (debugHbonds)
-   for (int i = 0; i < monomerCount; ++i)
-   Logger.debug("" + i + ":" + structureTags[i] +
-   " " + min1Indexes[i] + " " + min2Indexes[i]);
-   for (int iStart = 0; iStart < monomerCount; ++iStart) {
-   if (structureTags[iStart] != 'n') {
-   int iMax;
-   for (iMax = iStart + 1;
-   iMax < monomerCount && structureTags[iMax] != 'n';
-   ++iMax)
-   {}
-   int iLast = iMax - 1;
-   addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_SHEET,
-   iStart, iLast);
-   iStart = iLast;
-   }
-   }
-   }
-
-   void findHelixes(char[] structureTags) {
-   findPitch(3, 4, '4', structureTags);
-   }
-
-   void findPitch(int minRunLength, int pitch, char tag, char[] tags) {
-   int runLength = 0;
-   for (int i = 0; i < monomerCount; ++i) {
-   if (mainchainHbondOffsets[i] == pitch) {
-   ++runLength;
-   if (runLength == minRunLength)
-   for (int j = minRunLength; --j >= 0; )
-   tags[i - j] = tag;
-   else if (runLength > minRunLength)
-   tags[i] = tag;
-   } else {
-   runLength = 0;
-   }
-   }
-   }
-
-   void findSheets(char[] structureTags) {
-   if (debugHbonds)
-   Logger.debug("findSheets(...)");
-   for (int a = 0; a < monomerCount; ++a) {
-   //if (structureTags[a] == '4')
-   //continue;
-   for (int b = 0; b < monomerCount; ++b) {
-   //if (structureTags[b] == '4')
-   //continue;
-   // tim 2005 10 11
-   // changed tests to reflect actual hbonding patterns in 
-   // beta sheets.
-   if ( ( isHbonded(a, b) && isHbonded(b+2, a) ) || 
-   ( isHbonded(b, a) && isHbonded(a, b+2) ) )  {
-   if (debugHbonds)
-   Logger.debug("parallel found a=" + a + " b=" + b);
-   structureTags[a] = structureTags[b] = 
-   structureTags[a+1] = structureTags[b+1] = 
-   structureTags[a+2] = structureTags[b+2] = 'p';
-   } else if (isHbonded(a, b) && isHbonded(b, a)) {
-   if (debugHbonds)
-   Logger.debug("antiparallel found a=" + a + " b=" + b);
-   structureTags[a] = structureTags[b] = 'a';
-   // tim 2005 10 11
-   // gap-filling feature: if n is sheet, and n+2 or n-2 are sheet, 
-   // make n-1 and n+1 sheet as well.
-   if ( (a+2 < monomerCount) && (b-2 > 0) && 
-   (structureTags[a+2] == 'a') && (structureTags[b-2] == 'a') ) 
-   structureTags[a+1] = structureTags[b-1] = 'a';
-   if ( (b+2 < monomerCount) && (a-2 > 0) && 
-   (structureTags[a-2] == 'a') && (structureTags[b+2] == 'a') ) 
-   structureTags[a-1] = structureTags[b+1] = 'a';
-   } 
-   else if ( (isHbonded(a, b+1) && isHbonded(b, a+1) ) || 
-   ( isHbonded(b+1, a) && isHbonded(a+1, b) ) ) {
-   if (debugHbonds)
-   Logger.debug("antiparallel found a=" + a + " b=" + b);
-   structureTags[a] = structureTags[a+1] =
-   structureTags[b] = structureTags[b+1] = 'A';
-   }
-   }
-   }
-   }
-   
-   
-   boolean isHbonded(int indexDonor, int indexAcceptor) {
-   if (indexDonor < 0 || indexDonor >= monomerCount ||
-   indexAcceptor < 0 || indexAcceptor >= monomerCount)
-   return false;
-   return ((min1Indexes[indexDonor] == indexAcceptor &&
-   min1Energies[indexDonor] <= -500) ||
-   (min2Indexes[indexDonor] == indexAcceptor &&
-   min2Energies[indexDonor] <= -500));
-   }
-
-   *
-   * end old code for assigning SS.
+  ////////////////////// DSSP /////////////////////
+  //
+  //    W. Kabsch and C. Sander, Biopolymers, vol 22, 1983, pp 2577-2637
+  //
+  ////////////////////// DSSP /////////////////////
+ 
+  /**
+   * @param bioPolymers  
+   * @param bioPolymerCount 
    */
+  
+  protected static void calculateStructuresDssp(Polymer[] bioPolymers,
+                                             int bioPolymerCount) {
+    
+    // TODO
+    
+  }
+
 
 }

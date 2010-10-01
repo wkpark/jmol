@@ -205,6 +205,11 @@ public class Group {
     return JmolConstants.PROTEIN_STRUCTURE_NOT;
   }
 
+  public byte getProteinStructureSubType() {
+    return getProteinStructureType();
+  }
+
+
   /**
    * 
    * @param iType

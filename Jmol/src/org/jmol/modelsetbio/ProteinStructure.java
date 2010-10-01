@@ -47,6 +47,7 @@ public abstract class ProteinStructure {
   public String structureID;
   public int serialID;
   public int strandCount;
+  public byte subtype;
   
   /**
    * 

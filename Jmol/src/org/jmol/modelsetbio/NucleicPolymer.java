@@ -83,20 +83,22 @@ public class NucleicPolymer extends BioPolymer {
         theta += 360;
       m1.setGroupParameter(Token.eta, eta);
       m1.setGroupParameter(Token.theta, theta);
-      System.out.println("m1 " + i + " " + eta + " " + theta);
+      //System.out.println("m1 " + i + " " + eta + " " + theta);
     }
     return true;
   }
   
   @Override
-  public void calcRasmolHydrogenBonds(Polymer polymer, BitSet bsA, BitSet bsB, List<Bond> vAtoms, int nMaxPerResidue) {
-    NucleicPolymer other = (NucleicPolymer)polymer;
+  public void calcRasmolHydrogenBonds(Polymer polymer, BitSet bsA, 
+                                      BitSet bsB, List<Bond> vAtoms,
+                                      int nMaxPerResidue, int[][][] min, boolean checkDistances) {
+    NucleicPolymer other = (NucleicPolymer) polymer;
     Vector3f vNorm = new Vector3f();
     Vector3f vAB = new Vector3f();
     Vector3f vAC = new Vector3f();
-    for (int i = monomerCount; --i >= 0; ) {
-      NucleicMonomer myNucleotide = (NucleicMonomer)monomers[i];
-      if (! myNucleotide.isPurine())
+    for (int i = monomerCount; --i >= 0;) {
+      NucleicMonomer myNucleotide = (NucleicMonomer) monomers[i];
+      if (!myNucleotide.isPurine())
         continue;
       Atom myN3 = myNucleotide.getN3();
       boolean isInA = bsA.get(myN3.index);
@@ -104,21 +106,21 @@ public class NucleicPolymer extends BioPolymer {
         continue;
       Atom myN1 = myNucleotide.getN1();
       Atom myN9 = myNucleotide.getN0();
-      Point4f plane = Measure.getPlaneThroughPoints(myN3, myN1, myN9, vNorm, vAB, vAC);
+      Point4f plane = Measure.getPlaneThroughPoints(myN3, myN1, myN9, vNorm,
+          vAB, vAC);
       Atom bestN3 = null;
       float minDist2 = 25;
       NucleicMonomer bestNucleotide = null;
-      for (int j = other.monomerCount; --j >= 0; ) {
-        NucleicMonomer otherNucleotide = (NucleicMonomer)other.monomers[j];
-        if (! otherNucleotide.isPyrimidine())
+      for (int j = other.monomerCount; --j >= 0;) {
+        NucleicMonomer otherNucleotide = (NucleicMonomer) other.monomers[j];
+        if (!otherNucleotide.isPyrimidine())
           continue;
         Atom otherN3 = otherNucleotide.getN3();
         if (isInA ? !bsB.get(otherN3.index) : !bsA.get(otherN3.index))
           continue;
         Atom otherN1 = otherNucleotide.getN0();
         float dist2 = myN1.distanceSquared(otherN3);
-        if (dist2 < minDist2 
-            && myN9.distanceSquared(otherN1) > 50 // not stacked
+        if (dist2 < minDist2 && myN9.distanceSquared(otherN1) > 50 // not stacked
             && Math.abs(Measure.distanceToPlane(plane, otherN3)) < 1 // in plane
         ) {
           bestNucleotide = otherNucleotide;
@@ -132,17 +134,17 @@ public class NucleicPolymer extends BioPolymer {
         if (n >= nMaxPerResidue)
           continue;
         if (myNucleotide.isGuanine()) {
-          n += addHydrogenBond(vAtoms, myNucleotide.getN2(),
-              bestNucleotide.getO2());
+          n += addHydrogenBond(vAtoms, myNucleotide.getN2(), bestNucleotide
+              .getO2());
           if (n >= nMaxPerResidue)
             continue;
-          n += addHydrogenBond(vAtoms, myNucleotide.getO6(),
-              bestNucleotide.getN4());
+          n += addHydrogenBond(vAtoms, myNucleotide.getO6(), bestNucleotide
+              .getN4());
           if (n >= nMaxPerResidue)
             continue;
         } else {
-          n += addHydrogenBond(vAtoms, myNucleotide.getN6(),
-              bestNucleotide.getO4());
+          n += addHydrogenBond(vAtoms, myNucleotide.getN6(), bestNucleotide
+              .getO4());
         }
       }
     }

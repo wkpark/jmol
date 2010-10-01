@@ -95,11 +95,20 @@ public class HBond extends Bond {
   public final static int getEnergy(double distAH, double distCH, double distCD,
                               double distAD) {
     
-    int energy = (int) ((QConst / distAH - QConst / distAD + QConst / distCD - QConst
-        / distCH));
-    //Logger.info(" distAH=" + distAH + " distAD=" + distAD + " distCD=" + distCD
+    int energy = (int) Math.floor(QConst / distAH - QConst / distAD + QConst / distCD - QConst
+        / distCH + 0.5f);   
+    //Logger.info("HBond: distAH=" + distAH + " distAD=" + distAD + " distCD=" + distCD
       //  + " distCH=" + distCH + " energy=" + energy);
     return energy;
   }
 
+  
+  static {
+    for (int i = -20; i <= 20; i++)
+    System.out.println(i/10f + " " + Math.floor(i/10f + 0.5) + " " + (int) (i/10f));
+System.out.println("HBond...");    
+  }
 }
+
+
+

@@ -196,7 +196,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
             : JmolConstants.PROTEIN_STRUCTURE_DNA);
   }
 
-  ////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////
 
   Atom getC1P() {
     return getAtomFromOffsetIndex(C1P);

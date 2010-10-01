@@ -31,9 +31,10 @@ import org.jmol.viewer.JmolConstants;
 
 public class Helix extends ProteinStructure {
 
-  Helix(AlphaPolymer apolymer, int monomerIndex, int monomerCount, int id) {
-    super(apolymer, JmolConstants.PROTEIN_STRUCTURE_HELIX,
-          monomerIndex, monomerCount, id);
+  Helix(AlphaPolymer apolymer, int monomerIndex, int monomerCount, int id, byte subtype) {
+    super(apolymer, JmolConstants.PROTEIN_STRUCTURE_HELIX, monomerIndex,
+        monomerCount, id);
+    this.subtype = subtype;
   }
 
   @Override
@@ -47,7 +48,8 @@ public class Helix extends ProteinStructure {
     }
     axisA = new Point3f();
     axisUnitVector = new Vector3f();
-    Measure.calcBestAxisThroughPoints(points, axisA, axisUnitVector, vectorProjection, 4);
+    Measure.calcBestAxisThroughPoints(points, axisA, axisUnitVector,
+        vectorProjection, 4);
     axisB = new Point3f(points[monomerCount]);
     Measure.projectOntoAxis(axisB, axisA, axisUnitVector, vectorProjection);
   }
@@ -64,5 +66,5 @@ public class Helix extends ProteinStructure {
    * Peter C Kahn
    * Computers Chem. Vol 13, No 3, pp 191-195, 1989
    ****************************************************************/
-  
+
 }

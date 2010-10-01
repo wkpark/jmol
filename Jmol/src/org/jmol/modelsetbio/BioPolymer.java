@@ -982,4 +982,9 @@ public abstract class BioPolymer extends Polymer {
     for (int i = bsTemp.nextSetBit(0); i >= 0 && i < monomerCount; i = bsTemp.nextSetBit(i + 1)) 
       bsResult.set(monomers[i].getFirstAtomIndex(), monomers[i].getLastAtomIndex() + 1);
   }
+  
+  @Override
+  public void calculateStructures(Polymer[] bioPolymers, int bioPolymerCount) {
+    AminoPolymer.calculateStructuresDssp(bioPolymers, bioPolymerCount);
+  }
 }

@@ -239,7 +239,7 @@ class ColorManager {
       argb = getJmolOrRasmolArgb(id, Token.rasmol);
       break;
     case JmolConstants.PALETTE_STRUCTURE:
-      argb = JmolConstants.argbsStructure[atom.getProteinStructureType() + 1];
+      argb = JmolConstants.argbsStructure[atom.getProteinStructureSubType() + 1];
       break;
     case JmolConstants.PALETTE_CHAIN:
       int chain = atom.getChainID() & 0x1F;

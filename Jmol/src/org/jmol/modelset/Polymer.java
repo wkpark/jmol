@@ -114,9 +114,16 @@ abstract public class Polymer {
   public void freeze() {  
   }
   
-  public void calculateStructures() {
+  /**
+   * @param bioPolymers
+   * @param bioPolymerCount
+   */
+  public void calculateStructures(Polymer[] bioPolymers, int bioPolymerCount) {
   }
 
+  public void calculateStructures() {  
+  }
+  
   public void clearStructures() {
   }
 
@@ -149,8 +156,11 @@ abstract public class Polymer {
    * @param bsB
    * @param vHBonds
    * @param nMaxPerResidue
+   * @param min 
+   * @param checkDistances
    */
-  public void calcRasmolHydrogenBonds(Polymer polymer, BitSet bsA, BitSet bsB, List<Bond> vHBonds, int nMaxPerResidue) {
+  public void calcRasmolHydrogenBonds(Polymer polymer, BitSet bsA,
+           BitSet bsB, List<Bond> vHBonds, int nMaxPerResidue, int[][][] min, boolean checkDistances) {
     // subclasses should override if they know how to calculate hbonds
   }
   

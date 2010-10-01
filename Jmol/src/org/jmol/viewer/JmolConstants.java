@@ -1323,9 +1323,14 @@ final public class JmolConstants {
   public final static byte PROTEIN_STRUCTURE_DNA = 4;
   public final static byte PROTEIN_STRUCTURE_RNA = 5;
   public final static byte PROTEIN_STRUCTURE_CARBOHYDRATE = 6;
+  public final static byte PROTEIN_STRUCTURE_HELIX3 = 7;
+  public final static byte PROTEIN_STRUCTURE_HELIX5 = 8;
+  public final static byte PROTEIN_STRUCTURE_SHEET_PARALLEL = 9;
+  public final static byte PROTEIN_STRUCTURE_SHEET_ANTIPARALLEL = 10;
 
   private final static String[] proteinStructureNames = {
-    "none", "turn", "sheet", "helix", "dna", "rna", "carbohydrate"
+    "none", "turn", "sheet", "helix", "dna", "rna", "carbohydrate", 
+    "helix3", "helix5", "sheetparallel", "sheetantiparallel"
   };
   
   public final static String getProteinStructureName(int itype, boolean isGeneric) {
@@ -1367,6 +1372,10 @@ final public class JmolConstants {
     0xFFAE00FE, // PROTEIN_STRUCTURE_DNA
     0xFFFD0162, // PROTEIN_STRUCTURE_RNA
     0xFFA6A6FA, // PROTEIN_STRUCTURE_CARBOHYDRATE
+    0xFFA00080, // PROTEIN_STRUCTURE_HELIX3
+    0xFF800080, // PROTEIN_STRUCTURE_HELIX5
+    0xFFA0C800, // PROTEIN_STRUCTURE_SHEET_ANTIPARALLEL
+    0xFF80C800, // PROTEIN_STRUCTURE_SHEET_PARALLEL
   };
 
   static {

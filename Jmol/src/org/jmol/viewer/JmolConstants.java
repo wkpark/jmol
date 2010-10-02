@@ -1323,24 +1323,24 @@ final public class JmolConstants {
   public final static byte PROTEIN_STRUCTURE_DNA = 4;
   public final static byte PROTEIN_STRUCTURE_RNA = 5;
   public final static byte PROTEIN_STRUCTURE_CARBOHYDRATE = 6;
-  public final static byte PROTEIN_STRUCTURE_HELIX3 = 7;
-  public final static byte PROTEIN_STRUCTURE_HELIX5 = 8;
-  public final static byte PROTEIN_STRUCTURE_SHEET_PARALLEL = 9;
-  public final static byte PROTEIN_STRUCTURE_SHEET_ANTIPARALLEL = 10;
+  public final static byte PROTEIN_STRUCTURE_HELIX_310 = 7;
+  public final static byte PROTEIN_STRUCTURE_HELIX_PI = 8;
 
   private final static String[] proteinStructureNames = {
-    "none", "turn", "sheet", "helix", "dna", "rna", "carbohydrate", 
-    "helix3", "helix5", "sheetparallel", "sheetantiparallel"
+    "none", "turn", "sheet", "helix", "dna", "rna", 
+    "carbohydrate", 
+    "helix310", "helixpi"
   };
   
   public final static String getProteinStructureName(int itype, boolean isGeneric) {
-    return (itype < 0 || itype > 6 ? "" : isGeneric && itype < 4 ? "protein" : proteinStructureNames[itype]);
+    return (itype < 0 || itype > proteinStructureNames.length ? "" 
+        : isGeneric && (itype < 4 || itype > 6) ? "protein" : proteinStructureNames[itype]);
   }
   
   public final static byte getProteinStructureType(String type) {
-    for (byte i = 0; i < 4; i++)
+    for (byte i = 0; i < proteinStructureNames.length; i++)
       if (type.equalsIgnoreCase(proteinStructureNames[i]))
-        return i;
+        return (i < 4 || i > 6 ? i : -1);
     return -1;
   }
 
@@ -1374,8 +1374,6 @@ final public class JmolConstants {
     0xFFA6A6FA, // PROTEIN_STRUCTURE_CARBOHYDRATE
     0xFFA00080, // PROTEIN_STRUCTURE_HELIX3
     0xFF800080, // PROTEIN_STRUCTURE_HELIX5
-    0xFFA0C800, // PROTEIN_STRUCTURE_SHEET_ANTIPARALLEL
-    0xFF80C800, // PROTEIN_STRUCTURE_SHEET_PARALLEL
   };
 
   static {
@@ -2239,6 +2237,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "@turn structure=1",
     "@sheet structure=2",
     "@helix structure=3",
+    "@helix310 substructure=6",
+    "@helixpi substructure=7",
     "@bonded bondcount>0",
   };
   

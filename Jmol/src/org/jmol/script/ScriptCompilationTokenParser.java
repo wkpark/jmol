@@ -364,6 +364,8 @@ abstract class ScriptCompilationTokenParser {
     case Token.bitset:
     case Token.divide:
     case Token.helix:
+    case Token.helix310:
+    case Token.helixpi:
     case Token.isaromatic:
     case Token.none:
     case Token.sheet:
@@ -379,7 +381,6 @@ abstract class ScriptCompilationTokenParser {
       return clauseCell();
     case Token.connected:
       return clauseConnected();
-    case Token.substructure:
     case Token.search:
     case Token.smiles:
       return clauseSubstructure();
@@ -414,7 +415,11 @@ abstract class ScriptCompilationTokenParser {
         int itemp = itokenInfix;
         boolean isOK = clauseComparator(true);
         if (isOK || itokenInfix != itemp)
-            return isOK;
+          return isOK;
+        if (tok == Token.substructure) {
+          return clauseSubstructure(); 
+        }
+
       }
       //if (tok != Token.integer && !Token.tokAttr(tok, Token.predefinedset))
         //break;
@@ -563,6 +568,7 @@ abstract class ScriptCompilationTokenParser {
       break;
     case Token.search: 
     case Token.smiles:  
+    case Token.substructure:
       addTokenToPostfix(Token.string, theValue);
       if (!addNextTokenIf(Token.comma))
         return false;

@@ -410,28 +410,30 @@ public class Token {
   public final static int spec_seqcode         = expression | 38;
   public final static int spec_seqcode_range   = expression | 39;
 
-  final static int amino                = predefinedset | 1;
-  public final static int dna           = predefinedset | 2;
-  public final static int hetero        = predefinedset | 3 | deprecatedparam;
-  public final static int hydrogen      = predefinedset | 4 | deprecatedparam;
-  public final static int nucleic       = predefinedset | 5;
-  public final static int protein       = predefinedset | 6;
-  public final static int purine        = predefinedset | 7;
-  public final static int pyrimidine    = predefinedset | 8;
-  public final static int rna           = predefinedset | 9;
-  public final static int solvent       = predefinedset | 11 | deprecatedparam;
-  public final static int sidechain     = predefinedset | 12;
-  final static int surface              = predefinedset | 13;
-  final static int thismodel            = predefinedset | 14;
-  public final static int sheet         = predefinedset | 15;
-  public final static int spine         = predefinedset | 16; // new 11.9.34
+  final static int amino                = predefinedset | 2;
+  public final static int dna           = predefinedset | 4;
+  public final static int hetero        = predefinedset | 6 | deprecatedparam;
+  final static int helix310             = predefinedset | 8;  // new Jmol 12.1.14
+  final static int helixpi              = predefinedset | 10; // new
+  public final static int hydrogen      = predefinedset | 12 | deprecatedparam;
+  public final static int nucleic       = predefinedset | 14;
+  public final static int protein       = predefinedset | 16;
+  public final static int purine        = predefinedset | 18;
+  public final static int pyrimidine    = predefinedset | 20;
+  public final static int rna           = predefinedset | 22;
+  public final static int solvent       = predefinedset | 24 | deprecatedparam;
+  public final static int sidechain     = predefinedset | 26;
+  final static int surface              = predefinedset | 28;
+  final static int thismodel            = predefinedset | 30;
+  public final static int sheet         = predefinedset | 32;
+  public final static int spine         = predefinedset | 34; // new 11.9.34
   // these next are predefined in the sense that they are known quantities
-  public final static int carbohydrate    = predefinedset | 21;
-  final static int clickable              = predefinedset | 22;
-  final static int displayed              = predefinedset | 23;
-  final static int hidden                 = predefinedset | 24;
-  public final static int specialposition = predefinedset | 25;
-  final static int visible                = predefinedset | 27;
+  public final static int carbohydrate    = predefinedset | 36;
+  final static int clickable              = predefinedset | 38;
+  final static int displayed              = predefinedset | 40;
+  final static int hidden                 = predefinedset | 42;
+  public final static int specialposition = predefinedset | 44;
+  final static int visible                = predefinedset | 46;
 
   
   static int getPrecedence(int tokOperator) {
@@ -702,7 +704,7 @@ public class Token {
   final static int load         = 2 | 2 << 9 | mathfunc | scriptCommand;
   final static int random       = 4 | 2 << 9 | mathfunc;
   final static int script       = 5 | 2 << 9 | mathfunc | scriptCommand;
-  final static int substructure = 6 | 2 << 9 | mathfunc;
+  public final static int substructure = 6 | 2 << 9 | mathfunc | intproperty | strproperty;
   final static int search       = 7 | 2 << 9 | mathfunc;
   final static int smiles       = 8 | 2 << 9 | mathfunc;
  
@@ -1081,7 +1083,7 @@ public class Token {
   final static int functionxy     = misc  | 142;// new
   final static int functionxyz    = misc  | 144;// new
   final static int gridpoints     = misc  | 146;// new
-  final static int homo           = misc  | 148;// new
+  final static int homo           = misc  | 149;// new
   final static int id             = misc  | 150 | expression;
   final static int ignore         = misc  | 152;// new
   final static int image          = misc  | 154;
@@ -1489,6 +1491,8 @@ public class Token {
       "halo",              new Token(halo),
       "halos",             null,
       "helix",             new Token(helix),
+      "helix310",          new Token(helix310),
+      "helixpi",           new Token(helixpi),
       "hbond",             new Token(hbond),
       "hbonds",            null,
       "help",              new Token(help),
@@ -1808,7 +1812,7 @@ public class Token {
       "site",            new Token(site),
       "size",            new Token(size),
       "smiles",          new Token(smiles),
-      "substructure",    null,  // 12.0 substructure-->smiles (should be smarts, but for legacy reasons, need this to be smiles
+      "substructure",    new Token(substructure),  // 12.0 substructure-->smiles (should be smarts, but for legacy reasons, need this to be smiles
       "solid",           new Token(solid),
       "sort",            new Token(sort),
       "specialPosition", new Token(specialposition),

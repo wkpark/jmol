@@ -2833,8 +2833,10 @@ abstract public class ModelCollection extends BondCollection {
     StringBuffer sbHelix = new StringBuffer();
     StringBuffer sbSheet = new StringBuffer();
     int itype = 0;
+    int isubtype = 0;
     int id = 0;
     int iLastAtom = 0;
+    int iLastModel = -1;
     int lastId = -1;
     int res1 = 0;
     int res2 = 0;
@@ -2870,11 +2872,18 @@ abstract public class ModelCollection extends BondCollection {
               n++;
               if (bsAtoms == null) {
                 int iModel = atoms[iLastAtom].modelIndex;
+                String smodel = "    \t# model=" + getModelNumberDotted(iModel);
+                if (iLastModel != iModel) {
+                  iLastModel = iModel;
+                  cmd.append("  structure none ").append(
+                      Escape.escape(getModelAtomBitSetIncludingDeleted(iModel,
+                          false))).append(smodel).append(";\n");
+                }
                 cmd.append("  structure ").append(
-                    JmolConstants.getProteinStructureName(itype, false)).append(" ")
-                    .append(Escape.escape(bs)).append("    \t# model=").append(
-                        getModelNumberDotted(iModel)).append(" & (").append(
-                        res1).append(" - ").append(res2).append(");\n");
+                    JmolConstants.getProteinStructureName(isubtype, false))
+                    .append(" ").append(Escape.escape(bs)).append(smodel)
+                    .append(" & (").append(res1).append(" - ").append(res2)
+                    .append(");\n");
               } else {
                 String str;
                 int nx;
@@ -2935,8 +2944,8 @@ abstract public class ModelCollection extends BondCollection {
           if (id == 0
               || bsAtoms != null
               && needPhiPsi
-              && (Float.isNaN(atoms[i].getGroupParameter(Token.phi)) || Float.isNaN(atoms[i]
-                  .getGroupParameter(Token.psi))))
+              && (Float.isNaN(atoms[i].getGroupParameter(Token.phi)) || Float
+                  .isNaN(atoms[i].getGroupParameter(Token.psi))))
             continue;
         }
         char ch = atoms[i].getChainID();
@@ -2949,6 +2958,7 @@ abstract public class ModelCollection extends BondCollection {
           chain1 = "" + ch;
         }
         itype = atoms[i].getProteinStructureType();
+        isubtype = atoms[i].getProteinStructureSubType();
         sid = atoms[i].getProteinStructureTag();
         bs.set(i);
         lastId = id;

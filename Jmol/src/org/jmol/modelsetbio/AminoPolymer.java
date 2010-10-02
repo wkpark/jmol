@@ -30,13 +30,17 @@ import org.jmol.modelset.HBond;
 import org.jmol.modelset.Polymer;
 import org.jmol.script.Token;
 //import org.jmol.util.Escape;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.viewer.JmolConstants;
 
 //import java.util.ArrayList;
+import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -76,15 +80,13 @@ public class AminoPolymer extends AlphaPolymer {
       return;
     Point3f pt = new Point3f();
     Vector3f vNH = new Vector3f();
-    boolean intraChain = (polymer == this);
     AminoMonomer source;
-    int[][] min1 = (min == null ? new int[2][4] : null);
+    int[][] min1 = (min == null ? new int[2][3] : null);
     for (int i = 1; i < monomerCount; ++i) { //not first N
       if (min == null) {
-        min1[0][0] = min1[1][0] = -100;
-        min1[0][1] = min1[1][1] = 0;
-        min1[0][2] = min1[1][2] = bioPolymerIndexInModel;
-        min1[0][3] = min1[1][3] = monomers[i].leadAtomIndex;
+        min1[0][0] = min1[1][0] = bioPolymerIndexInModel;
+        min1[0][1] = min1[1][1] = Integer.MIN_VALUE;
+        min1[0][2] = min1[1][2] = 0;
       } else {
         min1 = min[i];
       }
@@ -93,16 +95,18 @@ public class AminoPolymer extends AlphaPolymer {
         boolean isInA = (bsA == null || bsA.get(source.getNitrogenAtom().index));
         if (!isInA)
           continue;
-        checkRasmolHydrogenBond(source, polymer, (intraChain ? i : -100), pt,
+        checkRasmolHydrogenBond(source, polymer, i, pt,
             (isInA ? bsB : bsA), vHBonds, min1, checkDistances);
       }
     }
   }
 
+  // max distance from RasMol 2.7.2.1.1  #define MaxHDist ((Long)2250*2250) 
   private final static float maxHbondAlphaDistance = 9;
   private final static float maxHbondAlphaDistance2 = maxHbondAlphaDistance
       * maxHbondAlphaDistance;
-  private final static float minimumHbondDistance2 = 0.5f; // note: RasMol is 1/2 this. RMH
+  // this next was fixed in Jmol 12.1.14; was just 0.5f (0.71*0.71) since Jmol 10.0.00
+  private final static float minimumHbondDistance2 = 0.5f * 0.5f; 
 
   private void checkRasmolHydrogenBond(AminoMonomer source, Polymer polymer,
                                        int indexDonor, Point3f hydrogenPoint,
@@ -122,42 +126,60 @@ public class AminoPolymer extends AlphaPolymer {
         continue;
       Point3f targetAlphaPoint = target.getLeadAtom();
       float dist2 = sourceAlphaPoint.distanceSquared(targetAlphaPoint);
-      if (dist2 > maxHbondAlphaDistance2)
+      if (dist2 >= maxHbondAlphaDistance2)
         continue;
       int energy = calcHbondEnergy(sourceNitrogenPoint, hydrogenPoint, target,
           checkDistances);
-      if (energy < min[0][1]) {
+      if (energy < min[0][2]) {
         m = min[1];
         min[1] = min[0];
         min[0] = m;
-      } else if (energy < min[1][1]) {
+      } else if (energy < min[1][2]) {
         m = min[1];
       } else {
         continue;
       }
-      m[0] = i;
-      m[1] = energy;
-      m[2] = polymer.bioPolymerIndexInModel;
-      m[3] = target.leadAtomIndex;
+      m[0] = polymer.bioPolymerIndexInModel;
+      m[1] = (energy < -500 ? i : -1 - i); // so that it will not be found, but we can check it
+      m[2] = energy;
     }
     if (vHBonds != null)
       for (int i = 0; i < 2; i++)
-        if (min[i][0] >= 0)
+        if (min[i][1] >= 0)
           addResidueHydrogenBond(nitrogen,
-              ((AminoMonomer) ((AminoPolymer) polymer).monomers[min[i][0]])
-                  .getCarbonylOxygenAtom(), indexDonor, min[i][0],
-              min[i][1] / 1000f, vHBonds);
+              ((AminoMonomer) ((AminoPolymer) polymer).monomers[min[i][1]])
+                  .getCarbonylOxygenAtom(), (polymer == this ? indexDonor : -99), min[i][1],
+              min[i][2] / 1000f, vHBonds);
   }
 
-  //private int hPtr = 0;
+  /**
+   * based on RasMol 2.7.2.1.1 model
+   * 
+   * checkDistances: 
+   * 
+   * When we are seriously looking for H bonds, we want to 
+   * also check that distCN > distCH and that the OH distance
+   * is less than 3 Angstroms. Otherwise that's just too strange 
+   * a hydrogen bond. (We get hydrogen bonds from i to i+2, for example)
+   * 
+   * This check is skipped for an actual DSSP calc., where we want the 
+   * original definition and are not actually creating hydrogen bonds
+   * 
+   *     H .......... O
+   *     |            |
+   *     |            |
+   *     N            C
+   * 
+   * @param nitrogenPoint
+   * @param hydrogenPoint
+   * @param target
+   * @param checkDistances
+   * @return               energy in cal/mol or 0 (none)
+   */
   private int calcHbondEnergy(Point3f nitrogenPoint, Point3f hydrogenPoint,
                               AminoMonomer target, boolean checkDistances) {
     Point3f targetOxygenPoint = target.getCarbonylOxygenAtom();
 
-    /*
-     * the following were changed from "return -9900" to "return 0"
-     * Bob Hanson 8/30/06
-     */
     if (targetOxygenPoint == null)
       return 0;
     float distON2 = targetOxygenPoint.distanceSquared(nitrogenPoint);
@@ -177,10 +199,6 @@ public class AminoPolymer extends AlphaPolymer {
     if (distCN2 < minimumHbondDistance2)
       return 0;
 
-    /*
-     * I'm adding these two because they just makes sense -- Bob Hanson
-     */
-
     double distOH = Math.sqrt(distOH2);
     double distCH = Math.sqrt(distCH2);
     double distCN = Math.sqrt(distCN2);
@@ -188,8 +206,8 @@ public class AminoPolymer extends AlphaPolymer {
 
     int energy = HBond.getEnergy(distOH, distCH, distCN, distON);
 
-    boolean isHbond = (energy < -500 && (!checkDistances || distCN2 > distCH2
-        && distOH <= 3.0f));
+    boolean isHbond = (energy < -500 
+        && (!checkDistances || distCN > distCH && distOH <= 3.0f));
     /*
     if (isHbond)
       Logger.info("draw calcHydrogen"+ " ("+nitrogen.getInfo()+") {" + hydrogenPoint.x + " "
@@ -198,7 +216,7 @@ public class AminoPolymer extends AlphaPolymer {
           + " distOH=" + distOH + " distCH=" + distCH + " distCN=" + distCN
           + " distON=" + distON + " energy=" + energy);
     */
-    return (!isHbond ? 0 : energy < -9900 ? -9900 : energy);
+    return (!isHbond && checkDistances || energy < -9900 ? 0 : energy);
   }
 
   private void addResidueHydrogenBond(Atom nitrogen, Atom oxygen,
@@ -498,17 +516,12 @@ public class AminoPolymer extends AlphaPolymer {
   //    W. Kabsch and C. Sander, Biopolymers, vol 22, 1983, pp 2577-2637
   //
   ////////////////////// DSSP /////////////////////
- 
-  /**
-   * @param bioPolymers  
-   * @param bioPolymerCount 
-   */
-  
+
   protected static void calculateStructuresDssp(Polymer[] bioPolymers,
-                                             int bioPolymerCount) {
-    
-    // TODO
-    
+                                            int bioPolymerCount) {
+
+  // TODO
+
   }
 
 

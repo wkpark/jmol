@@ -803,6 +803,7 @@ public class ScriptEvaluator {
       case Token.site:
       case Token.search:
       case Token.smiles:
+      case Token.substructure:
       case Token.structure:
         //
       case Token.on:
@@ -3396,6 +3397,8 @@ public class ScriptEvaluator {
       case Token.backbone:
       case Token.solvent:
       case Token.helix:
+      case Token.helix310:
+      case Token.helixpi:
       case Token.sidechain:
       case Token.surface:
         rpn.addX(lookupIdentifierValue((String) value));
@@ -3465,7 +3468,7 @@ public class ScriptEvaluator {
             if (Token.tokAttr(tokValue, Token.identifier))
               val = getNumericParameter((String) val);
             if (val instanceof String) {
-              if (tokWhat == Token.structure || tokWhat == Token.element)
+              if (tokWhat == Token.structure || tokWhat == Token.substructure || tokWhat == Token.element)
                 isStringProperty = !(isIntProperty = (comparisonValue != Integer.MAX_VALUE));
               else
                 val = ScriptVariable.nValue(code[pc]);
@@ -10992,7 +10995,7 @@ public class ScriptEvaluator {
         if (isSyntaxCheck)
           return;
         viewer.calculateStructures(bs);
-        viewer.addStateScript(thisCommand, false, true);
+        //viewer.addStateScript(thisCommand, false, true);
         return;
       }
       if (n != Integer.MIN_VALUE) {

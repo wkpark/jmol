@@ -2064,6 +2064,7 @@ class ScriptMathProcessor {
           ((BitSet) args[2].value).nextSetBit(0), ((BitSet) args[1].value)
               .nextSetBit(0)));
     case Token.smiles:
+    case Token.substructure:  // same as "SMILES"
     case Token.search:
       // within("smiles", "...", {bitset})
       // within("smiles", "...", {bitset})
@@ -2355,7 +2356,7 @@ class ScriptMathProcessor {
             : null);
         bs = viewer.getSmilesMatcher().getSubstructureSet(pattern,
             viewer.getModelSet().atoms, viewer.getAtomCount(), bsSelected,
-            tok != Token.smiles, false);
+            tok != Token.smiles && tok != Token.substructure, false);
       } catch (Exception e) {
         eval.evalError(e.getMessage(), null);
       }

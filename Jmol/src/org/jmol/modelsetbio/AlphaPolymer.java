@@ -74,13 +74,11 @@ public class AlphaPolymer extends BioPolymer {
     ProteinStructure proteinstructure = null;
     switch(type) {
     case JmolConstants.PROTEIN_STRUCTURE_HELIX:
-    case JmolConstants.PROTEIN_STRUCTURE_HELIX3:
-    case JmolConstants.PROTEIN_STRUCTURE_HELIX5:
+    case JmolConstants.PROTEIN_STRUCTURE_HELIX_310:
+    case JmolConstants.PROTEIN_STRUCTURE_HELIX_PI:
       proteinstructure = new Helix(this, indexStart, structureCount, 0, type);
       break;
     case JmolConstants.PROTEIN_STRUCTURE_SHEET:
-    case JmolConstants.PROTEIN_STRUCTURE_SHEET_PARALLEL:
-    case JmolConstants.PROTEIN_STRUCTURE_SHEET_ANTIPARALLEL:
       proteinstructure = new Sheet(this, indexStart, structureCount, 0, type);
       break;
     case JmolConstants.PROTEIN_STRUCTURE_TURN:

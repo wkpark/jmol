@@ -1179,6 +1179,8 @@ final public class Atom extends Point3fi implements JmolNode {
       return atom.getAtomSite();
     case Token.structure:
       return atom.getProteinStructureType();
+    case Token.substructure:
+      return atom.getProteinStructureSubType();
     case Token.strucno:
       return atom.getStrucNo();
     case Token.valence:
@@ -1322,6 +1324,8 @@ final public class Atom extends Point3fi implements JmolNode {
       return s;
     case Token.structure:
       return JmolConstants.getProteinStructureName(atom.getProteinStructureType(), false);
+    case Token.substructure:
+      return JmolConstants.getProteinStructureName(atom.getProteinStructureSubType(), false);
     case Token.strucid:
       return atom.getStructureId();
     case Token.shape:

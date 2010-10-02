@@ -101,13 +101,6 @@ public class HBond extends Bond {
       //  + " distCH=" + distCH + " energy=" + energy);
     return energy;
   }
-
-  
-  static {
-    for (int i = -20; i <= 20; i++)
-    System.out.println(i/10f + " " + Math.floor(i/10f + 0.5) + " " + (int) (i/10f));
-System.out.println("HBond...");    
-  }
 }
 
 

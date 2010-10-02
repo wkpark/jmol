@@ -130,6 +130,8 @@ public class AlphaMonomer extends Monomer {
       }
       switch (iType) {
       case JmolConstants.PROTEIN_STRUCTURE_HELIX:
+      case JmolConstants.PROTEIN_STRUCTURE_HELIX_310:
+      case JmolConstants.PROTEIN_STRUCTURE_HELIX_PI:
         setStructure(new Helix((AlphaPolymer) bioPolymer, monomerIndex, 1, 0, iType));
         break;
       case JmolConstants.PROTEIN_STRUCTURE_SHEET:

@@ -172,6 +172,7 @@ public class LabelToken {
            Token.sequence,
            Token.spacefill,
            Token.structure,
+           Token.substructure,
            Token.strucno,
            Token.strucid,
            Token.symbol,
@@ -430,6 +431,7 @@ public class LabelToken {
           strT = "null";
         break;
       case Token.structure:
+      case Token.substructure:
         strT = Atom.atomPropertyString(viewer, atom, t.tok);
         break;
       case 'W':

@@ -38,7 +38,7 @@ import java.util.Hashtable;
 public class Balls extends AtomShape {
   
   @Override
-  public void setSize(RadiusData rd, BitSet bsSelected) {
+  protected void setSize(RadiusData rd, BitSet bsSelected) {
     isActive = true;
     if (bsSizeSet == null)
       bsSizeSet = new BitSet();

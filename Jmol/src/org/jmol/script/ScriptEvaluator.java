@@ -5706,10 +5706,11 @@ public class ScriptEvaluator {
         }
         break;
       }
-      isOK = (theTok == Token.catchcmd 
-          || theTok == Token.process 
-          || theTok == Token.ifcmd 
-          || theTok == Token.switchcmd);
+      if (isOK)
+        isOK = (theTok == Token.catchcmd 
+            || theTok == Token.process 
+            || theTok == Token.ifcmd 
+            || theTok == Token.switchcmd);
       isForCheck = (theTok == Token.forcmd || theTok == Token.whilecmd);
       break;
     }

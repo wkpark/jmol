@@ -340,9 +340,10 @@ public class ShapeManager {
       return;
     for (int i = 0; i < shapes.length; ++i)
       if (shapes[i] != null && shapes[i].isBioShape) {
-        shapes[i].setSize(0, bsAllAtoms);
+        shapes[i].setModelSet(modelSet);
+        shapes[i].setShapeSize(0, null, bsAllAtoms);
         shapes[i].setShapeProperty("color",
-            new Byte(JmolConstants.PALETTE_CPK), bsAllAtoms);
+            new Byte(JmolConstants.PALETTE_NONE), bsAllAtoms);
       }
   }
 

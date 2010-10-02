@@ -151,7 +151,7 @@ public abstract class Shape {
    * @param size
    * @param bsSelected
    */
-  public void setSize(int size, BitSet bsSelected) {
+  protected void setSize(int size, BitSet bsSelected) {
     // not for atoms except to turn off -- size = 0
   }
 
@@ -160,7 +160,7 @@ public abstract class Shape {
    * @param rd
    * @param bsSelected
    */
-  public void setSize(RadiusData rd, BitSet bsSelected) {
+  protected void setSize(RadiusData rd, BitSet bsSelected) {
     // balls, dots, other atomshapes
   }
 

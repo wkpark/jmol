@@ -68,7 +68,7 @@ public abstract class AtomShape extends Shape {
   }
   
   @Override
-  public void setSize(int size, BitSet bsSelected) {
+  protected void setSize(int size, BitSet bsSelected) {
     if (size == 0)
       setSize(null, bsSelected);
     else
@@ -76,7 +76,7 @@ public abstract class AtomShape extends Shape {
   }
 
   @Override
-  public void setSize(RadiusData rd, BitSet bsSelected) {
+  protected void setSize(RadiusData rd, BitSet bsSelected) {
     // Halos Stars Vectors only
     if (atoms == null)  // vector values are ignored if there are none for a model 
       return;

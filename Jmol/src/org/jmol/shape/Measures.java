@@ -84,7 +84,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
   }
 
   @Override
-  public void setSize(int size, BitSet bsSelected) {
+  protected void setSize(int size, BitSet bsSelected) {
     mad = (short)size;
   }
 

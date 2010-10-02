@@ -117,7 +117,6 @@ public abstract class BioPolymer extends Polymer {
   }
 
   void removeProteinStructure(int monomerIndex, int count) {
-    //System.out.println("biopolymer removeProteinStructure mIndex " + monomerIndex + " count " + count);
     Monomer m = monomers[monomerIndex];
     byte iType = m.getProteinStructureType();
     int mLast = -1;
@@ -204,14 +203,14 @@ public abstract class BioPolymer extends Polymer {
       monomers[i].updateOffsetsForAlternativeLocations(bsSelected,
           nAltLocsInModel);
     recalculateLeadMidpointsAndWingVectors();
-    // calculateStructures();
   }
 
-  private boolean invalidLead = false;
-  private boolean invalidSheet = false;
+  private boolean invalidLead;
+  protected boolean invalidControl = false;
+  
   @Override
   public void recalculateLeadMidpointsAndWingVectors() {
-    invalidLead = invalidSheet = true;
+    invalidLead = invalidControl = true;
     getLeadAtomIndices();
     resetHydrogenPoints();
     calcLeadMidpointsAndWingVectors();
@@ -237,37 +236,37 @@ public abstract class BioPolymer extends Polymer {
   public Point3f[] getControlPoints(boolean isTraceAlpha, float sheetSmoothing,
                                     boolean invalidate) {
     if (invalidate)
-      invalidSheet = true;
-    if (!isTraceAlpha)
-      return leadMidpoints;
-    else if (sheetSmoothing == 0)
-      return leadPoints;
-    return getSheetPoints(sheetSmoothing);
+      invalidControl = true;
+    return (!isTraceAlpha ? leadMidpoints : sheetSmoothing == 0 ? leadPoints
+        : getControlPoints(sheetSmoothing));
   }
 
-  private float sheetSmoothing;
+  protected float sheetSmoothing;
 
-  private Point3f[] getSheetPoints(float sheetSmoothing) {
-    if (!invalidSheet && sheetSmoothing == this.sheetSmoothing)
-      return sheetPoints;
+  protected Point3f[] getControlPoints(float sheetSmoothing) {
+    if (!invalidControl && sheetSmoothing == this.sheetSmoothing)
+      return controlPoints;
     getLeadPoints();
     Vector3f v = new Vector3f();
-    if (sheetPoints == null)
-      sheetPoints = new Point3f[monomerCount + 1];
-    for (int i = 0; i < monomerCount; i++) {
-      if (monomers[i].isSheet()) {
-        v.sub(leadMidpoints[i], leadPoints[i]);
-        v.scale(sheetSmoothing);
-        sheetPoints[i] = new Point3f(leadPoints[i]);
-        sheetPoints[i].add(v);
-      } else {
-        sheetPoints[i] = leadPoints[i];
-      }
-    }
-    sheetPoints[monomerCount] = sheetPoints[monomerCount - 1];
-    this.sheetSmoothing = sheetSmoothing;
-    invalidSheet = false;
-    return sheetPoints;
+    if (controlPoints == null)
+      controlPoints = new Point3f[monomerCount + 1];
+    if (!Float.isNaN(sheetSmoothing))
+      this.sheetSmoothing = sheetSmoothing;
+    for (int i = 0; i < monomerCount; i++) 
+      controlPoints[i] = getControlPoint(i, v);
+    controlPoints[monomerCount] = controlPoints[monomerCount - 1];
+    invalidControl = false;
+    return controlPoints;
+  }
+
+  /**
+   * 
+   * @param i
+   * @param v
+   * @return  the leadPoint unless a protein sheet residue (see AlphaPolymer)
+   */
+  protected Point3f getControlPoint(int i, Vector3f v) {
+    return leadPoints[i];
   }
 
   public final Vector3f[] getWingVectors() {
@@ -985,6 +984,9 @@ public abstract class BioPolymer extends Polymer {
   
   @Override
   public void calculateStructures(Polymer[] bioPolymers, int bioPolymerCount) {
+    // Here because we are calling a static method in AminoPolymer for the 
+    // entire SET of polymers, just using the first one, which may or may not
+    // be an AminoPolymer.
     AminoPolymer.calculateStructuresDssp(bioPolymers, bioPolymerCount);
   }
 }

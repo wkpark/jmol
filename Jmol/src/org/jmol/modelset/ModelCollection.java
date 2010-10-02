@@ -651,7 +651,7 @@ abstract public class ModelCollection extends BondCollection {
         models[i].calculateStructures(asDssp);
     setStructureIds();
      if (addFileData)
-      propagateSecondaryStructure();
+       propagateSecondaryStructure();
   }
 
   public void setProteinType(BitSet bs, byte iType) {

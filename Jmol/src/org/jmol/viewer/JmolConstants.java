@@ -2236,7 +2236,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     // structure
     "@turn structure=1",
     "@sheet structure=2",
-    "@helix structure=3",
+    "@helix substructure=3",
     "@helix310 substructure=6",
     "@helixpi substructure=7",
     "@bonded bondcount>0",

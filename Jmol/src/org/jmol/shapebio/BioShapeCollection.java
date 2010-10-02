@@ -161,10 +161,13 @@ public abstract class BioShapeCollection extends Shape {
     int n = modelSet.getBioPolymerCount();
     BioShape[] shapes = new BioShape[n--];
     for (int i = modelCount; --i >= 0;)
-      for (int j = modelSet.getBioPolymerCountInModel(i); --j >= 0; n--)
+      for (int j = modelSet.getBioPolymerCountInModel(i); --j >= 0; n--) {
         shapes[n] = (bioShapes == null || bioShapes.length <= n
-            || bioShapes[n] == null ? new BioShape(this, i,
-            (BioPolymer) models[i].getBioPolymer(j)) : bioShapes[n]);
+            || bioShapes[n] == null
+            || bioShapes[n].bioPolymer != models[i].getBioPolymer(j) ? new BioShape(
+            this, i, (BioPolymer) models[i].getBioPolymer(j))
+            : bioShapes[n]);
+      }
     bioShapes = shapes;
   }
 

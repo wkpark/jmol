@@ -67,7 +67,7 @@ public class Sticks extends Shape {
    * @param bsSelected
    */
   @Override
-  public void setSize(int size, BitSet bsSelected) {
+  protected void setSize(int size, BitSet bsSelected) {
     if (size == Integer.MAX_VALUE) {
       selectedBonds = BitSetUtil.copy(bsSelected);
       return;

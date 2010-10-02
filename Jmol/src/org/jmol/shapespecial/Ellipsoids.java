@@ -75,7 +75,7 @@ public class Ellipsoids extends AtomShape {
   Ellipsoid ellipsoid;
   
   @Override
-  public void setSize(int size, BitSet bsSelected) {
+  protected void setSize(int size, BitSet bsSelected) {
     super.setSize(size, bsSelected);
     if (size == 0)
       return;

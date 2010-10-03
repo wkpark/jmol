@@ -223,7 +223,7 @@ public final class Model {
       bioPolymers[i].clearStructures();
     if (asDSSP)
       return bioPolymers[0].calculateStructures(bioPolymers, bioPolymerCount,
-          reportOnly);
+          reportOnly, null);
     for (int i = bioPolymerCount; --i >= 0;)
       bioPolymers[i].calculateStructures();
     return "";

@@ -3329,6 +3329,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public int autoHbond(BitSet bsFrom, BitSet bsTo) {
     if (bsFrom == null)
       bsFrom = bsTo = getSelectionSet(false);
+    // bsTo null --> use DSSP method further developed 
+    // here to give the "defining" Hbond set only
     return modelSet.autoHbond(bsFrom, bsTo);
   }
 

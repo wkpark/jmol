@@ -10893,8 +10893,9 @@ public class ScriptEvaluator {
 
   private void calculate() throws ScriptException {
     boolean isSurface = false;
+    boolean asDSSP;
     BitSet bs;
-    BitSet bs2;
+    BitSet bs2 = null;
     int n = Integer.MIN_VALUE;
     if ((iToken = statementLength) >= 2) {
       clearDefinedVariableAtomSets();
@@ -10984,8 +10985,14 @@ public class ScriptEvaluator {
           }
           return;
         }
-        BitSet bs1 = atomExpression(2);
-        bs2 = atomExpression(iToken + 1);
+        BitSet bs1 = null;
+        asDSSP = (tokAt(++iToken) == Token.dssp);
+        if (asDSSP)
+          bs1 = viewer.getSelectionSet(false);
+        else
+          bs1 = atomExpression(iToken);
+        if (!asDSSP && !(asDSSP = (tokAt(++iToken) == Token.dssp)))
+          bs2 = atomExpression(iToken);
         if (!isSyntaxCheck) {
           n = viewer.autoHbond(bs1, bs2);
           break;
@@ -10995,8 +11002,7 @@ public class ScriptEvaluator {
         bs = (statementLength < 4 ? null : atomExpression(2));
         if (isSyntaxCheck)
           return;
-          iToken++;
-        boolean asDSSP = (tokAt(iToken) == Token.dssp);
+        asDSSP = (tokAt(++iToken) == Token.dssp);
         showString(viewer.calculateStructures(bs, asDSSP, false));
         return;
       }

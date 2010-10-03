@@ -25,6 +25,7 @@ package org.jmol.modelsetbio;
 
 
 import org.jmol.modelset.Atom;
+import org.jmol.modelset.Bond;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.Model;
@@ -983,10 +984,10 @@ public abstract class BioPolymer extends Polymer {
   }
   
   @Override
-  public String calculateStructures(Polymer[] bioPolymers, int bioPolymerCount, boolean reportOnly) {
+  public String calculateStructures(Polymer[] bioPolymers, int bioPolymerCount, boolean reportOnly, List<Bond> vHBonds) {
     // Here because we are calling a static method in AminoPolymer for the 
     // entire SET of polymers, just using the first one, which may or may not
     // be an AminoPolymer.
-    return AminoPolymer.calculateStructuresDssp(bioPolymers, bioPolymerCount, reportOnly);
+    return AminoPolymer.calculateStructuresDssp(bioPolymers, bioPolymerCount, reportOnly, vHBonds);
   }
 }

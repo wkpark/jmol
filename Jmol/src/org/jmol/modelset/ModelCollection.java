@@ -1071,7 +1071,7 @@ abstract public class ModelCollection extends BondCollection {
 
   public void calcRasmolHydrogenBonds(BitSet bsA, BitSet bsB, List<Bond> vHBonds, 
                                       boolean nucleicOnly, int nMax) {
-    boolean isSame = bsA.equals(bsB);
+    boolean isSame = (bsB == null || bsA.equals(bsB));
     for (int i = modelCount; --i >= 0;)
       if (models[i].trajectoryBaseIndex == i) {
         if (vHBonds == null) {
@@ -2660,8 +2660,8 @@ abstract public class ModelCollection extends BondCollection {
       if (atoms[i].getElementNumber() == 1)
         haveHAtoms = true;
     boolean useRasMol = viewer.getHbondsRasmol();
-    if (useRasMol && !haveHAtoms) {
-      Logger.info("Rasmol pseudo-hbond calculation");
+    if (bsB == null || useRasMol && !haveHAtoms) {
+      Logger.info((bsB == null ? "DSSP " : "RasMol") + " pseudo-hbond calculation");
       calcRasmolHydrogenBonds(bsA, bsB, null, false, Integer.MAX_VALUE);
       return -BitSetUtil.cardinalityOf(bsHBondsRasmol);
     }

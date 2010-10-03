@@ -33,6 +33,7 @@ import org.jmol.script.Token;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
+import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 
 //import java.util.ArrayList;
@@ -517,12 +518,14 @@ public class AminoPolymer extends AlphaPolymer {
   //
   ////////////////////// DSSP /////////////////////
 
+
+
   protected static String calculateStructuresDssp(Polymer[] bioPolymers,
-                                            int bioPolymerCount, boolean reportOnly) {
+                                            int bioPolymerCount, boolean reportOnly, List<Bond> vHBonds) {
 
     return "not implemented";
 
   }
-
+  
   
 }

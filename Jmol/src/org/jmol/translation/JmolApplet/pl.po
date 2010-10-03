@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-09-14 20:21+0200\n"
-"PO-Revision-Date: 2008-11-21 13:37+0000\n"
-"Last-Translator: Andrzej MoST (Marcin Ostajewski) <Unknown>\n"
+"PO-Revision-Date: 2010-09-24 22:49+0000\n"
+"Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-11-23 20:24+0000\n"
+"X-Launchpad-Export-Date: 2010-10-03 21:21+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/AppletConsole.java:202
@@ -42,9 +42,8 @@ msgid "&More"
 msgstr "Więcej"
 
 #: org/jmol/applet/AppletConsole.java:208
-#, fuzzy
 msgid "Editor"
-msgstr "Historia"
+msgstr ""
 
 #: org/jmol/applet/AppletConsole.java:209
 msgid "State"
@@ -52,9 +51,8 @@ msgstr "Stan"
 
 #: org/jmol/applet/AppletConsole.java:210
 #: org/jmol/console/ScriptEditor.java:137
-#, fuzzy
 msgid "Run"
-msgstr "Rosyjski"
+msgstr ""
 
 #: org/jmol/applet/AppletConsole.java:211
 msgid "Clear Output"
@@ -122,9 +120,8 @@ msgid "Jmol Script Console"
 msgstr "Konsola skryptów Jmol"
 
 #: org/jmol/console/ScriptEditor.java:98
-#, fuzzy
 msgid "Jmol Script Editor"
-msgstr "Konsola skryptów Jmol"
+msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:130
 #: org/jmol/popup/MainPopupResourceBundle.java:843
@@ -143,18 +140,17 @@ msgid "Script"
 msgstr "Skrypt"
 
 #: org/jmol/console/ScriptEditor.java:134
-#, fuzzy
 msgid "Check"
-msgstr "Czeski"
+msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:136
-#, fuzzy
 msgid "Step"
-msgstr "Stop"
+msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:138
 #: org/jmol/popup/MainPopupResourceBundle.java:800
@@ -171,14 +167,12 @@ msgid "Halt"
 msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:144
-#, fuzzy
 msgid "Clear"
-msgstr "Wyczyść dane wejściowe"
+msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:145
-#, fuzzy
 msgid "Close"
-msgstr "Konsola"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:92
 msgid "File or URL:"
@@ -362,16 +356,15 @@ msgstr "Dołącz modele"
 
 #: org/jmol/i18n/GT.java:118
 msgid "Arabic"
-msgstr ""
+msgstr "arabski"
 
 #: org/jmol/i18n/GT.java:119
 msgid "Catalan"
 msgstr "Kataloński"
 
 #: org/jmol/i18n/GT.java:120
-#, fuzzy
 msgid "Simplified Chinese"
-msgstr "Łańcuchy boczne"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:121
 msgid "Traditional Chinese"
@@ -415,7 +408,7 @@ msgstr "Niemiecki"
 
 #: org/jmol/i18n/GT.java:131
 msgid "Greek"
-msgstr ""
+msgstr "grecki"
 
 #: org/jmol/i18n/GT.java:132
 msgid "Hungarian"
@@ -431,7 +424,7 @@ msgstr "Włoski"
 
 #: org/jmol/i18n/GT.java:135
 msgid "Japanese"
-msgstr ""
+msgstr "japoński"
 
 #: org/jmol/i18n/GT.java:136
 msgid "Korean"
@@ -483,7 +476,7 @@ msgstr "Turecki"
 
 #: org/jmol/i18n/GT.java:148
 msgid "Ukrainian"
-msgstr ""
+msgstr "ukraiński"
 
 #: org/jmol/minimize/Minimizer.java:206
 #, java-format
@@ -497,7 +490,7 @@ msgstr "Nie zaznaczono żadnego atomu -- brak zadań do wykonania!"
 #: org/jmol/minimize/Minimizer.java:286
 #, java-format
 msgid "{0} atoms will be minimized."
-msgstr ""
+msgstr "{0} atomów zostanie zminimalizowanych."
 
 #: org/jmol/minimize/Minimizer.java:374
 #, java-format
@@ -505,9 +498,8 @@ msgid "could not setup force field {0}"
 msgstr ""
 
 #: org/jmol/modelkit/ModelKitPopup.java:75
-#, fuzzy
 msgid "Element?"
-msgstr "Pierwiastek"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:78
 msgid "new"
@@ -523,33 +515,28 @@ msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:81
 #: org/jmol/viewer/ActionManager.java:58
-#, fuzzy
 msgid "center"
-msgstr "Wyśrodkuj"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:82
-#, fuzzy
 msgid "add hydrogens"
-msgstr "Pokaż Wodory"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:83
 msgid "minimize"
 msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:84
-#, fuzzy
 msgid "fix hydrogens and minimize"
-msgstr "{0} wiązania wodorowe"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:85
-#, fuzzy
 msgid "clear"
-msgstr "Wyczyść dane wejściowe"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:86
-#, fuzzy
 msgid "save file"
-msgstr "Zapisz"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:87
 msgid "save state"
@@ -560,14 +547,12 @@ msgid "invert ring stereochemistry"
 msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:89
-#, fuzzy
 msgid "delete atom"
-msgstr "Wyberz atom"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:90
-#, fuzzy
 msgid "drag to bond"
-msgstr "Stan"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:91
 msgid "drag atom"
@@ -594,23 +579,20 @@ msgid "decrease charge"
 msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:105
-#, fuzzy
 msgid "delete bond"
-msgstr "Wyberz atom"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:106
-#, fuzzy
 msgid "single"
-msgstr "Plik {0}"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:107
 msgid "double"
 msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:108
-#, fuzzy
 msgid "triple"
-msgstr "Plik {0}"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:109
 msgid "increase order"
@@ -621,9 +603,8 @@ msgid "decrease order"
 msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:111
-#, fuzzy
 msgid "rotate bond (SHIFT-DRAG)"
-msgstr "Stan"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:112
 msgid "exit modelkit mode"
@@ -636,9 +617,8 @@ msgstr "Brak załadowanych atomów"
 
 #: org/jmol/popup/JmolPopup.java:363
 #: org/jmol/popup/MainPopupResourceBundle.java:543
-#, fuzzy
 msgid "Space Group"
-msgstr "Grupa"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:425 org/jmol/popup/JmolPopup.java:465
 #: org/jmol/popup/MainPopupResourceBundle.java:564
@@ -659,9 +639,8 @@ msgid "Translations"
 msgstr "Tłumaczenia"
 
 #: org/jmol/popup/JmolPopup.java:571
-#, fuzzy
 msgid "System"
-msgstr "Stop"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:577
 msgid "1 processor"
@@ -681,9 +660,8 @@ msgid "Java version:"
 msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:586
-#, fuzzy
 msgid "Java memory usage:"
-msgstr "poziom użycia pamięci Java"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:592
 #, java-format
@@ -742,9 +720,8 @@ msgid "Symmetry"
 msgstr "Symetria"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:544
-#, fuzzy
 msgid "Hide Symmetry"
-msgstr "Symetria"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:545
 msgid "Model information"
@@ -753,12 +730,12 @@ msgstr "Informacje o modelu"
 #: org/jmol/popup/MainPopupResourceBundle.java:546
 #, java-format
 msgid "Select ({0})"
-msgstr ""
+msgstr "Wybierz ({0})"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:547
 #, java-format
 msgid "All {0} models"
-msgstr ""
+msgstr "Wszystkie {0} modeli"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:548
 #, java-format
@@ -768,7 +745,7 @@ msgstr "Konfiguracje ({0})"
 #: org/jmol/popup/MainPopupResourceBundle.java:549
 #, java-format
 msgid "Collection of {0} models"
-msgstr ""
+msgstr "Kolekcja {0} modeli"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:550
 #, java-format
@@ -992,13 +969,13 @@ msgstr "Obraz szkieletowy"
 #: org/jmol/popup/MainPopupResourceBundle.java:661
 #: org/jmol/popup/MainPopupResourceBundle.java:754
 msgid "Cartoon"
-msgstr ""
+msgstr "Rysunek"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:615
 #: org/jmol/popup/MainPopupResourceBundle.java:666
 #: org/jmol/popup/MainPopupResourceBundle.java:753
 msgid "Trace"
-msgstr ""
+msgstr "Ślad"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:617
 #: org/jmol/popup/MainPopupResourceBundle.java:706
@@ -1124,7 +1101,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:668
 msgid "Vibration"
-msgstr ""
+msgstr "Wibracja"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:671
 #: org/jmol/popup/MainPopupResourceBundle.java:761
@@ -1272,7 +1249,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:724
 msgid "Inherit"
-msgstr ""
+msgstr "Dziedziczyć"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:725
 msgid "Black"
@@ -1448,7 +1425,7 @@ msgstr "Nastepna klatka"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:804
 msgid "Previous Frame"
-msgstr ""
+msgstr "Poprzednia klatka"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:805
 msgid "Rewind"
@@ -1529,7 +1506,7 @@ msgstr "Wybierz łańcuch"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:835
 msgid "Select element"
-msgstr ""
+msgstr "Wybierz element"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:836
 msgid "Select group"
@@ -1553,11 +1530,11 @@ msgstr "Pokaż"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:844
 msgid "File Contents"
-msgstr "Zawartośc pliku"
+msgstr "Zawartość pliku"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:845
 msgid "File Header"
-msgstr ""
+msgstr "Nagłówek pliku"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:847
 msgid "Isosurface JVXL data"
@@ -1581,27 +1558,23 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:854
 msgid "Current state"
-msgstr ""
+msgstr "Bieżący stan"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:856
-#, fuzzy
 msgid "File"
-msgstr "Plik {0}"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:857
-#, fuzzy
 msgid "Reload"
-msgstr "Przeładuj {0}"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:858
-#, fuzzy
 msgid "Open from PDB"
-msgstr "Flik z PDB"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:859
-#, fuzzy
 msgid "Open file or URL"
-msgstr "Plik lub adres URL"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:860
 msgid "Load full unit cell"
@@ -1628,9 +1601,9 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:867
 #: org/jmol/popup/MainPopupResourceBundle.java:868
 #: org/jmol/popup/MainPopupResourceBundle.java:869
-#, fuzzy, java-format
+#, java-format
 msgid "Export {0} image"
-msgstr "{0} Obraz"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:870
 msgid "Save JVXL isosurface"
@@ -1640,23 +1613,21 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:872
 #: org/jmol/popup/MainPopupResourceBundle.java:873
 #: org/jmol/popup/MainPopupResourceBundle.java:874
-#, fuzzy, java-format
+#, java-format
 msgid "Export {0} 3D model"
-msgstr "{0} Model 3D"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:876
-#, fuzzy
 msgid "Computation"
-msgstr "Konfiguracje"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:877
 msgid "Optimize structure"
 msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:878
-#, fuzzy
 msgid "Model kit"
-msgstr "Model"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:882
 msgid "Extract MOL data"
@@ -1705,11 +1676,11 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:907
 msgid "Hide"
-msgstr ""
+msgstr "Ukryj"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:908
 msgid "Dotted"
-msgstr ""
+msgstr "Kropki"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:910
 msgid "Pixel Width"
@@ -1741,7 +1712,7 @@ msgstr "Pokaż Pomiary"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:927
 msgid "Perspective Depth"
-msgstr ""
+msgstr "Głębokość perspektywy"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:931
 msgid "RasMol Colors"
@@ -1845,9 +1816,8 @@ msgid "unrecognized token: {0}"
 msgstr ""
 
 #: org/jmol/script/ScriptCompiler.java:2450
-#, fuzzy
 msgid "script compiler ERROR: "
-msgstr "BŁĄD skryptu: "
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2441
 #: org/jmol/script/ScriptEvaluator.java:9611
@@ -2099,28 +2069,25 @@ msgid "{0} hydrogen bonds"
 msgstr "{0} wiązania wodorowe"
 
 #: org/jmol/script/ScriptEvaluator.java:10916
-#, fuzzy, java-format
+#, java-format
 msgid "{0} struts added"
-msgstr "{0} wiązania wodorowe"
+msgstr ""
 
 #: org/jmol/shape/Frank.java:76
 msgid "Click for menu..."
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:59
-#, fuzzy
 msgid "translate"
-msgstr "Tłumaczenia"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:60
-#, fuzzy
 msgid "rotate"
-msgstr "Stan"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:61
-#, fuzzy
 msgid "rotate Z"
-msgstr "Stan"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:62
 msgid ""
@@ -2128,9 +2095,8 @@ msgid ""
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:63
-#, fuzzy
 msgid "zoom"
-msgstr "Powiększenie"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:64
 msgid "zoom (along right edge of window)"
@@ -2152,7 +2118,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:69
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:71
@@ -2265,9 +2232,9 @@ msgid "pick an atom"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:98
-#, fuzzy, java-format
+#, java-format
 msgid "pick a DRAW point (for measurements) (requires {0}"
-msgstr "Kliknij dla pomiaru kąta"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:99
 #, java-format
@@ -2282,14 +2249,13 @@ msgid ""
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:101
-#, fuzzy
 msgid "pick an atom to initiate or conclude a measurement"
-msgstr "Kliknij dla pomiaru odległości"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:102
-#, fuzzy, java-format
+#, java-format
 msgid "pick an ISOSURFACE point (requires {0}"
-msgstr "Kliknij dla pomiaru kąta"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:103
 #, java-format
@@ -2338,15 +2304,13 @@ msgid "pick two atoms in order to spin the model around an axis"
 msgstr "wybierz dwa atomy aby obrócić model wokół osi"
 
 #: org/jmol/viewer/ActionManager.java:1929
-#, fuzzy
 msgid "pick one more atom in order to display the symmetry relationship"
-msgstr "wybierz atom aby obrócić model wokół osi"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:1930
-#, fuzzy
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
-msgstr "wybierz dwa atomy aby obrócić model wokół osi"
+msgstr ""
 
 #: org/jmol/viewer/SelectionManager.java:89
 #: org/jmol/viewer/SelectionManager.java:105
@@ -2360,9 +2324,9 @@ msgid "{0} atoms selected"
 msgstr "{0} atomy wybrane"
 
 #: org/jmol/viewer/Viewer.java:4501
-#, fuzzy, java-format
+#, java-format
 msgid "{0} hydrogens added"
-msgstr "{0} wiązania wodorowe"
+msgstr ""
 
 #: org/jmol/viewer/Viewer.java:4581
 msgid "Drag to move label"
@@ -2381,26 +2345,15 @@ msgstr ""
 msgid "Setting log file to {0}"
 msgstr ""
 
-#, fuzzy
-#~ msgid "atoms"
-#~ msgstr "Atomy"
-
-#, fuzzy
-#~ msgid "bonds"
-#~ msgstr "Wiązania"
-
-#~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
-#~ msgstr ""
-#~ "Tworzenie pliku przez ten aplet jest niedozwolone. Aby tworzyć pliki "
-#~ "formatu JPEG Base64, użyj {0}"
-
 #~ msgid "File creation failed."
 #~ msgstr "Tworzenie pliku zakończone niepowodzeniem."
 
+#, java-format
+#~ msgid ""
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
+#~ msgstr ""
+#~ "Tworzenie pliku przez ten aplet jest niedozwolone. Aby tworzyć pliki formatu "
+#~ "JPEG Base64, użyj {0}"
+
 #~ msgid "About Jmol"
 #~ msgstr "O programie Jmol"
-
-#~ msgid "Execute"
-#~ msgstr "Wykonaj"

@@ -215,17 +215,18 @@ public final class Model {
   boolean isJmolDataFrame;
   
   
-  void calculateStructures(boolean asDssp) {
+  String calculateStructures(boolean asDSSP, boolean reportOnly) {
     structureTainted = modelSet.proteinStructureTainted = true;
     if (bioPolymerCount == 0)
-      return;
-    for (int i = bioPolymerCount; --i >= 0; ) {
+      return "";
+    for (int i = bioPolymerCount; --i >= 0;)
       bioPolymers[i].clearStructures();
-      if (!asDssp)
-        bioPolymers[i].calculateStructures();
-    }
-    if(asDssp)
-      bioPolymers[0].calculateStructures(bioPolymers, bioPolymerCount);
+    if (asDSSP)
+      return bioPolymers[0].calculateStructures(bioPolymers, bioPolymerCount,
+          reportOnly);
+    for (int i = bioPolymerCount; --i >= 0;)
+      bioPolymers[i].calculateStructures();
+    return "";
   }
 
   public boolean isStructureTainted() {

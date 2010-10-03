@@ -517,12 +517,12 @@ public class AminoPolymer extends AlphaPolymer {
   //
   ////////////////////// DSSP /////////////////////
 
-  protected static void calculateStructuresDssp(Polymer[] bioPolymers,
-                                            int bioPolymerCount) {
+  protected static String calculateStructuresDssp(Polymer[] bioPolymers,
+                                            int bioPolymerCount, boolean reportOnly) {
 
-  // TODO
+    return "not implemented";
 
   }
 
-
+  
 }

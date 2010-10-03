@@ -117,8 +117,11 @@ abstract public class Polymer {
   /**
    * @param bioPolymers
    * @param bioPolymerCount
+   * @param reportOnly TODO
+   * @return TODO
    */
-  public void calculateStructures(Polymer[] bioPolymers, int bioPolymerCount) {
+  public String calculateStructures(Polymer[] bioPolymers, int bioPolymerCount, boolean reportOnly) {
+    return null;
   }
 
   public void calculateStructures() {  

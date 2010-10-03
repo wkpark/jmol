@@ -10992,11 +10992,12 @@ public class ScriptEvaluator {
         }
         return;
       case Token.structure:
-        bs = (statementLength == 2 ? null : atomExpression(2));
+        bs = (statementLength < 4 ? null : atomExpression(2));
         if (isSyntaxCheck)
           return;
-        viewer.calculateStructures(bs);
-        //viewer.addStateScript(thisCommand, false, true);
+          iToken++;
+        boolean asDSSP = (tokAt(iToken) == Token.dssp);
+        showString(viewer.calculateStructures(bs, asDSSP, false));
         return;
       }
       if (n != Integer.MIN_VALUE) {
@@ -13405,6 +13406,11 @@ public class ScriptEvaluator {
     switch (tok) {
     case Token.nada:
       msg = Escape.escape(((ScriptVariable) theToken).value);
+      break;
+    case Token.dssp:
+      checkLength(2);
+      if (!isSyntaxCheck)
+        msg = viewer.calculateStructures(null, true, true);
       break;
     case Token.smiles:
       checkLength(2);

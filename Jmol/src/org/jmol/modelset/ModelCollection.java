@@ -640,18 +640,27 @@ abstract public class ModelCollection extends BondCollection {
    * also accessed by ModelManager from Eval
    * 
    * @param alreadyDefined    set to skip calculation
+   * @param asDSSP TODO
    * @param addFileData       in the case of loading, we add the PDB data
+   * @param reportOnly 
+   * @return TODO
    *  
    */
-  protected void calculateStructuresAllExcept(BitSet alreadyDefined, boolean addFileData) {
+  protected String calculateStructuresAllExcept(BitSet alreadyDefined,
+                                                boolean addFileData,
+                                                boolean asDSSP,
+                                                boolean reportOnly) {
     freezeModels();
-    boolean asDssp = viewer.getTestFlag3();
+    String ret = "";
     for (int i = modelCount; --i >= 0;)
       if (models[i].isPDB && !alreadyDefined.get(i))
-        models[i].calculateStructures(asDssp);
-    setStructureIds();
-     if (addFileData)
-       propagateSecondaryStructure();
+        ret += models[i].calculateStructures(asDSSP, reportOnly);
+    if (!reportOnly) {
+      setStructureIds();
+      if (addFileData)
+        propagateSecondaryStructure();
+    }
+    return ret;
   }
 
   public void setProteinType(BitSet bs, byte iType) {

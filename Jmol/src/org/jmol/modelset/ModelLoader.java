@@ -1122,7 +1122,7 @@ public final class ModelLoader extends ModelSet {
 
     // finalize all group business
     if (isPDB)
-      calculateStructuresAllExcept(structuresDefinedInFile, true);
+      calculateStructuresAllExcept(structuresDefinedInFile, true, false, false);
 
     molecules = null;
     moleculeCount = 0;

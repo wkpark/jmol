@@ -1054,6 +1054,7 @@ public class Token {
   final static int cutoff        = misc  | 86;// new
   final static int cylinder      = misc  | 88;// new
   final static int density        = misc  | 90;// new
+  final static int dssp           = misc  | 91;// new
   final static int diameter       = misc  | 92;// new
   final static int direction      = misc  | 94;
   final static int discrete       = misc  | 96;// new
@@ -1441,6 +1442,7 @@ public class Token {
       "cartoons",          null,
       "case",              new Token(casecmd),
       "catch",             new Token(catchcmd),
+      "cd",                new Token(cd),
       "center",            new Token(center),
       "centre",            null,
       "centerat",          new Token(centerAt),
@@ -1463,11 +1465,11 @@ public class Token {
       "depth",             new Token(depth),
       "dipole",            new Token(dipole),
       "dipoles",           null,
-      "cd",                new Token(cd),
       "display",           new Token(display),
       "dot",               new Token(dot),
       "dots",              new Token(dots),
       "draw",              new Token(draw),
+      "DSSP",              new Token(dssp),
       "echo",              new Token(echo),
       "ellipsoid",         new Token(ellipsoid),
       "ellipsoids",        null,

@@ -194,7 +194,7 @@ abstract public class ModelSet extends ModelCollection {
 
     if (models[baseModel].hasRasmolHBonds) {
       clearRasmolHydrogenBonds(baseModel, null);
-      getRasmolHydrogenBonds(models[baseModel], bs, bs, null, false, Integer.MAX_VALUE);     
+      getRasmolHydrogenBonds(models[baseModel], bs, bs, null, false, Integer.MAX_VALUE, false);     
     }
     
     int m = viewer.getCurrentModelIndex();
@@ -319,17 +319,17 @@ abstract public class ModelSet extends ModelCollection {
   ///////// atom and shape selecting /////////
   
   
-  public String calculateStructures(BitSet bsAtoms, boolean asDSSP, boolean reportOnly) {
+  public String calculateStructures(BitSet bsAtoms, boolean asDSSP, boolean reportOnly, boolean dsspIgnoreHydrogen) {
     BitSet bsAllAtoms = new BitSet();
     BitSet bsDefined = BitSetUtil.copyInvert(modelsOf(bsAtoms, bsAllAtoms),
         modelCount);
     if (reportOnly)
-      return calculateStructuresAllExcept(bsDefined, false, asDSSP, true);
+      return calculateStructuresAllExcept(bsDefined, false, asDSSP, true, dsspIgnoreHydrogen);
     for (int i = 0; i < modelCount; i++)
       if (!bsDefined.get(i))
         addBioPolymerToModel(null, models[i]);
     calculatePolymers(bsDefined);
-    String ret = calculateStructuresAllExcept(bsDefined, false, asDSSP, false);
+    String ret = calculateStructuresAllExcept(bsDefined, false, asDSSP, false, dsspIgnoreHydrogen);
     viewer.resetBioshapes(bsAllAtoms);
     setStructureIds();
     return ret;

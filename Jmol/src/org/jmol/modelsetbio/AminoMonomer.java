@@ -183,24 +183,30 @@ public class AminoMonomer extends AlphaMonomer {
   Point3f getNitrogenHydrogenPoint() {
     if (nitrogenHydrogenPoint == null && !nhChecked) {
       nhChecked = true;
-      Atom nitrogen = getNitrogenAtom();
-      Atom h = null;
-      Bond[] bonds = nitrogen.getBonds();
-      if (bonds == null)
-        return null;
-      for (int i = 0; i < bonds.length; i++)
-        if ((h = bonds[i].getOtherAtom(nitrogen)).getElementNumber() == 1)
-          return (nitrogenHydrogenPoint = h);
+      nitrogenHydrogenPoint = getExplicitNH();
     }
     return nitrogenHydrogenPoint;
   }
   
-  public boolean getNHPoint(Point3f aminoHydrogenPoint, Vector3f vNH, boolean jmolHPoint) {
+  Point3f getExplicitNH() {
+    Atom nitrogen = getNitrogenAtom();
+    Atom h = null;
+    Bond[] bonds = nitrogen.getBonds();
+    if (bonds == null)
+      return null;
+    for (int i = 0; i < bonds.length; i++)
+      if ((h = bonds[i].getOtherAtom(nitrogen)).getElementNumber() == 1)
+        return h;
+    return null;
+  }
+
+  public boolean getNHPoint(Point3f aminoHydrogenPoint, Vector3f vNH, boolean jmolHPoint, 
+                            boolean dsspIgnoreHydrogens) {
     if (monomerIndex == 0 || groupID == JmolConstants.GROUPID_PROLINE) 
       return false;      
     Point3f nitrogenPoint = getNitrogenAtom();
     Point3f nhPoint = getNitrogenHydrogenPoint();
-    if (nhPoint != null) {
+    if (nhPoint != null && !dsspIgnoreHydrogens) {
       vNH.sub(nhPoint, nitrogenPoint);
       aminoHydrogenPoint.set(nhPoint);
       return true;
@@ -218,7 +224,7 @@ public class AminoMonomer extends AlphaMonomer {
     }
     vNH.normalize();
     aminoHydrogenPoint.add(nitrogenPoint, vNH);
-    this.nitrogenHydrogenPoint = new Point3f(aminoHydrogenPoint);
+    nitrogenHydrogenPoint = new Point3f(aminoHydrogenPoint);
     if (Logger.debugging)
       Logger.info("draw pta" + monomerIndex + " {" + aminoHydrogenPoint.x + " " + aminoHydrogenPoint.y + " " + aminoHydrogenPoint.z + "} color red#aminoPolymer.calchbonds");
     return true;
@@ -312,7 +318,7 @@ public class AminoMonomer extends AlphaMonomer {
       if (monomerIndex == 0 || groupID == JmolConstants.GROUPID_PROLINE)
         return null;
       vC = new Vector3f();
-      getNHPoint(ptTemp, vC, true);
+      getNHPoint(ptTemp, vC, true, false);
       vB.sub(ptCa, getNitrogenAtom());
       vB.cross(vC, vB);
       Matrix3f mat = new Matrix3f();

@@ -643,18 +643,20 @@ abstract public class ModelCollection extends BondCollection {
    * @param asDSSP TODO
    * @param addFileData       in the case of loading, we add the PDB data
    * @param reportOnly 
+   * @param dsspIgnoreHydrogen 
    * @return TODO
    *  
    */
   protected String calculateStructuresAllExcept(BitSet alreadyDefined,
                                                 boolean addFileData,
                                                 boolean asDSSP,
-                                                boolean reportOnly) {
+                                                boolean reportOnly, 
+                                                boolean dsspIgnoreHydrogen) {
     freezeModels();
     String ret = "";
     for (int i = modelCount; --i >= 0;)
       if (models[i].isPDB && !alreadyDefined.get(i))
-        ret += models[i].calculateStructures(asDSSP, reportOnly);
+        ret += models[i].calculateStructures(asDSSP, reportOnly, dsspIgnoreHydrogen);
     if (!reportOnly) {
       setStructureIds();
       if (addFileData)
@@ -1067,10 +1069,11 @@ abstract public class ModelCollection extends BondCollection {
    *          vector of bonds to fill; if null, creates the HBonds
    * @param nucleicOnly TODO
    * @param nMax 
+   * @param dsspIgnoreHydrogens 
    */
 
   public void calcRasmolHydrogenBonds(BitSet bsA, BitSet bsB, List<Bond> vHBonds, 
-                                      boolean nucleicOnly, int nMax) {
+                                      boolean nucleicOnly, int nMax, boolean dsspIgnoreHydrogens) {
     boolean isSame = (bsB == null || bsA.equals(bsB));
     for (int i = modelCount; --i >= 0;)
       if (models[i].trajectoryBaseIndex == i) {
@@ -1079,7 +1082,7 @@ abstract public class ModelCollection extends BondCollection {
           if (!isSame)
             clearRasmolHydrogenBonds(i, bsB);
         }
-        getRasmolHydrogenBonds(models[i], bsA, bsB, vHBonds, nucleicOnly, nMax);
+        getRasmolHydrogenBonds(models[i], bsA, bsB, vHBonds, nucleicOnly, nMax, dsspIgnoreHydrogens);
       }
   }
 
@@ -2328,7 +2331,7 @@ abstract public class ModelCollection extends BondCollection {
   private String getBasePairInfo(BitSet bs) {
     StringBuffer info = new StringBuffer();
     List<Bond> vHBonds = new ArrayList<Bond>();
-    calcRasmolHydrogenBonds(bs, bs, vHBonds, true, 1);      
+    calcRasmolHydrogenBonds(bs, bs, vHBonds, true, 1, false);      
     for (int i = vHBonds.size(); --i >= 0;) {
       Bond b = vHBonds.get(i);
       getAtomResidueInfo(info, b.atom1);
@@ -2355,7 +2358,7 @@ abstract public class ModelCollection extends BondCollection {
     List<Bond> vHBonds = new ArrayList<Bond>();
     if (specInfo.length() == 0) {
       bsA = bsB = viewer.getModelUndeletedAtomsBitSet(-1);
-      calcRasmolHydrogenBonds(bsA, bsB, vHBonds, true, 1);      
+      calcRasmolHydrogenBonds(bsA, bsB, vHBonds, true, 1, false);      
     } else {
       for (int i = 0; i < specInfo.length();) {
         bsA = getSequenceBits(specInfo.substring(i, ++i), null);
@@ -2364,7 +2367,7 @@ abstract public class ModelCollection extends BondCollection {
         bsB = getSequenceBits(specInfo.substring(i, ++i), null);
         if (bsB.cardinality() == 0)
           continue;
-        calcRasmolHydrogenBonds(bsA, bsB, vHBonds, true, 1);
+        calcRasmolHydrogenBonds(bsA, bsB, vHBonds, true, 1, false);
       }
     }
     BitSet bsAtoms = new BitSet();
@@ -2662,7 +2665,7 @@ abstract public class ModelCollection extends BondCollection {
     boolean useRasMol = viewer.getHbondsRasmol();
     if (bsB == null || useRasMol && !haveHAtoms) {
       Logger.info((bsB == null ? "DSSP " : "RasMol") + " pseudo-hbond calculation");
-      calcRasmolHydrogenBonds(bsA, bsB, null, false, Integer.MAX_VALUE);
+      calcRasmolHydrogenBonds(bsA, bsB, null, false, Integer.MAX_VALUE, false);
       return -BitSetUtil.cardinalityOf(bsHBondsRasmol);
     }
     Logger.info(haveHAtoms ? "Standard Hbond calculation"

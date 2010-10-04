@@ -24,6 +24,7 @@
 package org.jmol.modelsetbio;
 
 import org.jmol.api.JmolEdge;
+import org.jmol.i18n.GT;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.HBond;
@@ -74,7 +75,8 @@ public class AminoPolymer extends AlphaPolymer {
   @Override
   public void calcRasmolHydrogenBonds(Polymer polymer, BitSet bsA, BitSet bsB,
                                       List<Bond> vHBonds, int nMaxPerResidue,
-                                      int[][][] min, boolean checkDistances) {
+                                      int[][][] min, boolean checkDistances, 
+                                      boolean dsspIgnoreHydrogens) {
     if (polymer == null)
       polymer = this;
     if (!(polymer instanceof AminoPolymer))
@@ -92,7 +94,7 @@ public class AminoPolymer extends AlphaPolymer {
         min1 = min[i];
       }
       if ((source = ((AminoMonomer) monomers[i])).getNHPoint(pt, vNH,
-          checkDistances)) {
+          checkDistances, dsspIgnoreHydrogens)) {
         boolean isInA = (bsA == null || bsA.get(source.getNitrogenAtom().index));
         if (!isInA)
           continue;
@@ -518,14 +520,12 @@ public class AminoPolymer extends AlphaPolymer {
   //
   ////////////////////// DSSP /////////////////////
 
-
-
   protected static String calculateStructuresDssp(Polymer[] bioPolymers,
-                                            int bioPolymerCount, boolean reportOnly, List<Bond> vHBonds) {
+                                            int bioPolymerCount, boolean reportOnly, 
+                                            List<Bond> vHBonds, boolean dsspIgnoreHydrogens) {
 
     return "not implemented";
 
   }
-  
   
 }

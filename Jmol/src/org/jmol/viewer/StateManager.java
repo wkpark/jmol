@@ -842,6 +842,7 @@ public class StateManager {
       setParameterValue("dragSelected", dragSelected);
       setParameterValue("drawHover", drawHover);
       setParameterValue("drawPicking", drawPicking);
+      setParameterValue("dsspIgnoreHydrogen", dsspIgnoreHydrogen);
       setParameterValue("dynamicMeasurements", dynamicMeasurements);
       setParameterValue("edsUrlFormat", edsUrlFormat);
       //setParameterValue("edsUrlOptions", edsUrlOptions);
@@ -1191,6 +1192,7 @@ public class StateManager {
     boolean dragSelected = false;
     boolean drawHover = false;
     boolean drawPicking = false;
+    boolean dsspIgnoreHydrogen = true;
     boolean bondPicking = false;
     boolean atomPicking = true;
     String helpPath = JmolConstants.DEFAULT_HELP_PATH;

@@ -119,16 +119,17 @@ abstract public class Polymer {
    * @param bioPolymerCount
    * @param reportOnly TODO
    * @param vHBonds TODO
+   * @param dsspIgnoreHydrogen 
    * @return TODO
    */
   public String calculateStructures(Polymer[] bioPolymers, int bioPolymerCount,
-                                    boolean reportOnly, List<Bond> vHBonds) {
+                                    boolean reportOnly, List<Bond> vHBonds, boolean dsspIgnoreHydrogen) {
     return null;
   }
 
-  public void calculateStructures() {  
+  public void calculateStructures() {
   }
-  
+
   public void clearStructures() {
   }
 
@@ -163,9 +164,11 @@ abstract public class Polymer {
    * @param nMaxPerResidue
    * @param min 
    * @param checkDistances
+   * @param dsspIgnoreHydrogens 
    */
   public void calcRasmolHydrogenBonds(Polymer polymer, BitSet bsA,
-           BitSet bsB, List<Bond> vHBonds, int nMaxPerResidue, int[][][] min, boolean checkDistances) {
+           BitSet bsB, List<Bond> vHBonds, int nMaxPerResidue, int[][][] min, 
+           boolean checkDistances, boolean dsspIgnoreHydrogens) {
     // subclasses should override if they know how to calculate hbonds
   }
   

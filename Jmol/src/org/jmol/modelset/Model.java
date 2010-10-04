@@ -214,8 +214,11 @@ public final class Model {
   boolean structureTainted;
   boolean isJmolDataFrame;
   
+  public String getModelNumberDotted() {
+    return modelSet.getModelNumberDotted(modelIndex);
+  }
   
-  String calculateStructures(boolean asDSSP, boolean reportOnly) {
+  String calculateStructures(boolean asDSSP, boolean reportOnly, boolean dsspIgnoreHydrogen) {
     structureTainted = modelSet.proteinStructureTainted = true;
     if (bioPolymerCount == 0 || reportOnly && !asDSSP)
       return "";
@@ -224,7 +227,7 @@ public final class Model {
         bioPolymers[i].clearStructures();
     if (asDSSP)
       return bioPolymers[0].calculateStructures(bioPolymers, bioPolymerCount,
-          reportOnly, null);
+          reportOnly, null, dsspIgnoreHydrogen);
     for (int i = bioPolymerCount; --i >= 0;)
       bioPolymers[i].calculateStructures();
     return "";

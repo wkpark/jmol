@@ -91,7 +91,8 @@ public class NucleicPolymer extends BioPolymer {
   @Override
   public void calcRasmolHydrogenBonds(Polymer polymer, BitSet bsA, 
                                       BitSet bsB, List<Bond> vAtoms,
-                                      int nMaxPerResidue, int[][][] min, boolean checkDistances) {
+                                      int nMaxPerResidue, int[][][] min, 
+                                      boolean checkDistances, boolean dsspIgnoreHydrogens) {
     NucleicPolymer other = (NucleicPolymer) polymer;
     Vector3f vNorm = new Vector3f();
     Vector3f vAB = new Vector3f();

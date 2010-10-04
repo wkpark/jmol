@@ -2452,7 +2452,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // Eval
     if (bsAtoms == null)
       bsAtoms = getSelectionSet(false);
-    return modelSet.calculateStructures(bsAtoms, asDSSP, reportOnly);
+    return modelSet.calculateStructures(bsAtoms, asDSSP, reportOnly, global.dsspIgnoreHydrogen);
   }
 
   public AtomIndexIterator getSelectedAtomIterator(BitSet bsSelected,
@@ -5912,6 +5912,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean found = true;
     boolean doRepaint = true;
     switch (tok) {
+    case Token.dsspignorehydrogen:
+      global.dsspIgnoreHydrogen = value;
+      break;
     case Token.allowmodelkit:
       // 11.12.RC15
       global.allowModelkit = value;

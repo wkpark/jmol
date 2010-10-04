@@ -217,10 +217,11 @@ public final class Model {
   
   String calculateStructures(boolean asDSSP, boolean reportOnly) {
     structureTainted = modelSet.proteinStructureTainted = true;
-    if (bioPolymerCount == 0)
+    if (bioPolymerCount == 0 || reportOnly && !asDSSP)
       return "";
-    for (int i = bioPolymerCount; --i >= 0;)
-      bioPolymers[i].clearStructures();
+    if (!reportOnly)
+      for (int i = bioPolymerCount; --i >= 0;)
+        bioPolymers[i].clearStructures();
     if (asDSSP)
       return bioPolymers[0].calculateStructures(bioPolymers, bioPolymerCount,
           reportOnly, null);

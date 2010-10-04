@@ -797,7 +797,6 @@ public final class ModelLoader extends ModelSet {
    */
   private void iterateOverAllNewStructures(JmolAdapter adapter,
                                            Object atomSetCollection) {
-    structuresDefinedInFile = new BitSet(modelCount);
     JmolAdapter.StructureIterator iterStructure = adapter
         .getStructureIterator(atomSetCollection);
     if (iterStructure != null)

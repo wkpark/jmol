@@ -2451,7 +2451,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public String calculateStructures(BitSet bsAtoms, boolean asDSSP, boolean reportOnly) {
     // Eval
     if (bsAtoms == null)
-      bsAtoms = getModelUndeletedAtomsBitSet(-1);
+      bsAtoms = getSelectionSet(false);
     return modelSet.calculateStructures(bsAtoms, asDSSP, reportOnly);
   }
 

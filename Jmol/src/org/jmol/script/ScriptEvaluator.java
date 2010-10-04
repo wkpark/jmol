@@ -8422,8 +8422,8 @@ public class ScriptEvaluator {
             + "} allowEmbeddedScripts = true;";
       }
     }
-    if (msg.length() > 0)
-      Logger.info(msg);
+    logLoadInfo(msg);
+
     String siteScript = (String) viewer.getModelSetAuxiliaryInfo().remove(
         "sitescript");
     if (siteScript != null)
@@ -8431,6 +8431,27 @@ public class ScriptEvaluator {
     if (script.length() > 0 && !isCmdLine_c_or_C_Option)
       // NOT checking embedded scripts in some cases
       runScript(script);
+  }
+
+  @SuppressWarnings("unchecked")
+  private void logLoadInfo(String msg) {
+    if (msg.length() > 0)
+      Logger.info(msg);
+    StringBuffer sb = new StringBuffer();
+    int modelCount = viewer.getModelCount();
+    if (modelCount > 1)
+      sb.append(modelCount).append(" models");
+    for (int i = 0; i < modelCount; i++) {
+      Map<String, Object> moData = (Map<String, Object>) viewer.getModelAuxiliaryInfo(i, "moData");
+      if (moData == null)
+        continue;
+      sb.append("\n")
+      .append(((List<Map<String, Object>>) moData.get("mos")).size())
+      .append(" molecular obitals in model ")
+      .append(viewer.getModelNumberDotted(i));
+    }
+    if (sb.length() > 0)
+      showString(sb.toString());
   }
 
   private String getFullPathName() throws ScriptException {

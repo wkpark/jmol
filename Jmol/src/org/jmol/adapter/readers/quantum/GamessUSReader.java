@@ -233,6 +233,7 @@ public class GamessUSReader extends GamessReader {
     }
   }
   
+  
   @Override
   protected void readAtomsInBohrCoordinates() throws Exception {
 /*
@@ -250,20 +251,21 @@ public class GamessUSReader extends GamessReader {
     atomSetCollection.newAtomSet();
     int n = 0;
     while (readLine() != null
-        && (atomName = parseToken(line, 1, 6)) != null) {
+        && (atomName = parseToken(line, 1, 11)) != null) {
       float x = parseFloat(line, 17, 37);
       float y = parseFloat(line, 37, 57);
       float z = parseFloat(line, 57, 77);
       if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
         break;
       Atom atom = atomSetCollection.addNewAtom();
-      atom.atomName = atomName + (++n);
+      atom.elementSymbol = getElementSymbol(parseInt(line.substring(11, 14)));
+      atom.atomName = atom.elementSymbol + (++n);
       atom.set(x, y, z);
       atom.scale(ANGSTROMS_PER_BOHR);
       atomNames.add(atomName);
     }
   }
-
+  
   private void readAtomsInAngstromCoordinates() throws Exception {
     readLine(); 
     readLine(); // discard two lines
@@ -281,15 +283,16 @@ public class GamessUSReader extends GamessReader {
 */
     int n = 0;
     while (readLine() != null
-        && (atomName = parseToken(line, 1, 6)) != null) {
+        && (atomName = parseToken(line, 1, 11)) != null) {
       float x = parseFloat(line, 16, 31);
       float y = parseFloat(line, 31, 46);
       float z = parseFloat(line, 46, 61);
       if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
         break;
       Atom atom = atomSetCollection.addNewAtom();
-      atom.atomName = atomName + (++n);
       atom.set(x, y, z);
+      atom.elementSymbol = getElementSymbol(parseInt(line.substring(11, 14)));
+      atom.atomName = atom.elementSymbol + (++n);
       atomNames.add(atomName);
     }
     

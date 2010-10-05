@@ -586,10 +586,12 @@ public class SmilesSearch extends JmolMolecule {
     // If the search is SMILES, we add the missing hydrogens
 
     BitSet bs = new BitSet();
+    int nMatch = 0;
     for (int j = 0; j < atomCount; j++) {
       int i = patternAtoms[j].getMatchingAtom();
       if (!firstAtomOnly && haveSelected && !patternAtoms[j].selected)
         continue;
+      nMatch++;
       bs.set(i);
       if (patternAtoms[j].isBioAtom && patternAtoms[j].atomName == null)
         jmolAtoms[i].setGroupBits(bs);
@@ -606,9 +608,12 @@ public class SmilesSearch extends JmolMolecule {
 
     if (getMaps) {
       // every map is important always
-      int[] map = new int[atomCount];
-      for (int j = 0; j < atomCount; j++)
-        map[j] = patternAtoms[j].getMatchingAtom();
+      int[] map = new int[nMatch];
+      for (int j = 0, nn = 0; j < atomCount; j++) {
+        if (!firstAtomOnly && haveSelected && !patternAtoms[j].selected)
+          continue;
+        map[nn++] = patternAtoms[j].getMatchingAtom();
+      }
       vReturn.add(map);
       return !firstMatchOnly;
     }

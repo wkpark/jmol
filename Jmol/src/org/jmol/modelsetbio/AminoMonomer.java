@@ -104,7 +104,8 @@ public class AminoMonomer extends AlphaMonomer {
 
   boolean isAminoMonomer() { return true; }
 
-  Atom getNitrogenAtom() {
+  @Override
+  public Atom getNitrogenAtom() {
     return getAtomFromOffsetIndex(N);
   }
 
@@ -112,7 +113,8 @@ public class AminoMonomer extends AlphaMonomer {
     return getAtomFromOffsetIndex(C);
   }
 
-  Atom getCarbonylOxygenAtom() {
+  @Override
+  public Atom getCarbonylOxygenAtom() {
     return getWingAtom();
   }
 

@@ -507,4 +507,12 @@ public class Group {
   public boolean isConnectedPrevious() {
     return false;
   }
+
+  public Atom getNitrogenAtom() {
+    return null;
+  }
+
+  public Atom getCarbonylOxygenAtom() {
+    return null;
+  }
 }

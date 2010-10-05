@@ -1329,8 +1329,14 @@ abstract public class AtomCollection {
             // ................ sp2c sp3d sp3d  sp3b  sp2c sp2b sp
             switch (targetValence - nBonds) {
             case 1:
-              // sp3 or Boron sp2
-              if (getHybridizationAndAxes(i, z, x, (atomicNumber == 5 ? "sp2c"
+              // sp3 or Boron sp2 or N sp2
+              if (atomicNumber == 8 && atom == atom.getGroup().getCarbonylOxygenAtom()) {
+                hAtoms[i] = null;
+                continue;
+              }
+              if (getHybridizationAndAxes(i, z, x, (atomicNumber == 5 
+                  || atomicNumber == 7 && atom == atom.getGroup().getNitrogenAtom() 
+                  ? "sp2c"
                   : "sp3d"), true, false) != null) {
                 pt = new Point3f(z);
                 pt.scaleAdd(1.1f, z, atom);

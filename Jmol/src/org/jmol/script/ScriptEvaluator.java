@@ -11007,7 +11007,7 @@ public class ScriptEvaluator {
           return;
         }
         BitSet bs1 = null;
-        // calculate hbonds STRUCTURE -- only the structurally-defining H bonds
+        // calculate hbonds STRUCTURE -- only the DSSP structurally-defining H bonds
         asDSSP = (tokAt(++iToken) == Token.structure);
         if (asDSSP)
           bs1 = viewer.getSelectionSet(false);

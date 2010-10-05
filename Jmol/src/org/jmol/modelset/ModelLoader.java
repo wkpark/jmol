@@ -181,6 +181,8 @@ public final class ModelLoader extends ModelSet {
   private int baseModelIndex = 0;
   private int baseModelCount = 0;
   private int baseAtomIndex = 0;
+  private int baseGroupIndex = 0;
+
   private int baseTrajectoryCount = 0;
   private boolean appendNew;
   private int adapterModelCount = 0;
@@ -265,7 +267,7 @@ public final class ModelLoader extends ModelSet {
 
     finalizeGroupBuild(); // set group offsets and build monomers
 
-    calculatePolymers(null);
+    calculatePolymers(baseGroupIndex, null);
     // only now can we access all of the atom's properties
 
     RadiusData rd = viewer.getDefaultRadiusData();

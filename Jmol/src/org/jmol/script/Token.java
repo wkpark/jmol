@@ -910,7 +910,7 @@ public class Token {
   public final static int dragselected                   = booleanparam | 55;
   public final static int drawhover                      = booleanparam | 56;
   public final static int drawpicking                    = booleanparam | 57;
-  public final static int dsspignorehydrogen             = booleanparam | 58;
+  public final static int dsspcalchydrogen               = booleanparam | 58;
   public final static int dynamicmeasurements            = booleanparam | 59;
   public final static int ellipsoidarcs                  = booleanparam | 60;  
   public final static int ellipsoidaxes                  = booleanparam | 61;  
@@ -2169,7 +2169,7 @@ public class Token {
       "dragSelected",                             new Token(dragselected),
       "drawHover",                                new Token(drawhover),
       "drawPicking",                              new Token(drawpicking),
-      "dsspIgnoreHydrogen",                       new Token(dsspignorehydrogen),
+      "dsspCalculateHydrogenAlways",              new Token(dsspcalchydrogen),
       "dynamicMeasurements",                      new Token(dynamicmeasurements),
       "ellipsoidArcs",                            new Token(ellipsoidarcs),
       "ellipsoidAxes",                            new Token(ellipsoidaxes),

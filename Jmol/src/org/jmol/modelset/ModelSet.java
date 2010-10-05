@@ -25,6 +25,7 @@
 
 package org.jmol.modelset;
 
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 
@@ -328,7 +329,7 @@ abstract public class ModelSet extends ModelCollection {
     for (int i = 0; i < modelCount; i++)
       if (!bsDefined.get(i))
         addBioPolymerToModel(null, models[i]);
-    calculatePolymers(bsDefined);
+    calculatePolymers(0, bsDefined);
     String ret = calculateStructuresAllExcept(bsDefined, false, asDSSP, false, dsspIgnoreHydrogen);
     viewer.resetBioshapes(bsAllAtoms);
     setStructureIds();
@@ -687,6 +688,7 @@ abstract public class ModelSet extends ModelCollection {
     deleteBonds(bsBonds, true);
 
     // main deletion cycle
+    
     for (int i = 0, mpt = 0; i < oldModelCount; i++) {
       if (!bsModels.get(i)) {
         mpt++;
@@ -698,6 +700,10 @@ abstract public class ModelSet extends ModelCollection {
       nAtomsDeleted += nAtoms;
       BitSet bs = oldModels[i].bsAtoms;
       int firstAtomIndex = oldModels[i].firstAtomIndex;
+      int firstGroupIndex = atoms[firstAtomIndex].getGroupIndex();
+      int nGroups = atoms[firstAtomIndex + nAtoms - 1].getGroupIndex() - firstGroupIndex + 1;
+      groups = (Group[]) ArrayUtil.deleteElements(groups, firstGroupIndex, nGroups);
+      groupCount -= nGroups;
 
       // delete from symmetry set
       BitSetUtil.deleteBits(bsSymmetry, bs);

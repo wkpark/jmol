@@ -230,13 +230,12 @@ abstract public class ModelCollection extends BondCollection {
 
   protected Group[] groups;
   protected int groupCount;
-  protected int baseGroupIndex = 0;
   private int structureCount = 0;
   private Structure[] structures = new Structure[10];
   protected boolean haveBioClasses = true;
   protected JmolBioResolver jbr = null;
   
-  protected void calculatePolymers(BitSet alreadyDefined) {
+  protected void calculatePolymers(int baseGroupIndex, BitSet alreadyDefined) {
     if (jbr == null)
       return;
     if (alreadyDefined != null) {

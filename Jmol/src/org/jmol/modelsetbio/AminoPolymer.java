@@ -28,6 +28,7 @@ import org.jmol.i18n.GT;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.HBond;
+import org.jmol.modelset.Model;
 import org.jmol.modelset.Polymer;
 import org.jmol.script.Token;
 //import org.jmol.util.Escape;
@@ -523,9 +524,11 @@ public class AminoPolymer extends AlphaPolymer {
   protected static String calculateStructuresDssp(Polymer[] bioPolymers,
                                             int bioPolymerCount, boolean reportOnly, 
                                             List<Bond> vHBonds, boolean dsspIgnoreHydrogens) {
-
+    
     return "not implemented";
 
   }
+  
+/* */
   
 }

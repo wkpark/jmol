@@ -28,7 +28,6 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.LabelToken;
-import org.jmol.modelset.Model;
 import org.jmol.modelset.Polymer;
 import org.jmol.util.Escape;
 
@@ -56,8 +55,6 @@ public abstract class BioPolymer extends Polymer {
   public Group[] getGroups() {
     return monomers;
   }
-
-  protected Model model;
 
   BioPolymer(Monomer[] monomers) {
     this.monomers = monomers;

@@ -47,6 +47,8 @@ abstract public class Polymer {
   // these arrays will be one longer than the polymerCount
   // we probably should have better names for these things
   // holds center points between alpha carbons or sugar phosphoruses
+
+  public Model model;
   protected Point3f[] leadMidpoints;
   protected Point3f[] leadPoints;
   protected Point3f[] controlPoints;

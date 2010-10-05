@@ -217,6 +217,11 @@ public final class Model {
   public String getModelNumberDotted() {
     return modelSet.getModelNumberDotted(modelIndex);
   }
+
+  public String getModelTitle() {
+    return modelSet.getModelTitle(modelIndex);
+  }
+  
   
   String calculateStructures(boolean asDSSP, boolean reportOnly, boolean dsspIgnoreHydrogen) {
     structureTainted = modelSet.proteinStructureTainted = true;

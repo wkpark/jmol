@@ -521,14 +521,639 @@ public class AminoPolymer extends AlphaPolymer {
   //
   ////////////////////// DSSP /////////////////////
 
-  protected static String calculateStructuresDssp(Polymer[] bioPolymers,
-                                            int bioPolymerCount, boolean reportOnly, 
-                                            List<Bond> vHBonds, boolean dsspIgnoreHydrogens) {
-    
-    return "not implemented";
+  /**
+   * 
+   * @param bioPolymers  
+   * @param bioPolymerCount 
+   * @param reportOnly
+   * @param vHBonds 
+   * @param dsspIgnoreHydrogens 
+   * @return                 report       
+   */
 
+  protected static String calculateStructuresDssp(Polymer[] bioPolymers,
+                                                  int bioPolymerCount,
+                                                  boolean reportOnly,
+                                                  List<Bond> vHBonds,
+                                                  boolean dsspIgnoreHydrogens) {
+    if (bioPolymerCount == 0)
+      return "";
+
+    Model m = bioPolymers[0].model;
+    StringBuffer sb = new StringBuffer();
+    sb
+        .append("Jmol DSSP analysis for model ")
+        .append(m.getModelNumberDotted()).append(" - ").append(m.getModelTitle())
+        .append("\nW. Kabsch and C. Sander, Biopolymers, vol 22, 1983, pp 2577-2637\n");
+    if (!reportOnly)
+      sb.append("Use  show DSSP  for details.\n");
+
+    // for each AminoPolymer, we need:
+    // (1) a label reading "...EEE....HHHH...GGG...BTTTB...IIIII..."
+    // (2) a bitset to indicate that an assignment has been made already
+
+    char[][] labels = new char[bioPolymerCount][];
+    BitSet[] bsDone = new BitSet[bioPolymerCount];
+
+    boolean haveWarned = false;
+
+    for (int i = 0; i < bioPolymerCount; i++) {
+      if (!(bioPolymers[i] instanceof AminoPolymer))
+        continue;
+      if (!haveWarned
+          && ((AminoMonomer) ((AminoPolymer) bioPolymers[i]).monomers[0])
+              .getExplicitNH() != null) {
+        if (dsspIgnoreHydrogens)
+          sb
+              .append(GT
+                  ._(
+                      "NOTE: NH hydrogen atoms are present and will be ignored, and their positions will instead be approximated, as in standard DSSP analysis.\nUse {0} to not ignore these hydrogen atoms.\n\n",
+                      "SET dsspCalculateHydrogenAlways FALSE"));
+        else
+          sb
+              .append(GT
+                  ._(
+                      "NOTE: NH hydrogens are present and will not be calculated.\nUse {0} for a standard DSSP analysis.\n\n",
+                      "SET dsspCalculateHydrogenAlways TRUE"));
+        haveWarned = true;
+      }
+      bioPolymers[i].recalculateLeadMidpointsAndWingVectors();
+      labels[i] = new char[bioPolymers[i].monomerCount];
+      bsDone[i] = new BitSet();
+    }
+
+    // Step 1: Create a polymer-based array of dual-minimum NH->O connections
+    //         similar to those used in Rasmol.
+
+    int[][][][] min = getDualHydrogenBondArray(bioPolymers, bioPolymerCount,
+        dsspIgnoreHydrogens);
+
+    // NOTE: (p. 2587) "Structural overalaps are eliminated in this line by giving 
+    //                  priority to H,B,E,G,I,T,S in this order." 
+    //
+    // We do B and E first, then H G I. Oddly enough, this technically allows for 
+    // bridges to helix groups; I think, though, that is impossible.
+    // These will be flagged on the helix-3 line with a warning.
+
+    // Step 2: Find the bridges and mark them all as "B".
+
+    List<Atom[]> bridgesA = new ArrayList<Atom[]>();
+    List<Atom[]> bridgesP = new ArrayList<Atom[]>();
+    Map<String, Boolean> htBridges = new Hashtable<String, Boolean>();
+    getBridges(bioPolymers, min, labels, bridgesA, bridgesP, htBridges, bsDone,
+        vHBonds);
+
+    // Step 3: Find the ladders and bulges, mark them as "E", and add the sheet structures.
+
+    getSheetStructures(bioPolymers, bridgesA, bridgesP, htBridges, labels,
+        bsDone, reportOnly, vHBonds != null);
+
+    // Step 4: Find the helices and mark them as "G", "H", or "I", 
+    //         mark remaining turn residues as "T", and add the helix and turn structures.
+
+    for (int i = 0; i < bioPolymerCount; i++)
+      if (min[i] != null)
+        sb.append(((AminoPolymer) bioPolymers[i]).findHelixes(min[i], i,
+            bsDone[i], labels[i], reportOnly, vHBonds));
+
+    // Done!
+
+    if (reportOnly) {
+      sb.append("\n------------------------------\n");
+      for (int i = 0; i < bioPolymerCount; i++)
+        if (labels[i] != null) {
+          sb.append(((AminoPolymer) bioPolymers[i]).dumpTags("$.1: "
+              + String.valueOf(labels[i])));
+        }
+    }
+
+    return sb.toString();
   }
+
+  /**
+   * 
+   * (p. 2579):
+   * 
+   * Hydrogen bonds in proteins have little wave-function overlap and are well
+   * described by an electrostatic model:
+   * 
+   *   E = q1q2(1/r(ON) + 1/r(CH) - 1/r(OH) - 1/r(CN)) * f
+   *  
+   * with q1 = 0.42e and q2 = 0.20e, e being the unit electron charge and r(AB)
+   * the interatomic distance from A to B. In chemical units, r is in angstroms,
+   * the dimensional factor f = 332, and E is in kcal/mol. We ... assign an H bond
+   * between C=O of residue i and N-H of residue j if E is less than the cutoff,
+   * i.e., "Hbond(i,j) =: [E < -0.5 kcal/mol]."
+   * 
+   * @param bioPolymers
+   * @param bioPolymerCount
+   * @param dsspIgnoreHydrogens 
+   * @return                array of dual-minmum NH-->O=C H bonds
+   * 
+   */
+  private static int[][][][] getDualHydrogenBondArray(Polymer[] bioPolymers,
+                                                    int bioPolymerCount, 
+                                                    boolean dsspIgnoreHydrogens) {
+    
+    // The min[][][][] array:  min[iPolymer][i][[hb1],[hb2]]
+    //   where i is the index of the NH end of the bond, 
+    //   and [hb1] and [hb2] are [iPolymer2,i2,iEnergy]
+    //   and i2 is the index of the C=O end of the bond
+    //   if iEnergy is < -500 and -1 - (that number) if iEnergy is >= -500
+    
+    //   This part is the same as the Rasmol hydrogen bond calculation
+    //
+
+    int[][][][] min = new int[bioPolymerCount][][][];
+    for (int i = 0; i < bioPolymerCount; i++) {
+      if (!(bioPolymers[i] instanceof AminoPolymer))
+        continue;
+      int n = bioPolymers[i].monomerCount;
+      min[i] = new int[n][2][3];
+      for (int j = 0; j < n; ++j) {
+        min[i][j][0][1] = min[i][j][1][1] = Integer.MIN_VALUE;
+        min[i][j][0][2] = min[i][j][1][2] = 0;
+      }
+    }
+
+    for (int i = 0; i < bioPolymerCount; i++)
+      if (min[i] != null)
+        for (int j = 0; j < bioPolymerCount; j++)
+          if (min[j] != null)
+            bioPolymers[i].calcRasmolHydrogenBonds(bioPolymers[j], null, null,
+                null, 2, min[i], false, dsspIgnoreHydrogens);
+
+    return min;
+  }
+
+  /**
+   * (p. 2581):
+   * 
+   * A basic turn pattern (Fig. 2) is a single H bond of type (i,i+n). We
+   * assign an n-turn at residue i if there is an H bond from CO(i) to NH(i+n)....
+   *   When the pattern is found, the ends of the H bond are indicated using ">" at i
+   * and "<" at i+n...; the residues bracketed by the H bond are noted "3," "4," or "5"
+   * unless they are also end points of other H bonds. Coincidence of ">" and "<" at
+   * one residue is indicated by "X." ... Residues bracketed by the hydrogen bond
+   * are marked "T," unless they are part of an n-helix (defined below). 
+   * 
+   * (p. 2582):
+   * 
+   * A minimal helix is defined by two consecutive n-turns.... Longer helices are 
+   * defined as overlaps of minimal helices.... Residues bracketed by H bonds are 
+   * labeled G, H, I.... Long helices can deviate from regularity in that not all 
+   * possible H bonds are formed. This possibility is implicit in the above helix 
+   * definition.
+   * 
+   * @param min
+   * @param iPolymer
+   * @param bsDone
+   * @param labels
+   * @param reportOnly 
+   * @param vHBonds 
+   * @return             string label
+   */
+  private String findHelixes(int[][][] min, int iPolymer, BitSet bsDone,
+                             char[] labels, boolean reportOnly,
+                             List<Bond> vHBonds) {
+    if (Logger.debugging)
+      for (int j = 0; j < monomerCount; j++)
+        Logger.debug(iPolymer + "." + monomers[j].getResno() + "\t"
+            + Escape.escape(min[j]));
+
+    BitSet bsTurn = new BitSet();
+
+    String line4 = findHelixes(4, min, iPolymer,
+        JmolConstants.PROTEIN_STRUCTURE_HELIX, JmolEdge.BOND_H_PLUS_4, bsDone,
+        bsTurn, labels, reportOnly, vHBonds);
+    String line3 = findHelixes(3, min, iPolymer,
+        JmolConstants.PROTEIN_STRUCTURE_HELIX_310, JmolEdge.BOND_H_PLUS_3,
+        bsDone, bsTurn, labels, reportOnly, vHBonds);
+    String line5 = findHelixes(5, min, iPolymer,
+        JmolConstants.PROTEIN_STRUCTURE_HELIX_PI, JmolEdge.BOND_H_PLUS_5,
+        bsDone, bsTurn, labels, reportOnly, vHBonds);
+
+    // G, H, and I have been set; now set what is left over as turn
+
+    if (reportOnly) {
+      setTag(labels, bsTurn, 'T');
+      return dumpTags("$.5: " + line5 + "\n" + "$.4: " + line4 + "\n" + "$.3: "
+          + line3);
+    }
+    
+    // if not calculate hbond, set the turn structure
+    
+    if (vHBonds == null)
+      setStructure(bsTurn, JmolConstants.PROTEIN_STRUCTURE_TURN);
+    return "";
+  }
+
+  private String findHelixes(int pitch, int[][][] min, int thisIndex,
+                             byte subtype, int type, BitSet bsDone,
+                             BitSet bsTurn, char[] labels, boolean reportOnly,
+                             List<Bond> vHBonds) {
+
+    // The idea here is to run down the polymer setting bit sets
+    // that identify start, stop, N, and X codes: >, <, 3, 4, 5, and X
+    // In addition, we create a bit set that will identify G H or I.
+
+    BitSet bsStart = new BitSet();
+    BitSet bsNNN = new BitSet();
+    BitSet bsX = new BitSet();
+    BitSet bsStop = new BitSet();
+    BitSet bsHelix = new BitSet();
+    
+    String warning = "";
+
+    // index is to the NH (higher index) end, not the C=O end
+    
+    for (int i = pitch; i < monomerCount; ++i) {
+      int i0 = i - pitch;
+      int bpt = 0;
+      if (min[i][0][0] == thisIndex && min[i][0][1] == i0
+          || min[i][bpt = 1][0] == thisIndex && min[i][1][1] == i0) {
+
+        // the basic indicators are >33< or >444< or >5555<
+
+        // we use bit sets here for efficiency
+
+        bsStart.set(i0);         //   >
+        bsNNN.set(i0 + 1, i);    //    nnnn
+        bsStop.set(i);           //        <
+
+        // a run of HHHH or GGG or IIIII is made if: 
+        // (1) the previous position was a start for this n-helix, and
+        // (2) no position within that run has already been assigned one of BEHGI
+        // also look for >< and mark those with an X
+
+        // Note: The DSSP assignment priority is HBEGITS, so H must ignore determination of B or E.
+        // This would appear as "H" with a bridge connection in DSSP output.
+        // I don't think it's possible. An antiparallel bridge would require connections
+        // between NH and CO of the same group or NH and CO of adjacent groups, but
+        // they would be in a helix and not oriented at all the correct direction;
+        // a parallel bridge would require connections between NH and CO for two 
+        // groups separated by a group. This is certainly impossible in an alpha helix.
+        // Still, that is what we are implementing here -- just as described -- H with
+        // the possibility of a bridge.
+        
+        int ipt = bsDone.nextSetBit(i0);
+        boolean isClear = (ipt < 0 || ipt >= i);
+        boolean addH = false;
+        if (i0 > 0 && bsStart.get(i0 - 1) && (pitch == 4 || isClear)) {
+          bsHelix.set(i0, i);
+          if (!isClear)
+            warning += "  WARNING! Bridge to helix at " + monomers[ipt];
+          addH = true;
+        } else if (isClear || bsDone.nextClearBit(ipt) < i) {
+          addH = true;
+        }
+        if (bsStop.get(i0))
+          bsX.set(i0);
+        if (addH && vHBonds != null) {
+          addHbond(vHBonds, monomers[i], monomers[i0], min[i][bpt][2], type,
+              null);
+        }
+      }
+    }
+
+    char[] taglines;
+    if (reportOnly) {
+      taglines = new char[monomerCount];
+      setTag(taglines, bsNNN, (char) ('0' + pitch)); // 345
+      setTag(taglines, bsStart, '>'); // may overwrite n
+      setTag(taglines, bsStop, '<'); // may overwrite n or ">"
+      setTag(taglines, bsX, 'X'); // may overwrite "<"
+    } else {
+      taglines = null;
+    }
+
+    // update the bit sets based on this type of helix
+
+    bsDone.or(bsHelix); // add HELIX to DONE
+    bsNNN.andNot(bsDone); // remove DONE from nnnnn
+    bsTurn.or(bsNNN); // add nnnnn to TURN
+    bsTurn.andNot(bsHelix); // remove HELIX from TURN
+
+      if (reportOnly) {
+      setTag(labels, bsHelix, (char) ('D' + pitch));
+      return String.valueOf(taglines) + warning;
+    }
   
-/* */
+    // if not calculate hbond, create the Jmol helix structures of the given subtype
+
+    if (vHBonds == null)
+      setStructure(bsHelix, subtype); // GHI;
+    return "";
+  }
+
+  /**
+   * (p. 2581):
+   * 
+   * Two nonoverlapping stretches of three residues each, i-1,i,i+1 and
+   * j-1,j,j+1, form either a parallel or antiparallel bridge, depending on
+   * which of two basic patterns (Fig. 2) is matched. We assign a bridge
+   * between residues i and j if there are two H bonds characteristic of 
+   * beta-structure; in particular:
+   * 
+   *      Parallel Bridge(i,j) =: [Hbond(i-1,j) and Hbond(j,i+1)] or
+   *                              [Hbond(j-1,i) and Hbond(i,j+1)]
+   *                          
+   *  Antiparallel Bridge(i,j) =: [Hbond(i,j) and Hbond(j,i)] or
+   *                              [Hbond(i-1,j+1) and Hbond(j-1,i+1)]
+   *                          
+   * @param bioPolymers
+   * @param min
+   * @param bsDone
+   * @param labels
+   * @param bridgesA 
+   * @param bridgesP 
+   * @param htBridges 
+   * @param vHBonds 
+   */
+  private static void getBridges(Polymer[] bioPolymers, int[][][][] min,
+                                 char[][] labels, List<Atom[]> bridgesA,
+                                 List<Atom[]> bridgesP,
+                                 Map<String, Boolean> htBridges,
+                                 BitSet[] bsDone, List<Bond> vHBonds) {
+    BitSet bsDone1 = new BitSet();
+    BitSet bsDone2 = new BitSet();
+    Atom[] atoms = bioPolymers[0].model.getModelSet().atoms;
+    Atom[] bridge = null;
+    
+    Map<String, Boolean> htTemp = new Hashtable<String, Boolean>();
+    for (int p1 = 0; p1 < min.length; p1++)
+      if (bioPolymers[p1] instanceof AlphaPolymer) {
+        AminoPolymer ap1 = ((AminoPolymer) bioPolymers[p1]);
+        int n = min[p1].length - 1;
+        for (int a = 1; a < n; a++) {
+          int ia = ap1.monomers[a].leadAtomIndex;
+          if (!bsDone2.get(ia))
+            for (int p2 = p1; p2 < min.length; p2++)
+              if (bioPolymers[p2] instanceof AlphaPolymer)
+                for (int b = (p1 == p2 ? a + 3 : 1); b < min[p2].length - 1; b++) {
+                  AlphaPolymer ap2 = (AlphaPolymer) bioPolymers[p2];
+                  int ib = ap2.monomers[b].leadAtomIndex;
+                  if (!bsDone2.get(ib)) {
+                    boolean isA;
+                    if ((bridge = isBridge(min, p1, a, p2, b, bridgesP, atoms[ia], atoms[ib],
+                        ap1, ap2, vHBonds, htTemp, false)) != null)
+                      isA = false;
+                    else if ((bridge = isBridge(min, p1, a, p2, b, bridgesA,
+                        atoms[ia], atoms[ib], ap1, ap2, vHBonds, htTemp, true)) != null)
+                      isA = true;
+                    else
+                      continue;
+                    labels[p1][a] = labels[p2][b] = 'B';
+                    if (Logger.debugging)
+                      Logger.debug("Bridge found " + (isA ? "a" : "p") + " "
+                          + bridge[0] + " " + bridge[1]);
+                    setDone(bsDone1, bsDone2, ia);
+                    setDone(bsDone1, bsDone2, ib);
+                    bsDone[p1].set(a);
+                    bsDone[p2].set(b);
+                    htBridges.put(ia + "-" + ib, (isA ? Boolean.TRUE
+                        : Boolean.FALSE));
+                  }
+
+                }
+        }
+      }
+  }
+
+  private static int[][] sheetOffsets = {
+    new int[] {0, -1, 1, 0, 1,  0, 0, -1 },
+    new int[] {0,  0, 0, 0, 1, -1, 1, -1 }
+  };
+  
+  private static Atom[] isBridge(int[][][][] min, int p1, int a, int p2, int b,
+                                 List<Atom[]> bridges, Atom atom1, Atom atom2,
+                                 AminoPolymer ap1, AlphaPolymer ap2,
+                                 List<Bond> vHBonds,
+                                 Map<String, Boolean> htTemp,
+                                 boolean isAntiparallel) {
+
+    int[] b1 = null, b2 = null;
+    int ipt = 0;
+    int[] offsets = (isAntiparallel ? sheetOffsets[1] : sheetOffsets[0]);
+    if ((b1 = isHbonded(a + offsets[0], b + offsets[1], p1, p2, min)) != null
+        && (b2 = isHbonded(b + offsets[2], a + offsets[3], p2, p1, min)) != null
+        || (b1 = isHbonded(a + offsets[ipt = 4], b + offsets[5], p1, p2, min)) != null
+        && (b2 = isHbonded(b + offsets[6], a + offsets[7], p2, p1, min)) != null) {
+      Atom[] bridge = new Atom[] { atom1, atom2 };
+      bridges.add(bridge);
+      if (vHBonds != null) {
+        int type = (isAntiparallel ? JmolEdge.BOND_H_MINUS_3
+            : JmolEdge.BOND_H_PLUS_2);
+        addHbond(vHBonds, ap1.monomers[a + offsets[ipt]], ap2.monomers[b
+            + offsets[++ipt]], b1[2], type, htTemp);
+        addHbond(vHBonds, ap2.monomers[b + offsets[++ipt]], ap1.monomers[a
+            + offsets[++ipt]], b2[2], type, htTemp);
+      }
+      return bridge;
+    }
+    return null;
+  }
+
+  private static void addHbond(List<Bond> vHBonds, Monomer donor,
+                               Monomer acceptor, int iEnergy, int type, Map<String, Boolean> htTemp) {
+    Atom nitrogen = ((AminoMonomer)donor).getNitrogenAtom();
+    Atom oxygen = ((AminoMonomer) acceptor).getCarbonylOxygenAtom();
+    if (htTemp != null) {
+      String key = nitrogen.index + " " + oxygen.index;
+      if (htTemp.containsKey(key))
+        return;
+      htTemp.put(key, Boolean.TRUE);
+    }
+    vHBonds.add(new HBond(nitrogen, oxygen, type, iEnergy / 1000f));
+  }
+
+  /**
+   * 
+   * "sheet =: a set of one or more ladders connected by shared residues" (p. 2582)
+   * 
+   * @param bioPolymers
+   * @param bridgesA
+   * @param bridgesP
+   * @param htBridges
+   * @param labels
+   * @param bsDone 
+   * @param reportOnly 
+   * @param calcHbondOnly 
+   */
+  private static void getSheetStructures(Polymer[] bioPolymers,
+                                         List<Atom[]> bridgesA,
+                                         List<Atom[]> bridgesP,
+                                         Map<String, Boolean> htBridges,
+                                         char[][] labels, BitSet[] bsDone, 
+                                         boolean reportOnly,
+                                         boolean calcHbondOnly) {
+
+    // check to be sure all bridges are part of bridgeList
+
+    if (bridgesA.size() == 0 && bridgesP.size() == 0)
+      return;
+    BitSet bsEEE = new BitSet();
+    getLadders(bridgesA, htBridges, bsEEE, true);
+    getLadders(bridgesP, htBridges, bsEEE, false);
+
+    // add Jmol structures and set sheet labels to "E"
+
+    BitSet bsSheet = new BitSet();
+
+    for (int i = bioPolymers.length; --i >= 0;) {
+      if (!(bioPolymers[i] instanceof AminoPolymer))
+        continue;
+      bsSheet.clear();
+      AminoPolymer ap = (AminoPolymer) bioPolymers[i];
+      for (int iStart = 0; iStart < ap.monomerCount; ) {
+        if (bsEEE.get(ap.monomers[iStart].leadAtomIndex)) {
+          int iEnd = iStart + 1;
+          while (iEnd < ap.monomerCount
+              && bsEEE.get(ap.monomers[iEnd].leadAtomIndex)) {
+            iEnd++;
+          }
+          bsSheet.set(iStart, iEnd);
+          iStart = iEnd;
+        } else {
+          ++iStart;
+        }
+      }
+      bsDone[i].or(bsSheet);
+      if (reportOnly)
+        ap.setTag(labels[i], bsSheet, 'E');
+      else if (!calcHbondOnly) 
+        ap.setStructure(bsSheet, JmolConstants.PROTEIN_STRUCTURE_SHEET);
+    }
+    
+  }
+
+  
+  
+  /**
+   * "ladder =: one or more consecutive bridges of identical type" (p. 2582)
+   *   
+   * "For beta structures, we define explicitly: a bulge-linked ladder consists
+   *  of two (perfect) ladder or bridges of the same type connected by at most one
+   *  extra residue on one strand and at most four extra resideus on the other
+   *  strand.... all residues in bulge-linked ladders are marked "E," including
+   *  the extra residues." (p. 2585)
+   *  
+   * @param bridgesA 
+   * @param htBridges
+   * @param bsEEE 
+   * @param isAntiparallel 
+   *  
+   */
+  private static void getLadders(List<Atom[]> bridgesA,
+                                 Map<String, Boolean> htBridges, BitSet bsEEE,
+                                 boolean isAntiparallel) {
+    int dir = (isAntiparallel ? -1 : 1);
+    for (int i = bridgesA.size(); --i >= 0;) {
+      Atom[] bridge = bridgesA.get(i);
+      if (checkBridge(bridge, htBridges, isAntiparallel, 1, dir)) {
+        bsEEE.set(bridge[0].index);
+        bsEEE.set(bridge[1].index);
+      } else {
+        checkBulge(bridge, htBridges, isAntiparallel, 1, bsEEE);
+      }
+      if (checkBridge(bridge, htBridges, isAntiparallel, -1, -dir)) {
+        bsEEE.set(bridge[0].index);
+        bsEEE.set(bridge[1].index);
+      } else {
+        checkBulge(bridge, htBridges, isAntiparallel, -1, bsEEE);
+      }
+    }
+  }
+
+  /**
+   * check to see if another bridge exists offset by n1 and n2 from the two ends of a bridge
+   * 
+   * @param bridge
+   * @param htBridges
+   * @param isAntiparallel
+   * @param n1 
+   * @param n2 
+   * @return TRUE if bridge is part of a ladder
+   */
+  private static boolean checkBridge(Atom[] bridge,
+                                     Map<String, Boolean> htBridges,
+                                     boolean isAntiparallel, int n1, int n2) {
+    return (htBridges.get(bridge[0].getOffsetResidueAtom("0", n1) + "-"
+        + bridge[1].getOffsetResidueAtom("0", n2)) == (isAntiparallel ? Boolean.TRUE
+        : Boolean.FALSE));
+  }
+
+  private static void checkBulge(Atom[] bridge, Map<String, Boolean> htBridges,
+                                 boolean isAntiparallel, int dir, BitSet bsEEE) {
+    int dir1 = (isAntiparallel ? -1 : 1);
+    for (int i = 1; i < 3; i++)
+      for (int j = 3 - i; j < 6; j++) { // skip 1/1 -- that would be a perfect ladder
+        if (checkBridge(bridge, htBridges, isAntiparallel, i * dir, j * dir1))
+          markBulgeResidues(bridge, i - 1, j - 1, dir, dir1, bsEEE);
+        if (i == 1 || j > 2) // skip 2/1 and 2/2 since we have done those already
+          if (checkBridge(bridge, htBridges, isAntiparallel, j * dir, i * dir1)) 
+            markBulgeResidues(bridge, j - 1, i - 1, dir, dir1, bsEEE);
+      }
+  }
+
+  private static void markBulgeResidues(Atom[] bridge, int ni, int nj, int dir, int dir1, BitSet bsEEE) {
+    for (int i = 1; i <= ni; i++)
+      bsEEE.set(bridge[0].getOffsetResidueAtom("0", i * dir));
+    for (int i = 1; i <= nj; i++)
+      bsEEE.set(bridge[1].getOffsetResidueAtom("0", i * dir1));
+  }
+
+  //// general utility ////
+  private static int[] isHbonded(int indexDonor, int indexAcceptor, int pDonor,
+                                 int pAcceptor, int[][][][] min) {
+    if (indexDonor < 0 || indexAcceptor < 0)
+      return null;
+    int[][][] min1 = min[pDonor];
+    int[][][] min2 = min[pAcceptor];
+    if (indexDonor >= min1.length || indexAcceptor >= min2.length)
+      return null;
+    return (min1[indexDonor][0][0] == pAcceptor
+        && min1[indexDonor][0][1] == indexAcceptor ? min1[indexDonor][0]
+        : min1[indexDonor][1][0] == pAcceptor
+            && min1[indexDonor][1][1] == indexAcceptor ? min1[indexDonor][1]
+            : null);
+  }
+
+  private static void setDone(BitSet bsDone1, BitSet bsDone2, int ia) {
+    if (bsDone1.get(ia))
+      bsDone2.set(ia);
+    else
+      bsDone1.set(ia);
+  }
+
+  private void setTag(char[] tags, BitSet bs, char ch) {
+    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
+      tags[i] = ch;
+  }
+
+  private String dumpTags(String lines) {
+    String prefix = monomers[0].getLeadAtom().getChainID() 
+    + "." + (bioPolymerIndexInModel + 1);
+    lines = TextFormat.simpleReplace(lines, "$", prefix);
+    int iFirst = monomers[0].getLeadAtom().getResno();
+    String pre = "\n" + prefix;
+    StringBuffer sb = new StringBuffer(pre + ".8: ");
+    StringBuffer sb1 = new StringBuffer(pre + ".7: ");
+    StringBuffer sb2 = new StringBuffer(pre + ".6: ");
+    StringBuffer sb3 = new StringBuffer(pre + ".0: ");
+    int i = iFirst;
+    for (int ii = 0; ii < monomerCount; ii++) {
+      i = monomers[ii].getResno();
+      sb.append(i % 100 == 0 ? "" + ((i / 100) % 100) : " ");
+      sb1.append(i % 10 == 0 ? "" + ((i / 10) % 10) : " ");
+      sb2.append(i % 10);
+      sb3.append(monomers[ii].getGroup1());
+    }
+    sb.append(sb1).append(sb2).append("\n");
+    sb.append(lines);
+    sb.append(sb3);
+    sb.append("\n\n");
+    return sb.toString().replace('\0', '.');
+  }
   
 }

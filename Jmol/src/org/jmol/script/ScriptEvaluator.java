@@ -11007,12 +11007,13 @@ public class ScriptEvaluator {
           return;
         }
         BitSet bs1 = null;
-        asDSSP = (tokAt(++iToken) == Token.dssp);
+        // calculate hbonds STRUCTURE -- only the structurally-defining H bonds
+        asDSSP = (tokAt(++iToken) == Token.structure);
         if (asDSSP)
           bs1 = viewer.getSelectionSet(false);
         else
           bs1 = atomExpression(iToken);
-        if (!asDSSP && !(asDSSP = (tokAt(++iToken) == Token.dssp)))
+        if (!asDSSP && !(asDSSP = (tokAt(++iToken) == Token.structure)))
           bs2 = atomExpression(iToken);
         if (!isSyntaxCheck) {
           n = viewer.autoHbond(bs1, bs2);

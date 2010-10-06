@@ -333,6 +333,7 @@ public class ShapeManager {
           && (cmd = shape.getShapeState()) != null && cmd.length() > 1)
         commands.append(cmd);
     }
+    commands.append("  select *;\n");
   }
 
   public void resetBioshapes(BitSet bsAllAtoms) {

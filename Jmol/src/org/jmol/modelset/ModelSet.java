@@ -325,12 +325,12 @@ abstract public class ModelSet extends ModelCollection {
     BitSet bsDefined = BitSetUtil.copyInvert(modelsOf(bsAtoms, bsAllAtoms),
         modelCount);
     if (reportOnly)
-      return calculateStructuresAllExcept(bsDefined, false, asDSSP, true, dsspIgnoreHydrogen);
+      return calculateStructuresAllExcept(bsDefined, asDSSP, true, dsspIgnoreHydrogen);
     for (int i = 0; i < modelCount; i++)
       if (!bsDefined.get(i))
         addBioPolymerToModel(null, models[i]);
     calculatePolymers(0, bsDefined);
-    String ret = calculateStructuresAllExcept(bsDefined, false, asDSSP, false, dsspIgnoreHydrogen);
+    String ret = calculateStructuresAllExcept(bsDefined, asDSSP, false, dsspIgnoreHydrogen);
     viewer.resetBioshapes(bsAllAtoms);
     setStructureIds();
     return ret;
@@ -516,7 +516,7 @@ abstract public class ModelSet extends ModelCollection {
     String cmd;
     for (int i = 0; i < len; i++) {
       StateScript ss = stateScripts.get(i); 
-      if (!ss.postDefinitions && (cmd = ss.toString()).length() > 0) {
+      if (ss.inDefinedStateBlock && (cmd = ss.toString()).length() > 0) {
         commands.append("  ").append(cmd).append("\n");
         haveDefs = true;
       }
@@ -535,7 +535,7 @@ abstract public class ModelSet extends ModelCollection {
     return cmd + commands.toString();
   }
   
-  public String getState(StringBuffer sfunc, boolean isAll) {
+  public String getState(StringBuffer sfunc, boolean isAll, boolean withProteinStructure) {
     StringBuffer commands = new StringBuffer();
     if (isAll && sfunc != null) {
       sfunc.append("  _setModelState;\n");
@@ -550,7 +550,7 @@ abstract public class ModelSet extends ModelCollection {
       int len = stateScripts.size();
       for (int i = 0; i < len; i++) {
         StateScript ss = stateScripts.get(i);
-        if (ss.postDefinitions && (cmd = ss.toString()).length() > 0) {
+        if (!ss.inDefinedStateBlock && (cmd = ss.toString()).length() > 0) {
           commands.append("  ").append(cmd).append("\n");
         }
       }
@@ -594,8 +594,8 @@ abstract public class ModelSet extends ModelCollection {
 
     // unnecessary. Removed in 11.5.35 -- oops!
 
-    if (viewer.getBooleanProperty("saveProteinStructureState"))
-      commands.append(getProteinStructureState(null, true, false, false));
+    if (withProteinStructure)
+      commands.append(getProteinStructureState(null, isAll, false, false));
 
     viewer.getShapeState(commands, isAll);
 

@@ -3218,7 +3218,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           null));
     // connections, atoms, bonds, labels, echos, shapes
     if (isAll || type.equalsIgnoreCase("modelState"))
-      s.append(modelSet.getState(sfunc, true));
+      s.append(modelSet.getState(sfunc, true, getBooleanProperty("saveProteinStructureState")));
     // color scheme
     if (isAll || type.equalsIgnoreCase("colorState"))
       s.append(colorManager.getState(sfunc));
@@ -3249,7 +3249,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getStructureState() {
-    return modelSet.getState(null, false);
+    return modelSet.getState(null, false, true);
   }
 
   public String getProteinStructureState() {

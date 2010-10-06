@@ -230,8 +230,6 @@ abstract public class ModelCollection extends BondCollection {
 
   protected Group[] groups;
   protected int groupCount;
-  private int structureCount = 0;
-  private Structure[] structures = new Structure[10];
   protected boolean haveBioClasses = true;
   protected JmolBioResolver jbr = null;
   
@@ -523,7 +521,6 @@ abstract public class ModelCollection extends BondCollection {
    * What I fear is that in deleting models we must delete these connections,
    * and in deleting atoms, the bitsets may not be retrieved properly. 
    * 
-   * First, ZAP. We should be able to check these to see if the selected model
    * 
    */
   private int thisStateModel = 0;
@@ -556,17 +553,17 @@ abstract public class ModelCollection extends BondCollection {
     private BitSet bsAtoms2;
     private String script1;
     private String script2;
-    boolean postDefinitions;
+    boolean inDefinedStateBlock;
     
     StateScript(int modelIndex, String script1, BitSet bsBonds, BitSet bsAtoms1,
-        BitSet bsAtoms2, String script2, boolean postDefinitions) {
+        BitSet bsAtoms2, String script2, boolean inDefinedStateBlock) {
       this.modelIndex = modelIndex;
       this.script1 = script1;
       this.bsBonds = BitSetUtil.copy(bsBonds);
       this.bsAtoms1 = BitSetUtil.copy(bsAtoms1);
       this.bsAtoms2 = BitSetUtil.copy(bsAtoms2);
       this.script2 = script2;
-      this.postDefinitions = postDefinitions;
+      this.inDefinedStateBlock = inDefinedStateBlock;
     }
     
     public boolean isValid() {
@@ -618,22 +615,6 @@ abstract public class ModelCollection extends BondCollection {
     }
   }
   
-  protected void defineStructure(int modelIndex, String structureType, 
-                                 String structureID, int serialID, int strandCount, 
-                                 char startChainID,
-                       int startSequenceNumber, char startInsertionCode,
-                       char endChainID, int endSequenceNumber,
-                       char endInsertionCode) {
-    if (structureCount == structures.length)
-      structures = (Structure[]) ArrayUtil.setLength(structures,
-          structureCount + 10);
-    structures[structureCount++] = new Structure(modelIndex, structureType,
-        structureID, serialID, 
-        strandCount, startChainID,
-        Group.getSeqcode(startSequenceNumber, startInsertionCode), endChainID,
-        Group.getSeqcode(endSequenceNumber, endInsertionCode));
-  }
-
   /**
    * allows rebuilding of PDB structures;
    * also accessed by ModelManager from Eval
@@ -647,7 +628,6 @@ abstract public class ModelCollection extends BondCollection {
    *  
    */
   protected String calculateStructuresAllExcept(BitSet alreadyDefined,
-                                                boolean addFileData,
                                                 boolean asDSSP,
                                                 boolean reportOnly, 
                                                 boolean dsspIgnoreHydrogen) {
@@ -656,11 +636,8 @@ abstract public class ModelCollection extends BondCollection {
     for (int i = modelCount; --i >= 0;)
       if (models[i].isPDB && !alreadyDefined.get(i))
         ret += models[i].calculateStructures(asDSSP, reportOnly, dsspIgnoreHydrogen);
-    if (!reportOnly) {
+    if (!reportOnly)
       setStructureIds();
-      if (addFileData)
-        propagateSecondaryStructure();
-    }
     return ret;
   }
 
@@ -963,20 +940,6 @@ abstract public class ModelCollection extends BondCollection {
     return models[modelIndex].nAltLocs;
   }
 
-  private void propagateSecondaryStructure() {
-    // issue arises with multiple file loading and multi-_data  mmCIF files
-    // that structural information may be model-specific
-    // but for PDB files it is not. So we don't assign -1 for 
-    // structure modelIndex anymore in PDB files.
-    for (int i = structureCount; --i >= 0;) {
-      Structure structure = structures[i];
-      models[structure.modelIndex].addSecondaryStructure(structure.type,
-          structure.structureID, structure.serialID, structure.strandCount,
-          structure.startChainID, structure.startSeqcode, structure.endChainID,
-          structure.endSeqcode);
-    }
-  }
-
   public int getChainCount(boolean addWater) {
     int chainCount = 0;
     for (int i = modelCount; --i >= 0;)
@@ -1129,62 +1092,6 @@ abstract public class ModelCollection extends BondCollection {
     }
     return qs;
   }
-
-  private static class Structure {
-    //String typeName;
-    byte type;
-    char startChainID;
-    int startSeqcode;
-    char endChainID;
-    int endSeqcode;
-    int modelIndex;
-    String structureID;
-    int serialID;
-    int strandCount;
-
-    Structure(int modelIndex, String typeName, 
-        String structureID, int serialID, int strandCount, 
-        char startChainID,
-        int startSeqcode, char endChainID, int endSeqcode) {
-      this.modelIndex = modelIndex;
-      //this.typeName = typeName;
-      this.structureID = structureID;
-      this.strandCount = strandCount; 
-      this.serialID = serialID;
-      this.startChainID = startChainID;
-      this.startSeqcode = startSeqcode;
-      this.endChainID = endChainID;
-      this.endSeqcode = endSeqcode;
-      if ("helix".equals(typeName))
-        type = JmolConstants.PROTEIN_STRUCTURE_HELIX;
-      else if ("sheet".equals(typeName))
-        type = JmolConstants.PROTEIN_STRUCTURE_SHEET;
-      else if ("turn".equals(typeName))
-        type = JmolConstants.PROTEIN_STRUCTURE_TURN;
-      else
-        type = JmolConstants.PROTEIN_STRUCTURE_NONE;
-    }
-
-    /*    Hashtable toHashtable() {
-     Map info = new Hashtable();
-     info.put("type", typeName);
-     info.put("startChainID", startChainID + "");
-     info.put("startSeqcode", new Integer(startSeqcode));
-     info.put("endChainID", endChainID + "");
-     info.put("endSeqcode", new Integer(endSeqcode));
-     return info;
-     }
-     */
-  }
-
-  /*
-   * Vector getStructureInfo() { Vector info = new Vector(); for (int i = 0; i <
-   * structureCount; i++) info.addElement(structures[i].toHashtable()); return
-   * info; }
-   */
-  /*
-   * ONLY from one model
-   */
 
   public String getPdbAtomData(BitSet bs, OutputStringBuffer sb) {
     if (atomCount == 0)
@@ -2834,7 +2741,6 @@ abstract public class ModelCollection extends BondCollection {
       }
     }
   }
-  
 
   public String getProteinStructureState(BitSet bsAtoms, boolean taintedOnly,
                                          boolean needPhiPsi, boolean pdbFormat) {
@@ -2883,18 +2789,19 @@ abstract public class ModelCollection extends BondCollection {
               n++;
               if (bsAtoms == null) {
                 int iModel = atoms[iLastAtom].modelIndex;
-                String smodel = "    \t# model=" + getModelNumberDotted(iModel);
+                String comment = "    \t# model="
+                    + getModelNumberDotted(iModel);
                 if (iLastModel != iModel) {
                   iLastModel = iModel;
-                  cmd.append("  structure none ").append(
-                      Escape.escape(getModelAtomBitSetIncludingDeleted(iModel,
-                          false))).append(smodel).append(";\n");
+                    cmd.append("  structure none ").append(
+                        Escape.escape(getModelAtomBitSetIncludingDeleted(
+                            iModel, false))).append(comment).append(";\n");
                 }
-                cmd.append("  structure ").append(
-                    JmolConstants.getProteinStructureName(isubtype, false))
-                    .append(" ").append(Escape.escape(bs)).append(smodel)
-                    .append(" & (").append(res1).append(" - ").append(res2)
-                    .append(");\n");
+                comment += " & (" + res1 + " - " + res2 + ")";
+                String stype = JmolConstants.getProteinStructureName(isubtype,
+                    false);
+                  cmd.append("  structure ").append(stype).append(" ").append(
+                      Escape.escape(bs)).append(comment).append(";\n");
               } else {
                 String str;
                 int nx;
@@ -3134,13 +3041,14 @@ abstract public class ModelCollection extends BondCollection {
     case Token.basepair:
       return getBasePairInfo(bs);
     default:
-       return super.getChimeInfo(tok, bs);
+      return super.getChimeInfo(tok, bs);
     }
     int n = 0;
     StringBuffer sb = new StringBuffer();
     int nHetero = 0;
     if (models[0].isPDB) {
-      sb.append("\nMolecule name ....... "
+      sb
+          .append("\nMolecule name ....... "
               + getModelSetAuxiliaryInfo("COMPND"));
       sb.append("\nSecondary Structure . PDB Data Records");
       sb.append("\nBrookhaven Code ..... " + modelSetName);
@@ -3169,9 +3077,14 @@ abstract public class ModelCollection extends BondCollection {
       int nH = 0;
       int nS = 0;
       int nT = 0;
-      if (structures != null)
-        for (int i = structureCount; --i >= 0;)
-          switch (structures[i].type) {
+      int id;
+      int lastid = -1;
+      for (int i = 0; i < atomCount; i++) {
+        if (atoms[i].modelIndex != 0)
+          break;
+        if ((id = atoms[i].getStrucNo()) != lastid && id != 0) {
+          lastid = id;
+          switch (atoms[i].getProteinStructureType()) {
           case JmolConstants.PROTEIN_STRUCTURE_HELIX:
             nH++;
             break;
@@ -3182,6 +3095,8 @@ abstract public class ModelCollection extends BondCollection {
             nT++;
             break;
           }
+        }
+      }
       sb.append("\nNumber of Helices ... " + nH);
       sb.append("\nNumber of Strands ... " + nS);
       sb.append("\nNumber of Turns ..... " + nT);
@@ -3623,18 +3538,6 @@ abstract public class ModelCollection extends BondCollection {
     frameTitles = (String[]) ArrayUtil.deleteElements(frameTitles, modelIndex,
         1);
     thisStateModel = -1;
-    int nDeleted = 0;
-    for (int i = structureCount; --i >= 0;) {
-      if (structures[i].modelIndex > modelIndex) {
-        structures[i].modelIndex--;
-      } else if (structures[i].modelIndex == modelIndex) {
-        structures = (Structure[]) ArrayUtil.deleteElements(structures, i, 1);
-        nDeleted++;
-      } else {
-        break;
-      }
-    }
-    structureCount -= nDeleted;
     String[] group3Lists = (String[]) getModelSetAuxiliaryInfo("group3Lists");
     int[][] group3Counts = (int[][]) getModelSetAuxiliaryInfo("group3Counts");
     int ptm = modelIndex + 1;

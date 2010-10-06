@@ -247,11 +247,9 @@ public final class ModelLoader extends ModelSet {
       iterateOverAllNewModels(adapter, atomSetCollection);
       iterateOverAllNewAtoms(adapter, atomSetCollection);
       iterateOverAllNewBonds(adapter, atomSetCollection);
-      iterateOverAllNewStructures(adapter, atomSetCollection);
       if (adapter != null) {
         Map<String, Object> info = (merging && !appendNew ? 
             adapter.getAtomSetAuxiliaryInfo(atomSetCollection, 0) : null);      
-        adapter.finish(atomSetCollection);
         if (info != null) {
           setModelAuxiliaryInfo(baseModelIndex, "initialAtomCount", info
               .get("initialAtomCount"));
@@ -267,7 +265,12 @@ public final class ModelLoader extends ModelSet {
 
     finalizeGroupBuild(); // set group offsets and build monomers
 
-    calculatePolymers(baseGroupIndex, null);
+    if (adapter != null) {
+      calculatePolymers(baseGroupIndex, null);
+      iterateOverAllNewStructures(adapter, atomSetCollection);
+      adapter.finish(atomSetCollection);
+    }
+
     // only now can we access all of the atom's properties
 
     RadiusData rd = viewer.getDefaultRadiusData();
@@ -836,34 +839,37 @@ public final class ModelLoader extends ModelSet {
   }
   
   private BitSet structuresDefinedInFile = new BitSet();
-  @Override
-  protected void defineStructure(int modelIndex, String structureType,
-                                 String structureID, int serialID, int strandCount, 
-                                 char startChainID, int startSequenceNumber,
-                                 char startInsertionCode, char endChainID,
-                                 int endSequenceNumber, char endInsertionCode) {
+
+  private void defineStructure(int modelIndex, String structureType,
+                               String structureID, int serialID,
+                               int strandCount, char startChainID,
+                               int startSequenceNumber,
+                               char startInsertionCode, char endChainID,
+                               int endSequenceNumber, char endInsertionCode) {
+    byte type = JmolConstants.getProteinStructureType(structureType);
+    if (type < 0)
+      type = JmolConstants.PROTEIN_STRUCTURE_NONE;
+    int startSeqCode = Group.getSeqcode(startSequenceNumber,
+        startInsertionCode);
+    int endSeqCode = Group.getSeqcode(endSequenceNumber, endInsertionCode);
     if (modelIndex >= 0 || isTrajectory) { //from PDB file
       if (isTrajectory)
         modelIndex = 0;
       modelIndex += baseModelIndex;
       structuresDefinedInFile.set(modelIndex);
-      super.defineStructure(modelIndex, structureType, 
-          structureID, serialID, 
-          strandCount, startChainID,
-          startSequenceNumber, startInsertionCode, endChainID,
-          endSequenceNumber, endInsertionCode);
+      models[modelIndex].addSecondaryStructure(type,
+          structureID, serialID, strandCount,
+          startChainID, startSeqCode, endChainID, endSeqCode);
       return;
     }
     for (int i = baseModelIndex; i < modelCount; i++) {
       structuresDefinedInFile.set(i);
-      super.defineStructure(i, structureType, 
-          structureID, serialID, 
-          strandCount, startChainID,
-          startSequenceNumber, startInsertionCode, endChainID,
-          endSequenceNumber, endInsertionCode);
+      models[i].addSecondaryStructure(type,
+          structureID, serialID, strandCount,
+          startChainID, startSeqCode, endChainID, endSeqCode);
     }
   }
-
+  
   ////// symmetry ///////
   
   private void initializeUnitCellAndSymmetry() {
@@ -1121,15 +1127,15 @@ public final class ModelLoader extends ModelSet {
     
     findElementsPresent();
 
-    // finalize all group business
-    if (isPDB)
-      calculateStructuresAllExcept(structuresDefinedInFile, true, false, false, false);
-
     molecules = null;
     moleculeCount = 0;
     currentModel = null;
-    currentChain = null;    
-    setStructureIds();
+    currentChain = null;
+
+    // finalize all structures
+
+    if (isPDB)
+      calculateStructuresAllExcept(structuresDefinedInFile, false, false, false);
 
   }
 

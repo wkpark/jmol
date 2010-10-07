@@ -1234,7 +1234,6 @@ public class AminoPolymer extends AlphaPolymer {
       }
       lastResno = monomers[i].getResno();
     }    
-    sb.append("\n");
     return sb.toString();
   }
 

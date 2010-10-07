@@ -1222,17 +1222,25 @@ public class AminoPolymer extends AlphaPolymer {
     String prefix = monomers[0].getLeadAtom().getChainID() + ":";
     StringBuffer sb = new StringBuffer();
     char lastChar = '\0';
+    char insCode1 = '\0';
+    char insCode2 = '\0';
     int firstResno = -1, lastResno = -1;
     for (int i = 0; i <= monomerCount; i++) {
       if (i == monomerCount || labels[i] != lastChar) {
         if (lastChar != '\0')
-          sb.append('\n').append(lastChar).append(" : ").append(prefix).append(firstResno).append("_").append(prefix).append(lastResno); 
+          sb.append('\n').append(lastChar).append(" : ").append(prefix).append(firstResno)
+          .append(insCode1 == '\0' ? "" : String.valueOf(insCode1))
+              .append("_").append(prefix).append(lastResno)
+              .append(insCode2 == '\0' ? "" : String.valueOf(insCode2)); 
         if (i == monomerCount)
           break;
         lastChar = labels[i];
         firstResno = monomers[i].getResno();
+        insCode1 = monomers[i].getInsertionCode();
+        
       }
       lastResno = monomers[i].getResno();
+      insCode2 = monomers[i].getInsertionCode();
     }    
     return sb.toString();
   }

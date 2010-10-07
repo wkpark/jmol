@@ -958,8 +958,10 @@ public class AminoPolymer extends AlphaPolymer {
                                  List<Atom[]> bridgesP,
                                  Map<String, Boolean> htBridges,
                                  BitSet[] bsDone, List<Bond> vHBonds) {
-    BitSet bsDone1 = new BitSet();
-    BitSet bsDone2 = new BitSet();
+    // ooooooh! It IS possible to have 3 bridges to the same residue. (3A5F) 
+    // 
+    //BitSet bsDone1 = new BitSet();
+    //BitSet bsDone2 = new BitSet();
     Atom[] atoms = bioPolymers[0].model.getModelSet().atoms;
     Atom[] bridge = null;
     
@@ -970,13 +972,13 @@ public class AminoPolymer extends AlphaPolymer {
         int n = min[p1].length - 1;
         for (int a = 1; a < n; a++) {
           int ia = ap1.monomers[a].leadAtomIndex;
-          if (!bsDone2.get(ia))
+          //if (!bsDone2.get(ia))
             for (int p2 = p1; p2 < min.length; p2++)
               if (bioPolymers[p2] instanceof AminoPolymer)
                 for (int b = (p1 == p2 ? a + 3 : 1); b < min[p2].length - 1; b++) {
                   AminoPolymer ap2 = (AminoPolymer) bioPolymers[p2];
                   int ib = ap2.monomers[b].leadAtomIndex;
-                  if (!bsDone2.get(ib)) {
+                  //if (!bsDone2.get(ib)) {
                     boolean isA;
                     if ((bridge = isBridge(min, p1, a, p2, b, bridgesP, atoms[ia], atoms[ib],
                         ap1, ap2, vHBonds, htTemp, false)) != null)
@@ -990,13 +992,13 @@ public class AminoPolymer extends AlphaPolymer {
                     if (Logger.debugging)
                       Logger.debug("Bridge found " + (isA ? "a" : "p") + " "
                           + bridge[0] + " " + bridge[1]);
-                    setDone(bsDone1, bsDone2, ia);
-                    setDone(bsDone1, bsDone2, ib);
+                    //setDone(bsDone1, bsDone2, ia);
+                    //setDone(bsDone1, bsDone2, ib);
                     bsDone[p1].set(a);
                     bsDone[p2].set(b);
                     htBridges.put(ia + "-" + ib, (isA ? Boolean.TRUE
                         : Boolean.FALSE));
-                  }
+                  //}
 
                 }
         }
@@ -1203,14 +1205,14 @@ public class AminoPolymer extends AlphaPolymer {
             && min1[indexDonor][1][1] == indexAcceptor ? min1[indexDonor][1]
             : null);
   }
-
+/*
   private static void setDone(BitSet bsDone1, BitSet bsDone2, int ia) {
     if (bsDone1.get(ia))
       bsDone2.set(ia);
     else
       bsDone1.set(ia);
   }
-
+*/
   private void setTag(char[] tags, BitSet bs, char ch) {
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
       tags[i] = ch;

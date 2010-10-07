@@ -606,18 +606,28 @@ public class AminoPolymer extends AlphaPolymer {
 
     Model m = bioPolymers[0].model;
     StringBuffer sb = new StringBuffer();
-    sb.append("Jmol DSSP analysis for model ")
-          .append(m.getModelNumberDotted()).append(" - ").append(m.getModelTitle())
-          .append("\nW. Kabsch and C. Sander, Biopolymers, vol 22, 1983, pp 2577-2637\n");
+    sb
+        .append("Jmol DSSP analysis for model ")
+        .append(m.getModelNumberDotted())
+        .append(" - ")
+        .append(m.getModelTitle())
+        .append(
+            "\nW. Kabsch and C. Sander, Biopolymers, vol 22, 1983, pp 2577-2637\n");
     if (m.modelIndex == 0)
-        sb.append("\nWe thank Wolfgang Kabsch and Chris Sander for writing the DSSP software,\n") 
-        .append("and we thank the CMBI for maintaining it to the extent that it was easy to\n")
-        .append("re-engineer for our purposes. At this point in time, we make no guarantee\n")
-        .append("that this code gives precisely the same analysis as the code available via license\n")
-        .append("from CMBI at http://swift.cmbi.ru.nl/gv/dssp\n"); 
+      sb
+          .append(
+              "\nWe thank Wolfgang Kabsch and Chris Sander for writing the DSSP software,\n")
+          .append(
+              "and we thank the CMBI for maintaining it to the extent that it was easy to\n")
+          .append(
+              "re-engineer for our purposes. At this point in time, we make no guarantee\n")
+          .append(
+              "that this code gives precisely the same analysis as the code available via license\n")
+          .append("from CMBI at http://swift.cmbi.ru.nl/gv/dssp\n");
 
     if (!reportOnly)
-      sb.append("Use  show DSSP  for details. All bioshapes have been deleted and must be regenerated.\n");
+      sb
+          .append("Use  show DSSP  for details. All bioshapes have been deleted and must be regenerated.\n");
 
     // for each AminoPolymer, we need:
     // (1) a label reading "...EEE....HHHH...GGG...BTTTB...IIIII..."
@@ -689,12 +699,15 @@ public class AminoPolymer extends AlphaPolymer {
     // Done!
 
     if (reportOnly) {
+      StringBuffer sbSummary = new StringBuffer();
       sb.append("\n------------------------------\n");
       for (int i = 0; i < bioPolymerCount; i++)
         if (labels[i] != null) {
-          sb.append(((AminoPolymer) bioPolymers[i]).dumpTags("$.1: "
-              + String.valueOf(labels[i])));
+          AminoPolymer ap = (AminoPolymer) bioPolymers[i];
+          sbSummary.append(ap.dumpSummary(labels[i]));
+          sb.append(ap.dumpTags("$.1: " + String.valueOf(labels[i])));
         }
+      sb.append("\n").append("SUMMARY:" + sbSummary);
     }
 
     return sb.toString();
@@ -1201,11 +1214,30 @@ public class AminoPolymer extends AlphaPolymer {
       tags[i] = ch;
   }
 
+  private String dumpSummary(char[] labels) {
+    String prefix = monomers[0].getLeadAtom().getChainID() + ":";
+    StringBuffer sb = new StringBuffer();
+    char lastChar = '\0';
+    int firstResno = -1, lastResno = -1;
+    for (int i = 0; i <= monomerCount; i++) {
+      if (i == monomerCount || labels[i] != lastChar) {
+        if (lastChar != '\0')
+          sb.append('\n').append(lastChar).append(" : ").append(prefix).append(firstResno).append("_").append(prefix).append(lastResno); 
+        if (i == monomerCount)
+          break;
+        lastChar = labels[i];
+        firstResno = monomers[i].getResno();
+      }
+      lastResno = monomers[i].getResno();
+    }    
+    return sb.toString();
+  }
+
   private String dumpTags(String lines) {
     String prefix = monomers[0].getLeadAtom().getChainID() 
     + "." + (bioPolymerIndexInModel + 1);
     lines = TextFormat.simpleReplace(lines, "$", prefix);
-    int iFirst = monomers[0].getLeadAtom().getResno();
+    int iFirst = monomers[0].getResno();
     String pre = "\n" + prefix;
     StringBuffer sb = new StringBuffer(pre + ".8: ");
     StringBuffer sb1 = new StringBuffer(pre + ".7: ");

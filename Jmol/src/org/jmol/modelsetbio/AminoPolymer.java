@@ -566,7 +566,23 @@ public class AminoPolymer extends AlphaPolymer {
   //
   //   Thus, at least for now, we make no guarantee that this code will result 
   //   in an EXACT MATCH to the Pascal/C++ code provided by CMBI at 
-  //   <http://swift.cmbi.ru.nl/gv/dssp>.
+  //   <http://swift.cmbi.ru.nl/gv/dssp>, and we fully expect that there are 
+  //   special cases where, particularly, the CMBI code senses a chain break 
+  //   even though Jmol does not, or vice-versa, resulting in different analyses.
+  //
+  //   In addition, this code allows for the use of file-based backbone amide hydrogen
+  //   positions (via SET dsspCalculateHydrogenAlways FALSE), which the CMBI code does 
+  //   not. Certainly for some models (1def, for example) that produces a different 
+  //   result, because it changes the values of calculated hydrogen bond energies.
+  //
+  //   One final implementation note: It is curious that the DSSP algorithm orders the
+  //   SUMMARY line -- our final assignments -- as: H B E G I T S. (We do not implement
+  //   S here, because we haven't seen any discussion of its use, and we don't visualize
+  //   it.) The curious thing is that this TECHNICALLY allows for calculated bridges being
+  //   assignable to H groups. As noted below, I don't think this is physically possible,
+  //   but it seems to me there must be SOME reason to do this rather than the more 
+  //   obvious order: B E H G I T S. So there's a bit of a mystery there. My implementation
+  //   adds a warning at the end of the helix-4 line if such a bridge should ever appear. 
   // 
   ////////////////////// DSSP /////////////////////
 
@@ -601,7 +617,7 @@ public class AminoPolymer extends AlphaPolymer {
         .append("from CMBI at http://swift.cmbi.ru.nl/gv/dssp\n"); 
 
     if (!reportOnly)
-      sb.append("Use  show DSSP  for details.\n");
+      sb.append("Use  show DSSP  for details. All bioshapes have been deleted and must be regenerated.\n");
 
     // for each AminoPolymer, we need:
     // (1) a label reading "...EEE....HHHH...GGG...BTTTB...IIIII..."

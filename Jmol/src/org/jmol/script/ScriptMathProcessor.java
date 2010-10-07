@@ -2852,7 +2852,11 @@ class ScriptMathProcessor {
         s = (String) x1.value;
         if (n == 0)
           return addX(TextFormat.trim(s, "\n\t "));
-        else if (n > 0)
+        if (n == 9999)
+          return addX(s.toUpperCase());
+        if (n == -9999)
+          return addX(s.toLowerCase());
+        if (n > 0)
           return addX(TextFormat.format(s, n, n, false, false));
         return addX(TextFormat.format(s, -n, n, true, false));
       case Token.list:

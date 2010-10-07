@@ -1172,14 +1172,16 @@ public class AminoPolymer extends AlphaPolymer {
     for (int i = 1; i < 3; i++)
       for (int j = 3 - i; j < 6; j++) { // skip 1/1 -- that would be a perfect ladder
         if (checkBridge(bridge, htBridges, isAntiparallel, i * dir, j * dir1))
-          markBulgeResidues(bridge, i - 1, j - 1, dir, dir1, bsEEE);
+          markBulgeResidues(bridge, i, j, dir, dir1, bsEEE);
         if (i == 1 || j > 2) // skip 2/1 and 2/2 since we have done those already
           if (checkBridge(bridge, htBridges, isAntiparallel, j * dir, i * dir1)) 
-            markBulgeResidues(bridge, j - 1, i - 1, dir, dir1, bsEEE);
+            markBulgeResidues(bridge, j, i, dir, dir1, bsEEE);
       }
   }
 
   private static void markBulgeResidues(Atom[] bridge, int ni, int nj, int dir, int dir1, BitSet bsEEE) {
+    bsEEE.set(bridge[0].index); // in case it is just a B 
+    bsEEE.set(bridge[1].index);
     for (int i = 1; i <= ni; i++)
       bsEEE.set(bridge[0].getOffsetResidueAtom("0", i * dir));
     for (int i = 1; i <= nj; i++)

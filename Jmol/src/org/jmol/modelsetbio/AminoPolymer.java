@@ -518,7 +518,56 @@ public class AminoPolymer extends AlphaPolymer {
   ////////////////////// DSSP /////////////////////
   //
   //    W. Kabsch and C. Sander, Biopolymers, vol 22, 1983, pp 2577-2637
+  // 
   //
+  //   ------------------license permission-----------------
+  //
+  //   ---------- Forwarded message ----------
+  //   From: Gert Vriend <vriend@cmbi.ru.nl>
+  //   Date: Wed, Oct 6, 2010 at 12:28 PM
+  //   Subject: Re: DSSP license
+  //   To: Robert Hanson <hansonr@stolaf.edu>
+  // 
+  //   Dear Robert Hanson,
+  // 
+  //   Feel free to freely distribute your DSSP-like code with JMOL, using any 
+  //   license form you want (but preferably one that avoids people from 'stealing' 
+  //   the code for activities that go against the spirit of free software exchanges).
+  // 
+  //   Please put somewhere (doesn't need to be a prominent place, but should be 
+  //   clickable/visible one way or another):
+  //   "We thank Wolfgang Kabsch and Chris Sander for writing the DSSP software, 
+  //   and we thank the CMBI for maintaining it to the extent that it was easy to 
+  //   re-engineer for our purposes." 
+  // 
+  //   Greetings
+  //   Gert
+  //
+  //
+  //   ------------------end of license permission-----------------
+  //
+  //   Added note by Bob Hanson 10/7/2010:
+  //   
+  //   Although the DSSP code from CMBI was inspected in order to confirm 
+  //   conformance with that exact implementation of the algorithm described in
+  //   the Kabsch and Sander paper, none of that code was extracted. That is to 
+  //   say, this is an entirely different implementation.
+  //
+  //   This implementation of the DSSP algorithm is based solely upon the published 
+  //   description of that algorithm -- as evidenced by the quoted statements
+  //   in the Java doc and comments accompanying each method -- and has essentially
+  //   no relationship to the Pascal/C++ code, other than that it produces a 
+  //   similar result. 
+  // 
+  //   My approach to identifying chain breaks (use of the BioPolymer class), 
+  //   cataloging bridges (using hash tables), and generating the SUMMARY line (using 
+  //   bit sets), is an entirely different approach than that used by the original 
+  //   authors of the DSSP code.
+  //
+  //   Thus, at least for now, we make no guarantee that this code will result 
+  //   in an EXACT MATCH to the Pascal/C++ code provided by CMBI at 
+  //   <http://swift.cmbi.ru.nl/gv/dssp>.
+  // 
   ////////////////////// DSSP /////////////////////
 
   /**
@@ -528,7 +577,7 @@ public class AminoPolymer extends AlphaPolymer {
    * @param reportOnly
    * @param vHBonds 
    * @param dsspIgnoreHydrogens 
-   * @return                 report       
+   * @return                 helix-5, helix-4, helix-3, and SUMMARY lines        
    */
 
   protected static String calculateStructuresDssp(Polymer[] bioPolymers,
@@ -541,10 +590,16 @@ public class AminoPolymer extends AlphaPolymer {
 
     Model m = bioPolymers[0].model;
     StringBuffer sb = new StringBuffer();
-    sb
-        .append("Jmol DSSP analysis for model ")
-        .append(m.getModelNumberDotted()).append(" - ").append(m.getModelTitle())
-        .append("\nW. Kabsch and C. Sander, Biopolymers, vol 22, 1983, pp 2577-2637\n");
+    sb.append("Jmol DSSP analysis for model ")
+          .append(m.getModelNumberDotted()).append(" - ").append(m.getModelTitle())
+          .append("\nW. Kabsch and C. Sander, Biopolymers, vol 22, 1983, pp 2577-2637\n");
+    if (m.modelIndex == 0)
+        sb.append("\nWe thank Wolfgang Kabsch and Chris Sander for writing the DSSP software,\n") 
+        .append("and we thank the CMBI for maintaining it to the extent that it was easy to\n")
+        .append("re-engineer for our purposes. At this point in time, we make no guarantee\n")
+        .append("that this code gives precisely the same analysis as the code available via license\n")
+        .append("from CMBI at http://swift.cmbi.ru.nl/gv/dssp\n"); 
+
     if (!reportOnly)
       sb.append("Use  show DSSP  for details.\n");
 
@@ -554,7 +609,6 @@ public class AminoPolymer extends AlphaPolymer {
 
     char[][] labels = new char[bioPolymerCount][];
     BitSet[] bsDone = new BitSet[bioPolymerCount];
-
     boolean haveWarned = false;
 
     for (int i = 0; i < bioPolymerCount; i++) {
@@ -567,13 +621,13 @@ public class AminoPolymer extends AlphaPolymer {
           sb
               .append(GT
                   ._(
-                      "NOTE: NH hydrogen atoms are present and will be ignored, and their positions will instead be approximated, as in standard DSSP analysis.\nUse {0} to not ignore these hydrogen atoms.\n\n",
+                      "NOTE: Backbone amide hydrogen positions are present and will be ignored. Their positions will be approximated, as in standard DSSP analysis.\nUse {0} to not use this approximation.\n\n",
                       "SET dsspCalculateHydrogenAlways FALSE"));
         else
           sb
               .append(GT
                   ._(
-                      "NOTE: NH hydrogens are present and will not be calculated.\nUse {0} for a standard DSSP analysis.\n\n",
+                      "NOTE: Backbone amide hydrogen positions are present and will be used. Results may differ significantly from standard DSSP analysis.\nUse {0} to ignore these hydrogen positions.\n\n",
                       "SET dsspCalculateHydrogenAlways TRUE"));
         haveWarned = true;
       }

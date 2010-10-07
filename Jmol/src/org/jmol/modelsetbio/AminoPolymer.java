@@ -952,16 +952,16 @@ public class AminoPolymer extends AlphaPolymer {
     
     Map<String, Boolean> htTemp = new Hashtable<String, Boolean>();
     for (int p1 = 0; p1 < min.length; p1++)
-      if (bioPolymers[p1] instanceof AlphaPolymer) {
+      if (bioPolymers[p1] instanceof AminoPolymer) {
         AminoPolymer ap1 = ((AminoPolymer) bioPolymers[p1]);
         int n = min[p1].length - 1;
         for (int a = 1; a < n; a++) {
           int ia = ap1.monomers[a].leadAtomIndex;
           if (!bsDone2.get(ia))
             for (int p2 = p1; p2 < min.length; p2++)
-              if (bioPolymers[p2] instanceof AlphaPolymer)
+              if (bioPolymers[p2] instanceof AminoPolymer)
                 for (int b = (p1 == p2 ? a + 3 : 1); b < min[p2].length - 1; b++) {
-                  AlphaPolymer ap2 = (AlphaPolymer) bioPolymers[p2];
+                  AminoPolymer ap2 = (AminoPolymer) bioPolymers[p2];
                   int ib = ap2.monomers[b].leadAtomIndex;
                   if (!bsDone2.get(ib)) {
                     boolean isA;
@@ -997,7 +997,7 @@ public class AminoPolymer extends AlphaPolymer {
   
   private static Atom[] isBridge(int[][][][] min, int p1, int a, int p2, int b,
                                  List<Atom[]> bridges, Atom atom1, Atom atom2,
-                                 AminoPolymer ap1, AlphaPolymer ap2,
+                                 AminoPolymer ap1, AminoPolymer ap2,
                                  List<Bond> vHBonds,
                                  Map<String, Boolean> htTemp,
                                  boolean isAntiparallel) {

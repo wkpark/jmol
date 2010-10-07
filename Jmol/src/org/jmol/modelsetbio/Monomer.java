@@ -145,19 +145,6 @@ public abstract class Monomer extends Group {
 
   ////////////////////////////////////////////////////////////////
 
-  @Override
-  public boolean isDna() { return false; }
-  @Override
-  public boolean isRna() { return false; }
-  @Override
-  public boolean isProtein() {
-    return isAmino;
-  }
-  @Override
-  public final boolean isNucleic() {return this instanceof PhosphorusMonomer;}
-
-  ////////////////////////////////////////////////////////////////
-
   /**
    * @param proteinstructure 
    * 

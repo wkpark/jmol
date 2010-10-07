@@ -229,7 +229,8 @@ public final class Model {
       return "";
     if (!reportOnly)
       for (int i = bioPolymerCount; --i >= 0;)
-        bioPolymers[i].clearStructures();
+        if (!asDSSP || bioPolymers[i].getGroups()[0].getNitrogenAtom() != null)
+          bioPolymers[i].clearStructures();
     if (asDSSP)
       return bioPolymers[0].calculateStructures(bioPolymers, bioPolymerCount,
           reportOnly, null, dsspIgnoreHydrogen);

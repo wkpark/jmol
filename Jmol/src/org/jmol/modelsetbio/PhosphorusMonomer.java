@@ -42,6 +42,9 @@ public class PhosphorusMonomer extends Monomer {
   protected boolean isPurine;
   protected boolean isPyrimidine;
 
+  @Override
+  public final boolean isNucleic() {return true;}
+
   static Monomer
     validateAndAllocate(Chain chain, String group3, int seqcode,
                         int firstIndex, int lastIndex,

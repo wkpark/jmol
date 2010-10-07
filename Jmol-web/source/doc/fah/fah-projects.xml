@@ -8731,9 +8731,9 @@
   <fah_proj number="10046" name="p10046" public="y" file="xyz"
     server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
     credit="126.25" frames="100" code="PM" contact="abdulwahidc" contrib="Fernando Dias"/>
-  <fah_proj number="10047" name="p10047" public="y"
+  <fah_proj number="10047" name="p10047" public="y" file="xyz"
     server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
-    credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
+    credit="126.25" frames="100" code="PM" contact="abdulwahidc" contrib="Danny Nielsen"/>
   <fah_proj number="10048" name="p10048" public="y"
     server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
     credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
@@ -8746,15 +8746,15 @@
   <fah_proj number="10051" name="p10051" public="y" file="xyz"
     server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
     credit="126.25" frames="100" code="PM" contact="abdulwahidc" contrib="Tim Riley"/>
-  <fah_proj number="10052" name="p10052" public="y"
+  <fah_proj number="10052" name="p10052" public="y" file="xyz"
     server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
-    credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
+    credit="126.25" frames="100" code="PM" contact="abdulwahidc" contrib="Danny Nielsen"/>
   <fah_proj number="10053" name="p10053" public="y" file="xyz"
     server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
     credit="126.25" frames="100" code="PM" contact="abdulwahidc" contrib="Tim Riley"/>
-  <fah_proj number="10054" name="p10054" public="y"
+  <fah_proj number="10054" name="p10054" public="y" file="xyz"
     server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
-    credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
+    credit="126.25" frames="100" code="PM" contact="abdulwahidc" contrib="Danny Nielsen"/>
   <fah_proj number="10055" name="p10055" public="y" file="xyz"
     server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
     credit="126.25" frames="100" code="PM" contact="abdulwahidc" contrib="Leszek Dobrowolski"/>
@@ -8770,12 +8770,12 @@
   <fah_proj number="10059" name="p10059" public="y" file="xyz"
     server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
     credit="126.25" frames="100" code="PM" contact="abdulwahidc" contrib="Tim Riley"/>
-  <fah_proj number="10060" name="p10060" public="y"
+  <fah_proj number="10060" name="p10060" public="y" file="xyz"
     server="129.74.85.15" atoms="541" preferred="4.60" deadline="34.48"
-    credit="126.41" frames="100" code="PM" contact="abdulwahidc"/>
-  <fah_proj number="10061" name="p10061" public="y"
+    credit="126.41" frames="100" code="PM" contact="abdulwahidc" contrib="Danny Nielsen"/>
+  <fah_proj number="10061" name="p10061" public="y" file="xyz"
     server="129.74.85.15" atoms="541" preferred="4.60" deadline="34.48"
-    credit="126.41" frames="100" code="PM" contact="abdulwahidc"/>
+    credit="126.41" frames="100" code="PM" contact="abdulwahidc" contrib="Danny Nielsen"/>
   <fah_proj number="10099" name="p10099" public="y"
     server="129.74.85.15" atoms="551" preferred="0.09" deadline="1"
     credit="2.53" frames="100" code="PM" contact="abdulwahidc"/>
@@ -8835,13 +8835,13 @@
   <fah_proj number="10402" name="p10402" public="n"
     server="171.64.65.79" atoms="576" preferred="36" deadline="53"
     credit="93" frames="100" code="A4" contact="kyleb"/>
-  <fah_proj number="10410" name="p10410" public="n"
+  <fah_proj number="10410" name="p10410" public="y"
     server="171.64.65.80" atoms="576" preferred="13" deadline="19"
     credit="145" frames="100" code="A4" contact="kyleb"/>
-  <fah_proj number="10411" name="p10411" public="n"
+  <fah_proj number="10411" name="p10411" public="y"
     server="171.64.65.80" atoms="576" preferred="13" deadline="19"
     credit="145" frames="100" code="A4" contact="kyleb"/>
-  <fah_proj number="10412" name="p10412" public="n"
+  <fah_proj number="10412" name="p10412" public="y"
     server="171.64.65.80" atoms="576" preferred="13" deadline="19"
     credit="194" frames="100" code="A4" contact="kyleb"/>
 

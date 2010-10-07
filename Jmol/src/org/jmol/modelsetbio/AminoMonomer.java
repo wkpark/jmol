@@ -222,7 +222,10 @@ public class AminoMonomer extends AlphaMonomer {
     } else {
       // Rasmol def -- just use C=O vector, so this does not account for cis-amino acids
       // but I guess if those are just proline...
-      vNH.sub(prev.getCarbonylCarbonAtom(), prev.getCarbonylOxygenAtom());
+      Point3f oxygen = prev.getCarbonylOxygenAtom();
+      if (oxygen == null) // an optional atom for Jmol
+        return false;
+      vNH.sub(prev.getCarbonylCarbonAtom(), oxygen);
     }
     vNH.normalize();
     aminoHydrogenPoint.add(nitrogenPoint, vNH);

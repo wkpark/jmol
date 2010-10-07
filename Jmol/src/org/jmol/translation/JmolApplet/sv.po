@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-10-06 20:45+0200\n"
+"POT-Creation-Date: 2010-10-07 20:29+0200\n"
 "PO-Revision-Date: 2010-01-13 22:22+0000\n"
 "Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -605,20 +605,21 @@ msgstr ""
 msgid "exit modelkit mode"
 msgstr ""
 
-#: org/jmol/modelsetbio/AminoPolymer.java:570
+#: org/jmol/modelsetbio/AminoPolymer.java:650
 #, java-format
 msgid ""
-"NOTE: NH hydrogen atoms are present and will be ignored, and their positions "
-"will instead be approximated, as in standard DSSP analysis.\n"
-"Use {0} to not ignore these hydrogen atoms.\n"
+"NOTE: Backbone amide hydrogen positions are present and will be ignored. "
+"Their positions will be approximated, as in standard DSSP analysis.\n"
+"Use {0} to not use this approximation.\n"
 "\n"
 msgstr ""
 
-#: org/jmol/modelsetbio/AminoPolymer.java:576
+#: org/jmol/modelsetbio/AminoPolymer.java:656
 #, java-format
 msgid ""
-"NOTE: NH hydrogens are present and will not be calculated.\n"
-"Use {0} for a standard DSSP analysis.\n"
+"NOTE: Backbone amide hydrogen positions are present and will be used. "
+"Results may differ significantly from standard DSSP analysis.\n"
+"Use {0} to ignore these hydrogen positions.\n"
 "\n"
 msgstr ""
 

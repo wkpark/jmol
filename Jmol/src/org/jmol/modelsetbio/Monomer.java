@@ -145,6 +145,12 @@ public abstract class Monomer extends Group {
 
   ////////////////////////////////////////////////////////////////
 
+  @Override
+  public boolean isProtein() {
+    return isAmino;
+  }
+  ////////////////////////////////////////////////////////////////
+
   /**
    * @param proteinstructure 
    * 

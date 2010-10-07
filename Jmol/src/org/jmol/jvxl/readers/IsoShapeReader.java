@@ -55,7 +55,7 @@ class IsoShapeReader extends VolumeDataReader {
   private double[] rfactor = new double[10];
   private double[] pfactor = new double[10];
 
-  private final static double A0 = 0.52918f; //x10^-10 meters
+  private final static double A0 = 0.52918; //x10^-10 meters
   private final static double ROOT2 = 1.414214;
 
   

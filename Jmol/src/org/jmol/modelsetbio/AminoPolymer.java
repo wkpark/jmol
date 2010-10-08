@@ -124,9 +124,10 @@ public class AminoPolymer extends AlphaPolymer {
     Atom nitrogen = source.getNitrogenAtom();
     int[] m;
     for (int i = polymer.monomerCount; --i >= 0;) {
-      if (polymer == this
-          && (i == indexDonor || i + 1 == indexDonor || i - 1 == indexDonor))
-        continue;
+      if (polymer == this && (i == indexDonor || i + 1 == indexDonor 
+          /* || i - 1 == indexDonor*/ ))
+        continue;  
+      // 3mn5 GLY36->ARG37 is an example where we can have i-1 be the donor  
       AminoMonomer target = (AminoMonomer) ((BioPolymer) polymer).monomers[i];
       Atom oxygen = target.getCarbonylOxygenAtom();
       if (bsB != null && !bsB.get(oxygen.index))

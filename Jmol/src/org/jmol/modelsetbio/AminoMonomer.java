@@ -79,9 +79,11 @@ public class AminoMonomer extends AlphaMonomer {
                                    byte[] offsets, Atom[] atoms) {
     int atomIndex1 = firstAtomIndex + (offsets[offset1] & 0xFF);
     int atomIndex2 = firstAtomIndex + (offsets[offset2] & 0xFF);
-    if (atomIndex1 >= atomIndex2)
-      return false;
-    return atoms[atomIndex1].isBonded(atoms[atomIndex2]);
+    // why would order matter here? True, it's usually N CA C O,
+    // but it certainly doesn't have to be.
+    //if (atomIndex1 >= atomIndex2)
+      //return false;
+    return (atomIndex1 != atomIndex2 && atoms[atomIndex1].isBonded(atoms[atomIndex2]));
   }
 
   private static boolean isBondedCorrectly(int firstAtomIndex, byte[] offsets,

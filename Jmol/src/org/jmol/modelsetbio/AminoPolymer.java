@@ -715,8 +715,10 @@ public class AminoPolymer extends AlphaPolymer {
         if (labels[i] != null) {
           AminoPolymer ap = (AminoPolymer) bioPolymers[i];
           sbSummary.append(ap.dumpSummary(labels[i]));
-          sb.append(ap.dumpTags("$.1: " + String.valueOf(labels[i])));
+          sb.append(ap.dumpTags("$.1: " + String.valueOf(labels[i]), bsBad));
         }
+      if (bsBad.nextSetBit(0) >= 0)
+        sb.append("\nNOTE: '!' indicates a residue that is missing a backbone carbonyl oxygen atom.\n");
       sb.append("\n").append("SUMMARY:" + sbSummary);
     }
 
@@ -832,7 +834,7 @@ public class AminoPolymer extends AlphaPolymer {
     if (reportOnly) {
       setTag(labels, bsTurn, 'T');
       return dumpTags("$.5: " + line5 + "\n" + "$.4: " + line4 + "\n" + "$.3: "
-          + line3);
+          + line3, bsBad);
     }
     
     // if not calculate hbond, set the turn structure
@@ -1261,7 +1263,7 @@ public class AminoPolymer extends AlphaPolymer {
     return sb.toString();
   }
 
-  private String dumpTags(String lines) {
+  private String dumpTags(String lines, BitSet bsBad) {
     String prefix = monomers[0].getLeadAtom().getChainID() 
     + "." + (bioPolymerIndexInModel + 1);
     lines = TextFormat.simpleReplace(lines, "$", prefix);
@@ -1277,7 +1279,8 @@ public class AminoPolymer extends AlphaPolymer {
       sb.append(i % 100 == 0 ? "" + ((i / 100) % 100) : " ");
       sb1.append(i % 10 == 0 ? "" + ((i / 10) % 10) : " ");
       sb2.append(i % 10);
-      sb3.append(monomers[ii].getGroup1());
+      sb3.append(bsBad.get(monomers[ii].leadAtomIndex) ? 
+          '!' : monomers[ii].getGroup1());
     }
     sb.append(sb1).append(sb2).append("\n");
     sb.append(lines);

@@ -701,10 +701,11 @@ public class AminoPolymer extends AlphaPolymer {
     // Step 4: Find the helices and mark them as "G", "H", or "I", 
     //         mark remaining turn residues as "T", and add the helix and turn structures.
 
+    String[] reports = new String[bioPolymerCount];
     for (int i = 0; i < bioPolymerCount; i++)
       if (min[i] != null)
-        sb.append(((AminoPolymer) bioPolymers[i]).findHelixes(min[i], i,
-            bsDone[i], labels[i], reportOnly, vHBonds, bsBad));
+        reports[i] = ((AminoPolymer) bioPolymers[i]).findHelixes(min[i], i,
+            bsDone[i], labels[i], reportOnly, vHBonds, bsBad);
 
     // Done!
 
@@ -715,7 +716,7 @@ public class AminoPolymer extends AlphaPolymer {
         if (labels[i] != null) {
           AminoPolymer ap = (AminoPolymer) bioPolymers[i];
           sbSummary.append(ap.dumpSummary(labels[i]));
-          sb.append(ap.dumpTags("$.1: " + String.valueOf(labels[i]), bsBad));
+          sb.append(reports[i]).append(ap.dumpTags("$.1: " + String.valueOf(labels[i]), bsBad, 2));
         }
       if (bsBad.nextSetBit(0) >= 0)
         sb.append("\nNOTE: '!' indicates a residue that is missing a backbone carbonyl oxygen atom.\n");
@@ -834,7 +835,7 @@ public class AminoPolymer extends AlphaPolymer {
     if (reportOnly) {
       setTag(labels, bsTurn, 'T');
       return dumpTags("$.5: " + line5 + "\n" + "$.4: " + line4 + "\n" + "$.3: "
-          + line3, bsBad);
+          + line3, bsBad, 1);
     }
     
     // if not calculate hbond, set the turn structure
@@ -1263,29 +1264,34 @@ public class AminoPolymer extends AlphaPolymer {
     return sb.toString();
   }
 
-  private String dumpTags(String lines, BitSet bsBad) {
+  private String dumpTags(String lines, BitSet bsBad, int mode) {
     String prefix = monomers[0].getLeadAtom().getChainID() 
     + "." + (bioPolymerIndexInModel + 1);
     lines = TextFormat.simpleReplace(lines, "$", prefix);
     int iFirst = monomers[0].getResno();
     String pre = "\n" + prefix;
-    StringBuffer sb = new StringBuffer(pre + ".8: ");
+    StringBuffer sb = new StringBuffer();
+    StringBuffer sb0 = new StringBuffer(pre + ".8: ");
     StringBuffer sb1 = new StringBuffer(pre + ".7: ");
     StringBuffer sb2 = new StringBuffer(pre + ".6: ");
     StringBuffer sb3 = new StringBuffer(pre + ".0: ");
     int i = iFirst;
     for (int ii = 0; ii < monomerCount; ii++) {
       i = monomers[ii].getResno();
-      sb.append(i % 100 == 0 ? "" + ((i / 100) % 100) : " ");
+      sb0.append(i % 100 == 0 ? "" + ((i / 100) % 100) : " ");
       sb1.append(i % 10 == 0 ? "" + ((i / 10) % 10) : " ");
       sb2.append(i % 10);
       sb3.append(bsBad.get(monomers[ii].leadAtomIndex) ? 
           '!' : monomers[ii].getGroup1());
     }
-    sb.append(sb1).append(sb2).append("\n");
+    if ((mode & 1) == 1)
+      sb.append(sb0).append(sb1).append(sb2);
+    sb.append("\n");
     sb.append(lines);
-    sb.append(sb3);
-    sb.append("\n\n");
+    if ((mode & 2) == 2) {
+      sb.append(sb3);
+      sb.append("\n\n");
+    }
     return sb.toString().replace('\0', '.');
   }
   

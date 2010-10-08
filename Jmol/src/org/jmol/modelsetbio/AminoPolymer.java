@@ -99,6 +99,9 @@ public class AminoPolymer extends AlphaPolymer {
         boolean isInA = (bsA == null || bsA.get(source.getNitrogenAtom().index));
         if (!isInA)
           continue;
+        // for DSSP, we also knock out all groups having no carbonyl oxygen
+        if (!checkDistances && source.getCarbonylOxygenAtom() == null)
+          continue;
         checkRasmolHydrogenBond(source, polymer, i, pt,
             (isInA ? bsB : bsA), vHBonds, min1, checkDistances);
       }
@@ -631,17 +634,20 @@ public class AminoPolymer extends AlphaPolymer {
 
     // for each AminoPolymer, we need:
     // (1) a label reading "...EEE....HHHH...GGG...BTTTB...IIIII..."
-    // (2) a bitset to indicate that an assignment has been made already
+    // (2) a residue-bitset to indicate that an assignment has been made already
+    // (3) an atom-bitset to indicate we have a bad residue (no carbonyl O)
 
     char[][] labels = new char[bioPolymerCount][];
     BitSet[] bsDone = new BitSet[bioPolymerCount];
+    BitSet bsBad = new BitSet();
     boolean haveWarned = false;
 
     for (int i = 0; i < bioPolymerCount; i++) {
       if (!(bioPolymers[i] instanceof AminoPolymer))
         continue;
+      AminoPolymer ap = (AminoPolymer) bioPolymers[i];
       if (!haveWarned
-          && ((AminoMonomer) ((AminoPolymer) bioPolymers[i]).monomers[0])
+          && ((AminoMonomer) ap.monomers[0])
               .getExplicitNH() != null) {
         if (dsspIgnoreHydrogens)
           sb
@@ -660,12 +666,16 @@ public class AminoPolymer extends AlphaPolymer {
       bioPolymers[i].recalculateLeadMidpointsAndWingVectors();
       labels[i] = new char[bioPolymers[i].monomerCount];
       bsDone[i] = new BitSet();
+      // lacking a C=O counts as done or "chain break"
+      for (int j = 0; j < ap.monomerCount; j++)
+        if (((AminoMonomer)ap.monomers[j]).getCarbonylOxygenAtom() == null)
+          bsBad.set(ap.monomers[j].getLeadAtomIndex());
     }
 
     // Step 1: Create a polymer-based array of dual-minimum NH->O connections
     //         similar to those used in Rasmol.
 
-    int[][][][] min = getDualHydrogenBondArray(bioPolymers, bioPolymerCount,
+    int[][][][] min = getDualHydrogenBondArray(bioPolymers, bioPolymerCount, 
         dsspIgnoreHydrogens);
 
     // NOTE: (p. 2587) "Structural overalaps are eliminated in this line by giving 
@@ -680,8 +690,8 @@ public class AminoPolymer extends AlphaPolymer {
     List<Atom[]> bridgesA = new ArrayList<Atom[]>();
     List<Atom[]> bridgesP = new ArrayList<Atom[]>();
     Map<String, Boolean> htBridges = new Hashtable<String, Boolean>();
-    getBridges(bioPolymers, min, labels, bridgesA, bridgesP, htBridges, bsDone,
-        vHBonds);
+    getBridges(bioPolymers, min, labels, bridgesA, bridgesP, htBridges, bsBad,
+        vHBonds, bsDone);
 
     // Step 3: Find the ladders and bulges, mark them as "E", and add the sheet structures.
 
@@ -694,7 +704,7 @@ public class AminoPolymer extends AlphaPolymer {
     for (int i = 0; i < bioPolymerCount; i++)
       if (min[i] != null)
         sb.append(((AminoPolymer) bioPolymers[i]).findHelixes(min[i], i,
-            bsDone[i], labels[i], reportOnly, vHBonds));
+            bsDone[i], labels[i], reportOnly, vHBonds, bsBad));
 
     // Done!
 
@@ -735,7 +745,7 @@ public class AminoPolymer extends AlphaPolymer {
    * 
    */
   private static int[][][][] getDualHydrogenBondArray(Polymer[] bioPolymers,
-                                                    int bioPolymerCount, 
+                                                    int bioPolymerCount,
                                                     boolean dsspIgnoreHydrogens) {
     
     // The min[][][][] array:  min[iPolymer][i][[hb1],[hb2]]
@@ -794,11 +804,12 @@ public class AminoPolymer extends AlphaPolymer {
    * @param labels
    * @param reportOnly 
    * @param vHBonds 
+   * @param bsBad 
    * @return             string label
    */
   private String findHelixes(int[][][] min, int iPolymer, BitSet bsDone,
                              char[] labels, boolean reportOnly,
-                             List<Bond> vHBonds) {
+                             List<Bond> vHBonds, BitSet bsBad) {
     if (Logger.debugging)
       for (int j = 0; j < monomerCount; j++)
         Logger.debug(iPolymer + "." + monomers[j].getResno() + "\t"
@@ -808,13 +819,13 @@ public class AminoPolymer extends AlphaPolymer {
 
     String line4 = findHelixes(4, min, iPolymer,
         JmolConstants.PROTEIN_STRUCTURE_HELIX, JmolEdge.BOND_H_PLUS_4, bsDone,
-        bsTurn, labels, reportOnly, vHBonds);
+        bsTurn, labels, reportOnly, vHBonds, bsBad);
     String line3 = findHelixes(3, min, iPolymer,
         JmolConstants.PROTEIN_STRUCTURE_HELIX_310, JmolEdge.BOND_H_PLUS_3,
-        bsDone, bsTurn, labels, reportOnly, vHBonds);
+        bsDone, bsTurn, labels, reportOnly, vHBonds, bsBad);
     String line5 = findHelixes(5, min, iPolymer,
         JmolConstants.PROTEIN_STRUCTURE_HELIX_PI, JmolEdge.BOND_H_PLUS_5,
-        bsDone, bsTurn, labels, reportOnly, vHBonds);
+        bsDone, bsTurn, labels, reportOnly, vHBonds, bsBad);
 
     // G, H, and I have been set; now set what is left over as turn
 
@@ -834,7 +845,7 @@ public class AminoPolymer extends AlphaPolymer {
   private String findHelixes(int pitch, int[][][] min, int thisIndex,
                              byte subtype, int type, BitSet bsDone,
                              BitSet bsTurn, char[] labels, boolean reportOnly,
-                             List<Bond> vHBonds) {
+                             List<Bond> vHBonds, BitSet bsBad) {
 
     // The idea here is to run down the polymer setting bit sets
     // that identify start, stop, N, and X codes: >, <, 3, 4, 5, and X
@@ -860,6 +871,11 @@ public class AminoPolymer extends AlphaPolymer {
 
         // we use bit sets here for efficiency
 
+        int ia = monomers[i0].leadAtomIndex;
+        int ipt = bsBad.nextSetBit(ia);
+        if (ipt >= ia && ipt <= monomers[i].leadAtomIndex)
+          continue;
+
         bsStart.set(i0);         //   >
         bsNNN.set(i0 + 1, i);    //    nnnn
         bsStop.set(i);           //        <
@@ -879,7 +895,7 @@ public class AminoPolymer extends AlphaPolymer {
         // Still, that is what we are implementing here -- just as described -- H with
         // the possibility of a bridge.
         
-        int ipt = bsDone.nextSetBit(i0);
+        ipt = bsDone.nextSetBit(i0);
         boolean isClear = (ipt < 0 || ipt >= i);
         boolean addH = false;
         if (i0 > 0 && bsStart.get(i0 - 1) && (pitch == 4 || isClear)) {
@@ -946,25 +962,24 @@ public class AminoPolymer extends AlphaPolymer {
    *                          
    * @param bioPolymers
    * @param min
-   * @param bsDone
    * @param labels
    * @param bridgesA 
    * @param bridgesP 
    * @param htBridges 
+   * @param bsBad 
    * @param vHBonds 
+   * @param bsDone
    */
   private static void getBridges(Polymer[] bioPolymers, int[][][][] min,
                                  char[][] labels, List<Atom[]> bridgesA,
                                  List<Atom[]> bridgesP,
-                                 Map<String, Boolean> htBridges,
-                                 BitSet[] bsDone, List<Bond> vHBonds) {
+                                 Map<String, Boolean> htBridges, BitSet bsBad,
+                                 List<Bond> vHBonds, BitSet[] bsDone) {
     // ooooooh! It IS possible to have 3 bridges to the same residue. (3A5F) 
     // 
-    //BitSet bsDone1 = new BitSet();
-    //BitSet bsDone2 = new BitSet();
     Atom[] atoms = bioPolymers[0].model.getModelSet().atoms;
     Atom[] bridge = null;
-    
+
     Map<String, Boolean> htTemp = new Hashtable<String, Boolean>();
     for (int p1 = 0; p1 < min.length; p1++)
       if (bioPolymers[p1] instanceof AminoPolymer) {
@@ -972,16 +987,16 @@ public class AminoPolymer extends AlphaPolymer {
         int n = min[p1].length - 1;
         for (int a = 1; a < n; a++) {
           int ia = ap1.monomers[a].leadAtomIndex;
-          //if (!bsDone2.get(ia))
+          if (!bsBad.get(ia)) {
             for (int p2 = p1; p2 < min.length; p2++)
               if (bioPolymers[p2] instanceof AminoPolymer)
                 for (int b = (p1 == p2 ? a + 3 : 1); b < min[p2].length - 1; b++) {
                   AminoPolymer ap2 = (AminoPolymer) bioPolymers[p2];
                   int ib = ap2.monomers[b].leadAtomIndex;
-                  //if (!bsDone2.get(ib)) {
+                  if (!bsBad.get(ib)) {
                     boolean isA;
-                    if ((bridge = isBridge(min, p1, a, p2, b, bridgesP, atoms[ia], atoms[ib],
-                        ap1, ap2, vHBonds, htTemp, false)) != null)
+                    if ((bridge = isBridge(min, p1, a, p2, b, bridgesP,
+                        atoms[ia], atoms[ib], ap1, ap2, vHBonds, htTemp, false)) != null)
                       isA = false;
                     else if ((bridge = isBridge(min, p1, a, p2, b, bridgesA,
                         atoms[ia], atoms[ib], ap1, ap2, vHBonds, htTemp, true)) != null)
@@ -998,9 +1013,10 @@ public class AminoPolymer extends AlphaPolymer {
                     bsDone[p2].set(b);
                     htBridges.put(ia + "-" + ib, (isA ? Boolean.TRUE
                         : Boolean.FALSE));
-                  //}
+                  }
 
                 }
+          }
         }
       }
   }
@@ -1082,7 +1098,7 @@ public class AminoPolymer extends AlphaPolymer {
     getLadders(bridgesP, htBridges, bsEEE, false);
 
     // add Jmol structures and set sheet labels to "E"
-
+    
     BitSet bsSheet = new BitSet();
 
     for (int i = bioPolymers.length; --i >= 0;) {

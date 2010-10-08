@@ -450,8 +450,9 @@ abstract public class ModelSet extends ModelCollection {
         continue;
       }
       int nConnect = vConnect.size();
+      setModelAuxiliaryInfo(i, "initialBondCount", Integer.valueOf(nConnect));
       int[] atomInfo = (int[]) getModelAuxiliaryInfo(i, "PDB_CONECT_firstAtom_count_max");
-      int firstAtom = atomInfo[0] + baseAtomIndex;
+      int firstAtom = atomInfo[0] +  baseAtomIndex;
       int atomMax = firstAtom + atomInfo[1];
       int max = atomInfo[2];
       int[] serialMap = new int[max + 1];

@@ -943,9 +943,11 @@ public final class ModelLoader extends ModelSet {
       for (int i = baseModelIndex; i < modelCount; atomIndex += modelAtomCount, i++) {
         modelAtomCount = models[i].bsAtoms.cardinality();
         int modelBondCount = getModelAuxiliaryInfoInt(i, "initialBondCount");
-        if (modelBondCount < 0)
-          modelBondCount = bondCount;
+        
         boolean modelIsPDB = models[i].isPDB;
+        if (modelBondCount < 0) {
+          modelBondCount = bondCount;
+        }
         boolean modelHasSymmetry = getModelAuxiliaryInfoBoolean(i,
             "hasSymmetry");
         // check for PDB file with fewer than one bond per every two atoms

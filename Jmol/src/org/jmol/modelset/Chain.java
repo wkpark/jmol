@@ -25,6 +25,8 @@ package org.jmol.modelset;
 
 import java.util.BitSet;
 
+import org.jmol.util.Logger;
+
 public final class Chain {
 
   ModelSet modelSet;
@@ -165,8 +167,7 @@ public final class Chain {
                                                   byte[] offsets,
                                                   int firstAtomIndex,
                                                   int lastAtomIndex) {
-
-    String[] atomNames = modelSet.getAtomNames();
+    Atom[] atoms = modelSet.atoms;
     for (int offsetIndex = offsets.length; --offsetIndex >= 0;) {
       int offset = offsets[offsetIndex] & 0xFF;
       if (offset == 255)
@@ -175,6 +176,7 @@ public final class Chain {
       Atom atom = getAtom(iThis);
       if (atom.getAlternateLocationID() == 0)
         continue;
+      
       // scan entire group list to ensure including all of
       // this atom's alternate conformation locations.
       // (PDB order may be AAAAABBBBB, not ABABABABAB)
@@ -185,15 +187,15 @@ public final class Chain {
           iNew -= nScan + 1;
         int offsetNew = iNew - firstAtomIndex;
         if (offsetNew < 0 || offsetNew > 255 || iNew == iThis
-            || !bsSelected.get(iNew)
-            || atomNames[iNew] != atomNames[iThis])
+            || !bsSelected.get(iNew))
           continue;
+        if (atoms[iNew].atomID != atoms[iThis].atomID
+            || atoms[iNew].atomID == 0 
+                && !atoms[iNew].getAtomName().equals(atoms[iThis].getAtomName()))
+          continue;
+        if (Logger.debugging)
+          Logger.debug("Chain.udateOffsetsForAlternativeLocation " + atoms[iNew] + " was " + atoms[iThis]);
         offsets[offsetIndex] = (byte) offsetNew;
-        /*
-         Logger.debug(iNew + " " + offsetNew + " old:" + offset + " "
-         + chain.frame.atoms[iThis].getIdentity() + " " + " new:"
-         + offsetNew + " " + chain.frame.atoms[iNew].getIdentity());
-         */
         break;
       }
     }

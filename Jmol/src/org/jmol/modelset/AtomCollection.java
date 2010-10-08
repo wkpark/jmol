@@ -147,10 +147,6 @@ abstract public class AtomCollection {
     return (vibrationVectors != null);
   }
   
-  public String[] getAtomNames() {
-    return atomNames;
-  }
-
   public String[] getAtomTypes() {
     return atomTypes;
   }

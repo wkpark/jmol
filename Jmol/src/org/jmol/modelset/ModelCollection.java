@@ -621,7 +621,6 @@ abstract public class ModelCollection extends BondCollection {
    * 
    * @param alreadyDefined    set to skip calculation
    * @param asDSSP TODO
-   * @param addFileData       in the case of loading, we add the PDB data
    * @param reportOnly 
    * @param dsspIgnoreHydrogen 
    * @return TODO

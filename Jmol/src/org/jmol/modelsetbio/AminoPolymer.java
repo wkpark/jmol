@@ -126,11 +126,15 @@ public class AminoPolymer extends AlphaPolymer {
     for (int i = polymer.monomerCount; --i >= 0;) {
       if (polymer == this && (i == indexDonor || i + 1 == indexDonor 
           /* || i - 1 == indexDonor*/ ))
-        continue;  
+        continue; 
       // 3mn5 GLY36->ARG37 is an example where we can have i-1 be the donor  
       AminoMonomer target = (AminoMonomer) ((BioPolymer) polymer).monomers[i];
       Atom oxygen = target.getCarbonylOxygenAtom();
-      if (bsB != null && !bsB.get(oxygen.index))
+      if (oxygen == null || bsB != null && !bsB.get(oxygen.index))
+        continue;
+      char idN = nitrogen.getAlternateLocationID();
+      char idO = oxygen.getAlternateLocationID();
+      if (idN != '\0' && idO != '\0' && idN != idO)
         continue;
       Point3f targetAlphaPoint = target.getLeadAtom();
       float dist2 = sourceAlphaPoint.distanceSquared(targetAlphaPoint);
@@ -216,14 +220,6 @@ public class AminoPolymer extends AlphaPolymer {
 
     boolean isHbond = (energy < -500 
         && (!checkDistances || distCN > distCH && distOH <= 3.0f));
-    /*
-    if (isHbond)
-      Logger.info("draw calcHydrogen"+ " ("+nitrogen.getInfo()+") {" + hydrogenPoint.x + " "
-          + hydrogenPoint.y + " " + hydrogenPoint.z + "} #" + isHbond + " "
-          + nitrogen.getInfo() + " " + target.getLeadAtom().getInfo()
-          + " distOH=" + distOH + " distCH=" + distCH + " distCN=" + distCN
-          + " distON=" + distON + " energy=" + energy);
-    */
     return (!isHbond && checkDistances || energy < -9900 ? 0 : energy);
   }
 
@@ -688,9 +684,9 @@ public class AminoPolymer extends AlphaPolymer {
 
     // Step 2: Find the bridges and mark them all as "B".
 
-    List<Atom[]> bridgesA = new ArrayList<Atom[]>();
-    List<Atom[]> bridgesP = new ArrayList<Atom[]>();
-    Map<String, Boolean> htBridges = new Hashtable<String, Boolean>();
+    List<Bridge> bridgesA = new ArrayList<Bridge>();
+    List<Bridge> bridgesP = new ArrayList<Bridge>();
+    Map<String, Bridge> htBridges = new Hashtable<String, Bridge>();
     getBridges(bioPolymers, min, labels, bridgesA, bridgesP, htBridges, bsBad,
         vHBonds, bsDone);
 
@@ -975,14 +971,14 @@ public class AminoPolymer extends AlphaPolymer {
    * @param bsDone
    */
   private static void getBridges(Polymer[] bioPolymers, int[][][][] min,
-                                 char[][] labels, List<Atom[]> bridgesA,
-                                 List<Atom[]> bridgesP,
-                                 Map<String, Boolean> htBridges, BitSet bsBad,
+                                 char[][] labels, List<Bridge> bridgesA,
+                                 List<Bridge> bridgesP,
+                                 Map<String, Bridge> htBridges, BitSet bsBad,
                                  List<Bond> vHBonds, BitSet[] bsDone) {
     // ooooooh! It IS possible to have 3 bridges to the same residue. (3A5F) 
     // 
     Atom[] atoms = bioPolymers[0].model.getModelSet().atoms;
-    Atom[] bridge = null;
+    Bridge bridge = null;
 
     Map<String, Boolean> htTemp = new Hashtable<String, Boolean>();
     for (int p1 = 0; p1 < min.length; p1++)
@@ -998,25 +994,22 @@ public class AminoPolymer extends AlphaPolymer {
                   AminoPolymer ap2 = (AminoPolymer) bioPolymers[p2];
                   int ib = ap2.monomers[b].leadAtomIndex;
                   if (!bsBad.get(ib)) {
-                    boolean isA;
-                    if ((bridge = isBridge(min, p1, a, p2, b, bridgesP,
-                        atoms[ia], atoms[ib], ap1, ap2, vHBonds, htTemp, false)) != null)
-                      isA = false;
-                    else if ((bridge = isBridge(min, p1, a, p2, b, bridgesA,
-                        atoms[ia], atoms[ib], ap1, ap2, vHBonds, htTemp, true)) != null)
-                      isA = true;
-                    else
+                    if ((bridge = getBridge(min, p1, a, p2, b, bridgesP,
+                        atoms[ia], atoms[ib], ap1, ap2, vHBonds, htTemp, false)) != null) {
+                    } else if ((bridge = getBridge(min, p1, a, p2, b, bridgesA,
+                        atoms[ia], atoms[ib], ap1, ap2, vHBonds, htTemp, true)) != null) {
+                      bridge.isAntiparallel = true; 
+                    } else {
                       continue;
+                    }
                     labels[p1][a] = labels[p2][b] = 'B';
                     if (Logger.debugging)
-                      Logger.debug("Bridge found " + (isA ? "a" : "p") + " "
-                          + bridge[0] + " " + bridge[1]);
+                      Logger.debug("Bridge found " + bridge);
                     //setDone(bsDone1, bsDone2, ia);
                     //setDone(bsDone1, bsDone2, ib);
                     bsDone[p1].set(a);
                     bsDone[p2].set(b);
-                    htBridges.put(ia + "-" + ib, (isA ? Boolean.TRUE
-                        : Boolean.FALSE));
+                    htBridges.put(ia + "-" + ib, bridge);
                   }
 
                 }
@@ -1030,8 +1023,8 @@ public class AminoPolymer extends AlphaPolymer {
     new int[] {0,  0, 0, 0, 1, -1, 1, -1 }
   };
   
-  private static Atom[] isBridge(int[][][][] min, int p1, int a, int p2, int b,
-                                 List<Atom[]> bridges, Atom atom1, Atom atom2,
+  private static Bridge getBridge(int[][][][] min, int p1, int a, int p2, int b,
+                                 List<Bridge> bridges, Atom atom1, Atom atom2,
                                  AminoPolymer ap1, AminoPolymer ap2,
                                  List<Bond> vHBonds,
                                  Map<String, Boolean> htTemp,
@@ -1044,7 +1037,7 @@ public class AminoPolymer extends AlphaPolymer {
         && (b2 = isHbonded(b + offsets[2], a + offsets[3], p2, p1, min)) != null
         || (b1 = isHbonded(a + offsets[ipt = 4], b + offsets[5], p1, p2, min)) != null
         && (b2 = isHbonded(b + offsets[6], a + offsets[7], p2, p1, min)) != null) {
-      Atom[] bridge = new Atom[] { atom1, atom2 };
+      Bridge bridge = ap1.new Bridge(atom1, atom2);
       bridges.add(bridge);
       if (vHBonds != null) {
         int type = (isAntiparallel ? JmolEdge.BOND_H_MINUS_3
@@ -1059,6 +1052,7 @@ public class AminoPolymer extends AlphaPolymer {
     return null;
   }
 
+  
   private static void addHbond(List<Bond> vHBonds, Monomer donor,
                                Monomer acceptor, int iEnergy, int type, Map<String, Boolean> htTemp) {
     Atom nitrogen = ((AminoMonomer)donor).getNitrogenAtom();
@@ -1086,9 +1080,9 @@ public class AminoPolymer extends AlphaPolymer {
    * @param calcHbondOnly 
    */
   private static void getSheetStructures(Polymer[] bioPolymers,
-                                         List<Atom[]> bridgesA,
-                                         List<Atom[]> bridgesP,
-                                         Map<String, Boolean> htBridges,
+                                         List<Bridge> bridgesA,
+                                         List<Bridge> bridgesP,
+                                         Map<String, Bridge> htBridges,
                                          char[][] labels, BitSet[] bsDone, 
                                          boolean reportOnly,
                                          boolean calcHbondOnly) {
@@ -1098,8 +1092,8 @@ public class AminoPolymer extends AlphaPolymer {
     if (bridgesA.size() == 0 && bridgesP.size() == 0)
       return;
     BitSet bsEEE = new BitSet();
-    getLadders(bridgesA, htBridges, bsEEE, true);
-    getLadders(bridgesP, htBridges, bsEEE, false);
+    createLadders(bridgesA, htBridges, bsEEE, true);
+    createLadders(bridgesP, htBridges, bsEEE, false);
 
     // add Jmol structures and set sheet labels to "E"
     
@@ -1133,6 +1127,61 @@ public class AminoPolymer extends AlphaPolymer {
   }
 
   
+  private class Bridge {
+    protected Atom a, b;
+    protected int[][] ladder;
+    protected boolean isAntiparallel;
+    protected Bridge(Atom a, Atom b) {
+      this.a = a;
+      this.b = b;
+      ladder = new int[2][2];
+      ladder[0][0] = ladder[0][1] = Math.min(a.index, b.index);
+      ladder[1][0] = ladder[1][1] = Math.max(a.index, b.index);
+    }
+    
+    @Override
+    public String toString() {
+      return (isAntiparallel ? "a " : "p ") + a + " - " + b + "\t" + Escape.escape(ladder);
+    }
+    protected boolean addBridge(Bridge bridge) {
+      if (bridge == null || bridge.isAntiparallel != isAntiparallel
+          || !canAdd(bridge) || !bridge.canAdd(this))
+        return false;
+      extendLadder(bridge.ladder[0][0], bridge.ladder[1][0]);
+      extendLadder(bridge.ladder[0][1], bridge.ladder[1][1]);
+      bridge.ladder = ladder;
+      return true;
+    }
+
+    private boolean canAdd(Bridge bridge) {
+      int index1 = bridge.a.index;
+      int index2 = bridge.b.index;
+      if (index2 < index1) {
+        int i = index2;
+        index2 = index1;
+        index1 = i;
+      }
+      // no crossing of ladder rungs (2WUJ)
+      return (isAntiparallel ? (index1 >= ladder[0][1]
+          && index2 <= ladder[1][0] || index1 <= ladder[0][0]
+          && index2 >= ladder[1][1]) : (index1 <= ladder[0][0]
+          && index2 <= ladder[1][0] || index1 >= ladder[0][1]
+          && index2 >= ladder[1][1]));
+    }
+
+    private void extendLadder(int index1, int index2) {
+      if (ladder[0][0] > index1)
+        ladder[0][0] = index1;
+      if (ladder[0][1] < index1)
+        ladder[0][1] = index1;
+      if (ladder[1][0] > index2)
+        ladder[1][0] = index2;
+      if (ladder[1][1] < index2)
+        ladder[1][1] = index2;
+    }
+    
+    
+  }
   
   /**
    * "ladder =: one or more consecutive bridges of identical type" (p. 2582)
@@ -1143,31 +1192,47 @@ public class AminoPolymer extends AlphaPolymer {
    *  strand.... all residues in bulge-linked ladders are marked "E," including
    *  the extra residues." (p. 2585)
    *  
-   * @param bridgesA 
+   * @param ladders 
+   * @param bridges
    * @param htBridges
    * @param bsEEE 
    * @param isAntiparallel 
    *  
    */
-  private static void getLadders(List<Atom[]> bridgesA,
-                                 Map<String, Boolean> htBridges, BitSet bsEEE,
+  private static void createLadders(List<Bridge> bridges,
+                                 Map<String, Bridge> htBridges, BitSet bsEEE,
                                  boolean isAntiparallel) {
     int dir = (isAntiparallel ? -1 : 1);
-    for (int i = bridgesA.size(); --i >= 0;) {
-      Atom[] bridge = bridgesA.get(i);
+    int n = bridges.size();
+    if (Logger.debugging)
+      Logger.debug((isAntiparallel ? "anti" : "") + "parallel ladders:");
+    for (int i = 0; i < n; i++) {
+      Bridge bridge = bridges.get(i);
       if (checkBridge(bridge, htBridges, isAntiparallel, 1, dir)) {
-        bsEEE.set(bridge[0].index);
-        bsEEE.set(bridge[1].index);
-      } else {
-        checkBulge(bridge, htBridges, isAntiparallel, 1, bsEEE);
+        if (Logger.debugging)
+          Logger.debug(bridge.toString());
       }
       if (checkBridge(bridge, htBridges, isAntiparallel, -1, -dir)) {
-        bsEEE.set(bridge[0].index);
-        bsEEE.set(bridge[1].index);
-      } else {
-        checkBulge(bridge, htBridges, isAntiparallel, -1, bsEEE);
+        if (Logger.debugging)
+          Logger.debug(bridge.toString());
       }
     }
+    if (Logger.debugging)
+      Logger.debug((isAntiparallel ? "anti" : "") + "parallel bulges:");
+    for (int i = 0; i < n; i++) {
+      Bridge bridge = bridges.get(i);
+      checkBulge(bridge, htBridges, isAntiparallel, 1, bsEEE);
+      checkBulge(bridge, htBridges, isAntiparallel, -1, bsEEE);
+    }
+    
+    for (int i = 0; i < n; i++) {
+      Bridge bridge = bridges.get(i);
+      if (bridge.ladder[0][0] != bridge.ladder[0][1]) {
+        bsEEE.set(bridge.a.index); // in case it is just a B 
+        bsEEE.set(bridge.b.index);
+      }
+    }
+
   }
 
   /**
@@ -1180,34 +1245,60 @@ public class AminoPolymer extends AlphaPolymer {
    * @param n2 
    * @return TRUE if bridge is part of a ladder
    */
-  private static boolean checkBridge(Atom[] bridge,
-                                     Map<String, Boolean> htBridges,
+  private static boolean checkBridge(Bridge bridge,
+                                     Map<String, Bridge> htBridges,
                                      boolean isAntiparallel, int n1, int n2) {
-    return (htBridges.get(bridge[0].getOffsetResidueAtom("0", n1) + "-"
-        + bridge[1].getOffsetResidueAtom("0", n2)) == (isAntiparallel ? Boolean.TRUE
-        : Boolean.FALSE));
+    Bridge b = htBridges.get(bridge.a.getOffsetResidueAtom("0", n1) + "-"
+        + bridge.b.getOffsetResidueAtom("0", n2));
+    if (b == null)
+      return false;
+    return bridge.addBridge(b);
   }
 
-  private static void checkBulge(Atom[] bridge, Map<String, Boolean> htBridges,
+  /*
+   * 0 0 THIS BRIDGE
+   * 0 1 
+   * 0 2
+   * 0 3
+   * 0 4
+   * 0 5
+   * 1 0 *
+   * 1 1 * already marked
+   * 1 2
+   * 1 3
+   * 1 4
+   * 1 5
+   * 2 0 *
+   * 2 1 *
+   * 2 2 *
+   * 2 3
+   * 2 4
+   * 2 5
+   * 
+   */
+  private static void checkBulge(Bridge bridge, Map<String, Bridge> htBridges,
                                  boolean isAntiparallel, int dir, BitSet bsEEE) {
     int dir1 = (isAntiparallel ? -1 : 1);
-    for (int i = 1; i < 3; i++)
-      for (int j = 3 - i; j < 6; j++) { // skip 1/1 -- that would be a perfect ladder
-        if (checkBridge(bridge, htBridges, isAntiparallel, i * dir, j * dir1))
+    for (int i = 0; i < 3; i++)
+      for (int j = (i == 0 ? 1 : 0); j < 6; j++) {
+        if (checkBridge(bridge, htBridges, isAntiparallel, i * dir, j * dir1)) {
           markBulgeResidues(bridge, i, j, dir, dir1, bsEEE);
-        if (i == 1 || j > 2) // skip 2/1 and 2/2 since we have done those already
-          if (checkBridge(bridge, htBridges, isAntiparallel, j * dir, i * dir1)) 
+        }
+        if (j > i) 
+          if (checkBridge(bridge, htBridges, isAntiparallel, j * dir, i * dir1)) { 
             markBulgeResidues(bridge, j, i, dir, dir1, bsEEE);
+          }
       }
   }
 
-  private static void markBulgeResidues(Atom[] bridge, int ni, int nj, int dir, int dir1, BitSet bsEEE) {
-    bsEEE.set(bridge[0].index); // in case it is just a B 
-    bsEEE.set(bridge[1].index);
+  private static void markBulgeResidues(Bridge bridge, int ni, int nj, int dir, int dir1, BitSet bsEEE) {
+    if (Logger.debugging)
+      Logger.debug("Bulge  added (" + ni*dir + ") (" + nj*dir1 + ") "
+          + bridge.a + " " + bridge.b);
     for (int i = 1; i <= ni; i++)
-      bsEEE.set(bridge[0].getOffsetResidueAtom("0", i * dir));
+      bsEEE.set(bridge.a.getOffsetResidueAtom("0", i * dir));
     for (int i = 1; i <= nj; i++)
-      bsEEE.set(bridge[1].getOffsetResidueAtom("0", i * dir1));
+      bsEEE.set(bridge.b.getOffsetResidueAtom("0", i * dir1));
   }
 
   //// general utility ////

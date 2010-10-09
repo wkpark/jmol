@@ -323,10 +323,38 @@ public abstract class Monomer extends Group {
     return (structure == null ? "" : JmolConstants.getProteinStructureName(structure.type, false));
   }
   
-  final void updateOffsetsForAlternativeLocations(BitSet bsSelected,
-                                                  int nAltLocInModel) {
-    chain.updateOffsetsForAlternativeLocations(bsSelected, nAltLocInModel,
-        offsets, firstAtomIndex, lastAtomIndex);
+  final void updateOffsetsForAlternativeLocations(Atom[] atoms, BitSet bsSelected) {
+      for (int offsetIndex = offsets.length; --offsetIndex >= 0;) {
+        int offset = offsets[offsetIndex] & 0xFF;
+        if (offset == 255)
+          continue;
+        int iThis = firstAtomIndex + offset;
+        Atom atom = atoms[iThis];
+        if (atom.getAlternateLocationID() == 0)
+          continue;
+        // scan entire group list to ensure including all of
+        // this atom's alternate conformation locations.
+        // (PDB order may be AAAAABBBBB, not ABABABABAB)
+        int nScan = lastAtomIndex - firstAtomIndex;
+        for (int i = 1; i <= nScan; i++) {
+          int iNew = iThis + i;
+          if (iNew > lastAtomIndex)
+            iNew -= nScan + 1;
+          int offsetNew = iNew - firstAtomIndex;
+          if (offsetNew < 0 || offsetNew > 255 || iNew == iThis
+              || !bsSelected.get(iNew))
+            continue;
+          if (atoms[iNew].atomID != atoms[iThis].atomID
+              || atoms[iNew].atomID == 0 
+                  && !atoms[iNew].getAtomName().equals(atoms[iThis].getAtomName()))
+            continue;
+          if (Logger.debugging)
+            Logger.debug("Chain.udateOffsetsForAlternativeLocation " + atoms[iNew] + " was " + atoms[iThis]);
+          offsets[offsetIndex] = (byte) offsetNew;
+          break;
+        }
+      }
+
   }
     
   final void getMonomerSequenceAtoms(BitSet bsInclude, BitSet bsResult) {

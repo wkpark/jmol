@@ -25,8 +25,6 @@ package org.jmol.modelset;
 
 import java.util.BitSet;
 
-import org.jmol.util.Logger;
-
 public final class Chain {
 
   ModelSet modelSet;
@@ -152,54 +150,6 @@ public final class Chain {
   
   int getSelectedGroupCount() {
     return selectedGroupCount;
-  }
-
-  /**
-   * 
-   * @param bsSelected
-   * @param nAltLocInModel 
-   * @param offsets
-   * @param firstAtomIndex
-   * @param lastAtomIndex
-   */
-  public final void updateOffsetsForAlternativeLocations(BitSet bsSelected,
-                                                  int nAltLocInModel,
-                                                  byte[] offsets,
-                                                  int firstAtomIndex,
-                                                  int lastAtomIndex) {
-    Atom[] atoms = modelSet.atoms;
-    for (int offsetIndex = offsets.length; --offsetIndex >= 0;) {
-      int offset = offsets[offsetIndex] & 0xFF;
-      if (offset == 255)
-        continue;
-      int iThis = firstAtomIndex + offset;
-      Atom atom = getAtom(iThis);
-      if (atom.getAlternateLocationID() == 0)
-        continue;
-      
-      // scan entire group list to ensure including all of
-      // this atom's alternate conformation locations.
-      // (PDB order may be AAAAABBBBB, not ABABABABAB)
-      int nScan = lastAtomIndex - firstAtomIndex;
-      for (int i = 1; i <= nScan; i++) {
-        int iNew = iThis + i;
-        if (iNew > lastAtomIndex)
-          iNew -= nScan + 1;
-        int offsetNew = iNew - firstAtomIndex;
-        if (offsetNew < 0 || offsetNew > 255 || iNew == iThis
-            || !bsSelected.get(iNew))
-          continue;
-        if (atoms[iNew].atomID != atoms[iThis].atomID
-            || atoms[iNew].atomID == 0 
-                && !atoms[iNew].getAtomName().equals(atoms[iThis].getAtomName()))
-          continue;
-        if (Logger.debugging)
-          Logger.debug("Chain.udateOffsetsForAlternativeLocation " + atoms[iNew] + " was " + atoms[iThis]);
-        offsets[offsetIndex] = (byte) offsetNew;
-        break;
-      }
-    }
-
   }
 
   public void fixIndices(int atomsDeleted) {

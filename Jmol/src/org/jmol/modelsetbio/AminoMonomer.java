@@ -31,6 +31,7 @@ import javax.vecmath.Vector3f;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Chain;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
@@ -208,7 +209,7 @@ public class AminoMonomer extends AlphaMonomer {
                             boolean dsspIgnoreHydrogens) {
     if (monomerIndex == 0 || groupID == JmolConstants.GROUPID_PROLINE) 
       return false;      
-    Point3f nitrogenPoint = getNitrogenAtom();
+    Atom nitrogenPoint = getNitrogenAtom();
     Point3f nhPoint = getNitrogenHydrogenPoint();
     if (nhPoint != null && !dsspIgnoreHydrogens) {
       vNH.sub(nhPoint, nitrogenPoint);
@@ -233,7 +234,7 @@ public class AminoMonomer extends AlphaMonomer {
     aminoHydrogenPoint.add(nitrogenPoint, vNH);
     nitrogenHydrogenPoint = new Point3f(aminoHydrogenPoint);
     if (Logger.debugging)
-      Logger.info("draw pta" + monomerIndex + " {" + aminoHydrogenPoint.x + " " + aminoHydrogenPoint.y + " " + aminoHydrogenPoint.z + "} color red#aminoPolymer.calchbonds");
+      Logger.info("draw pta" + monomerIndex + "_" + nitrogenPoint.index + " " + Escape.escape(nitrogenPoint) + Escape.escape(aminoHydrogenPoint) + " # " + nitrogenPoint);
     return true;
   }
 

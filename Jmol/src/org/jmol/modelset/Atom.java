@@ -61,7 +61,7 @@ final public class Atom extends Point3fi implements JmolNode {
   private byte formalChargeAndFlags;
   private byte valence;
   char alternateLocationID;
-  byte atomID;
+  public byte atomID;
   public byte getAtomID() {
     return atomID;
   }

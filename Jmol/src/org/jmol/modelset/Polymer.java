@@ -152,9 +152,8 @@ abstract public class Polymer {
   /**
    * 
    * @param bsConformation
-   * @param nAltLocs
    */
-  public void setConformation(BitSet bsConformation, int nAltLocs) {
+  public void setConformation(BitSet bsConformation) {
   }
 
   /**

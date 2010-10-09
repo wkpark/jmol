@@ -196,10 +196,10 @@ public abstract class BioPolymer extends Polymer {
   }
 
   @Override
-  public void setConformation(BitSet bsSelected, int nAltLocsInModel) {
+  public void setConformation(BitSet bsSelected) {
+    Atom[] atoms = model.getModelSet().atoms;
     for (int i = monomerCount; --i >= 0;)
-      monomers[i].updateOffsetsForAlternativeLocations(bsSelected,
-          nAltLocsInModel);
+      monomers[i].updateOffsetsForAlternativeLocations(atoms, bsSelected);
     recalculateLeadMidpointsAndWingVectors();
   }
 

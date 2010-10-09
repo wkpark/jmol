@@ -244,8 +244,9 @@ public final class Model {
   }
   
   void setConformation(BitSet bsConformation) {
-    for (int i = bioPolymerCount; --i >= 0; )
-      bioPolymers[i].setConformation(bsConformation, nAltLocs);
+    if (nAltLocs > 0)
+      for (int i = bioPolymerCount; --i >= 0; )
+        bioPolymers[i].setConformation(bsConformation);
   }
 
   public Chain[] getChains() {

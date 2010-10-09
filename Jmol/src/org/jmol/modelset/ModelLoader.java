@@ -46,6 +46,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
@@ -465,14 +466,17 @@ public final class ModelLoader extends ModelSet {
     finalizeModels(baseModelCount);
   }
     
-  private boolean setModelNameNumberProperties(int modelIndex, int trajectoryBaseIndex,
-                                       String modelName, int modelNumber,
-                                       Properties modelProperties,
-                                       Map<String, Object> modelAuxiliaryInfo, 
-                                       String jmolData) {
+  private boolean setModelNameNumberProperties(
+                                               int modelIndex,
+                                               int trajectoryBaseIndex,
+                                               String modelName,
+                                               int modelNumber,
+                                               Properties modelProperties,
+                                               Map<String, Object> modelAuxiliaryInfo,
+                                               String jmolData) {
     if (modelNumber != Integer.MAX_VALUE) {
-      models[modelIndex] = new Model(this, modelIndex, trajectoryBaseIndex, jmolData,
-          modelProperties, modelAuxiliaryInfo);
+      models[modelIndex] = new Model(this, modelIndex, trajectoryBaseIndex,
+          jmolData, modelProperties, modelAuxiliaryInfo);
       modelNumbers[modelIndex] = modelNumber;
       modelNames[modelIndex] = modelName;
     }
@@ -482,13 +486,19 @@ public final class ModelLoader extends ModelSet {
     models[modelIndex].bsAtoms.clear(atoms.length + 1);
     String codes = (String) getModelAuxiliaryInfo(modelIndex, "altLocs");
     models[modelIndex].setNAltLocs(codes == null ? 0 : codes.length());
+    if (codes != null) {
+      char[] altlocs = codes.toCharArray();
+      Arrays.sort(altlocs);
+      codes = String.valueOf(altlocs);
+      setModelAuxiliaryInfo(modelIndex, "altLocs", codes);
+    }
     codes = (String) getModelAuxiliaryInfo(modelIndex, "insertionCodes");
     models[modelIndex].setNInsertions(codes == null ? 0 : codes.length());
-    boolean isModelKit = (modelSetName != null 
+    boolean isModelKit = (modelSetName != null
         && modelSetName.startsWith("Jmol Model Kit")
-        || modelName.startsWith("Jmol Model Kit")
-        || "Jme".equals(getModelAuxiliaryInfo(modelIndex,
-    "fileType")));models[modelIndex].isModelKit = isModelKit;
+        || modelName.startsWith("Jmol Model Kit") || "Jme"
+        .equals(getModelAuxiliaryInfo(modelIndex, "fileType")));
+    models[modelIndex].isModelKit = isModelKit;
     return models[modelIndex].isPDB = getModelAuxiliaryInfoBoolean(modelIndex,
         "isPDB");
   }
@@ -603,6 +613,11 @@ public final class ModelLoader extends ModelSet {
       setModelAuxiliaryInfo(i, "modelNumber", Integer.valueOf(modelNumbers[i] % 1000000));
       setModelAuxiliaryInfo(i, "modelFileNumber", Integer.valueOf(modelFileNumbers[i]));
       setModelAuxiliaryInfo(i, "modelNumberDotted", getModelNumberDotted(i));
+      String codes = (String) getModelAuxiliaryInfo(i, "altLocs");
+      if (codes != null) {
+        Logger.info("model " + getModelNumberDotted(i)
+            + " alternative locations: " + codes);
+      }
     }
   }
 

@@ -7,13 +7,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-10-07 20:29+0200\n"
-"PO-Revision-Date: 2009-12-19 18:54+0000\n"
-"Last-Translator: Frederico Tavares <Unknown>\n"
+"PO-Revision-Date: 2010-01-13 22:25+0000\n"
+"Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Portugal@Folding <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-12-19 20:04+0000\n"
+"X-Launchpad-Export-Date: 2010-10-10 06:44+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: Portugal\n"
 "X-Poedit-Language: Portuguese\n"
@@ -144,7 +144,8 @@ msgid "Check"
 msgstr "Verificar"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -415,7 +416,7 @@ msgstr "Húngaro"
 
 #: org/jmol/i18n/GT.java:133
 msgid "Indonesian"
-msgstr ""
+msgstr "Indonésio"
 
 #: org/jmol/i18n/GT.java:134
 msgid "Italian"
@@ -423,7 +424,7 @@ msgstr "Italiano"
 
 #: org/jmol/i18n/GT.java:135
 msgid "Japanese"
-msgstr ""
+msgstr "Japonês"
 
 #: org/jmol/i18n/GT.java:136
 msgid "Korean"
@@ -497,9 +498,8 @@ msgid "could not setup force field {0}"
 msgstr ""
 
 #: org/jmol/modelkit/ModelKitPopup.java:75
-#, fuzzy
 msgid "Element?"
-msgstr "Elemento"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:78
 msgid "new"
@@ -519,9 +519,8 @@ msgid "center"
 msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:82
-#, fuzzy
 msgid "add hydrogens"
-msgstr "Mostrar Hidrogénios"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:83
 msgid "minimize"
@@ -532,14 +531,12 @@ msgid "fix hydrogens and minimize"
 msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:85
-#, fuzzy
 msgid "clear"
-msgstr "Limpar"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:86
-#, fuzzy
 msgid "save file"
-msgstr "Guardar"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:87
 msgid "save state"
@@ -550,14 +547,12 @@ msgid "invert ring stereochemistry"
 msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:89
-#, fuzzy
 msgid "delete atom"
-msgstr "Seleccionar átomo"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:90
-#, fuzzy
 msgid "drag to bond"
-msgstr "Seleccionar átomo"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:91
 msgid "drag atom"
@@ -584,9 +579,8 @@ msgid "decrease charge"
 msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:105
-#, fuzzy
 msgid "delete bond"
-msgstr "Seleccionar átomo"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:106
 msgid "single"
@@ -733,9 +727,9 @@ msgid "By HETATM"
 msgstr "Por HETATM"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:541
-#, fuzzy, java-format
+#, java-format
 msgid "Molecular Orbitals ({0})"
-msgstr "Orbitais Moleculares"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:542
 #: org/jmol/popup/MainPopupResourceBundle.java:853
@@ -1514,7 +1508,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:831
 msgid "Identity"
-msgstr ""
+msgstr "Identidade"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:832
 msgid "Label"
@@ -1574,7 +1568,7 @@ msgstr "Modelo"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:851
 msgid "Orientation"
-msgstr ""
+msgstr "Orientação"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:852
 msgid "Space group"
@@ -1650,9 +1644,8 @@ msgid "Optimize structure"
 msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:878
-#, fuzzy
 msgid "Model kit"
-msgstr "Modelo"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:882
 msgid "Extract MOL data"
@@ -1804,7 +1797,7 @@ msgstr ""
 #: org/jmol/script/ScriptCompilationTokenParser.java:1241
 #: org/jmol/script/ScriptEvaluator.java:2698
 msgid "number expected"
-msgstr ""
+msgstr "número experado"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1244
 msgid "number or variable name expected"
@@ -1817,12 +1810,12 @@ msgstr ""
 #: org/jmol/script/ScriptCompilationTokenParser.java:1250
 #, java-format
 msgid "{0} expected"
-msgstr ""
+msgstr "{0} esperado"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1253
 #, java-format
 msgid "{0} unexpected"
-msgstr ""
+msgstr "{0} inesperado"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1256
 #, java-format
@@ -1881,7 +1874,7 @@ msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2616
 msgid "color expected"
-msgstr ""
+msgstr "cor esperada"
 
 #: org/jmol/script/ScriptEvaluator.java:2619
 msgid "a color or palette name (Jmol, Rasmol) is required"
@@ -1909,7 +1902,7 @@ msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2643
 msgid "file not found"
-msgstr ""
+msgstr "ficheiro não encontrado"
 
 #: org/jmol/script/ScriptEvaluator.java:2646
 msgid "incompatible arguments"
@@ -1917,7 +1910,7 @@ msgstr "argumentos incompatíveis"
 
 #: org/jmol/script/ScriptEvaluator.java:2649
 msgid "insufficient arguments"
-msgstr ""
+msgstr "argumentos insuficientes"
 
 #: org/jmol/script/ScriptEvaluator.java:2652
 msgid "integer expected"
@@ -1930,7 +1923,7 @@ msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2658
 msgid "invalid argument"
-msgstr ""
+msgstr "argumento inválido"
 
 #: org/jmol/script/ScriptEvaluator.java:2661
 msgid "invalid parameter order"
@@ -2143,7 +2136,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:69
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:71
@@ -2368,14 +2362,6 @@ msgstr ""
 #, java-format
 msgid "Setting log file to {0}"
 msgstr ""
-
-#, fuzzy
-#~ msgid "atoms"
-#~ msgstr "Átomos"
-
-#, fuzzy
-#~ msgid "bonds"
-#~ msgstr "Ligações"
 
 #~ msgid "About Jmol"
 #~ msgstr "Sobre o Jmol"

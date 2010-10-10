@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-09-21 17:23+0200\n"
-"PO-Revision-Date: 2010-08-15 10:58+0000\n"
-"Last-Translator: Frizzolo <Unknown>\n"
+"PO-Revision-Date: 2010-10-09 22:11+0000\n"
+"Last-Translator: simone sandri <Unknown>\n"
 "Language-Team: Italian <it@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-08-15 16:00+0000\n"
+"X-Launchpad-Export-Date: 2010-10-10 06:44+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -64,7 +64,8 @@ msgstr "nessuna console -- tutto l'output inviato a sysout"
 
 #: org/openscience/jmol/app/JmolApp.java:156
 msgid "send only output from print messages to console (implies -i)"
-msgstr "inviare l'output di stampa solo dai messaggi alla console (implica -i)"
+msgstr ""
+"inviare l'output di stampa solo dai messaggi alla console (implica -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:158
 msgid "independent command thread"
@@ -80,7 +81,8 @@ msgstr "file di script da eseguire o '-' per System.in"
 
 #: org/openscience/jmol/app/JmolApp.java:170
 msgid "use multitouch interface (requires \"sparshui\" parameter"
-msgstr "l'uso dell'interfaccia multitouch (richiede il parametro \"sparshui\""
+msgstr ""
+"l'uso dell'interfaccia multitouch (richiede il parametro \"sparshui\""
 
 #: org/openscience/jmol/app/JmolApp.java:177
 msgid "Jmol script to execute BEFORE -s option"
@@ -108,8 +110,8 @@ msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
 msgstr ""
-"Qualità delle immagini JPG (1-100; default 75) o compressione delle "
-"immagini  PNG (0-9; default e, compressione massima 9)"
+"Qualità delle immagini JPG (1-100; default 75) o compressione delle immagini "
+" PNG (0-9; default e, compressione massima 9)"
 
 #: org/openscience/jmol/app/JmolApp.java:216
 #, java-format
@@ -436,11 +438,11 @@ msgstr "Apri &URL"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:62
 msgid "&Get PDB"
-msgstr ""
+msgstr "&Ottieni PDB"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:63
 msgid "Get &MOL"
-msgstr ""
+msgstr "Ottieni &MOL"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:64
 msgid "Scrip&t Editor..."
@@ -667,7 +669,7 @@ msgstr "&Vettore"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:127
 msgid "&On"
-msgstr ""
+msgstr "&Attivo"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:128
 #, java-format
@@ -723,7 +725,7 @@ msgstr "&Misure"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:148
 msgid "Resi&ze"
-msgstr ""
+msgstr "&Ridimensiona"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:149
 msgid "&View"
@@ -990,9 +992,8 @@ msgid "Initializing Recent Files..."
 msgstr "Inizializzazione dei File Recenti..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:341
-#, fuzzy
 msgid "Jmol Java Console"
-msgstr "Jmol Java &Console"
+msgstr "Jmol Java Console"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:361
 msgid "Could not create ConsoleTextArea: "
@@ -1024,7 +1025,7 @@ msgstr "Inserisci URL di un modello molecolare"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1149
 msgid "Get PDB file"
-msgstr ""
+msgstr "Ottieni documento PDB"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1150
 msgid "Enter a four-digit PDB ID"
@@ -1102,7 +1103,8 @@ msgstr "Mostra durante Rendering"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:245
 msgid "Should POV-Ray attempt to display while rendering?"
-msgstr "Deve il POV-Ray tentare di visualizzare durante la fare di rendering?"
+msgstr ""
+"Deve il POV-Ray tentare di visualizzare durante la fare di rendering?"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:268
 msgid "width:"
@@ -1604,11 +1606,11 @@ msgstr "Animazione"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:178
 msgid "First Frame"
-msgstr ""
+msgstr "Primo Fotogramma"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:180
 msgid "Previous Frame"
-msgstr ""
+msgstr "Fotogramma precedente"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:182
 msgid "Play"
@@ -1616,7 +1618,7 @@ msgstr "Mostra"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:184
 msgid "Next Frame"
-msgstr ""
+msgstr "Fotogramma successivo"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:186
 msgid "Pause"
@@ -1624,7 +1626,7 @@ msgstr "Pausa"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:188
 msgid "Last Frame"
-msgstr ""
+msgstr "Ultimo Fotogramma"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:190
 msgid "Mode:"
@@ -1632,11 +1634,11 @@ msgstr "Modalità:"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:191
 msgid "Loop"
-msgstr ""
+msgstr "Ciclo"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:193
 msgid "Palindrome"
-msgstr ""
+msgstr "Palindromo"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:195
 msgid "Play Once"
@@ -1668,15 +1670,19 @@ msgstr "non implementato"
 #~ msgid "vector"
 #~ msgstr "vettore"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Vai al primo {0} nella raccolta"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Vai al precedente {0} nella raccolta"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Riproduci la collezione completa di {0}"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Vai al prossimo {0} nella raccolta"
 
@@ -1692,9 +1698,11 @@ msgstr "non implementato"
 #~ msgid "Show Selected"
 #~ msgstr "Mostra Selezionati."
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "aggiungendo {0}.spt"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "aggiungendo {0}.png"
 

@@ -337,8 +337,7 @@ public class ScriptVariable extends Token {
       if (v.objects != null) {
         objects = new ScriptVariable[n];
         System.arraycopy(v.objects, 0, objects, 0, n);
-      }
-      
+      }      
       break;
     default:
       value = v.value;

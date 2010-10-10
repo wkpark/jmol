@@ -327,17 +327,28 @@ public abstract class Monomer extends Group {
    * clear out bits that are not associated with the nth conformation
    * counting for each residue from the beginning of the file listing
    * 
+   * 
    * @param atoms
    * @param bsConformation
-   * @param conformationIndex
+   * @param conformationIndex   will be >= 0
    */
   void getConformation(Atom[] atoms, BitSet bsConformation, int conformationIndex) {
+
+    // A        A
+    // A        B
+    // A        A
+    // B  or    B
+    // B        A
+    // B        B
+    
     char ch = '\0';
     for (int i = firstAtomIndex; i <= lastAtomIndex; i++) {
       Atom atom = atoms[i];
       char altloc = atom.getAlternateLocationID();
+      // ignore atoms that have no designation
       if (altloc == '\0')
         continue;
+      // count down until we get the desired index into the list
       if (conformationIndex >= 0 && altloc != ch) {
         ch = altloc;
         conformationIndex--;

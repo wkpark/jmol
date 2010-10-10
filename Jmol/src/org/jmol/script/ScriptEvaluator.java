@@ -11025,7 +11025,7 @@ public class ScriptEvaluator {
         bs = (statementLength < 4 ? null : atomExpression(2));
         if (isSyntaxCheck)
           return;
-        asDSSP = (tokAt(++iToken) == Token.dssp);
+        asDSSP = (tokAt(++iToken) != Token.ramachandran);
         showString(viewer.calculateStructures(bs, asDSSP, true));
         return;
       }

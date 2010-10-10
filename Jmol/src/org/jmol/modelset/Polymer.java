@@ -263,4 +263,11 @@ abstract public class Polymer {
    */
   public void setStructureList(float[][] structureList) {
   }
+
+  /**
+   * @param bsConformation  
+   * @param conformationIndex 
+   */
+  public void getConformation(BitSet bsConformation, int conformationIndex) {
+  }
 }

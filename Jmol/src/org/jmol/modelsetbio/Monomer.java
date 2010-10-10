@@ -322,7 +322,31 @@ public abstract class Monomer extends Group {
     ProteinStructure structure = getProteinStructure();
     return (structure == null ? "" : JmolConstants.getProteinStructureName(structure.type, false));
   }
-  
+
+  /**
+   * clear out bits that are not associated with the nth conformation
+   * counting for each residue from the beginning of the file listing
+   * 
+   * @param atoms
+   * @param bsConformation
+   * @param conformationIndex
+   */
+  void getConformation(Atom[] atoms, BitSet bsConformation, int conformationIndex) {
+    char ch = '\0';
+    for (int i = firstAtomIndex; i <= lastAtomIndex; i++) {
+      Atom atom = atoms[i];
+      char altloc = atom.getAlternateLocationID();
+      if (altloc == '\0')
+        continue;
+      if (conformationIndex >= 0 && altloc != ch) {
+        ch = altloc;
+        conformationIndex--;
+      }
+      if (conformationIndex < 0 && altloc != ch)
+        bsConformation.clear(i);
+    }
+  }
+
   final void updateOffsetsForAlternativeLocations(Atom[] atoms, BitSet bsSelected) {
       for (int offsetIndex = offsets.length; --offsetIndex >= 0;) {
         int offset = offsets[offsetIndex] & 0xFF;

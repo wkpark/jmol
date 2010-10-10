@@ -249,6 +249,15 @@ public final class Model {
         bioPolymers[i].setConformation(bsConformation);
   }
 
+  boolean getPdbConformation(BitSet bsConformation, int conformationIndex) {
+    if (!isPDB)
+      return false;
+    if (nAltLocs > 0)
+      for (int i = bioPolymerCount; --i >= 0;)
+        bioPolymers[i].getConformation(bsConformation, conformationIndex);
+    return true;
+  }
+
   public Chain[] getChains() {
     return chains;
   }

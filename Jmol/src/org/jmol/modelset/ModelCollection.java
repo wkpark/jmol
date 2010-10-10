@@ -728,11 +728,13 @@ abstract public class ModelCollection extends BondCollection {
         if (conformationIndex >= nAltLocs)
           continue;
         BitSet bsConformation = viewer.getModelUndeletedAtomsBitSet(i);
-        if (conformationIndex >= 0)
-          for (int c = nAltLocs; --c >= 0;)
-            if (c != conformationIndex)
-              bsConformation.andNot(getAtomBits(
-                  Token.spec_alternate, altLocs.substring(c, c + 1)));
+        if (conformationIndex >= 0) {
+          if (!models[i].getPdbConformation(bsConformation, conformationIndex))
+            for (int c = nAltLocs; --c >= 0;)
+              if (c != conformationIndex)
+                bsConformation.andNot(getAtomBits(Token.spec_alternate, altLocs
+                    .substring(c, c + 1)));
+        }
         if (bsConformation.nextSetBit(0) >= 0) {
           bs.or(bsConformation);
           if (doSet)

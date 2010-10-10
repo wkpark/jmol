@@ -141,13 +141,13 @@ public class AminoPolymer extends AlphaPolymer {
       // In some cases, such as 2HEU, we have problems with some residues not having A and other having it.
       // These cases may result in a different analysis here than for the DSSP program itself.
       
-      char idN = nitrogen.getAlternateLocationID();
-      char idO = oxygen.getAlternateLocationID();
-      if (idN != '\0' && idO != '\0' && idN != idO) {
-        if (!checkDistances)
-          Logger.warn("AminoPolymer.calculateRasmolHydrogenBond: alt-loc mismatch: " + nitrogen + " " + oxygen + "; bond ignored -- results may differ from DSSP");
-        continue;
-      }
+      //char idN = nitrogen.getAlternateLocationID();
+      //char idO = oxygen.getAlternateLocationID();
+      //if (idN != '\0' && idO != '\0' && idN != idO) {
+      //  if (!checkDistances)
+      //    Logger.warn("AminoPolymer.calculateRasmolHydrogenBond: alt-loc mismatch: " + nitrogen + " " + oxygen + "; bond ignored -- results may differ from DSSP");
+      //  continue;
+     // }
       Point3f targetAlphaPoint = target.getLeadAtom();
       float dist2 = sourceAlphaPoint.distanceSquared(targetAlphaPoint);
       if (dist2 >= maxHbondAlphaDistance2)

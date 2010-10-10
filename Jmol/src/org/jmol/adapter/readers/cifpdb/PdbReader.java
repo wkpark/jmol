@@ -598,12 +598,12 @@ REMARK 290 REMARK: NULL
     atom.atomName = atomName;
     atom.chainID = chainID;
     atom.group3 = currentGroup3;
-    if (filter != null)
-      if (!filterAtom(atom))
-        return;
     atom.elementSymbol = elementSymbol;
     if (charAlternateLocation != ' ')
       atom.alternateLocationID = charAlternateLocation;
+    if (filter != null)
+      if (!filterAtom(atom))
+        return;
     atom.formalCharge = charge;
     if (partialCharge != Float.MAX_VALUE)
       atom.partialCharge = partialCharge;

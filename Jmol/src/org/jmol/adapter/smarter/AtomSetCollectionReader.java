@@ -349,7 +349,8 @@ public abstract class AtomSetCollectionReader {
     // gets used by COORD files to load just those coordinates
     doSetOrientation = (filter == null || filter.toUpperCase().indexOf("NOORIENT") < 0);
     haveAtomFilter = (filter != null && (filter.indexOf(".") >= 0 
-        || filter.indexOf("[") >= 0 || filter.indexOf(":") >= 0 
+        || filter.indexOf("[") >= 0 || filter.indexOf(":") >= 0
+        || filter.indexOf("%") >= 0
         || filter.toUpperCase().indexOf("BIOMOLECULE") >= 0));
     bsFilter = (BitSet) htParams.get("bsFilter");
     if (bsFilter == null && filter != null) {
@@ -670,6 +671,13 @@ public abstract class AtomSetCollectionReader {
           break;
       } else if (filter.indexOf(":") >= 0
           && filter.indexOf(":" + atom.chainID) < 0) {
+        break;
+      }
+      if (filter.indexOf("!%") >= 0) {
+        if (filter.indexOf(":" + atom.alternateLocationID) >= 0)
+          break;
+      } else if (filter.indexOf("%") >= 0
+          && atom.alternateLocationID != '\0' && filter.indexOf("%" + atom.alternateLocationID) < 0) {
         break;
       }
       isOK = true;

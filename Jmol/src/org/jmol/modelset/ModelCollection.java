@@ -620,22 +620,25 @@ abstract public class ModelCollection extends BondCollection {
    * also accessed by ModelManager from Eval
    * 
    * @param alreadyDefined    set to skip calculation
-   * @param asDSSP TODO
-   * @param reportOnly 
+   * @param asDSSP
+   * @param doReport 
    * @param dsspIgnoreHydrogen 
-   * @return TODO
+   * @param setStructure
+   * @return  report
    *  
    */
   protected String calculateStructuresAllExcept(BitSet alreadyDefined,
                                                 boolean asDSSP,
-                                                boolean reportOnly, 
-                                                boolean dsspIgnoreHydrogen) {
+                                                boolean doReport,
+                                                boolean dsspIgnoreHydrogen,
+                                                boolean setStructure) {
     freezeModels();
     String ret = "";
-    for (int i = modelCount; --i >= 0;)
+    for (int i = 0; i < modelCount; i++)
       if (models[i].isPDB && !alreadyDefined.get(i))
-        ret += models[i].calculateStructures(asDSSP, reportOnly, dsspIgnoreHydrogen);
-    if (!reportOnly)
+        ret += models[i].calculateStructures(asDSSP, doReport,
+            dsspIgnoreHydrogen, setStructure);
+    if (setStructure)
       setStructureIds();
     return ret;
   }
@@ -720,10 +723,10 @@ abstract public class ModelCollection extends BondCollection {
     BitSet bs = new BitSet();
     for (int i = modelCount; --i >= 0;)
       if (i == modelIndex || modelIndex < 0) {
-        int nAltLocs = getAltLocCountInModel(i);
-        if (nAltLocs == 0 || conformationIndex >= nAltLocs)
-          continue;
         String altLocs = getAltLocListInModel(i);
+        int nAltLocs = getAltLocCountInModel(i);
+        if (conformationIndex >= nAltLocs)
+          continue;
         BitSet bsConformation = viewer.getModelUndeletedAtomsBitSet(i);
         if (conformationIndex >= 0)
           for (int c = nAltLocs; --c >= 0;)
@@ -1028,7 +1031,7 @@ abstract public class ModelCollection extends BondCollection {
    * @param bsB
    * @param vHBonds
    *          vector of bonds to fill; if null, creates the HBonds
-   * @param nucleicOnly TODO
+   * @param nucleicOnly
    * @param nMax 
    * @param dsspIgnoreHydrogens 
    */

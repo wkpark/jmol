@@ -318,19 +318,22 @@ abstract public class ModelSet extends ModelCollection {
 
 
   ///////// atom and shape selecting /////////
-  
-  
-  public String calculateStructures(BitSet bsAtoms, boolean asDSSP, boolean reportOnly, boolean dsspIgnoreHydrogen) {
+
+  public String calculateStructures(BitSet bsAtoms, boolean asDSSP,
+                                    boolean dsspIgnoreHydrogen,
+                                    boolean setStructure) {
     BitSet bsAllAtoms = new BitSet();
     BitSet bsDefined = BitSetUtil.copyInvert(modelsOf(bsAtoms, bsAllAtoms),
         modelCount);
-    if (reportOnly)
-      return calculateStructuresAllExcept(bsDefined, asDSSP, true, dsspIgnoreHydrogen);
+    if (!setStructure)
+      return calculateStructuresAllExcept(bsDefined, asDSSP, true,
+          dsspIgnoreHydrogen, false);
     for (int i = 0; i < modelCount; i++)
       if (!bsDefined.get(i))
         addBioPolymerToModel(null, models[i]);
     calculatePolymers(0, bsDefined);
-    String ret = calculateStructuresAllExcept(bsDefined, asDSSP, false, dsspIgnoreHydrogen);
+    String ret = calculateStructuresAllExcept(bsDefined, asDSSP, true,
+        dsspIgnoreHydrogen, true);
     viewer.resetBioshapes(bsAllAtoms);
     setStructureIds();
     return ret;

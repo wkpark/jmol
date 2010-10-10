@@ -234,7 +234,8 @@ abstract public class BondCollection extends AtomCollection {
   protected BitSet bsHBondsRasmol;
 
   void getRasmolHydrogenBonds(Model m, BitSet bsA, BitSet bsB,
-                              List<Bond> vHBonds, boolean nucleicOnly, int nMax, boolean dsspIgnoreHydrogens) {
+                              List<Bond> vHBonds, boolean nucleicOnly,
+                              int nMax, boolean dsspIgnoreHydrogens) {
     boolean doAdd = (vHBonds == null);
     Polymer bp, bp1;
     if (doAdd)
@@ -243,7 +244,8 @@ abstract public class BondCollection extends AtomCollection {
       nMax = Integer.MAX_VALUE;
     boolean asDSSP = (bsB == null);
     if (asDSSP && m.bioPolymerCount > 0) {
-      m.bioPolymers[0].calculateStructures(m.bioPolymers, m.bioPolymerCount, false, vHBonds, dsspIgnoreHydrogens);
+      m.bioPolymers[0].calculateStructures(m.bioPolymers, m.bioPolymerCount,
+          vHBonds, false, dsspIgnoreHydrogens, false);
     } else {
       for (int i = m.bioPolymerCount; --i >= 0;) {
         bp = m.bioPolymers[i];
@@ -254,12 +256,13 @@ abstract public class BondCollection extends AtomCollection {
         boolean isRNA = bp.isRna();
         boolean isAmino = (type == Polymer.TYPE_AMINO);
         if (isAmino)
-          bp.calcRasmolHydrogenBonds(null, bsA, bsB, vHBonds, nMax, null, true, false);
+          bp.calcRasmolHydrogenBonds(null, bsA, bsB, vHBonds, nMax, null, true,
+              false);
         for (int j = m.bioPolymerCount; --j >= 0;) {
           if ((bp1 = m.bioPolymers[j]) != null && (isRNA || i != j)
               && type == bp1.getType()) {
             bp1.calcRasmolHydrogenBonds(bp, bsA, bsB, vHBonds, nMax, null,
-                    true, false);
+                true, false);
           }
         }
       }

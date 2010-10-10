@@ -498,6 +498,7 @@ public class ScriptEvaluator {
   public static boolean evaluateContext(Viewer viewer, ScriptContext context,
                                         ShapeManager shapeManager) {
     ScriptEvaluator e = new ScriptEvaluator(viewer);
+    e.historyDisabled = true;
     e.compiler = new ScriptCompiler(e.compiler);
     e.shapeManager = shapeManager;
     //System.out.println("ScriptEvaluator evaluating context for " + shapeManager);
@@ -11025,7 +11026,7 @@ public class ScriptEvaluator {
         if (isSyntaxCheck)
           return;
         asDSSP = (tokAt(++iToken) == Token.dssp);
-        showString(viewer.calculateStructures(bs, asDSSP, false));
+        showString(viewer.calculateStructures(bs, asDSSP, true));
         return;
       }
       if (n != Integer.MIN_VALUE) {
@@ -13438,7 +13439,7 @@ public class ScriptEvaluator {
     case Token.dssp:
       checkLength(2);
       if (!isSyntaxCheck)
-        msg = viewer.calculateStructures(null, true, true);
+        msg = viewer.calculateStructures(null, true, false);
       break;
     case Token.smiles:
       checkLength(2);

@@ -37,6 +37,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.Viewer;
 
 //import java.util.ArrayList;
 import java.util.ArrayList;
@@ -137,12 +138,15 @@ public class AminoPolymer extends AlphaPolymer {
       // Jmol allows setting other configurations. But it does assume that
       // there is a corrolation between "A" of one residue and "A" of another. 
       // (Just as DSSP does, only here we can choose which configuration we want.) 
-      // In some cases, such as 2HEU, we have problems with some residues not having A and other having it. 
+      // In some cases, such as 2HEU, we have problems with some residues not having A and other having it.
+      // These cases may result in a different analysis here than for the DSSP program itself.
       
       char idN = nitrogen.getAlternateLocationID();
       char idO = oxygen.getAlternateLocationID();
       if (idN != '\0' && idO != '\0' && idN != idO) {
-        Logger.warn("AminoPolymer.calculateRasmolHydrogenBond: alt-loc mismatch: " + nitrogen + " " + oxygen);
+        if (!checkDistances)
+          Logger.warn("AminoPolymer.calculateRasmolHydrogenBond: alt-loc mismatch: " + nitrogen + " " + oxygen + "; bond ignored -- results may differ from DSSP");
+        continue;
       }
       Point3f targetAlphaPoint = target.getLeadAtom();
       float dist2 = sourceAlphaPoint.distanceSquared(targetAlphaPoint);
@@ -599,32 +603,31 @@ public class AminoPolymer extends AlphaPolymer {
    * 
    * @param bioPolymers  
    * @param bioPolymerCount 
-   * @param reportOnly
    * @param vHBonds 
+   * @param doReport
    * @param dsspIgnoreHydrogens 
+   * @param setStructure
    * @return                 helix-5, helix-4, helix-3, and SUMMARY lines        
    */
 
   protected static String calculateStructuresDssp(Polymer[] bioPolymers,
                                                   int bioPolymerCount,
-                                                  boolean reportOnly,
                                                   List<Bond> vHBonds,
-                                                  boolean dsspIgnoreHydrogens) {
+                                                  boolean doReport,
+                                                  boolean dsspIgnoreHydrogens,
+                                                  boolean setStructure) {
     if (bioPolymerCount == 0)
       return "";
 
     Model m = bioPolymers[0].model;
     StringBuffer sb = new StringBuffer();
-    sb
-        .append("Jmol DSSP analysis for model ")
-        .append(m.getModelNumberDotted())
-        .append(" - ")
-        .append(m.getModelTitle())
-        .append(
-            "\nW. Kabsch and C. Sander, Biopolymers, vol 22, 1983, pp 2577-2637\n");
+    if (doReport) {
+    sb.append("Jmol ").append(Viewer.getJmolVersion()).append(
+        " DSSP analysis for model ").append(m.getModelNumberDotted()).append(
+        " - ").append(m.getModelTitle()).append("\n");
     if (m.modelIndex == 0)
-      sb
-          .append(
+      sb.append("\nW. Kabsch and C. Sander, Biopolymers, vol 22, 1983, pp 2577-2637\n")
+        .append(
               "\nWe thank Wolfgang Kabsch and Chris Sander for writing the DSSP software,\n")
           .append(
               "and we thank the CMBI for maintaining it to the extent that it was easy to\n")
@@ -634,9 +637,12 @@ public class AminoPolymer extends AlphaPolymer {
               "that this code gives precisely the same analysis as the code available via license\n")
           .append("from CMBI at http://swift.cmbi.ru.nl/gv/dssp\n");
 
-    if (!reportOnly)
-      sb
-          .append("Use  show DSSP  for details. All bioshapes have been deleted and must be regenerated.\n");
+    if (setStructure && m.modelIndex == 0)
+      sb.append("\nAll bioshapes have been deleted and must be regenerated.\n");
+
+    if (m.nAltLocs > 0)
+      sb.append("\nNote: This model contains alternative locations. Use  'CONFIGURATION n'  to set the configuration and 'CALCULATE STRUCTURE DSSP {selected}' to select just that configuration. Results may not be consistent with CMBI DSSP.\n");
+    }
 
     // for each AminoPolymer, we need:
     // (1) a label reading "...EEE....HHHH...GGG...BTTTB...IIIII..."
@@ -653,8 +659,7 @@ public class AminoPolymer extends AlphaPolymer {
         continue;
       AminoPolymer ap = (AminoPolymer) bioPolymers[i];
       if (!haveWarned
-          && ((AminoMonomer) ap.monomers[0])
-              .getExplicitNH() != null) {
+          && ((AminoMonomer) ap.monomers[0]).getExplicitNH() != null) {
         if (dsspIgnoreHydrogens)
           sb
               .append(GT
@@ -674,14 +679,14 @@ public class AminoPolymer extends AlphaPolymer {
       bsDone[i] = new BitSet();
       // lacking a C=O counts as done or "chain break"
       for (int j = 0; j < ap.monomerCount; j++)
-        if (((AminoMonomer)ap.monomers[j]).getCarbonylOxygenAtom() == null)
+        if (((AminoMonomer) ap.monomers[j]).getCarbonylOxygenAtom() == null)
           bsBad.set(ap.monomers[j].getLeadAtomIndex());
     }
 
     // Step 1: Create a polymer-based array of dual-minimum NH->O connections
     //         similar to those used in Rasmol.
 
-    int[][][][] min = getDualHydrogenBondArray(bioPolymers, bioPolymerCount, 
+    int[][][][] min = getDualHydrogenBondArray(bioPolymers, bioPolymerCount,
         dsspIgnoreHydrogens);
 
     // NOTE: (p. 2587) "Structural overalaps are eliminated in this line by giving 
@@ -702,8 +707,8 @@ public class AminoPolymer extends AlphaPolymer {
 
     // Step 3: Find the ladders and bulges, mark them as "E", and add the sheet structures.
 
-    getSheetStructures(bioPolymers, bridgesA, bridgesP, htBridges, htLadders, labels,
-        bsDone, reportOnly, vHBonds != null);
+    getSheetStructures(bioPolymers, bridgesA, bridgesP, htBridges, htLadders,
+        labels, bsDone, doReport, setStructure);
 
     // Step 4: Find the helices and mark them as "G", "H", or "I", 
     //         mark remaining turn residues as "T", and add the helix and turn structures.
@@ -712,21 +717,23 @@ public class AminoPolymer extends AlphaPolymer {
     for (int i = 0; i < bioPolymerCount; i++)
       if (min[i] != null)
         reports[i] = ((AminoPolymer) bioPolymers[i]).findHelixes(min[i], i,
-            bsDone[i], labels[i], reportOnly, vHBonds, bsBad);
+            bsDone[i], labels[i], doReport, setStructure, vHBonds, bsBad);
 
     // Done!
 
-    if (reportOnly) {
+    if (doReport) {
       StringBuffer sbSummary = new StringBuffer();
       sb.append("\n------------------------------\n");
       for (int i = 0; i < bioPolymerCount; i++)
         if (labels[i] != null) {
           AminoPolymer ap = (AminoPolymer) bioPolymers[i];
           sbSummary.append(ap.dumpSummary(labels[i]));
-          sb.append(reports[i]).append(ap.dumpTags("$.1: " + String.valueOf(labels[i]), bsBad, 2));
+          sb.append(reports[i]).append(
+              ap.dumpTags("$.1: " + String.valueOf(labels[i]), bsBad, 2));
         }
       if (bsBad.nextSetBit(0) >= 0)
-        sb.append("\nNOTE: '!' indicates a residue that is missing a backbone carbonyl oxygen atom.\n");
+        sb
+            .append("\nNOTE: '!' indicates a residue that is missing a backbone carbonyl oxygen atom.\n");
       sb.append("\n").append("SUMMARY:" + sbSummary);
     }
 
@@ -812,13 +819,14 @@ public class AminoPolymer extends AlphaPolymer {
    * @param iPolymer
    * @param bsDone
    * @param labels
-   * @param reportOnly 
+   * @param doReport
+   * @param setStructure
    * @param vHBonds 
    * @param bsBad 
    * @return             string label
    */
   private String findHelixes(int[][][] min, int iPolymer, BitSet bsDone,
-                             char[] labels, boolean reportOnly,
+                             char[] labels, boolean doReport, boolean setStructure,
                              List<Bond> vHBonds, BitSet bsBad) {
     if (Logger.debugging)
       for (int j = 0; j < monomerCount; j++)
@@ -829,32 +837,33 @@ public class AminoPolymer extends AlphaPolymer {
 
     String line4 = findHelixes(4, min, iPolymer,
         JmolConstants.PROTEIN_STRUCTURE_HELIX, JmolEdge.BOND_H_PLUS_4, bsDone,
-        bsTurn, labels, reportOnly, vHBonds, bsBad);
+        bsTurn, labels, doReport, setStructure, vHBonds, bsBad);
     String line3 = findHelixes(3, min, iPolymer,
         JmolConstants.PROTEIN_STRUCTURE_HELIX_310, JmolEdge.BOND_H_PLUS_3,
-        bsDone, bsTurn, labels, reportOnly, vHBonds, bsBad);
+        bsDone, bsTurn, labels, doReport, setStructure, vHBonds, bsBad);
     String line5 = findHelixes(5, min, iPolymer,
         JmolConstants.PROTEIN_STRUCTURE_HELIX_PI, JmolEdge.BOND_H_PLUS_5,
-        bsDone, bsTurn, labels, reportOnly, vHBonds, bsBad);
+        bsDone, bsTurn, labels, doReport, setStructure, vHBonds, bsBad);
 
     // G, H, and I have been set; now set what is left over as turn
 
-    if (reportOnly) {
+    if (setStructure)
+      setStructure(bsTurn, JmolConstants.PROTEIN_STRUCTURE_TURN);
+    
+    if (doReport) {
       setTag(labels, bsTurn, 'T');
       return dumpTags("$.5: " + line5 + "\n" + "$.4: " + line4 + "\n" + "$.3: "
           + line3, bsBad, 1);
     }
     
-    // if not calculate hbond, set the turn structure
-    
-    if (vHBonds == null)
-      setStructure(bsTurn, JmolConstants.PROTEIN_STRUCTURE_TURN);
+
     return "";
   }
 
   private String findHelixes(int pitch, int[][][] min, int thisIndex,
                              byte subtype, int type, BitSet bsDone,
-                             BitSet bsTurn, char[] labels, boolean reportOnly,
+                             BitSet bsTurn, char[] labels, 
+                             boolean doReport, boolean setStructure,
                              List<Bond> vHBonds, BitSet bsBad) {
 
     // The idea here is to run down the polymer setting bit sets
@@ -926,7 +935,7 @@ public class AminoPolymer extends AlphaPolymer {
     }
 
     char[] taglines;
-    if (reportOnly) {
+    if (doReport) {
       taglines = new char[monomerCount];
       setTag(taglines, bsNNN, (char) ('0' + pitch)); // 345
       setTag(taglines, bsStart, '>'); // may overwrite n
@@ -943,15 +952,15 @@ public class AminoPolymer extends AlphaPolymer {
     bsTurn.or(bsNNN); // add nnnnn to TURN
     bsTurn.andNot(bsHelix); // remove HELIX from TURN
 
-      if (reportOnly) {
+    // create the Jmol helix structures of the given subtype
+
+    if (setStructure)
+      setStructure(bsHelix, subtype); // GHI;
+
+    if (doReport) {
       setTag(labels, bsHelix, (char) ('D' + pitch));
       return String.valueOf(taglines) + warning;
     }
-  
-    // if not calculate hbond, create the Jmol helix structures of the given subtype
-
-    if (vHBonds == null)
-      setStructure(bsHelix, subtype); // GHI;
     return "";
   }
 
@@ -1087,8 +1096,8 @@ public class AminoPolymer extends AlphaPolymer {
    * @param htLadders 
    * @param labels
    * @param bsDone 
-   * @param reportOnly 
-   * @param calcHbondOnly 
+   * @param doReport
+   * @param setStructure 
    */
   private static void getSheetStructures(Polymer[] bioPolymers,
                                          List<Bridge> bridgesA,
@@ -1096,8 +1105,8 @@ public class AminoPolymer extends AlphaPolymer {
                                          Map<String, Bridge> htBridges,
                                          Map<int[][], Boolean> htLadders, char[][] labels, 
                                          BitSet[] bsDone,
-                                         boolean reportOnly, 
-                                         boolean calcHbondOnly) {
+                                         boolean doReport, 
+                                         boolean setStructure) {
 
     // check to be sure all bridges are part of bridgeList
 
@@ -1145,10 +1154,11 @@ public class AminoPolymer extends AlphaPolymer {
           ++iStart;
         }
       }
-      if (reportOnly) {
+      if (doReport) {
         ap.setTag(labels[i], bsBridge, 'B');
         ap.setTag(labels[i], bsSheet, 'E');
-      } else if (!calcHbondOnly) { 
+      } 
+      if (setStructure) { 
         ap.setStructure(bsSheet, JmolConstants.PROTEIN_STRUCTURE_SHEET);
       }
       bsDone[i].or(bsSheet);

@@ -976,10 +976,10 @@ public abstract class BioPolymer extends Polymer {
   }
   
   @Override
-  public String calculateStructures(Polymer[] bioPolymers, int bioPolymerCount, boolean reportOnly, List<Bond> vHBonds, boolean dsspIgnoreHydrogens) {
+  public String calculateStructures(Polymer[] bioPolymers, int bioPolymerCount, List<Bond> vHBonds, boolean doReport, boolean dsspIgnoreHydrogens, boolean setStructure) {
     // Here because we are calling a static method in AminoPolymer for the 
     // entire SET of polymers, just using the first one, which may or may not
     // be an AminoPolymer.
-    return AminoPolymer.calculateStructuresDssp(bioPolymers, bioPolymerCount, reportOnly, vHBonds, dsspIgnoreHydrogens);
+    return AminoPolymer.calculateStructuresDssp(bioPolymers, bioPolymerCount, vHBonds, doReport, dsspIgnoreHydrogens, setStructure);
   }
 }

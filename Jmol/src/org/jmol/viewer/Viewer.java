@@ -2448,11 +2448,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.calculateSurface(bsSelected, envelopeRadius);
   }
 
-  public String calculateStructures(BitSet bsAtoms, boolean asDSSP, boolean reportOnly) {
+  public String calculateStructures(BitSet bsAtoms, boolean asDSSP, boolean setStructure) {
     // Eval
     if (bsAtoms == null)
       bsAtoms = getSelectionSet(false);
-    return modelSet.calculateStructures(bsAtoms, asDSSP, reportOnly, global.dsspCalcHydrogen);
+    return modelSet.calculateStructures(bsAtoms, asDSSP, global.dsspCalcHydrogen, setStructure);
   }
 
   public AtomIndexIterator getSelectedAtomIterator(BitSet bsSelected,

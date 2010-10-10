@@ -147,7 +147,7 @@ public final class Model {
   int firstMoleculeIndex;
   int moleculeCount;
   
-  int nAltLocs;
+  public int nAltLocs;
   int nInsertions;
   
   int groupCount = -1;
@@ -223,17 +223,17 @@ public final class Model {
   }
   
   
-  String calculateStructures(boolean asDSSP, boolean reportOnly, boolean dsspIgnoreHydrogen) {
+  String calculateStructures(boolean asDSSP, boolean doReport, boolean dsspIgnoreHydrogen, boolean setStructure) {
     structureTainted = modelSet.proteinStructureTainted = true;
-    if (bioPolymerCount == 0 || reportOnly && !asDSSP)
+    if (bioPolymerCount == 0 || !setStructure && !asDSSP)
       return "";
-    if (!reportOnly)
+    if (setStructure)
       for (int i = bioPolymerCount; --i >= 0;)
         if (!asDSSP || bioPolymers[i].getGroups()[0].getNitrogenAtom() != null)
           bioPolymers[i].clearStructures();
     if (asDSSP)
       return bioPolymers[0].calculateStructures(bioPolymers, bioPolymerCount,
-          reportOnly, null, dsspIgnoreHydrogen);
+          null, doReport, dsspIgnoreHydrogen, setStructure);
     for (int i = bioPolymerCount; --i >= 0;)
       bioPolymers[i].calculateStructures();
     return "";

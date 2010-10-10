@@ -1130,7 +1130,7 @@ public final class ModelLoader extends ModelSet {
       bonds = (Bond[]) ArrayUtil.setLength(bonds, bondCount);
 
     // free bonds cache 
-    
+
     for (int i = MAX_BONDS_LENGTH_TO_CACHE; --i > 0;) { // .GT. 0
       numCached[i] = 0;
       Bond[][] bondsCache = freeBonds[i];
@@ -1141,7 +1141,7 @@ public final class ModelLoader extends ModelSet {
     setAtomNamesAndNumbers(0, baseAtomIndex, mergeModelSet);
 
     // find elements for the popup menus
-    
+
     findElementsPresent();
 
     molecules = null;
@@ -1152,7 +1152,8 @@ public final class ModelLoader extends ModelSet {
     // finalize all structures
 
     if (isPDB)
-      calculateStructuresAllExcept(structuresDefinedInFile, false, false, false);
+      calculateStructuresAllExcept(structuresDefinedInFile, false, false,
+          false, true);
 
   }
 

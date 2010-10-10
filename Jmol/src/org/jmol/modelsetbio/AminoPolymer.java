@@ -981,7 +981,6 @@ public class AminoPolymer extends AlphaPolymer {
    *                          
    * @param bioPolymers
    * @param min
-   * @param labels
    * @param bridgesA 
    * @param bridgesP 
    * @param htBridges 
@@ -1234,7 +1233,6 @@ public class AminoPolymer extends AlphaPolymer {
    *  strand.... all residues in bulge-linked ladders are marked "E," including
    *  the extra residues." (p. 2585)
    *  
-   * @param ladders 
    * @param bridges
    * @param htBridges
    * @param htLadders 

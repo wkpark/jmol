@@ -8448,7 +8448,7 @@ public class ScriptEvaluator {
         continue;
       sb.append("\n")
       .append(((List<Map<String, Object>>) moData.get("mos")).size())
-      .append(" molecular obitals in model ")
+      .append(" molecular orbitals in model ")
       .append(viewer.getModelNumberDotted(i));
     }
     if (sb.length() > 0)

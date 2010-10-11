@@ -207,7 +207,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return;
     }
 
-    if ("remapcolor" == propertyName) {
+    if ("remapColor" == propertyName) {
       if (thisMesh != null) {
         remapColors((ColorEncoder) value);
       }
@@ -389,18 +389,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         thisMesh.scale3d = thisMesh.jvxlData.scale3d = scale3d;
         thisMesh.offsetVertices = null;
       }
-    } else if ("setColorScheme" == propertyName) {
-      if (thisMesh == null) {
-        boolean isTranslucent;
-        if (value instanceof ColorEncoder) {
-          ColorEncoder ce = (ColorEncoder) value;
-          isTranslucent = ce.isTranslucent;
-        } else { // "sets"
-          isTranslucent = false;
-        }
-        thisMesh.colix = Graphics3D.getColixTranslucent(thisMesh.colix,
-            isTranslucent, isTranslucent ? 0.5f : 0);
-      }
     } else if ("title" == propertyName) {
       if (value instanceof String && "-".equals(value))
         value = null;
@@ -476,11 +464,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
           }
         }
       }
-      return;
-    }
-
-    if ("setColorScheme" == propertyName) {
-      setColorCommand((ColorEncoder) value);
       return;
     }
 

@@ -7480,7 +7480,7 @@ public class ScriptEvaluator {
               ce.setRange(min, max, min > max);
               if (max == Float.MAX_VALUE)
                 ce.hi = max;
-              setShapeProperty(shapeType, "remapcolor", ce);
+              setShapeProperty(shapeType, "remapColor", ce);
               showString(getIsosurfaceDataRange(shapeType, ""));
               if (translucentLevel == Float.MAX_VALUE)
                 return;
@@ -15632,7 +15632,7 @@ public class ScriptEvaluator {
           propertyName = "cutoffPositive";
           propertyValue = new Float(cutoff = floatParameter(++i));
           sbCommand.append("+").append(propertyValue);
-        } else if (isFloatParameter(i)){
+        } else if (isFloatParameter(i)) {
           propertyName = "cutoff";
           propertyValue = new Float(cutoff = floatParameter(i));
           sbCommand.append(propertyValue);
@@ -16107,15 +16107,14 @@ public class ScriptEvaluator {
           .valueOf(thisSetNumber - 1));
     if (discreteColixes != null) {
       addShapeProperty(propertyList, "colorDiscrete", discreteColixes);
+    } else if ("sets".equals(colorScheme)) {
+      addShapeProperty(propertyList, "setColorScheme", null);
     } else if (colorScheme != null) {
-      if (colorScheme.equals("sets")) {
-        addShapeProperty(propertyList, "setColorScheme", "sets");
-      } else {
-        ColorEncoder ce = viewer.getColorEncoder(colorScheme);
-        if (ce != null) {
-          ce.isTranslucent = isColorSchemeTranslucent;
-          addShapeProperty(propertyList, "setColorScheme", ce);
-        }
+      ColorEncoder ce = viewer.getColorEncoder(colorScheme);
+      if (ce != null) {
+        ce.isTranslucent = isColorSchemeTranslucent;
+        ce.hi = Float.MAX_VALUE;
+        addShapeProperty(propertyList, "remapColor", ce);
       }
     }
     // OK, now send them all
@@ -16156,8 +16155,8 @@ public class ScriptEvaluator {
       if (bsSelect == null)
         bsSelect = BitSetUtil.copy(viewer.getSelectionSet(false));
       bsSelect.and(viewer.getModelUndeletedAtomsBitSet(modelIndex));
-      setShapeProperty(iShape, "finalize", " select " + Escape.escape(bsSelect) + " "
-          + sbCommand);
+      setShapeProperty(iShape, "finalize", " select " + Escape.escape(bsSelect)
+          + " " + sbCommand);
       String s = (String) getShapeProperty(iShape, "ID");
       if (s != null) {
         cutoff = ((Float) getShapeProperty(iShape, "cutoff")).floatValue();

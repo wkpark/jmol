@@ -384,10 +384,11 @@ public class SurfaceGenerator {
       params.boundingBox = (Point3f[]) ((Object[]) value)[1];
       return true;
     }
-    
+
     if ("boundingBox" == propertyName) {
       Point3f[] pts = (Point3f[]) value;
-      params.boundingBox = new Point3f[] { new Point3f(pts[0]), new Point3f(pts[pts.length - 1]) };
+      params.boundingBox = new Point3f[] { new Point3f(pts[0]),
+          new Point3f(pts[pts.length - 1]) };
       return true;
     }
 
@@ -580,19 +581,10 @@ public class SurfaceGenerator {
     }
 
     if ("setColorScheme" == propertyName) {
-      if (value instanceof String) { // "sets"
-        getSurfaceSets();
-        params.colorBySets = true;
-        mapSurface();
-        return true;
-      }
-      params.colorEncoder = (ColorEncoder) value;
-      boolean isTranslucent = params.colorEncoder.isTranslucent;
-      params.colorSchemeTranslucent = isTranslucent;
-      if (surfaceReader != null
-          && params.state == Parameters.STATE_DATA_COLORED)
-        surfaceReader.applyColorScale();
-      return false; // still need to save this
+      getSurfaceSets();
+      params.colorBySets = true;
+      mapSurface();
+      return true;
     }
 
     if ("center" == propertyName) {
@@ -816,8 +808,8 @@ public class SurfaceGenerator {
       params.setFunctionXY((List<Object>) value);
       if (params.isContoured)
         volumeData.setPlaneParameters(new Point4f(0, 0, 1, 0)); // xy plane
-                                                                // through
-                                                                // origin
+      // through
+      // origin
       if (((String) params.functionXYinfo.get(0)).indexOf("_xyz") >= 0)
         getFunctionZfromXY();
       processState();
@@ -847,8 +839,8 @@ public class SurfaceGenerator {
         || "sasurface" == propertyName || "nomap" == propertyName) {
       params.setSolvent(propertyName, ((Float) value).floatValue());
       Logger.info(params.calculationType);
-      if (params.state < Parameters.STATE_DATA_READ && 
-          (params.cutoffAutomatic || !params.colorDensity))
+      if (params.state < Parameters.STATE_DATA_READ
+          && (params.cutoffAutomatic || !params.colorDensity))
         params.cutoff = 0.0f;
       processState();
       return true;
@@ -903,7 +895,7 @@ public class SurfaceGenerator {
       os = (OutputStream) value;
       return true;
     }
-    
+
     if ("readFile" == propertyName) {
       if ((surfaceReader = setFileData(value)) == null) {
         Logger.error("Could not set the surface data");
@@ -928,7 +920,7 @@ public class SurfaceGenerator {
       mapSurface();
       return true;
     }
-    
+
     if ("periodic" == propertyName) {
       params.isPeriodic = true;
     }

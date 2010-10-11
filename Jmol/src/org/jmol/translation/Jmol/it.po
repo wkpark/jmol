@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-09-21 17:23+0200\n"
-"PO-Revision-Date: 2010-10-09 22:11+0000\n"
-"Last-Translator: simone sandri <Unknown>\n"
+"PO-Revision-Date: 2010-10-11 14:12+0000\n"
+"Last-Translator: simone.sandri <Unknown>\n"
 "Language-Team: Italian <it@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-10-10 06:44+0000\n"
+"X-Launchpad-Export-Date: 2010-10-11 17:56+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -1029,7 +1029,7 @@ msgstr "Ottieni documento PDB"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1150
 msgid "Enter a four-digit PDB ID"
-msgstr ""
+msgstr "Inserisci un ID di 4 caratteri per PDB"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1167
 msgid "Get MOL file by compound name or ID"
@@ -1038,6 +1038,8 @@ msgstr ""
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1168
 msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
 msgstr ""
+"Inserisci il nome o il numero identificativo (SMILES, InChI, CAS) di una "
+"molecola"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1334
 msgid "IO Exception:"

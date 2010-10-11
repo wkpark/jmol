@@ -624,6 +624,7 @@ abstract public class ModelCollection extends BondCollection {
    * @param doReport 
    * @param dsspIgnoreHydrogen 
    * @param setStructure
+   * @param includeAlpha 
    * @return  report
    *  
    */
@@ -631,13 +632,14 @@ abstract public class ModelCollection extends BondCollection {
                                                 boolean asDSSP,
                                                 boolean doReport,
                                                 boolean dsspIgnoreHydrogen,
-                                                boolean setStructure) {
+                                                boolean setStructure,
+                                                boolean includeAlpha) {
     freezeModels();
     String ret = "";
     for (int i = 0; i < modelCount; i++)
       if (models[i].isPDB && !alreadyDefined.get(i))
         ret += models[i].calculateStructures(asDSSP, doReport,
-            dsspIgnoreHydrogen, setStructure);
+            dsspIgnoreHydrogen, setStructure, includeAlpha);
     if (setStructure)
       setStructureIds();
     return ret;
@@ -690,9 +692,6 @@ abstract public class ModelCollection extends BondCollection {
       for (int i = 0; i < m.chainCount; ++i)
         m.chains[i].groups = (Group[])ArrayUtil.setLength(m.chains[i].groups, m.chains[i].groupCount);
       m.bioPolymers = (Polymer[])ArrayUtil.setLength(m.bioPolymers, m.bioPolymerCount);
-      for (int i = m.bioPolymerCount; --i >= 0; ) {
-        m.bioPolymers[i].freeze();
-      }
     }
   }
   

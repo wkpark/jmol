@@ -1002,6 +1002,7 @@ public class StateManager {
     short bondRadiusMilliAngstroms = JmolConstants.DEFAULT_BOND_MILLIANGSTROM_RADIUS;
     float bondTolerance = JmolConstants.DEFAULT_BOND_TOLERANCE;
     String defaultDirectory = "";
+    boolean defaultStructureDSSP = true; // Jmol 12.1.15
     final Point3f ptDefaultLattice = new Point3f();
     String defaultLoadScript = "";
     String defaultLoadFilter = "";
@@ -1059,6 +1060,7 @@ public class StateManager {
       appendCmd(str, "set defaultLoadScript \"\"");
       if (defaultLoadScript.length() > 0)
         setParameterValue("defaultLoadScript", defaultLoadScript);
+      appendCmd(str, "set defaultStructureDssp " + defaultStructureDSSP);
       String sMode = viewer.getDefaultVdwTypeNameOrData(Integer.MIN_VALUE);
       appendCmd(str, "set defaultVDW " + sMode);
       if (sMode.equals("User"))

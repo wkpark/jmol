@@ -113,9 +113,6 @@ abstract public class Polymer {
                                     int endSeqcode) {
   }
 
-  public void freeze() {  
-  }
-  
   /**
    * @param bioPolymers
    * @param bioPolymerCount
@@ -132,7 +129,10 @@ abstract public class Polymer {
     return null;
   }
 
-  public void calculateStructures() {
+  /**
+   * @param alphaOnly  
+   */
+  public void calculateStructures(boolean alphaOnly) {
   }
 
   public void clearStructures() {

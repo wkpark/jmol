@@ -1151,10 +1151,14 @@ public final class ModelLoader extends ModelSet {
 
     // finalize all structures
 
-    if (isPDB)
-      calculateStructuresAllExcept(structuresDefinedInFile, false, false,
-          false, true);
-
+    if (!isPDB)
+      return;
+    boolean asDSSP = viewer.getDefaultStructureDSSP();
+    String ret = calculateStructuresAllExcept(structuresDefinedInFile, 
+          asDSSP, 
+          false, true, true, asDSSP); // now DSSP
+    if (ret.length() > 0)
+      Logger.info(ret);
   }
 
   private void findElementsPresent() {

@@ -180,10 +180,6 @@ public abstract class BioPolymer extends Polymer {
     midPoint.set(getLeadPoint(groupIndex));
   }
 
-  boolean hasWingPoints() {
-    return false;
-  }
-
   // this might change in the future ... if we calculate a wing point
   // without an atom for an AlphaPolymer
   final Point3f getWingPoint(int polymerIndex) {
@@ -276,6 +272,8 @@ public abstract class BioPolymer extends Polymer {
     return wingVectors; // wingVectors might be null ... before autocalc
   }
 
+  protected boolean hasWingPoints; // true for nucleic and SOME amino
+  
   private final void calcLeadMidpointsAndWingVectors() {
     if (leadMidpoints == null) {
       leadMidpoints = new Point3f[monomerCount + 1];
@@ -283,9 +281,6 @@ public abstract class BioPolymer extends Polymer {
       wingVectors = new Vector3f[monomerCount + 1];
       sheetSmoothing = Float.MIN_VALUE;
     }
-
-    boolean hasWingPoints = hasWingPoints();
-    // if (model.getModelSet().viewer.getTestFlag1()) hasWingPoints = false;
 
     Vector3f vectorA = new Vector3f();
     Vector3f vectorB = new Vector3f();

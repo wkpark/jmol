@@ -327,13 +327,13 @@ abstract public class ModelSet extends ModelCollection {
         modelCount);
     if (!setStructure)
       return calculateStructuresAllExcept(bsDefined, asDSSP, true,
-          dsspIgnoreHydrogen, false);
+          dsspIgnoreHydrogen, false, false);
     for (int i = 0; i < modelCount; i++)
       if (!bsDefined.get(i))
         addBioPolymerToModel(null, models[i]);
     calculatePolymers(0, bsDefined);
     String ret = calculateStructuresAllExcept(bsDefined, asDSSP, true,
-        dsspIgnoreHydrogen, true);
+        dsspIgnoreHydrogen, true, false);
     viewer.resetBioshapes(bsAllAtoms);
     setStructureIds();
     return ret;

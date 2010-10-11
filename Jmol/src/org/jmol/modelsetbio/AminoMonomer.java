@@ -31,6 +31,8 @@ import javax.vecmath.Vector3f;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Chain;
+import org.jmol.util.Escape;
+import org.jmol.util.Logger;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
@@ -203,10 +205,10 @@ public class AminoMonomer extends AlphaMonomer {
     return null;
   }
 
-  public boolean getNHPoint(Point3f aminoHydrogenPoint, Vector3f vNH, boolean jmolHPoint, 
-                            boolean dsspIgnoreHydrogens) {
-    if (monomerIndex == 0 || groupID == JmolConstants.GROUPID_PROLINE) 
-      return false;      
+  public boolean getNHPoint(Point3f aminoHydrogenPoint, Vector3f vNH,
+                            boolean jmolHPoint, boolean dsspIgnoreHydrogens) {
+    if (monomerIndex == 0 || groupID == JmolConstants.GROUPID_PROLINE)
+      return false;
     Atom nitrogenPoint = getNitrogenAtom();
     Point3f nhPoint = getNitrogenHydrogenPoint();
     if (nhPoint != null && !dsspIgnoreHydrogens) {
@@ -214,7 +216,7 @@ public class AminoMonomer extends AlphaMonomer {
       aminoHydrogenPoint.set(nhPoint);
       return true;
     }
-    AminoMonomer prev = (AminoMonomer)bioPolymer.monomers[monomerIndex - 1]; 
+    AminoMonomer prev = (AminoMonomer) bioPolymer.monomers[monomerIndex - 1];
     if (jmolHPoint) {
       // Jmol: based on trigonal planar C-NH-Ca
       vNH.sub(nitrogenPoint, getLeadAtom());
@@ -231,8 +233,10 @@ public class AminoMonomer extends AlphaMonomer {
     vNH.normalize();
     aminoHydrogenPoint.add(nitrogenPoint, vNH);
     nitrogenHydrogenPoint = new Point3f(aminoHydrogenPoint);
-    //if (Logger.debugging)
-      //Logger.info("draw pta" + monomerIndex + "_" + nitrogenPoint.index + " " + Escape.escape(nitrogenPoint) + Escape.escape(aminoHydrogenPoint) + " # " + nitrogenPoint);
+    if (Logger.debugging)
+      Logger.info("draw pta" + monomerIndex + "_" + nitrogenPoint.index + " "
+          + Escape.escape(nitrogenPoint) + Escape.escape(aminoHydrogenPoint)
+          + " # " + nitrogenPoint);
     return true;
   }
 

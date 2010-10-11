@@ -52,27 +52,148 @@ import javax.vecmath.Vector3f;
 
 public class AminoPolymer extends AlphaPolymer {
 
-  // the primary offset within the same mainchain;
   /*
-  private short[] mainchainHbondOffsets;
-  private short[] min1Indexes;
-  private short[] min1Energies;
-  private short[] min2Indexes;
-  private short[] min2Energies;
-  */
-
+   *  methods herein:
+   *  
+   *  (1) constructor and utilities
+   *  (2) Ramachandran angles
+   *  (3) dipole/dipole classical hydrogen bond calculation
+   *  (4) DSSP secondary structure determination
+   *  (5) Ramachandran-angle-based secondary structure determination
+   *  
+   *  See also AlphaPolymer.java for alpha-carbon-only SS determination
+   *  
+   */
+  
+  
   AminoPolymer(Monomer[] monomers) {
     super(monomers);
     type = TYPE_AMINO;
+    for (int i = 0; i < monomerCount; ++i)
+      if (!((AminoMonomer) monomers[i]).hasOAtom())
+        return;
+    hasWingPoints = true;
   }
-
-  private boolean hasOAtoms;
 
   @Override
-  boolean hasWingPoints() {
-    return hasOAtoms;
+  protected void resetHydrogenPoints() {
+    ProteinStructure ps;
+    ProteinStructure psLast = null;
+    for (int i = 0; i < monomerCount; i++) {
+      if ((ps = getProteinStructure(i)) != null && ps != psLast)
+        (psLast = ps).resetAxes();
+      ((AminoMonomer) monomers[i]).resetHydrogenPoint();
+    }
   }
 
+  ///////////// Ramachandran angles ///////////////
+  //
+  // G. N. Ramachandran and V. Sasisekharan,
+  // "Conformation of Polypeptides and Proteins" 
+  // in Advances in Protein Chemistry, D.C. Rees, Ed.,
+  // Volume 23, Elsevier, 1969, p 284
+  // 
+  /////////////////////////////////////////////////
+  
+  
+  @Override
+  protected boolean calcPhiPsiAngles() {
+    for (int i = 0; i < monomerCount - 1; ++i)
+      calcPhiPsiAngles((AminoMonomer) monomers[i],
+          (AminoMonomer) monomers[i + 1]);
+    return true;
+  }
+
+  private void calcPhiPsiAngles(AminoMonomer residue1, AminoMonomer residue2) {
+
+    /*
+     *   N1-Ca1-C1-N2-Ca2-C2
+     *    residue1  residue2
+     *   low -----------> high   atomIndex
+     * 
+     * UNfortunately, omega is defined for residue 1 (page 294)
+     * such that the residue having unusual omega is not the
+     * proline itself but the one prior to it.
+     * 
+     */
+    Point3f nitrogen1 = residue1.getNitrogenAtom();
+    Point3f alphacarbon1 = residue1.getLeadAtom();
+    Point3f carbon1 = residue1.getCarbonylCarbonAtom();
+    Point3f nitrogen2 = residue2.getNitrogenAtom();
+    Point3f alphacarbon2 = residue2.getLeadAtom();
+    Point3f carbon2 = residue2.getCarbonylCarbonAtom();
+
+    residue2.setGroupParameter(Token.phi, Measure.computeTorsion(carbon1,
+        nitrogen2, alphacarbon2, carbon2, true));
+    residue1.setGroupParameter(Token.psi, Measure.computeTorsion(nitrogen1,
+        alphacarbon1, carbon1, nitrogen2, true));
+    // to offset omega so cis-prolines show up off the plane, 
+    // we would have to use residue2 here:
+    residue1.setGroupParameter(Token.omega, Measure.computeTorsion(
+        alphacarbon1, carbon1, nitrogen2, alphacarbon2, true));
+  }
+
+  @Override
+  protected float calculateRamachandranHelixAngle(int m, char qtype) {
+    float psiLast = (m == 0 ? Float.NaN : monomers[m - 1]
+        .getGroupParameter(Token.psi));
+    float psi = monomers[m].getGroupParameter(Token.psi);
+    float phi = monomers[m].getGroupParameter(Token.phi);
+    float phiNext = (m == monomerCount - 1 ? Float.NaN : monomers[m + 1]
+        .getGroupParameter(Token.phi));
+    float psiNext = (m == monomerCount - 1 ? Float.NaN : monomers[m + 1]
+        .getGroupParameter(Token.psi));
+    switch (qtype) {
+    default:
+    case 'p':
+    case 'r':
+    case 'P':
+      /* 
+       * an approximation by Bob Hanson and Steven Braun 7/7/2009
+       * 
+       * P-straightness utilizes phi[i], psi[i] and phi[i+1], psi[i+1]
+       * and is approximated as:
+       * 
+       *   1 - 2 acos(|cos(theta/2)|) / PI
+       * 
+       * where 
+       * 
+       *   cos(theta/2) = dq[i]\dq[i-1] = cos(dPsi/2)cos(dPhi/2) - sin(alpha)sin(dPsi/2)sin(dPhi/2)
+       * 
+       * and 
+       * 
+       *   dPhi = phi[i+1] - phi[i]
+       *   dPsi = psi[i+1] - psi[i]
+       * 
+       */
+      float dPhi = (float) ((phiNext - phi) / 2 * Math.PI / 180);
+      float dPsi = (float) ((psiNext - psi) / 2 * Math.PI / 180);
+      return (float) (180 / Math.PI * 2 * Math.acos(Math.cos(dPsi)
+          * Math.cos(dPhi) - Math.cos(70 * Math.PI / 180) * Math.sin(dPsi)
+          * Math.sin(dPhi)));
+    case 'c':
+    case 'C':
+      /* an approximation by Bob Hanson and Dan Kohler, 7/2008
+       * 
+       * The near colinearity of the C_alpha-C and N'-C_alpha'
+       * allows for the remarkably simple relationship
+       * 
+       *  psi[i] - psi[i-1] + phi[i+1] - phi[i]
+       *
+       */
+      return (psi - psiLast + phiNext - phi);
+    }
+  }
+
+  //////////////////////////////////////////////////
+  //
+  // RasMol/DSSP dipole/dipole hydrogen bond calculation 
+  //
+  //    W. Kabsch and C. Sander, Biopolymers, 
+  //    vol 22, 1983, pp 2577-2637
+  // 
+  //////////////////////////////////////////////////
+  
   @Override
   public void calcRasmolHydrogenBonds(Polymer polymer, BitSet bsA, BitSet bsB,
                                       List<Bond> vHBonds, int nMaxPerResidue,
@@ -132,22 +253,6 @@ public class AminoPolymer extends AlphaPolymer {
       Atom oxygen = target.getCarbonylOxygenAtom();
       if (oxygen == null || bsB != null && !bsB.get(oxygen.index))
         continue;
-      // The problem here is that some models have ABC for one residue and BC for another
-      // there is no way to know if these are linked. 
-      // DSSP just takes the first letter as the given. 
-      // Jmol allows setting other configurations. But it does assume that
-      // there is a corrolation between "A" of one residue and "A" of another. 
-      // (Just as DSSP does, only here we can choose which configuration we want.) 
-      // In some cases, such as 2HEU, we have problems with some residues not having A and other having it.
-      // These cases may result in a different analysis here than for the DSSP program itself.
-      
-      //char idN = nitrogen.getAlternateLocationID();
-      //char idO = oxygen.getAlternateLocationID();
-      //if (idN != '\0' && idO != '\0' && idN != idO) {
-      //  if (!checkDistances)
-      //    Logger.warn("AminoPolymer.calculateRasmolHydrogenBond: alt-loc mismatch: " + nitrogen + " " + oxygen + "; bond ignored -- results may differ from DSSP");
-      //  continue;
-     // }
       Point3f targetAlphaPoint = target.getLeadAtom();
       float dist2 = sourceAlphaPoint.distanceSquared(targetAlphaPoint);
       if (dist2 >= maxHbondAlphaDistance2)
@@ -266,268 +371,6 @@ public class AminoPolymer extends AlphaPolymer {
     vHBonds.add(new HBond(nitrogen, oxygen, order, energy));
   }
 
-  /*
-   * New code for assigning secondary structure based on 
-   * phi-psi angles instead of hydrogen bond patterns.
-   *
-   * molvisions 2005 10 12
-   *
-   */
-
-  @Override
-  public void calculateStructures() {
-    if (structureList == null)
-      structureList = model.getModelSet().getStructureList();
-    char[] structureTags = new char[monomerCount];
-    for (int i = 0; i < monomerCount - 1; ++i) {
-      AminoMonomer leadingResidue = (AminoMonomer) monomers[i];
-      AminoMonomer trailingResidue = (AminoMonomer) monomers[i + 1];
-      float phi = trailingResidue.getGroupParameter(Token.phi);
-      float psi = leadingResidue.getGroupParameter(Token.psi);
-      if (isHelix(psi, phi)) {
-        //this next is just Bob's attempt to separate different helices
-        //it is CONSERVATIVE -- it displays fewer helices than before
-        //thus allowing more turns and (presumably) better rockets.
-
-        structureTags[i] = (phi < 0 && psi < 25 ? '4' : '3');
-      } else if (isSheet(psi, phi)) {
-        structureTags[i] = 's';
-      } else if (isTurn(psi, phi)) {
-        structureTags[i] = 't';
-      } else {
-        structureTags[i] = 'n';
-      }
-
-      if (Logger.debugging)
-        Logger.debug((0 + this.monomers[0].getChainID()) + " aminopolymer:" + i
-            + " " + trailingResidue.getGroupParameter(Token.phi) + ","
-            + leadingResidue.getGroupParameter(Token.psi) + " "
-            + structureTags[i]);
-    }
-
-    // build alpha helix stretches
-    for (int start = 0; start < monomerCount; ++start) {
-      if (structureTags[start] == '4') {
-        int end;
-        for (end = start + 1; end < monomerCount && structureTags[end] == '4'; ++end) {
-        }
-        end--;
-        if (end >= start + 3) {
-          addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_HELIX, null, 0,
-              0, start, end);
-        }
-        start = end;
-      }
-    }
-
-    for (int start = 0; start < monomerCount; ++start) {
-      if (structureTags[start] == '3') {
-        int end;
-        for (end = start + 1; end < monomerCount && structureTags[end] == '3'; ++end) {
-        }
-        end--;
-        if (end >= start + 3) {
-          addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_HELIX, null, 0,
-              0, start, end);
-        }
-        start = end;
-      }
-    }
-
-    // build beta sheet stretches
-    for (int start = 0; start < monomerCount; ++start) {
-      if (structureTags[start] == 's') {
-        int end;
-        for (end = start + 1; end < monomerCount && structureTags[end] == 's'; ++end) {
-        }
-        end--;
-        if (end >= start + 2) {
-          addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_SHEET, null, 0,
-              0, start, end);
-        }
-        start = end;
-      }
-    }
-
-    // build turns
-    for (int start = 0; start < monomerCount; ++start) {
-      if (structureTags[start] == 't') {
-        int end;
-        for (end = start + 1; end < monomerCount && structureTags[end] == 't'; ++end) {
-        }
-        end--;
-        if (end >= start + 2) {
-          addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_TURN, null, 0,
-              0, start, end);
-        }
-        start = end;
-      }
-    }
-  }
-
-  @Override
-  protected void resetHydrogenPoints() {
-    ProteinStructure ps;
-    ProteinStructure psLast = null;
-    for (int i = 0; i < monomerCount; i++) {
-      if ((ps = getProteinStructure(i)) != null && ps != psLast)
-        (psLast = ps).resetAxes();
-      ((AminoMonomer) monomers[i]).resetHydrogenPoint();
-    }
-  }
-
-  private boolean checkWingAtoms() {
-    for (int i = 0; i < monomerCount; ++i)
-      if (!((AminoMonomer) monomers[i]).hasOAtom())
-        return false;
-    return true;
-  }
-
-  @Override
-  public void freeze() {
-    hasOAtoms = checkWingAtoms();
-  }
-
-  @Override
-  protected boolean calcPhiPsiAngles() {
-    for (int i = 0; i < monomerCount - 1; ++i)
-      calcPhiPsiAngles((AminoMonomer) monomers[i],
-          (AminoMonomer) monomers[i + 1]);
-    return true;
-  }
-
-  private void calcPhiPsiAngles(AminoMonomer residue1, AminoMonomer residue2) {
-
-    /*
-     * G N Ramachandran and V. Sasisekharan,
-     * "Conformation of Polypeptides and Proteins" 
-     * in Advances in Protein Chemistry, D.C. Rees, Ed.,
-     * Volume 23, Elsevier, 1969, p 284
-     * 
-     *   N1-Ca1-C1-N2-Ca2-C2
-     *    residue1  residue2
-     *   low -----------> high   atomIndex
-     * 
-     * UNfortunately, omega is defined for residue 1 (page 294)
-     * such that the residue having unusual omega is not the
-     * proline itself but the one prior to it.
-     * 
-     */
-    Point3f nitrogen1 = residue1.getNitrogenAtom();
-    Point3f alphacarbon1 = residue1.getLeadAtom();
-    Point3f carbon1 = residue1.getCarbonylCarbonAtom();
-    Point3f nitrogen2 = residue2.getNitrogenAtom();
-    Point3f alphacarbon2 = residue2.getLeadAtom();
-    Point3f carbon2 = residue2.getCarbonylCarbonAtom();
-
-    residue2.setGroupParameter(Token.phi, Measure.computeTorsion(carbon1,
-        nitrogen2, alphacarbon2, carbon2, true));
-    residue1.setGroupParameter(Token.psi, Measure.computeTorsion(nitrogen1,
-        alphacarbon1, carbon1, nitrogen2, true));
-    // to offset omega so cis-prolines show up off the plane, 
-    // we would have to use residue2 here:
-    residue1.setGroupParameter(Token.omega, Measure.computeTorsion(
-        alphacarbon1, carbon1, nitrogen2, alphacarbon2, true));
-  }
-
-  @Override
-  protected float calculateRamachandranHelixAngle(int m, char qtype) {
-    float psiLast = (m == 0 ? Float.NaN : monomers[m - 1]
-        .getGroupParameter(Token.psi));
-    float psi = monomers[m].getGroupParameter(Token.psi);
-    float phi = monomers[m].getGroupParameter(Token.phi);
-    float phiNext = (m == monomerCount - 1 ? Float.NaN : monomers[m + 1]
-        .getGroupParameter(Token.phi));
-    float psiNext = (m == monomerCount - 1 ? Float.NaN : monomers[m + 1]
-        .getGroupParameter(Token.psi));
-    switch (qtype) {
-    default:
-    case 'p':
-    case 'r':
-    case 'P':
-      /* 
-       * an approximation by Bob Hanson and Steven Braun 7/7/2009
-       * 
-       * P-straightness utilizes phi[i], psi[i] and phi[i+1], psi[i+1]
-       * and is approximated as:
-       * 
-       *   1 - 2 acos(|cos(theta/2)|) / PI
-       * 
-       * where 
-       * 
-       *   cos(theta/2) = dq[i]\dq[i-1] = cos(dPsi/2)cos(dPhi/2) - sin(alpha)sin(dPsi/2)sin(dPhi/2)
-       * 
-       * and 
-       * 
-       *   dPhi = phi[i+1] - phi[i]
-       *   dPsi = psi[i+1] - psi[i]
-       * 
-       */
-      float dPhi = (float) ((phiNext - phi) / 2 * Math.PI / 180);
-      float dPsi = (float) ((psiNext - psi) / 2 * Math.PI / 180);
-      return (float) (180 / Math.PI * 2 * Math.acos(Math.cos(dPsi)
-          * Math.cos(dPhi) - Math.cos(70 * Math.PI / 180) * Math.sin(dPsi)
-          * Math.sin(dPhi)));
-    case 'c':
-    case 'C':
-      /* an approximation by Bob Hanson and Dan Kohler, 7/2008
-       * 
-       * The near colinearity of the C_alpha-C and N'-C_alpha'
-       * allows for the remarkably simple relationship
-       * 
-       *  psi[i] - psi[i-1] + phi[i+1] - phi[i]
-       *
-       */
-      return (psi - psiLast + phiNext - phi);
-    }
-  }
-
-  private float[][] structureList; // kept in StateManager.globalSettings
-
-  @Override
-  public void setStructureList(float[][] structureList) {
-    this.structureList = structureList;
-  }
-
-  /**
-   * 
-   * @param psi N-C-CA-N torsion for NEXT group
-   * @param phi C-CA-N-C torsion for THIS group
-   * @return whether this corresponds to a helix
-   */
-  private boolean isTurn(float psi, float phi) {
-    return checkPhiPsi(structureList[JmolConstants.PROTEIN_STRUCTURE_TURN],
-        psi, phi);
-  }
-
-  private boolean isSheet(float psi, float phi) {
-    return checkPhiPsi(structureList[JmolConstants.PROTEIN_STRUCTURE_SHEET],
-        psi, phi);
-  }
-
-  private boolean isHelix(float psi, float phi) {
-    return checkPhiPsi(structureList[JmolConstants.PROTEIN_STRUCTURE_HELIX],
-        psi, phi);
-  }
-
-  private static boolean checkPhiPsi(float[] list, float psi, float phi) {
-    for (int i = 0; i < list.length; i += 4)
-      if (phi >= list[i] && phi <= list[i + 1] && psi >= list[i + 2]
-          && psi <= list[i + 3])
-        return true;
-    return false;
-  }
-
-  void setStructure(BitSet bs, byte type) {
-    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-      int i2 = bs.nextClearBit(i);
-      if (i2 < 0)
-        i2 = monomerCount;
-      addSecondaryStructure(type, null, 0, 0, i, i2 - 1);
-      i = i2;
-    }
-  }
-
   ////////////////////// DSSP /////////////////////
   //
   //    W. Kabsch and C. Sander, Biopolymers, vol 22, 1983, pp 2577-2637
@@ -577,25 +420,94 @@ public class AminoPolymer extends AlphaPolymer {
   //   bit sets), is an entirely different approach than that used by the original 
   //   authors of the DSSP code.
   //
-  //   Thus, at least for now, we make no guarantee that this code will result 
-  //   in an EXACT MATCH to the Pascal/C++ code provided by CMBI at 
-  //   <http://swift.cmbi.ru.nl/gv/dssp>, and we fully expect that there are 
+  //   This implementation has been verified against 1769 high-resolution structures. 
+  //   (see http://jmol.svn.sourceforge.net/viewvc/jmol/trunk/Jmol-datafiles/dssp/cullpdb_pc20_res1.6_R0.25_d101001_chains1769)
+  //   which is from http://dunbrack.fccc.edu/Guoli/pisces_download.php#culledpdb.
+  //
+  //   All structures were verified either via comparison with REST data from RCSB, or for the
+  //   few cases for which that was not possible, by direct comparison with DSSP files
+  //   provided by http://swift.cmbi.ru.nl/gv/dssp.
+  //
+  //   Still, we cannot guarantee that this code will always result in an EXACT MATCH 
+  //   to the Pascal/C++ code provided by CMBI, and we fully expect that there are 
   //   special cases where, particularly, the CMBI code senses a chain break 
   //   even though Jmol does not, or vice-versa, resulting in different analyses.
   //
-  //   In addition, this code allows for the use of file-based backbone amide hydrogen
+  //   Known differences to CMBI DSSP:
+  //
+  //     Chain breaks
+  //     ------------
+  // 
+  //   Jmol has its own way to calculate chain breaks. In addition,
+  //   for these purposes, it does consider amino acids lacking a 
+  //   carbonyl oxygen to be a chain break, for consistency with DSSP.
+  //   When that is the case, no NH hydrogen bond is allowed from that
+  //   residue, and no helix is allowed to span it.
+  //
+  //     Backbone amide hydrogens
+  //     ------------------------
+  //
+  //   This code allows for the use of file-based backbone amide hydrogen
   //   positions (via SET dsspCalculateHydrogenAlways FALSE), which the CMBI code does 
   //   not. Certainly for some models (1def, for example) that produces a different 
   //   result, because it changes the values of calculated hydrogen bond energies.
   //
-  //   One final implementation note: It is curious that the DSSP algorithm orders the
-  //   SUMMARY line -- our final assignments -- as: H B E G I T S. (We do not implement
-  //   S here, because we haven't seen any discussion of its use, and we don't visualize
-  //   it.) The curious thing is that this TECHNICALLY allows for calculated bridges being
+  //     Alternative locations
+  //     ---------------------
+  //
+  //   As part of this implementation, the CONFIGURATION command was modified to be
+  //   consistent with a proper interpretation of the PDB file - that codes A, B, C,
+  //   etc., are only relevant WITHIN a specific residue, not across the entire file,
+  //   though in most cases that is true as well. 
+  //   
+  //   Jmol allows for setting "configurations" that include only a subset of the
+  //   alternative locations across an entire model. Thus, while the CMBI implementation
+  //   of DSSP allows for reading the first configuration, Jmol allows for getting 
+  //   the DSSP secondary structure analysis for any configuration. Simply use 
+  //   the command CONFIGURATION n, where "n" is a number 1, 2, 3, etc., just prior
+  //   to the CALCULATE STRUCTURE command.
+  //
+  //     Alternative SS methods
+  //     ----------------------
+  // 
+  //   Jmol also allows for a strictly geometric method -- without hydrogen bonding --
+  //   to identify sheet strands (not ladders or full "sheets") and helices. This is 
+  //   invoked by
+  //
+  //   CALCULATE STRUCTURE RAMACHANDRAN
+  //
+  //     Bend (S)
+  //     --------
+  //
+  //   Jmol does not report S in the summary line, only B, E, H, G, I, and T.
+  //
+  //     Surface Accessibility
+  //     ---------------------
+  // 
+  //   Jmol does not implement surface accessibility.
+  //
+  //     Detailed Reporting
+  //     ------------------
+  //
+  //   Jmol does not create the detailed report that CMBI DSSP does.
+  //   We do not report hydrogen bond energies, C-alpha points, sheet 
+  //   or ladder designators, or disulfide bonds.
+  // 
+  //   Instead, our report includes the helix-5, helix-4, and helix-3 lines
+  //   as well as the summary line similar to that given in the original paper
+  //   along with a summary list of stretches of B, E, H, G, I, and T structure.
+  //
+  //   You can use SET DEBUG TRUE to send voluminous amounts of 
+  //   information to the Java console if you wish.
+  //
+  //   One final implementation note: It is curious that the DSSP algorithm 
+  //   orders the SUMMARY line -- our final assignments -- as: H B E G I T S. 
+  //   The curious thing is that this TECHNICALLY allows for calculated bridges being
   //   assignable to H groups. As noted below, I don't think this is physically possible,
   //   but it seems to me there must be SOME reason to do this rather than the more 
   //   obvious order: B E H G I T S. So there's a bit of a mystery there. My implementation
   //   adds a warning at the end of the helix-4 line if such a bridge should ever appear. 
+  //   If this warning is seen, it probably means you forgot to use the CONFIGURATION command.
   // 
   ////////////////////// DSSP /////////////////////
 
@@ -621,7 +533,6 @@ public class AminoPolymer extends AlphaPolymer {
 
     Model m = bioPolymers[0].model;
     StringBuffer sb = new StringBuffer();
-    if (doReport) {
     sb.append("Jmol ").append(Viewer.getJmolVersion()).append(
         " DSSP analysis for model ").append(m.getModelNumberDotted()).append(
         " - ").append(m.getModelTitle()).append("\n");
@@ -641,8 +552,7 @@ public class AminoPolymer extends AlphaPolymer {
       sb.append("\nAll bioshapes have been deleted and must be regenerated.\n");
 
     if (m.nAltLocs > 0)
-      sb.append("\nNote: This model contains alternative locations. Use  'CONFIGURATION n'  to set the configuration and 'CALCULATE STRUCTURE DSSP {selected}' to select just that configuration. Results may not be consistent with CMBI DSSP.\n");
-    }
+      sb.append("\nNote: This model contains alternative locations. Use  'CONFIGURATION 1' to be consistent with CMBI DSSP.\n");
 
     // for each AminoPolymer, we need:
     // (1) a label reading "...EEE....HHHH...GGG...BTTTB...IIIII..."
@@ -1283,7 +1193,16 @@ public class AminoPolymer extends AlphaPolymer {
       }
   }
 
-  //// general utility ////
+  private void setStructure(BitSet bs, byte type) {
+    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+      int i2 = bs.nextClearBit(i);
+      if (i2 < 0)
+        i2 = monomerCount;
+      addSecondaryStructure(type, null, 0, 0, i, i2 - 1);
+      i = i2;
+    }
+  }
+
   private static int[] isHbonded(int indexDonor, int indexAcceptor, int pDonor,
                                  int pAcceptor, int[][][][] min) {
     if (indexDonor < 0 || indexAcceptor < 0)
@@ -1298,21 +1217,15 @@ public class AminoPolymer extends AlphaPolymer {
             && min1[indexDonor][1][1] == indexAcceptor ? min1[indexDonor][1]
             : null);
   }
-/*
-  private static void setDone(BitSet bsDone1, BitSet bsDone2, int ia) {
-    if (bsDone1.get(ia))
-      bsDone2.set(ia);
-    else
-      bsDone1.set(ia);
-  }
-*/
+
   private void setTag(char[] tags, BitSet bs, char ch) {
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
       tags[i] = ch;
   }
 
   private String dumpSummary(char[] labels) {
-    String prefix = monomers[0].getLeadAtom().getChainID() + ":";
+    char id = monomers[0].getLeadAtom().getChainID();
+    String prefix = (id == '\0' ? "" : String.valueOf(id) + ":");
     StringBuffer sb = new StringBuffer();
     char lastChar = '\0';
     char insCode1 = '\0';
@@ -1368,5 +1281,149 @@ public class AminoPolymer extends AlphaPolymer {
     }
     return sb.toString().replace('\0', '.');
   }
-  
+
+  ////////////////////////////////////////////////////////
+  //
+  // Ramachandran-angle-based structure determination 
+  //
+  //
+  ////////////////////////////////////////////////////////
+  /*
+   * New code for assigning secondary structure based on 
+   * phi-psi angles instead of hydrogen bond patterns.
+   *
+   * molvisions 2005 10 12
+   *
+   */
+
+  @Override
+  public void calculateStructures(boolean alphaOnly) {
+    if (alphaOnly)
+      return;
+    if (structureList == null)
+      structureList = model.getModelSet().getStructureList();
+    char[] structureTags = new char[monomerCount];
+    for (int i = 0; i < monomerCount - 1; ++i) {
+      AminoMonomer leadingResidue = (AminoMonomer) monomers[i];
+      AminoMonomer trailingResidue = (AminoMonomer) monomers[i + 1];
+      float phi = trailingResidue.getGroupParameter(Token.phi);
+      float psi = leadingResidue.getGroupParameter(Token.psi);
+      if (isHelix(psi, phi)) {
+        //this next is just Bob's attempt to separate different helices
+        //it is CONSERVATIVE -- it displays fewer helices than before
+        //thus allowing more turns and (presumably) better rockets.
+
+        structureTags[i] = (phi < 0 && psi < 25 ? '4' : '3');
+      } else if (isSheet(psi, phi)) {
+        structureTags[i] = 's';
+      } else if (isTurn(psi, phi)) {
+        structureTags[i] = 't';
+      } else {
+        structureTags[i] = 'n';
+      }
+
+      if (Logger.debugging)
+        Logger.debug((0 + this.monomers[0].getChainID()) + " aminopolymer:" + i
+            + " " + trailingResidue.getGroupParameter(Token.phi) + ","
+            + leadingResidue.getGroupParameter(Token.psi) + " "
+            + structureTags[i]);
+    }
+
+    // build alpha helix stretches
+    for (int start = 0; start < monomerCount; ++start) {
+      if (structureTags[start] == '4') {
+        int end;
+        for (end = start + 1; end < monomerCount && structureTags[end] == '4'; ++end) {
+        }
+        end--;
+        if (end >= start + 3) {
+          addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_HELIX, null, 0,
+              0, start, end);
+        }
+        start = end;
+      }
+    }
+
+    for (int start = 0; start < monomerCount; ++start) {
+      if (structureTags[start] == '3') {
+        int end;
+        for (end = start + 1; end < monomerCount && structureTags[end] == '3'; ++end) {
+        }
+        end--;
+        if (end >= start + 3) {
+          addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_HELIX, null, 0,
+              0, start, end);
+        }
+        start = end;
+      }
+    }
+
+    // build beta sheet stretches
+    for (int start = 0; start < monomerCount; ++start) {
+      if (structureTags[start] == 's') {
+        int end;
+        for (end = start + 1; end < monomerCount && structureTags[end] == 's'; ++end) {
+        }
+        end--;
+        if (end >= start + 2) {
+          addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_SHEET, null, 0,
+              0, start, end);
+        }
+        start = end;
+      }
+    }
+
+    // build turns
+    for (int start = 0; start < monomerCount; ++start) {
+      if (structureTags[start] == 't') {
+        int end;
+        for (end = start + 1; end < monomerCount && structureTags[end] == 't'; ++end) {
+        }
+        end--;
+        if (end >= start + 2) {
+          addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_TURN, null, 0,
+              0, start, end);
+        }
+        start = end;
+      }
+    }
+  }
+
+  /**
+   * 
+   * @param psi N-C-CA-N torsion for NEXT group
+   * @param phi C-CA-N-C torsion for THIS group
+   * @return whether this corresponds to a helix
+   */
+  private boolean isTurn(float psi, float phi) {
+    return checkPhiPsi(structureList[JmolConstants.PROTEIN_STRUCTURE_TURN],
+        psi, phi);
+  }
+
+  private boolean isSheet(float psi, float phi) {
+    return checkPhiPsi(structureList[JmolConstants.PROTEIN_STRUCTURE_SHEET],
+        psi, phi);
+  }
+
+  private boolean isHelix(float psi, float phi) {
+    return checkPhiPsi(structureList[JmolConstants.PROTEIN_STRUCTURE_HELIX],
+        psi, phi);
+  }
+
+  private static boolean checkPhiPsi(float[] list, float psi, float phi) {
+    for (int i = 0; i < list.length; i += 4)
+      if (phi >= list[i] && phi <= list[i + 1] && psi >= list[i + 2]
+          && psi <= list[i + 3])
+        return true;
+    return false;
+  }
+
+  private float[][] structureList; // kept in StateManager.globalSettings
+
+  @Override
+  public void setStructureList(float[][] structureList) {
+    this.structureList = structureList;
+  }
+
+
 }

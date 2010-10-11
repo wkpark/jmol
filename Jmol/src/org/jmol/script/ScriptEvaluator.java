@@ -10915,7 +10915,7 @@ public class ScriptEvaluator {
 
   private void calculate() throws ScriptException {
     boolean isSurface = false;
-    boolean asDSSP;
+    boolean asDSSP = false;
     BitSet bs;
     BitSet bs2 = null;
     int n = Integer.MIN_VALUE;
@@ -11023,10 +11023,20 @@ public class ScriptEvaluator {
         return;
       case Token.structure:
         bs = (statementLength < 4 ? null : atomExpression(2));
-        if (isSyntaxCheck)
-          return;
-        asDSSP = (tokAt(++iToken) != Token.ramachandran);
-        showString(viewer.calculateStructures(bs, asDSSP, true));
+        switch (tokAt(++iToken)) {
+        case Token.ramachandran:
+          break;
+        case Token.dssp:
+          asDSSP = true;
+          break;
+        case Token.nada:
+          asDSSP = viewer.getDefaultStructureDSSP();
+          break;
+        default:
+          error(ERROR_invalidArgument);
+        }
+        if (!isSyntaxCheck)
+          showString(viewer.calculateStructures(bs, asDSSP, true));
         return;
       }
       if (n != Integer.MIN_VALUE) {

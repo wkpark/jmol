@@ -45,14 +45,12 @@ public class NucleicPolymer extends BioPolymer {
   NucleicPolymer(Monomer[] monomers) {
     super(monomers);
     type = TYPE_NUCLEIC;
+    hasWingPoints = true;
   }
 
   Atom getNucleicPhosphorusAtom(int monomerIndex) {
     return monomers[monomerIndex].getLeadAtom();
   }
-
-  @Override
-  boolean hasWingPoints() { return true; }
 
   @Override
   protected boolean calcEtaThetaAngles() {

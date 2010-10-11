@@ -903,6 +903,7 @@ public class Token {
   public final static int chaincasesensitive             = booleanparam | 44;
   public final static int colorrasmol                    = booleanparam | 46;
   public final static int debugscript                    = booleanparam | 48;
+  public final static int defaultstructuredssp           = booleanparam | 49;
   public final static int disablepopupmenu               = booleanparam | 50;
   public final static int displaycellparameters          = booleanparam | 52;
   public final static int dotsselectedonly               = booleanparam | 53;
@@ -1470,7 +1471,6 @@ public class Token {
       "dot",               new Token(dot),
       "dots",              new Token(dots),
       "draw",              new Token(draw),
-      "DSSP",              new Token(dssp),
       "echo",              new Token(echo),
       "ellipsoid",         new Token(ellipsoid),
       "ellipsoids",        null,
@@ -1692,6 +1692,7 @@ public class Token {
       "div",             new Token(div),
       "DNA",             new Token(dna),
       "dotted",          new Token(dotted),
+      "DSSP",            new Token(dssp),
       "element",         new Token(element),
       "elemno",          new Token(elemno),
       "_e",              null,
@@ -2162,6 +2163,7 @@ public class Token {
       "chainCaseSensitive",                       new Token(chaincasesensitive),
       "colorRasmol",                              new Token(colorrasmol),
       "debugScript",                              new Token(debugscript),
+      "defaultStructureDssp",                     new Token(defaultstructuredssp),
       "disablePopupMenu",                         new Token(disablepopupmenu),
       "displayCellParameters",                    new Token(displaycellparameters),
       "dotsSelectedOnly",                         new Token(dotsselectedonly),

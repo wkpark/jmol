@@ -2448,6 +2448,21 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.calculateSurface(bsSelected, envelopeRadius);
   }
 
+  public float[][] getStructureList() {     
+    return global.getStructureList();
+  }
+
+  public void setStructureList(float[] list, int type) {
+    // none, turn, sheet, helix
+    global.setStructureList(list, type);
+    modelSet.setStructureList(getStructureList());
+  }
+
+  public boolean getDefaultStructureDSSP() {
+    return global.defaultStructureDSSP;
+  }
+  
+
   public String calculateStructures(BitSet bsAtoms, boolean asDSSP, boolean setStructure) {
     // Eval
     if (bsAtoms == null)
@@ -5912,6 +5927,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean found = true;
     boolean doRepaint = true;
     switch (tok) {
+    case Token.defaultstructuredssp:
+      global.defaultStructureDSSP = value;
+      break;
     case Token.dsspcalchydrogen:
       global.dsspCalcHydrogen = value;
       break;
@@ -9471,19 +9489,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return colorManager.getColorEncoder(colorScheme);
   }
 
-  public float[][] getStructureList() {     
-    return global.getStructureList();
-  }
-
-  public void setStructureList(float[] list, int type) {
-    // none, turn, sheet, helix
-    global.setStructureList(list, type);
-    modelSet.setStructureList(getStructureList());
-  }
-
   public void displayBonds(BondSet bs, boolean isDisplay) {
     modelSet.displayBonds(bs, isDisplay);    
   }
-  
 
 }

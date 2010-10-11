@@ -223,7 +223,9 @@ public final class Model {
   }
   
   
-  String calculateStructures(boolean asDSSP, boolean doReport, boolean dsspIgnoreHydrogen, boolean setStructure) {
+  String calculateStructures(boolean asDSSP, boolean doReport, 
+                             boolean dsspIgnoreHydrogen, boolean setStructure,
+                             boolean includeAlpha) {
     structureTainted = modelSet.proteinStructureTainted = true;
     if (bioPolymerCount == 0 || !setStructure && !asDSSP)
       return "";
@@ -231,12 +233,11 @@ public final class Model {
       for (int i = bioPolymerCount; --i >= 0;)
         if (!asDSSP || bioPolymers[i].getGroups()[0].getNitrogenAtom() != null)
           bioPolymers[i].clearStructures();
-    if (asDSSP)
-      return bioPolymers[0].calculateStructures(bioPolymers, bioPolymerCount,
-          null, doReport, dsspIgnoreHydrogen, setStructure);
-    for (int i = bioPolymerCount; --i >= 0;)
-      bioPolymers[i].calculateStructures();
-    return "";
+    if (!asDSSP || includeAlpha)
+      for (int i = bioPolymerCount; --i >= 0;)
+        bioPolymers[i].calculateStructures(includeAlpha);
+    return (asDSSP ? bioPolymers[0].calculateStructures(bioPolymers, bioPolymerCount,
+          null, doReport, dsspIgnoreHydrogen, setStructure) : "");
   }
 
   public boolean isStructureTainted() {

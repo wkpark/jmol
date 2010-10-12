@@ -365,6 +365,7 @@ abstract class ScriptCompilationTokenParser {
     case Token.divide:
     case Token.helix:
     case Token.helix310:
+    case Token.helixalpha:
     case Token.helixpi:
     case Token.isaromatic:
     case Token.none:

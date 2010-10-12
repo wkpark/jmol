@@ -705,49 +705,67 @@ REMARK 290 REMARK: NULL
 
   /*
           1         2         3
-0123456789012345678901234567890123456
-HELIX    1  H1 ILE      7  LEU     18
-HELIX    2  H2 PRO     19  PRO     19
-HELIX    3  H3 GLU     23  TYR     29
-HELIX    4  H4 THR     30  THR     30
-SHEET    1  S1 2 THR     2  CYS     4
-SHEET    2  S2 2 CYS    32  ILE    35
-SHEET    3  S3 2 THR    39  PRO    41
-TURN     1  T1 GLY    42  TYR    44
+  0123456789012345678901234567890123456
+  HELIX    1  H1 ILE      7  LEU     18
+  HELIX    2  H2 PRO     19  PRO     19
+  HELIX    3  H3 GLU     23  TYR     29
+  HELIX    4  H4 THR     30  THR     30
+  SHEET    1  S1 2 THR     2  CYS     4
+  SHEET    2  S2 2 CYS    32  ILE    35
+  SHEET    3  S3 2 THR    39  PRO    41
+  TURN     1  T1 GLY    42  TYR    44
 
-HELIX     1 H1 ILE A    7  PRO A   19
-HELIX     2 H2 GLU A   23  THR A   30
-SHEET     1 S1 0 CYS A   3  CYS A   4
-SHEET     2 S2 0 CYS A  32  ILE A  35
+  HELIX     1 H1 ILE A    7  PRO A   19
+  HELIX     2 H2 GLU A   23  THR A   30
+  SHEET     1 S1 0 CYS A   3  CYS A   4
+  SHEET     2 S2 0 CYS A  32  ILE A  35
 
-HELIX  113 113 ASN H  307  ARG H  327  1                                  21    
-SHEET    1   A 6 ASP A  77  HIS A  80  0                                        
-SHEET    2   A 6 GLU A  47  ILE A  51  1  N  ILE A  48   O  ASP A  77           
-SHEET    3   A 6 ARG A  22  ILE A  26  1  N  VAL A  23   O  GLU A  47           
+  HELIX  113 113 ASN H  307  ARG H  327  1                                  21    
+  SHEET    1   A 6 ASP A  77  HIS A  80  0                                        
+  SHEET    2   A 6 GLU A  47  ILE A  51  1  N  ILE A  48   O  ASP A  77           
+  SHEET    3   A 6 ARG A  22  ILE A  26  1  N  VAL A  23   O  GLU A  47           
+
+
+TYPE OF HELIX CLASS NUMBER (COLUMNS 39 - 40)
+--------------------------------------------------------------
+Right-handed alpha (default) 1
+Right-handed omega 2
+Right-handed pi 3
+Right-handed gamma 4
+Right-handed 310 5
+Left-handed alpha 6
+Left-handed omega 7
+Left-handed gamma 8
+27 ribbon/helix 9
+Polyproline 10
 
    */
+  
   private void structure() {
-    String structureType = "none";
+    int structureType = 0;
+    int substructureType = 0;
     int startChainIDIndex;
     int startIndex;
     int endChainIDIndex;
     int endIndex;
     int strandCount = 0;
     if (line.startsWith("HELIX ")) {
-      structureType = "helix";
+      structureType = Structure.PROTEIN_STRUCTURE_HELIX;
       startChainIDIndex = 19;
       startIndex = 21;
       endChainIDIndex = 31;
       endIndex = 33;
+      if (line.length() >= 40)
+      substructureType = Structure.getHelixType(parseInt(line.substring(38, 40)));
     } else if (line.startsWith("SHEET ")) {
-      structureType = "sheet";
+      structureType = Structure.PROTEIN_STRUCTURE_SHEET;
       startChainIDIndex = 21;
       startIndex = 22;
       endChainIDIndex = 32;
       endIndex = 33;
       strandCount = parseInt(line.substring(14, 16));
     } else if (line.startsWith("TURN  ")) {
-      structureType = "turn";
+      structureType = Structure.PROTEIN_STRUCTURE_TURN;
       startChainIDIndex = 19;
       startIndex = 20;
       endChainIDIndex = 30;
@@ -758,8 +776,8 @@ SHEET    3   A 6 ARG A  22  ILE A  26  1  N  VAL A  23   O  GLU A  47
     if (lineLength < endIndex + 4)
       return;
 
-    String structureID = line.substring(11,15).trim();
-    int serialID = parseInt(line.substring(7,10));
+    String structureID = line.substring(11, 15).trim();
+    int serialID = parseInt(line.substring(7, 10));
     char startChainID = line.charAt(startChainIDIndex);
     int startSequenceNumber = parseInt(line, startIndex, startIndex + 4);
     char startInsertionCode = line.charAt(startIndex + 4);
@@ -773,10 +791,11 @@ SHEET    3   A 6 ARG A  22  ILE A  26  1  N  VAL A  23   O  GLU A  47
     // this should probably call Structure.validateAndAllocate
     // in order to check validity of parameters
     // model number set to -1 here to indicate ALL MODELS
-    Structure structure = new Structure(-1, structureType, structureID, serialID, 
-                                        strandCount, startChainID, startSequenceNumber,
-                                        startInsertionCode, endChainID,
-                                        endSequenceNumber, endInsertionCode);
+    if (substructureType == 0)
+      substructureType = structureType;
+    Structure structure = new Structure(-1, structureType, substructureType,
+        structureID, serialID, strandCount, startChainID, startSequenceNumber,
+        startInsertionCode, endChainID, endSequenceNumber, endInsertionCode);
     atomSetCollection.addStructure(structure);
   }
 

@@ -970,6 +970,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   final private static byte END_INS_CODE = 6;
   final private static byte STRUCT_ID = 7;
   final private static byte SERIAL_NO = 8;
+  final private static byte HELIX_CLASS = 9;
 
   final private static String[] structConfFields = { 
       "_struct_conf_conf_type_id",
@@ -981,6 +982,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       "_struct_conf_pdbx_end_PDB_ins_code",
       "_struct_conf_id", 
       "_struct_conf_pdbx_PDB_helix_id", 
+      "_struct_conf.pdbx_PDB_helix_class"
   };
 
   /**
@@ -997,18 +999,16 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         return;
       }
     while (tokenizer.getData()) {
-      Structure structure = new Structure();
+      Structure structure = new Structure(Structure.PROTEIN_STRUCTURE_HELIX);
       for (int i = 0; i < tokenizer.fieldCount; ++i) {
         switch (fieldProperty(i)) {
         case NONE:
           break;
         case CONF_TYPE_ID:
-          if (field.startsWith("HELX"))
-            structure.structureType = "helix";
-          else if (field.startsWith("TURN"))
-            structure.structureType = "turn";
-          else
-            structure.structureType = "none";
+          if (field.startsWith("TURN"))
+            structure.structureType = structure.substructureType = Structure.PROTEIN_STRUCTURE_TURN;
+          else if (!field.startsWith("HELX"))
+            structure.structureType = structure.substructureType = Structure.PROTEIN_STRUCTURE_NONE;
           break;
         case BEG_ASYM_ID:
           structure.startChainID = firstChar;
@@ -1024,6 +1024,9 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           break;
         case END_SEQ_ID:
           structure.endSequenceNumber = parseInt(field);
+          break;
+        case HELIX_CLASS:
+          structure.substructureType = Structure.getHelixType(parseInt(field));
           break;
         case END_INS_CODE:
           structure.endInsertionCode = firstChar;
@@ -1072,8 +1075,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         return;
       }
     while (tokenizer.getData()) {
-      Structure structure = new Structure();
-      structure.structureType = "sheet";
+      Structure structure = new Structure(Structure.PROTEIN_STRUCTURE_SHEET);
       for (int i = 0; i < tokenizer.fieldCount; ++i) {
         switch (fieldProperty(i)) {
         case BEG_ASYM_ID:

@@ -1324,13 +1324,14 @@ final public class JmolConstants {
   public final static byte PROTEIN_STRUCTURE_RNA = 5;
   public final static byte PROTEIN_STRUCTURE_CARBOHYDRATE = 6;
   public final static byte PROTEIN_STRUCTURE_HELIX_310 = 7;
-  public final static byte PROTEIN_STRUCTURE_HELIX_PI = 8;
+  public final static byte PROTEIN_STRUCTURE_HELIX_ALPHA = 8;
+  public final static byte PROTEIN_STRUCTURE_HELIX_PI = 9;
 
   private final static String[] proteinStructureNames = {
     "none", "turn", "sheet", "helix", 
     "dna", "rna", 
     "carbohydrate", 
-    "helix310", "helixpi"
+    "helix310", "helixalpha", "helixpi"
   };
   
   public final static String getProteinStructureName(int itype, boolean isGeneric) {
@@ -1374,6 +1375,7 @@ final public class JmolConstants {
     0xFFFD0162, // PROTEIN_STRUCTURE_RNA
     0xFFA6A6FA, // PROTEIN_STRUCTURE_CARBOHYDRATE
     0xFFA00080, // PROTEIN_STRUCTURE_HELIX_310 -- lighter purple
+    0xFFFF0080, // PROTEIN_STRUCTURE_HELIX_ALPHA
     0xFF600080, // PROTEIN_STRUCTURE_HELIX_PI  -- dark purple
   };
 
@@ -2237,9 +2239,10 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     // structure
     "@turn structure=1",
     "@sheet structure=2",
-    "@helix substructure=3",
+    "@helix structure=3",
     "@helix310 substructure=7",
-    "@helixpi substructure=8",
+    "@helixalpha substructure=8",
+    "@helixpi substructure=9",
     "@bonded bondcount>0",
   };
   

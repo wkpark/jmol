@@ -413,6 +413,7 @@ public class Token {
   final static int amino                = predefinedset | 2;
   public final static int dna           = predefinedset | 4;
   public final static int hetero        = predefinedset | 6 | deprecatedparam;
+  final static int helixalpha           = predefinedset | 7;  // new Jmol 12.1.14
   final static int helix310             = predefinedset | 8;  // new Jmol 12.1.14
   final static int helixpi              = predefinedset | 10; // new
   public final static int hydrogen      = predefinedset | 12 | deprecatedparam;
@@ -1494,6 +1495,7 @@ public class Token {
       "halo",              new Token(halo),
       "halos",             null,
       "helix",             new Token(helix),
+      "helixalpha",        new Token(helixalpha),
       "helix310",          new Token(helix310),
       "helixpi",           new Token(helixpi),
       "hbond",             new Token(hbond),

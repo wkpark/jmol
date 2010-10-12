@@ -821,9 +821,9 @@ public final class ModelLoader extends ModelSet {
         .getStructureIterator(atomSetCollection);
     if (iterStructure != null)
       while (iterStructure.hasNext()) {
-        if (!iterStructure.getStructureType().equals("turn")) {
+        if (iterStructure.getStructureType() != JmolConstants.PROTEIN_STRUCTURE_TURN) {
           defineStructure(iterStructure.getModelIndex(),
-              iterStructure.getStructureType(),
+              iterStructure.getSubstructureType(),
               iterStructure.getStructureID(), 
               iterStructure.getSerialID(),
               iterStructure.getStrandCount(),
@@ -841,9 +841,9 @@ public final class ModelLoader extends ModelSet {
     iterStructure = adapter.getStructureIterator(atomSetCollection);
     if (iterStructure != null)
       while (iterStructure.hasNext()) {
-        if (iterStructure.getStructureType().equals("turn"))
+        if (iterStructure.getStructureType() == JmolConstants.PROTEIN_STRUCTURE_TURN)
           defineStructure(iterStructure.getModelIndex(),
-              iterStructure.getStructureType(),
+              iterStructure.getSubstructureType(),
               iterStructure.getStructureID(), 1, 1,
               iterStructure.getStartChainID(), iterStructure
                   .getStartSequenceNumber(), iterStructure
@@ -855,13 +855,13 @@ public final class ModelLoader extends ModelSet {
   
   private BitSet structuresDefinedInFile = new BitSet();
 
-  private void defineStructure(int modelIndex, String structureType,
+  private void defineStructure(int modelIndex, int subType,
                                String structureID, int serialID,
                                int strandCount, char startChainID,
                                int startSequenceNumber,
                                char startInsertionCode, char endChainID,
                                int endSequenceNumber, char endInsertionCode) {
-    byte type = JmolConstants.getProteinStructureType(structureType);
+    byte type = (byte) subType;
     if (type < 0)
       type = JmolConstants.PROTEIN_STRUCTURE_NONE;
     int startSeqCode = Group.getSeqcode(startSequenceNumber,

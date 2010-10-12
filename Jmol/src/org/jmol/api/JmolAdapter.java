@@ -431,7 +431,8 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
   public abstract class StructureIterator {
     public abstract boolean hasNext();
     public abstract int getModelIndex();
-    public abstract String getStructureType();
+    public abstract int getStructureType();
+    public abstract int getSubstructureType();
     public abstract String getStructureID();
     public abstract int getSerialID();
     public abstract int getStrandCount();

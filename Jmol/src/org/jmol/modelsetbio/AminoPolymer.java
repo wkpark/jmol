@@ -746,7 +746,7 @@ public class AminoPolymer extends AlphaPolymer {
     BitSet bsTurn = new BitSet();
 
     String line4 = findHelixes(4, min, iPolymer,
-        JmolConstants.PROTEIN_STRUCTURE_HELIX, JmolEdge.BOND_H_PLUS_4, bsDone,
+        JmolConstants.PROTEIN_STRUCTURE_HELIX_ALPHA, JmolEdge.BOND_H_PLUS_4, bsDone,
         bsTurn, labels, doReport, setStructure, vHBonds, bsBad);
     String line3 = findHelixes(3, min, iPolymer,
         JmolConstants.PROTEIN_STRUCTURE_HELIX_310, JmolEdge.BOND_H_PLUS_3,

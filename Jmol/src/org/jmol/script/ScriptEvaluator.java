@@ -3398,6 +3398,7 @@ public class ScriptEvaluator {
       case Token.backbone:
       case Token.solvent:
       case Token.helix:
+      case Token.helixalpha:
       case Token.helix310:
       case Token.helixpi:
       case Token.sidechain:

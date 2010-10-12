@@ -743,8 +743,13 @@ public class SmarterJmolAdapter extends JmolAdapter {
     }
 
     @Override
-    public String getStructureType() {
+    public int getStructureType() {
       return structure.structureType;
+    }
+
+    @Override
+    public int getSubstructureType() {
+      return structure.substructureType;
     }
 
     @Override

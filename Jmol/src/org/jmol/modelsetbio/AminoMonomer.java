@@ -388,11 +388,11 @@ public class AminoMonomer extends AlphaMonomer {
   public String getProteinStructureTag() {
     if (proteinStructure == null || proteinStructure.structureID == null)
       return null;
-    String tag = "%3N %2ID";
+    String tag = "%3N %3ID";
     tag = TextFormat.formatString(tag, "N", proteinStructure.serialID);
     tag = TextFormat.formatString(tag, "ID", proteinStructure.structureID);
     if (proteinStructure.type == JmolConstants.PROTEIN_STRUCTURE_SHEET)
-      tag += " " + proteinStructure.strandCount;
+      tag += TextFormat.formatString("%2SC", "SC", proteinStructure.strandCount);
     return tag;
   }
   

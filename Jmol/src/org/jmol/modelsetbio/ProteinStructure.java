@@ -36,6 +36,7 @@ public abstract class ProteinStructure {
   static int globalSerialID = 1000;
   AlphaPolymer apolymer;
   byte type;
+  byte subtype;
   int monomerIndexFirst;
   int monomerIndexLast;
   int monomerCount;
@@ -44,10 +45,9 @@ public abstract class ProteinStructure {
   final Vector3f vectorProjection = new Vector3f();
   Point3f[] segments;
   int uniqueID;
-  public String structureID;
-  public int serialID;
-  public int strandCount;
-  public byte subtype;
+  String structureID;
+  int serialID;
+  int strandCount;
   
   /**
    * 

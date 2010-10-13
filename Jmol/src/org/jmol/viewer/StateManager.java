@@ -828,6 +828,7 @@ public class StateManager {
       setParameterValue("defaultDistanceLabel", defaultDistanceLabel);
       setParameterValue("defaultLoadFilter", defaultLoadFilter);
       setParameterValue("defaultLoadScript", defaultLoadScript);
+      setParameterValue("defaultStructureDSSP", defaultStructureDSSP);
       setParameterValue("defaultTorsionLabel", defaultTorsionLabel);
       setParameterValue("defaultTranslucent", defaultTranslucent);
       setParameterValue("delayMaximumMs", delayMaximumMs);

@@ -724,7 +724,7 @@ abstract public class ModelCollection extends BondCollection {
       if (i == modelIndex || modelIndex < 0) {
         String altLocs = getAltLocListInModel(i);
         int nAltLocs = getAltLocCountInModel(i);
-        if (conformationIndex >= nAltLocs)
+        if (conformationIndex > 0 && conformationIndex >= nAltLocs)
           continue;
         BitSet bsConformation = viewer.getModelUndeletedAtomsBitSet(i);
         if (conformationIndex >= 0) {
@@ -2822,6 +2822,21 @@ abstract public class ModelCollection extends BondCollection {
                     sid = TextFormat.formatString("%3N %3N", "N", nx);
                   str = "HELIX  %ID %3GROUPA %1CA %4RESA  %3GROUPB %1CB %4RESB";
                   sb = sbHelix;
+                  String type = null;
+                  switch (isubtype) {
+                  case JmolConstants.PROTEIN_STRUCTURE_HELIX:
+                  case JmolConstants.PROTEIN_STRUCTURE_HELIX_ALPHA:
+                    type = "  1";
+                    break;
+                  case JmolConstants.PROTEIN_STRUCTURE_HELIX_310:
+                    type = "  5";
+                    break;
+                  case JmolConstants.PROTEIN_STRUCTURE_HELIX_PI:
+                    type = "  3";
+                    break;
+                  }
+                  if (type != null)
+                    str += type;
                   break;
                 case JmolConstants.PROTEIN_STRUCTURE_SHEET:
                   nx = ++nSheet;
@@ -3980,5 +3995,5 @@ abstract public class ModelCollection extends BondCollection {
       if (!models[lastModelIndex].isModelKit || atom.getElementNumber() > 0 && !atom.isDeleted())
         atomNo++;
     }
-  }
+  }  
 }

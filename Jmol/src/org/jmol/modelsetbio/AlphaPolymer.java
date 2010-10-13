@@ -230,7 +230,7 @@ public class AlphaPolymer extends BioPolymer {
         int polymerIndex2 = a2.getPolymerIndexInModel();
         if (polymerIndex1 == polymerIndex2 && Math.abs(resno2 - resno1) < delta)
           bsNearbyResidues.set(ipt);
-        float d = d2[ipt] = a1.distanceSquared(vCA.get(j));
+        float d = d2[ipt] = a1.distanceSquared(a2);
         if (d >= thresh2)
           bsNotAvailable.set(ipt);
       }

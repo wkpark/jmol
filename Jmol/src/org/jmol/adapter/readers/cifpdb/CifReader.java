@@ -982,7 +982,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       "_struct_conf_pdbx_end_PDB_ins_code",
       "_struct_conf_id", 
       "_struct_conf_pdbx_PDB_helix_id", 
-      "_struct_conf.pdbx_PDB_helix_class"
+      "_struct_conf_pdbx_PDB_helix_class"
   };
 
   /**

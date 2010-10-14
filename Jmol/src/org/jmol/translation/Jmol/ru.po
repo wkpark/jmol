@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-09-21 17:23+0200\n"
-"PO-Revision-Date: 2010-07-26 15:49+0000\n"
-"Last-Translator: vasilisc <vasilisc@rambler.ru>\n"
+"PO-Revision-Date: 2010-10-14 05:56+0000\n"
+"Last-Translator: Sergey Basalaev <SBasalaev@gmail.com>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-07-26 17:32+0000\n"
+"X-Launchpad-Export-Date: 2010-10-14 07:40+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -32,7 +32,7 @@ msgstr "показывает эту страницу справки"
 
 #: org/openscience/jmol/app/JmolApp.java:142
 msgid "no display (and also exit when done)"
-msgstr ""
+msgstr "без отображения (и выйти по завершении)"
 
 #: org/openscience/jmol/app/JmolApp.java:144
 msgid "check script syntax only - no file loading"
@@ -64,7 +64,7 @@ msgstr "нет консоли - весь вывод в выходной пото
 
 #: org/openscience/jmol/app/JmolApp.java:156
 msgid "send only output from print messages to console (implies -i)"
-msgstr ""
+msgstr "посылать в консоль только сообщения (влечёт -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:158
 msgid "independent command thread"
@@ -125,6 +125,8 @@ msgid ""
 "The -D options are as follows (defaults in parenthesis) and must be called "
 "preceding '-jar Jmol.jar':"
 msgstr ""
+"Опции -D, описанные ниже (в скобках значения по умолчанию) должны быть "
+"указаны перед объявлением '-jar Jmol.jar':"
 
 #: org/openscience/jmol/app/JmolApp.java:466
 msgid "Executing script 1..."
@@ -276,15 +278,15 @@ msgstr "Контроллер"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:363
 msgid "Go to first atom set in the collection"
-msgstr ""
+msgstr "Перейти к первому набору атомов в коллекции"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:364
 msgid "Go to previous atom set in the collection"
-msgstr ""
+msgstr "Перейти к предыдущему набору атомов в коллекции"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:365
 msgid "Play the whole collection of atom sets"
-msgstr ""
+msgstr "Проиграть полную коллекцию наборов атомов"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:366
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
@@ -293,31 +295,31 @@ msgstr "Приостановить воспроизведение"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:367
 msgid "Go to next atom set in the collection"
-msgstr ""
+msgstr "Перейти к следующему набору атомов в коллекции"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:368
 msgid "Jump to last atom set in the collection"
-msgstr ""
+msgstr "Перейти к последнему набору атомов в коллекции"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:372
 msgid "Go to first vector in the collection"
-msgstr ""
+msgstr "Перейти к первому вектору в коллекции"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:373
 msgid "Go to previous vector in the collection"
-msgstr ""
+msgstr "Перейти к предыдущему вектору в коллекции"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:374
 msgid "Play the whole collection of vectors"
-msgstr ""
+msgstr "Проиграть всю коллекцию векторов"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:376
 msgid "Go to next vector in the collection"
-msgstr ""
+msgstr "Перейти к следующему вектору в коллекции"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:377
 msgid "Jump to last vector in the collection"
-msgstr ""
+msgstr "Перейти к последнему вектору в коллекции"
 
 #: org/openscience/jmol/app/jmolpanel/ConsoleTextArea.java:87
 #, java-format
@@ -616,7 +618,7 @@ msgstr "&Атом"
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:111
 #, java-format
 msgid "{0}% van der Waals"
-msgstr ""
+msgstr "{0}% ван дер Ваальса"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:112
 msgid "&Bond"
@@ -914,11 +916,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:200
 msgid "File Preview (requires restarting Jmol)"
-msgstr ""
+msgstr "Предпросмотр файла (требует перезапуска Jmol)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:202
 msgid "Clear console button (requires restarting Jmol)"
-msgstr ""
+msgstr "Кнопка очистки консоли (требует перезапуска Jmol)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:203
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:204
@@ -963,7 +965,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:235
 msgid "Building Menubar..."
-msgstr ""
+msgstr "Построение строки меню..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:252
 msgid "Starting display..."
@@ -975,7 +977,7 @@ msgstr "Настройка Drag-and-Drop..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:300
 msgid "Launching main frame..."
-msgstr ""
+msgstr "Запуск главного окна..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:304
 msgid "Initializing Preferences..."
@@ -986,9 +988,8 @@ msgid "Initializing Recent Files..."
 msgstr "Инициализация Недавних Файлов..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:341
-#, fuzzy
 msgid "Jmol Java Console"
-msgstr "Jmol Явя &Консоль"
+msgstr "Java консоль Jmol"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:361
 msgid "Could not create ConsoleTextArea: "
@@ -1020,15 +1021,15 @@ msgstr "Введите URL молекулярной модели"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1149
 msgid "Get PDB file"
-msgstr ""
+msgstr "Взять файл PDB"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1150
 msgid "Enter a four-digit PDB ID"
-msgstr ""
+msgstr "Ввести четырёхзначный PDB ID"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1167
 msgid "Get MOL file by compound name or ID"
-msgstr ""
+msgstr "Взять файл MOL по структурному имени или ID"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1168
 msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
@@ -1036,12 +1037,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1334
 msgid "IO Exception:"
-msgstr ""
+msgstr "Исключение ввода/вывода:"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1427
-#, fuzzy
 msgid "width height?"
-msgstr "высота:"
+msgstr "ширина высота?"
 
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:124
 msgid "Delete"
@@ -1057,7 +1057,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:202
 msgid "Value"
-msgstr ""
+msgstr "Значение"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:153
 msgid "Conversion from Jmol to POV-Ray"
@@ -1152,11 +1152,11 @@ msgstr "T - Несжатый Targa-24"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:384
 msgid "Alpha transparency"
-msgstr ""
+msgstr "Альфа-прозрачность"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:386
 msgid "Output Alpha transparency data"
-msgstr ""
+msgstr "Выводить данные альфа-прозрачности"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:399
 msgid "Mosaic preview"
@@ -1202,35 +1202,35 @@ msgstr "Закрыть диалог без сохранения"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:140
 msgid "Preferences"
-msgstr ""
+msgstr "Настройки"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:158
 msgid "Display"
-msgstr ""
+msgstr "Отображение"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:159
 msgid "Atoms"
-msgstr ""
+msgstr "Атомы"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:160
 msgid "Bonds"
-msgstr ""
+msgstr "Связи"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:165
 msgid "Jmol Defaults"
-msgstr ""
+msgstr "Установки Jmol по умолчанию"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:169
 msgid "RasMol Defaults"
-msgstr ""
+msgstr "Установки RasMol по умолчанию"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:177
 msgid "Apply"
-msgstr ""
+msgstr "Применить"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:205
 msgid "Show All"
-msgstr ""
+msgstr "Показать всё"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:304
 msgid "Default atom size"
@@ -1238,7 +1238,7 @@ msgstr "Размер атома по-умолчанию"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:305
 msgid "(percentage of vanDerWaals radius)"
-msgstr ""
+msgstr "(процентное отношение радиуса Ван Дер Ваальса)"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:363
 msgid "Compute Bonds"
@@ -1246,7 +1246,7 @@ msgstr "Вычислить Связи"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:365
 msgid "Automatically"
-msgstr ""
+msgstr "Автоматически"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:366
 msgid "Don't Compute Bonds"
@@ -1260,7 +1260,7 @@ msgstr "Радиус Связи По-умолчанию"
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:436
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:482
 msgid "(Angstroms)"
-msgstr ""
+msgstr "(Ангстремы)"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:435
 msgid "Bond Tolerance - sum of two covalent radii + this value"
@@ -1272,7 +1272,7 @@ msgstr "Минимальная Связующая Дистанция"
 
 #: org/openscience/jmol/app/jmolpanel/RecentFilesDialog.java:61
 msgid "Recent Files"
-msgstr ""
+msgstr "Последние файлы"
 
 #: org/openscience/jmol/app/jmolpanel/RecentFilesDialog.java:66
 msgid "Open"
@@ -1280,7 +1280,7 @@ msgstr "Открыть"
 
 #: org/openscience/jmol/app/jmolpanel/Splash.java:46
 msgid "Loading..."
-msgstr ""
+msgstr "Загрузка..."
 
 #: org/openscience/jmol/app/jmolpanel/WhatsNewDialog.java:57
 msgid "What's New in Jmol"
@@ -1296,11 +1296,11 @@ msgstr "Лог и Сообщения об Ошибках:"
 
 #: org/openscience/jmol/app/webexport/LogPanel.java:64
 msgid "Messages (see Log tab for full history):"
-msgstr ""
+msgstr "Сообщения (полную историю можно просмотреть на вкладке Журнал):"
 
 #: org/openscience/jmol/app/webexport/PopInJmol.java:46
 msgid "These names will be used as filenames for the applets"
-msgstr ""
+msgstr "Эти названия будут использоваться, как имена файлов для апплетов"
 
 #: org/openscience/jmol/app/webexport/PopInJmol.java:72
 msgid "Applet width:"
@@ -1318,7 +1318,7 @@ msgstr "ввести примечания для {0} здесь."
 
 #: org/openscience/jmol/app/webexport/ScriptButtons.java:44
 msgid "These names will be used for button labels"
-msgstr ""
+msgstr "Эти названия будут использоваться для меток кнопок"
 
 #: org/openscience/jmol/app/webexport/ScriptButtons.java:57
 msgid "% of window for applet width:"
@@ -1348,7 +1348,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebExport.java:152
 msgid "Log"
-msgstr ""
+msgstr "Журнал"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:167
 #, java-format
@@ -1496,16 +1496,16 @@ msgstr "Используемая директория {0}"
 #: org/openscience/jmol/app/webexport/WebPanel.java:699
 #, java-format
 msgid "adding {0}"
-msgstr ""
+msgstr "добавление {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:687
 #, java-format
 msgid "Unable to load resource {0}"
-msgstr ""
+msgstr "Не удалось загрузить ресурс {0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:739
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
-msgstr ""
+msgstr "Основано на шаблоне от A. Herr&#x00E1;ez, модифицированном J. Gutow"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:742
 #, java-format
@@ -1528,10 +1528,13 @@ msgid ""
 "{0}\n"
 "         to"
 msgstr ""
+"копирование\n"
+"{0}\n"
+"         в"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:786
 msgid "compressing large data file to"
-msgstr ""
+msgstr "сжатие большого файла данных в"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:60
 msgid "Spin on/off"
@@ -1547,71 +1550,71 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:86
 msgid "Background Color"
-msgstr ""
+msgstr "Цвет фона"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:104
 msgid "background color:"
-msgstr ""
+msgstr "цвет фона:"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:117
 msgid "Stereo Viewing"
-msgstr ""
+msgstr "Стерео просмотр"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:134
 msgid "select stereo type"
-msgstr ""
+msgstr "выбор режима стерео"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:138
 msgid "Stereo Off"
-msgstr ""
+msgstr "Выключить стерео"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:139
 msgid "Red/Blue"
-msgstr ""
+msgstr "Красный/синий"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:141
 msgid "Red/Cyan"
-msgstr ""
+msgstr "Красный/голубой"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:143
 msgid "Red/Green"
-msgstr ""
+msgstr "Красный/зелёный"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:150
 msgid "Animation Control"
-msgstr ""
+msgstr "Управление анимацией"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:177
 msgid "Animation"
-msgstr ""
+msgstr "Анимация"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:178
 msgid "First Frame"
-msgstr ""
+msgstr "Первый кадр"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:180
 msgid "Previous Frame"
-msgstr ""
+msgstr "Предыдущий кадр"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:182
 msgid "Play"
-msgstr ""
+msgstr "Воспроизвести"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:184
 msgid "Next Frame"
-msgstr ""
+msgstr "Следующий кадр"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:186
 msgid "Pause"
-msgstr ""
+msgstr "Приостановить"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:188
 msgid "Last Frame"
-msgstr ""
+msgstr "Последний кадр"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:190
 msgid "Mode:"
-msgstr ""
+msgstr "Режим:"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:191
 msgid "Loop"
@@ -1627,11 +1630,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:204
 msgid "Open Console Button"
-msgstr ""
+msgstr "Кнопка открытия консоли"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:220
 msgid "launch Jmol console"
-msgstr ""
+msgstr "запустить консоль Jmol"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:222
 msgid "Jmol Console"
@@ -1643,11 +1646,12 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:245
 msgid "unimplemented"
-msgstr ""
+msgstr "не реализовано"
 
 #~ msgid "Jmol Script Console"
 #~ msgstr "Консоль сценариев Jmol"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Перейти к следующему {0} в коллекции"
 
@@ -1657,26 +1661,32 @@ msgstr ""
 #~ msgid "atom set"
 #~ msgstr "Набор атомов"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Идти к первой {0} в коллекции"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Идти к предыдущей {0} в коллекции"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Смотреть всю коллекцию {0}"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Перейти к последней {0} в коллекции"
 
 #~ msgid "Show Selected"
 #~ msgstr "Показать Выбранное"
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "добавление {0}.spt"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "добавление JmolPopIn.js"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "добавление {0}.png"

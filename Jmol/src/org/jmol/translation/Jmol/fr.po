@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-09-21 17:23+0200\n"
-"PO-Revision-Date: 2010-08-17 08:31+0000\n"
-"Last-Translator: Emilien Klein <emilien+ubuntu@klein.st>\n"
+"PO-Revision-Date: 2010-10-13 09:24+0000\n"
+"Last-Translator: Ptitphysik <amalpeyre@gmail.com>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-08-17 16:04+0000\n"
+"X-Launchpad-Export-Date: 2010-10-13 13:20+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: France\n"
 "X-Poedit-Language: French\n"
@@ -442,11 +442,11 @@ msgstr "Ouvrir une &URL"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:62
 msgid "&Get PDB"
-msgstr ""
+msgstr "&Obtenir PDB"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:63
 msgid "Get &MOL"
-msgstr ""
+msgstr "Obtenir &MOL"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:64
 msgid "Scrip&t Editor..."
@@ -729,7 +729,7 @@ msgstr "&Mesures"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:148
 msgid "Resi&ze"
-msgstr ""
+msgstr "Redim&ensionner"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:149
 msgid "&View"
@@ -995,9 +995,8 @@ msgid "Initializing Recent Files..."
 msgstr "Initialisation des fichiers récents..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:341
-#, fuzzy
 msgid "Jmol Java Console"
-msgstr "&Console Java Jmol"
+msgstr "Console Java Jmol"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:361
 msgid "Could not create ConsoleTextArea: "
@@ -1029,19 +1028,19 @@ msgstr "Saisissez l'URL d'un modèle moléculaire"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1149
 msgid "Get PDB file"
-msgstr ""
+msgstr "Obtenir un fichier PDB"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1150
 msgid "Enter a four-digit PDB ID"
-msgstr ""
+msgstr "Entrer une ID de PDB à 4 chiffres"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1167
 msgid "Get MOL file by compound name or ID"
-msgstr ""
+msgstr "Obtenir un fichier MOL par nom du composé ou ID"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1168
 msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
-msgstr ""
+msgstr "Entrer le nom ou l'identifiant (SMILES, InChI, CAS) d'une molécule"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1334
 msgid "IO Exception:"
@@ -1049,7 +1048,7 @@ msgstr "Exception E/S!"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1427
 msgid "width height?"
-msgstr ""
+msgstr "largeur hauteur ?"
 
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:124
 msgid "Delete"
@@ -1107,7 +1106,8 @@ msgstr "Afficher pendant le calcul"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:245
 msgid "Should POV-Ray attempt to display while rendering?"
-msgstr "Est-ce que POV-Ray doit essayer d'afficher le rendu durant le calcul ?"
+msgstr ""
+"Est-ce que POV-Ray doit essayer d'afficher le rendu durant le calcul ?"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:268
 msgid "width:"
@@ -1686,16 +1686,19 @@ msgstr "non-implémenté"
 #~ msgid "Show Selected"
 #~ msgstr "Afficher les options sélectionnées"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
-#~ "Insérer un texte explicatif pertinente ici. Long texte sera coupé "
-#~ "entourent le modèle de Jmol {0}."
+#~ "Insérer un texte explicatif pertinente ici. Long texte sera coupé entourent "
+#~ "le modèle de Jmol {0}."
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "ajoutant {0}. spt"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "ajoutant {0}. png"
 

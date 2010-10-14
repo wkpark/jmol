@@ -189,6 +189,9 @@ public class CrystalReader extends AtomSetCollectionReader {
       return true;
     }
     
+    if (line.startsWith(" FREQUENCIES COMPUTED ON A FRAGMENT"))
+      return readFragments();
+
     if (line.indexOf("CONSTRUCTION OF A NANOTUBE FROM A SLAB") >= 0) {
       isPolymer = true;
       isSlab = false;
@@ -224,9 +227,6 @@ public class CrystalReader extends AtomSetCollectionReader {
 
     if (line.startsWith(" TOTAL ATOMIC CHARGES"))
       return readTotalAtomicCharges();
-
-    if (line.startsWith(" FREQUENCIES COMPUTED ON A FRAGMENT"))
-      return readFragments();
 
     if (addVibrations
         && line

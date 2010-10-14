@@ -102,7 +102,7 @@ public class MoldenReader extends MopacSlaterReader {
        0.1285000000D+00  0.2384999379D-02
       s   10 1.00
      */
-    List<int[]> sdata = new ArrayList<int[]>();
+    shells = new ArrayList<int[]>();
     List<float[]> gdata = new ArrayList<float[]>();
     int atomIndex = 0;
     int gaussianPtr = 0;
@@ -140,7 +140,7 @@ public class MoldenReader extends MopacSlaterReader {
           gdata.add(orbData);
           gaussianPtr++;
         }
-        sdata.add(slater);
+        shells.add(slater);
       }      
       // Next atom
     }
@@ -149,10 +149,10 @@ public class MoldenReader extends MopacSlaterReader {
     for (int i = 0; i < gaussianPtr; i++) {
       garray[i] = gdata.get(i);
     }
-    moData.put("shells", sdata);
+    moData.put("shells", shells);
     moData.put("gaussians", garray);
     if (Logger.debugging) {
-      Logger.debug(sdata.size() + " slater shells read");
+      Logger.debug(shells.size() + " slater shells read");
       Logger.debug(garray.length + " gaussian primitives read");
     }
     atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);

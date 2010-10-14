@@ -40,6 +40,8 @@ import java.util.Map;
  */
 abstract class BasisFunctionReader extends AtomSetCollectionReader {
 
+  protected List<int[]> shells;
+
   protected Map<String, Object> moData = new Hashtable<String, Object>();
   protected List<Map<String, Object>> orbitals = new ArrayList<Map<String, Object>>();
   protected int nOrbitals = 0;
@@ -151,13 +153,11 @@ abstract class BasisFunctionReader extends AtomSetCollectionReader {
     return tag;
   }
   
-  @SuppressWarnings("unchecked")
   protected void fixSlaterTypes(int typeOld, int typeNew) {
     // in certain cases we assume Cartesian and then later have to 
     // correct that. 
-    List<int[]> sdata = (List<int[]>) moData.get("shells");
-    for (int i = sdata.size(); --i >=0 ;) {
-      int[] slater = sdata.get(i);
+    for (int i = shells.size(); --i >=0 ;) {
+      int[] slater = shells.get(i);
       if (slater[1] == typeOld)
         slater[1] = typeNew;
     }

@@ -3815,29 +3815,20 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                            boolean isExport, boolean isReset) {
     if (!isImageWrite && creatingImage)
       return;
+    antialiasDisplay = (isReset ? global.antialiasDisplay : isImageWrite
+        && !isExport ? global.antialiasImages : false);
+    imageFontScaling = (isReset || width <= 0 ? 1
+        : (global.zoomLarge == (height > width) ? height : width)
+            / getScreenDim()) * (antialiasDisplay ? 2 : 1);
     if (width > 0) {
-      if (isImageWrite && !isReset)
-        setImageFontScaling(width, height);
       dimScreen.width = width;
       dimScreen.height = height;
-    }
-
-    antialiasDisplay = false;
-
-    if (isReset) {
-      imageFontScaling = 1;
-      antialiasDisplay = global.antialiasDisplay;
-    } else if (isImageWrite && !isExport) {
-      antialiasDisplay = global.antialiasImages;
-    }
-    if (antialiasDisplay)
-      imageFontScaling *= 2;
-    if (width > 0 && !isImageWrite) {
-      global.setParameterValue("_width", width);
-      global.setParameterValue("_height", height);
-      setStatusResized(width, height);
-    }
-    if (width <= 0) {
+      if (!isImageWrite) {
+        global.setParameterValue("_width", width);
+        global.setParameterValue("_height", height);
+        setStatusResized(width, height);
+      }
+    } else {
       width = dimScreen.width;
       height = dimScreen.height;
     }
@@ -8286,11 +8277,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       fileName = dialogAsk(quality == Integer.MIN_VALUE ? "save" : "saveImage",
           fileName);
     return fileName;
-  }
-
-  private void setImageFontScaling(int width, int height) {
-    float screenDimNew = (global.zoomLarge == (height > width) ? height : width);
-    imageFontScaling = screenDimNew / getScreenDim();
   }
 
   private void setSyncTarget(int mode, boolean TF) {

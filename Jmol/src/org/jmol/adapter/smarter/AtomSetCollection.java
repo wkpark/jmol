@@ -286,10 +286,6 @@ public class AtomSetCollection {
   }
   
   void finish() {
-    for (int i = 0; i < atomSetCount; i++) {
-      setAtomSetAuxiliaryInfo("initialAtomCount", Integer.valueOf(atomSetAtomCounts[i]), i);
-      setAtomSetAuxiliaryInfo("initialBondCount", Integer.valueOf(atomSetBondCounts[i]), i);
-    }
     atoms = null;
     atomSetAtomCounts = new int[16];
     atomSetAuxiliaryInfo = new Hashtable[16];
@@ -319,6 +315,10 @@ public class AtomSetCollection {
       finalizeTrajectory();
     getAltLocLists();
     getInsertionLists();
+    for (int i = 0; i < atomSetCount; i++) {
+      setAtomSetAuxiliaryInfo("initialAtomCount", Integer.valueOf(atomSetAtomCounts[i]), i);
+      setAtomSetAuxiliaryInfo("initialBondCount", Integer.valueOf(atomSetBondCounts[i]), i);
+    }
   }
 
   public void discardPreviousAtoms() {

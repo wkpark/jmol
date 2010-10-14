@@ -590,7 +590,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     boolean doNormalizePrimitive = isPrimitive && !isMolecular && !isPolymer
         && !isSlab && (!doApplySymmetry || latticeCells[2] != 0);
     atomIndexLast = atomSetCollection.getAtomCount();    
-    while (readLine() != null && line.length() > 0) {
+    while (readLine() != null && line.length() > 0 && line.indexOf("=") < 0) {
       Atom atom = atomSetCollection.addNewAtom();
       String[] tokens = getTokens();
       int atomicNumber = getAtomicNumber(tokens[2]);

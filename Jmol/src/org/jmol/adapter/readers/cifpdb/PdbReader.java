@@ -103,20 +103,21 @@ public class PdbReader extends AtomSetCollectionReader {
  private StringBuffer pdbHeader;
  
  @Override
-protected void initializeReader() throws Exception {
-   atomSetCollection.setAtomSetCollectionAuxiliaryInfo("isPDB", Boolean.TRUE);
+ protected void initializeReader() throws Exception {
+   atomSetCollection.setIsPDB();
    pdbHeader = (getHeader ? new StringBuffer() : null);
  }
 
- @Override
-protected boolean checkLine() throws Exception {
+  @Override
+  protected boolean checkLine() throws Exception {
     int ptOption = ((lineLength = line.length()) < 6 ? -1 : lineOptions
         .indexOf(line.substring(0, 6))) >> 3;
     boolean isAtom = (ptOption == 0 || ptOption == 1);
     boolean isModel = (ptOption == 2);
     if (isAtom)
       serial = parseInt(line, 6, 11);
-    boolean isNewModel = ((isTrajectory || isSequential) && !isMultiModel && isAtom && serial == 1);
+    boolean isNewModel = ((isTrajectory || isSequential) && !isMultiModel
+        && isAtom && serial == 1);
     if (getHeader) {
       if (isAtom || isModel)
         getHeader = false;
@@ -323,7 +324,7 @@ protected boolean checkLine() throws Exception {
               .simpleReplace(value, ", ", ",:"), " ", "") + ")");
   }
 
-  String compnd = null;
+  private String compnd = null;
   private void compndOld() {
     if (compnd == null)
       compnd = "";

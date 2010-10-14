@@ -80,7 +80,16 @@ public class AtomSetCollection {
 
   private final static int GLOBAL_FRACTCOORD = 0;
   private final static int GLOBAL_SYMMETRY = 1;
-  private final static int GLOBAL_latticeCells = 2;
+  private final static int GLOBAL_UNITCELLS = 2;
+  private final static int GLOBAL_ISPDB = 3;
+
+  public void setIsPDB() {
+    setGlobalBoolean(GLOBAL_ISPDB);
+  }
+
+  public void setGlobalBoolean(int globalIndex) {
+    setAtomSetCollectionAuxiliaryInfo(globalBooleans[globalIndex], Boolean.TRUE);
+  }
   
   final public static String[] notionalUnitcellTags =
   { "a", "b", "c", "alpha", "beta", "gamma" };
@@ -285,6 +294,43 @@ public class AtomSetCollection {
       setAtomSetCollectionAuxiliaryInfo("noAutoBond", Boolean.TRUE);
   }
   
+  void freeze() {
+    //Logger.debug("AtomSetCollection.freeze; atomCount = " + atomCount);
+    if (isTrajectory)
+      finalizeTrajectory();
+    getList(true);
+    getList(false);
+    for (int i = 0; i < atomSetCount; i++) {
+      setAtomSetAuxiliaryInfo("initialAtomCount", Integer
+          .valueOf(atomSetAtomCounts[i]), i);
+      setAtomSetAuxiliaryInfo("initialBondCount", Integer
+          .valueOf(atomSetBondCounts[i]), i);
+    }
+  }
+
+  private void getList(boolean isAltLoc) {
+    int i;
+    for (i = atomCount; --i >= 0;)
+      if ((isAltLoc ? atoms[i].alternateLocationID : atoms[i].insertionCode) != '\0')
+        break;
+    if (i < 0)
+      return;
+    String[] lists = new String[atomSetCount];
+    for (i = 0; i < atomSetCount; i++)
+      lists[i] = "";
+    int pt;
+    for (i = 0; i < atomCount; i++) {
+      char id = (isAltLoc ? atoms[i].alternateLocationID
+          : atoms[i].insertionCode);
+      if (id != '\0' && lists[pt = atoms[i].atomSetIndex].indexOf(id) < 0)
+        lists[pt] += id;
+    }
+    String type = (isAltLoc ? "altLocs" : "insertionCodes");
+    for (i = 0; i < atomSetCount; i++)
+      if (lists[i].length() > 0)
+        setAtomSetAuxiliaryInfo(type, lists[i], i);
+  }
+
   void finish() {
     atoms = null;
     atomSetAtomCounts = new int[16];
@@ -306,19 +352,6 @@ public class AtomSetCollection {
     trajectorySteps = null;
     vConnect = null;
     vd = null;
-  }
-
-
-  void freeze() {
-    //Logger.debug("AtomSetCollection.freeze; atomCount = " + atomCount);
-    if (isTrajectory)
-      finalizeTrajectory();
-    getAltLocLists();
-    getInsertionLists();
-    for (int i = 0; i < atomSetCount; i++) {
-      setAtomSetAuxiliaryInfo("initialAtomCount", Integer.valueOf(atomSetAtomCounts[i]), i);
-      setAtomSetAuxiliaryInfo("initialBondCount", Integer.valueOf(atomSetBondCounts[i]), i);
-    }
   }
 
   public void discardPreviousAtoms() {
@@ -630,7 +663,7 @@ public class AtomSetCollection {
       notionalUnitCell[i] = info[i];
     haveUnitCell = true;
     setAtomSetAuxiliaryInfo("notionalUnitcell", notionalUnitCell);
-    setGlobalBoolean(GLOBAL_latticeCells);
+    setGlobalBoolean(GLOBAL_UNITCELLS);
     getSymmetry().setUnitCell(notionalUnitCell);
     // we need to set the auxiliary info as well, because 
     // ModelLoader creates a new symmetry object.
@@ -644,10 +677,6 @@ public class AtomSetCollection {
     }
   }
 
-  void setGlobalBoolean(int globalIndex) {
-    setAtomSetCollectionAuxiliaryInfo(globalBooleans[globalIndex], Boolean.TRUE);
-  }
-  
   boolean addSpaceGroupOperation(String xyz) {
     getSymmetry().setSpaceGroup(doNormalize);
     return (symmetry.addSpaceGroupOperation(xyz, 0) >= 0);
@@ -1294,14 +1323,12 @@ public class AtomSetCollection {
   }
 
   private void finalizeTrajectory() {
-    if (trajectoryStepCount == 0) {
+    if (trajectoryStepCount == 0)
       return;
-    }
     //reset atom positions to original trajectory
     Point3f[] trajectory = trajectorySteps.get(0);
-    for (int i = 0; i < atomCount; i++) {
+    for (int i = 0; i < atomCount; i++)
       atoms[i].set(trajectory[i]);
-    }
     setAtomSetCollectionAuxiliaryInfo("trajectorySteps", trajectorySteps);
   }
  
@@ -1465,14 +1492,10 @@ public class AtomSetCollection {
   void setAtomSetAuxiliaryInfo(String key, Object value, int atomSetIndex) {
     if (atomSetIndex < 0)
       return;
-    if (atomSetAuxiliaryInfo[atomSetIndex] == null) {
+    if (atomSetAuxiliaryInfo[atomSetIndex] == null)
       atomSetAuxiliaryInfo[atomSetIndex] = new Hashtable<String, Object>();
-    }
-    //Logger.debug(atomSetIndex + " key="+ key + " value="+ value);
-    if (value == null) {
-      return;
-    }
-    atomSetAuxiliaryInfo[atomSetIndex].put(key, value);
+    if (value != null)
+      atomSetAuxiliaryInfo[atomSetIndex].put(key, value);
   }
 
   /**
@@ -1522,62 +1545,7 @@ public class AtomSetCollection {
   }
   
   Map<String, Object> getAtomSetAuxiliaryInfo(int atomSetIndex) {
-    if (atomSetIndex >= atomSetCount) {
-      atomSetIndex = atomSetCount - 1;
-    }
-    return atomSetAuxiliaryInfo[atomSetIndex];
-  }
-
-  ////////////////////////////////////////////////////////////////
-  // special support for alternate locations and insertion codes
-  ////////////////////////////////////////////////////////////////
-
-  boolean hasAlternateLocations() {
-    for (int i = atomCount; --i >= 0; )
-      if (atoms[i].alternateLocationID != '\0')
-        return true;
-    return false;
-  }
-
-  void getAltLocLists() {
-    if (!hasAlternateLocations())
-      return;
-    String[] lists = new String[atomSetCount];
-    for (int i = 0; i < atomSetCount; i++)
-      lists[i] = "";
-    for (int i = 0; i < atomCount; i++) {
-      char id = atoms[i].alternateLocationID;
-      if (id == '\0' || lists[atoms[i].atomSetIndex].indexOf(id) >= 0)
-        continue;
-      lists[atoms[i].atomSetIndex] += id;
-    }
-    for (int i = 0; i < atomSetCount; i++)
-      if (lists[i].length() > 0)
-        setAtomSetAuxiliaryInfo("altLocs", lists[i], i);
-  }
-  
-  boolean hasInsertions() {
-    for (int i = atomCount; --i >= 0; )
-      if (atoms[i].insertionCode != '\0')
-        return true;
-    return false;
-  }
-
-  void getInsertionLists() {
-    if (!hasInsertions())
-      return;
-    String[] lists = new String[atomSetCount];
-    for (int i = 0; i < atomSetCount; i++)
-      lists[i] = "";
-    for (int i = 0; i < atomCount; i++) {
-      char id = atoms[i].insertionCode;
-      if (id == '\0' || lists[atoms[i].atomSetIndex].indexOf(id) >= 0)
-        continue;
-      lists[atoms[i].atomSetIndex] += id;
-    }
-    for (int i = 0; i < atomSetCount; i++)
-      if (lists[i].length() > 0)
-        setAtomSetAuxiliaryInfo("insertionCodes", lists[i], i);
+    return atomSetAuxiliaryInfo[atomSetIndex >= atomSetCount ? atomSetCount - 1 : atomSetIndex];
   }
 
   //// for XmlChem3dReader, but could be for CUBE

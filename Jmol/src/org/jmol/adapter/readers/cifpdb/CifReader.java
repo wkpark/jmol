@@ -659,7 +659,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           atom.sequenceNumber = parseInt(field);
           break;
         case INS_CODE:
-          atom.chainID = firstChar;
+          atom.insertionCode = firstChar;
           break;
         case ALT_ID:
         case DISORDER_GROUP: //not QUITE correct
@@ -776,8 +776,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       }
     }
     if (isPDB) {
-      atomSetCollection
-          .setAtomSetCollectionAuxiliaryInfo("isPDB", Boolean.TRUE);
+      atomSetCollection.setIsPDB();
       atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
     }
     atomSetCollection.setAtomSetAuxiliaryInfo("isCIF", Boolean.TRUE);

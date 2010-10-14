@@ -248,16 +248,13 @@ public final class ModelLoader extends ModelSet {
       iterateOverAllNewModels(adapter, atomSetCollection);
       iterateOverAllNewAtoms(adapter, atomSetCollection);
       iterateOverAllNewBonds(adapter, atomSetCollection);
-      if (adapter != null) {
-        Map<String, Object> info = (merging && !appendNew ? 
-            adapter.getAtomSetAuxiliaryInfo(atomSetCollection, 0) : null);      
-        if (info != null) {
-          setModelAuxiliaryInfo(baseModelIndex, "initialAtomCount", info
-              .get("initialAtomCount"));
-          setModelAuxiliaryInfo(baseModelIndex, "initialBondCount", info
-              .get("initialBondCount"));
-          info = null;
-        }
+      if (adapter != null && merging && !appendNew) {
+        Map<String, Object> info = adapter.getAtomSetAuxiliaryInfo(
+            atomSetCollection, 0);
+        setModelAuxiliaryInfo(baseModelIndex, "initialAtomCount", info
+            .get("initialAtomCount"));
+        setModelAuxiliaryInfo(baseModelIndex, "initialBondCount", info
+            .get("initialBondCount"));
       }
       initializeUnitCellAndSymmetry();
       initializeBonding();

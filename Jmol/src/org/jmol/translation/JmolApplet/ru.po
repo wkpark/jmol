@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-10-07 20:29+0200\n"
-"PO-Revision-Date: 2010-05-22 12:05+0000\n"
-"Last-Translator: Serguey Basalaev <SBasalaev@gmail.com>\n"
+"PO-Revision-Date: 2010-10-15 08:14+0000\n"
+"Last-Translator: Sergey Basalaev <SBasalaev@gmail.com>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-05-26 16:56+0000\n"
+"X-Launchpad-Export-Date: 2010-10-15 19:56+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/AppletConsole.java:199
@@ -144,7 +144,8 @@ msgid "Check"
 msgstr "Проверить"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Наверх"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -227,7 +228,7 @@ msgstr "Отмена"
 
 #: org/jmol/export/dialog/Dialog.java:435
 msgid "Abort file chooser dialog"
-msgstr ""
+msgstr "Прервать диалог выбора файла"
 
 #: org/jmol/export/dialog/Dialog.java:437
 #: org/jmol/export/dialog/Dialog.java:438
@@ -395,7 +396,7 @@ msgstr "Эстонский"
 
 #: org/jmol/i18n/GT.java:128
 msgid "Faroese"
-msgstr ""
+msgstr "Фарерский"
 
 #: org/jmol/i18n/GT.java:129
 msgid "French"
@@ -467,7 +468,7 @@ msgstr "Шведский"
 
 #: org/jmol/i18n/GT.java:146
 msgid "Tamil"
-msgstr ""
+msgstr "Тамильский"
 
 #: org/jmol/i18n/GT.java:147
 msgid "Turkish"
@@ -497,52 +498,49 @@ msgid "could not setup force field {0}"
 msgstr ""
 
 #: org/jmol/modelkit/ModelKitPopup.java:75
-#, fuzzy
 msgid "Element?"
-msgstr "Элемент"
+msgstr "Элемент?"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:78
 msgid "new"
-msgstr ""
+msgstr "новый"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:79
 msgid "undo (CTRL-Z)"
-msgstr ""
+msgstr "отменить (CTRL-Z)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:80
 msgid "redo (CTRL-Y)"
-msgstr ""
+msgstr "повторить (CTRL-Y)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:81
 #: org/jmol/viewer/ActionManager.java:58
 msgid "center"
-msgstr ""
+msgstr "по центру"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:82
-#, fuzzy
 msgid "add hydrogens"
-msgstr "{0} водородных связей"
+msgstr "добавить атомы водорода"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:83
 msgid "minimize"
-msgstr ""
+msgstr "свернуть"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:84
 msgid "fix hydrogens and minimize"
-msgstr ""
+msgstr "зафиксировать атомы водорода и свернуть"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:85
-#, fuzzy
 msgid "clear"
-msgstr "Очистить"
+msgstr "очистить"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:86
 msgid "save file"
-msgstr ""
+msgstr "сохранить файл"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:87
 msgid "save state"
-msgstr ""
+msgstr "сохранить состояние"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:88
 msgid "invert ring stereochemistry"
@@ -550,67 +548,67 @@ msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:89
 msgid "delete atom"
-msgstr ""
+msgstr "удалить атом"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:90
 msgid "drag to bond"
-msgstr ""
+msgstr "перетащить к связи"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:91
 msgid "drag atom"
-msgstr ""
+msgstr "перетащить атом"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:92
 msgid "drag atom (and minimize)"
-msgstr ""
+msgstr "перетащить атом (и свернуть)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:93
 msgid "drag molecule (SHIFT to rotate)"
-msgstr ""
+msgstr "перетащить молекулу (SHIFT для поворота)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:94
 msgid "drag and minimize molecule (docking)"
-msgstr ""
+msgstr "перетащить и свернуть молекулу (с привязкой)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:103
 msgid "increase charge"
-msgstr ""
+msgstr "увеличить заряд"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:104
 msgid "decrease charge"
-msgstr ""
+msgstr "уменьшить заряд"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:105
 msgid "delete bond"
-msgstr ""
+msgstr "удалить связь"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:106
 msgid "single"
-msgstr ""
+msgstr "одинарная"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:107
 msgid "double"
-msgstr ""
+msgstr "двойная"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:108
 msgid "triple"
-msgstr ""
+msgstr "тройная"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:109
 msgid "increase order"
-msgstr ""
+msgstr "увеличить порядок"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:110
 msgid "decrease order"
-msgstr ""
+msgstr "уменьшить порядок"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:111
 msgid "rotate bond (SHIFT-DRAG)"
-msgstr ""
+msgstr "повернуть связь (SHIFT-ТАЩИТЬ)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:112
 msgid "exit modelkit mode"
-msgstr ""
+msgstr "выйти из режима моделирования"
 
 #: org/jmol/modelsetbio/AminoPolymer.java:650
 #, java-format
@@ -620,6 +618,11 @@ msgid ""
 "Use {0} to not use this approximation.\n"
 "\n"
 msgstr ""
+"ЗАМЕЧАНИЕ: Опорные позиции атомов водорода амидов установлены, но будут "
+"игнорированы. Их позиции будут вычислены приблизительно, как в стандартном "
+"анализе DSSP.\n"
+"Используйте {0}, чтобы не использовать эту аппроксимацию.\n"
+"\n"
 
 #: org/jmol/modelsetbio/AminoPolymer.java:656
 #, java-format
@@ -629,6 +632,11 @@ msgid ""
 "Use {0} to ignore these hydrogen positions.\n"
 "\n"
 msgstr ""
+"ЗАМЕЧАНИЕ: Опорные позиции атомов водорода амидов установлены и будут "
+"использоваться. Результаты могут значительно отличаться от стандартного "
+"анализа DSSP.\n"
+"Используйте {0}, чтобы игнорировать эти позиции атомов водорода.\n"
+"\n"
 
 #: org/jmol/popup/JmolPopup.java:143
 #: org/jmol/popup/MainPopupResourceBundle.java:531
@@ -737,15 +745,15 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:853
 #: org/jmol/popup/MainPopupResourceBundle.java:896
 msgid "Symmetry"
-msgstr ""
+msgstr "Симметрия"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:544
 msgid "Hide Symmetry"
-msgstr ""
+msgstr "Скрыть симметрию"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:545
 msgid "Model information"
-msgstr ""
+msgstr "Информация о модели"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:546
 #, java-format
@@ -760,7 +768,7 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:548
 #, java-format
 msgid "Configurations ({0})"
-msgstr ""
+msgstr "Конфигурации ({0})"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:549
 #, java-format
@@ -2138,7 +2146,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:69
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:71
@@ -2357,17 +2366,9 @@ msgstr "буфер недоступен — используйте подпис�
 
 #: org/jmol/viewer/Viewer.java:8869
 msgid "Cannot set log file path."
-msgstr ""
+msgstr "Невозможно установить путь к файлу журнала."
 
 #: org/jmol/viewer/Viewer.java:8871
 #, java-format
 msgid "Setting log file to {0}"
-msgstr ""
-
-#, fuzzy
-#~ msgid "atoms"
-#~ msgstr "атомовu: {0}"
-
-#, fuzzy
-#~ msgid "bonds"
-#~ msgstr "связей: {0}"
+msgstr "Установка файла журнала в {0}"

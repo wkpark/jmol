@@ -2,7 +2,7 @@
 	-- Do not translate anything in this file --
 	Angel Herraez, 29 july 2005
 	Contributions by Nicolas Vervelle
-	Last updated: 5 may 2007
+	Last updated: 16 oct. 2010
 */
 
 function sectionMenu()
@@ -98,7 +98,7 @@ function buildIsotopeTable()
 }
 
 
-function buildStructTable(titleProt, lbProt, footerProt, titleNuc, lbNuc, footerNuc)
+function buildStructTable(titleProt, lbProt, footerProt, titleNuc, lbNuc, footerNuc, titleOther, lbOther)
 {	// a 3-column table that contains the protein and nucleic color tables plus a central separation
 	document.writeln("<table border='0' cellpadding='0'>")
 	document.writeln("<tr valign='top'>")
@@ -113,7 +113,11 @@ function buildStructTable(titleProt, lbProt, footerProt, titleNuc, lbNuc, footer
 	document.writeln("<table border='0' cellspacing='0' cellpadding='4' class='colorTable'>")
 	document.writeln("<tr><th colspan='4'>" + titleNuc + "</th></tr>")
 	buildStructNucTable(lbNuc)
-	document.writeln("</table>" + footerNuc + "</td>")
+	document.writeln("</table>" + footerNuc + "<br>&nbsp;")
+	document.writeln("<table border='0' cellspacing='0' cellpadding='4' class='colorTable'>")
+	document.writeln("<tr><th colspan='4'>" + titleOther + "</th></tr>")
+	buildStructOtherTable(lbOther)
+	document.writeln("</table></td>")
 	document.writeln("</tr>")
 	document.writeln("</table>")
 	document.close()
@@ -137,6 +141,17 @@ function buildStructNucTable(lb)
 		document.write("<td><tt>" + hexColorToDecColor(structNucParams[i]) + "</tt></td>")
 		document.write("<td>" + structNucParams[i] + "</td>")
 		document.write("<td bgcolor='#" + structNucParams[i] + "'>&nbsp;&nbsp;</td></tr>")
+	}
+	document.close()
+}
+
+function buildStructOtherTable(lb)
+{
+	for (i=0;i<structOtherParams.length;i++)
+	{	document.write("<tr><td>" + lb[i] + "</td>")
+		document.write("<td><tt>" + hexColorToDecColor(structOtherParams[i]) + "</tt></td>")
+		document.write("<td>" + structOtherParams[i] + "</td>")
+		document.write("<td bgcolor='#" + structOtherParams[i] + "'>&nbsp;&nbsp;</td></tr>")
 	}
 	document.close()
 }

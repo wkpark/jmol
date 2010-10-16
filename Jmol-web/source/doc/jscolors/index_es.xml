@@ -115,19 +115,22 @@
         <p>Instrucción relacionada: <tt>color structure</tt>
         </p>
 		<p>
-		Utiliza seis colores distintos para diferenciar cuatro tipos de
-		estructura secundaria en proteínas (hélices, hebras y láminas beta, 
+		Utiliza colores distintos para diferenciar seis tipos de
+		estructura secundaria en proteínas (3 tipos de hélices, hebras o láminas beta, 
 		giros y bucles) y el DNA del RNA. 
 		La estructura secundaria se lee del archivo PDB (campos HELIX y SHEET)
 		o, si esa información no está disponible, se determina usando un algoritmo. 
 		</p>
         <script type="text/javascript">buildStructTable(
           'Proteína',
-          ['hélice &#x03B1;','lámina &#x03B2;','giro (&#x03B2;)','otra'],
-          '(igual en RasMol)',
-          'Acido nucleico',
+          ['hélice &#945;','hélice 3<sub>10</sub>','hélice &#960;','hebra &#946;','giro (&#946;)','otra'],
+          '(igual en RasMol, excepto 3<sub>10</sub> y &#960;)',
+          'Ácido nucleico',
           ['DNA','RNA'],
-          '(igual en DRuMS)');
+          '(igual en DRuMS)',
+          'Otros',
+          ['carbohidrato','otros']
+          );
         </script>
 				<br/>
       </section>

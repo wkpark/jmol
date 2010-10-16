@@ -1,12 +1,13 @@
 /* Element parameters used by Jmol - mainly colors
 	as defined in   Jmol-HEAD/src/org/jmol/viewer/JmolConstants.java
-	( rev. 1.83,  aprox. Jmol 10.00.24 )
+	( rev.14469, Jmol 12.1.15 )
 	Support file for building color tables in jscolors/index.html (Jmol's website)
 	-- Do not translate anything in this file --
 	Angel Herráez, 29 july 2005
 	Contributions by Nicolas Vervelle
 	Updated: 11 august 2005
-	Last updated: 21 april 2007 - A.H. - Isotopes
+	Updated: 21 april 2007 - A.H. - Isotopes
+	Last update: 16 oct. 2010 - A.H. - new DSSP secondary structure types
 */
 
 var elemParams = new Array(110)
@@ -162,11 +163,14 @@ function hexColorToDecColor(x)
 }
 
 
-var structProtParams = ['FF0080', 'FFC800', '6080FF', 'FFFFFF']
-// helix, sheet, turn, other
+var structProtParams = ['FF0080', 'A00080', '600080', 'FFC800', '6080FF', 'FFFFFF']
+// alphaHelix, 3(10)helix, piHelix, sheet, turn, other
 
 var structNucParams = ['AE00FE', 'FD0162']
 // DNA, RNA
+
+var structOtherParams = ['A6A6FA', '808080']
+// carbohydrate, other
 
 
 var aaParams = new Array(23)

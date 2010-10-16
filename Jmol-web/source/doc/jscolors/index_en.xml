@@ -93,18 +93,21 @@
 				<p>Related command: <tt>color [object] structure</tt>
 				</p>
 					<p>
-				Uses six different colors to distinguish four types of protein secondary 
-				structures (helices, beta strands and sheets, turns, and loops) and 
+				Uses different colors to distinguish six types of protein secondary 
+				structures (three types of helices, beta strands or sheets, turns, and loops) and 
 				DNA vs. RNA. The secondary structure is either read from the PDB file 
 				(HELIX and SHEET records), if available, or determined using an algorithm. 
 				</p>
 				<script type="text/javascript">buildStructTable(
           'Protein',
-          ['&#945;-helix','&#946;-sheet','(&#946;) turn','other'],
-          '(same in RasMol)',
+          ['&#945; helix','3<sub>10</sub> helix','&#960; helix','&#946; strand','(&#946;) turn','other'],
+          '(same in RasMol, except 3<sub>10</sub> and &#960;)',
           'Nucleic acid',
           ['DNA','RNA'],
-          '(same in DRuMS)');
+          '(same in DRuMS)',
+          'Other',
+          ['carbohydrate','other']
+          );
         </script>
 				<br/><br/>
 			</section>

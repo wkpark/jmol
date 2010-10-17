@@ -7986,7 +7986,6 @@ public class ScriptEvaluator {
     // ignore optional file format
     String modelName = null;
     String filename = null;
-    float[] models = null;
     String[] filenames = null;
     String[] tempFileInfo = null;
     String errMsg = null;
@@ -8067,10 +8066,6 @@ public class ScriptEvaluator {
             bsModels = (BitSet) getToken(i++).value;
             htParams.put("bsModels", bsModels);
             loadScript.append(" " + Escape.escape(bsModels));
-          } else if (tok == Token.range) {
-            models = floatParameterSet(++i, 0, Integer.MAX_VALUE);
-            sOptions += " range " + Escape.escape(models);
-            i = iToken + 1;
           } else {
             htParams.put("firstLastStep", new int[] { 0, -1, 1 });
           }
@@ -8143,10 +8138,6 @@ public class ScriptEvaluator {
         else
           htParams.put("modelNumber", Integer.valueOf(n));
         tok = tokAt(++i);
-      } else if (tok == Token.range) {
-        models = floatParameterSet(++i, 0, Integer.MAX_VALUE);
-        tok = tokAt(i = iToken + 1);
-        sOptions += " range " + Escape.escape(models);
       }
       Point3f lattice = null;
       if (tok == Token.leftbrace || tok == Token.point3f) {
@@ -8297,13 +8288,6 @@ public class ScriptEvaluator {
     }
     if (!doLoadFiles)
       return;
-    if (models != null) {
-      bsModels = new BitSet();
-      for (int j = 0; j < models.length; j++)
-        if (models[j] >= 1)
-          bsModels.set((int) models[j] - 1);
-      htParams.put("bsModels", bsModels);
-    }
     if (filter == null)
       filter = viewer.getDefaultLoadFilter();
     if (filter.length() > 0) {

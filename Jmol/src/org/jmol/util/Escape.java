@@ -144,16 +144,6 @@ public class Escape {
     return sb.toString();
   }
 
-  public static String escape(int[] f) {
-    StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < f.length; i++) {
-      if (i > 0)
-        sb.append('\n');
-      sb.append("" + f[i]);
-    }
-    return sb.toString();
-  }
-
   private final static String escapable = "\\\\\tt\rr\nn\"\""; 
 
   public static String escapeChopped(String str) {

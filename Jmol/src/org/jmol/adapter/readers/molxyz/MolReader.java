@@ -77,7 +77,7 @@ public class MolReader extends AtomSetCollectionReader {
   
   @Override
   public void initializeReader() throws Exception {
-    is2D = (filter != null && filter.toUpperCase().indexOf("2D") >= 0);
+    is2D = checkFilter("2D");
   }
 
   @Override
@@ -109,8 +109,8 @@ public class MolReader extends AtomSetCollectionReader {
   
   @Override
   public void finalizeReader() throws Exception {
-    if (is2D /* STILL! */)
-      set2D(true);
+    if (is2D)
+      set2D();
   }
 
   void processMolSdHeader() throws Exception {

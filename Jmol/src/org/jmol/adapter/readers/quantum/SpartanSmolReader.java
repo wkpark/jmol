@@ -93,7 +93,7 @@ public class SpartanSmolReader extends SpartanInputReader {
         }
         if (title != null)
           atomSetCollection.setAtomSetName(title);
-        if (filter != null && filter.toLowerCase().indexOf("input") >= 0) {
+        if (checkFilter("INPUT")) {
           continuing = false;
           return false;
         }
@@ -199,7 +199,7 @@ public class SpartanSmolReader extends SpartanInputReader {
     }
     spartanArchive.readProperties();
     boolean haveCharges = false;
-    if (filter != null && filter.toLowerCase().indexOf("espcharges") >= 0)
+    if (checkFilter("ESPCHARGES"))
       haveCharges = atomSetCollection.setAtomSetCollectionPartialCharges("ESPCHARGES");
     if (!haveCharges && !atomSetCollection
         .setAtomSetCollectionPartialCharges("MULCHARGES"))

@@ -228,8 +228,7 @@ public class PdbReader extends AtomSetCollectionReader {
         && atomSetCollection.getAtomCount() > 0) {
       atomSetCollection.setAtomSetAuxiliaryInfo("biomolecules", biomolecules);
       setBiomoleculeAtomCounts();
-      if (biomts != null && filter != null
-          && filter.toUpperCase().indexOf("NOSYMMETRY") < 0) {
+      if (biomts != null && !checkFilter("NOSYMMETRY")) {
         atomSetCollection.applySymmetry(biomts, notionalUnitCell, applySymmetryToBonds, filter);
       }
     }
@@ -436,9 +435,8 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
           needLine = false;
           while (readLine() != null && line.indexOf("BIOMT") < 0)
             chainlist += ":" + line.substring(11).trim().replace(' ', ':');
-          if (filter != null
-              && filter.toUpperCase().indexOf("BIOMOLECULE " + iMolecule + ";") >= 0) {
-            filter += chainlist;
+          if (checkFilter("BIOMOLECULE " + iMolecule + ";")) {
+            setFilter(filter.replace(':', '_') + chainlist);
             Logger.info("filter set to \"" + filter + "\"");
             this.biomts = biomts;
           }
@@ -602,9 +600,8 @@ REMARK 290 REMARK: NULL
     atom.elementSymbol = elementSymbol;
     if (charAlternateLocation != ' ')
       atom.alternateLocationID = charAlternateLocation;
-    if (filter != null)
-      if (!filterAtom(atom))
-        return;
+    if (!filterAtom(atom))
+      return;
     atom.formalCharge = charge;
     if (partialCharge != Float.MAX_VALUE)
       atom.partialCharge = partialCharge;

@@ -59,8 +59,6 @@ public class JmeReader extends AtomSetCollectionReader {
    * Bob Hanson hansonr@stolaf.edu 4/11/2010
    */
 
-  private boolean doMinimize = true;
-  
   @Override
   public void initializeReader() throws Exception {
     atomSetCollection.setCollectionName("JME");
@@ -71,8 +69,7 @@ public class JmeReader extends AtomSetCollectionReader {
     int bondCount = parseInt();
     readAtoms(atomCount);
     readBonds(bondCount);
-    doMinimize = (filter == null || filter.toUpperCase().indexOf("NOMIN") < 0);
-    set2D(doMinimize);
+    set2D();
     continuing = false;
   }
 

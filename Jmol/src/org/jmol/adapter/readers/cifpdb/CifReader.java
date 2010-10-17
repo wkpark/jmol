@@ -760,11 +760,8 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         Logger.warn("atom " + atom.atomName
             + " has invalid/unknown coordinates");
       } else {
-        if (isAnisoData)
+        if (isAnisoData || !filterAtom(atom))
           continue;
-        if (filter != null)
-          if (!filterAtom(atom))
-            continue;
         setAtomCoord(atom);
         atomSetCollection.addAtomWithMappedName(atom);
         if (atom.isHetero && htHetero != null) {

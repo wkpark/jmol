@@ -110,28 +110,32 @@ abstract public class MOReader extends BasisFunctionReader {
   protected void initializeReader() throws Exception {
     line = "\nNBOs in the AO basis:";
     getNBOs = filterMO();
-    line = "\nNBOcharges";
+    line = "\nNBOCHARGES";
     getNBOCharges = (filter != null && filterMO());
     if (filter == null)
       return;
-    filter = TextFormat.simpleReplace(filter, "nbocharges", "");
-    if (filter.length() < 3)
+    String f = TextFormat.simpleReplace(filter, "NBOCHARGES", "");
+    if (f.length() < 3)
       filter = null;
   }
   
   protected boolean filterMO() {
+    boolean isHeader = (line.indexOf('\n') == 0);
+    if (!isHeader && !readMolecularOrbitals)
+      return false;
     if (filter == null)
       return true;
     boolean isOK = true;
     int nOK = 0;
-    line = line.toLowerCase() + " " + alphaBeta;
+    line += " " + alphaBeta;
+    String ucline = line.toUpperCase();
     if (filterTokens == null) {
       filterIsNot = (filter.indexOf("!") >= 0);
       filterTokens = getTokens(filter.replace('!', ' ').replace(',', ' ')
-          .replace(';', ' ').toLowerCase());
+          .replace(';', ' '));
     }
     for (int i = 0; i < filterTokens.length; i++)
-      if (line.indexOf(filterTokens[i]) >= 0) {
+      if (ucline.indexOf(filterTokens[i]) >= 0) {
         if (!filterIsNot) {
           nOK = filterTokens.length;
           break;
@@ -140,7 +144,7 @@ abstract public class MOReader extends BasisFunctionReader {
         nOK++;
       }
     isOK = (nOK == filterTokens.length);
-    if (line.indexOf('\n') != 0)
+    if (!isHeader)
       Logger.info("filter MOs: " + isOK + " for \"" + line + "\"");
     return isOK;
   }

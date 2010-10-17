@@ -93,7 +93,6 @@ public class CrystalReader extends AtomSetCollectionReader {
   private boolean isSlab;
   private boolean isMolecular;
   private boolean haveCharges;
-  private boolean addVibrations;
   private boolean isFreqCalc;
   private boolean inputOnly;
   private int atomCount;
@@ -103,11 +102,9 @@ public class CrystalReader extends AtomSetCollectionReader {
   @Override
   protected void initializeReader() throws Exception {
     doProcessLines = false;
-    if (filter != null)
-      filter = filter.toLowerCase();
-    inputOnly = (filter != null && filter.indexOf("input") >= 0);
-    addVibrations = !inputOnly && (filter == null || filter.indexOf("novib") < 0);
-    isPrimitive = !inputOnly && (filter == null || filter.indexOf("conv") < 0);
+    inputOnly = checkFilter("INPUT");
+    addVibrations &= !inputOnly;
+    isPrimitive = !inputOnly && !checkFilter("CONV");
     getLastConventional = (!isPrimitive && desiredModelNumber == 0);
     setFractionalCoordinates(readHeader());
   }

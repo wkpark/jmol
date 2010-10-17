@@ -33,6 +33,8 @@ public class MoldenReader extends MopacSlaterReader {
       return false;
     }
     if (line.indexOf("[MO]") >= 0) {
+      if (!readMolecularOrbitals)
+        return true;
       readMolecularOrbitals();
       return false;
     }

@@ -1135,10 +1135,10 @@ public class AtomSetCollection {
       atoms[iAtom].bsSymmetry = BitSetUtil.setBit(0);
     for (int i = 1; i < len; i++) { 
       if (filter.indexOf("!#") >= 0) {
-        if (filter.toUpperCase().indexOf("!#" + (i + 1) + ";") >= 0)
+        if (filter.indexOf("!#" + (i + 1) + ";") >= 0)
           continue;
       } else if (filter.indexOf("#") >= 0
-          && filter.toUpperCase().indexOf("#" + (i + 1) + ";") < 0) {
+          && filter.indexOf("#" + (i + 1) + ";") < 0) {
         continue;
       }
       Matrix4f mat = biomts.get(i);

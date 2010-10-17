@@ -8441,16 +8441,15 @@ public class ScriptEvaluator {
       Logger.info(msg);
     StringBuffer sb = new StringBuffer();
     int modelCount = viewer.getModelCount();
-    if (modelCount > 1)
-      sb.append(modelCount).append(" models");
+    if (modelCount > 1) 
+      sb.append(modelCount).append(" models\n");
     for (int i = 0; i < modelCount; i++) {
       Map<String, Object> moData = (Map<String, Object>) viewer.getModelAuxiliaryInfo(i, "moData");
       if (moData == null)
         continue;
-      sb.append("\n")
-      .append(((List<Map<String, Object>>) moData.get("mos")).size())
+      sb.append(((List<Map<String, Object>>) moData.get("mos")).size())
       .append(" molecular orbitals in model ")
-      .append(viewer.getModelNumberDotted(i));
+      .append(viewer.getModelNumberDotted(i)).append("\n");
     }
     if (sb.length() > 0)
       showString(sb.toString());

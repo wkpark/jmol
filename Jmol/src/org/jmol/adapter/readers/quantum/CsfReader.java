@@ -467,7 +467,7 @@ public class CsfReader extends MopacSlaterReader {
   };
    
   private void processMolecularOrbitalObject() throws Exception {
-    if (nSlaters == 0 && nGaussians == 0) {
+    if (nSlaters == 0 && nGaussians == 0 ||  !readMolecularOrbitals) {
       readLine();
       return; // no slaters or gaussians?;
     }

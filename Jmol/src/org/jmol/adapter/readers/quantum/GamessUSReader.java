@@ -403,7 +403,7 @@ ATOM         MULL.POP.    CHARGE          LOW.POP.     CHARGE
    */
   void readPartialCharges() throws Exception {
     String tokens[]=null;
-    String searchstr = (filter != null && filter.toUpperCase().indexOf("CHARGE=LOW") >= 0 ? "LOW.POP."
+    String searchstr = (checkFilter("CHARGE=LOW") ? "LOW.POP."
             : "MULL.POP.");
     while (readLine() != null && ("".equals(line.trim())||line.indexOf("ATOM") >= 0)) {
       tokens = getTokens();      

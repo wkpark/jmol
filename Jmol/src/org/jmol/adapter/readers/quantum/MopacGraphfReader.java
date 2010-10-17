@@ -42,10 +42,12 @@ public class MopacGraphfReader extends MopacSlaterReader {
   @Override
   protected boolean checkLine() throws Exception {
       readAtoms();
-      readSlaterBasis();
-      readMOs(false);
-      if (readKeywords())
-        readMOs(true);
+      if (readMolecularOrbitals) {
+        readSlaterBasis();
+        readMolecularOrbitals(false);
+        if (readKeywords())
+          readMolecularOrbitals(true);
+      }
       continuing = false;
       return false;
   }
@@ -136,7 +138,7 @@ public class MopacGraphfReader extends MopacSlaterReader {
 
   private float[][] invMatrix;
   
-  private void readMOs(boolean isBeta) throws Exception {
+  private void readMolecularOrbitals(boolean isBeta) throws Exception {
 
     // read mo coefficients
 

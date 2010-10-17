@@ -56,7 +56,8 @@ public class DgridReader extends SlaterReader {
       return true;
     }
     if (line.indexOf(" MO  DATA ") >= 0) {
-      readMolecularOrbitals();
+      if (readMolecularOrbitals)
+        readMolecularOrbitals();
       return true;
     }
     return true;

@@ -280,7 +280,7 @@ public class ScriptVariable extends Token {
       objects = new ScriptVariable[ix.length];
       for (int i = ix.length; --i >= 0;) {
         objects[i] = getVariable(ix[i]);
-        s[i] = "" + Escape.escape((Object)ix[i]);
+        s[i] = "" + Escape.escape(ix[i]);
       }
       sv = new ScriptVariable(list, s);
     } else if (x instanceof float[]) {

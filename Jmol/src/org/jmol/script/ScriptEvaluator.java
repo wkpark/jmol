@@ -11127,7 +11127,7 @@ public class ScriptEvaluator {
       mad = -4;
       break;
     case Token.integer:
-      mad = (intParameter(1, 0, 499) * 8);
+      mad = (intParameter(1, 0, 1000) * 8);
       break;
     case Token.decimal:
       mad = (int) (floatParameter(1, -Shape.RADIUS_MAX, Shape.RADIUS_MAX) * 2000);
@@ -13631,12 +13631,12 @@ public class ScriptEvaluator {
       }
       name = parameterAsString(2);
       if (name.equals("/") && (len = statementLength) == 4) {
-        name = parameterAsString(3);
+        name = parameterAsString(3).toLowerCase();
         if (!isSyntaxCheck) {
           String[] info = TextFormat.split(viewer.getStateInfo(), '\n');
           StringBuffer sb = new StringBuffer();
           for (int i = 0; i < info.length; i++)
-            if (info[i].indexOf(name) >= 0)
+            if (info[i].toLowerCase().indexOf(name) >= 0)
               sb.append(info[i]).append('\n');
           msg = sb.toString();
         }

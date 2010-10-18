@@ -8026,8 +8026,6 @@ public class ScriptEvaluator {
         i++;
         loadScript.append(" " + modelName);
         isAppend = (modelName.equalsIgnoreCase("append"));
-        isInline = (modelName.equalsIgnoreCase("inline"));
-        isSmiles = (modelName.equalsIgnoreCase("smiles"));
         tokType = (Parser.isOneOf(modelName.toLowerCase(),
             JmolConstants.LOAD_ATOM_DATA_TYPES) ? Token
             .getTokFromName(modelName.toLowerCase()) : 0);
@@ -8049,6 +8047,8 @@ public class ScriptEvaluator {
           loadScript.append(" " + modelName);
           i++;
         }
+        isInline = (modelName.equalsIgnoreCase("inline"));
+        isSmiles = (modelName.equalsIgnoreCase("smiles"));
         if (tokType > 0)
           isAppend = true;
         if (modelName.equalsIgnoreCase("trajectory")
@@ -8091,29 +8091,31 @@ public class ScriptEvaluator {
       if (filename == null) {
         zap(false);
         return;
-      }
-      if (filename.indexOf("[]") >= 0)
-        return;
-      if (filename.indexOf("[") == 0) {
-        filenames = Escape.unescapeStringArray(filename);
-        if (filenames != null) {
-          if (i == 1)
-            loadScript.append(" files");
-          if (loadScript.indexOf(" files") < 0)
-            error(ERROR_invalidArgument);
-          for (int j = 0; j < filenames.length; j++)
-            loadScript.append(" /*file*/").append(Escape.escape(filenames[j]));
+      } 
+      if (isSmiles) {
+        filename = "$" + filename;
+      } else if (!isInline) {
+        if (filename.indexOf("[]") >= 0)
+          return;
+        if (filename.indexOf("[") == 0) {
+          filenames = Escape.unescapeStringArray(filename);
+          if (filenames != null) {
+            if (i == 1)
+              loadScript.append(" files");
+            if (loadScript.indexOf(" files") < 0)
+              error(ERROR_invalidArgument);
+            for (int j = 0; j < filenames.length; j++)
+              loadScript.append(" /*file*/")
+                  .append(Escape.escape(filenames[j]));
+          }
         }
       }
-      if (isSmiles)
-        filename = "$" + filename;
     } else if (getToken(i + 1).tok == Token.leftbrace
         || theTok == Token.point3f || theTok == Token.integer
         || theTok == Token.range || theTok == Token.manifest
-        || theTok == Token.packed || theTok == Token.supercell 
-        || theTok == Token.filter
-          && tokAt(i + 3) != Token.coord || theTok == Token.identifier
-          && tokAt(i + 3) != Token.coord) {
+        || theTok == Token.packed || theTok == Token.supercell
+        || theTok == Token.filter && tokAt(i + 3) != Token.coord
+        || theTok == Token.identifier && tokAt(i + 3) != Token.coord) {
       if ((filename = parameterAsString(filePt)).length() == 0)
         filename = viewer.getFullPathName();
       if (filePt == i)
@@ -8159,12 +8161,13 @@ public class ScriptEvaluator {
           htParams.put("packed", Boolean.TRUE);
           sOptions += " PACKED";
           i++;
-        } 
-        if(tokAt(i) == Token.supercell) {
+        }
+        if (tokAt(i) == Token.supercell) {
           String supercell;
           if (isPoint3f(++i)) {
             Point3f sc = getPoint3f(i, false);
-            supercell = (int)sc.x + "x," + (int)sc.y + "y," + (int)sc.z + "z";
+            supercell = (int) sc.x + "x," + (int) sc.y + "y," + (int) sc.z
+                + "z";
             i = iToken + 1;
           } else {
             supercell = stringParameter(i++);
@@ -8299,14 +8302,14 @@ public class ScriptEvaluator {
     boolean isVariable = false;
     if (filenames == null) {
       // standard file loading here
-      if (filename.startsWith("@") && filename.length() > 1) {
+      if (isInline) {
+        htParams.put("fileData", filename);
+      } else if (filename.startsWith("@") && filename.length() > 1) {
         isVariable = true;
         String s = getStringParameter(filename.substring(1), false);
         htParams.put("fileData", s);
-        loadScript = new StringBuffer("{\n    var " + filename.substring(1) + " = "
-            + Escape.escape(s) + ";\n    " + loadScript);
-      } else if (isInline) {
-        htParams.put("fileData", filename);
+        loadScript = new StringBuffer("{\n    var " + filename.substring(1)
+            + " = " + Escape.escape(s) + ";\n    " + loadScript);
       }
     }
 

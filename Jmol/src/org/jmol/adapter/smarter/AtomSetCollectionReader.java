@@ -645,7 +645,7 @@ public abstract class AtomSetCollectionReader {
     filterChain = checkFilter(":");
     filterAltLoc = checkFilter("%");
     haveAtomFilter = filterAtomType || filterGroup3 || filterChain || filterAltLoc;
-    if (bsFilter == null) {
+    if (filter != null && bsFilter == null) {
       // bsFilter is usually null, but from MDTOP it gets set to indicate
       // which atoms were selected by the filter. This then
       // gets used by COORD files to load just those coordinates

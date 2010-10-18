@@ -663,13 +663,14 @@ public class Resolver {
   }
 
   private static boolean checkCrystal(String[] lines) {
-    if (lines[1].equals("SLAB") || lines[1].equals("MOLECULE")
-        || lines[1].equals("CRYSTAL")
-        || lines[1].equals("POLYMER") || lines[3].equals("SLAB")
-        || lines[3].equals("MOLECULE") || lines[3].equals("POLYMER"))
+    String s = lines[1].trim();
+    if (s.equals("SLAB") ||s.equals("MOLECULE")
+        || s.equals("CRYSTAL")
+        || s.equals("POLYMER") || (s = lines[3]).equals("SLAB")
+        || s.equals("MOLECULE") || s.equals("POLYMER"))
       return true;
     for (int i = 0; i < lines.length; i++) {
-      if (lines[i].equals("OPTGEOM"))
+      if (lines[i].trim().equals("OPTGEOM"))
         return true;
     }
     return false;
@@ -785,9 +786,9 @@ public class Resolver {
     try {
       int n1 = Integer.parseInt(lines[3].substring(0, 3).trim());
       int n2 = Integer.parseInt(lines[3].substring(3, 6).trim());
-      return (n1 != 0 && n2 != 0 && lines[0].indexOf("@<TRIPOS>") != 0
-          && lines[1].indexOf("@<TRIPOS>") != 0 && lines[2]
-          .indexOf("@<TRIPOS>") != 0);
+      return (n1 > 0 && n2 >= 0 && lines[0].indexOf("@<TRIPOS>") != 0
+          && lines[1].indexOf("@<TRIPOS>") != 0 
+          && lines[2].indexOf("@<TRIPOS>") != 0);
     } catch (NumberFormatException nfe) {
     }
     return false;

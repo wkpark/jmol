@@ -620,10 +620,7 @@ public abstract class AtomSetCollectionReader {
   protected boolean addVibrations;
   public boolean readMolecularOrbitals;
 
-  // MANY:
-  protected final static String FILTER_NOVIB = "NOVIB";
-  protected final static String FILTER_NOMO = "NOMO";
-
+  // MANY: "NOVIB" "NOMO"
   // CSF, SPARTAN: "NOORIENT"
   // CRYSTAL: "CONV" (conventional), "INPUT"
   // GAMESS-US:  "CHARGE=LOW"
@@ -638,8 +635,8 @@ public abstract class AtomSetCollectionReader {
       filter0 = filter0.toUpperCase();
     filter = filter0;
     doSetOrientation = !checkFilter("NOORIENT");
-    addVibrations = !checkFilter(FILTER_NOVIB);
-    readMolecularOrbitals = !checkFilter(FILTER_NOMO);
+    addVibrations = !checkFilter("NOVIB");
+    readMolecularOrbitals = !checkFilter("NOMO");
     if (filter == null)
       return;
     filterAtomType = checkFilter("*.") || checkFilter("!.");

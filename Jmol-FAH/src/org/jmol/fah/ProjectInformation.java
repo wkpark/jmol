@@ -745,6 +745,8 @@ public class ProjectInformation {
           info._fciCore = CoreType.GROMACS_SIMT;
         } else if ("NVIDIA-DEV".equalsIgnoreCase(core)) {
           info._fciCore = CoreType.NVIDIA_DEV;
+        } else if ("OPENMMFERMI".equalsIgnoreCase(core)) {
+          info._fciCore = CoreType.OPEN_MM_FERMI;
         } else if ("OPENMMGPU".equalsIgnoreCase(core)) {
           info._fciCore = CoreType.OPEN_MM_GPU;
         } else if ("ProtoMol".equalsIgnoreCase(core)) {

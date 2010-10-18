@@ -640,12 +640,14 @@ public abstract class AtomSetCollectionReader {
     doSetOrientation = !checkFilter("NOORIENT");
     addVibrations = !checkFilter(FILTER_NOVIB);
     readMolecularOrbitals = !checkFilter(FILTER_NOMO);
+    if (filter == null)
+      return;
     filterAtomType = checkFilter("*.") || checkFilter("!.");
     filterGroup3 = checkFilter("[");
     filterChain = checkFilter(":");
     filterAltLoc = checkFilter("%");
     haveAtomFilter = filterAtomType || filterGroup3 || filterChain || filterAltLoc;
-    if (filter != null && bsFilter == null) {
+    if (bsFilter == null) {
       // bsFilter is usually null, but from MDTOP it gets set to indicate
       // which atoms were selected by the filter. This then
       // gets used by COORD files to load just those coordinates

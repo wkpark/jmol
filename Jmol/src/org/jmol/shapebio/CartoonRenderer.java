@@ -119,7 +119,8 @@ public class CartoonRenderer extends RocketsRenderer {
       // runs backwards, so it can render the heads first
       thisStructure = monomers[i].getProteinStructure();
       if (thisStructure != previousStructure) {
-        lastWasHelix = false;
+        if (renderAsRockets)
+          lastWasHelix = false;
         lastWasSheet = false;
       }
       previousStructure = thisStructure;

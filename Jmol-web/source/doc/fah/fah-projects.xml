@@ -8477,9 +8477,9 @@
     credit="104" frames="100" code="G" contact="vvoelz" contrib="M.T"/>
 
   <!-- Projects 6500 to 6599 -->
-  <fah_proj number="6500" name="p6500_TR538_predict" public="y"
+  <fah_proj number="6500" name="p6500_TR538_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="13401" preferred="11" deadline="16"
-    credit="58" frames="100" code="G" contact="lan"/>
+    credit="58" frames="100" code="G" contact="lan" contrib="Danny Nielsen"/>
   <fah_proj number="6501" name="p6501_ubiquitin_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="25933" preferred="23" deadline="34"
     credit="123" frames="100" code="G" contact="lan" contrib="SandStar"/>
@@ -8737,12 +8737,12 @@
   <fah_proj number="10047" name="p10047" public="y" file="xyz"
     server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
     credit="126.25" frames="100" code="PM" contact="abdulwahidc" contrib="Danny Nielsen"/>
-  <fah_proj number="10048" name="p10048" public="y"
+  <fah_proj number="10048" name="p10048" public="y" file="xyz"
     server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
-    credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
-  <fah_proj number="10049" name="p10049" public="y"
+    credit="126.25" frames="100" code="PM" contact="abdulwahidc" contrib="Danny Nielsen"/>
+  <fah_proj number="10049" name="p10049" public="y" file="xyz"
     server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
-    credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
+    credit="126.25" frames="100" code="PM" contact="abdulwahidc" contrib="Danny Nielsen"/>
   <fah_proj number="10050" name="p10050" public="y" file="xyz"
     server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
     credit="126.25" frames="100" code="PM" contact="abdulwahidc" contrib="Tim Riley"/>

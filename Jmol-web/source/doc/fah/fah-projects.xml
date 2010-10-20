@@ -8477,9 +8477,9 @@
     credit="104" frames="100" code="G" contact="vvoelz" contrib="M.T"/>
 
   <!-- Projects 6500 to 6599 -->
-  <fah_proj number="6500" name="p6500_UBIQUITIN MODEL250 in water" public="n"
-    server="169.230.26.30" atoms="19252" preferred="43" deadline="65"
-    credit="237" frames="100" code="A0" contact="lan"/>
+  <fah_proj number="6500" name="p6500_TR538_predict" public="y"
+    server="171.64.65.62" atoms="13401" preferred="11" deadline="16"
+    credit="58" frames="100" code="G" contact="lan"/>
   <fah_proj number="6501" name="p6501_ubiquitin_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="25933" preferred="23" deadline="34"
     credit="123" frames="100" code="G" contact="lan" contrib="SandStar"/>
@@ -8525,6 +8525,9 @@
   <fah_proj number="6518" name="p6518_proG_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="16027" preferred="13" deadline="20"
     credit="72" frames="100" code="G" contact="lan"/>
+  <fah_proj number="6520" name="p6520_TR602_predict" public="n"
+    server="171.64.65.62" atoms="37016" preferred="57" deadline="85"
+    credit="310" frames="100" code="G" contact="lan"/>
 
   <!-- Projects 6600 to 6699 -->
   <fah_proj number="6600" name="p6600_CspTm_300K" public="y"
@@ -8806,6 +8809,9 @@
     server="171.64.65.71" atoms="1254" preferred="2" deadline="3"
     credit="548" frames="100" code="GG2" contact="gbowman"/>
   <fah_proj number="10109" name="p10109" public="y"
+    server="171.64.65.71" atoms="1174" preferred="2" deadline="3"
+    credit="494" frames="100" code="GG2" contact="gbowman"/>
+  <fah_proj number="10111" name="p10111" public="n"
     server="171.64.65.71" atoms="1174" preferred="2" deadline="3"
     credit="494" frames="100" code="GG2" contact="gbowman"/>
 
@@ -9983,5 +9989,11 @@
   <fah_proj number="11287" name="Abeta42_99sbstar_s" public="y" file="xyz"
     server="171.67.108.33" atoms="12219" preferred="14" deadline="21"
     credit="69" frames="100" code="G" contact="lin5" contrib="Danny Nielsen"/>
+  <fah_proj number="11291" name="Ab42gb" public="n"
+    server="171.67.108.44" atoms="627" preferred="20" deadline="29"
+    credit="1352" frames="100" code="OF" contact="lin5"/>
+  <fah_proj number="11292" name="Ab42gb" public="n"
+    server="171.67.108.44" atoms="627" preferred="20" deadline="29"
+    credit="1352" frames="100" code="OF" contact="lin5"/>
 
 </fah_projects>

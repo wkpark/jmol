@@ -312,6 +312,10 @@ function showProjectInfo(value) {
     document.fahForm.infoCode.value = "Gromacs ST";
   } else if (code == "ND") {
     document.fahForm.infoCode.value = "NVIDIA-DEV";
+  } else if (code == "OF") {
+    document.fahForm.infoCode.value = "OpenMMFermi";
+  } else if (code == "OG") {
+    document.fahForm.infoCode.value = "OpenMMGPU";
   } else if (code == "PM") {
     document.fahForm.infoCode.value = "ProtoMol";
   } else if (code == "Q") {

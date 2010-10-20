@@ -8811,7 +8811,7 @@
   <fah_proj number="10109" name="p10109" public="y"
     server="171.64.65.71" atoms="1174" preferred="2" deadline="3"
     credit="494" frames="100" code="GG2" contact="gbowman"/>
-  <fah_proj number="10111" name="p10111" public="n"
+  <fah_proj number="10111" name="p10111" public="y"
     server="171.64.65.71" atoms="1174" preferred="2" deadline="3"
     credit="494" frames="100" code="GG2" contact="gbowman"/>
 
@@ -9989,6 +9989,9 @@
   <fah_proj number="11287" name="Abeta42_99sbstar_s" public="y" file="xyz"
     server="171.67.108.33" atoms="12219" preferred="14" deadline="21"
     credit="69" frames="100" code="G" contact="lin5" contrib="Danny Nielsen"/>
+  <fah_proj number="11288" name="Abeta42_96_s" public="y"
+    server="171.67.108.33" atoms="12219" preferred="14" deadline="21"
+    credit="69" frames="100" code="G" contact="lin5"/>
   <fah_proj number="11291" name="Ab42gb" public="n"
     server="171.67.108.44" atoms="627" preferred="20" deadline="29"
     credit="1352" frames="100" code="OF" contact="lin5"/>

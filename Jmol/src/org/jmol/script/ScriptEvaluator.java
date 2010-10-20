@@ -789,24 +789,6 @@ public class ScriptEvaluator {
         }
         rpn.addX(new ScriptVariable(theToken));
         break;
-      // for within:
-      case Token.atomname:
-      case Token.atomtype:
-      case Token.branch:
-      case Token.boundbox:
-      case Token.chain:
-      case Token.coord:
-      case Token.element:
-      case Token.group:
-      case Token.model:
-      case Token.molecule:
-      case Token.sequence:
-      case Token.site:
-      case Token.search:
-      case Token.smiles:
-      case Token.substructure:
-      case Token.structure:
-        //
       case Token.on:
       case Token.off:
       case Token.string:
@@ -902,7 +884,7 @@ public class ScriptEvaluator {
           rpn.addOp(Token.tokenRightParen);
         }
         break;
-      default:
+      default:        
         if (Token.tokAttr(theTok, Token.mathop)
             || Token.tokAttr(theTok, Token.mathfunc) && tokAt(iToken + 1) == Token.leftparen) {
           if (!rpn.addOp(theToken)) {
@@ -943,9 +925,31 @@ public class ScriptEvaluator {
           if (isSyntaxCheck)
             v = name;
           else if ((localVars == null || (v = localVars.get(name)) == null)
-              && (v = getContextVariableAsVariable(name)) == null)
-            rpn.addX(viewer.getOrSetNewVariable(name, false));
-          break;
+              && (v = getContextVariableAsVariable(name)) == null) {
+            switch (tok) {
+            // for within:
+            case Token.atomname:
+            case Token.atomtype:
+            case Token.branch:
+            case Token.boundbox:
+            case Token.chain:
+            case Token.coord:
+            case Token.element:
+            case Token.group:
+            case Token.model:
+            case Token.molecule:
+            case Token.sequence:
+            case Token.site:
+            case Token.search:
+            case Token.smiles:
+            case Token.substructure:
+            case Token.structure:
+              rpn.addX(new ScriptVariable(theToken));
+              break;
+            default:
+              rpn.addX(viewer.getOrSetNewVariable(name, false));
+            }
+          }
         }
       }
       if (v != null) {

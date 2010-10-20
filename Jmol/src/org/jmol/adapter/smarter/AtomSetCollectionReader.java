@@ -627,7 +627,7 @@ public abstract class AtomSetCollectionReader {
   // JME, MOL: "NOMIN"
   // MOL:  "2D"
   // MOReaders: "NBOCHARGES"
-  // PDB: "BIOMOLECULE n;" "NOSYMMETRY"
+  // PDB: "BIOMOLECULE n;" "NOSYMMETRY"  "CONF n"
   // Spartan: "INPUT", "ESPCHARGES"
 
   protected void setFilter(String filter0) {

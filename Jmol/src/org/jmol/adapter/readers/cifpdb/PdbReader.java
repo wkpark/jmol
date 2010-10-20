@@ -101,11 +101,17 @@ public class PdbReader extends AtomSetCollectionReader {
 
  private int serial = 0;
  private StringBuffer pdbHeader;
- 
+ private int configurationPtr = Integer.MIN_VALUE;
+
  @Override
  protected void initializeReader() throws Exception {
    atomSetCollection.setIsPDB();
    pdbHeader = (getHeader ? new StringBuffer() : null);
+   if (checkFilter("CONF ")) {
+     configurationPtr = parseInt(filter, filter.indexOf("CONF ") + 5);
+     sbIgnored = new StringBuffer();
+     sbSelected = new StringBuffer();
+   }
  }
 
   @Override
@@ -241,6 +247,10 @@ public class PdbReader extends AtomSetCollectionReader {
     if (pdbHeader != null)
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo("fileHeader",
           pdbHeader.toString());
+    if (configurationPtr > 0) {
+      Logger.info(sbSelected.toString());
+      Logger.info(sbIgnored.toString());
+    }
   }
   
   @Override
@@ -526,44 +536,39 @@ REMARK 290 REMARK: NULL
   private int lastAtomIndex;
   
   private void atom(int serial) {
-    // get the group so that we can check the formul
+    Atom atom = new Atom();
+    atom.atomName = line.substring(12, 16).trim();
+    char ch = line.charAt(16);
+    if (ch != ' ')
+      atom.alternateLocationID = ch;
+    atom.group3 = parseToken(line, 17, 20);
+    ch = line.charAt(21);
+    if (chainAtomCounts != null)
+      chainAtomCounts[ch]++;
+    atom.chainID = ch;
+    atom.sequenceNumber = parseInt(line, 22, 26);
+    atom.insertionCode = JmolAdapter.canonizeInsertionCode(line.charAt(26));
+    
+    if (!filterAtom(atom))
+      return;
+    
+    atom.atomSerial = serial;
     if (serial > maxSerial)
       maxSerial = serial;
-    boolean isHetero = line.startsWith("HETATM");
-    char charAlternateLocation = line.charAt(16);
-    char chainID = line.charAt(21);
-    if (chainAtomCounts != null)
-      chainAtomCounts[chainID]++;
-    int sequenceNumber = parseInt(line, 22, 26);
-    char insertionCode = line.charAt(26);
-    String group3 = parseToken(line, 17, 20);
-    if (group3 == null) {
+    if (atom.group3 == null && currentGroup3 != null) {
       currentGroup3 = null;
       htElementsInCurrentGroup = null;
-    } else if (!group3.equals(currentGroup3)) {
-      currentGroup3 = group3;
-      htElementsInCurrentGroup = htFormul.get(group3);
+    } else if (!atom.group3.equals(currentGroup3)) {
+      currentGroup3 = atom.group3;
+      htElementsInCurrentGroup = htFormul.get(atom.group3);
       nRes++;
-      if (group3.equals("UNK"))
+      if (atom.group3.equals("UNK"))
         nUNK++;
     }
-
-    ////////////////////////////////////////////////////////////////
-    // extract elementSymbol
-    String elementSymbol = deduceElementSymbol(isHetero);
-
-    /****************************************************************
-     * atomName
-     ****************************************************************/
-    String rawAtomName = line.substring(12, 16);
-    // confusion|concern about the effect this will have on
-    // atom expressions
-    // but we have to do it to support mmCIF
-    String atomName = rawAtomName.trim();
-    /****************************************************************
-     * calculate the charge from cols 79 & 80 (1-based)
-     * 2+, 3-, etc
-     ****************************************************************/
+    boolean isHetero = line.startsWith("HETATM");
+    atom.isHetero = isHetero;
+    atom.elementSymbol = deduceElementSymbol(isHetero);
+    //calculate the charge from cols 79 & 80 (1-based): 2+, 3-, etc
     int charge = 0;
     if (lineLength >= 80) {
       char chMagnitude = line.charAt(78);
@@ -580,39 +585,18 @@ REMARK 290 REMARK: NULL
           charge = -charge;
       }
     }
-
-    float bfactor = readBFactor();
-    int occupancy = readOccupancy();
-    float partialCharge = readPartialCharge();
-    float radius = readRadius();
-    
-    /****************************************************************
-     * coordinates
-     ****************************************************************/
-    float x = parseFloat(line, 30, 38);
-    float y = parseFloat(line, 38, 46);
-    float z = parseFloat(line, 46, 54);
-    /****************************************************************/
-    Atom atom = new Atom();
-    atom.atomName = atomName;
-    atom.chainID = chainID;
-    atom.group3 = currentGroup3;
-    atom.elementSymbol = elementSymbol;
-    if (charAlternateLocation != ' ')
-      atom.alternateLocationID = charAlternateLocation;
-    if (!filterAtom(atom))
-      return;
     atom.formalCharge = charge;
+    float partialCharge = readPartialCharge();
     if (partialCharge != Float.MAX_VALUE)
       atom.partialCharge = partialCharge;
-    atom.occupancy = occupancy;
-    atom.bfactor = bfactor;
-    setAtomCoord(atom, x, y, z);
-    atom.isHetero = isHetero;
-    atom.atomSerial = serial;
-    atom.sequenceNumber = sequenceNumber;
-    atom.insertionCode = JmolAdapter.canonizeInsertionCode(insertionCode);
-    atom.radius = radius;
+
+    setAtomCoord(atom, parseFloat(line, 30, 38), parseFloat(line, 38, 46),
+        parseFloat(line, 46, 54));
+
+    atom.radius = readRadius();    
+    atom.bfactor = readBFactor();
+    atom.occupancy = readOccupancy();
+    
     lastAtomData = line.substring(6, 26);
     lastAtomIndex = atomSetCollection.getAtomCount();
     if (haveMappedSerials)
@@ -630,6 +614,46 @@ REMARK 290 REMARK: NULL
     }
   }
 
+  private int lastGroup = Integer.MIN_VALUE;
+  private char lastInsertion;
+  private char lastAltLoc;
+  private int conformationIndex;
+  StringBuffer sbIgnored, sbSelected;
+
+  @Override
+  protected boolean filterAtom(Atom atom) {
+    if (!super.filterAtom(atom))
+      return false;
+    if (configurationPtr > 0) {
+      if (atom.sequenceNumber != lastGroup || atom.insertionCode != lastInsertion) {
+        conformationIndex = configurationPtr - 1;
+        lastGroup = atom.sequenceNumber;
+        lastInsertion = atom.insertionCode;
+        lastAltLoc = '\0';
+      }
+      // ignore atoms that have no designation
+      if (atom.alternateLocationID != '\0') {
+        // count down until we get the desired index into the list
+        String msg = " atom [" + atom.group3 + "]"
+                           + atom.sequenceNumber 
+                           + (atom.insertionCode == '\0' ? "" : "^" + atom.insertionCode)
+                           + (atom.chainID == '\0' ? "" : ":" + atom.chainID)
+                           + "." + atom.atomName
+                           + "%" + atom.alternateLocationID + "\n";
+        if (conformationIndex >= 0 && atom.alternateLocationID != lastAltLoc) {
+          lastAltLoc = atom.alternateLocationID;
+          conformationIndex--;
+        }
+        if (conformationIndex < 0 && atom.alternateLocationID != lastAltLoc) {
+          sbIgnored.append("ignoring").append(msg);
+          return false;
+        }
+        sbSelected.append("loading").append(msg);
+      }
+    }
+    return true;
+  }
+  
   protected int readOccupancy() {
 
     /****************************************************************

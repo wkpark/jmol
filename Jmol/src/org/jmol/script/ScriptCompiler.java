@@ -142,6 +142,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   }
 
   private void addContextVariable(String ident) {
+    theToken = new Token(Token.identifier, ident);
     if (pushCount > 0) {
       ContextToken ct = (ContextToken) vPush.get(pushCount - 1);
       ct.addName(ident);
@@ -834,7 +835,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         theToken = new Token(theToken.tok, theToken.intValue, ident);
     } else {
       ident = ident.toLowerCase();
-      theToken = Token.getTokenFromName(ident);
+      theToken = (isContextVariable(ident) ? null : Token.getTokenFromName(ident));
     }
     if (theToken == null) {
       if (ident.indexOf("property_") == 0)

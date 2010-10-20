@@ -2046,11 +2046,11 @@ class ScriptMathProcessor {
       return false;
     int i = args.length;
     Object withinSpec = args[0].value;
-    String withinStr = "" + withinSpec;
+    String withinStr = "" + withinSpec; 
     int tok = args[0].tok;
     if (tok == Token.string)
       tok = Token.getTokFromName(withinStr.toLowerCase());
-    BitSet bs = new BitSet();
+    BitSet bs;
     float distance = 0;
     boolean isWithinModelSet = false;
     boolean isWithinGroup = false;
@@ -2186,10 +2186,11 @@ class ScriptMathProcessor {
       return addX(viewer.getAtomsWithin(distance, plane));
     if (pt != null)
       return addX(viewer.getAtomsWithin(distance, pt));
-    bs = ScriptVariable.bsSelect(args[i]);
-    if (tok == Token.sequence) {
+    bs = (args[i].tok == Token.bitset ? ScriptVariable.bsSelect(args[i]) : null);
+    if (tok == Token.sequence)
       return addX(viewer.getSequenceBits(withinStr, bs));
-    }
+    if (bs == null)
+      bs = new BitSet();
     if (!isDistance)
       return addX(viewer.getAtomBits(tok, bs));
     if (isWithinGroup)

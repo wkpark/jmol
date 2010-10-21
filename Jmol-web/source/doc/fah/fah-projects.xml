@@ -8728,9 +8728,9 @@
   <fah_proj number="10044" name="p10044" public="y" file="xyz"
     server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
     credit="126.25" frames="100" code="PM" contact="abdulwahidc" contrib="Tim Riley"/>
-  <fah_proj number="10045" name="p10045" public="y"
+  <fah_proj number="10045" name="p10045" public="y" file="xyz"
     server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
-    credit="126.25" frames="100" code="PM" contact="abdulwahidc"/>
+    credit="126.25" frames="100" code="PM" contact="abdulwahidc" contrib="Fernando Dias"/>
   <fah_proj number="10046" name="p10046" public="y" file="xyz"
     server="129.74.85.15" atoms="541" preferred="4.59" deadline="34.43"
     credit="126.25" frames="100" code="PM" contact="abdulwahidc" contrib="Fernando Dias"/>

@@ -261,6 +261,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     htUserFunctions = new Hashtable<String, Boolean>();
     script = script.replace('\u201C', '"').replace('\u201D', '"');
     script = cleanScriptComments(script);
+    isStateScript = (script.indexOf(Viewer.STATE_VERSION_STAMP) >= 0);
     cchScript = this.script.length();
 
     // these four will be returned:

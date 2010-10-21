@@ -49,8 +49,10 @@ abstract class ScriptCompilationTokenParser {
    * 
    */
 
-  protected String script;
   protected Viewer viewer;
+
+  protected String script;
+  protected boolean isStateScript;
 
   protected short lineCurrent;
   protected int iCommand;
@@ -215,7 +217,7 @@ abstract class ScriptCompilationTokenParser {
 
   protected Map<String, Boolean> htUserFunctions;
   protected boolean isUserFunction(String name) {
-    return viewer.isFunction(name) || htUserFunctions.containsKey(name);
+    return (!isStateScript && (viewer.isFunction(name) || htUserFunctions.containsKey(name)));
   }
 
   private boolean isExpressionNext() {

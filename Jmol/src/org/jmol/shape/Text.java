@@ -429,7 +429,7 @@ public class Text extends Object2d {
         s.append("; set echo ").append(target).append(" IMAGE /*file*/");
       else
         s.append("; echo ");
-      s.append(Escape.escape(textUnformatted));
+      s.append(Escape.escape(text)); // was textUnformatted, but that is not really the STATE
       s.append(";\n");
       if (script != null)
         s.append("  set echo ").append(target).append(" script ").append(

@@ -25,10 +25,12 @@ package org.jmol.script;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.Viewer;
 import org.jmol.api.JmolEdge;
 import org.jmol.i18n.GT;
 
@@ -48,6 +50,7 @@ abstract class ScriptCompilationTokenParser {
    */
 
   protected String script;
+  protected Viewer viewer;
 
   protected short lineCurrent;
   protected int iCommand;
@@ -99,6 +102,8 @@ abstract class ScriptCompilationTokenParser {
             || tokenCommand.intValue != Integer.MAX_VALUE) 
         && tokCommand != Token.end && !Token.tokAttrOr(tokCommand, Token.atomExpressionCommand,
             Token.implicitStringCommand));
+    isMathExpressionCommand = (tokCommand == Token.identifier || Token.tokAttr(tokCommand, Token.mathExpressionCommand));
+
     boolean checkExpression = isEmbeddedExpression
         || (Token.tokAttr(tokCommand, Token.atomExpressionCommand));
 
@@ -149,7 +154,26 @@ abstract class ScriptCompilationTokenParser {
     }
     while (moreTokens()) {
       if (isEmbeddedExpression) {
-        while (!isExpressionNext() && addNextToken()) {
+        while (!isExpressionNext()) {
+          if (tokPeek(Token.identifier)) {
+            String name = (String) atokenInfix[itokenInfix].value;
+            Token t = Token.getTokenFromName(name); 
+            if (t != null) {
+              if (!isMathExpressionCommand && lastToken.tok != Token.define
+                  || tokAt(itokenInfix + 1) == Token.leftparen && !isUserFunction(name)) {
+                // checking here for known token mascarading as identifier due to VAR definition
+                // we reset it to its original mapping if that is the case
+                // 1) it's a known token
+                // 2) ether: 
+                //    a) this isn't a math expression command, and not preceeded by @, or
+                //    b) it is followed by (
+
+                atokenInfix[itokenInfix] = t;
+                }
+            }
+          }
+          if (!addNextToken())
+            break;
         }
         if (!moreTokens())
           break;
@@ -189,6 +213,11 @@ abstract class ScriptCompilationTokenParser {
     return true;
   }
 
+  protected Map<String, Boolean> htUserFunctions;
+  protected boolean isUserFunction(String name) {
+    return viewer.isFunction(name) || htUserFunctions.containsKey(name);
+  }
+
   private boolean isExpressionNext() {
     return tokPeek(Token.leftbrace) 
     && !(tokAt(itokenInfix + 1) == Token.string
@@ -214,7 +243,7 @@ abstract class ScriptCompilationTokenParser {
   }
 
   private boolean tokPeek(int tok) {
-    return (itokenInfix < atokenInfix.length && atokenInfix[itokenInfix].tok == tok);
+    return (tokAt(itokenInfix) == tok);
   }
 
   private int intPeek() {

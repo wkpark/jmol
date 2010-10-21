@@ -789,6 +789,24 @@ public class ScriptEvaluator {
         }
         rpn.addX(new ScriptVariable(theToken));
         break;
+      // for within:
+      case Token.atomname:
+      case Token.atomtype:
+      case Token.branch:
+      case Token.boundbox:
+      case Token.chain:
+      case Token.coord:
+      case Token.element:
+      case Token.group:
+      case Token.model:
+      case Token.molecule:
+      case Token.sequence:
+      case Token.site:
+      case Token.search:
+      case Token.smiles:
+      case Token.substructure:
+      case Token.structure:
+      ////
       case Token.on:
       case Token.off:
       case Token.string:
@@ -926,29 +944,7 @@ public class ScriptEvaluator {
             v = name;
           else if ((localVars == null || (v = localVars.get(name)) == null)
               && (v = getContextVariableAsVariable(name)) == null) {
-            switch (tok) {
-            // for within:
-            case Token.atomname:
-            case Token.atomtype:
-            case Token.branch:
-            case Token.boundbox:
-            case Token.chain:
-            case Token.coord:
-            case Token.element:
-            case Token.group:
-            case Token.model:
-            case Token.molecule:
-            case Token.sequence:
-            case Token.site:
-            case Token.search:
-            case Token.smiles:
-            case Token.substructure:
-            case Token.structure:
-              rpn.addX(new ScriptVariable(theToken));
-              break;
-            default:
-              rpn.addX(viewer.getOrSetNewVariable(name, false));
-            }
+            rpn.addX(viewer.getOrSetNewVariable(name, false));
           }
         }
       }
@@ -5136,6 +5132,7 @@ public class ScriptEvaluator {
           break;
         case Token.parallel: // not actually found 
         case Token.function:
+        case Token.identifier:
           function(); // when a function is a command
           break;
         case Token.getproperty:
@@ -5650,7 +5647,7 @@ public class ScriptEvaluator {
             j -= 2;
           setVariable(++j, statementLength - 1, key, 0);
         } else {
-          setVariable(j + 2, statementLength - 1, key + "_set", 0);
+          //setVariable(j + 2, statementLength - 1, key + "_set", 0);
           setVariable(j + 2, statementLength - 1, key, 0);
         }
       }
@@ -7879,8 +7876,8 @@ public class ScriptEvaluator {
         code[i] = statement[i];
       definedAtomSets
           .put("!" + (isSite ? setName : setName.substring(8)), code);
-      if (!isSite)
-        viewer.addStateScript(thisCommand, false, true);
+      //if (!isSite)
+        //viewer.addStateScript(thisCommand, false, true); removed for 12.1.16
     } else {
       BitSet bs = atomExpression(2);
       definedAtomSets.put(setName, bs);
@@ -10916,7 +10913,7 @@ public class ScriptEvaluator {
       case Token.straightness:
         if (!isSyntaxCheck) {
           viewer.calculateStraightness();
-          viewer.addStateScript(thisCommand, false, true);
+          viewer.addStateScript("set quaternionFrame '" + viewer.getQuaternionFrame() + "'; calculate straightness", false, true);
         }
         return;
       case Token.hydrogen:

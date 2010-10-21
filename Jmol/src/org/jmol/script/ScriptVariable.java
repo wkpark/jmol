@@ -839,10 +839,11 @@ public class ScriptVariable extends Token {
   public boolean setSelectedValue(int selector, ScriptVariable var) {
     if (selector == Integer.MAX_VALUE)
       return false;
+    int len;
     switch (tok) {
     case matrix3f:
     case matrix4f:
-      int len = (tok == matrix3f ? 3 : 4);
+      len = (tok == matrix3f ? 3 : 4);
       if (selector > 10) {
         int col = selector % 10;
         int row = (selector - col) / 10;
@@ -889,18 +890,22 @@ public class ScriptVariable extends Token {
           + str.substring(selector + 1);
       return true;
     case list:
-      String[] array = (String[]) value;
+      len = objects.length;
       if (selector <= 0)
-        selector = array.length + selector;
+        selector = len + selector;
       if (--selector < 0)
         selector = 0;
-      String[] arrayNew = array;
-      if (arrayNew.length <= selector) {
-        value = arrayNew = ArrayUtil.ensureLength(array, selector + 1);
-        for (int i = array.length; i <= selector; i++)
+      String[] arrayNew = ((String[]) value);
+      if (len <= selector) {
+        value = arrayNew = ArrayUtil.ensureLength(arrayNew, selector + 1);
+        for (int i = len; i <= selector; i++)
           arrayNew[i] = "";
+        objects = (ScriptVariable[]) ArrayUtil.ensureLength(objects, selector + 1);
+        for (int i = len; i <= selector; i++)
+          objects[i] = getVariable("");
       }
       arrayNew[selector] = sValue(var);
+      objects[selector] = var;
       return true;
     }
     return false;

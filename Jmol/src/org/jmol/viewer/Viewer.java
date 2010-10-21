@@ -3216,8 +3216,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // window state
     if (isAll || type.equalsIgnoreCase("windowState"))
       s.append(global.getWindowState(sfunc));
-    if (isAll)
-      s.append(getFunctionCalls(null));
+    //if (isAll)
+      //s.append(getFunctionCalls(null)); // removed in 12.1.16; unnecessary in state
     // file state
     if (isAll || type.equalsIgnoreCase("fileState"))
       s.append(fileManager.getState(sfunc));
@@ -3226,8 +3226,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isAll || type.equalsIgnoreCase("definedState"))
       s.append(modelSet.getDefinedState(sfunc, true));
     // numerical values
-    if (isAll || type.equalsIgnoreCase("variableState"))
-      s.append(global.getState(sfunc));
+    //if (isAll || type.equalsIgnoreCase("variableState"))
+      //s.append(global.getState(sfunc)); // removed in 12.1.16; unnecessary in state
     if (isAll || type.equalsIgnoreCase("dataState"))
       dataManager.getDataState(s, sfunc, modelSet.getAtomicPropertyState(-1,
           null));

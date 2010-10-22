@@ -337,6 +337,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   private void processLoopBlock() throws Exception {
     tokenizer.getTokenPeeked(); //loop_
     String str = tokenizer.peekToken();
+    System.out.println(str);
     if (str == null)
       return;
     if (str.startsWith("_atom_site_") || str.startsWith("_atom_site.")) {
@@ -377,7 +378,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       return;
     }
     if (str.startsWith("_symmetry_equiv_pos")
-        || str.startsWith("space_group_symop")) {
+        || str.startsWith("_space_group_symop")) {
       if (ignoreFileSymmetryOperators) {
         Logger.warn("ignoring file-based symmetry operators");
         skipLoop();

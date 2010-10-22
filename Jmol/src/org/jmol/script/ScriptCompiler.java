@@ -1649,7 +1649,6 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   }
 
   private boolean checkFlowStartBrace(boolean atEnd) {
-    System.out.println(Token.nameOf(tokCommand));
     if ((!Token.tokAttr(tokCommand, Token.flowCommand)
         || tokCommand == Token.breakcmd || tokCommand == Token.continuecmd))
       return false;

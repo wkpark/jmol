@@ -337,7 +337,6 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   private void processLoopBlock() throws Exception {
     tokenizer.getTokenPeeked(); //loop_
     String str = tokenizer.peekToken();
-    System.out.println(str);
     if (str == null)
       return;
     if (str.startsWith("_atom_site_") || str.startsWith("_atom_site.")) {

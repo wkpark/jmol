@@ -8337,8 +8337,6 @@ public class ScriptEvaluator {
       loadScript.append(" ");
       if (isVariable || isInline) {
         loadScript.append(Escape.escape(filename));
-        if (isVariable)
-          sOptions += "\n  }";
       } else if (!isData) {
         if (!filename.equals("string") && !filename.equals("string[]"))
           loadScript.append("/*file*/");
@@ -8347,7 +8345,10 @@ public class ScriptEvaluator {
         loadScript.append(Escape.escape((localName != null ? localName
             : "$FILENAME$")));
       }
-      loadScript.append(sOptions);
+      if (sOptions.length() > 0)
+        loadScript.append(" /*options*/ ").append(sOptions);
+      if (isVariable)
+        loadScript.append("\n  }");
       htParams.put("loadScript", loadScript);
     }
     setCursorWait(true);

@@ -3905,9 +3905,13 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public String getInlineData(int modelIndex) {
-    StringBuffer data = models[modelIndex >= 0 ? modelIndex : modelCount - 1].loadScript;
-    if (data == null)
-      return "";
+    StringBuffer data = null;
+    if (modelIndex >= 0)
+      data = models[modelIndex].loadScript;
+    else
+      for (modelIndex = modelCount; --modelIndex >= 0; )
+        if ((data = models[modelIndex].loadScript).length() > 0)
+          break;
     int pt = data.lastIndexOf("data \"");
     if (pt < 0)
       return null;

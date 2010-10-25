@@ -46,10 +46,6 @@ public class SimpleUnitCell {
   protected Matrix4f matrixCartesianToFractional;
   protected Matrix4f matrixFractionalToCartesian;
     
-  protected boolean isPrimitive;
-  protected boolean isPolymer;
-  protected boolean isSlab;
-  
   protected final static float toRadians = (float) Math.PI * 2 / 360;
   protected float a, b, c, alpha, beta, gamma;
   protected double cosAlpha, sinAlpha;
@@ -59,6 +55,8 @@ public class SimpleUnitCell {
   protected double cA_, cB_;
   protected double a_;
   protected double b_, c_;
+  protected int dimension;
+  protected boolean isPrimitive;
     
   public static boolean isValid(float[] parameters) {
     return (parameters != null && (parameters[0] > 0 || parameters.length > 14
@@ -123,10 +121,12 @@ public class SimpleUnitCell {
     }
     if (b <= 0) {
       b = c = 1;
-      isPolymer = true;
+      dimension = 1;
     } else if (c <= 0) {
       c = 1;
-      isSlab = true;
+      dimension = 2;
+    } else {
+      dimension = 3;
     }
 
     cosAlpha = Math.cos(toRadians * alpha);
@@ -206,11 +206,11 @@ public class SimpleUnitCell {
   }
   
   public boolean isPolymer() {
-    return isPolymer;
+    return (dimension == 1);
   }
   
   public boolean isSlab() {
-    return isSlab;
+    return (dimension == 2);
   }
   
   public final float getInfo(int infoType) {
@@ -228,7 +228,7 @@ public class SimpleUnitCell {
     case JmolConstants.INFO_GAMMA:
       return gamma;
     case JmolConstants.INFO_DIMENSIONS:
-      return (isPolymer ? 1 : isSlab ? 2 : 3);
+      return dimension;
     }
     return Float.NaN;
   }

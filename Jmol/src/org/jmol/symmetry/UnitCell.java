@@ -78,16 +78,30 @@ class UnitCell extends SimpleUnitCell {
     if (offset == null) {
       // used redefined unitcell 
       matrixCartesianToFractional.transform(pt);
-      pt.x = toFractional(pt.x);
-      pt.y = toFractional(pt.y);
-      pt.z = toFractional(pt.z);  
+      switch (dimension) {
+      case 3:
+        pt.z = toFractional(pt.z);  
+        // fall through
+      case 2:
+        pt.y = toFractional(pt.y);
+        // fall through
+      case 1:
+        pt.x = toFractional(pt.x);
+      }
       matrixFractionalToCartesian.transform(pt);
     } else {
       // use original unit cell
       matrixCtoFAbsolute.transform(pt);
-      pt.x = toFractional(pt.x);
-      pt.y = toFractional(pt.y);
-      pt.z = toFractional(pt.z);  
+      switch (dimension) {
+      case 3:
+        pt.z = toFractional(pt.z);  
+        // fall through
+      case 2:
+        pt.y = toFractional(pt.y);
+        // fall through
+      case 1:
+        pt.x = toFractional(pt.x);
+      }
       pt.add(offset);      
       matrixFtoCAbsolute.transform(pt);
     }
@@ -147,12 +161,14 @@ class UnitCell extends SimpleUnitCell {
       maxXYZ.z = (maxXYZ.y % 10) - 4;
       maxXYZ.y = (maxXYZ.y % 100) / 10 - 4;
     }
-    if (isPolymer) {
-      minXYZ.y = minXYZ.z = 0;
-      maxXYZ.y = maxXYZ.z = 1;
-    }  else if (isSlab) {
-        minXYZ.z = 0;
-        maxXYZ.z = 1;
+    switch (dimension) {
+    case 1: // polymer
+      minXYZ.y = 0;
+      maxXYZ.y = 1;
+      // fall through
+    case 2: // slab
+      minXYZ.z = 0;
+      maxXYZ.z = 1;
     }
   }
 

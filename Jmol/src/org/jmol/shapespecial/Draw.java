@@ -692,7 +692,7 @@ public void initShape() {
               for (int ipt = m.drawVertexCount; --ipt >= 0;)
                 addPoint(m.vertices[ipt], iModel);
             else if (m.polygonIndexes[iModel] != null)
-              for (int ipt = 0; ipt < m.drawVertexCounts[iModel]; ipt++)
+              for (int ipt = m.drawVertexCounts[iModel]; --ipt >= 0;)
                 addPoint(m.vertices[m.polygonIndexes[iModel][ipt]], iModel);
           } else {
             if (iModel < 0 || iModel >= m.polygonCount)

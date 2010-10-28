@@ -8276,7 +8276,10 @@ public class ScriptEvaluator {
         Point3f offset = getPoint3f(++i, true);
         if (coordinatesAreFractional) {
           offset.set(fractionalPoint);
-          htParams.put("unitCellOffsetFractional", (coordinatesAreFractional ? Boolean.TRUE : Boolean.FALSE));          
+          htParams.put("unitCellOffsetFractional", (coordinatesAreFractional ? Boolean.TRUE : Boolean.FALSE));
+          sOptions += " offset {" + offset.x + " " + offset.y + " " + offset.z + "/1}";
+        } else {
+          sOptions += " offset " + Escape.escape(offset);
         }
         htParams.put("unitCellOffset", offset);
       }

@@ -83,7 +83,7 @@ public class SpartanReader extends AtomSetCollectionReader {
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementSymbol = elementSymbol;
       atom.atomName = atomName;
-      atom.set(parseFloat(line, 17, 30), parseFloat(line, 31, 44), parseFloat(
+      setAtomCoord(atom, parseFloat(line, 17, 30), parseFloat(line, 31, 44), parseFloat(
           line, 45, 58));
     }
   }

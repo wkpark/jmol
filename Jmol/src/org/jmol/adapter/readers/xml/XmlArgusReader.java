@@ -153,12 +153,12 @@ public class XmlArgusReader extends XmlReader {
         && chars.charAt(chars.length() - 1) == '\n')
       chars = chars.substring(0, chars.length() - 1);
     if ("molecule".equals(localName)) {
-      // end-of-molecule operations could be here
       elementContext = UNSET;
       return;
     }
     if ("atom".equals(localName)) {
       if (atom.elementSymbol != null && !Float.isNaN(atom.z)) {
+        parent.setAtomCoord(atom);
         atomSetCollection.addAtomWithMappedName(atom);
       }
       atom = null;

@@ -100,9 +100,7 @@ public class HyperChemReader extends AtomSetCollectionReader {
     parseToken(); // discard
     parseToken(); // discard
     atom.partialCharge = parseFloat();
-    atom.x = parseFloat();
-    atom.y = parseFloat();
-    atom.z = parseFloat();
+    setAtomCoord(atom, parseFloat(), parseFloat(), parseFloat());
     
     int bondCount = parseInt();
     for (int i = 0; i < bondCount; ++i) {

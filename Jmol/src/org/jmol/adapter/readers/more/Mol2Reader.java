@@ -62,6 +62,13 @@ public class Mol2Reader extends ForceFieldReader {
   }
 
   @Override
+  protected void finalizeReader() {
+    Atom[] atoms = atomSetCollection.getAtoms();
+    for (int i = 0; i < atomCount; ++i)
+      setAtomCoord(atoms[nAtoms + i]);
+  }
+  
+  @Override
   public boolean checkLine() throws Exception {
     if (line.equals("@<TRIPOS>MOLECULE")) {
       if (doGetModel(++modelNumber)) {
@@ -167,7 +174,7 @@ public class Mol2Reader extends ForceFieldReader {
       //Logger.debug(tokens.length + " -" + tokens[5] + "- " + line);
       String atomType = tokens[5];
       atom.atomName = tokens[1] + '\0' + atomType;
-      setAtomCoord(atom, parseFloat(tokens[2]), parseFloat(tokens[3]),
+      atom.set(parseFloat(tokens[2]), parseFloat(tokens[3]),
           parseFloat(tokens[4]));
       boolean deduceSymbol = !getElementSymbol(atom, atomType);
       // apparently "NO_CHARGES" is not strictly enforced
@@ -242,8 +249,5 @@ public class Mol2Reader extends ForceFieldReader {
       return;
     for (int i = 0; i < 6; i++)
       setUnitCellItem(i, parseFloat(tokens[i]));
-    Atom[] atoms = atomSetCollection.getAtoms();
-    for (int i = 0; i < atomCount; ++i)
-      setAtomCoord(atoms[nAtoms + i]);
   }
 }

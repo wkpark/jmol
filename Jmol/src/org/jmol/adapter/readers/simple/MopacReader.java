@@ -162,9 +162,7 @@ void processAtomicCharges() throws Exception {
           atom = atomSetCollection.addNewAtom(); // if no charges were found first
       }
       atom.atomSerial = atomNumber;
-      atom.x = parseFloat();
-      atom.y = parseFloat();
-      atom.z = parseFloat();
+      setAtomCoord(atom, parseFloat(), parseFloat(), parseFloat());
       int atno = parseInt(elementSymbol); 
       if (atno != Integer.MIN_VALUE)
         elementSymbol = getElementSymbol(atno);

@@ -91,8 +91,9 @@ public class DgridReader extends SlaterReader {
       String symbol = tokens[0];
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementSymbol = symbol;
-      atom.set(parseFloat(tokens[2]), parseFloat(tokens[3]), parseFloat(tokens[4]));
-      atom.scale(ANGSTROMS_PER_BOHR);
+      setAtomCoord(atom, parseFloat(tokens[2]) * ANGSTROMS_PER_BOHR, 
+          parseFloat(tokens[3]) * ANGSTROMS_PER_BOHR, 
+          parseFloat(tokens[4]) * ANGSTROMS_PER_BOHR);
     }
   }
 

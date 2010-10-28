@@ -103,7 +103,7 @@ public class XmlOdysseyReader extends XmlReader {
       if (atts.containsKey("xyz")) {
         String xyz = atts.get("xyz");
         String[] tokens = getTokens(xyz);
-        parent.setAtomCoord(atom, parseFloat(tokens[0]), parseFloat(tokens[1]),
+        atom.set(parseFloat(tokens[0]), parseFloat(tokens[1]),
             parseFloat(tokens[2]));
       }
       if (atts.containsKey("element")) {

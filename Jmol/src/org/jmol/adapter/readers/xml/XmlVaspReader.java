@@ -248,10 +248,9 @@ public class XmlVaspReader extends XmlReader {
           int fpt = 0;
           for (int i = 0; i < atomCount; i++) {
             Atom atom = atomSetCollection.addNewAtom();
-            atom.set(fdata[fpt++], fdata[fpt++], fdata[fpt++]);
+            parent.setAtomCoord(atom, fdata[fpt++], fdata[fpt++], fdata[fpt++]);
             atom.elementSymbol = atomSyms[i];
             atom.atomName = atomNames[i];
-            parent.setAtomCoord(atom);
           }
         } else if ("forces".equals(name)) {
           float[] fdata = new float[atomCount * 3];

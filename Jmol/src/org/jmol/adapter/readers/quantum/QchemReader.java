@@ -165,7 +165,7 @@ public class QchemReader extends MOReader {
         continue;
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementSymbol = symbol;
-      atom.set(x, y, z);
+      setAtomCoord(atom, x, y, z);
       atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
           "Calculation "+calculationNumber);
    }

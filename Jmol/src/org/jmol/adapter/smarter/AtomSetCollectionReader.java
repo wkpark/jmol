@@ -143,6 +143,10 @@ public abstract class AtomSetCollectionReader {
   public boolean doProcessLines;
   public boolean iHaveUnitCell;
   public boolean iHaveSymmetryOperators;
+  public boolean continuing = true;
+
+  protected JmolViewer viewer;
+
   protected boolean doApplySymmetry;
   protected boolean ignoreFileSymmetryOperators;
   protected boolean isTrajectory;
@@ -155,26 +159,34 @@ public abstract class AtomSetCollectionReader {
   protected int vibrationNumber;
   public int desiredVibrationNumber = Integer.MIN_VALUE;
   protected BitSet bsModels;
-  protected String spaceGroup;
   protected boolean havePartialChargeFilter;
   public String calculationType = "?";
+  protected String spaceGroup;
+  protected boolean ignoreFileUnitCell;
+  protected boolean ignoreFileSpaceGroupName;
+  protected float[] notionalUnitCell; //0-5 a b c alpha beta gamma; 6-21 matrix c->f
+  protected int desiredModelNumber = Integer.MIN_VALUE;
+  protected SymmetryInterface symmetry;
+  protected OutputStream os;
+
   // private state variables
+  
   private boolean iHaveFractionalCoordinates;
   private boolean doPackUnitCell;
   private boolean doConvertToFractional;
   private boolean fileCoordinatesAreFractional;
-  protected boolean ignoreFileUnitCell;
-  protected boolean ignoreFileSpaceGroupName;
   private float symmetryRange;
-  protected float[] notionalUnitCell; //0-5 a b c alpha beta gamma; 6-21 matrix c->f
   private int[] firstLastStep;
-  protected int desiredModelNumber = Integer.MIN_VALUE;
   private int lastModelNumber = Integer.MAX_VALUE;
   private int desiredSpaceGroupIndex = -1;
-  protected SymmetryInterface symmetry;
-  protected OutputStream os;
   private Point3f fileScaling;
   private Point3f fileOffset;
+  private Point3f fileOffsetFractional;
+  private Point3f unitCellOffset;
+  private String supercell;
+  private boolean unitCellOffsetFractional;
+
+
 
   /*  
     public void finalize() {
@@ -222,12 +234,6 @@ public abstract class AtomSetCollectionReader {
   public void readAtomSetCollectionFromDOM(Object DOMNode) {
     // XML readers only
   }
-
-  public boolean continuing = true;
-
-  protected JmolViewer viewer;
-
-  private String supercell;
 
   protected void initializeReader() throws Exception {
     // reader-dependent
@@ -416,6 +422,12 @@ public abstract class AtomSetCollectionReader {
       ignoreFileSpaceGroupName = (desiredSpaceGroupIndex == -2 || desiredSpaceGroupIndex >= 0);
       ignoreFileSymmetryOperators = (desiredSpaceGroupIndex != -1);
     }
+    if (htParams.containsKey("unitCellOffset")) {
+      fileScaling = new Point3f(1, 1, 1);
+      fileOffset = (Point3f) htParams.get("unitCellOffset");
+      fileOffsetFractional = new Point3f(fileOffset);
+      unitCellOffsetFractional = htParams.containsKey("unitCellOffsetFractional");
+    }
     if (htParams.containsKey("unitcell")) {
       float[] fParams = (float[]) htParams.get("unitcell");
       if (fParams.length == 9) {
@@ -429,7 +441,7 @@ public abstract class AtomSetCollectionReader {
       }
       ignoreFileUnitCell = iHaveUnitCell;
     }
-
+    
     if (htParams.containsKey("OutputStream"))
       os = (OutputStream) htParams.get("OutputStream");
 
@@ -594,7 +606,20 @@ public abstract class AtomSetCollectionReader {
     if (doApplySymmetry)
       doConvertToFractional = !fileCoordinatesAreFractional;
     //if (but not only if) applying symmetry do we force conversion
+    checkUnitCellOffset();
     return true;
+  }
+
+  private void checkUnitCellOffset() {
+    if (symmetry == null || fileOffsetFractional == null)
+      return;
+    fileOffset.set(fileOffsetFractional);
+    if (unitCellOffsetFractional != fileCoordinatesAreFractional) {
+      if (unitCellOffsetFractional)
+        symmetry.toCartesian(fileOffset, false);
+      else
+        symmetry.toFractional(fileOffset, false);
+    }
   }
 
   protected SymmetryInterface getSymmetry() {
@@ -605,6 +630,7 @@ public abstract class AtomSetCollectionReader {
 
   public void setFractionalCoordinates(boolean TF) {
     iHaveFractionalCoordinates = fileCoordinatesAreFractional = TF;
+    checkUnitCellOffset();
   }
 
   /////////// FILTER /////////////////
@@ -982,8 +1008,6 @@ public abstract class AtomSetCollectionReader {
     this.line = line;
     checkLineForScript();
   }
-
-  private Point3f unitCellOffset;
 
   public void checkLineForScript() {
     if (line.indexOf("Jmol") >= 0) {

@@ -116,7 +116,7 @@ public class JaguarReader extends MOReader {
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementSymbol = elementSymbol;
       atom.atomName = atomName;
-      atom.set(x, y, z);
+      setAtomCoord(atom, x, y, z);
       atomCount++;
     }
   }

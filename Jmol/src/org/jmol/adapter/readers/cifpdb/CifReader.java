@@ -232,7 +232,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
    * @throws Exception
    */
   private void processSymmetrySpaceGroupName() throws Exception {
-    setSpaceGroupName(data);
+    setSpaceGroupName((key.equals("_symmetry_space_group_name_H-M") ? "HM:" : "Hall:") + data);
   }
 
   final public static String[] cellParamNames = { 

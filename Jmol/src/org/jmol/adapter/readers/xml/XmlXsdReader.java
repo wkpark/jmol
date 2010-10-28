@@ -157,6 +157,7 @@ public class XmlXsdReader extends XmlReader {
   public void processEndElement(String uri, String localName, String qName) {
     if ("Atom3d".equals(localName)) {
       if (atom.elementSymbol != null && !Float.isNaN(atom.z)) {
+        parent.setAtomCoord(atom);
         atomSetCollection.addAtomWithMappedName(atom);
       }
       atom = null;

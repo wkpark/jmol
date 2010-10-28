@@ -353,7 +353,6 @@ public class XmlCmlReader extends XmlReader {
           Atom atom = atomArray[i];
           if (!coords3D)
             atom.z = 0;
-          parent.setAtomCoord(atom);
           addAtom(atom);
         }
       }
@@ -401,13 +400,13 @@ public class XmlCmlReader extends XmlReader {
         if (atts.containsKey("xFract")
             && (parent.iHaveUnitCell || !atts.containsKey("x3"))) {
           parent.setFractionalCoordinates(true);
-          parent.setAtomCoord(atom, parseFloat(atts.get("xFract")),
+          atom.set(parseFloat(atts.get("xFract")),
               parseFloat(atts.get("yFract")), parseFloat(atts.get("zFract")));
         } else if (atts.containsKey("x3")) {
-          parent.setAtomCoord(atom, parseFloat(atts.get("x3")),
+          atom.set(parseFloat(atts.get("x3")),
               parseFloat(atts.get("y3")), parseFloat(atts.get("z3")));
         } else if (atts.containsKey("x2")) {
-          parent.setAtomCoord(atom, parseFloat(atts.get("x2")),
+          atom.set(parseFloat(atts.get("x2")),
               parseFloat(atts.get("y2")), 0);
         }
         if (atts.containsKey("elementType")) {
@@ -652,11 +651,12 @@ public class XmlCmlReader extends XmlReader {
   private void addAtom(Atom atom) {
     if ((atom.elementSymbol == null && atom.elementNumber < 0)
         || Float.isNaN(atom.z))
-        return;
-      if (isSerial)
-        atomSetCollection.addAtomWithMappedSerialNumber(atom);
-      else
-        atomSetCollection.addAtomWithMappedName(atom);
+      return;
+    parent.setAtomCoord(atom);
+    if (isSerial)
+      atomSetCollection.addAtomWithMappedSerialNumber(atom);
+    else
+      atomSetCollection.addAtomWithMappedName(atom);
   }
 
   int parseBondToken(String str) {

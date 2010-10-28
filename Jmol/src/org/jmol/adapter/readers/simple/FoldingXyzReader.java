@@ -93,9 +93,7 @@ public class FoldingXyzReader extends AtomSetCollectionReader {
           }
           atom.elementSymbol = atom.atomName.substring(0, carCount);
         }
-        atom.x = parseFloat();
-        atom.y = parseFloat();
-        atom.z = parseFloat();
+        setAtomCoord(atom, parseFloat(), parseFloat(), parseFloat());
 
         // Memorise bond informations
         int bondCount = 0;

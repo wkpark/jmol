@@ -251,7 +251,7 @@ public class NWChemReader extends AtomSetCollectionReader {
       if (tokens.length < 6) break; // if don't have enough of them: done
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = fixTag(tokens[1]);
-      atom.set(parseFloat(tokens[3]), parseFloat(tokens[4]), parseFloat(tokens[5]));
+      setAtomCoord(atom, parseFloat(tokens[3]), parseFloat(tokens[4]), parseFloat(tokens[5]));
     }
     // only if was converged, use the last energy for the name and properties
     if (converged) {
@@ -299,8 +299,9 @@ public class NWChemReader extends AtomSetCollectionReader {
       if (tokens.length < 8) break; // make sure I have enough tokens
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = fixTag(tokens[1]);
-      atom.set(parseFloat(tokens[2]), parseFloat(tokens[3]), parseFloat(tokens[4]));
-      atom.scale(ANGSTROMS_PER_BOHR);
+      setAtomCoord(atom, parseFloat(tokens[2]) * ANGSTROMS_PER_BOHR, 
+          parseFloat(tokens[3]) * ANGSTROMS_PER_BOHR, 
+          parseFloat(tokens[4]) * ANGSTROMS_PER_BOHR);
       // Keep gradients in a.u. (larger value that way)
       // need to multiply with -1 so the direction is in the direction the
       // atom needs to move to lower the energy
@@ -419,8 +420,9 @@ public class NWChemReader extends AtomSetCollectionReader {
       tokens = getTokens();
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = fixTag(tokens[0]);
-      atom.set(parseFloat(tokens[2]), parseFloat(tokens[3]), parseFloat(tokens[4]));
-      atom.scale(ANGSTROMS_PER_BOHR);
+      setAtomCoord(atom, parseFloat(tokens[2]) * ANGSTROMS_PER_BOHR, 
+          parseFloat(tokens[3]) * ANGSTROMS_PER_BOHR, 
+          parseFloat(tokens[4]) * ANGSTROMS_PER_BOHR);
     }
 
     discardLinesUntilContains("(Projected Frequencies expressed in cm-1)");

@@ -156,7 +156,7 @@ public class GhemicalMMReader extends AtomSetCollectionReader {
       if (atomIndex != i)
         throw new Exception("bad atom index in !Coord" + "expected: " + i
             + " saw:" + atomIndex);
-      atoms[i].set(parseFloat() * 10, parseFloat() * 10, parseFloat() * 10);
+      setAtomCoord(atoms[i], parseFloat() * 10, parseFloat() * 10, parseFloat() * 10);
     }
   }
 

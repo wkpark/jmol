@@ -66,6 +66,7 @@ public class MoldenReader extends MopacSlaterReader {
     }
     
     readLine();
+    float f = (isAU ? ANGSTROMS_PER_BOHR : 1);
     while (line != null && line.indexOf('[') < 0) {    
       Atom atom = atomSetCollection.addNewAtom();
       String [] tokens = getTokens();
@@ -78,13 +79,11 @@ public class MoldenReader extends MopacSlaterReader {
         throw new Exception("out of order atom in [Atoms]");
       } 
       nPrevAtom = nCurAtom;
-      atom.set(parseFloat(tokens[3]), parseFloat(tokens[4]), parseFloat(tokens[5]));
+      setAtomCoord(atom, parseFloat(tokens[3]) * f, 
+          parseFloat(tokens[4]) * f, 
+          parseFloat(tokens[5]) * f);
       readLine();
-    }
-    
-    if (isAU)
-      for (int i = atomSetCollection.getAtomCount(); --i >= 0;)
-        atomSetCollection.getAtom(i).scale(ANGSTROMS_PER_BOHR);
+    }    
   }
   
   void readGaussianBasis() throws Exception {
@@ -259,8 +258,9 @@ public class MoldenReader extends MopacSlaterReader {
       tokens = getTokens(readLine());
       Atom atom = atoms[nAtom + i0];
       atom.atomName = tokens[0];
-      atom.set(parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
-      atom.scale(ANGSTROMS_PER_BOHR);      
+      setAtomCoord(atom, parseFloat(tokens[1]) * ANGSTROMS_PER_BOHR, 
+          parseFloat(tokens[2]) * ANGSTROMS_PER_BOHR, 
+          parseFloat(tokens[3]) * ANGSTROMS_PER_BOHR);
     }
       
     readLine();

@@ -115,8 +115,7 @@ public class GamessUKReader extends GamessReader {
         break;
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = atomName;
-      atom.set(x, y, z);
-      atom.scale(ANGSTROMS_PER_BOHR);
+      setAtomCoord(atom, x * ANGSTROMS_PER_BOHR, y * ANGSTROMS_PER_BOHR, z * ANGSTROMS_PER_BOHR);
       atom.elementSymbol = AtomSetCollectionReader.getElementSymbol(atomicNumber);
       atomNames.add(atomName);
     }

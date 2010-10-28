@@ -87,7 +87,7 @@ public class JmolFileDropper implements DropTargetListener {
   }
   
   private void loadFile(String fname) {
-    fname = fname.replace('\\', '/');
+    fname = fname.replace('\\', '/').trim();
     if (fname.indexOf("://") < 0)
       fname = (fname.startsWith("/") ? "file://" : "file:///") + fname;
     viewer.openFileAsynchronously(fname);
@@ -98,7 +98,7 @@ public class JmolFileDropper implements DropTargetListener {
     for (int i = 0; i < fileList.size(); ++ i) {
       File f = fileList.get(i);
       String fname = f.getAbsolutePath();
-      fname = fname.replace('\\', '/');
+      fname = fname.replace('\\', '/').trim();
       fname = (fname.startsWith("/") ? "file://" : "file:///") + fname;
       sb.append("load ").append(i == 0 ? "" : "APPEND ")
           .append(Escape.escape(fname)).append(";\n");        
@@ -158,15 +158,15 @@ public class JmolFileDropper implements DropTargetListener {
           List<File> fileList = (List<File>) o;
           final int length = fileList.size();
           if (length == 1) {
-            String fileName = fileList.get(0).getAbsolutePath();
+            String fileName = fileList.get(0).getAbsolutePath().trim();
             if (fileName.endsWith(".bmp"))
               break; // try another flavor -- Mozilla bug
-            loadFile(fileName);
             dtde.getDropTargetContext().dropComplete(true);
+            loadFile(fileName);
             return;
           }
-          loadFiles(fileList);
           dtde.getDropTargetContext().dropComplete(true);
+          loadFiles(fileList);
           return;
         }
         break;

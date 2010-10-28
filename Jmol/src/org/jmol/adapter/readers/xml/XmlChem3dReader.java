@@ -183,6 +183,7 @@ In Chem3D, all grid data in following format:
     //System.out.println("xmlchem3d: end " + localName);
     if ("atom".equals(localName)) {
       if (atom.elementSymbol != null && !Float.isNaN(atom.z)) {
+        parent.setAtomCoord(atom);
         atomSetCollection.addAtomWithMappedName(atom);
       }
       atom = null;

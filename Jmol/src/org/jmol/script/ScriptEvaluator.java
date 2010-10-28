@@ -4661,6 +4661,8 @@ public class ScriptEvaluator {
     return (Point4f) getPointOrPlane(i, false, false, false, false, 4, 4);
   }
 
+  private Point3f fractionalPoint;
+  
   private Object getPointOrPlane(int index, boolean integerOnly,
                                  boolean allowFractional, boolean doConvert,
                                  boolean implicitFractional, int minDim,
@@ -4740,8 +4742,10 @@ public class ScriptEvaluator {
       error(ERROR_invalidArgument);
     if (n == 3) {
       Point3f pt = new Point3f(coord[0], coord[1], coord[2]);
-      if (coordinatesAreFractional && doConvert && !isSyntaxCheck) {
-        viewer.toCartesian(pt, !viewer.getFractionalRelative());
+      if (coordinatesAreFractional && doConvert) {
+        fractionalPoint = new Point3f(pt);
+        if (!isSyntaxCheck)
+          viewer.toCartesian(pt, !viewer.getFractionalRelative());
       }
       return pt;
     }
@@ -8113,6 +8117,7 @@ public class ScriptEvaluator {
       }
     } else if (getToken(i + 1).tok == Token.leftbrace
         || theTok == Token.point3f || theTok == Token.integer
+        || theTok == Token.offset 
         || theTok == Token.range || theTok == Token.manifest
         || theTok == Token.packed || theTok == Token.supercell
         || theTok == Token.filter && tokAt(i + 3) != Token.coord
@@ -8133,6 +8138,9 @@ public class ScriptEvaluator {
         sOptions += " MANIFEST " + Escape.escape(manifest);
         tok = tokAt(++i);
       }
+      
+      // 1)   n >= 0: model number; n < 0: vibration number
+      
       if (tok == Token.integer) {
         int n = intParameter(i);
         sOptions += " " + n;
@@ -8142,27 +8150,38 @@ public class ScriptEvaluator {
           htParams.put("modelNumber", Integer.valueOf(n));
         tok = tokAt(++i);
       }
+      
+      // 2)   {i j k}
+      
       Point3f lattice = null;
       if (tok == Token.leftbrace || tok == Token.point3f) {
         lattice = getPoint3f(i, false);
         i = iToken + 1;
         tok = tokAt(i);
       }
+      
       if (tok == Token.packed || tok == Token.supercell) {
         if (lattice == null)
           lattice = new Point3f(555, 555, -1);
         iToken = i - 1;
       }
       if (lattice != null) {
+        
         i = iToken + 1;
         htParams.put("lattice", lattice);
         sOptions += " {" + (int) lattice.x + " " + (int) lattice.y + " "
             + (int) lattice.z + "}";
+
+        // PACKED
+        
         if (tokAt(i) == Token.packed) {
           htParams.put("packed", Boolean.TRUE);
           sOptions += " PACKED";
           i++;
         }
+        
+        // SUPERCELL
+        
         if (tokAt(i) == Token.supercell) {
           String supercell;
           if (isPoint3f(++i)) {
@@ -8194,32 +8213,27 @@ public class ScriptEvaluator {
          * set are found. Depending upon the application, one or the other of
          * these options may be desirable.
          */
+        
+        // RANGE x.y
+        
         if (tokAt(i) == Token.range) {
           i++;
           distance = floatParameter(i++);
           sOptions += " range " + distance;
         }
         htParams.put("symmetryRange", new Float(distance));
+        
+        // SPACEGROUP "info"
+        
+        // SPACEGROUP "IGNOREOPERATORS"
+        
         String spacegroup = null;
-        float[] fparams = null;
         int iGroup = Integer.MIN_VALUE;
         if (tokAt(i) == Token.spacegroup) {
           ++i;
           spacegroup = TextFormat.simpleReplace(parameterAsString(i++), "''",
               "\"");
           sOptions += " spacegroup " + Escape.escape(spacegroup);
-        }
-        if (tokAt(i) == Token.unitcell) {
-          ++i;
-          fparams = floatParameterSet(i, 6, 9);
-          if (fparams.length != 6 && fparams.length != 9)
-            error(ERROR_invalidArgument);
-          i = iToken;
-          sOptions += " unitcell {";
-          for (int j = 0; j < 6; j++)
-            sOptions += (j == 0 ? "" : " ") + fparams[j];
-          sOptions += "}";
-          htParams.put("unitcell", fparams);
         }
         if (spacegroup != null) {
           if (spacegroup.equalsIgnoreCase("ignoreOperators")) {
@@ -8232,13 +8246,46 @@ public class ScriptEvaluator {
             htParams.put("spaceGroupName", spacegroup);
           }
         }
-        if (fparams != null && iGroup == Integer.MIN_VALUE)
-          iGroup = -1;
+        
+        // UNITCELL [a b c alpha beta gamma]
+        // or
+        // UNITCELL [ax ay az bx by bz cx cy cz] 
+           
+        float[] fparams = null;
+        if (tokAt(i) == Token.unitcell) {
+          ++i;
+          fparams = floatParameterSet(i, 6, 9);
+          if (fparams.length != 6 && fparams.length != 9)
+            error(ERROR_invalidArgument);
+          i = iToken;
+          sOptions += " unitcell {";
+          for (int j = 0; j < fparams.length; j++)
+            sOptions += (j == 0 ? "" : " ") + fparams[j];
+          sOptions += "}";
+          htParams.put("unitcell", fparams);
+          if (iGroup == Integer.MIN_VALUE)
+            iGroup = -1;
+        }                
         if (iGroup != Integer.MIN_VALUE)
           htParams.put("spaceGroupIndex", Integer.valueOf(iGroup));
       }
+      
+      // OFFSET {x y z} (fractional or not) (Jmol 12.1.17)
+      
+      if (tokAt(i) == Token.offset) {
+        Point3f offset = getPoint3f(++i, true);
+        if (coordinatesAreFractional) {
+          offset.set(fractionalPoint);
+          htParams.put("unitCellOffsetFractional", (coordinatesAreFractional ? Boolean.TRUE : Boolean.FALSE));          
+        }
+        htParams.put("unitCellOffset", offset);
+      }
+      
+      // FILTER
+      
       if (tokAt(i) == Token.filter)
         filter = stringParameter(++i);
+      
     } else {
       if (i != 2) {
         modelName = parameterAsString(i++);

@@ -1774,6 +1774,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
   @Override
   public void openFileAsynchronously(String fileName) {
+    fileName = fileName.trim();
     boolean allowScript = (!fileName.startsWith("\t"));
     if (!allowScript)
       fileName = fileName.substring(1);

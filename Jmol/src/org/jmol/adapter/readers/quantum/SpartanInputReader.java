@@ -114,7 +114,7 @@ public abstract class SpartanInputReader extends AtomSetCollectionReader {
       String[] tokens = getTokens();
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementSymbol = getElementSymbol(parseInt(tokens[0]));
-      atom.set(parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
+      setAtomCoord(atom, parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
       modelAtomCount++;
     }
     atomCount = atomSetCollection.getAtomCount();

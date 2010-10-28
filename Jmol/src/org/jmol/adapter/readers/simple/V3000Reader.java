@@ -82,7 +82,7 @@ public class V3000Reader extends AtomSetCollectionReader {
       String[] tokens = getTokens();
       atom.atomSerial = parseInt(tokens[2]);
       atom.elementSymbol = tokens[3];
-      atom.set(parseFloat(tokens[4]), parseFloat(tokens[5]), parseFloat(tokens[6]));
+      setAtomCoord(atom, parseFloat(tokens[4]), parseFloat(tokens[5]), parseFloat(tokens[6]));
       for (int j = 8; j < tokens.length; j++) {
         String token = tokens[j];
         if (token.startsWith("CHG=")) {

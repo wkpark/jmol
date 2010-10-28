@@ -428,6 +428,7 @@ class SpaceGroup {
         newOps[j].mul(mat1, newOps[0]);
         newOps[0].set(newOps[j]);
         for (int k = 0; k < nOps; k++) {
+          
           operation.mul(newOps[j], operations[k]);
           SymmetryOperation.normalizeTranslation(operation);
           String xyz = SymmetryOperation.getXYZFromMatrix(operation, true, true, true);
@@ -472,147 +473,159 @@ class SpaceGroup {
     return (i >= 0 ? spaceGroupDefinitions[i] : null);
   }
 
+  private final static int NAME_HALL = 5;
+  private final static int NAME_HM = 3;
+
   private final static int determineSpaceGroupIndex(String name, float a,
                                                     float b, float c,
                                                     float alpha, float beta,
                                                     float gamma, int lastIndex) {
 
-     if (lastIndex < 0)
-       lastIndex = spaceGroupDefinitions.length;
-     name = name.trim().toLowerCase();
-     String nameExt = name;
-     int i;
-     boolean haveExtension = false;
-     
-     // '_' --> ' '
-     name = name.replace('_', ' ');
+    if (lastIndex < 0)
+      lastIndex = spaceGroupDefinitions.length;
+    name = name.trim().toLowerCase();
+    int nameType = (name.startsWith("hall:") ? NAME_HALL : name
+        .startsWith("hm:") ? NAME_HM : 0);
+    if (nameType > 0)
+      name = name.substring(nameType);
+    String nameExt = name;
+    int i;
+    boolean haveExtension = false;
 
-     // get lattice term to upper case and separated
-     if (name.length() >= 2) {
-       i = (name.indexOf("-") == 0 ? 2 : 1);
-       if (i < name.length() && name.charAt(i) != ' ')
-         name = name.substring(0, i) + " " + name.substring(i);
-       name = name.substring(0, 2).toUpperCase() + name.substring(2);
-     }
-     
-     // get extension
-     String ext = "";
-     if ((i = name.indexOf(":")) > 0) {
-       ext = name.substring(i + 1);
-       name = name.substring(0, i).trim();
-       haveExtension = true;
-     }
-     
-     if (!haveExtension && Parser.isOneOf(name, ambiguousNames)) {
-       ext = "?";
-       haveExtension = true;
-     }
-     
-     // generate spaceless abbreviation "P m m m" --> "Pmmm"  "P 2(1)/c" --> "P21/c"
-     String abbr = TextFormat.replaceAllCharacters(name, " ()", "");
+    // '_' --> ' '
+    name = name.replace('_', ' ');
 
-     SpaceGroup s;
+    // get lattice term to upper case and separated
+    if (name.length() >= 2) {
+      i = (name.indexOf("-") == 0 ? 2 : 1);
+      if (i < name.length() && name.charAt(i) != ' ')
+        name = name.substring(0, i) + " " + name.substring(i);
+      name = name.substring(0, 2).toUpperCase() + name.substring(2);
+    }
 
-     // exact matches:
+    // get extension
+    String ext = "";
+    if ((i = name.indexOf(":")) > 0) {
+      ext = name.substring(i + 1);
+      name = name.substring(0, i).trim();
+      haveExtension = true;
+    }
 
-     // Hall symbol
+    if (nameType != NAME_HALL && !haveExtension
+        && Parser.isOneOf(name, ambiguousNames)) {
+      ext = "?";
+      haveExtension = true;
+    }
 
-     if (!haveExtension) 
-       for (i = lastIndex; --i >= 0;) {
-         s = spaceGroupDefinitions[i];
-         if (s.hallSymbol.equals(name))
-           return i;
-       }
+    // generate spaceless abbreviation "P m m m" --> "Pmmm"  "P 2(1)/c" --> "P21/c"
+    String abbr = TextFormat.replaceAllCharacters(name, " ()", "");
 
-     // Full intl table entry, including :xx
+    SpaceGroup s;
 
-     for (i = lastIndex; --i >= 0;) {
-       s = spaceGroupDefinitions[i];
-       if (s.intlTableNumberFull.equals(nameExt))
-         return i;
-     }
+    // exact matches:
 
-     // Full H-M symbol, including :xx
+    // Hall symbol
 
-     // BUT some on the list presume defaults. The way to finesse this is
-     // to add ":?" to a space group name to force axis ambiguity check
+    if (nameType != NAME_HM && !haveExtension)
+      for (i = lastIndex; --i >= 0;) {
+        s = spaceGroupDefinitions[i];
+        if (s.hallSymbol.equals(name))
+          return i;
+      }
 
-     for (i = lastIndex; --i >= 0;) {
-       s = spaceGroupDefinitions[i];
-       if (s.hmSymbolFull.equals(nameExt))
-         return i;
-     }
+    if (nameType != NAME_HALL) {
 
-     // alternative, but unique H-M symbol, specifically for F m 3 m/F m -3 m type
-     for (i = lastIndex; --i >= 0;) {
-       s = spaceGroupDefinitions[i];
-       if (s.hmSymbolAlternative != null
-           && s.hmSymbolAlternative.equals(nameExt))
-         return i;
-     }
+      // Full intl table entry, including :xx
 
-     // Abbreviated H-M with intl table :xx
+      if (nameType != NAME_HM)
+        for (i = lastIndex; --i >= 0;) {
+          s = spaceGroupDefinitions[i];
+          if (s.intlTableNumberFull.equals(nameExt))
+            return i;
+        }
 
-     if (haveExtension) // P2/m:a      
-       for (i = lastIndex; --i >= 0;) {
-         s = spaceGroupDefinitions[i];
-         if (s.hmSymbolAbbr.equals(abbr) && s.intlTableNumberExt.equals(ext))
-           return i;
-       }
+      // Full H-M symbol, including :xx
 
-     // shortened -- not including " 1 " terms
-     if (haveExtension) // P2/m:a      
-       for (i = lastIndex; --i >= 0;) {
-         s = spaceGroupDefinitions[i];
-         if (s.hmSymbolAbbrShort.equals(abbr)
-             && s.intlTableNumberExt.equals(ext))
-           return i;
-       }
+      // BUT some on the list presume defaults. The way to finesse this is
+      // to add ":?" to a space group name to force axis ambiguity check
 
-     // unique axis, cell and origin options with H-M abbr
+      for (i = lastIndex; --i >= 0;) {
+        s = spaceGroupDefinitions[i];
+        if (s.hmSymbolFull.equals(nameExt))
+          return i;
+      }
 
-     char uniqueAxis = determineUniqueAxis(a, b, c, alpha, beta, gamma);
+      // alternative, but unique H-M symbol, specifically for F m 3 m/F m -3 m type
+      for (i = lastIndex; --i >= 0;) {
+        s = spaceGroupDefinitions[i];
+        if (s.hmSymbolAlternative != null
+            && s.hmSymbolAlternative.equals(nameExt))
+          return i;
+      }
 
-     if (!haveExtension || ext.charAt(0) == '?')
-       // no extension or unknown extension, so we look for unique axis
-       for (i = lastIndex; --i >= 0;) {
-         s = spaceGroupDefinitions[i];
-         if (s.hmSymbolAbbr.equals(abbr) || s.hmSymbolAbbrShort.equals(abbr)) {
-           switch (s.ambiguityType) {
-           case '\0':
-             return i;
-           case 'a':
-             if (s.uniqueAxis == uniqueAxis || uniqueAxis == '\0')
-               return i;
-             break;
-           case 'o':
-             if (ext.length() == 0) {
-               if (s.hmSymbolExt.equals("2"))
-                 return i; // defaults to origin:2
-             } else if (s.hmSymbolExt.equals(ext))
-               return i;
-             break;
-           case 't':
-             if (ext.length() == 0) {
-               if (s.axisChoice == 'h')
-                 return i; //defaults to hexagonal
-             } else if ((s.axisChoice + "").equals(ext))
-               return i;
-             break;
-           }
-         }
-       }
+      // Abbreviated H-M with intl table :xx
 
-     // inexact just the number; no extension indicated
+      if (haveExtension) // P2/m:a      
+        for (i = lastIndex; --i >= 0;) {
+          s = spaceGroupDefinitions[i];
+          if (s.hmSymbolAbbr.equals(abbr) && s.intlTableNumberExt.equals(ext))
+            return i;
+        }
 
-     if (ext.length() == 0)
-       for (i = lastIndex; --i >= 0;) {
-         s = spaceGroupDefinitions[i];
-         if (s.intlTableNumber.equals(nameExt))
-           return i;
-       }
-     return -1;
-   }
+      // shortened -- not including " 1 " terms
+      if (haveExtension) // P2/m:a      
+        for (i = lastIndex; --i >= 0;) {
+          s = spaceGroupDefinitions[i];
+          if (s.hmSymbolAbbrShort.equals(abbr)
+              && s.intlTableNumberExt.equals(ext))
+            return i;
+        }
+
+      // unique axis, cell and origin options with H-M abbr
+
+      char uniqueAxis = determineUniqueAxis(a, b, c, alpha, beta, gamma);
+
+      if (!haveExtension || ext.charAt(0) == '?')
+        // no extension or unknown extension, so we look for unique axis
+        for (i = lastIndex; --i >= 0;) {
+          s = spaceGroupDefinitions[i];
+          if (s.hmSymbolAbbr.equals(abbr) || s.hmSymbolAbbrShort.equals(abbr)) {
+            switch (s.ambiguityType) {
+            case '\0':
+              return i;
+            case 'a':
+              if (s.uniqueAxis == uniqueAxis || uniqueAxis == '\0')
+                return i;
+              break;
+            case 'o':
+              if (ext.length() == 0) {
+                if (s.hmSymbolExt.equals("2"))
+                  return i; // defaults to origin:2
+              } else if (s.hmSymbolExt.equals(ext))
+                return i;
+              break;
+            case 't':
+              if (ext.length() == 0) {
+                if (s.axisChoice == 'h')
+                  return i; //defaults to hexagonal
+              } else if ((s.axisChoice + "").equals(ext))
+                return i;
+              break;
+            }
+          }
+        }
+
+    }
+    // inexact just the number; no extension indicated
+
+    if (ext.length() == 0)
+      for (i = lastIndex; --i >= 0;) {
+        s = spaceGroupDefinitions[i];
+        if (s.intlTableNumber.equals(nameExt))
+          return i;
+      }
+    return -1;
+  }
    
    private final static char determineUniqueAxis(float a, float b, float c, float alpha, float beta, float gamma) {
      if (a == b)
@@ -1196,7 +1209,7 @@ class SpaceGroup {
     , new SpaceGroup("151;d3^3;p 31 1 2;p 31 2 (0 0 4)")
     , new SpaceGroup("152;d3^4;p 31 2 1;p 31 2\"")
     , new SpaceGroup("153;d3^5;p 32 1 2;p 32 2 (0 0 2)")
-    , new SpaceGroup("154;d3^6;p 32 2 1;p 32 2\"")
+    , new SpaceGroup("154;d3^6;p 32 2 1;p 32 2\"") // TODO MSA quartz.cif gives different operators for this -- 
     , new SpaceGroup("155:h;d3^7;r 3 2:h;r 3 2\"")
     , new SpaceGroup("155:r;d3^7;r 3 2:r;p 3* 2")
     , new SpaceGroup("156;c3v^1;p 3 m 1;p 3 -2\"")
@@ -1294,7 +1307,7 @@ class SpaceGroup {
 
   };
   
-  /*
+  /*  see http://cci.lbl.gov/sginfo/itvb_2001_table_a1427_hall_symbols.html
 
 intl#     H-M full       HM-abbr   HM-short  Hall
 1         P 1            P1        P         P 1       

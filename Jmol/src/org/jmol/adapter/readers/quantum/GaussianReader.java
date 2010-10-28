@@ -288,9 +288,9 @@ public class GaussianReader extends MOReader {
       if (atom.elementNumber < 0)
         atom.elementNumber = 0; // dummy atoms have -1 -> 0
       int offset = tokens.length-3;
-      atom.x = parseFloat(tokens[offset]);
-      atom.y = parseFloat(tokens[++offset]);
-      atom.z = parseFloat(tokens[++offset]);
+      setAtomCoord(atom, parseFloat(tokens[offset]), 
+          parseFloat(tokens[++offset]), 
+          parseFloat(tokens[++offset]));
     }
     atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
         "Calculation "+calculationNumber+

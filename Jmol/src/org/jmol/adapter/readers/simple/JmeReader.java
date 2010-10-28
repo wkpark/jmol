@@ -77,7 +77,7 @@ public class JmeReader extends AtomSetCollectionReader {
     for (int i = 0; i < atomCount; ++i) {
       String strAtom = parseToken();
       Atom atom = atomSetCollection.addNewAtom();
-      atom.set(parseFloat(), parseFloat(), 0);
+      setAtomCoord(atom, parseFloat(), parseFloat(), 0);
       int indexColon = strAtom.indexOf(':');
       String elementSymbol = (indexColon > 0 ? strAtom.substring(0, indexColon)
           : strAtom);

@@ -252,7 +252,7 @@ public class ActionManager {
   }
 
   /**
-   * picking modes     select picking....
+   * picking modes     set picking....
    */
   public final static int PICKING_OFF       = 0;
   public final static int PICKING_IDENTIFY  = 1;

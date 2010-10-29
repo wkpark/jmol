@@ -1527,8 +1527,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   @Override
   public void setSelectionSet(BitSet set) {
-    // not used in this project; in jmolViewer interface, though
-    select(set, true);
+    // ActionManager atom picking 
+    select(set, false);
   }
 
   public void selectBonds(BitSet bs) {

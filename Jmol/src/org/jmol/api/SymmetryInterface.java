@@ -91,6 +91,8 @@ public interface SymmetryInterface {
 
   public abstract float[] getNotionalUnitCell();
 
+  public abstract float[] getUnitCellAsArray();
+
   public abstract void toUnitCell(Point3f pt, Point3f offset);
 
   public abstract void setUnitCellOffset(Point3f pt);

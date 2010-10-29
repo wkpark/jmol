@@ -22,7 +22,6 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
 package org.jmol.util;
 
 import javax.vecmath.Matrix4f;
@@ -41,11 +40,11 @@ import org.jmol.viewer.JmolConstants;
  */
 
 public class SimpleUnitCell {
-  
+
   protected float[] notionalUnitcell; //6 parameters + optional 16 matrix items
   protected Matrix4f matrixCartesianToFractional;
   protected Matrix4f matrixFractionalToCartesian;
-    
+
   protected final static float toRadians = (float) Math.PI * 2 / 360;
   protected float a, b, c, alpha, beta, gamma;
   protected double cosAlpha, sinAlpha;
@@ -56,8 +55,7 @@ public class SimpleUnitCell {
   protected double a_;
   protected double b_, c_;
   protected int dimension;
-  protected boolean isPrimitive;
-    
+
   public static boolean isValid(float[] parameters) {
     return (parameters != null && (parameters[0] > 0 || parameters.length > 14
         && !Float.isNaN(parameters[14])));
@@ -66,7 +64,7 @@ public class SimpleUnitCell {
   public SimpleUnitCell(float[] parameters) {
     if (!isValid(parameters))
       return;
-    this.notionalUnitcell = parameters;
+    notionalUnitcell = parameters;
     a = parameters[0];
     b = parameters[1];
     c = parameters[2];
@@ -93,12 +91,6 @@ public class SimpleUnitCell {
       gamma = (b < 0 ? 90 : va.angle(vb) / toRadians);
       if (c < 0) {
         float[] n = parameters.clone();
-        n[0] = a;
-        n[1] = b;
-        n[2] = c;
-        n[3] = alpha;
-        n[4] = beta;
-        n[5] = gamma;
         if (b < 0) {
           vb.set(0, 0, 1);
           vb.cross(vb, va);
@@ -158,7 +150,6 @@ public class SimpleUnitCell {
     } else if (parameters.length > 14 && !Float.isNaN(parameters[14])) {
       // parameters with a 3 vectors
       // [a b c alpha beta gamma ax ay az bx by bz cx cy cz...]
-      isPrimitive = true;
       Matrix4f m = matrixFractionalToCartesian = new Matrix4f();
       m.setColumn(0, parameters[6], parameters[7], parameters[8], 0);
       m.setColumn(1, parameters[9], parameters[10], parameters[11], 0);
@@ -187,32 +178,42 @@ public class SimpleUnitCell {
 
   protected Matrix4f matrixCtoFAbsolute;
   protected Matrix4f matrixFtoCAbsolute;
-  
+
   public final void toCartesian(Point3f pt, boolean isAbsolute) {
     if (matrixFractionalToCartesian != null)
-      (isAbsolute ? matrixFtoCAbsolute : matrixFractionalToCartesian).transform(pt);
+      (isAbsolute ? matrixFtoCAbsolute : matrixFractionalToCartesian)
+          .transform(pt);
   }
-  
+
   public final void toFractional(Point3f pt, boolean isAbsolute) {
     if (matrixCartesianToFractional == null)
       return;
     (isAbsolute ? matrixCtoFAbsolute : matrixCartesianToFractional)
         .transform(pt);
   }
-  
-  
-  public final float[] getNotionalUnitCell() {
-    return notionalUnitcell;
-  }
-  
+
   public boolean isPolymer() {
     return (dimension == 1);
   }
-  
+
   public boolean isSlab() {
     return (dimension == 2);
   }
-  
+
+  public final float[] getNotionalUnitCell() {
+    return notionalUnitcell;
+  }
+
+  public final float[] getUnitCellAsArray() {
+    Matrix4f m = matrixFractionalToCartesian;
+    return new float[] { dimension, (float) volume,
+        a, b, c, alpha, beta, gamma, 
+        m.m00, m.m10, m.m20, // Va
+        m.m01, m.m11, m.m21, // Vb
+        m.m02, m.m12, m.m22, // Vc
+        };
+  }
+
   public final float getInfo(int infoType) {
     switch (infoType) {
     case JmolConstants.INFO_A:
@@ -232,5 +233,5 @@ public class SimpleUnitCell {
     }
     return Float.NaN;
   }
-  
+
 }

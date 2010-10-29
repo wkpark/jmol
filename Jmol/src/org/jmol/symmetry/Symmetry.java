@@ -239,6 +239,10 @@ public class Symmetry implements SymmetryInterface {
     return unitCell == null ? null : unitCell.getNotionalUnitCell();
   }
 
+  public float[] getUnitCellAsArray() {
+    return unitCell == null ? null : unitCell.getUnitCellAsArray();
+  }
+
   public void toUnitCell(Point3f pt, Point3f offset) {
     if (/*(symmetryInfo == null || symmetryInfo.isMultiCell)
         && why that ? should be OK for PDB files as well */ unitCell != null)
@@ -300,6 +304,7 @@ public class Symmetry implements SymmetryInterface {
     if (notionalUnitcell == null)
       return;
     setUnitCell(notionalUnitcell);
+    modelAuxiliaryInfo.put("infoUnitCell", getUnitCellAsArray());
     setUnitCellOffset((Point3f) modelAuxiliaryInfo.get("unitCellOffset"));
     if (modelAuxiliaryInfo.containsKey("jmolData"))
       setUnitCellAllFractionalRelative(true);

@@ -206,11 +206,12 @@ public class SimpleUnitCell {
 
   public final float[] getUnitCellAsArray() {
     Matrix4f m = matrixFractionalToCartesian;
-    return new float[] { dimension, (float) volume,
+    return new float[] { 
         a, b, c, alpha, beta, gamma, 
         m.m00, m.m10, m.m20, // Va
         m.m01, m.m11, m.m21, // Vb
         m.m02, m.m12, m.m22, // Vc
+        dimension, (float) volume,
         };
   }
 

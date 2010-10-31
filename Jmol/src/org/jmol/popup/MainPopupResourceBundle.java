@@ -173,7 +173,7 @@ class MainPopupResourceBundle extends PopupResource {
 
       {   "measureMenu",
           "showMeasurementsCB - "
-              + "measureOff measureDistance measureAngle measureTorsion - "
+              + "measureOff measureDistance measureAngle measureTorsion PDBmeasureSequence - "
               + "measureDelete measureList - distanceNanometers distanceAngstroms distancePicometers" },
 
       {   "pickingMenu",
@@ -430,6 +430,8 @@ class MainPopupResourceBundle extends PopupResource {
       { "measureAngle", "set pickingstyle MEASURE; set picking MEASURE ANGLE" },
       { "measureTorsion",
           "set pickingstyle MEASURE; set picking MEASURE TORSION" },
+      { "PDBmeasureSequence",
+          "set pickingstyle MEASURE; set picking MEASURE SEQUENCE" },
       { "measureDelete", "measure delete" },
       { "measureList", "console on;show measurements" },
       { "distanceNanometers", "select *; set measure nanometers" },
@@ -818,6 +820,7 @@ class MainPopupResourceBundle extends PopupResource {
         "measureDistance", GT._("Click for distance measurement"),
         "measureAngle", GT._("Click for angle measurement"),
         "measureTorsion", GT._("Click for torsion (dihedral) measurement"),
+        "PDBmeasureSequence", GT._("Click two atoms to display a sequence in the console"),
         "measureDelete", GT._("Delete measurements"),
         "measureList", GT._("List measurements"),
         "distanceNanometers", GT._("Distance units nanometers"),

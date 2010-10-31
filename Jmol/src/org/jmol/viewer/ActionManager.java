@@ -1780,6 +1780,9 @@ public class ActionManager {
             + measurementQueued.getMeasurementScript(" ", true));
       }
       return;
+    }
+    int mode = (measurementPending != null && atomPickingMode != PICKING_IDENTIFY ? PICKING_IDENTIFY : atomPickingMode);
+    switch (mode) {
     case PICKING_CENTER:
       if (!isBound(action, ACTION_pickAtom))
         return;
@@ -1799,7 +1802,7 @@ public class ActionManager {
     // atoms only here:
     BitSet bs;
     String spec = "atomindex=" + atomIndex;
-    switch (atomPickingMode) {
+    switch (mode) {
     case PICKING_IDENTIFY:
       if (isBound(action, ACTION_pickAtom))
         viewer.setStatusAtomPicked(atomIndex, null);

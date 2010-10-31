@@ -125,24 +125,24 @@ class StatusListener implements JmolStatusListener {
       break;
     case JmolConstants.CALLBACK_MEASURE:
       String mystatus = (String) data[3];
-      if (mystatus.indexOf("Pending") < 0 && display.haveDisplay) {
-        display.measurementTable.updateTables();
-        return;
+      if (mystatus.indexOf("Sequence") < 0) {
+        if (mystatus.indexOf("Pending") < 0 && display.haveDisplay)
+          display.measurementTable.updateTables();
+        if (mystatus.indexOf("Picked") >= 0) // picking mode
+          notifyAtomPicked(strInfo);
+        else if (mystatus.indexOf("Completed") < 0)
+          return;
       }
-      if (mystatus.indexOf("Picked") >= 0) // picking mode
-        notifyAtomPicked(strInfo);
-      else if (mystatus.indexOf("Completed") < 0)
-        return;
       break;
     case JmolConstants.CALLBACK_MESSAGE:
       break;
-//    case JmolConstants.CALLBACK_CLICK:
-      // x, y, action, int[] {action}
-      // the fourth parameter allows an application to change the action
-//      if (display.haveDisplay)
-//        display.status
-//          .setStatus(1, "(" + data[1] + "," + data[2] + ")");
-//      break;
+    //    case JmolConstants.CALLBACK_CLICK:
+    // x, y, action, int[] {action}
+    // the fourth parameter allows an application to change the action
+    //      if (display.haveDisplay)
+    //        display.status
+    //          .setStatus(1, "(" + data[1] + "," + data[2] + ")");
+    //      break;
     case JmolConstants.CALLBACK_PICK:
       notifyAtomPicked(strInfo);
       break;

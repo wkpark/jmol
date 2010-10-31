@@ -960,7 +960,7 @@ public class Jmol implements WrappedApplet {
         if (!doCallback)
           doCallback = ((callback = callbacks[type = JmolConstants.CALLBACK_MESSAGE]) != null);
         String status = (String) data[3];
-        if (status.indexOf("Picked") >= 0) {// picking mode
+        if (status.indexOf("Picked") >= 0 || status.indexOf("Sequence") >= 0) {// picking mode
           showStatus(strInfo); // set picking measure distance
           toConsole = true;
         } else if (status.indexOf("Completed") >= 0) {

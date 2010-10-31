@@ -334,7 +334,7 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
       break;
     case JmolConstants.CALLBACK_MEASURE:
       String mystatus = (String) data[3];
-      if (mystatus.indexOf("Picked") >= 0) // picking mode
+      if (mystatus.indexOf("Picked") >= 0 || mystatus.indexOf("Sequence") >= 0) // picking mode
         sendConsoleMessage(strInfo);
       else if (mystatus.indexOf("Completed") >= 0)
         sendConsoleEcho(strInfo.substring(strInfo.lastIndexOf(",") + 2, strInfo

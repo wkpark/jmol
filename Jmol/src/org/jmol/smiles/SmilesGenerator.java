@@ -111,7 +111,8 @@ public class SmilesGenerator {
         String groupType = a.getGroupType();
         boolean unknown = (ch.equals("?"));
         if (end != null) {
-          sb.append(end);
+          if (sb.length() > 0)
+            sb.append(end);
           end = null;
           len = 0;
           if (groupType.length() > 0) {

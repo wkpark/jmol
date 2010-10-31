@@ -1769,11 +1769,12 @@ public class ActionManager {
         resetMeasurement();
       if (queueAtom(atomIndex, ptClicked) < n)
         return;
-      if (atomPickingMode == PICKING_MEASURE_SEQUENCE)
+      if (atomPickingMode == PICKING_MEASURE_SEQUENCE) {
         getSequence();
-      else
-        viewer.setStatusMeasuring("measurePicked", n, measurementQueued
-            .getStringDetail(), measurementQueued.getValue());
+        return;
+      }
+      viewer.setStatusMeasuring("measurePicked", n, measurementQueued
+          .getStringDetail(), measurementQueued.getValue());
       if (atomPickingMode == PICKING_MEASURE
           || pickingStyleMeasure == PICKINGSTYLE_MEASURE_ON) {
         viewer.script("measure "
@@ -1781,7 +1782,9 @@ public class ActionManager {
       }
       return;
     }
-    int mode = (measurementPending != null && atomPickingMode != PICKING_IDENTIFY ? PICKING_IDENTIFY : atomPickingMode);
+    int mode = (measurementPending != null
+        && atomPickingMode != PICKING_IDENTIFY ? PICKING_IDENTIFY
+        : atomPickingMode);
     switch (mode) {
     case PICKING_CENTER:
       if (!isBound(action, ACTION_pickAtom))

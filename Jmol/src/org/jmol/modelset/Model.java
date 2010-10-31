@@ -163,6 +163,7 @@ public final class Model {
   Map<String, Object> auxiliaryInfo;
   Properties properties;
   float defaultRotationRadius;
+  String defaultStructure;
 
   Orientation orientation;
 

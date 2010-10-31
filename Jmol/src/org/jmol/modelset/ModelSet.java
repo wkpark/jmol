@@ -409,6 +409,15 @@ abstract public class ModelSet extends ModelCollection {
     return bsModels;
   }
 
+  public String getDefaultStructure(BitSet bsAtoms, BitSet bsAllAtoms) {
+    BitSet bsModels = modelsOf(bsAtoms, bsAllAtoms);
+    StringBuffer ret = new StringBuffer();
+    for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1)) 
+      if (models[i].isPDB && models[i].defaultStructure != null)
+        ret.append(models[i].defaultStructure);
+    return ret.toString();
+  }
+
 
   
   ///// super-overloaded methods ///////
@@ -599,7 +608,7 @@ abstract public class ModelSet extends ModelCollection {
     // unnecessary. Removed in 11.5.35 -- oops!
 
     if (withProteinStructure)
-      commands.append(getProteinStructureState(null, isAll, false, false));
+      commands.append(getProteinStructureState(null, isAll, false, 0));
 
     viewer.getShapeState(commands, isAll);
 

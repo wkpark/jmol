@@ -9105,6 +9105,13 @@ public class ScriptEvaluator {
     case Token.function:
       viewer.clearFunctions();
       return;
+    case Token.reset:
+      if (!isSyntaxCheck) {
+        BitSet bsAllAtoms = new BitSet();
+        runScript(viewer.getDefaultStructure(null, bsAllAtoms));
+        viewer.resetBioshapes(bsAllAtoms);
+      }
+      return;
     case Token.vanderwaals:
       viewer.setData("element_vdw", new Object[] { null, "" }, 0, 0, 0, 0, 0);
       return;
@@ -9124,12 +9131,12 @@ public class ScriptEvaluator {
   private void restrict() throws ScriptException {
     boolean isBond = (tokAt(1) == Token.bonds);
     select(isBond ? 2 : 1);
-    if (isSyntaxCheck)
-      return;
     restrictSelected(isBond, true);
   }
 
   private void restrictSelected(boolean isBond, boolean doInvert) {
+    if (isSyntaxCheck)
+      return;
     BitSet bsSelected = BitSetUtil.copy(viewer.getSelectionSet(true));
     if (doInvert) {
       viewer.invertSelection();
@@ -9137,7 +9144,7 @@ public class ScriptEvaluator {
       if (bsSubset != null) {
         bsSelected = BitSetUtil.copy(viewer.getSelectionSet(true));
         bsSelected.and(bsSubset);
-        viewer.setSelectionSet(bsSelected);
+        viewer.select(bsSelected, true);
         BitSetUtil.invertInPlace(bsSelected, viewer.getAtomCount());
         bsSelected.and(bsSubset);
       }
@@ -9162,7 +9169,7 @@ public class ScriptEvaluator {
 
     if (!isBond)
       setBooleanProperty("bondModeOr", bondmode);
-    viewer.setSelectionSet(bsSelected);
+    viewer.select(bsSelected, true);
   }
 
   private void rotate(boolean isSpin, boolean isSelected)
@@ -10961,10 +10968,34 @@ public class ScriptEvaluator {
     if ((iToken = statementLength) >= 2) {
       clearDefinedVariableAtomSets();
       switch (getToken(1).tok) {
-      case Token.straightness:
+      case Token.identifier:
+        checkLength(2);
+        break;
+      case Token.aromatic:
+        checkLength(2);
+        if (!isSyntaxCheck)
+          viewer.assignAromaticBonds();
+        return;
+      case Token.hbond:
+        if (statementLength == 2) {
+          if (!isSyntaxCheck) {
+            n = viewer.autoHbond(null, null);
+            break;
+          }
+          return;
+        }
+        BitSet bs1 = null;
+        // calculate hbonds STRUCTURE -- only the DSSP structurally-defining H bonds
+        asDSSP = (tokAt(++iToken) == Token.structure);
+        if (asDSSP)
+          bs1 = viewer.getSelectionSet(false);
+        else
+          bs1 = atomExpression(iToken);
+        if (!asDSSP && !(asDSSP = (tokAt(++iToken) == Token.structure)))
+          bs2 = atomExpression(iToken);
         if (!isSyntaxCheck) {
-          viewer.calculateStraightness();
-          viewer.addStateScript("set quaternionFrame '" + viewer.getQuaternionFrame() + "'; calculate straightness", false, true);
+          n = viewer.autoHbond(bs1, bs2);
+          break;
         }
         return;
       case Token.hydrogen:
@@ -10975,6 +11006,44 @@ public class ScriptEvaluator {
         return;
       case Token.pointgroup:
         pointGroup();
+        return;
+      case Token.straightness:
+        checkLength(2);
+        if (!isSyntaxCheck) {
+          viewer.calculateStraightness();
+          viewer.addStateScript("set quaternionFrame '"
+              + viewer.getQuaternionFrame() + "'; calculate straightness",
+              false, true);
+        }
+        return;
+      case Token.structure:
+        bs = (statementLength < 4 ? null : atomExpression(2));
+        switch (tokAt(++iToken)) {
+        case Token.ramachandran:
+          break;
+        case Token.dssp:
+          asDSSP = true;
+          break;
+        case Token.nada:
+          asDSSP = viewer.getDefaultStructureDSSP();
+          break;
+        default:
+          error(ERROR_invalidArgument);
+        }
+        if (!isSyntaxCheck)
+          showString(viewer.calculateStructures(bs, asDSSP, true));
+        return;
+      case Token.struts:
+        bs = (iToken + 1 < statementLength ? atomExpression(++iToken) : null);
+        bs2 = (iToken + 1 < statementLength ? atomExpression(++iToken) : null);
+        checkLength(++iToken);
+        if (!isSyntaxCheck) {
+          n = viewer.calculateStruts(bs, bs2);
+          if (n > 0)
+            colorShape(JmolConstants.SHAPE_STRUTS, JmolEdge.BOND_STRUT,
+                0x0FFFFFF, "translucent", 0.5f, null);
+          showString(GT._("{0} struts added", n));
+        }
         return;
       case Token.surface:
         isSurface = true;
@@ -11005,77 +11074,17 @@ public class ScriptEvaluator {
         bs = (iToken + 1 < statementLength ? atomExpression(++iToken) : viewer
             .getSelectionSet(false));
         checkLength(++iToken);
-        if (isSyntaxCheck)
-          return;
-        viewer.calculateSurface(bs, (isFrom ? Float.MAX_VALUE : -1));
-        return;
-      case Token.struts:
-        bs = (iToken + 1 < statementLength ? atomExpression(++iToken) : null);
-        bs2 = (iToken + 1 < statementLength ? atomExpression(++iToken) : null);
-        checkLength(++iToken);
-        if (isSyntaxCheck)
-          return;
-        n = viewer.calculateStruts(bs, bs2);
-        if (n > 0)
-          colorShape(JmolConstants.SHAPE_STRUTS, JmolEdge.BOND_STRUT,
-              0x0FFFFFF, "translucent", 0.5f, null);
-        showString(GT._("{0} struts added", n));
+        if (!isSyntaxCheck)
+          viewer.calculateSurface(bs, (isFrom ? Float.MAX_VALUE : -1));
         return;
       case Token.volume:
+        checkLength(2);
         if (!isSyntaxCheck) {
           float val = viewer.getVolume(null, null);
           showString("" + Math.round(val * 10) / 10f + " A^3; "
               + Math.round(val * 6.02) / 10f + " cm^3/mole (VDW "
               + viewer.getDefaultVdwTypeNameOrData(Integer.MIN_VALUE) + ")");
-          return;
         }
-        break;
-      case Token.aromatic:
-        checkLength(2);
-        if (!isSyntaxCheck)
-          viewer.assignAromaticBonds();
-        return;
-      case Token.identifier:
-        checkLength(2);
-        break;
-      case Token.hbond:
-        if (statementLength == 2) {
-          if (!isSyntaxCheck) {
-            n = viewer.autoHbond(null, null);
-            break;
-          }
-          return;
-        }
-        BitSet bs1 = null;
-        // calculate hbonds STRUCTURE -- only the DSSP structurally-defining H bonds
-        asDSSP = (tokAt(++iToken) == Token.structure);
-        if (asDSSP)
-          bs1 = viewer.getSelectionSet(false);
-        else
-          bs1 = atomExpression(iToken);
-        if (!asDSSP && !(asDSSP = (tokAt(++iToken) == Token.structure)))
-          bs2 = atomExpression(iToken);
-        if (!isSyntaxCheck) {
-          n = viewer.autoHbond(bs1, bs2);
-          break;
-        }
-        return;
-      case Token.structure:
-        bs = (statementLength < 4 ? null : atomExpression(2));
-        switch (tokAt(++iToken)) {
-        case Token.ramachandran:
-          break;
-        case Token.dssp:
-          asDSSP = true;
-          break;
-        case Token.nada:
-          asDSSP = viewer.getDefaultStructureDSSP();
-          break;
-        default:
-          error(ERROR_invalidArgument);
-        }
-        if (!isSyntaxCheck)
-          showString(viewer.calculateStructures(bs, asDSSP, true));
         return;
       }
       if (n != Integer.MIN_VALUE) {
@@ -11086,7 +11095,7 @@ public class ScriptEvaluator {
     error(
         ERROR_what,
         "CALCULATE",
-        "aromatic? hbonds? polymers? straightness? structure? strut? surfaceDistance FROM? surfaceDistance WITHIN? volume?");
+        "aromatic? hbonds? straightness? structure? strut? surfaceDistance FROM? surfaceDistance WITHIN? volume?");
   }
 
   private void pointGroup() throws ScriptException {

@@ -636,26 +636,39 @@ abstract public class ModelCollection extends BondCollection {
                                                 boolean includeAlpha) {
     freezeModels();
     String ret = "";
-    for (int i = 0; i < modelCount; i++)
-      if (models[i].isPDB && !alreadyDefined.get(i))
+    BitSet bsModels = BitSetUtil.copyInvert(alreadyDefined, modelCount);
+   //working here -- testing reset
+   //TODO bsModels first for not setStructure, after that for setstructure....
+    if (setStructure)
+      setDefaultStructure(bsModels);
+    for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1)) {
         ret += models[i].calculateStructures(asDSSP, doReport,
             dsspIgnoreHydrogen, setStructure, includeAlpha);
-    if (setStructure)
+    }
+    if (setStructure) {
       setStructureIds();
+    }
     return ret;
+  }
+
+  
+  public void setDefaultStructure(BitSet bsModels) {
+    for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1)) 
+      if (models[i].isPDB && models[i].defaultStructure == null)
+        models[i].defaultStructure = getProteinStructureState(models[i].bsAtoms, false, false, 0);
   }
 
   public void setProteinType(BitSet bs, byte iType) {
     int monomerIndexCurrent = -1;
     int iLast = -1;
-    BitSet bsModels = new BitSet();
+    BitSet bsModels = getModelBitSet(bs, false);
+    setDefaultStructure(bsModels);
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       if (iLast != i - 1)
         monomerIndexCurrent = -1;
       monomerIndexCurrent = atoms[i].group.setProteinStructureType(iType,
           monomerIndexCurrent);
       int modelIndex = atoms[i].modelIndex;
-      bsModels.set(modelIndex);
       proteinStructureTainted = models[modelIndex].structureTainted = true;
       iLast = i = atoms[i].group.lastAtomIndex;
     }
@@ -1257,7 +1270,7 @@ abstract public class ModelCollection extends BondCollection {
     bsSelected.and(bsAtoms);
     if (isPDB)
       sb.append("\n\n"
-          + getProteinStructureState(bsWritten, false, ctype == 'R', true));
+          + getProteinStructureState(bsWritten, false, ctype == 'R', 1));
     return sb.toString();
   }
 
@@ -2746,7 +2759,10 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public String getProteinStructureState(BitSet bsAtoms, boolean taintedOnly,
-                                         boolean needPhiPsi, boolean pdbFormat) {
+                                         boolean needPhiPsi, int mode) {
+    boolean showMode = (mode == 3);
+    boolean pdbFileMode = (mode == 1);
+    boolean scriptMode = (mode == 0);
     BitSet bs = null;
     StringBuffer cmd = new StringBuffer();
     StringBuffer sbTurn = new StringBuffer();
@@ -2790,7 +2806,7 @@ abstract public class ModelCollection extends BondCollection {
                 || itype == JmolConstants.PROTEIN_STRUCTURE_TURN
                 || itype == JmolConstants.PROTEIN_STRUCTURE_SHEET) {
               n++;
-              if (bsAtoms == null) {
+              if (scriptMode) {
                 int iModel = atoms[iLastAtom].modelIndex;
                 String comment = "    \t# model="
                     + getModelNumberDotted(iModel);
@@ -2818,7 +2834,7 @@ abstract public class ModelCollection extends BondCollection {
                 switch (itype) {
                 case JmolConstants.PROTEIN_STRUCTURE_HELIX:
                   nx = ++nHelix;
-                  if (sid == null || pdbFormat)
+                  if (sid == null || pdbFileMode)
                     sid = TextFormat.formatString("%3N %3N", "N", nx);
                   str = "HELIX  %ID %3GROUPA %1CA %4RESA  %3GROUPB %1CB %4RESB";
                   sb = sbHelix;
@@ -2840,7 +2856,7 @@ abstract public class ModelCollection extends BondCollection {
                   break;
                 case JmolConstants.PROTEIN_STRUCTURE_SHEET:
                   nx = ++nSheet;
-                  if (sid == null || pdbFormat) {
+                  if (sid == null || pdbFileMode) {
                     sid = TextFormat.formatString("%3N %3A 0", "N", nx);
                     sid = TextFormat.formatString(sid, "A", "S" + nx);
                   }
@@ -2850,7 +2866,7 @@ abstract public class ModelCollection extends BondCollection {
                 case JmolConstants.PROTEIN_STRUCTURE_TURN:
                 default:
                   nx = ++nTurn;
-                  if (sid == null || pdbFormat)
+                  if (sid == null || pdbFileMode)
                     sid = TextFormat.formatString("%3N %3N", "N", nx);
                   str = "TURN   %ID %3GROUPA %1CA%4RESA  %3GROUPB %1CB%4RESB";
                   sb = sbTurn;
@@ -2864,7 +2880,7 @@ abstract public class ModelCollection extends BondCollection {
                 str = TextFormat.formatString(str, "CB", chain2);
                 str = TextFormat.formatString(str, "RESB", res2);
                 sb.append(str);
-                if (!pdbFormat)
+                if (showMode)
                   sb.append(" strucno= ").append(lastId);
                 sb.append("\n");
 
@@ -2905,7 +2921,7 @@ abstract public class ModelCollection extends BondCollection {
       }
     if (n > 0)
       cmd.append("\n");
-    return (bsAtoms == null ? cmd.toString() : sbHelix.append(sbSheet).append(
+    return (scriptMode ? cmd.toString() : sbHelix.append(sbSheet).append(
         sbTurn).append(cmd).toString());
   }
   

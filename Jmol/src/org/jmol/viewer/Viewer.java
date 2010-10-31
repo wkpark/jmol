@@ -1519,7 +1519,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // ///////////////////////////////////////////////////////////////
 
   public void select(BitSet bs, boolean isQuiet) {
-    // Eval
+    // Eval, ActionManager
     selectionManager.select(bs, isQuiet);
     shapeManager.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MAX_VALUE,
         null, null);
@@ -1527,8 +1527,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   @Override
   public void setSelectionSet(BitSet set) {
-    // ActionManager atom picking 
-    select(set, false);
+    // JmolViewer API only -- not used in Jmol 
+    select(set, true);
   }
 
   public void selectBonds(BitSet bs) {
@@ -2463,6 +2463,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.defaultStructureDSSP;
   }
   
+  public String getDefaultStructure(BitSet bsAtoms, BitSet bsAllAtoms) {
+    if (bsAtoms == null)
+      bsAtoms = getSelectionSet(false);
+    return modelSet.getDefaultStructure(bsAtoms, bsAllAtoms);
+  }
 
   public String calculateStructures(BitSet bsAtoms, boolean asDSSP, boolean setStructure) {
     // Eval
@@ -3270,7 +3275,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public String getProteinStructureState() {
     return modelSet.getProteinStructureState(
-        getSelectionSet(false), false, false, false);
+        getSelectionSet(false), false, false, 3);
   }
 
   public String getCoordinateState(BitSet bsSelected) {

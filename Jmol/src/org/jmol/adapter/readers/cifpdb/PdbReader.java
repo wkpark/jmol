@@ -555,9 +555,11 @@ REMARK 290 REMARK: NULL
     atom.atomSerial = serial;
     if (serial > maxSerial)
       maxSerial = serial;
-    if (atom.group3 == null && currentGroup3 != null) {
-      currentGroup3 = null;
-      htElementsInCurrentGroup = null;
+    if (atom.group3 == null) {
+      if (currentGroup3 != null) {
+        currentGroup3 = null;
+        htElementsInCurrentGroup = null;
+      }
     } else if (!atom.group3.equals(currentGroup3)) {
       currentGroup3 = atom.group3;
       htElementsInCurrentGroup = htFormul.get(atom.group3);

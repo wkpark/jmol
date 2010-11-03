@@ -166,7 +166,7 @@ abstract class ScriptCompilationTokenParser {
                 // checking here for known token mascarading as identifier due to VAR definition
                 // we reset it to its original mapping if that is the case
                 // 1) it's a known token
-                // 2) ether: 
+                // 2) either: 
                 //    a) this isn't a math expression command, and not preceeded by @, or
                 //    b) it is followed by (
 
@@ -316,7 +316,7 @@ abstract class ScriptCompilationTokenParser {
     if (token == null)
       return false;
     if (logMessages)
-        Logger.debug("addTokenToPostfix" + token);
+        Logger.info("addTokenToPostfix" + token);
     ltokenPostfix.add(token);
     lastToken = token;
     return true;

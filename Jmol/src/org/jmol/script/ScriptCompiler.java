@@ -162,6 +162,11 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   }
 
   private boolean isContextVariable(String ident) {
+    for (int i = vPush.size(); --i >= 0;) {
+      ContextToken ct = (ContextToken) vPush.get(i);
+      if (ct.contextVariables != null && ct.contextVariables.containsKey(ident))
+        return true;
+    }
     return (thisFunction != null ? thisFunction.isVariable(ident)
       : contextVariables != null && contextVariables.containsKey(ident));
   }
@@ -366,7 +371,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           return false;
         }
       }
-      if (lookingAtLookupToken(ichToken)) {
+      if (lookingAtLookupToken(ichToken)) {        
         String ident = getPrefixToken();
         switch (parseKnownToken(ident)) {
         case CONTINUE:
@@ -676,7 +681,6 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       }
       setCommand(null);
       comment = null;
-      tokCommand = Token.nada;
       iHaveQuotedString = isNewSet = isSetBrace = needRightParen = false;
       ptNewSetModifier = 1;
       ltoken.clear();
@@ -809,8 +813,10 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   private String getPrefixToken() {
     String ident = script.substring(ichToken, ichToken + cchToken);
     String identLC = ident.toLowerCase();
-    if (nTokens == 1 && (tokCommand == Token.function || tokCommand == Token.parallel || tokCommand == Token.var)
-          || (isUserFunction(identLC) || nTokens != 0 && isContextVariable(identLC))
+    if (nTokens == 1 && (tokCommand == Token.function 
+        || tokCommand == Token.parallel || tokCommand == Token.var)
+        || (isUserFunction(identLC) 
+        || nTokens != 0 && isContextVariable(identLC))
           && (thisFunction == null || !thisFunction.name.equals(identLC))) {
       ident = identLC;
       theToken = null;
@@ -1285,7 +1291,6 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     // checking tokens based on the current command
     // all command starts are handled by case Token.nada
 
-    
     nTokens = ltoken.size();
     switch (tokCommand) {
     case Token.nada:
@@ -1656,6 +1661,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       if (tokenCommand.tok != Token.casecmd && tokenCommand.tok != Token.defaultcmd) {
         iBrace++;
         vBraces.add(tokenCommand);
+        lastFlowCommand = null;
       }
       parenCount = braceCount = 0;
     }

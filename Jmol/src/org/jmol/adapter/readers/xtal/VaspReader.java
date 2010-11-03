@@ -27,10 +27,16 @@
 
 package org.jmol.adapter.readers.xtal;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import javax.vecmath.Vector3f;
-import org.jmol.adapter.smarter.*;
-import org.jmol.util.TextFormat;
+
+import org.jmol.adapter.smarter.Atom;
+import org.jmol.adapter.smarter.AtomSetCollectionReader;
 
 /**
  * http://cms.mpi.univie.ac.at/vasp/
@@ -44,10 +50,9 @@ import org.jmol.util.TextFormat;
 
 public class VaspReader extends AtomSetCollectionReader {
 
-  private String[] elementName; //this array is to store the name of the element 
   private String[] atomMapped;
-  private int[] numofElement; // this array contains how many atoms per each elementName
-  private int numbTotelement = 0;
+  private String[] elementName; //this array is to store the name of the element 
+  private int atomCount = 0;
 
   @Override
   protected boolean checkLine() throws Exception {
@@ -167,34 +172,17 @@ public class VaspReader extends AtomSetCollectionReader {
   
   
   private void readNumberofatom() throws Exception {
-    numofElement = new int[100];
+    int[] numofElement = new int[100];
     readLine();
     String[] tokens = getTokens(line.substring(line.indexOf("=") + 1));
+    atomCount = 0;
     for (int i = 0; i < tokens.length; i++)
-      numofElement[i] = parseInt(tokens[i].trim());
-
-    numbTotelement = 0;
-    for (int i = 0; i < numofElement.length; i++)
-      numbTotelement++;
-
-    mapAtom();
-  }
-  
-  
+      atomCount += (numofElement[i] = parseInt(tokens[i].trim()));
   //this is to reconstruct the atomMappedarray containing the atom
-  private void mapAtom() {
-    int counter = 0;
-    int sndcounter = 0;
-    atomMapped = new String[numbTotelement];
-    for (int i = 0; i < numofElement.length; i++) {
-      if (counter != 0)
-        sndcounter = sndcounter - 1;
-      for (int j = 0; j < numofElement[i]; j++) {
-        atomMapped[j + sndcounter] = elementName[i];
-        counter++;
-      }
-      sndcounter = counter;
-    }
+    atomMapped = new String[atomCount];
+    for (int pt = 0, i = 0; i < numofElement.length; i++)
+      for (int j = 0; j < numofElement[i]; j++)
+        atomMapped[pt++] = elementName[i];
   }
       /*direct lattice vectors                 reciprocal lattice vectors
     1.850000000  1.850000000  0.000000000     0.270270270  0.270270270 -0.270270270
@@ -252,15 +240,14 @@ public class VaspReader extends AtomSetCollectionReader {
   ///This is the initial geometry not the geometry during the geometry dump
   private void readAtomicposfirst() throws Exception{
     int counter = 0;
-      while (readLine() != null && line.length() > 0){
+      while (readLine() != null && line.length() > 10){
         Atom atom = atomSetCollection.addNewAtom();
         String[] tokens = getTokens();
-        atom.atomName = atomMapped[counter];
+        atom.atomName = atomMapped[counter++];
         float x = parseFloat(tokens[0]);
         float y = parseFloat(tokens[1]);
         float z = parseFloat(tokens[2]);
         setAtomCoord(atom, x, y, z);
-        counter++;
       }
   }
   
@@ -305,13 +292,12 @@ public class VaspReader extends AtomSetCollectionReader {
 
   private void readEnergy() throws Exception {
 
-    discardLines(1);
-    //if(line.startsWith("  free  energy")){
-    String[] tokens = getTokens();
+    readLine();
+    String[] tokens = getTokens(readLine());
     energy = Double.valueOf(Double.parseDouble(tokens[4]));
-    discardLines(1);
-    entropy = Double.valueOf(Double.parseDouble(tokens[4]));
-    //}
+    readLine();
+    tokens = getTokens(readLine());
+    entropy = Double.valueOf(Double.parseDouble(tokens[3]));
     setenergyValue();
   }
   
@@ -368,32 +354,28 @@ public class VaspReader extends AtomSetCollectionReader {
   
   
   */
-  private float[] normalModes;
-
   private void readFrequency() throws Exception {
+    BitSet bs = new BitSet(noModes);
+    int pt = atomSetCollection.getCurrentAtomSetIndex();
+    int iAtom0 = atomSetCollection.getAtomCount();
+    for (int i = 0; i < noModes; ++i) {
+      if (!doGetVibration(++vibrationNumber))
+        continue;
+      bs.set(i);
+      atomSetCollection.cloneLastAtomSet();
+    }
     discardLines(5);
-    while (readLine() != null && line.contains("f  =")) {
-      float frequency = parseFloat(line.substring(line.indexOf("PiTHz") + 1,
-          line.indexOf("c") - 1));
-      discardLines(1);
-      normalModes[noModes] = frequency;
-      for (int i = 0; i < atomMapped.length; i++) {
-        String[] tokens = getTokens();
-        //These are all equals and they are equals to the last geometry
-        //I think they are trivial. Do we have to clone the last Geometry? 
-        float x = parseFloat(tokens[0]);
-        float y = parseFloat(tokens[1]);
-        float z = parseFloat(tokens[2]);
-
-        //These are the ion displacements dx, dy and dz we are looking for
-        float dx = parseFloat(tokens[3]);
-        float dy = parseFloat(tokens[4]);
-        float dz = parseFloat(tokens[5]);
-        discardLines(1);
-
-        //Here I am confused about what I should do.
-
-      }
+    boolean[] ignore = new boolean[1];
+    for (int i = 0; i < noModes; i++) {
+      readLine();
+      atomSetCollection.setCurrentAtomSetIndex(++pt);
+      atomSetCollection.setAtomSetFrequency(null, null, 
+          line.substring(line.indexOf("PiTHz") + 1, line.indexOf("c") - 1).trim(), null);
+      ignore[0] = !bs.get(i);
+      readLine();
+      fillFrequencyData(iAtom0, atomCount,atomCount, ignore, true, 35, 12, null);
+      iAtom0 += atomCount;
+      readLine();
     }
   }
   

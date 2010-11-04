@@ -255,25 +255,48 @@ public class VaspReader extends AtomSetCollectionReader {
   energy  without entropy=      -20.028155  energy(sigma->0) =      -20.028155
   */
   
-  private Double energy, T_S;
+  private Double gibbsEnergy, gibbsEntropy;
   
   private void readEnergy() throws Exception {
     readLine();
     String[] tokens = getTokens(readLine());
-    energy = Double.valueOf(Double.parseDouble(tokens[4]));
+    gibbsEnergy = Double.valueOf(Double.parseDouble(tokens[4]));
     readLine();
     tokens = getTokens(readLine());
-    T_S = Double.valueOf(energy.doubleValue() - Double.parseDouble(tokens[3]));
+    /* please double-check:
+
+  entropy T*S    EENTRO =        -0.01255935
+  eigenvalues    EBANDS =        27.21110509
+  atomic energy  EATOM  =       181.97672381
+  ---------------------------------------------------
+  free energy    TOTEN  =        35.37614365 eV
+
+  energy without entropy =       35.38870300  energy(sigma->0) =       35.38242333
+
+     * G = H - TS, so TS = H - G
+     * 
+     * My reading of this is that TOTEN is G,
+     * "energy without entropy" is H, and so the "T*S" line is
+     * actually -T*S, not T*S.
+     * 
+     * Can that be?
+     * 
+     * Bob
+     * 
+     * 
+     */
+    double enthalpy = Double.parseDouble(tokens[3]); 
+    gibbsEntropy = Double.valueOf(enthalpy - gibbsEnergy.doubleValue());
   }
 
   private void setAtomSetInfo() {
-    atomSetCollection.setAtomSetEnergy("" + energy, energy.floatValue());
-    atomSetCollection.setAtomSetAuxiliaryInfo("Energy", energy);
-    atomSetCollection.setAtomSetAuxiliaryInfo("Entropy", T_S);
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Energy", energy);
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Entropy", T_S);
-    atomSetCollection.setAtomSetName("G = " + energy + " eV, T*S = "
-        + T_S + " eV");
+    atomSetCollection.setAtomSetEnergy("" + gibbsEnergy, gibbsEnergy.floatValue());
+    atomSetCollection.setAtomSetAuxiliaryInfo("Energy", gibbsEnergy);
+    atomSetCollection.setAtomSetAuxiliaryInfo("Entropy", gibbsEntropy);
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Energy", gibbsEnergy);
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Entropy", gibbsEntropy);
+    atomSetCollection.setAtomSetName("G = " + gibbsEnergy + " eV, T*S = "
+        + gibbsEntropy + " eV");
   }
   
   private int freqCount = 0;

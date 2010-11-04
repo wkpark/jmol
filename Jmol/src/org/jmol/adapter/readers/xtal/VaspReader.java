@@ -48,76 +48,44 @@ import org.jmol.adapter.smarter.AtomSetCollectionReader;
 
 public class VaspReader extends AtomSetCollectionReader {
 
-  private String[] atomMapped;
-  private String[] elementName; //this array is to store the name of the element 
+  private String[] atomNames;
+  private String[] elementNames; //this array is to store the name of the element 
   private int atomCount = 0;
+  private boolean inputOnly;
 
   @Override
   protected void initializeReader() {
     setSpaceGroupName("P1");  
     setFractionalCoordinates(true);
-  }
+    inputOnly = checkFilter("INPUT");
+ }
   
   @Override
   protected boolean checkLine() throws Exception {
 
-    //reads the kind of atoms namely H, Ca etc
     if (line.toUpperCase().contains("INCAR")) {
-      System.out.println(line);
-      readIonsname();
-      return true;
-    }
-
-    //this read  how many atoms per species 
-    if (line.contains("LEXCH")) {
-      System.out.println(line);
+      //reads the kind of atoms namely H, Ca etc
+      readElementNames();
+    } else if (line.contains("LEXCH")) {
+      //this read  how many atoms per species 
       discardLinesUntilContains("support grid");
-      readNumberofatom();
-      return true;
-    }
-
-    //This look for lattice vector in the cell
-    if (line.contains("direct lattice vectors")) {
-      System.out.println(line);
-      readCellVector();
-      return true;
-    }
-
-    //read the intial ionic position as in input
-    if (line.contains("position of ions in fractional coordinates")) {
-      System.out.println(line);
+      readAtomCountAndNames();
+    } else if (line.contains("direct lattice vectors")) {
+      readUnitCellVectors();
+    } else if (line.contains("position of ions in fractional coordinates")) {
       readInitialCoordinates();
-      return true;
-    }
-
-    //This Reads the ionic positions
-    if (line.contains("POSITION")) {
-      System.out.println(line);
+      if (inputOnly)
+        continuing = false;
+    } else if (line.contains("POSITION")) {
       readPOSITION();
       return true;
-    }
-
-    //This Reads the energy at the end of each step
-    if (line.startsWith("  FREE ENERGIE")) {
-      System.out.println(line);
+    } else if (line.startsWith("  FREE ENERGIE")) {
       readEnergy();
-      return true;
-    }
-
-    //This Reads how many normal modes  in case of frequency calculations
-    if (line.startsWith("  Degree of freedom:")) {
-      System.out.println(line);
+    } else if (line.startsWith("  Degree of freedom:")) {
       readFreqCount();
-      return true;
-    }
-
-    //This Reads normal modes
-    if (line.startsWith(" Eigenvectors after division by SQRT(mass)")) {
-      System.out.println(line);
+    } else if (line.startsWith(" Eigenvectors after division by SQRT(mass)")) {
       readFrequency();
-      return true;
     }
-
     return true;
   }
   
@@ -133,7 +101,7 @@ public class VaspReader extends AtomSetCollectionReader {
     POTCAR:    PAW H                                 
       VRHFIN =H: ultrasoft test 
    */
-  private void readIonsname() throws Exception {
+  private void readElementNames() throws Exception {
     int counter = 0;
     boolean flagUnderscore = false;
     // Here I set the number of species to 100.
@@ -157,20 +125,14 @@ public class VaspReader extends AtomSetCollectionReader {
       counter++;
       flagUnderscore = false;
     }
-
-    elementName = removeDuplicates(tmpName);
-
-  }
-  
-  
-  //This removes duplicates
-  private String[] removeDuplicates(String[] array) {
-    List<String> list = Arrays.asList(array);
+    
+    // remove duplicates
+    
+    List<String> list = Arrays.asList(tmpName);
     Set<String> set = new HashSet<String>(list);
     set.remove(null);
-    String[] sortedArray = new String[set.size()];
-    set.toArray(sortedArray);
-    return sortedArray;
+    elementNames = new String[set.size()];
+    set.toArray(elementNames);
   }
   
 /*  
@@ -186,7 +148,7 @@ public class VaspReader extends AtomSetCollectionReader {
     ions per type =               6   2*/
   
   
-  private void readNumberofatom() throws Exception {
+  private void readAtomCountAndNames() throws Exception {
     int[] numofElement = new int[100];
     readLine();
     String[] tokens = getTokens(line.substring(line.indexOf("=") + 1));
@@ -194,10 +156,10 @@ public class VaspReader extends AtomSetCollectionReader {
     for (int i = 0; i < tokens.length; i++)
       atomCount += (numofElement[i] = parseInt(tokens[i].trim()));
   //this is to reconstruct the atomMappedarray containing the atom
-    atomMapped = new String[atomCount];
+    atomNames = new String[atomCount];
     for (int pt = 0, i = 0; i < numofElement.length; i++)
       for (int j = 0; j < numofElement[i]; j++)
-        atomMapped[pt++] = elementName[i];
+        atomNames[pt++] = elementNames[i];
   }
       /*direct lattice vectors                 reciprocal lattice vectors
     1.850000000  1.850000000  0.000000000     0.270270270  0.270270270 -0.270270270
@@ -206,10 +168,11 @@ public class VaspReader extends AtomSetCollectionReader {
   
   private float[] unitCellData = new float[18];
   
-  private void readCellVector() throws Exception {
+  private void readUnitCellVectors() throws Exception {
     if (atomSetCollection.getAtomCount() > 0) {
       setSymmetry();
       atomSetCollection.newAtomSet();
+      setAtomSetInfo();
     }
     fillFloatArray(unitCellData);
     setUnitCell();
@@ -246,12 +209,13 @@ public class VaspReader extends AtomSetCollectionReader {
       while (readLine() != null && line.length() > 10){
         Atom atom = atomSetCollection.addNewAtom();
         String[] tokens = getTokens();
-        atom.atomName = atomMapped[counter++];
+        atom.atomName = atomNames[counter++];
         float x = parseFloat(tokens[0]);
         float y = parseFloat(tokens[1]);
         float z = parseFloat(tokens[2]);
         setAtomCoord(atom, x, y, z);
       }
+     atomSetCollection.setAtomSetName("Initial Coordinates");
   }
   
   
@@ -274,7 +238,7 @@ public class VaspReader extends AtomSetCollectionReader {
     while (readLine() != null && line.indexOf("----------") < 0) {
       Atom atom = atomSetCollection.addNewAtom();
       String[] tokens = getTokens();
-      atom.atomName = atomMapped[counter];
+      atom.atomName = atomNames[counter];
       float x = parseFloat(tokens[0]);
       float y = parseFloat(tokens[1]);
       float z = parseFloat(tokens[2]);
@@ -291,21 +255,25 @@ public class VaspReader extends AtomSetCollectionReader {
   energy  without entropy=      -20.028155  energy(sigma->0) =      -20.028155
   */
   
+  private Double energy, T_S;
+  
   private void readEnergy() throws Exception {
-    Double energy, entropy;
     readLine();
     String[] tokens = getTokens(readLine());
     energy = Double.valueOf(Double.parseDouble(tokens[4]));
     readLine();
     tokens = getTokens(readLine());
-    entropy = Double.valueOf(Double.parseDouble(tokens[3]));
+    T_S = Double.valueOf(energy.doubleValue() - Double.parseDouble(tokens[3]));
+  }
+
+  private void setAtomSetInfo() {
     atomSetCollection.setAtomSetEnergy("" + energy, energy.floatValue());
     atomSetCollection.setAtomSetAuxiliaryInfo("Energy", energy);
-    atomSetCollection.setAtomSetAuxiliaryInfo("Entropy", entropy);
+    atomSetCollection.setAtomSetAuxiliaryInfo("Entropy", T_S);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Energy", energy);
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Entropy", entropy);
-    atomSetCollection.setAtomSetName("Energy = " + energy + " eV, Entropy = "
-        + entropy + " eV");
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Entropy", T_S);
+    atomSetCollection.setAtomSetName("G = " + energy + " eV, T*S = "
+        + T_S + " eV");
   }
   
   private int freqCount = 0;
@@ -366,7 +334,7 @@ public class VaspReader extends AtomSetCollectionReader {
       if (!ignore[0]) {
         atomSetCollection.setCurrentAtomSetIndex(++pt);
         atomSetCollection.setAtomSetFrequency(null, null, line.substring(
-            line.indexOf("PiTHz") + 1, line.indexOf("c") - 1).trim(), null);
+            line.indexOf("PiTHz") + 5, line.indexOf("c") - 1).trim(), null);
       }
       readLine();
       fillFrequencyData(iAtom0, atomCount, atomCount, ignore, true, 35, 12,
@@ -375,16 +343,4 @@ public class VaspReader extends AtomSetCollectionReader {
       readLine();
     }
   }
-  
-  
-  //this is spot on what we did for the Crystal Reader 
-/*  private void setFreqValue(int i) {
-    String activity = "Freq: " + data[2];
-    atomSetCollection.setAtomSetFrequency(null, activity, "" + frequencies[i], null);
-    atomSetCollection.setAtomSetName(data[0] + " "
-        + TextFormat.formatDecimal(frequencies[i], 2) + " cm-1 ("
-        + TextFormat.formatDecimal(Float.parseFloat(data[1]), 0) + " km/Mole), "
-        + activity);
-  }*/
-  
 }

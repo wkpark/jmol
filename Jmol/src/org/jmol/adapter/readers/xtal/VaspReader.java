@@ -35,6 +35,7 @@ import java.util.Set;
 
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
+import org.jmol.util.TextFormat;
 
 /**
  * http://cms.mpi.univie.ac.at/vasp/
@@ -52,6 +53,7 @@ public class VaspReader extends AtomSetCollectionReader {
   private String[] elementNames; //this array is to store the name of the element 
   private int atomCount = 0;
   private boolean inputOnly;
+  private boolean mDsimulation = false; //this is for MD simulations
 
   @Override
   protected void initializeReader() {
@@ -70,6 +72,8 @@ public class VaspReader extends AtomSetCollectionReader {
       //this read  how many atoms per species 
       discardLinesUntilContains("support grid");
       readAtomCountAndNames();
+    } else if (line.contains("molecular dynamics for ions")) {
+      mDsimulation = true;
     } else if (line.contains("direct lattice vectors")) {
       readUnitCellVectors();
     } else if (line.contains("position of ions in fractional coordinates")) {
@@ -79,8 +83,11 @@ public class VaspReader extends AtomSetCollectionReader {
     } else if (line.contains("POSITION")) {
       readPOSITION();
       return true;
-    } else if (line.startsWith("  FREE ENERGIE")) {
+    } else if (line.startsWith("  FREE ENERGIE") && !mDsimulation) {
       readEnergy();
+    } else if (line.contains("ENERGIE OF THE ELECTRON-ION-THERMOSTAT")
+        && mDsimulation) {
+      readMdyn();
     } else if (line.startsWith("  Degree of freedom:")) {
       readFreqCount();
     } else if (line.startsWith(" Eigenvectors after division by SQRT(mass)")) {
@@ -172,7 +179,7 @@ public class VaspReader extends AtomSetCollectionReader {
     if (atomSetCollection.getAtomCount() > 0) {
       setSymmetry();
       atomSetCollection.newAtomSet();
-      setAtomSetInfo();
+      //setAtomSetInfo();
     }
     fillFloatArray(unitCellData);
     setUnitCell();
@@ -287,16 +294,54 @@ public class VaspReader extends AtomSetCollectionReader {
      */
     double enthalpy = Double.parseDouble(tokens[3]); 
     gibbsEntropy = Double.valueOf(enthalpy - gibbsEnergy.doubleValue());
+    setAtomSetInfo();
   }
-
+  
+ 
   private void setAtomSetInfo() {
-    atomSetCollection.setAtomSetEnergy("" + gibbsEnergy, gibbsEnergy.floatValue());
+    atomSetCollection.setAtomSetEnergy("" + gibbsEnergy, gibbsEnergy
+        .floatValue());
     atomSetCollection.setAtomSetAuxiliaryInfo("Energy", gibbsEnergy);
     atomSetCollection.setAtomSetAuxiliaryInfo("Entropy", gibbsEntropy);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Energy", gibbsEnergy);
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Entropy", gibbsEntropy);
+    atomSetCollection
+    .setAtomSetCollectionAuxiliaryInfo("Entropy", gibbsEntropy);
     atomSetCollection.setAtomSetName("G = " + gibbsEnergy + " eV, T*S = "
         + gibbsEntropy + " eV");
+  }
+
+  private Double electronEne, kinEne, totEne;
+  private float temp;
+
+  private void readMdyn() throws Exception {
+    String[] tokens = getTokens();
+    discardLines(1);
+    tokens = getTokens(readLine());
+    electronEne = Double.valueOf(Double.parseDouble(tokens[4]));
+    tokens = getTokens(readLine());
+    kinEne = Double.valueOf(Double.parseDouble(tokens[4]));
+    temp = parseFloat(tokens[6]);
+    discardLines(3);
+    tokens = getTokens(readLine());
+    totEne = Double.valueOf(Double.parseDouble(tokens[4]));
+    setAtomSetInfoMd();
+  }
+
+  private void setAtomSetInfoMd() {
+    atomSetCollection.setAtomSetName("Temp. = "
+        + TextFormat.formatDecimal((temp), 2) + " K, Energy = " + totEne
+        + " eV");
+    atomSetCollection.setAtomSetAuxiliaryInfo("Energy", totEne);
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Energy", totEne);
+    atomSetCollection.setAtomSetAuxiliaryInfo("EleEnergy", kinEne);
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("EleEnergy",
+        electronEne);
+    atomSetCollection.setAtomSetAuxiliaryInfo("Kinetic", electronEne);
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Kinetic", kinEne);
+    atomSetCollection.setAtomSetAuxiliaryInfo("Temperature", TextFormat
+        .formatDecimal((temp), 2));
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Temperature",
+        TextFormat.formatDecimal((temp), 2));
   }
   
   private int freqCount = 0;

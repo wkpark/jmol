@@ -62,13 +62,6 @@ public class Mol2Reader extends ForceFieldReader {
   }
 
   @Override
-  protected void finalizeReader() {
-    Atom[] atoms = atomSetCollection.getAtoms();
-    for (int i = 0; i < atomCount; ++i)
-      setAtomCoord(atoms[nAtoms + i]);
-  }
-  
-  @Override
   public boolean checkLine() throws Exception {
     if (line.equals("@<TRIPOS>MOLECULE")) {
       if (doGetModel(++modelNumber)) {
@@ -249,5 +242,8 @@ public class Mol2Reader extends ForceFieldReader {
       return;
     for (int i = 0; i < 6; i++)
       setUnitCellItem(i, parseFloat(tokens[i]));
+    Atom[] atoms = atomSetCollection.getAtoms();
+    for (int i = 0; i < atomCount; ++i)
+      setAtomCoord(atoms[nAtoms + i]);
   }
 }

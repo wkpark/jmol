@@ -1800,7 +1800,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       } else if (type.equals("Jmol")) {
         cmd = "load ";
       } else if (!type.equals("spt")) {
-        evalString("zap; load "
+        evalString("zap; load auto "
             + Escape.escape(fileName)
             + ";if (_loadScript = '' && defaultLoadScript == '' && _filetype == 'Pdb') { select protein or nucleic;cartoons Only;color structure; select * }");
         return;

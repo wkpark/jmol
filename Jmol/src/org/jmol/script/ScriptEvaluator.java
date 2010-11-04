@@ -7978,6 +7978,7 @@ public class ScriptEvaluator {
     boolean isInline = false;
     boolean isSmiles = false;
     boolean isData = false;
+    boolean isAuto = false;
     BitSet bsModels;
     int i = (tokAt(0) == Token.data ? 0 : 1);
     boolean appendNew = viewer.getAppendNew();
@@ -8005,7 +8006,10 @@ public class ScriptEvaluator {
     } else {
       modelName = parameterAsString(i);
       tok = tokAt(i);
-      if (tok == Token.data) {
+      if (tok == Token.auto) {
+        isAuto= true;
+        i++;
+      } else if (tok == Token.data) {
         isData = true;
         loadScript.append(" data");
         String key = stringParameter(++i).toLowerCase();
@@ -8425,7 +8429,7 @@ public class ScriptEvaluator {
     // but there could state problems here because then we don't have the
     // option to save load options with that... Hmm.
     if (errMsg != null && !isCmdLine_c_or_C_Option) {
-      if (statementLength == 2) {
+      if (isAuto) {
         if (errMsg.indexOf("NOTE: file recognized as a script file:") == 0) {
           filename = errMsg.substring(errMsg.indexOf("file:") + 5).trim();
           script(0, filename, false);

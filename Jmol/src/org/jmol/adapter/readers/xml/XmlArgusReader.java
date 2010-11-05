@@ -50,25 +50,33 @@ public class XmlArgusReader extends XmlReader {
    * 
    */
 
-  String[] argusImplementedAttributes = { 
+  private String[] argusImplementedAttributes = { 
       "order", //bond
   };
 
-  String[] keepCharsList = { 
+  private String[] keepCharsList = { 
       "name", "x", "y", "z", "formalchg", "atomkey", "atsym", 
+      "e00", "e01", "e02", "e03", 
+      "e10", "e11", "e12", "e13", 
+      "e20", "e21", "e22", "e23", 
+      "e30", "e31", "e32", "e33"
   };
 
-  String atomName1;
-  String atomName2;
-  int bondOrder;
+  private String atomName1;
+  private String atomName2;
+  private int bondOrder;
 
   // this param is used to keep track of the parent element type
-  int elementContext;
-  final static int UNSET = 0;
-  final static int MOLECULE = 1;
-  final static int ATOM = 2;
-  final static int BOND = 3;
+  private int elementContext;
+  private final static int UNSET = 0;
+  private final static int MOLECULE = 1;
+  private final static int ATOM = 2;
+  private final static int BOND = 3;
+  private final static int TRANSFORMMAT = 4;
 
+  private float[] trans;
+  private int ptTrans;
+  
   XmlArgusReader() {
   }
 
@@ -117,6 +125,11 @@ public class XmlArgusReader extends XmlReader {
       atomName1 = null;
       atomName2 = null;
       bondOrder = parseBondToken(atts.get("order"));
+      return;
+    }    
+    if ("transformmat".equals(localName)) {
+      elementContext = TRANSFORMMAT;
+      trans = new float[16];
       return;
     }
   }
@@ -172,6 +185,15 @@ public class XmlArgusReader extends XmlReader {
       return;
     }
 
+    if ("transformmat".equals(localName)) {
+      elementContext = UNSET;
+      parent.setTransform(
+          trans[0],trans[1],trans[2],
+          trans[4],trans[5],trans[6],
+          trans[8],trans[9],trans[10]);
+      return;
+    }
+
     // contextual assignments 
 
     if (elementContext == MOLECULE) {
@@ -209,6 +231,12 @@ public class XmlArgusReader extends XmlReader {
           atomName2 = chars;
         setKeepChars(false);
       }
+      return;
+    }
+    
+    if (elementContext == TRANSFORMMAT) {
+      trans[ptTrans++] = parseFloat(chars);
+      setKeepChars(false);
       return;
     }
   }

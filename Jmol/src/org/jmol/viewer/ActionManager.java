@@ -1852,12 +1852,14 @@ public class ActionManager {
         }
         viewer.undoAction(true, atomIndex, AtomCollection.TAINT_COORD);
         viewer.invertSelected(null, null, atomIndex, bs);
+        viewer.setStatusAtomPicked(atomIndex, "inverted: " + Escape.escape(bs));
       }
       return;
     case PICKING_DELETE_ATOM:
       if (isBound(action, ACTION_deleteAtom)) {
         bs = getSelectionSet("(" + spec + ")");
         viewer.deleteAtoms(bs, false);
+        viewer.setStatusAtomPicked(atomIndex, "deleted: " + Escape.escape(bs));
       }
       return;
     }

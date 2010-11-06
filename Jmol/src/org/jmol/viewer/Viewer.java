@@ -5067,8 +5067,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                  String strError) {
     setErrorMessage(strError);
     global.setParameterValue("_loadPoint", ptLoad);
-    boolean doCallback = (ptLoad == FILE_STATUS_MODELSET_CREATED
-        || ptLoad == FILE_STATUS_ZAPPED || ptLoad == FILE_STATUS_NOT_LOADED);
+    boolean doCallback = (ptLoad != FILE_STATUS_CREATING_MODELSET); 
+//           ptLoad == FILE_STATUS_MODELSET_CREATED
+  //      || ptLoad == FILE_STATUS_ZAPPED 
+    //    || ptLoad == FILE_STATUS_MODELS_DELETED 
+      //  || ptLoad == FILE_STATUS_NOT_LOADED);
     statusManager.setFileLoadStatus(fullPathName, fileName, modelName,
         strError, ptLoad, doCallback);
   }

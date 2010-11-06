@@ -112,6 +112,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
 
   private boolean setVariables() {
     vertices = (mesh.ptOffset == null && mesh.scale3d == 0 
+        && mesh.q == null 
         ? mesh.vertices : mesh.getOffsetVertices(thePlane)); 
     
     colix = mesh.colix;

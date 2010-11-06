@@ -31,6 +31,7 @@ import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Measure;
 import org.jmol.util.MeshSurface;
+import org.jmol.util.Quaternion;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.g3d.*;
@@ -56,6 +57,7 @@ public class Mesh extends MeshSurface {
   public Point3f lattice;
   public boolean visible = true;
   public int lighting = JmolConstants.FRONTLIT;
+  public Quaternion q;
   
 
   public float scale = 1;
@@ -134,6 +136,7 @@ public class Mesh extends MeshSurface {
     //data2 = null;
     slabbingObject = null;
     cappingObject = null;
+    q = null;
     
     this.meshType = meshType;
   }
@@ -284,16 +287,21 @@ public class Mesh extends MeshSurface {
         normal = new Vector3f(thePlane.x, thePlane.y, thePlane.z);
         normal.normalize();
         normal.scale(scale3d);
+        if (q != null)
+          normal = q.transform(normal);
     }
     for (int i = 0; i < vertexCount; i++) {
       if (vertexValues != null && Float.isNaN(val = vertexValues[i]))
         continue;
+      if (q != null)
+        offsetVertices[i] = q.transform(offsetVertices[i]);
       Point3f pt = offsetVertices[i];
       if (ptOffset != null)
         pt.add(ptOffset);
       if (normal != null && val != 0)
         pt.scaleAdd(val, normal, pt);
     }
+    
     initialize(lighting, offsetVertices, null);
     return offsetVertices;
   }

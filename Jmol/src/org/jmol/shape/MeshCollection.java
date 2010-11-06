@@ -601,6 +601,8 @@ public String getShapeState() {
     if (mesh.modelIndex >= 0 && modelCount > 1)
       appendCmd(sb, "frame " + viewer.getModelNumberDotted(mesh.modelIndex));    
     appendCmd(sb, cmd);
+    if (mesh.q != null && mesh.q.q0 != 1)
+      appendCmd(sb, myType + " ID " + Escape.escape(mesh.thisID) + " rotate " + mesh.q.toString());
     if (mesh.ptOffset != null)
       appendCmd(sb, myType + " ID " + Escape.escape(mesh.thisID) + " offset " + Escape.escape(mesh.ptOffset));
     if (mesh.scale3d != 0)

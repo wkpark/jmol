@@ -15083,6 +15083,22 @@ public class ScriptEvaluator {
           && (str = parameterAsString(i)).equalsIgnoreCase("inline"))
         theTok = Token.string;
       switch (theTok) {
+      // offset, rotate, and scale3d don't need to be saved in sbCommand
+      // because they are display properties
+      case Token.offset:
+        propertyName = "offset";
+        propertyValue = centerParameter(++i);
+        i = iToken;
+        break;
+      case Token.rotate:
+        propertyName = "rotate";
+        propertyValue = (tokAt(iToken = ++i) == Token.none ? null : getPoint4f(i));
+        i = iToken;
+        break;
+      case Token.scale3d:
+        propertyName = "scale3d";
+        propertyValue = new Float(floatParameter(++i));
+        break;
       case Token.period:
         sbCommand.append(" periodic");
         propertyName = "periodic";
@@ -15288,12 +15304,6 @@ public class ScriptEvaluator {
         thisSetNumber = intParameter(++i);
         sbCommand.append(" set " + thisSetNumber);
         break;
-      case Token.offset:
-        propertyName = "offset";
-        propertyValue = centerParameter(++i);
-        i = iToken;
-        sbCommand.append(" offset " + Escape.escape((Point3f) propertyValue));
-        break;
       case Token.center:
         propertyName = "center";
         propertyValue = centerParameter(++i);
@@ -15405,11 +15415,6 @@ public class ScriptEvaluator {
         i = iToken;
         sbCommand.append(" plane ").append(
             Escape.escape((Point4f) propertyValue));
-        break;
-      case Token.scale3d:
-        propertyName = "scale3d";
-        propertyValue = new Float(floatParameter(++i));
-        sbCommand.append(" scale3d ").append(propertyValue);
         break;
       case Token.scale:
         propertyName = "scale";

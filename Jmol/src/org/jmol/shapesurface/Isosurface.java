@@ -104,6 +104,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Parser;
 import org.jmol.util.Point3fi;
+import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.JmolConstants;
@@ -298,6 +299,17 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         offset = null;
       if (thisMesh != null) {
         thisMesh.ptOffset = offset;
+        thisMesh.offsetVertices = null;
+      }
+      return;
+    }
+
+    if ("rotate" == propertyName) {
+      Point4f pt4 = (Point4f) value;
+      if (thisMesh != null) {
+        if (pt4 == null || thisMesh.q == null)
+          thisMesh.q = new Quaternion();
+        thisMesh.q = thisMesh.q.mul(new Quaternion(pt4));
         thisMesh.offsetVertices = null;
       }
       return;
@@ -1073,8 +1085,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       info.put("vertexCount", Integer.valueOf(mesh.vertexCount));
       if (mesh.ptCenter.x != Float.MAX_VALUE)
         info.put("center", mesh.ptCenter);
-      info.put("offset",
-          (mesh.ptOffset == null ? new Point3f() : mesh.ptOffset));
+      if (mesh.ptOffset != null)
+        info.put("offset", mesh.ptOffset);
+      if (mesh.q != null)
+        info.put("rotation", mesh.q.toPoint4f());
       if (mesh.scale3d != 0)
         info.put("scale3d", new Float(mesh.scale3d));
       info.put("xyzMin", mesh.jvxlData.boundingBox[0]);

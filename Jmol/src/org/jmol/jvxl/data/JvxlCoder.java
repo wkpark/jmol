@@ -132,6 +132,8 @@ public class JvxlCoder {
     if (verticesOnly) {
       jvxlAppendMeshXml(sb, jvxlData, meshData, true);
     } else if (jvxlData.jvxlPlane == null) {
+      if (jvxlData.jvxlEdgeData == null)
+        return "";
       appendXmlEdgeData(sb, jvxlData);
       appendXmlColorData(sb, "jvxlColorData", jvxlData.jvxlColorData,
           jvxlData.isJvxlPrecisionColor, jvxlData.valueMappedToRed,

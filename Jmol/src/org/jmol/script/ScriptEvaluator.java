@@ -15062,11 +15062,12 @@ public class ScriptEvaluator {
     StringBuffer sbCommand = new StringBuffer();
     Point3f[] pts;
     String str = null;
-    int modelIndex = (isSyntaxCheck ? 0 : viewer.getCurrentModelIndex());
+    int modelIndex = (isSyntaxCheck ? 0 : -1);
     setCursorWait(true);
     boolean idSeen = (initIsosurface(iShape) != null);
     boolean isWild = (idSeen && getShapeProperty(iShape, "ID") == null);
     boolean isColorSchemeTranslucent = false;
+    Object onlyOneModel = null;
     String translucency = null;
     String colorScheme = null;
     String dataUse = null;
@@ -15092,7 +15093,8 @@ public class ScriptEvaluator {
         break;
       case Token.rotate:
         propertyName = "rotate";
-        propertyValue = (tokAt(iToken = ++i) == Token.none ? null : getPoint4f(i));
+        propertyValue = (tokAt(iToken = ++i) == Token.none ? null
+            : getPoint4f(i));
         i = iToken;
         break;
       case Token.scale3d:
@@ -15184,8 +15186,12 @@ public class ScriptEvaluator {
           bs = (expressionResult instanceof BitSet ? (BitSet) expressionResult
               : null);
         if (!isSyntaxCheck) {
-          if (bs != null)
+          if (bs != null) {
+
+            // todo: modelindex may be -1 here. 
+
             bs.and(viewer.getModelUndeletedAtomsBitSet(modelIndex));
+          }
           if (ptc == null)
             ptc = viewer.getAtomSetCenter(bs);
 
@@ -15205,9 +15211,7 @@ public class ScriptEvaluator {
         continue;
       case Token.property:
       case Token.variable:
-        if (modelIndex < 0)
-          error(ERROR_multipleModelsDisplayedNotOK, "ISOSURFACE "
-              + theToken.value);
+        onlyOneModel = theToken.value;
         if (isCavity)
           error(ERROR_invalidArgument);
         boolean isVariable = (theTok == Token.variable);
@@ -15292,6 +15296,10 @@ public class ScriptEvaluator {
         propertyValue = Integer.valueOf(modelIndex);
         break;
       case Token.select:
+        // in general, viewer.getCurrentSelection() is used, but we may
+        // override that here. But we have to be careful that
+        // we PREPEND the selection to the command if no surface object
+        // has been seen yet, and APPEND it if it has.
         propertyName = "select";
         propertyValue = atomExpression(++i);
         i = iToken;
@@ -15478,27 +15486,23 @@ public class ScriptEvaluator {
         switch (getToken(++i).tok) {
         case Token.bitset:
         case Token.expressionBegin:
+          // automatically selects just the model of the first atom in the set.
           propertyName = "lcaoCartoon";
           bs = atomExpression(i);
-          sbCommand.append(" ").append(Escape.escape(bs));
           i = iToken;
+          if (isSyntaxCheck)
+            continue;
           int atomIndex = bs.nextSetBit(0);
-          modelIndex = 0;
-          Point3f pt;
-          if (atomIndex < 0) {
-            if (!isSyntaxCheck)
-              error(ERROR_expressionExpected);
-            pt = new Point3f();
-          } else {
-            modelIndex = viewer.getAtomModelIndex(atomIndex);
-            pt = viewer.getAtomPoint3f(atomIndex);
-          }
+          if (atomIndex < 0)
+            error(ERROR_expressionExpected);
+          sbCommand.append(" ({").append(atomIndex).append("})");
+          modelIndex = viewer.getAtomModelIndex(atomIndex);
           addShapeProperty(propertyList, "modelIndex", Integer
               .valueOf(modelIndex));
-          Vector3f[] axes = { new Vector3f(), new Vector3f(), new Vector3f(pt),
+          Vector3f[] axes = { new Vector3f(), new Vector3f(), 
+              new Vector3f(viewer.getAtomPoint3f(atomIndex)),
               new Vector3f() };
-          if (!isSyntaxCheck
-              && !lcaoType.equalsIgnoreCase("s")
+          if (!lcaoType.equalsIgnoreCase("s")
               && viewer.getHybridizationAndAxes(atomIndex, axes[0], axes[1],
                   lcaoType) == null)
             return;
@@ -15925,9 +15929,7 @@ public class ScriptEvaluator {
       case Token.molecular:
       case Token.sasurface:
       case Token.solvent:
-        if (modelIndex < 0)
-          error(ERROR_multipleModelsDisplayedNotOK, "ISOSURFACE "
-              + theToken.value);
+        onlyOneModel = theToken.value;
         surfaceObjectSeen = true;
         float radius;
         if (theTok == Token.molecular) {
@@ -16009,6 +16011,9 @@ public class ScriptEvaluator {
             }
           }
           if (ptWithin == 0) {
+            onlyOneModel = "=xxxx";
+            if (modelIndex < 0)
+              modelIndex = viewer.getCurrentModelIndex();
             bs = viewer.getModelUndeletedAtomsBitSet(modelIndex);
             getWithinDistanceVector(propertyList, 2.0f, null, bs, false);
             sbCommand.append(" within 2.0 ").append(Escape.escape(bs));
@@ -16043,6 +16048,9 @@ public class ScriptEvaluator {
           break;
         }
         if (filename.length() == 0) {
+          // "" 
+          if (modelIndex < 0)
+            modelIndex = viewer.getCurrentModelIndex();
           if (surfaceObjectSeen || planeSeen)
             propertyValue = viewer.getModelAuxiliaryInfo(modelIndex,
                 "jmolMappedDataInfo");
@@ -16174,7 +16182,25 @@ public class ScriptEvaluator {
         addShapeProperty(propertyList, "remapColor", ce);
       }
     }
+
+    if (surfaceObjectSeen && !isLcaoCartoon && !isSyntaxCheck) {
+      boolean needSelect = (bsSelect == null);
+      if (needSelect)
+        bsSelect = BitSetUtil.copy(viewer.getSelectionSet(false));
+      if (modelIndex < 0)
+        modelIndex = viewer.getCurrentModelIndex();
+      bsSelect.and(viewer.getModelUndeletedAtomsBitSet(modelIndex));
+      if (onlyOneModel != null) {
+        BitSet bsModels = viewer.getModelBitSet(bsSelect, true);
+        if (bsModels.cardinality() != 1)
+          error(ERROR_multipleModelsDisplayedNotOK, "ISOSURFACE " + onlyOneModel);
+        if (needSelect)
+        propertyList.add(0, new Object[] { "select", bsSelect }); 
+      }
+    }
+
     // OK, now send them all
+
     setShapeProperty(iShape, "setProperties", propertyList);
 
     if (defaultMesh) {
@@ -16209,9 +16235,6 @@ public class ScriptEvaluator {
             .getVariable(volume));
     }
     if (surfaceObjectSeen && !isLcaoCartoon && !isSyntaxCheck) {
-      if (bsSelect == null)
-        bsSelect = BitSetUtil.copy(viewer.getSelectionSet(false));
-      bsSelect.and(viewer.getModelUndeletedAtomsBitSet(modelIndex));
       setShapeProperty(iShape, "finalize", " select " + Escape.escape(bsSelect)
           + " " + sbCommand);
       String s = (String) getShapeProperty(iShape, "ID");

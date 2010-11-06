@@ -4841,8 +4841,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         + Viewer.getJmolVersion() + "|_GET_MENU|" + type));
   }
 
-  public Container getPopupMenu() {
-    if (jmolpopup != null)
+  private Container getPopupMenu() {
+    if (jmolpopup == null)
       jmolpopup = JmolPopup.newJmolPopup(this, true, menuStructure, true);
     return jmolpopup.getJMenu();
   }
@@ -5457,7 +5457,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       new GT(value);
       language = GT.getLanguage();
       modelkit = null;
-      getPopupMenu();
+      if (jmolpopup != null) {
+        jmolpopup = null;
+        getPopupMenu();
+      }
       statusManager.setCallbackFunction("language", language);
       value = GT.getLanguage();
       break;

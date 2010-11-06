@@ -798,6 +798,9 @@ class ScriptMathProcessor {
             smiles1 = TextFormat.simpleReplace(smiles1, "@@", "!@");
             smiles1 = TextFormat.simpleReplace(smiles1, "@", "@@");
             smiles1 = TextFormat.simpleReplace(smiles1, "!@@", "@");
+            smiles1 = TextFormat.simpleReplace(smiles1, "@@SP", "@SP");
+            smiles1 = TextFormat.simpleReplace(smiles1, "@@OH", "@OH");
+            smiles1 = TextFormat.simpleReplace(smiles1, "@@TB", "@TB");
             if (bs2 == null) {
               check = (viewer.getSmilesMatcher().areEqual(smiles1, smiles2) > 0);
             } else {

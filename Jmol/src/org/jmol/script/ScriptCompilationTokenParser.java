@@ -157,7 +157,7 @@ abstract class ScriptCompilationTokenParser {
     while (moreTokens()) {
       if (isEmbeddedExpression) {
         while (!isExpressionNext()) {
-          if (tokPeek(Token.identifier)) {
+          if (tokPeek(Token.identifier) && !(tokCommand == Token.load && itokenInfix == 1)) {
             String name = (String) atokenInfix[itokenInfix].value;
             Token t = Token.getTokenFromName(name); 
             if (t != null) {

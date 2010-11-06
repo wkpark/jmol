@@ -4817,8 +4817,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     switch (type) {
     case 'j':
-      if (jmolpopup == null)
-        jmolpopup = JmolPopup.newJmolPopup(this, true, menuStructure, true);
+      getPopupMenu();
       jmolpopup.show(x, y);
       break;
     case 'a':
@@ -4837,10 +4836,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getMenu(String type) {
-    if (jmolpopup == null)
-      jmolpopup = JmolPopup.newJmolPopup(this, true, menuStructure, true);
+    getPopupMenu();
     return (jmolpopup == null ? "" : jmolpopup.getMenu("Jmol version "
         + Viewer.getJmolVersion() + "|_GET_MENU|" + type));
+  }
+
+  public Container getPopupMenu() {
+    if (jmolpopup != null)
+      jmolpopup = JmolPopup.newJmolPopup(this, true, menuStructure, true);
+    return jmolpopup.getJMenu();
   }
 
   public void setMenu(String fileOrText, boolean isFile) {
@@ -5453,8 +5457,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       new GT(value);
       language = GT.getLanguage();
       modelkit = null;
-      if (jmolpopup != null)
-        jmolpopup = JmolPopup.newJmolPopup(this, true, menuStructure, true);
+      getPopupMenu();
       statusManager.setCallbackFunction("language", language);
       value = GT.getLanguage();
       break;
@@ -7423,6 +7426,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         + "spaceGroupInfo......" // 140
         + "disablePopupMenu...." // 160
         + "defaultDirectory...." // 180
+        + "getPopupMenu........" // 200
     ).indexOf(infoType)) {
 
     case 0:
@@ -7476,6 +7480,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return null;
     case 180:
       return global.defaultDirectory;
+    case 200:
+      if (paramInfo instanceof String)
+        return getMenu((String) paramInfo);
+      return getPopupMenu();
     default:
       Logger.error("ERROR in getProperty DATA_API: " + infoType);
       return null;

@@ -112,6 +112,11 @@ final public class JmolConstants {
   public final static int CALLBACK_CLICK = 13;
   public final static int CALLBACK_COUNT = 14;
 
+  public final static int FILE_STATUS_NOT_LOADED = -1;
+  public final static int FILE_STATUS_ZAPPED = 0;
+  public final static int FILE_STATUS_MODELSET_CREATED = 3;
+  public final static int FILE_STATUS_MODELS_DELETED = 5;
+
   private final static String[] callbackNames = {
     "animFrameCallback",
     "echoCallback",

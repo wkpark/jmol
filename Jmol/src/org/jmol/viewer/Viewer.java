@@ -1758,11 +1758,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   // //////////////// methods that open a file to create a model set ///////////
 
-  private final static int FILE_STATUS_NOT_LOADED = -1;
-  private final static int FILE_STATUS_ZAPPED = 0;
   private final static int FILE_STATUS_CREATING_MODELSET = 2;
-  private final static int FILE_STATUS_MODELSET_CREATED = 3;
-  private final static int FILE_STATUS_MODELS_DELETED = 5;
 
   /**
    * opens a file as a model, a script, or a surface via the creation of a
@@ -2230,7 +2226,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     if (atomSetCollection instanceof String) {
       errMsg = (String) atomSetCollection;
-      setFileLoadStatus(FILE_STATUS_NOT_LOADED, fullPathName, null, null,
+      setFileLoadStatus(JmolConstants.FILE_STATUS_NOT_LOADED, fullPathName, null, null,
           errMsg);
       if (displayLoadErrors && errMsg != null && !isAppend && !errMsg.equals("#CANCELED#"))
         zap(errMsg);
@@ -2275,7 +2271,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     popHoldRepaint("createModelSet");
     errMsg = getErrorMessage();
 
-    setFileLoadStatus(FILE_STATUS_MODELSET_CREATED, fullPathName, fileName,
+    setFileLoadStatus(JmolConstants.FILE_STATUS_MODELSET_CREATED, fullPathName, fileName,
         getModelSetName(), errMsg);
     if (isAppend) {
       selectAll();
@@ -2560,7 +2556,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     initializeModel();
     if (notify)
-      setFileLoadStatus(FILE_STATUS_ZAPPED, null, (resetUndo ? "resetUndo"
+      setFileLoadStatus(JmolConstants.FILE_STATUS_ZAPPED, null, (resetUndo ? "resetUndo"
           : getZapName()), null, null);
     if (Logger.debugging)
       Logger.checkMemory();
@@ -5045,9 +5041,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * myLoadStructCallback(fullPathName, fileName, modelName, errorMsg, ptLoad)
    * {}
    * 
-   * ptLoad == FILE_STATUS_NOT_LOADED == -1 ptLoad == FILE_STATUS_ZAPPED == 0
-   * ptLoad == FILE_STATUS_CREATING_MODELSET == 2 ptLoad ==
-   * FILE_STATUS_MODELSET_CREATED == 3 ptLoad == FILE_STATUS_MODELS_DELETED == 5
+   * ptLoad == JmolConstants.FILE_STATUS_NOT_LOADED == -1 ptLoad == JmolConstants.FILE_STATUS_ZAPPED == 0
+   * ptLoad == JmolConstants.FILE_STATUS_CREATING_MODELSET == 2 ptLoad ==
+   * JmolConstants.FILE_STATUS_MODELSET_CREATED == 3 ptLoad == JmolConstants.FILE_STATUS_MODELS_DELETED == 5
    * 
    * Only -1 (error loading), 0 (zapped), and 3 (model set created) messages are
    * passed on to the callback function. The others can be detected using
@@ -5068,10 +5064,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     setErrorMessage(strError);
     global.setParameterValue("_loadPoint", ptLoad);
     boolean doCallback = (ptLoad != FILE_STATUS_CREATING_MODELSET); 
-//           ptLoad == FILE_STATUS_MODELSET_CREATED
-  //      || ptLoad == FILE_STATUS_ZAPPED 
-    //    || ptLoad == FILE_STATUS_MODELS_DELETED 
-      //  || ptLoad == FILE_STATUS_NOT_LOADED);
     statusManager.setFileLoadStatus(fullPathName, fileName, modelName,
         strError, ptLoad, doCallback);
   }
@@ -8524,7 +8516,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (getModelCount() > 1)
       setCurrentModelIndex(-1, true);
     hoverAtomIndex = -1;
-    setFileLoadStatus(FILE_STATUS_MODELS_DELETED, null, null, null, null);
+    setFileLoadStatus(JmolConstants.FILE_STATUS_MODELS_DELETED, null, null, null, null);
     refreshMeasures(true);
     if (bsD0 != null)
       bsDeleted.andNot(bsD0);

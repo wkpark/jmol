@@ -30,6 +30,7 @@ import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 
 import java.awt.Component;
+import java.awt.Container;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
@@ -88,6 +89,11 @@ public class JmolPopup extends SimplePopup {
       build(title, mainMenu, bundle);
     }
   }
+
+  public Container getJMenu() {
+    return swingPopup;
+  }
+
 
   public String getMenu(String title) {
     int pt = title.indexOf("|"); 

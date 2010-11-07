@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-10-31 19:43+0100\n"
-"PO-Revision-Date: 2010-09-16 08:49+0000\n"
-"Last-Translator: Ptitphysik <amalpeyre@gmail.com>\n"
+"PO-Revision-Date: 2010-11-07 16:24+0000\n"
+"Last-Translator: Hugues Belaib <Unknown>\n"
 "Language-Team: French <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-09-16 17:08+0000\n"
+"X-Launchpad-Export-Date: 2010-11-07 21:16+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: France\n"
 "X-Poedit-Language: French\n"
@@ -147,7 +147,8 @@ msgid "Check"
 msgstr "Vérifier"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Retourner en haut"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -731,7 +732,7 @@ msgstr "Par HETATM"
 #: org/jmol/popup/MainPopupResourceBundle.java:543
 #, java-format
 msgid "Molecular Orbitals ({0})"
-msgstr ""
+msgstr "Orbites moléculaires ({0})"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:544
 #: org/jmol/popup/MainPopupResourceBundle.java:856
@@ -1482,7 +1483,7 @@ msgstr "Cliquer pour une mesure de torsion (dihédrale)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:823
 msgid "Click two atoms to display a sequence in the console"
-msgstr ""
+msgstr "Cliquez sur deux atomes afin d'afficher la séquence dans la console"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:824
 msgid "Delete measurements"
@@ -2153,7 +2154,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:69
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 "Cliquez sur deux points afin de tourner autour de l'axe dans le sens inverse "
 "des aiguilles d'une montre (requiert {0})"
@@ -2205,7 +2207,8 @@ msgstr ""
 #: org/jmol/viewer/ActionManager.java:82
 #, java-format
 msgid "add this group of atoms to the set of selected atoms (requires {0})"
-msgstr "ajouter ce groupe d'atomes au set d'atomes sélectionnés (requiert {0})"
+msgstr ""
+"ajouter ce groupe d'atomes au set d'atomes sélectionnés (requiert {0})"
 
 #: org/jmol/viewer/ActionManager.java:83
 #, java-format
@@ -2239,12 +2242,12 @@ msgstr "faire pivoter la branche autour du lien (requiert {0})"
 #: org/jmol/viewer/ActionManager.java:90
 #, java-format
 msgid "move atom (requires {0})"
-msgstr ""
+msgstr "déplacer atome (requiert {0})"
 
 #: org/jmol/viewer/ActionManager.java:91
 #, java-format
 msgid "move atom and minimize molecule (requires {0})"
-msgstr ""
+msgstr "déplacer atome et réduire la molécule (requiert {0})"
 
 #: org/jmol/viewer/ActionManager.java:92
 #, java-format
@@ -2264,7 +2267,7 @@ msgstr "déplacer un point DRAW (requiert {0})"
 #: org/jmol/viewer/ActionManager.java:95
 #, java-format
 msgid "move whole DRAW object (requires {0})"
-msgstr ""
+msgstr "déplacer objet DRAW entier (requiert {0})"
 
 #: org/jmol/viewer/ActionManager.java:97
 msgid "pick an atom"
@@ -2278,7 +2281,8 @@ msgstr "choisir un point DRAW (pour des mesures) (requiert {0})"
 #: org/jmol/viewer/ActionManager.java:99
 #, java-format
 msgid "pick a label to toggle it hidden/displayed (requires {0})"
-msgstr "choisir un label afin de basculer entre affiché/masqué (requiert {0})"
+msgstr ""
+"choisir un label afin de basculer entre affiché/masqué (requiert {0})"
 
 #: org/jmol/viewer/ActionManager.java:100
 #, java-format
@@ -2306,7 +2310,7 @@ msgstr "choisir un point ou un atome au(x)quel(s) se rendre (requiert {0})"
 #: org/jmol/viewer/ActionManager.java:105
 #, java-format
 msgid "delete atom (requires {0})"
-msgstr ""
+msgstr "supprimer atome (requiert {0})"
 
 #: org/jmol/viewer/ActionManager.java:106
 #, java-format
@@ -2347,7 +2351,8 @@ msgstr "Choisir deux atomes pour faire tourner le modèle autour d'un axe"
 
 #: org/jmol/viewer/ActionManager.java:1940
 msgid "pick one more atom in order to display the symmetry relationship"
-msgstr "choisir un atome supplémentaire afin d'afficher la relation symétrique"
+msgstr ""
+"choisir un atome supplémentaire afin d'afficher la relation symétrique"
 
 #: org/jmol/viewer/ActionManager.java:1941
 msgid ""
@@ -2396,15 +2401,16 @@ msgstr "Configuration du fichier journal dans {0}"
 #~ msgid "File creation failed."
 #~ msgstr "Création du fichier échoué"
 
+#, java-format
 #~ msgid "File {0}"
 #~ msgstr "Fichier {0}"
 
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
-#~ "La création de fichier par cette n''est pas autorisée. Pour le format "
-#~ "JPEG Base64, utiliser {0}."
+#~ "La création de fichier par cette n''est pas autorisée. Pour le format JPEG "
+#~ "Base64, utiliser {0}."
 
 #~ msgid "File or URL"
 #~ msgstr "Fichier ou URL"
@@ -2412,9 +2418,11 @@ msgstr "Configuration du fichier journal dans {0}"
 #~ msgid "Minimize"
 #~ msgstr "Réduire"
 
+#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "{0} Modèle 3D"
 
+#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "{0} Image"
 

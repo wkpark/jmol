@@ -208,6 +208,8 @@ class GuiMap {
         ._("Select a set of atoms using SHIFT-LEFT-DRAG."));
     labels.put("pickMeasureScriptTip", GT
         ._("Click atoms to measure distances"));
+    labels.put("pickCenterScriptTip", GT
+        ._("Click an atom to center on it"));
     labels.put("homeTip", GT._("Return molecule to home position."));
     labels.put("modelkitScriptTip", GT._("Open the model kit."));
     labels.put("JavaConsole.clear", GT._("Clear"));

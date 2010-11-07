@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-10-31 19:43+0100\n"
-"PO-Revision-Date: 2010-10-07 17:28+0000\n"
-"Last-Translator: Andrea Amoroso <andrea.amoroso@alice.it>\n"
+"PO-Revision-Date: 2010-11-06 20:49+0000\n"
+"Last-Translator: simone.sandri <Unknown>\n"
 "Language-Team: Italian <it@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-10-07 18:08+0000\n"
+"X-Launchpad-Export-Date: 2010-11-07 10:36+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/AppletConsole.java:199
@@ -144,7 +144,8 @@ msgid "Check"
 msgstr "Verifica"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Sopra"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -1479,7 +1480,7 @@ msgstr "Clicca per misurare l'angolo torsionale (diedro)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:823
 msgid "Click two atoms to display a sequence in the console"
-msgstr ""
+msgstr "Clicca su due atomi per visualizzare una sequenza nella console"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:824
 msgid "Delete measurements"
@@ -2055,7 +2056,8 @@ msgstr "oggetto non riconosciuto"
 #: org/jmol/script/ScriptEvaluator.java:2752
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
-msgstr "parametro {0} non riconosciuto in Jmol state script (imposta comunque)"
+msgstr ""
+"parametro {0} non riconosciuto in Jmol state script (imposta comunque)"
 
 #: org/jmol/script/ScriptEvaluator.java:2755
 #, java-format
@@ -2150,7 +2152,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:69
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 "cliccare su due punti a ruotare attorno al proprio asse in senso antiorario "
 "(richiede {0})"
@@ -2352,7 +2355,8 @@ msgstr "scegliere un altro atomo per visualizzare il rapporto di simmetria"
 #: org/jmol/viewer/ActionManager.java:1941
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
-msgstr "scegliere due atomi per visualizzare il rapporto di simmetria fra loro"
+msgstr ""
+"scegliere due atomi per visualizzare il rapporto di simmetria fra loro"
 
 #: org/jmol/viewer/SelectionManager.java:89
 #: org/jmol/viewer/SelectionManager.java:105
@@ -2387,15 +2391,6 @@ msgstr "Impossibile impostare il percorso del file di registro."
 msgid "Setting log file to {0}"
 msgstr "Impostazione file di log su {0}"
 
-#~ msgid ""
-#~ "NOTE: NH hydrogens are present and will not be calculated.\n"
-#~ "Use {0} for a standard DSSP analysis.\n"
-#~ "\n"
-#~ msgstr ""
-#~ "NOTA: gli atomi di idrogeno NH sono presenti e non saranno calcolati.\n"
-#~ "Usa {0} per un'analisi standard DSSP.\n"
-#~ "\n"
-
 #~ msgid "Java memory usage"
 #~ msgstr "Utilizzo di memoria Java"
 
@@ -2408,12 +2403,15 @@ msgstr "Impostazione file di log su {0}"
 #~ msgid "Minimize"
 #~ msgstr "Minimizza"
 
+#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "{0} Modello 3D"
 
+#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "{0} Immagine"
 
+#, java-format
 #~ msgid "File {0}"
 #~ msgstr "File {0}"
 
@@ -2422,3 +2420,13 @@ msgstr "Impostazione file di log su {0}"
 
 #~ msgid "Script with history"
 #~ msgstr "Script con storia"
+
+#, java-format
+#~ msgid ""
+#~ "NOTE: NH hydrogens are present and will not be calculated.\n"
+#~ "Use {0} for a standard DSSP analysis.\n"
+#~ "\n"
+#~ msgstr ""
+#~ "NOTA: gli atomi di idrogeno NH sono presenti e non saranno calcolati.\n"
+#~ "Usa {0} per un'analisi standard DSSP.\n"
+#~ "\n"

@@ -69,6 +69,7 @@ public class PdbReader extends AtomSetCollectionReader {
   private Map<String, String> htHetero = null;
   private Map<String, Map<String, Object>> htSites = null;
   private String currentGroup3;
+  private int currentResno = Integer.MIN_VALUE;
   private Map<String, Boolean> htElementsInCurrentGroup;
   private int maxSerial;
   private int[] chainAtomCounts;
@@ -558,10 +559,12 @@ REMARK 290 REMARK: NULL
     if (atom.group3 == null) {
       if (currentGroup3 != null) {
         currentGroup3 = null;
+        currentResno = Integer.MIN_VALUE;
         htElementsInCurrentGroup = null;
       }
-    } else if (!atom.group3.equals(currentGroup3)) {
+    } else if (!atom.group3.equals(currentGroup3) || atom.sequenceNumber != currentResno) {
       currentGroup3 = atom.group3;
+      currentResno = atom.sequenceNumber;
       htElementsInCurrentGroup = htFormul.get(atom.group3);
       nRes++;
       if (atom.group3.equals("UNK"))
@@ -855,9 +858,10 @@ Polyproline 10
   }
 
   private void checkNotPDB() {
-    if (atomSetCollection.getAtomCount() > 0 && nUNK == nRes)
+    if (nRes > 0 && nUNK == nRes)
       atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.FALSE);
     nUNK = nRes = 0;
+    currentGroup3 = null;
   }
 
   private void cryst1() throws Exception {

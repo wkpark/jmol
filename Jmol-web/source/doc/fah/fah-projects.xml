@@ -8566,6 +8566,14 @@
     server="171.64.65.56" atoms="28637" preferred="4.9" deadline="6"
     credit="921" frames="100" code="A3" contact="kasson" kfactor="4.1" contrib="Leszek Dobrowolski"/>
 
+  <!-- Projects 6800 to 6899 -->
+  <fah_proj number="6800" name="Ab_shooting" public="n"
+    server="171.64.65.64" atoms="627" preferred="4" deadline="10"
+    credit="1298" frames="100" code="OG" contact="lin5"/>
+  <fah_proj number="6811" name="PrP27_mono" public="n"
+    server="171.64.65.64" atoms="2150" preferred="13" deadline="18"
+    credit="7202" frames="100" code="OG" contact="lin5"/>
+
   <!-- Projects 9900 to 9999 -->
   <fah_proj number="9900" name="p9900_supervillin_e1" public="y"
     server="171.64.122.137" atoms="576" preferred="2" deadline="3"
@@ -8814,7 +8822,13 @@
   <fah_proj number="10109" name="p10109" public="y"
     server="171.64.65.71" atoms="1174" preferred="2" deadline="3"
     credit="494" frames="100" code="GG2" contact="gbowman"/>
+  <fah_proj number="10110" name="p10110" public="y"
+    server="171.64.65.71" atoms="1174" preferred="2" deadline="3"
+    credit="494" frames="100" code="GG2" contact="gbowman"/>
   <fah_proj number="10111" name="p10111" public="y"
+    server="171.64.65.71" atoms="1174" preferred="2" deadline="3"
+    credit="494" frames="100" code="GG2" contact="gbowman"/>
+  <fah_proj number="10112" name="p10112" public="y"
     server="171.64.65.71" atoms="1174" preferred="2" deadline="3"
     credit="494" frames="100" code="GG2" contact="gbowman"/>
 
@@ -8853,7 +8867,7 @@
   <fah_proj number="10412" name="p10412" public="y" file="xyz"
     server="171.64.65.80" atoms="576" preferred="13" deadline="19"
     credit="194" frames="100" code="A4" contact="kyleb" contrib="Danny Nielsen "/>
-  <fah_proj number="10413" name="p10413" public="n"
+  <fah_proj number="10413" name="p10413" public="y"
     server="171.64.65.81" atoms="576" preferred="13" deadline="19"
     credit="194" frames="100" code="A4" contact="kyleb"/>
   <fah_proj number="10414" name="p10414" public="n"
@@ -8865,20 +8879,29 @@
   <fah_proj number="10418" name="p10418" public="n"
     server="171.64.65.79" atoms="576" preferred="11" deadline="17"
     credit="172" frames="100" code="A4" contact="kyleb"/>
-  <fah_proj number="10419" name="p10419" public="n"
+  <fah_proj number="10419" name="p10419" public="y"
     server="171.64.65.79" atoms="576" preferred="13" deadline="19"
     credit="117" frames="100" code="A4" contact="kyleb"/>
-  <fah_proj number="10420" name="p10420" public="n"
+  <fah_proj number="10420" name="p10420" public="y"
     server="171.64.65.81" atoms="576" preferred="13" deadline="19"
     credit="194" frames="100" code="A4" contact="kyleb"/>
-  <fah_proj number="10421" name="p10421" public="n"
+  <fah_proj number="10421" name="p10421" public="y"
     server="171.64.65.81" atoms="576" preferred="13" deadline="19"
     credit="194" frames="100" code="A4" contact="kyleb"/>
   <fah_proj number="10422" name="p10422" public="n"
     server="171.64.65.84" atoms="576" preferred="13" deadline="19"
     credit="194" frames="100" code="A4" contact="kyleb"/>
-  <fah_proj number="10423" name="p10423" public="n"
+  <fah_proj number="10423" name="p10423" public="y"
     server="171.64.65.79" atoms="576" preferred="13" deadline="19"
+    credit="194" frames="100" code="A4" contact="kyleb"/>
+  <fah_proj number="10424" name="p10424" public="y"
+    server="171.64.65.79" atoms="576" preferred="13" deadline="19"
+    credit="194" frames="100" code="A4" contact="kyleb"/>
+  <fah_proj number="10425" name="p10425" public="n"
+    server="171.64.65.84" atoms="576" preferred="13" deadline="19"
+    credit="194" frames="100" code="A4" contact="kyleb"/>
+  <fah_proj number="10426" name="p10426" public="y"
+    server="171.64.65.81" atoms="576" preferred="13" deadline="19"
     credit="194" frames="100" code="A4" contact="kyleb"/>
 
   <!-- Projects 10500 to 10599 -->
@@ -10013,7 +10036,7 @@
   <fah_proj number="11288" name="Abeta42_96_s" public="y"
     server="171.67.108.33" atoms="12219" preferred="14" deadline="21"
     credit="69" frames="100" code="G" contact="lin5"/>
-  <fah_proj number="11289" name="Abeta42_99sbe_s" public="n"
+  <fah_proj number="11289" name="Abeta42_99sbe_s" public="y"
     server="171.67.108.33" atoms="12219" preferred="14" deadline="21"
     credit="69" frames="100" code="G" contact="lin5"/>
   <fah_proj number="11291" name="Ab42gb" public="n"

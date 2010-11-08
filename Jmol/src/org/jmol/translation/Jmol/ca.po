@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-10-18 20:46+0200\n"
+"POT-Creation-Date: 2010-11-08 19:06+0100\n"
 "PO-Revision-Date: 2009-10-25 22:19+0000\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.cat>\n"
 "Language-Team: Catalan <jmol-developers@lists.sourceforge.net>\n"
@@ -171,7 +171,7 @@ msgid "Check"
 msgstr "Comprova"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:165
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:213
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:215
 msgid "Clear"
 msgstr "Neteja"
 
@@ -961,11 +961,16 @@ msgstr "Selecciona un conjunt d'atoms utilitzant Maj-Esquerra-Arrossega."
 msgid "Click atoms to measure distances"
 msgstr "Cliqueu als àtoms per a mesurar-ne les distàncies"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:211
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:212
+#, fuzzy
+msgid "Click an atom to center on it"
+msgstr "Cliqueu als àtoms per a mesurar-ne les distàncies"
+
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:213
 msgid "Return molecule to home position."
 msgstr "Retorna la molècula a la posició inicial."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:212
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:214
 msgid "Open the model kit."
 msgstr ""
 

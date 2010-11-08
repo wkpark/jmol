@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-10-18 20:46+0200\n"
+"POT-Creation-Date: 2010-11-08 19:06+0100\n"
 "PO-Revision-Date: 2010-11-06 20:50+0000\n"
 "Last-Translator: simone.sandri <Unknown>\n"
 "Language-Team: Italian <it@li.org>\n"
@@ -64,8 +64,7 @@ msgstr "nessuna console -- tutto l'output inviato a sysout"
 
 #: org/openscience/jmol/app/JmolApp.java:156
 msgid "send only output from print messages to console (implies -i)"
-msgstr ""
-"inviare l'output di stampa solo dai messaggi alla console (implica -i)"
+msgstr "inviare l'output di stampa solo dai messaggi alla console (implica -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:158
 msgid "independent command thread"
@@ -81,8 +80,7 @@ msgstr "file di script da eseguire o '-' per System.in"
 
 #: org/openscience/jmol/app/JmolApp.java:170
 msgid "use multitouch interface (requires \"sparshui\" parameter"
-msgstr ""
-"l'uso dell'interfaccia multitouch (richiede il parametro \"sparshui\""
+msgstr "l'uso dell'interfaccia multitouch (richiede il parametro \"sparshui\""
 
 #: org/openscience/jmol/app/JmolApp.java:177
 msgid "Jmol script to execute BEFORE -s option"
@@ -110,8 +108,8 @@ msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
 msgstr ""
-"Qualità delle immagini JPG (1-100; default 75) o compressione delle immagini "
-" PNG (0-9; default e, compressione massima 9)"
+"Qualità delle immagini JPG (1-100; default 75) o compressione delle "
+"immagini  PNG (0-9; default e, compressione massima 9)"
 
 #: org/openscience/jmol/app/JmolApp.java:216
 #, java-format
@@ -166,7 +164,7 @@ msgid "Check"
 msgstr "Verifica"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:165
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:213
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:215
 msgid "Clear"
 msgstr "Pulisci"
 
@@ -947,11 +945,16 @@ msgstr ""
 msgid "Click atoms to measure distances"
 msgstr "Clicca sugli atomi per misurare le distanze"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:211
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:212
+#, fuzzy
+msgid "Click an atom to center on it"
+msgstr "Clicca sugli atomi per misurare le distanze"
+
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:213
 msgid "Return molecule to home position."
 msgstr "Riporta la molecola nelle condizioni iniziali."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:212
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:214
 msgid "Open the model kit."
 msgstr "Aprire il kit del modello."
 
@@ -1109,8 +1112,7 @@ msgstr "Mostra durante Rendering"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:245
 msgid "Should POV-Ray attempt to display while rendering?"
-msgstr ""
-"Deve il POV-Ray tentare di visualizzare durante la fare di rendering?"
+msgstr "Deve il POV-Ray tentare di visualizzare durante la fare di rendering?"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:268
 msgid "width:"
@@ -1676,19 +1678,15 @@ msgstr "non implementato"
 #~ msgid "vector"
 #~ msgstr "vettore"
 
-#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Vai al primo {0} nella raccolta"
 
-#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Vai al precedente {0} nella raccolta"
 
-#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Riproduci la collezione completa di {0}"
 
-#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Vai al prossimo {0} nella raccolta"
 
@@ -1704,11 +1702,9 @@ msgstr "non implementato"
 #~ msgid "Show Selected"
 #~ msgstr "Mostra Selezionati."
 
-#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "aggiungendo {0}.spt"
 
-#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "aggiungendo {0}.png"
 

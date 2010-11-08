@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-10-18 20:46+0200\n"
+"POT-Creation-Date: 2010-11-08 19:06+0100\n"
 "PO-Revision-Date: 2010-11-06 19:21+0000\n"
 "Last-Translator: Ask Hjorth Larsen <asklarsen@gmail.com>\n"
 "Language-Team: Danish <da@li.org>\n"
@@ -64,8 +64,7 @@ msgstr "ingen konsol -- al udskrift til sysout"
 
 #: org/openscience/jmol/app/JmolApp.java:156
 msgid "send only output from print messages to console (implies -i)"
-msgstr ""
-"send kun uddata fra udskrevne meddelelser til konsollen (medfører -i)"
+msgstr "send kun uddata fra udskrevne meddelelser til konsollen (medfører -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:158
 msgid "independent command thread"
@@ -165,7 +164,7 @@ msgid "Check"
 msgstr "Tjek"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:165
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:213
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:215
 msgid "Clear"
 msgstr "Ryd"
 
@@ -944,11 +943,16 @@ msgstr "Vælg et atomsæt ved hjælp af SKIFT-VENSTRE-TRÆK."
 msgid "Click atoms to measure distances"
 msgstr "Klik på atomer for at måle afstande"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:211
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:212
+#, fuzzy
+msgid "Click an atom to center on it"
+msgstr "Klik på atomer for at måle afstande"
+
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:213
 msgid "Return molecule to home position."
 msgstr "Returner molekyle til hjemmeposition."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:212
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:214
 msgid "Open the model kit."
 msgstr "Åbn modelkittet."
 
@@ -1661,32 +1665,26 @@ msgstr "ikke implementeret"
 #~ msgid "vector"
 #~ msgstr "vektor"
 
-#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Gå til første {0} i samlingen"
 
-#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Afspil hele samlingen af {0}"
 
-#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Gå til næste {0} i samlingen"
 
-#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Gå til sidste {0} i samlingen"
 
 #~ msgid "Output Conso&le..."
 #~ msgstr "Output Conso&le..."
 
-#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "tilføjer {0}.spt"
 
 #~ msgid "atom set"
 #~ msgstr "atomsæt"
 
-#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Gå til forrige {0} i samlingen"

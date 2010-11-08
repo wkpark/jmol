@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-10-18 20:46+0200\n"
+"POT-Creation-Date: 2010-11-08 19:06+0100\n"
 "PO-Revision-Date: 2010-10-19 04:02+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@gmail.com>\n"
 "Language-Team: Ukrainian <translation@linux.org.ua>\n"
@@ -21,8 +21,8 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/WebMaker.java:66
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr ""
-"Помилка під час спроби запуску Jmol: не вказано значення властивості "
-"«user.home»."
+"Помилка під час спроби запуску Jmol: не вказано значення властивості «user."
+"home»."
 
 #: org/openscience/jmol/app/JmolApp.java:139
 msgid "transparent background"
@@ -168,7 +168,7 @@ msgid "Check"
 msgstr "Перевірити"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:165
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:213
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:215
 msgid "Clear"
 msgstr "Спорожнити"
 
@@ -941,18 +941,22 @@ msgstr "Обертати молекулу."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:208
 msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
-msgstr ""
-"Вкажіть набір атомів за допомогою SHIFT-СТРІЛКА ЛІВОРУЧ-ПЕРЕТЯГУВАННЯ."
+msgstr "Вкажіть набір атомів за допомогою SHIFT-СТРІЛКА ЛІВОРУЧ-ПЕРЕТЯГУВАННЯ."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:210
 msgid "Click atoms to measure distances"
 msgstr "Щоб виміряти відстань, клацніть лівою кнопкою миші"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:211
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:212
+#, fuzzy
+msgid "Click an atom to center on it"
+msgstr "Щоб виміряти відстань, клацніть лівою кнопкою миші"
+
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:213
 msgid "Return molecule to home position."
 msgstr "Повернути молекулу у початкову позицію."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:212
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:214
 msgid "Open the model kit."
 msgstr "Відкрити вікно моделювання."
 
@@ -1376,8 +1380,8 @@ msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
 msgstr ""
-"Щоб отримати просторову модель, з якою можна буде працювати, натисніть "
-"{0}тут{1}. Перше звантаження за допомогою аплету може бути доволі тривалим."
+"Щоб отримати просторову модель, з якою можна буде працювати, натисніть {0}тут"
+"{1}. Перше звантаження за допомогою аплету може бути доволі тривалим."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:358
 msgid "Insert the page TITLE here."
@@ -1684,11 +1688,9 @@ msgstr "не реалізовано"
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "додавання JmolPopIn.js"
 
-#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "додавання {0}.png"
 
-#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "додавання {0}.spt"
 

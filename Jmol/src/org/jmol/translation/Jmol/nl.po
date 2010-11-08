@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-10-18 20:46+0200\n"
+"POT-Creation-Date: 2010-11-08 19:06+0100\n"
 "PO-Revision-Date: 2010-04-27 10:16+0000\n"
 "Last-Translator: Joostkam <Unknown>\n"
 "Language-Team: Dutch <jmol-developer@lists.sf.net>\n"
@@ -166,7 +166,7 @@ msgid "Check"
 msgstr "Controleer"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:165
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:213
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:215
 msgid "Clear"
 msgstr "Wissen"
 
@@ -956,11 +956,16 @@ msgstr "Selecteer een of meer atomen met SHIFT-LEFT-DRAG"
 msgid "Click atoms to measure distances"
 msgstr "Selecteer atomen om een afstand te meten"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:211
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:212
+#, fuzzy
+msgid "Click an atom to center on it"
+msgstr "Selecteer atomen om een afstand te meten"
+
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:213
 msgid "Return molecule to home position."
 msgstr "Zet molecule terug in startpositie."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:212
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:214
 msgid "Open the model kit."
 msgstr ""
 

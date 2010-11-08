@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-10-18 20:46+0200\n"
+"POT-Creation-Date: 2010-11-08 19:06+0100\n"
 "PO-Revision-Date: 2010-10-31 12:41+0000\n"
 "Last-Translator: David Green <Unknown>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
@@ -170,7 +170,7 @@ msgid "Check"
 msgstr "Vérifier"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:165
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:213
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:215
 msgid "Clear"
 msgstr "Effacer"
 
@@ -950,11 +950,16 @@ msgstr ""
 msgid "Click atoms to measure distances"
 msgstr "Cliquez sur les atomes pour mesurer les distances"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:211
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:212
+#, fuzzy
+msgid "Click an atom to center on it"
+msgstr "Cliquez sur les atomes pour mesurer les distances"
+
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:213
 msgid "Return molecule to home position."
 msgstr "Ramener la molécule à sa position d'origine."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:212
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:214
 msgid "Open the model kit."
 msgstr "Ouvrir le kit de modèles."
 
@@ -1110,8 +1115,7 @@ msgstr "Afficher pendant le calcul"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:245
 msgid "Should POV-Ray attempt to display while rendering?"
-msgstr ""
-"Est-ce que POV-Ray doit essayer d'afficher le rendu durant le calcul ?"
+msgstr "Est-ce que POV-Ray doit essayer d'afficher le rendu durant le calcul ?"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:268
 msgid "width:"
@@ -1690,19 +1694,16 @@ msgstr "non-implémenté"
 #~ msgid "Show Selected"
 #~ msgstr "Afficher les options sélectionnées"
 
-#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
-#~ "Insérer un texte explicatif pertinente ici. Long texte sera coupé entourent "
-#~ "le modèle de Jmol {0}."
+#~ "Insérer un texte explicatif pertinente ici. Long texte sera coupé "
+#~ "entourent le modèle de Jmol {0}."
 
-#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "ajoutant {0}. spt"
 
-#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "ajoutant {0}. png"
 

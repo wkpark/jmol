@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-10-18 20:46+0200\n"
+"POT-Creation-Date: 2010-11-08 19:06+0100\n"
 "PO-Revision-Date: 2010-10-31 12:49+0000\n"
 "Last-Translator: David Green <Unknown>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
@@ -164,7 +164,7 @@ msgid "Check"
 msgstr "Check"
 
 #: org/openscience/jmol/app/jmolpanel/AppConsole.java:165
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:213
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:215
 msgid "Clear"
 msgstr "Clear"
 
@@ -943,11 +943,16 @@ msgstr "Select a set of atoms using SHIFT-LEFT-DRAG."
 msgid "Click atoms to measure distances"
 msgstr "Click atoms to measure distances"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:211
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:212
+#, fuzzy
+msgid "Click an atom to center on it"
+msgstr "Click atoms to measure distances"
+
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:213
 msgid "Return molecule to home position."
 msgstr "Return molecule to home position."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:212
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:214
 msgid "Open the model kit."
 msgstr "Open the model kit."
 
@@ -1672,13 +1677,11 @@ msgstr "unimplemented"
 #~ msgid "Show Selected"
 #~ msgstr "Show Selected"
 
-#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "adding {0}.spt"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "adding JmolPopIn.js"
 
-#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "adding {0}.png"

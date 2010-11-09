@@ -8895,8 +8895,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (logFile == null || data == null)
         return;
       boolean doClear = (data.equals("$CLEAR$"));
-      if (data.startsWith("$NOW$"))
-        data = (new Date()).toString() + "\t" + data.substring(3);
+      if (data.indexOf("$NOW$") >= 0)
+        data = TextFormat.simpleReplace(data, "$NOW$", (new Date()).toString());
       FileWriter fstream = new FileWriter(logFile, !doClear);
       BufferedWriter out = new BufferedWriter(fstream);
       if (!doClear) {

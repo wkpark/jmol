@@ -140,7 +140,7 @@ public class JmolPopup extends SimplePopup {
   }
 
   private void updateFileMenu() {
-    Object menu = htMenus.get("SIGNEDfileMenu");
+    Object menu = htMenus.get("fileMenu");
     if (menu == null)
       return;
     String text = getMenuText("writeFileTextVARIABLE");

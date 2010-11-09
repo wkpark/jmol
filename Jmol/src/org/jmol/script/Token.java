@@ -881,8 +881,9 @@ public class Token {
   public final static int allowgestures                  = booleanparam | 4;
   public final static int allowkeystrokes                = booleanparam | 5;
   public static final int allowmodelkit                  = booleanparam | 6; // Jmol 12.RC15
-  public static final int allowmultitouch                = booleanparam | 7; // Jmol 11.9.24
-  public final static int allowrotateselected            = booleanparam | 8;
+  public final static int allowmoveatoms                 = booleanparam | 7; // Jmol 12.1.21
+  public static final int allowmultitouch                = booleanparam | 8; // Jmol 11.9.24
+  public final static int allowrotateselected            = booleanparam | 9;
   public final static int antialiasdisplay               = booleanparam | 10;
   public final static int antialiasimages                = booleanparam | 12;
   public final static int antialiastranslucent           = booleanparam | 14;
@@ -2141,6 +2142,7 @@ public class Token {
       "allowGestures",                            new Token(allowgestures),
       "allowKeyStrokes",                          new Token(allowkeystrokes),
       "allowModelKit",                            new Token(allowmodelkit),
+      "allowMoveAtoms",                           new Token(allowmoveatoms),
       "allowMultiTouch",                          new Token(allowmultitouch),
       "allowRotateSelected",                      new Token(allowrotateselected),
       "antialiasDisplay",                         new Token(antialiasdisplay),

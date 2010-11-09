@@ -796,6 +796,7 @@ public class StateManager {
       setParameterValue("allowModelkit", allowModelkit);
       setParameterValue("allowMultiTouch", allowMultiTouch);
       setParameterValue("allowRotateSelected", allowRotateSelected);
+      setParameterValue("allowMoveAtoms", allowMoveAtoms);
       setParameterValue("ambientPercent", ambientPercent);
       setParameterValue("animationFps", animationFps);
       setParameterValue("antialiasImages", antialiasImages);
@@ -1099,6 +1100,7 @@ public class StateManager {
     //centering and perspective
 
     boolean allowRotateSelected = false;
+    boolean allowMoveAtoms = false;
     boolean perspectiveDepth = true;
     float visualRange = 5f;
 

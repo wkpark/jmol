@@ -931,11 +931,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (mouseEnabled) {
       if (bsSelected == null)
         bsSelected = getSelectionSet(false);
-      transformManager.setRotateMolecule(true);
+      transformManager.setRotateMolecule(!global.allowMoveAtoms);
       transformManager.rotateXYBy(deltaX, deltaY, bsSelected);
       transformManager.setRotateMolecule(false);
       refreshMeasures(true);
     }
+    //TODO: note that sync may not work with set allowRotateSelectedAtoms
     refresh(2, statusManager.syncingMouse ? "Mouse: rotateMolecule " + deltaX
         + " " + deltaY : "");
   }
@@ -6146,7 +6147,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       break;
     case Token.allowrotateselected:
       // 11.1.14
-      setAllowRotateSelected(value);
+      global.allowRotateSelected = value;
+      break;
+    case Token.allowmoveatoms:
+      // 12.1.21
+      global.allowMoveAtoms = value;
+      global.allowRotateSelected = value;
+      global.dragSelected = value;
       break;
     case Token.showscript:
       // /11.1.13///
@@ -7776,10 +7783,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // Eval
     modelSet.setAtomCoordRelative(offset, bs == null ? getSelectionSet(false) : bs);
     refreshMeasures(true);
-  }
-
-  void setAllowRotateSelected(boolean TF) {
-    global.allowRotateSelected = TF;
   }
 
   boolean allowRotateSelected() {

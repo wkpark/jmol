@@ -8007,7 +8007,7 @@ public class ScriptEvaluator {
       modelName = parameterAsString(i);
       tok = tokAt(i);
       if (tok == Token.auto) {
-        isAuto= true;
+        isAuto = true;
         i++;
       } else if (tok == Token.data) {
         isData = true;
@@ -8100,7 +8100,7 @@ public class ScriptEvaluator {
       if (filename == null) {
         zap(false);
         return;
-      } 
+      }
       if (isSmiles) {
         filename = "$" + filename;
       } else if (!isInline) {
@@ -8121,11 +8121,11 @@ public class ScriptEvaluator {
       }
     } else if (getToken(i + 1).tok == Token.leftbrace
         || theTok == Token.point3f || theTok == Token.integer
-        || theTok == Token.offset 
-        || theTok == Token.range || theTok == Token.manifest
-        || theTok == Token.packed || theTok == Token.supercell
-        || theTok == Token.filter && tokAt(i + 3) != Token.coord
-        || theTok == Token.identifier && tokAt(i + 3) != Token.coord) {
+        || theTok == Token.offset || theTok == Token.range
+        || theTok == Token.manifest || theTok == Token.packed
+        || theTok == Token.supercell || theTok == Token.filter
+        && tokAt(i + 3) != Token.coord || theTok == Token.identifier
+        && tokAt(i + 3) != Token.coord) {
       if ((filename = parameterAsString(filePt)).length() == 0)
         filename = viewer.getFullPathName();
       if (filePt == i)
@@ -8142,9 +8142,9 @@ public class ScriptEvaluator {
         sOptions += " MANIFEST " + Escape.escape(manifest);
         tok = tokAt(++i);
       }
-      
+
       // 1)   n >= 0: model number; n < 0: vibration number
-      
+
       if (tok == Token.integer) {
         int n = intParameter(i);
         sOptions += " " + n;
@@ -8154,38 +8154,38 @@ public class ScriptEvaluator {
           htParams.put("modelNumber", Integer.valueOf(n));
         tok = tokAt(++i);
       }
-      
+
       // 2)   {i j k}
-      
+
       Point3f lattice = null;
       if (tok == Token.leftbrace || tok == Token.point3f) {
         lattice = getPoint3f(i, false);
         i = iToken + 1;
         tok = tokAt(i);
       }
-      
+
       if (tok == Token.packed || tok == Token.supercell) {
         if (lattice == null)
           lattice = new Point3f(555, 555, -1);
         iToken = i - 1;
       }
       if (lattice != null) {
-        
+
         i = iToken + 1;
         htParams.put("lattice", lattice);
         sOptions += " {" + (int) lattice.x + " " + (int) lattice.y + " "
             + (int) lattice.z + "}";
 
         // PACKED
-        
+
         if (tokAt(i) == Token.packed) {
           htParams.put("packed", Boolean.TRUE);
           sOptions += " PACKED";
           i++;
         }
-        
+
         // SUPERCELL
-        
+
         if (tokAt(i) == Token.supercell) {
           String supercell;
           if (isPoint3f(++i)) {
@@ -8217,20 +8217,20 @@ public class ScriptEvaluator {
          * set are found. Depending upon the application, one or the other of
          * these options may be desirable.
          */
-        
+
         // RANGE x.y
-        
+
         if (tokAt(i) == Token.range) {
           i++;
           distance = floatParameter(i++);
           sOptions += " range " + distance;
         }
         htParams.put("symmetryRange", new Float(distance));
-        
+
         // SPACEGROUP "info"
-        
+
         // SPACEGROUP "IGNOREOPERATORS"
-        
+
         String spacegroup = null;
         int iGroup = Integer.MIN_VALUE;
         if (tokAt(i) == Token.spacegroup) {
@@ -8250,11 +8250,11 @@ public class ScriptEvaluator {
             htParams.put("spaceGroupName", spacegroup);
           }
         }
-        
+
         // UNITCELL [a b c alpha beta gamma]
         // or
         // UNITCELL [ax ay az bx by bz cx cy cz] 
-           
+
         float[] fparams = null;
         if (tokAt(i) == Token.unitcell) {
           ++i;
@@ -8269,30 +8269,32 @@ public class ScriptEvaluator {
           htParams.put("unitcell", fparams);
           if (iGroup == Integer.MIN_VALUE)
             iGroup = -1;
-        }                
+        }
         if (iGroup != Integer.MIN_VALUE)
           htParams.put("spaceGroupIndex", Integer.valueOf(iGroup));
       }
-      
+
       // OFFSET {x y z} (fractional or not) (Jmol 12.1.17)
-      
+
       if (tokAt(i) == Token.offset) {
         Point3f offset = getPoint3f(++i, true);
         if (coordinatesAreFractional) {
           offset.set(fractionalPoint);
-          htParams.put("unitCellOffsetFractional", (coordinatesAreFractional ? Boolean.TRUE : Boolean.FALSE));
-          sOptions += " offset {" + offset.x + " " + offset.y + " " + offset.z + "/1}";
+          htParams.put("unitCellOffsetFractional",
+              (coordinatesAreFractional ? Boolean.TRUE : Boolean.FALSE));
+          sOptions += " offset {" + offset.x + " " + offset.y + " " + offset.z
+              + "/1}";
         } else {
           sOptions += " offset " + Escape.escape(offset);
         }
         htParams.put("unitCellOffset", offset);
       }
-      
+
       // FILTER
-      
+
       if (tokAt(i) == Token.filter)
         filter = stringParameter(++i);
-      
+
     } else {
       if (i != 2) {
         modelName = parameterAsString(i++);
@@ -8429,12 +8431,12 @@ public class ScriptEvaluator {
     // but there could state problems here because then we don't have the
     // option to save load options with that... Hmm.
     if (errMsg != null && !isCmdLine_c_or_C_Option) {
+      if (errMsg.indexOf("NOTE: file recognized as a script file:") == 0) {
+        filename = errMsg.substring(errMsg.indexOf("file:") + 5).trim();
+        script(0, filename, false);
+        return;
+      }
       if (isAuto) {
-        if (errMsg.indexOf("NOTE: file recognized as a script file:") == 0) {
-          filename = errMsg.substring(errMsg.indexOf("file:") + 5).trim();
-          script(0, filename, false);
-          return;
-        }
         String surfaceType = (errMsg.indexOf("java.io.FileNotFound") >= 0 ? null
             : SurfaceFileTyper.determineSurfaceFileType(viewer
                 .getBufferedInputStream(filename)));

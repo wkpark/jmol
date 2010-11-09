@@ -53,7 +53,7 @@ class MainPopupResourceBundle extends PopupResource {
           "FRAMESbyModelComputedMenu configurationComputedMenu - selectMenuText viewMenu renderMenu colorMenu - surfaceMenu SYMMETRYUNITCELLMenu - "
               + "zoomMenu spinMenu VIBRATIONMenu "
               + "FRAMESanimateMenu - "
-              + "measureMenu pickingMenu - showConsole showMenu SIGNEDfileMenu computationMenu - "
+              + "measureMenu pickingMenu - showConsole showMenu fileMenu computationMenu - "
               + "languageComputedMenu aboutComputedMenu" },
               
       {   "selectMenuText",
@@ -190,11 +190,11 @@ class MainPopupResourceBundle extends PopupResource {
               + "showOrient showMeasure - "
               + "showSpacegroup showState SYMMETRYshowSymmetry UNITCELLshow - showIsosurface showMo - extractMOL" },
 
-      {   "SIGNEDfileMenu",
-          "loadFileOrUrl loadPdb loadScript - "
+      {   "fileMenu",
+          "SIGNEDloadFileOrUrl SIGNEDloadPdb SIGNEDloadScript - "
               + "reload loadFileUnitCell - "
-              + "writeFileTextVARIABLE writeState writeHistory writeIsosurface - writeGif writeJpg writePng writePovray - "
-              + "writeVrml writeX3d writeIdtf writeMaya" },
+              + "writeFileTextVARIABLE writeState writeHistory SIGNEDwriteJmol SIGNEDwriteIsosurface - SIGNEDwriteGif SIGNEDwriteJpg SIGNEDwritePng SIGNEDwritePovray - "
+              + "SIGNEDwriteVrml SIGNEDwriteX3d SIGNEDwriteIdtf SIGNEDwriteMaya" },
 
       { "[set_spin_X]Menu", "s0 s5 s10 s20 s30 s40 s50" },
       { "[set_spin_Y]Menu", null },
@@ -465,23 +465,24 @@ class MainPopupResourceBundle extends PopupResource {
       { "showState", "console on;show state" },
       
       { "reload", "load \"\"" },
-      { "loadPdb", "load ?PdbId?" },      
-      { "loadFileOrUrl", "load ?" },      
-      { "loadFileUnitCell", "load ? {1 1 1}" },      
-      { "loadScript", "script ?.spt" },      
+      { "SIGNEDloadPdb", "load ?PdbId?" },      
+      { "SIGNEDloadFileOrUrl", "load ?" },      
+      { "SIGNEDloadFileUnitCell", "load ? {1 1 1}" },      
+      { "SIGNEDloadScript", "script ?.spt" },      
 
-      { "writeFileTextVARIABLE", "write file \"?FILE?\"" },      
-      { "writeState", "write state \"?FILEROOT?.spt\"" },      
-      { "writeHistory", "write history \"?FILEROOT?.his\"" },     
-      { "writeIsosurface", "write isosurface \"?FILEROOT?.jvxl\"" },      
-      { "writeGif", "write image \"?FILEROOT?.gif\"" },      
-      { "writeJpg", "write image \"?FILEROOT?.jpg\"" },      
-      { "writePng", "write image \"?FILEROOT?.png\"" },      
-      { "writePovray", "write POVRAY \"?FILEROOT?.pov\"" },      
-      { "writeVrml", "write VRML \"?FILEROOT?.wrl\"" },      
-      { "writeX3d", "write X3D \"?FILEROOT?.x3d\"" },      
-      { "writeIdtf", "write IDTF \"?FILEROOT?.idtf\"" },      
-      { "writeMaya", "write MAYA \"?FILEROOT?.ma\"" },       
+      { "writeFileTextVARIABLE", "if (_applet && !_signedApplet) { console;show file } else { write file \"?FILE?\"}" },      
+      { "writeState", "if (_applet && !_signedApplet) { console;show state } else { write state \"?FILEROOT?.spt\"}" },      
+      { "writeHistory", "if (_applet && !_signedApplet) { console;show history } else { write history \"?FILEROOT?.his\"}" },     
+      { "SIGNEDwriteJmol", "write \"?FILEROOT?.jmol\"" },      
+      { "SIGNEDwriteIsosurface", "write isosurface \"?FILEROOT?.jvxl\"" },      
+      { "SIGNEDwriteGif", "write image \"?FILEROOT?.gif\"" },      
+      { "SIGNEDwriteJpg", "write image \"?FILEROOT?.jpg\"" },      
+      { "SIGNEDwritePng", "write image \"?FILEROOT?.png\"" },      
+      { "SIGNEDwritePovray", "write POVRAY \"?FILEROOT?.pov\"" },      
+      { "SIGNEDwriteVrml", "write VRML \"?FILEROOT?.wrl\"" },      
+      { "SIGNEDwriteX3d", "write X3D \"?FILEROOT?.x3d\"" },      
+      { "SIGNEDwriteIdtf", "write IDTF \"?FILEROOT?.idtf\"" },      
+      { "SIGNEDwriteMaya", "write MAYA \"?FILEROOT?.ma\"" },       
       { "SYMMETRYshowSymmetry", "console on;show symmetry" },
       { "UNITCELLshow", "console on;show unitcell" },
       { "extractMOL", "console on;getproperty extractModel \"visible\" " },
@@ -856,25 +857,26 @@ class MainPopupResourceBundle extends PopupResource {
         "SYMMETRYshowSymmetry", GT._("Symmetry"),
         "showState", GT._("Current state"),
         
-        "SIGNEDfileMenu", GT._("File"),
+        "fileMenu", GT._("File"),
         "reload", GT._("Reload"),      
-        "loadPdb", GT._("Open from PDB"),      
-        "loadFileOrUrl", GT._("Open file or URL"),      
-        "loadFileUnitCell", GT._("Load full unit cell"),      
-        "loadScript", GT._("Open script"),      
+        "SIGNEDloadPdb", GT._("Open from PDB"),      
+        "SIGNEDloadFileOrUrl", GT._("Open file or URL"),      
+        "SIGNEDloadFileUnitCell", GT._("Load full unit cell"),      
+        "SIGNEDloadScript", GT._("Open script"),      
 
         "writeFileTextVARIABLE", GT._("Save a copy of {0}"),
         "writeState", GT._("Save script with state"),      
         "writeHistory", GT._("Save script with history"),      
-        "writeJpg", GT._("Export {0} image", "JPG"),      
-        "writePng", GT._("Export {0} image", "PNG"),      
-        "writeGif", GT._("Export {0} image", "GIF"),    
-        "writePovray", GT._("Export {0} image", "POV-Ray"),      
-        "writeIsosurface", GT._("Save JVXL isosurface"),      
-        "writeVrml", GT._("Export {0} 3D model", "VRML"),      
-        "writeX3d", GT._("Export {0} 3D model", "X3D"),      
-        "writeIdtf", GT._("Export {0} 3D model", "IDTF"),      
-        "writeMaya", GT._("Export {0} 3D model", "Maya"),      
+        "SIGNEDwriteJpg", GT._("Export {0} image", "JPG"),      
+        "SIGNEDwritePng", GT._("Export {0} image", "PNG"),      
+        "SIGNEDwriteGif", GT._("Export {0} image", "GIF"),    
+        "SIGNEDwritePovray", GT._("Export {0} image", "POV-Ray"),      
+        "SIGNEDwriteJmol", GT._("Save all as JMOL file (zip)"),      
+        "SIGNEDwriteIsosurface", GT._("Save JVXL isosurface"),      
+        "SIGNEDwriteVrml", GT._("Export {0} 3D model", "VRML"),      
+        "SIGNEDwriteX3d", GT._("Export {0} 3D model", "X3D"),      
+        "SIGNEDwriteIdtf", GT._("Export {0} 3D model", "IDTF"),      
+        "SIGNEDwriteMaya", GT._("Export {0} 3D model", "Maya"),      
 
         "computationMenu", GT._("Computation"),      
         "minimize", GT._("Optimize structure"),      

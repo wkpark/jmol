@@ -98,6 +98,21 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   public String getMolecularFormula(String pattern, boolean isSmarts) {
     InvalidSmilesException.setLastError(null);
     try {
+      // note: Jmol may undercount the number of hydrogen atoms
+      // for aromatic amines where the ring bonding to N is 
+      // not explicit. Each "n" will be assigned a bonding count
+      // of two unless explicitly indicated as -n-.
+      // Thus, we take the position that "n" is the 
+      // N of pyridine unless otherwise indicated.
+      //
+      // For example:
+      //   $ print "c1ncccc1C".find("SMILES","MF")
+      //   H 7 C 5 N 1   (correct)
+      //   $ print "c1nc-n-c1C".find("SMILES","MF")
+      //   H 6 C 4 N 2   (correct)
+      // but
+      //   $ print "c1ncnc1C".find("SMILES","MF")
+      //   H 5 C 4 N 2   (incorrect)
       SmilesSearch search = SmilesParser.getMolecule(pattern, isSmarts);
       search.createTopoMap(null);
       search.nodes = search.jmolAtoms;
@@ -110,7 +125,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   }
 
   public String getSmiles(JmolNode[] atoms, int atomCount, BitSet bsSelected,
-                          boolean asBioSmiles, boolean allowUnmatchedRings, boolean addCrossLinks, String comment) {
+                          boolean asBioSmiles, boolean allowUnmatchedRings, boolean addCrossLinks, String comment) {    
     InvalidSmilesException.setLastError(null);
     try {
       if (asBioSmiles)

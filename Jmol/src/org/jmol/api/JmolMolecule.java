@@ -212,12 +212,12 @@ public class JmolMolecule {
           nElements++;
         elementNumberMax = Math.max(elementNumberMax, n);
         if (includeMissingHydrogens) {
-        int nH = nodes[i].getImplicitHydrogenCount();
-        if (nH > 0) {
-          if (elementCounts[1] == 0)
-            nElements++;
-          elementCounts[1] += nH;
-        }
+          int nH = nodes[i].getImplicitHydrogenCount();
+          if (nH > 0) {
+            if (elementCounts[1] == 0)
+              nElements++;
+            elementCounts[1] += nH;
+          }
         }
       } else {
         n = Elements.altElementIndexFromNumber(n);

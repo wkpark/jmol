@@ -454,6 +454,13 @@ public class SmilesSearch extends JmolMolecule {
 
       // so far, so good... not done yet... on to the next position...
 
+      /*
+      if (patternAtoms[atomNum].toString().indexOf("*") < 0) {
+        for (int i = 0; i < atomNum; i++)System.out.println(i + " " + patternAtoms[i]);
+      System.out.println("");
+      }
+      */
+      
       SmilesAtom newPatternAtom = patternAtoms[atomNum];
       // For all the pattern bonds for this atom...
       // find the bond to atoms already assigned.
@@ -884,7 +891,9 @@ public class SmilesSearch extends JmolMolecule {
         bondFound = isRingBond(ringSets, iAtom, matchingAtom);
         break;
       case SmilesBond.TYPE_SINGLE:
-        bondFound = !isRingBond(ringSets, iAtom, matchingAtom);
+        // for SMARTS, single bond in aromatic means 
+        // TO ANOTHER RING
+        bondFound = !isSmarts || !isRingBond(ringSets, iAtom, matchingAtom);
         break;
       case SmilesBond.TYPE_ATROPISOMER_1:
       case SmilesBond.TYPE_ATROPISOMER_2:

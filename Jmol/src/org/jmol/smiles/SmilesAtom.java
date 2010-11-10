@@ -33,6 +33,7 @@ import javax.vecmath.Point3f;
 import org.jmol.api.JmolEdge;
 import org.jmol.api.JmolNode;
 import org.jmol.util.Elements;
+import org.jmol.util.Logger;
 
 //import org.jmol.util.Logger;
 
@@ -222,17 +223,28 @@ public class SmilesAtom extends Point3f implements JmolNode {
     if (count == -1)
       return true;
 
+    if (elementNumber == 7 && isAromatic && bondCount == 2) {
+      // is it -N= or -NH- ? 
+      if (bonds[0].bondType == SmilesBond.TYPE_SINGLE
+           && bonds[1].bondType == SmilesBond.TYPE_SINGLE)
+        count++;
+    }
     for (int i = 0; i < bondCount; i++) {
       SmilesBond bond = bonds[i];
       switch (bond.bondType) {
       case SmilesBond.TYPE_ANY: // for aromatics
+        if (elementNumber == 7) {
+          Logger.info("Ambiguous bonding to aromatic N found -- MF may be in error");
+        }
+        count -= 1;
+        break;
       case SmilesBond.TYPE_SINGLE:
       case SmilesBond.TYPE_DIRECTIONAL_1:
       case SmilesBond.TYPE_DIRECTIONAL_2:
         count -= 1;
         break;
       case SmilesBond.TYPE_DOUBLE:
-        count -= 2;
+        count -= (isAromatic && elementNumber == 6 ? 1 : 2);
         break;
       case SmilesBond.TYPE_TRIPLE:
         count -= 3;
@@ -259,8 +271,11 @@ public class SmilesAtom extends Point3f implements JmolNode {
     case 8: // O
     case 16: // S
       return 2;
-    case 5: // B
     case 7: // N
+      // note -- it is necessary to indicate explicitly
+      // single bonds to aromatic n if a proper MF is desired
+      return (isAromatic ? 2 : 3);
+    case 5: // B
     case 15: // P
       return 3;
     case 9: // F
@@ -704,8 +719,11 @@ public class SmilesAtom extends Point3f implements JmolNode {
                              int charge, int nH, boolean isAromatic,
                              String stereo) {
     String sym = Elements.elementSymbolFromNumber(atomicNumber);
-    if (isAromatic)
+    if (isAromatic) {
       sym = sym.toLowerCase();
+      if (atomicNumber != 6)
+        valence = -1; // force [n]
+    }
     int count = (stereo.length() > 0 || isotopeNumber != 0 || charge != 0 ? -1
         : getDefaultCount(atomicNumber, false));
     return (count == valence ? sym : "["

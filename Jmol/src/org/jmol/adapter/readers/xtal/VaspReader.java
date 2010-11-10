@@ -179,7 +179,7 @@ public class VaspReader extends AtomSetCollectionReader {
     if (atomSetCollection.getAtomCount() > 0) {
       setSymmetry();
       atomSetCollection.newAtomSet();
-      //setAtomSetInfo();
+      setAtomSetInfo();
     }
     fillFloatArray(unitCellData);
     setUnitCell();
@@ -294,18 +294,14 @@ public class VaspReader extends AtomSetCollectionReader {
      */
     double enthalpy = Double.parseDouble(tokens[3]); 
     gibbsEntropy = Double.valueOf(enthalpy - gibbsEnergy.doubleValue());
-    setAtomSetInfo();
   }
-  
- 
+
   private void setAtomSetInfo() {
-    atomSetCollection.setAtomSetEnergy("" + gibbsEnergy, gibbsEnergy
-        .floatValue());
+    atomSetCollection.setAtomSetEnergy("" + gibbsEnergy, gibbsEnergy.floatValue());
     atomSetCollection.setAtomSetAuxiliaryInfo("Energy", gibbsEnergy);
     atomSetCollection.setAtomSetAuxiliaryInfo("Entropy", gibbsEntropy);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Energy", gibbsEnergy);
-    atomSetCollection
-    .setAtomSetCollectionAuxiliaryInfo("Entropy", gibbsEntropy);
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Entropy", gibbsEntropy);
     atomSetCollection.setAtomSetName("G = " + gibbsEnergy + " eV, T*S = "
         + gibbsEntropy + " eV");
   }

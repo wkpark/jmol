@@ -297,6 +297,8 @@ public class VaspReader extends AtomSetCollectionReader {
   }
 
   private void setAtomSetInfo() {
+    if (gibbsEnergy == null)
+      return;
     atomSetCollection.setAtomSetEnergy("" + gibbsEnergy, gibbsEnergy.floatValue());
     atomSetCollection.setAtomSetAuxiliaryInfo("Energy", gibbsEnergy);
     atomSetCollection.setAtomSetAuxiliaryInfo("Entropy", gibbsEntropy);
@@ -311,7 +313,7 @@ public class VaspReader extends AtomSetCollectionReader {
 
   private void readMdyn() throws Exception {
     String[] tokens = getTokens();
-    discardLines(1);
+    readLine();
     tokens = getTokens(readLine());
     electronEne = Double.valueOf(Double.parseDouble(tokens[4]));
     tokens = getTokens(readLine());

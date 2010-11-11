@@ -8528,9 +8528,9 @@
   <fah_proj number="6520" name="p6520_TR602_predict" public="n"
     server="171.64.65.62" atoms="37016" preferred="57" deadline="85"
     credit="310" frames="100" code="G" contact="lan"/>
-  <fah_proj number="6526" name="p6526_proA_predict" public="y"
+  <fah_proj number="6526" name="p6526_proA_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="23935" preferred="21" deadline="31"
-    credit="112" frames="100" code="G" contact="lan"/>
+    credit="112" frames="100" code="G" contact="lan" contrib="Hyperlife"/>
 
   <!-- Projects 6600 to 6699 -->
   <fah_proj number="6600" name="p6600_CspTm_300K" public="y"

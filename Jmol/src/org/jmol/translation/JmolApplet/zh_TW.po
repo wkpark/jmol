@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-11-10 01:04+0100\n"
-"PO-Revision-Date: 2010-11-11 13:28+0000\n"
+"PO-Revision-Date: 2010-11-12 10:22+0000\n"
 "Last-Translator: iychiang <iychiang1809@gmail.com>\n"
 "Language-Team: Traditional Chinese <zh_TW@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-11-11 22:01+0000\n"
+"X-Launchpad-Export-Date: 2010-11-12 12:04+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/AppletConsole.java:199
@@ -1476,7 +1476,7 @@ msgstr "按一下來測量(兩平面間的)扭力"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:824
 msgid "Click two atoms to display a sequence in the console"
-msgstr ""
+msgstr "點選兩個原子並在指令模式中顯示其順序"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:825
 msgid "Delete measurements"

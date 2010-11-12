@@ -158,7 +158,7 @@ public class AminoPolymer extends AlphaPolymer {
        * 
        * where 
        * 
-       *   cos(theta/2) = dq[i]\dq[i-1] = cos(dPsi/2)cos(dPhi/2) - sin(alpha)sin(dPsi/2)sin(dPhi/2)
+       *   cos(theta/2) = dq[i]\dq[i-1] = cos(dPsi/2)cos(dPhi/2) - cos(alpha)sin(dPsi/2)sin(dPhi/2)
        * 
        * and 
        * 
@@ -169,8 +169,7 @@ public class AminoPolymer extends AlphaPolymer {
       float dPhi = (float) ((phiNext - phi) / 2 * Math.PI / 180);
       float dPsi = (float) ((psiNext - psi) / 2 * Math.PI / 180);
       return (float) (180 / Math.PI * 2 * Math.acos(Math.cos(dPsi)
-          * Math.cos(dPhi) - Math.cos(70 * Math.PI / 180) * Math.sin(dPsi)
-          * Math.sin(dPhi)));
+          * Math.cos(dPhi) - Math.sin(dPsi) * Math.sin(dPhi) / 3));
     case 'c':
     case 'C':
       /* an approximation by Bob Hanson and Dan Kohler, 7/2008

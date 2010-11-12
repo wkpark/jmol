@@ -216,7 +216,7 @@ public class SmilesBond implements JmolEdge {
   void setAtom2(SmilesAtom atom) {
     this.atom2 = atom;
     if (atom2 != null) {
-      atom2.isFirst = false;
+      // NO! could be after . as in .[C@H]12      atom2.isFirst = false;
       atom.addBond(this);
     }
   }

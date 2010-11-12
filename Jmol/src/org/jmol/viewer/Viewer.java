@@ -4415,6 +4415,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         s = s.substring(0, s.indexOf("%FILE") + 5);
       return TextFormat.formatString(s, "FILE", f);
     case '$':
+      f = TextFormat.simpleReplace(f, "%", "%25");
       f = TextFormat.simpleReplace(f, " ", "%20");
       return (withPrefix ? "MOL::" : "")
           + TextFormat.formatString(global.smilesUrlFormat, "FILE", f);

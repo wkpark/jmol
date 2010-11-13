@@ -1054,8 +1054,8 @@ public class ScriptEvaluator {
         if (asIdentity)
           str = modelSet.atoms[j].getInfo();
         else
-          str = LabelToken.formatLabel(viewer, modelSet.atoms[j], null, tokens,
-              '\0', indices);
+          str = LabelToken.formatLabel(viewer, modelSet.atoms[j], tokens, '\0',
+              indices);
       } else {
         Bond bond = modelSet.getBondAt(j);
         if (asIdentity)
@@ -13467,7 +13467,7 @@ public class ScriptEvaluator {
         msg = viewer.createImage(fileName, type, bytes, quality, width, height,
             bsFrames, fullPath);
     }
-    if (msg != null) {
+    if (!isSyntaxCheck && msg != null) {
       if (!msg.startsWith("OK"))
         evalError(msg, null);
       scriptStatusOrBuffer(msg

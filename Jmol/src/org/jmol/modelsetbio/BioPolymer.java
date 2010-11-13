@@ -477,11 +477,11 @@ public abstract class BioPolymer extends Polymer {
   final private static String[] qColor = { "yellow", "orange", "purple" };
 
   final public static void getPdbData(Viewer viewer, BioPolymer p, char ctype, char qtype,
-                                      int mStep, int derivType, boolean isDraw,
-                                      BitSet bsAtoms, OutputStringBuffer pdbATOM,
-                                      StringBuffer pdbCONECT,
-                                      BitSet bsSelected, boolean addHeader, boolean bothEnds,
-                                      BitSet bsWritten) {
+                                      int mStep, int derivType, BitSet bsAtoms,
+                                      BitSet bsSelected, boolean bothEnds,
+                                      boolean isDraw,
+                                      boolean addHeader, LabelToken[] tokens, OutputStringBuffer pdbATOM,
+                                      StringBuffer pdbCONECT, BitSet bsWritten) {
     boolean calcRamachandranStraightness = (qtype == 'C' || qtype == 'P');
     boolean isRamachandran = (ctype == 'R' || ctype == 'S' && 
         calcRamachandranStraightness);
@@ -565,14 +565,14 @@ public abstract class BioPolymer extends Polymer {
     for (int j = 0; j < (bothEnds? 2 : 1); j++, factor *= -1)
     for (int i = 0; i < (mStep < 1 ? 1 : mStep); i++)
       getData(viewer, i, mStep, p, ctype, qtype, derivType, 
-          bsAtoms, bsSelected, bsWritten, 
-          isDraw, isRamachandran,
-          calcRamachandranStraightness,
+          bsAtoms, bsSelected, isDraw, 
+          isRamachandran, calcRamachandranStraightness,
           useQuaternionStraightness,
           writeRamachandranStraightness,
-          quaternionStraightness, factor,
-          isAmino, isRelativeAlias,
-          pdbATOM, pdbCONECT);
+          quaternionStraightness,
+          factor, isAmino,
+          isRelativeAlias, tokens,
+          pdbATOM, pdbCONECT, bsWritten);
   }
   
   /**
@@ -586,7 +586,6 @@ public abstract class BioPolymer extends Polymer {
    * @param derivType
    * @param bsAtoms
    * @param bsSelected
-   * @param bsWritten
    * @param isDraw
    * @param isRamachandran
    * @param calcRamachandranStraightness
@@ -596,21 +595,24 @@ public abstract class BioPolymer extends Polymer {
    * @param factor
    * @param isAmino
    * @param isRelativeAlias
+   * @param tokens
    * @param pdbATOM
    * @param pdbCONECT
+   * @param bsWritten
    */
   private static void getData(Viewer viewer, int m0, int mStep, BioPolymer p,
                               char ctype, char qtype, int derivType,
                               BitSet bsAtoms, BitSet bsSelected,
-                              BitSet bsWritten, boolean isDraw,
-                              boolean isRamachandran,
+                              boolean isDraw, boolean isRamachandran,
                               boolean calcRamachandranStraightness,
                               boolean useQuaternionStraightness,
                               boolean writeRamachandranStraightness,
-                              boolean quaternionStraightness, float factor, 
-                              boolean isAmino,
+                              boolean quaternionStraightness,
+                              float factor, boolean isAmino, 
                               boolean isRelativeAlias,
-                              OutputStringBuffer pdbATOM, StringBuffer pdbCONECT) {
+                              LabelToken[] tokens,
+                              OutputStringBuffer pdbATOM, StringBuffer pdbCONECT,
+                              BitSet bsWritten) {
     String prefix = (derivType > 0 ? "dq" + (derivType == 2 ? "2" : "") : "q");
     Quaternion q;
     Atom aprev = null;
@@ -889,8 +891,7 @@ public abstract class BioPolymer extends Polymer {
         if (pdbATOM == null)// || bsSelected != null && !bsSelected.get(a.getIndex()))
           continue;
         bsWritten.set(((Monomer) a.getGroup()).leadAtomIndex);
-        pdbATOM.append(LabelToken.formatLabel(viewer, a,
-            "ATOM  %5i %4a%1A%3n %1c%4R%1E   "));
+        pdbATOM.append(LabelToken.formatLabel(viewer, a, tokens, '\0', null));
         pdbATOM.append(TextFormat
             .sprintf("%8.2f%8.2f%8.2f      %6.3f          %2s    %s\n",
                 new Object[] {

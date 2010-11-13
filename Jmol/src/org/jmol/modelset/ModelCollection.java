@@ -1085,8 +1085,8 @@ abstract public class ModelCollection extends BondCollection {
       Model model = models[i];
       int nPoly = model.getBioPolymerCount();
       for (int p = 0; p < nPoly; p++)
-        model.bioPolymers[p].getPdbData(viewer, ctype, qtype, mStep, 2, false, 
-            null, null, null, null, false, false, new BitSet());
+        model.bioPolymers[p].getPdbData(viewer, ctype, qtype, mStep, 2, null, 
+            null, false, false, false, null, null, null, new BitSet());
     }
     setHaveStraightness(true);
   }
@@ -1164,7 +1164,7 @@ abstract public class ModelCollection extends BondCollection {
             : (t3a == null ? LabelToken.compile(viewer, "ATOM  %5.-5i  %-3.3a%1A%3.-3n %1c%4.-4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          ", '\0', null)
                 : t3a));
       String XX = a.getElementSymbol(false).toUpperCase();
-      sb.append(LabelToken.formatLabel(viewer, a, null, tokens, '\0', null))
+      sb.append(LabelToken.formatLabel(viewer, a, tokens, '\0', null))
           .append(XX.length() == 1 ? " " + XX : XX.substring(0, 2)).append("  \n");
     }
     if (showModels)
@@ -1184,6 +1184,9 @@ abstract public class ModelCollection extends BondCollection {
       modelIndex = getJmolDataSourceFrame(modelIndex);
     if (modelIndex < 0)
       return "";
+    boolean isPDB = models[modelIndex].isPDB;
+    if (parameters == null && !isPDB)
+      return null;
     Model model = models[modelIndex];
     if (sb == null)
       sb = new OutputStringBuffer(null);
@@ -1191,11 +1194,10 @@ abstract public class ModelCollection extends BondCollection {
     boolean isDraw = (type.indexOf("draw") >= 0);
     BitSet bsAtoms = null;
     BitSet bsWritten = new BitSet();
-    boolean isPDB = models[modelIndex].isPDB;
     char ctype = '\0';
+    LabelToken[] tokens = LabelToken.compile(viewer, "ATOM  %-6i%4a%1A%3n %1c%4R%1E   ", 
+        '\0', null);
     if (parameters == null) {
-      if (!isPDB)
-        return null;
       boolean bothEnds = false;
       ctype = (type.length() > 11 && type.indexOf("quaternion ") >= 0 ? type
           .charAt(11) : 'R');
@@ -1216,15 +1218,19 @@ abstract public class ModelCollection extends BondCollection {
         sb.append("\nREMARK   6 Jmol Version ").append(Viewer.getJmolVersion())
             .append('\n');
         if (ctype == 'R')
-          sb.append("REMARK   6 Jmol data min = {-180 -180 -180} max = {180 180 180} " +
-          		"unScaledXyz = xyz * {1 1 1} + {0 0 0} plotScale = {100 100 100}\n");
+          sb
+              .append("REMARK   6 Jmol data min = {-180 -180 -180} max = {180 180 180} "
+                  + "unScaledXyz = xyz * {1 1 1} + {0 0 0} plotScale = {100 100 100}\n");
         else
-          sb.append("REMARK   6 Jmol data min = {-1 -1 -1} max = {1 1 1} " +
-          		"unScaledXyz = xyz * {0.1 0.1 0.1} + {0 0 0} plotScale = {100 100 100}\n");
+          sb
+              .append("REMARK   6 Jmol data min = {-1 -1 -1} max = {1 1 1} "
+                  + "unScaledXyz = xyz * {0.1 0.1 0.1} + {0 0 0} plotScale = {100 100 100}\n");
       }
+      
       for (int p = 0; p < nPoly; p++)
         model.bioPolymers[p].getPdbData(viewer, ctype, qtype, mStep, derivType,
-            isDraw, bsAtoms, sb, pdbCONECT, bsSelected, p == 0, bothEnds, bsWritten);
+            bsAtoms, bsSelected, bothEnds, isDraw, p == 0, tokens, sb, 
+            pdbCONECT, bsWritten);
       bsAtoms = viewer.getModelUndeletedAtomsBitSet(modelIndex);
     } else {
       // plot property x y z....
@@ -1254,14 +1260,9 @@ abstract public class ModelCollection extends BondCollection {
         if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
           continue;
         Atom a = atoms[i];
-        if (isPDB) {
-          sb.append(LabelToken.formatLabel(viewer, a,
-              "ATOM  %-6i%4a%1A%3n %1c%4R%1E   "));
+        sb.append(LabelToken.formatLabel(viewer, a, tokens, '\0', null));
+        if (isPDB)
           bsWritten.set(i);
-        } else {
-          sb.append(LabelToken.formatLabel(viewer, a,
-              "ATOM  %-6i%4a%1A%3n %1c%4R%1E   "));
-        }
         sb.append(TextFormat.sprintf(
             "%-8.2f%-8.2f%-10.2f    %6.3f          %2s    %s\n", new Object[] {
                 a.getElementSymbol(false).toUpperCase(), strExtra,

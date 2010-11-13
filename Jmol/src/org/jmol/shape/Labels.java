@@ -255,6 +255,8 @@ public class Labels extends AtomShape {
           : ((Boolean) value).booleanValue() ? 1 : -1);
       if (mads == null)
         mads = new short[atomCount];
+      String strLabel = null;
+      LabelToken[] tokens = null;
       for (int atomIndex = atomCount; --atomIndex >= 0;) {
         if (bsSelected.get(atomIndex)) {
           Atom atom = atoms[atomIndex];
@@ -267,9 +269,12 @@ public class Labels extends AtomShape {
           } else {
             if (bsSizeSet == null)
               bsSizeSet = new BitSet();
-            String strLabel = viewer.getStandardLabelFormat();
             strings = ArrayUtil.ensureLength(strings, atomIndex + 1);
-            strings[atomIndex] = LabelToken.formatLabel(viewer, atom, strLabel);
+            if (strLabel == null) {
+              strLabel = viewer.getStandardLabelFormat();
+              tokens = LabelToken.compile(viewer, strLabel, '\0', null);
+            }
+            strings[atomIndex] = LabelToken.formatLabel(viewer, atom, tokens, '\0', null);
             formats[atomIndex] = strLabel;
             bsSizeSet.set(atomIndex);
             if ((bsBgColixSet == null || !bsBgColixSet.get(atomIndex))
@@ -344,7 +349,7 @@ public class Labels extends AtomShape {
       LabelToken[] tokens = temp[0];
       if (tokens == null)
         tokens = temp[0] = LabelToken.compile(viewer, strLabel, '\0', null);
-      String label = LabelToken.formatLabel(viewer, atom, strLabel, tokens, '\0', null);
+      String label = LabelToken.formatLabel(viewer, atom, tokens, '\0', null);
       atom.setShapeVisibility(myVisibilityFlag, label != null);
       if (strings == null || i >= strings.length)
         strings = ArrayUtil.ensureLength(strings, i + 1);

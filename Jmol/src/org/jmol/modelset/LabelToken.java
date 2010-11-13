@@ -36,7 +36,7 @@ import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
 
 public class LabelToken {
-  
+
   /*
    * by Bob Hanson, 5/28/2009
    * 
@@ -73,7 +73,7 @@ public class LabelToken {
    * 
    */
 
-  private String text; 
+  private String text;
   private String key;
   private Object data;
   private int tok;
@@ -89,110 +89,69 @@ public class LabelToken {
   // new tokens can be added to the list at the end
   // and then also added in appendTokenValue()
   // and also in Eval, to atomProperty()
-  
+
   final private static String labelTokenParams = "AaBbCcDEefGgIiLlMmNnoPpQqRrSsTtUuVvWXxYyZz%%%gqW";
   final private static int[] labelTokenIds = {
-  /* 'A' */Token.altloc,
-  /* 'a' */Token.atomname,
-  /* 'B' */Token.atomtype,
-  /* 'b' */Token.temperature,
-  /* 'C' */Token.formalcharge,
-  /* 'c' */Token.chain,
-  /* 'D' */Token.atomindex,
-  /* 'E' */Token.insertion,
-  /* 'e' */Token.element,
-  /* 'f' */Token.phi,
-  /* 'G' */Token.groupindex,
-  /* 'g' */'g', //getSelectedGroupIndexWithinChain()
-  /* 'I' */Token.ionic,
-  /* 'i' */Token.atomno,
-  /* 'L' */Token.polymerlength,
-  /* 'l' */Token.elemno,
-  /* 'M' */Token.model,
-  /* 'm' */Token.group1,
-  /* 'N' */Token.molecule,
-  /* 'n' */Token.group,
-  /* 'o' */Token.symmetry,
-  /* 'P' */Token.partialcharge,
-  /* 'p' */Token.psi,
-  /* 'Q' */'Q',  //occupancy 0.0 to 1.0
-  /* 'q' */Token.occupancy,
-  /* 'R' */Token.resno,
-  /* 'r' */'r',
-  /* 'S' */Token.site,
-  /* 's' */Token.chain,
-  /* 'T' */Token.straightness,
-  /* 't' */Token.temperature,
-  /* 'U' */Token.identify,
-  /* 'u' */Token.surfacedistance,
-  /* 'V' */Token.vanderwaals,
-  /* 'v' */Token.vibxyz, 
-  /* 'W' */'W',   // identifier and XYZ coord
-  /* 'X' */Token.fracx, 
-  /* 'x' */Token.atomx, 
-  /* 'Y' */Token.fracy, 
-  /* 'y' */Token.atomy, 
-  /* 'Z' */Token.fracz,
-  /* 'z' */Token.atomz, 
+      /* 'A' */Token.altloc,
+      /* 'a' */Token.atomname,
+      /* 'B' */Token.atomtype,
+      /* 'b' */Token.temperature,
+      /* 'C' */Token.formalcharge,
+      /* 'c' */Token.chain,
+      /* 'D' */Token.atomindex,
+      /* 'E' */Token.insertion,
+      /* 'e' */Token.element,
+      /* 'f' */Token.phi,
+      /* 'G' */Token.groupindex,
+      /* 'g' */'g', //getSelectedGroupIndexWithinChain()
+      /* 'I' */Token.ionic,
+      /* 'i' */Token.atomno,
+      /* 'L' */Token.polymerlength,
+      /* 'l' */Token.elemno,
+      /* 'M' */Token.model,
+      /* 'm' */Token.group1,
+      /* 'N' */Token.molecule,
+      /* 'n' */Token.group,
+      /* 'o' */Token.symmetry,
+      /* 'P' */Token.partialcharge,
+      /* 'p' */Token.psi,
+      /* 'Q' */'Q', //occupancy 0.0 to 1.0
+      /* 'q' */Token.occupancy,
+      /* 'R' */Token.resno,
+      /* 'r' */'r',
+      /* 'S' */Token.site,
+      /* 's' */Token.chain,
+      /* 'T' */Token.straightness,
+      /* 't' */Token.temperature,
+      /* 'U' */Token.identify,
+      /* 'u' */Token.surfacedistance,
+      /* 'V' */Token.vanderwaals,
+      /* 'v' */Token.vibxyz,
+      /* 'W' */'W', // identifier and XYZ coord
+      /* 'X' */Token.fracx,
+      /* 'x' */Token.atomx,
+      /* 'Y' */Token.fracy,
+      /* 'y' */Token.atomy,
+      /* 'Z' */Token.fracz,
+      /* 'z' */Token.atomz,
 
-  // not having letter equivalents:
-  
-           //new for Jmol 11.9.5:
-           Token.backbone,
-           Token.cartoon,
-           Token.dots,
-           Token.ellipsoid,
-           Token.geosurface,
-           Token.halo,
-           Token.meshRibbon,
-           Token.ribbon,
-           Token.rocket,
-           Token.star,
-           Token.strands,
-           Token.trace,
+      // not having letter equivalents:
 
-           Token.adpmax,
-           Token.adpmin,
-           Token.atomid,
-           Token.bondcount,
-           Token.color,
-           Token.groupid,
-           Token.covalent,
-           Token.file,
-           Token.format,
-           Token.label,
-           Token.modelindex,
-           Token.eta,
-           Token.omega,
-           Token.polymer,
-           Token.property,
-           Token.radius,
-           Token.selected,
-           Token.shape,
-           Token.sequence,
-           Token.spacefill,
-           Token.structure,
-           Token.substructure,
-           Token.strucno,
-           Token.strucid,
-           Token.symbol,
-           Token.theta,
-           Token.unitx,
-           Token.unity,
-           Token.unitz,
-           Token.valence,
-           Token.vibx,
-           Token.viby,
-           Token.vibz,
-           Token.volume,
-           Token.unitxyz,
-           Token.fracxyz,
-           Token.xyz,
-           Token.fuxyz,
-           Token.fux,
-           Token.fuy,
-           Token.fuz,
-           
+      //new for Jmol 11.9.5:
+      Token.backbone, Token.cartoon, Token.dots, Token.ellipsoid,
+      Token.geosurface, Token.halo, Token.meshRibbon, Token.ribbon,
+      Token.rocket, Token.star, Token.strands, Token.trace,
+
+      Token.adpmax, Token.adpmin, Token.atomid, Token.bondcount, Token.color,
+      Token.groupid, Token.covalent, Token.file, Token.format, Token.label,
+      Token.modelindex, Token.eta, Token.omega, Token.polymer, Token.property,
+      Token.radius, Token.selected, Token.shape, Token.sequence,
+      Token.spacefill, Token.structure, Token.substructure, Token.strucno,
+      Token.strucid, Token.symbol, Token.theta, Token.unitx, Token.unity,
+      Token.unitz, Token.valence, Token.vibx, Token.viby, Token.vibz,
+      Token.volume, Token.unitxyz, Token.fracxyz, Token.xyz, Token.fuxyz,
+      Token.fux, Token.fuy, Token.fuz,
+
   };
 
   private static boolean isLabelPropertyTok(int tok) {
@@ -202,13 +161,13 @@ public class LabelToken {
     return false;
   }
 
+  public static final String STANDARD_LABEL = "%[identify]";
+
   private final static String twoCharLabelTokenParams = "fuv";
 
   private final static int[] twoCharLabelTokenIds = { Token.fracx, Token.fracy,
       Token.fracz, Token.unitx, Token.unity, Token.unitz, Token.vibx,
       Token.viby, Token.vibz, };
-
-  public static final String STANDARD_LABEL = "%[identify]";
 
   private LabelToken(String text) {
     this.text = text;
@@ -218,9 +177,18 @@ public class LabelToken {
     this.pt = pt;
   }
 
+  /**
+   * Compiles a set of tokens for each primitive element of a 
+   * label. This is the efficient way to create a set of labels. 
+   * 
+   * @param viewer
+   * @param strFormat
+   * @param chAtom
+   * @param htValues
+   * @return   array of tokens
+   */
   public static LabelToken[] compile(Viewer viewer, String strFormat,
-                                     char chAtom,
-                                     Map<String, Object> htValues) {
+                                     char chAtom, Map<String, Object> htValues) {
     if (strFormat.indexOf("%") < 0 || strFormat.length() < 2)
       return new LabelToken[] { new LabelToken(strFormat) };
     int n = 0;
@@ -243,6 +211,128 @@ public class LabelToken {
     return tokens;
   }
 
+  //////////// label formatting for atoms, bonds, and measurements ///////////
+
+  public static String formatLabel(Viewer viewer, Atom atom, String strFormat) {
+    if (strFormat == null || strFormat.length() == 0)
+      return null;
+    LabelToken[] tokens = compile(viewer, strFormat, '\0', null);
+    return formatLabel(viewer, atom, tokens, '\0', null);    
+  }
+
+  /**
+   * returns a formatted string based on the precompiled label tokens
+   * 
+   * @param viewer
+   * @param atom
+   * @param tokens
+   * @param chAtom
+   * @param indices
+   * @return   formatted string
+   */
+  public static String formatLabel(Viewer viewer, Atom atom, LabelToken[] tokens,
+                                   char chAtom, int[] indices) {
+    if (atom == null)
+      return null;
+    StringBuffer strLabel = (chAtom > '0' ? null : new StringBuffer());
+    for (int i = 0; i < tokens.length; i++) {
+      LabelToken t = tokens[i];
+      if (t == null)
+        break;
+      if (chAtom > '0' && t.ch1 != chAtom)
+        continue;
+      if (t.tok <= 0 || t.key != null) {
+        if (strLabel != null) {
+          strLabel.append(t.text);
+          if (t.ch1 != '\0')
+            strLabel.append(t.ch1);
+        }
+      } else {
+        appendAtomTokenValue(viewer, atom, t, strLabel, indices);
+      }
+    }
+    return (strLabel == null ? null : strLabel.toString().intern());
+  }
+
+  public static Map<String, Object> getBondLabelValues() {
+    Map<String, Object> htValues = new Hashtable<String, Object>();
+    htValues.put("#", "");
+    htValues.put("ORDER", "");
+    htValues.put("TYPE", "");
+    htValues.put("LENGTH", new Float(0));
+    htValues.put("ENERGY", new Float(0));
+    return htValues;
+  }
+
+  public static String formatLabel(Viewer viewer, Bond bond,
+                                   LabelToken[] tokens,
+                                   Map<String, Object> values, int[] indices) {
+    values.put("#", "" + (bond.index + 1));
+    values.put("ORDER", "" + bond.getOrderNumberAsString());
+    values.put("TYPE", bond.getOrderName());
+    values.put("LENGTH", new Float(bond.atom1.distance(bond.atom2)));
+    values.put("ENERGY", new Float(bond.getEnergy()));
+    setValues(tokens, values);
+    formatLabel(viewer, bond.atom1, tokens, '1', indices);
+    formatLabel(viewer, bond.atom2, tokens, '2', indices);
+    return getLabel(tokens);
+  }
+
+  public static String formatLabel(Viewer viewer, Measurement measurement,
+                                   String label, float value, String units) {
+    Map<String, Object> htValues = new Hashtable<String, Object>();
+    htValues.put("#", "" + (measurement.getIndex() + 1));
+    htValues.put("VALUE", new Float(value));
+    htValues.put("UNITS", units);
+    LabelToken[] tokens = compile(viewer, label, '\1', htValues);
+    setValues(tokens, htValues);
+    Atom[] atoms = measurement.modelSet.atoms;
+    int[] indices = measurement.getCountPlusIndices();
+    for (int i = indices[0]; i >= 1; --i)
+      if (indices[i] >= 0)
+        formatLabel(viewer, atoms[indices[i]], tokens, (char) ('0' + i), null);
+    label = getLabel(tokens);
+    return (label == null ? "" : label);
+  }
+
+  public static void setValues(LabelToken[] tokens, Map<String, Object> values) {
+    for (int i = 0; i < tokens.length; i++) {
+      LabelToken lt = tokens[i];
+      if (lt == null)
+        break;
+      if (lt.key == null)
+        continue;
+      Object value = values.get(lt.key);
+      lt.text = (value instanceof Float ? lt.format(((Float) value)
+          .floatValue(), null, null) : lt.format(Float.NaN, (String) value,
+          null));
+    }
+  }
+
+  public static String getLabel(LabelToken[] tokens) {
+    StringBuffer sb = new StringBuffer();
+    for (int i = 0; i < tokens.length; i++) {
+      LabelToken lt = tokens[i];
+      if (lt == null)
+        break;
+      sb.append(lt.text);
+    }
+    return sb.toString();
+  }
+
+  /////////////////// private methods
+  
+  /**
+   * sets a label token based on a label string
+   * 
+   * @param viewer
+   * @param strFormat
+   * @param lt
+   * @param cch
+   * @param chAtom
+   * @param htValues
+   * @return         new position
+   */
   private static int setToken(Viewer viewer, String strFormat, LabelToken lt,
                               int cch, int chAtom, Map<String, Object> htValues) {
     int ich = lt.pt + 1;
@@ -307,7 +397,7 @@ public class LabelToken {
         }
         ich = ichClose + 1;
         break;
-      case '{': 
+      case '{':
         // label %{altName}
         // client property name deprecated in 12.1.22
         // but this can be passed to Jmol from the reader
@@ -354,50 +444,19 @@ public class LabelToken {
     return ich;
   }
 
-  //////////// label formatting for atoms, bonds, and measurements ///////////
-
-  public static String formatLabel(Viewer viewer, Atom atom, String strFormat) {
-    return formatLabel(viewer, atom, strFormat, null, '\0', null);
-  }
-
-  public static String formatLabel(Viewer viewer, Atom atom, String strFormat, LabelToken[] tokens, char chAtom, int[]indices) {
-    if (atom == null || tokens == null && (strFormat == null || strFormat.length() == 0))
-        return null;
-    StringBuffer strLabel = (chAtom > '0' ? null : new StringBuffer());
-    if (tokens == null)
-      tokens = compile(viewer, strFormat, chAtom, null);
-    for (int i = 0; i < tokens.length; i++) {
-      LabelToken t = tokens[i];
-      if (t == null)
-        break;
-      if (chAtom > '0' && t.ch1 != chAtom)
-        continue;
-      if (t.tok <= 0 || t.key != null) {
-        if (strLabel !=  null) {
-          strLabel.append(t.text);
-          if (t.ch1 != '\0')
-            strLabel.append(t.ch1);
-        }
-      } else {
-        appendAtomTokenValue(viewer, atom, t, strLabel, indices);
-      }
-    }
-    return (strLabel == null ? null : strLabel.toString().intern());
-  }
-  
-  private static void appendAtomTokenValue(Viewer viewer, Atom atom, LabelToken t,
-                                           StringBuffer strLabel, int[] indices) {
+  private static void appendAtomTokenValue(Viewer viewer, Atom atom,
+                                           LabelToken t, StringBuffer strLabel,
+                                           int[] indices) {
     String strT = null;
     float floatT = Float.NaN;
     Tuple3f ptT = null;
     try {
       switch (t.tok) {
-      
+
       // special cases only for labels 
-      
+
       case Token.atomindex:
-        strT = ""
-            + (indices == null ? atom.index : indices[atom.index]);
+        strT = "" + (indices == null ? atom.index : indices[atom.index]);
         break;
       case Token.color:
         ptT = Atom.atomPropertyTuple(atom, t.tok);
@@ -453,7 +512,8 @@ public class LabelToken {
         break;
       case Token.string:
         // label %{altName}
-        strT = viewer.getModelAtomProperty(atom, t.text.substring(2, t.text.length() - 1));
+        strT = viewer.getModelAtomProperty(atom, t.text.substring(2, t.text
+            .length() - 1));
         break;
       case Token.structure:
       case Token.substructure:
@@ -462,9 +522,9 @@ public class LabelToken {
       case 'W':
         strT = atom.getIdentityXYZ(false);
         break;
-        
+
       // standard 
-        
+
       default:
         switch (t.tok & Token.PROPERTYFLAGS) {
         case Token.intproperty:
@@ -497,49 +557,6 @@ public class LabelToken {
       strLabel.append(strT);
   }
 
-  
-  public static Map<String, Object> getBondLabelValues() {
-    Map<String, Object> htValues = new Hashtable<String, Object>();
-    htValues.put("#", "");
-    htValues.put("ORDER", "");
-    htValues.put("TYPE", "");
-    htValues.put("LENGTH", new Float(0));
-    htValues.put("ENERGY", new Float(0));
-    return htValues;
-  }
-
-  public static String formatLabel(Viewer viewer, Bond bond,
-                                   LabelToken[] tokens, Map<String, Object> values,
-                                   int[] indices) {
-    values.put("#", "" + (bond.index + 1));
-    values.put("ORDER", "" + bond.getOrderNumberAsString());
-    values.put("TYPE", bond.getOrderName());
-    values.put("LENGTH", new Float(bond.atom1.distance(bond.atom2)));
-    values.put("ENERGY", new Float(bond.getEnergy()));
-    setValues(tokens, values);
-    formatLabel(viewer, bond.atom1, null, tokens, '1', indices);
-    formatLabel(viewer, bond.atom2, null, tokens, '2', indices);
-    return getLabel(tokens);
-  }
-
-  public static String formatLabel(Viewer viewer, Measurement measurement,
-                                   String label, float value, String units) {
-    Map<String, Object> htValues = new Hashtable<String, Object>();
-    htValues.put("#", "" + (measurement.getIndex() + 1));
-    htValues.put("VALUE", new Float(value));
-    htValues.put("UNITS", units);
-    LabelToken[] tokens = compile(viewer, label, '\1', htValues);
-    setValues(tokens, htValues);
-    Atom[] atoms = measurement.modelSet.atoms;
-    int[] indices = measurement.getCountPlusIndices();
-    for (int i = indices[0]; i >= 1; --i)
-      if (indices[i] >= 0)
-        formatLabel(viewer, atoms[indices[i]], null, tokens, (char) ('0' + i),
-            null);
-    label = getLabel(tokens);
-    return (label == null ? "" : label);
-  }
-
   private String format(float floatT, String strT, Tuple3f ptT) {
     if (!Float.isNaN(floatT)) {
       return TextFormat.format(floatT, width, precision, alignLeft, zeroPad);
@@ -551,36 +568,11 @@ public class LabelToken {
         precision = 2;
       }
       return TextFormat.format(ptT.x, width, precision, false, false)
-      + TextFormat.format(ptT.y, width, precision, false, false)
-      + TextFormat.format(ptT.z, width, precision, false, false);
+          + TextFormat.format(ptT.y, width, precision, false, false)
+          + TextFormat.format(ptT.z, width, precision, false, false);
     } else {
       return text;
     }
-  }
-
-  public static void setValues(LabelToken[] tokens, Map<String, Object> values) {
-    for (int i = 0; i < tokens.length; i++) {
-      LabelToken lt = tokens[i];
-      if (lt == null)
-        break;
-      if (lt.key == null)
-        continue;
-      Object value = values.get(lt.key);
-        lt.text = (value instanceof Float ? 
-            lt.format(((Float)value).floatValue(), null, null)
-            : lt.format(Float.NaN, (String) value, null));
-    }    
-  }
-
-  public static String getLabel(LabelToken[] tokens) {
-    StringBuffer sb = new StringBuffer();
-    for (int i = 0; i < tokens.length; i++) {
-      LabelToken lt = tokens[i];
-      if (lt == null)
-        break;
-      sb.append(lt.text);
-    }
-    return sb.toString();
   }
 
 }

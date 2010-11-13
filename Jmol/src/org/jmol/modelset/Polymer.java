@@ -209,19 +209,20 @@ abstract public class Polymer {
    * @param qtype
    * @param mStep
    * @param derivType
-   * @param isDraw
    * @param bsAtoms
+   * @param bsSelected
+   * @param bothEnds
+   * @param isDraw
+   * @param addHeader
+   * @param tokens
    * @param pdbATOM
    * @param pdbCONECT
-   * @param bsSelected
-   * @param addHeader
-   * @param bothEnds
    * @param bsWritten
    */
   public void getPdbData(Viewer viewer, char ctype, char qtype, int mStep, int derivType, 
-              boolean isDraw, BitSet bsAtoms, OutputStringBuffer pdbATOM, 
-              StringBuffer pdbCONECT, BitSet bsSelected, boolean addHeader, 
-              boolean bothEnds, BitSet bsWritten) {
+              BitSet bsAtoms, BitSet bsSelected, boolean bothEnds, 
+              boolean isDraw, boolean addHeader, LabelToken[] tokens, 
+              OutputStringBuffer pdbATOM, StringBuffer pdbCONECT, BitSet bsWritten) {
     return;
   }
 

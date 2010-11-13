@@ -53,7 +53,8 @@ public class P2nReader extends PdbReader {
   }
   
   @Override
-  protected void finalizeReader() {
+  protected void finalizeReader() throws Exception {
+    super.finalizeReader();
     if (useAltNames)
       return;
     String[] names = new String[altNames.size()];

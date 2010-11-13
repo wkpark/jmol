@@ -55,19 +55,12 @@ public class Group {
   protected short groupID;
   protected boolean isAmino;
   int selectedIndex;
-  protected int firstAtomIndex = -1;
-  protected int lastAtomIndex;
+  public int firstAtomIndex = -1;
+  public int leadAtomIndex = -1;
+  public int lastAtomIndex;
   private final static int SEQUENCE_NUMBER_FLAG = 0x80;
   private final static int INSERTION_CODE_MASK = 0x7F; //7-bit character codes, please!
   private final static int SEQUENCE_NUMBER_SHIFT = 8;
-  
-  public int getFirstAtomIndex(){
-    return firstAtomIndex;
-  }
-  public int getLastAtomIndex(){
-    return lastAtomIndex;
-  }
-  
   
   public int shapeVisibilityFlags = 0;
   
@@ -414,10 +407,6 @@ public class Group {
   
   public Atom getLeadAtom() {
     return null; // but see Monomer class
-  }
-
-  public int getLeadAtomIndex() {
-    return -1; // but see Monomer class
   }
 
   /**

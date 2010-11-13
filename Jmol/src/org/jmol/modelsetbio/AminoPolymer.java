@@ -589,7 +589,7 @@ public class AminoPolymer extends AlphaPolymer {
       // lacking a C=O counts as done or "chain break"
       for (int j = 0; j < ap.monomerCount; j++)
         if (((AminoMonomer) ap.monomers[j]).getCarbonylOxygenAtom() == null)
-          bsBad.set(ap.monomers[j].getLeadAtomIndex());
+          bsBad.set(ap.monomers[j].leadAtomIndex);
     }
 
     // Step 1: Create a polymer-based array of dual-minimum NH->O connections

@@ -153,8 +153,8 @@ public class LabelsRenderer extends ShapeRenderer {
 
   private int getMinZ(Atom[] atoms, Group group) {
     int minZ = Integer.MAX_VALUE;
-    int first = group.getFirstAtomIndex();
-    int last = group.getLastAtomIndex();
+    int first = group.firstAtomIndex;
+    int last = group.lastAtomIndex;
     for (int i = first; i <= last; i++) {
       int z = atoms[i].screenZ - atoms[i].screenDiameter / 2 - 2;
       if (z < minZ)

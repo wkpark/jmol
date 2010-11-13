@@ -68,8 +68,8 @@ public abstract class BioPolymer extends Polymer {
   public void getRange(BitSet bs) {
     if (monomerCount == 0)
       return;
-    bs.set(monomers[0].getFirstAtomIndex(),
-        monomers[monomerCount - 1].getLastAtomIndex() + 1);
+    bs.set(monomers[0].firstAtomIndex,
+        monomers[monomerCount - 1].lastAtomIndex + 1);
   }
   
   static BioPolymer allocateBioPolymer(Group[] groups, int firstGroupIndex,
@@ -968,14 +968,14 @@ public abstract class BioPolymer extends Polymer {
   public void getRangeGroups(int nResidues, BitSet bsAtoms, BitSet bsResult) {
     BitSet bsTemp = new BitSet();
     for (int i = 0; i < monomerCount; i++) {
-      int n = bsAtoms.nextSetBit(monomers[i].getFirstAtomIndex());
-      if (n < 0 || n > monomers[i].getLastAtomIndex())
+      int n = bsAtoms.nextSetBit(monomers[i].firstAtomIndex);
+      if (n < 0 || n > monomers[i].lastAtomIndex)
         continue;
       bsTemp.set(Math.max(0, i - nResidues), i + nResidues + 1);
       i += nResidues - 1;
     }
     for (int i = bsTemp.nextSetBit(0); i >= 0 && i < monomerCount; i = bsTemp.nextSetBit(i + 1)) 
-      bsResult.set(monomers[i].getFirstAtomIndex(), monomers[i].getLastAtomIndex() + 1);
+      bsResult.set(monomers[i].firstAtomIndex, monomers[i].lastAtomIndex + 1);
   }
   
   @Override

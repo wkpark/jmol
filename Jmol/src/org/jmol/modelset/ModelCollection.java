@@ -3961,9 +3961,9 @@ abstract public class ModelCollection extends BondCollection {
       if (offset == 1 && !m.isConnectedPrevious())
         return -1;
       if ("0".equals(name))
-        return m.getLeadAtomIndex();
-      int max = m.getLastAtomIndex();
-      for (int i = m.getFirstAtomIndex(); i <= max; i++)
+        return m.leadAtomIndex;
+      int max = m.lastAtomIndex;
+      for (int i = m.firstAtomIndex; i <= max; i++)
         if (name == null || name.equalsIgnoreCase(atoms[i].getAtomName()))
           return i;
     }

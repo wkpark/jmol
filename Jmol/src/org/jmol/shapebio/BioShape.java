@@ -295,8 +295,8 @@ class BioShape {
       return;
     String type = JmolConstants.shapeClassBases[shape.shapeID];
     for (int i = 0; i < monomerCount; i++) {
-      int atomIndex1 = monomers[i].getFirstAtomIndex();
-      int atomIndex2 = monomers[i].getLastAtomIndex();
+      int atomIndex1 = monomers[i].firstAtomIndex;
+      int atomIndex2 = monomers[i].lastAtomIndex;
       if (bsSizeSet != null && (bsSizeSet.get(i) 
           || bsColixSet != null && bsColixSet.get(i))) {//shapes MUST have been set with a size
         if (bsSizeDefault.get(i))

@@ -57,7 +57,6 @@ public abstract class Monomer extends Group {
   }
 
   int monomerIndex;
-  int leadAtomIndex;
   
   void setBioPolymer(BioPolymer polymer, int index) {
     this.bioPolymer = polymer;
@@ -235,11 +234,6 @@ public abstract class Monomer extends Group {
   @Override
   public final Atom getLeadAtom() {
     return getAtomFromOffsetIndex(0);
-  }
-
-  @Override
-  public int getLeadAtomIndex() {
-    return getLeadAtom().index;
   }
 
   public final Atom getWingAtom() {
@@ -491,7 +485,7 @@ public abstract class Monomer extends Group {
         haveCrossLink = true;
         if (group != null)
           break;
-        vReturn.add(Integer.valueOf(g.getLeadAtomIndex()));
+        vReturn.add(Integer.valueOf(g.leadAtomIndex));
       }
     }
     return haveCrossLink;

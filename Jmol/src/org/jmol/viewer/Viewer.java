@@ -9448,8 +9448,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
             index1 = index2;
             index2 = i;
           }
-          index1 = atoms[index1].getGroup().getFirstAtomIndex();
-          index2 = atoms[index2].getGroup().getLastAtomIndex();
+          index1 = atoms[index1].getGroup().firstAtomIndex;
+          index2 = atoms[index2].getGroup().lastAtomIndex;
         }
         bsSelected = new BitSet();
         bsSelected.set(index1, index2 + 1);

@@ -75,7 +75,7 @@ public class LabelToken {
 
   private String text; 
   private String key;
-  private float[] data;
+  private Object data;
   private int tok;
   private int pt = -1;
   private char ch1;
@@ -307,15 +307,29 @@ public class LabelToken {
         }
         ich = ichClose + 1;
         break;
-      case '{': // client property name
+      case '{': 
+        // label %{altName}
+        // client property name deprecated in 12.1.22
+        // but this can be passed to Jmol from the reader
+        // as an auxiliaryInfo array or '\n'-delimited string
         int ichCloseBracket = strFormat.indexOf('}', ich);
         if (ichCloseBracket < ich) {
           ich = cch;
           break;
         }
         lt.text = strFormat.substring(ich, ichCloseBracket);
-        lt.tok = Token.data;
         lt.data = viewer.getDataFloat(lt.text);
+        if (lt.data == null) {
+          lt.data = viewer.getData(lt.text);
+          if (lt.data instanceof Object[]) {
+            lt.data = ((Object[]) lt.data)[1];
+            if (lt.data instanceof String)
+              lt.data = TextFormat.split((String) lt.data, '\n');
+          }
+          if (!(lt.data instanceof String[]))
+            lt.data = null;
+        }
+        lt.tok = (lt.data == null ? Token.string : Token.data);
         ich = ichCloseBracket + 1;
         break;
       default:
@@ -389,7 +403,14 @@ public class LabelToken {
         ptT = Atom.atomPropertyTuple(atom, t.tok);
         break;
       case Token.data:
-        floatT = (t.data != null ? t.data[atom.index] : Float.NaN);
+        if (t.data != null) {
+          if (t.data instanceof float[])
+            floatT = ((float[]) t.data)[atom.index];
+          else if (t.data instanceof String[]) {
+            String[] sdata = (String[]) t.data;
+            strT = (atom.index < sdata.length ? sdata[atom.index] : "");
+          }
+        }
         break;
       case Token.formalcharge:
         int formalCharge = atom.getFormalCharge();
@@ -429,6 +450,10 @@ public class LabelToken {
         floatT = atom.getGroupParameter(Token.straightness);
         if (Float.isNaN(floatT))
           strT = "null";
+        break;
+      case Token.string:
+        // label %{altName}
+        strT = viewer.getModelAtomProperty(atom, t.text.substring(2, t.text.length() - 1));
         break;
       case Token.structure:
       case Token.substructure:

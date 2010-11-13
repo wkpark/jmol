@@ -45,9 +45,9 @@ public class Resolver {
 
   private final static String classBase = "org.jmol.adapter.readers.";
   private final static String[] readerSets = new String[] {
-    "cifpdb.", ";Cif;Pdb;Pqr;",
+    "cifpdb.", ";Cif;Pdb;",
     "molxyz.", ";Mol;Xyz;",
-    "more.", ";Gromacs;MdCrd;MdTop;Mol2;",
+    "more.", ";Gromacs;MdCrd;MdTop;Mol2;Pqr;P2n;",
     "quantum.", ";Adf;Csf;Dgrid;GamessUK;GamessUS;Gaussian;GausianWfn;Jaguar;" +
                  "Molden;MopacGraphf;GenNBO;NWChem;Odyssey;Psi;Qchem;Spartan;SpartanSmol;" +
                  "WebMO;",
@@ -931,6 +931,9 @@ public class Resolver {
   private final static String[] pqrLineStartRecords = 
   { "Pqr", "REMARK   1 PQR" };
 
+  private final static String[] p2nLineStartRecords = 
+  { "P2n", "REMARK   1 P2N" };
+
   private final static String[] pdbLineStartRecords = {
     "Pdb", "HEADER", "OBSLTE", "TITLE ", "CAVEAT", "COMPND", "SOURCE", "KEYWDS",
     "EXPDTA", "AUTHOR", "REVDAT", "SPRSDE", "JRNL  ", "REMARK ",
@@ -968,7 +971,8 @@ public class Resolver {
   { "HyperChem", "mol 1" };
   
   private final static String[][] lineStartsWithRecords =
-  { cifLineStartRecords, pqrLineStartRecords, pdbLineStartRecords, shelxLineStartRecords, 
+  { cifLineStartRecords, pqrLineStartRecords, p2nLineStartRecords,
+    pdbLineStartRecords, shelxLineStartRecords, 
     ghemicalMMLineStartRecords, jaguarLineStartRecords, 
     mdlLineStartRecords, spartanSmolLineStartRecords, csfLineStartRecords, 
     mol2Records, mdTopLineStartRecords, hyperChemLineStartRecords };

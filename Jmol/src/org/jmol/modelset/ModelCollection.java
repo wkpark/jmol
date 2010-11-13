@@ -933,6 +933,15 @@ abstract public class ModelCollection extends BondCollection {
     return Integer.MIN_VALUE;
   }
 
+  public String getModelAtomProperty(Atom atom, String text) {
+    Object data = getModelAuxiliaryInfo(atom.modelIndex, text);
+    if (!(data instanceof Object[]))
+      return "";
+    Object[] sdata = (Object[]) data;
+    int iatom = atom.index - models[atom.modelIndex].firstAtomIndex;
+    return (iatom < sdata.length ? sdata[iatom].toString() : "");
+  }
+
   public int getInsertionCountInModel(int modelIndex) {
     return models[modelIndex].nInsertions;
   }

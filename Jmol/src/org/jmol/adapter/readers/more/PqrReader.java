@@ -22,7 +22,10 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.adapter.readers.cifpdb;
+package org.jmol.adapter.readers.more;
+
+import org.jmol.adapter.readers.cifpdb.PdbReader;
+import org.jmol.adapter.smarter.Atom;
 
 /**
  * PQR file reader.
@@ -48,45 +51,20 @@ PDB files can be converted to PQR by the PDB2PQR software[3], which adds missing
 3.- http://pdb2pqr.sourceforge.net/
 4.- http://cardon.wustl.edu/MediaWiki/index.php/PQR_format
 
- *
- * @author Miguel, Egon, and Bob (hansonr@stolaf.edu)
- * 
- * symmetry added by Bob Hanson:
- * 
- *  setFractionalCoordinates()
- *  setSpaceGroupName()
- *  setUnitCell()
- *  initializeCartesianToFractional();
- *  setUnitCellItem()
- *  setAtomCoord()
- *  applySymmetryAndSetTrajectory()
  *  
  */
 
 public class PqrReader extends PdbReader {
 
   @Override
-  protected int readOccupancy() {
-    return 100;
-  }
+  protected void setAdditionalAtomParameters(Atom atom) {
 
-  @Override
-  protected float readBFactor() {
-    return Float.MAX_VALUE; 
-  }
-  
-  String[] tokens;
-  @Override
-  protected float readPartialCharge() {
-    tokens = getTokens();
-    return parseFloat(tokens[tokens.length - 2]);
-  }
-  
-  @Override
-  protected float readRadius() {
-    return parseFloat(tokens[tokens.length - 1]);
-  }
-  
+    String[] tokens = getTokens();
+    
+    atom.radius = parseFloat(tokens[tokens.length - 1]);
+    atom.partialCharge = parseFloat(tokens[tokens.length - 2]);
 
+  }
+  
 }
 

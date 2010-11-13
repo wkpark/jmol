@@ -288,7 +288,7 @@ public class Labels extends AtomShape {
     }
 
     if (propertyName.startsWith("label:")) {
-      setLabel(propertyName.substring(6), ((Integer)value).intValue());
+      setLabel(new LabelToken[1][], propertyName.substring(6), ((Integer)value).intValue());
       return;
     }
 
@@ -322,12 +322,13 @@ public class Labels extends AtomShape {
     boolean isScaled = viewer.getFontScaling();
     float scalePixelsPerMicron = (isScaled ? viewer
         .getScalePixelsPerAngstrom(false) * 10000f : 0);
+    LabelToken[][] temp = new LabelToken[][] { null };
     for (int i = atomCount; --i >= 0;)
       if (bsSelected.get(i)) 
-        setLabel(strLabel, i, isScaled, scalePixelsPerMicron);
+        setLabel(temp, strLabel, i, isScaled, scalePixelsPerMicron);
   }
 
-  private void setLabel(String value, int i) {
+  private void setLabel(LabelToken[][] temp, String value, int i) {
     isActive = true;
     if (bsSizeSet == null)
       bsSizeSet = new BitSet();
@@ -335,19 +336,22 @@ public class Labels extends AtomShape {
     boolean isScaled = viewer.getFontScaling();
     float scalePixelsPerMicron = (isScaled ? viewer
         .getScalePixelsPerAngstrom(false) * 10000f : 0);
-    setLabel(strLabel, i, isScaled, scalePixelsPerMicron);
+    setLabel(temp, strLabel, i, isScaled, scalePixelsPerMicron);
   }
   
-  private void setLabel(String strLabel, int i, boolean isScaled, float scalePixelsPerMicron) {
+  private void setLabel(LabelToken[][] temp, String strLabel, int i, boolean isScaled, float scalePixelsPerMicron) {
       Atom atom = atoms[i];
-      String label = LabelToken.formatLabel(viewer, atom, strLabel);
+      LabelToken[] tokens = temp[0];
+      if (tokens == null)
+        tokens = temp[0] = LabelToken.compile(viewer, strLabel, '\0', null);
+      String label = LabelToken.formatLabel(viewer, atom, strLabel, tokens, '\0', null);
       atom.setShapeVisibility(myVisibilityFlag, label != null);
       if (strings == null || i >= strings.length)
         strings = ArrayUtil.ensureLength(strings, i + 1);
       if (formats == null || i >= formats.length)
         formats = ArrayUtil.ensureLength(formats, i + 1);
       strings[i] = label;
-      formats[i] = strLabel;
+      formats[i] = (strLabel != null && strLabel.indexOf("%{") >= 0 ? label : strLabel);
       bsSizeSet.set(i, (strLabel != null));
       text = getLabel(i);
       if (isScaled) {

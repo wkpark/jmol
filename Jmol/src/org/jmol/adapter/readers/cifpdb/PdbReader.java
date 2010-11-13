@@ -591,17 +591,12 @@ REMARK 290 REMARK: NULL
       }
     }
     atom.formalCharge = charge;
-    float partialCharge = readPartialCharge();
-    if (partialCharge != Float.MAX_VALUE)
-      atom.partialCharge = partialCharge;
 
     setAtomCoord(atom, parseFloat(line, 30, 38), parseFloat(line, 38, 46),
         parseFloat(line, 46, 54));
 
-    atom.radius = readRadius();    
-    atom.bfactor = readBFactor();
-    atom.occupancy = readOccupancy();
-    
+    setAdditionalAtomParameters(atom);
+
     lastAtomData = line.substring(6, 26);
     lastAtomIndex = atomSetCollection.getAtomCount();
     if (haveMappedSerials)
@@ -658,33 +653,26 @@ REMARK 290 REMARK: NULL
     }
     return true;
   }
-  
-  protected int readOccupancy() {
+
+  /**
+   * adaptable via subclassing
+   * 
+   * @param atom
+   */
+  protected void setAdditionalAtomParameters(Atom atom) {
 
     /****************************************************************
      * read the occupancy from cols 55-60 (1-based)
      * should be in the range 0.00 - 1.00
      ****************************************************************/
-    int occupancy = 100;
     float floatOccupancy = parseFloat(line, 54, 60);
-    if (!Float.isNaN(floatOccupancy))
-      occupancy = (int) (floatOccupancy * 100);
-    return occupancy;
-  }
-  
-  protected float readBFactor() {
+    atom.occupancy = (Float.isNaN(floatOccupancy) ? 100 : (int) (floatOccupancy * 100));
+
     /****************************************************************
      * read the bfactor from cols 61-66 (1-based)
      ****************************************************************/
-    return parseFloat(line, 60, 66);
-  }
-  
-  protected float readPartialCharge() {
-    return Float.MAX_VALUE; 
-  }
-  
-  protected float readRadius() {
-    return Float.NaN; 
+    atom.bfactor = parseFloat(line, 60, 66);
+
   }
   
   private String deduceElementSymbol(boolean isHetero) {

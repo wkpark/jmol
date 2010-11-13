@@ -9495,4 +9495,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.displayBonds(bs, isDisplay);    
   }
 
+  public String getModelAtomProperty(Atom atom, String text) {
+    return modelSet.getModelAtomProperty(atom, text);
+  }
+
 }

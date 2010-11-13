@@ -644,6 +644,7 @@ public abstract class AtomSetCollectionReader {
   private boolean filterAtomType;
   private boolean doSetOrientation;
   protected boolean addVibrations;
+  protected boolean useAltNames;
   public boolean readMolecularOrbitals;
 
   // MANY: "NOVIB" "NOMO"
@@ -655,6 +656,7 @@ public abstract class AtomSetCollectionReader {
   // MOReaders: "NBOCHARGES"
   // PDB: "BIOMOLECULE n;" "NOSYMMETRY"  "CONF n"
   // Spartan: "INPUT", "ESPCHARGES"
+  // P2N: "ALTNAME"
 
   protected void setFilter(String filter0) {
     if (filter0 != null)
@@ -663,6 +665,7 @@ public abstract class AtomSetCollectionReader {
     doSetOrientation = !checkFilter("NOORIENT");
     addVibrations = !checkFilter("NOVIB");
     readMolecularOrbitals = !checkFilter("NOMO");
+    useAltNames = checkFilter("ALTNAME");
     if (filter == null)
       return;
     filterAtomType = checkFilter("*.") || checkFilter("!.");

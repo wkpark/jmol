@@ -76,7 +76,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   boolean showBoundingBox;
   boolean axesOrientationRasmol;
   boolean openFilePreview;
-  boolean clearConsoleButton;
+  boolean clearHistory;
   float minBondDistance;
   float bondTolerance;
   short marBond;
@@ -90,7 +90,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private JCheckBox cbShowAxes, cbShowBoundingBox;
   private JCheckBox cbAxesOrientationRasmol;
   private JCheckBox cbOpenFilePreview;
-  private JCheckBox cbClearConsoleButton;
+  private JCheckBox cbClearHistory;
   private Properties originalSystemProperties;
   private Properties jmolDefaultProperties;
   Properties currentProperties;
@@ -270,10 +270,10 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     cbOpenFilePreview.addItemListener(checkBoxListener);
     otherPanel.add(cbOpenFilePreview);
     
-    cbClearConsoleButton =
-        guimap.newJCheckBox("Prefs.clearConsoleButton", clearConsoleButton);
-    cbClearConsoleButton.addItemListener(checkBoxListener);
-    otherPanel.add(cbClearConsoleButton);
+    cbClearHistory =
+        guimap.newJCheckBox("Prefs.clearHistory", clearHistory);
+    cbClearHistory.addItemListener(checkBoxListener);
+    otherPanel.add(cbClearHistory);
     
     constraints = new GridBagConstraints();
     constraints.gridwidth = GridBagConstraints.REMAINDER;
@@ -558,7 +558,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     cbAxesOrientationRasmol.setSelected(viewer.getAxesOrientationRasmol());
     
     cbOpenFilePreview.setSelected(openFilePreview);
-    cbClearConsoleButton.setSelected(clearConsoleButton);
+    cbClearHistory.setSelected(clearHistory);
 
     // Atom panel controls: 
     vdwPercentSlider.setValue(viewer.getPercentVdwAtom());
@@ -621,7 +621,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     showBoundingBox = Boolean.getBoolean("showBoundingBox");
     axesOrientationRasmol = Boolean.getBoolean("axesOrientationRasmol");
     openFilePreview = Boolean.valueOf(System.getProperty("openFilePreview", "true")).booleanValue();
-    clearConsoleButton = Boolean.getBoolean("clearConsoleButton");
+    clearHistory = Boolean.getBoolean("clearHistory");
 
     minBondDistance =
       new Float(currentProperties.getProperty("minBondDistance")).floatValue();
@@ -712,9 +712,11 @@ public class PreferencesDialog extends JDialog implements ActionListener {
       } else if (key.equals("Prefs.openFilePreview")) {
       	openFilePreview = isSelected;
       	currentProperties.put("openFilePreview", strSelected);
-      } else if (key.equals("Prefs.clearConsoleButton")) {
-        clearConsoleButton = isSelected;
-        currentProperties.put("clearConsoleButton", strSelected);
+      } else if (key.equals("Prefs.clearHistory")) {
+        clearHistory = isSelected;
+        currentProperties.put("clearHistory", strSelected);
+        if (JmolPanel.historyFile != null)
+          JmolPanel.historyFile.addProperty("clearHistory", strSelected);
       }
     }
   };

@@ -480,6 +480,8 @@ public class JmolPanel extends JPanel implements SplashInterface {
 
   private void dispose(JFrame f) {
     // Save window positions and status in the history
+    if (webExport != null)
+      WebExport.cleanUp();
     if (historyFile != null) {
       if (frame != null) {
         jmolApp.border.x = frame.getWidth() - display.dimSize.width;
@@ -488,16 +490,14 @@ public class JmolPanel extends JPanel implements SplashInterface {
       }
       //System.out.println("doClose border: " + border);
       //historyFile.addWindowInfo(CONSOLE_WINDOW_NAME, consoleframe);
-    }
-    AppConsole console = (AppConsole) viewer.getProperty("DATA_API","getAppConsole", null);
-    if (console != null && console.jcd != null)
-      historyFile.addWindowInfo(SCRIPT_WINDOW_NAME, console.jcd, null);
-    Component c = (Component) viewer.getProperty("DATA_API","getScriptEditor", null);
-    if (c != null)
-      historyFile.addWindowInfo(EDITOR_WINDOW_NAME, c, null);
-    if (historyFile != null && webExport != null) {
-      WebExport.saveHistory();
-      WebExport.cleanUp();
+      AppConsole console = (AppConsole) viewer.getProperty("DATA_API","getAppConsole", null);
+      if (console != null && console.jcd != null)
+        historyFile.addWindowInfo(SCRIPT_WINDOW_NAME, console.jcd, null);
+      Component c = (Component) viewer.getProperty("DATA_API","getScriptEditor", null);
+      if (c != null)
+        historyFile.addWindowInfo(EDITOR_WINDOW_NAME, c, null);
+      if (historyFile.getProperty("clearHistory", "false").equals("true"))
+        historyFile.clear();
     }
     if (numWindows <= 1) {
       // Close Jmol

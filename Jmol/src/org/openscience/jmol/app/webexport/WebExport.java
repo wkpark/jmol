@@ -224,6 +224,8 @@ public class WebExport extends JPanel implements WindowListener {
   }
 
   public static void saveHistory() {
+    if (historyFile == null)
+      return;
     historyFile.addWindowInfo(windowName, webFrame, null);
     //    prop.setProperty("webMakerInfoWidth", "" + webPanels[0].getInfoWidth());
     //    prop.setProperty("webMakerInfoHeight", "" + webPanels[0].getInfoHeight());
@@ -455,6 +457,5 @@ public class WebExport extends JPanel implements WindowListener {
       }
     }
     saveHistory();//force save of history.
-    System.gc();//force garbage collection.
   }
 }

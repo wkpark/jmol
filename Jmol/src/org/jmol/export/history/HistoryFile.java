@@ -111,7 +111,7 @@ public class HistoryFile {
    * @param value Value of the property
    * @return true if the property is modified
    */
-  private boolean addProperty(String key, String value) {
+  public boolean addProperty(String key, String value) {
     boolean modified = false;
     Object oldValue = properties.setProperty(key, value);
     if (!value.equals(oldValue)) {
@@ -368,6 +368,17 @@ public class HistoryFile {
       output.close();
     } catch (IOException ex) {
       System.err.println("Error saving history: " + ex);
+    }
+  }
+  
+  public void clear() {
+    if (file == null)
+      return;
+    try {
+      FileOutputStream output = new FileOutputStream(file);
+      output.close();
+    } catch (IOException ex) {
+      System.err.println("Error clearing history: " + ex);
     }
   }
 

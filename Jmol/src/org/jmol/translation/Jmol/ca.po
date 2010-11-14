@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-11-08 19:06+0100\n"
+"POT-Creation-Date: 2010-11-14 10:32+0100\n"
 "PO-Revision-Date: 2009-10-25 22:19+0000\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.cat>\n"
 "Language-Team: Catalan <jmol-developers@lists.sourceforge.net>\n"
@@ -941,7 +941,8 @@ msgid "File Preview (requires restarting Jmol)"
 msgstr "Previsualització del fitxer (cal reiniciar el Jmol)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:203
-msgid "Clear console button (requires restarting Jmol)"
+#, fuzzy
+msgid "Clear history (requires restarting Jmol)"
 msgstr "Botó de neteja de la consola (cal reiniciar el Jmol)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:204
@@ -1357,7 +1358,7 @@ msgstr "% de la finestra per a l'amplada de la miniaplicació:"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:82
 #: org/openscience/jmol/app/webexport/WebExport.java:196
-#: org/openscience/jmol/app/webexport/WebExport.java:266
+#: org/openscience/jmol/app/webexport/WebExport.java:268
 msgid "Jmol Web Page Maker"
 msgstr "Creador de pàgines web del Jmol"
 
@@ -1390,7 +1391,7 @@ msgstr ""
 "L''esquelet de la pàgina i el Javascript s''han generat per la funció "
 "d''exportació web utilitzant {0} a {1}."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:356
+#: org/openscience/jmol/app/webexport/WebExport.java:358
 #, java-format
 msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
@@ -1400,20 +1401,20 @@ msgstr ""
 "temps de baixada pot ser significant la primera vegada que es carrega la "
 "miniaplicació."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:358
+#: org/openscience/jmol/app/webexport/WebExport.java:360
 msgid "Insert the page TITLE here."
 msgstr "Inseriu-hi el títol de la pàgina"
 
-#: org/openscience/jmol/app/webexport/WebExport.java:359
+#: org/openscience/jmol/app/webexport/WebExport.java:361
 msgid "Insert the page INTRODUCTION here."
 msgstr "Inseriu-hi la introducció de la pàgina."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:361
+#: org/openscience/jmol/app/webexport/WebExport.java:363
 #, java-format
 msgid "Insert a caption for {0} here."
 msgstr "Inseriu una llegenda per a {0} ací."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:362
+#: org/openscience/jmol/app/webexport/WebExport.java:364
 #, fuzzy, java-format
 msgid ""
 "Insert additional explanatory text here. Long text will wrap around Jmol "
@@ -1422,11 +1423,11 @@ msgstr ""
 "Inseriu un text explicatori addicional ací. Si el text és llarg, s''ajustarà "
 "al voltant del model de Jmol {0}."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:364
+#: org/openscience/jmol/app/webexport/WebExport.java:366
 msgid "Insert your TITLE and INTRODUCTION here."
 msgstr "Inseriu el vostre TÍTOL i INTRODUCCIÓ ací."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:366
+#: org/openscience/jmol/app/webexport/WebExport.java:368
 #, java-format
 msgid ""
 "The button {0} will appear in the box below.  Insert information for {0} "
@@ -1435,7 +1436,7 @@ msgstr ""
 "El botó {0} apareixerà al quadre a sota. Inseriu informació de {0} ací i a "
 "continuació."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:367
+#: org/openscience/jmol/app/webexport/WebExport.java:369
 #, java-format
 msgid "Insert more information for {0} here."
 msgstr "Inseriu més informació de {0} ací."

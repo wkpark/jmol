@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-11-08 19:06+0100\n"
+"POT-Creation-Date: 2010-11-14 10:32+0100\n"
 "PO-Revision-Date: 2010-11-06 20:50+0000\n"
 "Last-Translator: simone.sandri <Unknown>\n"
 "Language-Team: Italian <it@li.org>\n"
@@ -923,7 +923,8 @@ msgid "File Preview (requires restarting Jmol)"
 msgstr "Anteprima del file (richiede riavvio di Jmol)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:203
-msgid "Clear console button (requires restarting Jmol)"
+#, fuzzy
+msgid "Clear history (requires restarting Jmol)"
 msgstr "Pulsante pulisci console (richiede il riavvio di Jmol)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:204
@@ -1339,7 +1340,7 @@ msgstr "% di finestra per la larghezza dell'applet:"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:82
 #: org/openscience/jmol/app/webexport/WebExport.java:196
-#: org/openscience/jmol/app/webexport/WebExport.java:266
+#: org/openscience/jmol/app/webexport/WebExport.java:268
 msgid "Jmol Web Page Maker"
 msgstr "Creatore di Pagine Web Jmol"
 
@@ -1372,7 +1373,7 @@ msgstr ""
 "Scheletro pagina e JavaScript generato da esportare al web utilizzando la "
 "funzione {0} su {1}."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:356
+#: org/openscience/jmol/app/webexport/WebExport.java:358
 #, java-format
 msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
@@ -1382,20 +1383,20 @@ msgstr ""
 "tempo di scaricamento può essere significativo per la prima volta che  "
 "l'applet viene caricato."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:358
+#: org/openscience/jmol/app/webexport/WebExport.java:360
 msgid "Insert the page TITLE here."
 msgstr "Inserisci la pagina TITOLO qui."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:359
+#: org/openscience/jmol/app/webexport/WebExport.java:361
 msgid "Insert the page INTRODUCTION here."
 msgstr "Inserisci la pagina INTRODUZIONE qui."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:361
+#: org/openscience/jmol/app/webexport/WebExport.java:363
 #, java-format
 msgid "Insert a caption for {0} here."
 msgstr "Inserire una didascalia per {0} qui."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:362
+#: org/openscience/jmol/app/webexport/WebExport.java:364
 #, java-format
 msgid ""
 "Insert additional explanatory text here. Long text will wrap around Jmol "
@@ -1404,11 +1405,11 @@ msgstr ""
 "Inserisci il testo aggiuntivo esplicativo qui. Il testo lungo verrà avvolto "
 "intorno al modello Jmol {0}."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:364
+#: org/openscience/jmol/app/webexport/WebExport.java:366
 msgid "Insert your TITLE and INTRODUCTION here."
 msgstr "Inserisci il tuo TITOLO e INTRODUZIONE qui."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:366
+#: org/openscience/jmol/app/webexport/WebExport.java:368
 #, java-format
 msgid ""
 "The button {0} will appear in the box below.  Insert information for {0} "
@@ -1417,7 +1418,7 @@ msgstr ""
 "Il pulsante {0} apparirà nella casella qui sotto. Inserire le informazioni "
 "per {0} qui e qui di seguito."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:367
+#: org/openscience/jmol/app/webexport/WebExport.java:369
 #, java-format
 msgid "Insert more information for {0} here."
 msgstr "Inserisci maggiori informazioni per {0} qui."

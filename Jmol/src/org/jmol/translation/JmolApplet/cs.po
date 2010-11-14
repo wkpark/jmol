@@ -9,13 +9,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-11-10 01:04+0100\n"
-"PO-Revision-Date: 2010-08-25 18:14+0000\n"
-"Last-Translator: Konki <pavel.konkol@seznam.cz>\n"
+"PO-Revision-Date: 2010-11-13 19:29+0000\n"
+"Last-Translator: Martin Slavík <Unknown>\n"
 "Language-Team: Czech <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-08-26 08:32+0000\n"
+"X-Launchpad-Export-Date: 2010-11-14 09:16+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: CZECH REPUBLIC\n"
 "X-Poedit-Language: Czech\n"
@@ -147,7 +147,8 @@ msgid "Check"
 msgstr "Zkontrolovat"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Nahoru"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -566,11 +567,11 @@ msgstr "táhnout atom (a minimalizovat)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:93
 msgid "drag molecule (SHIFT to rotate)"
-msgstr "táhnouz molekulu (SHIFT pro rotaci)"
+msgstr "táhnout molekulu (SHIFT pro rotaci)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:94
 msgid "drag and minimize molecule (docking)"
-msgstr "táhnot a minimalizovat molekulu (dokování)"
+msgstr "táhnout a minimalizovat molekulu (dokování)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:103
 msgid "increase charge"
@@ -1173,15 +1174,15 @@ msgstr "Popisky"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:697
 msgid "With Element Symbol"
-msgstr "Se symboly prvků"
+msgstr "symboly prvků"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:698
 msgid "With Atom Name"
-msgstr "S názvy atomů"
+msgstr "symboly s čísly atomů"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:699
 msgid "With Atom Number"
-msgstr "S protonovými čísly"
+msgstr "očíslované atomy"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:701
 msgid "Position Label on Atom"
@@ -1482,7 +1483,7 @@ msgstr "Klepnout pro změření torze"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:824
 msgid "Click two atoms to display a sequence in the console"
-msgstr ""
+msgstr "Klepněte na dva atomy pro zobrazení sekvence v konzoli"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:825
 msgid "Delete measurements"
@@ -1631,7 +1632,7 @@ msgstr "Exportovat obrázek {0}"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:874
 msgid "Save all as JMOL file (zip)"
-msgstr ""
+msgstr "Uložit vše jako JMOL soubor (zip)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:875
 msgid "Save JVXL isosurface"
@@ -2061,7 +2062,8 @@ msgstr "neznámý objekt"
 #: org/jmol/script/ScriptEvaluator.java:2752
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
-msgstr "nerozpoznaný {0} parameter v Jmol stavovém skriptu (přesto nastavený)"
+msgstr ""
+"nerozpoznaný {0} parameter v Jmol stavovém skriptu (přesto nastavený)"
 
 #: org/jmol/script/ScriptEvaluator.java:2755
 #, java-format
@@ -2153,7 +2155,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:69
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 "klepnout na dva body pro otočení kolem osy proti směru hodinových ručiček "
 "(vyžaduje {0})"
@@ -2390,12 +2393,12 @@ msgstr "Nastavuji log soubor na {0}"
 #~ msgid "About Jmol"
 #~ msgstr "O programu Jmol"
 
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
-#~ "Vytvoření souboru appletem není dovoleno. Pro formát Base64 JPEG, "
-#~ "použijte {0}."
+#~ "Vytvoření souboru appletem není dovoleno. Pro formát Base64 JPEG, použijte "
+#~ "{0}."
 
 #~ msgid "File creation failed."
 #~ msgstr "Vytvoření souboru se nezdařilo."
@@ -2403,18 +2406,21 @@ msgstr "Nastavuji log soubor na {0}"
 #~ msgid "File or URL"
 #~ msgstr "Soubor nebo URL"
 
+#, java-format
 #~ msgid "File {0}"
 #~ msgstr "Soubor {0}"
 
 #~ msgid "File from PDB"
 #~ msgstr "Soubor z PDB"
 
+#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "{0} 3D Modelů"
 
 #~ msgid "JVXL Isosurface"
 #~ msgstr "JVXL izopovrch"
 
+#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "{0} obrázek"
 
@@ -2424,11 +2430,14 @@ msgstr "Nastavuji log soubor na {0}"
 #~ msgid "Script with history"
 #~ msgstr "Skript s historií"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to string value: {0}"
 #~ msgstr "ERROR: cannot set boolean flag to string value: {0}"
 
+#, java-format
 #~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 #~ msgstr "ERROR: Cannot set value of this variable to a boolean: {0}"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr "ERROR: cannot set boolean flag to numeric value: {0}"

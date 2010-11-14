@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-11-08 19:06+0100\n"
-"PO-Revision-Date: 2010-08-07 16:50+0000\n"
+"POT-Creation-Date: 2010-11-14 10:32+0100\n"
+"PO-Revision-Date: 2010-11-13 19:18+0000\n"
 "Last-Translator: Martin Slavík <Unknown>\n"
 "Language-Team: Czech <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-08-07 20:16+0000\n"
+"X-Launchpad-Export-Date: 2010-11-14 09:16+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: CZECH REPUBLIC\n"
 "X-Poedit-Language: Czech\n"
@@ -23,7 +23,7 @@ msgstr ""
 #: org/openscience/jmol/app/JmolApp.java:102
 #: org/openscience/jmol/app/webexport/WebMaker.java:66
 msgid "Error starting Jmol: the property 'user.home' is not defined."
-msgstr "Chyba při Jmol spouštění: vlastnost 'user.home' není definována."
+msgstr "Chyba při spouštění Jmolu: vlastnost 'user.home' není definována."
 
 #: org/openscience/jmol/app/JmolApp.java:139
 msgid "transparent background"
@@ -47,7 +47,7 @@ msgstr "zkontrolovat pouze syntaxi skriptu - s nahráním souboru"
 
 #: org/openscience/jmol/app/JmolApp.java:147
 msgid "debug"
-msgstr "ladění"
+msgstr "ladit"
 
 #: org/openscience/jmol/app/JmolApp.java:148
 msgid "silent startup operation"
@@ -439,15 +439,15 @@ msgstr "Otevřít &URL"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:62
 msgid "&Get PDB"
-msgstr ""
+msgstr "Získat &PDB"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:63
 msgid "Get &MOL"
-msgstr ""
+msgstr "Získat &MOL"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:64
 msgid "&Reload"
-msgstr ""
+msgstr "Aktua&lizovat"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:65
 msgid "Scrip&t Editor..."
@@ -803,7 +803,7 @@ msgstr "&Graf..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:168
 msgid "Calculate chemical &shifts..."
-msgstr "Vypočítat chemické &posuny..."
+msgstr "Vypočítat chemické po&suny..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:169
 msgid "&Crystal Properties"
@@ -927,7 +927,8 @@ msgid "File Preview (requires restarting Jmol)"
 msgstr "Náhled souboru (vyžaduje restart Jmol)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:203
-msgid "Clear console button (requires restarting Jmol)"
+#, fuzzy
+msgid "Clear history (requires restarting Jmol)"
 msgstr "Vyčistit tlačítka konzole (vyžaduje restart Jmolu)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:204
@@ -950,9 +951,8 @@ msgid "Click atoms to measure distances"
 msgstr "Klepněte na atomy pro změření vzdálenosti"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:212
-#, fuzzy
 msgid "Click an atom to center on it"
-msgstr "Klepněte na atomy pro změření vzdálenosti"
+msgstr "Klepněte na atom pro vycentrování"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:213
 msgid "Return molecule to home position."
@@ -1003,9 +1003,8 @@ msgid "Initializing Recent Files..."
 msgstr "Načítám naposledy otevřené soubory..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:341
-#, fuzzy
 msgid "Jmol Java Console"
-msgstr "Jmol Java &Konzole"
+msgstr "Jmol Java konzole"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:361
 msgid "Could not create ConsoleTextArea: "
@@ -1037,19 +1036,19 @@ msgstr "Zadat URL molekulárního modelu"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1149
 msgid "Get PDB file"
-msgstr ""
+msgstr "Získat PDB soubor"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1150
 msgid "Enter a four-digit PDB ID"
-msgstr ""
+msgstr "Zadej čtyřčíselný PDB ID"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1167
 msgid "Get MOL file by compound name or ID"
-msgstr ""
+msgstr "Získat MOL soubor podle jména sloučeniny nebo ID"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1168
 msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
-msgstr ""
+msgstr "Zadej jméno nebo identifikátor (SMILES, InChI, CAS) molekuly"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1334
 msgid "IO Exception:"
@@ -1342,7 +1341,7 @@ msgstr "% okna pro šířku appletu:"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:82
 #: org/openscience/jmol/app/webexport/WebExport.java:196
-#: org/openscience/jmol/app/webexport/WebExport.java:266
+#: org/openscience/jmol/app/webexport/WebExport.java:268
 msgid "Jmol Web Page Maker"
 msgstr "Jmol tvůrce webových stránek"
 
@@ -1374,7 +1373,7 @@ msgid ""
 msgstr ""
 "Jádro stránky a JavaScript vytvořen pomocí funkce exportu na web {0} na {1}."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:356
+#: org/openscience/jmol/app/webexport/WebExport.java:358
 #, java-format
 msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
@@ -1383,31 +1382,31 @@ msgstr ""
 "Pro získání 3-D modelu se kterým lze manipulovat, klepněte {0}zde{1}. Čas "
 "pro stažení může být napoprvé dlouhý, než se applet načte."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:358
+#: org/openscience/jmol/app/webexport/WebExport.java:360
 msgid "Insert the page TITLE here."
 msgstr "Vložte zde TITULEK stránky."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:359
+#: org/openscience/jmol/app/webexport/WebExport.java:361
 msgid "Insert the page INTRODUCTION here."
 msgstr "Vložte zde ÚVOD stránky."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:361
+#: org/openscience/jmol/app/webexport/WebExport.java:363
 #, java-format
 msgid "Insert a caption for {0} here."
 msgstr "Vložte zde titulek pro {0}."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:362
+#: org/openscience/jmol/app/webexport/WebExport.java:364
 #, java-format
 msgid ""
 "Insert additional explanatory text here. Long text will wrap around Jmol "
 "model {0}."
 msgstr "Vlož sem text s vysvětlením. Dlouhý text bude obtékat Jmol model {0}."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:364
+#: org/openscience/jmol/app/webexport/WebExport.java:366
 msgid "Insert your TITLE and INTRODUCTION here."
 msgstr "Zde vložte svůj TITULEK a ÚVOD."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:366
+#: org/openscience/jmol/app/webexport/WebExport.java:368
 #, java-format
 msgid ""
 "The button {0} will appear in the box below.  Insert information for {0} "
@@ -1415,7 +1414,7 @@ msgid ""
 msgstr ""
 "Tlačítko {0} se objeví v rámečku níže. Vložte informaci pro {0} zde a níže."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:367
+#: org/openscience/jmol/app/webexport/WebExport.java:369
 #, java-format
 msgid "Insert more information for {0} here."
 msgstr "Zde vložte více informací pro {0}."

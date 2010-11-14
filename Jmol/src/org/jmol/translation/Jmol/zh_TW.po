@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-11-08 19:06+0100\n"
+"POT-Creation-Date: 2010-11-14 10:32+0100\n"
 "PO-Revision-Date: 2010-11-11 13:27+0000\n"
 "Last-Translator: iychiang <iychiang1809@gmail.com>\n"
 "Language-Team: Traditional Chinese <zh_TW@li.org>\n"
@@ -107,7 +107,9 @@ msgstr "視窗的 寬度 x 高度,例如 {0}"
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
-msgstr "JPG 影像壓縮品質(1-100;預設 75) 或 PNG 影像壓縮品質(0-9;預設 2,最大壓縮值為 9)"
+msgstr ""
+"JPG 影像壓縮品質(1-100;預設 75) 或 PNG 影像壓縮品質(0-9;預設 2,最大壓縮值為 "
+"9)"
 
 #: org/openscience/jmol/app/JmolApp.java:216
 #, java-format
@@ -919,7 +921,8 @@ msgid "File Preview (requires restarting Jmol)"
 msgstr "檔案預視(Jmol須重新啟動)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:203
-msgid "Clear console button (requires restarting Jmol)"
+#, fuzzy
+msgid "Clear history (requires restarting Jmol)"
 msgstr "清除主控台按鈕(Jmol須重新啟動)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:204
@@ -1330,7 +1333,7 @@ msgstr "applet視窗寬度百分比："
 
 #: org/openscience/jmol/app/webexport/WebExport.java:82
 #: org/openscience/jmol/app/webexport/WebExport.java:196
-#: org/openscience/jmol/app/webexport/WebExport.java:266
+#: org/openscience/jmol/app/webexport/WebExport.java:268
 msgid "Jmol Web Page Maker"
 msgstr "Jmol網頁設計工具"
 
@@ -1361,45 +1364,46 @@ msgid ""
 "on {1}."
 msgstr "輸出至在{1}上的網頁功能{0}可產生網頁架構及JavaScript。"
 
-#: org/openscience/jmol/app/webexport/WebExport.java:356
+#: org/openscience/jmol/app/webexport/WebExport.java:358
 #, java-format
 msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
-msgstr "可以手動取得3-D模型，按{0}中的{1}。第一次載入applet時，須要相當長的下載時間。"
+msgstr ""
+"可以手動取得3-D模型，按{0}中的{1}。第一次載入applet時，須要相當長的下載時間。"
 
-#: org/openscience/jmol/app/webexport/WebExport.java:358
+#: org/openscience/jmol/app/webexport/WebExport.java:360
 msgid "Insert the page TITLE here."
 msgstr "在這兒插入標題(page TITLE)"
 
-#: org/openscience/jmol/app/webexport/WebExport.java:359
+#: org/openscience/jmol/app/webexport/WebExport.java:361
 msgid "Insert the page INTRODUCTION here."
 msgstr "在這兒插入簡介(page INTRODUCTION)"
 
-#: org/openscience/jmol/app/webexport/WebExport.java:361
+#: org/openscience/jmol/app/webexport/WebExport.java:363
 #, java-format
 msgid "Insert a caption for {0} here."
 msgstr "在{0}這兒插入標題"
 
-#: org/openscience/jmol/app/webexport/WebExport.java:362
+#: org/openscience/jmol/app/webexport/WebExport.java:364
 #, java-format
 msgid ""
 "Insert additional explanatory text here. Long text will wrap around Jmol "
 "model {0}."
 msgstr "在此加入額外的說明文字. 若文字過多, 將會圍繞在 Jmol 模型 {0}."
 
-#: org/openscience/jmol/app/webexport/WebExport.java:364
+#: org/openscience/jmol/app/webexport/WebExport.java:366
 msgid "Insert your TITLE and INTRODUCTION here."
 msgstr "在這兒插入標題和簡介"
 
-#: org/openscience/jmol/app/webexport/WebExport.java:366
+#: org/openscience/jmol/app/webexport/WebExport.java:368
 #, java-format
 msgid ""
 "The button {0} will appear in the box below.  Insert information for {0} "
 "here and below."
 msgstr "按扭{0}會出現在對話盒下。有關{0}資訊請加在這裡及以下的地方。"
 
-#: org/openscience/jmol/app/webexport/WebExport.java:367
+#: org/openscience/jmol/app/webexport/WebExport.java:369
 #, java-format
 msgid "Insert more information for {0} here."
 msgstr "更多有關{0}資訊請加在這裡。"
@@ -1667,7 +1671,6 @@ msgstr "未實作的"
 #~ msgid "Jmol Script Console"
 #~ msgstr "Jmol Script 主控台"
 
-#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
@@ -1676,11 +1679,9 @@ msgstr "未實作的"
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "JmolPopIn.js加入中"
 
-#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "{0}.png加入中"
 
-#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "{0}.spt加入中"
 

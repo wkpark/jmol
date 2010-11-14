@@ -8504,6 +8504,9 @@
   <fah_proj number="6509" name="p6509_TR574_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="35411" preferred="35" deadline="53"
     credit="192" frames="100" code="G" contact="lan" contrib="Bas Couwenberg"/>
+  <fah_proj number="6510" name="p6510_TR538_predict" public="y"
+    server="171.64.65.62" atoms="22749" preferred="20" deadline="29"
+    credit="107" frames="100" code="G" contact="lan"/>
   <fah_proj number="6511" name="p6511_ubiq_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="25933" preferred="23" deadline="34"
     credit="123" frames="100" code="G" contact="lan" contrib="Boron,Bas Couwenberg,Bryan Spencer"/>
@@ -8528,6 +8531,12 @@
   <fah_proj number="6520" name="p6520_TR602_predict" public="n"
     server="171.64.65.62" atoms="37016" preferred="57" deadline="85"
     credit="310" frames="100" code="G" contact="lan"/>
+  <fah_proj number="6522" name="p6522_TR462A_predict" public="y"
+    server="171.64.65.62" atoms="15133" preferred="13" deadline="19"
+    credit="67" frames="100" code="G" contact="lan"/>
+  <fah_proj number="6525" name="p6525_1CFC_A_predict" public="n"
+    server="171.64.65.62" atoms="19690" preferred="17" deadline="25"
+    credit="89" frames="100" code="G" contact="lan"/>
   <fah_proj number="6526" name="p6526_proA_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="23935" preferred="21" deadline="31"
     credit="112" frames="100" code="G" contact="lan" contrib="Hyperlife"/>

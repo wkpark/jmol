@@ -1582,6 +1582,8 @@ public class SmilesSearch extends JmolMolecule {
     v.vB.set((Point3f) atomB);
     v.vA.sub((Point3f) atom1);
     v.vB.sub((Point3f) atom2);
+    v.vA.normalize();
+    v.vB.normalize();
     // -0.95f about 172 degrees
     return (v.vA.dot(v.vB) < f);
   }
@@ -1615,55 +1617,13 @@ public class SmilesSearch extends JmolMolecule {
         v.vTemp2);
   }
 
-  private static float distanceToPlane(Vector3f norm, float w, Point3f pt) {
+  static float distanceToPlane(Vector3f norm, float w, Point3f pt) {
     return (norm == null ? Float.NaN 
         : (norm.x * pt.x + norm.y * pt.y + norm.z * pt.z + w)
         / (float) Math.sqrt(norm.x * norm.x + norm.y * norm.y + norm.z
             * norm.z));
   }
 
-  /**
-   * 
-   * @param atom0
-   * @param atoms
-   * @param nAtoms
-   * @param v
-   * @return        String
-   */
-  static String getStereoFlag(JmolNode atom0, JmolNode[] atoms, int nAtoms, VTemp v) {
-    JmolNode atom1 = atoms[0];
-    JmolNode atom2 = atoms[1];
-    JmolNode atom3 = atoms[2];
-    JmolNode atom4 = atoms[3];
-    JmolNode atom5 = atoms[4];
-    JmolNode atom6 = atoms[5];
-    int chiralClass = 0;
-    switch (nAtoms) {
-    default:
-    case 5:
-    case 6:
-      // not doing these for now
-      break;
-    case 2: // allene
-    case 4: // tetrahedral, square planar
-      if (atom3 == null || atom4 == null)
-        return "";
-      float d = SmilesAromatic.getNormalThroughPoints(atom1, atom2, atom3, v.vTemp, v.vA, v.vB);
-      if (Math.abs(distanceToPlane(v.vTemp, d, (Point3f) atom4)) < 0.2f) {
-        chiralClass = SmilesAtom.STEREOCHEMISTRY_SQUARE_PLANAR;
-        if (checkStereochemistry(false, atom0, chiralClass, 1, atom1, atom2, atom3, atom4, atom5, atom6, v))
-          return "@SP1";
-        if (checkStereochemistry(false, atom0, chiralClass, 2, atom1, atom2, atom3, atom4, atom5, atom6, v))
-          return "@SP2";
-        if (checkStereochemistry(false, atom0, chiralClass, 3, atom1, atom2, atom3, atom4, atom5, atom6, v))
-          return "@SP3";       
-      } else {
-        chiralClass = SmilesAtom.STEREOCHEMISTRY_TETRAHEDRAL;
-        return (checkStereochemistry(false, atom0, chiralClass, 1, atom1, atom2, atom3, atom4, atom5, atom6, v)? "@" : "@@");
-      }       
-    }
-    return "";
-  }
 /*
   static String getDoubleBondStereoFlag(JmolNode[] atoms, VTemp v) {
     JmolNode atom1 = atoms[0];

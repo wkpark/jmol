@@ -189,6 +189,8 @@ public class LabelToken {
    */
   public static LabelToken[] compile(Viewer viewer, String strFormat,
                                      char chAtom, Map<String, Object> htValues) {
+    if (strFormat == null || strFormat.length() == 0)
+      return null;
     if (strFormat.indexOf("%") < 0 || strFormat.length() < 2)
       return new LabelToken[] { new LabelToken(strFormat) };
     int n = 0;
@@ -230,27 +232,29 @@ public class LabelToken {
    * @param indices
    * @return   formatted string
    */
-  public static String formatLabel(Viewer viewer, Atom atom, LabelToken[] tokens,
-                                   char chAtom, int[] indices) {
+  public static String formatLabel(Viewer viewer, Atom atom,
+                                   LabelToken[] tokens, char chAtom,
+                                   int[] indices) {
     if (atom == null)
       return null;
     StringBuffer strLabel = (chAtom > '0' ? null : new StringBuffer());
-    for (int i = 0; i < tokens.length; i++) {
-      LabelToken t = tokens[i];
-      if (t == null)
-        break;
-      if (chAtom > '0' && t.ch1 != chAtom)
-        continue;
-      if (t.tok <= 0 || t.key != null) {
-        if (strLabel != null) {
-          strLabel.append(t.text);
-          if (t.ch1 != '\0')
-            strLabel.append(t.ch1);
+    if (tokens != null)
+      for (int i = 0; i < tokens.length; i++) {
+        LabelToken t = tokens[i];
+        if (t == null)
+          break;
+        if (chAtom > '0' && t.ch1 != chAtom)
+          continue;
+        if (t.tok <= 0 || t.key != null) {
+          if (strLabel != null) {
+            strLabel.append(t.text);
+            if (t.ch1 != '\0')
+              strLabel.append(t.ch1);
+          }
+        } else {
+          appendAtomTokenValue(viewer, atom, t, strLabel, indices);
         }
-      } else {
-        appendAtomTokenValue(viewer, atom, t, strLabel, indices);
       }
-    }
     return (strLabel == null ? null : strLabel.toString().intern());
   }
 

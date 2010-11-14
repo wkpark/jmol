@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javax.vecmath.Point3f;
+
 import org.jmol.api.JmolMolecule;
 import org.jmol.api.JmolNode;
 import org.jmol.api.JmolEdge;
@@ -247,8 +249,15 @@ public class SmilesGenerator {
     }
     bsToDo = (BitSet) bsSelected.clone();
     StringBuffer sb = new StringBuffer();
-    while ((atom = getSmiles(sb, atom, allowConnectionsToOutsideWorld)) != null) {
-    }
+    
+    for (int i = bsToDo.nextSetBit(0); i >= 0 ; i = bsToDo.nextSetBit(i + 1))
+      if (atoms[i].getCovalentBondCount() > 4) {
+        getSmiles(sb, atoms[i], allowConnectionsToOutsideWorld, false);
+        atom = null;       
+      }
+    if (atom != null)
+      while ((atom = getSmiles(sb, atom, allowConnectionsToOutsideWorld, true)) != null) {
+      }
     while (bsToDo.cardinality() > 0 || !htRings.isEmpty()) {
       Iterator<Object[]> e = htRings.values().iterator();
       if (e.hasNext()) {
@@ -261,7 +270,7 @@ public class SmilesGenerator {
       sb.append(".");
       prevSp2Atoms = null;
       prevAtom = null;
-      while ((atom = getSmiles(sb, atom, allowConnectionsToOutsideWorld)) != null) {
+      while ((atom = getSmiles(sb, atom, allowConnectionsToOutsideWorld, true)) != null) {
       }
     }
     if (!htRings.isEmpty()) {
@@ -410,7 +419,8 @@ public class SmilesGenerator {
     }
   }
 
-  private JmolNode getSmiles(StringBuffer sb, JmolNode atom, boolean allowConnectionsToOutsideWorld) {
+  private JmolNode getSmiles(StringBuffer sb, JmolNode atom,
+                             boolean allowConnectionsToOutsideWorld, boolean allowBranches) {
     int atomIndex = atom.getIndex();
 
     if (!bsToDo.get(atomIndex))
@@ -450,9 +460,11 @@ public class SmilesGenerator {
           bondPrev = bonds[i];
           continue;
         }
-        boolean isH = (atom1.getElementNumber() == 1 && atom1.getIsotopeNumber() == 0);
+        boolean isH = (atom1.getElementNumber() == 1 && atom1
+            .getIsotopeNumber() == 0);
         if (!bsIncludingH.get(index1)) {
-          if (!isH && allowConnectionsToOutsideWorld && bsSelected.get(atomIndex))
+          if (!isH && allowConnectionsToOutsideWorld
+              && bsSelected.get(atomIndex))
             bsToDo.set(index1);
           else
             continue;
@@ -475,7 +487,7 @@ public class SmilesGenerator {
     // 4) hydrogen atoms
     // 5) branches
     // 6) rings
-    
+
     // add the bond to the previous atom
 
     //System.out.println(" " + atom);
@@ -497,27 +509,26 @@ public class SmilesGenerator {
     // get bond0 
     int nMax = 0;
     BitSet bsBranches = new BitSet();
-
-    for (int i = 0; i < v.size(); i++) {
-      JmolEdge bond = v.get(i);
-      JmolNode a = bond.getOtherAtom(atom);
-      int n = a.getCovalentBondCount() - a.getCovalentHydrogenCount();
-      int order = bond.getCovalentOrder();
-      if (order == 1 && n == 1 && i < v.size() - (bond0 == null ? 1 : 0)) {
-        bsBranches.set(bond.getIndex());
-      } else if ((order > 1 || n > nMax)
-          && !htRings.containsKey(getRingKey(a.getIndex(), atomIndex))) {
-        nMax = (order > 1 ? 1000 + order : n);
-        bond0 = bond;
+    if (allowBranches)
+      for (int i = 0; i < v.size(); i++) {
+        JmolEdge bond = v.get(i);
+        JmolNode a = bond.getOtherAtom(atom);
+        int n = a.getCovalentBondCount() - a.getCovalentHydrogenCount();
+        int order = bond.getCovalentOrder();
+        if (order == 1 && n == 1 && i < v.size() - (bond0 == null ? 1 : 0)) {
+          bsBranches.set(bond.getIndex());
+        } else if ((order > 1 || n > nMax)
+            && !htRings.containsKey(getRingKey(a.getIndex(), atomIndex))) {
+          nMax = (order > 1 ? 1000 + order : n);
+          bond0 = bond;
+        }
       }
-    }
     JmolNode atomNext = (bond0 == null ? null : bond0.getOtherAtom(atom));
     int orderNext = (bond0 == null ? 0 : bond0.getCovalentOrder());
-    
+
     if (stereoFlag < 7 && bondPrev != null) {
-      if (bondPrev.getCovalentOrder() == 2 
-          && orderNext == 2 && prevSp2Atoms != null 
-          && prevSp2Atoms[1] != null) {
+      if (bondPrev.getCovalentOrder() == 2 && orderNext == 2
+          && prevSp2Atoms != null && prevSp2Atoms[1] != null) {
         // allene continuation
         stereo[stereoFlag++] = prevSp2Atoms[0];
         stereo[stereoFlag++] = prevSp2Atoms[1];
@@ -547,7 +558,7 @@ public class SmilesGenerator {
       //boolean b = stereoShown;
       JmolEdge bond0t = bond0;
       //stereoShown = false;
-      getSmiles(s2, a, allowConnectionsToOutsideWorld);
+      getSmiles(s2, a, allowConnectionsToOutsideWorld, allowBranches);
       //stereoShown = true;
       bond0 = bond0t;
       s2.append(")");
@@ -574,7 +585,7 @@ public class SmilesGenerator {
     if (nSp2Atoms < 0) {
       sp2Atoms = null;
     } else {
-//      stereoShown = false;
+      //      stereoShown = false;
     }
 
     // output section
@@ -591,10 +602,12 @@ public class SmilesGenerator {
       sb.append(strBond);
     }
 
-
     // now process any rings
 
-    for (int i = v.size(); --i >= 0;) {
+    String atat = null;
+    if (!allowBranches && (v.size() == 5 || v.size() == 6))
+      atat = sortInorganic(atom, v);
+    for (int i = 0; i < v.size(); i++) {
       JmolEdge bond = v.get(i);
       if (bond == bond0)
         continue;
@@ -621,12 +634,14 @@ public class SmilesGenerator {
     // we allow for charge, hydrogen count, isotope number,
     // and stereochemistry 
 
-    if (havePreviousSp2Atoms && stereoFlag == 2 && orderNext == 2 && atomNext.getCovalentBondCount() == 3) {
+    if (havePreviousSp2Atoms && stereoFlag == 2 && orderNext == 2
+        && atomNext.getCovalentBondCount() == 3) {
       // this is for allenes only, not cumulenes
       bonds = atomNext.getEdges();
       for (int k = 0; k < bonds.length; k++) {
-        if (bonds[k].isCovalent() && atomNext.getBondedAtomIndex(k) != atomIndex)
-          stereo[stereoFlag++] = atoms[atomNext.getBondedAtomIndex(k)]; 
+        if (bonds[k].isCovalent()
+            && atomNext.getBondedAtomIndex(k) != atomIndex)
+          stereo[stereoFlag++] = atoms[atomNext.getBondedAtomIndex(k)];
       }
       nSp2Atoms = 0;
     } else if (atomNext != null && stereoFlag < 7) {
@@ -641,12 +656,13 @@ public class SmilesGenerator {
     // present. For example, in 1BLU we have 
     // .[CYS.SG#16] could match either the atom number or the element number 
     if (Logger.debugging)
-      sb.append("\n//* " + atom  + " *//\t");    
+      sb.append("\n//* " + atom + " *//\t");
     if (isExtension && groupType.length() != 0 && atomName.length() != 0)
       addBracketedBioName(sb, atom, "." + atomName);
     else
-      sb.append(SmilesAtom.getAtomLabel(atomicNumber, isotope, valence, charge,
-          nH, isAromatic, checkStereoPairs(atom, atomIndex, stereo, stereoFlag)));
+      sb.append(SmilesAtom
+          .getAtomLabel(atomicNumber, isotope, valence, charge, nH, isAromatic,
+              atat != null ? atat : checkStereoPairs(atom, atomIndex, stereo, stereoFlag)));
     sb.append(sMore);
 
     // check the next bond
@@ -670,10 +686,117 @@ public class SmilesGenerator {
 
     // prevSp2Atoms is only so that we can track
     // ABC=C=CDE  systems
-    
+
     prevSp2Atoms = sp2Atoms;
     prevAtom = atom;
     return atomNext;
+  }
+
+  private String sortInorganic(JmolNode atom, List<JmolEdge> v) {
+    int atomIndex = atom.getIndex();
+    int n = v.size();
+    ArrayList<JmolEdge[]> axialPairs = new ArrayList<JmolEdge[]>();
+    ArrayList<JmolEdge> bonds = new ArrayList<JmolEdge>();
+    JmolNode a1, a2;
+    JmolEdge bond1, bond2;
+    BitSet bsDone = new BitSet();
+    for (int i = 0; i < n; i++) {
+      if (bsDone.get(i))
+        continue;
+      bsDone.set(i);
+      bond1 = v.get(i);
+      a1 = bond1.getOtherAtom(atom);
+      boolean isAxial = false;
+      for (int j = i + 1; j < n; j++) {
+        if (bsDone.get(j))
+          continue;
+        bond2 = v.get(j);
+        a2 = bond2.getOtherAtom(atom);
+        if (SmilesSearch.isDiaxial(atom, atom, a1, a2, vTemp, -0.95f)) {
+          axialPairs.add(new JmolEdge[] { bond1, bond2 } );
+          isAxial = true;
+          bsDone.set(j);
+          break;
+        }
+      }
+      if (!isAxial)
+        bonds.add(bond1);
+    }
+    JmolNode[] stereo = new JmolNode[6];
+    JmolEdge[] pair;
+    int nSame = 0;
+    switch (axialPairs.size()) {
+    case 3:
+      // octahedral -- check for at least two trans-related groups being the same
+      if (equalPair(atom, atomIndex, axialPairs.get(0), stereo))
+        nSame++;
+      if (equalPair(atom, atomIndex, axialPairs.get(1), stereo))
+        nSame++;
+      if (equalPair(atom, atomIndex, axialPairs.get(2), stereo))
+        nSame++;
+      break;
+    case 2:
+      if (n != 5)
+        return null;
+      // square pyramidal -- not defined -- use trigonal bipyramidal
+      pair = axialPairs.remove(1);
+      bonds.add(pair[0]);
+      bonds.add(pair[1]);
+      // fall through
+    case 1:
+      // trigonal bipyramidal
+      // check for the two axial groups being the same
+      if (n != 5 || equalPair(atom, atomIndex, axialPairs.get(0), stereo))
+        return null;
+      // check for any two eq groups same
+      nSame = 1;
+      pair = new JmolEdge[] { bonds.get(0), bonds.get(1) };
+      if (equalPair(atom, atomIndex, pair, stereo))
+        nSame++;
+      pair[0] = bonds.get(2);
+      if (equalPair(atom, atomIndex, pair, stereo))
+        nSame++;
+      pair[1] = bonds.get(0);
+      if (equalPair(atom, atomIndex, pair, stereo))
+        nSame++;
+      break;
+    case 0:
+      // can't analyze if no trans axial groups
+      return null;
+    }
+    if (nSame > 1)
+      return null;
+    pair = axialPairs.get(0);
+    bond1 = pair[0]; 
+    stereo[0] = bond1.getOtherAtom(atom);
+    v.clear();
+    v.add(pair[0]);
+    switch (axialPairs.size()) {
+    case 3: // octahedral -- just need three of these
+      bonds.add(axialPairs.get(1)[0]);
+      bonds.add(axialPairs.get(2)[0]);
+      bonds.add(axialPairs.get(1)[1]);
+      bonds.add(axialPairs.get(2)[1]);
+      break;
+    case 2:
+      bonds.add(axialPairs.get(1)[0]);
+      bonds.add(axialPairs.get(1)[1]);
+    }
+    for (int i = 0; i < bonds.size(); i++) {
+      bond1 = bonds.get(i);
+      v.add(bond1);
+      stereo[i + 1] = bond1.getOtherAtom(atom);
+    }
+    v.add(pair[1]);
+    return getStereoFlag(atom, stereo, n, vTemp);
+  }
+
+  private boolean equalPair(JmolNode atom, int atomIndex, JmolEdge[] pair, JmolNode[] stereo) {    
+    String s = "";
+    stereo[0] = pair[0].getOtherAtom(atom);
+    s = addStereoCheck(atomIndex, stereo, 0, s);
+    stereo[0] = pair[1].getOtherAtom(atom);
+    return (addStereoCheck(atomIndex, stereo, 0, s) == null);
   }
 
   private String checkStereoPairs(JmolNode atom, int atomIndex,
@@ -681,42 +804,100 @@ public class SmilesGenerator {
     //for (int jj = 0; jj < 7; jj++)
     //System.out.print(stereo[jj] + " ");
     //System.out.println(" " + atom);
+    if (stereoFlag < 4)
+      return "";
     if (stereoFlag == 4 && (atom.getElementNumber()) == 6) {
-      String s = "";
       // do a quick check for two of the same group.
-      for (int i = 0; i < 4; i++) {
-        int n = stereo[i].getAtomicAndIsotopeNumber();
-        int nx = stereo[i].getCovalentBondCount();
-        if (n != 6 && nx > 1)
-          continue;
-        int nh = (n == 6 ? stereo[i].getCovalentHydrogenCount() : 0);
-        // for C we use nh -- CH3, for example.
-        // for other atoms, we use number of bonds.
-        // just checking for 1 bond (to this atom, or 3 hydrogens)
-        if (nh > 0 && (nx != 4 || nh != 3))
-          continue;
-        String sa = ";" + n + "/" + nh + "/" + nx + ",";
-        if (s.indexOf(sa) >= 0) {
-          if (nh == 3) {
-            // must check isotopes for CH3
-            int ndt = 0;
-            for (int j = 0; j < nx && ndt < 3; j++) {
-              int ia = stereo[i].getBondedAtomIndex(j);
-              if (ia == atomIndex)
-                continue;
-              ndt += atoms[ia].getAtomicAndIsotopeNumber();
-            }
-            if (ndt > 3)
-              continue;
-          }
+      String s = "";
+      for (int i = 0; i < 4; i++)
+        if ((s = addStereoCheck(atomIndex, stereo, i, s)) == null) {
           stereoFlag = 10;
           break;
         }
-        s += sa;
-      }
     }
-    return (stereoFlag > 6 ? "" : SmilesSearch.getStereoFlag(atom, stereo,
+    return (stereoFlag > 6 ? "" : getStereoFlag(atom, stereo,
         stereoFlag, vTemp));
+  }
+
+  /**
+   * 
+   * @param atom0
+   * @param atoms
+   * @param nAtoms
+   * @param v
+   * @return        String
+   */
+  static String getStereoFlag(JmolNode atom0, JmolNode[] atoms, int nAtoms, VTemp v) {
+    JmolNode atom1 = atoms[0];
+    JmolNode atom2 = atoms[1];
+    JmolNode atom3 = atoms[2];
+    JmolNode atom4 = atoms[3];
+    JmolNode atom5 = atoms[4];
+    JmolNode atom6 = atoms[5];
+    int chiralClass = SmilesAtom.STEREOCHEMISTRY_TETRAHEDRAL;
+    switch (nAtoms) {
+    default:
+    case 5:
+    case 6:
+      // like tetrahedral
+      return (SmilesSearch.checkStereochemistry(false, atom0, chiralClass, 1, atom1, atom2, atom3, atom4, atom5, atom6, v)? "@" : "@@");
+    case 2: // allene
+    case 4: // tetrahedral, square planar
+      if (atom3 == null || atom4 == null)
+        return "";
+      float d = SmilesAromatic.getNormalThroughPoints(atom1, atom2, atom3, v.vTemp, v.vA, v.vB);
+      if (Math.abs(SmilesSearch.distanceToPlane(v.vTemp, d, (Point3f) atom4)) < 0.2f) {
+        chiralClass = SmilesAtom.STEREOCHEMISTRY_SQUARE_PLANAR;
+        if (SmilesSearch.checkStereochemistry(false, atom0, chiralClass, 1, atom1, atom2, atom3, atom4, atom5, atom6, v))
+          return "@SP1";
+        if (SmilesSearch.checkStereochemistry(false, atom0, chiralClass, 2, atom1, atom2, atom3, atom4, atom5, atom6, v))
+          return "@SP2";
+        if (SmilesSearch.checkStereochemistry(false, atom0, chiralClass, 3, atom1, atom2, atom3, atom4, atom5, atom6, v))
+          return "@SP3";       
+      } else {
+        return (SmilesSearch.checkStereochemistry(false, atom0, chiralClass, 1, atom1, atom2, atom3, atom4, atom5, atom6, v)? "@" : "@@");
+      }       
+    }
+    return "";
+  }
+
+  /**
+   * checks a group and either adds a new group to the growing
+   * check string or returns null
+   * @param atomIndex
+   * @param stereo
+   * @param i
+   * @param s
+   * @return   null if duplicate
+   */
+  private String addStereoCheck(int atomIndex, JmolNode[] stereo, int i, String s) {
+    int n = stereo[i].getAtomicAndIsotopeNumber();
+    int nx = stereo[i].getCovalentBondCount();
+    if (n != 6 && nx > 1)
+      return s;
+    int nh = (n == 6 ? stereo[i].getCovalentHydrogenCount() : 0);
+    // for C we use nh -- CH3, for example.
+    // for other atoms, we use number of bonds.
+    // just checking for 1 bond (to this atom, or 3 hydrogens)
+    if (nh > 0 && (nx != 4 || nh != 3))
+      return s;
+    String sa = ";" + n + "/" + nh + "/" + nx + ",";
+    if (s.indexOf(sa) >= 0) {
+      if (nh == 3) {
+        // must check isotopes for CH3
+        int ndt = 0;
+        for (int j = 0; j < nx && ndt < 3; j++) {
+          int ia = stereo[i].getBondedAtomIndex(j);
+          if (ia == atomIndex)
+            continue;
+          ndt += atoms[ia].getAtomicAndIsotopeNumber();
+        }
+        if (ndt > 3)
+          return s;
+      }
+      return null;
+    }
+    return s + sa;
   }
 
   private String getRingCache(int i0, int i1, Map<String, Object[]> ht) {

@@ -692,6 +692,16 @@ public class SmilesGenerator {
     return atomNext;
   }
 
+  /**
+   * We must sort the bond vector such that a diaxial pair is
+   * first and last. Then we assign stereochemistry based on what
+   * is left. The assignment is not made if there are no diaxial groups
+   * or with octahedral if there are fewer than three.
+   * 
+   * @param atom
+   * @param v
+   * @return  "@" or "@@" or null
+   */
   private String sortInorganic(JmolNode atom, List<JmolEdge> v) {
     int atomIndex = atom.getIndex();
     int n = v.size();

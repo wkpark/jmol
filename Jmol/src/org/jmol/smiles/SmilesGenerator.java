@@ -708,8 +708,11 @@ public class SmilesGenerator {
     ArrayList<JmolEdge[]> axialPairs = new ArrayList<JmolEdge[]>();
     ArrayList<JmolEdge> bonds = new ArrayList<JmolEdge>();
     JmolNode a1, a2;
-    JmolEdge bond1, bond2;
+    JmolEdge bond1, bond2, bond3, bond4;
     BitSet bsDone = new BitSet();
+    JmolEdge[] pair, pair0 = null;
+    JmolNode[] stereo = new JmolNode[6];
+    int nSame = 0;
     for (int i = 0; i < n; i++) {
       if (bsDone.get(i))
         continue;
@@ -723,7 +726,14 @@ public class SmilesGenerator {
         bond2 = v.get(j);
         a2 = bond2.getOtherAtom(atom);
         if (SmilesSearch.isDiaxial(atom, atom, a1, a2, vTemp, -0.95f)) {
-          axialPairs.add(new JmolEdge[] { bond1, bond2 } );
+          pair = new JmolEdge[] { bond1, bond2 };
+          if (equalPair(atom, atomIndex, pair, stereo)) {
+            axialPairs.add(pair);
+            nSame++;
+          } else {
+            pair0 = pair;
+            axialPairs.add(0, pair);
+          }
           isAxial = true;
           bsDone.set(j);
           break;
@@ -732,20 +742,14 @@ public class SmilesGenerator {
       if (!isAxial)
         bonds.add(bond1);
     }
-    JmolNode[] stereo = new JmolNode[6];
-    JmolEdge[] pair;
-    int nSame = 0;
+    boolean isOK = false;
     switch (axialPairs.size()) {
     case 3:
-      // octahedral -- check for at least two trans-related groups being the same
-      if (equalPair(atom, atomIndex, axialPairs.get(0), stereo))
-        nSame++;
-      if (equalPair(atom, atomIndex, axialPairs.get(1), stereo))
-        nSame++;
-      if (equalPair(atom, atomIndex, axialPairs.get(2), stereo))
-        nSame++;
+      if (pair0 == null)
+        return null;
       break;
     case 2:
+      // can't proceed if octahedral and only two diaxial groups
       if (n != 5)
         return null;
       // square pyramidal -- not defined -- use trigonal bipyramidal
@@ -756,49 +760,80 @@ public class SmilesGenerator {
     case 1:
       // trigonal bipyramidal
       // check for the two axial groups being the same
-      if (n != 5 || equalPair(atom, atomIndex, axialPairs.get(0), stereo))
+      if (n != 5 || pair0 == null)
         return null;
       // check for any two eq groups same
-      nSame = 1;
       pair = new JmolEdge[] { bonds.get(0), bonds.get(1) };
-      if (equalPair(atom, atomIndex, pair, stereo))
-        nSame++;
+      if (equalPair(atom, atomIndex, pair, stereo)) {
+        isOK = true;
+        break;
+      }
       pair[0] = bonds.get(2);
-      if (equalPair(atom, atomIndex, pair, stereo))
-        nSame++;
+      if (equalPair(atom, atomIndex, pair, stereo)){
+        isOK = true;
+        break;
+      }
       pair[1] = bonds.get(0);
-      if (equalPair(atom, atomIndex, pair, stereo))
-        nSame++;
+      if (equalPair(atom, atomIndex, pair, stereo)){
+        isOK = true;
+        break;
+      }
       break;
     case 0:
       // can't analyze if no trans axial groups
       return null;
     }
-    if (nSame > 1)
-      return null;
-    pair = axialPairs.get(0);
-    bond1 = pair[0]; 
+    pair0 = axialPairs.get(0);
+    bond1 = pair0[0];
     stereo[0] = bond1.getOtherAtom(atom);
     v.clear();
-    v.add(pair[0]);
+    v.add(bond1);
     switch (axialPairs.size()) {
-    case 3: // octahedral -- just need three of these
-      bonds.add(axialPairs.get(1)[0]);
-      bonds.add(axialPairs.get(2)[0]);
-      bonds.add(axialPairs.get(1)[1]);
-      bonds.add(axialPairs.get(2)[1]);
-      break;
     case 2:
       bonds.add(axialPairs.get(1)[0]);
       bonds.add(axialPairs.get(1)[1]);
+      break;
+    case 3: // octahedral 
+      // -- need to check to see if all 4 are same
+      // -- or at least there are at least three of one
+      bonds.add(bond1 = axialPairs.get(1)[0]);
+      bonds.add(bond2 = axialPairs.get(2)[0]);
+      bonds.add(bond3 = axialPairs.get(1)[1]);
+      bonds.add(bond4 = axialPairs.get(2)[1]);
+      pair = new JmolEdge[2];
+      switch (nSame) {
+      case 2:
+        //A-XB4-C ?
+        pair[0] = bond1;
+        pair[1] = bond2;
+        if (equalPair(atom, atomIndex, pair, stereo))
+          isOK = true;
+        break;
+      case 1:
+        //A-XB3B'-C
+        pair[0] = bond1;
+        pair[1] = bond2;
+        if (equalPair(atom, atomIndex, pair, stereo)) {
+          isOK = true;
+        } else {
+          pair[0] = bond3;
+          pair[1] = bond4;
+          if (equalPair(atom, atomIndex, pair, stereo))
+            isOK = true;          
+        }
+        break;        
+      case 0:
+        break;
+      }
+      break;
     }
     for (int i = 0; i < bonds.size(); i++) {
       bond1 = bonds.get(i);
       v.add(bond1);
       stereo[i + 1] = bond1.getOtherAtom(atom);
     }
-    v.add(pair[1]);
-    return getStereoFlag(atom, stereo, n, vTemp);
+    v.add(pair0[1]);
+    return (isOK ? "" : getStereoFlag(atom, stereo, n, vTemp));
   }
 
   private boolean equalPair(JmolNode atom, int atomIndex, JmolEdge[] pair, JmolNode[] stereo) {    

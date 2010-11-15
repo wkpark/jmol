@@ -745,7 +745,7 @@ public class SmilesGenerator {
     boolean isOK = false;
     switch (axialPairs.size()) {
     case 3:
-      if (pair0 == null)
+      if (pair0 == null)        // octahedral XA6
         return null;
       break;
     case 2:
@@ -759,7 +759,7 @@ public class SmilesGenerator {
       // fall through
     case 1:
       // trigonal bipyramidal
-      // check for the two axial groups being the same
+      // check for A-X-A
       if (n != 5 || pair0 == null)
         return null;
       // check for any two eq groups same
@@ -789,13 +789,10 @@ public class SmilesGenerator {
     v.clear();
     v.add(bond1);
     switch (axialPairs.size()) {
-    case 2:
-      bonds.add(axialPairs.get(1)[0]);
-      bonds.add(axialPairs.get(1)[1]);
-      break;
     case 3: // octahedral 
       // -- need to check to see if all 4 are same
       // -- or at least there are at least three of one
+      // -- pairs were necessary to get this order correct:
       bonds.add(bond1 = axialPairs.get(1)[0]);
       bonds.add(bond2 = axialPairs.get(2)[0]);
       bonds.add(bond3 = axialPairs.get(1)[1]);
@@ -803,14 +800,14 @@ public class SmilesGenerator {
       pair = new JmolEdge[2];
       switch (nSame) {
       case 2:
-        //A-XB4-C ?
+        //A-XB4-C or A-XB2B'2-C ?
         pair[0] = bond1;
         pair[1] = bond2;
         if (equalPair(atom, atomIndex, pair, stereo))
           isOK = true;
         break;
       case 1:
-        //A-XB3B'-C
+        //A-XB3B'-C or A-XB'BB''B-C
         pair[0] = bond1;
         pair[1] = bond2;
         if (equalPair(atom, atomIndex, pair, stereo)) {

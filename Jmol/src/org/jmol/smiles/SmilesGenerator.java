@@ -69,7 +69,6 @@ public class SmilesGenerator {
   private BitSet bsToDo;
   private JmolNode prevAtom;
   private JmolNode[] prevSp2Atoms;
-  private boolean stereoShown;
   
   // outputs
 
@@ -495,9 +494,7 @@ public class SmilesGenerator {
     String strBond = null;
     if (sp2Atoms == null)
       sp2Atoms = new JmolNode[5];
-    if (bondPrev == null) {
-      //stereoShown = true;
-    } else {
+    if (bondPrev != null) {
       strBond = SmilesBond.getBondOrderString(bondPrev.getCovalentOrder());
       if (prevSp2Atoms == null)
         sp2Atoms[nSp2Atoms++] = prevAtom;
@@ -555,11 +552,8 @@ public class SmilesGenerator {
       s2.append("(");
       prevAtom = atom;
       prevSp2Atoms = null;
-      //boolean b = stereoShown;
       JmolEdge bond0t = bond0;
-      //stereoShown = false;
       getSmiles(s2, a, allowConnectionsToOutsideWorld, allowBranches);
-      //stereoShown = true;
       bond0 = bond0t;
       s2.append(")");
       if (sMore.indexOf(s2.toString()) >= 0)
@@ -582,23 +576,14 @@ public class SmilesGenerator {
         || SmilesSearch.isRingBond(ringSets, atomIndex, index2)) {
       nSp2Atoms = -1;
     }
-    if (nSp2Atoms < 0) {
+    if (nSp2Atoms < 0)
       sp2Atoms = null;
-    } else {
-      //      stereoShown = false;
-    }
 
     // output section
 
-    if (strBond != null || !stereoShown && chBond != '\0') {
-      // stereoShown is never turned TRUE now, because all it does
-      // is allow for a more concise SMILES string without the 
-      // optional second stereo bond indicator / or \
-      // but it is such a headache to get right...
-      if (!stereoShown && chBond != '\0') {
+    if (strBond != null || chBond != '\0') {
+      if (chBond != '\0')
         strBond = "" + chBond;
-        //stereoShown = true;
-      }
       sb.append(strBond);
     }
 
@@ -614,12 +599,10 @@ public class SmilesGenerator {
       JmolNode a = bond.getOtherAtom(atom);
       String s = getRingCache(atomIndex, a.getIndex(), htRings);
       strBond = SmilesBond.getBondOrderString(bond.getOrder());
-      if (!deferStereo && !stereoShown) {
+      if (!deferStereo) {
         chBond = getBondStereochemistry(bond, atom);
-        if (chBond != '\0') {
+        if (chBond != '\0')
           strBond = "" + chBond;
-          //stereoShown = true;
-        }
       }
 
       sMore.append(strBond);
@@ -675,14 +658,10 @@ public class SmilesGenerator {
         sp2Atoms[0] = atom; // CN=C= , for example. close enough!
       if (sp2Atoms[1] == null)
         sp2Atoms[1] = atom; // .C3=C=
-      stereoShown = false;
     } else {
       sp2Atoms = null;
       nSp2Atoms = 0;
-      //stereoShown = true;
     }
-    if (orderNext == 2)
-      stereoShown = false;
 
     // prevSp2Atoms is only so that we can track
     // ABC=C=CDE  systems
@@ -745,13 +724,13 @@ public class SmilesGenerator {
     boolean isOK = false;
     switch (axialPairs.size()) {
     case 3:
-      if (pair0 == null)        // octahedral XA6
-        return null;
+      if (pair0 == null)        // octahedral XA6, XA2B4, XA2B2C2
+        isOK = true;
       break;
     case 2:
       // can't proceed if octahedral and only two diaxial groups
       if (n != 5)
-        return null;
+        return "";
       // square pyramidal -- not defined -- use trigonal bipyramidal
       pair = axialPairs.remove(1);
       bonds.add(pair[0]);
@@ -761,7 +740,7 @@ public class SmilesGenerator {
       // trigonal bipyramidal
       // check for A-X-A
       if (n != 5 || pair0 == null)
-        return null;
+        return "";
       // check for any two eq groups same
       pair = new JmolEdge[] { bonds.get(0), bonds.get(1) };
       if (equalPair(atom, atomIndex, pair, stereo)) {
@@ -781,7 +760,7 @@ public class SmilesGenerator {
       break;
     case 0:
       // can't analyze if no trans axial groups
-      return null;
+      return "";
     }
     pair0 = axialPairs.get(0);
     bond1 = pair0[0];
@@ -843,9 +822,6 @@ public class SmilesGenerator {
 
   private String checkStereoPairs(JmolNode atom, int atomIndex,
                                   JmolNode[] stereo, int stereoFlag) {
-    //for (int jj = 0; jj < 7; jj++)
-    //System.out.print(stereo[jj] + " ");
-    //System.out.println(" " + atom);
     if (stereoFlag < 4)
       return "";
     if (stereoFlag == 4 && (atom.getElementNumber()) == 6) {

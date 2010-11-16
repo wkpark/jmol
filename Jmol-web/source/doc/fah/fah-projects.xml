@@ -8923,6 +8923,9 @@
   <fah_proj number="10426" name="p10426" public="y"
     server="171.64.65.81" atoms="576" preferred="13" deadline="19"
     credit="20" frames="100" code="A4" contact="kyleb"/>
+  <fah_proj number="10428" name="p10428" public="n"
+    server="171.64.65.80" atoms="576" preferred="13" deadline="19"
+    credit="194" frames="100" code="A4" contact="kyleb"/>
 
   <!-- Projects 10500 to 10599 -->
   <fah_proj number="10501" name="p10501" public="y"

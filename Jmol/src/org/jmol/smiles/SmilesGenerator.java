@@ -675,30 +675,38 @@ public class SmilesGenerator {
    * We must sort the bond vector such that a diaxial pair is
    * first and last. Then we assign stereochemistry based on what
    * is left. The assignment is not made if there are no diaxial groups
-   * or with octahedral if there are fewer than three.
+   * or with octahedral if there are fewer than three or trigonal bipyramidal
+   * with no axial ligands.
    * 
    * @param atom
    * @param v
-   * @return  "@" or "@@" or null
+   * @return  "@" or "@@" or ""
    */
   private String sortInorganic(JmolNode atom, List<JmolEdge> v) {
     int atomIndex = atom.getIndex();
     int n = v.size();
     ArrayList<JmolEdge[]> axialPairs = new ArrayList<JmolEdge[]>();
     ArrayList<JmolEdge> bonds = new ArrayList<JmolEdge>();
-    ArrayList<JmolEdge> bondsA = new ArrayList<JmolEdge>();
     JmolNode a1, a2;
-    JmolEdge bond1, bond2, bond3, bond4;
+    JmolEdge bond1, bond2;
     BitSet bsDone = new BitSet();
-    JmolEdge[] pair, pair0 = null;
+    JmolEdge[] pair = new JmolEdge[2];
+    JmolEdge[] pair0 = null;
     JmolNode[] stereo = new JmolNode[6];
-    int nSame = 0;
+    boolean isOK = true; // AX6 or AX5
     for (int i = 0; i < n; i++) {
+      bond1 = v.get(i);
+      a1 = bond1.getOtherAtom(atom);
+      if (pair[0] == null) {
+        pair[0] = bond1;
+      } else if (isOK) {
+        pair[1] = bond1;
+        if (equalPair(atom, atomIndex, pair, stereo))
+          isOK = false;
+      }
       if (bsDone.get(i))
         continue;
       bsDone.set(i);
-      bond1 = v.get(i);
-      a1 = bond1.getOtherAtom(atom);
       boolean isAxial = false;
       for (int j = i + 1; j < n; j++) {
         if (bsDone.get(j))
@@ -706,15 +714,11 @@ public class SmilesGenerator {
         bond2 = v.get(j);
         a2 = bond2.getOtherAtom(atom);
         if (SmilesSearch.isDiaxial(atom, atom, a1, a2, vTemp, -0.95f)) {
-          pair = new JmolEdge[] { bond1, bond2 };
-          if (equalPair(atom, atomIndex, pair, stereo)) {
-            bondsA.add(bond1);
-            axialPairs.add(pair);
-            nSame++;
-          } else {
-            pair0 = pair;
-            axialPairs.add(0, pair);
-          }
+          JmolEdge[] pair1 = new JmolEdge[] { bond1, bond2 };
+          if (equalPair(atom, atomIndex, pair1, stereo))
+            axialPairs.add(pair1);
+          else
+            axialPairs.add(0, pair1);
           isAxial = true;
           bsDone.set(j);
           break;
@@ -723,106 +727,40 @@ public class SmilesGenerator {
       if (!isAxial)
         bonds.add(bond1);
     }
-    boolean isOK = false;
-    switch (axialPairs.size()) {
-    case 3:
-      if (pair0 != null)
-        break;
-      pair = new JmolEdge[] { bondsA.get(0), bondsA.get(1) };
-      if (!equalPair(atom, atomIndex, pair, stereo)) 
-        break;
-      pair[0] = bondsA.get(2);
-      if (!equalPair(atom, atomIndex, pair, stereo))
-        break;
-      pair[1] = bondsA.get(0);
-      if (!equalPair(atom, atomIndex, pair, stereo))
-        break;
-      // octahedral XA6
-        isOK = true;
-      break;
-    case 2:
-      // can't proceed if octahedral and only two diaxial groups
-      if (n != 5)
-        return "";
-      // square pyramidal -- not defined -- use trigonal bipyramidal
-      pair = axialPairs.remove(1);
-      bonds.add(pair[0]);
-      bonds.add(pair[1]);
-      // fall through
-    case 1:
-      // trigonal bipyramidal
-      // check for A-X-A
-      if (n != 5 || pair0 == null)
-        return "";
-      // check for any two eq groups same
-      pair = new JmolEdge[] { bonds.get(0), bonds.get(1) };
-      if (equalPair(atom, atomIndex, pair, stereo)) {
-        isOK = true;
-        break;
-      }
-      pair[0] = bonds.get(2);
-      if (equalPair(atom, atomIndex, pair, stereo)){
-        isOK = true;
-        break;
-      }
-      pair[1] = bonds.get(0);
-      if (equalPair(atom, atomIndex, pair, stereo)){
-        isOK = true;
-        break;
-      }
-      break;
-    case 0:
-      // can't analyze if no trans axial groups
+    int nPairs = axialPairs.size();
+
+    // AX6 or AX5 are fine as is
+    // can't proceed if octahedral and not all axial pairs
+    // or trigonal bipyramidal and no axial pair.
+    
+    if (isOK || n == 6 && nPairs != 3 || n == 5 && nPairs == 0)
       return "";
-    }
     pair0 = axialPairs.get(0);
     bond1 = pair0[0];
     stereo[0] = bond1.getOtherAtom(atom);
+    
+    // now sort them into the ligand vector in the proper order
+    
     v.clear();
     v.add(bond1);
-    switch (axialPairs.size()) {
-    case 3: // octahedral 
-      // -- need to check to see if all 4 are same
-      // -- or at least there are at least three of one
-      // -- pairs were necessary to get this order correct:
-      bonds.add(bond1 = axialPairs.get(1)[0]);
-      bonds.add(bond2 = axialPairs.get(2)[0]);
-      bonds.add(bond3 = axialPairs.get(1)[1]);
-      bonds.add(bond4 = axialPairs.get(2)[1]);
-      pair = new JmolEdge[2];
-      switch (nSame) {
-      case 2:
-        //A-XB4-C or A-XB2B'2-C ?
-        pair[0] = bond1;
-        pair[1] = bond2;
-        if (equalPair(atom, atomIndex, pair, stereo))
-          isOK = true;
-        break;
-      case 1:
-        //A-XB3B'-C or A-XB'BB''B-C
-        pair[0] = bond1;
-        pair[1] = bond2;
-        if (equalPair(atom, atomIndex, pair, stereo)) {
-          isOK = true;
-        } else {
-          pair[0] = bond3;
-          pair[1] = bond4;
-          if (equalPair(atom, atomIndex, pair, stereo))
-            isOK = true;          
-        }
-        break;        
-      case 0:
-        break;
-      }
-      break;
-    }
+    if (nPairs > 1)
+      bonds.add(axialPairs.get(1)[0]);
+    if (nPairs == 3)
+      bonds.add(axialPairs.get(2)[0]);
+    if (nPairs > 1)
+      bonds.add(axialPairs.get(1)[1]);
+    if (nPairs == 3)
+      bonds.add(axialPairs.get(2)[1]);
     for (int i = 0; i < bonds.size(); i++) {
       bond1 = bonds.get(i);
       v.add(bond1);
       stereo[i + 1] = bond1.getOtherAtom(atom);
     }
     v.add(pair0[1]);
-    return (isOK ? "" : getStereoFlag(atom, stereo, n, vTemp));
+    
+    // now deterimine the stereochemistry
+    
+    return getStereoFlag(atom, stereo, n, vTemp);
   }
 
   private boolean equalPair(JmolNode atom, int atomIndex, JmolEdge[] pair, JmolNode[] stereo) {    

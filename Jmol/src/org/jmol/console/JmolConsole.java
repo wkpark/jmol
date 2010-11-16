@@ -142,6 +142,7 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
       notThis = TextFormat.trim(notThis, "\"\'");
       String stub = TextFormat.trim(splitCmd[2], "\"\'");
       cmd = nextFileName(stub, nTab);
+      System.out.println("JmolConsole stub=" + stub +  " JmolConsole cmd=" + cmd);
       if (cmd != null)
         cmd = splitCmd[0] + splitCmd[1] + q + (cmd == null ? notThis : cmd) + q;
     } else {
@@ -152,6 +153,7 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
       cmd = splitCmd[0]
           + (cmd == null ? notThis : asCommand ? cmd : splitCmd[1] + cmd);
     }
+    System.out.println("cmd=" + cmd);
     return (cmd == null || cmd.equals(strCommand) ? null : cmd);
   }
 
@@ -188,7 +190,6 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
     }
 
     public boolean accept(File dir, String name) {
-      name = name.toLowerCase();
       if (!name.toLowerCase().startsWith(stub))
         return false;
       v.add(name); 

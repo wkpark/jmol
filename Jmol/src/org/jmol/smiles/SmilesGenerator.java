@@ -690,20 +690,17 @@ public class SmilesGenerator {
     JmolNode a1, a2;
     JmolEdge bond1, bond2;
     BitSet bsDone = new BitSet();
-    JmolEdge[] pair = new JmolEdge[2];
     JmolEdge[] pair0 = null;
     JmolNode[] stereo = new JmolNode[6];
     boolean isOK = true; // AX6 or AX5
+    String s = "";
     for (int i = 0; i < n; i++) {
       bond1 = v.get(i);
-      a1 = bond1.getOtherAtom(atom);
-      if (pair[0] == null) {
-        pair[0] = bond1;
-      } else if (isOK) {
-        pair[1] = bond1;
-        if (equalPair(atom, atomIndex, pair, stereo))
-          isOK = false;
-      }
+      stereo[0] = a1 = bond1.getOtherAtom(atom);
+      if (i == 0)
+        s = addStereoCheck(atomIndex, stereo, 0, "");
+      else if (isOK && addStereoCheck(atomIndex, stereo, 0, s) != null)
+        isOK = false;
       if (bsDone.get(i))
         continue;
       bsDone.set(i);
@@ -714,11 +711,7 @@ public class SmilesGenerator {
         bond2 = v.get(j);
         a2 = bond2.getOtherAtom(atom);
         if (SmilesSearch.isDiaxial(atom, atom, a1, a2, vTemp, -0.95f)) {
-          JmolEdge[] pair1 = new JmolEdge[] { bond1, bond2 };
-          if (equalPair(atom, atomIndex, pair1, stereo))
-            axialPairs.add(pair1);
-          else
-            axialPairs.add(0, pair1);
+          axialPairs.add(new JmolEdge[] { bond1, bond2 });
           isAxial = true;
           bsDone.set(j);
           break;
@@ -761,14 +754,6 @@ public class SmilesGenerator {
     // now deterimine the stereochemistry
     
     return getStereoFlag(atom, stereo, n, vTemp);
-  }
-
-  private boolean equalPair(JmolNode atom, int atomIndex, JmolEdge[] pair, JmolNode[] stereo) {    
-    String s = "";
-    stereo[0] = pair[0].getOtherAtom(atom);
-    s = addStereoCheck(atomIndex, stereo, 0, s);
-    stereo[0] = pair[1].getOtherAtom(atom);
-    return (addStereoCheck(atomIndex, stereo, 0, s) == null);
   }
 
   private String checkStereoPairs(JmolNode atom, int atomIndex,

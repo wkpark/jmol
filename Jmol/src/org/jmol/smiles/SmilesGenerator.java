@@ -686,6 +686,7 @@ public class SmilesGenerator {
     int n = v.size();
     ArrayList<JmolEdge[]> axialPairs = new ArrayList<JmolEdge[]>();
     ArrayList<JmolEdge> bonds = new ArrayList<JmolEdge>();
+    ArrayList<JmolEdge> bondsA = new ArrayList<JmolEdge>();
     JmolNode a1, a2;
     JmolEdge bond1, bond2, bond3, bond4;
     BitSet bsDone = new BitSet();
@@ -707,6 +708,7 @@ public class SmilesGenerator {
         if (SmilesSearch.isDiaxial(atom, atom, a1, a2, vTemp, -0.95f)) {
           pair = new JmolEdge[] { bond1, bond2 };
           if (equalPair(atom, atomIndex, pair, stereo)) {
+            bondsA.add(bond1);
             axialPairs.add(pair);
             nSame++;
           } else {
@@ -724,7 +726,18 @@ public class SmilesGenerator {
     boolean isOK = false;
     switch (axialPairs.size()) {
     case 3:
-      if (pair0 == null)        // octahedral XA6, XA2B4, XA2B2C2
+      if (pair0 != null)
+        break;
+      pair = new JmolEdge[] { bondsA.get(0), bondsA.get(1) };
+      if (!equalPair(atom, atomIndex, pair, stereo)) 
+        break;
+      pair[0] = bondsA.get(2);
+      if (!equalPair(atom, atomIndex, pair, stereo))
+        break;
+      pair[1] = bondsA.get(0);
+      if (!equalPair(atom, atomIndex, pair, stereo))
+        break;
+      // octahedral XA6
         isOK = true;
       break;
     case 2:

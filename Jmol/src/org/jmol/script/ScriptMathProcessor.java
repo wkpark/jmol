@@ -1396,6 +1396,8 @@ class ScriptMathProcessor {
 
     switch (args.length) {
     case 1:
+      if (args[0].tok == Token.decimal || args[0].tok == Token.integer)
+        return addX(Integer.valueOf(ScriptVariable.iValue(args[0])));
       Object pt = Escape.unescapePoint(ScriptVariable.sValue(args[0]));
       if (pt instanceof Point3f)
         return addX((Point3f) pt);

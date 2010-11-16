@@ -781,7 +781,7 @@ public class SmilesGenerator {
    * @param v
    * @return        String
    */
-  static String getStereoFlag(JmolNode atom0, JmolNode[] atoms, int nAtoms, VTemp v) {
+  private static String getStereoFlag(JmolNode atom0, JmolNode[] atoms, int nAtoms, VTemp v) {
     JmolNode atom1 = atoms[0];
     JmolNode atom2 = atoms[1];
     JmolNode atom3 = atoms[2];

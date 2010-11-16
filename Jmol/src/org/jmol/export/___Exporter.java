@@ -432,8 +432,8 @@ public abstract class ___Exporter {
     if (pt2.x == pt1.x && pt2.y == pt1.y) {
       m1 = new Matrix3f();
       m1.setIdentity();
-      if (pt1.z > pt2.z)
-        m1.mul(-1);
+      if (pt1.z > pt2.z) // 180-degree rotation about X
+        m1.m11 = m1.m22 = -1;
     } else {
       tempV1.set(pt2);
       tempV1.sub(pt1);

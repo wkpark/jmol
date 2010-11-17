@@ -1385,7 +1385,7 @@ all support for previous versions removed
              packagenames="org.openscience.*,org.jmol.*"
              excludepackagenames="org.jmol.jcamp.*">
       <classpath refid="project.class.path" />
-      <link href="http://java.sun.com/javase/6/docs/api/" />
+      <link href="http://download.oracle.com/javase/6/docs/api/" />
       <link href="http://download.java.net/media/java3d/javadoc/1.5.0/" />
     </javadoc>
   </target>

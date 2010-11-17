@@ -9,13 +9,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-11-10 01:04+0100\n"
-"PO-Revision-Date: 2010-11-13 19:29+0000\n"
+"PO-Revision-Date: 2010-11-17 19:02+0000\n"
 "Last-Translator: Martin Slavík <Unknown>\n"
 "Language-Team: Czech <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-11-14 09:16+0000\n"
+"X-Launchpad-Export-Date: 2010-11-17 20:52+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: CZECH REPUBLIC\n"
 "X-Poedit-Language: Czech\n"
@@ -657,7 +657,7 @@ msgstr "Návod pro myš :-)"
 #: org/jmol/popup/JmolPopup.java:575
 #: org/jmol/popup/MainPopupResourceBundle.java:943
 msgid "Translations"
-msgstr "Nastavit jazyk"
+msgstr "Nastavení jazyka"
 
 #: org/jmol/popup/JmolPopup.java:577
 msgid "System"
@@ -732,7 +732,7 @@ msgstr "Podle HETATM"
 #: org/jmol/popup/MainPopupResourceBundle.java:544
 #, java-format
 msgid "Molecular Orbitals ({0})"
-msgstr "Molekulových orbitalů ({0})"
+msgstr "Molekulové orbitaly ({0})"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:545
 #: org/jmol/popup/MainPopupResourceBundle.java:857
@@ -796,7 +796,7 @@ msgstr "polymerů: {0}"
 #: org/jmol/popup/MainPopupResourceBundle.java:558
 #, java-format
 msgid "model {0}"
-msgstr "model {0}"
+msgstr "Model {0}"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:559
 #, java-format
@@ -990,7 +990,7 @@ msgstr "Drátový model"
 #: org/jmol/popup/MainPopupResourceBundle.java:664
 #: org/jmol/popup/MainPopupResourceBundle.java:757
 msgid "Cartoon"
-msgstr "Cartoon (Skica)"
+msgstr "Skica (Cartoon)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:618
 #: org/jmol/popup/MainPopupResourceBundle.java:669
@@ -1153,7 +1153,7 @@ msgstr "Červené + tyrkysové brýle"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:689
 msgid "Red+Blue glasses"
-msgstr "Červené +modré brýle"
+msgstr "Červené + modré brýle"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:690
 msgid "Red+Green glasses"
@@ -1210,7 +1210,7 @@ msgstr "Vlevo dole"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:708
 msgid "Color"
-msgstr "Barva"
+msgstr "Barvy"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:711
 msgid "By Scheme"
@@ -1607,7 +1607,7 @@ msgstr "Načti úplnou elementární buňku"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:865
 msgid "Open script"
-msgstr "Otevřít script"
+msgstr "Otevřít skript"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:867
 #, java-format
@@ -1616,11 +1616,11 @@ msgstr "Uložit kopii {0}"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:868
 msgid "Save script with state"
-msgstr "Uložit script se stavem"
+msgstr "Uložit skript se stavem"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:869
 msgid "Save script with history"
-msgstr "Uložit script s historií"
+msgstr "Uložit skript s historií"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:870
 #: org/jmol/popup/MainPopupResourceBundle.java:871
@@ -1648,7 +1648,7 @@ msgstr "Exportovat {0} 3D model"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:881
 msgid "Computation"
-msgstr "Výpočet"
+msgstr "Výpočty"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:882
 msgid "Optimize structure"
@@ -1729,7 +1729,7 @@ msgstr "Šířka v Ångstrémech"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:929
 msgid "Selection Halos"
-msgstr "Zvýraznit výběr (Halo)"
+msgstr "Zvýraznit výběr (halo)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:930
 msgid "Show Hydrogens"
@@ -1955,7 +1955,7 @@ msgstr "MO index je požadován od 1 do {0}"
 
 #: org/jmol/script/ScriptEvaluator.java:2674
 msgid "no MO basis/coefficient data available for this frame"
-msgstr "žádné MO báze/koeficienty dostupné pro tento rám"
+msgstr "žádné MO báze/koeficienty dostupné pro tento snímek"
 
 #: org/jmol/script/ScriptEvaluator.java:2677
 msgid "no MO occupancy data available"
@@ -2207,7 +2207,7 @@ msgstr "zrušit výběr skupiny atomů (vyžaduje {0})"
 #: org/jmol/viewer/ActionManager.java:82
 #, java-format
 msgid "add this group of atoms to the set of selected atoms (requires {0})"
-msgstr "přidej tuto skupinu atomů k již v ybraným atomům (vyžaduje {0})"
+msgstr "přidej tuto skupinu atomů k již vybraným atomům (vyžaduje {0})"
 
 #: org/jmol/viewer/ActionManager.java:83
 #, java-format
@@ -2216,7 +2216,7 @@ msgid ""
 "set of selected atoms (requires {0})"
 msgstr ""
 "jestliže jsou všechny vybrány, zruš výběr, nebo přidej tuto skupinu atomů k "
-"již v ybraným atomům (vyžaduje {0})"
+"již vybraným atomům (vyžaduje {0})"
 
 #: org/jmol/viewer/ActionManager.java:85
 #, java-format

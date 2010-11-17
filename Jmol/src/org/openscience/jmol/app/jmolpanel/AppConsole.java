@@ -64,7 +64,7 @@ import org.jmol.viewer.JmolConstants;
 public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
     EnterListener {
 
-  protected static final String ALL_BUTTONS = "Editor Variables Clear History State UndoRedo Close Help";
+  public static final String ALL_BUTTONS = "Editor Variables Clear History State UndoRedo Close Help";
 
   // note:  "Check" "Top" "Step" not included in 12.1
 

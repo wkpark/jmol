@@ -2008,10 +2008,12 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         break;
       previousCharBackslash = (ch == '\\' ? !previousCharBackslash : false);
     }
-    if (ichT == cchScript)
+    if (ichT == cchScript) {
       cchToken = -1;
-    else
+      ichEnd = cchScript;
+    } else {
       cchToken = ++ichT - ichToken;
+    }
     return true;
   }
 
@@ -2467,6 +2469,10 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     errorMessage = GT._("script compiler ERROR: ") + errorMessage
          + ScriptEvaluator.setErrorLineMessage(null, filename, lineCurrent, iCommand, lineInfo);
     if (!isSilent) {
+      ichToken = Math.max(ichEnd, ichToken);
+      while (!lookingAtEndOfLine() && !lookingAtEndOfStatement())
+        ichToken++;
+      errorLine = script.substring(ichCurrentCommand, ichToken);      
       viewer.addCommand(errorLine + CommandHistory.ERROR_FLAG);
       Logger.error(errorMessage);
     }

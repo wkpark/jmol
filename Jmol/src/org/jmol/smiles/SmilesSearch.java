@@ -742,7 +742,7 @@ public class SmilesSearch extends JmolMolecule {
 
         // "=" <n>  Jmol index
 
-        if (patternAtom.jmolIndex > 0
+        if (patternAtom.jmolIndex >= 0
             && atom.getIndex() != patternAtom.jmolIndex)
           break;
 
@@ -773,7 +773,8 @@ public class SmilesSearch extends JmolMolecule {
           break;
 
         // H explicit H count
-        n = patternAtom.missingHydrogenCount;
+        //problem here is that you can have C[H]
+        n = patternAtom.getCovalentHydrogenCount() + patternAtom.missingHydrogenCount;
         if (n >= 0 && n != atom.getCovalentHydrogenCount())
           break;
 

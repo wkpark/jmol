@@ -618,14 +618,18 @@ public class SmilesAtom extends Point3f implements JmolNode {
         .getOtherAtom(this).index);
   }
 
+  private int covalentHydrogenCount = -1;
+  
   public int getCovalentHydrogenCount() {
+    if (covalentHydrogenCount >= 0)
+      return covalentHydrogenCount;
     if (parent != null)
       return parent.getCovalentHydrogenCount();
-    int n = 0;
+    covalentHydrogenCount = 0;
     for (int k = 0; k < bonds.length; k++)
       if (bonds[k].getOtherAtom(this).elementNumber == 1)
-        n++;
-    return n;
+        covalentHydrogenCount++;
+    return covalentHydrogenCount;
   }
 
   public int getValence() {

@@ -160,19 +160,18 @@ abstract class ScriptCompilationTokenParser {
           if (tokPeek(Token.identifier) && !(tokCommand == Token.load && itokenInfix == 1)) {
             String name = (String) atokenInfix[itokenInfix].value;
             Token t = Token.getTokenFromName(name); 
-            if (t != null) {
-              if (!isMathExpressionCommand && lastToken.tok != Token.define
-                  || tokAt(itokenInfix + 1) == Token.leftparen && !isUserFunction(name)) {
-                // checking here for known token mascarading as identifier due to VAR definition
-                // we reset it to its original mapping if that is the case
-                // 1) it's a known token
-                // 2) either: 
+            if (t != null)
+              if (!isMathExpressionCommand && lastToken.tok != Token.define 
+                  || (lastToken.tok == Token.per || tokAt(itokenInfix + 1) == Token.leftparen)
+                        && !isUserFunction(name)) {
+                // Checking here for known token mascarading as identifier due to VAR definition.
+                // We reset it to its original mapping if it's a known token and:
                 //    a) this isn't a math expression command, and not preceeded by @, or
-                //    b) it is followed by (
+                //    b) it is preceded by "." or followed by "(" 
+                //             and it isn't the name of a user function
 
                 atokenInfix[itokenInfix] = t;
-                }
-            }
+              }
           }
           if (!addNextToken())
             break;

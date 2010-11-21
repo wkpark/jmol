@@ -1,8 +1,18 @@
 <?php
 /**
- * @author Nicolas Vervelle, Angel Herraez, Jmol Development team
+ * Jmol extension - adds the possibility to include [http://www.jmol.org Jmol applets] in MediaWiki.
+ *
+ * @file
+ * @ingroup Extensions
+ * @version 3.3_dev
+ * @author Nicolas Vervelle
+ * @author Angel Herraez
+ * @author Jmol Development team
+ * @license http://www.gnu.org/copyleft/gpl.html GNU General Public License 2.0 or later
+ * @link http://wiki.jmol.org/index.php/MediaWiki Documentation
  * @package Jmol
  */
+
 /* Nov-Dec. 08 - several fixes by AH
     Compatibility with wikis residing in a non-root folder of the server.
     Javascript command blocked from inside Jmol.
@@ -18,22 +28,34 @@
 		E.g.:  <urlContents>http://some.server.com/myMols/?a=value1%26b=value2%26c=value3</urlContents>
 		  meaning http://some.server.com/myMols/?a=value1&b=value2&c=value3
 		or: <script>load http://some.server.com/myMols/?a=value1%26b=value2%26c=value3</script>
-*/
+ * Nov. 10 - version 3.3 - by NV
+    Adds Compatibility with MW 1.16
+	Removes the dependency on StubManager
+ */
 
 //<source lang=php>
-$wgExtensionCredits['parserhook'][] = array(
-  'author'      => 'Nicolas Vervelle, Angel Herraez; Jmol Development Team',
-  'description' => 'adds the possibility to include [http://www.jmol.org Jmol] applets in MediaWiki.',
-  'name'        => 'Jmol Extension for MediaWiki',
-  'update'      => '2009-11-13',
-  'url'         => 'http://wiki.jmol.org/index.php/MediaWiki',
-  'status'      => 'development',
-  'type'        => 'hook',
-  'version'     => '3.2'
-//  'version'     => StubManager::getRevisionId( '$Id$' )
+
+# Not a valid entry point, skip unless MEDIAWIKI is defined
+if ( !defined( 'MEDIAWIKI' ) ) {
+	echo "Jmol extension";
+	exit( 1 );
+}
+
+# Internationalisation file
+$dir = dirname( __FILE__ ) . '/';
+$wgExtensionMessagesFiles['Jmol'] = $dir . 'Jmol.i18n.php';
+
+// Extension credits that will show up on Special:Version
+$wgExtensionCredits['specialpage'][] = array(
+	'path'           => __FILE__,
+	'name'           => 'Jmol',
+	'descriptionmsg' => 'jmol-desc',
+	'version'        => '3.3_dev',
+	'author'         => array( 'Nicolas Vervelle', 'Angel Herraez', 'Jmol Development Team' ),
+	'url'            => 'http://wiki.jmol.org/index.php/MediaWiki',
 );
 
-/* Global configuration parameters */
+// Global configuration parameters
 global $wgJmolAuthorizeChoosingSignedApplet;
 global $wgJmolAuthorizeUploadedFile;
 global $wgJmolAuthorizeUrl;
@@ -44,9 +66,8 @@ global $wgJmolForceNameSpace;
 global $wgJmolShowWarnings;
 global $wgJmolUsingSignedAppletByDefault;
 
-/*	These are the default (recommended) values; they can be changed here, 
-	but it is advisable to chenge them in LocalSettings.php
-*/
+// These are the default (recommended) values.
+// They can be changed here, but it is advisable to change them in LocalSettings.php
 $wgJmolAuthorizeChoosingSignedApplet = false;
 $wgJmolAuthorizeUploadedFile = true;
 $wgJmolAuthorizeUrl = false;
@@ -57,16 +78,15 @@ $wgJmolForceNameSpace = "";
 $wgJmolShowWarnings = true;
 $wgJmolUsingSignedAppletByDefault = false;
 
-StubManager::createStub(
-    'Jmol',
-    dirname(__FILE__).'/Jmol.body.php',
-    null, //dirname(__FILE__).'/Jmol.i18n.php',
-    array( 'OutputPageBeforeHTML',
-           'ParserBeforeStrip',
-           'ParserAfterStrip' ),
-    false,                              // no need for logging support
-    array( 'jmol' ),                    // tags
-    null,                               //of parser function magic words,
-    null
-);
+// Autoload Jmol extension
+$wgAutoloadClasses['Jmol'] = $dir . '/Jmol.body.php';
+
+global $wgHooks;
+$wgHooks['ParserFirstCallInit'][] = 'wfJmolParserInit';
+
+function wfJmolParserInit( &$parser ) {
+	new Jmol;
+	return true;
+}
+
 //</source>

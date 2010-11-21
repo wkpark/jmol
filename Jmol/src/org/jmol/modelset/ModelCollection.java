@@ -3762,31 +3762,24 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public void appendLoadStates(StringBuffer commands) {
-    for (int i = 0; i < modelCount; i++) 
-      commands.append(getModelLoadState(i));
-  }
-
-  public String getModelLoadState(int i) {
-    if (i < 0)
-      i = modelCount - 1;
-    if (isJmolDataFrame(i))
-      return "";
-    StringBuffer commands = new StringBuffer();
-    commands.append(models[i].loadState);
-    if (models[i].isModelKit) {
-      BitSet bs = getModelAtomBitSetIncludingDeleted(i, false);
-      if (tainted != null) {
-        if (tainted[TAINT_COORD] != null)
-          tainted[TAINT_COORD].andNot(bs);
-        if (tainted[TAINT_ELEMENT] != null)
-          tainted[TAINT_ELEMENT].andNot(bs);
+    for (int i = 0; i < modelCount; i++) { 
+      if (isJmolDataFrame(i))
+        continue;
+      commands.append(models[i].loadState);
+      if (models[i].isModelKit) {
+        BitSet bs = getModelAtomBitSetIncludingDeleted(i, false);
+        if (tainted != null) {
+          if (tainted[TAINT_COORD] != null)
+            tainted[TAINT_COORD].andNot(bs);
+          if (tainted[TAINT_ELEMENT] != null)
+            tainted[TAINT_ELEMENT].andNot(bs);
+        }
+        models[i].loadScript = new StringBuffer(); 
+        Viewer.getInlineData(commands, getModelExtract(bs, false, true), i > 0);
+      } else {
+        commands.append(models[i].loadScript);
       }
-      models[i].loadScript = new StringBuffer(); 
-      Viewer.getInlineData(commands, getModelExtract(bs, false, true), false);
-    } else {
-      commands.append(models[i].loadScript);
     }
-    return commands.toString();
   }
 
   /*

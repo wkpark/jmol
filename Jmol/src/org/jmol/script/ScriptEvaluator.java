@@ -16197,7 +16197,7 @@ public class ScriptEvaluator {
         if (bsModels.cardinality() != 1)
           error(ERROR_multipleModelsDisplayedNotOK, "ISOSURFACE " + onlyOneModel);
         if (needSelect)
-        propertyList.add(0, new Object[] { "select", bsSelect }); 
+          propertyList.add(0, new Object[] { "select", bsSelect }); 
       }
     }
 

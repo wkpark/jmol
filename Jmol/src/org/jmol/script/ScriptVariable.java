@@ -920,7 +920,7 @@ public class ScriptVariable extends Token {
     case integer:
       return "" + intValue;
     case bitset:
-      return Escape.escape((BitSet)value);
+      return Escape.escape((BitSet)value, !(value instanceof BondSet));
     case list:
       StringBuffer sb = new StringBuffer();
       sb.append("[");

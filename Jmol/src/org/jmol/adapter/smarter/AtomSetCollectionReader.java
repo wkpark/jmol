@@ -151,7 +151,7 @@ public abstract class AtomSetCollectionReader {
   protected boolean ignoreFileSymmetryOperators;
   protected boolean isTrajectory;
   protected boolean applySymmetryToBonds;
-  protected boolean needToApplySymmetry;
+  protected boolean doCheckUnitCell;
   protected boolean getHeader;
   protected boolean isSequential;
   protected int templateAtomCount;
@@ -174,6 +174,7 @@ public abstract class AtomSetCollectionReader {
   private boolean iHaveFractionalCoordinates;
   private boolean doPackUnitCell;
   private boolean doConvertToFractional;
+  private boolean merging;
   private boolean fileCoordinatesAreFractional;
   private float symmetryRange;
   private int[] firstLastStep;
@@ -441,6 +442,7 @@ public abstract class AtomSetCollectionReader {
       }
       ignoreFileUnitCell = iHaveUnitCell;
     }
+    merging = htParams.containsKey("merging");
     
     if (htParams.containsKey("OutputStream"))
       os = (OutputStream) htParams.get("OutputStream");
@@ -485,7 +487,7 @@ public abstract class AtomSetCollectionReader {
     if (!ignoreFileSpaceGroupName)
       spaceGroup = "unspecified!";
 
-    needToApplySymmetry = false;
+    doCheckUnitCell = false;
   }
 
   protected void newAtomSet(String name) {
@@ -505,7 +507,7 @@ public abstract class AtomSetCollectionReader {
     atomSetCollection.cloneLastAtomSet(atomCount);
     if (atomSetCollection.haveUnitCell) {
       iHaveUnitCell = true;
-      needToApplySymmetry = true;
+      doCheckUnitCell = true;
       spaceGroup = previousSpaceGroup;
       notionalUnitCell = previousUnitCell;
     }
@@ -783,7 +785,7 @@ public abstract class AtomSetCollectionReader {
     }
     //if (Logger.debugging)
     //Logger.debug(" atom "+atom.atomName + " " + atom.x + " " + atom.y+" "+atom.z);
-    needToApplySymmetry = true;
+    doCheckUnitCell = true;
   }
 
   protected void addSites(Map<String, Map<String, Object>> htSites) {
@@ -809,7 +811,7 @@ public abstract class AtomSetCollectionReader {
   }
 
   public void applySymmetryAndSetTrajectory() throws Exception {
-    if (needToApplySymmetry && iHaveUnitCell) {
+    if (iHaveUnitCell && doCheckUnitCell) {
       atomSetCollection.setCoordinatesAreFractional(iHaveFractionalCoordinates);
       atomSetCollection.setNotionalUnitCell(notionalUnitCell,
           matUnitCellOrientation, unitCellOffset);
@@ -827,6 +829,14 @@ public abstract class AtomSetCollectionReader {
         } else {
           atomSetCollection.applySymmetry();
         }
+      }
+      if (iHaveFractionalCoordinates && merging && symmetry != null) {
+        // when merging (with appendNew false), we must return cartesians
+        atomSetCollection.toCartesian(symmetry);
+        atomSetCollection.setAtomSetAuxiliaryInfo("coordinatesAreFractional", Boolean.FALSE);
+        // We no longer allow merging of multiple-model files
+        // when the file to be appended has fractional coordinates and vibrations
+        addVibrations = false;
       }
     }
     if (isTrajectory)

@@ -1608,4 +1608,9 @@ public class AtomSetCollection {
         + "Frequencies");
   }
 
+  void toCartesian(SymmetryInterface symmetry) {
+    for (int i = getLastAtomSetAtomIndex(); i < atomCount; i++)
+      symmetry.toCartesian(atoms[i], true);
+  }
+
 }

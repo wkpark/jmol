@@ -30,6 +30,7 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.Logger;
 import org.jmol.util.Quaternion;
+import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
@@ -158,6 +159,10 @@ public final class ModelLoader extends ModelSet {
       someModelsHaveUnitcells |= mergeModelSet.getModelSetAuxiliaryInfoBoolean("someModelsHaveUnitcells");
       someModelsHaveFractionalCoordinates |= mergeModelSet.getModelSetAuxiliaryInfoBoolean("someModelsHaveFractionalCoordinates");
       someModelsHaveAromaticBonds |= mergeModelSet.someModelsHaveAromaticBonds;
+      modelSetAuxiliaryInfo.put("someModelsHaveSymmetry", Boolean.valueOf(someModelsHaveSymmetry));
+      modelSetAuxiliaryInfo.put("someModelsHaveUnitcells", Boolean.valueOf(someModelsHaveUnitcells));
+      modelSetAuxiliaryInfo.put("someModelsHaveFractionalCoordinates", Boolean.valueOf(someModelsHaveFractionalCoordinates));
+      modelSetAuxiliaryInfo.put("someModelsHaveAromaticBonds", Boolean.valueOf(someModelsHaveAromaticBonds));
     }
   }
 
@@ -446,7 +451,14 @@ public final class ModelLoader extends ModelSet {
     String loadState = (String) modelSetAuxiliaryInfo.remove("loadState");
     StringBuffer loadScript = (StringBuffer)modelSetAuxiliaryInfo.remove("loadScript");
     if (loadScript.indexOf("Viewer.AddHydrogens") < 0 || !m.isModelKit) {
-      m.loadState += m.loadScript + loadState;
+      String[] lines = TextFormat.split(loadState, '\n');
+      StringBuffer sb = new StringBuffer();
+      for (int i = 0; i < lines.length; i++) {
+        int pt = m.loadState.indexOf(lines[i]);
+        if (pt < 0 || pt != m.loadState.lastIndexOf(lines[i]))
+          sb.append(lines[i]).append('\n');
+      }
+      m.loadState += m.loadScript.toString() + sb.toString();
       m.loadScript = new StringBuffer();
       m.loadScript.append("  ").append(loadScript).append(";\n");
       
@@ -907,7 +919,7 @@ public final class ModelLoader extends ModelSet {
         }
       }
     }
-    if (someModelsHaveSymmetry) {
+    if (appendNew && someModelsHaveSymmetry) {
       getAtomBits(Token.symmetry, null);
       for (int iAtom = baseAtomIndex, iModel = -1, i0 = 0; iAtom < atomCount; iAtom++) {
         if (atoms[iAtom].modelIndex != iModel) {
@@ -920,7 +932,7 @@ public final class ModelLoader extends ModelSet {
           bsSymmetry.set(iAtom);
       }
     }
-    if (someModelsHaveFractionalCoordinates) {
+    if (appendNew && someModelsHaveFractionalCoordinates) {
       for (int i = baseAtomIndex; i < atomCount; i++) {
         int modelIndex = atoms[i].modelIndex;
         if (!unitCells[modelIndex].getCoordinatesAreFractional())

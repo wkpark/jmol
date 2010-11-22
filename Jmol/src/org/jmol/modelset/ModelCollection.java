@@ -3765,7 +3765,9 @@ abstract public class ModelCollection extends BondCollection {
     for (int i = 0; i < modelCount; i++) { 
       if (isJmolDataFrame(i))
         continue;
-      commands.append(models[i].loadState);
+      int pt = commands.indexOf(models[i].loadState);
+      if (pt < 0 || pt != commands.lastIndexOf(models[i].loadState))
+        commands.append(models[i].loadState);
       if (models[i].isModelKit) {
         BitSet bs = getModelAtomBitSetIncludingDeleted(i, false);
         if (tainted != null) {

@@ -98,10 +98,6 @@ public class CsfReader extends MopacSlaterReader {
     return true;
   }
  
-  @Override
-  public void finalizeReader() throws Exception {
-    super.finalizeReader();
-  }
   /*
    local_transform
    0.036857 -0.132149 0.003770 0.000000

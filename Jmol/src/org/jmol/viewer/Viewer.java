@@ -1734,7 +1734,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // fileManager.addLoadScript(script);
   }
 */
-  private Map<String, Object> setLoadParameters(Map<String, Object> htParams) {
+  private Map<String, Object> setLoadParameters(Map<String, Object> htParams, boolean isAppend) {
     if (htParams == null)
       htParams = new Hashtable<String, Object>();
     htParams.put("viewer", this);
@@ -1753,7 +1753,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (filter.length() > 0)
         htParams.put("filter", filter);
     }
-
+    if (isAppend && !global.appendNew && getAtomCount() > 0)
+      htParams.put("merging", Boolean.TRUE);
     return htParams;
   }
 
@@ -1882,7 +1883,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                   boolean isAppend, Map<String, Object> htParams,
                                   StringBuffer loadScript, int tokType) {
     if (htParams == null)
-      htParams = setLoadParameters(null);
+      htParams = setLoadParameters(null, isAppend);
     Object atomSetCollection;
     String[] saveInfo = fileManager.getFileInfo();
     if (fileNames != null) {
@@ -1897,7 +1898,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       long timeBegin = System.currentTimeMillis();
 
       atomSetCollection = fileManager.createAtomSetCollectionFromFiles(
-          fileNames, setLoadParameters(htParams), isAppend);
+          fileNames, setLoadParameters(htParams, isAppend), isAppend);
       long ms = System.currentTimeMillis() - timeBegin;
       String msg = "";
       for (int i = 0; i < fileNames.length; i++)
@@ -1927,13 +1928,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
         atomSetCollection = fileManager.createAtomSetCollectionFromReader(
             fullPathName, fileName, (Reader) reader,
-            htParams = setLoadParameters(null));
+            htParams = setLoadParameters(null, isAppend));
       else
 
         // 3) a DOM reader (could be used by Jmol) 
 
         atomSetCollection = fileManager.createAtomSetCollectionFromDOM(reader,
-            htParams = setLoadParameters(null));
+            htParams = setLoadParameters(null, isAppend));
     }
 
     // OK, the file has been read and is now closed.
@@ -1986,7 +1987,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     Object atomSetCollection;
     Logger.startTimer();
-    htParams = setLoadParameters(htParams);
+    htParams = setLoadParameters(htParams, isAppend);
     boolean isLoadVariable = fileName.startsWith("@");
     boolean haveFileData = (htParams.containsKey("fileData"));
     if (fileName.indexOf('$') == 0)
@@ -2089,7 +2090,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       zap(true, false/*true*/, false);
     setBooleanProperty("preserveState", false);
     Object atomSetCollection = fileManager.createAtomSeCollectionFromArrayData(
-        arrayData, setLoadParameters(null), isAppend);
+        arrayData, setLoadParameters(null, isAppend), isAppend);
     return createModelSetAndReturnError(atomSetCollection, isAppend, null);
   }
 
@@ -2170,7 +2171,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return "cannot open script inline";
     }
 
-    htParams = setLoadParameters(htParams);
+    htParams = setLoadParameters(htParams, isAppend);
     StringBuffer loadScript = (StringBuffer) htParams.get("loadScript");
     boolean isLoadCommand = htParams.containsKey("isData");
     if (loadScript == null)
@@ -2189,7 +2190,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (!isAppend)
       zap(true, false/*true*/, false);
     Object atomSetCollection = fileManager.createAtomSeCollectionFromStrings(
-        arrayModels, loadScript, setLoadParameters(htParams), isAppend);
+        arrayModels, loadScript, setLoadParameters(htParams, isAppend), isAppend);
     return createModelSetAndReturnError(atomSetCollection, isAppend, loadScript);
   }
 

@@ -23,4 +23,11 @@ $messages['qqq'] = array(
 	'jmol-desc'              => '{{desc}}',
 );
 
+/** French
+ * @author Nicolas Vervelle
+ */
+$messages['fr'] = array(
+	'jmol-desc'              => 'Ajoute la possibilité d\'inclure des applets [http://www.jmol.org Jmol] dans MediaWiki.',
+);
+
 //</source>

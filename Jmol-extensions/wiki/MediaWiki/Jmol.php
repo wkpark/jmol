@@ -45,6 +45,9 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 $dir = dirname( __FILE__ ) . '/';
 $wgExtensionMessagesFiles['Jmol'] = $dir . 'Jmol.i18n.php';
 
+// Bump this when updating Jmol.js or JmolMediaWiki.js to help update caches
+$wgJmolScriptVersion = '1';
+
 // Extension credits that will show up on Special:Version
 $wgExtensionCredits['specialpage'][] = array(
 	'path'           => __FILE__,

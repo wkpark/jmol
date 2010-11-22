@@ -639,22 +639,6 @@ class Jmol {
 		return Xml::escapeJsString( $value );
 	}
 
-	// Add a link to Javascript file in the HTML header
-	private function includeScript( &$outputPage, $scriptFile ) {
-		$script = "<script type='text/javascript' " .
-			"src='" . $scriptFile . "'>" .
-			"</script>\n";
-		$outputPage->addScript( $script );
-	}
-
-	// Add a Javascript script in the HTML header
-	private function addScript( &$outputPage, $scriptContents ) {
-		$script = "<script type='text/javascript'>" .
-			$scriptContents .
-			"</script>\n";
-		$outputPage->addScript( $script );
-	}
-
 	// *********************** //
 	// DIRECTING THE EXTENSION //
 	// *********************** //
@@ -665,19 +649,20 @@ class Jmol {
 	}
 
 	private function beforeHTMLOutput( &$outputPage, &$text ) {
-		global $wgJmolExtensionPath;
+		global $wgJmolExtensionPath, $wgJmolScriptVersion;
 		if ( preg_match_all( '/<!-- Jmol -->/m', $text, $matches ) === false ) {
 			return true;
 		}
-		$this->includeScript( $outputPage, $wgJmolExtensionPath . "/Jmol.js" );
-		$this->includeScript( $outputPage, $wgJmolExtensionPath . "/JmolMediaWiki.js" );
-		/*  initialize now goes in the body, thus allowing signed applet
-		if ( $this->mValSigned == "true" ) {
-			$this->addScript( $outputPage, "jmolInitialize('" . $wgJmolExtensionPath . "', true);" );
-		} else {
-			$this->addScript( $outputPage, "jmolInitialize('" . $wgJmolExtensionPath . "', false);" );
+		if ( ! $outputPage->hasHeadItem( 'JmolScript' ) ) {
+			$outputPage->addHeadItem(
+				'JmolScript',
+				Html::linkedScript( $wgJmolExtensionPath . "/Jmol.js?" . $wgJmolScriptVersion ) );
 		}
-		*/
+		if ( ! $outputPage->hasHeadItem( 'JmolMediaWikiScript' ) ) {
+			$outputPage->addHeadItem(
+				'JmolMediaWikiScript',
+				Html::linkedScript( $wgJmolExtensionPath . "/JmolMediaWiki.js?" . $wgJmolScriptVersion ) );
+		}
 		return true;
 	}
 

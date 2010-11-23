@@ -24,6 +24,8 @@
 package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
+import java.util.Hashtable;
+import java.util.Map;
 
 import javax.vecmath.Point3f;
 
@@ -102,8 +104,9 @@ class ObjReader extends PolygonFileReader {
   }
 
   private boolean readPmesh() {
+    nPolygons = 0;
     try {
-      if (readVertices() && readPolygons())
+      if (readVerticesAndPolygons())
         return true;
     } catch (Exception e) {
       if (pmeshError == null)
@@ -113,69 +116,87 @@ class ObjReader extends PolygonFileReader {
   }
 
   Point3f pt = new Point3f();
-  private boolean readVertices() throws Exception {
-    pmeshError = "pmesh ERROR: invalid vertex list";
+
+  private boolean readVerticesAndPolygons() throws Exception {
+    pmeshError = "pmesh ERROR: invalid vertex/face list";
     Point3f pt = new Point3f();
-    while (readLine() != null) {
-      if (line.length() == 0 || nVertices == 0 && line.indexOf("v ") != 0)
-        continue;
-      if (line.indexOf("v ") != 0)
-        break;
-      next[0] = 2;
-      pt.set(Parser.parseFloat(line, next), Parser.parseFloat(line, next), Parser.parseFloat(line, next));
-      if (isAnisotropic)
-        setVertexAnisotropy(pt);
-      addVertexCopy(pt, 0, ++nVertices);
+    int color = 0;
+    boolean haveColor = false;
+    int ia, ib, ic, id = 0;
+    int i = 0;
+    int nPts = 0;
+    Map<String, Integer> htPymol = new Hashtable<String, Integer>();
+    Integer ipt = null;
+    String spt = null;
+    int[] pymolMap = new int[3];
+    // pymol writes a crude file with much re-writing of vertices
+    
+    try {
+      while (readLine() != null) {
+        if (line.length() < 2 || line.charAt(1) != ' ')
+          continue;
+        switch (line.charAt(0)) {
+        case 'v':
+          next[0] = 2;
+          pt.set(Parser.parseFloat(line, next), Parser.parseFloat(line, next),
+              Parser.parseFloat(line, next));
+          if (htPymol == null) {
+            i = nVertices;
+          } else if ((ipt = htPymol.get(spt = "" + pt)) == null) {
+            htPymol.put(spt, Integer.valueOf(i = nVertices));
+          } else {
+            i = ipt.intValue();
+          }
+          if (i == nVertices) {
+            if (isAnisotropic)
+              setVertexAnisotropy(pt);
+            addVertexCopy(pt, 0, nVertices++);
+          }
+          pymolMap[nPts % 3] = i;
+          nPts++;
+          break;
+        case 'f':
+          if (nPts == 3 && line.indexOf("//") < 0)
+              htPymol = null;
+          nPolygons++;
+          String[] tokens = Parser.getTokens(line);
+          int vertexCount = tokens.length - 1;
+          if (vertexCount == 4)
+            htPymol = null;
+          if (htPymol == null) {
+            ia = Parser.parseInt(tokens[1]) - 1;
+            ib = Parser.parseInt(tokens[2]) - 1;
+            ic = Parser.parseInt(tokens[3]) - 1;
+            if (vertexCount == 4) {
+              id = Parser.parseInt(tokens[4]) - 1;
+              addTriangleCheck(ia, ib, ic, 5, 0, false, color);
+              nTriangles = addTriangleCheck(ib, ic, id, 3, 0, false, color);
+              continue;
+            }
+          } else {
+            ia = pymolMap[0];
+            ib = pymolMap[1];
+            ic = pymolMap[2];
+          }
+          nTriangles = addTriangleCheck(ia, ib, ic, 7, 0, false, color);
+          break;
+        case 'g':
+          htPymol = null;
+          if (params.readAllData != haveColor)
+            color = Graphics3D
+                .getArgbFromString("[x" + line.substring(3) + "]");
+          haveColor = true;
+          break;
+        }
+      }
+    } catch (Exception e) {
+      if (line != null) {
+        pmeshError = "problem reading OBJ file at: " + line;
+        return true;
+      }
     }
     pmeshError = null;
     return true;
   }
 
-  private boolean readPolygons() {
-    nPolygons = 0;
-    int color = 0;
-    try {
-      if (!params.readAllData) {
-        for (int i = 0; i < params.fileIndex; i++) {
-          while (line != null && line.indexOf("g ") != 0)
-            readLine();
-          if (line == null)
-            break;
-          color = Graphics3D.getArgbFromString("[x" + line.substring(3) + "]");
-          //System.out.println("[x" + line.substring(3) + "]" + " " + color);
-          readLine();
-        }
-      }
-
-      while (line != null) {
-        if (line.indexOf("f ") == 0) {
-          nPolygons++;
-          next[0] = 2;
-          int ia = Parser.parseInt(line, next);
-          int ib = Parser.parseInt(line, next);
-          int ic = Parser.parseInt(line, next);
-          int id = Parser.parseInt(line, next);
-          int vertexCount = (id == Integer.MIN_VALUE ? 3 : 4);
-          if (vertexCount == 4) {
-            nTriangles += 2;
-            addTriangleCheck(ia - 1, ib - 1, ic - 1, 5, 0, false, color);
-            addTriangleCheck(ib - 1, ic - 1, id - 1, 3, 0, false, color);
-          } else {
-            nTriangles++;
-            addTriangleCheck(ia - 1, ib - 1, ic - 1, 7, 0, false, color);
-          }
-        } else if (line.indexOf("g ") == 0) {
-          if (!params.readAllData)
-            break;
-          color = Graphics3D.getArgbFromString("[x" + line.substring(3) + "]");
-        }
-        readLine();
-      }
-    } catch (Exception e) {
-      if (line != null)
-        pmeshError = "problem reading OBJ file at: " + line;
-      // normal;
-    }
-    return true;
-  }
 }

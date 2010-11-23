@@ -64,6 +64,23 @@ public class SurfaceFileTyper {
     //for (int i = 0; i < 220; i++)
     //  System.out.print(" " + i + ":" + (0 + line.charAt(i)));
     //System.out.println("");
+    if ((line = br.info()).length() == 0)
+      return null;
+    switch (line.charAt(0)) {
+    case '#':
+      if (line.indexOf(".obj") >= 0)
+        return "Obj"; // #file: pymol.obj
+      break;
+    case '&':
+      if (line.indexOf("&plot") == 0)
+        return "Jaguar";
+      break;
+    case '\r':
+    case '\n':
+      if (line.indexOf("ZYX") >= 0)
+        return "Xplor";
+      break;
+    }
     if (line.indexOf("Here is your gzipped map") >= 0)
       return "UPPSALA" + line;
     if (line.indexOf("<jvxl") >= 0 && line.indexOf("<?xml") >= 0)
@@ -72,12 +89,8 @@ public class SurfaceFileTyper {
       return "Jvxl+";
     if (line.indexOf("#JVXL") >= 0)
       return "Jvxl";
-    if (line.indexOf("&plot") == 0)
-      return "Jaguar";
     if (line.indexOf("<efvet ") >= 0)
       return "Efvet";
-    if ("\n\r".indexOf(line.charAt(0)) >= 0 && line.indexOf("ZYX") >= 0)
-      return "Xplor";
     // binary formats: problem here is that the buffered reader
     // may be translating byte sequences into unicode
     // and thus shifting the offset

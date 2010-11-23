@@ -214,7 +214,7 @@ class Jmol {
 			           " id='" . $this->escapeAttribute( $this->mValName ) . "'";
 		}
 		$prefix .= " href='javascript:void(0)' " .
-		           " title='this will load a 3D model in a Jmol applet, which may take some time'" .
+		           " title='" . wfMsg( 'jmol-loadwarning' ) ."'" .
 		           " onclick=\"jmolWikiPopInline('" . $uniqueID . "','";
 
 		$postfix .= "');\"";
@@ -355,7 +355,7 @@ class Jmol {
 					$this->mValUrlContents = $file->getURL();
 				}
 			} else {
-				return $this->showWarning( "The field uploadedFileContents is not authorized on this wiki." );
+				return $this->showWarning( wfMsg( 'jmol-nouploadedfilecontents' ) );
 			}
 		}
 		if ( $this->mValWikiPageContents != "" ) {
@@ -366,13 +366,13 @@ class Jmol {
 				}
 				$this->mValUrlContents .= $this->mValWikiPageContents . "&action=raw";
 			} else {
-				return $this->showWarning( "The field wikiPageContents is not authorized on this wiki." );
+				return $this->showWarning( wfMsg( 'jmol-nowikipagecontents' ) );
 			}
 		}
 		if ( $this->mValUrlContents != "" ) {
 			$output .= "jmolApplet(" .
 				$this->escapeScript( $this->mValSize ) . ", " .
-				$sep . "set echo p 50% 50%;set echo p center;echo loading...;refresh;" .
+				$sep . "set echo p 50% 50%;set echo p center;echo " . wfMsg( 'jmol-loading' ) . ";refresh;" .
 					"load " . $this->escapeScript( $this->mValUrlContents ) . "; " .
 					$this->escapeScript( $this->mValScript ) . $sep;
 		} else {
@@ -690,7 +690,7 @@ class Jmol {
 	 * @param array $param Arguments
 	 * @return string
 	 */
-	public function jmolTag(&$text, &$params, &$parser) {
+	public function jmolTag( $text, $params, $parser ) {
 		if ( $this->mInJmol ) {
 			return htmlspecialchars( "<jmol>$text</jmol>" );
 		} else {

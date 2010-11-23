@@ -41,9 +41,10 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 	exit( 1 );
 }
 
-# Internationalisation file
-$dir = dirname( __FILE__ ) . '/';
-$wgExtensionMessagesFiles['Jmol'] = $dir . 'Jmol.i18n.php';
+# Initialisation
+$jmolDir = dirname(__FILE__);
+$wgAutoloadClasses['Jmol'] = "$jmolDir/Jmol.body.php";
+$wgExtensionMessagesFiles['Jmol'] = "$jmolDir/Jmol.i18n.php";
 
 // Bump this when updating Jmol.js or JmolMediaWiki.js to help update caches
 $wgJmolScriptVersion = '1';
@@ -80,9 +81,6 @@ $wgJmolExtensionPath = $wgScriptPath."/extensions/Jmol";
 $wgJmolForceNameSpace = "";
 $wgJmolShowWarnings = true;
 $wgJmolUsingSignedAppletByDefault = false;
-
-// Autoload Jmol extension
-$wgAutoloadClasses['Jmol'] = $dir . '/Jmol.body.php';
 
 global $wgHooks;
 $wgHooks['ParserFirstCallInit'][] = 'wfJmolParserInit';

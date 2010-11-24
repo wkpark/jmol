@@ -158,7 +158,8 @@ public class MopacGraphfReader extends MopacSlaterReader {
     if (isBeta)
       alphaBeta = "beta";
     float[][] list = null;
-    readLine();
+    if (readLine() == null)
+      return;
     isNewFormat = (line.indexOf("ORBITAL") >= 0);
     if (isNewFormat) {
       orbitalData = new ArrayList<float[]>();

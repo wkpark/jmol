@@ -147,6 +147,8 @@ public class MopacGraphfReader extends MopacSlaterReader {
   
   private boolean isNewFormat;
   private ArrayList<float[]> orbitalData;
+  private ArrayList<String> orbitalInfo;
+  
   private void readMolecularOrbitals(boolean isBeta) throws Exception {
     
     // read mo coefficients
@@ -158,43 +160,36 @@ public class MopacGraphfReader extends MopacSlaterReader {
     float[][] list = null;
     readLine();
     isNewFormat = (line.indexOf("ORBITAL") >= 0);
-    if (isNewFormat)
+    if (isNewFormat) {
       orbitalData = new ArrayList<float[]>();
-    else
+      if (line.length() > 10)
+        orbitalInfo = new ArrayList<String>();
+    } else {
       list = new float[nCoefficients][nCoefficients];
+    }
     for (int iMo = 0; iMo < nCoefficients; iMo++) {
-      int n = 0;
       if (iMo != 0)
         readLine();
       float[] data;
       if (isNewFormat) {
-        if (line.indexOf("ORBITAL") < 0 || line.indexOf("ORBITAL_LIST") >= 0)
+        if (line == null || line.indexOf("ORBITAL") < 0 || line.indexOf("ORBITAL_LIST") >= 0)
           break;
         orbitalData.add(data = new float[nCoefficients]);
+        if (orbitalInfo != null)
+          orbitalInfo.add(line);
         readLine();
       } else {
         data = list[iMo];
       }
-      for (int i = 0; i < nCoefficients; i++) {
-        if (i != 0 && (n = (n + 1) % 5) == 0)
-          readLine();
-        data[i] = parseFloat(line.substring(n * 15, (n + 1) * 15));
-      }
+      fillFloatArray(data, line, 15);
     }
-    if (!isBeta) {
+    if (invMatrix == null) {
       if (isNewFormat && line.indexOf("MATRIX") < 0)
         readLine();
       // read lower triangle of symmetric inverse sqrt matrix and multiply
-      invMatrix = new float[nCoefficients][nCoefficients];
-      for (int iMo = 0; iMo < nCoefficients; iMo++) {
-        int n = -1;
-        for (int i = 0; i < iMo + 1; i++) {
-          if ((n = (n + 1) % 5) == 0)
-            readLine();
-          invMatrix[iMo][i] = invMatrix[i][iMo] = parseFloat(line.substring(
-              n * 15, (n + 1) * 15));
-        }
-      }
+      invMatrix = new float[nCoefficients][];
+      for (int iMo = 0; iMo < nCoefficients; iMo++)
+        fillFloatArray(invMatrix[iMo] = new float[iMo + 1], null, 15);
     }
     nOrbitals = (orbitalData == null ? nCoefficients : orbitalData.size());
     if (orbitalData != null) {
@@ -206,7 +201,7 @@ public class MopacGraphfReader extends MopacSlaterReader {
     for (int i = 0; i < nOrbitals; i++)
       for (int j = 0; j < nCoefficients; j++) {
         for (int k = 0; k < nCoefficients; k++)
-          list2[i][j] += (list[i][k] * invMatrix[k][j]);
+          list2[i][j] += (list[i][k] * (k >= j ? invMatrix[k][j] : invMatrix[j][k]));
         if (Math.abs(list2[i][j]) < MIN_COEF)
           list2[i][j] = 0;
       }
@@ -221,12 +216,17 @@ public class MopacGraphfReader extends MopacSlaterReader {
      */
 
     // read MO energies and occupancies, and fill "coefficients" element
-    if (isNewFormat && line.indexOf("ORBITAL_LIST") < 0)
+    if (isNewFormat && orbitalInfo == null && line != null && line.indexOf("ORBITAL_LIST") < 0)
       readLine();
     float[] values = new float[2];
     for (int iMo = 0; iMo < nOrbitals; iMo++) {
       Map<String, Object> mo = new Hashtable<String, Object>();
-      if (readLine() != null) {
+      if (orbitalInfo != null) {
+        line = orbitalInfo.get(iMo);
+        String[] tokens = getTokens();
+        mo.put("energy", new Float(parseFloat(tokens[3])));
+        mo.put("occupancy", new Float(parseFloat(tokens[1])));
+      } else if (readLine() != null) {
         getTokensFloat(line, values, 2);
         mo.put("energy", new Float(values[0]));
         mo.put("occupancy", new Float(values[1]));

@@ -296,7 +296,7 @@ public class CrystalReader extends AtomSetCollectionReader {
   private Vector3f getPoint3f(float[] f, int pt) throws Exception {
     if (f == null) {
       f = new float[3];
-      fillFloatArray(f);
+      fillFloatArray(f, null, 0);
       return new Vector3f(f[0], f[1], f[2]);
     }
     return new Vector3f(f[pt++], f[pt++], f[pt]);
@@ -312,7 +312,7 @@ public class CrystalReader extends AtomSetCollectionReader {
   Matrix3f primitiveToCryst;
   private void readTransformationMatrix() throws Exception {    
     float[] f = new float[9];
-    fillFloatArray(f);
+    fillFloatArray(f, null, 0);
     primitiveToCryst = new Matrix3f(f);
   }
 

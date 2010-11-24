@@ -181,7 +181,7 @@ public class VaspReader extends AtomSetCollectionReader {
       atomSetCollection.newAtomSet();
       setAtomSetInfo();
     }
-    fillFloatArray(unitCellData);
+    fillFloatArray(unitCellData, null, 0);
     setUnitCell();
   }
   

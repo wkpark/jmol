@@ -273,7 +273,7 @@ public class GenNBOReader extends MOReader {
     for (int j = 0; j < 5; j++) {
       readLine();
       float[] temp = new float[gaussianCount];
-      fillFloatArray(temp);
+      fillFloatArray(temp, null, 0);
       for (int i = 0; i < gaussianCount; i++)
         gaussians[i][j] = temp[i];
     }
@@ -357,7 +357,7 @@ public class GenNBOReader extends MOReader {
       float[] coefs = new float[nAOs];
       mo.put("coefficients", coefs);
       if (isMO)
-        fillFloatArray(coefs);
+        fillFloatArray(coefs, null, 0);
       else
         coefs[i] = 1;
     }

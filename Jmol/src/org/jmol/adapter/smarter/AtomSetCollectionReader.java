@@ -904,14 +904,25 @@ public abstract class AtomSetCollectionReader {
   /**
    * fills a float array with string data from a file
    * @param temp
+   * @param line0 TODO
+   * @param width TODO
    * @throws Exception
    */
-  protected void fillFloatArray(float[] temp) throws Exception {
+  protected void fillFloatArray(float[] temp, String line0, int width) throws Exception {
     String[] tokens = new String[0];
     int pt = 0;
     for (int i = 0; i < temp.length; i++) {
       while (tokens != null && pt >= tokens.length) {
-        tokens = getTokens(readLine());
+        if (line0 == null)
+          line0 = readLine();
+        if (width == 0) {
+          tokens = getTokens(line0);
+        } else {
+          tokens = new String[line0.length() / width];
+          for (int j = 0; j < tokens.length; j++)
+            tokens[j] = line0.substring(j * width, (j + 1) * width);
+        }
+        line0 = null;
         pt = 0;
       }
       if (tokens == null)

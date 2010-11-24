@@ -45,10 +45,44 @@ abstract class BasisFunctionReader extends AtomSetCollectionReader {
   protected Map<String, Object> moData = new Hashtable<String, Object>();
   protected List<Map<String, Object>> orbitals = new ArrayList<Map<String, Object>>();
   protected int nOrbitals = 0;
-  
+  protected boolean ignoreMOs = false;
+  protected String alphaBeta = "";
 
   protected int[][] dfCoefMaps;
   
+  private String[] filterTokens;
+  private boolean filterIsNot; 
+
+  protected boolean filterMO() {
+    boolean isHeader = (line.indexOf('\n') == 0);
+    if (!isHeader && !readMolecularOrbitals)
+      return false;
+    if (filter == null)
+      return true;
+    boolean isOK = true;
+    int nOK = 0;
+    line += " " + alphaBeta;
+    String ucline = line.toUpperCase();
+    if (filterTokens == null) {
+      filterIsNot = (filter.indexOf("!") >= 0);
+      filterTokens = getTokens(filter.replace('!', ' ').replace(',', ' ')
+          .replace(';', ' '));
+    }
+    for (int i = 0; i < filterTokens.length; i++)
+      if (ucline.indexOf(filterTokens[i]) >= 0) {
+        if (!filterIsNot) {
+          nOK = filterTokens.length;
+          break;
+        }
+      } else if (filterIsNot) {
+        nOK++;
+      }
+    isOK = (nOK == filterTokens.length);
+    if (!isHeader)
+      Logger.info("filter MOs: " + isOK + " for \"" + line + "\"");
+    return isOK;
+  }
+
   protected void setMO(Map<String, Object> mo) {
     if (dfCoefMaps != null)
       mo.put("dfCoefMaps", dfCoefMaps);

@@ -95,12 +95,6 @@ abstract public class MOReader extends BasisFunctionReader {
   protected boolean haveNboCharges;
   private boolean haveNboOrbitals;
 
-  private String[] filterTokens;
-  private boolean filterIsNot; 
-
-  protected boolean ignoreMOs = false;
-  protected String alphaBeta = "";
-
   final protected int HEADER_GAMESS_UK_MO = 3;
   final protected int HEADER_GAMESS_OCCUPANCIES = 2;
   final protected int HEADER_GAMESS_ORIGINAL = 1;
@@ -119,36 +113,6 @@ abstract public class MOReader extends BasisFunctionReader {
       filter = null;
   }
   
-  protected boolean filterMO() {
-    boolean isHeader = (line.indexOf('\n') == 0);
-    if (!isHeader && !readMolecularOrbitals)
-      return false;
-    if (filter == null)
-      return true;
-    boolean isOK = true;
-    int nOK = 0;
-    line += " " + alphaBeta;
-    String ucline = line.toUpperCase();
-    if (filterTokens == null) {
-      filterIsNot = (filter.indexOf("!") >= 0);
-      filterTokens = getTokens(filter.replace('!', ' ').replace(',', ' ')
-          .replace(';', ' '));
-    }
-    for (int i = 0; i < filterTokens.length; i++)
-      if (ucline.indexOf(filterTokens[i]) >= 0) {
-        if (!filterIsNot) {
-          nOK = filterTokens.length;
-          break;
-        }
-      } else if (filterIsNot) {
-        nOK++;
-      }
-    isOK = (nOK == filterTokens.length);
-    if (!isHeader)
-      Logger.info("filter MOs: " + isOK + " for \"" + line + "\"");
-    return isOK;
-  }
-
   /**
    * 
    * @return true if need to read line

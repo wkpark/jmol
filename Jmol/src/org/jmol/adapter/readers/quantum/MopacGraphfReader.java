@@ -42,6 +42,11 @@ public class MopacGraphfReader extends MopacSlaterReader {
   private int nCoefficients;
   
   @Override
+  protected void initializeReader() {
+    alphaBeta = "alpha";
+  }
+  
+  @Override
   protected boolean checkLine() throws Exception {
       readAtoms();
       if (readMolecularOrbitals) {
@@ -143,11 +148,13 @@ public class MopacGraphfReader extends MopacSlaterReader {
   private boolean isNewFormat;
   private ArrayList<float[]> orbitalData;
   private void readMolecularOrbitals(boolean isBeta) throws Exception {
-
+    
     // read mo coefficients
 
     //  (5 data per line, 15 characters per datum, FORTRAN format: 5d15.8)
 
+    if (isBeta)
+      alphaBeta = "beta";
     float[][] list = null;
     readLine();
     isNewFormat = (line.indexOf("ORBITAL") >= 0);
@@ -161,7 +168,7 @@ public class MopacGraphfReader extends MopacSlaterReader {
         readLine();
       float[] data;
       if (isNewFormat) {
-        if (line.indexOf("ORBITAL") < 0)
+        if (line.indexOf("ORBITAL") < 0 || line.indexOf("ORBITAL_LIST") >= 0)
           break;
         orbitalData.add(data = new float[nCoefficients]);
         readLine();
@@ -175,6 +182,8 @@ public class MopacGraphfReader extends MopacSlaterReader {
       }
     }
     if (!isBeta) {
+      if (isNewFormat && line.indexOf("MATRIX") < 0)
+        readLine();
       // read lower triangle of symmetric inverse sqrt matrix and multiply
       invMatrix = new float[nCoefficients][nCoefficients];
       for (int iMo = 0; iMo < nCoefficients; iMo++) {
@@ -212,6 +221,8 @@ public class MopacGraphfReader extends MopacSlaterReader {
      */
 
     // read MO energies and occupancies, and fill "coefficients" element
+    if (isNewFormat && line.indexOf("ORBITAL_LIST") < 0)
+      readLine();
     float[] values = new float[2];
     for (int iMo = 0; iMo < nOrbitals; iMo++) {
       Map<String, Object> mo = new Hashtable<String, Object>();
@@ -221,10 +232,11 @@ public class MopacGraphfReader extends MopacSlaterReader {
         mo.put("occupancy", new Float(values[1]));
       }
       mo.put("coefficients", list2[iMo]);
-      if (isBeta) {
+      if (isBeta)
         mo.put("type", "beta");
-      }
-      setMO(mo);
+      line = "\n";
+      if (filterMO())
+        setMO(mo);
     }
     setMOs("eV");
   }

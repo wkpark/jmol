@@ -1177,6 +1177,10 @@ public class SmilesParser {
         if (!isBioSequence)
           molecule.parent.needAromatic = true;
         break;
+      case SmilesBond.TYPE_DOUBLE:
+        if (currentAtom.isAromatic())
+          molecule.parent.needRingData = true;
+        break;
       }
       newBond.set(bondType, isBondNot);
       // in the case of a bioSequence, we also mark the 

@@ -1178,6 +1178,7 @@ public class SmilesParser {
           molecule.parent.needAromatic = true;
         break;
       case SmilesBond.TYPE_DOUBLE:
+      case SmilesBond.TYPE_SINGLE:
         if (currentAtom.isAromatic())
           molecule.parent.needRingData = true;
         break;

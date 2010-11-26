@@ -8356,9 +8356,9 @@
   <fah_proj number="6065" name="p6065_Mutant_scan" public="y"
     server="171.64.65.54" atoms="77081" preferred="3" deadline="6"
     credit="481" frames="100" code="A3" contact="kasson" kfactor="2.1"/>
-  <fah_proj number="6066" name="p6066_Mutant_scan" public="y"
+  <fah_proj number="6066" name="p6066_Mutant_scan" public="y" file="xyz"
     server="171.64.65.54" atoms="77017" preferred="3" deadline="6"
-    credit="481" frames="100" code="A3" contact="kasson" kfactor="2.1"/>
+    credit="481" frames="100" code="A3" contact="kasson" kfactor="2.1" contrib="iLLADEL"/>
   <fah_proj number="6067" name="p6067_Mutant_scan" public="y"
     server="171.64.65.54" atoms="77078" preferred="3" deadline="6"
     credit="481" frames="100" code="A3" contact="kasson" kfactor="2.1"/>
@@ -8587,6 +8587,9 @@
     credit="210" frames="100" code="A3" contact="lin5"/>
   <fah_proj number="6880" name="Abeta42_shooting" public="y"
     server="171.67.108.33" atoms="12222" preferred="14" deadline="21"
+    credit="69" frames="100" code="G" contact="lin5"/>
+  <fah_proj number="6885" name="Abeta40_shooting" public="n"
+    server="171.67.108.33" atoms="12193" preferred="14" deadline="21"
     credit="69" frames="100" code="G" contact="lin5"/>
   <fah_proj number="6886" name="Abeta42_dPro_shooting" public="y"
     server="171.67.108.33" atoms="12229" preferred="14" deadline="21"

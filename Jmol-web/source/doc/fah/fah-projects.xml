@@ -8568,9 +8568,9 @@
   <fah_proj number="6700" name="p6700_VSD in POPC and water, neutralized" public="n"
     server="171.64.65.56" atoms="28637" preferred="3" deadline="6"
     credit="511" frames="100" code="A3" contact="kasson" kfactor="2.3"/>
-  <fah_proj number="6701" name="p6701_VSD in POPC and water, neutralized" public="y"
+  <fah_proj number="6701" name="p6701_VSD in POPC and water, neutralized" public="y" file="xyz"
     server="171.64.65.56" atoms="28637" preferred="4.9" deadline="6"
-    credit="921" frames="100" code="A3" contact="kasson" kfactor="4.1"/>
+    credit="921" frames="100" code="A3" contact="kasson" kfactor="4.1" contrib="iLLADEL"/>
   <fah_proj number="6702" name="p6702_VSD in POPC and water, neutralized" public="y" file="xyz"
     server="171.64.65.56" atoms="28637" preferred="4.9" deadline="6"
     credit="921" frames="100" code="A3" contact="kasson" kfactor="4.1" contrib="Leszek Dobrowolski"/>

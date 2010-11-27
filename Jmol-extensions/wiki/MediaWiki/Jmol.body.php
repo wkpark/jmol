@@ -644,26 +644,66 @@ class Jmol {
 	// *********************** //
 
 	private function parseJmolTag( &$text, &$params, &$parser ) {
+		global $wgJmolExtensionPath, $wgJmolScriptVersion;
+
 		$parser->disableCache();
+
+		// Add scripts in the header if needed
+		$parser->getOutput()->addHeadItem(
+			Html::linkedScript( $wgJmolExtensionPath . "/Jmol.js?version=" . $wgJmolScriptVersion ),
+			'JmolScript' );
+		$parser->getOutput()->addHeadItem(
+			Html::linkedScript( $wgJmolExtensionPath . "/JmolMediaWiki.js?version=" . $wgJmolScriptVersion ),
+			'JmolMediaWikiScript' );
+
+		// Add element to display file
 		return $this->renderJmol( $text );
 	}
 
-	private function beforeHTMLOutput( &$outputPage, &$text ) {
-		global $wgJmolExtensionPath, $wgJmolScriptVersion;
-		if ( preg_match_all( '/<!-- Jmol -->/m', $text, $matches ) === false ) {
-			return true;
+	private function parseJmolFileTag( &$text, &$params, &$parser ) {
+		global $wgJmolExtensionPath, $wgJmolScriptVersion, $wgJmolAuthorizeUploadedFile;
+
+		// Add scripts in the header if needed
+		$parser->getOutput()->addHeadItem(
+			Html::linkedScript( $wgJmolExtensionPath . "/JmolMediaWiki.js?version=" . $wgJmolScriptVersion ),
+			'JmolMediaWikiScript' );
+
+		// Add element to display file
+		$result =
+			"<a href=\"javascript:void(0)\"" .
+			  " onclick=\"jmolWikiPopupWindow(" .
+				"'" . $this->escapeScript( "Title" ) . "'," .
+				"'" . $this->escapeScript( "800" ) . "'," .
+				"'" . $this->escapeScript( "50" ) . "'," .
+				"'" . $this->escapeScript( "50" ) . "'," .
+				"'";
+		$result .= "jmolInitialize(\\'" . $wgJmolExtensionPath . "\\', false); ";
+		$result .= "_jmol.noEval = true; ";
+		$result .= "jmolCheckBrowser(\\'popup\\', \\'" . $wgJmolExtensionPath . "/browsercheck\\', \\'onclick\\'); ";
+		if ( $wgJmolAuthorizeUploadedFile != true ) {
+			return $this->showWarning( wfMsg( 'jmol-nouploadedfilecontents' ) );
 		}
-		if ( ! $outputPage->hasHeadItem( 'JmolScript' ) ) {
-			$outputPage->addHeadItem(
-				'JmolScript',
-				Html::linkedScript( $wgJmolExtensionPath . "/Jmol.js?" . $wgJmolScriptVersion ) );
+		$title = Title::makeTitleSafe( NS_IMAGE, $text );
+		$article = new Article($title);
+		if ( !is_null( $title ) && $article->exists() ) {
+			$file = new Image($title);
+			$this->mValUrlContents = $file->getURL();
+			$result .= "jmolApplet( 500, \\'" .
+				"set echo p 50% 50%;" .
+				"set echo p center;" .
+				"echo " . wfMsg( 'jmol-loading' ) . ";" .
+				"refresh;" .
+				"load " . $file->getURL() . "\\' ); ";
 		}
-		if ( ! $outputPage->hasHeadItem( 'JmolMediaWikiScript' ) ) {
-			$outputPage->addHeadItem(
-				'JmolMediaWikiScript',
-				Html::linkedScript( $wgJmolExtensionPath . "/JmolMediaWiki.js?" . $wgJmolScriptVersion ) );
+		$result .= "');\">";
+		if ( isset( $params[ "text" ] ) ) {
+			$result .= $params[ "text" ];
+		} else {
+			$result .= $text;
 		}
-		return true;
+		$result .= "</a>";
+
+		return $result;
 	}
 
  	/**
@@ -671,12 +711,14 @@ class Jmol {
 	 */
 	function setHooks() {
 		global $wgParser, $wgHooks;
+		global $wgJmolAuthorizeJmolFileTag, $wgJmolAuthorizeJmolTag;
 
-		$wgParser->setHook( 'jmol' , array( &$this, 'jmolTag' ) );
-
-		$wgHooks['OutputPageBeforeHTML'][] = array( &$this, 'hOutputPageBeforeHTML' );
-		$wgHooks['ParserBeforeStrip'][] = array( &$this, 'hParserBeforeStrip' );
-		$wgHooks['ParserAfterStrip'][] = array( &$this, 'hParserAfterStrip' );
+		if ( $wgJmolAuthorizeJmolTag == true ) {
+			$wgParser->setHook( 'jmol' , array( &$this, 'jmolTag' ) );
+		}
+		if ( $wgJmolAuthorizeJmolFileTag == true ) {
+			$wgParser->setHook( 'jmolFile', array( &$this, 'jmolFileTag' ) );
+		}
 	}
 
 	// ******************* //
@@ -690,12 +732,30 @@ class Jmol {
 	 * @param array $param Arguments
 	 * @return string
 	 */
-	public function jmolTag( $text, $params, $parser ) {
+	public function jmolTag( $text, $params, &$parser ) {
 		if ( $this->mInJmol ) {
 			return htmlspecialchars( "<jmol>$text</jmol>" );
 		} else {
 			$this->mInJmol = true;
-			$ret = $this->parseJmolTag($text, $params, $parser);
+			$ret = $this->parseJmolTag( $text, $params, $parser );
+			$this->mInJmol = false;
+			return $ret;
+		}
+	}
+
+	/**
+	 * Callback function for <jmolFile>
+	 *
+	 * @param string $text Input
+	 * @param array $param Arguments
+	 * @return string
+	 */
+	public function jmolFileTag( $text, $params, &$parser ) {
+		if ( $this->mInJmol ) {
+			return htmlspecialchars( "<jmolFile>$text</jmolFile>" );
+		} else {
+			$this->mInJmol = true;
+			$ret = $this->parseJmolFileTag( $text, $params, $parser );
 			$this->mInJmol = false;
 			return $ret;
 		}
@@ -716,41 +776,6 @@ class Jmol {
 		}
 		resetValues();
  
-		return true;
-	}
-
-	/**
-	 * Hook OutputPageBeforeHTML
-	 */
-	function hOutputPageBeforeHTML(&$out, &$text) {
-		return $this->beforeHTMLOutput($out, $text);
-	}
-
-	/**
-	 * Hook ParserBeforeStrip
-	 */
-	function hParserBeforeStrip(&$parser, &$text, &$strip_state) {
-		return true;
-	}
-
-	/**
-	 * Hook ParserAfterStrip
-	 */
-	function hParserAfterStrip(&$parser, &$text, &$strip_state) {
-		return true;
-	}
-
-	/**
-	 * Hook ParserBeforeTidy
-	 */
-	function hParserBeforeTidy(&$parser, &$text) {
-		return true;
-	}
-
-	/**
-	 * Hook ParserAfterTidy
-	 */
-	function hParserAfterTidy(&$parser, &$text) {
 		return true;
 	}
 

@@ -50,17 +50,19 @@ $wgExtensionMessagesFiles['Jmol'] = "$jmolDir/Jmol.i18n.php";
 $wgJmolScriptVersion = '1';
 
 // Extension credits that will show up on Special:Version
-$wgExtensionCredits['specialpage'][] = array(
+$wgExtensionCredits['parserhook'][] = array(
 	'path'           => __FILE__,
 	'name'           => 'Jmol',
 	'descriptionmsg' => 'jmol-desc',
 	'version'        => '3.3_dev',
 	'author'         => array( 'Nicolas Vervelle', 'Angel Herraez', 'Jmol Development Team' ),
-	'url'            => 'http://wiki.jmol.org/index.php/MediaWiki',
+	'url'            => 'http://www.mediawiki.org/wiki/Extension:Jmol',
 );
 
 // Global configuration parameters
 global $wgJmolAuthorizeChoosingSignedApplet;
+global $wgJmolAuthorizeJmolFileTag;
+global $wgJmolAuthorizeJmolTag;
 global $wgJmolAuthorizeUploadedFile;
 global $wgJmolAuthorizeUrl;
 global $wgJmolDefaultAppletSize;
@@ -73,6 +75,8 @@ global $wgJmolUsingSignedAppletByDefault;
 // These are the default (recommended) values.
 // They can be changed here, but it is advisable to change them in LocalSettings.php
 $wgJmolAuthorizeChoosingSignedApplet = false;
+$wgJmolAuthorizeJmolFileTag = true;
+$wgJmolAuthorizeJmolTag = true;
 $wgJmolAuthorizeUploadedFile = true;
 $wgJmolAuthorizeUrl = false;
 $wgJmolDefaultAppletSize = "400";

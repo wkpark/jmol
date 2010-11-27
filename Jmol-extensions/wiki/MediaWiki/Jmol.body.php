@@ -665,6 +665,9 @@ class Jmol {
 
 		// Add scripts in the header if needed
 		$parser->getOutput()->addHeadItem(
+			Html::linkedScript( $wgJmolExtensionPath . "/Jmol.js?version=" . $wgJmolScriptVersion ),
+			'JmolScript' );
+		$parser->getOutput()->addHeadItem(
 			Html::linkedScript( $wgJmolExtensionPath . "/JmolMediaWiki.js?version=" . $wgJmolScriptVersion ),
 			'JmolMediaWikiScript' );
 

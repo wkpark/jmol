@@ -543,7 +543,7 @@ class IsoSolventReader extends AtomDataReader {
      *       pt  /|\
      *          / | \ 
      *         /  |  \
-     *        S'--X---S  (both in plane per to vAB through point p)
+     *        S'--X---S  (both in plane perp to vAB through point p)
      *         \  |  / .
      *          \ | /   . rCS
      *           \|/     .
@@ -556,9 +556,12 @@ class IsoSolventReader extends AtomDataReader {
      * 
      * 1) define plane containing ptS
      * 2) project C onto plane as ptT
-     * 3) 
-     * 3) find closer ptS to pt
+     * 3) calculate two possible ptS and ptS' in this plane
+     *      or return if not applicable
+     * 4) find closer ptS to pt
+     * 5) return new distance only if pt is within the tetrahedron ABCS
      * 
+     * isosurface solvent 1.4 FULL # Jmol 12.1.24  11/26/2010 RMH
      * 
      */
     

@@ -436,7 +436,7 @@ class IsoSolventReader extends AtomDataReader {
         iter = null;
       } else {
         AtomIndexIterator iter = atomDataServer.getSelectedAtomIterator(
-            bsMySelected, true, true); //
+            bsMySelected, true, false); //
         for (int iAtom = 0; iAtom < firstNearbyAtom - 1; iAtom++)
           if (atomNo[iAtom] > 0) {
             ptA = atomXyz[iAtom];
@@ -554,7 +554,7 @@ class IsoSolventReader extends AtomDataReader {
      *   rBS = rB + rSolvent, and 
      *   rCS = rC + rSolvent
      * 
-     * 1) define plane containing ptS
+     * 1) define plane perpendicular to A-B axis and containing ptS
      * 2) project C onto plane as ptT
      * 3) calculate two possible ptS and ptS' in this plane
      *      or return if not applicable
@@ -567,17 +567,18 @@ class IsoSolventReader extends AtomDataReader {
     
     if (done)
       return v1;
-    //if (("" + ptA + ptB).indexOf("C1") < 0 ||("" + ptA + ptB).indexOf("C3") < 0 || pt.z < 1.5)
-      //return v1;
-    //if (pt.y < 1 || pt.z > 0.5 || pt.z < -0.5)
-      //return v1;
+    
+    //     * 1) define plane perpendicular to A-B axis and containing ptS
+
     vTemp.set(ptB);
     vTemp.sub(ptA);
     vTemp.normalize();
     p.scaleAdd((float) (cosAngleBAS * rAS), vTemp, ptA);
     double dpS = Math.sin(angleBAS) * rAS;
-    
     Measure.getPlaneThroughPoint(p, vTemp, planeTemp);
+    
+    //    * 2) project C onto plane as ptT
+
     float dCT = Measure.distanceToPlane(planeTemp, ptC);
     if (Math.abs(dCT) > rCS)
       return v1;
@@ -589,41 +590,23 @@ class IsoSolventReader extends AtomDataReader {
     if (cosTheta < 0.01f || cosTheta > 1)
       return v1;
     
-    // presumed center based on two-point contact
+    //    * 3) calculate two possible ptS and ptS' in this plane
+
     vXS.set(pt);
     vXS.sub(p);
     vXS.normalize();
     ptS1.scaleAdd((float)dpS, vXS, p);
-     // addTestString("draw ptb" + n1 + " 
-
-
     float dpX = (float) (dpS * cosTheta);
     vXS.set(ptTemp);
     vXS.sub(p);
     vXS.normalize();
-    //System.out.println("draw ptA " + Escape.escape(ptA) + "#" + ptA);
-    //System.out.println("draw ptB " + Escape.escape(ptB) + "#" + ptB);
-    //System.out.println("draw ptC " + Escape.escape(ptC) + " color blue" + "#" + ptC);
-    //System.out.println("draw pt " + Escape.escape(pt) + " color green");
-    //System.out.println("draw ptp " + Escape.escape(p) + " color red");
-    //System.out.println("draw ptTemp " + Escape.escape(ptTemp) + " color white");
-      ptTemp.scaleAdd((float)dpS, vXS, p);
-      //addTestString("draw ptp" + n1 + " 
-
-      
-      ptTemp.scaleAdd(dpX, vXS, p);
-    //System.out.println("draw ptX " + Escape.escape(ptTemp) + " color orange");
-
-    // ptTemp2 must be in S-p-S' triangle
+    ptTemp.scaleAdd(dpX, vXS, p);
     float d = Measure.distanceToPlane(planeTemp, pt);
     ptTemp2.scaleAdd(-d, vTemp, pt);
-
     vTemp2.set(ptTemp2);
     vTemp2.sub(p);
     if (vTemp2.dot(vXS) < 0)
-      return v1;
-
-    
+      return v1;    
     vXS.cross(vTemp, vXS);
     vXS.normalize();
     float dXS = (float) (Math.sqrt(1 - cosTheta * cosTheta) * dpS);
@@ -632,14 +615,18 @@ class IsoSolventReader extends AtomDataReader {
     ptS1.add(vXS);
     ptS2.set(ptTemp);
     ptS2.sub(vXS);
+
+    //    * 4) find closer ptS to pt
+
     d = pt.distance(ptS1);
     float d2 = pt.distance(ptS2);
     if (d2 < d) {
       ptS1.set(ptS2);
       d = d2;
     }
-    //addTestString("draw ptS1" + n1 + " width 2.8 XXX color red;", Escape.escape(ptS1));
-    //addTestString("draw ptS2" + n1 + " width 2.8 XXX color red;", Escape.escape(ptS2));
+    
+    //    * 5) return new distance only if pt is within the tetrahedron ABCS
+
     return (Measure.isInTetrahedron(pt, ptA, ptB, ptC, ptS1, planeTemp, vTemp, vTemp2, vTemp3) ? solventRadius - d : v1);
   }
 

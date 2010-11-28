@@ -794,7 +794,7 @@ class Jmol {
 	function setHooks() {
 		global $wgParser, $wgHooks;
 		global $wgJmolAuthorizeJmolFileTag,
-			   $wgJmolAuhtorizeJmolPdbTag,
+			   $wgJmolAuthorizeJmolPdbTag,
 			   $wgJmolAuthorizeJmolSmilesTag,
 			   $wgJmolAuthorizeJmolTag;
 

@@ -49,7 +49,7 @@ $wgExtensionMessagesFiles['Jmol'] = "$jmolDir/Jmol.i18n.php";
 $wgJmolVersion = '3.3_dev';
 
 // Bump this when updating Jmol.js or JmolMediaWiki.js to help update caches
-$wgJmolScriptVersion = $wgJmolVersion & '_1';
+$wgJmolScriptVersion = $wgJmolVersion . '_1';
 
 // Extension credits that will show up on Special:Version
 $wgExtensionCredits['parserhook'][] = array(

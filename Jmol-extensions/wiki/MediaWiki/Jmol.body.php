@@ -690,14 +690,93 @@ class Jmol {
 		$article = new Article($title);
 		if ( !is_null( $title ) && $article->exists() ) {
 			$file = new Image($title);
-			$this->mValUrlContents = $file->getURL();
 			$result .= "jmolApplet( 500, \\'" .
 				"set echo p 50% 50%;" .
 				"set echo p center;" .
 				"echo " . wfMsg( 'jmol-loading' ) . ";" .
 				"refresh;" .
-				"load " . $file->getURL() . "\\' ); ";
+				"load " . $file->getURL() . ";\\' ); ";
 		}
+		$result .= "');\">";
+		if ( isset( $params[ "text" ] ) ) {
+			$result .= $params[ "text" ];
+		} else {
+			$result .= $text;
+		}
+		$result .= "</a>";
+
+		return $result;
+	}
+
+	private function parseJmolPdbTag( &$text, &$params, &$parser ) {
+		global $wgJmolExtensionPath, $wgJmolScriptVersion;
+
+		// Add scripts in the header if needed
+		$parser->getOutput()->addHeadItem(
+			Html::linkedScript( $wgJmolExtensionPath . "/Jmol.js?version=" . $wgJmolScriptVersion ),
+			'JmolScript' );
+		$parser->getOutput()->addHeadItem(
+			Html::linkedScript( $wgJmolExtensionPath . "/JmolMediaWiki.js?version=" . $wgJmolScriptVersion ),
+			'JmolMediaWikiScript' );
+
+		// Add element to display file
+		$result =
+			"<a href=\"javascript:void(0)\"" .
+			  " onclick=\"jmolWikiPopupWindow(" .
+				"'" . $this->escapeScript( "Title" ) . "'," .
+				"'" . $this->escapeScript( "800" ) . "'," .
+				"'" . $this->escapeScript( "50" ) . "'," .
+				"'" . $this->escapeScript( "50" ) . "'," .
+				"'";
+		$result .= "jmolInitialize(\\'" . $wgJmolExtensionPath . "\\', true); ";
+		$result .= "_jmol.noEval = true; ";
+		$result .= "jmolCheckBrowser(\\'popup\\', \\'" . $wgJmolExtensionPath . "/browsercheck\\', \\'onclick\\'); ";
+		$result .= "jmolApplet( 500, \\'" .
+			"set echo p 50% 50%;" .
+			"set echo p center;" .
+			"echo " . wfMsg( 'jmol-loading' ) . ";" .
+			"refresh;" .
+			"load =" . $text . ";\\' ); ";
+		$result .= "');\">";
+		if ( isset( $params[ "text" ] ) ) {
+			$result .= $params[ "text" ];
+		} else {
+			$result .= $text;
+		}
+		$result .= "</a>";
+
+		return $result;
+	}
+
+	private function parseJmolSmilesTag( &$text, &$params, &$parser ) {
+		global $wgJmolExtensionPath, $wgJmolScriptVersion;
+
+		// Add scripts in the header if needed
+		$parser->getOutput()->addHeadItem(
+			Html::linkedScript( $wgJmolExtensionPath . "/Jmol.js?version=" . $wgJmolScriptVersion ),
+			'JmolScript' );
+		$parser->getOutput()->addHeadItem(
+			Html::linkedScript( $wgJmolExtensionPath . "/JmolMediaWiki.js?version=" . $wgJmolScriptVersion ),
+			'JmolMediaWikiScript' );
+
+		// Add element to display file
+		$result =
+			"<a href=\"javascript:void(0)\"" .
+			  " onclick=\"jmolWikiPopupWindow(" .
+				"'" . $this->escapeScript( "Title" ) . "'," .
+				"'" . $this->escapeScript( "800" ) . "'," .
+				"'" . $this->escapeScript( "50" ) . "'," .
+				"'" . $this->escapeScript( "50" ) . "'," .
+				"'";
+		$result .= "jmolInitialize(\\'" . $wgJmolExtensionPath . "\\', true); ";
+		$result .= "_jmol.noEval = true; ";
+		$result .= "jmolCheckBrowser(\\'popup\\', \\'" . $wgJmolExtensionPath . "/browsercheck\\', \\'onclick\\'); ";
+		$result .= "jmolApplet( 500, \\'" .
+			"set echo p 50% 50%;" .
+			"set echo p center;" .
+			"echo " . wfMsg( 'jmol-loading' ) . ";" .
+			"refresh;" .
+			"load \$" . $text . ";\\' ); ";
 		$result .= "');\">";
 		if ( isset( $params[ "text" ] ) ) {
 			$result .= $params[ "text" ];
@@ -714,13 +793,22 @@ class Jmol {
 	 */
 	function setHooks() {
 		global $wgParser, $wgHooks;
-		global $wgJmolAuthorizeJmolFileTag, $wgJmolAuthorizeJmolTag;
+		global $wgJmolAuthorizeJmolFileTag,
+			   $wgJmolAuhtorizeJmolPdbTag,
+			   $wgJmolAuthorizeJmolSmilesTag,
+			   $wgJmolAuthorizeJmolTag;
 
 		if ( $wgJmolAuthorizeJmolTag == true ) {
 			$wgParser->setHook( 'jmol' , array( &$this, 'jmolTag' ) );
 		}
 		if ( $wgJmolAuthorizeJmolFileTag == true ) {
 			$wgParser->setHook( 'jmolFile', array( &$this, 'jmolFileTag' ) );
+		}
+		if ( $wgJmolAuthorizeJmolPdbTag == true ) {
+			$wgParser->setHook( 'jmolPdb', array( &$this, 'jmolPdbTag' ) );
+		}
+		if ( $wgJmolAuthorizeJmolSmilesTag == true ) {
+			$wgParser->setHook( 'jmolSmiles', array( &$this, 'jmolSmilesTag' ) );
 		}
 	}
 
@@ -731,8 +819,9 @@ class Jmol {
 	/**
 	 * Callback function for <jmol>
 	 *
-	 * @param string $text Input
-	 * @param array $param Arguments
+	 * @param string $text Text inside <jmol> tag
+	 * @param array $param Arguments inside <jmol> tag
+	 * @param Parser &$parser Parser
 	 * @return string
 	 */
 	public function jmolTag( $text, $params, &$parser ) {
@@ -749,8 +838,9 @@ class Jmol {
 	/**
 	 * Callback function for <jmolFile>
 	 *
-	 * @param string $text Input
-	 * @param array $param Arguments
+	 * @param string $text Text inside <jmolFile> tag
+	 * @param array $param Arguments inside <jmolFile> tag
+	 * @param Parser &$parser Parser
 	 * @return string
 	 */
 	public function jmolFileTag( $text, $params, &$parser ) {
@@ -759,6 +849,44 @@ class Jmol {
 		} else {
 			$this->mInJmol = true;
 			$ret = $this->parseJmolFileTag( $text, $params, $parser );
+			$this->mInJmol = false;
+			return $ret;
+		}
+	}
+
+	/**
+	 * Callback function for <jmolPdb>
+	 *
+	 * @param string $text Text inside <jmolPdb> tag
+	 * @param array $param Arguments inside <jmolPdb> tag
+	 * @param Parser &$parser Parser
+	 * @return string
+	 */
+	public function jmolPdbTag( $text, $params, &$parser ) {
+		if ( $this->mInJmol ) {
+			return htmlspecialchars( "<jmolPdb>$text</jmolPdb>" );
+		} else {
+			$this->mInJmol = true;
+			$ret = $this->parseJmolPdbTag( $text, $params, $parser );
+			$this->mInJmol = false;
+			return $ret;
+		}
+	}
+
+	/**
+	 * Callback function for <jmolSmiles>
+	 *
+	 * @param string $text Text inside <jmolSmiles> tag
+	 * @param array $param Arguments inside <jmolSmiles> tag
+	 * @param Parser &$parser Parser
+	 * @return string
+	 */
+	public function jmolSmilesTag( $text, $params, &$parser ) {
+		if ( $this->mInJmol ) {
+			return htmlspecialchars( "<jmolSmiles>$text</jmolSmiles>" );
+		} else {
+			$this->mInJmol = true;
+			$ret = $this->parseJmolSmilesTag( $text, $params, $parser );
 			$this->mInJmol = false;
 			return $ret;
 		}

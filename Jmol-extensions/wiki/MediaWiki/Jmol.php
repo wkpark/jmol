@@ -62,6 +62,8 @@ $wgExtensionCredits['parserhook'][] = array(
 // Global configuration parameters
 global $wgJmolAuthorizeChoosingSignedApplet;
 global $wgJmolAuthorizeJmolFileTag;
+global $wgJmolAuthorizeJmolPdbTag;
+global $wgJmolAuthorizeJmolSmilesTag;
 global $wgJmolAuthorizeJmolTag;
 global $wgJmolAuthorizeUploadedFile;
 global $wgJmolAuthorizeUrl;
@@ -76,6 +78,8 @@ global $wgJmolUsingSignedAppletByDefault;
 // They can be changed here, but it is advisable to change them in LocalSettings.php
 $wgJmolAuthorizeChoosingSignedApplet = false;
 $wgJmolAuthorizeJmolFileTag = true;
+$wgJmolAuthorizeJmolPdbTag = true;
+$wgJmolAuthorizeJmolSmilesTag = true;
 $wgJmolAuthorizeJmolTag = true;
 $wgJmolAuthorizeUploadedFile = true;
 $wgJmolAuthorizeUrl = false;

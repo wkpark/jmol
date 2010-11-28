@@ -46,15 +46,17 @@ $jmolDir = dirname(__FILE__);
 $wgAutoloadClasses['Jmol'] = "$jmolDir/Jmol.body.php";
 $wgExtensionMessagesFiles['Jmol'] = "$jmolDir/Jmol.i18n.php";
 
+$wgJmolVersion = '3.3_dev';
+
 // Bump this when updating Jmol.js or JmolMediaWiki.js to help update caches
-$wgJmolScriptVersion = '1';
+$wgJmolScriptVersion = $wgJmolVersion & '_1';
 
 // Extension credits that will show up on Special:Version
 $wgExtensionCredits['parserhook'][] = array(
 	'path'           => __FILE__,
 	'name'           => 'Jmol',
 	'descriptionmsg' => 'jmol-desc',
-	'version'        => '3.3_dev',
+	'version'        => $wgJmolVersion,
 	'author'         => array( 'Nicolas Vervelle', 'Angel Herraez', 'Jmol Development Team' ),
 	'url'            => 'http://www.mediawiki.org/wiki/Extension:Jmol',
 );

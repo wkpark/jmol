@@ -29,6 +29,7 @@ function jmolWikiPopupWindow(windowTitle, windowSize, windowLeft, windowTop, win
             "left=" + windowLeft + ",top=" + windowTop ;
   var s =
     "<html><head>\n" +
+    "<style type='text/css'>body, html { height:100%; margin:0; padding:0; }</style>" +
     "<title>" + windowTitle + "</title>\n" +
     "</head><body>\n";
 	
@@ -47,10 +48,19 @@ function jmolWikiPopupWindow(windowTitle, windowSize, windowLeft, windowTop, win
 	// window name in IE cannot contain spaces or parentheses (and windowTitle may have anything)
 	// Therefore, avoid "non-word" characters (i.e. other than A-Z, numbers and underscore)
   var purgedTitle = windowTitle.replace(/\W/g, "_");
-  var w = open("", purgedTitle, opt);
+    /* Chrome (at least, 9.0.587) has a weird behaviour in inserting applet code 
+        into popup window document: the applet is not displayed.
+        The only workaround found is to open a named webpage (even if it does not exist) 
+        and not to close its document.
+        This hack might be removed in future, if no longer needed for newer Chrome versions.
+    */
+  var wN = "about:blank"; //blank string is not good, it prevents setting the window title in Safari.
+  var isChrome = !(navigator.userAgent.search("Chrome")==-1);
+  if (isChrome) { wN = "dummy.html"; }  //nonexistent file, but makes it work.
+  var w = open(wN, purgedTitle, opt);
   w.document.open();
-  w.document.write(s);
-  w.document.close();
+  w.document.write(s); 
+  if (!isChrome) { w.document.close(); }
   w.focus();
 }
 

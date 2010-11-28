@@ -64,6 +64,32 @@ class IsoSolventReader extends AtomDataReader {
    *  
    *  Bob Hanson 13 Jul 2006
    *  
+   * isosurface SOLVENT 1.4 FULL
+   * 
+   * The FULL option, introduced in Jmol 12.1.24 (11/26/2010):
+   * 
+   * Prior to Jmol 12.1.24, all isosurface SOLVENT/MOLECULAR calculations
+   * only checked for pairs of atoms in calculating troughs. This was
+   * sufficient for most work, but a full analysis of molecular surfaces
+   * requires that the "ball" rolling around a pair of atoms 
+   * may hit a third atom. If this is the case, then the surface area will
+   * be somewhat less, and the valleys produced will be shallower.
+   * The full analysis option checks for all possible triples and can 
+   * take significant calculation time. The results are rewarding, and 
+   * the saving of the JVXL equivalent is recommended.
+   * 
+   * I don't know how PyMOL does it, but its "show surface" command is
+   * very fast, though not as exact. Most probably it is a massaged dot surface, similar
+   * to spacefill but with a rough additional "surface smoothing" applied.
+   * That surface seems to be somewhat smaller than Jmol's, perhaps due to the use of 
+   * smaller radii for the atoms, but I am not sure. If it is a modified dot 
+   * surface, that would explain its speed. Certainly an interesting idea. 
+   * It might be generated in Jmol using a variation on the geosurface idea. 
+   * Start with surface dots (very fast) and then adjust them to their proper
+   * surface location. Hidden dots could then be removed. I wonder....
+   *  
+   *  Bob Hanson, 11/26/2010
+   *  
    */
 
   private float cavityRadius;
@@ -611,23 +637,7 @@ class IsoSolventReader extends AtomDataReader {
     }
     //addTestString("draw ptS1" + n1 + " width 2.8 XXX color red;", Escape.escape(ptS1));
     //addTestString("draw ptS2" + n1 + " width 2.8 XXX color red;", Escape.escape(ptS2));
-    return (isInTetrahedron(pt, ptA, ptB, ptC, ptS1, planeTemp, vTemp, vTemp2, vTemp3) ? solventRadius - d : v1);
-  }
-
-  private static boolean isInTetrahedron(Point3f pt, Point3f ptA, Point3f ptB,
-                                  Point3f ptC, Point3f ptD, Point4f plane, 
-                                  Vector3f vTemp, Vector3f vTemp2, Vector3f vTemp3) {
-    
-    Measure.getPlaneThroughPoints(ptA, ptB, ptC, vTemp, vTemp2, vTemp3, plane);
-    boolean b = (Measure.distanceToPlane(plane, pt) >= 0);
-    Measure.getPlaneThroughPoints(ptA, ptD, ptB, vTemp, vTemp2, vTemp3, plane);
-    if (b != (Measure.distanceToPlane(plane, pt) >= 0))
-      return false;
-    Measure.getPlaneThroughPoints(ptB, ptD, ptC, vTemp, vTemp2, vTemp3, plane);
-    if (b != (Measure.distanceToPlane(plane, pt) >= 0))
-      return false;
-    Measure.getPlaneThroughPoints(ptC, ptD, ptA, vTemp, vTemp2, vTemp3, plane);
-    return (b == (Measure.distanceToPlane(plane, pt) >= 0));
+    return (Measure.isInTetrahedron(pt, ptA, ptB, ptC, ptS1, planeTemp, vTemp, vTemp2, vTemp3) ? solventRadius - d : v1);
   }
 
 //  private void addTestString(String strXXX, String s) {

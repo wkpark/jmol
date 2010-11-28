@@ -827,7 +827,8 @@ public void initShape() {
       Vector3f normal = new Vector3f();
       if (nVertices == 2 && plane != null) {
         ptList[1] = new Point3f(ptList[0]);
-        Measure.moveToPlane(plane, ptList[1]);
+        Vector3f vTemp = new Vector3f();
+        Measure.getPlaneProjection(ptList[1], plane, ptList[1], vTemp);
         nVertices = -2;
         if (isArrow)
           drawType = JmolConstants.DRAW_ARROW;
@@ -1284,7 +1285,7 @@ public void initShape() {
       }
       str.append("]");
     } else {
-      int nVertices = mesh.drawVertexCount > 0 ? mesh.drawVertexCount
+      int nVertices = mesh.drawVertexCount > 0  || mesh.drawVertexCounts == null ? mesh.drawVertexCount
           : mesh.drawVertexCounts[iModel >= 0 ? iModel : 0];
       switch (mesh.drawTypes == null ? mesh.drawType : mesh.drawTypes[iModel]) {
       case JmolConstants.DRAW_POLYGON:

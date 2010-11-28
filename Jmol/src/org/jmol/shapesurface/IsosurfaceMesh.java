@@ -238,9 +238,11 @@ public class IsosurfaceMesh extends Mesh {
   }
   
   Point4f getFacePlane(int i, Vector3f vNorm) {
-    return Measure.getPlaneThroughPoints(vertices[polygonIndexes[i][0]], 
+    Point4f plane = new Point4f();
+    Measure.getPlaneThroughPoints(vertices[polygonIndexes[i][0]], 
         vertices[polygonIndexes[i][1]], vertices[polygonIndexes[i][2]], 
-        vNorm, vAB, vAC);
+        vNorm, vAB, vAC, plane);
+    return plane;
   }
   
   /**

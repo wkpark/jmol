@@ -201,6 +201,7 @@ public class Parameters {
     cutoffAutomatic = true;
     dataXYReversed = false;
     distance = Float.MAX_VALUE;
+    doFullMolecular = false;
     envelopeRadius = 10f;
     fileIndex = 1;
     readAllData = true;
@@ -749,6 +750,7 @@ public class Parameters {
   public ColorEncoder colorEncoder;
   public boolean usePropertyForColorRange = true;
   public boolean isPeriodic;
+  public boolean doFullMolecular;
   
   void setMapRanges(SurfaceReader surfaceReader, boolean haveData) {
     if (!colorDensity)

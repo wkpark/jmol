@@ -25,7 +25,6 @@ package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
 import java.util.BitSet;
-import java.util.Hashtable;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
@@ -228,7 +227,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
       if (isJvxl)
         jvxlVoxelBitSet = getVoxelBitSet(nDataPoints);
     } else if (isMapData && volumeData.hasPlane()){
-      volumeData.setVoxelMap(new Hashtable<String, Float>());
+      volumeData.setVoxelMap();
       float f = volumeData.getToPlaneParameter(); // was mappingPlane
       for (int x = 0; x < nPointsX; ++x) {
         for (int y = 0; y < nPointsY; ++y) {

@@ -53,7 +53,7 @@ final public class Measure {
   public static float computeAngle(Tuple3f pointA, Tuple3f pointB, Tuple3f pointC, boolean asDegrees) {
     Vector3f vectorBA = new Vector3f();
     Vector3f vectorBC = new Vector3f();        
-    return Measure.computeAngle(pointA, pointB, pointC, vectorBA, vectorBC, asDegrees);
+    return computeAngle(pointA, pointB, pointC, vectorBA, vectorBC, asDegrees);
   }
 
   public static float computeTorsion(Tuple3f p1, Tuple3f p2, Tuple3f p3, Tuple3f p4, boolean asDegrees) {
@@ -197,16 +197,16 @@ final public class Measure {
     }
   }
 
-  public static Point4f getPlaneThroughPoints(Point3f pointA,
+  public static void getPlaneThroughPoints(Point3f pointA,
                                               Point3f pointB,
                                               Point3f pointC, Vector3f vNorm,
-                                              Vector3f vAB, Vector3f vAC) {
+                                              Vector3f vAB, Vector3f vAC, Point4f plane) {
     float w = getNormalThroughPoints(pointA, pointB, pointC, vNorm, vAB, vAC);
-    return new Point4f(vNorm.x, vNorm.y, vNorm.z, w);
+    plane.set(vNorm.x, vNorm.y, vNorm.z, w);
   }
   
-  public static Point4f getPlaneThroughPoint(Point3f pt, Vector3f normal) {
-    return new Point4f(normal.x, normal.y, normal.z, -normal.dot(new Vector3f(pt)));
+  public static void getPlaneThroughPoint(Point3f pt, Vector3f normal, Point4f plane) {
+    plane.set(normal.x, normal.y, normal.z, -normal.dot(new Vector3f(pt)));
   }
   
   public static float distanceToPlane(Point4f plane, Point3f pt) {
@@ -262,16 +262,16 @@ final public class Measure {
     // ax + by + cz + d = 0
     // so if a point is in the plane, then N dot X = -d
     vAB.set(pointA);
-    float d = -vAB.dot(vNorm);
-    return d;
+    return -vAB.dot(vNorm);
   }
 
-  public static void moveToPlane(Point4f plane, Point3f a) {
-    float dist = Measure.distanceToPlane(plane, a);
-    Vector3f vAC = new Vector3f(plane.x, plane.y, plane.z);
-    vAC.normalize();
-    vAC.scale(-dist);
-    a.add(vAC);
+  public static void getPlaneProjection(Point3f pt, Point4f plane, Point3f ptProj, Vector3f vNorm) {
+    float dist = distanceToPlane(plane, pt);
+    vNorm.set(plane.x, plane.y, plane.z);
+    vNorm.normalize();
+    vNorm.scale(-dist);
+    ptProj.set(pt);
+    ptProj.add(vNorm);
   }
 
   /**
@@ -373,7 +373,7 @@ final public class Measure {
      * 
      */
 
-    Measure.calcAveragePointN(points, nPoints, axisA);
+    calcAveragePointN(points, nPoints, axisA);
 
     int nTries = 0;
     while (nTries++ < nTriesMax

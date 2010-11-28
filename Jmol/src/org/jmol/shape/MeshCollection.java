@@ -224,12 +224,12 @@ public abstract class MeshCollection extends Shape {
       if (value == null)
         return;
       colix = Graphics3D.getColix(value);
-      setTokenProperty(Token.color, false);
+      setTokenProperty(Token.color, false, false);
       return;
     }
 
     if ("translucency" == propertyName) {
-      setTokenProperty(Token.translucent, (((String) value).equals("translucent")));
+      setTokenProperty(Token.translucent, (((String) value).equals("translucent")), false);
       return;
     }
 
@@ -294,11 +294,9 @@ public abstract class MeshCollection extends Shape {
       default:
         Logger.error("PROBLEM IN MESHCOLLECTION: token? " + Token.nameOf(tok));
       }
-      setTokenProperty(tok, test);
-      if (tok2 != 0) {
-        if (currentMesh.havePlanarContours && currentMesh.drawTriangles != currentMesh.showContourLines)
-          setTokenProperty(tok2, test);
-      }
+      setTokenProperty(tok, test, false);
+      if (tok2 != 0)
+          setTokenProperty(tok2, test, true);
       return;
     }
     super.setProperty(propertyName, value, bs);
@@ -312,7 +310,7 @@ public abstract class MeshCollection extends Shape {
       previousMeshID = id;
   } 
   
-  private void setTokenProperty(int tokProp, boolean bProp) {
+  private void setTokenProperty(int tokProp, boolean bProp, boolean testD) {
     if (currentMesh == null) {
       String key = (explicitID && previousMeshID != null
           && TextFormat.isWild(previousMeshID) ? previousMeshID.toUpperCase()
@@ -322,15 +320,17 @@ public abstract class MeshCollection extends Shape {
       for (int i = 0; i < meshCount; i++)
         if (key == null
             || TextFormat.isMatch(meshes[i].thisID.toUpperCase(), key, true, true))
-          setMeshTokenProperty(meshes[i], tokProp, bProp);
+          setMeshTokenProperty(meshes[i], tokProp, bProp, testD);
     } else {
-      setMeshTokenProperty(currentMesh, tokProp, bProp);
+      setMeshTokenProperty(currentMesh, tokProp, bProp, testD);
       if (linkedMesh != null)
-        setMeshTokenProperty(linkedMesh, tokProp, bProp);
+        setMeshTokenProperty(linkedMesh, tokProp, bProp, testD);
     }
   }
  
-  private void setMeshTokenProperty(Mesh m, int tokProp, boolean bProp) {
+  private void setMeshTokenProperty(Mesh m, int tokProp, boolean bProp, boolean testD) {
+    if (testD && (!m.havePlanarContours || m.drawTriangles == m.showContourLines))
+      return;
     switch (tokProp) {
     case Token.display:
       m.bsDisplay = bsDisplay;

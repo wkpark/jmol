@@ -661,6 +661,11 @@ public class SurfaceGenerator {
       return true;
     }
 
+    if ("doFullMolecular" == propertyName) {
+      params.doFullMolecular = true;
+      return true;
+    }
+
     if ("pocket" == propertyName) {
       params.pocket = (Boolean) value;
       return true;

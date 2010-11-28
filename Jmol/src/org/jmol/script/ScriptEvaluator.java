@@ -4352,8 +4352,8 @@ public class ScriptEvaluator {
           if (points == null || points.length < 3 || points[0] == null
               || points[1] == null || points[2] == null)
             break;
-          plane = Measure.getPlaneThroughPoints(points[0], points[1],
-              points[2], new Vector3f(), vAB, vAC);
+          Measure.getPlaneThroughPoints(points[0], points[1],
+              points[2], new Vector3f(), vAB, vAC, plane = new Point4f());
           break;
         case JmolConstants.SHAPE_ISOSURFACE:
           setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "thisID", id);
@@ -9342,9 +9342,9 @@ public class ScriptEvaluator {
       case Token.point4f:
       case Token.quaternion:
         if (tok == Token.quaternion)
-          i++;        
+          i++;
         haveRotation = true;
-        if (tokAt(i) == Token.list) {  // TODO: list type?
+        if (tokAt(i) == Token.list) { // TODO: list type?
           String[] s = (String[]) getToken(i).value;
           if (s.length == 0)
             error(ERROR_invalidArgument);
@@ -9415,7 +9415,8 @@ public class ScriptEvaluator {
         }
         if (endDegrees == 0 && points[0] != null) {
           // glide plane
-          invPlane = Measure.getPlaneThroughPoint(points[0], rotAxis);
+          Measure.getPlaneThroughPoint(points[0], rotAxis,
+              invPlane = new Point4f());
         }
         q = new Quaternion(rotAxis, endDegrees);
         nPoints = (points[0] == null ? 0 : 1);
@@ -10482,6 +10483,8 @@ public class ScriptEvaluator {
       case Token.delete:
         break;
       default:
+        if (setMeshDisplayProperty(-1, 0, tokAt(i + 1)))
+          break;
         id += optParameterAsString(++i);
       }
     }
@@ -14992,7 +14995,9 @@ public class ScriptEvaluator {
 
     setShapeProperty(iShape, "init", fullCommand);
     iToken = 0;
-    if (tokAt(1) == Token.delete || tokAt(2) == Token.delete
+    int tok1 = tokAt(1);
+    int tok2 = tokAt(2);
+    if (tok1 == Token.delete || tok2 == Token.delete
         && tokAt(++iToken) == Token.all) {
       setShapeProperty(iShape, "delete", null);
       iToken += 2;
@@ -15003,11 +15008,12 @@ public class ScriptEvaluator {
       return null;
     }
     iToken = 1;
-    if (!setMeshDisplayProperty(iShape, 0, tokAt(1))) {
+    if (!setMeshDisplayProperty(iShape, 0, tok1)) {
       setShapeProperty(iShape, "thisID", JmolConstants.PREVIOUS_MESH_ID);
       if (iShape != JmolConstants.SHAPE_DRAW)
         setShapeProperty(iShape, "title", new String[] { thisCommand });
-      if (tokAt(2) == Token.times && tokAt(1) != Token.id) {
+      if (tok1 != Token.id && (tok2 == Token.times 
+          || tok1 == Token.times && setMeshDisplayProperty(iShape, 0, tok2))) {
         String id = setShapeId(iShape, 1, false);
         iToken++;
         return id;
@@ -15948,6 +15954,11 @@ public class ScriptEvaluator {
           sbCommand.append(" ").append(radius);
         }
         propertyValue = Float.valueOf(radius);
+        if (optParameterAsString(i + 1).equalsIgnoreCase("full")) {
+          addShapeProperty(propertyList, "doFullMolecular", null);
+          sbCommand.append(" full");
+          i++;
+        }
         break;
       case Token.object:
       case Token.obj:
@@ -16346,7 +16357,7 @@ public class ScriptEvaluator {
     case Token.hidden:
     case Token.display:
     case Token.displayed:
-      if (iToken == 1)
+      if (iToken == 1 && shape >= 0)
         setShapeProperty(shape, "thisID", null);
       if (tok == Token.nada)
         return (iToken == 1);

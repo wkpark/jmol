@@ -137,7 +137,7 @@ public class MarchingCubes extends TriangleData {
     cubeCountX = volumeData.voxelCounts[0] - 1;
     cubeCountY = (nY = volumeData.voxelCounts[1]) - 1;
     cubeCountZ = (nZ = volumeData.voxelCounts[2]) - 1;
-    yzCount = nY * nZ;
+    yzCount = volumeData.getYzCount();
     if (bsVoxels == null)
       bsVoxels = new BitSet();
     edgeVertexPointers = (isXLowToHigh ? edgeVertexPointersLowToHigh : edgeVertexPointersHighToLow);

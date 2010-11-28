@@ -106,8 +106,9 @@ public class NucleicPolymer extends BioPolymer {
         continue;
       Atom myN1 = myNucleotide.getN1();
       Atom myN9 = myNucleotide.getN0();
-      Point4f plane = Measure.getPlaneThroughPoints(myN3, myN1, myN9, vNorm,
-          vAB, vAC);
+      Point4f plane  = new Point4f();
+      Measure.getPlaneThroughPoints(myN3, myN1, myN9, vNorm,
+          vAB, vAC, plane);
       Atom bestN3 = null;
       float minDist2 = 25;
       NucleicMonomer bestNucleotide = null;

@@ -138,8 +138,7 @@ public class BoxInfo {
       va.set(vertices[facePoints[i].x]);
       vb.set(vertices[facePoints[i].y]);
       vc.set(vertices[facePoints[i].z]);
-      faces[i] = Measure
-          .getPlaneThroughPoints(va, vb, vc, vNorm, vAB, vAC);
+      Measure.getPlaneThroughPoints(va, vb, vc, vNorm, vAB, vAC, faces[i] = new Point4f());
     }
     return faces;
   }

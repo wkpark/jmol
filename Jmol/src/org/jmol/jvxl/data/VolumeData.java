@@ -112,6 +112,7 @@
 
 package org.jmol.jvxl.data;
 
+import java.util.Hashtable;
 import java.util.Map;
 
 import javax.vecmath.Point3i;
@@ -137,16 +138,17 @@ public class VolumeData implements VolumeDataInterface {
   public final int[] voxelCounts = new int[3];
   public int nPoints;
   public float[][][] voxelData;  
-  public Map<String, Float> voxelMap; // alternative to voxelData for sparse (plane interesected) data
+  private Map<Integer, Float> voxelMap; // alternative to voxelData for sparse (plane interesected) data
   public final float[] volumetricVectorLengths = new float[3];
   private float maxVectorLength;
   private float minToPlaneDistance;
+  private int yzCount;
 
   public final Vector3f[] unitVolumetricVectors = new Vector3f[3];
   private final Matrix3f volumetricMatrix = new Matrix3f();
   private final Matrix3f inverseMatrix = new Matrix3f();
   private Point4f thePlane;
-  
+
   public boolean hasPlane() {
     return (thePlane != null);
   }
@@ -172,6 +174,19 @@ public class VolumeData implements VolumeDataInterface {
     return origin;
   }
 
+  public float minGrid;
+  
+  public int getYzCount() {
+    
+    minGrid = volumetricVectors[0].length();
+    minGrid = Math.min(minGrid, volumetricVectors[1].length());
+    minGrid = Math.min(minGrid, volumetricVectors[2].length());
+    
+    nPoints = voxelCounts[0] * voxelCounts[1] * voxelCounts[2];
+    
+    return yzCount = voxelCounts[1] * voxelCounts[2];
+  }
+  
   public float[] getVolumetricVectorLengths() {
     return volumetricVectorLengths;
   }
@@ -191,23 +206,51 @@ public class VolumeData implements VolumeDataInterface {
     voxelCounts[0] = nPointsX;
     voxelCounts[1] = nPointsY;
     voxelCounts[2] = nPointsZ;
-    return nPoints = nPointsX * nPointsY * nPointsZ;
+    return nPointsX * nPointsY * nPointsZ;
   }
 
   public float[][][] getVoxelData() {
     return voxelData;
   }
   
+  public float getVoxelData(int pt) {
+    //System.out.print(pt + " ");
+    int ix = pt / yzCount;
+    pt -= ix * yzCount;
+    int iy = pt / voxelCounts[2];
+    int iz = pt - iy * voxelCounts[2];
+    //System.out.println(ix + " " + iy + " " + iz);
+    //return 0;
+    return voxelData[ix][iy][iz]; 
+  }
+  
+  public int getPointIndex(int x, int y, int z) {
+    return x * yzCount + y * voxelCounts[2] + z;  
+  }
+  
+  public void getPoint(int ipt, Point3f pt) {
+    int ix = ipt / yzCount;
+    ipt -= ix * yzCount;
+    int iy = ipt / voxelCounts[2];
+    int iz = ipt - iy * voxelCounts[2];
+    voxelPtToXYZ(ix, iy, iz, pt);
+  }
+  
+  public void setVoxelData(int pt, float value) {
+    int ix = pt / yzCount;
+    pt -= ix * yzCount;
+    int iy = pt / voxelCounts[2];
+    int iz = pt - iy * voxelCounts[2];
+    voxelData[ix][iy][iz] = value; 
+  }
+  
   public void setVoxelData(float[][][] voxelData) {
     this.voxelData = voxelData;
   }
 
-  public Map<String, Float> getVoxelMap() {
-    return voxelMap;
-  }
-  
-  public void setVoxelMap(Map<String, Float> voxelMap) {
-    this.voxelMap = voxelMap;
+  public void setVoxelMap() {
+    voxelMap = new Hashtable<Integer, Float>();
+    getYzCount();
   }
   
   public float getVoxelValueFromMap(int x, int y, int z) {
@@ -315,7 +358,7 @@ public class VolumeData implements VolumeDataInterface {
   public float getVoxelValue(int x, int y, int z) {
     if (voxelMap == null)
       return voxelData[x][y][z];
-    Float f = voxelMap.get(x + "_" + y + "_" + z);
+    Float f = voxelMap.get(new Integer(getPointIndex(x, y, z)));
     return (f == null ? Float.NaN : f.floatValue());
   }
 
@@ -423,7 +466,7 @@ public class VolumeData implements VolumeDataInterface {
   public void setVoxelMapValue(int x, int y, int z, float v) {
     if (voxelMap == null)
       return;
-    voxelMap.put(x+"_" + y + "_" + z, Float.valueOf(v));    
+    voxelMap.put(new Integer(getPointIndex(x, y, z)), Float.valueOf(v));    
   }
 
   private final Vector3f edgeVector = new Vector3f();
@@ -469,5 +512,5 @@ public class VolumeData implements VolumeDataInterface {
     }
     return v0;
   }
-
+  
 }

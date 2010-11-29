@@ -65,13 +65,11 @@ public class VaspReader extends AtomSetCollectionReader {
   @Override
   protected boolean checkLine() throws Exception {
 
-    if (line.toUpperCase().contains("INCAR")) {
+    if (line.toUpperCase().contains("INCAR:")) {
       //reads the kind of atoms namely H, Ca etc
       readElementNames();
-    } else if (line.contains("LEXCH")) {
-      //this read  how many atoms per species 
-      discardLinesUntilContains("support grid");
-      readAtomCountAndNames();
+    } else if (line.contains("ions per type")) {
+      readAtomCountAndSetNames();
     } else if (line.contains("molecular dynamics for ions")) {
       mDsimulation = true;
     } else if (line.contains("direct lattice vectors")) {
@@ -155,9 +153,9 @@ public class VaspReader extends AtomSetCollectionReader {
     ions per type =               6   2*/
   
   
-  private void readAtomCountAndNames() throws Exception {
+  private void readAtomCountAndSetNames() throws Exception {
     int[] numofElement = new int[100];
-    readLine();
+//    readLine();
     String[] tokens = getTokens(line.substring(line.indexOf("=") + 1));
     atomCount = 0;
     for (int i = 0; i < tokens.length; i++)

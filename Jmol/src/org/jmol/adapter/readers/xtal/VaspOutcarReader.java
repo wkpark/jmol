@@ -47,7 +47,7 @@ import org.jmol.util.TextFormat;
  */
 
 
-public class VaspReader extends AtomSetCollectionReader {
+public class VaspOutcarReader extends AtomSetCollectionReader {
 
   private String[] atomNames;
   private String[] elementNames; //this array is to store the name of the element 

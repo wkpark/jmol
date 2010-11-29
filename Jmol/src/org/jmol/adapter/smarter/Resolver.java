@@ -52,7 +52,7 @@ public class Resolver {
                  "Molden;MopacGraphf;GenNBO;NWChem;Odyssey;Psi;Qchem;Spartan;SpartanSmol;" +
                  "WebMO;",
     "simple.", ";Alchemy;Ampac;Cube;FoldingXyz;GhemicalMM;HyperChem;Jme;Mopac;V3000;", 
-    "xtal.", ";Aims;Castep;Crystal;Shelx;Vasp;Wien2k;"
+    "xtal.", ";Aims;Castep;Crystal;Shelx;VaspOutcar;Wien2k;"
   };
   
   public final static String getReaderClassBase(String type) {
@@ -585,7 +585,7 @@ public class Resolver {
     { "Castep" },
     { "Aims" },  
     { "Crystal" },  
-    { "Vasp" },
+    { "VaspOutcar" },
     { "Gromacs" },
     { "GenNBO" },
     

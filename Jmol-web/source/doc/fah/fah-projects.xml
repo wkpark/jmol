@@ -8588,7 +8588,7 @@
   <fah_proj number="6880" name="Abeta42_shooting" public="y"
     server="171.67.108.33" atoms="12222" preferred="14" deadline="21"
     credit="69" frames="100" code="G" contact="lin5"/>
-  <fah_proj number="6885" name="Abeta40_shooting" public="n"
+  <fah_proj number="6885" name="Abeta40_shooting" public="y"
     server="171.67.108.33" atoms="12193" preferred="14" deadline="21"
     credit="69" frames="100" code="G" contact="lin5"/>
   <fah_proj number="6886" name="Abeta42_dPro_shooting" public="y"

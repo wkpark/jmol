@@ -519,8 +519,13 @@ public abstract class SurfaceReader implements VertexDataServer {
     jvxlData.jvxlExcluded = params.bsExcluded;
     if (isJvxl)
       edgeData = jvxlEdgeDataRead;
+    postProcessVertices();
   }
 
+  protected void postProcessVertices() {
+    // IsoSolventReader test. 
+  }
+  
   /////////////////  MarchingReader Interface Methods ///////////////////
 
   protected final Point3f ptTemp = new Point3f();

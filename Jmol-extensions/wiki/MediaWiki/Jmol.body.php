@@ -675,7 +675,7 @@ class Jmol {
 		$result =
 			"<a href=\"javascript:void(0)\"" .
 			  " onclick=\"jmolWikiPopupWindow(" .
-				"'" . $this->escapeScript( "Title" ) . "'," .
+				"'" . $this->escapeScript( $text ) . "'," .
 				"'" . $this->escapeScript( "800" ) . "'," .
 				"'" . $this->escapeScript( "50" ) . "'," .
 				"'" . $this->escapeScript( "50" ) . "'," .
@@ -723,7 +723,7 @@ class Jmol {
 		$result =
 			"<a href=\"javascript:void(0)\"" .
 			  " onclick=\"jmolWikiPopupWindow(" .
-				"'" . $this->escapeScript( "Title" ) . "'," .
+				"'" . $this->escapeScript( $text ) . "'," .
 				"'" . $this->escapeScript( "800" ) . "'," .
 				"'" . $this->escapeScript( "50" ) . "'," .
 				"'" . $this->escapeScript( "50" ) . "'," .
@@ -763,7 +763,7 @@ class Jmol {
 		$result =
 			"<a href=\"javascript:void(0)\"" .
 			  " onclick=\"jmolWikiPopupWindow(" .
-				"'" . $this->escapeScript( "Title" ) . "'," .
+				"'" . $this->escapeScript( $text ) . "'," .
 				"'" . $this->escapeScript( "800" ) . "'," .
 				"'" . $this->escapeScript( "50" ) . "'," .
 				"'" . $this->escapeScript( "50" ) . "'," .

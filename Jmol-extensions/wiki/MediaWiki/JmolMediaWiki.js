@@ -39,7 +39,8 @@ function jmolWikiPopupWindow(windowTitle, windowSize, windowLeft, windowTop, win
   ap[2] = ap[2].charAt(0) + "set zoomLarge off; " + ap[2].substring(1);	// skips the quote and inserts command
   
   s += eval( ap[0] + "(" + ap[1] + ", " + ap[2] + ")" );	// put into page the code resulting from jmolApplet
-  if (ap[3]) {
+  ap[3] = ap[3].replace(/^\s+/, "").replace(/\s+$/, ""); //trim spaces
+  if (!!ap[3]) {
     s += eval(ap[3]);	// put into page the code resulting from whatever is after jmolApplet (was jmolBr)
   }
 
@@ -51,7 +52,7 @@ function jmolWikiPopupWindow(windowTitle, windowSize, windowLeft, windowTop, win
     /* Chrome (at least, 9.0.587) has a weird behaviour in inserting applet code 
         into popup window document: the applet is not displayed.
         The only workaround found is to open a named webpage (even if it does not exist) 
-        and not to close its document.
+        AND either not to close its document or to delay its closing.
         This hack might be removed in future, if no longer needed for newer Chrome versions.
     */
   var wN = "about:blank"; //blank string is not good, it prevents setting the window title in Safari.
@@ -60,26 +61,26 @@ function jmolWikiPopupWindow(windowTitle, windowSize, windowLeft, windowTop, win
   var w = open(wN, purgedTitle, opt);
   w.document.open();
   w.document.write(s); 
-  if (!isChrome) { w.document.close(); }
+  var z = setTimeout("w.document.close();", 200);  //Chrome bug
   w.focus();
 }
 
 function jmolParseWindowCode(wC) {
-  var t1,t2,j1,j2;
+  var ap=[],t1,t2,j1,j2;
   var j1 = wC.indexOf("jmolApplet");
   eval(wC.substring(0,j1));	// execute the windowCode before "jmolApplet" (jmolInitialize, jmolSetAppletColor etc.)
   jmolSetDocument(false);		// execute this
   t1 = wC.substring(j1);		// part of windowCode including "jmolApplet" and whatever follows
   j1 = t1.indexOf("\(");
-  var ap1 = t1.substring(0,j1);		// "jmolApplet"  or  "jmolAppletInline"
+  ap[0] = t1.substring(0,j1);		// "jmolApplet"  or  "jmolAppletInline"
   t2 = t1.substring(j1+1);
   j1 = t2.indexOf(",");
-  var ap2 = t2.substring(0,j1);		// applet size (single number, square applet)
+  ap[1] = t2.substring(0,j1);		// applet size (single number, square applet)
   j2 = t2.indexOf("\);");				// end of jmolApplet part
-  var ap3 = t2.substring(j1+2,j2);	// script
-  ap3 = ap3.replace(/\n/g, "|");		// protect newlines in inline data
-  var ap4 = t2.substring(j2+2);		// whatever is after jmolApplet (was only jmolBr, now empty)
-  return [ap1,ap2,ap3,ap4];
+  ap[2] = t2.substring(j1+2,j2);	// script
+  ap[2] = ap[2].replace(/\n/g, "|");		// protect newlines in inline data
+  ap[3] = t2.substring(j2+2);		// whatever is after jmolApplet (was only jmolBr, now empty)
+  return ap;
 }
 
 function jmolWikiPopInline(divID, windowCode) {

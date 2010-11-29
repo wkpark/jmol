@@ -643,7 +643,7 @@ class Jmol {
 	// DIRECTING THE EXTENSION //
 	// *********************** //
 
-	private function parseJmolTag( &$text, &$params, &$parser ) {
+	private function parseJmolTag( $text, $params, &$parser ) {
 		global $wgJmolExtensionPath, $wgJmolScriptVersion;
 
 		$parser->disableCache();
@@ -660,7 +660,7 @@ class Jmol {
 		return $this->renderJmol( $text );
 	}
 
-	private function parseJmolFileTag( &$text, &$params, &$parser ) {
+	private function parseJmolFileTag( $text, $params, &$parser ) {
 		global $wgJmolExtensionPath, $wgJmolScriptVersion, $wgJmolAuthorizeUploadedFile;
 
 		// Add scripts in the header if needed
@@ -708,7 +708,7 @@ class Jmol {
 		return $result;
 	}
 
-	private function parseJmolPdbTag( &$text, &$params, &$parser ) {
+	private function parseJmolPdbTag( $text, $params, &$parser ) {
 		global $wgJmolExtensionPath, $wgJmolScriptVersion;
 
 		// Add scripts in the header if needed
@@ -748,7 +748,7 @@ class Jmol {
 		return $result;
 	}
 
-	private function parseJmolSmilesTag( &$text, &$params, &$parser ) {
+	private function parseJmolSmilesTag( $text, $params, &$parser ) {
 		global $wgJmolExtensionPath, $wgJmolScriptVersion;
 
 		// Add scripts in the header if needed

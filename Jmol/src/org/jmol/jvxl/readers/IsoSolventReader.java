@@ -754,6 +754,7 @@ class IsoSolventReader extends AtomDataReader {
       dVS = solventDistance(rBS, rAS, dAB, dBV, dAV);
       ptAB = ptB;
       rS = rBS;
+      cosAngleBAS = -cosAngleBAS;
       return (voxelIsInTrough(dVS, rBS * rBS, rAS, dAB, dBV) ? dVS : Float.NaN);
     }
     // not within solvent sphere of A or B

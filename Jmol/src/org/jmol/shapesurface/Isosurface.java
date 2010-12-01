@@ -1215,7 +1215,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       IsosurfaceMesh m = isomeshes[i];
       if (!isPickable(m, bsVisible))
         continue;
-      Point3f[] centers = m.getCenters();
+      Point3f[] centers = (pickFront ? m.vertices : m.getCenters());
+      if (centers == null)
+        continue;
       for (int j = centers.length; --j >= 0; ) {
           Point3f v = centers[j];
           if (v == null)
@@ -1243,7 +1245,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     setPropertySuper("thisID", pickedMesh.thisID, null);
     int iFace = pickedVertex = (pickFront ? jminz : jmaxz);
     Point3fi ptRet = new Point3fi();
-    ptRet.set(((IsosurfaceMesh)pickedMesh).centers[iFace]);
+    ptRet.set((pickFront ? pickedMesh.vertices[pickedVertex] : ((IsosurfaceMesh)pickedMesh).centers[iFace]));
     pickedModel = ptRet.modelIndex = (short) pickedMesh.modelIndex;
     ptRet.index = imesh;
     if (pickFront) {

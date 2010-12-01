@@ -419,7 +419,7 @@ class IsoSolventReader extends AtomDataReader {
                     || ptC.distance(ptB) >= rBS + rCS)
                   continue;
                 n1++;
-                v1 = checkSpecialVoxel(ptA, rAS, ptB, ptC, rCS, pt, plane,
+                v1 = checkSpecialVoxel(ptA, ptB, ptC, rCS, pt, plane,
                     vTemp, vTemp2, v1);
               }
               if (v1 < v)
@@ -534,7 +534,7 @@ class IsoSolventReader extends AtomDataReader {
   private Vector3f vTemp2 = new Vector3f();
   private Vector3f vTemp3 = new Vector3f();
   
-  private float checkSpecialVoxel(Point3f ptA, float rAS, Point3f ptB, Point3f ptC, float rCS,
+  private float checkSpecialVoxel(Point3f ptA, Point3f ptB, Point3f ptC, float rCS,
                                   Point3f pt, Point4f planeTemp, Vector3f vTemp, Vector3f vXS, 
                                   float v1) {
     /*

@@ -573,8 +573,12 @@ class IsoSolventReader extends AtomDataReader {
     vTemp.set(ptB);
     vTemp.sub(ptA);
     vTemp.normalize();
-    p.scaleAdd((float) (cosAngleBAS * rAS), vTemp, ptA);
-    double dpS = Math.sin(angleBAS) * rAS;
+    
+    // note -- depending upon which side of the centerline we are on, 
+    //         ptAB may be ptA or ptB.
+    
+    p.scaleAdd((float) (cosAngleBAS * rS), vTemp, ptAB);
+    double dpS = Math.sin(angleBAS) * rS;
     Measure.getPlaneThroughPoint(p, vTemp, planeTemp);
     
     //    * 2) project C onto plane as ptT
@@ -681,17 +685,25 @@ class IsoSolventReader extends AtomDataReader {
      * within the solvent radius sphere of another, this voxel should
      * be checked in relation to solvent distance, not atom distance.
      * 
-     * 
+     * aa           bb
+     *   aaa      bbb
+     *      aa  bb
      *         S
-     *+++    /   \    +++
-     *   ++ /  |  \ ++
-     *     +   V   +     x     want V such that angle ASV < angle ASB
-     *    / p*****  \
+     *+++    /  a\    +++
+     *   ++ /  | ap ++
+     *     +*  V  *aa     x     want V such that angle ASV < angle ASB
+     *    /  *****  \
      *   A --+--+----B
      *        b
      * 
-     *  ++ Here represents the van der Waals radius for each atom. 
-     *  ***** is the key "trough" location. The objective is to calculate dSV.
+     *  ++   the van der Waals radius for each atom.
+     *  aa   the extended solvent radius for atom A.
+     *  bb   the extended solvent radius for atom B.
+     *  p    the projection of voxel V onto aaaaaaa.  
+     *  **   the key "trough" location. 
+     *  
+     *  The objective is to calculate dSV only when V
+     *  is within triangle ABS.
      *  
      * Getting dVS:
      * 
@@ -707,7 +719,7 @@ class IsoSolventReader extends AtomDataReader {
      * Since the voxel might be at point x (above), outside the
      * triangle, we have to test for that. What we will be looking 
      * for in the "trough" will be that angle ASV < angle ASB
-     * that is, cosASB < cosASV 
+     * that is, cosASB < cosASV, for each point p within bbbbb.
      * 
      * If we find the voxel in the "trough", then we set its value to 
      * (solvent radius - dVS).
@@ -719,28 +731,33 @@ class IsoSolventReader extends AtomDataReader {
     float f = rAS / dAV;
     if (f > 1) {
       // within solvent sphere of atom A
-      // calculate point on solvent sphere A projected through ptV
+      // calculate point on solvent sphere aaaa projected through ptV
       p.set(ptA.x + (ptV.x - ptA.x) * f, ptA.y + (ptV.y - ptA.y) * f, ptA.z
           + (ptV.z - ptA.z) * f);
       // If the distance of this point to B is less than the distance
       // of S to B, then we need to check this point
       if (ptB.distance(p) >= rBS)
         return Float.NaN;
-      // we are somewhere in the triangle ASB, within the solvent sphere of A
+      // we are somewhere in the arc SAB, within the solvent sphere of A
       dVS = solventDistance(rAS, rBS, dAB, dAV, dBV);
+      ptAB = ptA;
+      rS = rBS;
       return (voxelIsInTrough(dVS, rAS * rAS, rBS, dAB, dAV) ? dVS : Float.NaN);
     }
-    f = rBS / dBV;
-    if (f <= 1)
-      return Float.NaN; // not within solvent sphere of A or B
-    // calculate point on solvent sphere B projected through ptV
-    p.set(ptB.x + (ptV.x - ptB.x) * f, ptB.y + (ptV.y - ptB.y) * f, ptB.z
-        + (ptV.z - ptB.z) * f);
-    if (ptA.distance(p) >= rAS)
-      return Float.NaN;
-    // we are somewhere in the triangle ASB, within the solvent sphere of B
-    dVS = solventDistance(rBS, rAS, dAB, dBV, dAV);
-    return (voxelIsInTrough(dVS, rAS * rAS, rBS, dAB, dAV) ? dVS : Float.NaN);
+    if ((f = rBS / dBV) > 1) {
+      // calculate point on solvent sphere B projected through ptV
+      p.set(ptB.x + (ptV.x - ptB.x) * f, ptB.y + (ptV.y - ptB.y) * f, ptB.z
+          + (ptV.z - ptB.z) * f);
+      if (ptA.distance(p) >= rAS)
+        return Float.NaN;
+      // we are somewhere in the triangle ASB, within the solvent sphere of B
+      dVS = solventDistance(rBS, rAS, dAB, dBV, dAV);
+      ptAB = ptB;
+      rS = rBS;
+      return (voxelIsInTrough(dVS, rBS * rBS, rAS, dAB, dBV) ? dVS : Float.NaN);
+    }
+    // not within solvent sphere of A or B
+    return Float.NaN;
   }
 
   private static boolean voxelIsInTrough(float dXC, float rAC2, float rBC,
@@ -763,6 +780,8 @@ class IsoSolventReader extends AtomDataReader {
 
   private double cosAngleBAS;
   private double angleBAS;
+  private double rS;
+  private Point3f ptAB;
   
   private float solventDistance(float rAS, float rBS, float dAB, float dAV, float dBV) {
     double dAV2 = dAV * dAV;

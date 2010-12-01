@@ -85,7 +85,6 @@ public class TestSmarterJmolAdapter extends TestSuite {
     result.addDirectory(false, "gaussian", "log", "Gaussian");
     result.addDirectory(false, "gaussian", "out", "Gaussian");
     result.addDirectory(false, "ghemical", "gpr", "GhemicalMM");
-    result.addDirectory(false, "gpt2", "gpt2","MopacGraphf");
     result.addDirectory(false, "gromacs", "gro", "Gromacs");
     result.addDirectory(false, "hin", "hin", "HyperChem");
     result.addDirectory(false, "jaguar", "out", "Jaguar");
@@ -96,6 +95,8 @@ public class TestSmarterJmolAdapter extends TestSuite {
     result.addDirectory(false, "mol2", "mol2", "Mol2");
     result.addDirectory(false, "molpro", "xml", "XmlMolpro");
     result.addDirectory(false, "mopac", "out", "Mopac");
+    result.addDirectory(false, "mopac", "gpt2","MopacGraphf");
+    result.addDirectory(false, "mopac", "mgf","MopacGraphf");
     result.addDirectory(false, "odyssey", "odydata", "Odyssey");
     result.addDirectory(false, "odyssey", "xodydata", "XmlOdyssey");
     result.addDirectory(false, "nwchem", "nwo", "NWChem");

@@ -8534,6 +8534,9 @@
   <fah_proj number="6522" name="p6522_TR462A_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="15133" preferred="13" deadline="19"
     credit="67" frames="100" code="G" contact="lan" contrib="Danny Nielsen"/>
+  <fah_proj number="6524" name="p6524_1CFC_A_predict" public="n"
+    server="171.64.65.62" atoms="19690" preferred="17" deadline="25"
+    credit="89" frames="100" code="G" contact="lan"/>
   <fah_proj number="6525" name="p6525_1CFC_A_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="19690" preferred="17" deadline="25"
     credit="89" frames="100" code="G" contact="lan" contrib="Danny Nielsen"/>

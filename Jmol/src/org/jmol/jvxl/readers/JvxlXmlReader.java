@@ -402,8 +402,9 @@ public class JvxlXmlReader extends VolumeFileReader {
 
   private float getNextValue() {
     float fraction = Float.NaN;
-    if (colorPtr >= valueCount)
-      System.out.println("JvxlXmlREader test 1243 " + colorPtr + " " + valueCount);
+    if (colorPtr >= valueCount) {
+      Logger.debug("JvxlXmlREader test 1243 " + colorPtr + " " + valueCount);
+    }
     while (colorPtr < valueCount && Float.isNaN(fraction)) {
       if (jvxlData.isJvxlPrecisionColor) {
         // this COULD be an option for mapped surfaces; 

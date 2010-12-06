@@ -638,8 +638,6 @@ public class SmarterJmolAdapter extends JmolAdapter {
     @Override
     public Object getUniqueID() { return Integer.valueOf(atom.atomIndex); }
     @Override
-    public String getElementSymbol() { return atom.getElementSymbol(); }
-    @Override
     public short getElementNumber() { 
       return (atom.elementNumber > 0 ?
         atom.elementNumber : JmolAdapter.getElementNumber(atom.getElementSymbol())); }

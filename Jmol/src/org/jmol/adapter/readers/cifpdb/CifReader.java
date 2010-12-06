@@ -202,37 +202,13 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
     atomSetCollection.setCheckSpecial(!isPDB);
     boolean doCheck = doCheckUnitCell && !isPDB;
     super.applySymmetryAndSetTrajectory();
-    if (doCheck && (bondTypes.size() > 0 || isMolecular)) {
-      Logger.info("CIF creating molecule " + (bondTypes.size() > 0 ? " using GEOM_BOND records" : ""));
-      mapSites();
-      getAtomRadii();
-      if (bondTypes.size() > 0 && isMolecular)
-        atomSetCollection.setAtomSetAuxiliaryInfo("hasBonds", Boolean.TRUE);
-      atomSetCollection.setAtomSetAuxiliaryInfo("fileHasUnitCell", Boolean.TRUE);
-      while (createBonds()) {}
-      bondTypes.clear();
-      atomRadius = null;
-      bsBonds = null;
-      if (nMolecular++ == atomSetCollection.getCurrentAtomSetIndex()) {
-        atomSetCollection.clearGlobalBoolean(AtomSetCollection.GLOBAL_FRACTCOORD);
-        atomSetCollection.clearGlobalBoolean(AtomSetCollection.GLOBAL_SYMMETRY);
-        atomSetCollection.clearGlobalBoolean(AtomSetCollection.GLOBAL_UNITCELLS);
-      }        
-    }
+    if (doCheck && (bondTypes.size() > 0 || isMolecular))
+      setBondingAndMolecules();
   }
 
   ////////////////////////////////////////////////////////////////
   // processing methods
   ////////////////////////////////////////////////////////////////
-
-  private void setBs(Atom[] atoms, int iatom, BitSet[] bsBonds, BitSet bs) {
-    BitSet bsBond = bsBonds[iatom];
-    bs.set(iatom);
-    for (int i = bsBond.nextSetBit(0); i >= 0; i = bsBond.nextSetBit(i + 1)) {
-      if (!bs.get(i))
-        setBs(atoms, i, bsBonds, bs);
-    }
-  }
 
   /**
    *  initialize a new atom set
@@ -1434,140 +1410,255 @@ _struct_site_gen.details
   /////////////////////////////////////
   
   private float[] atomRadius;
-  private BitSet[] bsBonds;
-  
-  private void getAtomRadii() {
-    int i0 = atomSetCollection.getLastAtomSetAtomIndex();
-    int nAtoms = atomSetCollection.getLastAtomSetAtomCount();
-    int i1 = i0 + nAtoms;
-    Atom[] atoms = atomSetCollection.getAtoms();    
-    atomRadius = new float[i1];
-    for (int i = i0; i < i1; i++) {
-      int elemno = atoms[i].elementNumber = JmolAdapter.getElementNumber(atoms[i].getElementSymbol());
-      int charge = (atoms[i].formalCharge == Integer.MIN_VALUE ? 0 : atoms[i].formalCharge);
-      if (elemno > 0)
-        atomRadius[i] = JmolAdapter.getBondingRadiusFloat(elemno, charge);
-    }
-  }
-
-  private BitSet[] sites;
-  
-  private void mapSites() {
-    symmetry = atomSetCollection.getSymmetry();
-    int nAtoms = atomSetCollection.getLastAtomSetAtomCount();
-    int i0 = atomSetCollection.getLastAtomSetAtomIndex();
-    int i1 = i0 + nAtoms;
-    sites = new BitSet[nAtoms];
-    Atom[] atoms = atomSetCollection.getAtoms();
-    for (int i = i0; i < i1; i++) {
-      int ipt = atomSetCollection.getAtomNameIndex(atoms[i].atomName) - i0;
-      if (sites[ipt] == null)
-        sites[ipt] = new BitSet();
-      sites[ipt].set(i - i0);
-    }
-    bsMolecule = new BitSet();
-    bsExclude = new BitSet();
-  }
-
+  private BitSet[] bsConnected;
+  private BitSet[] bsSets;
   final private Point3f ptOffset = new Point3f();
-
-  private boolean createBonds() {
-    Atom[] atoms = atomSetCollection.getAtoms();
+  private BitSet bsMolecule;
+  private BitSet bsExclude;
+  private int firstAtom;
+  private int atomCount;
+  private Atom[] atoms;
+  
+  /**
+   * (1) If GEOM_BOND records are present, we
+   *     (a) use them to generate bonds
+   *     (b) add H atoms to bonds if necessary
+   *     (c) turn off autoBonding ("hasBonds")
+   * (2) If MOLECULAR, then we
+   *     (a) use {1 1 1} if lattice is not defined
+   *     (b) use atomSetCollection.bonds[] to construct 
+   *         a preliminary molecule and connect as we go
+   *     (c) check symmetry for connections to molecule in any
+   *         one of the 27 3x3 adjacent cells
+   *     (d) move those atoms and their connected branch set
+   *     (e) iterate as necessary to get all atoms desired
+   *     (f) delete unselected atoms
+   *     (g) set all coordinates as Cartesians
+   *     (h) remove all unit cell information
+   */
+  private void setBondingAndMolecules() {
+    Logger.info("CIF creating molecule "
+        + (bondTypes.size() > 0 ? " using GEOM_BOND records" : ""));
+    atoms = atomSetCollection.getAtoms();
+    firstAtom = atomSetCollection.getLastAtomSetAtomIndex();
     int nAtoms = atomSetCollection.getLastAtomSetAtomCount();
-    int i0 = atomSetCollection.getLastAtomSetAtomIndex();
-    int i1 = i0 + nAtoms;
-    int ib0 = atomSetCollection.getBondCount();
-    if (bsBonds == null && isMolecular) {
-      bsBonds = new BitSet[atomSetCollection.getAtomCount()];
-      for (int i = i0; i < i1; i++)
-        bsBonds[i] = new BitSet();
+    atomCount = firstAtom + nAtoms;
+
+    // get list of sites based on atom names
+
+    bsSets = new BitSet[nAtoms];
+    symmetry = atomSetCollection.getSymmetry();
+    for (int i = firstAtom; i < atomCount; i++) {
+      int ipt = atomSetCollection.getAtomNameIndex(atoms[i].atomName)
+          - firstAtom;
+      if (bsSets[ipt] == null)
+        bsSets[ipt] = new BitSet();
+      bsSets[ipt].set(i - firstAtom);
     }
+
+    // if molecular, we need atom connection lists and radii
+
+    if (isMolecular) {
+      atomRadius = new float[atomCount];
+      for (int i = firstAtom; i < atomCount; i++) {
+        int elemno = atoms[i].elementNumber = JmolAdapter
+            .getElementNumber(atoms[i].getElementSymbol());
+        int charge = (atoms[i].formalCharge == Integer.MIN_VALUE ? 0
+            : atoms[i].formalCharge);
+        if (elemno > 0)
+          atomRadius[i] = JmolAdapter.getBondingRadiusFloat(elemno, charge);
+      }
+      bsConnected = new BitSet[atomCount];
+      for (int i = firstAtom; i < atomCount; i++)
+        bsConnected[i] = new BitSet();
+
+      // Set up a working set of atoms in the "molecule".
+
+      bsMolecule = new BitSet();
+
+      // Set up a working set of atoms that should be excluded 
+      // because they would map onto an equivalent atom's position.
+
+      bsExclude = new BitSet();
+    }
+
+    boolean isFirst = true;
+    while (createBonds(isFirst)) {
+      isFirst = false;
+      // main loop continues until no new atoms are found
+    }
+
+    if (isMolecular) {
+
+      // Set bsAtoms to control which atoms and 
+      // bonds are delivered by the iterators.
+
+      if (atomSetCollection.bsAtoms == null)
+        atomSetCollection.bsAtoms = new BitSet();
+      atomSetCollection.bsAtoms.clear(firstAtom, atomCount);
+      atomSetCollection.bsAtoms.or(bsMolecule);
+      atomSetCollection.bsAtoms.andNot(bsExclude);
+
+      // Set atom positions to be Cartesians and clear out unit cell
+      // so that the model displays without it.
+
+      for (int i = firstAtom; i < atomCount; i++) {
+        if (atomSetCollection.bsAtoms.get(i))
+          symmetry.toCartesian(atoms[i], true);
+        else if (Logger.debugging)
+          Logger.info(molecularType + " removing " + i + " "
+              + atoms[i].atomName + " " + atoms[i]);
+      }
+      atomSetCollection.setAtomSetAuxiliaryInfo("notionalUnitcell", null);
+      if (nMolecular++ == atomSetCollection.getCurrentAtomSetIndex()) {
+        atomSetCollection
+            .clearGlobalBoolean(AtomSetCollection.GLOBAL_FRACTCOORD);
+        atomSetCollection.clearGlobalBoolean(AtomSetCollection.GLOBAL_SYMMETRY);
+        atomSetCollection
+            .clearGlobalBoolean(AtomSetCollection.GLOBAL_UNITCELLS);
+      }
+      
+    }
+    
+    // Set return info to enable desired defaults.
+
+    if (bondTypes.size() > 0)
+      atomSetCollection.setAtomSetAuxiliaryInfo("hasBonds", Boolean.TRUE);
+    atomSetCollection.setAtomSetAuxiliaryInfo("fileHasUnitCell", Boolean.TRUE);
+
+    // Clear temporary fields.
+
+    bondTypes.clear();
+    atomRadius = null;
+    bsSets = null;
+    bsConnected = null;
+    bsMolecule = null;
+    bsExclude = null;
+  }
+
+  /**
+   * Use the site bitset to check for atoms that are within 
+   * +/- 0.015 Angstroms of the specified distances in GEOM_BOND
+   * Note that this also "connects" the atoms that might have 
+   * been moved in a previous iteration.
+   * 
+   * Also connect H atoms based on a distance <= 1.1 Angstrom
+   * from a nearby atom. 
+   * 
+   * Then create molecules.
+   * 
+   * @param doInit 
+   * @return TRUE if need to continue
+   */
+  private boolean createBonds(boolean doInit) {
+    
+    // process GEOM_BOND records
+    
     for (int i = bondTypes.size(); --i >= 0;) {
       Object[] o = bondTypes.get(i);
       float distance = ((Float) o[2]).floatValue();
       int iatom1 = atomSetCollection.getAtomNameIndex((String) o[0]);
       int iatom2 = atomSetCollection.getAtomNameIndex((String) o[1]);
-      BitSet bs1 = sites[iatom1 - i0];
-      BitSet bs2 = sites[iatom2 - i0];
+      BitSet bs1 = bsSets[iatom1 - firstAtom];
+      BitSet bs2 = bsSets[iatom2 - firstAtom];
       if (bs1 == null || bs2 == null)
         continue;
       for (int j = bs1.nextSetBit(0); j >= 0; j = bs1.nextSetBit(j + 1))
-        for (int k = bs2.nextSetBit(0); k >= 0; k = bs2.nextSetBit(k + 1)) {
-          if (j == k || isMolecular && bsBonds[j].get(k))
-            continue;
-          if (symmetry.checkDistance(atoms[j + i0], atoms[k + i0], distance, 0.015f, 0, 0, 0, ptOffset))
-            atomSetCollection.addNewBond(j + i0, k + i0);
-        }
+        for (int k = bs2.nextSetBit(0); k >= 0; k = bs2.nextSetBit(k + 1))
+          if (j != k
+              && (!isMolecular || !bsConnected[j].get(k))
+              && symmetry.checkDistance(atoms[j + firstAtom], atoms[k
+                  + firstAtom], distance, 0.015f, 0, 0, 0, ptOffset))
+            addNewBond(j + firstAtom, k + firstAtom);
     }
+    
     // do a quick check for H-X bonds if we have GEOM_BOND
+    
     if (bondTypes.size() > 0)
-      for (int i = i0; i < i1; i++)
+      for (int i = firstAtom; i < atomCount; i++)
         if (atoms[i].elementNumber == 1)
-          for (int k = i0; k < i1; k++)
+          for (int k = firstAtom; k < atomCount; k++)
             if (k != i) {
-              if (!bsBonds[i].get(k) && symmetry.checkDistance(atoms[i], atoms[k], 1.1f, 0, 0, 0, 0, ptOffset))
-                atomSetCollection.addNewBond(i, k);
+              if (!bsConnected[i].get(k)
+                  && symmetry.checkDistance(atoms[i], atoms[k], 1.1f, 0, 0, 0,
+                      0, ptOffset))
+                addNewBond(i, k);
             }
-    return (isMolecular && createMolecule(i0, i1, ib0));
-  }
+    if (!isMolecular)
+      return false;
+    
+    // generate the base atom set
 
-  private BitSet bsMolecule;
-  private BitSet bsExclude;
-
-  private boolean createMolecule(int i0, int i1, int ib0) {
-    Atom[] atoms = atomSetCollection.getAtoms();
-    Bond[] bonds = atomSetCollection.getBonds();
-    int nBonds = atomSetCollection.getBondCount();
+    if (doInit)
+      for (int i = firstAtom; i < atomCount; i++)
+        if (atoms[i].atomSite == i && !bsMolecule.get(i))
+          setBs(atoms, i, bsConnected, bsMolecule);
+    
+    // Now look through unchecked atoms for ones that
+    // are within bonding distance of the "molecular" set
+    // in any one of the 27 adjacent cells in 444 - 666.
+    // If an atom is found, move it along with its "branch"
+    // to the new location. BUT also check that we are
+    // not overlaying another atom -- if that happens
+    // go ahead and move it, but mark it as excluded.
+    
     float bondTolerance = viewer.getBondTolerance();
-    for (int i = ib0; i < nBonds; i++) {
-      int ia1 = bonds[i].atomIndex1;
-      int ia2 = bonds[i].atomIndex2;
-      bsBonds[ia1].set(ia2);
-      bsBonds[ia2].set(ia1);
-    }
-    for (int i = i0; i < i1; i++)
-      if (atoms[i].atomSite == i && !bsMolecule.get(i))
-        setBs(atoms, i, bsBonds, bsMolecule);
-    BitSet bsOther = new BitSet();
-    for (int i = i0; i < i1; i++) {
-      if (atoms[i].atomSite != i && !bsMolecule.get(i) && !bsExclude.get(i)) {
-        for (int j = bsMolecule.nextSetBit(0); j >= 0; j = bsMolecule.nextSetBit(j + 1)) {
-          if (symmetry.checkDistance(atoms[j], atoms[i], atomRadius[i] + atomRadius[j] + bondTolerance, 0, 1, 1, 1, ptOffset)) {
-            setBs(atoms, i, bsBonds, bsOther);
-            for (int k = bsOther.nextSetBit(0); k >= 0; k = bsOther.nextSetBit(k + 1)) {
+    BitSet bsBranch = new BitSet();
+    for (int i = firstAtom; i < atomCount; i++)
+      if (!bsMolecule.get(i) && !bsExclude.get(i))
+        for (int j = bsMolecule.nextSetBit(0); j >= 0; j = bsMolecule
+            .nextSetBit(j + 1))
+          if (symmetry.checkDistance(atoms[j], atoms[i], atomRadius[i]
+              + atomRadius[j] + bondTolerance, 0, 1, 1, 1, ptOffset)) {
+            setBs(atoms, i, bsConnected, bsBranch);
+            for (int k = bsBranch.nextSetBit(0); k >= 0; k = bsBranch
+                .nextSetBit(k + 1)) {
               atoms[k].add(ptOffset);
-              BitSet bs = sites[atomSetCollection.getAtomNameIndex(atoms[k].atomName) - i0];
-              if (bs != null) {
-                for (int s = bs.nextSetBit(0); s >= 0; s = bs.nextSetBit(s + 1)) {
-                  if (s + i0 != k && atoms[s + i0].distance(atoms[k]) < 0.1f) {
+              BitSet bs = bsSets[atomSetCollection
+                  .getAtomNameIndex(atoms[k].atomName)
+                  - firstAtom];
+              if (bs != null)
+                for (int ii = bs.nextSetBit(0); ii >= 0; ii = bs.nextSetBit(ii + 1))
+                  if (ii + firstAtom != k
+                      && atoms[ii + firstAtom].distance(atoms[k]) < 0.1f) {
                     bsExclude.set(k);
                     break;
                   }
-                }                
-              }
               bsMolecule.set(k);
             }
             return true;
           }
-        }
-        
-      }
-    }
-    if (atomSetCollection.bsAtoms == null)
-      atomSetCollection.bsAtoms = new BitSet();
-    atomSetCollection.bsAtoms.clear(i0, i1);
-    atomSetCollection.bsAtoms.or(bsMolecule);
-    atomSetCollection.bsAtoms.andNot(bsExclude);
-    for (int i = i0; i < i1; i++) {
-      if (atomSetCollection.bsAtoms.get(i))
-        symmetry.toCartesian(atoms[i],true);
-      else if (Logger.debugging)
-        Logger.info(molecularType  + " removing " + i + " " + atoms[i].atomName + " " + atoms[i]);
-    }
-    
-    atomSetCollection.setAtomSetAuxiliaryInfo("notionalUnitcell", null);
     return false;
   }
 
+  /**
+   * add the bond and mark it for molecular processing
+   * 
+   * @param i
+   * @param j
+   */
+  private void addNewBond(int i, int j) {
+    atomSetCollection.addNewBond(i, j);
+    if (!isMolecular)
+      return;
+    bsConnected[i].set(j);
+    bsConnected[j].set(i);
+  }
 
+  /**
+   * iteratively run through connected atoms, adding them to the set
+   * 
+   * @param atoms
+   * @param iatom
+   * @param bsBonds
+   * @param bs
+   */
+  private void setBs(Atom[] atoms, int iatom, BitSet[] bsBonds, BitSet bs) {
+    BitSet bsBond = bsBonds[iatom];
+    bs.set(iatom);
+    for (int i = bsBond.nextSetBit(0); i >= 0; i = bsBond.nextSetBit(i + 1)) {
+      if (!bs.get(i))
+        setBs(atoms, i, bsBonds, bs);
+    }
+  }
 }

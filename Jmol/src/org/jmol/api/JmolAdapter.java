@@ -393,7 +393,6 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
     public int getAtomSite() { return Integer.MIN_VALUE; }
     abstract public Object getUniqueID();
     public short getElementNumber() { return -1; } // may be atomicNumber + isotopeNumber*128
-    public String getElementSymbol() { return null; }
     public String getAtomName() { return null; }
     public int getFormalCharge() { return 0; }
     public float getPartialCharge() { return Float.NaN; }

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-11-10 01:04+0100\n"
+"POT-Creation-Date: 2010-12-06 18:26+0100\n"
 "PO-Revision-Date: 2010-11-10 20:36+0000\n"
 "Last-Translator: Vladimir Oka <Unknown>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
@@ -63,7 +63,7 @@ msgid "Clear Input"
 msgstr "Clear Input"
 
 #: org/jmol/applet/AppletConsole.java:210
-#: org/jmol/popup/MainPopupResourceBundle.java:850
+#: org/jmol/popup/MainPopupResourceBundle.java:852
 msgid "History"
 msgstr "History"
 
@@ -122,7 +122,7 @@ msgid "Jmol Script Editor"
 msgstr "Jmol Script Editor"
 
 #: org/jmol/console/ScriptEditor.java:130
-#: org/jmol/popup/MainPopupResourceBundle.java:847
+#: org/jmol/popup/MainPopupResourceBundle.java:849
 msgid "Console"
 msgstr "Console"
 
@@ -142,8 +142,7 @@ msgid "Check"
 msgstr "Check"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid ""
-"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Top"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -151,12 +150,12 @@ msgid "Step"
 msgstr "Step"
 
 #: org/jmol/console/ScriptEditor.java:138
-#: org/jmol/popup/MainPopupResourceBundle.java:803
+#: org/jmol/popup/MainPopupResourceBundle.java:805
 msgid "Pause"
 msgstr "Pause"
 
 #: org/jmol/console/ScriptEditor.java:140
-#: org/jmol/popup/MainPopupResourceBundle.java:804
+#: org/jmol/popup/MainPopupResourceBundle.java:806
 msgid "Resume"
 msgstr "Resume"
 
@@ -608,7 +607,7 @@ msgstr "rotate bond (SHIFT-DRAG)"
 msgid "exit modelkit mode"
 msgstr "exit modelkit mode"
 
-#: org/jmol/modelsetbio/AminoPolymer.java:577
+#: org/jmol/modelsetbio/AminoPolymer.java:576
 #, java-format
 msgid ""
 "NOTE: Backbone amide hydrogen positions are present and will be ignored. "
@@ -621,7 +620,7 @@ msgstr ""
 "Use {0} to not use this approximation.\n"
 "\n"
 
-#: org/jmol/modelsetbio/AminoPolymer.java:583
+#: org/jmol/modelsetbio/AminoPolymer.java:582
 #, java-format
 msgid ""
 "NOTE: Backbone amide hydrogen positions are present and will be used. "
@@ -635,1224 +634,1225 @@ msgstr ""
 "\n"
 
 #: org/jmol/popup/JmolPopup.java:149
-#: org/jmol/popup/MainPopupResourceBundle.java:534
+#: org/jmol/popup/MainPopupResourceBundle.java:536
 msgid "No atoms loaded"
 msgstr "No atoms loaded"
 
-#: org/jmol/popup/JmolPopup.java:369
-#: org/jmol/popup/MainPopupResourceBundle.java:546
+#: org/jmol/popup/JmolPopup.java:362
+#: org/jmol/popup/MainPopupResourceBundle.java:548
 msgid "Space Group"
 msgstr "Space group"
 
-#: org/jmol/popup/JmolPopup.java:431 org/jmol/popup/JmolPopup.java:471
-#: org/jmol/popup/MainPopupResourceBundle.java:567
-#: org/jmol/popup/MainPopupResourceBundle.java:581
-#: org/jmol/popup/MainPopupResourceBundle.java:590
-#: org/jmol/popup/MainPopupResourceBundle.java:607
+#: org/jmol/popup/JmolPopup.java:424 org/jmol/popup/JmolPopup.java:464
+#: org/jmol/popup/MainPopupResourceBundle.java:569
+#: org/jmol/popup/MainPopupResourceBundle.java:583
+#: org/jmol/popup/MainPopupResourceBundle.java:592
+#: org/jmol/popup/MainPopupResourceBundle.java:609
 msgid "All"
 msgstr "All"
 
-#: org/jmol/popup/JmolPopup.java:574
-#: org/jmol/popup/MainPopupResourceBundle.java:942
+#: org/jmol/popup/JmolPopup.java:567
+#: org/jmol/popup/MainPopupResourceBundle.java:945
 msgid "Mouse Manual"
 msgstr "Mouse Manual"
 
-#: org/jmol/popup/JmolPopup.java:575
-#: org/jmol/popup/MainPopupResourceBundle.java:943
+#: org/jmol/popup/JmolPopup.java:568
+#: org/jmol/popup/MainPopupResourceBundle.java:946
 msgid "Translations"
 msgstr "Translations"
 
-#: org/jmol/popup/JmolPopup.java:577
+#: org/jmol/popup/JmolPopup.java:570
 msgid "System"
 msgstr "System"
 
-#: org/jmol/popup/JmolPopup.java:583
+#: org/jmol/popup/JmolPopup.java:576
 msgid "1 processor"
 msgstr "1 processor"
 
-#: org/jmol/popup/JmolPopup.java:584
+#: org/jmol/popup/JmolPopup.java:577
 #, java-format
 msgid "{0} processors"
 msgstr "{0} processors"
 
-#: org/jmol/popup/JmolPopup.java:586
+#: org/jmol/popup/JmolPopup.java:579
 msgid "unknown processor count"
 msgstr "unknown processor count"
 
-#: org/jmol/popup/JmolPopup.java:588
+#: org/jmol/popup/JmolPopup.java:581
 msgid "Java version:"
 msgstr "Java version:"
 
-#: org/jmol/popup/JmolPopup.java:592
+#: org/jmol/popup/JmolPopup.java:585
 msgid "Java memory usage:"
 msgstr "Java memory usage:"
 
-#: org/jmol/popup/JmolPopup.java:598
+#: org/jmol/popup/JmolPopup.java:591
 #, java-format
 msgid "{0} MB total"
 msgstr "{0} MB total"
 
-#: org/jmol/popup/JmolPopup.java:600
+#: org/jmol/popup/JmolPopup.java:593
 #, java-format
 msgid "{0} MB free"
 msgstr "{0} MB free"
 
-#: org/jmol/popup/JmolPopup.java:603
+#: org/jmol/popup/JmolPopup.java:596
 #, java-format
 msgid "{0} MB maximum"
 msgstr "{0} MB maximum"
 
-#: org/jmol/popup/JmolPopup.java:606
+#: org/jmol/popup/JmolPopup.java:599
 msgid "unknown maximum"
 msgstr "unknown maximum"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:536
+#: org/jmol/popup/MainPopupResourceBundle.java:538
 msgid "Configurations"
 msgstr "Configurations"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:537
+#: org/jmol/popup/MainPopupResourceBundle.java:539
 msgid "Element"
 msgstr "Element"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:538
+#: org/jmol/popup/MainPopupResourceBundle.java:540
 msgid "Model/Frame"
 msgstr "Model/Frame"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:539
+#: org/jmol/popup/MainPopupResourceBundle.java:541
 msgid "Language"
 msgstr "Language"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:540
-#: org/jmol/popup/MainPopupResourceBundle.java:541
 #: org/jmol/popup/MainPopupResourceBundle.java:542
+#: org/jmol/popup/MainPopupResourceBundle.java:543
+#: org/jmol/popup/MainPopupResourceBundle.java:544
 msgid "By Residue Name"
 msgstr "By Residue Name"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:543
+#: org/jmol/popup/MainPopupResourceBundle.java:545
 msgid "By HETATM"
 msgstr "By HETATM"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:544
+#: org/jmol/popup/MainPopupResourceBundle.java:546
 #, java-format
 msgid "Molecular Orbitals ({0})"
 msgstr "Molecular Orbitals ({0})"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:545
-#: org/jmol/popup/MainPopupResourceBundle.java:857
-#: org/jmol/popup/MainPopupResourceBundle.java:901
+#: org/jmol/popup/MainPopupResourceBundle.java:547
+#: org/jmol/popup/MainPopupResourceBundle.java:859
+#: org/jmol/popup/MainPopupResourceBundle.java:903
 msgid "Symmetry"
 msgstr "Symmetry"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:547
+#: org/jmol/popup/MainPopupResourceBundle.java:549
 msgid "Hide Symmetry"
 msgstr "Hide Symmetry"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:548
+#: org/jmol/popup/MainPopupResourceBundle.java:550
 msgid "Model information"
 msgstr "Model information"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:549
+#: org/jmol/popup/MainPopupResourceBundle.java:551
 #, java-format
 msgid "Select ({0})"
 msgstr "Select ({0})"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:550
+#: org/jmol/popup/MainPopupResourceBundle.java:552
 #, java-format
 msgid "All {0} models"
 msgstr "All {0} models"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:551
+#: org/jmol/popup/MainPopupResourceBundle.java:553
 #, java-format
 msgid "Configurations ({0})"
 msgstr "Configurations ({0})"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:552
+#: org/jmol/popup/MainPopupResourceBundle.java:554
 #, java-format
 msgid "Collection of {0} models"
 msgstr "Collection of {0} models"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:553
+#: org/jmol/popup/MainPopupResourceBundle.java:555
 #, java-format
 msgid "atoms: {0}"
 msgstr "atoms: {0}"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:554
+#: org/jmol/popup/MainPopupResourceBundle.java:556
 #, java-format
 msgid "bonds: {0}"
 msgstr "bonds: {0}"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:555
+#: org/jmol/popup/MainPopupResourceBundle.java:557
 #, java-format
 msgid "groups: {0}"
 msgstr "groups: {0}"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:556
+#: org/jmol/popup/MainPopupResourceBundle.java:558
 #, java-format
 msgid "chains: {0}"
 msgstr "chains: {0}"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:557
+#: org/jmol/popup/MainPopupResourceBundle.java:559
 #, java-format
 msgid "polymers: {0}"
 msgstr "polymers: {0}"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:558
+#: org/jmol/popup/MainPopupResourceBundle.java:560
 #, java-format
 msgid "model {0}"
 msgstr "model {0}"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:559
+#: org/jmol/popup/MainPopupResourceBundle.java:561
 #, java-format
 msgid "View {0}"
 msgstr "View {0}"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:560
+#: org/jmol/popup/MainPopupResourceBundle.java:562
 msgid "Main Menu"
 msgstr "Main Menu"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:561
+#: org/jmol/popup/MainPopupResourceBundle.java:563
 msgid "Biomolecules"
 msgstr "Biomolecules"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:562
+#: org/jmol/popup/MainPopupResourceBundle.java:564
 #, java-format
 msgid "biomolecule {0} ({1} atoms)"
 msgstr "biomolecule {0} ({1} atoms)"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:563
+#: org/jmol/popup/MainPopupResourceBundle.java:565
 #, java-format
 msgid "load biomolecule {0} ({1} atoms)"
 msgstr "load biomolecule {0} ({1} atoms)"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:568
-#: org/jmol/popup/MainPopupResourceBundle.java:687
-#: org/jmol/popup/MainPopupResourceBundle.java:696
+#: org/jmol/popup/MainPopupResourceBundle.java:570
+#: org/jmol/popup/MainPopupResourceBundle.java:689
+#: org/jmol/popup/MainPopupResourceBundle.java:698
 msgid "None"
 msgstr "None"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:569
+#: org/jmol/popup/MainPopupResourceBundle.java:571
 msgid "Display Selected Only"
 msgstr "Display Selected Only"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:570
+#: org/jmol/popup/MainPopupResourceBundle.java:572
 msgid "Invert Selection"
 msgstr "Invert Selection"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:572
+#: org/jmol/popup/MainPopupResourceBundle.java:574
 msgid "View"
 msgstr "View"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:573
+#: org/jmol/popup/MainPopupResourceBundle.java:575
 msgid "Front"
 msgstr "Front"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:574
+#: org/jmol/popup/MainPopupResourceBundle.java:576
 msgid "Left"
 msgstr "Left"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:575
+#: org/jmol/popup/MainPopupResourceBundle.java:577
 msgid "Right"
 msgstr "Right"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:576
+#: org/jmol/popup/MainPopupResourceBundle.java:578
 msgid "Top"
 msgstr "Top"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:577
+#: org/jmol/popup/MainPopupResourceBundle.java:579
 msgid "Bottom"
 msgstr "Bottom"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:578
+#: org/jmol/popup/MainPopupResourceBundle.java:580
 msgid "Back"
 msgstr "Back"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:580
+#: org/jmol/popup/MainPopupResourceBundle.java:582
 msgid "Protein"
 msgstr "Protein"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:582
-#: org/jmol/popup/MainPopupResourceBundle.java:593
-#: org/jmol/popup/MainPopupResourceBundle.java:663
-#: org/jmol/popup/MainPopupResourceBundle.java:755
+#: org/jmol/popup/MainPopupResourceBundle.java:584
+#: org/jmol/popup/MainPopupResourceBundle.java:595
+#: org/jmol/popup/MainPopupResourceBundle.java:665
+#: org/jmol/popup/MainPopupResourceBundle.java:757
 msgid "Backbone"
 msgstr "Backbone"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:583
+#: org/jmol/popup/MainPopupResourceBundle.java:585
 msgid "Side Chains"
 msgstr "Side Chains"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:584
+#: org/jmol/popup/MainPopupResourceBundle.java:586
 msgid "Polar Residues"
 msgstr "Polar Residues"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:585
+#: org/jmol/popup/MainPopupResourceBundle.java:587
 msgid "Nonpolar Residues"
 msgstr "Nonpolar Residues"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:586
+#: org/jmol/popup/MainPopupResourceBundle.java:588
 msgid "Basic Residues (+)"
 msgstr "Basic Residues (+)"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:587
+#: org/jmol/popup/MainPopupResourceBundle.java:589
 msgid "Acidic Residues (-)"
 msgstr "Acidic Residues (-)"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:588
+#: org/jmol/popup/MainPopupResourceBundle.java:590
 msgid "Uncharged Residues"
 msgstr "Uncharged Residues"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:589
+#: org/jmol/popup/MainPopupResourceBundle.java:591
 msgid "Nucleic"
 msgstr "Nucleic"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:591
+#: org/jmol/popup/MainPopupResourceBundle.java:593
 msgid "DNA"
 msgstr "DNA"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:592
+#: org/jmol/popup/MainPopupResourceBundle.java:594
 msgid "RNA"
 msgstr "RNA"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:594
+#: org/jmol/popup/MainPopupResourceBundle.java:596
 msgid "Bases"
 msgstr "Bases"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:595
+#: org/jmol/popup/MainPopupResourceBundle.java:597
 msgid "AT pairs"
 msgstr "AT pairs"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:596
+#: org/jmol/popup/MainPopupResourceBundle.java:598
 msgid "GC pairs"
 msgstr "GC pairs"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:597
+#: org/jmol/popup/MainPopupResourceBundle.java:599
 msgid "AU pairs"
 msgstr "AU pairs"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:598
+#: org/jmol/popup/MainPopupResourceBundle.java:600
 msgid "Hetero"
 msgstr "Hetero"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:599
+#: org/jmol/popup/MainPopupResourceBundle.java:601
 msgid "All PDB \"HETATM\""
 msgstr "All PDB \"HETATM\""
 
-#: org/jmol/popup/MainPopupResourceBundle.java:600
+#: org/jmol/popup/MainPopupResourceBundle.java:602
 msgid "All Solvent"
 msgstr "All Solvent"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:601
+#: org/jmol/popup/MainPopupResourceBundle.java:603
 msgid "All Water"
 msgstr "All Water"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:603
+#: org/jmol/popup/MainPopupResourceBundle.java:605
 msgid "Nonaqueous Solvent"
 msgstr "Nonaqueous Solvent"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:604
+#: org/jmol/popup/MainPopupResourceBundle.java:606
 msgid "Nonaqueous HETATM"
 msgstr "Nonaqueous HETATM"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:605
+#: org/jmol/popup/MainPopupResourceBundle.java:607
 msgid "Ligand"
 msgstr "Ligand"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:608
+#: org/jmol/popup/MainPopupResourceBundle.java:610
 msgid "Carbohydrate"
 msgstr "Carbohydrate"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:609
+#: org/jmol/popup/MainPopupResourceBundle.java:611
 msgid "None of the above"
 msgstr "None of the above"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:611
+#: org/jmol/popup/MainPopupResourceBundle.java:613
 msgid "Style"
 msgstr "Style"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:612
+#: org/jmol/popup/MainPopupResourceBundle.java:614
 msgid "Scheme"
 msgstr "Scheme"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:613
+#: org/jmol/popup/MainPopupResourceBundle.java:615
 msgid "CPK Spacefill"
 msgstr "CPK Spacefill"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:614
+#: org/jmol/popup/MainPopupResourceBundle.java:616
 msgid "Ball and Stick"
 msgstr "Ball and Stick"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:615
+#: org/jmol/popup/MainPopupResourceBundle.java:617
 msgid "Sticks"
 msgstr "Sticks"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:616
+#: org/jmol/popup/MainPopupResourceBundle.java:618
 msgid "Wireframe"
 msgstr "Wireframe"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:617
-#: org/jmol/popup/MainPopupResourceBundle.java:664
-#: org/jmol/popup/MainPopupResourceBundle.java:757
+#: org/jmol/popup/MainPopupResourceBundle.java:619
+#: org/jmol/popup/MainPopupResourceBundle.java:666
+#: org/jmol/popup/MainPopupResourceBundle.java:759
 msgid "Cartoon"
 msgstr "Cartoon"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:618
-#: org/jmol/popup/MainPopupResourceBundle.java:669
-#: org/jmol/popup/MainPopupResourceBundle.java:756
+#: org/jmol/popup/MainPopupResourceBundle.java:620
+#: org/jmol/popup/MainPopupResourceBundle.java:671
+#: org/jmol/popup/MainPopupResourceBundle.java:758
 msgid "Trace"
 msgstr "Trace"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:620
-#: org/jmol/popup/MainPopupResourceBundle.java:709
+#: org/jmol/popup/MainPopupResourceBundle.java:622
+#: org/jmol/popup/MainPopupResourceBundle.java:711
 msgid "Atoms"
 msgstr "Atoms"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:621
-#: org/jmol/popup/MainPopupResourceBundle.java:630
-#: org/jmol/popup/MainPopupResourceBundle.java:639
-#: org/jmol/popup/MainPopupResourceBundle.java:651
-#: org/jmol/popup/MainPopupResourceBundle.java:662
-#: org/jmol/popup/MainPopupResourceBundle.java:672
-#: org/jmol/popup/MainPopupResourceBundle.java:675
-#: org/jmol/popup/MainPopupResourceBundle.java:781
-#: org/jmol/popup/MainPopupResourceBundle.java:832
-#: org/jmol/popup/MainPopupResourceBundle.java:899
+#: org/jmol/popup/MainPopupResourceBundle.java:623
+#: org/jmol/popup/MainPopupResourceBundle.java:632
+#: org/jmol/popup/MainPopupResourceBundle.java:641
+#: org/jmol/popup/MainPopupResourceBundle.java:653
+#: org/jmol/popup/MainPopupResourceBundle.java:664
+#: org/jmol/popup/MainPopupResourceBundle.java:674
+#: org/jmol/popup/MainPopupResourceBundle.java:677
+#: org/jmol/popup/MainPopupResourceBundle.java:783
+#: org/jmol/popup/MainPopupResourceBundle.java:834
+#: org/jmol/popup/MainPopupResourceBundle.java:901
 msgid "Off"
 msgstr "Off"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:622
-#: org/jmol/popup/MainPopupResourceBundle.java:623
 #: org/jmol/popup/MainPopupResourceBundle.java:624
 #: org/jmol/popup/MainPopupResourceBundle.java:625
 #: org/jmol/popup/MainPopupResourceBundle.java:626
 #: org/jmol/popup/MainPopupResourceBundle.java:627
+#: org/jmol/popup/MainPopupResourceBundle.java:628
+#: org/jmol/popup/MainPopupResourceBundle.java:629
 #, java-format
 msgid "{0}% van der Waals"
 msgstr "{0}% van der Waals"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:629
-#: org/jmol/popup/MainPopupResourceBundle.java:751
+#: org/jmol/popup/MainPopupResourceBundle.java:631
+#: org/jmol/popup/MainPopupResourceBundle.java:753
 msgid "Bonds"
 msgstr "Bonds"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:631
-#: org/jmol/popup/MainPopupResourceBundle.java:641
-#: org/jmol/popup/MainPopupResourceBundle.java:652
-#: org/jmol/popup/MainPopupResourceBundle.java:673
-#: org/jmol/popup/MainPopupResourceBundle.java:676
-#: org/jmol/popup/MainPopupResourceBundle.java:780
+#: org/jmol/popup/MainPopupResourceBundle.java:633
+#: org/jmol/popup/MainPopupResourceBundle.java:643
+#: org/jmol/popup/MainPopupResourceBundle.java:654
+#: org/jmol/popup/MainPopupResourceBundle.java:675
+#: org/jmol/popup/MainPopupResourceBundle.java:678
+#: org/jmol/popup/MainPopupResourceBundle.java:782
 msgid "On"
 msgstr "On"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:632
-#: org/jmol/popup/MainPopupResourceBundle.java:633
 #: org/jmol/popup/MainPopupResourceBundle.java:634
 #: org/jmol/popup/MainPopupResourceBundle.java:635
 #: org/jmol/popup/MainPopupResourceBundle.java:636
-#: org/jmol/popup/MainPopupResourceBundle.java:644
-#: org/jmol/popup/MainPopupResourceBundle.java:645
+#: org/jmol/popup/MainPopupResourceBundle.java:637
+#: org/jmol/popup/MainPopupResourceBundle.java:638
 #: org/jmol/popup/MainPopupResourceBundle.java:646
 #: org/jmol/popup/MainPopupResourceBundle.java:647
 #: org/jmol/popup/MainPopupResourceBundle.java:648
-#: org/jmol/popup/MainPopupResourceBundle.java:655
-#: org/jmol/popup/MainPopupResourceBundle.java:656
+#: org/jmol/popup/MainPopupResourceBundle.java:649
+#: org/jmol/popup/MainPopupResourceBundle.java:650
 #: org/jmol/popup/MainPopupResourceBundle.java:657
 #: org/jmol/popup/MainPopupResourceBundle.java:658
 #: org/jmol/popup/MainPopupResourceBundle.java:659
-#: org/jmol/popup/MainPopupResourceBundle.java:678
-#: org/jmol/popup/MainPopupResourceBundle.java:679
-#: org/jmol/popup/MainPopupResourceBundle.java:922
-#: org/jmol/popup/MainPopupResourceBundle.java:923
-#: org/jmol/popup/MainPopupResourceBundle.java:924
+#: org/jmol/popup/MainPopupResourceBundle.java:660
+#: org/jmol/popup/MainPopupResourceBundle.java:661
+#: org/jmol/popup/MainPopupResourceBundle.java:680
+#: org/jmol/popup/MainPopupResourceBundle.java:681
 #: org/jmol/popup/MainPopupResourceBundle.java:925
 #: org/jmol/popup/MainPopupResourceBundle.java:926
+#: org/jmol/popup/MainPopupResourceBundle.java:927
+#: org/jmol/popup/MainPopupResourceBundle.java:928
+#: org/jmol/popup/MainPopupResourceBundle.java:929
 #, java-format
 msgid "{0} Å"
 msgstr "{0} Å"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:638
-#: org/jmol/popup/MainPopupResourceBundle.java:752
+#: org/jmol/popup/MainPopupResourceBundle.java:640
+#: org/jmol/popup/MainPopupResourceBundle.java:754
 msgid "Hydrogen Bonds"
 msgstr "Hydrogen Bonds"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:640
+#: org/jmol/popup/MainPopupResourceBundle.java:642
 msgid "Calculate"
 msgstr "Calculate"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:642
+#: org/jmol/popup/MainPopupResourceBundle.java:644
 msgid "Set H-Bonds Side Chain"
 msgstr "Set H-Bonds Side Chain"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:643
+#: org/jmol/popup/MainPopupResourceBundle.java:645
 msgid "Set H-Bonds Backbone"
 msgstr "Set H-Bonds Backbone"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:650
-#: org/jmol/popup/MainPopupResourceBundle.java:753
+#: org/jmol/popup/MainPopupResourceBundle.java:652
+#: org/jmol/popup/MainPopupResourceBundle.java:755
 msgid "Disulfide Bonds"
 msgstr "Disulfide Bonds"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:653
+#: org/jmol/popup/MainPopupResourceBundle.java:655
 msgid "Set SS-Bonds Side Chain"
 msgstr "Set SS-Bonds Side Chain"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:654
+#: org/jmol/popup/MainPopupResourceBundle.java:656
 msgid "Set SS-Bonds Backbone"
 msgstr "Set SS-Bonds Backbone"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:661
-#: org/jmol/popup/MainPopupResourceBundle.java:754
+#: org/jmol/popup/MainPopupResourceBundle.java:663
+#: org/jmol/popup/MainPopupResourceBundle.java:756
 msgid "Structures"
 msgstr "Structures"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:665
+#: org/jmol/popup/MainPopupResourceBundle.java:667
 msgid "Cartoon Rockets"
 msgstr "Cartoon Rockets"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:666
-#: org/jmol/popup/MainPopupResourceBundle.java:758
+#: org/jmol/popup/MainPopupResourceBundle.java:668
+#: org/jmol/popup/MainPopupResourceBundle.java:760
 msgid "Ribbons"
 msgstr "Ribbons"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:667
-#: org/jmol/popup/MainPopupResourceBundle.java:759
+#: org/jmol/popup/MainPopupResourceBundle.java:669
+#: org/jmol/popup/MainPopupResourceBundle.java:761
 msgid "Rockets"
 msgstr "Rockets"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:668
-#: org/jmol/popup/MainPopupResourceBundle.java:760
+#: org/jmol/popup/MainPopupResourceBundle.java:670
+#: org/jmol/popup/MainPopupResourceBundle.java:762
 msgid "Strands"
 msgstr "Strands"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:671
+#: org/jmol/popup/MainPopupResourceBundle.java:673
 msgid "Vibration"
 msgstr "Vibration"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:674
-#: org/jmol/popup/MainPopupResourceBundle.java:764
+#: org/jmol/popup/MainPopupResourceBundle.java:676
+#: org/jmol/popup/MainPopupResourceBundle.java:766
 msgid "Vectors"
 msgstr "Vectors"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:677
+#: org/jmol/popup/MainPopupResourceBundle.java:679
 #, java-format
 msgid "{0} pixels"
 msgstr "{0} pixels"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:680
-#: org/jmol/popup/MainPopupResourceBundle.java:681
 #: org/jmol/popup/MainPopupResourceBundle.java:682
 #: org/jmol/popup/MainPopupResourceBundle.java:683
 #: org/jmol/popup/MainPopupResourceBundle.java:684
+#: org/jmol/popup/MainPopupResourceBundle.java:685
+#: org/jmol/popup/MainPopupResourceBundle.java:686
 #, java-format
 msgid "Scale {0}"
 msgstr "Scale {0}"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:686
+#: org/jmol/popup/MainPopupResourceBundle.java:688
 msgid "Stereographic"
 msgstr "Stereographic"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:688
+#: org/jmol/popup/MainPopupResourceBundle.java:690
 msgid "Red+Cyan glasses"
 msgstr "Red+Cyan glasses"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:689
+#: org/jmol/popup/MainPopupResourceBundle.java:691
 msgid "Red+Blue glasses"
 msgstr "Red+Blue glasses"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:690
+#: org/jmol/popup/MainPopupResourceBundle.java:692
 msgid "Red+Green glasses"
 msgstr "Red+Green glasses"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:691
+#: org/jmol/popup/MainPopupResourceBundle.java:693
 msgid "Cross-eyed viewing"
 msgstr "Cross-eyed viewing"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:692
+#: org/jmol/popup/MainPopupResourceBundle.java:694
 msgid "Wall-eyed viewing"
 msgstr "Wall-eyed viewing"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:694
-#: org/jmol/popup/MainPopupResourceBundle.java:761
+#: org/jmol/popup/MainPopupResourceBundle.java:696
+#: org/jmol/popup/MainPopupResourceBundle.java:763
 msgid "Labels"
 msgstr "Labels"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:697
+#: org/jmol/popup/MainPopupResourceBundle.java:699
 msgid "With Element Symbol"
 msgstr "With Element Symbol"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:698
+#: org/jmol/popup/MainPopupResourceBundle.java:700
 msgid "With Atom Name"
 msgstr "With Atom Name"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:699
+#: org/jmol/popup/MainPopupResourceBundle.java:701
 msgid "With Atom Number"
 msgstr "With Atom Number"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:701
+#: org/jmol/popup/MainPopupResourceBundle.java:703
 msgid "Position Label on Atom"
 msgstr "Position Label on Atom"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:702
+#: org/jmol/popup/MainPopupResourceBundle.java:704
 msgid "Centered"
 msgstr "Centred"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:703
+#: org/jmol/popup/MainPopupResourceBundle.java:705
 msgid "Upper Right"
 msgstr "Upper Right"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:704
+#: org/jmol/popup/MainPopupResourceBundle.java:706
 msgid "Lower Right"
 msgstr "Lower Right"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:705
+#: org/jmol/popup/MainPopupResourceBundle.java:707
 msgid "Upper Left"
 msgstr "Upper Left"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:706
+#: org/jmol/popup/MainPopupResourceBundle.java:708
 msgid "Lower Left"
 msgstr "Lower Left"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:708
+#: org/jmol/popup/MainPopupResourceBundle.java:710
 msgid "Color"
 msgstr "Colour"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:711
+#: org/jmol/popup/MainPopupResourceBundle.java:713
 msgid "By Scheme"
 msgstr "By Scheme"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:712
+#: org/jmol/popup/MainPopupResourceBundle.java:714
 msgid "Element (CPK)"
 msgstr "Element (CPK)"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:713
+#: org/jmol/popup/MainPopupResourceBundle.java:715
 msgid "Alternative Location"
 msgstr "Alternative Location"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:714
+#: org/jmol/popup/MainPopupResourceBundle.java:716
 msgid "Molecule"
 msgstr "Molecule"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:715
+#: org/jmol/popup/MainPopupResourceBundle.java:717
 msgid "Formal Charge"
 msgstr "Formal Charge"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:716
+#: org/jmol/popup/MainPopupResourceBundle.java:718
 msgid "Partial Charge"
 msgstr "Partial Charge"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:717
+#: org/jmol/popup/MainPopupResourceBundle.java:719
 msgid "Temperature (Relative)"
 msgstr "Temperature (Relative)"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:718
+#: org/jmol/popup/MainPopupResourceBundle.java:720
 msgid "Temperature (Fixed)"
 msgstr "Temperature (Fixed)"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:720
+#: org/jmol/popup/MainPopupResourceBundle.java:722
 msgid "Amino Acid"
 msgstr "Amino Acid"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:721
+#: org/jmol/popup/MainPopupResourceBundle.java:723
 msgid "Secondary Structure"
 msgstr "Secondary Structure"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:722
+#: org/jmol/popup/MainPopupResourceBundle.java:724
 msgid "Chain"
 msgstr "Chain"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:723
+#: org/jmol/popup/MainPopupResourceBundle.java:725
 msgid "Group"
 msgstr "Group"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:724
+#: org/jmol/popup/MainPopupResourceBundle.java:726
 msgid "Monomer"
 msgstr "Monomer"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:725
+#: org/jmol/popup/MainPopupResourceBundle.java:727
 msgid "Shapely"
 msgstr "Shapely"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:727
+#: org/jmol/popup/MainPopupResourceBundle.java:729
 msgid "Inherit"
 msgstr "Inherit"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:728
+#: org/jmol/popup/MainPopupResourceBundle.java:730
 msgid "Black"
 msgstr "Black"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:729
+#: org/jmol/popup/MainPopupResourceBundle.java:731
 msgid "White"
 msgstr "White"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:730
+#: org/jmol/popup/MainPopupResourceBundle.java:732
 msgid "Cyan"
 msgstr "Cyan"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:732
+#: org/jmol/popup/MainPopupResourceBundle.java:734
 msgid "Red"
 msgstr "Red"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:733
+#: org/jmol/popup/MainPopupResourceBundle.java:735
 msgid "Orange"
 msgstr "Orange"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:734
+#: org/jmol/popup/MainPopupResourceBundle.java:736
 msgid "Yellow"
 msgstr "Yellow"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:735
+#: org/jmol/popup/MainPopupResourceBundle.java:737
 msgid "Green"
 msgstr "Green"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:736
+#: org/jmol/popup/MainPopupResourceBundle.java:738
 msgid "Blue"
 msgstr "Blue"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:737
+#: org/jmol/popup/MainPopupResourceBundle.java:739
 msgid "Indigo"
 msgstr "Indigo"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:738
+#: org/jmol/popup/MainPopupResourceBundle.java:740
 msgid "Violet"
 msgstr "Violet"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:740
+#: org/jmol/popup/MainPopupResourceBundle.java:742
 msgid "Salmon"
 msgstr "Salmon"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:741
+#: org/jmol/popup/MainPopupResourceBundle.java:743
 msgid "Olive"
 msgstr "Olive"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:742
+#: org/jmol/popup/MainPopupResourceBundle.java:744
 msgid "Maroon"
 msgstr "Maroon"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:743
+#: org/jmol/popup/MainPopupResourceBundle.java:745
 msgid "Gray"
 msgstr "Grey"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:744
+#: org/jmol/popup/MainPopupResourceBundle.java:746
 msgid "Slate Blue"
 msgstr "Slate Blue"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:745
+#: org/jmol/popup/MainPopupResourceBundle.java:747
 msgid "Gold"
 msgstr "Gold"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:746
+#: org/jmol/popup/MainPopupResourceBundle.java:748
 msgid "Orchid"
 msgstr "Orchid"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:748
-#: org/jmol/popup/MainPopupResourceBundle.java:897
+#: org/jmol/popup/MainPopupResourceBundle.java:750
+#: org/jmol/popup/MainPopupResourceBundle.java:899
 msgid "Make Opaque"
 msgstr "Make Opaque"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:749
-#: org/jmol/popup/MainPopupResourceBundle.java:898
+#: org/jmol/popup/MainPopupResourceBundle.java:751
+#: org/jmol/popup/MainPopupResourceBundle.java:900
 msgid "Make Translucent"
 msgstr "Make Translucent"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:762
+#: org/jmol/popup/MainPopupResourceBundle.java:764
 msgid "Background"
 msgstr "Background"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:763
-#: org/jmol/popup/MainPopupResourceBundle.java:889
+#: org/jmol/popup/MainPopupResourceBundle.java:765
+#: org/jmol/popup/MainPopupResourceBundle.java:891
 msgid "Surfaces"
 msgstr "Surfaces"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:765
-#: org/jmol/popup/MainPopupResourceBundle.java:908
-#: org/jmol/popup/MainPopupResourceBundle.java:934
+#: org/jmol/popup/MainPopupResourceBundle.java:767
+#: org/jmol/popup/MainPopupResourceBundle.java:911
+#: org/jmol/popup/MainPopupResourceBundle.java:937
 msgid "Axes"
 msgstr "Axes"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:766
-#: org/jmol/popup/MainPopupResourceBundle.java:909
-#: org/jmol/popup/MainPopupResourceBundle.java:933
+#: org/jmol/popup/MainPopupResourceBundle.java:768
+#: org/jmol/popup/MainPopupResourceBundle.java:912
+#: org/jmol/popup/MainPopupResourceBundle.java:936
 msgid "Boundbox"
 msgstr "Boundbox"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:767
-#: org/jmol/popup/MainPopupResourceBundle.java:886
-#: org/jmol/popup/MainPopupResourceBundle.java:910
-#: org/jmol/popup/MainPopupResourceBundle.java:935
+#: org/jmol/popup/MainPopupResourceBundle.java:769
+#: org/jmol/popup/MainPopupResourceBundle.java:888
+#: org/jmol/popup/MainPopupResourceBundle.java:913
+#: org/jmol/popup/MainPopupResourceBundle.java:938
 msgid "Unit cell"
 msgstr "Unit cell"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:769
+#: org/jmol/popup/MainPopupResourceBundle.java:771
 msgid "Zoom"
 msgstr "Zoom"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:776
+#: org/jmol/popup/MainPopupResourceBundle.java:778
 msgid "Zoom In"
 msgstr "Zoom In"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:777
+#: org/jmol/popup/MainPopupResourceBundle.java:779
 msgid "Zoom Out"
 msgstr "Zoom Out"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:779
-#: org/jmol/popup/MainPopupResourceBundle.java:844
+#: org/jmol/popup/MainPopupResourceBundle.java:781
+#: org/jmol/popup/MainPopupResourceBundle.java:846
 msgid "Spin"
 msgstr "Spin"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:783
+#: org/jmol/popup/MainPopupResourceBundle.java:785
 msgid "Set X Rate"
 msgstr "Set X Rate"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:784
+#: org/jmol/popup/MainPopupResourceBundle.java:786
 msgid "Set Y Rate"
 msgstr "Set Y Rate"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:785
+#: org/jmol/popup/MainPopupResourceBundle.java:787
 msgid "Set Z Rate"
 msgstr "Set Z Rate"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:786
-#: org/jmol/popup/MainPopupResourceBundle.java:812
+#: org/jmol/popup/MainPopupResourceBundle.java:788
+#: org/jmol/popup/MainPopupResourceBundle.java:814
 msgid "Set FPS"
 msgstr "Set FPS"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:796
+#: org/jmol/popup/MainPopupResourceBundle.java:798
 msgid "Animation"
 msgstr "Animation"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:797
+#: org/jmol/popup/MainPopupResourceBundle.java:799
 msgid "Animation Mode"
 msgstr "Animation Mode"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:798
+#: org/jmol/popup/MainPopupResourceBundle.java:800
 msgid "Play Once"
 msgstr "Play Once"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:799
+#: org/jmol/popup/MainPopupResourceBundle.java:801
 msgid "Palindrome"
 msgstr "Palindrome"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:800
+#: org/jmol/popup/MainPopupResourceBundle.java:802
 msgid "Loop"
 msgstr "Loop"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:802
+#: org/jmol/popup/MainPopupResourceBundle.java:804
 msgid "Play"
 msgstr "Play"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:805
+#: org/jmol/popup/MainPopupResourceBundle.java:807
 msgid "Stop"
 msgstr "Stop"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:806
+#: org/jmol/popup/MainPopupResourceBundle.java:808
 msgid "Next Frame"
 msgstr "Next Frame"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:807
+#: org/jmol/popup/MainPopupResourceBundle.java:809
 msgid "Previous Frame"
 msgstr "Previous Frame"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:808
+#: org/jmol/popup/MainPopupResourceBundle.java:810
 msgid "Rewind"
 msgstr "Rewind"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:809
+#: org/jmol/popup/MainPopupResourceBundle.java:811
 msgid "Reverse"
 msgstr "Reverse"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:810
+#: org/jmol/popup/MainPopupResourceBundle.java:812
 msgid "Restart"
 msgstr "Restart"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:819
-#: org/jmol/popup/MainPopupResourceBundle.java:852
+#: org/jmol/popup/MainPopupResourceBundle.java:821
+#: org/jmol/popup/MainPopupResourceBundle.java:854
 msgid "Measurements"
 msgstr "Measurements"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:820
+#: org/jmol/popup/MainPopupResourceBundle.java:822
 msgid "Double-Click begins and ends all measurements"
 msgstr "Double-Click begins and ends all measurements"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:821
+#: org/jmol/popup/MainPopupResourceBundle.java:823
 msgid "Click for distance measurement"
 msgstr "Click for distance measurement"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:822
+#: org/jmol/popup/MainPopupResourceBundle.java:824
 msgid "Click for angle measurement"
 msgstr "Click for angle measurement"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:823
+#: org/jmol/popup/MainPopupResourceBundle.java:825
 msgid "Click for torsion (dihedral) measurement"
 msgstr "Click for torsion (dihedral) measurement"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:824
+#: org/jmol/popup/MainPopupResourceBundle.java:826
 msgid "Click two atoms to display a sequence in the console"
 msgstr "Click two atoms to display a sequence in the console"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:825
+#: org/jmol/popup/MainPopupResourceBundle.java:827
 msgid "Delete measurements"
 msgstr "Delete measurements"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:826
+#: org/jmol/popup/MainPopupResourceBundle.java:828
 msgid "List measurements"
 msgstr "List measurements"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:827
+#: org/jmol/popup/MainPopupResourceBundle.java:829
 msgid "Distance units nanometers"
 msgstr "Distance units nanometers"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:828
+#: org/jmol/popup/MainPopupResourceBundle.java:830
 msgid "Distance units Angstroms"
 msgstr "Distance units Angstroms"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:829
+#: org/jmol/popup/MainPopupResourceBundle.java:831
 msgid "Distance units picometers"
 msgstr "Distance units picometers"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:831
+#: org/jmol/popup/MainPopupResourceBundle.java:833
 msgid "Set picking"
 msgstr "Set picking"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:833
+#: org/jmol/popup/MainPopupResourceBundle.java:835
 msgid "Center"
 msgstr "Center"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:835
+#: org/jmol/popup/MainPopupResourceBundle.java:837
 msgid "Identity"
 msgstr "Identity"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:836
+#: org/jmol/popup/MainPopupResourceBundle.java:838
 msgid "Label"
 msgstr "Label"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:837
+#: org/jmol/popup/MainPopupResourceBundle.java:839
 msgid "Select atom"
 msgstr "Select atom"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:838
+#: org/jmol/popup/MainPopupResourceBundle.java:840
 msgid "Select chain"
 msgstr "Select chain"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:839
+#: org/jmol/popup/MainPopupResourceBundle.java:841
 msgid "Select element"
 msgstr "Select element"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:840
+#: org/jmol/popup/MainPopupResourceBundle.java:842
 msgid "Select group"
 msgstr "Select group"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:841
+#: org/jmol/popup/MainPopupResourceBundle.java:843
 msgid "Select molecule"
 msgstr "Select molecule"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:842
+#: org/jmol/popup/MainPopupResourceBundle.java:844
 msgid "Select site"
 msgstr "Select site"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:843
+#: org/jmol/popup/MainPopupResourceBundle.java:845
 msgid "Show symmetry operation"
 msgstr "Show symmetry operation"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:846
+#: org/jmol/popup/MainPopupResourceBundle.java:848
 msgid "Show"
 msgstr "Show"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:848
+#: org/jmol/popup/MainPopupResourceBundle.java:850
 msgid "File Contents"
 msgstr "File Contents"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:849
+#: org/jmol/popup/MainPopupResourceBundle.java:851
 msgid "File Header"
 msgstr "File Header"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:851
+#: org/jmol/popup/MainPopupResourceBundle.java:853
 msgid "Isosurface JVXL data"
 msgstr "Isosurface JVXL data"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:853
+#: org/jmol/popup/MainPopupResourceBundle.java:855
 msgid "Molecular orbital JVXL data"
 msgstr "Molecular orbital JVXL data"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:854
+#: org/jmol/popup/MainPopupResourceBundle.java:856
 msgid "Model"
 msgstr "Model"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:855
+#: org/jmol/popup/MainPopupResourceBundle.java:857
 msgid "Orientation"
 msgstr "Orientation"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:856
+#: org/jmol/popup/MainPopupResourceBundle.java:858
 msgid "Space group"
 msgstr "Space group"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:858
+#: org/jmol/popup/MainPopupResourceBundle.java:860
 msgid "Current state"
 msgstr "Current state"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:860
+#: org/jmol/popup/MainPopupResourceBundle.java:862
 msgid "File"
 msgstr "File"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:861
+#: org/jmol/popup/MainPopupResourceBundle.java:863
 msgid "Reload"
 msgstr "Reload"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:862
+#: org/jmol/popup/MainPopupResourceBundle.java:864
 msgid "Open from PDB"
 msgstr "Open from PDB"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:863
+#: org/jmol/popup/MainPopupResourceBundle.java:865
 msgid "Open file or URL"
 msgstr "Open file or URL"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:864
+#: org/jmol/popup/MainPopupResourceBundle.java:866
 msgid "Load full unit cell"
 msgstr "Load full unit cell"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:865
+#: org/jmol/popup/MainPopupResourceBundle.java:867
 msgid "Open script"
 msgstr "Open script"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:867
+#: org/jmol/popup/MainPopupResourceBundle.java:869
 #, java-format
 msgid "Save a copy of {0}"
 msgstr "Save a copy of {0}"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:868
+#: org/jmol/popup/MainPopupResourceBundle.java:870
 msgid "Save script with state"
 msgstr "Save script with state"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:869
+#: org/jmol/popup/MainPopupResourceBundle.java:871
 msgid "Save script with history"
 msgstr "Save script with history"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:870
-#: org/jmol/popup/MainPopupResourceBundle.java:871
 #: org/jmol/popup/MainPopupResourceBundle.java:872
 #: org/jmol/popup/MainPopupResourceBundle.java:873
+#: org/jmol/popup/MainPopupResourceBundle.java:874
+#: org/jmol/popup/MainPopupResourceBundle.java:875
 #, java-format
 msgid "Export {0} image"
 msgstr "Export {0} image"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:874
+#: org/jmol/popup/MainPopupResourceBundle.java:876
 msgid "Save all as JMOL file (zip)"
 msgstr "Save all as JMOL file (zip)"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:875
+#: org/jmol/popup/MainPopupResourceBundle.java:877
 msgid "Save JVXL isosurface"
 msgstr "Save JVXL isosurface"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:876
-#: org/jmol/popup/MainPopupResourceBundle.java:877
 #: org/jmol/popup/MainPopupResourceBundle.java:878
 #: org/jmol/popup/MainPopupResourceBundle.java:879
+#: org/jmol/popup/MainPopupResourceBundle.java:880
+#: org/jmol/popup/MainPopupResourceBundle.java:881
 #, java-format
 msgid "Export {0} 3D model"
 msgstr "Export {0} 3D model"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:881
+#: org/jmol/popup/MainPopupResourceBundle.java:883
 msgid "Computation"
 msgstr "Computation"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:882
+#: org/jmol/popup/MainPopupResourceBundle.java:884
 msgid "Optimize structure"
 msgstr "Optimise structure"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:883
+#: org/jmol/popup/MainPopupResourceBundle.java:885
 msgid "Model kit"
 msgstr "Model kit"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:887
+#: org/jmol/popup/MainPopupResourceBundle.java:889
 msgid "Extract MOL data"
 msgstr "Extract MOL data"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:890
+#: org/jmol/popup/MainPopupResourceBundle.java:892
 msgid "Dot Surface"
 msgstr "Dot Surface"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:891
+#: org/jmol/popup/MainPopupResourceBundle.java:893
 msgid "van der Waals Surface"
 msgstr "van der Waals Surface"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:892
+#: org/jmol/popup/MainPopupResourceBundle.java:894
 msgid "Molecular Surface"
 msgstr "Molecular Surface"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:893
+#: org/jmol/popup/MainPopupResourceBundle.java:895
 #, java-format
 msgid "Solvent Surface ({0}-Angstrom probe)"
 msgstr "Solvent Surface ({0}-Angstrom probe)"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:895
+#: org/jmol/popup/MainPopupResourceBundle.java:897
 #, java-format
 msgid "Solvent-Accessible Surface (VDW + {0} Angstrom)"
 msgstr "Solvent-Accessible Surface (VDW + {0} Angstrom)"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:896
+#: org/jmol/popup/MainPopupResourceBundle.java:898
 msgid "Molecular Electrostatic Potential"
 msgstr "Molecular Electrostatic Potential"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:902
-#: org/jmol/popup/MainPopupResourceBundle.java:903
+#: org/jmol/popup/MainPopupResourceBundle.java:904
+#: org/jmol/popup/MainPopupResourceBundle.java:905
+#: org/jmol/popup/MainPopupResourceBundle.java:906
 #, java-format
 msgid "Reload {0}"
 msgstr "Reload {0}"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:904
+#: org/jmol/popup/MainPopupResourceBundle.java:907
 #, java-format
 msgid "Reload {0} + Display {1}"
 msgstr "Reload {0} + Display {1}"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:905
+#: org/jmol/popup/MainPopupResourceBundle.java:908
 msgid "Reload + Polyhedra"
 msgstr "Reload + Polyhedra"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:912
+#: org/jmol/popup/MainPopupResourceBundle.java:915
 msgid "Hide"
 msgstr "Hide"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:913
+#: org/jmol/popup/MainPopupResourceBundle.java:916
 msgid "Dotted"
 msgstr "Dotted"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:915
+#: org/jmol/popup/MainPopupResourceBundle.java:918
 msgid "Pixel Width"
 msgstr "Pixel Width"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:916
-#: org/jmol/popup/MainPopupResourceBundle.java:917
-#: org/jmol/popup/MainPopupResourceBundle.java:918
 #: org/jmol/popup/MainPopupResourceBundle.java:919
+#: org/jmol/popup/MainPopupResourceBundle.java:920
+#: org/jmol/popup/MainPopupResourceBundle.java:921
+#: org/jmol/popup/MainPopupResourceBundle.java:922
 #, java-format
 msgid "{0} px"
 msgstr "{0} px"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:921
+#: org/jmol/popup/MainPopupResourceBundle.java:924
 msgid "Angstrom Width"
 msgstr "Angstrom Width"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:929
+#: org/jmol/popup/MainPopupResourceBundle.java:932
 msgid "Selection Halos"
 msgstr "Selection Halos"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:930
+#: org/jmol/popup/MainPopupResourceBundle.java:933
 msgid "Show Hydrogens"
 msgstr "Show Hydrogens"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:931
+#: org/jmol/popup/MainPopupResourceBundle.java:934
 msgid "Show Measurements"
 msgstr "Show Measurements"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:932
+#: org/jmol/popup/MainPopupResourceBundle.java:935
 msgid "Perspective Depth"
 msgstr "Perspective Depth"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:936
+#: org/jmol/popup/MainPopupResourceBundle.java:939
 msgid "RasMol Colors"
 msgstr "RasMol Colours"
 
-#: org/jmol/popup/MainPopupResourceBundle.java:937
+#: org/jmol/popup/MainPopupResourceBundle.java:940
 msgid "About..."
 msgstr "About..."
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1237
+#: org/jmol/script/ScriptCompilationTokenParser.java:1236
 #: org/jmol/script/ScriptEvaluator.java:2599
 msgid "bad argument count"
 msgstr "bad argument count"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1240
+#: org/jmol/script/ScriptCompilationTokenParser.java:1239
 #, java-format
 msgid "invalid context for {0}"
 msgstr "invalid context for {0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1243
+#: org/jmol/script/ScriptCompilationTokenParser.java:1242
 #: org/jmol/script/ScriptEvaluator.java:2623
 msgid "command expected"
 msgstr "command expected"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1246
+#: org/jmol/script/ScriptCompilationTokenParser.java:1245
 msgid "{ number number number } expected"
 msgstr "{ number number number } expected"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1249
+#: org/jmol/script/ScriptCompilationTokenParser.java:1248
 #: org/jmol/script/ScriptEvaluator.java:2632
 msgid "unexpected end of script command"
 msgstr "unexpected end of script command"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1252
+#: org/jmol/script/ScriptCompilationTokenParser.java:1251
 msgid "end of expression expected"
 msgstr "end of expression expected"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1255
+#: org/jmol/script/ScriptCompilationTokenParser.java:1254
 msgid "identifier or residue specification expected"
 msgstr "identifier or residue specification expected"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1258
+#: org/jmol/script/ScriptCompilationTokenParser.java:1257
 msgid "invalid atom specification"
 msgstr "invalid atom specification"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1261
+#: org/jmol/script/ScriptCompilationTokenParser.java:1260
 msgid "invalid chain specification"
 msgstr "invalid chain specification"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1264
+#: org/jmol/script/ScriptCompilationTokenParser.java:1263
 #, java-format
 msgid "invalid expression token: {0}"
 msgstr "invalid expression token: {0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1267
+#: org/jmol/script/ScriptCompilationTokenParser.java:1266
 msgid "invalid model specification"
 msgstr "invalid model specification"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1270
+#: org/jmol/script/ScriptCompilationTokenParser.java:1269
 #, java-format
 msgid "missing END for {0}"
 msgstr "missing END for {0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1273
+#: org/jmol/script/ScriptCompilationTokenParser.java:1272
 #: org/jmol/script/ScriptEvaluator.java:2699
 msgid "number expected"
 msgstr "number expected"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1276
+#: org/jmol/script/ScriptCompilationTokenParser.java:1275
 msgid "number or variable name expected"
 msgstr "number or variable name expected"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1279
+#: org/jmol/script/ScriptCompilationTokenParser.java:1278
 msgid "residue specification (ALA, AL?, A*) expected"
 msgstr "residue specification (ALA, AL?, A*) expected"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1282
+#: org/jmol/script/ScriptCompilationTokenParser.java:1281
 #, java-format
 msgid "{0} expected"
 msgstr "{0} expected"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1285
+#: org/jmol/script/ScriptCompilationTokenParser.java:1284
 #, java-format
 msgid "{0} unexpected"
 msgstr "{0} unexpected"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1288
+#: org/jmol/script/ScriptCompilationTokenParser.java:1287
 #, java-format
 msgid "unrecognized expression token: {0}"
 msgstr "unrecognised expression token: {0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1291
+#: org/jmol/script/ScriptCompilationTokenParser.java:1290
 #: org/jmol/script/ScriptEvaluator.java:2748
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr "unrecognised {0} parameter"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1294
+#: org/jmol/script/ScriptCompilationTokenParser.java:1293
 #, java-format
 msgid "unrecognized token: {0}"
 msgstr "unrecognised token: {0}"
 
-#: org/jmol/script/ScriptCompiler.java:2467
+#: org/jmol/script/ScriptCompiler.java:2469
 msgid "script compiler ERROR: "
 msgstr "Script compiler ERROR: "
 
 #: org/jmol/script/ScriptEvaluator.java:2445
-#: org/jmol/script/ScriptEvaluator.java:9725
+#: org/jmol/script/ScriptEvaluator.java:9727
 msgid "script ERROR: "
 msgstr "script ERROR: "
 
@@ -2092,19 +2092,19 @@ msgstr "{0} new bonds; {1} modified"
 msgid "file {0} created"
 msgstr "file {0} created"
 
-#: org/jmol/script/ScriptEvaluator.java:9858
-#: org/jmol/script/ScriptEvaluator.java:10114
+#: org/jmol/script/ScriptEvaluator.java:9860
+#: org/jmol/script/ScriptEvaluator.java:10116
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "{0} atoms deleted"
 
-#: org/jmol/script/ScriptEvaluator.java:10685
-#: org/jmol/script/ScriptEvaluator.java:11097
+#: org/jmol/script/ScriptEvaluator.java:10689
+#: org/jmol/script/ScriptEvaluator.java:11101
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} hydrogen bonds"
 
-#: org/jmol/script/ScriptEvaluator.java:11051
+#: org/jmol/script/ScriptEvaluator.java:11055
 #, java-format
 msgid "{0} struts added"
 msgstr "{0} struts added"
@@ -2155,10 +2155,8 @@ msgstr "click on two points to spin around axis clockwise (requires {0})"
 
 #: org/jmol/viewer/ActionManager.java:69
 #, java-format
-msgid ""
-"click on two points to spin around axis counterclockwise (requires {0})"
-msgstr ""
-"click on two points to spin around axis anti-clockwise (requires {0})"
+msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgstr "click on two points to spin around axis anti-clockwise (requires {0})"
 
 #: org/jmol/viewer/ActionManager.java:71
 #, java-format
@@ -2366,33 +2364,34 @@ msgstr "{0} atoms hidden"
 msgid "{0} atoms selected"
 msgstr "{0} atoms selected"
 
-#: org/jmol/viewer/Viewer.java:4504
+#: org/jmol/viewer/Viewer.java:4506
 #, java-format
 msgid "{0} hydrogens added"
 msgstr "{0} hydrogens added"
 
-#: org/jmol/viewer/Viewer.java:4584
+#: org/jmol/viewer/Viewer.java:4586
 msgid "Drag to move label"
 msgstr "Drag to move label"
 
-#: org/jmol/viewer/Viewer.java:8132
+#: org/jmol/viewer/Viewer.java:8134
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "clipboard is not accessible -- use signed applet"
 
-#: org/jmol/viewer/Viewer.java:8888
+#: org/jmol/viewer/Viewer.java:8890
 msgid "Cannot set log file path."
 msgstr "Cannot set log file path."
 
-#: org/jmol/viewer/Viewer.java:8890
+#: org/jmol/viewer/Viewer.java:8892
 #, java-format
 msgid "Setting log file to {0}"
 msgstr "Setting log file to {0}"
 
-#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
+#~ "{0}."
 #~ msgstr ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
+#~ "{0}."
 
 #~ msgid "File creation failed."
 #~ msgstr "File creation failed."
@@ -2400,14 +2399,11 @@ msgstr "Setting log file to {0}"
 #~ msgid "About Jmol"
 #~ msgstr "About Jmol"
 
-#, java-format
 #~ msgid "ERROR: cannot set boolean flag to string value: {0}"
 #~ msgstr "ERROR: cannot set boolean flag to string value: {0}"
 
-#, java-format
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr "ERROR: cannot set boolean flag to numeric value: {0}"
 
-#, java-format
 #~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 #~ msgstr "ERROR: Cannot set value of this variable to a boolean: {0}"

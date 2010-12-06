@@ -8862,9 +8862,9 @@
     credit="494" frames="100" code="GG2" contact="gbowman"/>
 
   <!-- Projects 10200 to 10299 -->
-  <fah_proj number="10200" name="b2AR conformational space sampling" public="n"
+  <fah_proj number="10200" name="b2AR conformational space sampling" public="n" file="xyz"
     server="171.67.108.39" atoms="58794" preferred="92" deadline="136"
-    credit="493" frames="100" code="A4" contact="kohlhoff"/>
+    credit="493" frames="100" code="A4" contact="kohlhoff" contrib="Danny Nielsen"/>
   <fah_proj number="10203" name="b2AR conformational space sampling" public="n"
     server="171.67.108.39" atoms="58794" preferred="92" deadline="136"
     credit="493" frames="100" code="A4" contact="kohlhoff"/>

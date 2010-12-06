@@ -77,6 +77,8 @@ public class SimplePopup {
   protected Map<String, Object> htMenus = new Hashtable<String, Object>();
   protected List<Object> NotPDB = new ArrayList<Object>();
   protected List<Object> PDBOnly = new ArrayList<Object>();
+  protected List<Object> FileUnitOnly = new ArrayList<Object>();
+  protected List<Object> FileMolOnly = new ArrayList<Object>();
   protected List<Object> UnitcellOnly = new ArrayList<Object>();
   protected List<Object> SingleModelOnly = new ArrayList<Object>();
   protected List<Object> FramesOnly = new ArrayList<Object>();
@@ -87,6 +89,7 @@ public class SimplePopup {
   protected List<Object> ChargesOnly = new ArrayList<Object>();
   protected List<Object> TemperatureOnly = new ArrayList<Object>();
 
+  protected boolean fileHasUnitCell;
   protected boolean isPDB;
   protected boolean isSymmetry;
   protected boolean isUnitCell;
@@ -188,9 +191,8 @@ public class SimplePopup {
   }
 
   boolean checkBoolean(Map<String, Object> info, String key) {
-    if (info == null || !info.containsKey(key))
-      return false;
-    return ((Boolean) (info.get(key))).booleanValue();
+    Object value = (info == null ? null : info.get(key));
+    return !(value == null || value instanceof Boolean && !((Boolean) (value)).booleanValue());
   }
 
   protected void getViewerData() {
@@ -215,9 +217,10 @@ public class SimplePopup {
     if (modelInfo == null)
       modelInfo = new Hashtable<String, Object>();
     isPDB = checkBoolean(modelSetInfo, "isPDB");
-    isSymmetry = checkBoolean(modelSetInfo, "someModelsHaveSymmetry");
-    isUnitCell = checkBoolean(modelSetInfo, "someModelsHaveUnitcells");
     isMultiFrame = (modelCount > 1);
+    isSymmetry = !isMultiFrame && checkBoolean(modelInfo, "hasSymmetry");
+    isUnitCell = !isMultiFrame && checkBoolean(modelInfo, "notionalUnitcell");
+    fileHasUnitCell = !isMultiFrame && (isPDB && isUnitCell || checkBoolean(modelInfo, "fileHasUnitCell"));
     isLastFrame = (modelIndex == modelCount - 1);
     altlocs = viewer.getAltLocListInModel(modelIndex);
     isMultiConfiguration = (altlocs.length() > 0);
@@ -233,6 +236,10 @@ public class SimplePopup {
       enableMenu(PDBOnly.get(i), isPDB);
     for (int i = 0; i < UnitcellOnly.size(); i++)
       enableMenu(UnitcellOnly.get(i), isUnitCell);
+    for (int i = 0; i < FileUnitOnly.size(); i++)
+      enableMenu(FileUnitOnly.get(i), isUnitCell || fileHasUnitCell);
+    for (int i = 0; i < FileMolOnly.size(); i++)
+      enableMenu(FileMolOnly.get(i), isUnitCell || fileHasUnitCell);
     for (int i = 0; i < SingleModelOnly.size(); i++)
       enableMenu(SingleModelOnly.get(i), isLastFrame);
     for (int i = 0; i < FramesOnly.size(); i++)
@@ -331,6 +338,10 @@ public class SimplePopup {
         TemperatureOnly.add(newMenu);
       } else if (item.indexOf("UNITCELL") >= 0) {
         UnitcellOnly.add(newMenu);
+      } else if (item.indexOf("FILEUNIT") >= 0) {
+        FileUnitOnly.add(newMenu);
+      } else if (item.indexOf("FILEMOL") >= 0) {
+        FileMolOnly.add(newMenu);
       } 
       
       if (item.indexOf("!FRAMES") >= 0) {

@@ -636,7 +636,9 @@ public final class ModelLoader extends ModelSet {
     int iLast = -1;
     boolean isPDB = false;
     JmolAdapter.AtomIterator iterAtom = adapter.getAtomIterator(atomSetCollection);
+    int nRead = 0;
     while (iterAtom.hasNext()) {
+      nRead++;
       int modelIndex = iterAtom.getAtomSetIndex() + baseModelIndex;
       if (modelIndex != iLast) {
         currentModelIndex = modelIndex;
@@ -686,7 +688,7 @@ public final class ModelLoader extends ModelSet {
         }
       }
     }
-    
+    Logger.info(nRead + " atoms created");    
   }
 
   private void addAtom(boolean isPDB, BitSet atomSymmetry, int atomSite,
@@ -986,7 +988,9 @@ public final class ModelLoader extends ModelSet {
         boolean doBond = (forceAutoBond || doAutoBond
             && (modelBondCount == 0 || modelIsPDB && jmolData == null
                 && modelBondCount < modelAtomCount / 2 || modelHasSymmetry
-                && !symmetryAlreadyAppliedToBonds));
+                && !symmetryAlreadyAppliedToBonds 
+                && !getModelAuxiliaryInfoBoolean(i, "hasBonds")
+                ));
         if (!doBond)
           continue;
         autoBonding = true;

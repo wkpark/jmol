@@ -50,7 +50,7 @@ class MainPopupResourceBundle extends PopupResource {
       {   "@AXESCOLOR", "gray salmon maroon olive slateblue gold orchid"},
       
       {   "popupMenu",
-          "FRAMESbyModelComputedMenu configurationComputedMenu - selectMenuText viewMenu renderMenu colorMenu - surfaceMenu SYMMETRYUNITCELLMenu - "
+          "FRAMESbyModelComputedMenu configurationComputedMenu - selectMenuText viewMenu renderMenu colorMenu - surfaceMenu FILEUNITMenu - "
               + "zoomMenu spinMenu VIBRATIONMenu "
               + "FRAMESanimateMenu - "
               + "measureMenu pickingMenu - showConsole showMenu fileMenu computationMenu - "
@@ -208,8 +208,8 @@ class MainPopupResourceBundle extends PopupResource {
       {   "surfaceMenu",
           "surfDots surfVDW surfSolventAccessible14 surfSolvent14 surfMolecular CHARGEsurfMEP surfMoComputedMenuText - surfOpaque surfTranslucent surfOff" },
 
-      {   "SYMMETRYUNITCELLMenu",
-          "SYMMETRYShowComputedMenu SYMMETRYhide UNITCELLone UNITCELLnine UNITCELLnineRestricted UNITCELLninePoly" },
+      {   "FILEUNITMenu",
+          "SYMMETRYShowComputedMenu SYMMETRYhide FILEMOLload FILEUNITone FILEUNITnine FILEUNITnineRestricted FILEUNITninePoly" },
 
       {   "[set_axes]Menu", 
           "off#axes dotted - byPixelMenu byAngstromMenu" },
@@ -504,13 +504,15 @@ class MainPopupResourceBundle extends PopupResource {
       { "surfTranslucent", "mo translucent;isosurface translucent" },
       { "surfOff", "mo delete;isosurface delete;select *;dots off" },
       { "SYMMETRYhide", "draw sym_* delete" },
-      { "UNITCELLone",
+      { "FILEMOLload",
+      "save orientation;load \"\";restore orientation;center" },
+      { "FILEUNITone",
           "save orientation;load \"\" {1 1 1} ;restore orientation;center" },
-      { "UNITCELLnine",
+      { "FILEUNITnine",
           "save orientation;load \"\" {444 666 1} ;restore orientation;center" },
-      { "UNITCELLnineRestricted",
+      { "FILEUNITnineRestricted",
           "save orientation;load \"\" {444 666 1} ;restore orientation; unitcell on; display cell=555;center visible;zoom 200" },
-      { "UNITCELLninePoly",
+      { "FILEUNITninePoly",
           "save orientation;load \"\" {444 666 1} ;restore orientation; unitcell on; display cell=555; polyhedra 4,6 (displayed);center (visible);zoom 200" },
 
       { "1p", "on" },
@@ -898,11 +900,12 @@ class MainPopupResourceBundle extends PopupResource {
         "surfTranslucent", GT._("Make Translucent"),
         "surfOff", GT._("Off"),
 
-        "SYMMETRYUNITCELLMenu", GT._("Symmetry"),
-        "UNITCELLone", GT._("Reload {0}", "{1 1 1}"),
-        "UNITCELLnine", GT._("Reload {0}", "{444 666 1}"),
-        "UNITCELLnineRestricted", GT._("Reload {0} + Display {1}", new Object[] { "{444 666 1}", "555" } ),
-        "UNITCELLninePoly", GT._("Reload + Polyhedra"),
+        "FILEUNITMenu", GT._("Symmetry"),
+        "FILEMOLload", GT._("Reload {0}", "(molecular)"),
+        "FILEUNITone", GT._("Reload {0}", "{1 1 1}"),
+        "FILEUNITnine", GT._("Reload {0}", "{444 666 1}"),
+        "FILEUNITnineRestricted", GT._("Reload {0} + Display {1}", new Object[] { "{444 666 1}", "555" } ),
+        "FILEUNITninePoly", GT._("Reload + Polyhedra"),
         
 
         "[set_axes]Menu", GT._("Axes"), 

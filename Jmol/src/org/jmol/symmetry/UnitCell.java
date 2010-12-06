@@ -354,4 +354,34 @@ class UnitCell extends SimpleUnitCell {
     }
   }
 
+  /**
+   * 
+   * @param f1
+   * @param f2
+   * @param distance
+   * @param dx
+   * @param iRange
+   * @param jRange
+   * @param kRange
+   * @param ptOffset TODO
+   * @return       TRUE if pt has been set.
+   */
+  public boolean checkDistance(Point3f f1, Point3f f2, float distance, float dx,
+                              int iRange, int jRange, int kRange, Point3f ptOffset) {
+    Point3f p1 = new Point3f(f1);
+    toCartesian(p1, true);
+    for (int i = -iRange; i <= iRange; i++)
+      for (int j = -jRange; j <= jRange; j++)
+        for (int k = -kRange; k <= kRange; k++) {
+          ptOffset.set(f2.x + i, f2.y + j, f2.z + k);
+          toCartesian(ptOffset, true);
+          float d = p1.distance(ptOffset);
+          if (dx > 0 ? Math.abs(d - distance) <= dx : d <= distance) {
+            ptOffset.set(i, j, k);
+            return true;
+          }
+        }
+    return false;
+  }
+
 }

@@ -54,6 +54,7 @@ import org.jmol.viewer.JmolConstants;
  * @see org.jmol.adapter.smarter.SmarterJmolAdapter
  ****************************************************************/
 public abstract class JmolAdapter {
+
   
   public final static short ORDER_COVALENT_SINGLE = JmolEdge.BOND_COVALENT_SINGLE;
   public final static short ORDER_COVALENT_DOUBLE = JmolEdge.BOND_COVALENT_DOUBLE;
@@ -104,6 +105,9 @@ public abstract class JmolAdapter {
     return Group.lookupGroupID(group3);
   }
 
+  public static float getBondingRadiusFloat(int atomicNumber, int charge) {
+    return JmolConstants.getBondingRadiusFloat(atomicNumber, charge);
+  }
 
   //////////////////////////////////////////////////////////////////
   // file related

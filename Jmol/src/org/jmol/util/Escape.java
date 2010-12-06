@@ -366,7 +366,7 @@ public class Escape {
           iThis = -2;
           break;
         case ':':
-          iPrev = iThis;
+          iPrev = lastN = iThis;
           iThis = -2;
           break;
         default:

@@ -78,16 +78,20 @@ public class AtomSetCollection {
   private final static String[] globalBooleans = {"someModelsHaveFractionalCoordinates",
     "someModelsHaveSymmetry", "someModelsHaveUnitcells", "isPDB"};
 
-  private final static int GLOBAL_FRACTCOORD = 0;
-  private final static int GLOBAL_SYMMETRY = 1;
-  private final static int GLOBAL_UNITCELLS = 2;
+  public final static int GLOBAL_FRACTCOORD = 0;
+  public final static int GLOBAL_SYMMETRY = 1;
+  public final static int GLOBAL_UNITCELLS = 2;
   private final static int GLOBAL_ISPDB = 3;
 
   public void setIsPDB() {
     setGlobalBoolean(GLOBAL_ISPDB);
   }
 
-  public void setGlobalBoolean(int globalIndex) {
+  public void clearGlobalBoolean(int globalIndex) {
+    atomSetCollectionAuxiliaryInfo.remove(globalBooleans[globalIndex]);
+  }
+  
+  private void setGlobalBoolean(int globalIndex) {
     setAtomSetCollectionAuxiliaryInfo(globalBooleans[globalIndex], Boolean.TRUE);
   }
   
@@ -153,7 +157,7 @@ public class AtomSetCollection {
 
   public String errorMessage;
 
-  boolean coordinatesAreFractional;
+  public boolean coordinatesAreFractional;
   private boolean isTrajectory;    
   private int trajectoryStepCount = 0;
   private Point3f[] trajectoryStep;
@@ -311,7 +315,7 @@ public class AtomSetCollection {
   private void getList(boolean isAltLoc) {
     int i;
     for (i = atomCount; --i >= 0;)
-      if ((isAltLoc ? atoms[i].alternateLocationID : atoms[i].insertionCode) != '\0')
+      if (atoms[i] != null && (isAltLoc ? atoms[i].alternateLocationID : atoms[i].insertionCode) != '\0')
         break;
     if (i < 0)
       return;
@@ -320,6 +324,8 @@ public class AtomSetCollection {
       lists[i] = "";
     int pt;
     for (i = 0; i < atomCount; i++) {
+      if (atoms[i] == null)
+        continue;
       char id = (isAltLoc ? atoms[i].alternateLocationID
           : atoms[i].insertionCode);
       if (id != '\0' && lists[pt = atoms[i].atomSetIndex].indexOf(id) < 0)
@@ -598,7 +604,7 @@ public class AtomSetCollection {
     setAtomSetAuxiliaryInfo("spaceGroup", spaceGroupName+"");
   }
     
-  void setCoordinatesAreFractional(boolean coordinatesAreFractional) {
+  public void setCoordinatesAreFractional(boolean coordinatesAreFractional) {
     this.coordinatesAreFractional = coordinatesAreFractional;
     setAtomSetAuxiliaryInfo(
         "coordinatesAreFractional",
@@ -648,7 +654,7 @@ public class AtomSetCollection {
   }
  
   SymmetryInterface symmetry;
-  private SymmetryInterface getSymmetry() {
+  public SymmetryInterface getSymmetry() {
     if (symmetry == null)
       symmetry = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
     return symmetry;
@@ -1098,8 +1104,12 @@ public class AtomSetCollection {
         // Clone bonds
         for (int bondNum = bondIndex0; bondNum < bondCount0; bondNum++) {
           Bond bond = bonds[bondNum];
-          int iAtom1 = atomMap[atoms[bond.atomIndex1].atomSite];
-          int iAtom2 = atomMap[atoms[bond.atomIndex2].atomSite];
+          Atom atom1 = atoms[bond.atomIndex1];
+          Atom atom2 = atoms[bond.atomIndex2];
+          if (atom1 == null || atom2 == null)
+            continue;
+          int iAtom1 = atomMap[atom1.atomSite];
+          int iAtom2 = atomMap[atom2.atomSite];
           if (iAtom1 >= atomMax || iAtom2 >= atomMax)
             addNewBond(iAtom1, iAtom2, bond.order);
         }
@@ -1172,7 +1182,7 @@ public class AtomSetCollection {
       mat.m23 /= notionalUnitCell[2];
       if (symmetry != null && i > 0)
         symmetry.addSpaceGroupOperation(mat);
-      System.out.println("biomt " + i + " " + atomCount);
+      //System.out.println("biomt " + i + " " + atomCount);
     }
     int noSymmetryCount = atomMax - iAtomFirst;
     setAtomSetAuxiliaryInfo("presymmetryAtomIndex", Integer.valueOf(iAtomFirst));
@@ -1494,7 +1504,9 @@ public class AtomSetCollection {
       return;
     if (atomSetAuxiliaryInfo[atomSetIndex] == null)
       atomSetAuxiliaryInfo[atomSetIndex] = new Hashtable<String, Object>();
-    if (value != null)
+    if (value == null)
+      atomSetAuxiliaryInfo[atomSetIndex].remove(key);
+    else
       atomSetAuxiliaryInfo[atomSetIndex].put(key, value);
   }
 
@@ -1551,6 +1563,8 @@ public class AtomSetCollection {
   //// for XmlChem3dReader, but could be for CUBE
   
   VolumeDataInterface vd;
+
+  public BitSet bsAtoms;
   
   public void newVolumeData() {
     vd = (VolumeDataInterface) Interface.getOptionInterface("jvxl.data.VolumeData");

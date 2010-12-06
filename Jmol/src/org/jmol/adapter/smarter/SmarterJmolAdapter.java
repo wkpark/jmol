@@ -611,18 +611,22 @@ public class SmarterJmolAdapter extends JmolAdapter {
     private Atom atom;
     private int atomCount;
     private Atom[] atoms;
+    private BitSet bsAtoms;
 
     AtomIterator(AtomSetCollection atomSetCollection) {
       atomCount = atomSetCollection.getAtomCount();
       atoms = atomSetCollection.getAtoms();
+      bsAtoms = atomSetCollection.bsAtoms;
       iatom = 0;
     }
     @Override
     public boolean hasNext() {
       if (iatom == atomCount)
         return false;
-      atom = atoms[iatom];
-      atoms[iatom++] = null; // single pass
+      while ((atom = atoms[iatom++]) == null || (bsAtoms != null && !bsAtoms.get(atom.atomIndex)))
+        if (iatom == atomCount)
+          return false;
+      atoms[iatom - 1] = null; // single pass
       return true;
     }
     @Override
@@ -686,12 +690,14 @@ public class SmarterJmolAdapter extends JmolAdapter {
   }
 
   class BondIterator extends JmolAdapter.BondIterator {
+    private BitSet bsAtoms;
     private Bond[] bonds;
     private int ibond;
     private Bond bond;
     private int bondCount;
     
     BondIterator(AtomSetCollection atomSetCollection) {
+      bsAtoms = atomSetCollection.bsAtoms;
       bonds = atomSetCollection.getBonds();
       bondCount = atomSetCollection.getBondCount();      
       ibond = 0;
@@ -700,7 +706,10 @@ public class SmarterJmolAdapter extends JmolAdapter {
     public boolean hasNext() {
       if (ibond == bondCount)
         return false;
-      bond = bonds[ibond++];
+      while ((bond = bonds[ibond++]) == null 
+          || (bsAtoms != null && (!bsAtoms.get(bond.atomIndex1) || !bsAtoms.get(bond.atomIndex2))))
+        if (ibond == bondCount)
+          return false;
       return true;
     }
     @Override

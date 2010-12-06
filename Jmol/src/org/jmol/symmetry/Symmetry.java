@@ -212,6 +212,11 @@ public class Symmetry implements SymmetryInterface {
     if (unitCell == null)
       return;
     unitCell.toCartesian(fpt, isAbsolute);
+    
+  }
+
+  public Matrix4f getMatrixToCartesians() {
+    return (unitCell == null ? null : unitCell.matrixFractionalToCartesian);
   }
 
   public Object[] getEllipsoid(float[] parBorU) {
@@ -351,6 +356,12 @@ public class Symmetry implements SymmetryInterface {
 
   public String getMatrixFromString(String xyz, float[] temp, boolean allowScaling) {
     return SymmetryOperation.getMatrixFromString(xyz, temp, false, allowScaling);
+  }
+
+  public boolean checkDistance(Point3f f1, Point3f f2, float distance, float dx, 
+                               int iRange, int jRange, int kRange, Point3f ptOffset) {
+    return (unitCell != null && unitCell.checkDistance(f1, f2, distance, dx, 
+        iRange, jRange, kRange, ptOffset));
   }
 
 }  

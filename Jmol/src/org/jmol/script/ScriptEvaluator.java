@@ -8458,9 +8458,11 @@ public class ScriptEvaluator {
     String msg = "";
     if (script.length() > 0)
       msg += "\nUsing defaultLoadScript: " + script;
-    if (viewer.getAllowEmbeddedScripts()) {
-      String embeddedScript = (String) viewer.getModelSetAuxiliaryInfo()
-          .remove("jmolscript");
+
+    
+    Map<String,Object>info = viewer.getModelSetAuxiliaryInfo();
+    if (info != null && viewer.getAllowEmbeddedScripts()) {
+      String embeddedScript = (String) info.remove("jmolscript");
       if (embeddedScript != null && embeddedScript.length() > 0) {
         msg += "\nAdding embedded #jmolscript: " + embeddedScript;
         script += ";" + embeddedScript;
@@ -8471,8 +8473,7 @@ public class ScriptEvaluator {
     }
     logLoadInfo(msg);
 
-    String siteScript = (String) viewer.getModelSetAuxiliaryInfo().remove(
-        "sitescript");
+    String siteScript = (info == null ? null : (String) info.remove("sitescript"));
     if (siteScript != null)
       script = siteScript + ";" + script;
     if (script.length() > 0 && !isCmdLine_c_or_C_Option)

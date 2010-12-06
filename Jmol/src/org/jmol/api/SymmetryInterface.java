@@ -139,4 +139,8 @@ public interface SymmetryInterface {
 
   public abstract String getMatrixFromString(String xyz, float[] temp, boolean allowScaling);
 
+  public abstract Matrix4f getMatrixToCartesians();
+
+  public abstract boolean checkDistance(Point3f f1, Point3f f2, float distance, 
+                                        float dx, int iRange, int jRange, int kRange, Point3f ptOffset);
 }

@@ -168,11 +168,11 @@ public abstract class AtomSetCollectionReader {
   protected int desiredModelNumber = Integer.MIN_VALUE;
   protected SymmetryInterface symmetry;
   protected OutputStream os;
+  protected boolean iHaveFractionalCoordinates;
+  protected boolean doPackUnitCell;
 
   // private state variables
   
-  private boolean iHaveFractionalCoordinates;
-  private boolean doPackUnitCell;
   private boolean doConvertToFractional;
   private boolean merging;
   private boolean fileCoordinatesAreFractional;
@@ -329,7 +329,7 @@ public abstract class AtomSetCollectionReader {
   private void initialize() {
 
     initializeSymmetry();
-    this.viewer = (JmolViewer) htParams.get("viewer");
+    viewer = (JmolViewer) htParams.get("viewer");
     htParams.remove("viewer"); // don't pass this on to user
     getHeader = htParams.containsKey("getHeader");
     isSequential = htParams.containsKey("isSequential");
@@ -833,7 +833,7 @@ public abstract class AtomSetCollectionReader {
       if (iHaveFractionalCoordinates && merging && symmetry != null) {
         // when merging (with appendNew false), we must return cartesians
         atomSetCollection.toCartesian(symmetry);
-        atomSetCollection.setAtomSetAuxiliaryInfo("coordinatesAreFractional", Boolean.FALSE);
+        atomSetCollection.setCoordinatesAreFractional(false);
         // We no longer allow merging of multiple-model files
         // when the file to be appended has fractional coordinates and vibrations
         addVibrations = false;

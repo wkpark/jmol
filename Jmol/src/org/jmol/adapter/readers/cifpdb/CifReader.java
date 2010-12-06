@@ -27,8 +27,12 @@ import org.jmol.adapter.smarter.*;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolLineReader;
 
+import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Map;
+
+import javax.vecmath.Point3f;
 
 import org.jmol.util.CifDataReader;
 import org.jmol.util.Logger;
@@ -68,9 +72,22 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   private boolean iHaveDesiredModel;
   private boolean isPDB = false;
   private Map<String, String> htHetero;
-
+  private boolean isMolecular;
+  private String molecularType = "GEOM_BOND default";
+  
   @Override
   public void initializeReader() throws Exception {
+    isMolecular = (filter != null && filter.indexOf("MOLECUL") >= 0);
+    if (isMolecular) {
+      if (!doApplySymmetry) {
+        doApplySymmetry = true;
+        latticeCells[0] = 1;
+        latticeCells[1] = 1;
+        latticeCells[2] = 1;
+      }
+      molecularType = "filter \"MOLECULAR\"";
+    }
+
     int nAtoms = 0;
     /*
      * Modified for 10.9.64 9/23/06 by Bob Hanson to remove as much as possible
@@ -174,6 +191,8 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           header);
   }
 
+  private int nMolecular = 0;
+
   @Override
   public void applySymmetryAndSetTrajectory() throws Exception {
     // This speeds up calculation, because no crosschecking
@@ -181,12 +200,39 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
     // be no center of symmetry, no rotation-inversions, 
     // no atom-centered rotation axes, and no mirror or glide planes. 
     atomSetCollection.setCheckSpecial(!isPDB);
+    boolean doCheck = doCheckUnitCell && !isPDB;
     super.applySymmetryAndSetTrajectory();
+    if (doCheck && (bondTypes.size() > 0 || isMolecular)) {
+      Logger.info("CIF creating molecule " + (bondTypes.size() > 0 ? " using GEOM_BOND records" : ""));
+      mapSites();
+      getAtomRadii();
+      if (bondTypes.size() > 0 && isMolecular)
+        atomSetCollection.setAtomSetAuxiliaryInfo("hasBonds", Boolean.TRUE);
+      atomSetCollection.setAtomSetAuxiliaryInfo("fileHasUnitCell", Boolean.TRUE);
+      while (createBonds()) {}
+      bondTypes.clear();
+      atomRadius = null;
+      bsBonds = null;
+      if (nMolecular++ == atomSetCollection.getCurrentAtomSetIndex()) {
+        atomSetCollection.clearGlobalBoolean(AtomSetCollection.GLOBAL_FRACTCOORD);
+        atomSetCollection.clearGlobalBoolean(AtomSetCollection.GLOBAL_SYMMETRY);
+        atomSetCollection.clearGlobalBoolean(AtomSetCollection.GLOBAL_UNITCELLS);
+      }        
+    }
   }
 
   ////////////////////////////////////////////////////////////////
   // processing methods
   ////////////////////////////////////////////////////////////////
+
+  private void setBs(Atom[] atoms, int iatom, BitSet[] bsBonds, BitSet bs) {
+    BitSet bsBond = bsBonds[iatom];
+    bs.set(iatom);
+    for (int i = bsBond.nextSetBit(0); i >= 0; i = bsBond.nextSetBit(i + 1)) {
+      if (!bs.get(i))
+        setBs(atoms, i, bsBonds, bs);
+    }
+  }
 
   /**
    *  initialize a new atom set
@@ -354,10 +400,17 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       return;
     }
     if (str.startsWith("_geom_bond")) {
-      if (doApplySymmetry && !applySymmetryToBonds)
-        skipLoop();
-      else
+      if (!doApplySymmetry) {
+        isMolecular = true;
+        doApplySymmetry = true;
+        latticeCells[0] = 1;
+        latticeCells[1] = 1;
+        latticeCells[2] = 1;
+      }
+      if (isMolecular)
         processGeomBondLoopBlock();
+      else 
+        skipLoop();
       return;
     }
     if (str.startsWith("_pdbx_entity_nonpoly")) {
@@ -399,6 +452,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
 
 
   private Map<String, Float> atomTypes;
+  private ArrayList<Object[]> bondTypes = new ArrayList<Object[]>();
   
   final private static byte ATOM_TYPE_SYMBOL = 0;
   final private static byte ATOM_TYPE_OXIDATION_NUMBER = 1;
@@ -786,11 +840,13 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
 
   final private static byte GEOM_BOND_ATOM_SITE_LABEL_1 = 0;
   final private static byte GEOM_BOND_ATOM_SITE_LABEL_2 = 1;
-  final private static byte GEOM_BOND_SITE_SYMMETRY_2 = 2;
+  final private static byte GEOM_BOND_DISTANCE = 2;
+  final private static byte GEOM_BOND_SITE_SYMMETRY_2 = 3;
 
   final private static String[] geomBondFields = { 
       "_geom_bond_atom_site_label_1",
-      "_geom_bond_atom_site_label_2", 
+      "_geom_bond_atom_site_label_2",
+      "_geom_bond_distance",
 //      "_geom_bond_site_symmetry_2",
   };
 
@@ -812,30 +868,34 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         return;
       }
 
+    String name1 = null;
+    String name2 = null;
     while (tokenizer.getData()) {
       int atomIndex1 = -1;
       int atomIndex2 = -1;
+      float distance = 0;
       for (int i = 0; i < tokenizer.fieldCount; ++i) {
         switch (fieldProperty(i)) {
         case NONE:
           break;
         case GEOM_BOND_ATOM_SITE_LABEL_1:
-          atomIndex1 = atomSetCollection.getAtomNameIndex(field);
+          atomIndex1 = atomSetCollection.getAtomNameIndex(name1 = field);
           break;
         case GEOM_BOND_ATOM_SITE_LABEL_2:
-          atomIndex2 = atomSetCollection.getAtomNameIndex(field);
+          atomIndex2 = atomSetCollection.getAtomNameIndex(name2 = field);
+          break;
+        case GEOM_BOND_DISTANCE:
+          distance = parseFloat(field);
           break;
         case GEOM_BOND_SITE_SYMMETRY_2:
           //symmetry = field;
           break;
         }
       }
-      if (/*symmetry != null || */ atomIndex1 < 0 || atomIndex2 < 0)
+      if (atomIndex1 < 0 || atomIndex2 < 0)
         continue;
-      Bond bond = new Bond();
-      bond.atomIndex1 = atomIndex1;
-      bond.atomIndex2 = atomIndex2;
-      atomSetCollection.addBond(bond);
+      if (distance > 0)
+        bondTypes.add(new Object[] { name1, name2, new Float(distance) });
     }
   }
   
@@ -1367,5 +1427,147 @@ _struct_site_gen.details
         return false;
     }
     return true;
-  }  
+  }
+  
+  /////////////////////////////////////
+  //  bonding and molecular 
+  /////////////////////////////////////
+  
+  private float[] atomRadius;
+  private BitSet[] bsBonds;
+  
+  private void getAtomRadii() {
+    int i0 = atomSetCollection.getLastAtomSetAtomIndex();
+    int nAtoms = atomSetCollection.getLastAtomSetAtomCount();
+    int i1 = i0 + nAtoms;
+    Atom[] atoms = atomSetCollection.getAtoms();    
+    atomRadius = new float[i1];
+    for (int i = i0; i < i1; i++) {
+      int elemno = atoms[i].elementNumber = JmolAdapter.getElementNumber(atoms[i].getElementSymbol());
+      int charge = (atoms[i].formalCharge == Integer.MIN_VALUE ? 0 : atoms[i].formalCharge);
+      if (elemno > 0)
+        atomRadius[i] = JmolAdapter.getBondingRadiusFloat(elemno, charge);
+    }
+  }
+
+  private BitSet[] sites;
+  
+  private void mapSites() {
+    symmetry = atomSetCollection.getSymmetry();
+    int nAtoms = atomSetCollection.getLastAtomSetAtomCount();
+    int i0 = atomSetCollection.getLastAtomSetAtomIndex();
+    int i1 = i0 + nAtoms;
+    sites = new BitSet[nAtoms];
+    Atom[] atoms = atomSetCollection.getAtoms();
+    for (int i = i0; i < i1; i++) {
+      int ipt = atomSetCollection.getAtomNameIndex(atoms[i].atomName) - i0;
+      if (sites[ipt] == null)
+        sites[ipt] = new BitSet();
+      sites[ipt].set(i - i0);
+    }
+    bsMolecule = new BitSet();
+    bsExclude = new BitSet();
+  }
+
+  final private Point3f ptOffset = new Point3f();
+
+  private boolean createBonds() {
+    Atom[] atoms = atomSetCollection.getAtoms();
+    int nAtoms = atomSetCollection.getLastAtomSetAtomCount();
+    int i0 = atomSetCollection.getLastAtomSetAtomIndex();
+    int i1 = i0 + nAtoms;
+    int ib0 = atomSetCollection.getBondCount();
+    if (bsBonds == null && isMolecular) {
+      bsBonds = new BitSet[atomSetCollection.getAtomCount()];
+      for (int i = i0; i < i1; i++)
+        bsBonds[i] = new BitSet();
+    }
+    for (int i = bondTypes.size(); --i >= 0;) {
+      Object[] o = bondTypes.get(i);
+      float distance = ((Float) o[2]).floatValue();
+      int iatom1 = atomSetCollection.getAtomNameIndex((String) o[0]);
+      int iatom2 = atomSetCollection.getAtomNameIndex((String) o[1]);
+      BitSet bs1 = sites[iatom1 - i0];
+      BitSet bs2 = sites[iatom2 - i0];
+      if (bs1 == null || bs2 == null)
+        continue;
+      for (int j = bs1.nextSetBit(0); j >= 0; j = bs1.nextSetBit(j + 1))
+        for (int k = bs2.nextSetBit(0); k >= 0; k = bs2.nextSetBit(k + 1)) {
+          if (j == k || isMolecular && bsBonds[j].get(k))
+            continue;
+          if (symmetry.checkDistance(atoms[j + i0], atoms[k + i0], distance, 0.015f, 0, 0, 0, ptOffset))
+            atomSetCollection.addNewBond(j + i0, k + i0);
+        }
+    }
+    // do a quick check for H-X bonds if we have GEOM_BOND
+    if (bondTypes.size() > 0)
+      for (int i = i0; i < i1; i++)
+        if (atoms[i].elementNumber == 1)
+          for (int k = i0; k < i1; k++)
+            if (k != i) {
+              if (!bsBonds[i].get(k) && symmetry.checkDistance(atoms[i], atoms[k], 1.1f, 0, 0, 0, 0, ptOffset))
+                atomSetCollection.addNewBond(i, k);
+            }
+    return (isMolecular && createMolecule(i0, i1, ib0));
+  }
+
+  private BitSet bsMolecule;
+  private BitSet bsExclude;
+
+  private boolean createMolecule(int i0, int i1, int ib0) {
+    Atom[] atoms = atomSetCollection.getAtoms();
+    Bond[] bonds = atomSetCollection.getBonds();
+    int nBonds = atomSetCollection.getBondCount();
+    float bondTolerance = viewer.getBondTolerance();
+    for (int i = ib0; i < nBonds; i++) {
+      int ia1 = bonds[i].atomIndex1;
+      int ia2 = bonds[i].atomIndex2;
+      bsBonds[ia1].set(ia2);
+      bsBonds[ia2].set(ia1);
+    }
+    for (int i = i0; i < i1; i++)
+      if (atoms[i].atomSite == i && !bsMolecule.get(i))
+        setBs(atoms, i, bsBonds, bsMolecule);
+    BitSet bsOther = new BitSet();
+    for (int i = i0; i < i1; i++) {
+      if (atoms[i].atomSite != i && !bsMolecule.get(i) && !bsExclude.get(i)) {
+        for (int j = bsMolecule.nextSetBit(0); j >= 0; j = bsMolecule.nextSetBit(j + 1)) {
+          if (symmetry.checkDistance(atoms[j], atoms[i], atomRadius[i] + atomRadius[j] + bondTolerance, 0, 1, 1, 1, ptOffset)) {
+            setBs(atoms, i, bsBonds, bsOther);
+            for (int k = bsOther.nextSetBit(0); k >= 0; k = bsOther.nextSetBit(k + 1)) {
+              atoms[k].add(ptOffset);
+              BitSet bs = sites[atomSetCollection.getAtomNameIndex(atoms[k].atomName) - i0];
+              if (bs != null) {
+                for (int s = bs.nextSetBit(0); s >= 0; s = bs.nextSetBit(s + 1)) {
+                  if (s + i0 != k && atoms[s + i0].distance(atoms[k]) < 0.1f) {
+                    bsExclude.set(k);
+                    break;
+                  }
+                }                
+              }
+              bsMolecule.set(k);
+            }
+            return true;
+          }
+        }
+        
+      }
+    }
+    if (atomSetCollection.bsAtoms == null)
+      atomSetCollection.bsAtoms = new BitSet();
+    atomSetCollection.bsAtoms.clear(i0, i1);
+    atomSetCollection.bsAtoms.or(bsMolecule);
+    atomSetCollection.bsAtoms.andNot(bsExclude);
+    for (int i = i0; i < i1; i++) {
+      if (atomSetCollection.bsAtoms.get(i))
+        symmetry.toCartesian(atoms[i],true);
+      else if (Logger.debugging)
+        Logger.info(molecularType  + " removing " + i + " " + atoms[i].atomName + " " + atoms[i]);
+    }
+    
+    atomSetCollection.setAtomSetAuxiliaryInfo("notionalUnitcell", null);
+    return false;
+  }
+
+
 }

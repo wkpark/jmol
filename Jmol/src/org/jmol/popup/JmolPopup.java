@@ -154,13 +154,6 @@ public class JmolPopup extends SimplePopup {
     }
   }
 
-  @Override
-  boolean checkBoolean(Map<String, Object> info, String key) {
-    if (info == null || !info.containsKey(key))
-      return false;
-    return ((Boolean) (info.get(key))).booleanValue();
-  }
-
   void updateSelectMenu() {
     Object menu = htMenus.get("selectMenuText");
     if (menu == null)

@@ -51,6 +51,7 @@ public class Atom extends Point3f implements Cloneable {
   public char insertionCode = '\0';
   float[] anisoBorU; //[6] = 1 for U, 0 for B; [7] = bFactor
   public Object[] ellipsoid;
+  public boolean ignoreSymmetry; // CIF _atom_site_disorder_group -1
 
   public Atom() {
   }

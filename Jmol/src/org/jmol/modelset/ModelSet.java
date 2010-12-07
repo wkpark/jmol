@@ -880,7 +880,7 @@ abstract public class ModelSet extends ModelCollection {
       if (order < 0)
         order &= 0xFFFF; // 12.0.1 was saving struts as negative numbers
       short mad = (f.length > 3 ? (short) (1000f * connections[i][3]) : getDefaultMadFromOrder(order));
-      if (order == 0 || mad == 0) {
+      if (order == 0 || mad == 0 && order != JmolEdge.BOND_STRUT && !Bond.isHydrogen(order)) {
         Bond b = atoms[index1].getBond(atoms[index2]);
         if (b != null)
           bsDelete.set(b.index);

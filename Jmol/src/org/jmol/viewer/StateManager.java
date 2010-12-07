@@ -1540,7 +1540,7 @@ public class StateManager {
       //booleans
       e = htBooleanParameterFlags.keySet().iterator();
       while (e.hasNext()) {
-        key = e.next();
+        key = e.next();       
         if (doReportProperty(key))
           list[n++] = "set " + key + " " + htBooleanParameterFlags.get(key);
       }
@@ -1585,10 +1585,10 @@ public class StateManager {
       for (int i = 0; i < n; i++)
         if (list[i] != null)
           appendCmd(commands, list[i]);
-
+/*
       commands.append("\n#user-defined variables; \n");
       commands.append(StateManager.getVariableList(htUserVariables, 0, !isState));
-
+*/
       // label defaults
 
       viewer.loadShape(JmolConstants.SHAPE_LABELS);

@@ -1271,7 +1271,7 @@ public final class ModelLoader extends ModelSet {
       return;
     for (int i = atom.bonds.length; --i >= 0;) {
       Bond bond = atom.bonds[i];
-      if ((bond.order & JmolEdge.BOND_HYDROGEN_MASK) != 0)
+      if (bond.isHydrogen())
         continue;
       Atom atom2 = bond.getOtherAtom(atom);
       setAtom2dZ(atom, atom2, v, v0, v1);

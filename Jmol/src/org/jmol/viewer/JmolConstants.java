@@ -25,6 +25,7 @@
 package org.jmol.viewer;
 
 import org.jmol.api.JmolEdge;
+import org.jmol.modelset.Bond;
 import org.jmol.script.Token;
 import org.jmol.util.Elements;
 import org.jmol.util.Logger;
@@ -391,7 +392,7 @@ final public class JmolConstants {
     }
     if ((order & JmolEdge.BOND_PARTIAL_MASK) != 0)
       return "partial " + getBondOrderNumberFromOrder(order);
-    if ((order & JmolEdge.BOND_HYDROGEN_MASK) != 0)
+    if (Bond.isHydrogen(order))
       return "hbond";
     if ((order & JmolEdge.BOND_SULFUR_MASK) != 0)
       return "single";
@@ -433,7 +434,7 @@ final public class JmolConstants {
     order &= ~JmolEdge.BOND_NEW;
     if (order == JmolEdge.BOND_ORDER_NULL || order == JmolEdge.BOND_ORDER_ANY)
       return "0"; // I don't think this is possible
-    if ((order & JmolEdge.BOND_HYDROGEN_MASK) != 0)
+    if (Bond.isHydrogen(order))
       return "1";
     if ((order & JmolEdge.BOND_SULFUR_MASK) != 0)
       return "1";

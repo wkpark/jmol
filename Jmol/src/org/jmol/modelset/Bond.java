@@ -123,23 +123,27 @@ public class Bond implements JmolEdge {
   }
 
   public boolean isCovalent() {
-    return (order & JmolEdge.BOND_COVALENT_MASK) != 0;
+    return (order & BOND_COVALENT_MASK) != 0;
   }
 
   public boolean isHydrogen() {
-    return (order & JmolEdge.BOND_HYDROGEN_MASK) != 0;
+    return isHydrogen(order);
+  }
+
+  public static boolean isHydrogen(int order) {
+    return (order & BOND_HYDROGEN_MASK) != 0;
   }
 
   boolean isStereo() {
-    return (order & JmolEdge.BOND_STEREO_MASK) != 0;
+    return (order & BOND_STEREO_MASK) != 0;
   }
 
   boolean isPartial() {
-    return (order & JmolEdge.BOND_PARTIAL_MASK) != 0;
+    return (order & BOND_PARTIAL_MASK) != 0;
   }
 
   boolean isAromatic() {
-    return (order & JmolEdge.BOND_AROMATIC_MASK) != 0;
+    return (order & BOND_AROMATIC_MASK) != 0;
   }
 
   /**
@@ -157,7 +161,7 @@ public class Bond implements JmolEdge {
   
   int getValence() {
     return (!isCovalent() ? 0
-        : isPartial() || is(JmolEdge.BOND_AROMATIC) ? 1
+        : isPartial() || is(BOND_AROMATIC) ? 1
         : order & 7);
   }
 
@@ -184,10 +188,10 @@ public class Bond implements JmolEdge {
 
   public void setOrder(int order) {
     if (atom1.getElementNumber() == 16 && atom2.getElementNumber() == 16)
-      order |= JmolEdge.BOND_SULFUR_MASK;
-    if (order == JmolEdge.BOND_AROMATIC_MASK)
-      order = JmolEdge.BOND_AROMATIC;
-    this.order = order | (this.order & JmolEdge.BOND_NEW);
+      order |= BOND_SULFUR_MASK;
+    if (order == BOND_AROMATIC_MASK)
+      order = BOND_AROMATIC;
+    this.order = order | (this.order & BOND_NEW);
   }
 
   public Atom getAtom1() {
@@ -245,7 +249,7 @@ public class Bond implements JmolEdge {
   }
 
   public boolean is(int bondType) {
-    return (order & ~JmolEdge.BOND_NEW) == bondType;
+    return (order & ~BOND_NEW) == bondType;
   }
 
   public JmolNode getOtherAtom(JmolNode thisAtom) {

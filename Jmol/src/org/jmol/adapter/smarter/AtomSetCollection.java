@@ -1034,6 +1034,8 @@ public class AtomSetCollection {
 
       int pt0 = (checkSpecial ? pt : checkRange111 ? baseCount : 0);
       for (int i = iAtomFirst; i < atomMax; i++) {
+        if (atoms[i].ignoreSymmetry)
+          continue;
         symmetry.newSpaceGroupPoint(iSym, atoms[i], ptAtom, transX, transY, transZ);
         Atom special = null;
         Point3f cartesian = new Point3f(ptAtom);

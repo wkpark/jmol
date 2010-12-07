@@ -692,8 +692,15 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           atom.insertionCode = firstChar;
           break;
         case ALT_ID:
-        case DISORDER_GROUP: //not QUITE correct
           atom.alternateLocationID = firstChar;
+        break;
+        case DISORDER_GROUP:          
+          if (firstChar == '-' && field.length() > 1) {
+            atom.alternateLocationID = field.charAt(1);
+            atom.ignoreSymmetry = true;
+          } else {
+            atom.alternateLocationID = firstChar;
+          }
           break;
         case GROUP_PDB:
           isPDB = true;
@@ -1576,14 +1583,19 @@ _struct_site_gen.details
     
     if (bondTypes.size() > 0)
       for (int i = firstAtom; i < atomCount; i++)
-        if (atoms[i].elementNumber == 1)
+        if (atoms[i].elementNumber == 1) {
+          boolean checkAltLoc = (atoms[i].alternateLocationID != '\0');
           for (int k = firstAtom; k < atomCount; k++)
-            if (k != i) {
+            if (k != i && atoms[k].elementNumber != 1 && 
+                (!checkAltLoc 
+                    || atoms[k].alternateLocationID == '\0' 
+                    || atoms[k].alternateLocationID == atoms[i].alternateLocationID)) {
               if (!bsConnected[i].get(k)
                   && symmetry.checkDistance(atoms[i], atoms[k], 1.1f, 0, 0, 0,
                       0, ptOffset))
                 addNewBond(i, k);
             }
+        }
     if (!isMolecular)
       return false;
     

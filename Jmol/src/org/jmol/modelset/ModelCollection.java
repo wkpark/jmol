@@ -2364,7 +2364,7 @@ abstract public class ModelCollection extends BondCollection {
     boolean matchNull = (order == JmolEdge.BOND_ORDER_NULL);
     if (matchNull)
       order = JmolEdge.BOND_COVALENT_SINGLE; //default for setting
-    boolean matchHbond = ((order & JmolEdge.BOND_HYDROGEN_MASK) != 0);
+    boolean matchHbond = Bond.isHydrogen(order);
     boolean identifyOnly = false;
     boolean modifyOnly = false;
     boolean createOnly = false;

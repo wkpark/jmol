@@ -57,7 +57,7 @@
           file="${dist.dir}/Jmol-${version}-binary.zip" />
     <copy todir="${temp.dir}/${path.release}/${prefix.release}${version}"
           file="${dist.dir}/Jmol-${version}-full.tar.gz" />
-    <copy tofile="${temp.dir}/${path.release}/${prefix.release}${version}/Jmol-${version}.properties"
+    <copy tofile="${temp.dir}/${path.release}/${prefix.release}${version}/README-${version}.properties"
           file="${src.dir}/org/jmol/viewer/Jmol.properties" />
 
     <!-- Do the copy using scp -->

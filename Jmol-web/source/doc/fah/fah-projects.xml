@@ -8588,6 +8588,9 @@
   <fah_proj number="6861" name="Abeta42_L" public="n"
     server="171.64.65.64" atoms="98310" preferred="1" deadline="2"
     credit="210" frames="100" code="A3" contact="lin5"/>
+  <fah_proj number="6862" name="Abeta42_shootingL" public="n"
+    server="171.64.65.65" atoms="69222" preferred="2" deadline="3"
+    credit="362" frames="100" code="A3" contact="lin5" kfactor="2.78"/>
   <fah_proj number="6880" name="Abeta42_shooting" public="y"
     server="171.67.108.33" atoms="12222" preferred="14" deadline="21"
     credit="69" frames="100" code="G" contact="lin5"/>

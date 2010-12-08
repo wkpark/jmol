@@ -857,6 +857,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       int atomIndex1 = -1;
       int atomIndex2 = -1;
       float distance = 0;
+      float dx = 0.015f;
       for (int i = 0; i < tokenizer.fieldCount; ++i) {
         switch (fieldProperty(i)) {
         case NONE:
@@ -869,6 +870,19 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           break;
         case GEOM_BOND_DISTANCE:
           distance = parseFloat(field);
+          int pt = field.indexOf('('); 
+          if (pt >= 0) {
+            char[] data = field.toCharArray();
+            String sdx = field.substring(pt + 1, field.length() - 1);
+            int n = sdx.length();
+            for (int j = pt; --j >= 0;) {
+              if (data[j] == '.')
+                --j;
+               data[j] = (--n < 0 ? '0' : sdx.charAt(n));
+            }
+            dx = parseFloat(String.valueOf(data));
+            // TODO -- this is the full +/- (dx) in x.xxx(dx) -- is that too large?
+          }
           break;
         case GEOM_BOND_SITE_SYMMETRY_2:
           //symmetry = field;
@@ -877,8 +891,8 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       }
       if (atomIndex1 < 0 || atomIndex2 < 0)
         continue;
-      if (distance > 0)
-        bondTypes.add(new Object[] { name1, name2, new Float(distance) });
+      if (distance > 0) 
+        bondTypes.add(new Object[] { name1, name2, new Float(distance), new Float(dx) });
     }
   }
   
@@ -1545,7 +1559,8 @@ _struct_site_gen.details
 
   /**
    * Use the site bitset to check for atoms that are within 
-   * +/- 0.015 Angstroms of the specified distances in GEOM_BOND
+   * +/-dx Angstroms of the specified distances in GEOM_BOND
+   * where dx is determined by the uncertainty (dx) in the record.
    * Note that this also "connects" the atoms that might have 
    * been moved in a previous iteration.
    * 
@@ -1564,6 +1579,7 @@ _struct_site_gen.details
     for (int i = bondTypes.size(); --i >= 0;) {
       Object[] o = bondTypes.get(i);
       float distance = ((Float) o[2]).floatValue();
+      float dx = ((Float) o[3]).floatValue();
       int iatom1 = atomSetCollection.getAtomNameIndex((String) o[0]);
       int iatom2 = atomSetCollection.getAtomNameIndex((String) o[1]);
       BitSet bs1 = bsSets[iatom1 - firstAtom];
@@ -1575,7 +1591,7 @@ _struct_site_gen.details
           if (j != k
               && (!isMolecular || !bsConnected[j].get(k))
               && symmetry.checkDistance(atoms[j + firstAtom], atoms[k
-                  + firstAtom], distance, 0.015f, 0, 0, 0, ptOffset))
+                  + firstAtom], distance, dx, 0, 0, 0, ptOffset))
             addNewBond(j + firstAtom, k + firstAtom);
     }
     

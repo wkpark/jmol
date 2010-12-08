@@ -857,7 +857,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       int atomIndex1 = -1;
       int atomIndex2 = -1;
       float distance = 0;
-      float dx = 0.015f;
+      float dx = 0;
       for (int i = 0; i < tokenizer.fieldCount; ++i) {
         switch (fieldProperty(i)) {
         case NONE:
@@ -881,7 +881,13 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
                data[j] = (--n < 0 ? '0' : sdx.charAt(n));
             }
             dx = parseFloat(String.valueOf(data));
+            if (Float.isNaN(dx)) {
+              Logger.info("error reading uncertainty for " + line);
+              dx = 0.015f;
+            }
             // TODO -- this is the full +/- (dx) in x.xxx(dx) -- is that too large?
+          } else {
+            dx = 0.015f;
           }
           break;
         case GEOM_BOND_SITE_SYMMETRY_2:

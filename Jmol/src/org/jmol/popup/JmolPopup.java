@@ -648,6 +648,7 @@ public class JmolPopup extends SimplePopup {
 
   @Override
   protected void updateForShow() {
+    getViewerData();
     updateMode = UPDATE_SHOW;
     updateSelectMenu();
     updateFRAMESbyModelComputedMenu();
@@ -659,6 +660,7 @@ public class JmolPopup extends SimplePopup {
   public void show(int x, int y) {
     super.show(x, y, false);
     if (x < 0) {
+      getViewerData();
       setFrankMenu(currentMenuItemId);
       thisx = -x - 50;
       if (nFrankList > 1) {

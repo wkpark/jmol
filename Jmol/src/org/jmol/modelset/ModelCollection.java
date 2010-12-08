@@ -883,7 +883,7 @@ abstract public class ModelCollection extends BondCollection {
   }
   
   public String getModelNumberDotted(int modelIndex) {
-    return (modelCount < 1 || modelIndex < 0 ? "" : 
+    return (modelCount < 1 || modelIndex >= modelCount || modelIndex < 0 ? "" : 
       Escape.escapeModelFileNumber(modelFileNumbers[modelIndex]));
   }
 

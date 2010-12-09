@@ -28,8 +28,25 @@ public class MeshSurface {
   public BitSet bsFaces;
   public Point3f ptOffset;
   public float scale3d;
+  public Point3f[] dots;
+  public float[] vertexValues;
+  public BitSet[] surfaceSet;
+  public int[] vertexSets;
+  public int nSets = 0;
+  public int checkCount = 2;
+  
 
   public MeshSurface() {
+  }
+  
+  public MeshSurface(Point3f[] vertices, float[] vertexValues, int vertexCount,
+      int[][] polygonIndexes, int polygonCount, int checkCount) {
+    this.vertices = vertices;
+    this.vertexValues = vertexValues;
+    this.vertexCount = vertexCount;
+    this.polygonIndexes = polygonIndexes;
+    this.polygonCount = polygonCount;
+    this.checkCount = checkCount;
   }
 
   public void setColix(short colix) {
@@ -72,12 +89,6 @@ public class MeshSurface {
       polygonIndexes = new int[polygonCount][];
   }
 
-  public Point3f[] dots;
-  public float[] vertexValues;
-  public BitSet[] surfaceSet;
-  public int[] vertexSets;
-  public int nSets = 0;
-  
   public int addVertexCopy(Point3f vertex, float value) {
     if (vertexCount == 0)
       vertexValues = new float[SEED_COUNT];
@@ -98,8 +109,9 @@ public class MeshSurface {
         || Float.isNaN(vertices[vertexB].x) 
         || Float.isNaN(vertices[vertexC].x) 
         ? -1 
-      : addPolygon(new int[] { vertexA, vertexB, vertexC, check, check2 },
-        color));
+      : checkCount == 2 ? addPolygon(new int[] { vertexA, vertexB, vertexC, check, check2 },
+        color)
+      : addPolygon(new int[] { vertexA, vertexB, vertexC, check }));
   }
 
   private int lastColor;
@@ -143,18 +155,18 @@ public class MeshSurface {
 
   public void slabPolygons(Object slabbingObject, boolean andCap) {
     if (slabbingObject instanceof Point4f) {
-      getIntersection((Point4f) slabbingObject, null, andCap);
+      getIntersection((Point4f) slabbingObject, null, andCap, false);
       return;
     }
     if (slabbingObject instanceof Point3f[]) {
       Point4f[] faces = BoxInfo.getFacesFromCriticalPoints((Point3f[]) slabbingObject);
       for (int i = 0; i < faces.length; i++)
-        getIntersection(faces[i], null, andCap);
+        getIntersection(faces[i], null, andCap, false);
       return; 
     }
   }
 
-  public boolean getIntersection(Point4f plane, List<Point3f[]> vData, boolean andCap) {
+  public boolean getIntersection(Point4f plane, List<Point3f[]> vData, boolean andCap, boolean doClean) {
     boolean isSlab = (vData == null);
     Point3f[] pts;
     int iD, iE;
@@ -269,7 +281,47 @@ public class MeshSurface {
         addTriangleCheck(iD, v0, iE, 0, 0, 0);
       }
     }
+    if (doClean)
+      clean();
     return false;
+  }
+
+  private void clean() {
+    // not perfect yet
+    BitSet bsv = new BitSet();
+    BitSet bsp = new BitSet();
+    for (int i = 0; i < polygonCount; i++) {
+      if (polygonIndexes[i] == null)
+        continue;        
+      bsp.set(i);
+      for (int j = 0; j < 3; j++)
+        bsv.set(polygonIndexes[i][j]);
+    }
+    int n = 0;
+    int nPoly = bsp.cardinality(); 
+    if (nPoly != polygonCount) {
+      int[] map = new int[vertexCount];
+      for (int i = 0; i < vertexCount; i++)
+        if (bsv.get(i))
+          map[i] = n++;
+      Point3f[] vTemp = new Point3f[n];
+      n = 0;
+      for (int i = 0; i < vertexCount; i++)
+        if (bsv.get(i))
+          vTemp[n++] = vertices[i];
+      int[][] pTemp = new int[nPoly][];
+      nPoly = 0;
+      for (int i = 0; i < polygonCount; i++)
+        if (polygonIndexes[i] != null) {
+          for (int j = 0; j < 3; j++)
+            polygonIndexes[i][j] = map[polygonIndexes[i][j]];
+          pTemp[nPoly++] = polygonIndexes[i];
+        }
+      vertices = vTemp;
+      vertexCount = n;
+      polygonIndexes = pTemp;
+      polygonCount = nPoly;
+    }
   }
 
   private static Point3f interpolatePoint(Point3f v1, Point3f v2, float d1, float d2) {

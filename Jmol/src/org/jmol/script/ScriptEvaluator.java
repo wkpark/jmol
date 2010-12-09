@@ -9416,6 +9416,7 @@ public class ScriptEvaluator {
         }
         if (endDegrees == 0 && points[0] != null) {
           // glide plane
+          rotAxis.normalize();
           Measure.getPlaneThroughPoint(points[0], rotAxis,
               invPlane = new Point4f());
         }
@@ -14008,6 +14009,18 @@ public class ScriptEvaluator {
         propertyValue = vp;
         havePoints = true;
         break;
+      case Token.slab:
+        switch (getToken(++i).tok) {
+        case Token.dollarsign:
+          propertyName = "slab";
+          propertyValue = objectNameParameter(++i);
+          i = iToken;
+          havePoints = true;
+          break; 
+        default:
+          error(ERROR_invalidArgument);
+        }
+        break;
       case Token.intersection:
         switch (getToken(++i).tok) {
         case Token.unitcell:
@@ -14021,7 +14034,7 @@ public class ScriptEvaluator {
           i = iToken;
           isIntersect = true;
           havePoints = true;
-          break;
+          break; 
         default:
           error(ERROR_invalidArgument);
         }

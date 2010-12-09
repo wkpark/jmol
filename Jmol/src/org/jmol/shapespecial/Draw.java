@@ -39,6 +39,7 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.MeshSurface;
 
 import org.jmol.util.Measure;
 import org.jmol.util.Point3fi;
@@ -150,6 +151,7 @@ public void initShape() {
       modelCount = viewer.getModelCount();
       bsAllModels = null;
       intersectID = null;
+      slabData = null;
       boundBox = null;
       explicitID = false;
       setPropertySuper("thisID", JmolConstants.PREVIOUS_MESH_ID, null);
@@ -172,6 +174,20 @@ public void initShape() {
         boundBox = (Point3f[]) value;
       else
         intersectID = (String) value;
+      return;
+    }
+    
+    if ("slab" == propertyName) {
+      int meshIndex = getIndexFromName((String) value);
+      if (meshIndex < 0) {
+        // could be isosurface?
+        return;
+      }
+      Mesh m = meshes[meshIndex];
+      if (m.checkByteCount != 1)
+        return;
+      slabData = new MeshSurface(m.vertices, new float[m.vertexCount], m.vertexCount, 
+          m.polygonIndexes, m.polygonCount, 1);
       return;
     }
     
@@ -201,7 +217,7 @@ public void initShape() {
 
     if ("planedef" == propertyName) {
       plane = (Point4f) value;
-      if (intersectID != null || boundBox != null)
+      if (intersectID != null || boundBox != null || slabData != null)
         return;
      if (isCircle || isArc)
         isPlane = true;
@@ -506,6 +522,8 @@ public void initShape() {
     thisMesh.width = width;
     if (intersectID != null || boundBox != null)
       setIntersectData();
+    else if (slabData != null)
+      setSlabData();
     if (polygon == null && (lineData != null ? lineData.size() == 0 : vData.size() == 0))
       return false;
     if (polygon != null || lineData != null || indicatedModelIndex < 0
@@ -602,6 +620,17 @@ public void initShape() {
         return;
       indicatedModelIndex = ((Integer)data[3]).intValue();
       lineData = vData;
+    }
+  }
+
+  MeshSurface slabData;
+  
+  private void setSlabData() {
+    if (plane != null) {
+      slabData.getIntersection(plane, null, false, true);
+      polygon = new ArrayList<Object>();
+      polygon.add(slabData.vertices);
+      polygon.add(slabData.polygonIndexes);
     }
   }
 
@@ -1331,7 +1360,10 @@ public void initShape() {
           str.append(" ").append(Escape.escape(mesh.vertices[i]));
         str.append(" ").append(mesh.polygonCount);
         for (int i = 0; i < mesh.polygonCount; i++)
-          str.append(" ").append(Escape.escapeArray(mesh.polygonIndexes[i]));
+          if (mesh.polygonIndexes[i] == null)
+            str.append(" [0 0 0 0]");
+          else
+            str.append(" ").append(Escape.escapeArray(mesh.polygonIndexes[i]));
       } else {
         str.append(getVertexList(mesh, iModel, nVertices));
       }

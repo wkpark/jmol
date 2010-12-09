@@ -1343,10 +1343,11 @@ class ScriptMathProcessor {
   private boolean evaluatePlane(ScriptVariable[] args, int tok)
       throws ScriptException {
     if (args.length != 3 && tok == Token.hkl || tok != Token.hkl
-        && args.length != 1 && args.length != 3 && args.length != 4)
+        && args.length == 0 || args.length > 4)
       return false;
     if (isSyntaxCheck)
       return addX(new Point4f(0, 0, 1, 0));
+    Point3f pt1, pt2, pt3;
 
     switch (args.length) {
     case 1:
@@ -1354,6 +1355,18 @@ class ScriptMathProcessor {
       if (pt instanceof Point4f)
         return addX(pt);
       return addX("" + pt);
+    case 2:
+      pt1 = ptValue(args[0], false);
+      pt2 = ptValue(args[1], false);
+      pt3 = new Point3f(pt1);
+      pt3.add(pt2);
+      pt3.scale(0.5f);
+      Vector3f v = new Vector3f(pt2);
+      v.sub(pt1);
+      v.normalize();
+      Point4f plane = new Point4f();
+      Measure.getPlaneThroughPoint(pt3, v, plane);
+      return addX(plane);
     case 3:
       if (tok == Token.hkl) {
         return addX(eval.getHklPlane(new Point3f(
@@ -1364,9 +1377,9 @@ class ScriptMathProcessor {
       switch (args[0].tok) {
       case Token.bitset:
       case Token.point3f:
-        Point3f pt1 = ptValue(args[0], true);
-        Point3f pt2 = ptValue(args[1], true);
-        Point3f pt3 = ptValue(args[2], true);
+        pt1 = ptValue(args[0], false);
+        pt2 = ptValue(args[1], false);
+        pt3 = ptValue(args[2], false);
         Vector3f vAB = new Vector3f();
         Vector3f vAC = new Vector3f();
         Vector3f norm = new Vector3f();

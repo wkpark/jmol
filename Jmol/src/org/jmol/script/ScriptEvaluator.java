@@ -2931,7 +2931,10 @@ public class ScriptEvaluator {
       case Token.bitset:
       case Token.list:
       case Token.hash:
-        sb.append(ScriptVariable.sValue(token));  // TODO: list type?
+        if (token instanceof ScriptVariable)
+          sb.append(ScriptVariable.sValue(token)); // list
+        else
+          sb.append(Token.nameOf(token.tok));
         continue;
       case Token.seqcode:
         sb.append('^');
@@ -14043,7 +14046,7 @@ public class ScriptEvaluator {
         int nVertices = intParameter(++i);
         Point3f[] points = new Point3f[nVertices];
         for (int j = 0; j < nVertices; j++, i = iToken)
-          points[j] = getPoint3f(++iToken, true);
+          points[j] = centerParameter(++iToken);
         List<Object> v = new ArrayList<Object>();
         v.add(points);
         int nTriangles = intParameter(++i);

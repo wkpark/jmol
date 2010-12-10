@@ -60,7 +60,7 @@ public class ScriptVariable extends Token {
 
   private int flags = ~FLAG_CANINCREMENT & FLAG_LOCALVAR;
   private String name;
-  private ScriptVariable[] objects;
+  ScriptVariable[] objects;
 
   public ScriptVariable() {
     tok = string;
@@ -321,6 +321,12 @@ public class ScriptVariable extends Token {
     return new ScriptVariable(string, Escape.toReadable(x));
   }
 
+  /**
+   * creates a NEW version of the variable
+   * 
+   * @param v
+   * @return  new ScriptVariable
+   */
   @SuppressWarnings("unchecked")
   public ScriptVariable set(ScriptVariable v) {
     index = v.index;
@@ -339,6 +345,7 @@ public class ScriptVariable extends Token {
         System.arraycopy(v.objects, 0, objects, 0, n);
       }      
       break;
+      // todo: bitset, point3f ,point4f? These will not be copied
     default:
       value = v.value;
       break;
@@ -382,12 +389,6 @@ public class ScriptVariable extends Token {
       }
     }
     return true;
-  }
-
-  public static ScriptVariable getVariableSelected(int index, Object value) {
-    ScriptVariable v = new ScriptVariable(bitset, value);
-    v.index = index;
-    return v;
   }
 
   public boolean asBoolean() {

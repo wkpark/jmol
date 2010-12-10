@@ -827,13 +827,12 @@ public class SmilesGenerator {
   private String addStereoCheck(int atomIndex, JmolNode[] stereo, int i, String s) {
     int n = stereo[i].getAtomicAndIsotopeNumber();
     int nx = stereo[i].getCovalentBondCount();
-    if (n != 6 && nx > 1)
-      return s;
     int nh = (n == 6 ? stereo[i].getCovalentHydrogenCount() : 0);
+    // only carbon or singly-connected atoms are checked
     // for C we use nh -- CH3, for example.
     // for other atoms, we use number of bonds.
-    // just checking for 1 bond (to this atom, or 3 hydrogens)
-    if (nh > 0 && (nx != 4 || nh != 3))
+    // just checking for tetrahedral CH3)
+    if (n == 6 ? nx != 4 || nh != 3 : nx > 1)
       return s;
     String sa = ";" + n + "/" + nh + "/" + nx + ",";
     if (s.indexOf(sa) >= 0) {

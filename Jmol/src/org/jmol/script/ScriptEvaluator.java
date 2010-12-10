@@ -720,12 +720,11 @@ public class ScriptEvaluator {
         BitSet bsX = new BitSet();
         String[] sout = (isFor ? new String[BitSetUtil.cardinalityOf(bsAtoms)]
             : null);
-        ScriptVariable t = null;
         if (localVars == null)
           localVars = new Hashtable<String, ScriptVariable>();
         bsX.set(0);
-        localVars.put(dummy, t = ScriptVariable.getVariableSelected(0, bsX)
-            .setName(dummy));
+        ScriptVariable t = new ScriptVariable(bsX, 0);
+        localVars.put(dummy, t.setName(dummy));
         // one test just to check for errors and get iToken
         int pt2 = -1;
         if (isFunctionOfX) {
@@ -5878,8 +5877,9 @@ public class ScriptEvaluator {
       return;
     if (tv == null)
       tv = (v == null || v.size() == 0 ? ScriptVariable
-        .intVariable(0) : (ScriptVariable) v.get(0));
+        .intVariable(0) : (ScriptVariable) v.get(0));    
     t.value = tv.value;
+    t.objects = tv.objects;
     t.intValue = tv.intValue;
     t.tok = tv.tok;
     gotoCmd(null);
@@ -8536,6 +8536,10 @@ public class ScriptEvaluator {
         return;
       case Token.off:
         setShapeProperty(JmolConstants.SHAPE_MEASURES, "hideAll", Boolean.TRUE);
+        return;
+      case Token.list:
+        if (!isSyntaxCheck)
+          showString(viewer.getMeasurementInfoAsString(), false);
         return;
       case Token.delete:
         if (!isSyntaxCheck)
@@ -12670,16 +12674,16 @@ public class ScriptEvaluator {
     if (isArrayItem) {
       ScriptVariable vv = (v).get(0);
       // stack is selector [ VALUE
+      ScriptVariable tnew = (new ScriptVariable()).set(tv);
       if (t.tok == Token.hash || t.tok == Token.bitset) {
         if (t.tok == Token.bitset) {
           t.tok = Token.hash;
           t.value = new Hashtable<String, ScriptVariable>();
         }
         String hkey = ScriptVariable.sValue(vv);
-        ((Map<String, ScriptVariable>) t.value).put(hkey, tv);
+        ((Map<String, ScriptVariable>) t.value).put(hkey, tnew);
       } else {
-        int index = ScriptVariable.iValue(vv);
-        t.setSelectedValue(index, tv);
+        t.setSelectedValue(ScriptVariable.iValue(vv), tnew);
       }
       return;
     }

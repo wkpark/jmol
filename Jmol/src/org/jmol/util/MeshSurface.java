@@ -175,6 +175,8 @@ public class MeshSurface {
     for (int i = polygonIndexes.length; --i >= 0;) {
       if (!setABC(i))
         continue;
+      int check1 = polygonIndexes[i][3];
+      int check2 = (checkCount == 2 ? polygonIndexes[i][4]: 0);
       Point3f vA, vB, vC;
       float d1 = Measure.distanceToPlane(plane, vA = vertices[iA]);
       float d2 = Measure.distanceToPlane(plane, vB = vertices[iB]);
@@ -222,40 +224,40 @@ public class MeshSurface {
           // BC on side to keep
           iD = addVertexCopy(pts[1], vertexValues[iA]);  //AC
           iE = addVertexCopy(pts[0], vertexValues[iA]);  //AB
-          addTriangleCheck(iE, iB, iC, 0, 0, 0);
-          addTriangleCheck(iE, iC, iD, 0, 0, 0);
+          addTriangleCheck(iE, iB, iC, check1 & 3, check2, 0);
+          addTriangleCheck(iD, iE, iC, check1 & 4 | 1, check2, 0);
           break;
         case 2:
           // AC on side to keep
           iD = addVertexCopy(pts[0], vertexValues[iB]);  //AB
           iE = addVertexCopy(pts[1], vertexValues[iB]);  //BC
-          addTriangleCheck(iA, iD, iC, 0, 0, 0);
-          addTriangleCheck(iD, iE, iC, 0, 0, 0);
+          addTriangleCheck(iA, iD, iC, check1 & 5, check2, 0);
+          addTriangleCheck(iD, iE, iC, check1 & 2 | 1, check2, 0);
           break;
         case 3:
           //AB on side to toss
           iD = addVertexCopy(pts[0], vertexValues[iA]);  //AC
           iE = addVertexCopy(pts[1], vertexValues[iB]);  //BC
-          addTriangleCheck(iE, iC, iD, 0, 0, 0);
+          addTriangleCheck(iD, iE, iC, check1 & 6 | 1, check2, 0);
           break;
         case 4:
           //AB on side to keep
           iD = addVertexCopy(pts[1], vertexValues[iC]);  //BC
           iE = addVertexCopy(pts[0], vertexValues[iC]);  //AC
-          addTriangleCheck(iA, iB, iE, 0, 0, 0);
-          addTriangleCheck(iE, iB, iD, 0, 0, 0);
+          addTriangleCheck(iA, iB, iE, check1 & 5, check2, 0);
+          addTriangleCheck(iE, iB, iD, check1 & 2 | 4, check2, 0);
           break;
         case 5:
           //AC on side to toss
           iD = addVertexCopy(pts[1], vertexValues[iC]);  //BC
           iE = addVertexCopy(pts[0], vertexValues[iA]);  //AB
-          addTriangleCheck(iE, iB, iD, 0, 0, 0);
+          addTriangleCheck(iE, iB, iD, check1 & 3 | 4, check2, 0);
           break;
         case 6:
           // BC on side to toss
           iD = addVertexCopy(pts[0], vertexValues[iB]); //AB
           iE = addVertexCopy(pts[1], vertexValues[iC]); //AC
-          addTriangleCheck(iA, iD, iE, 0, 0, 0);
+          addTriangleCheck(iA, iD, iE, check1 & 5 | 2, check2, 0);
           break;
         }
         polygonIndexes[i] = null;
@@ -281,24 +283,19 @@ public class MeshSurface {
         addTriangleCheck(iD, v0, iE, 0, 0, 0);
       }
     }
-    if (doClean)
-      clean();
-    return false;
-  }
-
-  private void clean() {
-    // not perfect yet
+    if (!doClean)
+      return false;
     BitSet bsv = new BitSet();
     BitSet bsp = new BitSet();
     for (int i = 0; i < polygonCount; i++) {
       if (polygonIndexes[i] == null)
-        continue;        
+        continue;
       bsp.set(i);
       for (int j = 0; j < 3; j++)
         bsv.set(polygonIndexes[i][j]);
     }
     int n = 0;
-    int nPoly = bsp.cardinality(); 
+    int nPoly = bsp.cardinality();
     if (nPoly != polygonCount) {
       int[] map = new int[vertexCount];
       for (int i = 0; i < vertexCount; i++)
@@ -322,6 +319,7 @@ public class MeshSurface {
       polygonIndexes = pTemp;
       polygonCount = nPoly;
     }
+    return false;
   }
 
   private static Point3f interpolatePoint(Point3f v1, Point3f v2, float d1, float d2) {

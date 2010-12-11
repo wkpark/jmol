@@ -79,6 +79,9 @@ public abstract class MeshRenderer extends ShapeRenderer {
       return mesh.title != null;
     latticeOffset.set(0, 0, 0);
     for (int i = vertexCount; --i >= 0;)
+      if (vertices[i] == null)
+        System.out.println("meshrend test");
+      else
       viewer.transformPoint(vertices[i], screens[i]);
     if (mesh.lattice == null || mesh.modelIndex < 0) {
       render2(exportType != Graphics3D.EXPORT_NOT);
@@ -234,6 +237,8 @@ public abstract class MeshRenderer extends ShapeRenderer {
           continue;
         }
         check = vertexIndexes[3];
+        if (iShowTriangles)
+          check = 7;
         if ((check & 1) == 1)
           drawLine(iA, iB, true, vertices[iA], vertices[iB], screens[iA],
               screens[iB]);

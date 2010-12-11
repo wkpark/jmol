@@ -780,6 +780,8 @@ public abstract class AtomSetCollectionReader {
     }
     if (doConvertToFractional && !fileCoordinatesAreFractional
         && symmetry != null) {
+      if (!symmetry.haveUnitCell())
+        symmetry.setUnitCell(notionalUnitCell);
       symmetry.toFractional(atom, false);
       iHaveFractionalCoordinates = true;
     }

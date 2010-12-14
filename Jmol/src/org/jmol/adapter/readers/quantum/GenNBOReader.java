@@ -66,13 +66,22 @@ public class GenNBOReader extends MOReader {
   private boolean isOutputFile;
   private String moType = "";
 
-  /*
-   * molname.31 AO molname.32 PNAO molname.33 NAO molname.34 PNHO molname.35 NHO
-   * molname.36 PNBO molname.37 NBO molname.38 PNLMO molname.39 NLMO molname.40
-   * MO molname.41 AO density matrix molname.46 Basis label file
-   */
   @Override
   protected void initializeReader() throws Exception {
+    /*
+     * molname.31 AO 
+     * molname.32 PNAO 
+     * molname.33 NAO 
+     * molname.34 PNHO 
+     * molname.35 NHO
+     * molname.36 PNBO 
+     * molname.37 NBO 
+     * molname.38 PNLMO 
+     * molname.39 NLMO 
+     * molname.40 MO 
+     * molname.41 AO density matrix 
+     * molname.46 Basis label file
+     */
     String line1 = readLine().trim();
     readLine();
     isOutputFile = (line.indexOf("***") >= 0);
@@ -109,18 +118,15 @@ public class GenNBOReader extends MOReader {
     return checkNboLine();
   }
 
-  private String getFileData(String ext) {
+  private String getFileData(String ext) throws Exception {
     String fileName = (String) htParams.get("fullPathName");
     int pt = fileName.lastIndexOf(".");
     if (pt < 0)
       pt = fileName.length();
     fileName = fileName.substring(0, pt) + ext;
     String data = viewer.getFileAsString(fileName);
-    if (data.length() == 0) {
-      Logger.error(" supplemental file " + fileName + " was not found");
-      continuing = false;
-      return null;
-    }
+    if (data.length() == 0 || data.indexOf("java.io.FileNotFound") >= 0)
+      throw new Exception(" supplemental file " + fileName + " was not found");
     return data;
   }
 
@@ -135,8 +141,6 @@ public class GenNBOReader extends MOReader {
 
   private boolean readFile31() throws Exception {
     String data = getFileData(".31");
-    if (data == null)
-      return false;
     BufferedReader readerSave = reader;
     reader = new BufferedReader(new StringReader(data));
     if (!readData31(null, null))
@@ -147,16 +151,19 @@ public class GenNBOReader extends MOReader {
 
   private void readFile46() throws Exception {
     String data = getFileData(".46");
-    if (data == null)
-      return;
     BufferedReader readerSave = reader;
     reader = new BufferedReader(new StringReader(data));
     readData46();
     reader = readerSave;
   }
 
+  private static String P_LIST =  "101   102   103";
+  // GenNBO may be 103 101 102 
+  
+  private static String SP_LIST = "1     101   102   103";
+
   private static String DS_LIST = "255   252   253   254   251"; 
-  // GenNBO is 251 252 253 254    255 
+  // GenNBO is 251 252 253 254 255 
   //   for     Dxy Dxz Dyz Dx2-y2 D2z2-x2-y2
   // org.jmol.quantum.MOCalculation expects 
   //   d2z^2-x2-y2, dxz, dyz, dx2-y2, dxy
@@ -233,12 +240,12 @@ public class GenNBOReader extends MOReader {
         slater[1] = JmolAdapter.SHELL_S;
         break;
       case 3:
-        if (!"101   102   103".equals(line))
+        if (!getDFMap(line, JmolAdapter.SHELL_P, P_LIST, 3))
           return false;
         slater[1] = JmolAdapter.SHELL_P;
         break;
       case 4:
-        if (!"1   101   102   103".equals(line))
+        if (!getDFMap(line, JmolAdapter.SHELL_SP, SP_LIST, 1))
           return false;
         slater[1] = JmolAdapter.SHELL_SP;
         break;        

@@ -152,7 +152,7 @@ abstract class BasisFunctionReader extends AtomSetCollectionReader {
     //                    [4     0     0     0    -4]
     // meaning add that number to the pointer for this coef.
     if (dfCoefMaps == null) {
-      dfCoefMaps = new int[][] {null, null, null, // first unused; P and SP are assumed standard X Y Z
+      dfCoefMaps = new int[][] {null, new int[3], new int[4],
           new int[5], new int[6], new int[7], new int[10]};
     }
     String[] tokens = getTokens(fileList);

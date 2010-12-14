@@ -368,15 +368,16 @@ public class MOCalculation extends QuantumCalculation implements
   }
 
   private void addDataP() {
-    if (thisAtom == null) {
+    int[] map = dfCoefMaps[JmolConstants.SHELL_D_CARTESIAN];
+    if (thisAtom == null || map[0] == Integer.MIN_VALUE) {
       moCoeff += 3;
       return;
     }
     if (doDebug)
-      dumpInfo("X Y Z ");
-    float mx = moCoefficients[moCoeff++];
-    float my = moCoefficients[moCoeff++];
-    float mz = moCoefficients[moCoeff++];
+      dumpInfo(JmolConstants.SHELL_P, map);
+    float mx = map[0] + moCoefficients[moCoeff++];
+    float my = map[1] + moCoefficients[moCoeff++];
+    float mz = map[2] + moCoefficients[moCoeff++];
     if (isElectronDensity) {
       for (int ig = 0; ig < nGaussians; ig++) {
         float alpha = gaussians[gaussianPtr + ig][0];
@@ -425,16 +426,28 @@ public class MOCalculation extends QuantumCalculation implements
     // spartan uses format "1" for BOTH SP and P, which is fine, but then
     // when c1 = 0, there is no mo coefficient, of course. 
     float c1 = gaussians[gaussianPtr][1];
+    int[] map = dfCoefMaps[JmolConstants.SHELL_D_CARTESIAN];
+    if (thisAtom == null || map[0] == Integer.MIN_VALUE) {
+      moCoeff += 3;
+      return;
+    }
     if (thisAtom == null) {
       moCoeff += (c1 == 0 ? 3 : 4);
       return;
     }
-    if (doDebug)
-      dumpInfo(c1 == 0 ? "X Y Z " : "S X Y Z ");
-    float ms = (c1 == 0 ? 0 : moCoefficients[moCoeff++]);
-    float mx = moCoefficients[moCoeff++];
-    float my = moCoefficients[moCoeff++];
-    float mz = moCoefficients[moCoeff++];
+    float ms, mx, my, mz;
+    if (c1 == 0) {
+      if (doDebug)
+        dumpInfo("X Y Z ");
+      ms = 0;      
+    } else {
+      if (doDebug)
+        dumpInfo(JmolConstants.SHELL_SP, map);
+      ms = map[0] + moCoefficients[moCoeff++];
+    }
+    mx = map[1] + moCoefficients[moCoeff++];
+    my = map[2] + moCoefficients[moCoeff++];
+    mz = map[3] + moCoefficients[moCoeff++];
     if (isElectronDensity) {
       for (int ig = 0; ig < nGaussians; ig++) {
         float alpha = gaussians[gaussianPtr + ig][0];

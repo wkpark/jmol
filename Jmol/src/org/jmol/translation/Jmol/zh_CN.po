@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-11-14 10:32+0100\n"
-"PO-Revision-Date: 2010-11-10 11:03+0800\n"
+"PO-Revision-Date: 2010-12-16 11:53+0800\n"
 "Last-Translator: \n"
 "Language-Team: Simplified Chinese <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -20,7 +20,7 @@ msgstr ""
 #: org/openscience/jmol/app/JmolApp.java:102
 #: org/openscience/jmol/app/webexport/WebMaker.java:66
 msgid "Error starting Jmol: the property 'user.home' is not defined."
-msgstr "启动 Jmol 出错：未定义“user.home”属性"
+msgstr "启动 Jmol 出错：未定义参数“user.home”"
 
 #: org/openscience/jmol/app/JmolApp.java:139
 msgid "transparent background"
@@ -448,7 +448,7 @@ msgstr "脚本编辑器(&T)..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:66
 msgid "Conso&le..."
-msgstr "终端(&L)..."
+msgstr "控制台(&L)..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:67
 msgid "Jmol Java &Console"
@@ -468,7 +468,7 @@ msgstr "导出(&E)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:71
 msgid "Export &Image..."
-msgstr "导出图片（&I）"
+msgstr "导出图片(&I)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:72
 msgid "Save current view as an image."
@@ -476,7 +476,7 @@ msgstr "保存当前画面为图片"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:73
 msgid "Export to &Web Page..."
-msgstr "导出网页（&W）"
+msgstr "导出网页(&W)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:74
 msgid "Export one or more views to a web page."
@@ -517,7 +517,7 @@ msgstr "退出(&x)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:83
 msgid "Recent &Files..."
-msgstr "最近打开的文件(F)..."
+msgstr "近期文件(F)..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:84
 msgid "&Edit"
@@ -681,7 +681,7 @@ msgstr "{0} 像素"
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:136
 #, java-format
 msgid "Scale {0}"
-msgstr "缩放 {0}"
+msgstr "比例 {0}"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:137
 msgid "&Zoom"
@@ -698,7 +698,7 @@ msgstr "{0}%"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:143
 msgid "&Perspective Depth"
-msgstr "透视深度(&P)"
+msgstr "深度透视(&P)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:144
 msgid "A&xes"
@@ -731,23 +731,23 @@ msgstr "视图(&V)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:151
 msgid "&Front"
-msgstr "前面(&F)"
+msgstr "正视(&F)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:152
 msgid "&Top"
-msgstr "置顶(&T)"
+msgstr "顶视(&T)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:153
 msgid "&Bottom"
-msgstr "置底(&B)"
+msgstr "底视(&B)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:154
 msgid "&Right"
-msgstr "右对齐(&R)"
+msgstr "右视(&R)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:155
 msgid "&Left"
-msgstr "左对齐(&L)"
+msgstr "左视(&L)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:156
 msgid "Tr&ansform..."
@@ -1015,15 +1015,15 @@ msgstr "启动Jmol..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:504
 msgid "Closing Jmol..."
-msgstr "关闭Jmol..."
+msgstr "关闭 Jmol..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1122
 msgid "Open URL"
-msgstr "打开URL"
+msgstr "打开网址(URL)"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1123
 msgid "Enter URL of molecular model"
-msgstr "输入分子模型的URL"
+msgstr "输入分子模型的网址(URL)"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1149
 msgid "Get PDB file"
@@ -1035,7 +1035,7 @@ msgstr "输入四字母的 PDB ID"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1167
 msgid "Get MOL file by compound name or ID"
-msgstr "根据化合物名称或ID获取MOL文件"
+msgstr "根据化合物名称或 ID 获取 MOL 文件"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1168
 msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
@@ -1059,7 +1059,7 @@ msgstr "删除全部"
 
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:151
 msgid "Dismiss"
-msgstr "解散"
+msgstr "取消"
 
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:202
 msgid "Value"
@@ -1566,7 +1566,7 @@ msgstr "背景颜色"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:117
 msgid "Stereo Viewing"
-msgstr "立体化查看"
+msgstr "立体查看"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:134
 msgid "select stereo type"

@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-12-06 18:26+0100\n"
-"PO-Revision-Date: 2010-11-10 11:19+0800\n"
+"PO-Revision-Date: 2010-12-13 10:25+0800\n"
 "Last-Translator: \n"
 "Language-Team: Simplified Chinese <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -80,7 +80,7 @@ msgid ""
 "console Help menu item for on-line help, which will appear in a new browser "
 "window."
 msgstr ""
-"信息会显示于此。在下方窗口中键入命令。点击主控台的帮助(Help)菜单可得到在线帮"
+"信息会显示于此。在下方窗口中键入命令。点击控制台的帮助(Help)菜单可得到在线帮"
 "助信息（新窗口中显示）。"
 
 #: org/jmol/applet/Jmol.java:702
@@ -122,7 +122,7 @@ msgstr "Jmol 脚本编辑器"
 #: org/jmol/console/ScriptEditor.java:130
 #: org/jmol/popup/MainPopupResourceBundle.java:849
 msgid "Console"
-msgstr "主控台"
+msgstr "控制台"
 
 #: org/jmol/console/ScriptEditor.java:132
 #: org/jmol/export/dialog/Dialog.java:440
@@ -836,27 +836,27 @@ msgstr "反向选取"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:574
 msgid "View"
-msgstr "查看"
+msgstr "视图"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:575
 msgid "Front"
-msgstr "前面"
+msgstr "正视"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:576
 msgid "Left"
-msgstr "左边"
+msgstr "左视"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:577
 msgid "Right"
-msgstr "右边"
+msgstr "右视"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:578
 msgid "Top"
-msgstr "顶端"
+msgstr "顶视"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:579
 msgid "Bottom"
-msgstr "底部"
+msgstr "底视"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:580
 msgid "Back"
@@ -1028,7 +1028,7 @@ msgstr "{0}% 范德华力"
 #: org/jmol/popup/MainPopupResourceBundle.java:631
 #: org/jmol/popup/MainPopupResourceBundle.java:753
 msgid "Bonds"
-msgstr "键"
+msgstr "化学键"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:633
 #: org/jmol/popup/MainPopupResourceBundle.java:643
@@ -1098,7 +1098,7 @@ msgstr "设定二硫键骨架"
 #: org/jmol/popup/MainPopupResourceBundle.java:663
 #: org/jmol/popup/MainPopupResourceBundle.java:756
 msgid "Structures"
-msgstr "结构"
+msgstr "二级结构"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:667
 msgid "Cartoon Rockets"
@@ -1269,7 +1269,7 @@ msgstr "定形的"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:729
 msgid "Inherit"
-msgstr "遗传"
+msgstr "继承"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:730
 msgid "Black"
@@ -1356,7 +1356,7 @@ msgstr "背景"
 #: org/jmol/popup/MainPopupResourceBundle.java:765
 #: org/jmol/popup/MainPopupResourceBundle.java:891
 msgid "Surfaces"
-msgstr "平面"
+msgstr "表面"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:767
 #: org/jmol/popup/MainPopupResourceBundle.java:911
@@ -1478,7 +1478,7 @@ msgstr "点击以测量角度"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:825
 msgid "Click for torsion (dihedral) measurement"
-msgstr "点击测量(两平面间的)扭力"
+msgstr "点击测量(两平面间的)转矩"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:826
 msgid "Click two atoms to display a sequence in the console"
@@ -1498,7 +1498,7 @@ msgstr "距离单位 纳米"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:830
 msgid "Distance units Angstroms"
-msgstr "距离单位 埃"
+msgstr "距离单位 Å"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:831
 msgid "Distance units picometers"
@@ -1506,43 +1506,43 @@ msgstr "距离单位 皮米"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:833
 msgid "Set picking"
-msgstr "设定选取方式"
+msgstr "鼠标拾取"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:835
 msgid "Center"
-msgstr "居中"
+msgstr "居中显示"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:837
 msgid "Identity"
-msgstr "标识"
+msgstr "显示标识(ID)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:838
 msgid "Label"
-msgstr "标签"
+msgstr "显示标签"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:839
 msgid "Select atom"
-msgstr "选取原子"
+msgstr "选择原子"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:840
 msgid "Select chain"
-msgstr "选取链"
+msgstr "选择链"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:841
 msgid "Select element"
-msgstr "选取元素"
+msgstr "选择元素"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:842
 msgid "Select group"
-msgstr "选取基团"
+msgstr "选择基团"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:843
 msgid "Select molecule"
-msgstr "选取分子"
+msgstr "选择分子"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:844
 msgid "Select site"
-msgstr "选取位点"
+msgstr "选择位点"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:845
 msgid "Show symmetry operation"
@@ -1677,12 +1677,12 @@ msgstr "分子表面"
 #: org/jmol/popup/MainPopupResourceBundle.java:895
 #, java-format
 msgid "Solvent Surface ({0}-Angstrom probe)"
-msgstr "溶剂表面 ({0} 埃 的探针)"
+msgstr "溶剂表面 ({0} Å 的探针)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:897
 #, java-format
 msgid "Solvent-Accessible Surface (VDW + {0} Angstrom)"
-msgstr "溶剂可及表面 (范德华表面 + {0} 埃)"
+msgstr "溶剂可及表面 (范德华表面 + {0} Å)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:898
 msgid "Molecular Electrostatic Potential"
@@ -1726,11 +1726,11 @@ msgstr "{0} 像素"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:924
 msgid "Angstrom Width"
-msgstr "几个埃大小的宽度"
+msgstr "几 Å 宽度"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:932
 msgid "Selection Halos"
-msgstr "选择光圈"
+msgstr "显示选择光圈"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:933
 msgid "Show Hydrogens"
@@ -1742,7 +1742,7 @@ msgstr "显示测量结果"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:935
 msgid "Perspective Depth"
-msgstr "透视深度"
+msgstr "深度透视"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:939
 msgid "RasMol Colors"

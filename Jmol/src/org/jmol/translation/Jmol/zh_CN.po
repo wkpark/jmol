@@ -7,13 +7,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-11-14 10:32+0100\n"
-"PO-Revision-Date: 2010-12-16 11:53+0800\n"
-"Last-Translator: \n"
+"PO-Revision-Date: 2010-12-15 01:49+0000\n"
+"Last-Translator: LI Anbang <lianbang@gmail.com>\n"
 "Language-Team: Simplified Chinese <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-07-21 17:52+0000\n"
+"X-Launchpad-Export-Date: 2010-12-15 09:00+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Bookmarks: -1,-1,-1,-1,-1,69,-1,-1,-1,-1\n"
 
@@ -919,9 +919,8 @@ msgid "File Preview (requires restarting Jmol)"
 msgstr "文件预览(需重启Jmol)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:203
-#, fuzzy
 msgid "Clear history (requires restarting Jmol)"
-msgstr "清除控制台按钮（需重启Jmol）"
+msgstr "清除历史（需要重启Jmol）"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:204
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:205
@@ -941,9 +940,8 @@ msgid "Click atoms to measure distances"
 msgstr "点击原子以测距"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:212
-#, fuzzy
 msgid "Click an atom to center on it"
-msgstr "点击原子以测距"
+msgstr "点击一个原子并移动到以它为中心"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:213
 msgid "Return molecule to home position."
@@ -1302,7 +1300,7 @@ msgstr "日志和出错信息"
 
 #: org/openscience/jmol/app/webexport/LogPanel.java:64
 msgid "Messages (see Log tab for full history):"
-msgstr "信息（完整历史见Log标签）"
+msgstr "信息（完整历史见“日志”）"
 
 #: org/openscience/jmol/app/webexport/PopInJmol.java:46
 msgid "These names will be used as filenames for the applets"
@@ -1369,8 +1367,8 @@ msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
 msgstr ""
-"若需得到三维模型，你可以操作，点击 {0} 这里的 {1}.Java 小程序首次载入时可能下"
-"载时间较长"
+"请点击 {0} 启动Jmol {1} 以显示可以操纵的三维模型。（Java 小程序首次载入时可能"
+"下载时间较长）"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:360
 msgid "Insert the page TITLE here."
@@ -1430,7 +1428,7 @@ msgstr "Jmol 实例："
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:227
 msgid "Select widgets:"
-msgstr "选择微件："
+msgstr "按钮与选项"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:330
 msgid "Help/Instructions"
@@ -1439,11 +1437,11 @@ msgstr "帮助/指示"
 #: org/openscience/jmol/app/webexport/WebPanel.java:337
 #: org/openscience/jmol/app/webexport/WebPanel.java:345
 msgid "Cartoon of Page"
-msgstr "页面卡通"
+msgstr "页面示例"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:351
 msgid "Save HTML as..."
-msgstr "把HTML另存为..."
+msgstr "命名保存网页"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:361
 msgid "Relative server path to jar files:"
@@ -1546,7 +1544,7 @@ msgstr "把大数据文件压缩到"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:60
 msgid "Spin on/off"
-msgstr "旋转 开/关"
+msgstr "旋转"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:78
 msgid "enable/disable spin"
@@ -1638,7 +1636,7 @@ msgstr "播放一次"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:204
 msgid "Open Console Button"
-msgstr "打开控制台按钮"
+msgstr "[打开控制台]按钮"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:220
 msgid "launch Jmol console"
@@ -1656,20 +1654,6 @@ msgstr "下载视图"
 msgid "unimplemented"
 msgstr "功能尚未实现"
 
-#~ msgid "atom set"
-#~ msgstr "原子集"
-
-#, fuzzy
-#~ msgid "atom sets"
-#~ msgstr "原子集"
-
-#~ msgid "vector"
-#~ msgstr "矢量"
-
-#, fuzzy
-#~ msgid "vectors"
-#~ msgstr "矢量"
-
 #~ msgid "Jmol Script Console"
 #~ msgstr "Jmol 脚本控制台"
 
@@ -1684,6 +1668,12 @@ msgstr "功能尚未实现"
 
 #~ msgid "adding {0}.spt"
 #~ msgstr "正在增加 {0}.spt"
+
+#~ msgid "atom set"
+#~ msgstr "原子集"
+
+#~ msgid "vector"
+#~ msgstr "矢量"
 
 #~ msgid "stereo off"
 #~ msgstr "立体 关"

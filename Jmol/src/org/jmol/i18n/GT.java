@@ -52,10 +52,12 @@ public class GT {
   public static class Language {
     public final String code;
     public final String language;
+    public final String nativeLanguage;
     public final boolean display;
-    public Language(String code, String language, boolean display) {
+    public Language(String code, String language, String nativeLanguage, boolean display) {
       this.code = code;
       this.language = language;
+      this.nativeLanguage = nativeLanguage;
       this.display = display;
     }
   }
@@ -115,37 +117,37 @@ public class GT {
     boolean wasTranslating = doTranslate;
     doTranslate = false;
     languageList = new Language[] {
-      new Language("ar",    GT._("Arabic"),                   false),
-      new Language("ca",    GT._("Catalan"),                  true),
-      new Language("zh_CN", GT._("Simplified Chinese"),       true),
-      new Language("zh_TW", GT._("Traditional Chinese"),      true),
-      new Language("cs",    GT._("Czech"),                    true),
-      new Language("da",    GT._("Danish"),                   true),
-      new Language("nl",    GT._("Dutch"),                    true),
-      new Language("en_GB", GT._("British English"),          true),
-      new Language("en_US", GT._("American English"),         true), // global default for "en" will be "en_US"
-      new Language("et",    GT._("Estonian"),                 false),
-      new Language("fo",    GT._("Faroese"),                  false),
-      new Language("fr",    GT._("French"),                   true),
-      new Language("de",    GT._("German"),                   true),
-      new Language("el",    GT._("Greek"),                    false),
-      new Language("hu",    GT._("Hungarian"),                true),
-      new Language("id",    GT._("Indonesian"),               true),
-      new Language("it",    GT._("Italian"),                  true),
-      new Language("ja",    GT._("Japanese"),                 false),
-      new Language("ko",    GT._("Korean"),                   true),
-      new Language("nb",    GT._("Norwegian Bokmal"),         false),
-      new Language("oc",    GT._("Occitan"),                  false),
-      new Language("pl",    GT._("Polish"),                   false),
-      new Language("pt_BR", GT._("Brazilian Portuguese"),     true),
-      new Language("pt",    GT._("Portuguese"),               false),
-      new Language("ru",    GT._("Russian"),                  false),
-      new Language("sl",    GT._("Slovenian"),                false),
-      new Language("es",    GT._("Spanish"),                  true),
-      new Language("sv",    GT._("Swedish"),                  false),
-      new Language("ta",    GT._("Tamil"),                    false),
-      new Language("tr",    GT._("Turkish"),                  true),
-      new Language("uk",    GT._("Ukrainian"),                true),
+      new Language("ar",    GT._("Arabic"),               "العربية",              false),
+      new Language("ca",    GT._("Catalan"),              "Català",               true),
+      new Language("zh_CN", GT._("Simplified Chinese"),   "简体中文",             true),
+      new Language("zh_TW", GT._("Traditional Chinese"),  "繁體中文",             true),
+      new Language("cs",    GT._("Czech"),                "Čeština",              true),
+      new Language("da",    GT._("Danish"),               "Dansk",                true),
+      new Language("nl",    GT._("Dutch"),                "Nederlands",           true),
+      new Language("en_GB", GT._("British English"),      "British English",      true),
+      new Language("en_US", GT._("American English"),     "American English",     true), // global default for "en" will be "en_US"
+      new Language("et",    GT._("Estonian"),             "eesti",                false),
+      new Language("fo",    GT._("Faroese"),              "Føroyskt",             false),
+      new Language("fr",    GT._("French"),               "Français",             true),
+      new Language("de",    GT._("German"),               "Deutsch",              true),
+      new Language("el",    GT._("Greek"),                "Ελληνικά",             false),
+      new Language("hu",    GT._("Hungarian"),            "Magyar",               true),
+      new Language("id",    GT._("Indonesian"),           "Indonesia",            true),
+      new Language("it",    GT._("Italian"),              "Italiano",             true),
+      new Language("ja",    GT._("Japanese"),             "日本語",               false),
+      new Language("ko",    GT._("Korean"),               "한국어",               true),
+      new Language("nb",    GT._("Norwegian Bokmal"),     "Norsk Bokmål",         false),
+      new Language("oc",    GT._("Occitan"),              "Occitan",              false),
+      new Language("pl",    GT._("Polish"),               "Polski",               false),
+      new Language("pt_BR", GT._("Brazilian Portuguese"), "Português brasileiro", true),
+      new Language("pt",    GT._("Portuguese"),           "Português",            false),
+      new Language("ru",    GT._("Russian"),              "Русский",              false),
+      new Language("sl",    GT._("Slovenian"),            "Slovenščina",          false),
+      new Language("es",    GT._("Spanish"),              "Español",              true),
+      new Language("sv",    GT._("Swedish"),              "Svenska",              false),
+      new Language("ta",    GT._("Tamil"),                "தமிழ்",                 false),
+      new Language("tr",    GT._("Turkish"),              "Türkçe",               true),
+      new Language("uk",    GT._("Ukrainian"),            "Українська",           true),
     };
     doTranslate = wasTranslating;
     return languageList;

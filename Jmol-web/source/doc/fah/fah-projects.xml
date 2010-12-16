@@ -8582,7 +8582,7 @@
   <fah_proj number="6800" name="Ab_shooting" public="y"
     server="171.64.65.64" atoms="627" preferred="4" deadline="10"
     credit="1298" frames="100" code="OG" contact="lin5"/>
-  <fah_proj number="6806" name="dPro_shooting" public="n"
+  <fah_proj number="6806" name="dPro_shooting" public="y"
     server="171.64.65.64" atoms="634" preferred="5" deadline="10"
     credit="1348" frames="100" code="OG" contact="lin5"/>
   <fah_proj number="6811" name="PrP27_mono" public="y"
@@ -8596,6 +8596,9 @@
     credit="362" frames="100" code="A3" contact="lin5" kfactor="2.78"/>
   <fah_proj number="6880" name="Abeta42_shooting" public="y"
     server="171.67.108.33" atoms="12222" preferred="14" deadline="21"
+    credit="69" frames="100" code="G" contact="lin5"/>
+  <fah_proj number="6881" name="AbetaM1_shooting" public="n"
+    server="171.67.108.33" atoms="12233" preferred="14" deadline="21"
     credit="69" frames="100" code="G" contact="lin5"/>
   <fah_proj number="6885" name="Abeta40_shooting" public="y"
     server="171.67.108.33" atoms="12193" preferred="14" deadline="21"
@@ -9022,6 +9025,9 @@
     credit="611" frames="100" code="OG" contact="lin5"/>
   <fah_proj number="10633" name="OPENMMGMX_test" public="y"
     server="171.67.108.31" atoms="582" preferred="2" deadline="3"
+    credit="611" frames="100" code="OG" contact="lin5"/>
+  <fah_proj number="10634" name="OPENMMGMX_test" public="n"
+    server="171.67.108.20" atoms="582" preferred="2" deadline="3"
     credit="611" frames="100" code="OG" contact="lin5"/>
   <fah_proj number="10641" name="Fs_96" public="y"
     server="171.67.108.31" atoms="264" preferred="8" deadline="10"

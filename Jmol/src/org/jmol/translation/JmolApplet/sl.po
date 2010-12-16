@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-12-06 18:26+0100\n"
-"PO-Revision-Date: 2008-09-17 18:52+0000\n"
-"Last-Translator: Štefan Baebler <Unknown>\n"
+"PO-Revision-Date: 2010-12-16 13:04+0000\n"
+"Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-09-20 20:00+0000\n"
+"X-Launchpad-Export-Date: 2010-12-16 16:48+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/AppletConsole.java:199
@@ -42,9 +42,8 @@ msgid "&More"
 msgstr "&Več"
 
 #: org/jmol/applet/AppletConsole.java:205
-#, fuzzy
 msgid "Editor"
-msgstr "Zgodovina"
+msgstr ""
 
 #: org/jmol/applet/AppletConsole.java:206
 msgid "State"
@@ -131,18 +130,17 @@ msgid "Script"
 msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:134
-#, fuzzy
 msgid "Check"
-msgstr "Češčina"
+msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:136
-#, fuzzy
 msgid "Step"
-msgstr "Stanje"
+msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:138
 #: org/jmol/popup/MainPopupResourceBundle.java:805
@@ -224,14 +222,12 @@ msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:437
 #: org/jmol/export/dialog/Dialog.java:438
-#, fuzzy
 msgid "Details"
-msgstr "Danščina"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:439
-#, fuzzy
 msgid "Directory"
-msgstr "Zgodovina"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:442
 msgid "Open selected directory"
@@ -309,9 +305,8 @@ msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:468
 #: org/jmol/export/dialog/Dialog.java:471
-#, fuzzy
 msgid "Save"
-msgstr "Stanje"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:470
 msgid "Save selected file"
@@ -378,14 +373,12 @@ msgid "Dutch"
 msgstr "Nizozemščina"
 
 #: org/jmol/i18n/GT.java:125
-#, fuzzy
 msgid "British English"
-msgstr "Angleščina"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:126
-#, fuzzy
 msgid "American English"
-msgstr "Angleščina"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:127
 msgid "Estonian"
@@ -532,9 +525,8 @@ msgid "clear"
 msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:86
-#, fuzzy
 msgid "save file"
-msgstr "Stanje"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:87
 msgid "save state"
@@ -549,9 +541,8 @@ msgid "delete atom"
 msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:90
-#, fuzzy
 msgid "drag to bond"
-msgstr "Stanje"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:91
 msgid "drag atom"
@@ -602,9 +593,8 @@ msgid "decrease order"
 msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:111
-#, fuzzy
 msgid "rotate bond (SHIFT-DRAG)"
-msgstr "Stanje"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:112
 msgid "exit modelkit mode"
@@ -657,9 +647,8 @@ msgid "Translations"
 msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:570
-#, fuzzy
 msgid "System"
-msgstr "Stanje"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:576
 msgid "1 processor"
@@ -1588,9 +1577,8 @@ msgid "File"
 msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:863
-#, fuzzy
 msgid "Reload"
-msgstr "Naloži"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:864
 msgid "Open from PDB"
@@ -2111,14 +2099,12 @@ msgid "translate"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:60
-#, fuzzy
 msgid "rotate"
-msgstr "Stanje"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:61
-#, fuzzy
 msgid "rotate Z"
-msgstr "Stanje"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:62
 msgid ""
@@ -2149,7 +2135,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:69
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:71
@@ -2374,18 +2361,3 @@ msgstr ""
 #, java-format
 msgid "Setting log file to {0}"
 msgstr ""
-
-#~ msgid "Execute"
-#~ msgstr "Izvedi"
-
-#, fuzzy
-#~ msgid "Load PDB"
-#~ msgstr "Naloži"
-
-#, fuzzy
-#~ msgid "SPT State"
-#~ msgstr "Stanje"
-
-#, fuzzy
-#~ msgid "SPT History"
-#~ msgstr "Zgodovina"

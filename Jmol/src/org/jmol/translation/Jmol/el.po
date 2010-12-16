@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-11-14 10:32+0100\n"
-"PO-Revision-Date: 2009-09-07 10:32+0000\n"
+"PO-Revision-Date: 2010-07-24 00:06+0000\n"
 "Last-Translator: Yannis Kaskamanidis <ttnfy17@yahoo.gr>\n"
 "Language-Team: Greek <el@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-07-23 16:16+0000\n"
+"X-Launchpad-Export-Date: 2010-12-16 16:48+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -116,7 +116,7 @@ msgstr ""
 #: org/openscience/jmol/app/JmolApp.java:216
 #, java-format
 msgid "{0} or {1}:filename"
-msgstr ""
+msgstr "{0} ή {1}:filename"
 
 #: org/openscience/jmol/app/JmolApp.java:230
 msgid "For example:"
@@ -266,7 +266,7 @@ msgstr "Κλίμακα"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:316
 msgid "Amplitude"
-msgstr ""
+msgstr "Εύρος"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:326
 msgid "Period"
@@ -291,7 +291,7 @@ msgstr ""
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:366
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
 msgid "Pause playing"
-msgstr ""
+msgstr "Παύση αναπαραγωγής"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:367
 msgid "Go to next atom set in the collection"
@@ -472,7 +472,7 @@ msgstr "&Εξαγωγή"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:71
 msgid "Export &Image..."
-msgstr ""
+msgstr "Εξαγωγή Ε&ικόνας"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:72
 msgid "Save current view as an image."

@@ -7,13 +7,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-11-14 10:32+0100\n"
-"PO-Revision-Date: 2010-04-16 18:30+0000\n"
+"PO-Revision-Date: 2010-04-29 00:23+0000\n"
 "Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Korean <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-04-16 21:18+0000\n"
+"X-Launchpad-Export-Date: 2010-12-16 16:48+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -66,9 +66,8 @@ msgid "send only output from print messages to console (implies -i)"
 msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:158
-#, fuzzy
 msgid "independent command thread"
-msgstr "독립적인 명령 쓰레드"
+msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:160
 msgid "exit after script (implicit with -n)"
@@ -107,9 +106,7 @@ msgstr "창 너비 x 높이, 예) . {0}"
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
-msgstr ""
-"JPG 이미지 화질 (1-100: 기본값 75) 혹은 PNG 이미지 압축률 (0-9: 기본값 2, 최"
-"대 압축률 9)"
+msgstr "JPG 이미지 화질 (1-100: 기본값 75) 혹은 PNG 이미지 압축률 (0-9: 기본값 2, 최대 압축률 9)"
 
 #: org/openscience/jmol/app/JmolApp.java:216
 #, java-format
@@ -275,19 +272,16 @@ msgid "Controller"
 msgstr "콘트롤러"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:363
-#, fuzzy
 msgid "Go to first atom set in the collection"
-msgstr "콜렉션의 처음 {0}(으)로 가기"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:364
-#, fuzzy
 msgid "Go to previous atom set in the collection"
-msgstr "콜렉션의 {0} 이전으로 가기"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:365
-#, fuzzy
 msgid "Play the whole collection of atom sets"
-msgstr "{0}의 모든 콜렉션 재생"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:366
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
@@ -295,39 +289,32 @@ msgid "Pause playing"
 msgstr "재생 중지"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:367
-#, fuzzy
 msgid "Go to next atom set in the collection"
-msgstr "{0} 콜렉션의 다음으로"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:368
-#, fuzzy
 msgid "Jump to last atom set in the collection"
-msgstr "{0} 콜렉션의 맨 마지막으로"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:372
-#, fuzzy
 msgid "Go to first vector in the collection"
-msgstr "콜렉션의 처음 {0}(으)로 가기"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:373
-#, fuzzy
 msgid "Go to previous vector in the collection"
-msgstr "콜렉션의 {0} 이전으로 가기"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:374
-#, fuzzy
 msgid "Play the whole collection of vectors"
-msgstr "{0}의 모든 콜렉션 재생"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:376
-#, fuzzy
 msgid "Go to next vector in the collection"
-msgstr "{0} 콜렉션의 다음으로"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:377
-#, fuzzy
 msgid "Jump to last vector in the collection"
-msgstr "{0} 콜렉션의 맨 마지막으로"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/ConsoleTextArea.java:87
 #, java-format
@@ -459,9 +446,8 @@ msgid "Scrip&t Editor..."
 msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:66
-#, fuzzy
 msgid "Conso&le..."
-msgstr "Jmol 닫기..."
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:67
 msgid "Jmol Java &Console"
@@ -932,9 +918,8 @@ msgid "File Preview (requires restarting Jmol)"
 msgstr "파일 미리보기 (Jmol 재시작 필요)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:203
-#, fuzzy
 msgid "Clear history (requires restarting Jmol)"
-msgstr "콘솔 버튼 지우기 (Jmol 재시작 필요)"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:204
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:205
@@ -954,9 +939,8 @@ msgid "Click atoms to measure distances"
 msgstr "거리측정을 하려는 원자를 클릭하시오"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:212
-#, fuzzy
 msgid "Click an atom to center on it"
-msgstr "거리측정을 하려는 원자를 클릭하시오"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:213
 msgid "Return molecule to home position."
@@ -1007,9 +991,8 @@ msgid "Initializing Recent Files..."
 msgstr "최근 파일 초기화..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:341
-#, fuzzy
 msgid "Jmol Java Console"
-msgstr "Jmol 자바 콘솔(&C)"
+msgstr "Jmol 자바 콘솔"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:361
 msgid "Could not create ConsoleTextArea: "
@@ -1518,9 +1501,9 @@ msgid "adding {0}"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:687
-#, fuzzy, java-format
+#, java-format
 msgid "Unable to load resource {0}"
-msgstr "\"{0}\" URL을 찾을 수 없습니다."
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:739
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
@@ -1599,52 +1582,44 @@ msgid "Animation Control"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:177
-#, fuzzy
 msgid "Animation"
-msgstr "애니메이션 정지(&S)"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:178
 msgid "First Frame"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:180
-#, fuzzy
 msgid "Previous Frame"
-msgstr "이전 장면"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:182
 msgid "Play"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:184
-#, fuzzy
 msgid "Next Frame"
-msgstr "다음 장면"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:186
-#, fuzzy
 msgid "Pause"
-msgstr "붙여넣기(&P)"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:188
-#, fuzzy
 msgid "Last Frame"
-msgstr "마지막 프레임으로 가기"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:190
-#, fuzzy
 msgid "Mode:"
-msgstr "방식: "
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:191
-#, fuzzy
 msgid "Loop"
-msgstr "반복(&L)"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:193
-#, fuzzy
 msgid "Palindrome"
-msgstr "왔다갔다(&a)"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:195
 msgid "Play Once"
@@ -1655,9 +1630,8 @@ msgid "Open Console Button"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:220
-#, fuzzy
 msgid "launch Jmol console"
-msgstr "Jmol 스크립트 콘솔"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:222
 msgid "Jmol Console"
@@ -1674,20 +1648,8 @@ msgstr ""
 #~ msgid "atom set"
 #~ msgstr "원자셋"
 
-#, fuzzy
-#~ msgid "atom sets"
-#~ msgstr "원자셋"
-
 #~ msgid "vector"
-#~ msgstr "벡터"
-
-#, fuzzy
-#~ msgid "vectors"
 #~ msgstr "벡터"
 
 #~ msgid "Jmol Script Console"
 #~ msgstr "Jmol 스크립트 콘솔"
-
-#, fuzzy
-#~ msgid "Stop"
-#~ msgstr "단계"

@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-11-14 10:32+0100\n"
-"PO-Revision-Date: 2010-05-25 21:47+0000\n"
+"PO-Revision-Date: 2010-09-06 21:25+0000\n"
 "Last-Translator: Angel Spy <melissadilara@yahoo.com>\n"
 "Language-Team: Turkish <yerellestirme@kde.org.tr>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-05-25 22:04+0000\n"
+"X-Launchpad-Export-Date: 2010-12-16 16:48+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Language: Turkish\n"
 
@@ -276,19 +276,16 @@ msgid "Controller"
 msgstr "Denetleyici"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:363
-#, fuzzy
 msgid "Go to first atom set in the collection"
-msgstr "Koleksiyondaki ilk {0} elemanına git"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:364
-#, fuzzy
 msgid "Go to previous atom set in the collection"
-msgstr "Koleksiyondaki önceki {0} elemana git"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:365
-#, fuzzy
 msgid "Play the whole collection of atom sets"
-msgstr "{0} elemanının tüm koleksiyonunu oynat"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:366
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
@@ -296,39 +293,32 @@ msgid "Pause playing"
 msgstr "Oynatmayı Duraklat"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:367
-#, fuzzy
 msgid "Go to next atom set in the collection"
-msgstr "Koleksiyondaki bir sonraki {0} elemanına git"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:368
-#, fuzzy
 msgid "Jump to last atom set in the collection"
-msgstr "Koleksiyondaki en son {0} elemanına git"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:372
-#, fuzzy
 msgid "Go to first vector in the collection"
-msgstr "Koleksiyondaki ilk {0} elemanına git"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:373
-#, fuzzy
 msgid "Go to previous vector in the collection"
-msgstr "Koleksiyondaki önceki {0} elemana git"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:374
-#, fuzzy
 msgid "Play the whole collection of vectors"
-msgstr "{0} elemanının tüm koleksiyonunu oynat"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:376
-#, fuzzy
 msgid "Go to next vector in the collection"
-msgstr "Koleksiyondaki bir sonraki {0} elemanına git"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:377
-#, fuzzy
 msgid "Jump to last vector in the collection"
-msgstr "Koleksiyondaki en son {0} elemanına git"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/ConsoleTextArea.java:87
 #, java-format
@@ -932,9 +922,8 @@ msgid "File Preview (requires restarting Jmol)"
 msgstr "Dosya önizleme (Jmol'un yeniden başlatılması gerekir)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:203
-#, fuzzy
 msgid "Clear history (requires restarting Jmol)"
-msgstr "Komut arayüzünü temizle (Jmol'u yeniden başlatmanız gerekir)"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:204
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:205
@@ -954,9 +943,8 @@ msgid "Click atoms to measure distances"
 msgstr "Uzaklıkları ölçmek için atomlara tıklayın"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:212
-#, fuzzy
 msgid "Click an atom to center on it"
-msgstr "Uzaklıkları ölçmek için atomlara tıklayın"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:213
 msgid "Return molecule to home position."
@@ -1007,9 +995,8 @@ msgid "Initializing Recent Files..."
 msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:341
-#, fuzzy
 msgid "Jmol Java Console"
-msgstr "Jmol Java &Konsolu"
+msgstr "Jmol Java Uçbirimi"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:361
 msgid "Could not create ConsoleTextArea: "
@@ -1060,9 +1047,8 @@ msgid "IO Exception:"
 msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1427
-#, fuzzy
 msgid "width height?"
-msgstr "yükseklik:"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:124
 msgid "Delete"
@@ -1429,9 +1415,8 @@ msgid "A web page containing Jmol applets"
 msgstr "Jmol uygulamacıkları bulunan bir web sayfası"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:177
-#, fuzzy
 msgid "click and drag to reorder"
-msgstr "yeniden sıralamak için çift-tıklayıp sürükleyin"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:182
 msgid "Add Present Jmol State as Instance..."
@@ -1524,9 +1509,9 @@ msgid "adding {0}"
 msgstr "{0} ekleniyor"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:687
-#, fuzzy, java-format
+#, java-format
 msgid "Unable to load resource {0}"
-msgstr "\"{0}\" adresi bulunamadı."
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:739
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
@@ -1611,52 +1596,44 @@ msgid "Animation Control"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:177
-#, fuzzy
 msgid "Animation"
-msgstr "Animasyonu &durdur"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:178
 msgid "First Frame"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:180
-#, fuzzy
 msgid "Previous Frame"
-msgstr "Bir önceki çerçeveye git"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:182
 msgid "Play"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:184
-#, fuzzy
 msgid "Next Frame"
-msgstr "Bir sonraki çerçeveye git"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:186
-#, fuzzy
 msgid "Pause"
-msgstr "&Yapıştır"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:188
-#, fuzzy
 msgid "Last Frame"
-msgstr "Son çerçeveye git"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:190
-#, fuzzy
 msgid "Mode:"
-msgstr "Yöntem: "
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:191
-#, fuzzy
 msgid "Loop"
-msgstr "&Döngü"
+msgstr "Döngü"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:193
-#, fuzzy
 msgid "Palindrome"
-msgstr "P&alindrom"
+msgstr "Palindrom"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:195
 msgid "Play Once"
@@ -1667,9 +1644,8 @@ msgid "Open Console Button"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:220
-#, fuzzy
 msgid "launch Jmol console"
-msgstr "Jmol Konsolu"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:222
 msgid "Jmol Console"
@@ -1683,38 +1659,28 @@ msgstr "İndirme görünümü"
 msgid "unimplemented"
 msgstr ""
 
-#~ msgid "atom set"
-#~ msgstr "atom dizisi"
-
-#, fuzzy
-#~ msgid "atom sets"
-#~ msgstr "atom dizisi"
-
 #~ msgid "vector"
-#~ msgstr "vektör"
-
-#, fuzzy
-#~ msgid "vectors"
 #~ msgstr "vektör"
 
 #~ msgid "Jmol Script Console"
 #~ msgstr "Jmol Betik Uçbirimi"
 
-#, fuzzy
-#~ msgid "Stop"
-#~ msgstr "Adım"
+#~ msgid "Show Selected"
+#~ msgstr "Seçilenleri Göster"
+
+#, java-format
+#~ msgid "adding {0}.spt"
+#~ msgstr "{0}.spt ekleniyor"
+
+#, java-format
+#~ msgid "adding {0}.png"
+#~ msgstr "{0}.png ekleniyor"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "JmolPopIn.js ekleniyor"
 
-#~ msgid "adding {0}.png"
-#~ msgstr "{0}.png ekleniyor"
-
-#~ msgid "adding {0}.spt"
-#~ msgstr "{0}.spt ekleniyor"
+#~ msgid "atom set"
+#~ msgstr "atom dizisi"
 
 #~ msgid "stereo off"
 #~ msgstr "stereo kapalı"
-
-#~ msgid "Show Selected"
-#~ msgstr "Seçilenleri Göster"

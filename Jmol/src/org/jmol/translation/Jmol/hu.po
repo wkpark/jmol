@@ -9,13 +9,13 @@ msgstr ""
 "Project-Id-Version: Jmol 11.7.x\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-11-14 10:32+0100\n"
-"PO-Revision-Date: 2010-03-18 11:27+0000\n"
-"Last-Translator: Krasznecz Zoltán <krasznecz.zoltan@gmail.com>\n"
+"PO-Revision-Date: 2010-03-18 18:34+0000\n"
+"Last-Translator: Krasznecz Zoltán <zoltan.krasznecz@gmail.com>\n"
 "Language-Team: Hungarian <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-03-18 16:28+0000\n"
+"X-Launchpad-Export-Date: 2010-12-16 16:48+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: HUNGARY\n"
 "X-Poedit-Language: Hungarian\n"
@@ -72,9 +72,8 @@ msgid "send only output from print messages to console (implies -i)"
 msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:158
-#, fuzzy
 msgid "independent command thread"
-msgstr "független parancsvégrehajtási szál"
+msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:160
 msgid "exit after script (implicit with -n)"
@@ -281,19 +280,16 @@ msgid "Controller"
 msgstr "Vezérlő"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:363
-#, fuzzy
 msgid "Go to first atom set in the collection"
-msgstr "Ugárs az első {0}-ra a gyűjteményben"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:364
-#, fuzzy
 msgid "Go to previous atom set in the collection"
-msgstr "Ugárs az előző {0}-ra a gyűjteményben"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:365
-#, fuzzy
 msgid "Play the whole collection of atom sets"
-msgstr "A teljes {0} gyűjtemény lejátszása"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:366
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
@@ -301,39 +297,32 @@ msgid "Pause playing"
 msgstr "Leállítás"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:367
-#, fuzzy
 msgid "Go to next atom set in the collection"
-msgstr "Ugárs a következő  {0}-ra a gyűjteményben"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:368
-#, fuzzy
 msgid "Jump to last atom set in the collection"
-msgstr "Ugárs az utolsó {0}-ra a gyűjteményben"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:372
-#, fuzzy
 msgid "Go to first vector in the collection"
-msgstr "Ugárs az első {0}-ra a gyűjteményben"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:373
-#, fuzzy
 msgid "Go to previous vector in the collection"
-msgstr "Ugárs az előző {0}-ra a gyűjteményben"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:374
-#, fuzzy
 msgid "Play the whole collection of vectors"
-msgstr "A teljes {0} gyűjtemény lejátszása"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:376
-#, fuzzy
 msgid "Go to next vector in the collection"
-msgstr "Ugárs a következő  {0}-ra a gyűjteményben"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:377
-#, fuzzy
 msgid "Jump to last vector in the collection"
-msgstr "Ugárs az utolsó {0}-ra a gyűjteményben"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/ConsoleTextArea.java:87
 #, java-format
@@ -465,9 +454,8 @@ msgid "Scrip&t Editor..."
 msgstr "Scrip&t Szerkesztő..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:66
-#, fuzzy
 msgid "Conso&le..."
-msgstr "&Parancsfájl..."
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:67
 msgid "Jmol Java &Console"
@@ -938,9 +926,8 @@ msgid "File Preview (requires restarting Jmol)"
 msgstr "Fájl előnézet (a program ujraindítását igényli)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:203
-#, fuzzy
 msgid "Clear history (requires restarting Jmol)"
-msgstr "Konzol gomb alaphelyzetbe állítása (Jmol újraindítás szükséges)"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:204
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:205
@@ -960,9 +947,8 @@ msgid "Click atoms to measure distances"
 msgstr "Kattintson az atomokra a távolság méréséhez"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:212
-#, fuzzy
 msgid "Click an atom to center on it"
-msgstr "Kattintson az atomokra a távolság méréséhez"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:213
 msgid "Return molecule to home position."
@@ -1013,7 +999,6 @@ msgid "Initializing Recent Files..."
 msgstr "Utóbbi fájlok listájának inicializálása..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:341
-#, fuzzy
 msgid "Jmol Java Console"
 msgstr "Jmol Java konzol"
 
@@ -1066,9 +1051,8 @@ msgid "IO Exception:"
 msgstr "IO-hiba:"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1427
-#, fuzzy
 msgid "width height?"
-msgstr "Magasság:"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:124
 msgid "Delete"
@@ -1438,9 +1422,8 @@ msgid "A web page containing Jmol applets"
 msgstr "Egy weboldal, mely Jmol JAVA kisalkalmazást tartalmaz"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:177
-#, fuzzy
 msgid "click and drag to reorder"
-msgstr "dupla kattinttással vagy húzással rendezhető át"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:182
 msgid "Add Present Jmol State as Instance..."
@@ -1533,9 +1516,9 @@ msgid "adding {0}"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:687
-#, fuzzy, java-format
+#, java-format
 msgid "Unable to load resource {0}"
-msgstr "Nem található a \"{0}\" webcím."
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:739
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
@@ -1619,52 +1602,44 @@ msgid "Animation Control"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:177
-#, fuzzy
 msgid "Animation"
-msgstr "Animáció leállítása"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:178
 msgid "First Frame"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:180
-#, fuzzy
 msgid "Previous Frame"
-msgstr "Ugrás az előző kockára"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:182
 msgid "Play"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:184
-#, fuzzy
 msgid "Next Frame"
-msgstr "Ugrás a következő kockára"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:186
-#, fuzzy
 msgid "Pause"
-msgstr "&Beillesztés"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:188
-#, fuzzy
 msgid "Last Frame"
-msgstr "Ugrás az utolsó kockára"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:190
-#, fuzzy
 msgid "Mode:"
-msgstr "Módszer: "
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:191
-#, fuzzy
 msgid "Loop"
-msgstr "Ismétlés"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:193
-#, fuzzy
 msgid "Palindrome"
-msgstr "Oda-vissza"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:195
 msgid "Play Once"
@@ -1675,9 +1650,8 @@ msgid "Open Console Button"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:220
-#, fuzzy
 msgid "launch Jmol console"
-msgstr "Jmol Konzol"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:222
 msgid "Jmol Console"
@@ -1694,32 +1668,22 @@ msgstr ""
 #~ msgid "atom set"
 #~ msgstr "atomcsoport"
 
-#, fuzzy
-#~ msgid "atom sets"
-#~ msgstr "atomcsoport"
-
 #~ msgid "vector"
-#~ msgstr "vektor"
-
-#, fuzzy
-#~ msgid "vectors"
 #~ msgstr "vektor"
 
 #~ msgid "Jmol Script Console"
 #~ msgstr "Jmol parancsnyelvi konzol"
 
-#, fuzzy
-#~ msgid "Stop"
-#~ msgstr "Lépés"
+#~ msgid "Show Selected"
+#~ msgstr "A jelöltek látszanak"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "JmolPopIn.js hozzáadása"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "{0}.png hozzáadása"
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "{0}.spt hozzáadása"
-
-#~ msgid "Show Selected"
-#~ msgstr "A jelöltek látszanak"

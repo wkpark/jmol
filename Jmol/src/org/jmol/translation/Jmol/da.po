@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-11-14 10:32+0100\n"
-"PO-Revision-Date: 2010-11-06 19:21+0000\n"
+"PO-Revision-Date: 2010-11-08 00:48+0000\n"
 "Last-Translator: Ask Hjorth Larsen <asklarsen@gmail.com>\n"
 "Language-Team: Danish <da@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-11-07 10:36+0000\n"
+"X-Launchpad-Export-Date: 2010-12-16 16:48+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -64,7 +64,8 @@ msgstr "ingen konsol -- al udskrift til sysout"
 
 #: org/openscience/jmol/app/JmolApp.java:156
 msgid "send only output from print messages to console (implies -i)"
-msgstr "send kun uddata fra udskrevne meddelelser til konsollen (medfører -i)"
+msgstr ""
+"send kun uddata fra udskrevne meddelelser til konsollen (medfører -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:158
 msgid "independent command thread"
@@ -923,9 +924,8 @@ msgid "File Preview (requires restarting Jmol)"
 msgstr "Filforhåndsvisning (kræver genstart af Jmol)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:203
-#, fuzzy
 msgid "Clear history (requires restarting Jmol)"
-msgstr "Ryd konsol-knap (kræver genstart af Jmol)"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:204
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:205
@@ -945,9 +945,8 @@ msgid "Click atoms to measure distances"
 msgstr "Klik på atomer for at måle afstande"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:212
-#, fuzzy
 msgid "Click an atom to center on it"
-msgstr "Klik på atomer for at måle afstande"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:213
 msgid "Return molecule to home position."
@@ -1666,26 +1665,32 @@ msgstr "ikke implementeret"
 #~ msgid "vector"
 #~ msgstr "vektor"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Gå til første {0} i samlingen"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Afspil hele samlingen af {0}"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Gå til næste {0} i samlingen"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Gå til sidste {0} i samlingen"
 
 #~ msgid "Output Conso&le..."
 #~ msgstr "Output Conso&le..."
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "tilføjer {0}.spt"
 
 #~ msgid "atom set"
 #~ msgstr "atomsæt"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Gå til forrige {0} i samlingen"

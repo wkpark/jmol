@@ -7,14 +7,16 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-12-06 18:26+0100\n"
-"PO-Revision-Date: 2006-03-17 20:19+0100\n"
-"Last-Translator: Ivo Sarak <ivo@ra.vendomar.ee>\n"
+"PO-Revision-Date: 2010-12-16 12:57+0000\n"
+"Last-Translator: Ivo Sarak <Unknown>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: Estonian\n"
+"X-Launchpad-Export-Date: 2010-12-16 16:48+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: Estonia\n"
+"X-Poedit-Language: Estonian\n"
 "X-Poedit-Basepath: ../../../..\n"
 
 #: org/jmol/applet/AppletConsole.java:199
@@ -38,18 +40,16 @@ msgid "Set &Parameters"
 msgstr ""
 
 #: org/jmol/applet/AppletConsole.java:204
-#, fuzzy
 msgid "&More"
-msgstr "Mudel"
+msgstr ""
 
 #: org/jmol/applet/AppletConsole.java:205
 msgid "Editor"
 msgstr ""
 
 #: org/jmol/applet/AppletConsole.java:206
-#, fuzzy
 msgid "State"
-msgstr "Määra Z Kiirus"
+msgstr ""
 
 #: org/jmol/applet/AppletConsole.java:207
 #: org/jmol/console/ScriptEditor.java:137
@@ -61,9 +61,8 @@ msgid "Clear Output"
 msgstr ""
 
 #: org/jmol/applet/AppletConsole.java:209
-#, fuzzy
 msgid "Clear Input"
-msgstr "Sulge"
+msgstr ""
 
 #: org/jmol/applet/AppletConsole.java:210
 #: org/jmol/popup/MainPopupResourceBundle.java:852
@@ -71,9 +70,8 @@ msgid "History"
 msgstr ""
 
 #: org/jmol/applet/AppletConsole.java:211
-#, fuzzy
 msgid "Load"
-msgstr "Ligand"
+msgstr ""
 
 #: org/jmol/applet/AppletConsole.java:213
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
@@ -87,7 +85,7 @@ msgid ""
 msgstr ""
 
 #: org/jmol/applet/Jmol.java:702
-#, fuzzy, java-format
+#, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
 "\n"
@@ -95,8 +93,6 @@ msgid ""
 "\n"
 "See http://www.jmol.org for more information"
 msgstr ""
-"Jmol Applet. On osa OpenScience projektist. Täpsemalt vaata http://www.jmol."
-"org"
 
 #: org/jmol/applet/Jmol.java:952
 msgid "File Error:"
@@ -112,20 +108,17 @@ msgid "  {0} seconds"
 msgstr ""
 
 #: org/jmol/console/JmolConsole.java:87
-#, fuzzy
 msgid "Jmol Script Console"
-msgstr "Jmol skript sai täidetud"
+msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:98
-#, fuzzy
 msgid "Jmol Script Editor"
-msgstr "Jmol skript sai täidetud"
+msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:130
 #: org/jmol/popup/MainPopupResourceBundle.java:849
-#, fuzzy
 msgid "Console"
-msgstr "Konsool..."
+msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:132
 #: org/jmol/export/dialog/Dialog.java:440
@@ -143,44 +136,39 @@ msgid "Check"
 msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:136
-#, fuzzy
 msgid "Step"
-msgstr "Seiska"
+msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:138
 #: org/jmol/popup/MainPopupResourceBundle.java:805
-#, fuzzy
 msgid "Pause"
-msgstr "Alused"
+msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:140
 #: org/jmol/popup/MainPopupResourceBundle.java:806
-#, fuzzy
 msgid "Resume"
-msgstr "Mõõted"
+msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:142
 msgid "Halt"
 msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:144
-#, fuzzy
 msgid "Clear"
-msgstr "Sulge"
+msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:145
-#, fuzzy
 msgid "Close"
-msgstr "Konsool..."
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:92
-#, fuzzy
 msgid "File or URL:"
-msgstr "Faili viga:"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:266
 msgid "Image Type"
@@ -209,9 +197,8 @@ msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:371
 #: org/jmol/export/dialog/Dialog.java:481
-#, fuzzy
 msgid "No"
-msgstr "Ei ühtegi"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:373
 #, java-format
@@ -223,15 +210,13 @@ msgid "Warning"
 msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:432
-#, fuzzy
 msgid "All Files"
-msgstr "Kõik Raamistikud"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:433
 #: org/jmol/export/dialog/Dialog.java:480
-#, fuzzy
 msgid "Cancel"
-msgstr "Rohekassinine"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:435
 msgid "Abort file chooser dialog"
@@ -243,32 +228,28 @@ msgid "Details"
 msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:439
-#, fuzzy
 msgid "Directory"
-msgstr "Vektorid"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:442
 msgid "Open selected directory"
 msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:443
-#, fuzzy
 msgid "Attributes"
-msgstr "Struktuurid"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:444
-#, fuzzy
 msgid "Modified"
-msgstr "Mudel"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:445
 msgid "Generic File"
 msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:446
-#, fuzzy
 msgid "Name"
-msgstr "Raamistik"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:447
 msgid "File Name:"
@@ -305,9 +286,8 @@ msgid "List"
 msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:458
-#, fuzzy
 msgid "Look In:"
-msgstr "Suurenda sisse"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:460
 msgid "Error creating new folder"
@@ -327,14 +307,12 @@ msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:468
 #: org/jmol/export/dialog/Dialog.java:471
-#, fuzzy
 msgid "Save"
-msgstr "Määra Z Kiirus"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:470
-#, fuzzy
 msgid "Save selected file"
-msgstr "Vali"
+msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:472
 msgid "Save In:"
@@ -377,9 +355,8 @@ msgid "Catalan"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:120
-#, fuzzy
 msgid "Simplified Chinese"
-msgstr "Külgmised Ketid"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:121
 msgid "Traditional Chinese"
@@ -418,23 +395,20 @@ msgid "French"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:130
-#, fuzzy
 msgid "German"
-msgstr "Hall"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:131
-#, fuzzy
 msgid "Greek"
-msgstr "Roheline"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:132
 msgid "Hungarian"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:133
-#, fuzzy
 msgid "Indonesian"
-msgstr "Indiaanipunane"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:134
 msgid "Italian"
@@ -506,9 +480,9 @@ msgid "No atoms selected -- nothing to do!"
 msgstr ""
 
 #: org/jmol/minimize/Minimizer.java:286
-#, fuzzy, java-format
+#, java-format
 msgid "{0} atoms will be minimized."
-msgstr "Ei ühtegi aatomit"
+msgstr ""
 
 #: org/jmol/minimize/Minimizer.java:374
 #, java-format
@@ -516,9 +490,8 @@ msgid "could not setup force field {0}"
 msgstr ""
 
 #: org/jmol/modelkit/ModelKitPopup.java:75
-#, fuzzy
 msgid "Element?"
-msgstr "Element"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:78
 msgid "new"
@@ -534,33 +507,28 @@ msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:81
 #: org/jmol/viewer/ActionManager.java:58
-#, fuzzy
 msgid "center"
-msgstr "Tsentreeritud"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:82
-#, fuzzy
 msgid "add hydrogens"
-msgstr "Näita Vesinikke"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:83
 msgid "minimize"
 msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:84
-#, fuzzy
 msgid "fix hydrogens and minimize"
-msgstr "Vesiniku Sidemed"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:85
-#, fuzzy
 msgid "clear"
-msgstr "Sulge"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:86
-#, fuzzy
 msgid "save file"
-msgstr "Määra Z Kiirus"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:87
 msgid "save state"
@@ -571,14 +539,12 @@ msgid "invert ring stereochemistry"
 msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:89
-#, fuzzy
 msgid "delete atom"
-msgstr "Vali"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:90
-#, fuzzy
 msgid "drag to bond"
-msgstr "Määra Z Kiirus"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:91
 msgid "drag atom"
@@ -605,23 +571,20 @@ msgid "decrease charge"
 msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:105
-#, fuzzy
 msgid "delete bond"
-msgstr "Vali"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:106
-#, fuzzy
 msgid "single"
-msgstr "Skaala {0}"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:107
 msgid "double"
 msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:108
-#, fuzzy
 msgid "triple"
-msgstr "Skaala {0}"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:109
 msgid "increase order"
@@ -632,14 +595,12 @@ msgid "decrease order"
 msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:111
-#, fuzzy
 msgid "rotate bond (SHIFT-DRAG)"
-msgstr "Määra Z Kiirus"
+msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:112
-#, fuzzy
 msgid "exit modelkit mode"
-msgstr "Määra Valiku Reziim"
+msgstr ""
 
 #: org/jmol/modelsetbio/AminoPolymer.java:576
 #, java-format
@@ -666,9 +627,8 @@ msgstr "Ei ühtegi aatomit"
 
 #: org/jmol/popup/JmolPopup.java:362
 #: org/jmol/popup/MainPopupResourceBundle.java:548
-#, fuzzy
 msgid "Space Group"
-msgstr "Vali"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:424 org/jmol/popup/JmolPopup.java:464
 #: org/jmol/popup/MainPopupResourceBundle.java:569
@@ -689,9 +649,8 @@ msgid "Translations"
 msgstr "Tõlked"
 
 #: org/jmol/popup/JmolPopup.java:570
-#, fuzzy
 msgid "System"
-msgstr "Seiska"
+msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:576
 msgid "1 processor"
@@ -734,18 +693,16 @@ msgid "unknown maximum"
 msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:538
-#, fuzzy
 msgid "Configurations"
-msgstr "Tõlked"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:539
 msgid "Element"
 msgstr "Element"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:540
-#, fuzzy
 msgid "Model/Frame"
-msgstr "Mudel"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:541
 msgid "Language"
@@ -781,14 +738,14 @@ msgid "Model information"
 msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:551
-#, fuzzy, java-format
+#, java-format
 msgid "Select ({0})"
-msgstr "Skaala {0}"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:552
-#, fuzzy, java-format
+#, java-format
 msgid "All {0} models"
-msgstr "Kõik Mudelid"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:553
 #, java-format
@@ -796,9 +753,9 @@ msgid "Configurations ({0})"
 msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:554
-#, fuzzy, java-format
+#, java-format
 msgid "Collection of {0} models"
-msgstr "Kõik Mudelid"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:555
 #, java-format
@@ -816,9 +773,9 @@ msgid "groups: {0}"
 msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:558
-#, fuzzy, java-format
+#, java-format
 msgid "chains: {0}"
-msgstr "Skaala {0}"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:559
 #, java-format
@@ -826,23 +783,22 @@ msgid "polymers: {0}"
 msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:560
-#, fuzzy, java-format
+#, java-format
 msgid "model {0}"
-msgstr "Skaala {0}"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:561
-#, fuzzy, java-format
+#, java-format
 msgid "View {0}"
-msgstr "Skaala {0}"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:562
 msgid "Main Menu"
 msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:563
-#, fuzzy
 msgid "Biomolecules"
-msgstr "Mudel"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:564
 #, java-format
@@ -869,9 +825,8 @@ msgid "Invert Selection"
 msgstr "Vaheta Valik"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:574
-#, fuzzy
 msgid "View"
-msgstr "Skaala {0}"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:575
 msgid "Front"
@@ -882,23 +837,20 @@ msgid "Left"
 msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:577
-#, fuzzy
 msgid "Right"
-msgstr "Ülemine Parem"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:578
 msgid "Top"
 msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:579
-#, fuzzy
 msgid "Bottom"
-msgstr "Suurenda"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:580
-#, fuzzy
 msgid "Back"
-msgstr "Must"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:582
 msgid "Protein"
@@ -944,9 +896,8 @@ msgid "DNA"
 msgstr "DNA"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:594
-#, fuzzy
 msgid "RNA"
-msgstr "ARN"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:596
 msgid "Bases"
@@ -965,23 +916,20 @@ msgid "AU pairs"
 msgstr "AU paarid"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:600
-#, fuzzy
 msgid "Hetero"
-msgstr "hetero"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:601
 msgid "All PDB \"HETATM\""
 msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:602
-#, fuzzy
 msgid "All Solvent"
-msgstr "Lahusti"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:603
-#, fuzzy
 msgid "All Water"
-msgstr "Vesi"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:605
 msgid "Nonaqueous Solvent"
@@ -1004,9 +952,8 @@ msgid "None of the above"
 msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:613
-#, fuzzy
 msgid "Style"
-msgstr "Määra Z Kiirus"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:614
 msgid "Scheme"
@@ -1064,9 +1011,9 @@ msgstr "välja"
 #: org/jmol/popup/MainPopupResourceBundle.java:627
 #: org/jmol/popup/MainPopupResourceBundle.java:628
 #: org/jmol/popup/MainPopupResourceBundle.java:629
-#, fuzzy, java-format
+#, java-format
 msgid "{0}% van der Waals"
-msgstr "{0}% vanderWaals"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:631
 #: org/jmol/popup/MainPopupResourceBundle.java:753
@@ -1104,9 +1051,9 @@ msgstr "Sees"
 #: org/jmol/popup/MainPopupResourceBundle.java:927
 #: org/jmol/popup/MainPopupResourceBundle.java:928
 #: org/jmol/popup/MainPopupResourceBundle.java:929
-#, fuzzy, java-format
+#, java-format
 msgid "{0} Å"
-msgstr "{0} px"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:640
 #: org/jmol/popup/MainPopupResourceBundle.java:754
@@ -1144,9 +1091,8 @@ msgid "Structures"
 msgstr "Struktuurid"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:667
-#, fuzzy
 msgid "Cartoon Rockets"
-msgstr "Pildijada"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:668
 #: org/jmol/popup/MainPopupResourceBundle.java:760
@@ -1155,9 +1101,8 @@ msgstr "Ribad"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:669
 #: org/jmol/popup/MainPopupResourceBundle.java:761
-#, fuzzy
 msgid "Rockets"
-msgstr "Pildijada"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:670
 #: org/jmol/popup/MainPopupResourceBundle.java:762
@@ -1165,9 +1110,8 @@ msgid "Strands"
 msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:673
-#, fuzzy
 msgid "Vibration"
-msgstr "Tõlked"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:676
 #: org/jmol/popup/MainPopupResourceBundle.java:766
@@ -1193,9 +1137,8 @@ msgid "Stereographic"
 msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:690
-#, fuzzy
 msgid "Red+Cyan glasses"
-msgstr "Punane+Roheline klaasid"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:691
 msgid "Red+Blue glasses"
@@ -1271,9 +1214,8 @@ msgid "Alternative Location"
 msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:716
-#, fuzzy
 msgid "Molecule"
-msgstr "Mudel"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:717
 msgid "Formal Charge"
@@ -1292,9 +1234,8 @@ msgid "Temperature (Fixed)"
 msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:722
-#, fuzzy
 msgid "Amino Acid"
-msgstr "Amiino"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:723
 msgid "Secondary Structure"
@@ -1373,9 +1314,8 @@ msgid "Maroon"
 msgstr "Punapruun"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:745
-#, fuzzy
 msgid "Gray"
-msgstr "Hall"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:746
 msgid "Slate Blue"
@@ -1405,9 +1345,8 @@ msgstr "Taust"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:765
 #: org/jmol/popup/MainPopupResourceBundle.java:891
-#, fuzzy
 msgid "Surfaces"
-msgstr "Jälg"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:767
 #: org/jmol/popup/MainPopupResourceBundle.java:911
@@ -1425,9 +1364,8 @@ msgstr "Boundbox"
 #: org/jmol/popup/MainPopupResourceBundle.java:888
 #: org/jmol/popup/MainPopupResourceBundle.java:913
 #: org/jmol/popup/MainPopupResourceBundle.java:938
-#, fuzzy
 msgid "Unit cell"
-msgstr "Unitcell"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:771
 msgid "Zoom"
@@ -1464,9 +1402,8 @@ msgid "Set FPS"
 msgstr "Määra FPS"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:798
-#, fuzzy
 msgid "Animation"
-msgstr "Animatsiooni Reziim"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:799
 msgid "Animation Mode"
@@ -1505,9 +1442,8 @@ msgid "Rewind"
 msgstr "Keri Tagasi"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:811
-#, fuzzy
 msgid "Reverse"
-msgstr "Mängi Tagurpidi"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:812
 msgid "Restart"
@@ -1515,23 +1451,20 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:821
 #: org/jmol/popup/MainPopupResourceBundle.java:854
-#, fuzzy
 msgid "Measurements"
-msgstr "Mõõted"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:822
 msgid "Double-Click begins and ends all measurements"
 msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:823
-#, fuzzy
 msgid "Click for distance measurement"
-msgstr "Mõõted"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:824
-#, fuzzy
 msgid "Click for angle measurement"
-msgstr "Mõõted"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:825
 msgid "Click for torsion (dihedral) measurement"
@@ -1542,14 +1475,12 @@ msgid "Click two atoms to display a sequence in the console"
 msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:827
-#, fuzzy
 msgid "Delete measurements"
-msgstr "Mõõted"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:828
-#, fuzzy
 msgid "List measurements"
-msgstr "Mõõted"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:829
 msgid "Distance units nanometers"
@@ -1564,53 +1495,44 @@ msgid "Distance units picometers"
 msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:833
-#, fuzzy
 msgid "Set picking"
-msgstr "Vali"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:835
-#, fuzzy
 msgid "Center"
-msgstr "Tsentreeritud"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:837
 msgid "Identity"
 msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:838
-#, fuzzy
 msgid "Label"
-msgstr "Sildid"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:839
-#, fuzzy
 msgid "Select atom"
-msgstr "Vali"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:840
-#, fuzzy
 msgid "Select chain"
-msgstr "Vali"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:841
-#, fuzzy
 msgid "Select element"
-msgstr "Vali"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:842
-#, fuzzy
 msgid "Select group"
-msgstr "Vali"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:843
-#, fuzzy
 msgid "Select molecule"
-msgstr "Määra Valiku Reziim"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:844
-#, fuzzy
 msgid "Select site"
-msgstr "Vali"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:845
 msgid "Show symmetry operation"
@@ -1641,42 +1563,36 @@ msgid "Model"
 msgstr "Mudel"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:857
-#, fuzzy
 msgid "Orientation"
-msgstr "Tõlked"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:858
-#, fuzzy
 msgid "Space group"
-msgstr "Vali"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:860
 msgid "Current state"
 msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:862
-#, fuzzy
 msgid "File"
-msgstr "Skaala {0}"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:863
-#, fuzzy
 msgid "Reload"
-msgstr "Skaala {0}"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:864
 msgid "Open from PDB"
 msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:865
-#, fuzzy
 msgid "Open file or URL"
-msgstr "Faili viga:"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:866
-#, fuzzy
 msgid "Load full unit cell"
-msgstr "Unitcell"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:867
 msgid "Open script"
@@ -1715,42 +1631,37 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:879
 #: org/jmol/popup/MainPopupResourceBundle.java:880
 #: org/jmol/popup/MainPopupResourceBundle.java:881
-#, fuzzy, java-format
+#, java-format
 msgid "Export {0} 3D model"
-msgstr "Kõik Mudelid"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:883
-#, fuzzy
 msgid "Computation"
-msgstr "Tõlked"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:884
 msgid "Optimize structure"
 msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:885
-#, fuzzy
 msgid "Model kit"
-msgstr "Mudel"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:889
 msgid "Extract MOL data"
 msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:892
-#, fuzzy
 msgid "Dot Surface"
-msgstr "Jälg"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:893
-#, fuzzy
 msgid "van der Waals Surface"
-msgstr "{0}% vanderWaals"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:894
-#, fuzzy
 msgid "Molecular Surface"
-msgstr "Mudel"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:895
 #, java-format
@@ -1769,9 +1680,9 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:904
 #: org/jmol/popup/MainPopupResourceBundle.java:905
 #: org/jmol/popup/MainPopupResourceBundle.java:906
-#, fuzzy, java-format
+#, java-format
 msgid "Reload {0}"
-msgstr "Skaala {0}"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:907
 #, java-format
@@ -1807,9 +1718,8 @@ msgid "Angstrom Width"
 msgstr "Angstromi Laius"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:932
-#, fuzzy
 msgid "Selection Halos"
-msgstr "Vali"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:933
 msgid "Show Hydrogens"
@@ -1899,14 +1809,14 @@ msgid "residue specification (ALA, AL?, A*) expected"
 msgstr ""
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1281
-#, fuzzy, java-format
+#, java-format
 msgid "{0} expected"
-msgstr "Ei ühtegi aatomit"
+msgstr ""
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1284
-#, fuzzy, java-format
+#, java-format
 msgid "{0} unexpected"
-msgstr "Ei ühtegi aatomit"
+msgstr ""
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1287
 #, java-format
@@ -2066,9 +1976,8 @@ msgid ""
 msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2696
-#, fuzzy
 msgid "No unit cell"
-msgstr "Unitcell"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2702
 #, java-format
@@ -2168,39 +2077,36 @@ msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:9860
 #: org/jmol/script/ScriptEvaluator.java:10116
-#, fuzzy, java-format
+#, java-format
 msgid "{0} atoms deleted"
-msgstr "Ei ühtegi aatomit"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:10689
 #: org/jmol/script/ScriptEvaluator.java:11101
-#, fuzzy, java-format
+#, java-format
 msgid "{0} hydrogen bonds"
-msgstr "Vesiniku Sidemed"
+msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:11055
-#, fuzzy, java-format
+#, java-format
 msgid "{0} struts added"
-msgstr "Vesiniku Sidemed"
+msgstr ""
 
 #: org/jmol/shape/Frank.java:76
 msgid "Click for menu..."
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:59
-#, fuzzy
 msgid "translate"
-msgstr "Tõlked"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:60
-#, fuzzy
 msgid "rotate"
-msgstr "Määra Z Kiirus"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:61
-#, fuzzy
 msgid "rotate Z"
-msgstr "Määra Z Kiirus"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:62
 msgid ""
@@ -2208,9 +2114,8 @@ msgid ""
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:63
-#, fuzzy
 msgid "zoom"
-msgstr "Suurenda"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:64
 msgid "zoom (along right edge of window)"
@@ -2232,7 +2137,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:69
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:71
@@ -2345,9 +2251,9 @@ msgid "pick an atom"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:98
-#, fuzzy, java-format
+#, java-format
 msgid "pick a DRAW point (for measurements) (requires {0}"
-msgstr "Mõõted"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:99
 #, java-format
@@ -2362,14 +2268,13 @@ msgid ""
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:101
-#, fuzzy
 msgid "pick an atom to initiate or conclude a measurement"
-msgstr "Mõõted"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:102
-#, fuzzy, java-format
+#, java-format
 msgid "pick an ISOSURFACE point (requires {0}"
-msgstr "Mõõted"
+msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:103
 #, java-format
@@ -2428,19 +2333,19 @@ msgstr ""
 
 #: org/jmol/viewer/SelectionManager.java:89
 #: org/jmol/viewer/SelectionManager.java:105
-#, fuzzy, java-format
+#, java-format
 msgid "{0} atoms hidden"
-msgstr "Nimi peidetud"
+msgstr ""
 
 #: org/jmol/viewer/SelectionManager.java:147
-#, fuzzy, java-format
+#, java-format
 msgid "{0} atoms selected"
-msgstr "Ei ühtegi aatomit"
+msgstr ""
 
 #: org/jmol/viewer/Viewer.java:4506
-#, fuzzy, java-format
+#, java-format
 msgid "{0} hydrogens added"
-msgstr "Vesiniku Sidemed"
+msgstr ""
 
 #: org/jmol/viewer/Viewer.java:4586
 msgid "Drag to move label"
@@ -2459,219 +2364,5 @@ msgstr ""
 msgid "Setting log file to {0}"
 msgstr ""
 
-#, fuzzy
-#~ msgid "atoms"
-#~ msgstr "Aatomid"
-
-#, fuzzy
-#~ msgid "bonds"
-#~ msgstr "Sidemed"
-
-#, fuzzy
-#~ msgid "delete"
-#~ msgstr "Vali"
-
 #~ msgid "About Jmol"
 #~ msgstr "Jmol'ist"
-
-#, fuzzy
-#~ msgid "Load PDB"
-#~ msgstr "Ligand"
-
-#, fuzzy
-#~ msgid "SPT State"
-#~ msgstr "Määra Z Kiirus"
-
-#, fuzzy
-#~ msgid "all"
-#~ msgstr "Kõik"
-
-#, fuzzy
-#~ msgid "Structure"
-#~ msgstr "Struktuurid"
-
-#, fuzzy
-#~ msgid "Surface"
-#~ msgstr "Jälg"
-
-#~ msgid "Unitcell"
-#~ msgstr "Unitcell"
-
-#, fuzzy
-#~ msgid "Measure"
-#~ msgstr "Mõõted"
-
-#, fuzzy
-#~ msgid "Bound Box"
-#~ msgstr "Boundbox"
-
-#, fuzzy
-#~ msgid "Unit Cell"
-#~ msgstr "Unitcell"
-
-#, fuzzy
-#~ msgid "bad atom number"
-#~ msgstr "Koos Aatomite Numbritega"
-
-#, fuzzy
-#~ msgid "Compatibility"
-#~ msgstr "RasMol/Chime Ühilduvus"
-
-#, fuzzy
-#~ msgid "RasMol/Chime Settings"
-#~ msgstr "RasMol/Chime Ühilduvus"
-
-#~ msgid "Axes RasMol/Chime"
-#~ msgstr "Teljed RasMol/Chime"
-
-#, fuzzy
-#~ msgid "Zero-Based Xyz Rasmol"
-#~ msgstr "Zero Based Xyz Rasmol"
-
-#~ msgid "Jmol executing script ..."
-#~ msgstr "Jmol käivitab skripti ..."
-
-#, fuzzy
-#~ msgid "use {0}"
-#~ msgstr "Skaala {0}"
-
-#~ msgid "Animate"
-#~ msgstr "Animeeri"
-
-#~ msgid "Replace Selection"
-#~ msgstr "Asenda Valik"
-
-#~ msgid "Add to Selection (OR)"
-#~ msgstr "Lisa Valikusse (OR)"
-
-#~ msgid "Narrow Selection (AND)"
-#~ msgstr "Kitsenda Valikut (AND)"
-
-#~ msgid "Render"
-#~ msgstr "Renderda"
-
-#~ msgid "Crimson"
-#~ msgstr "Lilla"
-
-#~ msgid "Dark Red"
-#~ msgstr "Tumepunane"
-
-#~ msgid "Firebrick"
-#~ msgstr "Helepunane"
-
-#~ msgid "Dark Magenta"
-#~ msgstr "Tumelilla"
-
-#~ msgid "Dark Salmon"
-#~ msgstr "Tumekollane"
-
-#~ msgid "Light Salmon"
-#~ msgstr "Helekollane"
-
-#~ msgid "Deep Pink"
-#~ msgstr "Tumeroosa"
-
-#~ msgid "Light Pink"
-#~ msgstr "Heleroosa"
-
-#~ msgid "Goldenrod"
-#~ msgstr "Kuldkollane"
-
-#~ msgid "Lemon Chiffon"
-#~ msgstr "Sidrunkollane"
-
-#~ msgid "Yellow-Green"
-#~ msgstr "Kollaroheline"
-
-#~ msgid "Lime"
-#~ msgstr "Laimiroheline"
-
-#~ msgid "Seagreen"
-#~ msgstr "Mereroheline"
-
-#~ msgid "Green-Blue"
-#~ msgstr "Rohesinine"
-
-#~ msgid "Spring Green"
-#~ msgstr "Sügisroheline"
-
-#~ msgid "Aqua"
-#~ msgstr "Aqua"
-
-#~ msgid "Azure"
-#~ msgstr "Taevasinine"
-
-#~ msgid "Carolina Blue"
-#~ msgstr "Caroliina-sinine"
-
-#~ msgid "Cadet Blue"
-#~ msgstr "Mundrisinine"
-
-#~ msgid "Cornflower"
-#~ msgstr "Sinililla"
-
-#~ msgid "Dark Slate Blue"
-#~ msgstr "Tumesinine"
-
-#~ msgid "Light Steel Blue"
-#~ msgstr "Sinakashall"
-
-#~ msgid "Charge"
-#~ msgstr "Laeng"
-
-#~ msgid "Crystal"
-#~ msgstr "Kristall"
-
-#~ msgid "Aquamarine"
-#~ msgstr "Akvamariin"
-
-#~ msgid "Forest Green"
-#~ msgstr "Metsaroheline"
-
-#~ msgid "Hot Pink"
-#~ msgstr "Kuumroosa"
-
-#~ msgid "Options"
-#~ msgstr "Valikud"
-
-#, fuzzy
-#~ msgid "Show Selected Atoms"
-#~ msgstr "Näita Valikuvarje"
-
-#~ msgid "Jmol Colors"
-#~ msgstr "Jmol Värvid"
-
-#, fuzzy
-#~ msgid "or dotted"
-#~ msgstr "Punktiir"
-
-#~ msgid "Except Solvent"
-#~ msgstr "Välista Lahustit"
-
-#~ msgid "Except Water"
-#~ msgstr "Välista Vett"
-
-#~ msgid "Other"
-#~ msgstr "Muu"
-
-#~ msgid "Lipid"
-#~ msgstr "Lipiid"
-
-#~ msgid "Nanometers"
-#~ msgstr "Nanomeetrid"
-
-#~ msgid "Angstroms"
-#~ msgstr "Angsromid"
-
-#~ msgid "Picometers"
-#~ msgstr "Picomeetrid"
-
-#~ msgid "Wireframe Rotation"
-#~ msgstr "Sõrestiku Keeramine"
-
-#~ msgid ""
-#~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "
-#~ "for more information"
-#~ msgstr ""
-#~ "Jmol Applet. On osa OpenScience projektist. Täpsemalt vaata http://www."
-#~ "jmol.org"

@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-11-14 10:32+0100\n"
-"PO-Revision-Date: 2010-02-18 13:45+0000\n"
-"Last-Translator: scythe <Unknown>\n"
+"PO-Revision-Date: 2010-02-21 11:36+0000\n"
+"Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-02-21 09:32+0000\n"
+"X-Launchpad-Export-Date: 2010-12-16 16:48+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -107,9 +107,7 @@ msgstr "ウインドウサイズ 幅×高さ, 例 {0}"
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
-msgstr ""
-"JPG画像品質（１～１００；デフォルト ７５） or ＰＮＧ画像圧縮率（０～９；デ"
-"フォルト ２）"
+msgstr "JPG画像品質（１～１００；デフォルト ７５） or ＰＮＧ画像圧縮率（０～９；デフォルト ２）"
 
 #: org/openscience/jmol/app/JmolApp.java:216
 #, java-format
@@ -994,9 +992,8 @@ msgid "Initializing Recent Files..."
 msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:341
-#, fuzzy
 msgid "Jmol Java Console"
-msgstr "Jmol スクリプトコンソール"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:361
 msgid "Could not create ConsoleTextArea: "
@@ -1505,9 +1502,9 @@ msgid "adding {0}"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:687
-#, fuzzy, java-format
+#, java-format
 msgid "Unable to load resource {0}"
-msgstr "url \"{0}\" が見つかりません"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:739
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
@@ -1634,9 +1631,8 @@ msgid "Open Console Button"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:220
-#, fuzzy
 msgid "launch Jmol console"
-msgstr "Jmol スクリプトコンソール"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:222
 msgid "Jmol Console"
@@ -1649,11 +1645,3 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/Widgets.java:245
 msgid "unimplemented"
 msgstr ""
-
-#, fuzzy
-#~ msgid "vectors"
-#~ msgstr "ベクトル"
-
-#, fuzzy
-#~ msgid "Stop"
-#~ msgstr "ステップ"

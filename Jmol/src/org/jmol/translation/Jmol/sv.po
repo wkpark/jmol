@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-11-14 10:32+0100\n"
-"PO-Revision-Date: 2009-08-15 08:40+0000\n"
-"Last-Translator: Egon Willighagen <Unknown>\n"
+"PO-Revision-Date: 2010-09-06 21:25+0000\n"
+"Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-08-16 17:36+0000\n"
+"X-Launchpad-Export-Date: 2010-12-16 16:48+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -1424,9 +1424,8 @@ msgid "Jmol Instances:"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:227
-#, fuzzy
 msgid "Select widgets:"
-msgstr "Markering: "
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:330
 msgid "Help/Instructions"
@@ -1604,23 +1603,20 @@ msgid "Next Frame"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:186
-#, fuzzy
 msgid "Pause"
-msgstr "Klistra &in"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:188
 msgid "Last Frame"
 msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:190
-#, fuzzy
 msgid "Mode:"
-msgstr "Metod: "
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:191
-#, fuzzy
 msgid "Loop"
-msgstr "Cirku&lera"
+msgstr ""
 
 #: org/openscience/jmol/app/webexport/Widgets.java:193
 msgid "Palindrome"
@@ -1651,8 +1647,4 @@ msgid "unimplemented"
 msgstr ""
 
 #~ msgid "vector"
-#~ msgstr "vector"
-
-#, fuzzy
-#~ msgid "vectors"
 #~ msgstr "vector"

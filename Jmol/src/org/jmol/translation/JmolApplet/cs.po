@@ -9,13 +9,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-12-06 18:26+0100\n"
-"PO-Revision-Date: 2010-11-17 19:02+0000\n"
-"Last-Translator: Martin Slavík <Unknown>\n"
+"PO-Revision-Date: 2010-11-18 00:49+0000\n"
+"Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Czech <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-11-17 20:52+0000\n"
+"X-Launchpad-Export-Date: 2010-12-16 16:48+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: CZECH REPUBLIC\n"
 "X-Poedit-Language: Czech\n"
@@ -147,7 +147,8 @@ msgid "Check"
 msgstr "Zkontrolovat"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Nahoru"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -2062,7 +2063,8 @@ msgstr "neznámý objekt"
 #: org/jmol/script/ScriptEvaluator.java:2752
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
-msgstr "nerozpoznaný {0} parameter v Jmol stavovém skriptu (přesto nastavený)"
+msgstr ""
+"nerozpoznaný {0} parameter v Jmol stavovém skriptu (přesto nastavený)"
 
 #: org/jmol/script/ScriptEvaluator.java:2755
 #, java-format
@@ -2154,7 +2156,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:69
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 "klepnout na dva body pro otočení kolem osy proti směru hodinových ručiček "
 "(vyžaduje {0})"
@@ -2391,12 +2394,12 @@ msgstr "Nastavuji log soubor na {0}"
 #~ msgid "About Jmol"
 #~ msgstr "O programu Jmol"
 
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
-#~ "Vytvoření souboru appletem není dovoleno. Pro formát Base64 JPEG, "
-#~ "použijte {0}."
+#~ "Vytvoření souboru appletem není dovoleno. Pro formát Base64 JPEG, použijte "
+#~ "{0}."
 
 #~ msgid "File creation failed."
 #~ msgstr "Vytvoření souboru se nezdařilo."
@@ -2404,18 +2407,21 @@ msgstr "Nastavuji log soubor na {0}"
 #~ msgid "File or URL"
 #~ msgstr "Soubor nebo URL"
 
+#, java-format
 #~ msgid "File {0}"
 #~ msgstr "Soubor {0}"
 
 #~ msgid "File from PDB"
 #~ msgstr "Soubor z PDB"
 
+#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "{0} 3D Modelů"
 
 #~ msgid "JVXL Isosurface"
 #~ msgstr "JVXL izopovrch"
 
+#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "{0} obrázek"
 
@@ -2425,11 +2431,14 @@ msgstr "Nastavuji log soubor na {0}"
 #~ msgid "Script with history"
 #~ msgstr "Skript s historií"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to string value: {0}"
 #~ msgstr "ERROR: cannot set boolean flag to string value: {0}"
 
+#, java-format
 #~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 #~ msgstr "ERROR: Cannot set value of this variable to a boolean: {0}"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr "ERROR: cannot set boolean flag to numeric value: {0}"

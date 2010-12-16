@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-11-14 10:32+0100\n"
-"PO-Revision-Date: 2010-10-15 08:08+0000\n"
+"PO-Revision-Date: 2010-10-15 23:49+0000\n"
 "Last-Translator: Sergey Basalaev <SBasalaev@gmail.com>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-10-15 19:56+0000\n"
+"X-Launchpad-Export-Date: 2010-12-16 16:48+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -807,7 +807,7 @@ msgstr "&Кристальные свойства"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:170
 msgid "&Once"
-msgstr ""
+msgstr "&Только"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:171
 msgid "&Loop"
@@ -815,7 +815,7 @@ msgstr "&Цикл"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:172
 msgid "P&alindrome"
-msgstr ""
+msgstr "&Палиндром"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:173
 msgid "&Stop animation"
@@ -923,9 +923,8 @@ msgid "File Preview (requires restarting Jmol)"
 msgstr "Предпросмотр файла (требует перезапуска Jmol)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:203
-#, fuzzy
 msgid "Clear history (requires restarting Jmol)"
-msgstr "Кнопка очистки консоли (требует перезапуска Jmol)"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:204
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:205
@@ -945,9 +944,8 @@ msgid "Click atoms to measure distances"
 msgstr "Тыкайте атомы чтобы измерять растояния"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:212
-#, fuzzy
 msgid "Click an atom to center on it"
-msgstr "Тыкайте атомы чтобы измерять растояния"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:213
 msgid "Return molecule to home position."
@@ -1182,7 +1180,7 @@ msgstr "Сартовай размер : "
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:413
 msgid "Initial size of the tiles"
-msgstr ""
+msgstr "Первоначальный размер плитки"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:429
 msgid "End size : "
@@ -1190,7 +1188,7 @@ msgstr "Конечный размер : "
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:431
 msgid "Final size of the tiles"
-msgstr ""
+msgstr "Окончательный размер плитки"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:452
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:454
@@ -1200,7 +1198,7 @@ msgstr ""
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:491
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:758
 msgid "Go!"
-msgstr ""
+msgstr "ВПЕРЕД!"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:493
 msgid "Save file and possibly launch POV-Ray"
@@ -1471,6 +1469,7 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/WebPanel.java:482
 msgid "Error creating new instance containing script(s) and image."
 msgstr ""
+"Ошибка при создании нового экземпляра содержащий скрипт(ы) и изображения."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:493
 #, java-format
@@ -1662,6 +1661,7 @@ msgstr "не реализовано"
 #~ msgid "Jmol Script Console"
 #~ msgstr "Консоль сценариев Jmol"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Перейти к следующему {0} в коллекции"
 
@@ -1671,26 +1671,32 @@ msgstr "не реализовано"
 #~ msgid "atom set"
 #~ msgstr "Набор атомов"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Идти к первой {0} в коллекции"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Идти к предыдущей {0} в коллекции"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Смотреть всю коллекцию {0}"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Перейти к последней {0} в коллекции"
 
 #~ msgid "Show Selected"
 #~ msgstr "Показать Выбранное"
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "добавление {0}.spt"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "добавление JmolPopIn.js"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "добавление {0}.png"

@@ -647,7 +647,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
           filesToCopy.add(localPath + "/Jmol.js");
           filesToCopy.add(localPath + "/JmolApplet.jar");
         }
-        FileManager.getFileReferences(script, filesToCopy, "");
+        FileManager.getFileReferences(script, filesToCopy);
         List<String> copiedFileNames = new ArrayList<String>();
         int nFiles = filesToCopy.size();
         for (int iFile = 0; iFile < nFiles; iFile++) {

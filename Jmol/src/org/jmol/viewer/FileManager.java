@@ -1012,7 +1012,7 @@ public class FileManager {
       return script;
     boolean noPath = (dataPath.length() == 0);
     List<String> fileNames = new ArrayList<String>();
-    getFileReferences(script, fileNames, "");
+    getFileReferences(script, fileNames);
     List<String> oldFileNames = new ArrayList<String>();
     List<String> newFileNames = new ArrayList<String>();
     int nFiles = fileNames.size();
@@ -1041,19 +1041,23 @@ public class FileManager {
   }
 
   private static String[] scriptFilePrefixes = new String[] { "/*file*/\"", "FILE0=\"", "FILE1=\"" };
-  public static void getFileReferences(String script, List<String> fileList, String flag) {
+  public static void getFileReferences(String script, List<String> fileList) {
     for (int ipt = 0; ipt < scriptFilePrefixes.length; ipt++) {
       String tag = scriptFilePrefixes[ipt];
       int i = -1;
-      while ((i = script.indexOf(tag, i + 1)) >= 0)
-        fileList.add(flag + Parser.getNextQuotedString(script, i));
+      while ((i = script.indexOf(tag, i + 1)) >= 0) {
+        String s = Parser.getNextQuotedString(script, i);
+        if (s.indexOf("::") >= 0)
+          s = TextFormat.split(s, "::")[1];
+        fileList.add(s);
+      }
     }
   }
 
   String createZipSet(String fileName, String script, boolean includeRemoteFiles) {
     List<Object> v = new ArrayList<Object>();
     List<String> fileNames = new ArrayList<String>();
-    getFileReferences(script, fileNames, "");
+    getFileReferences(script, fileNames);
     List<String> newFileNames = new ArrayList<String>();
     int nFiles = fileNames.size();
     fileName = fileName.replace('\\', '/');

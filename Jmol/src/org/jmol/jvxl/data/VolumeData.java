@@ -175,13 +175,18 @@ public class VolumeData implements VolumeDataInterface {
   }
 
   public float minGrid;
+  public float maxGrid;
   
   public int getYzCount() {
     
     minGrid = volumetricVectors[0].length();
     minGrid = Math.min(minGrid, volumetricVectors[1].length());
     minGrid = Math.min(minGrid, volumetricVectors[2].length());
-    
+
+    maxGrid = volumetricVectors[0].length();
+    maxGrid = Math.max(maxGrid, volumetricVectors[1].length());
+    maxGrid = Math.max(maxGrid, volumetricVectors[2].length());
+
     nPoints = voxelCounts[0] * voxelCounts[1] * voxelCounts[2];
     
     return yzCount = voxelCounts[1] * voxelCounts[2];

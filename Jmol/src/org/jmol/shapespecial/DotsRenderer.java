@@ -61,6 +61,8 @@ public class DotsRenderer extends ShapeRenderer {
     render1(dots);
   }
 
+  protected float testRadiusAdjust;
+  
   protected void render1(Dots dots) {
     //dots.timeBeginExecution = System.currentTimeMillis();
     if (!iShowSolid && !g3d.setColix(Graphics3D.BLACK)) // no translucent for dots
@@ -68,10 +70,9 @@ public class DotsRenderer extends ShapeRenderer {
     int sppa = (int) viewer.getScalePixelsPerAngstrom(true);
     screenLevel = (iShowSolid || sppa > 20 ? 3 : sppa > 10 ? 2 : sppa > 5 ? 1
         : 0);
-    if (!iShowSolid) {
+    if (!iShowSolid)
       screenLevel += viewer.getDotDensity() - 3;
-      screenLevel = Math.max(Math.min(screenLevel, 3), 0);
-    }
+    screenLevel = Math.max(Math.min(screenLevel, Dots.MAX_LEVEL), 0);
     screenDotCount = Geodesic.getVertexCount(screenLevel);
     dotScale = viewer.getDotScale();
     for (int i = screenDotCount; --i >= 0;)
@@ -84,7 +85,7 @@ public class DotsRenderer extends ShapeRenderer {
       if (map == null || !atom.isVisible(myVisibilityFlag)
           || !g3d.isInDisplayRange(atom.screenX, atom.screenY))
         continue;
-      int nPoints = calcScreenPoints(map, dots.ec.getAppropriateRadius(i),
+      int nPoints = calcScreenPoints(map, dots.ec.getAppropriateRadius(i) + testRadiusAdjust,
           atom.screenX, atom.screenY, atom.screenZ);
       if (nPoints != 0)
         renderConvex(Graphics3D.getColixInherited(dots.colixes[i],

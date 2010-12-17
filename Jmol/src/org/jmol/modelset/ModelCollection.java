@@ -56,6 +56,7 @@ import org.jmol.util.Elements;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.OutputStringBuffer;
+import org.jmol.util.Parser;
 import org.jmol.util.Point3fi;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
@@ -3657,10 +3658,17 @@ abstract public class ModelCollection extends BondCollection {
         if (sym != null) {
           type += sym;
         }
-        sb.append(TextFormat.sprintf(
-            "model %-2s;  mo %-2i # energy %-8.3f %s %s\n", new Object[] {
-                getModelNumberDotted(m), Integer.valueOf(i + 1),
-                mo.get("energy"), units, type }));
+        String energy = "" + mo.get("energy");
+        if (Float.isNaN(Parser.parseFloat(energy)))
+          sb.append(TextFormat.sprintf(
+              "model %-2s;  mo %-2i # %s\n", new Object[] {
+                  getModelNumberDotted(m), Integer.valueOf(i + 1),
+                  type }));
+        else 
+          sb.append(TextFormat.sprintf(
+              "model %-2s;  mo %-2i # energy %-8.3f %s %s\n", new Object[] {
+                  getModelNumberDotted(m), Integer.valueOf(i + 1),
+                  mo.get("energy"), units, type }));
       }
     }
     return sb.toString();

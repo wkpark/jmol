@@ -123,8 +123,8 @@ public class MOCalculation extends QuantumCalculation implements
   private float occupancy = 2f; //for now -- RHF only
   //private float coefMax = Integer.MAX_VALUE;
   private boolean doNormalize = true;
-  //                                                              DS         DC          FS          FC
-  private int[][] dfCoefMaps = new int[][] {null, null, null, new int[5], new int[6], new int[7], new int[10]};
+  //                                              S           SP            DS         DC          FS          FC
+  private int[][] dfCoefMaps = new int[][] {null, new int[3], new int[4], new int[5], new int[6], new int[7], new int[10]};
 
 //  private float[] nuclearCharges;
 
@@ -368,16 +368,16 @@ public class MOCalculation extends QuantumCalculation implements
   }
 
   private void addDataP() {
-    int[] map = dfCoefMaps[JmolConstants.SHELL_D_CARTESIAN];
+    int[] map = dfCoefMaps[JmolConstants.SHELL_P];
     if (thisAtom == null || map[0] == Integer.MIN_VALUE) {
       moCoeff += 3;
       return;
     }
     if (doDebug)
       dumpInfo(JmolConstants.SHELL_P, map);
-    float mx = map[0] + moCoefficients[moCoeff++];
-    float my = map[1] + moCoefficients[moCoeff++];
-    float mz = map[2] + moCoefficients[moCoeff++];
+    float mx = moCoefficients[map[0] + moCoeff++];
+    float my = moCoefficients[map[1] + moCoeff++];
+    float mz = moCoefficients[map[2] + moCoeff++];
     if (isElectronDensity) {
       for (int ig = 0; ig < nGaussians; ig++) {
         float alpha = gaussians[gaussianPtr + ig][0];
@@ -426,7 +426,7 @@ public class MOCalculation extends QuantumCalculation implements
     // spartan uses format "1" for BOTH SP and P, which is fine, but then
     // when c1 = 0, there is no mo coefficient, of course. 
     float c1 = gaussians[gaussianPtr][1];
-    int[] map = dfCoefMaps[JmolConstants.SHELL_D_CARTESIAN];
+    int[] map = dfCoefMaps[JmolConstants.SHELL_SP];
     if (thisAtom == null || map[0] == Integer.MIN_VALUE) {
       moCoeff += 3;
       return;
@@ -443,11 +443,11 @@ public class MOCalculation extends QuantumCalculation implements
     } else {
       if (doDebug)
         dumpInfo(JmolConstants.SHELL_SP, map);
-      ms = map[0] + moCoefficients[moCoeff++];
+      ms = moCoefficients[map[0] + moCoeff++];
     }
-    mx = map[1] + moCoefficients[moCoeff++];
-    my = map[2] + moCoefficients[moCoeff++];
-    mz = map[3] + moCoefficients[moCoeff++];
+    mx = moCoefficients[map[1] + moCoeff++];
+    my = moCoefficients[map[2] + moCoeff++];
+    mz = moCoefficients[map[3] + moCoeff++];
     if (isElectronDensity) {
       for (int ig = 0; ig < nGaussians; ig++) {
         float alpha = gaussians[gaussianPtr + ig][0];
@@ -1131,7 +1131,7 @@ public class MOCalculation extends QuantumCalculation implements
     if (shell >= 0 && Logger.debugging) {
       String[] so = JmolConstants.getShellOrder(shell);
       for (int i = 0; i < so.length; i++)
-        Logger.debug("MO coeff " + (so == null ? "?" + i  : so[i]) + " " + (map[i] + moCoeff + i + 1) + " "
+        Logger.debug(thisAtom + " MO coeff " + (so == null ? "?" + i  : so[i]) + " " + (map[i] + moCoeff + i + 1) + " "
             + moCoefficients[map[i] + moCoeff + i]);
     }
   }

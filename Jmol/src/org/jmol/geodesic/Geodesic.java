@@ -169,11 +169,11 @@ public class Geodesic {
   };
 
   /**
-   * 5 levels, 0 through 4
+   * 3 levels, 0 through 3
    */
   
   public final static int standardLevel = 3;
-  private final static int maxLevel = 4;
+  private final static int maxLevel = 3;
   private static short[] vertexCounts;
   private static Vector3f[] vertexVectors;
   private static short[][] faceVertexesArrays;
@@ -215,9 +215,9 @@ public class Geodesic {
     //only one per applet set
     if (vertexCounts != null)
       return;
-    short[] v = new short[maxLevel];
-    neighborVertexesArrays = new short[maxLevel][];
-    faceVertexesArrays = new short[maxLevel][];
+    short[] v = new short[maxLevel + 1];
+    neighborVertexesArrays = new short[maxLevel + 1][];
+    faceVertexesArrays = new short[maxLevel + 1][];
     vertexVectors = new Vector3f[12];
     vertexVectors[0] = new Vector3f(0, 0, halfRoot5);
     for (int i = 0; i < 5; ++i) {
@@ -233,7 +233,7 @@ public class Geodesic {
     neighborVertexesArrays[0] = neighborVertexesIcosahedron;
     v[0] = 12;
 
-    for (int i = 0; i < maxLevel - 1; ++i)
+    for (int i = 0; i < maxLevel; ++i)
       quadruple(i, v);
 
     /*      for (int i = 0; i < maxLevel; ++i) {

@@ -93,7 +93,8 @@ abstract public class MOReader extends BasisFunctionReader {
   private boolean getNBOs;
   private boolean getNBOCharges;
   protected boolean haveNboCharges;
-  private boolean haveNboOrbitals;
+  protected boolean haveNboOrbitals;
+  protected boolean orbitalsRead;
 
   final protected int HEADER_GAMESS_UK_MO = 3;
   final protected int HEADER_GAMESS_OCCUPANCIES = 2;
@@ -260,7 +261,8 @@ abstract public class MOReader extends BasisFunctionReader {
 
    */
   
-  private static final String DS_LIST = "(D1)  (D2)  (D3)  (D4)  (D5)";
+  private static final String P_LIST =  "(PX)  (PY)  (PZ)";
+  private static final String DS_LIST = "(D5)  (D2)  (D3)  (D4)  (D1)";
   private static final String DC_LIST = "(D1)  (D4)  (D6)  (D2)  (D3)  (D5)";
   // DC_LIST is inferred from the order in NBO 5.G as well as the fact that for GenNBO
   // we have:   201 dxx, 202 dxy, 203 dxz, 204 dyy, 205 dyz, 206 dzz
@@ -293,10 +295,12 @@ abstract public class MOReader extends BasisFunctionReader {
       alphaBeta = "";
     }
     haveNboOrbitals = true;
+    orbitalsRead = true;
     Map<String, Object>[] mos = null;
     List<String>[] data = null;
     String dCoeffLabels = "";
     String fCoeffLabels = "";
+    String pCoeffLabels = "";
     int ptOffset = -1;
     int fieldSize = 0;
     int nThisLine = 0;
@@ -331,17 +335,12 @@ abstract public class MOReader extends BasisFunctionReader {
           || str.indexOf("CI EIGENVECTORS WILL BE LABELED") >= 0 //this happens when doing MCSCF optimizations
           || str.indexOf("LZ VALUE") >= 0 //open-shelled 
           || str.indexOf("   THIS LOCALIZATION HAD") >= 0) { //this happens with certain localization methods
-        if (str.length() == 0)
-          nBlank++;
-        else
-          nBlank = 0;
-        if (nBlank == 2)
-          break;
-        if (str.indexOf("LZ VALUE") >= 0)
-          discardLinesUntilBlank();
         if (!haveCoeffMap) {
           haveCoeffMap = true;
           boolean isOK = true;
+          if (pCoeffLabels.length() > 0)
+            isOK = getDFMap(pCoeffLabels, JmolAdapter.SHELL_P,
+                P_LIST, 4);
           if (dCoeffLabels.length() > 0) {
             if (dCoeffLabels.indexOf("X") >= 0)
               isOK = getDFMap(dCoeffLabels, JmolAdapter.SHELL_D_CARTESIAN,
@@ -368,6 +367,14 @@ abstract public class MOReader extends BasisFunctionReader {
             //
           }
         }
+        if (str.length() == 0)
+          nBlank++;
+        else
+          nBlank = 0;
+        if (nBlank == 2)
+          break;
+        if (str.indexOf("LZ VALUE") >= 0)
+          discardLinesUntilBlank();
         for (int iMo = 0; iMo < nThisLine; iMo++) {
           float[] coefs = new float[data[iMo].size()];
           int iCoeff = 0;
@@ -377,10 +384,7 @@ abstract public class MOReader extends BasisFunctionReader {
           }
           haveMOs = true;
           mos[iMo].put("coefficients", coefs);
-          if (alphaBeta.length() > 0)
-            mos[iMo].put("type", alphaBeta);
-          else if (moTypes != null && moCount < moTypes.size())
-            mos[iMo].put("type", moTypes.get(moCount++));
+          moCount = setMOType(mos[iMo], moCount);
           setMO(mos[iMo]);
         }
         nThisLine = 0;
@@ -411,14 +415,29 @@ abstract public class MOReader extends BasisFunctionReader {
         getMOHeader(headerType, tokens, mos, nThisLine);
         continue;
       }
-      char ch;
       int nSkip = tokens.length - nThisLine;
       String type = tokens[nSkip - 1];
+      char ch;
       if (type.charAt(0) == '(') {
         ch = type.charAt(1);
-        if (!haveCoeffMap && ch == 'd')
-          dCoeffLabels += " "
+        if (!haveCoeffMap) {
+          switch (ch) {
+          case 'p':
+            pCoeffLabels += " " + type.toUpperCase();
+            break;
+          case 'd':
+            dCoeffLabels += " "
               + canonicalizeQuantumSubshellTag(type.toUpperCase());
+            break;
+          case 'f':
+            // unchecked
+            fCoeffLabels += " "
+              + canonicalizeQuantumSubshellTag(type.toUpperCase());
+            break;
+          case 's':
+            // could be sp??? 
+          }
+        }
       } else {
         int nChar = type.length();
         ch = (nChar  < 4 ? 'S' : nChar == 4 ? 'G' : nChar == 5 ? 'H' : '?');
@@ -446,6 +465,18 @@ abstract public class MOReader extends BasisFunctionReader {
     // reset the coefficient maps again
     haveCoeffMap = false;
     dfCoefMaps = null;
+  }
+  
+  protected int setMOType(Map<String, Object> mo, int i) {
+    if (moTypes != null) {
+      String s = moTypes.get(i % moTypes.size());
+      i++;
+      mo.put("type", s);
+      mo.put("occupancy", new Float(s.indexOf("*") >= 0 ? 0 : 2));
+    } else if (alphaBeta.length() > 0) {
+      mo.put("type", alphaBeta);
+    } 
+    return i;
   }
   
   protected void getMOHeader(int headerType, String[] tokens, Map<String, Object>[] mos, int nThisLine)

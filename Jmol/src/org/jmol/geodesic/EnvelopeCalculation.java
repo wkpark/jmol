@@ -154,7 +154,8 @@ public final class EnvelopeCalculation {
     this.viewer = viewer;
     this.atomCount = atomCount; //preliminary, for setFromBits()
     this.mads = mads;
-    geodesicCount = Geodesic.getVertexVectorsCount();
+//    geodesicCount = Geodesic.getVertexVectorsCount();
+    geodesicCount = Geodesic.getVertexCount(MAX_LEVEL);
     
     //if (asJavaBitSet) {
     //  geodesicMap = SlowBitSet.allocateBitmap(geodesicCount);
@@ -170,7 +171,7 @@ public final class EnvelopeCalculation {
    
   public final static float SURFACE_DISTANCE_FOR_CALCULATION = 3f;
 
-  public final static int MAX_LEVEL = Geodesic.standardLevel;
+  public final static int MAX_LEVEL = 3;//Geodesic.standardLevel;
   
   private float maxRadius = 0;
   private boolean modelZeroBased;

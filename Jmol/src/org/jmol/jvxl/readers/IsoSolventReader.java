@@ -23,7 +23,7 @@
  */
 package org.jmol.jvxl.readers;
 
-import java.util.ArrayList;
+//import java.util.ArrayList;
 import java.util.BitSet;
 
 import javax.vecmath.Point3f;
@@ -32,6 +32,7 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 //import org.jmol.util.Escape;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 //import org.jmol.util.TextFormat;
@@ -122,6 +123,9 @@ class IsoSolventReader extends AtomDataReader {
     setRangesAndAddAtoms(params.solvent_ptsPerAngstrom, params.solvent_gridMax,
         params.thePlane != null ? Integer.MAX_VALUE : Math.min(firstNearbyAtom,
             100));
+    if (bsNearby != null)
+      bsMySelected.or(bsNearby);
+
   }
 
   //////////// meshData extensions ////////////
@@ -324,6 +328,7 @@ class IsoSolventReader extends AtomDataReader {
         maxRadius = rA;
       if (isWithin && ptA.distance(point) > distance + rA + 0.5)
         continue;
+      //TODO: ttest4 does not properly ignore atoms
       boolean isNearby = (iAtom >= firstNearbyAtom);
       setGridLimitsForAtom(ptA, rA + r0, pt0, pt1);
       volumeData.voxelPtToXYZ(pt0.x, pt0.y, pt0.z, ptXyzTemp);
@@ -348,32 +353,32 @@ class IsoSolventReader extends AtomDataReader {
     if (isCavity && isFirstPass)
       return;
     if (doCalculateTroughs) {
-      Point3i ptA0 = new Point3i();
-      Point3i ptB0 = new Point3i();
-      Point3i ptA1 = new Point3i();
-      Point3i ptB1 = new Point3i();
       volumeData.getYzCount();
-      ArrayList<float[]> troughList1 = new ArrayList<float[]>();
-      float dist2 = 2 * (solventRadius + maxRadius);
-      Point3f pt = new Point3f();
-      Vector3f vTemp = new Vector3f();
-      Vector3f vTemp2 = new Vector3f();
-      Point4f plane = new Point4f();
       if (params.doFullMolecular) {
+        Point3f pt = new Point3f();
+        Vector3f vTemp = new Vector3f();
+        Vector3f vTemp2 = new Vector3f();
+        Point4f plane = new Point4f();
+        //ArrayList<float[]> troughList1 = new ArrayList<float[]>();
+        int[] t = new int[64];
         float v;
         float vmin = -1.5f * volumeData.minGrid;
+        float dist2 = 2 * (solventRadius + maxRadius);
         AtomIndexIterator iter = atomDataServer.getSelectedAtomIterator(
             bsMySelected, false, false); // was TRUE TRUE
         for (int i = 0; i < volumeData.nPoints; i++) {
           v = volumeData.getVoxelData(i);
           // only select 
-          if (!havePlane && v < vmin)
+          if (!havePlane && v < vmin || Float.isNaN(v))
             continue;
           volumeData.getPoint(i, pt);
           if (isWithin && pt.distance(point) > distance)
             continue;
-          troughList1.clear();
-
+          if (havePlane
+              && Math.abs(volumeData.distancePointToPlane(pt)) > 1.2f * volumeData.maxGrid)
+            continue;
+          //troughList1.clear();
+          int n = 0;
           atomDataServer.setIteratorForPoint(iter, modelIndex, pt, dist2);
           while (iter.hasNext()) {
             int iatomB = iter.next();
@@ -381,23 +386,28 @@ class IsoSolventReader extends AtomDataReader {
             rB = atomData.atomRadius[iatomB] + solventRadius;
             if (isWithin && ptB.distance(point) > distance + rB + 0.5)
               continue;
-            if (havePlane
-                && Math.abs(volumeData.distancePointToPlane(ptB)) > 2 * rB)
-              continue;
-            float d = (float) Math.sqrt(iter.foundDistance2());
-            float[] a = new float[] { iatomB, rB, d };
-            troughList1.add(a);
+            //float d = (float) Math.sqrt(iter.foundDistance2());
+            //float[] a = new float[] { iatomB, rB, d };
+            //troughList1.add(a);
+            if (n == t.length)
+              t = ArrayUtil.doubleLength(t);
+            t[n++] = iatomB;
           }
-          int n = troughList1.size();
+          // 4.4 sec to here
+          //int n = troughList1.size();
+          // 7.1 sec to here with looping
+          // 18 sec with processing
+          // the problem is that we have to go through these loops for
+          // every voxel. 
           for (int ia = 0; ia < n - 1 && (havePlane || v >= vmin); ia++) {
-            float[] af = troughList1.get(ia);
-            int iatomA = (int) af[0];
-            float rAS = af[1];
+            //float[] af = troughList1.get(ia);
+            int iatomA = t[ia];//(int) af[0];
+            float rAS = atomData.atomRadius[iatomA] + solventRadius;//af[1];
             ptA = atomXyz[myIndex[iatomA]];
             for (int ib = ia + 1; ib < n && (havePlane || v >= vmin); ib++) {
-              float[] bf = troughList1.get(ib);
-              int iatomB = (int) bf[0];
-              float rBS = bf[1];
+              //float[] bf = troughList1.get(ib);
+              int iatomB = t[ib];//(int) bf[0];
+              float rBS = atomData.atomRadius[iatomB] + solventRadius;//bf[1];
               Point3f ptB = atomXyz[myIndex[iatomB]];
               float dAB = ptA.distance(ptB);
               if (dAB >= rAS + rBS)
@@ -409,11 +419,11 @@ class IsoSolventReader extends AtomDataReader {
               // question here is whether or not there is a third atom to worry about
               //if (v > 0) // only when outside?
               for (int ic = 0; ic < n  && (havePlane || v1 >= vmin); ic++) {
-                float[] cf = troughList1.get(ic);
-                int iatomC = (int) cf[0];
-                if (iatomC == iatomA || iatomC == iatomB)
+                //float[] cf = troughList1.get(ic);
+                int iatomC = t[ic];//(int) cf[0];
+                if (iatomC == iatomB || iatomC == iatomA)
                   continue;
-                float rCS = cf[1];
+                float rCS = atomData.atomRadius[iatomC] + solventRadius;//cf[1];
                 Point3f ptC = atomXyz[myIndex[iatomC]];
                 if (ptC.distance(ptA) >= rAS + rCS
                     || ptC.distance(ptB) >= rBS + rCS)
@@ -435,6 +445,10 @@ class IsoSolventReader extends AtomDataReader {
         iter.release();
         iter = null;
       } else {
+        Point3i ptA0 = new Point3i();
+        Point3i ptB0 = new Point3i();
+        Point3i ptA1 = new Point3i();
+        Point3i ptB1 = new Point3i();
         AtomIndexIterator iter = atomDataServer.getSelectedAtomIterator(
             bsMySelected, true, false); //
         for (int iAtom = 0; iAtom < firstNearbyAtom - 1; iAtom++)
@@ -479,7 +493,7 @@ class IsoSolventReader extends AtomDataReader {
                   ptZ0.set(ptXyzTemp);
                   for (int k = pt0.z; k < pt1.z; k++) {
                     n1++;
-                    float dVS = (isWithin
+                    float dVS = (Float.isNaN(voxelData[i][j][k]) || isWithin
                         && ptXyzTemp.distance(point) > distance ? Float.NaN
                         : checkSpecialVoxel(ptA, rA, ptB, rB, dAB, ptXyzTemp));
                     if (!Float.isNaN(dVS)) {

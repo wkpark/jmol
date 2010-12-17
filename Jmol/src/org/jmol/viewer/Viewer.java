@@ -260,6 +260,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (Logger.debugging) {
       Logger.debug("Viewer constructor " + this);
     }
+    isDataOnly = (display == null);
+    haveDisplay = (!isDataOnly && (commandOptions == null || commandOptions.indexOf("-n") < 0));
+    mustRender = haveDisplay;
+    if (!haveDisplay)
+      display = null;
     this.display = display;
     this.modelAdapter = modelAdapter;
     strJavaVendor = System.getProperty("java.vendor");
@@ -287,7 +292,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     scriptManager = new ScriptManager(this);
     transformManager = new TransformManager11(this);
     selectionManager = new SelectionManager(this);
-    if (display != null) {
+    if (haveDisplay) {
       if (multiTouch) {
         if (commandOptions.indexOf("-multitouch-sparshui-simulated") < 0) {
           int[] pixels = new int[1];
@@ -372,7 +377,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return isPreviewOnly;
   }
 
-  public boolean haveDisplay = true;
+  public boolean haveDisplay = false;
   public boolean autoExit = false;
 
   private boolean mustRender = true;
@@ -441,11 +446,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       isCmdLine_C_Option = (str.indexOf("-C") >= 0);
       listCommands = (str.indexOf("-l") >= 0);
       autoExit = (str.indexOf("-x") >= 0);
-      isDataOnly = (display == null);
-      haveDisplay = (display != null && str.indexOf("-n") < 0);
-      if (!haveDisplay)
-        display = null;
-      mustRender = haveDisplay;
       cd(".");
     }
     isPreviewOnly = (str.indexOf("#previewOnly") >= 0);
@@ -4682,7 +4682,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void setCursor(int cursor) {
-    if (currentCursor == cursor || multiTouch || display == null)
+    if (currentCursor == cursor || multiTouch || !haveDisplay)
       return;
     int c;
     switch (currentCursor = cursor) {
@@ -8787,9 +8787,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   void repaint() {
     // from RepaintManager
-    if (display == null)
-      return;
-    display.repaint();
+    if (haveDisplay)
+      display.repaint();
   }
 
   public OutputStream getOutputStream(String localName, String[] fullPath) {
@@ -8921,11 +8920,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public boolean hasFocus() {
-    return (display != null && (isKiosk || display.hasFocus()));
+    return (haveDisplay && (isKiosk || display.hasFocus()));
   }
 
   public void setFocus() {
-    if (display != null && !display.hasFocus())
+    if (haveDisplay && !display.hasFocus())
       display.requestFocusInWindow();
   }
 

@@ -192,7 +192,7 @@
 
   <target id="classes" name="classes" depends="init">
     <mkdir dir="${classes.dir}"/>
-    <javac srcdir="src" destdir="${classes.dir}"
+    <javac srcdir="src" destdir="${classes.dir}" encoding="UTF8"
            debug="${debug}" deprecation="${deprecation}"
            optimize="${optimization}" source="1.5" target="1.5">
       <classpath refid="project.class.path" />
@@ -273,7 +273,7 @@ all support for previous versions removed
     <javac srcdir="src" destdir="${applet.classes.dir}"
            debug="${debug}" deprecation="${deprecation}"
            optimize="${optimization}"
-           source="1.5" target="1.5"
+           source="1.5" target="1.5" encoding="UTF8"
            includesfile="applet.classes"
            classpathref="applet-project.class.path" />
 
@@ -307,7 +307,7 @@ all support for previous versions removed
     <mkdir dir="${apisio.classes.dir}"/>
     <javac srcdir="src" destdir="${apisio.classes.dir}"
            debug="${debug}" deprecation="${deprecation}"
-           optimize="${optimization}" source="1.5"
+           optimize="${optimization}" source="1.5" encoding="UTF8"
            includesfile="apisio.classes"
            classpathref="apisio-project.class.path" />
     <copy todir="${apisio.classes.dir}" >
@@ -1381,7 +1381,7 @@ all support for previous versions removed
   <target name="javadoc" depends="initdoc" unless="javadoc.uptodate">
     <mkdir dir="${javadoc.dir}"/>
     <javadoc destdir="${javadoc.dir}" sourcepath="src"
-             private="true"
+             private="true" encoding="UTF8"
              packagenames="org.openscience.*,org.jmol.*"
              excludepackagenames="org.jmol.jcamp.*">
       <classpath refid="project.class.path" />
@@ -1529,7 +1529,7 @@ all support for previous versions removed
     <mkdir dir="${test-classes.dir}"/>
     <javac srcdir="test" destdir="${test-classes.dir}"
            debug="off" deprecation="on"
-           optimize="off" source="1.5">
+           optimize="off" source="1.5" encoding="UTF8">
       <classpath>
         <pathelement location="${jmol.build.dir}/Jmol.jar" />
         <pathelement location="./jars/junit.jar" />

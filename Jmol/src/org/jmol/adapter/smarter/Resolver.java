@@ -813,10 +813,10 @@ public class Resolver {
   }
 
   private static boolean checkMol(String[] lines) {
-    String line4trimmed = ("X" + lines[3]).trim();
+    String line4trimmed = ("X" + lines[3]).trim().toUpperCase();
     if (line4trimmed.length() < 7 || line4trimmed.indexOf(".") >= 0)
       return false;
-    if (line4trimmed.endsWith("V2000") || line4trimmed.endsWith("v2000"))
+    if (line4trimmed.endsWith("V2000") || line4trimmed.endsWith("V3000"))
       return true;
     try {
       int n1 = Integer.parseInt(lines[3].substring(0, 3).trim());

@@ -3003,93 +3003,157 @@ abstract public class ModelCollection extends BondCollection {
     return bsResult;
   }
 
-  public String getModelExtract(BitSet bs, boolean doTransform, boolean isModelKit, boolean asSDF) {
-    int nAtoms = 0;
-    int nBonds = 0;
+  public String getModelExtract(BitSet bs, boolean doTransform,
+                                boolean isModelKit, boolean asSDF,
+                                boolean asV3000) {
+    String trailer = (asSDF ? "$$$$\n" : "");
+    asSDF = true;
     int[] atomMap = new int[atomCount];
     StringBuffer mol = new StringBuffer();
-    String name = (isModelKit ? "Jmol Model Kit" : viewer.getFullPathName()); 
+    String name = (isModelKit ? "Jmol Model Kit" : viewer.getFullPathName());
     mol.append(name);
     String version = Viewer.getJmolVersion();
     if (asSDF) {
       Calendar c = Calendar.getInstance();
-      mol.append("\nRH Jmol").append(version.substring(0, 2));
-      TextFormat.rFill(mol, " 00", "" + (1+c.get(Calendar.MONTH)));
+      mol.append("\n__Jmol-").append(version.substring(0, 2));
+      TextFormat.rFill(mol, "_00", "" + c.get(Calendar.MONTH));
       TextFormat.rFill(mol, "00", "" + c.get(Calendar.DAY_OF_MONTH));
-      mol.append(("" + c.get(Calendar.YEAR)).substring(2,4));
+      mol.append(("" + c.get(Calendar.YEAR)).substring(2, 4));
       TextFormat.rFill(mol, "00", "" + c.get(Calendar.HOUR_OF_DAY));
       TextFormat.rFill(mol, "00", "" + c.get(Calendar.MINUTE));
       mol.append("3D 1   1.00000     0.00000     0");
       //       This line has the format:
-      //           IIPPPPPPPPMMDDYYHHmmddSSssssssssssEEEEEEEEEEEERRRRRR
-      // (FORTRAN: A2<--A8--><---A10-->A2I2<--F10.5-><---F12.5--><-I6-> )
+      //  IIPPPPPPPPMMDDYYHHmmddSSssssssssssEEEEEEEEEEEERRRRRR
+      //  A2<--A8--><---A10-->A2I2<--F10.5-><---F12.5--><-I6->
     }
-    mol.append("\nJmol version ").append(Viewer.getJmolVersion()).append(asSDF ? " " : "\n")
-      .append("EXTRACT: ").append(Escape.escape(bs)).append("\n"); 
-    StringBuffer sb = new StringBuffer();
+    mol.append("\nJmol version ").append(Viewer.getJmolVersion()).append(
+        asSDF ? " " : "\n").append("EXTRACT: ").append(Escape.escape(bs))
+        .append("\n");
     Quaternion q = (doTransform ? viewer.getRotationQuaternion() : null);
     Point3f pTemp = new Point3f();
+    BitSet bsAtoms = BitSetUtil.copy(bs);
+    int nAtoms = 0;
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-      if (q != null && atoms[i].isDeleted())
+      if (q != null && atoms[i].isDeleted()) {
+        bsAtoms.clear(i);
         continue;
+      }
       atomMap[i] = ++nAtoms;
-      getAtomRecordMOL(sb, atoms[i], q, pTemp, asSDF);
     }
+    int nBonds = 0;
+    BitSet bsBonds = new BitSet();
     for (int i = 0; i < bondCount; i++) {
       Bond bond = bonds[i];
-      if (bs.get(bond.atom1.index) && bs.get(bond.atom2.index)) {
-        if (!bond.isHydrogen()) {
-          getBondRecordMOL(sb, i, atomMap, asSDF);
-          nBonds++;
-        }
+      if (bsAtoms.get(bond.atom1.index) && bsAtoms.get(bond.atom2.index)
+          && bond.isCovalent()) {
+        bsBonds.set(i);
+        nBonds++;
       }
     }
-    if (nAtoms > 999 || nBonds > 999) {
-      Logger.error("ModelManager.java::getModel: ERROR atom/bond overflow");
-      return "";
+    asV3000 |= (nAtoms > 999 || nBonds > 999);
+    asSDF |= asV3000;
+    if (asV3000) {
+      mol.append("  0  0  0  0  0  0            999 V3000");
+    } else {
+      TextFormat.rFill(mol, "   ", "" + nAtoms);
+      TextFormat.rFill(mol, "   ", "" + nBonds);
+      if (asSDF)
+        mol.append("  0  0  0  0              1 V2000");
     }
+    mol.append("\n");
+    if (asV3000) {
+      mol.append("M  V30 BEGIN CTAB\nM  V30 COUNTS ")
+      .append(nAtoms).append(" ").append(nBonds).append(" 0 0 0\n")
+      .append("M  V30 BEGIN ATOM\n");  
+    }
+    for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1))
+      getAtomRecordMOL(mol, atomMap[i], atoms[i], q, pTemp, asSDF, asV3000);
+    if (asV3000) {
+      mol.append("M  V30 END ATOM\nM  V30 BEGIN BOND\n");      
+    }
+    for (int i = bsBonds.nextSetBit(0), n = 0; i >= 0; i = bsBonds.nextSetBit(i + 1))
+      getBondRecordMOL(++n, mol, i, atomMap, asSDF, asV3000);
     // 21 21 0 0 0
-    TextFormat.rFill(mol, "   ", "" + nAtoms);
-    TextFormat.rFill(mol, "   ", "" + nBonds);
-    mol.append(asSDF ? "  0  0  0  0              1 V2000" : "").append("\n");
-    //                  lllfffcccsssxxxrrrpppiiimmmvvvvvv
-    mol.append(sb);
+    if (asV3000) {
+      mol.append("M  V30 END BOND\nM  V30 END CTAB\n");
+    }
     if (asSDF)
-      mol.append("M  END\n$$$$\n");
+      mol.append("M  END\n");
+    mol.append(trailer);
     return mol.toString();
   }
   
-  private void getAtomRecordMOL(StringBuffer sb, Atom a, Quaternion q, Point3f pTemp, boolean asSDF){
+  /*
+  L-Alanine
+  GSMACCS-II07189510252D 1 0.00366 0.00000 0
+  Figure 1, J. Chem. Inf. Comput. Sci., Vol 32, No. 3., 1992
+  0 0 0 0 0 999 V3000
+  M  V30 BEGIN CTAB
+  M  V30 COUNTS 6 5 0 0 1
+  M  V30 BEGIN ATOM
+  M  V30 1 C -0.6622 0.5342 0 0 CFG=2
+  M  V30 2 C 0.6622 -0.3 0 0
+  M  V30 3 C -0.7207 2.0817 0 0 MASS=13
+  M  V30 4 N -1.8622 -0.3695 0 0 CHG=1
+  M  V30 5 O 0.622 -1.8037 0 0
+  M  V30 6 O 1.9464 0.4244 0 0 CHG=-1
+  M  V30 END ATOM
+  M  V30 BEGIN BOND
+  M  V30 1 1 1 2
+  M  V30 2 1 1 3 CFG=1
+  M  V30 3 1 1 4
+  M  V30 4 2 2 5
+  M  V30 5 1 2 6
+  M  V30 END BOND
+  M  V30 END CTAB
+  M  END
+   */
+
+  private void getAtomRecordMOL(StringBuffer sb, int i, Atom a, Quaternion q,
+                                Point3f pTemp, boolean asSDF, boolean asV3000) {
     //   -0.9920    3.2030    9.1570 Cl  0  0  0  0  0
     //    3.4920    4.0920    5.8700 Cl  0  0  0  0  0
-    //xxxxx.xxxxyyyyy.yyyyzzzzz.zzzz aaaddcccssshhhbbbvvvHHHrrriiimmmnnneee// MDL-Symyx spec
+    //012345678901234567890123456789012
     if (q == null)
       pTemp.set(a);
     else
       q.transform(a, pTemp);
-    sb.append(TextFormat.sprintf("%10.4f", new Object[] {pTemp.x}))
-      .append(TextFormat.sprintf("%10.4f", new Object[] {pTemp.y}))
-      .append(TextFormat.sprintf("%10.4f", new Object[] {pTemp.z}));
-    sb.append(" ").append(a.isDeleted() ? "Xx" 
-        : asSDF ? (Elements.elementSymbolFromNumber(a.getElementNumber()) + " ").substring(0,2) 
-            : getElementSymbol(a.index));
-    if (asSDF) {
-      sb.append(" ");
-      int iso = a.getIsotopeNumber();
-      if (iso > 0)
-        iso -= Elements.getNaturalIsotope(a.getElementNumber()); 
-      TextFormat.rFill(sb, "  " ,"" + iso);
-      TextFormat.rFill(sb, "   ", "" + a.getFormalCharge());
-      sb.append("  0  0  0  0");
+    String sym = (a.isDeleted() ? "Xx" : asSDF ? Elements
+        .elementSymbolFromNumber(a.getElementNumber())
+        : getElementSymbol(a.index));
+    int iso = a.getIsotopeNumber();
+    int charge = a.getFormalCharge();
+    if (asV3000) {
+      sb.append("M  V30 ").append(i).append(" ").append(sym).append(" ")
+          .append(pTemp.x).append(" ").append(pTemp.y).append(" ").append(
+              pTemp.z).append(" 0");
+      if (charge != 0)
+        sb.append(" CHG=").append(charge);
+      if (iso != 0)
+        sb.append(" MASS=").append(iso);
+    } else {
+      if (asSDF && sym.length() == 1)
+        sym += " ";
+      sb.append(TextFormat
+          .sprintf("%10.5p%10.5p%10.5p", new Object[] { pTemp }));
+      sb.append(" ").append(sym);
+      if (asSDF) {
+        if (iso > 0)
+          iso -= Elements.getNaturalIsotope(a.getElementNumber());
+        sb.append(" ");
+        TextFormat.rFill(sb, "  ", "" + iso);
+        TextFormat.rFill(sb, "   ", "" + charge);
+        sb.append("  0  0  0  0");
+      }
     }
     sb.append("\n");
   }
 
-  private void getBondRecordMOL(StringBuffer sb, int i,int[] atomMap, boolean asSDF){
+  private void getBondRecordMOL(int n, StringBuffer sb, int i,int[] atomMap, boolean asSDF, boolean asV3000){
   //  1  2  1  0
     Bond b = bonds[i];
-    TextFormat.rFill(sb, "   ","" + atomMap[b.atom1.index]);
-    TextFormat.rFill(sb, "   ","" + atomMap[b.atom2.index]);
+    int a1 = atomMap[b.atom1.index];
+    int a2 = atomMap[b.atom2.index];
     int order = b.getValence();
     if (order > 3)
       order = 1;
@@ -3107,9 +3171,19 @@ abstract public class ModelCollection extends BondCollection {
       order = 7;
       break;
     }
-    sb.append("  ").append(order); 
-    if (asSDF)
-      sb.append("  0  0  0");
+   if (asV3000) {
+      sb.append("M  V30 ").append(n)
+          .append(" ").append(order)
+          .append(" ").append(a1)
+          .append(" ").append(a2)
+          .append(" 0");
+    } else {
+      TextFormat.rFill(sb, "   ","" + a1);
+      TextFormat.rFill(sb, "   ","" + a2);
+      sb.append("  ").append(order);
+      if (asSDF)
+        sb.append("  0  0  0");
+    }
     sb.append("\n");
   }
   
@@ -3818,7 +3892,7 @@ abstract public class ModelCollection extends BondCollection {
             tainted[TAINT_ELEMENT].andNot(bs);
         }
         models[i].loadScript = new StringBuffer(); 
-        Viewer.getInlineData(commands, getModelExtract(bs, false, true, false), i > 0);
+        Viewer.getInlineData(commands, getModelExtract(bs, false, true, false, false), i > 0);
       } else {
         commands.append(models[i].loadScript);
       }

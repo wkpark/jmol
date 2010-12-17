@@ -7520,8 +7520,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     scriptEditor.setVisible(true);
   }
 
-  public String getModelExtract(Object atomExpression, boolean doTransform, boolean asSDF) {
-    return modelSet.getModelExtract(getAtomBitSet(atomExpression), doTransform, false, asSDF);
+  public String getModelExtract(Object atomExpression, boolean doTransform, boolean asSDF, boolean asV3000) {
+    return modelSet.getModelExtract(getAtomBitSet(atomExpression), doTransform, false, asSDF, asV3000);
   }
 
   // ////////////////////////////////////////////////
@@ -7665,8 +7665,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   @Override
   public String getData(String atomExpression, String type) {
     String exp = "";
-    if (type.equalsIgnoreCase("MOL") || type.equalsIgnoreCase("SDF"))
-      return getModelExtract(atomExpression, false, type.equalsIgnoreCase("SDF"));
+    if (type.equalsIgnoreCase("MOL") || type.equalsIgnoreCase("SDF") || type.equalsIgnoreCase("V3000"))
+      return getModelExtract(atomExpression, false, type.equalsIgnoreCase("SDF"), type.equalsIgnoreCase("V3000"));
     if (type.toLowerCase().indexOf("property_") == 0)
       exp = "{selected}.label(\"%{" + type + "}\")";
     else if (type.equalsIgnoreCase("CML"))
@@ -9313,7 +9313,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       bs = getModelUndeletedAtomsBitSet(modelIndex);
       sb.append("zap ");
       sb.append(Escape.escape(bs)).append(";");
-      DataManager.getInlineData(sb, modelSet.getModelExtract(bs, false, true, false), true, null);
+      DataManager.getInlineData(sb, modelSet.getModelExtract(bs, false, true, false, false), true, null);
       sb.append("set refreshing false;")
           .append(actionManager.getPickingState()).append(
               transformManager.getMoveToText(0, false)).append(

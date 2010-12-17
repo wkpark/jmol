@@ -13,6 +13,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Hashtable;
 import java.util.zip.GZIPInputStream;
 
 import org.jmol.util.JUnitLogger;
@@ -84,6 +85,9 @@ public class TestSmarterJmolAdapter extends TestSuite {
     result.addDirectory(false, "gamess", "out", ";Gamess;GamessUS;GamessUK;");
     result.addDirectory(false, "gaussian", "log", "Gaussian");
     result.addDirectory(false, "gaussian", "out", "Gaussian");
+    result.addDirectory(false, "gennbo", "out", "GenNBO");
+    result.addDirectory(false, "gennbo", "36", "GenNBO");
+    result.addDirectory(false, "gennbo", "37", "GenNBO");
     result.addDirectory(false, "ghemical", "gpr", "GhemicalMM");
     result.addDirectory(false, "gromacs", "gro", "Gromacs");
     result.addDirectory(false, "hin", "hin", "HyperChem");
@@ -223,7 +227,9 @@ class TestSmarterJmolAdapterImpl extends TestCase {
         fail("Wrong type for " + file.getPath() + ": " + fileType + " instead of " + typeAllowed);
       }
     }
-    Object result = adapter.getAtomSetCollectionFromReader(file.getName(), null, bReader, null);
+    Hashtable<String, Object> htParams = new Hashtable<String, Object>();
+    htParams.put("fullPathName", file.getAbsolutePath());
+    Object result = adapter.getAtomSetCollectionFromReader(file.getName(), null, bReader, htParams);
     assertNotNull("Nothing read for " + file.getPath(), result);
     assertFalse("Error returned for " + file.getPath() + ": " + result, result instanceof String);
     assertTrue("Not an AtomSetCollection for " + file.getPath(), result instanceof AtomSetCollection);

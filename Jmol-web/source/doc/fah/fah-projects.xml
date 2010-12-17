@@ -8597,7 +8597,7 @@
   <fah_proj number="6880" name="Abeta42_shooting" public="y"
     server="171.67.108.33" atoms="12222" preferred="14" deadline="21"
     credit="69" frames="100" code="G" contact="lin5"/>
-  <fah_proj number="6881" name="AbetaM1_shooting" public="n"
+  <fah_proj number="6881" name="AbetaM1_shooting" public="y"
     server="171.67.108.33" atoms="12233" preferred="14" deadline="21"
     credit="69" frames="100" code="G" contact="lin5"/>
   <fah_proj number="6885" name="Abeta40_shooting" public="y"
@@ -8613,10 +8613,10 @@
     credit="8955" frames="100" code="A3" contact="kasson" kfactor="26.4"/>
   <fah_proj number="6950" name="hafp3_embed" public="n"
     server="128.143.199.96" atoms="77110" preferred="2" deadline="3"
-    credit="381" frames="100" code="A3" contact="kasson" kfactor="3.37"/>
+    credit="457" frames="100" code="A3" contact="kasson" kfactor="3.37"/>
   <fah_proj number="6951" name="hafp3_bax_embed" public="n"
     server="128.143.199.96" atoms="77110" preferred="1.9" deadline="3"
-    credit="366" frames="100" code="A3" contact="kasson" kfactor="3.24"/>
+    credit="439" frames="100" code="A3" contact="kasson" kfactor="3.24"/>
 
   <!-- Projects 9900 to 9999 -->
   <fah_proj number="9900" name="p9900_supervillin_e1" public="y"

@@ -13233,7 +13233,7 @@ public class ScriptEvaluator {
       } else if (Parser.isOneOf(val.toLowerCase(), "png;jpg;jpeg;jpg64;jpeg64")
           && tokAt(pt + 1, args) == Token.integer) {
         quality = ScriptVariable.iValue(tokenAt(++pt, args));
-      } else if (Parser.isOneOf(val.toLowerCase(), "xyz;mol;sdf;v3000;pdb;cml")) {
+      } else if (Parser.isOneOf(val.toLowerCase(), "xyz;mol;sdf;v2000;v3000;pdb;cml")) {
         type = val.toUpperCase();
         if (pt + 1 == argCount)
           pt++;
@@ -13331,12 +13331,12 @@ public class ScriptEvaluator {
           && !Parser
               .isOneOf(
                   type,
-                  "ZIP;ZIPALL;SPT;HIS;MO;ISO;ISOX;MESH;PMESH;VAR;FILE;FUNCS;CML;XYZ;MENU;MOL;PDB;PGRP;QUAT;RAMA;SDF;V3000;"))
+                  "ZIP;ZIPALL;SPT;HIS;MO;ISO;ISOX;MESH;PMESH;VAR;FILE;FUNCS;CML;XYZ;MENU;MOL;PDB;PGRP;QUAT;RAMA;SDF;V2000;V3000;"))
         error(
             ERROR_writeWhat,
             "COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|ISOSURFACE|JMOL|MENU|MO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
                 + "|RAMACHANDRAN|SPT|STATE|VAR x|ZIP|ZIPALL  CLIPBOARD",
-            "CML|GIF|JPG|JPG64|JVXL|MESH|MOL|PDB|PMESH|PNG|PPM|SDF|V3000;SPT|XJVXL|XYZ|ZIP"
+            "CML|GIF|JPG|JPG64|JVXL|MESH|MOL|PDB|PMESH|PNG|PPM|SDF|V2000|V3000|SPT|XJVXL|XYZ|ZIP"
                 + driverList.toUpperCase().replace(';', '|'));
       if (isSyntaxCheck)
         return "";
@@ -13396,9 +13396,9 @@ public class ScriptEvaluator {
           doDefer = true;
         if ("?".equals(fileName))
           fileName = "?Jmol." + viewer.getParameter("_fileType");
-      } else if ((data == "SDF" || data == "MOL" || data == "V3000") && isCoord) {
+      } else if ((data == "SDF" || data == "MOL" || data == "V2000" || data == "V3000") && isCoord) {
         data = viewer.getModelExtract("selected", true, data == "SDF", data == "V3000");
-      } else if (data == "XYZ" || data == "MOL" || data == "SDF" ||  data == "V3000" || data == "CML") {
+      } else if (data == "XYZ" || data == "MOL" || data == "SDF" ||  data == "V2000" || data == "V3000" || data == "CML") {
         data = viewer.getData("selected", data);
       } else if (data == "FUNCS") {
         data = viewer.getFunctionCalls(null);

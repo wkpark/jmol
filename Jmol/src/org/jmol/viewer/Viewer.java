@@ -7665,7 +7665,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   @Override
   public String getData(String atomExpression, String type) {
     String exp = "";
-    if (type.equalsIgnoreCase("MOL") || type.equalsIgnoreCase("SDF") || type.equalsIgnoreCase("V3000"))
+    if (type.equalsIgnoreCase("MOL") || type.equalsIgnoreCase("SDF") 
+        || type.equalsIgnoreCase("V2000") || type.equalsIgnoreCase("V3000"))
       return getModelExtract(atomExpression, false, type.equalsIgnoreCase("SDF"), type.equalsIgnoreCase("V3000"));
     if (type.toLowerCase().indexOf("property_") == 0)
       exp = "{selected}.label(\"%{" + type + "}\")";

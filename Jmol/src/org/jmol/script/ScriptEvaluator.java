@@ -13233,7 +13233,7 @@ public class ScriptEvaluator {
       } else if (Parser.isOneOf(val.toLowerCase(), "png;jpg;jpeg;jpg64;jpeg64")
           && tokAt(pt + 1, args) == Token.integer) {
         quality = ScriptVariable.iValue(tokenAt(++pt, args));
-      } else if (Parser.isOneOf(val.toLowerCase(), "xyz;mol;pdb;cml")) {
+      } else if (Parser.isOneOf(val.toLowerCase(), "xyz;mol;sdf;pdb;cml")) {
         type = val.toUpperCase();
         if (pt + 1 == argCount)
           pt++;
@@ -13331,12 +13331,12 @@ public class ScriptEvaluator {
           && !Parser
               .isOneOf(
                   type,
-                  "ZIP;ZIPALL;SPT;HIS;MO;ISO;ISOX;MESH;PMESH;VAR;FILE;CML;XYZ;MENU;MOL;PDB;PGRP;QUAT;RAMA;FUNCS;"))
+                  "ZIP;ZIPALL;SPT;HIS;MO;ISO;ISOX;MESH;PMESH;VAR;FILE;FUNCS;CML;XYZ;MENU;MOL;PDB;PGRP;QUAT;RAMA;SDF;"))
         error(
             ERROR_writeWhat,
             "COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|ISOSURFACE|JMOL|MENU|MO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
                 + "|RAMACHANDRAN|SPT|STATE|VAR x|ZIP|ZIPALL  CLIPBOARD",
-            "CML|GIF|JPG|JPG64|JVXL|MESH|MOL|PDB|PMESH|PNG|PPM|SPT|XJVXL|XYZ|ZIP"
+            "CML|GIF|JPG|JPG64|JVXL|MESH|MOL|PDB|PMESH|PNG|PPM|SDF|SPT|XJVXL|XYZ|ZIP"
                 + driverList.toUpperCase().replace(';', '|'));
       if (isSyntaxCheck)
         return "";
@@ -13396,9 +13396,9 @@ public class ScriptEvaluator {
           doDefer = true;
         if ("?".equals(fileName))
           fileName = "?Jmol." + viewer.getParameter("_fileType");
-      } else if (data == "MOL" && isCoord) {
-        data = viewer.getModelExtract("selected", true);
-      } else if (data == "XYZ" || data == "MOL" || data == "CML") {
+      } else if ((data == "SDF" || data == "MOL") && isCoord) {
+        data = viewer.getModelExtract("selected", true, data == "SDF");
+      } else if (data == "XYZ" || data == "MOL" || data == "SDF" || data == "CML") {
         data = viewer.getData("selected", data);
       } else if (data == "FUNCS") {
         data = viewer.getFunctionCalls(null);

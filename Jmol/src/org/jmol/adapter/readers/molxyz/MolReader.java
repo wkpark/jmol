@@ -28,6 +28,7 @@ import org.jmol.adapter.smarter.*;
 
 
 import org.jmol.api.JmolAdapter;
+import org.jmol.util.Elements;
 import org.jmol.util.Logger;
 
 /**
@@ -172,8 +173,6 @@ public class MolReader extends AtomSetCollectionReader {
     applySymmetryAndSetTrajectory();
   }
 
-  private final static String isotopeMap0 = "H1 H2 ";
-  private final static String isotopeMap1 = "D  T  ";
   void readAtoms(int atomCount) throws Exception {
     for (int i = 0; i < atomCount; ++i) {
       readLine();
@@ -196,13 +195,9 @@ public class MolReader extends AtomSetCollectionReader {
           charge = 4 - code;
         code = parseInt(line, 34, 36);
         if (code != 0 && code >= -3 && code <= 4) {
-          int ptr = isotopeMap0.indexOf(elementSymbol + code);
-          if (ptr >= 0)
-            elementSymbol = isotopeMap1.substring(ptr, ptr + 3).trim();
-          else if (elementSymbol=="C")
-            elementSymbol = (12 + code) + "C";
-          else if (elementSymbol=="N")
-            elementSymbol = (14 + code) + "N";
+          int n = JmolAdapter.getNaturalIsotope(JmolAdapter.getElementNumber(elementSymbol));
+          if (n > 0)
+            elementSymbol = (n > 1 ? (n + code) + elementSymbol : code == 1 ? "D" : code == 2 ? "T" : "H");
         }
       }
       Atom atom = atomSetCollection.addNewAtom();

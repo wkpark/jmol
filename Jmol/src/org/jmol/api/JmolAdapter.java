@@ -89,6 +89,10 @@ public abstract class JmolAdapter {
     return Elements.elementNumberFromSymbol(elementSymbol, false);
   }
   
+  public static int getNaturalIsotope(int elementNumber) {
+    return Elements.getNaturalIsotope(elementNumber);
+  }
+
   public static boolean isHetero(String group3) {
     return JmolConstants.isHetero(group3);
   }

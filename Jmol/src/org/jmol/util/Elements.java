@@ -392,6 +392,21 @@ public class Elements {
     return 0;
   }
   
+  private static int[] naturalIsotopeMasses = {
+    1, 1, // H
+    6, 12,// C
+    7, 14,// N
+    8, 16,// O   -- can add any number more if desired
+  };
+
+  public static int getNaturalIsotope(int elementNumber) {
+    for (int i = 0; i < naturalIsotopeMasses.length; i += 2)
+      if (naturalIsotopeMasses[i] == elementNumber)
+        return naturalIsotopeMasses[++i];
+    return 0;
+  }
+
+
   // add as we go
   private final static String naturalIsotopes = "1H,12C,14N,";
   
@@ -442,5 +457,6 @@ public class Elements {
     "",
     "",
   };
+  
   
 }

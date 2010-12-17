@@ -371,7 +371,7 @@ public class PropertyManager {
     case PROP_CHAIN_INFO:
       return viewer.getAllChainInfo(myParam);
     case PROP_EXTRACT_MODEL:
-      return viewer.getModelExtract(myParam, true);
+      return viewer.getModelExtract(myParam, true, false);
     case PROP_FILENAME:
       return viewer.getFullPathName();
     case PROP_FILEHEADER:

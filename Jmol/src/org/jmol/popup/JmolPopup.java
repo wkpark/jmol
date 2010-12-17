@@ -609,15 +609,18 @@ public class JmolPopup extends SimplePopup {
     String id = getId(menu);
     GT.Language[] languages = GT.getLanguageList();
     for (int i = 0; i < languages.length; i++) {
-      if (languages[i].display) {
+      if (language.equals(languages[i].code)) {
+        languages[i].forceDisplay();
+      }
+      if (languages[i].shouldDisplay()) {
         String code = languages[i].code;
         String name = languages[i].language;
         String nativeName = languages[i].nativeLanguage;
         String menuLabel = null;
         if ((nativeName != null) && (!nativeName.equals(name))) {
-          menuLabel = GT._(name, true) + " - " + nativeName + " (" + code + ")"; 
+          menuLabel = code + " - " + GT._(name, true) + " - " + nativeName; 
         } else {
-          menuLabel = GT._(name, true) + " (" + code + ")";
+          menuLabel = code + " - " + GT._(name, true);
         }
         addCheckboxMenuItem(
             menu,

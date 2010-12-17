@@ -75,6 +75,7 @@ public class MolReader extends AtomSetCollectionReader {
 
   boolean is2D;
   private boolean isV3000;
+  private String dimension;
   
   @Override
   public void initializeReader() throws Exception {
@@ -149,7 +150,7 @@ public class MolReader extends AtomSetCollectionReader {
     if (line == null)
       return;
     header += line + "\n";
-    isV3000 = (line.indexOf("V3000") >= 0);
+    dimension = (line.length() < 22 ? "3D" : line.substring(20,22));
     //line 3: comment
     readLine();
     if (line == null)
@@ -164,11 +165,13 @@ public class MolReader extends AtomSetCollectionReader {
     String[] tokens = null;
     if (isMDL)
       discardLinesUntilStartsWith("$CTAB");
-    else if (isV3000) {
+    readLine();
+    isV3000 = (line.indexOf("V3000") >= 0);
+    if (isV3000) {
+      is2D = (dimension.equals("2D"));
       discardLinesUntilContains("COUNTS");
       tokens = getTokens();
     }
-    readLine();
     if (line == null)
       return;
     int atomCount = (isV3000 ? parseInt(tokens[3]) : parseInt(line, 0, 3));
@@ -202,6 +205,8 @@ public class MolReader extends AtomSetCollectionReader {
           else if (s.startsWith("MASS="))
             isotope = parseInt(tokens[j].substring(5));
         }
+        if (isotope > 1 && elementSymbol.equals("H"))
+          isotope = 1 - isotope;
       } else {
         if (line.length() > 34) {
           elementSymbol = line.substring(31, 34).trim();
@@ -230,27 +235,26 @@ public class MolReader extends AtomSetCollectionReader {
               isotope += code;
             }
           }
-
-          switch (isotope) {
-          case 0:
-            break;
-          case -1:
-            elementSymbol = "D";
-            break;
-          case -2:
-            elementSymbol = "T";
-            break;
-          default:
-            elementSymbol = isotope + elementSymbol;
-          }
-          if (is2D && z != 0)
-            is2D = false;
-          Atom atom = atomSetCollection.addNewAtom();
-          atom.elementSymbol = elementSymbol;
-          atom.formalCharge = charge;
-          setAtomCoord(atom, x, y, z);
         }
       }
+      switch (isotope) {
+      case 0:
+        break;
+      case -1:
+        elementSymbol = "D";
+        break;
+      case -2:
+        elementSymbol = "T";
+        break;
+      default:
+        elementSymbol = isotope + elementSymbol;
+      }
+      if (is2D && z != 0)
+        is2D = false;
+      Atom atom = atomSetCollection.addNewAtom();
+      atom.elementSymbol = elementSymbol;
+      atom.formalCharge = charge;
+      setAtomCoord(atom, x, y, z);
     }
   }
 
@@ -272,10 +276,10 @@ public class MolReader extends AtomSetCollectionReader {
       if (isV3000) {
         checkLineContinuation();
         String[] tokens = getTokens();
-        atomIndex1 = parseInt(tokens[3]);
-        atomIndex2 = parseInt(tokens[4]);
-        order = parseInt(tokens[5]);
-        for (int j = 6; j < tokens.length; j++) {
+        order = parseInt(tokens[3]);
+        atomIndex1 = parseInt(tokens[4]);
+        atomIndex2 = parseInt(tokens[5]);
+          for (int j = 6; j < tokens.length; j++) {
           String s = tokens[j].toUpperCase();
           if (s.startsWith("CFG=")) {
             stereo = parseInt(tokens[j].substring(4));

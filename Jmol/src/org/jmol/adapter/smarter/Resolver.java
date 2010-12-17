@@ -51,7 +51,7 @@ public class Resolver {
     "quantum.", ";Adf;Csf;Dgrid;GamessUK;GamessUS;Gaussian;GausianWfn;Jaguar;" +
                  "Molden;MopacGraphf;GenNBO;NWChem;Odyssey;Psi;Qchem;Spartan;SpartanSmol;" +
                  "WebMO;",
-    "simple.", ";Alchemy;Ampac;Cube;FoldingXyz;GhemicalMM;HyperChem;Jme;Mopac;V3000;", 
+    "simple.", ";Alchemy;Ampac;Cube;FoldingXyz;GhemicalMM;HyperChem;Jme;Mopac;", 
     "xtal.", ";Aims;Castep;Crystal;Gulp;Shelx;VaspOutcar;Wien2k;"
   };
   
@@ -536,7 +536,7 @@ public class Resolver {
 
   private final static int SPECIAL_JME                = 0;
   private final static int SPECIAL_MOPACGRAPHF        = 1;
-  private final static int SPECIAL_V3000              = 2;
+  private final static int SPECIAL_V3000              = 2; // implemented in MOL
   private final static int SPECIAL_ODYSSEY            = 3;
   private final static int SPECIAL_MOL                = 4;
   private final static int SPECIAL_XYZ                = 5;
@@ -628,8 +628,6 @@ public class Resolver {
       return specialTags[SPECIAL_JME][0]; //only one line, and that line starts with a number 
     if (checkMopacGraphf(lines))
       return specialTags[SPECIAL_MOPACGRAPHF][0]; //must be prior to checkFoldingXyz and checkMol
-    if (checkV3000(lines))
-      return specialTags[SPECIAL_V3000][0];
     if (checkOdyssey(lines))
       return specialTags[SPECIAL_ODYSSEY][0];
     if (checkMol(lines))
@@ -803,15 +801,6 @@ public class Resolver {
     return false;
   }
   
-  private static boolean checkV3000(String[] lines) {
-    if (lines[3].length() >= 6) {
-      String line4trimmed = lines[3].trim();
-      if (line4trimmed.endsWith("V3000"))
-        return true;
-    }
-    return false;
-  }
-
   private static boolean checkMol(String[] lines) {
     String line4trimmed = ("X" + lines[3]).trim().toUpperCase();
     if (line4trimmed.length() < 7 || line4trimmed.indexOf(".") >= 0)

@@ -115,8 +115,6 @@ public class TestSmarterJmolAdapter extends TestSuite {
     result.addDirectory(false, "spartan", "sp4", "Spartan");
     result.addDirectory(false, "sparchive", "sparchive", "Spartan");
     result.addDirectory(false, "sparchive", "spartan", "Spartan");
-    result.addDirectory(false, "v3000", "mol", "V3000");
-    result.addDirectory(false, "v3000", "sdf", "V3000");
     result.addDirectory(false, "vasp", "xml", "XmlVasp");
     result.addDirectory(false, "vasp", "dat", "VaspOutcar");
     result.addDirectory(false, "wien2k", "struct", "Wien2k");

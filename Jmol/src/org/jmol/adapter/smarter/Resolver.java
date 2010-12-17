@@ -52,7 +52,7 @@ public class Resolver {
                  "Molden;MopacGraphf;GenNBO;NWChem;Odyssey;Psi;Qchem;Spartan;SpartanSmol;" +
                  "WebMO;",
     "simple.", ";Alchemy;Ampac;Cube;FoldingXyz;GhemicalMM;HyperChem;Jme;Mopac;V3000;", 
-    "xtal.", ";Aims;Castep;Crystal;Shelx;VaspOutcar;Wien2k;"
+    "xtal.", ";Aims;Castep;Crystal;Gulp;Shelx;VaspOutcar;Wien2k;"
   };
   
   public final static String getReaderClassBase(String type) {
@@ -548,26 +548,27 @@ public class Resolver {
   private final static int SPECIAL_AIMS               = 11;
   private final static int SPECIAL_CRYSTAL            = 12;
   private final static int SPECIAL_VASP               = 13;
-  private final static int SPECIAL_GROMACS            = 14;
-  private final static int SPECIAL_GENNBO             = 15;
+  private final static int SPECIAL_GULP               = 14;
+  private final static int SPECIAL_GROMACS            = 15;
+  private final static int SPECIAL_GENNBO             = 16;
   
   // these next are needed by the XML reader
   
-  public final static int SPECIAL_ARGUS_XML   = 16;
-  public final static int SPECIAL_CML_XML     = 17;
-  public final static int SPECIAL_CHEM3D_XML  = 18;
-  public final static int SPECIAL_MOLPRO_XML  = 19;
-  public final static int SPECIAL_ODYSSEY_XML = 20;
-  public final static int SPECIAL_XSD_XML     = 21;
-  public final static int SPECIAL_VASP_XML    = 22; 
+  public final static int SPECIAL_ARGUS_XML   = 17;
+  public final static int SPECIAL_CML_XML     = 18;
+  public final static int SPECIAL_CHEM3D_XML  = 19;
+  public final static int SPECIAL_MOLPRO_XML  = 20;
+  public final static int SPECIAL_ODYSSEY_XML = 21;
+  public final static int SPECIAL_XSD_XML     = 22;
+  public final static int SPECIAL_VASP_XML    = 23; 
   
-  public final static int SPECIAL_ARGUS_DOM   = 23;
-  public final static int SPECIAL_CML_DOM     = 24;
-  public final static int SPECIAL_CHEM3D_DOM  = 25;
-  public final static int SPECIAL_MOLPRO_DOM  = 26;
-  public final static int SPECIAL_ODYSSEY_DOM = 27;
-  public final static int SPECIAL_XSD_DOM     = 28; // not implemented
-  public final static int SPECIAL_VASP_DOM    = 29; 
+  public final static int SPECIAL_ARGUS_DOM   = 24;
+  public final static int SPECIAL_CML_DOM     = 25;
+  public final static int SPECIAL_CHEM3D_DOM  = 26;
+  public final static int SPECIAL_MOLPRO_DOM  = 27;
+  public final static int SPECIAL_ODYSSEY_DOM = 28;
+  public final static int SPECIAL_XSD_DOM     = 29; // not implemented
+  public final static int SPECIAL_VASP_DOM    = 30; 
   
   public final static String[][] specialTags = {
     { "Jme" },
@@ -586,6 +587,7 @@ public class Resolver {
     { "Aims" },  
     { "Crystal" },  
     { "VaspOutcar" },
+    { "Gulp"  },
     { "Gromacs" },
     { "GenNBO" },
     
@@ -618,6 +620,8 @@ public class Resolver {
         return specialTags[SPECIAL_CRYSTAL][0];
       if (checkVasp(lines))
         return specialTags[SPECIAL_VASP][0];
+      if(checkGulp(lines))
+        return specialTags[SPECIAL_GULP][0];
     }
     if (nLines == 1 && lines[0].length() > 0
         && Character.isDigit(lines[0].charAt(0)))
@@ -676,6 +680,23 @@ public class Resolver {
     for (int i = 0; i < lines.length; i++) {
       if (lines[i].trim().equals("OPTGEOM"))
         return true;
+    }
+    return false;
+  }
+  
+  
+  private static boolean checkGulp(String[] lines) {
+
+    if (lines[2]
+              .startsWith("*                       GENERAL UTILITY LATTICE PROGRAM      "))
+      return true;
+    for (int i = 0; i < lines.length; i++) {
+      if (lines[i]
+                .startsWith("*                       GENERAL UTILITY LATTICE PROGRAM      ")) {
+        return true;
+      } else if (lines[i].contains("Julian Gale")) {
+        return true;
+      }
     }
     return false;
   }

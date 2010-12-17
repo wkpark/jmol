@@ -616,7 +616,7 @@ public class JmolPopup extends SimplePopup {
         String code = languages[i].code;
         String name = languages[i].language;
         String nativeName = languages[i].nativeLanguage;
-        String menuLabel = null;
+        String menuLabel = code + " - " + GT._(name, true);
         if ((nativeName != null) && (!nativeName.equals(GT._(name, true)))) {
           menuLabel += " - " + nativeName; 
         }

@@ -94,6 +94,7 @@ public class TestSmarterJmolAdapter extends TestSuite {
     result.addDirectory(false, "jaguar", "out", "Jaguar");
     result.addDirectory(false, "modifiedGroups", "cif", "Cif");
     result.addDirectory(false, "modifiedGroups", "pdb", "Pdb");
+    result.addDirectory(false, "mol", "v3000", "Mol");
     result.addDirectory(false, "mol", "mol", "Mol");
     result.addDirectory(false, "mol", "sdf", "Mol");
     result.addDirectory(false, "mol2", "mol2", "Mol2");

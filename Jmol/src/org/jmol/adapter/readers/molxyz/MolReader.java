@@ -165,8 +165,7 @@ public class MolReader extends AtomSetCollectionReader {
     String[] tokens = null;
     if (isMDL)
       discardLinesUntilStartsWith("$CTAB");
-    readLine();
-    isV3000 = (line.indexOf("V3000") >= 0);
+    isV3000 = (readLine() != null && line.indexOf("V3000") >= 0);
     if (isV3000) {
       is2D = (dimension.equals("2D"));
       discardLinesUntilContains("COUNTS");

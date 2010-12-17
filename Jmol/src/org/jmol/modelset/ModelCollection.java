@@ -3013,16 +3013,16 @@ abstract public class ModelCollection extends BondCollection {
     String version = Viewer.getJmolVersion();
     if (asSDF) {
       Calendar c = Calendar.getInstance();
-      mol.append("\nRH Jmol-").append(version.substring(0, 2));
-      TextFormat.rFill(mol, " 00", "" + c.get(Calendar.MONTH));
+      mol.append("\nRH Jmol").append(version.substring(0, 2));
+      TextFormat.rFill(mol, " 00", "" + (1+c.get(Calendar.MONTH)));
       TextFormat.rFill(mol, "00", "" + c.get(Calendar.DAY_OF_MONTH));
       mol.append(("" + c.get(Calendar.YEAR)).substring(2,4));
       TextFormat.rFill(mol, "00", "" + c.get(Calendar.HOUR_OF_DAY));
       TextFormat.rFill(mol, "00", "" + c.get(Calendar.MINUTE));
       mol.append("3D 1   1.00000     0.00000     0");
       //       This line has the format:
-      //  IIPPPPPPPPMMDDYYHHmmddSSssssssssssEEEEEEEEEEEERRRRRR
-      //  (FORTRAN: A2<--A8--><---A10-->A2I2<--F10.5-><---F12.5--><-I6-> )
+      //           IIPPPPPPPPMMDDYYHHmmddSSssssssssssEEEEEEEEEEEERRRRRR
+      // (FORTRAN: A2<--A8--><---A10-->A2I2<--F10.5-><---F12.5--><-I6-> )
     }
     mol.append("\nJmol version ").append(Viewer.getJmolVersion()).append(asSDF ? " " : "\n")
       .append("EXTRACT: ").append(Escape.escape(bs)).append("\n"); 
@@ -3062,14 +3062,14 @@ abstract public class ModelCollection extends BondCollection {
   private void getAtomRecordMOL(StringBuffer sb, Atom a, Quaternion q, Point3f pTemp, boolean asSDF){
     //   -0.9920    3.2030    9.1570 Cl  0  0  0  0  0
     //    3.4920    4.0920    5.8700 Cl  0  0  0  0  0
-    //012345678901234567890123456789012
+    //xxxxx.xxxxyyyyy.yyyyzzzzz.zzzz aaaddcccssshhhbbbvvvHHHrrriiimmmnnneee// MDL-Symyx spec
     if (q == null)
       pTemp.set(a);
     else
       q.transform(a, pTemp);
-    TextFormat.rFill(sb, "          " ,TextFormat.safeTruncate(pTemp.x,9));
-    TextFormat.rFill(sb, "          " ,TextFormat.safeTruncate(pTemp.y,9));
-    TextFormat.rFill(sb, "          " ,TextFormat.safeTruncate(pTemp.z,9));
+    sb.append(TextFormat.sprintf("%10.4f", new Object[] {pTemp.x}))
+      .append(TextFormat.sprintf("%10.4f", new Object[] {pTemp.y}))
+      .append(TextFormat.sprintf("%10.4f", new Object[] {pTemp.z}));
     sb.append(" ").append(a.isDeleted() ? "Xx" 
         : asSDF ? (Elements.elementSymbolFromNumber(a.getElementNumber()) + " ").substring(0,2) 
             : getElementSymbol(a.index));

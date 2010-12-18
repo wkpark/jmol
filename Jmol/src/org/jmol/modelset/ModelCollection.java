@@ -3009,7 +3009,7 @@ abstract public class ModelCollection extends BondCollection {
     if (asV3000)
       asSDF = false;
     StringBuffer mol = new StringBuffer();
-    String name = (isModelKit ? "Jmol Model Kit" : viewer.getFullPathName());
+    String name = (isModelKit ? "Jmol Model Kit" : viewer.getFullPathName().replace('\\','/'));
     mol.append(name);
     String version = Viewer.getJmolVersion();
     Calendar c = Calendar.getInstance();

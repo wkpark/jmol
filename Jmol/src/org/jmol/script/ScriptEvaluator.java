@@ -13398,8 +13398,12 @@ public class ScriptEvaluator {
           fileName = "?Jmol." + viewer.getParameter("_fileType");
       } else if ((data == "SDF" || data == "MOL" || data == "V2000" || data == "V3000") && isCoord) {
         data = viewer.getModelExtract("selected", true, data == "SDF", data == "V3000");
+        if (data.startsWith("ERROR:"))
+          bytes = data;
       } else if (data == "XYZ" || data == "MOL" || data == "SDF" ||  data == "V2000" || data == "V3000" || data == "CML") {
         data = viewer.getData("selected", data);
+        if (data.startsWith("ERROR:"))
+          bytes = data;
       } else if (data == "FUNCS") {
         data = viewer.getFunctionCalls(null);
         type = "TXT";

@@ -769,12 +769,16 @@ final public class Atom extends Point3fi implements JmolNode {
   }
   
   void setFractionalCoord(Point3f ptNew, boolean asAbsolute) {
-    set(ptNew);
-    SymmetryInterface[] c = group.chain.modelSet.unitCells;
-    if (c != null && c[modelIndex].haveUnitCell())
-      c[modelIndex].toCartesian(this, asAbsolute && !group.chain.model.isJmolDataFrame);
+    setFractionalCoord(this, ptNew, asAbsolute);
   }
   
+  void setFractionalCoord(Point3f pt, Point3f ptNew, boolean asAbsolute) {
+    pt.set(ptNew);
+    SymmetryInterface[] c = group.chain.modelSet.unitCells;
+    if (c != null && c[modelIndex].haveUnitCell())
+      c[modelIndex].toCartesian(pt, asAbsolute && !group.chain.model.isJmolDataFrame);
+  }
+
   boolean isCursorOnTopOf(int xCursor, int yCursor,
                         int minRadius, Atom competitor) {
     int r = screenDiameter / 2;

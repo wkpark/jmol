@@ -3006,83 +3006,105 @@ abstract public class ModelCollection extends BondCollection {
   public String getModelExtract(BitSet bs, boolean doTransform,
                                 boolean isModelKit, boolean asSDF,
                                 boolean asV3000) {
-    String trailer = (asSDF ? "$$$$\n" : "");
-    asSDF = true;
-    int[] atomMap = new int[atomCount];
+    if (asV3000)
+      asSDF = false;
     StringBuffer mol = new StringBuffer();
     String name = (isModelKit ? "Jmol Model Kit" : viewer.getFullPathName());
     mol.append(name);
     String version = Viewer.getJmolVersion();
-    if (asSDF) {
-      Calendar c = Calendar.getInstance();
-      mol.append("\n__Jmol-").append(version.substring(0, 2));
-      TextFormat.rFill(mol, "_00", "" + (1 + c.get(Calendar.MONTH)));
-      TextFormat.rFill(mol, "00", "" + c.get(Calendar.DAY_OF_MONTH));
-      mol.append(("" + c.get(Calendar.YEAR)).substring(2, 4));
-      TextFormat.rFill(mol, "00", "" + c.get(Calendar.HOUR_OF_DAY));
-      TextFormat.rFill(mol, "00", "" + c.get(Calendar.MINUTE));
-      mol.append("3D 1   1.00000     0.00000     0");
-      //       This line has the format:
-      //  IIPPPPPPPPMMDDYYHHmmddSSssssssssssEEEEEEEEEEEERRRRRR
-      //  A2<--A8--><---A10-->A2I2<--F10.5-><---F12.5--><-I6->
-    }
+    Calendar c = Calendar.getInstance();
+    mol.append("\n__Jmol-").append(version.substring(0, 2));
+    TextFormat.rFill(mol, "_00", "" + (1 + c.get(Calendar.MONTH)));
+    TextFormat.rFill(mol, "00", "" + c.get(Calendar.DAY_OF_MONTH));
+    mol.append(("" + c.get(Calendar.YEAR)).substring(2, 4));
+    TextFormat.rFill(mol, "00", "" + c.get(Calendar.HOUR_OF_DAY));
+    TextFormat.rFill(mol, "00", "" + c.get(Calendar.MINUTE));
+    mol.append("3D 1   1.00000     0.00000     0");
+    //       This line has the format:
+    //  IIPPPPPPPPMMDDYYHHmmddSSssssssssssEEEEEEEEEEEERRRRRR
+    //  A2<--A8--><---A10-->A2I2<--F10.5-><---F12.5--><-I6->
     mol.append("\nJmol version ").append(Viewer.getJmolVersion()).append(
-        asSDF ? " " : "\n").append("EXTRACT: ").append(Escape.escape(bs))
+        " EXTRACT: ").append(Escape.escape(bs))
         .append("\n");
-    Quaternion q = (doTransform ? viewer.getRotationQuaternion() : null);
-    Point3f pTemp = new Point3f();
     BitSet bsAtoms = BitSetUtil.copy(bs);
-    int nAtoms = 0;
-    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-      if (q != null && atoms[i].isDeleted()) {
+    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
+      if (doTransform && atoms[i].isDeleted())
         bsAtoms.clear(i);
-        continue;
+    BitSet bsBonds = getCovalentBondsForAtoms(bsAtoms);
+    if (bsAtoms.cardinality() == 0)
+      return "";
+    boolean isOK = true;
+    Quaternion q = (doTransform ? viewer.getRotationQuaternion() : null);
+    if (asSDF) {
+      String header = mol.toString();
+      mol = new StringBuffer();
+      BitSet bsModels = getModelBitSet(bsAtoms, true);
+      for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels
+          .nextSetBit(i + 1)) {
+        mol.append(header);
+        BitSet bsTemp = BitSetUtil.copy(bsAtoms);
+        bsTemp.and(getModelAtomBitSetIncludingDeleted(i, false));
+        bsBonds = getCovalentBondsForAtoms(bsTemp);
+        if (!(isOK = addMolFile(mol, bsTemp, bsBonds, false, q)))
+          break;
+        mol.append("$$$$\n");
       }
-      atomMap[i] = ++nAtoms;
+    } else {
+      isOK = addMolFile(mol, bsAtoms, bsBonds, asV3000, q);
     }
-    int nBonds = 0;
-    BitSet bsBonds = new BitSet();
-    for (int i = 0; i < bondCount; i++) {
-      Bond bond = bonds[i];
-      if (bsAtoms.get(bond.atom1.index) && bsAtoms.get(bond.atom2.index)
-          && bond.isCovalent()) {
-        bsBonds.set(i);
-        nBonds++;
-      }
-    }
-    asV3000 |= (nAtoms > 999 || nBonds > 999);
-    asSDF |= asV3000;
+    return (isOK ? mol.toString() : "ERROR: Too many atoms or bonds -- use V3000 format.");
+  }
+  
+  private boolean addMolFile(StringBuffer mol, BitSet bsAtoms, BitSet bsBonds,
+                          boolean asV3000, Quaternion q) {
+    int nAtoms = bsAtoms.cardinality();
+    int nBonds = bsBonds.cardinality();
+    if (!asV3000 && (nAtoms > 999 || nBonds > 999))
+      return false;
+    int[] atomMap = new int[atomCount];
+    Point3f pTemp = new Point3f();
     if (asV3000) {
       mol.append("  0  0  0  0  0  0            999 V3000");
     } else {
       TextFormat.rFill(mol, "   ", "" + nAtoms);
       TextFormat.rFill(mol, "   ", "" + nBonds);
-      if (asSDF)
-        mol.append("  0  0  0  0              1 V2000");
+      mol.append("  0  0  0  0              1 V2000");
     }
     mol.append("\n");
     if (asV3000) {
-      mol.append("M  V30 BEGIN CTAB\nM  V30 COUNTS ")
-      .append(nAtoms).append(" ").append(nBonds).append(" 0 0 0\n")
-      .append("M  V30 BEGIN ATOM\n");  
+      mol.append("M  V30 BEGIN CTAB\nM  V30 COUNTS ").append(nAtoms)
+          .append(" ").append(nBonds).append(" 0 0 0\n").append(
+              "M  V30 BEGIN ATOM\n");
     }
-    for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1))
-      getAtomRecordMOL(mol, atomMap[i], atoms[i], q, pTemp, asSDF, asV3000);
+    for (int i = bsAtoms.nextSetBit(0), n = 0; i >= 0; i = bsAtoms
+        .nextSetBit(i + 1))
+      getAtomRecordMOL(mol, atomMap[i] = ++n, atoms[i], q, pTemp,
+          asV3000);
     if (asV3000) {
-      mol.append("M  V30 END ATOM\nM  V30 BEGIN BOND\n");      
+      mol.append("M  V30 END ATOM\nM  V30 BEGIN BOND\n");
     }
-    for (int i = bsBonds.nextSetBit(0), n = 0; i >= 0; i = bsBonds.nextSetBit(i + 1))
-      getBondRecordMOL(++n, mol, i, atomMap, asSDF, asV3000);
+    for (int i = bsBonds.nextSetBit(0), n = 0; i >= 0; i = bsBonds
+        .nextSetBit(i + 1))
+      getBondRecordMOL(++n, mol, i, atomMap, asV3000);
     // 21 21 0 0 0
     if (asV3000) {
       mol.append("M  V30 END BOND\nM  V30 END CTAB\n");
     }
-    if (asSDF)
-      mol.append("M  END\n");
-    mol.append(trailer);
-    return mol.toString();
+    mol.append("M  END\n");
+    return true;
   }
-  
+
+  private BitSet getCovalentBondsForAtoms(BitSet bsAtoms) {
+    BitSet bsBonds = new BitSet();
+    for (int i = 0; i < bondCount; i++) {
+      Bond bond = bonds[i];
+      if (bsAtoms.get(bond.atom1.index) && bsAtoms.get(bond.atom2.index)
+          && bond.isCovalent())
+        bsBonds.set(i);
+    }
+    return bsBonds;
+  }
+
   /*
   L-Alanine
   GSMACCS-II07189510252D 1 0.00366 0.00000 0
@@ -3110,17 +3132,19 @@ abstract public class ModelCollection extends BondCollection {
    */
 
   private void getAtomRecordMOL(StringBuffer sb, int i, Atom a, Quaternion q,
-                                Point3f pTemp, boolean asSDF, boolean asV3000) {
+                                Point3f pTemp, boolean asV3000) {
     //   -0.9920    3.2030    9.1570 Cl  0  0  0  0  0
     //    3.4920    4.0920    5.8700 Cl  0  0  0  0  0
     //012345678901234567890123456789012
-    if (q == null)
-      pTemp.set(a);
+    if (models[a.modelIndex].isTrajectory)
+      a.setFractionalCoord(ptTemp, trajectorySteps.get(a.modelIndex)[a.index
+          - models[a.modelIndex].firstAtomIndex], true);
     else
-      q.transform(a, pTemp);
-    String sym = (a.isDeleted() ? "Xx" : asSDF ? Elements
-        .elementSymbolFromNumber(a.getElementNumber())
-        : getElementSymbol(a.index));
+      pTemp.set(a);
+    if (q != null)
+      q.transform(pTemp, pTemp);
+    String sym = (a.isDeleted() ? "Xx" : Elements.elementSymbolFromNumber(a
+        .getElementNumber()));
     int iso = a.getIsotopeNumber();
     int charge = a.getFormalCharge();
     if (asV3000) {
@@ -3132,24 +3156,22 @@ abstract public class ModelCollection extends BondCollection {
       if (iso != 0)
         sb.append(" MASS=").append(iso);
     } else {
-      if (asSDF && sym.length() == 1)
-        sym += " ";
       sb.append(TextFormat
           .sprintf("%10.5p%10.5p%10.5p", new Object[] { pTemp }));
       sb.append(" ").append(sym);
-      if (asSDF) {
-        if (iso > 0)
-          iso -= Elements.getNaturalIsotope(a.getElementNumber());
+      if (sym.length() == 1)
         sb.append(" ");
-        TextFormat.rFill(sb, "  ", "" + iso);
-        TextFormat.rFill(sb, "   ", "" + charge);
-        sb.append("  0  0  0  0");
-      }
+      if (iso > 0)
+        iso -= Elements.getNaturalIsotope(a.getElementNumber());
+      sb.append(" ");
+      TextFormat.rFill(sb, "  ", "" + iso);
+      TextFormat.rFill(sb, "   ", "" + charge);
+      sb.append("  0  0  0  0");
     }
     sb.append("\n");
   }
 
-  private void getBondRecordMOL(int n, StringBuffer sb, int i,int[] atomMap, boolean asSDF, boolean asV3000){
+  private void getBondRecordMOL(int n, StringBuffer sb, int i,int[] atomMap, boolean asV3000){
   //  1  2  1  0
     Bond b = bonds[i];
     int a1 = atomMap[b.atom1.index];
@@ -3180,9 +3202,7 @@ abstract public class ModelCollection extends BondCollection {
     } else {
       TextFormat.rFill(sb, "   ","" + a1);
       TextFormat.rFill(sb, "   ","" + a2);
-      sb.append("  ").append(order);
-      if (asSDF)
-        sb.append("  0  0  0");
+      sb.append("  ").append(order).append("  0  0  0");
     }
     sb.append("\n");
   }

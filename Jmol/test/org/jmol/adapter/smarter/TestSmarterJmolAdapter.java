@@ -227,7 +227,7 @@ class TestSmarterJmolAdapterImpl extends TestCase {
       }
     }
     Hashtable<String, Object> htParams = new Hashtable<String, Object>();
-    htParams.put("fullPathName", file.getAbsolutePath());
+    htParams.put("fullPathName", file.getCanonicalPath());
     Object result = adapter.getAtomSetCollectionFromReader(file.getName(), null, bReader, htParams);
     assertNotNull("Nothing read for " + file.getPath(), result);
     assertFalse("Error returned for " + file.getPath() + ": " + result, result instanceof String);

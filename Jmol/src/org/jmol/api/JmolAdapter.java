@@ -205,9 +205,8 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
     if (!htParams.containsKey("viewer"))
       htParams.put("viewer", JmolViewer.allocateViewer(null, this));
     Object a = getAtomSetCollectionReader(name, type, bufferedReader, htParams);
-    if (a instanceof String) {
+    if (a instanceof String)
       return a;
-    }
     return getAtomSetCollection(a);
   }
 

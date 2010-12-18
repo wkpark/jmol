@@ -260,6 +260,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (Logger.debugging) {
       Logger.debug("Viewer constructor " + this);
     }
+    g3d = new Graphics3D(display);
     isDataOnly = (display == null);
     haveDisplay = (!isDataOnly && (commandOptions == null || commandOptions.indexOf("-n") < 0));
     mustRender = haveDisplay;
@@ -286,7 +287,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     multiTouch = (commandOptions != null && commandOptions
         .indexOf("-multitouch") >= 0);
     stateManager = new StateManager(this);
-    g3d = new Graphics3D(display);
     colorManager = new ColorManager(this, g3d);
     statusManager = new StatusManager(this);
     scriptManager = new ScriptManager(this);

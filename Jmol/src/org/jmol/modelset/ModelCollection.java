@@ -3016,7 +3016,7 @@ abstract public class ModelCollection extends BondCollection {
     if (asSDF) {
       Calendar c = Calendar.getInstance();
       mol.append("\n__Jmol-").append(version.substring(0, 2));
-      TextFormat.rFill(mol, "_00", "" + c.get(Calendar.MONTH));
+      TextFormat.rFill(mol, "_00", "" + (1 + c.get(Calendar.MONTH)));
       TextFormat.rFill(mol, "00", "" + c.get(Calendar.DAY_OF_MONTH));
       mol.append(("" + c.get(Calendar.YEAR)).substring(2, 4));
       TextFormat.rFill(mol, "00", "" + c.get(Calendar.HOUR_OF_DAY));

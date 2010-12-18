@@ -3197,8 +3197,7 @@ abstract public class ModelCollection extends BondCollection {
       sb.append("M  V30 ").append(n)
           .append(" ").append(order)
           .append(" ").append(a1)
-          .append(" ").append(a2)
-          .append(" 0");
+          .append(" ").append(a2);
     } else {
       TextFormat.rFill(sb, "   ","" + a1);
       TextFormat.rFill(sb, "   ","" + a2);

@@ -536,7 +536,7 @@ public class Resolver {
 
   private final static int SPECIAL_JME                = 0;
   private final static int SPECIAL_MOPACGRAPHF        = 1;
-  private final static int SPECIAL_V3000              = 2; // implemented in MOL
+//  private final static int SPECIAL_V3000              = 2; // implemented in MOL
   private final static int SPECIAL_ODYSSEY            = 3;
   private final static int SPECIAL_MOL                = 4;
   private final static int SPECIAL_XYZ                = 5;

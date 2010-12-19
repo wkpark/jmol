@@ -378,8 +378,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     } else if ("init" == propertyName) {
       newSg();
     } else if ("getSurfaceSets" == propertyName) {
-      if (thisMesh != null)
+      if (thisMesh != null) {
         thisMesh.thisSet = ((Integer) value).intValue();
+        thisMesh.calculatedVolume = null;
+        thisMesh.calculatedArea = null;
+      }
     } else if ("localName" == propertyName) {
       value = viewer.getOutputStream((String) value, null);
       propertyName = "outputStream";

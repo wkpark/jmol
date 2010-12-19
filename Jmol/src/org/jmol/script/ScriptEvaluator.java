@@ -15081,7 +15081,7 @@ public class ScriptEvaluator {
     boolean isFxy = false;
     float[] nlmZ = new float[5];
     float[] data = null;
-    int thisSetNumber = 0;
+    int thisSetNumber = -1;
     int nFiles = 0;
     int nX, nY, nZ, ptX, ptY;
     float sigma = Float.NaN;
@@ -16205,7 +16205,7 @@ public class ScriptEvaluator {
       addShapeProperty(propertyList, "nomap", new Float(0));
       surfaceObjectSeen = true;
     }
-    if (thisSetNumber > 0)
+    if (thisSetNumber >= 0)
       addShapeProperty(propertyList, "getSurfaceSets", Integer
           .valueOf(thisSetNumber - 1));
     if (discreteColixes != null) {

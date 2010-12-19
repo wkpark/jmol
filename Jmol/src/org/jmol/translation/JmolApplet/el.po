@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2010-12-18 10:41+0100\n"
-"PO-Revision-Date: 2009-12-01 20:10+0000\n"
-"Last-Translator: ΑναστόπουλοςΧάρης <harrisanasto@gmail.com>\n"
+"PO-Revision-Date: 2010-12-19 22:28+0000\n"
+"Last-Translator: Dimitrios - Georgios Kontopoulos <Unknown>\n"
 "Language-Team: Greek <el@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-12-16 16:48+0000\n"
+"X-Launchpad-Export-Date: 2010-12-19 22:48+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/jmol/applet/AppletConsole.java:199
@@ -134,7 +134,8 @@ msgid "Check"
 msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -165,7 +166,7 @@ msgstr "Κλείνω"
 
 #: org/jmol/export/dialog/Dialog.java:92
 msgid "File or URL:"
-msgstr "Φάκελος ή URL:"
+msgstr "Αρχείο ή URL:"
 
 #: org/jmol/export/dialog/Dialog.java:266
 msgid "Image Type"
@@ -185,17 +186,17 @@ msgstr ""
 #: org/jmol/export/dialog/Dialog.java:325
 #, java-format
 msgid "PNG Quality ({0})"
-msgstr ""
+msgstr "Ποιότητα PNG ({0})"
 
 #: org/jmol/export/dialog/Dialog.java:371
 #: org/jmol/export/dialog/Dialog.java:483
 msgid "Yes"
-msgstr ""
+msgstr "Ναι"
 
 #: org/jmol/export/dialog/Dialog.java:371
 #: org/jmol/export/dialog/Dialog.java:481
 msgid "No"
-msgstr ""
+msgstr "Όχι"
 
 #: org/jmol/export/dialog/Dialog.java:373
 #, java-format
@@ -208,7 +209,7 @@ msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:432
 msgid "All Files"
-msgstr ""
+msgstr "Όλα τα Αρχεία"
 
 #: org/jmol/export/dialog/Dialog.java:433
 #: org/jmol/export/dialog/Dialog.java:480
@@ -226,7 +227,7 @@ msgstr "<b>Ενότητες:</b>"
 
 #: org/jmol/export/dialog/Dialog.java:439
 msgid "Directory"
-msgstr ""
+msgstr "Κατάλογος"
 
 #: org/jmol/export/dialog/Dialog.java:442
 msgid "Open selected directory"
@@ -246,11 +247,11 @@ msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:446
 msgid "Name"
-msgstr ""
+msgstr "Όνομα"
 
 #: org/jmol/export/dialog/Dialog.java:447
 msgid "File Name:"
-msgstr ""
+msgstr "Όνομα αρχείου:"
 
 #: org/jmol/export/dialog/Dialog.java:448
 msgid "Size"
@@ -300,12 +301,12 @@ msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:466
 msgid "Open selected file"
-msgstr ""
+msgstr "Άνοιγμα επιλεγμένου αρχείου"
 
 #: org/jmol/export/dialog/Dialog.java:468
 #: org/jmol/export/dialog/Dialog.java:471
 msgid "Save"
-msgstr ""
+msgstr "Αποθήκευση"
 
 #: org/jmol/export/dialog/Dialog.java:470
 msgid "Save selected file"
@@ -317,7 +318,7 @@ msgstr "Αποθήκευση στο:"
 
 #: org/jmol/export/dialog/Dialog.java:473
 msgid "Update"
-msgstr ""
+msgstr "Ενημέρωση"
 
 #: org/jmol/export/dialog/Dialog.java:475
 msgid "Update directory listing"
@@ -333,7 +334,7 @@ msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:482
 msgid "OK"
-msgstr ""
+msgstr "Εντάξει"
 
 #: org/jmol/export/dialog/FilePreview.java:71
 msgid "Preview"
@@ -345,71 +346,71 @@ msgstr ""
 
 #: org/jmol/i18n/GT.java:128
 msgid "Arabic"
-msgstr ""
+msgstr "Αραβικά"
 
 #: org/jmol/i18n/GT.java:129
 msgid "Catalan"
-msgstr ""
+msgstr "Καταλανικά"
 
 #: org/jmol/i18n/GT.java:130
 msgid "Czech"
-msgstr ""
+msgstr "Τσέχικα"
 
 #: org/jmol/i18n/GT.java:131
 msgid "Danish"
-msgstr ""
+msgstr "Δανέζικα"
 
 #: org/jmol/i18n/GT.java:132
 msgid "German"
-msgstr ""
+msgstr "Γερμανικά"
 
 #: org/jmol/i18n/GT.java:133
 msgid "Greek"
-msgstr ""
+msgstr "Ελληνικά"
 
 #: org/jmol/i18n/GT.java:134
 msgid "British English"
-msgstr ""
+msgstr "Αγγλικά (Μ. Βρετανίας)"
 
 #: org/jmol/i18n/GT.java:135
 msgid "American English"
-msgstr ""
+msgstr "Αγγλικά (Αμερικής)"
 
 #: org/jmol/i18n/GT.java:136
 msgid "Spanish"
-msgstr ""
+msgstr "Ισπανικά"
 
 #: org/jmol/i18n/GT.java:137
 msgid "Estonian"
-msgstr ""
+msgstr "Εσθονικά"
 
 #: org/jmol/i18n/GT.java:138
 msgid "Faroese"
-msgstr ""
+msgstr "Νήσων Φερόε"
 
 #: org/jmol/i18n/GT.java:139
 msgid "French"
-msgstr ""
+msgstr "Γαλλικά"
 
 #: org/jmol/i18n/GT.java:140
 msgid "Hungarian"
-msgstr ""
+msgstr "Ουγγρικά"
 
 #: org/jmol/i18n/GT.java:141
 msgid "Indonesian"
-msgstr ""
+msgstr "Ινδονησιακά"
 
 #: org/jmol/i18n/GT.java:142
 msgid "Italian"
-msgstr ""
+msgstr "Ιταλικά"
 
 #: org/jmol/i18n/GT.java:143
 msgid "Japanese"
-msgstr ""
+msgstr "Ιαπωνικά"
 
 #: org/jmol/i18n/GT.java:144
 msgid "Korean"
-msgstr ""
+msgstr "Κορεάτικα"
 
 #: org/jmol/i18n/GT.java:145
 msgid "Norwegian Bokmal"
@@ -417,7 +418,7 @@ msgstr ""
 
 #: org/jmol/i18n/GT.java:146
 msgid "Dutch"
-msgstr ""
+msgstr "Ολλανδικά"
 
 #: org/jmol/i18n/GT.java:147
 msgid "Occitan"
@@ -425,27 +426,27 @@ msgstr ""
 
 #: org/jmol/i18n/GT.java:148
 msgid "Polish"
-msgstr ""
+msgstr "Πολωνέζικα"
 
 #: org/jmol/i18n/GT.java:149
 msgid "Portuguese"
-msgstr ""
+msgstr "Πορτογαλικά"
 
 #: org/jmol/i18n/GT.java:150
 msgid "Brazilian Portuguese"
-msgstr ""
+msgstr "Πορτογαλικά Βραζιλίας"
 
 #: org/jmol/i18n/GT.java:151
 msgid "Russian"
-msgstr ""
+msgstr "Ρωσικά"
 
 #: org/jmol/i18n/GT.java:152
 msgid "Slovenian"
-msgstr ""
+msgstr "Σλοβένικα"
 
 #: org/jmol/i18n/GT.java:153
 msgid "Swedish"
-msgstr ""
+msgstr "Σουηδικά"
 
 #: org/jmol/i18n/GT.java:154
 msgid "Tamil"
@@ -453,19 +454,19 @@ msgstr ""
 
 #: org/jmol/i18n/GT.java:155
 msgid "Turkish"
-msgstr ""
+msgstr "Τούρκικα"
 
 #: org/jmol/i18n/GT.java:156
 msgid "Ukrainian"
-msgstr ""
+msgstr "Ουκρανικά"
 
 #: org/jmol/i18n/GT.java:157
 msgid "Simplified Chinese"
-msgstr ""
+msgstr "Απλοποιημένα Κινέζικα"
 
 #: org/jmol/i18n/GT.java:158
 msgid "Traditional Chinese"
-msgstr ""
+msgstr "Παραδοσιακά Κινέζικα"
 
 #: org/jmol/minimize/Minimizer.java:206
 #, java-format
@@ -488,15 +489,15 @@ msgstr ""
 
 #: org/jmol/modelkit/ModelKitPopup.java:75
 msgid "Element?"
-msgstr ""
+msgstr "Στοιχείο;"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:78
 msgid "new"
-msgstr ""
+msgstr "νέο"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:79
 msgid "undo (CTRL-Z)"
-msgstr ""
+msgstr "αναίρεση (CTRL-Z)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:80
 msgid "redo (CTRL-Y)"
@@ -509,7 +510,7 @@ msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:82
 msgid "add hydrogens"
-msgstr ""
+msgstr "προσθήκη υδρογόνων"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:83
 msgid "minimize"
@@ -525,7 +526,7 @@ msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:86
 msgid "save file"
-msgstr ""
+msgstr "αποθήκευση αρχείου"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:87
 msgid "save state"
@@ -537,7 +538,7 @@ msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:89
 msgid "delete atom"
-msgstr ""
+msgstr "διαγραφή ατόμου"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:90
 msgid "drag to bond"
@@ -561,27 +562,27 @@ msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:103
 msgid "increase charge"
-msgstr ""
+msgstr "αύξηση φορτίου"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:104
 msgid "decrease charge"
-msgstr ""
+msgstr "μείωση φορτίου"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:105
 msgid "delete bond"
-msgstr ""
+msgstr "διαγραφή δεσμού"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:106
 msgid "single"
-msgstr ""
+msgstr "μονός"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:107
 msgid "double"
-msgstr ""
+msgstr "διπλός"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:108
 msgid "triple"
-msgstr ""
+msgstr "τριπλός"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:109
 msgid "increase order"
@@ -633,7 +634,7 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:592
 #: org/jmol/popup/MainPopupResourceBundle.java:609
 msgid "All"
-msgstr ""
+msgstr "Όλα"
 
 #: org/jmol/popup/JmolPopup.java:567
 #: org/jmol/popup/MainPopupResourceBundle.java:945
@@ -647,24 +648,24 @@ msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:570
 msgid "System"
-msgstr ""
+msgstr "Σύστημα"
 
 #: org/jmol/popup/JmolPopup.java:576
 msgid "1 processor"
-msgstr ""
+msgstr "1 επεξεργαστής"
 
 #: org/jmol/popup/JmolPopup.java:577
 #, java-format
 msgid "{0} processors"
-msgstr ""
+msgstr "{0} επεξεργαστές"
 
 #: org/jmol/popup/JmolPopup.java:579
 msgid "unknown processor count"
-msgstr ""
+msgstr "άγνωστος αριθμός επεξεργαστών"
 
 #: org/jmol/popup/JmolPopup.java:581
 msgid "Java version:"
-msgstr ""
+msgstr "Έκδοση Java:"
 
 #: org/jmol/popup/JmolPopup.java:585
 msgid "Java memory usage:"
@@ -673,12 +674,12 @@ msgstr ""
 #: org/jmol/popup/JmolPopup.java:591
 #, java-format
 msgid "{0} MB total"
-msgstr ""
+msgstr "{0} MB σύνολο"
 
 #: org/jmol/popup/JmolPopup.java:593
 #, java-format
 msgid "{0} MB free"
-msgstr ""
+msgstr "{0} ελεύθερα MB"
 
 #: org/jmol/popup/JmolPopup.java:596
 #, java-format
@@ -691,11 +692,11 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:538
 msgid "Configurations"
-msgstr ""
+msgstr "Ρυθμίσεις"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:539
 msgid "Element"
-msgstr ""
+msgstr "Στοιχείο"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:540
 msgid "Model/Frame"
@@ -703,13 +704,13 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:541
 msgid "Language"
-msgstr ""
+msgstr "Γλώσσα"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:542
 #: org/jmol/popup/MainPopupResourceBundle.java:543
 #: org/jmol/popup/MainPopupResourceBundle.java:544
 msgid "By Residue Name"
-msgstr ""
+msgstr "Κατά Όνομα Καταλοίπου"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:545
 msgid "By HETATM"
@@ -718,17 +719,17 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:546
 #, java-format
 msgid "Molecular Orbitals ({0})"
-msgstr ""
+msgstr "Μοριακά Τροχιακά ({0})"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:547
 #: org/jmol/popup/MainPopupResourceBundle.java:859
 #: org/jmol/popup/MainPopupResourceBundle.java:903
 msgid "Symmetry"
-msgstr ""
+msgstr "Συμμετρία"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:549
 msgid "Hide Symmetry"
-msgstr ""
+msgstr "Απόκρυψη Συμμετρίας"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:550
 msgid "Model information"
@@ -737,7 +738,7 @@ msgstr "Πληροφορίες Μοντέλου"
 #: org/jmol/popup/MainPopupResourceBundle.java:551
 #, java-format
 msgid "Select ({0})"
-msgstr ""
+msgstr "Επιλογή ({0})"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:552
 #, java-format
@@ -757,32 +758,32 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:555
 #, java-format
 msgid "atoms: {0}"
-msgstr ""
+msgstr "άτομα: {0}"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:556
 #, java-format
 msgid "bonds: {0}"
-msgstr ""
+msgstr "δεσμοί: {0}"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:557
 #, java-format
 msgid "groups: {0}"
-msgstr ""
+msgstr "ομάδες: {0}"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:558
 #, java-format
 msgid "chains: {0}"
-msgstr ""
+msgstr "αλυσίδες: {0}"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:559
 #, java-format
 msgid "polymers: {0}"
-msgstr ""
+msgstr "πολυμερή: {0}"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:560
 #, java-format
 msgid "model {0}"
-msgstr ""
+msgstr "μοντέλο {0}"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:561
 #, java-format
@@ -791,21 +792,21 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:562
 msgid "Main Menu"
-msgstr ""
+msgstr "Κεντρικό Μενού"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:563
 msgid "Biomolecules"
-msgstr ""
+msgstr "Βιομόρια"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:564
 #, java-format
 msgid "biomolecule {0} ({1} atoms)"
-msgstr ""
+msgstr "βιομόριο {0} ({1} άτομα)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:565
 #, java-format
 msgid "load biomolecule {0} ({1} atoms)"
-msgstr ""
+msgstr "φόρτωση βιομορίου {0} ({1} άτομα)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:570
 #: org/jmol/popup/MainPopupResourceBundle.java:689
@@ -851,7 +852,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:582
 msgid "Protein"
-msgstr ""
+msgstr "Πρωτεΐνη"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:584
 #: org/jmol/popup/MainPopupResourceBundle.java:595
@@ -862,55 +863,55 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:585
 msgid "Side Chains"
-msgstr ""
+msgstr "Πλευρικές Αλυσίδες"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:586
 msgid "Polar Residues"
-msgstr ""
+msgstr "Πολικά Κατάλοιπα"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:587
 msgid "Nonpolar Residues"
-msgstr ""
+msgstr "Μη Πολικά Κατάλοιπα"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:588
 msgid "Basic Residues (+)"
-msgstr ""
+msgstr "Βασικά Κατάλοιπα (+)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:589
 msgid "Acidic Residues (-)"
-msgstr ""
+msgstr "Όξινα Κατάλοιπα (-)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:590
 msgid "Uncharged Residues"
-msgstr ""
+msgstr "Μη Φορτισμένα Κατάλοιπα"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:591
 msgid "Nucleic"
-msgstr ""
+msgstr "Νουκλεϊκό"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:593
 msgid "DNA"
-msgstr ""
+msgstr "DNA"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:594
 msgid "RNA"
-msgstr ""
+msgstr "RNA"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:596
 msgid "Bases"
-msgstr ""
+msgstr "Βάσεις"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:597
 msgid "AT pairs"
-msgstr ""
+msgstr "ζεύγη AT"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:598
 msgid "GC pairs"
-msgstr ""
+msgstr "ζεύγη GC"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:599
 msgid "AU pairs"
-msgstr ""
+msgstr "ζεύγη AU"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:600
 msgid "Hetero"
@@ -930,7 +931,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:605
 msgid "Nonaqueous Solvent"
-msgstr ""
+msgstr "Μη υδατικός Διαλύτης"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:606
 msgid "Nonaqueous HETATM"
@@ -938,15 +939,15 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:607
 msgid "Ligand"
-msgstr ""
+msgstr "Προσδέτης"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:610
 msgid "Carbohydrate"
-msgstr ""
+msgstr "Υδατάνθρακας"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:611
 msgid "None of the above"
-msgstr ""
+msgstr "Κανένα από τα παραπάνω"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:613
 msgid "Style"
@@ -976,7 +977,7 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:666
 #: org/jmol/popup/MainPopupResourceBundle.java:759
 msgid "Cartoon"
-msgstr ""
+msgstr "Καρτούν"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:620
 #: org/jmol/popup/MainPopupResourceBundle.java:671
@@ -987,7 +988,7 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:622
 #: org/jmol/popup/MainPopupResourceBundle.java:711
 msgid "Atoms"
-msgstr ""
+msgstr "Άτομα"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:623
 #: org/jmol/popup/MainPopupResourceBundle.java:632
@@ -1010,12 +1011,12 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:629
 #, java-format
 msgid "{0}% van der Waals"
-msgstr ""
+msgstr "{0}% van der Waals"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:631
 #: org/jmol/popup/MainPopupResourceBundle.java:753
 msgid "Bonds"
-msgstr ""
+msgstr "Δεσμοί"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:633
 #: org/jmol/popup/MainPopupResourceBundle.java:643
@@ -1050,12 +1051,12 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:929
 #, java-format
 msgid "{0} Å"
-msgstr ""
+msgstr "{0} Å"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:640
 #: org/jmol/popup/MainPopupResourceBundle.java:754
 msgid "Hydrogen Bonds"
-msgstr ""
+msgstr "Δεσμοί Υδρογόνου"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:642
 msgid "Calculate"
@@ -1072,7 +1073,7 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:652
 #: org/jmol/popup/MainPopupResourceBundle.java:755
 msgid "Disulfide Bonds"
-msgstr ""
+msgstr "Δισουλφιδικοί Δεσμοί"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:655
 msgid "Set SS-Bonds Side Chain"
@@ -1085,7 +1086,7 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:663
 #: org/jmol/popup/MainPopupResourceBundle.java:756
 msgid "Structures"
-msgstr ""
+msgstr "Δομές"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:667
 msgid "Cartoon Rockets"
@@ -1094,7 +1095,7 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:668
 #: org/jmol/popup/MainPopupResourceBundle.java:760
 msgid "Ribbons"
-msgstr ""
+msgstr "Κορδέλες"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:669
 #: org/jmol/popup/MainPopupResourceBundle.java:761
@@ -1127,7 +1128,7 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:686
 #, java-format
 msgid "Scale {0}"
-msgstr ""
+msgstr "Κλίμακα {0}"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:688
 msgid "Stereographic"
@@ -1156,19 +1157,19 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:696
 #: org/jmol/popup/MainPopupResourceBundle.java:763
 msgid "Labels"
-msgstr ""
+msgstr "Ετικέτες"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:699
 msgid "With Element Symbol"
-msgstr ""
+msgstr "Με το Σύμβολο του Στοιχείου"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:700
 msgid "With Atom Name"
-msgstr ""
+msgstr "Με το Όνομα του Ατόμου"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:701
 msgid "With Atom Number"
-msgstr ""
+msgstr "Με τον Αριθμό του Ατόμου"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:703
 msgid "Position Label on Atom"
@@ -1196,7 +1197,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:710
 msgid "Color"
-msgstr ""
+msgstr "Χρώμα"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:713
 msgid "By Scheme"
@@ -1212,7 +1213,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:716
 msgid "Molecule"
-msgstr ""
+msgstr "Μόριο"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:717
 msgid "Formal Charge"
@@ -1232,23 +1233,23 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:722
 msgid "Amino Acid"
-msgstr ""
+msgstr "Αμινοξύ"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:723
 msgid "Secondary Structure"
-msgstr ""
+msgstr "Δευτεροταγής Δομή"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:724
 msgid "Chain"
-msgstr ""
+msgstr "Αλυσίδα"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:725
 msgid "Group"
-msgstr ""
+msgstr "Ομάδα"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:726
 msgid "Monomer"
-msgstr ""
+msgstr "Μονομερές"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:727
 msgid "Shapely"
@@ -1260,35 +1261,35 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:730
 msgid "Black"
-msgstr ""
+msgstr "Μαύρο"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:731
 msgid "White"
-msgstr ""
+msgstr "Λευκό"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:732
 msgid "Cyan"
-msgstr ""
+msgstr "Κυανό"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:734
 msgid "Red"
-msgstr ""
+msgstr "Κόκκινο"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:735
 msgid "Orange"
-msgstr ""
+msgstr "Πορτοκαλί"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:736
 msgid "Yellow"
-msgstr ""
+msgstr "Κίτρινο"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:737
 msgid "Green"
-msgstr ""
+msgstr "Πράσινο"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:738
 msgid "Blue"
-msgstr ""
+msgstr "Μπλε"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:739
 msgid "Indigo"
@@ -1296,7 +1297,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:740
 msgid "Violet"
-msgstr ""
+msgstr "Βιολετί"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:742
 msgid "Salmon"
@@ -1304,7 +1305,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:743
 msgid "Olive"
-msgstr ""
+msgstr "Λαδί"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:744
 msgid "Maroon"
@@ -1312,7 +1313,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:745
 msgid "Gray"
-msgstr ""
+msgstr "Γκρι"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:746
 msgid "Slate Blue"
@@ -1320,7 +1321,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:747
 msgid "Gold"
-msgstr ""
+msgstr "Χρυσό"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:748
 msgid "Orchid"
@@ -1338,7 +1339,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:764
 msgid "Background"
-msgstr ""
+msgstr "Παρασκήνιο"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:765
 #: org/jmol/popup/MainPopupResourceBundle.java:891
@@ -1349,7 +1350,7 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:911
 #: org/jmol/popup/MainPopupResourceBundle.java:937
 msgid "Axes"
-msgstr ""
+msgstr "Άξονες"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:768
 #: org/jmol/popup/MainPopupResourceBundle.java:912
@@ -1449,7 +1450,7 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:821
 #: org/jmol/popup/MainPopupResourceBundle.java:854
 msgid "Measurements"
-msgstr ""
+msgstr "Μετρήσεις"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:822
 msgid "Double-Click begins and ends all measurements"
@@ -1509,23 +1510,23 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:839
 msgid "Select atom"
-msgstr ""
+msgstr "Επιλογή ατόμου"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:840
 msgid "Select chain"
-msgstr ""
+msgstr "Επιλογή αλυσίδας"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:841
 msgid "Select element"
-msgstr ""
+msgstr "Επιλογή στοιχείου"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:842
 msgid "Select group"
-msgstr ""
+msgstr "Επιλογή ομάδας"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:843
 msgid "Select molecule"
-msgstr ""
+msgstr "Επιλογή μορίου"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:844
 msgid "Select site"
@@ -1541,11 +1542,11 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:850
 msgid "File Contents"
-msgstr ""
+msgstr "Περιεχόμενα Αρχείου"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:851
 msgid "File Header"
-msgstr ""
+msgstr "Κεφαλίδα Αρχείου"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:853
 msgid "Isosurface JVXL data"
@@ -1557,11 +1558,11 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:856
 msgid "Model"
-msgstr ""
+msgstr "Μοντέλο"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:857
 msgid "Orientation"
-msgstr ""
+msgstr "Προσανατολισμός"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:858
 msgid "Space group"
@@ -1573,7 +1574,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:862
 msgid "File"
-msgstr ""
+msgstr "Αρχείο"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:863
 msgid "Reload"
@@ -1585,7 +1586,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:865
 msgid "Open file or URL"
-msgstr ""
+msgstr "Άνοιγμα αρχείου ή URL"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:866
 msgid "Load full unit cell"
@@ -1634,7 +1635,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:883
 msgid "Computation"
-msgstr ""
+msgstr "Υπολογισμός"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:884
 msgid "Optimize structure"
@@ -1658,7 +1659,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:894
 msgid "Molecular Surface"
-msgstr ""
+msgstr "Μοριακή Επιφάνεια"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:895
 #, java-format
@@ -1672,7 +1673,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:898
 msgid "Molecular Electrostatic Potential"
-msgstr ""
+msgstr "Μοριακό Ηλεκτροστατικό Δυναμικό"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:904
 #: org/jmol/popup/MainPopupResourceBundle.java:905
@@ -1692,7 +1693,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:915
 msgid "Hide"
-msgstr ""
+msgstr "Απόκρυψη"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:916
 msgid "Dotted"
@@ -1708,7 +1709,7 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:922
 #, java-format
 msgid "{0} px"
-msgstr ""
+msgstr "{0} px"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:924
 msgid "Angstrom Width"
@@ -1720,7 +1721,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:933
 msgid "Show Hydrogens"
-msgstr ""
+msgstr "Εμφάνιση Υδρογόνων"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:934
 msgid "Show Measurements"
@@ -1732,7 +1733,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:939
 msgid "RasMol Colors"
-msgstr ""
+msgstr "Χρώματα RasMol"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:940
 msgid "About..."
@@ -1950,7 +1951,7 @@ msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2679
 msgid "Only one molecular orbital is available in this file"
-msgstr ""
+msgstr "Μόνο ένα μοριακό τροχιακό είναι διαθέσιμο σε αυτό το αρχείο"
 
 #: org/jmol/script/ScriptEvaluator.java:2682
 #, java-format
@@ -2076,13 +2077,13 @@ msgstr ""
 #: org/jmol/script/ScriptEvaluator.java:10124
 #, java-format
 msgid "{0} atoms deleted"
-msgstr ""
+msgstr "{0} άτομα διαγράφηκαν"
 
 #: org/jmol/script/ScriptEvaluator.java:10697
 #: org/jmol/script/ScriptEvaluator.java:11109
 #, java-format
 msgid "{0} hydrogen bonds"
-msgstr ""
+msgstr "{0} δεσμοί υδρογόνου"
 
 #: org/jmol/script/ScriptEvaluator.java:11063
 #, java-format
@@ -2134,7 +2135,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:69
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:71
@@ -2336,12 +2338,12 @@ msgstr ""
 #: org/jmol/viewer/SelectionManager.java:147
 #, java-format
 msgid "{0} atoms selected"
-msgstr ""
+msgstr "{0} άτομα επιλέχτηκαν"
 
 #: org/jmol/viewer/Viewer.java:4506
 #, java-format
 msgid "{0} hydrogens added"
-msgstr ""
+msgstr "{0} υδρογόνα προστέθηκαν"
 
 #: org/jmol/viewer/Viewer.java:4586
 msgid "Drag to move label"

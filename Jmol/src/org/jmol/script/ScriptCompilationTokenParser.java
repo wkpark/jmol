@@ -387,9 +387,11 @@ abstract class ScriptCompilationTokenParser {
   private boolean clausePrimitive() {
     int tok = tokPeek();
     switch (tok) {
+    case Token.spacebeforesquare:
+      itokenInfix++;
+      return clausePrimitive();
     case Token.nada:
       return error(ERROR_endOfCommandUnexpected);
-
     case Token.all:
     case Token.bitset:
     case Token.divide:

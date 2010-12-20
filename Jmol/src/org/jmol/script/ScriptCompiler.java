@@ -1266,6 +1266,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       }
       break;
     case Token.leftsquare:
+      if (ichToken > 0 && Character.isWhitespace(script.charAt(ichToken - 1)))
+        addTokenToPrefix(Token.tokenSpaceBeforeSquare);
       bracketCount++;
       break;
     case Token.rightsquare:
@@ -1524,7 +1526,6 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           ptNewSetModifier = nTokens + 1;
       }
       if (nTokens == ptNewSetModifier) { // 1 when { is not present
-        boolean isSetArray = false;
         Token token = tokenAt(0);
         if (theTok == Token.leftparen || isUserFunction(token.value.toString())) {
           // mysub(xxx,xxx,xxx)
@@ -1540,11 +1541,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
             error(ERROR_unrecognizedParameter, "SET", ": " + ident);
           return ERROR;
         }
-        if (isSetArray) {
-          addTokenToPrefix(theToken);
-          // token = Token.tokenArraySelector;
-          // theTok = Token.leftsquare;
-        } else if (nTokens == 1
+        if (nTokens == 1
             && (lastToken.tok == Token.plusPlus || lastToken.tok == Token.minusMinus)) {
           replaceCommand(Token.tokenSet);
           addTokenToPrefix(lastToken);

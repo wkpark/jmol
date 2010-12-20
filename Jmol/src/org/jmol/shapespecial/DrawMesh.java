@@ -110,4 +110,5 @@ public class DrawMesh extends Mesh {
     BitSetUtil.deleteBits(modelFlags, bs);
     //no! title = (String[]) ArrayUtil.deleteElements(title, modelIndex, 1);
   }
+
 }

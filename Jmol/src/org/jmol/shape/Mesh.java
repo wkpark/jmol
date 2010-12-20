@@ -340,4 +340,11 @@ public class Mesh extends MeshSurface {
     return false;
   }
 
+  public int getVertexIndexFromNumber(int vertexIndex) {
+    if (--vertexIndex < 0)
+      vertexIndex = vertexCount + vertexIndex;
+    return (vertexCount <= vertexIndex ? vertexCount - 1
+        : vertexIndex < 0 ? 0 : vertexIndex);
+  }
+
 }

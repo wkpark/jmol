@@ -1068,6 +1068,10 @@ public class SurfaceGenerator {
       params.cutoff = 0;
       surfaceReader.setMappingPlane(params.thePlane);
       surfaceReader.createIsosurface(!params.isPeriodic);//but don't read volume data yet
+      if (params.slabbingObject != null)
+        surfaceReader.slabIsosurface(params.slabbingObject, false);
+      if (params.cappingObject != null)
+        surfaceReader.slabIsosurface(params.cappingObject, true);
       if (meshDataServer != null)
         meshDataServer.notifySurfaceGenerationCompleted();
       if (params.dataType == Parameters.SURFACE_NOMAP) {

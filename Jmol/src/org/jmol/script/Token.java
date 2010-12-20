@@ -1204,11 +1204,13 @@ public class Token {
   final static int variable        = misc  | 366;// new
   final static int variables       = misc  | 368;// new
   final static int vertices        = misc  | 370;// new
+  final static int spacebeforesquare      = misc  | 371;// new
   final static int width           = misc  | 372;// new
   
   
   // predefined Tokens: 
   
+  final static Token tokenSpaceBeforeSquare = new Token(spacebeforesquare, " ");
   final static Token tokenOn  = new Token(on, 1, "on");
   final static Token tokenOff = new Token(off, 0, "off");
   final static Token tokenAll = new Token(all, "all");

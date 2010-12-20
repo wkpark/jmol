@@ -526,7 +526,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     }
     if (property == "getCenter") {
       int index = ((Integer)data[1]).intValue();
-      if (index < 0) {
+      if (index == Integer.MIN_VALUE) {
         String id = (String) data[0];
         IsosurfaceMesh m = (IsosurfaceMesh) getMesh(id);
         if (m == null || m.vertices == null)

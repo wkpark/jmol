@@ -107,9 +107,9 @@ public abstract class Object2d {
   }
 
   public void setXYZ(Point3f xyz) {
-    valign = VALIGN_XYZ;
+    valign = (xyz == null ? VALIGN_XY : VALIGN_XYZ);
     this.xyz = xyz;
-    setAdjustForWindow(false);
+    setAdjustForWindow(xyz == null);
   }
 
   public void setAdjustForWindow(boolean TF) {
@@ -363,6 +363,7 @@ public abstract class Object2d {
       if (currentObject == null)
         return true;
       Point3f pt = (Point3f) value;
+      currentObject.setXYZ(null);
       if (pt.z == Float.MAX_VALUE) {
         currentObject.setMovableX((int) pt.x);        
         currentObject.setMovableY((int) pt.y);        

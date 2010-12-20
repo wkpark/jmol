@@ -480,14 +480,12 @@ public void initShape() {
       if ((pt2 = axisID.lastIndexOf("]")) < pt)
         pt2 = axisID.length();
       try {
-        vertexIndex = Integer.parseInt(axisID.substring(pt + 1, pt2)) - 1;
+        vertexIndex = Integer.parseInt(axisID.substring(pt + 1, pt2));
       } catch (Exception e) {
         // ignore
       }
     } else {
       id = axisID;
-      if (vertexIndex != Integer.MIN_VALUE)
-        vertexIndex--;
     }
     DrawMesh m = (DrawMesh) getMesh(id);
     if (m == null || m.vertices == null)
@@ -495,14 +493,10 @@ public void initShape() {
     // >= 0 ? that vertexIndex
     // < 0 and no ptCenters or modelIndex < 0 -- center point
     // < 0 center for modelIndex
-    if (vertexIndex != Integer.MIN_VALUE) {
-      if (vertexIndex < 0)
-        vertexIndex = m.vertexCount + vertexIndex;
-      if (m.vertexCount <= vertexIndex)
-        vertexIndex = m.vertexCount - 1;
-      else if (vertexIndex < 0)
-        vertexIndex = 0;
-    }
+    if (vertexIndex == Integer.MAX_VALUE)
+      return new Point3f(m.index + 1, meshCount, m.vertexCount);
+    if (vertexIndex != Integer.MIN_VALUE) 
+      vertexIndex = m.getVertexIndexFromNumber(vertexIndex);
     return (vertexIndex >= 0 ? m.vertices[vertexIndex] : m.ptCenters == null
         || modelIndex < 0 || modelIndex >= m.ptCenters.length 
         ? m.ptCenter : m.ptCenters[modelIndex]);
@@ -607,6 +601,7 @@ public void initShape() {
       thisMesh.thisID = JmolConstants.getDrawTypeName(thisMesh.drawType) + (++nUnnamed);
       htObjects.put(thisMesh.thisID, thisMesh);
     }
+    clean();
     return true;
   }
 

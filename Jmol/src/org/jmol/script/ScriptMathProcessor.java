@@ -287,6 +287,8 @@ class ScriptMathProcessor {
     return addOp(op, true);
   }
 
+  private boolean haveSpaceBeforeSquare;
+  
   boolean addOp(Token op, boolean allowMathFunc) throws ScriptException {
 
     if (logMessages) {
@@ -356,6 +358,9 @@ class ScriptMathProcessor {
     boolean isArgument = (oPt >= 1 && tok0 == Token.leftparen);
 
     switch (op.tok) {
+    case Token.spacebeforesquare:
+      haveSpaceBeforeSquare = true;
+      return true;
     case Token.comma:
       if (!wasX)
         return false;
@@ -375,9 +380,10 @@ class ScriptMathProcessor {
       return true;
     case Token.leftsquare: // {....}[n][m]
       isLeftOp = true;
-      if (!wasX) {
+      if (!wasX || haveSpaceBeforeSquare) {
         squareCount++;
         op = newOp = Token.tokenArray;
+        haveSpaceBeforeSquare = false;
       }
       break;
     case Token.rightsquare:

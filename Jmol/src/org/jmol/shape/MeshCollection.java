@@ -391,11 +391,12 @@ public abstract class MeshCollection extends Shape {
       String id = (String) data[0];
       int index = ((Integer)data[1]).intValue();
       Mesh m;
-      if (index < 0 || (m = getMesh(id)) == null 
-          || m.vertices == null
-          || m.vertexCount <= index)
+      if ((m = getMesh(id)) == null || m.vertices == null)
           return false;
-      data[2] = m.vertices[index];
+      if (index == Integer.MAX_VALUE)
+        data[2] = new Point3f(m.index + 1, meshCount, m.vertexCount);
+      else 
+        data[2] = m.vertices[m.getVertexIndexFromNumber(index)];
       return true;
     }
     return false;
@@ -457,6 +458,12 @@ public abstract class MeshCollection extends Shape {
     return mesh.vertices;
   }
  
+  protected void clean() {
+    for (int i = meshCount; --i >= 0;)
+      if (meshes[i] == null || meshes[i].vertexCount == 0)
+        deleteMesh(i);
+  }
+
   private void deleteMesh() {
     if (explicitID && currentMesh != null)
       deleteMesh(currentMesh.index);

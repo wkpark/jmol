@@ -2,20 +2,30 @@ package org.jmol.adapter.readers.xtal;
 
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
-import org.jmol.util.TextFormat;
+
 
 /**
- * https://projects.ivec.org/gulp/
+ * Problems identified (Bob Hanson) --
+ * 
+ *   -- Are these "lattice vectors" for the primitive unit cell? I think so.
+ *      Then, if that's the case, why do we not see a list of symmetry-generated atoms?
+ * 
+ *   -- Frequency data number of atoms does not correspond to initial atom count.
+ *      It looks like there is a missing report of symmetry-generated atoms. 
+ *      
+ * see https://projects.ivec.org/gulp/
+ * 
  * @author Pieremanuele Canepa, Room 104, FM Group School of Physical Sciences,
  *         Ingram Building, University of Kent, Canterbury, Kent, CT2 7NH United
  *         Kingdom, pc229@kent.ac.uk
+ * 
+ * 
  * 
  * @version 1.0
  */
 
 public class GulpReader extends AtomSetCollectionReader {
 
-  private int atomNumbers;
   private String spaceGroup;
   private boolean isSlab;
   private boolean isPolymer;
@@ -31,22 +41,18 @@ public class GulpReader extends AtomSetCollectionReader {
   protected boolean checkLine() throws Exception {
     if (line.contains("Space group ")) {
       readSpaceGroup();
-    } else if (line.contains("Cell parameters (Angstroms/Degrees):")
-        || line.contains(" Primitive cell parameters :")) {
+    } else if (line.contains("Cartesian lattice vectors")) {
       readCellParameters();
-      // } else if (line.contains("Final cell parameters and derivatives")) {
-      // readFinalCell();
     } else if (line.contains("Fractional coordinates of asymmetric unit :")
         || line.contains("Final fractional coordinates of atoms :")
         || line.contains("Final asymmetric unit coordinates")
         || line.contains("Final fractional coordinates ")
         || line
-            .contains(" Mixed fractional/Cartesian coordinates of surface :")) {
-      readAtomicPos();
-    } else if ((line.contains("Cartesian coordinates of cluster ") || line
-        .contains(" Final cartesian coordinates of atoms :"))
-        && isMolecular) {
-      readAtomicPos();
+            .contains(" Mixed fractional/Cartesian coordinates of surface :")
+        || line.contains("Cartesian coordinates of cluster ") || line
+        .contains(" Final cartesian coordinates of atoms :") && isMolecular) {
+      if (doGetModel(++modelNumber))
+        readAtomicPos();
     } else if (line.contains("Monopole - monopole (total)")) {
       readEnergy();
       //} else if (line.contains(" Phonon Calculation : ")) {
@@ -57,97 +63,45 @@ public class GulpReader extends AtomSetCollectionReader {
 
   private boolean readType() throws Exception {
     discardLinesUntilContains("Dimensionality");
-    String[] tokens = getTokens(line.substring(line.indexOf("=") + 1));
-    int dimenStruc = parseInt(tokens[0]);
-
-    if (dimenStruc == 3) {
-      isCrystal = true;
-    } else if (dimenStruc == 2) {
-      isSlab = true;
-    } else if (dimenStruc == 1) {
-      isPolymer = true;
-    } else if (dimenStruc == 0) {
+    String[] tokens = getTokens();
+    switch(parseInt(tokens[2])) {
+    case 0:
       isMolecular = true;
       return false;
+    case 1:
+      isPolymer = true;
+      break;
+    case 2:
+      isSlab = true;
+      break;
+    case 3:
+      isCrystal = true;
+      break;
     }
     return true;
   }
 
   private void readSpaceGroup() throws Exception {
-    spaceGroup = line.substring(line.indexOf(":") + 1);
+    //spaceGroup = line.substring(line.indexOf(":") + 1).trim();
+    spaceGroup = "P1";
     setSpaceGroupName(spaceGroup);
-    applySymmetryAndSetTrajectory();
   }
-
-  /*  Cell parameters (Angstroms/Degrees):
-
-    a =       4.9147    alpha =  90.0000
-    b =       4.9147    beta  =  90.0000
-    c =       5.4066    gamma = 120.0000
-
-   */
-  private float a, b, c, alpha, beta, gamma;
 
   private void readCellParameters() throws Exception {
     discardLines(1);
-    readLine();
-    String[] tokens = getTokens();
-    a = parseFloat(tokens[2]);
-    alpha = parseFloat(tokens[5]);
     if (isCrystal) {
-      tokens = getTokens(readLine());
-      b = parseFloat(tokens[2]);
-      beta = parseFloat(tokens[5]);
-      tokens = getTokens(readLine());
-      c = parseFloat(tokens[2]);
-      gamma = parseFloat(tokens[5]);
-      setUnitCell(a, b, c, alpha, beta, gamma);
+      float[] data = new float[9];
+      fillFloatArray(data, null, 0);
+      addPrimitiveLatticeVector(0, data, 0);
+      addPrimitiveLatticeVector(1, data, 3);
+      addPrimitiveLatticeVector(2, data, 6);
     } else if (isSlab) {
-      /*
-      a =       4.2354    alpha =  90.0000
-      b =       4.2354
-       */
-      tokens = getTokens(readLine());
-      b = parseFloat(tokens[2]);
-      setUnitCell(a, b, -1, alpha, 90, 90);
+      // ? no examples
+    } else if (isPolymer) {
+      // ? no examples
     }
   }
 
-  /*  Final cell parameters and derivatives :
-
-      --------------------------------------------------------------------------------
-             a            5.378431 Angstrom     dE/de1(xx)    -0.004901 eV/strain
-             b            5.378431 Angstrom     dE/de2(yy)    -0.001887 eV/strain
-             c            5.378431 Angstrom     dE/de3(zz)    -0.001281 eV/strain
-             alpha       55.964422 Degrees      dE/de4(yz)    -0.000778 eV/strain
-             beta        55.964422 Degrees      dE/de5(xz)    -0.001486 eV/strain
-             gamma       55.964422 Degrees      dE/de6(xy)    -0.002174 eV/strain
-      --------------------------------------------------------------------------------
-   */
-
-  private void readFinalCell() throws Exception {
-    discardLines(3);
-    String[] tokens = getTokens();
-    a = parseFloat(tokens[2]);
-    tokens = getTokens(readLine());
-    if (isCrystal) {
-      b = parseFloat(tokens[2]);
-      tokens = getTokens(readLine());
-      c = parseFloat(tokens[2]);
-      tokens = getTokens(readLine());
-      alpha = parseFloat(tokens[2]);
-      tokens = getTokens(readLine());
-      beta = parseFloat(tokens[2]);
-      tokens = getTokens(readLine());
-      gamma = parseFloat(tokens[2]);
-      setUnitCell(a, b, c, alpha, beta, gamma);
-      applySymmetryAndSetTrajectory();
-    } else if (isSlab) {
-      tokens = getTokens(readLine());
-      b = parseFloat(tokens[2]);
-      setUnitCell(a, b, -1, alpha, 90, 90);
-    }
-  }
 
   /*  Fractional coordinates of asymmetric unit :
 
@@ -165,25 +119,6 @@ public class GulpReader extends AtomSetCollectionReader {
           8 Fe    c    0.427610 *  0.855219 *  0.855219 *    1.9710    1.000000    
           9 O     c    0.778081 *  0.943838 *  0.250000 *    0.5130    1.000000  
    */
-
-  private void readAtomicPos() throws Exception {
-    discardLines(5);
-    //atomSetCollection.newAtomSet();
-    while (readLine() != null && line.indexOf("----------") < 0) {
-      //This if is when the line contains extra *
-      if (line.contains("*"))
-        line = TextFormat.simpleReplace(line, "*", " ");
-      if (line.contains("c")) { //It won't mix up carbon with c
-        String[] tokens = getTokens();
-        Atom atom = atomSetCollection.addNewAtom();
-        atom.atomName = tokens[1];
-        float x = parseFloat(tokens[3]);
-        float y = parseFloat(tokens[4]);
-        float z = parseFloat(tokens[5]);
-        setAtomCoord(atom, x, y, z);
-      }
-    }
-  }
 
   /*
 
@@ -219,25 +154,24 @@ public class GulpReader extends AtomSetCollectionReader {
 
    */
 
-  private void readMoleculeCoord() throws Exception {
+  private void readAtomicPos() throws Exception {
     discardLines(5);
+    //atomSetCollection.newAtomSet();
     while (readLine() != null && line.indexOf("----------") < 0) {
       //This if is when the line contains extra *
-      if (line.contains("Region "))
-        discardLines(1);
-      if (line.contains("*"))
-        line = TextFormat.simpleReplace(line, "*", " ");
-      if (line.contains("c")) { //It won't mix up carbon with c
-        String[] tokens = getTokens();
-        Atom atom = atomSetCollection.addNewAtom();
-        atom.atomName = tokens[1];
-        float x = parseFloat(tokens[3]);
-        float y = parseFloat(tokens[4]);
-        float z = parseFloat(tokens[5]);
-        setAtomCoord(atom, x, y, z);
-      }
+      line = line.replace('*', ' ');
+      String[] tokens = getTokens();
+      if (!tokens[2].equals("c"))
+        continue;
+      Atom atom = atomSetCollection.addNewAtom();
+      atom.atomName = tokens[1];
+      setAtomCoord(atom, parseFloat(tokens[3]), parseFloat(tokens[4]),
+          parseFloat(tokens[5]));
     }
+    applySymmetryAndSetTrajectory();
   }
+
+
 
   /*  
   --------------------------------------------------------------------------------

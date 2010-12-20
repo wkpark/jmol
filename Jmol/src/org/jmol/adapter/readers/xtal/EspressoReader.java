@@ -23,7 +23,8 @@ public class EspressoReader extends AtomSetCollectionReader {
   @Override
   protected void initializeReader() {
     setSpaceGroupName("P1");
-    setFractionalCoordinates(true);
+    //This is correct only for the first set of coordinates
+    setFractionalCoordinates(false);
     // inputOnly = checkFilter("INPUT");
   }
 
@@ -91,10 +92,17 @@ public class EspressoReader extends AtomSetCollectionReader {
     gamma = (float) Math.toDegrees(abc[0].angle(abc[1]));
     setCell();
   }
+  
+  
+/*  
+  CELL_PARAMETERS (alat= 17.62853047)
+  1.019135101   0.000000000   0.000000000
+ -0.509567550   0.882596887   0.000000000
+  0.000000000   0.000000000   0.737221415
 
-  private void readCellParam() throws Exception {
+*/  private void readCellParam() throws Exception {
     aPar = parseFloat(line.substring(line.indexOf("=") + 1, line
-        .lastIndexOf(")") - 1))
+       .lastIndexOf(")") - 1))
         * ANGSTROMS_PER_BOHR;
     String[] tokens = getTokens();
     float x, y, z;
@@ -113,6 +121,11 @@ public class EspressoReader extends AtomSetCollectionReader {
     alpha = (float) Math.toDegrees(abc[1].angle(abc[2]));
     beta = (float) Math.toDegrees(abc[2].angle(abc[0]));
     gamma = (float) Math.toDegrees(abc[0].angle(abc[1]));
+    
+    
+    applySymmetryAndSetTrajectory();
+    setSpaceGroupName("P1");  
+    setFractionalCoordinates(true);
     setCell();
   }
 
@@ -142,10 +155,12 @@ public class EspressoReader extends AtomSetCollectionReader {
       String[] tokens = getTokens();
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = tokens[1];
-      float x = parseFloat(tokens[6]);
-      float y = parseFloat(tokens[7]);
-      float z = parseFloat(tokens[8]);
+      // here the cordinates are a_lat there fore expressed on base of cube of side a 
+      float x = parseFloat(tokens[6])* aPar;
+      float y = parseFloat(tokens[7])* aPar;
+      float z = parseFloat(tokens[8])* aPar;
       setAtomCoord(atom, x, y, z);
+      
     }
   }
 
@@ -170,6 +185,7 @@ public class EspressoReader extends AtomSetCollectionReader {
       String[] tokens = getTokens();
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = tokens[0];
+      //Here the coordinates are fractional
       float x = parseFloat(tokens[1]);
       float y = parseFloat(tokens[2]);
       float z = parseFloat(tokens[3]);

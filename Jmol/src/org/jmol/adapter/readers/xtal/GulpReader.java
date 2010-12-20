@@ -17,7 +17,6 @@ public class GulpReader extends AtomSetCollectionReader {
 
   private int atomNumbers;
   private String spaceGroup;
-  private boolean gulpVersion4 = false;
   private boolean isSlab;
   private boolean isPolymer;
   private boolean isMolecular;
@@ -25,8 +24,6 @@ public class GulpReader extends AtomSetCollectionReader {
 
   @Override
   protected void initializeReader() throws Exception {
-    discardLinesUntilContains("* Version =");
-    readGulpVersion();
     setFractionalCoordinates(readType());
   }
 
@@ -37,14 +34,18 @@ public class GulpReader extends AtomSetCollectionReader {
     } else if (line.contains("Cell parameters (Angstroms/Degrees):")
         || line.contains(" Primitive cell parameters :")) {
       readCellParameters();
-   // } else if (line.contains("Final cell parameters and derivatives")) {
-     // readFinalCell();
+      // } else if (line.contains("Final cell parameters and derivatives")) {
+      // readFinalCell();
     } else if (line.contains("Fractional coordinates of asymmetric unit :")
         || line.contains("Final fractional coordinates of atoms :")
         || line.contains("Final asymmetric unit coordinates")
-        || line.contains("Final fractional coordinates ")) {
+        || line.contains("Final fractional coordinates ")
+        || line
+            .contains(" Mixed fractional/Cartesian coordinates of surface :")) {
       readAtomicPos();
-    } else if ((line.contains("Cartesian coordinates of cluster ") || line.contains(" Final cartesian coordinates of atoms :")) && isMolecular){
+    } else if ((line.contains("Cartesian coordinates of cluster ") || line
+        .contains(" Final cartesian coordinates of atoms :"))
+        && isMolecular) {
       readAtomicPos();
     } else if (line.contains("Monopole - monopole (total)")) {
       readEnergy();
@@ -52,16 +53,6 @@ public class GulpReader extends AtomSetCollectionReader {
       // readFrequency();
     }
     return true;
-  }
-
-  private void readGulpVersion() {
-    ///* Version = 3.0.1 * Last modified = 11th April 2006   
-    ///* Version = 3.4.7 ....
-    line = TextFormat.simpleReplace(line, ".", " ");
-    String[] tokens = getTokens(line.substring(line.indexOf("=") + 1));
-    int rel = parseInt(tokens[1]);
-    if (rel == 4)
-      gulpVersion4 = true;
   }
 
   private boolean readType() throws Exception {
@@ -103,13 +94,23 @@ public class GulpReader extends AtomSetCollectionReader {
     String[] tokens = getTokens();
     a = parseFloat(tokens[2]);
     alpha = parseFloat(tokens[5]);
-    tokens = getTokens(readLine());
-    b = parseFloat(tokens[2]);
-    beta = parseFloat(tokens[5]);
-    tokens = getTokens(readLine());
-    c = parseFloat(tokens[2]);
-    gamma = parseFloat(tokens[5]);
-    setUnitCell(a, b, c, alpha, beta, gamma);
+    if (isCrystal) {
+      tokens = getTokens(readLine());
+      b = parseFloat(tokens[2]);
+      beta = parseFloat(tokens[5]);
+      tokens = getTokens(readLine());
+      c = parseFloat(tokens[2]);
+      gamma = parseFloat(tokens[5]);
+      setUnitCell(a, b, c, alpha, beta, gamma);
+    } else if (isSlab) {
+      /*
+      a =       4.2354    alpha =  90.0000
+      b =       4.2354
+       */
+      tokens = getTokens(readLine());
+      b = parseFloat(tokens[2]);
+      setUnitCell(a, b, -1, alpha, 90, 90);
+    }
   }
 
   /*  Final cell parameters and derivatives :
@@ -129,17 +130,23 @@ public class GulpReader extends AtomSetCollectionReader {
     String[] tokens = getTokens();
     a = parseFloat(tokens[2]);
     tokens = getTokens(readLine());
-    b = parseFloat(tokens[2]);
-    tokens = getTokens(readLine());
-    c = parseFloat(tokens[2]);
-    tokens = getTokens(readLine());
-    alpha = parseFloat(tokens[2]);
-    tokens = getTokens(readLine());
-    beta = parseFloat(tokens[2]);
-    tokens = getTokens(readLine());
-    gamma = parseFloat(tokens[2]);
-    setUnitCell(a, b, c, alpha, beta, gamma);
-    applySymmetryAndSetTrajectory();
+    if (isCrystal) {
+      b = parseFloat(tokens[2]);
+      tokens = getTokens(readLine());
+      c = parseFloat(tokens[2]);
+      tokens = getTokens(readLine());
+      alpha = parseFloat(tokens[2]);
+      tokens = getTokens(readLine());
+      beta = parseFloat(tokens[2]);
+      tokens = getTokens(readLine());
+      gamma = parseFloat(tokens[2]);
+      setUnitCell(a, b, c, alpha, beta, gamma);
+      applySymmetryAndSetTrajectory();
+    } else if (isSlab) {
+      tokens = getTokens(readLine());
+      b = parseFloat(tokens[2]);
+      setUnitCell(a, b, -1, alpha, 90, 90);
+    }
   }
 
   /*  Fractional coordinates of asymmetric unit :
@@ -177,17 +184,15 @@ public class GulpReader extends AtomSetCollectionReader {
       }
     }
   }
-  
-  
-  
-/*
+
+  /*
 
   Cartesian coordinates of cluster :
 
---------------------------------------------------------------------------------
+  --------------------------------------------------------------------------------
    No.  Atomic       x           y          z         Charge      Occupancy
         Label      (Angs)      (Angs)     (Angs)        (e)         (Frac)  
---------------------------------------------------------------------------------
+  --------------------------------------------------------------------------------
       1 C1    c     -2.3420 *    1.0960 *   -0.0010 *   -0.1819    1.000000    
       2 C1    c     -1.0490 *    1.5890 *    0.0010 *   -0.2684    1.000000    
       3 C2    c      0.0730      0.7330     -0.0010      0.0661    1.000000    
@@ -210,28 +215,30 @@ public class GulpReader extends AtomSetCollectionReader {
      20 N1    c     -3.8700 *   -0.7920 *   -0.0560 *   -0.8553    1.000000    
      21 H3    c     -4.0140 *   -1.7570 *    0.2000 *    0.4202    1.000000    
      22 H3    c     -4.6160 *   -0.1740 *    0.2260 *    0.4202    1.000000    
---------------------------------------------------------------------------------
+  --------------------------------------------------------------------------------
 
-*/
-  
-  
- private void readMoleculeCoord() throws Exception{
-   discardLines(5);
-   while (readLine() != null && line.indexOf("----------") < 0) {
-     //This if is when the line contains extra *
-     if (line.contains("*"))
-       line = TextFormat.simpleReplace(line, "*", " ");
-     if (line.contains("c")) { //It won't mix up carbon with c
-       String[] tokens = getTokens();
-       Atom atom = atomSetCollection.addNewAtom();
-       atom.atomName = tokens[1];
-       float x = parseFloat(tokens[3]);
-       float y = parseFloat(tokens[4]);
-       float z = parseFloat(tokens[5]);
-       setAtomCoord(atom, x, y, z);
-     }
-   }
- }
+   */
+
+  private void readMoleculeCoord() throws Exception {
+    discardLines(5);
+    while (readLine() != null && line.indexOf("----------") < 0) {
+      //This if is when the line contains extra *
+      if (line.contains("Region "))
+        discardLines(1);
+      if (line.contains("*"))
+        line = TextFormat.simpleReplace(line, "*", " ");
+      if (line.contains("c")) { //It won't mix up carbon with c
+        String[] tokens = getTokens();
+        Atom atom = atomSetCollection.addNewAtom();
+        atom.atomName = tokens[1];
+        float x = parseFloat(tokens[3]);
+        float y = parseFloat(tokens[4]);
+        float z = parseFloat(tokens[5]);
+        setAtomCoord(atom, x, y, z);
+      }
+    }
+  }
+
   /*  
   --------------------------------------------------------------------------------
   Total lattice energy       =        -386.17106576 eV
@@ -253,7 +260,7 @@ public class GulpReader extends AtomSetCollectionReader {
 
   private void readEnergy() throws Exception {
     discardLines(2);
-    if (gulpVersion4)
+    if (line.contains("-------") || line.contains(":"))
       discardLines(1);
     totEnergy = Double.valueOf(Double.parseDouble(line.substring(line
         .indexOf("=") + 1, line.indexOf("eV") - 2)));

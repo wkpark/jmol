@@ -348,6 +348,8 @@ public void initShape() {
 
     if ("polygon" == propertyName) {
       polygon = (List<Object>) value;
+      if (polygon == null)
+        polygon = new ArrayList<Object>();
       return;
     }
 
@@ -536,6 +538,8 @@ public void initShape() {
       thisMesh.drawTypes = null;
       thisMesh.drawVertexCounts = null;
       if (polygon != null) {
+        if (polygon.size() == 0)
+          return false;
         thisMesh.isPolygonSet = true;
         thisMesh.vertices = (Point3f[]) polygon.get(0);
         thisMesh.drawVertexCount = thisMesh.vertexCount = thisMesh.vertices.length;

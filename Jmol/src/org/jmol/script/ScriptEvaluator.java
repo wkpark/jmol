@@ -14065,8 +14065,6 @@ public class ScriptEvaluator {
         List<Object> vp = viewer.getPlaneIntersection(theTok, null,
             intScale / 100f, 0);
         intScale = 0;
-        if (vp == null)
-          continue;
         propertyName = "polygon";
         propertyValue = vp;
         havePoints = true;
@@ -14115,7 +14113,10 @@ public class ScriptEvaluator {
           polygons[j] = new int[] { (int) f[0], (int) f[1], (int) f[2],
               (f.length == 3 ? 7 : (int) f[3]) };
         }
-        v.add(polygons);
+        if (nVertices == 0)
+          v = null;
+        else
+          v.add(polygons);
         propertyName = "polygon";
         propertyValue = v;
         havePoints = true;
@@ -14203,8 +14204,6 @@ public class ScriptEvaluator {
           List<Object> vpc = viewer.getPlaneIntersection(tokIntersect, plane,
               intScale / 100f, 0);
           intScale = 0;
-          if (vpc == null)
-            continue;
           propertyName = "polygon";
           propertyValue = vpc;
         } else {

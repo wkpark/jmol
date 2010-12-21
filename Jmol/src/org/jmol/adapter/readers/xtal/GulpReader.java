@@ -41,7 +41,7 @@ public class GulpReader extends AtomSetCollectionReader {
   protected boolean checkLine() throws Exception {
     if (line.contains("Space group ")) {
       readSpaceGroup();
-    } else if (line.contains("Cartesian lattice vectors")) {
+    } else if (line.contains("Cartesian lattice vectors")  || line.contains("Surface cell parameters")) {
       readCellParameters();
     } else if (line.contains("Fractional coordinates of asymmetric unit :")
         || line.contains("Final fractional coordinates of atoms :")
@@ -82,8 +82,8 @@ public class GulpReader extends AtomSetCollectionReader {
   }
 
   private void readSpaceGroup() throws Exception {
-    //spaceGroup = line.substring(line.indexOf(":") + 1).trim();
-    spaceGroup = "P1";
+    spaceGroup = line.substring(line.indexOf(":") + 1).trim();
+    //spaceGroup = "P1";
     setSpaceGroupName(spaceGroup);
   }
 
@@ -96,7 +96,14 @@ public class GulpReader extends AtomSetCollectionReader {
       addPrimitiveLatticeVector(1, data, 3);
       addPrimitiveLatticeVector(2, data, 6);
     } else if (isSlab) {
-      // ? no examples
+      //See example 31 I cannot remember How we did for CRYSTAL?
+      discardLines(1);
+      String[] tokens = getTokens(line.substring(line.indexOf("=")));
+      float a = parseFloat(tokens[0]);
+      float alpha = parseFloat(tokens[3]);
+      tokens = getTokens(readLine());
+      float b = parseFloat(tokens[2]);
+      setUnitCell(a, b, -1, alpha, 90, 90);
     } else if (isPolymer) {
       // ? no examples
     }

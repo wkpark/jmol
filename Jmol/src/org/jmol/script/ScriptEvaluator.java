@@ -4071,7 +4071,7 @@ public class ScriptEvaluator {
       throws ScriptException {
     int tok = tokAt(i);
     if (tok == Token.spacebeforesquare)
-      tok = tokAt(i++);
+      tok = tokAt(++i);
     boolean haveBrace = (tok == Token.leftbrace);
     boolean haveSquare = (tok == Token.leftsquare);
     float[] fparams = null;

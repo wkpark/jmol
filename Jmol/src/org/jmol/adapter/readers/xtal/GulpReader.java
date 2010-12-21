@@ -105,7 +105,11 @@ public class GulpReader extends AtomSetCollectionReader {
       float b = parseFloat(tokens[2]);
       setUnitCell(a, b, -1, alpha, 90, 90);
     } else if (isPolymer) {
-      // ? no examples
+    //See example 32 I cannot recall How we did for CRYSTAL? 
+      discardLines(1);
+      String[] tokens = getTokens(line.substring(line.indexOf("=")));
+      float a = parseFloat(tokens[0]);
+      setUnitCell(a, -1, -1, 90, 90, 90);
     }
   }
 

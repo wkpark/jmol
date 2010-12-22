@@ -685,7 +685,7 @@ public class Resolver {
         return true;
       if (lines[i].contains("http://www.quantum-espresso.org"))
         return true;
-      if (lines[i].contains("Program PWSCF v"))
+      if (lines[i].contains("Program PWSCF"))
         return true;
       if (lines[i].contains("PHONON "))
         return true;

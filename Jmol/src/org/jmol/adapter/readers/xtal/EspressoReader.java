@@ -33,13 +33,13 @@ public class EspressoReader extends AtomSetCollectionReader {
     if (line.contains("lattice parameter (a_0)")) {
       readAparam();
     } else if (line.contains("crystal axes:")) {
-      readIntialCellParam();
+      readCellParam(false);
     } else if (line.contains("Cartesian axes")) {
       readInitialAtomic();
     } else if (line.contains("!    total energy")) {
       readEnergy();
     } else if (line.contains("CELL_PARAMETERS")) {
-      readCellParam();
+      readCellParam(true);
     } else if (line.contains("ATOMIC_POSITIONS")) {
       readAtomic();
     } else if(line.contains("End") && line.contains(" Geometry Optimization")){
@@ -52,8 +52,8 @@ public class EspressoReader extends AtomSetCollectionReader {
   private float aPar;
 
   private void readAparam() throws Exception {
-    String[] tokens = getTokens(line.substring(line.indexOf("=") + 1));
-    aPar = parseFloat(tokens[0]) * ANGSTROMS_PER_BOHR;
+    String[] tokens = getTokens();
+    aPar = parseFloat(tokens[4]) * ANGSTROMS_PER_BOHR;
   }
 
   /*
@@ -69,71 +69,30 @@ public class EspressoReader extends AtomSetCollectionReader {
 
    */
 
-  private float a, b, c, alpha, beta, gamma;
-
-  private void readIntialCellParam() throws Exception {
-    readLine();
-    String[] tokens = getTokens();
-    float x, y, z;
-    for (int n = 0; n < 3; n++) {
-      if (tokens.length >= 3) {
-        x = parseFloat(tokens[3]) * aPar;
-        y = parseFloat(tokens[4]) * aPar;
-        z = parseFloat(tokens[5]) * aPar;
-        abc[n] = new Vector3f(x, y, z);
-      }
-      tokens = getTokens(readLine());
-    }
-    a = abc[0].length();
-    b = abc[1].length();
-    c = abc[2].length();
-    alpha = (float) Math.toDegrees(abc[1].angle(abc[2]));
-    beta = (float) Math.toDegrees(abc[2].angle(abc[0]));
-    gamma = (float) Math.toDegrees(abc[0].angle(abc[1]));
-    setCell();
-  }
-  
-  
-/*  
+  /*  
   CELL_PARAMETERS (alat= 17.62853047)
   1.019135101   0.000000000   0.000000000
  -0.509567550   0.882596887   0.000000000
   0.000000000   0.000000000   0.737221415
 
-*/  private void readCellParam() throws Exception {
-    aPar = parseFloat(line.substring(line.indexOf("=") + 1, line
-       .lastIndexOf(")") - 1))
-        * ANGSTROMS_PER_BOHR;
-    String[] tokens = getTokens();
-    float x, y, z;
-    for (int n = 0; n < 3; n++) {
-      if (tokens.length >= 3) {
-        x = parseFloat(tokens[0]) * aPar;
-        y = parseFloat(tokens[1]) * aPar;
-        z = parseFloat(tokens[2]) * aPar;
-        abc[n] = new Vector3f(x, y, z);
-      }
-      tokens = getTokens(readLine());
+*/
+  
+  float[] cellParams;
+  
+  private void readCellParam(boolean andAPar) throws Exception {
+    int i0 = (andAPar ? 0 : 3);
+    if (andAPar)
+      aPar = parseFloat(line.substring(line.indexOf("=") + 1)) * ANGSTROMS_PER_BOHR;
+    cellParams = new float[9];
+    for (int n = 0, i = 0; n < 3; n++) {
+      String[] tokens = getTokens(readLine());
+      cellParams[i++] = parseFloat(tokens[i0]) * aPar;
+      cellParams[i++] = parseFloat(tokens[i0 + 1]) * aPar;
+      cellParams[i++] = parseFloat(tokens[i0 + 2]) * aPar;
     }
-    a = abc[0].length();
-    b = abc[1].length();
-    c = abc[2].length();
-    alpha = (float) Math.toDegrees(abc[1].angle(abc[2]));
-    beta = (float) Math.toDegrees(abc[2].angle(abc[0]));
-    gamma = (float) Math.toDegrees(abc[0].angle(abc[1]));
-    
-    
-    applySymmetryAndSetTrajectory();
-    setSpaceGroupName("P1");  
-    setFractionalCoordinates(true);
-    setCell();
   }
-
-  private void setCell() throws Exception {
-    setUnitCell(a, b, c, alpha, beta, gamma);
-    applySymmetryAndSetTrajectory();
-  }
-
+  
+  
   /*
   Cartesian axes
 
@@ -150,17 +109,30 @@ public class EspressoReader extends AtomSetCollectionReader {
        10           Ca  tau( 10) = (   0.1171775  -0.2203283  -0.1867815  )
    */
   private void readInitialAtomic() throws Exception {
+    setCellParams();
     discardLines(2);
     while (readLine() != null && line.length() > 1) {
       String[] tokens = getTokens();
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = tokens[1];
-      // here the cordinates are a_lat there fore expressed on base of cube of side a 
-      float x = parseFloat(tokens[6])* aPar;
-      float y = parseFloat(tokens[7])* aPar;
-      float z = parseFloat(tokens[8])* aPar;
+      // here the coordinates are a_lat there fore expressed on base of cube of side a 
+      float x = parseFloat(tokens[6]) * aPar;
+      float y = parseFloat(tokens[7]) * aPar;
+      float z = parseFloat(tokens[8]) * aPar;
       setAtomCoord(atom, x, y, z);
-      
+    }
+  }
+
+  private void setCellParams() throws Exception {
+    if (!doGetModel(++modelNumber))
+      return;    
+    applySymmetryAndSetTrajectory();
+    atomSetCollection.newAtomSet();
+    if (cellParams != null) {
+      setFractionalCoordinates(true);
+      addPrimitiveLatticeVector(0, cellParams, 0);
+      addPrimitiveLatticeVector(1, cellParams, 3);
+      addPrimitiveLatticeVector(2, cellParams, 6);
     }
   }
 
@@ -181,6 +153,7 @@ public class EspressoReader extends AtomSetCollectionReader {
     if(endOptimization){
       condition = 22;
     }
+    setCellParams();
     while (readLine() != null && line.length() > condition){
       String[] tokens = getTokens();
       Atom atom = atomSetCollection.addNewAtom();

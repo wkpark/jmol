@@ -10,14 +10,11 @@ package org.jmol.adapter.readers.xtal;
  * @version 1.0
  */
 
-import javax.vecmath.Vector3f;
-
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 
 public class EspressoReader extends AtomSetCollectionReader {
 
-  private Vector3f[] abc = new Vector3f[3];
   private boolean endOptimization = false;
   
   @Override
@@ -35,13 +32,15 @@ public class EspressoReader extends AtomSetCollectionReader {
     } else if (line.contains("crystal axes:")) {
       readCellParam(false);
     } else if (line.contains("Cartesian axes")) {
-      readInitialAtomic();
+      if (doGetModel(++modelNumber))
+        readInitialAtomic();
     } else if (line.contains("!    total energy")) {
       readEnergy();
     } else if (line.contains("CELL_PARAMETERS")) {
       readCellParam(true);
     } else if (line.contains("ATOMIC_POSITIONS")) {
-      readAtomic();
+      if (doGetModel(++modelNumber))
+        readAtomic();
     } else if(line.contains("End") && line.contains(" Geometry Optimization")){
       endOptimization = true;
     }
@@ -109,25 +108,29 @@ public class EspressoReader extends AtomSetCollectionReader {
        10           Ca  tau( 10) = (   0.1171775  -0.2203283  -0.1867815  )
    */
   private void readInitialAtomic() throws Exception {
-    setCellParams();
+    newAtomSet();
     discardLines(2);
     while (readLine() != null && line.length() > 1) {
       String[] tokens = getTokens();
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = tokens[1];
       // here the coordinates are a_lat there fore expressed on base of cube of side a 
-      float x = parseFloat(tokens[6]) * aPar;
-      float y = parseFloat(tokens[7]) * aPar;
-      float z = parseFloat(tokens[8]) * aPar;
+      float x = parseFloat(tokens[6]);
+      float y = parseFloat(tokens[7]);
+      float z = parseFloat(tokens[8]);
       setAtomCoord(atom, x, y, z);
     }
+    applySymmetryAndSetTrajectory();
+  }
+
+  private void newAtomSet() throws Exception {
+    atomSetCollection.newAtomSet();
+    if (totEnergy != null)
+      setEnergy();
+    setCellParams();
   }
 
   private void setCellParams() throws Exception {
-    if (!doGetModel(++modelNumber))
-      return;    
-    applySymmetryAndSetTrajectory();
-    atomSetCollection.newAtomSet();
     if (cellParams != null) {
       setFractionalCoordinates(true);
       addPrimitiveLatticeVector(0, cellParams, 0);
@@ -153,17 +156,19 @@ public class EspressoReader extends AtomSetCollectionReader {
     if(endOptimization){
       condition = 22;
     }
-    setCellParams();
+    newAtomSet();
+    float factor = (line.indexOf("alat") >= 0 ? 1f : ANGSTROMS_PER_BOHR / aPar);
     while (readLine() != null && line.length() > condition){
       String[] tokens = getTokens();
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = tokens[0];
-      //Here the coordinates are fractional
-      float x = parseFloat(tokens[1]);
-      float y = parseFloat(tokens[2]);
-      float z = parseFloat(tokens[3]);
+      //Here the coordinates are in BOHR
+      float x = parseFloat(tokens[1]) * factor;
+      float y = parseFloat(tokens[2]) * factor;
+      float z = parseFloat(tokens[3]) * factor;
       setAtomCoord(atom, x, y, z);
     }
+    applySymmetryAndSetTrajectory();
   }
 
   //!    total energy              =   -1668.20791579 Ry
@@ -171,13 +176,10 @@ public class EspressoReader extends AtomSetCollectionReader {
   private void readEnergy() throws Exception {
     String[] tokens = getTokens(line.substring(line.indexOf("=") + 1));
     totEnergy = Double.valueOf(Double.parseDouble(tokens[0]));
-    atomSetCollection.newAtomSet();
-    setEnergy();
   }
 
   private void setEnergy() {
     atomSetCollection.setAtomSetEnergy("" + totEnergy, totEnergy.floatValue());
-    atomSetCollection.setAtomSetAuxiliaryInfo("Energy", totEnergy);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Energy", totEnergy);
     atomSetCollection.setAtomSetName("E = " + totEnergy + " Ry");
   }

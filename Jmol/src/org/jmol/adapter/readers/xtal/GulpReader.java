@@ -410,7 +410,6 @@ public class GulpReader extends AtomSetCollectionReader {
 
   private void setEnergy() {
     atomSetCollection.setAtomSetEnergy("" + totEnergy, totEnergy.floatValue());
-    atomSetCollection.setAtomSetAuxiliaryInfo("Energy", totEnergy);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Energy", totEnergy);
     atomSetCollection.setAtomSetName("E = " + totEnergy + " " + energyUnits);
     totEnergy = null;

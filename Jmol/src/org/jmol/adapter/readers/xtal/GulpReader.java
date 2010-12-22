@@ -3,7 +3,6 @@ package org.jmol.adapter.readers.xtal;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 
-
 /**
  * Problems identified (Bob Hanson) --
  * 
@@ -41,16 +40,20 @@ public class GulpReader extends AtomSetCollectionReader {
   protected boolean checkLine() throws Exception {
     if (line.contains("Space group ")) {
       readSpaceGroup();
-    } else if (line.contains("Cartesian lattice vectors")  || line.contains("Surface cell parameters")) {
+    } else if (line.contains("Cartesian lattice vectors")
+        || line.contains("Surface cell parameters")) {
       readCellParameters();
+    } else if (line.contains("Final cell parameters and derivatives")) {
+      readFinalCell();
     } else if (line.contains("Fractional coordinates of asymmetric unit :")
         || line.contains("Final fractional coordinates of atoms :")
         || line.contains("Final asymmetric unit coordinates")
         || line.contains("Final fractional coordinates ")
         || line
             .contains(" Mixed fractional/Cartesian coordinates of surface :")
-        || line.contains("Cartesian coordinates of cluster ") || line
-        .contains(" Final cartesian coordinates of atoms :") && isMolecular) {
+        || line.contains("Cartesian coordinates of cluster ")
+        || line.contains(" Final cartesian coordinates of atoms :")
+        && isMolecular) {
       if (doGetModel(++modelNumber))
         readAtomicPos();
     } else if (line.contains("Monopole - monopole (total)")) {
@@ -64,7 +67,7 @@ public class GulpReader extends AtomSetCollectionReader {
   private boolean readType() throws Exception {
     discardLinesUntilContains("Dimensionality");
     String[] tokens = getTokens();
-    switch(parseInt(tokens[2])) {
+    switch (parseInt(tokens[2])) {
     case 0:
       isMolecular = true;
       return false;
@@ -80,6 +83,8 @@ public class GulpReader extends AtomSetCollectionReader {
     }
     return true;
   }
+  
+
 
   private void readSpaceGroup() throws Exception {
     spaceGroup = line.substring(line.indexOf(":") + 1).trim();
@@ -105,7 +110,7 @@ public class GulpReader extends AtomSetCollectionReader {
       float b = parseFloat(tokens[2]);
       setUnitCell(a, b, -1, alpha, 90, 90);
     } else if (isPolymer) {
-    //See example 32 I cannot recall How we did for CRYSTAL? 
+      //See example 32 I cannot recall How we did for CRYSTAL? 
       discardLines(1);
       String[] tokens = getTokens(line.substring(line.indexOf("=")));
       float a = parseFloat(tokens[0]);
@@ -113,6 +118,42 @@ public class GulpReader extends AtomSetCollectionReader {
     }
   }
 
+  /*
+    Final cell parameters and derivatives :
+
+      --------------------------------------------------------------------------------
+             a            5.153230 Angstrom     dE/de1(xx)     0.000090 eV/strain
+             b            5.153230 Angstrom     dE/de2(yy)     0.000000 eV/strain
+             c            5.153230 Angstrom     dE/de3(zz)     0.000078 eV/strain
+             alpha       55.766721 Degrees      dE/de4(yz)     0.000000 eV/strain
+             beta        55.766721 Degrees      dE/de5(xz)     0.000000 eV/strain
+             gamma       55.766721 Degrees      dE/de6(xy)     0.000000 eV/strain
+      --------------------------------------------------------------------------------
+
+
+   */
+
+  private void readFinalCell() throws Exception {
+    float cellArray[] = new float[6];
+    int counter = 0;
+
+    discardLines(2);
+    while (readLine() != null && line.indexOf("----------") < 0) {
+      String[] tokens = getTokens();
+      cellArray[counter] = parseFloat(tokens[1]);
+      counter++;
+    }
+
+    if (isCrystal) {
+      setUnitCell(cellArray[0], cellArray[1], cellArray[2], cellArray[3],
+          cellArray[4], cellArray[5]);
+    } else if (isSlab) {
+      setUnitCell(cellArray[0], cellArray[1], -1, cellArray[2], 90, 90);
+    } else if (isPolymer) {
+      setUnitCell(cellArray[0], -1, -1, 90, 90, 90);
+    }
+    
+  }
 
   /*  Fractional coordinates of asymmetric unit :
 
@@ -179,10 +220,10 @@ public class GulpReader extends AtomSetCollectionReader {
       setAtomCoord(atom, parseFloat(tokens[3]), parseFloat(tokens[4]),
           parseFloat(tokens[5]));
     }
+    atomSetCollection.newAtomSet(); ///Not too sure it has to be here
     applySymmetryAndSetTrajectory();
+    
   }
-
-
 
   /*  
   --------------------------------------------------------------------------------
@@ -213,6 +254,7 @@ public class GulpReader extends AtomSetCollectionReader {
     //don't change it to larger or smaller value
     discardLines(14);
     setEnergy();
+    
   }
 
   private void setEnergy() {

@@ -206,6 +206,8 @@ class TestSmarterJmolAdapterImpl extends TestCase {
     testFile();
   }
 
+  private static boolean continuing = true;
+
   /**
    * Tests reading of one file.
    * 
@@ -213,6 +215,8 @@ class TestSmarterJmolAdapterImpl extends TestCase {
    *  @throws IOException
    */
   public void testFile() throws FileNotFoundException, IOException {
+    if (!continuing)
+      return;
     JUnitLogger.setInformation(file.getPath());
     InputStream iStream = new FileInputStream(file);
     iStream = new BufferedInputStream(iStream);
@@ -225,17 +229,20 @@ class TestSmarterJmolAdapterImpl extends TestCase {
     if (typeAllowed != null) {
       String fileType = adapter.getFileTypeName(bReader);
       if (!typeAllowed.equals(fileType) && typeAllowed.indexOf(";"+ fileType + ";") < 0) {
+        continuing = false;
         fail("Wrong type for " + file.getPath() + ": " + fileType + " instead of " + typeAllowed);
       }
     }
     Hashtable<String, Object> htParams = new Hashtable<String, Object>();
     htParams.put("fullPathName", file.getCanonicalPath());
     Object result = adapter.getAtomSetCollectionFromReader(file.getName(), null, bReader, htParams);
+    continuing = (result != null && result instanceof AtomSetCollection);
     assertNotNull("Nothing read for " + file.getPath(), result);
     assertFalse("Error returned for " + file.getPath() + ": " + result, result instanceof String);
     assertTrue("Not an AtomSetCollection for " + file.getPath(), result instanceof AtomSetCollection);
-    AtomSetCollection collection = (AtomSetCollection) result;
-    assertTrue("No atoms loaded for " + file.getPath(), collection.getAtomCount() > 0);
+    int nAtoms = ((AtomSetCollection) result).getAtomCount();
+    continuing &= (nAtoms > 0);    
+    assertTrue("No atoms loaded for " + file.getPath(), nAtoms > 0);
   }
 
   /* (non-Javadoc)

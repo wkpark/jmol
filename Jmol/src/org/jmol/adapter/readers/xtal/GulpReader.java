@@ -55,6 +55,10 @@ public class GulpReader extends AtomSetCollectionReader {
       readCellParameters();
       return true;
     } 
+    if (line.contains("Monopole - monopole (total)")) {
+      readEnergy();
+      return true;
+    }
     
     if (line.contains("Fractional coordinates of asymmetric unit :")
         || line.contains("Final asymmetric unit coordinates")
@@ -76,10 +80,6 @@ public class GulpReader extends AtomSetCollectionReader {
       readFinalCell();
       return true;
     }    
-    if (line.contains("Monopole - monopole (total)")) {
-      readEnergy();
-      return true;
-    }
     
     //if (line.contains(" Phonon Calculation : ")) {
     // readFrequency();
@@ -149,18 +149,16 @@ public class GulpReader extends AtomSetCollectionReader {
   private void newAtomSet(boolean doSetUnitCell) {
     atomSetCollection.newAtomSet();
     if (doSetUnitCell)
-      setUnitCell();
+      setModelParameters();
   }
 
-  private void setUnitCell() {
+  private void setModelParameters() {
     setSpaceGroupName(spaceGroup);
-    if (a == 0 && primitiveData == null)
-      return;
-    if (a == 0) {
+    if (primitiveData != null) {
       addPrimitiveLatticeVector(0, primitiveData, 0);
       addPrimitiveLatticeVector(1, primitiveData, 3);
       addPrimitiveLatticeVector(2, primitiveData, 6);
-    } else {
+    } else if (a != 0) {
       if (isSlab) {
         c = -1;
         if (beta == 0)
@@ -171,6 +169,8 @@ public class GulpReader extends AtomSetCollectionReader {
       }
       setUnitCell(a, b, c, alpha, beta, gamma);
     }
+    if (totEnergy != null)
+      setEnergy();
   }
 
   /*
@@ -226,7 +226,7 @@ public class GulpReader extends AtomSetCollectionReader {
     String tokens[];
     while (readLine() != null && (tokens = getTokens()).length >= 2)
       setParameter(tokens[0], parseFloat(tokens[1]));
-    setUnitCell();
+    setModelParameters();
     applySymmetryAndSetTrajectory();
   }
 
@@ -328,7 +328,6 @@ public class GulpReader extends AtomSetCollectionReader {
     totEnergy = Double.valueOf(Double.parseDouble(tokens[1]));
     energyUnits = tokens[2];
     discardLinesUntilContains(sep);
-    setEnergy();    
   }
 
   private void setEnergy() {
@@ -336,6 +335,7 @@ public class GulpReader extends AtomSetCollectionReader {
     atomSetCollection.setAtomSetAuxiliaryInfo("Energy", totEnergy);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Energy", totEnergy);
     atomSetCollection.setAtomSetName("E = " + totEnergy + " " + energyUnits);
+    totEnergy = null;
   }
 
   /*  

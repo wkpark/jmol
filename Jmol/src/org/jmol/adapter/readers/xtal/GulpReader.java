@@ -198,7 +198,7 @@ public class GulpReader extends AtomSetCollectionReader {
     }
     while (readLine() != null && line.contains("="))  {
       String[] tokens = getTokens();
-      if (tokens.length >1 && tokens[1].equals("="))
+      if (tokens.length > 2 && tokens[1].equals("="))
         setParameter(tokens[0], parseFloat(tokens[2]));
       if (tokens.length > 5 && tokens[4].equals("="))
           setParameter(tokens[3], parseFloat(tokens[5]));

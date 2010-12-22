@@ -64,7 +64,9 @@ public class SimpleUnitCell {
   public SimpleUnitCell(float[] parameters) {
     if (!isValid(parameters))
       return;
-    notionalUnitcell = parameters;
+    notionalUnitcell = new float[parameters.length];
+    System.arraycopy(parameters, 0, notionalUnitcell, 0, parameters.length);
+
     a = parameters[0];
     b = parameters[1];
     c = parameters[2];

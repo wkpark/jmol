@@ -225,7 +225,7 @@ public class XmlCmlReader extends XmlReader {
           localSpaceGroupName = atts.get("spaceGroup");
         } else {
           localSpaceGroupName = "P1";
-          parent.clearLatticeParameters();
+          parent.clearUnitCell();
         }
       } else if (name.equals("module")) {
         moduleNestingLevel++;

@@ -1,8 +1,11 @@
 package org.jmol.adapter.readers.xtal;
 
+import javax.vecmath.Vector3f;
+
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
+import org.jmol.api.SymmetryInterface;
 
 /**
  * Problems identified (Bob Hanson) --
@@ -11,7 +14,11 @@ import org.jmol.adapter.smarter.AtomSetCollectionReader;
  *      Then, if that's the case, why do we not see a list of symmetry-generated atoms?
  * 
  *   -- Frequency data number of atoms does not correspond to initial atom count.
- *      It looks like there is a missing report of symmetry-generated atoms. 
+ *      It looks like there is a missing report of symmetry-generated atoms.
+ *      
+ *   -- Note: example1.got fails for LOAD example1.got {1 1 1} filter "CONV"
+ *      Still working on this -- I need to see a PNG image of what this should look like
+ *      could be a problem with rhombohedral symmetry ITC#148 or "centrosymmetryic" issue
  *      
  * see https://projects.ivec.org/gulp/
  * 
@@ -43,7 +50,6 @@ public class GulpReader extends AtomSetCollectionReader {
   
   @Override
   protected boolean checkLine() throws Exception {
-    System.out.println(line);
     if (line.contains("Space group ")) {
       readSpaceGroup();
       return true;
@@ -51,9 +57,10 @@ public class GulpReader extends AtomSetCollectionReader {
     
     if (isSlab ? line.contains("Surface cell parameters")
         : isPolymer ? line.contains("Polymer cell parameter")
-        : isPrimitive ? line.contains("Cartesian lattice vectors")
-        : line.contains("Cell parameters (Angstroms/Degrees)")) {
-      readCellParameters();
+        : (bTest = line.contains("Cartesian lattice vectors"))
+            || line.contains("Cell parameters (Angstroms/Degrees)") 
+            || line.contains("Primitive cell parameters")) {
+      readCellParameters(bTest);
       return true;
     } 
     if (line.contains("Monopole - monopole (total)")) {
@@ -62,7 +69,7 @@ public class GulpReader extends AtomSetCollectionReader {
     }
     
     if (line.contains("Fractional coordinates of asymmetric unit :")
-        || line.contains("Final asymmetric unit coordinates")
+        || (bTest = line.contains("Final asymmetric unit coordinates"))
         || (bTest = line.contains("Final fractional coordinates "))
         || line
             .contains("Mixed fractional/Cartesian coordinates")
@@ -149,14 +156,17 @@ public class GulpReader extends AtomSetCollectionReader {
 
   private void newAtomSet(boolean doSetUnitCell) {
     atomSetCollection.newAtomSet();
-    if (doSetUnitCell)
-      setModelParameters();
+    if (doSetUnitCell) {
+      setModelParameters(isPrimitive);
+      if (totEnergy != null)
+        setEnergy();
+    }
   }
 
-  private void setModelParameters() {
+  private void setModelParameters(boolean isPrimitive) {
     if (spaceGroup != null)
       setSpaceGroupName(spaceGroup);
-    if (primitiveData != null) {
+    if (isPrimitive && primitiveData != null) {
       addPrimitiveLatticeVector(0, primitiveData, 0);
       addPrimitiveLatticeVector(1, primitiveData, 3);
       addPrimitiveLatticeVector(2, primitiveData, 6);
@@ -170,8 +180,6 @@ public class GulpReader extends AtomSetCollectionReader {
       }
       setUnitCell(a, b, c, alpha, beta, gamma);
     }
-    if (totEnergy != null)
-      setEnergy();
   }
 
   /*
@@ -188,22 +196,29 @@ public class GulpReader extends AtomSetCollectionReader {
   b =       5.4723    beta  =  55.1928
   c =       5.4723    gamma =  55.1928
 
+  Primitive cell parameters :            Full cell parameters :
+
+  a =   5.1295    alpha =  55.2915       a =   4.7602    alpha =  90.0000
+  b =   5.1295    beta  =  55.2915       b =   4.7602    beta  =  90.0000
+  c =   5.1295    gamma =  55.2915       c =  12.9933    gamma = 120.0000
+
    */
   
-  private void readCellParameters() throws Exception {
+  private void readCellParameters(boolean isLatticeVectors) throws Exception {
+    int i0 = (isPrimitive || line.indexOf("Full cell") < 0 ? 0 : 4);
     discardLines(1);
-    if (isPrimitive) {
+    if (isLatticeVectors) {
       primitiveData = new float[9];
       fillFloatArray(primitiveData, null, 0);
       a = 0;
       return;
     }
     while (readLine() != null && line.contains("="))  {
+      line = line.replace('=', ' ');
       String[] tokens = getTokens();
-      if (tokens.length > 2 && tokens[1].equals("="))
-        setParameter(tokens[0], parseFloat(tokens[2]));
-      if (tokens.length > 5 && tokens[4].equals("="))
-          setParameter(tokens[3], parseFloat(tokens[5]));
+      for (int i = i0; i < i0 + 4; i += 2)
+        if (tokens.length > i + 1)
+          setParameter(tokens[i], parseFloat(tokens[i + 1]));
     }
   }
 
@@ -219,18 +234,73 @@ public class GulpReader extends AtomSetCollectionReader {
              gamma       55.766721 Degrees      dE/de6(xy)     0.000000 eV/strain
       --------------------------------------------------------------------------------
 
+  Non-primitive lattice parameters :
+
+  a    =     4.820055  b   =     4.820055  c    =    13.011659
+  alpha=    90.000000  beta=    90.000000  gamma=   120.000000
 
    */
 
   private void readFinalCell() throws Exception {
+    // problem here is if we have primitive data, we have to change
+    // that data by only changing vector lengths
     discardLinesUntilContains(sep);
     String tokens[];
     while (readLine() != null && (tokens = getTokens()).length >= 2)
       setParameter(tokens[0], parseFloat(tokens[1]));
-    setModelParameters();
+    if (primitiveData != null) {
+      scalePrimitiveData(0, a);
+      scalePrimitiveData(3, b);
+      scalePrimitiveData(6, c);
+      if (!isPrimitive)
+        // we have a conventional cell -- get a, b, and c for it now
+        while (readLine() != null && line.indexOf("Final") < 0)
+          if (line.indexOf("Non-primitive lattice parameters") > 0) {
+            readLine();
+            for (int i = 0; i < 2; i++) {
+              tokens = getTokens(readLine().replace('=', ' '));
+              setParameter(tokens[0], parseFloat(tokens[1]));
+              setParameter(tokens[2], parseFloat(tokens[3]));
+              setParameter(tokens[4], parseFloat(tokens[5]));
+            }
+            break;
+          }
+    }
+    setModelParameters(true);
     applySymmetryAndSetTrajectory();
+    if (totEnergy != null)
+      setEnergy();
   }
 
+  private void scalePrimitiveData(int i, float value) {
+    Vector3f v = new Vector3f(primitiveData[i], primitiveData[i + 1], primitiveData[i + 2]);
+    v.normalize();
+    v.scale(value);
+    primitiveData[i++] = v.x;
+    primitiveData[i++] = v.y;
+    primitiveData[i++] = v.z;
+  }
+
+  @Override
+  public void applySymmetryAndSetTrajectory() throws Exception {
+    if (iHaveUnitCell && doCheckUnitCell && primitiveData != null && !isPrimitive) {
+      setModelParameters(false);
+      SymmetryInterface symFull = symmetry;
+      setModelParameters(true);
+      // Full cell -- must convert primitive to conventional
+      
+      Atom[] atoms = atomSetCollection.getAtoms();
+      int i0 = atomSetCollection.getLastAtomSetAtomIndex();
+      int i1 = atomSetCollection.getAtomCount();
+      for (int i = i0; i < i1; i++) {
+        Atom atom = atoms[i];
+        symmetry.toCartesian(atom, true);
+        symFull.toFractional(atom, true);
+      }
+      setModelParameters(false);
+    }
+    super.applySymmetryAndSetTrajectory();
+  }
   /*  Fractional coordinates of asymmetric unit :
 
     --------------------------------------------------------------------------------

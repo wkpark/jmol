@@ -542,7 +542,7 @@ public abstract class AtomSetCollectionReader {
     nMatrixElements = 0;
   }
 
-  public void clearLatticeParameters() {
+  public void clearUnitCell() {
     if (ignoreFileUnitCell)
       return;
     for (int i = 6; i < notionalUnitCell.length; i++)
@@ -574,6 +574,7 @@ public abstract class AtomSetCollectionReader {
                           float gamma) {
     if (ignoreFileUnitCell)
       return;
+    clearUnitCell();
     notionalUnitCell[0] = a;
     notionalUnitCell[1] = b;
     notionalUnitCell[2] = c;
@@ -589,6 +590,9 @@ public abstract class AtomSetCollectionReader {
   public void addPrimitiveLatticeVector(int i, float[] xyz, int i0) {
     if (ignoreFileUnitCell)
       return;
+    if (i == 0) 
+      for (int j = 0; j < 6; j++)
+        notionalUnitCell[j] = 0;
     i = 6 + i * 3;
     notionalUnitCell[i++] = xyz[i0++];
     notionalUnitCell[i++] = xyz[i0++];

@@ -1,6 +1,7 @@
 package org.jmol.adapter.readers.xtal;
 
 import org.jmol.adapter.smarter.Atom;
+import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 
 /**
@@ -29,92 +30,179 @@ public class GulpReader extends AtomSetCollectionReader {
   private boolean isSlab;
   private boolean isPolymer;
   private boolean isMolecular;
-  private boolean isCrystal;
+  private boolean isPrimitive;
+  private String sep = "-------";
 
   @Override
   protected void initializeReader() throws Exception {
-    setFractionalCoordinates(readType());
+    setFractionalCoordinates(readDimensionality());
+    isPrimitive = !checkFilter("CONV");
   }
 
+  private boolean bTest;
+  
   @Override
   protected boolean checkLine() throws Exception {
+    System.out.println(line);
     if (line.contains("Space group ")) {
       readSpaceGroup();
-    } else if (line.contains("Cartesian lattice vectors")
-        || line.contains("Surface cell parameters")) {
+      return true;
+    } 
+    
+    if (isSlab ? line.contains("Surface cell parameters")
+        : isPrimitive ? line.contains("Cartesian lattice vectors")
+        : line.contains("Cell parameters (Angstroms/Degrees)")) {
       readCellParameters();
-    } else if (line.contains("Final cell parameters and derivatives")) {
-      readFinalCell();
-    } else if (line.contains("Fractional coordinates of asymmetric unit :")
-        || line.contains("Final fractional coordinates of atoms :")
+      return true;
+    } 
+    
+    if (line.contains("Fractional coordinates of asymmetric unit :")
         || line.contains("Final asymmetric unit coordinates")
-        || line.contains("Final fractional coordinates ")
+        || (bTest = line.contains("Final fractional coordinates "))
         || line
             .contains(" Mixed fractional/Cartesian coordinates of surface :")
         || line.contains("Cartesian coordinates of cluster ")
         || line.contains(" Final cartesian coordinates of atoms :")
         && isMolecular) {
       if (doGetModel(++modelNumber))
-        readAtomicPos();
-    } else if (line.contains("Monopole - monopole (total)")) {
+        readAtomicPos(!bTest);
+      return true;
+    } 
+    // past this point, we must already have coordinates defined
+    if (!doProcessLines)
+      return true;
+    if (line.contains("Final cell parameters and derivatives")) {
+      // this line comes AFTER atom positions
+      readFinalCell();
+      return true;
+    }    
+    if (line.contains("Monopole - monopole (total)")) {
       readEnergy();
-      //} else if (line.contains(" Phonon Calculation : ")) {
-      // readFrequency();
+      return true;
     }
+    
+    //if (line.contains(" Phonon Calculation : ")) {
+    // readFrequency();
+
     return true;
   }
 
-  private boolean readType() throws Exception {
+  private boolean readDimensionality() throws Exception {
     discardLinesUntilContains("Dimensionality");
     String[] tokens = getTokens();
     switch (parseInt(tokens[2])) {
     case 0:
       isMolecular = true;
+      isPrimitive = false;
       return false;
     case 1:
       isPolymer = true;
+      isPrimitive = false;
       break;
     case 2:
       isSlab = true;
-      break;
-    case 3:
-      isCrystal = true;
+      isPrimitive = false;
       break;
     }
     return true;
   }
   
-
-
   private void readSpaceGroup() throws Exception {
-    spaceGroup = line.substring(line.indexOf(":") + 1).trim();
-    //spaceGroup = "P1";
-    setSpaceGroupName(spaceGroup);
+    spaceGroup = (isPrimitive ? "P1" 
+        : line.substring(line.indexOf(":") + 1).trim());
   }
 
+  private float a, b, c, alpha, beta, gamma;
+  private float[] primitiveData;
+  private static String[] tags = AtomSetCollection.notionalUnitcellTags;
+
+  private static int parameterIndex(String key) {
+    for (int i = tags.length; --i >= 0;)
+      if (tags[i].equals(key))
+        return i;
+    return -1;
+  }
+
+  private void setParameter(String key, float value) {
+    switch (parameterIndex(key)) {
+    case 0:
+      a = value;
+      break;
+    case 1:
+      b = value;
+      break;
+    case 2:
+      c = value;
+      break;
+    case 3:
+      alpha = value;
+      break;
+    case 4:
+      beta = value;
+      break;
+    case 5:
+      gamma = value;
+      break;
+    }
+  }
+
+  private void newAtomSet(boolean doSetUnitCell) {
+    atomSetCollection.newAtomSet();
+    if (doSetUnitCell)
+      setUnitCell();
+  }
+
+  private void setUnitCell() {
+    setSpaceGroupName(spaceGroup);
+    if (a == 0 && primitiveData == null)
+      return;
+    if (a == 0) {
+      addPrimitiveLatticeVector(0, primitiveData, 0);
+      addPrimitiveLatticeVector(1, primitiveData, 3);
+      addPrimitiveLatticeVector(2, primitiveData, 6);
+    } else {
+      if (isSlab) {
+        c = -1;
+        if (beta == 0)
+          beta = gamma = 90;
+      } else if (isPolymer) {
+        b = c = -1;
+        alpha = beta = gamma = 90;
+      }
+      setUnitCell(a, b, c, alpha, beta, gamma);
+    }
+  }
+
+  /*
+
+  Cartesian lattice vectors (Angstroms) :
+
+       10.944693    0.000000    0.000000
+        3.123705    4.493221    0.000000
+        3.123705    1.632784    4.186054
+
+  Cell parameters (Angstroms/Degrees):
+
+  a =      10.9447    alpha =  55.1928
+  b =       5.4723    beta  =  55.1928
+  c =       5.4723    gamma =  55.1928
+
+   */
+  
   private void readCellParameters() throws Exception {
     discardLines(1);
-    if (isCrystal) {
-      float[] data = new float[9];
-      fillFloatArray(data, null, 0);
-      addPrimitiveLatticeVector(0, data, 0);
-      addPrimitiveLatticeVector(1, data, 3);
-      addPrimitiveLatticeVector(2, data, 6);
-    } else if (isSlab) {
-      //See example 31 I cannot remember How we did for CRYSTAL?
-      discardLines(1);
-      String[] tokens = getTokens(line.substring(line.indexOf("=")));
-      float a = parseFloat(tokens[0]);
-      float alpha = parseFloat(tokens[3]);
-      tokens = getTokens(readLine());
-      float b = parseFloat(tokens[2]);
-      setUnitCell(a, b, -1, alpha, 90, 90);
-    } else if (isPolymer) {
-      //See example 32 I cannot recall How we did for CRYSTAL? 
-      discardLines(1);
-      String[] tokens = getTokens(line.substring(line.indexOf("=")));
-      float a = parseFloat(tokens[0]);
-      setUnitCell(a, -1, -1, 90, 90, 90);
+    if (isPrimitive) {
+      primitiveData = new float[9];
+      fillFloatArray(primitiveData, null, 0);
+      a = 0;
+      return;
+    }
+    while (readLine() != null && line.contains("="))  {
+      String[] tokens = getTokens();
+      if (tokens.length >1 && tokens[1].equals("="))
+        setParameter(tokens[0], parseFloat(tokens[2]));
+      if (tokens.length > 5 && tokens[4].equals("="))
+          setParameter(tokens[3], parseFloat(tokens[5]));
     }
   }
 
@@ -134,25 +222,12 @@ public class GulpReader extends AtomSetCollectionReader {
    */
 
   private void readFinalCell() throws Exception {
-    float cellArray[] = new float[6];
-    int counter = 0;
-
-    discardLines(2);
-    while (readLine() != null && line.indexOf("----------") < 0) {
-      String[] tokens = getTokens();
-      cellArray[counter] = parseFloat(tokens[1]);
-      counter++;
-    }
-
-    if (isCrystal) {
-      setUnitCell(cellArray[0], cellArray[1], cellArray[2], cellArray[3],
-          cellArray[4], cellArray[5]);
-    } else if (isSlab) {
-      setUnitCell(cellArray[0], cellArray[1], -1, cellArray[2], 90, 90);
-    } else if (isPolymer) {
-      setUnitCell(cellArray[0], -1, -1, 90, 90, 90);
-    }
-    
+    discardLinesUntilContains(sep);
+    String tokens[];
+    while (readLine() != null && (tokens = getTokens()).length >= 2)
+      setParameter(tokens[0], parseFloat(tokens[1]));
+    setUnitCell();
+    applySymmetryAndSetTrajectory();
   }
 
   /*  Fractional coordinates of asymmetric unit :
@@ -206,11 +281,11 @@ public class GulpReader extends AtomSetCollectionReader {
 
    */
 
-  private void readAtomicPos() throws Exception {
-    discardLines(5);
-    //atomSetCollection.newAtomSet();
-    while (readLine() != null && line.indexOf("----------") < 0) {
-      //This if is when the line contains extra *
+  private void readAtomicPos(boolean finalizeSymmetry) throws Exception {
+    newAtomSet(finalizeSymmetry);
+    discardLinesUntilContains(sep);
+    discardLinesUntilContains(sep);
+    while (readLine() != null && line.indexOf(sep) < 0) {
       line = line.replace('*', ' ');
       String[] tokens = getTokens();
       if (!tokens[2].equals("c"))
@@ -220,9 +295,8 @@ public class GulpReader extends AtomSetCollectionReader {
       setAtomCoord(atom, parseFloat(tokens[3]), parseFloat(tokens[4]),
           parseFloat(tokens[5]));
     }
-    atomSetCollection.newAtomSet(); ///Not too sure it has to be here
-    applySymmetryAndSetTrajectory();
-    
+    if (finalizeSymmetry)
+      applySymmetryAndSetTrajectory();
   }
 
   /*  
@@ -243,25 +317,27 @@ public class GulpReader extends AtomSetCollectionReader {
    */
 
   private Double totEnergy;
+  private String energyUnits;
 
   private void readEnergy() throws Exception {
-    discardLines(2);
-    if (line.contains("-------") || line.contains(":"))
-      discardLines(1);
-    totEnergy = Double.valueOf(Double.parseDouble(line.substring(line
-        .indexOf("=") + 1, line.indexOf("eV") - 2)));
+    // question: Why read monopole-monopole energy as "totEnergy"?
+    // note that in some cases this is in Kcal/mol
+    if (line.indexOf("=") < 0)
+      discardLinesUntilContains("=");
+    String[] tokens = getTokens(line.substring(line.indexOf("=")));
+    totEnergy = Double.valueOf(Double.parseDouble(tokens[1]));
+    energyUnits = tokens[2];
     //this avoid the class to re-reading the Total lattice energy expressed in other units
     //don't change it to larger or smaller value
-    discardLines(14);
-    setEnergy();
-    
+    discardLinesUntilContains(sep);
+    setEnergy();    
   }
 
   private void setEnergy() {
     atomSetCollection.setAtomSetEnergy("" + totEnergy, totEnergy.floatValue());
     atomSetCollection.setAtomSetAuxiliaryInfo("Energy", totEnergy);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Energy", totEnergy);
-    atomSetCollection.setAtomSetName("E = " + totEnergy + " eV");
+    atomSetCollection.setAtomSetName("E = " + totEnergy + " " + energyUnits);
   }
 
   /*  

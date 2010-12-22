@@ -90,6 +90,8 @@ public class TestSmarterJmolAdapter extends TestSuite {
     result.addDirectory(false, "gennbo", "37", "GenNBO");
     result.addDirectory(false, "ghemical", "gpr", "GhemicalMM");
     result.addDirectory(false, "gromacs", "gro", "Gromacs");
+    result.addDirectory(false, "gulp", "gout", "Gulp");
+    result.addDirectory(false, "gulp", "got", "Gulp");
     result.addDirectory(false, "hin", "hin", "HyperChem");
     result.addDirectory(false, "jaguar", "out", "Jaguar");
     result.addDirectory(false, "modifiedGroups", "cif", "Cif");

@@ -110,6 +110,7 @@ public class TestSmarterJmolAdapter extends TestSuite {
     result.addDirectory(false, "pdb", "pdb", "Pdb");
     result.addDirectory(true,  "pdb", "pdb.gz", "Pdb");
     // result.pmesh files are not molecular data files
+    result.addDirectory(false, "quantumEspresso", "out", "Espresso");
     result.addDirectory(false, "psi3", "out", "Psi");
     result.addDirectory(false, "qchem", "out", "Qchem");
     result.addDirectory(false, "shelx", "res", "Shelx");

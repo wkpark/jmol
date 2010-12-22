@@ -161,8 +161,7 @@ public class GulpReader extends AtomSetCollectionReader {
     } else if (a != 0) {
       if (isSlab) {
         c = -1;
-        if (beta == 0)
-          beta = gamma = 90;
+        beta = gamma = 90;
       } else if (isPolymer) {
         b = c = -1;
         alpha = beta = gamma = 90;

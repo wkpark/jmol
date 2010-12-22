@@ -327,8 +327,6 @@ public class GulpReader extends AtomSetCollectionReader {
     String[] tokens = getTokens(line.substring(line.indexOf("=")));
     totEnergy = Double.valueOf(Double.parseDouble(tokens[1]));
     energyUnits = tokens[2];
-    //this avoid the class to re-reading the Total lattice energy expressed in other units
-    //don't change it to larger or smaller value
     discardLinesUntilContains(sep);
     setEnergy();    
   }

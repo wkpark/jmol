@@ -147,6 +147,10 @@ public class SurfaceGenerator {
   private AtomDataServer atomDataServer;
   private MarchingSquares marchingSquares;
   private String version;
+  private boolean isValid = true;
+  public boolean isValid() {
+    return isValid;
+  }
   private String fileType;
   public String getFileType() {
     return fileType;
@@ -801,8 +805,10 @@ public class SurfaceGenerator {
     }
 
     if ("hydrogenOrbital" == propertyName) {
-      if (!params.setAtomicOrbital((float[]) value))
+      if (!params.setAtomicOrbital((float[]) value)) {
+        isValid = false;
         return true;
+      }
       surfaceReader = new IsoShapeReader(this, params.psi_n, params.psi_l,
           params.psi_m, params.psi_Znuc);
       processState();

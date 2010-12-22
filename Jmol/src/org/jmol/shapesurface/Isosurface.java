@@ -331,10 +331,12 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     }
 
     if ("finalize" == propertyName) {
-      thisMesh.setDiscreteColixes(sg.getParams().contoursDiscrete, sg
-          .getParams().contourColixes);
-      setScriptInfo((String) value);
-      setJvxlInfo();
+      if (thisMesh != null) {
+        thisMesh.setDiscreteColixes(sg.getParams().contoursDiscrete, sg
+            .getParams().contourColixes);
+        setScriptInfo((String) value);
+        setJvxlInfo();
+      }
       clearSg();
       return;
     }
@@ -423,8 +425,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     // surface Export3D only (return TRUE) or shared (return FALSE)
 
-    if (sg != null && sg.setParameter(propertyName, value, bs))
-      return;
+    if (sg != null && sg.setParameter(propertyName, value, bs)) {
+      if (sg.isValid())
+        return;
+      propertyName = "delete";
+    }
 
     // ///////////// isosurface LAST, shared
 

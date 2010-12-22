@@ -35,8 +35,8 @@ public class GulpReader extends AtomSetCollectionReader {
 
   @Override
   protected void initializeReader() throws Exception {
-    setFractionalCoordinates(readDimensionality());
     isPrimitive = !checkFilter("CONV");
+    setFractionalCoordinates(readDimensionality());
   }
 
   private boolean bTest;
@@ -50,6 +50,7 @@ public class GulpReader extends AtomSetCollectionReader {
     } 
     
     if (isSlab ? line.contains("Surface cell parameters")
+        : isPolymer ? line.contains("Polymer cell parameter")
         : isPrimitive ? line.contains("Cartesian lattice vectors")
         : line.contains("Cell parameters (Angstroms/Degrees)")) {
       readCellParameters();
@@ -64,9 +65,9 @@ public class GulpReader extends AtomSetCollectionReader {
         || line.contains("Final asymmetric unit coordinates")
         || (bTest = line.contains("Final fractional coordinates "))
         || line
-            .contains(" Mixed fractional/Cartesian coordinates of surface :")
+            .contains("Mixed fractional/Cartesian coordinates")
         || line.contains("Cartesian coordinates of cluster ")
-        || line.contains(" Final cartesian coordinates of atoms :")
+        || line.contains("Final cartesian coordinates of atoms :")
         && isMolecular) {
       if (doGetModel(++modelNumber))
         readAtomicPos(!bTest);
@@ -153,7 +154,8 @@ public class GulpReader extends AtomSetCollectionReader {
   }
 
   private void setModelParameters() {
-    setSpaceGroupName(spaceGroup);
+    if (spaceGroup != null)
+      setSpaceGroupName(spaceGroup);
     if (primitiveData != null) {
       addPrimitiveLatticeVector(0, primitiveData, 0);
       addPrimitiveLatticeVector(1, primitiveData, 3);
@@ -284,7 +286,13 @@ public class GulpReader extends AtomSetCollectionReader {
     newAtomSet(finalizeSymmetry);
     discardLinesUntilContains(sep);
     discardLinesUntilContains(sep);
-    while (readLine() != null && line.indexOf(sep) < 0) {
+    while (readLine() != null) {
+      if (line.indexOf(sep) >= 0 && readLine().indexOf("Region") < 0)
+        break;
+      if (line.indexOf("Region") >= 0) {
+        readLine();
+        continue;
+      }
       line = line.replace('*', ' ');
       String[] tokens = getTokens();
       if (!tokens[2].equals("c"))

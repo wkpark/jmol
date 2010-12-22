@@ -8181,7 +8181,6 @@ public class ScriptEvaluator {
         iToken = i - 1;
       }
       if (lattice != null) {
-
         i = iToken + 1;
         htParams.put("lattice", lattice);
         sOptions += " {" + (int) lattice.x + " " + (int) lattice.y + " "
@@ -8272,7 +8271,6 @@ public class ScriptEvaluator {
           fparams = floatParameterSet(i, 6, 9);
           if (fparams.length != 6 && fparams.length != 9)
             error(ERROR_invalidArgument);
-          i = iToken;
           sOptions += " unitcell {";
           for (int j = 0; j < fparams.length; j++)
             sOptions += (j == 0 ? "" : " ") + fparams[j];
@@ -8280,6 +8278,7 @@ public class ScriptEvaluator {
           htParams.put("unitcell", fparams);
           if (iGroup == Integer.MIN_VALUE)
             iGroup = -1;
+          i = iToken + 1;
         }
         if (iGroup != Integer.MIN_VALUE)
           htParams.put("spaceGroupIndex", Integer.valueOf(iGroup));
@@ -8299,6 +8298,7 @@ public class ScriptEvaluator {
           sOptions += " offset " + Escape.escape(offset);
         }
         htParams.put("unitCellOffset", offset);
+        i = iToken + 1;
       }
 
       // FILTER

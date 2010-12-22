@@ -192,7 +192,7 @@ class MainPopupResourceBundle extends PopupResource {
 
       {   "fileMenu",
           "SIGNEDloadFileOrUrl SIGNEDloadPdb SIGNEDloadScript - "
-              + "reload loadFileUnitCell - "
+              + "reload SIGNEDloadFileUnitCell - "
               + "writeFileTextVARIABLE writeState writeHistory SIGNEDwriteJmol SIGNEDwriteIsosurface - SIGNEDwriteGif SIGNEDwriteJpg SIGNEDwritePng SIGNEDwritePovray - "
               + "SIGNEDwriteVrml SIGNEDwriteX3d SIGNEDwriteIdtf SIGNEDwriteMaya" },
 

@@ -218,9 +218,9 @@ public class SimplePopup {
       modelInfo = new Hashtable<String, Object>();
     isPDB = checkBoolean(modelSetInfo, "isPDB");
     isMultiFrame = (modelCount > 1);
-    isSymmetry = !isMultiFrame && checkBoolean(modelInfo, "hasSymmetry");
-    isUnitCell = !isMultiFrame && checkBoolean(modelInfo, "notionalUnitcell");
-    fileHasUnitCell = !isMultiFrame && (isPDB && isUnitCell || checkBoolean(modelInfo, "fileHasUnitCell"));
+    isSymmetry = checkBoolean(modelInfo, "hasSymmetry");
+    isUnitCell = checkBoolean(modelInfo, "notionalUnitcell");
+    fileHasUnitCell = (isPDB && isUnitCell || checkBoolean(modelInfo, "fileHasUnitCell"));
     isLastFrame = (modelIndex == modelCount - 1);
     altlocs = viewer.getAltLocListInModel(modelIndex);
     isMultiConfiguration = (altlocs.length() > 0);

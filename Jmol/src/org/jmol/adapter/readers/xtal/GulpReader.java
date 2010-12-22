@@ -10,15 +10,11 @@ import org.jmol.api.SymmetryInterface;
 /**
  * Problems identified (Bob Hanson) --
  * 
- *   -- Are these "lattice vectors" for the primitive unit cell? I think so.
- *      Then, if that's the case, why do we not see a list of symmetry-generated atoms?
- * 
+ *   -- Coordinates for the asymmetric unit are conventional. 
+ *      Default right now is to read conventional cell, not primitive celll
+ *   
  *   -- Frequency data number of atoms does not correspond to initial atom count.
  *      It looks like there is a missing report of symmetry-generated atoms.
- *      
- *   -- Note: example1.got fails for LOAD example1.got {1 1 1} filter "CONV"
- *      Still working on this -- I need to see a PNG image of what this should look like
- *      could be a problem with rhombohedral symmetry ITC#148 or "centrosymmetryic" issue
  *      
  * see https://projects.ivec.org/gulp/
  * 
@@ -39,10 +35,12 @@ public class GulpReader extends AtomSetCollectionReader {
   private boolean isMolecular;
   private boolean isPrimitive;
   private String sep = "-------";
+  private boolean coordinatesArePrimitive;
 
   @Override
   protected void initializeReader() throws Exception {
     isPrimitive = !checkFilter("CONV");
+    coordinatesArePrimitive = true;
     setFractionalCoordinates(readDimensionality());
   }
 
@@ -116,8 +114,7 @@ public class GulpReader extends AtomSetCollectionReader {
   }
   
   private void readSpaceGroup() throws Exception {
-    spaceGroup = (isPrimitive ? "P1" 
-        : line.substring(line.indexOf(":") + 1).trim());
+    spaceGroup = line.substring(line.indexOf(":") + 1).trim();
   }
 
   private float a, b, c, alpha, beta, gamma;
@@ -157,7 +154,7 @@ public class GulpReader extends AtomSetCollectionReader {
   private void newAtomSet(boolean doSetUnitCell) {
     atomSetCollection.newAtomSet();
     if (doSetUnitCell) {
-      setModelParameters(isPrimitive);
+      setModelParameters(coordinatesArePrimitive);
       if (totEnergy != null)
         setEnergy();
     }
@@ -165,7 +162,7 @@ public class GulpReader extends AtomSetCollectionReader {
 
   private void setModelParameters(boolean isPrimitive) {
     if (spaceGroup != null)
-      setSpaceGroupName(spaceGroup);
+      setSpaceGroupName(isPrimitive ? "P1" : spaceGroup);
     if (isPrimitive && primitiveData != null) {
       addPrimitiveLatticeVector(0, primitiveData, 0);
       addPrimitiveLatticeVector(1, primitiveData, 3);
@@ -205,14 +202,18 @@ public class GulpReader extends AtomSetCollectionReader {
    */
   
   private void readCellParameters(boolean isLatticeVectors) throws Exception {
-    int i0 = (isPrimitive || line.indexOf("Full cell") < 0 ? 0 : 4);
-    discardLines(1);
     if (isLatticeVectors) {
+      readLine();
       primitiveData = new float[9];
       fillFloatArray(primitiveData, null, 0);
       a = 0;
       return;
     }
+    int i0 = (line.indexOf("Full cell") < 0 ? 0 : 4);
+    coordinatesArePrimitive = (i0 == 0);
+    //if (!coordinatesArePrimitive)
+      //isPrimitive = false;
+    readLine();
     while (readLine() != null && line.contains("="))  {
       line = line.replace('=', ' ');
       String[] tokens = getTokens();
@@ -252,7 +253,7 @@ public class GulpReader extends AtomSetCollectionReader {
       scalePrimitiveData(0, a);
       scalePrimitiveData(3, b);
       scalePrimitiveData(6, c);
-      if (!isPrimitive)
+      if (!coordinatesArePrimitive)
         // we have a conventional cell -- get a, b, and c for it now
         while (readLine() != null && line.indexOf("Final") < 0)
           if (line.indexOf("Non-primitive lattice parameters") > 0) {
@@ -266,7 +267,7 @@ public class GulpReader extends AtomSetCollectionReader {
             break;
           }
     }
-    setModelParameters(true);
+    setModelParameters(coordinatesArePrimitive);
     applySymmetryAndSetTrajectory();
     if (totEnergy != null)
       setEnergy();
@@ -283,7 +284,7 @@ public class GulpReader extends AtomSetCollectionReader {
 
   @Override
   public void applySymmetryAndSetTrajectory() throws Exception {
-    if (iHaveUnitCell && doCheckUnitCell && primitiveData != null && !isPrimitive) {
+    if (coordinatesArePrimitive && iHaveUnitCell && doCheckUnitCell && primitiveData != null && !isPrimitive) {
       setModelParameters(false);
       SymmetryInterface symFull = symmetry;
       setModelParameters(true);

@@ -675,20 +675,20 @@ public class Resolver {
   private static boolean checkQuantumEspresso(String[] lines) {
     // can't we just use Quantum ESPRESSO and http://... and PWSCF in 'contains' records?
     // that catches the whole header.
-    
-    if (lines[2].contains("Program PWSCF"))
-      return true;
-    if (lines[2].contains("PHONON ")) // this may be too general -- is it necessary? Provide an example, please
-      return true;
+  // add more as examples are included in datafiles/quantumEspresso  
+//    if (lines[2].contains("Program PWSCF"))
+//      return true;
+//    if (lines[2].contains("PHONON ")) // this may be too general -- is it necessary? Provide an example, please
+//      return true;
     for (int i = 0; i < lines.length; i++) {
-      if (lines[i].contains("Quantum ESPRESSO"))
-        return true;
-      if (lines[i].contains("http://www.quantum-espresso.org"))
-        return true;
+//      if (lines[i].contains("Quantum ESPRESSO"))
+//        return true;
+//      if (lines[i].contains("http://www.quantum-espresso.org"))
+//        return true;
       if (lines[i].contains("Program PWSCF"))
         return true;
-      if (lines[i].contains("PHONON "))
-        return true;
+//      if (lines[i].contains("PHONON "))
+//        return true;
     }
     return false;
   }

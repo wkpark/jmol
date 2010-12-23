@@ -64,8 +64,7 @@ public class EspressoReader extends AtomSetCollectionReader {
   private float aPar;
 
   private void readAparam() throws Exception {
-    String[] tokens = getTokens();
-    aPar = parseFloat(tokens[4]) * ANGSTROMS_PER_BOHR;
+    aPar = parseFloat(getTokens()[4]) * ANGSTROMS_PER_BOHR;
   }
 
   /*
@@ -98,6 +97,9 @@ public class EspressoReader extends AtomSetCollectionReader {
       * ANGSTROMS_PER_BOHR;
     //Can you look at the example HAP_fullopt_40_r1.fullopt from the 2nd model on the representation is correct 
     //The 1st is wrong. 
+    // BH: It's just a bad starting geometry, but the program 
+    //     very nicely cleans it up in just one step. 
+    
     cellParams = new float[9];
     for (int n = 0, i = 0; n < 3; n++) {
       String[] tokens = getTokens(readLine());
@@ -126,7 +128,7 @@ public class EspressoReader extends AtomSetCollectionReader {
     newAtomSet();
     while (readLine() != null && (line.indexOf("(")) >= 0) {
       String[] tokens = getTokens();
-      Atom atom = atomSetCollection.addNewAtom();
+      Atom atom = atomSetCollection.addNewAtom(); 
       atom.atomName = tokens[1];
       // here the coordinates are a_lat there fore expressed on base of cube of side a 
       float x = parseFloat(tokens[tokens.length - 4]);

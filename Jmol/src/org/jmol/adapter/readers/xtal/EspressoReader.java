@@ -3,7 +3,7 @@ package org.jmol.adapter.readers.xtal;
 /**
  * Piero Canepa
  * 
- * I fix a coupple of things. First of all the correct representation of atom when deal with  crystallographic coordinates.
+ * I fix a couple of things. First of all the correct representation of atom when deal with  crystallographic coordinates.
  * Secondly I centered the cell in case of negative crystallographic coordinates.
  * 
  * However there is a minor issue
@@ -27,7 +27,7 @@ import org.jmol.adapter.smarter.AtomSetCollectionReader;
 public class EspressoReader extends AtomSetCollectionReader {
 
   private boolean endOptimization = false;
-  
+
   @Override
   protected void initializeReader() {
     setSpaceGroupName("P1");
@@ -52,12 +52,11 @@ public class EspressoReader extends AtomSetCollectionReader {
     } else if (line.contains("ATOMIC_POSITIONS")) {
       if (doGetModel(++modelNumber))
         readAtomic();
-    } else if(line.contains("End") && line.contains(" Geometry Optimization")){
+    } else if (line.contains("End") && line.contains(" Geometry Optimization")) {
       endOptimization = true;
     }
     return true;
   }
-
 
   private float aPar;
 
@@ -82,17 +81,18 @@ public class EspressoReader extends AtomSetCollectionReader {
   /*  
   CELL_PARAMETERS (alat= 17.62853047)
   1.019135101   0.000000000   0.000000000
- -0.509567550   0.882596887   0.000000000
+  -0.509567550   0.882596887   0.000000000
   0.000000000   0.000000000   0.737221415
 
-*/
-  
+   */
+
   float[] cellParams;
-  
+
   private void readCellParam(boolean andAPar) throws Exception {
     int i0 = (andAPar ? 0 : 3);
     if (andAPar)
-      aPar = parseFloat(line.substring(line.indexOf("=") + 1)) * ANGSTROMS_PER_BOHR;
+      aPar = parseFloat(line.substring(line.indexOf("=") + 1))
+      * ANGSTROMS_PER_BOHR;
     //Can you look at the example HAP_fullopt_40_r1.fullopt from the 2nd model on the representation is correct 
     //The 1st is wrong. 
     cellParams = new float[9];
@@ -103,8 +103,7 @@ public class EspressoReader extends AtomSetCollectionReader {
       cellParams[i++] = parseFloat(tokens[i0 + 2]) * aPar;
     }
   }
-  
-  
+
   /*
   Cartesian axes
 
@@ -131,11 +130,11 @@ public class EspressoReader extends AtomSetCollectionReader {
       float x = parseFloat(tokens[6]);
       float y = parseFloat(tokens[7]);
       float z = parseFloat(tokens[8]);
-      if(x < 0)
+      if (x < 0)
         x += 1;
-      if(y < 0)
+      if (y < 0)
         y += 1;
-      if(z < 0)
+      if (z < 0)
         z += 1;
       setAtomCoord(atom, x, y, z);
     }
@@ -159,39 +158,39 @@ public class EspressoReader extends AtomSetCollectionReader {
   }
 
   private void readAtomic() throws Exception {
-    
-/*    
-    This is to check for 
-    O       -0.088707198  -0.347657305   0.434774168
-    O       -0.258950107   0.088707198   0.434774168
-    O        0.000000000   0.000000000  -0.214003341
-    O        0.000000000   0.000000000   0.286225136
-    H        0.000000000   0.000000000  -0.071496337
-    H        0.000000000   0.000000000   0.428733409
-    End final coordinates
-    */
-    
+
+    /*    
+        This is to check for 
+        O       -0.088707198  -0.347657305   0.434774168
+        O       -0.258950107   0.088707198   0.434774168
+        O        0.000000000   0.000000000  -0.214003341
+        O        0.000000000   0.000000000   0.286225136
+        H        0.000000000   0.000000000  -0.071496337
+        H        0.000000000   0.000000000   0.428733409
+        End final coordinates
+     */
+
     int condition = 1;
-    if(endOptimization){
+    if (endOptimization) {
       condition = 22;
     }
     newAtomSet();
     float factor = (line.indexOf("alat") >= 0 ? 1f : ANGSTROMS_PER_BOHR / aPar);
-    if(line.contains("crystal"))
+    if (line.contains("crystal"))
       factor = 1; //in case of crystalographic coordinates we don't need an extra conversion
-    while (readLine() != null && line.length() > condition){
+    while (readLine() != null && line.length() > condition) {
       String[] tokens = getTokens();
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = tokens[0];
       //Here the coordinates are in BOHR
-      float x = parseFloat(tokens[1])* factor;
-      float y = parseFloat(tokens[2])* factor;
-      float z = parseFloat(tokens[3])* factor;
-      if(x < 0)
+      float x = parseFloat(tokens[1]) * factor;
+      float y = parseFloat(tokens[2]) * factor;
+      float z = parseFloat(tokens[3]) * factor;
+      if (x < 0)
         x += 1;
-      if(y < 0)
+      if (y < 0)
         y += 1;
-      if(z < 0)
+      if (z < 0)
         z += 1;
       setAtomCoord(atom, x, y, z);
     }
@@ -200,6 +199,7 @@ public class EspressoReader extends AtomSetCollectionReader {
 
   //!    total energy              =   -1668.20791579 Ry
   private Double totEnergy;
+
   private void readEnergy() throws Exception {
     String[] tokens = getTokens(line.substring(line.indexOf("=") + 1));
     totEnergy = Double.valueOf(Double.parseDouble(tokens[0]));

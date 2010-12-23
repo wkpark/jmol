@@ -212,8 +212,8 @@ public class EspressoReader extends AtomSetCollectionReader {
   //!    total energy              =   -1668.20791579 Ry
 
   private void readEnergy() throws Exception {
-    String[] tokens = getTokens(line.substring(line.indexOf("=") + 1));
-    totEnergy = Double.valueOf(Double.parseDouble(tokens[0]));
+    totEnergy = Double.valueOf(Double.parseDouble(getTokens(line.substring(line
+        .indexOf("=") + 1))[0]));
   }
 
   private void setEnergy() {

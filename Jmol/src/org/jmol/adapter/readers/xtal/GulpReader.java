@@ -1,5 +1,8 @@
 package org.jmol.adapter.readers.xtal;
 
+import java.util.Hashtable;
+import java.util.Map;
+
 import javax.vecmath.Vector3f;
 
 import org.jmol.adapter.smarter.Atom;
@@ -36,6 +39,7 @@ public class GulpReader extends AtomSetCollectionReader {
   private boolean isPrimitive;
   private String sep = "-------";
   private boolean coordinatesArePrimitive;
+  private Map<String, Float> atomCharges;
 
   @Override
   protected void initializeReader() throws Exception {
@@ -44,6 +48,18 @@ public class GulpReader extends AtomSetCollectionReader {
     setFractionalCoordinates(readDimensionality());
   }
 
+  @Override
+  protected void finalizeReader() {
+    if (atomCharges == null)
+      return;
+    Atom[] atoms = atomSetCollection.getAtoms();
+    Float f;
+    for (int i = atomSetCollection.getAtomCount(); --i >= 0;)
+      if ((f = atomCharges.get(atoms[i].atomName)) != null
+          || (f = atomCharges.get(atoms[i].getElementSymbol())) != null)
+        atoms[i].partialCharge = f.floatValue();
+  }
+  
   private boolean bTest;
   
   @Override
@@ -78,7 +94,13 @@ public class GulpReader extends AtomSetCollectionReader {
         readAtomicPos(!bTest);
       return true;
     } 
-    // past this point, we must already have coordinates defined
+
+    if (line.contains("Species output for all configurations")) {
+      readPartialCharges();
+      return true;
+    }
+    
+// past this point, we must already have coordinates defined
     if (!doProcessLines)
       return true;
     if (line.contains("Final cell parameters and derivatives")) {
@@ -215,8 +237,7 @@ public class GulpReader extends AtomSetCollectionReader {
       //isPrimitive = false;
     readLine();
     while (readLine() != null && line.contains("="))  {
-      line = line.replace('=', ' ');
-      String[] tokens = getTokens();
+      String[] tokens = getTokens(line.replace('=', ' '));
       for (int i = i0; i < i0 + 4; i += 2)
         if (tokens.length > i + 1)
           setParameter(tokens[i], parseFloat(tokens[i + 1]));
@@ -376,6 +397,36 @@ public class GulpReader extends AtomSetCollectionReader {
     if (finalizeSymmetry)
       applySymmetryAndSetTrajectory();
   }
+
+  /*
+
+  Species output for all configurations : 
+
+--------------------------------------------------------------------------------
+  Species    Type    Atomic    Atomic    Charge       Radii (Angs)     Library
+                     Number     Mass       (e)     Cova   Ionic  VDW   Symbol
+--------------------------------------------------------------------------------
+    Fe       Core       26      55.85     1.9710   1.340  0.000  2.000          
+    Fe       Shell      26      55.85     1.0290   1.340  0.000  2.000          
+    Ba       Core       56     137.33     0.1690   1.340  0.000  2.000          
+    Ba       Shell      56     137.33     1.8310   1.340  0.000  2.000          
+    O        Core        8      16.00     0.5130   0.730  0.000  1.360          
+    O        Shell       8      16.00    -2.5130   0.730  0.000  1.360          
+--------------------------------------------------------------------------------
+   */
+  private void readPartialCharges() throws Exception {
+    atomCharges = new Hashtable<String, Float>();
+    discardLinesUntilContains(sep);
+    discardLinesUntilContains(sep);
+    String[] tokens;
+    while ((tokens = getTokens(readLine())).length > 5) {
+      String species = tokens[0];
+      Float charge = atomCharges.get(species);
+      float f = (charge == null ? 0 : charge.floatValue());
+      atomCharges.put(species, Float.valueOf((f + parseFloat(tokens[4]))));
+    }
+  }
+
 
   /*  
   --------------------------------------------------------------------------------

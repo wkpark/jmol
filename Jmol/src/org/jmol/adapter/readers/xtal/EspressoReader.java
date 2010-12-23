@@ -15,6 +15,9 @@ package org.jmol.adapter.readers.xtal;
  * load HAP.out PACKED
  * animation on
  * 
+ * 
+ * PACKED works fine but Look at the first model the cell parameters are not correct. The structure seems shrunk.
+ * 
  *
  * 
  * 

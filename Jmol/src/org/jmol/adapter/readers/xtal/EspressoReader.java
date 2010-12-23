@@ -10,6 +10,13 @@ package org.jmol.adapter.readers.xtal;
  * Can you look at the example HAP_fullopt_40_r1.fullopt.out from the 2nd model on the representation is correct. The 1st one is wrong.
  * I think because the a_lat. 
  * 
+ * Looks great to me using the PACKED keyword.
+ * 
+ * load HAP.out PACKED
+ * animation on
+ * 
+ *
+ * 
  * 
  * 
  * Quantum Espresso
@@ -26,8 +33,6 @@ import org.jmol.adapter.smarter.AtomSetCollectionReader;
 
 public class EspressoReader extends AtomSetCollectionReader {
 
-  private boolean endOptimization = false;
-
   @Override
   protected void initializeReader() {
     setSpaceGroupName("P1");
@@ -42,18 +47,16 @@ public class EspressoReader extends AtomSetCollectionReader {
       readAparam();
     } else if (line.contains("crystal axes:")) {
       readCellParam(false);
-    } else if (line.contains("Cartesian axes")) {
-      if (doGetModel(++modelNumber))
-        readInitialAtomic();
-    } else if (line.contains("!    total energy")) {
-      readEnergy();
     } else if (line.contains("CELL_PARAMETERS")) {
       readCellParam(true);
+    } else if (line.contains("site n.")) {
+      if (doGetModel(++modelNumber))
+        readAtoms();
     } else if (line.contains("ATOMIC_POSITIONS")) {
       if (doGetModel(++modelNumber))
-        readAtomic();
-    } else if (line.contains("End") && line.contains(" Geometry Optimization")) {
-      endOptimization = true;
+        readAtomicPositions();
+    } else if (line.contains("!    total energy")) {
+      readEnergy();
     }
     return true;
   }
@@ -119,23 +122,24 @@ public class EspressoReader extends AtomSetCollectionReader {
         9           Ca  tau(  9) = (   0.1322212   0.2116428  -0.1867815  )
        10           Ca  tau( 10) = (   0.1171775  -0.2203283  -0.1867815  )
    */
-  private void readInitialAtomic() throws Exception {
+  private void readAtoms() throws Exception {
     newAtomSet();
-    discardLines(2);
-    while (readLine() != null && line.length() > 1) {
+    while (readLine() != null && (line.indexOf("(")) >= 0) {
       String[] tokens = getTokens();
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = tokens[1];
       // here the coordinates are a_lat there fore expressed on base of cube of side a 
-      float x = parseFloat(tokens[6]);
-      float y = parseFloat(tokens[7]);
-      float z = parseFloat(tokens[8]);
+      float x = parseFloat(tokens[tokens.length - 4]);
+      float y = parseFloat(tokens[tokens.length - 3]);
+      float z = parseFloat(tokens[tokens.length - 2]);
+      /* not for now
       if (x < 0)
         x += 1;
       if (y < 0)
         y += 1;
       if (z < 0)
         z += 1;
+      */
       setAtomCoord(atom, x, y, z);
     }
     applySymmetryAndSetTrajectory();
@@ -157,10 +161,11 @@ public class EspressoReader extends AtomSetCollectionReader {
     }
   }
 
-  private void readAtomic() throws Exception {
+  private void readAtomicPositions() throws Exception {
 
     /*    
-        This is to check for 
+     * some just end with a blank line; others end with a short phrase:
+     * 
         O       -0.088707198  -0.347657305   0.434774168
         O       -0.258950107   0.088707198   0.434774168
         O        0.000000000   0.000000000  -0.214003341
@@ -170,15 +175,10 @@ public class EspressoReader extends AtomSetCollectionReader {
         End final coordinates
      */
 
-    int condition = 1;
-    if (endOptimization) {
-      condition = 22;
-    }
     newAtomSet();
-    float factor = (line.indexOf("alat") >= 0 ? 1f : ANGSTROMS_PER_BOHR / aPar);
-    if (line.contains("crystal"))
-      factor = 1; //in case of crystalographic coordinates we don't need an extra conversion
-    while (readLine() != null && line.length() > condition) {
+    // BH: I think this is all we need:
+    float factor = (line.contains("bohr") ? ANGSTROMS_PER_BOHR / aPar : 1f);
+    while (readLine() != null && line.length() > 45) {
       String[] tokens = getTokens();
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = tokens[0];
@@ -186,12 +186,21 @@ public class EspressoReader extends AtomSetCollectionReader {
       float x = parseFloat(tokens[1]) * factor;
       float y = parseFloat(tokens[2]) * factor;
       float z = parseFloat(tokens[3]) * factor;
+      // This we can't do, at least not by default....
+      // None of the other readers do this. So let's think
+      // about why you are feeling it is important. 
+      // What's the case that is the problem? This is what
+      // I call "packed" -- it's certainly an option, but
+      // it's not the default. Please see if PACKED gets you
+      // what you want.
+      /*  (for now) 
       if (x < 0)
         x += 1;
       if (y < 0)
         y += 1;
       if (z < 0)
         z += 1;
+      */
       setAtomCoord(atom, x, y, z);
     }
     applySymmetryAndSetTrajectory();

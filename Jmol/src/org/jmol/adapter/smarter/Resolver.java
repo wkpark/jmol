@@ -675,10 +675,11 @@ public class Resolver {
   private static boolean checkQuantumEspresso(String[] lines) {
     // can't we just use Quantum ESPRESSO and http://... and PWSCF in 'contains' records?
     // that catches the whole header.
-  // add more as examples are included in datafiles/quantumEspresso  
+    
+    ///Piero This bit doesn't always appear  
 //    if (lines[2].contains("Program PWSCF"))
 //      return true;
-//    if (lines[2].contains("PHONON ")) // this may be too general -- is it necessary? Provide an example, please
+//    if (lines[2].contains("Program PHONON ")) // this may be too general -- is it necessary? Provide an example, please
 //      return true;
     for (int i = 0; i < lines.length; i++) {
 //      if (lines[i].contains("Quantum ESPRESSO"))
@@ -687,8 +688,10 @@ public class Resolver {
 //        return true;
       if (lines[i].contains("Program PWSCF"))
         return true;
-//      if (lines[i].contains("PHONON "))
-//        return true;
+      
+      //That's another code within quantum espresso
+      if (lines[i].contains("Program PHONON")) 
+        return true;
     }
     return false;
   }

@@ -1,6 +1,17 @@
 package org.jmol.adapter.readers.xtal;
 
 /**
+ * Piero Canepa
+ * 
+ * I fix a coupple of things. First of all the correct representation of atom when deal with  crystallographic coordinates.
+ * Secondly I centered the cell in case of negative crystallographic coordinates.
+ * 
+ * However there is a minor issue
+ * Can you look at the example HAP_fullopt_40_r1.fullopt.out from the 2nd model on the representation is correct. The 1st one is wrong.
+ * I think because the a_lat. 
+ * 
+ * 
+ * 
  * Quantum Espresso
  * http://www.quantum-espresso.org and http://qe-forge.org/frs/?group_id=10
  * @author Pieremanuele Canepa, Room 104, FM Group School of Physical Sciences,
@@ -82,6 +93,8 @@ public class EspressoReader extends AtomSetCollectionReader {
     int i0 = (andAPar ? 0 : 3);
     if (andAPar)
       aPar = parseFloat(line.substring(line.indexOf("=") + 1)) * ANGSTROMS_PER_BOHR;
+    //Can you look at the example HAP_fullopt_40_r1.fullopt from the 2nd model on the representation is correct 
+    //The 1st is wrong. 
     cellParams = new float[9];
     for (int n = 0, i = 0; n < 3; n++) {
       String[] tokens = getTokens(readLine());
@@ -118,6 +131,12 @@ public class EspressoReader extends AtomSetCollectionReader {
       float x = parseFloat(tokens[6]);
       float y = parseFloat(tokens[7]);
       float z = parseFloat(tokens[8]);
+      if(x < 0)
+        x += 1;
+      if(y < 0)
+        y += 1;
+      if(z < 0)
+        z += 1;
       setAtomCoord(atom, x, y, z);
     }
     applySymmetryAndSetTrajectory();
@@ -158,14 +177,22 @@ public class EspressoReader extends AtomSetCollectionReader {
     }
     newAtomSet();
     float factor = (line.indexOf("alat") >= 0 ? 1f : ANGSTROMS_PER_BOHR / aPar);
+    if(line.contains("crystal"))
+      factor = 1; //in case of crystalographic coordinates we don't need an extra conversion
     while (readLine() != null && line.length() > condition){
       String[] tokens = getTokens();
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = tokens[0];
       //Here the coordinates are in BOHR
-      float x = parseFloat(tokens[1]) * factor;
-      float y = parseFloat(tokens[2]) * factor;
-      float z = parseFloat(tokens[3]) * factor;
+      float x = parseFloat(tokens[1])* factor;
+      float y = parseFloat(tokens[2])* factor;
+      float z = parseFloat(tokens[3])* factor;
+      if(x < 0)
+        x += 1;
+      if(y < 0)
+        y += 1;
+      if(z < 0)
+        z += 1;
       setAtomCoord(atom, x, y, z);
     }
     applySymmetryAndSetTrajectory();

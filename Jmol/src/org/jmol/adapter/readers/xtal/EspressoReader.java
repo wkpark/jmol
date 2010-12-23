@@ -33,6 +33,9 @@ import org.jmol.adapter.smarter.AtomSetCollectionReader;
 
 public class EspressoReader extends AtomSetCollectionReader {
 
+  private float[] cellParams;
+  private Double totEnergy;
+
   @Override
   protected void initializeReader() {
     setSpaceGroupName("P1");
@@ -87,8 +90,6 @@ public class EspressoReader extends AtomSetCollectionReader {
   0.000000000   0.000000000   0.737221415
 
    */
-
-  float[] cellParams;
 
   private void readCellParam(boolean andAPar) throws Exception {
     int i0 = (andAPar ? 0 : 3);
@@ -209,7 +210,6 @@ public class EspressoReader extends AtomSetCollectionReader {
   }
 
   //!    total energy              =   -1668.20791579 Ry
-  private Double totEnergy;
 
   private void readEnergy() throws Exception {
     String[] tokens = getTokens(line.substring(line.indexOf("=") + 1));

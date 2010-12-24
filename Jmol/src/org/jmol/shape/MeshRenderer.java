@@ -79,10 +79,8 @@ public abstract class MeshRenderer extends ShapeRenderer {
       return mesh.title != null;
     latticeOffset.set(0, 0, 0);
     for (int i = vertexCount; --i >= 0;)
-      if (vertices[i] == null)
-        System.out.println("meshrend test");
-      else
-      viewer.transformPoint(vertices[i], screens[i]);
+      if (vertices[i] != null)
+        viewer.transformPoint(vertices[i], screens[i]);
     if (mesh.lattice == null || mesh.modelIndex < 0) {
       render2(exportType != Graphics3D.EXPORT_NOT);
     } else {
@@ -122,8 +120,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
     if (mesh.visibilityFlags == 0)
       return false;
     if (mesh.lineData == null) {
-      if ((vertexCount = mesh.vertexCount) == 0 || 
-          !mesh.colorDensity && mesh.polygonCount == 0)
+      if ((vertexCount = mesh.vertexCount) == 0)
         return false;
       normixes = mesh.normixes;
       if (normixes == null || vertices == null)
@@ -157,7 +154,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected void render2(boolean generateSet) {
     if (!g3d.setColix(colix))
       return;
-    if (mesh.showPoints)
+    if (mesh.showPoints || mesh.polygonCount == 0)
       renderPoints();
     if (mesh.drawTriangles)
       renderTriangles(false, mesh.showTriangles, false);

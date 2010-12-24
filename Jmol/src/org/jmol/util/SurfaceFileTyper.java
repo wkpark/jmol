@@ -70,6 +70,8 @@ public class SurfaceFileTyper {
     case '#':
       if (line.indexOf(".obj") >= 0)
         return "Obj"; // #file: pymol.obj
+      if (line.indexOf("MSMS") >= 0)
+        return "Msms";
       break;
     case '&':
       if (line.indexOf("&plot") == 0)

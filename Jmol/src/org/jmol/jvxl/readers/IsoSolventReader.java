@@ -354,6 +354,7 @@ class IsoSolventReader extends AtomDataReader {
       return;
     if (doCalculateTroughs) {
       volumeData.getYzCount();
+      Logger.info("calculating troughs for grid min " + volumeData.minGrid + " max " + volumeData.maxGrid);
       if (params.doFullMolecular) {
         Point3f pt = new Point3f();
         Vector3f vTemp = new Vector3f();

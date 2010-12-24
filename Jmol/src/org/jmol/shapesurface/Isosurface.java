@@ -1068,7 +1068,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     int pt;
     if (!explicitID && script != null && (pt = script.indexOf("# ID=")) >= 0)
       thisMesh.thisID = Parser.getNextQuotedString(script, pt);
-    thisMesh.scriptCommand = script;
+    thisMesh.scriptCommand = script + scriptAppendix;
 //    Vector v = (Vector) sg.getFunctionXYinfo();
 //    if (thisMesh.data1 == null)
 //      thisMesh.data1 = v;
@@ -1446,5 +1446,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   @Override
   public void merge(Shape shape) {
     super.merge(shape);
+  }
+
+  private String scriptAppendix = "";
+  public void addRequiredFile(String fileName) {
+    scriptAppendix += " # /*file*/\"" + fileName + "\"";
   }
 }

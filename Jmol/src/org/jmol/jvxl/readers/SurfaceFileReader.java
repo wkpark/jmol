@@ -130,10 +130,12 @@ abstract class SurfaceFileReader extends SurfaceReader {
 
   protected String readLine() throws Exception {
     line = br.readLine();
-    nBytes += line.length();
-    if (os != null && line != null) {
-      os.write(line.getBytes());
-      os.write('\n');
+    if (line != null) {
+      nBytes += line.length();
+      if (os != null) {
+        os.write(line.getBytes());
+        os.write('\n');
+      }
     }
     return line;
   } 

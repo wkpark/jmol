@@ -16045,6 +16045,10 @@ public class ScriptEvaluator {
         addShapeProperty(propertyList, "fileType", "Obj");
         sbCommand.append(" obj");
         continue;
+      case Token.msms:
+        addShapeProperty(propertyList, "fileType", "Msms");
+        sbCommand.append(" msms");
+        continue;
       case Token.phase:
         if (surfaceObjectSeen)
           error(ERROR_invalidArgument);

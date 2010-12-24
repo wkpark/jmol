@@ -1121,6 +1121,7 @@ public class Token {
   final static int modelbased     = misc  | 204;// new
   final static int molecular      = misc  | 206;// new
   final static int monomer        = misc  | 208;
+  final static int msms           = misc  | 209;// new
   public final static int next    = misc  | 210;
   public final static int nocontourlines  = misc  | 212;
   final static int nocross        = misc  | 214;// new
@@ -1945,6 +1946,7 @@ public class Token {
       "minSet",          new Token(minset),
       "modelBased",      new Token(modelbased),
       "molecular",       new Token(molecular),
+      "msms",            new Token(msms),
       "noCross",         new Token(nocross),
       "noDebug",         new Token(nodebug),
       "noEdges",         new Token(noedges),

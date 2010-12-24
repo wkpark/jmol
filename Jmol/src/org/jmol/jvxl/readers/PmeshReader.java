@@ -87,21 +87,37 @@ import org.jmol.util.SurfaceFileTyper;
 
 class PmeshReader extends PolygonFileReader {
 
-  private int nPolygons;
-  private boolean isBinary;
   final static String PMESH_BINARY_MAGIC_NUMBER = SurfaceFileTyper.PMESH_BINARY_MAGIC_NUMBER;
-  String pmeshError;
+
+  private boolean isBinary;
+  protected int nPolygons;
+  protected String pmeshError;
+  protected String type;
+  protected boolean isClosedFace; // a b c d a (pmesh only)
+  protected int fixedCount;
+  protected boolean onePerLine;
+  protected int vertexBase;
+  
+  PmeshReader(SurfaceGenerator sg, BufferedReader br) {
+    super(sg, br);
+  }
 
   PmeshReader(SurfaceGenerator sg, String fileName, BufferedReader br) {
     super(sg, br);
-    jvxlFileHeaderBuffer
-        .append("pmesh file format\nvertices and triangles only\n");
+    type = "pmesh";
+    setHeader();
+    isBinary = checkBinary(fileName);
+    isClosedFace = !isBinary;
+  }
+  
+  protected void setHeader() {
+    jvxlFileHeaderBuffer.append(type
+        + " file format\nvertices and triangles only\n");
     JvxlCoder.jvxlCreateHeaderWithoutTitleOrAtoms(volumeData,
         jvxlFileHeaderBuffer);
-    isBinary = checkBinary(fileName);
   }
 
-  private boolean checkBinary(String fileName) {
+  protected boolean checkBinary(String fileName) {
     try {
       br.mark(4);
       char[] buf = new char[5];
@@ -121,8 +137,8 @@ class PmeshReader extends PolygonFileReader {
 
   @Override
   void getSurfaceData() throws Exception {
-    if (readPmesh())
-      Logger.info((isBinary ? "binary " : "") + "pmesh file contains "
+    if (readVerticesAndPolygons())
+      Logger.info((isBinary ? "binary " : "") + type  + " file contains "
           + nVertices + " vertices and " + nPolygons + " polygons for "
           + nTriangles + " triangles");
     else
@@ -131,7 +147,7 @@ class PmeshReader extends PolygonFileReader {
               : pmeshError));
   }
 
-  private boolean readPmesh() {
+  protected boolean readVerticesAndPolygons() {
     try {
       if (isBinary && !readBinaryHeader())
         return false;
@@ -139,7 +155,7 @@ class PmeshReader extends PolygonFileReader {
         return true;
     } catch (Exception e) {
       if (pmeshError == null)
-        pmeshError = "pmesh ERROR: " + e;
+        pmeshError = type  + " ERROR: " + e;
     }
     return false;
   }
@@ -161,51 +177,68 @@ class PmeshReader extends PolygonFileReader {
     return true;
   }
 
-  private boolean readVertices() throws Exception {
-    pmeshError = "pmesh ERROR: vertex count must be positive";
+  protected int[] vertexMap;
+  
+  protected boolean readVertices() throws Exception {
+    pmeshError = type + " ERROR: vertex count must be positive";
     if (!isBinary)
       nVertices = getInt();
+    if (onePerLine)
+      iToken = Integer.MAX_VALUE;
     if (nVertices <= 0) {
       pmeshError += " (" + nVertices + ")";
       return false;
     }
-    pmeshError = "pmesh ERROR: invalid vertex list";
+    pmeshError = type + " ERROR: invalid vertex list";
     Point3f pt = new Point3f();
+    vertexMap = new int[nVertices];
     for (int i = 0; i < nVertices; i++) {
       pt.set(getFloat(), getFloat(), getFloat());
       if (isAnisotropic)
         setVertexAnisotropy(pt);
       if (Logger.debugging)
         Logger.debug(i + ": " + pt);
-      addVertexCopy(pt, 0, i);
+      vertexMap[i] = addVertexCopy(pt, 0, i);
+      if (onePerLine)
+        iToken = Integer.MAX_VALUE;
     }
     pmeshError = null;
     return true;
   }
 
-  private boolean readPolygons() throws Exception {
-    pmeshError = "pmesh ERROR: polygon count must be zero or positive";
+  protected boolean readPolygons() throws Exception {
+    pmeshError = type  + " ERROR: polygon count must be zero or positive";
     if (!isBinary)
       nPolygons = getInt();
     if (nPolygons < 0) {
       pmeshError += " (" + nPolygons + ")";
       return false;
     }
+    if (onePerLine)
+      iToken = Integer.MAX_VALUE;
     int[] vertices = new int[5];
     for (int iPoly = 0; iPoly < nPolygons; iPoly++) {
-      int intCount = getInt();
-      int vertexCount = intCount - (isBinary ? 0 : 1);
-      // (we will ignore the redundant extra vertex when not binary)
+      int intCount = (fixedCount == 0 ? getInt() : fixedCount);
+      int vertexCount = intCount - (isClosedFace ? 1 : 0);
+      // (we will ignore the redundant extra vertex when not binary and not msms)
       if (vertexCount < 1 || vertexCount > 4) {
-        pmeshError = "pmesh ERROR: bad polygon (must have 1-4 vertices) at #"
+        pmeshError = type  + " ERROR: bad polygon (must have 1-4 vertices) at #"
             + (iPoly + 1);
         return false;
       }
-      for (int i = 0; i < intCount; ++i)
-        if ((vertices[i] = getInt()) < 0 || vertices[i] >= nVertices) {
-          pmeshError = "pmesh ERROR: invalid vertex index: " + vertices[i];
+      boolean isOK = true;
+      for (int i = 0; i < intCount; ++i) {
+        if ((vertices[i] = getInt() - vertexBase) < 0 || vertices[i] >= nVertices) {
+          pmeshError = type  + " ERROR: invalid vertex index: " + vertices[i];
           return false;
         }
+        if ((vertices[i] = vertexMap[vertices[i]]) < 0)
+          isOK = false;
+      }
+      if (onePerLine)
+        iToken = Integer.MAX_VALUE;
+      if (!isOK)
+        continue;
       // allow for point or line definition here
       if (vertexCount < 3)
         for (int i = vertexCount; i < 3; ++i)
@@ -245,8 +278,8 @@ class PmeshReader extends PolygonFileReader {
 
   //////////// file reading
 
-  private String[] tokens = new String[0];
-  private int iToken = 0;
+  protected String[] tokens = new String[0];
+  protected int iToken = 0;
 
   private String nextToken() throws Exception {
     while (iToken >= tokens.length) { 

@@ -1200,6 +1200,8 @@ public class SurfaceGenerator {
       return new PmeshReader(this, params.fileName, br);
     if (fileType.equals("Obj"))
       return new ObjReader(this, br);
+    if (fileType.equals("Msms"))
+      return new MsmsReader(this, params.fileName, br);
     return null;
   }
 
@@ -1309,5 +1311,12 @@ public class SurfaceGenerator {
     result[2] = i3;
     return dist1;
   }
+
+  public void addRequiredFile(String fileName) {
+    if (meshDataServer == null)
+      return;
+    meshDataServer.addRequiredFile(fileName);    
+  }
+
 
 }

@@ -239,6 +239,27 @@ class IsoSolventReader extends AtomDataReader {
       params.cappingObject = null;
     }
   }
+  
+  @Override
+  protected void postProcessVertices() {
+    if (isMsMs) {
+      // creates two surfaces, one inside, one outside --
+      // the inside one will have negative volume. 
+      // TODO -- note that this removes any cavity as well, 
+      // and in principal will leave a cavity's inside cavity.
+      if (meshDataServer == null)
+        return; //can't do this without help!
+      meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
+      double[] volumes = (double[]) meshData.calculateVolumeOrArea(-1, false, true);
+      int nSets = meshData.nSets;
+      for (int i = 0; i < nSets; i++)
+        if (volumes[i] < 0)
+          meshData.invalidateSurfaceSet(i);
+      updateSurfaceData();
+      meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS, null);
+      meshData = new MeshData();
+    }
+  }
 
   private void generateSolventCavity() {
     //we have a ring of dots around the model.
@@ -306,8 +327,11 @@ class IsoSolventReader extends AtomDataReader {
 
   final Point3f ptXyzTemp = new Point3f();
   private AtomIndexIterator iter;
-
+  private boolean isMsMs;
+  
+  
   void generateSolventCubeMsMs() {
+    isMsMs = true;
     volumeData.getYzCount();
     resetVoxelData(Float.MAX_VALUE);
     if (dataType == Parameters.SURFACE_NOMAP)
@@ -603,9 +627,9 @@ class IsoSolventReader extends AtomDataReader {
       if (type < 10)
         nFaces[type < 0 ? 0 : type + 1]++;
     }
-    for (int i = 0; i < 10; i++)
-      System.out.print((i-1) + ": " + nFaces[i] + "\t");
-    System.out.println("edge types");
+    //for (int i = 0; i < 10; i++)
+    //  System.out.print((i-1) + ": " + nFaces[i] + "\t");
+    //System.out.println("edge types");
   }
 
   private Point3f ptY0 = new Point3f();

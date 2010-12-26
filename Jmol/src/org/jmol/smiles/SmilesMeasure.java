@@ -77,9 +77,9 @@ public class SmilesMeasure  {
   boolean check() {
     for (int i = 0; i < type; i++) {
       int iAtom = search.patternAtoms[indices[i]].getMatchingAtom();
-      System.out.print(iAtom + "-");
+      //System.out.print(iAtom + "-");
       points[i] = (Point3f) search.jmolAtoms[iAtom];
-      System.out.println(points[i]);
+      //System.out.println(points[i]);
     }
     float d = 0;
     switch (type) {
@@ -96,7 +96,7 @@ public class SmilesMeasure  {
       d = search.v.vTemp1.angle(search.v.vTemp2) / radiansPerDegree * (search.v.vNorm1.dot(search.v.vNorm2) < 0 ? 1 : -1);
       break;
     }
-    System.out.println(type + " " + min + " " + max + " " + d + " " + isNot);
+    //System.out.println(type + " " + min + " " + max + " " + d + " " + isNot);
     return ((d < min || d > max) == isNot);   
   }
 

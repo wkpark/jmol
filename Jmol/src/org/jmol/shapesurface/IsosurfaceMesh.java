@@ -142,55 +142,6 @@ public class IsosurfaceMesh extends Mesh {
           Graphics3D.getColixTranslucent(vertexColixes[i], isTranslucent, iLevel);
   }
   
-  Object calculateArea() {
-    if (calculatedArea != null)
-      return calculatedArea;
-    boolean justOne = (nSets == 0 || thisSet >= 0); 
-    int n = (justOne ? 1 : nSets);
-    double[] v = new double[n];
-    for (int i = polygonCount; --i >= 0;) {
-      if (!setABC(i)) 
-        continue;
-      int iSet = (nSets == 0 ? 0 : vertexSets[iA]);
-      if (thisSet >= 0 && iSet != thisSet)
-        continue;
-      vAB.sub(vertices[iB], vertices[iA]);
-      vAC.sub(vertices[iC], vertices[iA]);
-      vTemp.cross(vAB, vAC);
-      v[justOne ? 0 : iSet] += vTemp.length();
-    }
-    for (int i = 0; i < n; i++)
-      v[i] /= 2;
-    if (justOne)
-      return calculatedArea = Float.valueOf((float) v[0]);
-    return calculatedArea = v;
-  }
-
-  Object calculateVolume() {
-    if (calculatedVolume != null)
-      return calculatedVolume;
-    boolean justOne = (nSets == 0 || thisSet >= 0); 
-    int n = (justOne ? 1 : nSets);
-    double[] v = new double[n];
-    for (int i = polygonCount; --i >= 0;) {
-      if (!setABC(i))
-        continue;
-      int iSet = (nSets == 0 ? 0 : vertexSets[iA]);
-      if (thisSet >= 0 && iSet != thisSet)
-        continue;
-      vAB.set(vertices[iB]);
-      vAC.set(vertices[iC]);
-      vTemp.cross(vAB, vAC);
-      vAC.set(vertices[iA]);
-      v[justOne ? 0 : iSet] += vAC.dot(vTemp);
-    }
-    for (int i = 0; i < n; i++)
-      v[i] /= 6;
-    if (justOne)
-      return calculatedVolume = Float.valueOf((float) v[0]);
-    return calculatedVolume = v;
-  }
-
   int thisSet = -1;
   
   @Override

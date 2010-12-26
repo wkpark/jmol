@@ -399,6 +399,8 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
     //dumpUndo("undoRedo DONE");
   }
 
+  private boolean dontsave;
+  
   private void undoSave(boolean incrementPtr) {
     if (undoButton == null)
       return;
@@ -409,7 +411,8 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
     for (int i = undoPointer + 1; i <= MAXUNDO; i++)
       undoStack[i] = null;
     Logger.startTimer();
-    undoStack[undoPointer] = (String) viewer.getProperty("readable",
+    try {
+      undoStack[undoPointer] = (String) viewer.getProperty("readable",
         "stateInfo", null);
     //shift stack if full
     if (incrementPtr && undoPointer == MAXUNDO) {
@@ -418,7 +421,10 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
       undoStack[MAXUNDO] = null;
     } else if (incrementPtr)
       undoPointer++;
-    if (Logger.checkTimer(null) > 1000) {
+    } catch (Error e) {
+      dontsave = true;
+    }
+    if (dontsave || Logger.checkTimer(null) > 1000) {
       //viewer.setBooleanProperty("undo", false);
       //undoClear();
       Logger.info("command processing slow; undo disabled");

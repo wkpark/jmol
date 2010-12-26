@@ -561,9 +561,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (property == "moNumber")
       return Integer.valueOf(moNumber);
     if (property == "area")
-      return (thisMesh == null ? new Float(Float.NaN) : thisMesh.calculateArea());
+      return (thisMesh == null ? new Float(Float.NaN) : calculateVolumeOrArea(true));
     if (property == "volume")
-      return (thisMesh == null ? new Float(Float.NaN) : thisMesh.calculateVolume());
+      return (thisMesh == null ? new Float(Float.NaN) : calculateVolumeOrArea(false));
     if (thisMesh == null)
       return null;//"no current isosurface";
     if (property == "cutoff")
@@ -585,6 +585,26 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (property == "jvxlFileInfo")
       return JvxlCoder.jvxlGetInfo(jvxlData);
     return null;
+  }
+
+  private Object calculateVolumeOrArea(boolean isArea) {
+    if (isArea) {
+      if (thisMesh.calculatedArea != null)
+        return thisMesh.calculatedArea;
+    } else {
+      if (thisMesh.calculatedVolume != null)
+        return thisMesh.calculatedVolume;
+    }
+    MeshData meshData = new MeshData();
+    fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
+    meshData.nSets = thisMesh.nSets;
+    meshData.vertexSets = thisMesh.vertexSets;
+    Object ret = meshData.calculateVolumeOrArea(thisMesh.thisSet, isArea, false);
+    if (isArea)
+      thisMesh.calculatedArea = ret;
+    else
+      thisMesh.calculatedVolume = ret;
+    return ret;
   }
 
   public static String getPolygonColorData(int ccount, short[] colixes) {

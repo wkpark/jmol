@@ -118,6 +118,7 @@ import java.util.BitSet;
 import java.util.Comparator;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 import org.jmol.util.MeshSurface;
 
@@ -283,6 +284,48 @@ public class MeshData extends MeshSurface {
     return (val1 >= 0 && val2 >= 0 && val3 >= 0 
         || val1 <= 0 && val2 <= 0 && val3 <= 0);
   }
+
+  public Object calculateVolumes() {
+    // TODO
+    return null;
+  }
   
+  
+  
+  public Object calculateVolumeOrArea(int thisSet, boolean isArea, boolean getSets) {
+    if (getSets)
+      getSurfaceSet();
+    boolean justOne = (nSets == 0 || thisSet >= 0);
+    int n = (justOne ? 1 : nSets);
+    double[] v = new double[n];
+    Vector3f vAB = new Vector3f();
+    Vector3f vAC = new Vector3f();
+    Vector3f vTemp = new Vector3f();
+    for (int i = polygonCount; --i >= 0;) {
+      if (!setABC(i))
+        continue;
+      int iSet = (nSets == 0 ? 0 : vertexSets[iA]);
+      if (thisSet >= 0 && iSet != thisSet)
+        continue;
+      if (isArea) {
+        vAB.sub(vertices[iB], vertices[iA]);
+        vAC.sub(vertices[iC], vertices[iA]);
+        vTemp.cross(vAB, vAC);
+        v[justOne ? 0 : iSet] += vTemp.length();
+      } else {
+        // volume
+        vAB.set(vertices[iB]);
+        vAC.set(vertices[iC]);
+        vTemp.cross(vAB, vAC);
+        vAC.set(vertices[iA]);
+        v[justOne ? 0 : iSet] += vAC.dot(vTemp);
+      }
+    }
+    for (int i = 0; i < n; i++)
+      v[i] /= 6;
+    if (justOne)
+      return Float.valueOf((float) v[0]);
+    return v;
+  }
 }
 

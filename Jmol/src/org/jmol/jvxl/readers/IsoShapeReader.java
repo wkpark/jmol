@@ -214,11 +214,13 @@ class IsoShapeReader extends VolumeDataReader {
       if (params.isSquared)
         min = Math.sqrt(min / 2);
     }
+    float r0 = 0;
     for (radius = 100; radius > 0; radius--) {
-      if (Math.abs(radialPart(radius)) >= min)
-        break;
+      double d = radialPart(radius);
+      if (Math.abs(d) >= min && r0 == 0)
+        r0 = radius;
     }
-    radius += 1;
+    radius = r0 + 1;
     if (isAnisotropic) {
       float aMax = 0;
       for (int i = 3; --i >= 0;)

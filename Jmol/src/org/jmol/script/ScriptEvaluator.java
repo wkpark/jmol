@@ -16034,7 +16034,7 @@ public class ScriptEvaluator {
           sbCommand.append(" ").append(radius);
         }
         propertyValue = Float.valueOf(radius);
-        if (optParameterAsString(i + 1).equalsIgnoreCase("full")) {
+        if (tokAt(i + 1) == Token.full) {
           addShapeProperty(propertyList, "doFullMolecular", null);
           sbCommand.append(" full");
           i++;

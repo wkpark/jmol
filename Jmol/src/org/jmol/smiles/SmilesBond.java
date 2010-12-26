@@ -262,7 +262,6 @@ public class SmilesBond implements JmolEdge {
   }
 
   void switchAtoms() {
-    System.out.println("FIXING BOND " + this);
     SmilesAtom a = atom1;
     atom1 = atom2;
     atom2 = a;

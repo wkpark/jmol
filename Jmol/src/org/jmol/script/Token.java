@@ -1081,10 +1081,11 @@ public class Token {
   final static int from           = misc  | 128;// new
   public final static int front   = misc  | 130;
   final static int frontedges     = misc  | 132;// new
-  public final static int frontlit  = misc  | 134;
+  public final static int frontlit = misc  | 134;
   public final static int frontonly = misc  | 136;
-  final static int fullplane        = misc  | 138;// new
-  public final static int fullylit  = misc  | 140;
+  final static int full            = misc  | 137;// new
+  final static int fullplane       = misc  | 138;// new
+  public final static int fullylit = misc  | 140;
   final static int functionxy     = misc  | 142;// new
   final static int functionxyz    = misc  | 144;// new
   final static int gridpoints     = misc  | 146;// new
@@ -1921,6 +1922,7 @@ public class Token {
       "fps",             new Token(fps),
       "from",            new Token(from),
       "frontEdges",      new Token(frontedges),
+      "full",            new Token(full),
       "fullPlane",       new Token(fullplane),
       "functionXY",      new Token(functionxy),
       "functionXYZ",     new Token(functionxyz),

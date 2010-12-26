@@ -416,7 +416,7 @@ public class Parameters {
   float[] anisoB;
   public void setEllipsoid(float[] bList) {
     anisoB = bList;
-    for (int i = 0; i < 6; i++)System.out.print(bList[i] + " ");System.out.println( " in Parameters setEllipsoid" + center);
+    //for (int i = 0; i < 6; i++)System.out.print(bList[i] + " ");System.out.println( " in Parameters setEllipsoid" + center);
     dataType = SURFACE_ELLIPSOID3;
     distance = 0.3f * (Float.isNaN(scale) ? 1f : scale);
     cutoff = Float.MIN_VALUE;

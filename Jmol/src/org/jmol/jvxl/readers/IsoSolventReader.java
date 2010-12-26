@@ -338,17 +338,49 @@ class IsoSolventReader extends AtomDataReader {
       return;
     iter = atomDataServer.getSelectedAtomIterator(bsMySelected, true, false); // was TRUE TRUE
     Logger.startTimer();
+    
+    // PHASE I: Construction of the surface edge and face data
+    
+    // 1) -- same as MSMS -- get edges
     getReducedEdges();
+    
+    // 2) -- as in MSMS BUT get two faces for each atom triple
     getReducedFaces();
+    
+    // 3) -- check for interference of solvent position with other atoms
     validateFaces();
+
+    // PHASE II: Creating the voxel grid
+    
+    //                     /
+    //  (inside) .... (-) 0  (+) .... (outside)
+    //                     \
+    // Note that for steps (4) and (5) we only pull surfaces UP, not down.
+    // That is, if a voxel is hit twice, its value is checked, and it
+    // is only updated if the new value is less than the old one. 
+
+    // 4) -- First pass is to mark "-F" voxels (just under the surface).
     markFaceVoxels(true);
+    
+    // 5) -- Second pass is to mark -T and +T voxels that fall within 
+    //       the specific toroidal slice, but actually we mark ALL
+    //       of them; it turns out not necessary to worry about 
+    //       whether a face take priority or whether the toroidal
+    //       region is inward directed or not. This was a big surprise!
     markToroidVoxels();
-    vEdges = null;
-    // second pass picks up singularities
+    
+    vEdges = null;  // all done with the edge list
+
+    // 6) -- Third pass is to mark "+F" voxels (just above the surface)
+    //       This takes care of all singularities because we do NOT
+    //       check the voxel's former value; we KNOW these are exposed 
+    //       regions -- they have to be, or else this isn't a valid face.    
     markFaceVoxels(false);
-    vFaces = null;
-    markSphereVoxels(false);
-    markSphereVoxels(true);
+    
+    vFaces = null;  // all done with face list
+    
+    // 7) -- Now, finally, we are ready to mark the spherical regions.
+    markSphereVoxels();
     iter.release();
     iter = null;
     unsetVoxelData();
@@ -369,6 +401,11 @@ class IsoSolventReader extends AtomDataReader {
   protected int nTest;
 
   private void getReducedEdges() {
+    /*
+     * Collect a BitSet for each atom indicating all 
+     * other atoms within r1 + 2*solvent_radius + r2
+     * 
+     */
     int atomCount = myAtomCount;
     bsLocale = new BitSet[atomCount];
     htEdges = new Hashtable<String, Edge>();
@@ -497,6 +534,17 @@ class IsoSolventReader extends AtomDataReader {
   BitSet validSpheres;
 
   private void getReducedFaces() {
+    /*
+     * 2a) All possible faces are simply derived from ANDing 
+     *     the BitSets of all pairs of atoms. Then a quick
+     *     calculation of the solvent position determines if they
+     *     are really in position or not.
+     * 2b) Trick is to make TWO faces -- one for each direction.
+     *     Unlike MSMS, we do not have any need for determining
+     *     "THE" reduced face set. It's not necessary when you
+     *     use Marching Cubes. 
+     *      
+     */
     BitSet bs = new BitSet();
     vFaces = new ArrayList<Face>();
     validSpheres = new BitSet();
@@ -586,6 +634,16 @@ class IsoSolventReader extends AtomDataReader {
   }
 
   private void validateFaces() {
+    /*
+     * We must check each solvent position to see if there
+     * are any atoms present that would overlap with it. 
+     * This is a very quick binary tree search for nearby atoms.
+     * 
+     * We catalog singularities -- faces for which the perpenticular
+     * distance to the solvent atom is less than the solvent radius,
+     * but we don't actually use it -- it is just informational.
+     * 
+     */
     float dist2 = solventRadius + maxRadius;
     int n = 0;
     int nSingular = 0;
@@ -637,7 +695,7 @@ class IsoSolventReader extends AtomDataReader {
   private Point3i pt0 = new Point3i();
   private Point3i pt1 = new Point3i();
   
-  private void markFaceVoxels(boolean fullyEnclosed) {
+  private void markFaceVoxels(boolean firstPass) {
     for (int fi = vFaces.size(); --fi >= 0;) {
       Face f = vFaces.get(fi);
       if (!f.isValid)
@@ -662,13 +720,11 @@ class IsoSolventReader extends AtomDataReader {
           ptZ0.set(ptXyzTemp);
           for (int k = pt0.z; k < pt1.z; k++, ptXyzTemp
               .add(volumetricVectors[2])) {
-            if (fullyEnclosed || voxelData[i][j][k] > 0) {
-              if (Measure.isInTetrahedron(ptXyzTemp, ptA, ptB, ptC, ptS, plane,
-                  vTemp, vTemp2, vTemp3, fullyEnclosed)) {
-                float value = solventRadius - ptXyzTemp.distance(ptS);
-                if (value < voxelData[i][j][k])
-                  setVoxel(i, j, k, value);
-              }
+            if (Measure.isInTetrahedron(ptXyzTemp, ptA, ptB, ptC, ptS, plane,
+                vTemp, vTemp2, vTemp3, false)) {
+              float value = solventRadius - ptXyzTemp.distance(ptS);
+              if (firstPass == (value < 0))
+                setVoxel(i, j, k, value);
             }
           }
           ptXyzTemp.set(ptZ0);
@@ -799,7 +855,7 @@ class IsoSolventReader extends AtomDataReader {
   }
 
 
-  private void markSphereVoxels(boolean asValid) {
+  private void markSphereVoxels() {
     for (int iAtom = 0; iAtom < myAtomCount; iAtom++) {
       if (!havePlane && !validSpheres.get(iAtom))
         continue;
@@ -815,11 +871,6 @@ class IsoSolventReader extends AtomDataReader {
           for (int k = pt0.z; k < pt1.z; k++, ptXyzTemp
               .add(volumetricVectors[2])) {
             float v = ptXyzTemp.distance(ptA) - rA;
-            //if (iAtom==1)
-              //System.out.println("draw pb" + (nTest++) + " @{point"
-                //+ ptXyzTemp + "} \""+i + " " + j + " " + k + " " + " " + v + " " + voxelData[i][j][k] + " \"#");
-            if (!asValid && v > 0)
-              continue;
             if (v < voxelData[i][j][k])
               setVoxel(i, j, k, (isNearby ? Float.NaN : v));
           }

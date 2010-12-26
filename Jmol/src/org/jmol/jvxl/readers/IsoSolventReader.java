@@ -774,6 +774,8 @@ class IsoSolventReader extends AtomDataReader {
 
   private void markSphereVoxels(boolean asValid) {
     for (int iAtom = 0; iAtom < myAtomCount; iAtom++) {
+      if (!havePlane && !validSpheres.get(iAtom))
+        continue;
       boolean isNearby = (iAtom >= firstNearbyAtom);
       Point3f ptA = atomXyz[iAtom];
       float rA = atomRadius[iAtom];

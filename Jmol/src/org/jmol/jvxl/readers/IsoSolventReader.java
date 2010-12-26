@@ -359,9 +359,6 @@ class IsoSolventReader extends AtomDataReader {
     // That is, if a voxel is hit twice, its value is checked, and it
     // is only updated if the new value is less than the old one. 
 
-    // 4) -- First pass is to mark "-F" voxels (just under the surface).
-    markFaceVoxels(true);
-    
     // 5) -- Second pass is to mark -T and +T voxels that fall within 
     //       the specific toroidal slice, but actually we mark ALL
     //       of them; it turns out not necessary to worry about 
@@ -371,6 +368,9 @@ class IsoSolventReader extends AtomDataReader {
     
     vEdges = null;  // all done with the edge list
 
+    // 4) -- First pass is to mark "-F" voxels (just under the surface).
+    markFaceVoxels(true);
+    
     // 6) -- Third pass is to mark "+F" voxels (just above the surface)
     //       This takes care of all singularities because we do NOT
     //       check the voxel's former value; we KNOW these are exposed 
@@ -723,7 +723,7 @@ class IsoSolventReader extends AtomDataReader {
             if (Measure.isInTetrahedron(ptXyzTemp, ptA, ptB, ptC, ptS, plane,
                 vTemp, vTemp2, vTemp3, false)) {
               float value = solventRadius - ptXyzTemp.distance(ptS);
-              if (firstPass == (value < 0))
+              if (firstPass ? value < 0 && value < voxelData[i][j][k] : value > 0)
                 setVoxel(i, j, k, value);
             }
           }

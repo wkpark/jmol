@@ -113,7 +113,9 @@
 
 package org.jmol.jvxl.data;
 
+import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Comparator;
 
 import javax.vecmath.Point3f;
 
@@ -192,13 +194,44 @@ public class MeshData extends MeshSurface {
     if (!setsSuccessful && level < 2)
       getSurfaceSet(level + 1);
     if (level == 0) {
-      vertexSets = new int[vertexCount];
-      for (int i = 0; i < nSets; i++)
-        for (int j = surfaceSet[i].nextSetBit(0); j >= 0; j = surfaceSet[i]
-            .nextSetBit(j + 1))
-          vertexSets[j] = i;
+      sortSurfaceSets();
+      setVertexSets();      
     }
     return surfaceSet;
+  }
+
+  private void setVertexSets() {
+    vertexSets = new int[vertexCount];
+    for (int i = 0; i < nSets; i++)
+      for (int j = surfaceSet[i].nextSetBit(0); j >= 0; j = surfaceSet[i]
+          .nextSetBit(j + 1))
+        vertexSets[j] = i;
+  }
+
+  private class SSet {
+    BitSet bs;
+    int n;
+    
+    protected SSet (BitSet bs) {
+      this.bs = bs;
+      n = bs.cardinality();
+    }
+}
+  
+  protected class SortSet implements Comparator<SSet> {
+
+    public int compare(SSet o1, SSet o2) {
+      return (o1.n > o2.n ? -1 : o1.n < o2.n ? 1 : 0);
+    }  
+  }
+
+  private void sortSurfaceSets() {
+    SSet[] sets = new SSet[nSets];
+    for (int i = 0; i < nSets; i++)
+      sets[i] = new SSet(surfaceSet[i]);
+    Arrays.sort(sets, new SortSet());
+    for (int i = 0; i < nSets; i++)
+      surfaceSet[i] = sets[i].bs;
   }
 
   private int findSet(int vertex) {

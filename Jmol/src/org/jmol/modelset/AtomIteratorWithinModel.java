@@ -48,6 +48,7 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
 
   private BitSet bsSelected;
   private boolean isGreaterOnly;
+  private boolean checkGreater;
 
   
   /**
@@ -85,6 +86,7 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
     if (distance == Integer.MIN_VALUE) // distance and center will be added later
       return;
     this.atomIndex = atomIndex;
+    checkGreater = (isGreaterOnly && atomIndex != Integer.MAX_VALUE);
     set(center, distance);
   }
 
@@ -101,7 +103,7 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
       while (bsptIter.hasMoreElements()) {
         Atom a = (Atom) bsptIter.nextElement();
         if ((iNext = a.index) != atomIndex
-            && iNext > (isGreaterOnly ? atomIndex : -1)
+            && (!checkGreater || iNext > atomIndex)
             && (bsSelected == null || bsSelected.get(iNext))) {
           return true;
         }

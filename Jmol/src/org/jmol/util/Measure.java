@@ -591,18 +591,20 @@ final public class Measure {
   public static boolean isInTetrahedron(Point3f pt, Point3f ptA, Point3f ptB,
                                         Point3f ptC, Point3f ptD,
                                         Point4f plane, Vector3f vTemp,
-                                        Vector3f vTemp2, Vector3f vTemp3) {
-
-    Measure.getPlaneThroughPoints(ptA, ptB, ptC, vTemp, vTemp2, vTemp3, plane);
-    boolean b = (Measure.distanceToPlane(plane, pt) >= 0);
-    Measure.getPlaneThroughPoints(ptA, ptD, ptB, vTemp, vTemp2, vTemp3, plane);
-    if (b != (Measure.distanceToPlane(plane, pt) >= 0))
+                                        Vector3f vTemp2, Vector3f vTemp3, boolean fullyEnclosed) {
+    getPlaneThroughPoints(ptC, ptD, ptA, vTemp, vTemp2, vTemp3, plane);
+    boolean b = (distanceToPlane(plane, pt) >= 0);
+    getPlaneThroughPoints(ptA, ptD, ptB, vTemp, vTemp2, vTemp3, plane);
+    if (b != (distanceToPlane(plane, pt) >= 0))
       return false;
-    Measure.getPlaneThroughPoints(ptB, ptD, ptC, vTemp, vTemp2, vTemp3, plane);
-    if (b != (Measure.distanceToPlane(plane, pt) >= 0))
+    getPlaneThroughPoints(ptB, ptD, ptC, vTemp, vTemp2, vTemp3, plane);
+    if (b != (distanceToPlane(plane, pt) >= 0))
       return false;
-    Measure.getPlaneThroughPoints(ptC, ptD, ptA, vTemp, vTemp2, vTemp3, plane);
-    return (b == (Measure.distanceToPlane(plane, pt) >= 0));
+    getPlaneThroughPoints(ptA, ptB, ptC, vTemp, vTemp2, vTemp3, plane);
+    float d = distanceToPlane(plane, pt);
+    if (fullyEnclosed)
+      return (b == (d >= 0));
+    return Math.abs(distanceToPlane(plane, ptD)) > Math.abs(d);
   }
 
 

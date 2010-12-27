@@ -507,10 +507,11 @@ class IsoSolventReader extends AtomDataReader {
       edges[2] = findEdge(ic, ia);
     }
 
-    /*
+    
+    @SuppressWarnings("unused")
     public void dump() {
       setEdges();
-      System.out.println("/" + * "+faceIndex+ " *" + "/draw fp" + (nTest++) + " @{point"
+      System.out.println("draw fp" + (nTest++) + " @{point"
           + new Point3f(atomXyz[ia]) + "}" + " @{point"
           + new Point3f(atomXyz[ib]) + "}" + " @{point"
           + new Point3f(atomXyz[ic]) + "}" + "# " + ia + " " + ib + " " + ic
@@ -519,7 +520,7 @@ class IsoSolventReader extends AtomDataReader {
         System.out.println("draw pp" + (++nTest) + " width 3.0 @{point" + pS
             + "};");
     }
-    */
+    
 /*
     int otherPoint(int i, int j) {
       return (i == ia ? (j == ib ? ic : ib) 
@@ -699,8 +700,8 @@ class IsoSolventReader extends AtomDataReader {
     for (int fi = vFaces.size(); --fi >= 0;) {
       Face f = vFaces.get(fi);
       if (!f.isValid)
-        continue;
-      setGridLimitsForAtom(f.pS, solventRadius + volumeData.minGrid, pt0, pt1);
+        continue;      
+      setGridLimitsForAtom(f.pS, solventRadius, pt0, pt1);
       volumeData.voxelPtToXYZ(pt0.x, pt0.y, pt0.z, ptXyzTemp);
       Point3f ptA = atomXyz[f.ia];
       Point3f ptB = atomXyz[f.ib];
@@ -723,8 +724,9 @@ class IsoSolventReader extends AtomDataReader {
             if (Measure.isInTetrahedron(ptXyzTemp, ptA, ptB, ptC, ptS, plane,
                 vTemp, vTemp2, vTemp3, false)) {
               float value = solventRadius - ptXyzTemp.distance(ptS);
-              if (firstPass ? value < 0 && value < voxelData[i][j][k] : value > 0)
+              if (firstPass ? value < 0 && value < voxelData[i][j][k] : value > 0) {
                 setVoxel(i, j, k, value);
+              }
             }
           }
           ptXyzTemp.set(ptZ0);
@@ -871,7 +873,7 @@ class IsoSolventReader extends AtomDataReader {
           for (int k = pt0.z; k < pt1.z; k++, ptXyzTemp
               .add(volumetricVectors[2])) {
             float v = ptXyzTemp.distance(ptA) - rA;
-            if (v < voxelData[i][j][k])
+            if (v < 0 || v < voxelData[i][j][k])
               setVoxel(i, j, k, (isNearby ? Float.NaN : v));
           }
           ptXyzTemp.set(ptZ0);
@@ -1341,12 +1343,11 @@ class IsoSolventReader extends AtomDataReader {
     return Float.NaN;
   }
 
-  /*
-  private void dumpLine(Point3f pt1, Point3f pt2, String label) {
-    System.out.println("draw " + label + (nTest++) + " @{point" + new Point3f(pt1) + "} @{point" + new Point3f(pt2) + "}");
+  void dumpLine(Point3f pt1, Point3f pt2, String label) {
+    System.out.println("draw ID \"" + label + (nTest++) + "\" @{point" + new Point3f(pt1) + "} @{point" + new Point3f(pt2) + "}");
   }
-  private void dumpPoint(Point3f pt, String label) {
-    System.out.println("draw " + label + (nTest++) + " @{point" + new Point3f(pt) + "}");
+  
+  void dumpPoint(Point3f pt, String label) {
+    System.out.println("draw ID \"" + label + (nTest++) + "\" @{point" + new Point3f(pt) + "}");
   }
-  */
 }

@@ -8600,9 +8600,9 @@
   <fah_proj number="6881" name="AbetaM1_shooting" public="y"
     server="171.67.108.33" atoms="12233" preferred="14" deadline="21"
     credit="69" frames="100" code="G" contact="lin5"/>
-  <fah_proj number="6883" name="AbetaM3_shooting" public="n"
+  <fah_proj number="6883" name="AbetaM3_shooting" public="y" file="xyz"
     server="171.67.108.33" atoms="12226" preferred="14" deadline="21"
-    credit="69" frames="100" code="G" contact="lin5"/>
+    credit="69" frames="100" code="G" contact="lin5" contrib="Danny Nielsen"/>
   <fah_proj number="6885" name="Abeta40_shooting" public="y"
     server="171.67.108.33" atoms="12193" preferred="14" deadline="21"
     credit="69" frames="100" code="G" contact="lin5"/>

@@ -3,25 +3,6 @@ package org.jmol.adapter.readers.xtal;
 /**
  * Piero Canepa
  * 
- * I fix a couple of things. First of all the correct representation of atom when deal with  crystallographic coordinates.
- * Secondly I centered the cell in case of negative crystallographic coordinates.
- * 
- * However there is a minor issue
- * Can you look at the example HAP_fullopt_40_r1.fullopt.out from the 2nd model on the representation is correct. The 1st one is wrong.
- * I think because the a_lat. 
- * 
- * Looks great to me using the PACKED keyword.
- * 
- * load HAP.out PACKED
- * animation on
- * 
- * 
- * PACKED works fine but Look at the first model the cell parameters are not correct. The structure seems shrunk.
- * 
- *
- * 
- * 
- * 
  * Quantum Espresso
  * http://www.quantum-espresso.org and http://qe-forge.org/frs/?group_id=10
  * @author Pieremanuele Canepa, Room 104, FM Group School of Physical Sciences,

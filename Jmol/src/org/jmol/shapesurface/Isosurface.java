@@ -181,6 +181,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   private float scale3d;
   private boolean isPhaseColored;
   private boolean isColorExplicit;
+  private String scriptAppendix = "";
 
   protected SurfaceGenerator sg;
   protected JvxlData jvxlData;
@@ -435,6 +436,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     if ("init" == propertyName) {
       explicitID = false;
+      scriptAppendix = "";
       String script = (value instanceof String ? (String) value : null);
       int pt = (script == null ? -1 : script.indexOf("# ID="));
       actualID = (pt >= 0 ? Parser.getNextQuotedString(script, pt) : null);
@@ -1096,6 +1098,12 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
  //     thisMesh.data2 = v;
   }
 
+  public void addRequiredFile(String fileName) {
+    fileName = " # /*file*/\"" + fileName + "\"";
+    if (scriptAppendix.indexOf(fileName) < 0)
+    scriptAppendix += fileName;
+  }
+
   private void setJvxlInfo() {
     if (sg.getJvxlData() != jvxlData || sg.getJvxlData() != thisMesh.jvxlData)
       jvxlData = thisMesh.jvxlData = sg.getJvxlData();
@@ -1466,11 +1474,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   @Override
   public void merge(Shape shape) {
     super.merge(shape);
-  }
-
-  private String scriptAppendix = "";
-  public void addRequiredFile(String fileName) {
-    scriptAppendix += " # /*file*/\"" + fileName + "\"";
   }
 
 }

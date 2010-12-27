@@ -1318,5 +1318,12 @@ public class SurfaceGenerator {
     meshDataServer.addRequiredFile(fileName);    
   }
 
+  void log(String msg) {
+    if (atomDataServer == null)
+      System.out.println(msg);
+    else
+      atomDataServer.log(msg);
+  }
+
 
 }

@@ -1472,4 +1472,5 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   public void addRequiredFile(String fileName) {
     scriptAppendix += " # /*file*/\"" + fileName + "\"";
   }
+
 }

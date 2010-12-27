@@ -1123,6 +1123,7 @@ public class FileManager {
     long nBytes = 0;
     Logger.info("creating zip file " + outFileName + "...");
     String fullFilePath = null;
+    String fileList = "";
     try {
       ByteArrayOutputStream bos = (outFileName.startsWith("http://") ? new ByteArrayOutputStream() : null);
       ZipOutputStream os = new ZipOutputStream(bos == null ? 
@@ -1131,6 +1132,10 @@ public class FileManager {
         String fname = (String) fileNamesAndByteArrays.get(i);
         if (fname.indexOf("file:/") == 0)
           fname = fname.substring(6);
+        String key = ";" + fname + ";";
+        if (fileList.indexOf(key) >= 0)
+          continue;
+        fileList += key;
         byte[] bytes = (byte[]) fileNamesAndByteArrays.get(i + 1);
         String fnameShort = fname;
         if (!preservePath || fname.indexOf("|") >= 0) {

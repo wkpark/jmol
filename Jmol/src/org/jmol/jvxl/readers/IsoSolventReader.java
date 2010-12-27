@@ -707,14 +707,15 @@ class IsoSolventReader extends AtomDataReader {
       Point3f ptB = atomXyz[f.ib];
       Point3f ptC = atomXyz[f.ic];
       Point3f ptS = f.pS;
-      /*
-      dumpLine(ptA, ptB);
-      dumpLine(ptB, ptC);
-      dumpLine(ptC, ptS);
-      dumpLine(ptS, ptA);
-      dumpLine(ptS, ptB);
-      dumpLine(ptS, ptC);
-      */
+      if (Logger.debugging) {
+        String color = (f.isSingular ? "red" : "green");
+        dumpLine(ptA, ptB, "f", color);
+        dumpLine(ptB, ptC, "f", color);
+        dumpLine(ptC, ptA, "f", color);
+        dumpLine2(ptS, ptA, "f", solventRadius, color, "white");
+        dumpLine2(ptS, ptB, "f", solventRadius, color, "white");
+        dumpLine2(ptS, ptC, "f", solventRadius, color, "white");
+      }
       for (int i = pt0.x; i < pt1.x; i++) {
         ptY0.set(ptXyzTemp);
         for (int j = pt0.y; j < pt1.y; j++) {
@@ -736,6 +737,12 @@ class IsoSolventReader extends AtomDataReader {
         ptXyzTemp.add(volumetricVectors[0]);
       }
     }
+  }
+
+  private void dumpLine2(Point3f ptS, Point3f ptA, float solventRadius2,
+                         String color, String string) {
+    // TODO
+    
   }
 
   //private static Point3f ptRef = new Point3f((float) Math.PI, (float) Math.E, (float) Math.tan(Math.E));
@@ -1343,11 +1350,22 @@ class IsoSolventReader extends AtomDataReader {
     return Float.NaN;
   }
 
-  void dumpLine(Point3f pt1, Point3f pt2, String label) {
-    System.out.println("draw ID \"" + label + (nTest++) + "\" @{point" + new Point3f(pt1) + "} @{point" + new Point3f(pt2) + "}");
+  void dumpLine(Point3f pt1, Point3f pt2, String label, String color) {
+    sg.log("draw ID \"" + label + (nTest++) + "\" @{point" + new Point3f(pt1) + "} @{point" + new Point3f(pt2) + "} color " + color);
+  }
+  
+  void dumpLine2(Point3f pt1, Point3f pt2, String label, float d, String color1, String color2) {
+    Vector3f pt = new Vector3f();
+    pt.set(pt2);
+    pt.sub(pt1);
+    pt.normalize();
+    pt.scale(d);
+    pt.add(pt1);
+    sg.log("draw ID \"" + label + (nTest++) + "\" @{point" + new Point3f(pt1) + "} @{point" + new Point3f(pt) + "} color " + color1);
+    sg.log("draw ID \"" + label + (nTest++) + "\" @{point" + new Point3f(pt) + "} @{point" + new Point3f(pt2) + "} color " + color2);
   }
   
   void dumpPoint(Point3f pt, String label) {
-    System.out.println("draw ID \"" + label + (nTest++) + "\" @{point" + new Point3f(pt) + "}");
+    sg.log("draw ID \"" + label + (nTest++) + "\" @{point" + new Point3f(pt) + "}");
   }
 }

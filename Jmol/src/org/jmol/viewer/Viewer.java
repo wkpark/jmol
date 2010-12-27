@@ -8897,11 +8897,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void log(String data) {
     try {
-      if (logFile == null || data == null)
+      if (data == null)
         return;
       boolean doClear = (data.equals("$CLEAR$"));
       if (data.indexOf("$NOW$") >= 0)
         data = TextFormat.simpleReplace(data, "$NOW$", (new Date()).toString());
+      if (logFile == null) {
+        System.out.println(data);
+        return;
+      }
       FileWriter fstream = new FileWriter(logFile, !doClear);
       BufferedWriter out = new BufferedWriter(fstream);
       if (!doClear) {

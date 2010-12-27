@@ -1132,10 +1132,6 @@ public class FileManager {
         String fname = (String) fileNamesAndByteArrays.get(i);
         if (fname.indexOf("file:/") == 0)
           fname = fname.substring(6);
-        String key = ";" + fname + ";";
-        if (fileList.indexOf(key) >= 0)
-          continue;
-        fileList += key;
         byte[] bytes = (byte[]) fileNamesAndByteArrays.get(i + 1);
         String fnameShort = fname;
         if (!preservePath || fname.indexOf("|") >= 0) {
@@ -1143,6 +1139,12 @@ public class FileManager {
           fnameShort = fnameShort.substring(pt + 1);
         }
         Logger.info("...adding " + fname);
+        String key = ";" + fnameShort + ";";
+        if (fileList.indexOf(key) >= 0) {
+          Logger.info("duplicate entry");
+          continue;
+        }
+        fileList += key;
         os.putNextEntry(new ZipEntry(fnameShort));
         if (bytes == null) {
           // get data from disk

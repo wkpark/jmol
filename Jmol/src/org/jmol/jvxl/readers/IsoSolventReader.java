@@ -1488,9 +1488,29 @@ MSMS terminated normally
                                    Vector3f edgeVector, int x,
                                    int y, int z, int vA0, int vB0, float[] fReturn, Point3f ptReturn) {
     
-    // cutoff will be 0 here, and not absolute
+    // nonlinear Marching Cubes -- hansonr@stolaf.edu 12/31/2010
+    
+    // Generates exact position of circular arc based on two distances.
+    // Only slightly different from linear Marching Cubes.
+    // Uses a stored radius (-r for solvent radius; +r for atom)
+    // associated with each voxel point. The algorithm then does
+    // an exact positioning of the fractional distance based on cos law:
     // 
-    // for now, voxelRadii are null
+    // dAS^2 + dAB^2 + 2(dAS)(dAB)cos(theta) = dBS^2
+    // dAS^2 + dAX^2 + 2(dAS)(dAX)cos(theta) = dXS^2
+    //
+    //            B
+    //           /|
+    //          / |
+    //         /  |
+    //        S---X
+    //         \  |
+    //          \theta
+    //           \|
+    //            A
+    //
+    // So from this we can derive dAX, and thus f = dAX/dAb
+    
     int vA = marchingCubes.getLinearOffset(x, y, z, vA0);
     int vB = marchingCubes.getLinearOffset(x, y, z, vB0);
     if (voxelRadii == null || voxelRadii[vA] == 0 || voxelRadii[vA] != voxelRadii[vB])

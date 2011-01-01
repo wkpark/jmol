@@ -196,12 +196,31 @@ public class MeshData extends MeshSurface {
       getSurfaceSet(level + 1);
     if (level == 0) {
       sortSurfaceSets();
-      setVertexSets();      
+      setVertexSets(false);      
     }
     return surfaceSet;
   }
 
-  private void setVertexSets() {
+  public void setVertexSets(boolean onlyIfNull) {
+    if (surfaceSet == null)
+      return;
+    int nNull = 0;
+    for (int i = 0; i < nSets; i++) {
+      if (surfaceSet[i] != null && surfaceSet[i].cardinality() == 0)
+        surfaceSet[i] = null;
+      if (surfaceSet[i] == null)
+        nNull++;
+    }
+    if (nNull > 0) {
+      BitSet[] bsNew = new BitSet[nSets - nNull];
+      for (int i = 0, n = 0; i < nSets; i++)
+        if (surfaceSet[i] != null)
+          bsNew[n++] = surfaceSet[i];
+      surfaceSet = bsNew;
+      nSets -= nNull;
+    } else if (onlyIfNull) {
+      return;
+    }
     vertexSets = new int[vertexCount];
     for (int i = 0; i < nSets; i++)
       for (int j = surfaceSet[i].nextSetBit(0); j >= 0; j = surfaceSet[i]

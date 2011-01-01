@@ -21,13 +21,12 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+
 package org.jmol.jvxl.readers;
 
 //import java.util.ArrayList;
-import java.util.ArrayList;
-//import java.util.Arrays;
-import java.util.BitSet;
-import java.util.Comparator;
+import java.util.ArrayList; //import java.util.Arrays;
+import java.util.BitSet; //import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -38,8 +37,7 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
-//import org.jmol.util.Escape;
-//import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 
@@ -55,9 +53,55 @@ class IsoSolventReader extends AtomDataReader {
   ///// solvent-accessible, solvent-excluded surface //////
 
   /*
+   * isosurface SOLVENT 1.4; isosurface MOLECULAR
+   * 
+   * Prior to Jmol 12.1.29, all isosurface SOLVENT/MOLECULAR calculations
+   * only checked for pairs of atoms in calculating troughs. This was
+   * not satisfactory; a full analysis of molecular surfaces
+   * requires that the "ball" rolling around a pair of atoms 
+   * may hit a third atom. If this is the case, then the surface area will
+   * be somewhat less, and the valleys produced will be shallower.
+   * 
+   * Starting with Jmol 12.1.29, we take a new approach -- a modified MSMS
+   * algorithm based loosely on:
+   *    
+   *    Sanner, M.F., Spehner, J.-C., and Olson, A.J. (1996) 
+   *    Reduced surface: an efficient way to compute molecular surfaces. 
+   *    Biopolymers, Vol. 38., (3), 305-320.
+   *    
+   * I have no idea how the MSMS program actually works; all I have is what
+   * is published in the above account. 
+   * 
+   * Similarly to this algorithm, we catalog edges (two-point contacts) and
+   * faces (three-point contacts). However, we never calculate a "reduced surface"
+   * and we never associate specific triangulation vertices with specific atoms.
+   * Instead, we generate a field of values that measure the closest distance to
+   * the surface for a grid of points. 
+   * 
+   * Using a novel nonlinear Marching Cubes algorithm, we use this set of values
+   * to generate exact positions of points on the surface. 
+   * 
+   * A bonus is that we can calculate interior cavities automatically at the same time. 
+   * (They are inside-out and have negative volume. They can be visualized using
+   * the SET option of the ISOSURFACE command.)
+   * 
+   * We can also calculate fragments of isosurfaces as well as external cavities. 
+   * 
+   * The calculation is quite fast. Note that for comparison with MSMS,
+   * you will need to generate a .xyzrn file for MSMS input. This can be
+   * done using the writeXyzrn script found in the drawMsMs.spt script:
+   * 
+   * http://chemapps.stolaf.edu/jmol/docs/examples-12/drawMsMs.spt
+   * 
+   * That script also includes  drawMsMs(fileroot), which draws the resulting
+   * isosurface from MsMs in red (sphere), white (face), and blue (toroidal).
+   * 
+   * Bob Hanson, 11/31/2010
+   *
+   * 
    * The surface fragment idea:
    * 
-   * isosurface solvent|sasurface both work on the SELECTED atoms, thus
+   * ISOSURFACE solvent|sasurface both work on the SELECTED atoms, thus
    * allowing for a subset of the molecule to be involved. But in that
    * case we don't want to be creating a surface that goes right through
    * another atom. Rather, what we want (probably) is just the portion
@@ -66,37 +110,26 @@ class IsoSolventReader extends AtomDataReader {
    * The addition of Mesh.voxelValue[] means that we can specify any 
    * voxel we want to NOT be excluded (NaN). Here we first exclude any 
    * voxel that would have been INSIDE a nearby atom. This will take care
-   * of any portion of the vanderwaals surface that would be there. Then
+   * of any portion of the van der Waals surface that would be there. Then
    * we exclude any special-case voxel that is between two nearby atoms. 
    *  
    *  Bob Hanson 13 Jul 2006
-   *  
-   * isosurface SOLVENT 1.4 FULL
+   *     
+   * Jmol cavity rendering. Tim Driscoll suggested "filling a 
+   * protein with foam. Here you go...
    * 
-   * The FULL option, introduced in Jmol 12.1.24 (11/26/2010):
+   * 1) Use a dot-surface extended x.xx Angstroms to define the 
+   *    outer envelope of the protein.
+   * 2) Identify all voxel points outside the protein surface (v > 0) 
+   *    but inside the envelope (nearest distance to a dot > x.xx).
+   * 3) First pass -- create the protein surface.
+   * 4) Replace solvent atom set with "foam" ball of the right radius
+   *    at the voxel vertex points.
+   * 5) Run through a second time using these "atoms" to generate 
+   *    the surface around the foam spheres. 
+   *    
+   *    Bob Hanson 3/19/07
    * 
-   * Prior to Jmol 12.1.24, all isosurface SOLVENT/MOLECULAR calculations
-   * only checked for pairs of atoms in calculating troughs. This was
-   * sufficient for most work, but a full analysis of molecular surfaces
-   * requires that the "ball" rolling around a pair of atoms 
-   * may hit a third atom. If this is the case, then the surface area will
-   * be somewhat less, and the valleys produced will be shallower.
-   * The full analysis option checks for all possible triples and can 
-   * take significant calculation time. The results are rewarding, and 
-   * the saving of the JVXL equivalent is recommended.
-   * 
-   * I don't know how PyMOL does it, but its "show surface" command is
-   * very fast, though not as exact. Most probably it is a massaged dot surface, similar
-   * to spacefill but with a rough additional "surface smoothing" applied.
-   * That surface seems to be somewhat smaller than Jmol's, perhaps due to the use of 
-   * smaller radii for the atoms, but I am not sure. If it is a modified dot 
-   * surface, that would explain its speed. Certainly an interesting idea. 
-   * It might be generated in Jmol using a variation on the geosurface idea. 
-   * Start with surface dots (very fast) and then adjust them to their proper
-   * surface location. Hidden dots could then be removed. I wonder....
-   *  
-   *  Bob Hanson, 11/26/2010
-   *  
    */
 
   private float cavityRadius;
@@ -106,6 +139,25 @@ class IsoSolventReader extends AtomDataReader {
   private boolean isCavity, isPocket;
   protected float solventRadius;
   private boolean havePlane;
+  final private Point3f ptXyzTemp = new Point3f();
+  private AtomIndexIterator iter;
+  private float[] voxelRadii;
+  private BitSet bsSurfaceVoxels, bsSurfacePoints, bsSurfaceDone;
+  private BitSet[] bsLocale;
+  private List<Edge> vEdges;
+  private List<Face> vFaces;
+  private BitSet validSpheres, noFaceSpheres;
+  protected Vector3f vTemp = new Vector3f();
+  protected Point4f plane = new Point4f();
+
+  protected Point3f ptTemp2 = new Point3f();
+  private Point3f ptS1 = new Point3f();
+  private Point3f ptS2 = new Point3f();
+  protected Vector3f vTemp2 = new Vector3f();
+  private Vector3f vTemp3 = new Vector3f();
+  private float dPX;
+  final protected Point3f p = new Point3f();
+  private float maxRadius;
 
   @Override
   protected void setup() {
@@ -137,6 +189,191 @@ class IsoSolventReader extends AtomDataReader {
   }
 
   //////////// meshData extensions ////////////
+
+  @Override
+  protected void generateCube() {
+    // This is the starting point for the calculation.
+    volumeData.getYzCount();
+    volumeData.voxelData = voxelData = new float[nPointsX][nPointsY][nPointsZ];
+    if (isCavity && params.theProperty != null)
+      return;
+    Logger.startTimer();
+    getMaxRadius();
+    resetVoxelData(Float.MAX_VALUE);
+    if (isCavity && dataType != Parameters.SURFACE_NOMAP
+        && dataType != Parameters.SURFACE_PROPERTY) {
+      markSphereVoxels(cavityRadius, params.distance);
+      generateSolventCavity();
+      resetVoxelData(Float.MAX_VALUE);
+      markSphereVoxels(0, Float.NaN);
+    } else {
+      generateSolventCube();
+    }
+    unsetVoxelData();
+    if (params.cappingObject instanceof Point4f) {
+      volumeData.capData((Point4f) params.cappingObject, params.cutoff);
+      params.cappingObject = null;
+    }
+    Logger.checkTimer("solvent surface time");
+  }
+
+  private boolean isSurfacePoint;
+  private static boolean testLinear = false;
+
+  /**
+   * 
+   * TEST: alternative EXACT position of fraction for spherical MarchingCubes
+   * FOR: ttest.xyz:
+  2
+  isosurface molecular test showing discontinuities
+  C -2.70 0 0
+  C 2.75 0 0 
+   *
+   * RESULT:
+   * 
+   *  LINEAR (points slightly within R):
+
+  $ isosurface resolution 5 volume area solvent 1.5 full
+  isosurface1 created with cutoff=0.0; number of isosurfaces = 1
+  isosurfaceArea = [75.06620391572324]
+  isosurfaceVolume = [41.639681683494324]
+
+   *  NONLINEAR:
+
+  $ isosurface resolution 5 volume area solvent 1.5 full
+  isosurface1 created with cutoff=0.0; number of isosurfaces = 1
+  isosurfaceArea = [75.11873783245028]
+  isosurfaceVolume = [41.727027252180655]
+
+   * MSMS:
+
+  msms -if ttest.xyzrn -of ttest -density 5
+
+  MSMS 2.6.1 started on Local PC
+  Copyright M.F. Sanner (1994)
+  Compilation flags
+  INPUT  ttest.xyzrn 2 spheres 0 collision only, radii  1.700 to  1.700
+  PARAM  Probe_radius  1.500 density  5.000 hdensity  3.000
+    Couldn't find first face trying -all option
+  ANALYTICAL SURFACE AREA :
+    Comp. probe_radius,   reent,    toric,   contact    SES       SAS
+      0       1.500       0.000     8.144    67.243    75.387   238.258
+  NUMERICAL VOLUMES AND AREA
+    Comp. probe_radius SES_volume SES_area)
+       0      1.50       40.497     74.132
+    Total ses_volume:    40.497
+  MSMS terminated normally
+
+   * CONCLUSION: 
+   * 
+   * -- surfaces are essentially identical
+   * -- nonlinear is slightly closer to analytical area (75.387), as expected
+   * -- both are better than MSMS triangulation for same "resolution":
+   *    prog  parameters        %Error
+   *    MSMS  -density 5         1.66% (1412 faces)
+   *    MSMS  -density 20        0.36% (2968 faces) 
+   *    JMOL LINEAR resol 5      0.42% (2720 faces) 
+   *    JMOL NONLINEAR resol 5   0.32% (2720 faces)
+   * -- Marching Cubes is slightly improved using nonlinear calc.  
+   * 
+   * @param cutoff
+   * @param isCutoffAbsolute
+   * @param valueA
+   * @param valueB
+   * @param pointA
+   * @param edgeVector
+   * @param vA
+   * @param vB
+   * @param fReturn
+   * @param ptReturn
+   * @return          fractional distance from A to B
+   */
+  @Override
+  protected float getSurfacePointAndFraction(float cutoff,
+                                             boolean isCutoffAbsolute,
+                                             float valueA, float valueB,
+                                             Point3f pointA,
+                                             Vector3f edgeVector, int x, int y,
+                                             int z, int vA0, int vB0,
+                                             float[] fReturn, Point3f ptReturn) {
+
+    // nonlinear Marching Cubes -- hansonr@stolaf.edu 12/31/2010
+
+    // Generates exact position of circular arc based on two distances.
+    // Only slightly different from linear Marching Cubes.
+    // Uses a stored radius (-r for solvent radius; +r for atom)
+    // associated with each voxel point. The algorithm then does
+    // an exact positioning of the fractional distance based on cosine law:
+    // 
+    // dAS^2 + dAB^2 + 2(dAS)(dAB)cos(theta) = dBS^2
+    // dAS^2 + dAX^2 + 2(dAS)(dAX)cos(theta) = dXS^2
+    //
+    //            B
+    //           /|
+    //          / |
+    //         /  |
+    //        S---X
+    //         \  |
+    //          \theta
+    //           \|
+    //            A
+    //
+    // So from this we can derive dAX, and thus f = dAX/dAB
+    //
+    // I don't know of any published report of doing this.
+    //
+    // Bob Hanson, 12/31/2010
+
+    int vA = marchingCubes.getLinearOffset(x, y, z, vA0);
+    int vB = marchingCubes.getLinearOffset(x, y, z, vB0);
+    isSurfacePoint = (bsSurfaceVoxels != null && (bsSurfaceVoxels.get(vA) || bsSurfaceVoxels
+        .get(vB)));
+    
+    if (testLinear || voxelRadii == null || voxelRadii[vA] == 0
+        || voxelRadii[vA] != voxelRadii[vB])
+      return super.getSurfacePointAndFraction(cutoff, isCutoffAbsolute, valueA,
+          valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn);
+    float d = edgeVector.length();
+    double r = voxelRadii[vA];
+    double ra = Math.abs(r + valueA) / d;
+    double rb = Math.abs(r + valueB) / d;
+    double ra2 = ra * ra;
+    double q = ra2 - rb * rb + 1;
+    r /= d;
+    double p = 4 * (r * r - ra2);
+    double factor = (ra < rb ? 1 : -1);
+    float diff = valueB - valueA;
+
+    float fraction = (float) (((q) + factor * Math.sqrt(q * q + p)) / 2);
+    if (fraction < 0 || fraction > 1) {
+      Logger.error("problem with unusual fraction=" + fraction + " cutoff="
+          + cutoff + " A:" + valueA + " B:" + valueB);
+      fraction = Float.NaN;
+    }
+    fReturn[0] = fraction;
+    ptReturn.scaleAdd(fraction, edgeVector, pointA);
+    /*
+    //for testing -- linear with ttest.xyz: 
+    // float fractionLinear = (cutoff - valueA) / diff;
+      sg.log(x + "\t" + y + "\t" + z + "\t" 
+        + volumeData.getPointIndex(x, y, z) + "\t" 
+        + vA + "\t" + vB + "\t" 
+        + valueA + "\t" + valueB + "\t" 
+        + fractionLinear + "\t" + fraction + "\td=" + ptReturn.distance(new Point3f(2.75f, 0, 0)));
+    */
+    return valueA + fraction * diff;
+  }
+
+  @Override
+  public int addVertexCopy(Point3f vertexXYZ, float value, int assocVertex) {
+    // Boolean isSurfacePoint has been set in getSurfacePointAndFraction.
+    // We use it to identify all points derived from (a) all +F and (b)
+    // all -S voxels for atoms that are not related to a face. 
+    int i = super.addVertexCopy(vertexXYZ, value, assocVertex);
+    if (isSurfacePoint && i >= 0)
+      bsSurfacePoints.set(i);
+    return i;
+  }
 
   @Override
   public void selectPocket(boolean doExclude) {
@@ -182,85 +419,26 @@ class IsoSolventReader extends AtomDataReader {
     meshData = new MeshData();
   }
 
-  /////////////// calculation methods //////////////
-
-  @Override
-  protected void generateCube() {
-    /*
-     * 
-     * Jmol cavity rendering. Tim Driscoll suggested "filling a 
-     * protein with foam. Here you go...
-     * 
-     * 1) Use a dot-surface extended x.xx Angstroms to define the 
-     *    outer envelope of the protein.
-     * 2) Identify all voxel points outside the protein surface (v > 0) 
-     *    but inside the envelope (nearest distance to a dot > x.xx).
-     * 3) First pass -- create the protein surface.
-     * 4) Replace solvent atom set with "foam" ball of the right radius
-     *    at the voxel vertex points.
-     * 5) Run through a second time using these "atoms" to generate 
-     *    the surface around the foam spheres. 
-     *    
-     *    Bob Hanson 3/19/07
-     * 
-     */
-
-    volumeData.voxelData = voxelData = new float[nPointsX][nPointsY][nPointsZ];
-    if (isCavity && params.theProperty != null) {
-        /*
-         * couldn't get this to work -- we only have half of the points
-         for (int x = 0, i = 0, ipt = 0; x < nPointsX; ++x)
-         for (int y = 0; y < nPointsY; ++y)
-         for (int z = 0; z < nPointsZ; ++z)
-       voxelData[x][y][z] = (
-       bs.get(i++) ? 
-       surface_data[ipt++] 
-       : Float.NaN);
-       mappedDataMin = 0;
-       mappedDataMax = 0;
-       for (int i = 0; i < nAtoms; i++)
-       if (surface_data[i] > mappedDataMax)
-       mappedDataMax = surface_data[i];      
-       */
-      return;
-    }
-    if (isCavity && dataType != Parameters.SURFACE_NOMAP
-        && dataType != Parameters.SURFACE_PROPERTY) {
-      generateSolventCube(true);
-      generateSolventCavity();
-      generateSolventCube(false);
-    } else if (params.doFullMolecular) {
-      generateSolventCubeMsMs();
-    } else {
-      generateSolventCube(true);
-    }
-    if (params.cappingObject instanceof Point4f) { // had a check for mapping here, turning this off
-      //Logger.info("capping isosurface using " + params.cappingPlane);
-      volumeData.capData((Point4f) params.cappingObject, params.cutoff);
-      params.cappingObject = null;
-    }
-  }
-  
   @Override
   protected void postProcessVertices() {
-    if (isMsMs) {
-      // creates two surfaces, one inside, one outside --
-      // the inside one will have negative volume. 
-      // TODO -- note that this removes any cavity as well, 
-      // and in principal will leave a cavity's inside cavity.
-      if (meshDataServer == null)
-        return; //can't do this without help!
-      meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
-      double[] volumes = (double[]) meshData.calculateVolumeOrArea(Integer.MIN_VALUE, false, true);
-      int nSets = meshData.nSets;
-      for (int i = 0; i < nSets; i++)
-        if (volumes[i] < 0)
+    // Here we identify the actual surface set and cull out the other fragments
+    // created when the toroidal surfaces are split by faces.
+    if (doCalculateTroughs && bsSurfacePoints != null) {
+      if (meshDataServer != null)
+        meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
+      BitSet[] bsSurfaces = meshData.getSurfaceSet();
+      for (int i = 0; i < meshData.nSets; i++)
+        if (!bsSurfaces[i].intersects(bsSurfacePoints))
           meshData.invalidateSurfaceSet(i);
       updateSurfaceData();
-      meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS, null);
-      meshData = new MeshData();
+      if (meshDataServer != null) {
+        meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS, null);
+        meshData = new MeshData();
+      }
     }
   }
+
+  /////////////// calculation methods //////////////
 
   private void generateSolventCavity() {
     //we have a ring of dots around the model.
@@ -271,32 +449,6 @@ class IsoSolventReader extends AtomDataReader {
     int i = 0;
     int nDots = meshData.dots.length;
     int n = 0;
-    //surface_data = new float[1000];
-
-    // for (int j = 0; j < nDots; j++) {
-    //   System.out.println("draw pt"+j+" {"+meshData.dots[j].x + " " +meshData.dots[j].y + " " +meshData.dots[j].z + "} " );
-    // }
-    /*
-     Point3f pt = new Point3f(15.3375f, 1.0224999f, 5.1125f);
-     for (int x = 0; x < nPointsX; ++x)
-     for (int y = 0; y < nPointsY; ++y) {
-     out: for (int z = 0; z < nPointsZ; ++z, ++i) {
-     float d = voxelData[x][y][z]; 
-     volumeData.voxelPtToXYZ(x, y, z, ptXyzTemp);
-     if (d < Float.MAX_VALUE && d >= cavityRadius)
-     if (ptXyzTemp.distance(pt) < 3f)
-     System.out.println("draw pt"+(n++)+" {"+ptXyzTemp.x + " " +ptXyzTemp.y + " " +ptXyzTemp.z + "} # " +x + " " + y + " " + z + " " + voxelData[x][y][z]);
-     if (false && d < Float.MAX_VALUE &&
-     d >= cavityRadius) {
-     volumeData.voxelPtToXYZ(x, y, z, ptXyzTemp);
-     if (ptXyzTemp.x > 0 && ptXyzTemp.y > 0 && ptXyzTemp.z > 0)
-     System.out.println("draw pt"+(n++)+" {"+ptXyzTemp.x + " " +ptXyzTemp.y + " " +ptXyzTemp.z + "} " );
-     }
-     }
-     }
-     n = 0;
-     i = 0;
-     */
     float d;
     float r2 = envelopeRadius;// - cavityRadius;
 
@@ -326,98 +478,80 @@ class IsoSolventReader extends AtomDataReader {
     myAtomCount = firstNearbyAtom = n;
   }
 
-  final Point3f ptXyzTemp = new Point3f();
-  private AtomIndexIterator iter;
-  private boolean isMsMs;
-  
-  void generateSolventCubeMsMs() {
-    isMsMs = true;
-    volumeData.getYzCount();
-    voxelRadii = new float[volumeData.nPoints];  
-    resetVoxelData(Float.MAX_VALUE);
+  private void generateSolventCube() {
+    voxelRadii = new float[volumeData.nPoints];
     if (dataType == Parameters.SURFACE_NOMAP)
       return;
-    iter = atomDataServer.getSelectedAtomIterator(bsMySelected, true, false); // was TRUE TRUE
-    Logger.startTimer();
-    
-    // PHASE I: Construction of the surface edge and face data
-    
-    // 1) -- same as MSMS -- get edges
-    getReducedEdges();
-    
-    // 2) -- as in MSMS BUT get two faces for each atom triple
-    getReducedFaces();
-    
-    // 3) -- check for interference of solvent position with other atoms
-    validateFaces();
+    bsSurfaceDone = new BitSet();
+    bsSurfaceVoxels = new BitSet();
+    bsSurfacePoints = new BitSet();
 
-    // PHASE II: Creating the voxel grid
-    
-    //                     /
-    //  (inside) .... (-) 0  (+) .... (outside)
-    //                     \
-    // Note that for steps (4) and (5) we only pull surfaces UP, not down.
-    // That is, if a voxel is hit twice, its value is checked, and it
-    // is only updated if the new value is less than the old one. 
+    if (doCalculateTroughs) {
 
-    // 4) -- First pass is to mark "-F" voxels (just under the surface).
-    BitSet bsIgnore = markFaceVoxels(null);
-    
-    // 5) -- Second pass is to mark -T and +T voxels that fall within 
-    //       the specific toroidal slice, but actually we mark ALL
-    //       of them; it turns out not necessary to worry about 
-    //       whether a face take priority or whether the toroidal
-    //       region is inward directed or not. This was a big surprise!
-    markToroidVoxels();
-    
-    vEdges = null;  // all done with the edge list
+      // solvent excluded surfaces only
+      
+      iter = atomDataServer.getSelectedAtomIterator(bsMySelected, true, false);
 
-    // 6) -- Third pass is to mark "+F" voxels (just above the surface)
-    //       This takes care of all singularities because we do NOT
-    //       check the voxel's former value; we KNOW these are exposed 
-    //       regions -- they have to be, or else this isn't a valid face.
-    markFaceVoxels(bsIgnore);
-    
-    markSphereVoxels();
+      // PHASE I: Construction of the surface edge and face data
 
-    vFaces = null;  // all done with face list
-    
-    // 7) -- Now, finally, we are ready to mark the spherical regions.
-    iter.release();
-    iter = null;
-    unsetVoxelData();
-    Logger.checkTimer("solvent surface time");
-  }
+      // 1) -- same as MSMS -- get edges
+      getEdges();
 
-  private void setVoxel(int i, int j, int k, float value) {
-    if (new Point3f(-0.9061594f, 0.2512498f, 0.91538477f).distance(ptXyzTemp) < 0.1) {
-      dumpPoint(ptXyzTemp, "pt");
-      System.out.println("value="  + value);
+      // 2) -- as in MSMS BUT get two faces for each atom triple
+      getFaces();
+
+      // 3) -- check for interference of solvent position with other atoms
+      validateFaces();
+
+      iter.release();
+      iter = null;
+
+      // PHASE II: Creating the voxel grid
+
+      //                     /
+      //  (inside) .... (-) 0  (+) .... (outside)
+      //                     \
+      //
+      // We also identify "must have" voxels (+F and -S) in this phase.
+
+      // 1) -- First pass is to mark "+F" face voxels (just above the surface).
+      //       This takes care of all singularities; we KNOW these are exposed 
+      //       regions -- they have to be, or else this isn't a valid face.
+      markFaceVoxels(true);
+
+      // 2) -- Second pass is to mark -T and +T voxels that fall within 
+      //       the specific toroidal range. It is not necessary to 
+      //       worry about whether a face take priority or whether 
+      //       the toroidal region is inward directed or not. This is
+      //       because the faces will snip off interior segments, and 
+      //       they will be discarded in post-processing of the surface
+      //       fragment sets.
+      markToroidVoxels();
+      vEdges = null;
+
+      // 3) -- Third pass is to mark "-F" voxels (just below the surface)
+      markFaceVoxels(false);
+      vFaces = null;
     }
-    //sg.log("set voxel " + i + " " + j + " " + k + " " + volumeData.getPointIndex(i, j, k) + " " + value);
-    voxelData[i][j][k] = value;
+    
+    // 4) -- Final pass for SES and SAS is to mark "-S" (within atom sphere)
+    //       and "+S" (just outside the sphere) voxels
+    markSphereVoxels(0, doCalculateTroughs ? Float.MAX_VALUE : params.distance);
   }
 
-  private BitSet[] bsLocale;
-  private List<Edge> vEdges;
-
-  protected int nTest;
-
-  private void getReducedEdges() {
+  private void getEdges() {
     /*
-     * Collect a BitSet for each atom indicating all 
+     * Collect a bit set for each atom indicating all 
      * other atoms within r1 + 2*solvent_radius + r2
      * 
      */
-    int atomCount = myAtomCount;
-    bsLocale = new BitSet[atomCount];
+    bsLocale = new BitSet[myAtomCount];
     htEdges = new Hashtable<String, Edge>();
     vEdges = new ArrayList<Edge>();
-    for (int iatomA = 0; iatomA < atomCount; iatomA++)
+    for (int iatomA = 0; iatomA < myAtomCount; iatomA++)
       bsLocale[iatomA] = new BitSet();
-    getMaxRadius();
     float dist2 = solventRadius + maxRadius;
-    for (int iatomA = 0; iatomA < atomCount; iatomA++) {
+    for (int iatomA = 0; iatomA < myAtomCount; iatomA++) {
       Point3f ptA = atomXyz[iatomA];
       float rA = atomRadius[iatomA] + solventRadius;
       atomDataServer.setIteratorForAtom(iter, atomIndex[iatomA], rA + dist2);
@@ -436,47 +570,36 @@ class IsoSolventReader extends AtomDataReader {
         htEdges.put(edge.toString(), edge);
       }
     }
-    Logger.info(vEdges.size() + " reduced edges");
+    Logger.info(vEdges.size() + "  edges");
   }
 
   private class Edge {
     int ia, ib;
-    //List<Face>edgeFaces = new ArrayList<Face>();
     int nFaces;
     int nInvalid;
-    //boolean isSingular;
-    //Point3f ptP;
 
     Edge(int ia, int ib) {
       this.ia = Math.min(ia, ib);
       this.ib = Math.max(ia, ib);
     }
 
-    /**
-     * @param f  
-     */
     void addFace(Face f) {
-      //edgeFaces.add(f);
-      nFaces++;
+      if (f == null)
+        nInvalid++;
+      else
+        nFaces++;
     }
 
     int getType() {
       return (nFaces > 0 ? nFaces : nInvalid > 0 ? -nInvalid : 0);
     }
 
-    //void setPointP() {
-    //  dPS = getPointP(ia, ib);
-      //pPlane = plane;
-    //  ptP = new Point3f(p);
-    //  isSingular = (dPS < solventRadius);
-    //}
-
     /*
-    void dump() {
-      System.out.println("draw e" + (nTest) + " @{point"
-          + new Point3f(atomXyz[ia]) + "} @{point" + new Point3f(atomXyz[ib])
-          + "} color green # " + getType());
-    }
+        void dump() {
+          System.out.println("draw e" + (nTest++) + " @{point"
+              + new Point3f(atomXyz[ia]) + "} @{point" + new Point3f(atomXyz[ib])
+              + "} color green # " + getType());
+        }
     */
 
     @Override
@@ -486,14 +609,19 @@ class IsoSolventReader extends AtomDataReader {
 
   }
 
+  private Map<String, Edge> htEdges;
+
+  protected Edge findEdge(int i, int j) {
+    return htEdges.get(i < j ? i + "_" + j : j + "_" + i);
+  }
+
   private class Face {
     int ia, ib, ic;
     boolean isValid;
     boolean isSingular;
     Point3f pS; // solvent position
     Edge[] edges = new Edge[3];
-    public float sortAngle;
-    
+
     Face(int ia, int ib, int ic, Edge edgeAB, Point3f pS, boolean isSingular) {
       this.ia = ia;
       this.ib = ib;
@@ -504,55 +632,32 @@ class IsoSolventReader extends AtomDataReader {
     }
 
     void setEdges() {
-      if (edges[1] != null)
-        return;
-      edges[1] = findEdge(ib, ic);
-      edges[2] = findEdge(ic, ia);
+      if (edges[1] == null) {
+        edges[1] = findEdge(ib, ic);
+        edges[2] = findEdge(ic, ia);
+      }
+      Face f = (isValid ? this : null);
+      for (int k = 0; k < 3; k++)
+        edges[k].addFace(f);
     }
-
-    
-    @SuppressWarnings("unused")
-    public void dump() {
-      setEdges();
-      System.out.println("draw fp" + (nTest++) + " @{point"
-          + new Point3f(atomXyz[ia]) + "}" + " @{point"
-          + new Point3f(atomXyz[ib]) + "}" + " @{point"
-          + new Point3f(atomXyz[ic]) + "}" + "# " + ia + " " + ib + " " + ic
-          + " " + edges[0] + " " + edges[1] + " " + edges[2] + " " + pS + " " + atomXyz[ia] + " " + atomXyz[ib] + " "  + atomXyz[ic]);
-      if (isValid)
-        System.out.println("draw pp" + (++nTest) + " width 3.0 @{point" + pS
-            + "};");
-    }
-    
-/*
-    int otherPoint(int i, int j) {
-      return (i == ia ? (j == ib ? ic : ib) 
-          : i == ib ? (j == ia ? ic : ia)
-          : j == ia ? ib : ia);
-    }
-*/
   }
 
-  List<Face> vFaces;
-  Map<String, Edge> htEdges;
-  BitSet validSpheres;
-
-  private void getReducedFaces() {
+  private void getFaces() {
     /*
-     * 2a) All possible faces are simply derived from ANDing 
-     *     the BitSets of all pairs of atoms. Then a quick
+     * a) All possible faces are simply derived from ANDing 
+     *     the bit sets of all pairs of atoms. Then a quick
      *     calculation of the solvent position determines if they
      *     are really in position or not.
-     * 2b) Trick is to make TWO faces -- one for each direction.
+     * b) Trick is to make TWO faces -- one for each direction.
      *     Unlike MSMS, we do not have any need for determining
-     *     "THE" reduced face set. It's not necessary when you
+     *     "THE" face set. It's just not necessary when you
      *     use Marching Cubes. 
      *      
      */
     BitSet bs = new BitSet();
     vFaces = new ArrayList<Face>();
     validSpheres = new BitSet();
-    nTest = 0;
+    noFaceSpheres = BitSetUtil.setAll(myAtomCount);
     for (int i = vEdges.size(); --i >= 0;) {
       Edge edge = vEdges.get(i);
       int ia = edge.ia;
@@ -562,6 +667,9 @@ class IsoSolventReader extends AtomDataReader {
       bs.and(bsLocale[ib]);
       for (int ic = bs.nextSetBit(ib + 1); ic >= 0; ic = bs.nextSetBit(ic + 1)) {
         if (getSolventPoints(ia, ib, ic)) {
+          noFaceSpheres.clear(ia);
+          noFaceSpheres.clear(ib);
+          noFaceSpheres.clear(ic);
           //dumpLine(ptS1, dPX, "px", (dPX < solventRadius ? "red" : "blue"));
           boolean isSingular = (ptS1.distance(ptS2) < 2 * solventRadius);
           vFaces.add(new Face(ia, ib, ic, edge, ptS1, isSingular));
@@ -569,16 +677,9 @@ class IsoSolventReader extends AtomDataReader {
         }
       }
     }
-    Logger.info(vFaces.size() + " reduced (double-sided) faces");
+    Logger.info(vFaces.size() + "  (double-sided) faces");
   }
 
-  protected Edge findEdge(int i, int j) {
-    return htEdges.get(i < j ? i + "_" + j : j + "_" + i);
-  }
-
-  private float dPX;
-  protected double dPS;
-  
   private boolean getSolventPoints(int ia, int ib, int ic) {
     /*
      * 
@@ -603,10 +704,7 @@ class IsoSolventReader extends AtomDataReader {
      * 
      */
 
-    dPS = getPointP(ia, ib);
-
-    //    * 2) project C onto plane as ptT
-
+    double dPS = getPointP(ia, ib);
     Point3f ptC = atomXyz[ic];
     float rCS = atomRadius[ic] + solventRadius;
     float dCT = Measure.distanceToPlane(plane, ptC);
@@ -617,12 +715,8 @@ class IsoSolventReader extends AtomDataReader {
     double dpT = p.distance(ptTemp);
     float dsp2 = (float) (dPS * dPS);
     double cosTheta = (dsp2 + dpT * dpT - dST * dST) / (2 * dPS * dpT);
-    //    * 3) calculate two possible pS1 and pS2 in this plane
-
-    if (Math.abs(cosTheta) >= 1) {
+    if (Math.abs(cosTheta) >= 1)
       return false;
-    }
-
     Vector3f vXS = vTemp2;
     vXS.set(ptTemp);
     vXS.sub(p);
@@ -670,76 +764,65 @@ class IsoSolventReader extends AtomDataReader {
       }
       f.setEdges();
       if (f.isValid) {
+        n++;
         if (f.isSingular)
           nSingular++;
-        n++;
         for (int k = 0; k < 3; k++) {
-          f.edges[k].addFace(f);
           validSpheres.set(f.edges[k].ia);
           validSpheres.set(f.edges[k].ib);
-          //f.edges[k].setPointP();            
         }
-      } else {
-        for (int k = 0; k < 3; k++)
-          f.edges[k].nInvalid++;
       }
     }
-    Logger.info(n + " validated reduced faces; " + nSingular + " singular");
+    Logger.info(n + " validated faces; " + nSingular + " singular");
+    /*
     int[] nFaces = new int[11];
     for (int ei = vEdges.size(); --ei >= 0;) {
       int type = vEdges.get(ei).getType();
       if (type < 10)
         nFaces[type < 0 ? 0 : type + 1]++;
     }
-    //for (int i = 0; i < 10; i++)
-    //  System.out.print((i-1) + ": " + nFaces[i] + "\t");
-    //System.out.println("edge types");
+    */
   }
 
-  private Point3f ptY0 = new Point3f();
-  private Point3f ptZ0 = new Point3f();
-  private Point3i pt0 = new Point3i();
-  private Point3i pt1 = new Point3i();
-  
-  private BitSet markFaceVoxels(BitSet bsIgnore) {
-   /*
-    * We mark voxels for faces in two passes. In general,
-    * we only mark voxels within the trigonal cone formed by the planes
-    * ASB, BSC, and CSA (not just within the tetrahedron ABCS).
-    * 
-    * Pass 1:
-    * 
-    * In the first pass we are marking outside (+) voxels. The rules are:
-    *   (a) If the voxel is overwriting one marked as part of a torus, 
-    *       or if it has not been marked yet, then more (-), less (+) is better.
-    *   (b) If the voxel is being re-written for this pass, (i.e. in bsDone),
-    *       less (-), more (+) is better.
-    *   
-    * We also take this opportunity to create a bitset for all (+) values,
-    * because in the second pass we 
-    *    
-    * Pass 2:
-    * 
-    * In the second pass we are marking inside (-) voxels. The rules are:
-    * 
-    */
-    boolean secondPass = (bsIgnore != null);
-    if (bsIgnore == null)
-      bsIgnore = new BitSet();
+  private final Point3f ptY0 = new Point3f();
+  private final Point3f ptZ0 = new Point3f();
+  private final Point3i pt0 = new Point3i();
+  private final Point3i pt1 = new Point3i();
+
+  private void markFaceVoxels(boolean firstPass) {
+    /*
+     * We mark voxels for faces in two passes. In general,
+     * we only mark voxels within the trigonal cone formed by the planes
+     * ASB, BSC, and CSA (not just within the tetrahedron ABCS).
+     * 
+     * Pass 1:
+     * 
+     * In the first pass we are marking outside (+) voxels. The rules are:
+     *   (a) If the voxel is overwriting one marked as part of a torus, 
+     *       or if it has not been marked yet, then more (-), less (+) is better.
+     *   (b) If the voxel is being re-written for this pass, (i.e. in bsDone),
+     *       less (-), more (+) is better.
+     *   
+     * We also take this opportunity to create a bitset for all (+) values,
+     * because we need those for identifying the TRUE surface
+     *    
+     * Pass 2:
+     * 
+     * In the second pass we are marking inside (-) voxels. The rules are:
+     * 
+     */
     BitSet bsThisPass = new BitSet();
     for (int fi = vFaces.size(); --fi >= 0;) {
       Face f = vFaces.get(fi);
       if (!f.isValid)
         continue;
-      //if (fi < 100)
-        //continue;
       setGridLimitsForAtom(f.pS, solventRadius, pt0, pt1);
       volumeData.voxelPtToXYZ(pt0.x, pt0.y, pt0.z, ptXyzTemp);
       Point3f ptA = atomXyz[f.ia];
       Point3f ptB = atomXyz[f.ib];
       Point3f ptC = atomXyz[f.ic];
       Point3f ptS = f.pS;
-      if (Logger.debugging || fi == 100) {
+      if (Logger.debugging) {// || ptS.distance(new Point3f(14.460576f,13.85372f,2.8394585f/*11.366916f, 12.948542f, 5.944768f*/)) < 3.0 && fi == 78466) {
         String color = (f.isSingular ? "red" : "green");
         dumpLine(ptA, ptB, "f", color);
         dumpLine(ptB, ptC, "f", color);
@@ -752,9 +835,11 @@ class IsoSolventReader extends AtomDataReader {
       // voxels that have already been over-written by another face.
       // If they have, we go for the more positive one (further out);
       // if not, then we go for the less positive one (further in);
-      for (int i = pt0.x; i < pt1.x; i++) {
+      for (int i = pt0.x; i < pt1.x; i++, ptXyzTemp.scaleAdd(1,
+          volumetricVectors[0], ptY0)) {
         ptY0.set(ptXyzTemp);
-        for (int j = pt0.y; j < pt1.y; j++) {
+        for (int j = pt0.y; j < pt1.y; j++, ptXyzTemp.scaleAdd(1,
+            volumetricVectors[1], ptZ0)) {
           ptZ0.set(ptXyzTemp);
           for (int k = pt0.z; k < pt1.z; k++, ptXyzTemp
               .add(volumetricVectors[2])) {
@@ -763,174 +848,115 @@ class IsoSolventReader extends AtomDataReader {
             float value = solventRadius - ptXyzTemp.distance(ptS);
             float v = voxelData[i][j][k];
             int ipt = volumeData.getPointIndex(i, j, k);
-            if (!secondPass && value > 0)
-              bsIgnore.set(ipt);
+            if (firstPass && value > 0)
+              bsSurfaceDone.set(ipt);
             if (Measure.isInTetrahedron(ptXyzTemp, ptA, ptB, ptC, ptS, plane,
-                vTemp, vTemp2, vTemp3, !secondPass)) {
-              if (secondPass ? !bsIgnore.get(ipt) && value < 0 && value > -volumeData.maxGrid * 1.5f && (value > v) == bsThisPass.get(ipt) 
-                  : (value > 0 && (v < 0 || v == Float.MAX_VALUE || 
-                      (value > v) == bsThisPass.get(ipt)))) {
+                vTemp, vTemp2, vTemp3, false)) {
+              if (!firstPass ? !bsSurfaceDone.get(ipt) && value < 0
+                  && value > -volumeData.maxGrid * 1.8f
+                  && (value > v) == bsThisPass.get(ipt)
+                  : (value > 0 && (v < 0 || v == Float.MAX_VALUE || (value > v) == bsThisPass
+                      .get(ipt)))) {
                 bsThisPass.set(ipt);
                 setVoxel(i, j, k, value);
                 voxelRadii[ipt] = -solventRadius;
+                if (value > 0) {
+                  bsSurfaceVoxels.set(ipt);
+                }
               }
             }
           }
-          ptXyzTemp.set(ptZ0);
-          ptXyzTemp.add(volumetricVectors[1]);
         }
-        ptXyzTemp.set(ptY0);
-        ptXyzTemp.add(volumetricVectors[0]);
       }
     }
-    return bsIgnore;
   }
 
-  //private static Point3f ptRef = new Point3f((float) Math.PI, (float) Math.E, (float) Math.tan(Math.E));
+  private void setVoxel(int i, int j, int k, float value) {
+    voxelData[i][j][k] = value;
+  }
 
   private void markToroidVoxels() {
     Point3i ptA0 = new Point3i();
     Point3i ptB0 = new Point3i();
     Point3i ptA1 = new Point3i();
     Point3i ptB1 = new Point3i();
-    //Vector3f vAB = new Vector3f();
+
     for (int ei = vEdges.size(); --ei >= 0;) {
       Edge edge = vEdges.get(ei);
       if (edge.getType() < 0)
         continue;
-      //edge.setPointP();
-      //vAB.set(vTemp);
-      //vAB.normalize();
       int ia = edge.ia;
       int ib = edge.ib;
-      if (edge.getType() == 0) {
-        validSpheres.set(ia);
-        validSpheres.set(ib);
-      }
       Point3f ptA = atomXyz[ia];
       Point3f ptB = atomXyz[ib];
       float rAS = atomRadius[ia] + solventRadius;
       float rBS = atomRadius[ib] + solventRadius;
       float dAB = ptB.distance(ptA);
-      /*
-      int f0 = 0;
-      if (edge.nFaces > 0) {
-        for (int fi = edge.nFaces; --fi >= 0;) {
-          Face f = edge.faces[fi];
-          Point3f ptC = atomXyz[f.otherPoint(ia, ib)];
-          f.sortAngle = Measure.computeTorsion(ptC, ptA, ptB, edge.faces[fi].pS, true);
-          f.edgeReversed = f.sortAngle < 0;//!edge.faces[fi].isEdgeInOrder(ia, ib);
-          f.sortAngle += Measure.computeTorsion(ptC, ptA, ptB, ptRef, true);
-        }
-        Arrays.sort(edge.faces, new angleSort());
-        if (edge.faces[0].edgeReversed) {
-          f0 = 1;
-          edge.faces[edge.nFaces] = edge.faces[0];
-          edge.faces[0].sortAngle += 360;
-        }
-      }
-      */
+
       setGridLimitsForAtom(ptA, atomRadius[ia] + solventRadius, ptA0, ptA1);
       setGridLimitsForAtom(ptB, atomRadius[ib] + solventRadius, ptB0, ptB1);
       mergeLimits(ptA0, ptB0, pt0, null);
       mergeLimits(ptA1, ptB1, null, pt1);
       volumeData.voxelPtToXYZ(pt0.x, pt0.y, pt0.z, ptXyzTemp);
-      for (int i = pt0.x; i < pt1.x; i++) {
+      for (int i = pt0.x; i < pt1.x; i++, ptXyzTemp.scaleAdd(1,
+          volumetricVectors[0], ptY0)) {
         ptY0.set(ptXyzTemp);
-        for (int j = pt0.y; j < pt1.y; j++) {
+        for (int j = pt0.y; j < pt1.y; j++, ptXyzTemp.scaleAdd(1,
+            volumetricVectors[1], ptZ0)) {
           ptZ0.set(ptXyzTemp);
           for (int k = pt0.z; k < pt1.z; k++, ptXyzTemp
               .add(volumetricVectors[2])) {
-            //16 4 8
-            //System.out.println("draw pb" + (nTest++) + " @{point"
-              //  + ptXyzTemp + "} \""+i + " " + j + " " + k +"\"");
             float dVS = checkSpecialVoxel(ptA, rAS, ptB, rBS, dAB, ptXyzTemp);
             if (Float.isNaN(dVS))
               continue;
             float value = solventRadius - dVS;
-            
-            /*
-            if (edge.nFaces > 0) {
-              float angle = Measure.computeTorsion(ptXyzTemp, ptA, ptB, ptRef,
-                  true);              
-              boolean isOK = false;
-              for (int fi = f0; fi < edge.nFaces + f0; fi += 2) {
-                if (true || angle > edge.faces[fi].sortAngle && angle < edge.faces[fi+1].sortAngle
-                    || angle + 360 > edge.faces[fi].sortAngle && angle + 360 < edge.faces[fi+1].sortAngle) {
-                  isOK = true;
-               //   if (nTest == 1320)
-                 //   System.out.println("hmm");
-                  if (false) {
-                  System.out.println("#" + ei + " " + fi + " a=" + angle + " a[fi]=" + edge.faces[fi].sortAngle + " a[fi++]=" + edge.faces[fi+1].sortAngle);
-                  System.out.println("#" + angle + " " + edge.faces[fi].sortAngle);
-                  edge.faces[fi].dump();
-                  edge.faces[fi+1].dump();
-                  edge.dump();
-                  dumpPoint(ptRef, "pb");
-                  dumpPoint(ptXyzTemp,"pt");
-                  dumpLine(ptA, edge.faces[fi].pS, "pas");
-                  dumpLine(ptB, edge.faces[fi].pS, "pbs");
-                  break;
-                }
-              }
-              if (!isOK)
-                continue;
-                //dVS = solventRadius + 0.1f;
-            }
-            */
             if (value < voxelData[i][j][k]) {
               setVoxel(i, j, k, value);
               int ipt = volumeData.getPointIndex(i, j, k);
               voxelRadii[ipt] = -solventRadius;
             }
           }
-
-          ptXyzTemp.set(ptZ0);
-          ptXyzTemp.add(volumetricVectors[1]);
         }
-        ptXyzTemp.set(ptY0);
-        ptXyzTemp.add(volumetricVectors[0]);
       }
     }
+    validSpheres.or(noFaceSpheres);
   }
 
-  protected class angleSort implements Comparator<Face> {
-
-    public int compare(Face f1, Face f2) {
-      return (f1 == null || f2 == null ? 0 : f1.sortAngle < f2.sortAngle ? -1 : f1.sortAngle > f2.sortAngle ? 1 : 0);
-    }    
-  }
-
-
-  private void markSphereVoxels() {
+  private void markSphereVoxels(float r0, float distance) {
+    boolean isWithin = (distance != Float.MAX_VALUE && point != null);
     for (int iAtom = 0; iAtom < myAtomCount; iAtom++) {
-      if (!havePlane && !validSpheres.get(iAtom))
+      if (!havePlane && validSpheres != null && !validSpheres.get(iAtom))
         continue;
+      boolean isSurface = (noFaceSpheres != null && noFaceSpheres.get(iAtom));
       boolean isNearby = (iAtom >= firstNearbyAtom);
       Point3f ptA = atomXyz[iAtom];
       float rA = atomRadius[iAtom];
-      setGridLimitsForAtom(ptA, rA, pt0, pt1);
+      if (isWithin && ptA.distance(point) > distance + rA + 0.5)
+        continue;
+      setGridLimitsForAtom(ptA, rA + r0, pt0, pt1);
       volumeData.voxelPtToXYZ(pt0.x, pt0.y, pt0.z, ptXyzTemp);
-      for (int i = pt0.x; i < pt1.x; i++) {
+      for (int i = pt0.x; i < pt1.x; i++, ptXyzTemp.scaleAdd(1,
+          volumetricVectors[0], ptY0)) {
         ptY0.set(ptXyzTemp);
-        for (int j = pt0.y; j < pt1.y; j++) {
+        for (int j = pt0.y; j < pt1.y; j++, ptXyzTemp.scaleAdd(1,
+            volumetricVectors[1], ptZ0)) {
           ptZ0.set(ptXyzTemp);
           for (int k = pt0.z; k < pt1.z; k++, ptXyzTemp
               .add(volumetricVectors[2])) {
-            float v = ptXyzTemp.distance(ptA) - rA;
-            if (v < voxelData[i][j][k]) {
-              setVoxel(i, j, k, (isNearby ? Float.NaN : v));
-              if (!isNearby) {
+            float value = ptXyzTemp.distance(ptA) - rA;
+            if (value < voxelData[i][j][k]) {
+              if (isNearby || isWithin && ptXyzTemp.distance(point) > distance)
+                value = Float.NaN;
+              setVoxel(i, j, k, value);
+              if (!Float.isNaN(value)) {
                 int ipt = volumeData.getPointIndex(i, j, k);
                 voxelRadii[ipt] = rA;
+                if (value < 0 && isSurface)
+                  bsSurfaceVoxels.set(ipt);
               }
             }
           }
-          ptXyzTemp.set(ptZ0);
-          ptXyzTemp.add(volumetricVectors[1]);
         }
-        ptXyzTemp.set(ptY0);
-        ptXyzTemp.add(volumetricVectors[0]);
       }
     }
   }
@@ -961,8 +987,6 @@ class IsoSolventReader extends AtomDataReader {
     }
   }
 
-  private float maxRadius;
-
   void getMaxRadius() {
     maxRadius = 0;
     for (int iAtom = 0; iAtom < myAtomCount; iAtom++) {
@@ -972,145 +996,17 @@ class IsoSolventReader extends AtomDataReader {
     }
   }
 
-  protected Vector3f vTemp = new Vector3f();
-  protected Point4f plane = new Point4f();
-
-  void generateSolventCube(boolean isFirstPass) {
-    float distance = params.distance;
-    float rA, rB;
-    Point3f ptA;
-    Point3f ptY0 = new Point3f(), ptZ0 = new Point3f();
-    Point3i pt0 = new Point3i(), pt1 = new Point3i();
-    float value = Float.MAX_VALUE;
-    if (Logger.debugging)
-      Logger.startTimer();
-    for (int x = 0; x < nPointsX; ++x)
-      for (int y = 0; y < nPointsY; ++y)
-        for (int z = 0; z < nPointsZ; ++z)
-          voxelData[x][y][z] = value;
-    if (dataType == Parameters.SURFACE_NOMAP)
-      return;
-    int atomCount = myAtomCount;
-    float maxRadius = 0;
-    float r0 = (isFirstPass && isCavity ? cavityRadius : 0);
-    boolean isWithin = (isFirstPass && distance != Float.MAX_VALUE && point != null);
-    AtomIndexIterator iter = (doCalculateTroughs ? 
-        atomDataServer.getSelectedAtomIterator(bsMySelected, true, false) : null);
-    for (int iAtom = 0; iAtom < atomCount; iAtom++) {
-      ptA = atomXyz[iAtom];
-      rA = atomRadius[iAtom];
-      if (rA > maxRadius)
-        maxRadius = rA;
-      if (isWithin && ptA.distance(point) > distance + rA + 0.5)
-        continue;
-      boolean isNearby = (iAtom >= firstNearbyAtom);
-      setGridLimitsForAtom(ptA, rA + r0, pt0, pt1);
-      volumeData.voxelPtToXYZ(pt0.x, pt0.y, pt0.z, ptXyzTemp);
-      for (int i = pt0.x; i < pt1.x; i++) {
-        ptY0.set(ptXyzTemp);
-        for (int j = pt0.y; j < pt1.y; j++) {
-          ptZ0.set(ptXyzTemp);
-          for (int k = pt0.z; k < pt1.z; k++) {
-            float v = ptXyzTemp.distance(ptA) - rA;
-            if (v < voxelData[i][j][k]) {
-              voxelData[i][j][k] = (isNearby || isWithin
-                  && ptXyzTemp.distance(point) > distance ? Float.NaN : v);
-            }
-            ptXyzTemp.add(volumetricVectors[2]);
-          }
-          ptXyzTemp.set(ptZ0);
-          ptXyzTemp.add(volumetricVectors[1]);
-        }
-        ptXyzTemp.set(ptY0);
-        ptXyzTemp.add(volumetricVectors[0]);
-      }
-    }
-    if (isCavity && isFirstPass)
-      return;
-    if (doCalculateTroughs) {
-      Point3i ptA0 = new Point3i();
-      Point3i ptB0 = new Point3i();
-      Point3i ptA1 = new Point3i();
-      Point3i ptB1 = new Point3i();
-      for (int iAtom = 0; iAtom < firstNearbyAtom - 1; iAtom++)
-        if (atomNo[iAtom] > 0) {
-          ptA = atomXyz[iAtom];
-          rA = atomRadius[iAtom] + solventRadius;
-          int iatomA = atomIndex[iAtom];
-          if (isWithin && ptA.distance(point) > distance + rA + 0.5)
-            continue;
-          setGridLimitsForAtom(ptA, rA - solventRadius, ptA0, ptA1);
-          atomDataServer.setIteratorForAtom(iter, iatomA, rA + solventRadius + maxRadius);
-          //true ==> only atom index > this atom accepted
-          while (iter.hasNext()) {
-            int iatomB = iter.next();
-            Point3f ptB = atomXyz[myIndex[iatomB]];
-            rB = atomData.atomRadius[iatomB] + solventRadius;
-            if (isWithin && ptB.distance(point) > distance + rB + 0.5)
-              continue;
-            if (params.thePlane != null
-                && Math.abs(volumeData.distancePointToPlane(ptB)) > 2 * rB)
-              continue;
-
-            float dAB = ptA.distance(ptB);
-            if (dAB >= rA + rB)
-              continue;
-            //defining pt0 and pt1 very crudely -- this could be refined
-            setGridLimitsForAtom(ptB, rB - solventRadius, ptB0, ptB1);
-            pt0.x = Math.min(ptA0.x, ptB0.x);
-            pt0.y = Math.min(ptA0.y, ptB0.y);
-            pt0.z = Math.min(ptA0.z, ptB0.z);
-            pt1.x = Math.max(ptA1.x, ptB1.x);
-            pt1.y = Math.max(ptA1.y, ptB1.y);
-            pt1.z = Math.max(ptA1.z, ptB1.z);
-            volumeData.voxelPtToXYZ(pt0.x, pt0.y, pt0.z, ptXyzTemp);
-            for (int i = pt0.x; i < pt1.x; i++) {
-              ptY0.set(ptXyzTemp);
-              for (int j = pt0.y; j < pt1.y; j++) {
-                ptZ0.set(ptXyzTemp);
-                for (int k = pt0.z; k < pt1.z; k++) {
-                  float dVS = checkSpecialVoxel(ptA, rA, ptB, rB, dAB,
-                      ptXyzTemp);
-                  if (!Float.isNaN(dVS)) {
-                    float v = solventRadius - dVS;
-                    if (v < voxelData[i][j][k]) {
-                      voxelData[i][j][k] = (isWithin
-                          && ptXyzTemp.distance(point) > distance ? Float.NaN
-                          : v);
-                    }
-                  }
-                  ptXyzTemp.add(volumetricVectors[2]);
-                }
-                ptXyzTemp.set(ptZ0);
-                ptXyzTemp.add(volumetricVectors[1]);
-              }
-              ptXyzTemp.set(ptY0);
-              ptXyzTemp.add(volumetricVectors[0]);
-            }
-          }
-        }
-      iter.release();
-      iter = null;
-    }
-    if (params.thePlane == null) {
-      for (int x = 0; x < nPointsX; ++x)
-        for (int y = 0; y < nPointsY; ++y)
-          for (int z = 0; z < nPointsZ; ++z)
-            if (voxelData[x][y][z] == Float.MAX_VALUE)
-              voxelData[x][y][z] = Float.NaN;
-    } else { //solvent planes just focus on negative values
-      value = 0.001f;
-      for (int x = 0; x < nPointsX; ++x)
-        for (int y = 0; y < nPointsY; ++y)
-          for (int z = 0; z < nPointsZ; ++z)
-            if (voxelData[x][y][z] < value) {
-              // Float.NaN will also match ">=" this way
-            } else {
-              voxelData[x][y][z] = value;
-            }
-    }
-    if (Logger.debugging)
-      Logger.checkTimer("solvent surface time");
+  private void setGridLimitsForAtom(Point3f ptA, float rA, Point3i pt0,
+                                    Point3i pt1) {
+    rA += volumeData.maxGrid * 1.8f; // to span corner-to-corner possibility
+    volumeData.xyzToVoxelPt(ptA.x - rA, ptA.y - rA, ptA.z - rA, pt0);
+    pt0.x = Math.max(pt0.x - 1, 0);
+    pt0.y = Math.max(pt0.y - 1, 0);
+    pt0.z = Math.max(pt0.z - 1, 0);
+    volumeData.xyzToVoxelPt(ptA.x + rA, ptA.y + rA, ptA.z + rA, pt1);
+    pt1.x = Math.min(pt1.x + 1, nPointsX);
+    pt1.y = Math.min(pt1.y + 1, nPointsY);
+    pt1.z = Math.min(pt1.z + 1, nPointsZ);
   }
 
   private static void mergeLimits(Point3i ptA, Point3i ptB, Point3i pt0,
@@ -1127,40 +1023,7 @@ class IsoSolventReader extends AtomDataReader {
     }
   }
 
-  protected Point3f ptTemp2 = new Point3f();
-  private Point3f ptS1 = new Point3f();
-  private Point3f ptS2 = new Point3f();
-  protected Vector3f vTemp2 = new Vector3f();
-  private Vector3f vTemp3 = new Vector3f();
-
-  private void setGridLimitsForAtom(Point3f ptA, float rA, Point3i pt0,
-                                    Point3i pt1) {
-    int n = 1;
-    volumeData.xyzToVoxelPt(ptA.x - rA, ptA.y - rA, ptA.z - rA, pt0);
-    pt0.x -= n;
-    pt0.y -= n;
-    pt0.z -= n;
-    if (pt0.x < 0)
-      pt0.x = 0;
-    if (pt0.y < 0)
-      pt0.y = 0;
-    if (pt0.z < 0)
-      pt0.z = 0;
-    volumeData.xyzToVoxelPt(ptA.x + rA, ptA.y + rA, ptA.z + rA, pt1);
-    pt1.x += n + 1;
-    pt1.y += n + 1;
-    pt1.z += n + 1;
-    if (pt1.x >= nPointsX)
-      pt1.x = nPointsX;
-    if (pt1.y >= nPointsY)
-      pt1.y = nPointsY;
-    if (pt1.z >= nPointsZ)
-      pt1.z = nPointsZ;
-  }
-
-  final Point3f p = new Point3f();
-
-  float checkSpecialVoxel(Point3f ptA, float rAS, Point3f ptB, float rBS,
+  private float checkSpecialVoxel(Point3f ptA, float rAS, Point3f ptB, float rBS,
                           float dAB, Point3f ptV) {
     /*
      * Checking here for voxels that are in the situation:
@@ -1244,7 +1107,6 @@ class IsoSolventReader extends AtomDataReader {
         return Float.NaN;
       // we are somewhere in the triangle ASB, within the solvent sphere of B
       dVS = solventDistance(rBS, rAS, dAB, dBV, dAV);
-      cosAngleBAS = -cosAngleBAS;
       return (voxelIsInTrough(dVS, rBS * rBS, rAS, dAB, dBV) ? dVS : Float.NaN);
     }
     // not within solvent sphere of A or B
@@ -1269,17 +1131,13 @@ class IsoSolventReader extends AtomDataReader {
     return (cosACBf < cosACXf);
   }
 
-  protected double cosAngleBAS;
-  private double angleBAS;
-
   private float solventDistance(float rAS, float rBS, float dAB, float dAV,
                                 float dBV) {
     double dAV2 = dAV * dAV;
     double rAS2 = rAS * rAS;
     double dAB2 = dAB * dAB;
     double angleVAB = Math.acos((dAV2 + dAB2 - dBV * dBV) / (2 * dAV * dAB));
-    angleBAS = Math.acos(cosAngleBAS = (dAB2 + rAS2 - rBS * rBS)
-        / (2 * dAB * rAS));
+    double angleBAS = Math.acos((dAB2 + rAS2 - rBS * rBS) / (2 * dAB * rAS));
     float dVS = (float) Math.sqrt(rAS2 + dAV2 - 2 * rAS * dAV
         * Math.cos(angleBAS - angleVAB));
     return dVS;
@@ -1296,256 +1154,39 @@ class IsoSolventReader extends AtomDataReader {
     vTemp.normalize();
     double rAS2 = rAS * rAS;
     double dAB2 = dAB * dAB;
-    angleBAS = Math.acos(cosAngleBAS = (dAB2 + rAS2 - rBS * rBS)
-        / (2 * dAB * rAS));
+    double cosAngleBAS = (dAB2 + rAS2 - rBS * rBS) / (2 * dAB * rAS);
+    double angleBAS = Math.acos(cosAngleBAS);
     p.scaleAdd((float) (cosAngleBAS * rAS), vTemp, ptA);
     Measure.getPlaneThroughPoint(p, vTemp, plane);
     return Math.sin(angleBAS) * rAS;
   }
 
-  float checkSpecialVoxel2(Point3f ptA, float rAS, Point3f ptB, float rBS,
-                          float dAB, Point3f ptV) {
-    /*
-     * Checking here for voxels that are in the situation:
-     * 
-     * A------)(-----S-----)(------B  (not actually linear)
-     * |-----rAS-----|-----rBS-----|
-     * |-----------dAB-------------|
-     *         ptV
-     * |--dAV---|---------dBV------|
-     *
-     * A and B are the two atom centers; S is a hypothetical
-     * PROJECTED solvent center based on the position of ptV 
-     * in relation to first A, then B.
-     * 
-     * Where the projected solvent location for one voxel is 
-     * within the solvent radius sphere of another, this voxel should
-     * be checked in relation to solvent distance, not atom distance.
-     * 
-     * aa           bb
-     *   aaa      bbb
-     *      aa  bb
-     *         S
-     *+++    /  a\    +++
-     *   ++ /  | ap ++
-     *     +*  V  *aa     x     want V such that angle ASV < angle ASB
-     *    /  *****  \
-     *   A --+--+----B
-     *        b
-     * 
-     *  ++   the van der Waals radius for each atom.
-     *  aa   the extended solvent radius for atom A.
-     *  bb   the extended solvent radius for atom B.
-     *  p    the projection of voxel V onto aaaaaaa.  
-     *  **   the key "trough" location. 
-     *  
-     *  The objective is to calculate dSV only when V
-     *  is within triangle ABS.
-     *  
-     * Getting dVS:
-     * 
-     * Known: rAB, rAS, rBS, giving angle BAS (theta)
-     * Known: rAB, rAV, rBV, giving angle VAB (alpha)
-     * Determined: angle VAS (theta - alpha), and from that, dSV, using
-     * the cosine law:
-     * 
-     *   a^2 + b^2 - 2ab Cos(theta) = c^2.
-     * 
-     * The trough issue:
-     * 
-     * Since the voxel might be at point x (above), outside the
-     * triangle, we have to test for that. What we will be looking 
-     * for in the "trough" will be that angle ASV < angle ASB
-     * that is, cosASB < cosASV, for each point p within bbbbb.
-     * 
-     * If we find the voxel in the "trough", then we set its value to 
-     * (solvent radius - dVS).
-     * 
-     */
-    float dAV = ptA.distance(ptV);
-    float dBV = ptB.distance(ptV);
-    float dVS;
-    float f = rAS / dAV;
-    if (f > 1) {
-      // within solvent sphere of atom A
-      // calculate point on solvent sphere aaaa projected through ptV
-      p.set(ptA.x + (ptV.x - ptA.x) * f, ptA.y + (ptV.y - ptA.y) * f, ptA.z
-          + (ptV.z - ptA.z) * f);
-      // If the distance of this point to B is less than the distance
-      // of S to B, then we need to check this point
-      if (ptB.distance(p) >= rBS)
-        return Float.NaN;
-      // we are somewhere in the arc SAB, within the solvent sphere of A
-      dVS = solventDistance(rAS, rBS, dAB, dAV, dBV);
-      return (voxelIsInTrough(dVS, rAS * rAS, rBS, dAB, dAV) ? dVS : Float.NaN);
-    }
-    if ((f = rBS / dBV) > 1) {
-      // calculate point on solvent sphere B projected through ptV
-      p.set(ptB.x + (ptV.x - ptB.x) * f, ptB.y + (ptV.y - ptB.y) * f, ptB.z
-          + (ptV.z - ptB.z) * f);
-      if (ptA.distance(p) >= rAS)
-        return Float.NaN;
-      // we are somewhere in the triangle ASB, within the solvent sphere of B
-      dVS = solventDistance(rBS, rAS, dAB, dBV, dAV);
-      return (voxelIsInTrough(dVS, rBS * rBS, rAS, dAB, dBV) ? dVS : Float.NaN);
-    }
-    // not within solvent sphere of A or B
-    return Float.NaN;
-  }
+  ///////////////// debugging ////////////////
+
+  protected int nTest;
 
   void dumpLine(Point3f pt1, Tuple3f pt2, String label, String color) {
-    sg.log("draw ID \"" + label + (nTest++) + "\" @{point" + new Point3f(pt1) + "} @{point" + new Point3f(pt2) + "} color " + color);
+    sg.log("draw ID \"" + label + (nTest++) + "\" @{point" + new Point3f(pt1)
+        + "} @{point" + new Point3f(pt2) + "} color " + color);
   }
-  
-  void dumpLine2(Point3f pt1, Point3f pt2, String label, float d, String color1, String color2) {
+
+  void dumpLine2(Point3f pt1, Point3f pt2, String label, float d,
+                 String color1, String color2) {
     Vector3f pt = new Vector3f();
     pt.set(pt2);
     pt.sub(pt1);
     pt.normalize();
     pt.scale(d);
     pt.add(pt1);
-    sg.log("draw ID \"" + label + (nTest++) + "\" @{point" + new Point3f(pt1) + "} @{point" + new Point3f(pt) + "} color " + color1);
-    sg.log("draw ID \"" + label + (nTest++) + "\" @{point" + new Point3f(pt) + "} @{point" + new Point3f(pt2) + "} color " + color2);
+    sg.log("draw ID \"" + label + (nTest++) + "\" @{point" + new Point3f(pt1)
+        + "} @{point" + new Point3f(pt) + "} color " + color1);
+    sg.log("draw ID \"" + label + (nTest++) + "\" @{point" + new Point3f(pt)
+        + "} @{point" + new Point3f(pt2) + "} color " + color2);
   }
-  
-  void dumpPoint(Point3f pt, String label) {
-    sg.log("draw ID \"" + label + (nTest++) + "\" @{point" + new Point3f(pt) + "}");
-  }
-  
-  float[] voxelRadii;
-  
-  /**
-   * 
-   * TEST: alternative EXACT position of fraction for spherical MarchingCubes
-   * FOR: ttest.xyz:
-2
-isosurface molecular test showing discontinuities
-C -2.70 0 0
-C 2.75 0 0 
-   *
-   * RESULT:
-   * 
-   *  LINEAR (points slightly within R):
 
-$ isosurface resolution 5 volume area solvent 1.5 full
-isosurface1 created with cutoff=0.0; number of isosurfaces = 1
-isosurfaceArea = [75.06620391572324]
-isosurfaceVolume = [41.639681683494324]
-
-   *  NONLINEAR, using r = 1.7:
-
-$ isosurface resolution 5 volume area solvent 1.5 full
-isosurface1 created with cutoff=0.0; number of isosurfaces = 1
-isosurfaceArea = [75.14402204157523]
-isosurfaceVolume = [41.70455933115348]
-
-   * MSMS:
-
-msms -if ttest.xyzrn -of ttest -density 5
-
-MSMS 2.6.1 started on Local PC
-Copyright M.F. Sanner (1994)
-Compilation flags
-INPUT  ttest.xyzrn 2 spheres 0 collision only, radii  1.700 to  1.700
-PARAM  Probe_radius  1.500 density  5.000 hdensity  3.000
-    Couldn't find first face trying -all option
-ANALYTICAL SURFACE AREA :
-    Comp. probe_radius,   reent,    toric,   contact    SES       SAS
-      0       1.500       0.000     8.144    67.243    75.387   238.258
-NUMERICAL VOLUMES AND AREA
-    Comp. probe_radius SES_volume SES_area)
-       0      1.50       40.497     74.132
-    Total ses_volume:    40.497
-MSMS terminated normally
-
-   * CONCLUSION: 
-   * 
-   * -- surfaces are essentially identical
-   * -- nonlinear is slightly closer to analytical area (75.387), as expected
-   * -- both are better than MSMS triangulation for same "resolution":
-   *    prog  parameters        %Error
-   *    MSMS  -density 5         1.66% (1412 faces)
-   *    MSMS  -density 20        0.36% (2968 faces) 
-   *    JMOL LINEAR resol 5      0.42% (2720 faces) 
-   *    JMOL NONLINEAR resol 5   0.32% (2720 faces)
-   * -- Marching Cubes could be slightly improved using nonlinear calc.  
-   * 
-   * @param cutoff
-   * @param isCutoffAbsolute
-   * @param valueA
-   * @param valueB
-   * @param pointA
-   * @param edgeVector
-   * @param vA
-   * @param vB
-   * @param fReturn
-   * @param ptReturn
-   * @return          fractional distance from A to B
-   */
-  @Override
-  protected float getSurfacePointAndFraction(float cutoff, boolean isCutoffAbsolute,
-                                   float valueA, float valueB, Point3f pointA,
-                                   Vector3f edgeVector, int x,
-                                   int y, int z, int vA0, int vB0, float[] fReturn, Point3f ptReturn) {
-    
-    // nonlinear Marching Cubes -- hansonr@stolaf.edu 12/31/2010
-    
-    // Generates exact position of circular arc based on two distances.
-    // Only slightly different from linear Marching Cubes.
-    // Uses a stored radius (-r for solvent radius; +r for atom)
-    // associated with each voxel point. The algorithm then does
-    // an exact positioning of the fractional distance based on cos law:
-    // 
-    // dAS^2 + dAB^2 + 2(dAS)(dAB)cos(theta) = dBS^2
-    // dAS^2 + dAX^2 + 2(dAS)(dAX)cos(theta) = dXS^2
-    //
-    //            B
-    //           /|
-    //          / |
-    //         /  |
-    //        S---X
-    //         \  |
-    //          \theta
-    //           \|
-    //            A
-    //
-    // So from this we can derive dAX, and thus f = dAX/dAb
-    
-    int vA = marchingCubes.getLinearOffset(x, y, z, vA0);
-    int vB = marchingCubes.getLinearOffset(x, y, z, vB0);
-    if (voxelRadii == null || voxelRadii[vA] == 0 || voxelRadii[vA] != voxelRadii[vB])
-      return super.getSurfacePointAndFraction(cutoff, isCutoffAbsolute, valueA, valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn);
-    float d = edgeVector.length();
-    double r = voxelRadii[vA]; // testing only
-    double ra = Math.abs(r + valueA) / d;
-    double rb = Math.abs(r + valueB) / d;
-    double ra2 = ra * ra;
-    double q = ra2 - rb * rb + 1;
-    r /= d;
-    double p = 4 * (r * r - ra2);
-    double factor = (ra < rb ? 1 : -1);
-    float diff = valueB - valueA;
-    
-    float fraction = (float) (((q) + factor * Math.sqrt(q * q + p)) / 2);
-     if (fraction < 0 || fraction > 1) {
-      Logger.error("problem with unusual fraction=" + fraction + " cutoff="
-        + cutoff + " A:" + valueA + " B:" + valueB);
-      fraction = Float.NaN;
-    }
-    // float fractionLinear = (cutoff - valueA) / diff;
-    //for testing: 
-    //fraction = fractionLinear;
-    fReturn[0] = fraction;
-    ptReturn.scaleAdd(fraction, edgeVector, pointA);
-    /*
-      sg.log(x + "\t" + y + "\t" + z + "\t" 
-        + volumeData.getPointIndex(x, y, z) + "\t" 
-        + vA + "\t" + vB + "\t" 
-        + valueA + "\t" + valueB + "\t" 
-        + fractionLinear + "\t" + fraction + "\td=" + ptReturn.distance(new Point3f(2.75f, 0, 0)));
-    */
-    return valueA + fraction * diff;
+  void dumpPoint(Point3f pt, String label, String color) {
+    sg.log("draw ID \"" + label + (nTest++) + "\" @{point" + new Point3f(pt)
+        + "} color " + color);
   }
 
 }
-

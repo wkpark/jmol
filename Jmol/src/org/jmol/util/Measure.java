@@ -604,7 +604,8 @@ final public class Measure {
     float d = distanceToPlane(plane, pt);
     if (fullyEnclosed)
       return (b == (d >= 0));
-    return Math.abs(distanceToPlane(plane, ptD)) > Math.abs(d);
+    float d1 = distanceToPlane(plane, ptD);
+    return d1 * d <= 0 || Math.abs(d1) > Math.abs(d);
   }
 
 

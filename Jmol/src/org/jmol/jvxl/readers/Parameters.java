@@ -497,9 +497,7 @@ public class Parameters {
   void setSolvent(String propertyName, float radius) {
     isEccentric = isAnisotropic = false;
     //anisotropy[0] = anisotropy[1] = anisotropy[2] = 1f;
-    solventRadius = radius;
-    if (solventRadius < 0)
-      solventRadius = defaultSolventRadius;
+    solventRadius = Math.abs(radius);
     dataType = ("nomap" == propertyName ? SURFACE_NOMAP
         : "molecular" == propertyName ? SURFACE_MOLECULAR
             : "sasurface" == propertyName || solventRadius == 0f ? SURFACE_SASURFACE

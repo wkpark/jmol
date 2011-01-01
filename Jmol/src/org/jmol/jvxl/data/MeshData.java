@@ -324,7 +324,7 @@ public class MeshData extends MeshSurface {
     double factor = (isArea ? 2 : 6);
     for (int i = 0; i < n; i++)
       v[i] /= factor;
-    if (justOne)
+    if (justOne && thisSet != Integer.MIN_VALUE)
       return Float.valueOf((float) v[0]);
     return v;
   }

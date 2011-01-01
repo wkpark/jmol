@@ -326,7 +326,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
       return;
     g3d.setFont(g3d.getFontFid("Monospaced", 24));
     for (int i = vertexCount; --i >= 0;) {
-      if (vertexValues != null && !Float.isNaN(vertexValues[i])) {
+      if (vertexValues != null && Float.isNaN(vertexValues[i])) 
+        continue;
         ptTemp.set(mesh.vertices[i]);
         short n = mesh.normixes[i];
         // -n is an intensity2sided and does not correspond to a true normal
@@ -335,9 +336,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
           ptTemp.add(Graphics3D.getNormixVector(n));
           viewer.transformPoint(ptTemp, ptTempi);
           g3d.drawLine(screens[i], ptTempi);
-          g3d.drawStringNoSlab("" + n, null, ptTempi.x, ptTempi.y, ptTempi.z);
+          //g3d.drawStringNoSlab("" + n, null, ptTempi.x, ptTempi.y, ptTempi.z);
         }
-      }
     }
   }
 

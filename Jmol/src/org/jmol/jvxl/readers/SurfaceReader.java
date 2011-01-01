@@ -474,7 +474,7 @@ public abstract class SurfaceReader implements VertexDataServer {
   ////////////////////////////////////////////////////////////////
 
   protected MarchingSquares marchingSquares;
-  private MarchingCubes marchingCubes;
+  protected MarchingCubes marchingCubes;
 
   public float getValue(int x, int y, int z, int ptyz) {
     return volumeData.voxelData[x][y][z];
@@ -536,7 +536,7 @@ public abstract class SurfaceReader implements VertexDataServer {
                                   Point3f pointA, Vector3f edgeVector,
                                   boolean isContourType, float[] fReturn) {
     float thisValue = getSurfacePointAndFraction(cutoff, isCutoffAbsolute, valueA,
-        valueB, pointA, edgeVector, fReturn, ptTemp);
+        valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptTemp);
     /* 
      * from MarchingCubes
      * 
@@ -566,12 +566,30 @@ public abstract class SurfaceReader implements VertexDataServer {
     return n;
   }
 
+  /**
+   * 
+   * @param cutoff
+   * @param isCutoffAbsolute
+   * @param valueA
+   * @param valueB
+   * @param pointA
+   * @param edgeVector
+   * @param x TODO
+   * @param y TODO
+   * @param z TODO
+   * @param vA
+   * @param vB
+   * @param fReturn
+   * @param ptReturn
+   * @return          fractional distance from A to B
+   */
   protected float getSurfacePointAndFraction(float cutoff, boolean isCutoffAbsolute,
                                    float valueA, float valueB, Point3f pointA,
-                                   Vector3f edgeVector, float[] fReturn,
-                                   Point3f ptReturn) {
+                                   Vector3f edgeVector, int x,
+                                   int y, int z, int vA, int vB, float[] fReturn, Point3f ptReturn) {
 
     //JvxlReader may or may not call this
+    //IsoSolventReader overrides this for nonlinear Marching Cubes (12.1.29)
 
     float diff = valueB - valueA;
     float fraction = (cutoff - valueA) / diff;

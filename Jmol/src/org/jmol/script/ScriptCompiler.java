@@ -1627,7 +1627,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
 
   private Token setNewSetCommand(boolean isSetBrace, String ident) {
     tokCommand = Token.set;
-    isNewSet = !isSetBrace;
+    isNewSet = !isSetBrace && !isUserFunction(ident);
     setBraceCount = (isSetBrace ? 1 : 0);
     bracketCount = 0;
     setEqualPt = Integer.MAX_VALUE;

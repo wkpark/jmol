@@ -8888,8 +8888,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     if (value == null) {
       Logger.info(GT._("Cannot set log file path."));
-    } else if (path != null) {
-      Logger.info(GT._("Setting log file to {0}", path));
+    } else {
+      if (path != null) 
+        Logger.info(GT._("Setting log file to {0}", path));
       logFile = path;
     }
     return value;

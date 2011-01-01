@@ -388,10 +388,10 @@ public class JvxlXmlReader extends VolumeFileReader {
                                              float valueA, float valueB,
                                              Point3f pointA,
                                              Vector3f edgeVector,
-                                             float[] fReturn, Point3f ptReturn) {
+                                             int x, int y, int z, int vA, int vB, float[] fReturn, Point3f ptReturn) {
     if (edgeDataCount <= 0)
       return super.getSurfacePointAndFraction(cutoff, isCutoffAbsolute, valueA,
-          valueB, pointA, edgeVector, fReturn, ptReturn);
+          valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn);
     ptReturn.scaleAdd(fReturn[0] = jvxlGetNextFraction(edgeFractionBase,
         edgeFractionRange, 0.5f), edgeVector, pointA);
     if (Float.isNaN(valueMin))

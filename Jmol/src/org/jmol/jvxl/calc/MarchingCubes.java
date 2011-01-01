@@ -475,6 +475,8 @@ public class MarchingCubes extends TriangleData {
      *  edgeVertexPlanes[1]            [0] (scanning x high to low)
      *           
      */
+    
+
 
     int edgeMask = insideMaskTable[insideMask];
     boolean isNaN = false;

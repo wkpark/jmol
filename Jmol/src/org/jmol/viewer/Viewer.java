@@ -3188,8 +3188,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isImage && !global.imageState || !global.preserveState)
       return "";
     // we remove local file references in the embedded states for images
-    return JmolConstants.embedScript(FileManager.setScriptFileReferences(
-        getStateInfo(null), ".", null, null));
+    String s = "";
+    try {
+      s = JmolConstants.embedScript(FileManager.setScriptFileReferences(
+          getStateInfo(null), ".", null, null));
+    } catch (Throwable e) {
+      // ignore if this uses too much memory
+      Logger.error("state could not be saved: " + e.getMessage());
+    }
+    return s;
   }
 
   @Override

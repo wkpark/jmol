@@ -40,6 +40,7 @@ import javax.vecmath.Vector3f;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
+import org.jmol.util.MeshSurface;
 
 import org.jmol.api.AtomIndexIterator;
 import org.jmol.jvxl.data.MeshData;
@@ -134,6 +135,7 @@ class IsoSolventReader extends AtomDataReader {
 
   private float cavityRadius;
   private float envelopeRadius;
+  private Point3f[] dots;
 
   private boolean doCalculateTroughs;
   private boolean isCavity, isPocket;
@@ -176,7 +178,7 @@ class IsoSolventReader extends AtomDataReader {
     doUseIterator = doCalculateTroughs;
     getAtoms(Float.NaN, false, true);
     if (isCavity || isPocket)
-      meshData.dots = meshDataServer.calculateGeodesicSurface(bsMySelected,
+      dots = meshDataServer.calculateGeodesicSurface(bsMySelected,
           envelopeRadius);
 
     setHeader("solvent/molecular surface", params.calculationType);
@@ -328,30 +330,15 @@ class IsoSolventReader extends AtomDataReader {
     int vB = marchingCubes.getLinearOffset(x, y, z, vB0);
     isSurfacePoint = (bsSurfaceVoxels != null && (bsSurfaceVoxels.get(vA) || bsSurfaceVoxels
         .get(vB)));
-    
+
     if (testLinear || voxelRadii == null || voxelRadii[vA] == 0
         || voxelRadii[vA] != voxelRadii[vB])
       return super.getSurfacePointAndFraction(cutoff, isCutoffAbsolute, valueA,
           valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn);
-    float d = edgeVector.length();
-    double r = voxelRadii[vA];
-    double ra = Math.abs(r + valueA) / d;
-    double rb = Math.abs(r + valueB) / d;
-    double ra2 = ra * ra;
-    double q = ra2 - rb * rb + 1;
-    r /= d;
-    double p = 4 * (r * r - ra2);
-    double factor = (ra < rb ? 1 : -1);
-    float diff = valueB - valueA;
-
-    float fraction = (float) (((q) + factor * Math.sqrt(q * q + p)) / 2);
-    if (fraction < 0 || fraction > 1) {
-      Logger.error("problem with unusual fraction=" + fraction + " cutoff="
-          + cutoff + " A:" + valueA + " B:" + valueB);
-      fraction = Float.NaN;
-    }
-    fReturn[0] = fraction;
+    float fraction = fReturn[0] = MeshSurface.getSphericalInterpolationFraction(
+        voxelRadii[vA], valueA, valueB, edgeVector.length());
     ptReturn.scaleAdd(fraction, edgeVector, pointA);
+    float diff = valueB - valueA;
     /*
     //for testing -- linear with ttest.xyz: 
     // float fractionLinear = (cutoff - valueA) / diff;
@@ -377,14 +364,12 @@ class IsoSolventReader extends AtomDataReader {
 
   @Override
   public void selectPocket(boolean doExclude) {
-    if (meshDataServer == null)
-      return; //can't do this without help!
-    meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
+    if (meshDataServer != null)
+      meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
     //mark VERTICES for proximity to surface
     Point3f[] v = meshData.vertices;
     int nVertices = meshData.vertexCount;
     float[] vv = meshData.vertexValues;
-    Point3f[] dots = meshData.dots;
     int nDots = dots.length;
     for (int i = 0; i < nVertices; i++) {
       for (int j = 0; j < nDots; j++) {
@@ -415,8 +400,10 @@ class IsoSolventReader extends AtomDataReader {
     updateSurfaceData();
     if (!doExclude)
       meshData.surfaceSet = null;
-    meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS, null);
-    meshData = new MeshData();
+    if (meshDataServer != null) {
+      meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS, null);
+      meshData = new MeshData();
+    }
   }
 
   @Override
@@ -447,7 +434,7 @@ class IsoSolventReader extends AtomDataReader {
     //3) rerun the calculation to mark a solvent around these!
     BitSet bs = new BitSet(nPointsX * nPointsY * nPointsZ);
     int i = 0;
-    int nDots = meshData.dots.length;
+    int nDots = dots.length;
     int n = 0;
     float d;
     float r2 = envelopeRadius;// - cavityRadius;
@@ -458,7 +445,7 @@ class IsoSolventReader extends AtomDataReader {
           if ((d = voxelData[x][y][z]) < Float.MAX_VALUE && d >= cavityRadius) {
             volumeData.voxelPtToXYZ(x, y, z, ptXyzTemp);
             for (int j = 0; j < nDots; j++) {
-              if (meshData.dots[j].distance(ptXyzTemp) < r2)
+              if (dots[j].distance(ptXyzTemp) < r2)
                 continue out;
             }
             bs.set(i);

@@ -14780,10 +14780,15 @@ public class ScriptEvaluator {
       sb.append(" ").append(getToken(i).value).append(" ");
     int tok = tokAt(i + 1);
     Point4f plane = null;
+    float d = 0;
+    Point3f pt = null;
     switch (tok) {
     case Token.within:
       i++;
-      data = getPointArray(++i, 4);
+      if (isFloatParameter(++i))
+        data = new Object[] { Float.valueOf(d = floatParameter(i)), pt = centerParameter(++i) };
+     else
+        data = getPointArray(i, 4);
       break;
     case Token.boundbox:
       data = BoxInfo.getCriticalPoints(viewer.getBoundBoxVertices(), null);
@@ -14831,10 +14836,12 @@ public class ScriptEvaluator {
       data = plane;
     }
     if (sb != null) {
-      if (plane == null)
-        sb.append("within ").append(Escape.escape(data));
-      else
+      if (plane != null)
         sb.append(Escape.escape(plane));
+      else if (pt != null)
+        sb.append("within ").append(d).append(" ").append(Escape.escape(pt));
+      else
+        sb.append("within ").append(Escape.escape(data));
     }
     return data;
   }

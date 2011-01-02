@@ -168,14 +168,16 @@ public class JvxlData {
     this.nBytes = nBytes;
   }
 
-  public void updateSurfaceData(float[] vertexValues, int vertexCount, int vertexIncrement, char isNaN) { 
-    if (jvxlEdgeData.length() == 0)
-      return;
-    char[] chars = jvxlEdgeData.toCharArray();
-    for (int i = 0, ipt = 0; i < vertexCount; i+= vertexIncrement, ipt++)
+  public static String updateSurfaceData(String edgeData, float[] vertexValues,
+                                         int vertexCount, int vertexIncrement,
+                                         char isNaN) {
+    if (edgeData.length() == 0)
+      return "";
+    char[] chars = edgeData.toCharArray();
+    for (int i = 0, ipt = 0; i < vertexCount; i += vertexIncrement, ipt++)
       if (Float.isNaN(vertexValues[i]))
-          chars[ipt] = isNaN;
-    jvxlEdgeData = String.copyValueOf(chars);
+        chars[ipt] = isNaN;
+    return String.copyValueOf(chars);
   }
   
 }

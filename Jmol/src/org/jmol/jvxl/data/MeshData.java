@@ -201,6 +201,32 @@ public class MeshData extends MeshSurface {
     return surfaceSet;
   }
 
+  private class SSet {
+    BitSet bs;
+    int n;
+    
+    protected SSet (BitSet bs) {
+      this.bs = bs;
+      n = bs.cardinality();
+    }
+  }
+  
+  protected class SortSet implements Comparator<SSet> {
+
+    public int compare(SSet o1, SSet o2) {
+      return (o1.n > o2.n ? -1 : o1.n < o2.n ? 1 : 0);
+    }  
+  }
+
+  private void sortSurfaceSets() {
+    SSet[] sets = new SSet[nSets];
+    for (int i = 0; i < nSets; i++)
+      sets[i] = new SSet(surfaceSet[i]);
+    Arrays.sort(sets, new SortSet());
+    for (int i = 0; i < nSets; i++)
+      surfaceSet[i] = sets[i].bs;
+  }
+
   public void setVertexSets(boolean onlyIfNull) {
     if (surfaceSet == null)
       return;
@@ -226,32 +252,6 @@ public class MeshData extends MeshSurface {
       for (int j = surfaceSet[i].nextSetBit(0); j >= 0; j = surfaceSet[i]
           .nextSetBit(j + 1))
         vertexSets[j] = i;
-  }
-
-  private class SSet {
-    BitSet bs;
-    int n;
-    
-    protected SSet (BitSet bs) {
-      this.bs = bs;
-      n = bs.cardinality();
-    }
-}
-  
-  protected class SortSet implements Comparator<SSet> {
-
-    public int compare(SSet o1, SSet o2) {
-      return (o1.n > o2.n ? -1 : o1.n < o2.n ? 1 : 0);
-    }  
-  }
-
-  private void sortSurfaceSets() {
-    SSet[] sets = new SSet[nSets];
-    for (int i = 0; i < nSets; i++)
-      sets[i] = new SSet(surfaceSet[i]);
-    Arrays.sort(sets, new SortSet());
-    for (int i = 0; i < nSets; i++)
-      surfaceSet[i] = sets[i].bs;
   }
 
   private int findSet(int vertex) {

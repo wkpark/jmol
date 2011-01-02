@@ -28,7 +28,6 @@ public class MeshSurface {
   public BitSet bsFaces;
   public Point3f ptOffset;
   public float scale3d;
-  public Point3f[] dots;
   public float[] vertexValues;
   public BitSet[] surfaceSet;
   public int[] vertexSets;
@@ -155,32 +154,55 @@ public class MeshSurface {
 
   public void slabPolygons(Object slabbingObject, boolean andCap) {
     if (slabbingObject instanceof Point4f) {
-      getIntersection((Point4f) slabbingObject, null, andCap, false);
+      getIntersection((Point4f) slabbingObject, null, 0, null, andCap, false);
       return;
     }
     if (slabbingObject instanceof Point3f[]) {
       Point4f[] faces = BoxInfo.getFacesFromCriticalPoints((Point3f[]) slabbingObject);
       for (int i = 0; i < faces.length; i++)
-        getIntersection(faces[i], null, andCap, false);
+        getIntersection(faces[i], null, 0, null, andCap, false);
       return; 
+    }
+    if (slabbingObject instanceof Object[]) {
+      Object[] o = (Object[]) slabbingObject;
+      float distance = ((Float) o[0]).floatValue();
+      Point3f center = (Point3f) o[1];
+      getIntersection(null, center, distance, null, andCap, false);
     }
   }
 
-  public boolean getIntersection(Point4f plane, List<Point3f[]> vData, boolean andCap, boolean doClean) {
+  public boolean getIntersection(Point4f plane, Point3f ptCenter,
+                                 float distance, List<Point3f[]> vData,
+                                 boolean andCap, boolean doClean) {
     boolean isSlab = (vData == null);
+    if (ptCenter != null)
+      andCap = false; // can only cap faces
     Point3f[] pts;
     int iD, iE;
-
+    double absD = Math.abs(distance);
     List<int[]> iPts = (andCap ? new ArrayList<int[]>() : null);
     for (int i = polygonIndexes.length; --i >= 0;) {
       if (!setABC(i))
         continue;
       int check1 = polygonIndexes[i][3];
-      int check2 = (checkCount == 2 ? polygonIndexes[i][4]: 0);
-      Point3f vA, vB, vC;
-      float d1 = Measure.distanceToPlane(plane, vA = vertices[iA]);
-      float d2 = Measure.distanceToPlane(plane, vB = vertices[iB]);
-      float d3 = Measure.distanceToPlane(plane, vC = vertices[iC]);
+      int check2 = (checkCount == 2 ? polygonIndexes[i][4] : 0);
+      Point3f vA = vertices[iA];
+      Point3f vB = vertices[iB];
+      Point3f vC = vertices[iC];
+      float d1, d2, d3;
+      if (ptCenter == null) {
+        d1 = Measure.distanceToPlane(plane, vA);
+        d2 = Measure.distanceToPlane(plane, vB);
+        d3 = Measure.distanceToPlane(plane, vC);
+      } else if (distance < 0) {
+        d1 = -vA.distance(ptCenter) - distance;
+        d2 = -vB.distance(ptCenter) - distance;
+        d3 = -vC.distance(ptCenter) - distance;
+      } else {
+        d1 = vA.distance(ptCenter) - distance;
+        d2 = vB.distance(ptCenter) - distance;
+        d3 = vC.distance(ptCenter) - distance;
+      }
       int test1 = (d1 < 0 ? 1 : 0) + (d2 < 0 ? 2 : 0) + (d3 < 0 ? 4 : 0);
       int test2 = (d1 >= 0 ? 1 : 0) + (d2 >= 0 ? 2 : 0) + (d3 >= 0 ? 4 : 0);
       pts = null;
@@ -192,20 +214,32 @@ public class MeshSurface {
       case 1:
       case 6:
         // BC on same side
-        pts = new Point3f[] { interpolatePoint(vA, vB, -d1, d2),
-            interpolatePoint(vA, vC, -d1, d3)};
+        if (ptCenter == null)
+          pts = new Point3f[] { interpolatePoint(vA, vB, -d1, d2),
+              interpolatePoint(vA, vC, -d1, d3) };
+        else
+          pts = new Point3f[] { interpolateSphere(vA, vB, -d1, -d2, absD),
+              interpolateSphere(vA, vC, -d1, -d3, absD) };
         break;
       case 2:
       case 5:
         //AC on same side
-        pts = new Point3f[] { interpolatePoint(vB, vA, -d2, d1),
-            interpolatePoint(vB, vC, -d2, d3)};
+        if (ptCenter == null)
+          pts = new Point3f[] { interpolatePoint(vB, vA, -d2, d1),
+              interpolatePoint(vB, vC, -d2, d3) };
+        else
+          pts = new Point3f[] { interpolateSphere(vB, vA, -d2, -d1, absD),
+              interpolateSphere(vB, vC, -d2, -d3, absD) };
         break;
       case 3:
       case 4:
         //AB on same side need A-C, B-C
-        pts = new Point3f[] { interpolatePoint(vC, vA, -d3, d1),
-            interpolatePoint(vC, vB, -d3, d2)};
+        if (ptCenter == null)
+          pts = new Point3f[] { interpolatePoint(vC, vA, -d3, d1),
+              interpolatePoint(vC, vB, -d3, d2) };
+        else
+          pts = new Point3f[] { interpolateSphere(vC, vA, -d3, -d1, absD),
+              interpolateSphere(vC, vB, -d3, -d2, absD) };
         break;
       }
       if (isSlab) {
@@ -222,35 +256,35 @@ public class MeshSurface {
           break;
         case 1:
           // BC on side to keep
-          iD = addVertexCopy(pts[1], vertexValues[iA]);  //AC
-          iE = addVertexCopy(pts[0], vertexValues[iA]);  //AB
+          iD = addVertexCopy(pts[1], vertexValues[iA]); //AC
+          iE = addVertexCopy(pts[0], vertexValues[iA]); //AB
           addTriangleCheck(iE, iB, iC, check1 & 3, check2, 0);
           addTriangleCheck(iD, iE, iC, check1 & 4 | 1, check2, 0);
           break;
         case 2:
           // AC on side to keep
-          iD = addVertexCopy(pts[0], vertexValues[iB]);  //AB
-          iE = addVertexCopy(pts[1], vertexValues[iB]);  //BC
+          iD = addVertexCopy(pts[0], vertexValues[iB]); //AB
+          iE = addVertexCopy(pts[1], vertexValues[iB]); //BC
           addTriangleCheck(iA, iD, iC, check1 & 5, check2, 0);
           addTriangleCheck(iD, iE, iC, check1 & 2 | 1, check2, 0);
           break;
         case 3:
           //AB on side to toss
-          iD = addVertexCopy(pts[0], vertexValues[iA]);  //AC
-          iE = addVertexCopy(pts[1], vertexValues[iB]);  //BC
+          iD = addVertexCopy(pts[0], vertexValues[iA]); //AC
+          iE = addVertexCopy(pts[1], vertexValues[iB]); //BC
           addTriangleCheck(iD, iE, iC, check1 & 6 | 1, check2, 0);
           break;
         case 4:
           //AB on side to keep
-          iD = addVertexCopy(pts[1], vertexValues[iC]);  //BC
-          iE = addVertexCopy(pts[0], vertexValues[iC]);  //AC
+          iD = addVertexCopy(pts[1], vertexValues[iC]); //BC
+          iE = addVertexCopy(pts[0], vertexValues[iC]); //AC
           addTriangleCheck(iA, iB, iE, check1 & 5, check2, 0);
           addTriangleCheck(iE, iB, iD, check1 & 2 | 4, check2, 0);
           break;
         case 5:
           //AC on side to toss
-          iD = addVertexCopy(pts[1], vertexValues[iC]);  //BC
-          iE = addVertexCopy(pts[0], vertexValues[iA]);  //AB
+          iD = addVertexCopy(pts[1], vertexValues[iC]); //BC
+          iE = addVertexCopy(pts[0], vertexValues[iA]); //AB
           addTriangleCheck(iE, iB, iD, check1 & 3 | 4, check2, 0);
           break;
         case 6:
@@ -262,7 +296,7 @@ public class MeshSurface {
         }
         polygonIndexes[i] = null;
         if (andCap && iD > 0)
-          iPts.add(new int[] {iD, iE});
+          iPts.add(new int[] { iD, iE });
       } else if (pts != null) {
         vData.add(pts);
       }
@@ -322,15 +356,36 @@ public class MeshSurface {
     return false;
   }
 
+  private Point3f interpolateSphere(Point3f v1, Point3f v2, float d1, float d2,
+                                    double absD) {
+    return interpolateFraction(v1, v2, getSphericalInterpolationFraction(absD, d1,
+        d2, v1.distance(v2)));
+  }
+
   private static Point3f interpolatePoint(Point3f v1, Point3f v2, float d1, float d2) {
-    float f = d1 / (d1 + d2);
+    return interpolateFraction(v1, v2, d1 / (d1 + d2));
+  }
+
+  private static Point3f interpolateFraction(Point3f v1, Point3f v2, float f) {
     if (f < 0.0001)
       f = 0;
     else if (f > 0.9999)
       f = 1;
     return new Point3f(v1.x + (v2.x - v1.x) * f, 
         v1.y + (v2.y - v1.y) * f, 
-        v1.z + (v2.z - v1.z) * f);    
+        v1.z + (v2.z - v1.z) * f);
+  }
+
+  public static float getSphericalInterpolationFraction(double r, double valueA,
+                                                      double valueB, double d) {
+    double ra = Math.abs(r + valueA) / d;
+    double rb = Math.abs(r + valueB) / d;
+    r /= d;
+    double ra2 = ra * ra;
+    double q = ra2 - rb * rb + 1;
+    double p = 4 * (r * r - ra2);
+    double factor = (ra < rb ? 1 : -1);
+    return (float) (((q) + factor * Math.sqrt(q * q + p)) / 2);
   }
   
 }

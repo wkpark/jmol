@@ -521,7 +521,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       if (mesh == null)
         return false;
       data[3] = Integer.valueOf(mesh.modelIndex);
-      return mesh.getIntersection((Point4f) data[1], (List<Point3f[]>) data[2], false, false);
+      return mesh.getIntersection((Point4f) data[1], null, 0, (List<Point3f[]>) data[2], false, false);
     }
     if (property == "getBoundingBox") {
       String id = (String) data[0];

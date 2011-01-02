@@ -21,7 +21,7 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.openscience.jmol.app.webexport;
+/*package org.openscience.jmol.app.webexport;
 
 
 import java.io.*;
@@ -73,3 +73,4 @@ public class WebMaker extends JPanel {
         "Jmol's persistent values");
   }
 }
+*/

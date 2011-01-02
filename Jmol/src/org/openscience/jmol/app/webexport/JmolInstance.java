@@ -64,7 +64,7 @@ class JmolInstance {
     script = viewer.getStateInfo();
     spinOn = viewer.getBooleanProperty("_spinning");
     if (script == null) {
-      LogPanel.log("Error trying to get Jmol State within pop_in_Jmol.");
+      LogPanel.log("Error trying to get Jmol State when saving view/instance.");
       return;
     }
     bgColor = viewer.getBackgroundArgb();

@@ -3195,6 +3195,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     } catch (Throwable e) {
       // ignore if this uses too much memory
       Logger.error("state could not be saved: " + e.getMessage());
+      s = "Jmol " + getJmolVersion();
     }
     return s;
   }

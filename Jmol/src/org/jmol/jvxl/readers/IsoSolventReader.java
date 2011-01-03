@@ -196,14 +196,14 @@ class IsoSolventReader extends AtomDataReader {
   protected void generateCube() {
     // This is the starting point for the calculation.
     volumeData.getYzCount();
-    volumeData.voxelData = voxelData = new float[nPointsX][nPointsY][nPointsZ];
     if (isCavity && params.theProperty != null)
       return;
     Logger.startTimer();
     getMaxRadius();
-    resetVoxelData(Float.MAX_VALUE);
     if (isCavity && dataType != Parameters.SURFACE_NOMAP
         && dataType != Parameters.SURFACE_PROPERTY) {
+      volumeData.voxelData = voxelData = new float[nPointsX][nPointsY][nPointsZ];
+      resetVoxelData(Float.MAX_VALUE);
       markSphereVoxels(cavityRadius, params.distance);
       generateSolventCavity();
       resetVoxelData(Float.MAX_VALUE);
@@ -234,23 +234,23 @@ class IsoSolventReader extends AtomDataReader {
    * RESULT:
    * 
    *  LINEAR (points slightly within R):
-
+  
   $ isosurface resolution 5 volume area solvent 1.5 full
   isosurface1 created with cutoff=0.0; number of isosurfaces = 1
   isosurfaceArea = [75.06620391572324]
   isosurfaceVolume = [41.639681683494324]
-
+  
    *  NONLINEAR:
-
+  
   $ isosurface resolution 5 volume area solvent 1.5 full
   isosurface1 created with cutoff=0.0; number of isosurfaces = 1
   isosurfaceArea = [75.11873783245028]
   isosurfaceVolume = [41.727027252180655]
-
+  
    * MSMS:
-
+  
   msms -if ttest.xyzrn -of ttest -density 5
-
+  
   MSMS 2.6.1 started on Local PC
   Copyright M.F. Sanner (1994)
   Compilation flags
@@ -265,7 +265,7 @@ class IsoSolventReader extends AtomDataReader {
        0      1.50       40.497     74.132
     Total ses_volume:    40.497
   MSMS terminated normally
-
+  
    * CONCLUSION: 
    * 
    * -- surfaces are essentially identical
@@ -335,8 +335,9 @@ class IsoSolventReader extends AtomDataReader {
         || voxelRadii[vA] != voxelRadii[vB])
       return super.getSurfacePointAndFraction(cutoff, isCutoffAbsolute, valueA,
           valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn);
-    float fraction = fReturn[0] = MeshSurface.getSphericalInterpolationFraction(
-        voxelRadii[vA], valueA, valueB, edgeVector.length());
+    float fraction = fReturn[0] = MeshSurface
+        .getSphericalInterpolationFraction(voxelRadii[vA], valueA, valueB,
+            edgeVector.length());
     ptReturn.scaleAdd(fraction, edgeVector, pointA);
     float diff = valueB - valueA;
     /*
@@ -476,24 +477,33 @@ class IsoSolventReader extends AtomDataReader {
     if (doCalculateTroughs) {
 
       // solvent excluded surfaces only
-      
+
       iter = atomDataServer.getSelectedAtomIterator(bsMySelected, true, false);
 
       // PHASE I: Construction of the surface edge and face data
 
       // 1) -- same as MSMS -- get edges
+      vEdges = new ArrayList<Edge>();
+      bsLocale = new BitSet[myAtomCount];
+      htEdges = new Hashtable<String, Edge>();
       getEdges();
+      Logger.info(vEdges.size() + " edges");
 
       // 2) -- as in MSMS BUT get two faces for each atom triple
-      getFaces();
-
       // 3) -- check for interference of solvent position with other atoms
-      validateFaces();
+      vFaces = new ArrayList<Face>();
+      getFaces();
+      Logger.info(vFaces.size() + " faces");
+      bsLocale = null;
+      htEdges = null;
 
       iter.release();
       iter = null;
 
       // PHASE II: Creating the voxel grid
+
+      volumeData.voxelData = voxelData = new float[nPointsX][nPointsY][nPointsZ];
+      resetVoxelData(Float.MAX_VALUE);
 
       //                     /
       //  (inside) .... (-) 0  (+) .... (outside)
@@ -520,7 +530,7 @@ class IsoSolventReader extends AtomDataReader {
       markFaceVoxels(false);
       vFaces = null;
     }
-    
+
     // 4) -- Final pass for SES and SAS is to mark "-S" (within atom sphere)
     //       and "+S" (just outside the sphere) voxels
     markSphereVoxels(0, doCalculateTroughs ? Float.MAX_VALUE : params.distance);
@@ -532,9 +542,6 @@ class IsoSolventReader extends AtomDataReader {
      * other atoms within r1 + 2*solvent_radius + r2
      * 
      */
-    bsLocale = new BitSet[myAtomCount];
-    htEdges = new Hashtable<String, Edge>();
-    vEdges = new ArrayList<Edge>();
     for (int iatomA = 0; iatomA < myAtomCount; iatomA++)
       bsLocale[iatomA] = new BitSet();
     float dist2 = solventRadius + maxRadius;
@@ -557,7 +564,6 @@ class IsoSolventReader extends AtomDataReader {
         htEdges.put(edge.toString(), edge);
       }
     }
-    Logger.info(vEdges.size() + "  edges");
   }
 
   private class Edge {
@@ -605,16 +611,14 @@ class IsoSolventReader extends AtomDataReader {
   private class Face {
     int ia, ib, ic;
     boolean isValid;
-    boolean isSingular;
     Point3f pS; // solvent position
     Edge[] edges = new Edge[3];
 
-    Face(int ia, int ib, int ic, Edge edgeAB, Point3f pS, boolean isSingular) {
+    Face(int ia, int ib, int ic, Edge edgeAB, Point3f pS) {
       this.ia = ia;
       this.ib = ib;
       this.ic = ic;
       this.pS = new Point3f(pS);
-      this.isSingular = isSingular;
       edges[0] = edgeAB;
     }
 
@@ -642,7 +646,6 @@ class IsoSolventReader extends AtomDataReader {
      *      
      */
     BitSet bs = new BitSet();
-    vFaces = new ArrayList<Face>();
     validSpheres = new BitSet();
     noFaceSpheres = BitSetUtil.setAll(myAtomCount);
     for (int i = vEdges.size(); --i >= 0;) {
@@ -658,13 +661,15 @@ class IsoSolventReader extends AtomDataReader {
           noFaceSpheres.clear(ib);
           noFaceSpheres.clear(ic);
           //dumpLine(ptS1, dPX, "px", (dPX < solventRadius ? "red" : "blue"));
-          boolean isSingular = (ptS1.distance(ptS2) < 2 * solventRadius);
-          vFaces.add(new Face(ia, ib, ic, edge, ptS1, isSingular));
-          vFaces.add(new Face(ib, ia, ic, edge, ptS2, isSingular));
+          Face f = new Face(ia, ib, ic, edge, ptS1);
+          if (validateFace(f))
+            vFaces.add(f);
+          f = new Face(ib, ia, ic, edge, ptS2);
+          if (validateFace(f))
+            vFaces.add(f);
         }
       }
     }
-    Logger.info(vFaces.size() + "  (double-sided) faces");
   }
 
   private boolean getSolventPoints(int ia, int ib, int ic) {
@@ -720,7 +725,7 @@ class IsoSolventReader extends AtomDataReader {
     return true;
   }
 
-  private void validateFaces() {
+  private boolean validateFace(Face f) {
     /*
      * We must check each solvent position to see if there
      * are any atoms present that would overlap with it. 
@@ -732,43 +737,27 @@ class IsoSolventReader extends AtomDataReader {
      * 
      */
     float dist2 = solventRadius + maxRadius;
-    int n = 0;
-    int nSingular = 0;
-    for (int i = vFaces.size(); --i >= 0;) {
-      Face f = vFaces.get(i);
-      atomDataServer.setIteratorForPoint(iter, modelIndex, f.pS, dist2);
-      f.isValid = true;
-      while (iter.hasNext()) {
-        int ia = iter.next();
-        int iatom = myIndex[ia];
-        if (iatom == f.ia || iatom == f.ib || iatom == f.ic)
-          continue;
-        float d = atomData.atomXyz[ia].distance(f.pS);
-        if (d < atomData.atomRadius[ia] + solventRadius) {
-          f.isValid = false;
-          break;
-        }
-      }
-      f.setEdges();
-      if (f.isValid) {
-        n++;
-        if (f.isSingular)
-          nSingular++;
-        for (int k = 0; k < 3; k++) {
-          validSpheres.set(f.edges[k].ia);
-          validSpheres.set(f.edges[k].ib);
-        }
+    atomDataServer.setIteratorForPoint(iter, modelIndex, f.pS, dist2);
+    f.isValid = true;
+    while (iter.hasNext()) {
+      int ia = iter.next();
+      int iatom = myIndex[ia];
+      if (iatom == f.ia || iatom == f.ib || iatom == f.ic)
+        continue;
+      float d = atomData.atomXyz[ia].distance(f.pS);
+      if (d < atomData.atomRadius[ia] + solventRadius) {
+        f.isValid = false;
+        break;
       }
     }
-    Logger.info(n + " validated faces; " + nSingular + " singular");
-    /*
-    int[] nFaces = new int[11];
-    for (int ei = vEdges.size(); --ei >= 0;) {
-      int type = vEdges.get(ei).getType();
-      if (type < 10)
-        nFaces[type < 0 ? 0 : type + 1]++;
+    f.setEdges();
+    if (!f.isValid)
+      return false;
+    for (int k = 0; k < 3; k++) {
+      validSpheres.set(f.edges[k].ia);
+      validSpheres.set(f.edges[k].ib);
     }
-    */
+    return true;
   }
 
   private final Point3f ptY0 = new Point3f();
@@ -809,8 +798,8 @@ class IsoSolventReader extends AtomDataReader {
       Point3f ptB = atomXyz[f.ib];
       Point3f ptC = atomXyz[f.ic];
       Point3f ptS = f.pS;
-      if (Logger.debugging) {// || ptS.distance(new Point3f(14.460576f,13.85372f,2.8394585f/*11.366916f, 12.948542f, 5.944768f*/)) < 3.0 && fi == 78466) {
-        String color = (f.isSingular ? "red" : "green");
+      if (Logger.debugging) {
+        String color = "green";
         dumpLine(ptA, ptB, "f", color);
         dumpLine(ptB, ptC, "f", color);
         dumpLine(ptC, ptA, "f", color);
@@ -1010,8 +999,8 @@ class IsoSolventReader extends AtomDataReader {
     }
   }
 
-  private float checkSpecialVoxel(Point3f ptA, float rAS, Point3f ptB, float rBS,
-                          float dAB, Point3f ptV) {
+  private float checkSpecialVoxel(Point3f ptA, float rAS, Point3f ptB,
+                                  float rBS, float dAB, Point3f ptV) {
     /*
      * Checking here for voxels that are in the situation:
      * 

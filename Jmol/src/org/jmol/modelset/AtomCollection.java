@@ -1548,11 +1548,17 @@ abstract public class AtomCollection {
               && attached[0].getBondedAtomIndex(i) != atom.index) {
             x.sub(attached[0], attached[0].bonds[i].getOtherAtom(attached[0]));
             x.cross(z, x);
+            if (x.length() == 0)
+              continue;
             x.cross(x, z);
             break;
           }
         }
         x.normalize();
+        if (Float.isNaN(x.x)) {
+          x.set(vRef);
+          x.cross(x, z);
+        }
         // x is perp to bond
         vTemp.cross(z, x);
         vTemp.normalize();

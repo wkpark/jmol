@@ -660,7 +660,6 @@ class IsoSolventReader extends AtomDataReader {
           noFaceSpheres.clear(ia);
           noFaceSpheres.clear(ib);
           noFaceSpheres.clear(ic);
-          //dumpLine(ptS1, dPX, "px", (dPX < solventRadius ? "red" : "blue"));
           Face f = new Face(ia, ib, ic, edge, ptS1);
           if (validateFace(f))
             vFaces.add(f);

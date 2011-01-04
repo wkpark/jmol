@@ -284,8 +284,6 @@ class IsoSolventReader extends AtomDataReader {
    * @param valueB
    * @param pointA
    * @param edgeVector
-   * @param vA
-   * @param vB
    * @param fReturn
    * @param ptReturn
    * @return          fractional distance from A to B

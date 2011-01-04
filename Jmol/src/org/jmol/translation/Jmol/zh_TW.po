@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-11-14 10:32+0100\n"
+"POT-Creation-Date: 2011-01-04 23:43+0100\n"
 "PO-Revision-Date: 2010-11-16 00:06+0000\n"
 "Last-Translator: iychiang <iychiang1809@gmail.com>\n"
 "Language-Team: Traditional Chinese <zh_TW@li.org>\n"
@@ -18,7 +18,6 @@ msgstr ""
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
-#: org/openscience/jmol/app/webexport/WebMaker.java:66
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr "Jmol啟始錯誤:使用者家目錄 'user.home' 沒有定義。"
 
@@ -107,7 +106,9 @@ msgstr "視窗的 寬度 x 高度,例如 {0}"
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
-msgstr "JPG 影像壓縮品質(1-100;預設 75) 或 PNG 影像壓縮品質(0-9;預設 2,最大壓縮值為 9)"
+msgstr ""
+"JPG 影像壓縮品質(1-100;預設 75) 或 PNG 影像壓縮品質(0-9;預設 2,最大壓縮值為 "
+"9)"
 
 #: org/openscience/jmol/app/JmolApp.java:216
 #, java-format
@@ -1366,7 +1367,8 @@ msgstr "輸出至在{1}上的網頁功能{0}可產生網頁架構及JavaScript�
 msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
-msgstr "可以手動取得3-D模型，按{0}中的{1}。第一次載入applet時，須要相當長的下載時間。"
+msgstr ""
+"可以手動取得3-D模型，按{0}中的{1}。第一次載入applet時，須要相當長的下載時間。"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:360
 msgid "Insert the page TITLE here."
@@ -1540,115 +1542,115 @@ msgstr ""
 msgid "compressing large data file to"
 msgstr "正在壓縮大的資料檔至"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:60
+#: org/openscience/jmol/app/webexport/Widgets.java:62
 msgid "Spin on/off"
 msgstr "旋轉  開/關"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:78
+#: org/openscience/jmol/app/webexport/Widgets.java:80
 msgid "enable/disable spin"
 msgstr "開啟/關閉  旋轉"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:80
+#: org/openscience/jmol/app/webexport/Widgets.java:82
 msgid "Spin on"
 msgstr "開啟旋轉"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:86
+#: org/openscience/jmol/app/webexport/Widgets.java:88
 msgid "Background Color"
 msgstr "背景顏色"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:104
+#: org/openscience/jmol/app/webexport/Widgets.java:106
 msgid "background color:"
 msgstr "背景顏色:"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:117
+#: org/openscience/jmol/app/webexport/Widgets.java:119
 msgid "Stereo Viewing"
 msgstr "立體視覺"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:134
+#: org/openscience/jmol/app/webexport/Widgets.java:136
 msgid "select stereo type"
 msgstr "選擇立體視覺種類"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:138
+#: org/openscience/jmol/app/webexport/Widgets.java:140
 msgid "Stereo Off"
 msgstr "關閉立體視覺"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:139
+#: org/openscience/jmol/app/webexport/Widgets.java:141
 msgid "Red/Blue"
 msgstr "紅/藍"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:141
+#: org/openscience/jmol/app/webexport/Widgets.java:143
 msgid "Red/Cyan"
 msgstr "紅/靛"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:143
+#: org/openscience/jmol/app/webexport/Widgets.java:145
 msgid "Red/Green"
 msgstr "紅/綠"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:150
+#: org/openscience/jmol/app/webexport/Widgets.java:152
 msgid "Animation Control"
 msgstr "動畫控制"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:177
+#: org/openscience/jmol/app/webexport/Widgets.java:179
 msgid "Animation"
 msgstr "動畫"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:178
+#: org/openscience/jmol/app/webexport/Widgets.java:180
 msgid "First Frame"
 msgstr "第一格"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:180
+#: org/openscience/jmol/app/webexport/Widgets.java:182
 msgid "Previous Frame"
 msgstr "上一格"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:182
+#: org/openscience/jmol/app/webexport/Widgets.java:184
 msgid "Play"
 msgstr "播放"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:184
+#: org/openscience/jmol/app/webexport/Widgets.java:186
 msgid "Next Frame"
 msgstr "下一格"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:186
+#: org/openscience/jmol/app/webexport/Widgets.java:188
 msgid "Pause"
 msgstr "暫停"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:188
+#: org/openscience/jmol/app/webexport/Widgets.java:190
 msgid "Last Frame"
 msgstr "最後一格"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:190
+#: org/openscience/jmol/app/webexport/Widgets.java:192
 msgid "Mode:"
 msgstr "模式:"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:191
+#: org/openscience/jmol/app/webexport/Widgets.java:193
 msgid "Loop"
 msgstr "循環播放"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:193
+#: org/openscience/jmol/app/webexport/Widgets.java:195
 msgid "Palindrome"
 msgstr "迴文"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:195
+#: org/openscience/jmol/app/webexport/Widgets.java:197
 msgid "Play Once"
 msgstr "播放一次"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:204
+#: org/openscience/jmol/app/webexport/Widgets.java:206
 msgid "Open Console Button"
 msgstr "開啟指令列的按鍵"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:220
+#: org/openscience/jmol/app/webexport/Widgets.java:222
 msgid "launch Jmol console"
 msgstr "啟動 Jmol 指令列"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:222
+#: org/openscience/jmol/app/webexport/Widgets.java:224
 msgid "Jmol Console"
 msgstr "Jmol 主控台"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:227
+#: org/openscience/jmol/app/webexport/Widgets.java:229
 msgid "Download view"
 msgstr "下載觀看"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:245
+#: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr "未實作的"
 
@@ -1667,7 +1669,6 @@ msgstr "未實作的"
 #~ msgid "Jmol Script Console"
 #~ msgstr "Jmol Script 主控台"
 
-#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
@@ -1676,11 +1677,9 @@ msgstr "未實作的"
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "JmolPopIn.js加入中"
 
-#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "{0}.png加入中"
 
-#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "{0}.spt加入中"
 

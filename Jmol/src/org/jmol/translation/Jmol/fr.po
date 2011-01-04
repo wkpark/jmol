@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-11-14 10:32+0100\n"
+"POT-Creation-Date: 2011-01-04 23:43+0100\n"
 "PO-Revision-Date: 2010-11-22 23:39+0000\n"
 "Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
@@ -21,7 +21,6 @@ msgstr ""
 "X-Poedit-Basepath: ../../../..\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
-#: org/openscience/jmol/app/webexport/WebMaker.java:66
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr ""
 "Erreur au démarrage de Jmol : la propriété « user.home » n'est pas définie."
@@ -1114,8 +1113,7 @@ msgstr "Afficher pendant le calcul"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:245
 msgid "Should POV-Ray attempt to display while rendering?"
-msgstr ""
-"Est-ce que POV-Ray doit essayer d'afficher le rendu durant le calcul ?"
+msgstr "Est-ce que POV-Ray doit essayer d'afficher le rendu durant le calcul ?"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:268
 msgid "width:"
@@ -1563,115 +1561,115 @@ msgstr ""
 msgid "compressing large data file to"
 msgstr "compression de données volumineux dossier à"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:60
+#: org/openscience/jmol/app/webexport/Widgets.java:62
 msgid "Spin on/off"
 msgstr "Rotation active/inactive"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:78
+#: org/openscience/jmol/app/webexport/Widgets.java:80
 msgid "enable/disable spin"
 msgstr "activer/désactiver rotation"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:80
+#: org/openscience/jmol/app/webexport/Widgets.java:82
 msgid "Spin on"
 msgstr "Rotation active"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:86
+#: org/openscience/jmol/app/webexport/Widgets.java:88
 msgid "Background Color"
 msgstr "Couleur d'Arrière-plan"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:104
+#: org/openscience/jmol/app/webexport/Widgets.java:106
 msgid "background color:"
 msgstr "couleur d'arrière-plan :"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:117
+#: org/openscience/jmol/app/webexport/Widgets.java:119
 msgid "Stereo Viewing"
 msgstr "Affichage stéréo"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:134
+#: org/openscience/jmol/app/webexport/Widgets.java:136
 msgid "select stereo type"
 msgstr "sélectionner le type stéréo"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:138
+#: org/openscience/jmol/app/webexport/Widgets.java:140
 msgid "Stereo Off"
 msgstr "Stéréo inactif"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:139
+#: org/openscience/jmol/app/webexport/Widgets.java:141
 msgid "Red/Blue"
 msgstr "Rouge/Bleu"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:141
+#: org/openscience/jmol/app/webexport/Widgets.java:143
 msgid "Red/Cyan"
 msgstr "Rouge/Cyan"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:143
+#: org/openscience/jmol/app/webexport/Widgets.java:145
 msgid "Red/Green"
 msgstr "Rouge/Vert"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:150
+#: org/openscience/jmol/app/webexport/Widgets.java:152
 msgid "Animation Control"
 msgstr "Contrôle de l'animation"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:177
+#: org/openscience/jmol/app/webexport/Widgets.java:179
 msgid "Animation"
 msgstr "Animation"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:178
+#: org/openscience/jmol/app/webexport/Widgets.java:180
 msgid "First Frame"
 msgstr "Première image"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:180
+#: org/openscience/jmol/app/webexport/Widgets.java:182
 msgid "Previous Frame"
 msgstr "Image précédente"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:182
+#: org/openscience/jmol/app/webexport/Widgets.java:184
 msgid "Play"
 msgstr "Lecture"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:184
+#: org/openscience/jmol/app/webexport/Widgets.java:186
 msgid "Next Frame"
 msgstr "Image suivante"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:186
+#: org/openscience/jmol/app/webexport/Widgets.java:188
 msgid "Pause"
 msgstr "Pause"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:188
+#: org/openscience/jmol/app/webexport/Widgets.java:190
 msgid "Last Frame"
 msgstr "Dernière image"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:190
+#: org/openscience/jmol/app/webexport/Widgets.java:192
 msgid "Mode:"
 msgstr "Mode :"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:191
+#: org/openscience/jmol/app/webexport/Widgets.java:193
 msgid "Loop"
 msgstr "En boucle"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:193
+#: org/openscience/jmol/app/webexport/Widgets.java:195
 msgid "Palindrome"
 msgstr "Palindrome"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:195
+#: org/openscience/jmol/app/webexport/Widgets.java:197
 msgid "Play Once"
 msgstr "Lire une seule fois"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:204
+#: org/openscience/jmol/app/webexport/Widgets.java:206
 msgid "Open Console Button"
 msgstr "Bouton d'ouverture de console"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:220
+#: org/openscience/jmol/app/webexport/Widgets.java:222
 msgid "launch Jmol console"
 msgstr "lancer la console Jmol"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:222
+#: org/openscience/jmol/app/webexport/Widgets.java:224
 msgid "Jmol Console"
 msgstr "Console Jmol"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:227
+#: org/openscience/jmol/app/webexport/Widgets.java:229
 msgid "Download view"
 msgstr "Affichage de téléchargement"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:245
+#: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr "non-implémenté"
 
@@ -1694,19 +1692,16 @@ msgstr "non-implémenté"
 #~ msgid "Show Selected"
 #~ msgstr "Afficher les options sélectionnées"
 
-#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
-#~ "Insérer un texte explicatif pertinente ici. Long texte sera coupé entourent "
-#~ "le modèle de Jmol {0}."
+#~ "Insérer un texte explicatif pertinente ici. Long texte sera coupé "
+#~ "entourent le modèle de Jmol {0}."
 
-#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "ajoutant {0}. spt"
 
-#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "ajoutant {0}. png"
 

@@ -54,6 +54,15 @@ public class GT {
     public final String language;
     public final String nativeLanguage;
     private boolean display;
+
+    /**
+     * @param code Language code (see ISO 639-1 for the values)
+     * @param language Language name in English (see ISO 639-1 for the values)
+     * @param nativeLanguage Language name in its own language (see ISO 639-1 for the values)
+     * @param display True if this language has a good percentage of translations done
+     * 
+     * {@link "http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes"}
+     */
     public Language(String code, String language, String nativeLanguage, boolean display) {
       this.code = code;
       this.language = language;
@@ -134,7 +143,8 @@ public class GT {
       new Language("en_GB", GT._("British English"),      "British English",      true),
       new Language("en_US", GT._("American English"),     "American English",     true), // global default for "en" will be "en_US"
       new Language("es",    GT._("Spanish"),              "Español",              true),
-      new Language("et",    GT._("Estonian"),             "eesti",                false),
+      new Language("et",    GT._("Estonian"),             "Eesti",                false),
+      new Language("fi",    GT._("Finnish"),              "Suomi",                true),
       new Language("fo",    GT._("Faroese"),              "Føroyskt",             false),
       new Language("fr",    GT._("French"),               "Français",             true),
       new Language("hu",    GT._("Hungarian"),            "Magyar",               true),

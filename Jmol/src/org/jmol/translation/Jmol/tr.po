@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-11-14 10:32+0100\n"
+"POT-Creation-Date: 2011-01-04 23:43+0100\n"
 "PO-Revision-Date: 2010-09-06 21:25+0000\n"
 "Last-Translator: Angel Spy <melissadilara@yahoo.com>\n"
 "Language-Team: Turkish <yerellestirme@kde.org.tr>\n"
@@ -19,7 +19,6 @@ msgstr ""
 "X-Poedit-Language: Turkish\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
-#: org/openscience/jmol/app/webexport/WebMaker.java:66
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr "Jmol başlatmada hata: 'user.home' özelliği tanımlanmamış."
 
@@ -1547,115 +1546,115 @@ msgstr ""
 msgid "compressing large data file to"
 msgstr "geniş veri dosyası şuraya sıkıştırılıyor"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:60
+#: org/openscience/jmol/app/webexport/Widgets.java:62
 msgid "Spin on/off"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:78
+#: org/openscience/jmol/app/webexport/Widgets.java:80
 msgid "enable/disable spin"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:80
+#: org/openscience/jmol/app/webexport/Widgets.java:82
 msgid "Spin on"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:86
+#: org/openscience/jmol/app/webexport/Widgets.java:88
 msgid "Background Color"
 msgstr "Arkaplan Rengi"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:104
+#: org/openscience/jmol/app/webexport/Widgets.java:106
 msgid "background color:"
 msgstr "arkaplan rengi:"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:117
+#: org/openscience/jmol/app/webexport/Widgets.java:119
 msgid "Stereo Viewing"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:134
+#: org/openscience/jmol/app/webexport/Widgets.java:136
 msgid "select stereo type"
 msgstr "stereo türünü seç"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:138
+#: org/openscience/jmol/app/webexport/Widgets.java:140
 msgid "Stereo Off"
 msgstr "Stereo Kapalı"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:139
+#: org/openscience/jmol/app/webexport/Widgets.java:141
 msgid "Red/Blue"
 msgstr "Kırmızı/Mavi"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:141
+#: org/openscience/jmol/app/webexport/Widgets.java:143
 msgid "Red/Cyan"
 msgstr "Kırmızı/Camgöbeği"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:143
+#: org/openscience/jmol/app/webexport/Widgets.java:145
 msgid "Red/Green"
 msgstr "Kırmızı/Yeşil"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:150
+#: org/openscience/jmol/app/webexport/Widgets.java:152
 msgid "Animation Control"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:177
+#: org/openscience/jmol/app/webexport/Widgets.java:179
 msgid "Animation"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:178
+#: org/openscience/jmol/app/webexport/Widgets.java:180
 msgid "First Frame"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:180
+#: org/openscience/jmol/app/webexport/Widgets.java:182
 msgid "Previous Frame"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:182
+#: org/openscience/jmol/app/webexport/Widgets.java:184
 msgid "Play"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:184
+#: org/openscience/jmol/app/webexport/Widgets.java:186
 msgid "Next Frame"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:186
+#: org/openscience/jmol/app/webexport/Widgets.java:188
 msgid "Pause"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:188
+#: org/openscience/jmol/app/webexport/Widgets.java:190
 msgid "Last Frame"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:190
+#: org/openscience/jmol/app/webexport/Widgets.java:192
 msgid "Mode:"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:191
+#: org/openscience/jmol/app/webexport/Widgets.java:193
 msgid "Loop"
 msgstr "Döngü"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:193
+#: org/openscience/jmol/app/webexport/Widgets.java:195
 msgid "Palindrome"
 msgstr "Palindrom"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:195
+#: org/openscience/jmol/app/webexport/Widgets.java:197
 msgid "Play Once"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:204
+#: org/openscience/jmol/app/webexport/Widgets.java:206
 msgid "Open Console Button"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:220
+#: org/openscience/jmol/app/webexport/Widgets.java:222
 msgid "launch Jmol console"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:222
+#: org/openscience/jmol/app/webexport/Widgets.java:224
 msgid "Jmol Console"
 msgstr "Jmol Konsolu"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:227
+#: org/openscience/jmol/app/webexport/Widgets.java:229
 msgid "Download view"
 msgstr "İndirme görünümü"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:245
+#: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr ""
 
@@ -1668,11 +1667,9 @@ msgstr ""
 #~ msgid "Show Selected"
 #~ msgstr "Seçilenleri Göster"
 
-#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "{0}.spt ekleniyor"
 
-#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "{0}.png ekleniyor"
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-11-14 10:32+0100\n"
+"POT-Creation-Date: 2011-01-04 23:43+0100\n"
 "PO-Revision-Date: 2010-10-15 23:49+0000\n"
 "Last-Translator: Sergey Basalaev <SBasalaev@gmail.com>\n"
 "Language-Team: Russian <ru@li.org>\n"
@@ -18,7 +18,6 @@ msgstr ""
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
-#: org/openscience/jmol/app/webexport/WebMaker.java:66
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr "Ошибка при запуске Jmol: свойство 'user.home' не определено"
 
@@ -1546,122 +1545,121 @@ msgstr ""
 msgid "compressing large data file to"
 msgstr "сжатие большого файла данных в"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:60
+#: org/openscience/jmol/app/webexport/Widgets.java:62
 msgid "Spin on/off"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:78
+#: org/openscience/jmol/app/webexport/Widgets.java:80
 msgid "enable/disable spin"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:80
+#: org/openscience/jmol/app/webexport/Widgets.java:82
 msgid "Spin on"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:86
+#: org/openscience/jmol/app/webexport/Widgets.java:88
 msgid "Background Color"
 msgstr "Цвет фона"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:104
+#: org/openscience/jmol/app/webexport/Widgets.java:106
 msgid "background color:"
 msgstr "цвет фона:"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:117
+#: org/openscience/jmol/app/webexport/Widgets.java:119
 msgid "Stereo Viewing"
 msgstr "Стерео просмотр"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:134
+#: org/openscience/jmol/app/webexport/Widgets.java:136
 msgid "select stereo type"
 msgstr "выбор режима стерео"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:138
+#: org/openscience/jmol/app/webexport/Widgets.java:140
 msgid "Stereo Off"
 msgstr "Выключить стерео"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:139
+#: org/openscience/jmol/app/webexport/Widgets.java:141
 msgid "Red/Blue"
 msgstr "Красный/синий"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:141
+#: org/openscience/jmol/app/webexport/Widgets.java:143
 msgid "Red/Cyan"
 msgstr "Красный/голубой"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:143
+#: org/openscience/jmol/app/webexport/Widgets.java:145
 msgid "Red/Green"
 msgstr "Красный/зелёный"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:150
+#: org/openscience/jmol/app/webexport/Widgets.java:152
 msgid "Animation Control"
 msgstr "Управление анимацией"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:177
+#: org/openscience/jmol/app/webexport/Widgets.java:179
 msgid "Animation"
 msgstr "Анимация"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:178
+#: org/openscience/jmol/app/webexport/Widgets.java:180
 msgid "First Frame"
 msgstr "Первый кадр"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:180
+#: org/openscience/jmol/app/webexport/Widgets.java:182
 msgid "Previous Frame"
 msgstr "Предыдущий кадр"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:182
+#: org/openscience/jmol/app/webexport/Widgets.java:184
 msgid "Play"
 msgstr "Воспроизвести"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:184
+#: org/openscience/jmol/app/webexport/Widgets.java:186
 msgid "Next Frame"
 msgstr "Следующий кадр"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:186
+#: org/openscience/jmol/app/webexport/Widgets.java:188
 msgid "Pause"
 msgstr "Приостановить"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:188
+#: org/openscience/jmol/app/webexport/Widgets.java:190
 msgid "Last Frame"
 msgstr "Последний кадр"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:190
+#: org/openscience/jmol/app/webexport/Widgets.java:192
 msgid "Mode:"
 msgstr "Режим:"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:191
+#: org/openscience/jmol/app/webexport/Widgets.java:193
 msgid "Loop"
 msgstr "Повторение"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:193
+#: org/openscience/jmol/app/webexport/Widgets.java:195
 msgid "Palindrome"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:195
+#: org/openscience/jmol/app/webexport/Widgets.java:197
 msgid "Play Once"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:204
+#: org/openscience/jmol/app/webexport/Widgets.java:206
 msgid "Open Console Button"
 msgstr "Кнопка открытия консоли"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:220
+#: org/openscience/jmol/app/webexport/Widgets.java:222
 msgid "launch Jmol console"
 msgstr "запустить консоль Jmol"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:222
+#: org/openscience/jmol/app/webexport/Widgets.java:224
 msgid "Jmol Console"
 msgstr "Jmol Консоль"
 
-#: org/openscience/jmol/app/webexport/Widgets.java:227
+#: org/openscience/jmol/app/webexport/Widgets.java:229
 msgid "Download view"
 msgstr ""
 
-#: org/openscience/jmol/app/webexport/Widgets.java:245
+#: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr "не реализовано"
 
 #~ msgid "Jmol Script Console"
 #~ msgstr "Консоль сценариев Jmol"
 
-#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Перейти к следующему {0} в коллекции"
 
@@ -1671,32 +1669,26 @@ msgstr "не реализовано"
 #~ msgid "atom set"
 #~ msgstr "Набор атомов"
 
-#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Идти к первой {0} в коллекции"
 
-#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Идти к предыдущей {0} в коллекции"
 
-#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Смотреть всю коллекцию {0}"
 
-#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Перейти к последней {0} в коллекции"
 
 #~ msgid "Show Selected"
 #~ msgstr "Показать Выбранное"
 
-#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "добавление {0}.spt"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "добавление JmolPopIn.js"
 
-#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "добавление {0}.png"

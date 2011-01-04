@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2010-12-18 10:41+0100\n"
+"POT-Creation-Date: 2011-01-04 23:56+0100\n"
 "PO-Revision-Date: 2010-12-16 13:07+0000\n"
 "Last-Translator: LI Anbang <lianbang@gmail.com>\n"
 "Language-Team: Simplified Chinese <zh_CN@li.org>\n"
@@ -349,127 +349,132 @@ msgstr "预览"
 msgid "Append models"
 msgstr "附加模型"
 
-#: org/jmol/i18n/GT.java:128
+#: org/jmol/i18n/GT.java:137
 msgid "Arabic"
 msgstr "阿拉伯语"
 
-#: org/jmol/i18n/GT.java:129
+#: org/jmol/i18n/GT.java:138
 msgid "Catalan"
 msgstr "加泰隆语"
 
-#: org/jmol/i18n/GT.java:130
+#: org/jmol/i18n/GT.java:139
 msgid "Czech"
 msgstr "捷克语"
 
-#: org/jmol/i18n/GT.java:131
+#: org/jmol/i18n/GT.java:140
 msgid "Danish"
 msgstr "丹麦语"
 
-#: org/jmol/i18n/GT.java:132
+#: org/jmol/i18n/GT.java:141
 msgid "German"
 msgstr "德语"
 
-#: org/jmol/i18n/GT.java:133
+#: org/jmol/i18n/GT.java:142
 msgid "Greek"
 msgstr "希腊语"
 
-#: org/jmol/i18n/GT.java:134
+#: org/jmol/i18n/GT.java:143
 msgid "British English"
 msgstr "英式英语"
 
-#: org/jmol/i18n/GT.java:135
+#: org/jmol/i18n/GT.java:144
 msgid "American English"
 msgstr "美式英语"
 
-#: org/jmol/i18n/GT.java:136
+#: org/jmol/i18n/GT.java:145
 msgid "Spanish"
 msgstr "西班牙语"
 
-#: org/jmol/i18n/GT.java:137
+#: org/jmol/i18n/GT.java:146
 msgid "Estonian"
 msgstr "爱沙尼亚语"
 
-#: org/jmol/i18n/GT.java:138
+#: org/jmol/i18n/GT.java:147
+#, fuzzy
+msgid "Finnish"
+msgstr "丹麦语"
+
+#: org/jmol/i18n/GT.java:148
 msgid "Faroese"
 msgstr "法罗斯语"
 
-#: org/jmol/i18n/GT.java:139
+#: org/jmol/i18n/GT.java:149
 msgid "French"
 msgstr "法语"
 
-#: org/jmol/i18n/GT.java:140
+#: org/jmol/i18n/GT.java:150
 msgid "Hungarian"
 msgstr "匈牙利语"
 
-#: org/jmol/i18n/GT.java:141
+#: org/jmol/i18n/GT.java:151
 msgid "Indonesian"
 msgstr "印度尼西亚语(Indonesian)"
 
-#: org/jmol/i18n/GT.java:142
+#: org/jmol/i18n/GT.java:152
 msgid "Italian"
 msgstr "意大利语"
 
-#: org/jmol/i18n/GT.java:143
+#: org/jmol/i18n/GT.java:153
 msgid "Japanese"
 msgstr "日语"
 
-#: org/jmol/i18n/GT.java:144
+#: org/jmol/i18n/GT.java:154
 msgid "Korean"
 msgstr "韩语"
 
-#: org/jmol/i18n/GT.java:145
+#: org/jmol/i18n/GT.java:155
 msgid "Norwegian Bokmal"
 msgstr "挪威波克默尔语"
 
-#: org/jmol/i18n/GT.java:146
+#: org/jmol/i18n/GT.java:156
 msgid "Dutch"
 msgstr "荷兰语"
 
-#: org/jmol/i18n/GT.java:147
+#: org/jmol/i18n/GT.java:157
 msgid "Occitan"
 msgstr "欧希特语(Occitan)"
 
-#: org/jmol/i18n/GT.java:148
+#: org/jmol/i18n/GT.java:158
 msgid "Polish"
 msgstr "波兰语"
 
-#: org/jmol/i18n/GT.java:149
+#: org/jmol/i18n/GT.java:159
 msgid "Portuguese"
 msgstr "葡萄牙语"
 
-#: org/jmol/i18n/GT.java:150
+#: org/jmol/i18n/GT.java:160
 msgid "Brazilian Portuguese"
 msgstr "巴西葡萄牙语"
 
-#: org/jmol/i18n/GT.java:151
+#: org/jmol/i18n/GT.java:161
 msgid "Russian"
 msgstr "俄罗斯语"
 
-#: org/jmol/i18n/GT.java:152
+#: org/jmol/i18n/GT.java:162
 msgid "Slovenian"
 msgstr "斯洛维尼亚语"
 
-#: org/jmol/i18n/GT.java:153
+#: org/jmol/i18n/GT.java:163
 msgid "Swedish"
 msgstr "瑞典语"
 
-#: org/jmol/i18n/GT.java:154
+#: org/jmol/i18n/GT.java:164
 msgid "Tamil"
 msgstr "泰米尔语"
 
-#: org/jmol/i18n/GT.java:155
+#: org/jmol/i18n/GT.java:165
 msgid "Turkish"
 msgstr "土耳其语"
 
-#: org/jmol/i18n/GT.java:156
+#: org/jmol/i18n/GT.java:166
 msgid "Ukrainian"
 msgstr "乌克兰语"
 
-#: org/jmol/i18n/GT.java:157
+#: org/jmol/i18n/GT.java:167
 msgid "Simplified Chinese"
 msgstr "简体中文"
 
-#: org/jmol/i18n/GT.java:158
+#: org/jmol/i18n/GT.java:168
 msgid "Traditional Chinese"
 msgstr "繁体中文"
 
@@ -1751,353 +1756,353 @@ msgstr "RasMol 颜色"
 msgid "About..."
 msgstr "关于..."
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1236
-#: org/jmol/script/ScriptEvaluator.java:2598
+#: org/jmol/script/ScriptCompilationTokenParser.java:1238
+#: org/jmol/script/ScriptEvaluator.java:2626
 msgid "bad argument count"
 msgstr "参数数目错误"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1239
+#: org/jmol/script/ScriptCompilationTokenParser.java:1241
 #, java-format
 msgid "invalid context for {0}"
 msgstr "上下文对 {0} 无效"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1242
-#: org/jmol/script/ScriptEvaluator.java:2622
+#: org/jmol/script/ScriptCompilationTokenParser.java:1244
+#: org/jmol/script/ScriptEvaluator.java:2650
 msgid "command expected"
 msgstr "需要指令"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1245
+#: org/jmol/script/ScriptCompilationTokenParser.java:1247
 msgid "{ number number number } expected"
 msgstr "需要 {数值 数值 数值}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1248
-#: org/jmol/script/ScriptEvaluator.java:2631
+#: org/jmol/script/ScriptCompilationTokenParser.java:1250
+#: org/jmol/script/ScriptEvaluator.java:2659
 msgid "unexpected end of script command"
 msgstr "非预期的脚本命令结尾"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1251
+#: org/jmol/script/ScriptCompilationTokenParser.java:1253
 msgid "end of expression expected"
 msgstr "需要表达式结尾"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1254
+#: org/jmol/script/ScriptCompilationTokenParser.java:1256
 msgid "identifier or residue specification expected"
 msgstr "需要标识符或指定残基"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1257
+#: org/jmol/script/ScriptCompilationTokenParser.java:1259
 msgid "invalid atom specification"
 msgstr "指定原子无效"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1260
+#: org/jmol/script/ScriptCompilationTokenParser.java:1262
 msgid "invalid chain specification"
 msgstr "指定键无效"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1263
+#: org/jmol/script/ScriptCompilationTokenParser.java:1265
 #, java-format
 msgid "invalid expression token: {0}"
 msgstr "表达式标记无效：{0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1266
+#: org/jmol/script/ScriptCompilationTokenParser.java:1268
 msgid "invalid model specification"
 msgstr "指定模型无效"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1269
+#: org/jmol/script/ScriptCompilationTokenParser.java:1271
 #, java-format
 msgid "missing END for {0}"
 msgstr "{0} 缺失 END 结束符"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1272
-#: org/jmol/script/ScriptEvaluator.java:2698
+#: org/jmol/script/ScriptCompilationTokenParser.java:1274
+#: org/jmol/script/ScriptEvaluator.java:2726
 msgid "number expected"
 msgstr "需要数值"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1275
+#: org/jmol/script/ScriptCompilationTokenParser.java:1277
 msgid "number or variable name expected"
 msgstr "需要数字或变量名"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1278
+#: org/jmol/script/ScriptCompilationTokenParser.java:1280
 msgid "residue specification (ALA, AL?, A*) expected"
 msgstr "需要指定残基 (ALA, AL?, A*)"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1281
+#: org/jmol/script/ScriptCompilationTokenParser.java:1283
 #, java-format
 msgid "{0} expected"
 msgstr "需要{0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1284
+#: org/jmol/script/ScriptCompilationTokenParser.java:1286
 #, java-format
 msgid "{0} unexpected"
 msgstr "不需要 {0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1287
+#: org/jmol/script/ScriptCompilationTokenParser.java:1289
 #, java-format
 msgid "unrecognized expression token: {0}"
 msgstr "无法识别的表达式标记：{0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1290
-#: org/jmol/script/ScriptEvaluator.java:2747
+#: org/jmol/script/ScriptCompilationTokenParser.java:1292
+#: org/jmol/script/ScriptEvaluator.java:2775
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr "无法识别参数：{0}"
 
-#: org/jmol/script/ScriptCompilationTokenParser.java:1293
+#: org/jmol/script/ScriptCompilationTokenParser.java:1295
 #, java-format
 msgid "unrecognized token: {0}"
 msgstr "无法识别标记：{0}"
 
-#: org/jmol/script/ScriptCompiler.java:2471
+#: org/jmol/script/ScriptCompiler.java:2468
 msgid "script compiler ERROR: "
 msgstr "脚本编译器错误： "
 
-#: org/jmol/script/ScriptEvaluator.java:2444
-#: org/jmol/script/ScriptEvaluator.java:9735
+#: org/jmol/script/ScriptEvaluator.java:2472
+#: org/jmol/script/ScriptEvaluator.java:9749
 msgid "script ERROR: "
 msgstr "脚本错误： "
 
-#: org/jmol/script/ScriptEvaluator.java:2592
+#: org/jmol/script/ScriptEvaluator.java:2620
 msgid "x y z axis expected"
 msgstr "需要 x y z 轴"
 
-#: org/jmol/script/ScriptEvaluator.java:2595
+#: org/jmol/script/ScriptEvaluator.java:2623
 #, java-format
 msgid "{0} not allowed with background model displayed"
 msgstr "在显示背景模型时不允许 {0}"
 
-#: org/jmol/script/ScriptEvaluator.java:2601
+#: org/jmol/script/ScriptEvaluator.java:2629
 msgid "Miller indices cannot all be zero."
 msgstr "米勒指数(Miller Index)不可为 0"
 
-#: org/jmol/script/ScriptEvaluator.java:2604
+#: org/jmol/script/ScriptEvaluator.java:2632
 msgid "bad [R,G,B] color"
 msgstr "[R,G,B] 颜色值无效"
 
-#: org/jmol/script/ScriptEvaluator.java:2607
+#: org/jmol/script/ScriptEvaluator.java:2635
 msgid "boolean expected"
 msgstr "需要布尔真假值"
 
-#: org/jmol/script/ScriptEvaluator.java:2610
+#: org/jmol/script/ScriptEvaluator.java:2638
 msgid "boolean or number expected"
 msgstr "需要布尔真假值或数值"
 
-#: org/jmol/script/ScriptEvaluator.java:2613
+#: org/jmol/script/ScriptEvaluator.java:2641
 #, java-format
 msgid "boolean, number, or {0} expected"
 msgstr "需要布尔真假值、数值或{0}"
 
-#: org/jmol/script/ScriptEvaluator.java:2616
+#: org/jmol/script/ScriptEvaluator.java:2644
 msgid "color expected"
 msgstr "需要颜色"
 
-#: org/jmol/script/ScriptEvaluator.java:2619
+#: org/jmol/script/ScriptEvaluator.java:2647
 msgid "a color or palette name (Jmol, Rasmol) is required"
 msgstr "必须有颜色或调色盘名称 (Jmol, Rasmol)"
 
-#: org/jmol/script/ScriptEvaluator.java:2625
+#: org/jmol/script/ScriptEvaluator.java:2653
 msgid "{x y z} or $name or (atom expression) required"
 msgstr "必须有{x y z} 或 $name 或 (原子表示式)"
 
-#: org/jmol/script/ScriptEvaluator.java:2628
+#: org/jmol/script/ScriptEvaluator.java:2656
 msgid "draw object not defined"
 msgstr "未定义绘图对象"
 
-#: org/jmol/script/ScriptEvaluator.java:2634
+#: org/jmol/script/ScriptEvaluator.java:2662
 msgid "valid (atom expression) expected"
 msgstr "需要有效的原子表达式"
 
-#: org/jmol/script/ScriptEvaluator.java:2637
+#: org/jmol/script/ScriptEvaluator.java:2665
 msgid "(atom expression) or integer expected"
 msgstr "需要原子表达式或整数"
 
-#: org/jmol/script/ScriptEvaluator.java:2640
+#: org/jmol/script/ScriptEvaluator.java:2668
 msgid "filename expected"
 msgstr "需要文件名"
 
-#: org/jmol/script/ScriptEvaluator.java:2643
+#: org/jmol/script/ScriptEvaluator.java:2671
 msgid "file not found"
 msgstr "文件未找到"
 
-#: org/jmol/script/ScriptEvaluator.java:2646
+#: org/jmol/script/ScriptEvaluator.java:2674
 msgid "incompatible arguments"
 msgstr "参数不相容"
 
-#: org/jmol/script/ScriptEvaluator.java:2649
+#: org/jmol/script/ScriptEvaluator.java:2677
 msgid "insufficient arguments"
 msgstr "缺少参数"
 
-#: org/jmol/script/ScriptEvaluator.java:2652
+#: org/jmol/script/ScriptEvaluator.java:2680
 msgid "integer expected"
 msgstr "需要整数"
 
-#: org/jmol/script/ScriptEvaluator.java:2655
+#: org/jmol/script/ScriptEvaluator.java:2683
 #, java-format
 msgid "integer out of range ({0} - {1})"
 msgstr "整数超出({0} - {1})范围"
 
-#: org/jmol/script/ScriptEvaluator.java:2658
+#: org/jmol/script/ScriptEvaluator.java:2686
 msgid "invalid argument"
 msgstr "无效参数"
 
-#: org/jmol/script/ScriptEvaluator.java:2661
+#: org/jmol/script/ScriptEvaluator.java:2689
 msgid "invalid parameter order"
 msgstr "参数顺序无效"
 
-#: org/jmol/script/ScriptEvaluator.java:2664
+#: org/jmol/script/ScriptEvaluator.java:2692
 msgid "keyword expected"
 msgstr "需要关键词"
 
-#: org/jmol/script/ScriptEvaluator.java:2667
+#: org/jmol/script/ScriptEvaluator.java:2695
 msgid "no MO coefficient data available"
 msgstr "无分子轨域(MO)的系数数据可用"
 
-#: org/jmol/script/ScriptEvaluator.java:2670
+#: org/jmol/script/ScriptEvaluator.java:2698
 #, java-format
 msgid "An MO index from 1 to {0} is required"
 msgstr "分子轨域(MO)索引值必须介在1到{0}之间"
 
-#: org/jmol/script/ScriptEvaluator.java:2673
+#: org/jmol/script/ScriptEvaluator.java:2701
 msgid "no MO basis/coefficient data available for this frame"
 msgstr "这个结构没有分子轨域(MO)的基底(basis)或参数资料可用"
 
-#: org/jmol/script/ScriptEvaluator.java:2676
+#: org/jmol/script/ScriptEvaluator.java:2704
 msgid "no MO occupancy data available"
 msgstr "没有分子轨域(MO)的占据数据可用"
 
-#: org/jmol/script/ScriptEvaluator.java:2679
+#: org/jmol/script/ScriptEvaluator.java:2707
 msgid "Only one molecular orbital is available in this file"
 msgstr "在这个文件中只有一个分子轨域(MO)可用"
 
-#: org/jmol/script/ScriptEvaluator.java:2682
+#: org/jmol/script/ScriptEvaluator.java:2710
 #, java-format
 msgid "{0} require that only one model be displayed"
 msgstr "{0} 要求只显示一个模型"
 
-#: org/jmol/script/ScriptEvaluator.java:2685
+#: org/jmol/script/ScriptEvaluator.java:2713
 #, java-format
 msgid "{0} requires that only one model be loaded"
 msgstr "{0} 要求仅有一个模型被加载"
 
-#: org/jmol/script/ScriptEvaluator.java:2688
+#: org/jmol/script/ScriptEvaluator.java:2716
 msgid "No data available"
 msgstr "无可用数据"
 
-#: org/jmol/script/ScriptEvaluator.java:2692
+#: org/jmol/script/ScriptEvaluator.java:2720
 msgid ""
 "No partial charges were read from the file; Jmol needs these to render the "
 "MEP data."
 msgstr "未从文件中读取到局部电荷；Jmol需要它们来 MEP 数据。"
 
-#: org/jmol/script/ScriptEvaluator.java:2695
+#: org/jmol/script/ScriptEvaluator.java:2723
 msgid "No unit cell"
 msgstr "无单位晶格"
 
-#: org/jmol/script/ScriptEvaluator.java:2701
+#: org/jmol/script/ScriptEvaluator.java:2729
 #, java-format
 msgid "number must be ({0} or {1})"
 msgstr "数值必需是({0} 或 {1})"
 
-#: org/jmol/script/ScriptEvaluator.java:2704
+#: org/jmol/script/ScriptEvaluator.java:2732
 #, java-format
 msgid "decimal number out of range ({0} - {1})"
 msgstr "十进位数值超出({0} - {1})之间"
 
-#: org/jmol/script/ScriptEvaluator.java:2707
+#: org/jmol/script/ScriptEvaluator.java:2735
 msgid "object name expected after '$'"
 msgstr "'$'之后应该是对象名"
 
-#: org/jmol/script/ScriptEvaluator.java:2711
+#: org/jmol/script/ScriptEvaluator.java:2739
 #, java-format
 msgid ""
 "plane expected -- either three points or atom expressions or {0} or {1} or "
 "{2}"
 msgstr "需要有平面——3个点或原子表示式，或 {0} 或 {1} 或 {2}"
 
-#: org/jmol/script/ScriptEvaluator.java:2714
+#: org/jmol/script/ScriptEvaluator.java:2742
 msgid "property name expected"
 msgstr "需要属性名"
 
-#: org/jmol/script/ScriptEvaluator.java:2717
+#: org/jmol/script/ScriptEvaluator.java:2745
 #, java-format
 msgid "space group {0} was not found."
 msgstr "空间群{0} 未发现"
 
-#: org/jmol/script/ScriptEvaluator.java:2720
+#: org/jmol/script/ScriptEvaluator.java:2748
 msgid "quoted string expected"
 msgstr "需要有加引号的字符串"
 
-#: org/jmol/script/ScriptEvaluator.java:2723
+#: org/jmol/script/ScriptEvaluator.java:2751
 msgid "quoted string or identifier expected"
 msgstr "需要有加引号的字符或标识符"
 
-#: org/jmol/script/ScriptEvaluator.java:2726
+#: org/jmol/script/ScriptEvaluator.java:2754
 msgid "too many rotation points were specified"
 msgstr "指定了太多的旋转点"
 
-#: org/jmol/script/ScriptEvaluator.java:2729
+#: org/jmol/script/ScriptEvaluator.java:2757
 msgid "too many script levels"
 msgstr "脚本层次太多"
 
-#: org/jmol/script/ScriptEvaluator.java:2732
+#: org/jmol/script/ScriptEvaluator.java:2760
 msgid "unrecognized atom property"
 msgstr "无法辩识的原子属性"
 
-#: org/jmol/script/ScriptEvaluator.java:2735
+#: org/jmol/script/ScriptEvaluator.java:2763
 msgid "unrecognized bond property"
 msgstr "无法辩识的化学键属性"
 
-#: org/jmol/script/ScriptEvaluator.java:2738
+#: org/jmol/script/ScriptEvaluator.java:2766
 msgid "unrecognized command"
 msgstr "无法辨识的指令"
 
-#: org/jmol/script/ScriptEvaluator.java:2741
+#: org/jmol/script/ScriptEvaluator.java:2769
 msgid "runtime unrecognized expression"
 msgstr "执行时无法辨识的表示式"
 
-#: org/jmol/script/ScriptEvaluator.java:2744
+#: org/jmol/script/ScriptEvaluator.java:2772
 msgid "unrecognized object"
 msgstr "无法辨识的对象"
 
-#: org/jmol/script/ScriptEvaluator.java:2751
+#: org/jmol/script/ScriptEvaluator.java:2779
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
 msgstr "Jmol 状态脚本中参数 {0} 无法辨识"
 
-#: org/jmol/script/ScriptEvaluator.java:2754
+#: org/jmol/script/ScriptEvaluator.java:2782
 #, java-format
 msgid "unrecognized SHOW parameter --  use {0}"
 msgstr "无法辨识 SHOW 的参数 -- 使用{0}"
 
-#: org/jmol/script/ScriptEvaluator.java:2760
+#: org/jmol/script/ScriptEvaluator.java:2788
 #, java-format
 msgid "write what? {0} or {1} \"filename\""
 msgstr "写什么呢？{0} 或 {1} \"文件名\""
 
-#: org/jmol/script/ScriptEvaluator.java:7026
+#: org/jmol/script/ScriptEvaluator.java:7034
 #, java-format
 msgid "{0} connections deleted"
 msgstr "己删除 {0} 个连接"
 
-#: org/jmol/script/ScriptEvaluator.java:7047
+#: org/jmol/script/ScriptEvaluator.java:7055
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} 个新化学键; {1} 个己修改"
 
-#: org/jmol/script/ScriptEvaluator.java:8419
+#: org/jmol/script/ScriptEvaluator.java:8427
 #, java-format
 msgid "file {0} created"
 msgstr "已创建文件： {0}"
 
-#: org/jmol/script/ScriptEvaluator.java:9868
-#: org/jmol/script/ScriptEvaluator.java:10124
+#: org/jmol/script/ScriptEvaluator.java:9883
+#: org/jmol/script/ScriptEvaluator.java:10139
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "己删除 {0} 个原子"
 
-#: org/jmol/script/ScriptEvaluator.java:10697
-#: org/jmol/script/ScriptEvaluator.java:11109
+#: org/jmol/script/ScriptEvaluator.java:10717
+#: org/jmol/script/ScriptEvaluator.java:11129
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} 个氢键"
 
-#: org/jmol/script/ScriptEvaluator.java:11063
+#: org/jmol/script/ScriptEvaluator.java:11083
 #, java-format
 msgid "{0} struts added"
 msgstr "已增加 {0} struts"
@@ -2351,24 +2356,24 @@ msgstr "{0} 个原子己隐藏"
 msgid "{0} atoms selected"
 msgstr "{0} 个原子己选定"
 
-#: org/jmol/viewer/Viewer.java:4506
+#: org/jmol/viewer/Viewer.java:4514
 #, java-format
 msgid "{0} hydrogens added"
 msgstr "{0} 个氢原子已增加"
 
-#: org/jmol/viewer/Viewer.java:4586
+#: org/jmol/viewer/Viewer.java:4594
 msgid "Drag to move label"
 msgstr "拖拽移动标签"
 
-#: org/jmol/viewer/Viewer.java:8135
+#: org/jmol/viewer/Viewer.java:8143
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "不能存取剪贴板——请用使用签署过的小程序 (applet)"
 
-#: org/jmol/viewer/Viewer.java:8890
+#: org/jmol/viewer/Viewer.java:8898
 msgid "Cannot set log file path."
 msgstr "无法设置日志文件路径"
 
-#: org/jmol/viewer/Viewer.java:8892
+#: org/jmol/viewer/Viewer.java:8901
 #, java-format
 msgid "Setting log file to {0}"
 msgstr "设定日志文件为 {0}"

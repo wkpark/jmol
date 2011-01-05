@@ -146,7 +146,9 @@ class IsoSolventReader extends AtomDataReader {
   private float[] voxelRadii;
   private BitSet bsSurfaceVoxels, bsSurfacePoints, bsSurfaceDone;
   private BitSet[] bsLocale;
+  private Map<String, Edge> htEdges;
   private List<Edge> vEdges;
+  private Edge[] aEdges;
   private List<Face> vFaces;
   private BitSet validSpheres, noFaceSpheres;
   protected Vector3f vTemp = new Vector3f();
@@ -492,6 +494,7 @@ class IsoSolventReader extends AtomDataReader {
       vFaces = new ArrayList<Face>();
       getFaces();
       Logger.info(vFaces.size() + " faces");
+      vEdges = null;
       bsLocale = null;
       htEdges = null;
 
@@ -522,7 +525,7 @@ class IsoSolventReader extends AtomDataReader {
       //       they will be discarded in post-processing of the surface
       //       fragment sets.
       markToroidVoxels();
-      vEdges = null;
+      aEdges = null;
 
       // 3) -- Third pass is to mark "-F" voxels (just below the surface)
       markFaceVoxels(false);
@@ -532,6 +535,8 @@ class IsoSolventReader extends AtomDataReader {
     // 4) -- Final pass for SES and SAS is to mark "-S" (within atom sphere)
     //       and "+S" (just outside the sphere) voxels
     markSphereVoxels(0, doCalculateTroughs ? Float.MAX_VALUE : params.distance);
+    noFaceSpheres = null;
+    validSpheres = null;
   }
 
   private void getEdges() {
@@ -600,8 +605,6 @@ class IsoSolventReader extends AtomDataReader {
 
   }
 
-  private Map<String, Edge> htEdges;
-
   protected Edge findEdge(int i, int j) {
     return htEdges.get(i < j ? i + "_" + j : j + "_" + i);
   }
@@ -667,6 +670,13 @@ class IsoSolventReader extends AtomDataReader {
         }
       }
     }
+    BitSet bsOK = new BitSet();
+    for (int i = vEdges.size(); --i >= 0;)
+      if (vEdges.get(i).getType() >= 0)
+        bsOK.set(i);
+    aEdges = new Edge[bsOK.cardinality()];
+    for (int i = bsOK.nextSetBit(0), j = 0; i >= 0; i = bsOK.nextSetBit(i + 1))
+      aEdges[j++] = vEdges.get(i);
   }
 
   private boolean getSolventPoints(int ia, int ib, int ic) {
@@ -754,6 +764,7 @@ class IsoSolventReader extends AtomDataReader {
       validSpheres.set(f.edges[k].ia);
       validSpheres.set(f.edges[k].ib);
     }
+    f.edges = null;
     return true;
   }
 
@@ -854,10 +865,8 @@ class IsoSolventReader extends AtomDataReader {
     Point3i ptA1 = new Point3i();
     Point3i ptB1 = new Point3i();
 
-    for (int ei = vEdges.size(); --ei >= 0;) {
-      Edge edge = vEdges.get(ei);
-      if (edge.getType() < 0)
-        continue;
+    for (int ei = 0; ei < aEdges.length; ei++) {
+      Edge edge = aEdges[ei];
       int ia = edge.ia;
       int ib = edge.ib;
       Point3f ptA = atomXyz[ia];

@@ -288,9 +288,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         return;
     }
 
-    if ("colorMesh" == propertyName) {
+    if ("meshcolor" == propertyName) {
       int rgb = ((Integer) value).intValue();
       meshColix = Graphics3D.getColix(rgb);
+      if (thisMesh != null)
+        thisMesh.meshColix = meshColix;
       return;
     }
 
@@ -586,6 +588,17 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     }
     if (property == "jvxlFileInfo")
       return JvxlCoder.jvxlGetInfo(jvxlData);
+    if (property == "command") {
+      String key = previousMeshID.toUpperCase();
+      boolean isWild = TextFormat.isWild(key);
+      StringBuffer sb = new StringBuffer();
+      for (int i = meshCount; --i >= 0;) {
+        String id = meshes[i].thisID.toUpperCase();
+        if (id.equals(key) || isWild && TextFormat.isMatch(id, key, true, true))
+            getMeshCommand(sb, i);
+      }
+      return sb.toString();
+    }
     return null;
   }
 
@@ -634,7 +647,52 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   }
 
   @Override
-  protected void getColorState(StringBuffer sb, Mesh mesh) {
+  public String getShapeState() {
+      StringBuffer sb = new StringBuffer("\n");
+      for (int i = 0; i < meshCount; i++)
+        getMeshCommand(sb, i);
+      return sb.toString();
+    }
+
+  private void getMeshCommand(StringBuffer sb, int i) {
+    Mesh mesh = meshes[i];
+    String cmd = mesh.scriptCommand;
+    if (cmd == null)
+      return;
+    cmd = cmd.replace('\t', ' ');
+    cmd = TextFormat.simpleReplace(cmd, ";#", "; #");
+    int pt = cmd.indexOf("; #");
+    if (pt >= 0) {
+      cmd = cmd.substring(0, pt);
+    }
+    cmd = TextFormat.trim(cmd, ";");
+    if (mesh.linkedMesh != null)
+      cmd += " LINK"; // for lcaoCartoon state
+    if (mesh.modelIndex >= 0 && modelCount > 1)
+      appendCmd(sb, "frame " + viewer.getModelNumberDotted(mesh.modelIndex));
+    appendCmd(sb, cmd);
+    if (mesh.q != null && mesh.q.q0 != 1)
+      appendCmd(sb, myType + " ID " + Escape.escape(mesh.thisID) + " rotate "
+          + mesh.q.toString());
+    if (mesh.ptOffset != null)
+      appendCmd(sb, myType + " ID " + Escape.escape(mesh.thisID) + " offset "
+          + Escape.escape(mesh.ptOffset));
+    if (mesh.scale3d != 0)
+      appendCmd(sb, myType + " ID " + Escape.escape(mesh.thisID) + " scale3d "
+          + mesh.scale3d);
+    if (cmd.charAt(0) != '#') {
+      if (allowMesh)
+        appendCmd(sb, mesh.getState(myType));
+      if (mesh.colorCommand != null) {
+        if (!mesh.isColorSolid && Graphics3D.isColixTranslucent(mesh.colix))
+          appendCmd(sb, getColorCommand(myType, mesh.colix));
+        appendCmd(sb, mesh.colorCommand);
+      }
+      getColorState(sb, mesh);
+    }
+  }
+
+   private void getColorState(StringBuffer sb, Mesh mesh) {
     boolean colorArrayed = (mesh.isColorSolid && ((IsosurfaceMesh) mesh).polygonColixes != null);
     if (mesh.isColorSolid && !colorArrayed)
       appendCmd(sb, getColorCommand(myType, mesh.colix));  

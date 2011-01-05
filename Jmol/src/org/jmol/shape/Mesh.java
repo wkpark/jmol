@@ -46,6 +46,7 @@ public class Mesh extends MeshSurface {
 
   public String[] title;
   
+  public short meshColix;
   public short[] normixes;
   private int normixCount;
   public BitSet[] bitsets; // [0]bsSelected [1]bsIgnore [2]bsTrajectory
@@ -68,7 +69,7 @@ public class Mesh extends MeshSurface {
   public Point3f ptCenter = new Point3f(0,0,0);
   public String meshType;
   public Mesh linkedMesh; //for lcaoOrbitals
-  
+
   public int index;
   public int atomIndex = -1;
   public int modelIndex = -1;  // for Isosurface and Draw
@@ -254,6 +255,8 @@ public class Mesh extends MeshSurface {
       s.append(" ID ").append(Escape.escape(thisID));
     if (lattice != null)
       s.append(" lattice ").append(Escape.escape(lattice));
+    if (meshColix != 0)
+      s.append(" color mesh ").append(Graphics3D.getHexCode(meshColix));
     s.append(fillTriangles ? " fill" : " noFill");
     s.append(drawTriangles ? " mesh" : " noMesh");
     s.append(showPoints ? " dots" : " noDots");

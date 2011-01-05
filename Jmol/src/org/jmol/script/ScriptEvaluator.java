@@ -7373,6 +7373,10 @@ public class ScriptEvaluator {
       getToken(++index);
     if (isBackground)
       prefix = "bg";
+    else if (isIsosurface && theTok == Token.mesh) {
+      getToken(++index);
+      prefix = "mesh";
+    }
     if (!isSyntaxCheck && shapeType == JmolConstants.SHAPE_MO && !mo(true))
       return;
     boolean isTranslucent = (theTok == Token.translucent);
@@ -15448,7 +15452,7 @@ public class ScriptEvaluator {
             i++;
             sbCommand.append(" mesh");
             color = getArgbParam(++i);
-            addShapeProperty(propertyList, "colorMesh", Integer.valueOf(color));
+            addShapeProperty(propertyList, "meshcolor", Integer.valueOf(color));
             sbCommand.append(" ").append(Escape.escapeColor(color));
             i = iToken;
             continue;

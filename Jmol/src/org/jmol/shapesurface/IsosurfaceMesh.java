@@ -397,7 +397,6 @@ public class IsosurfaceMesh extends Mesh {
 
   float[] contourValues;
   short[] contourColixes;
-  short meshColix;
   ColorEncoder colorEncoder;
   
   public void setDiscreteColixes(float[] values, short[] colixes) {

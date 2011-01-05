@@ -436,17 +436,6 @@ public abstract class MeshCollection extends Shape {
       }
       return sb.toString();
     }
-    if (property == "command") {
-      String key = previousMeshID.toUpperCase();
-      boolean isWild = TextFormat.isWild(key);
-      StringBuffer sb = new StringBuffer();
-      for (int i = meshCount; --i >= 0;) {
-        String id = meshes[i].thisID.toUpperCase();
-        if (id.equals(key) || isWild && TextFormat.isMatch(id, key, true, true))
-            getMeshCommand(sb, i);
-      }
-      return sb.toString();
-    }
     if (property == "vertices")
       return getVertices(currentMesh);
     return null;
@@ -544,108 +533,8 @@ public abstract class MeshCollection extends Shape {
     currentMesh.scriptCommand = script;
   }
 
- @Override
-public String getShapeState() {
-    StringBuffer sb = new StringBuffer("\n");
-    for (int i = 0; i < meshCount; i++)
-      getMeshCommand(sb, i);
-    return sb.toString();
-  }
-
- private void getMeshCommand(StringBuffer sb, int i) {
-    Mesh mesh = meshes[i];
-    String cmd = mesh.scriptCommand;
-    if (cmd == null)
-      return;
-    cmd = cmd.replace('\t', ' ');
-    cmd = TextFormat.simpleReplace(cmd, ";#", "; #");
-    int pt = cmd.indexOf("; #");
-    /*
-     not perfect -- user may have that in a title, I suppose...
-    String options = "";
-    if (pt >= 0) {
-      options = cmd.substring(pt + 1);
-      cmd = cmd.substring(0, pt);
-      pt = options.indexOf("# ({");
-      if (pt >= 0)
-        options = options.substring(0, pt);
-      pt = options.indexOf("# ID");
-      if (pt >= 0)
-        options = options.substring(0, pt);
-    }
-    */
-    if (pt >= 0) {
-      cmd = cmd.substring(0, pt);
-    }
-    cmd = TextFormat.trim(cmd, ";");
-    if (mesh.linkedMesh != null)
-      cmd += " LINK"; // for lcaoCartoon state
-    /*
-    cmd = TextFormat.trim(cmd, ";") + ";" + options;
-    if (mesh.bitsets != null) {
-      cmd += "# "
-          + (mesh.bitsets[0] == null ? "({null})" : Escape
-              .escape(mesh.bitsets[0]))
-          + " "
-          + (mesh.bitsets[1] == null ? "({null})" : Escape
-              .escape(mesh.bitsets[1]))
-          + (mesh.bitsets[2] == null ? "" : "/"
-              + Escape.escape(mesh.bitsets[2]));
-    }
-    if (!myType.equals("mo"))
-      cmd += "# ID=\"" + mesh.thisID + "\"";
-    if (mesh.modelIndex >= 0)
-      cmd += "# MODEL({" + mesh.modelIndex + "})";
-    if (mesh.cappingObject != null)
-      cmd += "# CAP=\"" + Escape.escape(mesh.cappingObject) + "\"";
-    if (mesh.slabbingObject != null)
-      cmd += "# SLAB=\"" + Escape.escape(mesh.slabbingObject) + "\"";
-    if (mesh.data1 != null)
-      cmd = encapsulateData(cmd, mesh.data1, "");
-    if (mesh.data2 != null)
-      cmd = encapsulateData(cmd, mesh.data2, "2");
-    */
-    if (mesh.modelIndex >= 0 && modelCount > 1)
-      appendCmd(sb, "frame " + viewer.getModelNumberDotted(mesh.modelIndex));    
-    appendCmd(sb, cmd);
-    if (mesh.q != null && mesh.q.q0 != 1)
-      appendCmd(sb, myType + " ID " + Escape.escape(mesh.thisID) + " rotate " + mesh.q.toString());
-    if (mesh.ptOffset != null)
-      appendCmd(sb, myType + " ID " + Escape.escape(mesh.thisID) + " offset " + Escape.escape(mesh.ptOffset));
-    if (mesh.scale3d != 0)
-      appendCmd(sb, myType + " ID " + Escape.escape(mesh.thisID) + " scale3d " + mesh.scale3d);
-    if (cmd.charAt(0) != '#') {
-      if (allowMesh)
-        appendCmd(sb, mesh.getState(myType));
-      if (mesh.colorCommand != null) {
-        if (!mesh.isColorSolid && Graphics3D.isColixTranslucent(mesh.colix))
-          appendCmd(sb, getColorCommand(myType, mesh.colix));
-        appendCmd(sb, mesh.colorCommand);
-      }
-      getColorState(sb, mesh);
-    }
-  }
-/*
-private String encapsulateData(String cmd, List data, String ext) {
-  String name = ((String) data.elementAt(0)).toLowerCase();
-  Object array = data.elementAt(5);
-  if (array instanceof float[][] && name.indexOf("data2d_") != 0)
-    name = "data2d_" + name;
-  else if (array instanceof float[][][] && name.indexOf("data3d_") != 0)
-    name = "data3d_" + name;    
-  cmd = Escape.encapsulateData(name, array) 
-      + "  " + cmd + "# DATA" + ext + "=\"" + name + "\"";
-  return cmd;
-}
-*/
-protected void getColorState(StringBuffer sb, Mesh mesh) {
-  getColorState(sb, mesh);
-  if (mesh.isColorSolid)
-    appendCmd(sb, getColorCommand(myType, mesh.colix));  
-}
-
-@Override
-public void setVisibilityFlags(BitSet bs) {
+ @Override 
+ public void setVisibilityFlags(BitSet bs) {
     /*
      * set all fixed objects visible; others based on model being displayed
      * 

@@ -8543,6 +8543,9 @@
   <fah_proj number="6526" name="p6526_proA_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="23935" preferred="21" deadline="31"
     credit="112" frames="100" code="G" contact="lan" contrib="Hyperlife"/>
+  <fah_proj number="6541" name="p6526_ubiq_predict" public="y"
+    server="171.64.65.62" atoms="20146" preferred="21" deadline="31"
+    credit="123" frames="100" code="G" contact="lan"/>
 
   <!-- Projects 6600 to 6699 -->
   <fah_proj number="6600" name="p6600_CspTm_300K" public="y"
@@ -8582,9 +8585,12 @@
   <fah_proj number="6800" name="Ab_shooting" public="y"
     server="171.64.65.64" atoms="627" preferred="4" deadline="10"
     credit="1298" frames="100" code="OG" contact="lin5"/>
-  <fah_proj number="6801" name="M1_shooting" public="n"
+  <fah_proj number="6801" name="M1_shooting" public="y"
     server="171.64.65.64" atoms="634" preferred="5" deadline="10"
     credit="1348" frames="100" code="OG" contact="lin5"/>
+  <fah_proj number="6805" name="Ab40_shooting" public="y"
+    server="171.64.65.64" atoms="598" preferred="5" deadline="10"
+    credit="1280" frames="100" code="OG" contact="lin5"/>
   <fah_proj number="6806" name="dPro_shooting" public="y"
     server="171.64.65.64" atoms="634" preferred="5" deadline="10"
     credit="1348" frames="100" code="OG" contact="lin5"/>
@@ -8965,6 +8971,9 @@
   <fah_proj number="10429" name="p10429" public="n"
     server="171.64.65.81" atoms="576" preferred="13" deadline="19"
     credit="194" frames="100" code="A4" contact="kyleb"/>
+  <fah_proj number="10430" name="p10430" public="n"
+    server="171.64.65.80" atoms="576" preferred="13" deadline="19"
+    credit="25" frames="100" code="A4" contact="kyleb"/>
 
   <!-- Projects 10500 to 10599 -->
   <fah_proj number="10501" name="p10501" public="y"
@@ -9596,6 +9605,9 @@
   <fah_proj number="11010" name="p11010" public="n"
     server="171.64.65.55" atoms="25192" preferred="24" deadline="37"
     credit="124" frames="100" code="A4" contact="dvanatta"/>
+  <fah_proj number="11020" name="p11020" public="n"
+    server="171.64.65.55" atoms="25192" preferred="24" deadline="37"
+    credit="124" frames="100" code="A3" contact="dvanatta"/>
 
   <!-- Projects 11100 to 11199 -->
   <fah_proj number="11101" name="Fs_96" public="y"

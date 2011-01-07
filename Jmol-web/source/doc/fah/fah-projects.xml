@@ -8504,9 +8504,9 @@
   <fah_proj number="6509" name="p6509_TR574_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="35411" preferred="35" deadline="53"
     credit="192" frames="100" code="G" contact="lan" contrib="Bas Couwenberg"/>
-  <fah_proj number="6510" name="p6510_TR538_predict" public="y"
+  <fah_proj number="6510" name="p6510_TR538_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="22749" preferred="20" deadline="29"
-    credit="107" frames="100" code="G" contact="lan"/>
+    credit="107" frames="100" code="G" contact="lan" contrib="Danny Nielsen"/>
   <fah_proj number="6511" name="p6511_ubiq_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="25933" preferred="23" deadline="34"
     credit="123" frames="100" code="G" contact="lan" contrib="Boron,Bas Couwenberg,Bryan Spencer"/>
@@ -9606,8 +9606,8 @@
     server="171.64.65.55" atoms="25192" preferred="24" deadline="37"
     credit="124" frames="100" code="A4" contact="dvanatta"/>
   <fah_proj number="11020" name="p11020" public="n"
-    server="171.64.65.55" atoms="25192" preferred="24" deadline="37"
-    credit="124" frames="100" code="A3" contact="dvanatta"/>
+    server="171.64.65.55" atoms="25192" preferred="2" deadline="3"
+    credit="294" frames="100" code="A3" contact="dvanatta" kfactor="2.6"/>
 
   <!-- Projects 11100 to 11199 -->
   <fah_proj number="11101" name="Fs_96" public="y"

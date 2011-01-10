@@ -23,7 +23,6 @@
  */
 package org.jmol.shapesurface;
 
-import java.util.BitSet;
 import java.util.List;
 
 import javax.vecmath.Point3f;
@@ -58,6 +57,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       imesh = (IsosurfaceMesh) isosurface.meshes[i];
       g3d.setTranslucentCoverOnly(imesh.frontOnly);
       thePlane = imesh.jvxlData.jvxlPlane;
+      vertexValues = imesh.vertexValues;
       if (slabValue != Integer.MAX_VALUE && imesh.isSolvent) {
         g3d.setSlab((int) viewer.getNavigationOffset().z);
         render1(imesh);
@@ -158,21 +158,6 @@ public class IsosurfaceRenderer extends MeshRenderer {
     int cY = (showNumbers ? viewer.getScreenHeight() / 2 : 0);
     if (showNumbers)
       g3d.setFont(g3d.getFontFid("Monospaced", 24));
-    BitSet bsPoints = new BitSet(mesh.vertexCount);
-    if (mesh.polygonCount > 0)
-      for (int i = mesh.polygonCount; --i >= 0;) {
-        if (!isPolygonDisplayable(i))
-          continue;
-        int[] p = mesh.polygonIndexes[i];
-        if (p == null)
-          continue;
-        for (int j = p.length - 1; --j >= 0;) {
-          int pt = p[j];
-          bsPoints.set(pt);
-        }
-      }
-    else
-      bsPoints.set(0, mesh.vertexCount);
     for (int i = (!imesh.hasGridPoints || imesh.firstRealVertex < 0 ? 0
         : imesh.firstRealVertex); i < vertexCount; i += incr) {
       if (vertexValues != null && Float.isNaN(vertexValues[i]) || frontOnly
@@ -189,8 +174,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
         //  + imesh.vertices[i] + " " + imesh.vertexValues[i]);
         g3d.drawStringNoSlab(s, null, screens[i].x, screens[i].y, screens[i].z);
       }
-      if (bsPoints.get(i))
-        g3d.fillSphere(diam, screens[i]);
+      g3d.fillSphere(diam, screens[i]);
     }
     if (incr != 3)
       return;

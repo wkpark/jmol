@@ -23,6 +23,7 @@
  */
 package org.jmol.shapesurface;
 
+import java.util.BitSet;
 import java.util.List;
 
 import javax.vecmath.Point3f;
@@ -153,45 +154,57 @@ public class IsosurfaceRenderer extends MeshRenderer {
     int incr = imesh.vertexIncrement;
     int diam = viewer.getScreenDim() / 100;
     boolean showNumbers = viewer.getTestFlag3();
-    int cX = (showNumbers ? viewer.getScreenWidth()/2 : 0);
-    int cY = (showNumbers ? viewer.getScreenHeight()/2 : 0);
-    
+    int cX = (showNumbers ? viewer.getScreenWidth() / 2 : 0);
+    int cY = (showNumbers ? viewer.getScreenHeight() / 2 : 0);
     if (showNumbers)
       g3d.setFont(g3d.getFontFid("Monospaced", 24));
+    BitSet bsPoints = new BitSet(mesh.vertexCount);
+    if (mesh.polygonCount > 0)
+      for (int i = mesh.polygonCount; --i >= 0;) {
+        if (!isPolygonDisplayable(i))
+          continue;
+        int[] p = mesh.polygonIndexes[i];
+        if (p == null)
+          continue;
+        for (int j = p.length - 1; --j >= 0;) {
+          int pt = p[j];
+          bsPoints.set(pt);
+        }
+      }
+    else
+      bsPoints.set(0, mesh.vertexCount);
     for (int i = (!imesh.hasGridPoints || imesh.firstRealVertex < 0 ? 0
         : imesh.firstRealVertex); i < vertexCount; i += incr) {
       if (vertexValues != null && Float.isNaN(vertexValues[i]) || frontOnly
           && transformedVectors[normixes[i]].z < 0)
         continue;
       if (imesh.vertexColixes != null && !g3d.setColix(imesh.vertexColixes[i]))
-          continue;
+        continue;
       if (haveBsDisplay && !imesh.bsDisplay.get(i))
         continue;
-      if (showNumbers && screens[i].z > 10
-         && Math.abs(screens[i].x - cX) < 50
-         && Math.abs(screens[i].y - cY) < 50
-        ) {
+      if (showNumbers && screens[i].z > 10 && Math.abs(screens[i].x - cX) < 50
+          && Math.abs(screens[i].y - cY) < 50) {
         String s = i + (imesh.isColorSolid ? "" : " " + imesh.vertexValues[i]);
         //System.out.println("IsoSurfaceRenderer i=" + s + " " 
-          //  + imesh.vertices[i] + " " + imesh.vertexValues[i]);
-        g3d.drawStringNoSlab(s, null,
-            screens[i].x, screens[i].y, screens[i].z);
+        //  + imesh.vertices[i] + " " + imesh.vertexValues[i]);
+        g3d.drawStringNoSlab(s, null, screens[i].x, screens[i].y, screens[i].z);
       }
-      g3d.fillSphere(diam, screens[i]);
+      if (bsPoints.get(i))
+        g3d.fillSphere(diam, screens[i]);
     }
     if (incr != 3)
       return;
     g3d.setColix(isTranslucent ? Graphics3D.getColixTranslucent(
         Graphics3D.GRAY, true, 0.5f) : Graphics3D.GRAY);
     for (int i = 1; i < vertexCount; i += 3)
-      g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, diam/4, screens[i],
+      g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, diam / 4, screens[i],
           screens[i + 1]);
 
     g3d.setColix(isTranslucent ? Graphics3D.getColixTranslucent(
         Graphics3D.YELLOW, true, 0.5f) : Graphics3D.YELLOW);
     for (int i = 1; i < vertexCount; i += 3)
       g3d.fillSphere(diam, screens[i]);
-    
+
     g3d.setColix(isTranslucent ? Graphics3D.getColixTranslucent(
         Graphics3D.BLUE, true, 0.5f) : Graphics3D.BLUE);
     for (int i = 2; i < vertexCount; i += 3) {

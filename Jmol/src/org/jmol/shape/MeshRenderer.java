@@ -171,6 +171,8 @@ public abstract class MeshRenderer extends ShapeRenderer {
         bsPoints.andNot(mesh.bsDisplay);
       }
       for (int i = mesh.polygonCount; --i >= 0;) {
+        if (!isPolygonDisplayable(i))
+          continue;
         int[] p = polygonIndexes[i];
         if (frontOnly && transformedVectors[normixes[i]].z < 0)
           continue;

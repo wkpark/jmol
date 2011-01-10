@@ -8531,6 +8531,9 @@
   <fah_proj number="6520" name="p6520_TR602_predict" public="n"
     server="171.64.65.62" atoms="37016" preferred="57" deadline="85"
     credit="310" frames="100" code="G" contact="lan"/>
+  <fah_proj number="6521" name="p6521_ubiq_predict" public="n"
+    server="171.64.65.62" atoms="22333" preferred="20" deadline="29"
+    credit="106" frames="100" code="G" contact="lan"/>
   <fah_proj number="6522" name="p6522_TR462A_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="15133" preferred="13" deadline="19"
     credit="67" frames="100" code="G" contact="lan" contrib="Danny Nielsen"/>
@@ -8543,9 +8546,9 @@
   <fah_proj number="6526" name="p6526_proA_predict" public="y" file="xyz"
     server="171.64.65.62" atoms="23935" preferred="21" deadline="31"
     credit="112" frames="100" code="G" contact="lan" contrib="Hyperlife"/>
-  <fah_proj number="6541" name="p6526_ubiq_predict" public="y"
-    server="171.64.65.62" atoms="20146" preferred="21" deadline="31"
-    credit="123" frames="100" code="G" contact="lan"/>
+  <fah_proj number="6541" name="p6541_ubiq_predict" public="y"
+    server="171.64.65.62" atoms="20146" preferred="17" deadline="26"
+    credit="93" frames="100" code="G" contact="lan"/>
 
   <!-- Projects 6600 to 6699 -->
   <fah_proj number="6600" name="p6600_CspTm_300K" public="y"

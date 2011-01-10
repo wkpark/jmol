@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-01-04 23:56+0100\n"
-"PO-Revision-Date: 2010-11-08 00:43+0000\n"
-"Last-Translator: Nicolas Vervelle <Unknown>\n"
+"PO-Revision-Date: 2011-01-10 20:44+0000\n"
+"Last-Translator: Martino Barbon <Unknown>\n"
 "Language-Team: Italian <it@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-12-16 16:48+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-01-10 23:28+0000\n"
+"X-Generator: Launchpad (build 12161)\n"
 
 #: org/jmol/applet/AppletConsole.java:199
 msgid "&Help"
@@ -144,7 +144,8 @@ msgid "Check"
 msgstr "Verifica"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Sopra"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -394,9 +395,8 @@ msgid "Estonian"
 msgstr "Estone"
 
 #: org/jmol/i18n/GT.java:147
-#, fuzzy
 msgid "Finnish"
-msgstr "Danese"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:148
 msgid "Faroese"
@@ -1633,7 +1633,7 @@ msgstr "Esporta {0} immagine"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:876
 msgid "Save all as JMOL file (zip)"
-msgstr ""
+msgstr "Salva tutto come file JMOL (zip)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:877
 msgid "Save JVXL isosurface"
@@ -2065,7 +2065,8 @@ msgstr "oggetto non riconosciuto"
 #: org/jmol/script/ScriptEvaluator.java:2779
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
-msgstr "parametro {0} non riconosciuto in Jmol state script (imposta comunque)"
+msgstr ""
+"parametro {0} non riconosciuto in Jmol state script (imposta comunque)"
 
 #: org/jmol/script/ScriptEvaluator.java:2782
 #, java-format
@@ -2160,7 +2161,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:69
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 "cliccare su due punti a ruotare attorno al proprio asse in senso antiorario "
 "(richiede {0})"
@@ -2362,7 +2364,8 @@ msgstr "scegliere un altro atomo per visualizzare il rapporto di simmetria"
 #: org/jmol/viewer/ActionManager.java:1943
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
-msgstr "scegliere due atomi per visualizzare il rapporto di simmetria fra loro"
+msgstr ""
+"scegliere due atomi per visualizzare il rapporto di simmetria fra loro"
 
 #: org/jmol/viewer/SelectionManager.java:89
 #: org/jmol/viewer/SelectionManager.java:105
@@ -2409,12 +2412,15 @@ msgstr "Impostazione file di log su {0}"
 #~ msgid "Minimize"
 #~ msgstr "Minimizza"
 
+#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "{0} Modello 3D"
 
+#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "{0} Immagine"
 
+#, java-format
 #~ msgid "File {0}"
 #~ msgstr "File {0}"
 
@@ -2424,6 +2430,7 @@ msgstr "Impostazione file di log su {0}"
 #~ msgid "Script with history"
 #~ msgstr "Script con storia"
 
+#, java-format
 #~ msgid ""
 #~ "NOTE: NH hydrogens are present and will not be calculated.\n"
 #~ "Use {0} for a standard DSSP analysis.\n"

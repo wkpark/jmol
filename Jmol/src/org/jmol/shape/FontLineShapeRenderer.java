@@ -107,13 +107,13 @@ abstract class FontLineShapeRenderer extends ShapeRenderer {
     atomB.screenX = pt1.x;
     atomB.screenY = pt1.y;
     atomB.screenZ = pt1.z;
-    drawTicks(atomA, atomB, diameter);
+    drawTicks(atomA, atomB, diameter, true);
   }
 
-  protected void drawTicks(Point3fi pt1, Point3fi pt2, int diameter) {
+  protected void drawTicks(Point3fi pt1, Point3fi pt2, int diameter, boolean withLabels) {
     if (Float.isNaN(tickInfo.first))
       tickInfo.first = 0;
-    drawTicks(pt1, pt2, tickInfo.ticks.x, 8, diameter, (tickInfo.tickLabelFormats == null ? 
+    drawTicks(pt1, pt2, tickInfo.ticks.x, 8, diameter, (!withLabels ? null : tickInfo.tickLabelFormats == null ? 
             new String[] { "%0.2f" } : tickInfo.tickLabelFormats));
     drawTicks(pt1, pt2, tickInfo.ticks.y, 4, diameter, null);
     drawTicks(pt1, pt2, tickInfo.ticks.z, 2, diameter, null);
@@ -185,10 +185,10 @@ abstract class FontLineShapeRenderer extends ShapeRenderer {
       pointT3.set(ptRef);
     }
     viewer.transformPoint(pointT3, pt2);
-    float tx = vectorT2.x * ((ptA.screenX + ptB.screenX) / 2 - pt2.x);
-    float ty = vectorT2.y * ((ptA.screenY + ptB.screenY) / 2 - pt2.y);
-    if (tx + ty < -0.1)
-      vectorT2.scale(-1);
+    //too annoying! float tx = vectorT2.x * ((ptA.screenX + ptB.screenX) / 2 - pt2.x);
+    //float ty = vectorT2.y * ((ptA.screenY + ptB.screenY) / 2 - pt2.y);
+    //if (tx + ty < -0.1)
+      //vectorT2.scale(-1);
     if (!isOut)
       vectorT2.scale(-1);
     boolean horizontal = (Math.abs(vectorT2.x / vectorT2.y) < 0.2);

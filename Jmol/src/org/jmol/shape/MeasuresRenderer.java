@@ -121,7 +121,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
       drawLine(atomA.screenX, atomA.screenY, atomA.screenZ, 
           atomB.screenX, atomB.screenY, atomB.screenZ, mad);
       if (tickInfo != null)
-        drawTicks(atomA, atomB, mad);
+        drawTicks(atomA, atomB, mad, renderLabel);
       return;
     }
     int zA = atomA.screenZ - atomA.screenDiameter - 10;

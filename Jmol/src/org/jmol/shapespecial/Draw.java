@@ -1356,7 +1356,10 @@ public void initShape() {
             if (nVertices == 0)
               nVertices = mesh.drawVertexCounts[i];
             str.append(" [ " + i);
-            str.append(getVertexList(mesh, i, nVertices));
+            String s = getVertexList(mesh, i, nVertices);
+            if (s.indexOf("NaN") >= 0)
+              return "";
+            str.append(s);
             str.append(" ] ");
           }
       } else if (mesh.drawType == JmolConstants.DRAW_POLYGON) {
@@ -1369,7 +1372,10 @@ public void initShape() {
           else
             str.append(" ").append(Escape.escapeArray(mesh.polygonIndexes[i]));
       } else {
-        str.append(getVertexList(mesh, iModel, nVertices));
+        String s = getVertexList(mesh, iModel, nVertices);
+        if (s.indexOf("NaN") >= 0)
+          return "";
+        str.append(s);
       }
     }
     if (mesh.title != null) {

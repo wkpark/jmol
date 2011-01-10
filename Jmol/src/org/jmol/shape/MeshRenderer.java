@@ -227,6 +227,9 @@ public abstract class MeshRenderer extends ShapeRenderer {
           if (exportType != Graphics3D.EXPORT_NOT) {
             g3d.fillTriangle(screens[iC], colix, normix, screens[iB], colix,
                 normix, screens[iA], colix, normix);
+          } else if (iShowTriangles) {
+            g3d.fillTriangle(screens[iA], colix, normix, screens[iB], colix, normix,
+                screens[iC], colix, normix, 0.1f);
           } else {
             g3d.fillTriangle(screens[iA], colix, normix, screens[iB], colix,
                 normix, screens[iC], colix, normix);

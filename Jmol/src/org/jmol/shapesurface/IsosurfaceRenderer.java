@@ -161,11 +161,10 @@ public class IsosurfaceRenderer extends MeshRenderer {
     for (int i = (!imesh.hasGridPoints || imesh.firstRealVertex < 0 ? 0
         : imesh.firstRealVertex); i < vertexCount; i += incr) {
       if (vertexValues != null && Float.isNaN(vertexValues[i]) || frontOnly
-          && transformedVectors[normixes[i]].z < 0)
-        continue;
-      if (imesh.vertexColixes != null && !g3d.setColix(imesh.vertexColixes[i]))
-        continue;
-      if (haveBsDisplay && !imesh.bsDisplay.get(i))
+          && transformedVectors[normixes[i]].z < 0
+          || imesh.thisSet >= 0 && imesh.vertexSets[i] != imesh.thisSet
+          || imesh.vertexColixes != null && !g3d.setColix(imesh.vertexColixes[i])
+          || haveBsDisplay && !imesh.bsDisplay.get(i))
         continue;
       if (showNumbers && screens[i].z > 10 && Math.abs(screens[i].x - cX) < 50
           && Math.abs(screens[i].y - cY) < 50) {

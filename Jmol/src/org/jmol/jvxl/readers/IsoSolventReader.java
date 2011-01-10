@@ -530,6 +530,9 @@ class IsoSolventReader extends AtomDataReader {
       // 3) -- Third pass is to mark "-F" voxels (just below the surface)
       markFaceVoxels(false);
       vFaces = null;
+    } else {
+      volumeData.voxelData = voxelData = new float[nPointsX][nPointsY][nPointsZ];
+      resetVoxelData(Float.MAX_VALUE);
     }
 
     // 4) -- Final pass for SES and SAS is to mark "-S" (within atom sphere)

@@ -205,6 +205,7 @@ public class MeshSurface {
       }
       int test1 = (d1 < 0 ? 1 : 0) + (d2 < 0 ? 2 : 0) + (d3 < 0 ? 4 : 0);
       int test2 = (d1 >= 0 ? 1 : 0) + (d2 >= 0 ? 2 : 0) + (d3 >= 0 ? 4 : 0);
+      
       pts = null;
       switch (test1) {
       case 0:
@@ -243,7 +244,7 @@ public class MeshSurface {
         break;
       }
       if (isSlab) {
-        iD = iE = 0;
+        iD = iE = -1;
         //             A
         //            / \
         //           B---C
@@ -256,17 +257,50 @@ public class MeshSurface {
           break;
         case 1:
           // BC on side to keep
-          iD = addVertexCopy(pts[1], vertexValues[iA]); //AC
-          iE = addVertexCopy(pts[0], vertexValues[iA]); //AB
-          addTriangleCheck(iE, iB, iC, check1 & 3, check2, 0);
-          addTriangleCheck(iD, iE, iC, check1 & 4 | 1, check2, 0);
+          //TODO: must set edges for doClean
+          if (false && doClean) {
+            if (pts[0].distance(vA) < 0.01f  || pts[1].distance(vA) < 0.01f)              
+              continue;
+            if (pts[0].distance(vB) < 0.01f) {
+              iD = iB;
+            }
+            if (pts[1].distance(vC) < 0.01f) {
+              iE = iC;
+            }
+            if (iD >= 0 && iE >= 0)
+              continue;
+          }
+          if (iE < 0) {
+            iE = addVertexCopy(pts[0], vertexValues[iA]); //AB
+            addTriangleCheck(iE, iB, iC, check1 & 3, check2, 0);            
+          }
+          if (iD < 0) {
+            iD = addVertexCopy(pts[1], vertexValues[iA]); //AC
+            addTriangleCheck(iD, iE, iC, check1 & 4 | 1, check2, 0);
+          }
           break;
         case 2:
           // AC on side to keep
-          iD = addVertexCopy(pts[0], vertexValues[iB]); //AB
-          iE = addVertexCopy(pts[1], vertexValues[iB]); //BC
-          addTriangleCheck(iA, iD, iC, check1 & 5, check2, 0);
-          addTriangleCheck(iD, iE, iC, check1 & 2 | 1, check2, 0);
+          if (false && doClean) {
+            if (pts[0].distance(vB) < 0.01f  || pts[1].distance(vB) < 0.01f)              
+              continue;
+            if (pts[0].distance(vA) < 0.01f) {
+              iD = iA;
+            }
+            if (pts[1].distance(vC) < 0.01f) {
+              iE = iC;
+            }
+            if (iD >= 0 && iE >= 0)
+              continue;
+          }
+          if (iD < 0) {
+            iD = addVertexCopy(pts[0], vertexValues[iB]); //AB
+            addTriangleCheck(iA, iD, iC, check1 & 5, check2, 0);
+          }
+          if (iE < 0) {
+            iE = addVertexCopy(pts[1], vertexValues[iB]); //BC
+            addTriangleCheck(iD, iE, iC, check1 & 2 | 1, check2, 0);
+          }
           break;
         case 3:
           //AB on side to toss
@@ -276,10 +310,26 @@ public class MeshSurface {
           break;
         case 4:
           //AB on side to keep
-          iD = addVertexCopy(pts[1], vertexValues[iC]); //BC
-          iE = addVertexCopy(pts[0], vertexValues[iC]); //AC
-          addTriangleCheck(iA, iB, iE, check1 & 5, check2, 0);
-          addTriangleCheck(iE, iB, iD, check1 & 2 | 4, check2, 0);
+          if (false && doClean) {
+            if (pts[0].distance(vC) < 0.01f  || pts[1].distance(vC) < 0.01f)              
+              continue;
+            if (pts[0].distance(vA) < 0.01f) {
+              iD = iA;
+            }
+            if (pts[1].distance(vB) < 0.01f) {
+              iE = iB;
+            }
+            if (iD >= 0 && iE >= 0)
+              continue;
+          }
+          if (iE < 0) {
+            iE = addVertexCopy(pts[0], vertexValues[iC]); //AC
+            addTriangleCheck(iA, iB, iE, check1 & 5, check2, 0);
+          }
+          if (iD < 0) {
+            iD = addVertexCopy(pts[1], vertexValues[iC]); //BC
+            addTriangleCheck(iE, iB, iD, check1 & 2 | 4, check2, 0);
+          }
           break;
         case 5:
           //AC on side to toss
@@ -289,11 +339,15 @@ public class MeshSurface {
           break;
         case 6:
           // BC on side to toss
+          if (doClean && 
+              (pts[0].distance(vA) < 0.01f  || pts[1].distance(vA) < 0.01f))              
+            continue;
           iD = addVertexCopy(pts[0], vertexValues[iB]); //AB
           iE = addVertexCopy(pts[1], vertexValues[iC]); //AC
           addTriangleCheck(iA, iD, iE, check1 & 5 | 2, check2, 0);
           break;
         }
+        //if (test1 != 0 && test1 != 7)      System.out.println("meshsurface d1 d2 d3 " + d1 + "\t" + d2 + "\t" + d3);
         polygonIndexes[i] = null;
         if (andCap && iD > 0)
           iPts.add(new int[] { iD, iE });

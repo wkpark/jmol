@@ -3165,7 +3165,7 @@ abstract public class ModelCollection extends BondCollection {
         iso -= Elements.getNaturalIsotope(a.getElementNumber());
       sb.append(" ");
       TextFormat.rFill(sb, "  ", "" + iso);
-      TextFormat.rFill(sb, "   ", "" + charge);
+      TextFormat.rFill(sb, "   ", "" + (charge == 0 ? 0 : 4 - charge));
       sb.append("  0  0  0  0");
     }
     sb.append("\n");

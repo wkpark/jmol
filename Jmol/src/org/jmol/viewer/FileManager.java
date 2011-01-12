@@ -138,7 +138,7 @@ public class FileManager {
       commands.append("function _setFileState() {\n\n");
     }
     viewer.appendLoadStates(commands);
-    if (viewer.getModelSetFileName().equals("zapped"))
+    if (commands.indexOf("append") < 0 && viewer.getModelSetFileName().equals("zapped"))
       commands.append("  zap;\n");
     if (sfunc != null)
       commands.append("\n}\n\n");

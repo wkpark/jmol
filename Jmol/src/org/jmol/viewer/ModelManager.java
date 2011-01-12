@@ -56,32 +56,35 @@ class ModelManager {
   }
 
   ModelSet createModelSet(String fullPathName, String fileName,
-                          StringBuffer loadScript, Object atomSetCollection, BitSet bsNew, boolean isAppend) {
-    // 11.9.10 11/22/2009 bh adjusted to never allow a null return
+                          StringBuffer loadScript, Object atomSetCollection,
+                          BitSet bsNew, boolean isAppend) {
+    String modelSetName = null;
     if (isAppend) {
-      if (atomSetCollection != null) {
-        String name = modelLoader.getModelSetName();
-        if (name.indexOf(" (modified)") < 0)
-          name += " (modified)";
-        modelLoader = new ModelLoader(viewer, loadScript, atomSetCollection,
-            modelLoader, name, bsNew);
-      }
+      modelSetName = modelLoader.getModelSetName();
+      if (modelSetName.equals("zapped"))
+        modelSetName = null;
+      else if (modelSetName.indexOf(" (modified)") < 0)
+        modelSetName += " (modified)";
     } else if (atomSetCollection == null) {
       return zap();
     } else {
       this.fullPathName = fullPathName;
       this.fileName = fileName;
-      String modelSetName = viewer.getModelAdapter().getAtomSetCollectionName(
-          atomSetCollection);
-      if (modelSetName != null) {
-        modelSetName = modelSetName.trim();
-        if (modelSetName.length() == 0)
-          modelSetName = null;
+    }
+    if (atomSetCollection != null) {
+      if (modelSetName == null) {
+        modelSetName = viewer.getModelAdapter().getAtomSetCollectionName(
+            atomSetCollection);
+        if (modelSetName != null) {
+          modelSetName = modelSetName.trim();
+          if (modelSetName.length() == 0)
+            modelSetName = null;
+        }
+        if (modelSetName == null)
+          modelSetName = reduceFilename(fileName);
       }
-      if (modelSetName == null)
-        modelSetName = reduceFilename(fileName);
       modelLoader = new ModelLoader(viewer, loadScript, atomSetCollection,
-          null, modelSetName, bsNew);
+          (isAppend ? modelLoader : null), modelSetName, bsNew);
     }
     if (modelLoader.getAtomCount() == 0)
       zap();

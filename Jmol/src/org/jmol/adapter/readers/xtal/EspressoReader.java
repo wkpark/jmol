@@ -77,14 +77,27 @@ public class EspressoReader extends AtomSetCollectionReader {
 
   private void readCellParam(boolean andAPar) throws Exception {
     int i0 = (andAPar ? 0 : 3);
-    if (andAPar)
+
+    /*    in the old version of Espresso optimized cell parameters
+    are expressed in function of the original aPar stored at the beginning
+    CELL_PARAMETERS (alat)
+    1.001108280   0.000000000   0.000000000
+    0.000000000   1.001108280   0.000000000
+    0.000000000   0.000000000   1.301023011
+    So we also check for = in the line 
+     *
+     */
+
+    if (andAPar && line.contains("="))
       aPar = parseFloat(line.substring(line.indexOf("=") + 1))
-      * ANGSTROMS_PER_BOHR;
+          * ANGSTROMS_PER_BOHR;
+
     //Can you look at the example HAP_fullopt_40_r1.fullopt from the 2nd model on the representation is correct 
     //The 1st is wrong. 
     // BH: It's just a bad starting geometry, but the program 
-    //     very nicely cleans it up in just one step. 
-    
+    //     very nicely cleans it up in just one step.
+    //PC this is not true as it happens for every single jobs and even for single SCF calculations
+
     cellParams = new float[9];
     for (int n = 0, i = 0; n < 3; n++) {
       String[] tokens = getTokens(readLine());
@@ -113,7 +126,7 @@ public class EspressoReader extends AtomSetCollectionReader {
     newAtomSet();
     while (readLine() != null && (line.indexOf("(")) >= 0) {
       String[] tokens = getTokens();
-      Atom atom = atomSetCollection.addNewAtom(); 
+      Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = tokens[1];
       // here the coordinates are a_lat there fore expressed on base of cube of side a 
       float x = parseFloat(tokens[tokens.length - 4]);
@@ -126,7 +139,7 @@ public class EspressoReader extends AtomSetCollectionReader {
         y += 1;
       if (z < 0)
         z += 1;
-      */
+       */
       setAtomCoord(atom, x, y, z);
     }
     applySymmetryAndSetTrajectory();
@@ -141,6 +154,7 @@ public class EspressoReader extends AtomSetCollectionReader {
 
   private void setCellParams() throws Exception {
     if (cellParams != null) {
+
       setFractionalCoordinates(true);
       addPrimitiveLatticeVector(0, cellParams, 0);
       addPrimitiveLatticeVector(1, cellParams, 3);
@@ -187,7 +201,7 @@ public class EspressoReader extends AtomSetCollectionReader {
         y += 1;
       if (z < 0)
         z += 1;
-      */
+       */
       setAtomCoord(atom, x, y, z);
     }
     applySymmetryAndSetTrajectory();

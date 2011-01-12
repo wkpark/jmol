@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-01-04 23:56+0100\n"
+"POT-Creation-Date: 2011-01-12 18:30+0100\n"
 "PO-Revision-Date: 2011-01-06 10:44+0000\n"
 "Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: French <Jmol-developers@lists.sourceforge.net>\n"
@@ -147,8 +147,7 @@ msgid "Check"
 msgstr "Vérifier"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid ""
-"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Retourner en haut"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -426,62 +425,67 @@ msgid "Japanese"
 msgstr "Japonais"
 
 #: org/jmol/i18n/GT.java:154
+#, fuzzy
+msgid "Javanese"
+msgstr "Japonais"
+
+#: org/jmol/i18n/GT.java:155
 msgid "Korean"
 msgstr "Coréen"
 
-#: org/jmol/i18n/GT.java:155
+#: org/jmol/i18n/GT.java:156
 msgid "Norwegian Bokmal"
 msgstr "Norvégien « Bokmal »"
 
-#: org/jmol/i18n/GT.java:156
+#: org/jmol/i18n/GT.java:157
 msgid "Dutch"
 msgstr "Néerlandais"
 
-#: org/jmol/i18n/GT.java:157
+#: org/jmol/i18n/GT.java:158
 msgid "Occitan"
 msgstr "Occitan"
 
-#: org/jmol/i18n/GT.java:158
+#: org/jmol/i18n/GT.java:159
 msgid "Polish"
 msgstr "Polonais"
 
-#: org/jmol/i18n/GT.java:159
+#: org/jmol/i18n/GT.java:160
 msgid "Portuguese"
 msgstr "Portugais"
 
-#: org/jmol/i18n/GT.java:160
+#: org/jmol/i18n/GT.java:161
 msgid "Brazilian Portuguese"
 msgstr "Portugais brésilien"
 
-#: org/jmol/i18n/GT.java:161
+#: org/jmol/i18n/GT.java:162
 msgid "Russian"
 msgstr "Russe"
 
-#: org/jmol/i18n/GT.java:162
+#: org/jmol/i18n/GT.java:163
 msgid "Slovenian"
 msgstr "Slovène"
 
-#: org/jmol/i18n/GT.java:163
+#: org/jmol/i18n/GT.java:164
 msgid "Swedish"
 msgstr "Suédois"
 
-#: org/jmol/i18n/GT.java:164
+#: org/jmol/i18n/GT.java:165
 msgid "Tamil"
 msgstr "Tamoul"
 
-#: org/jmol/i18n/GT.java:165
+#: org/jmol/i18n/GT.java:166
 msgid "Turkish"
 msgstr "Turc"
 
-#: org/jmol/i18n/GT.java:166
+#: org/jmol/i18n/GT.java:167
 msgid "Ukrainian"
 msgstr "Ukrainien"
 
-#: org/jmol/i18n/GT.java:167
+#: org/jmol/i18n/GT.java:168
 msgid "Simplified Chinese"
 msgstr "Chinois Simplifié"
 
-#: org/jmol/i18n/GT.java:168
+#: org/jmol/i18n/GT.java:169
 msgid "Traditional Chinese"
 msgstr "Chinois traditionnel"
 
@@ -1864,7 +1868,7 @@ msgid "script compiler ERROR: "
 msgstr "Erreur du compilateur de script: "
 
 #: org/jmol/script/ScriptEvaluator.java:2472
-#: org/jmol/script/ScriptEvaluator.java:9749
+#: org/jmol/script/ScriptEvaluator.java:9753
 msgid "script ERROR: "
 msgstr "ERREUR de script: "
 
@@ -2100,24 +2104,24 @@ msgstr "{0} connexions supprimées"
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} de nouveaux liens; {1} modification"
 
-#: org/jmol/script/ScriptEvaluator.java:8427
+#: org/jmol/script/ScriptEvaluator.java:8431
 #, java-format
 msgid "file {0} created"
 msgstr "Fichier {0} crée"
 
-#: org/jmol/script/ScriptEvaluator.java:9883
-#: org/jmol/script/ScriptEvaluator.java:10139
+#: org/jmol/script/ScriptEvaluator.java:9887
+#: org/jmol/script/ScriptEvaluator.java:10143
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "{0} atomes supprimés"
 
-#: org/jmol/script/ScriptEvaluator.java:10717
-#: org/jmol/script/ScriptEvaluator.java:11129
+#: org/jmol/script/ScriptEvaluator.java:10721
+#: org/jmol/script/ScriptEvaluator.java:11133
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} liens hydrogène"
 
-#: org/jmol/script/ScriptEvaluator.java:11083
+#: org/jmol/script/ScriptEvaluator.java:11087
 #, java-format
 msgid "{0} struts added"
 msgstr "{0} traverse(s) ajoutée(s)"
@@ -2173,8 +2177,7 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:69
 #, java-format
-msgid ""
-"click on two points to spin around axis counterclockwise (requires {0})"
+msgid "click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 "Cliquez sur deux points afin de tourner autour de l'axe dans le sens inverse "
 "des aiguilles d'une montre (requiert {0})"
@@ -2226,8 +2229,7 @@ msgstr "Dé-sélectionner ce groupe d''atomes (requiert {0})"
 #: org/jmol/viewer/ActionManager.java:82
 #, java-format
 msgid "add this group of atoms to the set of selected atoms (requires {0})"
-msgstr ""
-"ajouter ce groupe d'atomes au set d'atomes sélectionnés (requiert {0})"
+msgstr "ajouter ce groupe d'atomes au set d'atomes sélectionnés (requiert {0})"
 
 #: org/jmol/viewer/ActionManager.java:83
 #, java-format
@@ -2300,8 +2302,7 @@ msgstr "choisir un point DRAW (pour des mesures) (requiert {0})"
 #: org/jmol/viewer/ActionManager.java:99
 #, java-format
 msgid "pick a label to toggle it hidden/displayed (requires {0})"
-msgstr ""
-"choisir un label afin de basculer entre affiché/masqué (requiert {0})"
+msgstr "choisir un label afin de basculer entre affiché/masqué (requiert {0})"
 
 #: org/jmol/viewer/ActionManager.java:100
 #, java-format
@@ -2370,8 +2371,7 @@ msgstr "Choisir deux atomes pour faire tourner le modèle autour d'un axe"
 
 #: org/jmol/viewer/ActionManager.java:1942
 msgid "pick one more atom in order to display the symmetry relationship"
-msgstr ""
-"choisir un atome supplémentaire afin d'afficher la relation symétrique"
+msgstr "choisir un atome supplémentaire afin d'afficher la relation symétrique"
 
 #: org/jmol/viewer/ActionManager.java:1943
 msgid ""
@@ -2420,16 +2420,15 @@ msgstr "Configuration du fichier journal dans {0}"
 #~ msgid "File creation failed."
 #~ msgstr "Création du fichier échoué"
 
-#, java-format
 #~ msgid "File {0}"
 #~ msgstr "Fichier {0}"
 
-#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
+#~ "{0}."
 #~ msgstr ""
-#~ "La création de fichier par cette n''est pas autorisée. Pour le format JPEG "
-#~ "Base64, utiliser {0}."
+#~ "La création de fichier par cette n''est pas autorisée. Pour le format "
+#~ "JPEG Base64, utiliser {0}."
 
 #~ msgid "File or URL"
 #~ msgstr "Fichier ou URL"
@@ -2437,11 +2436,9 @@ msgstr "Configuration du fichier journal dans {0}"
 #~ msgid "Minimize"
 #~ msgstr "Réduire"
 
-#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "{0} Modèle 3D"
 
-#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "{0} Image"
 

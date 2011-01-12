@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-01-04 23:56+0100\n"
+"POT-Creation-Date: 2011-01-12 18:30+0100\n"
 "PO-Revision-Date: 2011-01-05 06:55+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@gmail.com>\n"
 "Language-Team: Ukrainian <translation@linux.org.ua>\n"
@@ -144,8 +144,7 @@ msgid "Check"
 msgstr "Перевірити"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid ""
-"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Вгору"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -423,62 +422,67 @@ msgid "Japanese"
 msgstr "Японська"
 
 #: org/jmol/i18n/GT.java:154
+#, fuzzy
+msgid "Javanese"
+msgstr "Японська"
+
+#: org/jmol/i18n/GT.java:155
 msgid "Korean"
 msgstr "Корейська"
 
-#: org/jmol/i18n/GT.java:155
+#: org/jmol/i18n/GT.java:156
 msgid "Norwegian Bokmal"
 msgstr "Норвезька (Бокмал)"
 
-#: org/jmol/i18n/GT.java:156
+#: org/jmol/i18n/GT.java:157
 msgid "Dutch"
 msgstr "Нідерландська"
 
-#: org/jmol/i18n/GT.java:157
+#: org/jmol/i18n/GT.java:158
 msgid "Occitan"
 msgstr "Оксітанська"
 
-#: org/jmol/i18n/GT.java:158
+#: org/jmol/i18n/GT.java:159
 msgid "Polish"
 msgstr "Польська"
 
-#: org/jmol/i18n/GT.java:159
+#: org/jmol/i18n/GT.java:160
 msgid "Portuguese"
 msgstr "Португальська"
 
-#: org/jmol/i18n/GT.java:160
+#: org/jmol/i18n/GT.java:161
 msgid "Brazilian Portuguese"
 msgstr "Бразильська португальська"
 
-#: org/jmol/i18n/GT.java:161
+#: org/jmol/i18n/GT.java:162
 msgid "Russian"
 msgstr "Російська"
 
-#: org/jmol/i18n/GT.java:162
+#: org/jmol/i18n/GT.java:163
 msgid "Slovenian"
 msgstr "Словенська"
 
-#: org/jmol/i18n/GT.java:163
+#: org/jmol/i18n/GT.java:164
 msgid "Swedish"
 msgstr "Шведська"
 
-#: org/jmol/i18n/GT.java:164
+#: org/jmol/i18n/GT.java:165
 msgid "Tamil"
 msgstr "Тамільська"
 
-#: org/jmol/i18n/GT.java:165
+#: org/jmol/i18n/GT.java:166
 msgid "Turkish"
 msgstr "Турецька"
 
-#: org/jmol/i18n/GT.java:166
+#: org/jmol/i18n/GT.java:167
 msgid "Ukrainian"
 msgstr "Українська"
 
-#: org/jmol/i18n/GT.java:167
+#: org/jmol/i18n/GT.java:168
 msgid "Simplified Chinese"
 msgstr "Спрощена китайська"
 
-#: org/jmol/i18n/GT.java:168
+#: org/jmol/i18n/GT.java:169
 msgid "Traditional Chinese"
 msgstr "Традиційна китайська"
 
@@ -1496,8 +1500,7 @@ msgstr "Клацніть, щоб почати вимірювання двогр�
 
 #: org/jmol/popup/MainPopupResourceBundle.java:826
 msgid "Click two atoms to display a sequence in the console"
-msgstr ""
-"Позначте клацанням два атоми, щоб переглянути послідовність у консолі."
+msgstr "Позначте клацанням два атоми, щоб переглянути послідовність у консолі."
 
 #: org/jmol/popup/MainPopupResourceBundle.java:827
 msgid "Delete measurements"
@@ -1864,7 +1867,7 @@ msgid "script compiler ERROR: "
 msgstr "ПОМИЛКА обробки скрипту: "
 
 #: org/jmol/script/ScriptEvaluator.java:2472
-#: org/jmol/script/ScriptEvaluator.java:9749
+#: org/jmol/script/ScriptEvaluator.java:9753
 msgid "script ERROR: "
 msgstr "ПОМИЛКА скрипту: "
 
@@ -2104,24 +2107,24 @@ msgstr "вилучено {0} з’єднань"
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} нові зв’язки; {1} змінено"
 
-#: org/jmol/script/ScriptEvaluator.java:8427
+#: org/jmol/script/ScriptEvaluator.java:8431
 #, java-format
 msgid "file {0} created"
 msgstr "створено файл {0}"
 
-#: org/jmol/script/ScriptEvaluator.java:9883
-#: org/jmol/script/ScriptEvaluator.java:10139
+#: org/jmol/script/ScriptEvaluator.java:9887
+#: org/jmol/script/ScriptEvaluator.java:10143
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "вилучено {0} атомів"
 
-#: org/jmol/script/ScriptEvaluator.java:10717
-#: org/jmol/script/ScriptEvaluator.java:11129
+#: org/jmol/script/ScriptEvaluator.java:10721
+#: org/jmol/script/ScriptEvaluator.java:11133
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} водневих зв’язки"
 
-#: org/jmol/script/ScriptEvaluator.java:11083
+#: org/jmol/script/ScriptEvaluator.java:11087
 #, java-format
 msgid "{0} struts added"
 msgstr "додано {0} розпірки"
@@ -2177,8 +2180,7 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:69
 #, java-format
-msgid ""
-"click on two points to spin around axis counterclockwise (requires {0})"
+msgid "click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 "клацніть лівою кнопкою миші у двох точках, щоб почати обертання навколо вісі "
 "проти годинникової стрілки (потрібно {0})"
@@ -2302,8 +2304,7 @@ msgstr "вибрати точку DRAW (для вимірювання) (потр
 #: org/jmol/viewer/ActionManager.java:99
 #, java-format
 msgid "pick a label to toggle it hidden/displayed (requires {0})"
-msgstr ""
-"вибрати мітку для перемикання стану приховано/показано (потрібно {0})"
+msgstr "вибрати мітку для перемикання стану приховано/показано (потрібно {0})"
 
 #: org/jmol/viewer/ActionManager.java:100
 #, java-format
@@ -2414,12 +2415,12 @@ msgstr "Встановлення файла журналу {0}"
 #~ msgid "File creation failed."
 #~ msgstr "Не вдалося створити файл."
 
-#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
+#~ "{0}."
 #~ msgstr ""
-#~ "Створення файлів цим аплетом заборонено. Щоб отримати JPEG у форматі Base64, "
-#~ "скористайтеся {0}."
+#~ "Створення файлів цим аплетом заборонено. Щоб отримати JPEG у форматі "
+#~ "Base64, скористайтеся {0}."
 
 #~ msgid "Java memory usage"
 #~ msgstr "Використання пам’яті Java"
@@ -2430,7 +2431,6 @@ msgstr "Встановлення файла журналу {0}"
 #~ msgid "File or URL"
 #~ msgstr "Файл або адреса URL"
 
-#, java-format
 #~ msgid "File {0}"
 #~ msgstr "Файл {0}"
 
@@ -2440,14 +2440,12 @@ msgstr "Встановлення файла журналу {0}"
 #~ msgid "Script with history"
 #~ msgstr "Скрипт з журналом"
 
-#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "Зображення {0}"
 
 #~ msgid "JVXL Isosurface"
 #~ msgstr "Ізоповерхня JVXL"
 
-#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "Просторова модель {0}"
 

@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JmolApplet 11\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-01-04 23:56+0100\n"
+"POT-Creation-Date: 2011-01-12 18:30+0100\n"
 "PO-Revision-Date: 2010-08-19 22:29+0000\n"
 "Last-Translator: cmdrhenner <cmdrhenner@gmail.com>\n"
 "Language-Team: none\n"
@@ -429,62 +429,67 @@ msgid "Japanese"
 msgstr "Japanisch"
 
 #: org/jmol/i18n/GT.java:154
+#, fuzzy
+msgid "Javanese"
+msgstr "Japanisch"
+
+#: org/jmol/i18n/GT.java:155
 msgid "Korean"
 msgstr "Koreanisch"
 
-#: org/jmol/i18n/GT.java:155
+#: org/jmol/i18n/GT.java:156
 msgid "Norwegian Bokmal"
 msgstr "Norwegisch"
 
-#: org/jmol/i18n/GT.java:156
+#: org/jmol/i18n/GT.java:157
 msgid "Dutch"
 msgstr "Holländisch"
 
-#: org/jmol/i18n/GT.java:157
+#: org/jmol/i18n/GT.java:158
 msgid "Occitan"
 msgstr "Okzitanisch"
 
-#: org/jmol/i18n/GT.java:158
+#: org/jmol/i18n/GT.java:159
 msgid "Polish"
 msgstr "Polnisch"
 
-#: org/jmol/i18n/GT.java:159
+#: org/jmol/i18n/GT.java:160
 msgid "Portuguese"
 msgstr "Portugiesisch"
 
-#: org/jmol/i18n/GT.java:160
+#: org/jmol/i18n/GT.java:161
 msgid "Brazilian Portuguese"
 msgstr "brasilianisches Portugiesisch"
 
-#: org/jmol/i18n/GT.java:161
+#: org/jmol/i18n/GT.java:162
 msgid "Russian"
 msgstr "Russisch"
 
-#: org/jmol/i18n/GT.java:162
+#: org/jmol/i18n/GT.java:163
 msgid "Slovenian"
 msgstr "Slowenisch"
 
-#: org/jmol/i18n/GT.java:163
+#: org/jmol/i18n/GT.java:164
 msgid "Swedish"
 msgstr "Schwedisch"
 
-#: org/jmol/i18n/GT.java:164
+#: org/jmol/i18n/GT.java:165
 msgid "Tamil"
 msgstr "Tamilisch"
 
-#: org/jmol/i18n/GT.java:165
+#: org/jmol/i18n/GT.java:166
 msgid "Turkish"
 msgstr "Türkisch"
 
-#: org/jmol/i18n/GT.java:166
+#: org/jmol/i18n/GT.java:167
 msgid "Ukrainian"
 msgstr "Ukrainisch"
 
-#: org/jmol/i18n/GT.java:167
+#: org/jmol/i18n/GT.java:168
 msgid "Simplified Chinese"
 msgstr "Chinesisch, vereinfacht"
 
-#: org/jmol/i18n/GT.java:168
+#: org/jmol/i18n/GT.java:169
 msgid "Traditional Chinese"
 msgstr "Chinesisch, traditionell"
 
@@ -1861,7 +1866,7 @@ msgid "script compiler ERROR: "
 msgstr "Skript-Compiler FEHLER: "
 
 #: org/jmol/script/ScriptEvaluator.java:2472
-#: org/jmol/script/ScriptEvaluator.java:9749
+#: org/jmol/script/ScriptEvaluator.java:9753
 msgid "script ERROR: "
 msgstr "Skript FEHLER: "
 
@@ -2096,24 +2101,24 @@ msgstr "{0} Bindungen gelöscht"
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} neue Bindungen; {1} verändert"
 
-#: org/jmol/script/ScriptEvaluator.java:8427
+#: org/jmol/script/ScriptEvaluator.java:8431
 #, java-format
 msgid "file {0} created"
 msgstr "Datei {0} erstellt"
 
-#: org/jmol/script/ScriptEvaluator.java:9883
-#: org/jmol/script/ScriptEvaluator.java:10139
+#: org/jmol/script/ScriptEvaluator.java:9887
+#: org/jmol/script/ScriptEvaluator.java:10143
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "{0} Atome gelöscht"
 
-#: org/jmol/script/ScriptEvaluator.java:10717
-#: org/jmol/script/ScriptEvaluator.java:11129
+#: org/jmol/script/ScriptEvaluator.java:10721
+#: org/jmol/script/ScriptEvaluator.java:11133
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} Wasserstoff(brücken)bindungen"
 
-#: org/jmol/script/ScriptEvaluator.java:11083
+#: org/jmol/script/ScriptEvaluator.java:11087
 #, java-format
 msgid "{0} struts added"
 msgstr "{0} Streben hunzugefügt"

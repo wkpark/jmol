@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-01-04 23:56+0100\n"
+"POT-Creation-Date: 2011-01-12 18:30+0100\n"
 "PO-Revision-Date: 2011-01-07 01:10+0000\n"
 "Last-Translator: Andi Chandler <Unknown>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
@@ -142,8 +142,7 @@ msgid "Check"
 msgstr "Check"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid ""
-"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Top"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -421,62 +420,67 @@ msgid "Japanese"
 msgstr "Japanese"
 
 #: org/jmol/i18n/GT.java:154
+#, fuzzy
+msgid "Javanese"
+msgstr "Japanese"
+
+#: org/jmol/i18n/GT.java:155
 msgid "Korean"
 msgstr "Korean"
 
-#: org/jmol/i18n/GT.java:155
+#: org/jmol/i18n/GT.java:156
 msgid "Norwegian Bokmal"
 msgstr "Norwegian Bokmal"
 
-#: org/jmol/i18n/GT.java:156
+#: org/jmol/i18n/GT.java:157
 msgid "Dutch"
 msgstr "Dutch"
 
-#: org/jmol/i18n/GT.java:157
+#: org/jmol/i18n/GT.java:158
 msgid "Occitan"
 msgstr "Occitan"
 
-#: org/jmol/i18n/GT.java:158
+#: org/jmol/i18n/GT.java:159
 msgid "Polish"
 msgstr "Polish"
 
-#: org/jmol/i18n/GT.java:159
+#: org/jmol/i18n/GT.java:160
 msgid "Portuguese"
 msgstr "Portuguese"
 
-#: org/jmol/i18n/GT.java:160
+#: org/jmol/i18n/GT.java:161
 msgid "Brazilian Portuguese"
 msgstr "Brazilian Portuguese"
 
-#: org/jmol/i18n/GT.java:161
+#: org/jmol/i18n/GT.java:162
 msgid "Russian"
 msgstr "Russian"
 
-#: org/jmol/i18n/GT.java:162
+#: org/jmol/i18n/GT.java:163
 msgid "Slovenian"
 msgstr "Slovenian"
 
-#: org/jmol/i18n/GT.java:163
+#: org/jmol/i18n/GT.java:164
 msgid "Swedish"
 msgstr "Swedish"
 
-#: org/jmol/i18n/GT.java:164
+#: org/jmol/i18n/GT.java:165
 msgid "Tamil"
 msgstr "Tamil"
 
-#: org/jmol/i18n/GT.java:165
+#: org/jmol/i18n/GT.java:166
 msgid "Turkish"
 msgstr "Turkish"
 
-#: org/jmol/i18n/GT.java:166
+#: org/jmol/i18n/GT.java:167
 msgid "Ukrainian"
 msgstr "Ukrainian"
 
-#: org/jmol/i18n/GT.java:167
+#: org/jmol/i18n/GT.java:168
 msgid "Simplified Chinese"
 msgstr "Simplified Chinese"
 
-#: org/jmol/i18n/GT.java:168
+#: org/jmol/i18n/GT.java:169
 msgid "Traditional Chinese"
 msgstr "Traditional Chinese"
 
@@ -1857,7 +1861,7 @@ msgid "script compiler ERROR: "
 msgstr "Script compiler ERROR: "
 
 #: org/jmol/script/ScriptEvaluator.java:2472
-#: org/jmol/script/ScriptEvaluator.java:9749
+#: org/jmol/script/ScriptEvaluator.java:9753
 msgid "script ERROR: "
 msgstr "script ERROR: "
 
@@ -2092,24 +2096,24 @@ msgstr "{0} connections deleted"
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} new bonds; {1} modified"
 
-#: org/jmol/script/ScriptEvaluator.java:8427
+#: org/jmol/script/ScriptEvaluator.java:8431
 #, java-format
 msgid "file {0} created"
 msgstr "file {0} created"
 
-#: org/jmol/script/ScriptEvaluator.java:9883
-#: org/jmol/script/ScriptEvaluator.java:10139
+#: org/jmol/script/ScriptEvaluator.java:9887
+#: org/jmol/script/ScriptEvaluator.java:10143
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "{0} atoms deleted"
 
-#: org/jmol/script/ScriptEvaluator.java:10717
-#: org/jmol/script/ScriptEvaluator.java:11129
+#: org/jmol/script/ScriptEvaluator.java:10721
+#: org/jmol/script/ScriptEvaluator.java:11133
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} hydrogen bonds"
 
-#: org/jmol/script/ScriptEvaluator.java:11083
+#: org/jmol/script/ScriptEvaluator.java:11087
 #, java-format
 msgid "{0} struts added"
 msgstr "{0} struts added"
@@ -2160,10 +2164,8 @@ msgstr "click on two points to spin around axis clockwise (requires {0})"
 
 #: org/jmol/viewer/ActionManager.java:69
 #, java-format
-msgid ""
-"click on two points to spin around axis counterclockwise (requires {0})"
-msgstr ""
-"click on two points to spin around axis anti-clockwise (requires {0})"
+msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgstr "click on two points to spin around axis anti-clockwise (requires {0})"
 
 #: org/jmol/viewer/ActionManager.java:71
 #, java-format
@@ -2393,11 +2395,12 @@ msgstr "Cannot set log file path."
 msgid "Setting log file to {0}"
 msgstr "Setting log file to {0}"
 
-#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
+#~ "{0}."
 #~ msgstr ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
+#~ "{0}."
 
 #~ msgid "File creation failed."
 #~ msgstr "File creation failed."
@@ -2405,14 +2408,11 @@ msgstr "Setting log file to {0}"
 #~ msgid "About Jmol"
 #~ msgstr "About Jmol"
 
-#, java-format
 #~ msgid "ERROR: cannot set boolean flag to string value: {0}"
 #~ msgstr "ERROR: cannot set boolean flag to string value: {0}"
 
-#, java-format
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr "ERROR: cannot set boolean flag to numeric value: {0}"
 
-#, java-format
 #~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 #~ msgstr "ERROR: Cannot set value of this variable to a boolean: {0}"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-01-04 23:56+0100\n"
+"POT-Creation-Date: 2011-01-12 18:30+0100\n"
 "PO-Revision-Date: 2011-01-10 20:44+0000\n"
 "Last-Translator: Martino Barbon <Unknown>\n"
 "Language-Team: Italian <it@li.org>\n"
@@ -144,8 +144,7 @@ msgid "Check"
 msgstr "Verifica"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid ""
-"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Sopra"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -423,62 +422,67 @@ msgid "Japanese"
 msgstr "Giapponese"
 
 #: org/jmol/i18n/GT.java:154
+#, fuzzy
+msgid "Javanese"
+msgstr "Giapponese"
+
+#: org/jmol/i18n/GT.java:155
 msgid "Korean"
 msgstr "Coreano"
 
-#: org/jmol/i18n/GT.java:155
+#: org/jmol/i18n/GT.java:156
 msgid "Norwegian Bokmal"
 msgstr "Norvegese Bokmal"
 
-#: org/jmol/i18n/GT.java:156
+#: org/jmol/i18n/GT.java:157
 msgid "Dutch"
 msgstr "Olandese"
 
-#: org/jmol/i18n/GT.java:157
+#: org/jmol/i18n/GT.java:158
 msgid "Occitan"
 msgstr "Occitana"
 
-#: org/jmol/i18n/GT.java:158
+#: org/jmol/i18n/GT.java:159
 msgid "Polish"
 msgstr "Polacco"
 
-#: org/jmol/i18n/GT.java:159
+#: org/jmol/i18n/GT.java:160
 msgid "Portuguese"
 msgstr "Portoghese"
 
-#: org/jmol/i18n/GT.java:160
+#: org/jmol/i18n/GT.java:161
 msgid "Brazilian Portuguese"
 msgstr "Portoghese brasiliano"
 
-#: org/jmol/i18n/GT.java:161
+#: org/jmol/i18n/GT.java:162
 msgid "Russian"
 msgstr "Russo"
 
-#: org/jmol/i18n/GT.java:162
+#: org/jmol/i18n/GT.java:163
 msgid "Slovenian"
 msgstr "Sloveno"
 
-#: org/jmol/i18n/GT.java:163
+#: org/jmol/i18n/GT.java:164
 msgid "Swedish"
 msgstr "Svedese"
 
-#: org/jmol/i18n/GT.java:164
+#: org/jmol/i18n/GT.java:165
 msgid "Tamil"
 msgstr "Tamil"
 
-#: org/jmol/i18n/GT.java:165
+#: org/jmol/i18n/GT.java:166
 msgid "Turkish"
 msgstr "Turco"
 
-#: org/jmol/i18n/GT.java:166
+#: org/jmol/i18n/GT.java:167
 msgid "Ukrainian"
 msgstr "Ucraino"
 
-#: org/jmol/i18n/GT.java:167
+#: org/jmol/i18n/GT.java:168
 msgid "Simplified Chinese"
 msgstr "Cinese semplificato"
 
-#: org/jmol/i18n/GT.java:168
+#: org/jmol/i18n/GT.java:169
 msgid "Traditional Chinese"
 msgstr "Cinese tradizionale"
 
@@ -1851,7 +1855,7 @@ msgid "script compiler ERROR: "
 msgstr "ERRORE compilazione script: "
 
 #: org/jmol/script/ScriptEvaluator.java:2472
-#: org/jmol/script/ScriptEvaluator.java:9749
+#: org/jmol/script/ScriptEvaluator.java:9753
 msgid "script ERROR: "
 msgstr "script ERROR: "
 
@@ -2065,8 +2069,7 @@ msgstr "oggetto non riconosciuto"
 #: org/jmol/script/ScriptEvaluator.java:2779
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
-msgstr ""
-"parametro {0} non riconosciuto in Jmol state script (imposta comunque)"
+msgstr "parametro {0} non riconosciuto in Jmol state script (imposta comunque)"
 
 #: org/jmol/script/ScriptEvaluator.java:2782
 #, java-format
@@ -2088,24 +2091,24 @@ msgstr "cancellate {0} connessioni"
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} nuovi legami; {1} modificati"
 
-#: org/jmol/script/ScriptEvaluator.java:8427
+#: org/jmol/script/ScriptEvaluator.java:8431
 #, java-format
 msgid "file {0} created"
 msgstr "file {0} creato"
 
-#: org/jmol/script/ScriptEvaluator.java:9883
-#: org/jmol/script/ScriptEvaluator.java:10139
+#: org/jmol/script/ScriptEvaluator.java:9887
+#: org/jmol/script/ScriptEvaluator.java:10143
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "cancellati {0} atomi"
 
-#: org/jmol/script/ScriptEvaluator.java:10717
-#: org/jmol/script/ScriptEvaluator.java:11129
+#: org/jmol/script/ScriptEvaluator.java:10721
+#: org/jmol/script/ScriptEvaluator.java:11133
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} legami idrogeno"
 
-#: org/jmol/script/ScriptEvaluator.java:11083
+#: org/jmol/script/ScriptEvaluator.java:11087
 #, java-format
 msgid "{0} struts added"
 msgstr "{0} puntoni aggiunti"
@@ -2161,8 +2164,7 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:69
 #, java-format
-msgid ""
-"click on two points to spin around axis counterclockwise (requires {0})"
+msgid "click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 "cliccare su due punti a ruotare attorno al proprio asse in senso antiorario "
 "(richiede {0})"
@@ -2364,8 +2366,7 @@ msgstr "scegliere un altro atomo per visualizzare il rapporto di simmetria"
 #: org/jmol/viewer/ActionManager.java:1943
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
-msgstr ""
-"scegliere due atomi per visualizzare il rapporto di simmetria fra loro"
+msgstr "scegliere due atomi per visualizzare il rapporto di simmetria fra loro"
 
 #: org/jmol/viewer/SelectionManager.java:89
 #: org/jmol/viewer/SelectionManager.java:105
@@ -2412,15 +2413,12 @@ msgstr "Impostazione file di log su {0}"
 #~ msgid "Minimize"
 #~ msgstr "Minimizza"
 
-#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "{0} Modello 3D"
 
-#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "{0} Immagine"
 
-#, java-format
 #~ msgid "File {0}"
 #~ msgstr "File {0}"
 
@@ -2430,7 +2428,6 @@ msgstr "Impostazione file di log su {0}"
 #~ msgid "Script with history"
 #~ msgstr "Script con storia"
 
-#, java-format
 #~ msgid ""
 #~ "NOTE: NH hydrogens are present and will not be calculated.\n"
 #~ "Use {0} for a standard DSSP analysis.\n"

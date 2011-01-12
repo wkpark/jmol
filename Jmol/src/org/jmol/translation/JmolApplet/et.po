@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-01-04 23:56+0100\n"
+"POT-Creation-Date: 2011-01-12 18:30+0100\n"
 "PO-Revision-Date: 2010-12-16 12:57+0000\n"
 "Last-Translator: Ivo Sarak <Unknown>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
@@ -414,62 +414,66 @@ msgid "Japanese"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:154
-msgid "Korean"
+msgid "Javanese"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:155
-msgid "Norwegian Bokmal"
+msgid "Korean"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:156
-msgid "Dutch"
+msgid "Norwegian Bokmal"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:157
-msgid "Occitan"
+msgid "Dutch"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:158
-msgid "Polish"
+msgid "Occitan"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:159
-msgid "Portuguese"
+msgid "Polish"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:160
-msgid "Brazilian Portuguese"
+msgid "Portuguese"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:161
-msgid "Russian"
+msgid "Brazilian Portuguese"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:162
-msgid "Slovenian"
+msgid "Russian"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:163
-msgid "Swedish"
+msgid "Slovenian"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:164
-msgid "Tamil"
+msgid "Swedish"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:165
-msgid "Turkish"
+msgid "Tamil"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:166
-msgid "Ukrainian"
+msgid "Turkish"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:167
-msgid "Simplified Chinese"
+msgid "Ukrainian"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:168
+msgid "Simplified Chinese"
+msgstr ""
+
+#: org/jmol/i18n/GT.java:169
 msgid "Traditional Chinese"
 msgstr ""
 
@@ -1842,7 +1846,7 @@ msgid "script compiler ERROR: "
 msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2472
-#: org/jmol/script/ScriptEvaluator.java:9749
+#: org/jmol/script/ScriptEvaluator.java:9753
 msgid "script ERROR: "
 msgstr ""
 
@@ -2073,24 +2077,24 @@ msgstr ""
 msgid "{0} new bonds; {1} modified"
 msgstr ""
 
-#: org/jmol/script/ScriptEvaluator.java:8427
+#: org/jmol/script/ScriptEvaluator.java:8431
 #, java-format
 msgid "file {0} created"
 msgstr ""
 
-#: org/jmol/script/ScriptEvaluator.java:9883
-#: org/jmol/script/ScriptEvaluator.java:10139
+#: org/jmol/script/ScriptEvaluator.java:9887
+#: org/jmol/script/ScriptEvaluator.java:10143
 #, java-format
 msgid "{0} atoms deleted"
 msgstr ""
 
-#: org/jmol/script/ScriptEvaluator.java:10717
-#: org/jmol/script/ScriptEvaluator.java:11129
+#: org/jmol/script/ScriptEvaluator.java:10721
+#: org/jmol/script/ScriptEvaluator.java:11133
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr ""
 
-#: org/jmol/script/ScriptEvaluator.java:11083
+#: org/jmol/script/ScriptEvaluator.java:11087
 #, java-format
 msgid "{0} struts added"
 msgstr ""

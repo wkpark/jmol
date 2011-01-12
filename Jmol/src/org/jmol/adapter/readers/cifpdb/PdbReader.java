@@ -136,7 +136,6 @@ public class PdbReader extends AtomSetCollectionReader {
       getHeader = false;
       // PDB is different -- targets actual model number
       int modelNo = (isNewModel ? modelNumber + 1 : getModelNumber());
-      // System.out.println(modelNo);
       modelNumber = (bsModels == null ? modelNo : modelNumber + 1);
       if (!doGetModel(modelNumber))
         return checkLastModel();
@@ -549,7 +548,7 @@ REMARK 290 REMARK: NULL
     atom.chainID = ch;
     atom.sequenceNumber = parseInt(line, 22, 26);
     atom.insertionCode = JmolAdapter.canonizeInsertionCode(line.charAt(26));
-    
+    atom.isHetero = line.startsWith("HETATM");
     if (!filterAtom(atom))
       return;
     
@@ -570,9 +569,7 @@ REMARK 290 REMARK: NULL
       if (atom.group3.equals("UNK"))
         nUNK++;
     }
-    boolean isHetero = line.startsWith("HETATM");
-    atom.isHetero = isHetero;
-    atom.elementSymbol = deduceElementSymbol(isHetero);
+    atom.elementSymbol = deduceElementSymbol(atom.isHetero);
     //calculate the charge from cols 79 & 80 (1-based): 2+, 3-, etc
     int charge = 0;
     if (lineLength >= 80) {
@@ -606,7 +603,7 @@ REMARK 290 REMARK: NULL
     if (atomCount++ == 0)
       atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
     // note that values are +1 in this serial map
-    if (isHetero) {
+    if (atom.isHetero) {
       if (htHetero != null) {
         atomSetCollection.setAtomSetAuxiliaryInfo("hetNames", htHetero);
         htHetero = null;

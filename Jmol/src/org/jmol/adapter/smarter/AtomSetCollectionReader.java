@@ -648,6 +648,7 @@ public abstract class AtomSetCollectionReader {
   private boolean filterGroup3;
   private boolean filterChain;
   private boolean filterAtomType;
+  protected boolean filterHetero;
   private boolean doSetOrientation;
   protected boolean addVibrations;
   protected boolean useAltNames;
@@ -675,10 +676,11 @@ public abstract class AtomSetCollectionReader {
     if (filter == null)
       return;
     filterAtomType = checkFilter("*.") || checkFilter("!.");
+    filterHetero = checkFilter("HETATM"); // PDB
     filterGroup3 = checkFilter("[");
     filterChain = checkFilter(":");
     filterAltLoc = checkFilter("%");
-    haveAtomFilter = filterAtomType || filterGroup3 || filterChain || filterAltLoc;
+    haveAtomFilter = filterAtomType || filterGroup3 || filterChain || filterAltLoc || filterHetero;
     if (bsFilter == null) {
       // bsFilter is usually null, but from MDTOP it gets set to indicate
       // which atoms were selected by the filter. This then
@@ -688,9 +690,19 @@ public abstract class AtomSetCollectionReader {
       htParams.put("bsFilter", bsFilter);
       filter = (";" + filter + ";").replace(',', ';');
       Logger.info("filtering with " + filter);
+      if (haveAtomFilter) {
+        int ipt;
+        filter1 = filter;
+        if ((ipt = filter.indexOf("|")) >= 0) {
+          filter1 = filter.substring(0, ipt).trim() + ";";
+          filter2 = ";" + filter.substring(ipt).trim();
+        }
+      }
     }
   }
 
+  private String filter1, filter2;
+  
   public boolean checkFilter(String key) {
     return (filter != null && filter.indexOf(key) >= 0);
   }
@@ -706,22 +718,29 @@ public abstract class AtomSetCollectionReader {
    */
   protected boolean filterAtom(Atom atom, int iAtom) {
     // cif, mdtop, pdb, gromacs, pqr
-    boolean isOK = 
-      (!filterGroup3 || atom.group3 == null
-          || !filterReject("![", "[" + atom.group3.toUpperCase() + "]"))
-      && (!filterAtomType || atom.atomName == null
-          || !filterReject("!.", "." + atom.atomName.toUpperCase() + ";"))
-      && (!filterChain || atom.chainID == '\0'
-          || !filterReject("!:", ":" + atom.chainID))
-      && (!filterAltLoc || atom.alternateLocationID == '\0'
-          || !filterReject("!%", "%" + atom.alternateLocationID));
+    boolean isOK = checkFilter(atom, filter1);
+    if (filter2 != null)
+      isOK |= checkFilter(atom, filter2);
     bsFilter.set(iAtom >= 0 ? iAtom : atomSetCollection.getAtomCount(), isOK);
     return isOK;
   }
 
-  private boolean filterReject(String notCode, String code) {
-    return (filter.indexOf(notCode) >= 0 ? filter.indexOf(code) >= 0 
-        : filter.indexOf(code) < 0);
+  private boolean checkFilter(Atom atom, String f) {
+    return (!filterGroup3 || atom.group3 == null
+        || !filterReject(f, "[", atom.group3.toUpperCase() + "]"))
+    && (!filterAtomType || atom.atomName == null
+        || !filterReject(f, ".", atom.atomName.toUpperCase() + ";"))
+    && (!filterChain || atom.chainID == '\0'
+        || !filterReject(f, ":", "" + atom.chainID))
+    && (!filterAltLoc || atom.alternateLocationID == '\0'
+        || !filterReject(f, "%", "" + atom.alternateLocationID))
+    && (!filterHetero 
+        || !filterReject(f, "HETATM", atom.isHetero ? "HETATM" : "ATOM"));
+  }
+
+  private boolean filterReject(String f, String code, String atomCode) {
+    return (f.indexOf(code) >= 0 && (f.indexOf("!" + code) >= 0 ? f.indexOf(atomCode) >= 0 
+        : f.indexOf(atomCode) < 0));
   }
 
   protected void set2D() {

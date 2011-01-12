@@ -582,11 +582,16 @@ class IsoSolventReader extends AtomDataReader {
       this.ib = Math.max(ia, ib);
     }
 
+//    private ArrayList<Face> aFaces;
     void addFace(Face f) {
-      if (f == null)
+      if (f == null) {
         nInvalid++;
-      else
-        nFaces++;
+        return;
+      }
+  //    if (aFaces == null)
+    //    aFaces = new ArrayList<Face>();
+      //aFaces.add(f);
+      nFaces++;
     }
 
     int getType() {
@@ -598,9 +603,11 @@ class IsoSolventReader extends AtomDataReader {
           System.out.println("draw e" + (nTest++) + " @{point"
               + new Point3f(atomXyz[ia]) + "} @{point" + new Point3f(atomXyz[ib])
               + "} color green # " + getType());
+          for (int i = 0; i < aFaces.size(); i++)
+            aFaces.get(i).dump();
         }
-    */
-
+    
+   */
     @Override
     public String toString() {
       return ia + "_" + ib;
@@ -635,6 +642,19 @@ class IsoSolventReader extends AtomDataReader {
       for (int k = 0; k < 3; k++)
         edges[k].addFace(f);
     }
+
+    public void dump() {
+      Point3f ptA = atomXyz[ia];
+      Point3f ptB = atomXyz[ib];
+      Point3f ptC = atomXyz[ic];
+      String color = "green";
+      dumpLine(ptA, ptB, "f", color);
+      dumpLine(ptB, ptC, "f", color);
+      dumpLine(ptC, ptA, "f", color);
+      dumpLine2(pS, ptA, "f", solventRadius, color, "white");
+      dumpLine2(pS, ptB, "f", solventRadius, color, "white");
+      dumpLine2(pS, ptC, "f", solventRadius, color, "white");
+    }
   }
 
   private void getFaces() {
@@ -665,11 +685,13 @@ class IsoSolventReader extends AtomDataReader {
           noFaceSpheres.clear(ib);
           noFaceSpheres.clear(ic);
           Face f = new Face(ia, ib, ic, edge, ptS1);
-          if (validateFace(f))
+          if (validateFace(f)) {
             vFaces.add(f);
+          }
           f = new Face(ib, ia, ic, edge, ptS2);
-          if (validateFace(f))
+          if (validateFace(f)) {
             vFaces.add(f);
+          }
         }
       }
     }
@@ -810,13 +832,7 @@ class IsoSolventReader extends AtomDataReader {
       Point3f ptC = atomXyz[f.ic];
       Point3f ptS = f.pS;
       if (Logger.debugging) {
-        String color = "green";
-        dumpLine(ptA, ptB, "f", color);
-        dumpLine(ptB, ptC, "f", color);
-        dumpLine(ptC, ptA, "f", color);
-        dumpLine2(ptS, ptA, "f", solventRadius, color, "white");
-        dumpLine2(ptS, ptB, "f", solventRadius, color, "white");
-        dumpLine2(ptS, ptC, "f", solventRadius, color, "white");
+        f.dump();
       }
       // For the second pass (exterior of faces), we track 
       // voxels that have already been over-written by another face.

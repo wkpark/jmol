@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-01-12 18:30+0100\n"
-"PO-Revision-Date: 2011-01-03 00:45+0200\n"
+"PO-Revision-Date: 2011-01-16 18:11+0200\n"
 "Last-Translator: Johannes Pernaa <johannes.pernaa@edumendo.fi>\n"
 "Language-Team: Finnish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -332,7 +332,7 @@ msgstr "Päivitä"
 
 #: org/jmol/export/dialog/Dialog.java:475
 msgid "Update directory listing"
-msgstr "Päivitä kansioiden listaaminen"
+msgstr "Päivitä kansiolista"
 
 #: org/jmol/export/dialog/Dialog.java:476
 msgid "Up"
@@ -491,7 +491,7 @@ msgstr "Kiina (perinteinen)"
 #: org/jmol/minimize/Minimizer.java:206
 #, java-format
 msgid "Could not get class for force field {0}"
-msgstr "Virhe: Voimakentän luokkaa ei haettu. {0}"
+msgstr "Voimakentän luokkaa ei voida hakea. {0}"
 
 #: org/jmol/minimize/Minimizer.java:210
 msgid "No atoms selected -- nothing to do!"
@@ -505,7 +505,7 @@ msgstr "{0} atomit minimoidaan."
 #: org/jmol/minimize/Minimizer.java:374
 #, java-format
 msgid "could not setup force field {0}"
-msgstr "Virhe: Voimakenttää ei voitu asettaa. {0}"
+msgstr "Voimakenttää ei voitu asettaa. {0}"
 
 #: org/jmol/modelkit/ModelKitPopup.java:75
 msgid "Element?"
@@ -534,11 +534,11 @@ msgstr "lisää vedyt"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:83
 msgid "minimize"
-msgstr "minimointi"
+msgstr "optimoi rakenne"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:84
 msgid "fix hydrogens and minimize"
-msgstr "sovita vedyt ja minimoi"
+msgstr "sovita vedyt ja optimoi rakenne"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:85
 msgid "clear"
@@ -562,23 +562,23 @@ msgstr "poista atomi"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:90
 msgid "drag to bond"
-msgstr "raahaa ja luo sidos"
+msgstr "liikuta atomia ja luo sidos"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:91
 msgid "drag atom"
-msgstr "raahaa atomi"
+msgstr "liikuta atomia"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:92
 msgid "drag atom (and minimize)"
-msgstr "raahaa atomi (ja minimoi)"
+msgstr "liikuta atomia ja optimoi rakenne"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:93
 msgid "drag molecule (SHIFT to rotate)"
-msgstr "vedä molekyyli (SHIFT: pyöritä)"
+msgstr "liikuta molekyyliä (SHIFT - pyöritä)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:94
 msgid "drag and minimize molecule (docking)"
-msgstr "vedä ja minimoi molekyyli (telakointi)"
+msgstr "liikuta ja optimoi molekyyli (telakointi)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:103
 msgid "increase charge"
@@ -594,7 +594,7 @@ msgstr "poista sidos"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:106
 msgid "single"
-msgstr "yksinkertainen"
+msgstr "yksinkertainen sidos"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:107
 msgid "double"
@@ -614,14 +614,14 @@ msgstr "vähennä sidoksen kertalukua"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:111
 msgid "rotate bond (SHIFT-DRAG)"
-msgstr "pyöritä sidosta (SHIFT-DRAG)"
+msgstr "pyöritä sidosta (SHIFT - LIIKUTA)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:112
 msgid "exit modelkit mode"
 msgstr "poistu mallityökalutilasta"
 
 #: org/jmol/modelsetbio/AminoPolymer.java:576
-#, fuzzy, java-format
+#, java-format
 msgid ""
 "NOTE: Backbone amide hydrogen positions are present and will be ignored. "
 "Their positions will be approximated, as in standard DSSP analysis.\n"
@@ -635,7 +635,7 @@ msgstr ""
 "\n"
 
 #: org/jmol/modelsetbio/AminoPolymer.java:582
-#, fuzzy, java-format
+#, java-format
 msgid ""
 "NOTE: Backbone amide hydrogen positions are present and will be used. "
 "Results may differ significantly from standard DSSP analysis.\n"
@@ -743,7 +743,7 @@ msgstr "Lyhenteen mukaan"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:545
 msgid "By HETATM"
-msgstr "HETATM mukaan"
+msgstr "Heteroatomin mukaan"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:546
 #, java-format
@@ -853,7 +853,7 @@ msgstr "Käännä valitut"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:574
 msgid "View"
-msgstr "Näkymä"
+msgstr "Näkymät"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:575
 msgid "Front"
@@ -916,7 +916,7 @@ msgstr "Varauksettomat"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:591
 msgid "Nucleic"
-msgstr "Nukleiini"
+msgstr "Nukleiinihappo"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:593
 msgid "DNA"
@@ -944,7 +944,7 @@ msgstr "AU emäsparit"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:600
 msgid "Hetero"
-msgstr "Hetero"
+msgstr "Heteroatomi"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:601
 msgid "All PDB \"HETATM\""
@@ -980,11 +980,11 @@ msgstr "Ei mikään ylläolevista"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:613
 msgid "Style"
-msgstr "Tyyli"
+msgstr "Tyylit"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:614
 msgid "Scheme"
-msgstr "Malli"
+msgstr "Mallit"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:615
 msgid "CPK Spacefill"
@@ -1097,7 +1097,7 @@ msgstr "Aseta H-sidokset sivuketjuihin"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:645
 msgid "Set H-Bonds Backbone"
-msgstr "Aseta H-sidokset Proteiinirunkoon"
+msgstr "Aseta H-sidokset proteiinirunkoon"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:652
 #: org/jmol/popup/MainPopupResourceBundle.java:755
@@ -1138,7 +1138,7 @@ msgstr "Helminauha"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:673
 msgid "Vibration"
-msgstr "Värähtely"
+msgstr "Värähtelyt"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:676
 #: org/jmol/popup/MainPopupResourceBundle.java:766
@@ -1176,12 +1176,10 @@ msgid "Red+Green glasses"
 msgstr "Punainen+vihreä"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:693
-#, fuzzy
 msgid "Cross-eyed viewing"
 msgstr "Cross-eyed katselu"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:694
-#, fuzzy
 msgid "Wall-eyed viewing"
 msgstr "Wall-eyed katselu"
 
@@ -1192,7 +1190,7 @@ msgstr "Nimeäminen"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:699
 msgid "With Element Symbol"
-msgstr "Alkuainesymboli"
+msgstr "Kemiallinen merkki"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:700
 msgid "With Atom Name"
@@ -1228,7 +1226,7 @@ msgstr "Alhaalla vasemmalla"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:710
 msgid "Color"
-msgstr "Väri"
+msgstr "Värit"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:713
 msgid "By Scheme"
@@ -1398,7 +1396,7 @@ msgstr "Alkeiskoppi"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:771
 msgid "Zoom"
-msgstr "Zoom"
+msgstr "Muuta kokoa"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:778
 msgid "Zoom In"
@@ -1411,7 +1409,7 @@ msgstr "Zoomaa kauemmas"
 #: org/jmol/popup/MainPopupResourceBundle.java:781
 #: org/jmol/popup/MainPopupResourceBundle.java:846
 msgid "Spin"
-msgstr "Pyöritä"
+msgstr "Pyörittäminen"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:785
 msgid "Set X Rate"
@@ -1561,7 +1559,7 @@ msgstr "Valitse molekyyli"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:844
 msgid "Select site"
-msgstr "Valitse sivusto"
+msgstr "Valitse sijainti"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:845
 msgid "Show symmetry operation"
@@ -1580,7 +1578,6 @@ msgid "File Header"
 msgstr "Tiedoston otsikko"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:853
-#, fuzzy
 msgid "Isosurface JVXL data"
 msgstr "JVXL-pinnan tiedot"
 
@@ -1699,7 +1696,7 @@ msgid "Solvent Surface ({0}-Angstrom probe)"
 msgstr "Liuotinpinta ({0}-ångströmiä)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:897
-#, fuzzy, java-format
+#, java-format
 msgid "Solvent-Accessible Surface (VDW + {0} Angstrom)"
 msgstr "Liuottimen vaikutuspinta (VDW + {0} ångströmiä)"
 
@@ -1965,7 +1962,6 @@ msgid "keyword expected"
 msgstr "edellytetään avainsana"
 
 #: org/jmol/script/ScriptEvaluator.java:2695
-#, fuzzy
 msgid "no MO coefficient data available"
 msgstr "MO-kerroindataa ei ole saatavilla"
 
@@ -2248,7 +2244,7 @@ msgstr "liikuta valittuja atomeja (edellyttää {0})"
 #: org/jmol/viewer/ActionManager.java:86
 #, java-format
 msgid "select and drag atoms (requires {0})"
-msgstr "valitse ja vedä atomeja (edellyttää {0})"
+msgstr "valitse ja liikuta atomeja (edellyttää {0})"
 
 #: org/jmol/viewer/ActionManager.java:87
 #, java-format
@@ -2268,12 +2264,12 @@ msgstr "liikuta atomia (edellyttää {0})"
 #: org/jmol/viewer/ActionManager.java:91
 #, java-format
 msgid "move atom and minimize molecule (requires {0})"
-msgstr "liikuta atomia ja minimoi molekyyli (edellyttää {0})"
+msgstr "liikuta atomia ja optimoi molekyyli (edellyttää {0})"
 
 #: org/jmol/viewer/ActionManager.java:92
 #, java-format
 msgid "move and minimize molecule (requires {0})"
-msgstr "liikuta ja minimoi molekyyli (edellyttää {0})"
+msgstr "liikuta ja optimoi molekyyli (edellyttää {0})"
 
 #: org/jmol/viewer/ActionManager.java:93
 #, java-format
@@ -2286,7 +2282,7 @@ msgid "move specific DRAW point (requires {0})"
 msgstr "liikuta tiettyä DRAW-pistettä (edellyttää {0})"
 
 #: org/jmol/viewer/ActionManager.java:95
-#, fuzzy, java-format
+#, java-format
 msgid "move whole DRAW object (requires {0})"
 msgstr "liikuta koko DRAW-objektia (edellyttää {0})"
 
@@ -2295,7 +2291,7 @@ msgid "pick an atom"
 msgstr "valitse atomi"
 
 #: org/jmol/viewer/ActionManager.java:98
-#, fuzzy, java-format
+#, java-format
 msgid "pick a DRAW point (for measurements) (requires {0}"
 msgstr "valitse DRAW-piste (mittauksille) (edellyttää {0}"
 
@@ -2318,7 +2314,7 @@ msgid "pick an atom to initiate or conclude a measurement"
 msgstr "aloita tai lopeta mittaaminen valitsemalla atomi"
 
 #: org/jmol/viewer/ActionManager.java:102
-#, fuzzy, java-format
+#, java-format
 msgid "pick an ISOSURFACE point (requires {0}"
 msgstr "valitse ISOSURFACE-piste (edellyttää {0}"
 
@@ -2357,7 +2353,6 @@ msgid "stop motion (requires {0})"
 msgstr "lopeta liike (edellyttää {0})"
 
 #: org/jmol/viewer/ActionManager.java:112
-#, fuzzy
 msgid "simulate multi-touch using the mouse)"
 msgstr "simuloi multi-touch -toimintoa hiiren avulla)"
 

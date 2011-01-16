@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-01-04 23:43+0100\n"
-"PO-Revision-Date: 2011-01-03 00:46+0200\n"
+"PO-Revision-Date: 2011-01-16 18:05+0200\n"
 "Last-Translator: Johannes Pernaa <johannes.pernaa@edumendo.fi>\n"
 "Language-Team: Finland <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -60,7 +60,6 @@ msgid "start with no splash screen"
 msgstr "aloitus ilman alkunäkymää"
 
 #: org/openscience/jmol/app/JmolApp.java:154
-#, fuzzy
 msgid "no console -- all output to sysout"
 msgstr "ei konsolia -- ulostulo sysout"
 
@@ -69,9 +68,8 @@ msgid "send only output from print messages to console (implies -i)"
 msgstr "tulostustiedoista vain ulostulot lähetetään konsolille (merkitään -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:158
-#, fuzzy
 msgid "independent command thread"
-msgstr "riippumaton command thread"
+msgstr "riippumaton komentoketju"
 
 #: org/openscience/jmol/app/JmolApp.java:160
 msgid "exit after script (implicit with -n)"
@@ -82,7 +80,6 @@ msgid "script file to execute or '-' for System.in"
 msgstr "komentosarja-tiedosto suoritettavaksi tai '-' for System.in"
 
 #: org/openscience/jmol/app/JmolApp.java:170
-#, fuzzy
 msgid "use multitouch interface (requires \"sparshui\" parameter"
 msgstr "käyttää multitouch käyttöliittymää (vaatii \"sparshui \" parametrin"
 
@@ -129,7 +126,7 @@ msgid ""
 "The -D options are as follows (defaults in parenthesis) and must be called "
 "preceding '-jar Jmol.jar':"
 msgstr ""
-"-D valinnat ovat seuraavat (oletusarvot sulkeiden sisällä) ja ne täytyy "
+"D-valinnat ovat seuraavat (oletusarvot sulkeiden sisällä) ja ne täytyy "
 "kutsua edellisen '-jar Jmol.jar'"
 
 #: org/openscience/jmol/app/JmolApp.java:466
@@ -218,7 +215,7 @@ msgstr "Muuttujat"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:165
 msgid "AtomSetChooser"
-msgstr "Atomiryhmien valitsin"
+msgstr "Atomiryhmävalitsin"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:169
 msgid "No AtomSets"
@@ -250,7 +247,7 @@ msgstr "Valitse"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:254
 msgid "Repeat"
-msgstr "Toista"
+msgstr "Toista uudelleen"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:266
 msgid "FPS"
@@ -347,13 +344,12 @@ msgid "Advanced"
 msgstr "Edistynyt"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:224
-#, fuzzy
 msgid "Checkpoint File: "
-msgstr "Tarkistuspiste -tiedosto: "
+msgstr "Tarkistuspiste-tiedosto: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:229
 msgid "Amount of Memory:"
-msgstr "Muistimäärä:"
+msgstr "Muistia:"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:235
 msgid "Number of Processors:"
@@ -477,7 +473,7 @@ msgstr "&Vie tiedostoon"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:71
 msgid "Export &Image..."
-msgstr "Vie tiedostoon &Kuva..."
+msgstr "Vie tiedostoon &Kuvana..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:72
 msgid "Save current view as an image."
@@ -485,7 +481,7 @@ msgstr "Tallenna nykyinen näkymä kuvana."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:73
 msgid "Export to &Web Page..."
-msgstr "Vie tiedostoon &www-sivu..."
+msgstr "Vie tiedostoon &www-sivuna..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:74
 msgid "Export one or more views to a web page."
@@ -530,7 +526,7 @@ msgstr "Viimeksi käytetyt &tiedostot..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:84
 msgid "&Edit"
-msgstr "&Editoi"
+msgstr "&Editointi"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:86
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:92
@@ -599,11 +595,11 @@ msgstr "Rikki"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:102
 msgid "Amino"
-msgstr "Amino-ryhmä"
+msgstr "Aminohappo"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:103
 msgid "Nucleic"
-msgstr "Nukleiini"
+msgstr "Nukleiinihappo"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:104
 msgid "Water"
@@ -611,7 +607,7 @@ msgstr "Vesi"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:105
 msgid "Hetero"
-msgstr "Hetero"
+msgstr "Heteroatomi"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:106
 msgid "&Display"
@@ -694,7 +690,7 @@ msgstr "Koko {0}"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:137
 msgid "&Zoom"
-msgstr "&Zoom"
+msgstr "&Muuta kokoa"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:138
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:139
@@ -736,7 +732,7 @@ msgstr "Muuta kok&oa"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:150
 msgid "&View"
-msgstr "&Näkymä"
+msgstr "&Näkymät"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:151
 msgid "&Front"
@@ -796,7 +792,7 @@ msgstr "&Animointi..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:166
 msgid "&Vibrate..."
-msgstr "&Värähtely..."
+msgstr "&Värähtelyt..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:167
 msgid "&Graph..."
@@ -925,11 +921,11 @@ msgstr "RasMol/Chime sopivat akselit orientaatio/rotaatiot"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:201
 msgid "File Preview (requires restarting Jmol)"
-msgstr "Tiedoston esikatselu (Edellyttää Jmollin uudelleen käynnistämistä)"
+msgstr "Tiedoston esikatselu (Edellyttää Jmolin uudelleen käynnistämistä)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:203
 msgid "Clear history (requires restarting Jmol)"
-msgstr "Tyhjennä historia (Edellyttää Jmollin uudelleen käynnistämistä)"
+msgstr "Tyhjennä historia (Edellyttää Jmolin uudelleen käynnistämistä)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:204
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:205
@@ -973,6 +969,7 @@ msgid "Initializing Script Window..."
 msgstr "Alustetaan Komentosarjaikkuna..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:224
+#, fuzzy
 msgid "Building Command Hooks..."
 msgstr "Rakennetaan Command hooks..."
 
@@ -1104,7 +1101,7 @@ msgstr "Aja POV-Ray suoraan"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:198
 msgid "Launch POV-Ray from within Jmol"
-msgstr "Käynnistä POV-Ray Jmollin sisältä"
+msgstr "Käynnistä POV-Ray Jmolin sisältä"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:243
 msgid "Display While Rendering"
@@ -1371,13 +1368,13 @@ msgid ""
 msgstr "Sivurunko ja JavaScript ovat tuotettu www-funktiolla {0} on {1}."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:358
-#, fuzzy, java-format
+#, java-format
 msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
 msgstr ""
 "3D-mallin saamiseksi voit manipuloida, paina {0}tästä{1}. Latausaika voi "
-"appletin ensimmäisellä latauskerralla olla merkittävän pitkä."
+"appletin ensimmäisellä latauskerralla olla normaalia pidempi."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:360
 msgid "Insert the page TITLE here."
@@ -1567,7 +1564,7 @@ msgstr "pyörintä päälle/pyörintä pois"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:82
 msgid "Spin on"
-msgstr "Pyörintä"
+msgstr "Pyörintä päälle"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:88
 msgid "Background Color"
@@ -1651,7 +1648,7 @@ msgstr "Toista kerran"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:206
 msgid "Open Console Button"
-msgstr "Avaa konsoli -painike"
+msgstr "Avaa konsolipainike"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:222
 msgid "launch Jmol console"

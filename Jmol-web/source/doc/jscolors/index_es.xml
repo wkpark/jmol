@@ -103,9 +103,23 @@
 		las partes de una estructura multimérica, o las dos hebras de
 		un DNA bicatenario.
 		Los átomos de grupos HETERO (sólo en archivos PDB) se colorean 
-		un poco más oscuros que los de campos ATOM. 
+		en un tono diferente que los de campos ATOM: más oscuro para las
+		cadenas A-Q,S, más claro para las cadenas R,T-Z. 
 		</p>
-        <script type="text/javascript">assignLastChain('ninguno/<br/>numérico');
+		<p>El formato PDB
+		<a href="http://www.wwpdb.org/documentation/format32/sect9.html#ATOM">requiere</a>
+		que cada identificador de cadena sea un carácter alfanumérico no en blanco. 
+		En consecuencia, en cada modelo de un archivo PDB se admite un máximo de
+		62 cadenas (26 veces 2, con las letras A-Z mayúsculas y minúsculas, más otras
+		10, con identificadores entre 0 y 9). Un ejemplo con 62 cadenas es <tt>2zkr</tt>.
+        Los archivos PDB obtenidos antes de la remediación de la base de datos pueden 
+        tener identificadores de cadena en blanco o no alfanuméricos (p. ej., signos
+        de puntuación), pero esto actualmente ya no se permite. 
+        Aunque la cadena 'A' recibe el mismo color que la cadena 'a' (y así sucesivamente),
+        se pueden seleccionar por separado (véase la instrucción
+        <tt>set chainCaseSensitive</tt>).
+		</p>
+        <script type="text/javascript">assignLastChain('ninguno');
 		buildChainTable('Identificador', 'de cadena');
         </script>
 				<br/>
@@ -125,7 +139,7 @@
           'Proteína',
           ['hélice &#945;','hélice 3<sub>10</sub>','hélice &#960;','hebra &#946;','giro (&#946;)','otra'],
           '(igual en RasMol, excepto 3<sub>10</sub> y &#960;)',
-          'Ácido nucleico',
+          'Acido nucleico',
           ['DNA','RNA'],
           '(igual en DRuMS)',
           'Otros',
@@ -195,7 +209,7 @@
 			<ul>
 				<li>Jmol interpreta el patrón de esqueleto en residuos consecutivos
 				("monómeros") para identificar "polímeros" continuos. </li>
-				<li>Si una cadena está interrumpida, los dos trozos the chain se
+				<li>Si una cadena está interrumpida, las dos porciones de la cadena se
 				reconocen como polímeros independientes y, por tanto, se
 				colorean independientemente con el intervalo completo de colores,
 				a pesar de que ambos trozos están marcados con el mismo

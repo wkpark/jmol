@@ -241,21 +241,21 @@ chainParams[11] = ['L, l','66CDAA','56B592']
 chainParams[12] = ['M, m','9ACD32','8AB52A']
 chainParams[13] = ['N, n','EE82EE','BE72BE']
 chainParams[14] = ['O, o','00CED1','00B6A1']
-chainParams[15] = ['P, p','00FF7F','00CF6F']
-chainParams[16] = ['Q, q','3CB371','349B61']
-chainParams[17] = ['R, r','00008B','0000BB']
-chainParams[18] = ['S, s','BDB76B','A59F5B']
-chainParams[19] = ['T, t','006400','009400']
-chainParams[20] = ['U, u','800000','B00000']
-chainParams[21] = ['V, v','808000','B0B000']
-chainParams[22] = ['W, w','800080','B000B0']
-chainParams[23] = ['X, x','008080','00B0B0']
-chainParams[24] = ['Y, y','B8860B','E8B613']
+chainParams[15] = ['P, p, 0','00FF7F','00CF6F']
+chainParams[16] = ['Q, q, 1','3CB371','349B61']
+chainParams[17] = ['R, r, 2','00008B','0000BB']
+chainParams[18] = ['S, s, 3','BDB76B','A59F5B']
+chainParams[19] = ['T, t, 4','006400','009400']
+chainParams[20] = ['U, u, 5','800000','B00000']
+chainParams[21] = ['V, v, 6','808000','B0B000']
+chainParams[22] = ['W, w, 7','800080','B000B0']
+chainParams[23] = ['X, x, 8','008080','00B0B0']
+chainParams[24] = ['Y, y, 9','B8860B','E8B613']
 chainParams[25] = ['Z, z','B22222','C23232']
-chainParams[26] = ['none/<br>numeric','FFFFFF','FFFFFF']
+chainParams[26] = ['none','FFFFFF','FFFFFF']
 
 function assignLastChain(t)
-{	// allows other language word for last chain description (instead of 'none/numeric')
+{	// allows other language word for last chain description (instead of 'none')
 	if (t) chainParams[chainParams.length-1][0] = t
 }
 

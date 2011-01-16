@@ -81,10 +81,22 @@
 					<p>Renders each chain in the structure in a different color. 
 				This color scheme is particularly useful for distinguishing the parts 
 				of a multimeric structure or the individual DNA strands of a double helix.
-				Atoms in HETERO groups (PDB files only) are colored darker 
-				than those in ATOM records. 
+				Atoms in HETERO groups (PDB files only) are colored in a different shade 
+				than those in ATOM records: darker for chains A-Q,S, lighter for chains R,T-Z. 
 				</p>
-				<script type="text/javascript">assignLastChain('none/<br/>numeric');
+				<p>The PDB format 
+				<a href="http://www.wwpdb.org/documentation/format32/sect9.html#ATOM">requires</a>
+				that each chain ID be a non-blank alphanumeric character. Thus, a
+                maximum of 62 chains is permitted in a single model within a PDB file 
+                (26 times 2, for upper and lower case letters A-Z, plus 10, for chain IDs 0-9). 
+                An example with 62 chains is <tt>2zkr</tt>. PDB files obtained before 
+                remediation of the database may have chain IDs that are blank or not
+                alphanumeric (e.g. punctuation characters) but this is no longer
+                permitted. Although chain 'A' is the same color as chain 'a' (and so forth),
+                they may be selected independently (see the 
+                <tt>set chainCaseSensitive</tt> command).
+				</p>
+				<script type="text/javascript">assignLastChain('none');
           buildChainTable('Chain', 'ID');
         </script>
 				<br/><br/>

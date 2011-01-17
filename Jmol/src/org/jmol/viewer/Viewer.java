@@ -7684,6 +7684,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       // old crude
       exp = "{selected and not hetero}.label(\"ATOM  %5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2e  \").lines"
           + "+{selected and hetero}.label(\"HETATM%5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2e  \").lines";
+    else if (type.equalsIgnoreCase("XYZRN"))
+      exp = "{selected}.label(\"%8.3x %8.3y %8.3z %4.2[vdw] 1 [%n]%r.%a#%i\").lines";
     else if (type.startsWith("USER:"))
       exp = "{selected}.label(\"" + type.substring(5) + "\").lines";
     else

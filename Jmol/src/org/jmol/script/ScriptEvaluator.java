@@ -13391,6 +13391,9 @@ public class ScriptEvaluator {
         } else if (type.equals("MA")) {
           type = "Maya";
           isExport = true;
+        } else if (type.equals("OBJ")) {
+          type = "Obj";
+          isExport = true;
         } else if (type.equals("JVXL")) {
           type = "ISOX";
         } else if (type.equals("XJVXL")) {

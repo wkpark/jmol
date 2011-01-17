@@ -102,8 +102,12 @@ class ObjReader extends PmeshReader {
 
     BitSet bsOK = new BitSet();
     while (readLine() != null) {
-      if (line.length() < 2 || line.charAt(1) != ' ')
+      if (line.length() < 2 || line.charAt(1) != ' ') {
+        if (params.readAllData && line.startsWith("usemtl"))
+          // usemtl k00FF00
+            color = Graphics3D.getArgbFromString("[x" + line.substring(8) + "]");
         continue;
+      }
       switch (line.charAt(0)) {
       case 'v':
         next[0] = 2;

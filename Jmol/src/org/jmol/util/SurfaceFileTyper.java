@@ -64,8 +64,6 @@ public class SurfaceFileTyper {
     //for (int i = 0; i < 220; i++)
     //  System.out.print(" " + i + ":" + (0 + line.charAt(i)));
     //System.out.println("");
-    if ((line = br.info()).length() == 0)
-      return null;
     switch (line.charAt(0)) {
     case '#':
       if (line.indexOf(".obj") >= 0)
@@ -93,6 +91,8 @@ public class SurfaceFileTyper {
       return "Jvxl";
     if (line.indexOf("<efvet ") >= 0)
       return "Efvet";
+    if (line.indexOf("usemtl") >= 0)
+      return "Obj";
     // binary formats: problem here is that the buffered reader
     // may be translating byte sequences into unicode
     // and thus shifting the offset

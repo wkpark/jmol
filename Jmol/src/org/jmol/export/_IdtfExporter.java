@@ -36,7 +36,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.vecmath.AxisAngle4f;
-import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
@@ -516,13 +515,13 @@ public class _IdtfExporter extends __CartesianExporter {
     float sx = points[1].distance(center);
     float sy = points[3].distance(center);
     float sz = points[5].distance(center);
-    outputEllipsoid(center, sx, sy, sz, a, colix);
+    setSphereMatrix(center, sx, sy, sz, a, sphereMatrix);
+    outputEllipsoid(center, sphereMatrix, colix);
   }
 
-  private Matrix4f sphereMatrix = new Matrix4f();
   private Matrix4f cylinderMatrix = new Matrix4f();
 
-  private void outputEllipsoid(Point3f center, float rx, float ry, float rz, AxisAngle4f a, short colix) {
+  private void outputEllipsoid(Point3f center, Matrix4f sphereMatrix, short colix) {
     if (!haveSphere) {
       models.append(getSphereResource());
       haveSphere = true;
@@ -536,25 +535,6 @@ public class _IdtfExporter extends __CartesianExporter {
       htNodes.put(key, v);
       addShader(key, colix);
     }
-    if (a != null) {
-      Matrix3f mq = new Matrix3f();
-      Matrix3f m = new Matrix3f();
-      m.m00 = rx;
-      m.m11 = ry;
-      m.m22 = rz;
-      mq.set(a);
-      mq.mul(m);
-      sphereMatrix.set(mq);
-    } else {
-      sphereMatrix.setIdentity();
-      sphereMatrix.m00 = rx;
-      sphereMatrix.m11 = ry;
-      sphereMatrix.m22 = rz;
-    }
-    sphereMatrix.m03 = center.x;
-    sphereMatrix.m13 = center.y;
-    sphereMatrix.m23 = center.z;
-    sphereMatrix.m33 = 1;
     v.add(getParentItem("Jmol", sphereMatrix));
   }
 
@@ -991,7 +971,8 @@ public class _IdtfExporter extends __CartesianExporter {
   
   @Override
   protected void outputSphere(Point3f center, float radius, short colix) {
-    outputEllipsoid(center, radius, radius, radius, null, colix);
+    setSphereMatrix(center, radius, radius, radius, null, sphereMatrix);
+    outputEllipsoid(center, sphereMatrix, colix);
   }
 
   @Override

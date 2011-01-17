@@ -147,7 +147,6 @@ abstract public class __CartesianExporter extends ___Exporter {
       outputFace(indices[i], map, faceVertexMax);
   }
   
-
   // these are elaborated in IDTF, MAYA, VRML, or X3D:
 
   protected abstract void outputFace(int[] is, int[] coordMap, int faceVertexMax);
@@ -313,4 +312,28 @@ void drawCircle(int x, int y, int z, int diameter, short colix, boolean doFill) 
         jmolRenderer);
   }
 
+  protected Matrix4f sphereMatrix = new Matrix4f();
+  
+  protected void setSphereMatrix(Point3f center, float rx, float ry, float rz,
+                                 AxisAngle4f a, Matrix4f sphereMatrix) {
+    if (a != null) {
+      Matrix3f mq = new Matrix3f();
+      Matrix3f m = new Matrix3f();
+      m.m00 = rx;
+      m.m11 = ry;
+      m.m22 = rz;
+      mq.set(a);
+      mq.mul(m);
+      sphereMatrix.set(mq);
+    } else {
+      sphereMatrix.setIdentity();
+      sphereMatrix.m00 = rx;
+      sphereMatrix.m11 = ry;
+      sphereMatrix.m22 = rz;
+    }
+    sphereMatrix.m03 = center.x;
+    sphereMatrix.m13 = center.y;
+    sphereMatrix.m23 = center.z;
+    sphereMatrix.m33 = 1;
+  }  
 }

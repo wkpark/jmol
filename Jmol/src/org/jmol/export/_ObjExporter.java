@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashSet;
 import java.util.List;
@@ -13,7 +14,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.vecmath.AxisAngle4f;
-import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
@@ -99,13 +99,23 @@ public class _ObjExporter extends __CartesianExporter {
 
   // Abstract methods
 
+  private int[] iface = new int[3];
+
   /* (non-Javadoc)
    * @see org.jmol.export.__CartesianExporter#outputFace(int[], int[], int)
    */
   @Override
-  protected void outputFace(int[] is, int[] coordMap, int faceVertexMax) {
-    debugPrint("outputFace");
-    // TODO
+  protected void outputFace(int[] face, int[] map, int faceVertexMax) {
+    // hundreds of thousands of these... debugPrint("outputFace");
+    iface[0] = map[face[0]];
+    iface[1] = map[face[1]];
+    iface[2] = map[face[2]];
+    outputFace(iface);
+    if (faceVertexMax == 3 || face.length != 4)
+      return;
+    iface[1] = map[face[2]];
+    iface[2] = map[face[3]];
+    outputFace(iface);
   }
 
   /* (non-Javadoc)
@@ -256,21 +266,6 @@ public class _ObjExporter extends __CartesianExporter {
   @Override
   protected void output(Tuple3f pt) {
     debugPrint("output");
-  }
-
-  /* (non-Javadoc)
-   * @see org.jmol.export.___Exporter#outputSurface(javax.vecmath.Point3f[], javax.vecmath.Vector3f[], short[], int[][], short[], int, int, int, java.util.BitSet, int, short, java.util.List, java.util.Map, javax.vecmath.Point3f)
-   */
-  @Override
-  protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
-                               short[] colixes, int[][] indices,
-                               short[] polygonColixes, int nVertices,
-                               int nPolygons, int nFaces, BitSet bsFaces,
-                               int faceVertexMax, short colix,
-                               List<Short> colorList,
-                               Map<String, String> htColixes, Point3f offset) {
-    debugPrint("outputSurface");
-    // TODO
   }
 
   // Non-abstract overrides from _Exporter
@@ -449,7 +444,6 @@ public class _ObjExporter extends __CartesianExporter {
   private void outputEllipsoid1(Point3f center, float rx, float ry, float rz,
                                 AxisAngle4f a, short colix) {
     Data data = MeshData.getSphereData();
-    Matrix4f matrix = new Matrix4f();
     addTexture(colix);
     String name;
     if (center instanceof Atom) {
@@ -461,26 +455,8 @@ public class _ObjExporter extends __CartesianExporter {
     } else {
       name = "Ellipsoid" + ellipsoidNum++;
     }
-    if (a != null) {
-      Matrix3f mq = new Matrix3f();
-      Matrix3f m = new Matrix3f();
-      m.m00 = rx;
-      m.m11 = ry;
-      m.m22 = rz;
-      mq.set(a);
-      mq.mul(m);
-      matrix.set(mq);
-    } else {
-      matrix.setIdentity();
-      matrix.m00 = rx;
-      matrix.m11 = ry;
-      matrix.m22 = rz;
-    }
-    matrix.m03 = center.x;
-    matrix.m13 = center.y;
-    matrix.m23 = center.z;
-    matrix.m33 = 1;
-    addMesh(name, data, matrix, colix);
+    setSphereMatrix(center, rx, ry, rz, a, sphereMatrix);
+    addMesh(name, data, sphereMatrix, colix);
   }
 
   /**
@@ -607,16 +583,91 @@ public class _ObjExporter extends __CartesianExporter {
       output("vn " + v0.x + " " + v0.y + " " + v0.z + "\n");
     }
     output("# Number of faces: " + nFaces + "\n");
-    for (int[] face : data.getFaces()) {
-      output("f");
-      for (int i = 0; i < face.length; i++) {
-        output(" " + (face[i] + currentVertexOrigin) + "//"
-            + (face[i] + currentNormalOrigin));
-      }
-      output("\n");
-    }
+    for (int[] face : data.getFaces())
+      outputFace(face);
     currentVertexOrigin += nVertices;
     currentNormalOrigin += nNormals;
   }
+
+  private void outputFace(int[] face) {
+    output("f");
+    for (int i = 0; i < face.length; i++) {
+      output(" " + (face[i] + currentVertexOrigin) + "//"
+          + (face[i] + currentNormalOrigin));
+    }
+    output("\n");
+  }
+
+  /* (non-Javadoc)
+   * @see org.jmol.export.___Exporter#outputSurface(javax.vecmath.Point3f[], javax.vecmath.Vector3f[], short[], int[][], short[], int, int, int, java.util.BitSet, int, short, java.util.List, java.util.Map, javax.vecmath.Point3f)
+   */
+  @Override
+  protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
+                               short[] colixes, int[][] indices,
+                               short[] polygonColixes, int nVertices,
+                               int nPolygons, int nFaces, BitSet bsFaces,
+                               int faceVertexMax, short colix,
+                               List<Short> colorList,
+                               Map<String, String> htColixes, Point3f offset) {
+    
+    debugPrint("outputSurface");
+
+    boolean haveFaceColors = (polygonColixes != null);
+
+    // OBJ will use vt# in face for individual colors when colixes[] is not null
+    
+    // bsFaces indicates WHICH faces are actually to be used -- sometimes a 
+    // mesh fragment is being displayed, so we need to select only the "active" faces
+    
+    // 1) set overall colix -- may be over-ruled by individual vertex colixes.
+
+    // coordinates -- write v list
+        //outputIndices(indices, map, nPolygons, bsFaces, faceVertexMax);
+
+    if (normals != null) {
+      // write vn list
+    }
+
+
+    // colors, part 1
+
+    if (colorList != null) {
+      // write vt list
+
+      /*
+      boolean isAll = (bsFaces == null);
+      int i0 = (isAll ? nPolygons - 1 : bsFaces.nextSetBit(0));
+      for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsFaces.nextSetBit(i + 1))) {
+        if (polygonColixes == null) {
+          sbColorIndexes.append(" "
+              + htColixes.get("" + colixes[indices[i][0]]) + " "
+              + htColixes.get("" + colixes[indices[i][1]]) + " "
+              + htColixes.get("" + colixes[indices[i][2]]));
+          if (faceVertexMax == 4 && indices[i].length == 4)
+            sbColorIndexes.append(" "
+                + htColixes.get("" + colixes[indices[i][0]]) + " "
+                + htColixes.get("" + colixes[indices[i][2]]) + " "
+                + htColixes.get("" + colixes[indices[i][3]]));
+        } else {
+          // TODO polygon colixes
+          // output(htColixes.get("" + polygonColixes[i]) + "\n");
+        }
+      }
+      */
+    }
+
+    if (haveFaceColors) {
+      
+      // If we have polygonColixes, we are going to have to write individual
+      // vertex/vertex normal face sets if polygonColixes[] is not null.
+      // this will be individual 
+      
+      return;
+    }
+    
+
+    // write f list
+  }
+
 
 }

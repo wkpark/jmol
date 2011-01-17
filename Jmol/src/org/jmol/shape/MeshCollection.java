@@ -78,6 +78,8 @@ public abstract class MeshCollection extends Shape {
   private Mesh setMesh(String thisID) {
     linkedMesh = null;
     if (thisID == null || TextFormat.isWild(thisID)) {
+      if (thisID != null)
+        previousMeshID = thisID;
       currentMesh = null;
       return null;
     }

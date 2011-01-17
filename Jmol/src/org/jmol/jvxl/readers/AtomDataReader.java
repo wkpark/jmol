@@ -239,11 +239,12 @@ abstract class AtomDataReader extends VolumeDataReader {
         atomProp = ArrayUtil.setLength(atomProp, nAtoms);
       for (int i = bsNearby.nextSetBit(0); i >= 0; i = bsNearby
           .nextSetBit(i + 1)) {
-        if (props != null) {
+        if (props != null)
           atomProp[myAtomCount] = props[i];
+        if (doUseIterator) {
           myIndex[i] = myAtomCount;
+          atomIndex[myAtomCount] = i;
         }
-        atomIndex[myAtomCount] = i;
         atomXyz[myAtomCount] = atomData.atomXyz[i];
         atomRadius[myAtomCount++] = atomData.atomRadius[i];
       }

@@ -449,6 +449,7 @@ public class Group {
         case Token.angle:
           return new Float(Float.NaN);
         case Token.array:
+        case Token.list:
           return new String[] {};
         }
     return "";

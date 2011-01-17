@@ -63,6 +63,8 @@ public class Escape {
   public static String escape(Object x) {
     if (x instanceof String)
       return escape("" + x);
+    if (x instanceof ScriptVariable[])
+      return escape((ScriptVariable[]) x);
     if (x instanceof String[])
       return escape((String[]) x, true);
     if (x instanceof int[] 
@@ -200,6 +202,20 @@ public class Escape {
       if (i > 0)
         s.append(", ");
       s.append(nicely ? escapeNice(list[i]) : escape(list[i]));
+    }
+    s.append("]");
+    return s.toString();
+  }
+
+  public static String escape(ScriptVariable[] list) {
+    if (list == null)
+      return escape("");
+    StringBuilder s = new StringBuilder();
+    s.append("[");
+    for (int i = 0; i < list.length; i++) {
+      if (i > 0)
+        s.append(", ");
+      s.append(escapeNice(ScriptVariable.sValue(list[i])));
     }
     s.append("]");
     return s.toString();
@@ -781,17 +797,6 @@ public class Escape {
     return XmlUtil.wrapCdata(toReadable(null, value));
   }
 
-  public static List<Point3f> unescapePointVector(String[] pts) {
-    List<Point3f> data = new ArrayList<Point3f>();
-    for (int i = 0; i < pts.length; i++) {
-      Object pt = Escape.unescapePoint(pts[i]);
-      if (!(pt instanceof Point3f))
-        return null;
-      data.add((Point3f) pt);
-    }
-    return data;
-  }
-
   public static String unescapeUnicode(String s) {
     int ichMax = s.length();
     StringBuilder sb = new StringBuilder(ichMax);
@@ -855,26 +860,23 @@ public class Escape {
     return array;
   }
 
-  public static BitSet unEscapeBitSetArray(String[] list, boolean allowNull) {
+  public static BitSet unEscapeBitSetArray(Object o, boolean allowNull) {
     BitSet bs = new BitSet();
-    for (int i = 0; i < list.length; i++) {
-      BitSet bs1 = unescapeBitset(list[i]);
-      if (bs1 != null)
-        bs.or(bs1);
-      else if (allowNull)
-        return null;
+    if (o instanceof ScriptVariable[]) {
+      ScriptVariable[] sv = (ScriptVariable[]) o;
+      for (int i = 0; i < sv.length; i++)
+        if (!sv[i].unEscapeBitSetArray(bs) && allowNull)
+          return null;
+    } else if (o instanceof String[]) {
+      String[] list = (String[]) o;
+      for (int i = 0; i < list.length; i++) {
+        BitSet bs1 = unescapeBitset(list[i]);
+        if (bs1 != null)
+          bs.or(bs1);
+        else if (allowNull)
+          return null;
+      }
     }
     return bs;
   }
-
-  public static BitSet[] unEscapeBitSetArray(String[] list) {
-    BitSet[] b = new BitSet[list.length];
-    for (int i = 0; i < list.length; i++) {
-      b[i] = unescapeBitset(list[i]);
-      if (b[i] == null)
-        return null;
-    }
-    return b;
-  }
-
 }

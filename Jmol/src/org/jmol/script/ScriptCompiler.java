@@ -859,9 +859,10 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         // they are
         // the FIRST parameter of the set command.
         boolean isAndEquals = ("+-\\*/&|=".indexOf(ch) >= 0);
+        char ch2 = (ichToken + 1 >= cchScript ? 0 : script.charAt(ichToken + 1));
         if (Token.tokAttr(tokCommand, Token.setparam) && ch == '='
             || (isNewSet || isSetBrace) && (isAndEquals || ch == '.' || ch == '[')) {
-          setCommand(isAndEquals ? Token.tokenSet
+          setCommand(isAndEquals ? (ch == '=' && ch2 == '=' ? Token.tokenSetEqEq : Token.tokenSet)
               : ch == '[' && !isSetBrace ? Token.tokenSetArray : Token.tokenSetProperty);
           ltoken.add(0, tokenCommand);
           cchToken = 1;
@@ -880,12 +881,10 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           case '\\':
           case '&':
           case '|':
-            if (ichToken + 1 >= cchScript)
+            if (ch2 == 0)
               return ERROR(ERROR_endOfCommandUnexpected);
-            if (script.charAt(ichToken + 1) != ch) {
-              if (script.charAt(ichToken + 1) != '=')
-                return ERROR(ERROR_badContext, "\"" + ch + "\"");
-            }
+            if (ch2 != ch && ch2 != '=')
+              return ERROR(ERROR_badContext, "\"" + ch + "\"");
             break;
           default:
             lastToken = Token.tokenMinus; // just to allow for {(....)}
@@ -1205,6 +1204,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       }
       break;
     case Token.opEQ:
+    case Token.opEQEQ:
       if (parenCount == 0 && bracketCount == 0)
         setEqualPt = ichToken;
       break;
@@ -1366,6 +1366,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         case Token.identifier:
         case Token.var:
         case Token.define:
+        case Token.leftparen:
           break;
         default:
           if (!Token.tokAttr(theTok, Token.misc)
@@ -1595,7 +1596,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           return CONTINUE;
         }
         if (nTokens == 2) {
-          if (theTok == Token.opEQ) {
+          if (theTok == Token.opEQ || theTok == Token.opEQEQ) {
             // we are looking at @x =.... just insert a SET command
             // and ignore the =. It's the same as set @x ...
             ltoken.add(0, Token.tokenSet);
@@ -1631,7 +1632,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     setBraceCount = (isSetBrace ? 1 : 0);
     bracketCount = 0;
     setEqualPt = Integer.MAX_VALUE;
-    ptNewSetModifier = (isNewSet ? 1 : Integer.MAX_VALUE);
+    ptNewSetModifier = (isNewSet ? (ident.equals("(") ? 2 : 1) : Integer.MAX_VALUE);
     return (isSetBrace ? theToken : new Token(Token.identifier, ident));
   }
 

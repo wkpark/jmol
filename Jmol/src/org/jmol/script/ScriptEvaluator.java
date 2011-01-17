@@ -1607,7 +1607,14 @@ public class ScriptEvaluator {
     String[] list = null;
     String sValue = null;
     float[] fvalues = null;
-    int nValues;
+    Point3f pt;
+    ScriptVariable[] sv = null;
+    int nValues = 0;
+    if (tokenValue.tok == Token.varray) {
+      sv = ((ScriptVariable) tokenValue).objects;
+      if ((nValues = sv.length) == 0)
+        return;
+    }
     switch (tok) {
     case Token.xyz:
     case Token.fracxyz:
@@ -1615,37 +1622,31 @@ public class ScriptEvaluator {
     case Token.vibxyz:
       if (tokenValue.tok == Token.point3f) {
         viewer.setAtomCoord(bs, tok, tokenValue.value);
-      } else if (tokenValue.tok == Token.list) { // TODO: list type?
-        list = (String[]) tokenValue.value;
-        if ((nValues = list.length) == 0)
-          return;
-        Point3f[] values = new Point3f[nValues];
-        for (int i = nValues; --i >= 0;) {
-          Object o = Escape.unescapePoint(list[i]);
-          if (!(o instanceof Point3f))
-            error(ERROR_unrecognizedParameter, "ARRAY", list[i]);
-          values[i] = (Point3f) o;
-        }
-        viewer.setAtomCoord(bs, tok, values);
+      } else if (tokenValue.tok == Token.varray) {
+        theToken = tokenValue;
+        viewer.setAtomCoord(bs, tok, getPointArray(-1, nValues));
       }
       return;
     case Token.color:
       if (tokenValue.tok == Token.point3f)
         iValue = Graphics3D.colorPtToInt((Point3f) tokenValue.value);
-      else if (tokenValue.tok == Token.list) { // TODO: list type?
-        list = (String[]) tokenValue.value;
-        if ((nValues = list.length) == 0)
-          return;
+      else if (tokenValue.tok == Token.varray) {
         int[] values = new int[nValues];
         for (int i = nValues; --i >= 0;) {
-          Object pt = Escape.unescapePoint(list[i]);
-          if (pt instanceof Point3f)
-            values[i] = Graphics3D.colorPtToInt((Point3f) pt);
-          else
-            values[i] = Graphics3D.getArgbFromString(list[i]);
-          if (values[i] == 0
-              && (values[i] = Parser.parseInt(list[i])) == Integer.MIN_VALUE)
-            error(ERROR_unrecognizedParameter, "ARRAY", list[i]);
+          pt = ScriptVariable.ptValue(sv[i]);
+          if (pt != null) {
+            values[i] = Graphics3D.colorPtToInt(pt);
+          } else if (sv[i].tok == Token.integer) {
+            values[i] = sv[i].intValue;
+          } else {
+            values[i] = Graphics3D.getArgbFromString(ScriptVariable
+                .sValue(sv[i]));
+            if (values[i] == 0)
+              values[i] = ScriptVariable.iValue(sv[i]);
+          }
+          if (values[i] == 0)
+            error(ERROR_unrecognizedParameter, "ARRAY", ScriptVariable
+                .sValue(sv[i]));
         }
         setShapeProperty(JmolConstants.SHAPE_BALLS, "colorValues", values, bs);
         return;
@@ -1656,8 +1657,8 @@ public class ScriptEvaluator {
       return;
     case Token.label:
     case Token.format:
-      if (tokenValue.tok == Token.list) // TODO: list type?
-        list = (String[]) tokenValue.value;
+      if (tokenValue.tok == Token.varray)
+        list = ScriptVariable.listValue(tokenValue);
       else
         sValue = ScriptVariable.sValue(tokenValue);
       viewer.setAtomProperty(bs, tok, iValue, fValue, sValue, fvalues, list);
@@ -1667,22 +1668,29 @@ public class ScriptEvaluator {
       clearDefinedVariableAtomSets();
       break;
     }
-    if (tokenValue.tok == Token.list || tokenValue.tok == Token.string) { // TODO: list type?
-      list = (tokenValue.tok == Token.list ? (String[]) tokenValue.value
-          : Parser.getTokens(ScriptVariable.sValue(tokenValue)));
-      if ((nValues = list.length) == 0)
-        return;
+    boolean isStrProperty = Token.tokAttr(tok, Token.strproperty);
+    if (tokenValue.tok == Token.varray) {
+      if (isStrProperty || tok == Token.element)
+        list = ScriptVariable.listValue(tokenValue);
+      else
+        fvalues = ScriptVariable.flistValue(tokenValue, nValues);
+    } else {
+      list = Parser.getTokens(ScriptVariable.sValue(tokenValue));
+    }
+    if (fvalues == null && !isStrProperty) {
       fvalues = new float[nValues];
       for (int i = nValues; --i >= 0;)
         fvalues[i] = (tok == Token.element ? Elements.elementNumberFromSymbol(
             list[i], false) : Parser.parseFloat(list[i]));
-      if (tokenValue.tok == Token.string && nValues == 1) {
-        fValue = fvalues[0];
-        iValue = (int) fValue;
+    }
+    if (tokenValue.tok != Token.varray && nValues == 1) {
+      if (isStrProperty)
         sValue = list[0];
-        list = null;
-        fvalues = null;
-      }
+      else
+        fValue = fvalues[0];
+      iValue = (int) fValue;
+      list = null;
+      fvalues = null;
     }
     viewer.setAtomProperty(bs, tok, iValue, fValue, sValue, fvalues, list);
   }
@@ -1819,13 +1827,22 @@ public class ScriptEvaluator {
   // ///////////// Jmol parameter / user variable / function support
   // ///////////////
 
-  private Object getParameter(String key, boolean asToken) {
+  private Object getParameter(String key, int tokType) {
     Object v = getContextVariableAsVariable(key);
     if (v == null)
       v = viewer.getParameter(key);
-    if (asToken)
-      return (v instanceof ScriptVariable ? (ScriptVariable) v : ScriptVariable
-          .getVariable(v));
+    switch (tokType) {
+    case Token.variable:
+      return ScriptVariable.getVariable(v);
+    case Token.string:
+      if (!(v instanceof ScriptVariable[]))
+        break;
+      ScriptVariable[] sv = (ScriptVariable[]) v;
+      StringBuffer sb = new StringBuffer();
+      for (int i = 0; i < sv.length; i++)
+        sb.append(ScriptVariable.sValue(sv[i])).append('\n');
+      return sb.toString();
+    }
     return (v instanceof ScriptVariable ? ScriptVariable
         .oValue((ScriptVariable) v) : v);
   }
@@ -2162,16 +2179,18 @@ public class ScriptEvaluator {
         if (isClauseDefine) {
           ScriptVariable vt = parameterExpressionToken(++i);
           i = iToken;
-          v = (vt.tok == Token.list ? vt : ScriptVariable.oValue(vt));
+          v = (vt.tok == Token.varray ? vt : ScriptVariable.oValue(vt));
         } else {
-          v = getParameter(var, false);
+          v = getParameter(var, 0);
+          if (!isExpression)
+            isClauseDefine = true;
         }
         tok = tokAt(0);
         forceString |= (Token.tokAttr(tok, Token.implicitStringCommand) || tok == Token.script); // for the file names
         if (v instanceof ScriptVariable) {
           // select @{...}
           fixed[j] = (Token) v;
-          if (isExpression && fixed[j].tok == Token.list) {
+          if (isExpression && fixed[j].tok == Token.varray) {
             BitSet bs = ScriptVariable.getBitSet((ScriptVariable) v, true);
             // I can't remember why we have to be checking list variables
             // for atom names. 
@@ -2239,15 +2258,16 @@ public class ScriptEvaluator {
           fixed[j] = new Token(Token.matrix4f, v);
         } else if (v instanceof Map<?, ?>) {
           fixed[j] = new Token(Token.hash, v);
-        } else if (v instanceof String[]) {
-          String[] sv = (String[]) v;
-          if (sv.length > 0 && sv[0].startsWith("{")
-              && !(Escape.unescapePoint(sv[0]) instanceof String)) {
-            fixed[j] = new Token(Token.list, sv);
+        } else if (v instanceof ScriptVariable[]) {
+          ScriptVariable[] sv = (ScriptVariable[]) v;
+          if (sv.length > 0 && ScriptVariable.sValue(sv[0]).startsWith("{")
+              && !(Escape.unescapePoint(ScriptVariable.sValue(sv[0])) 
+                  instanceof String)) {
+            fixed[j] = ScriptVariable.getVariable(v);
           } else {
             BitSet bs = Escape.unEscapeBitSetArray(sv, true);
             if (bs == null)
-              fixed[j] = new Token(Token.string, Escape.escape(sv, true));
+              fixed[j] = new Token(Token.string, Escape.escape(sv));
             else
               fixed[j] = new Token(Token.bitset, bs);
           }
@@ -2898,7 +2918,8 @@ public class ScriptEvaluator {
     boolean inBrace = false;
     boolean inClauseDefine = false;
     boolean setEquals = (statement.length > 1 && tok == Token.set
-        && statement[0].value.equals("") && statement[0].intValue == '=' && statement[1].tok != Token.expressionBegin);
+        && statement[0].value.equals("") && (statement[0].intValue == '=' || statement[0].intValue == '#') 
+        && statement[1].tok != Token.expressionBegin);
     int len = statement.length;
     for (int i = 0; i < len; ++i) {
       Token token = statement[i];
@@ -2911,9 +2932,11 @@ public class ScriptEvaluator {
       if (i != 0)
         sb.append(' ');
       if (i == 2 && setEquals) {
-        setEquals = false;
-        if (token.tok != Token.opEQ)
-          sb.append("= ");
+        if ((setEquals = (token.tok != Token.opEQ)) || statement[0].intValue == '#') {
+          sb.append(setEquals ? "= " : "== ");
+          if (!setEquals)
+            continue;
+        }
       }
       if (iTok == i && token.tok != Token.expressionEnd)
         sb.append(">> ");
@@ -2961,12 +2984,9 @@ public class ScriptEvaluator {
       case Token.point3f:
       case Token.point4f:
       case Token.bitset:
-      case Token.list:
+      case Token.varray:
       case Token.hash:
-        if (token instanceof ScriptVariable)
-          sb.append(ScriptVariable.sValue(token)); // list
-        else
-          sb.append(Token.nameOf(token.tok));
+        sb.append(ScriptVariable.sValue(token)); // list
         continue;
       case Token.seqcode:
         sb.append('^');
@@ -3446,6 +3466,7 @@ public class ScriptEvaluator {
       case Token.opGE:
       case Token.opGT:
       case Token.opEQ:
+      case Token.opEQEQ:
       case Token.opNE:
         if (pc + 1 == code.length)
           error(ERROR_invalidArgument);
@@ -3458,7 +3479,7 @@ public class ScriptEvaluator {
             error(ERROR_invalidArgument);
           val = code[++pc].value;
         }
-        if (tokWhat == Token.configuration && tokOperator != Token.opEQ)
+        if (tokWhat == Token.configuration && tokOperator != Token.opEQ && tokOperator != Token.opEQEQ)
           error(ERROR_invalidArgument);
         if (isSyntaxCheck) {
           rpn.addX(new BitSet());
@@ -3552,7 +3573,7 @@ public class ScriptEvaluator {
           tokWhat = Token.file;
           isModel = false;
         }
-        if (tokWhat == -Token.model && tokOperator == Token.opEQ) {
+        if (tokWhat == -Token.model && tokOperator == Token.opEQ && tokOperator == Token.opEQEQ) {
           rpn.addX(bitSetForModelFileNumber(comparisonValue));
           break;
         }
@@ -3587,18 +3608,18 @@ public class ScriptEvaluator {
           rpn.addX(value);
           break;
         }
-        val = getParameter((String) value, false);
+        val = getParameter((String) value, 0);
         if (isInMath) {
           rpn.addX(val);
           break;
         }
         if (val instanceof String)
           val = getStringObjectAsVariable((String) val, null);
-        if (val instanceof String[]) {
-          BitSet bs = Escape.unEscapeBitSetArray((String[]) val, true);
+        if (val instanceof ScriptVariable[]) {
+          BitSet bs = Escape.unEscapeBitSetArray(val, true);
           if (bs != null)
             val = bs;
-        } else if (val instanceof String || val instanceof String[]) {
+        } else if (val instanceof String) {
           val = lookupIdentifierValue((String) value);
         }
         rpn.addX(val);
@@ -3718,6 +3739,7 @@ public class ScriptEvaluator {
         case Token.opGT:
           return BitSetUtil.newBitSet(comparisonValue + 1, atomCount);
         case Token.opEQ:
+        case Token.opEQEQ:
           return (comparisonValue < atomCount ? BitSetUtil.newBitSet(
               comparisonValue, comparisonValue + 1) : new BitSet());
         case Token.opNE:
@@ -3814,6 +3836,7 @@ public class ScriptEvaluator {
           imin = comparisonValue;
           break;
         case Token.opEQ:
+        case Token.opEQEQ:
           imax = comparisonValue;
           imin = comparisonValue - 1;
           break;
@@ -3848,6 +3871,7 @@ public class ScriptEvaluator {
         match = (propertyValue > comparisonValue);
         break;
       case Token.opEQ:
+      case Token.opEQEQ:
         match = (propertyValue == comparisonValue);
         break;
       case Token.opNE:
@@ -3864,6 +3888,7 @@ public class ScriptEvaluator {
                                 String comparisonValue) throws ScriptException {
     switch (tokOperator) {
     case Token.opEQ:
+    case Token.opEQEQ:
     case Token.opNE:
       return (TextFormat.isMatch(propertyValue, comparisonValue, true, true) == (tokOperator == Token.opEQ));
     default:
@@ -3884,6 +3909,7 @@ public class ScriptEvaluator {
     case Token.opGT:
       return propertyFloat > comparisonFloat;
     case Token.opEQ:
+    case Token.opEQEQ:
       return propertyFloat == comparisonFloat;
     case Token.opNE:
       return propertyFloat != comparisonFloat;
@@ -4083,10 +4109,13 @@ public class ScriptEvaluator {
     String s = null;
     switch (tokAt(i)) {
     case Token.string:
-    case Token.list: //TODO -- could be generic list?
       s = ScriptVariable.sValue(statement[i]);
       s = TextFormat.replaceAllCharacters(s, "{},[]\"'", ' ');
       fparams = Parser.parseFloatArray(s);
+      n = fparams.length;
+      break;
+    case Token.varray:
+      fparams = ScriptVariable.flistValue(statement[i], 0); 
       n = fparams.length;
       break;
     default:
@@ -4141,18 +4170,15 @@ public class ScriptEvaluator {
   }
 
   private Point3f[] getPointArray(int i, int nPoints) throws ScriptException {
-    int tok = getToken(i++).tok;
     Point3f[] points = new Point3f[nPoints];
-    if (tok == Token.list) { // TODO: could be generic list?
-      String[] list = (String[]) theToken.value;
-      if (list.length != nPoints)
+    int tok = (i < 0 ? Token.varray : getToken(i++).tok);
+    if (tok == Token.varray) {
+      ScriptVariable v = (ScriptVariable) theToken;
+      if (v.objects.length != nPoints)
         error(ERROR_invalidArgument);
-      for (int j = 0; j < nPoints; j++) {
-        Object o = Escape.unescapePoint(list[j]);
-        if (!(o instanceof Point3f))
+      for (int j = 0; j < nPoints; j++)
+        if ((points[j] = ScriptVariable.ptValue(v.objects[j])) == null)
           error(ERROR_invalidArgument);
-        points[j] = (Point3f) o;
-      }
       return points;
     }
     if (tok == Token.spacebeforesquare)
@@ -5657,7 +5683,7 @@ public class ScriptEvaluator {
       }
       if (Token.tokAttr(tokAt(j), Token.misc)
           || getContextVariableAsVariable(key) != null) {
-        if (bsIn == null && !isMinusMinus && getToken(++j).tok != Token.opEQ)
+        if (bsIn == null && !isMinusMinus && getToken(++j).tok != Token.opEQ && theTok != Token.opEQEQ)
           error(ERROR_invalidArgument);
         if (bsIn == null) {
           if (isMinusMinus)
@@ -5974,16 +6000,8 @@ public class ScriptEvaluator {
         bsCenter = (BitSet) expressionResult;
         q = (isSyntaxCheck ? new Quaternion() : viewer
             .getAtomQuaternion(bsCenter.nextSetBit(0)));
-      } else if (tokAt(i) == Token.list) { // TODO: list type?
-        String[] s = (String[]) getToken(i).value;
-        if (s.length == 0)
-          error(ERROR_invalidArgument);
-        Object o = Escape.unescapePoint(s[0]);
-        if (!(o instanceof Point4f))
-          error(ERROR_invalidArgument);
-        q = new Quaternion((Point4f) o);
       } else {
-        q = new Quaternion(getPoint4f(i));
+        q = getQuaternionParameter(i);
       }
       i = iToken + 1;
       if (q == null)
@@ -6514,15 +6532,15 @@ public class ScriptEvaluator {
         vAtomSets.add(new BitSet[] { bsAtoms1, bsAtoms2 });
         i = iToken;
         break;
-      case Token.list:
+      case Token.varray:
         if (vAtomSets != null)
           error(ERROR_invalidArgument);
         isQuaternion = true;
         data1 = ScriptMathProcessor
-            .getQuaternionArray((Object[]) theToken.value);
+            .getQuaternionArray(((ScriptVariable)theToken).objects);
         getToken(++i);
         data2 = ScriptMathProcessor
-            .getQuaternionArray((Object[]) theToken.value);
+            .getQuaternionArray(((ScriptVariable)theToken).objects);
         if (vQuatSets == null)
           vQuatSets = new ArrayList<Object[]>();
         vQuatSets.add(new Object[] { data1, data2 });
@@ -7453,7 +7471,8 @@ public class ScriptEvaluator {
           index++;
           name = parameterAsString(index++);
           data = new float[viewer.getAtomCount()];
-          Parser.parseStringInfestedFloatArray("" + getParameter(name, false),
+          Parser.parseStringInfestedFloatArray("" + 
+              getParameter(name, Token.string),
               null, (float[]) data);
           pid = JmolConstants.PALETTE_PROPERTY;
         }
@@ -7466,7 +7485,7 @@ public class ScriptEvaluator {
                 + scheme);
             isColorIndex = (scheme.indexOf(ColorEncoder.BYELEMENT_PREFIX) == 0 || scheme
                 .indexOf(ColorEncoder.BYRESIDUE_PREFIX) == 0);
-          }
+          } 
           float min = 0;
           float max = Float.MAX_VALUE;
           if (!isColorIndex
@@ -7746,7 +7765,7 @@ public class ScriptEvaluator {
         return;
       }
       if ((i = dataLabel.indexOf("@")) >= 0) {
-        dataString = "" + getParameter(dataLabel.substring(i + 1), false);
+        dataString = "" + getParameter(dataLabel.substring(i + 1), Token.string);
         dataLabel = dataLabel.substring(0, i).trim();
       } else if (dataString == null && (i = dataLabel.indexOf(" ")) >= 0) {
         dataString = dataLabel.substring(i + 1).trim();
@@ -9369,17 +9388,7 @@ public class ScriptEvaluator {
         if (tok == Token.quaternion)
           i++;
         haveRotation = true;
-        if (tokAt(i) == Token.list) { // TODO: list type?
-          String[] s = (String[]) getToken(i).value;
-          if (s.length == 0)
-            error(ERROR_invalidArgument);
-          Object o = Escape.unescapePoint(s[0]);
-          if (!(o instanceof Point4f))
-            error(ERROR_invalidArgument);
-          q = new Quaternion((Point4f) o);
-        } else {
-          q = new Quaternion(getPoint4f(i));
-        }
+        q = getQuaternionParameter(i);
         rotAxis.set(q.getNormal());
         endDegrees = q.getTheta();
         break;
@@ -9460,7 +9469,7 @@ public class ScriptEvaluator {
           if (ptsA == null)
             error(ERROR_invalidArgument, i);
           i = iToken;
-          ptsB = getPointVector(getToken(++i).value, i);
+          ptsB = getPointVector(getToken(++i), i);
           if (ptsB == null || ptsA.size() != ptsB.size())
             error(ERROR_invalidArgument, i);
           m4 = new Matrix4f();
@@ -9598,11 +9607,33 @@ public class ScriptEvaluator {
           isSpin, bsAtoms, translation, ptsB);
   }
 
-  List<Point3f> getPointVector(Object value, int i) throws ScriptException {
-    if (value instanceof BitSet)
-      return viewer.getAtomPointVector((BitSet) value);
-    if (value instanceof String[])
-      return Escape.unescapePointVector((String[]) value);
+  private Quaternion getQuaternionParameter(int i) throws ScriptException {
+    if (tokAt(i) == Token.varray) {
+      ScriptVariable sv = (ScriptVariable) getToken(i);
+      Point4f p4 = null;
+      if (sv.objects.length == 0
+          || (p4 = ScriptVariable.pt4Value(sv.objects[0])) == null)
+        error(ERROR_invalidArgument);
+      return new Quaternion(p4);
+    }
+    return new Quaternion(getPoint4f(i));
+  }
+
+  List<Point3f> getPointVector(Token t, int i) throws ScriptException {
+    switch (t.tok) {
+    case Token.bitset:
+      return viewer.getAtomPointVector((BitSet) t.value);
+    case Token.varray:
+      List<Point3f> data = new ArrayList<Point3f>();
+      Point3f pt;
+      ScriptVariable[] pts = ((ScriptVariable) t).objects;
+      for (int j = 0; j < pts.length; j++) 
+        if ((pt = ScriptVariable.ptValue(pts[j])) != null)
+          data.add(pt);
+        else
+          return null;
+      return data;
+    }
     if (i > 0)
       return viewer.getAtomPointVector(atomExpression(i));
     return null;
@@ -12066,9 +12097,9 @@ public class ScriptEvaluator {
       // a[...][...].xxx =
       // var a[...][...].xxx =
 
-      int pt = (tok2 == Token.opEQ ? 3
+      int pt = (tok2 == Token.opEQ  || tok2 == Token.opEQEQ ? 3
       // set x = ...
-          : setType == '=' && !key.equals("return") && tok2 != Token.opEQ ? 0
+          : setType == '=' && !key.equals("return") && tok2 != Token.opEQ && tok2 != Token.opEQEQ ? 0
           // {c}.xxx =
               // {...}.xxx =
               // {{...}[n]}.xxx =
@@ -12659,16 +12690,17 @@ public class ScriptEvaluator {
    * @param pt
    * @param ptMax
    * @param key
-   * @param xsetType
+   * @param setType
    * @throws ScriptException
    */
   @SuppressWarnings("unchecked")
-  private void setVariable(int pt, int ptMax, String key, int xsetType)
+  private void setVariable(int pt, int ptMax, String key, int setType)
       throws ScriptException {
     BitSet bs = null;
     String propertyName = "";
     int tokProperty = Token.nada;
-    boolean isArrayItem = (statement[0].intValue == '[');
+    boolean isEqEq = (setType == '#');
+    boolean isArrayItem = (setType == '[');
     boolean settingProperty = false;
     boolean isExpression = false;
     boolean settingData = (key.startsWith("property_"));
@@ -12702,11 +12734,14 @@ public class ScriptEvaluator {
       error(ERROR_invalidArgument);
     if (isSyntaxCheck)
       return;
+//    working here -- why doesn't y get set to x's object
+  //  why isn't tv (x[1])[2]
     ScriptVariable tv = v.get(isArrayItem ? 2 : 0);
 
     // create user variable if needed for list now, so we can do the copying
 
-    boolean needVariable = (!isUserVariable && !isExpression && !settingData && (isArrayItem
+    boolean needVariable = (!isUserVariable && !isExpression && 
+        !settingData && (isArrayItem
         || settingProperty || !(tv.value instanceof String
         || tv.tok == Token.integer || tv.value instanceof Integer
         || tv.value instanceof Float || tv.value instanceof Boolean)));
@@ -12722,7 +12757,8 @@ public class ScriptEvaluator {
     if (isArrayItem) {
       ScriptVariable vv = (v).get(0);
       // stack is selector [ VALUE
-      ScriptVariable tnew = (new ScriptVariable()).set(tv);
+      // a[n] = ..... this will be a COPY
+      ScriptVariable tnew = (new ScriptVariable()).set(tv, false);
       if (t.tok == Token.hash || t.tok == Token.bitset) {
         if (t.tok == Token.bitset) {
           t.tok = Token.hash;
@@ -12743,9 +12779,9 @@ public class ScriptEvaluator {
       }
       if (propertyName.startsWith("property_")) {
         viewer.setData(propertyName, new Object[] { propertyName,
-            ScriptVariable.sValue(tv), BitSetUtil.copy(bs) }, viewer
-            .getAtomCount(), 0, 0, tv.tok == Token.list ? Integer.MAX_VALUE // TODO: list type?
-            : Integer.MIN_VALUE, 0);
+            tv.tok == Token.varray ? ScriptVariable.flistValue(tv, viewer.getAtomCount()) : ScriptVariable.sValue(tv), 
+            BitSetUtil.copy(bs) }, viewer.getAtomCount(), 0, 0, 
+            tv.tok == Token.varray ? Integer.MAX_VALUE : Integer.MIN_VALUE, 0);
         return;
       }
       setBitsetProperty(bs, tokProperty, ScriptVariable.iValue(tv),
@@ -12754,16 +12790,16 @@ public class ScriptEvaluator {
     }
 
     if (isUserVariable) {
-      t.set(tv);
+      t.set(tv, !isEqEq);
       return;
     }
-
+   
     Object vv = ScriptVariable.oValue(tv);
 
     if (key.startsWith("property_")) {
       int n = viewer.getAtomCount();
-      if (vv instanceof String[])
-        vv = TextFormat.join((String[]) vv, '\n', 0);
+      if (tv.tok == Token.varray)
+        vv = ScriptVariable.sValue(tv);
       viewer.setData(key, new Object[] { key, "" + vv,
           BitSetUtil.copy(viewer.getSelectionSet(false)) }, n, 0, 0,
           Integer.MIN_VALUE, 0);
@@ -13461,7 +13497,7 @@ public class ScriptEvaluator {
         type = "TXT";
       } else if (data == "VAR") {
         data = ScriptVariable.sValue((ScriptVariable) getParameter(
-            ScriptVariable.sValue(tokenAt(isCommand ? 2 : 1, args)), true));
+            ScriptVariable.sValue(tokenAt(isCommand ? 2 : 1, args)), Token.variable));
         type = "TXT";
       } else if (data == "SPT") {
         if (isCoord) {
@@ -14231,9 +14267,9 @@ public class ScriptEvaluator {
         i = iToken;
         havePoints = true;
         break;
-      case Token.list:
+      case Token.varray:
         propertyName = "modelBasedPoints";
-        propertyValue = theToken.value;
+        propertyValue = ScriptVariable.listValue(theToken);
         havePoints = true;
         break;
       case Token.spacebeforesquare:
@@ -15121,8 +15157,6 @@ public class ScriptEvaluator {
   }
 
   private boolean listIsosurface(int iShape) throws ScriptException {
-    if (getToken(1).value instanceof String[]) // not just the word "list"
-      return false;
     checkLength(2);
     if (!isSyntaxCheck)
       showString((String) getShapeProperty(iShape, "list"));
@@ -15363,7 +15397,7 @@ public class ScriptEvaluator {
             data = new float[atomCount];
             if (!isSyntaxCheck)
               Parser.parseStringInfestedFloatArray(""
-                  + getParameter(vname, false), null, data);
+                  + getParameter(vname, Token.string), null, data);
           }
           if (!isSyntaxCheck)
             sbCommand.append(" \"\" ").append(Escape.escape(data));

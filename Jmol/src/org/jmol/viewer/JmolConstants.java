@@ -2710,9 +2710,11 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public static int modelValue(String strDecimal) {
     //this will overflow, but it doesn't matter -- it's only for file.model
     //2147483647 is maxvalue, so this allows loading
-    //simultaneously up to 2147 files. Yeah, sure!
+    //simultaneously up to 2147 files.
     int pt = strDecimal.indexOf(".");
-    if (pt < 1 || strDecimal.charAt(0) == '-')
+    if (pt < 1 || strDecimal.charAt(0) == '-'
+        || strDecimal.endsWith(".") 
+        || strDecimal.contains(".0"))
       return Integer.MAX_VALUE;
     int i = 0;
     int j = 0;
@@ -2721,14 +2723,14 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
         i = Integer.parseInt(strDecimal.substring(0, pt));
         if (i < 0)
           i = -i;
-      } catch(NumberFormatException e) {
+      } catch (NumberFormatException e) {
         i = -1;
       }
     }
     if (pt < strDecimal.length() - 1)
       try {
-         j = Integer.parseInt(strDecimal.substring(pt + 1));
-      } catch(NumberFormatException e) {
+        j = Integer.parseInt(strDecimal.substring(pt + 1));
+      } catch (NumberFormatException e) {
         // not a problem
       }
     i = i * 1000000 + j;

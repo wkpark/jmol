@@ -74,12 +74,12 @@ public class Token {
   public final static int decimal    =  3;
   public final static int string     =  4;
   
-  final static int seqcode           =  5;
-  public final static int hash       =  6;  // associative array; Hashtable
-  public final static int list       =  7;
-  public final static int point3f    =  8;
-  public final static int point4f    =  9;  
-  public final static int bitset     =  10;
+  final static int seqcode    =  5;
+  final static int hash       =  6;  // associative array; Hashtable
+  final static int varray     =  7;  // ScriptVariable[] array
+  final static int point3f    =  8;
+  final static int point4f    =  9;  
+  final static int bitset     =  10;
   
   public final static int matrix3f   = 11;  
   public final static int matrix4f   = 12;  
@@ -468,7 +468,8 @@ public class Token {
   final static int opLE         = 2 | comparator | 9 << 4;
   final static int opLT         = 3 | comparator | 9 << 4;
   public final static int opEQ  = 4 | comparator | 9 << 4;
-  final static int opNE         = 5 | comparator | 9 << 4;
+  public final static int opEQEQ = 5 | comparator | 9 << 4;
+  final static int opNE         = 6 | comparator | 9 << 4;
    
   final static int minus        = 0 | mathop | 10 << 4;
   final static int plus         = 1 | mathop | 10 << 4;
@@ -524,7 +525,6 @@ public class Token {
   final static int lines            = 4 | mathproperty;
   public final static int reverse   = 5 | mathproperty;
   final static int size             = 6 | mathproperty;
-  public final static int sort      = 7 | mathproperty;
   public final static int type      = 8 | mathproperty;
   public final static int boundbox  = 9 | mathproperty | deprecatedparam | shapeCommand | defaultON;
   public final static int xyz       =10 | mathproperty | atomproperty | settable;
@@ -668,8 +668,9 @@ public class Token {
   public final static int plane     = 15 | 0 << 9 | mathfunc;
   public final static int point     = 16 | 0 << 9 | mathfunc;
   final static int quaternion       = 17 | 0 << 9 | mathfunc | scriptCommand;
-  final static int within           = 18 | 0 << 9 | mathfunc;
-  final static int write            = 19 | 0 << 9 | mathfunc | scriptCommand;
+  public final static int sort      = 18 | 0 << 9 | mathfunc | mathproperty;
+  final static int within           = 19 | 0 << 9 | mathfunc;
+  final static int write            = 20 | 0 << 9 | mathfunc | scriptCommand;
 
   // xxx(a)
   
@@ -1106,6 +1107,7 @@ public class Token {
   final static int left           = misc  | 172;
   final static int line           = misc  | 174;// new
   final static int linedata       = misc  | 176;// new
+  public final static int list    = misc  | 177; // just "list"
   final static int lobe           = misc  | 178;// new
   final static int lonepair       = misc  | 180;// new
   final static int lp             = misc  | 182;// new
@@ -1232,7 +1234,7 @@ public class Token {
 
   public final static Token tokenLeftParen = new Token(leftparen, "(");
   public final static Token tokenRightParen = new Token(rightparen, ")");
-  final static Token tokenArray = new Token(array, "[");
+  final static Token tokenArraySquare = new Token(array, "[");
   final static Token tokenArraySelector = new Token(leftsquare, "[");
  
   public final static Token tokenExpressionBegin = new Token(expressionBegin, "expressionBegin");
@@ -1243,6 +1245,7 @@ public class Token {
   final static Token tokenCoordinateEnd = tokenRightBrace;
   final static Token tokenColon           = new Token(colon, ':');
   final static Token tokenSet             = new Token(set, '=', "");
+  final static Token tokenSetEqEq         = new Token(set, '#', "");
   final static Token tokenSetArray        = new Token(set, '[', "");
   final static Token tokenSetProperty     = new Token(set, '.', "");
   final static Token tokenSetVar          = new Token(set, '=', "var");
@@ -1410,7 +1413,7 @@ public class Token {
       ">=",           new Token(opGE),
       ">",            new Token(opGT),
       "=",            tokenEquals,
-      "==",           null,
+      "==",           new Token(opEQEQ),
       "!=",           new Token(opNE),
       "<>",           null,
       "within",       new Token(within),

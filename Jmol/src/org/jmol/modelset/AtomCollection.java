@@ -512,125 +512,124 @@ abstract public class AtomCollection {
         setAtomCoordRelative(i, x, y, z);
   }
 
-  public void setAtomProperty(BitSet bs, int tok, int iValue,
-                              float fValue, String sValue, float[] values,
-                              String[] list) {
+  public void setAtomProperty(BitSet bs, int tok, int iValue, float fValue,
+                              String sValue, float[] values, String[] list) {
     int n = 0;
-    
+
     if (values != null && values.length == 0 || bs == null)
       return;
-      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-        if (values != null) {
-          if (n >= values.length)
-            return;
-          fValue = values[n++];
-          iValue = (int) fValue;
-        } else if (list != null) {
-          if (n >= list.length)
-            return;
-          sValue = list[n++];
-        }
-        Atom atom = atoms[i];
-        switch (tok) {
-        case Token.atomname:
-          taint(i, TAINT_ATOMNAME);
-          setAtomName(i, sValue);
-          break;
-        case Token.atomno:
-          taint(i, TAINT_ATOMNO);
-          setAtomNumber(i, iValue);
-          break;
-        case Token.atomtype:
-          taint(i, TAINT_ATOMTYPE);
-          setAtomType(i, sValue);
-          break;
-        case Token.atomx:
-        case Token.x:
-          setAtomCoord(i, fValue, atom.y, atom.z);
-          break;
-        case Token.atomy:
-        case Token.y:
-          setAtomCoord(i, atom.x, fValue, atom.z);
-          break;
-        case Token.atomz:
-        case Token.z:
-          setAtomCoord(i, atom.x, atom.y, fValue);
-          break;
-        case Token.vibx:
-        case Token.viby:
-        case Token.vibz:
-          setVibrationVector(i, tok, fValue);
-          break;
-        case Token.fracx:
-        case Token.fracy:
-        case Token.fracz:
-          atom.setFractionalCoord(tok, fValue, true);
-          taint(i, TAINT_COORD);
-          break;
-        case Token.fux:
-        case Token.fuy:
-        case Token.fuz:
-          atom.setFractionalCoord(tok, fValue, false);
-          taint(i, TAINT_COORD);
-          break;
-        case Token.elemno:
-        case Token.element:
-          setElement(atom, iValue);
-          break;
-        case Token.formalcharge:
-          atom.setFormalCharge(iValue);
-          taint(i, TAINT_FORMALCHARGE);
-          break;
-        case Token.label:
-        case Token.format:
-          viewer.setAtomLabel(sValue, i);
-          break;
-        case Token.occupancy:
-          if (iValue < 2)
-            iValue = (int) (100 * fValue);
-          if (setOccupancy(i, iValue))
-            taint(i, TAINT_OCCUPANCY);
-          break;
-        case Token.partialcharge:
-          if (setPartialCharge(i, fValue))
-            taint(i, TAINT_PARTIALCHARGE);
-          break;
-        case Token.ionic:
-          if (setIonicRadius(i, fValue))
-            taint(i, TAINT_IONICRADIUS);
-          break;
-        case Token.radius:
-        case Token.spacefill:
-          if (fValue < 0)
-            fValue = 0;
-          else if (fValue > Atom.RADIUS_MAX)
-            fValue = Atom.RADIUS_MAX;
-          atom.madAtom = ((short) (fValue * 2000));
-          break;
-        case Token.selected:
-          viewer.setSelectedAtom(atom.index, (fValue != 0));
-          break;
-        case Token.temperature:
-          if (setBFactor(i, fValue))
-            taint(i, TAINT_TEMPERATURE);
-          break;
-        case Token.valence:
-          atom.setValence(iValue);
-          taint(i, TAINT_VALENCE);
-          break;
-        case Token.vanderwaals:
-          if (atom.setRadius(fValue))
-            taint(i, TAINT_VANDERWAALS);
-          else
-            untaint(i, TAINT_VANDERWAALS);
-          break;
-        default:
-          Logger.error("unsettable atom property: " + Token.nameOf(tok));
-          break;
-        }
+    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+      if (values != null) {
+        if (n >= values.length)
+          return;
+        fValue = values[n++];
+        iValue = (int) fValue;
+      } else if (list != null) {
+        if (n >= list.length)
+          return;
+        sValue = list[n++];
       }
-      if (tok == Token.selected)
-        viewer.setSelectedAtom(-1, false);
+      Atom atom = atoms[i];
+      switch (tok) {
+      case Token.atomname:
+        taint(i, TAINT_ATOMNAME);
+        setAtomName(i, sValue);
+        break;
+      case Token.atomno:
+        taint(i, TAINT_ATOMNO);
+        setAtomNumber(i, iValue);
+        break;
+      case Token.atomtype:
+        taint(i, TAINT_ATOMTYPE);
+        setAtomType(i, sValue);
+        break;
+      case Token.atomx:
+      case Token.x:
+        setAtomCoord(i, fValue, atom.y, atom.z);
+        break;
+      case Token.atomy:
+      case Token.y:
+        setAtomCoord(i, atom.x, fValue, atom.z);
+        break;
+      case Token.atomz:
+      case Token.z:
+        setAtomCoord(i, atom.x, atom.y, fValue);
+        break;
+      case Token.vibx:
+      case Token.viby:
+      case Token.vibz:
+        setVibrationVector(i, tok, fValue);
+        break;
+      case Token.fracx:
+      case Token.fracy:
+      case Token.fracz:
+        atom.setFractionalCoord(tok, fValue, true);
+        taint(i, TAINT_COORD);
+        break;
+      case Token.fux:
+      case Token.fuy:
+      case Token.fuz:
+        atom.setFractionalCoord(tok, fValue, false);
+        taint(i, TAINT_COORD);
+        break;
+      case Token.elemno:
+      case Token.element:
+        setElement(atom, iValue);
+        break;
+      case Token.formalcharge:
+        atom.setFormalCharge(iValue);
+        taint(i, TAINT_FORMALCHARGE);
+        break;
+      case Token.label:
+      case Token.format:
+        viewer.setAtomLabel(sValue, i);
+        break;
+      case Token.occupancy:
+        if (iValue < 2)
+          iValue = (int) (100 * fValue);
+        if (setOccupancy(i, iValue))
+          taint(i, TAINT_OCCUPANCY);
+        break;
+      case Token.partialcharge:
+        if (setPartialCharge(i, fValue))
+          taint(i, TAINT_PARTIALCHARGE);
+        break;
+      case Token.ionic:
+        if (setIonicRadius(i, fValue))
+          taint(i, TAINT_IONICRADIUS);
+        break;
+      case Token.radius:
+      case Token.spacefill:
+        if (fValue < 0)
+          fValue = 0;
+        else if (fValue > Atom.RADIUS_MAX)
+          fValue = Atom.RADIUS_MAX;
+        atom.madAtom = ((short) (fValue * 2000));
+        break;
+      case Token.selected:
+        viewer.setSelectedAtom(atom.index, (fValue != 0));
+        break;
+      case Token.temperature:
+        if (setBFactor(i, fValue))
+          taint(i, TAINT_TEMPERATURE);
+        break;
+      case Token.valence:
+        atom.setValence(iValue);
+        taint(i, TAINT_VALENCE);
+        break;
+      case Token.vanderwaals:
+        if (atom.setRadius(fValue))
+          taint(i, TAINT_VANDERWAALS);
+        else
+          untaint(i, TAINT_VANDERWAALS);
+        break;
+      default:
+        Logger.error("unsettable atom property: " + Token.nameOf(tok));
+        break;
+      }
+    }
+    if (tok == Token.selected)
+      viewer.setSelectedAtom(-1, false);
   }
 
   protected void setElement(Atom atom, int atomicNumber) {

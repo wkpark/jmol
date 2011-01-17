@@ -15,16 +15,16 @@
     <untar src="${launchpad.export.tgz}" dest="${build.dir}" compression="gzip" />
     <delete dir="${build.dir}" includes="**/*.pot" />
     <move todir="${build.dir}/Jmol" includeemptydirs="false">
-      <fileset dir="${build.dir}/Jmol">
-        <include name="**/*.po" />
+      <fileset dir="${build.dir}/src/org/jmol/translation/Jmol">
+        <include name="**/src_org_jmol_translation_Jmol_Jmol-*.po" />
       </fileset>
-      <mapper type="glob" from="jmol-*.po" to="*.po" />
+      <mapper type="glob" from="src_org_jmol_translation_Jmol_Jmol-*.po" to="*.po" />
     </move>
     <move todir="${build.dir}/JmolApplet" includeemptydirs="false">
-      <fileset dir="${build.dir}/JmolApplet">
-        <include name="**/*.po" />
+      <fileset dir="${build.dir}/src/org/jmol/translation/JmolApplet">
+        <include name="**/src_org_jmol_translation_JmolApplet_JmolApplet-*.po" />
       </fileset>
-      <mapper type="glob" from="jmol-applet-*.po" to="*.po" />
+      <mapper type="glob" from="src_org_jmol_translation_JmolApplet_JmolApplet-*.po" to="*.po" />
     </move>
     <copy todir="src/org/jmol/translation/Jmol">
       <fileset dir="${build.dir}/Jmol" includes="*.po" />
@@ -49,16 +49,16 @@
     <mkdir dir="${build.dir}/Jmol" />
     <move todir="${build.dir}/Jmol" includeemptydirs="false">
       <fileset dir="${launchpad.export.files}">
-        <include name="Jmol_jmol-*.po" />
+        <include name="src_org_jmol_translation_Jmol_Jmol-*.po" />
       </fileset>
-      <mapper type="glob" from="Jmol_jmol-*.po" to="*.po" />
+      <mapper type="glob" from="src_org_jmol_translation_Jmol_Jmol-*.po" to="*.po" />
     </move>
     <mkdir dir="${build.dir}/JmolApplet" />
     <move todir="${build.dir}/JmolApplet" includeemptydirs="false">
       <fileset dir="${launchpad.export.files}">
-        <include name="JmolApplet_jmol-applet-*.po" />
+        <include name="src_org_jmol_translation_JmolApplet_JmolApplet-*.po" />
       </fileset>
-      <mapper type="glob" from="JmolApplet_jmol-applet-*.po" to="*.po" />
+      <mapper type="glob" from="src_org_jmol_translation_JmolApplet_JmolApplet-*.po" to="*.po" />
     </move>
     <copy todir="src/org/jmol/translation/Jmol">
       <fileset dir="${build.dir}/Jmol" includes="*.po" />

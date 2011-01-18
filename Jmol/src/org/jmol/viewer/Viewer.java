@@ -1958,7 +1958,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (htParams.containsKey("loadScript"))
         loadScript = (StringBuffer) htParams.get("loadScript");
       htParams.put("loadScript", loadScript = new StringBuffer(TextFormat
-          .simpleReplace(loadScript.toString(), "$FILENAME$", fname)));
+          .simpleReplace(loadScript.toString(), "$FILENAME$", Escape
+              .escape(fname.replace('\\', '/')))));
     }
 
     // and finally to create the model set...
@@ -2009,7 +2010,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
          return "cannot find string data";
       if (loadScript != null)
         htParams.put("loadScript", loadScript = new StringBuffer(TextFormat.simpleReplace(
-            loadScript.toString(), "\"$FILENAME$\"", 
+            loadScript.toString(), "$FILENAME$", 
             "data \"model inline\"\n" + strModel + "end \"model inline\"")));
     }
     if (strModel != null) {

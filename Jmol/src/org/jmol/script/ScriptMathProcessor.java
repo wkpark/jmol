@@ -116,11 +116,6 @@ class ScriptMathProcessor {
     while (isOK && oPt >= 0)
       isOK = operate();
     if (isOK) {
-      if (isArrayItem && xPt == 2 && xStack[1].tok == Token.leftsquare) {
-        // stack is selector [ VALUE
-        x = xStack[2];
-        // asVector will be true;
-      }
       if (asVector) {
         List<ScriptVariable> result = new ArrayList<ScriptVariable>();
         for (int i = 0; i <= xPt; i++)
@@ -289,6 +284,7 @@ class ScriptMathProcessor {
   }
 
   private boolean haveSpaceBeforeSquare;
+  private int equalCount;
   
   boolean addOp(Token op, boolean allowMathFunc) throws ScriptException {
 
@@ -456,7 +452,7 @@ class ScriptMathProcessor {
         break;
       }
       if (op.tok == Token.rightsquare && tok0 == Token.leftsquare) {
-        if (xPt == 0 && isArrayItem) {
+        if (isArrayItem && squareCount == 1 && equalCount == 0) {
           addX(new ScriptVariable(Token.tokenArraySelector));
           break;
         }
@@ -567,6 +563,12 @@ class ScriptMathProcessor {
           op = (op.tok == Token.opOr ? Token.tokenOrTRUE : Token.tokenAndFALSE);
         }
       }
+      wasX = false;
+      break;
+    case Token.opEQ:
+    case Token.opEQEQ:
+      if (squareCount == 0)
+        equalCount++;
       wasX = false;
       break;
     default:
@@ -2385,9 +2387,10 @@ class ScriptMathProcessor {
       dumpStacks("operate: " + op);
     }
 
-    if (oPt < 0 
-        && (op.tok == Token.opEQ || op.tok == Token.opEQEQ) && isArrayItem) {
-      return (xPt == 2);
+    // check for a[3][2] 
+    if (isArrayItem && squareCount == 0 && equalCount == 1 && oPt < 0
+        && (op.tok == Token.opEQ || op.tok == Token.opEQEQ)) {
+      return true;
     }
 
     ScriptVariable x2 = getX();
@@ -2443,7 +2446,8 @@ class ScriptMathProcessor {
       case Token.keys:
         if (x2.tok != Token.hash)
           return addX("");
-        Object[] keys = ((Map<String, ScriptVariable>) x2.value).keySet().toArray();
+        Object[] keys = ((Map<String, ScriptVariable>) x2.value).keySet()
+            .toArray();
         Arrays.sort(keys);
         String[] ret = new String[keys.length];
         for (int i = 0; i < keys.length; i++)

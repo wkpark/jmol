@@ -851,7 +851,7 @@ public class ScriptVariable extends Token {
         }
       }
       if (selector != 0 && Math.abs(selector) <= len
-          && var.tok == Token.varray) {
+          && var.tok == varray) {
         if (var.objects.length == len) {
           float[] data = new float[len];
           for (int i = 0; i < len; i++)
@@ -1143,7 +1143,7 @@ public class ScriptVariable extends Token {
   }
 
   public static String[] listValue(Token x) {
-    if (x.tok == Token.varray) {
+    if (x.tok == varray) {
       ScriptVariable sv = (ScriptVariable) x;
       String[] list = new String[sv.objects.length];
       for (int i = sv.objects.length; --i >= 0;)
@@ -1163,7 +1163,7 @@ public class ScriptVariable extends Token {
       list = new float[nMin];
       System.arraycopy(x.value, 0, list, 0, n);
     }
-    if (x.tok == Token.varray) {
+    if (x.tok == varray) {
       ScriptVariable sv = (ScriptVariable) x;
       list = new float[Math.max(nMin, sv.objects.length)];
       for (int i = Math.min(sv.objects.length, nMin); --i >= 0;)
@@ -1171,6 +1171,34 @@ public class ScriptVariable extends Token {
       return list;
     }
     return new float[] { fValue(x) };
+  }
+
+  public void toArray() {
+    int dim;
+    Matrix3f m3 = null;
+    Matrix4f m4 = null;
+    switch (tok) {
+    case matrix3f:
+      m3 = (Matrix3f) value;
+      dim = 3;
+      break;
+    case matrix4f:
+      m4 = (Matrix4f) value;
+      dim = 4;
+      break;
+    default:
+      return;
+    }
+    tok = varray;
+    objects = new ScriptVariable[dim];
+    for (int i = 0; i < dim; i++) {
+      float[] a = new float[dim];
+      if (m3 == null)
+        m4.getRow(i, a);
+      else
+        m3.getRow(i, a);
+      objects[i] = getVariable(a);
+    }   
   }
 
 }

@@ -8432,8 +8432,8 @@ public class ScriptEvaluator {
           loadScript.append("/*file*/");
         if (localName != null)
           localName = viewer.getFilePath(localName, false);
-        loadScript.append(Escape.escape((localName != null ? localName
-            : "$FILENAME$")));
+        loadScript.append((localName != null ? Escape.escape(localName) : 
+            "$FILENAME$"));
       }
       if (sOptions.length() > 0)
         loadScript.append(" /*options*/ ").append(sOptions);
@@ -12730,18 +12730,17 @@ public class ScriptEvaluator {
     List<ScriptVariable> v = (List<ScriptVariable>) parameterExpression(pt,
         ptMax, key, true, true, -1, isArrayItem, null, null);
     int nv = v.size();
-    if (nv == 0 || !isArrayItem && nv > 1 || isArrayItem && nv != 3)
+    if (nv == 0 || !isArrayItem && nv > 1 || isArrayItem
+        && (nv < 3 || nv % 2 != 1))
       error(ERROR_invalidArgument);
     if (isSyntaxCheck)
       return;
-//    working here -- why doesn't y get set to x's object
-  //  why isn't tv (x[1])[2]
-    ScriptVariable tv = v.get(isArrayItem ? 2 : 0);
+    // x[3][4] = ??
+    ScriptVariable tv = v.get(isArrayItem ? v.size() - 1 : 0);
 
     // create user variable if needed for list now, so we can do the copying
 
-    boolean needVariable = (!isUserVariable && !isExpression && 
-        !settingData && (isArrayItem
+    boolean needVariable = (!isUserVariable && !isExpression && !settingData && (isArrayItem
         || settingProperty || !(tv.value instanceof String
         || tv.tok == Token.integer || tv.value instanceof Integer
         || tv.value instanceof Float || tv.value instanceof Boolean)));
@@ -12755,19 +12754,60 @@ public class ScriptEvaluator {
     }
 
     if (isArrayItem) {
-      ScriptVariable vv = (v).get(0);
-      // stack is selector [ VALUE
-      // a[n] = ..... this will be a COPY
       ScriptVariable tnew = (new ScriptVariable()).set(tv, false);
-      if (t.tok == Token.hash || t.tok == Token.bitset) {
+      int nParam = v.size() / 2;
+      for (int i = 0; i < nParam; i++) {
+        boolean isLast = (i + 1 == nParam);
+        ScriptVariable vv = (v).get(i * 2);
+        // stack is selector [ selector [ selector [ ... VALUE 
         if (t.tok == Token.bitset) {
           t.tok = Token.hash;
           t.value = new Hashtable<String, ScriptVariable>();
         }
-        String hkey = ScriptVariable.sValue(vv);
-        ((Map<String, ScriptVariable>) t.value).put(hkey, tnew);
-      } else {
-        t.setSelectedValue(ScriptVariable.iValue(vv), tnew);
+        if (t.tok == Token.hash) {
+          String hkey = ScriptVariable.sValue(vv);
+          Map<String, ScriptVariable> tmap = (Map<String, ScriptVariable>) t.value;
+          if (isLast) {
+            tmap.put(hkey, tnew);
+            break;
+          }
+          t = tmap.get(hkey);
+        } else {
+          int ipt = ScriptVariable.iValue(vv);
+          switch (t.tok) {
+          case Token.varray:
+            if (ipt > t.objects.length || isLast)
+              break;
+            if (ipt <= 0)
+              ipt = t.objects.length + ipt;
+            if (--ipt < 0)
+              ipt = 0;
+            t = t.objects[ipt];
+            continue;
+          case Token.matrix3f:
+          case Token.matrix4f:
+            // check for row/column replacement
+            int dim = (t.tok == Token.matrix3f ? 3 : 4);
+            if (nParam == 1 && Math.abs(ipt) >= 1 && Math.abs(ipt) <= dim
+                && tnew.tok == Token.varray && tnew.objects.length == dim)
+              break;
+            if (nParam == 2) {
+              int ipt2 = ScriptVariable.iValue(v.get(2));
+              if (ipt2 >= 1 && ipt2 <= dim
+                  && (tnew.tok == Token.integer || tnew.tok == Token.decimal)) {
+                i++;
+                ipt = ipt * 10 + ipt2;
+                break;
+              }
+            }
+            // change to an array and continue;
+            t.toArray();
+            --i;
+            continue;
+          }
+          t.setSelectedValue(ipt, tnew);
+          break;
+        }
       }
       return;
     }
@@ -12778,9 +12818,11 @@ public class ScriptEvaluator {
           error(ERROR_invalidArgument);
       }
       if (propertyName.startsWith("property_")) {
-        viewer.setData(propertyName, new Object[] { propertyName,
-            tv.tok == Token.varray ? ScriptVariable.flistValue(tv, viewer.getAtomCount()) : ScriptVariable.sValue(tv), 
-            BitSetUtil.copy(bs) }, viewer.getAtomCount(), 0, 0, 
+        viewer.setData(propertyName, new Object[] {
+            propertyName,
+            tv.tok == Token.varray ? ScriptVariable.flistValue(tv, viewer
+                .getAtomCount()) : ScriptVariable.sValue(tv),
+            BitSetUtil.copy(bs) }, viewer.getAtomCount(), 0, 0,
             tv.tok == Token.varray ? Integer.MAX_VALUE : Integer.MIN_VALUE, 0);
         return;
       }
@@ -12793,7 +12835,7 @@ public class ScriptEvaluator {
       t.set(tv, !isEqEq);
       return;
     }
-   
+
     Object vv = ScriptVariable.oValue(tv);
 
     if (key.startsWith("property_")) {

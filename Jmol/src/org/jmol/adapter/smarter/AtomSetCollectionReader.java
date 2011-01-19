@@ -649,6 +649,9 @@ public abstract class AtomSetCollectionReader {
   private boolean filterChain;
   private boolean filterAtomType;
   protected boolean filterHetero;
+  private boolean filterEveryNth;
+  private int filterN;
+  private int nFiltered;
   private boolean doSetOrientation;
   protected boolean addVibrations;
   protected boolean useAltNames;
@@ -680,7 +683,13 @@ public abstract class AtomSetCollectionReader {
     filterGroup3 = checkFilter("[");
     filterChain = checkFilter(":");
     filterAltLoc = checkFilter("%");
-    haveAtomFilter = filterAtomType || filterGroup3 || filterChain || filterAltLoc || filterHetero;
+    filterEveryNth = checkFilter("/=");
+    if (filterEveryNth)
+      filterN = parseInt(filter.substring(filter.indexOf("/=") + 2));
+    if (filterN == Integer.MIN_VALUE)
+      filterEveryNth = false;
+    haveAtomFilter = filterAtomType || filterGroup3 || filterChain
+        || filterAltLoc || filterHetero || filterEveryNth || checkFilter("/=");
     if (bsFilter == null) {
       // bsFilter is usually null, but from MDTOP it gets set to indicate
       // which atoms were selected by the filter. This then
@@ -721,6 +730,8 @@ public abstract class AtomSetCollectionReader {
     boolean isOK = checkFilter(atom, filter1);
     if (filter2 != null)
       isOK |= checkFilter(atom, filter2);
+    if (isOK && filterEveryNth)
+      isOK = (((nFiltered++) % filterN) == 0);
     bsFilter.set(iAtom >= 0 ? iAtom : atomSetCollection.getAtomCount(), isOK);
     return isOK;
   }

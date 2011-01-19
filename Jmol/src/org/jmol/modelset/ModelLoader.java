@@ -1002,7 +1002,7 @@ public final class ModelLoader extends ModelSet {
         }
       }
     if (autoBonding) {
-      autoBond(bs, bs, bsExclude, null, defaultCovalentMad);
+      autoBond(bs, bs, bsExclude, null, defaultCovalentMad, viewer.checkAutoBondLegacy());
       Logger
           .info("ModelSet: autobonding; use  autobond=false  to not generate bonds automatically");
     } else {

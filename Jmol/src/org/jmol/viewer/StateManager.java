@@ -580,7 +580,8 @@ public class StateManager {
         + ";axesposition;axesmolecular;axesorientationrasmol;axesunitcell;axeswindow;axis1color;axis2color"
         + ";axis3color;backgroundcolor;backgroundmodel;bondsymmetryatoms;boundboxcolor;cameradepth"
         + ";debug;debugscript;defaultlatttice;defaults;diffusepercent;exportdrivers"
-        + ";_filecaching;_filecache;fontcaching;fontscaling;language;"
+        + ";_filecaching;_filecache;fontcaching;fontscaling;language"
+        + ";legacyautobonding"
         + ";loglevel;logfile;loggestures;logcommands;measureStyleChime"
         + ";loadformat;smilesurlformat;edsurlformat;edsurlcutoff;multiprocessor;navigationmode;"
         + ";perspectivedepth;phongexponent;perspectivemodel;preservestate;refreshing;repaintwaitms;rotationradius"
@@ -696,6 +697,7 @@ public class StateManager {
         allowModelkit = g.allowModelkit;
         allowMultiTouch = g.allowMultiTouch;
         allowKeyStrokes = g.allowKeyStrokes;
+        legacyAutoBonding = g.legacyAutoBonding;
         useScriptQueue = g.useScriptQueue;
         useArcBall = g.useArcBall;
       }
@@ -882,6 +884,7 @@ public class StateManager {
       setParameterValue("isosurfacePropertySmoothingPower",
           isosurfacePropertySmoothingPower);
       setParameterValue("justifyMeasurements", justifyMeasurements);
+      setParameterValue("legacyAutoBonding", legacyAutoBonding);
       setParameterValue("loadAtomDataTolerance", loadAtomDataTolerance);
       setParameterValue("loadFormat", loadFormat);
       setParameterValue("logCommands", logCommands);
@@ -1028,6 +1031,7 @@ public class StateManager {
     int smallMoleculeMaxAtoms = 40000;
     boolean smartAromatic = true;
     boolean zeroBasedXyzRasmol = false;
+    boolean legacyAutoBonding = false;
 
     /**
      *  these settings are determined when the file is loaded and are
@@ -1076,6 +1080,7 @@ public class StateManager {
       appendCmd(str, "#set edsUrlCutoff " + Escape.escape(edsUrlCutoff));
 //      if (autoLoadOrientation)
   //      appendCmd(str, "set autoLoadOrientation true");
+      appendCmd(str, "set legacyAutoBonding " + legacyAutoBonding);
       appendCmd(str, "set minBondDistance " + minBondDistance);
       // these next two might be part of a 2D->3D operation
       appendCmd(str, "set minimizationCriterion  " + minimizationCriterion);

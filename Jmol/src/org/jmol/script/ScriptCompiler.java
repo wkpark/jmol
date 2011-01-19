@@ -268,7 +268,14 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     htUserFunctions = new Hashtable<String, Boolean>();
     script = script.replace('\u201C', '"').replace('\u201D', '"');
     script = cleanScriptComments(script);
-    isStateScript = (script.indexOf(Viewer.STATE_VERSION_STAMP) >= 0);
+    ichToken = script.indexOf(Viewer.STATE_VERSION_STAMP);
+    isStateScript = (ichToken >= 0);
+    if (isStateScript) {
+      ptSemi = script.indexOf(";", ichToken);
+      if (ptSemi >= ichToken)
+        viewer.setStateScriptVersion(script.substring(
+            ichToken + Viewer.STATE_VERSION_STAMP.length(), ptSemi).trim());
+    }
     cchScript = this.script.length();
 
     // these four will be returned:

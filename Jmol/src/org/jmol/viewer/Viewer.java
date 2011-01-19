@@ -4344,6 +4344,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       scriptStatus("Jmol script terminated", strErrorMessage, 1,
           strErrorMessageUntranslated);
     }
+    setStateScriptVersion(null); // set by compiler
     if (strErrorMessage != null && autoExit)
       exitJmol();
     if (isCmdLine_c_or_C_Option) {
@@ -5765,7 +5766,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     setIntProperty(key, Token.getTokFromName(key.toLowerCase()), value);
   }
-
+  
   public void setIntProperty(String key, int tok, int value) {
     boolean found = true;
     switch (tok) {
@@ -5937,6 +5938,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean found = true;
     boolean doRepaint = true;
     switch (tok) {
+    case Token.legacyautobonding:
+      global.legacyAutoBonding = value;
+      break;
     case Token.defaultstructuredssp:
       global.defaultStructureDSSP = value;
       break;
@@ -6931,7 +6935,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // Eval, PreferencesDialog
     clearModelDependentObjects();
     modelSet.deleteAllBonds();
-    modelSet.autoBond(null, null, null, null, getMadBond());
+    modelSet.autoBond(null, null, null, null, getMadBond(), false);
     addStateScript("connect;", false, true);
   }
 
@@ -6942,7 +6946,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     BitSet bsExclude = new BitSet();
     modelSet.setPdbConectBonding(0, 0, bsExclude);
     if (isAuto) {
-      modelSet.autoBond(null, null, bsExclude, null, getMadBond());
+      modelSet.autoBond(null, null, bsExclude, null, getMadBond(), false);
       addStateScript("connect PDB AUTO;", false, true);
       return;
     }
@@ -9515,5 +9519,37 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public String getModelAtomProperty(Atom atom, String text) {
     return modelSet.getModelAtomProperty(atom, text);
   }
+
+  private int stateScriptVersionInt;
+
+  public void setStateScriptVersion(String version) {
+    if (version != null) {
+      try {
+        String[] tokens = Parser.getTokens(version.replace('.', ' ').replace(
+            '_', ' '));
+        int main = Integer.valueOf(tokens[0]).intValue(); //11
+        int sub = Integer.valueOf(tokens[1]).intValue(); //9
+        int minor = Integer.valueOf(tokens[2]).intValue(); //24
+        stateScriptVersionInt = main * 10000 + sub * 100 + minor;
+        // here's why:
+        global.legacyAutoBonding = (stateScriptVersionInt < 110924);
+        
+        return;
+      } catch (Exception e) {
+        //
+      }
+    }
+    global.legacyAutoBonding = false;
+    stateScriptVersionInt = Integer.MAX_VALUE;
+  }
+  
+  public boolean checkAutoBondLegacy() {    
+    // aargh -- BitSet efficiencies in Jmol 11.9.24, 2/3/2010, meant that
+    // state files created before that that use select BONDS will select the
+    // wrong bonds. 
+    return global.legacyAutoBonding;
+    // reset after a state script is read
+  }
+
 
 }

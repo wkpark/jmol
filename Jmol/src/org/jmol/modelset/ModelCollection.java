@@ -49,6 +49,7 @@ import org.jmol.api.JmolEdge;
 import org.jmol.api.JmolMolecule;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.bspt.Bspf;
+import org.jmol.bspt.CubeIterator;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
@@ -2472,7 +2473,12 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public int autoBond(BitSet bsA, BitSet bsB, BitSet bsExclude, BitSet bsBonds,
-                      short mad) {
+                      short mad, boolean preJmol11_9_24) {
+    // unfortunately, 11.9.24 changed the order with which atoms were processed
+    // for autobonding. This means that state script prior to that that use
+    // select BOND will be misread by later version.
+    if (preJmol11_9_24)
+      return autoBond_Pre_11_9_24(bsA, bsB, bsExclude, bsBonds, mad);
     if (atomCount == 0)
       return 0;
     if (mad == 0)
@@ -2562,6 +2568,92 @@ abstract public class ModelCollection extends BondCollection {
     return nNew;
   }
 
+  private int autoBond_Pre_11_9_24(BitSet bsA, BitSet bsB, BitSet bsExclude, BitSet bsBonds, short mad) {
+    if (atomCount == 0)
+      return 0;
+    if (mad == 0)
+      mad = 1;
+    // null values for bitsets means "all"
+    if (maxBondingRadius == Float.MIN_VALUE)
+      findMaxRadii();
+    float bondTolerance = viewer.getBondTolerance();
+    float minBondDistance = viewer.getMinBondDistance();
+    float minBondDistance2 = minBondDistance * minBondDistance;
+    int nNew = 0;
+    initializeBspf();
+    if (showRebondTimes && Logger.debugging)
+      Logger.startTimer();
+    /*
+     * miguel 2006 04 02
+     * note that the way that these loops + iterators are constructed,
+     * everything assumes that all possible pairs of atoms are going to
+     * be looked at.
+     * for example, the hemisphere iterator will only look at atom indexes
+     * that are >= (or <= ?) the specified atom.
+     * if we are going to allow arbitrary sets bsA and bsB, then this will
+     * not work.
+     * so, for now I will do it the ugly way.
+     * maybe enhance/improve in the future.
+     */
+    int lastModelIndex = -1;
+    for (int i = atomCount; --i >= 0;) {
+      boolean isAtomInSetA = (bsA == null || bsA.get(i));
+      boolean isAtomInSetB = (bsB == null || bsB.get(i));
+      if (!isAtomInSetA && !isAtomInSetB)
+        //|| bsExclude != null && bsExclude.get(i))
+        continue;
+      Atom atom = atoms[i];
+      if (atom.isDeleted())
+        continue;
+      int modelIndex = atom.modelIndex;
+      //no connections allowed in a data frame
+      if (modelIndex != lastModelIndex) {
+        lastModelIndex = modelIndex;
+        if (isJmolDataFrame(modelIndex)) {
+          for (; --i >= 0;)
+            if (atoms[i].modelIndex != modelIndex)
+              break;
+          i++;
+          continue;
+        }
+      }
+      // Covalent bonds
+      float myBondingRadius = atom.getBondingRadiusFloat();
+      if (myBondingRadius == 0)
+        continue;
+      float searchRadius = myBondingRadius + maxBondingRadius + bondTolerance;
+      initializeBspt(modelIndex);
+      CubeIterator iter = bspf.getCubeIterator(modelIndex);
+      iter.initialize(atom, searchRadius, true);
+      while (iter.hasMoreElements()) {
+        Atom atomNear = (Atom) iter.nextElement();
+        if (atomNear == atom || atomNear.isDeleted())
+          continue;
+        int atomIndexNear = atomNear.index;
+        boolean isNearInSetA = (bsA == null || bsA.get(atomIndexNear));
+        boolean isNearInSetB = (bsB == null || bsB.get(atomIndexNear));
+        if (!isNearInSetA && !isNearInSetB 
+            || bsExclude != null && bsExclude.get(atomIndexNear)
+            && bsExclude.get(i) //this line forces BOTH to be excluded in order to ignore bonding
+             )
+          continue;
+        if (!(isAtomInSetA && isNearInSetB || isAtomInSetB && isNearInSetA))
+          continue;
+        short order = getBondOrder(myBondingRadius, atomNear
+            .getBondingRadiusFloat(), iter.foundDistance2(), minBondDistance2,
+            bondTolerance);
+        if (order > 0) {
+          if (checkValencesAndBond(atom, atomNear, order, mad, bsBonds))
+            nNew++;
+        }
+      }
+      iter.release();
+    }
+    if (showRebondTimes && Logger.debugging)
+      Logger.checkTimer("Time to autoBond");
+    return nNew;
+  }
+
   private int[] autoBond(BitSet bsA, BitSet bsB, BitSet bsBonds,
                          boolean isBonds, boolean matchHbond) {
     if (isBonds) {
@@ -2575,7 +2667,7 @@ abstract public class ModelCollection extends BondCollection {
     }
     return new int[] {
         matchHbond ? autoHbond(bsA, bsB) 
-            : autoBond(bsA, bsB, null, bsBonds, viewer.getMadBond()), 0 };
+            : autoBond(bsA, bsB, null, bsBonds, viewer.getMadBond(), false), 0 };
   }
   
   private static float hbondMin = 2.5f;

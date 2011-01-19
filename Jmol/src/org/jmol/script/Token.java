@@ -942,6 +942,7 @@ public class Token {
   public final static int isosurfacepropertysmoothing    = booleanparam | 94;
   public final static int justifymeasurements            = booleanparam | 96;
   public final static int languagetranslation            = booleanparam | 97;
+  public final static int legacyautobonding              = booleanparam | 98;// new
   public final static int logcommands                    = booleanparam | 99;
   public final static int loggestures                    = booleanparam | 100;
   public final static int measureallmodels               = booleanparam | 101;
@@ -2214,6 +2215,7 @@ public class Token {
       "isosurfacePropertySmoothingPower",         new Token(isosurfacepropertysmoothingpower),
       "justifyMeasurements",                      new Token(justifymeasurements),
       "languageTranslation",                      new Token(languagetranslation),
+      "legacyAutoBonding",                        new Token(legacyautobonding),
       "logCommands",                              new Token(logcommands),
       "logGestures",                              new Token(loggestures),
       "measureAllModels",                         new Token(measureallmodels),

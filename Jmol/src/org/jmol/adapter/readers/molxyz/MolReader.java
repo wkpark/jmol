@@ -102,11 +102,32 @@ public class MolReader extends AtomSetCollectionReader {
         continuing = false;
         return false;
       }
+      return true;
     }
     discardLinesUntilStartsWith("$$$$");
     return true;
   }
   
+  private void readUserData(int atom0) throws Exception {
+    if (isV3000)
+      return;
+    while (readLine() != null && line.indexOf("$$$$") != 0) {
+      if (line.toUpperCase().contains("PUBCHEM_MMFF94_PARTIAL_CHARGES")) {
+        try {
+          Atom[] atoms = atomSetCollection.getAtoms();
+          for (int i = parseInt(readLine()); --i >= 0;) {
+            String[] tokens = getTokens(readLine());
+            int atomIndex = parseInt(tokens[0]) + atom0 - 1;
+            float partialCharge = parseFloat(tokens[1]);
+            if (!Float.isNaN(partialCharge))
+              atoms[atomIndex].partialCharge = partialCharge; 
+          }
+        } catch (Exception e) {
+          return;
+        }
+      }
+    }
+  }
   @Override
   public void finalizeReader() throws Exception {
     if (is2D)
@@ -178,6 +199,7 @@ public class MolReader extends AtomSetCollectionReader {
     int atom0 = atomSetCollection.getAtomCount();
     readAtoms(atomCount);
     readBonds(atom0, bondCount);
+    readUserData(atom0);
     applySymmetryAndSetTrajectory();
   }
 

@@ -371,7 +371,7 @@ $SYSTEM OPTIONS
     while (readLine() != null && (line = line.trim()).length() > 0) {
       if (line.indexOf("=") < 0)
         continue;
-      String[] tokens = getTokens(TextFormat.simpleReplace(line, "="," = "));
+      String[] tokens = getTokens(TextFormat.simpleReplace(line, "="," = ") + "?");
       for (int i = 0; i < tokens.length; i++) {
         if (!tokens[i].equals("="))
           continue;

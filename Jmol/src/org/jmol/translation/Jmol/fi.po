@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-01-04 23:43+0100\n"
-"PO-Revision-Date: 2011-01-16 22:59+0000\n"
+"PO-Revision-Date: 2011-01-20 11:59+0000\n"
 "Last-Translator: Johannes Pernaa <Unknown>\n"
 "Language-Team: Finland <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-01-17 14:04+0000\n"
-"X-Generator: Launchpad (build 12200)\n"
+"X-Launchpad-Export-Date: 2011-01-20 14:40+0000\n"
+"X-Generator: Launchpad (build 12214)\n"
 "X-Poedit-Country: Finland\n"
 "X-Poedit-Language: Finnish\n"
 
@@ -126,7 +126,7 @@ msgid ""
 "The -D options are as follows (defaults in parenthesis) and must be called "
 "preceding '-jar Jmol.jar':"
 msgstr ""
-"-D valinnat ovat seuraavat (oletusarvot sulkeiden sisällä) ja ne täytyy "
+"D-valinnat ovat seuraavat (oletusarvot sulkeiden sisällä) ja ne täytyy "
 "kutsua edellisen '-jar Jmol.jar'"
 
 #: org/openscience/jmol/app/JmolApp.java:466
@@ -215,7 +215,7 @@ msgstr "Muuttujat"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:165
 msgid "AtomSetChooser"
-msgstr "Atomiryhmien valitsin"
+msgstr "Atomiryhmävalitsin"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:169
 msgid "No AtomSets"
@@ -247,7 +247,7 @@ msgstr "Valitse"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:254
 msgid "Repeat"
-msgstr "Toista"
+msgstr "Jatkuva toisto"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:266
 msgid "FPS"
@@ -349,7 +349,7 @@ msgstr "Tarkistuspiste-tiedosto: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:229
 msgid "Amount of Memory:"
-msgstr "Muistimäärä:"
+msgstr "Muistia:"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:235
 msgid "Number of Processors:"
@@ -473,7 +473,7 @@ msgstr "&Vie tiedostoon"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:71
 msgid "Export &Image..."
-msgstr "Vie tiedostoon &Kuva..."
+msgstr "Vie tiedostoon &Kuvana..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:72
 msgid "Save current view as an image."
@@ -481,7 +481,7 @@ msgstr "Tallenna nykyinen näkymä kuvana."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:73
 msgid "Export to &Web Page..."
-msgstr "Vie tiedostoon &www-sivu..."
+msgstr "Vie tiedostoon &www-sivuna..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:74
 msgid "Export one or more views to a web page."
@@ -526,7 +526,7 @@ msgstr "Viimeksi käytetyt &tiedostot..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:84
 msgid "&Edit"
-msgstr "&Editoi"
+msgstr "&Editointi"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:86
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:92
@@ -595,11 +595,11 @@ msgstr "Rikki"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:102
 msgid "Amino"
-msgstr "Amino-ryhmä"
+msgstr "Aminohappo"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:103
 msgid "Nucleic"
-msgstr "Nukleiini"
+msgstr "Nukleiinihappo"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:104
 msgid "Water"
@@ -607,7 +607,7 @@ msgstr "Vesi"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:105
 msgid "Hetero"
-msgstr "Hetero"
+msgstr "Heteroatomi"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:106
 msgid "&Display"
@@ -690,7 +690,7 @@ msgstr "Koko {0}"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:137
 msgid "&Zoom"
-msgstr "&Zoom"
+msgstr "&Muuta kokoa"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:138
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:139
@@ -732,7 +732,7 @@ msgstr "Muuta kok&oa"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:150
 msgid "&View"
-msgstr "&Näkymä"
+msgstr "&Näkymät"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:151
 msgid "&Front"
@@ -792,7 +792,7 @@ msgstr "&Animointi..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:166
 msgid "&Vibrate..."
-msgstr "&Värähtely..."
+msgstr "&Värähtelyt..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:167
 msgid "&Graph..."
@@ -921,11 +921,11 @@ msgstr "RasMol/Chime sopivat akselit orientaatio/rotaatiot"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:201
 msgid "File Preview (requires restarting Jmol)"
-msgstr "Tiedoston esikatselu (Edellyttää Jmollin uudelleen käynnistämistä)"
+msgstr "Tiedoston esikatselu (Edellyttää Jmolin uudelleen käynnistämistä)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:203
 msgid "Clear history (requires restarting Jmol)"
-msgstr "Tyhjennä historia (Edellyttää Jmollin uudelleen käynnistämistä)"
+msgstr "Tyhjennä historia (Edellyttää Jmolin uudelleen käynnistämistä)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:204
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:205
@@ -1100,7 +1100,7 @@ msgstr "Aja POV-Ray suoraan"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:198
 msgid "Launch POV-Ray from within Jmol"
-msgstr "Käynnistä POV-Ray Jmollin sisältä"
+msgstr "Käynnistä POV-Ray Jmolin sisältä"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:243
 msgid "Display While Rendering"
@@ -1563,7 +1563,7 @@ msgstr "pyörintä päälle/pyörintä pois"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:82
 msgid "Spin on"
-msgstr "Pyörintä"
+msgstr "Pyörintä päälle"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:88
 msgid "Background Color"
@@ -1647,7 +1647,7 @@ msgstr "Toista kerran"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:206
 msgid "Open Console Button"
-msgstr "Avaa konsoli -painike"
+msgstr "Avaa konsolipainike"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:222
 msgid "launch Jmol console"

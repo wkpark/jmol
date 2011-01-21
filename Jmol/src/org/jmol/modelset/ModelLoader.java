@@ -533,7 +533,7 @@ public final class ModelLoader extends ModelSet {
    * int fileIndex
    * 
    *   The 0-based reference to the file containing this model. Used
-   *   when doing   "select model=3.2" in a multifile context
+   *   when doing   "_modelnumber3.2" in a multifile context
    *   
    * int modelFileNumber
    * 

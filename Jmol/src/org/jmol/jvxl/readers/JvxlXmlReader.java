@@ -36,6 +36,7 @@ import javax.vecmath.Vector3f;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.JvxlData;
+import org.jmol.jvxl.data.MeshData;
 import org.jmol.shapesurface.IsosurfaceMesh;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.ColorEncoder;
@@ -53,6 +54,7 @@ public class JvxlXmlReader extends VolumeFileReader {
   protected int colorDataCount;
   private int excludedTriangleCount;
   private int excludedVertexCount;
+  private int invalidatedVertexCount;  
   protected boolean haveContourData;
 
   private XmlReader xr;
@@ -66,7 +68,7 @@ public class JvxlXmlReader extends VolumeFileReader {
   }
 
   protected boolean thisInside;
-  
+
   /////////////reading the format///////////
 
   @Override
@@ -105,6 +107,10 @@ public class JvxlXmlReader extends VolumeFileReader {
         jvxlData.jvxlExcluded[3]  
             = JvxlCoder.jvxlDecodeBitSet(
                 xr.getXmlData("jvxlExcludedTriangleData", null, false, false));
+      if (invalidatedVertexCount > 0)
+        jvxlData.jvxlExcluded[1]  
+                            = JvxlCoder.jvxlDecodeBitSet(
+                                xr.getXmlData("jvxlInvalidatedVertexData", null, false, false));
       if (haveContourData)
         jvxlDecodeContourData(jvxlData, xr.getXmlData("jvxlContourData", null, false, false));
     } catch (Exception e) {
@@ -227,6 +233,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     }
     excludedVertexCount = parseInt(XmlReader.getXmlAttrib(data, "nExcludedVertexes"));
     excludedTriangleCount = parseInt(XmlReader.getXmlAttrib(data, "nExcludedTriangles"));
+    invalidatedVertexCount = parseInt(XmlReader.getXmlAttrib(data, "nInvalidatedVertexes"));
     colorDataCount = Math.max(0, parseInt(XmlReader.getXmlAttrib(data, "nBytesUncompressedColorData")));
     jvxlDataIs2dContour = (params.thePlane != null && jvxlDataIsColorMapped);
     if (jvxlDataIs2dContour)
@@ -735,4 +742,20 @@ public class JvxlXmlReader extends VolumeFileReader {
       Logger.info("JVXL read: contour colors: " + colors);
     }
   }
+  
+  @Override
+  protected void postProcessVertices() {
+    BitSet bsInvalid = params.bsExcluded[1]; 
+    if (bsInvalid != null) {
+      if (meshDataServer != null)
+        meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
+      meshData.invalidateVertices(bsInvalid); 
+      if (meshDataServer != null) {
+        meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_VERTICES, null);
+        meshData = new MeshData();
+      }
+      updateTriangles();
+    }
+  }
+
 }

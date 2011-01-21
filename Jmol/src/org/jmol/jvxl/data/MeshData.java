@@ -347,5 +347,16 @@ public class MeshData extends MeshSurface {
       return Float.valueOf((float) v[0]);
     return v;
   }
+
+  public void updateInvalidatedVertices(BitSet bs) {
+    for (int i = 0, ipt = 0; i < vertexCount; i += vertexIncrement, ipt++)
+      if (Float.isNaN(vertexValues[i]))
+        bs.set(i);
+  }
+
+  public void invalidateVertices(BitSet bsInvalid) {
+    for (int i = bsInvalid.nextSetBit(0); i >= 0; i = bsInvalid.nextSetBit(i + 1))
+      vertexValues[i] = Float.NaN;
+  }
 }
 

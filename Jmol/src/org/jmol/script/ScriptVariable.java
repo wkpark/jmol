@@ -90,12 +90,12 @@ public class ScriptVariable extends Token {
     tok = bitset;
   }
 
-  public ScriptVariable(Token theToken) {
-    tok = theToken.tok;
-    intValue = theToken.intValue;
-    value = theToken.value;
+  public ScriptVariable(Token x) {
+    tok = x.tok;
+    intValue = x.intValue;
+    value = x.value;
     if (tok == varray)
-      objects = ((ScriptVariable) theToken).objects;
+      objects = ((ScriptVariable) x).objects;
   }
   
   static public String typeOf(ScriptVariable x) {
@@ -244,8 +244,8 @@ public class ScriptVariable extends Token {
                 key, o)));
           }
           x = x2;
-          break;
         }
+        break; // just need to check the first one
       }
       return new ScriptVariable(hash, x);
     }
@@ -532,8 +532,9 @@ public class ScriptVariable extends Token {
     }
   }
 
-  @SuppressWarnings("unchecked")
   public static String sValue(Token x) {
+    StringBuffer sb;
+    Map<Object,Boolean> map;
     if (x == null)
       return "";
     int i;
@@ -555,29 +556,17 @@ public class ScriptVariable extends Token {
     case bitset:
       return Escape.escape(bsSelect(x), !(x.value instanceof BondSet));
     case varray:
+    case hash:
       ScriptVariable vx = (ScriptVariable)x;
       i = vx.intValue;
       if (i <= 0)
         i = vx.objects.length - i;
       if (i != Integer.MAX_VALUE)
         return (i < 1 || i > vx.objects.length ? "" : sValue(vx.objects[i - 1]));
-      StringBuffer sb = new StringBuffer();
-      for (i = 0; i < vx.objects.length; i++) {
-        sb.append(sValue(vx.objects[i])).append("\n");
-      }
+      sb = new StringBuffer();
+      map = new Hashtable<Object,Boolean>();
+      sValueArray(sb, vx, map, 0, false);
       return sb.toString();
-    case hash:
-      StringBuffer sbh = new StringBuffer();
-      Map<String, ScriptVariable> ht = (Map<String, ScriptVariable>) x.value;
-      Object[] keys = ht.keySet().toArray();
-      Arrays.sort(keys);
-      for (i = 0; i < keys.length; i++) {
-        sbh.append(keys[i]).append("\t:");
-        String value = sValue(getVariable(ht.get(keys[i])));
-        sbh.append(value.indexOf("\n") >= 0 ? "\n" : "\t");
-        sbh.append(value).append("\n");
-      }
-      return sbh.toString();
     case string:
       String s = (String) x.value;
       i = x.intValue;
@@ -591,6 +580,72 @@ public class ScriptVariable extends Token {
     case decimal:
     default:
       return "" + x.value;
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  private static void sValueArray(StringBuffer sb, ScriptVariable vx,
+                                  Map<Object, Boolean> map, int level,
+                                  boolean isEscaped) {
+    switch (vx.tok) {
+    case hash:
+      if (map.containsKey(vx)) {
+        sb.append(isEscaped ? "{}" : vx.name == null ? "<circular reference>"
+            : "<" + vx.name + ">");
+        break;
+      }
+      map.put(vx, Boolean.TRUE);
+      Map<String, ScriptVariable> ht = (Map<String, ScriptVariable>) vx.value;
+      Object[] keys = ht.keySet().toArray();
+      Arrays.sort(keys);
+
+      if (isEscaped) {
+        sb.append("{ ");
+        String sep = "";
+        for (int i = 0; i < keys.length; i++) {
+          String key = (String) keys[i];
+          sb.append(sep).append(Escape.escape(key)).append(':');
+          sValueArray(sb, ht.get(key), map, level + 1, true);
+          sep = ", ";
+        }
+        sb.append(" }");
+        break;
+      }
+      for (int i = 0; i < keys.length; i++) {
+        sb.append(keys[i]).append("\t:");
+        ScriptVariable v = getVariable(ht.get(keys[i]));
+        StringBuffer sb2 = new StringBuffer();
+        sValueArray(sb2, v, map, level + 1, isEscaped);
+        String value = sb2.toString();
+        sb.append(value.indexOf("\n") >= 0 ? "\n" : "\t");
+        sb.append(value).append("\n");
+      }
+      break;
+    case varray:
+      if (map.containsKey(vx)) {
+        sb.append(isEscaped ? "[]" : vx.name == null ? "<circular reference>"
+            : "<" + vx.name + ">");
+        break;
+      }
+      map.put(vx, Boolean.TRUE);
+      if (isEscaped)
+        sb.append("[");
+      for (int i = 0; i < vx.objects.length; i++) {
+        if (isEscaped && i > 0)
+          sb.append(",");
+        ScriptVariable sv = vx.objects[i];
+        sValueArray(sb, sv, map, level + 1, isEscaped);
+        if (!isEscaped)
+          sb.append("\n");
+      }
+      if (isEscaped)
+        sb.append("]");
+      break;
+    default:
+      if (!isEscaped)
+        for (int j = 0; j < level - 1; j++)
+          sb.append("\t");
+      sb.append(isEscaped ? vx.escape() : sValue(vx));
     }
   }
 
@@ -647,9 +702,9 @@ public class ScriptVariable extends Token {
     return getVariable(list);
   }
 
-  public static BitSet bsSelect(Token token) {
-    token = selectItem(token, Integer.MIN_VALUE);
-    return (BitSet) token.value;
+  public static BitSet bsSelect(Token x) {
+    x = selectItem(x, Integer.MIN_VALUE);
+    return (BitSet) x.value;
   }
 
   public static BitSet bsSelect(ScriptVariable var) {
@@ -658,11 +713,11 @@ public class ScriptVariable extends Token {
     return (BitSet) var.value;
   }
 
-  public static BitSet bsSelect(Token token, int n) {
-    token = selectItem(token);
-    token = selectItem(token, 1);
-    token = selectItem(token, n);
-    return (BitSet) token.value;
+  public static BitSet bsSelect(Token x, int n) {
+    x = selectItem(x);
+    x = selectItem(x, 1);
+    x = selectItem(x, n);
+    return (BitSet) x.value;
   }
 
   public static ScriptVariable selectItem(ScriptVariable var) {
@@ -911,14 +966,10 @@ public class ScriptVariable extends Token {
     case bitset:
       return Escape.escape((BitSet)value, !(value instanceof BondSet));
     case varray:
+    case hash:
       StringBuffer sb = new StringBuffer();
-      sb.append("[");
-      for (int i = 0; i < objects.length; i++) {
-        if (i > 0)
-          sb.append(",");
-        sb.append(objects[i].escape());
-      }
-      sb.append("]");
+      Map<Object,Boolean>map = new Hashtable<Object,Boolean>();
+      sValueArray(sb, this, map, 0, true);
       return sb.toString();      
     case point3f:
       return Escape.escape((Point3f)value);
@@ -1154,23 +1205,16 @@ public class ScriptVariable extends Token {
   }
 
   public static float[] flistValue(Token x, int nMin) {
+    if (x.tok != varray)
+      return new float[] { fValue(x) };
     float[] list;
-    if (x.value instanceof float[]) {
-      list = (float[]) x.value;
-      int n = list.length;
-      if (n >= nMin)
-        return list;
-      list = new float[nMin];
-      System.arraycopy(x.value, 0, list, 0, n);
-    }
-    if (x.tok == varray) {
-      ScriptVariable sv = (ScriptVariable) x;
-      list = new float[Math.max(nMin, sv.objects.length)];
-      for (int i = Math.min(sv.objects.length, nMin); --i >= 0;)
-        list[i] = fValue(sv.objects[i]);
-      return list;
-    }
-    return new float[] { fValue(x) };
+    ScriptVariable sv = (ScriptVariable) x;
+    list = new float[Math.max(nMin, sv.objects.length)];
+    if (nMin == 0)
+      nMin = list.length;
+    for (int i = Math.min(sv.objects.length, nMin); --i >= 0;)
+      list[i] = fValue(sv.objects[i]);
+    return list;
   }
 
   public void toArray() {
@@ -1199,6 +1243,11 @@ public class ScriptVariable extends Token {
         m3.getRow(i, a);
       objects[i] = getVariable(a);
     }   
+  }
+
+  @SuppressWarnings("unchecked")
+  public static ScriptVariable mapValue(Token x, String key) {
+    return (x.tok == hash ? ((Map<String, ScriptVariable>) x.value).get(key) : null);
   }
 
 }

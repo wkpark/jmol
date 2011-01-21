@@ -727,8 +727,9 @@ public class Token {
   // xxx(a,b,c)
   
   final static int hkl          = 1 | 3 << 9 | mathfunc;
-  final static int prompt       = 2 | 3 << 9 | mathfunc | mathExpressionCommand;
-  final static int select       = 3 | 3 << 9 | mathfunc | atomExpressionCommand;
+  final static int intersection = 2 | 3 << 9 | mathfunc;
+  final static int prompt       = 3 | 3 << 9 | mathfunc | mathExpressionCommand;
+  final static int select       = 4 | 3 << 9 | mathfunc | atomExpressionCommand;
 
   // ___.xxx(a,b,c)
   
@@ -1101,7 +1102,6 @@ public class Token {
   final static int insideout      = misc  | 160;// new
   final static int interior       = misc  | 162;// new
   final static int internal       = misc  | 164;// new
-  final static int intersection   = misc  | 166;// new
   public final static int jmol    = misc  | 168;
   public final static int last    = misc  | 170;
   final static int lattice        = misc  | 171;// new

@@ -1849,8 +1849,8 @@ public class ScriptEvaluator {
 
   private String getParameterEscaped(String var) {
     ScriptVariable v = getContextVariableAsVariable(var);
-    return (v == null ? "" + viewer.getParameterEscaped(var) : Escape
-        .escape(v.value));
+    return (v == null ? "" + viewer.getParameterEscaped(var) : 
+      v.escape());
   }
 
   private String getStringParameter(String var, boolean orReturnName) {
@@ -2247,30 +2247,31 @@ public class ScriptEvaluator {
             }
           }
         } else if (v instanceof BitSet) {
-          fixed[j] = new Token(Token.bitset, v);
+          fixed[j] = new ScriptVariable(Token.bitset, v);
         } else if (v instanceof Point3f) {
-          fixed[j] = new Token(Token.point3f, v);
+          fixed[j] = new ScriptVariable(Token.point3f, v);
         } else if (v instanceof Point4f) {
-          fixed[j] = new Token(Token.point4f, v);
+          fixed[j] = new ScriptVariable(Token.point4f, v);
         } else if (v instanceof Matrix3f) {
-          fixed[j] = new Token(Token.matrix3f, v);
+          fixed[j] = new ScriptVariable(Token.matrix3f, v);
         } else if (v instanceof Matrix4f) {
-          fixed[j] = new Token(Token.matrix4f, v);
+          fixed[j] = new ScriptVariable(Token.matrix4f, v);
         } else if (v instanceof Map<?, ?>) {
-          fixed[j] = new Token(Token.hash, v);
+          fixed[j] = new ScriptVariable(Token.hash, v);
         } else if (v instanceof ScriptVariable[]) {
           ScriptVariable[] sv = (ScriptVariable[]) v;
-          if (sv.length > 0 && ScriptVariable.sValue(sv[0]).startsWith("{")
-              && !(Escape.unescapePoint(ScriptVariable.sValue(sv[0])) 
-                  instanceof String)) {
-            fixed[j] = ScriptVariable.getVariable(v);
-          } else {
-            BitSet bs = Escape.unEscapeBitSetArray(sv, true);
-            if (bs == null)
-              fixed[j] = new Token(Token.string, Escape.escape(sv));
-            else
-              fixed[j] = new Token(Token.bitset, bs);
+          BitSet bs = null;
+          for (int k = 0; k < sv.length; k++) {
+            if (sv[k].tok != Token.bitset) {
+              bs = null;
+              break;
+            } else if (bs == null) {
+              bs = new BitSet();
+            }
+            bs.or((BitSet) sv[k].value);
           }
+          fixed[j] = (bs == null ? ScriptVariable.getVariable(v) 
+              : new Token(Token.bitset, bs));
         } else {
           Point3f center = getObjectCenter(var, Integer.MIN_VALUE,
               Integer.MIN_VALUE);
@@ -2984,9 +2985,11 @@ public class ScriptEvaluator {
       case Token.point3f:
       case Token.point4f:
       case Token.bitset:
+        sb.append(ScriptVariable.sValue(token)); // list
+        continue;
       case Token.varray:
       case Token.hash:
-        sb.append(ScriptVariable.sValue(token)); // list
+        sb.append(((ScriptVariable) token).escape()); // list
         continue;
       case Token.seqcode:
         sb.append('^');
@@ -4029,8 +4032,7 @@ public class ScriptEvaluator {
     getToken(i);
     if (theToken == null)
       error(ERROR_endOfStatementUnexpected);
-    return (theTok == Token.integer ? "" + theToken.intValue : ""
-        + theToken.value);
+    return ScriptVariable.sValue(theToken);
   }
 
   private int intParameter(int index) throws ScriptException {
@@ -4169,37 +4171,67 @@ public class ScriptEvaluator {
     return fparams;
   }
 
+  private boolean isArrayParameter(int i) {
+    switch (tokAt(i)) {
+    case Token.varray:
+    case Token.matrix3f:
+    case Token.matrix4f:
+    case Token.spacebeforesquare:
+    case Token.leftsquare:
+      return true;
+    }
+    return false;
+  }
+  
   private Point3f[] getPointArray(int i, int nPoints) throws ScriptException {
-    Point3f[] points = new Point3f[nPoints];
+    Point3f[] points = (nPoints < 0 ? null : new Point3f[nPoints]);
+    ArrayList<Point3f> vp = (nPoints < 0 ? new ArrayList<Point3f>() : null);
     int tok = (i < 0 ? Token.varray : getToken(i++).tok);
-    if (tok == Token.varray) {
+    switch (tok) {
+    case Token.varray:
       ScriptVariable v = (ScriptVariable) theToken;
-      if (v.objects.length != nPoints)
+      if (nPoints >= 0 && v.objects.length != nPoints)
         error(ERROR_invalidArgument);
+      nPoints = v.objects.length;
+      if (points == null)
+        points = new Point3f[nPoints];
       for (int j = 0; j < nPoints; j++)
         if ((points[j] = ScriptVariable.ptValue(v.objects[j])) == null)
           error(ERROR_invalidArgument);
       return points;
-    }
-    if (tok == Token.spacebeforesquare)
+    case Token.spacebeforesquare:
       tok = tokAt(i++);
+      break;
+    }
     if (tok != Token.leftsquare)
       error(ERROR_invalidArgument);
     int n = 0;
-    while (tok != Token.rightsquare) {
+    while (tok != Token.rightsquare && tok != Token.nada) {
       tok = getToken(i).tok;
       switch (tok) {
+      case Token.nada:
       case Token.rightsquare:
-        continue;
+        break;
       case Token.comma:
         i++;
         break;
       default:
-        points[n++] = getPoint3f(i, true);
+        Point3f pt = getPoint3f(i, true);
+        if (points == null)
+          vp.add(pt);
+        else
+          points[n++] = pt;
         i = iToken + 1;
-        if (n == nPoints && tokAt(i) != Token.rightsquare)
-          error(ERROR_invalidArgument);
       }
+      if (n == nPoints)
+        break;
+    }
+    if (tok != Token.rightsquare)
+      error(ERROR_invalidArgument);
+    if (points == null) {
+      points = new Point3f[vp.size()];
+      for (int j = vp.size(); --j >= 0;)
+        points[j] = vp.get(j);
     }
     return points;
   }
@@ -4297,6 +4329,8 @@ public class ScriptEvaluator {
     case Token.leftsquare:
       ++i;
       break;
+    case Token.varray:
+      return ScriptVariable.listValue(getToken(i));
     default:
       error(ERROR_invalidArgument);
     }
@@ -13647,7 +13681,7 @@ public class ScriptEvaluator {
     }
     switch (tok) {
     case Token.nada:
-      msg = Escape.escape(((ScriptVariable) theToken).value);
+      msg = ((ScriptVariable) theToken).escape();
       break;
     case Token.dssp:
       checkLength(2);
@@ -13879,7 +13913,7 @@ public class ScriptEvaluator {
       String type = ((len = statementLength) == 3 ? parameterAsString(2) : null);
       if (!isSyntaxCheck) {
         Object[] data = (type == null ? this.data : viewer.getData(type));
-        msg = (data == null ? "no data" : "data \""
+        msg = (data == null ? "no data" : "data   "
             + data[0]
             + "\"\n"
             + (data[1] instanceof float[] ? Escape.escape((float[]) data[1],
@@ -14185,26 +14219,51 @@ public class ScriptEvaluator {
         }
         break;
       case Token.polygon:
-        int nVertices = intParameter(++i);
-        Point3f[] points = new Point3f[nVertices];
-        for (int j = 0; j < nVertices; j++, i = iToken)
-          points[j] = centerParameter(++iToken);
+        propertyName = "polygon";
+        havePoints = true;
         List<Object> v = new ArrayList<Object>();
-        v.add(points);
-        int nTriangles = intParameter(++i);
+        int nVertices = 0;
+        int nTriangles = 0;
+        Point3f[] points = null;
+        ScriptVariable vpolygons = null;
+        if (isArrayParameter(++i)) {
+          points = getPointArray(i, -1);
+          nVertices = points.length;
+        } else {
+          nVertices = Math.max(0, intParameter(i));
+          points = new Point3f[nVertices];
+          for (int j = 0; j < nVertices; j++)
+            points[j] = centerParameter(++iToken);
+        }
+        switch (tokAt(++iToken)) {
+        case Token.matrix3f:
+        case Token.matrix4f:
+        case Token.varray:
+          vpolygons = (ScriptVariable) getToken(iToken);
+          if (theTok != Token.varray)
+            vpolygons.toArray();
+          nTriangles = vpolygons.objects.length;
+          break;
+        default:
+          nTriangles = Math.max(0, intParameter(iToken));
+        }
         int[][] polygons = new int[nTriangles][];
-        for (int j = 0; j < nTriangles; j++, i = iToken) {
-          float[] f = floatParameterSet(++i, 3, 4);
+        for (int j = 0; j < nTriangles; j++) {
+          float[] f = (vpolygons == null ? floatParameterSet(++iToken, 3, 4)
+              : ScriptVariable.flistValue(vpolygons.objects[j], 0));
+          if (f.length < 3 || f.length > 4)
+            error(ERROR_invalidArgument);
           polygons[j] = new int[] { (int) f[0], (int) f[1], (int) f[2],
               (f.length == 3 ? 7 : (int) f[3]) };
         }
-        if (nVertices == 0)
-          v = null;
-        else
+        if (nVertices > 0) {
+          v.add(points);
           v.add(polygons);
-        propertyName = "polygon";
+        } else {
+          v = null;
+        }
         propertyValue = v;
-        havePoints = true;
+        i = iToken;
         break;
       case Token.symop:
         String xyz = null;

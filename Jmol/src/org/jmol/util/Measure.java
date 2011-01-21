@@ -40,8 +40,6 @@ import org.jmol.script.Token;
 final public class Measure {
 
   public final static float radiansPerDegree = (float) (2 * Math.PI / 360);
-
-  
   
   public static float computeAngle(Tuple3f pointA, Tuple3f pointB, Tuple3f pointC, Vector3f vectorBA, Vector3f vectorBC, boolean asDegrees) {
     vectorBA.sub(pointA, pointB);
@@ -308,7 +306,9 @@ final public class Measure {
       vNormNorm.set(1, 0, 0);
   }
   
-  public static void projectOntoAxis (Point3f point, Point3f axisA, Vector3f axisUnitVector, Vector3f vectorProjection) {
+  public static void projectOntoAxis(Point3f point, Point3f axisA,
+                                     Vector3f axisUnitVector,
+                                     Vector3f vectorProjection) {
     vectorProjection.sub(point, axisA);
     float projectedLength = vectorProjection.dot(axisUnitVector);
     point.set(axisUnitVector);
@@ -609,4 +609,80 @@ final public class Measure {
   }
 
 
+  /**
+   * 
+   * @param plane1
+   * @param plane2
+   * @return       [ point, vector ] or []
+   */
+  public static List<Object> getIntersection(Point4f plane1, Point4f plane2) {
+    float a1 = plane1.x;
+    float b1 = plane1.y;
+    float c1 = plane1.z;
+    float d1 = plane1.w;
+    float a2 = plane2.x;
+    float b2 = plane2.y;
+    float c2 = plane2.z;
+    float d2 = plane2.w;
+    Vector3f norm1 = new Vector3f(a1, b1, c1);
+    Vector3f norm2 = new Vector3f(a2, b2, c2);
+    Vector3f nxn = new Vector3f();
+    nxn.cross(norm1, norm2);
+    float ax = Math.abs(nxn.x);
+    float ay = Math.abs(nxn.y);
+    float az = Math.abs(nxn.z);
+    float x, y, z, diff;
+    int type = (ax > ay ? (ax > az ? 1 : 3) : ay > az ? 2 : 3);
+    switch(type) {
+    case 1:
+      x = 0;
+      diff = (b1 * c2 - b2 * c1);
+      if (Math.abs(diff) < 0.01) return null;
+      y = (c1 * d2 - c2 * d1) / diff;
+      z = (b2 * d1 - d2 * b1) / diff;
+      break;
+    case 2:
+      diff = (a1 * c2 - a2 * c1);
+      if (Math.abs(diff) < 0.01) return null;
+      x = (c1 * d2 - c2 * d1) / diff;
+      y = 0;
+      z = (a2 * d1 - d2 * a1) / diff;
+      break;
+    case 3:
+    default:
+      diff = (a1 * b2 - a2 * b1);
+      if (Math.abs(diff) < 0.01) return null;
+      x = (b1 * d2 - b2 * d1) / diff;
+      y = (a2 * d1 - d2 * a1) / diff;
+      z = 0;
+    }
+    List<Object>list = new ArrayList<Object>();
+    list.add(new Point3f(x, y, z));
+    list.add(nxn);
+    return list;
+  }
+
+  /**
+   * 
+   * @param pt1  point on line
+   * @param v    unit vector of line
+   * @param plane 
+   * @return      point of intersection of line with plane
+   */
+  public static Point3f getIntersection(Point3f pt1, Vector3f v,
+                                               Point4f plane) {
+    Vector3f norm = new Vector3f();
+    Point3f pt = new Point3f();
+    getPlaneProjection(pt1, plane, pt, norm);
+    norm.set(plane.x, plane.y, plane.z);
+    norm.normalize();
+    if (v == null)
+      v = new Vector3f(norm);
+    float l_dot_n = v.dot(norm);
+    if (Math.abs(l_dot_n) < 0.01) return null;
+    Vector3f perp = new Vector3f(pt);
+    perp.sub(pt1);
+    pt.scaleAdd(perp.dot(norm) / l_dot_n, v, pt1);
+    return pt;
+  }
 }

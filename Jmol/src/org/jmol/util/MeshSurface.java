@@ -441,5 +441,5 @@ public class MeshSurface {
     double factor = (ra < rb ? 1 : -1);
     return (float) (((q) + factor * Math.sqrt(q * q + p)) / 2);
   }
-  
+
 }

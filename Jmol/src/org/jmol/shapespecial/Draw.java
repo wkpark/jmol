@@ -542,8 +542,8 @@ public void initShape() {
           return false;
         thisMesh.isPolygonSet = true;
         thisMesh.vertices = (Point3f[]) polygon.get(0);
+        thisMesh.polygonIndexes = (int[][]) polygon.get(1);          
         thisMesh.drawVertexCount = thisMesh.vertexCount = thisMesh.vertices.length;
-        thisMesh.polygonIndexes = (int[][]) polygon.get(1);
         thisMesh.polygonCount = thisMesh.polygonIndexes.length;
         for (int i = 0; i < thisMesh.polygonCount; i++) {
           for (int j = 0; j < 3; j++)

@@ -143,6 +143,7 @@ public class JvxlCoder {
           jvxlData.isJvxlPrecisionColor, jvxlData.valueMappedToRed,
           jvxlData.valueMappedToBlue);
     }
+    appendEncodedBitSetTag(sb, "jvxlInvalidatedVertexData", jvxlData.jvxlExcluded[1], -1);
     if (jvxlData.excludedVertexCount > 0) {
       appendEncodedBitSetTag(sb, "jvxlExcludedVertexData", jvxlData.jvxlExcluded[0], jvxlData.excludedVertexCount);
       appendEncodedBitSetTag(sb, "jvxlExcludedPlaneData", jvxlData.jvxlExcluded[2], -1);
@@ -285,11 +286,14 @@ public class JvxlCoder {
       addAttrib(attribs, "\n  plane", Escape.escape(jvxlData.jvxlPlane));
     }
     jvxlData.excludedVertexCount = BitSetUtil.cardinalityOf(jvxlData.jvxlExcluded[0]);
-    jvxlData.excludedTriangleCount = BitSetUtil .cardinalityOf(jvxlData.jvxlExcluded[3]);
+    jvxlData.excludedTriangleCount = BitSetUtil.cardinalityOf(jvxlData.jvxlExcluded[3]);
     if (jvxlData.excludedVertexCount > 0)
       addAttrib(attribs, "\n  nExcludedVertexes", "" + jvxlData.excludedVertexCount);
     if (jvxlData.excludedTriangleCount > 0)
       addAttrib(attribs, "\n  nExcludedTriangles", "" + jvxlData.excludedTriangleCount);
+    int n = BitSetUtil.cardinalityOf(jvxlData.jvxlExcluded[1]);
+    if (n > 0)
+      addAttrib(attribs, "\n  nInvalidatedVertexes", "" + n);
     if (jvxlData.isContoured) {
       if (jvxlData.contourValues == null || jvxlData.contourColixes == null) {
         if (jvxlData.vContours == null)

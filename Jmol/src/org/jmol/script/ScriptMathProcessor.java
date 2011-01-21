@@ -588,7 +588,6 @@ class ScriptMathProcessor {
     return true;
   }
 
-  @SuppressWarnings("unchecked")
   private boolean doBitsetSelect() {
     if (xPt < 0 || xPt == 0 && !isArrayItem) {
       return false;
@@ -596,13 +595,11 @@ class ScriptMathProcessor {
     ScriptVariable var1 = xStack[xPt--];
     ScriptVariable var = xStack[xPt];
     if (var.tok == Token.hash) {
-      ScriptVariable v = ((Map<String, ScriptVariable>) var.value).get(ScriptVariable.sValue(var1));
-      if (v == null)
-        xStack[xPt] = ScriptVariable.getVariable("");
-      else
-        xStack[xPt] = v;
+      ScriptVariable v = ScriptVariable.mapValue(var, ScriptVariable
+          .sValue(var1));
+      xStack[xPt] = (v == null ? ScriptVariable.getVariable("") : v);
       return true;
-    }      
+    }
     int i = ScriptVariable.iValue(var1);
     switch (var.tok) {
     default:
@@ -721,6 +718,7 @@ class ScriptMathProcessor {
       return evaluateHelix(args);
     case Token.hkl:
     case Token.plane:
+    case Token.intersection:
       return evaluatePlane(args, tok);
     case Token.javascript:
     case Token.script:
@@ -1355,8 +1353,9 @@ class ScriptMathProcessor {
 
   private boolean evaluatePlane(ScriptVariable[] args, int tok)
       throws ScriptException {
-    if (args.length != 3 && tok == Token.hkl || tok != Token.hkl
-        && args.length == 0 || args.length > 4)
+    if (tok == Token.hkl && args.length != 3 || tok == Token.intersection
+        && args.length != 2 && args.length != 3 || args.length == 0
+        || args.length > 4)
       return false;
     Point3f pt1, pt2, pt3;
     Point4f plane;
@@ -1368,59 +1367,95 @@ class ScriptMathProcessor {
         return addX(pt);
       return addX("" + pt);
     case 2:
-      break;
+      if (tok == Token.intersection) {
+        // intersection(plane, plane)
+        // intersection(point, plane)
+        if (args[1].tok != Token.point4f)
+          return false;
+        plane = (Point4f) args[1].value;
+        if (args[0].tok == Token.point4f) {
+          List<Object> list = Measure.getIntersection((Point4f) args[0].value,
+              plane);
+          return addX(list == null ? "" : list);
+        }
+        pt2 = ptValue(args[1], false);
+        if (pt2 == null)
+          return addX("");
+        return addX(Measure.getIntersection(pt2, null, plane));
+      }
+      // fall through
     case 3:
-      if (tok == Token.hkl) {
+    case 4:
+      switch (tok) {
+      case Token.hkl:
+        // hkl(i,j,k)
         return addX(eval.getHklPlane(new Point3f(
             ScriptVariable.fValue(args[0]), ScriptVariable.fValue(args[1]),
             ScriptVariable.fValue(args[2]))));
+      case Token.intersection:
+        pt1 = ptValue(args[0], false);
+        pt2 = ptValue(args[1], false);
+        if (pt1 == null || pt2 == null)
+          return addX("");
+        Vector3f vLine = new Vector3f(pt2);
+        vLine.normalize();
+        if (args[2].tok == Token.point4f) {
+          // intersection(ptLine, vLine, plane)
+          pt1 = Measure.getIntersection(pt1, vLine, (Point4f) args[2].value);
+          return addX(pt1 == null ? "" : pt1);
+        }
+        pt3 = ptValue(args[2], false);
+        if (pt3 == null)
+          return addX("");
+        // interesection(ptLine, vLine, pt2); // IE intersection of plane perp to line through pt2
+        Vector3f v = new Vector3f();
+        Measure.projectOntoAxis(pt3, pt1, vLine, v);
+        return addX(pt3);
       }
-    case 4:
       switch (args[0].tok) {
       case Token.bitset:
       case Token.point3f:
         pt1 = ptValue(args[0], false);
         pt2 = ptValue(args[1], false);
-        pt3 = (args[2].tok == Token.bitset || args[2].tok == Token.point3f ? ptValue(args[2], false) : null);
-        Vector3f norm = new Vector3f();
+        if (pt2 == null)
+          return false;
+        pt3 = (args.length > 2
+            && (args[2].tok == Token.bitset || args[2].tok == Token.point3f) ? ptValue(
+            args[2], false)
+            : null);
+        Vector3f norm = new Vector3f(pt2);
         if (pt3 == null) {
-          if (!ScriptVariable.bValue(args[2]))
-            break;
-          // plane(<point1>,<point2>,true)
           plane = new Point4f();
-          norm.set(pt2);
-          Measure.getPlaneThroughPoint(pt1, norm, plane);
+          if (args.length == 2 || !ScriptVariable.bValue(args[2])) {
+            // plane(<point1>,<point2>) or 
+            // plane(<point1>,<point2>,false)
+            pt3 = new Point3f(pt1);
+            pt3.add(pt2);
+            pt3.scale(0.5f);
+            norm.sub(pt1);
+            norm.normalize();
+          } else {
+            // plane(<point1>,<vLine>,true)
+          }
+          Measure.getPlaneThroughPoint(pt3, norm, plane);
           return addX(plane);
         }
         // plane(<point1>,<point2>,<point3>)
+        // plane(<point1>,<point2>,<point3>,<pointref>)
         Vector3f vAB = new Vector3f();
         Vector3f vAC = new Vector3f();
         float nd = Measure.getDirectedNormalThroughPoints(pt1, pt2, pt3,
             (args.length == 4 ? ptValue(args[3], true) : null), norm, vAB, vAC);
         return addX(new Point4f(norm.x, norm.y, norm.z, nd));
-      default:
-        if (args.length != 4)
-          return false;
-        float x = ScriptVariable.fValue(args[0]);
-        float y = ScriptVariable.fValue(args[1]);
-        float z = ScriptVariable.fValue(args[2]);
-        float w = ScriptVariable.fValue(args[3]);
-        return addX(new Point4f(x, y, z, w));
       }
     }
-    // plane(<point1>,<point2>) or 
-    // plane(<point1>,<point2>,false)
-    pt1 = ptValue(args[0], false);
-    pt2 = ptValue(args[1], false);
-    pt3 = new Point3f(pt1);
-    pt3.add(pt2);
-    pt3.scale(0.5f);
-    Vector3f v = new Vector3f(pt2);
-    v.sub(pt1);
-    v.normalize();
-    plane = new Point4f();
-    Measure.getPlaneThroughPoint(pt3, v, plane);
-    return addX(plane);
+    if (args.length != 4)
+      return false;
+    float x = ScriptVariable.fValue(args[0]);
+    float y = ScriptVariable.fValue(args[1]);
+    float z = ScriptVariable.fValue(args[2]);
+    float w = ScriptVariable.fValue(args[3]);
+    return addX(new Point4f(x, y, z, w));
   }
 
   private boolean evaluatePoint(ScriptVariable[] args) {

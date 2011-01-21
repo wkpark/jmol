@@ -886,8 +886,9 @@ public abstract class SurfaceReader implements VertexDataServer {
   void updateSurfaceData() {
     meshData.setVertexSets(true);
     updateTriangles();
-    jvxlData.jvxlEdgeData = edgeData = JvxlData.updateSurfaceData(edgeData, meshData.vertexValues,
-        meshData.vertexCount, meshData.vertexIncrement, cJvxlEdgeNaN);
+    if (params.bsExcluded[1] == null)
+      params.bsExcluded[1] = new BitSet();
+    meshData.updateInvalidatedVertices(params.bsExcluded[1]);
   }
 
   /**

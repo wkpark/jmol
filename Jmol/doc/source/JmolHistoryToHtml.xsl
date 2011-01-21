@@ -13,7 +13,7 @@
   </xsl:choose>
  </title></head>
  <body bgcolor="#ffffff">
-  <center><img src="../images/Jmol_logo.jpg" alt="Jmol logo" /></center>
+  <center><img src="../app/images/Jmol_logo.jpg" alt="Jmol logo" /></center>
 
   <h2><xsl:choose>
    <xsl:when test='$lang="fr"'>Liste des modifications de Jmol:</xsl:when>

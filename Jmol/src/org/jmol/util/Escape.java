@@ -63,8 +63,8 @@ public class Escape {
   public static String escape(Object x) {
     if (x instanceof String)
       return escape("" + x);
-    if (x instanceof ScriptVariable[])
-      return escape((ScriptVariable[]) x);
+    if (x instanceof ArrayList<?>)
+      return escape((ArrayList<ScriptVariable>) x);
     if (x instanceof String[])
       return escape((String[]) x, true);
     if (x instanceof int[] 
@@ -207,15 +207,15 @@ public class Escape {
     return s.toString();
   }
 
-  public static String escape(ScriptVariable[] list) {
+  public static String escape(ArrayList<ScriptVariable> list) {
     if (list == null)
       return escape("");
     StringBuilder s = new StringBuilder();
     s.append("[");
-    for (int i = 0; i < list.length; i++) {
+    for (int i = 0; i < list.size(); i++) {
       if (i > 0)
         s.append(", ");
-      s.append(escapeNice(ScriptVariable.sValue(list[i])));
+      s.append(escapeNice(ScriptVariable.sValue(list.get(i))));
     }
     s.append("]");
     return s.toString();
@@ -860,12 +860,13 @@ public class Escape {
     return array;
   }
 
+  @SuppressWarnings("unchecked")
   public static BitSet unEscapeBitSetArray(Object o, boolean allowNull) {
     BitSet bs = new BitSet();
-    if (o instanceof ScriptVariable[]) {
-      ScriptVariable[] sv = (ScriptVariable[]) o;
-      for (int i = 0; i < sv.length; i++)
-        if (!sv[i].unEscapeBitSetArray(bs) && allowNull)
+    if (o instanceof ArrayList<?>) {
+      ArrayList<ScriptVariable> sv = (ArrayList<ScriptVariable>) o;
+      for (int i = 0; i < sv.size(); i++)
+        if (!sv.get(i).unEscapeBitSetArray(bs) && allowNull)
           return null;
     } else if (o instanceof String[]) {
       String[] list = (String[]) o;

@@ -24,8 +24,10 @@
 
 package org.jmol.script;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -39,7 +41,6 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.modelset.Bond.BondSet;
-import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Parser;
@@ -61,7 +62,7 @@ public class ScriptVariable extends Token {
 
   private int flags = ~FLAG_CANINCREMENT & FLAG_LOCALVAR;
   String name;
-  ScriptVariable[] objects;
+  ArrayList<ScriptVariable> objects;
 
   public ScriptVariable() {
     tok = string;
@@ -143,7 +144,7 @@ public class ScriptVariable extends Token {
     case string:
       return ((String) x.value).length();
     case varray:
-      return x.intValue == Integer.MAX_VALUE ? ((ScriptVariable)x).objects.length
+      return x.intValue == Integer.MAX_VALUE ? ((ScriptVariable)x).objects.size()
           : sizeOf(selectItem(x));
     case hash:
       return ((Map<String, ScriptVariable>) x.value).size();
@@ -255,47 +256,51 @@ public class ScriptVariable extends Token {
     // but ultimately, that should not be necessary
     
     ScriptVariable sv = null;
-    ScriptVariable[] objects = null;
+    ArrayList<ScriptVariable> objects = null;
     if (x instanceof ScriptVariable[]) {
-      objects = (ScriptVariable[]) x; 
+      objects = new ArrayList<ScriptVariable>();
+      ScriptVariable[] v = (ScriptVariable[]) x;
+      objects = new ArrayList<ScriptVariable>(); 
+      for (int i = 0; i < v.length; i++)
+        objects.add(v[i]);
       sv = new ScriptVariable(varray);
     } else if (x instanceof String[]) {
       String[] s = (String[]) x;
-      objects = new ScriptVariable[s.length];
-      for (int i = s.length; --i >= 0;)
-        objects[i] = getVariable(s[i]);
+      objects = new ArrayList<ScriptVariable>();
+      for (int i = 0; i < s.length; i++)
+        objects.add(getVariable(s[i]));
       sv = new ScriptVariable(varray);
     } if (x instanceof int[]) {
       int[] ix = (int[]) x;
-      objects = new ScriptVariable[ix.length];
-      for (int i = ix.length; --i >= 0;)
-        objects[i] = getVariable(Integer.valueOf(ix[i]));
+      objects = new ArrayList<ScriptVariable>();
+      for (int i = 0; i < ix.length; i++)
+        objects.add(getVariable(Integer.valueOf(ix[i])));
       sv = new ScriptVariable(varray);
     } else if (x instanceof int[][]) {
       int[][] ix = (int[][]) x;
-      objects = new ScriptVariable[ix.length];
-      for (int i = ix.length; --i >= 0;)
-        objects[i] = getVariable(ix[i]);
+      objects = new ArrayList<ScriptVariable>();
+      for (int i = 0; i < ix.length; i++)
+        objects.add(getVariable(ix[i]));
       sv = new ScriptVariable(varray);
     } else if (x instanceof float[]) {
       float[] f = (float[]) x;
-      objects = new ScriptVariable[f.length];
-      for (int i = f.length; --i >= 0;)
-        objects[i] = getVariable(Float.valueOf(f[i]));
+      objects = new ArrayList<ScriptVariable>();
+      for (int i = 0; i < f.length; i++)
+        objects.add(getVariable(Float.valueOf(f[i])));
       sv = new ScriptVariable(varray);
     } else if (x instanceof double[]) {
       double[] f = (double[]) x;
-      objects = new ScriptVariable[f.length];
-      for (int i = f.length; --i >= 0;)
-        objects[i] = getVariable(Float.valueOf((float) f[i]));
+      objects = new ArrayList<ScriptVariable>();
+      for (int i = 0; i < f.length; i++)
+        objects.add(getVariable(Float.valueOf((float) f[i])));
       sv = new ScriptVariable(varray);
     } else if (x instanceof List) {
       // will be turned into list
       List<Object> v = (List<Object>) x;
       int len = v.size();
-      objects = new ScriptVariable[len];
+      objects = new ArrayList<ScriptVariable>();
       for (int i = 0; i < len; i++)
-        objects[i] = getVariable(v.get(i));
+        objects.add(getVariable(v.get(i)));
       sv = new ScriptVariable(varray);
     }
     if (sv != null) {
@@ -331,8 +336,9 @@ public class ScriptVariable extends Token {
         break;
       case varray:
         value = null;
-        objects = new ScriptVariable[v.objects.length];
-        System.arraycopy(v.objects, 0, objects, 0, v.objects.length);
+        objects = new ArrayList<ScriptVariable>();
+        for (int i = 0; i < v.objects.size(); i++)
+          objects.add(v.objects.get(i));
         break;
       }
     }
@@ -510,7 +516,7 @@ public class ScriptVariable extends Token {
     case varray:
       int i = x.intValue;
       if (i == Integer.MAX_VALUE)
-        return ((ScriptVariable)x).objects.length;
+        return ((ScriptVariable)x).objects.size();
     case string:
       return toFloat(sValue(x));
     case bitset:
@@ -560,9 +566,9 @@ public class ScriptVariable extends Token {
       ScriptVariable vx = (ScriptVariable)x;
       i = vx.intValue;
       if (i <= 0)
-        i = vx.objects.length - i;
+        i = vx.objects.size() - i;
       if (i != Integer.MAX_VALUE)
-        return (i < 1 || i > vx.objects.length ? "" : sValue(vx.objects[i - 1]));
+        return (i < 1 || i > vx.objects.size() ? "" : sValue(vx.objects.get(i - 1)));
       sb = new StringBuffer();
       map = new Hashtable<Object,Boolean>();
       sValueArray(sb, vx, map, 0, false);
@@ -630,10 +636,10 @@ public class ScriptVariable extends Token {
       map.put(vx, Boolean.TRUE);
       if (isEscaped)
         sb.append("[");
-      for (int i = 0; i < vx.objects.length; i++) {
+      for (int i = 0; i < vx.objects.size(); i++) {
         if (isEscaped && i > 0)
           sb.append(",");
-        ScriptVariable sv = vx.objects[i];
+        ScriptVariable sv = vx.objects.get(i);
         sValueArray(sb, sv, map, level + 1, isEscaped);
         if (!isEscaped)
           sb.append("\n");
@@ -685,11 +691,11 @@ public class ScriptVariable extends Token {
   public static ScriptVariable concatList(ScriptVariable x1, ScriptVariable x2) {
     int pt = 0;
     if (x1.tok == varray && x2.tok == varray) {
-      ScriptVariable[] vlist = new ScriptVariable[x1.objects.length + x2.objects.length];
-      for (int i = 0; i < x1.objects.length; i++)
-        vlist[pt++] = x1.objects[i];
-      for (int i = 0; i < x2.objects.length; i++)
-        vlist[pt++] = x2.objects[i];
+      ArrayList<ScriptVariable> vlist = new ArrayList<ScriptVariable>(x1.objects.size() + x2.objects.size());
+      for (int i = 0; i < x1.objects.size(); i++)
+        vlist.add(x1.objects.get(i));
+      for (int i = 0; i < x2.objects.size(); i++)
+        vlist.add(x2.objects.get(i));
       return getVariable(vlist);
     }
     String[] list1 = TextFormat.split(sValue(x1), "\n");
@@ -785,7 +791,7 @@ public class ScriptVariable extends Token {
       tokenOut.value = bs;
       break;
     case varray:
-      len = ((ScriptVariable)tokenIn).objects.length;
+      len = ((ScriptVariable)tokenIn).objects.size();
       break;
     case string:
       s = (String) tokenIn.value;
@@ -876,10 +882,11 @@ public class ScriptVariable extends Token {
       if (i1 < 1 || i1 > len || i2 > len)
         return new ScriptVariable(string, "");
       if (i2 == i1)
-        return ((ScriptVariable) tokenIn).objects[i1 - 1];
-      ScriptVariable[] objects = new ScriptVariable[i2 - i1 + 1];
-      for (int i = 0; i < objects.length; i++)
-        objects[i] = new ScriptVariable(((ScriptVariable) tokenIn).objects[i + i1 - 1]);
+        return ((ScriptVariable) tokenIn).objects.get(i1 - 1);
+      ArrayList<ScriptVariable> objects = new ArrayList<ScriptVariable>();
+      n = i2 - i1 + 1;
+      for (int i = 0; i < n; i++)
+        objects.add(new ScriptVariable(((ScriptVariable) tokenIn).objects.get(i + i1 - 1)));
       tokenOut.objects = objects;
       break;
     }
@@ -907,10 +914,10 @@ public class ScriptVariable extends Token {
       }
       if (selector != 0 && Math.abs(selector) <= len
           && var.tok == varray) {
-        if (var.objects.length == len) {
+        if (var.objects.size() == len) {
           float[] data = new float[len];
           for (int i = 0; i < len; i++)
-            data[i] = fValue(var.objects[i]);
+            data[i] = fValue(var.objects.get(i));
           if (selector > 0) {
             if (tok == matrix3f)
               ((Matrix3f) value).setRow(selector - 1, data);
@@ -939,17 +946,16 @@ public class ScriptVariable extends Token {
           + str.substring(selector + 1);
       return true;
     case varray:
-      len = objects.length;
+      len = objects.size();
       if (selector <= 0)
         selector = len + selector;
       if (--selector < 0)
         selector = 0;
       if (len <= selector) {
-        objects = (ScriptVariable[]) ArrayUtil.ensureLength(objects, selector + 1);
         for (int i = len; i <= selector; i++)
-          objects[i] = getVariable("");
+          objects.add(getVariable(""));
       }
-      objects[selector] = var;
+      objects.set(selector, var);
       return true;
     }
     return false;
@@ -1046,9 +1052,9 @@ public class ScriptVariable extends Token {
     Object[] of = new Object[] { vd, vf, ve, null, null};
     if (var.tok != varray)
       return sprintf(strFormat, var, of, vd, vf, ve, getS, getP);
-    String[] list2 = new String[var.objects.length];
-    for (int i = 0; i < var.objects.length; i++)
-      list2[i] = sprintf(strFormat, var.objects[i], of, vd, vf, ve, getS, getP);
+    String[] list2 = new String[var.objects.size()];
+    for (int i = 0; i < var.objects.size(); i++)
+      list2[i] = sprintf(strFormat, var.objects.get(i), of, vd, vf, ve, getS, getP);
     return list2;
   }
 
@@ -1137,14 +1143,14 @@ public class ScriptVariable extends Token {
       case string:
         return sValue(y).compareTo(sValue(x));
       case varray:
-        if (x.objects.length != y.objects.length)
+        if (x.objects.size() != y.objects.size())
           return 0;
         int iPt = arrayPt;
         if (iPt < 0)
-          iPt += x.objects.length;
-        if (iPt < 0 || iPt >= x.objects.length)
+          iPt += x.objects.size();
+        if (iPt < 0 || iPt >= x.objects.size())
           return 0;
-        return compare(x.objects[iPt], y.objects[iPt]);
+        return compare(x.objects.get(iPt), y.objects.get(iPt));
       default:
         float fx = fValue(x);
         float fy = fValue(y);
@@ -1163,17 +1169,17 @@ public class ScriptVariable extends Token {
       return this;
     ScriptVariable x = new ScriptVariable();
     x.set(this, true);
-    if (x.objects.length < 2) {
+    if (x.objects.size() < 2) {
       // just copy it
     } else if (arrayPt == Integer.MIN_VALUE) {
-      int n = x.objects.length;
+      int n = x.objects.size();
       for (int i = 0; i < n; i++) {
-        ScriptVariable v = x.objects[i];
-        x.objects[i] = x.objects[--n];
-        x.objects[n] = v;
+        ScriptVariable v = x.objects.get(i);
+        x.objects.set(i, x.objects.get(--n));
+        x.objects.set(n, v);
       }
     } else {
-      Arrays.sort(x.objects, new Sort(--arrayPt));
+      Collections.sort(x.objects, new Sort(--arrayPt));
     }
     return x;
   }
@@ -1196,9 +1202,9 @@ public class ScriptVariable extends Token {
   public static String[] listValue(Token x) {
     if (x.tok == varray) {
       ScriptVariable sv = (ScriptVariable) x;
-      String[] list = new String[sv.objects.length];
-      for (int i = sv.objects.length; --i >= 0;)
-        list[i] = sValue(sv.objects[i]);
+      String[] list = new String[sv.objects.size()];
+      for (int i = sv.objects.size(); --i >= 0;)
+        list[i] = sValue(sv.objects.get(i));
       return list;
     }
     return new String[] { sValue(x) };
@@ -1209,11 +1215,11 @@ public class ScriptVariable extends Token {
       return new float[] { fValue(x) };
     float[] list;
     ScriptVariable sv = (ScriptVariable) x;
-    list = new float[Math.max(nMin, sv.objects.length)];
+    list = new float[Math.max(nMin, sv.objects.size())];
     if (nMin == 0)
       nMin = list.length;
-    for (int i = Math.min(sv.objects.length, nMin); --i >= 0;)
-      list[i] = fValue(sv.objects[i]);
+    for (int i = Math.min(sv.objects.size(), nMin); --i >= 0;)
+      list[i] = fValue(sv.objects.get(i));
     return list;
   }
 
@@ -1234,20 +1240,20 @@ public class ScriptVariable extends Token {
       return;
     }
     tok = varray;
-    objects = new ScriptVariable[dim];
+    objects = new ArrayList<ScriptVariable>(dim);
     for (int i = 0; i < dim; i++) {
       float[] a = new float[dim];
       if (m3 == null)
         m4.getRow(i, a);
       else
         m3.getRow(i, a);
-      objects[i] = getVariable(a);
+      objects.set(i,getVariable(a));
     }   
   }
 
   @SuppressWarnings("unchecked")
-  public static ScriptVariable mapValue(Token x, String key) {
-    return (x.tok == hash ? ((Map<String, ScriptVariable>) x.value).get(key) : null);
+  public ScriptVariable mapValue(String key) {
+    return (tok == hash ? ((Map<String, ScriptVariable>) value).get(key) : null);
   }
 
 }

@@ -595,8 +595,7 @@ class ScriptMathProcessor {
     ScriptVariable var1 = xStack[xPt--];
     ScriptVariable var = xStack[xPt];
     if (var.tok == Token.hash) {
-      ScriptVariable v = ScriptVariable.mapValue(var, ScriptVariable
-          .sValue(var1));
+      ScriptVariable v = var.mapValue(ScriptVariable.sValue(var1));
       xStack[xPt] = (v == null ? ScriptVariable.getVariable("") : v);
       return true;
     }
@@ -943,9 +942,9 @@ class ScriptMathProcessor {
     if (isListf) {
       data = (float[]) x1.value;
     } else {
-      data = new float[x1.objects.length];
-      for (int i = x1.objects.length; --i >= 0; )
-        data[i] = ScriptVariable.fValue(x1.objects[i]);
+      data = new float[x1.objects.size()];
+      for (int i = x1.objects.size(); --i >= 0; )
+        data[i] = ScriptVariable.fValue(x1.objects.get(i));
     }
     int nbins = (int) ((f1 - f0) / df + 0.01f);
     int[] array = new int[nbins];
@@ -1608,7 +1607,7 @@ class ScriptMathProcessor {
     
     if (x1.tok == Token.varray) {
       list1 = null;
-      len = x1.objects.length;
+      len = x1.objects.size();
     } else {
       sList1 = (TextFormat.split((String) x1.value, "\n"));
       list1 = new float[len = sList1.length];
@@ -1619,7 +1618,7 @@ class ScriptMathProcessor {
       float sum = 0f;
       if (x1.tok == Token.varray)
         for (int i = len; --i >= 0;)
-          sum += ScriptVariable.fValue(x1.objects[i]);
+          sum += ScriptVariable.fValue(x1.objects.get(i));
       else
         for (int i = len; --i >= 0;)
           sum += list1[i];
@@ -1660,7 +1659,7 @@ class ScriptMathProcessor {
     
     for (int i = 0; i < len; i++) {
       if (x1.tok == Token.varray)
-        addX(x1.objects[i]);
+        addX(x1.objects.get(i));
       else if (Float.isNaN(list1[i]))
         addX(ScriptVariable.unescapePointOrBitsetAsVariable(sList1[i]));
       else
@@ -1669,7 +1668,7 @@ class ScriptMathProcessor {
       if (isScalar)
         addX(scalar);
       else if (x2.tok == Token.varray)
-        addX(x2.objects[i]);
+        addX(x2.objects.get(i));
       else if (Float.isNaN(list2[i]))
         addX(ScriptVariable.unescapePointOrBitsetAsVariable(sList2[i]));
       else
@@ -1730,13 +1729,13 @@ class ScriptMathProcessor {
     if (len == 4 || len == 3) {
       boolean isMatrix = true;
       for (int i = 0; i < len && isMatrix; i++)
-        isMatrix = (args[i].tok == Token.varray && args[i].objects.length == len);
+        isMatrix = (args[i].tok == Token.varray && args[i].objects.size() == len);
       if (isMatrix) {
         float[] m = new float[len * len];
         int pt = 0;
         for (int i = 0; i < len && isMatrix; i++)
           for (int j = 0; j < len; j++) {
-            float x = ScriptVariable.fValue(args[i].objects[j]);
+            float x = ScriptVariable.fValue(args[i].objects.get(j));
             if (Float.isNaN(x)) {
               isMatrix = false;
               break;
@@ -3065,9 +3064,9 @@ class ScriptMathProcessor {
       }
       if (op.intValue == Token.sort || op.intValue == Token.reverse)
         return addX(x2.sortOrReverse(op.intValue == Token.reverse ? Integer.MIN_VALUE : 1));
-      ScriptVariable[] list2 = new ScriptVariable[x2.objects.length];
+      ScriptVariable[] list2 = new ScriptVariable[x2.objects.size()];
       for (int i = 0; i < list2.length; i++) {
-        Object v = ScriptVariable.unescapePointOrBitsetAsVariable(x2.objects[i]);
+        Object v = ScriptVariable.unescapePointOrBitsetAsVariable(x2.objects.get(i));
         if (!(v instanceof ScriptVariable)
             || !getPointOrBitsetOperation(op, (ScriptVariable) v))
           return false;
@@ -3149,9 +3148,10 @@ class ScriptMathProcessor {
     return false;
   }
 
+  @SuppressWarnings("unchecked")
   private static Object getMinMax(Object floatOrSVArray, int tok) {
     float[] data = null;
-    ScriptVariable[] sv = null;
+    ArrayList<ScriptVariable> sv = null;
     int ndata = 0;
     while (true) {
       if (floatOrSVArray instanceof float[]) {
@@ -3159,13 +3159,14 @@ class ScriptMathProcessor {
         ndata = data.length;
         if (ndata == 0)
           break;
-      } else if (floatOrSVArray instanceof ScriptVariable[]) {
-        sv = (ScriptVariable[]) floatOrSVArray;
-        ndata = sv.length;
+      } else if (floatOrSVArray instanceof ArrayList<?>) {
+        sv = (ArrayList<ScriptVariable>) floatOrSVArray;
+        ndata = sv.size();
         if (ndata == 0)
           break;
-        if (sv[0].tok == Token.string && ((String) sv[0].value).startsWith("{")) {
-          Object pt = ScriptVariable.ptValue(sv[0]);
+        ScriptVariable sv0 = sv.get(0);
+        if (sv0.tok == Token.string && ((String) sv0.value).startsWith("{")) {
+          Object pt = ScriptVariable.ptValue(sv0);
           if (pt instanceof Point3f)
             return getMinMaxPoint(sv, tok);
           if (pt instanceof Point4f)
@@ -3189,7 +3190,7 @@ class ScriptMathProcessor {
       double sum2 = 0;
       int n = 0;
       for (int i = ndata; --i >= 0;) {
-        float v = (data == null ? ScriptVariable.fValue(sv[i]) : data[i]);
+        float v = (data == null ? ScriptVariable.fValue(sv.get(i)) : data[i]);
         if (Float.isNaN(v))
           continue;
         n++;
@@ -3243,16 +3244,17 @@ class ScriptMathProcessor {
    * @param tok
    * @return Point3f or "NaN"
    */
-  private static Object getMinMaxPoint(Object[] pointOrSVArray, int tok) {
+  @SuppressWarnings("unchecked")
+  private static Object getMinMaxPoint(Object pointOrSVArray, int tok) {
     Point3f[] data = null;
-    ScriptVariable[] sv = null;
+    ArrayList<ScriptVariable> sv = null;
     int ndata = 0;
     if (pointOrSVArray instanceof Quaternion[]) {
       data = (Point3f[]) pointOrSVArray;
       ndata = data.length;
-    } else if (pointOrSVArray instanceof ScriptVariable[]) {
-      sv = (ScriptVariable[]) pointOrSVArray;
-      ndata = sv.length;
+    } else if (pointOrSVArray instanceof ArrayList<?>) {
+      sv = (ArrayList<ScriptVariable>) pointOrSVArray;
+      ndata = sv.size();
     }
     if (sv != null || data != null) {
       Point3f result = new Point3f();
@@ -3260,7 +3262,7 @@ class ScriptMathProcessor {
       boolean ok = true;
       for (int xyz = 0; xyz < 3 && ok; xyz++) {
         for (int i = 0; i < ndata; i++) {
-          Point3f pt = (data == null ? ScriptVariable.ptValue(sv[i]) : data[i]);
+          Point3f pt = (data == null ? ScriptVariable.ptValue(sv.get(i)) : data[i]);
           if (pt == null) {
             ok = false;
             break;
@@ -3302,7 +3304,7 @@ class ScriptMathProcessor {
     return "NaN";
   }
 
-  private static Object getMinMaxQuaternion(Object[] quaternionOrSVData,
+  private static Object getMinMaxQuaternion(Object quaternionOrSVData,
                                             int tok) {
     Quaternion[] data;
     switch (tok) {
@@ -3332,7 +3334,8 @@ class ScriptMathProcessor {
     return "NaN";
   }
 
-  protected static Quaternion[] getQuaternionArray(Object[] quaternionOrSVData) {
+  @SuppressWarnings("unchecked")
+  protected static Quaternion[] getQuaternionArray(Object quaternionOrSVData) {
     Quaternion[] data;
     if (quaternionOrSVData instanceof Quaternion[]) {
       data = (Quaternion[]) quaternionOrSVData;
@@ -3341,11 +3344,11 @@ class ScriptMathProcessor {
       data = new Quaternion[pts.length];
       for (int i = 0; i < pts.length; i++)
         data[i] = new Quaternion(pts[i]);
-    } else if (quaternionOrSVData instanceof ScriptVariable[]) {
-      ScriptVariable[] sv = (ScriptVariable[]) quaternionOrSVData;
-      data = new Quaternion[sv.length];
-      for (int i = 0; i < sv.length; i++) {
-        Point4f pt = ScriptVariable.pt4Value(sv[i]);
+    } else if (quaternionOrSVData instanceof ArrayList<?>) {
+      ArrayList<ScriptVariable> sv = (ArrayList<ScriptVariable>) quaternionOrSVData;
+      data = new Quaternion[sv.size()];
+      for (int i = 0; i < sv.size(); i++) {
+        Point4f pt = ScriptVariable.pt4Value(sv.get(i));
         if (pt == null)
           return null;
         data[i] = new Quaternion(pt);

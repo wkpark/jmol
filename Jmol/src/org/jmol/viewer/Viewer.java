@@ -2257,8 +2257,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         if (jmolScript != null)
           modelSet.getModelSetAuxiliaryInfo().put("jmolscript", jmolScript);
       }
-      if (!isAppend)
-        initializeModel();
+      initializeModel(isAppend);
       // if (global.modelkitMode &&
       // (modelSet.getModelCount() > 1 || modelSet.getModels()[0].isPDB()))
       // setBooleanProperty("modelkitmode", false);
@@ -2557,7 +2556,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     } else {
       modelSet = modelManager.zap();
     }
-    initializeModel();
+    initializeModel(false);
     if (notify)
       setFileLoadStatus(JmolConstants.FILE_STATUS_ZAPPED, null, (resetUndo ? "resetUndo"
           : getZapName()), null, null);
@@ -2578,8 +2577,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     setShapeProperty(iShape, "text", msg);
   }
 
-  private void initializeModel() {
+  private void initializeModel(boolean isAppend) {
     stopAnimationThreads("stop from init model");
+    if (isAppend) {
+      animationManager.initializePointers(1);
+      return;
+    }
     reset(true);
     selectAll();
     rotatePrev1 = rotateBondIndex = -1;

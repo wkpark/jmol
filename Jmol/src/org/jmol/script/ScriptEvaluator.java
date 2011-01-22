@@ -11468,6 +11468,8 @@ public class ScriptEvaluator {
           error(ERROR_invalidArgument);
         int iFrame = (theTok == Token.string ? JmolConstants
             .modelValue((String) theToken.value) : theToken.intValue);
+        if (iFrame == Integer.MAX_VALUE)
+          iFrame = 0; // frame 0.0
         if (iFrame == -1) {
           checkLength(offset + 1);
           if (!isSyntaxCheck)

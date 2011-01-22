@@ -247,8 +247,12 @@ void drawCircle(int x, int y, int z, int diameter, short colix, boolean doFill) 
       tempV2.add(tempP1);
       tempV2.scale(0.5f);
       tempP3.set(tempV2);
-      outputCylinder(null, tempP1, tempP3, colix1, Graphics3D.ENDCAPS_FLAT, radius, null, null);
-      outputCylinder(null, tempP3, tempP2, colix2, Graphics3D.ENDCAPS_FLAT, radius, null, null);
+      outputCylinder(null, tempP1, tempP3, colix1,
+          (endcaps == Graphics3D.ENDCAPS_SPHERICAL ? Graphics3D.ENDCAPS_NONE
+              : endcaps), radius, null, null);
+      outputCylinder(null, tempP3, tempP2, colix2,
+          (endcaps == Graphics3D.ENDCAPS_SPHERICAL ? Graphics3D.ENDCAPS_NONE
+              : endcaps), radius, null, null);
       if (endcaps == Graphics3D.ENDCAPS_SPHERICAL) {
         outputSphere(tempP1, radius * 1.01f, colix1);
         outputSphere(tempP2, radius * 1.01f, colix2);

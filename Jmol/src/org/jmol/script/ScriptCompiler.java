@@ -417,9 +417,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   
   private void setAaTokenCompiled() {
     aatokenCompiled = new Token[lltoken.size()][];
-    for (int i = 0; i < lltoken.size(); i++) {
+    for (int i = lltoken.size(); --i >= 0;)
       aatokenCompiled[i] = lltoken.get(i);
-    }
   }
 
   private boolean lookingAtLeadingWhitespace() {
@@ -762,9 +761,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     }
 
     atokenInfix = new Token[size = ltoken.size()];
-    for (int i = 0; i < ltoken.size(); i++) {
+    for (int i = ltoken.size(); --i >= 0;)
       atokenInfix[i] = ltoken.get(i);
-    }
 
     if (logMessages) {
       Logger.debug("token list:");

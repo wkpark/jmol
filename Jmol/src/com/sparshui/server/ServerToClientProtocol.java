@@ -50,7 +50,7 @@ public class ServerToClientProtocol extends ClientProtocol {
    *           If an error occurs while communication with the client.
    */
   public List<GestureType> getGestures(int groupID) throws IOException {
-    ArrayList<GestureType> gestures = new ArrayList<GestureType>();
+    List<GestureType> gestures = new ArrayList<GestureType>();
     _bufferOut.writeInt(groupID);
     sendBuffer(MessageType.GET_ALLOWED_GESTURES);
 
@@ -108,7 +108,7 @@ public class ServerToClientProtocol extends ClientProtocol {
    * @throws IOException
    *           If there is a communication error.
    */
-  public void processEvents(int groupID, ArrayList<Event> events) throws IOException {
+  public void processEvents(int groupID, List<Event> events) throws IOException {
     for (int i = 0; i < events.size(); i++) {
       _bufferOut.writeInt(groupID);
       _bufferOut.write(events.get(i).serialize());

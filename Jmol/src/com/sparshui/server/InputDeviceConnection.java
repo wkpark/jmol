@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 import com.sparshui.common.Location;
 import com.sparshui.common.NetworkConfiguration;
@@ -41,7 +42,7 @@ public class InputDeviceConnection implements Runnable {
 	 */
 	private Hashtable<Integer, TouchPoint>  _touchPoints;
 
-	private ArrayList<Integer> _flaggedids;
+	private List<Integer> _flaggedids;
 
 	/**
 	 * Create a new input device connection with the given

@@ -47,7 +47,7 @@ public class SinglePointGesture implements Gesture {
   // @override
   
   public List<Event> processChange(List<TouchPoint> touchPoints, TouchPoint changedTouchPoint) {
-    ArrayList<Event> retEvents = new ArrayList<Event>();
+    List<Event> retEvents = new ArrayList<Event>();
     int nPoints = touchPoints.size();
     if (Logger.debugging) {
       Logger.info("\nSinglePointGesture " + _myId + " nPoints: " + nPoints);
@@ -99,7 +99,7 @@ public class SinglePointGesture implements Gesture {
     return retEvents;
   }
 
-  private boolean checkClick(TouchPoint tpNew, ArrayList<Event> retEvents, boolean isDeath) {
+  private boolean checkClick(TouchPoint tpNew, List<Event> retEvents, boolean isDeath) {
     TouchPoint tp;
     long dt = tpNew.getTime() - _birth.getTime();
     boolean isSingleClick = (isDeath && dt < MAXIMUM_CLICK_TIME);

@@ -5,6 +5,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 import org.jmol.api.JmolGestureServerInterface;
 import org.jmol.util.Logger;
@@ -31,7 +32,7 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
   ServerSocket _clientSocket;
   ServerSocket _deviceSocket;
   ServerSocket _mySocket;
-  private ArrayList<ClientConnection> _clients = new ArrayList<ClientConnection>();
+  private List<ClientConnection> _clients = new ArrayList<ClientConnection>();
   private int port;
 
   InputDeviceConnection ic = null;
@@ -251,7 +252,7 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
    * 
    */
   private boolean processBirth(TouchPoint touchPoint) {
-    ArrayList<ClientConnection> clients_to_remove = null;
+    List<ClientConnection> clients_to_remove = null;
     boolean isClaimed = false;
     for (int i = 0; i < main._clients.size(); i++) {
       ClientConnection client = main._clients.get(i);

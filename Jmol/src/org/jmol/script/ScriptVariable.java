@@ -252,7 +252,7 @@ public class ScriptVariable extends Token {
     // at least for now, still saving as a string, 
     // but ultimately, that should not be necessary
 
-    ArrayList<ScriptVariable> objects = null;
+    List<ScriptVariable> objects = null;
     if (x instanceof List) {
       // will be turned into list
       List<Object> v = (List<Object>) x;
@@ -334,8 +334,8 @@ public class ScriptVariable extends Token {
             (Map<String, ScriptVariable>) v.value);
         break;
       case varray:
-        ArrayList<ScriptVariable> o2 = new ArrayList<ScriptVariable>();
-        ArrayList<ScriptVariable> o1 = v.getList();
+        List<ScriptVariable> o2 = new ArrayList<ScriptVariable>();
+        List<ScriptVariable> o1 = v.getList();
         for (int i = 0; i < o1.size(); i++)
           o2.add(o1.get(i));
         value = o2;
@@ -562,7 +562,7 @@ public class ScriptVariable extends Token {
     case varray:
     case hash:
       if (x.tok == Token.varray) {
-        ArrayList<ScriptVariable> sv = ((ScriptVariable) x).getList();
+        List<ScriptVariable> sv = ((ScriptVariable) x).getList();
         i = x.intValue;
         if (i <= 0)
           i = sv.size() - i;
@@ -636,7 +636,7 @@ public class ScriptVariable extends Token {
       map.put(vx, Boolean.TRUE);
       if (isEscaped)
         sb.append("[");
-      ArrayList<ScriptVariable> sx = vx.getList();
+      List<ScriptVariable> sx = vx.getList();
       for (int i = 0; i < sx.size(); i++) {
         if (isEscaped && i > 0)
           sb.append(",");
@@ -691,8 +691,8 @@ public class ScriptVariable extends Token {
 
   public static ScriptVariable concatList(ScriptVariable x1, ScriptVariable x2,
                                           boolean asNew) {
-    ArrayList<ScriptVariable> v1 = x1.getList();
-    ArrayList<ScriptVariable> v2 = x2.getList();
+    List<ScriptVariable> v1 = x1.getList();
+    List<ScriptVariable> v2 = x2.getList();
     if (!asNew) {
       if (v2 == null)
         v1.add(new ScriptVariable(x2));
@@ -701,7 +701,7 @@ public class ScriptVariable extends Token {
           v1.add(v2.get(i));
       return x1;
     }
-    ArrayList<ScriptVariable> vlist = new ArrayList<ScriptVariable>(
+    List<ScriptVariable> vlist = new ArrayList<ScriptVariable>(
         (v1 == null ? 1 : v1.size()) + (v2 == null ? 1 : v2.size()));
 
     if (v1 == null)
@@ -890,8 +890,8 @@ public class ScriptVariable extends Token {
         return new ScriptVariable(string, "");
       if (i2 == i1)
         return ((ScriptVariable) tokenIn).getList().get(i1 - 1);
-      ArrayList<ScriptVariable> o2 = new ArrayList<ScriptVariable>();
-      ArrayList<ScriptVariable> o1 = ((ScriptVariable) tokenIn).getList();
+      List<ScriptVariable> o2 = new ArrayList<ScriptVariable>();
+      List<ScriptVariable> o1 = ((ScriptVariable) tokenIn).getList();
       n = i2 - i1 + 1;
       for (int i = 0; i < n; i++)
         o2.add(new ScriptVariable(o1.get(i + i1 - 1)));
@@ -922,7 +922,7 @@ public class ScriptVariable extends Token {
       }
       if (selector != 0 && Math.abs(selector) <= len
           && var.tok == varray) {
-        ArrayList<ScriptVariable> sv = var.getList();
+        List<ScriptVariable> sv = var.getList();
         if (sv.size() == len) {
           float[] data = new float[len];
           for (int i = 0; i < len; i++)
@@ -1061,7 +1061,7 @@ public class ScriptVariable extends Token {
     Object[] of = new Object[] { vd, vf, ve, null, null};
     if (var.tok != varray)
       return sprintf(strFormat, var, of, vd, vf, ve, getS, getP);
-    ArrayList<ScriptVariable> sv = var.getList();
+    List<ScriptVariable> sv = var.getList();
     String[] list2 = new String[sv.size()];
     for (int i = 0; i < list2.length; i++)
       list2[i] = sprintf(strFormat, sv.get(i), of, vd, vf, ve, getS, getP);
@@ -1124,7 +1124,7 @@ public class ScriptVariable extends Token {
       return bsSelect(x);
     case varray:
       BitSet bs = new BitSet();
-      ArrayList<ScriptVariable> sv = (ArrayList<ScriptVariable>) x.value;
+      List<ScriptVariable> sv = (ArrayList<ScriptVariable>) x.value;
       for (int i = 0; i < sv.size(); i++)
         if (!sv.get(i).unEscapeBitSetArray(bs) && allowNull)
           return null;
@@ -1167,8 +1167,8 @@ public class ScriptVariable extends Token {
       case string:
         return sValue(x).compareTo(sValue(y));
       case varray:
-        ArrayList<ScriptVariable> sx = x.getList();
-        ArrayList<ScriptVariable> sy = y.getList();
+        List<ScriptVariable> sx = x.getList();
+        List<ScriptVariable> sy = y.getList();
         if (sx.size() != sy.size())
           return (sx.size() < sy.size() ? -1 : 1);
         int iPt = arrayPt;
@@ -1191,7 +1191,7 @@ public class ScriptVariable extends Token {
    * @return sorted or reversed array
    */
   public ScriptVariable sortOrReverse(int arrayPt) {
-    ArrayList<ScriptVariable> x = getList();
+    List<ScriptVariable> x = getList();
     if (x == null || x.size() < 2) 
       return this;
     if (arrayPt == Integer.MIN_VALUE) {
@@ -1234,7 +1234,7 @@ public class ScriptVariable extends Token {
   public static String[] listValue(Token x) {
     if (x.tok != varray)
       return new String[] { sValue(x) };
-    ArrayList<ScriptVariable> sv = ((ScriptVariable) x).getList();
+    List<ScriptVariable> sv = ((ScriptVariable) x).getList();
     String[] list = new String[sv.size()];
     for (int i = sv.size(); --i >= 0;)
       list[i] = sValue(sv.get(i));
@@ -1244,7 +1244,7 @@ public class ScriptVariable extends Token {
   public static float[] flistValue(Token x, int nMin) {
     if (x.tok != varray)
       return new float[] { fValue(x) };
-    ArrayList<ScriptVariable> sv = ((ScriptVariable) x).getList();
+    List<ScriptVariable> sv = ((ScriptVariable) x).getList();
     float[] list;
     list = new float[Math.max(nMin, sv.size())];
     if (nMin == 0)
@@ -1271,7 +1271,7 @@ public class ScriptVariable extends Token {
       return;
     }
     tok = varray;
-    ArrayList<ScriptVariable> o2 = new ArrayList<ScriptVariable>(dim);
+    List<ScriptVariable> o2 = new ArrayList<ScriptVariable>(dim);
     for (int i = 0; i < dim; i++) {
       float[] a = new float[dim];
       if (m3 == null)
@@ -1289,7 +1289,7 @@ public class ScriptVariable extends Token {
   }
 
   @SuppressWarnings("unchecked")
-  public ArrayList<ScriptVariable> getList() {
+  public List<ScriptVariable> getList() {
     return (tok == varray ? (ArrayList<ScriptVariable>) value : null);
   }
 }

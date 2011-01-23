@@ -76,7 +76,7 @@ public class Token {
   
   final static int seqcode    =  5;
   final static int hash       =  6;  // associative array; Hashtable
-  final static int varray     =  7;  // ArrayList<ScriptVariable>
+  final static int varray     =  7;  // List<ScriptVariable>
   final static int point3f    =  8;
   final static int point4f    =  9;  
   final static int bitset     =  10;

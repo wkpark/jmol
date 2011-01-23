@@ -582,7 +582,7 @@ class IsoSolventReader extends AtomDataReader {
       this.ib = Math.max(ia, ib);
     }
 
-//    private ArrayList<Face> aFaces;
+//    private List<Face> aFaces;
     void addFace(Face f) {
       if (f == null) {
         nInvalid++;

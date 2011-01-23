@@ -453,7 +453,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
    */
   public Action[] getActions() {
 
-    ArrayList<Action> actions = new ArrayList<Action>();
+    List<Action> actions = new ArrayList<Action>();
     actions.addAll(Arrays.asList(defaultActions));
     actions.addAll(Arrays.asList(display.getActions()));
     actions.addAll(Arrays.asList(preferencesDialog.getActions()));

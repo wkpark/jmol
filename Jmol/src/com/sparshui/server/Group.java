@@ -20,8 +20,8 @@ public class Group {
 
 	private int _id;
 	private List<GestureType> _gestureTypes;
-	private ArrayList<Gesture> _gestures;
-	private ArrayList<TouchPoint> _touchPoints;
+	private List<Gesture> _gestures;
+	private List<TouchPoint> _touchPoints;
 	private ServerToClientProtocol _clientProtocol;
 
 	/**
@@ -66,7 +66,7 @@ public class Group {
    *          The changed touch point.
    */
   public synchronized void update(TouchPoint changedPoint) {
-    ArrayList<Event> events = new ArrayList<Event>();
+    List<Event> events = new ArrayList<Event>();
     
     int state = changedPoint.getState();
 
@@ -81,7 +81,7 @@ public class Group {
     System.out.println();
     */
     
-    ArrayList<TouchPoint> clonedPoints = null;
+    List<TouchPoint> clonedPoints = null;
     /*
      * // until this is implemented somewhere, why go to the trouble? -- BH
      * 

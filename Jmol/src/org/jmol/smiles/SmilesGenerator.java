@@ -685,8 +685,8 @@ public class SmilesGenerator {
   private String sortInorganic(JmolNode atom, List<JmolEdge> v) {
     int atomIndex = atom.getIndex();
     int n = v.size();
-    ArrayList<JmolEdge[]> axialPairs = new ArrayList<JmolEdge[]>();
-    ArrayList<JmolEdge> bonds = new ArrayList<JmolEdge>();
+    List<JmolEdge[]> axialPairs = new ArrayList<JmolEdge[]>();
+    List<JmolEdge> bonds = new ArrayList<JmolEdge>();
     JmolNode a1, a2;
     JmolEdge bond1, bond2;
     BitSet bsDone = new BitSet();

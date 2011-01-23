@@ -63,7 +63,7 @@ public class Escape {
   public static String escape(Object x) {
     if (x instanceof String)
       return escape("" + x);
-    if (x instanceof ArrayList<?>)
+    if (x instanceof List<?>)
       return escape((ArrayList<ScriptVariable>) x);
     if (x instanceof String[])
       return escape((String[]) x, true);

@@ -222,8 +222,7 @@ final public class CommandHistory {
   public String removeCommand(int n) {
     if (n < 0 || n >= nextCommand)
       return "";
-    String str = commandList.get(n);
-    commandList.remove(n);
+    String str = commandList.remove(n);
     nextCommand--;
     return str; 
   }

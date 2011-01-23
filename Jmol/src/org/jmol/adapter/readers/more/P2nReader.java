@@ -25,6 +25,7 @@
 package org.jmol.adapter.readers.more;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.jmol.adapter.readers.cifpdb.PdbReader;
 import org.jmol.adapter.smarter.Atom;
@@ -39,7 +40,7 @@ import org.jmol.adapter.smarter.Atom;
 
 public class P2nReader extends PdbReader {
 
-  private ArrayList<String> altNames = new ArrayList<String>();
+  private List<String> altNames = new ArrayList<String>();
   
   @Override
   protected void setAdditionalAtomParameters(Atom atom) {

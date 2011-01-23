@@ -27,6 +27,7 @@ import org.jmol.adapter.smarter.*;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
 
@@ -146,8 +147,8 @@ public class MopacGraphfReader extends MopacSlaterReader {
   private float[][] invMatrix;
   
   private boolean isNewFormat;
-  private ArrayList<float[]> orbitalData;
-  private ArrayList<String> orbitalInfo;
+  private List<float[]> orbitalData;
+  private List<String> orbitalInfo;
   
   private void readMolecularOrbitals(boolean isBeta) throws Exception {
     

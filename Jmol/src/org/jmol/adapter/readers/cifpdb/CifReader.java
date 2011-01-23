@@ -30,6 +30,7 @@ import org.jmol.api.JmolLineReader;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
 import javax.vecmath.Point3f;
@@ -428,7 +429,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
 
 
   private Map<String, Float> atomTypes;
-  private ArrayList<Object[]> bondTypes = new ArrayList<Object[]>();
+  private List<Object[]> bondTypes = new ArrayList<Object[]>();
   
   final private static byte ATOM_TYPE_SYMBOL = 0;
   final private static byte ATOM_TYPE_OXIDATION_NUMBER = 1;

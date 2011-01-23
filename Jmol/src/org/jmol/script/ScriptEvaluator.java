@@ -1608,7 +1608,7 @@ public class ScriptEvaluator {
     String sValue = null;
     float[] fvalues = null;
     Point3f pt;
-    ArrayList<ScriptVariable> sv = null;
+    List<ScriptVariable> sv = null;
     int nValues = 0;
     if (tokenValue.tok == Token.varray) {
       sv = ((ScriptVariable) tokenValue).getList();
@@ -1837,9 +1837,9 @@ public class ScriptEvaluator {
     case Token.variable:
       return ScriptVariable.getVariable(v);
     case Token.string:
-      if (!(v instanceof ArrayList<?>))
+      if (!(v instanceof List<?>))
         break;
-      ArrayList<ScriptVariable> sv = (ArrayList<ScriptVariable>) v;
+      List<ScriptVariable> sv = (ArrayList<ScriptVariable>) v;
       StringBuffer sb = new StringBuffer();
       for (int i = 0; i < sv.size(); i++)
         sb.append(ScriptVariable.sValue(sv.get(i))).append('\n');
@@ -2263,8 +2263,8 @@ public class ScriptEvaluator {
           fixed[j] = new ScriptVariable(Token.matrix4f, v);
         } else if (v instanceof Map<?, ?>) {
           fixed[j] = new ScriptVariable(Token.hash, v);
-        } else if (v instanceof ArrayList<?>) {
-          ArrayList<ScriptVariable> sv = (ArrayList<ScriptVariable>) v;
+        } else if (v instanceof List<?>) {
+          List<ScriptVariable> sv = (ArrayList<ScriptVariable>) v;
           BitSet bs = null;
           for (int k = 0; k < sv.size(); k++) {
             ScriptVariable svk = sv.get(k); 
@@ -3624,7 +3624,7 @@ public class ScriptEvaluator {
         }
         if (val instanceof String)
           val = getStringObjectAsVariable((String) val, null);
-        if (val instanceof ArrayList<?>) {
+        if (val instanceof List<?>) {
           BitSet bs = ScriptVariable.unEscapeBitSetArray((ArrayList<ScriptVariable>)val, true);
           if (bs != null)
             val = bs;
@@ -4186,11 +4186,11 @@ public class ScriptEvaluator {
   
   private Point3f[] getPointArray(int i, int nPoints) throws ScriptException {
     Point3f[] points = (nPoints < 0 ? null : new Point3f[nPoints]);
-    ArrayList<Point3f> vp = (nPoints < 0 ? new ArrayList<Point3f>() : null);
+    List<Point3f> vp = (nPoints < 0 ? new ArrayList<Point3f>() : null);
     int tok = (i < 0 ? Token.varray : getToken(i++).tok);
     switch (tok) {
     case Token.varray:
-      ArrayList<ScriptVariable> v = ((ScriptVariable) theToken).getList();
+      List<ScriptVariable> v = ((ScriptVariable) theToken).getList();
       if (nPoints >= 0 && v.size() != nPoints)
         error(ERROR_invalidArgument);
       nPoints = v.size();
@@ -9643,7 +9643,7 @@ public class ScriptEvaluator {
 
   private Quaternion getQuaternionParameter(int i) throws ScriptException {
     if (tokAt(i) == Token.varray) {
-      ArrayList<ScriptVariable> sv = ((ScriptVariable) getToken(i)).getList();
+      List<ScriptVariable> sv = ((ScriptVariable) getToken(i)).getList();
       Point4f p4 = null;
       if (sv.size() == 0
           || (p4 = ScriptVariable.pt4Value(sv.get(0))) == null)
@@ -9660,7 +9660,7 @@ public class ScriptEvaluator {
     case Token.varray:
       List<Point3f> data = new ArrayList<Point3f>();
       Point3f pt;
-      ArrayList<ScriptVariable> pts = ((ScriptVariable) t).getList();
+      List<ScriptVariable> pts = ((ScriptVariable) t).getList();
       for (int j = 0; j < pts.size(); j++) 
         if ((pt = ScriptVariable.ptValue(pts.get(j))) != null)
           data.add(pt);
@@ -12811,7 +12811,7 @@ public class ScriptEvaluator {
           int ipt = ScriptVariable.iValue(vv);
           switch (t.tok) {
           case Token.varray:
-            ArrayList<ScriptVariable> list = t.getList();
+            List<ScriptVariable> list = t.getList();
             if (ipt > list.size() || isLast)
               break;
             if (ipt <= 0)

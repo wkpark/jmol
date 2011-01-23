@@ -208,9 +208,8 @@ abstract class ScriptCompilationTokenParser {
       }
     }
     atokenInfix = new Token[ltokenPostfix.size()];
-    for (int i = 0; i < ltokenPostfix.size(); i++) {
+    for (int i = ltokenPostfix.size(); --i >= 0;)
       atokenInfix[i] = ltokenPostfix.get(i);
-    }
     return true;
   }
 

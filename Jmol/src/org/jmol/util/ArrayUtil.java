@@ -257,11 +257,11 @@ final public class ArrayUtil {
   }
 
   /**
-   * Helper method for creating a ArrayList<T>[] without warnings.
+   * Helper method for creating a List<T>[] without warnings.
    * 
    * @param <T> Type of objects in the list.
    * @param size Array size.
-   * @return Array of ArrayList<T>
+   * @return Array of List<T>
    */
   @SuppressWarnings("unchecked")
   public static <T> List<T>[] createArrayOfArrayList(int size) {

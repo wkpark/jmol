@@ -944,7 +944,7 @@ class ScriptMathProcessor {
     if (isListf) {
       data = (float[]) x1.value;
     } else {
-      ArrayList<ScriptVariable> list = x1.getList();
+      List<ScriptVariable> list = x1.getList();
       data = new float[list.size()];
       for (int i = list.size(); --i >= 0; )
         data[i] = ScriptVariable.fValue(list.get(i));
@@ -1607,8 +1607,8 @@ class ScriptMathProcessor {
 
     float[] list1 = null;
     float[] list2 = null;
-    ArrayList<ScriptVariable> alist1 = x1.getList();
-    ArrayList<ScriptVariable> alist2 = x2.getList();
+    List<ScriptVariable> alist1 = x1.getList();
+    List<ScriptVariable> alist2 = x2.getList();
 
     if (x1.tok == Token.varray) {
       len = alist1.size();
@@ -1738,7 +1738,7 @@ class ScriptMathProcessor {
         float[] m = new float[len * len];
         int pt = 0;
         for (int i = 0; i < len && isMatrix; i++) {
-          ArrayList<ScriptVariable> list = args[i].getList();
+          List<ScriptVariable> list = args[i].getList();
           for (int j = 0; j < len; j++) {
             float x = ScriptVariable.fValue(list.get(j));
             if (Float.isNaN(x)) {
@@ -3158,7 +3158,7 @@ class ScriptMathProcessor {
   @SuppressWarnings("unchecked")
   private static Object getMinMax(Object floatOrSVArray, int tok) {
     float[] data = null;
-    ArrayList<ScriptVariable> sv = null;
+    List<ScriptVariable> sv = null;
     int ndata = 0;
     while (true) {
       if (floatOrSVArray instanceof float[]) {
@@ -3166,7 +3166,7 @@ class ScriptMathProcessor {
         ndata = data.length;
         if (ndata == 0)
           break;
-      } else if (floatOrSVArray instanceof ArrayList<?>) {
+      } else if (floatOrSVArray instanceof List<?>) {
         sv = (ArrayList<ScriptVariable>) floatOrSVArray;
         ndata = sv.size();
         if (ndata == 0)
@@ -3254,12 +3254,12 @@ class ScriptMathProcessor {
   @SuppressWarnings("unchecked")
   private static Object getMinMaxPoint(Object pointOrSVArray, int tok) {
     Point3f[] data = null;
-    ArrayList<ScriptVariable> sv = null;
+    List<ScriptVariable> sv = null;
     int ndata = 0;
     if (pointOrSVArray instanceof Quaternion[]) {
       data = (Point3f[]) pointOrSVArray;
       ndata = data.length;
-    } else if (pointOrSVArray instanceof ArrayList<?>) {
+    } else if (pointOrSVArray instanceof List<?>) {
       sv = (ArrayList<ScriptVariable>) pointOrSVArray;
       ndata = sv.size();
     }
@@ -3351,8 +3351,8 @@ class ScriptMathProcessor {
       data = new Quaternion[pts.length];
       for (int i = 0; i < pts.length; i++)
         data[i] = new Quaternion(pts[i]);
-    } else if (quaternionOrSVData instanceof ArrayList<?>) {
-      ArrayList<ScriptVariable> sv = (ArrayList<ScriptVariable>) quaternionOrSVData;
+    } else if (quaternionOrSVData instanceof List<?>) {
+      List<ScriptVariable> sv = (ArrayList<ScriptVariable>) quaternionOrSVData;
       data = new Quaternion[sv.size()];
       for (int i = 0; i < sv.size(); i++) {
         Point4f pt = ScriptVariable.pt4Value(sv.get(i));

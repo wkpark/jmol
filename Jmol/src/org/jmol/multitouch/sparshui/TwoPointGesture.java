@@ -61,8 +61,8 @@ public class TwoPointGesture implements Gesture /*extends StandardDynamicGesture
   protected Location _offset = null;
 
   protected Location _offsetCentroid = null;
-  private ArrayList<Location> _traces1 = new ArrayList<Location>();
-  private ArrayList<Location> _traces2 = new ArrayList<Location>();
+  private List<Location> _traces1 = new ArrayList<Location>();
+  private List<Location> _traces2 = new ArrayList<Location>();
   private int _id1 = -1;
   private int _id2 = -1;
   private int _nTraces = 0;
@@ -144,7 +144,7 @@ public class TwoPointGesture implements Gesture /*extends StandardDynamicGesture
     case 2:
       if (id == _id1) {
         _id1 = _id2;
-        ArrayList<Location> v = _traces1;
+        List<Location> v = _traces1;
         _traces1 = _traces2;
         _traces2 = v;
         _traces2.clear();
@@ -172,9 +172,9 @@ public class TwoPointGesture implements Gesture /*extends StandardDynamicGesture
   }
 
   // @override
-  protected ArrayList<Event> processMove(TouchPoint touchPoint) {
+  protected List<Event> processMove(TouchPoint touchPoint) {
     //System.out.println("TwoPointGesture move type:" + _myType + " ntraces:" + _nTraces + " ids:" + _id1+","+_id2+ " id:" + touchPoint.getID()  + " sizes: " + _traces1.size() + " " + _traces2.size());
-    ArrayList<Event> events = new ArrayList<Event>();
+    List<Event> events = new ArrayList<Event>();
     if (!updateLocations(touchPoint))
       return events;
     if (_myType == ActionManagerMT.INVALID_GESTURE)

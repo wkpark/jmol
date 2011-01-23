@@ -1762,7 +1762,7 @@ abstract class TransformManager {
         motion = new MotionThread();
       int nSteps = motion.set(floatSecondsTotal, center, matrixEnd, zoom, xTrans,
           yTrans, newRotationRadius, navCenter, xNav, yNav, navDepth);
-      if (nSteps == 0 || viewer.waitForMoveTo()) {
+      if (nSteps <= 0 || viewer.waitForMoveTo()) {
         motion.startMotion(false);
         motion = null;
       } else {

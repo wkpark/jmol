@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import org.jmol.api.JmolGestureServerInterface;
 import org.jmol.util.Logger;
@@ -220,7 +220,7 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
    * @param state
    * @return whether a client has claimed this touchPoint;
    */
-  boolean processTouchPoint(Hashtable<Integer, TouchPoint> inputDeviceTouchPoints, int id,
+  boolean processTouchPoint(Map<Integer, TouchPoint> inputDeviceTouchPoints, int id,
                             Location location, long time, int state) {
     if (Logger.debugging) {
       Logger.info("[GestureServer] processTouchPoint id=" + id + " state=" + state + " " + location

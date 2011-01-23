@@ -269,12 +269,12 @@ final public class ArrayUtil {
   }
 
   /**
-   * Helper method for creating a Hashtable<K, V>[] without warnings.
+   * Helper method for creating a Map<K, V>[] without warnings.
    * 
    * @param <K> Type of object for the keys in the map.
    * @param <V> Type of object for the values in the map.
    * @param size Array size.
-   * @return Array of Hashtable<K, V>
+   * @return Array of Map<K, V>
    */
   @SuppressWarnings("unchecked")
   public static <K, V> Map<K, V>[] createArrayOfHashtable(int size) {

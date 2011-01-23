@@ -12,6 +12,7 @@ import java.net.UnknownHostException;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeSet;
@@ -36,7 +37,7 @@ import com.sparshui.common.TouchState;
 public class JmolTouchSimulator implements JmolTouchSimulatorInterface {
 
   private TreeSet<TouchData> _events = new TreeSet<TouchData>(new TouchDataComparator());
-	protected Hashtable<Integer, TouchData> _active = new Hashtable<Integer, TouchData>();
+	protected Map<Integer, TouchData> _active = new Hashtable<Integer, TouchData>();
 	private boolean _recording = false;
 	private int _touchID = 0;
 	private long _when = 0;

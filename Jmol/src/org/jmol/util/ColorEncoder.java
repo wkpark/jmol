@@ -479,7 +479,7 @@ import org.jmol.util.ArrayUtil;
   }
 
   public Map<String, Object> getColorKey() {
-    Hashtable<String, Object> info = new Hashtable<String, Object>();
+    Map<String, Object> info = new Hashtable<String, Object>();
     boolean isReverse = isReversed;
     int segmentCount = getSegmentCount(currentPalette);
     switch (currentPalette) {

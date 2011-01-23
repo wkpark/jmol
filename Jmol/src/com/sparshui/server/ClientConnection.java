@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import com.sparshui.gestures.GestureType;
 
@@ -23,7 +24,7 @@ class ClientConnection {
 	/**
 	 * 
 	 */
-	private Hashtable<Integer, Group> _groups;
+	private Map<Integer, Group> _groups;
 
 	/**
 	 * Instantiate the connection on the specified socket.

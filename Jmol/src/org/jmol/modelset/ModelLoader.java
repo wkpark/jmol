@@ -317,7 +317,7 @@ public final class ModelLoader extends ModelSet {
     int modelAtomCount = 0;
     for (int i = baseModelIndex; i < modelCount; atomIndex += modelAtomCount, i++) {
       modelAtomCount = models[i].bsAtoms.cardinality();
-      Map<String, String> atomProperties = (Hashtable<String, String>) getModelAuxiliaryInfo(i,
+      Map<String, String> atomProperties = (Map<String, String>) getModelAuxiliaryInfo(i,
           "atomProperties");
       if (atomProperties == null)
         continue;

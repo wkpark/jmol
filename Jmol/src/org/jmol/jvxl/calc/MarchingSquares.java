@@ -24,6 +24,7 @@
 package org.jmol.jvxl.calc;
 
 import java.util.Hashtable;
+import java.util.Map;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
@@ -187,7 +188,7 @@ public class MarchingSquares {
     return 0;
   }
 
-  Hashtable<String, Integer> htPts = new Hashtable<String, Integer>();
+  Map<String, Integer> htPts = new Hashtable<String, Integer>();
 
   private class Triangle {
     int[] pts;

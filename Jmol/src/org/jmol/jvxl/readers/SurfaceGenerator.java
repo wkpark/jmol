@@ -206,7 +206,7 @@ public class SurfaceGenerator {
     return atomDataServer;
   }
 
-  ColorEncoder getColorEncoder() {
+  public ColorEncoder getColorEncoder() {
     return params.colorEncoder;
   }
 

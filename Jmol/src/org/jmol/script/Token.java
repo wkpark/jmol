@@ -468,7 +468,6 @@ public class Token {
   final static int opLE         = 2 | comparator | 9 << 4;
   final static int opLT         = 3 | comparator | 9 << 4;
   public final static int opEQ  = 4 | comparator | 9 << 4;
-  public final static int opEQEQ = 5 | comparator | 9 << 4;
   final static int opNE         = 6 | comparator | 9 << 4;
    
   final static int minus        = 0 | mathop | 10 << 4;
@@ -1246,7 +1245,6 @@ public class Token {
   final static Token tokenCoordinateEnd = tokenRightBrace;
   final static Token tokenColon           = new Token(colon, ':');
   final static Token tokenSet             = new Token(set, '=', "");
-  final static Token tokenSetEqEq         = new Token(set, '#', "");
   final static Token tokenSetArray        = new Token(set, '[', "");
   final static Token tokenSetProperty     = new Token(set, '.', "");
   final static Token tokenSetVar          = new Token(set, '=', "var");
@@ -1414,7 +1412,7 @@ public class Token {
       ">=",           new Token(opGE),
       ">",            new Token(opGT),
       "=",            tokenEquals,
-      "==",           new Token(opEQEQ),
+      "==",           null,
       "!=",           new Token(opNE),
       "<>",           null,
       "within",       new Token(within),
@@ -1561,6 +1559,7 @@ public class Token {
       "rama",              null,
       "refresh",           new Token(refresh),
       "reset",             new Token(reset),
+      "unset",             null,
       "restore",           new Token(restore),
       "restrict",          new Token(restrict),
       "return",            new Token(returncmd),

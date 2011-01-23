@@ -98,7 +98,7 @@ public class ScriptFunction {
       ScriptVariable local = contextVariables.get(names.get(i).toLowerCase());
       if (local.tok != Token.varray)  // TODO: list type?
         continue;
-      global.objects = local.objects;
+      global.value = local.value;
     }
   }
 

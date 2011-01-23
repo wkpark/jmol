@@ -813,8 +813,7 @@ abstract class ScriptCompilationTokenParser {
     }
     if (tokenAttr(tokenAtomProperty, Token.strproperty) 
         && tokenComparator.tok != Token.opEQ 
-        && tokenComparator.tok != Token.opNE
-        && tokenComparator.tok != Token.opEQEQ)
+        && tokenComparator.tok != Token.opNE)
       return error(ERROR_tokenExpected, "== !=");
     if (getToken() == null)
       return error(ERROR_unrecognizedExpressionToken, "" + valuePeek());

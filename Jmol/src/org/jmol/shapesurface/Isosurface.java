@@ -1049,7 +1049,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     //viewer.setPropertyColorScheme(schemeName, sg.getParams().colorSchemeTranslucent, false);
     thisMesh.isColorSolid = false;
     thisMesh.colorDensity = jvxlData.colorDensity;
-    thisMesh.colorEncoder = sg.getParams().colorEncoder;
+    thisMesh.colorEncoder = sg.getColorEncoder();
     thisMesh.getContours();
     if (thisMesh.jvxlData.jvxlPlane != null)
       allowContourLines = false;

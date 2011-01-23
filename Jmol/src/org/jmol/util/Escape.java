@@ -470,38 +470,11 @@ public class Escape {
   }
 
   public static String escape(Matrix3f m3) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("[[").append(m3.m00).append(",")
-    .append(m3.m01).append(",")
-    .append(m3.m02).append("]")
-    .append(",[").append(m3.m10).append(",")
-    .append(m3.m11).append(",")
-    .append(m3.m12).append("]")
-    .append(",[").append(m3.m20).append(",")
-    .append(m3.m21).append(",")
-    .append(m3.m22).append("]]");
-   return sb.toString();
+    return m3.toString();
   }
   
   public static String escape(Matrix4f m4) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("[[").append(m4.m00).append(",")
-    .append(m4.m01).append(",")
-    .append(m4.m02).append(",")
-    .append(m4.m03).append("]")
-    .append(",[").append(m4.m10).append(",")
-    .append(m4.m11).append(",")
-    .append(m4.m12).append(",")
-    .append(m4.m13).append("]")
-    .append(",[").append(m4.m20).append(",")
-    .append(m4.m21).append(",")
-    .append(m4.m22).append(",")
-    .append(m4.m23).append("]")
-    .append(",[").append(m4.m30).append(",")
-    .append(m4.m31).append(",")
-    .append(m4.m32).append(",")
-    .append(m4.m33).append("]]");
-   return sb.toString();
+    return (m4.toString());
   }
 
   public static String escape(Map<String, Object> ht) {
@@ -858,26 +831,5 @@ public class Escape {
       array[i] = v.get(i);
     }
     return array;
-  }
-
-  @SuppressWarnings("unchecked")
-  public static BitSet unEscapeBitSetArray(Object o, boolean allowNull) {
-    BitSet bs = new BitSet();
-    if (o instanceof ArrayList<?>) {
-      ArrayList<ScriptVariable> sv = (ArrayList<ScriptVariable>) o;
-      for (int i = 0; i < sv.size(); i++)
-        if (!sv.get(i).unEscapeBitSetArray(bs) && allowNull)
-          return null;
-    } else if (o instanceof String[]) {
-      String[] list = (String[]) o;
-      for (int i = 0; i < list.length; i++) {
-        BitSet bs1 = unescapeBitset(list[i]);
-        if (bs1 != null)
-          bs.or(bs1);
-        else if (allowNull)
-          return null;
-      }
-    }
-    return bs;
   }
 }

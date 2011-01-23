@@ -736,15 +736,6 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       atokenInfix = new Token[0];
       return true;
     }
-    if (isNewSet && setEqualPt == Integer.MAX_VALUE && tokAt(2) == Token.per
-        && ltoken.size() == 4) {
-      // implicit script command
-      isNewSet = false;
-      String name = "" + tokenAt(1).value + "." + tokenAt(3).value;
-      ltoken.clear();
-      addTokenToPrefix(Token.tokenScript);
-      addTokenToPrefix(new Token(Token.string, name));
-    }
     setCommand(tokenAt(0));
     int size = ltoken.size();
     if (size == 1 && Token.tokAttr(tokCommand, Token.defaultON))
@@ -869,7 +860,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         char ch2 = (ichToken + 1 >= cchScript ? 0 : script.charAt(ichToken + 1));
         if (Token.tokAttr(tokCommand, Token.setparam) && ch == '='
             || (isNewSet || isSetBrace) && (isAndEquals || ch == '.' || ch == '[')) {
-          setCommand(isAndEquals ? (ch == '=' && ch2 == '=' ? Token.tokenSetEqEq : Token.tokenSet)
+          setCommand(isAndEquals ? Token.tokenSet
               : ch == '[' && !isSetBrace ? Token.tokenSetArray : Token.tokenSetProperty);
           ltoken.add(0, tokenCommand);
           cchToken = 1;
@@ -1119,41 +1110,50 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       return ERROR(ERROR_badContext, ident);
     switch (theTok) {
     case Token.identifier:
-      if (nTokens == 0 && ident.charAt(0) == '\'') {
-        addTokenToPrefix(setCommand(Token.tokenScript));
-        cchToken = 0;
-        return CONTINUE;
+      if (nTokens == 0) {
+        if (ident.charAt(0) == '\'') {
+          addTokenToPrefix(setCommand(Token.tokenScript));
+          cchToken = 0;
+          return CONTINUE;
+        }
+        if (ichToken + cchToken < cchScript && script.charAt(ichToken + cchToken) == '.') {
+          addTokenToPrefix(setCommand(Token.tokenScript));
+          nTokens = 1;
+          cchToken = 0;
+          return CONTINUE;
+        }
       }
       break;
     case Token.andequals:
-      if (theTok == Token.andequals) {
-        if (nSemiSkip == forPoint3 && nTokens == ptSemi + 2) {
-          token = lastToken;
-          addTokenToPrefix(Token.tokenEquals);
-          addTokenToPrefix(token);
-          token = Token.getTokenFromName(ident.substring(0, 1));
-          addTokenToPrefix(token);
-          addTokenToPrefix(Token.tokenLeftParen);
-          needRightParen = true;
-          return CONTINUE;
-        }
-        checkNewSetCommand();
-        if (tokCommand == Token.set) {
-          tokenAndEquals = Token.getTokenFromName(ident.substring(0, 1));
-          setEqualPt = ichToken;
-          return OK;
-        }
-        if (tokCommand == Token.slab || tokCommand == Token.depth) {
-          addTokenToPrefix(tokenCommand);
-          replaceCommand(Token.tokenSet);
-          tokenAndEquals = Token.getTokenFromName(ident.substring(0, 1));
-          setEqualPt = ichToken;
-          return OK;
-        }
-        // otherwise ignore
+      if (nSemiSkip == forPoint3 && nTokens == ptSemi + 2) {
+        token = lastToken;
+        addTokenToPrefix(Token.tokenEquals);
+        addTokenToPrefix(token);
+        token = Token.getTokenFromName(ident.substring(0, 1));
+        addTokenToPrefix(token);
+        addTokenToPrefix(Token.tokenLeftParen);
+        needRightParen = true;
         return CONTINUE;
       }
-      break;
+      // check to see if we have a command name that
+      // was not registered yet as a local variable:
+      // var color = 3
+      // color += 3
+      checkNewSetCommand();
+      if (tokCommand == Token.set) {
+        tokenAndEquals = Token.getTokenFromName(ident.substring(0, 1));
+        setEqualPt = ichToken;
+        return OK;
+      }
+      if (tokCommand == Token.slab || tokCommand == Token.depth) {
+        addTokenToPrefix(tokenCommand);
+        replaceCommand(Token.tokenSet);
+        tokenAndEquals = Token.getTokenFromName(ident.substring(0, 1));
+        setEqualPt = ichToken;
+        return OK;
+      }
+      // otherwise ignore
+      return CONTINUE;
     case Token.end:
     case Token.endifcmd:
       if (flowContext != null)
@@ -1211,7 +1211,6 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       }
       break;
     case Token.opEQ:
-    case Token.opEQEQ:
       if (parenCount == 0 && bracketCount == 0)
         setEqualPt = ichToken;
       break;
@@ -1603,7 +1602,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           return CONTINUE;
         }
         if (nTokens == 2) {
-          if (theTok == Token.opEQ || theTok == Token.opEQEQ) {
+          if (theTok == Token.opEQ) {
             // we are looking at @x =.... just insert a SET command
             // and ignore the =. It's the same as set @x ...
             ltoken.add(0, Token.tokenSet);
@@ -1635,7 +1634,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
 
   private Token setNewSetCommand(boolean isSetBrace, String ident) {
     tokCommand = Token.set;
-    isNewSet = !isSetBrace && !isUserFunction(ident);
+    isNewSet = (!isSetBrace && !isUserFunction(ident));
     setBraceCount = (isSetBrace ? 1 : 0);
     bracketCount = 0;
     setEqualPt = Integer.MAX_VALUE;

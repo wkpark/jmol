@@ -124,12 +124,13 @@ abstract class FontLineShapeRenderer extends ShapeRenderer {
 
     if (dx == 0)
       return;
+    /*
     boolean isOut = true;
     if (dx < 0) {
       isOut = false;
       dx = -dx;
     }
-
+    */
     if (g3d.isAntialiased())
       length *= 2;
     // perpendicular to line on screen:
@@ -189,8 +190,8 @@ abstract class FontLineShapeRenderer extends ShapeRenderer {
     //float ty = vectorT2.y * ((ptA.screenY + ptB.screenY) / 2 - pt2.y);
     //if (tx + ty < -0.1)
       //vectorT2.scale(-1);
-    if (!isOut)
-      vectorT2.scale(-1);
+    //if (!isOut)
+      //vectorT2.scale(-1);
     boolean horizontal = (Math.abs(vectorT2.x / vectorT2.y) < 0.2);
     boolean centerX = horizontal;
     boolean centerY = !horizontal;

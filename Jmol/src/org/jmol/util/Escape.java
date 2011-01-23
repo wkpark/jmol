@@ -485,6 +485,8 @@ public class Escape {
       String key = entry.getKey();
       sb.append(sep).append(escape(key)).append(':');
       Object val = entry.getValue();
+      if (!(val instanceof ScriptVariable))
+        val = ScriptVariable.getVariable(val);
       sb.append(((ScriptVariable)val).escape());
       sep = ","; 
     }

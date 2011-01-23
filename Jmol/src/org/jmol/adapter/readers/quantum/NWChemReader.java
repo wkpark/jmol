@@ -24,7 +24,13 @@
 
 package org.jmol.adapter.readers.quantum;
 
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+
 import org.jmol.adapter.smarter.*;
+import org.jmol.api.JmolAdapter;
 
 
 /**
@@ -45,7 +51,7 @@ import org.jmol.adapter.smarter.*;
  * 
 **/
 
-public class NWChemReader extends AtomSetCollectionReader {
+public class NWChemReader extends MOReader {
 
   /**
    * The number of the task begin interpreted.
@@ -73,6 +79,8 @@ public class NWChemReader extends AtomSetCollectionReader {
   private boolean haveEnergy;
   private boolean haveAt;
   private boolean inInput;
+  
+  private List<String> atomTypes;
  
  /**
    * @return true if need to read new line
@@ -130,9 +138,16 @@ public class NWChemReader extends AtomSetCollectionReader {
         readPartialCharges();
       return true;
     }
+    if (line.contains("Basis \"ao basis\"")) {
+      readBasis();
+      return true;
+    }
+    if (line.contains("Final Molecular Orbital Analysis")) {
+      readMolecularOrbitals();
+    }
     return true;//checkNboLine();
   }
-  
+
   private void init() {
     haveEnergy = false;
     haveAt = false;
@@ -246,11 +261,13 @@ public class NWChemReader extends AtomSetCollectionReader {
         "Task "+taskNumber+
         (inInput?SmarterJmolAdapter.PATH_SEPARATOR+"Input":
          SmarterJmolAdapter.PATH_SEPARATOR+"Geometry"));
+    atomTypes = new ArrayList<String>();
     while (readLine() != null && line.length() > 0) {
       tokens = getTokens(); // get the tokens in the line
       if (tokens.length < 6) break; // if don't have enough of them: done
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = fixTag(tokens[1]);
+      atomTypes.add(atom.atomName);
       setAtomCoord(atom, parseFloat(tokens[3]), parseFloat(tokens[4]), parseFloat(tokens[5]));
     }
     // only if was converged, use the last energy for the name and properties
@@ -523,4 +540,258 @@ public class NWChemReader extends AtomSetCollectionReader {
     return "" + Character.toUpperCase(tag.charAt(0))
         + (tag.length() == 1 ? "" : "" + Character.toLowerCase(tag.charAt(1)));
   }
+
+  int nBasisFunctions;
+  
+  /*
+
+                        Basis "ao basis" -> "ao basis" (cartesian)
+                        -----
+    C (Carbon)
+    ----------
+              Exponent  Coefficients 
+         -------------- ---------------------------------------------------------
+    1 S  6.66500000E+03  0.000692
+    1 S  1.00000000E+03  0.005329
+    1 S  2.28000000E+02  0.027077
+    1 S  6.47100000E+01  0.101718
+    1 S  2.10600000E+01  0.274740
+    1 S  7.49500000E+00  0.448564
+    1 S  2.79700000E+00  0.285074
+    1 S  5.21500000E-01  0.015204
+
+    2 S  6.66500000E+03 -0.000146
+    2 S  1.00000000E+03 -0.001154
+    2 S  2.28000000E+02 -0.005725
+    2 S  6.47100000E+01 -0.023312
+    2 S  2.10600000E+01 -0.063955
+    2 S  7.49500000E+00 -0.149981
+    2 S  2.79700000E+00 -0.127262
+    2 S  5.21500000E-01  0.544529
+
+    3 S  1.59600000E-01  1.000000
+
+    4 P  9.43900000E+00  0.038109
+    4 P  2.00200000E+00  0.209480
+    4 P  5.45600000E-01  0.508557
+
+    5 P  1.51700000E-01  1.000000
+
+    6 D  5.50000000E-01  1.000000
+
+    F (Fluorine)
+    ------------
+              Exponent  Coefficients 
+         -------------- ---------------------------------------------------------
+    1 S  1.47100000E+04  0.000721
+    1 S  2.20700000E+03  0.005553
+    1 S  5.02800000E+02  0.028267
+    1 S  1.42600000E+02  0.106444
+    1 S  4.64700000E+01  0.286814
+    1 S  1.67000000E+01  0.448641
+    1 S  6.35600000E+00  0.264761
+    1 S  1.31600000E+00  0.015333
+
+    2 S  1.47100000E+04 -0.000165
+    2 S  2.20700000E+03 -0.001308
+    2 S  5.02800000E+02 -0.006495
+    2 S  1.42600000E+02 -0.026691
+    2 S  4.64700000E+01 -0.073690
+    2 S  1.67000000E+01 -0.170776
+    2 S  6.35600000E+00 -0.112327
+    2 S  1.31600000E+00  0.562814
+
+    3 S  3.89700000E-01  1.000000
+
+    4 P  2.26700000E+01  0.044878
+    4 P  4.97700000E+00  0.235718
+    4 P  1.34700000E+00  0.508521
+
+    5 P  3.47100000E-01  1.000000
+
+    6 D  1.64000000E+00  1.000000
+
+    H (Hydrogen)
+    ------------
+              Exponent  Coefficients 
+         -------------- ---------------------------------------------------------
+    1 S  1.30100000E+01  0.019685
+    1 S  1.96200000E+00  0.137977
+    1 S  4.44600000E-01  0.478148
+
+    2 S  1.22000000E-01  1.000000
+
+    3 P  7.27000000E-01  1.000000
+
+
+
+   Summary of "ao basis" -> "ao basis" (cartesian)
+
+   * 
+   */
+
+  private void readBasis() throws Exception {
+    shells = new ArrayList<int[]>();
+    gaussianCount = 0;
+    shellCount = 0;
+    nBasisFunctions = 0;
+
+    Map<String, List<List<Object[]>>> atomInfo = new Hashtable<String, List<List<Object[]>>>();
+    String atomSym = null;
+    List<List<Object[]>> atomData = null;
+    List<Object[]> shellData = null;
+    while (line != null) {
+      while (line.length() < 3 || line.charAt(2) == ' ') {
+        shellData = new ArrayList<Object[]>();
+        readLine();
+      }
+      if (parseInt(line) == Integer.MIN_VALUE) {
+        if (line.indexOf("Summary") >= 0)
+          break;
+        // next atom type
+        atomSym = getTokens()[0];
+        atomData = new ArrayList<List<Object[]>>();
+        atomInfo.put(atomSym, atomData);
+        readLine();
+        readLine();
+        continue;
+      }
+      while (line != null && line.length() > 3) {
+        String[] tokens = getTokens();
+        Object[] o = new Object[] { tokens[1],
+            new float[] { parseFloat(tokens[2]),
+            parseFloat(tokens[3]) } };
+        shellData.add(o);
+        readLine();
+      }
+      atomData.add(shellData);
+    }
+
+    int nD = 6; //??
+    int nF = 10; //??
+    List<float[]> gdata = new ArrayList<float[]>();
+    for (int i = 0; i < atomTypes.size(); i++) {
+      atomData = atomInfo.get(atomTypes.get(i));
+      int nShells = atomData.size();
+      for (int ishell = 0; ishell < nShells; ishell++) {
+        shellCount++;
+        shellData = atomData.get(ishell);
+        int nGaussians = shellData.size();
+        String type = (String) shellData.get(0)[0];
+        switch (type.charAt(0)) {
+        case 'S':
+          nBasisFunctions += 1;
+          break;
+        case 'P':
+          nBasisFunctions += 3;
+          break;
+        case 'D':
+          nBasisFunctions += nD;
+          break;
+        case 'F':
+          nBasisFunctions += nF;
+          break;
+        }
+        int[] slater = new int[4];
+        slater[0] = i;
+        slater[1] = JmolAdapter.getQuantumShellTagID(type);
+        slater[2] = gaussianCount;
+        slater[3] = nGaussians;
+        shells.add(slater);
+        for (int ifunc = 0; ifunc < nGaussians; ifunc++)
+          gdata.add((float[]) shellData.get(ifunc)[1]);
+        gaussianCount += nGaussians;
+      }      
+    }
+    gaussians = new float[gaussianCount][];
+    for (int i = 0; i < gaussianCount; i++)
+      gaussians[i] = gdata.get(i);    
+  }
+
+  /*
+   * 
+                       ROHF Final Molecular Orbital Analysis
+                       -------------------------------------
+
+ Vector    9  Occ=2.000000D+00  E=-1.152419D+00  Symmetry=a1
+              MO Center=  1.0D-19,  2.0D-16, -4.4D-01, r^2= 2.3D+00
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+    77      0.180031   6 C  s                47      0.180031   4 C  s         
+    32      0.178250   3 C  s                92      0.178250   7 C  s         
+    62      0.177105   5 C  s                 2      0.174810   1 C  s         
+
+ Vector   10  Occ=2.000000D+00  E=-1.030565D+00  Symmetry=b2
+              MO Center=  2.1D-18,  1.8D-17, -3.6D-01, r^2= 2.9D+00
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+    92      0.216716   7 C  s                32     -0.216716   3 C  s         
+    47     -0.205297   4 C  s                77      0.205297   6 C  s         
+
+...
+ Vector   39  Occ=0.000000D+00  E= 6.163870D-01  Symmetry=b2
+              MO Center= -9.0D-31,  2.4D-14, -1.7D-01, r^2= 5.7D+00
+   Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
+  ----- ------------  ---------------      ----- ------------  ---------------
+    68      2.509000   5 C  py               39     -2.096777   3 C  pz        
+    99      2.096777   7 C  pz               54     -1.647235   4 C  pz        
+    84      1.647235   6 C  pz                8     -1.004675   1 C  py        
+    98     -0.870389   7 C  py               38     -0.870389   3 C  py        
+    83      0.691421   6 C  py               53      0.691421   4 C  py        
+
+
+ center of mass
+   * 
+   */
+  private void readMolecularOrbitals() throws Exception {
+    // note -- this is preliminary. Should be connecting the correct Gaussians
+    // with the correct shells, but we may have a problem with:
+    // (a) D,F order (unchecked)
+    // (b) alpha/beta orbitals (unchecked)
+    // (b) normalization. (not correct)
+    //     With or without "isNormalized" being set TRUE, we see a problem
+    //     with integration. Using, for example:
+    //       set DEBUG; mo HOMO
+    //     we see too-low integrated density being reported.
+    //     I don't know if this is because only a selected subset of the
+    //     contributing orbitals are included (doubt that) or because
+    //     NWChem normalizes these orbitals in a different way.
+    //
+    
+    //moData.put("isNormalized", Boolean.TRUE);
+    if (shells == null)
+      return;
+    while (line != null) {
+      while (line.length() < 3 || line.charAt(1) == ' ') {
+        readLine();
+      }
+      if (line.charAt(1) != 'V') 
+        break;
+      line = line.replace('=', ' ');
+      //  Vector    9  Occ=2.000000D+00  E=-1.152419D+00  Symmetry=a1
+      String[] tokens = getTokens();
+      float occupancy = parseFloat(tokens[3]);
+      float energy = parseFloat(tokens[5]);
+      String symmetry = tokens[7];
+      discardLines(3);
+      Map<String, Object> mo = new Hashtable<String, Object>();
+      setMO(mo);
+      float[] coefs = new float[nBasisFunctions];
+      mo.put("occupancy", Float.valueOf(occupancy));
+      mo.put("energy", Float.valueOf(energy));
+      mo.put("symmetry", symmetry);
+      mo.put("coefficients", coefs);
+      
+//    68      2.509000   5 C  py               39     -2.096777   3 C  pz        
+      while (readLine() != null && line.length() > 3) {
+        tokens = getTokens();
+        coefs[parseInt(tokens[0]) - 1] = parseFloat(tokens[1]);
+        if (tokens.length == 10)
+          coefs[parseInt(tokens[5]) - 1] = parseFloat(tokens[6]);          
+      }
+    }
+    setMOData(false);
+  }
+
+
 }

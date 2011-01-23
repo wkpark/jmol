@@ -394,7 +394,7 @@ public class StateManager {
 
     public String getMoveToText(boolean asCommand) {
       return (asCommand ? "  " + moveToText + "\n  save orientation \"" 
-          + saveName.substring(12) + "\"\n" : moveToText);
+          + saveName.substring(12) + "\";\n" : moveToText);
     }
     
     public void restore(float timeSeconds, boolean isAll) {

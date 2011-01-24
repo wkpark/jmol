@@ -212,7 +212,7 @@ public class ScriptEvaluator {
   public void evaluateCompiledScript(boolean isCmdLine_c_or_C_Option,
                                      boolean isCmdLine_C_Option,
                                      boolean historyDisabled,
-                                     boolean listCommands) {
+                                     boolean listCommands, StringBuffer outputBuffer) {
     boolean tempOpen = this.isCmdLine_C_Option;
     this.isCmdLine_C_Option = isCmdLine_C_Option;
     viewer.pushHoldRepaint("runEval");
@@ -223,6 +223,7 @@ public class ScriptEvaluator {
     isSyntaxCheck = this.isCmdLine_c_or_C_Option = isCmdLine_c_or_C_Option;
     timeBeginExecution = System.currentTimeMillis();
     this.historyDisabled = historyDisabled;
+    this.outputBuffer = outputBuffer;
     setErrorMessage(null);
     try {
       try {

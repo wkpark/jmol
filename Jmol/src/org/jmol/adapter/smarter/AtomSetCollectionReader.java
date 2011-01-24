@@ -200,7 +200,7 @@ public abstract class AtomSetCollectionReader {
   void setup(String fileName, Map<String, Object> htParams,
              BufferedReader reader) {
     this.htParams = htParams;
-    this.fileName = fileName;
+    this.fileName = fileName.replace('\\', '/');
     this.reader = reader;
   }
 

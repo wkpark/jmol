@@ -2,7 +2,7 @@ package org.jmol;
 
 /*
  * An extraordinarily simple application that just creates a viewer,
- * runs a script, and returns the result of PRINT or MESSAGE or ECHO command
+ * runs a script, and returns the collective result of PRINT, MESSAGE or ECHO commands
  * 
  */
 import org.jmol.api.JmolViewer;

@@ -8615,9 +8615,9 @@
   <fah_proj number="6883" name="AbetaM3_shooting" public="y" file="xyz"
     server="171.67.108.33" atoms="12226" preferred="14" deadline="21"
     credit="69" frames="100" code="G" contact="lin5" contrib="Danny Nielsen"/>
-  <fah_proj number="6885" name="Abeta40_shooting" public="y"
+  <fah_proj number="6885" name="Abeta40_shooting" public="y" file="xyz"
     server="171.67.108.33" atoms="12193" preferred="14" deadline="21"
-    credit="69" frames="100" code="G" contact="lin5"/>
+    credit="69" frames="100" code="G" contact="lin5" contrib="Danny Nielsen"/>
   <fah_proj number="6886" name="Abeta42_dPro_shooting" public="y" file="xyz"
     server="171.67.108.33" atoms="12229" preferred="14" deadline="21"
     credit="69" frames="100" code="G" contact="lin5" contrib="Danny Nielsen"/>
@@ -8977,6 +8977,9 @@
   <fah_proj number="10430" name="p10430" public="n"
     server="171.64.65.80" atoms="576" preferred="13" deadline="19"
     credit="25" frames="100" code="A4" contact="kyleb"/>
+  <fah_proj number="10432" name="p10432" public="n"
+    server="171.64.65.80" atoms="0" preferred="4" deadline="8"
+    credit="425" frames="100" code="A4" contact="kyleb" kfactor="2.82"/>
 
   <!-- Projects 10500 to 10599 -->
   <fah_proj number="10501" name="p10501" public="y"

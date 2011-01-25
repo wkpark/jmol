@@ -4282,6 +4282,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   @Override
   public Object scriptWaitStatus(String strScript, String statusList) {
+    // null statusList will return a String 
+    //  -- output from PRINT/MESSAGE/ECHO commands or an error message
+    // otherwise, specific status messages will be created as a Java object
     scriptManager.waitForQueue();
     boolean doTranslateTemp = GT.getDoTranslate();
     GT.setDoTranslate(false);

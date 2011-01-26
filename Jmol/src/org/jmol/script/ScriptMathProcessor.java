@@ -2554,20 +2554,44 @@ class ScriptMathProcessor {
     switch (op.tok) {
     case Token.opAND:
     case Token.opAnd:
-      if (x1.tok == Token.bitset && x2.tok == Token.bitset) {
-        BitSet bs = BitSetUtil.copy(ScriptVariable.bsSelect(x1));
-        bs.and(ScriptVariable.bsSelect(x2));
-        return addX(bs);
+      switch (x1.tok) {
+      case Token.bitset:
+        BitSet bs = ScriptVariable.bsSelect(x1);
+        switch (x2.tok) {
+        case Token.bitset:
+          bs = BitSetUtil.copy(bs);
+          bs.and(ScriptVariable.bsSelect(x2));
+          return addX(bs);
+        case Token.integer:
+          int x = ScriptVariable.iValue(x2);
+          return (addX(x < 0 ? false : bs.get(x)));
+        }
+        break;
       }
       return addX(ScriptVariable.bValue(x1) && ScriptVariable.bValue(x2));
     case Token.opOr:
-      if (x1.tok == Token.bitset && x2.tok == Token.bitset) {
+      switch (x1.tok) {
+      case Token.bitset:
         BitSet bs = BitSetUtil.copy(ScriptVariable.bsSelect(x1));
-        bs.or(ScriptVariable.bsSelect(x2));
-        return addX(bs);
-      }
-      if (x1.tok == Token.varray)
+        switch (x2.tok) {
+        case Token.bitset:
+          bs.or(ScriptVariable.bsSelect(x2));
+          return addX(bs);
+        case Token.integer:
+          int x = ScriptVariable.iValue(x2);
+          if (x < 0) 
+            break;
+          bs.set(x);
+          return addX(bs);
+        case Token.varray:
+          List<ScriptVariable> sv = (ArrayList<ScriptVariable>) x2.value;
+          for (int i = sv.size(); --i >= 0;)
+            bs.set(ScriptVariable.iValue(sv.get(i)));
+          return addX(bs);
+        }
+      case Token.varray:
         return addX(ScriptVariable.concatList(x1, x2, false));
+      }
       return addX(ScriptVariable.bValue(x1) || ScriptVariable.bValue(x2));
     case Token.opXor:
       if (x1.tok == Token.bitset && x2.tok == Token.bitset) {
@@ -2995,7 +3019,7 @@ class ScriptMathProcessor {
           return false;
         }
       case Token.bitset:
-        return addX(ScriptVariable.bsSelect(x1, n));
+        return addX(ScriptVariable.bsSelectRange(x1, n));
       }
     case Token.divide:
       if (x1.tok == Token.integer && x2.tok == Token.integer

@@ -3784,6 +3784,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   @Override
   public void notifyViewerRepaintDone() {
     repaintManager.repaintDone();
+    animationManager.repaintDone();
   }
 
   private boolean axesAreTainted = false;

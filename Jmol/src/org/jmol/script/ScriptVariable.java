@@ -728,10 +728,10 @@ public class ScriptVariable extends Token {
     return (BitSet) var.value;
   }
 
-  public static BitSet bsSelect(Token x, int n) {
+  public static BitSet bsSelectRange(Token x, int n) {
     x = selectItem(x);
-    x = selectItem(x, 1);
-    x = selectItem(x, n);
+    x = selectItem(x, (n <= 0 ? n : 1));
+    x = selectItem(x, (n <= 0 ? Integer.MAX_VALUE - 1 : n));
     return (BitSet) x.value;
   }
 

@@ -333,6 +333,11 @@ class AnimationManager {
   }
   
   int intAnimThread = 0;
+  int lastModelPainted;
+  void repaintDone() {
+    lastModelPainted = currentModelIndex;
+  }
+  
   void resumeAnimation() {
     if(currentModelIndex < 0)
       setAnimationRange(firstModelIndex, lastModelIndex);
@@ -452,7 +457,7 @@ class AnimationManager {
             if (sleepTime > 0)
               Thread.sleep(sleepTime);
           }
-          if (!isFirst && !viewer.isRepaintPending() && !setAnimationNext()) {
+          if (!isFirst && lastModelPainted == currentModelIndex && !setAnimationNext()) {
             Logger.debug("animation thread " + intThread + " exiting");
             setAnimationOff(false);
             return;

@@ -845,7 +845,7 @@ public class ScriptEvaluator {
         break;
       case Token.expressionBegin:
         if (tokAt(i + 1) == Token.expressionEnd) {
-          v = new BitSet();
+          v = new Hashtable<String, Object>();
           i++;
           break;
         } else if (tokAt(i + 1) == Token.all

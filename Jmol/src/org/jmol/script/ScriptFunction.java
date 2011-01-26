@@ -86,6 +86,7 @@ public class ScriptFunction {
   }
 
   public void unsetVariables(Map<String, ScriptVariable> contextVariables, List<ScriptVariable> params) {
+    // note: this method is never called.
     // set list values in case they have changed.
     int nParams = (params == null ? 0 : params.size());
     int nNames = names.size();

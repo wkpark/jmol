@@ -1225,6 +1225,29 @@
 	<pre>document.write(appletCode)</pre>
 				</p>
 			</section>
+			<section title="jmolEvaluate">
+				<code>jmolEvaluate(molecularMath, targetSuffix)</code>
+				<p>
+	Allows to extract to JavaScript (e.g. to a variable) information from a 
+	<a href="http://www.stolaf.edu/academics/chemapps/jmol/docs/index.htm#jmolmathjmolvariables">variable</a>
+	set in the Jmol scripting language, a 
+	<a href="http://www.stolaf.edu/academics/chemapps/jmol/docs/index.htm#jmolmath">Jmol math</a>
+	expression, or some model information.
+	Examples:
+	<pre>
+	alert( jmolEvaluate("a") );
+	// Displays the value of the 'a' variable if set in Jmol script.
+	alert( jmolEvaluate("{*}.xyz") );
+	// Displays the coordinates of the geometric center of the model.
+	alert( jmolEvaluate("{*}.length") );
+	// Displays the total number of atoms in the model.
+	alert( jmolEvaluate("{carbon}.bonds.length.min") );
+	// Displays the minimum bond length between carbon atoms.
+	alert( jmolEvaluate("_atomPicked") );
+	// Displays the index of the atom that was most recently picked.
+	</pre>
+				</p>
+			</section>
 			<section title="jmolGetPropertyAsArray">
 				<code>jmolGetPropertyAsArray(sKey, sValue, targetSuffix)</code>
 				<p>
@@ -1314,6 +1337,23 @@
 	atominfo[0].info="H1 #1"
 	atominfo[0]._ipt=0
 	atominfo[0].formalCharge=0 	</pre>
+				</p>
+			</section>
+			<section title="jmolScriptEcho">
+				<code>jmolScriptEcho(script, targetSuffix)</code>
+				<p>
+                Returns a newline-separated list, in reverse order, 
+                of all echos from a script,
+                associated to the specified JmolApplet.
+				</p>
+			</section>
+			<section title="jmolScriptMessage">
+				<code>jmolScriptMessage(script, targetSuffix)</code>
+				<p>
+                Returns a newline-separated list, in reverse order, 
+                of all messages from a script,
+                associated to the specified JmolApplet, 
+                ending with <code>Script completed\n</code>.
 				</p>
 			</section>
 		</section>

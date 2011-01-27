@@ -12875,7 +12875,7 @@ public class ScriptEvaluator {
     }
 
     if (isUserVariable) {
-      System.out.println("setvar " + key + " " + t);
+      //System.out.println("setvar " + key + " " + t);
       t.set(tv, false);
       return;
     }

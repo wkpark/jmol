@@ -2323,21 +2323,23 @@ public class ScriptEvaluator {
     this.tQuiet = tQuiet;
   }
 
-  private ScriptContext thisContext = null;
+  protected ScriptContext thisContext = null;
 
   private void pushContext(ContextToken token) throws ScriptException {
     if (scriptLevel == scriptLevelMax)
       error(ERROR_tooManyScriptLevels);
-    scriptLevel++;
     thisContext = getScriptContext();
     thisContext.token = token;
-    if (token != null) {
+    if (token == null) {
+      scriptLevel = ++thisContext.scriptLevel;
+    } else {
+      thisContext.scriptLevel = -1;
       contextVariables = new Hashtable<String, ScriptVariable>();
       for (String key: token.contextVariables.keySet())
         ScriptCompiler.addContextVariable(contextVariables, key);
     }
     if (Logger.debugging || isCmdLine_c_or_C_Option)
-      Logger.info("-->>-------------".substring(0, scriptLevel + 5)
+      Logger.info("-->>-------------".substring(0, Math.max(17, scriptLevel + 5))
           + scriptLevel + " " + filename + " " + token + " " + thisContext);
     //System.out.println("scriptEval " + token + " " + scriptLevel + ": " + contextVariables);
   }
@@ -2376,18 +2378,17 @@ public class ScriptEvaluator {
   }
 
   void popContext(boolean isFlowCommand, boolean statementOnly) {
-    if (scriptLevel == 0)
-      return;
-    scriptLevel--;
     if (thisContext == null)
       return;
+    if (thisContext.scriptLevel > 0)
+      scriptLevel = thisContext.scriptLevel - 1;
     // we must save (and thus NOT restore) the current statement
     // business when doing push/pop for commands like FOR and WHILE
     ScriptContext scTemp = (isFlowCommand ? getScriptContext() : null);
     restoreScriptContext(thisContext, true, isFlowCommand, statementOnly);
     restoreScriptContext(scTemp, true, false, true);
     if (Logger.debugging || isCmdLine_c_or_C_Option)
-      Logger.info("--<<-------------".substring(0, scriptLevel + 5)
+      Logger.info("--<<-------------".substring(0, Math.max(17, scriptLevel + 5))
           + scriptLevel + " " + filename + " "
           + (thisContext == null ? "" : "" + thisContext.token) + " "
           + thisContext);
@@ -2870,7 +2871,7 @@ public class ScriptEvaluator {
         return;
       }
       String s = getScriptContext().getContextTrace(null, true).toString();
-      while (scriptLevel > 0)
+      while (thisContext != null)
         popContext(false, false);
       message += s;
       this.untranslated += s;

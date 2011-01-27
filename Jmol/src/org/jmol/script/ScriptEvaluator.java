@@ -2335,11 +2335,13 @@ public class ScriptEvaluator {
     } else {
       thisContext.scriptLevel = -1;
       contextVariables = new Hashtable<String, ScriptVariable>();
-      for (String key: token.contextVariables.keySet())
-        ScriptCompiler.addContextVariable(contextVariables, key);
+      if (token.contextVariables != null)
+        for (String key : token.contextVariables.keySet())
+          ScriptCompiler.addContextVariable(contextVariables, key);
     }
     if (Logger.debugging || isCmdLine_c_or_C_Option)
-      Logger.info("-->>-------------".substring(0, Math.max(17, scriptLevel + 5))
+      Logger.info("-->>-------------".substring(0, Math
+          .max(17, scriptLevel + 5))
           + scriptLevel + " " + filename + " " + token + " " + thisContext);
     //System.out.println("scriptEval " + token + " " + scriptLevel + ": " + contextVariables);
   }

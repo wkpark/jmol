@@ -2632,11 +2632,11 @@ class ScriptMathProcessor {
             || Math.abs(f1 - f2) >= 0.000001);
       }
     case Token.plus:
-      if (x1.tok == Token.varray || x2.tok == Token.varray)
-        return addX(ScriptVariable.concatList(x1, x2, true));
       switch (x1.tok) {
       default:
         return addX(ScriptVariable.fValue(x1) + ScriptVariable.fValue(x2));
+      case Token.varray:
+        return addX(ScriptVariable.concatList(x1, x2, true));
       case Token.integer:
         switch (x2.tok) {
         case Token.string:

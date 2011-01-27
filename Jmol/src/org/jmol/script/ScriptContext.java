@@ -47,6 +47,7 @@ public class ScriptContext {
   public int iToken;
   public StringBuffer outputBuffer;
   public Map<String, ScriptVariable> contextVariables;
+  public boolean isFunction;
   public boolean isStateScript;
   public String errorMessage;
   public String errorMessageUntranslated;

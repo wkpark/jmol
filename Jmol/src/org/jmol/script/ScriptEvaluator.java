@@ -1699,7 +1699,7 @@ public class ScriptEvaluator {
 
   // ///////////////////// general fields //////////////////////
 
-  private final static int scriptLevelMax = 20;
+  private final static int scriptLevelMax = 100;
 
   private Thread currentThread;
   protected Viewer viewer;
@@ -1888,6 +1888,8 @@ public class ScriptEvaluator {
       return contextVariables.get(var);
     ScriptContext context = thisContext;
     while (context != null) {
+      if (context.isFunction == true)
+        return null;
       if (context.contextVariables != null
           && context.contextVariables.containsKey(var))
         return context.contextVariables.get(var);
@@ -1912,6 +1914,7 @@ public class ScriptEvaluator {
                              ScriptVariable tokenAtom, boolean getReturn)
       throws ScriptException {
     pushContext(null);
+    thisContext.isFunction = true;
     //System.out.println(contextPath);
     if (function == null) {
       function = viewer.getFunction(name);
@@ -2329,11 +2332,14 @@ public class ScriptEvaluator {
     thisContext = getScriptContext();
     thisContext.token = token;
     if (token != null) {
-      contextVariables = token.contextVariables;
+      contextVariables = new Hashtable<String, ScriptVariable>();
+      for (String key: token.contextVariables.keySet())
+        ScriptCompiler.addContextVariable(contextVariables, key);
     }
     if (Logger.debugging || isCmdLine_c_or_C_Option)
       Logger.info("-->>-------------".substring(0, scriptLevel + 5)
           + scriptLevel + " " + filename + " " + token + " " + thisContext);
+    //System.out.println("scriptEval " + token + " " + scriptLevel + ": " + contextVariables);
   }
 
   public ScriptContext getScriptContext() {
@@ -12869,6 +12875,7 @@ public class ScriptEvaluator {
     }
 
     if (isUserVariable) {
+      System.out.println("setvar " + key + " " + t);
       t.set(tv, false);
       return;
     }

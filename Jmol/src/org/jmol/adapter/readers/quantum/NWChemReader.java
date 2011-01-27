@@ -31,7 +31,8 @@ import java.util.Map;
 
 import org.jmol.adapter.smarter.*;
 import org.jmol.api.JmolAdapter;
-
+import org.jmol.util.ArrayUtil;
+import org.jmol.util.Logger;
 
 /**
  * A reader for NWChem 4.6
@@ -58,13 +59,13 @@ public class NWChemReader extends MOReader {
    * <p>Used for the construction of the 'path' for the atom set.
    */
   private int taskNumber = 1;
-  
+
   /**
    * The number of equivalent atom sets.
    * <p>Needed to associate identical properties to multiple atomsets
    */
   private int equivalentAtomSets = 0;
-  
+
   /**
    * The type of energy last calculated.
    */
@@ -73,20 +74,26 @@ public class NWChemReader extends MOReader {
    * The last calculated energy value.
    */
   private String energyValue = "";
-  
+
   // need to remember a bit of the state of what was read before...
   private boolean converged;
   private boolean haveEnergy;
   private boolean haveAt;
   private boolean inInput;
-  
+
   private List<String> atomTypes;
- 
- /**
-   * @return true if need to read new line
-   * @throws Exception
-   * 
-   */
+  private boolean readROHFonly;
+
+  @Override
+  protected void initializeReader() {
+    readROHFonly = (filter != null && filter.indexOf("ROHF") >= 0);
+  }
+
+  /**
+    * @return true if need to read new line
+    * @throws Exception
+    * 
+    */
   @Override
   protected boolean checkLine() throws Exception {
     if (line.startsWith("          Step")) {
@@ -95,6 +102,11 @@ public class NWChemReader extends MOReader {
     }
     if (line.startsWith("      Symmetry information")) {
       readSymmetry();
+      return true;
+    }
+    if (line.indexOf("  wavefunction    = ") >= 0) {
+      calculationType = line.substring(line.indexOf("=") + 1).trim();
+      moData.put("calculationType", calculationType);
       return true;
     }
     if (line.indexOf("Total") >= 0) {
@@ -142,9 +154,14 @@ public class NWChemReader extends MOReader {
       readBasis();
       return true;
     }
-    if (line.contains("Final Molecular Orbital Analysis")) {
-      readMolecularOrbitals();
+    if (line.contains("ROHF Final Molecular Orbital Analysis")) {
+      return readMolecularOrbitals();
     }
+
+    if (!readROHFonly && line.contains("Final MO vectors")) {
+      readMolecularOrbitalVectors();
+    }
+
     return true;//checkNboLine();
   }
 
@@ -155,7 +172,7 @@ public class NWChemReader extends MOReader {
     inInput = false;
     equivalentAtomSets = 0;
   }
-  
+
   /**
    * 
    * @param key
@@ -177,7 +194,7 @@ public class NWChemReader extends MOReader {
     energyKey = key;
     energyValue = value;
     atomSetCollection.setAtomSetProperty(energyKey, energyValue);
-    atomSetCollection.setAtomSetName(energyKey+" = "+energyValue);
+    atomSetCollection.setAtomSetName(energyKey + " = " + energyValue);
     haveEnergy = true;
   }
 
@@ -191,14 +208,14 @@ public class NWChemReader extends MOReader {
       return;
     String tokens[] = getTokens();
     atomSetCollection.setAtomSetProperties("Symmetry group name",
-        tokens[tokens.length-1], equivalentAtomSets);
+        tokens[tokens.length - 1], equivalentAtomSets);
   }
-  
+
   private void readNWChemLine() {
     // currently only keep track of whether I am in the input module or not.
     inInput = (line.indexOf("NWChem Input Module") >= 0);
   }
-  
+
   /**
    * Interpret a line starting with a line with "Total" in it.
    * <p>Determine whether it reports the energy, if so set the property and name(s)
@@ -210,15 +227,16 @@ public class NWChemReader extends MOReader {
         // in an optimization an energy is reported in a follow up step
         // that energy I don't want so only set the energy once
         if (!haveAt)
-          setEnergies("E("+tokens[1]+")", tokens[tokens.length-1], equivalentAtomSets);
+          setEnergies("E(" + tokens[1] + ")", tokens[tokens.length - 1],
+              equivalentAtomSets);
       }
     } catch (Exception e) {
       // ignore any problems in dealing with the line
     }
   }
-  
+
   private void readAtSign() throws Exception {
-    if (line.charAt(2)=='S') {
+    if (line.charAt(2) == 'S') {
       discardLines(1); // skip over the line with the --- in it
       if (readLine() == null)
         return;
@@ -231,22 +249,23 @@ public class NWChemReader extends MOReader {
       // atom sets that may be been parsed.
       setEnergies(energyKey, energyValue, equivalentAtomSets);
     }
-    atomSetCollection.setAtomSetProperties("Step", tokens[1], equivalentAtomSets);
+    atomSetCollection.setAtomSetProperties("Step", tokens[1],
+        equivalentAtomSets);
     haveAt = true;
   }
-   
-// NWChem Output coordinates
-/*
-  Output coordinates in angstroms (scale by  1.889725989 to convert to a.u.)
 
-  No.       Tag          Charge          X              Y              Z
- ---- ---------------- ---------- -------------- -------------- --------------
-    1 O                    8.0000     0.00000000     0.00000000     0.14142136
-    2 H                    1.0000     0.70710678     0.00000000    -0.56568542
-    3 H                    1.0000    -0.70710678     0.00000000    -0.56568542
+  // NWChem Output coordinates
+  /*
+    Output coordinates in angstroms (scale by  1.889725989 to convert to a.u.)
 
-      Atomic Mass 
-*/
+    No.       Tag          Charge          X              Y              Z
+   ---- ---------------- ---------- -------------- -------------- --------------
+      1 O                    8.0000     0.00000000     0.00000000     0.14142136
+      2 H                    1.0000     0.70710678     0.00000000    -0.56568542
+      3 H                    1.0000    -0.70710678     0.00000000    -0.56568542
+
+        Atomic Mass 
+  */
 
   /**
    * Reads the output coordinates section into a new AtomSet.
@@ -257,18 +276,20 @@ public class NWChemReader extends MOReader {
     String tokens[];
     haveEnergy = false;
     atomSetCollection.newAtomSet();
-    atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
-        "Task "+taskNumber+
-        (inInput?SmarterJmolAdapter.PATH_SEPARATOR+"Input":
-         SmarterJmolAdapter.PATH_SEPARATOR+"Geometry"));
+    atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY, "Task "
+        + taskNumber
+        + (inInput ? SmarterJmolAdapter.PATH_SEPARATOR + "Input"
+            : SmarterJmolAdapter.PATH_SEPARATOR + "Geometry"));
     atomTypes = new ArrayList<String>();
     while (readLine() != null && line.length() > 0) {
       tokens = getTokens(); // get the tokens in the line
-      if (tokens.length < 6) break; // if don't have enough of them: done
+      if (tokens.length < 6)
+        break; // if don't have enough of them: done
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = fixTag(tokens[1]);
       atomTypes.add(atom.atomName);
-      setAtomCoord(atom, parseFloat(tokens[3]), parseFloat(tokens[4]), parseFloat(tokens[5]));
+      setAtomCoord(atom, parseFloat(tokens[3]), parseFloat(tokens[4]),
+          parseFloat(tokens[5]));
     }
     // only if was converged, use the last energy for the name and properties
     if (converged) {
@@ -278,21 +299,21 @@ public class NWChemReader extends MOReader {
       atomSetCollection.setAtomSetName("Input");
     }
   }
-  
-// NWChem Gradients output
-// The 'atom' is really a Tag (as above)
-/*
-                         UHF ENERGY GRADIENTS
 
-    atom               coordinates                        gradient
-                 x          y          z           x          y          z
-   1 O       0.000000   0.000000   0.267248    0.000000   0.000000  -0.005967
-   2 H       1.336238   0.000000  -1.068990   -0.064647   0.000000   0.002984
-   3 H      -1.336238   0.000000  -1.068990    0.064647   0.000000   0.002984
+  // NWChem Gradients output
+  // The 'atom' is really a Tag (as above)
+  /*
+                           UHF ENERGY GRADIENTS
 
-*/
-// NB one could consider removing the previous read structure since that
-// must have been the input structure for the optimizition?
+      atom               coordinates                        gradient
+                   x          y          z           x          y          z
+     1 O       0.000000   0.000000   0.267248    0.000000   0.000000  -0.005967
+     2 H       1.336238   0.000000  -1.068990   -0.064647   0.000000   0.002984
+     3 H      -1.336238   0.000000  -1.068990    0.064647   0.000000   0.002984
+
+  */
+  // NB one could consider removing the previous read structure since that
+  // must have been the input structure for the optimizition?
   /**
    * Reads the energy gradients section into a new AtomSet.
    *
@@ -307,28 +328,26 @@ public class NWChemReader extends MOReader {
     atomSetCollection.newAtomSet();
     if (equivalentAtomSets > 1)
       atomSetCollection.cloneLastAtomSetProperties();
-    atomSetCollection.setAtomSetProperty("vector","gradient");
-    atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
-        "Task "+taskNumber+
-        SmarterJmolAdapter.PATH_SEPARATOR+"Gradients");
-   while (readLine() != null && line.length() > 0) {
+    atomSetCollection.setAtomSetProperty("vector", "gradient");
+    atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY, "Task "
+        + taskNumber + SmarterJmolAdapter.PATH_SEPARATOR + "Gradients");
+    while (readLine() != null && line.length() > 0) {
       tokens = getTokens(); // get the tokens in the line
-      if (tokens.length < 8) break; // make sure I have enough tokens
+      if (tokens.length < 8)
+        break; // make sure I have enough tokens
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = fixTag(tokens[1]);
-      setAtomCoord(atom, parseFloat(tokens[2]) * ANGSTROMS_PER_BOHR, 
-          parseFloat(tokens[3]) * ANGSTROMS_PER_BOHR, 
-          parseFloat(tokens[4]) * ANGSTROMS_PER_BOHR);
+      setAtomCoord(atom, parseFloat(tokens[2]) * ANGSTROMS_PER_BOHR,
+          parseFloat(tokens[3]) * ANGSTROMS_PER_BOHR, parseFloat(tokens[4])
+              * ANGSTROMS_PER_BOHR);
       // Keep gradients in a.u. (larger value that way)
       // need to multiply with -1 so the direction is in the direction the
       // atom needs to move to lower the energy
       atomSetCollection.addVibrationVector(atom.atomIndex,
-          -parseFloat(tokens[5]),
-          -parseFloat(tokens[6]),
-          -parseFloat(tokens[7])
-      );
+          -parseFloat(tokens[5]), -parseFloat(tokens[6]),
+          -parseFloat(tokens[7]));
     }
- }
+  }
 
   // SAMPLE FREQUENCY OUTPUT
   // First the structure. The atom column has real element names (not the tags)
@@ -437,9 +456,9 @@ public class NWChemReader extends MOReader {
       tokens = getTokens();
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = fixTag(tokens[0]);
-      setAtomCoord(atom, parseFloat(tokens[2]) * ANGSTROMS_PER_BOHR, 
-          parseFloat(tokens[3]) * ANGSTROMS_PER_BOHR, 
-          parseFloat(tokens[4]) * ANGSTROMS_PER_BOHR);
+      setAtomCoord(atom, parseFloat(tokens[2]) * ANGSTROMS_PER_BOHR,
+          parseFloat(tokens[3]) * ANGSTROMS_PER_BOHR, parseFloat(tokens[4])
+              * ANGSTROMS_PER_BOHR);
     }
 
     discardLinesUntilContains("(Projected Frequencies expressed in cm-1)");
@@ -461,7 +480,7 @@ public class NWChemReader extends MOReader {
         ignore[i] = !doGetVibration(++vibrationNumber);
         if (ignore[i])
           continue;
-        if (!firstTime || i > 0) { 
+        if (!firstTime || i > 0) {
           atomSetCollection.cloneLastAtomSet();
         }
         atomSetCollection.setAtomSetFrequency(path, null, tokens[i], null);
@@ -482,7 +501,7 @@ public class NWChemReader extends MOReader {
         if (readLine() == null)
           return;
         if (!doGetVibration(i + 1))
-            continue;
+          continue;
         tokens = getTokens();
         int iset = atomSetCollection.getCurrentAtomSetIndex();
         atomSetCollection.setCurrentAtomSetIndex(idx++);
@@ -495,7 +514,7 @@ public class NWChemReader extends MOReader {
       // If exception was thrown, don't do anything here...
     }
   }
-  
+
   /**
    * Reads partial charges and assigns them only to the last atom set. 
    * @throws Exception When an I/O error or discardlines error occurs
@@ -542,7 +561,7 @@ public class NWChemReader extends MOReader {
   }
 
   int nBasisFunctions;
-  
+
   /*
 
                         Basis "ao basis" -> "ao basis" (cartesian)
@@ -630,12 +649,20 @@ public class NWChemReader extends MOReader {
    * 
    */
 
+  private static String DC_LIST = "DXX   DXY   DXZ   DYY   DYZ   DZZ";
+  private static String FC_LIST = "XXX   XXY   XXZ   XYY   XYZ   XZZ   YYY   YYZ   YZZ   ZZZ";
+
   private void readBasis() throws Exception {
-    shells = new ArrayList<int[]>();
     gaussianCount = 0;
     shellCount = 0;
     nBasisFunctions = 0;
+    getDFMap(DC_LIST, JmolAdapter.SHELL_D_CARTESIAN, CANONICAL_DC_LIST, 3);
+    getDFMap(FC_LIST, JmolAdapter.SHELL_F_CARTESIAN, CANONICAL_FC_LIST, 3);
 
+    boolean isD6F10 = (line.indexOf("cartesian") >= 0);
+    if (!isD6F10)
+      return; //TODO don't know exact ordering for spherical...
+    shells = new ArrayList<int[]>();
     Map<String, List<List<Object[]>>> atomInfo = new Hashtable<String, List<List<Object[]>>>();
     String atomSym = null;
     List<List<Object[]>> atomData = null;
@@ -659,16 +686,15 @@ public class NWChemReader extends MOReader {
       while (line != null && line.length() > 3) {
         String[] tokens = getTokens();
         Object[] o = new Object[] { tokens[1],
-            new float[] { parseFloat(tokens[2]),
-            parseFloat(tokens[3]) } };
+            new float[] { parseFloat(tokens[2]), parseFloat(tokens[3]) } };
         shellData.add(o);
         readLine();
       }
       atomData.add(shellData);
     }
 
-    int nD = 6; //??
-    int nF = 10; //??
+    int nD = (isD6F10 ? 6 : 5);
+    int nF = (isD6F10 ? 10 : 7);
     List<float[]> gdata = new ArrayList<float[]>();
     for (int i = 0; i < atomTypes.size(); i++) {
       atomData = atomInfo.get(atomTypes.get(i));
@@ -701,11 +727,11 @@ public class NWChemReader extends MOReader {
         for (int ifunc = 0; ifunc < nGaussians; ifunc++)
           gdata.add((float[]) shellData.get(ifunc)[1]);
         gaussianCount += nGaussians;
-      }      
+      }
     }
     gaussians = new float[gaussianCount][];
     for (int i = 0; i < gaussianCount; i++)
-      gaussians[i] = gdata.get(i);    
+      gaussians[i] = gdata.get(i);
   }
 
   /*
@@ -713,7 +739,7 @@ public class NWChemReader extends MOReader {
                        ROHF Final Molecular Orbital Analysis
                        -------------------------------------
 
- Vector    9  Occ=2.000000D+00  E=-1.152419D+00  Symmetry=a1
+  Vector    9  Occ=2.000000D+00  E=-1.152419D+00  Symmetry=a1
               MO Center=  1.0D-19,  2.0D-16, -4.4D-01, r^2= 2.3D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -721,15 +747,15 @@ public class NWChemReader extends MOReader {
     32      0.178250   3 C  s                92      0.178250   7 C  s         
     62      0.177105   5 C  s                 2      0.174810   1 C  s         
 
- Vector   10  Occ=2.000000D+00  E=-1.030565D+00  Symmetry=b2
+  Vector   10  Occ=2.000000D+00  E=-1.030565D+00  Symmetry=b2
               MO Center=  2.1D-18,  1.8D-17, -3.6D-01, r^2= 2.9D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
     92      0.216716   7 C  s                32     -0.216716   3 C  s         
     47     -0.205297   4 C  s                77      0.205297   6 C  s         
 
-...
- Vector   39  Occ=0.000000D+00  E= 6.163870D-01  Symmetry=b2
+  ...
+  Vector   39  Occ=0.000000D+00  E= 6.163870D-01  Symmetry=b2
               MO Center= -9.0D-31,  2.4D-14, -1.7D-01, r^2= 5.7D+00
    Bfn.  Coefficient  Atom+Function         Bfn.  Coefficient  Atom+Function  
   ----- ------------  ---------------      ----- ------------  ---------------
@@ -740,14 +766,15 @@ public class NWChemReader extends MOReader {
     83      0.691421   6 C  py               53      0.691421   4 C  py        
 
 
- center of mass
+  center of mass
    * 
    */
-  private void readMolecularOrbitals() throws Exception {
+
+  private boolean readMolecularOrbitals() throws Exception {
     // note -- this is preliminary. Should be connecting the correct Gaussians
-    // with the correct shells, but we may have a problem with:
-    // (a) D,F order (unchecked)
-    // (b) alpha/beta orbitals (unchecked)
+    // with the correct shells and D/F subshells, at least for cartesians, 
+    // but we may have a problem with:
+    // (a) alpha/beta orbitals (unchecked)
     // (b) normalization. (not correct)
     //     With or without "isNormalized" being set TRUE, we see a problem
     //     with integration. Using, for example:
@@ -757,15 +784,15 @@ public class NWChemReader extends MOReader {
     //     contributing orbitals are included (doubt that) or because
     //     NWChem normalizes these orbitals in a different way.
     //
-    
-    //moData.put("isNormalized", Boolean.TRUE);
+
     if (shells == null)
-      return;
+      return true;
+    int moCount = 0;
     while (line != null) {
-      while (line.length() < 3 || line.charAt(1) == ' ') {
+      while ((line.length() < 3 || line.charAt(1) == ' ') && line.indexOf("Final MO") < 0) {
         readLine();
       }
-      if (line.charAt(1) != 'V') 
+      if (line.charAt(1) != 'V')
         break;
       line = line.replace('=', ' ');
       //  Vector    9  Occ=2.000000D+00  E=-1.152419D+00  Symmetry=a1
@@ -780,18 +807,86 @@ public class NWChemReader extends MOReader {
       mo.put("occupancy", Float.valueOf(occupancy));
       mo.put("energy", Float.valueOf(energy));
       mo.put("symmetry", symmetry);
+      mo.put("type", "ROHF " + (++moCount));
       mo.put("coefficients", coefs);
-      
-//    68      2.509000   5 C  py               39     -2.096777   3 C  pz        
+
+      //    68      2.509000   5 C  py               39     -2.096777   3 C  pz        
       while (readLine() != null && line.length() > 3) {
         tokens = getTokens();
         coefs[parseInt(tokens[0]) - 1] = parseFloat(tokens[1]);
         if (tokens.length == 10)
-          coefs[parseInt(tokens[5]) - 1] = parseFloat(tokens[6]);          
+          coefs[parseInt(tokens[5]) - 1] = parseFloat(tokens[6]);
       }
     }
+    energyUnits = "a.u.";
     setMOData(false);
+    return false;
   }
 
+  /*
 
+                                 Final MO vectors
+                                 ----------------
+
+
+  global array: scf_init: MOs[1:80,1:80],  handle: -1000 
+
+            1           2           3           4           5           6  
+       ----------- ----------- ----------- ----------- ----------- -----------
+   1       0.98048    -0.02102     0.00000    -0.00000    -0.00000     0.06015
+  ...
+  80       0.00006    -0.00005    -0.00052     0.00006     0.00000     0.01181
+
+            7           8           9          10          11          12  
+       ----------- ----------- ----------- ----------- ----------- -----------
+   1      -0.00000    -0.00000     0.02285    -0.00000    -0.00000     0.00000
+   
+   */
+  private void readMolecularOrbitalVectors() throws Exception {
+
+    if (shells == null)
+      return;
+    Map<String, Object>[] mos = null;
+    List<String>[] data = null;
+    int moCount = 0;
+    int ptOffset = -1;
+    int fieldSize = 0;
+    int nThisLine = 0;
+    discardLines(5);
+    while (readLine() != null && line.indexOf("-----") < 0) {
+      readLine();
+      String[] tokens = getTokens();
+      if (Logger.debugging) {
+        Logger.debug(tokens.length + " --- " + line);
+      }
+      nThisLine = tokens.length;
+      ptOffset = 6;
+      fieldSize = 12;
+      mos = ArrayUtil.createArrayOfHashtable(nThisLine);
+      data = ArrayUtil.createArrayOfArrayList(nThisLine);
+      for (int i = 0; i < nThisLine; i++) {
+        mos[i] = new Hashtable<String, Object>();
+        data[i] = new ArrayList<String>();
+      }
+
+      while (readLine() != null && line.length() > 0)
+        for (int i = 0, pt = ptOffset; i < nThisLine; i++, pt += fieldSize)
+          data[i].add(line.substring(pt, pt + fieldSize).trim());
+
+      for (int iMo = 0; iMo < nThisLine; iMo++) {
+        float[] coefs = new float[data[iMo].size()];
+        int iCoeff = 0;
+        while (iCoeff < coefs.length) {
+          coefs[iCoeff] = parseFloat(data[iMo].get(iCoeff));
+          iCoeff++;
+        }
+        mos[iMo].put("coefficients", coefs);
+        mos[iMo].put("type", "full " + (++moCount));
+        setMO(mos[iMo]);
+      }
+      line = "";
+    }
+    energyUnits = "a.u.";
+    setMOData(false);
+  }
 }

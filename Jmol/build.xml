@@ -1191,6 +1191,10 @@ all support for previous versions removed
       <fileset dir="doc" />
     </copy>
 
+    <copy todir="build/dist/jmol-${version}/tools" >
+      <fileset dir="tools" />
+    </copy>
+
     <!-- Jvxl -->
     <copy file="build/Jvxl.jar" tofile="build/dist/Jvxl-${jvxl_version}.jar" failonerror="false" />
 

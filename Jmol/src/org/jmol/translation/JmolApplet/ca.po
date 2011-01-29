@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-12-16 16:48+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-01-29 19:08+0000\n"
+"X-Generator: Launchpad (build 12274)\n"
 "X-Poedit-Country: ANDORRA\n"
 "X-Poedit-Language: Catalan\n"
 
@@ -147,7 +147,8 @@ msgid "Check"
 msgstr "Comprova"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "A dalt"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -397,13 +398,12 @@ msgid "Estonian"
 msgstr "Estonià"
 
 #: org/jmol/i18n/GT.java:147
-#, fuzzy
 msgid "Finnish"
-msgstr "Danès"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:148
 msgid "Faroese"
-msgstr ""
+msgstr "Feroès"
 
 #: org/jmol/i18n/GT.java:149
 msgid "French"
@@ -415,7 +415,7 @@ msgstr "Hongarès"
 
 #: org/jmol/i18n/GT.java:151
 msgid "Indonesian"
-msgstr ""
+msgstr "Indonesi"
 
 #: org/jmol/i18n/GT.java:152
 msgid "Italian"
@@ -423,7 +423,7 @@ msgstr "Italià"
 
 #: org/jmol/i18n/GT.java:153
 msgid "Japanese"
-msgstr ""
+msgstr "Japonès"
 
 #: org/jmol/i18n/GT.java:154
 msgid "Javanese"
@@ -443,7 +443,7 @@ msgstr "Holandès"
 
 #: org/jmol/i18n/GT.java:158
 msgid "Occitan"
-msgstr ""
+msgstr "Occità"
 
 #: org/jmol/i18n/GT.java:159
 msgid "Polish"
@@ -471,7 +471,7 @@ msgstr "Suec"
 
 #: org/jmol/i18n/GT.java:165
 msgid "Tamil"
-msgstr ""
+msgstr "Tàmil"
 
 #: org/jmol/i18n/GT.java:166
 msgid "Turkish"
@@ -2161,7 +2161,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:69
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:71
@@ -2390,14 +2391,21 @@ msgstr ""
 msgid "Setting log file to {0}"
 msgstr ""
 
+#~ msgid "Java memory usage"
+#~ msgstr "Ús de memòria de Java"
+
+#~ msgid "Molecular Orbitals"
+#~ msgstr "Orbitals moleculars"
+
 #~ msgid "About Jmol"
 #~ msgstr "Quant al Jmol"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to string value: {0}"
 #~ msgstr ""
-#~ "ERROR: No s'ha pogut definir el senyal d'un booleà a un valor de cadena: "
-#~ "{0}"
+#~ "ERROR: No s'ha pogut definir el senyal d'un booleà a un valor de cadena: {0}"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr ""
 #~ "ERROR: No s'ha pogut definir el senyal d'un booleà a un valor numèric: {0}"
@@ -2405,13 +2413,44 @@ msgstr ""
 #~ msgid "File creation failed."
 #~ msgstr "La creació de fitxer ha falalt"
 
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
-#~ "Aquesta miniaplicació no té permisos per a creació de fitxers. Per al "
-#~ "format JPEG Base64, utilitzeu {0}."
+#~ "Aquesta miniaplicació no té permisos per a creació de fitxers. Per al format "
+#~ "JPEG Base64, utilitzeu {0}."
 
+#, java-format
+#~ msgid "{0} 3D Model"
+#~ msgstr "Model 3D {0}"
+
+#, java-format
+#~ msgid "File {0}"
+#~ msgstr "Fitxer {0}"
+
+#~ msgid "File from PDB"
+#~ msgstr "Fitxer del PDB"
+
+#~ msgid "File or URL"
+#~ msgstr "Fitxer o URL"
+
+#~ msgid "Script with state"
+#~ msgstr "Script amb estat"
+
+#~ msgid "Script with history"
+#~ msgstr "Script amb historial"
+
+#, java-format
+#~ msgid "{0} Image"
+#~ msgstr "Imatge {0}"
+
+#~ msgid "JVXL Isosurface"
+#~ msgstr "Isosuperfície JVXL"
+
+#~ msgid "Minimize"
+#~ msgstr "Minimitza"
+
+#, java-format
 #~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 #~ msgstr ""
 #~ "ERROR: No ha pogut definir-se el valor de la variable com a booleà: {0}"

@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-12-16 16:48+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-01-29 19:08+0000\n"
+"X-Generator: Launchpad (build 12274)\n"
 "X-Poedit-Country: France\n"
 "X-Poedit-Language: French\n"
 "X-Poedit-Basepath: ../../../..\n"
@@ -1679,15 +1679,39 @@ msgstr "non-implémenté"
 #~ msgid "vector"
 #~ msgstr "vecteur"
 
+#~ msgid "Go to first {0} in the collection"
+#~ msgstr "Aller au premier {0} de la collection"
+
+#~ msgid "Go to previous {0} in the collection"
+#~ msgstr "Aller au {0} précédent de la collection"
+
+#~ msgid "Play the whole collection of {0}'s"
+#~ msgstr "Jouer la collection complète de {0}"
+
+#~ msgid "Go to next {0} in the collection"
+#~ msgstr "Aller au {0} suivant de la collection"
+
+#~ msgid "Jump to last {0} in the collection"
+#~ msgstr "Aller au dernier {0} de la collection"
+
 #~ msgid "Jmol Script Console"
 #~ msgstr "Console Script Jmol"
+
+#~ msgid "Clear console button (requires restarting Jmol)"
+#~ msgstr "Bouton Effacer dans la console (redémarrage de Jmol nécessaire)"
 
 #~ msgid "The -D options are as follows (defaults in parenthesis):"
 #~ msgstr ""
 #~ "Les options -D sont les suivantes (valeurs par défaut entre parenthèses):"
 
+#~ msgid "Output Conso&le..."
+#~ msgstr "Output Conso&le..."
+
 #~ msgid "independent commmand thread"
 #~ msgstr "indépendante fil commmand"
+
+#~ msgid "double-click and drag to reorder"
+#~ msgstr "double-cliquer et faire glisser pour réorganiser"
 
 #~ msgid "Show Selected"
 #~ msgstr "Afficher les options sélectionnées"

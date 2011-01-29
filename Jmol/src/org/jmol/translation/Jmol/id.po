@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-12-16 16:48+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-01-29 19:08+0000\n"
+"X-Generator: Launchpad (build 12274)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
 msgid "Error starting Jmol: the property 'user.home' is not defined."
@@ -1671,8 +1671,26 @@ msgstr "belum diimplementasi"
 #~ msgid "atom set"
 #~ msgstr "atom set"
 
+#~ msgid "Go to first {0} in the collection"
+#~ msgstr "Menuju yang pertama {0} dalam koleksi"
+
+#~ msgid "Go to previous {0} in the collection"
+#~ msgstr "Menuju ke sebelumnya {0} dalam koleksi"
+
+#~ msgid "Play the whole collection of {0}'s"
+#~ msgstr "Menjalankan seluruh koleksi dari {0}"
+
+#~ msgid "Jump to last {0} in the collection"
+#~ msgstr "Loncat ke terakhir {0} dalam koleksi"
+
 #~ msgid "Jmol Script Console"
 #~ msgstr "Konsul Skrip Jmol"
+
+#~ msgid "Go to next {0} in the collection"
+#~ msgstr "Ke selanjutnya {0} dalam koleksi"
+
+#~ msgid "Clear console button (requires restarting Jmol)"
+#~ msgstr "Butang bersihkan konsul (Jmol perlu dijalankan ulang)"
 
 #~ msgid "adding {0}.spt"
 #~ msgstr "menambah {0}.spt"
@@ -1686,5 +1704,27 @@ msgstr "belum diimplementasi"
 #~ msgid "Stop"
 #~ msgstr "Henti"
 
+#~ msgid "double-click and drag to reorder"
+#~ msgstr "Klik ganda dan seret untuk pengurutan ulang"
+
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "menambah JmolPopIn.js"
+
+#~ msgid "Output Conso&le..."
+#~ msgstr "Keluaran Konsul..."
+
+#~ msgid "The -D options are as follows (defaults in parenthesis):"
+#~ msgstr "Pilihan -D adalah sebagai berikut (bawaan di dalam kurung):"
+
+#~ msgid ""
+#~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
+#~ "model {0}."
+#~ msgstr ""
+#~ "Sisipkan tambahan teks penjelasan disini. Teks panjang akan dilipat "
+#~ "sesuai dengan model Jmol {0}."
+
+#~ msgid "Show Selected"
+#~ msgstr "Tampilkan Pilihan"
+
+#~ msgid "independent commmand thread"
+#~ msgstr "ulir perintah independen"

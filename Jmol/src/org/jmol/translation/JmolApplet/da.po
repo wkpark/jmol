@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-01-12 18:30+0100\n"
-"PO-Revision-Date: 2010-07-27 23:49+0000\n"
-"Last-Translator: TLE <k.nielsen81@gmail.com>\n"
+"PO-Revision-Date: 2011-01-25 21:35+0000\n"
+"Last-Translator: Ask Hjorth Larsen <asklarsen@gmail.com>\n"
 "Language-Team: Danish <da@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-12-16 16:48+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-01-29 19:08+0000\n"
+"X-Generator: Launchpad (build 12274)\n"
 
 #: org/jmol/applet/AppletConsole.java:199
 msgid "&Help"
@@ -142,7 +142,8 @@ msgid "Check"
 msgstr "Tjek"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Toppen"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -392,9 +393,8 @@ msgid "Estonian"
 msgstr "Estisk"
 
 #: org/jmol/i18n/GT.java:147
-#, fuzzy
 msgid "Finnish"
-msgstr "Dansk"
+msgstr "Finsk"
 
 #: org/jmol/i18n/GT.java:148
 msgid "Faroese"
@@ -421,9 +421,8 @@ msgid "Japanese"
 msgstr "Japansk"
 
 #: org/jmol/i18n/GT.java:154
-#, fuzzy
 msgid "Javanese"
-msgstr "Japansk"
+msgstr "Javanesisk"
 
 #: org/jmol/i18n/GT.java:155
 msgid "Korean"
@@ -625,6 +624,11 @@ msgid ""
 "Use {0} to not use this approximation.\n"
 "\n"
 msgstr ""
+"BEMÆRK: Hydrogenpositioner på amid-rygraden er til stede og vil blive "
+"ignoreret. Deres positioner vil blive tilnærmet som i sædvanlig DSSP-"
+"analyse.\n"
+"Brug {0} for at undlade at bruge denne tilnærmelse.\n"
+"\n"
 
 #: org/jmol/modelsetbio/AminoPolymer.java:582
 #, java-format
@@ -634,6 +638,10 @@ msgid ""
 "Use {0} to ignore these hydrogen positions.\n"
 "\n"
 msgstr ""
+"BEMÆRK: Hydrogenpositioner på amid-rygraden er til stede og vil blive brugt. "
+"Resultaterne kan være betydeligt forskellige fra sædvanlig DSSP-analyse.\n"
+"Brug {0} for at ignorere disse hydrogenpositioner.\n"
+"\n"
 
 #: org/jmol/popup/JmolPopup.java:149
 #: org/jmol/popup/MainPopupResourceBundle.java:536
@@ -736,7 +744,7 @@ msgstr "Efter HETATM"
 #: org/jmol/popup/MainPopupResourceBundle.java:546
 #, java-format
 msgid "Molecular Orbitals ({0})"
-msgstr ""
+msgstr "Molekylorbitaler ({0})"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:547
 #: org/jmol/popup/MainPopupResourceBundle.java:859
@@ -1487,7 +1495,7 @@ msgstr "Klik for torsionsmåling (dihedral)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:826
 msgid "Click two atoms to display a sequence in the console"
-msgstr ""
+msgstr "Klik på to atomer for at vise en sekvens i konsollen"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:827
 msgid "Delete measurements"
@@ -1636,7 +1644,7 @@ msgstr "Eksporter {0}-billede"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:876
 msgid "Save all as JMOL file (zip)"
-msgstr ""
+msgstr "Gem alle som en JMOL-fil (zip)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:877
 msgid "Save JVXL isosurface"
@@ -2157,7 +2165,8 @@ msgstr "klik på to punkter for at rotere rundt om akse med uret (kræver {0})"
 
 #: org/jmol/viewer/ActionManager.java:69
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr "klik på to punkter for at rotere rundt om akse mod uret (kræver {0})"
 
 #: org/jmol/viewer/ActionManager.java:71
@@ -2399,11 +2408,16 @@ msgstr "Sætter logfil til {0}"
 #~ msgid "Minimize"
 #~ msgstr "Minimér"
 
+#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "{0} 3D model"
 
+#, java-format
 #~ msgid "File {0}"
 #~ msgstr "Fil {0}"
 
 #~ msgid "File from PDB"
 #~ msgstr "Fil fra PDB"
+
+#~ msgid "Molecular Orbitals"
+#~ msgstr "Molekylære orbitaler"

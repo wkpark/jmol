@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-12-16 16:48+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-01-29 19:08+0000\n"
+"X-Generator: Launchpad (build 12274)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
 msgid "Error starting Jmol: the property 'user.home' is not defined."
@@ -1663,11 +1663,35 @@ msgstr "未實作的"
 #~ msgid "atom set"
 #~ msgstr "原子集合"
 
+#~ msgid "Go to first {0} in the collection"
+#~ msgstr "從收藏中取得第一個 {0}"
+
+#~ msgid "Go to previous {0} in the collection"
+#~ msgstr "從收藏中取得前一個 {0}"
+
+#~ msgid "Play the whole collection of {0}'s"
+#~ msgstr "撥放{0}的所有收藏"
+
+#~ msgid "Go to next {0} in the collection"
+#~ msgstr "從收藏中取得後一個 {0}"
+
+#~ msgid "Jump to last {0} in the collection"
+#~ msgstr "從收藏中取得最後一個 {0}"
+
+#~ msgid "Clear console button (requires restarting Jmol)"
+#~ msgstr "清除主控台按鈕(Jmol須重新啟動)"
+
+#~ msgid "independent commmand thread"
+#~ msgstr "相依指令程式緒"
+
 #~ msgid "The -D options are as follows (defaults in parenthesis):"
 #~ msgstr "選項 -D 如下(括符內為預設值)"
 
 #~ msgid "Jmol Script Console"
 #~ msgstr "Jmol Script 主控台"
+
+#~ msgid "double-click and drag to reorder"
+#~ msgstr "雙擊並拖著重排"
 
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "

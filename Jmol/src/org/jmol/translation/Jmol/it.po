@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-12-16 16:48+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-01-29 19:08+0000\n"
+"X-Generator: Launchpad (build 12274)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
 msgid "Error starting Jmol: the property 'user.home' is not defined."
@@ -1708,3 +1708,16 @@ msgstr "non implementato"
 
 #~ msgid "Output Conso&le..."
 #~ msgstr "Output Conso&le..."
+
+#~ msgid "Clear console button (requires restarting Jmol)"
+#~ msgstr "Pulsante pulisci console (richiede il riavvio di Jmol)"
+
+#~ msgid "adding JmolPopIn.js"
+#~ msgstr "aggiungendo JmolPopIn.js"
+
+#~ msgid ""
+#~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
+#~ "model {0}."
+#~ msgstr ""
+#~ "Inserisci una descrizione qui. I testi lunghi saranno avvolti nel modello "
+#~ "jmod {0}"

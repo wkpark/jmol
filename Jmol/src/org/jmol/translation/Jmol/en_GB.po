@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-12-16 16:48+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-01-29 19:08+0000\n"
+"X-Generator: Launchpad (build 12274)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
 msgid "Error starting Jmol: the property 'user.home' is not defined."
@@ -1669,11 +1669,39 @@ msgstr "unimplemented"
 #~ msgid "atom set"
 #~ msgstr "atom set"
 
+#~ msgid "Go to first {0} in the collection"
+#~ msgstr "Go to first {0} in the collection"
+
+#~ msgid "Go to previous {0} in the collection"
+#~ msgstr "Go to previous {0} in the collection"
+
+#~ msgid "Play the whole collection of {0}'s"
+#~ msgstr "Play the whole collection of {0}'s"
+
+#~ msgid "Jump to last {0} in the collection"
+#~ msgstr "Jump to last {0} in the collection"
+
+#~ msgid "Go to next {0} in the collection"
+#~ msgstr "Go to next {0} in the collection"
+
+#~ msgid "independent commmand thread"
+#~ msgstr "independent commmand thread"
+
 #~ msgid "Jmol Script Console"
 #~ msgstr "Jmol Script Console"
 
 #~ msgid "Show Selected"
 #~ msgstr "Show Selected"
+
+#~ msgid "double-click and drag to reorder"
+#~ msgstr "double-click and drag to reorder"
+
+#~ msgid ""
+#~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
+#~ "model {0}."
+#~ msgstr ""
+#~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
+#~ "model {0}."
 
 #~ msgid "adding {0}.spt"
 #~ msgstr "adding {0}.spt"
@@ -1683,3 +1711,12 @@ msgstr "unimplemented"
 
 #~ msgid "adding {0}.png"
 #~ msgstr "adding {0}.png"
+
+#~ msgid "Clear console button (requires restarting Jmol)"
+#~ msgstr "Clear console button (requires restarting Jmol)"
+
+#~ msgid "The -D options are as follows (defaults in parenthesis):"
+#~ msgstr "The -D options are as follows (defaults in parenthesis):"
+
+#~ msgid "Output Conso&le..."
+#~ msgstr "Output Conso&le..."

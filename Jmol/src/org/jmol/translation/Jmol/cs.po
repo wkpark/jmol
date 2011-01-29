@@ -15,8 +15,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-12-16 16:48+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-01-29 19:08+0000\n"
+"X-Generator: Launchpad (build 12274)\n"
 "X-Poedit-Country: CZECH REPUBLIC\n"
 "X-Poedit-Language: Czech\n"
 
@@ -1671,6 +1671,21 @@ msgstr "neimplementováno"
 #~ msgid "vector"
 #~ msgstr "vektor"
 
+#~ msgid "Go to first {0} in the collection"
+#~ msgstr "Přejít na první {0} v kolekci"
+
+#~ msgid "Go to previous {0} in the collection"
+#~ msgstr "Přejít na předchozí {0} v kolekci"
+
+#~ msgid "Play the whole collection of {0}'s"
+#~ msgstr "Přehrát celou kolekci {0}"
+
+#~ msgid "Go to next {0} in the collection"
+#~ msgstr "Přejít na další {0} ve sbírce"
+
+#~ msgid "Jump to last {0} in the collection"
+#~ msgstr "Přejít na poslední  {0} ve sbírce"
+
 #~ msgid "Jmol Script Console"
 #~ msgstr "Jmol skriptovací konzole"
 
@@ -1680,8 +1695,14 @@ msgstr "neimplementováno"
 #~ msgid "Output Conso&le..."
 #~ msgstr "Output Conso&le..."
 
+#~ msgid "independent commmand thread"
+#~ msgstr "nezávislá řada příkazů"
+
 #~ msgid "Show Selected"
 #~ msgstr "Zobrazit vybrané"
+
+#~ msgid "double-click and drag to reorder"
+#~ msgstr "poklepejte a táhněte pro změnu pořadí"
 
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
@@ -1697,6 +1718,9 @@ msgstr "neimplementováno"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "přidávám JmolPopIn.js"
+
+#~ msgid "Clear console button (requires restarting Jmol)"
+#~ msgstr "Vyčistit tlačítka konzole (vyžaduje restart Jmolu)"
 
 #~ msgid "stereo off"
 #~ msgstr "vypnout stereo"

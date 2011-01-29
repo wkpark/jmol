@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-12-16 16:48+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-01-29 19:08+0000\n"
+"X-Generator: Launchpad (build 12274)\n"
 "X-Poedit-Country: The Netherlands\n"
 "X-Poedit-Language: Dutch\n"
 
@@ -1668,8 +1668,29 @@ msgstr "niet geimplementeerd"
 #~ msgid "vector"
 #~ msgstr "vector"
 
+#~ msgid "Go to first {0} in the collection"
+#~ msgstr "Ga naar de eerste {0} in de collectie"
+
+#~ msgid "Go to previous {0} in the collection"
+#~ msgstr "Ga naar de vorige {0} in de collectie"
+
+#~ msgid "Play the whole collection of {0}'s"
+#~ msgstr "Speel de hele collectie van {0}'s af"
+
+#~ msgid "Go to next {0} in the collection"
+#~ msgstr "Ga naar de volgende {0} in de collectie"
+
+#~ msgid "Jump to last {0} in the collection"
+#~ msgstr "Ga naar de laatste {0} in de collectie"
+
 #~ msgid "Jmol Script Console"
 #~ msgstr "Jmol Script Console"
+
+#~ msgid "independent commmand thread"
+#~ msgstr "onafhankelijke commando-proces"
+
+#~ msgid "double-click and drag to reorder"
+#~ msgstr "Dubbelklik en sleep om de volgorde te wijzigen"
 
 #~ msgid "Show Selected"
 #~ msgstr "Selectie laten zien"
@@ -1682,6 +1703,22 @@ msgstr "niet geimplementeerd"
 
 #~ msgid "adding {0}.spt"
 #~ msgstr "toevoegen {0}.spt"
+
+#~ msgid ""
+#~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
+#~ "model {0}."
+#~ msgstr ""
+#~ "Voeg hier extra uitleg in. Lange teksten worden om het Jmol-model {0} "
+#~ "heen gezet."
+
+#~ msgid "Clear console button (requires restarting Jmol)"
+#~ msgstr "Leeg console knop (vereist een herstart van Jmol)"
+
+#~ msgid "The -D options are as follows (defaults in parenthesis):"
+#~ msgstr "De -D opties zijn (standaard waarden tussen haakjes):"
+
+#~ msgid "Output Conso&le..."
+#~ msgstr "Output Conso&le..."
 
 #~ msgid "stereo off"
 #~ msgstr "stereo uit"

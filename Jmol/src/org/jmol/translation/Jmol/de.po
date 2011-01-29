@@ -20,8 +20,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-12-16 16:48+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-01-29 19:08+0000\n"
+"X-Generator: Launchpad (build 12274)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
 msgid "Error starting Jmol: the property 'user.home' is not defined."
@@ -1683,8 +1683,36 @@ msgstr "nicht implementiert"
 #~ msgid "vector"
 #~ msgstr "Vektor"
 
+#~ msgid "Go to first {0} in the collection"
+#~ msgstr "Springe zum ersten {0} der Sammlung"
+
+#~ msgid "Go to previous {0} in the collection"
+#~ msgstr "Springe zum vorherigen {0} der Sammlung"
+
+#~ msgid "Play the whole collection of {0}'s"
+#~ msgstr "Spiele die gesamte {0}-Sammlung ab"
+
+#~ msgid "Go to next {0} in the collection"
+#~ msgstr "Springe zum nächsten {0} der Sammlung"
+
+#~ msgid "Jump to last {0} in the collection"
+#~ msgstr "Springe zum letzten {0} der Sammlung"
+
+#~ msgid "independent commmand thread"
+#~ msgstr "unabhängiger Befehls Prozess"
+
+#~ msgid "double-click and drag to reorder"
+#~ msgstr "Doppelklick und ziehen um neu anzuordnen"
+
 #~ msgid "Jmol Script Console"
 #~ msgstr "Jmol Skript Konsole"
+
+#~ msgid ""
+#~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
+#~ "model {0}."
+#~ msgstr ""
+#~ "Fügen sie weiteren erklärenden Text hier ein. Langer Text wird das Jmol "
+#~ "Modell {0} umfließen."
 
 #~ msgid "Show Selected"
 #~ msgstr "Auswahl anzeigen"
@@ -1697,6 +1725,16 @@ msgstr "nicht implementiert"
 
 #~ msgid "adding {0}.spt"
 #~ msgstr "hinzufügen von {0}.spt"
+
+#~ msgid "Clear console button (requires restarting Jmol)"
+#~ msgstr "Konsole leeren Button (benötigt Neustart von Jmol)"
+
+#~ msgid "The -D options are as follows (defaults in parenthesis):"
+#~ msgstr ""
+#~ "Folgende -D-Optionen werden unterstützt (Standardwerte in Klammern):"
+
+#~ msgid "Output Conso&le..."
+#~ msgstr "Skrip&t..."
 
 #~ msgid "stereo off"
 #~ msgstr "Stereo aus"

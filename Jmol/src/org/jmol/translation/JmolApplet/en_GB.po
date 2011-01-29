@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-01-12 18:30+0100\n"
-"PO-Revision-Date: 2011-01-07 01:10+0000\n"
-"Last-Translator: Andi Chandler <Unknown>\n"
+"PO-Revision-Date: 2011-01-10 13:17+0000\n"
+"Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-01-07 08:04+0000\n"
-"X-Generator: Launchpad (build 12161)\n"
+"X-Launchpad-Export-Date: 2011-01-29 19:08+0000\n"
+"X-Generator: Launchpad (build 12274)\n"
 
 #: org/jmol/applet/AppletConsole.java:199
 msgid "&Help"
@@ -142,7 +142,8 @@ msgid "Check"
 msgstr "Check"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Top"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -420,9 +421,8 @@ msgid "Japanese"
 msgstr "Japanese"
 
 #: org/jmol/i18n/GT.java:154
-#, fuzzy
 msgid "Javanese"
-msgstr "Japanese"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:155
 msgid "Korean"
@@ -2164,8 +2164,10 @@ msgstr "click on two points to spin around axis clockwise (requires {0})"
 
 #: org/jmol/viewer/ActionManager.java:69
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
-msgstr "click on two points to spin around axis anti-clockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
+msgstr ""
+"click on two points to spin around axis anti-clockwise (requires {0})"
 
 #: org/jmol/viewer/ActionManager.java:71
 #, java-format
@@ -2395,24 +2397,91 @@ msgstr "Cannot set log file path."
 msgid "Setting log file to {0}"
 msgstr "Setting log file to {0}"
 
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 
 #~ msgid "File creation failed."
 #~ msgstr "File creation failed."
 
+#~ msgid "Java memory usage"
+#~ msgstr "Java memory usage"
+
+#~ msgid "Molecular Orbitals"
+#~ msgstr "Molecular Orbitals"
+
+#, java-format
+#~ msgid "File {0}"
+#~ msgstr "File {0}"
+
+#~ msgid "File from PDB"
+#~ msgstr "File from PDB"
+
+#~ msgid "File or URL"
+#~ msgstr "File or URL"
+
+#~ msgid "Script with state"
+#~ msgstr "Script with state"
+
+#, java-format
+#~ msgid "{0} 3D Model"
+#~ msgstr "{0} 3D Model"
+
+#~ msgid "JVXL Isosurface"
+#~ msgstr "JVXL Isosurface"
+
+#, java-format
+#~ msgid "{0} Image"
+#~ msgstr "{0} Image"
+
+#~ msgid "Script with history"
+#~ msgstr "Script with history"
+
 #~ msgid "About Jmol"
 #~ msgstr "About Jmol"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to string value: {0}"
 #~ msgstr "ERROR: cannot set boolean flag to string value: {0}"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr "ERROR: cannot set boolean flag to numeric value: {0}"
 
+#, java-format
 #~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 #~ msgstr "ERROR: Cannot set value of this variable to a boolean: {0}"
+
+#~ msgid ""
+#~ "click on two points to spin around axis counterclockwise (requires SET "
+#~ "picking SPIN)"
+#~ msgstr ""
+#~ "click on two points to spin around axis anticlockwise (requires SET picking "
+#~ "SPIN)"
+
+#~ msgid ""
+#~ "click on two points to spin around axis clockwise (requires SET picking SPIN)"
+#~ msgstr ""
+#~ "click on two points to spin around axis clockwise (requires SET picking SPIN)"
+
+#~ msgid "pick a DRAW point (for measurements)"
+#~ msgstr "pick a DRAW point (for measurements)"
+
+#~ msgid ""
+#~ "pick a point or atom to navigate to (requires SET NAVIGATIONMODE; "
+#~ "undocumented)"
+#~ msgstr ""
+#~ "pick a point or atom to navigate to (requires SET NAVIGATIONMODE; "
+#~ "undocumented)"
+
+#~ msgid "pick an ISOSURFACE point"
+#~ msgstr "pick an ISOSURFACE point"
+
+#, java-format
+#~ msgid "toggle selection (requires {0} or {1})"
+#~ msgstr "toggle selection (requires {0} or {1})"
+
+#~ msgid "Minimize"
+#~ msgstr "Minimise"

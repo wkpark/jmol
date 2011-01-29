@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-12-16 16:48+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-01-29 19:08+0000\n"
+"X-Generator: Launchpad (build 12274)\n"
 "X-Poedit-Language: Turkish\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -1661,8 +1661,44 @@ msgstr ""
 #~ msgid "vector"
 #~ msgstr "vektör"
 
+#~ msgid "Go to first {0} in the collection"
+#~ msgstr "Koleksiyondaki ilk {0} elemanına git"
+
+#~ msgid "Go to previous {0} in the collection"
+#~ msgstr "Koleksiyondaki önceki {0} elemana git"
+
+#~ msgid "Play the whole collection of {0}'s"
+#~ msgstr "{0} elemanının tüm koleksiyonunu oynat"
+
+#~ msgid "Go to next {0} in the collection"
+#~ msgstr "Koleksiyondaki bir sonraki {0} elemanına git"
+
+#~ msgid "Jump to last {0} in the collection"
+#~ msgstr "Koleksiyondaki en son {0} elemanına git"
+
 #~ msgid "Jmol Script Console"
 #~ msgstr "Jmol Betik Uçbirimi"
+
+#~ msgid "Clear console button (requires restarting Jmol)"
+#~ msgstr "Komut arayüzünü temizle (Jmol'u yeniden başlatmanız gerekir)"
+
+#~ msgid "The -D options are as follows (defaults in parenthesis):"
+#~ msgstr ""
+#~ "-D seçenekleri aşağıda listenenmiştir (parantez içindekiler varsayılan "
+#~ "seçeneklerdir):"
+
+#~ msgid "Output Conso&le..."
+#~ msgstr "Betik..."
+
+#~ msgid "double-click and drag to reorder"
+#~ msgstr "yeniden sıralamak için çift-tıklayıp sürükleyin"
+
+#~ msgid ""
+#~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
+#~ "model {0}."
+#~ msgstr ""
+#~ "Açıklayıcı ek yazıyı buraya ekle. Uzun yazı {0} Jmol modeli çevresinde "
+#~ "kaydırılır."
 
 #~ msgid "Show Selected"
 #~ msgstr "Seçilenleri Göster"

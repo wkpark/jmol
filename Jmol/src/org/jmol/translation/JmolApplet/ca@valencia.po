@@ -1,16 +1,16 @@
-# Japanese translation for jmol
-# Copyright (c) 2009 Rosetta Contributors and Canonical Ltd 2009
+# Catalan (Valencian) translation for jmol
+# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
 # This file is distributed under the same license as the jmol package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2009.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-01-12 18:30+0100\n"
-"PO-Revision-Date: 2009-12-17 09:37+0000\n"
+"PO-Revision-Date: 2011-01-17 06:55+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: Japanese <ja@li.org>\n"
+"Language-Team: Catalan (Valencian) <ca@valencia@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -19,61 +19,63 @@ msgstr ""
 
 #: org/jmol/applet/AppletConsole.java:199
 msgid "&Help"
-msgstr ""
+msgstr "A&juda"
 
 #: org/jmol/applet/AppletConsole.java:200
 msgid "&Search..."
-msgstr ""
+msgstr "Ce&rca…"
 
 #: org/jmol/applet/AppletConsole.java:201
 msgid "&Commands"
-msgstr ""
+msgstr "&Ordes"
 
 #: org/jmol/applet/AppletConsole.java:202
 msgid "Math &Functions"
-msgstr ""
+msgstr "&Funcions matemàtiques"
 
 #: org/jmol/applet/AppletConsole.java:203
 msgid "Set &Parameters"
-msgstr ""
+msgstr "Defineix els &paràmetres"
 
 #: org/jmol/applet/AppletConsole.java:204
 msgid "&More"
-msgstr ""
+msgstr "&Més"
 
 #: org/jmol/applet/AppletConsole.java:205
 msgid "Editor"
-msgstr ""
+msgstr "Editor"
 
 #: org/jmol/applet/AppletConsole.java:206
 msgid "State"
-msgstr ""
+msgstr "Estat"
 
 #: org/jmol/applet/AppletConsole.java:207
 #: org/jmol/console/ScriptEditor.java:137
 msgid "Run"
-msgstr ""
+msgstr "Executa"
 
 #: org/jmol/applet/AppletConsole.java:208
 msgid "Clear Output"
-msgstr ""
+msgstr "Neteja l'eixida"
 
 #: org/jmol/applet/AppletConsole.java:209
 msgid "Clear Input"
-msgstr ""
+msgstr "Neteja l'entrada"
 
 #: org/jmol/applet/AppletConsole.java:210
 #: org/jmol/popup/MainPopupResourceBundle.java:852
 msgid "History"
-msgstr ""
+msgstr "Historial"
 
 #: org/jmol/applet/AppletConsole.java:211
 msgid "Load"
-msgstr ""
+msgstr "Carrega"
 
 #: org/jmol/applet/AppletConsole.java:213
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
 msgstr ""
+"premeu Ctrl+Retorn per a una nova línia o enganxeu les dades del model i "
+"premeu Carrega"
 
 #: org/jmol/applet/AppletConsole.java:215
 msgid ""
@@ -81,6 +83,10 @@ msgid ""
 "console Help menu item for on-line help, which will appear in a new browser "
 "window."
 msgstr ""
+"Els missatges apareixeran ací. Introduïu les ordes en el quadre a "
+"continuació. Feu clic a l'element Ajuda del menú de la consola per a "
+"consultar l'ajuda en línia, que es mostrarà en una nova finestra del "
+"navegador."
 
 #: org/jmol/applet/Jmol.java:702
 #, java-format
@@ -91,298 +97,303 @@ msgid ""
 "\n"
 "See http://www.jmol.org for more information"
 msgstr ""
+"Miniaplicació de Jmol, versio {0} {1}.\n"
+"\n"
+"Un projecte d'OpenScience. \n"
+"\n"
+"Consulteu http://www.jmol.org per a més informació"
 
 #: org/jmol/applet/Jmol.java:952
 msgid "File Error:"
-msgstr ""
+msgstr "Error de fitxer:"
 
 #: org/jmol/appletwrapper/AppletWrapper.java:92
 msgid "Loading Jmol applet ..."
-msgstr ""
+msgstr "S'està carregant la miniaplicació del Jmol…"
 
 #: org/jmol/appletwrapper/AppletWrapper.java:169
 #, java-format
 msgid "  {0} seconds"
-msgstr ""
+msgstr "  {0} segons"
 
 #: org/jmol/console/JmolConsole.java:87
 msgid "Jmol Script Console"
-msgstr ""
+msgstr "Consola script del Jmol"
 
 #: org/jmol/console/ScriptEditor.java:98
 msgid "Jmol Script Editor"
-msgstr ""
+msgstr "Editor d'scripts del Jmol"
 
 #: org/jmol/console/ScriptEditor.java:130
 #: org/jmol/popup/MainPopupResourceBundle.java:849
 msgid "Console"
-msgstr ""
+msgstr "Consola"
 
 #: org/jmol/console/ScriptEditor.java:132
 #: org/jmol/export/dialog/Dialog.java:440
 #: org/jmol/export/dialog/Dialog.java:464
 #: org/jmol/export/dialog/Dialog.java:467
 msgid "Open"
-msgstr ""
+msgstr "Obri"
 
 #: org/jmol/console/ScriptEditor.java:133
 msgid "Script"
-msgstr ""
+msgstr "Script"
 
 #: org/jmol/console/ScriptEditor.java:134
 msgid "Check"
-msgstr ""
+msgstr "Comprova"
 
 #: org/jmol/console/ScriptEditor.java:135
 msgid ""
 "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
-msgstr ""
+msgstr "A dalt"
 
 #: org/jmol/console/ScriptEditor.java:136
 msgid "Step"
-msgstr ""
+msgstr "Pas"
 
 #: org/jmol/console/ScriptEditor.java:138
 #: org/jmol/popup/MainPopupResourceBundle.java:805
 msgid "Pause"
-msgstr ""
+msgstr "Pausa"
 
 #: org/jmol/console/ScriptEditor.java:140
 #: org/jmol/popup/MainPopupResourceBundle.java:806
 msgid "Resume"
-msgstr ""
+msgstr "Reprén"
 
 #: org/jmol/console/ScriptEditor.java:142
 msgid "Halt"
-msgstr ""
+msgstr "Atura"
 
 #: org/jmol/console/ScriptEditor.java:144
 msgid "Clear"
-msgstr ""
+msgstr "Neteja"
 
 #: org/jmol/console/ScriptEditor.java:145
 msgid "Close"
-msgstr ""
+msgstr "Tanca"
 
 #: org/jmol/export/dialog/Dialog.java:92
 msgid "File or URL:"
-msgstr ""
+msgstr "Fitxer o URL:"
 
 #: org/jmol/export/dialog/Dialog.java:266
 msgid "Image Type"
-msgstr ""
+msgstr "Tipus d'imatge"
 
 #: org/jmol/export/dialog/Dialog.java:281
 #: org/jmol/export/dialog/Dialog.java:322
 #, java-format
 msgid "JPEG Quality ({0})"
-msgstr ""
+msgstr "Qualitat del JPEG ({0})"
 
 #: org/jmol/export/dialog/Dialog.java:295
 #, java-format
 msgid "PNG Compression  ({0})"
-msgstr ""
+msgstr "Compressió PNG ({0})"
 
 #: org/jmol/export/dialog/Dialog.java:325
 #, java-format
 msgid "PNG Quality ({0})"
-msgstr ""
+msgstr "Qualitat del PNG ({0})"
 
 #: org/jmol/export/dialog/Dialog.java:371
 #: org/jmol/export/dialog/Dialog.java:483
 msgid "Yes"
-msgstr ""
+msgstr "Sí"
 
 #: org/jmol/export/dialog/Dialog.java:371
 #: org/jmol/export/dialog/Dialog.java:481
 msgid "No"
-msgstr ""
+msgstr "No"
 
 #: org/jmol/export/dialog/Dialog.java:373
 #, java-format
 msgid "Do you want to overwrite file {0}?"
-msgstr ""
+msgstr "Voleu sobreescriure el fitxer {0}?"
 
 #: org/jmol/export/dialog/Dialog.java:374
 msgid "Warning"
-msgstr ""
+msgstr "Avís"
 
 #: org/jmol/export/dialog/Dialog.java:432
 msgid "All Files"
-msgstr ""
+msgstr "Tots els fitxers"
 
 #: org/jmol/export/dialog/Dialog.java:433
 #: org/jmol/export/dialog/Dialog.java:480
 msgid "Cancel"
-msgstr ""
+msgstr "Cancel·la"
 
 #: org/jmol/export/dialog/Dialog.java:435
 msgid "Abort file chooser dialog"
-msgstr ""
+msgstr "Avorta el diàleg de selecció de fitxers"
 
 #: org/jmol/export/dialog/Dialog.java:437
 #: org/jmol/export/dialog/Dialog.java:438
 msgid "Details"
-msgstr ""
+msgstr "Detalls"
 
 #: org/jmol/export/dialog/Dialog.java:439
 msgid "Directory"
-msgstr ""
+msgstr "Directori"
 
 #: org/jmol/export/dialog/Dialog.java:442
 msgid "Open selected directory"
-msgstr ""
+msgstr "Obri el directori seleccionat"
 
 #: org/jmol/export/dialog/Dialog.java:443
 msgid "Attributes"
-msgstr ""
+msgstr "Atributs"
 
 #: org/jmol/export/dialog/Dialog.java:444
 msgid "Modified"
-msgstr ""
+msgstr "Modificat"
 
 #: org/jmol/export/dialog/Dialog.java:445
 msgid "Generic File"
-msgstr ""
+msgstr "Fitxer genèric"
 
 #: org/jmol/export/dialog/Dialog.java:446
 msgid "Name"
-msgstr ""
+msgstr "Nom"
 
 #: org/jmol/export/dialog/Dialog.java:447
 msgid "File Name:"
-msgstr ""
+msgstr "Nom del fitxer:"
 
 #: org/jmol/export/dialog/Dialog.java:448
 msgid "Size"
-msgstr ""
+msgstr "Mida"
 
 #: org/jmol/export/dialog/Dialog.java:449
 msgid "Files of Type:"
-msgstr ""
+msgstr "Fitxers del tipus:"
 
 #: org/jmol/export/dialog/Dialog.java:450
 msgid "Type"
-msgstr ""
+msgstr "Tipus"
 
 #: org/jmol/export/dialog/Dialog.java:451
 msgid "Help"
-msgstr ""
+msgstr "Ajuda"
 
 #: org/jmol/export/dialog/Dialog.java:453
 msgid "FileChooser help"
-msgstr ""
+msgstr "Ajuda del selector de fitxers"
 
 #: org/jmol/export/dialog/Dialog.java:454
 #: org/jmol/export/dialog/Dialog.java:455
 msgid "Home"
-msgstr ""
+msgstr "Inici"
 
 #: org/jmol/export/dialog/Dialog.java:456
 #: org/jmol/export/dialog/Dialog.java:457
 msgid "List"
-msgstr ""
+msgstr "Llista"
 
 #: org/jmol/export/dialog/Dialog.java:458
 msgid "Look In:"
-msgstr ""
+msgstr "Cerca a:"
 
 #: org/jmol/export/dialog/Dialog.java:460
 msgid "Error creating new folder"
-msgstr ""
+msgstr "S'ha produït un error en crear la carpeta nova"
 
 #: org/jmol/export/dialog/Dialog.java:461
 msgid "New Folder"
-msgstr ""
+msgstr "Carpeta nova"
 
 #: org/jmol/export/dialog/Dialog.java:463
 msgid "Create New Folder"
-msgstr ""
+msgstr "Crea una carpeta nova"
 
 #: org/jmol/export/dialog/Dialog.java:466
 msgid "Open selected file"
-msgstr ""
+msgstr "Obri el fitxer seleccionat"
 
 #: org/jmol/export/dialog/Dialog.java:468
 #: org/jmol/export/dialog/Dialog.java:471
 msgid "Save"
-msgstr ""
+msgstr "Alça"
 
 #: org/jmol/export/dialog/Dialog.java:470
 msgid "Save selected file"
-msgstr ""
+msgstr "Alça el fitxer seleccionat"
 
 #: org/jmol/export/dialog/Dialog.java:472
 msgid "Save In:"
-msgstr ""
+msgstr "Alça a:"
 
 #: org/jmol/export/dialog/Dialog.java:473
 msgid "Update"
-msgstr ""
+msgstr "Actualitza"
 
 #: org/jmol/export/dialog/Dialog.java:475
 msgid "Update directory listing"
-msgstr ""
+msgstr "Actualitza la llista de directoris"
 
 #: org/jmol/export/dialog/Dialog.java:476
 msgid "Up"
-msgstr ""
+msgstr "Amunt"
 
 #: org/jmol/export/dialog/Dialog.java:477
 msgid "Up One Level"
-msgstr ""
+msgstr "Un nivell amunt"
 
 #: org/jmol/export/dialog/Dialog.java:482
 msgid "OK"
-msgstr ""
+msgstr "D'acord"
 
 #: org/jmol/export/dialog/FilePreview.java:71
 msgid "Preview"
-msgstr ""
+msgstr "Previsualització"
 
 #: org/jmol/export/dialog/FilePreview.java:91
 msgid "Append models"
-msgstr ""
+msgstr "Afig els models"
 
 #: org/jmol/i18n/GT.java:137
 msgid "Arabic"
-msgstr ""
+msgstr "Àrab"
 
 #: org/jmol/i18n/GT.java:138
 msgid "Catalan"
-msgstr ""
+msgstr "Català"
 
 #: org/jmol/i18n/GT.java:139
 msgid "Czech"
-msgstr ""
+msgstr "Txec"
 
 #: org/jmol/i18n/GT.java:140
 msgid "Danish"
-msgstr ""
+msgstr "Danés"
 
 #: org/jmol/i18n/GT.java:141
 msgid "German"
-msgstr ""
+msgstr "Alemany"
 
 #: org/jmol/i18n/GT.java:142
 msgid "Greek"
-msgstr ""
+msgstr "Grec"
 
 #: org/jmol/i18n/GT.java:143
 msgid "British English"
-msgstr ""
+msgstr "Anglés britànic"
 
 #: org/jmol/i18n/GT.java:144
 msgid "American English"
-msgstr ""
+msgstr "Anglés americà"
 
 #: org/jmol/i18n/GT.java:145
 msgid "Spanish"
-msgstr ""
+msgstr "Espanyol"
 
 #: org/jmol/i18n/GT.java:146
 msgid "Estonian"
-msgstr ""
+msgstr "Estonià"
 
 #: org/jmol/i18n/GT.java:147
 msgid "Finnish"
@@ -390,27 +401,27 @@ msgstr ""
 
 #: org/jmol/i18n/GT.java:148
 msgid "Faroese"
-msgstr ""
+msgstr "Feroés"
 
 #: org/jmol/i18n/GT.java:149
 msgid "French"
-msgstr ""
+msgstr "Francés"
 
 #: org/jmol/i18n/GT.java:150
 msgid "Hungarian"
-msgstr ""
+msgstr "Hongarés"
 
 #: org/jmol/i18n/GT.java:151
 msgid "Indonesian"
-msgstr ""
+msgstr "Indonesi"
 
 #: org/jmol/i18n/GT.java:152
 msgid "Italian"
-msgstr ""
+msgstr "Italià"
 
 #: org/jmol/i18n/GT.java:153
 msgid "Japanese"
-msgstr ""
+msgstr "Japonés"
 
 #: org/jmol/i18n/GT.java:154
 msgid "Javanese"
@@ -418,82 +429,82 @@ msgstr ""
 
 #: org/jmol/i18n/GT.java:155
 msgid "Korean"
-msgstr ""
+msgstr "Coreà"
 
 #: org/jmol/i18n/GT.java:156
 msgid "Norwegian Bokmal"
-msgstr ""
+msgstr "Noruec Bökmal"
 
 #: org/jmol/i18n/GT.java:157
 msgid "Dutch"
-msgstr ""
+msgstr "Holandés"
 
 #: org/jmol/i18n/GT.java:158
 msgid "Occitan"
-msgstr ""
+msgstr "Occità"
 
 #: org/jmol/i18n/GT.java:159
 msgid "Polish"
-msgstr ""
+msgstr "Polonés"
 
 #: org/jmol/i18n/GT.java:160
 msgid "Portuguese"
-msgstr ""
+msgstr "Portugués"
 
 #: org/jmol/i18n/GT.java:161
 msgid "Brazilian Portuguese"
-msgstr ""
+msgstr "Portugués del Brasil"
 
 #: org/jmol/i18n/GT.java:162
 msgid "Russian"
-msgstr ""
+msgstr "Rus"
 
 #: org/jmol/i18n/GT.java:163
 msgid "Slovenian"
-msgstr ""
+msgstr "Eslovè"
 
 #: org/jmol/i18n/GT.java:164
 msgid "Swedish"
-msgstr ""
+msgstr "Suec"
 
 #: org/jmol/i18n/GT.java:165
 msgid "Tamil"
-msgstr ""
+msgstr "Tàmil"
 
 #: org/jmol/i18n/GT.java:166
 msgid "Turkish"
-msgstr ""
+msgstr "Turc"
 
 #: org/jmol/i18n/GT.java:167
 msgid "Ukrainian"
-msgstr ""
+msgstr "Ucraïnés"
 
 #: org/jmol/i18n/GT.java:168
 msgid "Simplified Chinese"
-msgstr ""
+msgstr "Xinés simplificat"
 
 #: org/jmol/i18n/GT.java:169
 msgid "Traditional Chinese"
-msgstr ""
+msgstr "Xinés tradicional"
 
 #: org/jmol/minimize/Minimizer.java:206
 #, java-format
 msgid "Could not get class for force field {0}"
-msgstr ""
+msgstr "No es pot aconseguir la classe del camp de força {0}"
 
 #: org/jmol/minimize/Minimizer.java:210
 msgid "No atoms selected -- nothing to do!"
-msgstr ""
+msgstr "No s'ha seleccionat cap àtom -- no hi ha res per fer!"
 
 #: org/jmol/minimize/Minimizer.java:286
 #, java-format
 msgid "{0} atoms will be minimized."
-msgstr ""
+msgstr "Es minimitzaran {0} àtoms."
 
 #: org/jmol/minimize/Minimizer.java:374
 #, java-format
 msgid "could not setup force field {0}"
-msgstr ""
+msgstr "no ha pogut configurar-se el camp de força {0}"
 
 #: org/jmol/modelkit/ModelKitPopup.java:75
 msgid "Element?"
@@ -629,12 +640,12 @@ msgstr ""
 #: org/jmol/popup/JmolPopup.java:149
 #: org/jmol/popup/MainPopupResourceBundle.java:536
 msgid "No atoms loaded"
-msgstr ""
+msgstr "No s'ha carregat cap àtom"
 
 #: org/jmol/popup/JmolPopup.java:362
 #: org/jmol/popup/MainPopupResourceBundle.java:548
 msgid "Space Group"
-msgstr ""
+msgstr "Grup espacial"
 
 #: org/jmol/popup/JmolPopup.java:424 org/jmol/popup/JmolPopup.java:464
 #: org/jmol/popup/MainPopupResourceBundle.java:569
@@ -642,17 +653,17 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:592
 #: org/jmol/popup/MainPopupResourceBundle.java:609
 msgid "All"
-msgstr ""
+msgstr "Tot"
 
 #: org/jmol/popup/JmolPopup.java:567
 #: org/jmol/popup/MainPopupResourceBundle.java:945
 msgid "Mouse Manual"
-msgstr ""
+msgstr "Manual del ratolí"
 
 #: org/jmol/popup/JmolPopup.java:568
 #: org/jmol/popup/MainPopupResourceBundle.java:946
 msgid "Translations"
-msgstr ""
+msgstr "Translacions"
 
 #: org/jmol/popup/JmolPopup.java:570
 msgid "System"
@@ -660,16 +671,16 @@ msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:576
 msgid "1 processor"
-msgstr ""
+msgstr "1 processador"
 
 #: org/jmol/popup/JmolPopup.java:577
 #, java-format
 msgid "{0} processors"
-msgstr ""
+msgstr "{0} processadors"
 
 #: org/jmol/popup/JmolPopup.java:579
 msgid "unknown processor count"
-msgstr ""
+msgstr "recompte de processadors desconegut"
 
 #: org/jmol/popup/JmolPopup.java:581
 msgid "Java version:"
@@ -682,47 +693,47 @@ msgstr ""
 #: org/jmol/popup/JmolPopup.java:591
 #, java-format
 msgid "{0} MB total"
-msgstr ""
+msgstr "{0} MB en total"
 
 #: org/jmol/popup/JmolPopup.java:593
 #, java-format
 msgid "{0} MB free"
-msgstr ""
+msgstr "{0} MB lliures"
 
 #: org/jmol/popup/JmolPopup.java:596
 #, java-format
 msgid "{0} MB maximum"
-msgstr ""
+msgstr "{0} MB com a màxim"
 
 #: org/jmol/popup/JmolPopup.java:599
 msgid "unknown maximum"
-msgstr ""
+msgstr "màxim desconegut"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:538
 msgid "Configurations"
-msgstr ""
+msgstr "Configuracions"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:539
 msgid "Element"
-msgstr ""
+msgstr "Element"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:540
 msgid "Model/Frame"
-msgstr ""
+msgstr "Model/fotograma"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:541
 msgid "Language"
-msgstr ""
+msgstr "Llengua"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:542
 #: org/jmol/popup/MainPopupResourceBundle.java:543
 #: org/jmol/popup/MainPopupResourceBundle.java:544
 msgid "By Residue Name"
-msgstr ""
+msgstr "Per nom de residu"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:545
 msgid "By HETATM"
-msgstr ""
+msgstr "Per HETATM"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:546
 #, java-format
@@ -733,270 +744,270 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:859
 #: org/jmol/popup/MainPopupResourceBundle.java:903
 msgid "Symmetry"
-msgstr ""
+msgstr "Simetria"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:549
 msgid "Hide Symmetry"
-msgstr ""
+msgstr "Amaga la simetria"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:550
 msgid "Model information"
-msgstr ""
+msgstr "Informació del model"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:551
 #, java-format
 msgid "Select ({0})"
-msgstr ""
+msgstr "Selecciona ({0})"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:552
 #, java-format
 msgid "All {0} models"
-msgstr ""
+msgstr "Tots els {0} models"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:553
 #, java-format
 msgid "Configurations ({0})"
-msgstr ""
+msgstr "Configuracions ({0})"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:554
 #, java-format
 msgid "Collection of {0} models"
-msgstr ""
+msgstr "Col·lecció de {0} models"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:555
 #, java-format
 msgid "atoms: {0}"
-msgstr ""
+msgstr "àtoms: {0}"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:556
 #, java-format
 msgid "bonds: {0}"
-msgstr ""
+msgstr "enllaços: {0}"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:557
 #, java-format
 msgid "groups: {0}"
-msgstr ""
+msgstr "grups: {0}"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:558
 #, java-format
 msgid "chains: {0}"
-msgstr ""
+msgstr "cadenes: {0}"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:559
 #, java-format
 msgid "polymers: {0}"
-msgstr ""
+msgstr "polímers: {0}"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:560
 #, java-format
 msgid "model {0}"
-msgstr ""
+msgstr "model {0}"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:561
 #, java-format
 msgid "View {0}"
-msgstr ""
+msgstr "Vista {0}"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:562
 msgid "Main Menu"
-msgstr ""
+msgstr "Menú principal"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:563
 msgid "Biomolecules"
-msgstr ""
+msgstr "Biomolècules"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:564
 #, java-format
 msgid "biomolecule {0} ({1} atoms)"
-msgstr ""
+msgstr "biomolècula {0} ({1} àtoms)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:565
 #, java-format
 msgid "load biomolecule {0} ({1} atoms)"
-msgstr ""
+msgstr "carrega una biomolècula {0} ({1} àtoms)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:570
 #: org/jmol/popup/MainPopupResourceBundle.java:689
 #: org/jmol/popup/MainPopupResourceBundle.java:698
 msgid "None"
-msgstr ""
+msgstr "Cap"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:571
 msgid "Display Selected Only"
-msgstr ""
+msgstr "Mostra només allò seleccionat"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:572
 msgid "Invert Selection"
-msgstr ""
+msgstr "Inverteix la selecció"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:574
 msgid "View"
-msgstr ""
+msgstr "Visualització"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:575
 msgid "Front"
-msgstr ""
+msgstr "Frontal"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:576
 msgid "Left"
-msgstr ""
+msgstr "Esquerra"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:577
 msgid "Right"
-msgstr ""
+msgstr "Dreta"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:578
 msgid "Top"
-msgstr ""
+msgstr "Superior"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:579
 msgid "Bottom"
-msgstr ""
+msgstr "Inferior"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:580
 msgid "Back"
-msgstr ""
+msgstr "Dorsal"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:582
 msgid "Protein"
-msgstr ""
+msgstr "Proteïna"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:584
 #: org/jmol/popup/MainPopupResourceBundle.java:595
 #: org/jmol/popup/MainPopupResourceBundle.java:665
 #: org/jmol/popup/MainPopupResourceBundle.java:757
 msgid "Backbone"
-msgstr ""
+msgstr "Esquelet"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:585
 msgid "Side Chains"
-msgstr ""
+msgstr "Cadenes laterals"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:586
 msgid "Polar Residues"
-msgstr ""
+msgstr "Residus polars"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:587
 msgid "Nonpolar Residues"
-msgstr ""
+msgstr "Residus no polars"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:588
 msgid "Basic Residues (+)"
-msgstr ""
+msgstr "Residus bàsics (+)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:589
 msgid "Acidic Residues (-)"
-msgstr ""
+msgstr "Residus acídics (-)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:590
 msgid "Uncharged Residues"
-msgstr ""
+msgstr "Residus sense càrrega"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:591
 msgid "Nucleic"
-msgstr ""
+msgstr "Nucleic"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:593
 msgid "DNA"
-msgstr ""
+msgstr "ADN"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:594
 msgid "RNA"
-msgstr ""
+msgstr "ARN"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:596
 msgid "Bases"
-msgstr ""
+msgstr "Bases"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:597
 msgid "AT pairs"
-msgstr ""
+msgstr "Parelles AT"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:598
 msgid "GC pairs"
-msgstr ""
+msgstr "Parelles GC"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:599
 msgid "AU pairs"
-msgstr ""
+msgstr "Parelles AU"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:600
 msgid "Hetero"
-msgstr ""
+msgstr "Hetero"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:601
 msgid "All PDB \"HETATM\""
-msgstr ""
+msgstr "Tots els «HETATM» del PDB"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:602
 msgid "All Solvent"
-msgstr ""
+msgstr "Tot el solvent"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:603
 msgid "All Water"
-msgstr ""
+msgstr "Tot l'aigua"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:605
 msgid "Nonaqueous Solvent"
-msgstr ""
+msgstr "Solvent no aquós"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:606
 msgid "Nonaqueous HETATM"
-msgstr ""
+msgstr "HETATM no aquosos"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:607
 msgid "Ligand"
-msgstr ""
+msgstr "Lligand"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:610
 msgid "Carbohydrate"
-msgstr ""
+msgstr "Carbohidrat"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:611
 msgid "None of the above"
-msgstr ""
+msgstr "Cap dels anteriors"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:613
 msgid "Style"
-msgstr ""
+msgstr "Estil"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:614
 msgid "Scheme"
-msgstr ""
+msgstr "Esquema"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:615
 msgid "CPK Spacefill"
-msgstr ""
+msgstr "Esferes CPK"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:616
 msgid "Ball and Stick"
-msgstr ""
+msgstr "Boles i bastons"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:617
 msgid "Sticks"
-msgstr ""
+msgstr "Bastons"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:618
 msgid "Wireframe"
-msgstr ""
+msgstr "Filferro"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:619
 #: org/jmol/popup/MainPopupResourceBundle.java:666
 #: org/jmol/popup/MainPopupResourceBundle.java:759
 msgid "Cartoon"
-msgstr ""
+msgstr "Disseny"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:620
 #: org/jmol/popup/MainPopupResourceBundle.java:671
 #: org/jmol/popup/MainPopupResourceBundle.java:758
 msgid "Trace"
-msgstr ""
+msgstr "Traç"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:622
 #: org/jmol/popup/MainPopupResourceBundle.java:711
 msgid "Atoms"
-msgstr ""
+msgstr "Àtoms"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:623
 #: org/jmol/popup/MainPopupResourceBundle.java:632
@@ -1009,7 +1020,7 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:834
 #: org/jmol/popup/MainPopupResourceBundle.java:901
 msgid "Off"
-msgstr ""
+msgstr "Desactivat"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:624
 #: org/jmol/popup/MainPopupResourceBundle.java:625
@@ -1019,12 +1030,12 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:629
 #, java-format
 msgid "{0}% van der Waals"
-msgstr ""
+msgstr "{0}% van der Waals"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:631
 #: org/jmol/popup/MainPopupResourceBundle.java:753
 msgid "Bonds"
-msgstr ""
+msgstr "Enllaços"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:633
 #: org/jmol/popup/MainPopupResourceBundle.java:643
@@ -1033,7 +1044,7 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:678
 #: org/jmol/popup/MainPopupResourceBundle.java:782
 msgid "On"
-msgstr ""
+msgstr "Activat"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:634
 #: org/jmol/popup/MainPopupResourceBundle.java:635
@@ -1059,75 +1070,75 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:929
 #, java-format
 msgid "{0} Å"
-msgstr ""
+msgstr "{0} Å"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:640
 #: org/jmol/popup/MainPopupResourceBundle.java:754
 msgid "Hydrogen Bonds"
-msgstr ""
+msgstr "Enllaços d'hidrogen"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:642
 msgid "Calculate"
-msgstr ""
+msgstr "Calcula"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:644
 msgid "Set H-Bonds Side Chain"
-msgstr ""
+msgstr "Defineix els enllaços d'hidrogen de les cadenes laterals"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:645
 msgid "Set H-Bonds Backbone"
-msgstr ""
+msgstr "Defineix els enllaços d'hidrogen de l'esquelet"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:652
 #: org/jmol/popup/MainPopupResourceBundle.java:755
 msgid "Disulfide Bonds"
-msgstr ""
+msgstr "Enllaços disulfur"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:655
 msgid "Set SS-Bonds Side Chain"
-msgstr ""
+msgstr "Defineix els enllaços disulfur de les cadenes laterals"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:656
 msgid "Set SS-Bonds Backbone"
-msgstr ""
+msgstr "Defineix els enllaços disulfur de l'esquelet"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:663
 #: org/jmol/popup/MainPopupResourceBundle.java:756
 msgid "Structures"
-msgstr ""
+msgstr "Estructures"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:667
 msgid "Cartoon Rockets"
-msgstr ""
+msgstr "Disseny en coets"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:668
 #: org/jmol/popup/MainPopupResourceBundle.java:760
 msgid "Ribbons"
-msgstr ""
+msgstr "Cintes"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:669
 #: org/jmol/popup/MainPopupResourceBundle.java:761
 msgid "Rockets"
-msgstr ""
+msgstr "Coets"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:670
 #: org/jmol/popup/MainPopupResourceBundle.java:762
 msgid "Strands"
-msgstr ""
+msgstr "Cadenes"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:673
 msgid "Vibration"
-msgstr ""
+msgstr "Vibració"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:676
 #: org/jmol/popup/MainPopupResourceBundle.java:766
 msgid "Vectors"
-msgstr ""
+msgstr "Vectors"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:679
 #, java-format
 msgid "{0} pixels"
-msgstr ""
+msgstr "{0} píxels"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:682
 #: org/jmol/popup/MainPopupResourceBundle.java:683
@@ -1136,345 +1147,345 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:686
 #, java-format
 msgid "Scale {0}"
-msgstr ""
+msgstr "Escala {0}"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:688
 msgid "Stereographic"
-msgstr ""
+msgstr "Estereogràfic"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:690
 msgid "Red+Cyan glasses"
-msgstr ""
+msgstr "Ulleres roig+cian"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:691
 msgid "Red+Blue glasses"
-msgstr ""
+msgstr "Ulleres roig+blau"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:692
 msgid "Red+Green glasses"
-msgstr ""
+msgstr "Ulleres roig+verd"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:693
 msgid "Cross-eyed viewing"
-msgstr ""
+msgstr "Visió guenya"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:694
 msgid "Wall-eyed viewing"
-msgstr ""
+msgstr "Visió paral·lela"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:696
 #: org/jmol/popup/MainPopupResourceBundle.java:763
 msgid "Labels"
-msgstr ""
+msgstr "Etiquetes"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:699
 msgid "With Element Symbol"
-msgstr ""
+msgstr "Amb el símbol de l'element"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:700
 msgid "With Atom Name"
-msgstr ""
+msgstr "Amb el nom de l'àtom"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:701
 msgid "With Atom Number"
-msgstr ""
+msgstr "Amb el número de l'àtom"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:703
 msgid "Position Label on Atom"
-msgstr ""
+msgstr "Posició de l'etiqueta a l'àtom"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:704
 msgid "Centered"
-msgstr ""
+msgstr "Centrat"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:705
 msgid "Upper Right"
-msgstr ""
+msgstr "Marge superior dret"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:706
 msgid "Lower Right"
-msgstr ""
+msgstr "Marge inferior dret"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:707
 msgid "Upper Left"
-msgstr ""
+msgstr "Marge superior esquerre"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:708
 msgid "Lower Left"
-msgstr ""
+msgstr "Marge inferior esquerre"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:710
 msgid "Color"
-msgstr ""
+msgstr "Color"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:713
 msgid "By Scheme"
-msgstr ""
+msgstr "Per esquema"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:714
 msgid "Element (CPK)"
-msgstr ""
+msgstr "Element (CPK)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:715
 msgid "Alternative Location"
-msgstr ""
+msgstr "Ubicació alternativa"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:716
 msgid "Molecule"
-msgstr ""
+msgstr "Molècula"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:717
 msgid "Formal Charge"
-msgstr ""
+msgstr "Càrrega formal"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:718
 msgid "Partial Charge"
-msgstr ""
+msgstr "Càrrega parcial"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:719
 msgid "Temperature (Relative)"
-msgstr ""
+msgstr "Temperatura (relativa)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:720
 msgid "Temperature (Fixed)"
-msgstr ""
+msgstr "Temperatura (fixada)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:722
 msgid "Amino Acid"
-msgstr ""
+msgstr "Aminoàcid"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:723
 msgid "Secondary Structure"
-msgstr ""
+msgstr "Estructura secundària"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:724
 msgid "Chain"
-msgstr ""
+msgstr "Cadena"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:725
 msgid "Group"
-msgstr ""
+msgstr "Grup"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:726
 msgid "Monomer"
-msgstr ""
+msgstr "Monòmer"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:727
 msgid "Shapely"
-msgstr ""
+msgstr "Amb forma"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:729
 msgid "Inherit"
-msgstr ""
+msgstr "Hereta"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:730
 msgid "Black"
-msgstr ""
+msgstr "Negre"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:731
 msgid "White"
-msgstr ""
+msgstr "Blanc"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:732
 msgid "Cyan"
-msgstr ""
+msgstr "Cian"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:734
 msgid "Red"
-msgstr ""
+msgstr "Roig"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:735
 msgid "Orange"
-msgstr ""
+msgstr "Taronja"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:736
 msgid "Yellow"
-msgstr ""
+msgstr "Groc"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:737
 msgid "Green"
-msgstr ""
+msgstr "Verd"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:738
 msgid "Blue"
-msgstr ""
+msgstr "Blau"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:739
 msgid "Indigo"
-msgstr ""
+msgstr "Indi"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:740
 msgid "Violet"
-msgstr ""
+msgstr "Violeta"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:742
 msgid "Salmon"
-msgstr ""
+msgstr "Salmó"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:743
 msgid "Olive"
-msgstr ""
+msgstr "Oliva"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:744
 msgid "Maroon"
-msgstr ""
+msgstr "Granat"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:745
 msgid "Gray"
-msgstr ""
+msgstr "Gris"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:746
 msgid "Slate Blue"
-msgstr ""
+msgstr "Blau pissarra"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:747
 msgid "Gold"
-msgstr ""
+msgstr "Daurat"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:748
 msgid "Orchid"
-msgstr ""
+msgstr "Orquídia"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:750
 #: org/jmol/popup/MainPopupResourceBundle.java:899
 msgid "Make Opaque"
-msgstr ""
+msgstr "Fes opac"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:751
 #: org/jmol/popup/MainPopupResourceBundle.java:900
 msgid "Make Translucent"
-msgstr ""
+msgstr "Fes translúcid"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:764
 msgid "Background"
-msgstr ""
+msgstr "Fons"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:765
 #: org/jmol/popup/MainPopupResourceBundle.java:891
 msgid "Surfaces"
-msgstr ""
+msgstr "Superfícies"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:767
 #: org/jmol/popup/MainPopupResourceBundle.java:911
 #: org/jmol/popup/MainPopupResourceBundle.java:937
 msgid "Axes"
-msgstr ""
+msgstr "Eixos"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:768
 #: org/jmol/popup/MainPopupResourceBundle.java:912
 #: org/jmol/popup/MainPopupResourceBundle.java:936
 msgid "Boundbox"
-msgstr ""
+msgstr "Quadre"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:769
 #: org/jmol/popup/MainPopupResourceBundle.java:888
 #: org/jmol/popup/MainPopupResourceBundle.java:913
 #: org/jmol/popup/MainPopupResourceBundle.java:938
 msgid "Unit cell"
-msgstr ""
+msgstr "Cel·la unitat"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:771
 msgid "Zoom"
-msgstr ""
+msgstr "Zoom"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:778
 msgid "Zoom In"
-msgstr ""
+msgstr "Amplia"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:779
 msgid "Zoom Out"
-msgstr ""
+msgstr "Redueix"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:781
 #: org/jmol/popup/MainPopupResourceBundle.java:846
 msgid "Spin"
-msgstr ""
+msgstr "Rotació"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:785
 msgid "Set X Rate"
-msgstr ""
+msgstr "Defineix la velocitat X"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:786
 msgid "Set Y Rate"
-msgstr ""
+msgstr "Defineix la velocitat Y"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:787
 msgid "Set Z Rate"
-msgstr ""
+msgstr "Defineix la velocitat Z"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:788
 #: org/jmol/popup/MainPopupResourceBundle.java:814
 msgid "Set FPS"
-msgstr ""
+msgstr "Defineix els FPS"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:798
 msgid "Animation"
-msgstr ""
+msgstr "Animació"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:799
 msgid "Animation Mode"
-msgstr ""
+msgstr "Mode d'animació"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:800
 msgid "Play Once"
-msgstr ""
+msgstr "Reprodueix una vegada"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:801
 msgid "Palindrome"
-msgstr ""
+msgstr "Palíndrom"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:802
 msgid "Loop"
-msgstr ""
+msgstr "En bucle"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:804
 msgid "Play"
-msgstr ""
+msgstr "Reprodueix"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:807
 msgid "Stop"
-msgstr ""
+msgstr "Atura"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:808
 msgid "Next Frame"
-msgstr ""
+msgstr "Següent fotograma"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:809
 msgid "Previous Frame"
-msgstr ""
+msgstr "Anterior fotograma"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:810
 msgid "Rewind"
-msgstr ""
+msgstr "Rebobina"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:811
 msgid "Reverse"
-msgstr ""
+msgstr "Reproducció inversa"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:812
 msgid "Restart"
-msgstr ""
+msgstr "Reinicia"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:821
 #: org/jmol/popup/MainPopupResourceBundle.java:854
 msgid "Measurements"
-msgstr ""
+msgstr "Mesures"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:822
 msgid "Double-Click begins and ends all measurements"
-msgstr ""
+msgstr "Amb doble clic es comença i acaba totes les mesures"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:823
 msgid "Click for distance measurement"
-msgstr ""
+msgstr "Feu clic per a mesurar la distància"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:824
 msgid "Click for angle measurement"
-msgstr ""
+msgstr "Feu clic per a mesurar l'angle"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:825
 msgid "Click for torsion (dihedral) measurement"
-msgstr ""
+msgstr "Feu clic per a mesurar la torsió (angle dihèdric)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:826
 msgid "Click two atoms to display a sequence in the console"
@@ -1482,63 +1493,63 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:827
 msgid "Delete measurements"
-msgstr ""
+msgstr "Suprimeix les mesures"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:828
 msgid "List measurements"
-msgstr ""
+msgstr "Llista les mesures"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:829
 msgid "Distance units nanometers"
-msgstr ""
+msgstr "Unitats de distància en nanòmetres"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:830
 msgid "Distance units Angstroms"
-msgstr ""
+msgstr "Unitats de distància en Angstroms"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:831
 msgid "Distance units picometers"
-msgstr ""
+msgstr "Unitats de distància en picòmetres"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:833
 msgid "Set picking"
-msgstr ""
+msgstr "Defineix la tria"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:835
 msgid "Center"
-msgstr ""
+msgstr "Centre"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:837
 msgid "Identity"
-msgstr ""
+msgstr "Identitat"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:838
 msgid "Label"
-msgstr ""
+msgstr "Etiqueta"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:839
 msgid "Select atom"
-msgstr ""
+msgstr "Selecciona un àtom"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:840
 msgid "Select chain"
-msgstr ""
+msgstr "Selecciona una cadena"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:841
 msgid "Select element"
-msgstr ""
+msgstr "Selecciona un element"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:842
 msgid "Select group"
-msgstr ""
+msgstr "Selecciona un grup"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:843
 msgid "Select molecule"
-msgstr ""
+msgstr "Selecciona una molècula"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:844
 msgid "Select site"
-msgstr ""
+msgstr "Selecciona un seti"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:845
 msgid "Show symmetry operation"
@@ -1546,39 +1557,39 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:848
 msgid "Show"
-msgstr ""
+msgstr "Mostra"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:850
 msgid "File Contents"
-msgstr ""
+msgstr "Continguts del fitxer"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:851
 msgid "File Header"
-msgstr ""
+msgstr "Capçalera del fitxer"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:853
 msgid "Isosurface JVXL data"
-msgstr ""
+msgstr "Dades JVXL d'isosuperfície"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:855
 msgid "Molecular orbital JVXL data"
-msgstr ""
+msgstr "Dades JVXL de l'orbital molecular"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:856
 msgid "Model"
-msgstr ""
+msgstr "Model"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:857
 msgid "Orientation"
-msgstr ""
+msgstr "Orientació"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:858
 msgid "Space group"
-msgstr ""
+msgstr "Grup espacial"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:860
 msgid "Current state"
-msgstr ""
+msgstr "Estat actual"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:862
 msgid "File"
@@ -1598,7 +1609,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:866
 msgid "Load full unit cell"
-msgstr ""
+msgstr "Carrega la cel·la unitat sencera"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:867
 msgid "Open script"
@@ -1655,61 +1666,61 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:889
 msgid "Extract MOL data"
-msgstr ""
+msgstr "Extreu les dades MOL"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:892
 msgid "Dot Surface"
-msgstr ""
+msgstr "Superfície puntejada"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:893
 msgid "van der Waals Surface"
-msgstr ""
+msgstr "Superfície van der Waals"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:894
 msgid "Molecular Surface"
-msgstr ""
+msgstr "Superfície molecular"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:895
 #, java-format
 msgid "Solvent Surface ({0}-Angstrom probe)"
-msgstr ""
+msgstr "Superfície del solvent (sonda de {0} Angstrom)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:897
 #, java-format
 msgid "Solvent-Accessible Surface (VDW + {0} Angstrom)"
-msgstr ""
+msgstr "Superfície accesible al solvent (VDW + {0} Angstrom)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:898
 msgid "Molecular Electrostatic Potential"
-msgstr ""
+msgstr "Potencial electrostàtic molecular"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:904
 #: org/jmol/popup/MainPopupResourceBundle.java:905
 #: org/jmol/popup/MainPopupResourceBundle.java:906
 #, java-format
 msgid "Reload {0}"
-msgstr ""
+msgstr "Recarrega {0}"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:907
 #, java-format
 msgid "Reload {0} + Display {1}"
-msgstr ""
+msgstr "Torna a carregar {0} + Mostra {1}"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:908
 msgid "Reload + Polyhedra"
-msgstr ""
+msgstr "Recàrrega + polihedres"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:915
 msgid "Hide"
-msgstr ""
+msgstr "Amaga"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:916
 msgid "Dotted"
-msgstr ""
+msgstr "Puntejat"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:918
 msgid "Pixel Width"
-msgstr ""
+msgstr "Amplada del píxel"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:919
 #: org/jmol/popup/MainPopupResourceBundle.java:920
@@ -1717,31 +1728,31 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:922
 #, java-format
 msgid "{0} px"
-msgstr ""
+msgstr "{0} px"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:924
 msgid "Angstrom Width"
-msgstr ""
+msgstr "Amplada de l'àngstrom"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:932
 msgid "Selection Halos"
-msgstr ""
+msgstr "Selecció dels halos"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:933
 msgid "Show Hydrogens"
-msgstr ""
+msgstr "Mostra els hidrògens"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:934
 msgid "Show Measurements"
-msgstr ""
+msgstr "Mostra les mesures"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:935
 msgid "Perspective Depth"
-msgstr ""
+msgstr "Perspectiva en profunditat"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:939
 msgid "RasMol Colors"
-msgstr ""
+msgstr "Colors del RasMol"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:940
 msgid "About..."
@@ -1750,221 +1761,221 @@ msgstr ""
 #: org/jmol/script/ScriptCompilationTokenParser.java:1238
 #: org/jmol/script/ScriptEvaluator.java:2626
 msgid "bad argument count"
-msgstr ""
+msgstr "recompte incorrecte dels arguments"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1241
 #, java-format
 msgid "invalid context for {0}"
-msgstr ""
+msgstr "el testimoni d''expressió no és vàlid: {0}"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1244
 #: org/jmol/script/ScriptEvaluator.java:2650
 msgid "command expected"
-msgstr ""
+msgstr "s'esperava una orde"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1247
 msgid "{ number number number } expected"
-msgstr ""
+msgstr "s'esperava { nombre nombre nombre }"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1250
 #: org/jmol/script/ScriptEvaluator.java:2659
 msgid "unexpected end of script command"
-msgstr ""
+msgstr "fi de l'orde de l'script no esperat"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1253
 msgid "end of expression expected"
-msgstr ""
+msgstr "s'esperava la fi d'una expressió"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1256
 msgid "identifier or residue specification expected"
-msgstr ""
+msgstr "s'esperava un identificador o una especifació de residu"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1259
 msgid "invalid atom specification"
-msgstr ""
+msgstr "l'especificació d'àtom no és vàlida"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1262
 msgid "invalid chain specification"
-msgstr ""
+msgstr "l'especificació de cadena no és vàlida"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1265
 #, java-format
 msgid "invalid expression token: {0}"
-msgstr ""
+msgstr "el testimoni d''expressió no és vàlid: {0}"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1268
 msgid "invalid model specification"
-msgstr ""
+msgstr "l'especificació de model no és vàlida"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1271
 #, java-format
 msgid "missing END for {0}"
-msgstr ""
+msgstr "Manca END per a {0}"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1274
 #: org/jmol/script/ScriptEvaluator.java:2726
 msgid "number expected"
-msgstr ""
+msgstr "s'esperava un nombre"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1277
 msgid "number or variable name expected"
-msgstr ""
+msgstr "s'esperava un nombre o nom de variable"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1280
 msgid "residue specification (ALA, AL?, A*) expected"
-msgstr ""
+msgstr "s'esperava una especificació de residu (ALA, AL?, A*)"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1283
 #, java-format
 msgid "{0} expected"
-msgstr ""
+msgstr "esperava {0}"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1286
 #, java-format
 msgid "{0} unexpected"
-msgstr ""
+msgstr "no esperava {0}"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1289
 #, java-format
 msgid "unrecognized expression token: {0}"
-msgstr ""
+msgstr "no es reconeix el testimoni de l''expressió: {0}"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1292
 #: org/jmol/script/ScriptEvaluator.java:2775
 #, java-format
 msgid "unrecognized {0} parameter"
-msgstr ""
+msgstr "el paràmetre {0} no està reconegut"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1295
 #, java-format
 msgid "unrecognized token: {0}"
-msgstr ""
+msgstr "no es reconeix el testimoni: {0}"
 
 #: org/jmol/script/ScriptCompiler.java:2468
 msgid "script compiler ERROR: "
-msgstr ""
+msgstr "Error del compilador script: "
 
 #: org/jmol/script/ScriptEvaluator.java:2472
 #: org/jmol/script/ScriptEvaluator.java:9753
 msgid "script ERROR: "
-msgstr ""
+msgstr "Error de l'script: "
 
 #: org/jmol/script/ScriptEvaluator.java:2620
 msgid "x y z axis expected"
-msgstr ""
+msgstr "s'esperava un eix x y z"
 
 #: org/jmol/script/ScriptEvaluator.java:2623
 #, java-format
 msgid "{0} not allowed with background model displayed"
-msgstr ""
+msgstr "no es permet {0} amb el model de fons que es mostra"
 
 #: org/jmol/script/ScriptEvaluator.java:2629
 msgid "Miller indices cannot all be zero."
-msgstr ""
+msgstr "Els índexs de Miller no poden ser tots zero."
 
 #: org/jmol/script/ScriptEvaluator.java:2632
 msgid "bad [R,G,B] color"
-msgstr ""
+msgstr "el color [R,G,B] és incorrecte"
 
 #: org/jmol/script/ScriptEvaluator.java:2635
 msgid "boolean expected"
-msgstr ""
+msgstr "s'esperava un booleà"
 
 #: org/jmol/script/ScriptEvaluator.java:2638
 msgid "boolean or number expected"
-msgstr ""
+msgstr "s'esperava un booleà o un nombre"
 
 #: org/jmol/script/ScriptEvaluator.java:2641
 #, java-format
 msgid "boolean, number, or {0} expected"
-msgstr ""
+msgstr "s''esperava un boolea, un nombre o {0}"
 
 #: org/jmol/script/ScriptEvaluator.java:2644
 msgid "color expected"
-msgstr ""
+msgstr "s'esperava un color"
 
 #: org/jmol/script/ScriptEvaluator.java:2647
 msgid "a color or palette name (Jmol, Rasmol) is required"
-msgstr ""
+msgstr "cal un nom de color o de paleta (Jmol, Rasmol)"
 
 #: org/jmol/script/ScriptEvaluator.java:2653
 msgid "{x y z} or $name or (atom expression) required"
-msgstr ""
+msgstr "cal {x y z}, $name o (expressió atòmica)"
 
 #: org/jmol/script/ScriptEvaluator.java:2656
 msgid "draw object not defined"
-msgstr ""
+msgstr "l'objecte de dibuix no està definit"
 
 #: org/jmol/script/ScriptEvaluator.java:2662
 msgid "valid (atom expression) expected"
-msgstr ""
+msgstr "s'esperava una (expressió atòmica) vàlida"
 
 #: org/jmol/script/ScriptEvaluator.java:2665
 msgid "(atom expression) or integer expected"
-msgstr ""
+msgstr "s'esperava una (expressió atòmica) o un nombre enter"
 
 #: org/jmol/script/ScriptEvaluator.java:2668
 msgid "filename expected"
-msgstr ""
+msgstr "s'esperava un nom de fitxer"
 
 #: org/jmol/script/ScriptEvaluator.java:2671
 msgid "file not found"
-msgstr ""
+msgstr "no s'ha trobat el fitxer"
 
 #: org/jmol/script/ScriptEvaluator.java:2674
 msgid "incompatible arguments"
-msgstr ""
+msgstr "arguments incompatibles"
 
 #: org/jmol/script/ScriptEvaluator.java:2677
 msgid "insufficient arguments"
-msgstr ""
+msgstr "arguments insuficients"
 
 #: org/jmol/script/ScriptEvaluator.java:2680
 msgid "integer expected"
-msgstr ""
+msgstr "s'esperava un enter"
 
 #: org/jmol/script/ScriptEvaluator.java:2683
 #, java-format
 msgid "integer out of range ({0} - {1})"
-msgstr ""
+msgstr "l'enter està fora de l'abast ({0} - {1})"
 
 #: org/jmol/script/ScriptEvaluator.java:2686
 msgid "invalid argument"
-msgstr ""
+msgstr "l'argument no és vàlid"
 
 #: org/jmol/script/ScriptEvaluator.java:2689
 msgid "invalid parameter order"
-msgstr ""
+msgstr "odre dels paràmetres no vàlid"
 
 #: org/jmol/script/ScriptEvaluator.java:2692
 msgid "keyword expected"
-msgstr ""
+msgstr "s'esperava una paraula clau"
 
 #: org/jmol/script/ScriptEvaluator.java:2695
 msgid "no MO coefficient data available"
-msgstr ""
+msgstr "no hi ha dades del coeficient d'OM disponibles"
 
 #: org/jmol/script/ScriptEvaluator.java:2698
 #, java-format
 msgid "An MO index from 1 to {0} is required"
-msgstr ""
+msgstr "És necessari un índex d'OM d'1 a {0}"
 
 #: org/jmol/script/ScriptEvaluator.java:2701
 msgid "no MO basis/coefficient data available for this frame"
-msgstr ""
+msgstr "no hi ha dades de base/coeficient d'OM per a este fotograma"
 
 #: org/jmol/script/ScriptEvaluator.java:2704
 msgid "no MO occupancy data available"
-msgstr ""
+msgstr "no hi ha dades d'ocupació d'OM disponibles"
 
 #: org/jmol/script/ScriptEvaluator.java:2707
 msgid "Only one molecular orbital is available in this file"
-msgstr ""
+msgstr "Només hi ha un orbital molecular disponible en este fitxer"
 
 #: org/jmol/script/ScriptEvaluator.java:2710
 #, java-format
 msgid "{0} require that only one model be displayed"
-msgstr ""
+msgstr "l''orde {0} requereix que només es mostre un model"
 
 #: org/jmol/script/ScriptEvaluator.java:2713
 #, java-format
@@ -1973,31 +1984,33 @@ msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2716
 msgid "No data available"
-msgstr ""
+msgstr "no hi ha dades disponibles"
 
 #: org/jmol/script/ScriptEvaluator.java:2720
 msgid ""
 "No partial charges were read from the file; Jmol needs these to render the "
 "MEP data."
 msgstr ""
+"No s'han llegit les càrregues parcials del títol; el Jmol les necessita per "
+"a rederitzar les dades d'EPM."
 
 #: org/jmol/script/ScriptEvaluator.java:2723
 msgid "No unit cell"
-msgstr ""
+msgstr "No hi ha cap cel·la unitat"
 
 #: org/jmol/script/ScriptEvaluator.java:2729
 #, java-format
 msgid "number must be ({0} or {1})"
-msgstr ""
+msgstr "el número ha de ser ({0} o {1})"
 
 #: org/jmol/script/ScriptEvaluator.java:2732
 #, java-format
 msgid "decimal number out of range ({0} - {1})"
-msgstr ""
+msgstr "el nombre decimal està fora de l''abast ({0} - {1})"
 
 #: org/jmol/script/ScriptEvaluator.java:2735
 msgid "object name expected after '$'"
-msgstr ""
+msgstr "s'esperava el nom de l'objectes després de '$'"
 
 #: org/jmol/script/ScriptEvaluator.java:2739
 #, java-format
@@ -2005,76 +2018,79 @@ msgid ""
 "plane expected -- either three points or atom expressions or {0} or {1} or "
 "{2}"
 msgstr ""
+"s''esperava un pla -- tres punts, unes expressions atòmiques, {0}, {1} o {2}"
 
 #: org/jmol/script/ScriptEvaluator.java:2742
 msgid "property name expected"
-msgstr ""
+msgstr "s'esperava un nom de propietat"
 
 #: org/jmol/script/ScriptEvaluator.java:2745
 #, java-format
 msgid "space group {0} was not found."
-msgstr ""
+msgstr "no s''ha trobat el grup espacial {0}."
 
 #: org/jmol/script/ScriptEvaluator.java:2748
 msgid "quoted string expected"
-msgstr ""
+msgstr "s'esperava una cadena entre cometes"
 
 #: org/jmol/script/ScriptEvaluator.java:2751
 msgid "quoted string or identifier expected"
-msgstr ""
+msgstr "s'esperava una cadena entre cometes o un identificador"
 
 #: org/jmol/script/ScriptEvaluator.java:2754
 msgid "too many rotation points were specified"
-msgstr ""
+msgstr "s'han especificat massa punts de rotació"
 
 #: org/jmol/script/ScriptEvaluator.java:2757
 msgid "too many script levels"
-msgstr ""
+msgstr "masses nivells d'script"
 
 #: org/jmol/script/ScriptEvaluator.java:2760
 msgid "unrecognized atom property"
-msgstr ""
+msgstr "no es reconeix la propietat de l'àtom"
 
 #: org/jmol/script/ScriptEvaluator.java:2763
 msgid "unrecognized bond property"
-msgstr ""
+msgstr "no es reconeix la propietat de l'enllaç"
 
 #: org/jmol/script/ScriptEvaluator.java:2766
 msgid "unrecognized command"
-msgstr ""
+msgstr "no es reconeix l'orde"
 
 #: org/jmol/script/ScriptEvaluator.java:2769
 msgid "runtime unrecognized expression"
-msgstr ""
+msgstr "no es reconeix l'expressió d'execució"
 
 #: org/jmol/script/ScriptEvaluator.java:2772
 msgid "unrecognized object"
-msgstr ""
+msgstr "no es reconeix l'objecte"
 
 #: org/jmol/script/ScriptEvaluator.java:2779
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
 msgstr ""
+"no es reconeix el paràmetre {0} a l'script d'estat del Jmol (es defineix "
+"així de totes maneres)"
 
 #: org/jmol/script/ScriptEvaluator.java:2782
 #, java-format
 msgid "unrecognized SHOW parameter --  use {0}"
-msgstr ""
+msgstr "no es reconeix el paràmetre SHOW -- utilitzeu {0}"
 
 #: org/jmol/script/ScriptEvaluator.java:2788
 #, java-format
 msgid "write what? {0} or {1} \"filename\""
-msgstr ""
+msgstr "què s'ha d'escriure? {0} o «nomdefitxer» {1}"
 
 #: org/jmol/script/ScriptEvaluator.java:7034
 #, java-format
 msgid "{0} connections deleted"
-msgstr ""
+msgstr "s''han suprimit {0} connexions"
 
 #: org/jmol/script/ScriptEvaluator.java:7055
 #, java-format
 msgid "{0} new bonds; {1} modified"
-msgstr ""
+msgstr "{0} enllaços nous; {1} modificats"
 
 #: org/jmol/script/ScriptEvaluator.java:8431
 #, java-format
@@ -2085,13 +2101,13 @@ msgstr ""
 #: org/jmol/script/ScriptEvaluator.java:10143
 #, java-format
 msgid "{0} atoms deleted"
-msgstr ""
+msgstr "{0} àtoms suprimits"
 
 #: org/jmol/script/ScriptEvaluator.java:10721
 #: org/jmol/script/ScriptEvaluator.java:11133
 #, java-format
 msgid "{0} hydrogen bonds"
-msgstr ""
+msgstr "{0} enllaços d'hidrogen"
 
 #: org/jmol/script/ScriptEvaluator.java:11087
 #, java-format
@@ -2322,11 +2338,11 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:1938
 msgid "pick one more atom in order to spin the model around an axis"
-msgstr ""
+msgstr "trieu un o més àtoms per a fer girar el model al voltant d'un eix"
 
 #: org/jmol/viewer/ActionManager.java:1939
 msgid "pick two atoms in order to spin the model around an axis"
-msgstr ""
+msgstr "trieu dos àtoms per a fer girar el model al voltant d'un eix"
 
 #: org/jmol/viewer/ActionManager.java:1942
 msgid "pick one more atom in order to display the symmetry relationship"
@@ -2341,12 +2357,12 @@ msgstr ""
 #: org/jmol/viewer/SelectionManager.java:105
 #, java-format
 msgid "{0} atoms hidden"
-msgstr ""
+msgstr "{0} àtoms amagats"
 
 #: org/jmol/viewer/SelectionManager.java:147
 #, java-format
 msgid "{0} atoms selected"
-msgstr ""
+msgstr "{0} àtoms seleccionats"
 
 #: org/jmol/viewer/Viewer.java:4514
 #, java-format
@@ -2355,11 +2371,12 @@ msgstr ""
 
 #: org/jmol/viewer/Viewer.java:4594
 msgid "Drag to move label"
-msgstr ""
+msgstr "Arrossegueu per a moure l'etiqueta"
 
 #: org/jmol/viewer/Viewer.java:8143
 msgid "clipboard is not accessible -- use signed applet"
 msgstr ""
+"el porta-retalls no és accessible -- utilitzeu una miniaplicació signada"
 
 #: org/jmol/viewer/Viewer.java:8898
 msgid "Cannot set log file path."
@@ -2369,3 +2386,62 @@ msgstr ""
 #, java-format
 msgid "Setting log file to {0}"
 msgstr ""
+
+#, java-format
+#~ msgid ""
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
+#~ msgstr ""
+#~ "Esta miniaplicació no té permisos per a creació de fitxers. Per al format "
+#~ "JPEG Base64, utilitzeu {0}."
+
+#~ msgid "File creation failed."
+#~ msgstr "La creació de fitxer ha falalt"
+
+#~ msgid "Minimize"
+#~ msgstr "Minimitza"
+
+#~ msgid "Java memory usage"
+#~ msgstr "Ús de memòria de Java"
+
+#~ msgid "Molecular Orbitals"
+#~ msgstr "Orbitals moleculars"
+
+#~ msgid "File from PDB"
+#~ msgstr "Fitxer del PDB"
+
+#~ msgid "File or URL"
+#~ msgstr "Fitxer o URL"
+
+#, java-format
+#~ msgid "File {0}"
+#~ msgstr "Fitxer {0}"
+
+#~ msgid "Script with state"
+#~ msgstr "Script amb estat"
+
+#~ msgid "Script with history"
+#~ msgstr "Script amb historial"
+
+#, java-format
+#~ msgid "{0} Image"
+#~ msgstr "Imatge {0}"
+
+#~ msgid "JVXL Isosurface"
+#~ msgstr "Isosuperfície JVXL"
+
+#, java-format
+#~ msgid "{0} 3D Model"
+#~ msgstr "Model 3D {0}"
+
+#~ msgid "About Jmol"
+#~ msgstr "Quant al Jmol"
+
+#, java-format
+#~ msgid "ERROR: cannot set boolean flag to string value: {0}"
+#~ msgstr ""
+#~ "ERROR: No s'ha pogut definir el senyal d'un booleà a un valor de cadena: {0}"
+
+#, java-format
+#~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
+#~ msgstr ""
+#~ "ERROR: No s'ha pogut definir el senyal d'un booleà a un valor numèric: {0}"

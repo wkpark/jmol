@@ -16,15 +16,15 @@
     <delete dir="${build.dir}" includes="**/*.pot" />
     <move todir="${build.dir}/Jmol" includeemptydirs="false">
       <fileset dir="${build.dir}/src/org/jmol/translation/Jmol">
-        <include name="**/src_org_jmol_translation_Jmol_Jmol-*.po" />
+        <include name="**/Jmol-*.po" />
       </fileset>
-      <mapper type="glob" from="src_org_jmol_translation_Jmol_Jmol-*.po" to="*.po" />
+      <mapper type="glob" from="Jmol-*.po" to="*.po" />
     </move>
     <move todir="${build.dir}/JmolApplet" includeemptydirs="false">
       <fileset dir="${build.dir}/src/org/jmol/translation/JmolApplet">
-        <include name="**/src_org_jmol_translation_JmolApplet_jmol-applet-*.po" />
+        <include name="**/jmol-applet-*.po" />
       </fileset>
-      <mapper type="glob" from="src_org_jmol_translation_JmolApplet_jmol-applet-*.po" to="*.po" />
+      <mapper type="glob" from="jmol-applet-*.po" to="*.po" />
     </move>
     <copy todir="src/org/jmol/translation/Jmol">
       <fileset dir="${build.dir}/Jmol" includes="*.po" />

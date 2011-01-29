@@ -20,8 +20,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-12-16 16:48+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-01-29 19:08+0000\n"
+"X-Generator: Launchpad (build 12274)\n"
 
 #: org/jmol/applet/AppletConsole.java:199
 msgid "&Help"
@@ -150,7 +150,8 @@ msgid "Check"
 msgstr "Prüfen"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "An die Spitze"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -400,9 +401,8 @@ msgid "Estonian"
 msgstr "Estnisch"
 
 #: org/jmol/i18n/GT.java:147
-#, fuzzy
 msgid "Finnish"
-msgstr "Dänisch"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:148
 msgid "Faroese"
@@ -429,9 +429,8 @@ msgid "Japanese"
 msgstr "Japanisch"
 
 #: org/jmol/i18n/GT.java:154
-#, fuzzy
 msgid "Javanese"
-msgstr "Japanisch"
+msgstr ""
 
 #: org/jmol/i18n/GT.java:155
 msgid "Korean"
@@ -2172,7 +2171,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:69
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:71
@@ -2408,15 +2408,18 @@ msgstr "Stelle Log Datei auf {0}"
 #~ msgid "Java memory usage"
 #~ msgstr "Java Speichernutzung"
 
+#~ msgid "Molecular Orbitals"
+#~ msgstr "Molekülorbitale"
+
 #~ msgid "About Jmol"
 #~ msgstr "Über Jmol"
 
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
-#~ "Dateierstellung mit diesem Applet ist nicht zulässig. Für das Base64 "
-#~ "Format, benutzen Sie {0}."
+#~ "Dateierstellung mit diesem Applet ist nicht zulässig. Für das Base64 Format, "
+#~ "benutzen Sie {0}."
 
 #~ msgid "File creation failed."
 #~ msgstr "Dateierstellung fehlgeschlagen."
@@ -2427,9 +2430,11 @@ msgstr "Stelle Log Datei auf {0}"
 #~ msgid "File from PDB"
 #~ msgstr "Datei aus PDB"
 
+#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "{0} Grafik"
 
+#, java-format
 #~ msgid "File {0}"
 #~ msgstr "Datei {0}"
 
@@ -2439,27 +2444,67 @@ msgstr "Stelle Log Datei auf {0}"
 #~ msgid "Script with state"
 #~ msgstr "Skript mit Zustand"
 
+#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "{0} 3D Modell"
 
 #~ msgid "JVXL Isosurface"
 #~ msgstr "JVXL Isofläche"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr "FEHLER: Kann boolschen Flag keinen numerischen Wert zuweisen: {0}"
 
+#, java-format
 #~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 #~ msgstr "FEHLER: Kann der Variable keinen Boolschen Wert zuweisen: {0}"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to string value: {0}"
 #~ msgstr ""
 #~ "Fehler: kann kein boolsches Kennzeichen zu einem variablen Wert setzen:{0}"
+
+#~ msgid "Minimize"
+#~ msgstr "Minimieren"
+
+#~ msgid "pick a DRAW point (for measurements)"
+#~ msgstr "einen DRAW punkt auswählen (für Messungen)"
+
+#~ msgid ""
+#~ "click on two points to spin around axis counterclockwise (requires SET "
+#~ "picking SPIN)"
+#~ msgstr ""
+#~ "Klicke auf zwei Punkte um entgegen dem Uhrzeigersinn um die Achse zu "
+#~ "rotieren (benötigt \"SET picking SPIN\")"
+
+#~ msgid ""
+#~ "click on two points to spin around axis clockwise (requires SET picking SPIN)"
+#~ msgstr ""
+#~ "Klicke auf zwei Punkte um im Uhrzeigersinn um die Achse zu rotieren "
+#~ "(benötigt \"Set picking SPIN\")"
+
+#, java-format
+#~ msgid "toggle selection (requires {0} or {1})"
+#~ msgstr "Auswahl umschalten (benötigt {0} oder {1})"
+
+#~ msgid ""
+#~ "pick a point or atom to navigate to (requires SET NAVIGATIONMODE; "
+#~ "undocumented)"
+#~ msgstr ""
+#~ "einen Punkt oder ein Atom auswählen um dorthin zu navigieren (benötigt SET "
+#~ "NAVIGATIONMODE; undokumentiert)"
+
+#~ msgid "pick an ISOSURFACE point"
+#~ msgstr "einen ISOSURFACE Punkt auswählen"
 
 #~ msgid "increase"
 #~ msgstr "erhöhen"
 
 #~ msgid "delete"
 #~ msgstr "löschen"
+
+#~ msgid "save"
+#~ msgstr "speichern"
 
 #~ msgid "decrease"
 #~ msgstr "verringern"

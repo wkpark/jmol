@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-12-16 16:48+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-01-29 19:08+0000\n"
+"X-Generator: Launchpad (build 12274)\n"
 "X-Poedit-Country: ANDORRA\n"
 "X-Poedit-Language: Catalan\n"
 
@@ -72,7 +72,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:158
 msgid "independent command thread"
-msgstr ""
+msgstr "fil d'ordres independent"
 
 #: org/openscience/jmol/app/JmolApp.java:160
 msgid "exit after script (implicit with -n)"
@@ -84,7 +84,7 @@ msgstr "fitxer d'script que s'executarà o '-' per a System.in"
 
 #: org/openscience/jmol/app/JmolApp.java:170
 msgid "use multitouch interface (requires \"sparshui\" parameter"
-msgstr ""
+msgstr "utilitza la interfície multitàctil (requereix el paràmetre «sparshui»)"
 
 #: org/openscience/jmol/app/JmolApp.java:177
 msgid "Jmol script to execute BEFORE -s option"
@@ -129,6 +129,8 @@ msgid ""
 "The -D options are as follows (defaults in parenthesis) and must be called "
 "preceding '-jar Jmol.jar':"
 msgstr ""
+"Les opcions -D són com a continuació (per defecte en parèntesis) i cal "
+"cridar-les amb '-jar Jmol.jar' precedent:"
 
 #: org/openscience/jmol/app/JmolApp.java:466
 msgid "Executing script 1..."
@@ -280,15 +282,15 @@ msgstr "Control·lador"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:363
 msgid "Go to first atom set in the collection"
-msgstr ""
+msgstr "Vés al primer conjunt d'àtoms de la col·lecció"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:364
 msgid "Go to previous atom set in the collection"
-msgstr ""
+msgstr "Vés a l'anterior conjunt d'àtoms de la col·lecció"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:365
 msgid "Play the whole collection of atom sets"
-msgstr ""
+msgstr "Reprodueix la col·lecció sencera de conjunts d'àtoms"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:366
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
@@ -297,31 +299,31 @@ msgstr "Pausa la reproducció"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:367
 msgid "Go to next atom set in the collection"
-msgstr ""
+msgstr "Vés al conjunt d'àtoms següent de la col·lecció"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:368
 msgid "Jump to last atom set in the collection"
-msgstr ""
+msgstr "Salta al darrer conjunt d'àtoms de la col·lecció"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:372
 msgid "Go to first vector in the collection"
-msgstr ""
+msgstr "Vés al primer vector de la col·lecció"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:373
 msgid "Go to previous vector in the collection"
-msgstr ""
+msgstr "Vés al vector anterior de la col·lecció"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:374
 msgid "Play the whole collection of vectors"
-msgstr ""
+msgstr "Reprodueix la col·lecció sencera de vectors"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:376
 msgid "Go to next vector in the collection"
-msgstr ""
+msgstr "Vés al vector següent de la col·lecció"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:377
 msgid "Jump to last vector in the collection"
-msgstr ""
+msgstr "Salta al darrer vector de la col·lecció"
 
 #: org/openscience/jmol/app/jmolpanel/ConsoleTextArea.java:87
 #, java-format
@@ -454,7 +456,7 @@ msgstr "Editor d'scrip&ts"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:66
 msgid "Conso&le..."
-msgstr ""
+msgstr "Conso&la..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:67
 msgid "Jmol Java &Console"
@@ -729,7 +731,7 @@ msgstr "&Mesures"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:149
 msgid "Resi&ze"
-msgstr ""
+msgstr "Redime&nsiona"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:150
 msgid "&View"
@@ -849,11 +851,11 @@ msgstr "Vés a l'anterior fotograma"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:180
 msgid "All &frames"
-msgstr ""
+msgstr "Tots els &fotogrames"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:181
 msgid "All frames"
-msgstr ""
+msgstr "Tots els fotogrames"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:182
 msgid "Go to &last frame"
@@ -955,7 +957,7 @@ msgstr "Retorna la molècula a la posició inicial."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:214
 msgid "Open the model kit."
-msgstr ""
+msgstr "Obre l'equip d'eines model."
 
 #: org/openscience/jmol/app/jmolpanel/HelpDialog.java:64
 msgid "Jmol Help"
@@ -1051,7 +1053,7 @@ msgstr "S'ha produït una excepció IO:"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1427
 msgid "width height?"
-msgstr ""
+msgstr "amplada alçada?"
 
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:124
 msgid "Delete"
@@ -1321,12 +1323,12 @@ msgstr "Amplada de la miniaplicació:"
 #: org/openscience/jmol/app/webexport/PopInJmol.java:107
 #, java-format
 msgid "insert a caption for {0} here."
-msgstr "Inseriu una llegenda de {0} ací."
+msgstr "Inseriu una llegenda de {0} aquí."
 
 #: org/openscience/jmol/app/webexport/PopInJmol.java:110
 #, java-format
 msgid "insert a note for {0} here."
-msgstr "Inseriu una nota de {0} ací."
+msgstr "Inseriu una nota de {0} aquí."
 
 #: org/openscience/jmol/app/webexport/ScriptButtons.java:44
 msgid "These names will be used for button labels"
@@ -1377,7 +1379,7 @@ msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
 msgstr ""
-"Per a aconseguir un model 3-D que pugueu manipular, feu clic {0}ací{1}. El "
+"Per a aconseguir un model 3-D que pugueu manipular, feu clic {0}aquí{1}. El "
 "temps de baixada pot ser significant la primera vegada que es carrega la "
 "miniaplicació."
 
@@ -1392,7 +1394,7 @@ msgstr "Inseriu-hi la introducció de la pàgina."
 #: org/openscience/jmol/app/webexport/WebExport.java:363
 #, java-format
 msgid "Insert a caption for {0} here."
-msgstr "Inseriu una llegenda per a {0} ací."
+msgstr "Inseriu una llegenda per a {0} aquí."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:364
 #, java-format
@@ -1403,7 +1405,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebExport.java:366
 msgid "Insert your TITLE and INTRODUCTION here."
-msgstr "Inseriu el vostre TÍTOL i INTRODUCCIÓ ací."
+msgstr "Inseriu el vostre TÍTOL i INTRODUCCIÓ aquí."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:368
 #, java-format
@@ -1411,13 +1413,13 @@ msgid ""
 "The button {0} will appear in the box below.  Insert information for {0} "
 "here and below."
 msgstr ""
-"El botó {0} apareixerà al quadre a sota. Inseriu informació de {0} ací i a "
+"El botó {0} apareixerà al quadre a sota. Inseriu informació de {0} aquí i a "
 "continuació."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:369
 #, java-format
 msgid "Insert more information for {0} here."
-msgstr "Inseriu més informació de {0} ací."
+msgstr "Inseriu més informació de {0} aquí."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:152
 msgid "A web page containing Jmol applets"
@@ -1425,7 +1427,7 @@ msgstr "Una pàgina web que conté miniaplicacions del Jmol"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:177
 msgid "click and drag to reorder"
-msgstr ""
+msgstr "clica i arrossega per reordenar"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:182
 msgid "Add Present Jmol State as Instance..."
@@ -1441,7 +1443,7 @@ msgstr "Instàncies de Jmol"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:227
 msgid "Select widgets:"
-msgstr ""
+msgstr "Selecció dels ginys:"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:330
 msgid "Help/Instructions"
@@ -1560,83 +1562,83 @@ msgstr "s'està comprimint un fitxer de gran extensió a"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:62
 msgid "Spin on/off"
-msgstr ""
+msgstr "Gir activat/desactivat"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:80
 msgid "enable/disable spin"
-msgstr ""
+msgstr "habilita/inhabilita el gir"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:82
 msgid "Spin on"
-msgstr ""
+msgstr "Gir activat"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:88
 msgid "Background Color"
-msgstr ""
+msgstr "Color de fons"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:106
 msgid "background color:"
-msgstr ""
+msgstr "color de fons:"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:119
 msgid "Stereo Viewing"
-msgstr ""
+msgstr "Visualització estèreo"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:136
 msgid "select stereo type"
-msgstr ""
+msgstr "seleccioneu el tipus estèreo"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:140
 msgid "Stereo Off"
-msgstr ""
+msgstr "Estèreo desactivat"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:141
 msgid "Red/Blue"
-msgstr ""
+msgstr "Vermell / Blau"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:143
 msgid "Red/Cyan"
-msgstr ""
+msgstr "Vermell / Cian"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:145
 msgid "Red/Green"
-msgstr ""
+msgstr "Vermell / Verd"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:152
 msgid "Animation Control"
-msgstr ""
+msgstr "Control d'animació"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:179
 msgid "Animation"
-msgstr ""
+msgstr "Animació"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:180
 msgid "First Frame"
-msgstr ""
+msgstr "Primer fotograma"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:182
 msgid "Previous Frame"
-msgstr ""
+msgstr "Fotograma anterior"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:184
 msgid "Play"
-msgstr ""
+msgstr "Reprodueix"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:186
 msgid "Next Frame"
-msgstr ""
+msgstr "Fotograma següent"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:188
 msgid "Pause"
-msgstr ""
+msgstr "Pausa"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:190
 msgid "Last Frame"
-msgstr ""
+msgstr "Darrer fotograma"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:192
 msgid "Mode:"
-msgstr ""
+msgstr "Mode:"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:193
 msgid "Loop"
@@ -1648,15 +1650,15 @@ msgstr "Palíndrom"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:197
 msgid "Play Once"
-msgstr ""
+msgstr "Reprodueix una vegada"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:206
 msgid "Open Console Button"
-msgstr ""
+msgstr "Botó d'obre la consola"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:222
 msgid "launch Jmol console"
-msgstr ""
+msgstr "executa la consola del Jmol"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:224
 msgid "Jmol Console"
@@ -1664,11 +1666,11 @@ msgstr "Consola del Jmol"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:229
 msgid "Download view"
-msgstr ""
+msgstr "Vista de baixada"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
-msgstr ""
+msgstr "no implementat"
 
 #~ msgid "atom set"
 #~ msgstr "conjunt d'àtoms"
@@ -1676,8 +1678,26 @@ msgstr ""
 #~ msgid "vector"
 #~ msgstr "vector"
 
+#~ msgid "Go to first {0} in the collection"
+#~ msgstr "Vés al primer {0} de la col·lecció"
+
+#~ msgid "Play the whole collection of {0}'s"
+#~ msgstr "Reprodueix la col·lecció sencera de {0}s"
+
+#~ msgid "Go to next {0} in the collection"
+#~ msgstr "Vés al següent {0} de la col·lecció"
+
+#~ msgid "Jump to last {0} in the collection"
+#~ msgstr "Salta al darrer {0} de la col·lecció"
+
 #~ msgid "Jmol Script Console"
 #~ msgstr "Consola script del Jmol"
+
+#~ msgid "Go to previous {0} in the collection"
+#~ msgstr "Vés a l''anterior {0} de la col·lecció"
+
+#~ msgid "independent commmand thread"
+#~ msgstr "Fil d'ordre independent"
 
 #~ msgid "Show Selected"
 #~ msgstr "Mostra allò seleccionat"
@@ -1685,8 +1705,29 @@ msgstr ""
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "s'afegeix JmolPopIn.js"
 
+#~ msgid "Clear console button (requires restarting Jmol)"
+#~ msgstr "Botó de neteja de la consola (cal reiniciar el Jmol)"
+
+#~ msgid "The -D options are as follows (defaults in parenthesis):"
+#~ msgstr ""
+#~ "Les opcions -D són les següents (els paràmetres predeterminats en "
+#~ "parèntesis):"
+
+#~ msgid "double-click and drag to reorder"
+#~ msgstr "feu doble clic i arrosegueu per a reordenar"
+
 #~ msgid "adding {0}.spt"
 #~ msgstr "afegeix {0}.spt"
 
 #~ msgid "adding {0}.png"
 #~ msgstr "afegeix {0}.png"
+
+#~ msgid ""
+#~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
+#~ "model {0}."
+#~ msgstr ""
+#~ "Inseriu un text explicatori addicional ací. Si el text és llarg, "
+#~ "s''ajustarà al voltant del model de Jmol {0}."
+
+#~ msgid "Output Conso&le..."
+#~ msgstr "Scrip&t…"

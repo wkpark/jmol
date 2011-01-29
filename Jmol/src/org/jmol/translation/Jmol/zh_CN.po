@@ -13,8 +13,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-12-16 16:48+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-01-29 19:08+0000\n"
+"X-Generator: Launchpad (build 12274)\n"
 "X-Poedit-Bookmarks: -1,-1,-1,-1,-1,69,-1,-1,-1,-1\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -1653,8 +1653,25 @@ msgstr "下载视图"
 msgid "unimplemented"
 msgstr "功能尚未实现"
 
+#~ msgid "Clear console button (requires restarting Jmol)"
+#~ msgstr "清除控制台按钮（需重启Jmol）"
+
+#~ msgid "independent commmand thread"
+#~ msgstr "独立命令线程"
+
 #~ msgid "Jmol Script Console"
 #~ msgstr "Jmol 脚本控制台"
+
+#~ msgid "Output Conso&le..."
+#~ msgstr "输出控制台(&L)..."
+
+#~ msgid ""
+#~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
+#~ "model {0}."
+#~ msgstr "此处插入额外的解释文字。较长的文本将会环绕 Jmol 模型 {0} 。"
+
+#~ msgid "double-click and drag to reorder"
+#~ msgstr "双击并拖动可以重新排序"
 
 #~ msgid "Show Selected"
 #~ msgstr "显示所选对象"
@@ -1668,11 +1685,26 @@ msgstr "功能尚未实现"
 #~ msgid "adding {0}.spt"
 #~ msgstr "正在增加 {0}.spt"
 
+#~ msgid "Jump to last {0} in the collection"
+#~ msgstr "跳转到集合中的最后一个 {0}"
+
 #~ msgid "atom set"
 #~ msgstr "原子集"
 
 #~ msgid "vector"
 #~ msgstr "矢量"
+
+#~ msgid "Go to first {0} in the collection"
+#~ msgstr "跳转到集合中的第一个 {0}"
+
+#~ msgid "Go to previous {0} in the collection"
+#~ msgstr "跳转到集合中的前一个{0}"
+
+#~ msgid "Play the whole collection of {0}'s"
+#~ msgstr "播放 {0} 的整个集合"
+
+#~ msgid "Go to next {0} in the collection"
+#~ msgstr "跳转到集合中的下一个 {0}"
 
 #~ msgid "stereo off"
 #~ msgstr "立体 关"

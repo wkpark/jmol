@@ -15,8 +15,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-12-16 16:48+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-01-29 19:08+0000\n"
+"X-Generator: Launchpad (build 12274)\n"
 "X-Poedit-Country: SPAIN\n"
 "X-Poedit-Language: Spanish\n"
 "X-Poedit-SourceCharset: utf-8\n"
@@ -1676,8 +1676,26 @@ msgstr "no implementado"
 #~ msgid "vector"
 #~ msgstr "vector"
 
+#~ msgid "Go to first {0} in the collection"
+#~ msgstr "Ir al primer {0} de la colección"
+
+#~ msgid "Go to previous {0} in the collection"
+#~ msgstr "Ir al {0} anterior de la colección"
+
+#~ msgid "Play the whole collection of {0}'s"
+#~ msgstr "Reproducir toda la colección de {0}"
+
+#~ msgid "Go to next {0} in the collection"
+#~ msgstr "Ir al siguiente {0} de la colección"
+
+#~ msgid "Jump to last {0} in the collection"
+#~ msgstr "Ir al último {0} de la colección"
+
 #~ msgid "Jmol Script Console"
 #~ msgstr "Consola de guiones de Jmol"
+
+#~ msgid "independent commmand thread"
+#~ msgstr "hilo de instrucciones independiente"
 
 #~ msgid "Show Selected"
 #~ msgstr "Mostrar las seleccionadas"
@@ -1698,6 +1716,9 @@ msgstr "no implementado"
 #~ "Inserta aquí cualquier texto adicional, por ejemplo la explicación del "
 #~ "modelo. Si el texto es largo, fluirá alrededor del modelo Jmol {0}."
 
+#~ msgid "Clear console button (requires restarting Jmol)"
+#~ msgstr "Botón para borrar consola  (requiere reiniciar Jmol)"
+
 #~ msgid "The -D options are as follows (defaults in parenthesis):"
 #~ msgstr "Las opciones  -D son (valores predeterminados entre paréntesis):"
 
@@ -1709,3 +1730,6 @@ msgstr "no implementado"
 
 #~ msgid "Stop"
 #~ msgstr "Detener"
+
+#~ msgid "double-click and drag to reorder"
+#~ msgstr "para reordenar, haga doble clic y arrastre"

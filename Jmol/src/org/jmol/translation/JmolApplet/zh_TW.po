@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-01-13 12:41+0000\n"
-"X-Generator: Launchpad (build 12177)\n"
+"X-Launchpad-Export-Date: 2011-01-29 19:08+0000\n"
+"X-Generator: Launchpad (build 12274)\n"
 
 #: org/jmol/applet/AppletConsole.java:199
 msgid "&Help"
@@ -2384,6 +2384,42 @@ msgstr "設定紀錄檔到 {0}"
 #~ msgid "File creation failed."
 #~ msgstr "新增檔案失敗"
 
+#~ msgid "Minimize"
+#~ msgstr "最小化"
+
+#~ msgid "Java memory usage"
+#~ msgstr "Java 所用的記憶體大小"
+
+#~ msgid "Molecular Orbitals"
+#~ msgstr "分子軌域"
+
+#, java-format
+#~ msgid "File {0}"
+#~ msgstr "檔案 {0}"
+
+#, java-format
+#~ msgid "{0} Image"
+#~ msgstr "{0} 圖形"
+
+#~ msgid "File from PDB"
+#~ msgstr "PDB 來的檔案"
+
+#~ msgid "File or URL"
+#~ msgstr "檔案或網址(URL)"
+
+#~ msgid "Script with state"
+#~ msgstr "含狀態指令稿"
+
+#~ msgid "Script with history"
+#~ msgstr "含記錄的指令稿"
+
+#~ msgid "JVXL Isosurface"
+#~ msgstr "JVXL 等位面"
+
+#, java-format
+#~ msgid "{0} 3D Model"
+#~ msgstr "{0} 3D 模型"
+
 #~ msgid "About Jmol"
 #~ msgstr "關於Jmol"
 
@@ -2398,3 +2434,36 @@ msgstr "設定紀錄檔到 {0}"
 #, java-format
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr "錯誤：不能把布林旗標設定為數字：{0}"
+
+#~ msgid "pick a DRAW point (for measurements)"
+#~ msgstr "請選取 DRAW 點 (以用測量)"
+
+#~ msgid "pick an ISOSURFACE point"
+#~ msgstr "選取一個等曲面的點"
+
+#~ msgid ""
+#~ "click on two points to spin around axis clockwise (requires SET PICKING SPIN)"
+#~ msgstr "點擊兩個點, 使分子繞著該軸作順時鐘方向旋轉 (需要設定 PICKING SPIN)"
+
+#~ msgid ""
+#~ "click on two points to spin around axis counterclockwise (requires SET "
+#~ "PICKING SPIN)"
+#~ msgstr "點擊兩個點, 使分子繞著該軸作逆時鐘方向旋轉 (需要設定 PICKING SPIN)"
+
+#, java-format
+#~ msgid "toggle selection (requires {0} or {1})"
+#~ msgstr "切換選取的 (需要 {0} 或是 {1})"
+
+#~ msgid ""
+#~ "pick a point or atom to navigate to (requires SET NAVIGATIONMODE; "
+#~ "undocumented)"
+#~ msgstr "請選擇一個點或是原子以進行導覽 (需要設定導覽模式; 尚未有說明文件)"
+
+#~ msgid ""
+#~ "click on two points to spin around axis counterclockwise (requires SET "
+#~ "picking SPIN)"
+#~ msgstr "請點擊兩個點, 使分子沿著該軸進行逆時針旋轉 (需要設定旋轉)"
+
+#~ msgid ""
+#~ "click on two points to spin around axis clockwise (requires SET picking SPIN)"
+#~ msgstr "請點擊兩個點, 使分子沿著該軸進行順時針旋轉 (需要設定旋轉)"

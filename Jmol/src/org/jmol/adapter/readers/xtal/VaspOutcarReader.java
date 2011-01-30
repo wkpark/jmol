@@ -88,8 +88,6 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
     } else if (line.contains("ENERGIE OF THE ELECTRON-ION-THERMOSTAT")
         && mDsimulation) {
       readMdyn();
-      /*    } else if (line.startsWith("  Degree of freedom:")) {
-            readFreqCount();*/
     } else if (line
         .startsWith(" Eigenvectors and eigenvalues of the dynamical matrix")) {
       readFrequency();

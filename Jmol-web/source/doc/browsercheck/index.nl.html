@@ -1,3 +1,4 @@
+<html>
 <!--
 /* $RCSfile$
  * $Author$
@@ -31,42 +32,10 @@
   Dutch translation 
   Translated from default version : index.en.html (v 1.1)
 -->
-<html>
   <head>
     <title>Jmol Browser Controle</title>
     <script src="../jmol/Jmol.js"></script>
-  </head>
-  <body>
-    <img src="../images/Jmol_smallLogo.jpg" />
-    <hr />
-    <h1>Jmol Browser Controle</h1>
-    <h2>Informatie van context:</h2>
-    <blockquote>
-    <p>
-       De Jmol applet vereist een browser die Java applets ondersteunt.
-    </p>
-    <p>
-      De meeste websites die de Jmol applet gebruiken voegen HTML controlemiddelen toe
-      (knoppen, aanvinkvakjes, enz.) die scripts versturen om de Jmol applet te besturen.
-      Om deze besturing goed te laten werken moet de browser eveneens JavaScript en LiveConnect
-      communicatie tussen JavaScript en Java applets ondersteunen.
-    </p>
-    </blockquote>
-    
-    <h2>
-      Resultaten van het testen van uw browser:
-    </h2>
-    <script type="text/javascript">
-      var msgNetscape47Win = 
-      "<p>While Jmol generally supports Netscape 4.7 on Windows, there are <b>some " +
-      "small problem</b> areas related to mouse events and occasional " +
-      "JavaScript/LiveConnect issues. </p>" +
-      "<p>In addition, the state of the applet does not get reset when " +
-      "a web page gets reloaded, sometimes causing html checkboxes " +
-      "and radio buttons to be out of synch with the applet appearance. </p>" +
-      "<p>We <b>recommend</b> that you consider upgrading " +
-      "to a newer web browser. </p>";
-
+		<script type="text/javascript">	
       var msgNoGetElementById =
       "<p>This seems to be an older web browser that does not support " +
       "current browser standards. Jmol and/or the buttons to control Jmol " +
@@ -80,11 +49,6 @@
       "<a href='http://www.java.com' target='_blank'>www.java.com " +
       "<img border='0' src='get_java_red_button.gif' /></a>." +
       "</p>";
-
-      var msgGenericOK =
-      "<p>Your web browser seems to <b>properly support</b> Jmol. </p>" +
-      "<p>If you do encounter problems please report them to " +
-      "<code>jmol-developers@lists.sf.net</code></p>";
 
       var msgNoLiveConnectMac =
       "<p>The Jmol applet itself <b>will function properly</b>. " +
@@ -131,107 +95,55 @@
       "you can use a Mozilla family browser.</p>";
 
       var msgOK =
-      "<p>Your browser seems <b>compliant</b> with Jmol.</p>" +
+      "<p>Your browser seems to <b>properly support</b> Jmol.</p>" +
       "<p>If you do experience problems with Jmol running in your browser " +
       " please report them to " +
-      "<code>jmol-developers@lists.sf.net</code></p>";
+      "<code>jmol-developers@lists.sf.net</code> with a copy of this page.</p>";
 
-      var msg = "";
-      var mozillaVersion = "";
-      var javaVersion = 0;
-      var state = "yellow";
-
-      with (_jmol) {
-        if (browser == "mozilla" && browserVersion >= 5) {
-          var indexRV = ua.indexOf("rv:");
-	  if (indexRV > 0) {
-	    var rv = ua.substring(indexRV + 3);
-	    var indexEnd = rv.indexOf(")");
-	    var indexSemi = rv.indexOf(";");
-	    if (indexEnd < 0 || (indexSemi > 0 && indexSemi < indexEnd))
-	      indexEnd = indexSemi;
-            if (indexEnd > 0)
-	      mozillaVersion = " " + rv.substring(0, indexEnd);
-	  }
-        }
-        do {
-	  if (isNetscape47Win)
-	    { msg = msgNetscape47Win; break; }
-	  if (os == "mac" && browser == "mozilla" && browserVersion >= 5) {
-	    eval("try{javaVersion=" +
-	         "java.lang.System.getProperty('java.version');" +
-                 "} catch (e) { }");
-	    if (javaVersion < 1.4) {
-	      msg = msgMacMozillaOldJava + msgNoLiveConnectMac +
-	            msgMacMozillaAlternative;
-              break;
-	    }
-	  }
-	  if (! isJavaEnabled)
-	    { msg = msgGenericNoJava; state = "red"; break; }
-	  if (! hasGetElementById)
-	    { msg = msgNoGetElementById; state = "red"; break; }
-          if (os == "mac" && browser == "msie")
-	    { msg = msgMacIE + msgNoLiveConnectMac; break; }
-	  if (os == "mac" && browser == "safari" && browserVersion < 125.1)
-	    { msg = msgMacOldSafari + msgNoLiveConnectMac; break; }
-	  if (os == "mac" && browser == "opera" && browserVersion <= 7.54)
-	    { msg = msgMacOpera754OrLess; state = "red"; break; }
-	  if ((os == "win" && browser == "msie") ||
-	      (os == "win" && browser == "mozilla" && browserVersion >= 5) ||
-	      (os == "win" && browser == "opera" && browserVersion >= 7.54) ||
-	      ((os == "linux" || os == "unix") &&
-	       browser == "mozilla" && browserVersion >= 5))
-	    { state = "green"; break; }
-	  if ((os == "linux" || os == "unix") &&
-	      browser == "konqueror" && browserVersion <= 3.3)
-	    { msg = msgLinuxKonqueror331OrLess; state = "red"; break; }
-        } while (false); // this 'loop' is here only to allow use of 'break'
-
-	    var osString = os;	/* for a more meaningful display */
-		if (osString=="win") { osString = "Windows" }
-		else if (osString=="linux") { osString = "Linux" }
-		else if (osString=="unix") { osString = "Unix" }
-		else if (osString=="mac") { osString = "MacOS" }
-
-		var browserString;
-		var Ffox = navigator.userAgent.indexOf("Firefox");
-		if ( browser=="mozilla")
-		{	/* Mozillas are always Mozilla/5; the browserVersion=5 is hence irrelevant as version nr. 
-				All details are shown in UA anyway, so I'll put here the most user-friendly string */
-			if (Ffox!=-1)
-			{	browser = "Firefox";
-				browserVersion = navigator.userAgent.substring(Ffox + "Firefox/".length);
-				browserString = browser + " " + browserVersion;
-			}
-			else
-			{	browserVersion = mozillaVersion;
-				browserString = browser + " " + browserVersion;
-			}
-		}
-		else if ( browser=="msie")
-		{	browser = "Internet Explorer";
-			browserString = browser + " " + browserVersion;
-		}
-		else 
-		{	browserString = browser + " " + browserVersion + mozillaVersion; /* default */
-		}
-
-        document.writeln("<p><big>Your web browser seems to be " +
-             "<i>" + browserString + "</i>" +
-			 " running on <i>" + osString + "</i></big></p>");
-        document.writeln("<table border='0'>" +
-             "<tr><td bgcolor='" + state + "'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
-			 "</td><td>");
-        if (msg == "") msg = msgOK;
-		document.writeln(msg);
-        document.writeln("</td></tr></table>");
-      }
+      var msgAcceptable =
+      "<p>Your browser <b>probably supports</b> Jmol.</p>" +
+      "<p>If you do experience problems with Jmol running in your browser " +
+      " please report them to " +
+      "<code>jmol-developers@lists.sf.net</code> with a copy of this page</p>";
+		</script>
+    <script src="browsercheck.js" type="text/javascript"></script>
+  </head>
+  <body>
+    <img src="../images/Jmol_smallLogo.jpg" />
+    <hr />
+    <h1>Jmol Browser Controle</h1>
+    <h2>Informatie van context:</h2>
+    <blockquote>
+    <p>
+       De Jmol applet vereist een browser die Java applets ondersteunt.
+    </p>
+    <p>
+      De meeste websites die de Jmol applet gebruiken voegen HTML controlemiddelen toe
+      (knoppen, aanvinkvakjes, enz.) die scripts versturen om de Jmol applet te besturen.
+      Om deze besturing goed te laten werken moet de browser eveneens JavaScript en LiveConnect
+      communicatie tussen JavaScript en Java applets ondersteunen.
+    </p>
+    </blockquote>
+    
+    <h2>
+      Resultaten van het testen van uw browser:
+    </h2>
+		<noscript>
+		Either the browser does not support Javascript, or its use has been disabled.<br>
+		Javascript must be enabled in your browser for the Jmol applets to work.
+		</noscript>
+    <script type="text/javascript">
+			var tx = "<p><big>Your web browser seems to be " +
+				"<i>" + browserString + "</i>" +
+				" running on <i>" + osString + "</i></big></p>" +
+				"<table border='0'><tr>" +
+				"<td bgcolor='" + state + "' width='40'>&nbsp;</td>" +
+				"<td>" + msg + "</td>"+
+				"</tr></table>"
+			document.writeln(tx);
     </script>
     
-	<p>
-	  <b>Details:</b>
-	</p>
+	<h3>Browser details:</h3>
     <table border="1" cellpadding="5" cellspacing="0">
       <tr>
 	<td>Besturingssysteem</td>
@@ -292,6 +204,12 @@
 	</td>
       </tr>
     </table>
-    <br />
+
+	<h3>Code produced by Jmol.js:</h3>
+	<script type="text/javascript">
+		jmolInitialize(".");
+		jmolSetDocument(false);
+		document.write( "<textarea cols='100' rows='15' style='width:95%; height:15em;'>"+ jmolApplet(200) +"</textarea>" );
+	</script>
   </body>
 </html>

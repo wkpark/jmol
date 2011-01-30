@@ -1,13 +1,18 @@
+<html lang="es">
 <!--
 /* $RCSfile$
  * $Author$
  * $Date$
  * $Revision$
+ * Revised aHerraez, 29 Jan. 2011:
+ *		- better browser name detection and display (accompanying a revision in Jmol.js)
+ *		- added output source code from Jmol.js
+ *		- code extracted to JS file (common for all languages)
  * A few changes by aHerraez 1-4 oct. 2008: 
  *		- fix: no message was being shown for compatible browsers
  *		- more user-friendly browser name and OS name displayed
  *
- * Copyright (C) 2004-2008  The Jmol Development Team
+ * Copyright (C) 2004-2011  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -31,27 +36,97 @@
   Spanish translation 
   Translated from default version : index.en.html (v 1.1
 -->
-<html>
   <head>
-    <title>VerificaciÛn del navegador para Jmol</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Verificaci√≥n del navegador para Jmol</title>
     <script src="../jmol/Jmol.js"></script>
-    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  	<script type="text/javascript">
+      var msgNoGetElementById =
+      "<p>Aparentemente, este navegador no es compatible " +
+      "con los est√°ndares de los navegadores modernos. Probablemente, Jmol o los botones que lo controlan " +
+      "<b>no funcionen</b> adecuadamente en este navegador. Se <b>recomienda</b> " +
+      "que actualices el navegador. </p>";
+
+      var msgGenericNoJava =
+      "<p>El naveagdor web informa de que Java no est√° activado. " +
+      "La miniaplicaci√≥n Jmol <b>requiere</b> apoyo de Java desde el navegador.<br />" +
+      "Por favor, <b>configura</b> el navegador para que active Java o <b>descarga</b> Java desde " +
+      "<a href='http://www.java.com' target='_blank'>www.java.com " +
+      "<img border='0' src='get_java_red_button.gif' /></a>." +
+      "</p>";
+
+      var msgNoLiveConnectMac =
+      "<p>La miniaplicaci√≥n Jmol <b>funcionar√°</b> adecuadamente. " +
+      "Sin embargo, las p√°ginas web que contengan controls HTML tales como " +
+      "botones, casillas de selecci√≥n y enlaces <b>no funcionar√°n</b> adecuadamente porque " +
+      "los controles no pueden enviar las instrucciones a Jmol.</p>" +
+      "<p><b>Se recomienda</b> que consideres la posibilidadv de utilizar Safari u otro " +
+      "navegador Macintosh que admita la comunicaci√≥n LiveConnect entre " +
+      "JavaScript y Java.</p>";
+
+      var msgMacIE =
+      "<p>Microsoft Internet Explorer en Macintosh <b>no admite</b> " +
+      "la comunicaci√≥n LiveConnect entre JavaScript y Java. </p>";
+
+      var msgMacOldSafari =
+      "<p>Las versiones antiguas de Safari <b>no admiten</b> " +
+      "la comunicaci√≥n LiveConnect entre JavaScript y Java. </p>";
+
+      var msgMacMozillaOldJava =
+      "<p>Netscape/Mozilla/FireFox en Macintosh no tiene acceso a " +
+      "la √∫ltima versi√≥n de Java y por ello <b>no es compatible</b> con " +
+      "la comunicaci√≥n LiveConnect entre JavaScript y Java. </p>";
+
+      var msgMacMozillaAlternative =
+      "<p>Puedes tambi√©n <b>intentar</b> instalar el conector Java "+
+      "Plug-in para Macintosh OS X desde" +
+      "<a href='http://javaplugin.sourceforge.net' target='_blank'>" +
+      "javaplugin.sourceforge.net</a>";
+
+      var msgMacOpera754OrLess =
+      "<p>Esta versi√≥n de Opera en Macintosh aparentemente tiene <b>problemas</b> " +
+      "para ejecutar miniaplicaciones. </p>" +
+      "<b>Se recomienda</b> que cosideres la posibilidad de emplear Safari u otro " +
+      "navegador Macintosh que ejecute con garant√≠as las miniaplicaciones Java y admita " +
+      "la comunicaci√≥n LiveConnect entre JavaScript y Java. </p>";
+
+      var msgLinuxKonqueror331OrLess =
+      "<p>Todas las versiones de Konqueror bajo Linux/Unix hasta la 3.3.1 tienen " +
+      "<b>anomal√≠as</b> en la compatibilidad con Java. " +
+      "El equipo de Jmol ha enviado informes de fallo al equipo Konqueror y " +
+      "√©ste los est√° considerando.</p>" +
+      "<p>Es posible que en una versi√≥n de Konqueror posterior a la 3.3.1 " +
+      "se haya solucionado el problema. Alternativamente, " +
+      "puedes utilizar un navegador de la familia Mozilla.</p>";
+
+      var msgOK =
+      "<p>El navegador parece <b>compatible</b> con Jmol.</p>" +
+      "<p>Si encuentras problemas con Jmol en este navegador, " +
+      "por favor informa de ellos a " +
+      "<code>jmol-developers@lists.sf.net</code> con una copia de esta p√°gina.</p>";
+
+      var msgAcceptable =
+      "<p>El navegador es <b>probablemente compatible</b> con Jmol. </p>" +
+      "<p>Si encuentras problemas con Jmol en este navegador, por favor informa de ellos a " +
+      "<code>jmol-developers@lists.sf.net</code> con una copia de esta p√°gina.</p>";
+		</script>		
+    <script src="browsercheck.js" type="text/javascript"></script>
   </head>
   <body>
     <img src="../images/Jmol_smallLogo.jpg" />
     <hr />
-    <h1>VerificaciÛn del navegador para Jmol</h1>
-    <h2>InformaciÛn de base:</h2>
+    <h1>Verificaci√≥n del navegador para Jmol</h1>
+    <h2>Informaci√≥n de base:</h2>
     <blockquote>
     <p>
-      La miniaplicaciÛn Jmol requiere un navegador web compatible con miniaplicaciones Java (<i>applets</i>).
+      La miniaplicaci√≥n Jmol requiere un navegador web compatible con miniaplicaciones Java (<i>applets</i>).
     </p>
     <p>
-      Adem·s, la mayorÌa de p·ginas web que usan la miniaplicaciÛn Jmol 
-      incluyen controles HTML (botones, casillas de selecciÛn, etc.)
-      que envÌan instrucciones de control a Jmol.
+      Adem√°s, la mayor√≠a de p√°ginas web que usan la miniaplicaci√≥n Jmol 
+      incluyen controles HTML (botones, casillas de selecci√≥n, etc.)
+      que env√≠an instrucciones de control a Jmol.
       Para que estos controles funcionen, el navegador web
-      debe tambiÈn reconocer JavaScript y la comunicaciÛn LiveConnect 
+      debe tambi√©n reconocer JavaScript y la comunicaci√≥n LiveConnect 
       entre JavaScript y Java.
     </p>
     </blockquote>
@@ -59,182 +134,22 @@
     <h2>
       Resultados obtenidos con tu navegador:
     </h2>
-  <script type="text/javascript">
-      var msgNetscape47Win = 
-      "<p>Aunque en general Jmol es compatible con  Netscape 4.7 en Windows, hay <b>algunos " +
-      "pequeÒos problemas</b> relativos a eventos del ratÛn y ocasionalmente " +
-      "a JavaScript/LiveConnect. </p>" +
-      "<p>Adem·s, el estado de la miniaplicaciÛn no se reinicia cuando " +
-      "se recarga la p·gina web, lo cual en ocasiones hace que las casillas de selecciÛn " +
-      "y botones de opciÛn queden desincronizados con el aspecto de la miniaplicaciÛn. </p>" +
-      "<p><b>Recomendamos</b> que consideres la posibilidad de actualizar " +
-      "a un navegador m·s moderno. </p>";
-
-      var msgNoGetElementById =
-      "<p>Aparentemente, este navegador no es compatible " +
-      "con los est·ndares de los navegadores modernos. Probablemente, Jmol o los botones que lo controlan " +
-      "<b>no funcionen</b> adecuadamente en este navegador. Se <b>recomienda</b> " +
-      "que actualices el navegador. </p>";
-
-      var msgGenericNoJava =
-      "<p>El naveagdor web informa de que Java no est· activado. " +
-      "La miniaplicaciÛn Jmol <b>requiere</b> apoyo de Java desde el navegador.<br />" +
-      "Por favor, <b>configura</b> el navegador para que active Java o <b>descarga</b> Java desde " +
-      "<a href='http://www.java.com' target='_blank'>www.java.com " +
-      "<img border='0' src='get_java_red_button.gif' /></a>." +
-      "</p>";
-
-      var msgGenericOK =
-      "<p>El navegador parece <b>compatible</b> con Jmol. </p>" +
-      "<p>Si encuentras problemas, por favor informa de ellos a " +
-      "<code>jmol-developers@lists.sf.net</code></p>";
-
-      var msgNoLiveConnectMac =
-      "<p>La miniaplicaciÛn Jmol <b>funcionar·</b> adecuadamente. " +
-      "Sin embargo, las p·ginas web que contengan controls HTML tales como " +
-      "botones, casillas de selecciÛn y enlaces <b>no funcionar·n</b> adecuadamente porque " +
-      "los controles no pueden enviar las instrucciones a Jmol.</p>" +
-      "<p><b>Se recomienda</b> que consideres la posibilidadv de utilizar Safari u otro " +
-      "navegador Macintosh que admita la comunicaciÛn LiveConnect entre " +
-      "JavaScript y Java.</p>";
-
-      var msgMacIE =
-      "<p>Microsoft Internet Explorer en Macintosh <b>no admite</b> " +
-      "la comunicaciÛn LiveConnect entre JavaScript y Java. </p>";
-
-      var msgMacOldSafari =
-      "<p>Las versiones antiguas de Safari <b>no admiten</b> " +
-      "la comunicaciÛn LiveConnect entre JavaScript y Java. </p>";
-
-      var msgMacMozillaOldJava =
-      "<p>Netscape/Mozilla/FireFox en Macintosh no tiene acceso a " +
-      "la ˙ltima versiÛn de Java y por ello <b>no es compatible</b> con " +
-      "la comunicaciÛn LiveConnect entre JavaScript y Java. </p>";
-
-      var msgMacMozillaAlternative =
-      "<p>Puedes tambiÈn <b>intentar</b> instalar el conector Java "+
-      "Plug-in para Macintosh OS X desde" +
-      "<a href='http://javaplugin.sourceforge.net' target='_blank'>" +
-      "javaplugin.sourceforge.net</a>";
-
-      var msgMacOpera754OrLess =
-      "<p>Esta versiÛn de Opera en Macintosh aparentemente tiene <b>problemas</b> " +
-      "para ejecutar miniaplicaciones. </p>" +
-      "<b>Se recomienda</b> que cosideres la posibilidad de emplear Safari u otro " +
-      "navegador Macintosh que ejecute con garantÌas las miniaplicaciones Java y admita " +
-      "la comunicaciÛn LiveConnect entre JavaScript y Java. </p>";
-
-      var msgLinuxKonqueror331OrLess =
-      "<p>Todas las versiones de Konqueror bajo Linux/Unix hasta la 3.3.1 tienen " +
-      "<b>anomalÌas</b> en la compatibilidad con Java. " +
-      "El equipo de Jmol ha enviado informes de fallo al equipo Konqueror y " +
-      "Èste los est· considerando.</p>" +
-      "<p>Es posible que en una versiÛn de Konqueror posterior a la 3.3.1 " +
-      "se haya solucionado el problema. Alternativamente, " +
-      "puedes utilizar un navegador de la familia Mozilla.</p>";
-
-      var msgOK =
-      "<p>El navegador parece ser <b>compatible</b> con Jmol.</p>" +
-      "<p>Si encuentras problemas con Jmol en este navegador, " +
-      "por favor informa de ellos a " +
-      "<code>jmol-developers@lists.sf.net</code></p>";
-
-      var msg = "";
-      var mozillaVersion = "";
-      var javaVersion = 0;
-      var state = "yellow";
-
-      with (_jmol) {
-        if (browser == "mozilla" && browserVersion >= 5) {
-          var indexRV = ua.indexOf("rv:");
-	  if (indexRV > 0) {
-	    var rv = ua.substring(indexRV + 3);
-	    var indexEnd = rv.indexOf(")");
-	    var indexSemi = rv.indexOf(";");
-	    if (indexEnd < 0 || (indexSemi > 0 && indexSemi < indexEnd))
-	      indexEnd = indexSemi;
-            if (indexEnd > 0)
-	      mozillaVersion = " " + rv.substring(0, indexEnd);
-	  }
-        }
-        do {
-	  if (isNetscape47Win)
-	    { msg = msgNetscape47Win; break; }
-	  if (os == "mac" && browser == "mozilla" && browserVersion >= 5) {
-	    eval("try{javaVersion=" +
-	         "java.lang.System.getProperty('java.version');" +
-                 "} catch (e) { }");
-	    if (javaVersion < 1.4) {
-	      msg = msgMacMozillaOldJava + msgNoLiveConnectMac +
-	            msgMacMozillaAlternative;
-              break;
-	    }
-	  }
-	  if (! isJavaEnabled)
-	    { msg = msgGenericNoJava; state = "red"; break; }
-	  if (! hasGetElementById)
-	    { msg = msgNoGetElementById; state = "red"; break; }
-          if (os == "mac" && browser == "msie")
-	    { msg = msgMacIE + msgNoLiveConnectMac; break; }
-	  if (os == "mac" && browser == "safari" && browserVersion < 125.1)
-	    { msg = msgMacOldSafari + msgNoLiveConnectMac; break; }
-	  if (os == "mac" && browser == "opera" && browserVersion <= 7.54)
-	    { msg = msgMacOpera754OrLess; state = "red"; break; }
-	  if ((os == "win" && browser == "msie") ||
-	      (os == "win" && browser == "mozilla" && browserVersion >= 5) ||
-	      (os == "win" && browser == "opera" && browserVersion >= 7.54) ||
-	      ((os == "linux" || os == "unix") &&
-	       browser == "mozilla" && browserVersion >= 5))
-	    { state = "green"; break; }
-	  if ((os == "linux" || os == "unix") &&
-	      browser == "konqueror" && browserVersion <= 3.3)
-	    { msg = msgLinuxKonqueror331OrLess; state = "red"; break; }
-        } while (false); // this 'loop' is here only to allow use of 'break'
-
-	    var osString = os;	/* for a more meaningful display */
-		if (osString=="win") { osString = "Windows" }
-		else if (osString=="linux") { osString = "Linux" }
-		else if (osString=="unix") { osString = "Unix" }
-		else if (osString=="mac") { osString = "MacOS" }
-
-		var browserString;
-		var Ffox = navigator.userAgent.indexOf("Firefox");
-		if ( browser=="mozilla")
-		{	/* Mozillas are always Mozilla/5; the browserVersion=5 is hence irrelevant as version nr. 
-				All details are shown in UA anyway, so I'll put here the most user-friendly string */
-			if (Ffox!=-1)
-			{	browser = "Firefox";
-				browserVersion = navigator.userAgent.substring(Ffox + "Firefox/".length);
-				browserString = browser + " " + browserVersion;
-			}
-			else
-			{	browserVersion = mozillaVersion;
-				browserString = browser + " " + browserVersion;
-			}
-		}
-		else if ( browser=="msie")
-		{	browser = "Internet Explorer";
-			browserString = browser + " " + browserVersion;
-		}
-		else 
-		{	browserString = browser + " " + browserVersion + mozillaVersion; /* default */
-		}
-
-        document.writeln("<p><big>Tu navegador web es, aparentemente, " +
-             "<i>" + browserString + "</i>" +
-			 " sobre <i>" + osString + "</i></big></p>");
-        document.writeln("<table border='0'>" +
-             "<tr><td bgcolor='" + state + "'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
-			 "</td><td>");
-        if (msg == "") msg = msgOK;
-		document.writeln(msg);
-        document.writeln("</td></tr></table>");
-      }
+		<noscript>
+		El navegador no es compatible con Javascript, o bien se ha desactivado su uso.<br>
+		Javascript debe estar activado en el navegador para que funcionen las miniaplicacines Jmol.
+		</noscript>
+    <script type="text/javascript">
+			var tx = "<p><big>Tu navegador web es, aparentemente, " +
+				"<i>" + browserString + "</i>" +
+				" sobre <i>" + osString + "</i></big></p>" +
+				"<table border='0'><tr>" +
+				"<td bgcolor='" + state + "' width='40'>&nbsp;</td>" +
+				"<td>" + msg + "</td>"+
+				"</tr></table>"
+			document.writeln(tx);
     </script>
     
-    <p>
-      <b>Detalles:</b>
-    </p>
+    <h3>Detalles del navegador:</h3>
     <table border="1" cellpadding="5" cellspacing="0">
       <tr>
 	<td>Sistema operativo</td>
@@ -246,7 +161,7 @@
       </tr>
       <tr>
 	<td>
-	  Navegador web
+	  Familia de navegador web
 	</td>
 	<td>
 	  <script type="text/javascript">
@@ -256,7 +171,7 @@
       </tr>
       <tr>
 	<td>
-	  VersiÛn del navegador
+	  Versi√≥n de la familia del navegador
 	</td>
 	<td>
 	  <script type="text/javascript">
@@ -266,7 +181,8 @@
       </tr>
       <tr>
 	<td>
-	  navigator.userAgent
+		Navegador concreto<br />
+	  [ navigator.userAgent ]
 	</td>
 	<td>
 	  <script type="text/javascript">
@@ -276,7 +192,8 @@
       </tr>
       <tr>
 	<td>
-	  tiene getElementById()
+		Utiliza el DOM<br />
+	  [ tiene getElementById() ]
 	</td>
 	<td>
 	  <script type="text/javascript">
@@ -285,8 +202,9 @@
 	</td>
       </tr>
       <tr>
-	<td>
-	  navigator.javaEnabled()
+	<td nowrap>
+		Puede usar Java<br />
+	  [ navigator.javaEnabled() ]
 	</td>
 	<td>
 	  <script type="text/javascript">
@@ -295,6 +213,13 @@
 	</td>
       </tr>
     </table>
-    <br />
+
+	<h3>C√≥digo producido por Jmol.js:</h3>
+	<script type="text/javascript">
+		jmolInitialize(".");
+		jmolSetDocument(false);
+		document.write( "<textarea cols='100' rows='15' style='width:95%; height:15em;'>"+ jmolApplet(200) +"</textarea>" );
+	</script>
+	
   </body>
 </html>

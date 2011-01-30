@@ -46,7 +46,6 @@ import org.jmol.util.TextFormat;
  * @version 1.0
  */
 
-
 public class VaspOutcarReader extends AtomSetCollectionReader {
 
   private String[] atomNames;
@@ -54,18 +53,22 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
   private int atomCount = 0;
   private boolean inputOnly;
   private boolean mDsimulation = false; //this is for MD simulations
+  private boolean isVersion5 = false;
 
   @Override
   protected void initializeReader() {
-    setSpaceGroupName("P1");  
+    setSpaceGroupName("P1");
     setFractionalCoordinates(true);
     inputOnly = checkFilter("INPUT");
- }
-  
+  }
+
   @Override
   protected boolean checkLine() throws Exception {
 
-    if (line.toUpperCase().contains("INCAR:")) {
+    //reads if output is from vasp5
+    if (line.contains(" vasp.5")) {
+      isVersion5 = true;
+    } else if (line.toUpperCase().contains("INCAR:")) {
       //reads the kind of atoms namely H, Ca etc
       readElementNames();
     } else if (line.contains("ions per type")) {
@@ -86,14 +89,15 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
     } else if (line.contains("ENERGIE OF THE ELECTRON-ION-THERMOSTAT")
         && mDsimulation) {
       readMdyn();
-    } else if (line.startsWith("  Degree of freedom:")) {
-      readFreqCount();
-    } else if (line.startsWith(" Eigenvectors after division by SQRT(mass)")) {
+      /*    } else if (line.startsWith("  Degree of freedom:")) {
+            readFreqCount();*/
+    } else if (line
+        .startsWith(" Eigenvectors and eigenvalues of the dynamical matrix")) {
       readFrequency();
     }
     return true;
   }
-  
+
   @Override
   protected void finalizeReader() throws Exception {
     setSymmetry();
@@ -112,7 +116,7 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
     // Here I set the number of species to 100.
     // We might need a larger one. Because we are mapping the atom coordinate on it
     // See mapAtom().
-    String[] tmpName = new String[100]; 
+    String[] tmpName = new String[100];
 
     while (readLine() != null && line.indexOf("VRHFIN") < 0) {
       if (line.contains("_")) {
@@ -130,17 +134,17 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
       counter++;
       flagUnderscore = false;
     }
-    
+
     // remove duplicates
-    
+
     List<String> list = Arrays.asList(tmpName);
     Set<String> set = new HashSet<String>(list);
     set.remove(null);
     elementNames = new String[set.size()];
     set.toArray(elementNames);
   }
-  
-/*  
+
+  /*  
   Dimension of arrays:
     k-Points           NKPTS =     10   number of bands    NBANDS=     16
     number of dos      NEDOS =    301   number of ions     NIONS =      8
@@ -151,28 +155,28 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
     dimension x,y,z NGXF=    84 NGYF=   84 NGZF=   84
     support grid    NGXF=    84 NGYF=   84 NGZF=   84
     ions per type =               6   2*/
-  
-  
+
   private void readAtomCountAndSetNames() throws Exception {
     int[] numofElement = new int[100];
-//    readLine();
+    //    readLine();
     String[] tokens = getTokens(line.substring(line.indexOf("=") + 1));
     atomCount = 0;
     for (int i = 0; i < tokens.length; i++)
       atomCount += (numofElement[i] = parseInt(tokens[i].trim()));
-  //this is to reconstruct the atomMappedarray containing the atom
+    //this is to reconstruct the atomMappedarray containing the atom
     atomNames = new String[atomCount];
     for (int pt = 0, i = 0; i < numofElement.length; i++)
       for (int j = 0; j < numofElement[i]; j++)
         atomNames[pt++] = elementNames[i];
   }
-      /*direct lattice vectors                 reciprocal lattice vectors
+
+  /*direct lattice vectors                 reciprocal lattice vectors
     1.850000000  1.850000000  0.000000000     0.270270270  0.270270270 -0.270270270
     0.000000000  1.850000000  1.850000000    -0.270270270  0.270270270  0.270270270
     1.850000000  0.000000000  1.850000000     0.270270270 -0.270270270  0.270270270*/
-  
+
   private float[] unitCellData = new float[18];
-  
+
   private void readUnitCellVectors() throws Exception {
     if (atomSetCollection.getAtomCount() > 0) {
       setSymmetry();
@@ -182,7 +186,7 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
     fillFloatArray(unitCellData, null, 0);
     setUnitCell();
   }
-  
+
   private void setUnitCell() {
     addPrimitiveLatticeVector(0, unitCellData, 0);
     addPrimitiveLatticeVector(1, unitCellData, 6);
@@ -191,11 +195,11 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
 
   private void setSymmetry() throws Exception {
     applySymmetryAndSetTrajectory();
-    setSpaceGroupName("P1");  
+    setSpaceGroupName("P1");
     setFractionalCoordinates(false);
   }
 
-/*
+  /*
   position of ions in fractional coordinates (direct lattice) 
   0.87800000  0.62200000  0.25000000
   0.25000000  0.87800000  0.62200000
@@ -205,26 +209,25 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
   0.37800000  0.75000000  0.12200000
   0.00000000  0.00000000  0.00000000
   0.50000000  0.50000000  0.50000000
- 
+
   position of ions in cartesian coordinates
-  */
+   */
   ///This is the initial geometry not the geometry during the geometry dump
-  private void readInitialCoordinates() throws Exception{
+  private void readInitialCoordinates() throws Exception {
     int counter = 0;
-      while (readLine() != null && line.length() > 10){
-        Atom atom = atomSetCollection.addNewAtom();
-        String[] tokens = getTokens();
-        atom.atomName = atomNames[counter++];
-        float x = parseFloat(tokens[0]);
-        float y = parseFloat(tokens[1]);
-        float z = parseFloat(tokens[2]);
-        setAtomCoord(atom, x, y, z);
-      }
-     atomSetCollection.setAtomSetName("Initial Coordinates");
+    while (readLine() != null && line.length() > 10) {
+      Atom atom = atomSetCollection.addNewAtom();
+      String[] tokens = getTokens();
+      atom.atomName = atomNames[counter++];
+      float x = parseFloat(tokens[0]);
+      float y = parseFloat(tokens[1]);
+      float z = parseFloat(tokens[2]);
+      setAtomCoord(atom, x, y, z);
+    }
+    atomSetCollection.setAtomSetName("Initial Coordinates");
   }
-  
-  
-/*  
+
+  /*  
   POSITION                                       TOTAL-FORCE (eV/Angst)
   -----------------------------------------------------------------------------------
        1.14298      0.83102      6.90311        -0.003060      0.001766      0.000000
@@ -236,7 +239,7 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
        0.00000      0.00000      0.00000         0.000000      0.000000      0.000000
        0.00000      0.00000      5.91695         0.000000      0.000000      0.000000
   -----------------------------------------------------------------------------------
-  */
+   */
   private void readPOSITION() throws Exception {
     int counter = 0;
     discardLines(1);
@@ -251,17 +254,16 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
       counter++;
     }
   }
-  
-  
-/*  FREE ENERGIE OF THE ION-ELECTRON SYSTEM (eV)
+
+  /*  FREE ENERGIE OF THE ION-ELECTRON SYSTEM (eV)
   ---------------------------------------------------
   free  energy   TOTEN  =       -20.028155 eV
 
   energy  without entropy=      -20.028155  energy(sigma->0) =      -20.028155
-  */
-  
+   */
+
   private Double gibbsEnergy, gibbsEntropy;
-  
+
   private void readEnergy() throws Exception {
     readLine();
     String[] tokens = getTokens(readLine());
@@ -270,13 +272,13 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
     tokens = getTokens(readLine());
     /* please double-check:
 
-  entropy T*S    EENTRO =        -0.01255935
-  eigenvalues    EBANDS =        27.21110509
-  atomic energy  EATOM  =       181.97672381
-  ---------------------------------------------------
-  free energy    TOTEN  =        35.37614365 eV
+    entropy T*S    EENTRO =        -0.01255935
+    eigenvalues    EBANDS =        27.21110509
+    atomic energy  EATOM  =       181.97672381
+    ---------------------------------------------------
+    free energy    TOTEN  =        35.37614365 eV
 
-  energy without entropy =       35.38870300  energy(sigma->0) =       35.38242333
+    energy without entropy =       35.38870300  energy(sigma->0) =       35.38242333
 
      * G = H - TS, so TS = H - G
      * 
@@ -290,18 +292,20 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
      * 
      * 
      */
-    double enthalpy = Double.parseDouble(tokens[3]); 
+    double enthalpy = Double.parseDouble(tokens[3]);
     gibbsEntropy = Double.valueOf(enthalpy - gibbsEnergy.doubleValue());
   }
 
   private void setAtomSetInfo() {
     if (gibbsEnergy == null)
       return;
-    atomSetCollection.setAtomSetEnergy("" + gibbsEnergy, gibbsEnergy.floatValue());
+    atomSetCollection.setAtomSetEnergy("" + gibbsEnergy,
+        gibbsEnergy.floatValue());
     atomSetCollection.setAtomSetAuxiliaryInfo("Energy", gibbsEnergy);
     atomSetCollection.setAtomSetAuxiliaryInfo("Entropy", gibbsEntropy);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Energy", gibbsEnergy);
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Entropy", gibbsEntropy);
+    atomSetCollection
+        .setAtomSetCollectionAuxiliaryInfo("Entropy", gibbsEntropy);
     atomSetCollection.setAtomSetName("G = " + gibbsEnergy + " eV, T*S = "
         + gibbsEntropy + " eV");
   }
@@ -334,27 +338,19 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
         electronEne);
     atomSetCollection.setAtomSetAuxiliaryInfo("Kinetic", electronEne);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Kinetic", kinEne);
-    atomSetCollection.setAtomSetAuxiliaryInfo("Temperature", TextFormat
-        .formatDecimal((temp), 2));
+    atomSetCollection.setAtomSetAuxiliaryInfo("Temperature",
+        TextFormat.formatDecimal((temp), 2));
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Temperature",
         TextFormat.formatDecimal((temp), 2));
   }
-  
-  private int freqCount = 0;
-
-  private void readFreqCount() {
-    String newLine = line.replace("/ ", " / ");
-    freqCount = parseInt(newLine.substring(newLine.indexOf(":") + 1, newLine
-        .indexOf("/") - 1));
-  }
 
   /*  
-    Eigenvectors after division by SQRT(mass)
-    
+    Eigenvectors after division by SQRT(mass)   ///This is lines is not there in VASP5
+
     Eigenvectors and eigenvalues of the dynamical matrix
     ----------------------------------------------------
-    
-    
+
+
       1 f  =   61.880092 THz   388.804082 2PiTHz 2064.097613 cm-1   255.915580 meV
                 X         Y         Z           dx          dy          dz
          1.154810  0.811470  6.887910     0.142328    0.284744    0.218505  
@@ -365,7 +361,7 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
         -0.125350  1.405820  4.919940    -0.147808    0.308554   -0.250128  
          0.000000  0.000000  0.000000     0.000000    0.000000    0.000000  
          0.000000  0.000000  5.903930     0.000000    0.000000    0.000000  
-    
+
       2 f  =   56.226671 THz   353.282596 2PiTHz 1875.519821 cm-1   232.534905 meV
                 X         Y         Z           dx          dy          dz
          1.154810  0.811470  6.887910     0.005057   -0.193034   -0.074407  
@@ -376,29 +372,31 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
         -0.125350  1.405820  4.919940    -0.155521    0.437777   -0.342368  
          0.000000  0.000000  0.000000     0.015694    0.002977    0.005811  
          0.000000  0.000000  5.903930     0.011571   -0.016988    0.006533 
-    
-    
-    
-    */
+
+
+
+   */
   private void readFrequency() throws Exception {
-    BitSet bs = new BitSet(freqCount);
+
     int pt = atomSetCollection.getCurrentAtomSetIndex();
     int iAtom0 = atomSetCollection.getAtomCount();
-    for (int i = 0; i < freqCount; ++i) {
-      if (!doGetVibration(++vibrationNumber))
-        continue;
-      bs.set(i);
-      cloneLastAtomSet(-1);
+
+    if (isVersion5) {
+      discardLines(3);
+    } else {
+      discardLinesUntilContains("Eigenvectors after division by SQRT(mass)");
+      discardLines(5);
     }
-    discardLines(5);
+
     boolean[] ignore = new boolean[1];
-    for (int i = 0; i < freqCount; i++) {
-      readLine();
-      ignore[0] = !bs.get(i);
+    while (readLine() != null
+        && (line.contains("f  = ") || line.contains("f/i= "))) {
+      cloneLastAtomSet(-1);
       if (!ignore[0]) {
         atomSetCollection.setCurrentAtomSetIndex(++pt);
-        atomSetCollection.setAtomSetFrequency(null, null, line.substring(
-            line.indexOf("PiTHz") + 5, line.indexOf("c") - 1).trim(), null);
+        atomSetCollection.setAtomSetFrequency(null, null,
+            line.substring(line.indexOf("2PiTHz") + 6, line.indexOf("c") - 1)
+                .trim(), null);
       }
       readLine();
       fillFrequencyData(iAtom0, atomCount, atomCount, ignore, true, 35, 12,

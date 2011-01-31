@@ -216,6 +216,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
    *  
    */
   private void processDataParameter() {
+    bondTypes.clear();
     tokenizer.getTokenPeeked();
     thisDataSetName = (key.length() < 6 ? "" : key.substring(5));
     if (thisDataSetName.length() > 0) {
@@ -1582,6 +1583,7 @@ _struct_site_gen.details
   private boolean createBonds(boolean doInit) {
     
     // process GEOM_BOND records
+    System.out.println("hmmm cifreader");
     
     for (int i = bondTypes.size(); --i >= 0;) {
       Object[] o = bondTypes.get(i);
@@ -1595,11 +1597,15 @@ _struct_site_gen.details
         continue;
       for (int j = bs1.nextSetBit(0); j >= 0; j = bs1.nextSetBit(j + 1))
         for (int k = bs2.nextSetBit(0); k >= 0; k = bs2.nextSetBit(k + 1))
+          try {
           if (j != k
-              && (!isMolecular || !bsConnected[j].get(k))
+              && (!isMolecular || !bsConnected[j + firstAtom].get(k))
               && symmetry.checkDistance(atoms[j + firstAtom], atoms[k
                   + firstAtom], distance, dx, 0, 0, 0, ptOffset))
             addNewBond(j + firstAtom, k + firstAtom);
+          } catch (Exception e) {
+            System.out.println("hmmm");
+          }
     }
     
     // do a quick check for H-X bonds if we have GEOM_BOND
@@ -1626,7 +1632,7 @@ _struct_site_gen.details
 
     if (doInit)
       for (int i = firstAtom; i < atomCount; i++)
-        if (atoms[i].atomSite == i && !bsMolecule.get(i))
+        if (atoms[i].atomSite + firstAtom == i && !bsMolecule.get(i))
           setBs(atoms, i, bsConnected, bsMolecule);
     
     // Now look through unchecked atoms for ones that

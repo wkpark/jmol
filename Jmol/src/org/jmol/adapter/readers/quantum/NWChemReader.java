@@ -854,7 +854,7 @@ public class NWChemReader extends MOReader {
     int fieldSize = 0;
     int nThisLine = 0;
     discardLines(5);
-    while (readLine() != null && line.indexOf("-----") < 0) {
+    while (readLine() != null && parseInt(line) != Integer.MIN_VALUE) {
       readLine();
       String[] tokens = getTokens();
       if (Logger.debugging) {

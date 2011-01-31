@@ -1583,8 +1583,6 @@ _struct_site_gen.details
   private boolean createBonds(boolean doInit) {
     
     // process GEOM_BOND records
-    System.out.println("hmmm cifreader");
-    
     for (int i = bondTypes.size(); --i >= 0;) {
       Object[] o = bondTypes.get(i);
       float distance = ((Float) o[2]).floatValue();
@@ -1597,15 +1595,11 @@ _struct_site_gen.details
         continue;
       for (int j = bs1.nextSetBit(0); j >= 0; j = bs1.nextSetBit(j + 1))
         for (int k = bs2.nextSetBit(0); k >= 0; k = bs2.nextSetBit(k + 1))
-          try {
           if (j != k
               && (!isMolecular || !bsConnected[j + firstAtom].get(k))
               && symmetry.checkDistance(atoms[j + firstAtom], atoms[k
                   + firstAtom], distance, dx, 0, 0, 0, ptOffset))
             addNewBond(j + firstAtom, k + firstAtom);
-          } catch (Exception e) {
-            System.out.println("hmmm");
-          }
     }
     
     // do a quick check for H-X bonds if we have GEOM_BOND

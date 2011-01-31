@@ -1053,6 +1053,13 @@ public abstract class AtomSetCollectionReader {
     return line;
   }
 
+  protected String discardLinesUntilContains(String s1, String s2)
+      throws Exception {
+    while (readLine() != null && line.indexOf(s1) < 0 && line.indexOf(s2) < 0) {
+    }
+    return line;
+  }
+
   protected void discardLinesUntilBlank() throws Exception {
     while (readLine() != null && line.trim().length() != 0) {
     }

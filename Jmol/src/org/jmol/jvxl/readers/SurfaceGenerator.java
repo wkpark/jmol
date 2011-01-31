@@ -1183,7 +1183,7 @@ public class SurfaceGenerator {
         // ignore
       }
       br = null;
-      return new MrcBinaryReader(this, params.fileName, data);
+      return new MrcBinaryReader(this, params.fileName);
     }
     if (fileType.equals("DSN6")) {
       try {

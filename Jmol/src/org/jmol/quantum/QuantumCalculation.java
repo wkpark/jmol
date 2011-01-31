@@ -25,6 +25,7 @@ package org.jmol.quantum;
 
 import javax.vecmath.Point3f;
 
+import org.jmol.modelset.Atom;
 import org.jmol.util.Logger;
 
 import java.util.BitSet;
@@ -108,7 +109,7 @@ abstract class QuantumCalculation {
     boolean isAll = (bsSelected == null);
     int i0 = (isAll ? qmAtoms.length - 1 : bsSelected.nextSetBit(0));
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsSelected.nextSetBit(i + 1)))
-      qmAtoms[i] = new QMAtom(atomCoordAngstroms[i], X, Y, Z, X2, Y2, Z2);
+      qmAtoms[i] = new QMAtom((Atom) atomCoordAngstroms[i], X, Y, Z, X2, Y2, Z2);
     if (doDebug)
       Logger.debug("QuantumCalculation:\n origin(Bohr)= " + originBohr[0] + " "
           + originBohr[1] + " " + originBohr[2] + "\n steps(Bohr)= "
@@ -131,8 +132,9 @@ abstract class QuantumCalculation {
     // grid coordinate squares relative to orbital center in Bohr
     private float[] myX2, myY2, myZ2;
 
+    Atom atom;
     
-    QMAtom(Point3f coordAngstroms, float[] X, float[] Y, float[] Z, 
+    QMAtom(Atom atom, float[] X, float[] Y, float[] Z, 
         float[] X2, float[] Y2, float[] Z2) {
       myX = X;
       myY = Y;
@@ -141,7 +143,7 @@ abstract class QuantumCalculation {
       myY2 = Y2;
       myZ2 = Z2;
       
-      set(coordAngstroms);
+      set(this.atom = atom);
       scale(unitFactor);
     }
 

@@ -23,9 +23,6 @@
  */
 package org.jmol.jvxl.readers;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-
 import org.jmol.util.BinaryDocument;
 import org.jmol.util.Logger;
 
@@ -37,17 +34,17 @@ class MrcBinaryReader extends MapFileReader {
    * examples include the emd_1xxx..map electron microscopy files
    * and xxxx.ccp4 files
    * 
+   * Jmol 12.1.33: adjusted to allow for nonstandard "MRC" files
+   * that are little-endian, have no labels, have no "MAP" file type marker
+   * and are not inside-out.
    *
    */
 
   
-  MrcBinaryReader(SurfaceGenerator sg, String fileName, String data) {
+  MrcBinaryReader(SurfaceGenerator sg, String fileName) {
     super(sg, null);
     binarydoc = new BinaryDocument();
-    if (data == null)
-      binarydoc.setStream(sg.getAtomDataServer().getBufferedInputStream(fileName), true);
-    else 
-      binarydoc.setStream(new DataInputStream(new ByteArrayInputStream(data.getBytes())));
+    binarydoc.setStream(sg.getAtomDataServer().getBufferedInputStream(fileName), true);
     // data are HIGH on the inside and LOW on the outside
     nSurfaces = 1; 
     if (params.thePlane == null)
@@ -110,6 +107,17 @@ class MrcBinaryReader extends MapFileReader {
     int nlabel;
 
     nx = binarydoc.readInt(); // CCP4 "extent[0-2]"
+    if (nx < 0 || nx > 1<<8) {
+      binarydoc.setIsBigEndian(false);
+      nx = BinaryDocument.swapBytes(nx);
+      if (params.thePlane == null)
+        params.insideOut = !params.insideOut;
+      if (nx < 0 || nx > 1000) {
+        Logger.info("nx=" + nx + " not displayable as MRC file");
+        throw new Exception("MRC file type not readable");
+      }
+      Logger.info("reading nonstandard little-endian MRC file");
+    }
     ny = binarydoc.readInt();
     nz = binarydoc.readInt();
 
@@ -184,7 +192,8 @@ class MrcBinaryReader extends MapFileReader {
     Logger.info("MRC header: labels: " + nlabel);
 
     labels = new String[nlabel];
-    labels[0] = "Jmol MrcBinaryReader";
+    if (nlabel > 0)
+      labels[0] = "Jmol MrcBinaryReader";
 
     for (int i = 0; i < 10; i++) {
       String s = binarydoc.readString(80).trim();
@@ -221,7 +230,7 @@ class MrcBinaryReader extends MapFileReader {
     }
 
     jvxlFileHeaderBuffer = new StringBuffer();
-    jvxlFileHeaderBuffer.append("MRC DATA ").append(labels[0]).append("\n");
+    jvxlFileHeaderBuffer.append("MRC DATA ").append(nlabel > 0 ? labels[0]: "").append("\n");
     jvxlFileHeaderBuffer.append("see http://ami.scripps.edu/software/mrctools/mrc_specification.php\n");
   }
   

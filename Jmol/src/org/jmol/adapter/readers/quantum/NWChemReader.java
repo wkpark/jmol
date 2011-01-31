@@ -87,6 +87,7 @@ public class NWChemReader extends MOReader {
   @Override
   protected void initializeReader() {
     readROHFonly = (filter != null && filter.indexOf("ROHF") >= 0);
+    calculationType = "(NWCHEM)"; // normalization is different for NWCHEM
   }
 
   /**
@@ -105,7 +106,7 @@ public class NWChemReader extends MOReader {
       return true;
     }
     if (line.indexOf("  wavefunction    = ") >= 0) {
-      calculationType = line.substring(line.indexOf("=") + 1).trim();
+      calculationType = line.substring(line.indexOf("=") + 1).trim() + "(NWCHEM)";
       moData.put("calculationType", calculationType);
       return true;
     }
@@ -154,7 +155,7 @@ public class NWChemReader extends MOReader {
       readBasis();
       return true;
     }
-    if (line.contains("ROHF Final Molecular Orbital Analysis")) {
+    if (readROHFonly && line.contains("ROHF Final Molecular Orbital Analysis")) {
       return readMolecularOrbitals();
     }
 

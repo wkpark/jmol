@@ -25,7 +25,6 @@ package org.jmol.quantum;
 
 import org.jmol.api.MOCalculationInterface;
 import org.jmol.api.VolumeDataInterface;
-import org.jmol.jvxl.readers.Parameters;
 import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 
@@ -94,22 +93,13 @@ public class MOCalculation extends QuantumCalculation implements
 
   private final static double CUT = -50;
   
-  private final static int MAX_GRID = Parameters.MO_MAX_GRID;
   // slater coefficients in Bohr
-  final float[] CX = new float[MAX_GRID];
-  final float[] CY = new float[MAX_GRID];
-  final float[] CZ = new float[MAX_GRID];
-
+  private float[] CX, CY, CZ;
   // d-orbital partial coefficients in Bohr
-  final float[] DXY = new float[MAX_GRID];
-  final float[] DXZ = new float[MAX_GRID];
-  final float[] DYZ = new float[MAX_GRID];
-
-  // exp(-alpha x^2...)
-  final float[] EX = new float[MAX_GRID];
-  final float[] EY = new float[MAX_GRID];
-  final float[] EZ = new float[MAX_GRID];
-
+  private float[] DXY, DXZ, DYZ;
+    // exp(-alpha x^2...)
+  private float[] EX, EY, EZ;
+  
   private String calculationType;
   private List<int[]> shells;
   private float[][] gaussians;
@@ -123,8 +113,9 @@ public class MOCalculation extends QuantumCalculation implements
   private float occupancy = 2f; //for now -- RHF only
   //private float coefMax = Integer.MAX_VALUE;
   private boolean doNormalize = true;
+  private boolean nwChemMode = false;
   //                                              S           SP            DS         DC          FS          FC
-  private int[][] dfCoefMaps = new int[][] {null, new int[3], new int[4], new int[5], new int[6], new int[7], new int[10]};
+  private int[][] dfCoefMaps = new int[][] {new int[1], new int[3], new int[4], new int[5], new int[6], new int[7], new int[10]};
 
 //  private float[] nuclearCharges;
 
@@ -168,6 +159,23 @@ public class MOCalculation extends QuantumCalculation implements
     if (doDebug || testing || isElectronDensity)
       calculateElectronDensity(nuclearCharges);
   }  
+  
+  @Override
+  protected void initialize(int nX, int nY, int nZ) {
+    super.initialize(nX, nY, nZ);
+    
+    CX = new float[nX];
+    CY = new float[nY];
+    CZ = new float[nZ];
+
+    DXY = new float[nX];
+    DXZ = new float[nX];
+    DYZ = new float[nY];
+
+    EX = new float[nX];
+    EY = new float[nY];
+    EZ = new float[nZ];
+  }
 
   public void calculateElectronDensity(float[] nuclearCharges) {
     //TODO
@@ -200,12 +208,8 @@ public class MOCalculation extends QuantumCalculation implements
     int nShells = shells.size();
     // each STO shell is the combination of one or more gaussians
     moCoeff = 0;
-    for (int i = 0; i < nShells; i++) {
+    for (int i = 0; i < nShells; i++)
       processShell(i);
-      if (doDebug)
-        Logger.debug("createGaussianCube shell=" + i + " moCoeff=" + moCoeff
-            + "/" + moCoefficients.length);
-    }
   }
 
   boolean as5D = false;
@@ -239,6 +243,7 @@ public class MOCalculation extends QuantumCalculation implements
       Logger.warn("calculation type not identified -- continuing");
       return true;
     }
+    nwChemMode = (calculationType.indexOf("NWCHEM") >= 0);
     /*if (calculationType.indexOf("5D") >= 0) {
      Logger
      .error("QuantumCalculation.checkCalculationType: can't read 5D basis sets yet: "
@@ -270,7 +275,7 @@ public class MOCalculation extends QuantumCalculation implements
     nGaussians = shell[3];
 
     if (doDebug)
-      Logger.debug("processShell: " + iShell + " type="
+      Logger.debug("\t\t\tprocessShell: " + iShell + " type="
           + JmolConstants.getQuantumShellTag(basisType) + " nGaussians="
           + nGaussians + " atom=" + atomIndex);
     if (atomIndex != lastAtom && (thisAtom = qmAtoms[atomIndex]) != null)
@@ -331,18 +336,29 @@ public class MOCalculation extends QuantumCalculation implements
       return;
     }
     if (doDebug)
-      dumpInfo("S ");
+      dumpInfo(JmolConstants.SHELL_S, dfCoefMaps[0]);
 
+    float norm;
+    if (doNormalize) {
+      // (8 alpha^3/pi^3)^0.25 exp(-alpha r^2)
+      norm = 0.712705470f; // (8/pi^3)^0.25
+      if (nwChemMode) {
+        //norm;
+      } else {
+        // 
+      }
+    } else {
+      norm = 1;
+    }
+   
     float m1 = moCoefficients[moCoeff++];
     for (int ig = 0; ig < nGaussians; ig++) {
       float alpha = gaussians[gaussianPtr + ig][0];
       float c1 = gaussians[gaussianPtr + ig][1];
-      // (2 alpha^3/pi^3)^0.25 exp(-alpha r^2)
-      float a = m1 * c1;
+      float a = norm * m1 * c1;
       if (doNormalize)
-        a *= (float) Math.pow(alpha, 0.75) * 0.712705470f;
+        a *= (float) Math.pow(alpha, 0.75);
       // the coefficients are all included with the X factor here
-
       for (int i = xMax; --i >= xMin;) {
         EX[i] = a * (float) Math.exp(-X2[i] * alpha);
       }
@@ -438,7 +454,7 @@ public class MOCalculation extends QuantumCalculation implements
     float ms, mx, my, mz;
     if (c1 == 0) {
       if (doDebug)
-        dumpInfo("X Y Z ");
+        dumpInfo(JmolConstants.SHELL_P, map);
       ms = 0;      
     } else {
       if (doDebug)
@@ -558,6 +574,19 @@ public class MOCalculation extends QuantumCalculation implements
     float mxy = moCoefficients[map[3] + moCoeff++];
     float mxz = moCoefficients[map[4] + moCoeff++];
     float myz = moCoefficients[map[5] + moCoeff++];
+    float norm1, norm2;
+    if (doNormalize) {
+      norm1 = 2.8508219178923f;
+      if (nwChemMode) {
+        norm2 = norm1;// / ROOT3;//norm1 * ROOT3 * ROOT3;
+        norm1 /= ROOT3;
+      } else {
+        norm2 = norm1 / ROOT3;
+      }
+    } else {
+      norm2 = 1 / ROOT3;
+      norm1 = 1;
+    }
     for (int ig = 0; ig < nGaussians; ig++) {
       float alpha = gaussians[gaussianPtr + ig][0];
       float c1 = gaussians[gaussianPtr + ig][1];
@@ -565,13 +594,13 @@ public class MOCalculation extends QuantumCalculation implements
       // xy|xz|yz: (2048 alpha^7/pi^3)^0.25 [xy|xz|yz]exp(-alpha r^2)
       float a = c1;
       if (doNormalize)
-        a *= (float) Math.pow(alpha, 1.75) * 2.8508219178923f;
-      float axx = a / ROOT3 * mxx;
-      float ayy = a / ROOT3 * myy;
-      float azz = a / ROOT3 * mzz;
-      float axy = a * mxy;
-      float axz = a * mxz;
-      float ayz = a * myz;
+        a *= (float) Math.pow(alpha, 1.75);
+      float axy = a * norm1 * mxy;
+      float axz = a * norm1 * mxz;
+      float ayz = a * norm1 * myz;
+      float axx = a * norm2 * mxx;
+      float ayy = a * norm2 * myy;
+      float azz = a * norm2 * mzz;
       setCE(CX, EX, alpha, 0, axx, ayy, azz);
 
       for (int i = xMax; --i >= xMin;) {
@@ -1105,35 +1134,19 @@ public class MOCalculation extends QuantumCalculation implements
     return true;
   }
 
-  private void dumpInfo(String info) {
-    for (int ig = 0; ig < nGaussians; ig++) {
-      float alpha = gaussians[gaussianPtr + ig][0];
-      float c1 = gaussians[gaussianPtr + ig][1];
-      if (Logger.debugging) {
-        Logger.debug("Gaussian " + (ig + 1) + " alpha=" + alpha + " c=" + c1);
-      }
-    }
-    int n = info.length() / 2;
-    if (Logger.debugging) {
-      for (int i = 0; i < n; i++)
-        Logger.debug("MO coeff " + info.substring(2 * i, 2 * i + 2) + " "
-            + (moCoeff + i + 1) + " " + moCoefficients[moCoeff + i]);
-    }
-    return;
-  }
-
   private void dumpInfo(int shell, int[] map) {
-    for (int ig = 0; ig < nGaussians; ig++) {
-      float alpha = gaussians[gaussianPtr + ig][0];
-      float c1 = gaussians[gaussianPtr + ig][1];
-      Logger.debug("Gaussian " + (ig + 1) + " alpha=" + alpha + " c=" + c1);
-    }
-    if (shell >= 0 && Logger.debugging) {
-      String[] so = JmolConstants.getShellOrder(shell);
-      for (int i = 0; i < so.length; i++)
-        Logger.debug(thisAtom + " MO coeff " + (so == null ? "?" + i  : so[i]) + " " + (map[i] + moCoeff + i + 1) + " "
-            + moCoefficients[map[i] + moCoeff + i]);
-    }
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUGHIGH))
+      for (int ig = 0; ig < nGaussians; ig++) {
+        float alpha = gaussians[gaussianPtr + ig][0];
+        float c1 = gaussians[gaussianPtr + ig][1];
+        Logger.debug("\t\t\tGaussian " + (ig + 1) + " alpha=" + alpha + " c="
+            + c1);
+      }
+    String[] so = JmolConstants.getShellOrder(shell);
+    for (int i = 0; i < so.length; i++)
+      Logger.debug("MO coeff " + (so == null ? "?" + i : so[i]) + " "
+          + (map[i] + moCoeff + i + 1) + "\t"
+          + moCoefficients[map[i] + moCoeff + i] + "\t" + thisAtom.atom);
   }
 
 }

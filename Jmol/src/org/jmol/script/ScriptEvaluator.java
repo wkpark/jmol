@@ -16205,6 +16205,10 @@ public class ScriptEvaluator {
           i++;
         }
         break;
+      case Token.mrc:
+        addShapeProperty(propertyList, "fileType", "MRC");
+        sbCommand.append(" mrc");
+        continue;
       case Token.object:
       case Token.obj:
         addShapeProperty(propertyList, "fileType", "Obj");

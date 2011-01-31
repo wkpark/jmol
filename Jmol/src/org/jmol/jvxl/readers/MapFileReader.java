@@ -131,7 +131,7 @@ abstract class MapFileReader extends VolumeFileReader {
      This is because our x is the slowest running variable.
     */               
         
-      vectors[0] = new Point3f(1, 0, 0);
+    vectors[0] = new Point3f(1, 0, 0);
     vectors[1] = new Point3f(0, 1, 0);
     vectors[2] = new Point3f(0, 0, 1);
     unitCell.toCartesian(vectors[0], false);

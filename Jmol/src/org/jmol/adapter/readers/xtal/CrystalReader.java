@@ -95,7 +95,7 @@ public class CrystalReader extends AtomSetCollectionReader {
   private boolean haveCharges;
   private boolean isFreqCalc;
   private boolean inputOnly;
-  private boolean islongMode;
+  private boolean isLongMode;
   private int atomCount;
   private int[] atomFrag;
   private boolean getLastConventional;
@@ -211,8 +211,8 @@ public class CrystalReader extends AtomSetCollectionReader {
       readLine();
       if (line.startsWith(" ********"))
         discardLinesUntilContains("SYMMETRY ALLOWED");
-      if (line.startsWith(" TTTTTTTT"))
-        discardLinesUntilContains("PREDICTED ENERGY CHANGE");
+      else if (line.startsWith(" TTTTTTTT"))
+        discardLinesUntilContains("PREDICTED ENERGY CHANGE", "HHHHHHH");
       return true;
     }
 
@@ -227,18 +227,11 @@ public class CrystalReader extends AtomSetCollectionReader {
     if (line.startsWith(" TOTAL ATOMIC CHARGES"))
       return readTotalAtomicCharges();
 
-    if (addVibrations
-        && line
-        .indexOf("* CALCULATION OF PHONON FREQUENCIES AT THE GAMMA POINT.") >= 0) {
+    if (addVibrations && line.indexOf("EIGENVALUES (EV) OF THE MASS") >= 0
+        || line.indexOf("LONGITUDINAL OPTICAL (LO)") >= 0) {
       if (vInputCoords != null)
         processInputCoords();
-      return readFrequencies();
-    }
-
-    if (addVibrations && line.indexOf("LONGITUDINAL OPTICAL (LO)") >= 0) {
-      if (vInputCoords != null)
-        processInputCoords();
-      islongMode = true;
+      isLongMode = (line.indexOf("LONGITUDINAL OPTICAL (LO)") >= 0);
       return readFrequencies();
     }
 
@@ -301,7 +294,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       mp.getColumn(1, b);
     }
     matUnitCellOrientation = Quaternion.getQuaternionFrame(new Point3f(), a, b)
-    .getMatrix();
+        .getMatrix();
     Logger.info("oriented unit cell is in model "
         + atomSetCollection.getAtomSetCount());
     return true;
@@ -418,7 +411,7 @@ public class CrystalReader extends AtomSetCollectionReader {
   }
 
   private void setData(String name, String data, int pt, int dp)
-  throws Exception {
+      throws Exception {
     if (vInputCoords != null)
       processInputCoords();
     String[] s = new String[atomCount];
@@ -582,7 +575,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       if (iPrim >= 0)
         primitiveToIndex[iPrim] = i;
     }
-    System.out.println(nPrim + " primitive atoms " + vInputCoords.size()
+    Logger.info(nPrim + " primitive atoms " + vInputCoords.size()
         + " conventionalAtoms");
     return true;
   }
@@ -603,7 +596,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     readLine();
     int i = atomIndexLast;
     boolean doNormalizePrimitive = isPrimitive && !isMolecular && !isPolymer
-    && !isSlab && (!doApplySymmetry || latticeCells[2] != 0);
+        && !isSlab && (!doApplySymmetry || latticeCells[2] != 0);
     atomIndexLast = atomSetCollection.getAtomCount();
     while (readLine() != null && line.length() > 0 && line.indexOf("=") < 0) {
       Atom atom = atomSetCollection.addNewAtom();
@@ -634,7 +627,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     String atomName = s;
     if (atomName.length() > 1 && Character.isLetter(atomName.charAt(1)))
       atomName = atomName.substring(0, 1)
-      + Character.toLowerCase(atomName.charAt(1)) + atomName.substring(2);
+          + Character.toLowerCase(atomName.charAt(1)) + atomName.substring(2);
     return atomName;
   }
 
@@ -744,7 +737,7 @@ public class CrystalReader extends AtomSetCollectionReader {
         int iConv = getAtomIndexFromPrimitiveIndex(iPrim);
         if (iConv >= 0)
           atoms[i0 + iConv].partialCharge = parseFloat(line.substring(9, 11))
-          - parseFloat(line.substring(12, 18));
+              - parseFloat(line.substring(12, 18));
         iPrim++;
       }
     return true;
@@ -813,38 +806,58 @@ public class CrystalReader extends AtomSetCollectionReader {
   private float[] frequencies;
   private String[] data;
 
+  /* 
+   * Transverse:
+   * 
+  0         1         2         3         4         5         6         7         
+  01234567890123456789012345678901234567890123456789012345678901234567890123456789
+      MODES          EV           FREQUENCIES     IRREP  IR   INTENS    RAMAN
+                    (AU)      (CM**-1)     (THZ)             (KM/MOL)
+      1-   1   -0.00004031    -32.6352   -0.9784  (A2 )   I (     0.00)   A
+      2-   2   -0.00003920    -32.1842   -0.9649  (B2 )   A (  6718.50)   A
+      3-   3   -0.00000027     -2.6678   -0.0800  (A1 )   A (     3.62)   A
+   * 
+   * Longitudinal:
+   * 
+   *
+  0         1         2         3         4         5         6         7         
+  01234567890123456789012345678901234567890123456789012345678901234567890123456789
+      MODES         EIGV          FREQUENCIES    IRREP IR INTENS       SHIFTS
+               (HARTREE**2)   (CM**-1)     (THZ)       (KM/MOL)  (CM**-1)   (THZ)
+      4-   6    0.2370E-06    106.8457    3.2032 (F1U)     40.2    7.382   0.2213
+     16-  18    0.4250E-06    143.0817    4.2895 (F1U)    181.4   14.234   0.4267
+     31-  33    0.5848E-06    167.8338    5.0315 (F1U)     24.5    1.250   0.0375
+     41-  43    0.9004E-06    208.2551    6.2433 (F1U)    244.7   10.821   0.3244
+   */
   private boolean readFrequencies() throws Exception {
-    discardLinesUntilContains(islongMode ? "LONGITUDINAL OPTICAL (LO)"
-        : "EIGENVALUES (EIGV) OF THE MASS ");
-    discardLinesUntilContains(isVersion3 ? "MODES          EV"
-        : "MODES         EIGV");
+    energy = null; // don't set energy for these models
+    discardLinesUntilContains("MODES");
+    boolean haveIntensities = (line.indexOf("INTENS") >= 0);
     readLine();
     List<String[]> vData = new ArrayList<String[]>();
     int freqAtomCount = atomCount;
     while (readLine() != null && line.length() > 0) {
       int i0 = parseInt(line.substring(1, 5));
       int i1 = parseInt(line.substring(6, 10));
-      String irrep = line.substring(49, 52).trim();
-      String intens = line.substring(59, 69).replace(')', ' ').trim();
+      String irrep = (isLongMode ? line.substring(48, 51) : line.substring(49,
+          52)).trim();
+      String intens = (!haveIntensities ? "not available" : 
+        (isLongMode ? line.substring(53, 61) 
+            : line.substring(59, 69).replace(')', ' ')).trim());
 
       // not all crystal calculations include intensities values
       // this feature is activated when the keyword INTENS is on the input
-      if (intens == null)
-        intens = "not available";
 
-      String irActivity = line.substring(55, 58).trim();
-      String ramanActivity = line.substring(71, 73).trim();
+      String irActivity = (isLongMode ? "A" : line.substring(55, 58).trim());
+      String ramanActivity = (isLongMode ? "I" : line.substring(71, 73).trim());
 
       String[] data = new String[] { irrep, intens, irActivity, ramanActivity };
       for (int i = i0; i <= i1; i++)
         vData.add(data);
     }
-    if (islongMode) {
-      discardLinesUntilContains("LO MODES FOR IRREP");
-    } else {
-      discardLinesUntilContains(isVersion3 ? "THE CORRESPONDING MODES"
-          : "NORMAL MODES NORMALIZED TO CLASSICAL AMPLITUDES");
-    }
+    discardLinesUntilContains(isLongMode ? "LO MODES FOR IRREP"
+        : isVersion3 ? "THE CORRESPONDING MODES"
+            : "NORMAL MODES NORMALIZED TO CLASSICAL AMPLITUDES");
     readLine();
     int lastAtomCount = -1;
     while (readLine() != null && line.startsWith(" FREQ(CM**-1)")) {
@@ -861,8 +874,9 @@ public class CrystalReader extends AtomSetCollectionReader {
       }
       boolean[] ignore = new boolean[frequencyCount];
       int iAtom0 = 0;
+      int nData = vData.size();
       for (int i = 0; i < frequencyCount; i++) {
-        data = vData.get(vibrationNumber);
+        data = vData.get(vibrationNumber % nData);
         ignore[i] = (!doGetVibration(++vibrationNumber) || data == null);
         if (ignore[i])
           continue;
@@ -880,7 +894,6 @@ public class CrystalReader extends AtomSetCollectionReader {
   }
 
   private void setFreqValue(int i) {
-    String headingFreq = "";
     String activity = "IR: " + data[2] + ", Ram.: " + data[3];
     atomSetCollection.setAtomSetFrequency(null, activity, "" + frequencies[i],
         null);
@@ -888,9 +901,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     atomSetCollection.setAtomSetProperty("vibrationalSymmetry", data[0]);
     atomSetCollection.setAtomSetProperty("IRactivity", data[2]);
     atomSetCollection.setAtomSetProperty("Ramanactivity", data[3]);
-    if (islongMode)
-      headingFreq = "LO ";
-    atomSetCollection.setAtomSetName(headingFreq + data[0] + " "
+    atomSetCollection.setAtomSetName((isLongMode ? "LO " : "") + data[0] + " "
         + TextFormat.formatDecimal(frequencies[i], 2) + " cm-1 ("
         + TextFormat.formatDecimal(Float.parseFloat(data[1]), 0)
         + " km/Mole), " + activity);

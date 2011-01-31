@@ -157,7 +157,7 @@ class ObjReader extends PmeshReader {
           if (vertexCount == 4) {
             id = Parser.parseInt(tokens[4]) - 1;
             boolean isOK = (bsOK.get(id));
-            nTriangles = addTriangleCheck(ia, ib, ic, (isOK ? 5 : 7), 0, false, color);
+            nTriangles = addTriangleCheck(ia, ib, ic, (isOK ? 3 : 7), 0, false, color);
             if (isOK)
               nTriangles = addTriangleCheck(ia, ic, id, 6, 0, false, color);
             continue;

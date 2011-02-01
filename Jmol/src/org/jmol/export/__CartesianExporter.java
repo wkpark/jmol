@@ -140,10 +140,10 @@ abstract public class __CartesianExporter extends ___Exporter {
   }
 
   protected void outputIndices(int[][] indices, int[] map, int nPolygons,
-                                       BitSet bsFaces, int faceVertexMax) {
-    boolean isAll = (bsFaces == null);
-    int i0 = (isAll ? nPolygons - 1 : bsFaces.nextSetBit(0));
-    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsFaces.nextSetBit(i + 1))) 
+                                       BitSet bsPolygons, int faceVertexMax) {
+    boolean isAll = (bsPolygons == null);
+    int i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit(0));
+    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsPolygons.nextSetBit(i + 1))) 
       outputFace(indices[i], map, faceVertexMax);
   }
   

@@ -291,9 +291,9 @@ public class _VrmlExporter extends __CartesianExporter {
   protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
                                short[] colixes, int[][] indices,
                                short[] polygonColixes,
-                               int nVertices, int nPolygons, int nFaces, BitSet bsFaces,
+                               int nVertices, int nPolygons, int nFaces, BitSet bsPolygons,
                                int faceVertexMax, short colix,
-                               List<Short> colorList, Map<String, String> htColixes, Point3f offset) {
+                               List<Short> colorList, Map<Short, Integer> htColixes, Point3f offset) {
     output("Shape {\n");
     outputAppearance(colix, false);
     output(" geometry IndexedFaceSet {\n");
@@ -310,7 +310,7 @@ public class _VrmlExporter extends __CartesianExporter {
     output("  coordIndex [\n");
     int[] map = new int[nVertices];
     getCoordinateMap(vertices, map);
-    outputIndices(indices, map, nPolygons, bsFaces, faceVertexMax);
+    outputIndices(indices, map, nPolygons, bsPolygons, faceVertexMax);
     output("  ]\n");
 
     // normals
@@ -323,7 +323,7 @@ public class _VrmlExporter extends __CartesianExporter {
       output("   ]\n");
       output("  }\n");
       output("  normalIndex [\n");
-      outputIndices(indices, map, nPolygons, bsFaces, faceVertexMax);
+      outputIndices(indices, map, nPolygons, bsPolygons, faceVertexMax);
       output("  ]\n");
     }
 
@@ -336,7 +336,7 @@ public class _VrmlExporter extends __CartesianExporter {
       outputColors(colorList);
       output("  ] } \n");
       output("  colorIndex [\n");
-      outputColorIndices(indices, nPolygons, bsFaces, faceVertexMax, htColixes, colixes, polygonColixes);
+      outputColorIndices(indices, nPolygons, bsPolygons, faceVertexMax, htColixes, colixes, polygonColixes);
       output("  ]\n");
     }
 
@@ -368,22 +368,22 @@ public class _VrmlExporter extends __CartesianExporter {
     }
   }
 
-  protected void outputColorIndices(int[][] indices, int nPolygons, BitSet bsFaces,
-                                  int faceVertexMax, Map<String, String> htColixes,
+  protected void outputColorIndices(int[][] indices, int nPolygons, BitSet bsPolygons,
+                                  int faceVertexMax, Map<Short, Integer> htColixes,
                                   short[] colixes, short[] polygonColixes) {
-    boolean isAll = (bsFaces == null);
-    int i0 = (isAll ? nPolygons - 1 : bsFaces.nextSetBit(0));
-    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsFaces.nextSetBit(i + 1))) {
+    boolean isAll = (bsPolygons == null);
+    int i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit(0));
+    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsPolygons.nextSetBit(i + 1))) {
       if (polygonColixes == null) {
-        output(htColixes.get("" + colixes[indices[i][0]]) + " "
-            + htColixes.get("" + colixes[indices[i][1]]) + " "
-            + htColixes.get("" + colixes[indices[i][2]]) + " -1\n");
+        output(htColixes.get(Short.valueOf(colixes[indices[i][0]])) + " "
+            + htColixes.get(Short.valueOf(colixes[indices[i][1]])) + " "
+            + htColixes.get(Short.valueOf(colixes[indices[i][2]])) + " -1\n");
         if (faceVertexMax == 4 && indices[i].length == 4)
-          output(htColixes.get("" + colixes[indices[i][0]]) + " "
-              + htColixes.get("" + colixes[indices[i][2]]) + " "
-              + htColixes.get("" + colixes[indices[i][3]]) + " -1\n");
+          output(htColixes.get(Short.valueOf(colixes[indices[i][0]])) + " "
+              + htColixes.get(Short.valueOf(colixes[indices[i][2]])) + " "
+              + htColixes.get(Short.valueOf(colixes[indices[i][3]])) + " -1\n");
       } else {
-        output(htColixes.get("" + polygonColixes[i]) + "\n");
+        output(htColixes.get(Short.valueOf(polygonColixes[i])) + "\n");
       }
     }
   }

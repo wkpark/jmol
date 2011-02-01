@@ -249,13 +249,13 @@ public class _TachyonExporter extends __RayTracerExporter {
   protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
                                short[] colixes, int[][] indices,
                                short[] polygonColixes, int nVertices,
-                               int nPolygons, int nFaces, BitSet bsFaces,
+                               int nPolygons, int nFaces, BitSet bsPolygons,
                                int faceVertexMax, short colix,
-                               List<Short> colorList, Map<String, String> htColixes, Point3f offset) {
+                               List<Short> colorList, Map<Short, Integer> htColixes, Point3f offset) {
     if (polygonColixes != null) {
-      boolean isAll = (bsFaces == null);
-      int i0 = (isAll ? nPolygons - 1 : bsFaces.nextSetBit(0));
-      for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsFaces.nextSetBit(i + 1))) {
+      boolean isAll = (bsPolygons == null);
+      int i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit(0));
+      for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsPolygons.nextSetBit(i + 1))) {
         setTempVertex(vertices[indices[i][0]], offset, tempP1);
         setTempVertex(vertices[indices[i][1]], offset, tempP2);
         setTempVertex(vertices[indices[i][2]], offset, tempP3);
@@ -282,9 +282,9 @@ public class _TachyonExporter extends __RayTracerExporter {
     }
     outputTextureCode();
     output("\nTriMesh " + nFaces + "\n");
-    boolean isAll = (bsFaces == null);
-    int i0 = (isAll ? nPolygons - 1 : bsFaces.nextSetBit(0));
-    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsFaces.nextSetBit(i + 1))) {
+    boolean isAll = (bsPolygons == null);
+    int i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit(0));
+    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsPolygons.nextSetBit(i + 1))) {
       output(indices[i][0] + " " + indices[i][1] + " " + indices[i][2] + "\n");
       if (faceVertexMax == 4 && indices[i].length == 4)
         output(indices[i][0] + " " + indices[i][2] + " " + indices[i][3] + "\n");

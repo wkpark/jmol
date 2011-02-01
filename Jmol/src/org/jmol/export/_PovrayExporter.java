@@ -373,13 +373,13 @@ public class _PovrayExporter extends __RayTracerExporter {
   protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
                                   short[] colixes, int[][] indices, 
                                   short[] polygonColixes,
-                                  int nVertices, int nPolygons, int nFaces, BitSet bsFaces,
+                                  int nVertices, int nPolygons, int nFaces, BitSet bsPolygons,
                                   int faceVertexMax, short colix,
-                                  List<Short> colorList, Map<String, String> htColixes, Point3f offset) {
+                                  List<Short> colorList, Map<Short, Integer> htColixes, Point3f offset) {
     if (polygonColixes != null) {
-      boolean isAll = (bsFaces == null);
-      int i0 = (isAll ? nPolygons - 1 : bsFaces.nextSetBit(0));
-      for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsFaces.nextSetBit(i + 1))) {
+      boolean isAll = (bsPolygons == null);
+      int i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit(0));
+      for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsPolygons.nextSetBit(i + 1))) {
         //if ((p++) % 10 == 0)
         //  output("\n");
         output("polygon { 4\n"); 
@@ -424,9 +424,9 @@ public class _PovrayExporter extends __RayTracerExporter {
       output("\n}\n");
     }
     output("face_indices { " + nFaces);
-    boolean isAll = (bsFaces == null);
-    int i0 = (isAll ? nPolygons - 1 : bsFaces.nextSetBit(0));
-    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsFaces.nextSetBit(i + 1))) {
+    boolean isAll = (bsPolygons == null);
+    int i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit(0));
+    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsPolygons.nextSetBit(i + 1))) {
       output(", <" + triad(indices[i]) + ">");
       if (colixes != null) {
         output("," + htColixes.get("" + colixes[indices[i][0]]));

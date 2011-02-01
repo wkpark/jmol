@@ -343,59 +343,41 @@ public class _ObjExporter extends __CartesianExporter {
   protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
                                short[] colixes, int[][] indices,
                                short[] polygonColixes, int nVertices,
-                               int nPolygons, int nFaces, BitSet bsFaces,
+                               int nPolygons, int nFaces, BitSet bsPolygons,
                                int faceVertexMax, short colix,
                                List<Short> colorList,
-                               Map<String, String> htColixes, Point3f offset) {
+                               Map<Short, Integer> htColixes, Point3f offset) {
     debugPrint("outputSurface");
-    if (vertices == null) {
-      debugPrint("  nVertices=" + "null");
-    } else {
-      debugPrint("  nVertices=" + vertices.length);
-      if (debug) {
-        int nNonNull = 0;
-        for (Tuple3f vertex : vertices) {
-          if (vertex != null) {
-            nNonNull++;
-          }
-        }
-        debugPrint("    nNonNull=" + nNonNull);
-      }
-    }
+    debugPrint("  nVertices=" + nVertices);
     if (normals == null) {
-      debugPrint("  nNormals=" + "null");
+      debugPrint("  no vertex normals");
     } else {
-      debugPrint("  nNormals=" + normals.length);
+      debugPrint("  nNormals=" + nVertices);
     }
     if (colixes == null) {
-      debugPrint("  nColixes=" + "null");
+      debugPrint("  no vertex colors");
     } else {
-      debugPrint("  nColixes=" + colixes.length);
+      debugPrint("  nColixes=" + nVertices);
     }
-    if (indices == null) {
-      debugPrint("  nIndices=" + "null");
-    } else {
-      debugPrint("  nIndices=" + indices.length);
-    }
+    debugPrint("  number of triangles or quads=" + nPolygons);
     if (polygonColixes == null) {
-      debugPrint("  nPolygonColixes=" + "null");
+      debugPrint("  no face colors");
     } else {
-      debugPrint("  nPolygonColixes=" + polygonColixes.length);
+      debugPrint("  nPolygonColixes=" + nPolygons);
     }
-    debugPrint("  nPolygons=" + nPolygons + " nFaces=" + nFaces
-        + " faceVertexMax=" + faceVertexMax);
-    if (bsFaces == null) {
-      debugPrint("  nBsFaces=" + "null");
+    debugPrint("  triangular face count=" + nFaces + " faceVertexMax="
+        + faceVertexMax);
+    if (bsPolygons == null) {
+      debugPrint("  all polygons used");
     } else {
-      debugPrint("  nBsFaces=" + bsFaces.size());
+      debugPrint("  number of polygons used=" + bsPolygons.cardinality());
     }
-    debugPrint("  colix=" + colix);
+    debugPrint("  solid color=" + g3d.getColorArgbOrGray(colix));
     if (colorList == null) {
-      debugPrint("  ncolorList=" + "null");
+      debugPrint("  no color list");
     } else {
-      debugPrint("  ncolorList=" + colorList.size());
+      debugPrint("  color list size=" + colorList.size());
     }
-
     boolean haveFaceColors = (polygonColixes != null);
     if (haveFaceColors) {
       // TODO
@@ -407,83 +389,19 @@ public class _ObjExporter extends __CartesianExporter {
       return;
     }
 
-    // Find non-null vertices
-    // FIXME Don't need the first loop if it is guaranteed
-    // only the first nVertices elements are used.  Then nNonNull = nVertices.
-    int nUsed = 0;
-    for (Tuple3f vertex : vertices) {
-      if (vertex != null) {
-        nUsed++;
-      }
+    // Create reduced face set
+    boolean isAll = (bsPolygons == null);
+    int[][] faces = new int[isAll ? nPolygons : bsPolygons.cardinality()][];
+    int i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit(0));
+    for (int i = i0, ipt = 0; i >= 0; i = isAll ? i - 1 : bsPolygons
+        .nextSetBit(i + 1)) {
+      int[] polygon = indices[i];
+      faces[ipt++] = (faceVertexMax == polygon.length ? polygon : new int[] {
+          polygon[0], polygon[1], polygon[2] });
     }
-    Tuple3f[] vertices1 = new Tuple3f[nUsed];
-    nUsed = 0;
-    for (Tuple3f vertex : vertices) {
-      if (vertex != null) {
-        vertices1[nUsed++] = vertex;
-      }
-    }
-
-    // Find non-null normals
-    // Apparently the number of normals is expected to be the same as the number
-    // of vertices
-    // FIXME Don't need the first loop if it is guaranteed
-    // only the first nVertices elements are used.  Then nNonNull = nVertices.
-    nUsed = 0;
-    for (Vector3f normal : normals) {
-      if (normal != null) {
-        nUsed++;
-      }
-    }
-    Vector3f[] normals1 = new Vector3f[nUsed];
-    nUsed = 0;
-    for (Vector3f normal : normals) {
-      if (normal != null) {
-        normals1[nUsed++] = normal;
-      }
-    }
-
-    // Find used faces
-    boolean isAll = (bsFaces == null);
-    // If bsFaces is null, loop over nPolygons, else use flags in bsFaces
-    int[] face;
-    nUsed = 0;
-    for (int i = isAll ? 0 : bsFaces.nextSetBit(0); i >= 0; i = isAll ? nPolygons - 1
-        : bsFaces.nextSetBit(i + 1)) {
-      face = indices[i];
-      nUsed++;
-      // Apparently there may be a second face
-      // TODO Check this logic
-      if (faceVertexMax == 3 || face.length != 4) {
-        continue;
-      }
-      nUsed++;
-    }
-    int[][] faces1 = new int[nUsed][3];
-    nUsed = 0;
-    for (int i = isAll ? 0 : bsFaces.nextSetBit(0); i >= 0; i = isAll ? nPolygons - 1
-        : bsFaces.nextSetBit(i + 1)) {
-      face = indices[i];
-      // Don't use, there are hundreds of thousands of these
-      // debugPrint("outputFace");
-      faces1[nUsed][0] = face[0];
-      faces1[nUsed][1] = face[1];
-      faces1[nUsed][2] = face[2];
-      nUsed++;
-      // Apparently there may be a second face
-      // TODO Check this logic
-      if (faceVertexMax == 3 || face.length != 4) {
-        continue;
-      }
-      faces1[nUsed][0] = face[0];
-      faces1[nUsed][1] = face[2];
-      faces1[nUsed][2] = face[3];
-      nUsed++;
-    }
-    Data data = new Data(faces1, vertices1, normals1);
-    debugPrint("  Used " + vertices1.length + " vertices");
-    debugPrint("  Used " + normals1.length + " normals");
-    debugPrint("  Used " + faces1.length + " faces");
+    Data data = new Data(faces, vertices, nVertices,
+        normals == null ? new Point3f[0] : normals, normals == null ? 0
+            : nVertices);
 
     // Assume there is no transformation
     Matrix4f matrix = new Matrix4f();
@@ -505,9 +423,9 @@ public class _ObjExporter extends __CartesianExporter {
     } else {
       // Determine the height and width of an image file that is as close to
       // square as possible 
-      int width = (int) Math.ceil(Math.sqrt(nUsed));
-      int height = nUsed / width;
-      if (nUsed % width != 0) {
+      int width = (int) Math.ceil(Math.sqrt(nFaces));
+      int height = nFaces / width;
+      if (nFaces % width != 0) {
         height++;
       }
       dim = new Point(width, height);
@@ -982,75 +900,69 @@ public class _ObjExporter extends __CartesianExporter {
     output("\n" + "g " + name + "\n");
     output("usemtl " + getTextureName(colix) + "\n");
 
-    int nVertices = data.getVertexes().length;
-    int nNormals = data.getNormals().length;
-    int nFaces = data.getFaces().length;
+    int[][] faces = data.getFaces();
+    int nFaces = faces.length;
+    Tuple3f[] vertices = data.getVertexes();
+    int nVertices = data.getVertexCount();
+    Tuple3f[] normals = data.getNormals();
+    int nNormals = data.getNormalCount();
 
-    Point3f p0;
-    Vector3f v0;
     output("# Number of vertices: " + nVertices + "\n");
-    for (Tuple3f vertex : data.getVertexes()) {
-      p0 = new Point3f(vertex);
-      matrix.transform(p0);
-      output("v " + p0.x + " " + p0.y + " " + p0.z + "\n");
-    }
+    outputList(vertices, nVertices, matrix, "v ");
     output("# Number of normals: " + nNormals + "\n");
-    for (Tuple3f normal : data.getNormals()) {
-      v0 = new Vector3f(normal);
-      matrix.transform(v0);
-      output("vn " + v0.x + " " + v0.y + " " + v0.z + "\n");
-    }
-    int iFace = 0;
+    outputList(normals, nNormals, matrix, "vn ");    
     if (dim != null) {
       // This needs to be kept correlated with what createTextureFile does
       output("# Number of texture coordinates: " + nFaces + "\n");
       int width = dim.x;
       int height = dim.y;
-      int[] face = null;
       float u, v;
-      for (int row = 0; row < height; row++) {
+      for (int row = 0, iFace = 0; row < height && iFace < nFaces; row++) {
         v = row + .5f;
-        if (normalizeUV) {
+        if (normalizeUV)
           v /= height;
-        }
-        for (int col = 0; col < width; col++) {
-          face = data.getFaces()[iFace++];
-          nVertices = face.length;
+        for (int col = 0; col < width && iFace < nFaces; col++, iFace++) {
           u = col + .5f;
-          if (normalizeUV) {
+          if (normalizeUV)
             u /= width;
-          }
           output("vt " + u + " " + v + "\n");
-          // Stop if all faces are done
-          if (iFace >= nFaces) {
-            break;
-          }
         }
       }
       if (!normalizeUV) {
         // Be sure there are values to denote the limits of the UV mesh
         output("vt 0.0 0.0\n");
         output("vt " + (float) width + " " + (float) height + "\n");
-        iFace += 2;
       }
     }
-    output("# Number of faces: " + iFace + "\n");
-    int[][] faces = data.getFaces();
-    for (int i = 0; i < nFaces; i++) {
-      if (dim != null) {
+    output("# Number of faces: " + nFaces + "\n");
+    for (int i = 0; i < nFaces; i++)
+      if (dim != null)
         outputFace2(faces[i], i);
-      } else {
+      else
         outputFace1(faces[i]);
-      }
-    }
 
-    // Increase the the current numbering start points  for the vertices,
+    // Increase the the current numbering start points for the vertices,
     // textures, and normals
-    if (dim != null) {
-      currentTextureOrigin += iFace;
-    }
+    if (dim != null)
+      currentTextureOrigin += nFaces;
     currentVertexOrigin += nVertices;
     currentNormalOrigin += nNormals;
+  }
+
+  /**
+   * create the v or vn list
+   * 
+   * @param pts  
+   * @param nPts
+   * @param m
+   * @param prefix
+   */
+  private void outputList(Tuple3f[] pts, int nPts, Matrix4f m, String prefix) {
+    for (int i = 0; i < nPts; i++) {
+      tempP1.set(pts[i]);
+      m.transform(tempP1);
+      output(prefix + tempP1.x + " " + tempP1.y + " " + tempP1.z + "\n");
+    }
   }
 
   /**

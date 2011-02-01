@@ -798,9 +798,9 @@ public class _IdtfExporter extends __CartesianExporter {
   protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
                                short[] colixes, int[][] indices,
                                short[] polygonColixes, int nVertices,
-                               int nPolygons, int nFaces, BitSet bsFaces,
+                               int nPolygons, int nFaces, BitSet bsPolygons,
                                int faceVertexMax, short colix,
-                               List<Short> colorList, Map<String, String> htColixes,
+                               List<Short> colorList, Map<Short, Integer> htColixes,
                                Point3f offset) {
     addColix(colix, polygonColixes != null || colixes != null);
     if (polygonColixes != null) {
@@ -813,7 +813,7 @@ public class _IdtfExporter extends __CartesianExporter {
     StringBuffer sbFaceCoordIndices = sbTemp = new StringBuffer();
     int[] map = new int[nVertices];
     int nCoord = getCoordinateMap(vertices, map);
-    outputIndices(indices, map, nPolygons, bsFaces, faceVertexMax);
+    outputIndices(indices, map, nPolygons, bsPolygons, faceVertexMax);
 
     // normals, part 1
 
@@ -822,7 +822,7 @@ public class _IdtfExporter extends __CartesianExporter {
     if (normals != null) {
       vNormals = new ArrayList<String>();
       map = getNormalMap(normals, nVertices, vNormals);
-      outputIndices(indices, map, nPolygons, bsFaces, faceVertexMax);
+      outputIndices(indices, map, nPolygons, bsPolygons, faceVertexMax);
     }
 
     map = null;
@@ -831,9 +831,9 @@ public class _IdtfExporter extends __CartesianExporter {
 
     StringBuffer sbColorIndexes = new StringBuffer();
     if (colorList != null) {
-      boolean isAll = (bsFaces == null);
-      int i0 = (isAll ? nPolygons - 1 : bsFaces.nextSetBit(0));
-      for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsFaces.nextSetBit(i + 1))) {
+      boolean isAll = (bsPolygons == null);
+      int i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit(0));
+      for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsPolygons.nextSetBit(i + 1))) {
         if (polygonColixes == null) {
           sbColorIndexes.append(" "
               + htColixes.get("" + colixes[indices[i][0]]) + " "

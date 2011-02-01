@@ -12,48 +12,69 @@ import org.jmol.geodesic.Geodesic;
  * exporters and possibly in other places, as well.<br><br>
  * The meshes implemented are circle, cone, cylinder, and sphere.
  */
-public class MeshData {
+class MeshData {
 
   /**
    * This internal class is a container for the return values of the getXxxData
    * methods.
    */
-  public static class Data {
+  static class Data {
     private int[][] faces;
     private Tuple3f[] vertexes;
     private Tuple3f[] normals;
+    private int nVertices;
+    private int nNormals;
 
     /**
      * Constructor.
      * 
      * @param faces
      * @param vertexes
+     * @param nVertices TODO
      * @param normals
+     * @param nNormals TODO
      */
-    public Data(int[][] faces, Tuple3f[] vertexes, Tuple3f[] normals) {
+    Data(int[][] faces, Tuple3f[] vertexes, int nVertices, Tuple3f[] normals, int nNormals) {
       this.faces = faces;
       this.vertexes = vertexes;
+      this.nVertices = (nVertices == 0 ? vertexes.length : nVertices);
       this.normals = normals;
+      this.nNormals = (nNormals == 0 ? normals.length : nNormals);
     }
 
     /**
      * @return The faces.
      */
-    public int[][] getFaces() {
+    int[][] getFaces() {
       return faces;
     }
 
     /**
      * @return The vertices.
      */
-    public Tuple3f[] getVertexes() {
+    Tuple3f[] getVertexes() {
       return vertexes;
     }
+    
+    /**
+     * @return vertex count
+     */
+    int getVertexCount() {
+      return nVertices;
+    }
+    
+    /**
+     * @return vertex count
+     */
+    int getNormalCount() {
+      return nNormals;
+    }
+    
 
     /**
      * @return The normals.
      */
-    public Tuple3f[] getNormals() {
+    Tuple3f[] getNormals() {
       return normals;
     }
   }
@@ -63,7 +84,7 @@ public class MeshData {
    * 
    * @return The data.
    */
-  public static MeshData.Data getCircleData() {
+  static MeshData.Data getCircleData() {
     int ndeg = 10;
     int n = 360 / ndeg;
     int vertexCount = n + 1;
@@ -81,7 +102,7 @@ public class MeshData {
     }
     vertexes[n] = new Point3f(0, 0, 0);
     normals[n] = new Point3f(0, 0, 1);
-    return new MeshData.Data(faces, vertexes, normals);
+    return new MeshData.Data(faces, vertexes, 0, normals, 0);
   }
 
   /**
@@ -92,7 +113,7 @@ public class MeshData {
    * @param pt3 Vertex 3.
    * @return The data.
    */
-  public static MeshData.Data getTriangleData(Point3f pt1, Point3f pt2,
+  static MeshData.Data getTriangleData(Point3f pt1, Point3f pt2,
                                               Point3f pt3) {
     Point3f[] vertexes = new Point3f[] { pt1, pt2, pt3 };
     Vector3f v1 = new Vector3f();
@@ -105,7 +126,7 @@ public class MeshData {
     v2.normalize();
     Vector3f[] normals = new Vector3f[] { v2, v2, v2 };
     int[][] faces = { { 0, 1, 2 } };
-    return new MeshData.Data(faces, vertexes, normals);
+    return new MeshData.Data(faces, vertexes, 0, normals, 0);
   }
 
   /**
@@ -113,7 +134,7 @@ public class MeshData {
    * 
    * @return The data.
    */
-  public static Data getConeData() {
+  static Data getConeData() {
     int ndeg = 10;
     int n = 360 / ndeg;
     Point3f[] vertices = new Point3f[n + 1];
@@ -127,7 +148,7 @@ public class MeshData {
       vertices[i] = new Point3f(x, y, 0);
     }
     vertices[n] = new Point3f(0, 0, 1);
-    return new Data(faces, vertices, vertices);
+    return new Data(faces, vertices, 0, vertices, 0);
   }
 
   /**
@@ -136,7 +157,7 @@ public class MeshData {
    * @param inSide Whether inside or not.
    * @return The data.
    */
-  public static Data getCylinderData(boolean inSide) {
+  static Data getCylinderData(boolean inSide) {
     int ndeg = 10;
     int vertexCount = 360 / ndeg * 2;
     int n = vertexCount / 2;
@@ -174,7 +195,7 @@ public class MeshData {
     if (inSide)
       for (int i = 0; i < n; i++)
         normals[i].scale(-1);
-    return new Data(faces, vertexes, normals);
+    return new Data(faces, vertexes, 0, normals, 0);
   }
 
   /**
@@ -182,7 +203,7 @@ public class MeshData {
    * 
    * @return The data.
    */
-  public static Data getSphereData() {
+  static Data getSphereData() {
     int vertexCount = Geodesic.getVertexCount(2);
     short[] f = Geodesic.getFaceVertexes(2);
     int nFaces = f.length / 3;
@@ -193,7 +214,7 @@ public class MeshData {
     Vector3f[] vertexes = new Vector3f[vertexCount];
     for (int i = 0; i < vertexCount; i++)
       vertexes[i] = Geodesic.getVertexVector(i);
-    return new Data(faces, vertexes, vertexes);
+    return new Data(faces, vertexes, 0, vertexes, 0);
   }
 
 }

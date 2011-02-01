@@ -381,17 +381,16 @@ public abstract class ___Exporter {
    * @return Vector and HashTable
    */
   protected List<Short> getColorList(int i00, short[] colixes, int nVertices,
-                                BitSet bsSelected, Map<String, String> htColixes) {
-    String color;
+                                BitSet bsSelected, Map<Short, Integer> htColixes) {
     int nColix = 0;
     List<Short> list = new ArrayList<Short>();
     boolean isAll = (bsSelected == null);
     int i0 = (isAll ? nVertices - 1 : bsSelected.nextSetBit(0));
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsSelected.nextSetBit(i + 1))) {
-      color = "" + colixes[i];
+      Short color = Short.valueOf(colixes[i]);
       if (!htColixes.containsKey(color)) {
-        list.add(Short.valueOf(colixes[i]));
-        htColixes.put(color, "" + (i00 + nColix++));
+        list.add(color);
+        htColixes.put(color, Integer.valueOf(i00 + nColix++));
       }
     }
     return list;
@@ -474,34 +473,54 @@ public abstract class ___Exporter {
 
   void drawSurface(int nVertices, int nPolygons, int faceVertexMax,
                       Point3f[] vertices, Vector3f[] normals, short[] colixes,
-                      int[][] indices, short[] polygonColixes, BitSet bsFaces,
+                      int[][] indices, short[] polygonColixes, BitSet bsPolygons,
                       short colix, Point3f offset) {
     if (nVertices == 0)
       return;
     int nFaces = 0;
-    boolean isAll = (bsFaces == null);
-    int i0 = (isAll ? nPolygons - 1 : bsFaces.nextSetBit(0));
-    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsFaces.nextSetBit(i + 1))) 
+    boolean isAll = (bsPolygons == null);
+    int i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit(0));
+    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsPolygons.nextSetBit(i + 1))) 
       nFaces += (faceVertexMax == 4 && indices[i].length == 4 ? 2 : 1);
     if (nFaces == 0)
       return;
-    Map<String, String> htColixes = new Hashtable<String, String>();
+    Map<Short, Integer> htColixes = new Hashtable<Short, Integer>();
     List<Short> colorList = null;
     if (polygonColixes != null)
-      colorList = getColorList(0, polygonColixes, nPolygons, bsFaces, htColixes);
+      colorList = getColorList(0, polygonColixes, nPolygons, bsPolygons, htColixes);
     else if (colixes != null)
       colorList = getColorList(0, colixes, nVertices, null, htColixes);
     outputSurface(vertices, normals, colixes, indices, polygonColixes,
-        nVertices, nPolygons, nFaces, bsFaces, faceVertexMax, colix, colorList,
+        nVertices, nPolygons, nFaces, bsPolygons, faceVertexMax, colix, colorList,
         htColixes, offset);
   }
 
+  /**
+   * @param vertices      generally unique vertices [0:nVertices)
+   * @param normals       one per vertex
+   * @param colixes       one per vertex, or null
+   * @param indices       one per triangular or quad polygon;
+   *                      may have additional elements beyond vertex indices if faceVertexMax = 3
+   *                      triangular if faceVertexMax == 3; 3 or 4 if face VertexMax = 4
+   * @param polygonColixes face-based colixes
+   * @param nVertices      vertices[nVertices-1] is last vertex
+   * @param nPolygons     indices[nPolygons - 1] is last polygon
+   * @param nFaces        number of triangular faces required
+   * @param bsPolygons    number of polygons (triangles or quads)   
+   * @param faceVertexMax (3) triangles only, indices[][i] may have more elements
+   *                      (4) triangles and quads; indices[][i].length determines 
+   * @param colix         overall (solid) color index
+   * @param colorList     list of unique color IDs
+   * @param htColixes     map of color IDs to colorList
+   * @param offset 
+   * 
+   */
   abstract protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
                                 short[] colixes, int[][] indices,
                                 short[] polygonColixes,
-                                int nVertices, int nPolygons, int nFaces, BitSet bsFaces,
+                                int nVertices, int nPolygons, int nFaces, BitSet bsPolygons,
                                 int faceVertexMax, short colix, List<Short> colorList,
-                                Map<String, String> htColixes, Point3f offset);
+                                Map<Short, Integer> htColixes, Point3f offset);
 
   abstract void drawPixel(short colix, int x, int y, int z, int scale); //measures
   

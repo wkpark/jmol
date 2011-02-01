@@ -172,9 +172,9 @@ public class _MayaExporter extends __CartesianExporter {
   protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
                                   short[] colixes, int[][] indices,
                                   short[] polygonColixes,
-                                  int nVertices, int nPolygons, int nFaces, BitSet bsFaces,
+                                  int nVertices, int nPolygons, int nFaces, BitSet bsPolygons,
                                   int faceVertexMax, short colix,
-                                  List<Short> colorList, Map<String, String> htColixes, Point3f offset) {
+                                  List<Short> colorList, Map<Short, Integer> htColixes, Point3f offset) {
   }
 
   @Override

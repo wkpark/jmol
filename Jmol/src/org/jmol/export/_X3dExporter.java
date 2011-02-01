@@ -292,9 +292,9 @@ public class _X3dExporter extends _VrmlExporter {
   protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
                                short[] colixes, int[][] indices,
                                short[] polygonColixes,
-                               int nVertices, int nPolygons, int nFaces, BitSet bsFaces,
+                               int nVertices, int nPolygons, int nFaces, BitSet bsPolygons,
                                int faceVertexMax, short colix,
-                               List<Short> colorList, Map<String, String> htColixes, Point3f offset) {
+                               List<Short> colorList, Map<Short, Integer> htColixes, Point3f offset) {
     output("<Shape>\n");
     outputAppearance(colix, false);
     output("<IndexedFaceSet \n");
@@ -307,7 +307,7 @@ public class _X3dExporter extends _VrmlExporter {
     output("coordIndex='\n");
     int[] map = new int[nVertices];
     getCoordinateMap(vertices, map);
-    outputIndices(indices, map, nPolygons, bsFaces, faceVertexMax);
+    outputIndices(indices, map, nPolygons, bsPolygons, faceVertexMax);
     output("'\n");
 
     // normals, part 1  
@@ -317,7 +317,7 @@ public class _X3dExporter extends _VrmlExporter {
       vNormals = new ArrayList<String>();
       map = getNormalMap(normals, nVertices, vNormals);
       output("  solid='FALSE'\n  normalPerVertex='TRUE'\n  normalIndex='\n");
-      outputIndices(indices, map, nPolygons, bsFaces, faceVertexMax);
+      outputIndices(indices, map, nPolygons, bsPolygons, faceVertexMax);
       output("'\n");
     }      
     
@@ -327,7 +327,7 @@ public class _X3dExporter extends _VrmlExporter {
         
     if (colorList != null) {
       output("  colorIndex='\n");
-      outputColorIndices(indices, nPolygons, bsFaces, faceVertexMax, htColixes, colixes, polygonColixes);
+      outputColorIndices(indices, nPolygons, bsPolygons, faceVertexMax, htColixes, colixes, polygonColixes);
       output("'\n");
     }    
 

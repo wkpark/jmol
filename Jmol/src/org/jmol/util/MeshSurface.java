@@ -25,7 +25,7 @@ public class MeshSurface {
   public int[][] polygonIndexes;
   public short[] polygonColixes;
   public Vector3f[] vertexNormals;
-  public BitSet bsFaces;
+  public BitSet bsPolygons;
   public Point3f ptOffset;
   public float scale3d;
   public float[] vertexValues;

@@ -206,7 +206,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     if (generateSet) {
       if (frontOnly && fill)
         frontOnly = false;
-      bsFaces.clear();
+      bsPolygons.clear();
     }
     if (exportType == Graphics3D.EXPORT_CARTESIAN) {
       frontOnly = false;
@@ -275,7 +275,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       }
       if (fill) {
         if (generateSet) {
-          bsFaces.set(i);
+          bsPolygons.set(i);
           continue;
         }
         if (iShowTriangles) {

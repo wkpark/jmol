@@ -38,6 +38,10 @@ import org.jmol.util.Logger;
  * A reader for NWChem 4.6
  * NWChem is a quantum chemistry program developed at
  * Pacific Northwest National Laboratory.
+ * See http://www.nwchem-sw.org/index.php/NWChem_Documentation
+ * for orbital plotting, one needs to use the following switches:
+ * 
+ * print "final vectors" "final vectors analysis"
  *
  * <p>AtomSets will be generated for
  * output coordinates in angstroms,

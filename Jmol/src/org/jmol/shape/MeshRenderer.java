@@ -193,7 +193,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
     }
   }
 
-  protected BitSet bsFaces = new BitSet();
+  protected BitSet bsPolygons = new BitSet();
   protected void renderTriangles(boolean fill, boolean iShowTriangles,
                                  boolean generateSet) {
     int[][] polygonIndexes = mesh.polygonIndexes;
@@ -203,7 +203,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
     if (generateSet) {
       if (frontOnly && fill)
         frontOnly = false;
-      bsFaces.clear();
+      bsPolygons.clear();
     }
     for (int i = mesh.polygonCount; --i >= 0;) {
       if (!isPolygonDisplayable(i))
@@ -267,7 +267,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
       case 3:
         if (fill) {
           if (generateSet) {
-            bsFaces.set(i);
+            bsPolygons.set(i);
             continue;
           }
           if (iShowTriangles) {
@@ -287,7 +287,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
         int iD = vertexIndexes[3];
         if (fill) {
           if (generateSet) {
-            bsFaces.set(i);
+            bsPolygons.set(i);
             continue;
           }
           g3d.fillQuadrilateral(screens[iA], colix, normixes[iA], screens[iB],
@@ -342,10 +342,10 @@ public abstract class MeshRenderer extends ShapeRenderer {
 
   protected void exportSurface() {
     mesh.vertexNormals = mesh.getNormals(vertices, null);
-    mesh.bsFaces = bsFaces;
+    mesh.bsPolygons = bsPolygons;
     g3d.drawSurface(mesh, mesh.offsetVertices, latticeOffset);
     mesh.vertexNormals = null;
-    mesh.bsFaces = null;
+    mesh.bsPolygons = null;
   }
   
 }

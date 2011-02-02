@@ -159,8 +159,8 @@ public class NWChemReader extends MOReader {
       readBasis();
       return true;
     }
-    if (readROHFonly && line.contains("ROHF Final Molecular Orbital Analysis")) {
-      return readMolecularOrbitals();
+    if (line.contains("Final Molecular Orbital Analysis")) {
+      return readMolecularOrbitalAnalysis();
     }
 
     if (!readROHFonly && line.contains("Final MO vectors")) {
@@ -673,10 +673,15 @@ public class NWChemReader extends MOReader {
     List<List<Object[]>> atomData = null;
     List<Object[]> shellData = null;
     while (line != null) {
+      int nBlankLines = 0;
       while (line.length() < 3 || line.charAt(2) == ' ') {
         shellData = new ArrayList<Object[]>();
         readLine();
+        if (line.length() < 3)
+          nBlankLines++;
       }
+      if (nBlankLines >= 2)
+        break;
       if (parseInt(line) == Integer.MIN_VALUE) {
         if (line.indexOf("Summary") >= 0)
           break;
@@ -775,7 +780,9 @@ public class NWChemReader extends MOReader {
    * 
    */
 
-  private boolean readMolecularOrbitals() throws Exception {
+  private Map<Integer, Map<String, Object>> moInfo;
+  
+  private boolean readMolecularOrbitalAnalysis() throws Exception {
     // note -- this is preliminary. Should be connecting the correct Gaussians
     // with the correct shells and D/F subshells, at least for cartesians, 
     // but we may have a problem with:
@@ -793,6 +800,7 @@ public class NWChemReader extends MOReader {
     if (shells == null)
       return true;
     int moCount = 0;
+    moInfo = new Hashtable<Integer, Map<String, Object>>();
     while (line != null) {
       while ((line.length() < 3 || line.charAt(1) == ' ') && line.indexOf("Final MO") < 0) {
         readLine();
@@ -802,25 +810,33 @@ public class NWChemReader extends MOReader {
       line = line.replace('=', ' ');
       //  Vector    9  Occ=2.000000D+00  E=-1.152419D+00  Symmetry=a1
       String[] tokens = getTokens();
+      int iMo = parseInt(tokens[1]);
       float occupancy = parseFloat(tokens[3]);
       float energy = parseFloat(tokens[5]);
       String symmetry = tokens[7];
       discardLines(3);
       Map<String, Object> mo = new Hashtable<String, Object>();
-      setMO(mo);
-      float[] coefs = new float[nBasisFunctions];
       mo.put("occupancy", Float.valueOf(occupancy));
       mo.put("energy", Float.valueOf(energy));
       mo.put("symmetry", symmetry);
-      mo.put("type", "ROHF " + (++moCount));
-      mo.put("coefficients", coefs);
+      float[] coefs = null;
+      if (readROHFonly) {
+        setMO(mo);
+        mo.put("type", "ROHF " + (++moCount));
+        coefs = new float[nBasisFunctions];
+        mo.put("coefficients", coefs);
+      } else {
+        moInfo.put(Integer.valueOf(iMo), mo);        
+      }
 
       //    68      2.509000   5 C  py               39     -2.096777   3 C  pz        
       while (readLine() != null && line.length() > 3) {
+        if (readROHFonly) {
         tokens = getTokens();
         coefs[parseInt(tokens[0]) - 1] = parseFloat(tokens[1]);
         if (tokens.length == 10)
           coefs[parseInt(tokens[5]) - 1] = parseFloat(tokens[6]);
+        }
       }
     }
     energyUnits = "a.u.";
@@ -887,6 +903,9 @@ public class NWChemReader extends MOReader {
         }
         mos[iMo].put("coefficients", coefs);
         mos[iMo].put("type", "full " + (++moCount));
+        Map<String, Object> mo = moInfo.get(Integer.valueOf(moCount));
+        if (mo != null)
+          mos[iMo].putAll(mo);
         setMO(mos[iMo]);
       }
       line = "";

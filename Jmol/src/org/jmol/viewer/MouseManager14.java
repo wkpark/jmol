@@ -139,7 +139,12 @@ class MouseManager14 implements MouseWheelListener, MouseListener,
       case 'v': // paste
         switch (modifiers) {
         case Binding.CTRL:
-          String ret = viewer.loadInline(ImageCreator.getClipboardTextStatic(), false);
+          String ret = ImageCreator.getClipboardTextStatic();
+          if (ret.startsWith("http://") && ret.indexOf("\n") < 0) {
+            viewer.evalString("load " + Escape.escape(ret));
+            break;
+          }
+          ret = viewer.loadInline(ret, false);
           if (ret != null)
             Logger.error(ret);
         }

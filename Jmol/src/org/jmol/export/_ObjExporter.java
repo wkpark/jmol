@@ -19,6 +19,7 @@ import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
+import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
@@ -394,10 +395,6 @@ public class _ObjExporter extends __CartesianExporter {
           polygon[0], polygon[1], polygon[2] });
     }
     meshSurface.faces = faces;
-    // Assume there is no transformation
-    Matrix4f matrix = new Matrix4f();
-    matrix.setIdentity();
-
     // Do the texture
     String name = "Surface" + surfaceNum++;
     boolean isSolidColor = (meshSurface.isColorSolid || meshSurface.vertexColixes == null);
@@ -444,7 +441,11 @@ public class _ObjExporter extends __CartesianExporter {
       outputMtl(" map_Ka " + file.getName() + "\n");
     }
 
-    addMesh(name, meshSurface, matrix, meshSurface.colix, dim);
+    Matrix4f matrix = new Matrix4f();
+    matrix.setIdentity();
+    matrix.setTranslation(new Vector3f(meshSurface.offset));
+
+    addMesh(name, meshSurface, matrix, null, meshSurface.colix, dim);
     meshSurface.faces = null;
   }
 
@@ -571,7 +572,7 @@ public class _ObjExporter extends __CartesianExporter {
     matrix.m13 = ptCenter.y;
     matrix.m23 = ptCenter.z;
     matrix.m33 = 1;
-    addMesh(name, data, matrix, colix, null);
+    addMesh(name, data, matrix, matrix, colix, null);
   }
 
   /**
@@ -593,7 +594,7 @@ public class _ObjExporter extends __CartesianExporter {
     matrix.m13 = ptBase.y;
     matrix.m23 = ptBase.z;
     matrix.m33 = 1;
-    addMesh(name, data, matrix, colix, null);
+    addMesh(name, data, matrix, matrix, colix, null);
   }
 
   /**
@@ -617,7 +618,7 @@ public class _ObjExporter extends __CartesianExporter {
     matrix.m13 = ptZ.y;
     matrix.m23 = ptZ.z;
     matrix.m33 = 1;
-    addMesh(name, data, matrix, colix, null);
+    addMesh(name, data, matrix, matrix, colix, null);
     return true;
   }
 
@@ -754,7 +755,7 @@ public class _ObjExporter extends __CartesianExporter {
       name = "Ellipsoid" + ellipsoidNum++;
     }
     setSphereMatrix(center, rx, ry, rz, a, sphereMatrix);
-    addMesh(name, data, sphereMatrix, colix, null);
+    addMesh(name, data, sphereMatrix, sphereMatrix, colix, null);
   }
 
   /**
@@ -787,7 +788,7 @@ public class _ObjExporter extends __CartesianExporter {
       matrix.m23 = pt1.z;
       matrix.m33 = 1;
     }
-    addMesh(name, data, matrix, colix, null);
+    addMesh(name, data, matrix, matrix, colix, null);
   }
 
   /**
@@ -809,7 +810,7 @@ public class _ObjExporter extends __CartesianExporter {
     addTexture(colix, null);
     String name = "Triangle" + triangleNum++;
     matrix.setIdentity();
-    addMesh(name, data, matrix, colix, null);
+    addMesh(name, data, matrix, matrix, colix, null);
   }
 
   /**
@@ -858,14 +859,16 @@ public class _ObjExporter extends __CartesianExporter {
    *          Where the data are located.
    * @param matrix
    *          Transformation to transform the base mesh.
+   * @param matrix1 
+   *          Transformation for normals
    * @param colix
    *          Colix associated with the mesh.
    * @param dim
    *          The width, height of the associated image for UV texture
    *          coordinates. If null no UV coordinates are used.
    */
-  private void addMesh(String name, MeshSurface data, Matrix4f matrix, short colix,
-                       Point dim) {
+  private void addMesh(String name, MeshSurface data, Matrix4f matrix, Matrix4f matrix1,
+                       short colix, Point dim) {
     // Use to only get surfaces in the output
     if (surfacesOnly) {
       if (name == null || !name.startsWith("Surface")) {
@@ -889,9 +892,9 @@ public class _ObjExporter extends __CartesianExporter {
     int nNormals = data.normalCount;
 
     output("# Number of vertices: " + nVertices + "\n");
-    outputList(vertices, data.offset, nVertices, matrix, "v ");
+    outputList(vertices, nVertices, matrix, "v ");
     output("# Number of normals: " + nNormals + "\n");
-    outputList(normals, null, nNormals, matrix, "vn ");    
+    outputList(normals, nNormals, matrix1, "vn ");    
     if (dim != null) {
       // This needs to be kept correlated with what createTextureFile does
       output("# Number of texture coordinates: " + nFaces + "\n");
@@ -941,12 +944,11 @@ public class _ObjExporter extends __CartesianExporter {
    * @param m
    * @param prefix
    */
-  private void outputList(Tuple3f[] pts, Point3f offset, int nPts, Matrix4f m, String prefix) {
+  private void outputList(Tuple3f[] pts, int nPts, Matrix4f m, String prefix) {
     for (int i = 0; i < nPts; i++) {
       ptTemp.set(pts[i]);
-      if (offset != null)
-        ptTemp.add(offset);
-      m.transform(ptTemp);
+      if (m != null)
+        m.transform(ptTemp);
       output(prefix + ptTemp.x + " " + ptTemp.y + " " + ptTemp.z + "\n");
     }
   }

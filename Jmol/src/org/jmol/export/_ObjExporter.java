@@ -889,9 +889,9 @@ public class _ObjExporter extends __CartesianExporter {
     int nNormals = data.normalCount;
 
     output("# Number of vertices: " + nVertices + "\n");
-    outputList(vertices, nVertices, matrix, "v ");
+    outputList(vertices, data.offset, nVertices, matrix, "v ");
     output("# Number of normals: " + nNormals + "\n");
-    outputList(normals, nNormals, matrix, "vn ");    
+    outputList(normals, data.offset, nNormals, matrix, "vn ");    
     if (dim != null) {
       // This needs to be kept correlated with what createTextureFile does
       output("# Number of texture coordinates: " + nFaces + "\n");
@@ -936,13 +936,16 @@ public class _ObjExporter extends __CartesianExporter {
    * create the v or vn list
    * 
    * @param pts  
+   * @param offset 
    * @param nPts
    * @param m
    * @param prefix
    */
-  private void outputList(Tuple3f[] pts, int nPts, Matrix4f m, String prefix) {
+  private void outputList(Tuple3f[] pts, Point3f offset, int nPts, Matrix4f m, String prefix) {
     for (int i = 0; i < nPts; i++) {
       ptTemp.set(pts[i]);
+      if (offset != null)
+        ptTemp.add(offset);
       m.transform(ptTemp);
       output(prefix + ptTemp.x + " " + ptTemp.y + " " + ptTemp.z + "\n");
     }

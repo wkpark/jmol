@@ -335,22 +335,27 @@ public class MOCalculation extends QuantumCalculation implements
     double df = (el == 3 ? 15 : el == 2 ? 3 : 1);
     double f = df * Math.pow(Math.PI, 1.5) / Math.pow(2, el);
     double p = 0.75 + el / 2.0;
-    sum = 0;
-    for (int ig1 = 0; ig1 < nGaussians; ig1++) {
-      double alpha1 = gaussians[gaussianPtr + ig1][0];
-      double c1 = gaussians[gaussianPtr + ig1][cpt];
-      double f1 = Math.pow(alpha1, p);
-      for (int ig2 = 0; ig2 < nGaussians; ig2++) {
-        double alpha2 = gaussians[gaussianPtr + ig2][0];
-        double c2 = gaussians[gaussianPtr + ig2][cpt];
-        double f2 = Math.pow(alpha2, p);
-        sum += c1 * f1 * c2 * f2 / Math.pow(alpha1 + alpha2, 2 * p);
+    if (nGaussians == 1) {
+      sum = Math.pow(2, -2 * p) * Math.pow(gaussians[gaussianPtr][cpt], 2);
+    } else {
+      sum = 0;
+      for (int ig1 = 0; ig1 < nGaussians; ig1++) {
+        double alpha1 = gaussians[gaussianPtr + ig1][0];
+        double c1 = gaussians[gaussianPtr + ig1][cpt];
+        double f1 = Math.pow(alpha1, p);
+        for (int ig2 = 0; ig2 < nGaussians; ig2++) {
+          double alpha2 = gaussians[gaussianPtr + ig2][0];
+          double c2 = gaussians[gaussianPtr + ig2][cpt];
+          double f2 = Math.pow(alpha2, p);
+          sum += c1 * f1 * c2 * f2 / Math.pow(alpha1 + alpha2, 2 * p);
+          if (nGaussians == 1)
+          System.out.println(c1 + " " + f1 + " " + c2 + " " + f2);
+        }
       }
     }
     sum = 1 / Math.sqrt(f * sum);
     if (Logger.debugging)
-      Logger.debug("\t\t\tnormalization for l=" + el + " nGaussians="
-          + nGaussians + " is " + sum);
+      Logger.debug("\t\t\tnormalization for l=" + el + " nGaussians=" + nGaussians + " is " + sum);
     return sum;
   }
 

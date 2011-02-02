@@ -413,12 +413,12 @@ public abstract class ___Exporter {
     }
     ms.vertices[n] = new Point3f(0, 0, 1);
     if (matRotateScale != null) {
-      ms.vertexNormals = new Vector3f[ms.vertexCount];
+      ms.normals = new Vector3f[ms.vertexCount];
       for (int i = 0; i < ms.vertexCount; i++) {
         matRotateScale.transform(ms.vertices[i]);
-        ms.vertexNormals[i] = new Vector3f();
-        ms.vertexNormals[i].set(ms.vertices[i]);
-        ms.vertexNormals[i].normalize();
+        ms.normals[i] = new Vector3f();
+        ms.normals[i].set(ms.vertices[i]);
+        ((Vector3f) ms.normals[i]).normalize();
         ms.vertices[i].add(centerBase);
       }
     }
@@ -471,28 +471,40 @@ public abstract class ___Exporter {
   abstract boolean drawEllipse(Point3f ptAtom, Point3f ptX, Point3f ptY,
                              short colix, boolean doFill);
 
-  void drawSurface(int nVertices, int nPolygons, int faceVertexMax,
-                      Point3f[] vertices, Vector3f[] normals, short[] colixes,
-                      int[][] indices, short[] polygonColixes, BitSet bsPolygons,
-                      short colix, Point3f offset) {
+  void drawSurface(MeshSurface meshSurface) {
+    int nVertices = meshSurface.vertexCount;
     if (nVertices == 0)
       return;
     int nFaces = 0;
+    int nPolygons = meshSurface.polygonCount;
+    BitSet bsPolygons = meshSurface.bsPolygons;
+    int faceVertexMax = (meshSurface.haveQuads ? 4 : 3);
+    int[][] indices = meshSurface.polygonIndexes;
     boolean isAll = (bsPolygons == null);
     int i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit(0));
-    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsPolygons.nextSetBit(i + 1))) 
+    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsPolygons.nextSetBit(i + 1)))
       nFaces += (faceVertexMax == 4 && indices[i].length == 4 ? 2 : 1);
     if (nFaces == 0)
       return;
+
+    Point3f[] vertices = (Point3f[]) meshSurface.getVertices();
+    Vector3f[] normals = (Vector3f[]) meshSurface.normals;
+
+    short colix = meshSurface.colix;
+    short[] colixes = (meshSurface.isColorSolid ? null
+        : meshSurface.vertexColixes);
+    short[] polygonColixes = (meshSurface.isColorSolid ? meshSurface.polygonColixes
+        : null);
     Map<Short, Integer> htColixes = new Hashtable<Short, Integer>();
     List<Short> colorList = null;
     if (polygonColixes != null)
-      colorList = getColorList(0, polygonColixes, nPolygons, bsPolygons, htColixes);
+      colorList = getColorList(0, polygonColixes, nPolygons, bsPolygons,
+          htColixes);
     else if (colixes != null)
       colorList = getColorList(0, colixes, nVertices, null, htColixes);
     outputSurface(vertices, normals, colixes, indices, polygonColixes,
-        nVertices, nPolygons, nFaces, bsPolygons, faceVertexMax, colix, colorList,
-        htColixes, offset);
+        nVertices, nPolygons, nFaces, bsPolygons, faceVertexMax, colix,
+        colorList, htColixes, meshSurface.offset);
   }
 
   /**
@@ -515,12 +527,14 @@ public abstract class ___Exporter {
    * @param offset 
    * 
    */
-  abstract protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
+  protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
                                 short[] colixes, int[][] indices,
                                 short[] polygonColixes,
                                 int nVertices, int nPolygons, int nFaces, BitSet bsPolygons,
                                 int faceVertexMax, short colix, List<Short> colorList,
-                                Map<Short, Integer> htColixes, Point3f offset);
+                                Map<Short, Integer> htColixes, Point3f offset) {
+    // not implemented in _ObjExporter
+  }
 
   abstract void drawPixel(short colix, int x, int y, int z, int scale); //measures
   

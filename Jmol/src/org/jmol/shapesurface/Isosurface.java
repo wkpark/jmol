@@ -302,7 +302,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         offset = null;
       if (thisMesh != null) {
         thisMesh.ptOffset = offset;
-        thisMesh.offsetVertices = null;
+        thisMesh.altVertices = null;
       }
       return;
     }
@@ -313,7 +313,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         if (pt4 == null || thisMesh.q == null)
           thisMesh.q = new Quaternion();
         thisMesh.q = thisMesh.q.mul(new Quaternion(pt4));
-        thisMesh.offsetVertices = null;
+        thisMesh.altVertices = null;
       }
       return;
     }
@@ -407,7 +407,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       scale3d = ((Float) value).floatValue();
       if (thisMesh != null) {
         thisMesh.scale3d = thisMesh.jvxlData.scale3d = scale3d;
-        thisMesh.offsetVertices = null;
+        thisMesh.altVertices = null;
       }
     } else if ("title" == propertyName) {
       if (value instanceof String && "-".equals(value))

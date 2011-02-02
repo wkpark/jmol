@@ -6,7 +6,7 @@ import java.util.List;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
-import javax.vecmath.Vector3f;
+import javax.vecmath.Tuple3f;
 
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.BoxInfo;
@@ -19,12 +19,14 @@ public class MeshSurface {
   public boolean isColorSolid = true;
   public int vertexCount;
   public Point3f[] vertices;
-  public Point3f[] offsetVertices;
+  public Point3f offset;
+  public Tuple3f[] altVertices;
   public short[] vertexColixes;
   public int polygonCount;
   public int[][] polygonIndexes;
   public short[] polygonColixes;
-  public Vector3f[] vertexNormals;
+  public Tuple3f[] normals;
+  public int normalCount;
   public BitSet bsPolygons;
   public Point3f ptOffset;
   public float scale3d;
@@ -33,9 +35,23 @@ public class MeshSurface {
   public int[] vertexSets;
   public int nSets = 0;
   public int checkCount = 2;
+  public int[][] faces;
+
   
 
   public MeshSurface() {
+  }
+  
+  public MeshSurface(int[][] polygonIndexes, Tuple3f[] vertices, int nVertices,
+      Tuple3f[] normals, int nNormals) {
+    this.polygonIndexes = polygonIndexes;
+    if (vertices instanceof Point3f[])
+      this.vertices = (Point3f[]) vertices;
+    else
+      this.altVertices = vertices;
+    this.vertexCount = (nVertices == 0 ? vertices.length : nVertices);
+    this.normals = normals;
+    this.normalCount = (nNormals == 0 ? normals.length : nNormals);
   }
   
   public MeshSurface(Point3f[] vertices, float[] vertexValues, int vertexCount,
@@ -46,6 +62,20 @@ public class MeshSurface {
     this.polygonIndexes = polygonIndexes;
     this.polygonCount = polygonCount;
     this.checkCount = checkCount;
+  }
+
+  /**
+   * @return The vertices.
+   */
+  public Tuple3f[] getVertices() {
+    return (altVertices == null ? vertices : altVertices);
+  }
+  
+  /**
+   * @return  faces, if defined (in exporter), otherwise polygonIndexes
+   */
+  public int[][] getFaces() {
+    return (faces == null ? polygonIndexes : faces);
   }
 
   public void setColix(short colix) {

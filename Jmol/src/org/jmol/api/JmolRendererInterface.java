@@ -16,7 +16,7 @@ import org.jmol.viewer.Viewer;
 
 public interface JmolRendererInterface {
 
-  // these methods are implmented in Export3D and Graphics3D
+  // these methods are implemented in Export3D and Graphics3D
   
   public abstract int getExportType();
   
@@ -283,7 +283,7 @@ public interface JmolRendererInterface {
                                          short normixC, Point3i screenD,
                                          short colixD, short normixD);
 
-  public abstract void drawSurface(MeshSurface meshSurface, Point3f[] vertices, Point3f offset);
+  public abstract void drawSurface(MeshSurface meshSurface);
 
   public abstract boolean isInDisplayRange(int x, int y);
 

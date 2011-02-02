@@ -341,10 +341,11 @@ public abstract class MeshRenderer extends ShapeRenderer {
   }
 
   protected void exportSurface() {
-    mesh.vertexNormals = mesh.getNormals(vertices, null);
+    mesh.normals = mesh.getNormals(vertices, null);
     mesh.bsPolygons = bsPolygons;
-    g3d.drawSurface(mesh, mesh.offsetVertices, latticeOffset);
-    mesh.vertexNormals = null;
+    mesh.offset = latticeOffset;
+    g3d.drawSurface(mesh);
+    mesh.normals = null;
     mesh.bsPolygons = null;
   }
   

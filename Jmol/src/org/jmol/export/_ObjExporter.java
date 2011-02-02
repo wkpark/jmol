@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
@@ -20,12 +19,12 @@ import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
-import javax.vecmath.Vector3f;
 
-import org.jmol.export.MeshData.Data;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.util.Escape;
+import org.jmol.util.Logger;
+import org.jmol.util.MeshSurface;
 import org.jmol.util.Quaternion;
 import org.jmol.viewer.Viewer;
 
@@ -337,48 +336,38 @@ public class _ObjExporter extends __CartesianExporter {
   }
 
   /* (non-Javadoc)
-   * @see org.jmol.export.___Exporter#outputSurface(javax.vecmath.Point3f[], javax.vecmath.Vector3f[], short[], int[][], short[], int, int, int, java.util.BitSet, int, short, java.util.List, java.util.Map, javax.vecmath.Point3f)
+   * @see org.jmol.export.___Exporter#drawSurface(MeshSurface meshSurface)
    */
   @Override
-  protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
-                               short[] colixes, int[][] indices,
-                               short[] polygonColixes, int nVertices,
-                               int nPolygons, int nFaces, BitSet bsPolygons,
-                               int faceVertexMax, short colix,
-                               List<Short> colorList,
-                               Map<Short, Integer> htColixes, Point3f offset) {
-    debugPrint("outputSurface");
-    debugPrint("  nVertices=" + nVertices);
-    if (normals == null) {
-      debugPrint("  no vertex normals");
-    } else {
-      debugPrint("  nNormals=" + nVertices);
+  protected void drawSurface(MeshSurface meshSurface) {
+    if (Logger.debugging) {
+      debugPrint("outputSurface");
+      debugPrint("  nVertices=" + meshSurface.vertexCount);
+      if (meshSurface.normals == null) {
+        debugPrint("  no vertex normals");
+      } else {
+        debugPrint("  nNormals=" + meshSurface.vertexCount);
+      }
+      if (meshSurface.polygonColixes == null) {
+        debugPrint("  no vertex colors");
+      } else {
+        debugPrint("  nColixes=" + meshSurface.vertexCount);
+      }
+      debugPrint("  number of triangles or quads=" + meshSurface.polygonCount);
+      if (meshSurface.polygonColixes == null) {
+        debugPrint("  no face colors");
+      } else {
+        debugPrint("  nPolygonColixes=" + meshSurface.polygonCount);
+      }
+      if (meshSurface.bsPolygons == null) {
+        debugPrint("  all polygons used");
+      } else {
+        debugPrint("  number of polygons used=" + meshSurface.bsPolygons.cardinality());
+      }
+      debugPrint("  solid color=" + g3d.getColorArgbOrGray(meshSurface.colix));
     }
-    if (colixes == null) {
-      debugPrint("  no vertex colors");
-    } else {
-      debugPrint("  nColixes=" + nVertices);
-    }
-    debugPrint("  number of triangles or quads=" + nPolygons);
-    if (polygonColixes == null) {
-      debugPrint("  no face colors");
-    } else {
-      debugPrint("  nPolygonColixes=" + nPolygons);
-    }
-    debugPrint("  triangular face count=" + nFaces + " faceVertexMax="
-        + faceVertexMax);
-    if (bsPolygons == null) {
-      debugPrint("  all polygons used");
-    } else {
-      debugPrint("  number of polygons used=" + bsPolygons.cardinality());
-    }
-    debugPrint("  solid color=" + g3d.getColorArgbOrGray(colix));
-    if (colorList == null) {
-      debugPrint("  no color list");
-    } else {
-      debugPrint("  color list size=" + colorList.size());
-    }
-    boolean haveFaceColors = (polygonColixes != null);
+
+    boolean haveFaceColors = (meshSurface.polygonColixes != null);
     if (haveFaceColors) {
       // TODO
       // This is not handled in the _IdtfExporter
@@ -390,26 +379,29 @@ public class _ObjExporter extends __CartesianExporter {
     }
 
     // Create reduced face set
+    
+    BitSet bsPolygons = meshSurface.bsPolygons;
+    int nPolygons = meshSurface.polygonCount;
+    if (meshSurface.normals != null)
+      meshSurface.normalCount = meshSurface.vertexCount;
     boolean isAll = (bsPolygons == null);
     int[][] faces = new int[isAll ? nPolygons : bsPolygons.cardinality()][];
     int i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit(0));
     for (int i = i0, ipt = 0; i >= 0; i = isAll ? i - 1 : bsPolygons
         .nextSetBit(i + 1)) {
-      int[] polygon = indices[i];
-      faces[ipt++] = (faceVertexMax == polygon.length ? polygon : new int[] {
+      int[] polygon = meshSurface.polygonIndexes[i];
+      faces[ipt++] = (meshSurface.haveQuads ? polygon : new int[] {
           polygon[0], polygon[1], polygon[2] });
     }
-    Data data = new Data(faces, vertices, nVertices,
-        normals == null ? new Point3f[0] : normals, normals == null ? 0
-            : nVertices);
-
+    meshSurface.faces = faces;
     // Assume there is no transformation
     Matrix4f matrix = new Matrix4f();
     matrix.setIdentity();
 
     // Do the texture
     String name = "Surface" + surfaceNum++;
-    addTexture(colix);
+    boolean isSolidColor = (meshSurface.isColorSolid || meshSurface.vertexColixes == null);
+    addTexture(meshSurface.colix, isSolidColor ? null : name);
 
     // Create a Point with the image file dimensions
     // If it remains null, then it is a flag that a texture file and
@@ -417,10 +409,11 @@ public class _ObjExporter extends __CartesianExporter {
     Point dim = null;
 
     // Make a texture file if colixes is defined
-    if (colixes == null) {
+    if (isSolidColor) {
       debugPrint("outputSurface: colixes = null");
       debugPrint("  Omitting texture map");
     } else {
+      int nFaces = faces.length;
       // Determine the height and width of an image file that is as close to
       // square as possible 
       int width = (int) Math.ceil(Math.sqrt(nFaces));
@@ -431,7 +424,7 @@ public class _ObjExporter extends __CartesianExporter {
       dim = new Point(width, height);
       debugPrint("  width=" + width + " height=" + height + " size = "
           + (width * height));
-      File file = createTextureFile(name, data, colixes, dim);
+      File file = createTextureFile(name, meshSurface, dim);
       if (file == null) {
         System.out.println("Error creating texture file: " + name);
         textureFiles.add("Error creating texture file: " + name);
@@ -451,7 +444,8 @@ public class _ObjExporter extends __CartesianExporter {
       outputMtl(" map_Ka " + file.getName() + "\n");
     }
 
-    addMesh(name, data, matrix, colix, dim);
+    addMesh(name, meshSurface, matrix, meshSurface.colix, dim);
+    meshSurface.faces = null;
   }
 
   // Non-abstract overrides from _Exporter
@@ -568,9 +562,9 @@ public class _ObjExporter extends __CartesianExporter {
    */
   private void outputCircle1(Point3f ptCenter, Point3f ptPerp, short colix,
                              float radius) {
-    Data data = MeshData.getCircleData();
+    MeshSurface data = MeshData.getCircleData();
     Matrix4f matrix = new Matrix4f();
-    addTexture(colix);
+    addTexture(colix, null);
     String name = "Circle" + circleNum++;
     matrix.set(getRotationMatrix(ptCenter, ptPerp, radius));
     matrix.m03 = ptCenter.x;
@@ -590,9 +584,9 @@ public class _ObjExporter extends __CartesianExporter {
    */
   private void outputCone1(Point3f ptBase, Point3f ptTip, float radius,
                            short colix) {
-    Data data = MeshData.getConeData();
+    MeshSurface data = MeshData.getConeData();
     Matrix4f matrix = new Matrix4f();
-    addTexture(colix);
+    addTexture(colix, null);
     String name = "Cone" + coneNum++;
     matrix.set(getRotationMatrix(ptBase, ptTip, radius));
     matrix.m03 = ptBase.x;
@@ -614,9 +608,9 @@ public class _ObjExporter extends __CartesianExporter {
    */
   private boolean outputEllipse1(Point3f ptCenter, Point3f ptZ, Point3f ptX,
                                  Point3f ptY, short colix) {
-    Data data = MeshData.getCircleData();
+    MeshSurface data = MeshData.getCircleData();
     Matrix4f matrix = new Matrix4f();
-    addTexture(colix);
+    addTexture(colix, null);
     String name = "Ellipse" + ellipseNum++;
     matrix.set(getRotationMatrix(ptCenter, ptZ, 1, ptX, ptY));
     matrix.m03 = ptZ.x;
@@ -641,7 +635,7 @@ public class _ObjExporter extends __CartesianExporter {
    *          A Point representing the width, height of the image.
    * @return The File created or null on failure.
    */
-  public File createTextureFile(String name, Data data, short[] colixes,
+  private File createTextureFile(String name, MeshSurface data,
                                 Point dim) {
     // This needs to be kept correlated with what doUV in addMesh does
     debugPrint("createTextureFile: " + name);
@@ -673,6 +667,7 @@ public class _ObjExporter extends __CartesianExporter {
     }
 
     // Check input 
+    short[] colixes = data.vertexColixes;
     if (colixes == null || data == null || colixes.length == 0) {
       debugPrint("createTextureFile: Array problem");
       debugPrint("  colixes=" + colixes + " data=" + data);
@@ -682,24 +677,9 @@ public class _ObjExporter extends __CartesianExporter {
       return imageFile;
     }
 
-    int nColors = colixes.length;
-    Tuple3f[] vertices = data.getVertexes();
-    Tuple3f[] normals = data.getNormals();
-    if (vertices == null || normals == null || vertices.length != nColors
-        || normals.length != nColors) {
-      debugPrint("createTextureFile: Vertices / normals problem");
-      debugPrint("  vertices=" + vertices + " normals=" + normals);
-      if (vertices != null) {
-        debugPrint("  vertices.length=" + vertices.length);
-      }
-      if (normals != null) {
-        debugPrint("  normals=" + normals.length);
-      }
-      return imageFile;
-    }
     // FIXME Fix it to draw a triangle rather than a point
     // FIXME Find the number of unique colors
-    int nUsed = data.getFaces().length;
+    int nUsed = data.faces.length;
     if (nUsed <= 0) {
       debugPrint("createTextureFile: nFaces = 0");
       return imageFile;
@@ -717,7 +697,7 @@ public class _ObjExporter extends __CartesianExporter {
     // Write it bottom to top to match direction of UV coordinate v
     for (int row = height - 1; row >= 0; row--) {
       for (int col = 0; col < width; col++) {
-        face = data.getFaces()[iFace++];
+        face = data.polygonIndexes[iFace++];
         nVertices = face.length;
         // Get the vertex colors and average them
         sum.set(0, 0, 0);
@@ -761,8 +741,8 @@ public class _ObjExporter extends __CartesianExporter {
    */
   private void outputEllipsoid1(Point3f center, float rx, float ry, float rz,
                                 AxisAngle4f a, short colix) {
-    Data data = MeshData.getSphereData();
-    addTexture(colix);
+    MeshSurface data = MeshData.getSphereData();
+    addTexture(colix, null);
     String name;
     if (center instanceof Atom) {
       Atom atom = (Atom) center;
@@ -792,9 +772,9 @@ public class _ObjExporter extends __CartesianExporter {
   private void outputCylinder1(Point3f ptCenter, Point3f pt1, Point3f pt2,
                                short colix, byte endcaps, float radius,
                                Point3f ptX, Point3f ptY) {
-    Data data = MeshData.getCylinderData(false);
+    MeshSurface data = MeshData.getCylinderData(false);
     Matrix4f matrix = new Matrix4f();
-    addTexture(colix);
+    addTexture(colix, null);
     String name = "Cylinder" + cylinderNum++;
     int n = (ptX != null && endcaps == Graphics3D.ENDCAPS_NONE ? 2 : 1);
     for (int i = 0; i < n; i++) {
@@ -824,9 +804,9 @@ public class _ObjExporter extends __CartesianExporter {
    */
   private void outputTriangle1(Point3f pt1, Point3f pt2, Point3f pt3,
                                short colix) {
-    Data data = MeshData.getTriangleData(pt1, pt2, pt3);
+    MeshSurface data = MeshData.getTriangleData(pt1, pt2, pt3);
     Matrix4f matrix = new Matrix4f();
-    addTexture(colix);
+    addTexture(colix, null);
     String name = "Triangle" + triangleNum++;
     matrix.setIdentity();
     addMesh(name, data, matrix, colix, null);
@@ -838,15 +818,16 @@ public class _ObjExporter extends __CartesianExporter {
    * edited if it is desired to change things.
    * 
    * @param colix
+   * @param name TODO
    */
-  private void addTexture(short colix) {
+  private void addTexture(short colix, String name) {
     Short scolix = new Short(colix);
-    if (textures.contains(scolix)) {
+    if (name == null && textures.contains(scolix)) {
       return;
     }
     textures.add(scolix);
     StringBuffer sb = new StringBuffer();
-    sb.append("\nnewmtl " + getTextureName(colix) + "\n");
+    sb.append("\nnewmtl " + (name == null ? getTextureName(colix) : name) + "\n");
     // Highlight exponent (0-1000) High is a tight, concentrated highlight
     sb.append(" Ns 163\n");
     // Opacity (Sometimes d is used, sometimes Tr)
@@ -883,7 +864,7 @@ public class _ObjExporter extends __CartesianExporter {
    *          The width, height of the associated image for UV texture
    *          coordinates. If null no UV coordinates are used.
    */
-  private void addMesh(String name, Data data, Matrix4f matrix, short colix,
+  private void addMesh(String name, MeshSurface data, Matrix4f matrix, short colix,
                        Point dim) {
     // Use to only get surfaces in the output
     if (surfacesOnly) {
@@ -898,14 +879,14 @@ public class _ObjExporter extends __CartesianExporter {
     // currentNormalOrigin is the same as currentVertexOrigin since the
     //   normals and vertices are in 1-1 correspondence for our meshes
     output("\n" + "g " + name + "\n");
-    output("usemtl " + getTextureName(colix) + "\n");
+    output("usemtl " + (dim == null ? getTextureName(colix) : name) + "\n");
 
     int[][] faces = data.getFaces();
     int nFaces = faces.length;
-    Tuple3f[] vertices = data.getVertexes();
-    int nVertices = data.getVertexCount();
-    Tuple3f[] normals = data.getNormals();
-    int nNormals = data.getNormalCount();
+    Tuple3f[] vertices = data.getVertices();
+    int nVertices = data.vertexCount;
+    Tuple3f[] normals = data.normals;
+    int nNormals = data.normalCount;
 
     output("# Number of vertices: " + nVertices + "\n");
     outputList(vertices, nVertices, matrix, "v ");
@@ -948,6 +929,8 @@ public class _ObjExporter extends __CartesianExporter {
     currentVertexOrigin += nVertices;
     currentNormalOrigin += nNormals;
   }
+  
+  private final Point3f ptTemp = new Point3f();
 
   /**
    * create the v or vn list
@@ -959,9 +942,9 @@ public class _ObjExporter extends __CartesianExporter {
    */
   private void outputList(Tuple3f[] pts, int nPts, Matrix4f m, String prefix) {
     for (int i = 0; i < nPts; i++) {
-      tempP1.set(pts[i]);
-      m.transform(tempP1);
-      output(prefix + tempP1.x + " " + tempP1.y + " " + tempP1.z + "\n");
+      ptTemp.set(pts[i]);
+      m.transform(ptTemp);
+      output(prefix + ptTemp.x + " " + ptTemp.y + " " + ptTemp.z + "\n");
     }
   }
 

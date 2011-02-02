@@ -330,22 +330,22 @@ public class MOCalculation extends QuantumCalculation implements
     }
   }
   
-  private double getContractionNormalization(int el) {
+  private double getContractionNormalization(int el, int cpt) {
     double sum;
     double df = (el == 3 ? 15 : el == 2 ? 3 : 1);
     double f = df * Math.pow(Math.PI, 1.5) / Math.pow(2, el);
     double p = 0.75 + el / 2.0;
     if (nGaussians == 1) {
-      sum = 1 / Math.pow(2, 2 * p);
+      sum = Math.pow(2, -2 * p);
     } else {
       sum = 0;
       for (int ig1 = 0; ig1 < nGaussians; ig1++) {
         double alpha1 = gaussians[gaussianPtr + ig1][0];
-        double c1 = gaussians[gaussianPtr + ig1][1];
+        double c1 = gaussians[gaussianPtr + ig1][cpt];
         double f1 = Math.pow(alpha1, p);
         for (int ig2 = 0; ig2 < nGaussians; ig2++) {
           double alpha2 = gaussians[gaussianPtr + ig2][0];
-          double c2 = gaussians[gaussianPtr + ig2][1];
+          double c2 = gaussians[gaussianPtr + ig2][cpt];
           double f2 = Math.pow(alpha2, p);
           sum += c1 * f1 * c2 * f2 / Math.pow(alpha1 + alpha2, 2 * p);
         }
@@ -353,6 +353,7 @@ public class MOCalculation extends QuantumCalculation implements
     }
     return 1 / Math.sqrt(f * sum);
   }
+
   private void addDataS() {
     if (thisAtom == null) {
       moCoeff++;
@@ -366,7 +367,7 @@ public class MOCalculation extends QuantumCalculation implements
     if (doNormalize) {
       if (nwChemMode) {
         // contraction needs to be normalized
-        norm = getContractionNormalization(0);
+        norm = getContractionNormalization(0, 1);
       } else {
         // (8 alpha^3/pi^3)^0.25 exp(-alpha r^2)
         norm = 0.712705470f; // (8/pi^3)^0.25 = (2/pi)^3/4
@@ -420,10 +421,10 @@ public class MOCalculation extends QuantumCalculation implements
     double mz = moCoefficients[map[2] + moCoeff++];
     double norm;
     if (doNormalize) {
-      // (128 alpha^5/pi^3)^0.25 [x|y|z]exp(-alpha r^2)
       if (nwChemMode) {
-        norm = getContractionNormalization(1);
+        norm = getContractionNormalization(1, 1);
       } else {
+        // (128 alpha^5/pi^3)^0.25 [x|y|z]exp(-alpha r^2)
         norm = 1.42541094f;
       }
     } else {
@@ -495,13 +496,25 @@ public class MOCalculation extends QuantumCalculation implements
     mx = moCoefficients[map[1] + moCoeff++];
     my = moCoefficients[map[2] + moCoeff++];
     mz = moCoefficients[map[3] + moCoeff++];
+    double norm1, norm2;
+    if (doNormalize) {
+      if (nwChemMode) {
+        norm1 = getContractionNormalization(0, 1);
+        norm2 = getContractionNormalization(1, 2);
+      } else {
+        norm1 = 0.712705470f;
+        norm2 = 1.42541094f;
+      }
+    } else {
+      norm1 = norm2 = 1;
+    }
     if (isElectronDensity) {
       for (int ig = 0; ig < nGaussians; ig++) {
         double alpha = gaussians[gaussianPtr + ig][0];
         c1 = gaussians[gaussianPtr + ig][1];
         double a1 = c1;
         if (doNormalize)
-          a1 *=  Math.pow(alpha, 0.75) * 0.712705470f;
+          a1 *=  Math.pow(alpha, 0.75) * norm1;
         calcSP(alpha, a1 * ms, 0, 0, 0);
       }
       setTemp();
@@ -510,7 +523,7 @@ public class MOCalculation extends QuantumCalculation implements
         double c2 = gaussians[gaussianPtr + ig][2];
         double a2 = c2;
         if (doNormalize)
-          a2 *=  Math.pow(alpha, 1.25) * 1.42541094f;
+          a2 *=  Math.pow(alpha, 1.25) * norm2;
         calcSP(alpha, 0, a2 * mx, 0, 0);
       }
       setTemp();
@@ -519,7 +532,7 @@ public class MOCalculation extends QuantumCalculation implements
         double c2 = gaussians[gaussianPtr + ig][2];
         double a2 = c2;
         if (doNormalize)
-          a2 *=  Math.pow(alpha, 1.25) * 1.42541094f;
+          a2 *=  Math.pow(alpha, 1.25) * norm2;
         calcSP(alpha, 0, 0, a2 * my, 0);
       }
       setTemp();
@@ -528,7 +541,7 @@ public class MOCalculation extends QuantumCalculation implements
         double c2 = gaussians[gaussianPtr + ig][2];
         double a2 = c2;
         if (doNormalize)
-          a2 *=  Math.pow(alpha, 1.25) * 1.42541094f;
+          a2 *=  Math.pow(alpha, 1.25) * norm2;
         calcSP(alpha, 0, 0, 0, a2 * mz);
       }
       setTemp();
@@ -539,10 +552,10 @@ public class MOCalculation extends QuantumCalculation implements
         double c2 = gaussians[gaussianPtr + ig][2];
         double a1 = c1;
         if (doNormalize)
-          a1 *=  Math.pow(alpha, 0.75) * 0.712705470f;
+          a1 *=  Math.pow(alpha, 0.75) * norm1;
         double a2 = c2;
         if (doNormalize)
-          a2 *=  Math.pow(alpha, 1.25) * 1.42541094f;
+          a2 *=  Math.pow(alpha, 1.25) * norm2;
         calcSP(alpha, a1 * ms, a2 * mx, a2 * my, a2 * mz);
       }
     }
@@ -608,10 +621,8 @@ public class MOCalculation extends QuantumCalculation implements
     double norm1, norm2;
     if (doNormalize) {
       if (nwChemMode) {
-        norm1 = getContractionNormalization(2);
-        //norm2 = norm1;// / ROOT3;//norm1 * ROOT3 * ROOT3;
-        //norm1 /= ROOT3;
-        norm2 = norm1;//norm1 / ROOT3;
+        norm1 = getContractionNormalization(2, 1);
+        norm2 = norm1;
       } else {
         norm1 = 2.8508219178923f;
         norm2 = norm1 / ROOT3;
@@ -696,11 +707,22 @@ public class MOCalculation extends QuantumCalculation implements
      zz           [(2048 * alpha^7) / (9 * pi^3))]^(1/4)
      */
 
-    final double norm1 =(doNormalize ?  Math.pow(2048.0 / (Math.PI * Math.PI * Math.PI), 0.25) : 1);
-    final double norm2 = (doNormalize ?  (norm1 / Math.sqrt(3)) : 1);
-
-    // Normalization constant that shows up for dx^2-y^2
-    final double root34 =(doNormalize ?  Math.sqrt(0.75) : 1);
+    double norm1, norm2, norm3;
+    
+    if (doNormalize) {
+      if (nwChemMode) {
+        norm1 = getContractionNormalization(2, 1);
+        norm2 = norm1;
+        // TODO: needs testing
+        norm3 = Math.sqrt(0.75); // Normalization constant that shows up for dx^2-y^2
+      } else {
+        norm1 = Math.pow(2048.0 / (Math.PI * Math.PI * Math.PI), 0.25);
+        norm2 = norm1 / ROOT3;
+        norm3 = Math.sqrt(0.75); // Normalization constant that shows up for dx^2-y^2
+      }
+    } else {
+      norm1 = norm2 = norm3 = 1;
+    }
 
     double m0 = moCoefficients[map[0] + moCoeff++];
     double m1p = moCoefficients[map[1] + moCoeff++];
@@ -743,7 +765,7 @@ public class MOCalculation extends QuantumCalculation implements
             cyz = norm1 * y * z;
 
             voxelDataTemp[ix][iy][iz] += (ad0 * (czz - 0.5f * (cxx + cyy)) + ad1p * cxz + ad1n
-                * cyz + ad2p * root34 * (cxx - cyy) + ad2n * cxy)
+                * cyz + ad2p * norm3 * (cxx - cyy) + ad2n * cxy)
                 * eXY * EZ[iz];
           }
         }
@@ -786,16 +808,15 @@ public class MOCalculation extends QuantumCalculation implements
     double norm1, norm2, norm3;
     if (doNormalize) {
       if (nwChemMode) {
-        norm1 = getContractionNormalization(3);
+        norm1 = getContractionNormalization(3, 1);
         norm2 = norm1;
         norm3 = norm1;
       } else {
-        norm1 = Math.pow(
-            32768.0 / (Math.PI * Math.PI * Math.PI), 0.25);
+        norm1 = Math.pow(32768.0 / (Math.PI * Math.PI * Math.PI), 0.25);
         norm2 = norm1 / Math.sqrt(3);
         norm3 = norm1 / Math.sqrt(15);
       }
-      
+
     } else {
       norm1 = norm2 = norm3 = 1;
     }
@@ -819,7 +840,7 @@ public class MOCalculation extends QuantumCalculation implements
       // factor; only call pow once per primitive
       a = c1;
       if (doNormalize)
-        a *=  Math.pow(alpha, 2.25);
+        a *= Math.pow(alpha, 2.25);
 
       axxx = a * norm3 * mxxx;
       ayyy = a * norm3 * myyy;
@@ -856,8 +877,8 @@ public class MOCalculation extends QuantumCalculation implements
             cyyz = ayyz * yy * z;
             cyzz = ayzz * y * zz;
             cxyz = axyz * x * y * z;
-            voxelDataTemp[ix][iy][iz] +=  (cxxx + cyyy + czzz + cxyy + cxxy + cxxz + cxzz + cyzz
-                + cyyz + cxyz)
+            voxelDataTemp[ix][iy][iz] += (cxxx + cyyy + czzz + cxyy + cxxy
+                + cxxz + cxzz + cyzz + cyyz + cxyz)
                 * Exy * EZ[iz];
           }
         }
@@ -897,25 +918,38 @@ public class MOCalculation extends QuantumCalculation implements
      zzz          [(32768 * alpha^9) / (225 * pi^3))]^(1/4)
      */
 
-    final double norm1 = (doNormalize ?   Math.pow(
-        32768.0 / (Math.PI * Math.PI * Math.PI), 0.25) : 1);
-    final double norm2 = (doNormalize ?   (norm1 / Math.sqrt(3)) : 1);
-    final double norm3 = (doNormalize ?  (norm1 / Math.sqrt(15)) : 1);
+    double norm1, norm2, norm3;
+    if (doNormalize) {
+      if (nwChemMode) {
+        norm1 = getContractionNormalization(3, 1);
+        //norm2 = norm1;
+        //norm3 = norm1;
+        norm2 = norm1 / Math.sqrt(3);
+        norm3 = norm1 / Math.sqrt(15);
+      } else {
+        norm1 = Math.pow(32768.0 / (Math.PI * Math.PI * Math.PI), 0.25);
+        norm2 = norm1 / Math.sqrt(3);
+        norm3 = norm1 / Math.sqrt(15);
+      }
+
+    } else {
+      norm1 = norm2 = norm3 = 1;
+    }
 
     // Linear combination coefficients for the various Cartesian gaussians
-    final double c0_xxz_yyz =  (3.0 / (2.0 * Math.sqrt(5)));
+    final double c0_xxz_yyz = (3.0 / (2.0 * Math.sqrt(5)));
 
-    final double c1p_xzz =  Math.sqrt(6.0 / 5.0);
-    final double c1p_xxx =  Math.sqrt(3.0 / 8.0);
-    final double c1p_xyy =  Math.sqrt(3.0 / 40.0);
+    final double c1p_xzz = Math.sqrt(6.0 / 5.0);
+    final double c1p_xxx = Math.sqrt(3.0 / 8.0);
+    final double c1p_xyy = Math.sqrt(3.0 / 40.0);
     final double c1n_yzz = c1p_xzz;
     final double c1n_yyy = c1p_xxx;
     final double c1n_xxy = c1p_xyy;
 
-    final double c2p_xxz_yyz =  Math.sqrt(3.0 / 4.0);
+    final double c2p_xxz_yyz = Math.sqrt(3.0 / 4.0);
 
-    final double c3p_xxx =  Math.sqrt(5.0 / 8.0);
-    final double c3p_xyy = 0.75f *  Math.sqrt(2);
+    final double c3p_xxx = Math.sqrt(5.0 / 8.0);
+    final double c3p_xyy = 0.75f * Math.sqrt(2);
     final double c3n_yyy = c3p_xxx;
     final double c3n_xxy = c3p_xyy;
 
@@ -932,7 +966,7 @@ public class MOCalculation extends QuantumCalculation implements
       c1 = gaussians[gaussianPtr + ig][1];
       a = c1;
       if (doNormalize)
-        a *=  Math.pow(alpha, 2.25);
+        a *= Math.pow(alpha, 2.25);
 
       af0 = a * m0;
       af1p = a * m1p;
@@ -976,7 +1010,7 @@ public class MOCalculation extends QuantumCalculation implements
             f2n = af2n * cxyz;
             f3p = af3p * (c3p_xxx * cxxx - c3p_xyy * cxyy);
             f3n = af3n * (-c3n_yyy * cyyy + c3n_xxy * cxxy);
-            voxelDataTemp[ix][iy][iz] += (f0 + f1p + f1n + f2p + f2n + f3p + f3n) 
+            voxelDataTemp[ix][iy][iz] += (f0 + f1p + f1n + f2p + f2n + f3p + f3n)
                 * eXY * EZ[iz];
           }
         }

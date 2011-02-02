@@ -131,7 +131,7 @@ public class Mesh extends MeshSurface {
     normixes = null;
     bitsets = null;    
     vertices = null;
-    offsetVertices = null;
+    altVertices = null;
     polygonIndexes = null;
     //data1 = null;
     //data2 = null;
@@ -279,11 +279,11 @@ public class Mesh extends MeshSurface {
   }
 
   public Point3f[] getOffsetVertices(Point4f thePlane) {
-    if (offsetVertices != null)
-      return offsetVertices;
-    offsetVertices = new Point3f[vertexCount];
+    if (altVertices != null)
+      return (Point3f[]) altVertices;
+    altVertices = new Point3f[vertexCount];
     for (int i = 0; i < vertexCount; i++)
-      offsetVertices[i] = new Point3f(vertices[i]);
+      altVertices[i] = new Point3f(vertices[i]);
     Vector3f normal = null;
     float val = 0;
     if (scale3d != 0 && vertexValues != null && thePlane != null) {
@@ -297,16 +297,16 @@ public class Mesh extends MeshSurface {
       if (vertexValues != null && Float.isNaN(val = vertexValues[i]))
         continue;
       if (q != null)
-        offsetVertices[i] = q.transform(offsetVertices[i]);
-      Point3f pt = offsetVertices[i];
+        altVertices[i] = q.transform((Point3f) altVertices[i]);
+      Point3f pt = (Point3f) altVertices[i];
       if (ptOffset != null)
         pt.add(ptOffset);
       if (normal != null && val != 0)
         pt.scaleAdd(val, normal, pt);
     }
     
-    initialize(lighting, offsetVertices, null);
-    return offsetVertices;
+    initialize(lighting, (Point3f[]) altVertices, null);
+    return (Point3f[]) altVertices;
   }
 
   /**

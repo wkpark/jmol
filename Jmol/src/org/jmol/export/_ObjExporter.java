@@ -638,7 +638,6 @@ public class _ObjExporter extends __CartesianExporter {
    *          to the root name of the OBJ file along with the image suffix. The
    *          value should be the name given to the surface.
    * @param data
-   * @param colixes
    * @param dim
    *          A Point representing the width, height of the image.
    * @return The File created or null on failure.
@@ -941,7 +940,6 @@ public class _ObjExporter extends __CartesianExporter {
    * create the v or vn list
    * 
    * @param pts  
-   * @param offset 
    * @param nPts
    * @param m
    * @param prefix

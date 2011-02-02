@@ -1797,6 +1797,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         }
       } else if (type.equals("Jmol")) {
         cmd = "load ";
+      } else if (type.equals("Cube")) {
+        cmd = "isosurface sign red blue ";
       } else if (!type.equals("spt")) {
         evalString("zap; load auto "
             + Escape.escape(fileName)

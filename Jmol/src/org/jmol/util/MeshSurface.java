@@ -35,7 +35,6 @@ public class MeshSurface {
   public int[] vertexSets;
   public int nSets = 0;
   public int checkCount = 2;
-  public int[][] faces;
 
   
 
@@ -51,7 +50,7 @@ public class MeshSurface {
       this.altVertices = vertices;
     this.vertexCount = (nVertices == 0 ? vertices.length : nVertices);
     this.normals = normals;
-    this.normalCount = (nNormals == 0 ? normals.length : nNormals);
+    this.normalCount = (nNormals == 0  && normals != null ? normals.length : nNormals);
   }
   
   public MeshSurface(Point3f[] vertices, float[] vertexValues, int vertexCount,
@@ -75,7 +74,7 @@ public class MeshSurface {
    * @return  faces, if defined (in exporter), otherwise polygonIndexes
    */
   public int[][] getFaces() {
-    return (faces == null ? polygonIndexes : faces);
+    return polygonIndexes;
   }
 
   public void setColix(short colix) {

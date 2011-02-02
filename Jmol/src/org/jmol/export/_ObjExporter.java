@@ -694,7 +694,7 @@ public class _ObjExporter extends __CartesianExporter {
     int width = dim.x;
     int height = dim.y;
     // We write a 3x3 block of pixels for each color 
-    // point so as to avoid antialising by viewer
+    // point so as to avoid antialiasing by viewer
     BufferedImage image = new BufferedImage(width * 3, height * 3,
         BufferedImage.TYPE_INT_ARGB);
     // Write it bottom to top to match direction of UV coordinate v

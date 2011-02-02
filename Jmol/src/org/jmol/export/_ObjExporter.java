@@ -118,6 +118,10 @@ public class _ObjExporter extends __CartesianExporter {
    */
   private int currentTextureOrigin = 1;
 
+  /**
+   * The size of a pixel based on some assumptions about screen size
+   */
+  private float pixelSize;
   public _ObjExporter() {
     debugPrint("_WavefrontObjExporter CTOR");
     commentChar = "# ";
@@ -301,7 +305,7 @@ public class _ObjExporter extends __CartesianExporter {
     }
 
     short colix = Graphics3D.getColix(argb);
-    outputSphere(pt, 0.02f, colix);
+    outputSphere(pt, pixelSize, colix);
   }
 
   /* (non-Javadoc)
@@ -463,6 +467,8 @@ public class _ObjExporter extends __CartesianExporter {
       debugPrint("End initializeOutput (error in super):");
       return false;
     }
+
+    pixelSize = 0.5f / scalePixelsPerAngstrom;
 
     // Get the root path
     int dot = fileName.lastIndexOf(".");
@@ -636,8 +642,7 @@ public class _ObjExporter extends __CartesianExporter {
    *          A Point representing the width, height of the image.
    * @return The File created or null on failure.
    */
-  private File createTextureFile(String name, MeshSurface data,
-                                Point dim) {
+  private File createTextureFile(String name, MeshSurface data, Point dim) {
     // This needs to be kept correlated with what doUV in addMesh does
     debugPrint("createTextureFile: " + name);
     // Do nothing unless all the arrays exist and have the same size
@@ -688,32 +693,27 @@ public class _ObjExporter extends __CartesianExporter {
     // Make a BufferedImage and set the pixels in it
     int width = dim.x;
     int height = dim.y;
-    BufferedImage image = new BufferedImage(width, height,
+    // We write a 3x3 block of pixels for each color 
+    // point so as to avoid antialising by viewer
+    BufferedImage image = new BufferedImage(width * 3, height * 3,
         BufferedImage.TYPE_INT_ARGB);
-    int rgb, nVertices, color;
-    Point3f colors;
-    Point3f sum = new Point3f();
-    int iFace = 0;
     // Write it bottom to top to match direction of UV coordinate v
-    for (int row = height - 1; row >= 0; row--) {
-      for (int col = 0; col < width; col++) {
-        int[] face = data.faces[iFace++];
-        nVertices = face.length;
-        // Get the vertex colors and average them
-        sum.set(0, 0, 0);
-        for (int iVertex : face) {
-          color = g3d.getColorArgbOrGray(colixes[iVertex]);
-          colors = Graphics3D.colorPointFromInt2(color);
-          sum.add(colors);
-        }
-        sum.scale(1.0f / nVertices);
-        rgb = Graphics3D.colorPtToInt(sum);
-        image.setRGB(col, row, rgb);
-        // Stop if all faces are done
-        if (iFace >= nUsed) {
-          break;
-        }
-      }
+    int row = height - 1;
+    int col = 0;
+    Point3f sum = new Point3f();
+    for (int[] face : data.faces) {
+      int nVertices = face.length;
+      // Get the vertex colors and average them
+      sum.set(0, 0, 0);
+      for (int iVertex : face)
+        sum.add(Graphics3D.colorPointFromInt2(g3d.getColorArgbOrGray(colixes[iVertex])));
+      sum.scale(1.0f / nVertices);
+      int rgb = Graphics3D.colorPtToInt(sum);
+      for (int j = 0; j < 3; j++)
+        for (int k = 0; k < 3; k++)          
+          image.setRGB(col * 3 + j, row * 3 + k, rgb); 
+      if ((col = (col + 1) % width) == 0)
+        row--;
     }
 
     // Write the file

@@ -25,7 +25,6 @@
 
 package org.jmol.export;
 
-
 import java.awt.Image;
 import java.util.BitSet;
 import java.util.Hashtable;
@@ -37,7 +36,7 @@ import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
-import javax.vecmath.Vector3f;
+import javax.vecmath.Tuple3f;
 
 import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
@@ -65,19 +64,19 @@ abstract public class __CartesianExporter extends ___Exporter {
     // (The rotation center is generally directly
     // in front of the observer -- not allowing, for example,
     // holding the model in one's hand at waist level and rotating it.)
-    
+
     // But there are good reasons to do it the Jmol way. If you don't, then
     // what happens is that the distortion pans over the moving model
     // and you get an odd lens effect rather than the desired smooth
     // panning. So we must approximate.
-    
+
     return referenceCenter;
   }
-  
+
   protected Point3f getCameraPosition() {
-    
+
     // used for VRML/X3D only
-    
+
     Point3f ptCamera = new Point3f();
     Point3f pt = new Point3f(screenWidth / 2, screenHeight / 2, 0);
     viewer.unTransformPoint(pt, ptCamera);
@@ -85,20 +84,20 @@ abstract public class __CartesianExporter extends ___Exporter {
     // this is NOT QUITE correct when the model has been shifted with CTRL-ALT
     // because in that case the center of distortion is not the screen center,
     // and these simpler perspective models don't allow for that.
-    tempP3.set(screenWidth / 2, screenHeight / 2, cameraDistance * scalePixelsPerAngstrom);
+    tempP3.set(screenWidth / 2, screenHeight / 2, cameraDistance
+        * scalePixelsPerAngstrom);
     viewer.unTransformPoint(tempP3, tempP3);
     tempP3.sub(center);
     ptCamera.add(tempP3);
-    
-    System.out.println(ptCamera +  " " + cameraPosition);
-  //  return ptCamera;
-    
+
+    System.out.println(ptCamera + " " + cameraPosition);
+    //  return ptCamera;
+
     return cameraPosition;
-   
+
   }
 
-  private void setTempPoints(Point3f ptA, Point3f ptB,
-                                boolean isCartesian) {
+  private void setTempPoints(Point3f ptA, Point3f ptB, boolean isCartesian) {
     if (isCartesian) {
       // really first order -- but actual coord
       tempP1.set(ptA);
@@ -109,25 +108,32 @@ abstract public class __CartesianExporter extends ___Exporter {
     }
   }
 
-  protected int getCoordinateMap(Point3f[] vertices, int[] coordMap) {
+  protected int getCoordinateMap(Tuple3f[] vertices, int[] coordMap, BitSet bsValid) {
     int n = 0;
     for (int i = 0; i < coordMap.length; i++) {
-      if (Float.isNaN(vertices[i].x))
+      if (bsValid != null && !bsValid.get(i) || Float.isNaN(vertices[i].x)) {
+        if (bsValid != null)
+          bsValid.clear(i);
         continue;
+      }
       coordMap[i] = n++;
-    }      
+    }
     return n;
   }
 
-  protected int[] getNormalMap(Vector3f[] normals, int nNormals, List<String> vNormals) {
+  protected int[] getNormalMap(Tuple3f[] normals, int nNormals,
+                               BitSet bsValid, List<String> vNormals) {
     Map<String, Integer> htNormals = new Hashtable<String, Integer>();
     int[] normalMap = new int[nNormals];
     for (int i = 0; i < nNormals; i++) {
       String s;
-      if (Float.isNaN(normals[i].x)) {
+      if (bsValid != null && !bsValid.get(i) || Float.isNaN(normals[i].x)){
+        if (bsValid != null)
+          bsValid.clear(i);
         continue;
       }
-      s = (round(normals[i].x) + " " + round(normals[i].y) + " " + round(normals[i].z) + "\n");
+      s = (round(normals[i].x) + " " + round(normals[i].y) + " "
+          + round(normals[i].z) + "\n");
       if (htNormals.containsKey(s)) {
         normalMap[i] = htNormals.get(s).intValue();
       } else {
@@ -140,13 +146,13 @@ abstract public class __CartesianExporter extends ___Exporter {
   }
 
   protected void outputIndices(int[][] indices, int[] map, int nPolygons,
-                                       BitSet bsPolygons, int faceVertexMax) {
+                               BitSet bsPolygons, int faceVertexMax) {
     boolean isAll = (bsPolygons == null);
     int i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit(0));
-    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsPolygons.nextSetBit(i + 1))) 
+    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsPolygons.nextSetBit(i + 1)))
       outputFace(indices[i], map, faceVertexMax);
   }
-  
+
   // these are elaborated in IDTF, MAYA, VRML, or X3D:
 
   protected abstract void outputFace(int[] is, int[] coordMap, int faceVertexMax);
@@ -158,8 +164,9 @@ abstract public class __CartesianExporter extends ___Exporter {
                                      float radius, short colix);
 
   abstract protected boolean outputCylinder(Point3f ptCenter, Point3f pt1,
-                                         Point3f pt2, short colix1,
-                                         byte endcaps, float radius, Point3f ptX, Point3f ptY);
+                                            Point3f pt2, short colix1,
+                                            byte endcaps, float radius,
+                                            Point3f ptX, Point3f ptY);
 
   abstract protected void outputEllipsoid(Point3f center, Point3f[] points,
                                           short colix);
@@ -178,8 +185,8 @@ abstract public class __CartesianExporter extends ___Exporter {
     outputSphere(atom, atom.madAtom / 2000f, atom.getColix());
   }
 
- @Override
-void drawCircle(int x, int y, int z, int diameter, short colix, boolean doFill) {
+  @Override
+  void drawCircle(int x, int y, int z, int diameter, short colix, boolean doFill) {
     // draw circle
     tempP3.set(x, y, z);
     viewer.unTransformPoint(tempP3, tempP1);
@@ -225,8 +232,8 @@ void drawCircle(int x, int y, int z, int diameter, short colix, boolean doFill) 
   }
 
   @Override
-  void fillConeScreen(short colix, byte endcap, int screenDiameter, Point3f screenBase,
-                Point3f screenTip) {
+  void fillConeScreen(short colix, byte endcap, int screenDiameter,
+                      Point3f screenBase, Point3f screenTip) {
     viewer.unTransformPoint(screenBase, tempP1);
     viewer.unTransformPoint(screenTip, tempP2);
     float radius = viewer.unscaleToScreen(screenBase.z, screenDiameter) / 2;
@@ -262,18 +269,19 @@ void drawCircle(int x, int y, int z, int diameter, short colix, boolean doFill) 
 
   @Override
   void fillCylinderScreenMad(short colix, byte endcaps, int mad,
-                    Point3f screenA, Point3f screenB) {
+                             Point3f screenA, Point3f screenB) {
     float radius = mad / 2000f;
     setTempPoints(screenA, screenB, false);
     outputCylinder(null, tempP1, tempP2, colix, endcaps, radius, null, null);
   }
 
   @Override
-  void fillCylinderScreen(short colix, byte endcaps, int screenDiameter, Point3f screenA, 
-                          Point3f screenB) {
-   // vectors, polyhedra
-  int mad = (int) (viewer.unscaleToScreen((screenA.z + screenB.z) / 2, screenDiameter) * 1000);
-  fillCylinderScreenMad(colix, endcaps, mad, screenA, screenB);
+  void fillCylinderScreen(short colix, byte endcaps, int screenDiameter,
+                          Point3f screenA, Point3f screenB) {
+    // vectors, polyhedra
+    int mad = (int) (viewer.unscaleToScreen((screenA.z + screenB.z) / 2,
+        screenDiameter) * 1000);
+    fillCylinderScreenMad(colix, endcaps, mad, screenA, screenB);
   }
 
   @Override
@@ -286,12 +294,12 @@ void drawCircle(int x, int y, int z, int diameter, short colix, boolean doFill) 
   @Override
   void fillSphere(short colix, int diameter, Point3f pt) {
     viewer.unTransformPoint(pt, tempP1);
-    outputSphere(tempP1, viewer.unscaleToScreen(pt.z, diameter) / 2,
-        colix);
+    outputSphere(tempP1, viewer.unscaleToScreen(pt.z, diameter) / 2, colix);
   }
 
   @Override
-  protected void fillTriangle(short colix, Point3f ptA, Point3f ptB, Point3f ptC, boolean twoSided) {
+  protected void fillTriangle(short colix, Point3f ptA, Point3f ptB,
+                              Point3f ptC, boolean twoSided) {
     viewer.unTransformPoint(ptA, tempP1);
     viewer.unTransformPoint(ptB, tempP2);
     viewer.unTransformPoint(ptC, tempP3);
@@ -317,7 +325,7 @@ void drawCircle(int x, int y, int z, int diameter, short colix, boolean doFill) 
   }
 
   protected Matrix4f sphereMatrix = new Matrix4f();
-  
+
   protected void setSphereMatrix(Point3f center, float rx, float ry, float rz,
                                  AxisAngle4f a, Matrix4f sphereMatrix) {
     if (a != null) {
@@ -339,5 +347,5 @@ void drawCircle(int x, int y, int z, int diameter, short colix, boolean doFill) 
     sphereMatrix.m13 = center.y;
     sphereMatrix.m23 = center.z;
     sphereMatrix.m33 = 1;
-  }  
+  }
 }

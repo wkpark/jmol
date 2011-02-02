@@ -309,7 +309,7 @@ public class _VrmlExporter extends __CartesianExporter {
     output("  }\n");
     output("  coordIndex [\n");
     int[] map = new int[nVertices];
-    getCoordinateMap(vertices, map);
+    getCoordinateMap(vertices, map, null);
     outputIndices(indices, map, nPolygons, bsPolygons, faceVertexMax);
     output("  ]\n");
 
@@ -317,7 +317,7 @@ public class _VrmlExporter extends __CartesianExporter {
 
     if (normals != null) {
       List<String> vNormals = new ArrayList<String>();
-      map = getNormalMap(normals, nVertices, vNormals);
+      map = getNormalMap(normals, nVertices, null, vNormals);
       output("  solid FALSE\n  normalPerVertex TRUE\n   normal Normal {\n  vector [\n");
       outputNormals(vNormals);
       output("   ]\n");

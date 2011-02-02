@@ -306,7 +306,7 @@ public class _X3dExporter extends _VrmlExporter {
 
     output("coordIndex='\n");
     int[] map = new int[nVertices];
-    getCoordinateMap(vertices, map);
+    getCoordinateMap(vertices, map, null);
     outputIndices(indices, map, nPolygons, bsPolygons, faceVertexMax);
     output("'\n");
 
@@ -315,7 +315,7 @@ public class _X3dExporter extends _VrmlExporter {
     List<String> vNormals = null;
     if (normals != null) {
       vNormals = new ArrayList<String>();
-      map = getNormalMap(normals, nVertices, vNormals);
+      map = getNormalMap(normals, nVertices, null, vNormals);
       output("  solid='FALSE'\n  normalPerVertex='TRUE'\n  normalIndex='\n");
       outputIndices(indices, map, nPolygons, bsPolygons, faceVertexMax);
       output("'\n");

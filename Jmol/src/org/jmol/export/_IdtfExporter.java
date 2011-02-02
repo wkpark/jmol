@@ -812,7 +812,7 @@ public class _IdtfExporter extends __CartesianExporter {
 
     StringBuffer sbFaceCoordIndices = sbTemp = new StringBuffer();
     int[] map = new int[nVertices];
-    int nCoord = getCoordinateMap(vertices, map);
+    int nCoord = getCoordinateMap(vertices, map, null);
     outputIndices(indices, map, nPolygons, bsPolygons, faceVertexMax);
 
     // normals, part 1
@@ -821,7 +821,7 @@ public class _IdtfExporter extends __CartesianExporter {
     List<String> vNormals = null;
     if (normals != null) {
       vNormals = new ArrayList<String>();
-      map = getNormalMap(normals, nVertices, vNormals);
+      map = getNormalMap(normals, nVertices, null, vNormals);
       outputIndices(indices, map, nPolygons, bsPolygons, faceVertexMax);
     }
 

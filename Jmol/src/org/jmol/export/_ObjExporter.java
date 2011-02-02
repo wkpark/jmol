@@ -891,7 +891,7 @@ public class _ObjExporter extends __CartesianExporter {
     output("# Number of vertices: " + nVertices + "\n");
     outputList(vertices, data.offset, nVertices, matrix, "v ");
     output("# Number of normals: " + nNormals + "\n");
-    outputList(normals, data.offset, nNormals, matrix, "vn ");    
+    outputList(normals, null, nNormals, matrix, "vn ");    
     if (dim != null) {
       // This needs to be kept correlated with what createTextureFile does
       output("# Number of texture coordinates: " + nFaces + "\n");

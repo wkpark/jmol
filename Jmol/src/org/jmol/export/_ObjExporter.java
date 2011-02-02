@@ -398,7 +398,9 @@ public class _ObjExporter extends __CartesianExporter {
       faces[ipt++] = (meshSurface.haveQuads ? polygon : new int[] {
           polygon[0], polygon[1], polygon[2] });
     }
-    meshSurface.faces = faces;
+    MeshSurface data = new MeshSurface(faces, meshSurface.vertices, meshSurface.vertexCount,
+        meshSurface.normals, 0);
+    data.vertexColixes = meshSurface.vertexColixes;
     // Do the texture
     String name = "Surface" + surfaceNum++;
     boolean isSolidColor = (meshSurface.isColorSolid || meshSurface.vertexColixes == null);
@@ -425,7 +427,7 @@ public class _ObjExporter extends __CartesianExporter {
       dim = new Point(width, height);
       debugPrint("  width=" + width + " height=" + height + " size = "
           + (width * height));
-      File file = createTextureFile(name, meshSurface, dim);
+      File file = createTextureFile(name, data, dim);
       if (file == null) {
         System.out.println("Error creating texture file: " + name);
         textureFiles.add("Error creating texture file: " + name);
@@ -449,8 +451,7 @@ public class _ObjExporter extends __CartesianExporter {
     matrix.setIdentity();
     matrix.setTranslation(new Vector3f(meshSurface.offset));
 
-    addMesh(name, meshSurface, matrix, null, meshSurface.colix, dim);
-    meshSurface.faces = null;
+    addMesh(name, data, matrix, null, meshSurface.colix, dim);
   }
 
   // Non-abstract overrides from _Exporter
@@ -685,7 +686,7 @@ public class _ObjExporter extends __CartesianExporter {
 
     // FIXME Fix it to draw a triangle rather than a point
     // FIXME Find the number of unique colors
-    int nUsed = data.faces.length;
+    int nUsed = data.polygonIndexes.length;
     if (nUsed <= 0) {
       debugPrint("createTextureFile: nFaces = 0");
       return imageFile;
@@ -701,7 +702,7 @@ public class _ObjExporter extends __CartesianExporter {
     int row = height - 1;
     int col = 0;
     Point3f sum = new Point3f();
-    for (int[] face : data.faces) {
+    for (int[] face : data.polygonIndexes) {
       int nVertices = face.length;
       // Get the vertex colors and average them
       sum.set(0, 0, 0);

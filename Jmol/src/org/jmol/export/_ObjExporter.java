@@ -694,11 +694,10 @@ public class _ObjExporter extends __CartesianExporter {
     Point3f colors;
     Point3f sum = new Point3f();
     int iFace = 0;
-    int[] face = null;
     // Write it bottom to top to match direction of UV coordinate v
     for (int row = height - 1; row >= 0; row--) {
       for (int col = 0; col < width; col++) {
-        face = data.polygonIndexes[iFace++];
+        int[] face = data.faces[iFace++];
         nVertices = face.length;
         // Get the vertex colors and average them
         sum.set(0, 0, 0);
@@ -901,15 +900,17 @@ public class _ObjExporter extends __CartesianExporter {
       int width = dim.x;
       int height = dim.y;
       float u, v;
-      for (int row = 0, iFace = 0; row < height && iFace < nFaces; row++) {
+      for (int row = 0, iFace = 0; row < height; row++) {
         v = row + .5f;
         if (normalizeUV)
           v /= height;
-        for (int col = 0; col < width && iFace < nFaces; col++, iFace++) {
+        for (int col = 0; col < width; col++) {
           u = col + .5f;
           if (normalizeUV)
             u /= width;
           output("vt " + u + " " + v + "\n");
+          if (++iFace == nFaces)
+            break;
         }
       }
       if (!normalizeUV) {

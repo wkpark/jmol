@@ -508,9 +508,11 @@ public class PngEncoder extends Object {
                                        scrunch);
     try {
       while (rowsLeft > 0) {
-        nRows = Math.min(32767 / (width * (bytesPerPixel + 1)), rowsLeft);
-
-        // nRows = rowsLeft;
+        //         nRows = Math.min(32767 / (width * (bytesPerPixel + 1)), rowsLeft);
+        // What if bytesPerPixel == 3 and width > 8191 ?
+        // then nRows = 0 and we have an infinite loop
+        //
+        nRows = Math.min(32767 / (width * (bytesPerPixel)) + 1, rowsLeft);
 
         int[] pixels = new int[width * nRows];
 

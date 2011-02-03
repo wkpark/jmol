@@ -23,7 +23,7 @@ public interface JmolRendererInterface {
   public abstract String getExportName();
 
   public abstract boolean initializeExporter(String type, Viewer viewer,
-                                             Graphics3D g3d, Object output);
+                                             double privateKey, Graphics3D g3d, Object output);
 
   public abstract boolean isAntialiased();
   
@@ -319,4 +319,5 @@ public interface JmolRendererInterface {
 
   public abstract boolean drawEllipse(Point3f ptAtom, Point3f ptX, Point3f ptY,
                                     boolean fillArc, boolean wireframeOnly);
+
 }

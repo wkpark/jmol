@@ -16359,6 +16359,7 @@ public class ScriptEvaluator {
             fullPathNameOrError = viewer.getFullPathNameOrError(localName);
             localName = fullPathNameOrError[0];
             addShapeProperty(propertyList, "localName", localName);
+            viewer.setPrivateKeyForShape(iShape); // for the "AS" keyword to work
           }
           // just checking here, and getting the full path name
           fullPathNameOrError = viewer.getFullPathNameOrError(filename);

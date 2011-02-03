@@ -9564,5 +9564,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // reset after a state script is read
   }
 
+  boolean initializeExporter(JmolRendererInterface g3dExport,
+                                    String type, Object output) {
+    return  g3dExport.initializeExporter(type, this, privateKey, g3d, output);
+  }
 
+  public void setPrivateKeyForShape(int iShape) {
+    setShapeProperty(iShape, "privateKey", Double.valueOf(privateKey));
+  }
+  
 }

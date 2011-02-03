@@ -51,6 +51,7 @@ public class ImageCreator implements JmolImageCreatorInterface {
   }
   
   public ImageCreator(JmolViewer viewer){
+    // for clipImage only
     this.viewer = (Viewer) viewer;
   }
  
@@ -97,6 +98,8 @@ public class ImageCreator implements JmolImageCreatorInterface {
    */
   public Object createImage(String fileName, String type, Object text_or_bytes,
                             int quality) {
+    // this method may not be accessed, though public, unless 
+    // accessed via viewer, which provides its private key.
     if (!viewer.checkPrivateKey(privateKey))
       return "NO SECURITY";
     // returns message starting with OK or an error message
@@ -115,7 +118,7 @@ public class ImageCreator implements JmolImageCreatorInterface {
         return "NO DATA";
       if (isBytes) {
         if (text_or_bytes instanceof Image) {
-          getImageBytes(type, quality, fileName, text_or_bytes, os);
+          getImageBytes(type, quality, fileName, text_or_bytes, null);
           return fileName;
         }
         len = ((byte[]) text_or_bytes).length;
@@ -169,7 +172,8 @@ public class ImageCreator implements JmolImageCreatorInterface {
     boolean isPDF = type.equalsIgnoreCase("PDF");
     boolean isOsTemp = (os == null && fileName != null && !isPDF);
     boolean asBytes = (os == null && fileName == null && !isPDF);
-    Image image = (appendText instanceof Image ? (Image) appendText : viewer.getScreenImage());
+    boolean isImage = (appendText instanceof Image); 
+    Image image = (isImage ? (Image) appendText : viewer.getScreenImage());
     try {
       if (image == null) {
         errMsg = viewer.getErrorMessage();
@@ -242,13 +246,16 @@ public class ImageCreator implements JmolImageCreatorInterface {
           os.close();
       }
     } catch (IOException e) {
-      viewer.releaseScreenImage();
+      if (!isImage)
+        viewer.releaseScreenImage();
       throw new IOException("" + e);
     } catch (Error er) {
-      viewer.releaseScreenImage();
+      if (!isImage)
+        viewer.releaseScreenImage();
       throw new Error(er);
     }
-    viewer.releaseScreenImage();
+    if (!isImage)
+      viewer.releaseScreenImage();
     if (errMsg != null)
       return errMsg;
     return bytes;

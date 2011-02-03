@@ -196,7 +196,7 @@ class RepaintManager {
       }
       Class<?> export3Dclass = Class.forName("org.jmol.export.Export3D");
       g3dExport = (JmolRendererInterface) export3Dclass.newInstance();
-      isOK = g3dExport.initializeExporter(type, viewer, g3d, output);
+      isOK = viewer.initializeExporter(g3dExport, type, output);
     } catch (Exception e) {
     }
     if (!isOK) {

@@ -46,7 +46,7 @@ abstract class SurfaceFileReader extends SurfaceReader {
     if (binarydoc == null)
       this.os = os; 
     else
-      binarydoc.setOutputStream(os);
+      sg.setOutputStream(binarydoc, os);
   }
   
   @Override

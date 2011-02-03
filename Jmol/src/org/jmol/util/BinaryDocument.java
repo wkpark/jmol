@@ -29,6 +29,8 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.jmol.viewer.Viewer;
+
 
 //import java.io.RandomAccessFile;
 
@@ -56,11 +58,12 @@ public class BinaryDocument {
   protected boolean isBigEndian = true;
 
   public void close() {
-    try {
-      stream.close();
-    } catch (Exception e) {
-      // ignore
-    }
+    if (stream != null)
+      try {
+        stream.close();
+      } catch (Exception e) {
+        // ignore
+      }
     if (os != null) {
       try {
         os.flush();
@@ -129,8 +132,16 @@ public class BinaryDocument {
   private int ioRead(byte[] b, int off, int len) throws Exception {
     int n = stream.read(b, off, len);
     if (n > 0 && os != null)
-      os.write(b, off, n);
+      writeBytes(b, off, n);
     return n;
+  }
+
+  public void writeBytes(byte[] b) throws Exception {
+    os.write(b, 0, b.length);
+  }
+
+  public void writeBytes(byte[] b, int off, int n) throws Exception {
+    os.write(b, off, n);
   }
 
   public String readString(int nChar) throws Exception {
@@ -152,10 +163,15 @@ public class BinaryDocument {
   private short ioReadShort() throws Exception {
     short b = stream.readShort();
     if (os != null)
-      os.write(b);
+      writeShort(b);
     return b;
   }
 
+
+  public void writeShort(short i) throws Exception {
+    os.write((byte) ((i >> 8) & 0xFF));
+    os.write((byte) (i & 0xFF));
+  }
 
   public int readInt() throws Exception {
     nBytes += 4;
@@ -169,7 +185,7 @@ public class BinaryDocument {
     return i;
   }
 
-  private void writeInt(int i) throws Exception {
+  public void writeInt(int i) throws Exception {
     os.write((byte) ((i >> 24) & 0xFF));
     os.write((byte) ((i >> 16) & 0xFF));
     os.write((byte) ((i >> 8) & 0xFF));
@@ -216,7 +232,7 @@ public class BinaryDocument {
     return b;
   }
 
-  private void writeLong(long b) throws Exception {
+  public void writeLong(long b) throws Exception {
     writeInt((int)((b >> 32) & 0xFFFFFFFFl));
     writeInt((int)(b & 0xFFFFFFFFl));
   }
@@ -289,8 +305,9 @@ public class BinaryDocument {
   }
 
   OutputStream os;
-  public void setOutputStream(OutputStream os) {
-    this.os = os;
+  public void setOutputStream(OutputStream os, Viewer viewer, double privateKey) {
+    if (viewer.checkPrivateKey(privateKey))
+      this.os = os;
   }
 
 

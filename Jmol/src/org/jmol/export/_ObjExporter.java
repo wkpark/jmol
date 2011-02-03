@@ -1,5 +1,6 @@
 package org.jmol.export;
 
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
@@ -7,6 +8,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -20,8 +22,10 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.export.image.ImageCreator;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
+import org.jmol.util.BinaryDocument;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.MeshSurface;
@@ -64,12 +68,6 @@ public class _ObjExporter extends __CartesianExporter {
    */
   private boolean normalizeUV = true;
   /** BufferedWriter for the .mtl file. */
-  /**
-   * Specify the texture type. You can find the available formats by using
-   * ImageIO.getWriterFormatNames().
-   */
-  private String textureType = "png";
-
   private BufferedWriter mtlbw;
   /** FileOutputStream for the .mtl file. */
   private FileOutputStream mtlos;
@@ -435,10 +433,10 @@ public class _ObjExporter extends __CartesianExporter {
    * @see org.jmol.export.___Exporter#initializeOutput(org.jmol.viewer.Viewer, org.jmol.g3d.Graphics3D, java.lang.Object)
    */
   @Override
-  boolean initializeOutput(Viewer viewer, Graphics3D g3d, Object output) {
+  boolean initializeOutput(Viewer viewer, double privateKey, Graphics3D g3d, Object output) {
     debugPrint("initializeOutput: + output");
     // Call the super method
-    boolean retVal = super.initializeOutput(viewer, g3d, output);
+    boolean retVal = super.initializeOutput(viewer, privateKey, g3d, output);
     if (!retVal) {
       debugPrint("End initializeOutput (error in super):");
       return false;
@@ -656,8 +654,12 @@ public class _ObjExporter extends __CartesianExporter {
     int height = dim.y;
     // We write a 3x3 block of pixels for each color 
     // point so as to avoid antialiasing by viewer
-    BufferedImage image = new BufferedImage(width * 3, height * 3,
-        BufferedImage.TYPE_INT_ARGB);
+    
+    String textureType = "png";
+
+    byte[][] bytes = (textureType.equals("tga") ? new byte[height * 3][width * 3 * 3] : null);
+    BufferedImage image = (bytes == null ? new BufferedImage(width * 3, height * 3,
+        BufferedImage.TYPE_INT_ARGB) : null);
     // Write it bottom to top to match direction of UV coordinate v
     int row = height - 1;
     int col = 0;
@@ -676,9 +678,24 @@ public class _ObjExporter extends __CartesianExporter {
       } else {
         rgb = g3d.getColorArgbOrGray(colixes[i]);
       }
+      if (bytes == null) {
       for (int j = 0; j < 3; j++)
-        for (int k = 0; k < 3; k++)          
-          image.setRGB(col * 3 + j, row * 3 + k, rgb); 
+        for (int k = 0; k < 3; k++)
+          image.setRGB(col * 3 + j, row * 3 + k, rgb);
+      } else {
+        byte r = (byte) ((rgb >> 16) & 0xFF);
+        byte g = (byte) ((rgb >> 8) & 0xFF);
+        byte b = (byte) (rgb & 0xFF);
+        for (int j = 0; j < 3; j++) {
+          int x = col * 9 + j * 3;
+          for (int k = 0; k < 3; k++) {
+             int y = height * 3 - 1 - (row * 3 + k);
+             bytes[y][x] = b;
+             bytes[y][x + 1] = g;
+             bytes[y][x + 2] = r;
+          }
+        }
+      }
       if ((col = (col + 1) % width) == 0)
         row--;
     }
@@ -687,8 +704,11 @@ public class _ObjExporter extends __CartesianExporter {
     // TODO Fix this to set compression for JPEGs
     Object ret = null;
     try {
+
+
       // in the applet, we allow the user to use a dialog, which can change the file name
-      ret = viewer.createImage(objFileRootName + "_" + name + "." + textureType, "png", image, Integer.MIN_VALUE, 0, 0);
+      ret = createImage(objFileRootName + "_" + name + "." + textureType, textureType, 
+          bytes == null ? image : bytes, width, height);
       if (ret instanceof String)
         name = (String) ret;
       debugPrint("End createTextureFile: " + name);
@@ -697,6 +717,36 @@ public class _ObjExporter extends __CartesianExporter {
       debugPrint("End createTextureFile (" + ex.getMessage() + "):");
       return null;
     }
+  }
+
+  private Object createImage(String fileName, String type, Object image, int width, int height) throws Exception {
+    if (image instanceof Image) {
+      ImageCreator ic = new ImageCreator();
+      // we need the viewer's private key to access the image creator
+      ic.setViewer(viewer, privateKey);
+      return ic.createImage(fileName, type, image, Integer.MIN_VALUE);
+    }
+    // write simple TGA file
+    // see http://www.organicbit.com/closecombat/formats/tga.html
+    // no point in this, and it is much larger than png
+    OutputStream os = new FileOutputStream(fileName);
+    width *= 3;
+    height *= 3;
+    byte[] header = new byte[18];
+    header[2] = 2; // rbg image
+    header[7] = 32;
+    header[12] = (byte) (width & 0xFF);
+    header[13] = (byte) ((width >> 8) & 0xFF);
+    header[14] = (byte) (height & 0xFF);
+    header[15] = (byte) ((height >> 8) & 0xFF);
+    header[16] = 24;
+    os.write(header);
+    byte[][] bytes = (byte[][]) image;
+    for (int i = 0; i < bytes.length; i++)
+      os.write(bytes[i]);
+    os.flush();
+    os.close();
+    return fileName;
   }
 
   /**

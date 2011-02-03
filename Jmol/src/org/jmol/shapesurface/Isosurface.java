@@ -98,6 +98,7 @@ import org.jmol.shape.Shape;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 
+import org.jmol.util.BinaryDocument;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
@@ -116,6 +117,7 @@ import org.jmol.jvxl.readers.Parameters;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -344,6 +346,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return;
     }
 
+    if ("privateKey" == propertyName) {
+      this.privateKey = ((Double) value).doubleValue();
+      return;
+    }
+    
     // Isosurface / SurfaceGenerator both interested
 
     if ("mapColor" == propertyName || "readFile" == propertyName) {
@@ -979,6 +986,12 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   public void invalidateTriangles() {
     thisMesh.invalidatePolygons();
+  }
+
+  private double privateKey;
+  
+  public void setOutputStream(BinaryDocument binaryDoc, OutputStream os) {
+    binaryDoc.setOutputStream(os, viewer, privateKey);
   }
 
   public void fillMeshData(MeshData meshData, int mode, IsosurfaceMesh mesh) {

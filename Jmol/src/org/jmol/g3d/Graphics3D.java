@@ -2892,7 +2892,7 @@ final public class Graphics3D implements JmolRendererInterface {
     return false;
   }
 
-  public boolean initializeExporter(String type, Viewer viewer, Graphics3D g3d,
+  public boolean initializeExporter(String type, Viewer viewer, double privateKey, Graphics3D g3d,
                                     Object output) {
     return false;
   }
@@ -2908,6 +2908,11 @@ final public class Graphics3D implements JmolRendererInterface {
   public boolean drawEllipse(Point3f ptAtom, Point3f ptX, Point3f ptY,
                            boolean fillArc, boolean wireframeOnly) {
     return false;
+  }
+
+  public double getPrivateKey() {
+    // exporter only
+    return 0;
   }
 
 }

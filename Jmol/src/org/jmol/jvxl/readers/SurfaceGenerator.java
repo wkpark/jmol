@@ -1325,5 +1325,11 @@ public class SurfaceGenerator {
       atomDataServer.log(msg);
   }
 
+  void setOutputStream(BinaryDocument binaryDoc, OutputStream os) {
+    if (meshDataServer == null)
+      return;
+     meshDataServer.setOutputStream(binaryDoc, os);    
+  }
+
 
 }

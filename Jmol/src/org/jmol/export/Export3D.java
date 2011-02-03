@@ -49,6 +49,7 @@ import org.jmol.viewer.Viewer;
 final public class Export3D implements JmolRendererInterface {
 
   private ___Exporter exporter;
+  private double privateKey;
 
   private Graphics3D g3d;
   private short colix;
@@ -72,7 +73,7 @@ final public class Export3D implements JmolRendererInterface {
     return exportName;
   }
 
-  public boolean initializeExporter(String type, Viewer viewer, Graphics3D g3d,
+  public boolean initializeExporter(String type, Viewer viewer, double privateKey, Graphics3D g3d,
                                     Object output) {
     exportName = type;
     try {
@@ -91,7 +92,8 @@ final public class Export3D implements JmolRendererInterface {
     slab = g3d.getSlab();
     width = g3d.getRenderWidth();
     height = g3d.getRenderHeight();
-    return exporter.initializeOutput(viewer, g3d, output);
+    this.privateKey = privateKey;
+    return exporter.initializeOutput(viewer, privateKey, g3d, output);
   }
 
   public String finalizeOutput() {
@@ -831,6 +833,10 @@ final public class Export3D implements JmolRendererInterface {
 
   public void setTranslucentCoverOnly(boolean TF) {
     // ignore
+  }
+
+  public double getPrivateKey() {
+    return privateKey;
   }
 
 }

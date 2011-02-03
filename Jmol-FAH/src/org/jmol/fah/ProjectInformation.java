@@ -1777,12 +1777,14 @@ public class ProjectInformation {
       }
       if (info._fciPreferred != null) {
         outputInfoFCI(info._fciPreferred, separator);
+        outputText(" "); //$NON-NLS-1$
+        outputText(Double.toString(((double) (info._fciPreferred.intValue() / 864)) / 100));
         separator = true;
       }
       if (info._psPreferred != null) {
         outputInfoPS(info._psPreferred, separator);
         outputText(" "); //$NON-NLS-1$
-        outputText(Integer.toString(info._psPreferred.intValue() / 86400));
+        outputText(Double.toString(((double) (info._psPreferred.intValue() / 864)) / 100));
         separator = true;
       }
       outputNewLine();
@@ -1808,12 +1810,14 @@ public class ProjectInformation {
       }
       if (info._fciDeadline != null) {
         outputInfoFCI(info._fciDeadline, separator);
+        outputText(" "); //$NON-NLS-1$
+        outputText(Double.toString(((double) (info._fciDeadline.intValue() / 864)) / 100));
         separator = true;
       }
       if (info._psDeadline != null) {
         outputInfoPS(info._psDeadline, separator);
         outputText(" "); //$NON-NLS-1$
-        outputText(Integer.toString(info._psDeadline.intValue() / 86400));
+        outputText(Double.toString(((double) (info._psDeadline.intValue() / 864)) / 100));
         separator = true;
       }
       outputNewLine();

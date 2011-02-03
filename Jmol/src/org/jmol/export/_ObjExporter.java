@@ -8,7 +8,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+//import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -25,7 +25,6 @@ import javax.vecmath.Vector3f;
 import org.jmol.export.image.ImageCreator;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
-import org.jmol.util.BinaryDocument;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.MeshSurface;
@@ -683,6 +682,7 @@ public class _ObjExporter extends __CartesianExporter {
         for (int k = 0; k < 3; k++)
           image.setRGB(col * 3 + j, row * 3 + k, rgb);
       } else {
+        /*  TGA test -- not worth it 
         byte r = (byte) ((rgb >> 16) & 0xFF);
         byte g = (byte) ((rgb >> 8) & 0xFF);
         byte b = (byte) (rgb & 0xFF);
@@ -695,6 +695,7 @@ public class _ObjExporter extends __CartesianExporter {
              bytes[y][x + 2] = r;
           }
         }
+        */
       }
       if ((col = (col + 1) % width) == 0)
         row--;
@@ -719,6 +720,15 @@ public class _ObjExporter extends __CartesianExporter {
     }
   }
 
+  /**
+   * @param fileName 
+   * @param type 
+   * @param image 
+   * @param width  
+   * @param height 
+   * @return        the file name
+   * @throws Exception 
+   */
   private Object createImage(String fileName, String type, Object image, int width, int height) throws Exception {
     if (image instanceof Image) {
       ImageCreator ic = new ImageCreator();
@@ -726,6 +736,7 @@ public class _ObjExporter extends __CartesianExporter {
       ic.setViewer(viewer, privateKey);
       return ic.createImage(fileName, type, image, Integer.MIN_VALUE);
     }
+    /*  TGA test -- not worth it 
     // write simple TGA file
     // see http://www.organicbit.com/closecombat/formats/tga.html
     // no point in this, and it is much larger than png
@@ -746,6 +757,7 @@ public class _ObjExporter extends __CartesianExporter {
       os.write(bytes[i]);
     os.flush();
     os.close();
+    */
     return fileName;
   }
 

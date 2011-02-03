@@ -534,10 +534,12 @@ public class NWChemReader extends MOReader {
       // first skip over the dummy atoms (not sure whether that really is needed..)
       while (atoms[i].elementNumber == 0)
         ++i;
-      // assign the partial charge
-      if (readLine() == null)
-        return;
-      tokens = getTokens();
+      do {
+        // assign the partial charge
+        if (readLine() == null || line.length() < 3)
+          return;
+        tokens = getTokens();
+      } while (tokens[0].indexOf(".") >= 0);
       atoms[i].partialCharge = parseInt(tokens[2]) - parseFloat(tokens[3]);
     }
   }
@@ -913,4 +915,35 @@ public class NWChemReader extends MOReader {
     energyUnits = "a.u.";
     setMOData(false);
   }
+
+  /*
+------------------------------------------------------------
+EAF file 0: "./CeO2-ECP-RHF.aoints.0" size=19922944 bytes
+------------------------------------------------------------
+               write      read    awrite     aread      wait
+               -----      ----    ------     -----      ----
+     calls:       38        15         0       555       555
+   data(b): 1.99e+07  7.86e+06  0.00e+00  2.91e+08
+   time(s): 5.03e-02  3.82e-03  0.00e+00  1.17e-01  5.40e-05
+rate(mb/s): 3.96e+02  2.06e+03  0.00e+00* 2.49e+03*
+------------------------------------------------------------
+* = Effective rate.  Full wait time used for read and write.
+
+   */
+  
+  private boolean purging;
+  @Override
+  public String readLine() throws Exception {
+    super.readLine();
+    if (!purging && line != null && line.startsWith("--")) {
+      purging = true;
+      discardLinesUntilStartsWith("*");
+      readLine();
+      purging = false;
+      super.readLine();
+    }
+    return line;
+ }
+
+
 }

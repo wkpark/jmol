@@ -656,6 +656,9 @@ public class NWChemReader extends MOReader {
    * 
    */
 
+  private static String DS_LIST = "d2-   d1-   d0    d1+   d2+";
+  private static String FS_LIST = "f3-   f2-   f1-   f0    f1+   f2+   f3+";
+//  private static String FS_LIST = "f3+   f2+   f1+   f0    f1-   f2-   f3-";
   private static String DC_LIST = "DXX   DXY   DXZ   DYY   DYZ   DZZ";
   private static String FC_LIST = "XXX   XXY   XXZ   XYY   XYZ   XZZ   YYY   YYZ   YZZ   ZZZ";
 
@@ -663,12 +666,15 @@ public class NWChemReader extends MOReader {
     gaussianCount = 0;
     shellCount = 0;
     nBasisFunctions = 0;
-    getDFMap(DC_LIST, JmolAdapter.SHELL_D_CARTESIAN, CANONICAL_DC_LIST, 3);
-    getDFMap(FC_LIST, JmolAdapter.SHELL_F_CARTESIAN, CANONICAL_FC_LIST, 3);
 
     boolean isD6F10 = (line.indexOf("cartesian") >= 0);
-    if (!isD6F10)
-      return; //TODO don't know exact ordering for spherical...
+    if (isD6F10) {
+      getDFMap(DC_LIST, JmolAdapter.SHELL_D_CARTESIAN, CANONICAL_DC_LIST, 3);
+      getDFMap(FC_LIST, JmolAdapter.SHELL_F_CARTESIAN, CANONICAL_FC_LIST, 3);
+    } else {
+      getDFMap(DS_LIST, JmolAdapter.SHELL_D_SPHERICAL, CANONICAL_DS_LIST, 2);
+      getDFMap(FS_LIST, JmolAdapter.SHELL_F_SPHERICAL, CANONICAL_FS_LIST, 2);
+    }
     shells = new ArrayList<int[]>();
     Map<String, List<List<Object[]>>> atomInfo = new Hashtable<String, List<List<Object[]>>>();
     String atomSym = null;
@@ -685,8 +691,6 @@ public class NWChemReader extends MOReader {
       if (nBlankLines >= 2)
         break;
       if (parseInt(line) == Integer.MIN_VALUE) {
-        if (line.indexOf("Summary") >= 0)
-          break;
         // next atom type
         atomSym = getTokens()[0];
         atomData = new ArrayList<List<Object[]>>();
@@ -732,7 +736,8 @@ public class NWChemReader extends MOReader {
         }
         int[] slater = new int[4];
         slater[0] = i;
-        slater[1] = JmolAdapter.getQuantumShellTagID(type);
+        slater[1] = (isD6F10 ? JmolAdapter.getQuantumShellTagID(type)
+            : JmolAdapter.getQuantumShellTagIDSpherical(type));
         slater[2] = gaussianCount;
         slater[3] = nGaussians;
         shells.add(slater);
@@ -804,7 +809,8 @@ public class NWChemReader extends MOReader {
     int moCount = 0;
     moInfo = new Hashtable<Integer, Map<String, Object>>();
     while (line != null) {
-      while ((line.length() < 3 || line.charAt(1) == ' ') && line.indexOf("Final MO") < 0) {
+      while ((line.length() < 3 || line.charAt(1) == ' ')
+          && line.indexOf("Final MO") < 0) {
         readLine();
       }
       if (line.charAt(1) != 'V')
@@ -828,16 +834,17 @@ public class NWChemReader extends MOReader {
         coefs = new float[nBasisFunctions];
         mo.put("coefficients", coefs);
       } else {
-        moInfo.put(Integer.valueOf(iMo), mo);        
+        moInfo.put(Integer.valueOf(iMo), mo);
       }
 
       //    68      2.509000   5 C  py               39     -2.096777   3 C  pz        
       while (readLine() != null && line.length() > 3) {
         if (readROHFonly) {
-        tokens = getTokens();
-        coefs[parseInt(tokens[0]) - 1] = parseFloat(tokens[1]);
-        if (tokens.length == 10)
-          coefs[parseInt(tokens[5]) - 1] = parseFloat(tokens[6]);
+          tokens = getTokens();
+          coefs[parseInt(tokens[0]) - 1] = parseFloat(tokens[1]);
+          int pt = tokens.length / 2;
+          if (pt == 5 || pt == 6)
+            coefs[parseInt(tokens[pt]) - 1] = parseFloat(tokens[pt + 1]);
         }
       }
     }

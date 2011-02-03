@@ -159,7 +159,7 @@ abstract public class ModelSet extends ModelCollection {
   }
 
   public void setTrajectory(int modelIndex) {
-    if (modelIndex < 0 || !models[modelIndex].isTrajectory)
+    if (modelIndex < 0 || !isTrajectory(modelIndex))
       return;
     // The user has used the MODEL command to switch to a new set of atom coordinates
     // Or has specified a trajectory in a select, display, or hide command.
@@ -618,7 +618,7 @@ abstract public class ModelSet extends ModelCollection {
         if (t != null && t.length() > 0)
           commands.append("  frame " + getModelNumberDotted(i)
               + "; frame title " + Escape.escape(t) + ";\n");
-        if (models[i].orientation != null)
+        if (models[i].orientation != null && !isTrajectorySubFrame(i))
           commands.append("  frame " + getModelNumberDotted(i) + "; "
               + models[i].orientation.getMoveToText(false) + "\n");
       }
@@ -816,7 +816,7 @@ abstract public class ModelSet extends ModelCollection {
   public BitSet addHydrogens(List<Atom> vConnections, Point3f[] pts) {
     int modelIndex = modelCount - 1;
     BitSet bs = new BitSet();
-    if (models[modelIndex].isTrajectory || models[modelIndex].getGroupCount() > 1) {
+    if (isTrajectory(modelIndex) || models[modelIndex].getGroupCount() > 1) {
       return bs; // can't add atoms to a trajectory or a system with multiple groups!
     }
     growAtomArrays(atomCount + pts.length);

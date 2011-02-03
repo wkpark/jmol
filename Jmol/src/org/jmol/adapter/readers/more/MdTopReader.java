@@ -109,8 +109,9 @@ public class MdTopReader extends ForceFieldReader {
         j++;
       setAtomCoord(atom, (i % 100)*2, j*2, 0);
       atom.isHetero = JmolAdapter.isHetero(atom.group3);
-      String atomType = atom.atomName;
-      atomType = atomType.substring(atomType.indexOf('\0') + 1);
+      int pt = atom.atomName.indexOf('\0');
+      String atomType = atom.atomName.substring(pt + 1);
+      atom.atomName = atom.atomName.substring(0, pt);
       if (!getElementSymbol(atom, atomType))
         atom.elementSymbol = deducePdbElementSymbol(atom.isHetero, atom.atomName,
             atom.group3);

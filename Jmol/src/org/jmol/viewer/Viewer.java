@@ -1907,10 +1907,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         msg += (i == 0 ? "" : ",") + fileNames[i];
       Logger.info("openFiles(" + fileNames.length + ") " + ms + " ms");
       fileNames = (String[]) htParams.get("fullPathNames");
+      String[] fileTypes = (String[]) htParams.get("fileTypes");
       String s = loadScript.toString();
-      for (int i = 0; i < fileNames.length; i++)
+      for (int i = 0; i < fileNames.length; i++) {
+        String fname = fileNames[i];
+        if (fileTypes != null && fileTypes[i] != null)
+          fname = fileTypes[i] + "::" + fname;
         s = TextFormat.simpleReplace(s, "$FILENAME" + (i + 1) + "$", Escape
-            .escape(fileNames[i].replace('\\', '/')));
+            .escape(fname.replace('\\', '/')));
+      }
 
       loadScript = new StringBuffer(s);
     } else {

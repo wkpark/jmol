@@ -358,14 +358,14 @@ public abstract class AtomSetCollectionReader {
       } else {
         firstLastStep = (int[]) val;
       }
-      templateAtomCount = ((Integer) htParams.get("templateAtomCount"))
-          .intValue();
     } else if (htParams.containsKey("firstLastStep")) {
       firstLastStep = (int[]) htParams.get("firstLastStep");
     } else if (htParams.containsKey("bsModels")) {
-      isTrajectory = htParams.containsKey("isTrajectory");
       bsModels = (BitSet) htParams.get("bsModels");
     }
+    if (htParams.containsKey("templateAtomCount"))
+      templateAtomCount = ((Integer) htParams.get("templateAtomCount"))
+      .intValue();
     if (bsModels != null || firstLastStep != null)
       desiredModelNumber = Integer.MIN_VALUE;
     if (bsModels == null && firstLastStep != null) {

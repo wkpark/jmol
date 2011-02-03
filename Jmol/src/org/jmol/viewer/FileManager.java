@@ -250,6 +250,7 @@ public class FileManager {
       namesAsGiven[i] = nameAsGiven;
     }
     htParams.put("fullPathNames", fullPathNames);
+    htParams.put("fileTypes", fileTypes);
     FilesReader filesReader = new FilesReader(fullPathNames, namesAsGiven,
         fileTypes, null, htParams, isAppend);
     filesReader.run();

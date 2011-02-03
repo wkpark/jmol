@@ -875,6 +875,10 @@ abstract public class ModelCollection extends BondCollection {
     return bs;
   }
   
+  protected boolean isTrajectorySubFrame(int i) {
+    return (models[i].isTrajectory && models[i].trajectoryBaseIndex != i);
+  }
+
   public void selectDisplayedTrajectories(BitSet bs) {
     //when a trajectory is selected, the atom's modelIndex is
     //switched to that of the selected trajectory
@@ -978,17 +982,14 @@ abstract public class ModelCollection extends BondCollection {
   public int getBioPolymerCount() {
     int polymerCount = 0;
     for (int i = modelCount; --i >= 0;)
-      if (!models[i].isTrajectory || models[i].trajectoryBaseIndex == i)
+      if (!isTrajectorySubFrame(i))
         polymerCount += models[i].getBioPolymerCount();
     return polymerCount;
   }
 
   public int getBioPolymerCountInModel(int modelIndex) {
-    if (modelIndex < 0)
-      return getBioPolymerCount();
-    if (models[modelIndex].isTrajectory && models[modelIndex].trajectoryBaseIndex != modelIndex)
-      return 0;
-    return models[modelIndex].getBioPolymerCount();
+    return (modelIndex < 0 ? getBioPolymerCount()
+        : isTrajectorySubFrame(modelIndex) ? 0 : models[modelIndex].getBioPolymerCount());
   }
 
   public void getPolymerPointsAndVectors(BitSet bs, List<Point3f[]> vList) {
@@ -3989,7 +3990,7 @@ abstract public class ModelCollection extends BondCollection {
 
   public void appendLoadStates(StringBuffer commands) {
     for (int i = 0; i < modelCount; i++) { 
-      if (isJmolDataFrame(i))
+      if (isJmolDataFrame(i) || isTrajectorySubFrame(i))
         continue;
       int pt = commands.indexOf(models[i].loadState);
       if (pt < 0 || pt != commands.lastIndexOf(models[i].loadState))

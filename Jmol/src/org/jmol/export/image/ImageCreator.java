@@ -95,15 +95,15 @@ public class ImageCreator implements JmolImageCreatorInterface {
    * @param quality
    * @return          null (canceled) or a message starting with OK or an error message
    */
-  public Object createImage(String fileName, String type, Object text_or_bytes, 
+  public Object createImage(String fileName, String type, Object text_or_bytes,
                             int quality) {
     if (!viewer.checkPrivateKey(privateKey))
       return "NO SECURITY";
     // returns message starting with OK or an error message
-    boolean isBytes = (text_or_bytes instanceof byte[]);
+    boolean isBytes = (text_or_bytes instanceof byte[] || text_or_bytes instanceof Image);
     boolean appendText = (text_or_bytes instanceof Object[]);
     if (appendText)
-      text_or_bytes = ((Object[])text_or_bytes)[0];
+      text_or_bytes = ((Object[]) text_or_bytes)[0];
     String text = (isBytes ? null : (String) text_or_bytes);
     boolean isText = (quality == Integer.MIN_VALUE);
     FileOutputStream os = null;
@@ -114,6 +114,10 @@ public class ImageCreator implements JmolImageCreatorInterface {
       if ((isText || isBytes) && text_or_bytes == null)
         return "NO DATA";
       if (isBytes) {
+        if (text_or_bytes instanceof Image) {
+          getImageBytes(type, quality, fileName, text_or_bytes, os);
+          return fileName;
+        }
         len = ((byte[]) text_or_bytes).length;
         os = new FileOutputStream(fileName);
         os.write((byte[]) text_or_bytes);
@@ -127,10 +131,10 @@ public class ImageCreator implements JmolImageCreatorInterface {
         bw.write(text);
         bw.close();
         os = null;
-      } else { 
+      } else {
         len = 1;
-        Object bytesOrError = getImageBytes(type, quality, fileName, 
-            (appendText ? text_or_bytes :  null ), null);
+        Object bytesOrError = getImageBytes(type, quality, fileName,
+            (appendText ? text_or_bytes : null), null);
         if (bytesOrError instanceof String)
           return bytesOrError;
         byte[] bytes = (byte[]) bytesOrError;
@@ -152,8 +156,9 @@ public class ImageCreator implements JmolImageCreatorInterface {
         }
       }
     }
-    return (len < 0 ? "Creation of " + fileName + " failed: " + viewer.getErrorMessageUntranslated() : "OK " + type
-        + " " + len + " " + fileName
+    return (len < 0 ? "Creation of " + fileName + " failed: "
+        + viewer.getErrorMessageUntranslated() : "OK " + type + " " + len + " "
+        + fileName
         + (quality == Integer.MIN_VALUE ? "" : "; quality=" + quality));
   }
 
@@ -164,7 +169,7 @@ public class ImageCreator implements JmolImageCreatorInterface {
     boolean isPDF = type.equalsIgnoreCase("PDF");
     boolean isOsTemp = (os == null && fileName != null && !isPDF);
     boolean asBytes = (os == null && fileName == null && !isPDF);
-    Image image = viewer.getScreenImage();
+    Image image = (appendText instanceof Image ? (Image) appendText : viewer.getScreenImage());
     try {
       if (image == null) {
         errMsg = viewer.getErrorMessage();
@@ -224,11 +229,13 @@ public class ImageCreator implements JmolImageCreatorInterface {
                 .getApplicationInterface("jmolpanel.PdfCreator");
             errMsg = pci.createPdfDocument(fileName, image);
         }
-        if (appendText != null && os != null)
-          os.write(
-              (appendText instanceof byte[] ? 
-                  (byte[]) appendText 
-                : ((String) appendText).getBytes()));
+        if (appendText != null && os != null) {
+          byte[] b = (appendText instanceof byte[] ? 
+                (byte[]) appendText 
+              : appendText instanceof String ? ((String) appendText).getBytes() : null);
+          if (b != null)
+            os.write(b);
+        }
         if (os != null)
           os.flush();
         if (isOsTemp)

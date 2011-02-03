@@ -14,7 +14,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.imageio.ImageIO;
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
@@ -414,6 +413,7 @@ public class _ObjExporter extends __CartesianExporter {
       } else if (file.length() == 0) {
         error = " [Empty]";
       }
+      
       textureFiles.add(file.length() + " (" + width + "x" + height + ") "
           + file.getPath() + error);
       // Add the texture file to the material
@@ -633,29 +633,15 @@ public class _ObjExporter extends __CartesianExporter {
     // of the same name (silently) so we will not have an inconsistent set of
     // files.  Create the file even if it will be empty so we can denote that
     // in the console output.
-    File imageFile = null;
-    try {
-      imageFile = new File(objFileRootName + "_" + name + "." + textureType);
-      if (imageFile.exists()) {
-        imageFile.delete();
-      }
-      imageFile.createNewFile();
-      System.out.println("_WavefrontObjExporter writing to "
-          + imageFile.getAbsolutePath());
-    } catch (Exception ex) {
-      debugPrint("End createTextureFile (" + ex.getMessage() + "):");
-      return imageFile;
-    }
-
     // Check input 
     short[] colixes = (data.polygonColixes == null ? data.vertexColixes : data.polygonColixes);
-    if (colixes == null || data == null || colixes.length == 0) {
+    if (colixes == null || colixes.length == 0) {
       debugPrint("createTextureFile: Array problem");
       debugPrint("  colixes=" + colixes + " data=" + data);
       if (colixes != null) {
         debugPrint("  colixes.length=" + colixes.length);
       }
-      return imageFile;
+      return null;
     }
 
     // FIXME Fix it to draw a triangle rather than a point
@@ -663,7 +649,7 @@ public class _ObjExporter extends __CartesianExporter {
     int nUsed = data.polygonIndexes.length;
     if (nUsed <= 0) {
       debugPrint("createTextureFile: nFaces = 0");
-      return imageFile;
+      return null;
     }
     // Make a BufferedImage and set the pixels in it
     int width = dim.x;
@@ -699,15 +685,18 @@ public class _ObjExporter extends __CartesianExporter {
 
     // Write the file
     // TODO Fix this to set compression for JPEGs
+    Object ret = null;
     try {
-      ImageIO.write(image, textureType, imageFile);
-    } catch (IOException ex) {
+      // in the applet, we allow the user to use a dialog, which can change the file name
+      ret = viewer.createImage(objFileRootName + "_" + name + "." + textureType, "png", image, Integer.MIN_VALUE, 0, 0);
+      if (ret instanceof String)
+        name = (String) ret;
+      debugPrint("End createTextureFile: " + name);
+      return new File(name);
+    } catch (Exception ex) {
       debugPrint("End createTextureFile (" + ex.getMessage() + "):");
       return null;
     }
-
-    debugPrint("End createTextureFile: " + name);
-    return imageFile;
   }
 
   /**

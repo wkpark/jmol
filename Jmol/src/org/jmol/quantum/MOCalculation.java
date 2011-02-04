@@ -1020,7 +1020,7 @@ public class MOCalculation extends QuantumCalculation implements
             f1n = af1n * (c1n_yzz * cyzz - c1n_yyy * cyyy - c1n_xxy * cxxy);
             f2p = af2p * (c2p_xxz_yyz * (cxxz - cyyz));
             f2n = af2n * cxyz;
-            f3p = af3p * (c3p_xxx * cxxx - c3p_xyy * cxyy);
+            f3p = norm4 * af3p * (c3p_xxx * cxxx - c3p_xyy * cxyy);
             f3n = -af3n * (c3n_yyy * cyyy - c3n_xxy * cxxy);
             voxelDataTemp[ix][iy][iz] += (f0 + f1p + f1n + f2p + f2n + f3p + f3n)
                 * eXY * EZ[iz];

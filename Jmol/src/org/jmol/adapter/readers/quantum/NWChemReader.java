@@ -101,16 +101,19 @@ public class NWChemReader extends MOReader {
     */
   @Override
   protected boolean checkLine() throws Exception {
+
+    if (line.trim().startsWith("NWChem")) {
+      readNWChemLine();
+      return true;
+    }
+
     if (line.startsWith("          Step")) {
       init();
       return true;
     }
-    if (line.startsWith("      Symmetry information")) {
-      readSymmetry();
-      return true;
-    }
     if (line.indexOf("  wavefunction    = ") >= 0) {
-      calculationType = line.substring(line.indexOf("=") + 1).trim() + "(NWCHEM)";
+      calculationType = line.substring(line.indexOf("=") + 1).trim()
+          + "(NWCHEM)";
       moData.put("calculationType", calculationType);
       return true;
     }
@@ -122,52 +125,76 @@ public class NWChemReader extends MOReader {
       readAtSign();
       return true;
     }
-    if (line.startsWith("      Optimization converged")) {
-      converged = true;
-      return true;
-    }
-    if (line.indexOf("Output coordinates in angstroms") >= 0) {
-      equivalentAtomSets++;
-      readAtoms();
-      return true;
-    }
-    if (line.indexOf("ENERGY GRADIENTS") >= 0) {
-      equivalentAtomSets++;
-      readGradients();
-      return true;
-    }
-    if (line.indexOf("NWChem Nuclear Hessian and Frequency Analysis") >= 0) {
-      readFrequencies();
-      return true;
-    }
     if (line.startsWith(" Task  times")) {
       init();
       taskNumber++; // starting a new task
       return true;
     }
-    if (line.trim().startsWith("NWChem")) {
-      readNWChemLine();
+    if (line.startsWith("      Optimization converged")) {
+      converged = true;
       return true;
     }
+    if (line.startsWith("      Symmetry information")) {
+      readSymmetry();
+      return true;
+    }
+    if (line.indexOf("Output coordinates in angstroms") >= 0) {
+      if (!doGetModel(++modelNumber))
+        return checkLastModel();
+      equivalentAtomSets++;
+      readAtoms();
+      return true;
+    }
+    if (!doProcessLines)
+      return true;
+
+    if (line.indexOf("NWChem Nuclear Hessian and Frequency Analysis") >= 0) {
+      readFrequencies();
+      return true;
+    }
+
+    if (line.indexOf("ENERGY GRADIENTS") >= 0) {
+      equivalentAtomSets++;
+      readGradients();
+      return true;
+    }
+
     if (line.startsWith("  Mulliken analysis of the total density")) {
       // only do this if I have read an atom set in this task/step
-      if (equivalentAtomSets > 0)
-        readPartialCharges();
+      if (equivalentAtomSets == 0)
+        return true;
+      readPartialCharges();
       return true;
     }
-    if (line.contains("Basis \"ao basis\"")) {
-      readBasis();
-      return true;
+    if (line.contains("Basis \"ao basis\"") && readMolecularOrbitals) {
+      return readBasis();
     }
     if (line.contains("Final Molecular Orbital Analysis")) {
-      return readMolecularOrbitalAnalysis();
+      if (equivalentAtomSets == 0)
+        return true;
+      return readMolecularOrbitalAnalysis(true);
+    }
+
+    if (line.contains("Final Alpha Molecular Orbital Analysis")) {
+      if (equivalentAtomSets == 0)
+        return true;
+      alphaBeta = "alpha ";
+      return readMolecularOrbitalAnalysis(true);
+    }
+
+    if (line.contains("Final Beta Molecular Orbital Analysis")) {
+      if (equivalentAtomSets == 0)
+        return true;
+      return readMolecularOrbitalAnalysis(false);
     }
 
     if (!readROHFonly && line.contains("Final MO vectors")) {
-      readMolecularOrbitalVectors();
+      if (equivalentAtomSets == 0)
+        return true;
+      return readMolecularOrbitalVectors();
     }
 
-    return true;//checkNboLine();
+    return true;
   }
 
   private void init() {
@@ -662,7 +689,7 @@ public class NWChemReader extends MOReader {
   private static String DC_LIST = "DXX   DXY   DXZ   DYY   DYZ   DZZ";
   private static String FC_LIST = "XXX   XXY   XXZ   XYY   XYZ   XZZ   YYY   YYZ   YZZ   ZZZ";
 
-  private void readBasis() throws Exception {
+  private boolean readBasis() throws Exception {
     gaussianCount = 0;
     shellCount = 0;
     nBasisFunctions = 0;
@@ -749,6 +776,7 @@ public class NWChemReader extends MOReader {
     gaussians = new float[gaussianCount][];
     for (int i = 0; i < gaussianCount; i++)
       gaussians[i] = gdata.get(i);
+    return true;
   }
 
   /*
@@ -789,29 +817,31 @@ public class NWChemReader extends MOReader {
 
   private Map<Integer, Map<String, Object>> moInfo;
   
-  private boolean readMolecularOrbitalAnalysis() throws Exception {
-    // note -- this is preliminary. Should be connecting the correct Gaussians
-    // with the correct shells and D/F subshells, at least for cartesians, 
-    // but we may have a problem with:
-    // (a) alpha/beta orbitals (unchecked)
-    // (b) normalization. (not correct)
-    //     With or without "isNormalized" being set TRUE, we see a problem
-    //     with integration. Using, for example:
-    //       set DEBUG; mo HOMO
-    //     we see too-low integrated density being reported.
-    //     I don't know if this is because only a selected subset of the
-    //     contributing orbitals are included (doubt that) or because
-    //     NWChem normalizes these orbitals in a different way.
-    //
+  int moCount;
+  
+  private boolean readMolecularOrbitalAnalysis(boolean doClear) throws Exception {
 
     if (shells == null)
       return true;
     int moCount = 0;
-    moInfo = new Hashtable<Integer, Map<String, Object>>();
+    boolean isBeta = false;
+    if (doClear && !readROHFonly) {
+      moInfo = new Hashtable<Integer, Map<String, Object>>();
+    }
     while (line != null) {
       while ((line.length() < 3 || line.charAt(1) == ' ')
-          && line.indexOf("Final MO") < 0) {
+          && line.indexOf("Final") < 0) {
         readLine();
+      }
+      Logger.info(line);
+      if (line.indexOf("Final") >= 0) {
+        if (line.indexOf("MO") >= 0)
+          break;
+        if (line.indexOf("Final Beta") >= 0) {
+          isBeta = true;
+        }
+        readLine();
+        continue;
       }
       if (line.charAt(1) != 'V')
         break;
@@ -834,7 +864,7 @@ public class NWChemReader extends MOReader {
         coefs = new float[nBasisFunctions];
         mo.put("coefficients", coefs);
       } else {
-        moInfo.put(Integer.valueOf(iMo), mo);
+        moInfo.put(Integer.valueOf(isBeta ? -iMo : iMo), mo);
       }
 
       //    68      2.509000   5 C  py               39     -2.096777   3 C  pz        
@@ -849,7 +879,8 @@ public class NWChemReader extends MOReader {
       }
     }
     energyUnits = "a.u.";
-    setMOData(false);
+    if (readROHFonly)
+      setMOData(false);
     return false;
   }
 
@@ -872,18 +903,33 @@ public class NWChemReader extends MOReader {
    1      -0.00000    -0.00000     0.02285    -0.00000    -0.00000     0.00000
    
    */
-  private void readMolecularOrbitalVectors() throws Exception {
+  private boolean readMolecularOrbitalVectors() throws Exception {
 
     if (shells == null)
-      return;
+      return true;
     Map<String, Object>[] mos = null;
     List<String>[] data = null;
     int moCount = 0;
+    int iListed = 0;
     int ptOffset = -1;
     int fieldSize = 0;
     int nThisLine = 0;
     discardLines(5);
-    while (readLine() != null && parseInt(line) == moCount + 1) {
+    boolean isBeta = false;
+    boolean betaOnly = !filterMO();
+    while (readLine() != null) {
+      if (parseInt(line) != iListed + 1) {
+        if (line.indexOf("beta") < 0)
+          break;
+        alphaBeta = "beta ";
+        if (!filterMO())
+          break;
+        isBeta = true;
+        iListed = 0;
+        readLine();
+        continue;
+      }
+      
       readLine();
       String[] tokens = getTokens();
       if (Logger.debugging) {
@@ -911,16 +957,20 @@ public class NWChemReader extends MOReader {
           iCoeff++;
         }
         mos[iMo].put("coefficients", coefs);
-        mos[iMo].put("type", "full " + (++moCount));
-        Map<String, Object> mo = moInfo.get(Integer.valueOf(moCount));
+        mos[iMo].put("type", alphaBeta + " "            + (++iListed));
+        ++moCount;
+        Map<String, Object> mo = (moInfo == null ? null : moInfo.get(Integer
+            .valueOf(isBeta ? -iListed : iListed)));
         if (mo != null)
           mos[iMo].putAll(mo);
-        setMO(mos[iMo]);
+        if (!betaOnly || isBeta)
+          setMO(mos[iMo]);
       }
       line = "";
     }
     energyUnits = "a.u.";
     setMOData(false);
+    return true;
   }
 
   /*

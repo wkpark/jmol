@@ -719,7 +719,8 @@ public class MOCalculation extends QuantumCalculation implements
         norm1 = norm2 * ROOT3;
         norm4 = -1;
       } else {
-        // same as above, except for norm4. Needs checking
+        // same as above, except for norm4. 
+        // norm4 verified using CeO2.log 
         norm1 = Math.pow(2048.0 / (Math.PI * Math.PI * Math.PI), 0.25);
         norm2 = norm1 / ROOT3;
         norm4 = 1;
@@ -941,6 +942,7 @@ public class MOCalculation extends QuantumCalculation implements
         norm1 = Math.pow(32768.0 / (Math.PI * Math.PI * Math.PI), 0.25);
         norm2 = norm1 / Math.sqrt(3);
         norm3 = norm1 / Math.sqrt(15);
+        // norm4 verified for Gaussian using CeO2.log 
         norm4 = 1;
       }
 

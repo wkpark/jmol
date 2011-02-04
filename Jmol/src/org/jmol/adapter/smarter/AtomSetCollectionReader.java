@@ -39,6 +39,7 @@ import java.io.OutputStream;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
@@ -1295,4 +1296,65 @@ public abstract class AtomSetCollectionReader {
     return Parser.parseTrimmed(s, iStart, iEnd);
   }
 
+  /**
+   * get all integers after letters
+   * negative entries are spaces (1Xn)
+   * 
+   * @param s
+   * @return Vector of integers
+   */
+  protected static ArrayList<Integer> getFortranFormatLengths(String s) {
+    ArrayList<Integer> vdata = new ArrayList<Integer>();
+    int n = 0;
+    int c = 0;
+    int factor = 1;
+    boolean inN = false;
+    boolean inCount = true;
+    s += ",";
+    for (int i = 0; i < s.length(); i++) {
+      char ch = s.charAt(i);
+      switch (ch) {
+      case '.':
+        inN = false;
+        continue;
+      case ',':
+        for (int j = 0; j < c; j++)
+          vdata.add(Integer.valueOf(n * factor));
+      inN = false;
+      inCount = true;
+      c = 0;
+      continue;
+      case 'X':
+        n = c;
+        c = 1;
+        factor = -1;
+        continue;
+      
+      }
+      boolean isDigit = Character.isDigit(ch);
+      if (isDigit) {
+        if (inN)
+          n = n * 10 + ch - '0';
+        else if (inCount)
+          c = c * 10 + ch - '0'; 
+      } else if (Character.isLetter(ch)) {
+        n = 0;
+        inN = true;
+        inCount = false;
+        factor = 1;
+      } else {
+        inN = false;
+      }
+    }
+    return vdata;
+  }
+/*
+  static {
+    System.out.println(Escape.toJSON(null, getFortranFormatLengths("(5A10")));    
+    System.out.println(Escape.toJSON(null, getFortranFormatLengths("(5E10.3,2A4.6")));    
+    System.out.println(Escape.toJSON(null, getFortranFormatLengths("(5A4,2X,2I20")));
+  }
+*/
+  
 }
+

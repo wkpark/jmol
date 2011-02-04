@@ -2272,7 +2272,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "@acyclic amino&!cyclic",
     "@aliphatic ala,gly,ile,leu,val",
     "@aromatic his,phe,trp,tyr",
-    "@cystine within(group, cys.sg and connected(cys.sg))",
+    "@cystine within(group, (cys.sg or cyx.sg) and connected(cys.sg or cyx.sg))",
 
     "@buried ala,cys,ile,leu,met,phe,trp,val",
     "@surface amino&!buried",

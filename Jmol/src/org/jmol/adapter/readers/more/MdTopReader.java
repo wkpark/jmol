@@ -24,6 +24,8 @@
 
 package org.jmol.adapter.readers.more;
 
+import java.util.ArrayList;
+
 import org.jmol.adapter.smarter.*;
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
@@ -87,74 +89,151 @@ public class MdTopReader extends ForceFieldReader {
   protected void finalizeReader() throws Exception {
     super.finalizeReader();
     Atom[] atoms = atomSetCollection.getAtoms();
+    Atom atom;
+    Atom[] atoms2 = null;
     if (filter == null) {
       nAtoms = atomCount;
     } else {
-      Atom[] atoms2 = new Atom[atoms.length];
+      atoms2 = new Atom[atoms.length];
       nAtoms = 0;
       for (int i = 0; i < atomCount; i++)
-        if (filterAtom(atoms[i], i))
-          atoms2[nAtoms++] = atoms[i];
-      atomSetCollection.discardPreviousAtoms();
-      for (int i = 0; i < nAtoms; i++) {
-        Atom atom = atoms2[i];
-        atomSetCollection.addAtom(atom);
+        if (filterAtom(atom = atoms[i], i))
+          atoms2[nAtoms++] = atom;
+    }
+    for (int i = 0, j = 0, k = 0; i < atomCount; i++) {
+      if (filter == null || bsFilter.get(i)) {
+        if (k % 100 == 0)
+          j++;
+        atom = atoms[i];
+        setAtomCoord(atom, (i % 100) * 2, j * 2, 0);
+        atom.isHetero = JmolAdapter.isHetero(atom.group3);
+        String atomType = atomTypes[i];
+        if (!getElementSymbol(atom, atomType))
+          atom.elementSymbol = deducePdbElementSymbol(atom.isHetero,
+              atom.atomName, atom.group3);
       }
     }
-    Logger.info("Total number of atoms used=" + nAtoms);
-    int j = 0;
-    for (int i = 0; i < nAtoms; i++) {
-      Atom atom = atoms[i];
-      if (i % 100 == 0)
-        j++;
-      setAtomCoord(atom, (i % 100)*2, j*2, 0);
-      atom.isHetero = JmolAdapter.isHetero(atom.group3);
-      int pt = atom.atomName.indexOf('\0');
-      String atomType = atom.atomName.substring(pt + 1);
-      atom.atomName = atom.atomName.substring(0, pt);
-      if (!getElementSymbol(atom, atomType))
-        atom.elementSymbol = deducePdbElementSymbol(atom.isHetero, atom.atomName,
-            atom.group3);
+    if (atoms2 != null) {
+      atomSetCollection.discardPreviousAtoms();
+      for (int i = 0; i < nAtoms; i++)
+        atomSetCollection.addAtom(atoms2[i]);
     }
+    Logger.info("Total number of atoms used=" + nAtoms);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("isPDB", Boolean.TRUE);
     atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
   }
 
-  private String getDataBlock() throws Exception {
-    StringBuilder sb = new StringBuilder();
-    while ((readLine() != null) && (line.indexOf("%FLAG") != 0)) {
-      sb.append(line);
+  private String[] getDataBlock() throws Exception {
+    ArrayList<String> vdata = new ArrayList<String>();
+    // for these purposes, we just read the first length
+    discardLinesUntilContains("FORMAT");
+    int n = getFortranFormatLengths(line.substring(line.indexOf("("))).get(0).intValue();
+    int i = 0;
+    int len = 0;
+    while (true) {
+      if (i >= len) {
+        if (readLine() == null)
+          break;
+        i = 0;
+        len = line.length();
+        if (len == 0 || line.indexOf("FLAG") >= 0)
+          break;
+      }
+      vdata.add(line.substring(i, i + n).trim());
+      i += n;
     }
-    return sb.toString();
+    String[] data = new String[vdata.size()];
+    for (i = vdata.size(); --i >= 0; )
+      data[i] = vdata.get(i);
+    return data;
   }
 
-  private void getMasses() throws Exception {
-/*    float[] data = new float[atomCount];
-    readLine();
-    getTokensFloat(getDataBlock(), data, atomCount);
-*/
-  }
+  /*
+  FORMAT(12i6)  NATOM,  NTYPES, NBONH,  MBONA,  NTHETH, MTHETA,
+                NPHIH,  MPHIA,  NHPARM, NPARM,  NEXT,   NRES,
+                NBONA,  NTHETA, NPHIA,  NUMBND, NUMANG, NPTRA,
+                NATYP,  NPHB,   IFPERT, NBPER,  NGPER,  NDPER,
+                MBPER,  MGPER,  MDPER,  IFBOX,  NMXRS,  IFCAP
+    NATOM  : total number of atoms 
+    NTYPES : total number of distinct atom types
+    NBONH  : number of bonds containing hydrogen
+    MBONA  : number of bonds not containing hydrogen
+    NTHETH : number of angles containing hydrogen
+    MTHETA : number of angles not containing hydrogen
+    NPHIH  : number of dihedrals containing hydrogen
+    MPHIA  : number of dihedrals not containing hydrogen
+    NHPARM : currently not used
+    NPARM  : currently not used
+    NEXT   : number of excluded atoms
+    NRES   : number of residues
+    NBONA  : MBONA + number of constraint bonds
+    NTHETA : MTHETA + number of constraint angles
+    NPHIA  : MPHIA + number of constraint dihedrals
+    NUMBND : number of unique bond types
+    NUMANG : number of unique angle types
+    NPTRA  : number of unique dihedral types
+    NATYP  : number of atom types in parameter file, see SOLTY below
+    NPHB   : number of distinct 10-12 hydrogen bond pair types
+    IFPERT : set to 1 if perturbation info is to be read in
+    NBPER  : number of bonds to be perturbed
+    NGPER  : number of angles to be perturbed
+    NDPER  : number of dihedrals to be perturbed
+    MBPER  : number of bonds with atoms completely in perturbed group
+    MGPER  : number of angles with atoms completely in perturbed group
+    MDPER  : number of dihedrals with atoms completely in perturbed groups
+    IFBOX  : set to 1 if standard periodic box, 2 when truncated octahedral
+    NMXRS  : number of atoms in the largest residue
+    IFCAP  : set to 1 if the CAP option from edit was specified
 
+  %FLAG POINTERS                                                                  
+  %FORMAT(10I8)                                                                   
+     37300      16   29669    6234   12927    6917   28267    6499       0       0
+     87674    9013    6234    6917    6499      47     101      41      31       1
+         0       0       0       0       0       0       0       1      24       0
+         0
+
+  0         1         2         3         4         5         6         7         
+  01234567890123456789012345678901234567890123456789012345678901234567890123456789
+
+     */
+    private void getPointers() throws Exception {
+      String[] tokens = getDataBlock();
+      atomCount = parseInt(tokens[0]);
+      boolean isPeriodic = (tokens[27].charAt(0) != '0');
+      if (isPeriodic) {
+        Logger.info("Periodic type: " + tokens[27]);
+        htParams.put("isPeriodic", Boolean.TRUE);
+      }
+      Logger.info("Total number of atoms read=" + atomCount);
+      htParams.put("templateAtomCount", Integer.valueOf(atomCount));
+      for (int i = 0; i < atomCount; i++) 
+        atomSetCollection.addAtom(new Atom());
+    }
+
+  String[] atomTypes;
   private void getAtomTypes() throws Exception {
-    readLine(); // #FORMAT
-    String[] data = getTokens(getDataBlock());
-    Atom[] atoms = atomSetCollection.getAtoms();
-    for (int i = atomCount; --i >= 0;)  
-      atoms[i].atomName += '\0' + data[i];
+    atomTypes = getDataBlock();
   }
 
+  /*
+%FLAG CHARGE                                                                    
+%FORMAT(5E16.8)                                                                 
+  5.66713530E-01  4.24397367E+00  4.24397367E+00  4.24397367E+00  4.68313110E-01
+  1.87871913E+00  3.43490355E+00  3.88134990E-01 -6.77869560E+00  1.72565181E+00
+  1.72565181E+00  1.72565181E+00 -7.05203010E-01  3.66268230E-01  3.66268230E-01
+
+   */
   private void getCharges() throws Exception {
-    float[] data = new float[atomCount];
-    readLine(); // #FORMAT
-    getTokensFloat(getDataBlock(), data, atomCount);
+    String[] data = getDataBlock();
+    if (data.length != atomCount)
+      return;
     Atom[] atoms = atomSetCollection.getAtoms();
     for (int i = atomCount; --i >= 0;)
-      atoms[i].partialCharge = data[i];
+      atoms[i].partialCharge = parseFloat(data[i]);
   }
 
   private void getResiduePointers() throws Exception {
-    readLine(); // #FORMAT
-    String[] resPtrs = getTokens(getDataBlock());
+    String[] resPtrs = getDataBlock();
     Logger.info("Total number of residues=" + resPtrs.length);
     int pt1 = atomCount;
     int pt2;
@@ -173,91 +252,31 @@ public class MdTopReader extends ForceFieldReader {
   String[] group3s;
   
   private void getResidueLabels() throws Exception {
-    readLine(); // #FORMAT
-    group3s = getTokens(getDataBlock());
-  }
-
-  private void getAtomNames() throws Exception {
-    readLine(); // #FORMAT
-    Atom[] atoms = atomSetCollection.getAtoms();
-    int pt = 0;
-    int i = 0;
-    int len = 0;
-    while (pt < atomCount) {
-      if (i >= len) {
-        readLine();
-        i = 0;
-        len = line.length();
-      }
-      atoms[pt++].atomName = line.substring(i, i + 4).trim();
-      i += 4;
-    }
+    group3s = getDataBlock();
   }
 
   /*
-FORMAT(12i6)  NATOM,  NTYPES, NBONH,  MBONA,  NTHETH, MTHETA,
-              NPHIH,  MPHIA,  NHPARM, NPARM,  NEXT,   NRES,
-              NBONA,  NTHETA, NPHIA,  NUMBND, NUMANG, NPTRA,
-              NATYP,  NPHB,   IFPERT, NBPER,  NGPER,  NDPER,
-              MBPER,  MGPER,  MDPER,  IFBOX,  NMXRS,  IFCAP
-  NATOM  : total number of atoms 
-  NTYPES : total number of distinct atom types
-  NBONH  : number of bonds containing hydrogen
-  MBONA  : number of bonds not containing hydrogen
-  NTHETH : number of angles containing hydrogen
-  MTHETA : number of angles not containing hydrogen
-  NPHIH  : number of dihedrals containing hydrogen
-  MPHIA  : number of dihedrals not containing hydrogen
-  NHPARM : currently not used
-  NPARM  : currently not used
-  NEXT   : number of excluded atoms
-  NRES   : number of residues
-  NBONA  : MBONA + number of constraint bonds
-  NTHETA : MTHETA + number of constraint angles
-  NPHIA  : MPHIA + number of constraint dihedrals
-  NUMBND : number of unique bond types
-  NUMANG : number of unique angle types
-  NPTRA  : number of unique dihedral types
-  NATYP  : number of atom types in parameter file, see SOLTY below
-  NPHB   : number of distinct 10-12 hydrogen bond pair types
-  IFPERT : set to 1 if perturbation info is to be read in
-  NBPER  : number of bonds to be perturbed
-  NGPER  : number of angles to be perturbed
-  NDPER  : number of dihedrals to be perturbed
-  MBPER  : number of bonds with atoms completely in perturbed group
-  MGPER  : number of angles with atoms completely in perturbed group
-  MDPER  : number of dihedrals with atoms completely in perturbed groups
-  IFBOX  : set to 1 if standard periodic box, 2 when truncated octahedral
-  NMXRS  : number of atoms in the largest residue
-  IFCAP  : set to 1 if the CAP option from edit was specified
-
-%FLAG POINTERS                                                                  
-%FORMAT(10I8)                                                                   
-   37300      16   29669    6234   12927    6917   28267    6499       0       0
-   87674    9013    6234    6917    6499      47     101      41      31       1
-       0       0       0       0       0       0       0       1      24       0
-       0
-
-0         1         2         3         4         5         6         7         
-01234567890123456789012345678901234567890123456789012345678901234567890123456789
-
-   */
-  private void getPointers() throws Exception {
-    readLine(); // #FORMAT
-    String data = "";
-    int pt = 0;
-    while (pt++ < 3 && (line = readLine()) != null && !line.startsWith("#"))
-        data += line;
-    String[] tokens = getTokens(data); 
-    atomCount = parseInt(tokens[0]);
-    boolean isPeriodic = (tokens[27].charAt(0) != '0');
-    if (isPeriodic) {
-      Logger.info("Periodic type: " + tokens[27]);
-      htParams.put("isPeriodic", Boolean.TRUE);
-    }
-    Logger.info("Total number of atoms read=" + atomCount);
-    htParams.put("templateAtomCount", Integer.valueOf(atomCount));
-    for (int i = 0; i < atomCount; i++) 
-      atomSetCollection.addAtom(new Atom());
+  %FLAG ATOM_NAME                                                                 
+  %FORMAT(20a4)                                                                   
+  N   H1  H2  H3  CA  HA  CB  HB  CG2 HG21HG22HG23CG1 HG12HG13CD1 HD11HD12HD13C   
+  O   N   H   CA  HA  CB  HB2 HB3 SG  HG  C   O   N   H   CA  HA  CB  HB  CG1 HG11
+  HG12HG13CG2 HG21HG22HG23C   O   N   H   CA  HA  CB  HB2 HB3 CG  CD1 HD1 CE1 HE1 
+  CZ  OH  HH  CE2 HE2 CD2 HD2 C   O   N   H   CA  HA  CB  HB  CG1 HG11HG12HG13CG2 
+  */
+ 
+  private void getAtomNames() throws Exception {
+    String[] names = getDataBlock();
+    Atom[] atoms = atomSetCollection.getAtoms();
+    for (int i = 0; i < atomCount; i++)
+      atoms[i].atomName = names[i];
   }
+
+  private void getMasses() throws Exception {
+    /*    float[] data = new float[atomCount];
+        readLine();
+        getTokensFloat(getDataBlock(), data, atomCount);
+    */
+  }
+
+
 }

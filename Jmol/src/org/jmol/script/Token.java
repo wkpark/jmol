@@ -128,7 +128,8 @@ public class Token {
    * 0987654321098765432109876543210
    *                   x             sciptCommand
    *                  xx             atomExpressionCommand
-   *                 x x             implicitStringCommand
+   *                 x x           o implicitStringCommand (parsing of @{x})
+   *                 x x           x implicitStringCommand (no initial parsing of @{x})
    *                x  x             mathExpressionCommand
    *               xx  x             flowCommand
    *              x    x             shapeCommand
@@ -194,7 +195,8 @@ public class Token {
   final static int atomExpressionCommand  = (1 << 13) | scriptCommand;
   
   // this implicitString flag indicates that then entire command is an implied quoted string  
-  // -- echo, help, hover, javascript, label, message, pause
+  // -- ODD echo, hover, label, message, pause  -- do NOT parse variables the same way
+  // -- EVEN help, javascript, cd, gotocmd -- allow for single starting variable
   final static int implicitStringCommand     = (1 << 14) | scriptCommand;
   
   // this implicitExpression flag indicates that phrases surrounded 
@@ -261,12 +263,12 @@ public class Token {
   //final static int prompt     see mathfunc
   
   public final static int echo  = 1 | implicitStringCommand | shapeCommand | setparam;
-  final static int help         = 2 | implicitStringCommand;
+  final static int help         = 2 /* must be even */ | implicitStringCommand;
   public final static int hover = 3 | implicitStringCommand | defaultON;
 //final static int javascript   see mathfunc
 //final static int label        see mathfunc
   final static int message      = 5 | implicitStringCommand;
-  public final static int pause = 6 | implicitStringCommand;
+  public final static int pause = 7 | implicitStringCommand;
 
   //these commands control flow
   //sorry about GOTO!
@@ -292,7 +294,7 @@ public class Token {
   final static int bind         = scriptCommand | 4;
   final static int bondorder    = scriptCommand | 5;
   final static int calculate    = scriptCommand | 6;
-  final static int cd           = scriptCommand | 8 | implicitStringCommand | expression;
+  final static int cd           = scriptCommand | 8 | implicitStringCommand | expression; // must be even
   final static int centerAt     = scriptCommand | 9;
 //final static int color        see intproperty
 //final static int configuration see intproperty
@@ -304,10 +306,10 @@ public class Token {
   final static int exit         = scriptCommand | 14 | noArgs;
   final static int exitjmol     = scriptCommand | 17 | noArgs;
 //final static int file         see intproperty
-  final static int font         = scriptCommand | 19;
-  final static int frame        = scriptCommand | 20;
+  final static int font         = scriptCommand | 18;
+  final static int frame        = scriptCommand | 19;
 //final static int getproperty  see mathfunc
-  final static int gotocmd      = scriptCommand | 21 | implicitStringCommand;
+  final static int gotocmd      = scriptCommand | 20 /*must be even*/| implicitStringCommand;
   public final static int hbond = scriptCommand | 22 | deprecatedparam | expression | defaultON;
   final static int history      = scriptCommand | 23 | deprecatedparam;
   final static int initialize   = scriptCommand | 24 | noArgs;
@@ -660,8 +662,8 @@ public class Token {
   public final static int format    = 8 | 0 << 9 | mathfunc | mathproperty | strproperty | settable;
   final static int function         = 9 | 0 << 9 | mathfunc | flowCommand;
   final static int getproperty      = 10 | 0 << 9 | mathfunc | scriptCommand;
-  public final static int helix     = 11 | 0 << 9 | mathfunc | predefinedset;
-  public final static int label     = 12 | 0 << 9 | mathfunc | mathproperty | strproperty | settable | implicitStringCommand | shapeCommand | defaultON | deprecatedparam;
+  public final static int label     = 11 /* must be odd */| 0 << 9 | mathfunc | mathproperty | strproperty | settable | implicitStringCommand | shapeCommand | defaultON | deprecatedparam; 
+  public final static int helix     = 12 | 0 << 9 | mathfunc | predefinedset;
   public final static int measure   = 13 | 0 << 9| mathfunc | shapeCommand | deprecatedparam | defaultON;
   final static int now              = 14 | 0 << 9 | mathfunc;
   public final static int plane     = 15 | 0 << 9 | mathfunc;
@@ -673,7 +675,6 @@ public class Token {
 
   // xxx(a)
   
-  final static int javascript   = 2 | 1 << 9 | mathfunc | implicitStringCommand;
   final static int acos         = 3 | 1 << 9 | mathfunc;
   final static int sin          = 4 | 1 << 9 | mathfunc;
   final static int cos          = 5 | 1 << 9 | mathfunc;
@@ -682,6 +683,7 @@ public class Token {
   final static int forcmd       = 8 | 1 << 9 | mathfunc | flowCommand;
   final static int ifcmd        = 9 | 1 << 9 | mathfunc | flowCommand;
   final static int abs          = 10 | 1 << 9 | mathfunc;
+  final static int javascript   = 12 /* must be even */| 1 << 9 | mathfunc | implicitStringCommand;
 
   // ___.xxx(a)
   

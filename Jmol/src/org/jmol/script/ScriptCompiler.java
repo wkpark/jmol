@@ -2096,23 +2096,26 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
    * position in a command is implied to be a string. First we must exclude @xxxx.
    * Then we consume the entire math syntax @{......} or any set of
    * characters not involving white space.
-   * @param allowSpace TODO
+   * echo, hover, label, message, pause are odd-valued; no initial parsing of variables for them. 
+   * @param allowSpace 
    * 
    * @return true or false
    */
   private boolean lookingAtImpliedString(boolean allowSpace) {
     int ichT = ichToken;
-    boolean isVariable = (ichT + 1 < cchScript && (script.charAt(ichT) == '@' || script
-        .charAt(ichT) == '%'));
-    boolean isMath = (isVariable && ichT + 3 < cchScript && script
-        .charAt(ichT + 1) == '{');
-    if (isMath) {
+    if (ichT + 2 > cchScript)
+      return false;
+    char ch = script.charAt(ichT);
+    boolean parseVariables = !(Token.tokAttr(tokCommand, Token.implicitStringCommand) 
+        || (tokCommand & 1) == 0); 
+    boolean isVariable = (ch == '@');
+    boolean isMath = (isVariable && ichT + 3 < cchScript && script.charAt(ichT + 1) == '{');
+    if (isMath && parseVariables) {
       ichT = ichMathTerminator(script, ichToken + 1, cchScript);
       return (ichT != cchScript && (cchToken = ichT + 1 - ichToken) > 0);
     }
     int ptSpace = -1;
     int ptLastChar = -1;
-    char ch = ' ';
     // look ahead to \n, \r, terminal ;, or }
     boolean isOK = true;
     int parenpt = 0;

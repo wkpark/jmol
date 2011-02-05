@@ -569,6 +569,8 @@ abstract class ScriptCompilationTokenParser {
   
   private boolean clauseWithin() {
 
+    // within ( plane, planeExpression)
+    // within ( hkl, hklExpression)
     // within ( distance, plane, planeExpression)
     // within ( distance, hkl, hklExpression)
     // within ( distance, coord, point)
@@ -636,6 +638,8 @@ abstract class ScriptCompilationTokenParser {
     case Token.helix:
     case Token.model:
     case Token.molecule:
+    case Token.plane:
+    case Token.hkl:
     case Token.polymer:
     case Token.sequence:
     case Token.sheet:

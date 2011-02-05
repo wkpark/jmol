@@ -227,11 +227,11 @@ public class CrystalReader extends AtomSetCollectionReader {
     if (line.startsWith(" TOTAL ATOMIC CHARGES"))
       return readTotalAtomicCharges();
 
-    if (addVibrations && line.indexOf("EIGENVALUES (EV) OF THE MASS") >= 0
+    if (addVibrations && line.contains(isVersion3 ? "EIGENVALUES (EV) OF THE MASS": "EIGENVALUES (EIGV) OF THE MASS") 
         || line.indexOf("LONGITUDINAL OPTICAL (LO)") >= 0) {
       if (vInputCoords != null)
         processInputCoords();
-      isLongMode = (line.indexOf("LONGITUDINAL OPTICAL (LO)") >= 0);
+     isLongMode = (line.indexOf("LONGITUDINAL OPTICAL (LO)") >= 0);
       return readFrequencies();
     }
 
@@ -830,9 +830,11 @@ public class CrystalReader extends AtomSetCollectionReader {
      41-  43    0.9004E-06    208.2551    6.2433 (F1U)    244.7   10.821   0.3244
    */
   private boolean readFrequencies() throws Exception {
+    
     energy = null; // don't set energy for these models
     discardLinesUntilContains("MODES");
-    boolean haveIntensities = (line.indexOf("INTENS") >= 0);
+    // This line is always there
+    boolean haveIntensities = (line.indexOf("INTENS") >= 0);  
     readLine();
     List<String[]> vData = new ArrayList<String[]>();
     int freqAtomCount = atomCount;
@@ -840,7 +842,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       int i0 = parseInt(line.substring(1, 5));
       int i1 = parseInt(line.substring(6, 10));
       String irrep = (isLongMode ? line.substring(48, 51) : line.substring(49,
-          52)).trim();
+       52)).trim();
       String intens = (!haveIntensities ? "not available" : 
         (isLongMode ? line.substring(53, 61) 
             : line.substring(59, 69).replace(')', ' ')).trim());

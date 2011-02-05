@@ -349,7 +349,7 @@ public class Labels extends AtomShape {
       LabelToken[] tokens = temp[0];
       if (tokens == null)
         tokens = temp[0] = LabelToken.compile(viewer, strLabel, '\0', null);
-      String label = LabelToken.formatLabel(viewer, atom, tokens, '\0', null);
+      String label = (tokens == null ? null : LabelToken.formatLabel(viewer, atom, tokens, '\0', null));
       atom.setShapeVisibility(myVisibilityFlag, label != null);
       if (strings == null || i >= strings.length)
         strings = ArrayUtil.ensureLength(strings, i + 1);

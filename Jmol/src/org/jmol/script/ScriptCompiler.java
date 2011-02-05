@@ -1538,7 +1538,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           setBraceCount = 0;
           break;
         }
-        if (theTok != Token.identifier && theTok != Token.andequals
+        if (theTok != Token.identifier && theTok != Token.andequals && theTok != Token.define
             && (!Token.tokAttr(theTok, Token.setparam))) {
           if (isNewSet)
             commandExpected();
@@ -2102,11 +2102,42 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
    */
   private boolean lookingAtImpliedString(boolean allowSpace) {
     int ichT = ichToken;
+    boolean isVariable = (ichT + 1 < cchScript && (script.charAt(ichT) == '@' || script
+        .charAt(ichT) == '%'));
+    boolean isMath = (isVariable && ichT + 3 < cchScript && script
+        .charAt(ichT + 1) == '{');
+    if (isMath) {
+      ichT = ichMathTerminator(script, ichToken + 1, cchScript);
+      return (ichT != cchScript && (cchToken = ichT + 1 - ichToken) > 0);
+    }
     int ptSpace = -1;
     int ptLastChar = -1;
     char ch = ' ';
     // look ahead to \n, \r, terminal ;, or }
-    while (ichT < cchScript && !eol(ch = script.charAt(ichT)) && ch != '}') {
+    boolean isOK = true;
+    int parenpt = 0;
+    while (isOK && ichT < cchScript && !eol(ch = script.charAt(ichT))) {
+      switch (ch) {
+      case '{':
+        parenpt++;
+        break;
+      case '}':
+        // only consider this if it is extra
+        parenpt--;
+        if (parenpt < 0 && braceCount > 0) {
+          isOK = false;
+          continue;
+        }
+        break;
+      default:
+        if (Character.isWhitespace(ch)) {
+          if (ptSpace < 0)
+            ptSpace = ichT;
+        } else {
+          ptLastChar = ichT;
+        }
+        break;
+      }
       if (Character.isWhitespace(ch)) {
         if (ptSpace < 0)
           ptSpace = ichT;
@@ -2115,16 +2146,13 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       }
       ++ichT;
     }
-    boolean isMath = false;
-    boolean isVariable = false;
-    // if we have @xxx then this is not an implied string
-    if (ichT > ichToken && 
-        ((isVariable = (script.charAt(ichToken) == '@')) || script.charAt(ichToken) == '%'))
-      isMath = (ichT > ichToken + 1 && script.charAt(ichToken + 1) == '{');
-    if (isMath) {
-      ichT = ichMathTerminator(script, ichToken + 1, cchScript);
-      return (ichT != cchScript && (cchToken = ichT + 1 - ichToken) > 0);
-    } else if (isVariable) {
+    // message/echo/label @x
+    // message/echo/label @{.....}
+    // message/echo/label @{....} testing  NOT ok
+    // message/echo/label @x bananas OK -- "@x bananas"
+    // {... message/echo label ok }  
+    if (isVariable && ptSpace < 0 && parenpt <= 0) {
+      // if we have @xxx then this is not an implied string
       return false;
     }
     if (allowSpace)

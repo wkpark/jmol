@@ -1245,6 +1245,7 @@ public class Token {
   final static Token tokenRightBrace = new Token(rightbrace, "}");
   final static Token tokenCoordinateEnd = tokenRightBrace;
   final static Token tokenColon           = new Token(colon, ':');
+  final static Token tokenSetCmd          = new Token(set, "set");
   final static Token tokenSet             = new Token(set, '=', "");
   final static Token tokenSetArray        = new Token(set, '[', "");
   final static Token tokenSetProperty     = new Token(set, '.', "");
@@ -1577,7 +1578,7 @@ public class Token {
       "selectionHalos",    new Token(selectionhalos),
       "selectionHalo",     null,
       "showSelections",    null,
-      "set",               new Token(set),
+      "set",               tokenSetCmd,
       "sheet",             new Token(sheet),
       "show",              new Token(show),
       "slab",              new Token(slab),

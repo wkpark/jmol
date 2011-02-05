@@ -118,11 +118,11 @@ final public class Atom extends Point3fi implements JmolNode {
     shapeVisibilityFlags = flag;
   }
 
-  public final void setShapeVisibility(int shapeVisibilityFlag, boolean isVisible) {
+  public final void setShapeVisibility(int flag, boolean isVisible) {
     if(isVisible) {
-      shapeVisibilityFlags |= shapeVisibilityFlag;        
+      shapeVisibilityFlags |= flag;        
     } else {
-      shapeVisibilityFlags &=~shapeVisibilityFlag;
+      shapeVisibilityFlags &=~flag;
     }
   }
   
@@ -142,13 +142,13 @@ final public class Atom extends Point3fi implements JmolNode {
     return null;
   }
 
-  void addDisplayedBond(int stickVisibilityFlag, boolean isVisible){
-    nBondsDisplayed+=(isVisible ? 1 : -1);
-    setShapeVisibility(stickVisibilityFlag, isVisible);
+  void addDisplayedBond(int stickVisibilityFlag, boolean isVisible) {
+    nBondsDisplayed += (isVisible ? 1 : -1);
+    setShapeVisibility(stickVisibilityFlag, (nBondsDisplayed > 0));
   } 
   
-  public void addDisplayedBackbone(int backboneVisibilityFlag, boolean isVisible){
-    nBackbonesDisplayed+=(isVisible ? 1 : -1);
+  public void addDisplayedBackbone(int backboneVisibilityFlag, boolean isVisible) {
+    nBackbonesDisplayed += (isVisible ? 1 : -1);
     setShapeVisibility(backboneVisibilityFlag, isVisible);
   }
   
@@ -969,7 +969,7 @@ final public class Atom extends Point3fi implements JmolNode {
     // Is the atom's model visible? Is the atom NOT hidden?
     if (!isInFrame() || group.chain.modelSet.isAtomHidden(index))
       return false;
-    // Is any shape associated with this atom visible? 
+    // Is any shape associated with this atom visible?
     if (flags != 0)
       return (isShapeVisible(flags));  
     flags = shapeVisibilityFlags;

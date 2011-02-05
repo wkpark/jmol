@@ -671,6 +671,16 @@ public class ScriptEvaluator {
         }
       }
       switch (tok) {
+      case Token.define:
+        // @{@x} or @{@{x}}
+        if (tokAt(++i) == Token.expressionBegin) {
+          v = parameterExpressionToken(++i);
+        } else {
+          v = getParameter(ScriptVariable.sValue(statement[i]), Token.variable);
+        }
+        v = getParameter(ScriptVariable.sValue((ScriptVariable) v), Token.variable);
+        i = iToken;
+        break;
       case Token.ifcmd:
         if (getToken(++i).tok != Token.leftparen)
           error(ERROR_invalidArgument);
@@ -2174,6 +2184,15 @@ public class ScriptEvaluator {
       if (statement[i] == null)
         continue;
       switch (tok = getToken(i).tok) {
+      default:
+        fixed[j] = statement[i];
+        break;
+      case Token.expressionBegin:
+      case Token.expressionEnd:
+        // @ in expression will be taken as SELECT
+        isExpression = (tok == Token.expressionBegin);
+        fixed[j] = statement[i];
+        break;
       case Token.define:
         if (++i == statementLength)
           error(ERROR_invalidArgument);
@@ -2185,13 +2204,14 @@ public class ScriptEvaluator {
         String s;
         String var = parameterAsString(i);
         boolean isClauseDefine = (tokAt(i) == Token.expressionBegin);
+        boolean isSetAt = (j == 1 && statement[0] == Token.tokenSetCmd);
         if (isClauseDefine) {
           ScriptVariable vt = parameterExpressionToken(++i);
           i = iToken;
           v = (vt.tok == Token.varray ? vt : ScriptVariable.oValue(vt));
         } else {
           v = getParameter(var, 0);
-          if (!isExpression)
+          if (!isExpression && !isSetAt)
             isClauseDefine = true;
         }
         tok = tokAt(0);
@@ -2221,18 +2241,28 @@ public class ScriptEvaluator {
           fixed[j] = new Token(Token.decimal, JmolConstants.modelValue("" + v),
               v);
         } else if (v instanceof String) {
-          if (!forceString)
-            v = getStringObjectAsVariable((String) v, null);
+          if (!forceString) {
+            if ((tok != Token.set || j > 1) && Token.tokAttr(tok, Token.mathExpressionCommand)) {
+              v = getParameter((String) v, Token.variable);
+            } 
+            if (v instanceof String) {
+              v = getStringObjectAsVariable((String) v, null);
+            }
+          }
           if (v instanceof ScriptVariable) {
-            // was a variable name
+            // was a bitset 
             fixed[j] = (Token) v;
           } else {
-            // wasn't a known variable name
             s = (String) v;
             if (isExpression && !forceString) {
               // select @x  where x is "arg", for example
               fixed[j] = new Token(Token.bitset, getAtomBitSet(this, s));
             } else {
+              if (!isExpression) {
+                //print @x
+              }
+              
+              
               // bit of a hack here....
               // identifiers cannot have periods; file names can, though
               // TODO: this is still a hack
@@ -2248,7 +2278,8 @@ public class ScriptEvaluator {
               // there is a check for SET parameter name assignments.
               // even those may not work...
 
-              tok = (isClauseDefine || forceString || s.indexOf(".") >= 0
+              tok = (isSetAt ? Token.getTokFromName(s) 
+                  : isClauseDefine || forceString || s.length() == 0 || s.indexOf(".") >= 0
                   || s.indexOf(" ") >= 0 || s.indexOf("=") >= 0
                   || s.indexOf(";") >= 0 || s.indexOf("[") >= 0
                   || s.indexOf("{") >= 0 ? Token.string : Token.identifier);
@@ -2289,18 +2320,9 @@ public class ScriptEvaluator {
             error(ERROR_invalidArgument);
           fixed[j] = new Token(Token.point3f, center);
         }
-        if (j == 1 && statement[0].tok == Token.set
-            && fixed[j].tok != Token.identifier)
+        if (isSetAt && !Token.tokAttr(fixed[j].tok, Token.setparam))
           error(ERROR_invalidArgument);
         break;
-      case Token.expressionBegin:
-      case Token.expressionEnd:
-        // @ in expression will be taken as SELECT
-        isExpression = (tok == Token.expressionBegin);
-        fixed[j] = statement[i];
-        break;
-      default:
-        fixed[j] = statement[i];
       }
 
       j++;
@@ -12082,7 +12104,7 @@ public class ScriptEvaluator {
       key = Token.nameOf(tok = newTok);
     } else if (!justShow && !isContextVariable) {
       // special cases must be checked
-      if (key.charAt(0) == '_') // these cannot be set by user
+      if (key.length() == 0 || key.charAt(0) == '_') // these cannot be set by user
         error(ERROR_invalidArgument);
 
       // these next are not reported and do not allow calculation xxxx = a + b

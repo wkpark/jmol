@@ -596,11 +596,29 @@ public class Escape {
       return packageJSON(infoType, sb);
     }
     if (info instanceof Matrix4f) {
-      sb.append(escape((Matrix4f) info));
+      float[] x = new float[4];
+      Matrix4f m4 = (Matrix4f) info;
+      sb.append('[');
+      for (int i = 0; i < 4; i++) {
+        if (i > 0)
+          sb.append(',');
+        m4.getRow(i, x);
+        sb.append(toJSON(null, x));
+      }
+      sb.append(']');
       return packageJSON(infoType, sb);
     }
     if (info instanceof Matrix3f) {
-      sb.append(escape((Matrix3f) info));
+      float[] x = new float[3];
+      Matrix3f m3 = (Matrix3f) info;
+      sb.append('[');
+      for (int i = 0; i < 3; i++) {
+        if (i > 0)
+          sb.append(',');
+        m3.getRow(i, x);
+        sb.append(toJSON(null, x));
+      }
+      sb.append(']');
       return packageJSON(infoType, sb);
     }
     if (info instanceof Tuple3f) {

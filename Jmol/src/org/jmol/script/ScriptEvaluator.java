@@ -4670,7 +4670,7 @@ public class ScriptEvaluator {
   private boolean isColorParam(int i) {
     int tok = tokAt(i);
     return (tok == Token.navy 
-        || tok == Token.spacebeforesquare || tok == Token.leftsquare
+        || tok == Token.spacebeforesquare || tok == Token.leftsquare || tok == Token.varray
         || tok == Token.point3f || isPoint3f(i) || (tok == Token.string || Token
         .tokAttr(tok, Token.identifier))
         && Graphics3D.getArgbFromString((String) statement[i].value) != 0);
@@ -4702,12 +4702,17 @@ public class ScriptEvaluator {
         return getColorTriad(index + 2);
       case Token.leftsquare:
         return getColorTriad(++index);
+      case Token.varray:
+        float[] rgb = ScriptVariable.flistValue(theToken, 3);
+        if (rgb != null && rgb.length != 3)
+          pt = new Point3f(rgb[0], rgb[1], rgb[2]);
+        break;
       case Token.point3f:
         pt = (Point3f) theToken.value;
         break;
       case Token.leftbrace:
         pt = getPoint3f(index, false);
-        break;
+        break;  
       case Token.none:
         if (allowNone)
           return 0;
@@ -6304,16 +6309,16 @@ public class ScriptEvaluator {
         case Token.z:
           rotAxis.set(0, 0, 1);
           break;
-        case Token.identifier:
-          error(ERROR_invalidArgument); // for now
-          break;
         case Token.point3f:
         case Token.leftbrace:
           rotAxis.set(getPoint3f(i, true));
-          i = iToken + 1;
+          i = iToken;
+          break;
+        default:
+          error(ERROR_invalidArgument); // for now
           break;
         }
-        float degrees = floatParameter(i);
+        float degrees = floatParameter(++i);
         if (!isSyntaxCheck)
           viewer.navigate(timeSec, rotAxis, degrees);
         continue;

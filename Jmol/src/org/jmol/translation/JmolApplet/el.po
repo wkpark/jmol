@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-01-12 18:30+0100\n"
-"PO-Revision-Date: 2010-12-20 02:58+0000\n"
-"Last-Translator: Nicolas Vervelle <Unknown>\n"
+"PO-Revision-Date: 2011-02-06 17:32+0000\n"
+"Last-Translator: Dimitrios - Georgios Kontopoulos <Unknown>\n"
 "Language-Team: Greek <el@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-01-29 19:08+0000\n"
-"X-Generator: Launchpad (build 12274)\n"
+"X-Launchpad-Export-Date: 2011-02-07 12:13+0000\n"
+"X-Generator: Launchpad (build 12335)\n"
 
 #: org/jmol/applet/AppletConsole.java:199
 msgid "&Help"
@@ -181,7 +181,7 @@ msgstr "Ποιότητα JPEG ({0})"
 #: org/jmol/export/dialog/Dialog.java:295
 #, java-format
 msgid "PNG Compression  ({0})"
-msgstr ""
+msgstr "Συμπίεση PNG ({0})"
 
 #: org/jmol/export/dialog/Dialog.java:325
 #, java-format

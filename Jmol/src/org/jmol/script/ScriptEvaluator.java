@@ -1678,6 +1678,11 @@ public class ScriptEvaluator {
     case Token.element:
     case Token.elemno:
       clearDefinedVariableAtomSets();
+      if (tokenValue.tok == Token.string) {
+        iValue = Elements.elementNumberFromSymbol(ScriptVariable.sValue(tokenValue), true);
+        if (iValue == 0)
+          return;
+      }
       break;
     }
     boolean isStrProperty = Token.tokAttr(tok, Token.strproperty);

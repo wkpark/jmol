@@ -69,6 +69,7 @@ public class MolecularOrbital extends Isosurface {
   private int myColorPt;
   private String strID;
   private int moNumber;
+  private float[] moLinearCombination;
   private Map<String, Map<String, Object>> htModels;
   private Map<String, Object> thisModel;
 
@@ -94,6 +95,7 @@ public class MolecularOrbital extends Isosurface {
       thisModel = htModels.get(strID);
       moNumber = (!thisModel.containsKey("moNumber") ? 0 : ((Integer) thisModel
           .get("moNumber")).intValue());
+      moLinearCombination = (float[]) thisModel.get("moLinearCombination");
       return;
     }
 
@@ -102,7 +104,7 @@ public class MolecularOrbital extends Isosurface {
       thisModel.put("moIsPositiveOnly", Boolean.FALSE);
       return;
     }
-
+    
     if ("scale" == propertyName) {
       thisModel.put("moScale", value);
       return;
@@ -152,9 +154,18 @@ public class MolecularOrbital extends Isosurface {
     }
 
     if ("molecularOrbital" == propertyName) {
-      moNumber = ((Integer) value).intValue();
-      thisModel.put("moNumber", value);
-      setOrbital(moNumber);
+      if (value instanceof Integer) {
+        moNumber = ((Integer) value).intValue();
+        thisModel.put("moNumber", value);
+        thisModel.remove("moLinearCombination");
+        moLinearCombination = null;
+      } else {
+        moNumber = 0;
+        moLinearCombination = (float[]) value;
+        thisModel.put("moNumber", Integer.valueOf(0));
+        thisModel.put("moLinearCombination", moLinearCombination);
+      }
+      setOrbital(moNumber, moLinearCombination);
       return;
     }
 
@@ -171,6 +182,7 @@ public class MolecularOrbital extends Isosurface {
     if ("delete" == propertyName) {
       htModels.remove(strID);
       moNumber = 0;
+      moLinearCombination = null;
       //pass through
     }
 
@@ -250,6 +262,8 @@ public class MolecularOrbital extends Isosurface {
     }
     if (propertyName == "moNumber")
       return Integer.valueOf(moNumber);
+    if (propertyName == "moLinearCombination")
+      return moLinearCombination;
     if (propertyName == "showMO") {
       StringBuffer str = new StringBuffer();
       List<Map<String, Object>> mos = (List<Map<String, Object>>) (sg.getMoData().get("mos"));
@@ -273,7 +287,7 @@ public class MolecularOrbital extends Isosurface {
           if (!doOneMo) {
             Parameters params = sg.getParams();
             super.setProperty("init", params, null);
-            setOrbital(i);
+            setOrbital(i, null);
           }
           jvxlData.moleculeXml = viewer.getModelCml(viewer.getModelUndeletedAtomsBitSet(thisMesh.modelIndex), 100, true);
           if (!haveHeader) {
@@ -320,12 +334,13 @@ public class MolecularOrbital extends Isosurface {
     moColorPos = (Integer) thisModel.get("moColorPos");
     moColorNeg = (Integer) thisModel.get("moColorNeg");
     moNumber = ((Integer) thisModel.get("moNumber")).intValue();
+    moLinearCombination = (float[]) thisModel.get("moLinearCombination");
     Object b = thisModel.get("moIsPositiveOnly");
     moIsPositiveOnly = (b != null && ((Boolean) (b)).booleanValue());
     return true;
   }
 
-  private void setOrbital(int moNumber) {
+  private void setOrbital(int moNumber, float[] linearCombination) {
     super.setProperty("reset", strID, null);
     if (moDebug)
       super.setProperty("debug", Boolean.TRUE, null);
@@ -351,20 +366,21 @@ public class MolecularOrbital extends Isosurface {
     }
     super.setProperty("title", moTitleFormat, null);
     super.setProperty("fileName", viewer.getFileName(), null);
-    super.setProperty("molecularOrbital", Integer.valueOf(moNumber), null);
+    super.setProperty("molecularOrbital", linearCombination == null ? Integer
+        .valueOf(moNumber) : linearCombination, null);
     if (moPlane != null && moColorNeg != null)
       super.setProperty("colorRGB", moColorNeg, null);
     if (moPlane != null && moColorPos != null)
       super.setProperty("colorRGB", moColorPos, null);
-     currentMesh.isColorSolid = false;
+    currentMesh.isColorSolid = false;
     if (moTranslucentLevel != null)
       super.setProperty("translucenctLevel", moTranslucentLevel, null);
     if (moTranslucency != null)
       super.setProperty("translucency", moTranslucency, null);
     super.setProperty("token", Integer.valueOf(moFill), null);
-    super.setProperty("token",  Integer.valueOf(moMesh), null);
-    super.setProperty("token",  Integer.valueOf(moDots), null);
-    super.setProperty("token",  Integer.valueOf(moFrontOnly), null);
+    super.setProperty("token", Integer.valueOf(moMesh), null);
+    super.setProperty("token", Integer.valueOf(moDots), null);
+    super.setProperty("token", Integer.valueOf(moFrontOnly), null);
     thisModel.put("mesh", currentMesh);
     return;
   }
@@ -405,13 +421,29 @@ public class MolecularOrbital extends Isosurface {
           + Escape.escapeColor(moColorNeg.intValue())
           + (moColorNeg.equals(moColorPos) ? "" : " "
               + Escape.escapeColor(moColorPos.intValue())));
-    appendCmd(s, "mo " + moNumber);
+    if (moLinearCombination == null) {
+      appendCmd(s, "mo " + moNumber);
+    } else {
+      appendCmd(s, "mo " + getStrLC());
+    }
     if (moTranslucency != null)
       appendCmd(s, "mo translucent " + moTranslucentLevel);
     appendCmd(s, ((IsosurfaceMesh) thisModel.get("mesh")).getState("mo"));
     return s.toString();
   }
   
+  private String getStrLC() {
+    StringBuffer sb = new StringBuffer();
+    sb.append('[');
+    for (int i = 0; i < moLinearCombination.length; i += 2) {
+      if (i > 0)
+        sb.append(", ");
+      sb.append(moLinearCombination[i]).append(" ").append((int) moLinearCombination[i + 1]);
+    }
+    sb.append(']');
+    return sb.toString();
+  }
+
   @Override
   public void merge(Shape shape) {
   MolecularOrbital mo = (MolecularOrbital) shape;

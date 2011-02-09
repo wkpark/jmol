@@ -635,14 +635,16 @@ public class Parameters {
   float qm_marginAngstroms = 1f; // may have to adjust this
   int qm_nAtoms;
   int qm_moNumber = Integer.MAX_VALUE;
+  float[] qm_moLinearCombination = null;
   
   @SuppressWarnings("unchecked")
-  void setMO(int iMo) {
+  void setMO(int iMo, float[] linearCombination) {
     iUseBitSets = true;
-    qm_moNumber = Math.abs(iMo);
+    qm_moLinearCombination = linearCombination;
+    qm_moNumber = (linearCombination == null ? Math.abs(iMo) : (int) linearCombination[1]);
     qmOrbitalType = (moData.containsKey("gaussians") ? QM_TYPE_GAUSSIAN
         : moData.containsKey("slaters") ? QM_TYPE_SLATER : QM_TYPE_UNKNOWN);
-    boolean isElectronDensity = (iMo <= 0);
+    boolean isElectronDensity = (iMo <= 0 && linearCombination == null);
     if (qmOrbitalType == QM_TYPE_UNKNOWN) {
       //TODO     value = moData; // must be generic surface info
       Logger

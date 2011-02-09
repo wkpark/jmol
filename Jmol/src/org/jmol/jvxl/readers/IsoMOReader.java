@@ -63,7 +63,7 @@ class IsoMOReader extends AtomDataReader {
     if (line.indexOf("%F") >= 0)
       line = TextFormat.formatString(line, "F", params.fileName);
     if (line.indexOf("%I") >= 0)
-      line = TextFormat.formatString(line, "I", "" + params.qm_moNumber);
+      line = TextFormat.formatString(line, "I", params.qm_moLinearCombination == null ? "" + params.qm_moNumber : getStrLC(params.qm_moLinearCombination));
     if (line.indexOf("%N") >= 0)
       line = TextFormat.formatString(line, "N", "" + params.qmOrbitalCount);
     if (line.indexOf("%E") >= 0)
@@ -80,6 +80,18 @@ class IsoMOReader extends AtomDataReader {
     params.title[iLine] = (!isOptional ? line : rep > 0 && !line.trim().endsWith("=") ? line.substring(1) : "");
   }
   
+  private String getStrLC(float[] lc) {
+    StringBuffer sb = new StringBuffer();
+    sb.append('[');
+    for (int i = 0; i < lc.length; i += 2) {
+      if (i > 0)
+        sb.append(", ");
+      sb.append(lc[i]).append(" ").append((int) lc[i + 1]);
+    }
+    sb.append(']');
+    return sb.toString();
+  }
+
   @SuppressWarnings("unchecked")
   @Override
   protected void generateCube() {
@@ -88,10 +100,10 @@ class IsoMOReader extends AtomDataReader {
     Map<String, Object> moData = params.moData;
     float[] coef = params.moCoefficients; 
     int[][] dfCoefMaps = params.dfCoefMaps;
-
-    if (coef == null) {
+    float[] linearCombination = params.qm_moLinearCombination;
+    List<Map<String, Object>> mos = (List<Map<String, Object>>) moData.get("mos");
+    if (coef == null && linearCombination == null) {
       // electron density calc
-      List<Map<String, Object>> mos = (List<Map<String, Object>>) moData.get("mos");
       if (mos == null)
         return;
       for (int i = params.qm_moNumber; --i >= 0; ) {
@@ -99,31 +111,42 @@ class IsoMOReader extends AtomDataReader {
         Map<String, Object> mo = mos.get(i);
         coef = (float[]) mo.get("coefficients");
         dfCoefMaps = (int[][]) mo.get("dfCoefMaps");
-        getData(q, moData, coef, dfCoefMaps, params.theProperty);
+        getData(q, moData, coef, dfCoefMaps, params.theProperty, null, null);
       }
     } else {
       Logger.info("generating isosurface data for MO using cutoff " + params.cutoff);
-      getData(q, moData, coef, dfCoefMaps, null);
+      float[][] coefs = null;
+      if (linearCombination != null) {
+        coefs = new float[mos.size()][];
+        for (int i = 1; i < linearCombination.length; i += 2) {
+          int j = (int) linearCombination[i];
+          if (j > mos.size() || j < 1)
+            return;
+          coefs[j - 1] = (float[]) mos.get(j - 1).get("coefficients");
+        }
+      }
+      getData(q, moData, coef, dfCoefMaps, null, linearCombination, coefs);
     }
   }
   
   @SuppressWarnings("unchecked")
   private void getData(MOCalculationInterface q, Map<String, Object> moData,
-                       float[] coef, int[][] dfCoefMaps, float[] nuclearCharges) {
+                       float[] coef, int[][] dfCoefMaps, float[] nuclearCharges, float[] linearCombination, float[][] coefs) {
     switch (params.qmOrbitalType) {
     case Parameters.QM_TYPE_GAUSSIAN:
       q.calculate(
           volumeData, bsMySelected, (String) moData.get("calculationType"),
           atomData.atomXyz, atomData.firstAtomIndex,
           (List<int[]>) moData.get("shells"), (float[][]) moData.get("gaussians"),
-          dfCoefMaps, null, coef,
+          dfCoefMaps, null, coef, linearCombination, coefs,
           nuclearCharges, moData.get("isNormalized") == null);
       break;
     case Parameters.QM_TYPE_SLATER:
       q.calculate(
           volumeData, bsMySelected, (String) moData.get("calculationType"),
           atomData.atomXyz, atomData.firstAtomIndex,
-          null, null, null, moData.get("slaters"), coef, nuclearCharges, true);
+          null, null, null, moData.get("slaters"), coef, 
+          linearCombination, coefs, nuclearCharges, true);
       break;
     default:
     }

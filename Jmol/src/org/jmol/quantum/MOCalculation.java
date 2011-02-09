@@ -121,6 +121,12 @@ public class MOCalculation extends QuantumCalculation implements
 
   protected float[][][] voxelDataTemp;
 
+  private float[] linearCombination;
+
+  private float[][] coefs;
+
+  private double moFactor = 1;
+
   public MOCalculation() {
   }
 
@@ -129,7 +135,8 @@ public class MOCalculation extends QuantumCalculation implements
                         int firstAtomOffset, List<int[]> shells,
                         float[][] gaussians, int[][] dfCoefMaps,
                         Object slaters,
-                        float[] moCoefficients, float[] nuclearCharges, boolean doNormalize) {
+                        float[] moCoefficients, float[] linearCombination, float[][] coefs,
+                        float[] nuclearCharges, boolean doNormalize) {
     boolean testing = false;
     this.calculationType = calculationType;
     this.firstAtomOffset = firstAtomOffset;
@@ -139,6 +146,8 @@ public class MOCalculation extends QuantumCalculation implements
       this.dfCoefMaps = dfCoefMaps;
     this.slaters = (SlaterData[]) slaters;
     this.moCoefficients = moCoefficients;
+    this.linearCombination = linearCombination;
+    this.coefs = coefs;
     //this.nuclearCharges = nuclearCharges;
     this.isElectronDensity = (testing || nuclearCharges != null);
     this.doNormalize = doNormalize;
@@ -152,10 +161,7 @@ public class MOCalculation extends QuantumCalculation implements
         bsSelected, atomCoordAngstroms);
     atomIndex = firstAtomOffset - 1;
     doDebug = (Logger.debugging);
-    if (slaters == null)
-      createGaussianCube();
-    else
-      createSlaterCube();
+    createCube();
     if (doDebug || testing || isElectronDensity)
       calculateElectronDensity(nuclearCharges);
   }  
@@ -177,39 +183,60 @@ public class MOCalculation extends QuantumCalculation implements
     EZ = new double[nZ];
   }
 
+  float integration = 0;
+
   public void calculateElectronDensity(float[] nuclearCharges) {
     //TODO
-    float t = 0;
     for (int ix = nX; --ix >= 0;)
       for (int iy = nY; --iy >= 0;)
         for (int iz = nZ; --iz >= 0;) {
           float x = voxelData[ix][iy][iz];
-          t += x * x;
+          integration += x * x;
         }
     float volume = stepBohr[0] * stepBohr[1] * stepBohr[2]; 
         // / bohr_per_angstrom / bohr_per_angstrom / bohr_per_angstrom;
-    t = t * volume;
-    Logger.info("Integrated density = " + t);
+    integration *= volume;
+    Logger.info("Integrated density = " + integration);
     //processMep(nuclearCharges);
   }
 
-  private void createSlaterCube() {
-    moCoeff = 0;
-    for (int i = 0; i < slaters.length; i++) {
-      if (!processSlater(i))
-        break;
+  private void createCube() {
+    if (slaters == null && !checkCalculationType())
+      return;
+    if (linearCombination == null) {
+      process();
+    } else {
+      double sum = 0;
+      for (int i = 0; i < linearCombination.length; i += 2)
+        sum += linearCombination[i] * linearCombination[i];
+      sum = Math.sqrt(sum);
+      if (sum == 0)
+        return;
+      for (int i = 0; i < linearCombination.length; i += 2) {
+        moFactor = linearCombination[i] / sum;
+        if (moFactor == 0)
+          continue;
+        moCoefficients = coefs[(int) linearCombination[i + 1] - 1];
+        process();
+      }
     }
   }
 
-  private void createGaussianCube() {
-    if (!checkCalculationType())
-      return;
-    check5D();
-    int nShells = shells.size();
-    // each STO shell is the combination of one or more gaussians
+  private void process() {
     moCoeff = 0;
-    for (int i = 0; i < nShells; i++)
-      processShell(i);
+    if (slaters == null) {
+      check5D();
+      // each STO shell is the combination of one or more gaussians
+      int nShells = shells.size();
+      moCoeff = 0;
+      for (int i = 0; i < nShells; i++)
+        processShell(i);
+      return;
+    }
+      for (int i = 0; i < slaters.length; i++) {
+        if (!processSlater(i))
+          break;
+      }
   }
 
   boolean as5D = false;
@@ -228,10 +255,10 @@ public class MOCalculation extends QuantumCalculation implements
     thisAtom = null;
     for (int i = 0; i < nShells; i++) {
       int[] shell = shells.get(i);
-      int basisType = shell[1];
+      basisType = shell[1];
       gaussianPtr = shell[2];
       nGaussians = shell[3];
-      addData(basisType);
+      addData();
     }
     as5D = (moCoeff > moCoefficients.length);
     if (as5D)
@@ -265,25 +292,23 @@ public class MOCalculation extends QuantumCalculation implements
   }
 
   private int nGaussians;
+  private boolean doShowShellType;
+  private int basisType;
   
   private void processShell(int iShell) {
     int lastAtom = atomIndex;
     int[] shell = shells.get(iShell);
     atomIndex = shell[0] + firstAtomOffset;
-    int basisType = shell[1];
+    basisType = shell[1];
     gaussianPtr = shell[2];
     nGaussians = shell[3];
-
-    if (doDebug)
-      Logger.debug("\n\t\t\tprocessShell: " + iShell + " type="
-          + JmolConstants.getQuantumShellTag(basisType) + " nGaussians="
-          + nGaussians + " atom=" + atomIndex);
+    doShowShellType = doDebug;
     if (atomIndex != lastAtom && (thisAtom = qmAtoms[atomIndex]) != null)
       thisAtom.setXYZ(true);
-    addData(basisType);
+    addData();
   }
 
-  private void addData(int basisType) {
+  private void addData() {
     switch (basisType) {
     case JmolConstants.SHELL_S:
       addDataS();
@@ -384,9 +409,9 @@ public class MOCalculation extends QuantumCalculation implements
     for (int ig = 0; ig < nGaussians; ig++) {
       double alpha = gaussians[gaussianPtr + ig][0];
       c1 = gaussians[gaussianPtr + ig][1];
-      double a = norm * m1 * c1;
+      double a = norm * m1 * c1 * moFactor;
       if (doNormalize)
-        a = (a * Math.pow(alpha, 0.75));
+        a *= Math.pow(alpha, 0.75);
       // the coefficients are all included with the X factor here
       for (int i = xMax; --i >= xMin;) {
         EX[i] = a *  Math.exp(-X2[i] * alpha);
@@ -569,7 +594,7 @@ public class MOCalculation extends QuantumCalculation implements
                      double ay, double az) {
     for (int i = xMax; --i >= xMin;) {
       CX[i] = as + ax * X[i];
-      EX[i] =  Math.exp(-X2[i] * alpha);
+      EX[i] =  Math.exp(-X2[i] * alpha) * moFactor;
     }
     for (int i = yMax; --i >= yMin;) {
       CY[i] = ay * Y[i];
@@ -583,7 +608,7 @@ public class MOCalculation extends QuantumCalculation implements
 
   private void setE(double[] EX, double alpha) {
     for (int i = xMax; --i >= xMin;)
-      EX[i] =  Math.exp(-X2[i] * alpha);
+      EX[i] =  Math.exp(-X2[i] * alpha) * moFactor;
     for (int i = yMax; --i >= yMin;)
       EY[i] =  Math.exp(-Y2[i] * alpha);
     for (int i = zMax; --i >= zMin;)
@@ -1071,6 +1096,7 @@ public class MOCalculation extends QuantumCalculation implements
       atomIndex = -1;
       return true;
     }
+    coef *= moFactor;
     if (atomIndex != lastAtom)
       thisAtom.setXYZ(true);
     int a = slater.x;
@@ -1228,6 +1254,12 @@ public class MOCalculation extends QuantumCalculation implements
   }
 
   private void dumpInfo(int shell, int[] map) {
+    if (doShowShellType) {
+      Logger.debug("\n\t\t\tprocessShell: " + shell + " type="
+          + JmolConstants.getQuantumShellTag(basisType) + " nGaussians="
+          + nGaussians + " atom=" + atomIndex);
+      doShowShellType = false;
+    }
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUGHIGH))
       for (int ig = 0; ig < nGaussians; ig++) {
         double alpha = gaussians[gaussianPtr + ig][0];

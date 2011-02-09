@@ -15060,6 +15060,7 @@ public class ScriptEvaluator {
       String title = null;
       int moNumber = ((Integer) getShapeProperty(JmolConstants.SHAPE_MO,
           "moNumber")).intValue();
+      float[] linearCombination = (float[]) getShapeProperty(JmolConstants.SHAPE_MO, "moLinearCombination");
       if (isInitOnly)
         return true;// (moNumber != 0);
       if (moNumber == 0)
@@ -15069,6 +15070,7 @@ public class ScriptEvaluator {
       switch (getToken(i).tok) {
       case Token.integer:
         moNumber = intParameter(i);
+        linearCombination = null;
         break;
       case Token.next:
         moNumber = Token.next;
@@ -15127,6 +15129,10 @@ public class ScriptEvaluator {
       case Token.identifier:
         error(ERROR_invalidArgument);
       default:
+        if (isArrayParameter(i)) {
+          linearCombination = floatParameterSet(i, 2, Integer.MAX_VALUE);
+          break;
+        }
         int ipt = iToken;
         if (!setMeshDisplayProperty(JmolConstants.SHAPE_MO, 0, theTok))
           error(ERROR_invalidArgument);
@@ -15136,11 +15142,11 @@ public class ScriptEvaluator {
       }
       if (propertyName != null)
         addShapeProperty(propertyList, propertyName, propertyValue);
-      if (moNumber != Integer.MAX_VALUE) {
+      if (moNumber != Integer.MAX_VALUE || linearCombination != null) {
         if (tokAt(i + 1) == Token.string)
           title = parameterAsString(i + 1);
         setCursorWait(true);
-        setMoData(propertyList, moNumber, offset, iModel, title);
+        setMoData(propertyList, moNumber, linearCombination, offset, iModel, title);
         addShapeProperty(propertyList, "finalize", null);
       }
       if (propertyList.size() > 0)
@@ -15204,8 +15210,9 @@ public class ScriptEvaluator {
   }
 
   @SuppressWarnings("unchecked")
-  private void setMoData(List<Object[]> propertyList, int moNumber, int offset,
-                         int modelIndex, String title) throws ScriptException {
+  private void setMoData(List<Object[]> propertyList, int moNumber,
+                         float[] linearCombination, int offset, int modelIndex,
+                         String title) throws ScriptException {
     if (isSyntaxCheck)
       return;
     if (modelIndex < 0) {
@@ -15221,50 +15228,53 @@ public class ScriptEvaluator {
       // setShapeProperty(shape, "init", new Integer(modelIndex));
     } else {
       moData = (Map) viewer.getModelAuxiliaryInfo(modelIndex, "moData");
-      if (moData == null)
-        error(ERROR_moModelError);
-      int lastMoNumber = (moData.containsKey("lastMoNumber") ? ((Integer) moData
-          .get("lastMoNumber")).intValue()
-          : 0);
-      if (moNumber == Token.prev)
-        moNumber = lastMoNumber - 1;
-      else if (moNumber == Token.next)
-        moNumber = lastMoNumber + 1;
-      List<Map<String, Object>> mos = (List<Map<String, Object>>) (moData
-          .get("mos"));
-      int nOrb = (mos == null ? 0 : mos.size());
-      if (nOrb == 0)
-        error(ERROR_moCoefficients);
-      if (nOrb == 1 && moNumber > 1)
-        error(ERROR_moOnlyOne);
-      if (offset != Integer.MAX_VALUE) {
-        // 0: HOMO;
-        if (moData.containsKey("HOMO")) {
-          moNumber = ((Integer) moData.get("HOMO")).intValue() + offset;
-        } else {
-          for (int i = 0; i < nOrb; i++) {
-            Map<String, Object> mo = mos.get(i);
-            if (!mo.containsKey("occupancy"))
-              error(ERROR_moOccupancy);
-            if (((Float) mo.get("occupancy")).floatValue() == 0) {
-              moNumber = i + offset;
-              break;
+      if (linearCombination == null) {
+        if (moData == null)
+          error(ERROR_moModelError);
+        int lastMoNumber = (moData.containsKey("lastMoNumber") ? ((Integer) moData
+            .get("lastMoNumber")).intValue()
+            : 0);
+        if (moNumber == Token.prev)
+          moNumber = lastMoNumber - 1;
+        else if (moNumber == Token.next)
+          moNumber = lastMoNumber + 1;
+        List<Map<String, Object>> mos = (List<Map<String, Object>>) (moData
+            .get("mos"));
+        int nOrb = (mos == null ? 0 : mos.size());
+        if (nOrb == 0)
+          error(ERROR_moCoefficients);
+        if (nOrb == 1 && moNumber > 1)
+          error(ERROR_moOnlyOne);
+        if (offset != Integer.MAX_VALUE) {
+          // 0: HOMO;
+          if (moData.containsKey("HOMO")) {
+            moNumber = ((Integer) moData.get("HOMO")).intValue() + offset;
+          } else {
+            for (int i = 0; i < nOrb; i++) {
+              Map<String, Object> mo = mos.get(i);
+              if (!mo.containsKey("occupancy"))
+                error(ERROR_moOccupancy);
+              if (((Float) mo.get("occupancy")).floatValue() == 0) {
+                moNumber = i + offset;
+                break;
+              }
             }
           }
+          Logger.info("MO " + moNumber);
         }
-        Logger.info("MO " + moNumber);
+        if (moNumber < 1 || moNumber > nOrb)
+          error(ERROR_moIndex, "" + nOrb);
       }
-      if (moNumber < 1 || moNumber > nOrb)
-        error(ERROR_moIndex, "" + nOrb);
+      moData.put("lastMoNumber", Integer.valueOf(moNumber));
     }
-    moData.put("lastMoNumber", Integer.valueOf(moNumber));
     addShapeProperty(propertyList, "moData", moData);
     if (title != null)
       addShapeProperty(propertyList, "title", title);
     if (firstMoNumber < 0)
       addShapeProperty(propertyList, "charges", viewer.getAtomicCharges());
-    addShapeProperty(propertyList, "molecularOrbital", Integer
-        .valueOf(firstMoNumber < 0 ? -moNumber : moNumber));
+    addShapeProperty(propertyList, "molecularOrbital",
+        linearCombination != null ? linearCombination : Integer
+            .valueOf(firstMoNumber < 0 ? -moNumber : moNumber));
     addShapeProperty(propertyList, "clear", null);
   }
 
@@ -15801,6 +15811,7 @@ public class ScriptEvaluator {
         // mo 1-based-index
         int moNumber = Integer.MAX_VALUE;
         int offset = Integer.MAX_VALUE;
+        float[] linearCombination = null;
         switch (tokAt(++i)) {
         case Token.nada:
           error(ERROR_badArgumentCount);
@@ -15819,8 +15830,13 @@ public class ScriptEvaluator {
           moNumber = intParameter(i);
           sbCommand.append(" mo ").append(moNumber);
           break;
+        default:
+          if (isArrayParameter(i)) {
+            linearCombination = floatParameterSet(i, 2, Integer.MAX_VALUE);
+            i = iToken;
+          }
         }
-        setMoData(propertyList, moNumber, offset, modelIndex, null);
+        setMoData(propertyList, moNumber, linearCombination, offset, modelIndex, null);
         surfaceObjectSeen = true;
         continue;
       case Token.mep:
@@ -16006,7 +16022,7 @@ public class ScriptEvaluator {
       case Token.ed:
         sbCommand.append(" ed");
         // electron density - never documented
-        setMoData(propertyList, -1, 0, modelIndex, null);
+        setMoData(propertyList, -1, null, 0, modelIndex, null);
         surfaceObjectSeen = true;
         continue;
       case Token.debug:

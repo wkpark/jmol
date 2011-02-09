@@ -885,8 +885,14 @@ public class SurfaceGenerator {
     }
 
     if ("molecularOrbital" == propertyName) {
-      int iMo = ((Integer) value).intValue();
-      params.setMO(iMo);
+      int iMo = 0;
+      float[] linearCombination = null;
+      if (value instanceof Integer) {
+        iMo = ((Integer) value).intValue();
+      } else {
+        linearCombination = (float[]) value;
+      }
+      params.setMO(iMo, linearCombination);
       Logger.info(params.calculationType);
       processState();
       return true;

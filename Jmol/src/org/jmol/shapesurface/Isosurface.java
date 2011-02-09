@@ -176,6 +176,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   private boolean explicitContours;
   private int atomIndex;
   private int moNumber;
+  private float[] moLinearCombination;
   private short defaultColix;
   private short meshColix;
   private Point3f center;
@@ -399,7 +400,13 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       value = viewer.getOutputStream((String) value, null);
       propertyName = "outputStream";
     } else if ("molecularOrbital" == propertyName) {
-      moNumber = ((Integer) value).intValue();
+      if (value instanceof Integer) {
+        moNumber = ((Integer) value).intValue();
+        moLinearCombination = null;
+      } else {
+        moLinearCombination = (float[]) value;
+        moNumber = 0;
+      }
       if (!isColorExplicit)
         isPhaseColored = true;
     } else if ("phase" == propertyName) {
@@ -571,6 +578,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
           (jvxlData.isColorReversed ? jvxlData.valueMappedToRed : jvxlData.valueMappedToBlue)});
     if (property == "moNumber")
       return Integer.valueOf(moNumber);
+    if (property == "moLinearCombination")
+      return moLinearCombination;
     if (property == "area")
       return (thisMesh == null ? new Float(Float.NaN) : calculateVolumeOrArea(true));
     if (property == "volume")

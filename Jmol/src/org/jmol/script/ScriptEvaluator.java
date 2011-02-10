@@ -16001,9 +16001,14 @@ public class ScriptEvaluator {
           sbCommand.append(" ").append(propertyValue);
         }
         break;
+      case Token.decimal:
+      case Token.integer:
+      case Token.plus:
       case Token.cutoff:
         sbCommand.append(" cutoff ");
-        if (tokAt(++i) == Token.plus) {
+        if (theTok == Token.cutoff)
+          i++;
+        if (tokAt(i) == Token.plus) {
           propertyName = "cutoffPositive";
           propertyValue = new Float(cutoff = floatParameter(++i));
           sbCommand.append("+").append(propertyValue);
@@ -16015,7 +16020,6 @@ public class ScriptEvaluator {
           propertyName = "cutoffRange";
           propertyValue = floatParameterSet(i, 2, 2);
           addShapeProperty(propertyList, "cutoff", Float.valueOf(0));
-          //addShapeProperty(propertyList, "colorDensity", null);
           sbCommand.append(Escape.escape(propertyValue));
           i = iToken;
         }

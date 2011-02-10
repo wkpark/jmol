@@ -453,7 +453,10 @@ public class JmolApp {
     // Open a file if one is given as an argument -- note, this CAN be a
     // script file
     if (modelFilename != null) {
-      viewer.openFile(modelFilename);
+      if (script1 == null)
+        script1 = "";
+      script1 = (modelFilename.endsWith(".spt") ? "script " : "load ") 
+          + Escape.escape(modelFilename) + ";" + script1;
     }
 
     // OK, by now it is time to execute the script

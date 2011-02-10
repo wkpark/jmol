@@ -86,9 +86,9 @@ public abstract class AtomShape extends Shape {
     boolean isVisible = (rd != null && rd.value != 0);
     boolean isAll = (bsSelected == null);
     int i0 = (isAll ? atomCount - 1 : bsSelected.nextSetBit(0));
+    if (mads == null && i0 >= 0)
+      mads = new short[atomCount];
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsSelected.nextSetBit(i + 1))) {
-      if (mads == null)
-        mads = new short[atomCount];
       Atom atom = atoms[i];
       mads[i] = atom.calculateMad(viewer, rd);
 //      System.out.println("atomSHape " + atom + " mad=" + mads[i]);

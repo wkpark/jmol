@@ -595,7 +595,7 @@ public class Labels extends AtomShape {
         if (align.length() > 0)
           setStateInfo(temp3, i, "set labelAlignment " + align);
       }
-      if (mads[i] < 0)
+      if (mads != null && mads[i] < 0)
         setStateInfo(temp2, i, "set toggleLabel");
       if (bsFontSet != null && bsFontSet.get(i))
         setStateInfo(temp2, i, getFontCommand("label", Font3D

@@ -1621,6 +1621,7 @@ public class ScriptEvaluator {
     Point3f pt;
     List<ScriptVariable> sv = null;
     int nValues = 0;
+    boolean isStrProperty = Token.tokAttr(tok, Token.strproperty);
     if (tokenValue.tok == Token.varray) {
       sv = ((ScriptVariable) tokenValue).getList();
       if ((nValues = sv.size()) == 0)
@@ -1631,17 +1632,21 @@ public class ScriptEvaluator {
     case Token.fracxyz:
     case Token.fuxyz:
     case Token.vibxyz:
-      if (tokenValue.tok == Token.point3f) {
+      switch (tokenValue.tok) {
+      case Token.point3f:
         viewer.setAtomCoord(bs, tok, tokenValue.value);
-      } else if (tokenValue.tok == Token.varray) {
+        break;
+      case Token.varray:
         theToken = tokenValue;
         viewer.setAtomCoord(bs, tok, getPointArray(-1, nValues));
+        break;
       }
       return;
     case Token.color:
-      if (tokenValue.tok == Token.point3f)
-        iValue = Graphics3D.colorPtToInt((Point3f) tokenValue.value);
-      else if (tokenValue.tok == Token.varray) {
+      Object value = null;
+      String prop = "color";
+      switch (tokenValue.tok) {
+      case Token.varray:
         int[] values = new int[nValues];
         for (int i = nValues; --i >= 0;) {
           ScriptVariable svi = sv.get(i);
@@ -1651,8 +1656,8 @@ public class ScriptEvaluator {
           } else if (svi.tok == Token.integer) {
             values[i] = svi.intValue;
           } else {
-            values[i] = Graphics3D.getArgbFromString(ScriptVariable
-                .sValue(svi));
+            values[i] = Graphics3D
+                .getArgbFromString(ScriptVariable.sValue(svi));
             if (values[i] == 0)
               values[i] = ScriptVariable.iValue(svi);
           }
@@ -1660,54 +1665,62 @@ public class ScriptEvaluator {
             error(ERROR_unrecognizedParameter, "ARRAY", ScriptVariable
                 .sValue(svi));
         }
-        setShapeProperty(JmolConstants.SHAPE_BALLS, "colorValues", values, bs);
-        return;
+        value = values;
+        prop = "colorValues";
+        break;
+      case Token.point3f:
+        value = Integer.valueOf(Graphics3D.colorPtToInt((Point3f) tokenValue.value));
+        break;
+      case Token.string:
+        value = tokenValue.value;
+        break;
+      default:
+        value = Integer.valueOf(ScriptVariable.iValue(tokenValue));
+        break;
       }
-      setShapeProperty(JmolConstants.SHAPE_BALLS, "color",
-          tokenValue.tok == Token.string ? tokenValue.value : Integer
-              .valueOf(iValue), bs);
+      setShapeProperty(JmolConstants.SHAPE_BALLS, prop, value, bs);
       return;
     case Token.label:
     case Token.format:
-      if (tokenValue.tok == Token.varray)
-        list = ScriptVariable.listValue(tokenValue);
-      else
+      if (tokenValue.tok != Token.varray)
         sValue = ScriptVariable.sValue(tokenValue);
-      viewer.setAtomProperty(bs, tok, iValue, fValue, sValue, fvalues, list);
-      return;
+      break;
     case Token.element:
     case Token.elemno:
       clearDefinedVariableAtomSets();
-      if (tokenValue.tok == Token.string) {
-        iValue = Elements.elementNumberFromSymbol(ScriptVariable.sValue(tokenValue), true);
-        if (iValue == 0)
-          return;
-      }
+      isStrProperty = false;
       break;
     }
-    boolean isStrProperty = Token.tokAttr(tok, Token.strproperty);
-    if (tokenValue.tok == Token.varray) {
-      if (isStrProperty || tok == Token.element)
+    switch (tokenValue.tok) {
+    case Token.varray:
+      if (isStrProperty)
         list = ScriptVariable.listValue(tokenValue);
       else
         fvalues = ScriptVariable.flistValue(tokenValue, nValues);
-    } else {
-      list = Parser.getTokens(ScriptVariable.sValue(tokenValue));
+      break;
+    case Token.string:
+      if (sValue == null)
+        list = Parser.getTokens(ScriptVariable.sValue(tokenValue));
+      break;
     }
-    if (fvalues == null && !isStrProperty) {
-      fvalues = new float[nValues];
-      for (int i = nValues; --i >= 0;)
-        fvalues[i] = (tok == Token.element ? Elements.elementNumberFromSymbol(
-            list[i], false) : Parser.parseFloat(list[i]));
-    }
-    if (tokenValue.tok != Token.varray && nValues == 1) {
-      if (isStrProperty)
-        sValue = list[0];
-      else
-        fValue = fvalues[0];
-      iValue = (int) fValue;
-      list = null;
-      fvalues = null;
+    if (list != null) {
+      nValues = list.length;
+      if (!isStrProperty) {
+        fvalues = new float[nValues];
+        for (int i = nValues; --i >= 0;)
+          fvalues[i] = (tok == Token.element ? Elements
+              .elementNumberFromSymbol(list[i], false) : Parser
+              .parseFloat(list[i]));
+      }
+      if (tokenValue.tok != Token.varray && nValues == 1) {
+        if (isStrProperty)
+          sValue = list[0];
+        else
+          fValue = fvalues[0];
+        iValue = (int) fValue;
+        list = null;
+        fvalues = null;
+      }
     }
     viewer.setAtomProperty(bs, tok, iValue, fValue, sValue, fvalues, list);
   }

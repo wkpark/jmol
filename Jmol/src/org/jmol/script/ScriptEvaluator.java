@@ -13971,7 +13971,7 @@ public class ScriptEvaluator {
       String type = ((len = statementLength) == 3 ? parameterAsString(2) : null);
       if (!isSyntaxCheck) {
         Object[] data = (type == null ? this.data : viewer.getData(type));
-        msg = (data == null ? "no data" : "data   "
+        msg = (data == null ? "no data" : "data  \""
             + data[0]
             + "\"\n"
             + (data[1] instanceof float[] ? Escape.escape((float[]) data[1],
@@ -16576,11 +16576,13 @@ public class ScriptEvaluator {
         if (Float.isNaN(cutoff) && !Float.isNaN(sigma)) {
           Logger.error("sigma not supported");
         }
-        s += " created with cutoff=" + cutoff;
+        s += " created";
+        if (isIsosurface) 
+          s += " with cutoff=" + cutoff;
         float[] minMax = (float[]) getShapeProperty(iShape, "minMaxInfo");
         if (minMax[0] != Float.MAX_VALUE)
           s += " min=" + minMax[0] + " max=" + minMax[1];
-        s += "; number of isosurfaces = " + getShapeProperty(iShape, "count");
+        s += "; " + JmolConstants.shapeClassBases[iShape].toLowerCase() + " count: " + getShapeProperty(iShape, "count");
         s += getIsosurfaceDataRange(iShape, "\n");
         if (doCalcArea)
           s += "\nisosurfaceArea = " + Escape.escapeArray(area);

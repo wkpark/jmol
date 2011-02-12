@@ -9242,7 +9242,7 @@ public class ScriptEvaluator {
     case Token.function:
       viewer.clearFunctions();
       return;
-    case Token.reset:
+    case Token.structure:
       if (!isSyntaxCheck) {
         BitSet bsAllAtoms = new BitSet();
         runScript(viewer.getDefaultStructure(null, bsAllAtoms));

@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-01-04 23:43+0100\n"
-"PO-Revision-Date: 2010-11-06 20:50+0000\n"
-"Last-Translator: simone.sandri <Unknown>\n"
+"PO-Revision-Date: 2011-02-12 20:00+0000\n"
+"Last-Translator: Matteo Ferrabone <Unknown>\n"
 "Language-Team: Italian <it@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-01-29 19:08+0000\n"
-"X-Generator: Launchpad (build 12274)\n"
+"X-Launchpad-Export-Date: 2011-02-13 20:28+0000\n"
+"X-Generator: Launchpad (build 12351)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
 msgid "Error starting Jmol: the property 'user.home' is not defined."
@@ -277,7 +277,7 @@ msgstr "Controller"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:363
 msgid "Go to first atom set in the collection"
-msgstr ""
+msgstr "Vai al primo insieme di atomi nella raccolta"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:364
 msgid "Go to previous atom set in the collection"
@@ -443,7 +443,7 @@ msgstr "Ottieni &MOL"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:64
 msgid "&Reload"
-msgstr ""
+msgstr "&Ricarica"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:65
 msgid "Scrip&t Editor..."
@@ -923,7 +923,7 @@ msgstr "Anteprima del file (richiede riavvio di Jmol)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:203
 msgid "Clear history (requires restarting Jmol)"
-msgstr ""
+msgstr "Cancella la cronologia (richiede il riavvio di Jmol)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:204
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:205
@@ -946,7 +946,7 @@ msgstr "Clicca sugli atomi per misurare le distanze"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:212
 msgid "Click an atom to center on it"
-msgstr ""
+msgstr "Clicca su di un atomo per selezionarlo"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:213
 msgid "Return molecule to home position."
@@ -1052,7 +1052,7 @@ msgstr "IO Exception:"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1427
 msgid "width height?"
-msgstr ""
+msgstr "larghezza altezza?"
 
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:124
 msgid "Delete"

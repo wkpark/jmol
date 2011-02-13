@@ -360,25 +360,26 @@ public class SmilesSearch extends JmolMolecule {
 
       jmolAtom = jmolAtoms[iAtom];
 
-      // check atoms 
-
-      if (patternAtom.atomsOr != null) {
-        for (int ii = 0; ii < patternAtom.nAtomsOr; ii++)
-          if (!checkMatch(patternAtom.atomsOr[ii], atomNum, iAtom,
-              firstAtomOnly))
-            return false;
-        return true;
-      }
-
-      if (patternAtom.primitives == null) {
-        if (!checkPrimitiveAtom(patternAtom, iAtom))
+      if (!isRingCheck) {
+        // check atoms 
+        if (patternAtom.atomsOr != null) {
+          for (int ii = 0; ii < patternAtom.nAtomsOr; ii++)
+            if (!checkMatch(patternAtom.atomsOr[ii], atomNum, iAtom,
+                firstAtomOnly))
+              return false;
           return true;
-      } else {
-        for (int i = 0; i < patternAtom.nPrimitives; i++)
-          if (!checkPrimitiveAtom(patternAtom.primitives[i], iAtom))
-            return true;
-      }
+        }
 
+        if (patternAtom.primitives == null) {
+          if (!checkPrimitiveAtom(patternAtom, iAtom))
+            return true;
+        } else {
+          for (int i = 0; i < patternAtom.nPrimitives; i++)
+            if (!checkPrimitiveAtom(patternAtom.primitives[i], iAtom))
+              return true;
+        }
+      }
+      
       // Check bonds
 
       jmolBonds = jmolAtom.getEdges();
@@ -435,8 +436,8 @@ public class SmilesSearch extends JmolMolecule {
       if (Logger.debugging && !isSilent)
         Logger.debug("pattern atom " + atomNum + " " + patternAtom);
       bsFound.set(iAtom);
-      
-    }    
+
+    }
     if (!continueMatch(atomNum, iAtom, firstAtomOnly))
       return false;
     if (iAtom >= 0)
@@ -769,7 +770,7 @@ public class SmilesSearch extends JmolMolecule {
         }
 
         // +/- Check charge
-        if (!isRingCheck && patternAtom.getCharge() != atom.getFormalCharge())
+        if (patternAtom.getCharge() != atom.getFormalCharge())
           break;
 
         // H explicit H count

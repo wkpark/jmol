@@ -769,7 +769,7 @@ public class SmilesSearch extends JmolMolecule {
         }
 
         // +/- Check charge
-        if (patternAtom.getCharge() != atom.getFormalCharge())
+        if (!isRingCheck && patternAtom.getCharge() != atom.getFormalCharge())
           break;
 
         // H explicit H count

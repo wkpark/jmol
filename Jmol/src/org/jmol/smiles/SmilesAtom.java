@@ -726,7 +726,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
     if (isAromatic) {
       sym = sym.toLowerCase();
       if (atomicNumber != 6)
-        valence = -1; // force [n]
+        valence = Integer.MAX_VALUE; // force [n]
     }
     int count = (stereo.length() > 0 || isotopeNumber != 0 || charge != 0 ? -1
         : getDefaultCount(atomicNumber, false));

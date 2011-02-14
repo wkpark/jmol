@@ -25,6 +25,7 @@ package org.jmol.viewer;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -88,8 +89,8 @@ public class PropertyManager {
     "evaluate"        , "<expression>", "",
     "menu"            , "<type>", "current",
     "minimizationInfo", "", "",
-    "PointGroupInfo"  , atomExpression, "(visible)",
-    "FileInfo"         , "<type>", "",
+    "pointGroupInfo"  , atomExpression, "(visible)",
+    "fileInfo"         , "<type>", "",
     "errorMessage", "", "",
     "mouseInfo", "", "",
   };
@@ -341,7 +342,8 @@ public class PropertyManager {
     return false;
   }
   
-  private static Object getPropertyAsObject(Viewer viewer, String infoType, Object paramInfo, String returnType) {
+  private static Object getPropertyAsObject(Viewer viewer, String infoType,
+                                            Object paramInfo, String returnType) {
     //Logger.debug("getPropertyAsObject(\"" + infoType+"\", \"" + paramInfo + "\")");
     if (infoType.equals("tokenList")) {
       return Token.getTokensLike((String) paramInfo);
@@ -382,7 +384,7 @@ public class PropertyManager {
         return viewer.getFileAsString(myParam.toString());
       return viewer.getCurrentFileAsString();
     case PROP_JMOL_STATUS:
-      return viewer.getStatusChanged(myParam.toString()); 
+      return viewer.getStatusChanged(myParam.toString());
     case PROP_JMOL_VIEWER:
       return viewer;
     case PROP_MEASUREMENT_INFO:
@@ -420,20 +422,26 @@ public class PropertyManager {
     case PROP_EVALUATE:
       return ScriptEvaluator.evaluateExpression(viewer, myParam.toString());
     case PROP_IMAGE:
-      return viewer.getImageAs(returnType == null ? "JPEG" : "JPG64", -1, -1, -1, null, null);
+      return viewer.getImageAs(returnType == null ? "JPEG" : "JPG64", -1, -1,
+          -1, null, null);
     }
-    String info = "getProperty ERROR\n" + infoType + "?\nOptions include:\n";
+    String[] data = new String[PROP_COUNT];
     for (int i = 0; i < PROP_COUNT; i++) {
       String paramType = getParamType(i);
       String paramDefault = getDefaultParam(i);
       String name = getPropertyName(i);
-      if (name.charAt(0) != 'X')
-        info += "\n getProperty "
-            + name
-            + (paramType != "" ? " " + paramType
-                + (paramDefault != "" ? " #default: " + paramDefault : "") : "");
+      data[i] = (name.charAt(0) == 'X' ? "" : name
+          + (paramType != "" ? " " + getParamType(i)
+              + (paramDefault != "" ? " #default: " + getDefaultParam(i) : "")
+              : ""));
     }
-    return info;
+    Arrays.sort(data);
+    StringBuffer info = new StringBuffer("getProperty ERROR\n" + infoType
+        + "?\nOptions include:\n");
+    for (int i = 0; i < PROP_COUNT; i++)
+      if (data[i].length() > 0)
+        info.append("\n getProperty ").append(data[i]);
+    return info.toString();
   }
   
   @SuppressWarnings("unchecked")

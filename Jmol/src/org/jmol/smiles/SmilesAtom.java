@@ -612,8 +612,6 @@ public class SmilesAtom extends Point3f implements JmolNode {
   }
 
   public int getBondedAtomIndex(int j) {
-    if (bonds == null || bonds[j] == null)
-      System.out.println("OOPS SMILESAOTM ");
     return (parent != null ? parent.getBondedAtomIndex(j) : bonds[j]
         .getOtherAtom(this).index);
   }

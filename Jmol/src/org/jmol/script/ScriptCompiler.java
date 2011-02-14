@@ -2103,8 +2103,6 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
    */
   private boolean lookingAtImpliedString(boolean allowSpace) {
     int ichT = ichToken;
-    if (ichT + 2 > cchScript)
-      return false;
     char ch = script.charAt(ichT);
     boolean parseVariables = !(Token.tokAttr(tokCommand, Token.implicitStringCommand) 
         || (tokCommand & 1) == 0); 
@@ -2154,14 +2152,14 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     // message/echo/label @{....} testing  NOT ok
     // message/echo/label @x bananas OK -- "@x bananas"
     // {... message/echo label ok }  
-    if (isVariable && ptSpace < 0 && parenpt <= 0) {
-      // if we have @xxx then this is not an implied string
-      return false;
-    }
     if (allowSpace)
       ichT = ptLastChar + 1;
     else if (ptSpace > 0)
       ichT = ptSpace;
+    if (isVariable && ptSpace < 0 && parenpt <= 0 && ichT - ichToken > 1) {
+      // if we have @xxx then this is not an implied string
+      return false;
+    }
     return (cchToken = ichT - ichToken) > 0;
   }
 

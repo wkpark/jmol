@@ -23,8 +23,6 @@ public class EspressoReader extends AtomSetCollectionReader {
   @Override
   protected void initializeReader() {
     setSpaceGroupName("P1");
-    //This is correct only for the first set of coordinates
-    setFractionalCoordinates(false);
     // inputOnly = checkFilter("INPUT");
   }
 
@@ -36,12 +34,12 @@ public class EspressoReader extends AtomSetCollectionReader {
       readCellParam(false);
     } else if (line.contains("CELL_PARAMETERS")) {
       readCellParam(true);
-    } else if (line.contains("site n.")) {
+    } else if (line.contains("   Cartesian axes")) {
       if (doGetModel(++modelNumber))
-        readAtoms();
+        readAtomsCartesian();
     } else if (line.contains("ATOMIC_POSITIONS")) {
       if (doGetModel(++modelNumber))
-        readAtomicPositions();
+        readAtomsFractional();
     } else if (line.contains("!    total energy")) {
       readEnergy();
     }
@@ -122,16 +120,18 @@ public class EspressoReader extends AtomSetCollectionReader {
         9           Ca  tau(  9) = (   0.1322212   0.2116428  -0.1867815  )
        10           Ca  tau( 10) = (   0.1171775  -0.2203283  -0.1867815  )
    */
-  private void readAtoms() throws Exception {
+  private void readAtomsCartesian() throws Exception {
+    setFractionalCoordinates(false);
     newAtomSet();
+    discardLines(2);
     while (readLine() != null && (line.indexOf("(")) >= 0) {
       String[] tokens = getTokens();
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = tokens[1];
       // here the coordinates are a_lat there fore expressed on base of cube of side a 
-      float x = parseFloat(tokens[tokens.length - 4]);
-      float y = parseFloat(tokens[tokens.length - 3]);
-      float z = parseFloat(tokens[tokens.length - 2]);
+      float x = parseFloat(tokens[tokens.length - 4]) * aPar;
+      float y = parseFloat(tokens[tokens.length - 3]) * aPar;
+      float z = parseFloat(tokens[tokens.length - 2]) * aPar;
       /* not for now
       if (x < 0)
         x += 1;
@@ -154,15 +154,13 @@ public class EspressoReader extends AtomSetCollectionReader {
 
   private void setCellParams() throws Exception {
     if (cellParams != null) {
-
-      setFractionalCoordinates(true);
       addPrimitiveLatticeVector(0, cellParams, 0);
       addPrimitiveLatticeVector(1, cellParams, 3);
       addPrimitiveLatticeVector(2, cellParams, 6);
     }
   }
 
-  private void readAtomicPositions() throws Exception {
+  private void readAtomsFractional() throws Exception {
 
     /*    
      * some just end with a blank line; others end with a short phrase:
@@ -176,9 +174,10 @@ public class EspressoReader extends AtomSetCollectionReader {
         End final coordinates
      */
 
+    boolean isFractional = !line.contains("bohr");
+    setFractionalCoordinates(isFractional);
+    float factor = (isFractional ? 1 : ANGSTROMS_PER_BOHR);
     newAtomSet();
-    // BH: I think this is all we need:
-    float factor = (line.contains("bohr") ? ANGSTROMS_PER_BOHR / aPar : 1f);
     while (readLine() != null && line.length() > 45) {
       String[] tokens = getTokens();
       Atom atom = atomSetCollection.addNewAtom();

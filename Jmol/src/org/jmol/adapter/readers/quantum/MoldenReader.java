@@ -3,6 +3,7 @@ package org.jmol.adapter.readers.quantum;
 import org.jmol.adapter.smarter.*;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -255,8 +256,12 @@ public class MoldenReader extends MopacSlaterReader {
   void readFreqsAndModes() throws Exception {
     String[] tokens;
     List<String> frequencies = new ArrayList<String>();
+    BitSet bsOK = new BitSet();
+    int iFreq = 0;
     while (readLine() != null && line.indexOf('[') < 0) {
-      frequencies.add(getTokens()[0]);
+      String f = getTokens()[0];
+      bsOK.set(iFreq++, parseFloat(f) != 0);
+      frequencies.add(f);
     }
     discardLinesUntilContains("[FR-COORD]");
     final int nFreqs = frequencies.size();
@@ -277,14 +282,17 @@ public class MoldenReader extends MopacSlaterReader {
     readLine();
     if (line.indexOf("[FR-NORM-COORD]") < 0) 
       throw new Exception("error reading normal modes: [FR-COORD] must be followed by [FR-NORM-COORD]");
-    
+    boolean haveVib = false;
     for (int nFreq = 0; nFreq < nFreqs; nFreq++) {
-      if (readLine().toLowerCase().indexOf("vibration") < 0)
-        throw new Exception("error reading normal modes: expected vibration data");
-      boolean ignore = !doGetVibration(nFreq + 1);
+      discardLinesUntilContains("vibration");
+      if (!bsOK.get(nFreq))
+        continue;
+      boolean ignore = !doGetVibration(++vibrationNumber);
       if (!ignore) {
-        atomSetCollection.cloneLastAtomSet();
-        atomSetCollection.setAtomSetFrequency(null, null, "" + frequencies.get(nFreq), null);
+        if (haveVib)
+          atomSetCollection.cloneLastAtomSet();
+        haveVib = true;
+        atomSetCollection.setAtomSetFrequency(null, null, frequencies.get(nFreq), null);
         i0 = atomSetCollection.getLastAtomSetAtomIndex();
       }
       for (int nAtom = 0; nAtom < nAtoms; nAtom++) {

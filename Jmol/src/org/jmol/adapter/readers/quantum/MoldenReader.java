@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
@@ -195,21 +194,23 @@ public class MoldenReader extends MopacSlaterReader {
     // TODO no check here for G orbitals
     
     String[] tokens = getTokens();
-    while (tokens != null &&  line.indexOf('[') < 0) {
+    while (tokens != null && tokens[0].indexOf('[') < 0) {
       Map<String, Object> mo = new Hashtable<String, Object>();
       List<String> data = new ArrayList<String>();
       float energy = Float.NaN;
       float occupancy = Float.NaN;
-      
-      while (tokens != null && parseInt(tokens[0]) == Integer.MIN_VALUE) {
-        String[] kvPair;
-        if (tokens[0].startsWith("Ene")) {
-          kvPair = splitKeyValue();
-          energy = parseFloat(kvPair[1]);          
-        } else if (tokens[0].startsWith("Occup")) {
-          kvPair = splitKeyValue();
-          occupancy = parseFloat(kvPair[1]);
-        }  // TODO: Symmetry and spin
+      String symmetry = null;      
+      String key;
+      while (tokens != null && parseInt(key = tokens[0]) == Integer.MIN_VALUE) {
+        if (key.startsWith("Ene")) {
+          energy = parseFloat(tokens[1]);          
+        } else if (key.startsWith("Occup")) {
+          occupancy = parseFloat(tokens[1]);
+        } else if (key.startsWith("Sym")) {
+          symmetry = tokens[1];
+        } else if (key.startsWith("Spin")) {
+          alphaBeta = tokens[1].toLowerCase();
+        }
         tokens = getTokens(readLine());
       }
       
@@ -228,13 +229,24 @@ public class MoldenReader extends MopacSlaterReader {
       for (int i = data.size(); --i >= 0;) {
         coefs[i] = parseFloat(data.get(i));
       }
-      mo.put("energy", new Float(energy));
-      mo.put("occupancy", new Float(occupancy));
-      mo.put("coefficients", coefs);
-      setMO(mo);
-      if (Logger.debugging) {
-        Logger.debug(coefs.length + " coefficients in MO " + orbitals.size() );
+      String l = line;
+      line = "";
+      if (filterMO()) {
+        mo.put("coefficients", coefs);
+        if (!Float.isNaN(energy))
+          mo.put("energy", new Float(energy));
+        if (!Float.isNaN(occupancy))
+          mo.put("occupancy", new Float(occupancy));
+        if (symmetry != null)
+          mo.put("symmetry", symmetry);
+        if (alphaBeta.length() > 0)
+          mo.put("type", alphaBeta);
+        setMO(mo);
+        if (Logger.debugging) {
+          Logger.debug(coefs.length + " coefficients in MO " + orbitals.size() );
+        }
       }
+      line = l;
     }
     Logger.debug("read " + orbitals.size() + " MOs");
     setMOs("eV");
@@ -246,9 +258,7 @@ public class MoldenReader extends MopacSlaterReader {
     while (readLine() != null && line.indexOf('[') < 0) {
       frequencies.add(getTokens()[0]);
     }
-    if (line.indexOf("[FR-COORD]") < 0)
-      throw new Exception("error reading normal modes: [FREQ] must be followed by [FR-COORD]");
-    
+    discardLinesUntilContains("[FR-COORD]");
     final int nFreqs = frequencies.size();
     final int nAtoms = atomSetCollection.getFirstAtomSetAtomCount();
     atomSetCollection.cloneLastAtomSet();
@@ -269,7 +279,7 @@ public class MoldenReader extends MopacSlaterReader {
       throw new Exception("error reading normal modes: [FR-COORD] must be followed by [FR-NORM-COORD]");
     
     for (int nFreq = 0; nFreq < nFreqs; nFreq++) {
-      if (readLine().indexOf("Vibration") < 0)
+      if (readLine().toLowerCase().indexOf("vibration") < 0)
         throw new Exception("error reading normal modes: expected vibration data");
       boolean ignore = !doGetVibration(nFreq + 1);
       if (!ignore) {
@@ -288,23 +298,5 @@ public class MoldenReader extends MopacSlaterReader {
       }      
     }
     readLine();
-  }
-
-  String[] splitKeyValue() {
-    return splitKeyValue("=", line);
-  }
-  
-  String[] splitKeyValue(String sep) {
-    return splitKeyValue(sep, line);
-  }
-  
-  String[] splitKeyValue(String sep, String text) throws NoSuchElementException {
-    String[] kvPair = new String[2];
-    int posSep = text.indexOf(sep);
-    if (posSep < 0)
-      throw new NoSuchElementException("separator not found");
-    kvPair[0] = text.substring(0, posSep);
-    kvPair[1] = text.substring(posSep + sep.length());
-    return kvPair;    
   }
 }

@@ -21,7 +21,6 @@ class MeshData {
    */
   static class Data {
     private int[][] faces;
-    private Tuple3f[] vertexes;
     private Tuple3f[] normals;
     private int nVertices;
     private int nNormals;

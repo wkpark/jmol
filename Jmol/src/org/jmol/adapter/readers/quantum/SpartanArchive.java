@@ -232,14 +232,27 @@ class SpartanArchive {
       readLine();
       String[] tokens = getTokens();
       int[] slater = new int[4];
-      slater[0]= parseInt(tokens[3]) - 1; //atom pointer; 1-based
+      slater[0] = parseInt(tokens[3]) - 1; //atom pointer; 1-based
       int iBasis = parseInt(tokens[0]); //0 = S, 1 = SP, 2 = D, 3 = F
-      slater[1] = (iBasis == 0 ? 0 : iBasis + 1);//0 = S, 1 = P, 2 = SP, 3 = D, 4 = F
+      switch (iBasis) {
+      case 0:
+        iBasis = JmolAdapter.SHELL_S;
+        break;
+      case 1:
+        iBasis = JmolAdapter.SHELL_SP;
+        break;
+      case 2:
+        iBasis = JmolAdapter.SHELL_D_CARTESIAN;
+        break;
+      case 3:
+        iBasis = JmolAdapter.SHELL_F_CARTESIAN;
+        break;
+      }
+      slater[1] = iBasis;
       int gaussianPtr = slater[2] = parseInt(tokens[2]) - 1;
       int nGaussians = slater[3] = parseInt(tokens[1]);
-      for (int j = 0; j < nGaussians; j++) {
+      for (int j = 0; j < nGaussians; j++)
         typeArray[gaussianPtr + j] = iBasis;
-      }
       sdata.add(slater);
     }
     for (int i = 0; i < gaussianCount; i++) {
@@ -248,23 +261,63 @@ class SpartanArchive {
       int nData = tokens.length;
       float[] data = new float[nData + 1];
       data[0] = alpha;
-      int iBasis = typeArray[i];
       //we put D and F into coef 1. This may change if I find that Gaussian output
       //lists D and F in columns 3 and 4 as well.
-      switch(iBasis) {
-      case 1: //SP
-        data[2] = parseFloat(tokens[1]);
-        //fall through
-      case 0: //S
+      switch (typeArray[i]) {
+      case JmolAdapter.SHELL_S:
         data[1] = parseFloat(tokens[0]);
         break;
-      case 2: //D
+      case JmolAdapter.SHELL_SP:
+        data[1] = parseFloat(tokens[0]);
+        data[2] = parseFloat(tokens[1]);
+        if (data[1] == 0) {
+          data[1] = data[2];
+          typeArray[i] = JmolAdapter.SHELL_P;
+        }
+        break;
+      case JmolAdapter.SHELL_D_CARTESIAN:
         data[1] = parseFloat(tokens[2]);
         break;
-      case 3: //F
+      case JmolAdapter.SHELL_F_CARTESIAN:
         data[1] = parseFloat(tokens[3]);
+        break;
       }
       garray[i] = data;
+    }
+    int nCoeff = 0;
+    for (int i = 0; i < shellCount; i++) {
+      int[] slater = sdata.get(i);
+      switch(typeArray[slater[2]]) {
+      case JmolAdapter.SHELL_S:
+        nCoeff++;
+        break;
+      case JmolAdapter.SHELL_P:
+        slater[1] = JmolAdapter.SHELL_P;
+        nCoeff += 3;
+        break;
+      case JmolAdapter.SHELL_SP:
+        nCoeff += 4;
+        break;
+      case JmolAdapter.SHELL_D_CARTESIAN:
+        nCoeff += 6;
+        break;
+      case JmolAdapter.SHELL_F_CARTESIAN:
+        nCoeff += 10;
+        break;
+      }
+    }
+    boolean isD5F7 = (nCoeff < coefCount);
+    if (isD5F7)
+    for (int i = 0; i < shellCount; i++) {
+      int[] slater = sdata.get(i);
+      switch (typeArray[i]) {
+      case JmolAdapter.SHELL_D_CARTESIAN:
+        slater[1] = JmolAdapter.SHELL_D_SPHERICAL;
+        break;
+      case JmolAdapter.SHELL_F_CARTESIAN:
+        slater[1] = JmolAdapter.SHELL_F_SPHERICAL;
+        break;
+      }
     }
     moData.put("shells", sdata);
     moData.put("gaussians", garray);

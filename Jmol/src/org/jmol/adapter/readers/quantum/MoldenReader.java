@@ -79,6 +79,7 @@ public class MoldenReader extends MopacSlaterReader {
         throw new Exception("out of order atom in [Atoms]");
       } 
       nPrevAtom = nCurAtom;
+      atom.elementNumber = (short) parseInt(tokens[2]);
       setAtomCoord(atom, parseFloat(tokens[3]) * f, 
           parseFloat(tokens[4]) * f, 
           parseFloat(tokens[5]) * f);

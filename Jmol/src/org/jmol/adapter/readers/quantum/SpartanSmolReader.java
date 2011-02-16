@@ -93,6 +93,7 @@ public class SpartanSmolReader extends SpartanInputReader {
         }
         if (title != null)
           atomSetCollection.setAtomSetName(title);
+        setProperties();
         if (checkFilter("INPUT")) {
           continuing = false;
           return false;
@@ -192,23 +193,33 @@ public class SpartanSmolReader extends SpartanInputReader {
     }
   }
   
+  private boolean haveCharges;
+  
+  private void setProperties() {
+    if (haveCharges || atomSetCollection.getAtomCount() == 0)
+      return;
+    if (checkFilter("ESPCHARGES"))
+      haveCharges = atomSetCollection.setAtomSetCollectionPartialCharges("ESPCHARGES");
+    if (!haveCharges && !atomSetCollection
+        .setAtomSetCollectionPartialCharges("MULCHARGES"))
+      haveCharges = atomSetCollection.setAtomSetCollectionPartialCharges("Q1_CHARGES");
+    if (!haveCharges)
+      atomSetCollection.setAtomSetCollectionPartialCharges("ESPCHARGES");
+    haveCharges = true;
+    Float n = (Float) atomSetCollection
+        .getAtomSetCollectionAuxiliaryInfo("HOMO_N");
+    if (moData != null && n != null)
+      moData.put("HOMO", Integer.valueOf(n.intValue()));
+  }
+  
   private void readProperties() throws Exception {
     if (spartanArchive == null) {
       readLine();
       return;
     }
     spartanArchive.readProperties();
-    boolean haveCharges = false;
-    if (checkFilter("ESPCHARGES"))
-      haveCharges = atomSetCollection.setAtomSetCollectionPartialCharges("ESPCHARGES");
-    if (!haveCharges && !atomSetCollection
-        .setAtomSetCollectionPartialCharges("MULCHARGES"))
-      atomSetCollection.setAtomSetCollectionPartialCharges("Q1_CHARGES");
-    Float n = (Float) atomSetCollection
-        .getAtomSetCollectionAuxiliaryInfo("HOMO_N");
-    if (moData != null && n != null)
-      moData.put("HOMO", Integer.valueOf(n.intValue()));
     readLine();
+    setProperties();
   }
   
   private int getModelNumber() {

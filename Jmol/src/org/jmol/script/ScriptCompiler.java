@@ -25,6 +25,7 @@ package org.jmol.script;
 
 import org.jmol.util.Escape;
 import org.jmol.util.CommandHistory;
+import org.jmol.util.JpegEncoder;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.viewer.JmolConstants;
@@ -213,7 +214,12 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     int pt2 = script.indexOf((script.charAt(pt1 + 2) == '*' ? "*" : "") + "*/",
         pt);
     if (pt1 >= 0 && pt2 >= pt)
-      script = script.substring(pt + JmolConstants.EMBEDDED_SCRIPT_TAG.length(), pt2) + "\n";
+      script = script.substring(
+          pt + JmolConstants.EMBEDDED_SCRIPT_TAG.length(), pt2)
+          + "\n";
+    while ((pt1 = script.indexOf(JpegEncoder.CONTINUE_STRING)) >= 0)
+      script = script.substring(0, pt1)
+          + script.substring(pt1 + JpegEncoder.CONTINUE_STRING.length() + 4);
     if (Logger.debugging)
       Logger.info(script);
     return script;
@@ -488,6 +494,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   }
 
   private boolean isShowCommand;
+  private boolean inlineLoad;
   
   private int lookingAtComment() {
     char ch = script.charAt(ichToken);
@@ -857,9 +864,11 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         boolean isAndEquals = ("+-\\*/&|=".indexOf(ch) >= 0);
         char ch2 = (ichToken + 1 >= cchScript ? 0 : script.charAt(ichToken + 1));
         if (Token.tokAttr(tokCommand, Token.setparam) && ch == '='
-            || (isNewSet || isSetBrace) && (isAndEquals || ch == '.' || ch == '[')) {
+            || (isNewSet || isSetBrace)
+            && (isAndEquals || ch == '.' || ch == '[')) {
           setCommand(isAndEquals ? Token.tokenSet
-              : ch == '[' && !isSetBrace ? Token.tokenSetArray : Token.tokenSetProperty);
+              : ch == '[' && !isSetBrace ? Token.tokenSetArray
+                  : Token.tokenSetProperty);
           ltoken.add(0, tokenCommand);
           cchToken = 1;
           switch (ch) {
@@ -889,26 +898,30 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         }
       }
     }
-    
+
     // cd, echo, gotocmd, help, hover, javascript, label, message, and pause
     // all are implicitly strings. You CAN use "..." but you don't have to,
     // and you cannot use '...'. This way the introduction of single quotes 
     // as an equivalent of double quotes cannot break existing scripts. -- BH 06/2009
-    
+
     if (lookingAtString(!Token.tokAttr(tokCommand, Token.implicitStringCommand))) {
       if (cchToken < 0)
         return ERROR(ERROR_endOfCommandUnexpected);
       String str;
       if ((tokCommand == Token.load || tokCommand == Token.background || tokCommand == Token.script)
           && !iHaveQuotedString) {
-        str = script.substring(ichToken + 1, ichToken + cchToken - 1);
-        if (str.indexOf("\\u") >= 0)
-          str = Escape.unescapeUnicode(str);
+        if (inlineLoad) {
+          str = getUnescapedStringLiteral();
+        } else {
+          str = script.substring(ichToken + 1, ichToken + cchToken - 1);
+          if (str.indexOf("\\u") >= 0)
+            str = Escape.unescapeUnicode(str);
+        }
       } else {
         str = getUnescapedStringLiteral();
       }
       iHaveQuotedString = true;
-      if (tokCommand == Token.load && lastToken.tok == Token.data 
+      if (tokCommand == Token.load && lastToken.tok == Token.data
           || tokCommand == Token.data && str.indexOf("@") < 0) {
         if (!getData(str))
           return ERROR(ERROR_missingEnd, "data");
@@ -926,16 +939,21 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         iHaveQuotedString = true;
         return OK;
       }
-      if (nTokens == 1 && lookingAtLoadFormat()) {
-        String strFormat = script.substring(ichToken, ichToken + cchToken);
-        int tok = (strFormat.indexOf("=") == 0 || strFormat.indexOf("$") == 0 ? Token.string
-            : (strFormat = strFormat.toLowerCase()).equals("data") ? Token.data 
-            : Parser.isOneOf(strFormat, LOAD_TYPES) ? Token.identifier : 0);
-        if (tok != 0) {
-          addTokenToPrefix(new Token(tok, strFormat));
-          iHaveQuotedString = (tok == Token.string);
+      if (nTokens == 1) {
+        inlineLoad = false;
+        if (lookingAtLoadFormat()) {
+          String strFormat = script.substring(ichToken, ichToken + cchToken);
+          int tok = (strFormat.indexOf("=") == 0 || strFormat.indexOf("$") == 0 ? Token.string
+              : (strFormat = strFormat.toLowerCase()).equals("data") ? Token.data
+                  : Parser.isOneOf(strFormat, LOAD_TYPES) ? Token.identifier
+                      : 0);
+          if (tok != 0) {
+            inlineLoad = (strFormat.equals("inline"));
+            addTokenToPrefix(new Token(tok, strFormat));
+            iHaveQuotedString = (tok == Token.string);
+          }
+          return CONTINUE;
         }
-        return CONTINUE;
       }
       BitSet bs;
       if (script.charAt(ichToken) == '{' || parenCount > 0) {
@@ -980,7 +998,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         && !(tokCommand == Token.script && iHaveQuotedString)
         && lookingAtImpliedString(true)) {
       String str = script.substring(ichToken, ichToken + cchToken);
-      if (tokCommand == Token.label 
+      if (tokCommand == Token.label
           && Parser.isOneOf(str.toLowerCase(), "on;off;hide;display"))
         addTokenToPrefix(Token.getTokenFromName(str.toLowerCase()));
       else
@@ -999,13 +1017,14 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       return CONTINUE;
     }
     if (lookingAtDecimal()) {
-      value = 
+      value =
       // can't use parseFloat with jvm 1.1
       // Float.parseFloat(script.substring(ichToken, ichToken +
       // cchToken));
       Float.valueOf(script.substring(ichToken, ichToken + cchToken))
           .floatValue();
-      int intValue = (JmolConstants.modelValue(script.substring(ichToken, ichToken + cchToken)));
+      int intValue = (JmolConstants.modelValue(script.substring(ichToken,
+          ichToken + cchToken)));
       addTokenToPrefix(new Token(Token.decimal, intValue, new Float(value)));
       return CONTINUE;
     }
@@ -1046,7 +1065,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       return CONTINUE;
     }
     if (!isMathExpressionCommand && parenCount == 0
-        || lastToken.tok != Token.identifier && !tokenAttr(lastToken, Token.mathfunc)) {
+        || lastToken.tok != Token.identifier
+        && !tokenAttr(lastToken, Token.mathfunc)) {
       // here if:
       //   structure helix ({...})
       //   frame align ({...})
@@ -1064,7 +1084,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         if (isBondOrMatrix) {
           Object m = lookingAtMatrix();
           if (m instanceof Matrix3f || m instanceof Matrix4f) {
-            addTokenToPrefix(new Token((m instanceof Matrix3f ? Token.matrix3f : Token.matrix4f), m));            
+            addTokenToPrefix(new Token((m instanceof Matrix3f ? Token.matrix3f
+                : Token.matrix4f), m));
             return CONTINUE;
           }
         }

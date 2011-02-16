@@ -47,6 +47,19 @@ import java.io.*;
 
 public class JpegEncoder extends Frame
 {
+  // A system to allow the full Jmol state -- regardless of length -- 
+  // to be encoded in a set of APP1 (FFE1) tags.
+  // But we have to be careful about line ends for backward compatibility. 
+  // This solution is not 100% effective, because some data lines may in principle be 
+  // Very large and may not contain new lines for more than 65500 characters, 
+  // But that would be very unusual. Perhaps a huge data set loaded from a 
+  // string. Introduced in Jmol 12.1.36. 
+  
+  public static final String CONTINUE_STRING = " #Jmol...\0"; 
+  // this string will GENERALLY appear at the end of lines and escape the 
+  private static final int CONTINUE_MAX = 65500;  // some room to spare here. 
+  private static final int CONTINUE_MAX_BUFFER = CONTINUE_MAX + 10; // never break up last 10 bytes
+  
   //Thread runner;
   private BufferedOutputStream outStream;
   //Image image;
@@ -217,24 +230,24 @@ public class JpegEncoder extends Frame
   }
   
   static private String WriteHeaders(BufferedOutputStream out, JpegInfo JpegObj, DCT dct) {
-    int i, j, index, offset, length;
+    int i, j, index, offset;
     int tempArray[];
 
     // the SOI marker
     byte[] SOI = {(byte) 0xFF, (byte) 0xD8};
     WriteMarker(SOI, out);
     
-    // The order of the following headers is quiet inconsequential.
+    // The order of the following headers is quite inconsequential.
     // the JFIF header
     byte JFIF[] = new byte[18];
     JFIF[0] = (byte) 0xff;
     JFIF[1] = (byte) 0xe0;
-    JFIF[2] = (byte) 0x00;
-    JFIF[3] = (byte) 0x10;
-    JFIF[4] = (byte) 0x4a;
-    JFIF[5] = (byte) 0x46;
-    JFIF[6] = (byte) 0x49;
-    JFIF[7] = (byte) 0x46;
+    JFIF[2] = 0;
+    JFIF[3] = 16;
+    JFIF[4] = (byte) 0x4a; //'J'
+    JFIF[5] = (byte) 0x46; //'F'
+    JFIF[6] = (byte) 0x49; //'I'
+    JFIF[7] = (byte) 0x46; //'F'
     JFIF[8] = (byte) 0x00;
     JFIF[9] = (byte) 0x01;
     JFIF[10] = (byte) 0x00;
@@ -245,35 +258,21 @@ public class JpegEncoder extends Frame
     JFIF[15] = (byte) 0x01;
     JFIF[16] = (byte) 0x00;
     JFIF[17] = (byte) 0x00;
-    WriteArray(JFIF, out);
+    writeArray(JFIF, out);
     
     // Comment Header
-    String comment = JpegObj.Comment;
-    if (JpegObj.Comment.length() >= 65000) {
-      JpegObj.Comment = "JPEG Encoder Copyright 1998, James R. Weeks and BioElectroMech.\n\n";
-    } else {
-      JpegObj.Comment = "JPEG Encoder Copyright 1998, James R. Weeks and BioElectroMech.\n\n" + comment;
-      comment = null;
-    }
-    // bug fix -- hansonr@stolaf.edu -- 4/2010 -- Jmol 12.0.RC7 -- 
-    // length was two short here.
-    length = JpegObj.Comment.length() + 2;
-    byte COM[] = new byte[length + 2];
-    COM[0] = (byte) 0xFF;
-    COM[1] = (byte) 0xFE;
-    COM[2] = (byte) ((length >> 8) & 0xFF);
-    COM[3] = (byte) (length & 0xFF);
-    java.lang.System.arraycopy(JpegObj.Comment.getBytes(), 0, 
-          COM, 4, JpegObj.Comment.length());
-    WriteArray(COM, out);
-
+    String comment = null;    
+    if (JpegObj.Comment.length() > 0) 
+      writeString(JpegObj.Comment, (byte) 0xE1, out); // App data 1
+    writeString("JPEG Encoder Copyright 1998, James R. Weeks and BioElectroMech.\n\n", (byte) 0xFE, out);
+    
     // The DQT header
     // 0 is the luminance index and 1 is the chrominance index
     byte DQT[] = new byte[134];
     DQT[0] = (byte) 0xFF;
     DQT[1] = (byte) 0xDB;
-    DQT[2] = (byte) 0x00;
-    DQT[3] = (byte) 0x84;
+    DQT[2] = 0;
+    DQT[3] = (byte) 132;
     offset = 4;
     for (i = 0; i < 2; i++) {
       DQT[offset++] = (byte) ((0 << 4) + i);
@@ -282,14 +281,14 @@ public class JpegEncoder extends Frame
         DQT[offset++] = (byte) tempArray[Huffman.jpegNaturalOrder[j]];
       }
     }
-    WriteArray(DQT, out);
+    writeArray(DQT, out);
     
     // Start of Frame Header
     byte SOF[] = new byte[19];
     SOF[0] = (byte) 0xFF;
     SOF[1] = (byte) 0xC0;
-    SOF[2] = (byte) 0x00;
-    SOF[3] = (byte) 17;
+    SOF[2] = 0;
+    SOF[3] = 17;
     SOF[4] = (byte) JpegObj.Precision;
     SOF[5] = (byte) ((JpegObj.imageHeight >> 8) & 0xFF);
     SOF[6] = (byte) ((JpegObj.imageHeight) & 0xFF);
@@ -302,7 +301,7 @@ public class JpegEncoder extends Frame
       SOF[index++] = (byte) ((JpegObj.HsampFactor[i] << 4) + JpegObj.VsampFactor[i]);
       SOF[index++] = (byte) JpegObj.QtableNumber[i];
     }
-    WriteArray(SOF, out);
+    writeArray(SOF, out);
     
     WriteDHTHeader(Huffman.bitsDCluminance, Huffman.valDCluminance, out);
     WriteDHTHeader(Huffman.bitsACluminance, Huffman.valACluminance, out);
@@ -313,8 +312,8 @@ public class JpegEncoder extends Frame
     byte SOS[] = new byte[14];
     SOS[0] = (byte) 0xFF;
     SOS[1] = (byte) 0xDA;
-    SOS[2] = (byte) 0x00;
-    SOS[3] = (byte) 12;
+    SOS[2] = 0;
+    SOS[3] = 12;
     SOS[4] = (byte) JpegObj.NumberOfComponents;
     index = 5;
     for (i = 0; i < SOS[4]; i++) {
@@ -325,8 +324,41 @@ public class JpegEncoder extends Frame
     SOS[index++] = (byte) JpegObj.Ss;
     SOS[index++] = (byte) JpegObj.Se;
     SOS[index++] = (byte) ((JpegObj.Ah << 4) + JpegObj.Al);
-    WriteArray(SOS, out);
+    writeArray(SOS, out);
     return comment;
+  }
+
+  private static void writeString(String s, byte id, BufferedOutputStream out) {
+    int len = s.length();
+    int i0 = 0;
+    String suffix = CONTINUE_STRING;
+    while (i0 < len) {
+      int nBytes = len - i0;
+      if (nBytes > CONTINUE_MAX_BUFFER) {
+        nBytes = CONTINUE_MAX;
+        // but break only at line breaks
+        int pt = s.lastIndexOf('\n', i0 + nBytes);
+        if (pt > i0 + 1)
+          nBytes = pt - i0;
+      }
+      if (i0 + nBytes == len)
+        suffix = "";
+      writeTag(nBytes + suffix.length(), id, out);
+      writeArray(s.substring(i0, i0 + nBytes).getBytes(), out);
+      if (suffix.length() > 0)
+        writeArray(suffix.getBytes(), out);
+      i0 += nBytes;
+    }
+  }
+
+  private static void writeTag(int length, byte id, BufferedOutputStream out) {
+    length += 2;
+    byte COM[] = new byte[4];
+    COM[0] = (byte) 0xFF;
+    COM[1] = id;
+    COM[2] = (byte) ((length >> 8) & 0xFF);
+    COM[3] = (byte) (length & 0xFF);
+    writeArray(COM, out);
   }
 
   static void WriteDHTHeader(int[] bits, int[] val, BufferedOutputStream out) {
@@ -358,7 +390,7 @@ public class JpegEncoder extends Frame
     oldindex = index;
     DHT4[2] = (byte) (((index - 2) >> 8) & 0xFF);
     DHT4[3] = (byte) ((index - 2) & 0xFF);
-    WriteArray(DHT4, out);
+    writeArray(DHT4, out);
   }
   
   static void WriteMarker(byte[] data, BufferedOutputStream out) {
@@ -369,11 +401,9 @@ public class JpegEncoder extends Frame
     }
   }
   
-  static void WriteArray(byte[] data, BufferedOutputStream out) {
-    int length;
+  static void writeArray(byte[] data, BufferedOutputStream out) {
     try {
-      length = ((data[2] & 0xFF) << 8) + (data[3] & 0xFF) + 2;
-      out.write(data, 0, length);
+      out.write(data);
     } catch (IOException e) {
       Logger.error("IO Error", e);
     }

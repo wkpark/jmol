@@ -15053,6 +15053,7 @@ public class ScriptEvaluator {
 
   private boolean mo(boolean isInitOnly) throws ScriptException {
     int offset = Integer.MAX_VALUE;
+    boolean isNegOffset = false;
     BitSet bsModels = viewer.getVisibleFramesBitSet();
     List<Object[]> propertyList = new ArrayList<Object[]>();
     int i = 1;
@@ -15083,12 +15084,31 @@ public class ScriptEvaluator {
       switch (getToken(i).tok) {
       case Token.integer:
         moNumber = intParameter(i);
+        linearCombination = (moNumber >= 0 ? null : new float[] {-100, -moNumber});
+        break;
+      case Token.minus:
+        switch (tokAt(++i)) {
+          case Token.homo:
+          case Token.lumo:
+            break;
+          default:
+            error(ERROR_invalidArgument);
+        }
+        isNegOffset = true;
+        // fall through
+      case Token.homo:
+      case Token.lumo:
         linearCombination = null;
+        if ((offset = moOffset(i)) == Integer.MAX_VALUE)
+          error(ERROR_invalidArgument);
+        moNumber = 0;
         break;
       case Token.next:
+        linearCombination = null;
         moNumber = Token.next;
         break;
       case Token.prev:
+        linearCombination = null;
         moNumber = Token.prev;
         break;
       case Token.color:
@@ -15133,12 +15153,6 @@ public class ScriptEvaluator {
           propertyValue = parameterAsString(i + 1);
         }
         break;
-      case Token.homo:
-      case Token.lumo:
-        if ((offset = moOffset(i)) == Integer.MAX_VALUE)
-          error(ERROR_invalidArgument);
-        moNumber = 0;
-        break;
       case Token.identifier:
         error(ERROR_invalidArgument);
       default:
@@ -15159,7 +15173,7 @@ public class ScriptEvaluator {
         if (tokAt(i + 1) == Token.string)
           title = parameterAsString(i + 1);
         setCursorWait(true);
-        setMoData(propertyList, moNumber, linearCombination, offset, iModel, title);
+        setMoData(propertyList, moNumber, linearCombination, offset, isNegOffset, iModel, title);
         addShapeProperty(propertyList, "finalize", null);
       }
       if (propertyList.size() > 0)
@@ -15224,7 +15238,7 @@ public class ScriptEvaluator {
 
   @SuppressWarnings("unchecked")
   private void setMoData(List<Object[]> propertyList, int moNumber,
-                         float[] linearCombination, int offset, int modelIndex,
+                         float[] linearCombination, int offset, boolean isNegOffset, int modelIndex,
                          String title) throws ScriptException {
     if (isSyntaxCheck)
       return;
@@ -15280,6 +15294,8 @@ public class ScriptEvaluator {
       }
       moData.put("lastMoNumber", Integer.valueOf(moNumber));
     }
+    if (isNegOffset)
+      linearCombination = new float[] {-100, moNumber};
     addShapeProperty(propertyList, "moData", moData);
     if (title != null)
       addShapeProperty(propertyList, "title", title);
@@ -15824,6 +15840,9 @@ public class ScriptEvaluator {
         // mo 1-based-index
         int moNumber = Integer.MAX_VALUE;
         int offset = Integer.MAX_VALUE;
+        boolean isNegOffset = (tokAt(i + 1) == Token.minus);
+        if (isNegOffset)
+          i++;
         float[] linearCombination = null;
         switch (tokAt(++i)) {
         case Token.nada:
@@ -15833,7 +15852,7 @@ public class ScriptEvaluator {
           offset = moOffset(i);
           moNumber = 0;
           i = iToken;
-          sbCommand.append(" mo HOMO ");
+          sbCommand.append(" mo " + (isNegOffset ? "-" : "") + "HOMO ");
           if (offset > 0)
             sbCommand.append("+");
           if (offset != 0)
@@ -15849,7 +15868,7 @@ public class ScriptEvaluator {
             i = iToken;
           }
         }
-        setMoData(propertyList, moNumber, linearCombination, offset, modelIndex, null);
+        setMoData(propertyList, moNumber, linearCombination, offset, isNegOffset, modelIndex, null);
         surfaceObjectSeen = true;
         continue;
       case Token.mep:
@@ -16039,7 +16058,7 @@ public class ScriptEvaluator {
       case Token.ed:
         sbCommand.append(" ed");
         // electron density - never documented
-        setMoData(propertyList, -1, null, 0, modelIndex, null);
+        setMoData(propertyList, -1, null, 0, false, modelIndex, null);
         surfaceObjectSeen = true;
         continue;
       case Token.debug:

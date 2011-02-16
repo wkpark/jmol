@@ -2697,6 +2697,20 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     return "" + shell;
   }
   
+  final public static String getMOString(float[] lc) {
+    StringBuffer sb = new StringBuffer();
+    if (lc.length == 2)
+      return "" + (int)(lc[0] < 0 ? -lc[1] : lc[1]);
+    sb.append('[');
+    for (int i = 0; i < lc.length; i += 2) {
+      if (i > 0)
+        sb.append(", ");
+      sb.append(lc[i]).append(" ").append((int) lc[i + 1]);
+    }
+    sb.append(']');
+    return sb.toString();
+  }
+
   //////////////////////////////////
   
   public static final String LOAD_ATOM_DATA_TYPES = "xyz;vxyz;vibration;temperature;occupancy;partialcharge";

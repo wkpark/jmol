@@ -29,6 +29,7 @@ import java.util.List;
 
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
+import org.jmol.viewer.JmolConstants;
 import org.jmol.api.Interface;
 import org.jmol.api.MOCalculationInterface;
 
@@ -63,7 +64,7 @@ class IsoMOReader extends AtomDataReader {
     if (line.indexOf("%F") >= 0)
       line = TextFormat.formatString(line, "F", params.fileName);
     if (line.indexOf("%I") >= 0)
-      line = TextFormat.formatString(line, "I", params.qm_moLinearCombination == null ? "" + params.qm_moNumber : getStrLC(params.qm_moLinearCombination));
+      line = TextFormat.formatString(line, "I", params.qm_moLinearCombination == null ? "" + params.qm_moNumber : JmolConstants.getMOString(params.qm_moLinearCombination));
     if (line.indexOf("%N") >= 0)
       line = TextFormat.formatString(line, "N", "" + params.qmOrbitalCount);
     if (line.indexOf("%E") >= 0)
@@ -80,18 +81,6 @@ class IsoMOReader extends AtomDataReader {
     params.title[iLine] = (!isOptional ? line : rep > 0 && !line.trim().endsWith("=") ? line.substring(1) : "");
   }
   
-  private String getStrLC(float[] lc) {
-    StringBuffer sb = new StringBuffer();
-    sb.append('[');
-    for (int i = 0; i < lc.length; i += 2) {
-      if (i > 0)
-        sb.append(", ");
-      sb.append(lc[i]).append(" ").append((int) lc[i + 1]);
-    }
-    sb.append(']');
-    return sb.toString();
-  }
-
   @SuppressWarnings("unchecked")
   @Override
   protected void generateCube() {

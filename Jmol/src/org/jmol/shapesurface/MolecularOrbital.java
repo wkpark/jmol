@@ -35,6 +35,7 @@ import javax.vecmath.Point4f;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.viewer.JmolConstants;
 import org.jmol.script.Token;
 import org.jmol.shape.Shape;
 import org.jmol.jvxl.data.JvxlCoder;
@@ -424,7 +425,7 @@ public class MolecularOrbital extends Isosurface {
     if (moLinearCombination == null) {
       appendCmd(s, "mo " + moNumber);
     } else {
-      appendCmd(s, "mo " + getStrLC());
+      appendCmd(s, "mo " + JmolConstants.getMOString(moLinearCombination));
     }
     if (moTranslucency != null)
       appendCmd(s, "mo translucent " + moTranslucentLevel);
@@ -432,18 +433,6 @@ public class MolecularOrbital extends Isosurface {
     return s.toString();
   }
   
-  private String getStrLC() {
-    StringBuffer sb = new StringBuffer();
-    sb.append('[');
-    for (int i = 0; i < moLinearCombination.length; i += 2) {
-      if (i > 0)
-        sb.append(", ");
-      sb.append(moLinearCombination[i]).append(" ").append((int) moLinearCombination[i + 1]);
-    }
-    sb.append(']');
-    return sb.toString();
-  }
-
   @Override
   public void merge(Shape shape) {
   MolecularOrbital mo = (MolecularOrbital) shape;

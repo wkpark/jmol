@@ -114,7 +114,7 @@ public class MOCalculation extends QuantumCalculation implements
   //private float coefMax = Integer.MAX_VALUE;
   private boolean doNormalize = true;
   private boolean nwChemMode = false;
-  //                                              S           SP            DS         DC          FS          FC
+  //                                              S           P           SP          DS         DC          FS          FC
   private int[][] dfCoefMaps = new int[][] {new int[1], new int[3], new int[4], new int[5], new int[6], new int[7], new int[10]};
 
 //  private float[] nuclearCharges;
@@ -151,7 +151,6 @@ public class MOCalculation extends QuantumCalculation implements
     //this.nuclearCharges = nuclearCharges;
     this.isElectronDensity = (testing || nuclearCharges != null);
     this.doNormalize = doNormalize;
-    
     int[] countsXYZ = volumeData.getVoxelCounts();
     initialize(countsXYZ[0], countsXYZ[1], countsXYZ[2]);
     voxelData = volumeData.getVoxelData();
@@ -225,10 +224,8 @@ public class MOCalculation extends QuantumCalculation implements
   private void process() {
     moCoeff = 0;
     if (slaters == null) {
-      check5D();
       // each STO shell is the combination of one or more gaussians
       int nShells = shells.size();
-      moCoeff = 0;
       for (int i = 0; i < nShells; i++)
         processShell(i);
       return;
@@ -237,32 +234,6 @@ public class MOCalculation extends QuantumCalculation implements
         if (!processSlater(i))
           break;
       }
-  }
-
-  boolean as5D = false;
-  /**
-   * Idea here is that we skip all the atoms, just increment moCoeff,
-   * and compare the number of coefficients run through to the 
-   * size of the moCoefficients array. If there are more coefficients
-   * than there should be, we have to assume 5D orbitals were not recognized
-   * by the file loader
-   * 
-   */
-  private void check5D() {
-    int nShells = shells.size();
-    // each STO shell is the combination of one or more gaussians
-    moCoeff = 0;
-    thisAtom = null;
-    for (int i = 0; i < nShells; i++) {
-      int[] shell = shells.get(i);
-      basisType = shell[1];
-      gaussianPtr = shell[2];
-      nGaussians = shell[3];
-      addData();
-    }
-    as5D = (moCoeff > moCoefficients.length);
-    if (as5D)
-      Logger.error("MO calculation does not have the proper number of coefficients! Assuming spherical (5D,7F) orbitals");
   }
 
   private boolean checkCalculationType() {
@@ -305,10 +276,8 @@ public class MOCalculation extends QuantumCalculation implements
     doShowShellType = doDebug;
     if (atomIndex != lastAtom && (thisAtom = qmAtoms[atomIndex]) != null)
       thisAtom.setXYZ(true);
-    addData();
-  }
-
-  private void addData() {
+    if (!setCoeffs())
+      return;
     switch (basisType) {
     case JmolConstants.SHELL_S:
       addDataS();
@@ -323,18 +292,12 @@ public class MOCalculation extends QuantumCalculation implements
       addData5D();
       break;
     case JmolConstants.SHELL_D_CARTESIAN:
-      if (as5D)
-        addData5D();
-      else
         addData6D();
       break;
     case JmolConstants.SHELL_F_SPHERICAL:
       addData7F();
       break;
     case JmolConstants.SHELL_F_CARTESIAN:
-      if (as5D)
-        addData7F();
-      else        
         addData10F();
       break;
     default:
@@ -383,14 +346,26 @@ public class MOCalculation extends QuantumCalculation implements
     return sum;
   }
 
-  private void addDataS() {
+  private final double[] coeffs = new double[10];
+  private int[] map;
+  
+  private boolean setCoeffs() {
+    boolean isOK = false;
+    int mapType = basisType;
+    map = dfCoefMaps[mapType];
     if (thisAtom == null) {
-      moCoeff++;
-      return;
+      moCoeff += map.length;
+      return false;
     }
-    if (doDebug)
-      dumpInfo(JmolConstants.SHELL_S, dfCoefMaps[0]);
-
+    for (int i = 0; i < map.length; i++)
+      isOK |= ((coeffs[i] = moCoefficients[map[i] + moCoeff++]) != 0);
+    isOK &= (coeffs[0] != Integer.MIN_VALUE);
+    if (isOK && doDebug)
+      dumpInfo(mapType);
+    return isOK;
+  }
+  
+  private void addDataS() {
     double norm, c1;
     
     if (doNormalize) {
@@ -405,7 +380,7 @@ public class MOCalculation extends QuantumCalculation implements
       norm = 1;
     }
    
-    double m1 = moCoefficients[moCoeff++];
+    double m1 = coeffs[0];
     for (int ig = 0; ig < nGaussians; ig++) {
       double alpha = gaussians[gaussianPtr + ig][0];
       c1 = gaussians[gaussianPtr + ig][1];
@@ -438,17 +413,11 @@ public class MOCalculation extends QuantumCalculation implements
   }
 
   private void addDataP() {
-    int[] map = dfCoefMaps[JmolConstants.SHELL_P];
-    if (thisAtom == null || map[0] == Integer.MIN_VALUE) {
-      moCoeff += 3;
-      return;
-    }
-    if (doDebug)
-      dumpInfo(JmolConstants.SHELL_P, map);
-    double mx = moCoefficients[map[0] + moCoeff++];
-    double my = moCoefficients[map[1] + moCoeff++];
-    double mz = moCoefficients[map[2] + moCoeff++];
+    double mx = coeffs[0];
+    double my = coeffs[1];
+    double mz = coeffs[2];
     double norm;
+    
     if (doNormalize) {
       if (nwChemMode) {
         norm = getContractionNormalization(1, 1);
@@ -459,6 +428,7 @@ public class MOCalculation extends QuantumCalculation implements
     } else {
       norm = 1;
     }
+    
     if (isElectronDensity) {
       for (int ig = 0; ig < nGaussians; ig++) {
         double alpha = gaussians[gaussianPtr + ig][0];
@@ -502,29 +472,12 @@ public class MOCalculation extends QuantumCalculation implements
   private void addDataSP() {
     // spartan uses format "1" for BOTH SP and P, which is fine, but then
     // when c1 = 0, there is no mo coefficient, of course. 
-    double c1 = gaussians[gaussianPtr][1];
-    int[] map = dfCoefMaps[JmolConstants.SHELL_SP];
-    if (thisAtom == null || map[0] == Integer.MIN_VALUE) {
-      moCoeff += 3;
-      return;
-    }
-    if (thisAtom == null) {
-      moCoeff += (c1 == 0 ? 3 : 4);
-      return;
-    }
-    double ms, mx, my, mz;
-    if (c1 == 0) {
-      if (doDebug)
-        dumpInfo(JmolConstants.SHELL_P, map);
-      ms = 0;      
-    } else {
-      if (doDebug)
-        dumpInfo(JmolConstants.SHELL_SP, map);
-      ms = moCoefficients[map[0] + moCoeff++];
-    }
-    mx = moCoefficients[map[1] + moCoeff++];
-    my = moCoefficients[map[2] + moCoeff++];
-    mz = moCoefficients[map[3] + moCoeff++];
+    boolean isP = (map.length == 3);
+    int pPt = (isP ? 0 : 1);
+    double ms = (isP ? 0 : coeffs[0]);
+    double mx = coeffs[pPt++];
+    double my = coeffs[pPt++];
+    double mz = coeffs[pPt++];
     double norm1, norm2;
     if (doNormalize) {
       if (nwChemMode) {
@@ -537,54 +490,59 @@ public class MOCalculation extends QuantumCalculation implements
     } else {
       norm1 = norm2 = 1;
     }
+    double a1, a2, c1, c2, alpha;
     if (isElectronDensity) {
-      for (int ig = 0; ig < nGaussians; ig++) {
-        double alpha = gaussians[gaussianPtr + ig][0];
-        c1 = gaussians[gaussianPtr + ig][1];
-        double a1 = c1;
-        if (doNormalize)
-          a1 *=  Math.pow(alpha, 0.75) * norm1;
-        calcSP(alpha, a1 * ms, 0, 0, 0);
-      }
+      if (ms != 0)
+        for (int ig = 0; ig < nGaussians; ig++) {
+          alpha = gaussians[gaussianPtr + ig][0];
+          c1 = gaussians[gaussianPtr + ig][1];
+          a1 = c1;
+          if (doNormalize)
+            a1 *= Math.pow(alpha, 0.75) * norm1;
+          calcSP(alpha, a1 * ms, 0, 0, 0);
+        }
       setTemp();
-      for (int ig = 0; ig < nGaussians; ig++) {
-        double alpha = gaussians[gaussianPtr + ig][0];
-        double c2 = gaussians[gaussianPtr + ig][2];
-        double a2 = c2;
-        if (doNormalize)
-          a2 *=  Math.pow(alpha, 1.25) * norm2;
-        calcSP(alpha, 0, a2 * mx, 0, 0);
-      }
+      if (mx != 0)
+        for (int ig = 0; ig < nGaussians; ig++) {
+          alpha = gaussians[gaussianPtr + ig][0];
+          c2 = gaussians[gaussianPtr + ig][2];
+          a2 = c2;
+          if (doNormalize)
+            a2 *= Math.pow(alpha, 1.25) * norm2;
+          calcSP(alpha, 0, a2 * mx, 0, 0);
+        }
       setTemp();
-      for (int ig = 0; ig < nGaussians; ig++) {
-        double alpha = gaussians[gaussianPtr + ig][0];
-        double c2 = gaussians[gaussianPtr + ig][2];
-        double a2 = c2;
-        if (doNormalize)
-          a2 *=  Math.pow(alpha, 1.25) * norm2;
-        calcSP(alpha, 0, 0, a2 * my, 0);
-      }
+      if (my != 0)
+        for (int ig = 0; ig < nGaussians; ig++) {
+          alpha = gaussians[gaussianPtr + ig][0];
+          c2 = gaussians[gaussianPtr + ig][2];
+          a2 = c2;
+          if (doNormalize)
+            a2 *= Math.pow(alpha, 1.25) * norm2;
+          calcSP(alpha, 0, 0, a2 * my, 0);
+        }
       setTemp();
-      for (int ig = 0; ig < nGaussians; ig++) {
-        double alpha = gaussians[gaussianPtr + ig][0];
-        double c2 = gaussians[gaussianPtr + ig][2];
-        double a2 = c2;
-        if (doNormalize)
-          a2 *=  Math.pow(alpha, 1.25) * norm2;
-        calcSP(alpha, 0, 0, 0, a2 * mz);
-      }
+      if (mz != 0)
+        for (int ig = 0; ig < nGaussians; ig++) {
+          alpha = gaussians[gaussianPtr + ig][0];
+          c2 = gaussians[gaussianPtr + ig][2];
+          a2 = c2;
+          if (doNormalize)
+            a2 *= Math.pow(alpha, 1.25) * norm2;
+          calcSP(alpha, 0, 0, 0, a2 * mz);
+        }
       setTemp();
     } else {
       for (int ig = 0; ig < nGaussians; ig++) {
-        double alpha = gaussians[gaussianPtr + ig][0];
+        alpha = gaussians[gaussianPtr + ig][0];
         c1 = gaussians[gaussianPtr + ig][1];
-        double c2 = gaussians[gaussianPtr + ig][2];
-        double a1 = c1;
-        if (doNormalize)
-          a1 *=  Math.pow(alpha, 0.75) * norm1;
-        double a2 = c2;
-        if (doNormalize)
-          a2 *=  Math.pow(alpha, 1.25) * norm2;
+        c2 = gaussians[gaussianPtr + ig][2];
+        a1 = c1;
+        a2 = c2;
+        if (doNormalize) {
+          a1 *= Math.pow(alpha, 0.75) * norm1;
+          a2 *= Math.pow(alpha, 1.25) * norm2;
+        }
         calcSP(alpha, a1 * ms, a2 * mx, a2 * my, a2 * mz);
       }
     }
@@ -634,19 +592,14 @@ public class MOCalculation extends QuantumCalculation implements
 
   private void addData6D() {
     //expects 6 orbitals in the order XX YY ZZ XY XZ YZ
-    int[] map = dfCoefMaps[JmolConstants.SHELL_D_CARTESIAN];
-    if (thisAtom == null || isElectronDensity || map[0] == Integer.MIN_VALUE) {
-      moCoeff += 6;
+    if (isElectronDensity) 
       return;
-    }
-    if (doDebug)
-      dumpInfo(JmolConstants.SHELL_D_CARTESIAN, map);
-    double mxx = moCoefficients[map[0] + moCoeff++];
-    double myy = moCoefficients[map[1] + moCoeff++];
-    double mzz = moCoefficients[map[2] + moCoeff++];
-    double mxy = moCoefficients[map[3] + moCoeff++];
-    double mxz = moCoefficients[map[4] + moCoeff++];
-    double myz = moCoefficients[map[5] + moCoeff++];
+    double mxx = coeffs[0];
+    double myy = coeffs[1];
+    double mzz = coeffs[2];
+    double mxy = coeffs[3];
+    double mxz = coeffs[4];
+    double myz = coeffs[5];
     double norm1, norm2;
     if (doNormalize) {
       if (nwChemMode) {
@@ -712,14 +665,8 @@ public class MOCalculation extends QuantumCalculation implements
     // "Trasnformation Between Cartesian and Pure Spherical Harmonic Gaussians",
     // Schlegel and Frisch, Int. J. Quant. Chem 54, 83-87, 1995
 
-    int[] map = dfCoefMaps[JmolConstants.SHELL_D_SPHERICAL];
-    if (thisAtom == null || isElectronDensity || map[0] == Integer.MIN_VALUE) {
-      moCoeff += 5;
+    if (isElectronDensity)
       return;
-    }
-    if (doDebug)
-      dumpInfo(JmolConstants.SHELL_D_SPHERICAL, map);
-
     double alpha, c1, a;
     double x, y, z;
     double cxx, cyy, czz, cxy, cxz, cyz;
@@ -755,11 +702,11 @@ public class MOCalculation extends QuantumCalculation implements
       norm1 = norm2 = norm3 = norm4 = 1;
     }
 
-    double m0 = moCoefficients[map[0] + moCoeff++];
-    double m1p = moCoefficients[map[1] + moCoeff++];
-    double m1n = moCoefficients[map[2] + moCoeff++];
-    double m2p = moCoefficients[map[3] + moCoeff++];
-    double m2n = moCoefficients[map[4] + moCoeff++];
+    double m0 = coeffs[0];
+    double m1p = coeffs[1];
+    double m1n = coeffs[2];
+    double m2p = coeffs[3];
+    double m2n = coeffs[4];
     
     for (int ig = 0; ig < nGaussians; ig++) {
       alpha = gaussians[gaussianPtr + ig][0];
@@ -811,13 +758,8 @@ public class MOCalculation extends QuantumCalculation implements
   private void addData10F() {
     // expects 10 orbitals in the order XXX, YYY, ZZZ, XYY, XXY, 
     //                                  XXZ, XZZ, YZZ, YYZ, XYZ
-    int[] map = dfCoefMaps[JmolConstants.SHELL_F_CARTESIAN];
-    if (thisAtom == null || isElectronDensity || map[0] == Integer.MIN_VALUE) {
-      moCoeff += 10;
+    if (isElectronDensity) 
       return;
-    }
-    if (doDebug)
-      dumpInfo(JmolConstants.SHELL_F_CARTESIAN, map);
     double alpha;
     double c1;
     double a;
@@ -856,16 +798,16 @@ public class MOCalculation extends QuantumCalculation implements
       norm1 = norm2 = norm3 = 1;
     }
 
-    double mxxx = moCoefficients[map[0] + moCoeff++];
-    double myyy = moCoefficients[map[1] + moCoeff++];
-    double mzzz = moCoefficients[map[2] + moCoeff++];
-    double mxyy = moCoefficients[map[3] + moCoeff++];
-    double mxxy = moCoefficients[map[4] + moCoeff++];
-    double mxxz = moCoefficients[map[5] + moCoeff++];
-    double mxzz = moCoefficients[map[6] + moCoeff++];
-    double myzz = moCoefficients[map[7] + moCoeff++];
-    double myyz = moCoefficients[map[8] + moCoeff++];
-    double mxyz = moCoefficients[map[9] + moCoeff++];
+    double mxxx = coeffs[0];
+    double myyy = coeffs[1];
+    double mzzz = coeffs[2];
+    double mxyy = coeffs[3];
+    double mxxy = coeffs[4];
+    double mxxz = coeffs[5];
+    double mxzz = coeffs[6];
+    double myzz = coeffs[7];
+    double myyz = coeffs[8];
+    double mxyz = coeffs[9];
     for (int ig = 0; ig < nGaussians; ig++) {
       alpha = gaussians[gaussianPtr + ig][0];
       c1 = gaussians[gaussianPtr + ig][1];
@@ -924,15 +866,8 @@ public class MOCalculation extends QuantumCalculation implements
   private void addData7F() {
     // expects 7 real orbitals in the order f0, f+1, f-1, f+2, f-2, f+3, f-3
 
-    int[] map = dfCoefMaps[JmolConstants.SHELL_F_SPHERICAL];
-    if (thisAtom == null || isElectronDensity || map[0] == Integer.MIN_VALUE) {
-      moCoeff += 7;
-      return;
-    }
-
-    if (doDebug)
-      dumpInfo(JmolConstants.SHELL_F_SPHERICAL, map);
-
+    if (isElectronDensity)
+      return;    
     double alpha, c1, a;
     double x, y, z, xx, yy, zz;
     double cxxx, cyyy, czzz, cxyy, cxxy, cxxz, cxzz, cyzz, cyyz, cxyz;
@@ -992,13 +927,13 @@ public class MOCalculation extends QuantumCalculation implements
     final double c3n_yyy = c3p_xxx;
     final double c3n_xxy = c3p_xyy;
 
-    double m0 = moCoefficients[map[0] + moCoeff++];
-    double m1p = moCoefficients[map[1] + moCoeff++];
-    double m1n = moCoefficients[map[2] + moCoeff++];
-    double m2p = moCoefficients[map[3] + moCoeff++];
-    double m2n = moCoefficients[map[4] + moCoeff++];
-    double m3p = moCoefficients[map[5] + moCoeff++];
-    double m3n = moCoefficients[map[6] + moCoeff++];
+    double m0 = coeffs[0];
+    double m1p = coeffs[1];
+    double m1n = coeffs[2];
+    double m2p = coeffs[3];
+    double m2n = coeffs[4];
+    double m3p = coeffs[5];
+    double m3n = coeffs[6];
 
     for (int ig = 0; ig < nGaussians; ig++) {
       alpha = gaussians[gaussianPtr + ig][0];
@@ -1253,10 +1188,10 @@ public class MOCalculation extends QuantumCalculation implements
     return true;
   }
 
-  private void dumpInfo(int shell, int[] map) {
+  private void dumpInfo(int shell) {
     if (doShowShellType) {
       Logger.debug("\n\t\t\tprocessShell: " + shell + " type="
-          + JmolConstants.getQuantumShellTag(basisType) + " nGaussians="
+          + JmolConstants.getQuantumShellTag(shell) + " nGaussians="
           + nGaussians + " atom=" + atomIndex);
       doShowShellType = false;
     }
@@ -1269,10 +1204,9 @@ public class MOCalculation extends QuantumCalculation implements
       }
     String[] so = JmolConstants.getShellOrder(shell);
     for (int i = 0; i < so.length; i++) {
-      float c = moCoefficients[map[i] + moCoeff + i];
-      if (c != 0)
+      double c = coeffs[i];
         Logger.debug("MO coeff " + (so == null ? "?" + i : so[i]) + " "
-            + (map[i] + moCoeff + i + 1) + "\t" + c + "\t" + thisAtom.atom);
+            + (map[i] + moCoeff - map.length + i + 1) + "\t" + c + "\t" + thisAtom.atom);
     }
   }
 

@@ -346,7 +346,7 @@ max-force
   }
 
   private void readAtomSet(String atomSetName, boolean isBohr) throws Exception {
-    atomSetCollection.cloneLastAtomSet();
+    atomSetCollection.cloneFirstAtomSet();
     atomSetCollection.setAtomSetName(atomSetName);
     Atom[] atoms = atomSetCollection.getAtoms();
     int i0 = atomSetCollection.getLastAtomSetAtomIndex();

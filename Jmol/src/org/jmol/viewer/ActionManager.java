@@ -1339,7 +1339,7 @@ public class ActionManager {
         case PICKING_ROTATE_BOND:
           viewer.setRotateBondIndex(nearestPoint.index);
           break;
-        default:
+        case PICKING_DELETE_BOND:
           viewer.deleteBonds(BitSetUtil.setBit(nearestPoint.index));
         }
         return false;

@@ -21,14 +21,21 @@ import org.jmol.util.Logger;
  */
 
 public class MoldenReader extends MopacSlaterReader {
-  private boolean inputOnly;
+  
   private boolean loadGeometries;
+  private boolean loadVibrations;
+  private boolean vibOnly;
+  private boolean optOnly;
+  
   private int modelAtomCount;
   
   @Override
   protected void initializeReader() {
-    inputOnly = checkFilter("INPUT");
-    loadGeometries = !checkFilter("NOOPT");
+    vibOnly = checkFilter("VIBONLY");
+    optOnly = checkFilter("OPTONLY");
+    loadGeometries = !vibOnly && !checkFilter("NOOPT");
+    loadVibrations = !optOnly && desiredModelNumber < 0 && !checkFilter("NOVIB");
+    
     if (checkFilter("ALPHA"))
       filter = "alpha";
     else if (checkFilter("BETA"))
@@ -42,8 +49,6 @@ public class MoldenReader extends MopacSlaterReader {
     if (line.indexOf("[Atoms]") >= 0 || line.indexOf("[ATOMS]") >= 0) {
       readAtoms();
       modelAtomCount = atomSetCollection.getFirstAtomSetAtomCount();
-      if (inputOnly)
-        continuing = false;
       return false;
     }
     if (line.indexOf("[GTO]") >= 0)
@@ -51,7 +56,7 @@ public class MoldenReader extends MopacSlaterReader {
     if (line.indexOf("[MO]") >= 0) 
       return (!readMolecularOrbitals || readMolecularOrbitals());
     if (line.indexOf("[FREQ]") >= 0)
-      return readFreqsAndModes();
+      return (!loadVibrations || readFreqsAndModes());
     if (line.indexOf("[GEOCONV]") >= 0)
       return (!loadGeometries || readGeometryOptimization());
     return true;
@@ -279,7 +284,8 @@ public class MoldenReader extends MopacSlaterReader {
     }
     int nFreqs = frequencies.size();
     discardLinesUntilContains("[FR-COORD]");
-    readAtomSet("frequency base geometry", true);
+    if (!vibOnly)
+      readAtomSet("frequency base geometry", true, true);
     discardLinesUntilContains("[FR-NORM-COORD]");
     boolean haveVib = false;
     for (int nFreq = 0; nFreq < nFreqs; nFreq++) {
@@ -334,19 +340,29 @@ max-force
       energies.add(Double.valueOf(line.trim()).toString());
     discardLinesUntilContains("[GEOMETRIES] XYZ");
     int nGeom = energies.size();
-    modelNumber = 1; // input model counts as model 1; vibrations do not count
+    int firstModel = (optOnly || desiredModelNumber >= 0 ? 0 : 1);
+    modelNumber = firstModel; // input model counts as model 1; vibrations do not count
+    boolean haveModel = false;
+    if (desiredModelNumber == 0 || desiredModelNumber == nGeom)
+      desiredModelNumber = nGeom; 
+    else
+      setMOData(null);
     for (int i = 0; i < nGeom; i++) {
       discardLines(2);
-      if (doGetModel(++modelNumber))
-        readAtomSet("Step " + (modelNumber - 1) + "/" + nGeom + ": " + energies.get(i), false);
-      else
+      if (doGetModel(++modelNumber)) {
+        readAtomSet("Step " + (modelNumber - firstModel) + "/" + nGeom + ": " + energies.get(i), false, 
+            !optOnly || haveModel);
+        haveModel = true;
+      } else {
         discardLines(modelAtomCount);
+      }
     }
     return true;
   }
 
-  private void readAtomSet(String atomSetName, boolean isBohr) throws Exception {
-    atomSetCollection.cloneFirstAtomSet();
+  private void readAtomSet(String atomSetName, boolean isBohr, boolean asClone) throws Exception {
+    if (asClone && desiredModelNumber < 0)
+      atomSetCollection.cloneFirstAtomSet();
     atomSetCollection.setAtomSetName(atomSetName);
     Atom[] atoms = atomSetCollection.getAtoms();
     int i0 = atomSetCollection.getLastAtomSetAtomIndex();

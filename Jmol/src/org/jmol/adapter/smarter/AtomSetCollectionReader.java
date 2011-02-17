@@ -890,6 +890,8 @@ public abstract class AtomSetCollectionReader {
   @SuppressWarnings("unchecked")
   public void setMOData(Map<String, Object> moData) {
     atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
+    if (moData == null)
+      return;
     List<Map<String, Object>> orbitals = (List<Map<String, Object>>) moData
         .get("mos");
     if (orbitals != null)

@@ -735,6 +735,8 @@ public class ProjectInformation {
           info._fciCore = CoreType.A3GROMACS;
         } else if ("GRO-A4".equalsIgnoreCase(core)) {
           info._fciCore = CoreType.A4GROMACS;
+        } else if ("GRO-A5".equalsIgnoreCase(core)) {
+          info._fciCore = CoreType.A5GROMACS;
         } else if ("GRO-PS3".equalsIgnoreCase(core)) {
           info._fciCore = CoreType.GROMACS_PS3;
         } else if ("GRO-SMP".equalsIgnoreCase(core)) {
@@ -765,6 +767,7 @@ public class ProjectInformation {
       info._fciValue = XMLValue.getDouble(node, "credit"); //$NON-NLS-1$
       info._fciDeadline = XMLValue.getInteger(node, "deadline", 86400); //$NON-NLS-1$
       info._fciFrames = XMLValue.getInteger(node, "frames"); //$NON-NLS-1$
+      info._fciKfactor = XMLValue.getDouble(node, "kfactor"); //$NON-NLS-1$
       info._fciName = XMLValue.getString(node, "name", null); //$NON-NLS-1$
       info._fciPreferred = XMLValue.getInteger(node, "preferred", 86400); //$NON-NLS-1$
       info._fciServer = XMLValue.getString(node, "server", null); //$NON-NLS-1$
@@ -870,6 +873,7 @@ public class ProjectInformation {
       this._fciCore = null;
       this._fciDeadline = null;
       this._fciFrames = null;
+      this._fciKfactor = null;
       this._fciName = null;
       this._fciPreferred = null;
       this._fciServer = null;
@@ -909,6 +913,7 @@ public class ProjectInformation {
     CoreType _fciCore;
     Integer  _fciDeadline;
     Integer  _fciFrames;
+    Double   _fciKfactor;
     String   _fciName;
     Integer  _fciPreferred;
     String   _fciServer;
@@ -1479,6 +1484,12 @@ public class ProjectInformation {
         (info._fciFrames != null)) {
       different = true;
     }
+    if ((info._psKfactor == null) &&
+        (info._staticKfactor == null) &&
+        (info._fciKfactor != null) &&
+        (info._fciKfactor.doubleValue() != 0.0)) {
+      different = true;
+    }
     if ((info._psName == null) &&
         (info._staticName == null) &&
         (info._fciName != null)) {
@@ -1965,12 +1976,20 @@ public class ProjectInformation {
           ((info._psKfactor.doubleValue() != 0.0) || (info._staticKfactor != null))) {
         kfactorDifferent = true;
       }
+    } else if (info._staticKfactor == null) {
+      if ((info._fciKfactor != null) && (info._fciKfactor.doubleValue() != 0.0)) {
+        kfactorDifferent = true;
+      }
     }
     if (kfactorDifferent) {
       outputText("  Kfactor: "); // $NON-NLS-1$
       boolean separator = false;
       if (info._staticKfactor != null) {
         outputInfoS(info._staticKfactor, separator);
+        separator = true;
+      }
+      if (info._fciKfactor != null) {
+        outputInfoFCI(info._fciKfactor, separator);
         separator = true;
       }
       if (info._psKfactor != null) {

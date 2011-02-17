@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-01-12 18:30+0100\n"
-"PO-Revision-Date: 2011-02-06 17:32+0000\n"
+"PO-Revision-Date: 2011-02-17 15:04+0000\n"
 "Last-Translator: Dimitrios - Georgios Kontopoulos <Unknown>\n"
 "Language-Team: Greek <el@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-02-07 12:13+0000\n"
-"X-Generator: Launchpad (build 12335)\n"
+"X-Launchpad-Export-Date: 2011-02-17 19:20+0000\n"
+"X-Generator: Launchpad (build 12395)\n"
 
 #: org/jmol/applet/AppletConsole.java:199
 msgid "&Help"
@@ -107,7 +107,7 @@ msgstr "  {0} δευτερόλεπτα"
 
 #: org/jmol/console/JmolConsole.java:87
 msgid "Jmol Script Console"
-msgstr ""
+msgstr "Κονσόλα Script του Jmol"
 
 #: org/jmol/console/ScriptEditor.java:98
 msgid "Jmol Script Editor"
@@ -116,26 +116,25 @@ msgstr ""
 #: org/jmol/console/ScriptEditor.java:130
 #: org/jmol/popup/MainPopupResourceBundle.java:849
 msgid "Console"
-msgstr ""
+msgstr "Κονσόλα"
 
 #: org/jmol/console/ScriptEditor.java:132
 #: org/jmol/export/dialog/Dialog.java:440
 #: org/jmol/export/dialog/Dialog.java:464
 #: org/jmol/export/dialog/Dialog.java:467
 msgid "Open"
-msgstr ""
+msgstr "Άνοιγμα"
 
 #: org/jmol/console/ScriptEditor.java:133
 msgid "Script"
-msgstr ""
+msgstr "Script"
 
 #: org/jmol/console/ScriptEditor.java:134
 msgid "Check"
-msgstr ""
+msgstr "Έλεγχος"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid ""
-"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -170,7 +169,7 @@ msgstr "Αρχείο ή URL:"
 
 #: org/jmol/export/dialog/Dialog.java:266
 msgid "Image Type"
-msgstr ""
+msgstr "Τύπος εικόνας"
 
 #: org/jmol/export/dialog/Dialog.java:281
 #: org/jmol/export/dialog/Dialog.java:322
@@ -201,7 +200,7 @@ msgstr "Όχι"
 #: org/jmol/export/dialog/Dialog.java:373
 #, java-format
 msgid "Do you want to overwrite file {0}?"
-msgstr ""
+msgstr "Θέλετε να αντικαταστήσετε το αρχείο {0};"
 
 #: org/jmol/export/dialog/Dialog.java:374
 msgid "Warning"
@@ -255,11 +254,11 @@ msgstr "Όνομα αρχείου:"
 
 #: org/jmol/export/dialog/Dialog.java:448
 msgid "Size"
-msgstr ""
+msgstr "Μέγεθος"
 
 #: org/jmol/export/dialog/Dialog.java:449
 msgid "Files of Type:"
-msgstr ""
+msgstr "Αρχεία τύπου:"
 
 #: org/jmol/export/dialog/Dialog.java:450
 msgid "Type"
@@ -267,7 +266,7 @@ msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:451
 msgid "Help"
-msgstr ""
+msgstr "Βοήθεια"
 
 #: org/jmol/export/dialog/Dialog.java:453
 msgid "FileChooser help"
@@ -276,7 +275,7 @@ msgstr "Βοήθεια για τον ΕπιλογέαΑρχείων"
 #: org/jmol/export/dialog/Dialog.java:454
 #: org/jmol/export/dialog/Dialog.java:455
 msgid "Home"
-msgstr ""
+msgstr "Αρχική"
 
 #: org/jmol/export/dialog/Dialog.java:456
 #: org/jmol/export/dialog/Dialog.java:457
@@ -293,11 +292,11 @@ msgstr "Λάθος δημιουργίας νέου φακέλου"
 
 #: org/jmol/export/dialog/Dialog.java:461
 msgid "New Folder"
-msgstr ""
+msgstr "Νέος Φάκελος"
 
 #: org/jmol/export/dialog/Dialog.java:463
 msgid "Create New Folder"
-msgstr ""
+msgstr "Δημιουργία Νέου Φακέλου"
 
 #: org/jmol/export/dialog/Dialog.java:466
 msgid "Open selected file"
@@ -326,11 +325,11 @@ msgstr ""
 
 #: org/jmol/export/dialog/Dialog.java:476
 msgid "Up"
-msgstr ""
+msgstr "Πάνω"
 
 #: org/jmol/export/dialog/Dialog.java:477
 msgid "Up One Level"
-msgstr ""
+msgstr "Ένα επίπεδο πάνω"
 
 #: org/jmol/export/dialog/Dialog.java:482
 msgid "OK"
@@ -338,7 +337,7 @@ msgstr "Εντάξει"
 
 #: org/jmol/export/dialog/FilePreview.java:71
 msgid "Preview"
-msgstr ""
+msgstr "Προεπισκόπηση"
 
 #: org/jmol/export/dialog/FilePreview.java:91
 msgid "Append models"
@@ -483,7 +482,7 @@ msgstr ""
 
 #: org/jmol/minimize/Minimizer.java:210
 msgid "No atoms selected -- nothing to do!"
-msgstr ""
+msgstr "Δεν επιλέχθηκαν άτομα -- δεν υπάρχει κάτι να κάνω!"
 
 #: org/jmol/minimize/Minimizer.java:286
 #, java-format
@@ -629,7 +628,7 @@ msgstr ""
 #: org/jmol/popup/JmolPopup.java:149
 #: org/jmol/popup/MainPopupResourceBundle.java:536
 msgid "No atoms loaded"
-msgstr ""
+msgstr "Δεν φορτώθηκαν άτομα"
 
 #: org/jmol/popup/JmolPopup.java:362
 #: org/jmol/popup/MainPopupResourceBundle.java:548
@@ -652,7 +651,7 @@ msgstr ""
 #: org/jmol/popup/JmolPopup.java:568
 #: org/jmol/popup/MainPopupResourceBundle.java:946
 msgid "Translations"
-msgstr ""
+msgstr "Μεταφράσεις"
 
 #: org/jmol/popup/JmolPopup.java:570
 msgid "System"
@@ -677,7 +676,7 @@ msgstr "Έκδοση Java:"
 
 #: org/jmol/popup/JmolPopup.java:585
 msgid "Java memory usage:"
-msgstr ""
+msgstr "Χρήση μνήμης από Java:"
 
 #: org/jmol/popup/JmolPopup.java:591
 #, java-format
@@ -692,11 +691,11 @@ msgstr "{0} ελεύθερα MB"
 #: org/jmol/popup/JmolPopup.java:596
 #, java-format
 msgid "{0} MB maximum"
-msgstr ""
+msgstr "{0} MB μέγιστο"
 
 #: org/jmol/popup/JmolPopup.java:599
 msgid "unknown maximum"
-msgstr ""
+msgstr "άγνωστο μέγιστο"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:538
 msgid "Configurations"
@@ -867,7 +866,7 @@ msgstr "Πρωτεΐνη"
 #: org/jmol/popup/MainPopupResourceBundle.java:665
 #: org/jmol/popup/MainPopupResourceBundle.java:757
 msgid "Backbone"
-msgstr ""
+msgstr "Ραχοκοκαλιά"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:585
 msgid "Side Chains"
@@ -923,7 +922,7 @@ msgstr "ζεύγη AU"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:600
 msgid "Hetero"
-msgstr ""
+msgstr "Ετεροάτομα"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:601
 msgid "All PDB \"HETATM\""
@@ -931,11 +930,11 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:602
 msgid "All Solvent"
-msgstr ""
+msgstr "Όλος ο Διαλύτης"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:603
 msgid "All Water"
-msgstr ""
+msgstr "Όλο το Νερό"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:605
 msgid "Nonaqueous Solvent"
@@ -1127,7 +1126,7 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:679
 #, java-format
 msgid "{0} pixels"
-msgstr ""
+msgstr "{0} εικονοστοιχεία"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:682
 #: org/jmol/popup/MainPopupResourceBundle.java:683
@@ -1189,19 +1188,19 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:705
 msgid "Upper Right"
-msgstr ""
+msgstr "Πάνω Δεξιά"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:706
 msgid "Lower Right"
-msgstr ""
+msgstr "Κάτω Δεξιά"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:707
 msgid "Upper Left"
-msgstr ""
+msgstr "Πάνω Αριστερά"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:708
 msgid "Lower Left"
-msgstr ""
+msgstr "Κάτω Αριστερά"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:710
 msgid "Color"
@@ -1229,11 +1228,11 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:718
 msgid "Partial Charge"
-msgstr ""
+msgstr "Μερικό Φορτίο"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:719
 msgid "Temperature (Relative)"
-msgstr ""
+msgstr "Θερμοκρασία (Σχετική)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:720
 msgid "Temperature (Fixed)"
@@ -1371,7 +1370,7 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:913
 #: org/jmol/popup/MainPopupResourceBundle.java:938
 msgid "Unit cell"
-msgstr ""
+msgstr "Στοιχειώδης κυψελίδα"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:771
 msgid "Zoom"
@@ -1421,7 +1420,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:801
 msgid "Palindrome"
-msgstr ""
+msgstr "Παλινδρομικά"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:802
 msgid "Loop"
@@ -1429,7 +1428,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:804
 msgid "Play"
-msgstr ""
+msgstr "Αναπαραγωγή"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:807
 msgid "Stop"
@@ -1462,15 +1461,15 @@ msgstr "Μετρήσεις"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:822
 msgid "Double-Click begins and ends all measurements"
-msgstr ""
+msgstr "Με διπλό κλικ ξεκινούν και τελειώνουν όλες οι μετρήσεις"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:823
 msgid "Click for distance measurement"
-msgstr ""
+msgstr "Κάντε κλικ για μέτρηση απόστασης"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:824
 msgid "Click for angle measurement"
-msgstr ""
+msgstr "Κάντε κλικ για μετρήση γωνίας"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:825
 msgid "Click for torsion (dihedral) measurement"
@@ -1482,7 +1481,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:827
 msgid "Delete measurements"
-msgstr ""
+msgstr "Διαγραφή μετρήσεων"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:828
 msgid "List measurements"
@@ -1490,15 +1489,15 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:829
 msgid "Distance units nanometers"
-msgstr ""
+msgstr "Μονάδες απόστασης νανόμετρα"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:830
 msgid "Distance units Angstroms"
-msgstr ""
+msgstr "Μονάδες απόστασης Angstroms"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:831
 msgid "Distance units picometers"
-msgstr ""
+msgstr "Μονάδες απόστασης πικόμετρα"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:833
 msgid "Set picking"
@@ -1590,7 +1589,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:864
 msgid "Open from PDB"
-msgstr ""
+msgstr "Άνοιγμα από την PDB"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:865
 msgid "Open file or URL"
@@ -1602,12 +1601,12 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:867
 msgid "Open script"
-msgstr ""
+msgstr "Άνοιγμα script"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:869
 #, java-format
 msgid "Save a copy of {0}"
-msgstr ""
+msgstr "Αποθήκευση αντιγράφου από {0}"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:870
 msgid "Save script with state"
@@ -1623,11 +1622,11 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:875
 #, java-format
 msgid "Export {0} image"
-msgstr ""
+msgstr "Εξαγωγή {0} εικόνας"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:876
 msgid "Save all as JMOL file (zip)"
-msgstr ""
+msgstr "Αποθήκευσέ τα όλα ώς αρχείο JMOL (zip)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:877
 msgid "Save JVXL isosurface"
@@ -1639,7 +1638,7 @@ msgstr ""
 #: org/jmol/popup/MainPopupResourceBundle.java:881
 #, java-format
 msgid "Export {0} 3D model"
-msgstr ""
+msgstr "Εξαγωγή {0} 3D μοντέλου"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:883
 msgid "Computation"
@@ -1647,7 +1646,7 @@ msgstr "Υπολογισμός"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:884
 msgid "Optimize structure"
-msgstr ""
+msgstr "Βελτίωση δομής"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:885
 msgid "Model kit"
@@ -1663,7 +1662,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:893
 msgid "van der Waals Surface"
-msgstr ""
+msgstr "Επιφάνεια van der Waals"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:894
 msgid "Molecular Surface"
@@ -1688,7 +1687,7 @@ msgstr "Μοριακό Ηλεκτροστατικό Δυναμικό"
 #: org/jmol/popup/MainPopupResourceBundle.java:906
 #, java-format
 msgid "Reload {0}"
-msgstr ""
+msgstr "Επαναφόρτωση {0}"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:907
 #, java-format
@@ -1709,7 +1708,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:918
 msgid "Pixel Width"
-msgstr ""
+msgstr "Πλάτος εικονοστοιχείου"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:919
 #: org/jmol/popup/MainPopupResourceBundle.java:920
@@ -1721,7 +1720,7 @@ msgstr "{0} px"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:924
 msgid "Angstrom Width"
-msgstr ""
+msgstr "Πλάτος Angstrom"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:932
 msgid "Selection Halos"
@@ -1733,11 +1732,11 @@ msgstr "Εμφάνιση Υδρογόνων"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:934
 msgid "Show Measurements"
-msgstr ""
+msgstr "Δείξε Μετρήσεις"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:935
 msgid "Perspective Depth"
-msgstr ""
+msgstr "Βάθος Προοπτικής"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:939
 msgid "RasMol Colors"
@@ -1833,7 +1832,7 @@ msgstr ""
 #: org/jmol/script/ScriptEvaluator.java:2775
 #, java-format
 msgid "unrecognized {0} parameter"
-msgstr ""
+msgstr "μη αναγνωρίσιμη {0} παράμετρος"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1295
 #, java-format
@@ -1909,15 +1908,15 @@ msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2671
 msgid "file not found"
-msgstr ""
+msgstr "δε βρέθηκε το αρχείου"
 
 #: org/jmol/script/ScriptEvaluator.java:2674
 msgid "incompatible arguments"
-msgstr ""
+msgstr "ασύμβατα ορίσματα"
 
 #: org/jmol/script/ScriptEvaluator.java:2677
 msgid "insufficient arguments"
-msgstr ""
+msgstr "ανεπαρκή ορίσματα"
 
 #: org/jmol/script/ScriptEvaluator.java:2680
 msgid "integer expected"
@@ -1930,7 +1929,7 @@ msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2686
 msgid "invalid argument"
-msgstr ""
+msgstr "μη έγκυρο όρισμα"
 
 #: org/jmol/script/ScriptEvaluator.java:2689
 msgid "invalid parameter order"
@@ -1973,7 +1972,7 @@ msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2716
 msgid "No data available"
-msgstr ""
+msgstr "Δεν υπάρχουν διαθέσιμα δεδομένα"
 
 #: org/jmol/script/ScriptEvaluator.java:2720
 msgid ""
@@ -1983,12 +1982,12 @@ msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2723
 msgid "No unit cell"
-msgstr ""
+msgstr "Δεν υπάρχει στοιχειώδης κυψελίδα"
 
 #: org/jmol/script/ScriptEvaluator.java:2729
 #, java-format
 msgid "number must be ({0} or {1})"
-msgstr ""
+msgstr "ο αριθμός πρέπει να είναι ({0} ή {1})"
 
 #: org/jmol/script/ScriptEvaluator.java:2732
 #, java-format
@@ -2041,7 +2040,7 @@ msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2766
 msgid "unrecognized command"
-msgstr ""
+msgstr "μη αναγνωρίσιμη εντολή"
 
 #: org/jmol/script/ScriptEvaluator.java:2769
 msgid "runtime unrecognized expression"
@@ -2049,7 +2048,7 @@ msgstr ""
 
 #: org/jmol/script/ScriptEvaluator.java:2772
 msgid "unrecognized object"
-msgstr ""
+msgstr "μη αναγνωρίσιμο αντικείμενο"
 
 #: org/jmol/script/ScriptEvaluator.java:2779
 #, java-format
@@ -2069,17 +2068,17 @@ msgstr ""
 #: org/jmol/script/ScriptEvaluator.java:7034
 #, java-format
 msgid "{0} connections deleted"
-msgstr ""
+msgstr "{0} συνδέσεις διαγράφηκαν"
 
 #: org/jmol/script/ScriptEvaluator.java:7055
 #, java-format
 msgid "{0} new bonds; {1} modified"
-msgstr ""
+msgstr "{0} νέοι δεσμοί, {1} τροποποιήθηκαν"
 
 #: org/jmol/script/ScriptEvaluator.java:8431
 #, java-format
 msgid "file {0} created"
-msgstr ""
+msgstr "αρχείο {0} δημιουργήθηκε"
 
 #: org/jmol/script/ScriptEvaluator.java:9887
 #: org/jmol/script/ScriptEvaluator.java:10143
@@ -2100,19 +2099,19 @@ msgstr ""
 
 #: org/jmol/shape/Frank.java:76
 msgid "Click for menu..."
-msgstr ""
+msgstr "Κάντε κλικ για μενού..."
 
 #: org/jmol/viewer/ActionManager.java:59
 msgid "translate"
-msgstr ""
+msgstr "μετάφραση"
 
 #: org/jmol/viewer/ActionManager.java:60
 msgid "rotate"
-msgstr ""
+msgstr "περιστροφή"
 
 #: org/jmol/viewer/ActionManager.java:61
 msgid "rotate Z"
-msgstr ""
+msgstr "περιστροφή του Z"
 
 #: org/jmol/viewer/ActionManager.java:62
 msgid ""
@@ -2143,8 +2142,7 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:69
 #, java-format
-msgid ""
-"click on two points to spin around axis counterclockwise (requires {0})"
+msgid "click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:71
@@ -2173,7 +2171,7 @@ msgstr ""
 #: org/jmol/viewer/ActionManager.java:78
 #, java-format
 msgid "select an atom (requires {0})"
-msgstr ""
+msgstr "επιλέξτε ένα άτομα (απαιτείται {0})"
 
 #: org/jmol/viewer/ActionManager.java:79
 #, java-format
@@ -2205,7 +2203,7 @@ msgstr ""
 #: org/jmol/viewer/ActionManager.java:85
 #, java-format
 msgid "move selected atoms (requires {0})"
-msgstr ""
+msgstr "μετακίνηση επιλεγμένων ατόμων (απαιτείται {0})"
 
 #: org/jmol/viewer/ActionManager.java:86
 #, java-format
@@ -2215,7 +2213,7 @@ msgstr ""
 #: org/jmol/viewer/ActionManager.java:87
 #, java-format
 msgid "rotate selected atoms (requires {0})"
-msgstr ""
+msgstr "περιστροφή επιλεγμένων ατόμων (απαιτείται {0})"
 
 #: org/jmol/viewer/ActionManager.java:88
 #, java-format
@@ -2225,7 +2223,7 @@ msgstr ""
 #: org/jmol/viewer/ActionManager.java:90
 #, java-format
 msgid "move atom (requires {0})"
-msgstr ""
+msgstr "μετακίνηση ατόμου (απαιτείται {0})"
 
 #: org/jmol/viewer/ActionManager.java:91
 #, java-format
@@ -2254,7 +2252,7 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:97
 msgid "pick an atom"
-msgstr ""
+msgstr "επιλέξτε ένα άτομο"
 
 #: org/jmol/viewer/ActionManager.java:98
 #, java-format
@@ -2275,7 +2273,7 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:101
 msgid "pick an atom to initiate or conclude a measurement"
-msgstr ""
+msgstr "επιλέξτε ένα άτομο για να ξεκινήσει ή να ολοκληρωθεί μια μέτρηση"
 
 #: org/jmol/viewer/ActionManager.java:102
 #, java-format
@@ -2290,17 +2288,17 @@ msgstr ""
 #: org/jmol/viewer/ActionManager.java:105
 #, java-format
 msgid "delete atom (requires {0})"
-msgstr ""
+msgstr "διαγραφή ατόμου (απαιτείται {0})"
 
 #: org/jmol/viewer/ActionManager.java:106
 #, java-format
 msgid "delete bond (requires {0})"
-msgstr ""
+msgstr "διαγραφή δεσμού (απαιτείται {0})"
 
 #: org/jmol/viewer/ActionManager.java:107
 #, java-format
 msgid "connect atoms (requires {0})"
-msgstr ""
+msgstr "σύνδεση ατόμων (απαιτείται {0})"
 
 #: org/jmol/viewer/ActionManager.java:108
 #, java-format
@@ -2323,19 +2321,20 @@ msgstr ""
 #: org/jmol/viewer/ActionManager.java:1938
 msgid "pick one more atom in order to spin the model around an axis"
 msgstr ""
+"επιλέξτε ένα ακόμα άτομο για να περιστραφεί το μοντέλο γύρω από έναν άξονα"
 
 #: org/jmol/viewer/ActionManager.java:1939
 msgid "pick two atoms in order to spin the model around an axis"
-msgstr ""
+msgstr "επιλέξτε δύο άτομα για να περιστραφεί το μοντέλο γύρω από έναν άξονα"
 
 #: org/jmol/viewer/ActionManager.java:1942
 msgid "pick one more atom in order to display the symmetry relationship"
-msgstr ""
+msgstr "επιλέξτε ένα ακόμα άτομο για να απεικονιστεί η σχέση συμμετρίας"
 
 #: org/jmol/viewer/ActionManager.java:1943
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
-msgstr ""
+msgstr "επιλέξτε δύο άτομα για να απεικονιστεί η σχέση συμμετρίας ανάμεσά τους"
 
 #: org/jmol/viewer/SelectionManager.java:89
 #: org/jmol/viewer/SelectionManager.java:105

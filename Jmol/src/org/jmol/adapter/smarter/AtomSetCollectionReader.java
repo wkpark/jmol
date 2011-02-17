@@ -664,6 +664,7 @@ public abstract class AtomSetCollectionReader {
   // GAMESS-US:  "CHARGE=LOW"
   // JME, MOL: "NOMIN"
   // MOL:  "2D"
+  // Molden: "INPUT" "GEOM" "NOGEOM"
   // MOReaders: "NBOCHARGES"
   // PDB: "BIOMOLECULE n;" "NOSYMMETRY"  "CONF n"
   // Spartan: "INPUT", "ESPCHARGES"
@@ -716,7 +717,7 @@ public abstract class AtomSetCollectionReader {
   public boolean checkFilter(String key) {
     return (filter != null && filter.indexOf(key) >= 0);
   }
-
+  
   protected boolean filterAtom(Atom atom) {
     return (!haveAtomFilter || filterAtom(atom, -1));
   }

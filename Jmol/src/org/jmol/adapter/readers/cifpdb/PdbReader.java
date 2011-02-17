@@ -103,11 +103,14 @@ public class PdbReader extends AtomSetCollectionReader {
  private int serial = 0;
  private StringBuffer pdbHeader;
  private int configurationPtr = Integer.MIN_VALUE;
+ private boolean applySymmetry;
 
  @Override
  protected void initializeReader() throws Exception {
    atomSetCollection.setIsPDB();
    pdbHeader = (getHeader ? new StringBuffer() : null);
+   applySymmetry = !checkFilter("NOSYMMETRY");
+   
    if (checkFilter("CONF ")) {
      configurationPtr = parseInt(filter, filter.indexOf("CONF ") + 5);
      sbIgnored = new StringBuffer();
@@ -234,7 +237,7 @@ public class PdbReader extends AtomSetCollectionReader {
         && atomSetCollection.getAtomCount() > 0) {
       atomSetCollection.setAtomSetAuxiliaryInfo("biomolecules", biomolecules);
       setBiomoleculeAtomCounts();
-      if (biomts != null && !checkFilter("NOSYMMETRY")) {
+      if (biomts != null && applySymmetry) {
         atomSetCollection.applySymmetry(biomts, notionalUnitCell, applySymmetryToBonds, filter);
       }
     }

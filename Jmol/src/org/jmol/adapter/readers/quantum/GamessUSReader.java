@@ -40,6 +40,7 @@ import org.jmol.util.Logger;
 
 public class GamessUSReader extends GamessReader {
 
+  private boolean lowdenCharges;
   /*
   ------------------
   MOLECULAR ORBITALS
@@ -76,6 +77,11 @@ public class GamessUSReader extends GamessReader {
 
   */
 
+  @Override
+  protected void initializeReader() {
+    lowdenCharges = checkFilter("CHARGE=LOW");
+  }
+  
   /**
    * @return true if need to read new line
    * @throws Exception
@@ -401,7 +407,7 @@ ATOM         MULL.POP.    CHARGE          LOW.POP.     CHARGE
    */
   void readPartialCharges() throws Exception {
     String tokens[]=null;
-    String searchstr = (checkFilter("CHARGE=LOW") ? "LOW.POP."
+    String searchstr = (lowdenCharges ? "LOW.POP."
             : "MULL.POP.");
     while (readLine() != null && ("".equals(line.trim())||line.indexOf("ATOM") >= 0)) {
       tokens = getTokens();      

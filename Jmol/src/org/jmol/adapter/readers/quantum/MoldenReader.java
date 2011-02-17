@@ -15,37 +15,49 @@ import org.jmol.util.Logger;
  * A molecular structure and orbital reader for MolDen files.
  * See http://www.cmbi.ru.nl/molden/molden_format.html
  * 
+ * updated by Bob Hanson <hansonr@stolaf.edu> for Jmol 12.0/12.1
+ * 
  * @author Matthew Zwier <mczwier@gmail.com>
  */
 
 public class MoldenReader extends MopacSlaterReader {
-  protected float[] frequencies = null;
-  protected AtomSetCollection freqAtomSet = null;
+  private boolean inputOnly;
+  private boolean loadGeometries;
+  private int modelAtomCount;
   
-	@Override
+  @Override
+  protected void initializeReader() {
+    inputOnly = checkFilter("INPUT");
+    loadGeometries = !checkFilter("NOOPT");
+    if (checkFilter("ALPHA"))
+      filter = "alpha";
+    else if (checkFilter("BETA"))
+      filter = "beta";
+    else
+      filter = null;
+  }
+
+  @Override
   protected boolean checkLine() throws Exception {
     if (line.indexOf("[Atoms]") >= 0 || line.indexOf("[ATOMS]") >= 0) {
       readAtoms();
+      modelAtomCount = atomSetCollection.getFirstAtomSetAtomCount();
+      if (inputOnly)
+        continuing = false;
       return false;
     }
-    if (line.indexOf("[GTO]") >= 0) {
-      readGaussianBasis();
-      return false;
-    }
-    if (line.indexOf("[MO]") >= 0) {
-      if (!readMolecularOrbitals)
-        return true;
-      readMolecularOrbitals();
-      return false;
-    }
-    if (line.indexOf("[FREQ]") >= 0) {
-      readFreqsAndModes();
-      return false;
-    }
+    if (line.indexOf("[GTO]") >= 0)
+      return readGaussianBasis();
+    if (line.indexOf("[MO]") >= 0) 
+      return (!readMolecularOrbitals || readMolecularOrbitals());
+    if (line.indexOf("[FREQ]") >= 0)
+      return readFreqsAndModes();
+    if (line.indexOf("[GEOCONV]") >= 0)
+      return (!loadGeometries || readGeometryOptimization());
     return true;
   }
   
-  void readAtoms() throws Exception {
+  private void readAtoms() throws Exception {
     /* 
      [Atoms] {Angs|AU}
      C     1    6         0.0076928100       -0.0109376700        0.0000000000
@@ -87,7 +99,7 @@ public class MoldenReader extends MopacSlaterReader {
     }    
   }
   
-  void readGaussianBasis() throws Exception {
+  private boolean readGaussianBasis() throws Exception {
     /* 
      [GTO]
        1 0
@@ -158,9 +170,10 @@ public class MoldenReader extends MopacSlaterReader {
       Logger.debug(garray.length + " gaussian primitives read");
     }
     atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
+    return false;
   }
   
-  void readMolecularOrbitals() throws Exception {
+  private boolean readMolecularOrbitals() throws Exception {
     /*
       [MO]
        Ene=     -11.5358
@@ -251,9 +264,10 @@ public class MoldenReader extends MopacSlaterReader {
     }
     Logger.debug("read " + orbitals.size() + " MOs");
     setMOs("eV");
+    return false;
   }
   
-  void readFreqsAndModes() throws Exception {
+  private boolean readFreqsAndModes() throws Exception {
     String[] tokens;
     List<String> frequencies = new ArrayList<String>();
     BitSet bsOK = new BitSet();
@@ -263,48 +277,86 @@ public class MoldenReader extends MopacSlaterReader {
       bsOK.set(iFreq++, parseFloat(f) != 0);
       frequencies.add(f);
     }
+    int nFreqs = frequencies.size();
     discardLinesUntilContains("[FR-COORD]");
-    final int nFreqs = frequencies.size();
-    final int nAtoms = atomSetCollection.getFirstAtomSetAtomCount();
-    atomSetCollection.cloneLastAtomSet();
-    atomSetCollection.setAtomSetName("frequency base geometry");
-    Atom[] atoms = atomSetCollection.getAtoms();
-    int i0 = atomSetCollection.getLastAtomSetAtomIndex();
-    for (int nAtom = 0; nAtom < nAtoms; nAtom++) {
-      tokens = getTokens(readLine());
-      Atom atom = atoms[nAtom + i0];
-      atom.atomName = tokens[0];
-      setAtomCoord(atom, parseFloat(tokens[1]) * ANGSTROMS_PER_BOHR, 
-          parseFloat(tokens[2]) * ANGSTROMS_PER_BOHR, 
-          parseFloat(tokens[3]) * ANGSTROMS_PER_BOHR);
-    }
-      
-    readLine();
-    if (line.indexOf("[FR-NORM-COORD]") < 0) 
-      throw new Exception("error reading normal modes: [FR-COORD] must be followed by [FR-NORM-COORD]");
+    readAtomSet("frequency base geometry", true);
+    discardLinesUntilContains("[FR-NORM-COORD]");
     boolean haveVib = false;
     for (int nFreq = 0; nFreq < nFreqs; nFreq++) {
       discardLinesUntilContains("vibration");
-      if (!bsOK.get(nFreq))
+      if (!bsOK.get(nFreq) || !doGetVibration(++vibrationNumber)) 
         continue;
-      boolean ignore = !doGetVibration(++vibrationNumber);
-      if (!ignore) {
-        if (haveVib)
-          atomSetCollection.cloneLastAtomSet();
-        haveVib = true;
-        atomSetCollection.setAtomSetFrequency(null, null, frequencies.get(nFreq), null);
-        i0 = atomSetCollection.getLastAtomSetAtomIndex();
-      }
-      for (int nAtom = 0; nAtom < nAtoms; nAtom++) {
+      if (haveVib)
+        atomSetCollection.cloneLastAtomSet();
+      haveVib = true;
+      atomSetCollection.setAtomSetFrequency(null, null, Double.valueOf(frequencies.get(nFreq)).toString(), null);
+      int i0 = atomSetCollection.getLastAtomSetAtomIndex();
+      for (int i = 0; i < modelAtomCount; i++) {
         tokens = getTokens(readLine());
-        if (!ignore)
-          atomSetCollection.addVibrationVector(nAtom + i0,
-              parseFloat(tokens[0]) * ANGSTROMS_PER_BOHR,
-              parseFloat(tokens[1]) * ANGSTROMS_PER_BOHR,
-              parseFloat(tokens[2]) * ANGSTROMS_PER_BOHR
-          );
-      }      
+        atomSetCollection.addVibrationVector(i + i0,
+            parseFloat(tokens[0]) * ANGSTROMS_PER_BOHR,
+            parseFloat(tokens[1]) * ANGSTROMS_PER_BOHR,
+            parseFloat(tokens[2]) * ANGSTROMS_PER_BOHR);
+      }
     }
-    readLine();
+    return true;
+  }
+  
+  /*
+[GEOCONV]
+energy
+-.75960756002000E+02
+-.75961091052100E+02
+-.75961320555300E+02
+-.75961337317300E+02
+-.75961338487700E+02
+-.75961338493500E+02
+max-force
+0.15499000000000E-01
+0.11197000000000E-01
+0.50420000000000E-02
+0.15350000000000E-02
+0.42000000000000E-04
+0.60000000000000E-05
+[GEOMETRIES] XYZ
+     3
+
+ o  0.00000000000000E+00 0.00000000000000E+00 -.36565628831562E+00
+ h  -.77567072215814E+00 0.00000000000000E+00 0.18282805096053E+00
+ h  0.77567072215814E+00 0.00000000000000E+00 0.18282805096053E+00
+
+  */
+  private boolean readGeometryOptimization() throws Exception {
+    List<String> energies = new ArrayList<String>();
+    readLine(); // energy
+    while (readLine() != null 
+        && line.indexOf("force") < 0)
+      energies.add(Double.valueOf(line.trim()).toString());
+    discardLinesUntilContains("[GEOMETRIES] XYZ");
+    int nGeom = energies.size();
+    modelNumber = 1; // input model counts as model 1; vibrations do not count
+    for (int i = 0; i < nGeom; i++) {
+      discardLines(2);
+      if (doGetModel(++modelNumber))
+        readAtomSet("Step " + (modelNumber - 1) + "/" + nGeom + ": " + energies.get(i), false);
+      else
+        discardLines(modelAtomCount);
+    }
+    return true;
+  }
+
+  private void readAtomSet(String atomSetName, boolean isBohr) throws Exception {
+    atomSetCollection.cloneLastAtomSet();
+    atomSetCollection.setAtomSetName(atomSetName);
+    Atom[] atoms = atomSetCollection.getAtoms();
+    int i0 = atomSetCollection.getLastAtomSetAtomIndex();
+    float f = (isBohr ? ANGSTROMS_PER_BOHR : 1);
+    for (int i = 0; i < modelAtomCount; i++) {
+      String[] tokens = getTokens(readLine());
+      Atom atom = atoms[i + i0];
+      setAtomCoord(atom, parseFloat(tokens[1]) * f, 
+          parseFloat(tokens[2]) * f, 
+          parseFloat(tokens[3]) * f);
+    }
   }
 }

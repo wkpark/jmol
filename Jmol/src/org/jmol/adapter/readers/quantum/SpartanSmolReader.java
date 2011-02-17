@@ -37,12 +37,17 @@ import org.jmol.util.Logger;
 public class SpartanSmolReader extends SpartanInputReader {
 
   private boolean iHaveModelStatement = false;
-
-  boolean isCompoundDocument = false;
+  private boolean isCompoundDocument = false;
+  private boolean inputOnly;
+  private boolean espCharges;
+  
   @Override
   protected void initializeReader() throws Exception {
     modelName = "Spartan file";
     isCompoundDocument = (readLine().indexOf("Compound Document File Directory") >= 0);
+    inputOnly = checkFilter("INPUT");
+    espCharges = checkFilter("ESPCHARGES");
+    
   }
 
   @Override
@@ -94,7 +99,7 @@ public class SpartanSmolReader extends SpartanInputReader {
         if (title != null)
           atomSetCollection.setAtomSetName(title);
         setProperties();
-        if (checkFilter("INPUT")) {
+        if (inputOnly) {
           continuing = false;
           return false;
         }
@@ -198,7 +203,7 @@ public class SpartanSmolReader extends SpartanInputReader {
   private void setProperties() {
     if (haveCharges || atomSetCollection.getAtomCount() == 0)
       return;
-    if (checkFilter("ESPCHARGES"))
+    if (espCharges)
       haveCharges = atomSetCollection.setAtomSetCollectionPartialCharges("ESPCHARGES");
     if (!haveCharges && !atomSetCollection
         .setAtomSetCollectionPartialCharges("MULCHARGES"))

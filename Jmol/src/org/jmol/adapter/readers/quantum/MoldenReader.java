@@ -33,7 +33,7 @@ public class MoldenReader extends MopacSlaterReader {
   protected void initializeReader() {
     vibOnly = checkFilter("VIBONLY");
     optOnly = checkFilter("OPTONLY");
-    loadGeometries = !vibOnly && !checkFilter("NOOPT");
+    loadGeometries = !vibOnly && desiredVibrationNumber < 0 && !checkFilter("NOOPT");
     loadVibrations = !optOnly && desiredModelNumber < 0 && !checkFilter("NOVIB");
     
     if (checkFilter("ALPHA"))

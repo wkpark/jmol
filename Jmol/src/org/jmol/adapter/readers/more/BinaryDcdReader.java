@@ -122,7 +122,8 @@ ICNTRL(20)=VERNUM ! version number
     int x5 = doc.readInt();
     int x6 = doc.readInt();
     int x7 = doc.readInt();
-    int ndegf = doc.readInt(); // 3 * nFree
+    int ndegf = doc.readInt();
+    nFree = ndegf / 3;
     int nFixed = doc.readInt(); //10
     int delta4 = doc.readInt();
     doc.readByteArray(bytes, 0, 36);
@@ -139,12 +140,16 @@ ICNTRL(20)=VERNUM ! version number
     n = doc.readInt(); // HEADER
     int nAtoms = doc.readInt();
     n = doc.readInt(); // TRAILER
-    nFree = doc.readInt() / 4; // HEADER
-    bsFree = new BitSet(nFree);
-    for (int i = 0; i < nFree; i++)
-      bsFree.set(doc.readInt() - 1);
-    Logger.info("free: " + bsFree.cardinality() + " " + Escape.escape(bsFree));
-    n = doc.readInt() / 4; // TRAILER
+    nFree = nAtoms - nFixed;
+    if (nFixed != 0) {
+      // read list of free atoms
+      doc.readInt(); // HEADER
+      bsFree = new BitSet(nFree);
+      for (int i = 0; i < nFree; i++)
+        bsFree.set(doc.readInt() - 1);
+      Logger.info("free: " + bsFree.cardinality() + " " + Escape.escape(bsFree));
+      n = doc.readInt() / 4; // TRAILER
+    }
     readCoordinates();
     Logger.info("Total number of trajectory steps=" + trajectorySteps.size());
   }

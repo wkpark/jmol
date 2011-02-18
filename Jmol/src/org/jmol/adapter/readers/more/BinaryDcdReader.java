@@ -112,9 +112,12 @@ ICNTRL(20)=VERNUM ! version number
   @Override
   protected void readDocument() throws Exception {
     byte[] bytes = new byte[40];
+    
+    // read DCD header
+    
     int n = doc.readInt(); 
     doc.setIsBigEndian(n != 0x54);
-    n = doc.readInt(); //1 -- CORD
+    n = doc.readInt(); // "CORD"
     nModels = doc.readInt();
     int nPriv = doc.readInt();
     int nSaveC = doc.readInt();
@@ -124,19 +127,24 @@ ICNTRL(20)=VERNUM ! version number
     int x7 = doc.readInt();
     int ndegf = doc.readInt();
     nFree = ndegf / 3;
-    int nFixed = doc.readInt(); //10
+    int nFixed = doc.readInt();
     int delta4 = doc.readInt();
     doc.readByteArray(bytes, 0, 36);
     int nTitle = doc.readInt();
     n = doc.readInt();  // TRAILER
+    
+    // read titles
+    
     n = doc.readInt();  // HEADER
     n = doc.readInt();
     StringBuffer sb = new StringBuffer();
     for (int i = 0; i < n; i++)
       sb.append(doc.readString(80).trim()).append('\n');
+    n = doc.readInt(); // TRAILER
     Logger.info("BinaryDcdReadaer:\n" + sb);
 
-    n = doc.readInt(); // TRAILER
+    // read number of atoms and free-atom list
+    
     n = doc.readInt(); // HEADER
     int nAtoms = doc.readInt();
     n = doc.readInt(); // TRAILER
@@ -147,10 +155,12 @@ ICNTRL(20)=VERNUM ! version number
       bsFree = new BitSet(nFree);
       for (int i = 0; i < nFree; i++)
         bsFree.set(doc.readInt() - 1);
-      Logger.info("free: " + bsFree.cardinality() + " " + Escape.escape(bsFree));
       n = doc.readInt() / 4; // TRAILER
+      Logger.info("free: " + bsFree.cardinality() + " " + Escape.escape(bsFree));
     }
+    
     readCoordinates();
+    
     Logger.info("Total number of trajectory steps=" + trajectorySteps.size());
   }
 

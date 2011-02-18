@@ -336,4 +336,15 @@ public class ZipUtil {
     }
   }
 
+  public static InputStream getGzippedInputStream(byte[] bytes) {
+    try {
+      InputStream is = new ByteArrayInputStream(bytes);
+      do {
+        is = new BufferedInputStream(new GZIPInputStream(is));
+      } while (isGzip(is));
+      return is;
+    } catch (Exception e) {
+      return null;
+    }
+  }
 }

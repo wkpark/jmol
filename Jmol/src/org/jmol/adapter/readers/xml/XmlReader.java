@@ -219,16 +219,11 @@ public class XmlReader extends AtomSetCollectionReader {
 
   /////////////// DOM option //////////////
 
- @Override
-public void readAtomSetCollectionFromDOM(Object Node) {
-    processXml((JSObject) Node);
-  }
-
-  private Object processXml(JSObject DOMNode) {
+  @Override
+  protected void processXml(Object DOMNode) {
     atomSetCollection = new AtomSetCollection(readerName, this);
     String className = null;
     Class<?> atomSetCollectionReaderClass;
-    String err = null;
     XmlReader thisReader = null;
     String name = readerName.substring(0, readerName.indexOf("("));
     try {
@@ -236,13 +231,10 @@ public void readAtomSetCollectionFromDOM(Object Node) {
       atomSetCollectionReaderClass = Class.forName(className);//,true, Thread.currentThread().getContextClassLoader());
       thisReader = (XmlReader) atomSetCollectionReaderClass
           .newInstance();
+      thisReader.processXml(this, atomSetCollection, reader, (JSObject) DOMNode);
     } catch (Exception e) {
-      err = "File reader was not found:" + className;
-      Logger.error(err);
-      return err;
+      atomSetCollection.errorMessage = "File reader was not found:" + className;
     }
-    thisReader.processXml(this, atomSetCollection, reader, DOMNode);
-    return thisReader;
   }
 
   /**

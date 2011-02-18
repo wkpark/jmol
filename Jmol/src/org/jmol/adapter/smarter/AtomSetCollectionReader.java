@@ -28,6 +28,7 @@ import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolViewer;
 import org.jmol.api.SymmetryInterface;
+import org.jmol.util.BinaryDocument;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
@@ -128,8 +129,11 @@ public abstract class AtomSetCollectionReader {
 
   public final static float ANGSTROMS_PER_BOHR = 0.5291772f; // used by SpartanArchive
 
+  public boolean isBinary;  
+
   protected AtomSetCollection atomSetCollection;
   protected BufferedReader reader;
+  protected BinaryDocument doc;
   protected String readerName;
   public Map<String, Object> htParams;
   //protected String parameterData;
@@ -199,10 +203,13 @@ public abstract class AtomSetCollectionReader {
   String fileName;
 
   void setup(String fileName, Map<String, Object> htParams,
-             BufferedReader reader) {
+             Object reader) {
     this.htParams = htParams;
     this.fileName = fileName.replace('\\', '/');
-    this.reader = reader;
+    if (reader instanceof BufferedReader)
+      this.reader = (BufferedReader) reader;
+    else if (reader instanceof BinaryDocument)
+      this.doc = (BinaryDocument) reader;
   }
 
   Object readData() throws Exception {
@@ -210,22 +217,31 @@ public abstract class AtomSetCollectionReader {
     atomSetCollection = new AtomSetCollection(readerName, this);
     try {
       initializeReader();
-      if (line == null && continuing)
-        readLine();
-      while (line != null && continuing)
-        if (checkLine())
+      if (doc == null) {
+        if (line == null && continuing)
           readLine();
+        while (line != null && continuing)
+          if (checkLine())
+            readLine();
+      } else {
+        processBinaryDocument(doc);
+      }
       finalizeReader();
     } catch (Throwable e) {
       setError(e);
     }
-    reader.close();
+    if (reader != null)
+      reader.close();
+    if (doc != null)
+      doc.close();
     return finish();
   }
 
-  protected Object readData(Object DOMNode) {
+  protected Object readData(Object node) throws Exception {
     initialize();
-    readAtomSetCollectionFromDOM(DOMNode);
+    atomSetCollection = new AtomSetCollection(readerName, this);
+    initializeReader();
+    processXml(node);
     return finish();
   }
 
@@ -233,8 +249,16 @@ public abstract class AtomSetCollectionReader {
    * 
    * @param DOMNode
    */
-  public void readAtomSetCollectionFromDOM(Object DOMNode) {
+  protected void processXml(Object DOMNode) {
     // XML readers only
+  }
+
+  /**
+   * @param doc  
+   * @throws Exception 
+   */
+  protected void processBinaryDocument(BinaryDocument doc) throws Exception {
+    // Binary readers only
   }
 
   protected void initializeReader() throws Exception {

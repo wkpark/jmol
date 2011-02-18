@@ -50,7 +50,10 @@ public class BinaryDocument {
 
   public BinaryDocument() {  
   }
-  
+
+  public BinaryDocument(BufferedInputStream bis) {
+    setStream(bis, false);   
+  }
 //  RandomAccessFile file;
   
   protected DataInputStream stream;

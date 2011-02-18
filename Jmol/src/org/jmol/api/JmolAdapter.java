@@ -179,13 +179,13 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
    * @return The atomSetCollection or String with an error message
    */
 
-  abstract public Object getAtomSetCollectionReaders(JmolFileReaderInterface fileReader, String[] names, String[] types,
+  abstract public Object getAtomSetCollectionReaders(JmolFilesReaderInterface fileReader, String[] names, String[] types,
                                     Map<String, Object> htParams, boolean getReadersOnly);
 
   abstract public Object getAtomSetCollectionFromSet(Object readers, Object atomSets, Map<String, Object> htParams);
 
   abstract public Object getAtomSetCollectionOrBufferedReaderFromZip(InputStream is, String fileName, String[] zipDirectory,
-                             Map<String, Object> htParams, boolean asBufferedReader);
+                             Map<String, Object> htParams, boolean asBufferedReader, boolean asBufferendInputStream);
 
   /**
    * all in one -- for TestSmarterJmolAdapter

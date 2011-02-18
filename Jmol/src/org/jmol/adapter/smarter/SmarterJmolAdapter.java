@@ -25,7 +25,7 @@
 package org.jmol.adapter.smarter;
 
 import org.jmol.api.JmolAdapter;
-import org.jmol.api.JmolFileReaderInterface;
+import org.jmol.api.JmolFilesReaderInterface;
 import org.jmol.util.CompoundDocument;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
@@ -163,33 +163,42 @@ public class SmarterJmolAdapter extends JmolAdapter {
    * 
    */
   @Override
-  public Object getAtomSetCollectionReaders(JmolFileReaderInterface fileReader, String[] names, String[] types,
-                                    Map<String, Object> htParams, boolean getReadersOnly) {
+  public Object getAtomSetCollectionReaders(JmolFilesReaderInterface fileReader,
+                                            String[] names, String[] types,
+                                            Map<String, Object> htParams,
+                                            boolean getReadersOnly) {
     //FilesOpenThread
     int size = names.length;
-    AtomSetCollectionReader[] readers = (getReadersOnly ? new AtomSetCollectionReader[size] : null);
-    AtomSetCollection[] atomsets = (getReadersOnly ? null : new AtomSetCollection[size]);
+    AtomSetCollectionReader[] readers = (getReadersOnly ? new AtomSetCollectionReader[size]
+        : null);
+    AtomSetCollection[] atomsets = (getReadersOnly ? null
+        : new AtomSetCollection[size]);
     for (int i = 0; i < size; i++) {
       try {
-        Object reader = fileReader.getBufferedReader(i);
+        Object reader = fileReader.getBufferedReaderOrBinaryDocument(i, false);
         if (!(reader instanceof BufferedReader))
           return reader;
         Object ret = Resolver.getAtomCollectionReader(names[i],
-            (types == null ? null : types[i]), (BufferedReader) reader, htParams, i);
+            (types == null ? null : types[i]), (BufferedReader) reader,
+            htParams, i);
         if (!(ret instanceof AtomSetCollectionReader))
           return ret;
-          AtomSetCollectionReader r = (AtomSetCollectionReader) ret;
-          r.setup(names[i], htParams, (BufferedReader) reader);
-          if (getReadersOnly) {
-            readers[i] = r;
-          } else {
-            ret = r.readData();
-            if (!(ret instanceof AtomSetCollection))
-              return ret;
-            atomsets[i] = (AtomSetCollection) ret;
-            if (atomsets[i].errorMessage != null)
-              return atomsets[i].errorMessage;
-          }
+        AtomSetCollectionReader r = (AtomSetCollectionReader) ret;
+        if (r.isBinary) {
+          r.setup(names[i], htParams, fileReader.getBufferedReaderOrBinaryDocument(i, true));
+        } else { 
+          r.setup(names[i], htParams, reader);
+        }
+        if (getReadersOnly) {
+          readers[i] = r;
+        } else {
+          ret = r.readData();
+          if (!(ret instanceof AtomSetCollection))
+            return ret;
+          atomsets[i] = (AtomSetCollection) ret;
+          if (atomsets[i].errorMessage != null)
+            return atomsets[i].errorMessage;
+        }
       } catch (Throwable e) {
         Logger.error(null, e);
         return "" + e;
@@ -259,14 +268,14 @@ public class SmarterJmolAdapter extends JmolAdapter {
    */
   @Override
   public Object getAtomSetCollectionOrBufferedReaderFromZip(InputStream is, String fileName, String[] zipDirectory,
-                             Map<String, Object> htParams, boolean asBufferedReader) {
-    return staticGetAtomSetCollectionOrBufferedReaderFromZip(is, fileName, zipDirectory, htParams, 1, asBufferedReader);
+                             Map<String, Object> htParams, boolean asBufferedReader, boolean asBufferedInputStream) {
+    return staticGetAtomSetCollectionOrBufferedReaderFromZip(is, fileName, zipDirectory, htParams, 1, asBufferedReader, asBufferedInputStream);
   }
 
   private static Object staticGetAtomSetCollectionOrBufferedReaderFromZip(
                                     InputStream is, String fileName,
                                     String[] zipDirectory, Map<String, Object> htParams,
-                                    int subFilePtr, boolean asBufferedReader) {
+                                    int subFilePtr, boolean asBufferedReader, boolean asBufferedInputStream) {
 
     // we're here because user is using | in a load file name
     // or we are opening a zip file.
@@ -366,7 +375,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
           bis = new BufferedInputStream(new ByteArrayInputStream(bytes));
           Object atomSetCollections = staticGetAtomSetCollectionOrBufferedReaderFromZip(
               bis, fileName + "|" + thisEntry, zipDir2, htParams, ++subFilePtr,
-              asBufferedReader);
+              asBufferedReader, asBufferedInputStream);
           if (atomSetCollections instanceof String) {
             if (ignoreErrors)
               continue;
@@ -388,6 +397,13 @@ public class SmarterJmolAdapter extends JmolAdapter {
             zis.close();
             return "unknown zip reader error";
           }
+        } else if (asBufferedInputStream){ 
+          if (ZipUtil.isGzip(bytes))
+            return ZipUtil.getGzippedInputStream(bytes);
+          BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(bytes));
+            if (doCombine)
+              zis.close();
+            return bis;          
         } else {
           String sData = (CompoundDocument.isCompoundDocument(bytes) ? (new CompoundDocument(
               new BufferedInputStream(new ByteArrayInputStream(bytes))))

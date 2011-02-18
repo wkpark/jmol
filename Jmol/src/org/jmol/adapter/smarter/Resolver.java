@@ -47,7 +47,7 @@ public class Resolver {
   private final static String[] readerSets = new String[] {
     "cifpdb.", ";Cif;Pdb;",
     "molxyz.", ";Mol;Xyz;",
-    "more.", ";Gromacs;MdCrd;MdTop;Mol2;Pqr;P2n;",
+    "more.", ";BinaryDcd;Gromacs;MdCrd;MdTop;Mol2;Pqr;P2n;",
     "quantum.", ";Adf;Csf;Dgrid;GamessUK;GamessUS;Gaussian;GausianWfn;Jaguar;" +
                  "Molden;MopacGraphf;GenNBO;NWChem;Odyssey;Psi;Qchem;Spartan;SpartanSmol;" +
                  "WebMO;",
@@ -959,8 +959,11 @@ public class Resolver {
   private final static String[] moldenFileStartRecords =
   {"Molden", "[Molden"};
 
+  private final static String[] dcdFileStartRecords =
+  {"BinaryDcd", "T\0\0\0CORD", "\0\0\0TCORD"};
+
   private final static String[][] fileStartsWithRecords =
-  { cubeFileStartRecords, mol2Records, webmoFileStartRecords, moldenFileStartRecords };
+  { cubeFileStartRecords, mol2Records, webmoFileStartRecords, moldenFileStartRecords, dcdFileStartRecords };
 
   ////////////////////////////////////////////////////////////////
   // these test lines that startWith one of these strings

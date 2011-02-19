@@ -623,7 +623,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       skipLoop();
       return false;
     }
-    int iAtom = 0;
+    int iAtom = -1;
     float[] data;
     while (tokenizer.getData()) {
       Atom atom = new Atom();
@@ -743,7 +743,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           atom = atomSetCollection.getAtom(iAtom);
           break;
         case ANISO_MMCIF_ID:
-          atom = atomSetCollection.getAtom(iAtom);
+          atom = atomSetCollection.getAtom(++iAtom);
           break;
         case ANISO_U11:
         case ANISO_U22:

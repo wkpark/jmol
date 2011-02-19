@@ -34,7 +34,7 @@ import org.jmol.util.Logger;
  * 
  */
 
-public abstract class SpartanInputReader extends AtomSetCollectionReader {
+public abstract class SpartanInputReader extends BasisFunctionReader {
 
   protected String modelName;
   protected int modelAtomCount;

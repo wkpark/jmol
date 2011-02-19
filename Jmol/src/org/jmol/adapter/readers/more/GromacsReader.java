@@ -86,7 +86,7 @@ public class GromacsReader extends AtomSetCollectionReader {
       }
       setAtomCoord(atom);
       atom.elementSymbol = deduceElementSymbol(atom.group3, atom.atomName);
-      if (!filterAtom(atom))
+      if (!filterAtom(atom, i))
         continue;
       atom.isHetero = false;
       atomSetCollection.addAtom(atom);

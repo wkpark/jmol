@@ -67,7 +67,8 @@ public class SpartanSmolReader extends SpartanInputReader {
       bondData = "";
       if (!doGetModel(modelNumber))
         return checkLastModel();
-      atomSetCollection.newAtomSet();
+      if (modelAtomCount == 0)
+        atomSetCollection.newAtomSet();
       moData = new Hashtable<String, Object>();
       moData.put("isNormalized", Boolean.TRUE);
       if (modelNo == Integer.MIN_VALUE) {
@@ -130,9 +131,15 @@ public class SpartanSmolReader extends SpartanInputReader {
   protected void finalizeReader() throws Exception {
     super.finalizeReader();
     // info out of order -- still a chance, at least for first model
-    if (atomCount > 0 && spartanArchive != null && atomSetCollection.getBondCount() == 0
-        && bondData != null)
+    if (atomCount > 0 && spartanArchive != null
+        && atomSetCollection.getBondCount() == 0 && bondData != null)
       spartanArchive.addBonds(bondData, 0);
+    if (moData != null) {
+      Float n = (Float) atomSetCollection
+          .getAtomSetCollectionAuxiliaryInfo("HOMO_N");
+      if (n != null)
+        moData.put("HOMO", Integer.valueOf(n.intValue()));
+    }
   }
   
   private void readTransform() throws Exception {
@@ -167,7 +174,6 @@ public class SpartanSmolReader extends SpartanInputReader {
     }
 
   private String endCheck = "END Directory Entry ";
-  private Map<String, Object> moData = new Hashtable<String, Object>();
   private String title;
 
   SpartanArchive spartanArchive;
@@ -189,8 +195,7 @@ public class SpartanSmolReader extends SpartanInputReader {
   }
 
   private void readArchive() throws Exception {
-    spartanArchive = new SpartanArchive(this, atomSetCollection, moData,
-        bondData, endCheck);
+    spartanArchive = new SpartanArchive(this, endCheck);
     if (readArchiveHeader()) {
       modelAtomCount = spartanArchive.readArchive(line, false, atomCount, false);
       if (atomCount == 0 || !isTrajectory)
@@ -211,10 +216,6 @@ public class SpartanSmolReader extends SpartanInputReader {
     if (!haveCharges)
       atomSetCollection.setAtomSetCollectionPartialCharges("ESPCHARGES");
     haveCharges = true;
-    Float n = (Float) atomSetCollection
-        .getAtomSetCollectionAuxiliaryInfo("HOMO_N");
-    if (moData != null && n != null)
-      moData.put("HOMO", Integer.valueOf(n.intValue()));
   }
   
   private void readProperties() throws Exception {

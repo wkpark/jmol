@@ -439,8 +439,30 @@ public class Resolver {
    */
   private static String determineAtomSetCollectionReader(BufferedReader bufferedReader, boolean returnLines)
       throws Exception {
-    String[] lines = new String[16];
     LimitedLineReader llr = new LimitedLineReader(bufferedReader, 16384);
+    
+    // first check just the first 10 bytes
+    
+    String leader = llr.getHeader(LEADER_CHAR_MAX);
+
+    for (int i = 0; i < fileStartsWithRecords.length; ++i) {
+      String[] recordTags = fileStartsWithRecords[i];
+      for (int j = 1; j < recordTags.length; ++j) {
+        String recordTag = recordTags[j];
+        if (leader.startsWith(recordTag))
+          return recordTags[0];
+      }
+    }
+
+    // PNG or BCD-encoded JPG or JPEG
+    if (leader.indexOf("PNG") == 1 || leader.indexOf("JPG") == 1
+        || leader.indexOf("JFIF") == 6)
+      return "spt"; // presume embedded script --- allows dragging into Jmol
+
+    // now allow identification in first 16 lines
+    // excluding those starting with "#"
+    
+    String[] lines = new String[16];
     int nLines = 0;
     for (int i = 0; i < lines.length; ++i) {
       lines[i] = llr.readLineWithNewline();
@@ -453,19 +475,6 @@ public class Resolver {
     if (readerName != null)
       return readerName;
 
-    // run these loops forward ... easier for people to understand
-    //file starts with added 4/26 to ensure no issue with NWChem files
-    
-    String leader = llr.getHeader(LEADER_CHAR_MAX);
-
-    for (int i = 0; i < fileStartsWithRecords.length; ++i) {
-      String[] recordTags = fileStartsWithRecords[i];
-      for (int j = 1; j < recordTags.length; ++j) {
-        String recordTag = recordTags[j];
-        if (leader.startsWith(recordTag))
-          return recordTags[0];
-      }
-    }
     for (int i = 0; i < lineStartsWithRecords.length; ++i) {
       String[] recordTags = lineStartsWithRecords[i];
       for (int j = 1; j < recordTags.length; ++j) {
@@ -477,16 +486,6 @@ public class Resolver {
       }
     }
 
-    if (lines[0].indexOf("PNG") == 1 || lines[0].indexOf("JPG") == 1
-        || lines[0].indexOf("JFIF") == 6)
-      return "spt"; // presume embedded script --- allows dragging into Jmol
-    for (int i = 0; i < lines.length; ++i)
-      if (lines[i].indexOf("# Jmol state") >= 0)
-        return "spt";
-
-    //check for spt as a last resort, but ahead of XML, just in case
-    //a web file is being returned with an XML header.
-    
     String header = llr.getHeader(0);
     String type = null;
     for (int i = 0; i < containsRecords.length; ++i) {
@@ -943,7 +942,7 @@ public class Resolver {
   // these test files that startWith one of these strings
   ////////////////////////////////////////////////////////////////
 
-  private final static int LEADER_CHAR_MAX = 20;
+  private final static int LEADER_CHAR_MAX = 10;
   
   private final static String[] cubeFileStartRecords =
   {"Cube", "JVXL", "#JVXL"};
@@ -1020,6 +1019,9 @@ public class Resolver {
   // contains formats
   ////////////////////////////////////////////////////////////////
 
+  private final static String[] sptContainsRecords = 
+  { "spt", "# Jmol state" };
+  
   private final static String[] xmlContainsRecords = 
   { "Xml", "<?xml", "<atom", "<molecule", "<reaction", "<cml", "<bond", ".dtd\"",
     "<list>", "<entry", "<identifier", "http://www.xml-cml.org/schema/cml2/core" };
@@ -1073,7 +1075,7 @@ public class Resolver {
   { "Crystal", "*                                CRYSTAL"};
 
   private final static String[][] containsRecords =
-  { xmlContainsRecords, gaussianContainsRecords, 
+  { sptContainsRecords, xmlContainsRecords, gaussianContainsRecords, 
     ampacContainsRecords, mopacContainsRecords, qchemContainsRecords, 
     gamessUKContainsRecords, gamessUSContainsRecords,
     spartanBinaryContainsRecords, spartanContainsRecords, mol2Records, adfContainsRecords, psiContainsRecords,
@@ -1122,15 +1124,8 @@ class LimitedLineReader {
       if (ch == '\r' && ichCurrent < cchBuf && buf[ichCurrent] == '\n')
         ++ichCurrent;
       int cchLine = ichCurrent - ichBeginningOfLine;
-      if (buf[ichBeginningOfLine] == '#') {// flush comment lines;
-        if (buf.length < ichBeginningOfLine + 6 || 
-            buf[ichBeginningOfLine + 1] != ' '
-            || buf[ichBeginningOfLine + 2] != 'J'
-            || buf[ichBeginningOfLine + 3] != 'm'
-            || buf[ichBeginningOfLine + 4] != 'o'
-            || buf[ichBeginningOfLine + 5] != 'l')
-        continue;
-      }
+      if (buf[ichBeginningOfLine] == '#')
+        continue; // flush comment lines;
       StringBuffer sb = new StringBuffer(cchLine);
       sb.append(buf, ichBeginningOfLine, cchLine);
       return sb.toString();

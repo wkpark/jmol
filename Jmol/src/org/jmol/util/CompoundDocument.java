@@ -126,7 +126,7 @@ public class CompoundDocument extends BinaryDocument {
   StringBuffer data;
   
   public StringBuffer getAllData() {
-    return getAllData(null);
+    return getAllData(null, null);
   }
 
   /**
@@ -165,7 +165,17 @@ public class CompoundDocument extends BinaryDocument {
     close();
   }
 
-  public StringBuffer getAllData(String binaryFileList) {
+  public StringBuffer getAllData(String binaryFileList, String firstFile) {
+    if (firstFile != null) {
+      for (int i = 0; i < directory.size(); i++) {
+        CmpDocDirectoryEntry thisEntry = directory.get(i);
+        if (thisEntry.entryName.equals(firstFile)) {
+          directory.remove(i);
+          directory.add(1, thisEntry); // after ROOT_ENTRY
+          break;
+        }
+      }
+    }
     data = new StringBuffer();
     data.append("Compound Document File Directory: ");
     data.append(getDirectoryListing("|"));

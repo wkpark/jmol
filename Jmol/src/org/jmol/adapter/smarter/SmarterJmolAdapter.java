@@ -407,7 +407,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
         } else {
           String sData = (CompoundDocument.isCompoundDocument(bytes) ? (new CompoundDocument(
               new BufferedInputStream(new ByteArrayInputStream(bytes))))
-              .getAllData("Molecule").toString()
+              .getAllData("Molecule", "Input").toString()
               : ZipUtil.isGzip(bytes) ? ZipUtil.getGzippedBytesAsString(bytes)
                   : new String(bytes));
           BufferedReader reader = new BufferedReader(new StringReader(sData));

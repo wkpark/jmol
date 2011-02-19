@@ -27,7 +27,6 @@ package org.jmol.adapter.readers.quantum;
 import org.jmol.adapter.smarter.*;
 
 import java.util.Hashtable;
-import java.util.Map;
 
 /*
  * perhaps unnecessary ? I think this was for when all you had was 
@@ -40,15 +39,14 @@ import java.util.Map;
  * 
  */
 
-public class SpartanReader extends AtomSetCollectionReader {
+public class SpartanReader extends BasisFunctionReader {
 
   @Override
   public void initializeReader() throws Exception {
     String cartesianHeader = "Cartesian Coordinates (Ang";
     if (isSpartanArchive(cartesianHeader)) {
-      Map<String, Object> moData = new Hashtable<String, Object>();
-      SpartanArchive spartanArchive = new SpartanArchive(this,
-          atomSetCollection, moData);
+      moData = new Hashtable<String, Object>();
+      SpartanArchive spartanArchive = new SpartanArchive(this);
       int atomCount = spartanArchive.readArchive(line, true, 0, true);
       if (atomCount > 0)
         atomSetCollection.setAtomSetName("Spartan file");

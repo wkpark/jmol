@@ -15238,8 +15238,9 @@ public class ScriptEvaluator {
 
   @SuppressWarnings("unchecked")
   private void setMoData(List<Object[]> propertyList, int moNumber,
-                         float[] linearCombination, int offset, boolean isNegOffset, int modelIndex,
-                         String title) throws ScriptException {
+                         float[] linearCombination, int offset,
+                         boolean isNegOffset, int modelIndex, String title)
+      throws ScriptException {
     if (isSyntaxCheck)
       return;
     if (modelIndex < 0) {
@@ -15277,15 +15278,28 @@ public class ScriptEvaluator {
           if (moData.containsKey("HOMO")) {
             moNumber = ((Integer) moData.get("HOMO")).intValue() + offset;
           } else {
+            moNumber = -1;
+            Float f;
             for (int i = 0; i < nOrb; i++) {
               Map<String, Object> mo = mos.get(i);
-              if (!mo.containsKey("occupancy"))
-                error(ERROR_moOccupancy);
-              if (((Float) mo.get("occupancy")).floatValue() == 0) {
-                moNumber = i + offset;
+              f = (Float) mo.get("occupancy");
+              if (f != null) {
+                if (f.floatValue() == 0) {
+                  moNumber = i;
+                  break;
+                }
+              } else if ((f = (Float) mo.get("energy")) == null) {
+                break;
+              }
+              if (f.floatValue() > 0) {
+                // go for HOMO = highest non-negative
+                moNumber = i;
                 break;
               }
             }
+            if (moNumber < 0)
+              error(ERROR_moOccupancy);
+            moNumber += offset;
           }
           Logger.info("MO " + moNumber);
         }
@@ -15295,7 +15309,7 @@ public class ScriptEvaluator {
       moData.put("lastMoNumber", Integer.valueOf(moNumber));
     }
     if (isNegOffset)
-      linearCombination = new float[] {-100, moNumber};
+      linearCombination = new float[] { -100, moNumber };
     addShapeProperty(propertyList, "moData", moData);
     if (title != null)
       addShapeProperty(propertyList, "title", title);

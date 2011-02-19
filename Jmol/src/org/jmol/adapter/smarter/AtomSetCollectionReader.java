@@ -131,7 +131,7 @@ public abstract class AtomSetCollectionReader {
 
   public boolean isBinary;
 
-  protected AtomSetCollection atomSetCollection;
+  public AtomSetCollection atomSetCollection;
   protected BufferedReader reader;
   protected BinaryDocument doc;
   protected String readerName;
@@ -738,10 +738,6 @@ public abstract class AtomSetCollectionReader {
 
   public boolean checkFilter(String key) {
     return (filter != null && filter.indexOf(key) >= 0);
-  }
-
-  protected boolean filterAtom(Atom atom) {
-    return (!haveAtomFilter || filterAtom(atom, -1));
   }
 
   /**

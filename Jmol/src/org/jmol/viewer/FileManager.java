@@ -534,7 +534,7 @@ public class FileManager {
       BufferedInputStream bis = new BufferedInputStream((InputStream) t, 8192);
       if (CompoundDocument.isCompoundDocument(bis)) {
         CompoundDocument doc = new CompoundDocument(bis);
-        return getBufferedReaderForString(doc.getAllData("Molecule").toString());
+        return getBufferedReaderForString(doc.getAllData("Molecule", "Input").toString());
       } else if (ZipUtil.isGzip(bis)) {
         do {
           bis = new BufferedInputStream(new GZIPInputStream(bis));

@@ -195,7 +195,7 @@ public class SpartanSmolReader extends SpartanInputReader {
   }
 
   private void readArchive() throws Exception {
-    spartanArchive = new SpartanArchive(this, endCheck);
+    spartanArchive = new SpartanArchive(this, bondData, endCheck);
     if (readArchiveHeader()) {
       modelAtomCount = spartanArchive.readArchive(line, false, atomCount, false);
       if (atomCount == 0 || !isTrajectory)

@@ -57,7 +57,7 @@ class SpartanArchive {
     initialize(r, "");
   }
 
-  SpartanArchive(BasisFunctionReader r, String endCheck) {
+  SpartanArchive(BasisFunctionReader r, String bondData, String endCheck) {
     initialize(r, bondData);
     this.endCheck = endCheck;
   }

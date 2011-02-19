@@ -147,6 +147,8 @@ public final class ModelLoader extends ModelSet {
     fileHeader = (String) getModelSetAuxiliaryInfo("fileHeader");
     trajectorySteps = (List<Point3f[]>) getModelSetAuxiliaryInfo("trajectorySteps");
     isTrajectory = (trajectorySteps != null);
+    if (isTrajectory)
+      info.remove("trajectorySteps");
     noAutoBond = getModelSetAuxiliaryInfoBoolean("noAutoBond");
     is2D = getModelSetAuxiliaryInfoBoolean("is2D");
     doMinimize = is2D && getModelSetAuxiliaryInfoBoolean("doMinimize");
@@ -465,7 +467,9 @@ public final class ModelLoader extends ModelSet {
     }
     if (isTrajectory) {
       // fill in the rest of the data
-      Logger.info((modelCount - ipt + 1) + " trajectory steps read");
+      int n = (modelCount - ipt + 1);
+      Logger.info(n + " trajectory steps read");
+      setModelAuxiliaryInfo(baseModelCount, "trajectoryStepCount", Integer.valueOf(n));
       for (int ia = adapterModelCount, i = ipt; i < modelCount; i++) {
         models[i] = models[baseModelCount];
         modelNumbers[i] = adapter.getAtomSetNumber(atomSetCollection, ia++);

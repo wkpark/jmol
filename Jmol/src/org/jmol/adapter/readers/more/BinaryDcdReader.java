@@ -104,6 +104,7 @@ ICNTRL(20)=VERNUM ! version number
    */
 
   private int nModels;
+  private int nAtoms;
   private int nFree;
   private BitSet bsFree;
   private float[] xAll, yAll, zAll;
@@ -119,18 +120,18 @@ ICNTRL(20)=VERNUM ! version number
     doc.setIsBigEndian(n != 0x54);
     n = doc.readInt(); // "CORD"
     nModels = doc.readInt();
-    int nPriv = doc.readInt();
-    int nSaveC = doc.readInt();
-    int nStep = doc.readInt();
-    int x5 = doc.readInt();
-    int x6 = doc.readInt();
-    int x7 = doc.readInt();
+    /* int nPriv = */ doc.readInt();
+    /* int nSaveC = */ doc.readInt();
+    /* int nStep = */ doc.readInt();
+    doc.readInt();
+    doc.readInt();
+    doc.readInt();
     int ndegf = doc.readInt();
     nFree = ndegf / 3;
     int nFixed = doc.readInt();
-    int delta4 = doc.readInt();
+    /* int delta4 = */ doc.readInt();
     doc.readByteArray(bytes, 0, 36);
-    int nTitle = doc.readInt();
+    /* int nTitle = */ doc.readInt();
     n = doc.readInt();  // TRAILER
     
     // read titles
@@ -146,7 +147,7 @@ ICNTRL(20)=VERNUM ! version number
     // read number of atoms and free-atom list
     
     n = doc.readInt(); // HEADER
-    int nAtoms = doc.readInt();
+    nAtoms = doc.readInt();
     n = doc.readInt(); // TRAILER
     nFree = nAtoms - nFixed;
     if (nFixed != 0) {
@@ -201,13 +202,13 @@ ICNTRL(20)=VERNUM ! version number
     float[] x = readFloatArray();
     float[] y = readFloatArray();
     float[] z = readFloatArray();
-    BitSet bs = (x.length == trajectoryStep.length ? null : bsFree);
+    BitSet bs = (xAll == null ? null : bsFree);
     if (bs == null) {
       xAll = x;
       yAll = y;
       zAll = z;
     }
-    for (int i = 0, vpt = 0; i < templateAtomCount; i++) {
+    for (int i = 0, vpt = 0; i < nAtoms; i++) {
       Point3f pt = new Point3f();
       if (bs == null || bs.get(i)) {
         pt.set(x[vpt], y[vpt], z[vpt]);
@@ -217,7 +218,7 @@ ICNTRL(20)=VERNUM ! version number
       }
       if (bsFilter == null || bsFilter.get(i)) {
         if (++n == atomCount)
-          return false;
+          return true;
         trajectoryStep[n] = pt;
       }
     }

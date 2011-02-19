@@ -537,6 +537,7 @@ REMARK 290 REMARK: NULL
   private int atomCount;
   private String lastAtomData;
   private int lastAtomIndex;
+  private int iAtom;
   
   private void atom(int serial) {
     Atom atom = new Atom();
@@ -552,7 +553,7 @@ REMARK 290 REMARK: NULL
     atom.sequenceNumber = parseInt(line, 22, 26);
     atom.insertionCode = JmolAdapter.canonizeInsertionCode(line.charAt(26));
     atom.isHetero = line.startsWith("HETATM");
-    if (!filterAtom(atom))
+    if (!filterAtom(atom, iAtom++))
       return;
     
     atom.atomSerial = serial;
@@ -621,8 +622,8 @@ REMARK 290 REMARK: NULL
   StringBuffer sbIgnored, sbSelected;
 
   @Override
-  protected boolean filterAtom(Atom atom) {
-    if (!super.filterAtom(atom))
+  protected boolean filterAtom(Atom atom, int iAtom) {
+    if (!super.filterAtom(atom, iAtom))
       return false;
     if (configurationPtr > 0) {
       if (atom.sequenceNumber != lastGroup || atom.insertionCode != lastInsertion) {

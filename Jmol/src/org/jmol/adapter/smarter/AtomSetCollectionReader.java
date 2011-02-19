@@ -129,7 +129,7 @@ public abstract class AtomSetCollectionReader {
 
   public final static float ANGSTROMS_PER_BOHR = 0.5291772f; // used by SpartanArchive
 
-  public boolean isBinary;  
+  public boolean isBinary;
 
   protected AtomSetCollection atomSetCollection;
   protected BufferedReader reader;
@@ -177,7 +177,7 @@ public abstract class AtomSetCollectionReader {
   protected boolean doPackUnitCell;
 
   // private state variables
-  
+
   private boolean doConvertToFractional;
   private boolean merging;
   private boolean fileCoordinatesAreFractional;
@@ -192,8 +192,6 @@ public abstract class AtomSetCollectionReader {
   private String supercell;
   private boolean unitCellOffsetFractional;
 
-
-
   /*  
     public void finalize() {
       System.out.println(this + " finalized");
@@ -202,8 +200,7 @@ public abstract class AtomSetCollectionReader {
 
   String fileName;
 
-  void setup(String fileName, Map<String, Object> htParams,
-             Object reader) {
+  void setup(String fileName, Map<String, Object> htParams, Object reader) {
     this.htParams = htParams;
     this.fileName = fileName.replace('\\', '/');
     if (reader instanceof BufferedReader)
@@ -390,7 +387,7 @@ public abstract class AtomSetCollectionReader {
     }
     if (htParams.containsKey("templateAtomCount"))
       templateAtomCount = ((Integer) htParams.get("templateAtomCount"))
-      .intValue();
+          .intValue();
     if (bsModels != null || firstLastStep != null)
       desiredModelNumber = Integer.MIN_VALUE;
     if (bsModels == null && firstLastStep != null) {
@@ -452,7 +449,8 @@ public abstract class AtomSetCollectionReader {
       fileScaling = new Point3f(1, 1, 1);
       fileOffset = (Point3f) htParams.get("unitCellOffset");
       fileOffsetFractional = new Point3f(fileOffset);
-      unitCellOffsetFractional = htParams.containsKey("unitCellOffsetFractional");
+      unitCellOffsetFractional = htParams
+          .containsKey("unitCellOffsetFractional");
     }
     if (htParams.containsKey("unitcell")) {
       float[] fParams = (float[]) htParams.get("unitcell");
@@ -468,7 +466,7 @@ public abstract class AtomSetCollectionReader {
       ignoreFileUnitCell = iHaveUnitCell;
     }
     merging = htParams.containsKey("merging");
-    
+
     if (htParams.containsKey("OutputStream"))
       os = (OutputStream) htParams.get("OutputStream");
 
@@ -615,7 +613,7 @@ public abstract class AtomSetCollectionReader {
   public void addPrimitiveLatticeVector(int i, float[] xyz, int i0) {
     if (ignoreFileUnitCell)
       return;
-    if (i == 0) 
+    if (i == 0)
       for (int j = 0; j < 6; j++)
         notionalUnitCell[j] = 0;
     i = 6 + i * 3;
@@ -665,7 +663,7 @@ public abstract class AtomSetCollectionReader {
   }
 
   /////////// FILTER /////////////////
-  
+
   protected BitSet bsFilter;
   protected String filter;
   private boolean haveAtomFilter;
@@ -737,11 +735,11 @@ public abstract class AtomSetCollectionReader {
   }
 
   private String filter1, filter2;
-  
+
   public boolean checkFilter(String key) {
     return (filter != null && filter.indexOf(key) >= 0);
   }
-  
+
   protected boolean filterAtom(Atom atom) {
     return (!haveAtomFilter || filterAtom(atom, -1));
   }
@@ -752,6 +750,8 @@ public abstract class AtomSetCollectionReader {
    * @return        true if we want this atom
    */
   protected boolean filterAtom(Atom atom, int iAtom) {
+    if (!haveAtomFilter)
+      return true;
     // cif, mdtop, pdb, gromacs, pqr
     boolean isOK = checkFilter(atom, filter1);
     if (filter2 != null)
@@ -763,21 +763,21 @@ public abstract class AtomSetCollectionReader {
   }
 
   private boolean checkFilter(Atom atom, String f) {
-    return (!filterGroup3 || atom.group3 == null
-        || !filterReject(f, "[", atom.group3.toUpperCase() + "]"))
-    && (!filterAtomType || atom.atomName == null
-        || !filterReject(f, ".", atom.atomName.toUpperCase() + ";"))
-    && (!filterChain || atom.chainID == '\0'
-        || !filterReject(f, ":", "" + atom.chainID))
-    && (!filterAltLoc || atom.alternateLocationID == '\0'
-        || !filterReject(f, "%", "" + atom.alternateLocationID))
-    && (!filterHetero 
-        || !filterReject(f, "HETATM", atom.isHetero ? "HETATM" : "ATOM"));
+    return (!filterGroup3 || atom.group3 == null || !filterReject(f, "[",
+        atom.group3.toUpperCase() + "]"))
+        && (!filterAtomType || atom.atomName == null || !filterReject(f, ".",
+            atom.atomName.toUpperCase() + ";"))
+        && (!filterChain || atom.chainID == '\0' || !filterReject(f, ":", ""
+            + atom.chainID))
+        && (!filterAltLoc || atom.alternateLocationID == '\0' || !filterReject(
+            f, "%", "" + atom.alternateLocationID))
+        && (!filterHetero || !filterReject(f, "HETATM",
+            atom.isHetero ? "HETATM" : "ATOM"));
   }
 
   private boolean filterReject(String f, String code, String atomCode) {
-    return (f.indexOf(code) >= 0 && (f.indexOf("!" + code) >= 0 ? f.indexOf(atomCode) >= 0 
-        : f.indexOf(atomCode) < 0));
+    return (f.indexOf(code) >= 0 && (f.indexOf("!" + code) >= 0 ? f
+        .indexOf(atomCode) >= 0 : f.indexOf(atomCode) < 0));
   }
 
   protected void set2D() {
@@ -823,7 +823,7 @@ public abstract class AtomSetCollectionReader {
   }
 
   /////////////////////////////
-  
+
   public void setAtomCoord(Atom atom, float x, float y, float z) {
     atom.set(x, y, z);
     setAtomCoord(atom);
@@ -972,7 +972,8 @@ public abstract class AtomSetCollectionReader {
    * @param width TODO
    * @throws Exception
    */
-  protected void fillFloatArray(float[] temp, String line0, int width) throws Exception {
+  protected void fillFloatArray(float[] temp, String line0, int width)
+      throws Exception {
     String[] tokens = new String[0];
     int pt = 0;
     for (int i = 0; i < temp.length; i++) {
@@ -1347,23 +1348,23 @@ public abstract class AtomSetCollectionReader {
       case ',':
         for (int j = 0; j < c; j++)
           vdata.add(Integer.valueOf(n * factor));
-      inN = false;
-      inCount = true;
-      c = 0;
-      continue;
+        inN = false;
+        inCount = true;
+        c = 0;
+        continue;
       case 'X':
         n = c;
         c = 1;
         factor = -1;
         continue;
-      
+
       }
       boolean isDigit = Character.isDigit(ch);
       if (isDigit) {
         if (inN)
           n = n * 10 + ch - '0';
         else if (inCount)
-          c = c * 10 + ch - '0'; 
+          c = c * 10 + ch - '0';
       } else if (Character.isLetter(ch)) {
         n = 0;
         inN = true;
@@ -1375,13 +1376,12 @@ public abstract class AtomSetCollectionReader {
     }
     return vdata;
   }
-/*
-  static {
-    System.out.println(Escape.toJSON(null, getFortranFormatLengths("(5A10")));    
-    System.out.println(Escape.toJSON(null, getFortranFormatLengths("(5E10.3,2A4.6")));    
-    System.out.println(Escape.toJSON(null, getFortranFormatLengths("(5A4,2X,2I20")));
-  }
-*/
-  
-}
+  /*
+    static {
+      System.out.println(Escape.toJSON(null, getFortranFormatLengths("(5A10")));    
+      System.out.println(Escape.toJSON(null, getFortranFormatLengths("(5E10.3,2A4.6")));    
+      System.out.println(Escape.toJSON(null, getFortranFormatLengths("(5A4,2X,2I20")));
+    }
+  */
 
+}

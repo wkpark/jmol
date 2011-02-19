@@ -743,7 +743,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           atom = atomSetCollection.getAtom(iAtom);
           break;
         case ANISO_MMCIF_ID:
-          atom = atomSetCollection.getAtom(iAtom++);
+          atom = atomSetCollection.getAtom(iAtom);
           break;
         case ANISO_U11:
         case ANISO_U22:
@@ -799,7 +799,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         Logger.warn("atom " + atom.atomName
             + " has invalid/unknown coordinates");
       } else {
-        if (isAnisoData || !filterAtom(atom))
+        if (isAnisoData || !filterAtom(atom, iAtom))
           continue;
         setAtomCoord(atom);
         atomSetCollection.addAtomWithMappedName(atom);

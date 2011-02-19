@@ -2589,6 +2589,7 @@ class ScriptMathProcessor {
             bs.set(ScriptVariable.iValue(sv.get(i)));
           return addX(bs);
         }
+        break;
       case Token.varray:
         return addX(ScriptVariable.concatList(x1, x2, false));
       }

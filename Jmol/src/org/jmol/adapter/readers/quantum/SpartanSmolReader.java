@@ -99,7 +99,7 @@ public class SpartanSmolReader extends SpartanInputReader {
         }
         if (title != null)
           atomSetCollection.setAtomSetName(title);
-        setProperties();
+        setCharges();
         if (inputOnly) {
           continuing = false;
           return false;
@@ -205,17 +205,15 @@ public class SpartanSmolReader extends SpartanInputReader {
   
   private boolean haveCharges;
   
-  private void setProperties() {
+  private void setCharges() {
     if (haveCharges || atomSetCollection.getAtomCount() == 0)
       return;
-    if (espCharges)
-      haveCharges = atomSetCollection.setAtomSetCollectionPartialCharges("ESPCHARGES");
-    if (!haveCharges && !atomSetCollection
-        .setAtomSetCollectionPartialCharges("MULCHARGES"))
-      haveCharges = atomSetCollection.setAtomSetCollectionPartialCharges("Q1_CHARGES");
-    if (!haveCharges)
-      atomSetCollection.setAtomSetCollectionPartialCharges("ESPCHARGES");
-    haveCharges = true;
+    haveCharges = (
+        espCharges && atomSetCollection.setAtomSetCollectionPartialCharges("ESPCHARGES")
+        || atomSetCollection.setAtomSetCollectionPartialCharges("MULCHARGES")
+        || atomSetCollection.setAtomSetCollectionPartialCharges("Q1_CHARGES")
+        || atomSetCollection.setAtomSetCollectionPartialCharges("ESPCHARGES")
+        );
   }
   
   private void readProperties() throws Exception {
@@ -225,7 +223,7 @@ public class SpartanSmolReader extends SpartanInputReader {
     }
     spartanArchive.readProperties();
     readLine();
-    setProperties();
+    setCharges();
   }
   
   private int getModelNumber() {

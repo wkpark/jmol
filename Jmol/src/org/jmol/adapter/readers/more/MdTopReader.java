@@ -121,6 +121,7 @@ public class MdTopReader extends ForceFieldReader {
     Logger.info("Total number of atoms used=" + nAtoms);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("isPDB", Boolean.TRUE);
     atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
+    htParams.put("defaultType", "mdcrd");
   }
 
   private String[] getDataBlock() throws Exception {

@@ -219,22 +219,31 @@ public class Resolver {
    * @throws Exception
    */
   static Object getAtomCollectionReader(String fullName, String type,
-                        BufferedReader bufferedReader, Map<String, Object> htParams,
-                        int ptFile) throws Exception {
+                                        BufferedReader bufferedReader,
+                                        Map<String, Object> htParams, int ptFile)
+      throws Exception {
     AtomSetCollectionReader atomSetCollectionReader = null;
     String readerName;
-    fullName = fullName.replace('\\','/');
+    fullName = fullName.replace('\\', '/');
     String errMsg = null;
     if (type != null) {
       readerName = getReaderFromType(type);
       if (readerName == null)
-        errMsg =  "unrecognized file format type " + type;
-      else 
+        errMsg = "unrecognized file format type " + type;
+      else
         Logger.info("The Resolver assumes " + readerName);
     } else {
-      readerName = determineAtomSetCollectionReader(
-          bufferedReader, true);
-      if (readerName.indexOf("\n") >= 0)
+      readerName = determineAtomSetCollectionReader(bufferedReader, true);
+      if (readerName.charAt(0) == '\n') {
+        type = (String) htParams.get("defaultType");
+        if (type != null) {
+          // allow for MDTOP to specify default MDCRD
+          type = getReaderFromType(type);
+          if (type != null)
+            readerName = type;
+        }
+      }
+      if (readerName.charAt(0) == '\n')
         errMsg = "unrecognized file format for file " + fullName + "\n"
             + readerName;
       else if (readerName.equals("spt"))
@@ -613,170 +622,6 @@ public class Resolver {
 
   };
 
-  private final static String checkSpecial(int nLines, String[] lines, boolean isEnd) {
-    // the order here is CRITICAL
-    if (isEnd) {
-      if (checkGromacs(lines))
-        return specialTags[SPECIAL_GROMACS][0];
-      if (checkCrystal(lines))
-        return specialTags[SPECIAL_CRYSTAL][0];
-      if (checkVasp(lines))
-        return specialTags[SPECIAL_VASP][0];
-      if(checkGulp(lines))
-        return specialTags[SPECIAL_GULP][0];
-      if(checkQuantumEspresso(lines))
-        return specialTags[SPECIAL_ESPRESSO][0];
-    }
-    if (nLines == 1 && lines[0].length() > 0
-        && Character.isDigit(lines[0].charAt(0)))
-      return specialTags[SPECIAL_JME][0]; //only one line, and that line starts with a number 
-    if (checkMopacGraphf(lines))
-      return specialTags[SPECIAL_MOPACGRAPHF][0]; //must be prior to checkFoldingXyz and checkMol
-    if (checkOdyssey(lines))
-      return specialTags[SPECIAL_ODYSSEY][0];
-    if (checkMol(lines))
-      return specialTags[SPECIAL_MOL][0];
-    if (checkXyz(lines))
-      return specialTags[SPECIAL_XYZ][0];
-    if (checkAlchemy(lines[0]))
-      return specialTags[SPECIAL_ALCHEMY][0];
-    if (checkFoldingXyz(lines))
-      return specialTags[SPECIAL_FOLDINGXYZ][0];
-    if (checkCube(lines))
-      return specialTags[SPECIAL_CUBE][0];
-    if (checkWien2k(lines))
-      return specialTags[SPECIAL_WIEN][0];
-    if (checkCastep(lines))
-      return specialTags[SPECIAL_CASTEP][0];
-    if (checkAims(lines))
-      return specialTags[SPECIAL_AIMS][0];
-    if (checkGenNBO(lines))
-      return specialTags[SPECIAL_GENNBO][0];
-    return null;
-  }
-  
-  private static boolean checkGenNBO(String[] lines) {
-    // .31-.41 file or .nbo file
-    return (lines[1].startsWith(" Basis set information needed for plotting orbitals")
-      || lines[1].indexOf("s in the AO basis:") >= 0
-      || lines[2].indexOf(" N A T U R A L   A T O M I C   O R B I T A L") >= 0);
-  }
-  
-  private static boolean checkGromacs(String[] lines) {
-    if (Parser.parseInt(lines[1]) == Integer.MIN_VALUE)
-      return false;
-    int len = -1;
-    for (int i = 2; i < 16 && len != 0; i++)
-      if ((len = lines[i].length()) != 69 && len != 45 && len != 0)
-        return false;
-    return true;
-  }
-  
-  private static boolean checkQuantumEspresso(String[] lines) {
-    // can't we just use Quantum ESPRESSO and http://... and PWSCF in 'contains' records?
-    // that catches the whole header.
-    
-    ///Piero This bit doesn't always appear  
-//    if (lines[2].contains("Program PWSCF"))
-//      return true;
-//    if (lines[2].contains("Program PHONON ")) // this may be too general -- is it necessary? Provide an example, please
-//      return true;
-    for (int i = 0; i < lines.length; i++) {
-//      if (lines[i].contains("Quantum ESPRESSO"))
-//        return true;
-//      if (lines[i].contains("http://www.quantum-espresso.org"))
-//        return true;
-      if (lines[i].contains("Program PWSCF"))
-        return true;
-      
-      //That's another code within quantum espresso
-      if (lines[i].contains("Program PHONON")) 
-        return true;
-    }
-    return false;
-  }
-  
-  private static boolean checkCrystal(String[] lines) {
-    String s = lines[1].trim();
-    if (s.equals("SLAB") ||s.equals("MOLECULE")
-        || s.equals("CRYSTAL")
-        || s.equals("POLYMER") || (s = lines[3]).equals("SLAB")
-        || s.equals("MOLECULE") || s.equals("POLYMER"))
-      return true;
-    for (int i = 0; i < lines.length; i++) {
-      if (lines[i].trim().equals("OPTGEOM"))
-        return true;
-    }
-    return false;
-  }
-  
-  
-  private static boolean checkGulp(String[] lines) {
-
-    if (lines[2]
-              .startsWith("*                       GENERAL UTILITY LATTICE PROGRAM      "))
-      return true;
-    for (int i = 0; i < lines.length; i++) {
-      if (lines[i]
-                .startsWith("*                       GENERAL UTILITY LATTICE PROGRAM      ")) {
-        return true;
-      } else if (lines[i].contains("Julian Gale")) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  private static boolean checkWien2k(String[] lines) {
-    return (lines[2].startsWith("MODE OF CALC=") 
-        || lines[2].startsWith("             RELA")
-        || lines[2].startsWith("             NREL"));
-  }
-  
-  private static boolean checkVasp(String[] lines){
-     if(lines[1].startsWith(" vasp."))
-       return true;
-     for(int i =0 ; i < lines.length; i++){
-       if(lines[i].startsWith(" INCAR:"))
-           return true;
-     }
-     return false;
-   }
-
-  private static boolean checkCastep(String[] lines) {
-    for ( int i = 0; i<lines.length; i++ ) {
-      if ( lines[i].toUpperCase().startsWith("%BLOCK LATTICE_ABC") ) return true;
-      if ( lines[i].toUpperCase().startsWith("%BLOCK LATTICE_CART") ) return true;
-      if ( lines[i].toUpperCase().startsWith("%BLOCK POSITIONS_FRAC") ) return true;
-      if ( lines[i].toUpperCase().startsWith("%BLOCK POSITIONS_ABS") ) return true;
-    }
-    return false;
-  }
-
-  private static boolean checkAims(String[] lines) {
-
-    // use same tokenizing mechanism as in AimsReader.java to also recognize
-    // AIMS geometry files with indented keywords
-    // use same tokenizing mechanism as in AimsReader.java 
-    //  to reliably recognize FHI-aims files
-    // "atom" is a VERY generic term; just "atom" breaks HIN reader. 
-    // >= token.length are necessary to allow for comments at the end of valid lines
-    //  (as perfectly legal in simple Fortran list based IO) 
-    for (int i = 0; i < lines.length; i++) {
-      if (lines[i].startsWith("mol 1"))
-        return false;  /* hin format also uses "atom " */
-      String[] tokens = Parser.getTokens(lines[i]);
-      if (tokens.length == 0)
-        continue;
-      if (tokens[0].startsWith("atom") && tokens.length >= 5
-          || tokens[0].startsWith("multipole") && tokens.length >= 6
-          || tokens[0].startsWith("lattice_vector") && tokens.length >= 4)
-        return true;
-    }
-    return false;
-  }
-
-
   private final static String getReaderFromType(String type) {
     type = type.toLowerCase();
     String base = null;
@@ -800,48 +645,70 @@ public class Resolver {
   // file types that need special treatment
   ////////////////////////////////////////////////////////////////
 
-  private static boolean checkOdyssey(String[] lines) {
-    int i;
-    for (i = 0; i < lines.length; i++)
-      if (!lines[i].startsWith("C ") && lines[i].length() != 0)
-        break;
-    if (i >= lines.length 
-        || lines[i].charAt(0) != ' ' 
-        || (i = i + 2) + 1 >= lines.length)
-      return false;
-    try {
-      // distinguishing between Spartan input and MOL file
-      // MOL files have aaabbb.... on the data line
-      // SPIN files have cc s on that line (c = charge; s = spin)
-      // so the typical MOL file, with more parameters, will fail getting the spin
-      int spin = Integer.parseInt(lines[i].substring(2).trim());
-      int charge = Integer.parseInt(lines[i].substring(0, 2).trim());
-      // and if it does not, then we get the next lines of info
-      int atom1 = Integer.parseInt(lines[++i].substring(0, 2).trim());
-      if (spin < 0 || spin > 5 || atom1 <= 0 || charge > 5)
-        return false;
-      // hard to believe we would get here for a MOL file
-      float[] atomline = new float[5];
-      AtomSetCollectionReader.getTokensFloat(lines[i], atomline, 5);
-      return !Float.isNaN(atomline[1]) && !Float.isNaN(atomline[2]) && !Float.isNaN(atomline[3]) && Float.isNaN(atomline[4]);
-    } catch (Exception e) {
+  private final static String checkSpecial(int nLines, String[] lines,
+                                           boolean isEnd) {
+    // the order here is CRITICAL
+    
+    if (isEnd) {
+      if (checkGromacs(lines))
+        return specialTags[SPECIAL_GROMACS][0];
+      if (checkCrystal(lines))
+        return specialTags[SPECIAL_CRYSTAL][0];
+      if (checkVasp(lines))
+        return specialTags[SPECIAL_VASP][0];
+      if (checkGulp(lines))
+        return specialTags[SPECIAL_GULP][0];
+      if (checkQuantumEspresso(lines))
+        return specialTags[SPECIAL_ESPRESSO][0];
+    } else {
+      if (nLines == 1 && lines[0].length() > 0
+          && Character.isDigit(lines[0].charAt(0)))
+        return specialTags[SPECIAL_JME][0]; //only one line, and that line starts with a number 
+      if (checkMopacGraphf(lines))
+        return specialTags[SPECIAL_MOPACGRAPHF][0]; //must be prior to checkFoldingXyz and checkMol
+      if (checkOdyssey(lines))
+        return specialTags[SPECIAL_ODYSSEY][0];
+      if (checkMol(lines))
+        return specialTags[SPECIAL_MOL][0];
+      if (checkXyz(lines))
+        return specialTags[SPECIAL_XYZ][0];
+      if (checkAlchemy(lines[0]))
+        return specialTags[SPECIAL_ALCHEMY][0];
+      if (checkFoldingXyz(lines))
+        return specialTags[SPECIAL_FOLDINGXYZ][0];
+      if (checkCube(lines))
+        return specialTags[SPECIAL_CUBE][0];
+      if (checkWien2k(lines))
+        return specialTags[SPECIAL_WIEN][0];
+      if (checkCastep(lines))
+        return specialTags[SPECIAL_CASTEP][0];
+      if (checkAims(lines))
+        return specialTags[SPECIAL_AIMS][0];
+      if (checkGenNBO(lines))
+        return specialTags[SPECIAL_GENNBO][0];
     }
-    return false;
+    return null;
   }
   
-  private static boolean checkMol(String[] lines) {
-    String line4trimmed = ("X" + lines[3]).trim().toUpperCase();
-    if (line4trimmed.length() < 7 || line4trimmed.indexOf(".") >= 0)
-      return false;
-    if (line4trimmed.endsWith("V2000") || line4trimmed.endsWith("V3000"))
-      return true;
-    try {
-      int n1 = Integer.parseInt(lines[3].substring(0, 3).trim());
-      int n2 = Integer.parseInt(lines[3].substring(3, 6).trim());
-      return (n1 > 0 && n2 >= 0 && lines[0].indexOf("@<TRIPOS>") != 0
-          && lines[1].indexOf("@<TRIPOS>") != 0 
-          && lines[2].indexOf("@<TRIPOS>") != 0);
-    } catch (NumberFormatException nfe) {
+  private static boolean checkAims(String[] lines) {
+
+    // use same tokenizing mechanism as in AimsReader.java to also recognize
+    // AIMS geometry files with indented keywords
+    // use same tokenizing mechanism as in AimsReader.java 
+    //  to reliably recognize FHI-aims files
+    // "atom" is a VERY generic term; just "atom" breaks HIN reader. 
+    // >= token.length are necessary to allow for comments at the end of valid lines
+    //  (as perfectly legal in simple Fortran list based IO) 
+    for (int i = 0; i < lines.length; i++) {
+      if (lines[i].startsWith("mol 1"))
+        return false;  /* hin format also uses "atom " */
+      String[] tokens = Parser.getTokens(lines[i]);
+      if (tokens.length == 0)
+        continue;
+      if (tokens[0].startsWith("atom") && tokens.length >= 5
+          || tokens[0].startsWith("multipole") && tokens.length >= 6
+          || tokens[0].startsWith("lattice_vector") && tokens.length >= 4)
+        return true;
     }
     return false;
   }
@@ -861,9 +728,45 @@ public class Resolver {
     return false;
   }
 
-  private static boolean checkXyz(String[] lines) {
+  private static boolean checkCastep(String[] lines) {
+    for ( int i = 0; i<lines.length; i++ ) {
+      if ( lines[i].toUpperCase().startsWith("%BLOCK LATTICE_ABC") ) return true;
+      if ( lines[i].toUpperCase().startsWith("%BLOCK LATTICE_CART") ) return true;
+      if ( lines[i].toUpperCase().startsWith("%BLOCK POSITIONS_FRAC") ) return true;
+      if ( lines[i].toUpperCase().startsWith("%BLOCK POSITIONS_ABS") ) return true;
+    }
+    return false;
+  }
+
+  private static boolean checkCrystal(String[] lines) {
+    String s = lines[1].trim();
+    if (s.equals("SLAB") ||s.equals("MOLECULE")
+        || s.equals("CRYSTAL")
+        || s.equals("POLYMER") || (s = lines[3]).equals("SLAB")
+        || s.equals("MOLECULE") || s.equals("POLYMER"))
+      return true;
+    for (int i = 0; i < lines.length; i++) {
+      if (lines[i].trim().equals("OPTGEOM"))
+        return true;
+    }
+    return false;
+  }
+  
+  private static boolean checkCube(String[] lines) {
     try {
-      Integer.parseInt(lines[0].trim());
+      StringTokenizer tokens2 = new StringTokenizer(lines[2]);
+      if (tokens2 == null || tokens2.countTokens() != 4)
+        return false;
+      Integer.parseInt(tokens2.nextToken());
+      for (int i = 3; --i >= 0; )
+        new Float(tokens2.nextToken());
+      StringTokenizer tokens3 = new StringTokenizer(lines[3]);
+      if (tokens3 == null || tokens3.countTokens() != 4)
+        return false;
+      Integer.parseInt(tokens3.nextToken());
+      for (int i = 3; --i >= 0; )
+        if ((new Float(tokens3.nextToken())).floatValue() < 0)
+          return false;
       return true;
     } catch (NumberFormatException nfe) {
     }
@@ -900,6 +803,56 @@ public class Resolver {
     return true;
   }
   
+  private static boolean checkGenNBO(String[] lines) {
+    // .31-.41 file or .nbo file
+    return (lines[1].startsWith(" Basis set information needed for plotting orbitals")
+      || lines[1].indexOf("s in the AO basis:") >= 0
+      || lines[2].indexOf(" N A T U R A L   A T O M I C   O R B I T A L") >= 0);
+  }
+  
+  private static boolean checkGromacs(String[] lines) {
+    if (Parser.parseInt(lines[1]) == Integer.MIN_VALUE)
+      return false;
+    int len = -1;
+    for (int i = 2; i < 16 && len != 0; i++)
+      if ((len = lines[i].length()) != 69 && len != 45 && len != 0)
+        return false;
+    return true;
+  }
+  
+  private static boolean checkGulp(String[] lines) {
+
+    if (lines[2]
+              .startsWith("*                       GENERAL UTILITY LATTICE PROGRAM      "))
+      return true;
+    for (int i = 0; i < lines.length; i++) {
+      if (lines[i]
+                .startsWith("*                       GENERAL UTILITY LATTICE PROGRAM      ")) {
+        return true;
+      } else if (lines[i].contains("Julian Gale")) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private static boolean checkMol(String[] lines) {
+    String line4trimmed = ("X" + lines[3]).trim().toUpperCase();
+    if (line4trimmed.length() < 7 || line4trimmed.indexOf(".") >= 0)
+      return false;
+    if (line4trimmed.endsWith("V2000") || line4trimmed.endsWith("V3000"))
+      return true;
+    try {
+      int n1 = Integer.parseInt(lines[3].substring(0, 3).trim());
+      int n2 = Integer.parseInt(lines[3].substring(3, 6).trim());
+      return (n1 > 0 && n2 >= 0 && lines[0].indexOf("@<TRIPOS>") != 0
+          && lines[1].indexOf("@<TRIPOS>") != 0 
+          && lines[2].indexOf("@<TRIPOS>") != 0);
+    } catch (NumberFormatException nfe) {
+    }
+    return false;
+  }
+
   /**
    * @param lines First lines of the files.
    * @return Indicates if the file is a Mopac GRAPHF output file.
@@ -909,26 +862,71 @@ public class Resolver {
     return (lines[0].indexOf("MOPAC-Graphical data") > 2); //nAtoms MOPAC-Graphical data
   }
 
-  private static boolean checkCube(String[] lines) {
+  private static boolean checkOdyssey(String[] lines) {
+    int i;
+    for (i = 0; i < lines.length; i++)
+      if (!lines[i].startsWith("C ") && lines[i].length() != 0)
+        break;
+    if (i >= lines.length 
+        || lines[i].charAt(0) != ' ' 
+        || (i = i + 2) + 1 >= lines.length)
+      return false;
     try {
-      StringTokenizer tokens2 = new StringTokenizer(lines[2]);
-      if (tokens2 == null || tokens2.countTokens() != 4)
+      // distinguishing between Spartan input and MOL file
+      // MOL files have aaabbb.... on the data line
+      // SPIN files have cc s on that line (c = charge; s = spin)
+      // so the typical MOL file, with more parameters, will fail getting the spin
+      int spin = Integer.parseInt(lines[i].substring(2).trim());
+      int charge = Integer.parseInt(lines[i].substring(0, 2).trim());
+      // and if it does not, then we get the next lines of info
+      int atom1 = Integer.parseInt(lines[++i].substring(0, 2).trim());
+      if (spin < 0 || spin > 5 || atom1 <= 0 || charge > 5)
         return false;
-      Integer.parseInt(tokens2.nextToken());
-      for (int i = 3; --i >= 0; )
-        new Float(tokens2.nextToken());
-      StringTokenizer tokens3 = new StringTokenizer(lines[3]);
-      if (tokens3 == null || tokens3.countTokens() != 4)
-        return false;
-      Integer.parseInt(tokens3.nextToken());
-      for (int i = 3; --i >= 0; )
-        if ((new Float(tokens3.nextToken())).floatValue() < 0)
-          return false;
+      // hard to believe we would get here for a MOL file
+      float[] atomline = new float[5];
+      AtomSetCollectionReader.getTokensFloat(lines[i], atomline, 5);
+      return !Float.isNaN(atomline[1]) && !Float.isNaN(atomline[2]) && !Float.isNaN(atomline[3]) && Float.isNaN(atomline[4]);
+    } catch (Exception e) {
+    }
+    return false;
+  }
+  
+  private static boolean checkQuantumEspresso(String[] lines) {
+    for (int i = 0; i < lines.length; i++) {
+      if (lines[i].contains("Program PWSCF"))
+        return true;
+      if (lines[i].contains("Program PHONON")) 
+        return true;
+    }
+    return false;
+  }
+  
+  private static boolean checkVasp(String[] lines){
+    if(lines[1].startsWith(" vasp."))
+      return true;
+    for(int i =0 ; i < lines.length; i++){
+      if(lines[i].startsWith(" INCAR:"))
+          return true;
+    }
+    return false;
+  }
+
+ private static boolean checkWien2k(String[] lines) {
+   return (lines[2].startsWith("MODE OF CALC=") 
+       || lines[2].startsWith("             RELA")
+       || lines[2].startsWith("             NREL"));
+ }
+ 
+  private static boolean checkXyz(String[] lines) {
+    try {
+      Integer.parseInt(lines[0].trim());
       return true;
     } catch (NumberFormatException nfe) {
     }
     return false;
   }
+
+
 /*
   private void dumpLines(String[] lines) {
       for (int i = 0; i < lines.length; i++) {

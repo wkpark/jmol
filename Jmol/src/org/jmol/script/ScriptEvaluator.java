@@ -15643,7 +15643,7 @@ public class ScriptEvaluator {
         propertyValue = atomExpression(++i);
         i = iToken;
         if (surfaceObjectSeen)
-          sbCommand.append(" select " + Escape.escape(propertyValue));
+          sbCommand.append(" select " + Escape.escape((BitSet) propertyValue));
         else
           bsSelect = (BitSet) propertyValue;
         break;

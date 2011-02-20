@@ -103,8 +103,8 @@ public class XyzReader extends AtomSetCollectionReader {
         atom.elementSymbol = str;
       } else {
         str = str.substring(("" + isotope).length());
-        atom.elementNumber = (short) ((isotope << 7) + JmolAdapter
-            .getElementNumber(str));
+        atom.elementNumber = (short) (str.length() == 0 ? isotope
+            : ((isotope << 7) + JmolAdapter.getElementNumber(str)));
       }
       atom.x = parseFloat(tokens[1]);
       atom.y = parseFloat(tokens[2]);
@@ -117,12 +117,13 @@ public class XyzReader extends AtomSetCollectionReader {
       setAtomCoord(atom);
       switch (tokens.length) {
       case 4:
-      case 6:
         continue;
       case 5:
+      case 6:
       case 8:
       case 9:
         // accepts  sym x y z c
+        // accepts  sym x y z c r
         // accepts  sym x y z c vx vy vz
         if ((str = tokens[4]).indexOf(".") >= 0) {
           atom.partialCharge = parseFloat(str);
@@ -130,16 +131,21 @@ public class XyzReader extends AtomSetCollectionReader {
           int charge = parseInt(str);
           if (charge != Integer.MIN_VALUE)
             atom.formalCharge = charge;
-        }        
-        if (tokens.length == 5)
+        }
+        switch (tokens.length) {
+        case 5:
           continue;
-        if (tokens.length == 9)
+        case 6:
+          atom.radius = parseFloat(tokens[5]);
+          continue;
+        case 9:
           atom.atomSerial = parseInt(tokens[8]);
+        }
         vpt++;
         //fall through:
       default:
-         // accepts  sym x y z c vx vy vz atomno
-         // or       sym x y z vx vy vz
+        // accepts  sym x y z c vx vy vz atomno
+        // or       sym x y z vx vy vz
         float vx = parseFloat(tokens[vpt++]);
         float vy = parseFloat(tokens[vpt++]);
         float vz = parseFloat(tokens[vpt++]);

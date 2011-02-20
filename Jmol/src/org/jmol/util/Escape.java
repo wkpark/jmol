@@ -67,6 +67,8 @@ public class Escape {
       return escape((ArrayList<ScriptVariable>) x);
     if (x instanceof String[])
       return escape((String[]) x, true);
+    if (x instanceof BitSet) 
+      return escape((BitSet) x, true);
     if (x instanceof int[] 
           || x instanceof int[][]
           || x instanceof float[]

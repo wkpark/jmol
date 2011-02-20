@@ -815,14 +815,28 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     ltoken.add(0, setCommand(token));
   }
 
+  private boolean isUserToken;
+  
   private String getPrefixToken() {
     String ident = script.substring(ichToken, ichToken + cchToken);
     String identLC = ident.toLowerCase();
-    if (nTokens == 1 && (tokCommand == Token.function 
-        || tokCommand == Token.parallel || tokCommand == Token.var)
-        || (isUserFunction(identLC) 
-        || nTokens != 0 && isContextVariable(identLC))
-          && (thisFunction == null || !thisFunction.name.equals(identLC))) {
+    boolean isUserVar = isContextVariable(identLC);
+    if (nTokens == 0)
+      isUserToken = isUserVar;
+    if (nTokens == 1 && (tokCommand == Token.function  || tokCommand == Token.parallel || tokCommand == Token.var)
+        || nTokens != 0 && isUserVar
+        || isUserFunction(identLC)  && (thisFunction == null || !thisFunction.name.equals(identLC))) {
+      // we need to allow:
+      
+      // var color = "xxx"
+      // color @color
+      // print color
+      // etc. 
+      // BUT we also should allow
+      // color = ...
+      // color += ...
+      // color[ ...
+      
       ident = identLC;
       theToken = null;
     } else if (ident.length() == 1) {
@@ -849,8 +863,19 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   private int checkSpecialParameterSyntax() {
     char ch;
     if (nTokens == ptNewSetModifier) {
-      if (tokCommand == Token.set || Token.tokAttr(tokCommand, Token.setparam)) {
-        ch = script.charAt(ichToken);
+      ch = script.charAt(ichToken);
+      boolean isAndEquals = ("+-\\*/&|=".indexOf(ch) >= 0);
+      boolean isOperation = (isAndEquals || ch == '.' || ch == '[');
+      char ch2 = (ichToken + 1 >= cchScript ? 0 : script.charAt(ichToken + 1));
+      if (!isNewSet && isUserToken && isOperation && (ch == '=' || ch2 == ch || ch2 == '=')) {
+        isNewSet = true;
+        // Var data = ""
+        // data = 5
+        // data++
+        // data += what
+        
+      }
+      if (isNewSet || tokCommand == Token.set || Token.tokAttr(tokCommand, Token.setparam)) {
         if (ch == '=')
           setEqualPt = ichToken;
 
@@ -861,11 +886,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         // both commands and parameters for the SET command, but only if
         // they are
         // the FIRST parameter of the set command.
-        boolean isAndEquals = ("+-\\*/&|=".indexOf(ch) >= 0);
-        char ch2 = (ichToken + 1 >= cchScript ? 0 : script.charAt(ichToken + 1));
         if (Token.tokAttr(tokCommand, Token.setparam) && ch == '='
-            || (isNewSet || isSetBrace)
-            && (isAndEquals || ch == '.' || ch == '[')) {
+            || (isNewSet || isSetBrace) && isOperation) {
           setCommand(isAndEquals ? Token.tokenSet
               : ch == '[' && !isSetBrace ? Token.tokenSetArray
                   : Token.tokenSetProperty);

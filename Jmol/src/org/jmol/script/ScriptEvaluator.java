@@ -678,7 +678,8 @@ public class ScriptEvaluator {
         } else {
           v = getParameter(ScriptVariable.sValue(statement[i]), Token.variable);
         }
-        v = getParameter(ScriptVariable.sValue((ScriptVariable) v), Token.variable);
+        v = getParameter(ScriptVariable.sValue((ScriptVariable) v),
+            Token.variable);
         i = iToken;
         break;
       case Token.ifcmd:
@@ -960,23 +961,29 @@ public class ScriptEvaluator {
             }
             break;
           }
-        } else if (Token.tokAttr(theTok, Token.identifier)
-            && viewer.isFunction((String) theToken.value)) {
-          if (!rpn.addOp(new ScriptVariable(Token.function, theToken.value))) {
-            // iToken--;
-            error(ERROR_invalidArgument);
-          }
-          if (tokAt(i + 1) != Token.leftparen) {
-            rpn.addOp(Token.tokenLeftParen);
-            rpn.addOp(Token.tokenRightParen);
-          }
         } else {
+          // first check to see if the variable has been defined already
           String name = parameterAsString(i).toLowerCase();
-          if (isSyntaxCheck)
+          boolean haveParens = (tokAt(i + 1) == Token.leftparen);
+          if (isSyntaxCheck) {
             v = name;
-          else if ((localVars == null || (v = localVars.get(name)) == null)
-              && (v = getContextVariableAsVariable(name)) == null) {
-            rpn.addX(viewer.getOrSetNewVariable(name, false));
+          } else if (!haveParens
+              && (localVars == null || (v = localVars.get(name)) == null)) {
+            v = getContextVariableAsVariable(name);
+          }
+          if (v == null) {
+            if (Token.tokAttr(theTok, Token.identifier)
+                && viewer.isFunction(name)) {
+              if (!rpn
+                  .addOp(new ScriptVariable(Token.function, theToken.value)))
+                error(ERROR_invalidArgument);
+              if (!haveParens) {
+                rpn.addOp(Token.tokenLeftParen);
+                rpn.addOp(Token.tokenRightParen);
+              }
+            } else {
+              rpn.addX(viewer.getOrSetNewVariable(name, false));
+            }
           }
         }
       }

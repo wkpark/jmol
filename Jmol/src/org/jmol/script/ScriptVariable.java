@@ -537,11 +537,11 @@ public class ScriptVariable extends Token {
   }
 
   public static String sValue(Token x) {
-    StringBuffer sb;
-    Map<Object, Boolean> map;
     if (x == null)
       return "";
     int i;
+    StringBuffer sb;
+    Map<Object, Boolean> map;
     switch (x.tok) {
     case on:
       return "true";
@@ -549,14 +549,6 @@ public class ScriptVariable extends Token {
       return "false";
     case integer:
       return "" + x.intValue;
-    case point3f:
-      return Escape.escape((Point3f) x.value);
-    case point4f:
-      return Escape.escape((Point4f) x.value);
-    case matrix3f:
-      return Escape.escape((Matrix3f) x.value);
-    case matrix4f:
-      return Escape.escape((Matrix4f) x.value);
     case bitset:
       return Escape.escape(bsSelect(x), !(x.value instanceof BondSet));
     case varray:
@@ -583,9 +575,13 @@ public class ScriptVariable extends Token {
       if (i < 1 || i > s.length())
         return "";
       return "" + s.charAt(i - 1);
-    case decimal:
+    case point3f:
+    case point4f:
+    case matrix3f:
+    case matrix4f:
+      return Escape.escape(x.value);
     default:
-      return "" + x.value;
+      return x.value.toString();
     }
   }
 
@@ -972,30 +968,16 @@ public class ScriptVariable extends Token {
 
   public String escape() {
     switch (tok) {
-    case on:
-      return "true";
-    case off:
-      return "false";
-    case integer:
-      return "" + intValue;
-    case bitset:
-      return Escape.escape((BitSet)value, !(value instanceof BondSet));
+    case string:
+      return Escape.escape(value);
     case varray:
     case hash:
       StringBuffer sb = new StringBuffer();
       Map<Object,Boolean>map = new Hashtable<Object,Boolean>();
       sValueArray(sb, this, map, 0, true);
-      return sb.toString();      
-    case point3f:
-      return Escape.escape((Point3f)value);
-    case point4f:
-      return Escape.escape((Point4f)value);
-    case matrix3f:
-      return Escape.escape((Matrix3f)value);
-    case matrix4f:
-      return Escape.escape((Matrix4f)value);
+      return sb.toString();
     default:
-      return Escape.escape(value);
+      return sValue(this);
     }
   }
 

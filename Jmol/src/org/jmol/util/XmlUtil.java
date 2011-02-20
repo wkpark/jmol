@@ -186,7 +186,7 @@ public class XmlUtil {
       if (value instanceof String) {
         value = wrapCdata(value);
       } else if (value instanceof BitSet) {
-        value = Escape.escape((BitSet) value);
+        value = Escape.escape(value);
       } else if (value instanceof List) {
         List<Object> v = (List<Object>) value;
         sb = new StringBuffer("\n");

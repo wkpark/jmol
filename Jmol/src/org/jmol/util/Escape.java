@@ -59,16 +59,42 @@ public class Escape {
     return r + g + b;
   }
 
+  
+  /**
+   * must be its own, because of the possibility of being null
+   * @param xyz
+   * @return  {x y z}
+   */
+  public static String escape(Tuple3f xyz) {
+    if (xyz == null)
+      return "null";
+    return "{" + xyz.x + " " + xyz.y + " " + xyz.z + "}";
+  }
+
   @SuppressWarnings("unchecked")
   public static String escape(Object x) {
     if (x instanceof String)
-      return escape("" + x);
+      return escape((String) x);
     if (x instanceof List<?>)
       return escape((ArrayList<ScriptVariable>) x);
-    if (x instanceof String[])
-      return escape((String[]) x, true);
     if (x instanceof BitSet) 
       return escape((BitSet) x, true);
+    if (x instanceof Matrix3f) 
+      return ((Matrix3f) x).toString();
+    if (x instanceof Matrix4f) 
+      return ((Matrix4f) x).toString();
+    if (x instanceof Tuple3f)
+      return escape((Tuple3f) x);
+    if (x instanceof Point4f) {
+      Point4f xyzw = (Point4f) x;
+      return "{" + xyzw.x + " " + xyzw.y + " " + xyzw.z + " " + xyzw.w + "}";
+    }
+    if (x instanceof AxisAngle4f) {
+      AxisAngle4f a = (AxisAngle4f) x;
+      return "{" + a.x + " " + a.y + " " + a.z + " " + (float) (a.angle * 180d/Math.PI) + "}";
+    }    
+    if (x instanceof String[])
+      return escape((String[]) x, true);
     if (x instanceof int[] 
           || x instanceof int[][]
           || x instanceof float[]
@@ -82,20 +108,78 @@ public class Escape {
     return (x == null ? "null" : x.toString());
   }
 
-  public static String escape(Point4f xyzw) {
-    return "{" + xyzw.x + " " + xyzw.y + " " + xyzw.z + " " + xyzw.w + "}";
+//static String ESCAPE_SET = " ,./;:_+-~=><?'!@#$%^&*";
+//static int nEscape = ESCAPE_SET.length();
+
+  private final static String escapable = "\\\\\tt\rr\nn\"\""; 
+
+  public static String escape(String str) {
+    if (str == null)
+      return "\"\"";
+    boolean haveEscape = false;
+    int i = 0;
+    for (; i < escapable.length(); i += 2)
+      if (str.indexOf(escapable.charAt(i)) >= 0) {
+        haveEscape = true;
+        break;
+      }
+    if (haveEscape)
+      while (i < escapable.length()) {
+        int pt = -1;
+        char ch = escapable.charAt(i++);
+        char ch2 = escapable.charAt(i++);
+        StringBuffer sb = new StringBuffer();
+        int pt0 = 0;
+        while ((pt = str.indexOf(ch, pt + 1)) >= 0) {
+          sb.append(str.substring(pt0, pt)).append('\\').append(ch2);
+          pt0 = pt + 1;
+        }
+        sb.append(str.substring(pt0, str.length()));
+        str = sb.toString();
+      }
+    for (i = str.length(); --i >= 0;)
+      if (str.charAt(i) > 0x7F)
+        str = str.substring(0, i) + unicode(str.charAt(i))
+            + str.substring(i + 1);
+    return "\"" + str + "\"";
   }
 
-  public static String escape(AxisAngle4f a) {
-    return "{" + a.x + " " + a.y + " " + a.z + " " + (float) (a.angle * 180d/Math.PI) + "}";
+  private static String unicode(char c) {
+    String s = "0000" + Integer.toHexString(c);
+    return "\\u" + s.substring(s.length() - 4);
   }
 
-  public static String escape(Tuple3f xyz) {
-    if (xyz == null)
-      return "null";
-    return "{" + xyz.x + " " + xyz.y + " " + xyz.z + "}";
+  public static String escape(ArrayList<ScriptVariable> list) {
+    if (list == null)
+      return escape("");
+    StringBuilder s = new StringBuilder();
+    s.append("[");
+    for (int i = 0; i < list.size(); i++) {
+      if (i > 0)
+        s.append(", ");
+      s.append(escapeNice(ScriptVariable.sValue(list.get(i))));
+    }
+    s.append("]");
+    return s.toString();
   }
 
+  public static String escape(Map<String, Object> ht) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("{ ");
+    String sep = "";
+    for (Map.Entry<String, Object> entry : ht.entrySet()) {
+      String key = entry.getKey();
+      sb.append(sep).append(escape(key)).append(':');
+      Object val = entry.getValue();
+      if (!(val instanceof ScriptVariable))
+        val = ScriptVariable.getVariable(val);
+      sb.append(((ScriptVariable)val).escape());
+      sep = ","; 
+    }
+    sb.append(" }");
+    return sb.toString();
+  }
+  
   /**
    * 
    * @param f
@@ -148,46 +232,6 @@ public class Escape {
     return sb.toString();
   }
 
-  private final static String escapable = "\\\\\tt\rr\nn\"\""; 
-
-  public static String escapeChopped(String str) {
-    return chop(escape(str)); 
-  }
-  
-  public static String escape(String str) {
-    if (str == null)
-      return "\"\"";
-    boolean haveEscape = false;
-    int i = 0;
-    for (; i < escapable.length(); i += 2)
-      if (str.indexOf(escapable.charAt(i)) >= 0) {
-        haveEscape = true;
-        break;
-      }
-    if (haveEscape)
-      while (i < escapable.length()) {
-        int pt = -1;
-        char ch = escapable.charAt(i++);
-        char ch2 = escapable.charAt(i++);
-        StringBuffer sb = new StringBuffer();
-        int pt0 = 0;
-        while ((pt = str.indexOf(ch, pt + 1)) >= 0) {
-          sb.append(str.substring(pt0, pt)).append('\\').append(ch2);
-          pt0 = pt + 1;
-        }
-        sb.append(str.substring(pt0, str.length()));
-        str = sb.toString();
-      }
-    for (i = str.length(); --i >= 0;)
-      if (str.charAt(i) > 0x7F)
-        str = str.substring(0, i) + unicode(str.charAt(i))
-            + str.substring(i + 1);
-    return "\"" + str + "\"";
-  }
-
-  static String ESCAPE_SET = " ,./;:_+-~=><?'!@#$%^&*";
-  static int nEscape = ESCAPE_SET.length();
-
   /**
    * 
    * @param list
@@ -204,20 +248,6 @@ public class Escape {
       if (i > 0)
         s.append(", ");
       s.append(nicely ? escapeNice(list[i]) : escape(list[i]));
-    }
-    s.append("]");
-    return s.toString();
-  }
-
-  public static String escape(ArrayList<ScriptVariable> list) {
-    if (list == null)
-      return escape("");
-    StringBuilder s = new StringBuilder();
-    s.append("[");
-    for (int i = 0; i < list.size(); i++) {
-      if (i > 0)
-        s.append(", ");
-      s.append(escapeNice(ScriptVariable.sValue(list.get(i))));
     }
     s.append("]");
     return s.toString();
@@ -272,27 +302,6 @@ public class Escape {
       return "null";
     float f = Parser.parseFloatStrict(s);
     return (Float.isNaN(f) ? escape(s) : s);
-  }
-
-  private static String unicode(char c) {
-    String s = "0000" + Integer.toHexString(c);
-    return "\\u" + s.substring(s.length() - 4);
-  }
-
-  private static String chop(String s) {
-    int len = s.length();
-    if (len < 512)
-      return s;
-    StringBuilder sb = new StringBuilder();
-    String sep = "\"\\\n    + \"";
-    int pt = 0;
-    for (int i = 72; i < len; pt = i, i += 72) {
-      while (s.charAt(i - 1) == '\\')
-        i++;
-      sb.append((pt == 0 ? "" : sep)).append(s.substring(pt, i));
-    }
-    sb.append(sep).append(s.substring(pt, len));
-    return sb.toString();
   }
 
   public static Object unescapePointOrBitsetOrMatrixOrArray(String s) {
@@ -467,35 +476,6 @@ public class Escape {
     return s.toString();
   }
 
-  public static String escape(BitSet bs) {
-    return escape(bs, true);
-  }
-
-  public static String escape(Matrix3f m3) {
-    return m3.toString();
-  }
-  
-  public static String escape(Matrix4f m4) {
-    return (m4.toString());
-  }
-
-  public static String escape(Map<String, Object> ht) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("{ ");
-    String sep = "";
-    for (Map.Entry<String, Object> entry : ht.entrySet()) {
-      String key = entry.getKey();
-      sb.append(sep).append(escape(key)).append(':');
-      Object val = entry.getValue();
-      if (!(val instanceof ScriptVariable))
-        val = ScriptVariable.getVariable(val);
-      sb.append(((ScriptVariable)val).escape());
-      sep = ","; 
-    }
-    sb.append(" }");
-    return sb.toString();
-  }
-  
   private static String packageJSON(String infoType, StringBuilder sb) {
     return packageJSON(infoType, sb.toString());
   }
@@ -729,20 +709,11 @@ public class Escape {
       }
       return packageReadable(name, "List[" + imax + "]", sb);
     }
-    if (info instanceof Matrix3f) {
-      sb.append(escape((Matrix3f) info));
-      return packageReadable(name, null, sb);
-    }
-    if (info instanceof Tuple3f) {
-      sb.append(escape((Tuple3f) info));
-      return packageReadable(name, null, sb);
-    }
-    if (info instanceof Point4f) {
-      sb.append(escape((Point4f) info));
-      return packageReadable(name, null, sb);
-    }
-    if (info instanceof AxisAngle4f) {
-      sb.append(escape((AxisAngle4f) info));
+    if (info instanceof Matrix3f
+        || info instanceof Tuple3f
+        || info instanceof Point4f
+        || info instanceof AxisAngle4f) {
+      sb.append(escape(info));
       return packageReadable(name, null, sb);
     }
     if (info instanceof Map<?, ?>) {

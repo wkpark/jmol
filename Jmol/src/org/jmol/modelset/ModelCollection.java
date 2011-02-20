@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import javax.vecmath.Matrix3f;
-import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
@@ -3745,7 +3744,7 @@ abstract public class ModelCollection extends BondCollection {
           Escape.escape((Point3f)info[7]),
           Escape.escape((Vector3f)info[8]),
           "" + info[9],
-          "" + Escape.escape((Matrix4f)info[10])
+          "" + Escape.escape(info[10])
         };
         return sinfo;
     case Token.info:

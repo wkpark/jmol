@@ -1518,7 +1518,7 @@ public class StateManager {
                 .indexOf(_prefix) == 0)) {
           Object value = htNonbooleanParameterValues.get(key);
           if (value instanceof String)
-            value = Escape.escapeChopped((String) value);
+            value = chop(Escape.escape((String) value));
           list[n++] = (key.indexOf("_") == 0 ? key + " = " : "set " + key + " ")
               + value;
         }
@@ -1529,6 +1529,22 @@ public class StateManager {
           appendCmd(commands, list[i]);
       commands.append("\n");
       return commands.toString();
+    }
+
+    private String chop(String s) {
+      int len = s.length();
+      if (len < 512)
+        return s;
+      StringBuilder sb = new StringBuilder();
+      String sep = "\"\\\n    + \"";
+      int pt = 0;
+      for (int i = 72; i < len; pt = i, i += 72) {
+        while (s.charAt(i - 1) == '\\')
+          i++;
+        sb.append((pt == 0 ? "" : sep)).append(s.substring(pt, i));
+      }
+      sb.append(sep).append(s.substring(pt, len));
+      return sb.toString();
     }
 
     String getState(StringBuffer sfunc) {

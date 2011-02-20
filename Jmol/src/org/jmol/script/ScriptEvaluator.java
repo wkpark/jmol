@@ -12946,7 +12946,7 @@ public class ScriptEvaluator {
           Integer.MIN_VALUE, 0);
       return;
     }
-    String str;
+    
     if (vv instanceof Boolean) {
       setBooleanProperty(key, ((Boolean) vv).booleanValue());
     } else if (vv instanceof Integer) {
@@ -12957,14 +12957,10 @@ public class ScriptEvaluator {
       setStringProperty(key, (String) vv);
     } else if (vv instanceof BondSet) {
       setStringProperty(key, Escape.escape((BitSet) vv, false));
-    } else if (vv instanceof BitSet) {
-      setStringProperty(key, Escape.escape((BitSet) vv));
-    } else if (vv instanceof Point3f) {
-      str = Escape.escape((Point3f) vv);
-      setStringProperty(key, str);
-    } else if (vv instanceof Point4f) {
-      str = Escape.escape((Point4f) vv);
-      setStringProperty(key, str);
+    } else if (vv instanceof BitSet 
+        || vv instanceof Point3f 
+        || vv instanceof Point4f) {
+      setStringProperty(key, Escape.escape(vv));
     } else {
       Logger.error("ERROR -- return from propertyExpression was " + vv);
     }
@@ -15650,7 +15646,7 @@ public class ScriptEvaluator {
         propertyValue = atomExpression(++i);
         i = iToken;
         if (surfaceObjectSeen)
-          sbCommand.append(" select " + Escape.escape((BitSet) propertyValue));
+          sbCommand.append(" select " + Escape.escape(propertyValue));
         else
           bsSelect = (BitSet) propertyValue;
         break;
@@ -15661,7 +15657,7 @@ public class ScriptEvaluator {
       case Token.center:
         propertyName = "center";
         propertyValue = centerParameter(++i);
-        sbCommand.append(" center " + Escape.escape((Point3f) propertyValue));
+        sbCommand.append(" center " + Escape.escape(propertyValue));
         i = iToken;
         break;
       case Token.sign:
@@ -15768,7 +15764,7 @@ public class ScriptEvaluator {
         propertyValue = planeParameter(++i);
         i = iToken;
         sbCommand.append(" plane ").append(
-            Escape.escape((Point4f) propertyValue));
+            Escape.escape(propertyValue));
         break;
       case Token.scale:
         propertyName = "scale";
@@ -15790,7 +15786,7 @@ public class ScriptEvaluator {
           propertyName = "ellipsoid";
           i = iToken;
           sbCommand.append(" ellipsoid ").append(
-              Escape.escape((Point4f) propertyValue));
+              Escape.escape(propertyValue));
           break;
         } catch (ScriptException e) {
         }
@@ -15822,7 +15818,7 @@ public class ScriptEvaluator {
         propertyValue = hklParameter(++i);
         i = iToken;
         sbCommand.append(" plane ").append(
-            Escape.escape((Point4f) propertyValue));
+            Escape.escape(propertyValue));
         break;
       case Token.lcaocartoon:
         surfaceObjectSeen = true;
@@ -16073,7 +16069,7 @@ public class ScriptEvaluator {
         propertyName = "eccentricity";
         propertyValue = getPoint4f(++i);
         sbCommand.append(" eccentricity ").append(
-            Escape.escape((Point4f) propertyValue));
+            Escape.escape(propertyValue));
         i = iToken;
         break;
       case Token.ed:
@@ -16217,7 +16213,7 @@ public class ScriptEvaluator {
         propertyName = "ignore";
         propertyValue = bsIgnore = atomExpression(++i);
         sbCommand.append(" ignore ").append(
-            Escape.escape((BitSet) propertyValue));
+            Escape.escape(propertyValue));
         i = iToken;
         break;
       case Token.insideout:
@@ -16238,7 +16234,7 @@ public class ScriptEvaluator {
         propertyValue = getPoint4f(++i);
         i = iToken;
         sbCommand.append(" lobe ").append(
-            Escape.escape((Point4f) propertyValue));
+            Escape.escape(propertyValue));
         break;
       case Token.lonepair:
       case Token.lp:
@@ -16247,7 +16243,7 @@ public class ScriptEvaluator {
         propertyName = "lp";
         propertyValue = getPoint4f(++i);
         i = iToken;
-        sbCommand.append(" lp ").append(Escape.escape((Point4f) propertyValue));
+        sbCommand.append(" lp ").append(Escape.escape(propertyValue));
         break;
       case Token.mapProperty:
         sbCommand.append(" map");
@@ -16277,7 +16273,7 @@ public class ScriptEvaluator {
         propertyValue = getPoint4f(++i);
         i = iToken;
         sbCommand.append(" radical ").append(
-            Escape.escape((Point4f) propertyValue));
+            Escape.escape(propertyValue));
         break;
       case Token.modelbased:
         propertyName = "fixed";

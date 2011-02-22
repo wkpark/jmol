@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-01-04 23:43+0100\n"
-"PO-Revision-Date: 2011-02-17 18:34+0000\n"
+"PO-Revision-Date: 2011-02-22 14:47+0000\n"
 "Last-Translator: Dimitrios - Georgios Kontopoulos <Unknown>\n"
 "Language-Team: Greek <el@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-02-17 19:20+0000\n"
-"X-Generator: Launchpad (build 12395)\n"
+"X-Launchpad-Export-Date: 2011-02-22 19:08+0000\n"
+"X-Generator: Launchpad (build 12406)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
 msgid "Error starting Jmol: the property 'user.home' is not defined."
@@ -77,7 +77,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:164
 msgid "script file to execute or '-' for System.in"
-msgstr ""
+msgstr "αρχείο script για εκτέλεση ή '-' για το System.in"
 
 #: org/openscience/jmol/app/JmolApp.java:170
 msgid "use multitouch interface (requires \"sparshui\" parameter"
@@ -215,11 +215,11 @@ msgstr "Μεταβλητές"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:165
 msgid "AtomSetChooser"
-msgstr ""
+msgstr "Επιλογέας Ατομικών Σετ"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:169
 msgid "No AtomSets"
-msgstr ""
+msgstr "Δεν υπάρχουν Ατομικά Σετ"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:198
 msgid "Properties"
@@ -227,7 +227,7 @@ msgstr "Ιδιότητες"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:206
 msgid "Atom Set Collection"
-msgstr ""
+msgstr "Συλλογή Ατομικών Σετ"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:227
 msgid "Collection"
@@ -279,15 +279,15 @@ msgstr "Ελεγκτής"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:363
 msgid "Go to first atom set in the collection"
-msgstr ""
+msgstr "Μετάβαση στο πρώτο ατομικό σετ της συλλογής"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:364
 msgid "Go to previous atom set in the collection"
-msgstr ""
+msgstr "Μετάβαση στο προηγούμενο ατομικό σετ της συλλογής"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:365
 msgid "Play the whole collection of atom sets"
-msgstr ""
+msgstr "Αναπαραγωγή ολόκληρης της συλλογής ατομικών σετ"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:366
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
@@ -296,11 +296,11 @@ msgstr "Παύση αναπαραγωγής"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:367
 msgid "Go to next atom set in the collection"
-msgstr ""
+msgstr "Μετάβαση στο επόμενο ατομικό σετ της συλλογής"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:368
 msgid "Jump to last atom set in the collection"
-msgstr ""
+msgstr "Μεταπήδηση στο τελευταίο ατομικό σετ της συλλογής"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:372
 msgid "Go to first vector in the collection"
@@ -345,7 +345,7 @@ msgstr "Για προχωρημένους"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:224
 msgid "Checkpoint File: "
-msgstr ""
+msgstr "Αρχείο Σημείου Ελέγχου: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:229
 msgid "Amount of Memory:"
@@ -365,7 +365,7 @@ msgstr "Μέθοδος: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:261
 msgid "Basis Set: "
-msgstr ""
+msgstr "Βασικό Σετ: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:269
 msgid "Density Fitting Basis Set (DFT Only): "
@@ -449,7 +449,7 @@ msgstr "Επανα&φόρτωση"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:65
 msgid "Scrip&t Editor..."
-msgstr ""
+msgstr "Επε&ξεργαστής Script"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:66
 msgid "Conso&le..."
@@ -461,7 +461,7 @@ msgstr "Java &Κονσόλα Jmol"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:68
 msgid "AtomSet&Chooser..."
-msgstr ""
+msgstr "Επι&λογέας Ατομικών Σετ"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:69
 msgid "&Save As..."
@@ -510,7 +510,7 @@ msgstr "&Εκτύπωση..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:80
 msgid "Print view."
-msgstr ""
+msgstr "Εκτύπωση όψης"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:81
 msgid "&Close"
@@ -824,15 +824,15 @@ msgstr "&Τερματισμός προσομοίωσης"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:174
 msgid "&Rewind to first frame"
-msgstr ""
+msgstr "&Επαναφορά στο πρώτο καρέ"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:175
 msgid "Rewind to first frame"
-msgstr ""
+msgstr "Επαναφορά στο πρώτο καρέ"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:176
 msgid "Go to &next frame"
-msgstr ""
+msgstr "Μετάβαση στο ε&πόμενο καρέ"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:177
 msgid "Go to next frame"

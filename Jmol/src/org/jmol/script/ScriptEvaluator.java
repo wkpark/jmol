@@ -15412,7 +15412,7 @@ public class ScriptEvaluator {
     Object onlyOneModel = null;
     String translucency = null;
     String colorScheme = null;
-    String dataUse = null;
+    String mepOrMlp = null;
     short[] discreteColixes = null;
     List<Object[]> propertyList = new ArrayList<Object[]>();
     boolean defaultMesh = false;
@@ -15426,6 +15426,17 @@ public class ScriptEvaluator {
           && (str = parameterAsString(i)).equalsIgnoreCase("inline"))
         theTok = Token.string;
       switch (theTok) {
+      // settings only
+      case Token.isosurfacepropertysmoothing:
+        smoothing = (getToken(++i).tok == Token.on ? Boolean.TRUE
+            : theTok == Token.off ? Boolean.FALSE : null);
+        if (smoothing == null)
+          error(ERROR_invalidArgument);
+        continue;
+      case Token.isosurfacepropertysmoothingpower:
+        smoothingPower = intParameter(++i);
+        continue;
+      
       // offset, rotate, and scale3d don't need to be saved in sbCommand
       // because they are display properties
       case Token.offset:
@@ -15459,15 +15470,17 @@ public class ScriptEvaluator {
         } else {
           pts = viewer.getBoundBoxVertices();
         }
-        addShapeProperty(propertyList, "boundingBox", pts);
         sbCommand.append(" boundBox " + Escape.escape(pts[0]) + " "
             + Escape.escape(pts[pts.length - 1]));
-        continue;
+        propertyName = "boundingBox";
+        propertyValue = pts;
+        break;
       case Token.pmesh:
         isPmesh = true;
-        addShapeProperty(propertyList, "fileType", "Pmesh");
         sbCommand.append(" pmesh");
-        continue;
+        propertyName = "fileType";
+        propertyValue = "Pmesh";
+        break;
       case Token.display:
       case Token.within:
         boolean isDisplay = (theTok == Token.display);
@@ -15542,22 +15555,13 @@ public class ScriptEvaluator {
               bs == null ? Escape.escape(ptc) : Escape.escape(bs));
         }
         continue;
-      case Token.isosurfacepropertysmoothing:
-        smoothing = (getToken(++i).tok == Token.on ? Boolean.TRUE
-            : theTok == Token.off ? Boolean.FALSE : null);
-        if (smoothing == null)
-          error(ERROR_invalidArgument);
-        continue;
-      case Token.isosurfacepropertysmoothingpower:
-        smoothingPower = intParameter(++i);
-        continue;
       case Token.property:
       case Token.variable:
         onlyOneModel = theToken.value;
         if (isCavity)
           error(ERROR_invalidArgument);
         boolean isVariable = (theTok == Token.variable);
-        if (dataUse == null) { // not mlp or mep
+        if (mepOrMlp == null) { // not mlp or mep
           if (!surfaceObjectSeen) {
             surfaceObjectSeen = true;
             addShapeProperty(propertyList, "sasurface", new Float(0));
@@ -15578,7 +15582,7 @@ public class ScriptEvaluator {
           if (viewer.isRangeSelected())
             addShapeProperty(propertyList, "rangeSelected", Boolean.TRUE);
         } else {
-          propertyName = dataUse;
+          propertyName = mepOrMlp;
         }
         str = parameterAsString(i);
         sbCommand.append(" ").append(str);
@@ -15906,7 +15910,7 @@ public class ScriptEvaluator {
           fname = stringParameter(++i);
           sbCommand.append(" /*file*/" + Escape.escape(fname));
         } else if (tokAt(i + 1) == Token.property) {
-          dataUse = propertyName;
+          mepOrMlp = propertyName;
           continue;
         }
         if (!isSyntaxCheck)
@@ -16512,13 +16516,6 @@ public class ScriptEvaluator {
         break;
       }
       idSeen = (theTok != Token.delete);
-      if (propertyName == "property" && !surfaceObjectSeen) {
-        surfaceObjectSeen = true;
-        addShapeProperty(propertyList, "bsSolvent",
-            lookupIdentifierValue("solvent"));
-        propertyName = "sasurface";
-        propertyValue = new Float(0);
-      }
       if (isWild && surfaceObjectSeen)
         error(ERROR_invalidArgument);
       if (propertyName != null)
@@ -16559,7 +16556,7 @@ public class ScriptEvaluator {
         modelIndex = viewer.getCurrentModelIndex();
       bsSelect.and(viewer.getModelUndeletedAtomsBitSet(modelIndex));
       if (onlyOneModel != null) {
-        BitSet bsModels = viewer.getModelBitSet(bsSelect, true);
+        BitSet bsModels = viewer.getModelBitSet(bsSelect, false);
         if (bsModels.cardinality() != 1)
           error(ERROR_multipleModelsDisplayedNotOK, "ISOSURFACE "
               + onlyOneModel);

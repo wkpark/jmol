@@ -751,6 +751,8 @@ public class ProjectInformation {
           info._fciCore = CoreType.OPEN_MM_FERMI;
         } else if ("OPENMMGPU".equalsIgnoreCase(core)) {
           info._fciCore = CoreType.OPEN_MM_GPU;
+        } else if ("OPENMM_OPENCL".equalsIgnoreCase(core)) {
+          info._fciCore = CoreType.OPEN_MM_CL;
         } else if ("ProtoMol".equalsIgnoreCase(core)) {
           info._fciCore = CoreType.PROTO_MOL;
         } else if ("QMD".equalsIgnoreCase(core)) {

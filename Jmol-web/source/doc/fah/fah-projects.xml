@@ -9781,7 +9781,7 @@
     server="171.64.65.55" atoms="25192" preferred="24" deadline="37"
     credit="124" frames="100" code="A4" contact="dvanatta"/>
   <fah_proj number="11020" name="p11020" public="n"
-    server="171.64.65.55" atoms="25192" preferred="2" deadline="3"
+    server="171.64.65.55" atoms="25192" preferred="8" deadline="12"
     credit="294" frames="100" code="A3" contact="dvanatta" kfactor="0.75"/>
 
   <!-- Projects 11100 to 11199 -->
@@ -10299,6 +10299,9 @@
     credit="1352" frames="100" code="OF" contact="lin5"/>
   <fah_proj number="11292" name="Ab42gb" public="n"
     server="171.67.108.44" atoms="627" preferred="14" deadline="21"
-    credit="2224" frames="100" code="OF" contact="lin5"/>
+    credit="2224" frames="100" code="OC" contact="lin5"/>
+  <fah_proj number="11293" name="Ab42gb360" public="n"
+    server="171.67.108.44" atoms="627" preferred="6" deadline="10"
+    credit="1835" frames="100" code="OC" contact="lin5"/>
 
 </fah_projects>

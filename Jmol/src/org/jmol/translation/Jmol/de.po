@@ -14,14 +14,14 @@ msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-01-04 23:43+0100\n"
-"PO-Revision-Date: 2010-09-23 21:45+0000\n"
-"Last-Translator: cmdrhenner <cmdrhenner@gmail.com>\n"
+"PO-Revision-Date: 2011-02-24 16:07+0000\n"
+"Last-Translator: Alexander <Unknown>\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-01-29 19:08+0000\n"
-"X-Generator: Launchpad (build 12274)\n"
+"X-Launchpad-Export-Date: 2011-02-24 19:52+0000\n"
+"X-Generator: Launchpad (build 12438)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
 msgid "Error starting Jmol: the property 'user.home' is not defined."
@@ -453,7 +453,7 @@ msgstr "Beziehe &MOL"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:64
 msgid "&Reload"
-msgstr ""
+msgstr "&Neu laden"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:65
 msgid "Scrip&t Editor..."
@@ -933,7 +933,7 @@ msgstr "Datei-Vorschau (Neustart erforderlich)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:203
 msgid "Clear history (requires restarting Jmol)"
-msgstr ""
+msgstr "Historie löschen (erfordert Jmol Neustart)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:204
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:205
@@ -954,7 +954,7 @@ msgstr "Klicke auf Atome um die Entfernung zu messen"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:212
 msgid "Click an atom to center on it"
-msgstr ""
+msgstr "Atom anklicken um es zu zentrieren"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:213
 msgid "Return molecule to home position."

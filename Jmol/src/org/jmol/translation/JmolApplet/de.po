@@ -14,14 +14,14 @@ msgstr ""
 "Project-Id-Version: JmolApplet 11\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-01-12 18:30+0100\n"
-"PO-Revision-Date: 2010-08-19 22:29+0000\n"
-"Last-Translator: cmdrhenner <cmdrhenner@gmail.com>\n"
+"PO-Revision-Date: 2011-02-24 16:26+0000\n"
+"Last-Translator: Alexander <Unknown>\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-01-29 19:08+0000\n"
-"X-Generator: Launchpad (build 12274)\n"
+"X-Launchpad-Export-Date: 2011-02-24 19:52+0000\n"
+"X-Generator: Launchpad (build 12438)\n"
 
 #: org/jmol/applet/AppletConsole.java:199
 msgid "&Help"
@@ -150,8 +150,7 @@ msgid "Check"
 msgstr "Prüfen"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid ""
-"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "An die Spitze"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -402,7 +401,7 @@ msgstr "Estnisch"
 
 #: org/jmol/i18n/GT.java:147
 msgid "Finnish"
-msgstr ""
+msgstr "Finnisch"
 
 #: org/jmol/i18n/GT.java:148
 msgid "Faroese"
@@ -430,7 +429,7 @@ msgstr "Japanisch"
 
 #: org/jmol/i18n/GT.java:154
 msgid "Javanese"
-msgstr ""
+msgstr "Javanesisch"
 
 #: org/jmol/i18n/GT.java:155
 msgid "Korean"
@@ -743,7 +742,7 @@ msgstr "Nach HETATM"
 #: org/jmol/popup/MainPopupResourceBundle.java:546
 #, java-format
 msgid "Molecular Orbitals ({0})"
-msgstr ""
+msgstr "Molekülorbital ({0})"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:547
 #: org/jmol/popup/MainPopupResourceBundle.java:859
@@ -1498,7 +1497,7 @@ msgstr "Torsions-/Diederwinkel messen"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:826
 msgid "Click two atoms to display a sequence in the console"
-msgstr ""
+msgstr "Klicke zwei Atome an um eine Sequenz in der Konsole anzuzeigen"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:827
 msgid "Delete measurements"
@@ -1647,7 +1646,7 @@ msgstr "exportiere {0} Abbild"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:876
 msgid "Save all as JMOL file (zip)"
-msgstr ""
+msgstr "Sichere alles als JMOL Datei (zip)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:877
 msgid "Save JVXL isosurface"
@@ -2168,12 +2167,15 @@ msgstr ""
 #, java-format
 msgid "click on two points to spin around axis clockwise (requires {0})"
 msgstr ""
+"klicke zwei Atome an um im Uhrzeigersinn um die Achse zu drehen (erfordert "
+"{0})"
 
 #: org/jmol/viewer/ActionManager.java:69
 #, java-format
-msgid ""
-"click on two points to spin around axis counterclockwise (requires {0})"
+msgid "click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
+"klicke zwei Atome an um gegen den Uhrzeigersinn um die Achse zu drehen "
+"(erfordert {0})"
 
 #: org/jmol/viewer/ActionManager.java:71
 #, java-format
@@ -2212,7 +2214,7 @@ msgstr "nichts auswählen (benötigt {0})"
 #: org/jmol/viewer/ActionManager.java:80
 #, java-format
 msgid "toggle selection (requires {0})"
-msgstr ""
+msgstr "Auswahl hin- und herschalten (erfordert {0})"
 
 #: org/jmol/viewer/ActionManager.java:81
 #, java-format
@@ -2231,6 +2233,8 @@ msgid ""
 "if all are selected, unselect all, otherwise add this group of atoms to the "
 "set of selected atoms (requires {0})"
 msgstr ""
+"wenn alle ausgewählt sind, wähle alle ab, ansonsten füge diese Gruppe von "
+"Atomen der Menge ausgewählten Atome hinzu (benötigt {0})"
 
 #: org/jmol/viewer/ActionManager.java:85
 #, java-format
@@ -2414,12 +2418,12 @@ msgstr "Stelle Log Datei auf {0}"
 #~ msgid "About Jmol"
 #~ msgstr "Über Jmol"
 
-#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
+#~ "{0}."
 #~ msgstr ""
-#~ "Dateierstellung mit diesem Applet ist nicht zulässig. Für das Base64 Format, "
-#~ "benutzen Sie {0}."
+#~ "Dateierstellung mit diesem Applet ist nicht zulässig. Für das Base64 "
+#~ "Format, benutzen Sie {0}."
 
 #~ msgid "File creation failed."
 #~ msgstr "Dateierstellung fehlgeschlagen."
@@ -2430,11 +2434,9 @@ msgstr "Stelle Log Datei auf {0}"
 #~ msgid "File from PDB"
 #~ msgstr "Datei aus PDB"
 
-#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "{0} Grafik"
 
-#, java-format
 #~ msgid "File {0}"
 #~ msgstr "Datei {0}"
 
@@ -2444,22 +2446,18 @@ msgstr "Stelle Log Datei auf {0}"
 #~ msgid "Script with state"
 #~ msgstr "Skript mit Zustand"
 
-#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "{0} 3D Modell"
 
 #~ msgid "JVXL Isosurface"
 #~ msgstr "JVXL Isofläche"
 
-#, java-format
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr "FEHLER: Kann boolschen Flag keinen numerischen Wert zuweisen: {0}"
 
-#, java-format
 #~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 #~ msgstr "FEHLER: Kann der Variable keinen Boolschen Wert zuweisen: {0}"
 
-#, java-format
 #~ msgid "ERROR: cannot set boolean flag to string value: {0}"
 #~ msgstr ""
 #~ "Fehler: kann kein boolsches Kennzeichen zu einem variablen Wert setzen:{0}"
@@ -2478,12 +2476,12 @@ msgstr "Stelle Log Datei auf {0}"
 #~ "rotieren (benötigt \"SET picking SPIN\")"
 
 #~ msgid ""
-#~ "click on two points to spin around axis clockwise (requires SET picking SPIN)"
+#~ "click on two points to spin around axis clockwise (requires SET picking "
+#~ "SPIN)"
 #~ msgstr ""
 #~ "Klicke auf zwei Punkte um im Uhrzeigersinn um die Achse zu rotieren "
 #~ "(benötigt \"Set picking SPIN\")"
 
-#, java-format
 #~ msgid "toggle selection (requires {0} or {1})"
 #~ msgstr "Auswahl umschalten (benötigt {0} oder {1})"
 
@@ -2491,8 +2489,8 @@ msgstr "Stelle Log Datei auf {0}"
 #~ "pick a point or atom to navigate to (requires SET NAVIGATIONMODE; "
 #~ "undocumented)"
 #~ msgstr ""
-#~ "einen Punkt oder ein Atom auswählen um dorthin zu navigieren (benötigt SET "
-#~ "NAVIGATIONMODE; undokumentiert)"
+#~ "einen Punkt oder ein Atom auswählen um dorthin zu navigieren (benötigt "
+#~ "SET NAVIGATIONMODE; undokumentiert)"
 
 #~ msgid "pick an ISOSURFACE point"
 #~ msgstr "einen ISOSURFACE Punkt auswählen"

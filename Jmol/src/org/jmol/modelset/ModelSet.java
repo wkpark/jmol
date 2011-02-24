@@ -613,12 +613,18 @@ abstract public class ModelSet extends ModelCollection {
     viewer.getShapeState(commands, isAll);
 
     if (isAll) {
+      boolean needOrientations =  false;
+      for (int i = 0; i < modelCount; i++)
+        if (models[i].isJmolDataFrame) {
+          needOrientations = true;
+          break;
+        }
       for (int i = 0; i < modelCount; i++) {
         String t = frameTitles[i];
         if (t != null && t.length() > 0)
           commands.append("  frame " + getModelNumberDotted(i)
               + "; frame title " + Escape.escape(t) + ";\n");
-        if (models[i].orientation != null && !isTrajectorySubFrame(i))
+        if (needOrientations && models[i].orientation != null && !isTrajectorySubFrame(i))
           commands.append("  frame " + getModelNumberDotted(i) + "; "
               + models[i].orientation.getMoveToText(false) + "\n");
       }

@@ -12659,12 +12659,12 @@ public class ScriptEvaluator {
     // set picking dragselected
 
     String str = parameterAsString(i);
-    int mode = ActionManager.getPickingMode(str);
     switch (getToken(i).tok) {
     case Token.on:
     case Token.normal:
       str = "identify";
       break;
+    case Token.off:
     case Token.none:
       str = "off";
       break;
@@ -12684,7 +12684,7 @@ public class ScriptEvaluator {
       str = "deleteBond";
       break;
     }
-    mode = ((mode = str.indexOf("_")) >= 0 ? mode : str.length());
+    int mode = ((mode = str.indexOf("_")) >= 0 ? mode : str.length());
     mode = ActionManager.getPickingMode(str.substring(0, mode));
     if (mode < 0)
       error(ERROR_unrecognizedParameter, "SET PICKING " + type, str);

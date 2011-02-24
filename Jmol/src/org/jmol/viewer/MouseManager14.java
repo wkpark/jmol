@@ -68,185 +68,6 @@ class MouseManager14 implements MouseWheelListener, MouseListener,
     display.removeKeyListener(this);
   }
 
-  private String keyBuffer = "";
-
-  private void clearKeyBuffer() {
-    if (keyBuffer.length() == 0)
-      return;
-    keyBuffer = "";
-    if (viewer.getBooleanProperty("showKeyStrokes"))
-      viewer
-          .evalStringQuiet("!set echo _KEYSTROKES; set echo bottom left;echo \"\"");
-  }
-
-  private void addKeyBuffer(char ch) {
-    if (ch == 10) {
-      sendKeyBuffer();
-      return;
-    }
-    if (ch == 8) {
-      if (keyBuffer.length() > 0)
-        keyBuffer = keyBuffer.substring(0, keyBuffer.length() - 1);
-    } else {
-      keyBuffer += ch;
-    }
-    if (viewer.getBooleanProperty("showKeyStrokes"))
-      viewer
-          .evalStringQuiet("!set echo _KEYSTROKES; set echo bottom left;echo "
-              + Escape.escape("\1" + keyBuffer));
-  }
-
-  private void sendKeyBuffer() {
-    String kb = keyBuffer;
-    if (viewer.getBooleanProperty("showKeyStrokes"))
-      viewer
-          .evalStringQuiet("!set echo _KEYSTROKES; set echo bottom left;echo "
-              + Escape.escape(keyBuffer));
-    clearKeyBuffer();
-    viewer.script(kb);
-  }
-
-  public void keyTyped(KeyEvent ke) {
-    ke.consume();
-    if (!viewer.menuEnabled())
-      return;
-    char ch = ke.getKeyChar();
-    int modifiers = ke.getModifiers();
-    // for whatever reason, CTRL may also drop the 6- and 7-bits,
-    // so we are in the ASCII non-printable region 1-31
-    if (Logger.debuggingHigh)
-      Logger.debug("MouseManager keyTyped: " + ch + " " + (0+ch) + " " + modifiers);
-    if (modifiers != 0) {
-      switch (ch) {
-      case (char) 11:
-      case 'k': // keystrokes on/off
-        boolean isON = !viewer.getBooleanProperty("allowKeyStrokes");
-        switch (modifiers) {
-        case Binding.CTRL:
-          viewer.setBooleanProperty("allowKeyStrokes", isON);
-          viewer.setBooleanProperty("showKeyStrokes", true);
-          break;
-        case Binding.CTRL_ALT:
-        case Binding.ALT:
-          viewer.setBooleanProperty("allowKeyStrokes", isON);
-          viewer.setBooleanProperty("showKeyStrokes", false);
-          break;
-        }
-        clearKeyBuffer();
-        viewer.refresh(3, "showkey");
-        break;
-      case 22:
-      case 'v': // paste
-        switch (modifiers) {
-        case Binding.CTRL:
-          String ret = ImageCreator.getClipboardTextStatic();
-          if (ret.startsWith("http://") && ret.indexOf("\n") < 0) {
-            viewer.evalString("load " + Escape.escape(ret));
-            break;
-          }
-          ret = viewer.loadInline(ret, false);
-          if (ret != null)
-            Logger.error(ret);
-        }
-        break;
-      case 26:
-      case 'z': // undo
-        switch (modifiers) {
-        case Binding.CTRL:
-          viewer.undoAction(false, 0, 1);
-        }
-        break;
-      case 25:
-      case 'y': // redo
-        switch (modifiers) {
-        case Binding.CTRL:
-          viewer.undoAction(false, 0, -1);
-        }
-        break;        
-      }
-      return;
-    }
-    if (!viewer.getBooleanProperty("allowKeyStrokes"))
-      return;
-    addKeyBuffer(ch);
-  }
-
-  public void keyPressed(KeyEvent ke) {
-    actionManager.keyPressed(ke);
-  }
-
-  public void keyReleased(KeyEvent ke) {
-    actionManager.keyReleased(ke);
-  }
-
-  void mouseEntered(long time, int x, int y) {
-    actionManager.mouseEntered(time, x, y);
-  }
-
-  void mouseExited(long time, int x, int y) {
-    actionManager.mouseExited(time, x, y);
-  }
-
-  void setMouseMode() {
-    clearKeyBuffer();
-    actionManager.setMouseMode();
-  }
-
-  /**
-   * 
-   * @param time
-   * @param x
-   * @param y
-   * @param modifiers
-   * @param clickCount
-   */
-  void mouseClicked(long time, int x, int y, int modifiers, int clickCount) {
-    clearKeyBuffer();
-    // clickedCount is not reliable on some platforms
-    // so we will just deal with it ourselves
-    actionManager.mouseClicked(time, x, y, modifiers, 1);
-  }
-
-  protected void mouseMoved(long time, int x, int y, int modifiers) {
-    clearKeyBuffer();
-    actionManager.mouseMoved(time, x, y, modifiers);
-  }
-
-  void mouseWheel(long time, int rotation, int modifiers) {
-    clearKeyBuffer();
-    actionManager.mouseWheel(time, rotation, modifiers);
-  }
-
-  /**
-   * 
-   * @param time
-   * @param x
-   * @param y
-   * @param modifiers
-   * @param isPopupTrigger
-   */
-  void mousePressed(long time, int x, int y, int modifiers,
-                    boolean isPopupTrigger) {
-    clearKeyBuffer();
-    actionManager.mousePressed(time, x, y, modifiers);
-  }
-
-  void mouseReleased(long time, int x, int y, int modifiers) {
-    actionManager.mouseReleased(time, x, y, modifiers);
-  }
-
-  void mouseDragged(long time, int x, int y, int modifiers) {
-    actionManager.mouseDragged(time, x, y, modifiers);
-  }
-
-  private int applyLeftMouse(int modifiers) {
-    // if neither BUTTON2 or BUTTON3 then it must be BUTTON1
-    return ((modifiers & Binding.LEFT_MIDDLE_RIGHT) == 0) ? (modifiers | Binding.LEFT)
-        : modifiers;
-  }
-
-  int xWhenPressed, yWhenPressed, modifiersWhenPressed10;
-
   boolean handleOldJvm10Event(Event e) {
     int x = e.x, y = e.y, modifiers = e.modifiers;
     long time = e.when;
@@ -328,4 +149,193 @@ class MouseManager14 implements MouseWheelListener, MouseListener,
     mouseWheel(e.getWhen(), e.getWheelRotation(), e.getModifiers()
         | Binding.WHEEL);
   }
+
+  public void keyTyped(KeyEvent ke) {
+    ke.consume();
+    if (!viewer.menuEnabled())
+      return;
+    char ch = ke.getKeyChar();
+    int modifiers = ke.getModifiers();
+    // for whatever reason, CTRL may also drop the 6- and 7-bits,
+    // so we are in the ASCII non-printable region 1-31
+    if (Logger.debuggingHigh)
+      Logger.debug("MouseManager keyTyped: " + ch + " " + (0+ch) + " " + modifiers);
+    if (modifiers != 0) {
+      switch (ch) {
+      case (char) 11:
+      case 'k': // keystrokes on/off
+        boolean isON = !viewer.getBooleanProperty("allowKeyStrokes");
+        switch (modifiers) {
+        case Binding.CTRL:
+          viewer.setBooleanProperty("allowKeyStrokes", isON);
+          viewer.setBooleanProperty("showKeyStrokes", true);
+          break;
+        case Binding.CTRL_ALT:
+        case Binding.ALT:
+          viewer.setBooleanProperty("allowKeyStrokes", isON);
+          viewer.setBooleanProperty("showKeyStrokes", false);
+          break;
+        }
+        clearKeyBuffer();
+        viewer.refresh(3, "showkey");
+        break;
+      case 22:
+      case 'v': // paste
+        switch (modifiers) {
+        case Binding.CTRL:
+          String ret = ImageCreator.getClipboardTextStatic();
+          if (ret.startsWith("http://") && ret.indexOf("\n") < 0) {
+            viewer.evalString("load " + Escape.escape(ret));
+            break;
+          }
+          ret = viewer.loadInline(ret, false);
+          if (ret != null)
+            Logger.error(ret);
+        }
+        break;
+      case 26:
+      case 'z': // undo
+        switch (modifiers) {
+        case Binding.CTRL:
+          viewer.undoAction(false, 0, 1);
+        }
+        break;
+      case 25:
+      case 'y': // redo
+        switch (modifiers) {
+        case Binding.CTRL:
+          viewer.undoAction(false, 0, -1);
+        }
+        break;        
+      }
+      return;
+    }
+    if (!viewer.getBooleanProperty("allowKeyStrokes"))
+      return;
+    addKeyBuffer(ch);
+  }
+
+  public void keyPressed(KeyEvent ke) {
+    actionManager.keyPressed(ke);
+  }
+
+  public void keyReleased(KeyEvent ke) {
+    actionManager.keyReleased(ke);
+  }
+
+  private String keyBuffer = "";
+
+  private void clearKeyBuffer() {
+    if (keyBuffer.length() == 0)
+      return;
+    keyBuffer = "";
+    if (viewer.getBooleanProperty("showKeyStrokes"))
+      viewer
+          .evalStringQuiet("!set echo _KEYSTROKES; set echo bottom left;echo \"\"");
+  }
+
+  private void addKeyBuffer(char ch) {
+    if (ch == 10) {
+      sendKeyBuffer();
+      return;
+    }
+    if (ch == 8) {
+      if (keyBuffer.length() > 0)
+        keyBuffer = keyBuffer.substring(0, keyBuffer.length() - 1);
+    } else {
+      keyBuffer += ch;
+    }
+    if (viewer.getBooleanProperty("showKeyStrokes"))
+      viewer
+          .evalStringQuiet("!set echo _KEYSTROKES; set echo bottom left;echo "
+              + Escape.escape("\1" + keyBuffer));
+  }
+
+  private void sendKeyBuffer() {
+    String kb = keyBuffer;
+    if (viewer.getBooleanProperty("showKeyStrokes"))
+      viewer
+          .evalStringQuiet("!set echo _KEYSTROKES; set echo bottom left;echo "
+              + Escape.escape(keyBuffer));
+    clearKeyBuffer();
+    viewer.script(kb);
+  }
+
+  private void mouseEntered(long time, int x, int y) {
+    actionManager.mouseEntered(time, x, y);
+  }
+
+  private void mouseExited(long time, int x, int y) {
+    actionManager.mouseExited(time, x, y);
+  }
+
+  void setMouseMode() {
+    clearKeyBuffer();
+    actionManager.setMouseMode();
+  }
+
+  /**
+   * 
+   * @param time
+   * @param x
+   * @param y
+   * @param modifiers
+   * @param clickCount
+   */
+  private void mouseClicked(long time, int x, int y, int modifiers, int clickCount) {
+    clearKeyBuffer();
+    // clickedCount is not reliable on some platforms
+    // so we will just deal with it ourselves
+    actionManager.mouseClicked(time, x, y, modifiers, 1);
+  }
+
+  private boolean isMouseDown; // Macintosh may not recognize CTRL-SHIFT-LEFT as drag, only move
+  
+  private void mouseMoved(long time, int x, int y, int modifiers) {
+    clearKeyBuffer();
+    if (isMouseDown)
+      actionManager.mouseDragged(time, x, y, applyLeftMouse(modifiers));
+    else
+      actionManager.mouseMoved(time, x, y, modifiers);
+  }
+
+  private void mouseWheel(long time, int rotation, int modifiers) {
+    clearKeyBuffer();
+    actionManager.mouseWheel(time, rotation, modifiers);
+  }
+
+  /**
+   * 
+   * @param time
+   * @param x
+   * @param y
+   * @param modifiers
+   * @param isPopupTrigger
+   */
+  private void mousePressed(long time, int x, int y, int modifiers,
+                    boolean isPopupTrigger) {
+    clearKeyBuffer();
+    isMouseDown = true;
+    actionManager.mousePressed(time, x, y, modifiers);
+  }
+
+  private void mouseReleased(long time, int x, int y, int modifiers) {
+    isMouseDown = false;
+    actionManager.mouseReleased(time, x, y, modifiers);
+  }
+
+  private void mouseDragged(long time, int x, int y, int modifiers) {
+    if ((modifiers & Binding.MAC_COMMAND) == Binding.MAC_COMMAND)
+      modifiers = modifiers & ~Binding.RIGHT | Binding.CTRL; 
+    actionManager.mouseDragged(time, x, y, modifiers);
+  }
+
+  private static int applyLeftMouse(int modifiers) {
+    // if neither BUTTON2 or BUTTON3 then it must be BUTTON1
+    return ((modifiers & Binding.LEFT_MIDDLE_RIGHT) == 0) ? (modifiers | Binding.LEFT)
+        : modifiers;
+  }
+
+  private int xWhenPressed, yWhenPressed, modifiersWhenPressed10;
+
 }

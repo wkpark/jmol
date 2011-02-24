@@ -22,6 +22,7 @@ abstract public class Binding {
   public final static int SHIFT = Event.SHIFT_MASK; // 1
   public final static int CTRL_ALT = CTRL | ALT;
   public final static int LEFT_MIDDLE_RIGHT = LEFT | MIDDLE | RIGHT;
+  public final static int MAC_COMMAND = LEFT | RIGHT;
 
   public final static int DOUBLE_CLICK = 2 << 8;
   public final static int SINGLE_CLICK = 1 << 8;

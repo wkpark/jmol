@@ -721,6 +721,7 @@ public class ActionManager {
   }
 
   public void mouseMoved(long time, int x, int y, int modifiers) {
+    //System.out.println("actionmanager mouseMoved " + modifiers + " " + pressedCount);
     setCurrent(time, x, y, modifiers);
     moved.setCurrent(Binding.MOVED);
     if (measurementPending != null || hoverActive)
@@ -732,6 +733,7 @@ public class ActionManager {
   }
 
   public void mouseWheel(long time, int rotation, int mods) {
+    //System.out.println("actionmanager mouseWheel " + mods);
     if (viewer.isApplet() && !viewer.hasFocus())
       return;
     // sun bug? noted by Charles Xie that wheeling on a Java page
@@ -752,6 +754,7 @@ public class ActionManager {
     boolean isSelectAndDrag = isBound(Binding.getMouseAction(Integer.MIN_VALUE,
         mods), ACTION_selectAndDrag);
     int action = Binding.getMouseAction(pressedCount, mods);
+    //System.out.println("actionmanager mousePressed " + mods + " " + action);
     dragGesture.setAction(action, time);
     if (Binding.getModifiers(action) != 0) {
       action = viewer.notifyMouseClicked(x, y, action, Binding.PRESSED);
@@ -835,6 +838,7 @@ public class ActionManager {
     if (atomPickingMode != PICKING_ASSIGN_ATOM)
       exitMeasurementMode();
     int action = Binding.getMouseAction(pressedCount, mods);
+    //System.out.println("actionmanager mouseDragged " + mods + " " + action);
     dragGesture.add(action, x, y, time);
     checkAction(action, x, y, deltaX, deltaY, time, Binding.DRAGGED);
   }
@@ -846,6 +850,7 @@ public class ActionManager {
     viewer.setInMotion(false);
     viewer.setCursor(Viewer.CURSOR_DEFAULT);
     int action = Binding.getMouseAction(pressedCount, mods);
+    //System.out.println("actionmanager mouseReleased " + mods + " " + action);
     dragGesture.add(action, x, y, time);
     if (dragRelease)
       viewer.setRotateBondIndex(Integer.MIN_VALUE);

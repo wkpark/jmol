@@ -998,7 +998,6 @@ public class _ObjExporter extends __CartesianExporter {
    * @param nPts
    * @param m
    * @param prefix
-   * @param map TODO
    * @param bsValid TODO
    */
   private void outputList(Tuple3f[] pts, int nPts, Matrix4f m, String prefix, BitSet bsValid) {

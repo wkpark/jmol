@@ -493,11 +493,8 @@ class PointGroup {
         if (elements[j] != e1)
           continue;
 
-        // look for all axes to average position of A and B
-        // or including A and B if A - 0 - B is linear
+        // check if A - 0 - B is linear
 
-        pt.add(a1, a2);
-        pt.scale(0.5f);
         v1.sub(a1, center);
         v2.sub(a2, center);
         v1.normalize();
@@ -506,8 +503,14 @@ class PointGroup {
           getAllAxes(v1);
           continue;
         }
+
+        // look for all axes to average position of A and B
+
         if (nAxes[c2] < axesMaxN[c2]) {
-          v3.set(pt);
+          v3.set(a1);
+          v3.add(a2);
+          v3.scale(0.5f);
+          v3.sub(center);
           getAllAxes(v3);
         }
 

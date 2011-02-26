@@ -4100,7 +4100,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // ///////////////////////////////////////////////////////////////
 
   public boolean getAllowEmbeddedScripts() {
-    return global.allowEmbeddedScripts;
+    return global.allowEmbeddedScripts && !isPreviewOnly;
   }
 
   @Override

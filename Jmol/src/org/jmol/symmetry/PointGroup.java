@@ -143,6 +143,8 @@ class PointGroup {
 
   private Point3f[] atoms;
   private int[] elements;
+
+  private BitSet bsAtoms;
   
   static PointGroup getPointGroup(PointGroup pgLast, Atom[] atomset,
                                          BitSet bsAtoms, boolean haveVibration,
@@ -161,7 +163,7 @@ class PointGroup {
       return false;
     if (this.linearTolerance != pg.linearTolerance 
         || this.distanceTolerance != pg.distanceTolerance
-        || this.nAtoms != pg.nAtoms)
+        || this.nAtoms != pg.nAtoms || this.bsAtoms.equals(pg.bsAtoms))
       return false;
     for (int i = 0; i < nAtoms; i++) {
       // real floating == 0 here because they must be IDENTICAL POSITIONS
@@ -175,6 +177,7 @@ class PointGroup {
       boolean haveVibration, float distanceTolerance, float linearTolerance) {
     this.distanceTolerance = distanceTolerance;
     this.linearTolerance = linearTolerance;
+    this.bsAtoms = bsAtoms;
     cosTolerance = (float) (Math.cos(linearTolerance / 180 * Math.PI));
     if (!getAtomsAndElements(atomset, bsAtoms)) {
       Logger.error("Too many atoms for point group calculation");
@@ -904,12 +907,12 @@ class PointGroup {
       sb.append("set perspectivedepth off;\n");
       String m = "_" + modelIndex + "_";
       if (!haveType)
-        sb.append("draw delete pg0" + m + "*;draw delete pgva" + m
-            + "*;draw delete pgvp" + m + "*;");
+        sb.append("draw pg0").append(m).append("* delete;draw pgva").append(m
+           ).append("* delete;draw pgvp").append(m).append("* delete;");
       if (!haveType || type.equalsIgnoreCase("Ci"))
         sb.append("draw pg0").append(m).append(
             haveInversionCenter ? "inv " : " ").append(
-            Escape.escape(center) + (haveInversionCenter ? "\"i\";\n" : ";\n"));
+            Escape.escape(center)).append(haveInversionCenter ? "\"i\";\n" : ";\n");
       float offset = 0.1f;
       for (int i = 2; i < maxAxis; i++) {
         if (i == firstProper)
@@ -930,12 +933,12 @@ class PointGroup {
             if (op.type == OPERATION_IMPROPER_AXIS)
               scale = -scale;
             sb.append("draw pgva").append(m).append(label).append("_").append(
-                j + 1).append(" width 0.05 scale " + scale + " ").append(
+                j + 1).append(" width 0.05 scale ").append(scale).append(" ").append(
                 Escape.escape(v));
             v.scaleAdd(-2, op.normalOrAxis, v);
             boolean isPA = (principalAxis != null && op.index == principalAxis.index);
             sb.append(Escape.escape(v)).append(
-                "\"" + label + (isPA ? "*" : "") + "\" color ").append(
+                "\"").append(label).append(isPA ? "*" : "").append("\" color ").append(
                 isPA ? "red" : op.type == OPERATION_IMPROPER_AXIS ? "blue"
                     : "yellow").append(";\n");
           }
@@ -946,7 +949,7 @@ class PointGroup {
             continue;
           op = axes[0][j];
           sb.append("draw pgvp").append(m).append(j + 1).append(
-              "disk scale " + (scaleFactor * radius * 2) + " CIRCLE PLANE ")
+              "disk scale ").append(scaleFactor * radius * 2).append(" CIRCLE PLANE ")
               .append(Escape.escape(center));
           v.set(op.normalOrAxis);
           v.add(center);
@@ -954,27 +957,30 @@ class PointGroup {
           v.set(op.normalOrAxis);
           v.add(center);
           sb.append("draw pgvp").append(m).append(j + 1).append(
-              "ring width 0.05 scale " + (scaleFactor * radius * 2) + " arc ")
+              "ring width 0.05 scale ").append(scaleFactor * radius * 2).append(" arc ")
               .append(Escape.escape(v));
           v.scaleAdd(-2, op.normalOrAxis, v);
           sb.append(Escape.escape(v));
           v.x += 0.011;
           v.y += 0.012;
           v.z += 0.013;
-          sb.append(Escape.escape(v)).append("{0 360 0.5} color ")
-              .append(principalPlane != null && op.index == principalPlane.index ? "red"
+          sb
+              .append(Escape.escape(v))
+              .append("{0 360 0.5} color ")
+              .append(
+                  principalPlane != null && op.index == principalPlane.index ? "red"
                       : "blue").append(";\n");
         }
-      sb.append("# name=" + name);
-      sb.append(", nCi=" + (haveInversionCenter ? 1 : 0));
-      sb.append(", nCs=" + nAxes[0]);
-      sb.append(", nCn=" + nType[OPERATION_PROPER_AXIS][0]);
-      sb.append(", nSn=" + nType[OPERATION_IMPROPER_AXIS][0]);
+      sb.append("# name=").append(name);
+      sb.append(", nCi=").append(haveInversionCenter ? 1 : 0);
+      sb.append(", nCs=").append(nAxes[0]);
+      sb.append(", nCn=").append(nType[OPERATION_PROPER_AXIS][0]);
+      sb.append(", nSn=").append(nType[OPERATION_IMPROPER_AXIS][0]);
       sb.append(": ");
       for (int i = maxAxis; --i >= 2;)
         if (nAxes[i] > 0) {
-          String s = " n" + (i < firstProper ? "S" : "C") + (i % firstProper);
-          sb.append(s + "=" + nAxes[i]);
+          sb.append(" n").append(i < firstProper ? "S" : "C").append(i % firstProper);
+          sb.append("=").append(nAxes[i]);
         }
       sb.append(";\n");
       drawInfo = sb.toString();
@@ -982,58 +988,59 @@ class PointGroup {
     }
     int n = 0;
     int nTotal = 1;
+    String ctype = (haveInversionCenter ? "Ci" : "center");
+    if (haveInversionCenter)
+      nTotal++;
+    if (info == null)
+      sb.append("\n\n").append(name).append("\t").append(ctype).append("\t").append(Escape.escape(center));
+    else
+      info.put(ctype, center);
     for (int i = maxAxis; --i >= 0;) {
       if (nAxes[i] > 0) {
         n = nUnique[i];
         String label = axes[i][0].getLabel();
-        if (info != null)
+        if (info == null)
+          sb.append("\n\n").append(name).append("\tn").append(label).append("\t").append(nAxes[i]).append("\t").append(n);
+        else
           info.put("n" + label, Integer.valueOf(nAxes[i]));
-        sb.append("\n\n" + name + "\tn" + label + "\t" + nAxes[i] + "\t" + n);
         n *= nAxes[i];
         nTotal += n;
         nType[axes[i][0].type][1] += n;
         List<Vector3f> vinfo = (info == null ? null : new ArrayList<Vector3f>());
         for (int j = 0; j < nAxes[i]; j++) {
           //axes[i][j].typeIndex = j + 1;
-          if (vinfo != null) {
+          if (vinfo == null)
+            sb.append("\n").append(name).append("\t").append(label).append("_").append(j + 1).append("\t"
+               ).append(axes[i][j].normalOrAxis);
+          else
             vinfo.add(axes[i][j].normalOrAxis);
-          }
-          sb.append("\n" + name + "\t" + label + "_" + (j + 1) + "\t"
-              + axes[i][j].normalOrAxis);
         }
         if (info != null)
           info.put(label, vinfo);
       }
     }
-    if (haveInversionCenter) {
-      nTotal++;
-      if (info == null)
-        sb.append("\n\n" + name + "\tCi\t" + Escape.escape(center));
-      else
-        info.put("Ci", center);
-    }
-
+    
     if (info == null) {
       sb.append("\n");
-      sb.append("\n" + name + "\ttype\tnType\tnUnique");
-      sb.append("\n" + name + "\tE\t  1\t  1");
+      sb.append("\n").append(name).append("\ttype\tnType\tnUnique");
+      sb.append("\n").append(name).append("\tE\t  1\t  1");
 
       n = (haveInversionCenter ? 1 : 0);
-      sb.append("\n" + name + "\tCi\t  " + n + "\t  " + n);
+      sb.append("\n").append(name).append("\tCi\t  ").append(n).append("\t  ").append(n);
 
-      sb.append("\n" + name + "\tCs\t");
+      sb.append("\n").append(name).append("\tCs\t");
       TextFormat.rFill(sb, "    ", nAxes[0] + "\t");
       TextFormat.rFill(sb, "    ", nAxes[0] + "\n");
 
-      sb.append(name + "\tCn\t");
+      sb.append(name).append("\tCn\t");
       TextFormat.rFill(sb, "    ", nType[OPERATION_PROPER_AXIS][0] + "\t");
       TextFormat.rFill(sb, "    ", nType[OPERATION_PROPER_AXIS][1] + "\n");
 
-      sb.append(name + "\tSn\t");
+      sb.append(name).append("\tSn\t");
       TextFormat.rFill(sb, "    ", nType[OPERATION_IMPROPER_AXIS][0] + "\t");
       TextFormat.rFill(sb, "    ", nType[OPERATION_IMPROPER_AXIS][1] + "\n");
 
-      sb.append(name + "\t\tTOTAL\t");
+      sb.append(name).append("\t\tTOTAL\t");
       TextFormat.rFill(sb, "    ", nTotal + "\n");
       textInfo = sb.toString();
       return textInfo;

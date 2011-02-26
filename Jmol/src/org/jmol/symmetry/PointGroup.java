@@ -479,7 +479,6 @@ class PointGroup {
     Vector3f v1 = new Vector3f();
     Vector3f v2 = new Vector3f();
     Vector3f v3 = new Vector3f();
-    Point3f pt = new Point3f();
 
     // look for the proper and improper axes relating pairs of atoms
 
@@ -583,10 +582,9 @@ class PointGroup {
                 v3.cross(v1, v2);
                 getAllAxes(v3);
 //                checkAxisOrder(3, v3, center);
-                pt.set(atoms[i]);
-                pt.add(atoms[j]);
-                pt.add(atoms[k]);
-                v1.set(pt);
+                v1.set(atoms[i]);
+                v1.add(atoms[j]);
+                v1.add(atoms[k]);
                 v1.normalize();
                 if (!isParallel(v1, v3))
                   getAllAxes(v1);

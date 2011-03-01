@@ -119,6 +119,9 @@ public class CoreType {
       if (code.equalsIgnoreCase(TINKER._code)) {
         return TINKER;
       }
+      if (code.equalsIgnoreCase(UNLISTED._code)) {
+        return UNLISTED;
+      }
     }
     return UNKNOWN;
   }
@@ -212,6 +215,9 @@ public class CoreType {
       if (name.equalsIgnoreCase(TINKER._name)) {
         return TINKER;
       }
+      if (name.equalsIgnoreCase(UNLISTED._name)) {
+        return UNLISTED;
+      }
     }
     return UNKNOWN;
   }
@@ -266,6 +272,7 @@ public class CoreType {
   static public final CoreType QMD          = new CoreType("QMD", "Q", true); //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType SHARPEN      = new CoreType("Sharpen", "SP", true);   //$NON-NLS-1$//$NON-NLS-2$
   static public final CoreType TINKER       = new CoreType("Tinker", "T", true);   //$NON-NLS-1$//$NON-NLS-2$
+  static public final CoreType UNLISTED     = new CoreType("Unlisted", "UL", true);   //$NON-NLS-1$//$NON-NLS-2$
 
   // Attributes
   private final String _name;

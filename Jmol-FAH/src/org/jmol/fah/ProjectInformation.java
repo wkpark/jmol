@@ -761,6 +761,8 @@ public class ProjectInformation {
           info._fciCore = CoreType.SHARPEN;
         } else if ("TINKER".equalsIgnoreCase(core)) {
           info._fciCore = CoreType.TINKER;
+        } else if ("UNLISTED".equalsIgnoreCase(core)) {
+          info._fciCore = CoreType.UNLISTED;
         } else {
           outputTextLn("FCI Core unknown: " + core);
         }

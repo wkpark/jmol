@@ -8191,6 +8191,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           width, height, fullPath);
     String info = "";
     int n = 0;
+    fileName = getFileNameFromDialog(fileName, quality);
+    if (fullPath != null)
+      fullPath[0] = fileName;
+    if (fileName == null) 
+      return null;
     int ptDot = fileName.indexOf(".");
     if (ptDot < 0)
       ptDot = fileName.length();
@@ -8204,7 +8209,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (fullPath != null)
         fullPath[0] = fileName;
       String msg = (String) createImage(fileName, type, text_or_bytes, quality,
-          width, height);
+          width, height, null, false);
       Logger.info(msg);
       info += msg + "\n";
       if (!msg.startsWith("OK"))
@@ -8221,7 +8226,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public Object createImage(String fileName, String type, Object text_or_bytes,
                             int quality, int width, int height) {
     return createImage(fileName, type, text_or_bytes, quality, width, height,
-        null);
+        null, true);
   }
 
   /**
@@ -8248,6 +8253,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public Object createImage(String fileName, String type, Object text_or_bytes,
                             int quality, int width, int height,
                             String[] fullPath) {
+    return createImage(fileName, type, text_or_bytes, quality, width, height, fullPath, true);
+  }
+  
+  private Object createImage(String fileName, String type, Object text_or_bytes,
+                            int quality, int width, int height,
+                            String[] fullPath, boolean doCheck) {
+
 
     /*
      * 
@@ -8279,7 +8291,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (fileName == null) {
         err = clipImage((String) text_or_bytes);
       } else {
-        fileName = getFileNameFromDialog(fileName, quality);
+        if (doCheck)
+          fileName = getFileNameFromDialog(fileName, quality);
         if (fullPath != null)
           fullPath[0] = fileName;
         if (fileName == null) {

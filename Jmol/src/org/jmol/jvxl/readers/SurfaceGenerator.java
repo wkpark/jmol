@@ -416,6 +416,11 @@ public class SurfaceGenerator {
       return true;
     }
 
+    if ("propertyDistanceMax" == propertyName) {
+      params.propertyDistanceMax = ((Float) value).floatValue();
+      return true;
+    }
+
     if ("propertySmoothingPower" == propertyName) {
       params.propertySmoothingPower = ((Integer) value).intValue();
       return true;

@@ -67,14 +67,16 @@ class AtomPropertyMapper extends AtomDataReader {
       smoothingPower = (smoothingPower - 11) / 2f;
       // 0 to 10 becomes d^-10 to d^-1, and we'll be using distance^2
     }
-    maxDistance = Integer.MAX_VALUE;
+    maxDistance = params.propertyDistanceMax;
+    if (!doSmoothProperty && maxDistance == Integer.MAX_VALUE)
+      maxDistance = 5.0f; // usually just local to a group
     if (mepType != null) {
       doSmoothProperty = true;
       if (params.mep_calcType >= 0)
         calcType = params.mep_calcType;
       m = (MepCalculationInterface) Interface.getOptionInterface("quantum." + mepType + "Calculation");
     }
-    getAtoms(Float.NaN, false, doSmoothProperty);    
+    getAtoms(Float.NaN, false, true);    
     setHeader("property", params.calculationType);
     // for plane mapping
     setRangesAndAddAtoms(params.solvent_ptsPerAngstrom, params.solvent_gridMax, 0); 
@@ -123,8 +125,13 @@ class AtomPropertyMapper extends AtomDataReader {
         continue;
       float d2 = pt.distanceSquared(ptA);
       if (isNearby) {
-        if (d2 < dminNearby)
+        if (d2 < dminNearby) {
           dminNearby = d2;
+          if (!doSmoothProperty && dminNearby < dmin) {
+            dmin = d2;
+            value = Float.NaN;
+          }
+        }
       } else if (d2 < dmin) {
         dmin = d2;
         if (!doSmoothProperty)
@@ -139,7 +146,8 @@ class AtomPropertyMapper extends AtomDataReader {
       }
     }
     //System.out.println(pt + " " + value + " " + vdiv + " " + value / vdiv);
-    return (m != null ? value : doSmoothProperty ? (vdiv == 0  || dminNearby < dmin ? Float.NaN : value / vdiv) : value);
+    return (m != null ? value : doSmoothProperty ? (vdiv == 0
+        || dminNearby < dmin ? Float.NaN : value / vdiv) : value);
   }
 
 }

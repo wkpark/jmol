@@ -15625,6 +15625,11 @@ public class ScriptEvaluator {
           }
           if (tokProperty == Token.color)
             colorScheme = "colorRGB";
+          if (tokAt(i + 1) == Token.within) {
+            float d = floatParameter(i = i + 2);
+            sbCommand.append(" within " + d);
+            addShapeProperty(propertyList, "propertyDistanceMax", Float.valueOf(d)); 
+          }
         }
         propertyValue = data;
         break;

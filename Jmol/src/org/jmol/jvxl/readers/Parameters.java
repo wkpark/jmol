@@ -232,6 +232,7 @@ public class Parameters {
     contourColixes = null;
     mep_calcType = -1;
     pocket = null;
+    propertyDistanceMax = Integer.MAX_VALUE;
     propertySmoothing = false;
     propertySmoothingPower = 4;
     rangeDefined = false;
@@ -751,6 +752,7 @@ public class Parameters {
   public boolean usePropertyForColorRange = true;
   public boolean isPeriodic;
   public boolean doFullMolecular;
+  public float propertyDistanceMax = Integer.MAX_VALUE;
   
   void setMapRanges(SurfaceReader surfaceReader, boolean haveData) {
     if (!colorDensity)

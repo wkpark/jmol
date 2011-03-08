@@ -76,12 +76,13 @@ public class AtomSetCollection {
   }
   
   private final static String[] globalBooleans = {"someModelsHaveFractionalCoordinates",
-    "someModelsHaveSymmetry", "someModelsHaveUnitcells", "isPDB"};
+    "someModelsHaveSymmetry", "someModelsHaveUnitcells", "someModelsHaveCONECT", "isPDB"};
 
   public final static int GLOBAL_FRACTCOORD = 0;
   public final static int GLOBAL_SYMMETRY = 1;
   public final static int GLOBAL_UNITCELLS = 2;
-  private final static int GLOBAL_ISPDB = 3;
+  private final static int GLOBAL_CONECT = 3;
+  private final static int GLOBAL_ISPDB = 4;
 
   public void setIsPDB() {
     setGlobalBoolean(GLOBAL_ISPDB);
@@ -251,7 +252,11 @@ public class AtomSetCollection {
     setAtomSetCollectionAuxiliaryInfo("loadState", collection.getAtomSetCollectionAuxiliaryInfo("loadState"));
     for (int atomSetNum = 0; atomSetNum < collection.atomSetCount; atomSetNum++) {
       newAtomSet();
-      atomSetAuxiliaryInfo[currentAtomSetIndex] = collection.atomSetAuxiliaryInfo[atomSetNum];
+      // must fix referencing for someModelsHaveCONECT business
+      Map info = atomSetAuxiliaryInfo[currentAtomSetIndex] = collection.atomSetAuxiliaryInfo[atomSetNum];
+      int[] atomInfo = (int[]) info.get("PDB_CONECT_firstAtom_count_max");
+      if (atomInfo != null)
+        atomInfo[0] += existingAtomsCount;
       setAtomSetAuxiliaryInfo("title", collection.collectionName);
       setAtomSetName(collection.getAtomSetName(atomSetNum));
       for (int atomNum = 0; atomNum < collection.atomSetAtomCounts[atomSetNum]; atomNum++) {
@@ -527,7 +532,7 @@ public class AtomSetCollection {
     }
     int firstAtom = connectNextAtomIndex;
     for (int i = connectNextAtomSet; i < atomSetCount; i++) {
-      setAtomSetCollectionAuxiliaryInfo("someModelsHaveCONECT", Boolean.TRUE);
+      setGlobalBoolean(GLOBAL_CONECT);
       setAtomSetAuxiliaryInfo("PDB_CONECT_firstAtom_count_max", new int[] {firstAtom, atomSetAtomCounts[i], maxSerial}, i);
       setAtomSetAuxiliaryInfo("PDB_CONECT_bonds", vConnect, i);
       firstAtom += atomSetAtomCounts[i];

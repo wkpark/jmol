@@ -458,9 +458,8 @@ abstract public class ModelSet extends ModelCollection {
     short mad = viewer.getMadBond();
     for (int i = baseModelIndex; i < modelCount; i++) {
       List<int[]> vConnect = (List<int[]>) getModelAuxiliaryInfo(i, "PDB_CONECT_bonds");
-      if (vConnect == null) {
+      if (vConnect == null)
         continue;
-      }
       int nConnect = vConnect.size();
       setModelAuxiliaryInfo(i, "initialBondCount", Integer.valueOf(nConnect));
       int[] atomInfo = (int[]) getModelAuxiliaryInfo(i, "PDB_CONECT_firstAtom_count_max");
@@ -469,32 +468,26 @@ abstract public class ModelSet extends ModelCollection {
       int max = atomInfo[2];
       int[] serialMap = new int[max + 1];
       int iSerial;
-      for (int iAtom = firstAtom; iAtom < atomMax; iAtom++) {
-        if ((iSerial = atomSerials[iAtom]) > 0) {
+      for (int iAtom = firstAtom; iAtom < atomMax; iAtom++)
+        if ((iSerial = atomSerials[iAtom]) > 0)
           serialMap[iSerial] = iAtom + 1;
-        }
-      }
       for (int iConnect = 0; iConnect < nConnect; iConnect++) {
         int[] pair = vConnect.get(iConnect);
         int sourceSerial = pair[0];
         int targetSerial = pair[1];
         short order = (short) pair[2];
         if (sourceSerial < 0 || targetSerial < 0 || sourceSerial > max
-            || targetSerial > max) {
+            || targetSerial > max)
           continue;
-        }
         int sourceIndex = serialMap[sourceSerial] - 1;
         int targetIndex = serialMap[targetSerial] - 1;
-        if (sourceIndex < 0 || targetIndex < 0) {
+        if (sourceIndex < 0 || targetIndex < 0)
           continue;
-        }
         if (bsExclude != null) {
-          if (atoms[sourceIndex].isHetero()) {
+          if (atoms[sourceIndex].isHetero())
             bsExclude.set(sourceIndex);
-          }
-          if (atoms[targetIndex].isHetero()) {
+          if (atoms[targetIndex].isHetero())
             bsExclude.set(targetIndex);
-          }
         }
         checkValencesAndBond(atoms[sourceIndex], atoms[targetIndex], order,
             (order == JmolEdge.BOND_H_REGULAR ? 1 : mad), null);

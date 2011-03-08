@@ -2556,10 +2556,8 @@ abstract public class ModelCollection extends BondCollection {
         short order = getBondOrder(myBondingRadius, atomNear
             .getBondingRadiusFloat(), iter.foundDistance2(), minBondDistance2,
             bondTolerance);
-        if (order > 0) {
-          if (checkValencesAndBond(atom, atomNear, order, mad, bsBonds))
+        if (order > 0 && checkValencesAndBond(atom, atomNear, order, mad, bsBonds))
             nNew++;
-        }
       }
       iter.release();
     }

@@ -16254,7 +16254,7 @@ public class ScriptEvaluator {
         if ((isCavity || haveRadius) && !surfaceObjectSeen) {
           surfaceObjectSeen = true;
           addShapeProperty(propertyList, "bsSolvent",
-              lookupIdentifierValue("solvent"));
+            (haveRadius ? new BitSet() : lookupIdentifierValue("solvent")));
           addShapeProperty(propertyList, "sasurface", new Float(0));
         }
         surfaceObjectSeen = !isCavity;
@@ -16524,7 +16524,7 @@ public class ScriptEvaluator {
     if ((isCavity || haveRadius) && !surfaceObjectSeen) {
       surfaceObjectSeen = true;
       addShapeProperty(propertyList, "bsSolvent",
-          lookupIdentifierValue("solvent"));
+          (haveRadius ? new BitSet() : lookupIdentifierValue("solvent")));
       addShapeProperty(propertyList, "sasurface", new Float(0));
     }
 

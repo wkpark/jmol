@@ -176,18 +176,15 @@ class AnimationManager {
   }
 
   void clear() {
-    clearAnimation();
-  }
-  
-  void clearAnimation() {
     setAnimationOn(false);
     setCurrentModelIndex(0);
+    currentDirection = 1;
     setAnimationDirection(1);
     setAnimationFps(10);
     setAnimationReplayMode(0, 0, 0);
     initializePointers(0);
   }
-
+  
   Map<String, Object> getAnimationInfo(){
     Map<String, Object> info = new Hashtable<String, Object>();
     info.put("firstModelIndex", Integer.valueOf(firstModelIndex));

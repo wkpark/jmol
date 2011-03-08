@@ -364,37 +364,46 @@ public class JaguarReader extends MOReader {
 
   private void readFrequencies() throws Exception {
     int atomCount = atomSetCollection.getLastAtomSetAtomCount();
-    int iAtom0 = atomSetCollection.getAtomCount() - atomCount;
     discardLinesUntilStartsWith("  frequencies ");
     while (line != null && line.startsWith("  frequencies ")) {
+      int iAtom0 = atomSetCollection.getAtomCount() - atomCount;
       String[] frequencies = getTokens();
       int frequencyCount = frequencies.length - 1;
       boolean[] ignore = new boolean[frequencyCount];
       // skip to "intensity" or "force" line
       String[] symmetries = null;
       String[] intensities = null;
-      while (line != null 
-          && !line.startsWith("  intensities ") 
-          && !line.startsWith("  force ")) {
-        readLine();
+      while (line != null && line.charAt(2) != ' ') {
         if (line.indexOf("symmetries") >= 0)
           symmetries = getTokens();
+        else if (line.indexOf("intensities") >= 0)
+          intensities = getTokens();
+        readLine();
       }
-      if (line.startsWith("  intensities"))
-        intensities = getTokens();
       for (int i = 0; i < frequencyCount; i++) {
         ignore[i] = !doGetVibration(++vibrationNumber);
         if (ignore[i]) 
           continue;
         atomSetCollection.cloneFirstAtomSet();
-        atomSetCollection.setAtomSetFrequency(null, symmetries == null ? null : symmetries[i + 1], frequencies[i], null);
+        atomSetCollection.setAtomSetFrequency(null, symmetries == null ? null : symmetries[i + 1], frequencies[i + 1], null);
         if (intensities != null)
           atomSetCollection.setAtomSetProperty("IRIntensity",
               intensities[i + 1] + " km/mol");
       }
+      haveLine = true;
       fillFrequencyData(iAtom0, atomCount, atomCount, ignore, false, 0, 0, null);
       readLine();
       readLine();
     }
+  }
+  
+  private boolean haveLine;
+
+  @Override
+  public String readLine() throws Exception {
+    if (!haveLine)
+      return super.readLine();
+    haveLine = false;
+    return line;
   }
 }

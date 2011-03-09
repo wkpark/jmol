@@ -13392,6 +13392,10 @@ public class ScriptEvaluator {
       type = "HIS";
       pt++;
       break;
+    case Token.jmol:
+      type = "ZIPALL";
+      pt++;
+      break;
     case Token.var:
       type = "VAR";
       pt += 2;
@@ -13556,12 +13560,12 @@ public class ScriptEvaluator {
           && !Parser
               .isOneOf(
                   type,
-                  "ZIP;ZIPALL;SPT;HIS;MO;ISO;ISOX;MESH;PMESH;VAR;FILE;FUNCS;CML;XYZ;XYZRN;MENU;MOL;PDB;PGRP;QUAT;RAMA;SDF;V2000;V3000;"))
+                  "JMOL;ZIP;ZIPALL;SPT;HIS;MO;ISO;ISOX;MESH;PMESH;VAR;FILE;FUNCS;CML;XYZ;XYZRN;MENU;MOL;PDB;PGRP;QUAT;RAMA;SDF;V2000;V3000;"))
         error(
             ERROR_writeWhat,
             "COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|ISOSURFACE|JMOL|MENU|MO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
                 + "|RAMACHANDRAN|SPT|STATE|VAR x|ZIP|ZIPALL  CLIPBOARD",
-            "CML|GIF|JPG|JPG64|JVXL|MESH|MOL|PDB|PMESH|PNG|PPM|SDF|V2000|V3000|SPT|XJVXL|XYZ|XYZRN|ZIP"
+            "CML|GIF|JPG|JPG64|JMOL|JVXL|MESH|MOL|PDB|PMESH|PNG|PPM|SDF|V2000|V3000|SPT|XJVXL|XYZ|XYZRN|ZIP"
                 + driverList.toUpperCase().replace(';', '|'));
       if (isSyntaxCheck)
         return "";
@@ -14190,9 +14194,9 @@ public class ScriptEvaluator {
     if (n == null || n.intValue() == 0) {
       setShapeProperty(JmolConstants.SHAPE_MO, "init", Integer
           .valueOf(modelIndex));
-      setShapeProperty(JmolConstants.SHAPE_MO, "moData", moData);
     } else if (ptMO == Integer.MAX_VALUE) {
     }
+    setShapeProperty(JmolConstants.SHAPE_MO, "moData", moData);
     return (String) getShapeProperty(JmolConstants.SHAPE_MO, "showMO", ptMO);
   }
 

@@ -101,6 +101,6 @@ public class VectorsRenderer extends ShapeRenderer {
           atom.screenY, atom.screenZ, screenArrowHead.x, screenArrowHead.y,
           screenArrowHead.z);
     g3d.fillConeScreen(Graphics3D.ENDCAPS_FLAT, headWidthPixels, screenArrowHead,
-        screenVectorEnd);
+        screenVectorEnd, false);
   }
 }

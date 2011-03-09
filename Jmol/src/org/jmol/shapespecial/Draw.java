@@ -108,6 +108,7 @@ public void initShape() {
   private boolean isCrossed;
   private boolean isValid;
   private boolean noHead;
+  private boolean isBarb;
   private int indicatedModelIndex = -1;
   private int[] modelInfo;
   private boolean makePoints;
@@ -135,7 +136,7 @@ public void initShape() {
     if ("init" == propertyName) {
       colix = Graphics3D.ORANGE;
       newScale = 0;
-      isFixed = isReversed = isRotated45 = isCrossed = noHead = false;
+      isFixed = isReversed = isRotated45 = isCrossed = noHead = isBarb = false;
       isCurve = isArc = isArrow = isPlane = isCircle = isCylinder = isLine = false;
       isVertices = isPerpendicular = isVector = false;
       isValid = true;
@@ -289,6 +290,11 @@ public void initShape() {
 
     if ("nohead" == propertyName) {
       noHead = true;
+      return;
+    }
+
+    if ("isbarb" == propertyName) {
+      isBarb = true;
       return;
     }
 
@@ -595,7 +601,8 @@ public void initShape() {
       }
     }
     thisMesh.isVector = isVector;
-    thisMesh.nohead = noHead;
+    thisMesh.noHead = noHead;
+    thisMesh.isBarb = isBarb;
     thisMesh.width= (thisMesh.drawType == JmolConstants.DRAW_CYLINDER || 
         thisMesh.drawType == JmolConstants.DRAW_CIRCULARPLANE ? -Math.abs(width) : width);
     thisMesh.setCenter(-1);
@@ -1293,8 +1300,10 @@ public void initShape() {
       str.append(" fixed");
     if (iModel < 0)
       iModel = 0;
-    if (mesh.nohead)
+    if (mesh.noHead)
       str.append(" noHead");
+    else if (mesh.isBarb)
+      str.append(" barb");
     if (mesh.scale != 1
         && (mesh.haveXyPoints || mesh.drawType == JmolConstants.DRAW_CIRCLE || mesh.drawType == JmolConstants.DRAW_ARC))
       str.append(" scale ").append(mesh.scale);

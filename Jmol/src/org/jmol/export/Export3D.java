@@ -514,7 +514,7 @@ final public class Export3D implements JmolRendererInterface {
   }
 
   public void fillConeScreen(byte endcap, int screenDiameter, Point3i pointBase,
-                       Point3i screenTip) {
+                       Point3i screenTip, boolean isBarb) {
     // dipole, vector, draw arrow/vector
     ptA.set(pointBase.x, pointBase.y, pointBase.z);
     ptB.set(screenTip.x, screenTip.y, screenTip.z);

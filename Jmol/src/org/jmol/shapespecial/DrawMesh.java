@@ -53,10 +53,12 @@ public class DrawMesh extends Mesh {
   boolean isFixed;
   boolean isVector;
   float drawArrowScale;
-  boolean nohead;
+  boolean noHead;
+  boolean isBarb;
+  
 
   BitSet bsMeshesVisible = new BitSet();
-  
+
   final void setCenter(int iModel) {
     Point3f center = new Point3f(0, 0, 0);
     int iptlast = -1;

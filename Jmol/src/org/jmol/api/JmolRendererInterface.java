@@ -213,7 +213,7 @@ public interface JmolRendererInterface {
                                                 Point3i pt0i, Point3i pt1i);
 
   public abstract void fillConeScreen(byte endcap, int screenDiameter, Point3i screenBase,
-                                Point3i screenTip);
+                                Point3i screenTip, boolean isBarb);
 
   public abstract void fillConeSceen(byte endcap, int screenDiameter, Point3f screenBase,
                                 Point3f screenTip);

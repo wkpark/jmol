@@ -14561,6 +14561,9 @@ public class ScriptEvaluator {
       case Token.nohead:
         propertyName = "nohead";
         break;
+      case Token.barb:
+        propertyName = "isbarb";
+        break;
       case Token.rotate45:
         propertyName = "rotate45";
         break;

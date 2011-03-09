@@ -1230,11 +1230,11 @@ final public class Graphics3D implements JmolRendererInterface {
  }
 
   public void fillConeScreen(byte endcap, int screenDiameter,
-                       Point3i screenBase, Point3i screenTip) {
+                       Point3i screenBase, Point3i screenTip, boolean isBarb) {
     // dipoles, mesh, vectors
     cylinder3d.renderCone(colixCurrent, !addAllPixels, endcap, screenDiameter,
                           screenBase.x, screenBase.y, screenBase.z,
-                          screenTip.x, screenTip.y, screenTip.z, false);
+                          screenTip.x, screenTip.y, screenTip.z, false, isBarb);
   }
 
   public void fillConeSceen(byte endcap, int screenDiameter,
@@ -1242,7 +1242,7 @@ final public class Graphics3D implements JmolRendererInterface {
     // cartoons, rockets
     cylinder3d.renderCone(colixCurrent, !addAllPixels, endcap, screenDiameter,
                           screenBase.x, screenBase.y, screenBase.z,
-                          screenTip.x, screenTip.y, screenTip.z, true);
+                          screenTip.x, screenTip.y, screenTip.z, true, false);
   }
 
   public void drawHermite(int tension,

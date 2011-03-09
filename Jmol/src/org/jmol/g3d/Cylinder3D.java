@@ -168,7 +168,7 @@ class Cylinder3D {
     calcArgbEndcap(true, true);
 
     if (diameter > 0)
-      generateBaseEllipsePrecisely();
+      generateBaseEllipsePrecisely(false);
     if (endcaps == Graphics3D.ENDCAPS_FLAT)
       renderFlatEndcapPrecisely(true);
     line3d.setLineBits(this.dxBf, this.dyBf);
@@ -213,7 +213,7 @@ class Cylinder3D {
   float xTip, yTip, zTip;
 
   void renderCone(short colix, boolean isScreened, byte endcap, int diameter, float xA, float yA,
-                  float zA, float xTip, float yTip, float zTip, boolean doFill) {
+                  float zA, float xTip, float yTip, float zTip, boolean doFill, boolean isBarb) {
     if (diameter > g3d.height * 3)
       return;
     dxBf = (xTip) - (xAf = xA);
@@ -246,12 +246,12 @@ class Cylinder3D {
     //System.out.println(r2);
     this.endcaps = endcap;
     calcArgbEndcap(false, true);
-    generateBaseEllipsePrecisely();
-    if (endcaps == Graphics3D.ENDCAPS_FLAT)
+    generateBaseEllipsePrecisely(isBarb);
+    if (!isBarb && endcaps == Graphics3D.ENDCAPS_FLAT)
       renderFlatEndcapPrecisely(false);
     g3d.setZMargin(5);
     for (int i = rasterCount; --i >= 0;)
-      plotRasterCone(i, doFill);
+      plotRasterCone(i, doFill, isBarb);
     g3d.setZMargin(0);
   }
 
@@ -281,7 +281,7 @@ class Cylinder3D {
     interpolate(1, 2);
   }
 
-  private void generateBaseEllipsePrecisely() {
+  private void generateBaseEllipsePrecisely(boolean isBarb) {
     tEvenDiameter = (diameter & 1) == 0;
     //Logger.debug("diameter=" + diameter);
     radius = diameter / 2.0f;
@@ -299,12 +299,19 @@ class Cylinder3D {
       sinPhi = dyBf / mag2d;
     }
 
-    calcRotatedPoint(0f, 0, true);
-    calcRotatedPoint(0.5f, 1, true);
-    calcRotatedPoint(1f, 2, true);
-    rasterCount = 3;
-    interpolatePrecisely(0, 1);
-    interpolatePrecisely(1, 2);
+    if (isBarb) {
+      calcRotatedPoint(0f, 0, true);
+      calcRotatedPoint(0.5f, 1, true);
+      rasterCount = 2;
+      interpolatePrecisely(0, 1);
+    } else {
+      calcRotatedPoint(0f, 0, true);
+      calcRotatedPoint(0.5f, 1, true);
+      calcRotatedPoint(1f, 2, true);
+      rasterCount = 3;
+      interpolatePrecisely(0, 1);
+      interpolatePrecisely(1, 2);
+    }
     for (int i = 0; i < rasterCount; i++) {
       xRaster[i] = (int) Math.floor(txRaster[i]);
       yRaster[i] = (int) Math.floor(tyRaster[i]);
@@ -585,7 +592,7 @@ class Cylinder3D {
       g3d.fillSphere(diameter, xA + dxB, yA + dyB, zA + dzB + 1);
   }
 
-  private void plotRasterCone(int i, boolean doFill) {
+  private void plotRasterCone(int i, boolean doFill, boolean isBarb) {
     float x = txRaster[i];
     float y = tyRaster[i];
     float z = tzRaster[i];
@@ -614,7 +621,7 @@ class Cylinder3D {
           (int) Math.ceil(yTip - yUp), (int) Math.ceil(zTip - zUp), true);
       }    
   
-      if (!(endcaps == Graphics3D.ENDCAPS_FLAT && dzB > 0)) {
+      if (!isBarb && !(endcaps != Graphics3D.ENDCAPS_FLAT && dzB > 0)) {
         line3d.plotLineDelta(argb, isScreenedA, argb, isScreenedA, (int) xDn,
             (int) yDn, (int) zDn, (int) Math.ceil(xTip - xDn), (int) Math
                 .ceil(yTip - yDn), (int) Math.ceil(zTip - zDn), true);

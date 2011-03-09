@@ -157,7 +157,7 @@ public class DipolesRenderer extends ShapeRenderer {
         g3d.fillCylinderBits(Graphics3D.ENDCAPS_FLAT, crossWidthPixels, cross0,
             cross1);
       g3d.fillConeScreen(Graphics3D.ENDCAPS_FLAT, headWidthPixels,
-          screens[arrowHeadBase], screens[arrowHeadTip]);
+          screens[arrowHeadBase], screens[arrowHeadTip], false);
       return;
     }
     if (g3d.setColix(colix)) {
@@ -172,7 +172,7 @@ public class DipolesRenderer extends ShapeRenderer {
       g3d.fillCylinder(Graphics3D.ENDCAPS_OPENEND, diameter, screens[center],
           screens[arrowHeadBase]);
       g3d.fillConeScreen(Graphics3D.ENDCAPS_FLAT, headWidthPixels,
-          screens[arrowHeadBase], screens[arrowHeadTip]);
+          screens[arrowHeadBase], screens[arrowHeadTip], false);
     }
   }
  

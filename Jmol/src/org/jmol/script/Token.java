@@ -1033,6 +1033,7 @@ public class Token {
   final static int babel         = misc  | 32;
   final static int babel21       = misc  | 34; // new
   final static int back          = misc  | 36;
+  final static int barb          = misc  | 37;// new
   public final static int backlit = misc  | 38;
   public final static int basepair      = misc  | 40;
   final static int binary        = misc  | 42;// new
@@ -1890,6 +1891,7 @@ public class Token {
       "aromatic",        new Token(aromatic),
       "arrow",           new Token(arrow),
       "auto",            new Token(auto),
+      "barb",            new Token(barb),
       "binary",          new Token(binary),
       "blockData",       new Token(blockdata),
       "cancel",          new Token(cancel),

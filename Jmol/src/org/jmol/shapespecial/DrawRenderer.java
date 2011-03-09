@@ -185,15 +185,15 @@ public class DrawRenderer extends MeshRenderer {
         viewer.transformPoint(vpt1, screens[i]);
         mat.transform(vTemp2);
       }
-      if (dmesh.isVector && !dmesh.nohead) {
-        renderArrowHead(vpt0, vpt1, 0.3f, false, false);
+      if (dmesh.isVector && !dmesh.noHead) {
+        renderArrowHead(vpt0, vpt1, 0.3f, false, false, dmesh.isBarb);
         viewer.transformPoint(pt1f, screens[nPoints - 1]);
       }
       pt1f.set(vpt2);
       break;
     case JmolConstants.DRAW_ARROW:
       if (vertexCount == 2) {
-        renderArrowHead(vertices[0], vertices[1], 0, false, true);
+        renderArrowHead(vertices[0], vertices[1], 0, false, true, dmesh.isBarb);
         return;
       }
       int nHermites = 5;
@@ -204,7 +204,7 @@ public class DrawRenderer extends MeshRenderer {
             vertices[vertexCount - 2], vertices[vertexCount - 1],
             vertices[vertexCount - 1], vertices[vertexCount - 1],
             controlHermites, 0, nHermites);
-      renderArrowHead(controlHermites[nHermites - 2], controlHermites[nHermites - 1], 0, false, false);
+      renderArrowHead(controlHermites[nHermites - 2], controlHermites[nHermites - 1], 0, false, false, dmesh.isBarb);
       break;
     }
     if (diameter == 0)
@@ -257,15 +257,15 @@ public class DrawRenderer extends MeshRenderer {
       g3d.drawDottedLine(pt1i, pt2i);
     else
       g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, diameter, pt1i, pt2i);
-    renderArrowHead(vpt0, vpt1, 0, true, false);
+    renderArrowHead(vpt0, vpt1, 0, true, false, false);
   }
 
   private final Point3f pt0f = new Point3f();
   private final Point3i pt0i = new Point3i();
 
   private void renderArrowHead(Point3f pt1, Point3f pt2, float factor2, 
-                               boolean isTransformed, boolean withShaft) {
-    if (dmesh.nohead)
+                               boolean isTransformed, boolean withShaft, boolean isBarb) {
+    if (dmesh.noHead)
       return;
     float fScale = dmesh.drawArrowScale;
     if (fScale == 0)
@@ -312,7 +312,7 @@ public class DrawRenderer extends MeshRenderer {
     if (diameter < 1)
       diameter = 1;
     if (headDiameter > 2)
-      g3d.fillConeScreen(Graphics3D.ENDCAPS_FLAT, headDiameter, pt1i, pt2i);
+      g3d.fillConeScreen(Graphics3D.ENDCAPS_FLAT, headDiameter, pt1i, pt2i, isBarb);
     if (withShaft)
       g3d.fillCylinderScreen(Graphics3D.ENDCAPS_OPENEND, diameter, pt0i,
            pt1i);

@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-01-04 23:43+0100\n"
-"PO-Revision-Date: 2011-03-07 05:17+0000\n"
+"PO-Revision-Date: 2011-03-09 16:53+0000\n"
 "Last-Translator: zvacet <ikoli@yahoo.com>\n"
 "Language-Team: Croatian <hr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-03-07 08:48+0000\n"
-"X-Generator: Launchpad (build 12515)\n"
+"X-Launchpad-Export-Date: 2011-03-09 17:56+0000\n"
+"X-Generator: Launchpad (build 12532)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
 msgid "Error starting Jmol: the property 'user.home' is not defined."
@@ -111,7 +111,7 @@ msgstr ""
 #: org/openscience/jmol/app/JmolApp.java:216
 #, java-format
 msgid "{0} or {1}:filename"
-msgstr ""
+msgstr "{0} ili {1}:datoteka"
 
 #: org/openscience/jmol/app/JmolApp.java:230
 msgid "For example:"
@@ -125,27 +125,27 @@ msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:466
 msgid "Executing script 1..."
-msgstr ""
+msgstr "Izvršavanje skripte 1..."
 
 #: org/openscience/jmol/app/JmolApp.java:476
 msgid "Executing script file..."
-msgstr ""
+msgstr "Izvršavanje datoteke skripte..."
 
 #: org/openscience/jmol/app/JmolApp.java:497
 msgid "Executing script 2..."
-msgstr ""
+msgstr "Izvršavanje skripte 2..."
 
 #: org/openscience/jmol/app/jmolpanel/AboutDialog.java:57
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:190
 msgid "About Jmol"
-msgstr ""
+msgstr "O  Jmol-u"
 
 #: org/openscience/jmol/app/jmolpanel/AboutDialog.java:67
 #: org/openscience/jmol/app/jmolpanel/HelpDialog.java:74
 #: org/openscience/jmol/app/jmolpanel/WhatsNewDialog.java:68
 #, java-format
 msgid "Unable to find url \"{0}\"."
-msgstr ""
+msgstr "NIje moguće naći url \"{0}\"."
 
 #: org/openscience/jmol/app/jmolpanel/AboutDialog.java:97
 #: org/openscience/jmol/app/jmolpanel/HelpDialog.java:95
@@ -286,7 +286,7 @@ msgstr ""
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:366
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
 msgid "Pause playing"
-msgstr ""
+msgstr "Pauza u izvođenju"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:367
 msgid "Go to next atom set in the collection"
@@ -298,11 +298,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:372
 msgid "Go to first vector in the collection"
-msgstr ""
+msgstr "Idi na prvi vektor u zbirci"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:373
 msgid "Go to previous vector in the collection"
-msgstr ""
+msgstr "Idi na prethodni vektor u zbirci"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:374
 msgid "Play the whole collection of vectors"
@@ -310,11 +310,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:376
 msgid "Go to next vector in the collection"
-msgstr ""
+msgstr "Idi na slijedeći vektor u zbirci"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:377
 msgid "Jump to last vector in the collection"
-msgstr ""
+msgstr "Skoči na zadnji vektor u zbirci"
 
 #: org/openscience/jmol/app/jmolpanel/ConsoleTextArea.java:87
 #, java-format
@@ -323,7 +323,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:209
 msgid "Delete atoms"
-msgstr ""
+msgstr "Izbriši atome"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:187
 msgid "Export Gaussian Input File"
@@ -347,7 +347,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:235
 msgid "Number of Processors:"
-msgstr ""
+msgstr "Broj procesora:"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:248
 msgid "Route"
@@ -355,7 +355,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:254
 msgid "Method: "
-msgstr ""
+msgstr "Metoda "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:261
 msgid "Basis Set: "

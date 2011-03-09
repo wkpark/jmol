@@ -56,9 +56,9 @@
     <mkdir dir="${build.dir}/JmolApplet" />
     <move todir="${build.dir}/JmolApplet" includeemptydirs="false">
       <fileset dir="${launchpad.export.files}">
-        <include name="src_org_jmol_translation_JmolApplet_jmol-applet-*.po" />
+        <include name="src_org_jmol_translation_JmolApplet_JmolApplet-*.po" />
       </fileset>
-      <mapper type="glob" from="src_org_jmol_translation_JmolApplet_jmol-applet-*.po" to="*.po" />
+      <mapper type="glob" from="src_org_jmol_translation_JmolApplet_JmolApplet-*.po" to="*.po" />
     </move>
     <copy todir="src/org/jmol/translation/Jmol">
       <fileset dir="${build.dir}/Jmol" includes="*.po" />

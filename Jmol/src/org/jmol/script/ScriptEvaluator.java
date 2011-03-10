@@ -13355,9 +13355,8 @@ public class ScriptEvaluator {
       pt++;
       break;
     case Token.coord:
-    case Token.data:
-      type = ScriptVariable.sValue(tokenAt(++pt, args)).toLowerCase();
-      type = "data";
+      type = "coord";
+      pt++;
       isCoord = true;
       break;
     case Token.state:
@@ -13459,7 +13458,7 @@ public class ScriptEvaluator {
           && tokAt(pt + 1, args) == Token.integer) {
         quality = ScriptVariable.iValue(tokenAt(++pt, args));
       } else if (Parser.isOneOf(val.toLowerCase(),
-          "xyz;xyzrn;mol;sdf;v2000;v3000;pdb;cml")) {
+          "xyz;xyzrn;xyzvib;mol;sdf;v2000;v3000;pdb;cml")) {
         type = val.toUpperCase();
         if (pt + 1 == argCount)
           pt++;
@@ -13545,7 +13544,7 @@ public class ScriptEvaluator {
           type = "ZIPALL";
         }
       }
-      if (type.equals("data")) {
+      if (type.equals("coord")) {
         if (fileName != null && fileName.indexOf(".") >= 0)
           type = fileName.substring(fileName.lastIndexOf(".") + 1)
               .toUpperCase();
@@ -13560,12 +13559,12 @@ public class ScriptEvaluator {
           && !Parser
               .isOneOf(
                   type,
-                  "JMOL;ZIP;ZIPALL;SPT;HIS;MO;ISO;ISOX;MESH;PMESH;VAR;FILE;FUNCS;CML;XYZ;XYZRN;MENU;MOL;PDB;PGRP;QUAT;RAMA;SDF;V2000;V3000;"))
+                  "JMOL;ZIP;ZIPALL;SPT;HIS;MO;ISO;ISOX;MESH;PMESH;VAR;FILE;FUNCS;CML;XYZ;XYZRN;XYZVIB;MENU;MOL;PDB;PGRP;QUAT;RAMA;SDF;V2000;V3000;"))
         error(
             ERROR_writeWhat,
             "COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|ISOSURFACE|JMOL|MENU|MO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
                 + "|RAMACHANDRAN|SPT|STATE|VAR x|ZIP|ZIPALL  CLIPBOARD",
-            "CML|GIF|JPG|JPG64|JMOL|JVXL|MESH|MOL|PDB|PMESH|PNG|PPM|SDF|V2000|V3000|SPT|XJVXL|XYZ|XYZRN|ZIP"
+            "CML|GIF|JPG|JPG64|JMOL|JVXL|MESH|MOL|PDB|PMESH|PNG|PPM|SDF|V2000|V3000|SPT|XJVXL|XYZ|XYZRN|XYZVIB|ZIP"
                 + driverList.toUpperCase().replace(';', '|'));
       if (isSyntaxCheck)
         return "";
@@ -13627,11 +13626,10 @@ public class ScriptEvaluator {
           fileName = "?Jmol." + viewer.getParameter("_fileType");
       } else if ((data == "SDF" || data == "MOL" || data == "V2000" || data == "V3000")
           && isCoord) {
-        data = viewer.getModelExtract("selected", true, data == "SDF",
-            data == "V3000");
+        data = viewer.getModelExtract("selected", true, data);
         if (data.startsWith("ERROR:"))
           bytes = data;
-      } else if (data == "XYZ" || data == "XYZRN" || data == "MOL" || data == "SDF"
+      } else if (data == "XYZ" || data == "XYZRN" || data == "XYZVIB" || data == "MOL" || data == "SDF"
           || data == "V2000" || data == "V3000" || data == "CML") {
         data = viewer.getData("selected", data);
         if (data.startsWith("ERROR:"))

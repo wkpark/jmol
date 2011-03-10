@@ -3094,34 +3094,35 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public String getModelExtract(BitSet bs, boolean doTransform,
-                                boolean isModelKit, boolean asSDF,
-                                boolean asV3000) {
-    if (asV3000)
-      asSDF = false;
+                                boolean isModelKit, String type) {
+    boolean asV3000 = (type.equalsIgnoreCase("V3000"));
+    boolean asSDF = (type.equalsIgnoreCase("SDF"));
+    boolean asXYZVIB = (type.equalsIgnoreCase("XYZVIB"));
     StringBuffer mol = new StringBuffer();
-    String name = (isModelKit ? "Jmol Model Kit" : viewer.getFullPathName().replace('\\','/'));
-    mol.append(name);
-    String version = Viewer.getJmolVersion();
-    Calendar c = Calendar.getInstance();
-    mol.append("\n__Jmol-").append(version.substring(0, 2));
-    TextFormat.rFill(mol, "_00", "" + (1 + c.get(Calendar.MONTH)));
-    TextFormat.rFill(mol, "00", "" + c.get(Calendar.DAY_OF_MONTH));
-    mol.append(("" + c.get(Calendar.YEAR)).substring(2, 4));
-    TextFormat.rFill(mol, "00", "" + c.get(Calendar.HOUR_OF_DAY));
-    TextFormat.rFill(mol, "00", "" + c.get(Calendar.MINUTE));
-    mol.append("3D 1   1.00000     0.00000     0");
+    if (!asXYZVIB) {
+      mol.append(isModelKit ? "Jmol Model Kit" : viewer.getFullPathName().replace('\\','/'));
+      String version = Viewer.getJmolVersion();
+      Calendar c = Calendar.getInstance();
+      mol.append("\n__Jmol-").append(version.substring(0, 2));
+      TextFormat.rFill(mol, "_00", "" + (1 + c.get(Calendar.MONTH)));
+      TextFormat.rFill(mol, "00", "" + c.get(Calendar.DAY_OF_MONTH));
+      mol.append(("" + c.get(Calendar.YEAR)).substring(2, 4));
+      TextFormat.rFill(mol, "00", "" + c.get(Calendar.HOUR_OF_DAY));
+      TextFormat.rFill(mol, "00", "" + c.get(Calendar.MINUTE));
+      mol.append("3D 1   1.00000     0.00000     0");
     //       This line has the format:
     //  IIPPPPPPPPMMDDYYHHmmddSSssssssssssEEEEEEEEEEEERRRRRR
     //  A2<--A8--><---A10-->A2I2<--F10.5-><---F12.5--><-I6->
-    mol.append("\nJmol version ").append(Viewer.getJmolVersion()).append(
+      mol.append("\nJmol version ").append(Viewer.getJmolVersion()).append(
         " EXTRACT: ").append(Escape.escape(bs))
         .append("\n");
+    }
     BitSet bsAtoms = BitSetUtil.copy(bs);
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
       if (doTransform && atoms[i].isDeleted())
         bsAtoms.clear(i);
     BitSet bsBonds = getCovalentBondsForAtoms(bsAtoms);
-    if (bsAtoms.cardinality() == 0)
+    if (!asXYZVIB && bsAtoms.cardinality() == 0)
       return "";
     boolean isOK = true;
     Quaternion q = (doTransform ? viewer.getRotationQuaternion() : null);
@@ -3138,6 +3139,29 @@ abstract public class ModelCollection extends BondCollection {
         if (!(isOK = addMolFile(mol, bsTemp, bsBonds, false, q)))
           break;
         mol.append("$$$$\n");
+      }
+    } else if (asXYZVIB) {
+      LabelToken[] tokens1 = LabelToken.compile(
+          viewer, "%-2e %8.3x %8.3y %8.3z %8.5vx %8.5vy %8.5vz\n", '\0', null);
+      LabelToken[] tokens2 = LabelToken.compile(
+          viewer, "%-2e %8.3x %8.3y %8.3z\n", '\0', null);
+      BitSet bsModels = getModelBitSet(bsAtoms, true);
+      int n = 0;
+      for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels
+          .nextSetBit(i + 1)) {
+        BitSet bsTemp = BitSetUtil.copy(bsAtoms);
+        bsTemp.and(getModelAtomBitSetIncludingDeleted(i, false));
+        if (bsTemp.cardinality() == 0)
+          continue;
+        mol.append(bsTemp.cardinality()).append('\n');
+        String freq = getModelProperty(i, "Frequency");
+        if (freq == null)
+          freq = "Jmol " + Viewer.getJmolVersion();
+        else 
+          freq = "Frequency[" + ++n + "]: " + freq;
+        mol.append(freq).append('\n');
+        for (int j = bsTemp.nextSetBit(0); j >= 0; j = bsTemp.nextSetBit(j + 1))
+          mol.append(LabelToken.formatLabel(viewer, atoms[j], (getVibrationVector(j, false) == null ? tokens2 : tokens1), '\0', null));
       }
     } else {
       isOK = addMolFile(mol, bsAtoms, bsBonds, asV3000, q);
@@ -4001,7 +4025,7 @@ abstract public class ModelCollection extends BondCollection {
             tainted[TAINT_ELEMENT].andNot(bs);
         }
         models[i].loadScript = new StringBuffer(); 
-        Viewer.getInlineData(commands, getModelExtract(bs, false, true, false, false), i > 0);
+        Viewer.getInlineData(commands, getModelExtract(bs, false, true, "MOL"), i > 0);
       } else {
         commands.append(models[i].loadScript);
       }

@@ -544,7 +544,7 @@ public abstract class ___Exporter {
 
   //rockets and dipoles
   abstract void fillConeScreen(short colix, byte endcap, int screenDiameter, 
-                         Point3f screenBase, Point3f screenTip);
+                         Point3f screenBase, Point3f screenTip, boolean isBarb);
   
   abstract void drawCylinder(Point3f atom1, Point3f atom2, short colix1, short colix2,
                              byte endcaps, int madBond, int bondOrder);

@@ -31,10 +31,12 @@ import java.util.List;
 import java.util.Map;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
+import org.jmol.util.Measure;
 import org.jmol.viewer.Viewer;
 
 /*
@@ -176,8 +178,6 @@ public class _PovrayExporter extends __RayTracerExporter {
     writeMacrosFinish();
     writeMacrosAtom();
     writeMacrosBond();
-    writeMacrosTriangle();
-    writeMacrosTextPixel();
     //    writeMacrosRing();
   }
 
@@ -257,7 +257,10 @@ public class _PovrayExporter extends __RayTracerExporter {
 
   }
 
-  private void writeMacrosTriangle() {
+  private boolean haveMacros;
+  
+  private void writeMacros2() {
+    // triangle
     output("#macro r(X1,Y1,Z1,X2,Y2,Z2,X3,Y3,Z3,R,G,B,T)\n"
         + " triangle{<X1,Y1,Z1>,<X2,Y2,Z2>,<X3,Y3,Z3>\n"
         + "  pigment{rgbt<R,G,B,T>}\n"
@@ -265,27 +268,31 @@ public class _PovrayExporter extends __RayTracerExporter {
         + "  clip()\n"
         + "  check_shadow()}\n" 
         + "#end\n\n");
-  }
-
-  private void writeMacrosTextPixel() {
+    // text pixel
     output("#macro p(X,Y,Z,R,G,B)\n" 
         + " box{<X,Y,Z>,<X+1,Y+1,Z+1>\n"
         + "  pigment{rgb<R,G,B>}\n"
         + "  clip()\n"
         + "  check_shadow()}\n" 
         + "#end\n\n");
+    // draw arrow BARB
+    output("#macro barb(X1,Y1,Z1,RADIUS1,X2,Y2,Z2,RADIUS2,R,G,B,T,X3,Y3,Z3,W3)\n"
+        + " cone{<X1,Y1,Z1>,RADIUS1,<X2,Y2,Z2>,RADIUS2\n"
+        + "  pigment{rgbt<R,G,B,T>}\n"
+        + "  translucentFinish(T)\n"
+        + "  clip()\n"
+        + "  clipped_by{plane{<X3,Y3,Z3>,W3}}\n"
+        + "  check_shadow()}\n" + "#end\n\n");
+    /*
+    // This type of ring does not take into account perspective effects!
+    output("#macro o(X,Y,Z,RADIUS,R,G,B,T)\n"
+    + " torus{RADIUS,wireRadius pigment{rgbt<R,G,B,T>}\n"
+    + " translate<X,Z,-Y> rotate<90,0,0>\n" + "  check_shadow()}\n"
+    + "#end\n\n");
+    */
+    haveMacros = true;
   }
-
-  /*
-  private void writeMacrosRing() {
-  // This type of ring does not take into account perspective effects!
-  output("#macro o(X,Y,Z,RADIUS,R,G,B,T)\n"
-  + " torus{RADIUS,wireRadius pigment{rgbt<R,G,B,T>}\n"
-  + " translate<X,Z,-Y> rotate<90,0,0>\n" + "  check_shadow()}\n"
-  + "#end\n\n");
-  }
-  */
-
+  
   private String triad(Tuple3f pt) {
     if (Float.isNaN(pt.x))
       return "0,0,0";
@@ -338,10 +345,22 @@ public class _PovrayExporter extends __RayTracerExporter {
   }
 
   @Override
-  protected void outputCone(Point3f screenBase, Point3f screenTip, float radius,
-                            short colix) {
-    output("b(" + triad(screenBase) + "," + radius + ","
-        + triad(screenTip) + ",0" + "," + color4(colix) + ")\n");
+  protected void outputCone(Point3f screenBase, Point3f screenTip,
+                            float radius, short colix, boolean isBarb) {
+    if (isBarb) {
+      if (!haveMacros)
+        writeMacros2();
+      Point4f plane = new Point4f();
+      tempP1.set(screenBase.x, screenTip.y, 12345.6789f);
+      Measure.getPlaneThroughPoints(screenBase, screenTip, tempP1, tempV1,
+          tempV2, tempV3, plane);
+      output("barb(" + triad(screenBase) + "," + radius + ","
+          + triad(screenTip) + ",0" + "," + color4(colix) + "," + plane.x + ","
+          + plane.y + "," + plane.z + "," + -plane.w + ")\n");
+    } else {
+      output("b(" + triad(screenBase) + "," + radius + "," + triad(screenTip)
+          + ",0" + "," + color4(colix) + ")\n");
+    }
   }
 
   @Override
@@ -495,6 +514,8 @@ public class _PovrayExporter extends __RayTracerExporter {
   
   @Override
   protected void outputTextPixel(int x, int y, int z, int argb) {
+    if (!haveMacros)
+      writeMacros2();
     //text only
     output("p(" + x + "," + y + "," + z + "," + 
         rgbFractionalFromArgb(argb, ',') + ")\n");
@@ -502,6 +523,8 @@ public class _PovrayExporter extends __RayTracerExporter {
   
   @Override
   protected void outputTriangle(Point3f ptA, Point3f ptB, Point3f ptC, short colix) {
+    if (!haveMacros)
+      writeMacros2();
     //cartoons, mesh, isosurface
     output("r(" + triad(ptA) + "," + triad(ptB) + "," + triad(ptC) + ","
         + color4(colix) + ")\n");

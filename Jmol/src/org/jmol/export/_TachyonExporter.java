@@ -194,7 +194,7 @@ public class _TachyonExporter extends __RayTracerExporter {
 
   @Override
   protected void outputCone(Point3f screenBase, Point3f screenTip, float radius,
-                            short colix) {
+                            short colix, boolean isBarb) {
     
     // as mesh, which uses Cartesian coordinates
     

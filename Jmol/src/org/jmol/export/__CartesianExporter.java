@@ -233,7 +233,7 @@ abstract public class __CartesianExporter extends ___Exporter {
 
   @Override
   void fillConeScreen(short colix, byte endcap, int screenDiameter,
-                      Point3f screenBase, Point3f screenTip) {
+                      Point3f screenBase, Point3f screenTip, boolean isBarb) {
     viewer.unTransformPoint(screenBase, tempP1);
     viewer.unTransformPoint(screenTip, tempP2);
     float radius = viewer.unscaleToScreen(screenBase.z, screenDiameter) / 2;

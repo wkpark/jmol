@@ -77,7 +77,7 @@ abstract class __RayTracerExporter extends ___Exporter {
   abstract protected void outputTriangle(Point3f ptA, Point3f ptB, Point3f ptC, short colix);
 
   abstract protected void outputCone(Point3f screenBase, Point3f screenTip, float radius,
-                                     short colix);
+                                     short colix, boolean isBarb);
 
   protected Point3f getScreenNormal(Point3f pt, Vector3f normal, float factor) {
     if (Float.isNaN(normal.x)) {
@@ -137,8 +137,8 @@ abstract class __RayTracerExporter extends ___Exporter {
     
   @Override
   void fillConeScreen(short colix, byte endcap, int screenDiameter, Point3f screenBase,
-                Point3f screenTip) {
-    outputCone(screenBase, screenTip, screenDiameter / 2f, colix);
+                Point3f screenTip, boolean isBarb) {
+    outputCone(screenBase, screenTip, screenDiameter / 2f, colix, isBarb);
   }
 
   @Override

@@ -518,13 +518,13 @@ final public class Export3D implements JmolRendererInterface {
     // dipole, vector, draw arrow/vector
     ptA.set(pointBase.x, pointBase.y, pointBase.z);
     ptB.set(screenTip.x, screenTip.y, screenTip.z);
-    fillConeSceen(endcap, screenDiameter, ptA, ptB);
+    exporter.fillConeScreen(colix, endcap, screenDiameter, ptA, ptB, isBarb);
   }
 
   public void fillConeSceen(byte endcap, int screenDiameter, Point3f pointBase,
                        Point3f screenTip) {
     // cartoons, rockets
-    exporter.fillConeScreen(colix, endcap, screenDiameter, pointBase, screenTip);
+    exporter.fillConeScreen(colix, endcap, screenDiameter, pointBase, screenTip, false);
   }
 
   public void drawHermite(int tension, Point3i s0, Point3i s1, Point3i s2,

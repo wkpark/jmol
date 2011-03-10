@@ -366,7 +366,7 @@ public class JaguarReader extends MOReader {
     int atomCount = atomSetCollection.getLastAtomSetAtomCount();
     discardLinesUntilStartsWith("  frequencies ");
     while (line != null && line.startsWith("  frequencies ")) {
-      int iAtom0 = atomSetCollection.getAtomCount() - atomCount;
+      int iAtom0 = atomSetCollection.getAtomCount();
       String[] frequencies = getTokens();
       int frequencyCount = frequencies.length - 1;
       boolean[] ignore = new boolean[frequencyCount];

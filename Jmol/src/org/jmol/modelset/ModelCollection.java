@@ -3100,7 +3100,8 @@ abstract public class ModelCollection extends BondCollection {
     boolean asXYZVIB = (type.equalsIgnoreCase("XYZVIB"));
     StringBuffer mol = new StringBuffer();
     if (!asXYZVIB) {
-      mol.append(isModelKit ? "Jmol Model Kit" : viewer.getFullPathName().replace('\\','/'));
+      mol.append(isModelKit ? "Jmol Model Kit" : viewer.getFullPathName()
+          .replace('\\', '/'));
       String version = Viewer.getJmolVersion();
       Calendar c = Calendar.getInstance();
       mol.append("\n__Jmol-").append(version.substring(0, 2));
@@ -3110,12 +3111,11 @@ abstract public class ModelCollection extends BondCollection {
       TextFormat.rFill(mol, "00", "" + c.get(Calendar.HOUR_OF_DAY));
       TextFormat.rFill(mol, "00", "" + c.get(Calendar.MINUTE));
       mol.append("3D 1   1.00000     0.00000     0");
-    //       This line has the format:
-    //  IIPPPPPPPPMMDDYYHHmmddSSssssssssssEEEEEEEEEEEERRRRRR
-    //  A2<--A8--><---A10-->A2I2<--F10.5-><---F12.5--><-I6->
+      //       This line has the format:
+      //  IIPPPPPPPPMMDDYYHHmmddSSssssssssssEEEEEEEEEEEERRRRRR
+      //  A2<--A8--><---A10-->A2I2<--F10.5-><---F12.5--><-I6->
       mol.append("\nJmol version ").append(Viewer.getJmolVersion()).append(
-        " EXTRACT: ").append(Escape.escape(bs))
-        .append("\n");
+          " EXTRACT: ").append(Escape.escape(bs)).append("\n");
     }
     BitSet bsAtoms = BitSetUtil.copy(bs);
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
@@ -3141,12 +3141,11 @@ abstract public class ModelCollection extends BondCollection {
         mol.append("$$$$\n");
       }
     } else if (asXYZVIB) {
-      LabelToken[] tokens1 = LabelToken.compile(
-          viewer, "%-2e %8.3x %8.3y %8.3z %8.5vx %8.5vy %8.5vz\n", '\0', null);
-      LabelToken[] tokens2 = LabelToken.compile(
-          viewer, "%-2e %8.3x %8.3y %8.3z\n", '\0', null);
+      LabelToken[] tokens1 = LabelToken.compile(viewer,
+          "%-2e %10.5x %10.5y %10.5z %10.5vx %10.5vy %10.5vz\n", '\0', null);
+      LabelToken[] tokens2 = LabelToken.compile(viewer,
+          "%-2e %10.5x %10.5y %10.5z\n", '\0', null);
       BitSet bsModels = getModelBitSet(bsAtoms, true);
-      int n = 0;
       for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels
           .nextSetBit(i + 1)) {
         BitSet bsTemp = BitSetUtil.copy(bsAtoms);
@@ -3154,19 +3153,36 @@ abstract public class ModelCollection extends BondCollection {
         if (bsTemp.cardinality() == 0)
           continue;
         mol.append(bsTemp.cardinality()).append('\n');
-        String freq = getModelProperty(i, "Frequency");
-        if (freq == null)
-          freq = "Jmol " + Viewer.getJmolVersion();
-        else 
-          freq = "Frequency[" + ++n + "]: " + freq;
-        mol.append(freq).append('\n');
+        Properties props = models[i].properties;
+        mol.append("Model[" + (i + 1) + "]: ");
+        if (frameTitles[i] != null && frameTitles[i].length() > 0) {
+          mol.append(frameTitles[i].replace('\n', ' '));
+        } else if (props == null) {
+          mol.append("Jmol " + Viewer.getJmolVersion());
+        } else {
+          StringBuffer sb = new StringBuffer();
+          Enumeration<?> e = props.propertyNames();
+          while (e.hasMoreElements()) {
+            String propertyName = (String) e.nextElement();
+            if (propertyName.equals(".PATH"))
+              mol.append("PATH=").append(props.getProperty(propertyName));
+            else
+              sb.append(";").append(propertyName).append("=").append(
+                  props.getProperty(propertyName));
+          }
+          mol.append(sb.toString().replace('\n', ' '));
+        }
+        mol.append('\n');
         for (int j = bsTemp.nextSetBit(0); j >= 0; j = bsTemp.nextSetBit(j + 1))
-          mol.append(LabelToken.formatLabel(viewer, atoms[j], (getVibrationVector(j, false) == null ? tokens2 : tokens1), '\0', null));
+          mol.append(LabelToken.formatLabel(viewer, atoms[j],
+              (getVibrationVector(j, false) == null ? tokens2 : tokens1), '\0',
+              null));
       }
     } else {
       isOK = addMolFile(mol, bsAtoms, bsBonds, asV3000, q);
     }
-    return (isOK ? mol.toString() : "ERROR: Too many atoms or bonds -- use V3000 format.");
+    return (isOK ? mol.toString()
+        : "ERROR: Too many atoms or bonds -- use V3000 format.");
   }
   
   private boolean addMolFile(StringBuffer mol, BitSet bsAtoms, BitSet bsBonds,

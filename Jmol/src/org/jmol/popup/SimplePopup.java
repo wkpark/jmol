@@ -281,20 +281,23 @@ public class SimplePopup {
       st = new StringTokenizer(value);
     }
     while (st.hasMoreTokens()) {
+      item = st.nextToken();
+      String label = popupResourceBundle.getWord(item);
       Object newMenu = null;
       String script = "";
-      item = st.nextToken();
-      String word = popupResourceBundle.getWord(item);
       boolean isCB = false;
-      if (item.indexOf("Menu") >= 0) {
+      if (label.equals("null")) {
+        // user has taken this menu item out
+        continue;
+      } else if (item.indexOf("Menu") >= 0) {
         if (item.indexOf("more") < 0)
           group = null;
-        Object subMenu = newMenu(word, id + "." + item);        
+        Object subMenu = newMenu(label, id + "." + item);        
         addMenuSubMenu(menu, subMenu);
         htMenus.put(item, subMenu);
         if (item.indexOf("Computed") < 0)
           addMenuItems(id, item, subMenu, popupResourceBundle);
-        checkSpecialMenu(item, subMenu, word);
+        checkSpecialMenu(item, subMenu, label);
         newMenu = subMenu;
       } else if ("-".equals(item)) {
         addMenuSeparator(menu);
@@ -306,7 +309,7 @@ public class SimplePopup {
         boolean isRadio = (isCB && item.endsWith("RD"));
         if (script == null || script.length() == 0 && !isRadio)
           script = "set " + basename + " T/F";
-        newMenu = addCheckboxMenuItem(menu, word, basename 
+        newMenu = addCheckboxMenuItem(menu, label, basename 
             + ":" + script, id + "." + item, isRadio);
         if (isRadio) {
           if (group == null)
@@ -317,7 +320,7 @@ public class SimplePopup {
         script = popupResourceBundle.getStructure(item);
         if (script == null)
           script = item;
-        newMenu = addMenuItem(menu, word, script, id + "." + item);
+        newMenu = addMenuItem(menu, label, script, id + "." + item);
       }
 
       if (!allowSignedFeatures && item.startsWith("SIGNED"))
@@ -360,7 +363,7 @@ public class SimplePopup {
 
       if (dumpList) {
         String str = item.endsWith("Menu") ? "----" : id + "." + item + "\t"
-            + word + "\t" + fixScript(id + "." + item, script);
+            + label + "\t" + fixScript(id + "." + item, script);
         str = "addMenuItem('\t" + str + "\t')";
         Logger.info(str);
       }

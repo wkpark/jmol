@@ -516,12 +516,14 @@ public class JmolPanel extends JPanel implements SplashInterface {
     }
   }
 
-  protected void setupNewFrame(String state) {
+  protected void setupNewFrame(JmolViewer viewer) {
+    String state = viewer.getStateInfo();
     JFrame newFrame = new JFrame();
     JFrame f = this.frame;
     Jmol j = new Jmol(jmolApp, null, newFrame, (Jmol) this, startupWidth, startupHeight,
         "", (state == null ? null : f.getLocationOnScreen()));
     newFrame.setVisible(true);
+    j.viewer.menuStructure = viewer.menuStructure;
     if (state != null) {
       dispose(f);
       j.viewer.evalStringQuiet(state);

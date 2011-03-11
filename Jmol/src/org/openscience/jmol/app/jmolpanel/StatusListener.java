@@ -167,7 +167,7 @@ class StatusListener implements JmolStatusListener {
       return;
     }
     if (callbackType.equalsIgnoreCase("menu")) {
-      jmol.setupNewFrame(viewer.getStateInfo());
+      jmol.setupNewFrame(viewer);
       return;
     }
     if (callbackType.equalsIgnoreCase("language")) {

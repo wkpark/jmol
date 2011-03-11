@@ -7443,10 +7443,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   JmolAppConsoleInterface appConsole;
   JmolScriptEditorInterface scriptEditor;
   JmolPopup jmolpopup;
-  JmolModelKitInterface modelkit;
-
-  String menuStructure;
-
+  
+  private JmolModelKitInterface modelkit;
+  
   @Override
   public Object getProperty(String returnType, String infoType, Object paramInfo) {
     // accepts a BitSet paramInfo

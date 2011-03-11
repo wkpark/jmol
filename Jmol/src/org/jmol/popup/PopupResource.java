@@ -70,7 +70,7 @@ public abstract class PopupResource {
     int pt;
     try {
       while ((line = br.readLine()) != null) {
-        if (line.length() == 0 || line.charAt(0) == '#') 
+        if (line.length() == 0 || line.charAt(0) == '#')
           continue;
         pt = line.indexOf("=");
         if (pt < 0) {
@@ -127,9 +127,11 @@ public abstract class PopupResource {
    */
   private void localize(boolean haveUserMenu, Properties menuText) {
     String[] wordContents = getWordContents();
-    for (int i = 0; i < wordContents.length;) {
+    for (int i = 0; i < wordContents.length; i++) {
       String item = wordContents[i++];
-      String word = wordContents[i++];
+      String word = words.getProperty(item);
+      if (word == null)
+        word = wordContents[i];
       words.setProperty(item, word);
       // save a few names for later
       if (menuText != null && item.indexOf("Text") >= 0)

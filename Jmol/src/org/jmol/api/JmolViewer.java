@@ -488,10 +488,9 @@ abstract public class JmolViewer extends JmolSimpleViewer {
    * @param privateKey  
    * @return T/F
    */
-  public boolean checkPrivateKey(double privateKey) {
-    return false;
-  }
-
+  abstract public boolean checkPrivateKey(double privateKey);
+  
+  public String menuStructure;
 
 }
 

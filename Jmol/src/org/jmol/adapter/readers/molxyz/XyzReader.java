@@ -125,6 +125,7 @@ public class XyzReader extends AtomSetCollectionReader {
         // accepts  sym x y z c
         // accepts  sym x y z c r
         // accepts  sym x y z c vx vy vz
+        // accepts  sym x y z c vx vy vz atomno
         if ((str = tokens[4]).indexOf(".") >= 0) {
           atom.partialCharge = parseFloat(str);
         } else {
@@ -144,7 +145,6 @@ public class XyzReader extends AtomSetCollectionReader {
         vpt++;
         //fall through:
       default:
-        // accepts  sym x y z c vx vy vz atomno
         // or       sym x y z vx vy vz
         float vx = parseFloat(tokens[vpt++]);
         float vy = parseFloat(tokens[vpt++]);

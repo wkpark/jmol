@@ -194,10 +194,10 @@ class SpartanArchive {
    * 
    */
 
-  private static String DS_LIST = "d2-   d1-   d0    d1+   d2+";
-  private static String FS_LIST = "f3-   f2-   f1-   f0    f1+   f2+   f3+";
-  private static String DC_LIST = "DXX   DXY   DYY   DXZ   DYZ   DZZ";
-  private static String FC_LIST = "XXX   XXY   XYY   YYY   XXZ   XYZ   YYZ   XZZ   YZZ   ZZZ";
+  //private static String DS_LIST = "d2-   d1-   d0    d1+   d2+";
+  //private static String FS_LIST = "f3-   f2-   f1-   f0    f1+   f2+   f3+";
+  //private static String DC_LIST = "DXX   DXY   DYY   DXZ   DYZ   DZZ";
+  //private static String FC_LIST = "XXX   XXY   XYY   YYY   XXZ   XYZ   YYZ   XZZ   YZZ   ZZZ";
 
   void readBasis() throws Exception {
     /*
@@ -221,12 +221,12 @@ class SpartanArchive {
     ArrayList<int[]> shells = new ArrayList<int[]>();
     float[][] gaussians = new float[gaussianCount][];
     int[] typeArray = new int[gaussianCount];
-    if (false) { // checking these still
-     r.getDFMap(DC_LIST, JmolAdapter.SHELL_D_CARTESIAN, BasisFunctionReader.CANONICAL_DC_LIST, 3);
-     r.getDFMap(FC_LIST, JmolAdapter.SHELL_F_CARTESIAN, BasisFunctionReader.CANONICAL_FC_LIST, 3);
-     r.getDFMap(DS_LIST, JmolAdapter.SHELL_D_SPHERICAL, BasisFunctionReader.CANONICAL_DS_LIST, 3);
-     r.getDFMap(FS_LIST, JmolAdapter.SHELL_F_SPHERICAL, BasisFunctionReader.CANONICAL_FS_LIST, 3);
-    }
+    //if (false) { // checking these still
+    // r.getDFMap(DC_LIST, JmolAdapter.SHELL_D_CARTESIAN, BasisFunctionReader.CANONICAL_DC_LIST, 3);
+    // r.getDFMap(FC_LIST, JmolAdapter.SHELL_F_CARTESIAN, BasisFunctionReader.CANONICAL_FC_LIST, 3);
+    // r.getDFMap(DS_LIST, JmolAdapter.SHELL_D_SPHERICAL, BasisFunctionReader.CANONICAL_DS_LIST, 3);
+    // r.getDFMap(FS_LIST, JmolAdapter.SHELL_F_SPHERICAL, BasisFunctionReader.CANONICAL_FS_LIST, 3);
+    // }
     for (int i = 0; i < shellCount; i++) {
       String[] tokens = getTokens(readLine());
       boolean flag4 = (tokens[4].charAt(0) == '1');

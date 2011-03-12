@@ -80,6 +80,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Event;
 import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
 import java.awt.image.MemoryImageSource;
 import java.util.ArrayList;
 import java.util.Date;
@@ -3822,7 +3823,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     dim.width = Math.min(dim.width, maximumSize);
     int height = dim.height;
     int width = dim.width;
-    if (transformManager.stereoMode == JmolConstants.STEREO_DOUBLE)
+    if (isStereoDouble())
       width = (width + 1) / 2;
     if (dimScreen.width == width && dimScreen.height == height)
       return;
@@ -3921,12 +3922,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (size != null)
         setScreenDimension(size);
       if (gRight == null) {
-        Image image = getScreenImage();
-        if (transformManager.stereoMode == JmolConstants.STEREO_DOUBLE) {
-          render1(gLeft, image, dimScreen.width, 0);
-          image = getImage(false);
-        }
-        render1(gLeft, image, 0, 0);
+        getScreenImage(gLeft);
       } else {
         render1(gRight, getImage(true), 0, 0);
         render1(gLeft, getImage(false), 0, 0);
@@ -4013,9 +4009,24 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   @Override
-  public Image getScreenImage() {
-    return (transformManager.stereoMode <= JmolConstants.STEREO_DOUBLE ? getImage(transformManager.stereoMode == JmolConstants.STEREO_DOUBLE)
+  public Image getScreenImage(Graphics g) {
+    boolean mergeImages = (g == null && isStereoDouble());
+    Image image = (transformManager.stereoMode <= JmolConstants.STEREO_DOUBLE ? getImage(isStereoDouble())
         : getStereoImage(transformManager.stereoMode));
+    Image image1 = null;
+    if (mergeImages) {
+      image1 = new BufferedImage(dimScreen.width << 1, dimScreen.height,
+          ((BufferedImage) image).getType());
+      g = image1.getGraphics();
+    }
+    if (g != null) {
+      if (isStereoDouble()) {
+        render1(g, image, dimScreen.width, 0);
+        image = getImage(false);
+      }
+      render1(g, image, 0, 0);
+    }
+    return (mergeImages ? image1 : image);
   }
 
   @Override
@@ -4055,7 +4066,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         // and thus will not use os or filename
       }
     if (c == null) {
-      Image eImage = getScreenImage();
+      BufferedImage eImage = (BufferedImage) getScreenImage(null);
       if (eImage != null) {
         try {
           if (quality < 0)

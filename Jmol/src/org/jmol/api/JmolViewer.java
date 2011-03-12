@@ -177,7 +177,11 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public int getScreenWidth();
   abstract public int getScreenHeight();
 
-  abstract public Image getScreenImage();
+  public Image getScreenImage() {
+    return getScreenImage(null);
+  }
+
+  abstract public Image getScreenImage(Graphics g);
   abstract public void releaseScreenImage();
   
   abstract public void writeTextFile(String string, String data);

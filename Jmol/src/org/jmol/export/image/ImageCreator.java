@@ -64,7 +64,7 @@ public class ImageCreator implements JmolImageCreatorInterface {
     String msg;
     try {
       if (text == null) {
-        Image image = viewer.getScreenImage();
+        Image image = viewer.getScreenImage(null);
         ImageSelection.setClipboard(image);
         msg = "OK image to clipboard: " + (image.getWidth(null) * image.getHeight(null));
       } else {
@@ -173,7 +173,7 @@ public class ImageCreator implements JmolImageCreatorInterface {
     boolean isOsTemp = (os == null && fileName != null && !isPDF);
     boolean asBytes = (os == null && fileName == null && !isPDF);
     boolean isImage = (appendText instanceof Image); 
-    Image image = (isImage ? (Image) appendText : viewer.getScreenImage());
+    Image image = (isImage ? (Image) appendText : viewer.getScreenImage(null));
     try {
       if (image == null) {
         errMsg = viewer.getErrorMessage();

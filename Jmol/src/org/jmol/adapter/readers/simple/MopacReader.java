@@ -23,13 +23,14 @@
  */
 package org.jmol.adapter.readers.simple;
 
+import java.util.BitSet;
+
 import org.jmol.adapter.smarter.*;
+import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
 /**
- * Reads Mopac 93, 97 or 2002 output files, but was tested only
- * for Mopac 93 files yet. (Miguel tweaked it to handle 2002 files,
- * but did not test extensively.)
+ * Reads Mopac 93, 6, 7, 2002, or 2009 output files
  *
  * @author Egon Willighagen <egonw@jmol.org>
  */
@@ -38,6 +39,25 @@ public class MopacReader extends AtomSetCollectionReader {
   private int baseAtomIndex;  
   private boolean chargesFound = false;
   private boolean haveHeader;
+  private int mopacVersion;
+  
+  @Override
+  protected void initializeReader() throws Exception {
+    while (mopacVersion == 0) {
+      discardLinesUntilContains("MOPAC");
+      if (line.indexOf("2009") >= 0)
+        mopacVersion = 2009;
+      else if (line.indexOf("6.") >= 0)
+        mopacVersion = 6;
+      else if (line.indexOf("7.") >= 0)
+        mopacVersion = 7;
+      else if (line.indexOf("93") >= 0)
+        mopacVersion = 93;
+      else if (line.indexOf("2002") >= 0)
+        mopacVersion = 2002;
+    }
+    Logger.info("MOPAC version " + mopacVersion);
+  }
   
   @Override
   protected boolean checkLine() throws Exception {    
@@ -199,30 +219,58 @@ void processAtomicCharges() throws Exception {
    *             If an I/O error occurs
    */
   private void readFrequencies() throws Exception {
-    while (readLine() != null
-        && line.indexOf("DESCRIPTION") < 0)
+    
+    BitSet bsOK = new BitSet();
+    int n0 = atomSetCollection.getCurrentAtomSetIndex() + 1;
+    String[] tokens;
+
+    boolean done = false;
+    while (!done && readLine() != null
+        && line.indexOf("DESCRIPTION") < 0 && line.indexOf("MASS-WEIGHTED") < 0)
       if (line.toUpperCase().indexOf("ROOT") >= 0) {
-        int frequencyCount = getTokens().length - 2;
         discardLinesUntilNonBlank();
-        String[] fdata = getTokens();
-        String[] ldata = null;
-        if (Float.isNaN(Parser.parseFloatStrict(fdata[0]))) {
-          ldata = fdata;
+        tokens = getTokens();
+        if (Float.isNaN(Parser.parseFloatStrict(tokens[tokens.length - 1]))) {
           discardLinesUntilNonBlank();
-          fdata = getTokens();
+          tokens = getTokens();
         }
+        int frequencyCount = tokens.length;
+        readLine();
         int iAtom0 = atomSetCollection.getAtomCount();
         int atomCount = atomSetCollection.getLastAtomSetAtomCount();
         boolean[] ignore = new boolean[frequencyCount];
         for (int i = 0; i < frequencyCount; ++i) {
-          ignore[i] = !doGetVibration(++vibrationNumber);
+          ignore[i] = done || (done = Parser.parseFloatStrict(tokens[i]) < 1) || !doGetVibration(++vibrationNumber);
           if (ignore[i])
             continue;  
+          bsOK.set(vibrationNumber - 1);
           atomSetCollection.cloneLastAtomSet();
-          atomSetCollection.setAtomSetFrequency(null, ldata == null ? "" : " " + ldata[i], 
-              fdata[i], null);
         }
         fillFrequencyData(iAtom0, atomCount, atomCount, ignore, false, 0, 0, null);
       }
+    String[][] info = new String[vibrationNumber][];
+    if (line.indexOf("DESCRIPTION") < 0)
+      discardLinesUntilContains("DESCRIPTION");
+    while (discardLinesUntilContains("VIBRATION") != null) {
+      tokens = getTokens();
+      int freqNo = parseInt(tokens[1]); 
+      tokens[0] = getTokens(readLine())[1]; // FREQ
+      if (tokens[2].equals("ATOM"))
+        tokens[2] = null;
+      info[freqNo - 1] = tokens;
+      if (freqNo == vibrationNumber)
+        break;            
+    }
+    // some may be missing -- degenerate sets
+    for (int i = vibrationNumber - 1; --i >= 0; ) 
+      if (info[i] == null)
+        info[i] = info[i + 1];
+    // now set labels
+    for (int i = 0, n = n0; i < vibrationNumber; i++) {
+      if (!bsOK.get(i))
+        continue;
+      atomSetCollection.setCurrentAtomSetIndex(n++);
+      atomSetCollection.setAtomSetFrequency(null, info[i][2], info[i][0], null);
+    }
   }
 }

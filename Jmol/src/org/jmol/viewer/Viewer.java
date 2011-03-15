@@ -7767,7 +7767,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.setFrameTitle(BitSetUtil.setBit(modelIndex), title);
   }
 
-  public void setFrameTitle(String title) {
+  public void setFrameTitle(Object title) {
     loadShape(JmolConstants.SHAPE_ECHO);
     modelSet.setFrameTitle(getVisibleFramesBitSet(), title);
   }

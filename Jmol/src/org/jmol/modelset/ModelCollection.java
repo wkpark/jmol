@@ -208,9 +208,16 @@ abstract public class ModelCollection extends BondCollection {
     return (String) getModelAuxiliaryInfo(modelIndex, "fileName");
   }
 
-  public void setFrameTitle(BitSet bsFrames, String title) {
-    for (int i = bsFrames.nextSetBit(0); i >= 0; i = bsFrames.nextSetBit(i + 1)) 
-      frameTitles[i] = title;
+  public void setFrameTitle(BitSet bsFrames, Object title) {
+    if (title instanceof String[]) {
+      String[] list = (String[]) title;
+      for (int i = bsFrames.nextSetBit(0), n = 0; i >= 0; i = bsFrames.nextSetBit(i + 1)) 
+        if (n < list.length)
+          frameTitles[i] = list[n++];      
+    } else {
+      for (int i = bsFrames.nextSetBit(0); i >= 0; i = bsFrames.nextSetBit(i + 1)) 
+        frameTitles[i] = (String) title;
+    }
   }
   
   public String getFrameTitle(int modelIndex) {

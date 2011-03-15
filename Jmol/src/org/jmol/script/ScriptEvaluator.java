@@ -11479,7 +11479,7 @@ public class ScriptEvaluator {
       if (checkLength23() > 0)
         if (!isSyntaxCheck)
           viewer.setFrameTitle(statementLength == 2 ? "@{_modelName}"
-              : parameterAsString(2));
+              : (tokAt(2) == Token.varray ? ScriptVariable.listValue(statement[2]) : parameterAsString(2)));
       return;
     case Token.align:
       BitSet bs = (statementLength == 2 || tokAt(2) == Token.none ? null

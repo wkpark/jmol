@@ -210,7 +210,7 @@ abstract class TransformManager {
           .append(";\n");
     commands.append(getSpinState(true)).append("\n");
     if (viewer.modelSetHasVibrationVectors() && vibrationOn) 
-      StateManager.appendCmd(commands, "set vibrationPeriod " + vibrationPeriod);
+      StateManager.appendCmd(commands, "set vibrationPeriod " + vibrationPeriod + ";vibration on");
     if (mode == MODE_NAVIGATION) {
       commands.append(getNavigationState());
       if (depthPlane != null || slabPlane != null)

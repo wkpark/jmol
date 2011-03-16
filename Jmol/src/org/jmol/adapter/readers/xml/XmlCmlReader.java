@@ -451,6 +451,7 @@ public class XmlCmlReader extends XmlReader {
   }
 
   private void addNewBond(String a1, String a2, int order) {
+    parent.applySymmetryToBonds = true;
     if (isSerial)
       atomSetCollection.addNewBondWithMappedSerialNumbers(Parser.parseInt(a1.substring(1)),
           Parser.parseInt(a2.substring(1)), order);
@@ -564,9 +565,9 @@ public class XmlCmlReader extends XmlReader {
     case MOLECULE_BOND_ARRAY:
       if (name.equals("bondArray")) {
         state = MOLECULE;
-        for (int i = 0; i < bondCount; ++i) {
+        for (int i = 0; i < bondCount; ++i)
           atomSetCollection.addBond(bondArray[i]);
-        }
+        parent.applySymmetryToBonds = true;
       }
       break;
     case MOLECULE_ATOM_ARRAY:

@@ -155,7 +155,7 @@ public abstract class AtomSetCollectionReader {
   protected boolean doApplySymmetry;
   protected boolean ignoreFileSymmetryOperators;
   protected boolean isTrajectory;
-  protected boolean applySymmetryToBonds;
+  public boolean applySymmetryToBonds;
   protected boolean doCheckUnitCell;
   protected boolean getHeader;
   protected boolean isSequential;

@@ -68,14 +68,14 @@ class AtomPropertyMapper extends AtomDataReader {
       // 0 to 10 becomes d^-10 to d^-1, and we'll be using distance^2
     }
     maxDistance = params.propertyDistanceMax;
-    if (!doSmoothProperty && maxDistance == Integer.MAX_VALUE)
-      maxDistance = 5.0f; // usually just local to a group
     if (mepType != null) {
       doSmoothProperty = true;
       if (params.mep_calcType >= 0)
         calcType = params.mep_calcType;
       m = (MepCalculationInterface) Interface.getOptionInterface("quantum." + mepType + "Calculation");
     }
+    if (!doSmoothProperty && maxDistance == Integer.MAX_VALUE)
+      maxDistance = 5.0f; // usually just local to a group
     getAtoms(Float.NaN, false, true);    
     setHeader("property", params.calculationType);
     // for plane mapping

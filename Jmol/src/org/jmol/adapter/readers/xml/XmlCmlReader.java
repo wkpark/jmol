@@ -82,7 +82,7 @@ public class XmlCmlReader extends XmlReader {
    */
 
   private String[] cmlImplementedAttributes = { "id", //general
-      "title", //molecule, atom
+      "title", //molecule, atom, scalar
       "label", "name", //old atom
       "x3", "y3", "z3", "x2", "y2", "isotope", //atom 
       "elementType", "formalCharge", //atom
@@ -513,22 +513,11 @@ public class XmlCmlReader extends XmlReader {
     case CRYSTAL_SCALAR:
       if (name.equals("scalar")) {
         state = CRYSTAL;
-        if (scalarTitle != null) {
-          int i = 6;
-          while (--i >= 0
-              && !scalarTitle.equals(AtomSetCollection.notionalUnitcellTags[i])) {
-          }
-          if (i >= 0)
-            parent.setUnitCellItem(i, parseFloat(chars));
-        }
-        if (scalarDictRef != null) {
-          int i = 6;
-          while (--i >= 0
-              && !scalarDictValue.equals(CifReader.cellParamNames[i])) {
-          }
-          if (i >= 0)
-            parent.setUnitCellItem(i, parseFloat(chars));
-        }
+        if (scalarTitle != null)
+          checkUnitCellItem(AtomSetCollection.notionalUnitcellTags, scalarTitle);
+        else if (scalarDictRef != null)
+          checkUnitCellItem(CifReader.cellParamNames, (scalarDictValue
+              .startsWith("_") ? scalarDictValue : "_" + scalarDictValue));
       }
       setKeepChars(false);
       scalarTitle = null;
@@ -553,10 +542,9 @@ public class XmlCmlReader extends XmlReader {
       break;
     case CRYSTAL_SYMMETRY:
     case SYMMETRY:
-      if (name.equals("symmetry")) {
+      if (name.equals("symmetry"))
         state = (state == CRYSTAL_SYMMETRY ? CRYSTAL : START);
-      }
-      if (moduleNestingLevel == 0 && parent.iHaveUnitCell)
+      if (moduleNestingLevel == 0 && parent.iHaveUnitCell && !embeddedCrystal)
         applySymmetryAndSetTrajectory();
       break;
     case MOLECULE:
@@ -646,6 +634,14 @@ public class XmlCmlReader extends XmlReader {
       state = MOLECULE;
       break;
     }
+  }
+
+  private void checkUnitCellItem(String[] tags, String value) {
+    for (int i = tags.length; --i >= 0;)
+      if (value.equals(tags[i])) {
+        parent.setUnitCellItem(i, parseFloat(chars));
+        return;
+      }
   }
 
   private void addAtom(Atom atom) {

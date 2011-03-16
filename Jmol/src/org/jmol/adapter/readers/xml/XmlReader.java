@@ -339,12 +339,14 @@ public class XmlReader extends AtomSetCollectionReader {
 
     public Map<String, String> atts;
 
+    private String context = "";
     @Override
     public void startElement(String namespaceURI, String localName,
                              String qName, Attributes attributes) {
       getAttributes(attributes);
       if (Logger.debugging) {
-        Logger.debug("start " + localName);
+        context +=  " " + localName;
+        Logger.debug(context);
       }
       startElement(namespaceURI, localName, qName);
     }
@@ -356,7 +358,8 @@ public class XmlReader extends AtomSetCollectionReader {
     @Override
     public void endElement(String uri, String localName, String qName) {
       if (Logger.debugging) {
-        Logger.debug("end " + localName);
+        Logger.debug("");//"end   " + indent);
+        context = context.substring(0, context.lastIndexOf(" "));
       }
       processEndElement(uri, localName, qName);
     }

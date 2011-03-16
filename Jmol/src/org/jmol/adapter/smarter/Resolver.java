@@ -495,8 +495,10 @@ public class Resolver {
         if (header.indexOf(recordTag) != -1) {
           type = recordTags[0];
           if (type.equals("Xml")) {
-            if (header.indexOf("XHTML") >= 0 || header.indexOf("xhtml") >= 0)
-              break; //probably an error message from a server -- certainly not XML
+            // check for an error message from a server -- certainly not XML
+            // but new CML format includes xmlns:xhtml="http://www.w3.org/1999/xhtml" in <cml> tag.
+            if (header.indexOf("XHTML") >= 0 || header.indexOf("xhtml") >= 0 && header.indexOf("<cml") < 0)
+              break; 
             type = getXmlType(header);
           }
           return type;

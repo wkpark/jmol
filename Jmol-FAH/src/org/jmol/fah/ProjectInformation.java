@@ -1680,6 +1680,99 @@ public class ProjectInformation {
     outputText("Differences for project "); //$NON-NLS-1$
     outputTextLn(Integer.toString(projectNumber));
 
+    // Check for unknown project
+    if ((info._staticAtoms == null) &&
+        (info._staticContact == null) &&
+        (info._staticCore == null) &&
+        (info._staticDeadline == null) &&
+        (info._staticFile == null) &&
+        (info._staticFrames == null) &&
+        (info._staticKfactor == null) &&
+        (info._staticName == null) &&
+        (info._staticPreferred == null) &&
+        (info._staticPublic == null) &&
+        (info._staticServer == null) &&
+        (info._staticValue == null)) {
+      outputText("  <fah_proj number=\"" + Integer.toString(projectNumber) + "\"");
+      if (info._psName != null) {
+        outputText(" name=\"" + info._psName + "\"");
+      } else if (info._fciName != null) {
+        outputText(" name=\"" + info._fciName + "\"");
+      }
+      if (info._psPublic != null) {
+        outputText(" public=\"" + (Boolean.TRUE.equals(info._psPublic) ? "y" : "n") + "\"");
+      } else {
+        outputText(" public=\"n\"");
+      }
+      outputTextLn("");
+      outputText("   ");
+      if (info._psServer != null) {
+        outputText(" server=\"" + info._psServer + "\"");
+      } else if (info._fciServer != null) {
+        outputText(" server=\"" + info._fciServer + "\"");
+      }
+      if (info._psAtoms != null) {
+        outputText(" atoms=\"" + info._psAtoms + "\"");
+      } else if (info._fciAtoms != null) {
+        outputText(" atoms=\"" + info._fciAtoms + "\"");
+      }
+      if (info._psPreferred != null) {
+        if (info._psPreferred.intValue() % 86400 == 0) {
+          outputText(" preferred=\"" + (info._psPreferred.intValue() / 86400) + "\"");
+        } else {
+          outputText(" preferred=\"" + (info._psPreferred.doubleValue() / 86400) + "\"");
+        }
+      } else if (info._fciPreferred != null) {
+        if (info._fciPreferred.intValue() % 86400 == 0) {
+          outputText(" preferred=\"" + (info._fciPreferred.intValue() / 86400) + "\"");
+        } else {
+          outputText(" preferred=\"" + (info._fciPreferred.doubleValue() / 86400) + "\"");
+        }
+      }
+      if (info._psDeadline != null) {
+        if (info._psDeadline.intValue() % 86400 == 0) {
+          outputText(" deadline=\"" + (info._psDeadline.intValue() / 86400) + "\"");
+        } else {
+          outputText(" deadline=\"" + (info._psDeadline.doubleValue() / 86400) + "\"");
+        }
+      } else if (info._fciDeadline != null) {
+        if (info._fciDeadline.intValue() % 86400 == 0) {
+          outputText(" deadline=\"" + (info._fciDeadline.intValue() / 86400) + "\"");
+        } else {
+          outputText(" deadline=\"" + (info._fciDeadline.doubleValue() / 86400) + "\"");
+        }
+      }
+      outputTextLn("");
+      outputText("   ");
+      if (info._psValue != null) {
+        outputText(" credit=\"" + info._psValue + "\"");
+      } else if (info._fciValue != null) {
+        outputText(" credit=\"" + info._fciValue + "\"");
+      }
+      if (info._psFrames != null) {
+        outputText(" frames=\"" + info._psFrames + "\"");
+      } else if (info._fciFrames != null) {
+        outputText(" frames=\"" + info._fciFrames + "\"");
+      }
+      if (info._psCore != null) {
+        outputText(" code=\"" + info._psCore.getCode() + "\"");
+      } else if (info._fciCore != null) {
+        outputText(" code=\"" + info._fciCore.getCode() + "\"");
+      }
+      if (info._psContact != null) {
+        outputText(" contact=\"" + info._psContact + "\"");
+      } else if (info._fciContact != null) {
+        outputText(" contact=\"" + info._fciContact + "\"");
+      }
+      if (info._psKfactor != null) {
+        outputText(" kfactor=\"" + info._psKfactor + "\"");
+      } else if (info._fciKfactor != null) {
+        outputText(" kfactor=\"" + info._fciKfactor + "\"");
+      }
+      outputTextLn("/>");
+      return;
+    }
+
     //Print names difference
     boolean nameDifferent = false;
     if (info._psName != null) {

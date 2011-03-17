@@ -28,14 +28,9 @@
 package org.jmol.adapter.readers.xtal;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
-import org.jmol.api.JmolAdapter;
 import org.jmol.util.TextFormat;
 
 /**

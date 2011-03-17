@@ -171,8 +171,6 @@ abstract public class AtomCollection {
   }
 
   public boolean isAtomHidden(int iAtom) {
-    if (bsHidden.get(436))
-      System.out.println("atomcollecion is hidden: " + atoms[436]);
     return bsHidden.get(iAtom);
   }
   

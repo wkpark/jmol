@@ -702,7 +702,11 @@ REMARK 290 REMARK: NULL
     return "Xx";
   }
 
+  private StringBuffer sbConect;
   private void conect() {
+    // adapted for improper non-crossreferenced files such as 1W7R
+    if (sbConect == null)
+      sbConect = new StringBuffer();
     int sourceSerial = -1;
     sourceSerial = parseInt(line, 6, 11);
     if (sourceSerial < 0)
@@ -712,9 +716,21 @@ REMARK 290 REMARK: NULL
       int offsetEnd = offset + 5;
       int targetSerial = (offsetEnd <= lineLength ? parseInt(line, offset,
           offsetEnd) : -1);
-      if (targetSerial < sourceSerial)
+      if (targetSerial < 0)
         continue;
-      atomSetCollection.addConnection(new int[] { sourceSerial, targetSerial,
+      int i1;
+      boolean isSwapped = (targetSerial < sourceSerial);
+      if (isSwapped) {
+        i1 = targetSerial;
+        targetSerial = sourceSerial;
+      } else {
+        i1 = sourceSerial;
+      }
+      String st = ";" + i1 + " " + targetSerial + ";";
+      if (sbConect.indexOf(st) >= 0)
+        continue;
+      sbConect.append(st);
+      atomSetCollection.addConnection(new int[] { i1, targetSerial,
           i < 4 ? 1 : JmolAdapter.ORDER_HBOND });
     }
   }
@@ -841,6 +857,7 @@ Polyproline 10
      ****************************************************************/
     checkNotPDB();
     haveMappedSerials = false;
+    sbConect = null;
     atomSetCollection.newAtomSet();
     atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
     atomSetCollection.setAtomSetNumber(modelNumber);

@@ -27,6 +27,7 @@
 
 package org.jmol.adapter.readers.xtal;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -34,6 +35,7 @@ import java.util.Set;
 
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
+import org.jmol.api.JmolAdapter;
 import org.jmol.util.TextFormat;
 
 /**
@@ -48,7 +50,7 @@ import org.jmol.util.TextFormat;
 public class VaspOutcarReader extends AtomSetCollectionReader {
 
   private String[] atomNames;
-  private String[] elementNames; //this array is to store the name of the element 
+  private ArrayList<String> elementNames; //this array is to store the name of the element 
   private int atomCount = 0;
   private boolean inputOnly;
   private boolean mDsimulation = false; //this is for MD simulations
@@ -108,37 +110,20 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
       VRHFIN =H: ultrasoft test 
    */
   private void readElementNames() throws Exception {
-    int counter = 0;
-    boolean flagUnderscore = false;
-    // Here I set the number of species to 100.
-    // We might need a larger one. Because we are mapping the atom coordinate on it
-    // See mapAtom().
-    String[] tmpName = new String[100];
-
+    elementNames = new ArrayList<String>();
+    String elementList = "";
     while (readLine() != null && line.indexOf("VRHFIN") < 0) {
-      if (line.contains("_")) {
-        flagUnderscore = true;
+      int pt = (line.contains("_") ? 2 : 1);
+      if (pt == 2)
         line = line.replace("_", " ");
-      }
-
       String[] tokens = getTokens(line.substring(line.indexOf(":") + 1));
-
-      if (!flagUnderscore) {
-        tmpName[counter] = tokens[1];
-      } else {
-        tmpName[counter] = tokens[2];
-      }
-      counter++;
-      flagUnderscore = false;
+      String sym = tokens[pt];
+      String key = ";" + sym + ";";
+      if (elementList.indexOf(key) >= 0)
+        continue;
+      elementList += key;
+      elementNames.add(sym);
     }
-
-    // remove duplicates
-
-    List<String> list = Arrays.asList(tmpName);
-    Set<String> set = new HashSet<String>(list);
-    set.remove(null);
-    elementNames = new String[set.size()];
-    set.toArray(elementNames);
   }
 
   /*  
@@ -162,9 +147,10 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
       atomCount += (numofElement[i] = parseInt(tokens[i].trim()));
     //this is to reconstruct the atomMappedarray containing the atom
     atomNames = new String[atomCount];
-    for (int pt = 0, i = 0; i < numofElement.length; i++)
+    int nElements = elementNames.size();
+    for (int pt = 0, i = 0; i < nElements; i++)
       for (int j = 0; j < numofElement[i]; j++)
-        atomNames[pt++] = elementNames[i];
+        atomNames[pt++] = elementNames.get(i);
   }
 
   /*direct lattice vectors                 reciprocal lattice vectors

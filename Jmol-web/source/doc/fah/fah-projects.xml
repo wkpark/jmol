@@ -8638,6 +8638,90 @@
   <fah_proj number="6951" name="hafp3_bax_embed" public="y"
     server="128.143.199.96" atoms="77110" preferred="1.9" deadline="3"
     credit="439" frames="100" code="A3" contact="kasson" kfactor="3.24"/>
+  <fah_proj number="6952" name="hafp3_tamm" public="n"
+    server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
+    credit="552.0" frames="100" code="A3" contact="kasson" kfactor="3.33"/>
+  <fah_proj number="6953" name="hafp3_tamm" public="n"
+    server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
+    credit="552.0" frames="100" code="A3" contact="kasson" kfactor="3.33"/>
+  <fah_proj number="6954" name="hafp3_tamm" public="n"
+    server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
+    credit="552.0" frames="100" code="A3" contact="kasson" kfactor="3.33"/>
+  <fah_proj number="6955" name="hafp3_tamm" public="n"
+    server="128.143.199.96" atoms="77113" preferred="4" deadline="2.7"
+    credit="552.0" frames="100" code="A3" contact="kasson" kfactor="3.33"/>
+  <fah_proj number="6956" name="hafp3_tamm" public="n"
+    server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
+    credit="552.0" frames="100" code="A3" contact="kasson" kfactor="3.33"/>
+  <fah_proj number="6957" name="hafp3_tamm" public="n"
+    server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
+    credit="552.0" frames="100" code="A3" contact="kasson" kfactor="3.33"/>
+  <fah_proj number="6958" name="hafp3_tamm" public="n"
+    server="128.143.199.96" atoms="77074" preferred="2.7" deadline="4"
+    credit="552.0" frames="100" code="A3" contact="kasson" kfactor="3.33"/>
+  <fah_proj number="6959" name="hafp3_tamm" public="n"
+    server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
+    credit="552.0" frames="100" code="A3" contact="kasson" kfactor="3.33"/>
+  <fah_proj number="6960" name="hafp3_tamm" public="n"
+    server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
+    credit="552.0" frames="100" code="A3" contact="kasson" kfactor="3.33"/>
+  <fah_proj number="6961" name="hafp3_tamm" public="n"
+    server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
+    credit="552.0" frames="100" code="A3" contact="kasson" kfactor="3.33"/>
+  <fah_proj number="6962" name="hafp3_tamm" public="n"
+    server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
+    credit="552" frames="100" code="A3" contact="kasson" kfactor="3.33"/>
+  <fah_proj number="6963" name="hafp3_tamm" public="n"
+    server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
+    credit="552" frames="100" code="A3" contact="kasson" kfactor="3.33"/>
+  <fah_proj number="6964" name="hafp3_tamm" public="n"
+    server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
+    credit="552" frames="100" code="A3" contact="kasson" kfactor="3.33"/>
+  <fah_proj number="6965" name="hafp3_tamm" public="n"
+    server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
+    credit="552" frames="100" code="A3" contact="kasson" kfactor="3.33"/>
+  <fah_proj number="6966" name="hafp3_tamm" public="n"
+    server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
+    credit="552" frames="100" code="A3" contact="kasson" kfactor="3.3"/>
+  <fah_proj number="6967" name="hafp3_tamm" public="n"
+    server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
+    credit="552" frames="100" code="A3" contact="kasson" kfactor="3.3"/>
+  <fah_proj number="6968" name="hafp3_tamm" public="n"
+    server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
+    credit="552" frames="100" code="A3" contact="kasson" kfactor="3.3"/>
+  <fah_proj number="6969" name="hafp3_tamm" public="n"
+    server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
+    credit="552" frames="100" code="A3" contact="kasson" kfactor="3.3"/>
+  <fah_proj number="6970" name="hafp3_tamm" public="n"
+    server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
+    credit="552" frames="100" code="A3" contact="kasson" kfactor="3.3"/>
+  <fah_proj number="6971" name="hafp3_tamm" public="n"
+    server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
+    credit="552" frames="100" code="A3" contact="kasson" kfactor="3.3"/>
+  <fah_proj number="6972" name="hafp3_tamm" public="n"
+    server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
+    credit="552" frames="100" code="A3" contact="kasson" kfactor="3.3"/>
+  <fah_proj number="6973" name="hafp3_tamm" public="n"
+    server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
+    credit="552" frames="100" code="A3" contact="kasson" kfactor="3.3"/>
+  <fah_proj number="6974" name="hafp3_tamm" public="n"
+    server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
+    credit="552" frames="100" code="A3" contact="kasson" kfactor="3.3"/>
+  <fah_proj number="6975" name="hafp3_tamm" public="n"
+    server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
+    credit="552" frames="100" code="A3" contact="kasson" kfactor="3.3"/>
+  <fah_proj number="6976" name="hafp3_tamm" public="n"
+    server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
+    credit="552" frames="100" code="A3" contact="kasson" kfactor="3.3"/>
+  <fah_proj number="6977" name="hafp3_tamm" public="n"
+    server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
+    credit="552" frames="100" code="A3" contact="kasson" kfactor="3.3"/>
+  <fah_proj number="6978" name="hafp3_tamm" public="n"
+    server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
+    credit="552" frames="100" code="A3" contact="kasson" kfactor="3.3"/>
+  <fah_proj number="6979" name="hafp3_tamm" public="n"
+    server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
+    credit="552" frames="100" code="A3" contact="kasson" kfactor="3.3"/>
 
   <!-- Projects 7100 to 7199 -->
   <fah_proj number="7100" name="2kxa_bax" public="y"
@@ -8720,6 +8804,87 @@
     credit="585" frames="100" code="A3" contact="pela3247" kfactor="3.23"/>
   <fah_proj number="7127" name="2kxa_bax" public="y"
     server="128.143.199.96" atoms="77269" preferred="2.6" deadline="4"
+    credit="585" frames="100" code="A3" contact="pela3247" kfactor="3.23"/>
+  <fah_proj number="7128" name="2kxa_bax" public="y"
+    server="128.143.199.96" atoms="77351" preferred="2.6" deadline="4"
+    credit="585" frames="100" code="A3" contact="pela3247" kfactor="3.23"/>
+  <fah_proj number="7129" name="2kxa_bax" public="y"
+    server="128.143.199.96" atoms="77299" preferred="2.6" deadline="4"
+    credit="585" frames="100" code="A3" contact="pela3247" kfactor="3.23"/>
+  <fah_proj number="7130" name="2kxa_bax" public="y"
+    server="128.143.199.96" atoms="77312" preferred="2.6" deadline="4"
+    credit="585" frames="100" code="A3" contact="pela3247" kfactor="3.23"/>
+  <fah_proj number="7131" name="2kxa_bax" public="y"
+    server="128.143.199.96" atoms="77321" preferred="2.6" deadline="4"
+    credit="585" frames="100" code="A3" contact="pela3247" kfactor="3.23"/>
+  <fah_proj number="7132" name="2kxa_bax" public="y"
+    server="128.143.199.96" atoms="77351" preferred="2.6" deadline="4"
+    credit="585" frames="100" code="A3" contact="pela3247" kfactor="3.23"/>
+  <fah_proj number="7133" name="2kxa_bax" public="y"
+    server="128.143.199.96" atoms="77342" preferred="2.6" deadline="4"
+    credit="585" frames="100" code="A3" contact="pela3247" kfactor="3.23"/>
+  <fah_proj number="7134" name="2kxa_bax" public="y"
+    server="128.143.199.96" atoms="77339" preferred="2.6" deadline="4"
+    credit="585" frames="100" code="A3" contact="pela3247" kfactor="3.23"/>
+  <fah_proj number="7135" name="2kxa_bax" public="y"
+    server="128.143.199.96" atoms="77308" preferred="2.6" deadline="4"
+    credit="585" frames="100" code="A3" contact="pela3247" kfactor="3.23"/>
+  <fah_proj number="7136" name="2kxa_bax" public="y"
+    server="128.143.199.96" atoms="77317" preferred="2.6" deadline="4"
+    credit="585" frames="100" code="A3" contact="pela3247" kfactor="3.23"/>
+  <fah_proj number="7137" name="2kxa_bax" public="y"
+    server="128.143.199.96" atoms="77330" preferred="2.6" deadline="4"
+    credit="585" frames="100" code="A3" contact="pela3247" kfactor="3.23"/>
+  <fah_proj number="7138" name="2kxa_bax" public="y"
+    server="128.143.199.96" atoms="77339" preferred="2.6" deadline="4"
+    credit="585" frames="100" code="A3" contact="pela3247" kfactor="3.23"/>
+  <fah_proj number="7139" name="2kxa_bax" public="y"
+    server="128.143.199.96" atoms="77272" preferred="2.6" deadline="4"
+    credit="585" frames="100" code="A3" contact="pela3247" kfactor="3.23"/>
+  <fah_proj number="7140" name="2kxa_bax" public="y"
+    server="128.143.199.96" atoms="77281" preferred="2.6" deadline="4"
+    credit="585" frames="100" code="A3" contact="pela3247" kfactor="3.23"/>
+  <fah_proj number="7141" name="2kxa_bax" public="y"
+    server="128.143.199.96" atoms="77220" preferred="2.6" deadline="4"
+    credit="585" frames="100" code="A3" contact="pela3247" kfactor="3.23"/>
+  <fah_proj number="7142" name="2kxa_bax" public="y"
+    server="128.143.199.96" atoms="77278" preferred="2.6" deadline="4"
+    credit="585" frames="100" code="A3" contact="pela3247" kfactor="3.23"/>
+  <fah_proj number="7143" name="2kxa_bax" public="y"
+    server="128.143.199.96" atoms="77226" preferred="2.6" deadline="4"
+    credit="585" frames="100" code="A3" contact="pela3247" kfactor="3.23"/>
+  <fah_proj number="7144" name="2kxa_bax" public="y"
+    server="128.143.199.96" atoms="77217" preferred="2.6" deadline="4"
+    credit="585" frames="100" code="A3" contact="pela3247" kfactor="3.23"/>
+  <fah_proj number="7145" name="2kxa_bax" public="y"
+    server="128.143.199.96" atoms="77333" preferred="2.6" deadline="4"
+    credit="585" frames="100" code="A3" contact="pela3247" kfactor="3.23"/>
+  <fah_proj number="7146" name="2kxa_bax" public="y"
+    server="128.143.199.96" atoms="77324" preferred="2.6" deadline="4"
+    credit="585" frames="100" code="A3" contact="pela3247" kfactor="3.23"/>
+  <fah_proj number="7147" name="2kxa_bax" public="y"
+    server="128.143.199.96" atoms="77317" preferred="2.6" deadline="4"
+    credit="585" frames="100" code="A3" contact="pela3247" kfactor="3.23"/>
+  <fah_proj number="7148" name="2kxa_bax" public="y"
+    server="128.143.199.96" atoms="77369" preferred="2.6" deadline="4"
+    credit="585" frames="100" code="A3" contact="pela3247" kfactor="3.23"/>
+  <fah_proj number="7149" name="2kxa_bax" public="y"
+    server="128.143.199.96" atoms="77387" preferred="2.6" deadline="4"
+    credit="585" frames="100" code="A3" contact="pela3247" kfactor="3.23"/>
+  <fah_proj number="7150" name="2kxa_bax" public="y"
+    server="128.143.199.96" atoms="77369" preferred="2.6" deadline="4"
+    credit="585" frames="100" code="A3" contact="pela3247" kfactor="3.23"/>
+  <fah_proj number="7151" name="2kxa_bax" public="y"
+    server="128.143.199.96" atoms="77369" preferred="2.6" deadline="4"
+    credit="585" frames="100" code="A3" contact="pela3247" kfactor="3.23"/>
+  <fah_proj number="7152" name="2kxa_bax" public="y"
+    server="128.143.199.96" atoms="77281" preferred="2.6" deadline="4"
+    credit="585" frames="100" code="A3" contact="pela3247" kfactor="3.23"/>
+  <fah_proj number="7153" name="2kxa_bax" public="y"
+    server="128.143.199.96" atoms="77272" preferred="2.6" deadline="4"
+    credit="585" frames="100" code="A3" contact="pela3247" kfactor="3.23"/>
+  <fah_proj number="7154" name="2kxa_bax" public="y"
+    server="128.143.199.96" atoms="77348" preferred="2.6" deadline="4"
     credit="585" frames="100" code="A3" contact="pela3247" kfactor="3.23"/>
 
   <!-- Projects 9900 to 9999 -->
@@ -9135,10 +9300,10 @@
   <fah_proj number="10428" name="p10428" public="n"
     server="171.64.65.80" atoms="576" preferred="13" deadline="19"
     credit="194" frames="100" code="A4" contact="kyleb"/>
-  <fah_proj number="10429" name="p10429" public="n"
+  <fah_proj number="10429" name="p10429" public="y"
     server="171.64.65.81" atoms="576" preferred="13" deadline="19"
     credit="194" frames="100" code="A4" contact="kyleb"/>
-  <fah_proj number="10430" name="p10430" public="n"
+  <fah_proj number="10430" name="p10430" public="y"
     server="171.64.65.81" atoms="576" preferred="13" deadline="19"
     credit="10" frames="100" code="A4" contact="kyleb"/>
   <fah_proj number="10432" name="p10432" public="y"
@@ -9150,7 +9315,7 @@
   <fah_proj number="10436" name="p10436" public="y"
     server="171.64.65.80" atoms="576" preferred="8" deadline="12"
     credit="311" frames="100" code="A4" contact="kyleb" kfactor="0.69"/>
-  <fah_proj number="10437" name="p10437" public="n"
+  <fah_proj number="10437" name="p10437" public="y"
     server="171.64.65.81" atoms="576" preferred="8" deadline="12"
     credit="311" frames="100" code="A4" contact="kyleb" kfactor="0.69"/>
 
@@ -9792,6 +9957,9 @@
   <fah_proj number="11020" name="p11020" public="y"
     server="171.64.65.55" atoms="25192" preferred="8" deadline="12"
     credit="310" frames="100" code="A3" contact="dvanatta" kfactor="0.75"/>
+  <fah_proj number="11021" name="p11021" public="n"
+    server="171.64.65.55" atoms="29884" preferred="8" deadline="12"
+    credit="336" frames="100" code="A3" contact="dvanatta" kfactor="0.75"/>
 
   <!-- Projects 11100 to 11199 -->
   <fah_proj number="11101" name="Fs_96" public="y"

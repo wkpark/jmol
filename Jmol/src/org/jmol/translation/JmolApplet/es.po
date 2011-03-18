@@ -3,11 +3,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-03-07 20:56+0100\n"
-<<<<<<< .mine
 "PO-Revision-Date: 2011-03-17 11:58+0000\n"
-=======
-"PO-Revision-Date: 2011-03-16 21:22+0100\n"
->>>>>>> .r15300
 "Last-Translator: Angel Herráez <aherraez@users.sourceforge.net>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"

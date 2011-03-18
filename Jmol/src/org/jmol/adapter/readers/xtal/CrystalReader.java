@@ -96,9 +96,20 @@ public class CrystalReader extends AtomSetCollectionReader {
   private boolean isFreqCalc;
   private boolean inputOnly;
   private boolean isLongMode;
-  private int atomCount;
-  private int[] atomFrag;
   private boolean getLastConventional;
+  private boolean havePrimitiveMapping;
+  
+  private int atomCount;
+  private int atomIndexLast;
+  private int[] atomFrag;
+  private int[] primitiveToIndex;
+  private float[] nuclearCharges;
+  private List<String> vInputCoords;
+
+  private Double energy;
+  private Point3f ptOriginShift = new Point3f();
+  private Matrix3f primitiveToCryst;
+  private Vector3f[] directLatticeVectors;
 
   @Override
   protected void initializeReader() throws Exception {
@@ -262,8 +273,6 @@ public class CrystalReader extends AtomSetCollectionReader {
   -0.145331646077E+01  -0.251721794953E+01   0.460469095849E+01
    */
 
-  Vector3f[] directLatticeVectors;
-
   private boolean setDirect() throws Exception {
     readLine();
     directLatticeVectors = new Vector3f[3];
@@ -323,15 +332,11 @@ public class CrystalReader extends AtomSetCollectionReader {
 
    */
 
-  Matrix3f primitiveToCryst;
-
   private void readTransformationMatrix() throws Exception {
     float[] f = new float[9];
     fillFloatArray(f, null, 0);
     primitiveToCryst = new Matrix3f(f);
   }
-
-  private Point3f ptOriginShift = new Point3f();
 
   private boolean readShift() {
     //  SHIFT OF THE ORIGIN                  :    3/4    1/4      0
@@ -514,9 +519,6 @@ public class CrystalReader extends AtomSetCollectionReader {
     }
   }
 
-  private boolean havePrimitiveMapping;
-  private int[] primitiveToIndex;
-
   /**
    * create arrays that maps primitive atoms to conventional atoms
    * in a 1:1 fashion. Creates:
@@ -563,31 +565,22 @@ public class CrystalReader extends AtomSetCollectionReader {
       }
     }
 
-    if (bsInputAtomsIgnore.nextSetBit(0) >= 0 && vInputCoords != null)
-      for (int i = n; --i >= 0;) {
+    if (bsInputAtomsIgnore.nextSetBit(0) >= 0)
+      for (int i = n; --i >= 0;)
         if (bsInputAtomsIgnore.get(i))
           vInputCoords.remove(i);
-      }
     atomCount = vInputCoords.size();
-
-    // now reset primitiveToIndex
+    Logger.info(nPrim + " primitive atoms and " + atomCount + " conventionalAtoms");
     primitiveToIndex = new int[nPrim];
     for (int i = 0; i < nPrim; i++)
       primitiveToIndex[i] = -1;
-
-    for (int i = vInputCoords.size(); --i >= 0;) {
-      line = vInputCoords.get(i);
-      int iConv = parseInt(line.substring(0, 4)) - 1;
-      iPrim = indexToPrimitive[iConv];
+    for (int i = atomCount; --i >= 0;) {
+      iPrim = indexToPrimitive[parseInt(vInputCoords.get(i).substring(0, 4)) - 1];
       if (iPrim >= 0)
         primitiveToIndex[iPrim] = i;
     }
-    Logger.info(nPrim + " primitive atoms " + vInputCoords.size()
-        + " conventionalAtoms");
     return true;
   }
-
-  int atomIndexLast;
 
   /*
    * ATOMS IN THE ASYMMETRIC UNIT 30 - ATOMS IN THE UNIT CELL: 30 ATOM X/A Y/B
@@ -652,8 +645,6 @@ public class CrystalReader extends AtomSetCollectionReader {
     return atomicNumber;
   }
 
-  private List<String> vInputCoords;
-
   /*
    * INPUT COORDINATES
    * 
@@ -708,8 +699,6 @@ public class CrystalReader extends AtomSetCollectionReader {
     atomSetCollection.newAtomSet();
   }
 
-  private Double energy;
-
   private void readEnergy() {
     line = TextFormat.simpleReplace(line, "( ", "(");
     String[] tokens = getTokens();
@@ -749,8 +738,6 @@ public class CrystalReader extends AtomSetCollectionReader {
       }
     return true;
   }
-
-  private float[] nuclearCharges;
 
   private boolean readTotalAtomicCharges() throws Exception {
     StringBuffer data = new StringBuffer();

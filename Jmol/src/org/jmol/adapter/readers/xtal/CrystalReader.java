@@ -265,6 +265,15 @@ public class CrystalReader extends AtomSetCollectionReader {
     return true;
   }
 
+  @Override
+  protected void finalizeReader() throws Exception {
+    if (vInputCoords != null)
+      processInputCoords();
+    if (energy != null)
+      setEnergy();
+    super.finalizeReader();
+  }
+
   /*
   DIRECT LATTICE VECTORS CARTESIAN COMPONENTS (ANGSTROM)
           X                    Y                    Z
@@ -435,15 +444,6 @@ public class CrystalReader extends AtomSetCollectionReader {
     }
     data = TextFormat.join(s, '\n', 0);
     atomSetCollection.setAtomSetAuxiliaryProperty(name, data);
-  }
-
-  @Override
-  protected void finalizeReader() throws Exception {
-    if (vInputCoords != null)
-      processInputCoords();
-    if (energy != null)
-      setEnergy();
-    super.finalizeReader();
   }
 
   private boolean readHeader() throws Exception {

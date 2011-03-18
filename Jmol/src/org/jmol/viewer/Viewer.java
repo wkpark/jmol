@@ -8399,11 +8399,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (!"*".equals(applet))
         return;
     }
-    if (script.equalsIgnoreCase("on")) {
+    if (script.equalsIgnoreCase("on") || script.equalsIgnoreCase("true")) {
       statusManager.setSyncDriver(StatusManager.SYNC_DRIVER);
       return;
     }
-    if (script.equalsIgnoreCase("off")) {
+    if (script.equalsIgnoreCase("off") || script.equalsIgnoreCase("false")) {
       statusManager.setSyncDriver(StatusManager.SYNC_OFF);
       return;
     }

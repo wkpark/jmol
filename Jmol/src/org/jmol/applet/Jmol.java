@@ -693,6 +693,7 @@ public class Jmol implements WrappedApplet {
   }
 
   synchronized public void syncScript(String script) {
+    System.out.println("Jmol.syncScript " + script);
     viewer.syncScript(script, "~");
   }
 

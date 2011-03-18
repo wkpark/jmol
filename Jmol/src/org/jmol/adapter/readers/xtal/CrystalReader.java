@@ -196,6 +196,13 @@ public class CrystalReader extends AtomSetCollectionReader {
       isSlab = false;
       return true;
     }
+    
+    if(line.indexOf("* CLUSTER CALCULATION") >= 0){
+      isMolecular =true;
+      isSlab = false;
+      isPolymer =false;
+      return true;
+    }
 
     if (isPrimitive && line.startsWith(" ATOMS IN THE ASYMMETRIC UNIT")) {
       if (!doGetModel(++modelNumber))

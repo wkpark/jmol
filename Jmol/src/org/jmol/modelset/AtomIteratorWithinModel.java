@@ -85,7 +85,7 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
     zeroBase = (isZeroBased ? firstModelAtom : 0);
     if (distance == Integer.MIN_VALUE) // distance and center will be added later
       return;
-    this.atomIndex = atomIndex;
+    this.atomIndex = (distance < 0 ? -1 : atomIndex);
     checkGreater = (isGreaterOnly && atomIndex != Integer.MAX_VALUE);
     set(center, distance);
   }

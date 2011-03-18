@@ -810,9 +810,6 @@ public class CrystalReader extends AtomSetCollectionReader {
     return true;
   }
 
-  private float[] frequencies;
-  private String[] data;
-
   /* 
    * Transverse:
    * 
@@ -870,29 +867,26 @@ public class CrystalReader extends AtomSetCollectionReader {
     readLine();
     int lastAtomCount = -1;
     while (readLine() != null && line.startsWith(" FREQ(CM**-1)")) {
-      int frequencyCount = 0;
       String[] tokens = getTokens(line.substring(15));
-      frequencies = new float[tokens.length];
-      for (int i = 0; i < tokens.length; i++) {
-        float frequency = parseFloat(tokens[i]);
-        frequencies[frequencyCount] = frequency;
-        frequencyCount++;
-        if (Logger.debugging) {
-          Logger.debug((vibrationNumber + 1) + " frequency=" + frequency);
-        }
+      float[] frequencies = new float[tokens.length];
+      int frequencyCount = frequencies.length;
+      for (int i = 0; i < frequencyCount; i++) {
+        frequencies[i] = parseFloat(tokens[i]);
+        if (Logger.debugging)
+          Logger.debug((vibrationNumber + i) + " frequency=" + frequencies[i]);
       }
       boolean[] ignore = new boolean[frequencyCount];
       int iAtom0 = 0;
       int nData = vData.size();
       for (int i = 0; i < frequencyCount; i++) {
-        data = vData.get(vibrationNumber % nData);
-        ignore[i] = (!doGetVibration(++vibrationNumber) || data == null);
+        tokens = vData.get(vibrationNumber % nData);
+        ignore[i] = (!doGetVibration(++vibrationNumber) || tokens == null);
         if (ignore[i])
           continue;
         lastAtomCount = cloneLastAtomSet(atomCount);
         if (i == 0)
           iAtom0 = atomSetCollection.getLastAtomSetAtomIndex();
-        setFreqValue(i);
+        setFreqValue(frequencies[i], tokens);
       }
       readLine();
       fillFrequencyData(iAtom0, freqAtomCount, lastAtomCount, ignore, false,
@@ -902,18 +896,17 @@ public class CrystalReader extends AtomSetCollectionReader {
     return true;
   }
 
-  private void setFreqValue(int i) {
+  private void setFreqValue(float freq, String[] data) {
     String activity = "IR: " + data[2] + ", Ram.: " + data[3];
-    atomSetCollection.setAtomSetFrequency(null, activity, "" + frequencies[i],
+    atomSetCollection.setAtomSetFrequency(null, activity, "" + freq,
         null);
     atomSetCollection.setAtomSetProperty("IRintensity", data[1] + " km/Mole");
     atomSetCollection.setAtomSetProperty("vibrationalSymmetry", data[0]);
     atomSetCollection.setAtomSetProperty("IRactivity", data[2]);
     atomSetCollection.setAtomSetProperty("Ramanactivity", data[3]);
     atomSetCollection.setAtomSetName((isLongMode ? "LO " : "") + data[0] + " "
-        + TextFormat.formatDecimal(frequencies[i], 2) + " cm-1 ("
+        + TextFormat.formatDecimal(freq, 2) + " cm-1 ("
         + TextFormat.formatDecimal(Float.parseFloat(data[1]), 0)
         + " km/Mole), " + activity);
   }
-
 }

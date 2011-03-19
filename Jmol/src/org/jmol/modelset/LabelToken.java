@@ -144,7 +144,7 @@ public class LabelToken {
 
       Token.adpmax, Token.adpmin, Token.atomid, Token.bondcount, Token.color,
       Token.groupid, Token.covalent, Token.file, Token.format, Token.label,
-      Token.modelindex, Token.eta, Token.omega, Token.polymer, Token.property,
+      Token.mass, Token.modelindex, Token.eta, Token.omega, Token.polymer, Token.property,
       Token.radius, Token.selected, Token.shape, Token.sequence,
       Token.spacefill, Token.structure, Token.substructure, Token.strucno,
       Token.strucid, Token.symbol, Token.theta, Token.unitx, Token.unity,

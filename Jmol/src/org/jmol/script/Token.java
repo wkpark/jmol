@@ -590,15 +590,16 @@ public class Token {
   public final static int adpmin          = floatproperty | 2;
   public final static int covalent        = floatproperty | 3;
   public final static int eta             = floatproperty | 4; // Jmol 12.0.RC23
-  public final static int omega           = floatproperty | 5;
-  public final static int phi             = floatproperty | 6;
-  public final static int psi             = floatproperty | 7;
-  public final static int straightness    = floatproperty | 8;
-  public final static int surfacedistance = floatproperty | 9;
-  public final static int theta           = floatproperty | 10; // Jmol 12.0.RC23
-  public final static int unitx           = floatproperty | 11;
-  public final static int unity           = floatproperty | 12;
-  public final static int unitz           = floatproperty | 13;
+  public final static int mass            = floatproperty | 5;
+  public final static int omega           = floatproperty | 6;
+  public final static int phi             = floatproperty | 7;
+  public final static int psi             = floatproperty | 8;
+  public final static int straightness    = floatproperty | 9;
+  public final static int surfacedistance = floatproperty | 10;
+  public final static int theta           = floatproperty | 11; // Jmol 12.0.RC23
+  public final static int unitx           = floatproperty | 12;
+  public final static int unity           = floatproperty | 13;
+  public final static int unitz           = floatproperty | 14;
   public final static int atomx           = floatproperty | 1 | settable;
   public final static int atomy           = floatproperty | 2 | settable;
   public final static int atomz           = floatproperty | 3 | settable;
@@ -1758,6 +1759,7 @@ public class Token {
       "length",          new Token(length),
       "lines",           new Token(lines),
       "list",            new Token(list),
+      "mass",            new Token(mass),
       "max",             new Token(max),
       "mep",             new Token(mep),
       "mesh",            new Token(mesh),

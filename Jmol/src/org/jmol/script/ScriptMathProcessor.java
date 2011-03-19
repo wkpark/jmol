@@ -1380,7 +1380,7 @@ class ScriptMathProcessor {
               plane);
           return addX(list == null ? "" : list);
         }
-        pt2 = ptValue(args[1], false);
+        pt2 = ptValue(args[0], false);
         if (pt2 == null)
           return addX("");
         return addX(Measure.getIntersection(pt2, null, plane));
@@ -1438,6 +1438,7 @@ class ScriptMathProcessor {
             norm.normalize();
           } else {
             // plane(<point1>,<vLine>,true)
+            pt3 = pt1;
           }
           Measure.getPlaneThroughPoint(pt3, norm, plane);
           return addX(plane);

@@ -1250,6 +1250,8 @@ final public class Atom extends Point3fi implements JmolNode {
       return atom.getFractionalCoord('Z', false);
     case Token.ionic:
       return atom.getBondingRadiusFloat();
+    case Token.mass:
+      return atom.getMass();
     case Token.occupancy:
       return atom.getOccupancy100() / 100f;
     case Token.partialcharge:
@@ -1292,6 +1294,11 @@ final public class Atom extends Point3fi implements JmolNode {
       return atom.getVibrationCoord('Z');
     }
     return atomPropertyInt(atom, tokWhat);
+  }
+
+  private float getMass() {
+    float mass = getIsotopeNumber();
+    return (mass > 0 ? mass : Elements.getAtomicMass(getElementNumber()));
   }
 
   public static String atomPropertyString(Viewer viewer, Atom atom, int tokWhat) {

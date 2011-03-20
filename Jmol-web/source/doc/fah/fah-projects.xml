@@ -8638,88 +8638,88 @@
   <fah_proj number="6951" name="hafp3_bax_embed" public="y"
     server="128.143.199.96" atoms="77110" preferred="1.9" deadline="3"
     credit="439" frames="100" code="A3" contact="kasson" kfactor="3.24"/>
-  <fah_proj number="6952" name="hafp3_tamm" public="n"
+  <fah_proj number="6952" name="hafp3_tamm" public="y"
     server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
     credit="552.0" frames="100" code="A3" contact="kasson" kfactor="3.33"/>
-  <fah_proj number="6953" name="hafp3_tamm" public="n"
+  <fah_proj number="6953" name="hafp3_tamm" public="y"
     server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
     credit="552.0" frames="100" code="A3" contact="kasson" kfactor="3.33"/>
-  <fah_proj number="6954" name="hafp3_tamm" public="n"
+  <fah_proj number="6954" name="hafp3_tamm" public="y"
     server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
     credit="552.0" frames="100" code="A3" contact="kasson" kfactor="3.33"/>
-  <fah_proj number="6955" name="hafp3_tamm" public="n"
+  <fah_proj number="6955" name="hafp3_tamm" public="y"
     server="128.143.199.96" atoms="77113" preferred="4" deadline="2.7"
     credit="552.0" frames="100" code="A3" contact="kasson" kfactor="3.33"/>
-  <fah_proj number="6956" name="hafp3_tamm" public="n"
+  <fah_proj number="6956" name="hafp3_tamm" public="y"
     server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
     credit="552.0" frames="100" code="A3" contact="kasson" kfactor="3.33"/>
-  <fah_proj number="6957" name="hafp3_tamm" public="n"
+  <fah_proj number="6957" name="hafp3_tamm" public="y"
     server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
     credit="552.0" frames="100" code="A3" contact="kasson" kfactor="3.33"/>
-  <fah_proj number="6958" name="hafp3_tamm" public="n"
+  <fah_proj number="6958" name="hafp3_tamm" public="y"
     server="128.143.199.96" atoms="77074" preferred="2.7" deadline="4"
     credit="552.0" frames="100" code="A3" contact="kasson" kfactor="3.33"/>
-  <fah_proj number="6959" name="hafp3_tamm" public="n"
+  <fah_proj number="6959" name="hafp3_tamm" public="y"
     server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
     credit="552.0" frames="100" code="A3" contact="kasson" kfactor="3.33"/>
-  <fah_proj number="6960" name="hafp3_tamm" public="n"
+  <fah_proj number="6960" name="hafp3_tamm" public="y"
     server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
     credit="552.0" frames="100" code="A3" contact="kasson" kfactor="3.33"/>
-  <fah_proj number="6961" name="hafp3_tamm" public="n"
+  <fah_proj number="6961" name="hafp3_tamm" public="y"
     server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
     credit="552.0" frames="100" code="A3" contact="kasson" kfactor="3.33"/>
-  <fah_proj number="6962" name="hafp3_tamm" public="n"
+  <fah_proj number="6962" name="hafp3_tamm" public="y"
     server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
     credit="552" frames="100" code="A3" contact="kasson" kfactor="3.33"/>
-  <fah_proj number="6963" name="hafp3_tamm" public="n"
+  <fah_proj number="6963" name="hafp3_tamm" public="y"
     server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
     credit="552" frames="100" code="A3" contact="kasson" kfactor="3.33"/>
-  <fah_proj number="6964" name="hafp3_tamm" public="n"
+  <fah_proj number="6964" name="hafp3_tamm" public="y"
     server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
     credit="552" frames="100" code="A3" contact="kasson" kfactor="3.33"/>
-  <fah_proj number="6965" name="hafp3_tamm" public="n"
+  <fah_proj number="6965" name="hafp3_tamm" public="y"
     server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
     credit="552" frames="100" code="A3" contact="kasson" kfactor="3.33"/>
-  <fah_proj number="6966" name="hafp3_tamm" public="n"
+  <fah_proj number="6966" name="hafp3_tamm" public="y"
     server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
     credit="552" frames="100" code="A3" contact="kasson" kfactor="3.3"/>
-  <fah_proj number="6967" name="hafp3_tamm" public="n"
+  <fah_proj number="6967" name="hafp3_tamm" public="y"
     server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
     credit="552" frames="100" code="A3" contact="kasson" kfactor="3.3"/>
-  <fah_proj number="6968" name="hafp3_tamm" public="n"
+  <fah_proj number="6968" name="hafp3_tamm" public="y"
     server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
     credit="552" frames="100" code="A3" contact="kasson" kfactor="3.3"/>
-  <fah_proj number="6969" name="hafp3_tamm" public="n"
+  <fah_proj number="6969" name="hafp3_tamm" public="y"
     server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
     credit="552" frames="100" code="A3" contact="kasson" kfactor="3.3"/>
-  <fah_proj number="6970" name="hafp3_tamm" public="n"
+  <fah_proj number="6970" name="hafp3_tamm" public="y"
     server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
     credit="552" frames="100" code="A3" contact="kasson" kfactor="3.3"/>
-  <fah_proj number="6971" name="hafp3_tamm" public="n"
+  <fah_proj number="6971" name="hafp3_tamm" public="y"
     server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
     credit="552" frames="100" code="A3" contact="kasson" kfactor="3.3"/>
-  <fah_proj number="6972" name="hafp3_tamm" public="n"
+  <fah_proj number="6972" name="hafp3_tamm" public="y"
     server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
     credit="552" frames="100" code="A3" contact="kasson" kfactor="3.3"/>
-  <fah_proj number="6973" name="hafp3_tamm" public="n"
+  <fah_proj number="6973" name="hafp3_tamm" public="y"
     server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
     credit="552" frames="100" code="A3" contact="kasson" kfactor="3.3"/>
-  <fah_proj number="6974" name="hafp3_tamm" public="n"
+  <fah_proj number="6974" name="hafp3_tamm" public="y"
     server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
     credit="552" frames="100" code="A3" contact="kasson" kfactor="3.3"/>
-  <fah_proj number="6975" name="hafp3_tamm" public="n"
+  <fah_proj number="6975" name="hafp3_tamm" public="y"
     server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
     credit="552" frames="100" code="A3" contact="kasson" kfactor="3.3"/>
-  <fah_proj number="6976" name="hafp3_tamm" public="n"
+  <fah_proj number="6976" name="hafp3_tamm" public="y"
     server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
     credit="552" frames="100" code="A3" contact="kasson" kfactor="3.3"/>
-  <fah_proj number="6977" name="hafp3_tamm" public="n"
+  <fah_proj number="6977" name="hafp3_tamm" public="y"
     server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
     credit="552" frames="100" code="A3" contact="kasson" kfactor="3.3"/>
-  <fah_proj number="6978" name="hafp3_tamm" public="n"
+  <fah_proj number="6978" name="hafp3_tamm" public="y"
     server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
     credit="552" frames="100" code="A3" contact="kasson" kfactor="3.3"/>
-  <fah_proj number="6979" name="hafp3_tamm" public="n"
+  <fah_proj number="6979" name="hafp3_tamm" public="y"
     server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
     credit="552" frames="100" code="A3" contact="kasson" kfactor="3.3"/>
 

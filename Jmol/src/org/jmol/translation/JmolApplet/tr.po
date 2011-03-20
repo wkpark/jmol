@@ -1,21 +1,21 @@
 # translation of JmolApplet-tr.po to Turkish.
-# Copyright (C) 1998-2006 The Jmol Development Team
+# Copyright (C) 1998-2011 The Jmol Development Team
 # This file is distributed under the same license as the JmolApplet package.
-# Muhammet Kara <muhammet.k@gmail.com>, 2006.
+# Muhammet Kara <muhammet.k@gmail.com>, 2006, 2011.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: JmolApplet\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-03-07 20:56+0100\n"
-"PO-Revision-Date: 2010-09-06 21:34+0000\n"
-"Last-Translator: Angel Spy <melissadilara@yahoo.com>\n"
+"PO-Revision-Date: 2011-03-20 13:09+0000\n"
+"Last-Translator: Muhammet Kara <Unknown>\n"
 "Language-Team: Turkish <yerellestirme@kde.org.tr>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-01-29 19:08+0000\n"
-"X-Generator: Launchpad (build 12274)\n"
+"X-Launchpad-Export-Date: 2011-03-20 20:36+0000\n"
+"X-Generator: Launchpad (build 12617)\n"
 "X-Poedit-Language: Turkish\n"
 
 #: org/jmol/applet/AppletConsole.java:199
@@ -145,7 +145,8 @@ msgid "Check"
 msgstr "Denetle"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Yukarı"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -396,20 +397,19 @@ msgstr "Estonyaca"
 
 #: org/jmol/i18n/GT.java:147
 msgid "Finnish"
-msgstr ""
+msgstr "Fince"
 
 #: org/jmol/i18n/GT.java:148
 msgid "Faroese"
-msgstr ""
+msgstr "Faroese"
 
 #: org/jmol/i18n/GT.java:149
 msgid "French"
 msgstr "Fransızca"
 
 #: org/jmol/i18n/GT.java:150
-#, fuzzy
 msgid "Croatian"
-msgstr "Protein"
+msgstr "Hırvatça"
 
 #: org/jmol/i18n/GT.java:151
 msgid "Hungarian"
@@ -429,7 +429,7 @@ msgstr "Japonca"
 
 #: org/jmol/i18n/GT.java:155
 msgid "Javanese"
-msgstr ""
+msgstr "Cavaca"
 
 #: org/jmol/i18n/GT.java:156
 msgid "Korean"
@@ -512,19 +512,19 @@ msgstr "Güç alanını ayarlanamadı {0}"
 
 #: org/jmol/modelkit/ModelKitPopup.java:75
 msgid "Element?"
-msgstr ""
+msgstr "Element mi?"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:78
 msgid "new"
-msgstr ""
+msgstr "yeni"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:79
 msgid "undo (CTRL-Z)"
-msgstr ""
+msgstr "geri al (CTRL-Z)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:80
 msgid "redo (CTRL-Y)"
-msgstr ""
+msgstr "yinele (CTRL-Y)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:81
 #: org/jmol/viewer/ActionManager.java:58
@@ -533,7 +533,7 @@ msgstr "merkez"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:82
 msgid "add hydrogens"
-msgstr ""
+msgstr "hidrojen ekle"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:83
 msgid "minimize"
@@ -541,23 +541,23 @@ msgstr "küçült"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:84
 msgid "fix hydrogens and minimize"
-msgstr ""
+msgstr "hidrojenleri sabitle ve küçült"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:85
 msgid "clear"
-msgstr ""
+msgstr "temizle"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:86
 msgid "save file"
-msgstr ""
+msgstr "kayıt dosyası"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:87
 msgid "save state"
-msgstr ""
+msgstr "kayıt durumu"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:88
 msgid "invert ring stereochemistry"
-msgstr ""
+msgstr "halka stereokimyasını ters çevir"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:89
 msgid "delete atom"
@@ -565,19 +565,19 @@ msgstr "atomu sil"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:90
 msgid "drag to bond"
-msgstr ""
+msgstr "bağa sürükle"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:91
 msgid "drag atom"
-msgstr ""
+msgstr "atom sürükle"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:92
 msgid "drag atom (and minimize)"
-msgstr ""
+msgstr "atomu sürükle (ve küçült)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:93
 msgid "drag molecule (SHIFT to rotate)"
-msgstr ""
+msgstr "molekül taşı (döndürmek için SHIFT)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:94
 msgid "drag and minimize molecule (docking)"
@@ -585,15 +585,15 @@ msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:103
 msgid "increase charge"
-msgstr ""
+msgstr "yükü artır"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:104
 msgid "decrease charge"
-msgstr ""
+msgstr "yükü azalt"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:105
 msgid "delete bond"
-msgstr ""
+msgstr "bağı sil"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:106
 msgid "single"
@@ -605,15 +605,15 @@ msgstr "çift"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:108
 msgid "triple"
-msgstr ""
+msgstr "üçlü"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:109
 msgid "increase order"
-msgstr ""
+msgstr "dereceyi artır"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:110
 msgid "decrease order"
-msgstr ""
+msgstr "dereceyi azalt"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:111
 msgid "rotate bond (SHIFT-DRAG)"
@@ -621,7 +621,7 @@ msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:112
 msgid "exit modelkit mode"
-msgstr ""
+msgstr "modelkit modundan çık"
 
 #: org/jmol/modelsetbio/AminoPolymer.java:576
 #, java-format
@@ -649,7 +649,7 @@ msgstr "Hiç atom yüklenmedi"
 #: org/jmol/popup/JmolPopup.java:362
 #: org/jmol/popup/MainPopupResourceBundle.java:548
 msgid "Space Group"
-msgstr ""
+msgstr "Uzay Grubu"
 
 #: org/jmol/popup/JmolPopup.java:424 org/jmol/popup/JmolPopup.java:464
 #: org/jmol/popup/MainPopupResourceBundle.java:569
@@ -742,7 +742,7 @@ msgstr "HETATM' e Göre"
 #: org/jmol/popup/MainPopupResourceBundle.java:546
 #, java-format
 msgid "Molecular Orbitals ({0})"
-msgstr ""
+msgstr "Moleküler Orbitaller ({0})"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:547
 #: org/jmol/popup/MainPopupResourceBundle.java:859
@@ -1493,7 +1493,7 @@ msgstr "Bükülme(iki düzlemli) ölçümü için tıklayın"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:826
 msgid "Click two atoms to display a sequence in the console"
-msgstr ""
+msgstr "Uçbirimde bir dizilim görüntülemek için iki atoma tıklayın"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:827
 msgid "Delete measurements"
@@ -1642,7 +1642,7 @@ msgstr "{0} resim dışa aktar"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:876
 msgid "Save all as JMOL file (zip)"
-msgstr ""
+msgstr "Tümünü JMOL dosyası (zip) olarak kaydet"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:877
 msgid "Save JVXL isosurface"
@@ -1666,7 +1666,7 @@ msgstr "İyileştirilmiş yapı"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:885
 msgid "Model kit"
-msgstr ""
+msgstr "Model kiti"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:889
 msgid "Extract MOL data"
@@ -2099,7 +2099,7 @@ msgstr "{0} yeni bağ; {1} düzenlenmiş"
 #: org/jmol/script/ScriptEvaluator.java:8546
 #, java-format
 msgid "file {0} created"
-msgstr ""
+msgstr "{0} dosyası oluşturuldu"
 
 #: org/jmol/script/ScriptEvaluator.java:10014
 #: org/jmol/script/ScriptEvaluator.java:10270
@@ -2163,7 +2163,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:69
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:71
@@ -2192,17 +2193,17 @@ msgstr ""
 #: org/jmol/viewer/ActionManager.java:78
 #, java-format
 msgid "select an atom (requires {0})"
-msgstr ""
+msgstr "bir atom seç ({0} gerektirir)"
 
 #: org/jmol/viewer/ActionManager.java:79
 #, java-format
 msgid "select NONE (requires {0})"
-msgstr ""
+msgstr "HİÇBİRİNİ seçme ({0} gerektirir)"
 
 #: org/jmol/viewer/ActionManager.java:80
 #, java-format
 msgid "toggle selection (requires {0})"
-msgstr ""
+msgstr "seçimi değiştir ({0} gerektirir)"
 
 #: org/jmol/viewer/ActionManager.java:81
 #, java-format
@@ -2244,7 +2245,7 @@ msgstr ""
 #: org/jmol/viewer/ActionManager.java:90
 #, java-format
 msgid "move atom (requires {0})"
-msgstr ""
+msgstr "atomu taşı ({0} gerektirir)"
 
 #: org/jmol/viewer/ActionManager.java:91
 #, java-format
@@ -2259,7 +2260,7 @@ msgstr ""
 #: org/jmol/viewer/ActionManager.java:93
 #, java-format
 msgid "move label (requires {0})"
-msgstr ""
+msgstr "etiketi taşı ({0} gerektirir)"
 
 #: org/jmol/viewer/ActionManager.java:94
 #, java-format
@@ -2309,12 +2310,12 @@ msgstr ""
 #: org/jmol/viewer/ActionManager.java:105
 #, java-format
 msgid "delete atom (requires {0})"
-msgstr ""
+msgstr "atom sil ({0} gerekir)"
 
 #: org/jmol/viewer/ActionManager.java:106
 #, java-format
 msgid "delete bond (requires {0})"
-msgstr ""
+msgstr "bağ sil ({0} gerekir)"
 
 #: org/jmol/viewer/ActionManager.java:107
 #, java-format
@@ -2324,7 +2325,7 @@ msgstr "atomları birleştir ({0} gerektirir)"
 #: org/jmol/viewer/ActionManager.java:108
 #, java-format
 msgid "assign/new atom or bond (requires {0})"
-msgstr ""
+msgstr "yeni atom ya da bağ ata ({0} gerekir)"
 
 #: org/jmol/viewer/ActionManager.java:110
 msgid "reset (when clicked off the model)"
@@ -2333,7 +2334,7 @@ msgstr ""
 #: org/jmol/viewer/ActionManager.java:111
 #, java-format
 msgid "stop motion (requires {0})"
-msgstr ""
+msgstr "hareketi durdur ({0} gerektirir)"
 
 #: org/jmol/viewer/ActionManager.java:112
 msgid "simulate multi-touch using the mouse)"
@@ -2341,7 +2342,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:1943
 msgid "pick one more atom in order to spin the model around an axis"
-msgstr "modeli bir eksen etrafında döndürebilmek için bir tane daha atom seçin"
+msgstr ""
+"modeli bir eksen etrafında döndürebilmek için bir tane daha atom seçin"
 
 #: org/jmol/viewer/ActionManager.java:1944
 msgid "pick two atoms in order to spin the model around an axis"
@@ -2370,7 +2372,7 @@ msgstr "{0} atom(lar) seçildi"
 #: org/jmol/viewer/Viewer.java:4534
 #, java-format
 msgid "{0} hydrogens added"
-msgstr ""
+msgstr "{0} hidrojen eklendi"
 
 #: org/jmol/viewer/Viewer.java:4614
 msgid "Drag to move label"
@@ -2382,12 +2384,12 @@ msgstr "panoya erişilemiyor -- işaretli uygulamacığı kullanın"
 
 #: org/jmol/viewer/Viewer.java:8923
 msgid "Cannot set log file path."
-msgstr ""
+msgstr "Günlük dosyası yolu ayarlanamıyor."
 
 #: org/jmol/viewer/Viewer.java:8926
 #, java-format
 msgid "Setting log file to {0}"
-msgstr ""
+msgstr "Günlük dosyası {0} olarak ayarlanıyor"
 
 #~ msgid "Java memory usage"
 #~ msgstr "Java hafıza kullanımı"
@@ -2398,22 +2400,25 @@ msgstr ""
 #~ msgid "About Jmol"
 #~ msgstr "Jmol Hakkında"
 
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
-#~ "Bu programcık tarafından dosya oluşturulmasına izin verilmemektedir. "
-#~ "Base64 JPEG biçimi için {0} kullanın."
+#~ "Bu programcık tarafından dosya oluşturulmasına izin verilmemektedir. Base64 "
+#~ "JPEG biçimi için {0} kullanın."
 
 #~ msgid "File creation failed."
 #~ msgstr "Dosya oluşturulamadı."
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to string value: {0}"
 #~ msgstr "HATA: ikili işaret yazı değerine atanamadı: {0}"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr "HATA: ikili işaret sayısal değere atanamadı: {0}"
 
+#, java-format
 #~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 #~ msgstr "HATA: Bu değişkenin değeri bir ikiliye atanamadı: {0}"
 
@@ -2423,9 +2428,11 @@ msgstr ""
 #~ msgid "File or URL"
 #~ msgstr "Dosya ya da URL"
 
+#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "{0} Görsel"
 
+#, java-format
 #~ msgid "File {0}"
 #~ msgstr "Dosya {0}"
 
@@ -2441,6 +2448,7 @@ msgstr ""
 #~ msgid "decrease"
 #~ msgstr "azalt"
 
+#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "{0} 3D Model"
 

@@ -1,21 +1,21 @@
 # translation of Jmol-tr.po to Turkish.
-# Copyright (C) 1998-2006 The Jmol Development Team
+# Copyright (C) 1998-2011 The Jmol Development Team
 # This file is distributed under the same license as the Jmol package.
-# Muhammet Kara <muhammet.k@gmail.com>, 2006.
+# Muhammet Kara <muhammet.k@gmail.com>, 2006, 2011.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-01-04 23:43+0100\n"
-"PO-Revision-Date: 2010-09-06 21:25+0000\n"
-"Last-Translator: Angel Spy <melissadilara@yahoo.com>\n"
+"PO-Revision-Date: 2011-03-20 13:07+0000\n"
+"Last-Translator: Muhammet Kara <Unknown>\n"
 "Language-Team: Turkish <yerellestirme@kde.org.tr>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-01-29 19:08+0000\n"
-"X-Generator: Launchpad (build 12274)\n"
+"X-Launchpad-Export-Date: 2011-03-20 20:36+0000\n"
+"X-Generator: Launchpad (build 12617)\n"
 "X-Poedit-Language: Turkish\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -378,7 +378,7 @@ msgstr "Moleküler Özellikler"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:294
 msgid "Total Charge: "
-msgstr ""
+msgstr "Toplam Yük: "
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:301
 msgid "Multiplicity: "
@@ -442,7 +442,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:64
 msgid "&Reload"
-msgstr ""
+msgstr "&Yeniden Yükle"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:65
 msgid "Scrip&t Editor..."
@@ -470,7 +470,7 @@ msgstr "&Dışa Aktar"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:71
 msgid "Export &Image..."
-msgstr ""
+msgstr "Dışarı aktar &Image..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:72
 msgid "Save current view as an image."
@@ -829,7 +829,7 @@ msgstr "İlk çerçeveye geri dön"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:176
 msgid "Go to &next frame"
-msgstr ""
+msgstr "&Sonraki kareye git"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:177
 msgid "Go to next frame"
@@ -837,7 +837,7 @@ msgstr "Bir sonraki çerçeveye git"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:178
 msgid "Go to &previous frame"
-msgstr ""
+msgstr "&Önceki kareye git"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:179
 msgid "Go to previous frame"
@@ -845,15 +845,15 @@ msgstr "Bir önceki çerçeveye git"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:180
 msgid "All &frames"
-msgstr ""
+msgstr "Tüm &kareler"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:181
 msgid "All frames"
-msgstr ""
+msgstr "Tüm kareler"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:182
 msgid "Go to &last frame"
-msgstr ""
+msgstr "Son kareye git"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:183
 msgid "Go to last frame"
@@ -861,23 +861,23 @@ msgstr "Son çerçeveye git"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:184
 msgid "Start &vibration"
-msgstr ""
+msgstr "&Titreşimi başlat"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:185
 msgid "&Stop vibration"
-msgstr ""
+msgstr "Titreşimi &durdur"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:186
 msgid "&First frequency"
-msgstr ""
+msgstr "&İlk frekans"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:187
 msgid "&Next frequency"
-msgstr ""
+msgstr "&Sonraki frekans"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:188
 msgid "&Previous frequency"
-msgstr ""
+msgstr "&Önceki frekans"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:189
 msgid "&Help"
@@ -951,7 +951,7 @@ msgstr "Molekülü ana konumuna getir."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:214
 msgid "Open the model kit."
-msgstr ""
+msgstr "Model kitini aç."
 
 #: org/openscience/jmol/app/jmolpanel/HelpDialog.java:64
 msgid "Jmol Help"
@@ -991,7 +991,7 @@ msgstr "Tercihler Başlatılıyor..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:306
 msgid "Initializing Recent Files..."
-msgstr ""
+msgstr "Son Kullanılan Dosyalar Başlatılıyor..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:341
 msgid "Jmol Java Console"
@@ -1027,7 +1027,7 @@ msgstr "Moleküler modelin adresini gir"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1149
 msgid "Get PDB file"
-msgstr ""
+msgstr "PDB dosyası al"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1150
 msgid "Enter a four-digit PDB ID"
@@ -1487,7 +1487,7 @@ msgstr "Oluşturulacak bir dizin veya kaydedilecek bir HTML dosyası seçin"
 #: org/openscience/jmol/app/webexport/WebPanel.java:551
 #, java-format
 msgid "file {0} created"
-msgstr ""
+msgstr "{0} dosyası oluşturuldu"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:553
 msgid "Call to FileWriter unsuccessful."
@@ -1548,15 +1548,15 @@ msgstr "geniş veri dosyası şuraya sıkıştırılıyor"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:62
 msgid "Spin on/off"
-msgstr ""
+msgstr "Dönme (spin) kapalı/açık"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:80
 msgid "enable/disable spin"
-msgstr ""
+msgstr "dönmeyi (spin) etkinleştir/devre dışı bırak"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:82
 msgid "Spin on"
-msgstr ""
+msgstr "Dönme açık"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:88
 msgid "Background Color"
@@ -1568,7 +1568,7 @@ msgstr "arkaplan rengi:"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:119
 msgid "Stereo Viewing"
-msgstr ""
+msgstr "Stereo Gösterim"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:136
 msgid "select stereo type"
@@ -1592,39 +1592,39 @@ msgstr "Kırmızı/Yeşil"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:152
 msgid "Animation Control"
-msgstr ""
+msgstr "Canlandırma Kontrolü"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:179
 msgid "Animation"
-msgstr ""
+msgstr "Canlandırma"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:180
 msgid "First Frame"
-msgstr ""
+msgstr "İlk Kare"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:182
 msgid "Previous Frame"
-msgstr ""
+msgstr "Önceki Kare"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:184
 msgid "Play"
-msgstr ""
+msgstr "Oynat"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:186
 msgid "Next Frame"
-msgstr ""
+msgstr "Sonraki Kare"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:188
 msgid "Pause"
-msgstr ""
+msgstr "Duraklat"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:190
 msgid "Last Frame"
-msgstr ""
+msgstr "Son Kare"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:192
 msgid "Mode:"
-msgstr ""
+msgstr "Mod:"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:193
 msgid "Loop"
@@ -1636,15 +1636,15 @@ msgstr "Palindrom"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:197
 msgid "Play Once"
-msgstr ""
+msgstr "Bir Kere Oynat"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:206
 msgid "Open Console Button"
-msgstr ""
+msgstr "Uçbirim Açma Düğmesi"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:222
 msgid "launch Jmol console"
-msgstr ""
+msgstr "Jmol uçbirimini çalıştır"
 
 #: org/openscience/jmol/app/webexport/Widgets.java:224
 msgid "Jmol Console"

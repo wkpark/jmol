@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-03-07 20:56+0100\n"
-"PO-Revision-Date: 2011-02-15 10:26+0000\n"
+"PO-Revision-Date: 2011-03-21 13:00+0000\n"
 "Last-Translator: Johannes Pernaa <Unknown>\n"
 "Language-Team: Finnish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-02-15 17:41+0000\n"
-"X-Generator: Launchpad (build 12372)\n"
+"X-Launchpad-Export-Date: 2011-03-21 13:16+0000\n"
+"X-Generator: Launchpad (build 12617)\n"
 "X-Poedit-Country: Finland\n"
 "X-Poedit-Language: Finnish\n"
 
@@ -145,7 +145,8 @@ msgid "Check"
 msgstr "Tarkista"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Ylös"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -407,9 +408,8 @@ msgid "French"
 msgstr "Ranska"
 
 #: org/jmol/i18n/GT.java:150
-#, fuzzy
 msgid "Croatian"
-msgstr "Proteiini"
+msgstr "Kroatia"
 
 #: org/jmol/i18n/GT.java:151
 msgid "Hungarian"
@@ -2178,7 +2178,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:69
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 "valitse kaksi akselin ympäri vastapäivään kiertävää pistettä (edellyttää {0})"
 
@@ -2203,7 +2204,8 @@ msgstr "esiin ponnahtava koko valikko"
 
 #: org/jmol/viewer/ActionManager.java:76
 msgid "pop up recent context menu (click on Jmol frank)"
-msgstr "esiin ponnahtava viimeksi käytetty valikko (valitse suoraan Jmollista)"
+msgstr ""
+"esiin ponnahtava viimeksi käytetty valikko (valitse suoraan Jmollista)"
 
 #: org/jmol/viewer/ActionManager.java:78
 #, java-format
@@ -2228,7 +2230,8 @@ msgstr "poista valinnoista tämä atomiryhmä (edellyttää {0})"
 #: org/jmol/viewer/ActionManager.java:82
 #, java-format
 msgid "add this group of atoms to the set of selected atoms (requires {0})"
-msgstr "lisää tämä atomijoukko valittujen atomien valikoimaan (edellyttää {0})"
+msgstr ""
+"lisää tämä atomijoukko valittujen atomien valikoimaan (edellyttää {0})"
 
 #: org/jmol/viewer/ActionManager.java:83
 #, java-format
@@ -2386,7 +2389,7 @@ msgstr "{0} piilotettiin atomit"
 #: org/jmol/viewer/SelectionManager.java:147
 #, java-format
 msgid "{0} atoms selected"
-msgstr "{0} valittiin atomit"
+msgstr "{0} atomia valittu"
 
 #: org/jmol/viewer/Viewer.java:4534
 #, java-format
@@ -2410,12 +2413,11 @@ msgstr "Lokitiedoston polkua ei voitu asettaa."
 msgid "Setting log file to {0}"
 msgstr "Asetetaan lokitiedosto: {0}"
 
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 
 #~ msgid "File creation failed."
 #~ msgstr "File creation failed."
@@ -2423,11 +2425,14 @@ msgstr "Asetetaan lokitiedosto: {0}"
 #~ msgid "About Jmol"
 #~ msgstr "About Jmol"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to string value: {0}"
 #~ msgstr "ERROR: cannot set boolean flag to string value: {0}"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr "ERROR: cannot set boolean flag to numeric value: {0}"
 
+#, java-format
 #~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 #~ msgstr "ERROR: Cannot set value of this variable to a boolean: {0}"

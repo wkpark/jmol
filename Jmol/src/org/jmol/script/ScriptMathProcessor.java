@@ -2939,7 +2939,7 @@ class ScriptMathProcessor {
           return addX(s.toLowerCase());
         if (n > 0)
           return addX(TextFormat.format(s, n, n, false, false));
-        return addX(TextFormat.format(s, -n, n, true, false));
+        return addX(TextFormat.format(s, n, n - 1, true, false));
       case Token.varray:
         String[] list = ScriptVariable.listValue(x1);
         for (int i = 0; i < list.length; i++) {

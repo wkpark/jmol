@@ -4333,7 +4333,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     String str = checkScriptExecution(strScript, false);
     if (str != null)
       return str;
-    StringBuffer outputBuffer = (statusList == null ? new StringBuffer() : null);
+    StringBuffer outputBuffer = (statusList == null
+        || statusList.equals("output") ? new StringBuffer() : null);
 
     // typically request:
     // "+scriptStarted,+scriptStatus,+scriptEcho,+scriptTerminated"
@@ -4385,8 +4386,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (returnType.equalsIgnoreCase("String"))
       return strErrorMessageUntranslated;
     if (outputBuffer != null)
-      return (strErrorMessageUntranslated == null ? 
-        outputBuffer.toString() : strErrorMessageUntranslated);
+      return (strErrorMessageUntranslated == null ? outputBuffer.toString()
+          : strErrorMessageUntranslated);
     // get Vector of Vectors of Vectors info
     Object info = getProperty(returnType, "jmolStatus", statusList);
     // reset to previous status list

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-03-07 20:56+0100\n"
-"PO-Revision-Date: 2011-03-17 11:58+0000\n"
+"PO-Revision-Date: 2011-03-23 00:33+0100\n"
 "Last-Translator: Angel Herráez <aherraez@users.sourceforge.net>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -134,8 +134,7 @@ msgid "Check"
 msgstr "Verificar"
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid ""
-"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Subir"
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -1951,17 +1950,16 @@ msgstr "se esperaba una palabra clave"
 
 #: org/jmol/script/ScriptEvaluator.java:2779
 msgid "no MO coefficient data available"
-msgstr "no hay datos disponibles de coeficientes para MO"
+msgstr "no hay datos disponibles de coeficientes de orbitales moleculares"
 
 #: org/jmol/script/ScriptEvaluator.java:2782
 #, java-format
 msgid "An MO index from 1 to {0} is required"
-msgstr "Se requiere un índice entre 1 y {0} para MO"
+msgstr "Se requiere un índice de orbitales moleculares entre 1 y {0}"
 
 #: org/jmol/script/ScriptEvaluator.java:2785
 msgid "no MO basis/coefficient data available for this frame"
-msgstr ""
-"en este modelo no hay datos disponibles de base o coeficientes para MO"
+msgstr "en este modelo no hay datos disponibles de base o coeficientes de orbitales moleculares"
 
 #: org/jmol/script/ScriptEvaluator.java:2788
 msgid "no MO occupancy data available"
@@ -2144,19 +2142,17 @@ msgstr "girar el modelo (deslizar, deteniendo el movimiento al tiempo que se sue
 #: org/jmol/viewer/ActionManager.java:68
 #, java-format
 msgid "click on two points to spin around axis clockwise (requires {0})"
-msgstr ""
-"pulsa en dos puntos para definir un eje de giro horario (requiere {0})"
+msgstr "pulsa en dos puntos para definir un eje de giro horario (requiere {0})"
 
 #: org/jmol/viewer/ActionManager.java:69
 #, java-format
-msgid ""
-"click on two points to spin around axis counterclockwise (requires {0})"
+msgid "click on two points to spin around axis counterclockwise (requires {0})"
 msgstr "pulsa en dos puntos para definir un eje de giro antihorario (requiere {0})"
 
 #: org/jmol/viewer/ActionManager.java:71
 #, java-format
 msgid "adjust slab (front plane; requires {0})"
-msgstr "(requiere {0})"
+msgstr "ajustar el plano delantero de sección (requiere {0})"
 
 #: org/jmol/viewer/ActionManager.java:72
 #, java-format
@@ -2263,8 +2259,7 @@ msgstr "elige un átomo"
 #: org/jmol/viewer/ActionManager.java:98
 #, java-format
 msgid "pick a DRAW point (for measurements) (requires {0}"
-msgstr ""
-"elige un punto de un objeto dibujado (para mediciones) (requiere {0})"
+msgstr "elige un punto de un objeto dibujado (para mediciones) (requiere {0})"
 
 #: org/jmol/viewer/ActionManager.java:99
 #, java-format

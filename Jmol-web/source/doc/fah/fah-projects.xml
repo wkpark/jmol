@@ -9222,6 +9222,12 @@
   <fah_proj number="10117" name="p10117" public="y"
     server="171.64.65.71" atoms="1174" preferred="2" deadline="3"
     credit="494" frames="100" code="GG2" contact="gbowman"/>
+  <fah_proj number="10118" name="p10118" public="n"
+    server="171.64.65.75" atoms="35081" preferred="28" deadline="48"
+    credit="1338.0" frames="100" code="A3" contact="gbowman" kfactor="0.74"/>
+  <fah_proj number="10119" name="p10119" public="n"
+    server="171.64.65.75" atoms="34367" preferred="28" deadline="48"
+    credit="1338.0" frames="100" code="A3" contact="gbowman" kfactor="0.74"/>
 
   <!-- Projects 10200 to 10299 -->
   <fah_proj number="10200" name="b2AR conformational space sampling" public="n" file="xyz"
@@ -9552,6 +9558,12 @@
   <fah_proj number="10700" name="p10700" public="n"
     server="171.64.65.55" atoms="5254" preferred="16" deadline="24"
     credit="689" frames="100" code="A3" contact="dvanatta" kfactor="0.75"/>
+  <fah_proj number="10720" name="p10720" public="n"
+    server="171.67.108.42" atoms="5254" preferred="16" deadline="24"
+    credit="689.0" frames="100" code="A4" contact="dvanatta" kfactor="0.0"/>
+  <fah_proj number="10721" name="p10721" public="n"
+    server="171.67.108.42" atoms="3441" preferred="8" deadline="16"
+    credit="458.0" frames="100" code="A4" contact="dvanatta" kfactor="0.0"/>
 
   <!-- Projects 10800 to 10899 -->
   <fah_proj number="10820" name="Abeta42_monomer" public="n"

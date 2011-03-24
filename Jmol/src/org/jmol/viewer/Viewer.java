@@ -500,7 +500,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   boolean mustRenderFlag() {
-    return mustRender && refreshing;
+    return mustRender && (refreshing || creatingImage);
   }
 
   @Override
@@ -1666,10 +1666,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   @Override
   public void setModeMouse(int modeMouse) {
     // call before setting viewer=null
-    if (haveDisplay && modeMouse == JmolConstants.MOUSE_NONE)
-      mouseManager.dispose();
     if (modeMouse == JmolConstants.MOUSE_NONE) {
       // applet is being destroyed
+      if (haveDisplay)
+        mouseManager.dispose();
       clearScriptQueue();
       haltScriptExecution();
       stopAnimationThreads("setModeMouse NONE");
@@ -3915,7 +3915,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
     // System.out.println(Thread.currentThread() + "render Screen Image " +
     // creatingImage);
-    if (!creatingImage) {
+    if (refreshing && !creatingImage) {
       if (isTainted || getSlabEnabled())
         setModelVisibility();
       isTainted = false;
@@ -3964,6 +3964,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private boolean antialiasDisplay;
 
   private void render() {
+    if (!refreshing && !creatingImage)
+      return;
     boolean antialias2 = antialiasDisplay && global.antialiasTranslucent;
     repaintManager.render(g3d, modelSet);
     if (g3d.setPass2(antialias2)) {
@@ -7571,8 +7573,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   boolean isTainted = true;
 
   public void setTainted(boolean TF) {
-    isTainted = TF && refreshing;
-    axesAreTainted = TF && refreshing;
+    isTainted = axesAreTainted = (TF && (refreshing || creatingImage));
   }
 
   public int notifyMouseClicked(int x, int y, int action, int mode) {
@@ -8289,12 +8290,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
     int saveWidth = dimScreen.width;
     int saveHeight = dimScreen.height;
+    creatingImage = true;
     if (quality != Integer.MIN_VALUE) {
       mustRender = true;
       resizeImage(width, height, true, false, false);
       setModelVisibility();
     }
-    creatingImage = true;
     Object err = null;
 
     try {
@@ -9599,6 +9600,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void setPrivateKeyForShape(int iShape) {
     setShapeProperty(iShape, "privateKey", Double.valueOf(privateKey));
+  }
+
+  public boolean getMouseEnabled() {
+    return refreshing && !creatingImage;
   }
   
 }

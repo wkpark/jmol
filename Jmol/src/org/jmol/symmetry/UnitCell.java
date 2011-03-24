@@ -376,7 +376,7 @@ class UnitCell extends SimpleUnitCell {
           ptOffset.set(f2.x + i, f2.y + j, f2.z + k);
           toCartesian(ptOffset, true);
           float d = p1.distance(ptOffset);
-          if (dx > 0 ? Math.abs(d - distance) <= dx : d <= distance) {
+          if (dx > 0 ? Math.abs(d - distance) <= dx : d <= distance && d > 0.1f) {
             ptOffset.set(i, j, k);
             return true;
           }

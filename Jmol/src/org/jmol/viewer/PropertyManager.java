@@ -422,8 +422,21 @@ public class PropertyManager {
     case PROP_EVALUATE:
       return ScriptEvaluator.evaluateExpression(viewer, myParam.toString());
     case PROP_IMAGE:
-      return viewer.getImageAs(returnType == null ? "JPEG" : "JPG64", -1, -1,
-          -1, null, null);
+      String params = myParam.toString();
+      int height = -1, width = -1;
+      int pt;
+      if ((pt = params.indexOf("height=")) >= 0)
+        height = Parser.parseInt(params.substring(pt + 7));
+      if ((pt = params.indexOf("width=")) >= 0)
+        width = Parser.parseInt(params.substring(pt + 6));
+      if (width < 0 && height < 0)
+        height = width = -1;
+      else if (width < 0)
+        width = height;
+      else
+        height = width;        
+      return viewer.getImageAs(returnType == null ? "JPEG" : "JPG64", -1, width, height,
+          null, null);
     }
     String[] data = new String[PROP_COUNT];
     for (int i = 0; i < PROP_COUNT; i++) {

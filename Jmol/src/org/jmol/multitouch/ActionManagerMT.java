@@ -226,11 +226,24 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
           + Integer.toHexString(groupID) + " eventType=" + eventType + "("
           + getEventName(eventType) + ") iData=" + iData + " pt=" + pt);
     switch (eventType) {
+    case DRAG_EVENT:
+      if (iData == 2) {
+        // This is a 2-finger drag
+        checkMotion(Viewer.CURSOR_MOVE);
+        viewer.translateXYBy((int) pt.x, (int) pt.y);
+        logEvent("Drag", pt);
+      }
+      break;
     case DRIVER_NONE:
       if (simulator == null)
         haveMultiTouchInput = false;
       Logger.error("SparshUI reports no driver present");
       viewer.log("SparshUI reports no driver present -- setting haveMultiTouchInput FALSE");
+      break;
+    case ROTATE_EVENT:
+      checkMotion(Viewer.CURSOR_MOVE);
+      viewer.rotateZBy((int) pt.z, Integer.MAX_VALUE, Integer.MAX_VALUE);
+      logEvent("Rotate", pt);
       break;
     case SERVICE_LOST:
       viewer.log("Jmol SparshUI client reports service lost -- " + (doneHere ? "not " : "") + " restarting");
@@ -247,21 +260,18 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
       switch(iData) {
       case BIRTH:
         mouseDown = true;
-        super.mousePressed(time, (int) pt.x, (int) pt.y, Binding.LEFT);
+        super.mouseAction(Binding.PRESSED, time, (int) pt.x, (int) pt.y, 0, Binding.LEFT);
         break;
       case MOVE:
-        if (mouseDown)
-          super.mouseDragged(time, (int) pt.x, (int) pt.y, Binding.LEFT);
-        else
-          super.mouseMoved(time, (int) pt.x, (int) pt.y, Binding.LEFT);
+        super.mouseAction(mouseDown ? Binding.DRAGGED : Binding.MOVED, time, (int) pt.x, (int) pt.y, 0, Binding.LEFT);
         break;
       case DEATH:
         mouseDown = false;
-        super.mouseReleased(time, (int) pt.x, (int) pt.y, Binding.LEFT);
+        super.mouseAction(Binding.RELEASED, time, (int) pt.x, (int) pt.y, 0, Binding.LEFT);
         break;
       case CLICK:
         // always follows DEATH when found
-        super.mouseClicked(time, (int) pt.x, (int) pt.y, Binding.LEFT, 1);
+        super.mouseAction(Binding.CLICKED, time, (int) pt.x, (int) pt.y, 1, Binding.LEFT);
         break;
       }
       break;
@@ -270,19 +280,6 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
       if (scale == -1 || scale == 1) {
         zoomByFactor((int)scale, Integer.MAX_VALUE, Integer.MAX_VALUE);
         logEvent("Zoom", pt);
-      }
-      break;
-    case ROTATE_EVENT:
-      checkMotion(Viewer.CURSOR_MOVE);
-      viewer.rotateZBy((int) pt.z, Integer.MAX_VALUE, Integer.MAX_VALUE);
-      logEvent("Rotate", pt);
-      break;
-    case DRAG_EVENT:
-      if (iData == 2) {
-        // This is a 2-finger drag
-        checkMotion(Viewer.CURSOR_MOVE);
-        viewer.translateXYBy((int) pt.x, (int) pt.y);
-        logEvent("Drag", pt);
       }
       break;
     }
@@ -300,85 +297,54 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   }
 
   @Override
-  public void mouseEntered(long time, int x, int y) {
-    super.mouseEntered(time, x, y);    
-  }
-  
-  @Override
-  public void mouseExited(long time, int x, int y) {
-    super.mouseExited(time, x, y);    
-  }
-  
-  @Override
-  public void mouseClicked(long time, int x, int y, int mods, int count) {
-    if (haveMultiTouchInput)
-      return;
-    super.mouseClicked(time, x, y, mods, count);
-  }
-
-  @Override
-  public void mouseMoved(long time, int x, int y, int mods) {
-    if (haveMultiTouchInput)
-      return;
-    adapter.mouseMoved(x, y);
-    super.mouseMoved(time, x, y, mods);
-  }
-
-  @Override
-  public void mouseWheel(long time, int rotation, int mods) {
-    if (haveMultiTouchInput)
-      return;
-    super.mouseWheel(time, rotation, mods);
-  }
-
-  @Override
-  public void mousePressed(long time, int x, int y, int mods) {
-    if (simulator != null) {
-      int action = Binding.getMouseAction(1, mods);
-      if (binding.isBound(action, ACTION_multiTouchSimulation)) {
-        setCurrent(0, x, y, mods);
-        viewer.setFocus();
-        if (simulationPhase++ == 0)
-          simulator.startRecording();
-        simulator.mousePressed(time, x, y);
+  public void mouseAction(int action, long time, int x, int y, int count, int modifiers) {
+    switch(action) {
+    case Binding.MOVED:
+      if (haveMultiTouchInput)
+        return;
+      adapter.mouseMoved(x, y);
+      break;
+    case Binding.WHEELED:
+    case Binding.CLICKED:
+      break;
+    case Binding.DRAGGED:
+      if (simulator != null && simulationPhase > 0) {
+        setCurrent(time, x, y, modifiers);
+        simulator.mouseDragged(time, x, y);
         return;
       }
-      simulationPhase = 0;
-    }
-    if (haveMultiTouchInput)
-      return;
-    super.mousePressed(time, x, y, mods);
-  }
-
-  @Override
-  public void mouseDragged(long time, int x, int y, int mods) {
-    if (simulator != null && simulationPhase > 0) {
-      setCurrent(time, x, y, mods);
-      simulator.mouseDragged(time, x, y);
-      return;
-    }
-    if (haveMultiTouchInput)
-      return;
-    super.mouseDragged(time, x, y, mods);
-  }
-
-  @Override
-  public void mouseReleased(long time, int x, int y, int mods) {
-    if (simulator != null && simulationPhase > 0) {
-      setCurrent(time, x, y, mods);
-      viewer.spinXYBy(0, 0, 0);
-      simulator.mouseReleased(time, x, y);
-      if (simulationPhase >= 2) {
-        // two strokes only
-        resetNeeded = true;
-        simulator.endRecording();
+      break;
+    case Binding.PRESSED:
+      if (simulator != null) {
+        int maction = Binding.getMouseAction(1, modifiers);
+        if (binding.isBound(maction, ACTION_multiTouchSimulation)) {
+          setCurrent(0, x, y, modifiers);
+          viewer.setFocus();
+          if (simulationPhase++ == 0)
+            simulator.startRecording();
+          simulator.mousePressed(time, x, y);
+          return;
+        }
         simulationPhase = 0;
       }
-      return;
+      break;
+    case Binding.RELEASED:
+      if (simulator != null && simulationPhase > 0) {
+        setCurrent(time, x, y, modifiers);
+        viewer.spinXYBy(0, 0, 0);
+        simulator.mouseReleased(time, x, y);
+        if (simulationPhase >= 2) {
+          // two strokes only
+          resetNeeded = true;
+          simulator.endRecording();
+          simulationPhase = 0;
+        }
+        return;
+      }
+      break;
     }
-    if (haveMultiTouchInput)
-      return;
-    super.mouseReleased(time, x, y, mods);
+    if (!haveMultiTouchInput)
+      super.mouseAction(action, time, x, y, count, modifiers);
   }
 
   @Override

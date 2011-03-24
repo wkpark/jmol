@@ -286,7 +286,7 @@ class MouseManager14 implements MouseWheelListener, MouseListener,
     clearKeyBuffer();
     // clickedCount is not reliable on some platforms
     // so we will just deal with it ourselves
-    actionManager.mouseClicked(time, x, y, modifiers, 1);
+    actionManager.mouseAction(Binding.CLICKED, time, x, y, 1, modifiers);
   }
 
   private boolean isMouseDown; // Macintosh may not recognize CTRL-SHIFT-LEFT as drag, only move
@@ -294,14 +294,14 @@ class MouseManager14 implements MouseWheelListener, MouseListener,
   private void mouseMoved(long time, int x, int y, int modifiers) {
     clearKeyBuffer();
     if (isMouseDown)
-      actionManager.mouseDragged(time, x, y, applyLeftMouse(modifiers));
+      actionManager.mouseAction(Binding.DRAGGED, time, x, y, 0, applyLeftMouse(modifiers));
     else
-      actionManager.mouseMoved(time, x, y, modifiers);
+      actionManager.mouseAction(Binding.MOVED, time, x, y, 0, modifiers);
   }
 
   private void mouseWheel(long time, int rotation, int modifiers) {
     clearKeyBuffer();
-    actionManager.mouseWheel(time, rotation, modifiers);
+    actionManager.mouseAction(Binding.WHEELED, time, 0, rotation, 0, modifiers);
   }
 
   /**
@@ -316,18 +316,18 @@ class MouseManager14 implements MouseWheelListener, MouseListener,
                     boolean isPopupTrigger) {
     clearKeyBuffer();
     isMouseDown = true;
-    actionManager.mousePressed(time, x, y, modifiers);
+    actionManager.mouseAction(Binding.PRESSED, time, x, y, 0, modifiers);
   }
 
   private void mouseReleased(long time, int x, int y, int modifiers) {
     isMouseDown = false;
-    actionManager.mouseReleased(time, x, y, modifiers);
+    actionManager.mouseAction(Binding.RELEASED, time, x, y, 0, modifiers);
   }
 
   private void mouseDragged(long time, int x, int y, int modifiers) {
     if ((modifiers & Binding.MAC_COMMAND) == Binding.MAC_COMMAND)
       modifiers = modifiers & ~Binding.RIGHT | Binding.CTRL; 
-    actionManager.mouseDragged(time, x, y, modifiers);
+    actionManager.mouseAction(Binding.DRAGGED, time, x, y, 0, modifiers);
   }
 
   private static int applyLeftMouse(int modifiers) {

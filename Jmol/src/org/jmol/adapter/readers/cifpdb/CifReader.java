@@ -826,13 +826,13 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   final private static byte GEOM_BOND_ATOM_SITE_LABEL_1 = 0;
   final private static byte GEOM_BOND_ATOM_SITE_LABEL_2 = 1;
   final private static byte GEOM_BOND_DISTANCE = 2;
-  final private static byte GEOM_BOND_SITE_SYMMETRY_2 = 3;
+  //final private static byte GEOM_BOND_SITE_SYMMETRY_2 = 3;
 
   final private static String[] geomBondFields = { 
       "_geom_bond_atom_site_label_1",
       "_geom_bond_atom_site_label_2",
       "_geom_bond_distance",
-//      "_geom_bond_site_symmetry_2",
+    //  "_geom_bond_site_symmetry_2",
   };
 
   /**
@@ -860,6 +860,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       int atomIndex2 = -1;
       float distance = 0;
       float dx = 0;
+      //String siteSym2 = null;
       for (int i = 0; i < tokenizer.fieldCount; ++i) {
         switch (fieldProperty(i)) {
         case NONE:
@@ -892,9 +893,9 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
             dx = 0.015f;
           }
           break;
-        case GEOM_BOND_SITE_SYMMETRY_2:
-          //symmetry = field;
-          break;
+        //case GEOM_BOND_SITE_SYMMETRY_2:
+          //siteSym2 = field;
+          //break;
         }
       }
       if (atomIndex1 < 0 || atomIndex2 < 0)
@@ -1594,12 +1595,12 @@ _struct_site_gen.details
       if (bs1 == null || bs2 == null)
         continue;
       for (int j = bs1.nextSetBit(0); j >= 0; j = bs1.nextSetBit(j + 1))
-        for (int k = bs2.nextSetBit(0); k >= 0; k = bs2.nextSetBit(k + 1))
-          if (j != k
-              && (!isMolecular || !bsConnected[j + firstAtom].get(k))
+        for (int k = bs2.nextSetBit(0); k >= 0; k = bs2.nextSetBit(k + 1)) {
+          if ((!isMolecular || !bsConnected[j + firstAtom].get(k))
               && symmetry.checkDistance(atoms[j + firstAtom], atoms[k
                   + firstAtom], distance, dx, 0, 0, 0, ptOffset))
             addNewBond(j + firstAtom, k + firstAtom);
+        }
     }
     
     // do a quick check for H-X bonds if we have GEOM_BOND
@@ -1639,6 +1640,8 @@ _struct_site_gen.details
     
     float bondTolerance = viewer.getBondTolerance();
     BitSet bsBranch = new BitSet();
+    Point3f cart1 = new Point3f();
+    Point3f cart2 = new Point3f();
     for (int i = firstAtom; i < atomCount; i++)
       if (!bsMolecule.get(i) && !bsExclude.get(i))
         for (int j = bsMolecule.nextSetBit(0); j >= 0; j = bsMolecule
@@ -1649,16 +1652,22 @@ _struct_site_gen.details
             for (int k = bsBranch.nextSetBit(0); k >= 0; k = bsBranch
                 .nextSetBit(k + 1)) {
               atoms[k].add(ptOffset);
+              cart1.set(atoms[k]);
+              symmetry.toCartesian(cart1, true);
               BitSet bs = bsSets[atomSetCollection
                   .getAtomNameIndex(atoms[k].atomName)
                   - firstAtom];
               if (bs != null)
-                for (int ii = bs.nextSetBit(0); ii >= 0; ii = bs.nextSetBit(ii + 1))
-                  if (ii + firstAtom != k
-                      && atoms[ii + firstAtom].distance(atoms[k]) < 0.1f) {
+                for (int ii = bs.nextSetBit(0); ii >= 0; ii = bs.nextSetBit(ii + 1)) {
+                  if (ii + firstAtom == k)
+                    continue;
+                  cart2.set(atoms[ii + firstAtom]);
+                  symmetry.toCartesian(cart2, true);
+                  if (cart2.distance(cart1) < 0.1f) {
                     bsExclude.set(k);
                     break;
                   }
+                }
               bsMolecule.set(k);
             }
             return true;

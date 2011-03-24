@@ -658,9 +658,8 @@ public class ScriptEvaluator {
             : getBitsetPropertySelector(i, false));
         if (token != null) {
           rpn.addX((ScriptVariable) localVars.get(localVar));
-          if (!rpn.addOp(token)) {
+          if (!rpn.addOp(token, (tokAt(i + 1) == Token.leftparen)))
             error(ERROR_invalidArgument);
-          }
           if ((token.intValue == Token.function || token.intValue == Token.parallel)
               && tokAt(iToken + 1) != Token.leftparen) {
             rpn.addOp(Token.tokenLeftParen);

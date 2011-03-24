@@ -106,8 +106,6 @@ class RepaintManager {
   }
 
   void render(Graphics3D g3d, ModelSet modelSet) {// , Rectangle rectClip
-    if (!viewer.getRefreshing())
-      return;
     //System.out.println("render " + (test++));
     //System.out.println("repaintManager render thread=" + Thread.currentThread().getName());
     render1(g3d, modelSet); // , rectClip

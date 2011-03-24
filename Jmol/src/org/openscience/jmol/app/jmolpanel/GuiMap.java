@@ -91,6 +91,7 @@ class GuiMap {
     labels.put("pasteClipboard", GT._("&Paste"));
     labels.put("editSelectAllScript", GT._("Select &All"));
     labels.put("selectMenu", GT._("&Select"));
+    labels.put("selectMenuText", GT._("&Select"));
     labels.put("selectAllScript", GT._("&All"));
     labels.put("selectNoneScript", GT._("&None"));
     labels.put("selectHydrogenScript", GT._("Hydrogen"));

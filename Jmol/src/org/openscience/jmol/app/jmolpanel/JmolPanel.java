@@ -643,7 +643,6 @@ public class JmolPanel extends JPanel implements SplashInterface {
       boolean isToggle = Boolean.valueOf(isToggleString).booleanValue();
       if (isToggle) {
         b = new JToggleButton(ii);
-        //System.out.println(key);
         if (key.equals("rotateScript")) {
           display.buttonRotate = b;
         }
@@ -813,7 +812,6 @@ public class JmolPanel extends JPanel implements SplashInterface {
 
     // Get list of items from resource file:
     String[] itemKeys = tokenize(JmolResourceHandler.getStringX(key));
-
     // Get label associated with this menu:
     JMenu menu = guimap.newJMenu(key);
     ImageIcon f = JmolResourceHandler.getIconX(key + "Image");
@@ -824,13 +822,10 @@ public class JmolPanel extends JPanel implements SplashInterface {
 
     // Loop over the items in this menu:
     for (int i = 0; i < itemKeys.length; i++) {
-
       String item = itemKeys[i];
       if (item.equals("-")) {
         menu.addSeparator();
-        continue;
-      }
-      if (item.endsWith("Menu")) {
+      } else if (item.endsWith("Menu")) {
         JMenu pm;
         if ("recentFilesMenu".equals(item)) {
           /*recentFilesMenu = */pm = createMenu(item);
@@ -838,10 +833,10 @@ public class JmolPanel extends JPanel implements SplashInterface {
           pm = createMenu(item);
         }
         menu.add(pm);
-        continue;
+      } else {
+        JMenuItem mi = createMenuItem(item);
+        menu.add(mi);
       }
-      JMenuItem mi = createMenuItem(item);
-      menu.add(mi);
     }
     menu.addMenuListener(display.getMenuListener());
     return menu;

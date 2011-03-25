@@ -46,7 +46,7 @@ public class SpartanSmolReader extends SpartanInputReader {
     modelName = "Spartan file";
     isCompoundDocument = (readLine().indexOf("Compound Document File Directory") >= 0);
     inputOnly = checkFilter("INPUT");
-    espCharges = checkFilter("ESPCHARGES");
+    espCharges = !checkFilter("MULLIKEN"); // changed default in Jmol 12.1.41, 12.0.38
     
   }
 

@@ -5763,21 +5763,21 @@ public class ScriptEvaluator {
 
       }
       if (isForCheck) {
-        j = pts[1] + 1;
-        isForCheck = false;
+        j = (bsIn == null ? pts[1] + 1 : 2);
       } else {
         pushContext((ContextToken) token);
         j = 2;
-        if (tokAt(j) == Token.var)
-          j++;
       }
+      if (tokAt(j) == Token.var)
+        j++;
       String key = parameterAsString(j);
       boolean isMinusMinus = key.equals("--") || key.equals("++");
       if (isMinusMinus) {
         key = parameterAsString(++j);
-      }
+      }      
+      ScriptVariable v = null;
       if (Token.tokAttr(tokAt(j), Token.misc)
-          || getContextVariableAsVariable(key) != null) {
+          || (v = getContextVariableAsVariable(key)) != null) {
         if (bsIn == null && !isMinusMinus && getToken(++j).tok != Token.opEQ)
           error(ERROR_invalidArgument);
         if (bsIn == null) {
@@ -5785,14 +5785,35 @@ public class ScriptEvaluator {
             j -= 2;
           setVariable(++j, statementLength - 1, key, 0);
         } else {
-          //setVariable(j + 2, statementLength - 1, key + "_set", 0);
-          setVariable(j + 2, statementLength - 1, key, 0);
+          // for (var x in {xx})....
+          isOK = true;
+          if (v == null)
+            v = getContextVariableAsVariable(key);
+          if (v == null)
+            v = viewer.getOrSetNewVariable(key, false);
+          if (v == null || v.tok != Token.bitset || v.intValue == Integer.MAX_VALUE) {
+            if (v == null) {
+              contextVariables.put(key.toLowerCase(), v = ScriptVariable.getVariable(bsIn));
+              v.intValue = 1;
+            } else if (isForCheck) {
+              // someone messed with this variable -- do not continue!
+              isOK = false;
+            } else {
+              v.set(ScriptVariable.getVariable(bsIn), false);
+              v.intValue = 1;
+            }
+          } else {
+            v.intValue++;
+          }
+          isOK = isOK && ScriptVariable.bsSelect(v).cardinality() == 1;
         }
       }
-      isOK = parameterExpressionBoolean(pts[0] + 1, pts[1]);
+      if (bsIn == null)
+        isOK = parameterExpressionBoolean(pts[0] + 1, pts[1]);
       pt++;
       if (!isOK)
         popContext(true, false);
+      isForCheck = false;
       break;
     case Token.end: // function, if, for, while, catch, switch
       switch (getToken(checkLast(1)).tok) {

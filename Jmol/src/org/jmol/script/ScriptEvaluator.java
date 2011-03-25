@@ -5739,6 +5739,7 @@ public class ScriptEvaluator {
       // for (var i = 1; i < 3; i = i + 1);
       // for (;;;);
       // for (var x in {...}) { xxxxx }
+      System.out.println("forcmd forcheck=" + isForCheck);
       Token token = theToken;
       int[] pts = new int[2];
       int j = 0;
@@ -5792,13 +5793,10 @@ public class ScriptEvaluator {
           if (v == null) {
             if (key.startsWith("_"))
               error(ERROR_invalidArgument);
-            v = viewer.getOrSetNewVariable(key, false);
+            v = viewer.getOrSetNewVariable(key, true);
           }
-          if (!isForCheck || v == null || v.tok != Token.bitset || v.intValue == Integer.MAX_VALUE) {
-            if (v == null) {
-              contextVariables.put(key.toLowerCase(), v = ScriptVariable.getVariable(bsIn));
-              v.intValue = 1;
-            } else if (isForCheck) {
+          if (!isForCheck || v.tok != Token.bitset || v.intValue == Integer.MAX_VALUE) {
+            if (isForCheck) {
               // someone messed with this variable -- do not continue!
               isOK = false;
             } else {

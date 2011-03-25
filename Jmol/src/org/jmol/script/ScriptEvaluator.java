@@ -5739,7 +5739,6 @@ public class ScriptEvaluator {
       // for (var i = 1; i < 3; i = i + 1);
       // for (;;;);
       // for (var x in {...}) { xxxxx }
-      System.out.println("forcmd forcheck=" + isForCheck);
       Token token = theToken;
       int[] pts = new int[2];
       int j = 0;

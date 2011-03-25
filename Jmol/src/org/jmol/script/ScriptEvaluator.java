@@ -5794,7 +5794,7 @@ public class ScriptEvaluator {
               error(ERROR_invalidArgument);
             v = viewer.getOrSetNewVariable(key, false);
           }
-          if (v == null || v.tok != Token.bitset || v.intValue == Integer.MAX_VALUE) {
+          if (!isForCheck || v == null || v.tok != Token.bitset || v.intValue == Integer.MAX_VALUE) {
             if (v == null) {
               contextVariables.put(key.toLowerCase(), v = ScriptVariable.getVariable(bsIn));
               v.intValue = 1;

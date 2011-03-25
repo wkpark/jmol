@@ -5789,8 +5789,11 @@ public class ScriptEvaluator {
           isOK = true;
           if (v == null)
             v = getContextVariableAsVariable(key);
-          if (v == null)
+          if (v == null) {
+            if (key.startsWith("_"))
+              error(ERROR_invalidArgument);
             v = viewer.getOrSetNewVariable(key, false);
+          }
           if (v == null || v.tok != Token.bitset || v.intValue == Integer.MAX_VALUE) {
             if (v == null) {
               contextVariables.put(key.toLowerCase(), v = ScriptVariable.getVariable(bsIn));
@@ -12862,10 +12865,9 @@ public class ScriptEvaluator {
         || tv.value instanceof Float || tv.value instanceof Boolean)));
 
     if (needVariable) {
+      if (key.startsWith("_"))
+        error(ERROR_invalidArgument, key);
       t = viewer.getOrSetNewVariable(key, true);
-      if (t == null) { // can't set a variable _xxxx
-        error(ERROR_invalidArgument);
-      }
       isUserVariable = true;
     }
 

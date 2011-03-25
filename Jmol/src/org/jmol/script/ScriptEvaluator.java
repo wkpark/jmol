@@ -564,10 +564,10 @@ public class ScriptEvaluator {
 
   @SuppressWarnings("unchecked")
   private List<ScriptVariable> parameterExpressionList(int pt,
-                                                       boolean isArrayItem)
+                                                       int ptAtom, boolean isArrayItem)
       throws ScriptException {
     return (List<ScriptVariable>) parameterExpression(pt, -1, null, true, true,
-        -1, isArrayItem, null, null);
+        ptAtom, isArrayItem, null, null);
   }
 
   private String parameterExpressionString(int pt, int ptMax)
@@ -583,7 +583,7 @@ public class ScriptEvaluator {
   }
 
   private ScriptVariable parameterExpressionToken(int pt) throws ScriptException {
-    return parameterExpressionList(pt, false).get(0);
+    return parameterExpressionList(pt, -1, false).get(0);
   }
 
   /**
@@ -945,7 +945,7 @@ public class ScriptEvaluator {
             nParen++;
             break;
           case Token.rightparen:
-            if (--nParen == 0 && nSquare == 0 && isOneExpressionOnly) {
+            if (--nParen <= 0 && nSquare == 0 && isOneExpressionOnly) {
               iToken++;
               break out;
             }
@@ -4474,7 +4474,7 @@ public class ScriptEvaluator {
         int index = Integer.MIN_VALUE;
         // allow for $pt2.3 -- specific vertex
         if (tokAt(i + 1) == Token.leftsquare) {
-          index = ScriptVariable.iValue(parameterExpressionList(-i - 1, true)
+          index = ScriptVariable.iValue(parameterExpressionList(-i - 1, -1, true)
               .get(0));
           if (getToken(--iToken).tok != Token.rightsquare)
             error(ERROR_invalidArgument);
@@ -5742,7 +5742,7 @@ public class ScriptEvaluator {
       Token token = theToken;
       int[] pts = new int[2];
       int j = 0;
-      BitSet bsIn = null;
+      Object bsOrList = null;
       for (int i = 1, nSkip = 0; i < statementLength && j < 2; i++) {
         switch (tokAt(i)) {
         case Token.semicolon:
@@ -5753,7 +5753,14 @@ public class ScriptEvaluator {
           break;
         case Token.in:
           nSkip -= 2;
-          bsIn = atomExpression(++i);
+          if (tokAt(++i) == Token.expressionBegin || tokAt(i) == Token.bitset) {
+            bsOrList = atomExpression(i);            
+          } else {
+            ScriptVariable vl =  parameterExpressionList(-i, 1, false).get(0);
+            if (vl.tok != Token.varray)
+              error(ERROR_invalidArgument);
+            bsOrList = vl.getList();
+          }
           i = iToken;
           break;
         case Token.select:
@@ -5763,7 +5770,7 @@ public class ScriptEvaluator {
 
       }
       if (isForCheck) {
-        j = (bsIn == null ? pts[1] + 1 : 2);
+        j = (bsOrList == null ? pts[1] + 1 : 2);
       } else {
         pushContext((ContextToken) token);
         j = 2;
@@ -5774,13 +5781,14 @@ public class ScriptEvaluator {
       boolean isMinusMinus = key.equals("--") || key.equals("++");
       if (isMinusMinus) {
         key = parameterAsString(++j);
-      }      
+      }
       ScriptVariable v = null;
       if (Token.tokAttr(tokAt(j), Token.misc)
           || (v = getContextVariableAsVariable(key)) != null) {
-        if (bsIn == null && !isMinusMinus && getToken(++j).tok != Token.opEQ)
+        if (bsOrList == null && !isMinusMinus
+            && getToken(++j).tok != Token.opEQ)
           error(ERROR_invalidArgument);
-        if (bsIn == null) {
+        if (bsOrList == null) {
           if (isMinusMinus)
             j -= 2;
           setVariable(++j, statementLength - 1, key, 0);
@@ -5794,21 +5802,24 @@ public class ScriptEvaluator {
               error(ERROR_invalidArgument);
             v = viewer.getOrSetNewVariable(key, true);
           }
-          if (!isForCheck || v.tok != Token.bitset || v.intValue == Integer.MAX_VALUE) {
+          if (!isForCheck || v.tok != Token.bitset && v.tok != Token.varray
+              || v.intValue == Integer.MAX_VALUE) {
             if (isForCheck) {
               // someone messed with this variable -- do not continue!
               isOK = false;
             } else {
-              v.set(ScriptVariable.getVariable(bsIn), false);
+              v.set(ScriptVariable.getVariable(bsOrList), false);
               v.intValue = 1;
             }
           } else {
             v.intValue++;
           }
-          isOK = isOK && ScriptVariable.bsSelect(v).cardinality() == 1;
+          isOK = isOK
+              && (bsOrList instanceof BitSet ? ScriptVariable.bsSelect(v)
+                  .cardinality() == 1 : v.intValue <= v.getList().size());
         }
       }
-      if (bsIn == null)
+      if (bsOrList == null)
         isOK = parameterExpressionBoolean(pts[0] + 1, pts[1]);
       pt++;
       if (!isOK)
@@ -9917,7 +9928,7 @@ public class ScriptEvaluator {
       error(ERROR_commandExpected);
     List<ScriptVariable> params = (statementLength == 1 || statementLength == 3
         && tokAt(1) == Token.leftparen && tokAt(2) == Token.rightparen ? null
-        : parameterExpressionList(1, false));
+        : parameterExpressionList(1, -1, false));
     if (isSyntaxCheck)
       return;
     runFunction(null, name, params, null, false);

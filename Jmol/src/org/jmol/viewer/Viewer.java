@@ -9537,7 +9537,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     int i = JOptionPane.showOptionDialog(null, label, "Jmol prompt",
         JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null,
         list, list[0]);
-    return (data != null ? list[i] : "" + i);
+    // ESCAPE will close the panel with no option selected.
+    return (data == null ? "" + i : i == JOptionPane.CLOSED_OPTION ? "null"
+        : list[i]);
   }
 
   String getMenuName(int i) {

@@ -1175,7 +1175,7 @@ final public class Atom extends Point3fi implements JmolNode {
     case Token.polymerlength:
       return atom.getPolymerLength();
     case Token.radius:
-      // the comparitor uses rasmol radius, unfortunately, for integers
+      // the comparator uses rasmol radius, unfortunately, for integers
       return atom.getRasMolRadius();        
     case Token.resno:
       return atom.getResno();

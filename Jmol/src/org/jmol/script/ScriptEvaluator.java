@@ -1584,13 +1584,12 @@ public class ScriptEvaluator {
       case Token.sum2:
       case Token.stddev:
         break;
-      case Token.average:
+      case Token.sum:
+        return Integer.valueOf((int) sum);
+      default:
         if (sum / n == (int) (sum / n))
           return Integer.valueOf((int) (sum / n));
-      case Token.sum:
-      default:
-        if (sum == (int) sum)
-          return Integer.valueOf((int) sum);
+        return new Float(sum / n);
       }
     }
     switch (minmaxtype) {

@@ -288,6 +288,7 @@ public class ActionManager {
   public final static int PICKING_ASSIGN_ATOM      = 31;
   public final static int PICKING_ASSIGN_BOND      = 32;
   public final static int PICKING_ROTATE_BOND      = 33;
+  public final static int PICKING_IDENTIFY_BOND    = 34;
   
 
 
@@ -300,7 +301,7 @@ public class ActionManager {
     "navigate", 
     "connect", "struts", 
     "dragmolecule", "dragatom", "dragminimize", "dragminimizemolecule",
-    "invertstereo", "assignatom", "assignbond", "rotatebond"
+    "invertstereo", "assignatom", "assignbond", "rotatebond", "identifybond"
   };
  
   public final static String getPickingModeName(int pickingMode) {
@@ -1650,10 +1651,11 @@ public class ActionManager {
     
   public void setPickingMode(int pickingMode) {
     switch (pickingMode) {
-    case -1:
-      bondPickingMode = PICKING_OFF;
+    case -1: // from  set modelkit OFF
+      bondPickingMode = PICKING_IDENTIFY_BOND;
       pickingMode = PICKING_IDENTIFY;
       break;
+    case PICKING_IDENTIFY_BOND:
     case PICKING_ROTATE_BOND:
     case PICKING_ASSIGN_BOND:
       viewer.setBooleanProperty("bondPicking", true);

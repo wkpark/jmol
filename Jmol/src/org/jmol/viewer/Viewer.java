@@ -6479,7 +6479,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (getAtomCount() == 0)
         zap(false, true, true);
     } else {
-      setStringProperty("pickingMode", "ident");
+      actionManager.setPickingMode(-1);
       setStringProperty("pickingStyle", "toggle");
       setBooleanProperty("bondPicking", false);
       if (isChange)

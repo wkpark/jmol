@@ -1636,7 +1636,7 @@ public class ActionManager {
     if (atomPickingMode == PICKING_ASSIGN_ATOM)
       script += "_" + pickAtomAssignType;
     script += ";";
-    if (bondPickingMode != 0)
+    if (bondPickingMode != PICKING_OFF)
       script += "set picking " + getPickingModeName(bondPickingMode);
     if (bondPickingMode == PICKING_ASSIGN_BOND)
       script += "_" + pickBondAssignType;
@@ -1648,12 +1648,12 @@ public class ActionManager {
     return atomPickingMode;
   }
     
-  public int getBondPickingMode() {
-    return bondPickingMode;
-  }
-    
   public void setPickingMode(int pickingMode) {
     switch (pickingMode) {
+    case -1:
+      bondPickingMode = PICKING_OFF;
+      pickingMode = PICKING_IDENTIFY;
+      break;
     case PICKING_ROTATE_BOND:
     case PICKING_ASSIGN_BOND:
       viewer.setBooleanProperty("bondPicking", true);

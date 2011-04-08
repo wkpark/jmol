@@ -139,7 +139,12 @@ public class JmolTouchSimulator implements JmolTouchSimulatorInterface {
 		TouchData te = new TouchData();
 		te.id = (type == TouchState.BIRTH) ? ++_touchID : _touchID;
 		Point p = new Point(x, y);
-		SwingUtilities.convertPointToScreen(p, _display);
+		try {
+		  SwingUtilities.convertPointToScreen(p, _display);
+		} catch (Throwable e) {
+		  // no Swing
+		  return;
+		}
 		te.x = p.x;
 		te.y = p.y;
 		//te.x = e.getLocationOnScreen().x;

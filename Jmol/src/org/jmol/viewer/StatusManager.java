@@ -35,6 +35,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.jmol.api.Interface;
@@ -697,6 +698,24 @@ class StatusManager {
       Logger.error(e.getMessage());
     }
     return outputFileName;
+  }
+
+  static String prompt(String label, String data, String[] list,
+                              boolean asButtons) {
+    try {
+      if (!asButtons)
+        return JOptionPane.showInputDialog(label, data);
+      if (data != null)
+        list = TextFormat.split(data, "|");
+      int i = JOptionPane.showOptionDialog(null, label, "Jmol prompt",
+          JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null,
+          list, list[0]);
+      // ESCAPE will close the panel with no option selected.
+      return (data == null ? "" + i : i == JOptionPane.CLOSED_OPTION ? "null"
+          : list[i]);
+    } catch (Throwable e) {
+      return "null";
+    }
   }
 
 }

@@ -90,7 +90,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.swing.JOptionPane;
 import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
@@ -4860,6 +4859,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void popupMenu(int x, int y, char type) {
     if (!haveDisplay || !refreshing || isPreviewOnly || global.disablePopupMenu)
       return;
+    try {
     switch (type) {
     case 'j':
       getPopupMenu();
@@ -4877,6 +4877,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         modelkit.getMenus(true);
       }
       modelkit.show(x, y, type);
+    }
+    } catch (Throwable e) {
+      // no Swing -- tough luck!
+      global.disablePopupMenu = true;
     }
   }
 
@@ -5370,8 +5374,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (appConsole == null)
         getProperty("DATA_API", "getAppConsole", Boolean.TRUE);
       appConsole.setVisible(showConsole);
-    } catch (Exception e) {
-      // no console for this client...
+    } catch (Throwable e) {
+      // no console for this client... maybe no Swing
     }
   }
 
@@ -9530,16 +9534,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public String prompt(String label, String data, String[] list,
                        boolean asButtons) {
-    if (!asButtons)
-      return JOptionPane.showInputDialog(label, data);
-    if (data != null)
-      list = TextFormat.split(data, "|");
-    int i = JOptionPane.showOptionDialog(null, label, "Jmol prompt",
-        JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null,
-        list, list[0]);
-    // ESCAPE will close the panel with no option selected.
-    return (data == null ? "" + i : i == JOptionPane.CLOSED_OPTION ? "null"
-        : list[i]);
+    return StatusManager.prompt(label, data, list, asButtons);
   }
 
   String getMenuName(int i) {

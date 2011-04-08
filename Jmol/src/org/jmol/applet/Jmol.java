@@ -263,7 +263,7 @@ public class Jmol implements WrappedApplet {
     try {
       UIManager.setLookAndFeel(UIManager
           .getCrossPlatformLookAndFeelClassName());
-    } catch (Exception exc) {
+    } catch (Throwable exc) {
       System.err.println("Error loading L&F: " + exc);
     }
     if (Logger.debugging) {

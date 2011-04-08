@@ -9561,10 +9561,10 @@
   <fah_proj number="10700" name="p10700" public="n"
     server="171.64.65.55" atoms="5254" preferred="16" deadline="24"
     credit="689" frames="100" code="A3" contact="dvanatta" kfactor="0.75"/>
-  <fah_proj number="10720" name="p10720" public="n"
+  <fah_proj number="10720" name="p10720" public="y"
     server="171.67.108.42" atoms="5254" preferred="16" deadline="24"
     credit="689.0" frames="100" code="A4" contact="dvanatta" kfactor="0.0"/>
-  <fah_proj number="10721" name="p10721" public="n"
+  <fah_proj number="10721" name="p10721" public="y"
     server="171.67.108.42" atoms="3441" preferred="8" deadline="16"
     credit="458.0" frames="100" code="A4" contact="dvanatta" kfactor="0.0"/>
 
@@ -9972,7 +9972,7 @@
   <fah_proj number="11020" name="p11020" public="y"
     server="171.64.65.55" atoms="25192" preferred="8" deadline="12"
     credit="310" frames="100" code="A3" contact="dvanatta" kfactor="0.75"/>
-  <fah_proj number="11021" name="p11021" public="n"
+  <fah_proj number="11021" name="p11021" public="y"
     server="171.64.65.55" atoms="29884" preferred="8" deadline="12"
     credit="336" frames="100" code="A3" contact="dvanatta" kfactor="0.75"/>
 
@@ -10495,7 +10495,7 @@
   <fah_proj number="11293" name="Ab42gb360" public="y"
     server="171.67.108.44" atoms="627" preferred="6" deadline="10"
     credit="1835" frames="100" code="OC" contact="lin5"/>
-  <fah_proj number="11294" name="Ab42gb370" public="n"
+  <fah_proj number="11294" name="Ab42gb370" public="y"
     server="171.64.65.56" atoms="627" preferred="6" deadline="10"
     credit="1835.0" frames="100" code="OC" contact="lin5" kfactor="0.0"/>
 

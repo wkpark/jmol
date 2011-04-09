@@ -797,6 +797,7 @@ public class Token {
   public final static int propertycolorscheme            = strparam | 54;
   public final static int quaternionframe                = strparam | 58;
   public final static int smilesurlformat                = strparam | 60;
+  public final static int smiles2dimageformat            = strparam | 61;
   public final static int unitcellcolor                  = strparam | 62;
   
   public final static int axesscale                      = floatparam | 2;
@@ -1072,6 +1073,7 @@ public class Token {
   final static int distancefactor = misc  | 100;// new
   final static int dotted         = misc  | 102;
   final static int downsample     = misc  | 104;// new
+  final static int drawing        = misc  | 105;// new
   final static int eccentricity   = misc  | 106;// new
   final static int ed             = misc  | 108 | expression;// new
   final static int edges          = misc  | 110;// new
@@ -1919,6 +1921,7 @@ public class Token {
       "discrete",        new Token(discrete),
       "distanceFactor",  new Token(distancefactor),
       "downsample",      new Token(downsample),
+      "drawing",         new Token(drawing),
       "eccentricity",    new Token(eccentricity),
       "ed",              new Token(ed),
       "edges",           new Token(edges),
@@ -2061,6 +2064,7 @@ public class Token {
       "propertyColorScheme",                      new Token(propertycolorscheme),
       "quaternionFrame",                          new Token(quaternionframe),
       "smilesUrlFormat",                          new Token(smilesurlformat),
+      "smiles2dImageFormat",                      new Token(smiles2dimageformat),
       "unitCellColor",                            new Token(unitcellcolor),
 
       // float

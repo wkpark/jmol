@@ -13781,10 +13781,19 @@ public class ScriptEvaluator {
         msg = viewer.calculateStructures(null, true, false);
       break;
     case Token.smiles:
+    case Token.drawing:
       checkLength(2);
-      if (!isSyntaxCheck)
-        msg = viewer.getSmiles(0, 0, viewer.getSelectionSet(false), false,
+      if (isSyntaxCheck)
+        return;
+      msg = viewer.getSmiles(0, 0, viewer.getSelectionSet(false), false,
             true, false, false);
+      if (tok == Token.drawing) {
+        if (msg.length() > 0) {
+          viewer.show2D(msg);
+          return;
+        }
+        msg = "Could not show drawing -- Either insufficient atoms are selected or the model is a PDB file.";
+      }
       break;
     case Token.symop:
       if (statementLength > 3) {

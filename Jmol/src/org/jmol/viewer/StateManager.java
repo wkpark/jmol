@@ -583,7 +583,7 @@ public class StateManager {
         + ";_filecaching;_filecache;fontcaching;fontscaling;language"
         + ";legacyautobonding"
         + ";loglevel;logfile;loggestures;logcommands;measureStyleChime"
-        + ";loadformat;smilesurlformat;edsurlformat;edsurlcutoff;multiprocessor;navigationmode;"
+        + ";loadformat;smilesurlformat;smiles2dimageformat;edsurlformat;edsurlcutoff;multiprocessor;navigationmode;"
         + ";perspectivedepth;phongexponent;perspectivemodel;preservestate;refreshing;repaintwaitms;rotationradius"
         + ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showunitcell"
         + ";slabenabled;slab;slabrange;depth;zshade;zshadepower;specular;specularexponent;specularpercent;specularpower;stateversion"
@@ -942,6 +942,7 @@ public class StateManager {
       setParameterValue("smartAromatic", smartAromatic);
       setParameterValue("smallMoleculeMaxAtoms", smallMoleculeMaxAtoms);
       setParameterValue("smilesUrlFormat", smilesUrlFormat);
+      setParameterValue("smiles2dImageFormat", smiles2dImageFormat);
       setParameterValue("solventProbe", solventOn);
       setParameterValue("solventProbeRadius", solventProbeRadius);
       setParameterValue("specular", specular);
@@ -1019,6 +1020,7 @@ public class StateManager {
     char inlineNewlineChar = '|'; //pseudo static
     String loadFormat = "http://www.rcsb.org/pdb/files/%FILE.pdb.gz";
     String smilesUrlFormat = "http://cactus.nci.nih.gov/chemical/structure/%FILE/file?format=sdf&get3d=True"; 
+    String smiles2dImageFormat = "http://cactus.nci.nih.gov/chemical/structure/%FILE/image"; 
       
     //  "http://cheminfov.informatics.indiana.edu/rest/thread/d3.py/SMILES/%FILE";
     String edsUrlFormat = "http://eds.bmc.uu.se/eds/dfs/%LC13/%LCFILE/%LCFILE.omap";
@@ -1076,6 +1078,7 @@ public class StateManager {
       appendCmd(str, "#set defaultDirectory " + Escape.escape(defaultDirectory));
       appendCmd(str, "#set loadFormat " + Escape.escape(loadFormat));
       appendCmd(str, "#set smilesUrlFormat " + Escape.escape(smilesUrlFormat));
+      appendCmd(str, "#set smiles2dImageFormat " + Escape.escape(smiles2dImageFormat));
       appendCmd(str, "#set edsUrlFormat " + Escape.escape(edsUrlFormat));
       appendCmd(str, "#set edsUrlCutoff " + Escape.escape(edsUrlCutoff));
 //      if (autoLoadOrientation)

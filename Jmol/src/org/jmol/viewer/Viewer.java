@@ -4457,10 +4457,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         s = s.substring(0, s.indexOf("%FILE") + 5);
       return TextFormat.formatString(s, "FILE", f);
     case '$':
+    case '2':
       f = TextFormat.simpleReplace(f, "%", "%25");
+      f = TextFormat.simpleReplace(f, "[", "%5B");
+      f = TextFormat.simpleReplace(f, "]", "%5D");
       f = TextFormat.simpleReplace(f, " ", "%20");
       return (withPrefix ? "MOL::" : "")
-          + TextFormat.formatString(global.smilesUrlFormat, "FILE", f);
+          + TextFormat.formatString(
+              (type == '$' ? global.smilesUrlFormat : global.smiles2dImageFormat)
+              , "FILE", f);
     case '_': // isosurface "=...", but we code that type as '-'
       String server = FileManager.fixFileNameVariables(global.edsUrlFormat, f);
       String strCutoff = FileManager.fixFileNameVariables(global.edsUrlCutoff,
@@ -8105,6 +8110,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       what = "?search=" + what;
     showUrl(global.helpPath + what);
   }
+  
+  public void show2D(String smiles) {
+    showUrl((String) setLoadFormat("2" + smiles, '2', false));
+  }
+  
+
 
   // ///////////////////////////////////////////////////////////////
   // delegated to stateManager
@@ -9602,5 +9613,5 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public boolean getMouseEnabled() {
     return refreshing && !creatingImage;
   }
-  
+
 }

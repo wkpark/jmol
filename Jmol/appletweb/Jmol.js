@@ -81,6 +81,7 @@ try{if(typeof(_jmol)!="undefined")exit()
 // bh 4/2010  -- added jmolSetMemoryMb(nMb)
 // ah 1/2011  -- wider detection of browsers; more browsers now use the object tag instead of the applet tag; 
 //               fix of object tag (removed classid) accounts for change of behavior in Chrome
+// bh 3/2011  -- added jmolLoadAjax_STOLAF_NIH
 
 var defaultdir = "."
 var defaultjar = "JmolApplet.jar"
@@ -1502,6 +1503,29 @@ function jmolLoadAjax_STOLAF_RCSB(fileformat,pdbid,optionalscript,targetSuffix){
  _jmolDomScriptLoad(url)
  return url
 }
+
+
+///////////////auto load NIH CACTVS data -- compound name or SMILES ///////////
+
+function jmolLoadAjax_STOLAF_NIH(compoundid,optionalscript,targetSuffix){
+ _jmol.thismodel || (_jmol.thismodel = "aspirin")
+ _jmol.serverURL || (_jmol.serverURL="http://fusion.stolaf.edu/chemistry/jmol/getajaxjs.cfm")
+ _jmol.defaultURL_NIH || (_jmol.defaultURL_NIH="http://cactus.nci.nih.gov/chemical/structure/FILE/file?format=sdf&get3d=True")
+ compoundid || (compoundid=prompt("Enter a compound name or a SMILES string:",_jmol.thismodel))
+ if(!compoundid)return ""
+ targetSuffix || (targetSuffix="0")
+ optionalscript || (optionalscript="")
+ var url=_jmol.defaultURL_NIH.replace(/FILE/g,compoundid)
+ _jmol.optionalscript=optionalscript
+ _jmol.thismodel=compoundid
+ _jmol.thistargetsuffix=targetSuffix
+ _jmol.thisurl=url
+ _jmol.modelArray = []
+ url=_jmol.serverURL+"?returnfunction=_jmolLoadModel&returnArray=_jmol.modelArray&id="+targetSuffix+_jmolExtractPostData(url)
+ _jmolDomScriptLoad(url)
+ return url
+}
+
 
 /////////////// St. Olaf College AJAX server -- ANY URL ///////////
 

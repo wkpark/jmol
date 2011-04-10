@@ -166,10 +166,10 @@ class StatusListener implements JmolStatusListener {
       jmol.setButtonMode(callbackFunction.equals("ON") ? "modelkit" : "rotate");
       return;
     }
-    if (callbackType.equalsIgnoreCase("menu")) {
-      jmol.setupNewFrame(viewer);
-      return;
-    }
+    //if (callbackType.equalsIgnoreCase("menu")) {
+      //jmol.setupNewFrame(vi/ewer);
+      //return;
+    //}
     if (callbackType.equalsIgnoreCase("language")) {
       JmolResourceHandler.clear();
       Dialog.setupUIManager();

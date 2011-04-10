@@ -7536,6 +7536,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
       return scriptEditor;
     case 120:
+      jmolpopup = null;
       return menuStructure = (String) paramInfo;
     case 140:
       return getSpaceGroupInfo(null);

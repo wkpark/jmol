@@ -773,7 +773,7 @@ public abstract class AtomSetCollectionReader {
 
   private boolean filterReject(String f, String code, String atomCode) {
     return (f.indexOf(code) >= 0 && (f.indexOf("!" + code) >= 0 ? f
-        .indexOf(atomCode) >= 0 : f.indexOf(atomCode) < 0));
+        .indexOf(code + atomCode) >= 0 : f.indexOf(code + atomCode) < 0));
   }
 
   protected void set2D() {

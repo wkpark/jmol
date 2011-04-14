@@ -396,56 +396,55 @@ public class Text extends Object2d {
     //set echo myecho x y
     //echo .....
     boolean isImage = (image != null);
-//    if (isDefine) {
-      String strOff = null;
-      switch (valign) {
-      case VALIGN_XY:
-        if (movableXPercent == Integer.MAX_VALUE
-            || movableYPercent == Integer.MAX_VALUE) {
-          strOff = (movableXPercent == Integer.MAX_VALUE ? movableX + " "
-              : movableXPercent + "% ")
-          + (movableYPercent == Integer.MAX_VALUE ? movableY + ""
-              : movableYPercent + "%");
-        } else {
-          strOff = "[" + movableXPercent + " " + movableYPercent + "%]";
-        }          
-      //fall through
-      case VALIGN_XYZ:
-        if (strOff == null)
-          strOff = Escape.escape(xyz);
-        s.append("  set echo ").append(target).append(" ").append(strOff);
-        if (align != ALIGN_LEFT)
-          s.append(";  set echo ").append(target).append(" ").append(
-              hAlignNames[align]);
-        break;
-      default:
-        s.append("  set echo ").append(vAlignNames[valign]).append(" ").append(
-            hAlignNames[align]);
+    //    if (isDefine) {
+    String strOff = null;
+    String echoCmd = "set echo ID " + Escape.escape(target);
+    switch (valign) {
+    case VALIGN_XY:
+      if (movableXPercent == Integer.MAX_VALUE
+          || movableYPercent == Integer.MAX_VALUE) {
+        strOff = (movableXPercent == Integer.MAX_VALUE ? movableX + " "
+            : movableXPercent + "% ")
+            + (movableYPercent == Integer.MAX_VALUE ? movableY + ""
+                : movableYPercent + "%");
+      } else {
+        strOff = "[" + movableXPercent + " " + movableYPercent + "%]";
       }
-      if (valign == VALIGN_XY && movableZPercent != Integer.MAX_VALUE)
-        s.append(";  set echo ").append(target).append(" depth ")
-          .append(movableZPercent);
-      if (isImage)
-        s.append("; set echo ").append(target).append(" IMAGE /*file*/");
-      else
-        s.append("; echo ");
-      s.append(Escape.escape(text)); // was textUnformatted, but that is not really the STATE
-      s.append(";\n");
-      if (script != null)
-        s.append("  set echo ").append(target).append(" script ").append(
-            Escape.escape(script)).append(";\n");
-      if (modelIndex >= 0)
-        s.append("  set echo ").append(target).append(" model ").append(
-            viewer.getModelNumberDotted(modelIndex)).append(";\n");
-//    }
+      //fall through
+    case VALIGN_XYZ:
+      if (strOff == null)
+        strOff = Escape.escape(xyz);
+      s.append("  ").append(echoCmd).append(" ").append(strOff);
+      if (align != ALIGN_LEFT)
+        s.append(";  ").append(echoCmd).append(" ").append(hAlignNames[align]);
+      break;
+    default:
+      s.append("  set echo ").append(vAlignNames[valign]).append(" ").append(
+          hAlignNames[align]);
+    }
+    if (valign == VALIGN_XY && movableZPercent != Integer.MAX_VALUE)
+      s.append(";  ").append(echoCmd).append(" depth ").append(movableZPercent);
+    if (isImage)
+      s.append("; ").append(echoCmd).append(" IMAGE /*file*/");
+    else
+      s.append("; echo ");
+    s.append(Escape.escape(text)); // was textUnformatted, but that is not really the STATE
+    s.append(";\n");
+    if (script != null)
+      s.append("  ").append(echoCmd).append(" script ").append(
+          Escape.escape(script)).append(";\n");
+    if (modelIndex >= 0)
+      s.append("  ").append(echoCmd).append(" model ").append(
+          viewer.getModelNumberDotted(modelIndex)).append(";\n");
+    //    }
     //isDefine and target==top: do all
     //isDefine and target!=top: just start
     //!isDefine and target==top: do nothing
     //!isDefine and target!=top: do just this
     //fluke because top is defined with default font
     //in initShape(), so we MUST include its font def here
-//    if (isDefine != target.equals("top"))
-//      return s.toString();
+    //    if (isDefine != target.equals("top"))
+    //      return s.toString();
     // these may not change much:
     s.append("  " + Shape.getFontCommand("echo", font));
     if (scalePixelsPerMicron > 0)

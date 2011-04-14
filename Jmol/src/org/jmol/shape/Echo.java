@@ -24,6 +24,7 @@
 
 package org.jmol.shape;
 
+import org.jmol.util.Escape;
 import org.jmol.util.TextFormat;
 import org.jmol.g3d.*;
 
@@ -183,7 +184,7 @@ public class Echo extends TextShape {
       Text t = e.next();
       s.append(t.getState());
       if (t.hidden)
-        s.append("  set echo " + t.target + " hidden;\n");
+        s.append("  set echo ID ").append(Escape.escape(t.target)).append(" hidden;\n");
     }
     return s.toString();
   }

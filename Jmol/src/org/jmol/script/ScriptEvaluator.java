@@ -2265,7 +2265,7 @@ public class ScriptEvaluator {
               v);
         } else if (v instanceof String) {
           if (!forceString) {
-            if ((tok != Token.set || j > 1) && Token.tokAttr(tok, Token.mathExpressionCommand)) {
+            if ((tok != Token.set || j > 1 && statement[1].tok != Token.echo) && Token.tokAttr(tok, Token.mathExpressionCommand)) {
               v = getParameter((String) v, Token.variable);
             } 
             if (v instanceof String) {
@@ -4944,10 +4944,10 @@ public class ScriptEvaluator {
 
   private Point3f xypParameter(int index) throws ScriptException {
     // [x y] or [x,y] refers to an xy point on the screen
-    // just a Point3f with z = Float.MAX_VALUE
+    //     return a Point3f with z = Float.MAX_VALUE
     // [x y %] or [x,y %] refers to an xy point on the screen
     // as a percent
-    // just a Point3f with z = -Float.MAX_VALUE
+    //     return a Point3f with z = -Float.MAX_VALUE
 
     int tok = tokAt(index);
     if (tok == Token.spacebeforesquare)
@@ -12265,188 +12265,152 @@ public class ScriptEvaluator {
   }
 
   private void setEcho() throws ScriptException {
-    String propertyName = "target";
+    String propertyName = null;
     Object propertyValue = null;
+    String id = null;
     boolean echoShapeActive = true;
     // set echo xxx
-    int len = 3;
+    int pt = 2;
+
+    // check for ID name or just name
+    // also check simple OFF, NONE
     switch (getToken(2).tok) {
     case Token.off:
-      checkLength(3);
-      echoShapeActive = false;
-      propertyName = "allOff";
-      break;
-    case Token.hide:
-    case Token.hidden:
-      propertyName = "hidden";
-      propertyValue = Boolean.TRUE;
-      break;
-    case Token.on:
-    case Token.display:
-    case Token.displayed:
-      propertyName = "hidden";
-      propertyValue = Boolean.FALSE;
-      break;
+      id = propertyName = "allOff";
+      // fall through
     case Token.none:
       echoShapeActive = false;
       // fall through
     case Token.all:
-      checkLength(3);
-      // fall through
+      // all and none get NO additional parameters;
+      if (id == null)
+        id = parameterAsString(2);
+      checkLength(++pt);
+      break;
     case Token.left:
     case Token.right:
     case Token.top:
     case Token.bottom:
     case Token.center:
     case Token.identifier:
-      propertyValue = parameterAsString(2);
+      id = parameterAsString(pt++);
       break;
-    case Token.model:
-      int modelIndex = modelNumberParameter(3);
-      if (isSyntaxCheck)
-        return;
-      if (modelIndex >= viewer.getModelCount())
-        error(ERROR_invalidArgument);
-      propertyName = "model";
-      propertyValue = Integer.valueOf(modelIndex);
-      len = 4;
-      break;
-    case Token.image:
-      // set echo image "..."
-      echo(3, true);
-      return;
-    case Token.depth:
-      // set echo depth zzz
-      propertyName = "%zpos";
-      propertyValue = Integer.valueOf((int) floatParameter(3));
-      len = 4;
-      break;
-    case Token.string:
-      echo(2, false);
-      return;
-    default:
-      if (!Token.tokAttr(theTok, Token.identifier))
-        error(ERROR_invalidArgument);
-      propertyValue = parameterAsString(2);
+    case Token.id:
+      pt++;
+      id = parameterAsString(pt++);
       break;
     }
+
     if (!isSyntaxCheck) {
       viewer.setEchoStateActive(echoShapeActive);
       shapeManager.loadShape(JmolConstants.SHAPE_ECHO);
-      setShapeProperty(JmolConstants.SHAPE_ECHO, propertyName, propertyValue);
+      if (id != null)
+        setShapeProperty(JmolConstants.SHAPE_ECHO,
+            propertyName == null ? "target" : propertyName, id);
     }
-    if (statementLength == len)
-      return;
-    propertyName = "align";
-    propertyValue = null;
-    // set echo name xxx
-    if (statementLength == 4) {
-      if (isCenterParameter(3)) {
-        setShapeProperty(JmolConstants.SHAPE_ECHO, "xyz", centerParameter(3));
+
+    if (pt < statementLength) {
+      // set echo name xxx
+      // pt is usually 3, but could be 4 if ID used
+      switch (getToken(pt++).tok) {
+      case Token.image:
+      case Token.string:
+        if (theTok == Token.image)
+          pt++;
+        checkLength(pt);
+        echo(pt - 1, theTok == Token.image);
         return;
-      }
-      switch (getToken(3).tok) {
+      default:
+        if (isCenterParameter(pt - 1)) {
+          propertyName = "xyz";
+          propertyValue = centerParameter(pt - 1);
+          pt = iToken + 1;
+          break;
+        }
+        error(ERROR_invalidArgument);
       case Token.off:
         propertyName = "off";
         break;
+      case Token.hide:
       case Token.hidden:
         propertyName = "hidden";
         propertyValue = Boolean.TRUE;
         break;
+      case Token.display:
       case Token.displayed:
       case Token.on:
         propertyName = "hidden";
         propertyValue = Boolean.FALSE;
         break;
       case Token.model:
-        int modelIndex = modelNumberParameter(4);
-        if (isSyntaxCheck)
-          return;
+        int modelIndex = (isSyntaxCheck ? 0 : modelNumberParameter(pt++));
         if (modelIndex >= viewer.getModelCount())
           error(ERROR_invalidArgument);
         propertyName = "model";
         propertyValue = Integer.valueOf(modelIndex);
+        break;
+      case Token.script:
+        propertyName = "script";
+        propertyValue = parameterAsString(pt++);
+        break;
+      case Token.align:
+        propertyName = "align";
+        switch (getToken(pt).tok) {
+        case Token.left:
+        case Token.right:
+        case Token.top:
+        case Token.bottom:
+        case Token.center:
+          propertyValue = parameterAsString(pt++);
+          break;
+        default:
+          error(ERROR_invalidArgument);
+        }
         break;
       case Token.left:
       case Token.right:
       case Token.top:
       case Token.bottom:
       case Token.center:
-      case Token.identifier:
-        propertyValue = parameterAsString(3);
+        propertyName = "align";
+        propertyValue = parameterAsString(pt - 1);
         break;
-      default:
-        if (!Token.tokAttr(theTok, Token.identifier))
-          error(ERROR_invalidArgument);
-        propertyValue = parameterAsString(3);
-        break;
-      }
-      setShapeProperty(JmolConstants.SHAPE_ECHO, propertyName, propertyValue);
-      return;
-    }
-    // set echo name script "some script"
-    // set echo name model x.y
-    // set echo name depth nnnn
-    // set echo name image "myimage.jpg"
-    if (statementLength == 5) {
-      switch (tokAt(3)) {
-      case Token.script:
-        propertyName = "script";
-        propertyValue = parameterAsString(4);
-        break;
-      case Token.model:
-        int modelIndex = modelNumberParameter(4);
-        if (!isSyntaxCheck && modelIndex >= viewer.getModelCount())
-          error(ERROR_invalidArgument);
-        propertyName = "model";
-        propertyValue = Integer.valueOf(modelIndex);
-        break;
-      case Token.image:
-        // set echo name image "xxx"
-        echo(4, true);
-        return;
       case Token.depth:
         propertyName = "%zpos";
-        propertyValue = Integer.valueOf((int) floatParameter(4));
+        propertyValue = Integer.valueOf((int) floatParameter(pt++));
         break;
-      }
-      if (propertyValue != null) {
-        setShapeProperty(JmolConstants.SHAPE_ECHO, propertyName, propertyValue);
-        return;
-      }
-    }
-    // set echo name [x y] or set echo name [x y %]
-    // set echo name x-pos y-pos
-
-    getToken(4);
-    int i = 3;
-    // set echo name {x y z}
-    if (isCenterParameter(i)) {
-      if (!isSyntaxCheck)
-        setShapeProperty(JmolConstants.SHAPE_ECHO, "xyz", centerParameter(i));
-      return;
-    }
-    String type = "xypos";
-    if ((propertyValue = xypParameter(i)) == null) {
-      int pos = intParameter(i++);
-      propertyValue = Integer.valueOf(pos);
-      if (tokAt(i) == Token.percent) {
-        type = "%xpos";
-        i++;
-      } else {
-        type = "xpos";
-      }
-      setShapeProperty(JmolConstants.SHAPE_ECHO, type, propertyValue);
-      pos = intParameter(i++);
-      propertyValue = Integer.valueOf(pos);
-      if (tokAt(i) == Token.percent) {
-        type = "%ypos";
-        i++;
-      } else {
-        type = "ypos";
+      case Token.leftsquare:
+      case Token.spacebeforesquare:
+        // [ x y ] with or without %
+        propertyName = "xypos";
+        propertyValue = xypParameter(--pt);
+        if (propertyValue == null)
+          pt--;
+        else
+          pt = iToken + 1;
+        break;
+      case Token.integer:
+        // x y without brackets
+        pt--;
+        int posx = intParameter(pt++);
+        String namex = "xpos";
+        if (tokAt(pt) == Token.percent) {
+          namex = "%xpos";
+          pt++;
+        }
+        propertyName = "ypos";
+        propertyValue = Integer.valueOf(intParameter(pt++));
+        if (tokAt(pt) == Token.percent) {
+          propertyName = "%ypos";
+          pt++;
+        }
+        checkLength(pt);
+        setShapeProperty(JmolConstants.SHAPE_ECHO, namex, Integer.valueOf(posx));
       }
     }
-    setShapeProperty(JmolConstants.SHAPE_ECHO, type, propertyValue);
+    checkLength(pt);
+    if (!isSyntaxCheck && propertyName != null)
+      setShapeProperty(JmolConstants.SHAPE_ECHO, propertyName, propertyValue);
   }
 
   private int intSetting(int pt, int val, int min, int max)

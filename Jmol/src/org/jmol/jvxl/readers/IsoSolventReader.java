@@ -202,6 +202,7 @@ class IsoSolventReader extends AtomDataReader {
       return;
     Logger.startTimer();
     getMaxRadius();
+    voxelRadii = new float[volumeData.nPoints];
     if (isCavity && dataType != Parameters.SURFACE_NOMAP
         && dataType != Parameters.SURFACE_PROPERTY) {
       volumeData.voxelData = voxelData = new float[nPointsX][nPointsY][nPointsZ];
@@ -467,7 +468,6 @@ class IsoSolventReader extends AtomDataReader {
   }
 
   private void generateSolventCube() {
-    voxelRadii = new float[volumeData.nPoints];
     if (dataType == Parameters.SURFACE_NOMAP)
       return;
     bsSurfaceDone = new BitSet();

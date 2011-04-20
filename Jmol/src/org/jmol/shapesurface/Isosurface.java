@@ -1155,11 +1155,12 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   protected void setScriptInfo(String strCommand) {
     // also from lcaoCartoon
     String script = (strCommand == null ? sg.getScript() : strCommand);
-    if (script != null && script.startsWith("; isosurface map")) {
+    int pt = (script == null ? -1 : script.indexOf("; isosurface map"));
+    if (pt == 0) {
       // remapping surface
       if (thisMesh.scriptCommand == null)
         return;
-      int pt = thisMesh.scriptCommand.indexOf("; isosurface map"); 
+      pt = thisMesh.scriptCommand.indexOf("; isosurface map"); 
       if (pt >= 0)
         thisMesh.scriptCommand = thisMesh.scriptCommand.substring(0, pt);
       thisMesh.scriptCommand += script;
@@ -1174,17 +1175,20 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (script != null) {
       if (script.charAt(0) == ' ') {
         script = myType + " ID " + Escape.escape(thisMesh.thisID) + script;
+        pt = script.indexOf("; isosurface map");
       } else if (sg.getIUseBitSets()) {
         thisMesh.bitsets = new BitSet[3];
         thisMesh.bitsets[0] = sg.getBsSelected();
         thisMesh.bitsets[1] = sg.getBsIgnore();
         thisMesh.bitsets[2] = viewer.getBitSetTrajectories();
       }
-    }
-    int pt;
+    }    
+    if (pt > 0 && scriptAppendix.length() > 0)
+      thisMesh.scriptCommand = script.substring(0, pt) + scriptAppendix + script.substring(pt);
+    else
+      thisMesh.scriptCommand = script + scriptAppendix;
     if (!explicitID && script != null && (pt = script.indexOf("# ID=")) >= 0)
       thisMesh.thisID = Parser.getNextQuotedString(script, pt);
-    thisMesh.scriptCommand = script + scriptAppendix;
   }
 
   public void addRequiredFile(String fileName) {

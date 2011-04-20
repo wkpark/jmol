@@ -226,11 +226,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return;
     }
 
-    if ("map" == propertyName) {
-      setProperty("squareData", Boolean.FALSE, null);
-      return;
-    }
-
     if ("color" == propertyName) {
       if (thisMesh != null) {
         // thisMesh.vertexColixes = null;
@@ -338,10 +333,13 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     if ("finalize" == propertyName) {
       if (thisMesh != null) {
-        thisMesh.setDiscreteColixes(sg.getParams().contoursDiscrete, sg
-            .getParams().contourColixes);
-        setScriptInfo((String) value);
-        setJvxlInfo();
+        String cmd = (String) value;
+        if (!cmd.startsWith("; isosurface map")) {
+          thisMesh.setDiscreteColixes(sg.getParams().contoursDiscrete, sg
+              .getParams().contourColixes);
+          setJvxlInfo();
+        }
+        setScriptInfo(cmd);
       }
       clearSg();
       return;
@@ -353,6 +351,12 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     }
     
     // Isosurface / SurfaceGenerator both interested
+
+    if ("map" == propertyName) {
+      setProperty("squareData", Boolean.FALSE, null);
+      if (thisMesh == null || thisMesh.vertexCount == 0)
+        return;
+    }
 
     if ("mapColor" == propertyName || "readFile" == propertyName) {
       if (value == null) {
@@ -1065,7 +1069,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   }
 
   public void notifySurfaceMappingCompleted() {
-    setModelIndex();
+    //setModelIndex();
     //viewer.setCurrentColorRange(jvxlData.valueMappedToRed,
       //  jvxlData.valueMappedToBlue);
     //viewer.setPropertyColorScheme(schemeName, sg.getParams().colorSchemeTranslucent, false);
@@ -1150,8 +1154,18 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   protected void setScriptInfo(String strCommand) {
     // also from lcaoCartoon
-    thisMesh.title = sg.getTitle();
     String script = (strCommand == null ? sg.getScript() : strCommand);
+    if (script != null && script.startsWith("; isosurface map")) {
+      // remapping surface
+      if (thisMesh.scriptCommand == null)
+        return;
+      int pt = thisMesh.scriptCommand.indexOf("; isosurface map"); 
+      if (pt >= 0)
+        thisMesh.scriptCommand = thisMesh.scriptCommand.substring(0, pt);
+      thisMesh.scriptCommand += script;
+      return;
+    }
+    thisMesh.title = sg.getTitle();
     thisMesh.dataType = sg.getParams().dataType;
     thisMesh.scale3d = sg.getParams().scale3d;
     thisMesh.bitsets = null;
@@ -1171,11 +1185,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (!explicitID && script != null && (pt = script.indexOf("# ID=")) >= 0)
       thisMesh.thisID = Parser.getNextQuotedString(script, pt);
     thisMesh.scriptCommand = script + scriptAppendix;
-//    Vector v = (Vector) sg.getFunctionXYinfo();
-//    if (thisMesh.data1 == null)
-//      thisMesh.data1 = v;
-//    else
- //     thisMesh.data2 = v;
   }
 
   public void addRequiredFile(String fileName) {

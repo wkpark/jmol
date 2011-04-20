@@ -15390,6 +15390,7 @@ public class ScriptEvaluator {
     boolean isLcaoCartoon = (iShape == JmolConstants.SHAPE_LCAOCARTOON);
     boolean surfaceObjectSeen = false;
     boolean planeSeen = false;
+    boolean isMapped = false;
     boolean doCalcArea = false;
     boolean doCalcVolume = false;
     boolean isCavity = false;
@@ -15443,9 +15444,9 @@ public class ScriptEvaluator {
       case Token.isosurfacepropertysmoothingpower:
         smoothingPower = intParameter(++i);
         continue;
-      
-      // offset, rotate, and scale3d don't need to be saved in sbCommand
-      // because they are display properties
+
+        // offset, rotate, and scale3d don't need to be saved in sbCommand
+        // because they are display properties
       case Token.offset:
         propertyName = "offset";
         propertyValue = centerParameter(++i);
@@ -15565,11 +15566,9 @@ public class ScriptEvaluator {
       case Token.property:
       case Token.variable:
         onlyOneModel = theToken.value;
-        if (isCavity)
-          error(ERROR_invalidArgument);
         boolean isVariable = (theTok == Token.variable);
         if (mepOrMlp == null) { // not mlp or mep
-          if (!surfaceObjectSeen) {
+          if (!surfaceObjectSeen && !isMapped && !planeSeen) {
             surfaceObjectSeen = true;
             addShapeProperty(propertyList, "sasurface", new Float(0));
             sbCommand.append(" vdw");
@@ -15635,7 +15634,8 @@ public class ScriptEvaluator {
           if (tokAt(i + 1) == Token.within) {
             float d = floatParameter(i = i + 2);
             sbCommand.append(" within " + d);
-            addShapeProperty(propertyList, "propertyDistanceMax", Float.valueOf(d)); 
+            addShapeProperty(propertyList, "propertyDistanceMax", Float
+                .valueOf(d));
           }
         }
         propertyValue = data;
@@ -15779,8 +15779,7 @@ public class ScriptEvaluator {
         propertyName = "plane";
         propertyValue = planeParameter(++i);
         i = iToken;
-        sbCommand.append(" plane ").append(
-            Escape.escape(propertyValue));
+        sbCommand.append(" plane ").append(Escape.escape(propertyValue));
         break;
       case Token.scale:
         propertyName = "scale";
@@ -15801,8 +15800,7 @@ public class ScriptEvaluator {
           propertyValue = getPoint4f(i);
           propertyName = "ellipsoid";
           i = iToken;
-          sbCommand.append(" ellipsoid ").append(
-              Escape.escape(propertyValue));
+          sbCommand.append(" ellipsoid ").append(Escape.escape(propertyValue));
           break;
         } catch (ScriptException e) {
         }
@@ -15833,8 +15831,7 @@ public class ScriptEvaluator {
         propertyName = "plane";
         propertyValue = hklParameter(++i);
         i = iToken;
-        sbCommand.append(" plane ").append(
-            Escape.escape(propertyValue));
+        sbCommand.append(" plane ").append(Escape.escape(propertyValue));
         break;
       case Token.lcaocartoon:
         surfaceObjectSeen = true;
@@ -15901,7 +15898,8 @@ public class ScriptEvaluator {
             i = iToken;
           }
         }
-        setMoData(propertyList, moNumber, linearCombination, offset, isNegOffset, modelIndex, null);
+        setMoData(propertyList, moNumber, linearCombination, offset,
+            isNegOffset, modelIndex, null);
         surfaceObjectSeen = true;
         continue;
       case Token.mep:
@@ -16084,8 +16082,7 @@ public class ScriptEvaluator {
       case Token.eccentricity:
         propertyName = "eccentricity";
         propertyValue = getPoint4f(++i);
-        sbCommand.append(" eccentricity ").append(
-            Escape.escape(propertyValue));
+        sbCommand.append(" eccentricity ").append(Escape.escape(propertyValue));
         i = iToken;
         break;
       case Token.ed:
@@ -16228,8 +16225,7 @@ public class ScriptEvaluator {
       case Token.ignore:
         propertyName = "ignore";
         propertyValue = bsIgnore = atomExpression(++i);
-        sbCommand.append(" ignore ").append(
-            Escape.escape(propertyValue));
+        sbCommand.append(" ignore ").append(Escape.escape(propertyValue));
         i = iToken;
         break;
       case Token.insideout:
@@ -16249,8 +16245,7 @@ public class ScriptEvaluator {
         propertyName = "lobe";
         propertyValue = getPoint4f(++i);
         i = iToken;
-        sbCommand.append(" lobe ").append(
-            Escape.escape(propertyValue));
+        sbCommand.append(" lobe ").append(Escape.escape(propertyValue));
         break;
       case Token.lonepair:
       case Token.lp:
@@ -16262,15 +16257,21 @@ public class ScriptEvaluator {
         sbCommand.append(" lp ").append(Escape.escape(propertyValue));
         break;
       case Token.mapProperty:
-        sbCommand.append(" map");
+        if (isMapped || statementLength == i + 1)
+          error(ERROR_invalidArgument);
+        isMapped = true;
         if ((isCavity || haveRadius) && !surfaceObjectSeen) {
           surfaceObjectSeen = true;
           addShapeProperty(propertyList, "bsSolvent",
-            (haveRadius ? new BitSet() : lookupIdentifierValue("solvent")));
+              (haveRadius ? new BitSet() : lookupIdentifierValue("solvent")));
           addShapeProperty(propertyList, "sasurface", new Float(0));
         }
-        surfaceObjectSeen = !isCavity;
+        if (!surfaceObjectSeen && !planeSeen && sbCommand.length() != 0)
+          error(ERROR_invalidArgument);
+        //surfaceObjectSeen = !isCavity;
+        sbCommand.append("; isosurface map");
         propertyName = "map";
+        propertyValue = (surfaceObjectSeen ? Boolean.TRUE : Boolean.FALSE);
         break;
       case Token.maxset:
         propertyName = "maxset";
@@ -16288,8 +16289,7 @@ public class ScriptEvaluator {
         propertyName = "rad";
         propertyValue = getPoint4f(++i);
         i = iToken;
-        sbCommand.append(" radical ").append(
-            Escape.escape(propertyValue));
+        sbCommand.append(" radical ").append(Escape.escape(propertyValue));
         break;
       case Token.modelbased:
         propertyName = "fixed";
@@ -16495,21 +16495,15 @@ public class ScriptEvaluator {
         if (fileIndex >= 0)
           sbCommand.append(" ").append(fileIndex);
         break;
-      case Token.identifier:
-        if (str.equalsIgnoreCase("LINK")) { // for state of lcaoCartoon
-          propertyName = "link";
-          sbCommand.append(" link");
-          break;
-        } else if (str.equalsIgnoreCase("REMAPPABLE")) { // testing only
-          propertyName = "remappable";
-          sbCommand.append(" remappable");
-          break;
-        } else {
+      case Token.link:
+        propertyName = "link";
+        sbCommand.append(" link");
+        break;
+      default:
+        if (theTok == Token.identifier) {
           propertyName = "thisID";
           propertyValue = str;
         }
-        // fall through
-      default:
         if (planeSeen && !surfaceObjectSeen) {
           addShapeProperty(propertyList, "nomap", new Float(0));
           surfaceObjectSeen = true;
@@ -16535,8 +16529,8 @@ public class ScriptEvaluator {
     }
     if ((isCavity || haveRadius) && !surfaceObjectSeen) {
       surfaceObjectSeen = true;
-      addShapeProperty(propertyList, "bsSolvent",
-          (haveRadius ? new BitSet() : lookupIdentifierValue("solvent")));
+      addShapeProperty(propertyList, "bsSolvent", (haveRadius ? new BitSet()
+          : lookupIdentifierValue("solvent")));
       addShapeProperty(propertyList, "sasurface", new Float(0));
     }
 
@@ -16612,34 +16606,39 @@ public class ScriptEvaluator {
         viewer.setUserVariable("isosurfaceVolume", ScriptVariable
             .getVariable(volume));
     }
-    if (surfaceObjectSeen && !isLcaoCartoon && !isSyntaxCheck) {
-      setShapeProperty(iShape, "finalize", " select " + Escape.escape(bsSelect)
-          + " " + sbCommand);
-      String s = (String) getShapeProperty(iShape, "ID");
-      if (s != null) {
-        cutoff = ((Float) getShapeProperty(iShape, "cutoff")).floatValue();
-        if (Float.isNaN(cutoff) && !Float.isNaN(sigma)) {
-          Logger.error("sigma not supported");
+    if (!isSyntaxCheck && !isLcaoCartoon) {
+      if (isMapped && !surfaceObjectSeen) {
+        setShapeProperty(iShape, "finalize", sbCommand.toString());
+      } else if (surfaceObjectSeen) {
+        setShapeProperty(iShape, "finalize", " select "
+            + Escape.escape(bsSelect) + " " + sbCommand);
+        String s = (String) getShapeProperty(iShape, "ID");
+        if (s != null) {
+          cutoff = ((Float) getShapeProperty(iShape, "cutoff")).floatValue();
+          if (Float.isNaN(cutoff) && !Float.isNaN(sigma)) {
+            Logger.error("sigma not supported");
+          }
+          s += " created";
+          if (isIsosurface)
+            s += " with cutoff=" + cutoff;
+          float[] minMax = (float[]) getShapeProperty(iShape, "minMaxInfo");
+          if (minMax[0] != Float.MAX_VALUE)
+            s += " min=" + minMax[0] + " max=" + minMax[1];
+          s += "; " + JmolConstants.shapeClassBases[iShape].toLowerCase()
+              + " count: " + getShapeProperty(iShape, "count");
+          s += getIsosurfaceDataRange(iShape, "\n");
+          if (doCalcArea)
+            s += "\nisosurfaceArea = " + Escape.escapeArray(area);
+          if (doCalcVolume)
+            s += "\nisosurfaceVolume = " + Escape.escapeArray(volume);
+          showString(s);
         }
-        s += " created";
-        if (isIsosurface) 
-          s += " with cutoff=" + cutoff;
-        float[] minMax = (float[]) getShapeProperty(iShape, "minMaxInfo");
-        if (minMax[0] != Float.MAX_VALUE)
-          s += " min=" + minMax[0] + " max=" + minMax[1];
-        s += "; " + JmolConstants.shapeClassBases[iShape].toLowerCase() + " count: " + getShapeProperty(iShape, "count");
-        s += getIsosurfaceDataRange(iShape, "\n");
+      } else if (doCalcArea || doCalcVolume) {
         if (doCalcArea)
-          s += "\nisosurfaceArea = " + Escape.escapeArray(area);
+          showString("isosurfaceArea = " + Escape.escapeArray(area));
         if (doCalcVolume)
-          s += "\nisosurfaceVolume = " + Escape.escapeArray(volume);
-        showString(s);
+          showString("isosurfaceVolume = " + Escape.escapeArray(volume));
       }
-    } else if (doCalcArea || doCalcVolume) {
-      if (doCalcArea)
-        showString("isosurfaceArea = " + Escape.escapeArray(area));
-      if (doCalcVolume)
-        showString("isosurfaceVolume = " + Escape.escapeArray(volume));
     }
     if (translucency != null)
       setShapeProperty(iShape, "translucency", translucency);

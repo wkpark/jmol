@@ -319,7 +319,6 @@ public class Parameters {
    
   //special effects
   boolean iAddGridPoints;
-  boolean remappable;
   
   /////////////////////////////
   

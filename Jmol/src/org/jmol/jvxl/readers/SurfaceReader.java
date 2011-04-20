@@ -682,7 +682,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     //old: boolean saveColorData = !(params.colorByPhase && !params.isBicolorMap && !params.colorBySign); //sorry!
     boolean saveColorData = (params.colorDensity || params.isBicolorMap || params.colorBySign || !params.colorByPhase);
     // colors mappable always now
-    jvxlData.isJvxlPrecisionColor = true;//(jvxlDataIsPrecisionColor || params.isContoured || params.remappable);
+    jvxlData.isJvxlPrecisionColor = true;
     jvxlData.vertexCount = (contourVertexCount > 0 ? contourVertexCount
         : meshData.vertexCount);
     jvxlData.minColorIndex = -1;

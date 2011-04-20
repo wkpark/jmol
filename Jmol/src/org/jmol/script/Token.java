@@ -1112,6 +1112,7 @@ public class Token {
   final static int lattice        = misc  | 171;// new
   final static int left           = misc  | 172;
   final static int line           = misc  | 174;// new
+  final static int link           = misc  | 175;
   final static int linedata       = misc  | 176;// new
   public final static int list    = misc  | 177; // just "list"
   final static int lobe           = misc  | 178;// new
@@ -1951,6 +1952,7 @@ public class Token {
       "lattice",         new Token(lattice),
       "line",            new Token(line),
       "lineData",        new Token(linedata),
+      "link",            new Token(link),
       "lobe",            new Token(lobe),
       "lonePair",        new Token(lonepair),
       "lp",              new Token(lp),

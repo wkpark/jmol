@@ -360,6 +360,13 @@ public class SurfaceGenerator {
       return false; // more to do
     }
 
+    if ("map" == propertyName) {
+      boolean haveSurface = ((Boolean)value).booleanValue();
+      if (!haveSurface) {
+        params.state = Parameters.STATE_DATA_READ;
+      }
+      return true;
+    }
     if ("finalize" == propertyName) {
       initializeIsosurface();
       return true;
@@ -530,11 +537,6 @@ public class SurfaceGenerator {
     }
 
     // / color options
-
-    if ("remappable" == propertyName) {
-      params.remappable = true;
-      return true;
-    }
 
     if ("insideOut" == propertyName) {
       params.insideOut = true;

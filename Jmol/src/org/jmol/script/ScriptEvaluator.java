@@ -12277,26 +12277,26 @@ public class ScriptEvaluator {
     switch (getToken(2).tok) {
     case Token.off:
       id = propertyName = "allOff";
-      // fall through
+      checkLength(++pt);
+      break;
     case Token.none:
       echoShapeActive = false;
       // fall through
     case Token.all:
       // all and none get NO additional parameters;
-      if (id == null)
-        id = parameterAsString(2);
+      id = parameterAsString(2);
       checkLength(++pt);
       break;
     case Token.left:
+    case Token.center:
     case Token.right:
     case Token.top:
+    case Token.middle:
     case Token.bottom:
-    case Token.center:
     case Token.identifier:
-      id = parameterAsString(pt++);
-      break;
     case Token.id:
-      pt++;
+      if (theTok == Token.id)
+        pt++;
       id = parameterAsString(pt++);
       break;
     }
@@ -12313,53 +12313,11 @@ public class ScriptEvaluator {
       // set echo name xxx
       // pt is usually 3, but could be 4 if ID used
       switch (getToken(pt++).tok) {
-      case Token.image:
-      case Token.string:
-        if (theTok == Token.image)
-          pt++;
-        checkLength(pt);
-        echo(pt - 1, theTok == Token.image);
-        return;
-      default:
-        if (isCenterParameter(pt - 1)) {
-          propertyName = "xyz";
-          propertyValue = centerParameter(pt - 1);
-          pt = iToken + 1;
-          break;
-        }
-        error(ERROR_invalidArgument);
-      case Token.off:
-        propertyName = "off";
-        break;
-      case Token.hide:
-      case Token.hidden:
-        propertyName = "hidden";
-        propertyValue = Boolean.TRUE;
-        break;
-      case Token.display:
-      case Token.displayed:
-      case Token.on:
-        propertyName = "hidden";
-        propertyValue = Boolean.FALSE;
-        break;
-      case Token.model:
-        int modelIndex = (isSyntaxCheck ? 0 : modelNumberParameter(pt++));
-        if (modelIndex >= viewer.getModelCount())
-          error(ERROR_invalidArgument);
-        propertyName = "model";
-        propertyValue = Integer.valueOf(modelIndex);
-        break;
-      case Token.script:
-        propertyName = "script";
-        propertyValue = parameterAsString(pt++);
-        break;
       case Token.align:
         propertyName = "align";
         switch (getToken(pt).tok) {
         case Token.left:
         case Token.right:
-        case Token.top:
-        case Token.bottom:
         case Token.center:
           propertyValue = parameterAsString(pt++);
           break;
@@ -12367,17 +12325,33 @@ public class ScriptEvaluator {
           error(ERROR_invalidArgument);
         }
         break;
+      case Token.center:
       case Token.left:
       case Token.right:
-      case Token.top:
-      case Token.bottom:
-      case Token.center:
         propertyName = "align";
         propertyValue = parameterAsString(pt - 1);
         break;
       case Token.depth:
         propertyName = "%zpos";
         propertyValue = Integer.valueOf((int) floatParameter(pt++));
+        break;
+      case Token.display:
+      case Token.displayed:
+      case Token.on:
+        propertyName = "hidden";
+        propertyValue = Boolean.FALSE;
+        break;
+      case Token.hide:
+      case Token.hidden:
+        propertyName = "hidden";
+        propertyValue = Boolean.TRUE;
+        break;
+      case Token.model:
+        int modelIndex = (isSyntaxCheck ? 0 : modelNumberParameter(pt++));
+        if (modelIndex >= viewer.getModelCount())
+          error(ERROR_invalidArgument);
+        propertyName = "model";
+        propertyValue = Integer.valueOf(modelIndex);
         break;
       case Token.leftsquare:
       case Token.spacebeforesquare:
@@ -12406,6 +12380,29 @@ public class ScriptEvaluator {
         }
         checkLength(pt);
         setShapeProperty(JmolConstants.SHAPE_ECHO, namex, Integer.valueOf(posx));
+        break;
+      case Token.off:
+        propertyName = "off";
+        break;
+      case Token.script:
+        propertyName = "script";
+        propertyValue = parameterAsString(pt++);
+        break;
+      case Token.string:
+      case Token.image:
+        if (theTok == Token.image)
+          pt++;
+        checkLength(pt);
+        echo(pt - 1, theTok == Token.image);
+        return;
+      default:
+        if (isCenterParameter(pt - 1)) {
+          propertyName = "xyz";
+          propertyValue = centerParameter(pt - 1);
+          pt = iToken + 1;
+          break;
+        }
+        error(ERROR_invalidArgument);
       }
     }
     checkLength(pt);

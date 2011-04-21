@@ -122,6 +122,7 @@ public class Echo extends TextShape {
       if (target == "none" || target == "all") {
         // process in Object2dShape
       } else {
+        isAll = false;
         Text text = objects.get(target);
         if (text == null) {
           int valign = Object2d.VALIGN_XY;

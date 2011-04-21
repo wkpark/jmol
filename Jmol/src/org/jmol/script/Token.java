@@ -1123,6 +1123,7 @@ public class Token {
   final static int maxset         = misc  | 190;// new
   final static int mep            = misc  | 192;
   public final static int mesh    = misc  | 194;
+  final static int middle         = misc  | 195;
   final static int minset         = misc  | 196;// new
   final static int mlp            = misc  | 197;
   final static int mode           = misc  | 198;
@@ -1766,6 +1767,7 @@ public class Token {
       "max",             new Token(max),
       "mep",             new Token(mep),
       "mesh",            new Token(mesh),
+      "middle",          new Token(middle),
       "min",             new Token(min),
       "mlp",             new Token(mlp),
       "mode",            new Token(mode),

@@ -4457,15 +4457,34 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         s = s.substring(0, s.indexOf("%FILE") + 5);
       return TextFormat.formatString(s, "FILE", f);
     case '$':
+    case 'N':
     case '2':
+    case 'I':
+    case 'K':
       f = TextFormat.simpleReplace(f, "%", "%25");
       f = TextFormat.simpleReplace(f, "[", "%5B");
       f = TextFormat.simpleReplace(f, "]", "%5D");
       f = TextFormat.simpleReplace(f, " ", "%20");
+      String format;
+      switch (type) {
+      case 'N':
+        format = global.nihResolverFormat + "/names";
+        break;
+      case '2':
+        format = global.nihResolverFormat + "/image";
+        break;
+      case 'I':
+        format = global.nihResolverFormat + "/stdinchi";
+        break;
+      case 'K':
+        format = global.nihResolverFormat + "/inchikey";
+        break;
+      default:
+        format = global.smilesUrlFormat;
+        break;
+      }
       return (withPrefix ? "MOL::" : "")
-          + TextFormat.formatString(
-              (type == '$' ? global.smilesUrlFormat : global.smiles2dImageFormat)
-              , "FILE", f);
+          + TextFormat.formatString(format, "FILE", f);
     case '_': // isosurface "=...", but we code that type as '-'
       String server = FileManager.fixFileNameVariables(global.edsUrlFormat, f);
       String strCutoff = FileManager.fixFileNameVariables(global.edsUrlCutoff,
@@ -8113,7 +8132,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
   
   public void show2D(String smiles) {
-    showUrl((String) setLoadFormat("2" + smiles, '2', false));
+    showUrl((String) setLoadFormat("_" + smiles, '2', false));
+  }
+  
+  public String getChemicalInfo(String smiles, char type) {
+    return getFileAsString((String) setLoadFormat("_" + smiles, type, false), Integer.MAX_VALUE, false);
   }
   
 

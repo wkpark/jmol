@@ -1046,6 +1046,7 @@ public class Token {
   final static int cap           = misc  | 50 | expression;// new
   final static int cavity        = misc  | 52;// new
   final static int check         = misc  | 54;// new
+  final static int chemical      = misc  | 55;// new
   final static int circle        = misc  | 56;// new
   final static int clear         = misc  | 58;
   final static int clipboard     = misc  | 60;
@@ -1100,9 +1101,11 @@ public class Token {
   final static int homo           = misc  | 149;// new
   final static int id             = misc  | 150 | expression;
   final static int ignore         = misc  | 152;// new
-  final static int image          = misc  | 154;
-  final static int in             = misc  | 155;// new
-  final static int increment      = misc  | 156;// new
+  final static int inchi          = misc  | 153;// new
+  final static int inchikey       = misc  | 154;// new
+  final static int image          = misc  | 155;
+  final static int in             = misc  | 156;// new
+  final static int increment      = misc  | 157;// new
   public final static int info    = misc  | 158;
   final static int insideout      = misc  | 160;// new
   final static int interior       = misc  | 162;// new
@@ -1134,8 +1137,9 @@ public class Token {
   final static int monomer        = misc  | 208;
   final static int mrc            = misc  | 209;// new
   final static int msms           = misc  | 210;// new
-  public final static int next    = misc  | 211;
-  public final static int nocontourlines  = misc  | 212;
+  final static int name           = misc  | 211;// new
+  public final static int next    = misc  | 212;
+  public final static int nocontourlines  = misc  | 213;
   final static int nocross        = misc  | 214;// new
   final static int nodebug        = misc  | 216;// new
   public final static int nodots  = misc  | 218;
@@ -1905,6 +1909,7 @@ public class Token {
       "cap",             new Token(cap),
       "cavity",          new Token(cavity),
       "check",           new Token(check),
+      "chemical",        new Token(chemical),
       "circle",          new Token(circle),
       "collapsed",       new Token(collapsed),
       "col",             new Token(col),
@@ -1946,6 +1951,8 @@ public class Token {
       "gridPoints",      new Token(gridpoints),
       "homo",            new Token(homo),
       "ignore",          new Token(ignore),
+      "InChI",           new Token(inchi),
+      "InChIKey",        new Token(inchikey),
       "increment",       new Token(increment),
       "insideout",       new Token(insideout),
       "interior",        new Token(interior),
@@ -1968,6 +1975,7 @@ public class Token {
       "molecular",       new Token(molecular),
       "mrc",             new Token(mrc),
       "msms",            new Token(msms),
+      "name",            new Token(name),
       "noCross",         new Token(nocross),
       "noDebug",         new Token(nodebug),
       "noEdges",         new Token(noedges),

@@ -13745,7 +13745,8 @@ public class ScriptEvaluator {
       break;
     case Token.smiles:
     case Token.drawing:
-      checkLength(2);
+    case Token.chemical:
+      checkLength(tok == Token.chemical ? 3 : 2);
       if (isSyntaxCheck)
         return;
       msg = viewer.getSmiles(0, 0, viewer.getSelectionSet(false), false,
@@ -13756,6 +13757,29 @@ public class ScriptEvaluator {
           return;
         }
         msg = "Could not show drawing -- Either insufficient atoms are selected or the model is a PDB file.";
+      } else if (tok == Token.chemical) {
+        len = 3;
+        if (msg.length() > 0) {
+          char type = 'N';
+          switch (getToken(2).tok) {
+          case Token.inchi:
+            type = 'I';
+            break;
+          case Token.inchikey:
+            type = 'K';
+            break;
+          case Token.name:
+            type = 'N';
+            break;
+          default:
+            error(ERROR_invalidArgument);  
+          }
+          msg = viewer.getChemicalInfo(msg, type);
+          if (msg.indexOf("FileNotFound") >= 0)
+            msg = "?";
+        } else {
+          msg = "Could not show name -- Either insufficient atoms are selected or the model is a PDB file.";
+        }
       }
       break;
     case Token.symop:

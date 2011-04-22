@@ -3681,11 +3681,13 @@ public class ScriptEvaluator {
           val = getStringObjectAsVariable((String) val, null);
         if (val instanceof List<?>) {
           BitSet bs = ScriptVariable.unEscapeBitSetArray((ArrayList<ScriptVariable>)val, true);
-          if (bs != null)
+          if (bs == null)
+            val = value;
+          else
             val = bs;
-        } else if (val instanceof String) {
-          val = lookupIdentifierValue((String) value);
         }
+        if (val instanceof String)
+          val = lookupIdentifierValue((String) value);
         rpn.addX(val);
         break;
       }

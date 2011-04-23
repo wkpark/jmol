@@ -497,7 +497,7 @@ public class Resolver {
           if (type.equals("Xml")) {
             // check for an error message from a server -- certainly not XML
             // but new CML format includes xmlns:xhtml="http://www.w3.org/1999/xhtml" in <cml> tag.
-            if (header.indexOf("XHTML") >= 0 || header.indexOf("xhtml") >= 0 && header.indexOf("<cml") < 0)
+            if (header.indexOf("<!DOCTYPE HTML PUBLIC") >= 0 || header.indexOf("XHTML") >= 0 || header.indexOf("xhtml") >= 0 && header.indexOf("<cml") < 0)
               break; 
             type = getXmlType(header);
           }

@@ -949,6 +949,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           return ERROR(ERROR_missingEnd, "data");
       } else {
         addTokenToPrefix(new Token(Token.string, str));
+        if (Token.tokAttr(tokCommand, Token.implicitStringCommand))
+          isEndOfCommand = true;
       }
       return CONTINUE;
     }
@@ -2168,7 +2170,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       case '}':
         // only consider this if it is extra
         parenpt--;
-        if (parenpt < 0 && braceCount > 0) {
+        if (parenpt < 0 && (braceCount > 0 || iBrace > 0)) {
           isOK = false;
           continue;
         }

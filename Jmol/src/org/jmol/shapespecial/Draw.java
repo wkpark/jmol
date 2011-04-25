@@ -1245,6 +1245,8 @@ public void initShape() {
     pickedMesh = null;
     for (int i = 0; i < meshCount; i++) {
       DrawMesh m = dmeshes[i];
+      if (m.drawType == JmolConstants.DRAW_POLYGON)
+        continue;
       if (m.visibilityFlags != 0) {
         int mCount = (m.modelFlags == null ? 1 : modelCount);
         for (int iModel = mCount; --iModel >= 0;) {
@@ -1253,12 +1255,17 @@ public void initShape() {
               || iModel >= m.polygonIndexes.length || m.polygonIndexes[iModel] == null)
             continue;
           for (int iVertex = m.polygonIndexes[iModel].length; --iVertex >= 0;) {
+            try{
             int d2 = coordinateInRange(x, y, m.vertices[m.polygonIndexes[iModel][iVertex]], dmin2, ptXY);
+            
             if (d2 >= 0) {
               pickedMesh = m;
               dmin2 = d2;
               pickedModel = iModel;
               pickedVertex = iVertex;
+            }
+            } catch (Exception e) {
+              System.out.println(e);
             }
           }
         }

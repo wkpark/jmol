@@ -8428,7 +8428,7 @@
     server="171.64.65.111" atoms="15097" preferred="36" deadline="52"
     credit="336" frames="100" code="G" contact="vvoelz"/>
   <fah_proj number="6316" name="p6316_sh3_with_ALA_frags" public="y" file="xyz"
-    server="171.64.65.111" atoms="15097" preferred="36" deadline="52"
+    server="171.64.65.111" atoms="1000" preferred="36" deadline="52"
     credit="336" frames="100" code="G" contact="vvoelz"/>
   <fah_proj number="6317" name="p6317_sh3_with_ALA_frags" public="n" file="xyz"
     server="171.64.65.111" atoms="15097" preferred="36" deadline="52"
@@ -8886,6 +8886,11 @@
   <fah_proj number="7154" name="2kxa_bax" public="y"
     server="128.143.199.96" atoms="77348" preferred="2.6" deadline="4"
     credit="585" frames="100" code="A3" contact="pela3247" kfactor="3.23"/>
+
+  <!-- Projects 7200 to 7299 -->
+  <fah_proj number="7200" name="p7200" public="n"
+    server="129.64.95.82" atoms="24001" preferred="8" deadline="12"
+    credit="339.0" frames="100" code="A4" contact="pontiggi" kfactor="0.75"/>
 
   <!-- Projects 9900 to 9999 -->
   <fah_proj number="9900" name="p9900_supervillin_e1" public="y"

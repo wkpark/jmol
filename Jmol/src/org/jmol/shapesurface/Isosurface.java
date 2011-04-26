@@ -334,7 +334,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if ("finalize" == propertyName) {
       if (thisMesh != null) {
         String cmd = (String) value;
-        if (!cmd.startsWith("; isosurface map")) {
+        if (cmd != null && !cmd.startsWith("; isosurface map")) {
           thisMesh.setDiscreteColixes(sg.getParams().contoursDiscrete, sg
               .getParams().contourColixes);
           setJvxlInfo();

@@ -871,6 +871,8 @@ abstract public class ModelSet extends ModelCollection {
     BitSet bsDelete = new BitSet();
     for (int i = 0; i < connections.length; i++) {
       float[] f = connections[i];
+      if (f == null || f.length < 2)
+        continue;
       int index1 = (int) f[0];
       int index2 = (int) f[1];
       if (index1 < 0 || index2 < 0 || index1 >= atomCount || index2 >= atomCount)

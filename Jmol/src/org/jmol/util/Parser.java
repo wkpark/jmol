@@ -101,9 +101,16 @@ public class Parser {
     return max + 1;
   }
 
-  public static float[][] parseFloatArray2d(String str) {
+  private static String fixDataString(String str) {
     str = str.replace(';', str.indexOf('\n') < 0 ? '\n' : ' ');
     str = TextFormat.trim(str, "\n \t");
+    str = TextFormat.simpleReplace(str, "\n ", "\n");
+    str = TextFormat.simpleReplace(str, "\n\n", "\n");
+    return str;    
+  }
+  
+  public static float[][] parseFloatArray2d(String str) {
+    str = fixDataString(str);
     int[] lines = markLines(str, '\n');
     int nLines = lines.length;
     float[][] data = new float[nLines][];
@@ -115,8 +122,7 @@ public class Parser {
   }
 
   public static float[][][] parseFloatArray3d(String str) {
-    str = str.replace(';', str.indexOf('\n') < 0 ? '\n' : ' ');
-    str = TextFormat.trim(str, "\n \t");
+    str = fixDataString(str);
     int[] lines = markLines(str, '\n');
     int nLines = lines.length;
     String[] tokens = getTokens(str.substring(0, lines[0]));

@@ -103,8 +103,8 @@ public class NWChemReader extends MOReader {
   protected boolean checkLine() throws Exception {
 
     if (line.trim().startsWith("NWChem")) {
-      readNWChemLine();
-      return true;
+      // currently only keep track of whether I am in the input module or not.
+      inInput = (line.indexOf("NWChem Input Module") >= 0);
     }
 
     if (line.startsWith("          Step")) {
@@ -147,7 +147,6 @@ public class NWChemReader extends MOReader {
     }
     if (!doProcessLines)
       return true;
-
     if (line.indexOf("NWChem Nuclear Hessian and Frequency Analysis") >= 0) {
       readFrequencies();
       return true;
@@ -241,11 +240,6 @@ public class NWChemReader extends MOReader {
     String tokens[] = getTokens();
     atomSetCollection.setAtomSetProperties("Symmetry group name",
         tokens[tokens.length - 1], equivalentAtomSets);
-  }
-
-  private void readNWChemLine() {
-    // currently only keep track of whether I am in the input module or not.
-    inInput = (line.indexOf("NWChem Input Module") >= 0);
   }
 
   /**
@@ -509,15 +503,14 @@ public class NWChemReader extends MOReader {
 
       // assign the frequency values to each atomset's name and property
       for (int i = 0; i < frequencyCount; ++i) {
-        ignore[i] = !doGetVibration(++vibrationNumber);
+        ignore[i] = (tokens[i].equals("0.00") || !doGetVibration(++vibrationNumber));
         if (ignore[i])
           continue;
-        if (!firstTime || i > 0) {
+        if (!firstTime)
           atomSetCollection.cloneLastAtomSet();
-        }
+        firstTime = false;
         atomSetCollection.setAtomSetFrequency(path, null, tokens[i], null);
       }
-      firstTime = false;
       discardLines(1);
       fillFrequencyData(iAtom0, atomCount, atomCount, ignore, false, 0, 0, null);
       discardLines(3);

@@ -3169,15 +3169,19 @@ abstract public class ModelCollection extends BondCollection {
         } else {
           StringBuffer sb = new StringBuffer();
           Enumeration<?> e = props.propertyNames();
+          String path = null;
           while (e.hasMoreElements()) {
             String propertyName = (String) e.nextElement();
             if (propertyName.equals(".PATH"))
-              mol.append("PATH=").append(props.getProperty(propertyName));
+              path = props.getProperty(propertyName);
             else
               sb.append(";").append(propertyName).append("=").append(
                   props.getProperty(propertyName));
           }
-          mol.append(sb.toString().replace('\n', ' '));
+          if (path != null)
+            sb.append(";PATH=").append(path);
+          path = sb.substring(sb.length() > 0 ? 1 : 0);
+          mol.append(path.replace('\n', ' '));
         }
         mol.append('\n');
         for (int j = bsTemp.nextSetBit(0); j >= 0; j = bsTemp.nextSetBit(j + 1))

@@ -416,8 +416,8 @@ public class JmolPopup extends SimplePopup {
     if (menu == null)
       return;
     enableMenu(menu, (modelCount > 1));
-    setLabel(menu, (modelIndex < 0 ? GT._(getMenuText("allModelsText"), modelCount, true)
-        : getModelLabel()));
+    setLabel(menu, (modelIndex < 0 ? GT._(getMenuText("allModelsText"),
+        modelCount, true) : getModelLabel()));
     removeAll(menu);
     if (modelCount < 2)
       return;
@@ -439,8 +439,15 @@ public class JmolPopup extends SimplePopup {
       }
       String script = "" + viewer.getModelNumberDotted(i);
       String entryName = viewer.getModelName(i);
-      if (!entryName.equals(script))
+      if (!entryName.equals(script)) {
+        int ipt = entryName.indexOf(";PATH");
+        if (ipt >= 0)
+          entryName = entryName.substring(0, ipt);
+        if (entryName.indexOf("Model[") == 0
+            && (ipt = entryName.indexOf("]:")) >= 0)
+          entryName = entryName.substring(ipt + 2);
         entryName = script + ": " + entryName;
+      }
       if (entryName.length() > 50)
         entryName = entryName.substring(0, 45) + "...";
       addCheckboxMenuItem(subMenu, entryName, "model " + script + " ##", null,

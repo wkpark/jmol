@@ -61,7 +61,7 @@ public class ScriptVariable extends Token {
   private final static int FLAG_LOCALVAR = 2;
 
   private int flags = ~FLAG_CANINCREMENT & FLAG_LOCALVAR;
-  String name;
+  private String myName;
 
   public ScriptVariable() {
     tok = string;
@@ -170,6 +170,7 @@ public class ScriptVariable extends Token {
         || x instanceof ScriptVariable[] // stored as list
         || x instanceof double[]   // stored as list
         || x instanceof float[]    // stored as list
+        || x instanceof float[][]  // stored as list
         || x instanceof Float[]    // stored as list
         || x instanceof int[]      // stored as list
         || x instanceof int[][]    // stored as list
@@ -307,6 +308,13 @@ public class ScriptVariable extends Token {
         objects.add(getVariable(ix[i]));
       return new ScriptVariable(varray, objects);
     }
+    if (x instanceof float[][]) {
+      float[][] fx = (float[][]) x;
+      objects = new ArrayList<ScriptVariable>();
+      for (int i = 0; i < fx.length; i++)
+        objects.add(getVariable(fx[i]));
+      return new ScriptVariable(varray, objects);
+    }
     return new ScriptVariable(string, Escape.toReadable(x));
   }
 
@@ -346,7 +354,7 @@ public class ScriptVariable extends Token {
   }
 
   public ScriptVariable setName(String name) {
-    this.name = name;
+    this.myName = name;
     flags |= FLAG_CANINCREMENT;
     //System.out.println("Variable: " + name + " " + intValue + " " + value);
     return this;
@@ -592,8 +600,8 @@ public class ScriptVariable extends Token {
     switch (vx.tok) {
     case hash:
       if (map.containsKey(vx)) {
-        sb.append(isEscaped ? "{}" : vx.name == null ? "<circular reference>"
-            : "<" + vx.name + ">");
+        sb.append(isEscaped ? "{}" : vx.myName == null ? "<circular reference>"
+            : "<" + vx.myName + ">");
         break;
       }
       map.put(vx, Boolean.TRUE);
@@ -625,8 +633,8 @@ public class ScriptVariable extends Token {
       break;
     case varray:
       if (map.containsKey(vx)) {
-        sb.append(isEscaped ? "[]" : vx.name == null ? "<circular reference>"
-            : "<" + vx.name + ">");
+        sb.append(isEscaped ? "[]" : vx.myName == null ? "<circular reference>"
+            : "<" + vx.myName + ">");
         break;
       }
       map.put(vx, Boolean.TRUE);
@@ -1096,7 +1104,7 @@ public class ScriptVariable extends Token {
   
   @Override
   public String toString() {
-    return super.toString() + "[" + name + "] index =" + index + " hashcode=" + hashCode();
+    return super.toString() + "[" + myName + "] index =" + index + " hashcode=" + hashCode();
   }
 
   @SuppressWarnings("unchecked")

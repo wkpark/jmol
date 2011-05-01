@@ -132,6 +132,10 @@ abstract public class MOReader extends BasisFunctionReader {
         readMolecularOrbitals(HEADER_NONE);
         return false;
       }
+      if (line.indexOf(" SECOND ORDER PERTURBATION THEORY ANALYSIS") >= 0) {
+        readSecondOrderData();
+        return false;
+      }
     }
     if (getNBOCharges && line.indexOf("Summary of Natural Population Analysis:") >= 0) {
       getNboCharges();
@@ -199,6 +203,7 @@ abstract public class MOReader extends BasisFunctionReader {
    */
   protected void getNboTypes() throws Exception {
     moTypes = new ArrayList<String>();
+    iMo0 = (orbitals == null ? 0 : orbitals.size()) + 1;
     readLine();
     readLine();
     int n = 0;
@@ -467,6 +472,8 @@ abstract public class MOReader extends BasisFunctionReader {
     dfCoefMaps = null;
   }
   
+  private int iMo0 = 1;
+  
   protected int setMOType(Map<String, Object> mo, int i) {
     if (moTypes != null) {
       String s = moTypes.get(i % moTypes.size());
@@ -535,6 +542,8 @@ abstract public class MOReader extends BasisFunctionReader {
     }
   }
 
+  private Map<String, Object> lastMoData;
+  
   protected void setMOData(boolean clearOrbitals) {
     if (shells != null && gaussians != null) {
       moData.put("calculationType", calculationType);
@@ -542,7 +551,7 @@ abstract public class MOReader extends BasisFunctionReader {
       moData.put("shells", shells);
       moData.put("gaussians", gaussians);
       moData.put("mos", orbitals);
-      setMOData(moData);
+      setMOData(lastMoData = moData);
     }
     if (clearOrbitals) {
       orbitals = new ArrayList<Map<String, Object>>();
@@ -550,5 +559,55 @@ abstract public class MOReader extends BasisFunctionReader {
       alphaBeta = "";
     }
   }
- 
+  
+  /*
+  SECOND ORDER PERTURBATION THEORY ANALYSIS OF FOCK MATRIX IN NBO BASIS
+
+    Threshold for printing:   0.50 kcal/mol
+                                                          E(2)  E(j)-E(i) F(i,j)
+     Donor NBO (i)              Acceptor NBO (j)       kcal/mol   a.u.    a.u. 
+  ===============================================================================
+
+  within unit  1
+   1. BD ( 1) C 1- C 2       47. RY*( 1) O 4              1.28    1.86    0.044
+   1. BD ( 1) C 1- C 2       66. BD*( 1) C 2- O 4         0.67    1.27    0.026
+  xxxxxxxxxxxxxxxxxxxxxxxxxx yyyyyyyyyyyyyyyyyyyyyyyyyyy zzzzzz
+  0         1         2         3         4         5         6        
+  012345678901234567890123456789012345678901234567890123456789012
+   */
+  private void readSecondOrderData() throws Exception {
+
+    if (lastMoData == null || moTypes == null)
+      return;
+    Hashtable<String, Integer> ht = new Hashtable<String, Integer>();
+    for (int i = moTypes.size(); --i >= 0;)
+      ht.put(TextFormat.simpleReplace(moTypes.get(i).substring(10), " ", ""),
+          new Integer(i + iMo0));
+
+    List<String[]> strSecondOrderData = new ArrayList<String[]>();
+    discardLines(5);
+    while (readLine() != null && line.indexOf("NBO") < 0) {
+      if (line.length() < 5 || line.charAt(4) != '.')
+        continue;
+      strSecondOrderData.add(new String[] {
+          TextFormat.simpleReplace(line.substring(5, 27).trim(), " ", ""),
+          TextFormat.simpleReplace(line.substring(32, 54).trim(), " ", ""),
+          line.substring(56, 62).trim() });
+    }
+    float[][] secondOrderData = new float[strSecondOrderData.size()][3];
+    lastMoData.put("secondOrderData", secondOrderData);
+    lastMoData = null;
+    Integer IMO;
+    for (int i = strSecondOrderData.size(); --i >= 0;) {
+      String[] a = strSecondOrderData.get(i);
+      IMO = ht.get(a[0]);
+      if (IMO != null)
+        secondOrderData[i][0] = IMO.intValue();
+      IMO = ht.get(a[1]);
+      if (IMO != null)
+        secondOrderData[i][1] = IMO.intValue();
+      secondOrderData[i][2] = parseFloat(a[2]);
+    }
+  }
+  
 }

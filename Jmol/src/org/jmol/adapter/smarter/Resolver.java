@@ -1066,7 +1066,7 @@ public class Resolver {
   { "Dgrid", "BASISFILE   created by DGrid" };
   
   private final static String[] psiContainsRecords =
-  { "Psi", "    PSI  3"};
+  { "Psi", "    PSI  3", "PSI3:"};
  
   private final static String[] nwchemContainsRecords =
   { "NWChem", " argument  1 = "};

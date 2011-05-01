@@ -98,6 +98,10 @@ public class PsiReader extends MOReader {
       readSCFDone();
       return true;
     }
+    if (line.indexOf("Normal Modes") >= 0) {
+      readFrequencies();
+      return true;
+    }
     return checkNboLine();
   }
 
@@ -141,6 +145,8 @@ public class PsiReader extends MOReader {
           : atomSetCollection.getAtom(atomPt++));
       if (isInitial) {
         atomNames.add(tokens[0]);
+        if (tokens[0].length() <= 2)
+          atom.elementNumber = JmolAdapter.getElementNumber(tokens[0]);
       } else {
         atom.elementNumber = (short) parseInt(tokens[0]);
       }
@@ -419,5 +425,24 @@ Orbital energies (a.u.):
     moData.put("mos", orbitals);
     setMOData(moData);
   }
+
+  private void readFrequencies() throws Exception {
+    readLine();
+    int atomCount = atomSetCollection.getLastAtomSetAtomCount();
+    String tokens[];
+    while (readLine() != null && line.indexOf("Frequency") >= 0) {
+      tokens = getTokens();
+      int iAtom0 = atomSetCollection.getAtomCount();
+      boolean[] ignore = new boolean[1];
+      if (!doGetVibration(++vibrationNumber))
+        continue;
+      atomSetCollection.cloneLastAtomSet();
+      atomSetCollection.setAtomSetFrequency(null, null, tokens[1], null);
+      discardLines(2);
+      fillFrequencyData(iAtom0, atomCount, atomCount, ignore, true, 0, 0, null);
+      discardLines(1);
+    }
+  }
+
 
 }

@@ -8121,13 +8121,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       for (int j = 0; j < nY; j++)
         for (int k = 0; k < nZ; k++)
           xyzdata[i][j][k] = f[n++];
-    return xyzdata;
+    return xyzdata; 
   }
 
   public void getHelp(String what) {
-    if (what.length() > 0 && what.indexOf("?") != 0
-        && global.helpPath.indexOf("?") < 0)
-      what = "?search=" + what;
+    if (global.helpPath.indexOf("?") < 0) { 
+      if (what.length() > 0 && what.indexOf("?") != 0) 
+        what = "?search=" + what;
+      what += (what.length() == 0 ? "?ver=" : "&ver=") + JmolConstants.version;
+    } else {
+      what = "&" + what;
+    }
     showUrl(global.helpPath + what);
   }
   

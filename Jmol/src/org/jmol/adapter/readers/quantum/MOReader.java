@@ -568,12 +568,12 @@ abstract public class MOReader extends BasisFunctionReader {
      Donor NBO (i)              Acceptor NBO (j)       kcal/mol   a.u.    a.u. 
   ===============================================================================
 
-  within unit  1
+ within unit  1
    1. BD ( 1) C 1- C 2       47. RY*( 1) O 4              1.28    1.86    0.044
    1. BD ( 1) C 1- C 2       66. BD*( 1) C 2- O 4         0.67    1.27    0.026
-  xxxxxxxxxxxxxxxxxxxxxxxxxx yyyyyyyyyyyyyyyyyyyyyyyyyyy zzzzzz
-  0         1         2         3         4         5         6        
-  012345678901234567890123456789012345678901234567890123456789012
+xxxxxxxxxxxxxxxxxxxxxxxxxx yyyyyyyyyyyyyyyyyyyyyyyyyyy zzzzzzz ....... ffffffff 
+0         1         2         3         4         5         6         7         8        
+01234567890123456789012345678901234567890123456789012345678901234567890123456789012
    */
   private void readSecondOrderData() throws Exception {
 
@@ -592,9 +592,9 @@ abstract public class MOReader extends BasisFunctionReader {
       strSecondOrderData.add(new String[] {
           TextFormat.simpleReplace(line.substring(5, 27).trim(), " ", ""),
           TextFormat.simpleReplace(line.substring(32, 54).trim(), " ", ""),
-          line.substring(56, 62).trim() });
+          line.substring(55, 62).trim(), line.substring(71).trim() });
     }
-    float[][] secondOrderData = new float[strSecondOrderData.size()][3];
+    float[][] secondOrderData = new float[strSecondOrderData.size()][4];
     lastMoData.put("secondOrderData", secondOrderData);
     lastMoData = null;
     Integer IMO;
@@ -607,6 +607,7 @@ abstract public class MOReader extends BasisFunctionReader {
       if (IMO != null)
         secondOrderData[i][1] = IMO.intValue();
       secondOrderData[i][2] = parseFloat(a[2]);
+      secondOrderData[i][3] = parseFloat(a[3]);
     }
   }
   

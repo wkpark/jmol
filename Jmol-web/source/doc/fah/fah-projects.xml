@@ -8428,7 +8428,7 @@
     server="171.64.65.111" atoms="15097" preferred="36" deadline="52"
     credit="336" frames="100" code="G" contact="vvoelz"/>
   <fah_proj number="6316" name="p6316_sh3_with_ALA_frags" public="y" file="xyz"
-    server="171.64.65.111" atoms="1000" preferred="36" deadline="52"
+    server="171.64.65.111" atoms="15097" preferred="36" deadline="52"
     credit="336" frames="100" code="G" contact="vvoelz"/>
   <fah_proj number="6317" name="p6317_sh3_with_ALA_frags" public="n" file="xyz"
     server="171.64.65.111" atoms="15097" preferred="36" deadline="52"
@@ -8888,7 +8888,7 @@
     credit="585" frames="100" code="A3" contact="pela3247" kfactor="3.23"/>
 
   <!-- Projects 7200 to 7299 -->
-  <fah_proj number="7200" name="p7200" public="n"
+  <fah_proj number="7200" name="p7200" public="y"
     server="129.64.95.82" atoms="24001" preferred="8" deadline="12"
     credit="339.0" frames="100" code="A4" contact="pontiggi" kfactor="0.75"/>
 
@@ -9230,12 +9230,15 @@
   <fah_proj number="10118" name="p10118" public="n"
     server="171.64.65.75" atoms="35081" preferred="28" deadline="48"
     credit="1338.0" frames="100" code="A3" contact="gbowman" kfactor="0.74"/>
-  <fah_proj number="10119" name="p10119" public="n"
+  <fah_proj number="10119" name="p10119" public="y"
     server="171.64.65.75" atoms="34367" preferred="28" deadline="48"
     credit="1338.0" frames="100" code="A3" contact="gbowman" kfactor="0.74"/>
   <fah_proj number="10120" name="p10120" public="y"
     server="171.64.65.71" atoms="1174" preferred="2" deadline="3"
     credit="494.0" frames="100" code="GG2" contact="gbowman" kfactor="0.0"/>
+  <fah_proj number="10121" name="p10121" public="n"
+    server="171.64.65.75" atoms="35824" preferred="32" deadline="56"
+    credit="1571.0" frames="100" code="A3" contact="gbowman" kfactor="0.74"/>
 
   <!-- Projects 10200 to 10299 -->
   <fah_proj number="10200" name="b2AR conformational space sampling" public="n" file="xyz"
@@ -9566,12 +9569,15 @@
   <fah_proj number="10700" name="p10700" public="n"
     server="171.64.65.55" atoms="5254" preferred="16" deadline="24"
     credit="689" frames="100" code="A3" contact="dvanatta" kfactor="0.75"/>
-  <fah_proj number="10720" name="p10720" public="y"
+  <fah_proj number="10720" name="p10720" public="y" file="xyz"
     server="171.67.108.42" atoms="5254" preferred="16" deadline="24"
-    credit="689.0" frames="100" code="A4" contact="dvanatta" kfactor="0.0"/>
-  <fah_proj number="10721" name="p10721" public="y"
+    credit="689.0" frames="100" code="A4" contact="dvanatta" kfactor="0.75" contrib="Danny Nielsen"/>
+  <fah_proj number="10721" name="p10721" public="y" file="xyz"
     server="171.67.108.42" atoms="3441" preferred="8" deadline="16"
-    credit="458.0" frames="100" code="A4" contact="dvanatta" kfactor="0.0"/>
+    credit="458.0" frames="100" code="A4" contact="dvanatta" kfactor="0.75" contrib="Danny Nielsen"/>
+  <fah_proj number="10722" name="p10722" public="n"
+    server="171.67.108.42" atoms="12098" preferred="32" deadline="56"
+    credit="1571.0" frames="100" code="A4" contact="dvanatta" kfactor="0.75"/>
 
   <!-- Projects 10800 to 10899 -->
   <fah_proj number="10820" name="Abeta42_monomer" public="n"
@@ -9980,6 +9986,18 @@
   <fah_proj number="11021" name="p11021" public="y"
     server="171.64.65.55" atoms="29884" preferred="8" deadline="12"
     credit="336" frames="100" code="A3" contact="dvanatta" kfactor="0.75"/>
+  <fah_proj number="11040" name="p11040" public="n"
+    server="171.64.65.55" atoms="28663" preferred="12" deadline="20"
+    credit="521.0" frames="100" code="A3" contact="dvanatta" kfactor="0.75"/>
+  <fah_proj number="11041" name="p11041" public="n"
+    server="171.64.65.55" atoms="35368" preferred="12" deadline="24"
+    credit="643.0" frames="100" code="A3" contact="dvanatta" kfactor="0.75"/>
+  <fah_proj number="11050" name="p11050" public="n"
+    server="171.64.65.55" atoms="28669" preferred="12" deadline="22"
+    credit="523.0" frames="100" code="A3" contact="dvanatta" kfactor="0.75"/>
+  <fah_proj number="11051" name="p11051" public="n"
+    server="171.64.65.55" atoms="35398" preferred="12" deadline="24"
+    credit="645.0" frames="100" code="A3" contact="dvanatta" kfactor="0.75"/>
 
   <!-- Projects 11100 to 11199 -->
   <fah_proj number="11101" name="Fs_96" public="y"

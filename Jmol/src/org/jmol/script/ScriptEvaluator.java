@@ -2131,6 +2131,7 @@ public class ScriptEvaluator {
       return new BitSet();
     }
     defineSets();
+    setName = setName.toLowerCase();
     Object value = definedAtomSets.get(setName);
     boolean isDynamic = false;
     if (value == null) {
@@ -9771,14 +9772,16 @@ public class ScriptEvaluator {
     Object[] data = new Object[] { axisID, Integer.valueOf(index),
         Integer.valueOf(modelIndex) };
     return (getShapeProperty(JmolConstants.SHAPE_DRAW, "getCenter", data)
-        || getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "getCenter", data) ? (Point3f) data[2]
+        || getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "getCenter", data)
+        || getShapeProperty(JmolConstants.SHAPE_MO, "getCenter", data) ? (Point3f) data[2]
         : null);
   }
 
   private Point3f[] getObjectBoundingBox(String id) {
     Object[] data = new Object[] { id, null, null };
     return (getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "getBoundingBox",
-        data) ? (Point3f[]) data[2] : null);
+        data) || getShapeProperty(JmolConstants.SHAPE_MO, "getBoundingBox",
+            data) ? (Point3f[]) data[2] : null);
   }
 
   private Vector3f getDrawObjectAxis(String axisID, int index) {

@@ -2292,14 +2292,14 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
     // nucleic, dna, rna, purine, pyrimidine are hard-wired
     //
-    "@c nucleic & ([C] or within(group,_a="+ATOMID_N4+"))",
-    "@g nucleic & ([G] or within(group,_a="+ATOMID_N2+"))",
+    "@c nucleic & ([C] or [DC] or within(group,_a="+ATOMID_N4+"))",
+    "@g nucleic & ([G] or [DG] or within(group,_a="+ATOMID_N2+"))",
     "@cg c,g",
-    "@a nucleic & ([A] or within(group,_a="+ATOMID_N6+"))",
-    "@t nucleic & ([T] or within(group,_a="+ATOMID_C5M+" | _a="+ATOMID_C7+"))",
+    "@a nucleic & ([A] or [DA] or within(group,_a="+ATOMID_N6+"))",
+    "@t nucleic & ([T] or [DT] or within(group,_a="+ATOMID_C5M+" | _a="+ATOMID_C7+"))",
     "@at a,t",
-    "@i nucleic & ([I] or within(group,_a="+ATOMID_O6+") & !g)",
-    "@u nucleic & ([U] or within(group,_a="+ATOMID_O4+") & !t)",
+    "@i nucleic & ([I] or [DI] or within(group,_a="+ATOMID_O6+") & !g)",
+    "@u nucleic & ([U] or [DU] or within(group,_a="+ATOMID_O4+") & !t)",
     "@tu nucleic & within(group,_a="+ATOMID_S4+")",
 
     //

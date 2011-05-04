@@ -219,9 +219,17 @@ public class AminoMonomer extends AlphaMonomer {
     AminoMonomer prev = (AminoMonomer) bioPolymer.monomers[monomerIndex - 1];
     if (jmolHPoint) {
       // Jmol: based on trigonal planar C-NH-Ca
+      /* prior to Jmol 12.1.45 was not bisecting correctly 
       vNH.sub(nitrogenPoint, getLeadAtom());
       vNH.add(nitrogenPoint);
       vNH.sub(prev.getCarbonylCarbonAtom());
+      */
+      vNH.sub(nitrogenPoint, getLeadAtom());
+      vNH.normalize();
+      Vector3f v = new Vector3f();
+      v.sub(nitrogenPoint, prev.getCarbonylCarbonAtom());
+      v.normalize();
+      vNH.add(v);
     } else {
       // Rasmol def -- just use C=O vector, so this does not account for cis-amino acids
       // but I guess if those are just proline...

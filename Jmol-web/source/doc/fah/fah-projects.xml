@@ -9398,8 +9398,8 @@
     server="171.64.65.81" atoms="576" preferred="13" deadline="19"
     credit="194" frames="100" code="A4" contact="kyleb"/>
   <fah_proj number="10430" name="p10430" public="y"
-    server="171.64.65.81" atoms="576" preferred="13" deadline="19"
-    credit="10" frames="100" code="A4" contact="kyleb"/>
+    server="171.64.65.92" atoms="576" preferred="13" deadline="19"
+    credit="25" frames="100" code="A4" contact="kyleb"/>
   <fah_proj number="10432" name="p10432" public="y"
     server="171.64.65.80" atoms="0" preferred="5" deadline="10"
     credit="425" frames="100" code="A4" contact="kyleb" kfactor="1.13"/>
@@ -9417,7 +9417,7 @@
     credit="311.0" frames="100" code="A4" contact="kyleb" kfactor="0.69"/>
   <fah_proj number="10439" name="p10439" public="n"
     server="171.64.65.92" atoms="576" preferred="8" deadline="12"
-    credit="311.0" frames="100" code="A4" contact="kyleb" kfactor="0.69"/>
+    credit="21.0" frames="100" code="A4" contact="kyleb" kfactor="0.69"/>
 
   <!-- Projects 10500 to 10599 -->
   <fah_proj number="10501" name="p10501" public="y"

@@ -9373,9 +9373,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void undoAction(boolean isSave, int taintedAtom, int type) {
     int modelIndex = (taintedAtom >= 0 ? modelSet.atoms[taintedAtom].modelIndex 
         : modelSet.getModelCount() - 1);
-    System.out.println(isSave + " " + type  + " undoAction " + modelSet.getModels()[modelIndex].isModelkit());
     if (!modelSet.getModels()[modelIndex].isModelkit())
       return;
+    //System.out.println(isSave + " " + type  + " undoAction " + modelSet.getModels()[modelIndex].isModelkit());
     if (!isSave) {
       stopMinimization();
       String s;

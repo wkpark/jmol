@@ -393,32 +393,32 @@ abstract class TransformManager {
     matrixRotate.rotZ(angleRadians);
   }
 
-  private void applyRotation(Matrix3f mNew, boolean isInternal, BitSet bsAtoms) {
+  private void applyRotation(Matrix3f mNew, boolean isInternal, BitSet bsAtoms, Vector3f translation) {
     if (bsAtoms == null) {
       matrixRotate.mul(mNew, matrixRotate);
       return;
     }
     viewer.rotateAtoms(mNew, matrixRotate, rotateMolecule,
         internalRotationCenter, isInternal, bsAtoms);
-    if (internalTranslation != null) {
-      viewer.setAtomCoordRelative(internalTranslation, bsAtoms);
-      internalRotationCenter.add(internalTranslation);
+    if (translation != null) {
+      viewer.setAtomCoordRelative(translation, bsAtoms);
+      internalRotationCenter.add(translation);
     }
   }
 
   synchronized void rotateXRadians(float angleRadians, BitSet bsAtoms) {
     matrixTemp3.rotX(angleRadians);
-    applyRotation(matrixTemp3, false, bsAtoms);
+    applyRotation(matrixTemp3, false, bsAtoms, null);
   }
 
   synchronized void rotateYRadians(float angleRadians, BitSet bsAtoms) {
     matrixTemp3.rotY(angleRadians);
-    applyRotation(matrixTemp3, false, bsAtoms);
+    applyRotation(matrixTemp3, false, bsAtoms, null);
   }
 
   synchronized void rotateZRadians(float angleRadians) {
     matrixTemp3.rotZ(angleRadians);
-    applyRotation(matrixTemp3, false, null);
+    applyRotation(matrixTemp3, false, null, null);
   }
 
   protected void rotateAxisAngle(Vector3f rotAxis, float radians) {
@@ -429,7 +429,7 @@ abstract class TransformManager {
   synchronized void rotateAxisAngle(AxisAngle4f axisAngle, BitSet bsAtoms) {
     //matrixTemp3.setIdentity();
     matrixTemp3.set(axisAngle);
-    applyRotation(matrixTemp3, false, bsAtoms);
+    applyRotation(matrixTemp3, false, bsAtoms, null);
   }
 
   /*
@@ -553,7 +553,7 @@ abstract class TransformManager {
     // NOW apply that rotation  
 
     matrixTemp3.set(axisangleT);
-    applyRotation(matrixTemp3, true, bsAtoms);
+    applyRotation(matrixTemp3, true, bsAtoms, internalTranslation);
     if (bsAtoms == null)
       getNewFixedRotationCenter();
   }

@@ -29,6 +29,7 @@ package org.jmol.api;
 import org.jmol.util.Elements;
 
 import java.util.BitSet;
+import java.util.List;
 
 
 /**
@@ -58,36 +59,26 @@ public class JmolMolecule {
   /**
    * Creates an array of JmolMolecules from a set of atoms in the form of simple
    * JmolNodes. Allows for appending onto an already established set of
-   * molecules.
+   * branches (from BioPolymer).
    * @param atoms
    *          set of atoms to check
    * @param bsModelAtoms
    *          per-model atom list, or null
-   * @param molecules
-   *          previously made set of molecules, or null
-   * @param moleculeCount TODO
-   * @param bsExclude
-   *          set of atoms to exclude, or null
-   * @param mergeBaseCount 
+   * @param biobranches 
+   *          pre-defined connections, like bonds but not to be followed internally
    * @return an array of JmolMolecules
    */
   public final static JmolMolecule[] getMolecules(JmolNode[] atoms,
                                                   BitSet[] bsModelAtoms,
-                                                  JmolMolecule[] molecules,
-                                                  int moleculeCount, BitSet bsExclude, 
-                                                  int mergeBaseCount) {
+                                                  List<BitSet> biobranches) {
     BitSet bsToTest = null;
     BitSet bsBranch = new BitSet();
     int thisModelIndex = -1;
     int indexInModel = 0;
-    if (molecules == null)
-      molecules = new JmolMolecule[4];
-    if (bsModelAtoms == null) {
-      bsToTest = new BitSet();
-      bsToTest.set(0, atoms.length);
-    }
-    if (bsExclude == null)
-      bsExclude = new BitSet();
+    int moleculeCount = 0;
+    JmolMolecule[] molecules = new JmolMolecule[4];
+    BitSet bsExclude = new BitSet();
+    
     for (int i = 0; i < atoms.length; i++)
       if (!bsExclude.get(i) && !bsBranch.get(i)) {
         if (atoms[i].isDeleted()) {
@@ -98,30 +89,15 @@ public class JmolMolecule {
         if (modelIndex != thisModelIndex) {
           thisModelIndex = modelIndex;
           indexInModel = 0;
-          if (bsModelAtoms != null)
-            bsToTest = bsModelAtoms[modelIndex];
+          bsToTest = bsModelAtoms[modelIndex];
         }
-        bsBranch = getBranchBitSet(atoms, bsToTest, i, -1, true, true);
+        bsBranch = getBranchBitSet(atoms, i, bsToTest, biobranches, -1, true, true);
         if (bsBranch.nextSetBit(0) >= 0) {
-          if (mergeBaseCount == 0 || !intersect(molecules, bsBranch, mergeBaseCount))
           molecules = addMolecule(molecules, moleculeCount++, atoms, i, bsBranch,
               modelIndex, indexInModel++, bsExclude);
         }
       }
     return allocateArray(molecules, moleculeCount);
-  }
-  
-  private static boolean intersect(JmolMolecule[] molecules, BitSet bsBranch,
-                                   int mergeBaseCount) {
-    JmolMolecule m;
-    for (int i = mergeBaseCount; --i >= 0;)
-      if ((m = molecules[i]).atomList.intersects(bsBranch)) {
-        m.atomList.or(bsBranch);
-        m.mf = null;
-        m.firstAtomIndex = m.atomList.nextSetBit(0);
-        return true;
-      }
-    return false;
   }
 
   /**
@@ -131,29 +107,33 @@ public class JmolMolecule {
    * deliver the set of atoms constituting this branch.
    * 
    * @param atoms
-   * @param bsToTest
-   *          some subset of those atoms
    * @param atomIndex
-   *          the first atom of the branch
+   *        the first atom of the branch
+   * @param bsToTest
+   *        some subset of those atoms
+   * @param biobranches
+   *        pre-determined groups of connected atoms
    * @param atomIndexNot
-   *          the "root" atom stopping branch development; often a ring atom; if
-   *          -1, then this method will return all atoms in a connected set of
-   *          atoms.
+   *        the "root" atom stopping branch development; often a ring atom; if
+   *        -1, then this method will return all atoms in a connected set of
+   *        atoms.
    * @param allowCyclic
-   *          allow
-   * @param allowBioResidue TODO
+   *        allow
+   * @param allowBioResidue
+   *        TODO
    * @return a bitset of atoms along this branch
    */
-  public static BitSet getBranchBitSet(JmolNode[] atoms, BitSet bsToTest,
-                                       int atomIndex, int atomIndexNot,
-                                       boolean allowCyclic, boolean allowBioResidue) {
+  public static BitSet getBranchBitSet(JmolNode[] atoms, int atomIndex,
+                                       BitSet bsToTest, List<BitSet> biobranches,
+                                       int atomIndexNot, boolean allowCyclic,
+                                       boolean allowBioResidue) {
     BitSet bs = new BitSet(atoms.length);
     if (atomIndex < 0)
       return bs;
     if (atomIndexNot >= 0)
       bsToTest.clear(atomIndexNot);
-    return (getCovalentlyConnectedBitSet(atoms[atomIndex], bsToTest,
-        allowCyclic, allowBioResidue, bs) ? bs : new BitSet());
+    return (getCovalentlyConnectedBitSet(atoms, atoms[atomIndex],
+        bsToTest, allowCyclic, allowBioResidue, biobranches, bs) ? bs : new BitSet());
   }
 
   public final static JmolMolecule[] addMolecule(JmolMolecule[] molecules, int iMolecule,
@@ -247,25 +227,48 @@ public class JmolMolecule {
     atomCount = count;
   }
 
-  private static boolean getCovalentlyConnectedBitSet(JmolNode atom,
+  private static boolean getCovalentlyConnectedBitSet(JmolNode[] atoms, 
+                                                      JmolNode atom,
                                                       BitSet bsToTest,
                                                       boolean allowCyclic,
-                                                      boolean allowBioResidue, BitSet bsResult) {
+                                                      boolean allowBioResidue,
+                                                      List<BitSet> biobranches,
+                                                      BitSet bsResult) {
     int atomIndex = atom.getIndex();
     if (!bsToTest.get(atomIndex))
       return allowCyclic;
     if (!allowBioResidue && atom.getGroupType().length() > 0)
       return allowCyclic;
     bsToTest.clear(atomIndex);
+    if (biobranches != null && !bsResult.get(atomIndex)) {
+      for (int i = biobranches.size(); --i >= 0;) {
+        BitSet b = biobranches.get(i);
+        if (b.get(atomIndex)) {
+          bsResult.or(b); // prevent iteration to same set 
+          bsToTest.andNot(b);
+          for (int j = b.nextSetBit(0); j >= 0; j = b.nextSetBit(j + 1)) {
+            JmolNode atom1 = atoms[j];  
+            // allow just this atom for now
+            bsToTest.set(j);
+            getCovalentlyConnectedBitSet(atoms, atom1, bsToTest, allowCyclic, allowBioResidue, biobranches, bsResult);
+            bsToTest.clear(j);
+          }          
+          break;
+        }
+      }      
+    }
     bsResult.set(atomIndex);
     JmolEdge[] bonds = atom.getEdges();
     if (bonds == null)
       return true;
+
+    // now do bonds
+    
     for (int i = bonds.length; --i >= 0;) {
       JmolEdge bond = bonds[i];
       if (bond.isCovalent()
-          && !getCovalentlyConnectedBitSet(bond.getOtherAtom(atom), bsToTest,
-              allowCyclic, allowBioResidue, bsResult))
+          && !getCovalentlyConnectedBitSet(atoms, bond.getOtherAtom(atom), bsToTest,
+              allowCyclic, allowBioResidue, biobranches, bsResult))
         return false;
     }
     return true;

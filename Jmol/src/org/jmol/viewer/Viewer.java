@@ -3101,8 +3101,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (atomIndex < 0 || atomIndex >= getAtomCount())
       return new BitSet();
     return JmolMolecule.getBranchBitSet(modelSet.atoms,
-        getModelUndeletedAtomsBitSet(modelSet.atoms[atomIndex].modelIndex),
-        atomIndex, atomIndexNot, true, true);
+        atomIndex,
+        getModelUndeletedAtomsBitSet(modelSet.atoms[atomIndex].modelIndex), null, atomIndexNot, true, true);
   }
 
   public int getAtomIndexFromAtomNumber(int atomNumber) {
@@ -9484,8 +9484,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void moveAtomWithHydrogens(int atomIndex, int deltaX, int deltaY,
                              BitSet bsAtoms) {
     stopMinimization();
-    Atom atom = modelSet.atoms[atomIndex];
     if (bsAtoms == null) {
+      Atom atom = modelSet.atoms[atomIndex];
       bsAtoms = BitSetUtil.setBit(atomIndex);
       Bond[] bonds = atom.getBonds();
       if (bonds != null)

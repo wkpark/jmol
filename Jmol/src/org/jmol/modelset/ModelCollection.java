@@ -1584,14 +1584,13 @@ abstract public class ModelCollection extends BondCollection {
       JmolMolecule m = molecules[i];
       bsTemp.and(m.atomList);
       if (bsTemp.length() > 0) {
-        String mf = m.getMolecularFormula(false); // sets atomCount and nElements
         Map<String, Object> info = new Hashtable<String, Object>();
+        info.put("mf", m.getMolecularFormula(false)); // sets atomCount and nElements
         info.put("number", Integer.valueOf(m.moleculeIndex + 1)); //for now
         info.put("modelNumber", getModelNumberDotted(m.modelIndex));
         info.put("numberInModel", Integer.valueOf(m.indexInModel + 1));
         info.put("nAtoms", Integer.valueOf(m.atomCount));
         info.put("nElements", Integer.valueOf(m.nElements));
-        info.put("mf", mf);
         V.add(info);
       }
     }
@@ -1713,7 +1712,7 @@ abstract public class ModelCollection extends BondCollection {
       for (int i = 0; i < bonds.length; i++) {
         Atom a = bonds[i].getOtherAtom(thisAtom);
         if (invAtoms.get(a.index)) {
-            bsAtoms.or(JmolMolecule.getBranchBitSet(atoms, bsModel, a.index, iAtom, true, true));
+            bsAtoms.or(JmolMolecule.getBranchBitSet(atoms, a.index, bsModel, null, iAtom, true, true));
         } else {
           vNot.add(a);
         }
@@ -1819,31 +1818,31 @@ abstract public class ModelCollection extends BondCollection {
     if (molecules == null)
       molecules = new JmolMolecule[4];
     moleculeCount = 0;
-    BitSet bsExclude = new BitSet(atomCount);
     BitSet bsBranch;
     Model m = null;
     BitSet[] bsModelAtoms = new BitSet[modelCount];
+    List<BitSet> biobranches = null;
     for (int i = 0; i < modelCount; i++) {
       // TODO: Trajetories?
       bsModelAtoms[i] = viewer.getModelUndeletedAtomsBitSet(i);
       m = models[i];
       m.moleculeCount = 0;
-      int count = 0;
       int bpt = m.getBioPolymerCount();
       // scan through biopolymers quickly -- 
       for (int j = 0; j < bpt; j++) {
         bsBranch = new BitSet();
         m.getBioPolymer(j).getRange(bsBranch);
         int iAtom = bsBranch.nextSetBit(0);
-        if (iAtom >= 0)
-          molecules = JmolMolecule.addMolecule(molecules, moleculeCount++, atoms,
-              iAtom, bsBranch, m.modelIndex, count++, bsExclude);
+        if (iAtom >= 0) {
+          if (biobranches == null)
+            biobranches = new ArrayList<BitSet>();
+          biobranches.add(bsBranch);
+        }
       }
     }
     // problem, as with 1gzx, is that this does not include non-protein cofactors that are 
-    // covalently bonded. So we indicate a "mergeMoleculeCount" in JmolMolecule.getMolecules
-    molecules = JmolMolecule.getMolecules(atoms, bsModelAtoms, molecules,
-        moleculeCount, bsExclude, moleculeCount);
+    // covalently bonded. So we indicate a set of "biobranches" in JmolMolecule.getMolecules
+    molecules = JmolMolecule.getMolecules(atoms, bsModelAtoms, biobranches);
     moleculeCount = molecules.length;
     for (int i = moleculeCount; --i >= 0;) {
       m = models[molecules[i].modelIndex];

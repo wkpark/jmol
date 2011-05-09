@@ -208,22 +208,23 @@ public class SmilesGenerator {
 
   /**
    * 
-   * creates a valid SMILES string from a model.
-   * TODO: stereochemistry other than square planar and tetrahedral
+   * creates a valid SMILES string from a model. TODO: stereochemistry other
+   * than square planar and tetrahedral
    * 
    * @param atom
    * @param bs
-   * @param allowConnectionsToOutsideWorld 
-   * @return        SMILES
+   * @param allowConnectionsToOutsideWorld
+   * @return SMILES
    * @throws InvalidSmilesException
    */
-  private String getSmilesComponent(JmolNode atom, BitSet bs, boolean allowConnectionsToOutsideWorld)
+  private String getSmilesComponent(JmolNode atom, BitSet bs,
+                                    boolean allowConnectionsToOutsideWorld)
       throws InvalidSmilesException {
 
     if (atom.getElementNumber() == 1 && atom.getEdges().length > 0)
       atom = atoms[atom.getBondedAtomIndex(0)]; // don't start with H
-    bsSelected = JmolMolecule.getBranchBitSet(atoms, (BitSet) bs.clone(), atom
-        .getIndex(), -1, true, false);
+    bsSelected = JmolMolecule.getBranchBitSet(atoms, atom.getIndex(),
+        (BitSet) bs.clone(), null, -1, true, false);
     bs.andNot(bsSelected);
     bsIncludingH = (BitSet) bsSelected.clone();
     for (int j = bsSelected.nextSetBit(0); j >= 0; j = bsSelected
@@ -248,11 +249,11 @@ public class SmilesGenerator {
     }
     bsToDo = (BitSet) bsSelected.clone();
     StringBuffer sb = new StringBuffer();
-    
-    for (int i = bsToDo.nextSetBit(0); i >= 0 ; i = bsToDo.nextSetBit(i + 1))
+
+    for (int i = bsToDo.nextSetBit(0); i >= 0; i = bsToDo.nextSetBit(i + 1))
       if (atoms[i].getCovalentBondCount() > 4) {
         getSmiles(sb, atoms[i], allowConnectionsToOutsideWorld, false);
-        atom = null;       
+        atom = null;
       }
     if (atom != null)
       while ((atom = getSmiles(sb, atom, allowConnectionsToOutsideWorld, true)) != null) {

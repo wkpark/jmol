@@ -68,12 +68,14 @@ public class JmolMolecule {
    * @param moleculeCount TODO
    * @param bsExclude
    *          set of atoms to exclude, or null
+   * @param mergeBaseCount 
    * @return an array of JmolMolecules
    */
   public final static JmolMolecule[] getMolecules(JmolNode[] atoms,
                                                   BitSet[] bsModelAtoms,
                                                   JmolMolecule[] molecules,
-                                                  int moleculeCount, BitSet bsExclude) {
+                                                  int moleculeCount, BitSet bsExclude, 
+                                                  int mergeBaseCount) {
     BitSet bsToTest = null;
     BitSet bsBranch = new BitSet();
     int thisModelIndex = -1;
@@ -100,13 +102,28 @@ public class JmolMolecule {
             bsToTest = bsModelAtoms[modelIndex];
         }
         bsBranch = getBranchBitSet(atoms, bsToTest, i, -1, true, true);
-        if (bsBranch.nextSetBit(0) >= 0)
+        if (bsBranch.nextSetBit(0) >= 0) {
+          if (mergeBaseCount == 0 || !intersect(molecules, bsBranch, mergeBaseCount))
           molecules = addMolecule(molecules, moleculeCount++, atoms, i, bsBranch,
               modelIndex, indexInModel++, bsExclude);
+        }
       }
     return allocateArray(molecules, moleculeCount);
   }
   
+  private static boolean intersect(JmolMolecule[] molecules, BitSet bsBranch,
+                                   int mergeBaseCount) {
+    JmolMolecule m;
+    for (int i = mergeBaseCount; --i >= 0;)
+      if ((m = molecules[i]).atomList.intersects(bsBranch)) {
+        m.atomList.or(bsBranch);
+        m.mf = null;
+        m.firstAtomIndex = m.atomList.nextSetBit(0);
+        return true;
+      }
+    return false;
+  }
+
   /**
    * 
    * given a set of atoms, a subset of atoms to test, two atoms that start the

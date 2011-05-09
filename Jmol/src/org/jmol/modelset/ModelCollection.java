@@ -1584,13 +1584,14 @@ abstract public class ModelCollection extends BondCollection {
       JmolMolecule m = molecules[i];
       bsTemp.and(m.atomList);
       if (bsTemp.length() > 0) {
+        String mf = m.getMolecularFormula(false); // sets atomCount and nElements
         Map<String, Object> info = new Hashtable<String, Object>();
         info.put("number", Integer.valueOf(m.moleculeIndex + 1)); //for now
         info.put("modelNumber", getModelNumberDotted(m.modelIndex));
         info.put("numberInModel", Integer.valueOf(m.indexInModel + 1));
         info.put("nAtoms", Integer.valueOf(m.atomCount));
         info.put("nElements", Integer.valueOf(m.nElements));
-        info.put("mf", m.getMolecularFormula(false));
+        info.put("mf", mf);
         V.add(info);
       }
     }
@@ -1829,6 +1830,7 @@ abstract public class ModelCollection extends BondCollection {
       m.moleculeCount = 0;
       int count = 0;
       int bpt = m.getBioPolymerCount();
+      // scan through biopolymers quickly -- 
       for (int j = 0; j < bpt; j++) {
         bsBranch = new BitSet();
         m.getBioPolymer(j).getRange(bsBranch);
@@ -1838,8 +1840,10 @@ abstract public class ModelCollection extends BondCollection {
               iAtom, bsBranch, m.modelIndex, count++, bsExclude);
       }
     }
+    // problem, as with 1gzx, is that this does not include non-protein cofactors that are 
+    // covalently bonded. So we indicate a "mergeMoleculeCount" in JmolMolecule.getMolecules
     molecules = JmolMolecule.getMolecules(atoms, bsModelAtoms, molecules,
-        moleculeCount, bsExclude);
+        moleculeCount, bsExclude, moleculeCount);
     moleculeCount = molecules.length;
     for (int i = moleculeCount; --i >= 0;) {
       m = models[molecules[i].modelIndex];

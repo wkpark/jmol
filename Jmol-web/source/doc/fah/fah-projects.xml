@@ -5263,7 +5263,7 @@
     credit="25403" frames="100" code="GC" contact="kasson" kfactor="2.0"/>
   <fah_proj number="2684" name="p2684_SINGLE VESICLE in water" public="y"
     server="171.67.108.22" atoms="1096433" preferred="4" deadline="6"
-    credit="8955" frames="100" code="A5" contact="kasson" kfactor="26.4"/>
+    credit="12790" frames="100" code="A5" contact="kasson" kfactor="26.4"/>
   <fah_proj number="2685" name="p2685_SINGLE VESICLE in water" public="y"
     server="171.67.108.22" atoms="1089419" preferred="4" deadline="6"
     credit="8955" frames="100" code="A5" contact="kasson" kfactor="26.4"/>
@@ -8962,7 +8962,7 @@
   <!-- Projects 7200 to 7299 -->
   <fah_proj number="7200" name="p7200" public="y"
     server="129.64.95.82" atoms="24001" preferred="8" deadline="12"
-    credit="339.0" frames="100" code="A4" contact="pontiggi" kfactor="0.75"/>
+    credit="484" frames="100" code="A4" contact="pontiggi" kfactor="0.75"/>
 
   <!-- Projects 7500 to 7599 -->
   <fah_proj number="7500" name="ndm" public="n"
@@ -10065,10 +10065,10 @@
     credit="124" frames="100" code="A4" contact="dvanatta"/>
   <fah_proj number="11020" name="p11020" public="y"
     server="171.64.65.55" atoms="25192" preferred="8" deadline="12"
-    credit="310" frames="100" code="A3" contact="dvanatta" kfactor="0.75"/>
+    credit="443" frames="100" code="A3" contact="dvanatta" kfactor="0.75"/>
   <fah_proj number="11021" name="p11021" public="y"
     server="171.64.65.55" atoms="29884" preferred="8" deadline="12"
-    credit="336" frames="100" code="A3" contact="dvanatta" kfactor="0.75"/>
+    credit="480" frames="100" code="A3" contact="dvanatta" kfactor="0.75"/>
   <fah_proj number="11040" name="p11040" public="n"
     server="171.64.65.55" atoms="28663" preferred="12" deadline="20"
     credit="521.0" frames="100" code="A3" contact="dvanatta" kfactor="0.75"/>

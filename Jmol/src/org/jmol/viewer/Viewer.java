@@ -4776,6 +4776,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void setPickingMode(String strMode, int pickingMode) {
     if (!haveDisplay)
       return;
+    showSelected = false;
     String option = null;
     if (strMode != null) {
       int pt = strMode.indexOf("_");

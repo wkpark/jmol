@@ -2248,21 +2248,11 @@ abstract public class AtomCollection {
       }
       break;
     case Token.chain:
-      for (i = i0; i >= 0; i = bsInfo.nextSetBit(i+1)) {
-        if (bs.get(i))
-          continue;
+      bsInfo = BitSetUtil.copy((BitSet) specInfo);
+      for (i = bsInfo.nextSetBit(0); i >= 0; i = bsInfo.nextSetBit(i + 1)) {
         Chain chain = atoms[i].getChain();
-        bs.set(i);
-        for (int j = i; --j >= 0;)
-          if (atoms[j].getChain() == chain)
-            bs.set(j);
-          else
-            break;
-        for (; ++i < atomCount;)
-          if (atoms[i].getChain() == chain)
-            bs.set(i);
-          else
-            break;
+        chain.setAtomBitSet(bs);
+        bsInfo.andNot(bs);
       }
       break;
     case Token.polymer:
@@ -2470,17 +2460,20 @@ abstract public class AtomCollection {
     return (!isEmpty || returnEmpty ? bs : null);
   }
 
-  protected BitSet getChainBits(char chain) {
+  protected BitSet getChainBits(char chainId) {
     boolean caseSensitive = viewer.getChainCaseSensitive();
     if (!caseSensitive)
-      chain = Character.toUpperCase(chain);
+      chainId = Character.toUpperCase(chainId);
     BitSet bs = new BitSet();
-    for (int i = atomCount; --i >= 0;) {
-      char ch = atoms[i].getChainID();
-      if (!caseSensitive)
-        ch = Character.toUpperCase(ch);
-      if (chain == ch)
-        bs.set(i);
+    BitSet bsDone = new BitSet(atomCount);
+    for (int i = bsDone.nextClearBit(0); i < atomCount; i = bsDone.nextClearBit(i)) {
+      Chain chain = atoms[i].getChain();
+      if (chainId == (caseSensitive ? chain.chainID : Character.toUpperCase(chain.chainID))) {
+        chain.setAtomBitSet(bs);
+        bsDone.or(bs);
+      } else {
+        chain.setAtomBitSet(bsDone);
+      }
     }
     return bs;
   }

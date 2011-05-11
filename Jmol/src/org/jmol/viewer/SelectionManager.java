@@ -292,7 +292,7 @@ class SelectionManager {
     StateManager.appendCmd(commands, "set hideNotSelected " + hideNotSelected);
     commands.append(viewer.getShapeProperty(JmolConstants.SHAPE_STICKS,
         "selectionState"));
-    if (viewer.getSelectionHaloEnabled())
+    if (viewer.getSelectionHaloEnabled(false))
       StateManager.appendCmd(commands, "SelectionHalos ON");
     if (sfunc != null)
       commands.append("}\n\n");
@@ -356,9 +356,8 @@ class SelectionManager {
   }
 
   void setMotionFixedAtoms(BitSet bs) {
-    if (bs == null)
-      bsFixed.clear();
-    else
+    bsFixed.clear();
+    if (bs != null)
       bsFixed.or(bs);
   }
 

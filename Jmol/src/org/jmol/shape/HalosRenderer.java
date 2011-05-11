@@ -37,7 +37,7 @@ public class HalosRenderer extends ShapeRenderer {
   @Override
   protected void render() {
     Halos halos = (Halos) shape;
-    boolean selectDisplayTrue = viewer.getSelectionHaloEnabled();
+    boolean selectDisplayTrue = viewer.getSelectionHaloEnabled(true);
     boolean showHiddenSelections = (selectDisplayTrue && viewer
         .getShowHiddenSelectionHalos());
     if (halos.mads == null && halos.bsHighlight == null && !selectDisplayTrue)

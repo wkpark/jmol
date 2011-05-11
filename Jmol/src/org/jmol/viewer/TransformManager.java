@@ -297,12 +297,6 @@ abstract class TransformManager {
   final static int MAXIMUM_ZOOM_PERCENTAGE = 200000;
   final static int MAXIMUM_ZOOM_PERSPECTIVE_DEPTH = 10000;
 
-  private boolean rotateMolecule;
-
-  void setRotateMolecule(boolean TF) {
-    rotateMolecule = TF;
-  }
-
   private void setFixedRotationCenter(Point3f center) {
     if (center == null)
       return;
@@ -398,7 +392,7 @@ abstract class TransformManager {
       matrixRotate.mul(mNew, matrixRotate);
       return;
     }
-    viewer.rotateAtoms(mNew, matrixRotate, rotateMolecule,
+    viewer.rotateAtoms(mNew, matrixRotate,
         internalRotationCenter, isInternal, bsAtoms);
     if (translation != null) {
       viewer.setAtomCoordRelative(translation, bsAtoms);

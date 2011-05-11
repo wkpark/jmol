@@ -925,20 +925,26 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         + (x == Integer.MAX_VALUE ? "" : " " + x + " " + y) : "");
   }
 
-  void rotateMolecule(float deltaX, float deltaY, BitSet bsSelected) {
+  void rotateSelected(float deltaX, float deltaY, BitSet bsSelected) {
     if (isJmolDataFrame())
       return;
     if (mouseEnabled) {
-      if (bsSelected == null)
-        bsSelected = getSelectionSet(false);
-      transformManager.setRotateMolecule(!global.allowMoveAtoms);
-      transformManager.rotateXYBy(deltaX, deltaY, bsSelected);
-      transformManager.setRotateMolecule(false);
+      transformManager.rotateXYBy(deltaX, deltaY, setMovableBitSet(bsSelected));
       refreshMeasures(true);
     }
     //TODO: note that sync may not work with set allowRotateSelectedAtoms
     refresh(2, statusManager.syncingMouse ? "Mouse: rotateMolecule " + deltaX
         + " " + deltaY : "");
+  }
+
+  private BitSet setMovableBitSet(BitSet bsSelected) {
+    if (bsSelected == null)
+      bsSelected = getSelectionSet(false);
+    bsSelected = BitSetUtil.copy(bsSelected);
+    BitSetUtil.andNot(bsSelected,getMotionFixedAtoms());
+    if (!global.allowMoveAtoms)
+      bsSelected = modelSet.getMoleculeBitSet(bsSelected);
+    return bsSelected;
   }
 
   public void translateXYBy(int xDelta, int yDelta) {
@@ -2557,7 +2563,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         }
         actionStates.clear();
         actionStatesRedo.clear();
-        lastUndoRedo = 0;
       }
       System.gc();
     } else {
@@ -4204,9 +4209,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private boolean checkUndo(String str) {
     if (str.equalsIgnoreCase("redo"))
-      undoAction(false, 0, -1);
+      undoAction(0, ACTION_REDO, true);
     else if (str.equalsIgnoreCase("undo"))
-      undoAction(false, 0, 1);
+      undoAction(0, ACTION_UNDO, true);
     else
       return false;
     return true;
@@ -5458,7 +5463,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (key.equalsIgnoreCase("frank"))
       return getShowFrank();
     if (key.equalsIgnoreCase("showSelections"))
-      return getSelectionHaloEnabled();
+      return modelSet.getSelectionHaloEnabled();
     if (global.htUserVariables.containsKey(key)) {
       ScriptVariable t = global.getUserVariable(key);
       if (t.tok == Token.on)
@@ -6106,6 +6111,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case Token.dragselected:
       // 11.7.24
       global.dragSelected = value;
+      showSelected = false;
       break;
     case Token.showkeystrokes:
       global.showKeyStrokes = value;
@@ -6230,6 +6236,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       global.allowMoveAtoms = value;
       global.allowRotateSelected = value;
       global.dragSelected = value;
+      showSelected = false;
       break;
     case Token.showscript:
       // /11.1.13///
@@ -6787,7 +6794,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   @Override
   public void setSelectionHalos(boolean TF) {
     // display panel can hit this without a frame, apparently
-    if (modelSet == null || TF == getSelectionHaloEnabled())
+    if (modelSet == null || TF == modelSet.getSelectionHaloEnabled())
       return;
     global.setParameterValue("selectionHalos", TF);
     loadShape(JmolConstants.SHAPE_HALOS);
@@ -6795,8 +6802,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.setSelectionHaloEnabled(TF);
   }
 
-  public boolean getSelectionHaloEnabled() {
-    return modelSet.getSelectionHaloEnabled() || showSelected;
+  public boolean getSelectionHaloEnabled(boolean isRenderer) {
+    boolean flag = modelSet.getSelectionHaloEnabled() || isRenderer && showSelected;
+    if (isRenderer)
+      showSelected = false;
+    return flag;
   }
 
   public boolean getBondSelectionModeOr() {
@@ -7897,9 +7907,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       rotateBondIndex = -1;
     if (isJmolDataFrame())
       return;
-    if (bsSelected == null)
-      bsSelected = getSelectionSet(false);
-    bsSelected.andNot(selectionManager.getMotionFixedAtoms());
     if (deltaX == Integer.MIN_VALUE) {
       showSelected = true;
       loadShape(JmolConstants.SHAPE_HALOS);
@@ -7907,6 +7914,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     }
     if (deltaX == Integer.MAX_VALUE) {
+      if (!showSelected)
+        return;
       showSelected = false;
       refresh(6, "moveSelected");
       return;
@@ -7914,24 +7923,26 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (movingSelected)
       return;
     movingSelected = true;
+    stopMinimization();
     // note this does not sync with applets
     if (rotateBondIndex >= 0 && x != Integer.MIN_VALUE) {
       actionRotateBond(deltaX, deltaY, x, y);
-    } else if (isTranslation) {
-      Point3f ptCenter = getAtomSetCenter(bsSelected);
-      Point3i ptScreen = transformPoint(ptCenter);
-      Point3f ptScreenNew = new Point3f(ptScreen.x + deltaX + 0.5f, ptScreen.y
-          + deltaY + 0.5f, ptScreen.z);
-      Point3f ptNew = new Point3f();
-      transformManager.finalizeTransformParameters();
-      unTransformPoint(ptScreenNew, ptNew);
-      // script("draw ID 'pt" + Math.random() + "' " + Escape.escape(ptNew));
-      ptNew.sub(ptCenter);
-      modelSet.setAtomCoordRelative(ptNew, bsSelected);
     } else {
-      transformManager.setRotateMolecule(true);
-      transformManager.rotateXYBy(deltaX, deltaY, bsSelected);
-      transformManager.setRotateMolecule(false);
+      bsSelected = setMovableBitSet(bsSelected);
+      if (isTranslation) {
+        Point3f ptCenter = getAtomSetCenter(bsSelected);
+        Point3i ptScreen = transformPoint(ptCenter);
+        Point3f ptScreenNew = new Point3f(ptScreen.x + deltaX + 0.5f,
+            ptScreen.y + deltaY + 0.5f, ptScreen.z);
+        Point3f ptNew = new Point3f();
+        transformManager.finalizeTransformParameters();
+        unTransformPoint(ptScreenNew, ptNew);
+        // script("draw ID 'pt" + Math.random() + "' " + Escape.escape(ptNew));
+        ptNew.sub(ptCenter);
+        modelSet.setAtomCoordRelative(ptNew, bsSelected);
+      } else {
+        transformManager.rotateXYBy(deltaX, deltaY, bsSelected);
+      }
     }
     refresh(2, ""); // should be syncing here
     refreshMeasures(true);
@@ -7993,7 +8004,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       Bond b = modelSet.getBonds()[rotateBondIndex];
       atom1 = b.getAtom1();
       atom2 = b.getAtom2();
-      undoAction(true, atom1.index, AtomCollection.TAINT_COORD);
+      undoAction(atom1.index, AtomCollection.TAINT_COORD, true);
       Point3f pt = new Point3f(x, y, (atom1.screenZ + atom2.screenZ) / 2);
       transformManager.unTransformPoint(pt, pt);
       if (atom2.getCovalentBondCount() == 1
@@ -8037,10 +8048,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         null, null);
   }
 
-  void rotateAtoms(Matrix3f mNew, Matrix3f matrixRotate, boolean fullMolecule,
+  void rotateAtoms(Matrix3f mNew, Matrix3f matrixRotate,
                    Point3f center, boolean isInternal, BitSet bsAtoms) {
     // from TransformManager exclusively
-    modelSet.rotateAtoms(mNew, matrixRotate, bsAtoms, fullMolecule, center,
+    modelSet.rotateAtoms(mNew, matrixRotate, bsAtoms, center,
         isInternal);
     refreshMeasures(true);
     checkMinimization();
@@ -8493,7 +8504,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       else if (key.equals("translateXYBy"))
         translateXYBy(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]));
       else if (key.equals("rotateMolecule"))
-        rotateMolecule(Parser.parseFloat(tokens[2]), Parser
+        rotateSelected(Parser.parseFloat(tokens[2]), Parser
             .parseFloat(tokens[3]), null);
       break;
     case 5:
@@ -9369,68 +9380,101 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private final static int MAX_ACTION_UNDO = 100;
   private final List<String> actionStates = new ArrayList<String>();
   private final List<String> actionStatesRedo = new ArrayList<String>();
-  private int lastUndoRedo = 0;
+  final static int ACTION_SAVE = -1;
+  final static int ACTION_UNDO = -2;
+  final static int ACTION_REDO = -3;
+  private boolean undoWorking = false;
   
-  void undoAction(boolean isSave, int taintedAtom, int type) {
-    int modelIndex = (taintedAtom >= 0 ? modelSet.atoms[taintedAtom].modelIndex 
+  void undoAction(int taintedAtom, int type, boolean clearRedo) {
+    int modelIndex = (taintedAtom >= 0 ? modelSet.atoms[taintedAtom].modelIndex
         : modelSet.getModelCount() - 1);
-    if (!modelSet.getModels()[modelIndex].isModelkit())
-      return;
-    //System.out.println(isSave + " " + type  + " undoAction " + modelSet.getModels()[modelIndex].isModelkit());
-    if (!isSave) {
+    //System.out.print("undoAction " + type + " " + taintedAtom + " modelkit?"
+    //    + modelSet.getModels()[modelIndex].isModelkit());
+    //System.out.println(" " + type + " size=" + actionStates.size() + " "
+    //    + +actionStatesRedo.size());
+    switch (type) {
+    case ACTION_REDO:
+    case ACTION_UNDO:
+      // from MouseManager
+      // CTRL-Z: type = 1 UNDO
+      // CTRL-Y: type = -1 REDO
       stopMinimization();
-      String s;
-      if (lastUndoRedo != 0 && lastUndoRedo != type) {
-        try {
-        if (type == -1) {
-          actionStates.add(0, actionStatesRedo.remove(0));
-        } else {
-          actionStatesRedo.add(0, actionStates.remove(0));
-        }
-        } catch (Exception e) {
-         System.out.println("oops"); // ignore
-        }
-      }
-      lastUndoRedo = type;
-      if (type == -1) {
-        if (actionStatesRedo.size() == 0)
+      String s = "";
+      List<String> list1;
+      List<String> list2;
+      switch (type) {
+      default:
+      case ACTION_UNDO:
+        list1 = actionStates;
+        list2 = actionStatesRedo;            
+        break;
+      case ACTION_REDO:
+        list1 = actionStatesRedo;
+        list2 = actionStates;
+        if (actionStatesRedo.size() == 1)
           return;
-        s = actionStatesRedo.remove(0);
-        actionStates.add(0, s);
-      } else if (actionStates.size() == 0) {
-        return;
-      } else {
-        s = actionStates.remove(0);
-        actionStatesRedo.add(0, s);
+        break;
       }
-      if (Logger.debugging)
-        log(s);
-      evalStringQuiet(s);
-      return;
-    }
-    lastUndoRedo = 0;
-    actionStatesRedo.clear();
-    BitSet bs;
-    StringBuffer sb = new StringBuffer();
-    if (taintedAtom >= 0) {
-      bs = getModelUndeletedAtomsBitSet(modelIndex);
-      modelSet.taint(bs, (byte) type);
-      sb.append(modelSet.getAtomicPropertyState(-1, null));
-    } else {
-      bs = getModelUndeletedAtomsBitSet(modelIndex);
-      sb.append("zap ");
-      sb.append(Escape.escape(bs)).append(";");
-      DataManager.getInlineData(sb, modelSet.getModelExtract(bs, false, true, "MOL"), true, null);
-      sb.append("set refreshing false;")
-          .append(actionManager.getPickingState()).append(
-              transformManager.getMoveToText(0, false)).append(
-              "set refreshing true;");
+      if (list1.size() == 0 || undoWorking)
+        return;
+      undoWorking = true;
+      list2.add(0, list1.remove(0));
+      s = actionStatesRedo.get(0);
+      if (type == ACTION_UNDO && list2.size() == 1) {
+        // must save current state, coord, etc.
+        // but this destroys actionStatesRedo
+        int[] pt = new int[] {1};
+        type = Parser.parseInt(s, pt);
+        taintedAtom = Parser.parseInt(s, pt);
+        undoAction(taintedAtom, type, false);
+      }
+      //System.out.println("redo type = " + type + " size=" + actionStates.size()
+      //    + " " + +actionStatesRedo.size());
+      if (modelSet.getModels()[modelIndex].isModelkit()
+          || s.indexOf("zap ") < 0) {
+        if (Logger.debugging)
+          log(s);
+        evalStringQuiet(s);
+      } else {
+        // if it's not modelkit mode and we are trying to do a zap, then ignore
+        // and clear all action states.
+        actionStates.clear();
+      }
+      break;
+    default:
+      if (undoWorking && clearRedo)
+        return;
+      undoWorking = true;
+      BitSet bs;
+      StringBuffer sb = new StringBuffer();
+      sb.append("#" + type + " "+ taintedAtom + " " + (new Date()) + "\n");
+      if (taintedAtom >= 0) {
+        bs = getModelUndeletedAtomsBitSet(modelIndex);
+        modelSet.taint(bs, (byte) type);
+        sb.append(modelSet.getAtomicPropertyState(-1, null));
+      } else {
+        bs = getModelUndeletedAtomsBitSet(modelIndex);
+        sb.append("zap ");
+        sb.append(Escape.escape(bs)).append(";");
+        DataManager.getInlineData(sb, modelSet.getModelExtract(bs, false, true,
+            "MOL"), true, null);
+        sb.append("set refreshing false;").append(
+            actionManager.getPickingState()).append(
+            transformManager.getMoveToText(0, false)).append(
+            "set refreshing true;");
 
+      }
+      if (clearRedo) {
+        actionStates.add(0, sb.toString());
+        actionStatesRedo.clear();        
+      } else {
+        actionStatesRedo.add(1, sb.toString());
+      }
+      if (actionStates.size() == MAX_ACTION_UNDO) {
+        actionStates.remove(MAX_ACTION_UNDO - 1);
+      }
     }
-    actionStates.add(0, sb.toString());
-    if (actionStates.size() == MAX_ACTION_UNDO) {
-      actionStates.remove(MAX_ACTION_UNDO - 1);
-    }
+    undoWorking = !clearRedo;
   }
 
   public void assignBond(int bondIndex, char type) {

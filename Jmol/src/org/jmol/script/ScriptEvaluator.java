@@ -13929,7 +13929,7 @@ public class ScriptEvaluator {
     case Token.display:// deprecated
     case Token.selectionhalos:
       msg = "selectionHalos "
-          + (viewer.getSelectionHaloEnabled() ? "ON" : "OFF");
+          + (viewer.getSelectionHaloEnabled(false) ? "ON" : "OFF");
       break;
     case Token.hetero:
       msg = "set selectHetero " + viewer.getRasmolSetting(tok);

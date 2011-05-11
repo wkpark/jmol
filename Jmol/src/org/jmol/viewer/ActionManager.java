@@ -54,162 +54,38 @@ import org.jmol.viewer.binding.JmolBinding;
 
 public class ActionManager {
 
-  private final static String[] actionInfo = new String[] {
-    GT._("center"),
-    GT._("translate"),
-    GT._("rotate"),
-    GT._("rotate Z"),
-    GT._("rotate Z (horizontal motion of mouse) or zoom (vertical motion of mouse)"),
-    GT._("zoom"),
-    GT._("zoom (along right edge of window)"),
-    GT._("translate navigation point (requires {0} and {1})", new String[] {"set NAVIGATIONMODE", "set picking NAVIGATE"}),
-    
-    GT._("spin model (swipe and release button and stop motion simultaneously)"),
-    GT._("click on two points to spin around axis clockwise (requires {0})", "set picking SPIN"),
-    GT._("click on two points to spin around axis counterclockwise (requires {0})", "set picking SPIN"),
-
-    GT._("adjust slab (front plane; requires {0})", "SLAB ON"),
-    GT._("adjust depth (back plane; requires {0})", "SLAB ON"),
-    GT._("move slab/depth window (both planes; requires {0})", "SLAB ON"),
-
-    GT._("pop up the full context menu"),
-    GT._("pop up recent context menu (click on Jmol frank)"),
-    
-    GT._("select an atom (requires {0})", "set pickingStyle EXTENDEDSELECT"),
-    GT._("select NONE (requires {0})", "set pickingStyle EXTENDEDSELECT"),
-    GT._("toggle selection (requires {0})", "set pickingStyle DRAG/EXTENDEDSELECT/RASMOL"),
-    GT._("unselect this group of atoms (requires {0})", "set pickingStyle DRAG/EXTENDEDSELECT"),
-    GT._("add this group of atoms to the set of selected atoms (requires {0})", "set pickingStyle DRAG/EXTENDEDSELECT"),
-    GT._("if all are selected, unselect all, otherwise add this group of atoms to the set of selected atoms (requires {0})", "set pickingStyle DRAG"),    
-
-    GT._("move selected atoms (requires {0})", "set DRAGSELECTED"), 
-    GT._("select and drag atoms (requires {0})", "set DRAGSELECTED"), 
-    GT._("rotate selected atoms (requires {0})", "set DRAGSELECTED"),
-    GT._("rotate branch around bond (requires {0})", "set picking ROTATEBOND"),
-
-    GT._("move atom (requires {0})", "set picking DRAGATOM"),
-    GT._("move atom and minimize molecule (requires {0})", "set picking DRAGMINIMIZE"),
-    GT._("move and minimize molecule (requires {0})", "set picking DRAGMINIMIZEMOLECULE"),
-    GT._("move label (requires {0})", "set picking LABEL"),
-    GT._("move specific DRAW point (requires {0})", "set picking DRAW"),
-    GT._("move whole DRAW object (requires {0})", "set picking DRAW"),
-    
-    GT._("pick an atom"),
-    GT._("pick a DRAW point (for measurements) (requires {0}", "set DRAWPICKING"),
-    GT._("pick a label to toggle it hidden/displayed (requires {0})", "set picking LABEL"),
-    GT._("pick an atom to include it in a measurement (after starting a measurement or after {0})", "set picking DISTANCE/ANGLE/TORSION"),
-    GT._("pick an atom to initiate or conclude a measurement"),
-    GT._("pick an ISOSURFACE point (requires {0}", "set DRAWPICKING"),
-    GT._("pick a point or atom to navigate to (requires {0})", "set NAVIGATIONMODE"),
-
-    GT._("delete atom (requires {0})", "set picking DELETE ATOM"),
-    GT._("delete bond (requires {0})", "set picking DELETE BOND"),
-    GT._("connect atoms (requires {0})", "set picking CONNECT"),
-    GT._("assign/new atom or bond (requires {0})", "set picking assignAtom_??/assignBond_?"),
-
-    GT._("reset (when clicked off the model)"),    
-    GT._("stop motion (requires {0})", "set waitForMoveTo FALSE"),
-    GT._("simulate multi-touch using the mouse)"),
-  };
-
-  private final static String[] actionNames = new String[] {
-    "_center",
-    "_translate",
-    "_rotate",
-    "_rotateZ",
-    "_rotateZorZoom",
-    "_wheelZoom",
-    "_slideZoom",
-    "_navTranslate",
-
-    "_swipe",
-    "_spinDrawObjectCW",
-    "_spinDrawObjectCCW",
-    
-    "_slab",
-    "_depth",
-    "_slabAndDepth",
-    
-    "_popupMenu",
-    "_clickFrank",
-    
-    "_select",
-    "_selectNone",
-    "_selectToggle",
-    "_selectAndNot",
-    "_selectOr",
-    "_selectToggleOr",
-    
-    "_dragSelected",
-    "_selectAndDrag",
-    "_rotateSelected",
-    "_rotateBranch",
-
-    "_dragAtom",
-    "_dragMinimize",
-    "_dragMinimizeMolecule",
-    "_dragLabel",
-    "_dragDrawPoint",
-    "_dragDrawObject",
-
-    "_pickAtom",
-    "_pickPoint",
-    "_pickLabel",
-    "_pickMeasure",
-    "_setMeasure",
-    "_pickIsosurface",
-    "_pickNavigate",
-
-    "_deleteAtom",
-    "_deleteBond",
-    "_pickConnect",
-    "_assignNew",
-
-    "_reset",
-    "_stopMotion",
-    "_multiTouchSimulation",
-  };
-
   public final static int ACTION_center = 0;
   public final static int ACTION_translate = 1;  
   public final static int ACTION_rotate = 2;
   public final static int ACTION_rotateZ = 3;
   public final static int ACTION_rotateZorZoom = 4;
   public final static int ACTION_wheelZoom = 5;
-  public final static int ACTION_slideZoom = 6;
-  
+  public final static int ACTION_slideZoom = 6;  
   public final static int ACTION_navTranslate = 7;
-
   public final static int ACTION_swipe = 8;
   public final static int ACTION_spinDrawObjectCW = 9;
   public final static int ACTION_spinDrawObjectCCW = 10;
-
   public final static int ACTION_slab = 11;
   public final static int ACTION_depth = 12;
   public final static int ACTION_slabAndDepth = 13;
-
   public final static int ACTION_popupMenu = 14;
   public final static int ACTION_clickFrank = 15;
-
   public final static int ACTION_select = 16;
   public final static int ACTION_selectNone = 17;
   public final static int ACTION_selectToggle = 18;  
   public final static int ACTION_selectAndNot = 19;
   public final static int ACTION_selectOr = 20;
   public final static int ACTION_selectToggleExtended = 21;
-    
   public final static int ACTION_dragSelected = 22;
   public final static int ACTION_selectAndDrag = 23;
   public final static int ACTION_rotateSelected = 24;
   public final static int ACTION_rotateBranch = 25;
-  
   public final static int ACTION_dragAtom = 26;
   public final static int ACTION_dragMinimize = 27;
   public final static int ACTION_dragMinimizeMolecule = 28;
   public final static int ACTION_dragLabel = 29;
   public final static int ACTION_dragDrawPoint = 30;
   public final static int ACTION_dragDrawObject = 31;
- 
   public final static int ACTION_pickAtom = 32;
   public final static int ACTION_pickPoint = 33;
   public final static int ACTION_pickLabel = 34;
@@ -217,23 +93,70 @@ public class ActionManager {
   public final static int ACTION_setMeasure = 36;
   public final static int ACTION_pickIsosurface = 37;
   public final static int ACTION_pickNavigate = 38;
-  
   public final static int ACTION_deleteAtom = 39;
   public final static int ACTION_deleteBond = 40;
   public final static int ACTION_connectAtoms = 41;
   public final static int ACTION_assignNew = 42;
-  
   public final static int ACTION_reset = 43;
   public final static int ACTION_stopMotion = 44;
   public final static int ACTION_multiTouchSimulation = 45;
   public final static int ACTION_count = 46;
 
+  private final static String[] actionInfo = new String[ACTION_count];
+  private final static String[] actionNames = new String[ACTION_count];
+
+  static void newAction(int i, String name, String info) {
+    actionInfo[i] = info;
+    actionNames[i] = name;
+  }
   
   static {
-    if (actionNames.length != ACTION_count)
-      Logger.error("ERROR IN ActionManager: actionNames length?");
-    if (actionInfo.length != ACTION_count)
-      Logger.error("ERROR IN ActionManager: actionInfo length?");
+    newAction(ACTION_center,                "_center",               GT._("center"));
+    newAction(ACTION_translate,             "_translate",            GT._("translate"));
+    newAction(ACTION_rotate,                "_rotate",               GT._("rotate"));
+    newAction(ACTION_rotateZ,               "_rotateZ",              GT._("rotate Z"));
+    newAction(ACTION_rotateZorZoom,         "_rotateZorZoom",        GT._("rotate Z (horizontal motion of mouse) or zoom (vertical motion of mouse)"));
+    newAction(ACTION_wheelZoom,             "_wheelZoom",            GT._("zoom"));
+    newAction(ACTION_slideZoom,             "_slideZoom",            GT._("zoom (along right edge of window)"));
+    newAction(ACTION_navTranslate,          "_navTranslate",         GT._("translate navigation point (requires {0} and {1})", new String[] {"set NAVIGATIONMODE", "set picking NAVIGATE"}));
+    newAction(ACTION_swipe,                 "_swipe",                GT._("spin model (swipe and release button and stop motion simultaneously)"));
+    newAction(ACTION_spinDrawObjectCW,      "_spinDrawObjectCW",     GT._("click on two points to spin around axis clockwise (requires {0})", "set picking SPIN"));
+    newAction(ACTION_spinDrawObjectCCW,     "_spinDrawObjectCCW",    GT._("click on two points to spin around axis counterclockwise (requires {0})", "set picking SPIN"));
+    newAction(ACTION_slab,                  "_slab",                 GT._("adjust slab (front plane; requires {0})", "SLAB ON"));
+    newAction(ACTION_depth,                 "_depth",                GT._("adjust depth (back plane; requires {0})", "SLAB ON"));
+    newAction(ACTION_slabAndDepth,          "_slabAndDepth",         GT._("move slab/depth window (both planes; requires {0})", "SLAB ON"));
+    newAction(ACTION_popupMenu,             "_popupMenu",            GT._("pop up the full context menu"));
+    newAction(ACTION_clickFrank,            "_clickFrank",           GT._("pop up recent context menu (click on Jmol frank)"));
+    newAction(ACTION_select,                "_select",               GT._("select an atom (requires {0})", "set pickingStyle EXTENDEDSELECT"));
+    newAction(ACTION_selectNone,            "_selectNone",           GT._("select NONE (requires {0})", "set pickingStyle EXTENDEDSELECT"));
+    newAction(ACTION_selectToggle,          "_selectToggle",         GT._("toggle selection (requires {0})", "set pickingStyle DRAG/EXTENDEDSELECT/RASMOL"));
+    newAction(ACTION_selectAndNot,          "_selectAndNot",         GT._("unselect this group of atoms (requires {0})", "set pickingStyle DRAG/EXTENDEDSELECT"));
+    newAction(ACTION_selectOr,              "_selectOr",             GT._("add this group of atoms to the set of selected atoms (requires {0})", "set pickingStyle DRAG/EXTENDEDSELECT"));
+    newAction(ACTION_selectToggleExtended,  "_selectToggleOr",       GT._("if all are selected, unselect all, otherwise add this group of atoms to the set of selected atoms (requires {0})", "set pickingStyle DRAG"));
+    newAction(ACTION_dragSelected,          "_dragSelected",         GT._("move selected atoms (requires {0})", "set DRAGSELECTED"));
+    newAction(ACTION_selectAndDrag,         "_selectAndDrag",        GT._("select and drag atoms (requires {0})", "set DRAGSELECTED"));
+    newAction(ACTION_rotateSelected,        "_rotateSelected",       GT._("rotate selected atoms (requires {0})", "set DRAGSELECTED"));
+    newAction(ACTION_rotateBranch,          "_rotateBranch",         GT._("rotate branch around bond (requires {0})", "set picking ROTATEBOND"));
+    newAction(ACTION_dragAtom,              "_dragAtom",             GT._("move atom (requires {0})", "set picking DRAGATOM"));
+    newAction(ACTION_dragMinimize,          "_dragMinimize",         GT._("move atom and minimize molecule (requires {0})", "set picking DRAGMINIMIZE"));
+    newAction(ACTION_dragMinimizeMolecule,  "_dragMinimizeMolecule", GT._("move and minimize molecule (requires {0})", "set picking DRAGMINIMIZEMOLECULE"));
+    newAction(ACTION_dragLabel,             "_dragLabel",            GT._("move label (requires {0})", "set picking LABEL"));
+    newAction(ACTION_dragDrawPoint,         "_dragDrawPoint",        GT._("move specific DRAW point (requires {0})", "set picking DRAW"));
+    newAction(ACTION_dragDrawObject,        "_dragDrawObject",       GT._("move whole DRAW object (requires {0})", "set picking DRAW"));
+    newAction(ACTION_pickAtom,              "_pickAtom",             GT._("pick an atom"));
+    newAction(ACTION_pickPoint,             "_pickPoint",            GT._("pick a DRAW point (for measurements) (requires {0}", "set DRAWPICKING"));
+    newAction(ACTION_pickLabel,             "_pickLabel",            GT._("pick a label to toggle it hidden/displayed (requires {0})", "set picking LABEL"));
+    newAction(ACTION_pickMeasure,           "_pickMeasure",          GT._("pick an atom to include it in a measurement (after starting a measurement or after {0})", "set picking DISTANCE/ANGLE/TORSION"));
+    newAction(ACTION_setMeasure,            "_setMeasure",           GT._("pick an atom to initiate or conclude a measurement"));
+    newAction(ACTION_pickIsosurface,        "_pickIsosurface",       GT._("pick an ISOSURFACE point (requires {0}", "set DRAWPICKING"));
+    newAction(ACTION_pickNavigate,          "_pickNavigate",         GT._("pick a point or atom to navigate to (requires {0})", "set NAVIGATIONMODE"));
+    newAction(ACTION_deleteAtom,            "_deleteAtom",           GT._("delete atom (requires {0})", "set picking DELETE ATOM"));
+    newAction(ACTION_deleteBond,            "_deleteBond",           GT._("delete bond (requires {0})", "set picking DELETE BOND"));
+    newAction(ACTION_connectAtoms,          "_pickConnect",          GT._("connect atoms (requires {0})", "set picking CONNECT"));
+    newAction(ACTION_assignNew,             "_assignNew",            GT._("assign/new atom or bond (requires {0})", "set picking assignAtom_??/assignBond_?"));
+    newAction(ACTION_reset,                 "_reset",                GT._("reset (when clicked off the model)"));
+    newAction(ACTION_stopMotion,            "_stopMotion",           GT._("stop motion (requires {0})", "set waitForMoveTo FALSE"));
+    newAction(ACTION_multiTouchSimulation,  "_multiTouchSimulation", GT._("simulate multi-touch using the mouse)"));
   }
 
   public static String getActionName(int i) {
@@ -601,6 +524,7 @@ public class ActionManager {
     viewer.setPickingMode(null, PICKING_IDENTIFY);
     viewer.setPickingStyle(null, rootPickingStyle);
     eval = null;
+    isAltKeyReleased = true;
   }
 
   synchronized public void startHoverWatcher(boolean isStart) {
@@ -813,14 +737,14 @@ public class ActionManager {
       case PICKING_DRAG_SELECTED:
       case PICKING_DRAG_MOLECULE:
         isBound = isBound(action, ACTION_dragAtom)
-            || isBound(action, ACTION_rotateBranch);
+            || isBound(action, ACTION_rotateSelected);
         break;
       case PICKING_DRAG_MINIMIZE:
         isBound = isBound(action, ACTION_dragMinimize);
         break;
       case PICKING_DRAG_MINIMIZE_MOLECULE:
         isBound = isBound(action, ACTION_dragMinimizeMolecule)
-            || isBound(action, ACTION_rotateBranch);
+            || isBound(action, ACTION_rotateSelected);
         break;
       }
       if (isBound) {
@@ -884,7 +808,7 @@ public class ActionManager {
         // H C + -, etc.
         // also check valence and add/remove H atoms as necessary?
         if (measurementPending.getCount() == 2) {
-          viewer.undoAction(true, -1, 0);
+          viewer.undoAction(-1, Viewer.ACTION_SAVE, true);
           viewer.script("assign connect "
               + measurementPending.getMeasurementScript(" ", false));
         } else if (pickAtomAssignType.equals("Xx")) {
@@ -896,14 +820,14 @@ public class ActionManager {
                 + pickAtomAssignType + "\"";
             if (isPickAtomAssignCharge) {
               s += ";{atomindex=" + dragAtomIndex + "}.label='%C'; ";
-              viewer.undoAction(true, dragAtomIndex,
-                  AtomCollection.TAINT_FORMALCHARGE);
+              viewer.undoAction(dragAtomIndex,
+                  AtomCollection.TAINT_FORMALCHARGE, true);
             } else {
-              viewer.undoAction(true, -1, 0);
+              viewer.undoAction(-1, Viewer.ACTION_SAVE, true);
             }
             viewer.script(s);
           } else if (!isPickAtomAssignCharge) {
-            viewer.undoAction(true, -1, 0);
+            viewer.undoAction(-1, Viewer.ACTION_SAVE, true);
             Atom a = viewer.getModelSet().atoms[dragAtomIndex];
             if (a.getElementNumber() == 1) {
               viewer.script("assign atom ({" + dragAtomIndex + "}) \"X\"");
@@ -1055,12 +979,12 @@ public class ActionManager {
       switch (atomPickingMode) {
       case PICKING_DRAG_SELECTED:
         checkMotion(Viewer.CURSOR_MOVE);
-        bs = viewer.getSelectionSet(false);
-        if (isBound(action, ACTION_rotateBranch)) {
-          viewer.rotateMolecule(getDegrees(deltaX, 0), getDegrees(deltaY, 1),
-              bs);
+        if (isBound(action, ACTION_rotateSelected) && viewer.allowRotateSelected()) {
+          viewer.rotateSelected(getDegrees(deltaX, 0), getDegrees(deltaY, 1),
+              null);
         } else {
-          viewer.moveAtomWithHydrogens(-1, deltaX, deltaY, bs);
+          viewer.moveSelected(deltaX, deltaY, Integer.MIN_VALUE, Integer.MIN_VALUE, null,
+              true);
         }
         return;
       case PICKING_DRAG_MOLECULE:
@@ -1068,12 +992,12 @@ public class ActionManager {
       case PICKING_DRAG_MINIMIZE:
       case PICKING_DRAG_MINIMIZE_MOLECULE:
         if (dragGesture.getPointCount() == 1)
-          viewer.undoAction(true, dragAtomIndex, AtomCollection.TAINT_COORD);
+          viewer.undoAction(dragAtomIndex, AtomCollection.TAINT_COORD, true);
         checkMotion(Viewer.CURSOR_MOVE);
-        if (isBound(action, ACTION_rotateBranch)) {
+        if (isBound(action, ACTION_rotateSelected)) {
           bs = viewer.getAtomBits(Token.molecule, BitSetUtil
               .setBit(dragAtomIndex));
-          viewer.rotateMolecule(getDegrees(deltaX, 0), getDegrees(deltaY, 1),
+          viewer.rotateSelected(getDegrees(deltaX, 0), getDegrees(deltaY, 1),
               bs);
         } else {
           bs = null;
@@ -1135,11 +1059,22 @@ public class ActionManager {
 
     }
 
-    if (dragSelectedMode && isBound(action, ACTION_dragSelected)
-        && haveSelection) {
+    if (dragSelectedMode && haveSelection
+        && (isBound(action, ACTION_dragSelected) || isBound(action, ACTION_rotateSelected))) {
+      int iatom = viewer.getSelectionSet(false).nextSetBit(0);
+      if (iatom < 0)
+        return;
+      if (dragGesture.getPointCount() == 1)
+        viewer.undoAction(iatom, AtomCollection.TAINT_COORD, true);
+      else
+        viewer.moveSelected(Integer.MAX_VALUE, 0, Integer.MIN_VALUE, Integer.MIN_VALUE, null, false);
       checkMotion(Viewer.CURSOR_MOVE);
-      viewer.moveSelected(deltaX, deltaY, Integer.MIN_VALUE, Integer.MIN_VALUE,
-          null, true);
+      if (isBound(action, ACTION_rotateSelected) && viewer.allowRotateSelected())
+        viewer.rotateSelected(getDegrees(deltaX, 0), getDegrees(deltaY, 1),
+            null);
+      else
+        viewer.moveSelected(deltaX, deltaY, Integer.MIN_VALUE,
+            Integer.MIN_VALUE, null, true);
       return;
     }
 
@@ -1156,20 +1091,13 @@ public class ActionManager {
       viewer.zoomBy(deltaY);
       return;
     }
-    boolean isRotate = isBound(action, ACTION_rotate);
-    if (isRotate || viewer.allowRotateSelected()
-        && isBound(action, ACTION_rotateSelected)) {
+    if (isBound(action, ACTION_rotate)) {
       float degX = getDegrees(deltaX, 0);
       float degY = getDegrees(deltaY, 1);
-      if (isRotate) {
-        if (viewer.useArcBall())
-          viewer.rotateArcBall(x, y, mouseDragFactor);
-        else
-          viewer.rotateXYBy(degX, degY);
-      } else {
-        checkMotion(Viewer.CURSOR_MOVE);
-        viewer.rotateMolecule(degX, degY, null);
-      }
+      if (viewer.useArcBall())
+        viewer.rotateArcBall(x, y, mouseDragFactor);
+      else
+        viewer.rotateXYBy(degX, degY);
       return;
     }
     if (isBound(action, ACTION_rotateZorZoom)) {
@@ -1358,7 +1286,7 @@ public class ActionManager {
           || bondPickingMode == PICKING_ASSIGN_BOND ? ACTION_assignNew
           : ACTION_deleteBond)) {
         if (bondPickingMode == PICKING_ASSIGN_BOND)
-          viewer.undoAction(true, -1, 0);
+          viewer.undoAction(-1, Viewer.ACTION_SAVE, true);
         switch (bondPickingMode) {
         case PICKING_ASSIGN_BOND:
           viewer.script("assign bond [{" + nearestPoint.index + "}] \""
@@ -1879,7 +1807,7 @@ public class ActionManager {
             bs.clear(imax);
           }
         }
-        viewer.undoAction(true, atomIndex, AtomCollection.TAINT_COORD);
+        viewer.undoAction(atomIndex, AtomCollection.TAINT_COORD, true);
         viewer.invertSelected(null, null, atomIndex, bs);
         viewer.setStatusAtomPicked(atomIndex, "inverted: " + Escape.escape(bs));
       }

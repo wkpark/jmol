@@ -71,7 +71,7 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
 
  @Override
 public void setVisibilityFlags(BitSet bs) {
-    BitSet bsSelected = (viewer.getSelectionHaloEnabled() ? viewer
+    BitSet bsSelected = (viewer.getSelectionHaloEnabled(false) ? viewer
         .getSelectionSet(false) : null);
     for (int i = atomCount; --i >= 0;) {
       boolean isVisible = bsSelected != null && bsSelected.get(i)

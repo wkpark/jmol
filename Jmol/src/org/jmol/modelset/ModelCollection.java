@@ -1635,11 +1635,9 @@ abstract public class ModelCollection extends BondCollection {
 
 
   public void rotateAtoms(Matrix3f mNew, Matrix3f matrixRotate,
-                             BitSet bsAtoms, boolean fullMolecule,
+                             BitSet bs,
                              Point3f center, boolean isInternal) {
     bspf = null;
-    BitSet bs = (fullMolecule ? getMoleculeBitSet(bsAtoms) : BitSetUtil.copy(bsAtoms));
-    BitSetUtil.andNot(bs, viewer.getMotionFixedAtoms());
     if (mNew == null) {
       matTemp.set(matrixRotate);
     } else {
@@ -1723,7 +1721,7 @@ abstract public class ModelCollection extends BondCollection {
       Vector3f v = new Vector3f(thisAtom);
       v.sub(pt);
       Quaternion q = new Quaternion(v, 180);
-      rotateAtoms(null, q.getMatrix(), bsAtoms, false, thisAtom, true);
+      rotateAtoms(null, q.getMatrix(), bsAtoms, thisAtom, true);
     }
   }
 

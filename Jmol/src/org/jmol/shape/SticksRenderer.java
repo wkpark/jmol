@@ -63,6 +63,7 @@ public class SticksRenderer extends ShapeRenderer {
   private boolean isAntialiased;
   private boolean slabbing;
   private boolean slabByAtom;
+  private int[] dashDots = null;
 
 
   @Override
@@ -70,6 +71,7 @@ public class SticksRenderer extends ShapeRenderer {
     slabbing = viewer.getSlabEnabled();
     slabByAtom = viewer.getSlabByAtom();          
     endcaps = Graphics3D.ENDCAPS_SPHERICAL;
+    dashDots = (viewer.getBondDots() ? dots : dashes);
     multipleBondSpacing = viewer.getMultipleBondSpacing();
     multipleBondRadiusFactor = viewer.getMultipleBondRadiusFactor();
     if (multipleBondSpacing > 0) {
@@ -80,6 +82,8 @@ public class SticksRenderer extends ShapeRenderer {
       p2 = new Point3f();
       s1 = new Point3i();
       s2 = new Point3i();
+    } else if (dashDots == dots) {
+      s1 = new Point3i();
     }
     showMultipleBonds = multipleBondSpacing != 0 && viewer.getShowMultipleBonds();
     modeMultipleBond = viewer.getModeMultipleBond();
@@ -221,7 +225,7 @@ public class SticksRenderer extends ShapeRenderer {
     
     switch (mask) {
     case -1:
-      renderHbondDashed();
+      drawDashed(xA, yA, zA, xB, yB, zB, hDashes);
       break;
     default:
       drawBond(mask);
@@ -260,7 +264,7 @@ public class SticksRenderer extends ShapeRenderer {
     }
     if (bondOrder == 1) {
       if ((dottedMask & 1) != 0)
-        drawDashed(xA, yA, zA, xB, yB, zB);
+        drawDashed(xA, yA, zA, xB, yB, zB, dashDots);
       else
         fillCylinder(colixA, colixB, endcaps, width, xA, yA, zA, xB, yB, zB);
       return;
@@ -280,7 +284,7 @@ public class SticksRenderer extends ShapeRenderer {
         p1.add(y);
         p2.add(y);
         if ((dottedMask & 1) != 0)
-          drawDashed(s1.x, s1.y, s1.z, s2.x, s2.y, s2.z);
+          drawDashed(s1.x, s1.y, s1.z, s2.x, s2.y, s2.z, dashDots);
         else
           fillCylinder(colixA, colixB, endcaps, width, s1.x, s1.y, s1.z, s2.x,
               s2.y, s2.z);
@@ -297,7 +301,7 @@ public class SticksRenderer extends ShapeRenderer {
     resetAxisCoordinates();
     while (true) {
       if ((dottedMask & 1) != 0)
-        drawDashed(xAxis1, yAxis1, zA, xAxis2, yAxis2, zB);
+        drawDashed(xAxis1, yAxis1, zA, xAxis2, yAxis2, zB, dashDots);
       else
         fillCylinder(colixA, colixB, endcaps, width, xAxis1, yAxis1, zA,
             xAxis2, yAxis2, zB);
@@ -342,46 +346,46 @@ public class SticksRenderer extends ShapeRenderer {
     return ((dx * dyAC - dy * dxAC) < 0 ? 2 : 1);
   }
 
-  private void drawDashed(int xA, int yA, int zA, int xB, int yB, int zB) {
+  private final static int[] dashes =  { 12, 0, 0, 2, 5, 7, 10 };
+  private final static int[] dots =    { 12, 3, 6, 1, 3, 5, 7, 9, 11 };
+  private final static int[] hDashes = { 10, 7, 6, 1, 3, 4, 6, 7, 9 };
+  
+  private void drawDashed(int xA, int yA, int zA, int xB, int yB, int zB, int[] array) {
     int dx = xB - xA;
     int dy = yB - yA;
     int dz = zB - zA;
-    int i = 2;
-    while (i <= 9) {
-      int xS = xA + (dx * i) / 12;
-      int yS = yA + (dy * i) / 12;
-      int zS = zA + (dz * i) / 12;
-      i += 3;
-      int xE = xA + (dx * i) / 12;
-      int yE = yA + (dy * i) / 12;
-      int zE = zA + (dz * i) / 12;
-      i += 2;
-      fillCylinder(colixA, colixB, Graphics3D.ENDCAPS_FLAT, width,
-                         xS, yS, zS, xE, yE, zE);
+    int f = array[0];
+    int ptS = array[1]; // when starting point color is set (or 0)
+    int ptE = array[2]; // when ending point color is set (or 0)
+    short colixS = colixA;
+    short colixE = colixB;
+    for (int pt = 3; pt < array.length; pt++) {
+      int i = array[pt];
+      int xS = xA + (dx * i) / f;
+      int yS = yA + (dy * i) / f;
+      int zS = zA + (dz * i) / f;
+      if (array == dots) {
+        s1.set(xS, yS, zS);
+        if (pt == ptS)
+          g3d.setColix(colixS);
+        else if (pt == ptE)
+          g3d.setColix(colixE);
+        g3d.fillSphere(width, s1);
+        continue;
+      }
+      if (pt == ptS)
+        colixS = colixB;
+      i = array[++pt];
+      if (pt == ptE)
+        colixE = colixB;
+      int xE = xA + (dx * i) / f;
+      int yE = yA + (dy * i) / f;
+      int zE = zA + (dz * i) / f;
+      fillCylinder(colixS, colixE, Graphics3D.ENDCAPS_FLAT, width, xS, yS, zS,
+          xE, yE, zE);
     }
   }
 
-  private void renderHbondDashed() {
-    int dx = xB - xA;
-    int dy = yB - yA;
-    int dz = zB - zA;
-    int i = 1;
-    while (i < 10) {
-      int xS = xA + (dx * i) / 10;
-      int yS = yA + (dy * i) / 10;
-      int zS = zA + (dz * i) / 10;
-      short colixS = i < 5 ? colixA : colixB;
-      i += 2;
-      int xE = xA + (dx * i) / 10;
-      int yE = yA + (dy * i) / 10;
-      int zE = zA + (dz * i) / 10;
-      short colixE = i < 5 ? colixA : colixB;
-      ++i;
-      fillCylinder(colixS, colixE, Graphics3D.ENDCAPS_FLAT, width,
-                         xS, yS, zS, xE, yE, zE);
-    }
-  }
-    
   private void fillCylinder(short colixA, short colixB, byte endcaps,
                               int diameter, int xA, int yA, int zA, int xB,
                               int yB, int zB) {

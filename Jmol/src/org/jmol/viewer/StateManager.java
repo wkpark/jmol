@@ -816,6 +816,7 @@ public class StateManager {
       setParameterValue("axesMode", axesMode);
       setParameterValue("axesScale", axesScale);
       setParameterValue("axesOrientationRasmol", axesOrientationRasmol);
+      setParameterValue("bondDots", bondDots);
       setParameterValue("bondModeOr", bondModeOr);
       setParameterValue("bondPicking", bondPicking);
       setParameterValue("bondRadiusMilliAngstroms", bondRadiusMilliAngstroms);
@@ -1156,6 +1157,7 @@ public class StateManager {
     
     //atoms and bonds
 
+    boolean bondDots = false;
     boolean bondModeOr = false;
     boolean hbondsBackbone = false;
     float hbondsAngleMinimum = 90f;

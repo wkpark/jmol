@@ -315,12 +315,12 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
   void executeCommandAsThread(String strCommand) {
     if (strCommand == null)
       strCommand = console.getCommandString().trim();
-    if (strCommand.equalsIgnoreCase("undo")) {
+    if (strCommand.equalsIgnoreCase("undoCmd")) {
       undoRedo(false);
       console.appendNewline();
       console.setPrompt();
       return;
-    } else if (strCommand.equalsIgnoreCase("redo")) {
+    } else if (strCommand.equalsIgnoreCase("redoCmd")) {
       undoRedo(true);
       console.appendNewline();
       console.setPrompt();

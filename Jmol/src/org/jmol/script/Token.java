@@ -332,13 +332,14 @@ public class Token {
   final static int push         = scriptCommand | 40 | noArgs; //internal only
   final static int quit         = scriptCommand | 41 | noArgs;
   final static int ramachandran = scriptCommand | 42 | expression;
-  final static int refresh      = scriptCommand | 43 | noArgs;
-  final static int reset        = scriptCommand | 44;
-  final static int restore      = scriptCommand | 45;
-  public final static int resume = scriptCommand | 46 | noArgs;
+  public final static int redo  = scriptCommand | 43;
+  final static int refresh      = scriptCommand | 44 | noArgs;
+  final static int reset        = scriptCommand | 45;
+  final static int restore      = scriptCommand | 46;
+  public final static int resume = scriptCommand | 47 | noArgs;
   final static int rotate       = scriptCommand | 48 | defaultON;
   final static int rotateSelected = scriptCommand | 49;
-  final static int save         = scriptCommand | 50;
+  public final static int save  = scriptCommand | 50;
 //final static int script   see mathfunc
   public final static int selectionhalos = scriptCommand | 51 | deprecatedparam | defaultON;
   final static int show         = scriptCommand | 52;
@@ -353,6 +354,7 @@ public class Token {
   final static int translate    = scriptCommand | 64;
   final static int translateSelected = scriptCommand | 66;
   final static int unbind       = scriptCommand | 68;
+  public final static int undo  = scriptCommand | 69;
   public final static int vibration    = scriptCommand | 70;
   //final static int write   see mathfunc
   final static int zoom         = scriptCommand | 72;
@@ -801,6 +803,7 @@ public class Token {
   public final static int unitcellcolor                  = strparam | 62;
   
   public final static int axesscale                      = floatparam | 2;
+  public final static int bonddots                       = floatparam | 3; // 12.1.46
   public final static int bondtolerance                  = floatparam | 4;
   public final static int cameradepth                    = floatparam | 6;
   public final static int defaultdrawarrowscale          = floatparam | 8;
@@ -1002,7 +1005,6 @@ public class Token {
   public final static int testflag3                      = booleanparam | 188;
   public final static int testflag4                      = booleanparam | 190;
   public final static int tracealpha                     = booleanparam | 191;
-  public final static int undo                           = booleanparam | 192;
   public final static int usearcball                     = booleanparam | 193;
   public final static int useminimizationthread          = booleanparam | 194;
   public final static int usenumberlocalization          = booleanparam | 196;
@@ -2083,6 +2085,7 @@ public class Token {
       
       "axesScale",                                new Token(axesscale),
       "axisScale",                                null, // legacy
+      "bondDots",                                 new Token(bonddots),
       "bondTolerance",                            new Token(bondtolerance),
       "cameraDepth",                              new Token(cameradepth),
       "defaultDrawArrowScale",                    new Token(defaultdrawarrowscale),
@@ -2261,6 +2264,7 @@ public class Token {
       "perspectiveDepth",                         new Token(perspectivedepth),
       "preserveState",                            new Token(preservestate),
       "rangeSelected",                            new Token(rangeselected),
+      "redo",                                     new Token(redo),
       "refreshing",                               new Token(refreshing),
       "ribbonBorder",                             new Token(ribbonborder),
       "rocketBarrels",                            new Token(rocketbarrels),

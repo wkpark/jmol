@@ -35,6 +35,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
 import org.jmol.export.image.ImageCreator;
+import org.jmol.script.Token;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.viewer.binding.Binding;
@@ -197,10 +198,10 @@ class MouseManager14 implements MouseWheelListener, MouseListener,
       case 'z': // undo
         switch (modifiers) {
         case Binding.CTRL:
-          viewer.undoAction(0, Viewer.ACTION_UNDO, true);
+          viewer.undoAction(Token.undo, 1);
           break;
         case Binding.CTRL_SHIFT:
-          viewer.undoAction(0, Viewer.ACTION_REDO, true);
+          viewer.undoAction(Token.redo, 1);
           break;
         }
         break;
@@ -208,7 +209,7 @@ class MouseManager14 implements MouseWheelListener, MouseListener,
       case 'y': // redo
         switch (modifiers) {
         case Binding.CTRL:
-          viewer.undoAction(0, Viewer.ACTION_REDO, true);
+          viewer.undoAction(Token.redo, 1);
           break;
         }
         break;        

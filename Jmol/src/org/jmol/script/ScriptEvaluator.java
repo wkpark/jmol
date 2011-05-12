@@ -5341,6 +5341,10 @@ public class ScriptEvaluator {
         case Token.prompt:
           prompt();
           break;
+        case Token.redo:
+        case Token.undo:
+          undoRedo();
+          break;
         case Token.refresh:
           refresh();
           break;
@@ -16845,4 +16849,25 @@ public class ScriptEvaluator {
       viewer.unBindAction(mouseAction, name);
   }
 
+  private void undoRedo() throws ScriptException {
+    // Jmol 12.1.46
+    int n = 1;
+    int len = 2;
+    switch (tokAt(1)) {
+    case Token.nada:
+      len = 1;
+      break;
+    case Token.all:
+      n = 0;
+      break;
+    case Token.integer:
+      n = intParameter(1);
+      break;
+    default:
+      error(ERROR_invalidArgument);    
+    }
+    checkLength(len);
+    if (!isSyntaxCheck)
+      viewer.undoAction(tokAt(0), n);
+  }
 }

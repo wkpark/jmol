@@ -808,7 +808,7 @@ public class ActionManager {
         // H C + -, etc.
         // also check valence and add/remove H atoms as necessary?
         if (measurementPending.getCount() == 2) {
-          viewer.undoAction(-1, Viewer.ACTION_SAVE, true);
+          viewer.undoAction(-1, Token.save, true);
           viewer.script("assign connect "
               + measurementPending.getMeasurementScript(" ", false));
         } else if (pickAtomAssignType.equals("Xx")) {
@@ -823,11 +823,11 @@ public class ActionManager {
               viewer.undoAction(dragAtomIndex,
                   AtomCollection.TAINT_FORMALCHARGE, true);
             } else {
-              viewer.undoAction(-1, Viewer.ACTION_SAVE, true);
+              viewer.undoAction(-1, Token.save, true);
             }
             viewer.script(s);
           } else if (!isPickAtomAssignCharge) {
-            viewer.undoAction(-1, Viewer.ACTION_SAVE, true);
+            viewer.undoAction(-1, Token.save, true);
             Atom a = viewer.getModelSet().atoms[dragAtomIndex];
             if (a.getElementNumber() == 1) {
               viewer.script("assign atom ({" + dragAtomIndex + "}) \"X\"");
@@ -1286,7 +1286,7 @@ public class ActionManager {
           || bondPickingMode == PICKING_ASSIGN_BOND ? ACTION_assignNew
           : ACTION_deleteBond)) {
         if (bondPickingMode == PICKING_ASSIGN_BOND)
-          viewer.undoAction(-1, Viewer.ACTION_SAVE, true);
+          viewer.undoAction(-1, Token.save, true);
         switch (bondPickingMode) {
         case PICKING_ASSIGN_BOND:
           viewer.script("assign bond [{" + nearestPoint.index + "}] \""

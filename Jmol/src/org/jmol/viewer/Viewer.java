@@ -1867,7 +1867,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public String openDOM(Object DOMNode) {
     // applet.loadDOMNode
     zap(true, true, false);
-    setBooleanProperty("preserveState", false);
     return loadModelFromFile("?", "?", null, DOMNode, false, null, null, 0);
   }
 
@@ -1924,30 +1923,29 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
 
       loadScript = new StringBuffer(s);
-    } else {
-      if (loadScript == null)
-        loadScript = new StringBuffer("load /*file*/$FILENAME$");
-
-      if (reader == null)
+      
+    } else if (reader == null) {
 
         // 2) a standard, single file 
+
+        if (loadScript == null)
+          loadScript = new StringBuffer("load /*file*/$FILENAME$");
 
         atomSetCollection = getAtomSetCollection(fileName, isAppend, htParams,
             loadScript);
 
-      else if (reader instanceof Reader)
+    } else if (reader instanceof Reader) {
 
         // 3) a file reader (not used by Jmol) 
 
         atomSetCollection = fileManager.createAtomSetCollectionFromReader(
-            fullPathName, fileName, (Reader) reader,
-            htParams = setLoadParameters(null, isAppend));
-      else
+            fullPathName, fileName, (Reader) reader, htParams);
+        
+    } else {
 
-        // 3) a DOM reader (could be used by Jmol) 
+        // 4) a DOM reader (could be used by Jmol) 
 
-        atomSetCollection = fileManager.createAtomSetCollectionFromDOM(reader,
-            htParams = setLoadParameters(null, isAppend));
+        atomSetCollection = fileManager.createAtomSetCollectionFromDOM(reader, htParams);
     }
 
     // OK, the file has been read and is now closed.
@@ -1957,10 +1955,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return loadAtomDataAndReturnError(atomSetCollection, tokType);
     }
 
-    if (htParams.containsKey("isData")) {
-      //      fileManager.setFileInfo(saveInfo);
+    if (htParams.containsKey("isData"))
       return (String) atomSetCollection;
-    }
 
     // now we fix the load script (possibly) with the full path name
     if (loadScript != null) {
@@ -2102,7 +2098,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return null;
     if (!isAppend)
       zap(true, false/*true*/, false);
-    setBooleanProperty("preserveState", false);
     Object atomSetCollection = fileManager.createAtomSeCollectionFromArrayData(
         arrayData, setLoadParameters(null, isAppend), isAppend);
     return createModelSetAndReturnError(atomSetCollection, isAppend, null);
@@ -2227,7 +2222,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * 
    * @param atomSetCollection
    * @param isAppend
-   * @param loadScript
+   * @param loadScript  if null, then some special method like DOM; turn of preserveState
    * @return errMsg
    */
   private String createModelSetAndReturnError(Object atomSetCollection,
@@ -2561,8 +2556,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           setStringProperty("picking", "assignAtom_C");
           setStringProperty("picking", "assignBond_p");
         }
-        actionStates.clear();
-        actionStatesRedo.clear();
+        undoClear();
       }
       System.gc();
     } else {
@@ -2576,7 +2570,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       Logger.checkMemory();
   }
 
-  private void zap(String msg) {
+private void zap(String msg) {
     zap(true, true, false);
     echoMessage(msg);
   }
@@ -4202,19 +4196,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return "script processing stepped";
     if (checkHalt(str, isInterrupt))
       return "script execution halted";
-    if (checkUndo(str))
-      return "OK - " + str;  
     return null;
-  }
-
-  private boolean checkUndo(String str) {
-    if (str.equalsIgnoreCase("redo"))
-      undoAction(0, ACTION_REDO, true);
-    else if (str.equalsIgnoreCase("undo"))
-      undoAction(0, ACTION_UNDO, true);
-    else
-      return false;
-    return true;
   }
 
   public boolean usingScriptQueue() {
@@ -6004,6 +5986,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean found = true;
     boolean doRepaint = true;
     switch (tok) {
+    case Token.bonddots:
+      // Jmol 12.1.46
+      global.bondDots = value;
+      break;
     case Token.legacyautobonding:
       global.legacyAutoBonding = value;
       break;
@@ -6066,6 +6052,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       // 11.9.23
       global.preserveState = value;
       modelSet.setPreserveState(value);
+      undoClear();
       break;
     case Token.strutsmultiple:
       // 11.9.23
@@ -8784,6 +8771,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     try {
       if (doClear)
         zap("" + er); // get some breathing room
+      undoClear();
       setCursor(Viewer.CURSOR_DEFAULT);
       setBooleanProperty("refreshing", true);
       Logger.error("viewer handling error condition: " + er);
@@ -9380,12 +9368,49 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private final static int MAX_ACTION_UNDO = 100;
   private final List<String> actionStates = new ArrayList<String>();
   private final List<String> actionStatesRedo = new ArrayList<String>();
-  final static int ACTION_SAVE = -1;
-  final static int ACTION_UNDO = -2;
-  final static int ACTION_REDO = -3;
+  // other possibilities include:
+  //   AtomCollection.TAINT_COORD
+  //   AtomCollection.TAINT_FORMALCHARGE
   private boolean undoWorking = false;
   
+  void undoClear() {
+    actionStates.clear();
+    actionStatesRedo.clear();
+  }
+
+  /**
+   * 
+   * @param action   Token.undo or Token.redo
+   * @param n        number of steps to go back/forward; 0 for all; -1 for clear; -2 for clear BOTH
+   * 
+   */
+  public void undoAction(int action, int n) {
+    switch (action) {
+    case Token.undo:
+    case Token.redo:
+      switch (n) {
+      case -2:
+        undoClear();
+        break;
+      case -1:
+        (action == Token.undo ? actionStates : actionStatesRedo).clear();
+        break;
+      case 0:
+        n = Integer.MAX_VALUE;
+        // fall through
+      default:
+        if (n > MAX_ACTION_UNDO)
+          n = (action == Token.undo ? actionStates : actionStatesRedo).size();
+        for (int i = 0; i < n; i++)
+          undoAction(0, action, true);
+      }
+      break;
+    }
+  }
+
   void undoAction(int taintedAtom, int type, boolean clearRedo) {
+    if (!global.preserveState)
+      return;
     int modelIndex = (taintedAtom >= 0 ? modelSet.atoms[taintedAtom].modelIndex
         : modelSet.getModelCount() - 1);
     //System.out.print("undoAction " + type + " " + taintedAtom + " modelkit?"
@@ -9393,8 +9418,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     //System.out.println(" " + type + " size=" + actionStates.size() + " "
     //    + +actionStatesRedo.size());
     switch (type) {
-    case ACTION_REDO:
-    case ACTION_UNDO:
+    case Token.redo:
+    case Token.undo:
       // from MouseManager
       // CTRL-Z: type = 1 UNDO
       // CTRL-Y: type = -1 REDO
@@ -9402,13 +9427,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       String s = "";
       List<String> list1;
       List<String> list2;
-      switch (type) {
+      switch (type) { 
       default:
-      case ACTION_UNDO:
+      case Token.undo:
         list1 = actionStates;
         list2 = actionStatesRedo;            
         break;
-      case ACTION_REDO:
+      case Token.redo:
         list1 = actionStatesRedo;
         list2 = actionStates;
         if (actionStatesRedo.size() == 1)
@@ -9420,7 +9445,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       undoWorking = true;
       list2.add(0, list1.remove(0));
       s = actionStatesRedo.get(0);
-      if (type == ACTION_UNDO && list2.size() == 1) {
+      if (type == Token.undo && list2.size() == 1) {
         // must save current state, coord, etc.
         // but this destroys actionStatesRedo
         int[] pt = new int[] {1};
@@ -9685,6 +9710,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public boolean getMouseEnabled() {
     return refreshing && !creatingImage;
+  }
+
+  public boolean getBondDots() {
+    return global.bondDots;
   }
 
 }

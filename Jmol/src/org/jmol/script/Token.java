@@ -803,7 +803,6 @@ public class Token {
   public final static int unitcellcolor                  = strparam | 62;
   
   public final static int axesscale                      = floatparam | 2;
-  public final static int bonddots                       = floatparam | 3; // 12.1.46
   public final static int bondtolerance                  = floatparam | 4;
   public final static int cameradepth                    = floatparam | 6;
   public final static int defaultdrawarrowscale          = floatparam | 8;
@@ -963,7 +962,8 @@ public class Token {
   public final static int navigatesurface                = booleanparam | 109;
   public final static int navigationmode                 = booleanparam | 110;
   public final static int navigationperiodic             = booleanparam | 111;
-  public final static int pdbgetheader                   = booleanparam | 112;
+  public final static int partialdots                    = booleanparam | 112; // 12.1.46
+  public final static int pdbgetheader                   = booleanparam | 113;
   public final static int pdbsequential                  = booleanparam | 114;
   public final static int perspectivedepth               = booleanparam | 116;
   public final static int preservestate                  = booleanparam | 117;
@@ -2085,7 +2085,6 @@ public class Token {
       
       "axesScale",                                new Token(axesscale),
       "axisScale",                                null, // legacy
-      "bondDots",                                 new Token(bonddots),
       "bondTolerance",                            new Token(bondtolerance),
       "cameraDepth",                              new Token(cameradepth),
       "defaultDrawArrowScale",                    new Token(defaultdrawarrowscale),
@@ -2259,6 +2258,7 @@ public class Token {
       "navigateSurface",                          new Token(navigatesurface),
       "navigationMode",                           new Token(navigationmode),
       "navigationPeriodic",                       new Token(navigationperiodic),
+      "partialDots",                              new Token(partialdots),
       "pdbGetHeader",                             new Token(pdbgetheader),
       "pdbSequential",                            new Token(pdbsequential),
       "perspectiveDepth",                         new Token(perspectivedepth),

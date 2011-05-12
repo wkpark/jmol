@@ -5986,9 +5986,9 @@ private void zap(String msg) {
     boolean found = true;
     boolean doRepaint = true;
     switch (tok) {
-    case Token.bonddots:
+    case Token.partialdots:
       // Jmol 12.1.46
-      global.bondDots = value;
+      global.partialDots = value;
       break;
     case Token.legacyautobonding:
       global.legacyAutoBonding = value;
@@ -9712,8 +9712,8 @@ private void zap(String msg) {
     return refreshing && !creatingImage;
   }
 
-  public boolean getBondDots() {
-    return global.bondDots;
+  public boolean getPartialDots() {
+    return global.partialDots;
   }
 
 }

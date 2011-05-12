@@ -816,7 +816,6 @@ public class StateManager {
       setParameterValue("axesMode", axesMode);
       setParameterValue("axesScale", axesScale);
       setParameterValue("axesOrientationRasmol", axesOrientationRasmol);
-      setParameterValue("bondDots", bondDots);
       setParameterValue("bondModeOr", bondModeOr);
       setParameterValue("bondPicking", bondPicking);
       setParameterValue("bondRadiusMilliAngstroms", bondRadiusMilliAngstroms);
@@ -908,6 +907,7 @@ public class StateManager {
       setParameterValue("navigateSurface", navigateSurface);
       setParameterValue("navigationPeriodic", navigationPeriodic);
       setParameterValue("navigationSpeed", navigationSpeed);
+      setParameterValue("partialDots", partialDots);
       setParameterValue("pdbGetHeader", pdbGetHeader); // new 11.5.39
       setParameterValue("pdbSequential", pdbSequential); // new 11.5.39
       setParameterValue("perspectiveDepth", perspectiveDepth);
@@ -1157,7 +1157,7 @@ public class StateManager {
     
     //atoms and bonds
 
-    boolean bondDots = false;
+    boolean partialDots = false;
     boolean bondModeOr = false;
     boolean hbondsBackbone = false;
     float hbondsAngleMinimum = 90f;

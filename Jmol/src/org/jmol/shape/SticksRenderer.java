@@ -71,7 +71,7 @@ public class SticksRenderer extends ShapeRenderer {
     slabbing = viewer.getSlabEnabled();
     slabByAtom = viewer.getSlabByAtom();          
     endcaps = Graphics3D.ENDCAPS_SPHERICAL;
-    dashDots = (viewer.getBondDots() ? dots : dashes);
+    dashDots = (viewer.getPartialDots() ? dots : dashes);
     multipleBondSpacing = viewer.getMultipleBondSpacing();
     multipleBondRadiusFactor = viewer.getMultipleBondRadiusFactor();
     if (multipleBondSpacing > 0) {

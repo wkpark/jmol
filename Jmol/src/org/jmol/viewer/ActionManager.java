@@ -561,7 +561,8 @@ public class ActionManager {
    * @param ke
    */
   public void keyPressed(KeyEvent ke) {
-    ke.consume();
+    if (viewer.isApplet())
+      ke.consume();
     if (keyProcessing)
       return;
     hoverOff();

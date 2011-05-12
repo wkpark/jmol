@@ -9313,9 +9313,17 @@
   <fah_proj number="10120" name="p10120" public="y"
     server="171.64.65.71" atoms="1174" preferred="2" deadline="3"
     credit="494.0" frames="100" code="GG2" contact="gbowman" kfactor="0.0"/>
-  <fah_proj number="10121" name="p10121" public="n"
+  <fah_proj number="10121" name="p10121" public="y"
     server="171.64.65.75" atoms="35824" preferred="32" deadline="56"
-    credit="1571.0" frames="100" code="A3" contact="gbowman" kfactor="0.74"/>
+    credit="2245.0" frames="100" code="A3" contact="gbowman" kfactor="0.74"/>
+Differences for project 10122
+  <fah_proj number="10122" name="p10122" public="y"
+    server="171.64.65.71" atoms="1174" preferred="2" deadline="3"
+    credit="494.0" frames="100" code="GG2" contact="gbowman" kfactor="0.0"/>
+Differences for project 10123
+  <fah_proj number="10123" name="p10123" public="y"
+    server="171.64.65.71" atoms="1174" preferred="2" deadline="3"
+    credit="494.0" frames="100" code="GG2" contact="gbowman" kfactor="0.0"/>
 
   <!-- Projects 10200 to 10299 -->
   <fah_proj number="10200" name="b2AR conformational space sampling" public="n" file="xyz"

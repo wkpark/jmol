@@ -63,28 +63,24 @@ public class SticksRenderer extends ShapeRenderer {
   private boolean isAntialiased;
   private boolean slabbing;
   private boolean slabByAtom;
-  private int[] dashDots = null;
+  private int[] dashDots;
 
-
+  private final Vector3f x = new Vector3f();
+  private final Vector3f y = new Vector3f();
+  private final Vector3f z = new Vector3f();
+  private final Point3f p1 = new Point3f();
+  private final Point3f p2 = new Point3f();
+  private final Point3i s1 = new Point3i();
+  private final Point3i s2 = new Point3i();
+  
   @Override
   protected void render() {
     slabbing = viewer.getSlabEnabled();
     slabByAtom = viewer.getSlabByAtom();          
     endcaps = Graphics3D.ENDCAPS_SPHERICAL;
-    dashDots = (viewer.getPartialDots() ? dots : dashes);
+    dashDots = (viewer.getPartialDots() ? sixdots : dashes);
     multipleBondSpacing = viewer.getMultipleBondSpacing();
     multipleBondRadiusFactor = viewer.getMultipleBondRadiusFactor();
-    if (multipleBondSpacing > 0) {
-      z = new Vector3f();
-      x = new Vector3f();
-      y = new Vector3f();
-      p1 = new Point3f();
-      p2 = new Point3f();
-      s1 = new Point3i();
-      s2 = new Point3i();
-    } else if (dashDots == dots) {
-      s1 = new Point3i();
-    }
     showMultipleBonds = multipleBondSpacing != 0 && viewer.getShowMultipleBonds();
     modeMultipleBond = viewer.getModeMultipleBond();
     renderWireframe = viewer.getInMotion() && viewer.getWireframeRotation();
@@ -233,10 +229,6 @@ public class SticksRenderer extends ShapeRenderer {
     }
   }
     
-  private Vector3f x, y, z;
-  private Point3f p1, p2;
-  private Point3i s1, s2;
-  
   private void drawBond(int dottedMask) {
     if (exportType == Graphics3D.EXPORT_CARTESIAN && bondOrder == 1) {
       // bypass screen rendering and just use the atoms themselves
@@ -346,30 +338,40 @@ public class SticksRenderer extends ShapeRenderer {
     return ((dx * dyAC - dy * dxAC) < 0 ? 2 : 1);
   }
 
-  private final static int[] dashes =  { 12, 0, 0, 2, 5, 7, 10 };
-  private final static int[] dots =    { 12, 3, 6, 1, 3, 5, 7, 9, 11 };
-  private final static int[] hDashes = { 10, 7, 6, 1, 3, 4, 6, 7, 9 };
-  
-  private void drawDashed(int xA, int yA, int zA, int xB, int yB, int zB, int[] array) {
+  private final static int[] dashes =   { 12, 0, 0, 2, 5, 7, 10 };
+  private final static int[] hDashes =  { 10, 7, 6, 1, 3, 4, 6, 7, 9 };
+  private final static int[] sixdots =  { 12, 3, 6, 1, 3, 5, 7, 9, 11 };
+  private final static int[] fourdots = { 13, 3, 5, 2, 5, 8, 11 };
+  private final static int[] twodots =  { 12, 3, 4, 3, 9 };
+
+  private void drawDashed(int xA, int yA, int zA, int xB, int yB, int zB,
+                          int[] array) {
     int dx = xB - xA;
     int dy = yB - yA;
     int dz = zB - zA;
-    int f = array[0];
-    int ptS = array[1]; // when starting point color is set (or 0)
-    int ptE = array[2]; // when ending point color is set (or 0)
+    boolean isDots = (array == sixdots);
+    if (isDots) {
+      if (mad * 4 > 1500)
+        array = twodots;
+      else if (mad * 6 > 1500)
+        array = fourdots;
+    }
+    float f = array[0];
+    int ptS = array[1];
+    int ptE = array[2];
     short colixS = colixA;
-    short colixE = colixB;
+    short colixE = (ptE == 0 ? colixB : colixA);
     for (int pt = 3; pt < array.length; pt++) {
       int i = array[pt];
-      int xS = xA + (dx * i) / f;
-      int yS = yA + (dy * i) / f;
-      int zS = zA + (dz * i) / f;
-      if (array == dots) {
+      int xS = (int) (xA + dx * i / f);
+      int yS = (int) (yA + dy * i / f);
+      int zS = (int) (zA + dz * i / f);
+      if (isDots) {
         s1.set(xS, yS, zS);
         if (pt == ptS)
-          g3d.setColix(colixS);
+          g3d.setColix(colixA);
         else if (pt == ptE)
-          g3d.setColix(colixE);
+          g3d.setColix(colixB);
         g3d.fillSphere(width, s1);
         continue;
       }
@@ -378,9 +380,9 @@ public class SticksRenderer extends ShapeRenderer {
       i = array[++pt];
       if (pt == ptE)
         colixE = colixB;
-      int xE = xA + (dx * i) / f;
-      int yE = yA + (dy * i) / f;
-      int zE = zA + (dz * i) / f;
+      int xE = (int) (xA + dx * i / f);
+      int yE = (int) (yA + dy * i / f);
+      int zE = (int) (zA + dz * i / f);
       fillCylinder(colixS, colixE, Graphics3D.ENDCAPS_FLAT, width, xS, yS, zS,
           xE, yE, zE);
     }

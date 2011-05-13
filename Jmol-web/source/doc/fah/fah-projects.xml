@@ -9188,9 +9188,9 @@
   <fah_proj number="10062" name="ww0" public="y"
     server="129.74.85.15" atoms="583" preferred="4" deadline="8"
     credit="242" frames="100" code="A4" contact="abdulwahidc"/>
-  <fah_proj number="10063" name="ww1" public="y"
+  <fah_proj number="10063" name="ww1" public="y" file="xyz"
     server="129.74.85.15" atoms="579" preferred="4" deadline="8"
-    credit="242" frames="100" code="A4" contact="abdulwahidc"/>
+    credit="242" frames="100" code="A4" contact="abdulwahidc" contrib="Danny Nielsen"/>
   <fah_proj number="10064" name="ww2" public="y"
     server="129.74.85.15" atoms="575" preferred="4" deadline="8"
     credit="242" frames="100" code="A4" contact="abdulwahidc"/>
@@ -9230,9 +9230,9 @@
   <fah_proj number="10076" name="ww19" public="y"
     server="129.74.85.15" atoms="553" preferred="4" deadline="8"
     credit="242" frames="100" code="A4" contact="abdulwahidc"/>
-  <fah_proj number="10077" name="ww20" public="y"
+  <fah_proj number="10077" name="ww20" public="y" file="xyz"
     server="129.74.85.15" atoms="557" preferred="4" deadline="8"
-    credit="242" frames="100" code="A4" contact="abdulwahidc"/>
+    credit="242" frames="100" code="A4" contact="abdulwahidc" contrib="Danny Nielsen"/>
   <fah_proj number="10078" name="ww21" public="y"
     server="129.74.85.15" atoms="573" preferred="4" deadline="8"
     credit="242" frames="100" code="A4" contact="abdulwahidc"/>
@@ -9316,11 +9316,9 @@
   <fah_proj number="10121" name="p10121" public="y"
     server="171.64.65.75" atoms="35824" preferred="32" deadline="56"
     credit="2245.0" frames="100" code="A3" contact="gbowman" kfactor="0.74"/>
-Differences for project 10122
   <fah_proj number="10122" name="p10122" public="y"
     server="171.64.65.71" atoms="1174" preferred="2" deadline="3"
     credit="494.0" frames="100" code="GG2" contact="gbowman" kfactor="0.0"/>
-Differences for project 10123
   <fah_proj number="10123" name="p10123" public="y"
     server="171.64.65.71" atoms="1174" preferred="2" deadline="3"
     credit="494.0" frames="100" code="GG2" contact="gbowman" kfactor="0.0"/>

@@ -152,7 +152,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
   @Override
   protected void renderPoints() {
     int incr = imesh.vertexIncrement;
-    int diam = viewer.getScreenDim() / 100;
+    int diam = viewer.getScreenDim() / (imesh.diameter > 0 ? imesh.diameter : 100);
     boolean showNumbers = viewer.getTestFlag3();
     int cX = (showNumbers ? viewer.getScreenWidth() / 2 : 0);
     int cY = (showNumbers ? viewer.getScreenHeight() / 2 : 0);

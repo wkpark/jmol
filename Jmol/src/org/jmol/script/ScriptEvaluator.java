@@ -15426,7 +15426,6 @@ public class ScriptEvaluator {
     boolean isCavity = false;
     boolean haveRadius = false;
     boolean isFxy = false;
-    float[] nlmZ = new float[5];
     float[] data = null;
     int thisSetNumber = -1;
     int nFiles = 0;
@@ -16010,6 +16009,7 @@ public class ScriptEvaluator {
       case Token.atomicorbital:
       case Token.orbital:
         surfaceObjectSeen = true;
+        float[] nlmZ = new float[5];
         nlmZ[0] = intParameter(++i);
         nlmZ[1] = intParameter(++i);
         nlmZ[2] = intParameter(++i);
@@ -16017,6 +16017,11 @@ public class ScriptEvaluator {
         sbCommand.append(" atomicOrbital ").append((int) nlmZ[0]).append(" ")
             .append((int) nlmZ[1]).append(" ").append((int) nlmZ[2])
             .append(" ").append(nlmZ[3]);
+        if (tokAt(i + 1) == Token.point) {
+          i += 2;
+          nlmZ[4] = floatParameter(i);
+          sbCommand.append(" points ").append(i);
+        }
         propertyName = "hydrogenOrbital";
         propertyValue = nlmZ;
         break;

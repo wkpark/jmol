@@ -1063,6 +1063,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     thisMesh.calculatedVolume = null;
     thisMesh.initialize(sg.getPlane() != null ? JmolConstants.FULLYLIT
         : lighting, null, sg.getPlane());
+    if (sg.getParams().psi_monteCarloCount > 0)
+      thisMesh.diameter = 500;
     if (thisMesh.jvxlData.jvxlPlane != null)
       allowContourLines = false;
     thisMesh.isSolvent = ((sg.getDataType() & Parameters.IS_SOLVENTTYPE) != 0);

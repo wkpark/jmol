@@ -563,17 +563,20 @@ public class Parameters {
   int psi_m = 1;
   float psi_Znuc = 1; // hydrogen
   float psi_ptsPerAngstrom = 5f;
+  public int psi_monteCarloCount = 0;
 
   boolean setAtomicOrbital(float[] nlmZ) {
     dataType = SURFACE_ATOMICORBITAL;
+    setEccentricity(new Point4f(0, 0, 1, 1));
     psi_n = (int) nlmZ[0];
     psi_l = (int) nlmZ[1];
     psi_m = (int) nlmZ[2];
     psi_Znuc = nlmZ[3];
+    psi_monteCarloCount = (int) nlmZ[4];
     psi_ptsPerAngstrom = 10;
     // quantum rule is abs(m) <= l < n
     if (cutoff == Float.MAX_VALUE) {
-      cutoff = defaultOrbitalCutoff;
+      cutoff = (psi_monteCarloCount > 0 ? 0 : defaultOrbitalCutoff);
       if (isSquared)
         cutoff = cutoff * cutoff;
     }

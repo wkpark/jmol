@@ -35,19 +35,21 @@ class IsoShapeReader extends VolumeDataReader {
   private int psi_m = 1;
   private float psi_Znuc = 1; // hydrogen
   private float sphere_radiusAngstroms;
+  private int monteCarloCount;
 
   IsoShapeReader(SurfaceGenerator sg, float radius) {
     super(sg);
     sphere_radiusAngstroms = radius;    
   }
   
-  IsoShapeReader(SurfaceGenerator sg, int n, int l, int m, float z_eff) {
+  IsoShapeReader(SurfaceGenerator sg, int n, int l, int m, float z_eff, int monteCarloCount) {
     super(sg);
     psi_n = n;
     psi_l = l;
     psi_m = m;
     psi_Znuc = z_eff;    
     sphere_radiusAngstroms = 0;
+    this.monteCarloCount = monteCarloCount;
   }
 
   private boolean allowNegative = true;
@@ -79,6 +81,10 @@ class IsoShapeReader extends VolumeDataReader {
       ppa = 5f;
       maxGrid = 40;
       type = "hydrogen-like orbital";
+      if (monteCarloCount > 0) {
+        vertexDataOnly = true;
+        params.colorDensity = true;
+      }
       break;
     case Parameters.SURFACE_LONEPAIR:
     case Parameters.SURFACE_RADICAL:
@@ -131,34 +137,35 @@ class IsoShapeReader extends VolumeDataReader {
   
   @Override
   public float getValueAtPoint(Point3f pt) {
-    pt.sub(center);
+    ptTemp.set(pt);
+    ptTemp.sub(center);
     if (isEccentric)
-      eccentricityMatrixInverse.transform(pt);
+      eccentricityMatrixInverse.transform(ptTemp);
     if (isAnisotropic) {
-      pt.x /= anisotropy[0];
-      pt.y /= anisotropy[1];
-      pt.z /= anisotropy[2];
+      ptTemp.x /= anisotropy[0];
+      ptTemp.y /= anisotropy[1];
+      ptTemp.z /= anisotropy[2];
     }
     if (sphere_radiusAngstroms > 0) {
       if (params.anisoB != null) {
         
         return sphere_radiusAngstroms - 
         
-        (float) Math.sqrt(pt.x * pt.x + pt.y * pt.y + pt.z
-            * pt.z) /
+        (float) Math.sqrt(ptTemp.x * ptTemp.x + ptTemp.y * ptTemp.y + ptTemp.z
+            * ptTemp.z) /
         (float) (Math.sqrt(
-            params.anisoB[0] * pt.x * pt.x +
-            params.anisoB[1] * pt.y * pt.y +
-            params.anisoB[2] * pt.z * pt.z +
-            params.anisoB[3] * pt.x * pt.y +
-            params.anisoB[4] * pt.x * pt.z +
-            params.anisoB[5] * pt.y * pt.z));
+            params.anisoB[0] * ptTemp.x * ptTemp.x +
+            params.anisoB[1] * ptTemp.y * ptTemp.y +
+            params.anisoB[2] * ptTemp.z * ptTemp.z +
+            params.anisoB[3] * ptTemp.x * ptTemp.y +
+            params.anisoB[4] * ptTemp.x * ptTemp.z +
+            params.anisoB[5] * ptTemp.y * ptTemp.z));
       }
       return sphere_radiusAngstroms
-          - (float) Math.sqrt(pt.x * pt.x + pt.y * pt.y + pt.z
-              * pt.z);
+          - (float) Math.sqrt(ptTemp.x * ptTemp.x + ptTemp.y * ptTemp.y + ptTemp.z
+              * ptTemp.z);
     }
-    float value = (float) hydrogenAtomPsi(pt);
+    float value = (float) hydrogenAtomPsi(ptTemp);
     return (allowNegative || value >= 0 ? value : 0);
   }
   
@@ -267,9 +274,44 @@ class IsoShapeReader extends VolumeDataReader {
     
   }
   
+  private void createMonteCarloOrbital() {
+    double value;
+    double f = 0;
+    double d = radius * 2;
+    
+    for (int i = 0; i < 1000; i++) {
+      setRandomPoint(d);
+      value = Math.abs(hydrogenAtomPsi(ptPsi));
+      if (value > f)
+        f = value;
+    }    
+    for (int i = 0; i < monteCarloCount;) {
+      setRandomPoint(d);
+      ptPsi.add(center);
+      value = getValueAtPoint(ptPsi);
+      double absValue = Math.abs(value);
+      double x = f * Math.random();
+      if (absValue <= x || absValue < params.cutoff)
+        continue;
+      addVertexCopy(ptPsi, (float) value, 0);
+      i++;
+    }    
+  }
+
+  private void setRandomPoint(double d) {
+    ptPsi.x = (float) ((Math.random() - 0.5) * d);
+    ptPsi.y = (float) ((Math.random() - 0.5) * d);
+    ptPsi.z = (float) ((Math.random() - 0.5) * d);
+  }
+
   @Override
   protected void readSurfaceData(boolean isMapData) throws Exception {
     switch (params.dataType) {
+    case Parameters.SURFACE_ATOMICORBITAL:
+      if (monteCarloCount <= 0)
+        break;
+      createMonteCarloOrbital();
+      return;
     case Parameters.SURFACE_LONEPAIR:
     case Parameters.SURFACE_RADICAL:
       ptPsi.set(0, 0, eccentricityScale / 2);
@@ -282,4 +324,5 @@ class IsoShapeReader extends VolumeDataReader {
     }
     super.readSurfaceData(isMapData);
   }
+
 }

@@ -792,21 +792,21 @@ public class SurfaceGenerator {
 
     if ("lp" == propertyName) {
       params.setLp((Point4f) value);
-      surfaceReader = new IsoShapeReader(this, 3, 2, 0, 15);
+      surfaceReader = new IsoShapeReader(this, 3, 2, 0, 15, 0);
       generateSurface();
       return true;
     }
 
     if ("rad" == propertyName) {
       params.setRadical((Point4f) value);
-      surfaceReader = new IsoShapeReader(this, 3, 2, 0, 15);
+      surfaceReader = new IsoShapeReader(this, 3, 2, 0, 15, 0);
       generateSurface();
       return true;
     }
 
     if ("lobe" == propertyName) {
       params.setLobe((Point4f) value);
-      surfaceReader = new IsoShapeReader(this, 3, 2, 0, 15);
+      surfaceReader = new IsoShapeReader(this, 3, 2, 0, 15, 0);
       generateSurface();
       return true;
     }
@@ -817,7 +817,7 @@ public class SurfaceGenerator {
         return true;
       }
       surfaceReader = new IsoShapeReader(this, params.psi_n, params.psi_l,
-          params.psi_m, params.psi_Znuc);
+          params.psi_m, params.psi_Znuc, params.psi_monteCarloCount);
       processState();
       return true;
     }

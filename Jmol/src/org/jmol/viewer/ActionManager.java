@@ -651,6 +651,8 @@ public class ActionManager {
                           int modifiers) {
     if (!viewer.getMouseEnabled())
       return;
+    if (Logger.debugging)
+      Logger.info("ActionManager mouseAction action=" + action + " x y = " + x + " " + y + " count = " + count + " mods = " + modifiers);
     switch (action) {
     case Binding.MOVED:
       setCurrent(time, x, y, modifiers);

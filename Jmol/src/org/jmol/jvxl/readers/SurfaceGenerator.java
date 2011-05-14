@@ -558,6 +558,10 @@ public class SurfaceGenerator {
       return true;
     }
 
+    if ("monteCarloCount" == propertyName) {
+      params.psi_monteCarloCount = ((Integer) value).intValue();
+      return true;
+    }
     if ("rangeAll" == propertyName) {
       params.rangeAll = true;
       return true;

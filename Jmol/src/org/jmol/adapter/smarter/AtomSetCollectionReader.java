@@ -1214,7 +1214,7 @@ public abstract class AtomSetCollectionReader {
       siteScript += ";";
     siteScript += script;
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("sitescript",
-        siteScript);
+        siteScript);  // checked in ScriptEvaluator.load()
   }
 
   public String readLine() throws Exception {

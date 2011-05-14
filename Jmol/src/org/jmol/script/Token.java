@@ -117,7 +117,7 @@ public class Token {
    * 3         2         1         0
    * 0987654321098765432109876543210
    *  x                  xxxxxxxxxxx setparam  "set THIS ...."
-   *  x     x                        stringparam
+   *  x     x                        strparam
    *  x    x                         intparam
    *  x   x                          floatparam
    *  x  x                           booleanparam
@@ -234,6 +234,7 @@ public class Token {
   public final static int intparam   = (1 << 24) | setparam; // int parameter
   public final static int floatparam = (1 << 25) | setparam; // float parameter
   public final static int booleanparam = (1 << 26) | setparam; // boolean parameter
+  private final static int paramTypes = (strparam | intparam | floatparam | booleanparam);
   
   // note: the booleanparam and the mathproperty bits are the same, but there is no
   //       conflict because mathproperty is only checked in ScriptEvaluator.getBitsetProperty
@@ -2335,6 +2336,12 @@ public class Token {
       tokenLast = tokenThis;
     }
     Logger.info(arrayPairs.length + " script command tokens");
+  }
+
+  public static int getParamType(int tok) {
+    if (!tokAttr(tok, setparam))
+      return nada;
+    return tok & paramTypes;
   }
 
 }

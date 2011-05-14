@@ -173,7 +173,7 @@ public abstract class MeshCollection extends Shape {
     if ("variables" == propertyName) {
       if (currentMesh != null && currentMesh.scriptCommand != null && !currentMesh.scriptCommand.startsWith("{"))
         currentMesh.scriptCommand = "{\n" 
-          + StateManager.getVariableList((Map<String, ScriptVariable>) value, 0, false) + "\n" + currentMesh.scriptCommand;
+          + StateManager.getVariableList((Map<String, ScriptVariable>) value, 0, false, false) + "\n" + currentMesh.scriptCommand;
       return;
     }
 

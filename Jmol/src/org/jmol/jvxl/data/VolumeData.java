@@ -258,11 +258,6 @@ public class VolumeData implements VolumeDataInterface {
     getYzCount();
   }
   
-  public float getVoxelValueFromMap(int x, int y, int z) {
-    Float v = (voxelMap == null ? null : (Float) voxelMap.get(x+"_" + y + "_" + z));
-    return (v == null ? Float.NaN : v.floatValue());
-  }
-
   public boolean setMatrix() {
     for (int i = 0; i < 3; i++)
       volumetricMatrix.setColumn(i, volumetricVectors[i]);

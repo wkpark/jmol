@@ -157,7 +157,7 @@ public class Escape {
     for (int i = 0; i < list.size(); i++) {
       if (i > 0)
         s.append(", ");
-      s.append(escapeNice(ScriptVariable.sValue(list.get(i))));
+      s.append(escapeNice(list.get(i).asString()));
     }
     s.append("]");
     return s.toString();

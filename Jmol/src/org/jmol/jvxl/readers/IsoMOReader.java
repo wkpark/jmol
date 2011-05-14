@@ -27,6 +27,8 @@ import java.util.Map;
 
 import java.util.List;
 
+import javax.vecmath.Point3f;
+
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
@@ -50,6 +52,10 @@ class IsoMOReader extends AtomDataReader {
     setRangesAndAddAtoms(params.qm_ptsPerAngstrom, params.qm_gridMax, myAtomCount);
     for (int i = params.title.length; --i >= 0;)
       fixTitleLine(i, params.mo);
+    if (params.psi_monteCarloCount > 0) {
+      vertexDataOnly = true;
+      //params.colorDensity = true;
+    }
   }
   
   private void fixTitleLine(int iLine, Map<String, Object> mo) {
@@ -81,10 +87,72 @@ class IsoMOReader extends AtomDataReader {
     params.title[iLine] = (!isOptional ? line : rep > 0 && !line.trim().endsWith("=") ? line.substring(1) : "");
   }
   
-  @SuppressWarnings("unchecked")
+  private final float[] vDist = new float[3];
+  
+  @Override
+  protected void readSurfaceData(boolean isMapData) throws Exception {
+    if (params.psi_monteCarloCount <= 0) {
+      super.readSurfaceData(isMapData);
+      return;
+    }
+    points = new Point3f[1000];
+    // presumes orthogonal
+    for (int i = 0; i < 3; i++)
+      vDist[i] = volumeData.volumetricVectorLengths[i]
+          * volumeData.voxelCounts[i];
+    volumeData.voxelData = voxelData = new float[1000][1][1];
+    for (int j = 0; j < 1000; j++)
+      points[j] = new Point3f();
+    getValues();
+    float value;
+    float f = 0;
+    for (int j = 0; j < 1000; j++)
+      if ((value = Math.abs(voxelData[j][0][0])) > f)
+        f = value;
+    //minMax = new float[] {(params.mappedDataMin  = -f / 2), 
+    //(params.mappedDataMax = f / 2)};
+    for (int i = 0; i < params.psi_monteCarloCount;) {
+      getValues();
+      System.out.println("isomo f=" + f + " i=" + i);
+      for (int j = 0; j < 1000; j++) {
+        value = voxelData[j][0][0];
+        double absValue = Math.abs(value);
+        double x = f * Math.random();
+        if (absValue <= x)
+          continue;
+        //System.out.println(j + "\t" + points[j] + "\t" + value + "\t" + x);
+        addVertexCopy(points[j], value, 0);
+        if (++i == params.psi_monteCarloCount)
+          break;
+      }
+    }
+  }
+
+  private void getValues() {        
+    for (int j = 0; j < 1000; j++) {
+      voxelData[j][0][0] = 0;
+      points[j].set(volumeData.volumetricOrigin.x + getRnd(vDist[0]), 
+          volumeData.volumetricOrigin.y + getRnd(vDist[1]), 
+          volumeData.volumetricOrigin.z + getRnd(vDist[2]));
+    }
+    createOrbital();
+  }
+
+  private float getRnd(float f) {
+    return (float) (Math.random() * f);
+  }
+
   @Override
   protected void generateCube() {
     volumeData.voxelData = voxelData = new float[nPointsX][nPointsY][nPointsZ];
+    createOrbital();
+  }
+
+  private Point3f[] points;
+
+  @SuppressWarnings("unchecked")
+  protected void createOrbital() {
+    boolean isMonteCarlo = (params.psi_monteCarloCount > 0);
     MOCalculationInterface q = (MOCalculationInterface) Interface.getOptionInterface("quantum.MOCalculation");
     Map<String, Object> moData = params.moData;
     float[] coef = params.moCoefficients; 
@@ -93,7 +161,7 @@ class IsoMOReader extends AtomDataReader {
     List<Map<String, Object>> mos = (List<Map<String, Object>>) moData.get("mos");
     if (coef == null && linearCombination == null) {
       // electron density calc
-      if (mos == null)
+      if (mos == null || isMonteCarlo)
         return;
       for (int i = params.qm_moNumber; --i >= 0; ) {
         Logger.info(" generating isosurface data for MO " + (i + 1));
@@ -103,7 +171,8 @@ class IsoMOReader extends AtomDataReader {
         getData(q, moData, coef, dfCoefMaps, params.theProperty, null, null);
       }
     } else {
-      Logger.info("generating isosurface data for MO using cutoff " + params.cutoff);
+      if (!isMonteCarlo)
+        Logger.info("generating isosurface data for MO using cutoff " + params.cutoff);
       float[][] coefs = null;
       if (linearCombination != null) {
         coefs = new float[mos.size()][];
@@ -128,14 +197,14 @@ class IsoMOReader extends AtomDataReader {
           atomData.atomXyz, atomData.firstAtomIndex,
           (List<int[]>) moData.get("shells"), (float[][]) moData.get("gaussians"),
           dfCoefMaps, null, coef, linearCombination, coefs,
-          nuclearCharges, moData.get("isNormalized") == null);
+          nuclearCharges, moData.get("isNormalized") == null, points);
       break;
     case Parameters.QM_TYPE_SLATER:
       q.calculate(
           volumeData, bsMySelected, (String) moData.get("calculationType"),
           atomData.atomXyz, atomData.firstAtomIndex,
           null, null, null, moData.get("slaters"), coef, 
-          linearCombination, coefs, nuclearCharges, true);
+          linearCombination, coefs, nuclearCharges, true, points);
       break;
     default:
     }

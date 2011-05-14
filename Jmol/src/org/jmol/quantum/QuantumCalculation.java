@@ -37,6 +37,7 @@ abstract class QuantumCalculation {
   protected final static float bohr_per_angstrom = 1 / 0.52918f;
 
   protected float[][][] voxelData;
+  protected Point3f[] points;
   protected int xMin, xMax, yMin, yMax, zMin, zMax;
 
   protected QMAtom[] qmAtoms;
@@ -61,7 +62,11 @@ abstract class QuantumCalculation {
   
   protected float unitFactor = bohr_per_angstrom;
 
-  protected void initialize(int nX, int nY, int nZ) {
+  protected void initialize(int nX, int nY, int nZ, Point3f[] points) {
+    if (points != null) {
+      this.points = points;
+      nX = nY = nZ = points.length;
+    }
     
     this.nX = nX;
     this.nY = nY;
@@ -86,7 +91,7 @@ abstract class QuantumCalculation {
   protected float volume = 1;
 
   protected void setupCoordinates(float[] originXYZ, float[] stepsXYZ,
-                                  BitSet bsSelected, Point3f[] atomCoordAngstroms) {
+                                  BitSet bsSelected, Point3f[] atomCoordAngstroms, Point3f[] points) {
 
     // all coordinates come in as angstroms, not bohr, and are converted here into bohr
 
@@ -95,9 +100,9 @@ abstract class QuantumCalculation {
       stepBohr[i] = stepsXYZ[i] * unitFactor;
       volume *= stepBohr[i];
     }
-    setXYZBohr(xBohr, 0, nX);
-    setXYZBohr(yBohr, 1, nY);
-    setXYZBohr(zBohr, 2, nZ);
+    setXYZBohr(xBohr, 0, nX, points);
+    setXYZBohr(yBohr, 1, nY, points);
+    setXYZBohr(zBohr, 2, nZ, points);
     
     /* 
      * allowing null atoms allows for selectively removing
@@ -117,7 +122,25 @@ abstract class QuantumCalculation {
           + nX + " " + nY + " " + nZ);
   }
 
-  private void setXYZBohr(float[] bohr, int i, int n) {
+  private void setXYZBohr(float[] bohr, int i, int n, Point3f[] points) {
+    if (points != null) {
+      float x = 0;
+      for (int j = 0; j < n; j++) {
+        switch (i) {
+        case 0:
+          x = points[j].x;
+          break;
+        case 1:
+          x = points[j].y;
+          break;
+        case 2:
+          x = points[j].z;
+          break;
+        }
+        bohr[j] = x * unitFactor;
+      }
+      return;
+    }
     bohr[0] = originBohr[i];
     float inc = stepBohr[i];
     for (int j = 0; ++j < n;)
@@ -150,33 +173,47 @@ abstract class QuantumCalculation {
     protected void setXYZ(boolean setMinMax) {
       int i;
       try {
-      if (setMinMax) {
-        i = (int) Math.floor((x - xBohr[0] - rangeBohrOrAngstroms) / stepBohr[0]);
-        xMin = (i < 0 ? 0 : i);
-        i = (int) Math.floor(1 + (x - xBohr[0] + rangeBohrOrAngstroms) / stepBohr[0]);
-        xMax = (i >= nX ? nX : i + 1);
-        i = (int) Math.floor((y - yBohr[0] - rangeBohrOrAngstroms) / stepBohr[1]);
-        yMin = (i < 0 ? 0 : i);
-        i = (int) Math.floor(1 + (y - yBohr[0] + rangeBohrOrAngstroms) / stepBohr[1]);
-        yMax = (i >= nY ? nY : i + 1);
-        i = (int) Math.floor((z - zBohr[0] - rangeBohrOrAngstroms) / stepBohr[2]);
-        zMin = (i < 0 ? 0 : i);
-        i = (int) Math.floor(1 + (z - zBohr[0] + rangeBohrOrAngstroms) / stepBohr[2]);
-        zMax = (i >= nZ ? nZ : i + 1);
-      }
-      for (i = xMax; --i >= xMin;) {
-        myX2[i] = myX[i] = xBohr[i] - x;
-        myX2[i] *= myX[i];
-      }
-      for (i = yMax; --i >= yMin;) {
-        myY2[i] = myY[i] = yBohr[i] - y;
-        myY2[i] *= myY[i];
-      }
-      for (i = zMax; --i >= zMin;) {
-        myZ2[i] = myZ[i] = zBohr[i] - z;
-        myZ2[i] *= myZ[i];
-      }
-      
+        if (setMinMax) {
+          if (points != null) {
+            xMin = yMin = zMin = 0;
+            xMax = yMax = zMax = points.length;
+          } else {
+            i = (int) Math.floor((x - xBohr[0] - rangeBohrOrAngstroms)
+                / stepBohr[0]);
+            xMin = (i < 0 ? 0 : i);
+            i = (int) Math.floor(1 + (x - xBohr[0] + rangeBohrOrAngstroms)
+                / stepBohr[0]);
+            xMax = (i >= nX ? nX : i + 1);
+            i = (int) Math.floor((y - yBohr[0] - rangeBohrOrAngstroms)
+                / stepBohr[1]);
+            yMin = (i < 0 ? 0 : i);
+            i = (int) Math.floor(1 + (y - yBohr[0] + rangeBohrOrAngstroms)
+                / stepBohr[1]);
+            yMax = (i >= nY ? nY : i + 1);
+            i = (int) Math.floor((z - zBohr[0] - rangeBohrOrAngstroms)
+                / stepBohr[2]);
+            zMin = (i < 0 ? 0 : i);
+            i = (int) Math.floor(1 + (z - zBohr[0] + rangeBohrOrAngstroms)
+                / stepBohr[2]);
+            zMax = (i >= nZ ? nZ : i + 1);
+          }
+        }
+        for (i = xMax; --i >= xMin;) {
+          myX2[i] = myX[i] = xBohr[i] - x;
+          myX2[i] *= myX[i];
+        }
+        for (i = yMax; --i >= yMin;) {
+          myY2[i] = myY[i] = yBohr[i] - y;
+          myY2[i] *= myY[i];
+        }
+        for (i = zMax; --i >= zMin;) {
+          myZ2[i] = myZ[i] = zBohr[i] - z;
+          myZ2[i] *= myZ[i];
+        }
+        if (points != null) {
+          yMax = zMax = 1;
+        }
+
       } catch (Exception e) {
         Logger.error("Error in QuantumCalculation setting bounds");
       }

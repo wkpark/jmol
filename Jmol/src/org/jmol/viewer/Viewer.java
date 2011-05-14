@@ -5465,11 +5465,23 @@ private void zap(String msg) {
       global.setParameterValue(key, value);
       return;
     }
-    setStringProperty(key, Token.getTokFromName(key.toLowerCase()), value);
+    int tok = Token.getTokFromName(key.toLowerCase());
+    switch (Token.getParamType(tok)) {
+    case Token.booleanparam:
+      setBooleanProperty(key, tok, ScriptVariable.bValue(ScriptVariable.getVariable(value)));
+      break;
+    case Token.intparam:
+      setIntProperty(key, tok, ScriptVariable.iValue(ScriptVariable.getVariable(value)));
+      break;
+    case Token.floatparam:
+      setFloatProperty(key, tok, Parser.parseFloat(value));
+      break;
+    default:
+      setStringProperty(key, tok, value);
+    }
   }
 
-  public void setStringProperty(String key, int tok, String value) {
-    boolean found = true;
+  private void setStringProperty(String key, int tok, String value) {
     switch (tok) {
     case Token.defaultloadfilter:
       // 12.0.RC10
@@ -5602,21 +5614,15 @@ private void zap(String msg) {
             || value.equalsIgnoreCase("none") ? null : value));
         break;
       }
-      found = false;
+      if (!global.htNonbooleanParameterValues.containsKey(key.toLowerCase())) {
+        global.setUserVariable(key, new ScriptVariable(Token.string, value));
+        return;
+      }
+      // a few String parameters may not be tokenized. Save them anyway.
+      // for example, defaultDirectoryLocal
+      break;
     }
-    key = key.toLowerCase();
-    if (global.htNonbooleanParameterValues.containsKey(key)) {
-      global.setParameterValue(key, value);
-    } else if (!found
-        && key.charAt(0) != '@'
-        // not found -- @ is a silent mode indicator
-        && (global.htBooleanParameterFlags.containsKey(key) || global.htPropertyFlagsRemoved
-            .containsKey(key))) {
-      // setPropertyError(GT._(
-      // "ERROR: cannot set boolean flag to string value: {0}", key));
-    } else {
-      global.setUserVariable(key, new ScriptVariable(Token.string, value));
-    }
+    global.setParameterValue(key, value);
   }
 
   @Override
@@ -5627,12 +5633,23 @@ private void zap(String msg) {
       global.setParameterValue(key, value);
       return;
     }
-    setFloatProperty(key, Token.getTokFromName(key.toLowerCase()), value, false);
+    int tok = Token.getTokFromName(key.toLowerCase());
+    switch (Token.getParamType(tok)) {
+    case Token.strparam:
+      setStringProperty(key, tok, "" + value);
+      break;
+    case Token.booleanparam:
+      setBooleanProperty(key, tok, value != 0);
+      break;
+    case Token.intparam:
+      setIntProperty(key, tok, (int) value);
+      break;
+    default:
+      setFloatProperty(key, tok, value);
+    }
   }
 
-  public boolean setFloatProperty(String key, int tok, float value,
-                                  boolean isInt) {
-    boolean found = true;
+  private void setFloatProperty(String key, int tok, float value) {
     switch (tok) {
     case Token.multiplebondradiusfactor:
       // 12.1.11
@@ -5679,7 +5696,7 @@ private void zap(String msg) {
       break;
     case Token.navfps:
       if (Float.isNaN(value))
-        return true;
+        return;
       setSpin("FPS", (int) value);
       break;
     case Token.loadatomdatatolerance:
@@ -5701,9 +5718,7 @@ private void zap(String msg) {
       global.pointGroupLinearTolerance = value;
       break;
     case Token.ellipsoidaxisdiameter:
-      // 11.5.30//
-      if (isInt)
-        value = value / 1000;
+      global.ellipsoidAxisDiameter = value;
       break;
     case Token.spinx:
       // /11.3.52//
@@ -5748,7 +5763,7 @@ private void zap(String msg) {
       break;
     case Token.rotationradius:
       setRotationRadius(value, true);
-      return true;
+      return;
     case Token.hoverdelay:
       global.hoverDelayMs = (int) (value * 1000);
       break;
@@ -5765,21 +5780,21 @@ private void zap(String msg) {
     case Token.vectorscale:
       // public -- no need to set
       setVectorScale(value);
-      return true;
+      return;
     case Token.vibrationperiod:
       // public -- no need to set
       setVibrationPeriod(value);
-      return true;
+      return;
     case Token.vibrationscale:
       // public -- no need to set
       setVibrationScale(value);
-      return true;
+      return;
     case Token.bondtolerance:
       setBondTolerance(value);
-      return true;
+      return;
     case Token.minbonddistance:
       setMinBondDistance(value);
-      return true;
+      return;
     case Token.scaleangstromsperinch:
       transformManager.setScaleAngstromsPerInch(value);
       break;
@@ -5787,21 +5802,13 @@ private void zap(String msg) {
       global.solventProbeRadius = value;
       break;
     default:
-      if (isInt)
-        return false;
-      found = false;
+      if (!global.htNonbooleanParameterValues.containsKey(key.toLowerCase())) {
+        global.setUserVariable(key, new ScriptVariable(Token.decimal,
+            new Float(value)));
+        return;
+      }
     }
-    key = key.toLowerCase();
-    if (global.htNonbooleanParameterValues.containsKey(key))
-      global.setParameterValue(key, value);
-    else if (!found && global.htBooleanParameterFlags.containsKey(key)) {
-      // setPropertyError(GT._(
-      // "ERROR: cannot set boolean flag to numeric value: {0}", key));
-    } else {
-      global.setUserVariable(key, new ScriptVariable(Token.decimal, new Float(
-          value)));
-    }
-    return true;
+    global.setParameterValue(key, value);
   }
 
   @Override
@@ -5812,11 +5819,23 @@ private void zap(String msg) {
       global.setParameterValue(key, value);
       return;
     }
-    setIntProperty(key, Token.getTokFromName(key.toLowerCase()), value);
+    int tok = Token.getTokFromName(key.toLowerCase());
+    switch (Token.getParamType(tok)) {
+    case Token.strparam:
+      setStringProperty(key, tok, "" + value);
+      break;
+    case Token.booleanparam:
+      setBooleanProperty(key, tok, value != 0);
+      break;
+    case Token.floatparam:
+      setFloatProperty(key, tok, value);
+      break;
+    default:
+      setIntProperty(key, tok, value);
+    }
   }
   
-  public void setIntProperty(String key, int tok, int value) {
-    boolean found = true;
+  private void setIntProperty(String key, int tok, int value) {
     switch (tok) {
     case Token.isosurfacepropertysmoothingpower:
       // 12.1.11
@@ -5832,12 +5851,6 @@ private void zap(String msg) {
       break;
     case Token.minimizationsteps:
       global.minimizationSteps = value;
-      break;
-    case Token.propertyatomnumbercolumncount:
-    case Token.propertyatomnumberfield: // 11.6.RC16
-    case Token.ellipsoiddotcount: // 11.5.30
-    case Token.propertydatafield: // 11.1.31
-      // just save in the hashtable, not in global
       break;
     case Token.strutspacing:
       // 11.9.21
@@ -5911,7 +5924,7 @@ private void zap(String msg) {
       // public method -- no need to set
       return;
     case Token.specular:
-      setBooleanProperty(key, tok, value == 1, true);
+      setBooleanProperty(key, tok, value == 1);
       return;
     case Token.specularpercent:
       Graphics3D.setSpecularPercent(value);
@@ -5952,23 +5965,22 @@ private void zap(String msg) {
     case Token.hermitelevel:
       global.hermiteLevel = value;
       break;
+    case Token.ellipsoiddotcount: // 11.5.30
+    case Token.historylevel:
+    case Token.propertyatomnumbercolumncount:
+    case Token.propertyatomnumberfield: // 11.6.RC16
+    case Token.propertydatacolumncount:
+    case Token.propertydatafield: // 11.1.31
+      // just save in the hashtable, not in global
+      break;
     default:
-      if ((value != 0 && value != 1)
-          || !setBooleanProperty(key, tok, value == 1, false)) {
-        if (setFloatProperty(key, tok, value, true))
-          return;
+      // stateversion is not tokenized
+      if (!global.htNonbooleanParameterValues.containsKey(key)) {
+        global.setUserVariable(key, ScriptVariable.intVariable(value));
+        return;
       }
-      found = false;
     }
-    key = key.toLowerCase();
-    if (global.htNonbooleanParameterValues.containsKey(key)) {
-      global.setParameterValue(key, value);
-    } else if (!found && global.htBooleanParameterFlags.containsKey(key)) {
-      // setPropertyError(GT._(
-      // "ERROR: cannot set boolean flag to numeric value: {0}", key));
-    } else {
-      global.setUserVariable(key, ScriptVariable.intVariable(value));
-    }
+    global.setParameterValue(key, value);
   }
 
   @Override
@@ -5977,13 +5989,23 @@ private void zap(String msg) {
       global.setParameterValue(key, value);
       return;
     }
-    setBooleanProperty(key, Token.getTokFromName(key.toLowerCase()), value,
-        true);
+    int tok = Token.getTokFromName(key.toLowerCase());
+    switch (Token.getParamType(tok)) {
+    case Token.strparam:
+      setStringProperty(key, tok, "" + value);
+      break;
+    case Token.intparam:
+      setIntProperty(key, tok, value ? 1 : 0);
+      break;
+    case Token.floatparam:
+      setFloatProperty(key, tok, value ? 1 : 0);
+      break;
+    default:
+      setBooleanProperty(key, tok, value);
+    }
   }
 
-  private boolean setBooleanProperty(String key, int tok, boolean value,
-                                     boolean defineNew) {
-    boolean found = true;
+  private void setBooleanProperty(String key, int tok, boolean value) {
     boolean doRepaint = true;
     switch (tok) {
     case Token.partialdots:
@@ -6228,7 +6250,7 @@ private void zap(String msg) {
     case Token.showscript:
       // /11.1.13///
       setIntProperty("showScript", tok, value ? 1 : 0);
-      return true;
+      return;
     case Token.allowembeddedscripts:
       // /11.1///
       global.allowEmbeddedScripts = value;
@@ -6238,7 +6260,7 @@ private void zap(String msg) {
       break;
     case Token.zshade:
       transformManager.setZShadeEnabled(value);
-      return true;
+      return;
     case Token.drawhover:
       if (haveDisplay)
         global.drawHover = value;
@@ -6277,10 +6299,10 @@ private void zap(String msg) {
     case Token.slabenabled:
       // Eval.slab
       transformManager.setSlabEnabled(value); // refresh?
-      return true;
+      return;
     case Token.zoomenabled:
       transformManager.setZoomEnabled(value);
-      return true;
+      return;
     case Token.highresolution:
       global.highResolutionFlag = value;
       break;
@@ -6361,47 +6383,48 @@ private void zap(String msg) {
     case Token.axeswindow:
       // remove parameters, so don't set htParameter key here
       setAxesModeMolecular(!value);
-      return true;
+      return;
     case Token.axesmolecular:
       // remove parameters, so don't set htParameter key here
       setAxesModeMolecular(value);
-      return true;
+      return;
     case Token.axesunitcell:
       // remove parameters, so don't set htParameter key here
       setAxesModeUnitCell(value);
-      return true;
+      return;
     case Token.axesorientationrasmol:
       // public; no need to set here
       setAxesOrientationRasmol(value);
-      return true;
+      return;
     case Token.colorrasmol:
-      setStringProperty("defaultcolorscheme", Token.defaultcolorscheme,value ? "rasmol" : "jmol");
-      return true;
+      setStringProperty("defaultcolorscheme", Token.defaultcolorscheme,
+          value ? "rasmol" : "jmol");
+      return;
     case Token.debugscript:
       setDebugScript(value);
-      return true;
+      return;
     case Token.perspectivedepth:
       setPerspectiveDepth(value);
-      return true;
+      return;
     case Token.autobond:
       // public - no need to set
       setAutoBond(value);
-      return true;
+      return;
     case Token.showaxes:
       setShowAxes(value);
-      return true;
+      return;
     case Token.showboundbox:
       setShowBbcage(value);
-      return true;
+      return;
     case Token.showhydrogens:
       setShowHydrogens(value);
-      return true;
+      return;
     case Token.showmeasurements:
       setShowMeasurements(value);
-      return true;
+      return;
     case Token.showunitcell:
       setShowUnitCell(value);
-      return true;
+      return;
     case Token.bondmodeor:
       doRepaint = false;
       global.bondModeOr = value;
@@ -6444,30 +6467,15 @@ private void zap(String msg) {
       doRepaint = false;
       global.fractionalRelative = value;
       break;
-    case Token.nada:
     default:
-      doRepaint = false; // ??
-      found = false;
+      if (!global.htBooleanParameterFlags.containsKey(key.toLowerCase())) {
+        global.setUserVariable(key, ScriptVariable.getBoolean(value));
+        return;
+      }
     }
-    if (!defineNew)
-      return found;
-    key = key.toLowerCase();
-    boolean isJmol = global.htBooleanParameterFlags.containsKey(key);
-    if (isJmol)
-      global.setParameterValue(key, value);
-    else if (!found && global.htNonbooleanParameterValues.containsKey(key)) {
-      // setPropertyError(GT._(
-      // "ERROR: Cannot set value of this variable to a boolean: {0}", key));
-      return true;
-    } else {
-      global.setUserVariable(key, ScriptVariable.getBoolean(value));
-    }
-    if (!found)
-      return false;
-    // not sure why we are doing this, and only for booleans...
+    global.setParameterValue(key, value);
     if (doRepaint)
       setTainted(true);
-    return true;
   }
 
   /*

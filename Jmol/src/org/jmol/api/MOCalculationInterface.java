@@ -17,7 +17,7 @@ public interface MOCalculationInterface {
                                  Object slaters,
                                  float[] moCoefficients, 
                                  float[] linearCombination, float[][] coefs,
-                                 float[] nuclearCharges, boolean doNormalize);
+                                 float[] nuclearCharges, boolean doNormalize, Point3f[] points);
   
   public abstract void calculateElectronDensity(float[] nuclearCharges);
 }

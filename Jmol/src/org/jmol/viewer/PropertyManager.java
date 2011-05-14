@@ -278,7 +278,7 @@ public class PropertyManager {
       }
       break;
     case Token.string:
-      String key = ScriptVariable.sValue(arg);
+      String key = arg.asString();
       if (property instanceof Map<?,?>) {
         Map<String, Object> h = (Map<String, Object>) property;
         if (key.equalsIgnoreCase("keys")) {

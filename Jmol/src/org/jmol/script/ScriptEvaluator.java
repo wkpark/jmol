@@ -677,7 +677,7 @@ public class ScriptEvaluator {
         } else {
           v = getParameter(ScriptVariable.sValue(statement[i]), Token.variable);
         }
-        v = getParameter(ScriptVariable.sValue((ScriptVariable) v),
+        v = getParameter(((ScriptVariable) v).asString(),
             Token.variable);
         i = iToken;
         break;
@@ -779,8 +779,7 @@ public class ScriptEvaluator {
             if (isFor) {
               if (res == null || ((List<?>) res).size() == 0)
                 error(ERROR_invalidArgument);
-              sout[p++] = ScriptVariable
-                  .sValue((ScriptVariable) ((List<?>) res).get(0));
+              sout[p++] = ((ScriptVariable) ((List<?>) res).get(0)).asString();
             } else if (((Boolean) res).booleanValue()) {
               bsSelect.set(j);
             }
@@ -1006,7 +1005,7 @@ public class ScriptEvaluator {
     if (returnString) {
       if (result.tok == Token.string)
         result.intValue = Integer.MAX_VALUE;
-      return ScriptVariable.sValue(result);
+      return result.asString();
     }
     switch (result.tok) {
     case Token.on:
@@ -1239,7 +1238,7 @@ public class ScriptEvaluator {
       case Token.stddev:
       case Token.sum:
       case Token.sum2:
-        return new Float(Float.NaN);
+        return Float.valueOf(Float.NaN);
       default:
         return bsNew;
       }
@@ -1575,7 +1574,7 @@ public class ScriptEvaluator {
     if (isPt)
       return (n == 0 ? pt : new Point3f(pt.x / n, pt.y / n, pt.z / n));
     if (n == 0 || n == 1 && minmaxtype == Token.stddev)
-      return new Float(Float.NaN);
+      return Float.valueOf(Float.NaN);
     if (isInt) {
       switch (minmaxtype) {
       case Token.min:
@@ -1589,7 +1588,7 @@ public class ScriptEvaluator {
       default:
         if (sum / n == (int) (sum / n))
           return Integer.valueOf((int) (sum / n));
-        return new Float(sum / n);
+        return Float.valueOf((float)(sum / n));
       }
     }
     switch (minmaxtype) {
@@ -1662,13 +1661,12 @@ public class ScriptEvaluator {
             values[i] = svi.intValue;
           } else {
             values[i] = Graphics3D
-                .getArgbFromString(ScriptVariable.sValue(svi));
+                .getArgbFromString(svi.asString());
             if (values[i] == 0)
               values[i] = ScriptVariable.iValue(svi);
           }
           if (values[i] == 0)
-            error(ERROR_unrecognizedParameter, "ARRAY", ScriptVariable
-                .sValue(svi));
+            error(ERROR_unrecognizedParameter, "ARRAY", svi.asString());
         }
         value = values;
         prop = "colorValues";
@@ -1876,7 +1874,7 @@ public class ScriptEvaluator {
       List<ScriptVariable> sv = (ArrayList<ScriptVariable>) v;
       StringBuffer sb = new StringBuffer();
       for (int i = 0; i < sv.size(); i++)
-        sb.append(ScriptVariable.sValue(sv.get(i))).append('\n');
+        sb.append(sv.get(i).asString()).append('\n');
       return sb.toString();
     }
     return (v instanceof ScriptVariable ? ScriptVariable
@@ -1892,7 +1890,7 @@ public class ScriptEvaluator {
   private String getStringParameter(String var, boolean orReturnName) {
     ScriptVariable v = getContextVariableAsVariable(var);
     if (v != null)
-      return ScriptVariable.sValue(v);
+      return v.asString();
     String val = "" + viewer.getParameter(var);
     return (val.length() == 0 && orReturnName ? var : val);
   }
@@ -2168,6 +2166,8 @@ public class ScriptEvaluator {
       Object value = entry.getValue();
       if (value instanceof BitSet) {
         BitSetUtil.deleteBits((BitSet) value, bsDeleted);
+        if (!entry.getKey().startsWith("!"))
+          viewer.setUserVariable("@" + entry.getKey(), ScriptVariable.getVariable(value));
       }
     }
   }
@@ -2489,7 +2489,7 @@ public class ScriptEvaluator {
         if (context.contextVariables != null) {
           sb.append(getScriptID(context));
           sb.append(StateManager.getVariableList(context.contextVariables, 80,
-              true));
+              true, false));
         }
       } else {
         sb.append(setErrorLineMessage(context.functionName, context.filename,
@@ -2501,7 +2501,7 @@ public class ScriptEvaluator {
     if (withVariables) {
       if (contextVariables != null) {
         sb.append(getScriptID(null));
-        sb.append(StateManager.getVariableList(contextVariables, 80, true));
+        sb.append(StateManager.getVariableList(contextVariables, 80, true, false));
       }
     } else {
       sb.append(setErrorLineMessage(functionName, filename,
@@ -4194,21 +4194,21 @@ public class ScriptEvaluator {
           break;
         case Token.point3f:
           pt = getPoint3f(i, false);
-          v.add(new Float(pt.x));
-          v.add(new Float(pt.y));
-          v.add(new Float(pt.z));
+          v.add(Float.valueOf(pt.x));
+          v.add(Float.valueOf(pt.y));
+          v.add(Float.valueOf(pt.z));
           n += 3;
           break;
         case Token.point4f:
           Point4f pt4 = getPoint4f(i);
-          v.add(new Float(pt4.x));
-          v.add(new Float(pt4.y));
-          v.add(new Float(pt4.z));
-          v.add(new Float(pt4.w));
+          v.add(Float.valueOf(pt4.x));
+          v.add(Float.valueOf(pt4.y));
+          v.add(Float.valueOf(pt4.z));
+          v.add(Float.valueOf(pt4.w));
           n += 4;
           break;
         default:
-          v.add(new Float(floatParameter(i)));
+          v.add(Float.valueOf(floatParameter(i)));
           n++;
           if (n == nMax && haveSquare && tokAt(i + 1) == Token.rightbrace)
             i++;
@@ -7196,7 +7196,7 @@ public class ScriptEvaluator {
         if (translucentLevel == Float.MAX_VALUE)
           translucentLevel = viewer.getDefaultTranslucent();
         setShapeProperty(JmolConstants.SHAPE_STICKS, "translucentLevel",
-            new Float(translucentLevel));
+            Float.valueOf(translucentLevel));
         setShapeProperty(JmolConstants.SHAPE_STICKS, "translucency",
             translucency, bsBonds);
       }
@@ -7758,7 +7758,7 @@ public class ScriptEvaluator {
                                     float translucentLevel, BitSet bs) {
     if (translucentLevel == Float.MAX_VALUE)
       translucentLevel = viewer.getDefaultTranslucent();
-    setShapeProperty(shapeType, "translucentLevel", new Float(translucentLevel));
+    setShapeProperty(shapeType, "translucentLevel", Float.valueOf(translucentLevel));
     if (prefix == null)
       return;
     if (bs == null)
@@ -8052,7 +8052,8 @@ public class ScriptEvaluator {
     } else {
       BitSet bs = atomExpression(2);
       definedAtomSets.put(setName, bs);
-      setStringProperty("@" + setName, Escape.escape(bs));
+      if (!isSyntaxCheck)
+        viewer.setUserVariable("@" + setName, ScriptVariable.getVariable(bs));
     }
   }
 
@@ -8391,7 +8392,7 @@ public class ScriptEvaluator {
           distance = floatParameter(i++);
           sOptions += " range " + distance;
         }
-        htParams.put("symmetryRange", new Float(distance));
+        htParams.put("symmetryRange", Float.valueOf(distance));
 
         // SPACEGROUP "info"
 
@@ -8565,8 +8566,8 @@ public class ScriptEvaluator {
           loadScript.append("/*file*/");
         if (localName != null)
           localName = viewer.getFilePath(localName, false);
-        loadScript.append((localName != null ? Escape.escape(localName) : 
-            "$FILENAME$"));
+        loadScript.append((localName != null ? Escape.escape(localName)
+            : "$FILENAME$"));
       }
       if (sOptions.length() > 0)
         loadScript.append(" /*options*/ ").append(sOptions);
@@ -10100,7 +10101,7 @@ public class ScriptEvaluator {
         }
         if (!isSyntaxCheck)
           viewer.getMinimizer(true).setProperty("constraint",
-              new Object[] { aList, new int[n], new Float(targetValue) });
+              new Object[] { aList, new int[n], Float.valueOf(targetValue) });
         return;
       case Token.criterion:
         crit = floatParameter(++i);
@@ -10627,7 +10628,7 @@ public class ScriptEvaluator {
             continue;
           if (!Float.isNaN(translucentLevel))
             setShapeProperty(JmolConstants.SHAPE_ELLIPSOIDS,
-                "translucentLevel", new Float(translucentLevel));
+                "translucentLevel", Float.valueOf(translucentLevel));
           key = "translucency";
           break;
         case Token.delete:
@@ -10645,7 +10646,7 @@ public class ScriptEvaluator {
           value = Boolean.FALSE;
           break;
         case Token.scale:
-          value = new Float(floatParameter(++i));
+          value = Float.valueOf(floatParameter(++i));
           break;
         }
         if (value == null)
@@ -10997,7 +10998,7 @@ public class ScriptEvaluator {
       case Token.integer:
       case Token.decimal:
         propertyName = "value";
-        propertyValue = new Float(floatParameter(i));
+        propertyValue = Float.valueOf(floatParameter(i));
         break;
       case Token.bitset:
         propertyName = "atomBitset";
@@ -11043,21 +11044,21 @@ public class ScriptEvaluator {
           propertyValue = Integer.valueOf((int) v);
         } else {
           propertyName = "offset";
-          propertyValue = new Float(v);
+          propertyValue = Float.valueOf(v);
         }
         break;
       case Token.offsetside:
         propertyName = "offsetSide";
-        propertyValue = new Float(floatParameter(++i));
+        propertyValue = Float.valueOf(floatParameter(++i));
         break;
 
       case Token.val:
         propertyName = "value";
-        propertyValue = new Float(floatParameter(++i));
+        propertyValue = Float.valueOf(floatParameter(++i));
         break;
       case Token.width:
         propertyName = "width";
-        propertyValue = new Float(floatParameter(++i));
+        propertyValue = Float.valueOf(floatParameter(++i));
         break;
       default:
         if (theTok == Token.times || Token.tokAttr(theTok, Token.identifier)) {
@@ -11357,7 +11358,7 @@ public class ScriptEvaluator {
       if (tokAt(ipt + 1) == Token.radius) {
         ipt++;
         setShapeProperty(iShape, "atom", Integer.valueOf(dotsParam));
-        setShapeProperty(iShape, "radius", new Float(floatParameter(++ipt)));
+        setShapeProperty(iShape, "radius", Float.valueOf(floatParameter(++ipt)));
         if (tokAt(++ipt) == Token.color) {
           setShapeProperty(iShape, "colorRGB", Integer
               .valueOf(getArgbParam(++ipt)));
@@ -11782,7 +11783,7 @@ public class ScriptEvaluator {
     shapeManager.loadShape(shapeType);
     setShapeProperty(shapeType, "font", font3d);
     if (scaleAngstromsPerPixel >= 0)
-      setShapeProperty(shapeType, "scalereference", new Float(
+      setShapeProperty(shapeType, "scalereference", Float.valueOf(
           scaleAngstromsPerPixel));
   }
 
@@ -12448,7 +12449,7 @@ public class ScriptEvaluator {
       throws ScriptException {
     if (isJmolSet && statementLength == pt + 1)
       return parameterAsString(pt);
-    return ScriptVariable.sValue(parameterExpressionToken(pt));
+    return parameterExpressionToken(pt).asString();
   }
 
   private boolean setLabel(String str) throws ScriptException {
@@ -12463,7 +12464,7 @@ public class ScriptEvaluator {
           scaleAngstromsPerPixel = viewer.getZoomSetting()
               / scaleAngstromsPerPixel
               / viewer.getScalePixelsPerAngstrom(false);
-        propertyValue = new Float(scaleAngstromsPerPixel);
+        propertyValue = Float.valueOf(scaleAngstromsPerPixel);
         break;
       }
       if (str.equals("offset") || str.equals("offsetexact")) {
@@ -12861,7 +12862,7 @@ public class ScriptEvaluator {
           t.value = new Hashtable<String, ScriptVariable>();
         }
         if (t.tok == Token.hash) {
-          String hkey = ScriptVariable.sValue(vv);
+          String hkey = vv.asString();
           Map<String, ScriptVariable> tmap = (Map<String, ScriptVariable>) t.value;
           if (isLast) {
             tmap.put(hkey, tnew);
@@ -12918,7 +12919,7 @@ public class ScriptEvaluator {
         viewer.setData(propertyName, new Object[] {
             propertyName,
             tv.tok == Token.varray ? ScriptVariable.flistValue(tv, viewer
-                .getAtomCount()) : ScriptVariable.sValue(tv),
+                .getAtomCount()) : tv.asString(),
             BitSetUtil.copy(bs) }, viewer.getAtomCount(), 0, 0,
             tv.tok == Token.varray ? Integer.MAX_VALUE : Integer.MIN_VALUE, 0);
         return;
@@ -12939,7 +12940,7 @@ public class ScriptEvaluator {
     if (key.startsWith("property_")) {
       int n = viewer.getAtomCount();
       if (tv.tok == Token.varray)
-        vv = ScriptVariable.sValue(tv);
+        vv = tv.asString();
       viewer.setData(key, new Object[] { key, "" + vv,
           BitSetUtil.copy(viewer.getSelectionSet(false)) }, n, 0, 0,
           Integer.MIN_VALUE, 0);
@@ -13637,8 +13638,8 @@ public class ScriptEvaluator {
         data = viewer.getFunctionCalls(null);
         type = "TXT";
       } else if (data == "VAR") {
-        data = ScriptVariable.sValue((ScriptVariable) getParameter(
-            ScriptVariable.sValue(tokenAt(isCommand ? 2 : 1, args)), Token.variable));
+        data = ((ScriptVariable) getParameter(
+            ScriptVariable.sValue(tokenAt(isCommand ? 2 : 1, args)), Token.variable)).asString();
         type = "TXT";
       } else if (data == "SPT") {
         if (isCoord) {
@@ -14506,12 +14507,12 @@ public class ScriptEvaluator {
         propertyName = "vector";
         break;
       case Token.length:
-        propertyValue = new Float(floatParameter(++i));
+        propertyValue = Float.valueOf(floatParameter(++i));
         propertyName = "length";
         break;
       case Token.decimal:
         // $drawObject
-        propertyValue = new Float(floatParameter(i));
+        propertyValue = Float.valueOf(floatParameter(i));
         propertyName = "length";
         break;
       case Token.modelindex:
@@ -14562,7 +14563,7 @@ public class ScriptEvaluator {
         propertyName = "crossed";
         break;
       case Token.width:
-        propertyValue = new Float(floatParameter(++i));
+        propertyValue = Float.valueOf(floatParameter(++i));
         propertyName = "width";
         swidth = propertyName + " " + propertyValue;
         break;
@@ -14602,7 +14603,7 @@ public class ScriptEvaluator {
         break;
       case Token.diameter:
         float f = floatParameter(++i);
-        propertyValue = new Float(f);
+        propertyValue = Float.valueOf(f);
         propertyName = (tokAt(i) == Token.decimal ? "width" : "diameter");
         swidth = propertyName
             + (tokAt(i) == Token.decimal ? " " + f : " " + ((int) f));
@@ -14759,7 +14760,7 @@ public class ScriptEvaluator {
         }
         propertyName = (decimalPropertyName == "radius_" ? "radius"
             : decimalPropertyName);
-        propertyValue = new Float(floatParameter(i));
+        propertyValue = Float.valueOf(floatParameter(i));
         decimalPropertyName = "radius_";
         isDesignParameter = false;
         needsGenerating = true;
@@ -14969,7 +14970,7 @@ public class ScriptEvaluator {
         break;
       case Token.scale:
         propertyName = "scale";
-        propertyValue = new Float(floatParameter(++i));
+        propertyValue = Float.valueOf(floatParameter(++i));
         break;
       case Token.lonepair:
       case Token.lp:
@@ -15096,18 +15097,19 @@ public class ScriptEvaluator {
     boolean isNegOffset = false;
     BitSet bsModels = viewer.getVisibleFramesBitSet();
     List<Object[]> propertyList = new ArrayList<Object[]>();
-    int i = 1;
+    int i0 = 1;
     if (tokAt(1) == Token.model || tokAt(1) == Token.frame) {
-      i = modelNumberParameter(2);
-      if (i < 0)
+      i0 = modelNumberParameter(2);
+      if (i0 < 0)
         error(ERROR_invalidArgument);
       bsModels.clear();
-      bsModels.set(i);
-      i = 3;
+      bsModels.set(i0);
+      i0 = 3;
     }
     for (int iModel = bsModels.nextSetBit(0); iModel >= 0; iModel = bsModels
         .nextSetBit(iModel + 1)) {
       shapeManager.loadShape(JmolConstants.SHAPE_MO);
+      int i = i0;
       if (tokAt(i) == Token.list && listIsosurface(JmolConstants.SHAPE_MO))
         return true;
       setShapeProperty(JmolConstants.SHAPE_MO, "init", Integer.valueOf(iModel));
@@ -15159,17 +15161,21 @@ public class ScriptEvaluator {
         propertyName = "plane";
         propertyValue = planeParameter(i + 1);
         break;
+      case Token.point:
+        propertyName = "monteCarloCount";
+        propertyValue = Integer.valueOf(intParameter(i + 1));
+        break;
       case Token.scale:
         propertyName = "scale";
-        propertyValue = new Float(floatParameter(i + 1));
+        propertyValue = Float.valueOf(floatParameter(i + 1));
         break;
       case Token.cutoff:
         if (tokAt(i + 1) == Token.plus) {
           propertyName = "cutoffPositive";
-          propertyValue = new Float(floatParameter(i + 2));
+          propertyValue = Float.valueOf(floatParameter(i + 2));
         } else {
           propertyName = "cutoff";
-          propertyValue = new Float(floatParameter(i + 1));
+          propertyValue = Float.valueOf(floatParameter(i + 1));
         }
         break;
       case Token.debug:
@@ -15181,7 +15187,7 @@ public class ScriptEvaluator {
       case Token.pointsperangstrom:
       case Token.resolution:
         propertyName = "resolution";
-        propertyValue = new Float(floatParameter(i + 1));
+        propertyValue = Float.valueOf(floatParameter(i + 1));
         break;
       case Token.squared:
         propertyName = "squareData";
@@ -15489,7 +15495,7 @@ public class ScriptEvaluator {
         break;
       case Token.scale3d:
         propertyName = "scale3d";
-        propertyValue = new Float(floatParameter(++i));
+        propertyValue = Float.valueOf(floatParameter(++i));
         break;
       case Token.period:
         sbCommand.append(" periodic");
@@ -15599,7 +15605,7 @@ public class ScriptEvaluator {
         if (mepOrMlp == null) { // not mlp or mep
           if (!surfaceObjectSeen && !isMapped && !planeSeen) {
             surfaceObjectSeen = true;
-            addShapeProperty(propertyList, "sasurface", new Float(0));
+            addShapeProperty(propertyList, "sasurface", Float.valueOf(0));
             sbCommand.append(" vdw");
           }
           propertyName = "property";
@@ -15764,8 +15770,8 @@ public class ScriptEvaluator {
             }
             float min = floatParameter(++i);
             float max = floatParameter(++i);
-            addShapeProperty(propertyList, "red", new Float(min));
-            addShapeProperty(propertyList, "blue", new Float(max));
+            addShapeProperty(propertyList, "red", Float.valueOf(min));
+            addShapeProperty(propertyList, "blue", Float.valueOf(max));
             sbCommand.append(" ").append(min).append(" ").append(max);
             continue;
           }
@@ -15812,7 +15818,7 @@ public class ScriptEvaluator {
         break;
       case Token.scale:
         propertyName = "scale";
-        propertyValue = new Float(floatParameter(++i));
+        propertyValue = Float.valueOf(floatParameter(++i));
         sbCommand.append(" scale ").append(propertyValue);
         break;
       case Token.all:
@@ -16055,9 +16061,9 @@ public class ScriptEvaluator {
           integerOutOfRange(0, 10);
         sbCommand.append(" cavity ").append(cavityRadius).append(" ").append(
             envelopeRadius);
-        addShapeProperty(propertyList, "envelopeRadius", new Float(
+        addShapeProperty(propertyList, "envelopeRadius", Float.valueOf(
             envelopeRadius));
-        addShapeProperty(propertyList, "cavityRadius", new Float(cavityRadius));
+        addShapeProperty(propertyList, "cavityRadius", Float.valueOf(cavityRadius));
         propertyName = "cavity";
         break;
       case Token.contour:
@@ -16095,11 +16101,11 @@ public class ScriptEvaluator {
           i++;
         if (tokAt(i) == Token.plus) {
           propertyName = "cutoffPositive";
-          propertyValue = new Float(cutoff = floatParameter(++i));
+          propertyValue = Float.valueOf(cutoff = floatParameter(++i));
           sbCommand.append("+").append(propertyValue);
         } else if (isFloatParameter(i)) {
           propertyName = "cutoff";
-          propertyValue = new Float(cutoff = floatParameter(i));
+          propertyValue = Float.valueOf(cutoff = floatParameter(i));
           sbCommand.append(propertyValue);
         } else {
           propertyName = "cutoffRange";
@@ -16299,7 +16305,7 @@ public class ScriptEvaluator {
           surfaceObjectSeen = true;
           addShapeProperty(propertyList, "bsSolvent",
               (haveRadius ? new BitSet() : lookupIdentifierValue("solvent")));
-          addShapeProperty(propertyList, "sasurface", new Float(0));
+          addShapeProperty(propertyList, "sasurface", Float.valueOf(0));
         }
         if (!surfaceObjectSeen && !planeSeen && sbCommand.length() != 0)
           error(ERROR_invalidArgument);
@@ -16381,7 +16387,7 @@ public class ScriptEvaluator {
       case Token.pointsperangstrom:
       case Token.resolution:
         propertyName = "resolution";
-        propertyValue = new Float(floatParameter(++i));
+        propertyValue = Float.valueOf(floatParameter(++i));
         sbCommand.append(" resolution ").append(propertyValue);
         break;
       case Token.reversecolor:
@@ -16391,14 +16397,14 @@ public class ScriptEvaluator {
         break;
       case Token.sigma:
         propertyName = "sigma";
-        propertyValue = new Float(sigma = floatParameter(++i));
+        propertyValue = Float.valueOf(sigma = floatParameter(++i));
         sbCommand.append(" sigma ").append(propertyValue);
         break;
       case Token.sphere:
         // sphere [radius]
         surfaceObjectSeen = true;
         propertyName = "sphere";
-        propertyValue = new Float(floatParameter(++i));
+        propertyValue = Float.valueOf(floatParameter(++i));
         sbCommand.append(" sphere ").append(propertyValue);
         break;
       case Token.squared:
@@ -16422,9 +16428,9 @@ public class ScriptEvaluator {
               if (!Float.isNaN(sigma)) {
                 cutoff *= sigma;
                 sigma = Float.NaN;
-                addShapeProperty(propertyList, "sigma", new Float(sigma));
+                addShapeProperty(propertyList, "sigma", Float.valueOf(sigma));
               }
-              addShapeProperty(propertyList, "cutoff", new Float(cutoff));
+              addShapeProperty(propertyList, "cutoff", Float.valueOf(cutoff));
               sbCommand.append(" cutoff ").append(cutoff);
             }
           }
@@ -16442,7 +16448,7 @@ public class ScriptEvaluator {
         if (firstPass && viewer.getParameter("_fileType").equals("Pdb")
             && Float.isNaN(sigma) && Float.isNaN(cutoff)) {
           // negative sigma just indicates that 
-          addShapeProperty(propertyList, "sigma", new Float(-1));
+          addShapeProperty(propertyList, "sigma", Float.valueOf(-1));
           sbCommand.append(" sigma -1.0");
         }
         propertyName = (firstPass ? "readFile" : "mapColor");
@@ -16540,7 +16546,7 @@ public class ScriptEvaluator {
           propertyValue = str;
         }
         if (planeSeen && !surfaceObjectSeen) {
-          addShapeProperty(propertyList, "nomap", new Float(0));
+          addShapeProperty(propertyList, "nomap", Float.valueOf(0));
           surfaceObjectSeen = true;
         }
         if (!setMeshDisplayProperty(iShape, 0, theTok)) {
@@ -16566,11 +16572,11 @@ public class ScriptEvaluator {
       surfaceObjectSeen = true;
       addShapeProperty(propertyList, "bsSolvent", (haveRadius ? new BitSet()
           : lookupIdentifierValue("solvent")));
-      addShapeProperty(propertyList, "sasurface", new Float(0));
+      addShapeProperty(propertyList, "sasurface", Float.valueOf(0));
     }
 
     if (planeSeen && !surfaceObjectSeen) {
-      addShapeProperty(propertyList, "nomap", new Float(0));
+      addShapeProperty(propertyList, "nomap", Float.valueOf(0));
       surfaceObjectSeen = true;
     }
     if (thisSetNumber >= 0)
@@ -16713,11 +16719,11 @@ public class ScriptEvaluator {
         v.add(viewer.getAtomPoint3f(bs.nextSetBit(0)));
     }
     if (v.size() == 1 && !isShow) {
-      addShapeProperty(propertyList, "withinDistance", new Float(distance));
+      addShapeProperty(propertyList, "withinDistance", Float.valueOf(distance));
       addShapeProperty(propertyList, "withinPoint", v.get(0));
     }
     addShapeProperty(propertyList, (isShow ? "displayWithin" : "withinPoints"),
-        new Object[] { new Float(distance), pts, bs, v });
+        new Object[] { Float.valueOf(distance), pts, bs, v });
   }
 
   /**

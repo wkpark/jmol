@@ -967,18 +967,39 @@ public class FileManager {
   public static File getLocalDirectory(JmolViewer viewer, boolean forDialog) {
     String localDir = (String) viewer
         .getParameter(forDialog ? "currentLocalPath" : "defaultDirectoryLocal");
-    if (localDir.length() == 0 && forDialog)
+    if (forDialog && localDir.length() == 0)
       localDir = (String) viewer.getParameter("defaultDirectoryLocal");
     if (localDir.length() == 0)
       return (viewer.isApplet() ? null : new File(System
           .getProperty("user.dir")));
     if (viewer.isApplet() && localDir.indexOf("file:/") == 0)
-      localDir = getLocalPathForWritingFile(viewer, localDir);
-
+      localDir = localDir.substring(6);
     File f = new File(localDir);
     return f.isDirectory() ? f : f.getParentFile();
   }
 
+  /**
+   * called by getImageFileNameFromDialog 
+   * called by getOpenFileNameFromDialog
+   * called by getSaveFileNameFromDialog
+   * 
+   * called by classifyName for any full file load
+   * called from the CD command
+   * 
+   * currentLocalPath is set in all cases
+   *   and is used specifically for dialogs as a first try
+   * defaultDirectoryLocal is set only when not from a dialog
+   *   and is used only in getLocalPathForWritingFile or
+   *   from an open/save dialog.
+   * In this way, saving a file from a dialog doesn't change
+   *   the "CD" directory. 
+   * Neither of these is saved in the state, but 
+   * 
+   * 
+   * @param viewer
+   * @param path
+   * @param forDialog
+   */
   public static void setLocalPath(JmolViewer viewer, String path,
                                   boolean forDialog) {
     while (path.endsWith("/") || path.endsWith("\\"))

@@ -37,6 +37,7 @@ import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.ModelSet;
 import org.jmol.script.ScriptFunction;
 import org.jmol.script.ScriptVariable;
+import org.jmol.script.Token;
 import org.jmol.util.Escape;
 
 import org.jmol.util.BitSetUtil;
@@ -73,7 +74,7 @@ public class StateManager {
   private final static String objectNameList = "background axis1      axis2      axis3      boundbox   unitcell   frank      ";
 
   public static String getVariableList(Map<String, ScriptVariable> htVariables, int nMax,
-                                       boolean withSites) {
+                                       boolean withSites, boolean definedOnly) {
     StringBuffer sb = new StringBuffer();
     // user variables only:
     int n = 0;
@@ -82,16 +83,16 @@ public class StateManager {
     for (Map.Entry<String, ScriptVariable> entry : htVariables.entrySet()) {
       String key = entry.getKey();
       ScriptVariable var = entry.getValue();
-      if (withSites || (!key.startsWith("@site_") && !key.startsWith("site_")))
+      if ((withSites || !key.startsWith("site_")) && (!definedOnly || key.charAt(0) == '@'))
         list[n++] = key
-            + (key.charAt(0) == '@' ? " " + ScriptVariable.sValue(var) : " = "
+            + (key.charAt(0) == '@' ? " " + var.asString() : " = "
                 + varClip(key, var.escape(), nMax));
     }
     Arrays.sort(list, 0, n);
     for (int i = 0; i < n; i++)
       if (list[i] != null)
         appendCmd(sb, list[i]);
-    if (n == 0)
+    if (n == 0 && !definedOnly)
       sb.append("# --no global user variables defined--;\n");
     return sb.toString();
   }
@@ -1390,6 +1391,13 @@ public class StateManager {
     }
 
     void removeJmolParameter(String key) {
+      // used by resetError to remove _errorMessage
+      // used by setSmilesString to remove _smilesString
+      // used by setAxesModeMolecular to remove axesUnitCell
+      //   and either axesWindow or axesMolecular
+      // used by setAxesModeUnitCell to remove axesMolecular
+      //   and either remove axesWindow or axesUnitCell
+
       if (htBooleanParameterFlags.containsKey(key)) {
         htBooleanParameterFlags.remove(key);
         if (!htPropertyFlagsRemoved.containsKey(key))
@@ -1403,6 +1411,7 @@ public class StateManager {
     ScriptVariable setUserVariable(String key, ScriptVariable var) {
       if (var == null) 
         return null;
+//      System.out.println("stateman setting user variable " + key );
       key = key.toLowerCase();
       htUserVariables.put(key, var.setName(key).setGlobal());
       return var;
@@ -1502,7 +1511,7 @@ public class StateManager {
       Iterator<String> e;
       String key;
       String[] list = new String[htBooleanParameterFlags.size()
-          + htNonbooleanParameterValues.size()];
+          + htNonbooleanParameterValues.size()+ htUserVariables.size()];
       //booleans
       int n = 0;
       String _prefix = "_" + prefix;
@@ -1526,6 +1535,15 @@ public class StateManager {
             value = chop(Escape.escape((String) value));
           list[n++] = (key.indexOf("_") == 0 ? key + " = " : "set " + key + " ")
               + value;
+        }
+      }
+      e = htUserVariables.keySet().iterator();
+      while (e.hasNext()) {
+        key = e.next();
+        if (prefix == null || key.indexOf(prefix) == 0) {
+          ScriptVariable value = htUserVariables.get(key);
+          String s = value.asString();
+          list[n++] = key + " " + (key.startsWith("@") ? "" : "= ") + (value.tok == Token.string ? chop(Escape.escape(s)) : s);
         }
       }
       Arrays.sort(list, 0, n);
@@ -1574,7 +1592,7 @@ public class StateManager {
       e = htNonbooleanParameterValues.keySet().iterator();
       while (e.hasNext()) {
         key = e.next();
-        if (key.charAt(0) != '@' && doReportProperty(key)) {
+        if (doReportProperty(key)) {
           Object value = htNonbooleanParameterValues.get(key);
           if (key.charAt(0) == '=') {
             //save as =xxxx if you don't want "set" to be there first
@@ -1601,21 +1619,17 @@ public class StateManager {
         list[n++] = "set axes molecular";
       }
 
-      //nonboolean variables:
-      e = htNonbooleanParameterValues.keySet().iterator();
-      while (e.hasNext()) {
-        key = e.next();
-        if (key.charAt(0) == '@')
-          list[n++] = key + " " + htNonbooleanParameterValues.get(key);
-      }
       Arrays.sort(list, 0, n);
       for (int i = 0; i < n; i++)
         if (list[i] != null)
           appendCmd(commands, list[i]);
-/*
-      commands.append("\n#user-defined variables; \n");
-      commands.append(StateManager.getVariableList(htUserVariables, 0, !isState));
-*/
+
+      String s = StateManager.getVariableList(htUserVariables, 0, false, true);
+      if (s.length() > 0) {
+        commands.append("\n#user-defined atom sets; \n");
+        commands.append(s);
+      }
+
       // label defaults
 
       viewer.loadShape(JmolConstants.SHAPE_LABELS);
@@ -1640,7 +1654,7 @@ public class StateManager {
     }
 
     String getVariableList() {
-      return StateManager.getVariableList(htUserVariables, 0, true);
+      return StateManager.getVariableList(htUserVariables, 0, true, false);
     }
 
     // static because we don't plan to be changing these

@@ -766,6 +766,7 @@ public class Parameters {
       float[] minMax = surfaceReader.getMinMaxMappedValues(haveData);
       mappedDataMin = minMax[0];
       mappedDataMax = minMax[1];
+      System.out.println("params minmax " + mappedDataMin + " " + mappedDataMax);
     }
     if (mappedDataMin == 0 && mappedDataMax == 0) {
       //just set default -1/1 if there is no obvious data

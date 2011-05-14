@@ -60,6 +60,7 @@ public class MolecularOrbital extends Isosurface {
   private Float moScale = null;
   private Integer moColorPos = null;
   private Integer moColorNeg = null;
+  private Integer monteCarloCount;
   private boolean moIsPositiveOnly = false;
   private int moFill = Token.nofill;
   private int moMesh = Token.mesh;
@@ -151,6 +152,11 @@ public class MolecularOrbital extends Isosurface {
         thisModel.remove("moPlane");
       else
         thisModel.put("moPlane", value);
+      return;
+    }
+    
+    if ("monteCarloCount" == propertyName) {
+      thisModel.put("monteCarloCount", value);
       return;
     }
 
@@ -334,6 +340,7 @@ public class MolecularOrbital extends Isosurface {
     moScale = (Float) thisModel.get("moScale");
     moColorPos = (Integer) thisModel.get("moColorPos");
     moColorNeg = (Integer) thisModel.get("moColorNeg");
+    monteCarloCount = (Integer) thisModel.get("monteCarloCount");
     moNumber = ((Integer) thisModel.get("moNumber")).intValue();
     moLinearCombination = (float[]) thisModel.get("moLinearCombination");
     Object b = thisModel.get("moIsPositiveOnly");
@@ -364,6 +371,8 @@ public class MolecularOrbital extends Isosurface {
         super.setProperty("colorRGB", moColorNeg, null);
       if (moColorPos != null)
         super.setProperty("colorRGB", moColorPos, null);
+      if (monteCarloCount != null)
+        super.setProperty("monteCarloCount", monteCarloCount, null);
     }
     super.setProperty("title", moTitleFormat, null);
     super.setProperty("fileName", viewer.getFileName(), null);

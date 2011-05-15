@@ -117,6 +117,7 @@ public class Mesh extends MeshSurface {
     bsDisplay = null;
     vertexCount = polygonCount = 0;
     scale = 1;
+    diameter = 0;
     havePlanarContours = false;
     haveXyPoints = false;
     showPoints = false;
@@ -269,7 +270,9 @@ public class Mesh extends MeshSurface {
         : lighting == JmolConstants.FULLYLIT ? " fullylit" : " frontlit");
     if (!visible)
       s.append(" hidden");
-    if (bsDisplay != null) {
+    if (bsDisplay != null && diameter == 0) {
+      // can't do this with MonteCarlo type (diameter = 1)
+      // diameter is also used for DRAW, but DRAW does not use bsDisplay 
       s.append(";\n  ").append(type);
       if (!type.equals("mo"))
         s.append(" ID ").append(Escape.escape(thisID));

@@ -755,6 +755,7 @@ public class Parameters {
   public boolean isPeriodic;
   public boolean doFullMolecular;
   public float propertyDistanceMax = Integer.MAX_VALUE;
+  public int randomSeed;
   
   void setMapRanges(SurfaceReader surfaceReader, boolean haveData) {
     if (!colorDensity)

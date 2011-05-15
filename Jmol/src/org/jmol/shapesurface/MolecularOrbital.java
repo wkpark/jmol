@@ -52,21 +52,22 @@ public class MolecularOrbital extends Isosurface {
 
   // these are globals, stored here and only passed on when the they are needed. 
 
-  private String moTranslucency = null;
-  private Float moTranslucentLevel = null;
-  private Point4f moPlane = null;
-  private Float moCutoff = null;
-  private Float moResolution = null;
-  private Float moScale = null;
-  private Integer moColorPos = null;
-  private Integer moColorNeg = null;
-  private Integer monteCarloCount;
-  private boolean moIsPositiveOnly = false;
+  private String moTranslucency;
+  private Float moTranslucentLevel;
+  private Point4f moPlane;
+  private Float moCutoff;
+  private Float moResolution;
+  private Float moScale;
+  private Integer moColorPos;
+  private Integer moColorNeg;
+  private Integer moMonteCarloCount;
+  private boolean moIsPositiveOnly;
+  private Integer moRandomSeed;
   private int moFill = Token.nofill;
   private int moMesh = Token.mesh;
   private int moDots = Token.nodots;
   private int moFrontOnly = Token.frontonly;
-  private String moTitleFormat = null;
+  private String moTitleFormat;
   private boolean moDebug;
   private int myColorPt;
   private String strID;
@@ -160,6 +161,14 @@ public class MolecularOrbital extends Isosurface {
       return;
     }
 
+    if ("randomSeed" == propertyName) {
+      if (value == null)
+        thisModel.remove("randomSeed");
+      else
+        thisModel.put("randomSeed", value);
+      return;
+    }
+    
     if ("molecularOrbital" == propertyName) {
       if (value instanceof Integer) {
         moNumber = ((Integer) value).intValue();
@@ -340,7 +349,11 @@ public class MolecularOrbital extends Isosurface {
     moScale = (Float) thisModel.get("moScale");
     moColorPos = (Integer) thisModel.get("moColorPos");
     moColorNeg = (Integer) thisModel.get("moColorNeg");
-    monteCarloCount = (Integer) thisModel.get("monteCarloCount");
+    moMonteCarloCount = (Integer) thisModel.get("monteCarloCount");
+    moRandomSeed = (Integer) thisModel.get("randomSeed");
+    if (moRandomSeed == null)
+      thisModel.put("randomSeed", moRandomSeed = Integer.valueOf((int) System
+          .currentTimeMillis()));
     moNumber = ((Integer) thisModel.get("moNumber")).intValue();
     moLinearCombination = (float[]) thisModel.get("moLinearCombination");
     Object b = thisModel.get("moIsPositiveOnly");
@@ -371,8 +384,10 @@ public class MolecularOrbital extends Isosurface {
         super.setProperty("colorRGB", moColorNeg, null);
       if (moColorPos != null)
         super.setProperty("colorRGB", moColorPos, null);
-      if (monteCarloCount != null)
-        super.setProperty("monteCarloCount", monteCarloCount, null);
+      if (moMonteCarloCount != null) {
+        super.setProperty("randomSeed", moRandomSeed, null);
+        super.setProperty("monteCarloCount", moMonteCarloCount, null);
+      }
     }
     super.setProperty("title", moTitleFormat, null);
     super.setProperty("fileName", viewer.getFileName(), null);
@@ -418,6 +433,8 @@ public class MolecularOrbital extends Isosurface {
           + moCutoff);
     if (moScale != null)
       appendCmd(s, "mo scale " + moScale);
+    if (moMonteCarloCount != null)
+      appendCmd(s, "mo points " + moMonteCarloCount + " " + moRandomSeed);
     if (moResolution != null)
       appendCmd(s, "mo resolution " + moResolution);
     if (moPlane != null)

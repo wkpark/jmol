@@ -895,6 +895,13 @@ public class SurfaceGenerator {
       return true;
     }
 
+    if ("randomSeed" == propertyName) {
+      // for any object requiring reproduction in the state
+      // and using random numbers -- AO and MO
+      params.randomSeed = ((Integer) value).intValue();
+      return true;
+    }
+    
     if ("molecularOrbital" == propertyName) {
       int iMo = 0;
       float[] linearCombination = null;

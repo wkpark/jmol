@@ -23,6 +23,8 @@
  */
 package org.jmol.jvxl.readers;
 
+import java.util.Random;
+
 import javax.vecmath.Point3f;
 
 import org.jmol.jvxl.data.JvxlCoder;
@@ -36,7 +38,7 @@ class IsoShapeReader extends VolumeDataReader {
   private float psi_Znuc = 1; // hydrogen
   private float sphere_radiusAngstroms;
   private int monteCarloCount;
-
+  private Random random;
   IsoShapeReader(SurfaceGenerator sg, float radius) {
     super(sg);
     sphere_radiusAngstroms = radius;    
@@ -83,7 +85,8 @@ class IsoShapeReader extends VolumeDataReader {
       type = "hydrogen-like orbital";
       if (monteCarloCount > 0) {
         vertexDataOnly = true;
-        params.colorDensity = true;
+        //params.colorDensity = true;
+        random = new Random(params.randomSeed);
       }
       break;
     case Parameters.SURFACE_LONEPAIR:
@@ -275,13 +278,13 @@ class IsoShapeReader extends VolumeDataReader {
   }
   
   private void createMonteCarloOrbital() {
-    double value;
-    double f = 0;
-    double d = radius * 2;
+    float value;
+    float f = 0;
+    float d = radius * 2;
     
     for (int i = 0; i < 1000; i++) {
       setRandomPoint(d);
-      value = Math.abs(hydrogenAtomPsi(ptPsi));
+      value = (float) Math.abs(hydrogenAtomPsi(ptPsi));
       if (value > f)
         f = value;
     }    
@@ -289,19 +292,18 @@ class IsoShapeReader extends VolumeDataReader {
       setRandomPoint(d);
       ptPsi.add(center);
       value = getValueAtPoint(ptPsi);
-      double absValue = Math.abs(value);
-      double x = f * Math.random();
-      if (absValue <= x)
+      float absValue = Math.abs(value);
+      if (absValue <= f * random.nextFloat())
         continue;
-      addVertexCopy(ptPsi, (float) value, 0);
+      addVertexCopy(ptPsi, value, 0);
       i++;
     }    
   }
 
-  private void setRandomPoint(double d) {
-    ptPsi.x = (float) ((Math.random() - 0.5) * d);
-    ptPsi.y = (float) ((Math.random() - 0.5) * d);
-    ptPsi.z = (float) ((Math.random() - 0.5) * d);
+  private void setRandomPoint(float x) {
+    ptPsi.x = (random.nextFloat() - 0.5f) * x;
+    ptPsi.y = (random.nextFloat() - 0.5f) * x;
+    ptPsi.z = (random.nextFloat() - 0.5f) * x;
   }
 
   @Override

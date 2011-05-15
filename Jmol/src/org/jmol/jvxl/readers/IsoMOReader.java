@@ -24,6 +24,7 @@
 package org.jmol.jvxl.readers;
 
 import java.util.Map;
+import java.util.Random;
 
 import java.util.List;
 
@@ -37,6 +38,8 @@ import org.jmol.api.MOCalculationInterface;
 
 class IsoMOReader extends AtomDataReader {
 
+  private Random random;
+  
   IsoMOReader(SurfaceGenerator sg) {
     super(sg);
   }
@@ -54,7 +57,7 @@ class IsoMOReader extends AtomDataReader {
       fixTitleLine(i, params.mo);
     if (params.psi_monteCarloCount > 0) {
       vertexDataOnly = true;
-      //params.colorDensity = true;
+      random = new Random(params.randomSeed);
     }
   }
   
@@ -113,12 +116,10 @@ class IsoMOReader extends AtomDataReader {
     //(params.mappedDataMax = f / 2)};
     for (int i = 0; i < params.psi_monteCarloCount;) {
       getValues();
-      System.out.println("isomo f=" + f + " i=" + i);
       for (int j = 0; j < 1000; j++) {
         value = voxelData[j][0][0];
-        double absValue = Math.abs(value);
-        double x = f * Math.random();
-        if (absValue <= x)
+        float absValue = Math.abs(value);
+        if (absValue <= getRnd(f))
           continue;
         //System.out.println(j + "\t" + points[j] + "\t" + value + "\t" + x);
         addVertexCopy(points[j], value, 0);
@@ -139,7 +140,7 @@ class IsoMOReader extends AtomDataReader {
   }
 
   private float getRnd(float f) {
-    return (float) (Math.random() * f);
+    return random.nextFloat() * f;
   }
 
   @Override

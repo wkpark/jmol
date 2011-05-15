@@ -6682,7 +6682,6 @@ public class ScriptEvaluator {
         isQuaternion = true;
         break;
       case Token.point:
-
       case Token.atoms:
         isQuaternion = false;
         break;
@@ -15162,6 +15161,7 @@ public class ScriptEvaluator {
         propertyValue = planeParameter(i + 1);
         break;
       case Token.point:
+        addShapeProperty(propertyList, "randomSeed", Integer.valueOf(tokAt(i + 2) == Token.integer ? intParameter(i + 2) : 0));
         propertyName = "monteCarloCount";
         propertyValue = Integer.valueOf(intParameter(i + 1));
         break;
@@ -15933,6 +15933,15 @@ public class ScriptEvaluator {
             i = iToken;
           }
         }
+        if (tokAt(i + 1) == Token.point) {
+          ++i;
+          int monteCarloCount = intParameter(++i);
+          int seed = (tokAt(i + 1) == Token.integer ? intParameter(++i)
+              : ((int) -System.currentTimeMillis())% 10000) ;
+          addShapeProperty(propertyList, "monteCarloCount", Integer.valueOf(monteCarloCount));
+          addShapeProperty(propertyList, "randomSeed", Integer.valueOf(seed));
+          sbCommand.append(" points ").append(monteCarloCount).append(' ').append(seed);
+        }
         setMoData(propertyList, moNumber, linearCombination, offset,
             isNegOffset, modelIndex, null);
         surfaceObjectSeen = true;
@@ -16026,7 +16035,11 @@ public class ScriptEvaluator {
         if (tokAt(i + 1) == Token.point) {
           i += 2;
           nlmZ[4] = floatParameter(i);
-          sbCommand.append(" points ").append((int) nlmZ[4]);
+          int randomSeed = (tokAt(i + 1) == Token.integer ? intParameter(++i)
+              : ((int) -System.currentTimeMillis())% 10000);
+          addShapeProperty(propertyList, "randomSeed", Integer.valueOf(randomSeed));
+          sbCommand.append(" points ").append((int) nlmZ[4]).append(' ')
+              .append(randomSeed);
         }
         propertyName = "hydrogenOrbital";
         propertyValue = nlmZ;
@@ -16061,9 +16074,10 @@ public class ScriptEvaluator {
           integerOutOfRange(0, 10);
         sbCommand.append(" cavity ").append(cavityRadius).append(" ").append(
             envelopeRadius);
-        addShapeProperty(propertyList, "envelopeRadius", Float.valueOf(
-            envelopeRadius));
-        addShapeProperty(propertyList, "cavityRadius", Float.valueOf(cavityRadius));
+        addShapeProperty(propertyList, "envelopeRadius", Float
+            .valueOf(envelopeRadius));
+        addShapeProperty(propertyList, "cavityRadius", Float
+            .valueOf(cavityRadius));
         propertyName = "cavity";
         break;
       case Token.contour:
@@ -16308,7 +16322,8 @@ public class ScriptEvaluator {
           addShapeProperty(propertyList, "sasurface", Float.valueOf(0));
         }
         if (sbCommand.length() == 0) {
-          Object plane = getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "plane");
+          Object plane = getShapeProperty(JmolConstants.SHAPE_ISOSURFACE,
+              "plane");
           if (plane == null) {
             if (getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "contours") != null) {
               addShapeProperty(propertyList, "nocontour", null);
@@ -16663,8 +16678,10 @@ public class ScriptEvaluator {
       if (isMapped && !surfaceObjectSeen) {
         setShapeProperty(iShape, "finalize", sbCommand.toString());
       } else if (surfaceObjectSeen) {
-        setShapeProperty(iShape, "finalize", (sbCommand.indexOf("; isosurface map") == 0 ? "" : " select "
-            + Escape.escape(bsSelect) + " ") + sbCommand);
+        setShapeProperty(iShape, "finalize", (sbCommand
+            .indexOf("; isosurface map") == 0 ? "" : " select "
+            + Escape.escape(bsSelect) + " ")
+            + sbCommand);
         String s = (String) getShapeProperty(iShape, "ID");
         if (s != null) {
           cutoff = ((Float) getShapeProperty(iShape, "cutoff")).floatValue();

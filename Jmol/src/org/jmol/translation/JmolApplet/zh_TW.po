@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-03-07 20:56+0100\n"
-"PO-Revision-Date: 2011-03-08 07:34+0000\n"
-"Last-Translator: iychiang <iychiang1809@gmail.com>\n"
+"PO-Revision-Date: 2011-05-14 23:17+0000\n"
+"Last-Translator: Lushih Hsieh <bruce@rssh.kh.edu.tw>\n"
 "Language-Team: Traditional Chinese <zh_TW@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-03-08 08:44+0000\n"
-"X-Generator: Launchpad (build 12532)\n"
+"X-Launchpad-Export-Date: 2011-05-15 16:32+0000\n"
+"X-Generator: Launchpad (build 13037)\n"
 
 #: org/jmol/applet/AppletConsole.java:199
 msgid "&Help"
@@ -626,6 +626,9 @@ msgid ""
 "Use {0} to not use this approximation.\n"
 "\n"
 msgstr ""
+"注意：主幹上的含氮基中氫原子的位置是顯現的而且在逼近計算中將會被乎略。在標準的 DSSP 逼近法分析中，氫原子的位置將是顯現在大約位置而己。使用 {0} "
+"選項就不採用這樣的逼近法來計算。\n"
+"\n"
 
 #: org/jmol/modelsetbio/AminoPolymer.java:582
 #, java-format
@@ -635,6 +638,9 @@ msgid ""
 "Use {0} to ignore these hydrogen positions.\n"
 "\n"
 msgstr ""
+"注意：主幹上的含氮基中氫原子的位置是顯現的而且將會被引入逼近計算中。計算的結果可能和標準的 DSSP 法的結果有著顯著的不同。使用 {0} "
+"選項則不採計這些氫原子的位置。\n"
+"\n"
 
 #: org/jmol/popup/JmolPopup.java:149
 #: org/jmol/popup/MainPopupResourceBundle.java:536

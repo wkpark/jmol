@@ -15161,7 +15161,8 @@ public class ScriptEvaluator {
         propertyValue = planeParameter(i + 1);
         break;
       case Token.point:
-        addShapeProperty(propertyList, "randomSeed", Integer.valueOf(tokAt(i + 2) == Token.integer ? intParameter(i + 2) : 0));
+        addShapeProperty(propertyList, "randomSeed", tokAt(i + 2) == Token.integer ? 
+            Integer.valueOf(intParameter(i + 2)) : null);
         propertyName = "monteCarloCount";
         propertyValue = Integer.valueOf(intParameter(i + 1));
         break;

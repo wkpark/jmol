@@ -352,8 +352,8 @@ public class MolecularOrbital extends Isosurface {
     moMonteCarloCount = (Integer) thisModel.get("monteCarloCount");
     moRandomSeed = (Integer) thisModel.get("randomSeed");
     if (moRandomSeed == null)
-      thisModel.put("randomSeed", moRandomSeed = Integer.valueOf((int) System
-          .currentTimeMillis()));
+      thisModel.put("randomSeed", moRandomSeed = Integer.valueOf(
+          ((int) -System.currentTimeMillis())% 10000));
     moNumber = ((Integer) thisModel.get("moNumber")).intValue();
     moLinearCombination = (float[]) thisModel.get("moLinearCombination");
     Object b = thisModel.get("moIsPositiveOnly");

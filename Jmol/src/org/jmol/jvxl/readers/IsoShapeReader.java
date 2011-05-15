@@ -26,9 +26,11 @@ package org.jmol.jvxl.readers;
 import java.util.Random;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.util.Logger;
+import org.jmol.util.Measure;
 
 class IsoShapeReader extends VolumeDataReader {
 
@@ -281,13 +283,17 @@ class IsoShapeReader extends VolumeDataReader {
     float value;
     float f = 0;
     float d = radius * 2;
+    if (params.thePlane != null)
+      vTemp = new Vector3f();
     
     for (int i = 0; i < 1000; i++) {
       setRandomPoint(d);
       value = (float) Math.abs(hydrogenAtomPsi(ptPsi));
       if (value > f)
         f = value;
-    }    
+    }
+    if (f < 0.01f) // must be a node
+      return;
     for (int i = 0; i < monteCarloCount;) {
       setRandomPoint(d);
       ptPsi.add(center);
@@ -300,10 +306,14 @@ class IsoShapeReader extends VolumeDataReader {
     }    
   }
 
+  private Vector3f vTemp;
+  
   private void setRandomPoint(float x) {
     ptPsi.x = (random.nextFloat() - 0.5f) * x;
     ptPsi.y = (random.nextFloat() - 0.5f) * x;
     ptPsi.z = (random.nextFloat() - 0.5f) * x;
+    if (params.thePlane != null)
+      Measure.getPlaneProjection(ptPsi, params.thePlane, ptPsi, vTemp);
   }
 
   @Override

@@ -29,8 +29,10 @@ import java.util.Random;
 import java.util.List;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 import org.jmol.util.Logger;
+import org.jmol.util.Measure;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.api.Interface;
@@ -99,19 +101,23 @@ class IsoMOReader extends AtomDataReader {
       return;
     }
     points = new Point3f[1000];
+    for (int j = 0; j < 1000; j++)
+      points[j] = new Point3f();
+    if (params.thePlane != null)
+      vTemp = new Vector3f();
     // presumes orthogonal
     for (int i = 0; i < 3; i++)
       vDist[i] = volumeData.volumetricVectorLengths[i]
           * volumeData.voxelCounts[i];
     volumeData.voxelData = voxelData = new float[1000][1][1];
-    for (int j = 0; j < 1000; j++)
-      points[j] = new Point3f();
     getValues();
     float value;
     float f = 0;
     for (int j = 0; j < 1000; j++)
       if ((value = Math.abs(voxelData[j][0][0])) > f)
         f = value;
+    if (f < 0.0001f)
+      return;
     //minMax = new float[] {(params.mappedDataMin  = -f / 2), 
     //(params.mappedDataMax = f / 2)};
     for (int i = 0; i < params.psi_monteCarloCount;) {
@@ -135,6 +141,8 @@ class IsoMOReader extends AtomDataReader {
       points[j].set(volumeData.volumetricOrigin.x + getRnd(vDist[0]), 
           volumeData.volumetricOrigin.y + getRnd(vDist[1]), 
           volumeData.volumetricOrigin.z + getRnd(vDist[2]));
+      if (params.thePlane != null)
+        Measure.getPlaneProjection(points[j], params.thePlane, points[j], vTemp);
     }
     createOrbital();
   }
@@ -150,6 +158,7 @@ class IsoMOReader extends AtomDataReader {
   }
 
   private Point3f[] points;
+  private Vector3f vTemp;
 
   @SuppressWarnings("unchecked")
   protected void createOrbital() {

@@ -244,6 +244,13 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return;
     }
 
+    if ("nocontour" == propertyName) {
+      // recontouring
+      if (thisMesh != null) {
+        thisMesh.deleteContours();
+      }
+      return;
+    }
     if ("fixed" == propertyName) {
       isFixed = ((Boolean) value).booleanValue();
       setModelIndex();
@@ -596,6 +603,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return new float[] { jvxlData.dataMin, jvxlData.dataMax };
     if (property == "plane")
       return jvxlData.jvxlPlane;
+    if (property == "contours")
+      return thisMesh.getContours();
     if (property == "jvxlDataXml" || property == "jvxlMeshXml") {
       MeshData meshData = null;
       if (property == "jvxlMeshXml" || jvxlData.vertexDataOnly) {
@@ -679,6 +688,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     String cmd = mesh.scriptCommand;
     if (cmd == null)
       return;
+    cmd = TextFormat.simpleReplace(cmd, "; isosurface map", " map");
     cmd = cmd.replace('\t', ' ');
     cmd = TextFormat.simpleReplace(cmd, ";#", "; #");
     int pt = cmd.indexOf("; #");

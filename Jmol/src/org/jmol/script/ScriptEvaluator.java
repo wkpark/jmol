@@ -16026,7 +16026,7 @@ public class ScriptEvaluator {
         if (tokAt(i + 1) == Token.point) {
           i += 2;
           nlmZ[4] = floatParameter(i);
-          sbCommand.append(" points ").append(i);
+          sbCommand.append(" points ").append((int) nlmZ[4]);
         }
         propertyName = "hydrogenOrbital";
         propertyValue = nlmZ;
@@ -16307,8 +16307,20 @@ public class ScriptEvaluator {
               (haveRadius ? new BitSet() : lookupIdentifierValue("solvent")));
           addShapeProperty(propertyList, "sasurface", Float.valueOf(0));
         }
-        if (!surfaceObjectSeen && !planeSeen && sbCommand.length() != 0)
+        if (sbCommand.length() == 0) {
+          Object plane = getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "plane");
+          if (plane == null) {
+            if (getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "contours") != null) {
+              addShapeProperty(propertyList, "nocontour", null);
+            }
+          } else {
+            addShapeProperty(propertyList, "plane", plane);
+            sbCommand.append("plane ").append(Escape.escape(plane));
+            planeSeen = true;
+          }
+        } else if (!surfaceObjectSeen && !planeSeen) {
           error(ERROR_invalidArgument);
+        }
         //surfaceObjectSeen = !isCavity;
         sbCommand.append("; isosurface map");
         propertyName = "map";
@@ -16651,8 +16663,8 @@ public class ScriptEvaluator {
       if (isMapped && !surfaceObjectSeen) {
         setShapeProperty(iShape, "finalize", sbCommand.toString());
       } else if (surfaceObjectSeen) {
-        setShapeProperty(iShape, "finalize", " select "
-            + Escape.escape(bsSelect) + " " + sbCommand);
+        setShapeProperty(iShape, "finalize", (sbCommand.indexOf("; isosurface map") == 0 ? "" : " select "
+            + Escape.escape(bsSelect) + " ") + sbCommand);
         String s = (String) getShapeProperty(iShape, "ID");
         if (s != null) {
           cutoff = ((Float) getShapeProperty(iShape, "cutoff")).floatValue();

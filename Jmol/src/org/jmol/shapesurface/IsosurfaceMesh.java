@@ -465,6 +465,13 @@ public class IsosurfaceMesh extends Mesh {
     return ht;
   }
 
+  void deleteContours() {
+    jvxlData.contourValuesUsed = null;
+    jvxlData.contourValues = null;
+    jvxlData.contourColixes = null;
+    jvxlData.vContours = null;
+  }
+
   //private void dumpData() {
     //for (int i =0;i<10;i++) {
     //  System.out.println("P["+i+"]="+polygonIndexes[i][0]+" "+polygonIndexes[i][1]+" "+polygonIndexes[i][2]+" "+ polygonIndexes[i][3]+" "+vertices[i]);

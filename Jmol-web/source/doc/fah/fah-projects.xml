@@ -9197,9 +9197,9 @@
   <fah_proj number="10065" name="ww3" public="y"
     server="129.74.85.15" atoms="579" preferred="4" deadline="8"
     credit="242" frames="100" code="A4" contact="abdulwahidc"/>
-  <fah_proj number="10066" name="ww4" public="y"
+  <fah_proj number="10066" name="ww4" public="y" file="xyz"
     server="129.74.85.15" atoms="579" preferred="4" deadline="8"
-    credit="242" frames="100" code="A4" contact="abdulwahidc"/>
+    credit="242" frames="100" code="A4" contact="abdulwahidc" contrib="Danny Nielsen"/>
   <fah_proj number="10067" name="ww5" public="y"
     server="129.74.85.15" atoms="579" preferred="4" deadline="8"
     credit="242" frames="100" code="A4" contact="abdulwahidc"/>
@@ -9660,13 +9660,13 @@
     credit="689" frames="100" code="A3" contact="dvanatta" kfactor="0.75"/>
   <fah_proj number="10720" name="p10720" public="y" file="xyz"
     server="171.67.108.42" atoms="5254" preferred="16" deadline="24"
-    credit="689.0" frames="100" code="A4" contact="dvanatta" kfactor="0.75" contrib="Danny Nielsen"/>
+    credit="984.0" frames="100" code="A4" contact="dvanatta" kfactor="0.75" contrib="Danny Nielsen"/>
   <fah_proj number="10721" name="p10721" public="y" file="xyz"
     server="171.67.108.42" atoms="3441" preferred="8" deadline="16"
-    credit="458.0" frames="100" code="A4" contact="dvanatta" kfactor="0.75" contrib="Danny Nielsen"/>
-  <fah_proj number="10722" name="p10722" public="n"
+    credit="654.0" frames="100" code="A4" contact="dvanatta" kfactor="0.75" contrib="Danny Nielsen"/>
+  <fah_proj number="10722" name="p10722" public="y"
     server="171.67.108.42" atoms="12098" preferred="32" deadline="56"
-    credit="1571.0" frames="100" code="A4" contact="dvanatta" kfactor="0.75"/>
+    credit="2244.0" frames="100" code="A4" contact="dvanatta" kfactor="0.75"/>
 
   <!-- Projects 10800 to 10899 -->
   <fah_proj number="10820" name="Abeta42_monomer" public="n"

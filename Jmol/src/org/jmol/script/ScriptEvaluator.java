@@ -13425,7 +13425,8 @@ public class ScriptEvaluator {
         pt++;
         type = type.substring(0, 1).toUpperCase() + type.substring(1);
         isExport = true;
-        fileName = "Jmol." + type;
+        if (isCommand)
+          fileName = "Jmol." + type;
       } else if (type.equals("menu")) {
         pt++;
         type = "MENU";
@@ -13575,7 +13576,7 @@ public class ScriptEvaluator {
         // todo -- there's no reason this data has to be done this way. 
         // we could send all of them out to file directly
         fullPath[0] = fileName;
-        data = viewer.generateOutput(data, fullPath, width, height);
+        data = viewer.generateOutput(data, isCommand || fileName != null ? fullPath : null, width, height);
         if (data == null || data.length() == 0)
           return "";
         if (!isCommand)

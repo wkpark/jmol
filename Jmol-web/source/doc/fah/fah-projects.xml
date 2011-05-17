@@ -9664,9 +9664,9 @@
   <fah_proj number="10721" name="p10721" public="y" file="xyz"
     server="171.67.108.42" atoms="3441" preferred="8" deadline="16"
     credit="654.0" frames="100" code="A4" contact="dvanatta" kfactor="0.75" contrib="Danny Nielsen"/>
-  <fah_proj number="10722" name="p10722" public="y"
+  <fah_proj number="10722" name="p10722" public="y" file="xyz"
     server="171.67.108.42" atoms="12098" preferred="32" deadline="56"
-    credit="2244.0" frames="100" code="A4" contact="dvanatta" kfactor="0.75"/>
+    credit="2244.0" frames="100" code="A4" contact="dvanatta" kfactor="0.75" contrib="Danny Nielsen"/>
 
   <!-- Projects 10800 to 10899 -->
   <fah_proj number="10820" name="Abeta42_monomer" public="n"

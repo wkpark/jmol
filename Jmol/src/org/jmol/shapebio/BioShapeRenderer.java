@@ -151,9 +151,9 @@ abstract class BioShapeRenderer extends MeshRenderer {
 
     bsVisible.clear();
     boolean haveVisible = false;
+    if (invalidateMesh)
+      bioShape.falsifyMesh();
     for (int i = monomerCount; --i >= 0;) {
-      if (invalidateMesh)
-        bioShape.falsifyMesh(i, false);
       if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0
           || modelSet.isAtomHidden(leadAtomIndices[i]))
         continue;

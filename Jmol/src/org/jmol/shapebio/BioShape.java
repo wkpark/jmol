@@ -200,7 +200,7 @@ class BioShape {
         bsSizeSet.set(i, isVisible);
         monomers[i].setShapeVisibility(flag, isVisible);
         shape.atoms[leadAtomIndex].setShapeVisibility(flag,isVisible);
-        falsifyMesh(i, true);
+        falsifyNearbyMesh(i);
       }
     }
     if (monomerCount > 1)
@@ -252,12 +252,17 @@ class BioShape {
     return 0;
   }
 
-  void falsifyMesh(int index, boolean andNearby) {
+  void falsifyMesh() {
+    if (meshReady == null)
+      return;
+    for (int i = 0; i < monomerCount; i++)
+      meshReady[i] = false;
+  }
+   
+  private void falsifyNearbyMesh(int index) {
     if (meshReady == null)
       return;
     meshReady[index] = false;
-    if (!andNearby)
-      return;
     if (index > 0)
       meshReady[index - 1] = false;
     if (index < monomerCount - 1)
@@ -326,5 +331,5 @@ class BioShape {
         ((NucleicMonomer) monomers[i]).setModelClickability();
     }
   }
-  
+
 }

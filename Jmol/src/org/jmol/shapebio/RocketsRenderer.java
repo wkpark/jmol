@@ -47,8 +47,7 @@ public class RocketsRenderer extends BioShapeRenderer {
       return;
     boolean val = !viewer.getRocketBarrelFlag();
     if (renderArrowHeads != val) {
-      for (int i = 0; i < monomerCount; i++)
-        bioShape.falsifyMesh(i, false);
+      bioShape.falsifyMesh();
       renderArrowHeads = val;
     }
     calcRopeMidPoints(false);    

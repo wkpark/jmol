@@ -51,14 +51,12 @@ public class CartoonRenderer extends RocketsRenderer {
     }
     boolean val = viewer.getCartoonRocketFlag();
     if (renderAsRockets != val) {
-      for (int i = 0; i < monomerCount; i++)
-        bioShape.falsifyMesh(i, false);
+      bioShape.falsifyMesh();
       renderAsRockets = val;
     }
     val = !viewer.getRocketBarrelFlag();
     if (renderArrowHeads != val) {
-      for (int i = 0; i < monomerCount; i++)
-        bioShape.falsifyMesh(i, false);
+      bioShape.falsifyMesh();
       renderArrowHeads = val;
     }
     ribbonTopScreens = calcScreens(0.5f);

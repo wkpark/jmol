@@ -298,8 +298,7 @@ class IsoShapeReader extends VolumeDataReader {
       setRandomPoint(d);
       ptPsi.add(center);
       value = getValueAtPoint(ptPsi);
-      float absValue = Math.abs(value);
-      if (absValue <= f * random.nextFloat())
+      if (Math.abs(value) <= f * random.nextFloat())
         continue;
       addVertexCopy(ptPsi, value, 0);
       i++;

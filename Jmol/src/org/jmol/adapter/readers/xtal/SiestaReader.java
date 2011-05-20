@@ -3,6 +3,19 @@ package org.jmol.adapter.readers.xtal;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 
+
+/**
+ * SIESTA
+ * http://www.icmab.es/siesta/
+ * @author Pieremanuele Canepa, Room 104, FM Group School of Physical Sciences,
+ *         Ingram Building, University of Kent, Canterbury, Kent, CT2 7NH United
+ *         Kingdom, pc229@kent.ac.uk
+ * 
+ * @version 1.0
+ */
+
+
+
 public class SiestaReader extends AtomSetCollectionReader {
 
   private boolean geomMod = false;

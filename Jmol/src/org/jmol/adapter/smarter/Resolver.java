@@ -52,7 +52,7 @@ public class Resolver {
                  "Molden;MopacGraphf;GenNBO;NWChem;Odyssey;Psi;Qchem;Spartan;SpartanSmol;" +
                  "WebMO;",
     "simple.", ";Alchemy;Ampac;Cube;FoldingXyz;GhemicalMM;HyperChem;Jme;Mopac;", 
-    "xtal.", ";Aims;Castep;Crystal;Espresso;Gulp;Shelx;VaspOutcar;Wien2k;"
+    "xtal.", ";Aims;Castep;Crystal;Espresso;Gulp;Shelx;Siesta;VaspOutcar;Wien2k;"
   };
   
   public final static String getReaderClassBase(String type) {
@@ -560,26 +560,27 @@ public class Resolver {
   private final static int SPECIAL_VASP               = 13;
   private final static int SPECIAL_GULP               = 14;
   private final static int SPECIAL_ESPRESSO           = 15;
-  private final static int SPECIAL_GROMACS            = 16;
-  private final static int SPECIAL_GENNBO             = 17;
+  private final static int SPECIAL_SIESTA             = 16;
+  private final static int SPECIAL_GROMACS            = 17;
+  private final static int SPECIAL_GENNBO             = 18;
   
   // these next are needed by the XML reader
   
-  public final static int SPECIAL_ARGUS_XML   = 18;
-  public final static int SPECIAL_CML_XML     = 19;
-  public final static int SPECIAL_CHEM3D_XML  = 20;
-  public final static int SPECIAL_MOLPRO_XML  = 21;
-  public final static int SPECIAL_ODYSSEY_XML = 22;
-  public final static int SPECIAL_XSD_XML     = 23;
-  public final static int SPECIAL_VASP_XML    = 24; 
+  public final static int SPECIAL_ARGUS_XML   = 19;
+  public final static int SPECIAL_CML_XML     = 20;
+  public final static int SPECIAL_CHEM3D_XML  = 21;
+  public final static int SPECIAL_MOLPRO_XML  = 22;
+  public final static int SPECIAL_ODYSSEY_XML = 23;
+  public final static int SPECIAL_XSD_XML     = 24;
+  public final static int SPECIAL_VASP_XML    = 25; 
   
-  public final static int SPECIAL_ARGUS_DOM   = 25;
-  public final static int SPECIAL_CML_DOM     = 26;
-  public final static int SPECIAL_CHEM3D_DOM  = 27;
-  public final static int SPECIAL_MOLPRO_DOM  = 28;
-  public final static int SPECIAL_ODYSSEY_DOM = 29;
-  public final static int SPECIAL_XSD_DOM     = 30; // not implemented
-  public final static int SPECIAL_VASP_DOM    = 31; 
+  public final static int SPECIAL_ARGUS_DOM   = 26;
+  public final static int SPECIAL_CML_DOM     = 27;
+  public final static int SPECIAL_CHEM3D_DOM  = 28;
+  public final static int SPECIAL_MOLPRO_DOM  = 29;
+  public final static int SPECIAL_ODYSSEY_DOM = 30;
+  public final static int SPECIAL_XSD_DOM     = 31; // not implemented
+  public final static int SPECIAL_VASP_DOM    = 32; 
   
   public final static String[][] specialTags = {
     { "Jme" },
@@ -600,6 +601,7 @@ public class Resolver {
     { "VaspOutcar" },
     { "Gulp"  },
     { "Espresso" },
+    { "Siesta" },
     { "Gromacs" },
     { "GenNBO" },
     
@@ -661,6 +663,8 @@ public class Resolver {
         return specialTags[SPECIAL_GULP][0];
       if (checkQuantumEspresso(lines))
         return specialTags[SPECIAL_ESPRESSO][0];
+      if (checkSiesta(lines))
+        return specialTags[SPECIAL_SIESTA][0];
     } else {
       if (nLines == 1 && lines[0].length() > 0
           && Character.isDigit(lines[0].charAt(0)))
@@ -901,7 +905,25 @@ public class Resolver {
     }
     return false;
   }
-  
+
+  private static boolean checkSiesta(String[] lines) {
+    for (int i = 0; i < lines.length; i++) {
+      if (lines[i].contains("MD.TypeOfRun"))
+        return true;
+      if (lines[i].contains("SolutionMethod"))
+        return true;
+      if (lines[i].contains("MeshCutoff"))
+        return true;
+      if (lines[i]
+                .contains("                           *  WELCOME TO SIESTA  *"))
+        return true;
+      if (lines[i]
+                .contains("************************** Dump of input data file"))
+        return true;
+    }
+    return false;
+  }
+
   private static boolean checkVasp(String[] lines){
     if(lines[1].startsWith(" vasp."))
       return true;

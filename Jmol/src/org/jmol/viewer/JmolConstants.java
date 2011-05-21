@@ -1879,7 +1879,10 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "H2'",
     "H2''",
     "HO2'",
-    
+
+    "O3P", //    - third equivalent oxygen on phosphorus of phosphate    
+    "OP3", //    - third equivalent oxygen on phosphorus of phosphate -- new designation
+        
   };
 
   public final static String getSpecialAtomName(int atomID) {

@@ -785,9 +785,10 @@ public class CrystalReader extends AtomSetCollectionReader {
     String Sfrag = "";
     while (readLine() != null && line.indexOf("(") >= 0)
       Sfrag += line;
-    Sfrag = TextFormat.simpleReplace(Sfrag, "(", " (");
+    Sfrag = TextFormat.simpleReplace(Sfrag, "(", " ");
+    Sfrag = TextFormat.simpleReplace(Sfrag, ")", " ");
     String[] tokens = getTokens(Sfrag);
-    for (int i = 0, pos = 0; i < numAtomsFrag; i++, pos += 5)
+    for (int i = 0, pos = 0; i < numAtomsFrag; i++, pos += 3)
       atomFrag[i] = getAtomIndexFromPrimitiveIndex(parseInt(tokens[pos]) - 1);
 
     Arrays.sort(atomFrag); // the frequency module needs these sorted

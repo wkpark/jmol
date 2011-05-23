@@ -915,10 +915,10 @@ public class Resolver {
       if (lines[i].contains("MeshCutoff"))
         return true;
       if (lines[i]
-                .contains("                           *  WELCOME TO SIESTA  *"))
+                .contains("WELCOME TO SIESTA"))
         return true;
       if (lines[i]
-                .contains("************************** Dump of input data file"))
+                .contains("** Dump of input data file"))
         return true;
     }
     return false;

@@ -14,8 +14,6 @@ import org.jmol.adapter.smarter.AtomSetCollectionReader;
  * @version 1.0
  */
 
-
-
 public class SiestaReader extends AtomSetCollectionReader {
 
   private boolean geomMod = false;
@@ -99,7 +97,6 @@ public class SiestaReader extends AtomSetCollectionReader {
     discardLines(geomMod ? 0 : 1);
     setFractionalCoordinates(false);
     atomSetCollection.newAtomSet();
-    discardLines(1);
     while (readLine() != null
         && line.indexOf(geomMod ? "" : "%endblock Atomic") < 0) {
       String[] tokens = getTokens();

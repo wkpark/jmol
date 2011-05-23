@@ -17,6 +17,7 @@ import org.jmol.adapter.smarter.AtomSetCollectionReader;
 public class SiestaReader extends AtomSetCollectionReader {
 
   private boolean geomMod = false;
+  private int noAtoms;
 
   @Override
   protected void initializeReader() {
@@ -28,13 +29,17 @@ public class SiestaReader extends AtomSetCollectionReader {
   protected boolean checkLine() throws Exception {
 
     if (line.contains("%block LatticeVectors")) {
+      geomMod = false;
       setCell();
       return true;
     } else if (line.contains("AtomicCoordinatesFormat Ang")) {
       readAtomsCartesian();
       return true;
-    } else if (line.contains("Begin CG move =")) {
+    } else if (line.contains("NumberOfAtoms")){
+      readNoAtoms();
       geomMod = true;
+      return true;
+    } else if (line.contains("Begin CG move =")) {
       setNewmodel();
       return true;
     } else if (line.contains("outcell: Unit cell vectors")) {
@@ -49,7 +54,7 @@ public class SiestaReader extends AtomSetCollectionReader {
 
   private void setNewmodel() throws Exception {
     discardLinesUntilContains("outcoor: Atomic coordinates");
-    readAtomsCartesian();
+      readAtomsCartGeom();
   }
 
   private float[] unitCellData = new float[9];
@@ -79,6 +84,12 @@ public class SiestaReader extends AtomSetCollectionReader {
     setSpaceGroupName("P1");
     setFractionalCoordinates(false);
   }
+  
+  
+  private void readNoAtoms() {
+    String[] tokens = getTokens();
+    noAtoms = parseInt(tokens[1]);
+  }
 
   /*  
     AtomicCoordinatesFormat Ang
@@ -94,11 +105,11 @@ public class SiestaReader extends AtomSetCollectionReader {
          5.98800000     8.04300000    13.09100000    1    H    9
    */
   private void readAtomsCartesian() throws Exception {
-    discardLines(geomMod ? 0 : 1);
+    discardLines(1);
     setFractionalCoordinates(false);
     atomSetCollection.newAtomSet();
     while (readLine() != null
-        && line.indexOf(geomMod ? "" : "%endblock Atomic") < 0) {
+        && line.indexOf("%endblock Atomic") < 0) {
       String[] tokens = getTokens();
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = tokens[4];
@@ -109,6 +120,24 @@ public class SiestaReader extends AtomSetCollectionReader {
     }
     applySymmetryAndSetTrajectory();
   }
+  
+  private void readAtomsCartGeom() throws Exception {
+    discardLines(1);
+    setFractionalCoordinates(false);
+   // atomSetCollection.newAtomSet();
+    for (int i = 0; i < noAtoms; i++) {
+      String[] tokens = getTokens();
+      Atom atom = atomSetCollection.addNewAtom();
+      atom.atomName = tokens[4];
+      float x = parseFloat(tokens[0]);
+      float y = parseFloat(tokens[1]);
+      float z = parseFloat(tokens[2]);
+      setAtomCoord(atom, x, y, z);
+      readLine();
+    }
+    applySymmetryAndSetTrajectory();
+  }
+  
 
   private Double energy;
 

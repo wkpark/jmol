@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-03-07 20:56+0100\n"
-"PO-Revision-Date: 2011-05-09 12:54+0000\n"
+"PO-Revision-Date: 2011-05-25 16:29+0000\n"
 "Last-Translator: simone.sandri <lexluxsox@hotmail.it>\n"
 "Language-Team: Italian <it@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-09 15:24+0000\n"
-"X-Generator: Launchpad (build 12981)\n"
+"X-Launchpad-Export-Date: 2011-05-26 06:12+0000\n"
+"X-Generator: Launchpad (build 13117)\n"
 
 #: org/jmol/applet/AppletConsole.java:199
 msgid "&Help"
@@ -630,6 +630,10 @@ msgid ""
 "Use {0} to not use this approximation.\n"
 "\n"
 msgstr ""
+"NOTA: le posizioni di idrogeno amidico Backbone presenti saranno ignorate. "
+"Le loro posizioni saranno ravvicinate, come nelle analisi standard DSSP.\n"
+"Usa {0} per non usare questa approssimazione.\n"
+"\n"
 
 #: org/jmol/modelsetbio/AminoPolymer.java:582
 #, java-format

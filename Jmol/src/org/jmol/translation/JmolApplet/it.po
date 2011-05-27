@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-03-07 20:56+0100\n"
-"PO-Revision-Date: 2011-05-25 16:29+0000\n"
+"PO-Revision-Date: 2011-05-27 12:58+0000\n"
 "Last-Translator: simone.sandri <lexluxsox@hotmail.it>\n"
 "Language-Team: Italian <it@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-26 06:12+0000\n"
+"X-Launchpad-Export-Date: 2011-05-27 13:56+0000\n"
 "X-Generator: Launchpad (build 13117)\n"
 
 #: org/jmol/applet/AppletConsole.java:199
@@ -643,6 +643,10 @@ msgid ""
 "Use {0} to ignore these hydrogen positions.\n"
 "\n"
 msgstr ""
+"NOTA: Le posizioni di idrogeno amidico Backbone sono presenti e verranno "
+"utilizzati. I risultati possono differire dagli standard di analisi DSSP.\n"
+"Usa {0} per ignorare queste posizioni idrogeno.\n"
+"\n"
 
 #: org/jmol/popup/JmolPopup.java:149
 #: org/jmol/popup/MainPopupResourceBundle.java:536

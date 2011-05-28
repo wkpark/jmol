@@ -394,7 +394,7 @@ public void initShape() {
         allocMesh(null, null);
         thisMesh.colix = colix;
       }
-      thisMesh.isValid = (isValid ? setDrawing() : false);
+      thisMesh.isValid = (isValid ? setDrawing((int[]) value) : false);
       if (thisMesh.isValid) {
         if (thisMesh.vertexCount > 2 && length != Float.MAX_VALUE
             && newScale == 1)
@@ -516,7 +516,7 @@ public void initShape() {
         : m.ptCenters == null || modelIndex < 0 ? m.axis : m.axes[modelIndex]);
    }
   
-  private boolean setDrawing() {
+  private boolean setDrawing(int[] connections) {
     if (thisMesh == null)
       allocMesh(null, null);
     thisMesh.clear("draw");
@@ -526,8 +526,9 @@ public void initShape() {
       setIntersectData();
     else if (slabData != null)
       setSlabData();
-    if (polygon == null && (lineData != null ? lineData.size() == 0 : vData.size() == 0))
-      return false;
+    if (polygon == null && (lineData != null ? lineData.size() == 0 : (vData.size() == 0) == (connections == null))
+        || !isArrow && connections != null)
+      return false;  // connections only for arrows at this point
     if (polygon != null || lineData != null || indicatedModelIndex < 0
         && (isFixed || isArrow || isCurve || isCircle || isCylinder || modelCount == 1)) {
       // make just ONE copy 
@@ -543,6 +544,7 @@ public void initShape() {
       thisMesh.modelFlags = null;
       thisMesh.drawTypes = null;
       thisMesh.drawVertexCounts = null;
+      thisMesh.connections = connections;
       if (polygon != null) {
         if (polygon.size() == 0)
           return false;
@@ -614,6 +616,13 @@ public void initShape() {
     }
     clean();
     return true;
+  }
+  
+  @Override
+  protected void clean() {
+    for (int i = meshCount; --i >= 0;)
+      if (meshes[i] == null || meshes[i].vertexCount == 0 && meshes[i].connections == null)
+        deleteMesh(i);
   }
 
   private void setIntersectData() {
@@ -885,8 +894,8 @@ public void initShape() {
         nVertices = 4;
       } else if (nVertices >= 3 && !isPlane && isPerpendicular) {
         // normal to plane
-        Measure.calcNormalizedNormal(ptList[0], ptList[1], ptList[2],
-            normal, vAB, vAC);
+        Measure.calcNormalizedNormal(ptList[0], ptList[1], ptList[2], normal,
+            vAB, vAC);
         center = new Point3f();
         Measure.calcAveragePointN(ptList, nVertices, center);
         dist = (length == Float.MAX_VALUE ? ptList[0].distance(center) : length);
@@ -915,8 +924,8 @@ public void initShape() {
           // 0-------+--------1
           // |
           // 2
-          Measure.calcNormalizedNormal(ptList[0], ptList[1], ptList[2],
-              normal, vAB, vAC);
+          Measure.calcNormalizedNormal(ptList[0], ptList[1], ptList[2], normal,
+              vAB, vAC);
           normal.scale(dist);
           ptList[3] = new Point3f(center);
           ptList[3].add(normal);
@@ -973,7 +982,8 @@ public void initShape() {
                     : JmolConstants.DRAW_LINE);
         break;
       default:
-        drawType = JmolConstants.DRAW_PLANE;
+        drawType = (thisMesh.connections == null ? JmolConstants.DRAW_PLANE
+            : JmolConstants.DRAW_ARROW);
       }
     }
     thisMesh.drawType = drawType;
@@ -1215,11 +1225,7 @@ public void initShape() {
           break;
         klast = k;
       }
-    if (mesh.ptCenters == null)
-      mesh.setCenter(-1);
-    else
-      for (int i = mesh.ptCenters.length; --i >= 0; )
-        mesh.setCenter(i);
+    mesh.setCenters();
     if (Logger.debugging)
       Logger.debug(getDrawCommand(mesh));
     viewer.refresh(3, "draw");
@@ -1348,6 +1354,8 @@ public void initShape() {
         break;
       case JmolConstants.DRAW_ARROW:
         str.append(mesh.isVector ? " VECTOR" : " ARROW");
+        if (mesh.connections != null)
+          str.append(" connect ").append(Escape.escape(mesh.connections));
         break;
       case JmolConstants.DRAW_CIRCLE:
         str.append(" CIRCLE");
@@ -1394,6 +1402,8 @@ public void initShape() {
         str.append(s);
       }
     }
+    if (mesh.ptOffset != null)
+      str.append(" offset ").append(Escape.escape(mesh.ptOffset));
     if (mesh.title != null) {
       String s = "";
       for (int i = 0; i < mesh.title.length; i++)

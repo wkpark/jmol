@@ -28,23 +28,31 @@ package org.jmol.modelset;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
+import org.jmol.util.Measure;
+import org.jmol.util.Quaternion;
 
 import org.jmol.viewer.JmolConstants;
 import org.jmol.modelset.Bond.BondSet;
 import org.jmol.script.Token;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolEdge;
+import org.jmol.api.JmolMolecule;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.shape.Shape;
 
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
 
+import javax.vecmath.Matrix3f;
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
+import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
+import javax.vecmath.Vector3f;
 
 /*
  * An abstract class always created using new ModelLoader(...)
@@ -191,7 +199,7 @@ abstract public class ModelSet extends ModelCollection {
     recalculateLeadMidpointsAndWingVectors(baseModel);
     // Recalculate all measures that involve trajectories
 
-    shapeManager.refreshShapeTrajectories(baseModel, bs);
+    shapeManager.refreshShapeTrajectories(baseModel, bs, null);
 
     if (models[baseModel].hasRasmolHBonds) {
       clearRasmolHydrogenBonds(baseModel, null);
@@ -838,7 +846,10 @@ abstract public class ModelSet extends ModelCollection {
 
   public void setAtomCoordRelative(Tuple3f offset, BitSet bs) {
     setAtomCoordRelative(bs, offset.x, offset.y, offset.z);
-    recalculatePositionDependentQuantities(bs);
+    mat4.setIdentity();
+    vTemp.set(offset);
+    mat4.setTranslation(vTemp);
+    recalculatePositionDependentQuantities(bs, mat4);
   }
 
   @Override
@@ -851,17 +862,185 @@ abstract public class ModelSet extends ModelCollection {
     case Token.vibxyz:
       break;
     default:
-      recalculatePositionDependentQuantities(bs);
+      recalculatePositionDependentQuantities(bs, null);
     }
   }
 
-  public void recalculatePositionDependentQuantities(BitSet bs) {
+  public void invertSelected(Point3f pt, Point4f plane, int iAtom,
+                             BitSet invAtoms, BitSet bs) {
+    bspf = null;
+    if (pt != null) {
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+        float x = (pt.x - atoms[i].x) * 2;
+        float y = (pt.y - atoms[i].y) * 2;
+        float z = (pt.z - atoms[i].z) * 2;
+        setAtomCoordRelative(i, x, y, z);
+      }
+      return;
+    }
+    if (plane != null) {
+      // ax + by + cz + d = 0
+      Vector3f norm = new Vector3f(plane.x, plane.y, plane.z);
+      norm.normalize();
+      float d = (float) Math.sqrt(plane.x * plane.x + plane.y * plane.y
+          + plane.z * plane.z);
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+        float twoD = -Measure.distanceToPlane(plane, d, atoms[i]) * 2;
+        float x = norm.x * twoD;
+        float y = norm.y * twoD;
+        float z = norm.z * twoD;
+        setAtomCoordRelative(i, x, y, z);
+      }
+      return;
+    }
+    if (iAtom >= 0) {
+      Atom thisAtom = atoms[iAtom];
+      // stereochemical inversion at iAtom
+      Bond[] bonds = thisAtom.bonds;
+      if (bonds == null)
+        return;
+      BitSet bsAtoms = new BitSet();
+      List<Point3f> vNot = new ArrayList<Point3f>();
+      BitSet bsModel = viewer.getModelUndeletedAtomsBitSet(thisAtom.modelIndex);
+      for (int i = 0; i < bonds.length; i++) {
+        Atom a = bonds[i].getOtherAtom(thisAtom);
+        if (invAtoms.get(a.index)) {
+            bsAtoms.or(JmolMolecule.getBranchBitSet(atoms, a.index, bsModel, null, iAtom, true, true));
+        } else {
+          vNot.add(a);
+        }
+      }
+      if (vNot.size() == 0)
+        return;
+      pt = Measure.getCenterAndPoints(vNot)[0];
+      Vector3f v = new Vector3f(thisAtom);
+      v.sub(pt);
+      Quaternion q = new Quaternion(v, 180);
+      moveAtoms(null, q.getMatrix(), null, bsAtoms, thisAtom, true);
+    }
+  }
+
+  private final Matrix3f matTemp = new Matrix3f();
+  private final Matrix3f matInv = new Matrix3f();
+  private final Matrix4f mat4 = new Matrix4f();
+  private final Matrix4f mat4t = new Matrix4f();
+  private final Vector3f vTemp = new Vector3f();
+
+  public void moveAtoms(Matrix3f mNew, Matrix3f matrixRotate,
+                        Vector3f translation, BitSet bs, Point3f center,
+                        boolean isInternal) {
+    int n = bs.cardinality();
+    if (n == 0)
+      return;
+    if (mNew == null) {
+      matTemp.set(matrixRotate);
+    } else {
+      matInv.set(matrixRotate);
+      matInv.invert();
+      ptTemp.set(0, 0, 0);
+      matTemp.mul(mNew, matrixRotate);
+      matTemp.mul(matInv, matTemp);
+    }
+    if (isInternal) {
+      vTemp.set(center);
+      mat4.setIdentity();
+      mat4.setTranslation(vTemp);
+      mat4t.set(matTemp);
+      mat4.mul(mat4t);
+      mat4t.setIdentity();
+      vTemp.scale(-1);
+      mat4t.setTranslation(vTemp);
+      mat4.mul(mat4t);
+    } else {
+      mat4.set(matTemp);
+    }
+    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+      if (isInternal) {
+        mat4.transform(atoms[i]);
+      } else {
+        ptTemp.add(atoms[i]);
+        mat4.transform(atoms[i]);
+        ptTemp.sub(atoms[i]);
+      }
+      taint(i, TAINT_COORD);
+    }
+    if (!isInternal) {
+      ptTemp.scale(1f / n);
+      if (translation == null)
+        translation = new Vector3f();
+      translation.add(ptTemp);
+    }
+    if (translation != null) {
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
+        atoms[i].add(translation);
+      mat4t.setIdentity();
+      mat4t.setTranslation(translation);
+      mat4.mul(mat4t, mat4);
+    }
+    bspf = null;
+    recalculatePositionDependentQuantities(bs, mat4);
+  }
+
+  
+  /*
+ 
+ static {
+
+    Point3f pt = new Point3f(-1, 2, 3);
+    Point3f center = new Point3f(.2f,.4f,.5f);
+    Matrix3f matTemp = (new Quaternion(.2f, .3f, .4f, .5f)).getMatrix();
+    
+    Matrix4f mat4 = new Matrix4f();
+    Matrix4f mat4t = new Matrix4f();
+    Vector3f vTemp = new Vector3f();
+
+    vTemp.set(center);
+    mat4.setIdentity();
+    mat4.setTranslation(vTemp);
+    mat4t.set(matTemp);
+    mat4.mul(mat4t);
+    mat4t.setIdentity();
+    vTemp.scale(-1);
+    mat4t.setTranslation(vTemp);
+    mat4.mul(mat4t);
+
+    Point3f pt1 = new Point3f(pt);
+    System.out.println(pt);    
+    pt1.sub(center);
+    matTemp.transform(pt1);
+    pt1.add(center);
+    System.out.println(pt1);
+    //mat4.transform(pt);
+
+    vTemp.set(2,3,4);
+    pt1.set(pt);
+    mat4.transform(pt1);
+    pt1.add(vTemp);
+    System.out.println(pt1);
+    
+    
+    mat4t.setIdentity();
+    mat4t.setTranslation(vTemp);
+    mat4.mul(mat4t, mat4);
+    pt1.set(pt);
+    mat4.transform(pt1);
+    System.out.println(pt1);
+    
+    
+    
+    
+    // mat4 == (1) rot, then (2) trans
+    
+    System.out.println("HHH MODELSET");
+  }
+*/
+  public void recalculatePositionDependentQuantities(BitSet bs, Matrix4f mat) {
     if (getHaveStraightness())
       calculateStraightness();
     recalculateLeadMidpointsAndWingVectors(-1);
     BitSet bsModels = getModelBitSet(bs, false);
     for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1))
-      shapeManager.refreshShapeTrajectories(i, viewer.getModelUndeletedAtomsBitSet(i));
+      shapeManager.refreshShapeTrajectories(i, bs, mat);
   }
 
   public void connect(float[][] connections) {

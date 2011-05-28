@@ -127,6 +127,7 @@ import java.util.Map;
 
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Point4f;
@@ -257,6 +258,13 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return;
     }
 
+    if ("refreshTrajectories" == propertyName) {
+      for (int i = meshCount; --i >= 0;)
+        if (meshes[i].connections != null && meshes[i].modelIndex == ((Integer)((Object[]) value)[0]).intValue())
+          meshes[i].updateCoordinates((Matrix4f)((Object[]) value)[2], (BitSet)((Object[]) value)[1]);
+      return;
+    }
+  
     if ("modelIndex" == propertyName) {
       if (!iHaveModelIndex) {
         modelIndex = ((Integer) value).intValue();
@@ -384,7 +392,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         } catch (UnsupportedEncodingException e) {
           // ignore
         }
-
       }
     } else if ("atomIndex" == propertyName) {
       atomIndex = ((Integer) value).intValue();
@@ -688,18 +695,19 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     String cmd = mesh.scriptCommand;
     if (cmd == null)
       return;
+    if (mesh.modelIndex >= 0 && modelCount > 1)
+      appendCmd(sb, "frame " + viewer.getModelNumberDotted(mesh.modelIndex));
     cmd = TextFormat.simpleReplace(cmd, "; isosurface map", " map");
     cmd = cmd.replace('\t', ' ');
     cmd = TextFormat.simpleReplace(cmd, ";#", "; #");
     int pt = cmd.indexOf("; #");
-    if (pt >= 0) {
+    if (pt >= 0)
       cmd = cmd.substring(0, pt);
-    }
+    if (mesh.connections != null)
+      cmd += " connect " + Escape.escape(mesh.connections);
     cmd = TextFormat.trim(cmd, ";");
     if (mesh.linkedMesh != null)
       cmd += " LINK"; // for lcaoCartoon state
-    if (mesh.modelIndex >= 0 && modelCount > 1)
-      appendCmd(sb, "frame " + viewer.getModelNumberDotted(mesh.modelIndex));
     appendCmd(sb, cmd);
     if (mesh.q != null && mesh.q.q0 != 1)
       appendCmd(sb, myType + " ID " + Escape.escape(mesh.thisID) + " rotate "

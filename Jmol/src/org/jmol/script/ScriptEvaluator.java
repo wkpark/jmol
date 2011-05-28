@@ -70,7 +70,6 @@ import org.jmol.util.Measure;
 import org.jmol.util.Parser;
 import org.jmol.util.Point3fi;
 import org.jmol.util.Quaternion;
-import org.jmol.util.SurfaceFileTyper;
 import org.jmol.util.TextFormat;
 import org.jmol.modelset.TickInfo;
 import org.jmol.viewer.ActionManager;
@@ -3130,7 +3129,7 @@ public class ScriptEvaluator {
       case Token.trycmd:
         continue;
       case Token.end:
-        sb.append("try");
+        sb.append("end");
         continue;
       default:
         if (Token.tokAttr(token.tok, Token.identifier) || !doLogMessages)
@@ -6364,23 +6363,26 @@ public class ScriptEvaluator {
         switch (getToken(++i).tok) {
         case Token.x:
           rotAxis.set(1, 0, 0);
+          i++;
           break;
         case Token.y:
           rotAxis.set(0, 1, 0);
+          i++;
           break;
         case Token.z:
           rotAxis.set(0, 0, 1);
+          i++;
           break;
         case Token.point3f:
         case Token.leftbrace:
           rotAxis.set(getPoint3f(i, true));
-          i = iToken;
+          i = iToken + 1;
           break;
-        default:
+        case Token.identifier:
           error(ERROR_invalidArgument); // for now
           break;
         }
-        float degrees = floatParameter(++i);
+        float degrees = floatParameter(i);
         if (!isSyntaxCheck)
           viewer.navigate(timeSec, rotAxis, degrees);
         continue;
@@ -8145,7 +8147,6 @@ public class ScriptEvaluator {
     boolean isInline = false;
     boolean isSmiles = false;
     boolean isData = false;
-    boolean isAuto = false;
     BitSet bsModels;
     int i = (tokAt(0) == Token.data ? 0 : 1);
     boolean appendNew = viewer.getAppendNew();
@@ -8172,15 +8173,18 @@ public class ScriptEvaluator {
       i = 0;
     } else {
       modelName = parameterAsString(i);
-      tok = tokAt(i);
-      if (tok == Token.auto) {
-        isAuto = true;
-        i++;
-      } else if (tok == Token.data) {
+      switch (tok = tokAt(i)) {
+      case Token.menu:
+        String m = parameterAsString(checkLast(2));
+        if (!isSyntaxCheck)
+          viewer.setMenu(m, true);
+        return;
+      case Token.data:
         isData = true;
         loadScript.append(" data");
         String key = stringParameter(++i).toLowerCase();
         loadScript.append(" ").append(Escape.escape(key));
+        isAppend = key.startsWith("append");
         String strModel = parameterAsString(++i);
         strModel = viewer.fixInlineString(strModel, viewer.getInlineChar());
         htParams.put("fileData", strModel);
@@ -8190,20 +8194,19 @@ public class ScriptEvaluator {
         loadScript.append(strModel);
         loadScript.append(" end ").append(Escape.escape(key));
         i += 2; // skip END "key"
-        isAppend = key.startsWith("append");
-      } else if (tok == Token.identifier
-          || modelName.equalsIgnoreCase("fileset")) {
-        if (modelName.equals("menu")) {
-          String m = parameterAsString(checkLast(2));
-          if (!isSyntaxCheck)
-            viewer.setMenu(m, true);
-          return;
-        }
+        break;
+      case Token.append:
+        isAppend = true;
+        loadScript.append(" " + modelName);
+        filename = optParameterAsString(++i);
+        tok = Token.getTokFromName(filename);
+        break;
+      case Token.identifier:
         i++;
         loadScript.append(" " + modelName);
-        isAppend = (modelName.equalsIgnoreCase("append"));
-        tokType = (Parser.isOneOf(modelName.toLowerCase(),
-            JmolConstants.LOAD_ATOM_DATA_TYPES) ? Token
+        tokType = (tok == Token.identifier
+            && Parser.isOneOf(modelName.toLowerCase(),
+                JmolConstants.LOAD_ATOM_DATA_TYPES) ? Token
             .getTokFromName(modelName.toLowerCase()) : 0);
         if (tokType > 0) {
           // loading just some data here
@@ -8213,41 +8216,44 @@ public class ScriptEvaluator {
           if (tokType == Token.vibration)
             tokType = Token.vibxyz;
           tempFileInfo = viewer.getFileInfo();
-        }
-        if (isAppend
-            && ((filename = optParameterAsString(i))
-                .equalsIgnoreCase("trajectory")
-                || filename.equalsIgnoreCase("models") || filename
-                .equalsIgnoreCase("inline"))) {
-          modelName = filename;
-          loadScript.append(" " + modelName);
-          i++;
-        }
-        isInline = (modelName.equalsIgnoreCase("inline"));
-        isSmiles = (modelName.equalsIgnoreCase("smiles"));
-        if (tokType > 0)
           isAppend = true;
-        if (modelName.equalsIgnoreCase("trajectory")
-            || modelName.equalsIgnoreCase("models")) {
-          if (modelName.equalsIgnoreCase("trajectory"))
-            htParams.put("isTrajectory", Boolean.TRUE);
-          if (isPoint3f(i)) {
-            Point3f pt = getPoint3f(i, false);
-            i = iToken + 1;
-            // first last stride
-            htParams.put("firstLastStep", new int[] { (int) pt.x, (int) pt.y,
-                (int) pt.z });
-            loadScript.append(" " + Escape.escape(pt));
-          } else if (tokAt(i) == Token.bitset) {
-            bsModels = (BitSet) getToken(i++).value;
-            htParams.put("bsModels", bsModels);
-            loadScript.append(" " + Escape.escape(bsModels));
-          } else {
-            htParams.put("firstLastStep", new int[] { 0, -1, 1 });
-          }
         }
-      } else if (modelName.equalsIgnoreCase("inline")) {
-      } else {
+      }
+      switch (tok) {
+      case Token.file:
+      case Token.inline:
+      case Token.smiles:
+        isInline = (tok == Token.inline);
+        isSmiles = (tok == Token.smiles);
+        modelName = filename;
+        i++;
+        loadScript.append(" " + modelName);
+        break;
+      case Token.trajectory:
+      case Token.model:
+        modelName = filename;
+        i++;
+        loadScript.append(" " + modelName);
+        if (tok == Token.trajectory)
+          htParams.put("isTrajectory", Boolean.TRUE);
+        if (isPoint3f(i)) {
+          Point3f pt = getPoint3f(i, false);
+          i = iToken + 1;
+          // first last stride
+          htParams.put("firstLastStep", new int[] { (int) pt.x, (int) pt.y,
+              (int) pt.z });
+          loadScript.append(" " + Escape.escape(pt));
+        } else if (tokAt(i) == Token.bitset) {
+          bsModels = (BitSet) getToken(i++).value;
+          htParams.put("bsModels", bsModels);
+          loadScript.append(" " + Escape.escape(bsModels));
+        } else {
+          htParams.put("firstLastStep", new int[] { 0, -1, 1 });
+        }
+        break;
+      case Token.identifier:
+        break;
+      default:
         modelName = "fileset";
       }
       if (getToken(i).tok != Token.string)
@@ -8336,9 +8342,10 @@ public class ScriptEvaluator {
           lattice = new Point3f(555, 555, -1);
         iToken = i - 1;
       }
+      Point3f offset = null;
       if (lattice != null) {
-        i = iToken + 1;
         htParams.put("lattice", lattice);
+        i = iToken + 1;
         sOptions += " {" + (int) lattice.x + " " + (int) lattice.y + " "
             + (int) lattice.z + "}";
 
@@ -8398,6 +8405,7 @@ public class ScriptEvaluator {
         // SPACEGROUP "IGNOREOPERATORS"
 
         String spacegroup = null;
+        SymmetryInterface sg;
         int iGroup = Integer.MIN_VALUE;
         if (tokAt(i) == Token.spacegroup) {
           ++i;
@@ -8409,24 +8417,40 @@ public class ScriptEvaluator {
           if (spacegroup.equalsIgnoreCase("ignoreOperators")) {
             iGroup = -999;
           } else {
-            if (spacegroup.indexOf(",") >= 0) // Jones Faithful
-              if ((lattice.x < 9 && lattice.y < 9 && lattice.z == 0))
-                spacegroup += "#doNormalize=0";
-            iGroup = -2;
+            if (spacegroup.length() == 0) {
+              sg = viewer.getCurrentUnitCell();
+              if (sg != null)
+                htParams.put("spaceGroup", sg);
+            } else {
+              if (spacegroup.indexOf(",") >= 0) // Jones Faithful
+                if ((lattice.x < 9 && lattice.y < 9 && lattice.z == 0))
+                  spacegroup += "#doNormalize=0";
+            }
             htParams.put("spaceGroupName", spacegroup);
+            iGroup = -2;
           }
         }
 
         // UNITCELL [a b c alpha beta gamma]
         // or
         // UNITCELL [ax ay az bx by bz cx cy cz] 
-
+        // or
+        // UNITCELL ""  // same as current
         float[] fparams = null;
         if (tokAt(i) == Token.unitcell) {
           ++i;
-          fparams = floatParameterSet(i, 6, 9);
-          if (fparams.length != 6 && fparams.length != 9)
-            error(ERROR_invalidArgument);
+          if (optParameterAsString(i).length() == 0) {
+            // unitcell "" -- use current unit cell
+            sg = viewer.getCurrentUnitCell();
+            if (sg != null) {
+              fparams = sg.getUnitCellAsArray(true);
+              offset = sg.getCartesianOffset();
+            }
+          } else {
+            fparams = floatParameterSet(i, 6, 9);
+            if (fparams.length != 6 && fparams.length != 9)
+              error(ERROR_invalidArgument);
+          }
           sOptions += " unitcell {";
           for (int j = 0; j < fparams.length; j++)
             sOptions += (j == 0 ? "" : " ") + fparams[j];
@@ -8434,16 +8458,19 @@ public class ScriptEvaluator {
           htParams.put("unitcell", fparams);
           if (iGroup == Integer.MIN_VALUE)
             iGroup = -1;
-          i = iToken + 1;
         }
+        i = iToken + 1;
         if (iGroup != Integer.MIN_VALUE)
           htParams.put("spaceGroupIndex", Integer.valueOf(iGroup));
       }
 
       // OFFSET {x y z} (fractional or not) (Jmol 12.1.17)
 
-      if (tokAt(i) == Token.offset) {
-        Point3f offset = getPoint3f(++i, true);
+      if (offset != null)
+        coordinatesAreFractional = false;
+      else if (tokAt(i) == Token.offset)
+        offset = getPoint3f(++i, true);
+      if (offset != null) {
         if (coordinatesAreFractional) {
           offset.set(fractionalPoint);
           htParams.put("unitCellOffsetFractional",
@@ -8463,9 +8490,9 @@ public class ScriptEvaluator {
         filter = stringParameter(++i);
 
     } else {
-      if (i != 2) {
-        modelName = parameterAsString(i++);
-        loadScript.append(" ").append(Escape.escape(modelName));
+      if (i == 1) {
+        i++;
+        loadScript.append(" " + modelName);
       }
       Point3f pt = null;
       BitSet bs = null;
@@ -8511,7 +8538,7 @@ public class ScriptEvaluator {
       filenames = new String[nFiles];
       for (int j = 0; j < nFiles; j++)
         filenames[j] = fNames.get(j);
-      filename = modelName;
+      filename = "fileSet";
     }
     if (!doLoadFiles)
       return;
@@ -8603,6 +8630,7 @@ public class ScriptEvaluator {
         script(0, filename, false);
         return;
       }
+      /* no longer used 
       if (isAuto) {
         String surfaceType = (errMsg.indexOf("java.io.FileNotFound") >= 0 ? null
             : SurfaceFileTyper.determineSurfaceFileType(viewer
@@ -8612,6 +8640,7 @@ public class ScriptEvaluator {
           return;
         }
       }
+      */
       evalError(errMsg, null);
     }
     if (isAppend && (appendNew || nFiles > 1)) {
@@ -13757,8 +13786,8 @@ public class ScriptEvaluator {
       checkLength(tok == Token.chemical ? 3 : 2);
       if (isSyntaxCheck)
         return;
-      msg = viewer.getSmiles(0, 0, viewer.getSelectionSet(false), false,
-            true, false, false);
+      msg = viewer.getSmiles(0, 0, viewer.getSelectionSet(false), false, true,
+          false, false);
       if (tok == Token.drawing) {
         if (msg.length() > 0) {
           viewer.show2D(msg);
@@ -13780,7 +13809,7 @@ public class ScriptEvaluator {
             type = 'N';
             break;
           default:
-            error(ERROR_invalidArgument);  
+            error(ERROR_invalidArgument);
           }
           msg = viewer.getChemicalInfo(msg, type);
           if (msg.indexOf("FileNotFound") >= 0)
@@ -13988,6 +14017,13 @@ public class ScriptEvaluator {
             if (info[i].toLowerCase().indexOf(name) >= 0)
               sb.append(info[i]).append('\n');
           msg = sb.toString();
+        }
+        break;
+      } else if (tokAt(2) == Token.file && (len = statementLength) == 4) {
+        if (!isSyntaxCheck) {
+          msg = viewer.getFileAsString(parameterAsString(3));
+          msg = (msg.indexOf(JmolConstants.EMBEDDED_SCRIPT_TAG) < 0 ? ""
+              : ScriptCompiler.getEmbeddedScript(msg));
         }
         break;
       }
@@ -14269,6 +14305,8 @@ public class ScriptEvaluator {
     String thisId = initIsosurface(JmolConstants.SHAPE_DRAW);
     boolean idSeen = (thisId != null);
     boolean isWild = (idSeen && getShapeProperty(JmolConstants.SHAPE_DRAW, "ID") == null);
+    int[] connections = null;
+    int iConnect= 0;
     for (int i = iToken; i < statementLength; ++i) {
       String propertyName = null;
       Object propertyValue = null;
@@ -14282,6 +14320,27 @@ public class ScriptEvaluator {
         intScale = 0;
         propertyName = "polygon";
         propertyValue = vp;
+        havePoints = true;
+        break;
+      case Token.connect:
+        connections = new int[4];
+        iConnect = 4;
+        float[] farray = floatParameterSet(++i, 4, 4);
+        i = iToken;
+        for (int j = 0; j < 4; j++)
+          connections[j] = (int) farray[j];
+        havePoints = true;
+        break;
+      case Token.bonds:
+      case Token.atoms:
+        if (connections == null || iConnect > (theTok == Token.bondcount ? 2 : 3)) {
+          iConnect = 0;
+          connections = new int[] {-1, -1, -1, -1};
+        }
+        connections[iConnect++] = atomExpression(++i).nextSetBit(0);
+        i = iToken;
+        connections[iConnect++] = (theTok == Token.bonds ? atomExpression(++i).nextSetBit(0) : -1);
+        i = iToken;
         havePoints = true;
         break;
       case Token.slab:
@@ -14673,7 +14732,7 @@ public class ScriptEvaluator {
         setShapeProperty(JmolConstants.SHAPE_DRAW, propertyName, propertyValue);
     }
     if (havePoints) {
-      setShapeProperty(JmolConstants.SHAPE_DRAW, "set", null);
+      setShapeProperty(JmolConstants.SHAPE_DRAW, "set", connections);
     }
     if (colorArgb != Integer.MIN_VALUE)
       setShapeProperty(JmolConstants.SHAPE_DRAW, "color", Integer
@@ -15696,12 +15755,24 @@ public class ScriptEvaluator {
         // we PREPEND the selection to the command if no surface object
         // has been seen yet, and APPEND it if it has.
         propertyName = "select";
-        propertyValue = atomExpression(++i);
+        BitSet bs1 = atomExpression(++i);
+        propertyValue = bs1;
         i = iToken;
-        if (surfaceObjectSeen)
+        boolean isOnly = (tokAt(i + 1) == Token.only); 
+        if (isOnly) {
+          i++;
+          BitSet bs2 = BitSetUtil.copy(bs1);
+          BitSetUtil.invertInPlace(bs2, viewer.getAtomCount());
+          addShapeProperty(propertyList, "ignore", bs2);
+          sbCommand.append(" ignore ").append(Escape.escape(bs2));
+        }        
+        if (surfaceObjectSeen || isMapped) {
           sbCommand.append(" select " + Escape.escape(propertyValue));
-        else
+        } else {
           bsSelect = (BitSet) propertyValue;
+          if (modelIndex < 0 && bsSelect.nextSetBit(0) >= 0)
+            modelIndex = viewer.getAtomModelIndex(bsSelect.nextSetBit(0));
+        }
         break;
       case Token.set:
         thisSetNumber = intParameter(++i);
@@ -15808,6 +15879,8 @@ public class ScriptEvaluator {
         propertyValue = rd;
         propertyName = "radius";
         haveRadius = true;
+        if (isMapped)
+          surfaceObjectSeen = false;
         i = iToken;
         break;
       case Token.plane:
@@ -16565,6 +16638,19 @@ public class ScriptEvaluator {
         if (fileIndex >= 0)
           sbCommand.append(" ").append(fileIndex);
         break;
+      case Token.connect:
+        propertyName = "connections";
+        switch (tokAt(++i)) {
+        case Token.bitset:
+        case Token.expressionBegin:
+        propertyValue = new int[] { atomExpression(i).nextSetBit(0) };
+          break;
+        default:
+          propertyValue = new int[] {(int) floatParameterSet(i, 1, 1)[0] } ;
+          break;
+        }
+        i = iToken;
+        break;
       case Token.link:
         propertyName = "link";
         sbCommand.append(" link");
@@ -16636,8 +16722,12 @@ public class ScriptEvaluator {
         if (bsModels.cardinality() != 1)
           error(ERROR_multipleModelsDisplayedNotOK, "ISOSURFACE "
               + onlyOneModel);
-        if (needSelect)
+        if (needSelect) {
           propertyList.add(0, new Object[] { "select", bsSelect });
+          if (sbCommand.indexOf("; isosurface map") == 0) {
+            sbCommand = new StringBuffer("; isosurface map select " + Escape.escape(bsSelect) + sbCommand.substring(16));
+          }
+        }
       }
     }
 

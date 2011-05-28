@@ -32,7 +32,9 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
+import org.jmol.shape.Mesh;
 import org.jmol.shape.MeshRenderer;
+import org.jmol.util.Measure;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.JmolConstants;
 
@@ -40,7 +42,7 @@ public class DrawRenderer extends MeshRenderer {
 
   private int drawType;
   private DrawMesh dmesh;
-  
+
   private Point3f[] controlHermites;
   private final Point3f vpt0 = new Point3f();
   private final Point3f vpt1 = new Point3f();
@@ -62,15 +64,34 @@ public class DrawRenderer extends MeshRenderer {
       if (render1(dmesh = (DrawMesh) draw.meshes[i]))
         renderInfo();
   }
-  
+
   @Override
   protected boolean isPolygonDisplayable(int i) {
-    return Draw.isPolygonDisplayable(dmesh, i) 
-        && (dmesh.modelFlags == null || dmesh.bsMeshesVisible.get(i)); 
+    return Draw.isPolygonDisplayable(dmesh, i)
+        && (dmesh.modelFlags == null || dmesh.bsMeshesVisible.get(i));
   }
-  
+
+  @Override
+  public boolean render1(Mesh mesh) {
+    if (mesh.connections != null) {
+      if (mesh.connections[0] < 0)
+        return false;
+      mesh.vertices = new Point3f[4];
+      mesh.vertexCount = 4;
+      int[] c = mesh.connections;
+      for (int i = 0; i < 4; i++) {
+        mesh.vertices[i] = (c[i] < 0 ? mesh.vertices[i - 1] : viewer
+            .getAtomPoint3f(c[i]));
+      }
+      mesh.recalcAltVertices = true;
+    }
+    return super.render1(mesh);
+  }
+
   @Override
   protected void render2(boolean isExport) {
+    if (mesh.connections != null)
+      getConnectionPoints();
     drawType = dmesh.drawType;
     diameter = dmesh.diameter;
     width = dmesh.width;
@@ -80,15 +101,12 @@ public class DrawRenderer extends MeshRenderer {
     }
     boolean isDrawPickMode = (viewer.getPickingMode() == ActionManager.PICKING_DRAW);
     int nPoints = vertexCount;
-    boolean isCurved = (
-        (drawType == JmolConstants.DRAW_CURVE 
-            || drawType == JmolConstants.DRAW_ARROW
-            || drawType == JmolConstants.DRAW_ARC) 
-        && vertexCount >= 2);
+    boolean isCurved = ((drawType == JmolConstants.DRAW_CURVE
+        || drawType == JmolConstants.DRAW_ARROW || drawType == JmolConstants.DRAW_ARC) && vertexCount >= 2);
     boolean isSegments = (drawType == JmolConstants.DRAW_LINE_SEGMENT);
     if (width > 0 && isCurved) {
       pt1f.set(0, 0, 0);
-      int n = (drawType == JmolConstants.DRAW_ARC ? 2 :vertexCount);
+      int n = (drawType == JmolConstants.DRAW_ARC ? 2 : vertexCount);
       for (int i = 0; i < n; i++)
         pt1f.add(vertices[i]);
       pt1f.scale(1f / n);
@@ -96,7 +114,7 @@ public class DrawRenderer extends MeshRenderer {
       diameter = viewer.scaleToScreen(pt1i.z, (int) (width * 1000));
       if (diameter == 0)
         diameter = 1;
-    }    
+    }
     if ((dmesh.isVector) && dmesh.haveXyPoints) {
       int ptXY = 0;
       // [x y] or [x,y] refers to an xy point on the screen
@@ -105,13 +123,14 @@ public class DrawRenderer extends MeshRenderer {
       // as a percent 
       // just a Point3f with z = -Float.MAX_VALUE
       for (int i = 0; i < 2; i++)
-        if (vertices[i].z == Float.MAX_VALUE || vertices[i].z == -Float.MAX_VALUE)
+        if (vertices[i].z == Float.MAX_VALUE
+            || vertices[i].z == -Float.MAX_VALUE)
           ptXY += i + 1;
       if (--ptXY < 2) {
         renderXyArrow(ptXY);
         return;
       }
-    }    
+    }
     int tension = 5;
     switch (drawType) {
     default:
@@ -131,7 +150,8 @@ public class DrawRenderer extends MeshRenderer {
       if (width > 0)
         diameter = viewer.scaleToScreen(pt1i.z, (int) (width * 1000));
       if (diameter > 0 && (mesh.drawTriangles || mesh.fillTriangles))
-        g3d.drawFilledCircle(colix, mesh.fillTriangles ? colix : 0, diameter, pt1i.x, pt1i.y, pt1i.z);
+        g3d.drawFilledCircle(colix, mesh.fillTriangles ? colix : 0, diameter,
+            pt1i.x, pt1i.y, pt1i.z);
       break;
     case JmolConstants.DRAW_CURVE:
     case JmolConstants.DRAW_LINE_SEGMENT:
@@ -156,7 +176,7 @@ public class DrawRenderer extends MeshRenderer {
       // vector to rotate
       if (vertexCount > 2)
         vTemp2.set(vertices[2]);
-      else 
+      else
         vTemp2.set(Draw.randomPoint());
       vTemp2.sub(vertices[0]);
       vTemp2.cross(vTemp, vTemp2);
@@ -201,31 +221,98 @@ public class DrawRenderer extends MeshRenderer {
         controlHermites = new Point3f[nHermites + 1];
       }
       Graphics3D.getHermiteList(tension, vertices[vertexCount - 3],
-            vertices[vertexCount - 2], vertices[vertexCount - 1],
-            vertices[vertexCount - 1], vertices[vertexCount - 1],
-            controlHermites, 0, nHermites);
-      renderArrowHead(controlHermites[nHermites - 2], controlHermites[nHermites - 1], 0, false, false, dmesh.isBarb);
+          vertices[vertexCount - 2], vertices[vertexCount - 1],
+          vertices[vertexCount - 1], vertices[vertexCount - 1],
+          controlHermites, 0, nHermites);
+      renderArrowHead(controlHermites[nHermites - 2],
+          controlHermites[nHermites - 1], 0, false, false, dmesh.isBarb);
       break;
     }
     if (diameter == 0)
       diameter = 3;
     if (isCurved) {
       for (int i = 0, i0 = 0; i < nPoints - 1; i++) {
-        g3d.fillHermite(tension, diameter, diameter, diameter, screens[i0],
-            screens[i], screens[i + 1], screens[i
-                + (i == nPoints - 2 ? 1 : 2)]);
+        g3d
+            .fillHermite(tension, diameter, diameter, diameter, screens[i0],
+                screens[i], screens[i + 1], screens[i
+                    + (i == nPoints - 2 ? 1 : 2)]);
         i0 = i;
       }
     } else if (isSegments) {
       for (int i = 0; i < nPoints - 1; i++)
-        drawLine(i, i + 1, true, vertices[i], vertices[i + 1], screens[i], screens[i + 1]);
+        drawLine(i, i + 1, true, vertices[i], vertices[i + 1], screens[i],
+            screens[i + 1]);
     }
-    
+
     if (isDrawPickMode && !isExport) {
       renderHandles();
     }
   }
-  
+
+  private void getConnectionPoints() {
+    // now we screens and any adjustment to positions
+    // we need to set the actual control points
+    
+    
+    vertexCount = 3;
+    float dmax = Float.MAX_VALUE;
+    int i0 = 0;
+    int j0 = 0;
+    for (int i = 0; i < 2; i++)
+      for (int j = 2; j < 4; j++) {
+        float d = vertices[i].distance(vertices[j]);
+        if (d < dmax) {
+          dmax = d;
+          i0 = i;
+          j0 = j;
+        }
+      }
+    vpt0.set(vertices[0]);
+    vpt0.add(vertices[1]);
+    vpt0.scale(0.5f);
+    vpt2.set(vertices[2]);
+    vpt2.add(vertices[3]);
+    vpt2.scale(0.5f);
+    vpt1.set(vpt0);
+    vpt1.add(vpt2);
+    vpt1.scale(0.5f);
+    vertices[3] = new Point3f(vertices[i0]);
+    vertices[3].add(vertices[j0]);
+    vertices[3].scale(0.5f);
+    vertices[1] = new Point3f(vpt1); 
+    vertices[0] = new Point3f(vpt0);
+    vertices[2] = new Point3f(vpt2);
+
+    for (int i = 0; i < 4; i++)
+      viewer.transformPoint(vertices[i], screens[i]);
+
+    float f = 1; // bendiness
+    float endoffset = 0.2f;
+    
+    vpt0.set(screens[0].x, screens[0].y, screens[0].z);
+    vpt1.set(screens[1].x, screens[1].y, screens[1].z);
+    vpt2.set(screens[3].x, screens[3].y, screens[3].z);
+    float dx = (screens[1].x - screens[0].x) * f;
+    float dy = (screens[1].y - screens[0].y) * f;
+    
+    if (dmax == 0 || Measure.computeTorsion(vpt2, vpt0, new Point3f(vpt0.x, vpt0.y, 10000f), vpt1, false) > 0) {
+      vpt0.set(screens[1].x - dy, screens[1].y + dx, screens[1].z);
+    } else {
+      vpt0.set(screens[1].x + dy, screens[1].y - dx, screens[1].z);
+    }
+    viewer.unTransformPoint(vpt0, vertices[1]);
+    vTemp.set(vertices[1]);
+    vTemp.sub(vertices[0]);
+    vTemp.scale(endoffset); 
+    vertices[0].add(vTemp);
+    vTemp.set(vertices[1]);
+    vTemp.sub(vertices[2]);
+    vTemp.scale(endoffset); 
+    vertices[2].add(vTemp);
+    for (int i = 0; i < 3; i++)
+      viewer.transformPoint(vertices[i], screens[i]);
+  }
+
   private void drawLineData(List<Point3f[]> lineData) {
     if (diameter == 0)
       diameter = 3;
@@ -251,8 +338,8 @@ public class DrawRenderer extends MeshRenderer {
     vpt1.scaleAdd(dmesh.scale * scaleFactor, vpt1, vpt0);
     if (diameter == 0)
       diameter = 1;
-    pt1i.set((int) vpt0.x, (int) vpt0.y, (int) vpt0.z );
-    pt2i.set((int) vpt1.x, (int) vpt1.y, (int) vpt1.z );
+    pt1i.set((int) vpt0.x, (int) vpt0.y, (int) vpt0.z);
+    pt2i.set((int) vpt1.x, (int) vpt1.y, (int) vpt1.z);
     if (diameter < 0)
       g3d.drawDottedLine(pt1i, pt2i);
     else
@@ -263,20 +350,21 @@ public class DrawRenderer extends MeshRenderer {
   private final Point3f pt0f = new Point3f();
   private final Point3i pt0i = new Point3i();
 
-  private void renderArrowHead(Point3f pt1, Point3f pt2, float factor2, 
-                               boolean isTransformed, boolean withShaft, boolean isBarb) {
+  private void renderArrowHead(Point3f pt1, Point3f pt2, float factor2,
+                               boolean isTransformed, boolean withShaft,
+                               boolean isBarb) {
     if (dmesh.noHead)
       return;
     float fScale = dmesh.drawArrowScale;
     if (fScale == 0)
-      fScale = viewer.getDefaultDrawArrowScale();
+      fScale = viewer.getDefaultDrawArrowScale() * (dmesh.connections == null ? 1f : 0.5f);
     if (fScale <= 0)
       fScale = 0.5f;
     if (isTransformed)
       fScale *= 40;
     if (factor2 > 0)
       fScale *= factor2;
-    
+
     pt0f.set(pt1);
     pt2f.set(pt2);
     float d = pt0f.distance(pt2f);
@@ -292,8 +380,8 @@ public class DrawRenderer extends MeshRenderer {
     pt1f.set(pt2f);
     pt1f.sub(vTemp);
     if (isTransformed) {
-      pt1i.set((int)pt1f.x, (int)pt1f.y, (int)pt1f.z);
-      pt2i.set((int)pt2f.x, (int)pt2f.y, (int)pt2f.z);
+      pt1i.set((int) pt1f.x, (int) pt1f.y, (int) pt1f.z);
+      pt2i.set((int) pt2f.x, (int) pt2f.y, (int) pt2f.z);
     } else {
       viewer.transformPoint(pt2f, pt2i);
       viewer.transformPoint(pt1f, pt1i);
@@ -312,12 +400,12 @@ public class DrawRenderer extends MeshRenderer {
     if (diameter < 1)
       diameter = 1;
     if (headDiameter > 2)
-      g3d.fillConeScreen(Graphics3D.ENDCAPS_FLAT, headDiameter, pt1i, pt2i, isBarb);
+      g3d.fillConeScreen(Graphics3D.ENDCAPS_FLAT, headDiameter, pt1i, pt2i,
+          isBarb);
     if (withShaft)
-      g3d.fillCylinderScreen(Graphics3D.ENDCAPS_OPENEND, diameter, pt0i,
-           pt1i);
+      g3d.fillCylinderScreen(Graphics3D.ENDCAPS_OPENEND, diameter, pt0i, pt1i);
   }
-  
+
   private void renderHandles() {
     int diameter = (int) (10 * imageFontScaling);
     switch (drawType) {
@@ -325,7 +413,8 @@ public class DrawRenderer extends MeshRenderer {
     case JmolConstants.DRAW_TRIANGLE:
       return;
     default:
-      short colixFill = Graphics3D.getColixTranslucent(Graphics3D.GOLD, true, 0.5f);
+      short colixFill = Graphics3D.getColixTranslucent(Graphics3D.GOLD, true,
+          0.5f);
       for (int i = dmesh.polygonCount; --i >= 0;) {
         if (!isPolygonDisplayable(i))
           continue;
@@ -334,14 +423,14 @@ public class DrawRenderer extends MeshRenderer {
           continue;
         for (int j = vertexIndexes.length; --j >= 0;) {
           int k = vertexIndexes[j];
-          g3d.drawFilledCircle(Graphics3D.GOLD, colixFill, diameter, screens[k].x,
-              screens[k].y, screens[k].z);
+          g3d.drawFilledCircle(Graphics3D.GOLD, colixFill, diameter,
+              screens[k].x, screens[k].y, screens[k].z);
         }
         break;
       }
     }
   }
-  
+
   private void renderInfo() {
     if (mesh.title == null || viewer.getDrawHover()
         || !g3d.setColix(viewer.getColixBackgroundContrast()))
@@ -358,15 +447,15 @@ public class DrawRenderer extends MeshRenderer {
           s = s.substring(1);
           if (drawType == JmolConstants.DRAW_ARC)
             pt1f.set(pt2f);
-        } 
+        }
         if (drawType != JmolConstants.DRAW_ARC)
           pt1f.set(vertices[dmesh.polygonIndexes[i][pt]]);
         viewer.transformPoint(pt1f, pt1i);
         int offset = (int) (5 * imageFontScaling);
-        g3d.drawString(s, null, pt1i.x + offset, pt1i.y - offset,
-            pt1i.z, pt1i.z);
+        g3d.drawString(s, null, pt1i.x + offset, pt1i.y - offset, pt1i.z,
+            pt1i.z);
         break;
       }
   }
-  
+
 }

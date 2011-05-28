@@ -45,7 +45,7 @@ import javax.vecmath.Matrix4f;
 
 public class ScriptCompiler extends ScriptCompilationTokenParser {
 
-  /**
+  /*
    * The Compiler class is really two parts -- 
    * 
    * Compiler.class          going from characters to tokens
@@ -60,7 +60,6 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
    * String characters --> Token token --> Vector ltoken[] --> Token[][] aatokenCompiled[][]
    * 
    */
-  private static final String LOAD_TYPES = "auto;append;data;files;inline;menu;smiles;trajectory;models;" + JmolConstants.LOAD_ATOM_DATA_TYPES;
   
   public ScriptCompiler(Viewer viewer) {
     this.viewer = viewer;
@@ -494,7 +493,6 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   }
 
   private boolean isShowCommand;
-  private boolean inlineLoad;
   
   private int lookingAtComment() {
     char ch = script.charAt(ichToken);
@@ -867,15 +865,17 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       boolean isAndEquals = ("+-\\*/&|=".indexOf(ch) >= 0);
       boolean isOperation = (isAndEquals || ch == '.' || ch == '[');
       char ch2 = (ichToken + 1 >= cchScript ? 0 : script.charAt(ichToken + 1));
-      if (!isNewSet && isUserToken && isOperation && (ch == '=' || ch2 == ch || ch2 == '=')) {
+      if (!isNewSet && isUserToken && isOperation
+          && (ch == '=' || ch2 == ch || ch2 == '=')) {
         isNewSet = true;
         // Var data = ""
         // data = 5
         // data++
         // data += what
-        
+
       }
-      if (isNewSet || tokCommand == Token.set || Token.tokAttr(tokCommand, Token.setparam)) {
+      if (isNewSet || tokCommand == Token.set
+          || Token.tokAttr(tokCommand, Token.setparam)) {
         if (ch == '=')
           setEqualPt = ichToken;
 
@@ -932,7 +932,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       String str;
       if ((tokCommand == Token.load || tokCommand == Token.background || tokCommand == Token.script)
           && !iHaveQuotedString) {
-        if (inlineLoad) {
+        if (lastToken.tok == Token.inline) {
           str = getUnescapedStringLiteral();
         } else {
           str = script.substring(ichToken + 1, ichToken + cchToken - 1);
@@ -958,26 +958,38 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       String ident = script.substring(ichToken, ichToken + cchToken);
       addTokenToPrefix(new Token(Token.identifier, ident));
       return CONTINUE;
-    } else if (tokCommand == Token.load) {
+    }
+    switch (tokCommand) {
+    case Token.load:
       if (script.charAt(ichToken) == '@') {
         iHaveQuotedString = true;
         return OK;
       }
-      if (nTokens == 1) {
-        inlineLoad = false;
-        if (lookingAtLoadFormat()) {
-          String strFormat = script.substring(ichToken, ichToken + cchToken);
+      if (nTokens == 1 && lookingAtLoadFormat()) {
+        String strFormat = script.substring(ichToken, ichToken + cchToken);
+        Token token = Token.getTokenFromName(strFormat.toLowerCase());
+        switch (token == null ? Token.nada : token.tok) {
+        case Token.append:
+        case Token.data:
+        case Token.file:
+        case Token.inline:
+        case Token.menu:
+        case Token.model:
+        case Token.smiles:
+        case Token.trajectory:
+          addTokenToPrefix(token);
+          break;
+        default:
+          // skip entirely if not recognized
           int tok = (strFormat.indexOf("=") == 0 || strFormat.indexOf("$") == 0 ? Token.string
-              : (strFormat = strFormat.toLowerCase()).equals("data") ? Token.data
-                  : Parser.isOneOf(strFormat, LOAD_TYPES) ? Token.identifier
-                      : 0);
+              : Parser.isOneOf(strFormat = strFormat.toLowerCase(),
+                  JmolConstants.LOAD_ATOM_DATA_TYPES) ? Token.identifier : 0);
           if (tok != 0) {
-            inlineLoad = (strFormat.equals("inline"));
             addTokenToPrefix(new Token(tok, strFormat));
             iHaveQuotedString = (tok == Token.string);
           }
-          return CONTINUE;
         }
+        return CONTINUE;
       }
       BitSet bs;
       if (script.charAt(ichToken) == '{' || parenCount > 0) {
@@ -990,15 +1002,17 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         iHaveQuotedString = true;
         return CONTINUE;
       }
-    } else if (tokCommand == Token.script || tokCommand == Token.getproperty) {
+      break;
+    case Token.script:
+    case Token.getproperty:
       if (!iHaveQuotedString && lookingAtImpliedString(false)) {
         String str = script.substring(ichToken, ichToken + cchToken);
         addTokenToPrefix(new Token(Token.string, str));
         iHaveQuotedString = true;
         return CONTINUE;
       }
-    } else if (tokCommand == Token.write) {
-      int pt = cchToken;
+      break;
+    case Token.write:
       // write image 300 300 filename
       // write script filename
       // write spt filename
@@ -1006,17 +1020,23 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       // write filename
       if (nTokens == 2 && lastToken.tok == Token.frame)
         iHaveQuotedString = true;
-      if (!iHaveQuotedString && lookingAtImpliedString(true)) {
-        String str = script.substring(ichToken, ichToken + cchToken);
-        if (str.startsWith("@{")) {
+      if (!iHaveQuotedString) {
+        if (script.charAt(ichToken) == '@') {
           iHaveQuotedString = true;
-        } else if (str.indexOf(" ") < 0) {
-          addTokenToPrefix(new Token(Token.string, str));
-          iHaveQuotedString = true;
-          return CONTINUE;
+          return OK;
         }
-        cchToken = pt;
+        if (lookingAtImpliedString(true)) {
+          int pt = cchToken;
+          String str = script.substring(ichToken, ichToken + cchToken);
+          if (str.indexOf(" ") < 0) {
+            addTokenToPrefix(new Token(Token.string, str));
+            iHaveQuotedString = true;
+            return CONTINUE;
+          }
+          cchToken = pt;
+        }
       }
+      break;
     }
     if (Token.tokAttr(tokCommand, Token.implicitStringCommand)
         && !(tokCommand == Token.script && iHaveQuotedString)
@@ -2116,11 +2136,6 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     }
     return sb.toString();
   }
-
-  // static String[] loadFormats = { "append", "files", "trajectory", "menu",
-  // "models",
-  // /*ancient:*/ "alchemy", "mol2", "mopac", "nmrpdb", "charmm", "xyz", "mdl",
-  // "pdb" };
 
   private boolean lookingAtLoadFormat() {
     // just allow a simple word or =xxxx or $CCCC

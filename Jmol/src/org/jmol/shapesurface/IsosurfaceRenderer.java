@@ -92,7 +92,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
   }
   
   private void renderLonePair(boolean isRadical) {
-    pt2f.set(imesh.vertices[1]);
+    pt2f.set(vertices[1]);
     viewer.transformPoint(pt2f, pt2f);
     int r = viewer.scaleToScreen((int)pt2f.z, 100);
     if (r < 1)
@@ -100,7 +100,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     if (!isRadical) {
       Vector3f v1 = new Vector3f();
       Vector3f v2 = new Vector3f();
-      pt1f.set(imesh.vertices[0]);
+      pt1f.set(vertices[0]);
       viewer.transformPoint(pt1f, pt1f);
       v1.sub(pt2f, pt1f);
       v2.set(v1.x, v1.y, v1.z + 1);
@@ -176,7 +176,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
           && Math.abs(screens[i].y - cY) < 50) {
         String s = i + (imesh.isColorSolid ? "" : " " + imesh.vertexValues[i]);
         //System.out.println("IsoSurfaceRenderer i=" + s + " " 
-        //  + imesh.vertices[i] + " " + imesh.vertexValues[i]);
+        //  + vertices[i] + " " + imesh.vertexValues[i]);
         g3d.drawStringNoSlab(s, null, screens[i].x, screens[i].y, screens[i].z);
       }
       g3d.fillSphere(diam, screens[i]);
@@ -252,15 +252,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       short nA = normixes[iA];
       short nB = normixes[iB];
       short nC = normixes[iC];
-      int check = 7;
-      if (frontOnly) {
-        if (transformedVectors[nA].z < 0)
-          check ^= 1;
-        if (transformedVectors[nB].z < 0)
-          check ^= 2;
-        if (transformedVectors[nC].z < 0)
-          check ^= 4;
-      }
+      int check = checkNormals(nA, nB, nC);
       if (fill && check == 0)
         continue;
       short colixA, colixB, colixC;
@@ -330,7 +322,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     for (int i = vertexCount; --i >= 0;) {
       if (vertexValues != null && Float.isNaN(vertexValues[i])) 
         continue;
-        ptTemp.set(mesh.vertices[i]);
+        ptTemp.set(vertices[i]);
         short n = mesh.normixes[i];
         // -n is an intensity2sided and does not correspond to a true normal
         // index

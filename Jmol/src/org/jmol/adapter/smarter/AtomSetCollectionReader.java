@@ -349,13 +349,15 @@ public abstract class AtomSetCollectionReader {
 
   @SuppressWarnings("unchecked")
   private void initialize() {
-
     initializeSymmetry();
     viewer = (JmolViewer) htParams.get("viewer");
     htParams.remove("viewer"); // don't pass this on to user
+    merging = htParams.containsKey("merging");
     getHeader = htParams.containsKey("getHeader");
     isSequential = htParams.containsKey("isSequential");
     readerName = (String) htParams.get("readerName");
+    if (htParams.containsKey("OutputStream"))
+      os = (OutputStream) htParams.get("OutputStream");
     //parameterData = (String) htParams.get("parameterData");
     if (htParams.containsKey("vibrationNumber"))
       desiredVibrationNumber = ((Integer) htParams.get("vibrationNumber"))
@@ -405,9 +407,9 @@ public abstract class AtomSetCollectionReader {
     }
     if (bsModels != null && (firstLastStep == null || firstLastStep[1] != -1))
       lastModelNumber = bsModels.length();
+      
     symmetryRange = (htParams.containsKey("symmetryRange") ? ((Float) htParams
         .get("symmetryRange")).floatValue() : 0);
-
     latticeCells = new int[3];
     if (htParams.containsKey("lattice")) {
       Point3f pt = ((Point3f) htParams.get("lattice"));
@@ -454,6 +456,8 @@ public abstract class AtomSetCollectionReader {
     }
     if (htParams.containsKey("unitcell")) {
       float[] fParams = (float[]) htParams.get("unitcell");
+      if (merging)
+        setFractionalCoordinates(true);      
       if (fParams.length == 9) {
         // these are vectors
         addPrimitiveLatticeVector(0, fParams, 0);
@@ -464,12 +468,10 @@ public abstract class AtomSetCollectionReader {
             fParams[5]);
       }
       ignoreFileUnitCell = iHaveUnitCell;
+      if (merging && !iHaveUnitCell)
+        setFractionalCoordinates(false);
+      // with appendNew == false and UNITCELL parameter, we assume fractional coordinates
     }
-    merging = htParams.containsKey("merging");
-
-    if (htParams.containsKey("OutputStream"))
-      os = (OutputStream) htParams.get("OutputStream");
-
   }
 
   public boolean haveModel;
@@ -879,7 +881,10 @@ public abstract class AtomSetCollectionReader {
         atomSetCollection.setLatticeCells(latticeCells, applySymmetryToBonds,
             doPackUnitCell, supercell);
         if (ignoreFileSpaceGroupName || !iHaveSymmetryOperators) {
-          if (createSpaceGroup()) {
+          if (!merging || symmetry == null)
+            getSymmetry();
+          if (symmetry.createSpaceGroup(desiredSpaceGroupIndex,
+              (spaceGroup.indexOf("!") >= 0 ? "P1" : spaceGroup), notionalUnitCell)) {
             atomSetCollection.setAtomSetSpaceGroupName(symmetry
                 .getSpaceGroupName());
             atomSetCollection.applySymmetry(symmetry);
@@ -900,11 +905,6 @@ public abstract class AtomSetCollectionReader {
     if (isTrajectory)
       atomSetCollection.setTrajectory();
     initializeSymmetry();
-  }
-
-  protected boolean createSpaceGroup() {
-    return getSymmetry().createSpaceGroup(desiredSpaceGroupIndex,
-        (spaceGroup.indexOf("!") >= 0 ? "P1" : spaceGroup), notionalUnitCell);
   }
 
   @SuppressWarnings("unchecked")

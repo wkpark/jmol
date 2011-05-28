@@ -59,6 +59,14 @@ public class DrawMesh extends Mesh {
 
   BitSet bsMeshesVisible = new BitSet();
 
+  void setCenters() {
+    if (ptCenters == null)
+      setCenter(-1);
+    else
+      for (int i = ptCenters.length; --i >= 0; )
+        setCenter(i);
+  }
+
   final void setCenter(int iModel) {
     Point3f center = new Point3f(0, 0, 0);
     int iptlast = -1;
@@ -79,6 +87,8 @@ public class DrawMesh extends Mesh {
       }
       if (n > 0 && (i == iModel || i == 0)) {
         center.scale(1.0f / n);
+        if (ptOffset != null)
+          center.add(ptOffset);
         break;
       }
     }
@@ -90,13 +100,13 @@ public class DrawMesh extends Mesh {
   }
 
   void offset(Vector3f offset) {
-    for (int i = vertexCount; --i >= 0;)
-      vertices[i].add(offset);
-    if (ptCenters != null)
-      for (int i = ptCenters.length; --i >= 0;)
-        ptCenters[i].add(offset);
-    if (ptCenter != null)
-      ptCenter.add(offset);
+    if (ptOffset == null)
+      ptOffset = new Point3f();
+    ptOffset.add(offset);
+//    for (int i = vertexCount; --i >= 0;)
+  //    vertices[i].add(offset);
+    setCenters();
+    recalcAltVertices = true;
   }
 
   public void deleteAtoms(int modelIndex) {

@@ -1027,6 +1027,7 @@ public class Token {
   final static int allconnected  = misc  | 10;// new
   final static int angstroms     = misc  | 12;// new
   final static int anisotropy    = misc  | 14;// new
+  final static int append        = misc  | 15;// new
   final static int arc           = misc  | 16 | expression;// new
   final static int area          = misc  | 18;// new
   final static int aromatic      = misc  | 20 | predefinedset;// new
@@ -1110,6 +1111,7 @@ public class Token {
   final static int in             = misc  | 156;// new
   final static int increment      = misc  | 157;// new
   public final static int info    = misc  | 158;
+  final static int inline         = misc  | 159;// new
   final static int insideout      = misc  | 160;// new
   final static int interior       = misc  | 162;// new
   final static int internal       = misc  | 164;// new
@@ -1127,6 +1129,7 @@ public class Token {
   final static int lumo           = misc  | 184;// new
   final static int manifest       = misc  | 186;// new
   final static int maxset         = misc  | 190;// new
+  final static int menu           = misc  | 191;// new
   final static int mep            = misc  | 192;
   public final static int mesh    = misc  | 194;
   final static int middle         = misc  | 195;
@@ -1505,6 +1508,7 @@ public class Token {
       "endif",             new Token(endifcmd),
       "exit",              new Token(exit),
       "file",              new Token(file),
+      "files",             null,
       "font",              new Token(font),
       "for",               new Token(forcmd),
       "format",            new Token(format),
@@ -1757,6 +1761,7 @@ public class Token {
       "ident",           null,
       "image",           new Token(image),
       "info",            new Token(info),
+      "inline",          new Token(inline),
       "insertion",       new Token(insertion),
       "insertions",      null, 
       "ionic",           new Token(ionic),
@@ -1900,6 +1905,7 @@ public class Token {
       "allConnected",    new Token(allconnected),
       "angstroms",       new Token(angstroms),
       "anisotropy",      new Token(anisotropy),
+      "append",          new Token(append),
       "arc",             new Token(arc),
       "area",            new Token(area),
       "aromatic",        new Token(aromatic),
@@ -1973,6 +1979,7 @@ public class Token {
       "mapProperty",     new Token(mapProperty),
       "map",             null,
       "maxSet",          new Token(maxset),
+      "menu",            new Token(menu),
       "minSet",          new Token(minset),
       "modelBased",      new Token(modelbased),
       "molecular",       new Token(molecular),

@@ -113,7 +113,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
 
   private boolean setVariables() {
     vertices = (mesh.ptOffset == null && mesh.scale3d == 0 
-        && mesh.q == null 
+        && mesh.q == null && mesh.mat4 == null 
         ? mesh.vertices : mesh.getOffsetVertices(thePlane)); 
     
     colix = mesh.colix;
@@ -186,14 +186,13 @@ public abstract class MeshRenderer extends ShapeRenderer {
       }
       return;
     }
-    for (int i = vertexCount; --i >= 0;) {
-      if (frontOnly && transformedVectors[normixes[i]].z < 0)
-        continue;
-      g3d.fillSphere(4, screens[i]);
-    }
+    for (int i = vertexCount; --i >= 0;)
+      if (!frontOnly || transformedVectors[normixes[i]].z >= 0)
+        g3d.fillSphere(4, screens[i]);
   }
 
   protected BitSet bsPolygons = new BitSet();
+
   protected void renderTriangles(boolean fill, boolean iShowTriangles,
                                  boolean generateSet) {
     int[][] polygonIndexes = mesh.polygonIndexes;
@@ -212,7 +211,9 @@ public abstract class MeshRenderer extends ShapeRenderer {
       int iA = vertexIndexes[0];
       int iB = vertexIndexes[1];
       int iC = vertexIndexes[2];
-      if (haveBsDisplay && (!mesh.bsDisplay.get(iA) || !mesh.bsDisplay.get(iB) || !mesh.bsDisplay.get(iC)))
+      if (haveBsDisplay
+          && (!mesh.bsDisplay.get(iA) || !mesh.bsDisplay.get(iB) || !mesh.bsDisplay
+              .get(iC)))
         continue;
       if (iB == iC) {
         // line or point
@@ -230,8 +231,8 @@ public abstract class MeshRenderer extends ShapeRenderer {
             g3d.fillTriangle(screens[iC], colix, normix, screens[iB], colix,
                 normix, screens[iA], colix, normix);
           } else if (iShowTriangles) {
-            g3d.fillTriangle(screens[iA], colix, normix, screens[iB], colix, normix,
-                screens[iC], colix, normix, 0.1f);
+            g3d.fillTriangle(screens[iA], colix, normix, screens[iB], colix,
+                normix, screens[iC], colix, normix, 0.1f);
           } else {
             g3d.fillTriangle(screens[iA], colix, normix, screens[iB], colix,
                 normix, screens[iC], colix, normix);
@@ -252,15 +253,10 @@ public abstract class MeshRenderer extends ShapeRenderer {
               screens[iC]);
         continue;
       }
-      check = 7;
-      if (frontOnly) {
-        if (transformedVectors[normixes[iA]].z < 0)
-          check ^= 1;
-        if (transformedVectors[normixes[iB]].z >= 0)
-          check ^= 2;
-        if (transformedVectors[normixes[iC]].z >= 0)
-          check ^= 4;
-      }
+      short nA = normixes[iA];
+      short nB = normixes[iB];
+      short nC = normixes[iC];
+      check = checkNormals(nA, nB, nC);
       if (fill && check != 7)
         continue;
       switch (vertexIndexes.length) {
@@ -271,28 +267,30 @@ public abstract class MeshRenderer extends ShapeRenderer {
             continue;
           }
           if (iShowTriangles) {
-            g3d.fillTriangle(screens[iA], colix, normixes[iA], screens[iB],
-                colix, normixes[iB], screens[iC], colix, normixes[iC], 0.1f);
+            g3d.fillTriangle(screens[iA], colix, nA, screens[iB], colix, nB,
+                screens[iC], colix, nC, 0.1f);
             continue;
           }
           // System.out.println(normixes[iA]+ " " + normixes[iB] + " " +
           // normixes[iC]);
-          g3d.fillTriangle(screens[iA], colix, normixes[iA], screens[iB],
-              colix, normixes[iB], screens[iC], colix, normixes[iC]);
+          g3d.fillTriangle(screens[iA], colix, nA, screens[iB], colix, nB,
+              screens[iC], colix, nC);
           continue;
         }
         g3d.drawTriangle(screens[iA], screens[iB], screens[iC], check);
         continue;
       case 4:
         int iD = vertexIndexes[3];
+        short nD = normixes[iD];
+        if (frontOnly && (check != 7 || transformedVectors[nD].z < 0))
+          continue;
         if (fill) {
           if (generateSet) {
             bsPolygons.set(i);
             continue;
           }
-          g3d.fillQuadrilateral(screens[iA], colix, normixes[iA], screens[iB],
-              colix, normixes[iB], screens[iC], colix, normixes[iC],
-              screens[iD], colix, normixes[iD]);
+          g3d.fillQuadrilateral(screens[iA], colix, nA, screens[iB], colix, nB,
+              screens[iC], colix, nC, screens[iD], colix, nD);
           continue;
         }
         g3d.drawQuadrilateral(colix, screens[iA], screens[iB], screens[iC],
@@ -301,6 +299,19 @@ public abstract class MeshRenderer extends ShapeRenderer {
     }
     if (generateSet)
       exportSurface();
+  }
+
+  protected int checkNormals(short nA, short nB, short nC) {
+    int check = 7;
+    if (frontOnly) {
+      if (transformedVectors[nA].z < 0)
+        check ^= 1;
+      if (transformedVectors[nB].z < 0)
+        check ^= 2;
+      if (transformedVectors[nC].z < 0)
+        check ^= 4;
+    }
+    return check;
   }
 
   protected void drawLine(int iA, int iB, boolean fill, 

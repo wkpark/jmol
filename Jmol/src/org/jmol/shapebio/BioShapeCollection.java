@@ -104,7 +104,7 @@ public abstract class BioShapeCollection extends Shape {
   public void setProperty(String propertyName, Object value, BitSet bsSelected) {
 
     if (propertyName == "refreshTrajectories") {
-      int modelIndex = ((Integer) value).intValue();
+      int modelIndex = ((Integer)((Object[]) value)[0]).intValue();
       for (int i = bioShapes.length; --i >= 0; ){
         BioShape b = bioShapes[i];
         if (b.modelIndex == modelIndex)

@@ -94,7 +94,9 @@ public class JvxlCoder {
       XmlUtil.openDocument(data);
       XmlUtil.openTag(data, "jvxl", new String[] {
           "version", JVXL_VERSION_XML,
-          "jmolVersion", jvxlData.version });
+          "jmolVersion", jvxlData.version,
+          "xmlns", "http://jmol.org/jvxl_schema",
+          "xmlns:cml", "http://www.xml-cml.org/schema" });
       if (jvxlData.jvxlFileTitle != null)
         XmlUtil.appendCdata(data, "jvxlFileTitle", null, "\n" + jvxlData.jvxlFileTitle);
       if (jvxlData.moleculeXml != null)

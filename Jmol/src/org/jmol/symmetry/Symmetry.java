@@ -244,8 +244,8 @@ public class Symmetry implements SymmetryInterface {
     return unitCell == null ? null : unitCell.getNotionalUnitCell();
   }
 
-  public float[] getUnitCellAsArray() {
-    return unitCell == null ? null : unitCell.getUnitCellAsArray();
+  public float[] getUnitCellAsArray(boolean vectorsOnly) {
+    return unitCell == null ? null : unitCell.getUnitCellAsArray(vectorsOnly);
   }
 
   public void toUnitCell(Point3f pt, Point3f offset) {
@@ -309,7 +309,7 @@ public class Symmetry implements SymmetryInterface {
     if (notionalUnitcell == null)
       return;
     setUnitCell(notionalUnitcell);
-    modelAuxiliaryInfo.put("infoUnitCell", getUnitCellAsArray());
+    modelAuxiliaryInfo.put("infoUnitCell", getUnitCellAsArray(false));
     setUnitCellOffset((Point3f) modelAuxiliaryInfo.get("unitCellOffset"));
     if (modelAuxiliaryInfo.containsKey("jmolData"))
       setUnitCellAllFractionalRelative(true);

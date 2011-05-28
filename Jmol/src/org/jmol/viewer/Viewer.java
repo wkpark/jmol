@@ -929,7 +929,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isJmolDataFrame())
       return;
     if (mouseEnabled) {
-      transformManager.rotateXYBy(deltaX, deltaY, setMovableBitSet(bsSelected));
+      transformManager.rotateXYBy(deltaX, deltaY, setMovableBitSet(bsSelected, false));
       refreshMeasures(true);
     }
     //TODO: note that sync may not work with set allowRotateSelectedAtoms
@@ -937,12 +937,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         + " " + deltaY : "");
   }
 
-  private BitSet setMovableBitSet(BitSet bsSelected) {
+  private BitSet setMovableBitSet(BitSet bsSelected, boolean checkMolecule) {
     if (bsSelected == null)
       bsSelected = getSelectionSet(false);
     bsSelected = BitSetUtil.copy(bsSelected);
     BitSetUtil.andNot(bsSelected,getMotionFixedAtoms());
-    if (!global.allowMoveAtoms)
+    if (checkMolecule && !global.allowMoveAtoms)
       bsSelected = modelSet.getMoleculeBitSet(bsSelected);
     return bsSelected;
   }
@@ -1806,7 +1806,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       } else if (type.equals("Cube")) {
         cmd = "isosurface sign red blue ";
       } else if (!type.equals("spt")) {
-        evalString("zap; load auto "
+        evalString("zap; load "
             + Escape.escape(fileName)
             + ";if (_loadScript = '' && defaultLoadScript == '' && _filetype == 'Pdb') { select protein or nucleic;cartoons Only;color structure; select * }");
         return;
@@ -2449,9 +2449,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public Point3f[] calculateSurface(BitSet bsSelected, float envelopeRadius) {
     if (bsSelected == null)
       bsSelected = getSelectionSet(false);
-    addStateScript("calculate surfaceDistance "
-        + (envelopeRadius == Float.MAX_VALUE ? "FROM" : "WITHIN"), null,
-        bsSelected, null, "", false, true);
+    if (envelopeRadius == Float.MAX_VALUE || envelopeRadius == -1)
+      addStateScript("calculate surfaceDistance "
+          + (envelopeRadius == Float.MAX_VALUE ? "FROM" : "WITHIN"), null,
+          bsSelected, null, "", false, true);
     return modelSet.calculateSurface(bsSelected, envelopeRadius);
   }
 
@@ -6516,7 +6517,6 @@ private void zap(String msg) {
       if (isChange)
         statusManager.setCallbackFunction("modelkit", "OFF");
     }
-
   }
 
   public boolean getModelkitMode() {
@@ -7841,7 +7841,9 @@ private void zap(String msg) {
   }
 
   public void checkCoordinatesChanged() {
-    modelSet.recalculatePositionDependentQuantities(null);
+    // note -- use of save/restore coordinates cannot 
+    // track connected objects
+    modelSet.recalculatePositionDependentQuantities(null, null);
     refreshMeasures(true);
   }
 
@@ -7896,7 +7898,7 @@ private void zap(String msg) {
   private boolean showSelected;
 
   public void moveSelected(int deltaX, int deltaY, int x, int y,
-                           BitSet bsSelected, boolean isTranslation) {
+                           BitSet bsSelected, boolean isTranslation, boolean asAtoms) {
     // cannot synchronize this -- it's from the mouse and the event queue
     if (x == Integer.MIN_VALUE)
       rotateBondIndex = -1;
@@ -7923,7 +7925,7 @@ private void zap(String msg) {
     if (rotateBondIndex >= 0 && x != Integer.MIN_VALUE) {
       actionRotateBond(deltaX, deltaY, x, y);
     } else {
-      bsSelected = setMovableBitSet(bsSelected);
+      bsSelected = setMovableBitSet(bsSelected, !asAtoms);
       if (isTranslation) {
         Point3f ptCenter = getAtomSetCenter(bsSelected);
         Point3i ptScreen = transformPoint(ptCenter);
@@ -8043,10 +8045,10 @@ private void zap(String msg) {
         null, null);
   }
 
-  void rotateAtoms(Matrix3f mNew, Matrix3f matrixRotate,
+  void moveAtoms(Matrix3f mNew, Matrix3f matrixRotate, Vector3f translation,
                    Point3f center, boolean isInternal, BitSet bsAtoms) {
     // from TransformManager exclusively
-    modelSet.rotateAtoms(mNew, matrixRotate, bsAtoms, center,
+    modelSet.moveAtoms(mNew, matrixRotate, translation, bsAtoms, center,
         isInternal);
     refreshMeasures(true);
     checkMinimization();
@@ -9574,7 +9576,7 @@ private void zap(String msg) {
         }
     }
     moveSelected(deltaX, deltaY, Integer.MIN_VALUE, Integer.MIN_VALUE, bsAtoms,
-        true);
+        true, true);
   }
 
   void appendLoadStates(StringBuffer commands) {

@@ -296,9 +296,7 @@ abstract public class ModelCollection extends BondCollection {
     return !isPDB && someModelsHaveSymmetry && someModelsHaveFractionalCoordinates;
   }
 
-  private final Matrix3f matTemp = new Matrix3f();
-  private final Matrix3f matInv = new Matrix3f();
-  private final Point3f ptTemp = new Point3f();
+  protected final Point3f ptTemp = new Point3f();
 
   ////////////////////////////////////////////
 
@@ -1631,98 +1629,6 @@ abstract public class ModelCollection extends BondCollection {
       if (molecules[i].atomList.get(atomIndex))
         return molecules[i].atomList;
     return null;
-  }
-
-
-  public void rotateAtoms(Matrix3f mNew, Matrix3f matrixRotate,
-                             BitSet bs,
-                             Point3f center, boolean isInternal) {
-    bspf = null;
-    if (mNew == null) {
-      matTemp.set(matrixRotate);
-    } else {
-      matInv.set(matrixRotate);
-      matInv.invert();
-      ptTemp.set(0, 0, 0);
-      matTemp.mul(mNew, matrixRotate);
-      matTemp.mul(matInv, matTemp);
-    }
-    int n = 0;
-    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i+1)) {
-        if (isInternal) {
-          atoms[i].sub(center);
-          matTemp.transform(atoms[i]);
-          atoms[i].add(center);          
-        } else {
-          ptTemp.add(atoms[i]);
-          matTemp.transform(atoms[i]);
-          ptTemp.sub(atoms[i]);
-        }
-        taint(i, TAINT_COORD);
-        n++;
-      }
-    if (n == 0)
-      return;
-    if (!isInternal) {
-      ptTemp.scale(1f / n);
-      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) 
-        atoms[i].add(ptTemp);
-    }
-    recalculateLeadMidpointsAndWingVectors(-1);
-  }
-
-  public void invertSelected(Point3f pt, Point4f plane, int iAtom,
-                             BitSet invAtoms, BitSet bs) {
-    bspf = null;
-    if (pt != null) {
-      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-        float x = (pt.x - atoms[i].x) * 2;
-        float y = (pt.y - atoms[i].y) * 2;
-        float z = (pt.z - atoms[i].z) * 2;
-        setAtomCoordRelative(i, x, y, z);
-      }
-      return;
-    }
-    if (plane != null) {
-      // ax + by + cz + d = 0
-      Vector3f norm = new Vector3f(plane.x, plane.y, plane.z);
-      norm.normalize();
-      float d = (float) Math.sqrt(plane.x * plane.x + plane.y * plane.y
-          + plane.z * plane.z);
-      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-        float twoD = -Measure.distanceToPlane(plane, d, atoms[i]) * 2;
-        float x = norm.x * twoD;
-        float y = norm.y * twoD;
-        float z = norm.z * twoD;
-        setAtomCoordRelative(i, x, y, z);
-      }
-      return;
-    }
-    if (iAtom >= 0) {
-      Atom thisAtom = atoms[iAtom];
-      // stereochemical inversion at iAtom
-      Bond[] bonds = thisAtom.bonds;
-      if (bonds == null)
-        return;
-      BitSet bsAtoms = new BitSet();
-      List<Point3f> vNot = new ArrayList<Point3f>();
-      BitSet bsModel = viewer.getModelUndeletedAtomsBitSet(thisAtom.modelIndex);
-      for (int i = 0; i < bonds.length; i++) {
-        Atom a = bonds[i].getOtherAtom(thisAtom);
-        if (invAtoms.get(a.index)) {
-            bsAtoms.or(JmolMolecule.getBranchBitSet(atoms, a.index, bsModel, null, iAtom, true, true));
-        } else {
-          vNot.add(a);
-        }
-      }
-      if (vNot.size() == 0)
-        return;
-      pt = Measure.getCenterAndPoints(vNot)[0];
-      Vector3f v = new Vector3f(thisAtom);
-      v.sub(pt);
-      Quaternion q = new Quaternion(v, 180);
-      rotateAtoms(null, q.getMatrix(), bsAtoms, thisAtom, true);
-    }
   }
 
   public Vector3f getModelDipole(int modelIndex) {

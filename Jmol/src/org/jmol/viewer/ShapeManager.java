@@ -28,6 +28,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
@@ -287,11 +288,12 @@ public class ShapeManager {
     loadShape(JmolConstants.SHAPE_UCCAGE);
   }
 
-  public void refreshShapeTrajectories(int baseModel, BitSet bs) {
+  public void refreshShapeTrajectories(int baseModel, BitSet bs, Matrix4f mat) {
     Integer Imodel = Integer.valueOf(baseModel);
+    BitSet bsModelAtoms = viewer.getModelUndeletedAtomsBitSet(baseModel);
     for (int i = 0; i < JmolConstants.SHAPE_MAX; i++)
       if (shapes[i] != null)
-        setShapeProperty(i, "refreshTrajectories", Imodel, bs);    
+        setShapeProperty(i, "refreshTrajectories", new Object[] { Imodel, bs, mat }, bsModelAtoms);    
   }
 
   public void deleteShapeAtoms(Object[] value, BitSet bs) {

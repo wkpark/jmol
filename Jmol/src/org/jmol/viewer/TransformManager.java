@@ -392,10 +392,9 @@ abstract class TransformManager {
       matrixRotate.mul(mNew, matrixRotate);
       return;
     }
-    viewer.rotateAtoms(mNew, matrixRotate,
+    viewer.moveAtoms(mNew, matrixRotate, translation,
         internalRotationCenter, isInternal, bsAtoms);
     if (translation != null) {
-      viewer.setAtomCoordRelative(translation, bsAtoms);
       internalRotationCenter.add(translation);
     }
   }

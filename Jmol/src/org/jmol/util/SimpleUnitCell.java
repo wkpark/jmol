@@ -206,15 +206,21 @@ public class SimpleUnitCell {
     return notionalUnitcell;
   }
 
-  public final float[] getUnitCellAsArray() {
+  public final float[] getUnitCellAsArray(boolean vectorsOnly) {
     Matrix4f m = matrixFractionalToCartesian;
-    return new float[] { 
+    return (vectorsOnly ? new float[] { 
+        m.m00, m.m10, m.m20, // Va
+        m.m01, m.m11, m.m21, // Vb
+        m.m02, m.m12, m.m22, // Vc
+      } 
+      : new float[] { 
         a, b, c, alpha, beta, gamma, 
         m.m00, m.m10, m.m20, // Va
         m.m01, m.m11, m.m21, // Vb
         m.m02, m.m12, m.m22, // Vc
         dimension, (float) volume,
-        };
+      } 
+    );
   }
 
   public final float getInfo(int infoType) {

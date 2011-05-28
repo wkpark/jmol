@@ -36,6 +36,8 @@ import org.jmol.viewer.JmolConstants;
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.g3d.*;
 
+//import javax.vecmath.Matrix3f;
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
@@ -115,9 +117,11 @@ public class Mesh extends MeshSurface {
 
   public void clear(String meshType) {
     bsDisplay = null;
+    connections = null;
     vertexCount = polygonCount = 0;
     scale = 1;
     diameter = 0;
+    ptOffset = null;
     havePlanarContours = false;
     haveXyPoints = false;
     showPoints = false;
@@ -125,7 +129,7 @@ public class Mesh extends MeshSurface {
     colorDensity = false;
     drawTriangles = false;
     fillTriangles = true;
-    showTriangles = false; //as distinct entitities
+    showTriangles = false; //as distinct entities
     isPolygonSet = false;
     frontOnly = false;
     title = null;
@@ -148,7 +152,6 @@ public class Mesh extends MeshSurface {
       vertices = this.vertices;
     Vector3f[] normals = getNormals(vertices, plane);
     normixes = new short[normixCount];
-    isTwoSided = (lighting == JmolConstants.FULLYLIT);
     BitSet bsTemp = new BitSet();
     if (haveXyPoints)
       for (int i = normixCount; --i >= 0;)
@@ -185,6 +188,7 @@ public class Mesh extends MeshSurface {
       return;
     flipLighting(this.lighting);
     flipLighting(this.lighting = lighting);
+    isTwoSided = (lighting == JmolConstants.FULLYLIT);
   }
   
   private void flipLighting(int lighting) {
@@ -214,7 +218,10 @@ public class Mesh extends MeshSurface {
   public boolean colorDensity;
   public Object cappingObject;
   public Object slabbingObject;
-  
+
+  public int[] connections;
+
+  public boolean recalcAltVertices;
   
   protected void sumVertexNormals(Point3f[] vertices, Vector3f[] normals) {
     // subclassed in IsosurfaceMesh
@@ -280,7 +287,7 @@ public class Mesh extends MeshSurface {
   }
 
   public Point3f[] getOffsetVertices(Point4f thePlane) {
-    if (altVertices != null)
+    if (altVertices != null && !recalcAltVertices)
       return (Point3f[]) altVertices;
     altVertices = new Point3f[vertexCount];
     for (int i = 0; i < vertexCount; i++)
@@ -297,6 +304,8 @@ public class Mesh extends MeshSurface {
     for (int i = 0; i < vertexCount; i++) {
       if (vertexValues != null && Float.isNaN(val = vertexValues[i]))
         continue;
+      if (mat4 != null)
+        mat4.transform((Point3f) altVertices[i]);
       if (q != null)
         altVertices[i] = q.transform((Point3f) altVertices[i]);
       Point3f pt = (Point3f) altVertices[i];
@@ -307,6 +316,7 @@ public class Mesh extends MeshSurface {
     }
     
     initialize(lighting, (Point3f[]) altVertices, null);
+    recalcAltVertices = false;
     return (Point3f[]) altVertices;
   }
 
@@ -349,6 +359,47 @@ public class Mesh extends MeshSurface {
       vertexIndex = vertexCount + vertexIndex;
     return (vertexCount <= vertexIndex ? vertexCount - 1
         : vertexIndex < 0 ? 0 : vertexIndex);
+  }
+
+  Matrix4f mat4;
+  
+  public void updateCoordinates(Matrix4f m, BitSet bs) {
+    boolean doUpdate = false;
+    for (int i = 0; i < connections.length; i++)
+      if (connections[i] >= 0 && bs.get(connections[i])) {
+        doUpdate = true;
+        break;
+      }
+    if (!doUpdate)
+      return;
+    /* problem is that the state will not be reproduced
+     * 
+    if (q == null)
+      q = new Quaternion();
+    if (ptOffset == null)
+      ptOffset = new Point3f();
+    Vector3f v = new Vector3f(ptOffset);
+    
+    Matrix4f m4 = new Matrix4f();
+    m4.set(q.getMatrix());
+    m4.setTranslation(v);
+    m4.mul(m, m4);
+
+    Matrix3f m3 = new Matrix3f();
+    m4.get(m3);
+    m4.get(v);
+    q.set(m3);
+    ptOffset.set(v);
+
+     */
+    
+    if (mat4 == null) {
+      mat4 = new Matrix4f();
+      mat4.setIdentity();
+    }
+    mat4.mul(m, mat4);
+    
+    recalcAltVertices = true;
   }
 
 }

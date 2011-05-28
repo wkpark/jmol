@@ -170,6 +170,12 @@ public abstract class MeshCollection extends Shape {
       return;
     }
 
+    if ("connections" == propertyName) {
+      if (currentMesh != null)
+        currentMesh.connections = (int[]) value;
+      return;
+    }
+    
     if ("variables" == propertyName) {
       if (currentMesh != null && currentMesh.scriptCommand != null && !currentMesh.scriptCommand.startsWith("{"))
         currentMesh.scriptCommand = "{\n" 
@@ -535,18 +541,20 @@ public abstract class MeshCollection extends Shape {
     currentMesh.scriptCommand = script;
   }
 
- @Override 
- public void setVisibilityFlags(BitSet bs) {
+  @Override
+  public void setVisibilityFlags(BitSet bs) {
     /*
      * set all fixed objects visible; others based on model being displayed
      * 
      */
+    BitSet bsDeleted = viewer.getDeletedAtoms();
     for (int i = meshCount; --i >= 0;) {
       Mesh mesh = meshes[i];
-      mesh.visibilityFlags = (mesh.visible && mesh.isValid
+      mesh.visibilityFlags = (mesh.visible
+          && mesh.isValid
           && (mesh.modelIndex < 0 || bs.get(mesh.modelIndex)
-          && (mesh.atomIndex < 0 || !modelSet.isAtomHidden(mesh.atomIndex))
-          ) ? myVisibilityFlag
+              && (mesh.atomIndex < 0 || !modelSet.isAtomHidden(mesh.atomIndex)
+                  && !(bsDeleted != null && bsDeleted.get(mesh.atomIndex)))) ? myVisibilityFlag
           : 0);
     }
   }

@@ -572,7 +572,7 @@ public class ActionManager {
     switch(i) {
     case KeyEvent.VK_ALT:
       if (dragSelectedMode && isAltKeyReleased)
-        viewer.moveSelected(Integer.MIN_VALUE, 0, Integer.MIN_VALUE, Integer.MIN_VALUE, null, false);
+        viewer.moveSelected(Integer.MIN_VALUE, 0, Integer.MIN_VALUE, Integer.MIN_VALUE, null, false, false);
       isAltKeyReleased = false;
       moved.modifiers |= Binding.ALT;
       break;
@@ -612,7 +612,7 @@ public class ActionManager {
     switch(i) {
     case KeyEvent.VK_ALT:
       if (dragSelectedMode)
-        viewer.moveSelected(Integer.MAX_VALUE, 0, Integer.MIN_VALUE, Integer.MIN_VALUE, null, false);
+        viewer.moveSelected(Integer.MAX_VALUE, 0, Integer.MIN_VALUE, Integer.MIN_VALUE, null, false, false);
       isAltKeyReleased = true;
       moved.modifiers &= ~Binding.ALT;
       break;
@@ -768,7 +768,7 @@ public class ActionManager {
         }
         if (isBound(action, ACTION_dragSelected) && haveSelection) {
           viewer.moveSelected(Integer.MIN_VALUE, 0, Integer.MIN_VALUE,
-              Integer.MIN_VALUE, null, false);
+              Integer.MIN_VALUE, null, false, false);
         }
         return;
       }
@@ -877,7 +877,7 @@ public class ActionManager {
       if (dragSelectedMode && isBound(action, ACTION_dragSelected)
           && haveSelection)
         viewer.moveSelected(Integer.MAX_VALUE, 0, Integer.MIN_VALUE,
-            Integer.MIN_VALUE, null, false);
+            Integer.MIN_VALUE, null, false, false);
 
       if (dragRelease && checkUserAction(action, x, y, 0, 0, time, 2))
         return;
@@ -901,13 +901,15 @@ public class ActionManager {
   private boolean haveSelection;
   
 
-   private void minimize(boolean dragDone) {
-    BitSet bs = BitSetUtil.setBit(dragAtomIndex);
+  private void minimize(boolean dragDone) {
+    viewer.stopMinimization();
+    int iAtom = dragAtomIndex;
     if (dragDone)
       dragAtomIndex = -1;
-    bs = viewer.getAtomBits((viewer.isAtomPDB(dragAtomIndex) ? Token.group
-        : Token.molecule), bs);
-    viewer.stopMinimization();
+    BitSet bs = (viewer.getMotionFixedAtoms().cardinality() == 0 ? viewer
+        .getAtomBits((viewer.isAtomPDB(iAtom) ? Token.group
+            : Token.molecule), BitSetUtil.setBit(iAtom)) : BitSetUtil
+        .setAll(viewer.getAtomCount()));
     viewer.minimize(Integer.MAX_VALUE, 0, bs, null, 0, false, false, false);
   }
 
@@ -971,7 +973,7 @@ public class ActionManager {
 
     if (viewer.getRotateBondIndex() >= 0) {
       if (isBound(action, ACTION_rotateBranch)) {
-        viewer.moveSelected(deltaX, deltaY, x, y, null, false);
+        viewer.moveSelected(deltaX, deltaY, x, y, null, false, false);
         return;
       }
       if (!isBound(action, ACTION_rotate))
@@ -987,7 +989,7 @@ public class ActionManager {
               null);
         } else {
           viewer.moveSelected(deltaX, deltaY, Integer.MIN_VALUE, Integer.MIN_VALUE, null,
-              true);
+              true, false);
         }
         return;
       case PICKING_DRAG_MOLECULE:
@@ -1070,14 +1072,14 @@ public class ActionManager {
       if (dragGesture.getPointCount() == 1)
         viewer.undoAction(iatom, AtomCollection.TAINT_COORD, true);
       else
-        viewer.moveSelected(Integer.MAX_VALUE, 0, Integer.MIN_VALUE, Integer.MIN_VALUE, null, false);
+        viewer.moveSelected(Integer.MAX_VALUE, 0, Integer.MIN_VALUE, Integer.MIN_VALUE, null, false, false);
       checkMotion(Viewer.CURSOR_MOVE);
       if (isBound(action, ACTION_rotateSelected) && viewer.allowRotateSelected())
         viewer.rotateSelected(getDegrees(deltaX, 0), getDegrees(deltaY, 1),
             null);
       else
         viewer.moveSelected(deltaX, deltaY, Integer.MIN_VALUE,
-            Integer.MIN_VALUE, null, true);
+            Integer.MIN_VALUE, null, true, false);
       return;
     }
 
@@ -1590,11 +1592,11 @@ public class ActionManager {
     return script;
   }
   
-  public int getAtomPickingMode() {
+  int getAtomPickingMode() {
     return atomPickingMode;
   }
     
-  public void setPickingMode(int pickingMode) {
+  void setPickingMode(int pickingMode) {
     switch (pickingMode) {
     case -1: // from  set modelkit OFF
       bondPickingMode = PICKING_IDENTIFY_BOND;
@@ -1634,11 +1636,11 @@ public class ActionManager {
     }
   }
   
-  public int getPickingStyle() {
+  int getPickingStyle() {
     return pickingStyle;
   }
 
-  public void setPickingStyle(int pickingStyle) {
+  void setPickingStyle(int pickingStyle) {
     this.pickingStyle = pickingStyle;
     if (pickingStyle >= PICKINGSTYLE_MEASURE_ON) {
       pickingStyleMeasure = pickingStyle;

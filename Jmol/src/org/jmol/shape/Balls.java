@@ -109,13 +109,11 @@ public class Balls extends AtomShape {
 
  @Override
 public void setModelClickability() {
-   BitSet bs = viewer.getDeletedAtoms();
-   if (bs == null)
-     bs = new BitSet();
+   BitSet bsDeleted = viewer.getDeletedAtoms();
    for (int i = atomCount; --i >= 0;) {
      Atom atom = atoms[i];
      atom.setClickable(0);
-     if (bs.get(i) || (atom.getShapeVisibilityFlags() & myVisibilityFlag) == 0
+     if (bsDeleted != null && bsDeleted.get(i) || (atom.getShapeVisibilityFlags() & myVisibilityFlag) == 0
          || modelSet.isAtomHidden(i))
        continue;
      atom.setClickable(myVisibilityFlag);

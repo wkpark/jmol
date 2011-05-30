@@ -656,36 +656,14 @@ with (_jmol) {
   _jmolTestOS("mac") ||
   _jmolTestOS("win");
 
-  /* not used:
-	isNetscape47Win = (os == "win" && browser == "mozilla" &&
-                     browserVersion >= 4.78 && browserVersion <= 4.8);
-	*/
-
-  if (os == "win") {
-    isBrowserCompliant = hasGetElementById;
-  } else if (os == "mac") { // mac is the problem child :-(
-    if (browser == "mozilla" && browserVersion >= 5) {
-      // miguel 2004 11 17
-      // checking the plugins array does not work because
-      // Netscape 7.2 OS X still has Java 1.3.1 listed even though
-      // javaplugin.sf.net is installed to upgrade to 1.4.2
-      eval("try {var v = java.lang.System.getProperty('java.version');" +
-           " _jmol.isBrowserCompliant = v >= '1.4.2';" +
-           " } catch (e) { }");
-    } else if (browser == "opera" && browserVersion <= 7.54) {
-      isBrowserCompliant = false;
-    } else {
-      isBrowserCompliant = hasGetElementById &&
-        !((browser == "msie") ||
-          (browser == "webkit" && browserVersion < 125.12));
-    }
-  } else if (os == "linux" || os == "unix") {
-    if (browser == "konqueror" && browserVersion <= 3.3)
-      isBrowserCompliant = false;
-    else
-      isBrowserCompliant = hasGetElementById;
-  } else { // other OS
-    isBrowserCompliant = hasGetElementById;
+  isBrowserCompliant = hasGetElementById;
+  // known exceptions (old browsers):
+  if (browser == "opera" && browserVersion <= 7.54 && os == "mac" 
+      || browser == "webkit" && browserVersion < 125.12
+      || browser == "msie" && os == "mac" 
+      || browser == "konqueror" && browserVersion <= 3.3
+    ) {
+    isBrowserCompliant = false;
   }
 
   // possibly more checks in the future for this

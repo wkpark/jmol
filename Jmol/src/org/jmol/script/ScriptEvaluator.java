@@ -8420,7 +8420,7 @@ public class ScriptEvaluator {
             if (spacegroup.length() == 0) {
               sg = viewer.getCurrentUnitCell();
               if (sg != null)
-                htParams.put("spaceGroup", sg);
+                spacegroup = sg.getSpaceGroupName();
             } else {
               if (spacegroup.indexOf(",") >= 0) // Jones Faithful
                 if ((lattice.x < 9 && lattice.y < 9 && lattice.z == 0))

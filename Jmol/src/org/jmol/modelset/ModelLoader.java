@@ -421,8 +421,7 @@ public final class ModelLoader extends ModelSet {
     int iTrajectory = (isTrajectory ? baseTrajectoryCount : -1);
     int ipt = baseModelIndex;
     for (int i = 0; i < adapterModelCount; ++i, ++ipt) {
-      int modelNumber = (appendNew ? adapter.getAtomSetNumber(atomSetCollection, i)
-          : Integer.MAX_VALUE);
+      int modelNumber = adapter.getAtomSetNumber(atomSetCollection, i);
       String modelName = adapter.getAtomSetName(atomSetCollection, i);
       Map<String, Object> modelAuxiliaryInfo = adapter.getAtomSetAuxiliaryInfo(
           atomSetCollection, i);
@@ -432,8 +431,7 @@ public final class ModelLoader extends ModelSet {
       if (modelName == null)
         modelName = (jmolData != null && jmolData.indexOf(";") > 2 ? jmolData.substring(jmolData
             .indexOf(":") + 2, jmolData.indexOf(";"))
-            : modelNumber == Integer.MAX_VALUE ? "" : ""
-                + (modelNumber % 1000000));
+            : appendNew ? "" + (modelNumber % 1000000): "");
       boolean isPDBModel = setModelNameNumberProperties(ipt, iTrajectory,
           modelName, modelNumber, modelProperties, modelAuxiliaryInfo,
           jmolData);
@@ -487,11 +485,16 @@ public final class ModelLoader extends ModelSet {
                                                Properties modelProperties,
                                                Map<String, Object> modelAuxiliaryInfo,
                                                String jmolData) {
-    if (modelNumber != Integer.MAX_VALUE) {
+    if (appendNew) {
       models[modelIndex] = new Model(this, modelIndex, trajectoryBaseIndex,
           jmolData, modelProperties, modelAuxiliaryInfo);
       modelNumbers[modelIndex] = modelNumber;
       modelNames[modelIndex] = modelName;
+    } else {
+      // set appendNew false
+      Object atomInfo = modelAuxiliaryInfo.get("PDB_CONECT_firstAtom_count_max"); 
+      if (atomInfo != null)
+        setModelAuxiliaryInfo(modelIndex, "PDB_CONECT_firstAtom_count_max", atomInfo); 
     }
     // this next sets the bitset length to avoid 
     // unnecessary calls to System.arrayCopy

@@ -76,6 +76,11 @@ public class DrawRenderer extends MeshRenderer {
     if (mesh.connections != null) {
       if (mesh.connections[0] < 0)
         return false;
+      // bond-bond [ a b   c d  ]
+      // bond-atom [ a b   c -1 ]
+      // atom-bond [ a -1  c d  ]
+      // atom-atom [ a -1  c -1 ]
+      
       mesh.vertices = new Point3f[4];
       mesh.vertexCount = 4;
       int[] c = mesh.connections;
@@ -90,11 +95,11 @@ public class DrawRenderer extends MeshRenderer {
 
   @Override
   protected void render2(boolean isExport) {
-    if (mesh.connections != null)
-      getConnectionPoints();
     drawType = dmesh.drawType;
     diameter = dmesh.diameter;
     width = dmesh.width;
+    if (mesh.connections != null)
+      getConnectionPoints();
     if (mesh.lineData != null) {
       drawLineData(mesh.lineData);
       return;
@@ -288,6 +293,7 @@ public class DrawRenderer extends MeshRenderer {
 
     float f = 1; // bendiness
     float endoffset = 0.2f;
+    float offsetside = 10 * width;
     
     vpt0.set(screens[0].x, screens[0].y, screens[0].z);
     vpt1.set(screens[1].x, screens[1].y, screens[1].z);
@@ -296,11 +302,13 @@ public class DrawRenderer extends MeshRenderer {
     float dy = (screens[1].y - screens[0].y) * f;
     
     if (dmax == 0 || Measure.computeTorsion(vpt2, vpt0, new Point3f(vpt0.x, vpt0.y, 10000f), vpt1, false) > 0) {
-      vpt0.set(screens[1].x - dy, screens[1].y + dx, screens[1].z);
-    } else {
-      vpt0.set(screens[1].x + dy, screens[1].y - dx, screens[1].z);
+      dx = -dx;
+      dy = -dy;
     }
-    viewer.unTransformPoint(vpt0, vertices[1]);
+    vpt2.set(dy, -dx, 0);
+    vpt1.add(vpt2);
+    viewer.unTransformPoint(vpt1, vertices[1]);
+    vpt2.scale(offsetside);
     vTemp.set(vertices[1]);
     vTemp.sub(vertices[0]);
     vTemp.scale(endoffset); 
@@ -309,8 +317,15 @@ public class DrawRenderer extends MeshRenderer {
     vTemp.sub(vertices[2]);
     vTemp.scale(endoffset); 
     vertices[2].add(vTemp);
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 3; i++) {
       viewer.transformPoint(vertices[i], screens[i]);
+      if (offsetside != 0) {
+        screens[i].x += (int) vpt2.x;
+        screens[i].y += (int) vpt2.y;
+        vpt1.set(screens[i].x, screens[i].y, screens[i].z);
+        viewer.unTransformPoint(vpt1 , vertices[i]);
+      }
+    }
   }
 
   private void drawLineData(List<Point3f[]> lineData) {

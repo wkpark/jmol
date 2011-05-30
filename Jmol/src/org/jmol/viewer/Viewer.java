@@ -7675,8 +7675,6 @@ private void zap(String msg) {
     transformManager.rotateAxisAngleAtCenter(rotCenter, rotAxis,
         degreesPerSecond, endDegrees, isSpin, bsSelected);
     refresh(-1, "rotateAxisAngleAtCenter");
-    if (bsSelected != null && !isSpin)
-      checkMinimization();
   }
 
   public void rotateAboutPointsInternal(Point3f point1, Point3f point2,
@@ -7696,8 +7694,6 @@ private void zap(String msg) {
         degreesPerSecond, endDegrees, false, isSpin, bsSelected, false,
         translation, finalPoints);
     refresh(-1, "rotateAxisAboutPointsInternal");
-    if (bsSelected != null && !isSpin)
-      checkMinimization();
   }
 
   int getPickingSpinRate() {
@@ -7901,25 +7897,43 @@ private void zap(String msg) {
     // Eval
     modelSet.invertSelected(pt, null, -1, null, bs);
     checkMinimization();
+    statusManager.setStatusAtomMoved(bs);
   }
 
   public void invertAtomCoord(Point4f plane, BitSet bs) {
     modelSet.invertSelected(null, plane, -1, null, bs);
     checkMinimization();
+    statusManager.setStatusAtomMoved(bs);
   }
 
   public void invertSelected(Point3f pt, Point4f plane, int iAtom,
                              BitSet invAtoms) {
     // Eval
-    modelSet.invertSelected(pt, plane, iAtom, invAtoms, getSelectionSet(false));
+    BitSet bs = getSelectionSet(false);
+    if (bs.cardinality() == 0)
+      return;
+    modelSet.invertSelected(pt, plane, iAtom, invAtoms, bs);
     checkMinimization();
+    statusManager.setStatusAtomMoved(bs);
+  }
+
+  void moveAtoms(Matrix3f mNew, Matrix3f matrixRotate, Vector3f translation,
+                 Point3f center, boolean isInternal, BitSet bsAtoms) {
+    // from TransformManager exclusively
+    if (bsAtoms.cardinality() == 0)
+      return;
+    modelSet.moveAtoms(mNew, matrixRotate, translation, bsAtoms, center,
+        isInternal);
+    checkMinimization();
+    statusManager.setStatusAtomMoved(bsAtoms);
   }
 
   private boolean movingSelected;
   private boolean showSelected;
 
   public void moveSelected(int deltaX, int deltaY, int x, int y,
-                           BitSet bsSelected, boolean isTranslation, boolean asAtoms) {
+                           BitSet bsSelected, boolean isTranslation,
+                           boolean asAtoms) {
     // cannot synchronize this -- it's from the mouse and the event queue
     if (x == Integer.MIN_VALUE)
       rotateBondIndex = -1;
@@ -7947,27 +7961,24 @@ private void zap(String msg) {
       actionRotateBond(deltaX, deltaY, x, y);
     } else {
       bsSelected = setMovableBitSet(bsSelected, !asAtoms);
-      if (bsSelected.cardinality() == 0)
-        return;
-      if (isTranslation) {
-        Point3f ptCenter = getAtomSetCenter(bsSelected);
-        Point3i ptScreen = transformPoint(ptCenter);
-        Point3f ptScreenNew = new Point3f(ptScreen.x + deltaX + 0.5f,
-            ptScreen.y + deltaY + 0.5f, ptScreen.z);
-        Point3f ptNew = new Point3f();
-        transformManager.finalizeTransformParameters();
-        unTransformPoint(ptScreenNew, ptNew);
-        // script("draw ID 'pt" + Math.random() + "' " + Escape.escape(ptNew));
-        ptNew.sub(ptCenter);
-        setAtomCoordRelative(ptNew, bsSelected);
-        refresh(2, ""); // should be syncing here
-        movingSelected = false;
-        return;
-      } 
-      transformManager.rotateXYBy(deltaX, deltaY, bsSelected);
+      if (bsSelected.cardinality() != 0) {
+        if (isTranslation) {
+          Point3f ptCenter = getAtomSetCenter(bsSelected);
+          Point3i ptScreen = transformPoint(ptCenter);
+          Point3f ptScreenNew = new Point3f(ptScreen.x + deltaX + 0.5f,
+              ptScreen.y + deltaY + 0.5f, ptScreen.z);
+          Point3f ptNew = new Point3f();
+          transformManager.finalizeTransformParameters();
+          unTransformPoint(ptScreenNew, ptNew);
+          // script("draw ID 'pt" + Math.random() + "' " + Escape.escape(ptNew));
+          ptNew.sub(ptCenter);
+          setAtomCoordRelative(ptNew, bsSelected);
+        } else {
+          transformManager.rotateXYBy(deltaX, deltaY, bsSelected);
+        }
+      }
     }
     refresh(2, ""); // should be syncing here
-    checkMinimization();
     movingSelected = false;
   }
 
@@ -8067,17 +8078,6 @@ private void zap(String msg) {
 
     rotateAboutPointsInternal(atom1, atom2, 0, degrees, false, bs,
         null, null);
-  }
-
-  void moveAtoms(Matrix3f mNew, Matrix3f matrixRotate, Vector3f translation,
-                   Point3f center, boolean isInternal, BitSet bsAtoms) {
-    // from TransformManager exclusively
-    if (bsAtoms.cardinality() == 0)
-      return;
-    modelSet.moveAtoms(mNew, matrixRotate, translation, bsAtoms, center,
-        isInternal);
-    checkMinimization();
-    statusManager.setStatusAtomMoved(bsAtoms);
   }
 
   public void refreshMeasures(boolean andStopMinimization) {

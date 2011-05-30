@@ -61,7 +61,7 @@ public abstract class MeshCollection extends Shape {
   protected boolean iHaveModelIndex;
   protected int modelIndex;
   protected boolean allowContourLines;
-  protected boolean haveContours = false;
+  protected boolean haveContours;
   
   protected float displayWithinDistance2;
   protected boolean isDisplayWithinNot;
@@ -71,9 +71,11 @@ public abstract class MeshCollection extends Shape {
   public String[] title;
   protected boolean allowMesh = true;
   
-  protected Mesh pickedMesh = null;
+  protected Mesh pickedMesh;
   protected int pickedModel;
   protected int pickedVertex;
+  
+  protected int[] connections;
 
   private Mesh setMesh(String thisID) {
     linkedMesh = null;
@@ -172,7 +174,7 @@ public abstract class MeshCollection extends Shape {
 
     if ("connections" == propertyName) {
       if (currentMesh != null)
-        currentMesh.connections = (int[]) value;
+        connections  = currentMesh.connections = (int[]) value;
       return;
     }
     

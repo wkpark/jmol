@@ -260,7 +260,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     if ("refreshTrajectories" == propertyName) {
       for (int i = meshCount; --i >= 0;)
-        if (meshes[i].connections != null && meshes[i].modelIndex == ((Integer)((Object[]) value)[0]).intValue())
+        if (meshes[i].connections != null 
+            && meshes[i].modelIndex == ((Integer)((Object[]) value)[0]).intValue())
           meshes[i].updateCoordinates((Matrix4f)((Object[]) value)[2], (BitSet)((Object[]) value)[1]);
       return;
     }
@@ -826,6 +827,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     displayWithinPoints = null;
     bsDisplay = null;
     linkedMesh = null;
+    connections = null;
     initState();
   }
 
@@ -1030,6 +1032,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       if (thisMesh == null)
         allocMesh(null, null);
       thisMesh.clear("isosurface", sg.getIAddGridPoints());
+      thisMesh.connections = connections;
       thisMesh.colix = getDefaultColix();
       thisMesh.meshColix = meshColix;
       if (isPhaseColored || thisMesh.jvxlData.isBicolorMap)

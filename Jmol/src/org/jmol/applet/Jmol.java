@@ -211,10 +211,16 @@ public class Jmol implements WrappedApplet {
     initApplication();
   }
 
+  public void jmolReady() {
+    System.out.println("Jmol applet " + fullName + " ready");
+    viewer.getBooleanProperty("__appletReady");
+  }
+  
   public void destroy() {
     gRight = null;
     JmolAppletRegistry.checkOut(fullName);
     viewer.setModeMouse(JmolConstants.MOUSE_NONE);
+    viewer.getBooleanProperty("__appletDestroyed");
     viewer = null;
     if (dropper != null) {
       dropper.dispose();
@@ -651,6 +657,7 @@ public class Jmol implements WrappedApplet {
   public void script(String script) {
     if (script == null || script.length() == 0)
       return;
+    System.out.println("Jmol.java script " + script);
     scriptProcessor(script, null, SCRIPT_NOWAIT);
   }
 
@@ -865,6 +872,8 @@ public class Jmol implements WrappedApplet {
       case JmolConstants.CALLBACK_SYNC:
       case JmolConstants.CALLBACK_SCRIPT:
         return true;
+      case JmolConstants.CALLBACK_APPLETREADY:  // Jmol 12.1.48
+      case JmolConstants.CALLBACK_ATOMMOVED:  // Jmol 12.1.48
       case JmolConstants.CALLBACK_CLICK:
       case JmolConstants.CALLBACK_HOVER:
       case JmolConstants.CALLBACK_MINIMIZATION:

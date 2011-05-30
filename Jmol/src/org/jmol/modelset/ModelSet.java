@@ -929,9 +929,6 @@ abstract public class ModelSet extends ModelCollection {
   public void moveAtoms(Matrix3f mNew, Matrix3f matrixRotate,
                         Vector3f translation, BitSet bs, Point3f center,
                         boolean isInternal) {
-    int n = bs.cardinality();
-    if (n == 0)
-      return;
     if (mNew == null) {
       matTemp.set(matrixRotate);
     } else {
@@ -965,7 +962,7 @@ abstract public class ModelSet extends ModelCollection {
       taint(i, TAINT_COORD);
     }
     if (!isInternal) {
-      ptTemp.scale(1f / n);
+      ptTemp.scale(1f / bs.cardinality());
       if (translation == null)
         translation = new Vector3f();
       translation.add(ptTemp);

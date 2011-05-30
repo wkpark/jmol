@@ -32,6 +32,7 @@ public interface WrappedApplet extends JmolAppletInterface {
   public String getAppletInfo();
   public void setAppletWrapper(AppletWrapper appletWrapper);
   public void init();
+  public void jmolReady();
   public void update(Graphics g);
   public void paint(Graphics g);
   public boolean handleEvent(Event e);

@@ -30,6 +30,7 @@ import org.jmol.util.TextFormat;
 
 import java.applet.Applet;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
@@ -291,6 +292,21 @@ class StatusManager {
   
   private boolean notifyEnabled(int type) {
     return jmolCallbackListener != null && jmolCallbackListener.notifyEnabled(type);
+  }
+
+  synchronized void setStatusAppletReady(String htmlName, boolean isReady) {
+    String sJmol = (isReady ? jmolScriptCallback(JmolConstants.CALLBACK_APPLETREADY) : null);
+    if (notifyEnabled(JmolConstants.CALLBACK_APPLETREADY))
+      jmolCallbackListener.notifyCallback(JmolConstants.CALLBACK_APPLETREADY,
+          new Object[] { sJmol, htmlName, Boolean.valueOf(isReady) });
+  }
+
+  synchronized void setStatusAtomMoved(BitSet bsMoved) {
+    String sJmol = jmolScriptCallback(JmolConstants.CALLBACK_ATOMMOVED);
+    setStatusChanged("atomMoved", -1, bsMoved, false);
+    if (notifyEnabled(JmolConstants.CALLBACK_ATOMMOVED))
+      jmolCallbackListener.notifyCallback(JmolConstants.CALLBACK_ATOMMOVED,
+          new Object[] { sJmol, bsMoved });
   }
 
   synchronized void setStatusAtomPicked(int atomIndex, String strInfo) {

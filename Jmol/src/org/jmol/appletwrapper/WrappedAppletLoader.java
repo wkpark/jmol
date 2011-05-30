@@ -81,6 +81,7 @@ class WrappedAppletLoader extends Thread {
     tickerThread.interrupt();
     appletWrapper.wrappedApplet = wrappedApplet;
     appletWrapper.repaint();
+    wrappedApplet.jmolReady();
   }
 }
 

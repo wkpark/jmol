@@ -3025,6 +3025,9 @@ private void zap(String msg) {
 
   public void setAtomData(int type, String name, String coordinateData,
                           boolean isDefault) {
+    // DATA "xxxx"
+    // atom coordinates may be moved here 
+    //  but this is not included as an atomMovedCallback
     modelSet.setAtomData(type, name, coordinateData, isDefault);
     refreshMeasures(true);
   }
@@ -5434,6 +5437,16 @@ private void zap(String msg) {
       String s = actionManager.getPickingState().toLowerCase();
       key = key.substring(0, key.length() - 2) + ";";
       return (s.indexOf(key) >= 0);
+    }
+    if (key.equalsIgnoreCase("__appletReady")) {
+      // used as a simple way to communicate this from org.jmol.applet.jmol
+      statusManager.setStatusAppletReady(htmlName, true);
+      return true;
+    }
+    if (key.equalsIgnoreCase("__appletDestroyed")) {
+      // used as a simple way to communicate this from org.jmol.applet.jmol
+      statusManager.setStatusAppletReady(htmlName, false);
+      return true;
     }
     if (key.equalsIgnoreCase("executionPaused"))
       return eval.isExecutionPaused();
@@ -7848,25 +7861,36 @@ private void zap(String msg) {
   }
 
   public void setAtomCoord(int atomIndex, float x, float y, float z) {
-    // Frame equivalent used in DATA "coord set"
+    // not used in Jmol
     modelSet.setAtomCoord(atomIndex, x, y, z);
     // no measure refresh here -- because it may involve hundreds of calls
-  }
-
-  public void setAtomCoord(BitSet bs, int tokType, Object xyzValues) {
-    modelSet.setAtomCoord(bs, tokType, xyzValues);
-    refreshMeasures(true);
+    // not included in setStatusAtomMoved
   }
 
   public void setAtomCoordRelative(int atomIndex, float x, float y, float z) {
+    // not used in Jmol
     modelSet.setAtomCoordRelative(atomIndex, x, y, z);
     // no measure refresh here -- because it may involve hundreds of calls
+    // not included in setStatusAtomMoved
+  }
+
+  public void setAtomCoord(BitSet bs, int tokType, Object xyzValues) {
+    if (bs.cardinality() == 0)
+      return;
+    modelSet.setAtomCoord(bs, tokType, xyzValues);
+    checkMinimization();
+    statusManager.setStatusAtomMoved(bs);
   }
 
   public void setAtomCoordRelative(Tuple3f offset, BitSet bs) {
     // Eval
-    modelSet.setAtomCoordRelative(offset, bs == null ? getSelectionSet(false) : bs);
-    refreshMeasures(true);
+    if (bs == null)
+      bs = getSelectionSet(false);
+    if (bs.cardinality() == 0)
+      return;
+    modelSet.setAtomCoordRelative(offset, bs);
+    checkMinimization();
+    statusManager.setStatusAtomMoved(bs);
   }
 
   boolean allowRotateSelected() {
@@ -7876,13 +7900,11 @@ private void zap(String msg) {
   public void invertAtomCoord(Point3f pt, BitSet bs) {
     // Eval
     modelSet.invertSelected(pt, null, -1, null, bs);
-    refreshMeasures(true);
     checkMinimization();
   }
 
   public void invertAtomCoord(Point4f plane, BitSet bs) {
     modelSet.invertSelected(null, plane, -1, null, bs);
-    refreshMeasures(true);
     checkMinimization();
   }
 
@@ -7890,7 +7912,6 @@ private void zap(String msg) {
                              BitSet invAtoms) {
     // Eval
     modelSet.invertSelected(pt, plane, iAtom, invAtoms, getSelectionSet(false));
-    refreshMeasures(true);
     checkMinimization();
   }
 
@@ -7926,6 +7947,8 @@ private void zap(String msg) {
       actionRotateBond(deltaX, deltaY, x, y);
     } else {
       bsSelected = setMovableBitSet(bsSelected, !asAtoms);
+      if (bsSelected.cardinality() == 0)
+        return;
       if (isTranslation) {
         Point3f ptCenter = getAtomSetCenter(bsSelected);
         Point3i ptScreen = transformPoint(ptCenter);
@@ -7936,13 +7959,14 @@ private void zap(String msg) {
         unTransformPoint(ptScreenNew, ptNew);
         // script("draw ID 'pt" + Math.random() + "' " + Escape.escape(ptNew));
         ptNew.sub(ptCenter);
-        modelSet.setAtomCoordRelative(ptNew, bsSelected);
-      } else {
-        transformManager.rotateXYBy(deltaX, deltaY, bsSelected);
-      }
+        setAtomCoordRelative(ptNew, bsSelected);
+        refresh(2, ""); // should be syncing here
+        movingSelected = false;
+        return;
+      } 
+      transformManager.rotateXYBy(deltaX, deltaY, bsSelected);
     }
     refresh(2, ""); // should be syncing here
-    refreshMeasures(true);
     checkMinimization();
     movingSelected = false;
   }
@@ -8048,10 +8072,12 @@ private void zap(String msg) {
   void moveAtoms(Matrix3f mNew, Matrix3f matrixRotate, Vector3f translation,
                    Point3f center, boolean isInternal, BitSet bsAtoms) {
     // from TransformManager exclusively
+    if (bsAtoms.cardinality() == 0)
+      return;
     modelSet.moveAtoms(mNew, matrixRotate, translation, bsAtoms, center,
         isInternal);
-    refreshMeasures(true);
     checkMinimization();
+    statusManager.setStatusAtomMoved(bsAtoms);
   }
 
   public void refreshMeasures(boolean andStopMinimization) {
@@ -9076,6 +9102,7 @@ private void zap(String msg) {
   }
 
   private void checkMinimization() {
+    refreshMeasures(true);
     if (!global.monitorEnergy)
       return;
     minimize(0, 0, getModelUndeletedAtomsBitSet(-1), null, 0, false, true, false);

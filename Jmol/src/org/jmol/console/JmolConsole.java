@@ -310,7 +310,7 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
   // For applications that embed Jmol, see the example application Integration.java.
 
   public boolean notifyEnabled(int type) {
-    // See org.openscience.jmol.app.jmolpanel.StatusListener.java for a complete list
+    // See org.jmol.viewer.JmolConstants.java for a complete list
     switch (type) {
     case JmolConstants.CALLBACK_ECHO:
     case JmolConstants.CALLBACK_MEASURE:

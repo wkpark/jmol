@@ -75,18 +75,22 @@ class MyStatusListener implements JmolStatusListener {
     // indicate here any callbacks you will be working with.
     // some of these flags are not tested. See org.jmol.viewer.StatusManager.java
     switch (type) {
-    case JmolConstants.CALLBACK_ANIMFRAME:
     case JmolConstants.CALLBACK_ECHO:
-    case JmolConstants.CALLBACK_ERROR:
     case JmolConstants.CALLBACK_LOADSTRUCT:
-    case JmolConstants.CALLBACK_MEASURE:
     case JmolConstants.CALLBACK_MESSAGE:
     case JmolConstants.CALLBACK_PICK:
-    case JmolConstants.CALLBACK_SYNC:
-    case JmolConstants.CALLBACK_SCRIPT:
+      return true;
+    case JmolConstants.CALLBACK_ANIMFRAME:
+    case JmolConstants.CALLBACK_APPLETREADY:
+    case JmolConstants.CALLBACK_ATOMMOVED:
+    case JmolConstants.CALLBACK_ERROR:
     case JmolConstants.CALLBACK_HOVER:
+    case JmolConstants.CALLBACK_MEASURE:
     case JmolConstants.CALLBACK_MINIMIZATION:
     case JmolConstants.CALLBACK_RESIZE:
+    case JmolConstants.CALLBACK_SYNC:
+    case JmolConstants.CALLBACK_SCRIPT:
+      return false;
     }
     return false;
   }
@@ -106,36 +110,20 @@ class MyStatusListener implements JmolStatusListener {
     // etc. 
     
     switch (type) {
-    case JmolConstants.CALLBACK_ANIMFRAME:
-      break;
     case JmolConstants.CALLBACK_ECHO:
       sendConsoleEcho((String) data[1]);
-      break;
-    case JmolConstants.CALLBACK_ERROR:
-      break;
-    case JmolConstants.CALLBACK_HOVER:
       break;
     case JmolConstants.CALLBACK_LOADSTRUCT:
       String strInfo = (String) data[1];
       System.out.println(strInfo);
       monitor.setText(strInfo);
       break;
-    case JmolConstants.CALLBACK_MEASURE:
-      break;
     case JmolConstants.CALLBACK_MESSAGE:
       sendConsoleMessage(data == null ? null : (String) data[1]);
-      break;
-    case JmolConstants.CALLBACK_MINIMIZATION:
       break;
     case JmolConstants.CALLBACK_PICK:
       //for example:
       notifyAtomPicked(((Integer) data[2]).intValue(), (String) data[1]);
-      break;
-    case JmolConstants.CALLBACK_RESIZE:
-      break;
-    case JmolConstants.CALLBACK_SCRIPT:
-      break;
-    case JmolConstants.CALLBACK_SYNC:
       break;
     }
   }  

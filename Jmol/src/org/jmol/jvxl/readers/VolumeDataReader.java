@@ -67,7 +67,7 @@ class VolumeDataReader extends SurfaceReader {
   }
   
   @Override
-  protected boolean readVolumeParameters() {
+  protected boolean readVolumeParameters(boolean ismapData) {
     setup();
     initializeVolumetricData();
     return true;

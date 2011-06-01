@@ -52,14 +52,34 @@ public class IsosurfaceRenderer extends MeshRenderer {
   protected void render() {
     iShowNormals = viewer.getTestFlag4();
     Isosurface isosurface = (Isosurface) shape;
-    int slabValue = (viewer.getNavigationMode() ? g3d.getSlab() : Integer.MAX_VALUE);
+    int mySlabValue = Integer.MAX_VALUE;
+    boolean isNavigationMode = viewer.getNavigationMode();
+    int slabValue = g3d.getSlab();
+    if (isNavigationMode)
+      mySlabValue = (int) viewer.getNavigationOffset().z;
     for (int i = isosurface.meshCount; --i >= 0;) {
       imesh = (IsosurfaceMesh) isosurface.meshes[i];
+      if (!isNavigationMode) {
+        int meshSlabValue = imesh.slabValue;
+        if (meshSlabValue != Integer.MAX_VALUE && imesh.isSolvent) {
+          Point3f[] points = imesh.jvxlData.boundingBox;
+          int zMin = Integer.MAX_VALUE;
+          int zMax = Integer.MIN_VALUE;
+          for (int j = 0; j < 2; j++) {
+            viewer.transformPoint(points[j], ptTempi);
+            if (ptTempi.z < zMin)
+              zMin = ptTempi.z;
+            if (ptTempi.z > zMax)
+              zMax = ptTempi.z;
+          }
+          mySlabValue = (int) (zMax - (zMax - zMin) * meshSlabValue / 100f);
+        }
+      }
       g3d.setTranslucentCoverOnly(imesh.frontOnly);
       thePlane = imesh.jvxlData.jvxlPlane;
       vertexValues = imesh.vertexValues;
-      if (slabValue != Integer.MAX_VALUE && imesh.isSolvent) {
-        g3d.setSlab((int) viewer.getNavigationOffset().z);
+      if (mySlabValue != Integer.MAX_VALUE && imesh.isSolvent) {
+        g3d.setSlab(mySlabValue);
         render1(imesh);
         g3d.setSlab(slabValue);
       } else {

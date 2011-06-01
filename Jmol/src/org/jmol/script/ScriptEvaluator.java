@@ -14942,7 +14942,7 @@ public class ScriptEvaluator {
         propertyName = (String) theToken.value;
         if (tokAt(i + 1) == Token.off)
           iToken = i + 1;
-        propertyValue = getCapSlabObject(null, i);
+        propertyValue = getCapSlabObject(null, i, true);
         i = iToken;
         break;
       case Token.center:
@@ -15078,11 +15078,11 @@ public class ScriptEvaluator {
     setShapeProperty(JmolConstants.SHAPE_LCAOCARTOON, "clear", null);
   }
 
-  private Object getCapSlabObject(StringBuffer sb, int i)
+  private Object getCapSlabObject(StringBuffer sb, int i, boolean isLcaoCartoon)
       throws ScriptException {
     Object data = null;
-    if (sb != null)
-      sb.append(" ").append(getToken(i).value).append(" ");
+    int tok0 = tokAt(i);
+    boolean isSlab = (tok0 == Token.slab);
     int tok = tokAt(i + 1);
     Point4f plane = null;
     float d = 0;
@@ -15133,14 +15133,19 @@ public class ScriptEvaluator {
       iToken = i + 1;
       break;
     default:
-      plane = planeParameter(++i);
-      float off = (isFloatParameter(iToken + 1) ? floatParameter(++iToken)
-          : Float.NaN);
-      if (!Float.isNaN(off))
-        plane.w -= off;
-      data = plane;
+      if (!isLcaoCartoon && isSlab && isFloatParameter(i + 1)) {
+        data = new Integer((int) floatParameter(++i));
+      } else {
+        plane = planeParameter(++i);
+        float off = (isFloatParameter(iToken + 1) ? floatParameter(++iToken)
+            : Float.NaN);
+        if (!Float.isNaN(off))
+          plane.w -= off;
+        data = plane;
+      }
     }
-    if (sb != null) {
+    if (sb != null && !(data instanceof Integer)) {
+      sb.append(" ").append(Token.nameOf(tok0)).append(" ");
       if (plane != null)
         sb.append(Escape.escape(plane));
       else if (pt != null)
@@ -16144,7 +16149,7 @@ public class ScriptEvaluator {
       case Token.cap:
       case Token.slab:
         propertyName = (String) theToken.value;
-        propertyValue = getCapSlabObject(sbCommand, i);
+        propertyValue = getCapSlabObject(sbCommand, i, false);
         i = iToken;
         break;
       case Token.cavity:

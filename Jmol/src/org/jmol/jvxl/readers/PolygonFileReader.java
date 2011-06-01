@@ -41,7 +41,7 @@ abstract class PolygonFileReader extends SurfaceFileReader {
   }
 
   @Override
-  protected boolean readVolumeParameters() {
+  protected boolean readVolumeParameters(boolean ismapData) {
     // required by SurfaceReader
     return true;
   }

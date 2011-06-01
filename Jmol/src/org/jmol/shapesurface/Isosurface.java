@@ -368,6 +368,14 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     
     // Isosurface / SurfaceGenerator both interested
 
+    if ("slab" == propertyName) {
+      if (value instanceof Integer) {
+        if (thisMesh != null)
+          thisMesh.slabValue = ((Integer) value).intValue();
+      }
+      return;
+    }
+
     if ("map" == propertyName) {
       setProperty("squareData", Boolean.FALSE, null);
       if (thisMesh == null || thisMesh.vertexCount == 0)
@@ -719,6 +727,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (mesh.scale3d != 0)
       appendCmd(sb, myType + " ID " + Escape.escape(mesh.thisID) + " scale3d "
           + mesh.scale3d);
+    if (mesh.slabValue != Integer.MAX_VALUE)
+      appendCmd(sb, myType + " ID " + Escape.escape(mesh.thisID) + " slab "
+          + mesh.slabValue);
     if (cmd.charAt(0) != '#') {
       if (allowMesh)
         appendCmd(sb, mesh.getState(myType));

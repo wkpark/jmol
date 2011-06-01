@@ -150,6 +150,7 @@ public class Parameters {
   final static int IS_SILENT = 1 << 6;
   final public static int IS_SOLVENTTYPE = 1 << 7;
   final static int HAS_MAXGRID = 1 << 8;
+  final static int IS_POINTMAPPABLE = 1 << 9;
   
   public int dataType;
   int surfaceType;
@@ -170,12 +171,12 @@ public class Parameters {
   // getSurface or mapColor:
   final static int SURFACE_SOLVENT = 11 | IS_SOLVENTTYPE | NO_ANISOTROPY;
   final static int SURFACE_SASURFACE = 12 | IS_SOLVENTTYPE | NO_ANISOTROPY;
-  final static int SURFACE_MOLECULARORBITAL = 13 | NO_ANISOTROPY | HAS_MAXGRID;
+  final static int SURFACE_MOLECULARORBITAL = 13 | NO_ANISOTROPY | HAS_MAXGRID | IS_POINTMAPPABLE;
   final static int SURFACE_ATOMICORBITAL = 14 | HAS_MAXGRID;
   final static int SURFACE_MEP = 16 | NO_ANISOTROPY | HAS_MAXGRID;
   final static int SURFACE_MLP = 17 | NO_ANISOTROPY | HAS_MAXGRID;
   final static int SURFACE_MOLECULAR = 19 | IS_SOLVENTTYPE | NO_ANISOTROPY;
-  final static int SURFACE_NCI = 20 | NO_ANISOTROPY | HAS_MAXGRID;
+  final static int SURFACE_NCI = 20 | NO_ANISOTROPY | HAS_MAXGRID | IS_POINTMAPPABLE;
 
   // mapColor only:
 

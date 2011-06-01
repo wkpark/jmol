@@ -270,7 +270,7 @@ public abstract class SurfaceReader implements VertexDataServer {
       v.setDataSource(this);
 */  }
 
-  protected abstract boolean readVolumeParameters();
+  protected abstract boolean readVolumeParameters(boolean ismapData);
 
   protected abstract boolean readVolumeData(boolean isMapData);
 
@@ -308,7 +308,7 @@ public abstract class SurfaceReader implements VertexDataServer {
   }
 
   boolean readAndSetVolumeParameters() {
-    return (readVolumeParameters() && (vertexDataOnly || setUnitVectors()));
+    return (readVolumeParameters(false) && (vertexDataOnly || setUnitVectors()));
   }
 
   protected boolean setUnitVectors() {

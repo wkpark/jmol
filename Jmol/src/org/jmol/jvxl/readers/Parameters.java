@@ -119,6 +119,7 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import java.util.BitSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -174,11 +175,12 @@ public class Parameters {
   final static int SURFACE_MEP = 16 | NO_ANISOTROPY | HAS_MAXGRID;
   final static int SURFACE_MLP = 17 | NO_ANISOTROPY | HAS_MAXGRID;
   final static int SURFACE_MOLECULAR = 19 | IS_SOLVENTTYPE | NO_ANISOTROPY;
+  final static int SURFACE_NCI = 20 | NO_ANISOTROPY | HAS_MAXGRID;
 
   // mapColor only:
 
-  final static int SURFACE_NOMAP = 20 | IS_SOLVENTTYPE | NO_ANISOTROPY;
-  final static int SURFACE_PROPERTY = 21 | IS_SOLVENTTYPE | NO_ANISOTROPY;
+  final static int SURFACE_NOMAP = 21 | IS_SOLVENTTYPE | NO_ANISOTROPY;
+  final static int SURFACE_PROPERTY = 22 | IS_SOLVENTTYPE | NO_ANISOTROPY;
 
   void initialize() {
     addHydrogens = false;
@@ -216,6 +218,7 @@ public class Parameters {
     isSquared = false;
     isContoured = false;
     isEccentric = isAnisotropic = false;
+    isDensity = false;
     isSilent = false;
     iUseBitSets = false;
     logCube = logCompression = false;
@@ -585,8 +588,7 @@ public class Parameters {
       isBicolorMap = true;
     return (psi_Znuc > 0 && Math.abs(psi_m) <= psi_l && psi_l < psi_n);
   }  
-  
- 
+
   public final static int MEP_MAX_GRID = 40;
   int mep_gridMax = MEP_MAX_GRID;
   float mep_ptsPerAngstrom = 3f;
@@ -627,6 +629,7 @@ public class Parameters {
   final static int QM_TYPE_UNKNOWN = 0;
   final static int QM_TYPE_GAUSSIAN = 1;
   final static int QM_TYPE_SLATER = 2;
+  final static int QM_TYPE_NCI = 3;
   
   Map<String, Object> moData;
   Map<String, Object> mo;
@@ -639,7 +642,23 @@ public class Parameters {
   int qm_nAtoms;
   int qm_moNumber = Integer.MAX_VALUE;
   float[] qm_moLinearCombination = null;
+  public boolean isDensity;
   
+  void setNci(boolean doMap) {
+    dataType = SURFACE_NCI;
+    isDensity = doMap;
+    qm_marginAngstroms = 2f;
+    qmOrbitalType = QM_TYPE_NCI;
+    if (cutoff == Float.MAX_VALUE)
+      cutoff = 0.3f;
+    if (isSquared)
+      cutoff *= cutoff;
+    
+    if (title == null)
+      title = new String[0];
+    moData = new Hashtable<String, Object>();
+  }
+   
   @SuppressWarnings("unchecked")
   void setMO(int iMo, float[] linearCombination) {
     iUseBitSets = true;

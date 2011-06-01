@@ -155,6 +155,8 @@ abstract class QuantumCalculation {
     // grid coordinate squares relative to orbital center in Bohr
     private float[] myX2, myY2, myZ2;
 
+    int znuc;
+    
     Atom atom;
     
     QMAtom(Atom atom, float[] X, float[] Y, float[] Z, 
@@ -168,6 +170,7 @@ abstract class QuantumCalculation {
       
       set(this.atom = atom);
       scale(unitFactor);
+      znuc = atom.getElementNumber();
     }
 
     protected void setXYZ(boolean setMinMax) {

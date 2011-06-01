@@ -890,6 +890,12 @@ public class SurfaceGenerator {
       return true;
     }
 
+    if ("nci" == propertyName) {
+      params.setNci(((Boolean) value).booleanValue()); // nciplot
+      processState();
+      return true;
+    }
+
     if ("charges" == propertyName) {
       params.theProperty = (float[]) value;
       return true;
@@ -999,6 +1005,7 @@ public class SurfaceGenerator {
     case Parameters.SURFACE_SASURFACE:
       surfaceReader = new IsoSolventReader(this);
       break;
+    case Parameters.SURFACE_NCI:
     case Parameters.SURFACE_MOLECULARORBITAL:
       surfaceReader = new IsoMOReader(this);
       break;

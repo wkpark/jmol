@@ -340,18 +340,11 @@ public class Mesh extends MeshSurface {
 
   public static boolean checkWithin(Point3f pti, List<Point3f> withinPoints,
                                     float withinDistance2, boolean isWithinNot) {
-    if (withinPoints.size() == 0)
-      return isWithinNot;
-    if (isWithinNot) {
-      for (int i = withinPoints.size(); --i >= 0;)
-        if (pti.distanceSquared(withinPoints.get(i)) > withinDistance2)
-          return true;
-    } else {
+    if (withinPoints.size() != 0)
       for (int i = withinPoints.size(); --i >= 0;)
         if (pti.distanceSquared(withinPoints.get(i)) <= withinDistance2)
-          return true;
-    }
-    return false;
+          return !isWithinNot;
+    return isWithinNot;
   }
 
   public int getVertexIndexFromNumber(int vertexIndex) {

@@ -16021,6 +16021,18 @@ public class ScriptEvaluator {
             isNegOffset, modelIndex, null);
         surfaceObjectSeen = true;
         continue;
+      case Token.nci:
+        propertyName = "nci";
+        sbCommand.append(" " + propertyName);
+        if (tokAt(i + 1) == Token.density) {
+          propertyValue = Boolean.TRUE;
+          sbCommand.append(" density");
+          i++;
+        } else {
+          propertyValue = Boolean.FALSE;  // no mapping yet
+        }
+        surfaceObjectSeen = true;
+        break;
       case Token.mep:
       case Token.mlp:
         boolean isMep = (theTok == Token.mep);
@@ -16833,7 +16845,7 @@ public class ScriptEvaluator {
       pts[1] = pt1;
       v.add(ptc);
     } else {
-      BoxInfo bbox = viewer.getBoxInfo(bs, -distance);
+      BoxInfo bbox = viewer.getBoxInfo(bs, -Math.abs(distance));
       pts[0] = bbox.getBboxVertices()[0];
       pts[1] = bbox.getBboxVertices()[7];
       if (bs.cardinality() == 1)

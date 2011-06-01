@@ -61,6 +61,8 @@ class IsoMOReader extends AtomDataReader {
       vertexDataOnly = true;
       random = new Random(params.randomSeed);
     }
+    if (params.qmOrbitalType == Parameters.QM_TYPE_NCI && params.thePlane == null && !params.isDensity)
+        params.insideOut = !params.insideOut;
   }
   
   private void fixTitleLine(int iLine, Map<String, Object> mo) {
@@ -163,13 +165,15 @@ class IsoMOReader extends AtomDataReader {
   @SuppressWarnings("unchecked")
   protected void createOrbital() {
     boolean isMonteCarlo = (params.psi_monteCarloCount > 0);
-    MOCalculationInterface q = (MOCalculationInterface) Interface.getOptionInterface("quantum.MOCalculation");
+    boolean isNci = (params.qmOrbitalType == Parameters.QM_TYPE_NCI);
+    String className = (isNci ? "quantum.NciCalculation" : "quantum.MOCalculation");
+    MOCalculationInterface q = (MOCalculationInterface) Interface.getOptionInterface(className);
     Map<String, Object> moData = params.moData;
     float[] coef = params.moCoefficients; 
     int[][] dfCoefMaps = params.dfCoefMaps;
     float[] linearCombination = params.qm_moLinearCombination;
     List<Map<String, Object>> mos = (List<Map<String, Object>>) moData.get("mos");
-    if (coef == null && linearCombination == null) {
+    if (coef == null && linearCombination == null && !isNci) {
       // electron density calc
       if (mos == null || isMonteCarlo)
         return;
@@ -215,6 +219,12 @@ class IsoMOReader extends AtomDataReader {
           atomData.atomXyz, atomData.firstAtomIndex,
           null, null, null, moData.get("slaters"), coef, 
           linearCombination, coefs, nuclearCharges, true, points);
+      break;
+    case Parameters.QM_TYPE_NCI:
+      q.calculate(
+          volumeData, bsMySelected, null,
+          atomData.atomXyz, atomData.firstAtomIndex,
+          null, null, null, null, null, null, null, nuclearCharges, params.isDensity, points);
       break;
     default:
     }

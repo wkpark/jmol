@@ -1144,9 +1144,10 @@ public class Token {
   final static int mrc            = misc  | 209;// new
   final static int msms           = misc  | 210;// new
   final static int name           = misc  | 211;// new
-  public final static int next    = misc  | 212;
-  public final static int nocontourlines  = misc  | 213;
-  final static int nocross        = misc  | 214;// new
+  final static int nci            = misc  | 212;
+  public final static int next    = misc  | 213;
+  public final static int nocontourlines  = misc  | 214;
+  final static int nocross        = misc  | 215;// new
   final static int nodebug        = misc  | 216;// new
   public final static int nodots  = misc  | 218;
   final static int noedges        = misc  | 220;// new
@@ -1790,6 +1791,7 @@ public class Token {
       "modelIndex",      new Token(modelindex),
       "monomer",         new Token(monomer),
       "mul",             new Token(mul),
+      "nci",             new Token(nci),
       "next",            new Token(next),
       "noDots",          new Token(nodots),
       "noFill",          new Token(nofill),

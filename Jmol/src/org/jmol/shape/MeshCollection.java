@@ -50,26 +50,20 @@ public abstract class MeshCollection extends Shape {
   public Mesh currentMesh;
   public int modelCount;
   public boolean isFixed;  
-  public String script;
   public int nUnnamed;
   public short colix;
   public String myType;
   public boolean explicitID;
-  public String actualID;
   protected String previousMeshID;
   protected Mesh linkedMesh;
-  protected boolean iHaveModelIndex;
   protected int modelIndex;
-  protected boolean allowContourLines;
-  protected boolean haveContours;
-  
+
   protected float displayWithinDistance2;
   protected boolean isDisplayWithinNot;
   protected List<Point3f> displayWithinPoints;
   protected BitSet bsDisplay;
 
   public String[] title;
-  protected boolean allowMesh = true;
   
   protected Mesh pickedMesh;
   protected int pickedModel;
@@ -172,12 +166,6 @@ public abstract class MeshCollection extends Shape {
       return;
     }
 
-    if ("connections" == propertyName) {
-      if (currentMesh != null)
-        connections  = currentMesh.connections = (int[]) value;
-      return;
-    }
-    
     if ("variables" == propertyName) {
       if (currentMesh != null && currentMesh.scriptCommand != null && !currentMesh.scriptCommand.startsWith("{"))
         currentMesh.scriptCommand = "{\n" 
@@ -528,21 +516,6 @@ public abstract class MeshCollection extends Shape {
     return -1;
   }
   
-  public void setModelIndex(int atomIndex, int modelIndex) {
-    if (currentMesh == null)
-      return;
-    currentMesh.visible = true; 
-    if ((currentMesh.atomIndex = atomIndex) >= 0)
-      currentMesh.modelIndex = viewer.getAtomModelIndex(atomIndex);
-    else if (isFixed)
-      currentMesh.modelIndex = -1;
-    else if (modelIndex >= 0)
-      currentMesh.modelIndex = modelIndex;
-    else
-      currentMesh.modelIndex = viewer.getCurrentModelIndex();
-    currentMesh.scriptCommand = script;
-  }
-
   @Override
   public void setVisibilityFlags(BitSet bs) {
     /*
@@ -561,21 +534,6 @@ public abstract class MeshCollection extends Shape {
     }
   }
  
-  protected void getModelIndex(String script) {
-    //pmesh and isosurface state
-    int i;
-    iHaveModelIndex = false;
-    modelIndex = -1;
-    if (script == null || (i = script.indexOf("MODEL({")) < 0)
-      return;
-    int j = script.indexOf("})", i);
-    if (j < 0)
-      return;
-    BitSet bs = Escape.unescapeBitset(script.substring(i + 3, j + 1));
-    modelIndex = (bs == null ? -1 : bs.nextSetBit(0));
-    iHaveModelIndex = (modelIndex >= 0);
-  }
-  
   protected void setStatusPicked(int flag, Point3f v) {
     // for draw and isosurface
     viewer.setStatusAtomPicked(flag, "[\"" + myType + "\"," + Escape.escape(pickedMesh.thisID) + "," +

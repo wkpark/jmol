@@ -63,16 +63,12 @@ public class IsosurfaceRenderer extends MeshRenderer {
         int meshSlabValue = imesh.slabValue;
         if (meshSlabValue != Integer.MAX_VALUE && imesh.isSolvent) {
           Point3f[] points = imesh.jvxlData.boundingBox;
-          int zMin = Integer.MAX_VALUE;
-          int zMax = Integer.MIN_VALUE;
-          for (int j = 0; j < 2; j++) {
-            viewer.transformPoint(points[j], ptTempi);
-            if (ptTempi.z < zMin)
-              zMin = ptTempi.z;
-            if (ptTempi.z > zMax)
-              zMax = ptTempi.z;
-          }
-          mySlabValue = (int) (zMax - (zMax - zMin) * meshSlabValue / 100f);
+          pt2f.set(points[0]);
+          pt2f.add(points[1]);
+          pt2f.scale(0.5f); // center
+          viewer.transformPoint(pt2f, pt2f);
+          int r = viewer.scaleToScreen((int)pt2f.z, (int) points[0].distance(points[1]) * 500);
+          mySlabValue = (int) (pt2f.z + r * (1 - meshSlabValue / 50f));
         }
       }
       g3d.setTranslucentCoverOnly(imesh.frontOnly);

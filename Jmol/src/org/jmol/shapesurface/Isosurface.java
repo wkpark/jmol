@@ -172,6 +172,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     sg = null; // not Molecular Orbitals
   }
   //private boolean logMessages;
+  private String actualID;
   private int lighting;
   private boolean iHaveBitSets;
   private boolean explicitContours;
@@ -194,6 +195,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   private boolean isWithinNot;
   private List<Point3f> withinPoints;
   private float[] cutoffRange;
+
+  //private boolean allowContourLines;
+  boolean allowMesh = true;
 
   @SuppressWarnings("unchecked")
   @Override
@@ -254,7 +258,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     }
     if ("fixed" == propertyName) {
       isFixed = ((Boolean) value).booleanValue();
-      setModelIndex();
+      setMesh();
       return;
     }
 
@@ -366,6 +370,12 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return;
     }
     
+    if ("connections" == propertyName) {
+      if (currentMesh != null)
+        connections  = currentMesh.connections = (int[]) value;
+      return;
+    }
+    
     // Isosurface / SurfaceGenerator both interested
 
     if ("slab" == propertyName) {
@@ -412,7 +422,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     } else if ("contour" == propertyName) {
       explicitContours = true;
     } else if ("functionXY" == propertyName) {
-      allowContourLines = false;
+      //allowContourLines = false;
       if (sg.isStateDataRead())
         setScriptInfo(null); // for script DATA1
     } else if ("init" == propertyName) {
@@ -439,7 +449,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     } else if ("phase" == propertyName) {
       isPhaseColored = true;
     } else if ("plane" == propertyName) {
-      allowContourLines = false;
+      //allowContourLines = false;
     } else if ("pocket" == propertyName) {
       Boolean pocket = (Boolean) value;
       lighting = (pocket.booleanValue() ? JmolConstants.FULLYLIT
@@ -748,13 +758,25 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       appendCmd(sb, getColorCommand(myType, mesh.colix));  
   }
   
+  private String script;
+
   private boolean getScriptBitSets(String script, BitSet[] bsCmd) {
     this.script = script;
-    getModelIndex(script);
+    int i;
+    iHaveModelIndex = false;
+    modelIndex = -1;
+    if (script != null && (i = script.indexOf("MODEL({")) >= 0) {
+      int j = script.indexOf("})", i);
+      if (j > 0) {
+        BitSet bs = Escape.unescapeBitset(script.substring(i + 3, j + 1));
+        modelIndex = (bs == null ? -1 : bs.nextSetBit(0));
+        iHaveModelIndex = (modelIndex >= 0);
+      }
+    }    
     if (script == null)
       return false;
     getCapSlabInfo(script);
-    int i = script.indexOf("# ({");
+    i = script.indexOf("# ({");
     if (i < 0)
       return false;
     int j = script.indexOf("})", i);
@@ -814,6 +836,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     }
   }
 
+  private boolean iHaveModelIndex;
+
   private void initializeIsosurface() {
     lighting = JmolConstants.FRONTLIT;
     if (!iHaveModelIndex)
@@ -829,7 +853,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     colix = Graphics3D.ORANGE;
     defaultColix = meshColix = 0;
     isPhaseColored = isColorExplicit = false;
-    allowContourLines = true; //but not for f(x,y) or plane, which use mesh
+    //allowContourLines = true; //but not for f(x,y) or plane, which use mesh
     center = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
     offset = null;
     scale3d = 0;
@@ -846,6 +870,22 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     associateNormals = true;
     sg.initState();
     //TODO   need to pass assocCutoff to sg
+  }
+
+  private void setMesh() {
+    thisMesh.visible = true;
+    if ((thisMesh.atomIndex = atomIndex) >= 0)
+      thisMesh.modelIndex = viewer.getAtomModelIndex(atomIndex);
+    else if (isFixed)
+      thisMesh.modelIndex = -1;
+    else if (modelIndex >= 0)
+      thisMesh.modelIndex = modelIndex;
+    else
+      thisMesh.modelIndex = viewer.getCurrentModelIndex();
+    thisMesh.scriptCommand = script;
+    thisMesh.ptCenter.set(center);
+    thisMesh.ptOffset = offset;
+    thisMesh.scale3d = (thisMesh.jvxlData.jvxlPlane == null ? 0 : scale3d);
   }
 
   /*
@@ -1089,7 +1129,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   }
 
   public void notifySurfaceGenerationCompleted() {
-    setModelIndex();
+    setMesh();
     thisMesh.insideOut = sg.isInsideOut();
     thisMesh.calculatedArea = null;
     thisMesh.calculatedVolume = null;
@@ -1097,8 +1137,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         : lighting, null, sg.getPlane());
     if (sg.getParams().psi_monteCarloCount > 0)
       thisMesh.diameter = 1;
-    if (thisMesh.jvxlData.jvxlPlane != null)
-      allowContourLines = false;
+    //if (thisMesh.jvxlData.jvxlPlane != null)
+      //allowContourLines = false;
     thisMesh.isSolvent = ((sg.getDataType() & Parameters.IS_SOLVENTTYPE) != 0);
   }
 
@@ -1111,8 +1151,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     thisMesh.colorDensity = jvxlData.colorDensity;
     thisMesh.colorEncoder = sg.getColorEncoder();
     thisMesh.getContours();
-    if (thisMesh.jvxlData.jvxlPlane != null)
-      allowContourLines = false;
+    //if (thisMesh.jvxlData.jvxlPlane != null)
+      //allowContourLines = false;
     if (thisMesh.jvxlData.nContours != 0 && thisMesh.jvxlData.nContours != -1)
       explicitContours = true;
     if (explicitContours && thisMesh.jvxlData.jvxlPlane != null)
@@ -1177,13 +1217,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
    return (iA < 0 || iB < 0 || iC < 0 
        || isAbsolute && !MeshData.checkCutoff(iA, iB, iC, thisMesh.vertexValues)
        ? -1 : thisMesh.addTriangleCheck(iA, iB, iC, check, check2, color));
-  }
-
-  private void setModelIndex() {
-    setModelIndex(atomIndex, modelIndex);
-    thisMesh.ptCenter.set(center);
-    thisMesh.ptOffset = offset;
-    thisMesh.scale3d = (thisMesh.jvxlData.jvxlPlane == null ? 0 : scale3d);
   }
 
   protected void setScriptInfo(String strCommand) {

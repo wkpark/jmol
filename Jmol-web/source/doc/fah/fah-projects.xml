@@ -6615,6 +6615,15 @@
   <fah_proj number="3864" name="p3864_fkbprelative_complex" public="y" file="xyz"
     server="128.143.48.226" atoms="14907" preferred="6" deadline="60"
     credit="623" frames="100" code="DC" contact="mrshirts" contrib="Neil Klopfenstein"/>
+  <fah_proj number="3865" name="p3865" public="y"
+    server="128.143.48.226" atoms="28851" preferred="7" deadline="12"
+    credit="333.0" frames="100" code="A6" contact="mrshirts" kfactor="0.72"/>
+  <fah_proj number="3866" name="p3866" public="y"
+    server="128.143.48.226" atoms="28851" preferred="7" deadline="12"
+    credit="333.0" frames="100" code="A6" contact="mrshirts" kfactor="0.72"/>
+  <fah_proj number="3867" name="p3867" public="y"
+    server="128.143.48.226" atoms="28851" preferred="7" deadline="12"
+    credit="333.0" frames="100" code="A6" contact="mrshirts" kfactor="0.72"/>
 
   <!-- Projects 3900 to 3999 -->
   <fah_proj number="3900" name="p3900_Protein in POPC" public="n"
@@ -8977,9 +8986,12 @@
     credit="484" frames="100" code="A4" contact="pontiggi" kfactor="0.75"/>
 
   <!-- Projects 7500 to 7599 -->
-  <fah_proj number="7500" name="ndm" public="n"
+  <fah_proj number="7500" name="ndm" public="y"
     server="128.143.199.97" atoms="77324" preferred="2.6" deadline="4"
     credit="529.0" frames="100" code="A3" contact="kasson" kfactor="3.19"/>
+  <fah_proj number="7501" name="ndm" public="n"
+    server="128.143.199.97" atoms="77324" preferred="2.2" deadline="3.6"
+    credit="494.0" frames="100" code="A3" contact="kasson" kfactor="3.05"/>
 
   <!-- Projects 9900 to 9999 -->
   <fah_proj number="9900" name="p9900_supervillin_e1" public="y"
@@ -9254,9 +9266,9 @@
   <fah_proj number="10080" name="ww23" public="y"
     server="129.74.85.15" atoms="548" preferred="4" deadline="8"
     credit="242" frames="100" code="A4" contact="abdulwahidc"/>
-  <fah_proj number="10081" name="ww27" public="y"
+  <fah_proj number="10081" name="ww27" public="y" file="xyz"
     server="129.74.85.15" atoms="543" preferred="4" deadline="8"
-    credit="242" frames="100" code="A4" contact="abdulwahidc"/>
+    credit="242" frames="100" code="A4" contact="abdulwahidc" contrib="Danny Nielsen"/>
   <fah_proj number="10082" name="ww28" public="y"
     server="129.74.85.15" atoms="543" preferred="4" deadline="8"
     credit="242" frames="100" code="A4" contact="abdulwahidc"/>

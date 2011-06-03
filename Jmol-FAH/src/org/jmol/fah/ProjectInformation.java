@@ -737,6 +737,8 @@ public class ProjectInformation {
           info._fciCore = CoreType.A4GROMACS;
         } else if ("GRO-A5".equalsIgnoreCase(core)) {
           info._fciCore = CoreType.A5GROMACS;
+        } else if ("GRO-A6".equalsIgnoreCase(core)) {
+          info._fciCore = CoreType.A6GROMACS;
         } else if ("GRO-PS3".equalsIgnoreCase(core)) {
           info._fciCore = CoreType.GROMACS_PS3;
         } else if ("GRO-SMP".equalsIgnoreCase(core)) {

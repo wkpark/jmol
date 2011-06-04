@@ -7,14 +7,14 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-03-24 19:02+0100\n"
-"PO-Revision-Date: 2010-04-29 00:23+0000\n"
-"Last-Translator: Nicolas Vervelle <Unknown>\n"
+"PO-Revision-Date: 2011-06-04 05:49+0000\n"
+"Last-Translator: Won-Kyu Park <wkpark@gmail.com>\n"
 "Language-Team: Korean <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-01-29 19:08+0000\n"
-"X-Generator: Launchpad (build 12274)\n"
+"X-Launchpad-Export-Date: 2011-06-04 08:28+0000\n"
+"X-Generator: Launchpad (build 13144)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
 msgid "Error starting Jmol: the property 'user.home' is not defined."
@@ -832,7 +832,7 @@ msgstr "다음 프레임(&N)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:178
 msgid "Go to next frame"
-msgstr "다음 장면"
+msgstr "다음 프레임"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:179
 msgid "Go to &previous frame"
@@ -840,15 +840,15 @@ msgstr "이전 프레임(&P)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:180
 msgid "Go to previous frame"
-msgstr "이전 장면"
+msgstr "이전 프레임"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:181
 msgid "All &frames"
-msgstr ""
+msgstr "모든 프레임(&F)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:182
 msgid "All frames"
-msgstr ""
+msgstr "모든 프레임"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:183
 msgid "Go to &last frame"

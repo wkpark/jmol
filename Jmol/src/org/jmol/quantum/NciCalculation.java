@@ -166,9 +166,9 @@ public class NciCalculation extends QuantumCalculation implements
       double z2 = zeta2[znuc];
       double z3 = zeta3[znuc];
       //System.out.println(i + " " + znuc + " " + z1 + " " + z2 + " " + z3 + " " + coef1[znuc] + " " + coef2[znuc] +" " + coef3[znuc]);
-      float x = xBohr[ix] - qmAtoms[i].x;
-      float y = yBohr[iy] - qmAtoms[i].y;
-      float z = zBohr[iz] - qmAtoms[i].z;
+      double x = xBohr[ix] - qmAtoms[i].x;
+      double y = yBohr[iy] - qmAtoms[i].y;
+      double z = zBohr[iz] - qmAtoms[i].z;
       double r = Math.sqrt(x * x + y * y + z * z);
       double ce1 = coef1[znuc] * Math.exp(-r / z1);
       double ce2 = coef2[znuc] * Math.exp(-r / z2);

@@ -74,7 +74,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   }
   
   @Override
-  protected boolean readVolumeParameters(boolean ismapData) {
+  protected boolean readVolumeParameters(boolean isMapData) {
     endOfData = false;
     nSurfaces = readVolumetricHeader();
     if (nSurfaces == 0)

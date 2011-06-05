@@ -37,12 +37,15 @@ abstract class QuantumCalculation {
   protected final static float bohr_per_angstrom = 1 / 0.52918f;
 
   protected float[][][] voxelData;
+  protected float[] vd;
+  
   protected Point3f[] points;
   protected int xMin, xMax, yMin, yMax, zMin, zMax;
 
   protected QMAtom[] qmAtoms;
   protected int atomIndex;
   protected QMAtom thisAtom;
+  protected int firstAtomOffset;
 
   // absolute grid coordinates in Bohr 
   protected float[] xBohr, yBohr, zBohr;
@@ -68,9 +71,9 @@ abstract class QuantumCalculation {
       nX = nY = nZ = points.length;
     }
     
-    this.nX = nX;
-    this.nY = nY;
-    this.nZ = nZ;
+    this.nX = xMax = nX;
+    this.nY = yMax = nY;
+    this.nZ = zMax = nZ;
     
     // absolute grid coordinates in Bohr
     xBohr = new float[nX];
@@ -91,19 +94,18 @@ abstract class QuantumCalculation {
   protected float volume = 1;
 
   protected void setupCoordinates(float[] originXYZ, float[] stepsXYZ,
-                                  BitSet bsSelected, Point3f[] atomCoordAngstroms, Point3f[] points) {
+                                  BitSet bsSelected,
+                                  Point3f[] atomCoordAngstroms, Point3f[] points) {
 
     // all coordinates come in as angstroms, not bohr, and are converted here into bohr
 
-    for (int i = 3; --i >= 0;) {
-      originBohr[i] = originXYZ[i] * unitFactor;
-      stepBohr[i] = stepsXYZ[i] * unitFactor;
-      volume *= stepBohr[i];
-    }
-    setXYZBohr(xBohr, 0, nX, points);
-    setXYZBohr(yBohr, 1, nY, points);
-    setXYZBohr(zBohr, 2, nZ, points);
-    
+    if (points == null)
+      for (int i = 3; --i >= 0;) {
+        originBohr[i] = originXYZ[i] * unitFactor;
+        stepBohr[i] = stepsXYZ[i] * unitFactor;
+        volume *= stepBohr[i];
+      }
+
     /* 
      * allowing null atoms allows for selectively removing
      * atoms from the rendering. Maybe a first time this has ever been done?
@@ -122,6 +124,21 @@ abstract class QuantumCalculation {
           + nX + " " + nY + " " + nZ);
   }
 
+  protected void setXYZBohr() {
+    setXYZBohr(xBohr, 0, nX, points);
+    setXYZBohr(yBohr, 1, nY, points);
+    setXYZBohr(zBohr, 2, nZ, points);
+  }
+
+  public void process(Point3f pt) {
+    points[0].set(pt);
+    voxelData[0][0][0] = 0;
+    setXYZBohr();
+    process();
+  }
+
+  protected abstract void process();
+  
   private void setXYZBohr(float[] bohr, int i, int n, Point3f[] points) {
     if (points != null) {
       float x = 0;
@@ -145,6 +162,11 @@ abstract class QuantumCalculation {
     float inc = stepBohr[i];
     for (int j = 0; ++j < n;)
       bohr[j] = bohr[j - 1] + inc;
+  }
+
+  protected void setMinMax(int ix) {
+    yMax = zMax = (ix < 0 ? xMax : ix + 1);
+    yMin = zMin = (ix < 0 ? 0 : ix);    
   }
 
   class QMAtom extends Point3f {
@@ -222,4 +244,5 @@ abstract class QuantumCalculation {
       }
     }
   }
+  
 }

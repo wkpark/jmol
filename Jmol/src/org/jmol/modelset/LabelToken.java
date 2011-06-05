@@ -148,7 +148,7 @@ public class LabelToken {
       Token.radius, Token.selected, Token.shape, Token.sequence,
       Token.spacefill, Token.structure, Token.substructure, Token.strucno,
       Token.strucid, Token.symbol, Token.theta, Token.unitx, Token.unity,
-      Token.unitz, Token.valence, Token.vibx, Token.viby, Token.vibz,
+      Token.unitz, Token.valence, Token.vectorscale, Token.vibx, Token.viby, Token.vibz,
       Token.volume, Token.unitxyz, Token.fracxyz, Token.xyz, Token.fuxyz,
       Token.fux, Token.fuy, Token.fuz,
 

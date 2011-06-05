@@ -9,7 +9,7 @@ import javax.vecmath.Point3f;
 
 public interface MOCalculationInterface {
 
-  public abstract void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
+  public abstract boolean setupCalculation(VolumeDataInterface volumeData, BitSet bsSelected,
                                  String calculationType,
                                  Point3f[] atomCoordAngstroms,
                                  int firstAtomOffset, List<int[]> shells,
@@ -19,5 +19,7 @@ public interface MOCalculationInterface {
                                  float[] linearCombination, float[][] coefs,
                                  float[] nuclearCharges, boolean doNormalize, Point3f[] points);
   
+  public abstract void createCube();
+  public abstract void process(Point3f pt);
   public abstract void calculateElectronDensity(float[] nuclearCharges);
 }

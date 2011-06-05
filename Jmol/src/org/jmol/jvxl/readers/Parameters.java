@@ -633,9 +633,6 @@ public class Parameters {
   final static int QM_TYPE_NCI = 3;
   
   Map<String, Object> moData;
-  Map<String, Object> mo;
-  float[] moCoefficients;
-  int[][] dfCoefMaps;
   public final static int MO_MAX_GRID = 80;
   int qm_gridMax = MO_MAX_GRID;
   float qm_ptsPerAngstrom = 10f;
@@ -672,7 +669,6 @@ public class Parameters {
       //TODO     value = moData; // must be generic surface info
       Logger
           .error("MO ERROR: No basis functions found in file for MO calculation. (GAUSSIAN 'gfprint' keyword may be missing?)");
-      mo = null;
       title = new String[] {"no basis functions found in file"};
     } else {
       List<Object> mos = (List<Object>) moData.get("mos");
@@ -692,9 +688,6 @@ public class Parameters {
           title[3] = "?Symmetry = %S";
           title[4] = "?Occupancy = %O";
         }
-        mo = (Map<String, Object>) mos.get(qm_moNumber - 1);
-        moCoefficients = (float[]) mo.get("coefficients");
-        dfCoefMaps = (int[][]) mo.get("dfCoefMaps");
       }
     }
     dataType = SURFACE_MOLECULARORBITAL;

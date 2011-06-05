@@ -31,6 +31,7 @@ import java.util.List;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.TextFormat;
@@ -48,23 +49,60 @@ class IsoMOReader extends AtomDataReader {
   
   /////// ab initio/semiempirical quantum mechanical orbitals ///////
 
-  @Override
-  protected void setup() {
-    super.setup();
+  @SuppressWarnings("unchecked")
+  private void setup(boolean isMapData) {
+    setup();
     doAddHydrogens = false;
     getAtoms(params.qm_marginAngstroms, true, false);
     setHeader("MO", "calculation type: " + params.moData.get("calculationType"));
     setRangesAndAddAtoms(params.qm_ptsPerAngstrom, params.qm_gridMax, myAtomCount);
-    for (int i = params.title.length; --i >= 0;)
-      fixTitleLine(i, params.mo);
-    if (params.psi_monteCarloCount > 0) {
+    isNci = (params.qmOrbitalType == Parameters.QM_TYPE_NCI);
+    String className = (isNci ? "quantum.NciCalculation" : "quantum.MOCalculation");
+    q = (MOCalculationInterface) Interface.getOptionInterface(className);
+    moData = params.moData;
+    mos = (List<Map<String, Object>>) moData.get("mos");
+    linearCombination = params.qm_moLinearCombination;
+    if (isNci) {
+    } else if (linearCombination == null) {
+      Map<String, Object> mo = mos.get(params.qm_moNumber - 1);
+      for (int i = params.title.length; --i >= 0;)
+        fixTitleLine(i, mo);
+      coef = (float[]) mo.get("coefficients"); 
+      dfCoefMaps = (int[][]) mo.get("dfCoefMaps");
+    } else {
+      coefs = new float[mos.size()][];
+      for (int i = 1; i < linearCombination.length; i += 2) {
+        int j = (int) linearCombination[i];
+        if (j > mos.size() || j < 1)
+          return;
+        coefs[j - 1] = (float[]) mos.get(j - 1).get("coefficients");
+      }
+    }
+    isElectronDensityCalc = (coef == null && linearCombination == null && !isNci);
+    volumeData.sr = null;
+    if (isMapData && !isElectronDensityCalc) {
+      volumeData.sr = this;
+      volumeData.doIterate = false;
+      volumeData.voxelData = voxelData = new float[1][1][1];
+      points = new Point3f[1];
+      points[0] = new Point3f();
+      if (!setupCalculation())
+        q = null;
+    } else if (params.psi_monteCarloCount > 0) {
       vertexDataOnly = true;
       random = new Random(params.randomSeed);
     }
-    if (params.qmOrbitalType == Parameters.QM_TYPE_NCI && params.thePlane == null && !params.isDensity)
+    if (params.qmOrbitalType == Parameters.QM_TYPE_NCI && params.thePlane == null)
         params.insideOut = !params.insideOut;
   }
   
+  @Override
+  protected boolean readVolumeParameters(boolean isMapData) {
+    setup(isMapData);
+    if (volumeData.sr == null)
+      initializeVolumetricData();
+    return true;
+  }
   private void fixTitleLine(int iLine, Map<String, Object> mo) {
     // see Parameters.Java for defaults here. 
     if (!fixTitleLine(iLine))
@@ -98,6 +136,8 @@ class IsoMOReader extends AtomDataReader {
   
   @Override
   protected void readSurfaceData(boolean isMapData) throws Exception {
+    if (volumeData.sr != null)
+      return;
     if (params.psi_monteCarloCount <= 0) {
       super.readSurfaceData(isMapData);
       return;
@@ -149,10 +189,24 @@ class IsoMOReader extends AtomDataReader {
     createOrbital();
   }
 
+  @Override
+  public float getValueAtPoint(Point3f pt) {
+    if (q != null)
+      q.process(pt);
+    if (pt.x == 0 && voxelData[0][0][0] > 0.036) {
+      System.out.println("draw ID '" + Math.random() + "' " + Escape.escape(pt)  + (voxelData[0][0][0] > 0.036 ? " color red" : " color blue"));
+      q.process(pt);
+    }
+    return voxelData[0][0][0];
+  }
+  
+
   private float getRnd(float f) {
     return random.nextFloat() * f;
   }
 
+  //mapping mos fails
+  
   @Override
   protected void generateCube() {
     volumeData.voxelData = voxelData = new float[nPointsX][nPointsY][nPointsZ];
@@ -161,73 +215,64 @@ class IsoMOReader extends AtomDataReader {
 
   private Point3f[] points;
   private Vector3f vTemp;
-
-  @SuppressWarnings("unchecked")
+  MOCalculationInterface q;
+  Map<String, Object> moData;
+  List<Map<String, Object>> mos;
+  boolean isNci;
+  float[] coef; 
+  int[][] dfCoefMaps;
+  float[] linearCombination;
+  float[][] coefs;
+  float[] nuclearCharges;
+  private boolean isElectronDensityCalc;
+  
   protected void createOrbital() {
     boolean isMonteCarlo = (params.psi_monteCarloCount > 0);
-    boolean isNci = (params.qmOrbitalType == Parameters.QM_TYPE_NCI);
-    String className = (isNci ? "quantum.NciCalculation" : "quantum.MOCalculation");
-    MOCalculationInterface q = (MOCalculationInterface) Interface.getOptionInterface(className);
-    Map<String, Object> moData = params.moData;
-    float[] coef = params.moCoefficients; 
-    int[][] dfCoefMaps = params.dfCoefMaps;
-    float[] linearCombination = params.qm_moLinearCombination;
-    List<Map<String, Object>> mos = (List<Map<String, Object>>) moData.get("mos");
-    if (coef == null && linearCombination == null && !isNci) {
+    if (isElectronDensityCalc) {
       // electron density calc
       if (mos == null || isMonteCarlo)
         return;
+      nuclearCharges = params.theProperty;
       for (int i = params.qm_moNumber; --i >= 0; ) {
         Logger.info(" generating isosurface data for MO " + (i + 1));
         Map<String, Object> mo = mos.get(i);
         coef = (float[]) mo.get("coefficients");
         dfCoefMaps = (int[][]) mo.get("dfCoefMaps");
-        getData(q, moData, coef, dfCoefMaps, params.theProperty, null, null);
+        if (!setupCalculation())
+          return;
+        q.createCube();
       }
     } else {
       if (!isMonteCarlo)
         Logger.info("generating isosurface data for MO using cutoff " + params.cutoff);
-      float[][] coefs = null;
-      if (linearCombination != null) {
-        coefs = new float[mos.size()][];
-        for (int i = 1; i < linearCombination.length; i += 2) {
-          int j = (int) linearCombination[i];
-          if (j > mos.size() || j < 1)
-            return;
-          coefs[j - 1] = (float[]) mos.get(j - 1).get("coefficients");
-        }
-      }
-      getData(q, moData, coef, dfCoefMaps, null, linearCombination, coefs);
+      if (!setupCalculation())
+        return;
+      q.createCube();
     }
   }
   
   @SuppressWarnings("unchecked")
-  private void getData(MOCalculationInterface q, Map<String, Object> moData,
-                       float[] coef, int[][] dfCoefMaps, float[] nuclearCharges, float[] linearCombination, float[][] coefs) {
+  private boolean setupCalculation() {
     switch (params.qmOrbitalType) {
     case Parameters.QM_TYPE_GAUSSIAN:
-      q.calculate(
+      return q.setupCalculation(
           volumeData, bsMySelected, (String) moData.get("calculationType"),
           atomData.atomXyz, atomData.firstAtomIndex,
           (List<int[]>) moData.get("shells"), (float[][]) moData.get("gaussians"),
           dfCoefMaps, null, coef, linearCombination, coefs,
           nuclearCharges, moData.get("isNormalized") == null, points);
-      break;
     case Parameters.QM_TYPE_SLATER:
-      q.calculate(
+      return q.setupCalculation(
           volumeData, bsMySelected, (String) moData.get("calculationType"),
           atomData.atomXyz, atomData.firstAtomIndex,
           null, null, null, moData.get("slaters"), coef, 
           linearCombination, coefs, nuclearCharges, true, points);
-      break;
     case Parameters.QM_TYPE_NCI:
-      q.calculate(
+      return q.setupCalculation(
           volumeData, bsMySelected, null,
           atomData.atomXyz, atomData.firstAtomIndex,
           null, null, null, null, null, null, null, nuclearCharges, params.isDensity, points);
-      break;
-    default:
     }
-
+    return false;
   }
 }

@@ -366,7 +366,7 @@ public abstract class AtomSetCollectionReader {
       desiredModelNumber = ((Integer) htParams.get("modelNumber")).intValue();
     applySymmetryToBonds = htParams.containsKey("applySymmetryToBonds");
     bsFilter = (BitSet) htParams.get("bsFilter");
-    setFilter((String) htParams.get("filter"));
+    setFilter(null);
     // ptFile < 0 indicates just one file being read
     // ptFile >= 0 indicates multiple files are being loaded
     // if the file is not the first read in the LOAD command, then
@@ -695,6 +695,11 @@ public abstract class AtomSetCollectionReader {
   // P2N: "ALTNAME"
 
   protected void setFilter(String filter0) {
+    if (filter0 == null) {
+      filter0 = (String) htParams.get("filter");
+    } else {
+      bsFilter = null;
+    }
     if (filter0 != null)
       filter0 = filter0.toUpperCase();
     filter = filter0;

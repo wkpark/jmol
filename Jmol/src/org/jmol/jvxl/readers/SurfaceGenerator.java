@@ -1120,7 +1120,7 @@ public class SurfaceGenerator {
       params.mappedDataMin = Float.MAX_VALUE;
       surfaceReader.readVolumeData(true);
     } else if (!params.colorBySets) {
-      surfaceReader.readAndSetVolumeParameters();
+      surfaceReader.readAndSetVolumeParameters(true);
       params.mappedDataMin = Float.MAX_VALUE;
       surfaceReader.readVolumeData(true);
     }

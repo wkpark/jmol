@@ -2453,9 +2453,16 @@ final public class Graphics3D implements JmolRendererInterface {
   }
     
   // {"Plain", "Bold", "Italic", "BoldItalic"};
+  public static int getFontStyleID(String fontStyle) {
+    return Font3D.getFontStyleID(fontStyle);
+  }
+  
   public Font3D getFont3D(String fontFace, String fontStyle, float fontSize) {
+    int iStyle = Font3D.getFontStyleID(fontStyle);
+    if (iStyle < 0)
+      iStyle = 0;
     return Font3D.getFont3D(Font3D.getFontFaceID(fontFace),
-                            Font3D.getFontStyleID(fontStyle), fontSize, fontSize, platform);
+                            iStyle, fontSize, fontSize, platform);
   }
 
   public Font3D getFont3DScaled(Font3D font, float scale) {

@@ -270,7 +270,7 @@ public abstract class SurfaceReader implements VertexDataServer {
       v.setDataSource(this);
 */  }
 
-  protected abstract boolean readVolumeParameters(boolean ismapData);
+  protected abstract boolean readVolumeParameters(boolean isMapData);
 
   protected abstract boolean readVolumeData(boolean isMapData);
 
@@ -307,8 +307,8 @@ public abstract class SurfaceReader implements VertexDataServer {
     jvxlData.jvxlUpdateInfo(params.title, nBytes);
   }
 
-  boolean readAndSetVolumeParameters() {
-    return (readVolumeParameters(false) && (vertexDataOnly || setUnitVectors()));
+  boolean readAndSetVolumeParameters(boolean isMapData) {
+    return (readVolumeParameters(isMapData) && (vertexDataOnly || setUnitVectors()));
   }
 
   protected boolean setUnitVectors() {
@@ -318,7 +318,7 @@ public abstract class SurfaceReader implements VertexDataServer {
   boolean createIsosurface(boolean justForPlane) {
     resetIsosurface();
     jvxlData.cutoff = Float.NaN;
-    if (!readAndSetVolumeParameters())
+    if (!readAndSetVolumeParameters(false))
       return false;
     if (!justForPlane && !Float.isNaN(params.sigma) && !allowSigma) {
       if (params.sigma > 0)

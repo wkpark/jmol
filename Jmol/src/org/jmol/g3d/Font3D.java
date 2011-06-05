@@ -158,7 +158,7 @@ final public class Font3D {
 
   public static int getFontStyleID(String fontstyle) {
     int i = 4;
-    while (--i > 0)
+    while (--i >= 0)
       if (fontStyles[i].equalsIgnoreCase(fontstyle))
         break;
     return i;

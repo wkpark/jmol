@@ -303,16 +303,22 @@ public class Eigen {
      }
   }
 
-  public Eigen(double[][] A) {
-
-    // symmetric option is all we need here
-    
-    n = A.length;
-    
+  public Eigen(int n) {
+    this.n = n;
     V = new double[n][n];
     d = new double[n];
     e = new double[n];
+  }
+  
+  public Eigen(double[][] A) {
+    this(A.length);
+    calc(A);
+  }
+  
+  public void calc(double[][] A) {
 
+    // symmetric option is all we need here
+    
        for (int i = 0; i < n; i++) {
           for (int j = 0; j < n; j++) {
              V[i][j] = A[i][j];

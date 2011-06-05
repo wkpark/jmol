@@ -1204,7 +1204,6 @@ final public class Atom extends Point3fi implements JmolNode {
    * 
    */  
   public static float atomPropertyFloat(Viewer viewer, Atom atom, int tokWhat) {
-
     switch (tokWhat) {
     case Token.radius:
       return atom.getRadius();
@@ -1292,6 +1291,10 @@ final public class Atom extends Point3fi implements JmolNode {
       return atom.getVibrationCoord('Y');
     case Token.vibz:
       return atom.getVibrationCoord('Z');
+    case Token.vectorscale:
+      Vector3f v = atom.getVibrationVector();
+      return (v == null ? 0 : v.length() * viewer.getVectorScale());
+      
     }
     return atomPropertyInt(atom, tokWhat);
   }

@@ -134,7 +134,8 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
     initialize(countsXYZ[0], countsXYZ[1], countsXYZ[2], null);
     setupCoordinates(volumeData.getOriginFloat(), volumeData
         .getVolumetricVectorLengths(), bsSelected, atomCoordAngstroms, null);
-    processMep();
+    setXYZBohr();
+    process();
   }
 
   public float getValueAtPoint(Point3f pt) {
@@ -148,7 +149,8 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
     return value;
   }
   
-  private void processMep() {
+  @Override
+  protected void process() {
     for (int atomIndex = qmAtoms.length; --atomIndex >= 0;) {
       if ((thisAtom = qmAtoms[atomIndex]) == null)
         continue;

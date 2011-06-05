@@ -108,7 +108,6 @@ public class MOCalculation extends QuantumCalculation implements
   private float[] moCoefficients;
   private int moCoeff;
   private int gaussianPtr;
-  private int firstAtomOffset;
   private boolean isElectronDensity;
   private float occupancy = 2f; //for now -- RHF only
   //private float coefMax = Integer.MAX_VALUE;
@@ -127,18 +126,21 @@ public class MOCalculation extends QuantumCalculation implements
 
   private double moFactor = 1;
   private boolean havePoints;
+  private float[] nuclearCharges;
+  boolean testing;
   
   public MOCalculation() {
   }
 
-  public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
+
+  
+  public boolean setupCalculation(VolumeDataInterface volumeData, BitSet bsSelected,
                         String calculationType, Point3f[] atomCoordAngstroms,
                         int firstAtomOffset, List<int[]> shells,
                         float[][] gaussians, int[][] dfCoefMaps,
                         Object slaters,
                         float[] moCoefficients, float[] linearCombination, float[][] coefs,
                         float[] nuclearCharges, boolean doNormalize, Point3f[] points) {
-    boolean testing = false;
     havePoints = (points != null);
     this.calculationType = calculationType;
     this.firstAtomOffset = firstAtomOffset;
@@ -152,6 +154,7 @@ public class MOCalculation extends QuantumCalculation implements
     this.coefs = coefs;
     //this.nuclearCharges = nuclearCharges;
     this.isElectronDensity = (testing || nuclearCharges != null);
+    this.nuclearCharges = nuclearCharges;
     this.doNormalize = doNormalize;
     int[] countsXYZ = volumeData.getVoxelCounts();
     initialize(countsXYZ[0], countsXYZ[1], countsXYZ[2], points);
@@ -160,11 +163,8 @@ public class MOCalculation extends QuantumCalculation implements
     setupCoordinates(volumeData.getOriginFloat(), 
         volumeData.getVolumetricVectorLengths(), 
         bsSelected, atomCoordAngstroms, points);
-    atomIndex = firstAtomOffset - 1;
     doDebug = (Logger.debugging);
-    createCube();
-    if (doDebug || testing || isElectronDensity)
-      calculateElectronDensity(nuclearCharges);
+    return (slaters != null || checkCalculationType());
   }  
   
   @Override
@@ -183,26 +183,8 @@ public class MOCalculation extends QuantumCalculation implements
     EZ = new double[this.nZ];
   }
 
-  float integration = 0;
-
-  public void calculateElectronDensity(float[] nuclearCharges) {
-    //TODO
-    for (int ix = nX; --ix >= 0;)
-      for (int iy = nY; --iy >= 0;)
-        for (int iz = nZ; --iz >= 0;) {
-          float x = voxelData[ix][iy][iz];
-          integration += x * x;
-        }
-    float volume = stepBohr[0] * stepBohr[1] * stepBohr[2]; 
-        // / bohr_per_angstrom / bohr_per_angstrom / bohr_per_angstrom;
-    integration *= volume;
-    Logger.info("Integrated density = " + integration);
-    //processMep(nuclearCharges);
-  }
-
-  private void createCube() {
-    if (slaters == null && !checkCalculationType())
-      return;
+  public void createCube() {
+    setXYZBohr();
     if (linearCombination == null) {
       process();
     } else {
@@ -220,9 +202,13 @@ public class MOCalculation extends QuantumCalculation implements
         process();
       }
     }
+    if (doDebug || testing || isElectronDensity)
+      calculateElectronDensity(nuclearCharges);
   }
 
-  private void process() {
+  @Override
+  protected void process() {
+    atomIndex = firstAtomOffset - 1;
     moCoeff = 0;
     if (slaters == null) {
       // each STO shell is the combination of one or more gaussians
@@ -231,10 +217,10 @@ public class MOCalculation extends QuantumCalculation implements
         processShell(i);
       return;
     }
-      for (int i = 0; i < slaters.length; i++) {
-        if (!processSlater(i))
-          break;
-      }
+    for (int i = 0; i < slaters.length; i++) {
+      if (!processSlater(i))
+        break;
+    }
   }
 
   private boolean checkCalculationType() {
@@ -407,18 +393,14 @@ public class MOCalculation extends QuantumCalculation implements
           setMinMax(ix);
         for (int iy = yMax; --iy >= yMin;) {
           double eXY = eX * EY[iy];
+          vd = voxelData[ix][(havePoints ? 0 : iy)]; 
           for (int iz = zMax; --iz >= zMin;)
-            voxelDataTemp[ix][(havePoints ? 0 : iy)][(havePoints ? 0 : iz)] += eXY * EZ[iz];
+            vd[(havePoints ? 0 : iz)] += eXY * EZ[iz];
        }
       }
     }
     if (isElectronDensity)
       setTemp();
-  }
-
-  private void setMinMax(int ix) {
-    yMax = zMax = (ix < 0 ? xMax : ix + 1);
-    yMin = zMin = (ix < 0 ? 0 : ix);    
   }
 
   private void addDataP() {
@@ -557,7 +539,7 @@ public class MOCalculation extends QuantumCalculation implements
     }
   }
 
-  private void setCE(double[] CX, double[] EX, double alpha, double as, double ax,
+  private void setCE(double alpha, double as, double ax,
                      double ay, double az) {
     for (int i = xMax; --i >= xMin;) {
       CX[i] = as + ax * X[i];
@@ -583,7 +565,7 @@ public class MOCalculation extends QuantumCalculation implements
   }
 
   private void calcSP(double alpha, double as, double ax, double ay, double az) {
-    setCE(CX, EX, alpha, as, ax, ay, az);
+    setCE(alpha, as, ax, ay, az);
     for (int ix = xMax; --ix >= xMin;) {
       double eX = EX[ix];
       double cX = CX[ix];
@@ -592,8 +574,9 @@ public class MOCalculation extends QuantumCalculation implements
       for (int iy = yMax; --iy >= yMin;) {
         double eXY = eX * EY[iy];
         double cXY = cX + CY[iy];
+        vd = voxelData[ix][(havePoints ? 0 : iy)]; 
         for (int iz = zMax; --iz >= zMin;) {
-          voxelDataTemp[ix][(havePoints ? 0 : iy)][(havePoints ? 0 : iz)] += (cXY + CZ[iz]) * eXY * EZ[iz];
+          vd[(havePoints ? 0 : iz)] += (cXY + CZ[iz]) * eXY * EZ[iz];
         }
       }
     }
@@ -638,7 +621,7 @@ public class MOCalculation extends QuantumCalculation implements
       double axx = a * norm2 * mxx;
       double ayy = a * norm2 * myy;
       double azz = a * norm2 * mzz;
-      setCE(CX, EX, alpha, 0, axx, ayy, azz);
+      setCE(alpha, 0, axx, ayy, azz);
 
       for (int i = xMax; --i >= xMin;) {
         DXY[i] = axy * X[i];
@@ -658,8 +641,9 @@ public class MOCalculation extends QuantumCalculation implements
           double axx_x2__ayy_y2__axy_xy = axx_x2 + (CY[iy] + axy_x) * Y[iy];
           double axz_x__ayz_y = axz_x + DYZ[iy];
           double eXY = eX * EY[iy];
+          vd = voxelData[ix][(havePoints ? 0 : iy)]; 
           for (int iz = zMax; --iz >= zMin;) {
-            voxelDataTemp[ix][(havePoints ? 0 : iy)][(havePoints ? 0 : iz)] += (axx_x2__ayy_y2__axy_xy + (CZ[iz] + axz_x__ayz_y) * Z[iz])
+            vd[(havePoints ? 0 : iz)] += (axx_x2__ayy_y2__axy_xy + (CZ[iz] + axz_x__ayz_y) * Z[iz])
                 * eXY * EZ[iz];
             // giving (axx_x2 + ayy_y2 + azz_z2 + axy_xy + axz_xz + ayz_yz)e^-br2; 
           }
@@ -749,6 +733,7 @@ public class MOCalculation extends QuantumCalculation implements
 
           cyy = norm2 * y * y;
           cxy = norm1 * x * y;
+          vd = voxelData[ix][(havePoints ? 0 : iy)]; 
 
           for (int iz = zMax; --iz >= zMin;) {
             z = Z[iz];
@@ -757,7 +742,7 @@ public class MOCalculation extends QuantumCalculation implements
             cxz = norm1 * x * z;
             cyz = norm1 * y * z;
 
-            voxelDataTemp[ix][(havePoints ? 0 : iy)][(havePoints ? 0 : iz)] += (
+            vd[(havePoints ? 0 : iz)] += (
                 ad0 * (czz - 0.5f * (cxx + cyy)) 
                 + ad1p * cxz 
                 + ad1n * cyz 
@@ -861,6 +846,7 @@ public class MOCalculation extends QuantumCalculation implements
           cyyy = ayyy * yy * y;
           cxxy = axxy * xx * y;
           cxyy = axyy * x * yy;
+          vd = voxelData[ix][(havePoints ? 0 : iy)]; 
 
           for (int iz = zMax; --iz >= zMin;) {
             z = Z[iz];
@@ -871,7 +857,7 @@ public class MOCalculation extends QuantumCalculation implements
             cyyz = ayyz * yy * z;
             cyzz = ayzz * y * zz;
             cxyz = axyz * x * y * z;
-            voxelDataTemp[ix][(havePoints ? 0 : iy)][(havePoints ? 0 : iz)] += (cxxx + cyyy + czzz + cxyy + cxxy
+            vd[(havePoints ? 0 : iz)] += (cxxx + cyyy + czzz + cxyy + cxxy
                 + cxxz + cxzz + cyzz + cyyz + cxyz)
                 * Exy * EZ[iz];
           }
@@ -984,6 +970,7 @@ public class MOCalculation extends QuantumCalculation implements
           cyyy = norm3 * y * yy;
           cxyy = norm2 * x * yy;
           cxxy = norm2 * xx * y;
+          vd = voxelData[ix][(havePoints ? 0 : iy)]; 
 
           for (int iz = zMax; --iz >= zMin;) {
             z = Z[iz];
@@ -1003,7 +990,7 @@ public class MOCalculation extends QuantumCalculation implements
             f2n = af2n * cxyz;
             f3p = norm4 * af3p * (c3p_xxx * cxxx - c3p_xyy * cxyy);
             f3n = -af3n * (c3n_yyy * cyyy - c3n_xxy * cxxy);
-            voxelDataTemp[ix][(havePoints ? 0 : iy)][(havePoints ? 0 : iz)] += (f0 + f1p + f1n + f2p + f2n + f3p + f3n)
+            vd[(havePoints ? 0 : iz)] += (f0 + f1p + f1n + f2p + f2n + f3p + f3n)
                 * eXY * EZ[iz];
           }
         }
@@ -1067,6 +1054,7 @@ public class MOCalculation extends QuantumCalculation implements
         for (int iy = yMax; --iy >= yMin;) {
           double dy2 = Y2[iy];
           double dx2y2 = dx2 + dy2;
+          vd = voxelData[ix][(havePoints ? 0 : iy)]; 
           for (int iz = zMax; --iz >= zMin;) {
             double dz2 = Z2[iz];
             double r2 = dx2y2 + dz2;
@@ -1087,7 +1075,7 @@ public class MOCalculation extends QuantumCalculation implements
               value *= r;
               break;
             }
-            voxelDataTemp[ix][(havePoints ? 0 : iy)][(havePoints ? 0 : iz)] += value;
+            vd[(havePoints ? 0 : iz)] += value;
           }
         }
       }
@@ -1100,6 +1088,7 @@ public class MOCalculation extends QuantumCalculation implements
           double dy2 = Y2[iy];
           double dx2y2 = dx2 + dy2;
           double dx2my2 = coef * (dx2 - dy2);
+          vd = voxelData[ix][(havePoints ? 0 : iy)]; 
           for (int iz = zMax; --iz >= zMin;) {
             double dz2 = Z2[iz];
             double r2 = dx2y2 + dz2;
@@ -1119,7 +1108,7 @@ public class MOCalculation extends QuantumCalculation implements
               value *= r;
               break;
             }
-            voxelDataTemp[ix][(havePoints ? 0 : iy)][(havePoints ? 0 : iz)] += value;
+            vd[(havePoints ? 0 : iz)] += value;
           }
         }
       }
@@ -1156,6 +1145,7 @@ public class MOCalculation extends QuantumCalculation implements
             vdy *= Y[iy];
             break;
           }
+          vd = voxelData[ix][(havePoints ? 0 : iy)]; 
           for (int iz = zMax; --iz >= zMin;) {
             double dz2 = Z2[iz];
             double r2 = dx2y2 + dz2;
@@ -1186,7 +1176,7 @@ public class MOCalculation extends QuantumCalculation implements
               value *= r;
               break;
             }
-            voxelDataTemp[ix][(havePoints ? 0 : iy)][(havePoints ? 0 : iz)] += value;
+            vd[(havePoints ? 0 : iz)] += value;
             //if (ix == 27 && iy == 27)
               //System.out.println(iz + "\t"  
                 //  + xBohr[ix] + " " + yBohr[iy] + " " 
@@ -1234,5 +1224,23 @@ public class MOCalculation extends QuantumCalculation implements
             + (map[i] + moCoeff - map.length + i + 1) + "\t" + c + "\t" + thisAtom.atom);
     }
   }
+
+  float integration = 0;
+
+  public void calculateElectronDensity(float[] nuclearCharges) {
+    //TODO
+    for (int ix = nX; --ix >= 0;)
+      for (int iy = nY; --iy >= 0;)
+        for (int iz = nZ; --iz >= 0;) {
+          float x = voxelData[ix][iy][iz];
+          integration += x * x;
+        }
+    float volume = stepBohr[0] * stepBohr[1] * stepBohr[2]; 
+        // / bohr_per_angstrom / bohr_per_angstrom / bohr_per_angstrom;
+    integration *= volume;
+    Logger.info("Integrated density = " + integration);
+    //processMep(nuclearCharges);
+  }
+
 
 }

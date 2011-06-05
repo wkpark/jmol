@@ -618,12 +618,13 @@ public class Token {
   public final static int selected        = floatproperty | 13 | settable | predefinedset;
   public final static int temperature     = floatproperty | 14 | settable;
   public final static int vanderwaals     = floatproperty | 15 | settable;
-  public final static int vibx            = floatproperty | 16 | settable;
-  public final static int viby            = floatproperty | 17 | settable;
-  public final static int vibz            = floatproperty | 18 | settable;
-  public final static int x               = floatproperty | 19 | settable;
-  public final static int y               = floatproperty | 20 | settable;
-  public final static int z               = floatproperty | 21 | settable;
+  public final static int vectorscale     = floatproperty | 16 | floatparam;
+  public final static int vibx            = floatproperty | 17 | settable;
+  public final static int viby            = floatproperty | 18 | settable;
+  public final static int vibz            = floatproperty | 19 | settable;
+  public final static int x               = floatproperty | 20 | settable;
+  public final static int y               = floatproperty | 21 | settable;
+  public final static int z               = floatproperty | 22 | settable;
   
   public final static int backbone     = floatproperty | shapeCommand | 1 | predefinedset | defaultON | settable;
   public final static int cartoon      = floatproperty | shapeCommand | 2 | defaultON | settable;
@@ -842,7 +843,7 @@ public class Token {
   public final static int stereodegrees                  = floatparam | 60;
   public final static int strutdefaultradius             = floatparam | 62;
   public final static int strutlengthmaximum             = floatparam | 64;
-  public final static int vectorscale                    = floatparam | 66;
+  // see floatproperty public final static int vectorscale                    = floatparam | 66;
   public final static int vibrationperiod                = floatparam | 68;
   public final static int vibrationscale                 = floatparam | 70;
   public final static int visualrange                    = floatparam | 72;

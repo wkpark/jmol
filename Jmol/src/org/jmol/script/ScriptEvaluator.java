@@ -11807,6 +11807,10 @@ public class ScriptEvaluator {
     }
     if (isSyntaxCheck)
       return;
+    if (Graphics3D.getFontStyleID(fontface) >= 0) {
+      fontstyle = fontface;
+      fontface = "SansSerif";
+    }
     Font3D font3d = viewer.getFont3D(fontface, fontstyle, fontsize);
     shapeManager.loadShape(shapeType);
     setShapeProperty(shapeType, "font", font3d);
@@ -16029,13 +16033,7 @@ public class ScriptEvaluator {
       case Token.nci:
         propertyName = "nci";
         sbCommand.append(" " + propertyName);
-        if (tokAt(i + 1) == Token.density) {
-          propertyValue = Boolean.TRUE;
-          sbCommand.append(" density");
-          i++;
-        } else {
-          propertyValue = Boolean.FALSE;  // no mapping yet
-        }
+        propertyValue = Boolean.valueOf(!isMapped);  // no mapping yet
         surfaceObjectSeen = true;
         break;
       case Token.mep:

@@ -186,11 +186,11 @@ public class Mesh extends MeshSurface {
   }
   
   public void setLighting(int lighting) {
+    isTwoSided = (lighting == JmolConstants.FULLYLIT);
     if (lighting == this.lighting)
       return;
     flipLighting(this.lighting);
     flipLighting(this.lighting = lighting);
-    isTwoSided = (lighting == JmolConstants.FULLYLIT);
   }
   
   private void flipLighting(int lighting) {

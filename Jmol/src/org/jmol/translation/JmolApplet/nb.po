@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-03-07 20:56+0100\n"
-"PO-Revision-Date: 2010-01-13 22:47+0000\n"
+"PO-Revision-Date: 2011-06-06 09:19+0000\n"
 "Last-Translator: Anders Oftedal <anders.oftedal@gmail.com>\n"
 "Language-Team: Norwegian Bokmal <nb@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-01-29 19:08+0000\n"
-"X-Generator: Launchpad (build 12274)\n"
+"X-Launchpad-Export-Date: 2011-06-06 15:56+0000\n"
+"X-Generator: Launchpad (build 13144)\n"
 
 #: org/jmol/applet/AppletConsole.java:199
 msgid "&Help"
@@ -43,11 +43,11 @@ msgstr "&Mer"
 
 #: org/jmol/applet/AppletConsole.java:205
 msgid "Editor"
-msgstr ""
+msgstr "Redigeringsverktøy"
 
 #: org/jmol/applet/AppletConsole.java:206
 msgid "State"
-msgstr ""
+msgstr "Status"
 
 #: org/jmol/applet/AppletConsole.java:207
 #: org/jmol/console/ScriptEditor.java:137
@@ -135,7 +135,8 @@ msgid "Check"
 msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:135
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:136
@@ -154,7 +155,7 @@ msgstr "Gjenoppta"
 
 #: org/jmol/console/ScriptEditor.java:142
 msgid "Halt"
-msgstr ""
+msgstr "Stans"
 
 #: org/jmol/console/ScriptEditor.java:144
 msgid "Clear"
@@ -181,7 +182,7 @@ msgstr "JPEG Kvalitet ({0})"
 #: org/jmol/export/dialog/Dialog.java:295
 #, java-format
 msgid "PNG Compression  ({0})"
-msgstr ""
+msgstr "PNG komprimering ({0})"
 
 #: org/jmol/export/dialog/Dialog.java:325
 #, java-format
@@ -276,7 +277,7 @@ msgstr ""
 #: org/jmol/export/dialog/Dialog.java:454
 #: org/jmol/export/dialog/Dialog.java:455
 msgid "Home"
-msgstr ""
+msgstr "Hjem"
 
 #: org/jmol/export/dialog/Dialog.java:456
 #: org/jmol/export/dialog/Dialog.java:457
@@ -346,7 +347,7 @@ msgstr ""
 
 #: org/jmol/i18n/GT.java:137
 msgid "Arabic"
-msgstr ""
+msgstr "Arabisk"
 
 #: org/jmol/i18n/GT.java:138
 msgid "Catalan"
@@ -386,20 +387,19 @@ msgstr "Estisk"
 
 #: org/jmol/i18n/GT.java:147
 msgid "Finnish"
-msgstr ""
+msgstr "Finsk"
 
 #: org/jmol/i18n/GT.java:148
 msgid "Faroese"
-msgstr ""
+msgstr "Færøyisk"
 
 #: org/jmol/i18n/GT.java:149
 msgid "French"
 msgstr "Fransk"
 
 #: org/jmol/i18n/GT.java:150
-#, fuzzy
 msgid "Croatian"
-msgstr "Protein"
+msgstr "Kroatisk"
 
 #: org/jmol/i18n/GT.java:151
 msgid "Hungarian"
@@ -407,7 +407,7 @@ msgstr "Ungarsk"
 
 #: org/jmol/i18n/GT.java:152
 msgid "Indonesian"
-msgstr ""
+msgstr "Indonesisk"
 
 #: org/jmol/i18n/GT.java:153
 msgid "Italian"
@@ -415,11 +415,11 @@ msgstr "Italiensk"
 
 #: org/jmol/i18n/GT.java:154
 msgid "Japanese"
-msgstr ""
+msgstr "Japansk"
 
 #: org/jmol/i18n/GT.java:155
 msgid "Javanese"
-msgstr ""
+msgstr "Javansk"
 
 #: org/jmol/i18n/GT.java:156
 msgid "Korean"
@@ -435,7 +435,7 @@ msgstr "Nederlandsk"
 
 #: org/jmol/i18n/GT.java:159
 msgid "Occitan"
-msgstr ""
+msgstr "Occitansk"
 
 #: org/jmol/i18n/GT.java:160
 msgid "Polish"
@@ -463,7 +463,7 @@ msgstr "Svensk"
 
 #: org/jmol/i18n/GT.java:166
 msgid "Tamil"
-msgstr ""
+msgstr "Tamilsk"
 
 #: org/jmol/i18n/GT.java:167
 msgid "Turkish"
@@ -502,19 +502,19 @@ msgstr ""
 
 #: org/jmol/modelkit/ModelKitPopup.java:75
 msgid "Element?"
-msgstr ""
+msgstr "Element ?"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:78
 msgid "new"
-msgstr ""
+msgstr "ny"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:79
 msgid "undo (CTRL-Z)"
-msgstr ""
+msgstr "Angre"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:80
 msgid "redo (CTRL-Y)"
-msgstr ""
+msgstr "Gjør om"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:81
 #: org/jmol/viewer/ActionManager.java:58
@@ -523,23 +523,23 @@ msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:82
 msgid "add hydrogens"
-msgstr ""
+msgstr "Legg til hydrogener"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:83
 msgid "minimize"
-msgstr ""
+msgstr "minimer"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:84
 msgid "fix hydrogens and minimize"
-msgstr ""
+msgstr "fiks hydrogener og minimer"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:85
 msgid "clear"
-msgstr ""
+msgstr "tøm"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:86
 msgid "save file"
-msgstr ""
+msgstr "lagre fil"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:87
 msgid "save state"
@@ -551,7 +551,7 @@ msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:89
 msgid "delete atom"
-msgstr ""
+msgstr "slett atom"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:90
 msgid "drag to bond"
@@ -559,15 +559,15 @@ msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:91
 msgid "drag atom"
-msgstr ""
+msgstr "dra atom"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:92
 msgid "drag atom (and minimize)"
-msgstr ""
+msgstr "dra atom (og minimer)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:93
 msgid "drag molecule (SHIFT to rotate)"
-msgstr ""
+msgstr "dra molekyl (bruk SHIFT for å rotere)"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:94
 msgid "drag and minimize molecule (docking)"
@@ -591,11 +591,11 @@ msgstr ""
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:107
 msgid "double"
-msgstr ""
+msgstr "dobbel"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:108
 msgid "triple"
-msgstr ""
+msgstr "trippel"
 
 #: org/jmol/modelkit/modelKitPopupResourceBundle.java:109
 msgid "increase order"
@@ -657,11 +657,11 @@ msgstr ""
 #: org/jmol/popup/JmolPopup.java:568
 #: org/jmol/popup/MainPopupResourceBundle.java:946
 msgid "Translations"
-msgstr ""
+msgstr "Oversettelser"
 
 #: org/jmol/popup/JmolPopup.java:570
 msgid "System"
-msgstr ""
+msgstr "System"
 
 #: org/jmol/popup/JmolPopup.java:576
 msgid "1 processor"
@@ -678,7 +678,7 @@ msgstr ""
 
 #: org/jmol/popup/JmolPopup.java:581
 msgid "Java version:"
-msgstr ""
+msgstr "Java versjon:"
 
 #: org/jmol/popup/JmolPopup.java:585
 msgid "Java memory usage:"
@@ -2148,7 +2148,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:69
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:71
@@ -2380,12 +2381,15 @@ msgstr ""
 #~ msgid "Minimize"
 #~ msgstr "Minimer"
 
+#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "{0} Bilde"
 
+#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "{0} 3D Modell"
 
+#, java-format
 #~ msgid "File {0}"
 #~ msgstr "Fil {0}"
 

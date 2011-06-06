@@ -183,9 +183,9 @@ abstract class QuantumCalculation {
     private float[] myX2, myY2, myZ2;
 
     int znuc;
-    
+    int iMolecule;
     Atom atom;
-    
+
     QMAtom(Atom atom, float[] X, float[] Y, float[] Z, 
         float[] X2, float[] Y2, float[] Z2) {
       myX = X;

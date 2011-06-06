@@ -26,9 +26,11 @@ package org.jmol.quantum;
 import org.jmol.api.MOCalculationInterface;
 import org.jmol.api.VolumeDataInterface;
 import org.jmol.util.Eigen;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Tuple3f;
 
 import java.util.List;
 import java.util.BitSet;
@@ -68,23 +70,59 @@ public class NciCalculation extends QuantumCalculation implements
   
   private boolean havePoints;
   private boolean isReducedDensity;
-  private float DEFAULT_RHOPLOT = 0.07f;
-  private double rhoPlot;
+  private double DEFAULT_RHOPLOT = 0.07;
+  private double DEFAULT_RHOPARAM = 0.95;
+  private double rhoPlot;  // only rho <= this number plotted
+  private double rhoParam; // fractional rho cutoff defining intramolecular 
+  private final static int TYPE_ALL = 0;
+  private final static int TYPE_INTRA = 1;
+  private final static int TYPE_INTER = 2;
+  private final static int TYPE_LIGAND = 3;
   
   public NciCalculation() {
   }
 
   private Eigen eigen;
-  public boolean setupCalculation(VolumeDataInterface volumeData, BitSet bsSelected,
-                        String calculationType, Point3f[] atomCoordAngstroms,
-                        int firstAtomOffset, List<int[]> shells,
-                        float[][] gaussians, int[][] dfCoefMaps,
-                        Object slaters,
-                        float[] moCoefficients, float[] linearCombination, float[][] coefs,
-                        float[] nuclearCharges, boolean isDensity, Point3f[] points, float[] parameters) {
+  private BitSet[] bsMolecules;
+  private double[] rhoMolecules;
+  private int type;
+  private int nMolecules;
+  
+  public boolean setupCalculation(VolumeDataInterface volumeData,
+                                  BitSet bsSelected, String calculationType,
+                                  Point3f[] atomCoordAngstroms,
+                                  int firstAtomOffset, List<int[]> shells,
+                                  float[][] gaussians, int[][] dfCoefMaps,
+                                  Object slaters, float[] moCoefficients,
+                                  float[] linearCombination, float[][] coefs,
+                                  float[] nuclearCharges, boolean isDensity,
+                                  Point3f[] points, float[] parameters) {
     havePoints = (points != null);
-    rhoPlot = (parameters == null ? DEFAULT_RHOPLOT : parameters[parameters.length - 1]);
     isReducedDensity = isDensity;
+    if (!isReducedDensity)
+      parameters = null;
+    if (parameters != null)
+      Logger.info("NCI calculation parameters = " + Escape.escape(parameters));
+    rhoPlot = getParameter(parameters, 1, DEFAULT_RHOPLOT, "rhoPlot");
+    type = (int) getParameter(parameters, 2, 0, "type");
+    rhoParam = getParameter(parameters, 3, DEFAULT_RHOPARAM, "rhoParam");
+    String stype;
+    switch (type) {
+    default:
+      type = 0;
+      stype = "all";
+      break;
+    case TYPE_INTRA:
+      stype = "intramolecular";
+      break;
+    case TYPE_INTER:
+      stype = "intermolecular";
+      break;
+    case TYPE_LIGAND:
+      stype = "ligand";
+      break;
+    }
+    Logger.info("NCI calculation type = " + stype);
     this.firstAtomOffset = firstAtomOffset;
     int[] countsXYZ = volumeData.getVoxelCounts();
     initialize(countsXYZ[0], countsXYZ[1], countsXYZ[2], points);
@@ -97,14 +135,56 @@ public class NciCalculation extends QuantumCalculation implements
       eigen = new Eigen(3);
       hess = new double[3][3];
     }
-    setupCoordinates(volumeData.getOriginFloat(), 
-        volumeData.getVolumetricVectorLengths(), 
-        bsSelected, atomCoordAngstroms, points, false);
-    
+    setupCoordinates(volumeData.getOriginFloat(), volumeData
+        .getVolumetricVectorLengths(), bsSelected, atomCoordAngstroms, points,
+        true);
+    nMolecules = 0;
+    int firstMolecule = Integer.MAX_VALUE;
+    for (int i = qmAtoms.length; --i >= 0;) {
+      // must ignore heavier elements
+      if (qmAtoms[i].znuc < 1) {
+        qmAtoms[i] = null;
+      } else if (qmAtoms[i].znuc > 18) {
+        qmAtoms[i].znuc = 18; // just max it out at argon?
+        Logger.info("NCI calculation just setting nuclear charge for "
+            + qmAtoms[i].atom + " to 18 (argon)");
+      }
+      if (type != TYPE_ALL) {
+        int iMolecule = qmAtoms[i].iMolecule = qmAtoms[i].atom
+            .getMoleculeNumber();
+        nMolecules = Math.max(nMolecules, iMolecule);
+        firstMolecule = Math.min(firstMolecule, iMolecule);
+      }
+    }
+    if (nMolecules == 0)
+      nMolecules = 1;
+    else 
+      nMolecules = nMolecules - firstMolecule + 1;
+    if (type != TYPE_ALL) {
+      bsMolecules = new BitSet[nMolecules];
+      for (int i = qmAtoms.length; --i >= 0;) {
+        int j = qmAtoms[i].iMolecule = qmAtoms[i].iMolecule - firstMolecule;
+        if (bsMolecules[j] == null)
+          bsMolecules[j] = new BitSet();
+        bsMolecules[j].set(i);
+      }
+      for (int i = 0; i < nMolecules; i++)
+        if (bsMolecules[i] != null)
+          Logger.info("Molecule " + (i+1) + ": " + bsMolecules[i]);
+      rhoMolecules = new double[nMolecules];
+    }
     doDebug = (Logger.debugging);
     return true;
   }  
   
+  private static double getParameter(float[] parameters, int i, double def, String name) {
+    double param = (parameters == null || parameters.length < i + 1 ? 0 : parameters[i]);
+    if (param == 0)
+      param = def;
+    Logger.info("NCI calculation parameters[" + i + "] (" + name + ") = " + param);
+    return param;
+  }
+
   public void createCube() {
     setXYZBohr();
     process();
@@ -113,29 +193,19 @@ public class NciCalculation extends QuantumCalculation implements
   private static double c = (1 / (2 * Math.pow(3 * Math.PI * Math.PI, 1/3d)));
   private static double rpower = -4/3d;
   private double[][] hess;
-  private double gxTemp, gyTemp, gzTemp, gxxTemp, gyyTemp, gzzTemp, gxyTemp, gyzTemp, gxzTemp;
+  private double grad, gxTemp, gyTemp, gzTemp, gxxTemp, gyyTemp, gzzTemp, gxyTemp, gyzTemp, gxzTemp;
   
   @Override
   protected void process() {
-    for (int i = qmAtoms.length; --i >= 0;) {
-      if (qmAtoms[i] == null)
-        continue;
-      // must ignore heavier elements
-      if (qmAtoms[i].znuc < 1)
-        qmAtoms[i] = null;
-      else if (qmAtoms[i].znuc > 18)
-        qmAtoms[i].znuc = 18; // just max it out at argon?
-    }
-   for (int ix = xMax; --ix >= xMin;) {
+    for (int ix = xMax; --ix >= xMin;) {
       for (int iy = yMax; --iy >= yMin;) {
         vd = voxelData[ix][(havePoints ? 0 : iy)];
         for (int iz = zMax; --iz >= zMin;) {
           double rho = process(ix, iy, iz);
           double s;
           if (isReducedDensity) {
-            double grad = Math.sqrt(gxTemp * gxTemp + gyTemp * gyTemp + gzTemp * gzTemp);
-            s = (rho > rhoPlot ? 100 : c * grad * Math.pow(rho, rpower));
-          } else{
+            s = (rho > rhoPlot || grad < 0 ? 100 : c * grad * Math.pow(rho, rpower));
+          } else {
             // do Hessian only for specified points
             //GET LAMBDA
             hess[0][0] = gxxTemp;
@@ -144,7 +214,7 @@ public class NciCalculation extends QuantumCalculation implements
             hess[1][1] = gyyTemp;
             hess[1][2] = hess[2][1] = gyzTemp;
             hess[2][2] = gzzTemp;
-            eigen.calc(hess);            
+            eigen.calc(hess);
             double lambda2 = eigen.getEigenvalues()[1];
             s = Math.signum(lambda2) * Math.abs(rho);
           }
@@ -158,12 +228,13 @@ public class NciCalculation extends QuantumCalculation implements
     double rho = 0;
     if (isReducedDensity) {
       gxTemp = gyTemp = gzTemp = 0;
+      if (type != TYPE_ALL)
+        for (int i = nMolecules; --i >= 0;)
+          rhoMolecules[i] = 0;
     } else {
       gxxTemp = gyyTemp = gzzTemp = gxyTemp = gyzTemp = gxzTemp = 0;      
     }
-    for (int i = qmAtoms.length; --i >= firstAtomOffset;) {
-      if (qmAtoms[i] == null)
-        continue;
+    for (int i = qmAtoms.length; --i >= 0;) {
       int znuc = qmAtoms[i].znuc;
       double z1 = zeta1[znuc];
       double z2 = zeta2[znuc];
@@ -183,9 +254,12 @@ public class NciCalculation extends QuantumCalculation implements
       EXP3=exp(-R/ZETA3(J))
       RHO=RHO + C1(J)*EXP1 + C2(J)*EXP2 + C3(J)*EXP3
       */
-      rho += ce1 + ce2 + ce3;
+      double rhoAtom = ce1 + ce2 + ce3;
+      rho += rhoAtom;
       double fac1r = (ce1 / z1 + ce2 / z2 + ce3 / z3) / r;
       if (isReducedDensity) {
+        if (type != TYPE_ALL)
+          rhoMolecules[qmAtoms[i].iMolecule] += rhoAtom;
         gxTemp -= fac1r * x;
         gyTemp -= fac1r * y;
         gzTemp -= fac1r * z;
@@ -233,6 +307,30 @@ public class NciCalculation extends QuantumCalculation implements
         gxzTemp += fr2 * x * z;
         gyzTemp += fr2 * y * z;
       }
+    }
+    if (isReducedDensity) {
+      grad = 0;
+      switch(type) {
+      case TYPE_INTRA: // 
+      case TYPE_INTER:
+        boolean isIntra = false;
+        double rhocut2 = rhoParam * rho;
+        for (int i = 0; i < nMolecules; i++)
+          if (rhoMolecules[i] >= rhocut2) {
+            isIntra = true;
+            break;
+          }
+        if ((type == TYPE_INTRA) != isIntra) 
+          grad = -1;
+        break;
+      case TYPE_LIGAND:
+        // ?? 
+        break;
+      default:
+        break;
+      }
+      if (grad == 0)
+        grad = Math.sqrt(gxTemp * gxTemp + gyTemp * gyTemp + gzTemp * gzTemp);
     }
     return rho;
   }

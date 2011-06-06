@@ -276,16 +276,20 @@ class IsoShapeReader extends VolumeDataReader {
     if (Math.abs(phi_m) < 0.0000000001)
       phi_m = 0;
     return rnl * theta_lm * phi_m;
-    
   }
+
+  private boolean monteCarloDone;
   
   private void createMonteCarloOrbital() {
+    if (monteCarloDone)
+      return;
+    monteCarloDone = true;
     float value;
     float f = 0;
     float d = radius * 2;
     if (params.thePlane != null)
       vTemp = new Vector3f();
-    
+
     for (int i = 0; i < 1000; i++) {
       setRandomPoint(d);
       value = (float) Math.abs(hydrogenAtomPsi(ptPsi));
@@ -302,7 +306,7 @@ class IsoShapeReader extends VolumeDataReader {
         continue;
       addVertexCopy(ptPsi, value, 0);
       i++;
-    }    
+    }
   }
 
   private Vector3f vTemp;

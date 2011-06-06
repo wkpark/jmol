@@ -142,6 +142,8 @@ class IsoMOReader extends AtomDataReader {
       super.readSurfaceData(isMapData);
       return;
     }
+    if (points != null)
+      return; // already done
     points = new Point3f[1000];
     for (int j = 0; j < 1000; j++)
       points[j] = new Point3f();
@@ -169,7 +171,6 @@ class IsoMOReader extends AtomDataReader {
         float absValue = Math.abs(value);
         if (absValue <= getRnd(f))
           continue;
-        //System.out.println(j + "\t" + points[j] + "\t" + value + "\t" + x);
         addVertexCopy(points[j], value, 0);
         if (++i == params.psi_monteCarloCount)
           break;
@@ -193,10 +194,6 @@ class IsoMOReader extends AtomDataReader {
   public float getValueAtPoint(Point3f pt) {
     if (q != null)
       q.process(pt);
-    if (pt.x == 0 && voxelData[0][0][0] > 0.036) {
-      System.out.println("draw ID '" + Math.random() + "' " + Escape.escape(pt)  + (voxelData[0][0][0] > 0.036 ? " color red" : " color blue"));
-      q.process(pt);
-    }
     return voxelData[0][0][0];
   }
   

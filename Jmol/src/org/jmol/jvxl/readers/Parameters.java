@@ -647,7 +647,7 @@ public class Parameters {
     isDensity = doMap;
     qm_marginAngstroms = 2f;
     qmOrbitalType = QM_TYPE_NCI;
-    if (cutoff == Float.MAX_VALUE)
+    if (cutoff == Float.MAX_VALUE || cutoff == 0)
       cutoff = 0.3f;
     if (isSquared)
       cutoff *= cutoff;
@@ -781,7 +781,6 @@ public class Parameters {
       float[] minMax = surfaceReader.getMinMaxMappedValues(haveData);
       mappedDataMin = minMax[0];
       mappedDataMax = minMax[1];
-      System.out.println("params minmax " + mappedDataMin + " " + mappedDataMax);
     }
     if (mappedDataMin == 0 && mappedDataMax == 0) {
       //just set default -1/1 if there is no obvious data

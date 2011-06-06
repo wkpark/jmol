@@ -30,7 +30,6 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
 import javax.vecmath.Point3f;
-import javax.vecmath.Tuple3f;
 
 import java.util.List;
 import java.util.BitSet;
@@ -103,8 +102,9 @@ public class NciCalculation extends QuantumCalculation implements
       parameters = null;
     if (parameters != null)
       Logger.info("NCI calculation parameters = " + Escape.escape(parameters));
-    rhoPlot = getParameter(parameters, 1, DEFAULT_RHOPLOT, "rhoPlot");
-    type = (int) getParameter(parameters, 2, 0, "type");
+    // parameters[0] is the cutoff.
+    type = (int) getParameter(parameters, 1, 0, "type");
+    rhoPlot = getParameter(parameters, 2, DEFAULT_RHOPLOT, "rhoPlot");
     rhoParam = getParameter(parameters, 3, DEFAULT_RHOPARAM, "rhoParam");
     String stype;
     switch (type) {

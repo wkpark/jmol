@@ -3842,6 +3842,8 @@ private void zap(String msg) {
                            boolean isExport, boolean isReset) {
     if (!isImageWrite && creatingImage)
       return;
+    if (!isExport && !isImageWrite)
+      setShapeProperty(JmolConstants.SHAPE_LABELS, "clearBoxes", null);
     antialiasDisplay = (isReset ? global.antialiasDisplay : isImageWrite
         && !isExport ? global.antialiasImages : false);
     imageFontScaling = (isReset || width <= 0 ? 1
@@ -7246,6 +7248,7 @@ private void zap(String msg) {
   }
 
   private void setAntialias(int mode, boolean TF) {
+    
     switch (mode) {
     case 0: // display
       global.antialiasDisplay = TF;
@@ -8310,6 +8313,11 @@ private void zap(String msg) {
   }
 
   private boolean creatingImage;
+  
+  public boolean getCreatingImage() {
+    return creatingImage;
+  }
+  
 
   @Override
   public Object createImage(String fileName, String type, Object text_or_bytes,

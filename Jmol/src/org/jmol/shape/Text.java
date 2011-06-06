@@ -180,9 +180,13 @@ public class Text extends Object2d {
   }
 
   void render(JmolRendererInterface g3d, float scalePixelsPerMicron,
-              float imageFontScaling, boolean isExact) {
+              float imageFontScaling, boolean isExact, float[] boxXY) {
     if (text == null)
       return;
+    if (boxXY == null)
+      boxXY = this.boxXY;
+    else
+      this.boxXY = boxXY;
     setWindow(g3d, scalePixelsPerMicron);
     if (scalePixelsPerMicron != 0 && this.scalePixelsPerMicron != 0)
       setFontScale(scalePixelsPerMicron / this.scalePixelsPerMicron);
@@ -331,7 +335,8 @@ public class Text extends Object2d {
     }
     boxXY[0] += xBoxOffset;
     boxXY[1] += yBoxOffset;
-
+    boxXY[2] = boxWidth;
+    boxXY[3] = boxHeight;
   }
   
   private static void showBox(JmolRendererInterface g3d, short colix,

@@ -38,8 +38,6 @@ public class LabelsRenderer extends ShapeRenderer {
   protected int ascent;
   protected int descent;
 
-  private final float[] boxXY = new float[2];
-  
   @Override
   protected void render() {
     fidPrevious = 0;
@@ -58,17 +56,19 @@ public class LabelsRenderer extends ShapeRenderer {
     Atom[] atoms = modelSet.atoms;
     short backgroundColixContrast = viewer.getColixBackgroundContrast();
     int backgroundColor = viewer.getBackgroundArgb();
-    float scalePixelsPerMicron = (viewer.getFontScaling() ? viewer.getScalePixelsPerAngstrom(true) * 10000f : 0);
+    float scalePixelsPerMicron = (viewer.getFontScaling() ? viewer
+        .getScalePixelsPerAngstrom(true) * 10000f : 0);
     float imageFontScaling = viewer.getImageFontScaling();
     int iGroup = -1;
     int minZ = Integer.MAX_VALUE;
+    boolean isAntialiased = g3d.isAntialiased();
     for (int i = labelStrings.length; --i >= 0;) {
       Atom atom = atoms[i];
       if (!atom.isVisible(myVisibilityFlag))
         continue;
       String label = labelStrings[i];
-      if (label == null || label.length() == 0 
-          || labels.mads != null && labels.mads[i] < 0)
+      if (label == null || label.length() == 0 || labels.mads != null
+          && labels.mads[i] < 0)
         continue;
       short colix = (colixes == null || i >= colixes.length) ? 0 : colixes[i];
       colix = Graphics3D.getColixInherited(colix, atom.getColix());
@@ -92,9 +92,9 @@ public class LabelsRenderer extends ShapeRenderer {
       int zSlab = atom.screenZ - atom.screenDiameter / 2 - 3;
       if (zSlab < 1)
         zSlab = 1;
-      int zBox = zSlab;      
+      int zBox = zSlab;
       if (labelsGroup) {
-        Group group = atom.getGroup(); 
+        Group group = atom.getGroup();
         int ig = group.getGroupIndex();
         if (ig != iGroup) {
           minZ = getMinZ(atoms, group);
@@ -108,6 +108,10 @@ public class LabelsRenderer extends ShapeRenderer {
         zBox = 1;
 
       Text text = labels.getLabel(i);
+      float[] boxXY = (exportType == Graphics3D.EXPORT_NOT
+          || viewer.getCreatingImage() ? labels.getBox(i) : new float[5]);
+      if (boxXY == null)
+        labels.putBox(i, boxXY = new float[5]);
       if (text != null) {
         if (text.font == null)
           text.setFid(fid);
@@ -126,29 +130,40 @@ public class LabelsRenderer extends ShapeRenderer {
             descent = fontMetrics.getDescent();
           }
         }
-        boolean isSimple = isLeft && (imageFontScaling == 1 && scalePixelsPerMicron == 0
-            && label.indexOf("|") < 0 && label.indexOf("<su") < 0);
+        boolean isSimple = isLeft
+            && (imageFontScaling == 1 && scalePixelsPerMicron == 0
+                && label.indexOf("|") < 0 && label.indexOf("<su") < 0);
         if (isSimple) {
           boolean doPointer = ((pointer & Object2d.POINTER_ON) != 0);
           short pointerColix = ((pointer & Object2d.POINTER_BACKGROUND) != 0
               && bgcolix != 0 ? bgcolix : colix);
           boxXY[0] = atom.screenX;
           boxXY[1] = atom.screenY;
-          Text.renderSimpleLabel(g3d, font3d, label, colix, bgcolix, boxXY, 
-              zBox, zSlab, Object2d.getXOffset(offset), Object2d.getYOffset(offset), 
-              ascent, descent, doPointer, pointerColix, isExact);
-          continue;
+          Text.renderSimpleLabel(g3d, font3d, label, colix, bgcolix, boxXY,
+              zBox, zSlab, Object2d.getXOffset(offset), Object2d
+                  .getYOffset(offset), ascent, descent, doPointer,
+              pointerColix, isExact);
+          atom = null;
+        } else {
+          text = new Text(g3d, font3d, label, colix, bgcolix, atom.screenX,
+              atom.screenY, zBox, zSlab, textAlign, 0);
+          labels.putLabel(i, text);
         }
-        text = new Text(g3d, font3d, label, colix, bgcolix, atom.screenX,
-            atom.screenY, zBox, zSlab, textAlign, 0);
-        labels.putLabel(i, text);
       }
-      text.setOffset(offset);
-      if (textAlign != Object2d.ALIGN_NONE)
-        text.setAlignment(textAlign);
-      text.setPointer(pointer); 
-      text.render(g3d, scalePixelsPerMicron, imageFontScaling, isExact);
+      if (atom != null) {
+        text.setOffset(offset);
+        if (textAlign != Object2d.ALIGN_NONE)
+          text.setAlignment(textAlign);
+        text.setPointer(pointer);
+        text.render(g3d, scalePixelsPerMicron, imageFontScaling, isExact, boxXY);
+      }
+      if (isAntialiased) {
+        boxXY[0] /= 2;
+        boxXY[1] /= 2;
+      }
+      boxXY[4] = zBox;
     }
+
   }
 
   private int getMinZ(Atom[] atoms, Group group) {

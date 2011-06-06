@@ -48,6 +48,8 @@ public class Labels extends AtomShape {
   private Map<Integer, Text> atomLabels = new Hashtable<Integer, Text>();
   private Text text;
 
+  private Map<Integer, float[]> labelBoxes;
+
   private BitSet bsFontSet, bsBgColixSet;
 
   private int defaultOffset;
@@ -126,10 +128,20 @@ public class Labels extends AtomShape {
     }
 
     if ("label" == propertyName) {
-      setLabel((String) value, bsSelected);
+      setScaling();
+      String strLabel = (String) value;
+      LabelToken[][] tokens = (strLabel == null || strLabel.length() == 0 ? nullToken : new LabelToken[][] { null });
+      for (int i = atomCount; --i >= 0;)
+        if (bsSelected.get(i)) 
+          setLabel(tokens, strLabel, i);
       return;
     }
 
+    if ("clearBoxes" == propertyName) {
+      labelBoxes = null;
+      return;
+    }
+    
     if ("translucency" == propertyName || "bgtranslucency" == propertyName) {
       // no translucency
       return;
@@ -293,11 +305,13 @@ public class Labels extends AtomShape {
     }
 
     if (propertyName.startsWith("label:")) {
+      setScaling();
       setLabel(new LabelToken[1][], propertyName.substring(6), ((Integer)value).intValue());
       return;
     }
 
     if (propertyName == "deleteModelAtoms") {
+      labelBoxes = null;
       int firstAtomDeleted = ((int[]) ((Object[]) value)[2])[1];
       int nAtomsDeleted = ((int[]) ((Object[]) value)[2])[2];
       fids = (byte[]) ArrayUtil.deleteElements(fids, firstAtomDeleted,
@@ -319,70 +333,60 @@ public class Labels extends AtomShape {
 
   }
 
-  private void setLabel(String value, BitSet bsSelected) {
+  private final static LabelToken[][] nullToken = new LabelToken[][] { null };
+  private boolean isScaled;
+  private float scalePixelsPerMicron;
+  
+  private void setScaling() {
     isActive = true;
     if (bsSizeSet == null)
       bsSizeSet = new BitSet();
-    String strLabel = value;
-    boolean isScaled = viewer.getFontScaling();
-    float scalePixelsPerMicron = (isScaled ? viewer
+    isScaled = viewer.getFontScaling();
+    scalePixelsPerMicron = (isScaled ? viewer
         .getScalePixelsPerAngstrom(false) * 10000f : 0);
-    LabelToken[][] temp = new LabelToken[][] { null };
-    for (int i = atomCount; --i >= 0;)
-      if (bsSelected.get(i)) 
-        setLabel(temp, strLabel, i, isScaled, scalePixelsPerMicron);
-  }
-
-  private void setLabel(LabelToken[][] temp, String value, int i) {
-    isActive = true;
-    if (bsSizeSet == null)
-      bsSizeSet = new BitSet();
-    String strLabel = value;
-    boolean isScaled = viewer.getFontScaling();
-    float scalePixelsPerMicron = (isScaled ? viewer
-        .getScalePixelsPerAngstrom(false) * 10000f : 0);
-    setLabel(temp, strLabel, i, isScaled, scalePixelsPerMicron);
   }
   
-  private void setLabel(LabelToken[][] temp, String strLabel, int i, boolean isScaled, float scalePixelsPerMicron) {
-      Atom atom = atoms[i];
-      LabelToken[] tokens = temp[0];
-      if (tokens == null)
-        tokens = temp[0] = LabelToken.compile(viewer, strLabel, '\0', null);
-      String label = (tokens == null ? null : LabelToken.formatLabel(viewer, atom, tokens, '\0', null));
-      atom.setShapeVisibility(myVisibilityFlag, label != null);
-      if (strings == null || i >= strings.length)
-        strings = ArrayUtil.ensureLength(strings, i + 1);
-      if (formats == null || i >= formats.length)
-        formats = ArrayUtil.ensureLength(formats, i + 1);
-      strings[i] = label;
-      formats[i] = (strLabel != null && strLabel.indexOf("%{") >= 0 ? label : strLabel);
-      bsSizeSet.set(i, (strLabel != null));
-      text = getLabel(i);
-      if (isScaled) {
-        text = new Text(g3d, null, label, (short) 0, (short) 0, 0, 0, 0, 0,
-            0, scalePixelsPerMicron);
-        putLabel(i, text);
-      } else if (text != null) {
-        text.setText(label);
-      }
-      if (defaultOffset != zeroOffset)
-        setOffsets(i, defaultOffset, false);
-      if (defaultAlignment != Object2d.ALIGN_LEFT)
-        setAlignment(i, defaultAlignment);
-      if ((defaultZPos & FRONT_FLAG) != 0)
-        setFront(i, true);
-      else if ((defaultZPos & GROUP_FLAG) != 0)
-        setGroup(i, true);
-      if (defaultPointer != Object2d.POINTER_NONE)
-        setPointer(i, defaultPointer);
-      if (defaultColix != 0 || defaultPaletteID != 0)
-        setColix(i, defaultColix, defaultPaletteID);
-      if (defaultBgcolix != 0)
-        setBgcolix(i, defaultBgcolix);
-      if (defaultFontId != zeroFontId)
-        setFont(i, defaultFontId);
- }
+  private void setLabel(LabelToken[][] temp, String strLabel, int i) {
+    Atom atom = atoms[i];
+    LabelToken[] tokens = temp[0];
+    if (tokens == null)
+      tokens = temp[0] = LabelToken.compile(viewer, strLabel, '\0', null);
+    String label = (tokens == null ? null : LabelToken.formatLabel(viewer,
+        atom, tokens, '\0', null));
+    atom.setShapeVisibility(myVisibilityFlag, label != null);
+    if (strings == null || i >= strings.length)
+      strings = ArrayUtil.ensureLength(strings, i + 1);
+    if (formats == null || i >= formats.length)
+      formats = ArrayUtil.ensureLength(formats, i + 1);
+    strings[i] = label;
+    formats[i] = (strLabel != null && strLabel.indexOf("%{") >= 0 ? label
+        : strLabel);
+    bsSizeSet.set(i, (strLabel != null));
+    text = getLabel(i);
+    if (isScaled) {
+      text = new Text(g3d, null, label, (short) 0, (short) 0, 0, 0, 0, 0, 0,
+          scalePixelsPerMicron);
+      putLabel(i, text);
+    } else if (text != null) {
+      text.setText(label);
+    }
+    if (defaultOffset != zeroOffset)
+      setOffsets(i, defaultOffset, false);
+    if (defaultAlignment != Object2d.ALIGN_LEFT)
+      setAlignment(i, defaultAlignment);
+    if ((defaultZPos & FRONT_FLAG) != 0)
+      setFront(i, true);
+    else if ((defaultZPos & GROUP_FLAG) != 0)
+      setGroup(i, true);
+    if (defaultPointer != Object2d.POINTER_NONE)
+      setPointer(i, defaultPointer);
+    if (defaultColix != 0 || defaultPaletteID != 0)
+      setColix(i, defaultColix, defaultPaletteID);
+    if (defaultBgcolix != 0)
+      setBgcolix(i, defaultBgcolix);
+    if (defaultFontId != zeroFontId)
+      setFont(i, defaultFontId);
+  }
 
   @Override
   public Object getProperty(String property, int index) {
@@ -407,6 +411,18 @@ public class Labels extends AtomShape {
     return atomLabels.get(Integer.valueOf(i));
   }
 
+  void putBox(int i, float[] boxXY) {
+    if (labelBoxes == null)
+      labelBoxes = new Hashtable<Integer, float[]>(); 
+    labelBoxes.put(Integer.valueOf(i), boxXY);
+  }
+
+  float[] getBox(int i) {
+    if (labelBoxes == null)
+      return null;
+    return labelBoxes.get(Integer.valueOf(i));
+  }
+  
   private void setColix(int i, short colix, byte pid) {
     setColixAndPalette(colix, pid, i);
     // text is only created by labelsRenderer
@@ -605,19 +621,24 @@ public class Labels extends AtomShape {
         + getShapeCommands(null, temp3);
   }
 
-  int pickedAtom = -1;
-  int pickedOffset = 0;
+  private int pickedAtom = -1;
+  private int pickedOffset = 0;
+  private int pickedX;
+  private int pickedY;
+  
   @Override
   public synchronized boolean checkObjectDragged(int prevX, int prevY, int x,
                                                  int y, int modifiers,
                                                  BitSet bsVisible) {
-    if (viewer.getPickingMode() != ActionManager.PICKING_LABEL)
+    if (viewer.getPickingMode() != ActionManager.PICKING_LABEL || labelBoxes == null)
       return false;
     // mouse down ?
     if (prevX == Integer.MIN_VALUE) {
-      int iAtom = viewer.findNearestAtomIndex(x, y);
-      if (iAtom >= 0 && atoms[iAtom].isVisible(myVisibilityFlag)) {
+      int iAtom = findNearestLabel(x, y);
+      if (iAtom >= 0) {
         pickedAtom = iAtom;
+        pickedX = x;
+        pickedY = y;
         pickedOffset = (offsets == null 
             || pickedAtom >= offsets.length ? 0 
                 : offsets[pickedAtom]) >> FLAG_OFFSET;
@@ -636,16 +657,35 @@ public class Labels extends AtomShape {
     return true;
   }
                          
-  private void move2D(int pickedAtom, int x, int y) {
-    if (g3d.isAntialiased()) {
-      x <<= 1;
-      y <<= 1;
+  private int findNearestLabel(int x, int y) {
+    if (labelBoxes == null)
+      return -1;
+    float dmin = Float.MAX_VALUE;
+    int imin = -1;
+    float zmin = Float.MAX_VALUE;
+    for (Map.Entry<Integer, float[]> entry : labelBoxes.entrySet()) {
+      if (!atoms[entry.getKey().intValue()].isVisible(myVisibilityFlag))
+        continue;
+      float[] boxXY = entry.getValue();
+      float dx = x - boxXY[0];
+      float dy = y - boxXY[1];
+      if (dx <= 0 || dy <= 0 || dx >= boxXY[2] || dy >= boxXY[3] || boxXY[4] > zmin)
+        continue;
+      zmin = boxXY[4];
+      float d = Math.min(Math.abs(dx - boxXY[2]/2), Math.abs(dy - boxXY[3]/2));
+      if (d <= dmin) {
+        dmin = d;
+        imin = entry.getKey().intValue();
+      }
     }
-    Atom atom = atoms[pickedAtom];
+    return imin;
+  }
+
+  private void move2D(int pickedAtom, int x, int y) {
     int xOffset = Object2d.getXOffset(pickedOffset);
     int yOffset = -Object2d.getYOffset(pickedOffset);
-    xOffset += x - atom.screenX;
-    yOffset += atom.screenY - y;
+    xOffset += x - pickedX;
+    yOffset += pickedY - y;
     int offset = Object2d.getOffset(xOffset, yOffset);
     if (offset == 0)
       offset = Short.MAX_VALUE;

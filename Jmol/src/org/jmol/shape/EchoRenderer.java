@@ -55,7 +55,7 @@ public class EchoRenderer extends ShapeRenderer {
         int z = viewer.zValueFromPercent(t.movableZPercent);
         t.setZs(z, z);
       }
-      t.render(g3d, scalePixelsPerMicron, imageFontScaling, false);
+      t.render(g3d, scalePixelsPerMicron, imageFontScaling, false, null);
     }
     String frameTitle = viewer.getFrameTitle();
     if (frameTitle != null && frameTitle.length() > 0) {

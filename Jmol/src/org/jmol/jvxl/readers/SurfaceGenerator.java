@@ -464,7 +464,7 @@ public class SurfaceGenerator {
 
     if ("parameters" == propertyName) {
       params.parameters = (float[]) value;
-      if (params.parameters.length > 1 && params.parameters[0] != 0)
+      if (params.parameters.length > 0 && params.parameters[0] != 0)
         params.cutoff = params.parameters[0];
       return true;
     }

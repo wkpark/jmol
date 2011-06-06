@@ -68,6 +68,8 @@ public class NciCalculation extends QuantumCalculation implements
   
   private boolean havePoints;
   private boolean isReducedDensity;
+  private float DEFAULT_RHOPLOT = 0.07f;
+  private double rhoPlot;
   
   public NciCalculation() {
   }
@@ -79,8 +81,9 @@ public class NciCalculation extends QuantumCalculation implements
                         float[][] gaussians, int[][] dfCoefMaps,
                         Object slaters,
                         float[] moCoefficients, float[] linearCombination, float[][] coefs,
-                        float[] nuclearCharges, boolean isDensity, Point3f[] points) {
+                        float[] nuclearCharges, boolean isDensity, Point3f[] points, float[] parameters) {
     havePoints = (points != null);
+    rhoPlot = (parameters == null ? DEFAULT_RHOPLOT : parameters[parameters.length - 1]);
     isReducedDensity = isDensity;
     this.firstAtomOffset = firstAtomOffset;
     int[] countsXYZ = volumeData.getVoxelCounts();
@@ -96,7 +99,7 @@ public class NciCalculation extends QuantumCalculation implements
     }
     setupCoordinates(volumeData.getOriginFloat(), 
         volumeData.getVolumetricVectorLengths(), 
-        bsSelected, atomCoordAngstroms, points);
+        bsSelected, atomCoordAngstroms, points, false);
     
     doDebug = (Logger.debugging);
     return true;
@@ -114,7 +117,7 @@ public class NciCalculation extends QuantumCalculation implements
   
   @Override
   protected void process() {
-    for (int i = qmAtoms.length; --i >= firstAtomOffset;) {
+    for (int i = qmAtoms.length; --i >= 0;) {
       if (qmAtoms[i] == null)
         continue;
       // must ignore heavier elements
@@ -131,7 +134,7 @@ public class NciCalculation extends QuantumCalculation implements
           double s;
           if (isReducedDensity) {
             double grad = Math.sqrt(gxTemp * gxTemp + gyTemp * gyTemp + gzTemp * gzTemp);
-            s = c * grad * Math.pow(rho, rpower);
+            s = (rho > rhoPlot ? 100 : c * grad * Math.pow(rho, rpower));
           } else{
             // do Hessian only for specified points
             //GET LAMBDA

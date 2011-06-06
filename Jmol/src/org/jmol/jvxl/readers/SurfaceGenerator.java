@@ -462,6 +462,13 @@ public class SurfaceGenerator {
       return true;
     }
 
+    if ("parameters" == propertyName) {
+      params.parameters = (float[]) value;
+      if (params.parameters.length > 1)
+        params.cutoff = params.parameters[0];
+      return true;
+    }
+    
     if ("cutoffPositive" == propertyName) {
       params.cutoff = ((Float) value).floatValue();
       params.isPositiveOnly = true;

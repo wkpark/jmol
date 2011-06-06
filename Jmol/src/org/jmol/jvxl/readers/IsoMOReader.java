@@ -31,7 +31,6 @@ import java.util.List;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.TextFormat;
@@ -252,23 +251,22 @@ class IsoMOReader extends AtomDataReader {
   private boolean setupCalculation() {
     switch (params.qmOrbitalType) {
     case Parameters.QM_TYPE_GAUSSIAN:
-      return q.setupCalculation(
-          volumeData, bsMySelected, (String) moData.get("calculationType"),
-          atomData.atomXyz, atomData.firstAtomIndex,
-          (List<int[]>) moData.get("shells"), (float[][]) moData.get("gaussians"),
-          dfCoefMaps, null, coef, linearCombination, coefs,
-          nuclearCharges, moData.get("isNormalized") == null, points);
+      return q.setupCalculation(volumeData, bsMySelected, (String) moData
+          .get("calculationType"), atomData.atomXyz, atomData.firstAtomIndex,
+          (List<int[]>) moData.get("shells"), (float[][]) moData
+              .get("gaussians"), dfCoefMaps, null, coef, linearCombination,
+          coefs, nuclearCharges, moData.get("isNormalized") == null, points,
+          params.parameters);
     case Parameters.QM_TYPE_SLATER:
-      return q.setupCalculation(
-          volumeData, bsMySelected, (String) moData.get("calculationType"),
-          atomData.atomXyz, atomData.firstAtomIndex,
-          null, null, null, moData.get("slaters"), coef, 
-          linearCombination, coefs, nuclearCharges, true, points);
+      return q.setupCalculation(volumeData, bsMySelected, (String) moData
+          .get("calculationType"), atomData.atomXyz, atomData.firstAtomIndex,
+          null, null, null, moData.get("slaters"), coef, linearCombination,
+          coefs, nuclearCharges, true, points, params.parameters);
     case Parameters.QM_TYPE_NCI:
-      return q.setupCalculation(
-          volumeData, bsMySelected, null,
-          atomData.atomXyz, atomData.firstAtomIndex,
-          null, null, null, null, null, null, null, nuclearCharges, params.isDensity, points);
+      return q.setupCalculation(volumeData, bsMySelected, null,
+          atomData.atomXyz, atomData.firstAtomIndex, null, null, null, null,
+          null, null, null, nuclearCharges, params.isDensity, points,
+          params.parameters);
     }
     return false;
   }

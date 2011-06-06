@@ -17,7 +17,7 @@ public interface MOCalculationInterface {
                                  Object slaters,
                                  float[] moCoefficients, 
                                  float[] linearCombination, float[][] coefs,
-                                 float[] nuclearCharges, boolean doNormalize, Point3f[] points);
+                                 float[] nuclearCharges, boolean doNormalize, Point3f[] points, float[] parameters);
   
   public abstract void createCube();
   public abstract void process(Point3f pt);

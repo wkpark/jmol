@@ -1172,6 +1172,7 @@ public class Token {
   final static int out            = misc  | 255;// new
   final static int packed         = misc  | 256;// new
   final static int palindrome     = misc  | 258;// new
+  final static int parameters     = misc  | 259;// new
   final static int path           = misc  | 260;// new
   final static int pdb            = misc  | 262 | expression;// new
   final static int pdbheader      = misc  | 264;
@@ -2004,6 +2005,7 @@ public class Token {
       "atomicOrbital",   new Token(atomicorbital),
       "packed",          new Token(packed),
       "palindrome",      new Token(palindrome),
+      "parameters",      new Token(parameters),
       "path",            new Token(path),
       "pdb",             new Token(pdb),
       "period",          new Token(period),

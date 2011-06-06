@@ -15668,6 +15668,14 @@ public class ScriptEvaluator {
               bs == null ? Escape.escape(ptc) : Escape.escape(bs));
         }
         continue;
+      case Token.parameters:
+        propertyName = "parameters";
+        // if > 1 parameter, then first is assumed to be the cutoff. 
+        float[] fparams = floatParameterSet(++i, 1, 10);
+        i = iToken;
+        propertyValue = fparams;
+        sbCommand.append(" parameters ").append(Escape.escape(fparams));
+        break;
       case Token.property:
       case Token.variable:
         onlyOneModel = theToken.value;

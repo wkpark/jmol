@@ -140,7 +140,7 @@ public class MOCalculation extends QuantumCalculation implements
                         float[][] gaussians, int[][] dfCoefMaps,
                         Object slaters,
                         float[] moCoefficients, float[] linearCombination, float[][] coefs,
-                        float[] nuclearCharges, boolean doNormalize, Point3f[] points) {
+                        float[] nuclearCharges, boolean doNormalize, Point3f[] points, float[] parameters) {
     havePoints = (points != null);
     this.calculationType = calculationType;
     this.firstAtomOffset = firstAtomOffset;
@@ -162,7 +162,7 @@ public class MOCalculation extends QuantumCalculation implements
     voxelDataTemp = (isElectronDensity ? new float[nX][nY][nZ] : voxelData);
     setupCoordinates(volumeData.getOriginFloat(), 
         volumeData.getVolumetricVectorLengths(), 
-        bsSelected, atomCoordAngstroms, points);
+        bsSelected, atomCoordAngstroms, points, false);
     doDebug = (Logger.debugging);
     return (slaters != null || checkCalculationType());
   }  

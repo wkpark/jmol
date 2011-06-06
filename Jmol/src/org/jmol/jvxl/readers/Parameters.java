@@ -752,6 +752,7 @@ public class Parameters {
   int nContours;
   int thisContour; 
   boolean contourFromZero;
+  float[] parameters; // additional parameters
  
   float resolution;
   int downsampleFactor;

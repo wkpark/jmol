@@ -95,16 +95,23 @@ abstract class QuantumCalculation {
 
   protected void setupCoordinates(float[] originXYZ, float[] stepsXYZ,
                                   BitSet bsSelected,
-                                  Point3f[] atomCoordAngstroms, Point3f[] points) {
+                                  Point3f[] atomCoordAngstroms,
+                                  Point3f[] points, boolean renumber) {
 
     // all coordinates come in as angstroms, not bohr, and are converted here into bohr
 
-    if (points == null)
+    if (points == null) {
       for (int i = 3; --i >= 0;) {
         originBohr[i] = originXYZ[i] * unitFactor;
         stepBohr[i] = stepsXYZ[i] * unitFactor;
         volume *= stepBohr[i];
       }
+      if (doDebug)
+        Logger.debug("QuantumCalculation:\n origin(Bohr)= " + originBohr[0]
+            + " " + originBohr[1] + " " + originBohr[2] + "\n steps(Bohr)= "
+            + stepBohr[0] + " " + stepBohr[1] + " " + stepBohr[2]
+            + "\n counts= " + nX + " " + nY + " " + nZ);
+    }
 
     /* 
      * allowing null atoms allows for selectively removing
@@ -112,16 +119,14 @@ abstract class QuantumCalculation {
      * 
      */
 
-    qmAtoms = new QMAtom[atomCoordAngstroms.length];
+    qmAtoms = new QMAtom[renumber ? bsSelected.cardinality()
+        : atomCoordAngstroms.length];
     boolean isAll = (bsSelected == null);
     int i0 = (isAll ? qmAtoms.length - 1 : bsSelected.nextSetBit(0));
-    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsSelected.nextSetBit(i + 1)))
-      qmAtoms[i] = new QMAtom((Atom) atomCoordAngstroms[i], X, Y, Z, X2, Y2, Z2);
-    if (doDebug)
-      Logger.debug("QuantumCalculation:\n origin(Bohr)= " + originBohr[0] + " "
-          + originBohr[1] + " " + originBohr[2] + "\n steps(Bohr)= "
-          + stepBohr[0] + " " + stepBohr[1] + " " + stepBohr[2] + "\n counts= "
-          + nX + " " + nY + " " + nZ);
+    for (int i = i0, j = 0; i >= 0; i = (isAll ? i - 1 : bsSelected
+        .nextSetBit(i + 1)))
+      qmAtoms[renumber ? j++ : i] = new QMAtom((Atom) atomCoordAngstroms[i], X,
+          Y, Z, X2, Y2, Z2);
   }
 
   protected void setXYZBohr() {

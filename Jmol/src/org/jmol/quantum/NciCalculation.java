@@ -69,7 +69,8 @@ public class NciCalculation extends QuantumCalculation implements
   
   private boolean havePoints;
   private boolean isReducedDensity;
-  private double DEFAULT_RHOPLOT = 0.07;
+  private double DEFAULT_RHOPLOT_SCF = 0.05;
+  private double DEFAULT_RHOPLOT_PRO = 0.07;
   private double DEFAULT_RHOPARAM = 0.95;
   private double rhoPlot;  // only rho <= this number plotted
   private double rhoParam; // fractional rho cutoff defining intramolecular 
@@ -96,6 +97,7 @@ public class NciCalculation extends QuantumCalculation implements
                                   float[] linearCombination, float[][] coefs,
                                   float[] nuclearCharges, boolean isDensity,
                                   Point3f[] points, float[] parameters) {
+    boolean isPromolecular = (atomCoordAngstroms != null);    
     havePoints = (points != null);
     isReducedDensity = isDensity;
     if (!isReducedDensity)
@@ -104,7 +106,7 @@ public class NciCalculation extends QuantumCalculation implements
       Logger.info("NCI calculation parameters = " + Escape.escape(parameters));
     // parameters[0] is the cutoff.
     type = (int) getParameter(parameters, 1, 0, "type");
-    rhoPlot = getParameter(parameters, 2, DEFAULT_RHOPLOT, "rhoPlot");
+    rhoPlot = getParameter(parameters, 2, (isPromolecular ? DEFAULT_RHOPLOT_PRO : DEFAULT_RHOPLOT_SCF), "rhoPlot");
     rhoParam = getParameter(parameters, 3, DEFAULT_RHOPARAM, "rhoParam");
     String stype;
     switch (type) {
@@ -122,7 +124,9 @@ public class NciCalculation extends QuantumCalculation implements
       stype = "ligand";
       break;
     }
-    Logger.info("NCI calculation type = " + stype);
+    
+    Logger.info("NCI calculation type = " + (isPromolecular ? "promolecular " : "SCF(CUBE) ") + stype);
+    
     this.firstAtomOffset = firstAtomOffset;
     int[] countsXYZ = volumeData.getVoxelCounts();
     initialize(countsXYZ[0], countsXYZ[1], countsXYZ[2], points);
@@ -131,48 +135,50 @@ public class NciCalculation extends QuantumCalculation implements
       xMin = yMin = zMin = 0;
       xMax = yMax = zMax = points.length;
     }
-    if (!isReducedDensity) {
-      eigen = new Eigen(3);
-      hess = new double[3][3];
-    }
+
     setupCoordinates(volumeData.getOriginFloat(), volumeData
         .getVolumetricVectorLengths(), bsSelected, atomCoordAngstroms, points,
         true);
-    nMolecules = 0;
-    int firstMolecule = Integer.MAX_VALUE;
-    for (int i = qmAtoms.length; --i >= 0;) {
-      // must ignore heavier elements
-      if (qmAtoms[i].znuc < 1) {
-        qmAtoms[i] = null;
-      } else if (qmAtoms[i].znuc > 18) {
-        qmAtoms[i].znuc = 18; // just max it out at argon?
-        Logger.info("NCI calculation just setting nuclear charge for "
-            + qmAtoms[i].atom + " to 18 (argon)");
-      }
-      if (type != TYPE_ALL) {
-        int iMolecule = qmAtoms[i].iMolecule = qmAtoms[i].atom
-            .getMoleculeNumber();
-        nMolecules = Math.max(nMolecules, iMolecule);
-        firstMolecule = Math.min(firstMolecule, iMolecule);
-      }
-    }
-    if (nMolecules == 0)
-      nMolecules = 1;
-    else 
-      nMolecules = nMolecules - firstMolecule + 1;
-    if (type != TYPE_ALL) {
-      bsMolecules = new BitSet[nMolecules];
+    
+    if (isPromolecular) {
+      nMolecules = 0;
+      int firstMolecule = Integer.MAX_VALUE;
       for (int i = qmAtoms.length; --i >= 0;) {
-        int j = qmAtoms[i].iMolecule = qmAtoms[i].iMolecule - firstMolecule;
-        if (bsMolecules[j] == null)
-          bsMolecules[j] = new BitSet();
-        bsMolecules[j].set(i);
+        // must ignore heavier elements
+        if (qmAtoms[i].znuc < 1) {
+          qmAtoms[i] = null;
+        } else if (qmAtoms[i].znuc > 18) {
+          qmAtoms[i].znuc = 18; // just max it out at argon?
+          Logger.info("NCI calculation just setting nuclear charge for "
+              + qmAtoms[i].atom + " to 18 (argon)");
+        }
+        if (type != TYPE_ALL) {
+          int iMolecule = qmAtoms[i].iMolecule = qmAtoms[i].atom
+              .getMoleculeNumber();
+          nMolecules = Math.max(nMolecules, iMolecule);
+          firstMolecule = Math.min(firstMolecule, iMolecule);
+        }
       }
-      for (int i = 0; i < nMolecules; i++)
-        if (bsMolecules[i] != null)
-          Logger.info("Molecule " + (i+1) + ": " + bsMolecules[i]);
-      rhoMolecules = new double[nMolecules];
+      if (nMolecules == 0)
+        nMolecules = 1;
+      else
+        nMolecules = nMolecules - firstMolecule + 1;
+      if (type != TYPE_ALL) {
+        bsMolecules = new BitSet[nMolecules];
+        for (int i = qmAtoms.length; --i >= 0;) {
+          int j = qmAtoms[i].iMolecule = qmAtoms[i].iMolecule - firstMolecule;
+          if (bsMolecules[j] == null)
+            bsMolecules[j] = new BitSet();
+          bsMolecules[j].set(i);
+        }
+        for (int i = 0; i < nMolecules; i++)
+          if (bsMolecules[i] != null)
+            Logger.info("Molecule " + (i + 1) + ": " + bsMolecules[i]);
+        rhoMolecules = new double[nMolecules];
+      }
     }
+    if (!isReducedDensity)
+      initializeEigen();
     doDebug = (Logger.debugging);
     return true;
   }  
@@ -189,7 +195,21 @@ public class NciCalculation extends QuantumCalculation implements
     setXYZBohr();
     process();
   }  
-  
+
+  @Override
+  protected void initializeOnePoint() {
+    // called by surface mapper because
+    // we have set "hasColorData" in reader
+    initializeEigen();
+    super.initializeOnePoint();
+  }
+
+  private void initializeEigen() {
+    isReducedDensity = false;
+    eigen = new Eigen(3);
+    hess = new double[3][3];
+  }
+
   private static double c = (1 / (2 * Math.pow(3 * Math.PI * Math.PI, 1/3d)));
   private static double rpower = -4/3d;
   private double[][] hess;
@@ -200,30 +220,32 @@ public class NciCalculation extends QuantumCalculation implements
     for (int ix = xMax; --ix >= xMin;) {
       for (int iy = yMax; --iy >= yMin;) {
         vd = voxelData[ix][(havePoints ? 0 : iy)];
-        for (int iz = zMax; --iz >= zMin;) {
-          double rho = process(ix, iy, iz);
-          double s;
-          if (isReducedDensity) {
-            s = (rho > rhoPlot || grad < 0 ? 100 : c * grad * Math.pow(rho, rpower));
-          } else {
-            // do Hessian only for specified points
-            //GET LAMBDA
-            hess[0][0] = gxxTemp;
-            hess[1][0] = hess[0][1] = gxyTemp;
-            hess[2][0] = hess[0][2] = gxzTemp;
-            hess[1][1] = gyyTemp;
-            hess[1][2] = hess[2][1] = gyzTemp;
-            hess[2][2] = gzzTemp;
-            eigen.calc(hess);
-            double lambda2 = eigen.getEigenvalues()[1];
-            s = Math.signum(lambda2) * Math.abs(rho);
-          }
-          vd[(havePoints ? 0 : iz)] = (float) s;
-        }
+        for (int iz = zMax; --iz >= zMin;)
+          vd[(havePoints ? 0 : iz)] = getValue(process(ix, iy, iz), isReducedDensity);
       }
     }
   }
   
+  private float getValue(double rho, boolean isReducedDensity) {
+    double s;
+    if (isReducedDensity) {
+      s = (rho > rhoPlot || grad < 0 ? 100 : c * grad * Math.pow(rho, rpower));
+    } else {
+      // do Hessian only for specified points
+      //GET LAMBDA
+      hess[0][0] = gxxTemp;
+      hess[1][0] = hess[0][1] = gxyTemp;
+      hess[2][0] = hess[0][2] = gxzTemp;
+      hess[1][1] = gyyTemp;
+      hess[1][2] = hess[2][1] = gyzTemp;
+      hess[2][2] = gzzTemp;
+      eigen.calc(hess);
+      double lambda2 = eigen.getEigenvalues()[1];
+      s = Math.signum(lambda2) * Math.abs(rho);
+    }
+    return (float) s;
+  }
+
   private double process(int ix, int iy, int iz) {
     double rho = 0;
     if (isReducedDensity) {
@@ -335,6 +357,88 @@ public class NciCalculation extends QuantumCalculation implements
     return rho;
   }
 
+  private float[][] yzPlanesRaw;
+  private int yzCount;
+      
+  public void setPlanes(float[][] planes) {
+    yzPlanesRaw = planes;
+    yzCount = nY * nZ;
+  }
+  
+  private float[][] yzPlanesRho = new float[2][];
+
+  public void calcPlane(float[] plane) {
+    yzPlanesRho[0] = yzPlanesRho[1];
+    yzPlanesRho[1] = plane;
+    // reduced density only; coloring is done point by point
+    // we either process planes 0, 1, and 2, or (more usually) 1, 2, and 3
+    int i0 = (yzPlanesRho[0] == null ? 0 : 1);
+    float[] p0 = yzPlanesRaw[i0++];
+    float[] p1 = yzPlanesRaw[i0++];
+    float[] p2 = yzPlanesRaw[i0++];
+    for (int y = 0, i = 0; y < nY; y++)
+      for (int z = 0; z < nZ; z++, i++) {
+        double rho = p1[i];
+        if (y == 0 || y == nY - 1 || z == 0 || z == nZ - 1) {
+          plane[i] = 100;
+        } else {
+          /*
+          System.out.println("\n----- " + i + " y=" + y + " z=" + z + "\n" + p0[i+nZ+1] + "\t" + p1[i + nZ + 1]+ "\t" + p2[i + nZ + 1]);
+          System.out.println(p0[i+1] + "\t" + p1[i + 1]+ "\t" + p2[i + 1]);
+          System.out.println(p0[i-nZ+1] + "\t" + p1[i -nZ + 1]+ "\t" + p2[i -nZ + 1]);
+
+          System.out.println("\n" + p0[i+nZ] + "\t" + p1[i + nZ]+ "\t" + p2[i + nZ]);
+          System.out.println(p0[i] + "\t" + p1[i]+ "\t" + p2[i]);
+          System.out.println(p0[i-nZ] + "\t" + p1[i -nZ]+ "\t" + p2[i-nZ]);
+
+          
+          System.out.println("\n" + p0[i+nZ-1] + "\t" + p1[i + nZ - 1]+ "\t" + p2[i + nZ - 1]);
+          System.out.println(p0[i-1] + "\t" + p1[i - 1]+ "\t" + p2[i - 1]);
+          System.out.println(p0[i-nZ-1] + "\t" + p1[i -nZ - 1]+ "\t" + p2[i -nZ - 1]);
+*/
+          
+          gxTemp = (p2[i] - p0[i]) / (2 * stepBohr[0]);
+          gyTemp = (p1[i + nZ] - p1[i - nZ]) / (2 * stepBohr[1]);
+          gzTemp = (p1[i + 1] - p1[i - 1]) / (2 * stepBohr[2]);
+          grad = Math.sqrt(gxTemp * gxTemp + gyTemp * gyTemp + gzTemp * gzTemp);
+          plane[i] = getValue(rho, true);
+        }
+      }
+  }
+
+  public float process(int vA, int vB, float f) {
+    // first we need to know what planes we are working with.
+    double valueA = getPlaneValue(vA);
+    double valueB = getPlaneValue(vB);
+    return (float) (valueA + f * (valueB - valueA));
+  }
+
+  private double getPlaneValue(int vA) {
+    int i = (vA % yzCount);
+    int x = vA / yzCount;
+    int y = i / nZ;
+    int z = i % nZ;
+    if (x == 0 || x == nX - 1
+        || y == 0 || y == nY - 1
+        || z == 0 || z == nZ - 1)
+      return Double.NaN;
+    int iPlane = (vA / yzCount) % 2;
+    float[] p0 = yzPlanesRaw[iPlane++];
+    float[] p1 = yzPlanesRaw[iPlane++];
+    float[] p2 = yzPlanesRaw[iPlane++];
+    float dx = stepBohr[0];
+    float dy = stepBohr[1];
+    float dz = stepBohr[2];
+    double rho = p1[i];
+    gxxTemp = (p2[i] - 2 * rho + p0[i]) / (dx * dx);
+    gyyTemp = (p1[i + nZ] - 2 * rho + p1[i - nZ]) / (dy * dy);
+    gzzTemp = (p1[i + 1] - 2 * rho + p1[i - 1]) / (dz * dz);
+    gxyTemp = ((p2[i + nZ] - p2[i - nZ]) - (p0[i + nZ] - p0[i - nZ])) / (4 * dx * dy);
+    gxzTemp = ((p2[i + 1] - p2[i - 1]) - (p0[i + 1] - p0[i - 1])) / (4 * dx * dz);
+    gyzTemp = ((p1[i + nZ + 1] - p1[i - nZ + 1]) - (p1[i + nZ - 1] - p1[i - nZ - 1])) / (4 * dy * dz);
+    return getValue(rho, false);
+  }
+
   public void calculateElectronDensity(float[] nuclearCharges) {
     // n/a
   }
@@ -378,6 +482,5 @@ public class NciCalculation extends QuantumCalculation implements
        1., 1.,                                1., 1., 1., 1., 1., 1., 
        1.0236, 0.7753,    0.5962, 0.6995, 0.5851, 0.5149, 0.4974, 0.4412     
   };
-  
 
 }

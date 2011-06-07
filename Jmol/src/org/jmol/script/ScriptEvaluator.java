@@ -15775,14 +15775,14 @@ public class ScriptEvaluator {
         BitSet bs1 = atomExpression(++i);
         propertyValue = bs1;
         i = iToken;
-        boolean isOnly = (tokAt(i + 1) == Token.only); 
+        boolean isOnly = (tokAt(i + 1) == Token.only);
         if (isOnly) {
           i++;
           BitSet bs2 = BitSetUtil.copy(bs1);
           BitSetUtil.invertInPlace(bs2, viewer.getAtomCount());
           addShapeProperty(propertyList, "ignore", bs2);
           sbCommand.append(" ignore ").append(Escape.escape(bs2));
-        }        
+        }
         if (surfaceObjectSeen || isMapped) {
           sbCommand.append(" select " + Escape.escape(propertyValue));
         } else {
@@ -15885,6 +15885,8 @@ public class ScriptEvaluator {
         }
         continue;
       case Token.file:
+        if (tokAt(i + 1) != Token.string)
+          error(ERROR_invalidParameterOrder);
         continue;
       case Token.ionic:
       case Token.vanderwaals:
@@ -16029,10 +16031,12 @@ public class ScriptEvaluator {
           ++i;
           int monteCarloCount = intParameter(++i);
           int seed = (tokAt(i + 1) == Token.integer ? intParameter(++i)
-              : ((int) -System.currentTimeMillis())% 10000) ;
-          addShapeProperty(propertyList, "monteCarloCount", Integer.valueOf(monteCarloCount));
+              : ((int) -System.currentTimeMillis()) % 10000);
+          addShapeProperty(propertyList, "monteCarloCount", Integer
+              .valueOf(monteCarloCount));
           addShapeProperty(propertyList, "randomSeed", Integer.valueOf(seed));
-          sbCommand.append(" points ").append(monteCarloCount).append(' ').append(seed);
+          sbCommand.append(" points ").append(monteCarloCount).append(' ')
+              .append(seed);
         }
         setMoData(propertyList, moNumber, linearCombination, offset,
             isNegOffset, modelIndex, null);
@@ -16041,8 +16045,12 @@ public class ScriptEvaluator {
       case Token.nci:
         propertyName = "nci";
         sbCommand.append(" " + propertyName);
-        propertyValue = Boolean.valueOf(!isMapped);  // no mapping yet
-        surfaceObjectSeen = true;
+        boolean isCube = (tokAt(i + 1) == Token.file
+            || tokAt(i + 1) == Token.string);
+        if (!isCube) {
+          propertyValue =  Boolean.valueOf(!isMapped);
+          surfaceObjectSeen = true;
+        }
         break;
       case Token.mep:
       case Token.mlp:
@@ -16134,8 +16142,9 @@ public class ScriptEvaluator {
           i += 2;
           nlmZ[4] = floatParameter(i);
           int randomSeed = (tokAt(i + 1) == Token.integer ? intParameter(++i)
-              : ((int) -System.currentTimeMillis())% 10000);
-          addShapeProperty(propertyList, "randomSeed", Integer.valueOf(randomSeed));
+              : ((int) -System.currentTimeMillis()) % 10000);
+          addShapeProperty(propertyList, "randomSeed", Integer
+              .valueOf(randomSeed));
           sbCommand.append(" points ").append((int) nlmZ[4]).append(' ')
               .append(randomSeed);
         }
@@ -16666,10 +16675,10 @@ public class ScriptEvaluator {
         switch (tokAt(++i)) {
         case Token.bitset:
         case Token.expressionBegin:
-        propertyValue = new int[] { atomExpression(i).nextSetBit(0) };
+          propertyValue = new int[] { atomExpression(i).nextSetBit(0) };
           break;
         default:
-          propertyValue = new int[] {(int) floatParameterSet(i, 1, 1)[0] } ;
+          propertyValue = new int[] { (int) floatParameterSet(i, 1, 1)[0] };
           break;
         }
         i = iToken;
@@ -16748,7 +16757,8 @@ public class ScriptEvaluator {
         if (needSelect) {
           propertyList.add(0, new Object[] { "select", bsSelect });
           if (sbCommand.indexOf("; isosurface map") == 0) {
-            sbCommand = new StringBuffer("; isosurface map select " + Escape.escape(bsSelect) + sbCommand.substring(16));
+            sbCommand = new StringBuffer("; isosurface map select "
+                + Escape.escape(bsSelect) + sbCommand.substring(16));
           }
         }
       }

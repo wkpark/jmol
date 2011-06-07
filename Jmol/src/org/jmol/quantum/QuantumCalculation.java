@@ -119,14 +119,16 @@ abstract class QuantumCalculation {
      * 
      */
 
-    qmAtoms = new QMAtom[renumber ? bsSelected.cardinality()
-        : atomCoordAngstroms.length];
-    boolean isAll = (bsSelected == null);
-    int i0 = (isAll ? qmAtoms.length - 1 : bsSelected.nextSetBit(0));
-    for (int i = i0, j = 0; i >= 0; i = (isAll ? i - 1 : bsSelected
-        .nextSetBit(i + 1)))
-      qmAtoms[renumber ? j++ : i] = new QMAtom((Atom) atomCoordAngstroms[i], X,
-          Y, Z, X2, Y2, Z2);
+    if (atomCoordAngstroms != null) {
+      qmAtoms = new QMAtom[renumber ? bsSelected.cardinality()
+          : atomCoordAngstroms.length];
+      boolean isAll = (bsSelected == null);
+      int i0 = (isAll ? qmAtoms.length - 1 : bsSelected.nextSetBit(0));
+      for (int i = i0, j = 0; i >= 0; i = (isAll ? i - 1 : bsSelected
+          .nextSetBit(i + 1)))
+        qmAtoms[renumber ? j++ : i] = new QMAtom((Atom) atomCoordAngstroms[i],
+            X, Y, Z, X2, Y2, Z2);
+    }
   }
 
   protected void setXYZBohr() {
@@ -135,11 +137,22 @@ abstract class QuantumCalculation {
     setXYZBohr(zBohr, 2, nZ, points);
   }
 
-  public void process(Point3f pt) {
+  public float process(Point3f pt) {
+    if (points == null)
+      initializeOnePoint();
     points[0].set(pt);
     voxelData[0][0][0] = 0;
     setXYZBohr();
     process();
+    return voxelData[0][0][0];
+  }
+
+  protected void initializeOnePoint() {
+    points = new Point3f[1];
+    points[0] = new Point3f();
+    voxelData = new float[1][1][1];
+    xMin = yMin = zMin = 0;
+    initialize(1, 1, 1, points);
   }
 
   protected abstract void process();

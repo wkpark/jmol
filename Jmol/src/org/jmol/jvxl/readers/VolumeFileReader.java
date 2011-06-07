@@ -162,7 +162,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
       setVectorAnisotropy(voxelVector);
   }
 
-  private int downsampleFactor;
+  protected int downsampleFactor;
   private int nSkipX, nSkipY, nSkipZ;
   
   @Override
@@ -278,19 +278,24 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   // Note that we cannot do this when the file is being opened for
   // mapping. In that case we will need ALL the points. At least for now...
   
-  private float[][] yzPlanes;
-  private int yzCount;
+  protected float[][] yzPlanes;
+  protected int yzCount;
   @Override
   public void getPlane(int x) {
-    float[] plane;
-    if (yzCount == 0) {
-      Logger.info("VolumeFileReader reading data progressively");
-      yzPlanes = new float[2][];
-      yzCount = nPointsY * nPointsZ;
-      yzPlanes[0] = new float[yzCount];
-      yzPlanes[1] = new float[yzCount];
-    }
-    plane = yzPlanes[x % 2];
+    if (yzCount == 0)
+      initPlanes();
+    getPlane(yzPlanes[x % 2]);
+  }
+  
+  protected void initPlanes() {
+    Logger.info("VolumeFileReader reading data progressively");
+    yzCount = nPointsY * nPointsZ;
+    yzPlanes = new float[2][];
+    yzPlanes[0] = new float[yzCount];
+    yzPlanes[1] = new float[yzCount];
+  }
+
+  protected void getPlane(float[] plane) {
     try {
       for (int y = 0, ptyz = 0; y < nPointsY; ++y) {
         for (int z = 0; z < nPointsZ; ++z) {
@@ -307,7 +312,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
       // ignore
     }
   }
-  
+
   protected Point3f[] boundingBox;
   
   @Override

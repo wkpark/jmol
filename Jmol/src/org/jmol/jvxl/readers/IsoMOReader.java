@@ -55,13 +55,14 @@ class IsoMOReader extends AtomDataReader {
     getAtoms(params.qm_marginAngstroms, true, false);
     setHeader("MO", "calculation type: " + params.moData.get("calculationType"));
     setRangesAndAddAtoms(params.qm_ptsPerAngstrom, params.qm_gridMax, myAtomCount);
-    isNci = (params.qmOrbitalType == Parameters.QM_TYPE_NCI);
+    isNci = (params.qmOrbitalType == Parameters.QM_TYPE_NCI_PRO);
     String className = (isNci ? "quantum.NciCalculation" : "quantum.MOCalculation");
     q = (MOCalculationInterface) Interface.getOptionInterface(className);
     moData = params.moData;
     mos = (List<Map<String, Object>>) moData.get("mos");
     linearCombination = params.qm_moLinearCombination;
     if (isNci) {
+      hasColorData = true;
     } else if (linearCombination == null) {
       Map<String, Object> mo = mos.get(params.qm_moNumber - 1);
       for (int i = params.title.length; --i >= 0;)
@@ -91,7 +92,7 @@ class IsoMOReader extends AtomDataReader {
       vertexDataOnly = true;
       random = new Random(params.randomSeed);
     }
-    if (params.qmOrbitalType == Parameters.QM_TYPE_NCI && params.thePlane == null)
+    if (isNci && params.thePlane == null)
         params.insideOut = !params.insideOut;
   }
   
@@ -191,9 +192,7 @@ class IsoMOReader extends AtomDataReader {
 
   @Override
   public float getValueAtPoint(Point3f pt) {
-    if (q != null)
-      q.process(pt);
-    return voxelData[0][0][0];
+    return (q == null ? 0 : q.process(pt));
   }
   
 
@@ -262,12 +261,26 @@ class IsoMOReader extends AtomDataReader {
           .get("calculationType"), atomData.atomXyz, atomData.firstAtomIndex,
           null, null, null, moData.get("slaters"), coef, linearCombination,
           coefs, nuclearCharges, true, points, params.parameters);
-    case Parameters.QM_TYPE_NCI:
+    case Parameters.QM_TYPE_NCI_PRO:
       return q.setupCalculation(volumeData, bsMySelected, null,
           atomData.atomXyz, atomData.firstAtomIndex, null, null, null, null,
           null, null, null, nuclearCharges, params.isDensity, points,
           params.parameters);
     }
     return false;
+  }
+  
+  @Override
+  protected float getSurfacePointAndFraction(float cutoff,
+                                             boolean isCutoffAbsolute,
+                                             float valueA, float valueB,
+                                             Point3f pointA,
+                                             Vector3f edgeVector, int x, int y,
+                                             int z, int vA, int vB,
+                                             float[] fReturn, Point3f ptReturn) {
+      
+      float zero = super.getSurfacePointAndFraction(cutoff, isCutoffAbsolute, valueA,
+          valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn);
+      return (q == null || Float.isNaN(zero) ? zero : q.process(ptReturn)); 
   }
 }

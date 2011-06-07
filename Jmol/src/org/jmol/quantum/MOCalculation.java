@@ -1242,5 +1242,17 @@ public class MOCalculation extends QuantumCalculation implements
     //processMep(nuclearCharges);
   }
 
+  public void setPlanes(float[][] planes) {
+    // NciCalculation only
+  }
+
+  public void calcPlane(float[] plane) {
+    // NciCalculation only
+  }
+
+  public float process(int vA, int vB, float f) {
+    // NciCalculation only
+    return 0;
+  }
 
 }

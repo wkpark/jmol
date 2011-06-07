@@ -898,8 +898,12 @@ public class SurfaceGenerator {
     }
 
     if ("nci" == propertyName) {
-      params.setNci(((Boolean) value).booleanValue()); // nciplot
-      processState();
+      if (value == null) {
+        params.setNci(false, false);
+      } else {
+        params.setNci(true, ((Boolean) value).booleanValue()); // nciplot
+        processState();
+      }
       return true;
     }
 
@@ -1180,7 +1184,7 @@ public class SurfaceGenerator {
       // -- ah, but this does not work, because it is asynchronous!
       // -- first a message is sent back that suggests you might have to wait, 
       //    then a message that says, "Here is your map" is sent.
-      
+
       String fname = params.fileName;
       fname = fname.substring(0, fname.indexOf("/", 10));
       fname += Parser.getNextQuotedString(fileType,
@@ -1207,7 +1211,8 @@ public class SurfaceGenerator {
     if (fileType.equals("Apbs"))
       return new ApbsReader(this, br);
     if (fileType.equals("Cube"))
-      return new CubeReader(this, br);
+      return (params.qmOrbitalType == Parameters.QM_TYPE_NCI_SCF ? 
+          new NciCubeReader(this, br) : new CubeReader(this, br));
     if (fileType.equals("Jaguar"))
       return new JaguarReader(this, br);
     if (fileType.equals("Xplor"))

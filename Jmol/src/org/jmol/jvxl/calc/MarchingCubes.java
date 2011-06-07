@@ -286,6 +286,8 @@ public class MarchingCubes extends TriangleData {
             case MODE_GETXYZ:
               v = vertexValues[i] = getValue(x + offset.x, y + offset.y, z
                   + offset.z, pti, yzPlanes[yzPlanePts[i]]);
+              //if (!Float.isNaN(v) && v != 100)
+                //System.out.println("mc test v=" + v);
               isInside = bsVoxels.get(pti);
               break;
             case MODE_BITSET:

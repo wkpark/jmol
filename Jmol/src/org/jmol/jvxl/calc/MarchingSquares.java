@@ -27,7 +27,6 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
 import javax.vecmath.Point4f;
 
 import org.jmol.jvxl.api.VertexDataServer;
@@ -120,16 +119,10 @@ public class MarchingSquares {
 
   }
 
-  public int addContourVertex(int x, int y, int z, Point3i offsets,
-                              Point3f vertexXYZ, float value) {
+  public int addContourVertex(Point3f vertexXYZ, float value) {
     if (contourVertexCount == contourVertexes.length)
       contourVertexes = (ContourVertex[]) ArrayUtil
           .doubleLength(contourVertexes);
-    if (offsets != null) {
-      x += offsets.x;
-      y += offsets.y;
-      z += offsets.z;
-    }
     int vPt = surfaceReader.addVertexCopy(vertexXYZ, value, VERTEX_POINT);
     contourVertexes[contourVertexCount++] = new ContourVertex(vertexXYZ);
     return vPt;
@@ -221,7 +214,7 @@ public class MarchingSquares {
           pointB.set(contourVertexes[iB]);
           value = calcContourPoint(value, valueA, valueB, ptTemp);
           if (!Float.isNaN(value)) {
-            iPt = addContourVertex(0, 0, 0, null, ptTemp, value);
+            iPt = addContourVertex(ptTemp, value);
             contourVertexes[iPt].setValue(value);
           } else {
 //            System.out.println("#MarchingSquares nonlinear problem for contour " + (i + 1) + " at " + ptTemp + " " + valueA + " " + valueB 

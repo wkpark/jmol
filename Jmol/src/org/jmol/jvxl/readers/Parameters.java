@@ -630,7 +630,8 @@ public class Parameters {
   final static int QM_TYPE_UNKNOWN = 0;
   final static int QM_TYPE_GAUSSIAN = 1;
   final static int QM_TYPE_SLATER = 2;
-  final static int QM_TYPE_NCI = 3;
+  final static int QM_TYPE_NCI_PRO = 3;
+  final static int QM_TYPE_NCI_SCF = 4;
   
   Map<String, Object> moData;
   public final static int MO_MAX_GRID = 80;
@@ -642,11 +643,11 @@ public class Parameters {
   float[] qm_moLinearCombination = null;
   public boolean isDensity;
   
-  void setNci(boolean doMap) {
+  void setNci(boolean isPromolecular, boolean doMap) {
     dataType = SURFACE_NCI;
     isDensity = doMap;
     qm_marginAngstroms = 2f;
-    qmOrbitalType = QM_TYPE_NCI;
+    qmOrbitalType = (isPromolecular ? QM_TYPE_NCI_PRO : QM_TYPE_NCI_SCF);
     if (cutoff == Float.MAX_VALUE || cutoff == 0)
       cutoff = 0.3f;
     if (isSquared)

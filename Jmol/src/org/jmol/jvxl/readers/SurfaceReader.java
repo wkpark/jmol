@@ -548,8 +548,7 @@ public abstract class SurfaceReader implements VertexDataServer {
      */
 
     if (marchingSquares != null && params.isContoured)
-      return marchingSquares.addContourVertex(x, y, z, offset,
-          ptTemp, cutoff);
+      return marchingSquares.addContourVertex(ptTemp, cutoff);
     int assocVertex = (assocCutoff > 0 ? (fReturn[0] < assocCutoff ? vA
         : fReturn[0] > 1 - assocCutoff ? vB : MarchingSquares.CONTOUR_POINT)
         : MarchingSquares.CONTOUR_POINT);
@@ -704,7 +703,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     boolean useMeshDataValues = jvxlDataIs2dContour
         ||
         //      !jvxlDataIs2dContour && (params.isContoured && jvxlData.jvxlPlane != null || 
-        vertexDataOnly || params.colorDensity || params.isBicolorMap
+        hasColorData || vertexDataOnly || params.colorDensity || params.isBicolorMap
         && !params.isContoured;
     if (!useMeshDataValues) {
 

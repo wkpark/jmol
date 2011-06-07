@@ -934,7 +934,8 @@ class IsoSolventReader extends AtomDataReader {
       float rA = atomRadius[iAtom];
       if (isWithin && ptA.distance(point) > distance + rA + 0.5)
         continue;
-      setGridLimitsForAtom(ptA, rA + r0, pt0, pt1);
+      float rA0 = rA + r0;
+      setGridLimitsForAtom(ptA, rA0, pt0, pt1);
       volumeData.voxelPtToXYZ(pt0.x, pt0.y, pt0.z, ptXyzTemp);
       for (int i = pt0.x; i < pt1.x; i++, ptXyzTemp.scaleAdd(1,
           volumetricVectors[0], ptY0)) {
@@ -944,8 +945,8 @@ class IsoSolventReader extends AtomDataReader {
           ptZ0.set(ptXyzTemp);
           for (int k = pt0.z; k < pt1.z; k++, ptXyzTemp
               .add(volumetricVectors[2])) {
-            float value = ptXyzTemp.distance(ptA) - rA;
-            if (value < voxelData[i][j][k]) {
+            float value = ptXyzTemp.distance(ptA) - rA;            
+            if ((r0 == 0 || value <= rA0) && value < voxelData[i][j][k]) {
               if (isNearby || isWithin && ptXyzTemp.distance(point) > distance)
                 value = Float.NaN;
               setVoxel(i, j, k, value);

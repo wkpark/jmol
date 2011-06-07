@@ -448,16 +448,16 @@ public class _PovrayExporter extends __RayTracerExporter {
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsPolygons.nextSetBit(i + 1))) {
       output(", <" + triad(indices[i]) + ">");
       if (colixes != null) {
-        output("," + htColixes.get("" + colixes[indices[i][0]]));
-        output("," + htColixes.get("" + colixes[indices[i][1]]));
-        output("," + htColixes.get("" + colixes[indices[i][2]]));
+        output("," + htColixes.get(Short.valueOf(colixes[indices[i][0]])));
+        output("," + htColixes.get(Short.valueOf(colixes[indices[i][1]])));
+        output("," + htColixes.get(Short.valueOf(colixes[indices[i][2]])));
       }
       if (faceVertexMax == 4 && indices[i].length == 4) {
         output(", <" + indices[i][0] + "," + indices[i][2] + "," + indices[i][3] + ">");
         if (colixes != null) {
-          output("," + htColixes.get("" + colixes[indices[i][0]]));
-          output("," + htColixes.get("" + colixes[indices[i][2]]));
-          output("," + htColixes.get("" + colixes[indices[i][3]]));
+          output("," + htColixes.get(Short.valueOf(colixes[indices[i][0]])));
+          output("," + htColixes.get(Short.valueOf(colixes[indices[i][2]])));
+          output("," + htColixes.get(Short.valueOf(colixes[indices[i][3]])));
         }
       }
       output("\n");

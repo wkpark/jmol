@@ -92,8 +92,8 @@ class IsoMOReader extends AtomDataReader {
       vertexDataOnly = true;
       random = new Random(params.randomSeed);
     }
-    if (isNci && params.thePlane == null)
-        params.insideOut = !params.insideOut;
+    //if (isNci && params.thePlane == null)
+      //  params.insideOut = !params.insideOut;
   }
   
   @Override

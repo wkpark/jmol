@@ -1829,6 +1829,7 @@ class ScriptMathProcessor {
     }
 
     switch (nArgs) {
+    case 0:
     case 1:
     case 4:
       break;
@@ -1863,6 +1864,8 @@ class ScriptMathProcessor {
     Quaternion[] qs = null;
     Point4f p4 = null;
     switch (nArgs) {
+    case 0:
+      return addX(new Quaternion(viewer.getRotationQuaternion()));
     case 1:
     default:
       if (tok == Token.quaternion && args[0].tok == Token.varray) {

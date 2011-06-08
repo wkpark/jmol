@@ -36,7 +36,7 @@ import org.jmol.util.Measure;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.api.Interface;
-import org.jmol.api.MOCalculationInterface;
+import org.jmol.api.QuantumCalculationInterface;
 
 class IsoMOReader extends AtomDataReader {
 
@@ -57,7 +57,7 @@ class IsoMOReader extends AtomDataReader {
     setRangesAndAddAtoms(params.qm_ptsPerAngstrom, params.qm_gridMax, myAtomCount);
     isNci = (params.qmOrbitalType == Parameters.QM_TYPE_NCI_PRO);
     String className = (isNci ? "quantum.NciCalculation" : "quantum.MOCalculation");
-    q = (MOCalculationInterface) Interface.getOptionInterface(className);
+    q = (QuantumCalculationInterface) Interface.getOptionInterface(className);
     moData = params.moData;
     mos = (List<Map<String, Object>>) moData.get("mos");
     linearCombination = params.qm_moLinearCombination;
@@ -210,7 +210,7 @@ class IsoMOReader extends AtomDataReader {
 
   private Point3f[] points;
   private Vector3f vTemp;
-  MOCalculationInterface q;
+  QuantumCalculationInterface q;
   Map<String, Object> moData;
   List<Map<String, Object>> mos;
   boolean isNci;

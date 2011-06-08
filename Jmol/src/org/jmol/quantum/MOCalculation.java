@@ -23,7 +23,7 @@
  */
 package org.jmol.quantum;
 
-import org.jmol.api.MOCalculationInterface;
+import org.jmol.api.QuantumCalculationInterface;
 import org.jmol.api.VolumeDataInterface;
 import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
@@ -89,7 +89,7 @@ import java.util.BitSet;
  */
 
 public class MOCalculation extends QuantumCalculation implements
-    MOCalculationInterface {
+    QuantumCalculationInterface {
 
   private final static double CUT = -50;
   
@@ -1240,19 +1240,6 @@ public class MOCalculation extends QuantumCalculation implements
     integration *= volume;
     Logger.info("Integrated density = " + integration);
     //processMep(nuclearCharges);
-  }
-
-  public void setPlanes(float[][] planes) {
-    // NciCalculation only
-  }
-
-  public void calcPlane(float[] plane) {
-    // NciCalculation only
-  }
-
-  public float process(int vA, int vB, float f) {
-    // NciCalculation only
-    return 0;
   }
 
 }

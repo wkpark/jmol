@@ -23,7 +23,7 @@
  */
 package org.jmol.quantum;
 
-import org.jmol.api.MOCalculationInterface;
+import org.jmol.api.QuantumPlaneCalculationInterface;
 import org.jmol.api.VolumeDataInterface;
 import org.jmol.util.Eigen;
 import org.jmol.util.Escape;
@@ -35,26 +35,47 @@ import java.util.List;
 import java.util.BitSet;
 
 /*
- * promolecular NCIPLOT implemented in Jmol 12.1.49 as
+ * promolecular NCIPLOT implemented in Jmol 12.1.49
+ *
+ *   -- NCIPLOT promolecule calculation for reduced density.
+ *      Plots reduced density mapped with ABS(rho)*SIGN(lambda2)
+ *      where lambda2 is the middle eigenvalue of the Hessian matrix of
+ *      promolecular electron density. Innovates a discrete SCF option not
+ *      available in NCIPLOT itself.
+ *
+ *      default is "promolecular" approximation
+ *
+ *        isosurface NCI
+ *
+ *      DISCRETE SCF -- starting with standard CUBEGEN file
+ *
+ *        isosurface NCI "dens.cube"  
+ *
+ *      DISCRETE SCF -- starting with NCIPLOT's xx-nci-dens.cube file        
+ *
+ *        isosurface parameters [0 0 0 0 0.01] NCI "dens.cube"
  * 
- *   isosurface NCI
+ *      Extended to all volume file formats, including
+ *            ABPS, CUBE, Jaguar, MRC, OMAP, CCP4, XPLOR  
+ *
+ *      Isosurface parameters [cutoff, p1, p2, p3, p4] NCI ...
+ *
+ *         -- p1 = 0(all, default), 1(intramolecular), 2(intermolecular)
+ *         -- p2 = rhoPlot  (cutoff used to remove covalent density, default 0.07 for promolecular, 0.05 for SCF)
+ *         -- p3 = rhoParam (fraction of total rho that defines intramolecular, default 0.95)
+ *         -- p4 = dataScaling (default 1, but set to 0.01 to read back in NCIPLOT -dens.cube file)
+ *
+ *  references: 
+ *
+ *   "Revealing Noncovalent Interactions", 
+ *   Erin R. Johnson, Shahar Keinan, Paula Mori-Sanchez, Julia Contreras-Garcia, Aron J. Cohen, and Weitao Yang, 
+ *   J. Am. Chem. Soc., 2010, 132, 6498-6506. email to julia.contreras@duke.edu
  * 
- * and 
- * 
- *   isosurface NCI "filename.CUBE" (or APBS, or CCP4, or OMAP, or MRC, or XPLOR)
- * 
- * ref: 
- * 
- * "Revealing Noncovalent Interactions", 
- * Erin R. Johnson, Shahar Keinan, Paula Mori-Sanchez, Julia Contreras-Garcia, Aron J. Cohen, and Weitao Yang, 
- * J. Am. Chem. Soc., 2010, 132, 6498-6506. email to julia.contreras@duke.edu
- * 
- * "NCIPLOT: A Program for Plotting Noncovalent Interaction Regions"
- * Julia Contreras-García, Erin R. Johnson, Shahar Keinan, Robin Chaudret, Jean-Philip Piquemal, David N. Beratan, and Weitao Yang,
- * J. of Chemical Theory and Computation, 2011, 7, 625-632
- * 
- * 
- * Bob Hanson hansonr@stolaf.edu 6/1/2011
+ *   "NCIPLOT: A Program for Plotting Noncovalent Interaction Regions"
+ *   Julia Contreras-García, Erin R. Johnson, Shahar Keinan, Robin Chaudret, Jean-Philip Piquemal, David N. Beratan, and Weitao Yang,
+ *   J. of Chemical Theory and Computation, 2011, 7, 625-632
+ *
+ * Bob Hanson hansonr@stolaf.edu 6/8/2011
  * 
  */
 
@@ -65,7 +86,7 @@ import java.util.BitSet;
  */
 
 public class NciCalculation extends QuantumCalculation implements
-    MOCalculationInterface {
+    QuantumPlaneCalculationInterface {
   
   private boolean havePoints;
   private boolean isReducedDensity;
@@ -78,6 +99,14 @@ public class NciCalculation extends QuantumCalculation implements
   private final static int TYPE_INTRA = 1;
   private final static int TYPE_INTER = 2;
   private final static int TYPE_LIGAND = 3;
+  
+  private final static double NO_VALUE = 100;
+  
+  private float dataScaling = 1; // set to 0.01 to read NCIPLOT-generated density files
+  
+  public float getNoValue() {
+    return (float) NO_VALUE;
+  }
   
   public NciCalculation() {
   }
@@ -95,19 +124,18 @@ public class NciCalculation extends QuantumCalculation implements
                                   float[][] gaussians, int[][] dfCoefMaps,
                                   Object slaters, float[] moCoefficients,
                                   float[] linearCombination, float[][] coefs,
-                                  float[] nuclearCharges, boolean isDensity,
+                                  float[] nuclearCharges, boolean isDensityOnly,
                                   Point3f[] points, float[] parameters) {
     boolean isPromolecular = (atomCoordAngstroms != null);    
     havePoints = (points != null);
-    isReducedDensity = isDensity;
-    if (!isReducedDensity)
-      parameters = null;
+    isReducedDensity = isDensityOnly;
     if (parameters != null)
       Logger.info("NCI calculation parameters = " + Escape.escape(parameters));
     // parameters[0] is the cutoff.
     type = (int) getParameter(parameters, 1, 0, "type");
     rhoPlot = getParameter(parameters, 2, (isPromolecular ? DEFAULT_RHOPLOT_PRO : DEFAULT_RHOPLOT_SCF), "rhoPlot");
     rhoParam = getParameter(parameters, 3, DEFAULT_RHOPARAM, "rhoParam");
+    dataScaling = (float) getParameter(parameters, 4, 1, "dataScaling");
     String stype;
     switch (type) {
     default:
@@ -229,7 +257,7 @@ public class NciCalculation extends QuantumCalculation implements
   private float getValue(double rho, boolean isReducedDensity) {
     double s;
     if (isReducedDensity) {
-      s = (rho > rhoPlot || grad < 0 ? 100 : c * grad * Math.pow(rho, rpower));
+      s = (rho > rhoPlot || grad < 0 ? NO_VALUE : c * grad * Math.pow(rho, rpower));
     } else {
       // do Hessian only for specified points
       //GET LAMBDA
@@ -241,7 +269,7 @@ public class NciCalculation extends QuantumCalculation implements
       hess[2][2] = gzzTemp;
       eigen.calc(hess);
       double lambda2 = eigen.getEigenvalues()[1];
-      s = Math.signum(lambda2) * Math.abs(rho);
+      s = (lambda2 < 0 ? -rho : rho);
     }
     return (float) s;
   }
@@ -357,6 +385,8 @@ public class NciCalculation extends QuantumCalculation implements
     return rho;
   }
 
+  ///////////////////////// DISCRETE SCF METHODS /////////////////////
+
   private float[][] yzPlanesRaw;
   private int yzCount;
       
@@ -376,27 +406,17 @@ public class NciCalculation extends QuantumCalculation implements
     float[] p0 = yzPlanesRaw[i0++];
     float[] p1 = yzPlanesRaw[i0++];
     float[] p2 = yzPlanesRaw[i0++];
+      for (int i = (i0 == 4 ? 3 : 0); i < i0; i++)
+        for (int j = 0; j < yzCount; j++)
+          yzPlanesRaw[i][j] = Math.abs(yzPlanesRaw[i][j] * dataScaling);
     for (int y = 0, i = 0; y < nY; y++)
       for (int z = 0; z < nZ; z++, i++) {
         double rho = p1[i];
-        if (y == 0 || y == nY - 1 || z == 0 || z == nZ - 1) {
-          plane[i] = 100;
+        if (rho == 0) {
+          plane[i] = 0;
+        } else if (y == 0 || y == nY - 1 || z == 0 || z == nZ - 1) {
+          plane[i] = (float) NO_VALUE;
         } else {
-          /*
-          System.out.println("\n----- " + i + " y=" + y + " z=" + z + "\n" + p0[i+nZ+1] + "\t" + p1[i + nZ + 1]+ "\t" + p2[i + nZ + 1]);
-          System.out.println(p0[i+1] + "\t" + p1[i + 1]+ "\t" + p2[i + 1]);
-          System.out.println(p0[i-nZ+1] + "\t" + p1[i -nZ + 1]+ "\t" + p2[i -nZ + 1]);
-
-          System.out.println("\n" + p0[i+nZ] + "\t" + p1[i + nZ]+ "\t" + p2[i + nZ]);
-          System.out.println(p0[i] + "\t" + p1[i]+ "\t" + p2[i]);
-          System.out.println(p0[i-nZ] + "\t" + p1[i -nZ]+ "\t" + p2[i-nZ]);
-
-          
-          System.out.println("\n" + p0[i+nZ-1] + "\t" + p1[i + nZ - 1]+ "\t" + p2[i + nZ - 1]);
-          System.out.println(p0[i-1] + "\t" + p1[i - 1]+ "\t" + p2[i - 1]);
-          System.out.println(p0[i-nZ-1] + "\t" + p1[i -nZ - 1]+ "\t" + p2[i -nZ - 1]);
-*/
-          
           gxTemp = (p2[i] - p0[i]) / (2 * stepBohr[0]);
           gyTemp = (p1[i + nZ] - p1[i - nZ]) / (2 * stepBohr[1]);
           gzTemp = (p1[i + 1] - p1[i - 1]) / (2 * stepBohr[2]);

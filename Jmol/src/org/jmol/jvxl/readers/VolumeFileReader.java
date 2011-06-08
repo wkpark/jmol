@@ -31,7 +31,7 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.api.Interface;
-import org.jmol.api.MOCalculationInterface;
+import org.jmol.api.QuantumPlaneCalculationInterface;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
@@ -44,40 +44,42 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   protected boolean isAngstroms;
   protected boolean canDownsample;
   private int[] downsampleRemainders;
-  private boolean isNCI;
+  private boolean preProcessPlanes;
  
   VolumeFileReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg, br);
     canDownsample = isProgressive = isXLowToHigh = true;
     jvxlData.wasCubic = true;
     boundingBox = params.boundingBox;
-    
-    isNCI = (params.qmOrbitalType == Parameters.QM_TYPE_NCI_SCF);       
-    if (isNCI)
+    if (params.qmOrbitalType == Parameters.QM_TYPE_NCI_SCF) {
+      preProcessPlanes = true; 
       hasColorData = true;
+    }
   }
 
+  private int nData;  
   protected float recordData(float value) {
      if (value < dataMin)
        dataMin = value;
      if (value > dataMax)
        dataMax = value;
      dataMean += value;
+     nData++;
      return value;
   }
   
   boolean readerClosed;
+  
   @Override
   protected void closeReader() {
     if (readerClosed)
       return;
     readerClosed = true;
     super.closeReader();
-    int n = nPointsX * nPointsY * nPointsZ;
-    if (n == 0 || dataMax == -Float.MAX_VALUE)
+    if (nData == 0 || dataMax == -Float.MAX_VALUE)
       return;
-    dataMean /= n;
-    Logger.info("VolumeFileReader closing file: " + n + " points read \ndata min/max/mean = " + dataMin + ", " + dataMax + ", " + dataMean );
+    dataMean /= nData;
+    Logger.info("VolumeFileReader closing file: " + nData + " points read \ndata min/max/mean = " + dataMin + "/" + dataMax + "/" + dataMean );
   }
   
   @Override
@@ -289,19 +291,19 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   protected int yzCount;
   @Override
   public void getPlane(int x) {
-    if (isNCI) {
+    if (preProcessPlanes) {
       getPlaneNCI(x);
       return;
     }
     if (yzCount == 0)
       initPlanes();
-    getPlane(yzPlanes[x % 2]);
+    getPlane(yzPlanes[x % 2], true);
   }
   
-  private MOCalculationInterface q;
+  private QuantumPlaneCalculationInterface q;
   
   private float[][] yzPlanesRaw;
-  private int nPlanesRaw;
+  private int iPlaneRaw;
 
   /**
    * Retrieve raw electron density planes and pass them to 
@@ -321,31 +323,36 @@ abstract class VolumeFileReader extends SurfaceFileReader {
    * @param x
    */
   public void getPlaneNCI(int x) {
-    if (nPlanesRaw == 0) {
+    float[] plane;
+    if (iPlaneRaw == 0) {
       initPlanes();
-      q = (MOCalculationInterface) Interface
+      q = (QuantumPlaneCalculationInterface) Interface
           .getOptionInterface("quantum.NciCalculation");
       q.setupCalculation(volumeData, null, null, null, -1, null, null, null,
           null, null, null, null, null, false, null, params.parameters);
       q.setPlanes(yzPlanesRaw = new float[4][yzCount]);
-      getPlane(yzPlanesRaw[0]);
-      getPlane(yzPlanesRaw[1]);
-      nPlanesRaw = 2;
+      getPlane(yzPlanesRaw[0], false);
+      getPlane(yzPlanesRaw[1], false);
+      iPlaneRaw = 1;
       for (int i = 0; i < yzCount; i++)
         yzPlanes[0][i] = 100;
       return;
     }
-    if (nPlanesRaw == 4) {
-      float[] plane = yzPlanesRaw[0];
+    if (iPlaneRaw == 3) {
+      plane = yzPlanesRaw[0];
       yzPlanesRaw[0] = yzPlanesRaw[1];
       yzPlanesRaw[1] = yzPlanesRaw[2];
       yzPlanesRaw[2] = yzPlanesRaw[3];
       yzPlanesRaw[3] = plane;
-      getPlane(yzPlanesRaw[3]);
     } else {
-      getPlane(yzPlanesRaw[nPlanesRaw++]);
+      iPlaneRaw++;
     }
-    q.calcPlane(yzPlanes[x % 2]);
+    getPlane(yzPlanesRaw[iPlaneRaw], false);
+    q.calcPlane(plane = yzPlanes[x % 2]);
+    float noValue = q.getNoValue();
+    for (int i = 0; i < yzCount; i++)
+      if (plane[i] != noValue)
+        recordData(plane[i]);
   }
   
   protected void initPlanes() {
@@ -356,11 +363,14 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     yzPlanes[1] = new float[yzCount];
   }
 
-  protected void getPlane(float[] plane) {
+  private void getPlane(float[] plane, boolean doRecord) {
     try {
       for (int y = 0, ptyz = 0; y < nPointsY; ++y) {
         for (int z = 0; z < nPointsZ; ++z) {
-          plane[ptyz++] = recordData(getNextVoxelValue());
+          float v = getNextVoxelValue();
+          if (doRecord)
+            recordData(v);
+          plane[ptyz++] = v;
           if (nSkipX != 0)
             skipVoxels(nSkipX);
         }

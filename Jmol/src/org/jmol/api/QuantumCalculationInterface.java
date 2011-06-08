@@ -7,7 +7,7 @@ import java.util.List;
 import javax.vecmath.Point3f;
 
 
-public interface MOCalculationInterface {
+public interface QuantumCalculationInterface {
 
   public abstract boolean setupCalculation(VolumeDataInterface volumeData, BitSet bsSelected,
                                  String calculationType,
@@ -21,12 +21,7 @@ public interface MOCalculationInterface {
   
   public abstract void createCube();
   public abstract float process(Point3f pt);
-
-  // progressive readers:
-  public abstract void calcPlane(float[] plane);
-  public abstract void setPlanes(float[][] planes);
-  public abstract float process(int vA, int vB, float f);
-
+  
   public abstract void calculateElectronDensity(float[] nuclearCharges);
 
 }

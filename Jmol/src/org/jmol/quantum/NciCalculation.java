@@ -259,8 +259,6 @@ public class NciCalculation extends QuantumCalculation implements
     if (isReducedDensity) {
       s = (rho > rhoPlot || grad < 0 ? NO_VALUE : c * grad * Math.pow(rho, rpower));
     } else {
-      // do Hessian only for specified points
-      //GET LAMBDA
       hess[0][0] = gxxTemp;
       hess[1][0] = hess[0][1] = gxyTemp;
       hess[2][0] = hess[0][2] = gxzTemp;
@@ -282,7 +280,7 @@ public class NciCalculation extends QuantumCalculation implements
         for (int i = nMolecules; --i >= 0;)
           rhoMolecules[i] = 0;
     } else {
-      gxxTemp = gyyTemp = gzzTemp = gxyTemp = gyzTemp = gxzTemp = 0;      
+      gxxTemp = gyyTemp = gzzTemp = gxyTemp = gyzTemp = gxzTemp = 0;
     }
     for (int i = qmAtoms.length; --i >= 0;) {
       int znuc = qmAtoms[i].znuc;
@@ -297,13 +295,6 @@ public class NciCalculation extends QuantumCalculation implements
       double ce1 = coef1[znuc] * Math.exp(-r / z1);
       double ce2 = coef2[znuc] * Math.exp(-r / z2);
       double ce3 = coef3[znuc] * Math.exp(-r / z3);
-      /*
-      R=SQRT((SVEC(1)-X3(I))**2+(SVEC(2)-Y3(I))**2+(SVEC(3)-Z3(I))**2)
-      EXP1=exp(-R/ZETA1(J))
-      EXP2=exp(-R/ZETA2(J))
-      EXP3=exp(-R/ZETA3(J))
-      RHO=RHO + C1(J)*EXP1 + C2(J)*EXP2 + C3(J)*EXP3
-      */
       double rhoAtom = ce1 + ce2 + ce3;
       rho += rhoAtom;
       double fac1r = (ce1 / z1 + ce2 / z2 + ce3 / z3) / r;
@@ -313,42 +304,10 @@ public class NciCalculation extends QuantumCalculation implements
         gxTemp -= fac1r * x;
         gyTemp -= fac1r * y;
         gzTemp -= fac1r * z;
-        /*
-        FAC=(C1(J)/ZETA1(J))*EXP1 + (C2(J)/ZETA2(J))*EXP2 +
-       +    (C3(J)/ZETA3(J))*EXP3
-        GRADX=GRADX - FAC*(SVEC(1)-X3(I))/R
-        GRADY=GRADY - FAC*(SVEC(2)-Y3(I))/R
-        GRADZ=GRADZ - FAC*(SVEC(3)-Z3(I))/R
-        */
       } else {
-        /*
-        FAC1=(C1(J)/ZETA1(J))*EXP1 + (C2(J)/ZETA2(J))*EXP2 +
-       +     (C3(J)/ZETA3(J))*EXP3
-        FAC2=(C1(J)/ZETA1(J)**2)*EXP1 + (C2(J)/ZETA2(J)**2)*EXP2 +
-       +     (C3(J)/ZETA3(J)**2)*EXP3
-       
-        but here we see what is going to happen with them, and condense;
-        
-        GRADXX=GRADXX + FAC2*((SVEC(1)-X3(I))/R)**2 
-              + FAC1*( (SVEC(1)-X3(I))**2/R**3 - 1.D0/R )
-       
-         == FAC2 * x^2/r^2 + FAC1 * (x^2/r^3 - 1/r)
-         == (FAC2 + FAC1/r) * x/r * x/r - FAC1/r
-         
-        and
-
-        GRADXY=GRADXY + FAC2*(SVEC(1)-X3(I))*(SVEC(2)-Y3(I))/R**2 
-              + FAC1*(SVEC(1)-X3(I))*(SVEC(2)-Y3(I))/R**3
-              
-         == (FAC2 + FAC1/r) * x/r * y/r 
-        GRADXZ=GRADXZ + FAC2*(SVEC(1)-X3(I))*(SVEC(3)-Z3(I))/R**2
-       +       + FAC1*(SVEC(1)-X3(I))*(SVEC(3)-Z3(I))/R**3
-        GRADYZ=GRADYZ + FAC2*(SVEC(2)-Y3(I))*(SVEC(3)-Z3(I))/R**2
-       +       + FAC1*(SVEC(2)-Y3(I))*(SVEC(3)-Z3(I))/R**3
-       */
-         x /= r;
-         y /= r;
-         z /= r;
+        x /= r;
+        y /= r;
+        z /= r;
         double fr2 = fac1r + (ce1 / z1 / z1 + ce2 / z2 / z2 + ce3 / z3 / z3);
         gxxTemp += fr2 * x * x - fac1r;
         gyyTemp += fr2 * y * y - fac1r;
@@ -360,7 +319,7 @@ public class NciCalculation extends QuantumCalculation implements
     }
     if (isReducedDensity) {
       grad = 0;
-      switch(type) {
+      switch (type) {
       case TYPE_INTRA: // 
       case TYPE_INTER:
         boolean isIntra = false;
@@ -370,7 +329,7 @@ public class NciCalculation extends QuantumCalculation implements
             isIntra = true;
             break;
           }
-        if ((type == TYPE_INTRA) != isIntra) 
+        if ((type == TYPE_INTRA) != isIntra)
           grad = -1;
         break;
       case TYPE_LIGAND:
@@ -389,7 +348,12 @@ public class NciCalculation extends QuantumCalculation implements
 
   private float[][] yzPlanesRaw;
   private int yzCount;
-      
+
+  /**
+   * Raw file data planes are passed to us here from VolumeFileReader
+   * 
+   * @param planes 
+   */
   public void setPlanes(float[][] planes) {
     yzPlanesRaw = planes;
     yzCount = nY * nZ;
@@ -397,18 +361,36 @@ public class NciCalculation extends QuantumCalculation implements
   
   private float[][] yzPlanesRho = new float[2][];
 
+  /**
+   * For reduced density only; coloring is done point by point.
+   * 
+   * @param plane
+   *        an OUTPUT plane, to be filled here and used by MarchingCubes
+   * 
+   */
   public void calcPlane(float[] plane) {
+
+    // (1) shift planes:
+
     yzPlanesRho[0] = yzPlanesRho[1];
     yzPlanesRho[1] = plane;
-    // reduced density only; coloring is done point by point
-    // we either process planes 0, 1, and 2, or (more usually) 1, 2, and 3
+
+    // (2) assign input planes. We either process planes 0, 1, and 2, 
+    //     (first time around) or 1, 2, and 3 (after that).
+
     int i0 = (yzPlanesRho[0] == null ? 0 : 1);
     float[] p0 = yzPlanesRaw[i0++];
     float[] p1 = yzPlanesRaw[i0++];
     float[] p2 = yzPlanesRaw[i0++];
-      for (int i = (i0 == 4 ? 3 : 0); i < i0; i++)
-        for (int j = 0; j < yzCount; j++)
-          yzPlanesRaw[i][j] = Math.abs(yzPlanesRaw[i][j] * dataScaling);
+
+    // (3) Make sure rho data is scaled appropriately and nonnegative.
+
+    for (int i = (i0 == 4 ? 3 : 0); i < i0; i++)
+      for (int j = 0; j < yzCount; j++)
+        yzPlanesRaw[i][j] = Math.abs(yzPlanesRaw[i][j] * dataScaling);
+
+    // (4) Calculate discrete reduced gradients. All edges are just assigned "no value"
+
     for (int y = 0, i = 0; y < nY; y++)
       for (int z = 0; z < nZ; z++, i++) {
         double rho = p1[i];
@@ -426,6 +408,18 @@ public class NciCalculation extends QuantumCalculation implements
       }
   }
 
+  /**
+   * Passing the grid points of the two ends of an edge and a fraction
+   * to this method returns the value at a triangle point. This way we
+   * do not need to calculate this for EVERY point on the grid, only the
+   * ones that are part of the surface.  
+   * 
+   * @param vA 
+   * @param vB 
+   * @param f 
+   * @return value at point f-way between vA and vB
+   * 
+   */
   public float process(int vA, int vB, float f) {
     // first we need to know what planes we are working with.
     double valueA = getPlaneValue(vA);
@@ -433,6 +427,13 @@ public class NciCalculation extends QuantumCalculation implements
     return (float) (valueA + f * (valueB - valueA));
   }
 
+  /**
+   * We always have four raw planes in hand; we just need to know which
+   * three to use in any particular case. 
+   * 
+   * @param vA
+   * @return    value of sign(lambda2)*rho at this grid point
+   */
   private double getPlaneValue(int vA) {
     int i = (vA % yzCount);
     int x = vA / yzCount;
@@ -442,7 +443,7 @@ public class NciCalculation extends QuantumCalculation implements
         || y == 0 || y == nY - 1
         || z == 0 || z == nZ - 1)
       return Double.NaN;
-    int iPlane = (vA / yzCount) % 2;
+    int iPlane = x % 2;
     float[] p0 = yzPlanesRaw[iPlane++];
     float[] p1 = yzPlanesRaw[iPlane++];
     float[] p2 = yzPlanesRaw[iPlane++];
@@ -450,6 +451,14 @@ public class NciCalculation extends QuantumCalculation implements
     float dy = stepBohr[1];
     float dz = stepBohr[2];
     double rho = p1[i];
+    
+    // Using explicit discrete second partial derivatives here. 
+    // Worked these out myself; just seemed right! Note that
+    // d^2rho/dxdy does = d^2rho/dydx. The factors of 1/4 are there
+    // because in those nondiagonal cases we are spanning two edges
+    // in each direction. Really [(p2.. - p2..)/2dy - (p0.. - p0..)/2dy]/2dx
+    // That is, the differences along x of the differences along y.
+    
     gxxTemp = (p2[i] - 2 * rho + p0[i]) / (dx * dx);
     gyyTemp = (p1[i + nZ] - 2 * rho + p1[i - nZ]) / (dy * dy);
     gzzTemp = (p1[i + 1] - 2 * rho + p1[i - 1]) / (dz * dz);
@@ -460,9 +469,15 @@ public class NciCalculation extends QuantumCalculation implements
   }
 
   public void calculateElectronDensity(float[] nuclearCharges) {
-    // n/a
+    
+    // Required for QuantumCalculationInterface
+    
+    // I guess we could do this, but really all you need is the original raw data in this case.
   }
   
+  /////////////////////////// promolecular data ///////////////////////////
+  //// Source: NCIPLOT 1.0
+  ///
   //   H                                                      He
   //   Li      Be          B      C      N      O      F      Ne
   //   Na      Mg          Al     Si     P      S      Cl     Ar

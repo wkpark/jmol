@@ -256,10 +256,10 @@ public class NciCalculation extends QuantumCalculation implements
   
   private float getValue(double rho, boolean isReducedDensity) {
     double s;
-    if (rho > rhoPlot) {
+    if (rho == NO_VALUE) {
       s = NO_VALUE;
     } else if (isReducedDensity) {
-      s = (grad < 0 ? NO_VALUE : c * grad * Math.pow(rho, rpower));
+      s = c * grad * Math.pow(rho, rpower);
     } else {
       hess[0][0] = gxxTemp;
       hess[1][0] = hess[0][1] = gxyTemp;
@@ -302,7 +302,9 @@ public class NciCalculation extends QuantumCalculation implements
       // We couldn't do this if we were intending to write the density cube, 
       // but we aren't doing that.
       if (rho > rhoPlot)
-        return rho; 
+        return NO_VALUE; 
+      // Some efficiencies introduced here vs. NCIPLOT's FORTRAN code
+      // just to minimize number of exponentials and multiplications, mostly.
       double fac1r = (ce1 / z1 + ce2 / z2 + ce3 / z3) / r;
       if (isReducedDensity) {
         if (type != TYPE_ALL)
@@ -324,7 +326,8 @@ public class NciCalculation extends QuantumCalculation implements
       }
     }
     if (isReducedDensity) {
-      grad = 0;
+      // Check to see if this is intermolecular or intramolecular.
+      // Note that we can do intra (type=1) or inter (type=2) here.
       switch (type) {
       case TYPE_INTRA: // 
       case TYPE_INTER:
@@ -336,7 +339,7 @@ public class NciCalculation extends QuantumCalculation implements
             break;
           }
         if ((type == TYPE_INTRA) != isIntra)
-          grad = -1;
+          return NO_VALUE;
         break;
       case TYPE_LIGAND:
         // ?? 
@@ -344,8 +347,7 @@ public class NciCalculation extends QuantumCalculation implements
       default:
         break;
       }
-      if (grad == 0)
-        grad = Math.sqrt(gxTemp * gxTemp + gyTemp * gyTemp + gzTemp * gzTemp);
+      grad = Math.sqrt(gxTemp * gxTemp + gyTemp * gyTemp + gzTemp * gzTemp);
     }
     return rho;
   }
@@ -402,7 +404,7 @@ public class NciCalculation extends QuantumCalculation implements
         double rho = p1[i];
         if (rho == 0) {
           plane[i] = 0;
-        } else if (y == 0 || y == nY - 1 || z == 0 || z == nZ - 1) {
+        } else if (rho > rhoPlot || y == 0 || y == nY - 1 || z == 0 || z == nZ - 1) {
           plane[i] = (float) NO_VALUE;
         } else {
           gxTemp = (p2[i] - p0[i]) / (2 * stepBohr[0]);
@@ -453,11 +455,17 @@ public class NciCalculation extends QuantumCalculation implements
     float[] p0 = yzPlanesRaw[iPlane++];
     float[] p1 = yzPlanesRaw[iPlane++];
     float[] p2 = yzPlanesRaw[iPlane++];
+    double rho = p1[i];
+    // Shouldn't be possible to be too large, because the MarchingCubes algorithm
+    // can't generate a value -- but if it WERE possible, getValue() would set it
+    // to NO_VALUE anyway.
+    
+    if (rho > rhoPlot)  
+      return NO_VALUE; 
     float dx = stepBohr[0];
     float dy = stepBohr[1];
     float dz = stepBohr[2];
-    double rho = p1[i];
-    
+
     // Using explicit discrete second partial derivatives here. 
     // Worked these out myself; just seemed right! Note that
     // d^2rho/dxdy does = d^2rho/dydx. The factors of 1/4 are there

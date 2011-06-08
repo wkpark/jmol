@@ -30,6 +30,8 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.api.Interface;
+import org.jmol.api.MOCalculationInterface;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
@@ -42,12 +44,29 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   protected boolean isAngstroms;
   protected boolean canDownsample;
   private int[] downsampleRemainders;
+  private boolean isNCI;
  
   VolumeFileReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg, br);
     canDownsample = isProgressive = isXLowToHigh = true;
     jvxlData.wasCubic = true;
     boundingBox = params.boundingBox;
+    
+    
+    isNCI = (params.qmOrbitalType == Parameters.QM_TYPE_NCI_SCF);
+       
+    /* reads an electron density cube file and does a 
+     * discrete calculation for reduced electron density and
+     * Hessian processing. 
+     * 
+     *   isosurface NCI "filexxx.cube"
+     *
+     * Bob Hanson hansonr@stolaf.edu  6/7/2011
+     *  
+     */
+
+    if (isNCI)
+      hasColorData = true;
   }
 
   protected float recordData(float value) {
@@ -282,9 +301,52 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   protected int yzCount;
   @Override
   public void getPlane(int x) {
+    if (isNCI) {
+      getPlaneNCI(x);
+      return;
+    }
     if (yzCount == 0)
       initPlanes();
     getPlane(yzPlanes[x % 2]);
+  }
+  
+  private MOCalculationInterface q;
+  
+  private float[][] yzPlanesRaw;
+  private int nPlanesRaw;
+
+  /**
+   * Retrieve raw electron density planes and pass them to 
+   * the NciCalculation object for processing 
+   * 
+   * @param x
+   */
+  public void getPlaneNCI(int x) {
+    if (nPlanesRaw == 0) {
+      initPlanes();
+      q = (MOCalculationInterface) Interface
+          .getOptionInterface("quantum.NciCalculation");
+      q.setupCalculation(volumeData, null, null, null, -1, null, null, null,
+          null, null, null, null, null, false, null, params.parameters);
+      q.setPlanes(yzPlanesRaw = new float[4][yzCount]);
+      getPlane(yzPlanesRaw[0]);
+      getPlane(yzPlanesRaw[1]);
+      nPlanesRaw = 2;
+      for (int i = 0; i < yzCount; i++)
+        yzPlanes[0][i] = 100;
+      return;
+    }
+    if (nPlanesRaw == 4) {
+      float[] plane = yzPlanesRaw[0];
+      yzPlanesRaw[0] = yzPlanesRaw[1];
+      yzPlanesRaw[1] = yzPlanesRaw[2];
+      yzPlanesRaw[2] = yzPlanesRaw[3];
+      yzPlanesRaw[3] = plane;
+      getPlane(yzPlanesRaw[3]);
+    } else {
+      getPlane(yzPlanesRaw[nPlanesRaw++]);
+    }
+    q.calcPlane(yzPlanes[x % 2]);
   }
   
   protected void initPlanes() {
@@ -457,6 +519,23 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     bs.append(atomLine);
     return isAngstroms;
   }
-  
+
+  @Override
+  protected float getSurfacePointAndFraction(float cutoff,
+                                             boolean isCutoffAbsolute,
+                                             float valueA, float valueB,
+                                             Point3f pointA,
+                                             Vector3f edgeVector, int x, int y,
+                                             int z, int vA, int vB,
+                                             float[] fReturn, Point3f ptReturn) {
+      
+      float zero = super.getSurfacePointAndFraction(cutoff, isCutoffAbsolute, valueA,
+          valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn);
+      if (q == null || Float.isNaN(zero))
+        return zero;
+      vA = marchingCubes.getLinearOffset(x, y, z, vA);
+      vB = marchingCubes.getLinearOffset(x, y, z, vB);
+      return q.process(vA, vB, fReturn[0]);
+  }
 }
 

@@ -1211,8 +1211,7 @@ public class SurfaceGenerator {
     if (fileType.equals("Apbs"))
       return new ApbsReader(this, br);
     if (fileType.equals("Cube"))
-      return (params.qmOrbitalType == Parameters.QM_TYPE_NCI_SCF ? 
-          new NciCubeReader(this, br) : new CubeReader(this, br));
+      return new CubeReader(this, br);
     if (fileType.equals("Jaguar"))
       return new JaguarReader(this, br);
     if (fileType.equals("Xplor"))

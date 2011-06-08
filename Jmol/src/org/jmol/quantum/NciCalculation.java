@@ -41,7 +41,7 @@ import java.util.BitSet;
  * 
  * and 
  * 
- *   isosurface NCI map NCI
+ *   isosurface NCI "filename.CUBE" (or APBS, or CCP4, or OMAP, or MRC, or XPLOR)
  * 
  * ref: 
  * 

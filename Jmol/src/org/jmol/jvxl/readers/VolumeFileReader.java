@@ -52,19 +52,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     jvxlData.wasCubic = true;
     boundingBox = params.boundingBox;
     
-    
-    isNCI = (params.qmOrbitalType == Parameters.QM_TYPE_NCI_SCF);
-       
-    /* reads an electron density cube file and does a 
-     * discrete calculation for reduced electron density and
-     * Hessian processing. 
-     * 
-     *   isosurface NCI "filexxx.cube"
-     *
-     * Bob Hanson hansonr@stolaf.edu  6/7/2011
-     *  
-     */
-
+    isNCI = (params.qmOrbitalType == Parameters.QM_TYPE_NCI_SCF);       
     if (isNCI)
       hasColorData = true;
   }
@@ -317,8 +305,19 @@ abstract class VolumeFileReader extends SurfaceFileReader {
 
   /**
    * Retrieve raw electron density planes and pass them to 
-   * the NciCalculation object for processing 
+   * the NciCalculation object for processing into reduced
+   * density planes.   
    * 
+   * reads an electron density cube file and does a 
+   * discrete calculation for reduced electron density and
+   * Hessian processing. 
+   * 
+   *   isosurface NCI "filexxx.cube"
+   *
+   * see org.jmol.quantum.NciCalculation.java for references and calculation
+   * 
+   * Bob Hanson hansonr@stolaf.edu  6/7/2011
+   *  
    * @param x
    */
   public void getPlaneNCI(int x) {
@@ -533,6 +532,12 @@ abstract class VolumeFileReader extends SurfaceFileReader {
           valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn);
       if (q == null || Float.isNaN(zero))
         return zero;
+      /*
+       * in the case of an NCI calculation, we need to process
+       * the two end points vA an vB individually, then do
+       * the interpolation.
+       * 
+       */
       vA = marchingCubes.getLinearOffset(x, y, z, vA);
       vB = marchingCubes.getLinearOffset(x, y, z, vB);
       return q.process(vA, vB, fReturn[0]);

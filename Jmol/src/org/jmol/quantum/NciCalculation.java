@@ -256,8 +256,10 @@ public class NciCalculation extends QuantumCalculation implements
   
   private float getValue(double rho, boolean isReducedDensity) {
     double s;
-    if (isReducedDensity) {
-      s = (rho > rhoPlot || grad < 0 ? NO_VALUE : c * grad * Math.pow(rho, rpower));
+    if (rho > rhoPlot) {
+      s = NO_VALUE;
+    } else if (isReducedDensity) {
+      s = (grad < 0 ? NO_VALUE : c * grad * Math.pow(rho, rpower));
     } else {
       hess[0][0] = gxxTemp;
       hess[1][0] = hess[0][1] = gxyTemp;
@@ -287,7 +289,6 @@ public class NciCalculation extends QuantumCalculation implements
       double z1 = zeta1[znuc];
       double z2 = zeta2[znuc];
       double z3 = zeta3[znuc];
-      //System.out.println(i + " " + znuc + " " + z1 + " " + z2 + " " + z3 + " " + coef1[znuc] + " " + coef2[znuc] +" " + coef3[znuc]);
       double x = xBohr[ix] - qmAtoms[i].x;
       double y = yBohr[iy] - qmAtoms[i].y;
       double z = zBohr[iz] - qmAtoms[i].z;
@@ -297,6 +298,11 @@ public class NciCalculation extends QuantumCalculation implements
       double ce3 = coef3[znuc] * Math.exp(-r / z3);
       double rhoAtom = ce1 + ce2 + ce3;
       rho += rhoAtom;
+      // Don't continue to more atoms if the density is already high. 
+      // We couldn't do this if we were intending to write the density cube, 
+      // but we aren't doing that.
+      if (rho > rhoPlot)
+        return rho; 
       double fac1r = (ce1 / z1 + ce2 / z2 + ce3 / z3) / r;
       if (isReducedDensity) {
         if (type != TYPE_ALL)

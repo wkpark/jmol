@@ -9761,4 +9761,8 @@ private void zap(String msg) {
     return global.partialDots;
   }
 
+  public void setZslabPoint(Point3f pt) {
+    transformManager.setZslabPoint(pt);
+  }
+
 }

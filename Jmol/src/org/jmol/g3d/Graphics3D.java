@@ -556,6 +556,10 @@ final public class Graphics3D implements JmolRendererInterface {
     }
   }
 
+  public void setTempZSlab(int zSlab) {
+    this.zSlab = zSlab;
+  }
+  
   Pixel pixel;
   int zShadeR;
   int zShadeG;

@@ -990,7 +990,7 @@ public class StateManager {
     int specularPercent = 22;
     int specularPower = 40;
     int zDepth = 0;
-    int zShadePower = 1;
+    int zShadePower = 3;  // increased to 3 from 1 for Jmol 12.1.49
     int zSlab = 0;
     
     boolean slabByMolecule = false;

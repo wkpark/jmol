@@ -11961,6 +11961,9 @@ public class ScriptEvaluator {
     case Token.usercolorscheme:
       setUserColors();
       return;
+    case Token.zslab:
+      setZslab();
+      return;
     }
 
     // these next may report a value
@@ -12290,6 +12293,22 @@ public class ScriptEvaluator {
     }
     if (showing)
       viewer.showParameter(key, true, 80);
+  }
+
+  private void setZslab() throws ScriptException {
+    // sets zSlab either based on a percent value or an atom position
+    Point3f pt = null;
+    if (isFloatParameter(2)) {
+      checkLength(3);
+      setIntProperty("zSlab", (int) floatParameter(2));
+    } else {
+      if (!isCenterParameter(2))
+        error(ERROR_invalidArgument);
+      pt = centerParameter(2);
+      checkLength(iToken + 1);
+    }
+    if (!isSyntaxCheck)
+      viewer.setZslabPoint(pt);
   }
 
   private void setBondmode() throws ScriptException {

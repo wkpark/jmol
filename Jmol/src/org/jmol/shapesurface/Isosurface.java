@@ -382,8 +382,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       if (value instanceof Integer) {
         if (thisMesh != null)
           thisMesh.slabValue = ((Integer) value).intValue();
+        return;
       }
-      return;
     }
 
     if ("map" == propertyName) {

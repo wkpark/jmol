@@ -33,6 +33,7 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.util.*;
+import org.jmol.api.QuantumPlaneCalculationInterface;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.jvxl.data.*;
 import org.jmol.jvxl.api.MeshDataServer;
@@ -476,14 +477,33 @@ public abstract class SurfaceReader implements VertexDataServer {
   protected MarchingSquares marchingSquares;
   protected MarchingCubes marchingCubes;
 
-  public float getValue(int x, int y, int z, int ptyz) {
-    return volumeData.voxelData[x][y][z];
+  protected float[][] yzPlanes;
+  protected int yzCount;
+
+  protected QuantumPlaneCalculationInterface qpc;
+  
+  public float[] getPlane(int x) {
+    if (yzCount == 0)
+      initPlanes();
+    if (qpc != null)
+      qpc.getPlane(x, yzPlanes[x % 2]);
+    return yzPlanes[x % 2];
   }
 
-  public void getPlane(int x) {
-    // implementation specific -- for progressive readers
-    // MrcBinaryReader does this
+  protected void initPlanes() {
+    Logger.info("reading data progressively");
+    yzCount = nPointsY * nPointsZ;
+    yzPlanes = new float[2][];
+    yzPlanes[0] = new float[yzCount];
+    yzPlanes[1] = new float[yzCount];
   }
+
+  public float getValue(int x, int y, int z, int ptyz) {
+    if (yzPlanes == null)
+      return volumeData.voxelData[x][y][z];
+    return yzPlanes[x % 2][ptyz];
+  }
+
   private void generateSurfaceData() {
     edgeData = "";
     if (vertexDataOnly) {

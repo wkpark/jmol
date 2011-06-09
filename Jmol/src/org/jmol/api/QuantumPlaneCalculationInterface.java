@@ -49,4 +49,6 @@ public interface QuantumPlaneCalculationInterface extends QuantumCalculationInte
    */
   public abstract float getNoValue();
 
+  public abstract void getPlane(int x, float[] yzPlane);
+
 }

@@ -38,6 +38,7 @@ abstract class QuantumCalculation {
 
   protected float[][][] voxelData;
   protected float[] vd;
+  protected int[] countsXYZ;
   
   protected Point3f[] points;
   protected int xMin, xMax, yMin, yMax, zMin, zMax;
@@ -47,7 +48,12 @@ abstract class QuantumCalculation {
   protected QMAtom thisAtom;
   protected int firstAtomOffset;
 
-  // absolute grid coordinates in Bohr 
+  // absolute grid coordinates in Bohr
+  // these values may change if the reader
+  // is switching between reading surface points 
+  // and getting values for them during a 
+  // progressive calculation.
+  
   protected float[] xBohr, yBohr, zBohr;
   protected float[] originBohr = new float[3];
   protected float[] stepBohr = new float[3];
@@ -75,6 +81,9 @@ abstract class QuantumCalculation {
     this.nY = yMax = nY;
     this.nZ = zMax = nZ;
     
+    if (xBohr != null && xBohr.length >= nX)
+      return;
+    
     // absolute grid coordinates in Bohr
     xBohr = new float[nX];
     yBohr = new float[nY];
@@ -101,16 +110,16 @@ abstract class QuantumCalculation {
     // all coordinates come in as angstroms, not bohr, and are converted here into bohr
 
     if (points == null) {
+      volume = 1;
       for (int i = 3; --i >= 0;) {
         originBohr[i] = originXYZ[i] * unitFactor;
         stepBohr[i] = stepsXYZ[i] * unitFactor;
         volume *= stepBohr[i];
       }
-      if (doDebug)
-        Logger.debug("QuantumCalculation:\n origin(Bohr)= " + originBohr[0]
-            + " " + originBohr[1] + " " + originBohr[2] + "\n steps(Bohr)= "
-            + stepBohr[0] + " " + stepBohr[1] + " " + stepBohr[2]
-            + "\n counts= " + nX + " " + nY + " " + nZ);
+      Logger.info("QuantumCalculation:\n origin(Bohr)= " + originBohr[0] + " "
+          + originBohr[1] + " " + originBohr[2] + "\n steps(Bohr)= "
+          + stepBohr[0] + " " + stepBohr[1] + " " + stepBohr[2] + "\n counts= "
+          + nX + " " + nY + " " + nZ);
     }
 
     /* 
@@ -131,19 +140,14 @@ abstract class QuantumCalculation {
     }
   }
 
-  protected void setXYZBohr() {
-    setXYZBohr(xBohr, 0, nX, points);
-    setXYZBohr(yBohr, 1, nY, points);
-    setXYZBohr(zBohr, 2, nZ, points);
-  }
-
   public float process(Point3f pt) {
-    if (points == null)
+    if (points == null || nX != 1)
       initializeOnePoint();
     points[0].set(pt);
     voxelData[0][0][0] = 0;
-    setXYZBohr();
+    setXYZBohr(points);
     process();
+    //System.out.println("qc pt=" + pt + " " + voxelData[0][0][0]);
     return voxelData[0][0][0];
   }
 
@@ -157,6 +161,12 @@ abstract class QuantumCalculation {
 
   protected abstract void process();
   
+  protected void setXYZBohr(Point3f[] points) {
+    setXYZBohr(xBohr, 0, nX, points);
+    setXYZBohr(yBohr, 1, nY, points);
+    setXYZBohr(zBohr, 2, nZ, points);
+  }
+
   private void setXYZBohr(float[] bohr, int i, int n, Point3f[] points) {
     if (points != null) {
       float x = 0;

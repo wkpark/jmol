@@ -320,6 +320,7 @@ public class VolumeData implements VolumeDataInterface {
     origin[0] = volumetricOrigin.x;
     origin[1] = volumetricOrigin.y;
     origin[2] = volumetricOrigin.z;
+    System.out.println("volumeData " + volumetricOrigin);
     return setMatrix();
   }
 

@@ -285,58 +285,43 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   // and keep them indexed. reading x low to high, we will first encounter
   // plane 0, then plane 1.
   // Note that we cannot do this when the file is being opened for
-  // mapping. In that case we will need ALL the points. At least for now...
+  // mapping. In that case we either need ALL the points
+  // or, for some readers (IsoMOReader, NCI versions of file reader)
+  // we can process mapped data as individual points in one pass.
   
-  protected float[][] yzPlanes;
-  protected int yzCount;
   @Override
-  public void getPlane(int x) {
-    if (preProcessPlanes) {
-      getPlaneNCI(x);
-      return;
-    }
-    if (yzCount == 0)
-      initPlanes();
-    getPlane(yzPlanes[x % 2], true);
+  public float[] getPlane(int x) {
+    return (preProcessPlanes ? getPlaneProcessed(x) : super.getPlane(x));
   }
-  
-  private QuantumPlaneCalculationInterface q;
   
   private float[][] yzPlanesRaw;
   private int iPlaneRaw;
 
   /**
-   * Retrieve raw electron density planes and pass them to 
-   * the NciCalculation object for processing into reduced
-   * density planes.   
-   * 
-   * reads an electron density cube file and does a 
-   * discrete calculation for reduced electron density and
-   * Hessian processing. 
-   * 
-   *   isosurface NCI "filexxx.cube"
-   *
-   * see org.jmol.quantum.NciCalculation.java for references and calculation
+   * Retrieve raw file planes and pass them to 
+   * the calculation object for processing into new data.
    * 
    * Bob Hanson hansonr@stolaf.edu  6/7/2011
    *  
    * @param x
+   * @return plane (for testing)
    */
-  public void getPlaneNCI(int x) {
+  public float[] getPlaneProcessed(int x) {
     float[] plane;
     if (iPlaneRaw == 0) {
       initPlanes();
-      q = (QuantumPlaneCalculationInterface) Interface
+      qpc = (QuantumPlaneCalculationInterface) Interface
           .getOptionInterface("quantum.NciCalculation");
-      q.setupCalculation(volumeData, null, null, null, -1, null, null, null,
+      qpc.setupCalculation(volumeData, null, null, null, -1, null, null, null,
           null, null, null, null, null, false, null, params.parameters);
-      q.setPlanes(yzPlanesRaw = new float[4][yzCount]);
+      qpc.setPlanes(yzPlanesRaw = new float[4][yzCount]);
       getPlane(yzPlanesRaw[0], false);
       getPlane(yzPlanesRaw[1], false);
       iPlaneRaw = 1;
+      plane = yzPlanes[0];
       for (int i = 0; i < yzCount; i++)
-        yzPlanes[0][i] = 100;
-      return;
+        plane[i] = 100;
+      return plane;
     }
     if (iPlaneRaw == 3) {
       plane = yzPlanesRaw[0];
@@ -348,21 +333,14 @@ abstract class VolumeFileReader extends SurfaceFileReader {
       iPlaneRaw++;
     }
     getPlane(yzPlanesRaw[iPlaneRaw], false);
-    q.calcPlane(plane = yzPlanes[x % 2]);
-    float noValue = q.getNoValue();
+    qpc.calcPlane(plane = yzPlanes[x % 2]);
+    float noValue = qpc.getNoValue();
     for (int i = 0; i < yzCount; i++)
       if (plane[i] != noValue)
         recordData(plane[i]);
+    return plane;
   }
   
-  protected void initPlanes() {
-    Logger.info("VolumeFileReader reading data progressively");
-    yzCount = nPointsY * nPointsZ;
-    yzPlanes = new float[2][];
-    yzPlanes[0] = new float[yzCount];
-    yzPlanes[1] = new float[yzCount];
-  }
-
   private void getPlane(float[] plane, boolean doRecord) {
     try {
       for (int y = 0, ptyz = 0; y < nPointsY; ++y) {
@@ -399,9 +377,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
       )
         return Float.NaN;
     }
-    if (yzPlanes == null)
-      return super.getValue(x, y, z, ptyz);
-    return yzPlanes[x % 2][ptyz];
+    return super.getValue(x, y, z, ptyz);
   }
   
   private void skipVoxels(int n) throws Exception {
@@ -540,7 +516,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
       
       float zero = super.getSurfacePointAndFraction(cutoff, isCutoffAbsolute, valueA,
           valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn);
-      if (q == null || Float.isNaN(zero))
+      if (qpc == null || Float.isNaN(zero))
         return zero;
       /*
        * in the case of an NCI calculation, we need to process
@@ -550,7 +526,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
        */
       vA = marchingCubes.getLinearOffset(x, y, z, vA);
       vB = marchingCubes.getLinearOffset(x, y, z, vB);
-      return q.process(vA, vB, fReturn[0]);
+      return qpc.process(vA, vB, fReturn[0]);
   }
 }
 

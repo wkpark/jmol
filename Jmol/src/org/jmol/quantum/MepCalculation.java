@@ -130,11 +130,11 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
                         int calcType) {
     setup(calcType, potentials, atomCoordAngstroms, bsSelected);
     voxelData = volumeData.getVoxelData();
-    int[] countsXYZ = volumeData.getVoxelCounts();
+    countsXYZ = volumeData.getVoxelCounts();
     initialize(countsXYZ[0], countsXYZ[1], countsXYZ[2], null);
     setupCoordinates(volumeData.getOriginFloat(), volumeData
         .getVolumetricVectorLengths(), bsSelected, atomCoordAngstroms, null, false);
-    setXYZBohr();
+    setXYZBohr(points);
     process();
   }
 

@@ -120,7 +120,7 @@ public class MarchingCubes extends TriangleData {
     bsExcludedPlanes =    (bsExcluded[2] == null ? bsExcluded[2] = new BitSet() : bsExcluded[2]);
     bsExcludedTriangles = (bsExcluded[3] == null ? bsExcluded[3] = new BitSet() : bsExcluded[3]);
     mode = (volumeData.voxelData != null ? MODE_CUBE 
-        : bsVoxels != null ? MODE_BITSET : MODE_GETXYZ);
+        : bsVoxels != null ? MODE_BITSET : MODE_PLANES);
     setParameters(volumeData, params);
   }
 
@@ -143,7 +143,7 @@ public class MarchingCubes extends TriangleData {
     edgeVertexPointers = (isXLowToHigh ? edgeVertexPointersLowToHigh : edgeVertexPointersHighToLow);
     edgeVertexPlanes =  (isXLowToHigh ? edgeVertexPlanesLowToHigh : edgeVertexPlanesHighToLow);
     isoPointIndexPlanes = new int[2][yzCount][3];
-    yzPlanes = (mode == MODE_GETXYZ ? new float[2][yzCount] : null);
+    yzPlanes = (mode == MODE_PLANES ? new float[2][yzCount] : null);
     setLinearOffsets();
     calcVoxelVertexVectors();
   }
@@ -151,7 +151,7 @@ public class MarchingCubes extends TriangleData {
   protected int mode;
   protected final static int MODE_CUBE = 1;
   protected final static int MODE_BITSET = 2;
-  protected final static int MODE_GETXYZ = 3;
+  protected final static int MODE_PLANES = 3;
 
   protected final float[] vertexValues = new float[8];
 
@@ -213,14 +213,20 @@ public class MarchingCubes extends TriangleData {
 
     int x0, x1, xStep, ptStep, pt, ptX;
     if (isXLowToHigh) {
+      // used for progressive plane readers
       x0 = 0;
       x1 = cubeCountX;
+//      if (mode == MODE_PLANES)
+  //      x1++;
       xStep = 1;
       ptStep = yzCount;
       pt = ptX = (yzCount - 1) - nZ - 1;
       // we are starting at the top corner, in the next to last
       // cell on the next to last row of the first plane
     } else {
+      // NOTE: isXLowToHigh FALSE is not compatible with progressive plane reading.
+      //       One should never need to do that anyway, because one can always
+      //       define the cube axes such that they go "from low to high in X"
       x0 = cubeCountX - 1;
       x1 = -1;
       xStep = -1;
@@ -234,9 +240,8 @@ public class MarchingCubes extends TriangleData {
     int cellIndex0 = cubeCountY * cubeCountZ - 1;
     int cellIndex = cellIndex0;
     resetIndexPlane(isoPointIndexPlanes[1]);
-    if (mode == MODE_GETXYZ)
-      surfaceReader.getPlane(x0);
-
+    if (mode == MODE_PLANES)
+      getPlane(x0, false);
     float v = 0;
     int pti = 0;
     boolean allInside = (colorDensity && (cutoff == 0 || bsVoxels.cardinality() == 0));
@@ -246,14 +251,11 @@ public class MarchingCubes extends TriangleData {
       // we swap planes of grid data when
       // obtaining the grid data point by point
 
-      if (mode == MODE_GETXYZ) {
+      if (mode == MODE_PLANES) {
         // for a progressive reader, we read the next two planes
         // for x = 0, 2, 4, 6...
         if (x + xStep != x1)
-          surfaceReader.getPlane(x + xStep);
-        float[] plane = yzPlanes[0];
-        yzPlanes[0] = yzPlanes[1];
-        yzPlanes[1] = plane;
+          getPlane(x + xStep, true);
       }
 
       // we swap the edge vertex index planes
@@ -283,11 +285,9 @@ public class MarchingCubes extends TriangleData {
             Point3i offset = cubeVertexOffsets[i];
             pti = pt + linearOffsets[i];
             switch (mode) {
-            case MODE_GETXYZ:
+            case MODE_PLANES:
               v = vertexValues[i] = getValue(x + offset.x, y + offset.y, z
                   + offset.z, pti, yzPlanes[yzPlanePts[i]]);
-              //if (!Float.isNaN(v) && v != 100)
-                //System.out.println("mc test v=" + v);
               isInside = bsVoxels.get(pti);
               break;
             case MODE_BITSET:
@@ -297,6 +297,8 @@ public class MarchingCubes extends TriangleData {
               break;
             default:
             case MODE_CUBE:
+              //if (i == 0 && y == 0 && z == 0)
+                //dumpPlane(x, null);
               v = vertexValues[i] = volumeData.voxelData[x + offset.x][y
                   + offset.y][z + offset.z];
               if (isSquared)
@@ -311,9 +313,6 @@ public class MarchingCubes extends TriangleData {
               fractionOutside += (integrateSquared ? vertexValues[i]
                   * vertexValues[i] : vertexValues[i]);
             }
-
-            //if (Float.isNaN(v))
-              //bsExcludedVertices.set(pti);
           }
           if (!Float.isNaN(v)) {
             xCount++;
@@ -353,6 +352,28 @@ public class MarchingCubes extends TriangleData {
     return edgeData.toString();
   }
 
+  private void getPlane(int i, boolean andSwap) {
+    /*float[] p = */ surfaceReader.getPlane(i);
+    if (!andSwap)
+      return;
+    float[] plane = yzPlanes[0];
+    yzPlanes[0] = yzPlanes[1];
+    yzPlanes[1] = plane;
+    //dumpPlane(i, p);
+  }
+/*
+  private void dumpPlane(int n, float[] plane) {
+    float test = 0;
+    if (plane == null)
+      for (int y = 0; y <= cubeCountY; y++)
+        for (int z = 0; z <= cubeCountZ; z++)
+          test += volumeData.voxelData[n][y][z];
+    else
+      for (int i = 0; i < yzCount; i++)
+        test += plane[i];
+    System.out.println(isXLowToHigh + " test " + n + "=" + test);
+  }
+*/  
   protected void processTriangles(int insideMask) {
 
     // the inside mask serves to define the triangles necessary

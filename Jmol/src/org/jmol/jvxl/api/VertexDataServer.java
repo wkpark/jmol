@@ -116,6 +116,6 @@ public interface VertexDataServer {
    */
   public abstract float getValue(int x, int y, int z, int ptyz);
 
-  public abstract void getPlane(int x);
+  public abstract float[] getPlane(int x);
 
 }

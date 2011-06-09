@@ -37,6 +37,7 @@ import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.api.Interface;
 import org.jmol.api.QuantumCalculationInterface;
+import org.jmol.api.QuantumPlaneCalculationInterface;
 
 class IsoMOReader extends AtomDataReader {
 
@@ -44,6 +45,14 @@ class IsoMOReader extends AtomDataReader {
   
   IsoMOReader(SurfaceGenerator sg) {
     super(sg);
+    isNci = (params.qmOrbitalType == Parameters.QM_TYPE_NCI_PRO);
+    if (isNci) {
+      // NCI analysis org.jmol.quantum.NciCalculation
+      // allows for progressive plane reading, which requires
+      // isXLowToHigh to be TRUE
+      isXLowToHigh = hasColorData = true;
+      precalculateVoxelData = false; // will process as planes
+    }
   }
   
   /////// ab initio/semiempirical quantum mechanical orbitals ///////
@@ -53,16 +62,18 @@ class IsoMOReader extends AtomDataReader {
     setup();
     doAddHydrogens = false;
     getAtoms(params.qm_marginAngstroms, true, false);
-    setHeader("MO", "calculation type: " + params.moData.get("calculationType"));
+    if (isNci)
+      setHeader("NCI (promolecular)", "see NCIPLOT: A Program for Plotting Noncovalent Interaction Regions, Julia Contreras-Garcia, et al., J. of Chemical Theory and Computation, 2011, 7, 625-632");
+    else
+      setHeader("MO", "calculation type: " + params.moData.get("calculationType"));
     setRangesAndAddAtoms(params.qm_ptsPerAngstrom, params.qm_gridMax, myAtomCount);
-    isNci = (params.qmOrbitalType == Parameters.QM_TYPE_NCI_PRO);
     String className = (isNci ? "quantum.NciCalculation" : "quantum.MOCalculation");
     q = (QuantumCalculationInterface) Interface.getOptionInterface(className);
     moData = params.moData;
     mos = (List<Map<String, Object>>) moData.get("mos");
     linearCombination = params.qm_moLinearCombination;
     if (isNci) {
-      hasColorData = true;
+      qpc = (QuantumPlaneCalculationInterface) q;
     } else if (linearCombination == null) {
       Map<String, Object> mo = mos.get(params.qm_moNumber - 1);
       for (int i = params.title.length; --i >= 0;)
@@ -246,8 +257,18 @@ class IsoMOReader extends AtomDataReader {
     }
   }
   
+  @Override
+  public float[] getPlane(int x) {
+    if (!qSetupDone) 
+      setupCalculation();
+    return super.getPlane(x); 
+  }
+
+  private boolean qSetupDone;
+  
   @SuppressWarnings("unchecked")
   private boolean setupCalculation() {
+    qSetupDone = true;
     switch (params.qmOrbitalType) {
     case Parameters.QM_TYPE_GAUSSIAN:
       return q.setupCalculation(volumeData, bsMySelected, (String) moData

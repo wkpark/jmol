@@ -78,7 +78,7 @@ public class SimpleMarchingCubes extends MarchingCubes {
      * 
      */
     this.vdc = vdc;
-    mode = (vdc == null ? MODE_CUBE : MODE_GETXYZ);
+    mode = (vdc == null ? MODE_CUBE : MODE_PLANES);
     setParameters(volumeData, params);
     doCalcArea = (areaVolumeReturn != null);
     surfacePoints = surfacePointsReturn;

@@ -1364,8 +1364,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     thisMesh.isColorSolid = false;
   }
 
-  public void getPlane(int x) {
+  public float[] getPlane(int x) {
     // only for surface readers
+    return null;
   }
   
   public float getValue(int x, int y, int z, int ptyz) {

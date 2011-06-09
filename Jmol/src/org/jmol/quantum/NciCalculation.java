@@ -156,9 +156,9 @@ public class NciCalculation extends QuantumCalculation implements
     Logger.info("NCI calculation type = " + (isPromolecular ? "promolecular " : "SCF(CUBE) ") + stype);
     
     this.firstAtomOffset = firstAtomOffset;
-    int[] countsXYZ = volumeData.getVoxelCounts();
-    initialize(countsXYZ[0], countsXYZ[1], countsXYZ[2], points);
     voxelData = volumeData.getVoxelData();
+    countsXYZ = volumeData.getVoxelCounts();
+    initialize(countsXYZ[0], countsXYZ[1], countsXYZ[2], points);
     if (havePoints) {
       xMin = yMin = zMin = 0;
       xMax = yMax = zMax = points.length;
@@ -220,7 +220,7 @@ public class NciCalculation extends QuantumCalculation implements
   }
 
   public void createCube() {
-    setXYZBohr();
+    setXYZBohr(points);
     process();
   }  
 
@@ -228,12 +228,13 @@ public class NciCalculation extends QuantumCalculation implements
   protected void initializeOnePoint() {
     // called by surface mapper because
     // we have set "hasColorData" in reader
-    initializeEigen();
+    if (eigen == null)
+      initializeEigen();
+    isReducedDensity = false;
     super.initializeOnePoint();
   }
 
   private void initializeEigen() {
-    isReducedDensity = false;
     eigen = new Eigen(3);
     hess = new double[3][3];
   }
@@ -243,16 +244,33 @@ public class NciCalculation extends QuantumCalculation implements
   private double[][] hess;
   private double grad, gxTemp, gyTemp, gzTemp, gxxTemp, gyyTemp, gzzTemp, gxyTemp, gyzTemp, gxzTemp;
   
+  public void getPlane(int ix, float[] yzPlane) {
+    isReducedDensity = true;
+    initialize(countsXYZ[0], countsXYZ[1], countsXYZ[2], null);
+    setXYZBohr(null);
+    for (int iy = 0, i = 0; iy < countsXYZ[1]; iy++) {
+      for (int iz = 0; iz < countsXYZ[2]; i++, iz++)
+        yzPlane[i] = getValue(process(ix, iy, iz), isReducedDensity);
+    }
+  }
+
   @Override
   protected void process() {
     for (int ix = xMax; --ix >= xMin;) {
+      for (int iy = yMin; iy < yMax; iy++) {
+        vd = voxelData[ix][(havePoints ? 0 : iy)];
+        for (int iz = zMin; iz < zMax; iz++)
+          vd[(havePoints ? 0 : iz)] = getValue(process(ix, iy, iz), isReducedDensity);
+      }
+    }
+/*    for (int ix = xMax; --ix >= xMin;) {
       for (int iy = yMax; --iy >= yMin;) {
         vd = voxelData[ix][(havePoints ? 0 : iy)];
         for (int iz = zMax; --iz >= zMin;)
           vd[(havePoints ? 0 : iz)] = getValue(process(ix, iy, iz), isReducedDensity);
       }
     }
-  }
+*/  }
   
   private float getValue(double rho, boolean isReducedDensity) {
     double s;
@@ -348,10 +366,15 @@ public class NciCalculation extends QuantumCalculation implements
         break;
       }
       grad = Math.sqrt(gxTemp * gxTemp + gyTemp * gyTemp + gzTemp * gzTemp);
+
+      //if (ix == 4 && iy < 10 && iz < 10)
+        //System.out.println(ix + " " + iy + " " + iz + " rho " + rho + " grad " + grad);
     }
     return rho;
   }
 
+  double test1;
+  
   ///////////////////////// DISCRETE SCF METHODS /////////////////////
 
   private float[][] yzPlanesRaw;
@@ -531,5 +554,6 @@ public class NciCalculation extends QuantumCalculation implements
        1., 1.,                                1., 1., 1., 1., 1., 1., 
        1.0236, 0.7753,    0.5962, 0.6995, 0.5851, 0.5149, 0.4974, 0.4412     
   };
+
 
 }

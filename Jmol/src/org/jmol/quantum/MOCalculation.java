@@ -156,7 +156,7 @@ public class MOCalculation extends QuantumCalculation implements
     this.isElectronDensity = (testing || nuclearCharges != null);
     this.nuclearCharges = nuclearCharges;
     this.doNormalize = doNormalize;
-    int[] countsXYZ = volumeData.getVoxelCounts();
+    countsXYZ = volumeData.getVoxelCounts();
     initialize(countsXYZ[0], countsXYZ[1], countsXYZ[2], points);
     voxelData = volumeData.getVoxelData();
     voxelDataTemp = (isElectronDensity ? new float[nX][nY][nZ] : voxelData);
@@ -184,7 +184,7 @@ public class MOCalculation extends QuantumCalculation implements
   }
 
   public void createCube() {
-    setXYZBohr();
+    setXYZBohr(points);
     if (linearCombination == null) {
       process();
     } else {

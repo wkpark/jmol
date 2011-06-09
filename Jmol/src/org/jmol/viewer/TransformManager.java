@@ -203,9 +203,13 @@ abstract class TransformManager {
     commands.append("  set slabRange ").append(slabRange).append(";\n");
     if (zShadeEnabled)
       commands.append("  set zShade;\n");
+    try {
     if (zSlabPoint != null)
       commands.append("  set zSlab ").append(Escape.escape(zSlabPoint)).append(
       ";\n");
+    } catch (Exception e) {
+      // don't care
+    }
     if (slabPlane != null)
       commands.append("  slab plane ").append(Escape.escape(slabPlane)).append(
           ";\n");
@@ -873,7 +877,7 @@ abstract class TransformManager {
   Point3f zSlabPoint;
   
   void setZslabPoint(Point3f pt) {
-    zSlabPoint = new Point3f(pt);
+    zSlabPoint = (pt == null ? null : new Point3f(pt));
   }
   
   int slabValue;
@@ -1479,8 +1483,12 @@ abstract class TransformManager {
       zDepthValue = zValueFromPercent(zDepthPercentSetting);
     }
     if (zSlabPoint != null) {
+      try {
       transformPoint(zSlabPoint, pointT2);
       zSlabValue = (int) pointT2.z;
+      } catch (Exception e) {
+        // don't care
+      }
     }
       
     viewer.getGlobalSettings().setParameterValue("_slabPlane",

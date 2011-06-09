@@ -35,13 +35,13 @@ import java.util.List;
 import java.util.BitSet;
 
 /*
- * promolecular NCIPLOT implemented in Jmol 12.1.49
+ * promolecular and discrete SCF NCIPLOT implemented in Jmol 12.1.49
  *
  *   -- NCIPLOT promolecule calculation for reduced density.
  *      Plots reduced density mapped with ABS(rho)*SIGN(lambda2)
  *      where lambda2 is the middle eigenvalue of the Hessian matrix of
  *      promolecular electron density. Innovates a discrete SCF option not
- *      available in NCIPLOT itself.
+ *      available in NCIPLOT itself as well as an "intramolecular only" option.
  *
  *      default is "promolecular" approximation
  *

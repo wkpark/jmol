@@ -59,6 +59,8 @@ abstract class VolumeFileReader extends SurfaceFileReader {
 
   private int nData;  
   protected float recordData(float value) {
+    if (Float.isNaN(value))
+      return value;
      if (value < dataMin)
        dataMin = value;
      if (value > dataMax)
@@ -305,11 +307,11 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   private int iPlaneRaw;
 
   /**
-   * Retrieve raw file planes and pass them to 
-   * the calculation object for processing into new data.
+   * Retrieve raw file planes and pass them to the calculation object for
+   * processing into new data.
    * 
-   * Bob Hanson hansonr@stolaf.edu  6/7/2011
-   *  
+   * Bob Hanson hansonr@stolaf.edu 6/7/2011
+   * 
    * @param x
    * @return plane (for testing)
    */
@@ -321,12 +323,13 @@ abstract class VolumeFileReader extends SurfaceFileReader {
       qpc.setupCalculation(volumeData, null, null, null, -1, null, null, null,
           null, null, null, null, null, false, null, params.parameters);
       qpc.setPlanes(yzPlanesRaw = new float[4][yzCount]);
+      float nan = qpc.getNoValue();
       getPlane(yzPlanesRaw[0], false);
       getPlane(yzPlanesRaw[1], false);
       iPlaneRaw = 1;
       plane = yzPlanes[0];
       for (int i = 0; i < yzCount; i++)
-        plane[i] = 100;
+        plane[i] = nan;
       return plane;
     }
     if (iPlaneRaw == 3) {
@@ -338,12 +341,18 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     } else {
       iPlaneRaw++;
     }
-    getPlane(yzPlanesRaw[iPlaneRaw], false);
-    qpc.calcPlane(plane = yzPlanes[x % 2]);
-    float noValue = qpc.getNoValue();
-    for (int i = 0; i < yzCount; i++)
-      if (plane[i] != noValue)
-        recordData(plane[i]);
+    plane = yzPlanesRaw[iPlaneRaw];
+    float nan = qpc.getNoValue();
+    if (x < nPointsZ - 1) {
+      getPlane(plane, false);
+      qpc.calcPlane(plane = yzPlanes[x % 2]);
+      for (int i = 0; i < yzCount; i++)
+        if (plane[i] != nan)
+          recordData(plane[i]);
+    } else {
+      for (int i = 0; i < yzCount; i++)
+        plane[i] = nan;
+    }
     return plane;
   }
   

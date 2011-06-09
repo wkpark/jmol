@@ -491,8 +491,8 @@ public abstract class SurfaceReader implements VertexDataServer {
   }
 
   protected void initPlanes() {
-    Logger.info("reading data progressively");
     yzCount = nPointsY * nPointsZ;
+    Logger.info("reading data progressively -- yzCount = " + yzCount);
     yzPlanes = new float[2][];
     yzPlanes[0] = new float[yzCount];
     yzPlanes[1] = new float[yzCount];

@@ -291,7 +291,14 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   
   @Override
   public float[] getPlane(int x) {
-    return (preProcessPlanes ? getPlaneProcessed(x) : super.getPlane(x));
+    if (x == 0)
+      initPlanes();
+    if (preProcessPlanes)
+      return getPlaneProcessed(x);
+    float[] plane = super.getPlane(x);
+    if (qpc == null)
+      getPlane(plane, true);
+    return plane;
   }
   
   private float[][] yzPlanesRaw;
@@ -309,7 +316,6 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   public float[] getPlaneProcessed(int x) {
     float[] plane;
     if (iPlaneRaw == 0) {
-      initPlanes();
       qpc = (QuantumPlaneCalculationInterface) Interface
           .getOptionInterface("quantum.NciCalculation");
       qpc.setupCalculation(volumeData, null, null, null, -1, null, null, null,

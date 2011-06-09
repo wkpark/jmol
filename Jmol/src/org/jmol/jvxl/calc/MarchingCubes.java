@@ -216,8 +216,10 @@ public class MarchingCubes extends TriangleData {
       // used for progressive plane readers
       x0 = 0;
       x1 = cubeCountX;
-//      if (mode == MODE_PLANES)
-  //      x1++;
+      // either this is a bug, or I'm forgetting something, but the
+      // progressive readers otherwise will miss the last plane. Added in Jmol 12.1.49:
+      if (mode == MODE_PLANES)
+        x1++;
       xStep = 1;
       ptStep = yzCount;
       pt = ptX = (yzCount - 1) - nZ - 1;
@@ -353,13 +355,13 @@ public class MarchingCubes extends TriangleData {
   }
 
   private void getPlane(int i, boolean andSwap) {
-    /*float[] p = */ surfaceReader.getPlane(i);
-    if (!andSwap)
-      return;
-    float[] plane = yzPlanes[0];
-    yzPlanes[0] = yzPlanes[1];
-    yzPlanes[1] = plane;
+    /*float[] p = */surfaceReader.getPlane(i);
     //dumpPlane(i, p);
+    if (andSwap) {
+      float[] plane = yzPlanes[0];
+      yzPlanes[0] = yzPlanes[1];
+      yzPlanes[1] = plane;
+    }
   }
 /*
   private void dumpPlane(int n, float[] plane) {

@@ -219,13 +219,10 @@ public class VolumeData implements VolumeDataInterface {
   }
   
   public float getVoxelData(int pt) {
-    //System.out.print(pt + " ");
     int ix = pt / yzCount;
     pt -= ix * yzCount;
     int iy = pt / voxelCounts[2];
     int iz = pt - iy * voxelCounts[2];
-    //System.out.println(ix + " " + iy + " " + iz);
-    //return 0;
     return voxelData[ix][iy][iz]; 
   }
   
@@ -320,7 +317,6 @@ public class VolumeData implements VolumeDataInterface {
     origin[0] = volumetricOrigin.x;
     origin[1] = volumetricOrigin.y;
     origin[2] = volumetricOrigin.z;
-    System.out.println("volumeData " + volumetricOrigin);
     return setMatrix();
   }
 

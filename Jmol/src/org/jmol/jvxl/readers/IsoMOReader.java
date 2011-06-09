@@ -52,6 +52,7 @@ class IsoMOReader extends AtomDataReader {
       // isXLowToHigh to be TRUE
       isXLowToHigh = hasColorData = true;
       precalculateVoxelData = false; // will process as planes
+      params.insideOut = !params.insideOut;
     }
   }
   

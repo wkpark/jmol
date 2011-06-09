@@ -54,6 +54,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     if (params.qmOrbitalType == Parameters.QM_TYPE_NCI_SCF) {
       preProcessPlanes = true; 
       hasColorData = true;
+      params.insideOut = !params.insideOut;
     }
   }
 

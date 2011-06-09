@@ -201,7 +201,7 @@ public class NciCalculation extends QuantumCalculation implements
         }
         for (int i = 0; i < nMolecules; i++)
           if (bsMolecules[i] != null)
-            Logger.info("Molecule " + (i + 1) + ": " + bsMolecules[i]);
+            Logger.info("Molecule " + (i + 1) + " " + bsMolecules[i].cardinality() + " atoms: " + bsMolecules[i]);
         rhoMolecules = new double[nMolecules];
       }
     }

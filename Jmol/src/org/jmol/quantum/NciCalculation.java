@@ -283,6 +283,7 @@ public class NciCalculation extends QuantumCalculation implements
       for (int iy = 0; iy < countsXYZ[1]; iy++)
         for (int iz = 0; iz < countsXYZ[2]; index++, iz++)
           processAtoms(ix, iy, iz, index);
+    Logger.info("NCI calculation SCF " + (type == TYPE_INTRA ? "intra" : "inter") + "molecular grid points = " + bsOK.cardinality());
   }
 
   @Override
@@ -438,7 +439,7 @@ public class NciCalculation extends QuantumCalculation implements
    *        an OUTPUT plane, to be filled here and used by MarchingCubes
    * 
    */
-  public void calcPlane(float[] plane) {
+  public void calcPlane(int x, float[] plane) {
 
     // (1) shift planes:
 
@@ -468,10 +469,14 @@ public class NciCalculation extends QuantumCalculation implements
 
     // (4) Calculate discrete reduced gradients. All edges are just assigned "no value"
 
+    int index = x * yzCount;
+    
     for (int y = 0, i = 0; y < nY; y++)
       for (int z = 0; z < nZ; z++, i++) {
         double rho = p1[i];
-        if (rho == 0) {
+        if (bsOK != null && !bsOK.get(index + i)) {
+          plane[i] = (float) NO_VALUE;
+        } else if (rho == 0) {
           plane[i] = 0;
         } else if (rho > rhoPlot || y == 0 || y == nY - 1 || z == 0 || z == nZ - 1) {
           plane[i] = (float) NO_VALUE;

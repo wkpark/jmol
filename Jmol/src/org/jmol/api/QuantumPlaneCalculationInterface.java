@@ -20,11 +20,12 @@ public interface QuantumPlaneCalculationInterface extends QuantumCalculationInte
    * Fill this plane with data based on the current set of raw data planes. 
    * Really there are just two planes that are managed by VolumeFileReader
    * and are interchanged as the Marching Cubes process moves along.
+   * @param x 
    * 
    * @param plane
    */
   
-  public abstract void calcPlane(float[] plane);
+  public abstract void calcPlane(int x, float[] plane);
   
   /**
    * 

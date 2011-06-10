@@ -357,7 +357,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     float nan = qpc.getNoValue();
     if (x < nPointsZ - 1) {
       getPlane(plane, false);
-      qpc.calcPlane(plane = yzPlanes[x % 2]);
+      qpc.calcPlane(x, plane = yzPlanes[x % 2]);
       for (int i = 0; i < yzCount; i++)
         if (plane[i] != nan)
           recordData(plane[i]);

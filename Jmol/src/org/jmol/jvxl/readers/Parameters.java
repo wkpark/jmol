@@ -219,7 +219,6 @@ public class Parameters {
     isSquared = false;
     isContoured = false;
     isEccentric = isAnisotropic = false;
-    isDensity = false;
     isSilent = false;
     iUseBitSets = false;
     logCube = logCompression = false;
@@ -641,11 +640,9 @@ public class Parameters {
   int qm_nAtoms;
   int qm_moNumber = Integer.MAX_VALUE;
   float[] qm_moLinearCombination = null;
-  public boolean isDensity;
   
-  void setNci(boolean isPromolecular, boolean doMap) {
+  void setNci(boolean isPromolecular) {
     dataType = SURFACE_NCI;
-    isDensity = doMap;
     qm_marginAngstroms = 2f;
     qmOrbitalType = (isPromolecular ? QM_TYPE_NCI_PRO : QM_TYPE_NCI_SCF);
     if (cutoff == Float.MAX_VALUE || cutoff == 0)

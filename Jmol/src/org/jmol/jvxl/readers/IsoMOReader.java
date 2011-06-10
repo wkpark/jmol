@@ -230,7 +230,6 @@ class IsoMOReader extends AtomDataReader {
   int[][] dfCoefMaps;
   float[] linearCombination;
   float[][] coefs;
-  float[] nuclearCharges;
   private boolean isElectronDensityCalc;
   
   protected void createOrbital() {
@@ -239,7 +238,6 @@ class IsoMOReader extends AtomDataReader {
       // electron density calc
       if (mos == null || isMonteCarlo)
         return;
-      nuclearCharges = params.theProperty;
       for (int i = params.qm_moNumber; --i >= 0; ) {
         Logger.info(" generating isosurface data for MO " + (i + 1));
         Map<String, Object> mo = mos.get(i);
@@ -276,17 +274,17 @@ class IsoMOReader extends AtomDataReader {
           .get("calculationType"), atomData.atomXyz, atomData.firstAtomIndex,
           (List<int[]>) moData.get("shells"), (float[][]) moData
               .get("gaussians"), dfCoefMaps, null, coef, linearCombination,
-          coefs, nuclearCharges, moData.get("isNormalized") == null, points,
+          coefs, params.theProperty, moData.get("isNormalized") == null, points,
           params.parameters);
     case Parameters.QM_TYPE_SLATER:
       return q.setupCalculation(volumeData, bsMySelected, (String) moData
           .get("calculationType"), atomData.atomXyz, atomData.firstAtomIndex,
           null, null, null, moData.get("slaters"), coef, linearCombination,
-          coefs, nuclearCharges, true, points, params.parameters);
+          coefs, params.theProperty, true, points, params.parameters);
     case Parameters.QM_TYPE_NCI_PRO:
       return q.setupCalculation(volumeData, bsMySelected, null,
           atomData.atomXyz, atomData.firstAtomIndex, null, null, null, null,
-          null, null, null, nuclearCharges, params.isDensity, points,
+          null, null, null, params.theProperty, true, points,
           params.parameters);
     }
     return false;

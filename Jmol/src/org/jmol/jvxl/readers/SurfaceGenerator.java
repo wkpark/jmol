@@ -898,12 +898,10 @@ public class SurfaceGenerator {
     }
 
     if ("nci" == propertyName) {
-      if (value == null) {
-        params.setNci(false, false);
-      } else {
-        params.setNci(true, ((Boolean) value).booleanValue()); // nciplot
+      boolean isPromolecular = ((Boolean) value).booleanValue(); 
+      params.setNci(isPromolecular);
+      if (isPromolecular)
         processState();
-      }
       return true;
     }
 

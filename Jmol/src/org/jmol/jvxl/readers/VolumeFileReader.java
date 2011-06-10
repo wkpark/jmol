@@ -32,6 +32,7 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.api.Interface;
 import org.jmol.api.QuantumPlaneCalculationInterface;
+import org.jmol.atomdata.AtomData;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
@@ -45,34 +46,35 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   protected boolean canDownsample;
   private int[] downsampleRemainders;
   private boolean preProcessPlanes;
- 
+
   VolumeFileReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg, br);
     canDownsample = isProgressive = isXLowToHigh = true;
     jvxlData.wasCubic = true;
     boundingBox = params.boundingBox;
     if (params.qmOrbitalType == Parameters.QM_TYPE_NCI_SCF) {
-      preProcessPlanes = true; 
+      preProcessPlanes = true;
       hasColorData = true;
       params.insideOut = !params.insideOut;
     }
   }
 
-  private int nData;  
+  private int nData;
+
   protected float recordData(float value) {
     if (Float.isNaN(value))
       return value;
-     if (value < dataMin)
-       dataMin = value;
-     if (value > dataMax)
-       dataMax = value;
-     dataMean += value;
-     nData++;
-     return value;
+    if (value < dataMin)
+      dataMin = value;
+    if (value > dataMax)
+      dataMax = value;
+    dataMean += value;
+    nData++;
+    return value;
   }
-  
+
   boolean readerClosed;
-  
+
   @Override
   protected void closeReader() {
     if (readerClosed)
@@ -82,9 +84,11 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     if (nData == 0 || dataMax == -Float.MAX_VALUE)
       return;
     dataMean /= nData;
-    Logger.info("VolumeFileReader closing file: " + nData + " points read \ndata min/max/mean = " + dataMin + "/" + dataMax + "/" + dataMean );
+    Logger.info("VolumeFileReader closing file: " + nData
+        + " points read \ndata min/max/mean = " + dataMin + "/" + dataMax + "/"
+        + dataMean);
   }
-  
+
   @Override
   protected boolean readVolumeParameters(boolean isMapData) {
     endOfData = false;
@@ -92,21 +96,23 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     if (nSurfaces == 0)
       return false;
     if (nSurfaces < params.fileIndex) {
-      Logger.warn("not enough surfaces in file -- resetting params.fileIndex to "
-          + nSurfaces);
+      Logger
+          .warn("not enough surfaces in file -- resetting params.fileIndex to "
+              + nSurfaces);
       params.fileIndex = nSurfaces;
     }
     return true;
   }
-  
+
   Point4f thePlane;
+
   @Override
   protected boolean readVolumeData(boolean isMapData) {
     if (!gotoAndReadVoxelData(isMapData))
       return false;
     if (!vertexDataOnly)
-      Logger.info("JVXL read: " + nPointsX + " x " + nPointsY + " x " + nPointsZ
-          + " data points");
+      Logger.info("JVXL read: " + nPointsX + " x " + nPointsY + " x "
+          + nPointsZ + " data points");
     return true;
   }
 
@@ -121,7 +127,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
       Logger.info("voxel grid origin:" + volumetricOrigin);
 
       int downsampleFactor = params.downsampleFactor;
-      boolean downsampling = (canDownsample && downsampleFactor > 0);      
+      boolean downsampling = (canDownsample && downsampleFactor > 0);
       if (downsampling) {
         downsampleRemainders = new int[3];
         Logger.info("downsample factor = " + downsampleFactor);
@@ -151,20 +157,20 @@ abstract class VolumeFileReader extends SurfaceFileReader {
       return 0;
     }
   }
-  
+
   abstract protected void readParameters() throws Exception;
 
   // generally useful:
-  
+
   protected String skipComments(boolean allowBlankLines) throws Exception {
     StringBuffer sb = new StringBuffer();
-    while (readLine() != null && 
-        (allowBlankLines && line.length() == 0 || line.indexOf("#") == 0))
+    while (readLine() != null
+        && (allowBlankLines && line.length() == 0 || line.indexOf("#") == 0))
       sb.append(line).append('\n');
     return sb.toString();
   }
-    
-  protected void readVoxelVector(int voxelVectorIndex) throws Exception {    
+
+  protected void readVoxelVector(int voxelVectorIndex) throws Exception {
     readLine();
     Vector3f voxelVector = volumetricVectors[voxelVectorIndex];
     if ((voxelCounts[voxelVectorIndex] = parseInt(line)) == Integer.MIN_VALUE) //unreadable
@@ -176,7 +182,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
 
   protected int downsampleFactor;
   private int nSkipX, nSkipY, nSkipZ;
-  
+
   @Override
   protected void readSurfaceData(boolean isMapData) throws Exception {
     /*
@@ -218,8 +224,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     nSkipZ = 0;
     if (canDownsample && downsampleFactor > 0) {
       nSkipX = downsampleFactor - 1;
-      nSkipY = downsampleRemainders[2]
-          + (downsampleFactor - 1)
+      nSkipY = downsampleRemainders[2] + (downsampleFactor - 1)
           * (nSkipZ = (nPointsZ * downsampleFactor + downsampleRemainders[2]));
       nSkipZ = downsampleRemainders[1] * nSkipZ + (downsampleFactor - 1)
           * nSkipZ * (nPointsY * downsampleFactor + downsampleRemainders[1]);
@@ -238,7 +243,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
       voxelData = null;
       if (isJvxl)
         jvxlVoxelBitSet = getVoxelBitSet(nDataPoints);
-    } else if (isMapData && volumeData.hasPlane()){
+    } else if (isMapData && volumeData.hasPlane()) {
       volumeData.setVoxelMap();
       float f = volumeData.getToPlaneParameter(); // was mappingPlane
       for (int x = 0; x < nPointsX; ++x) {
@@ -246,7 +251,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
           for (int z = 0; z < nPointsZ; ++z) {
             float v = recordData(getNextVoxelValue()); // was mappingPlane
             if (volumeData.isNearPlane(x, y, z, f))
-              volumeData.setVoxelMapValue(x, y, z, v);          
+              volumeData.setVoxelMapValue(x, y, z, v);
             if (nSkipX != 0)
               skipVoxels(nSkipX);
           }
@@ -291,7 +296,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   // mapping. In that case we either need ALL the points
   // or, for some readers (IsoMOReader, NCI versions of file reader)
   // we can process mapped data as individual points in one pass.
-  
+
   @Override
   public float[] getPlane(int x) {
     if (x == 0)
@@ -303,7 +308,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
       getPlane(plane, true);
     return plane;
   }
-  
+
   private float[][] yzPlanesRaw;
   private int iPlaneRaw;
 
@@ -321,8 +326,14 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     if (iPlaneRaw == 0) {
       qpc = (QuantumPlaneCalculationInterface) Interface
           .getOptionInterface("quantum.NciCalculation");
-      qpc.setupCalculation(volumeData, null, null, null, -1, null, null, null,
-          null, null, null, null, null, false, null, params.parameters);
+      AtomData atomData = new AtomData();
+      atomData.modelIndex = -1; // -1 here means fill ALL atoms; any other
+      // means "this model only"
+      atomData.bsSelected = params.bsSelected;
+      sg.getAtomDataServer().fillAtomData(atomData, AtomData.MODE_FILL_COORDS);
+      qpc.setupCalculation(volumeData, sg.getBsSelected(), null,
+          atomData.atomXyz, -1, null, null, null, null, null, null, null,
+          params.theProperty, true, null, params.parameters);
       qpc.setPlanes(yzPlanesRaw = new float[4][yzCount]);
       float nan = qpc.getNoValue();
       getPlane(yzPlanesRaw[0], false);
@@ -356,7 +367,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     }
     return plane;
   }
-  
+
   private void getPlane(float[] plane, boolean doRecord) {
     try {
       for (int y = 0, ptyz = 0; y < nPointsY; ++y) {
@@ -379,40 +390,39 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   }
 
   protected Point3f[] boundingBox;
-  
+
   @Override
   public float getValue(int x, int y, int z, int ptyz) {
-   // if (x == 0 && ptyz + 1 == yzCount) {
-      //first value -- ALWAYS send
-   // }
+    // if (x == 0 && ptyz + 1 == yzCount) {
+    //first value -- ALWAYS send
+    // }
     if (boundingBox != null) {
       volumeData.voxelPtToXYZ(x, y, z, ptTemp);
       if (ptTemp.x < boundingBox[0].x || ptTemp.x > boundingBox[1].x
           || ptTemp.y < boundingBox[0].y || ptTemp.y > boundingBox[1].y
-          || ptTemp.z < boundingBox[0].z || ptTemp.z > boundingBox[1].z
-      )
+          || ptTemp.z < boundingBox[0].z || ptTemp.z > boundingBox[1].z)
         return Float.NaN;
     }
     return super.getValue(x, y, z, ptyz);
   }
-  
+
   private void skipVoxels(int n) throws Exception {
     // not allowed for JVXL data
     for (int i = n; --i >= 0;)
       getNextVoxelValue();
   }
-  
+
   /**
    * 
    * @param nPoints
-   * @return  JVXL bitset
+   * @return JVXL bitset
    * @throws Exception
    */
   protected BitSet getVoxelBitSet(int nPoints) throws Exception {
     // jvxlReader will use this to read the surface voxel data
-    return null;  
+    return null;
   }
-  
+
   protected float getNextVoxelValue() throws Exception {
     float voxelValue = 0;
     if (nSurfaces > 1 && !params.blockCubeData) {
@@ -430,8 +440,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   protected float nextVoxel() throws Exception {
     float voxelValue = parseFloat();
     if (Float.isNaN(voxelValue)) {
-      while (readLine() != null
-          && Float.isNaN(voxelValue = parseFloat(line))) {
+      while (readLine() != null && Float.isNaN(voxelValue = parseFloat(line))) {
       }
       if (line == null) {
         if (!endOfData)
@@ -529,20 +538,19 @@ abstract class VolumeFileReader extends SurfaceFileReader {
                                              Vector3f edgeVector, int x, int y,
                                              int z, int vA, int vB,
                                              float[] fReturn, Point3f ptReturn) {
-      
-      float zero = super.getSurfacePointAndFraction(cutoff, isCutoffAbsolute, valueA,
-          valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn);
-      if (qpc == null || Float.isNaN(zero))
-        return zero;
-      /*
-       * in the case of an NCI calculation, we need to process
-       * the two end points vA an vB individually, then do
-       * the interpolation.
-       * 
-       */
-      vA = marchingCubes.getLinearOffset(x, y, z, vA);
-      vB = marchingCubes.getLinearOffset(x, y, z, vB);
-      return qpc.process(vA, vB, fReturn[0]);
+
+    float zero = super.getSurfacePointAndFraction(cutoff, isCutoffAbsolute,
+        valueA, valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn);
+    if (qpc == null || Float.isNaN(zero))
+      return zero;
+    /*
+     * in the case of an NCI calculation, we need to process
+     * the two end points vA an vB individually, then do
+     * the interpolation.
+     * 
+     */
+    vA = marchingCubes.getLinearOffset(x, y, z, vA);
+    vB = marchingCubes.getLinearOffset(x, y, z, vB);
+    return qpc.process(vA, vB, fReturn[0]);
   }
 }
-

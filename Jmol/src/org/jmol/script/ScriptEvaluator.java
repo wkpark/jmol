@@ -16064,12 +16064,12 @@ public class ScriptEvaluator {
       case Token.nci:
         propertyName = "nci";
         sbCommand.append(" " + propertyName);
-        boolean isCube = (tokAt(i + 1) == Token.file
-            || tokAt(i + 1) == Token.string);
-        if (!isCube) {
-          propertyValue =  Boolean.valueOf(!isMapped);
+        int tok = tokAt(i + 1);
+        boolean isPromolecular = (tok != Token.file
+            && tok != Token.string && tok != Token.mrc);
+        propertyValue =  Boolean.valueOf(isPromolecular);
+        if (isPromolecular)
           surfaceObjectSeen = true;
-        }
         break;
       case Token.mep:
       case Token.mlp:

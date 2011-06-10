@@ -17,11 +17,9 @@ public interface QuantumCalculationInterface {
                                  Object slaters,
                                  float[] moCoefficients, 
                                  float[] linearCombination, float[][] coefs,
-                                 float[] nuclearCharges, boolean doNormalize, Point3f[] points, float[] parameters);
+                                 float[] partialCharges, boolean doNormalize, Point3f[] points, float[] parameters);
   
   public abstract void createCube();
   public abstract float process(Point3f pt);
   
-  public abstract void calculateElectronDensity(float[] nuclearCharges);
-
 }

@@ -116,8 +116,6 @@ public class MOCalculation extends QuantumCalculation implements
   //                                              S           P           SP          DS         DC          FS          FC
   private int[][] dfCoefMaps = new int[][] {new int[1], new int[3], new int[4], new int[5], new int[6], new int[7], new int[10]};
 
-//  private float[] nuclearCharges;
-
   protected float[][][] voxelDataTemp;
 
   private float[] linearCombination;
@@ -126,21 +124,18 @@ public class MOCalculation extends QuantumCalculation implements
 
   private double moFactor = 1;
   private boolean havePoints;
-  private float[] nuclearCharges;
   boolean testing;
   
   public MOCalculation() {
   }
 
-
-  
   public boolean setupCalculation(VolumeDataInterface volumeData, BitSet bsSelected,
                         String calculationType, Point3f[] atomCoordAngstroms,
                         int firstAtomOffset, List<int[]> shells,
                         float[][] gaussians, int[][] dfCoefMaps,
                         Object slaters,
                         float[] moCoefficients, float[] linearCombination, float[][] coefs,
-                        float[] nuclearCharges, boolean doNormalize, Point3f[] points, float[] parameters) {
+                        float[] partialCharges, boolean doNormalize, Point3f[] points, float[] parameters) {
     havePoints = (points != null);
     this.calculationType = calculationType;
     this.firstAtomOffset = firstAtomOffset;
@@ -152,9 +147,7 @@ public class MOCalculation extends QuantumCalculation implements
     this.moCoefficients = moCoefficients;
     this.linearCombination = linearCombination;
     this.coefs = coefs;
-    //this.nuclearCharges = nuclearCharges;
-    this.isElectronDensity = (testing || nuclearCharges != null);
-    this.nuclearCharges = nuclearCharges;
+    this.isElectronDensity = (partialCharges != null);
     this.doNormalize = doNormalize;
     countsXYZ = volumeData.getVoxelCounts();
     initialize(countsXYZ[0], countsXYZ[1], countsXYZ[2], points);
@@ -203,7 +196,7 @@ public class MOCalculation extends QuantumCalculation implements
       }
     }
     if (doDebug || testing || isElectronDensity)
-      calculateElectronDensity(nuclearCharges);
+      calculateElectronDensity();
   }
 
   @Override
@@ -1227,7 +1220,7 @@ public class MOCalculation extends QuantumCalculation implements
 
   float integration = 0;
 
-  public void calculateElectronDensity(float[] nuclearCharges) {
+  public void calculateElectronDensity() {
     //TODO
     for (int ix = nX; --ix >= 0;)
       for (int iy = nY; --iy >= 0;)
@@ -1239,7 +1232,6 @@ public class MOCalculation extends QuantumCalculation implements
         // / bohr_per_angstrom / bohr_per_angstrom / bohr_per_angstrom;
     integration *= volume;
     Logger.info("Integrated density = " + integration);
-    //processMep(nuclearCharges);
   }
 
 }

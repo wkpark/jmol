@@ -434,6 +434,7 @@ public class NciCalculation extends QuantumCalculation implements
 
   /**
    * For reduced density only; coloring is done point by point.
+   * @param x 
    * 
    * @param plane
    *        an OUTPUT plane, to be filled here and used by MarchingCubes

@@ -1453,6 +1453,4 @@ public class JmolPanel extends JPanel implements SplashInterface {
     GT.setDoTranslate(doTranslate);
     guimap.updateLabels();
   }
-  
-
 }

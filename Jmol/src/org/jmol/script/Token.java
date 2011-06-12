@@ -360,6 +360,7 @@ public class Token {
   //final static int write   see mathfunc
   final static int zoom         = scriptCommand | 72;
   final static int zoomTo       = scriptCommand | 74;
+  public final static int slice = scriptCommand | 75;
 
   // shapes:
   
@@ -1119,7 +1120,7 @@ public class Token {
   public final static int jmol    = misc  | 168;
   public final static int last    = misc  | 170;
   final static int lattice        = misc  | 171;// new
-  final static int left           = misc  | 172;
+  public final static int left           = misc  | 172;
   final static int line           = misc  | 174;// new
   final static int link           = misc  | 175;
   final static int linedata       = misc  | 176;// new
@@ -1195,7 +1196,7 @@ public class Token {
   final static int resolution     = misc  | 298;// new
   final static int reversecolor   = misc  | 300;// new
   public final static int rewind  = misc  | 302;
-  final static int right          = misc  | 304;
+  public final static int right          = misc  | 304;
   final static int rotate45       = misc  | 306;// new
   public final static int rotation = misc  | 308;
   final static int rubberband     = misc  | 310;
@@ -1206,6 +1207,7 @@ public class Token {
   final static int sigma          = misc  | 322;// new
   final static int sign           = misc  | 323;// new
   final static int silent         = misc  | 324;// new
+  final static int slicebox       = misc  | 326;
   final static int solid          = misc  | 327;
   final static int spacegroup     = misc  | 328;
   final static int sphere         = misc  | 330;// new
@@ -1604,6 +1606,8 @@ public class Token {
       "sheet",             new Token(sheet),
       "show",              new Token(show),
       "slab",              new Token(slab),
+      "slice",             new Token(slice),
+      "slicebox",          new Token(slicebox),
       "spacefill",         new Token(spacefill),
       "cpk",               null,
       "spin",              new Token(spin),

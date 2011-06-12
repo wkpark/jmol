@@ -41,6 +41,7 @@ import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.api.JmolEdge;
+import org.jmol.api.JmolViewer;
 import org.jmol.api.MinimizerInterface;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
@@ -4281,8 +4282,11 @@ public class ScriptEvaluator {
           points[n++] = pt;
         i = iToken + 1;
       }
-      if (n == nPoints)
-        break;
+// TODO - following two lines removed to fix bug in interpretting 
+// isosurface slab within [...] syntax.  Don't remove completely until
+// sure this doesn't break something else. --JG June 9, 2011.
+//      if (n == nPoints)
+//        break;
     }
     if (tok != Token.rightsquare)
       error(ERROR_invalidArgument);
@@ -5389,6 +5393,9 @@ public class ScriptEvaluator {
           break;
         case Token.slab:
           slab(false);
+          break;
+        case Token.slice:
+          slice();
           break;
         case Token.spin:
           rotate(true, false);
@@ -10597,6 +10604,46 @@ public class ScriptEvaluator {
       viewer.slabInternal(plane, isDepth);
   }
 
+  private void slice() throws ScriptException{
+    if(!isSyntaxCheck && viewer.slicer==null){
+     viewer.createSlicer();
+    }
+    int tok1 = getToken(1).tok;
+    if(tok1==Token.left||tok1==Token.right){
+      switch (getToken(2).tok){
+      case Token.on:
+        if(isSyntaxCheck) return;
+        viewer.slicer.drawSlicePlane(tok1, true);
+        return;
+      case Token.off:
+        if(isSyntaxCheck) return;
+        viewer.slicer.drawSlicePlane(tok1, false);
+        return;
+      default:
+        error(ERROR_invalidArgument);
+      break;
+      }
+    }else{//command to slice object, not show slice planes
+      String name = (String)getToken(1).value;
+      //TODO - should accept "all"  for now "all" will fail silently.
+      // Should check it is a valid isosurface name
+      //Should be followed by two angles, and two percents (float values)
+      float[] param = new float[4];
+      for (int i=2;i<6;++i){
+        if(getToken(i).tok == Token.decimal){
+          param[i-2]=floatParameter(i);
+        } else{
+          error(ERROR_invalidArgument);  
+        }
+      }
+      if(!isSyntaxCheck){
+        viewer.slicer.setSlice(param[0], param[1], param[2], param[3]);
+        viewer.slicer.sliceObject(name);
+      }
+      return; 
+    }
+  }
+  
   private void ellipsoid() throws ScriptException {
     int mad = 0;
     int i = 1;
@@ -15122,6 +15169,10 @@ public class ScriptEvaluator {
       data = BoxInfo.getCriticalPoints(viewer.getBoundBoxVertices(), null);
       iToken = i + 1;
       break;
+    case Token.slicebox:
+      data = BoxInfo.getCriticalPoints(((JmolViewer)(viewer)).slicer.getSliceVert(), null);
+      iToken = i + 1;
+      break;      
     case Token.unitcell:
       SymmetryInterface unitCell = viewer.getCurrentUnitCell();
       if (unitCell == null)

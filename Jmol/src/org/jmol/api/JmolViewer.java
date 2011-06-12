@@ -40,8 +40,10 @@ import java.util.List;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 
+import org.jmol.slicer.Slicer;
 import org.jmol.viewer.Viewer;
 
 /**
@@ -253,7 +255,8 @@ abstract public class JmolViewer extends JmolSimpleViewer {
 
   abstract public void showUrl(String urlString);
 
-
+  abstract public Point3f getBoundBoxCenter();
+  abstract public Vector3f getBoundBoxCornerVector();
   abstract public int getMeasurementCount();
   abstract public String getMeasurementStringValue(int i);
   abstract public int[] getMeasurementCountPlusIndices(int i);
@@ -496,5 +499,12 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   
   public String menuStructure;
 
+  public Slicer slicer;
+
+  public void createSlicer(){
+    if(slicer == null){
+      slicer = new Slicer(this, false);
+    }
+  }
 }
 

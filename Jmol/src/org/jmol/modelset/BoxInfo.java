@@ -242,7 +242,7 @@ public class BoxInfo {
     return info;
   }
 
-  void setBoundBox(Point3f pt1, Point3f pt2, boolean byCorner, float scale) {
+  public void setBoundBox(Point3f pt1, Point3f pt2, boolean byCorner, float scale) {
     if (pt1 != null) {
       if (scale == 0)
         return;

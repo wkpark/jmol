@@ -42,7 +42,6 @@ import org.jmol.shape.Shape;
 import org.jmol.util.Logger;
 import org.jmol.util.Point3fi;
 
-
 public class ShapeManager {
 
   private Viewer viewer;
@@ -150,6 +149,12 @@ public class ShapeManager {
     return result;
   }
 
+  /**
+   * Returns the shape type index for a shape object given the object name.
+   * @param objectName (string) string name of object
+   * @return shapeType (int) integer corresponding to the shape type index
+   *                   see ShapeManager.shapes[].
+   */
   public int getShapeIdFromObjectName(String objectName) {
     if (shapes != null)
       for (int i = JmolConstants.SHAPE_MIN_SPECIAL; i < JmolConstants.SHAPE_MAX_MESH_COLLECTION; ++i)

@@ -4274,6 +4274,10 @@ public class ScriptEvaluator {
         i++;
         break;
       default:
+        if (nPoints >= 0 && n == nPoints) {
+          tok = Token.nada;
+          break;
+        }
         Point3f pt = getPoint3f(i, true);
         if (points == null) 
           vp.add(pt);
@@ -4283,7 +4287,7 @@ public class ScriptEvaluator {
         i = iToken + 1;
       }
     }
-    if (tok != Token.rightsquare || nPoints > 0 && n != nPoints)
+    if (tok != Token.rightsquare)
       error(ERROR_invalidArgument);
     if (points == null) {
       points = new Point3f[vp.size()];

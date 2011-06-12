@@ -1355,12 +1355,13 @@ class ScriptMathProcessor {
 
   private boolean evaluatePlane(ScriptVariable[] args, int tok)
       throws ScriptException {
-    if (tok == Token.hkl && args.length != 3 || tok == Token.intersection
-        && args.length != 2 && args.length != 3 || args.length == 0
-        || args.length > 4)
+    if (tok == Token.hkl && args.length != 3 
+        || tok == Token.intersection && args.length != 2 && args.length != 3 
+        || args.length == 0 || args.length > 4)
       return false;
     Point3f pt1, pt2, pt3;
     Point4f plane;
+    Vector3f norm;
 
     switch (args.length) {
     case 1:
@@ -1415,6 +1416,29 @@ class ScriptMathProcessor {
         return addX(pt3);
       }
       switch (args[0].tok) {
+      case Token.integer:
+      case Token.decimal:
+        if (args.length == 3) {
+          // plane(r theta phi)
+          float r = ScriptVariable.fValue(args[0]); 
+          float theta = ScriptVariable.fValue(args[1]);  // longitude, azimuthal, in xy plane
+          float phi = ScriptVariable.fValue(args[2]);    // 90 - latitude, polar, from z
+          // rotate {0 0 r} about x axis
+          norm = new Vector3f(0, 0, 1);
+          pt2 = new Point3f(1, 0, 0);
+          Quaternion q = new Quaternion(pt2, phi);
+          q.getMatrix().transform(norm);
+          // rotate that vector around z
+          pt2.set(0, 0, 1);
+          q = new Quaternion(pt2, theta);
+          q.getMatrix().transform(norm);
+          pt2.set(norm);
+          pt2.scale(r);
+          plane = new Point4f();
+          Measure.getPlaneThroughPoint(pt2, norm, plane);
+          return addX(plane);          
+        }
+        break;
       case Token.bitset:
       case Token.point3f:
         pt1 = ptValue(args[0], false);
@@ -1425,7 +1449,7 @@ class ScriptMathProcessor {
             && (args[2].tok == Token.bitset || args[2].tok == Token.point3f) ? ptValue(
             args[2], false)
             : null);
-        Vector3f norm = new Vector3f(pt2);
+        norm = new Vector3f(pt2);
         if (pt3 == null) {
           plane = new Point4f();
           if (args.length == 2 || !ScriptVariable.bValue(args[2])) {

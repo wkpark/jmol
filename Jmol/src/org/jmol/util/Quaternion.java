@@ -51,7 +51,7 @@ import javax.vecmath.Vector3f;
 
 public class Quaternion {
   public float q0, q1, q2, q3;
-  public Matrix3f mat;
+  private Matrix3f mat;
 
   private final static Point4f qZero = new Point4f();
   private final static Quaternion qTemp = new Quaternion(0, 0, 0, 0);

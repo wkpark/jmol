@@ -1175,8 +1175,11 @@ public class FileManager {
           bos == null ? (OutputStream) new FileOutputStream(outFileName) : bos);
       for (int i = 0; i < fileNamesAndByteArrays.size(); i += 2) {
         String fname = (String) fileNamesAndByteArrays.get(i);
-        if (fname.indexOf("file:/") == 0)
+        if (fname.indexOf("file:/") == 0) {
           fname = fname.substring(5);
+          if (fname.length() > 2 && fname.charAt(2) == ':') // DOS/Windows
+            fname = fname.substring(1);
+        }
         byte[] bytes = (byte[]) fileNamesAndByteArrays.get(i + 1);
         String fnameShort = fname;
         if (!preservePath || fname.indexOf("|") >= 0) {

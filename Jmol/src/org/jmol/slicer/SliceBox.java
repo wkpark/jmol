@@ -26,7 +26,7 @@
 package org.jmol.slicer;
 
 import javax.vecmath.*;
-
+/*
 public class SliceBox {
 
   Point3f[] vertices = new Point3f[8]; //8 vertices (ordered to match boundbox)
@@ -59,14 +59,14 @@ public class SliceBox {
       basis[1].z = (float) (-Math.sin(anglefromZ));
     }
 
-    /*    Plane(float x, float y, float z){
+        Plane(float x, float y, float z){
           this.x = x;
           this.y=y;
           this.z = z;
-        }*/
+        }
   }
 
-  /**
+  *//**
    * Defines a parallelpiped within which isosurfaces (and in future? atoms) are
    * displayed.
    * 
@@ -82,7 +82,7 @@ public class SliceBox {
    *        (Point3f) most negative boundbox corner
    * @param boundBoxPosCorner
    *        (Point3f) most positive boundbox corner
-   */
+   *//*
   void setSlice(float angleXY, float anglefromZ, float position, float thickness,
                 Point3f boundBoxNegCorner, Point3f boundBoxPosCorner){
     if (angleXY >= 0 && angleXY < Math.PI) {
@@ -120,20 +120,20 @@ public class SliceBox {
     vertices[6] = tempVert[3];//2 & 3 swapped to match boundbox ordering
     vertices[7] = tempVert[2];
   }
-/**
+*//**
  *   
  * @return returns this SliceBox
- */
+ *//*
   SliceBox getSlice(){
     return (this);
   }
   
-/**
+*//**
  * @param plane (Plane) the plane
  * @param start (Point3f) start of line segment
  * @param end (Point3f) end of line segement
  * @return a Point3f if line segment intersects plane
- */
+ *//*
   private Point3f intersectionSegmentPlane(Plane plane, Point3f start,
                                            Point3f end) {
     Point3f intersection = new Point3f();
@@ -194,3 +194,4 @@ public class SliceBox {
     return (result);
   }
 }
+*/

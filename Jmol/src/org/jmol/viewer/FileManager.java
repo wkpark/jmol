@@ -1177,7 +1177,7 @@ public class FileManager {
         String fname = (String) fileNamesAndByteArrays.get(i);
         if (fname.indexOf("file:/") == 0) {
           fname = fname.substring(5);
-          if (fname.length() > 2 && fname.charAt(2) == ':') // DOS/Windows
+          if (fname.length() > 2 && fname.charAt(2) == ':') // "/C:..." DOS/Windows
             fname = fname.substring(1);
         }
         byte[] bytes = (byte[]) fileNamesAndByteArrays.get(i + 1);

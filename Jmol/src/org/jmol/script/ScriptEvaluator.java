@@ -41,7 +41,6 @@ import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.api.JmolEdge;
-import org.jmol.api.JmolViewer;
 import org.jmol.api.MinimizerInterface;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
@@ -4276,19 +4275,15 @@ public class ScriptEvaluator {
         break;
       default:
         Point3f pt = getPoint3f(i, true);
-        if (points == null)
+        if (points == null) 
           vp.add(pt);
         else
-          points[n++] = pt;
+          points[n] = pt;
+        n++;
         i = iToken + 1;
       }
-// TODO - following two lines removed to fix bug in interpretting 
-// isosurface slab within [...] syntax.  Don't remove completely until
-// sure this doesn't break something else. --JG June 9, 2011.
-//      if (n == nPoints)
-//        break;
     }
-    if (tok != Token.rightsquare)
+    if (tok != Token.rightsquare || nPoints > 0 && n != nPoints)
       error(ERROR_invalidArgument);
     if (points == null) {
       points = new Point3f[vp.size()];
@@ -5394,9 +5389,9 @@ public class ScriptEvaluator {
         case Token.slab:
           slab(false);
           break;
-        case Token.slice:
-          slice();
-          break;
+        //case Token.slice:
+         // slice();
+          //break;
         case Token.spin:
           rotate(true, false);
           break;
@@ -10604,6 +10599,7 @@ public class ScriptEvaluator {
       viewer.slabInternal(plane, isDepth);
   }
 
+  /*
   private void slice() throws ScriptException{
     if(!isSyntaxCheck && viewer.slicer==null){
      viewer.createSlicer();
@@ -10643,6 +10639,8 @@ public class ScriptEvaluator {
       return; 
     }
   }
+  
+  */
   
   private void ellipsoid() throws ScriptException {
     int mad = 0;
@@ -15169,10 +15167,10 @@ public class ScriptEvaluator {
       data = BoxInfo.getCriticalPoints(viewer.getBoundBoxVertices(), null);
       iToken = i + 1;
       break;
-    case Token.slicebox:
-      data = BoxInfo.getCriticalPoints(((JmolViewer)(viewer)).slicer.getSliceVert(), null);
-      iToken = i + 1;
-      break;      
+    //case Token.slicebox:
+     // data = BoxInfo.getCriticalPoints(((JmolViewer)(viewer)).slicer.getSliceVert(), null);
+      //iToken = i + 1;
+      //break;      
     case Token.unitcell:
       SymmetryInterface unitCell = viewer.getCurrentUnitCell();
       if (unitCell == null)

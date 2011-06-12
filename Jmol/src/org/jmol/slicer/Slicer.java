@@ -25,6 +25,7 @@
 
 package org.jmol.slicer;
 
+
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
@@ -36,9 +37,10 @@ import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 import org.jmol.util.*;
 
-/**
+/*
+*//**
  * 
- */
+ *//*
 public class Slicer {
 
   boolean useGUI;
@@ -88,7 +90,7 @@ public class Slicer {
     return (slicebox.vertices);
   }
 
-  /**
+  *//**
    * Defines a parallelpiped within which isosurfaces (and in future? atoms) are
    * displayed.
    * 
@@ -100,7 +102,7 @@ public class Slicer {
    *        (float) position along vector in % of boundbox diagonal
    * @param thickness
    *        (float) thickness of slice in % of boundbox diagonal
-   */
+   *//*
   public void setSlice(float angleXY, float anglefromZ, float position,
                        float thickness) {
     this.angleXY = angleXY;
@@ -111,11 +113,11 @@ public class Slicer {
         posCorner);
   }
 
-  /**
+  *//**
    * 
    * @param radians
    *        (float) angle from X-axis of projection on XY plane in radians.
-   */
+   *//*
   public void setSliceAngleXY(float radians) {
     if (this.angleXY != radians) {
       this.angleXY = radians;
@@ -135,11 +137,11 @@ public class Slicer {
     return (this.angleXY);
   }
 
-  /**
+  *//**
    * 
    * @param radians
    *        (float) angle of vector from Z axis in radians.
-   */
+   *//*
   public void setSliceAnglefromZ(float radians) {
     if (this.anglefromZ != radians) {
       this.anglefromZ = radians;
@@ -159,12 +161,12 @@ public class Slicer {
     return (this.anglefromZ);
   }
 
-  /**
+  *//**
    * 
    * @param percent
    *        (float) position of slice center along direction vector as percent
    *        of boundbox diagonal (50% is origin).
-   */
+   *//*
   public void setSlicePosition(float percent) {
     if (this.position != percent) {
       this.position = percent;
@@ -184,11 +186,11 @@ public class Slicer {
     return (this.position);
   }
 
-  /**
+  *//**
    * 
    * @param percent
    *        (float) thickness of slice as percent of boundbox diagonal.
-   */
+   *//*
   public void setSliceThickness(float percent) {
     if (this.thickness != percent) {
       this.thickness = percent;
@@ -303,4 +305,6 @@ public class Slicer {
       break;
     }
   }
-}
+*/
+
+//}

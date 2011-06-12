@@ -1643,12 +1643,4 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     getMeshCommand(sb, index);
     return (sb.toString());
   }
-  
-  public Point3f getXYZMin(int index){
-    return(this.isomeshes[index].jvxlData.boundingBox[0]);
-  }
-  
-  public Point3f getXYZMax(int index){
-    return(this.isomeshes[index].jvxlData.boundingBox[1]);
-  }
 }

@@ -42,8 +42,6 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-
-import org.jmol.slicer.Slicer;
 import org.jmol.viewer.Viewer;
 
 /**
@@ -498,13 +496,5 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public boolean checkPrivateKey(double privateKey);
   
   public String menuStructure;
-
-  public Slicer slicer;
-
-  public void createSlicer(){
-    if(slicer == null){
-      slicer = new Slicer(this, false);
-    }
-  }
 }
 

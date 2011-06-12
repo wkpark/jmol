@@ -103,6 +103,7 @@ public class NciCalculation extends QuantumCalculation implements
   private final static double NO_VALUE = 100;
   
   private float dataScaling = 1; // set to 0.01 to read NCIPLOT-generated density files
+  private boolean dataIsReducedDensity; // for mapping actual NCIPLOT data and doing -1 or -2 flags
   
   public float getNoValue() {
     return (float) NO_VALUE;
@@ -139,16 +140,21 @@ public class NciCalculation extends QuantumCalculation implements
     rhoPlot = getParameter(parameters, 2, (isPromolecular ? DEFAULT_RHOPLOT_PRO : DEFAULT_RHOPLOT_SCF), "rhoPlot");
     rhoParam = getParameter(parameters, 3, DEFAULT_RHOPARAM, "rhoParam");
     dataScaling = (float) getParameter(parameters, 4, 1, "dataScaling");
+    dataIsReducedDensity = (type < 0);
     String stype;
     switch (type) {
     default:
       type = 0;
       stype = "all";
       break;
+    case -TYPE_INTRA:
     case TYPE_INTRA:
+      type = TYPE_INTRA;
       stype = "intramolecular";
       break;
+    case -TYPE_INTER:
     case TYPE_INTER:
+      type = TYPE_INTER;
       stype = "intermolecular";
       break;
     case TYPE_LIGAND:
@@ -211,7 +217,7 @@ public class NciCalculation extends QuantumCalculation implements
         }
         for (int i = 0; i < nMolecules; i++)
           if (bsMolecules[i] != null)
-            Logger.info("Molecule " + (i + 1) + " " + bsMolecules[i].cardinality() + " atoms: " + bsMolecules[i]);
+            Logger.info("Molecule " + (i + 1) + " (" + bsMolecules[i].cardinality() + " atoms): " + bsMolecules[i]);
         rhoMolecules = new double[nMolecules];
       }
       if (!isPromolecular)
@@ -229,6 +235,23 @@ public class NciCalculation extends QuantumCalculation implements
       param = def;
     Logger.info("NCI calculation parameters[" + i + "] (" + name + ") = " + param);
     return param;
+  }
+
+  /**
+   * grid-based discrete SCF calculation needs to know which 
+   * atoms to consider inter and which intramolecular
+   * 
+   */
+  private void getBsOK() {
+    if (noValuesAtAll || nMolecules == 1)
+      return;
+    bsOK = new BitSet(nX * nY * nZ);
+    setXYZBohr(null);
+    for (int ix = 0, index = 0; ix < countsXYZ[0]; ix++)
+      for (int iy = 0; iy < countsXYZ[1]; iy++)
+        for (int iz = 0; iz < countsXYZ[2]; index++, iz++)
+          processAtoms(ix, iy, iz, index);
+    Logger.info("NCI calculation SCF " + (type == TYPE_INTRA ? "intra" : "inter") + "molecular grid points = " + bsOK.cardinality());
   }
 
   public void createCube() {
@@ -274,18 +297,6 @@ public class NciCalculation extends QuantumCalculation implements
           yzPlane[i] = (float) NO_VALUE;
   }
 
-  private void getBsOK() {
-    if (noValuesAtAll || nMolecules == 1)
-      return;
-    bsOK = new BitSet(nX * nY * nZ);
-    setXYZBohr(null);
-    for (int ix = 0, index = 0; ix < countsXYZ[0]; ix++)
-      for (int iy = 0; iy < countsXYZ[1]; iy++)
-        for (int iz = 0; iz < countsXYZ[2]; index++, iz++)
-          processAtoms(ix, iy, iz, index);
-    Logger.info("NCI calculation SCF " + (type == TYPE_INTRA ? "intra" : "inter") + "molecular grid points = " + bsOK.cardinality());
-  }
-
   @Override
   protected void process() {
     if (noValuesAtAll)
@@ -326,6 +337,23 @@ public class NciCalculation extends QuantumCalculation implements
     return (float) s;
   }
 
+  /**
+   *  At each grid point we need to calculate the sum of the 
+   *  atom-based promolecular data. We partition this calculation
+   *  into molecular subsets if necessary, and we check for atoms
+   *  that are too far away to make a difference before we waste 
+   *  time doing exponentiation.
+   *  
+   *  If index >= 0, then this is just a check for intra- vs. inter-
+   *  molecularity based on promolecular density. This is needed for 
+   *  applying intra- and inter-molecular filters to SCF CUBE data.
+   * 
+   * @param ix
+   * @param iy
+   * @param iz
+   * @param index
+   * @return rho value or NO_VALUE
+   */
   private double processAtoms(int ix, int iy, int iz, int index) {
     double rho = 0;
     if (isReducedDensity) {
@@ -339,13 +367,16 @@ public class NciCalculation extends QuantumCalculation implements
     }
     for (int i = qmAtoms.length; --i >= 0;) {
       int znuc = qmAtoms[i].znuc;
-      double z1 = zeta1[znuc];
-      double z2 = zeta2[znuc];
-      double z3 = zeta3[znuc];
       double x = xBohr[ix] - qmAtoms[i].x;
       double y = yBohr[iy] - qmAtoms[i].y;
       double z = zBohr[iz] - qmAtoms[i].z;
+      if (Math.abs(x) > dMax[znuc] || Math.abs(y) > dMax[znuc]
+          || Math.abs(z) > dMax[znuc])
+        continue;
       double r = Math.sqrt(x * x + y * y + z * z);
+      double z1 = zeta1[znuc];
+      double z2 = zeta2[znuc];
+      double z3 = zeta3[znuc];
       double ce1 = coef1[znuc] * Math.exp(-r / z1);
       double ce2 = coef2[znuc] * Math.exp(-r / z2);
       double ce3 = coef3[znuc] * Math.exp(-r / z3);
@@ -358,11 +389,11 @@ public class NciCalculation extends QuantumCalculation implements
         return NO_VALUE;
       // Some efficiencies introduced here vs. NCIPLOT's FORTRAN code
       // just to minimize number of exponentials and multiplications, mostly.
-      double fac1r = (ce1 / z1 + ce2 / z2 + ce3 / z3) / r;
       if (isReducedDensity) {
         if (type != TYPE_ALL)
           rhoMolecules[qmAtoms[i].iMolecule] += rhoAtom;
         if (isPromolecular) {
+          double fac1r = (ce1 / z1 + ce2 / z2 + ce3 / z3) / r;
           gxTemp -= fac1r * x;
           gyTemp -= fac1r * y;
           gzTemp -= fac1r * z;
@@ -371,6 +402,7 @@ public class NciCalculation extends QuantumCalculation implements
         x /= r;
         y /= r;
         z /= r;
+        double fac1r = (ce1 / z1 + ce2 / z2 + ce3 / z3) / r;
         double fr2 = fac1r + (ce1 / z1 / z1 + ce2 / z2 / z2 + ce3 / z3 / z3);
         gxxTemp += fr2 * x * x - fac1r;
         gyyTemp += fr2 * y * y - fac1r;
@@ -393,11 +425,12 @@ public class NciCalculation extends QuantumCalculation implements
             isIntra = true;
             break;
           }
-        boolean isOK = ((type == TYPE_INTRA) == isIntra);
-        if (isOK && index >= 0)
-          bsOK.set(index);
-        if (!isOK)
+        if ((type == TYPE_INTRA) != isIntra)
           return NO_VALUE;
+        if (index >= 0) {
+          bsOK.set(index);
+          return 0;
+        }
         break;
       case TYPE_LIGAND:
         // ?? 
@@ -431,10 +464,12 @@ public class NciCalculation extends QuantumCalculation implements
   }
   
   private float[][] yzPlanesRho = new float[2][];
-
+  private float[] p0, p1, p2;
+  
   /**
    * For reduced density only; coloring is done point by point.
-   * @param x 
+   * 
+   * @param x
    * 
    * @param plane
    *        an OUTPUT plane, to be filled here and used by MarchingCubes
@@ -452,34 +487,50 @@ public class NciCalculation extends QuantumCalculation implements
         plane[j] = (float) NO_VALUE;
       return;
     }
+
+    int i0 = 0;
     
+    // In the case of isosurface parameters [0 -1/-2 ...] "grad.cube" MAP "dens.cube"
+    // we already have the reduced density. We are just applying an
+    // intra- or inter-molecular filter on the NCIPLOT data (because NCIPLOT 1.0 does not do this.)
+    // So we can skip steps 2 and 3 in that case. All we are checking
+    // is for intramolecularity.
 
-    // (2) assign input planes. We either process planes 0, 1, and 2, 
-    //     (first time around) or 1, 2, and 3 (after that).
+    if (dataIsReducedDensity) {
+      p1 = plane;
+    } else {
+      
+      // (2) assign input planes. We either process planes 0, 1, and 2, 
+      //     (first time around) or 1, 2, and 3 (after that).
 
-    int i0 = (yzPlanesRho[0] == null ? 0 : 1);
-    float[] p0 = yzPlanesRaw[i0++];
-    float[] p1 = yzPlanesRaw[i0++];
-    float[] p2 = yzPlanesRaw[i0++];
+      i0 = (yzPlanesRho[0] == null ? 0 : 1);
+      p0 = yzPlanesRaw[i0++];
+      p1 = yzPlanesRaw[i0++];
+      p2 = yzPlanesRaw[i0++];
 
-    // (3) Make sure rho data is scaled appropriately and nonnegative.
+      // (3) Make sure rho data is scaled appropriately and nonnegative.
 
-    for (int i = (i0 == 4 ? 3 : 0); i < i0; i++)
-      for (int j = 0; j < yzCount; j++)
-        yzPlanesRaw[i][j] = Math.abs(yzPlanesRaw[i][j] * dataScaling);
-
+      for (int i = (i0 == 4 ? 3 : 0); i < i0; i++)
+        for (int j = 0; j < yzCount; j++)
+          yzPlanesRaw[i][j] = Math.abs(yzPlanesRaw[i][j] * dataScaling);
+    }
+    
     // (4) Calculate discrete reduced gradients. All edges are just assigned "no value"
+    //     It is here also where we filter for intra- and inter-molecular.
 
     int index = x * yzCount;
-    
+
     for (int y = 0, i = 0; y < nY; y++)
       for (int z = 0; z < nZ; z++, i++) {
         double rho = p1[i];
         if (bsOK != null && !bsOK.get(index + i)) {
           plane[i] = (float) NO_VALUE;
+        } else if (dataIsReducedDensity) {
+          continue;
         } else if (rho == 0) {
           plane[i] = 0;
-        } else if (rho > rhoPlot || y == 0 || y == nY - 1 || z == 0 || z == nZ - 1) {
+        } else if (rho > rhoPlot || y == 0 || y == nY - 1 || z == 0
+            || z == nZ - 1) {
           plane[i] = (float) NO_VALUE;
         } else {
           gxTemp = (p2[i] - p0[i]) / (2 * stepBohr[0]);
@@ -504,7 +555,6 @@ public class NciCalculation extends QuantumCalculation implements
    * 
    */
   public float process(int vA, int vB, float f) {
-    // first we need to know what planes we are working with.
     double valueA = getPlaneValue(vA);
     double valueB = getPlaneValue(vB);
     return (float) (valueA + f * (valueB - valueA));
@@ -531,6 +581,7 @@ public class NciCalculation extends QuantumCalculation implements
     float[] p1 = yzPlanesRaw[iPlane++];
     float[] p2 = yzPlanesRaw[iPlane++];
     double rho = p1[i];
+    
     // Shouldn't be possible to be too large, because the MarchingCubes algorithm
     // can't generate a value -- but if it WERE possible, getValue() would set it
     // to NO_VALUE anyway.
@@ -600,5 +651,20 @@ public class NciCalculation extends QuantumCalculation implements
        1.0236, 0.7753,    0.5962, 0.6995, 0.5851, 0.5149, 0.4974, 0.4412     
   };
 
+  // cutoffs in bohr for rho = 0.001 -- considered too small to make a difference.
+  // source: Excel solver calculation based on above parameters (Bob Hanson)
+  private static double[] dMax = new double[] {
+    0, 2.982502423,                                                                                          2.635120936,     
+       4.144887422,  4.105800759,           3.576656363, 3.872424373, 3.497503547, 3.165369971, 3.204214082, 3.051069564,
+       4.251312809,  4.503309314,           4.047465141, 4.666024968, 4.265151411, 3.955710076, 4.040067606, 3.776022242
+  };
 
+/*
+  static {
+    for (int i = 1; i <= 18; i++) {
+      double x = coef1[i] * Math.exp(-dMax[i] / zeta1[i]) + coef2[i] * Math.exp(-dMax[i] / zeta2[i]) + coef3[i] * Math.exp(-dMax[i] / zeta3[i]);
+      System.out.println("ncicalc \t" + i + "\t" + coef1[i] + "\t"+ coef2[i] + "\t"+ coef3[i] + "\t"+ zeta1[i] + "\t"+ zeta2[i] + "\t"+ zeta3[i] + "\t" + x);
+    }
+  }
+*/  
 }

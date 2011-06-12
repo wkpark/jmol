@@ -53,8 +53,8 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     jvxlData.wasCubic = true;
     boundingBox = params.boundingBox;
     if (params.qmOrbitalType == Parameters.QM_TYPE_NCI_SCF) {
-      preProcessPlanes = true;
-      hasColorData = true;
+      hasColorData = (params.parameters == null || params.parameters[1] >= 0);
+      preProcessPlanes = true; 
       params.insideOut = !params.insideOut;
     }
   }
@@ -334,28 +334,39 @@ abstract class VolumeFileReader extends SurfaceFileReader {
       qpc.setupCalculation(volumeData, sg.getBsSelected(), null,
           atomData.atomXyz, -1, null, null, null, null, null, null, null,
           params.theProperty, true, null, params.parameters);
-      qpc.setPlanes(yzPlanesRaw = new float[4][yzCount]);
-      float nan = qpc.getNoValue();
-      getPlane(yzPlanesRaw[0], false);
-      getPlane(yzPlanesRaw[1], false);
       iPlaneRaw = 1;
-      plane = yzPlanes[0];
-      for (int i = 0; i < yzCount; i++)
-        plane[i] = nan;
-      return plane;
+      qpc.setPlanes(yzPlanesRaw = new float[4][yzCount]);
+      if (hasColorData) {
+        float nan = qpc.getNoValue();
+        getPlane(yzPlanesRaw[0], false);
+        getPlane(yzPlanesRaw[1], false);
+        plane = yzPlanes[0];
+        for (int i = 0; i < yzCount; i++)
+          plane[i] = nan;
+        return plane;
+      }
+      iPlaneRaw = -1;
     }
-    if (iPlaneRaw == 3) {
+    float nan = qpc.getNoValue();
+    int x1 = nPointsX - 1;
+    switch (iPlaneRaw) {
+    case -1:
+      plane = yzPlanes[x % 2];
+      x1++;
+      break;
+    case 3:
       plane = yzPlanesRaw[0];
       yzPlanesRaw[0] = yzPlanesRaw[1];
       yzPlanesRaw[1] = yzPlanesRaw[2];
       yzPlanesRaw[2] = yzPlanesRaw[3];
       yzPlanesRaw[3] = plane;
-    } else {
+      plane = yzPlanesRaw[iPlaneRaw];
+      break;
+    default:
       iPlaneRaw++;
+      plane = yzPlanesRaw[iPlaneRaw];
     }
-    plane = yzPlanesRaw[iPlaneRaw];
-    float nan = qpc.getNoValue();
-    if (x < nPointsZ - 1) {
+    if (x < x1) {
       getPlane(plane, false);
       qpc.calcPlane(x, plane = yzPlanes[x % 2]);
       for (int i = 0; i < yzCount; i++)
@@ -541,7 +552,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
 
     float zero = super.getSurfacePointAndFraction(cutoff, isCutoffAbsolute,
         valueA, valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn);
-    if (qpc == null || Float.isNaN(zero))
+    if (qpc == null || Float.isNaN(zero) || !hasColorData)
       return zero;
     /*
      * in the case of an NCI calculation, we need to process

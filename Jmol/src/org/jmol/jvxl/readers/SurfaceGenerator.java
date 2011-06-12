@@ -361,10 +361,7 @@ public class SurfaceGenerator {
     }
 
     if ("map" == propertyName) {
-      boolean haveSurface = ((Boolean)value).booleanValue();
-      if (!haveSurface) {
-        params.state = Parameters.STATE_DATA_READ;
-      }
+      params.resetForMapping(((Boolean)value).booleanValue());
       return true;
     }
     if ("finalize" == propertyName) {
@@ -1100,7 +1097,7 @@ public class SurfaceGenerator {
   private void mapSurface() {
     if (params.state == Parameters.STATE_INITIALIZED && params.thePlane != null)
       params.state++;
-    if (++params.state != Parameters.STATE_DATA_COLORED)
+    if (++params.state < Parameters.STATE_DATA_COLORED)
       return;
     if (!setReader())
       return;    

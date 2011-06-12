@@ -642,7 +642,8 @@ public class Parameters {
   float[] qm_moLinearCombination = null;
   
   void setNci(boolean isPromolecular) {
-    dataType = SURFACE_NCI;
+    if (isPromolecular)
+      dataType = SURFACE_NCI;
     qm_marginAngstroms = 2f;
     qmOrbitalType = (isPromolecular ? QM_TYPE_NCI_PRO : QM_TYPE_NCI_SCF);
     if (cutoff == Float.MAX_VALUE || cutoff == 0)
@@ -790,6 +791,19 @@ public class Parameters {
       valueMappedToRed = mappedDataMin;
       valueMappedToBlue = mappedDataMax;
     }
+  }
+
+  /**
+   * reset some parameters at the "MAP" keyword
+   * 
+   * @param haveSurface
+   */
+  public void resetForMapping(boolean haveSurface) {
+    if (!haveSurface) 
+      state = Parameters.STATE_DATA_READ;
+    qmOrbitalType = QM_TYPE_UNKNOWN; 
+    parameters = null;
+    mappedDataMin = Float.MAX_VALUE;
   }
 
 }

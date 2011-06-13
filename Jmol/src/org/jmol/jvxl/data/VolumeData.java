@@ -129,7 +129,7 @@ import org.jmol.util.XmlUtil;
 
 public class VolumeData implements VolumeDataInterface {
 
-  public SurfaceReader sr;
+  public SurfaceReader sr; // used for delivering point-specific values, particularly when mapping
   public boolean doIterate = true;
   
   public final Point3f volumetricOrigin = new Point3f();

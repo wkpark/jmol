@@ -164,6 +164,17 @@ class IsoSolventReader extends AtomDataReader {
   private float maxRadius;
 
   @Override
+  protected boolean readVolumeParameters(boolean isMapData) {
+    setup();
+    if (isMapData && !doCalculateTroughs) {
+      precalculateVoxelData = false;
+      volumeData.sr = this;
+    }
+    initializeVolumetricData();
+    return true;
+  }
+
+  @Override
   protected void setup() {
     super.setup();
     cavityRadius = params.cavityRadius;
@@ -926,6 +937,18 @@ class IsoSolventReader extends AtomDataReader {
       }
     }
     validSpheres.or(noFaceSpheres);
+  }
+
+  @Override
+  public float getValueAtPoint(Point3f pt) {
+    // mapping sasurface/vdw 
+    float value = Float.MAX_VALUE;
+    for (int iAtom = 0; iAtom < firstNearbyAtom; iAtom++) {
+      float r = pt.distance(atomXyz[iAtom]) - atomRadius[iAtom] - solventRadius;
+      if (r < value)
+        value = r;
+    }
+    return (value == Float.MAX_VALUE ? Float.NaN : value);
   }
 
   private void markSphereVoxels(float r0, float distance) {

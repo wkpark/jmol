@@ -118,8 +118,9 @@ public class Mesh extends MeshSurface {
 
   public void clear(String meshType) {
     bsDisplay = null;
+    bsValid = null;
     connections = null;
-    vertexCount = polygonCount = 0;
+    vertexCount0 = polygonCount0 = vertexCount = polygonCount = 0;
     scale = 1;
     diameter = 0;
     ptOffset = null;

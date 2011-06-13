@@ -105,6 +105,8 @@ public class MeshSurface {
       polygonIndexes = new int[SEED_COUNT][];
     else if (polygonCount == polygonIndexes.length)
       polygonIndexes = (int[][]) ArrayUtil.doubleLength(polygonIndexes);
+    if (bsValid != null)
+      bsValid.set(polygonCount);
     polygonIndexes[polygonCount++] = polygon;
     return n;
   }
@@ -167,13 +169,15 @@ public class MeshSurface {
   
   public void invalidatePolygons() {
     for (int i = polygonCount; --i >= 0;)
-      if (!setABC(i))
+      if ((bsValid == null || bsValid.get(i)) && !setABC(i))
         polygonIndexes[i] = null;
   }
 
   protected int iA, iB, iC;
   
   protected boolean setABC(int i) {
+    if (bsValid != null && !bsValid.get(i))
+      return false;
     int[] vertexIndexes = polygonIndexes[i];
     return vertexIndexes != null
           && !(Float.isNaN(vertexValues[iA = vertexIndexes[0]])
@@ -181,7 +185,40 @@ public class MeshSurface {
             || Float.isNaN(vertexValues[iC = vertexIndexes[2]]));
   }
 
-  public void slabPolygons(Object slabbingObject, boolean andCap) {
+  public int polygonCount0;
+  public int vertexCount0;
+  public BitSet bsValid;
+  public StringBuffer slabOptions;
+  
+  public void slabPolygons(List<Object[]> slabInfo) {
+    for (int i = 0; i < slabInfo.size(); i++)
+      slabPolygons(slabInfo.get(i));
+  }
+  
+  public void slabPolygons(Object[] slabInfo) {
+    Object slabbingObject = slabInfo[0];
+    if (slabbingObject == null) {
+      if (bsValid != null) {
+        polygonCount = polygonCount0;
+        vertexCount = vertexCount0;
+        bsValid.set(0, polygonCount);
+        slabOptions = new StringBuffer(" slab none");
+      }
+      return;
+    }
+    if (polygonCount0 == 0 || vertexCount0 == 0) {
+      polygonCount0 = polygonCount;
+      vertexCount0 = vertexCount;
+      bsValid = new BitSet();
+      bsValid.set(0, polygonCount);
+      if (polygonCount == 0 && vertexCount == 0)
+        return;
+    }
+    if (slabOptions == null)
+      slabOptions = new StringBuffer();
+    if (slabOptions.indexOf(slabInfo[1].toString()) < 0)
+      slabOptions.append(slabInfo[1]);
+    boolean andCap = ((Boolean)slabInfo[2]).booleanValue();
     if (slabbingObject instanceof Point4f) {
       getIntersection((Point4f) slabbingObject, null, 0, null, andCap, false);
       return;
@@ -234,11 +271,17 @@ public class MeshSurface {
       }
       int test1 = (d1 < 0 ? 1 : 0) + (d2 < 0 ? 2 : 0) + (d3 < 0 ? 4 : 0);
       int test2 = (d1 >= 0 ? 1 : 0) + (d2 >= 0 ? 2 : 0) + (d3 >= 0 ? 4 : 0);
-      
+      /*
+      int itest = 1600;
+      if (iA == itest || iB == itest || iC == itest) {
+        System.out.println("getInteresction " + i + " " + iA + " " + iB + " " + iC 
+            + " test12 " + test1 + " " + test2);
+      }
+      */
       pts = null;
       switch (test1) {
-      case 0:
       case 7:
+      case 0:
         // all on the same side
         break;
       case 1:
@@ -287,6 +330,7 @@ public class MeshSurface {
         case 1:
           // BC on side to keep
           //TODO: must set edges for doClean
+          /*
           if (false && doClean) {
             if (pts[0].distance(vA) < 0.01f  || pts[1].distance(vA) < 0.01f)              
               continue;
@@ -299,6 +343,7 @@ public class MeshSurface {
             if (iD >= 0 && iE >= 0)
               continue;
           }
+          */
           if (iE < 0) {
             iE = addVertexCopy(pts[0], vertexValues[iA]); //AB
             addTriangleCheck(iE, iB, iC, check1 & 3, check2, 0);            
@@ -310,6 +355,7 @@ public class MeshSurface {
           break;
         case 2:
           // AC on side to keep
+          /*
           if (false && doClean) {
             if (pts[0].distance(vB) < 0.01f  || pts[1].distance(vB) < 0.01f)              
               continue;
@@ -322,6 +368,7 @@ public class MeshSurface {
             if (iD >= 0 && iE >= 0)
               continue;
           }
+          */
           if (iD < 0) {
             iD = addVertexCopy(pts[0], vertexValues[iB]); //AB
             addTriangleCheck(iA, iD, iC, check1 & 5, check2, 0);
@@ -339,6 +386,7 @@ public class MeshSurface {
           break;
         case 4:
           //AB on side to keep
+          /*
           if (false && doClean) {
             if (pts[0].distance(vC) < 0.01f  || pts[1].distance(vC) < 0.01f)              
               continue;
@@ -351,6 +399,7 @@ public class MeshSurface {
             if (iD >= 0 && iE >= 0)
               continue;
           }
+          */
           if (iE < 0) {
             iE = addVertexCopy(pts[0], vertexValues[iC]); //AC
             addTriangleCheck(iA, iB, iE, check1 & 5, check2, 0);
@@ -368,16 +417,17 @@ public class MeshSurface {
           break;
         case 6:
           // BC on side to toss
+          /*
           if (doClean && 
               (pts[0].distance(vA) < 0.01f  || pts[1].distance(vA) < 0.01f))              
             continue;
+            */
           iD = addVertexCopy(pts[0], vertexValues[iB]); //AB
           iE = addVertexCopy(pts[1], vertexValues[iC]); //AC
           addTriangleCheck(iA, iD, iE, check1 & 5 | 2, check2, 0);
           break;
         }
-        //if (test1 != 0 && test1 != 7)      System.out.println("meshsurface d1 d2 d3 " + d1 + "\t" + d2 + "\t" + d3);
-        polygonIndexes[i] = null;
+        bsValid.clear(i);
         if (andCap && iD > 0)
           iPts.add(new int[] { iD, iE });
       } else if (pts != null) {

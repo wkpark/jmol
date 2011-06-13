@@ -472,13 +472,9 @@ public class SurfaceGenerator {
       return true;
     }
 
-    if ("cap" == propertyName) {
-      params.cappingObject = value;
-      return true;
-    }
-
-    if ("slab" == propertyName) {
-      params.slabbingObject = value;
+    if ("cap" == propertyName || "slab" == propertyName) {
+      if (value != null)
+        params.addSlabInfo((Object[]) value);
       return true;
     }
 
@@ -1064,11 +1060,8 @@ public class SurfaceGenerator {
     if (params.maxSet > 0)
       surfaceReader.excludeMaximumSet();
 
-    if (params.slabbingObject != null)
-      surfaceReader.slabIsosurface(params.slabbingObject, false);
-
-    if (params.cappingObject != null)
-      surfaceReader.slabIsosurface(params.cappingObject, true);
+    if (params.slabInfo != null)
+      surfaceReader.slabIsosurface(params.slabInfo);
 
     if (haveMeshDataServer)
       meshDataServer.notifySurfaceGenerationCompleted();
@@ -1111,10 +1104,8 @@ public class SurfaceGenerator {
       params.cutoff = 0;
       surfaceReader.setMappingPlane(params.thePlane);
       surfaceReader.createIsosurface(!params.isPeriodic);//but don't read volume data yet
-      if (params.slabbingObject != null)
-        surfaceReader.slabIsosurface(params.slabbingObject, false);
-      if (params.cappingObject != null)
-        surfaceReader.slabIsosurface(params.cappingObject, true);
+      if (params.slabInfo != null)
+        surfaceReader.slabIsosurface(params.slabInfo);
       if (meshDataServer != null)
         meshDataServer.notifySurfaceGenerationCompleted();
       if (params.dataType == Parameters.SURFACE_NOMAP) {

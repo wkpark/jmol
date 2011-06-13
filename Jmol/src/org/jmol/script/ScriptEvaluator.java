@@ -15160,6 +15160,9 @@ public class ScriptEvaluator {
     float d = 0;
     Point3f pt = null;
     switch (tok) {
+    case Token.none:
+      iToken = i + 1;
+      break;
     case Token.within:
       i++;
       if (isFloatParameter(++i))
@@ -15221,13 +15224,18 @@ public class ScriptEvaluator {
       }
     }
     if (sb != null && !(data instanceof Integer)) {
-      sb.append(" ").append(Token.nameOf(tok0)).append(" ");
+      StringBuffer sb2 = new StringBuffer();
+      sb2.append(" ").append(Token.nameOf(tok0)).append(" ");
       if (plane != null)
-        sb.append(Escape.escape(plane));
+        sb2.append(Escape.escape(plane));
       else if (pt != null)
-        sb.append("within ").append(d).append(" ").append(Escape.escape(pt));
+        sb2.append("within ").append(d).append(" ").append(Escape.escape(pt));
+      else if (data == null)
+        sb2.append("none");
       else
-        sb.append("within ").append(Escape.escape(data));
+        sb2.append("within ").append(Escape.escape(data));
+      sb.append(sb2);
+      data = new Object[] { data, sb2, Boolean.valueOf(!isSlab) };
     }
     return data;
   }
@@ -16814,7 +16822,8 @@ public class ScriptEvaluator {
       }
     }
 
-    if (surfaceObjectSeen && !isLcaoCartoon && !isSyntaxCheck) {
+    if (surfaceObjectSeen && !isLcaoCartoon && !isSyntaxCheck) {  
+      propertyList.add(0, new Object[] { "newObject", null });
       boolean needSelect = (bsSelect == null);
       if (needSelect)
         bsSelect = BitSetUtil.copy(viewer.getSelectionSet(false));

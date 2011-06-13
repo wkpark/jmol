@@ -25,6 +25,7 @@ package org.jmol.jvxl.readers;
 
 import java.io.OutputStream;
 import java.util.BitSet;
+import java.util.List;
 
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
@@ -952,12 +953,12 @@ public abstract class SurfaceReader implements VertexDataServer {
       meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS, null);
   }
   
-  public void slabIsosurface(Object slabbingObject, boolean andCap) {
+  public void slabIsosurface(List<Object[]> slabInfo) {
     if (meshDataServer != null)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
     if (meshData.polygonIndexes == null)
       return;
-    meshData.slabPolygons(slabbingObject, andCap);
+    meshData.slabPolygons(slabInfo);
     if (meshDataServer != null)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_VERTICES, null);
   }

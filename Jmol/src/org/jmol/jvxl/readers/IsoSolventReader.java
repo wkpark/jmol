@@ -215,10 +215,15 @@ class IsoSolventReader extends AtomDataReader {
       generateSolventCube();
     }
     unsetVoxelData();
-    if (params.cappingObject instanceof Point4f) {
-      volumeData.capData((Point4f) params.cappingObject, params.cutoff);
-      params.cappingObject = null;
-    }
+    // apply cap here
+    List<Object[]> info = params.slabInfo;
+    if (info != null)
+      for (int i = 0; i < info.size(); i++)
+        if (((Boolean) info.get(i)[2]).booleanValue()
+            && info.get(i)[0] instanceof Point4f) {
+          volumeData.capData((Point4f) info.get(i)[0], params.cutoff);
+          info.remove(i--);
+        }
     Logger.checkTimer("solvent surface time");
   }
 

@@ -118,6 +118,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
@@ -192,7 +193,6 @@ public class Parameters {
     bsSolvent = null;
     calculationType = "";
     center = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
-    cappingObject= null;
     colorBySign = colorByPhase = colorBySets = false;
     colorDensity = false;
     colorEncoder = null;
@@ -243,7 +243,7 @@ public class Parameters {
     scale = Float.NaN;
     scale3d = 0;
     sigma = Float.NaN;
-    slabbingObject = null;
+    slabInfo = null;
     solventExtendedAtomRadius = 0;
     state = STATE_INITIALIZED;
     thePlane = null;
@@ -272,8 +272,7 @@ public class Parameters {
   boolean isCavity;
   Boolean pocket; //three states: TRUE, FALSE, and NULL
   int minSet;
-  public Object cappingObject;
-  public Object slabbingObject;
+  public List<Object[]> slabInfo;
   float slabPlaneOffset = Float.NaN;
 
   float[] theProperty;
@@ -448,11 +447,7 @@ public class Parameters {
   }
   
   private String getScriptParams() {
-    return (slabbingObject == null ? "" : " slab within "
-        + Escape.escape(slabbingObject))
-        + (cappingObject == null ? "" : " cap within "
-            + Escape.escape(cappingObject))
-        + " center "
+    return " center "
         + Escape.escape(center) + (Float.isNaN(scale) ? "" : " scale " + scale);
   }
 
@@ -804,6 +799,12 @@ public class Parameters {
     qmOrbitalType = QM_TYPE_UNKNOWN; 
     parameters = null;
     mappedDataMin = Float.MAX_VALUE;
+  }
+
+  public void addSlabInfo(Object[] value) {
+    if (slabInfo == null)
+      slabInfo = new ArrayList<Object[]>();
+    slabInfo.add(value);
   }
 
 }

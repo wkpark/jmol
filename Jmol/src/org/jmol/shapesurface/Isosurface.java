@@ -262,14 +262,22 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return;
     }
 
-    if ("refreshTrajectories" == propertyName) {
-      for (int i = meshCount; --i >= 0;)
-        if (meshes[i].connections != null 
-            && meshes[i].modelIndex == ((Integer)((Object[]) value)[0]).intValue())
-          meshes[i].updateCoordinates((Matrix4f)((Object[]) value)[2], (BitSet)((Object[]) value)[1]);
+    if ("newObject" == propertyName) {
+      if (thisMesh != null)
+        thisMesh.clear(thisMesh.meshType);
       return;
     }
-  
+    
+    if ("refreshTrajectories" == propertyName) {
+      for (int i = meshCount; --i >= 0;)
+        if (meshes[i].connections != null
+            && meshes[i].modelIndex == ((Integer) ((Object[]) value)[0])
+                .intValue())
+          meshes[i].updateCoordinates((Matrix4f) ((Object[]) value)[2],
+              (BitSet) ((Object[]) value)[1]);
+      return;
+    }
+
     if ("modelIndex" == propertyName) {
       if (!iHaveModelIndex) {
         modelIndex = ((Integer) value).intValue();
@@ -369,13 +377,13 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       this.privateKey = ((Double) value).doubleValue();
       return;
     }
-    
+
     if ("connections" == propertyName) {
       if (currentMesh != null)
-        connections  = currentMesh.connections = (int[]) value;
+        connections = currentMesh.connections = (int[]) value;
       return;
     }
-    
+
     // Isosurface / SurfaceGenerator both interested
 
     if ("slab" == propertyName) {
@@ -384,8 +392,22 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
           thisMesh.slabValue = ((Integer) value).intValue();
         return;
       }
+      if (thisMesh != null && thisMesh.polygonCount != 0) {
+        thisMesh.slabPolygons((Object[]) value);
+        thisMesh.initialize(thisMesh.lighting, null, null);
+        return;
+      }
     }
-
+/* in principal, after-model CAP should work, but it's not quite there.
+ * 
+    if ("cap" == propertyName) {
+      if (thisMesh != null && thisMesh.polygonCount != 0) {
+        thisMesh.slabPolygons((Object[]) value);
+        thisMesh.initialize(thisMesh.lighting, null, null);
+        return;
+      }
+    }
+*/
     if ("map" == propertyName) {
       setProperty("squareData", Boolean.FALSE, null);
       if (thisMesh == null || thisMesh.vertexCount == 0)
@@ -728,18 +750,17 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (mesh.linkedMesh != null)
       cmd += " LINK"; // for lcaoCartoon state
     appendCmd(sb, cmd);
+    String id = myType + " ID " + Escape.escape(mesh.thisID);
     if (mesh.q != null && mesh.q.q0 != 1)
-      appendCmd(sb, myType + " ID " + Escape.escape(mesh.thisID) + " rotate "
-          + mesh.q.toString());
+      appendCmd(sb, id + " rotate " + mesh.q.toString());
     if (mesh.ptOffset != null)
-      appendCmd(sb, myType + " ID " + Escape.escape(mesh.thisID) + " offset "
-          + Escape.escape(mesh.ptOffset));
+      appendCmd(sb, id + " offset " + Escape.escape(mesh.ptOffset));
     if (mesh.scale3d != 0)
-      appendCmd(sb, myType + " ID " + Escape.escape(mesh.thisID) + " scale3d "
-          + mesh.scale3d);
+      appendCmd(sb, id + " scale3d " + mesh.scale3d);
+    if (mesh.slabOptions != null)
+      appendCmd(sb, id + mesh.slabOptions.toString());
     if (mesh.slabValue != Integer.MAX_VALUE)
-      appendCmd(sb, myType + " ID " + Escape.escape(mesh.thisID) + " slab "
-          + mesh.slabValue);
+      appendCmd(sb, id + " slab " + mesh.slabValue);
     if (cmd.charAt(0) != '#') {
       if (allowMesh)
         appendCmd(sb, mesh.getState(myType));
@@ -812,28 +833,42 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   protected void getCapSlabInfo(String script) {
     int i = script.indexOf("# SLAB=");
     if (i >= 0)
-      sg.setParameter("slab", getCapSlabObject(i, script));
+      sg.setParameter("slab", getCapSlabObject("slab", i, script));
     i = script.indexOf("# CAP=");
     if (i >= 0)
-      sg.setParameter("cap", getCapSlabObject(i, script));
+      sg.setParameter("slab", getCapSlabObject("cap", i, script));
   }
 
-  private Object getCapSlabObject(int i, String script) {
+  /**
+   * legacy
+   * 
+   * @param type
+   * @param i
+   * @param script
+   * @return   slabInfo object
+   */
+  private Object[] getCapSlabObject(String type, int i, String script) {
+    Object[] info = new Object[3];
     try {
-    String s = Parser.getNextQuotedString(script, i);
-    if (s.indexOf("array") == 0) {
-      String[] pts = TextFormat.split(s.substring(6, s.length() -1), ",");
-      return new Point3f[] {
-          (Point3f) Escape.unescapePoint(pts[0]), 
-          (Point3f) Escape.unescapePoint(pts[1]), 
-          (Point3f) Escape.unescapePoint(pts[2]), 
-          (Point3f) Escape.unescapePoint(pts[3])};
-    }
-    return Escape.unescapePoint(s); // Point4f
-    }
-    catch (Exception e) {
+      String s = Parser.getNextQuotedString(script, i);
+      StringBuffer sb = new StringBuffer(type);
+      sb.append(" ");
+      if (s.indexOf("array") == 0) {
+        String[] pts = TextFormat.split(s.substring(6, s.length() - 1), ",");
+        info[0] = new Point3f[] { (Point3f) Escape.unescapePoint(pts[0]),
+            (Point3f) Escape.unescapePoint(pts[1]),
+            (Point3f) Escape.unescapePoint(pts[2]),
+            (Point3f) Escape.unescapePoint(pts[3]) };
+      } else {
+        info[0] = Escape.unescapePoint(s); // Point4f
+      }
+      sb.append(Escape.escape(info[0]));
+      info[1] = sb;
+      info[2] = Boolean.valueOf(type.equals("cap"));
+    } catch (Exception e) {
       return null;
     }
+    return info;
   }
 
   private boolean iHaveModelIndex;
@@ -1103,6 +1138,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       meshData.polygonCount = mesh.polygonCount;
       meshData.polygonIndexes = mesh.polygonIndexes;
       meshData.polygonColixes = mesh.polygonColixes;
+      meshData.bsValid = mesh.bsValid;
+      meshData.polygonCount0 = mesh.polygonCount0;
+      meshData.vertexCount0 = mesh.vertexCount0;
+      meshData.slabOptions = mesh.slabOptions;
       return;
     case MeshData.MODE_GET_COLOR_INDEXES:
       if (mesh.vertexColixes == null
@@ -1124,6 +1163,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       mesh.polygonCount = meshData.polygonCount;
       mesh.polygonIndexes = meshData.polygonIndexes;
       mesh.polygonColixes = meshData.polygonColixes;
+      mesh.bsValid = meshData.bsValid;
+      mesh.polygonCount0 = meshData.polygonCount0;
+      mesh.vertexCount0 = meshData.vertexCount0;
+      mesh.slabOptions = meshData.slabOptions;
       return;
     }
   }
@@ -1237,8 +1280,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     thisMesh.dataType = sg.getParams().dataType;
     thisMesh.scale3d = sg.getParams().scale3d;
     thisMesh.bitsets = null;
-    thisMesh.slabbingObject = sg.getParams().slabbingObject;
-    thisMesh.cappingObject = sg.getParams().cappingObject;
     if (script != null) {
       if (script.charAt(0) == ' ') {
         script = myType + " ID " + Escape.escape(thisMesh.thisID) + script;

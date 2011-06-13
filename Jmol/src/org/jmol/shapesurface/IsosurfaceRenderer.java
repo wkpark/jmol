@@ -256,7 +256,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     
     for (int i = imesh.polygonCount; --i >= 0;) {
       int[] vertexIndexes = polygonIndexes[i];
-      if (vertexIndexes == null)
+      if (vertexIndexes == null || imesh.bsValid != null && !imesh.bsValid.get(i))
         continue;
       int iA = vertexIndexes[0];
       int iB = vertexIndexes[1];

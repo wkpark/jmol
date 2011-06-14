@@ -395,6 +395,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       }
       if (thisMesh != null && thisMesh.polygonCount != 0) {
         thisMesh.slabPolygons((Object[]) value);
+        thisMesh.jvxlData.vertexDataOnly = true;
         thisMesh.initialize(thisMesh.lighting, null, null);
         if (thisMesh.colorEncoder != null) {
           thisMesh.vertexColixes = null;
@@ -926,6 +927,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     thisMesh.ptCenter.set(center);
     thisMesh.ptOffset = offset;
     thisMesh.scale3d = (thisMesh.jvxlData.jvxlPlane == null ? 0 : scale3d);
+    if (thisMesh.bsSlabDisplay != null)
+      thisMesh.jvxlData.vertexDataOnly = true;
+//      thisMesh.bsSlabDisplay = thisMesh.jvxlData.bsSlabDisplay;
   }
 
   /*
@@ -1143,7 +1147,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       meshData.polygonCount = mesh.polygonCount;
       meshData.polygonIndexes = mesh.polygonIndexes;
       meshData.polygonColixes = mesh.polygonColixes;
-      meshData.bsValid = mesh.bsValid;
+      meshData.bsSlabDisplay = mesh.bsSlabDisplay;
       meshData.polygonCount0 = mesh.polygonCount0;
       meshData.vertexCount0 = mesh.vertexCount0;
       meshData.slabOptions = mesh.slabOptions;
@@ -1168,7 +1172,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       mesh.polygonCount = meshData.polygonCount;
       mesh.polygonIndexes = meshData.polygonIndexes;
       mesh.polygonColixes = meshData.polygonColixes;
-      mesh.bsValid = meshData.bsValid;
+      mesh.bsSlabDisplay = meshData.bsSlabDisplay;
       mesh.polygonCount0 = meshData.polygonCount0;
       mesh.vertexCount0 = meshData.vertexCount0;
       mesh.slabOptions = meshData.slabOptions;

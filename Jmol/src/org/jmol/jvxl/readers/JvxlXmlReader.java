@@ -54,7 +54,7 @@ public class JvxlXmlReader extends VolumeFileReader {
   protected int colorDataCount;
   private int excludedTriangleCount;
   private int excludedVertexCount;
-  private int invalidatedVertexCount;  
+  private int invalidatedVertexCount;
   protected boolean haveContourData;
 
   private XmlReader xr;

@@ -105,8 +105,8 @@ public class MeshSurface {
       polygonIndexes = new int[SEED_COUNT][];
     else if (polygonCount == polygonIndexes.length)
       polygonIndexes = (int[][]) ArrayUtil.doubleLength(polygonIndexes);
-    if (bsValid != null)
-      bsValid.set(polygonCount);
+    if (bsSlabDisplay != null)
+      bsSlabDisplay.set(polygonCount);
     polygonIndexes[polygonCount++] = polygon;
     return n;
   }
@@ -169,14 +169,14 @@ public class MeshSurface {
   
   public void invalidatePolygons() {
     for (int i = polygonCount; --i >= 0;)
-      if ((bsValid == null || bsValid.get(i)) && !setABC(i))
+      if ((bsSlabDisplay == null || bsSlabDisplay.get(i)) && !setABC(i))
         polygonIndexes[i] = null;
   }
 
   protected int iA, iB, iC;
   
   protected boolean setABC(int i) {
-    if (bsValid != null && !bsValid.get(i))
+    if (bsSlabDisplay != null && !bsSlabDisplay.get(i))
       return false;
     int[] vertexIndexes = polygonIndexes[i];
     return vertexIndexes != null
@@ -187,7 +187,7 @@ public class MeshSurface {
 
   public int polygonCount0;
   public int vertexCount0;
-  public BitSet bsValid;
+  public BitSet bsSlabDisplay;
   public StringBuffer slabOptions;
   
   public void slabPolygons(List<Object[]> slabInfo) {
@@ -198,11 +198,11 @@ public class MeshSurface {
   public void slabPolygons(Object[] slabInfo) {
     Object slabbingObject = slabInfo[0];
     if (slabbingObject == null) {
-      if (bsValid != null) {
+      if (bsSlabDisplay != null) {
         polygonCount = polygonCount0;
         vertexCount = vertexCount0;
         polygonCount0 = vertexCount0 = 0;
-        bsValid.set(0, polygonCount);
+        bsSlabDisplay.set(0, polygonCount);
         slabOptions = new StringBuffer(" slab none");
       }
       return;
@@ -210,8 +210,8 @@ public class MeshSurface {
     if (polygonCount0 == 0 || vertexCount0 == 0) {
       polygonCount0 = polygonCount;
       vertexCount0 = vertexCount;
-      bsValid = new BitSet();
-      bsValid.set(0, polygonCount);
+      bsSlabDisplay = new BitSet();
+      bsSlabDisplay.set(0, polygonCount);
       if (polygonCount == 0 && vertexCount == 0)
         return;
     }
@@ -448,7 +448,7 @@ public class MeshSurface {
           addTriangleCheck(iA, iD, iE, check1 & 5 | 2, check2, 0);
           break;
         }
-        bsValid.clear(i);
+        bsSlabDisplay.clear(i);
         if (andCap && iD > 0)
           iPts.add(new int[] { iD, iE });
       } else if (pts != null) {

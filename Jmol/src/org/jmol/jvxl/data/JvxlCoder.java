@@ -558,7 +558,7 @@ public class JvxlCoder {
                                         JvxlData jvxlData, MeshData meshData, boolean escapeXml) {
     int[] vertexIdNew = new int[meshData.vertexCount];
     if (appendXmlTriangleData(sb, meshData.polygonIndexes,
-        meshData.polygonCount, vertexIdNew, escapeXml))
+        meshData.polygonCount, meshData.bsSlabDisplay, vertexIdNew, escapeXml))
       appendXmlVertexData(sb, jvxlData, vertexIdNew,
           meshData.vertices, meshData.vertexValues, meshData.vertexCount,
           meshData.polygonColorData, meshData.polygonCount,
@@ -608,12 +608,13 @@ public class JvxlCoder {
    * @param sb
    * @param triangles
    * @param nData
+   * @param bsInclude 
    * @param vertexIdNew
    * @param escapeXml 
    * @return (triangles are present)
    */
   private static boolean appendXmlTriangleData(StringBuffer sb, int[][] triangles, int nData,
-                                              int[] vertexIdNew, boolean escapeXml) {
+                                              BitSet bsInclude, int[] vertexIdNew, boolean escapeXml) {
     StringBuffer list1 = new StringBuffer();
     int ilast = 1;
     int p = 0;
@@ -621,7 +622,7 @@ public class JvxlCoder {
     boolean addPlus = false;
     int nTri = 0;
     for (int i = 0; i < nData;) {
-      if (triangles[i] == null) {
+      if (triangles[i] == null || (bsInclude != null && !bsInclude.get(i))) {
         i++;
         continue;
       }

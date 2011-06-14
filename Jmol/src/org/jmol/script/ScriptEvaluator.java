@@ -14732,10 +14732,14 @@ public class ScriptEvaluator {
       case Token.perpendicular:
         propertyName = "perp";
         break;
+      case Token.radius:
       case Token.diameter:
+        boolean isRadius = (theTok == Token.radius);
         float f = floatParameter(++i);
+        if (isRadius)
+          f *= 2;
         propertyValue = Float.valueOf(f);
-        propertyName = (tokAt(i) == Token.decimal ? "width" : "diameter");
+        propertyName = (isRadius || tokAt(i) == Token.decimal ? "width" : "diameter");
         swidth = propertyName
             + (tokAt(i) == Token.decimal ? " " + f : " " + ((int) f));
         break;
@@ -15158,15 +15162,36 @@ public class ScriptEvaluator {
     int tok = tokAt(i + 1);
     Point4f plane = null;
     float d = 0;
-    Point3f pt = null;
+    Point3f[] pts = null;
+    BitSet bs = null;
     switch (tok) {
     case Token.none:
       iToken = i + 1;
       break;
     case Token.within:
       i++;
-      if (isFloatParameter(++i))
-        data = new Object[] { Float.valueOf(d = floatParameter(i)), pt = centerParameter(++i) };
+      if (isFloatParameter(++i)) {
+        d = floatParameter(i);
+        if (isCenterParameter(++i)) {
+          Point3f pt = centerParameter(i);
+          if (isSyntaxCheck || !(expressionResult instanceof BitSet)) {
+            pts = new Point3f[] { pt };
+          } else {
+            Atom[] atoms = viewer.getModelSet().atoms;
+            bs = (BitSet) expressionResult;
+            pts = new Point3f[bs.cardinality()];
+            for (int k = 0, j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1), k++)
+              pts[k] = atoms[j];
+          }
+        } else {
+          pts = getPointArray(i, -1);
+        }
+        if (pts.length == 0) {
+          iToken = i;
+          error(ERROR_invalidArgument);
+        }
+        data = new Object[] { Float.valueOf(d), pts };
+      }
      else
         data = getPointArray(i, 4);
       break;
@@ -15182,7 +15207,7 @@ public class ScriptEvaluator {
       SymmetryInterface unitCell = viewer.getCurrentUnitCell();
       if (unitCell == null)
         error(ERROR_invalidArgument);
-      Point3f[] pts = BoxInfo.getCriticalPoints(unitCell.getUnitCellVertices(),
+      pts = BoxInfo.getCriticalPoints(unitCell.getUnitCellVertices(),
           unitCell.getCartesianOffset());
       int iType = (int) unitCell.getUnitCellInfo(JmolConstants.INFO_DIMENSIONS);
       Vector3f v1 = null;
@@ -15209,6 +15234,7 @@ public class ScriptEvaluator {
         break;
       }
       data = pts;
+      pts = null;
       iToken = i + 1;
       break;
     default:
@@ -15228,8 +15254,10 @@ public class ScriptEvaluator {
       sb2.append(" ").append(Token.nameOf(tok0)).append(" ");
       if (plane != null)
         sb2.append(Escape.escape(plane));
-      else if (pt != null)
-        sb2.append("within ").append(d).append(" ").append(Escape.escape(pt));
+      else if (bs != null)
+        sb2.append("within ").append(d).append(" ").append(Escape.escape(bs));
+      else if (pts != null)
+        sb2.append("within ").append(d).append(" ").append(Escape.escape(pts));
       else if (data == null)
         sb2.append("none");
       else

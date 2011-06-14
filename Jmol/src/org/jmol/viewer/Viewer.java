@@ -2714,6 +2714,7 @@ private void zap(String msg) {
     modelSet.setBoundBox(pt1, pt2, byCorner, scale);
   }
 
+  @Override
   public Point3f getBoundBoxCenter() {
     return modelSet.getBoundBoxCenter(animationManager.currentModelIndex);
   }
@@ -2740,6 +2741,7 @@ private void zap(String msg) {
     return modelSet.calcRotationRadius(bs);
   }
 
+  @Override
   public Vector3f getBoundBoxCornerVector() {
     return modelSet.getBoundBoxCornerVector();
   }

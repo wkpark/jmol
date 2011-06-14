@@ -687,18 +687,21 @@ REMARK 290 REMARK: NULL
     }
     char ch12 = line.charAt(12);
     char ch13 = line.charAt(13);
+    // PDB atom symbols are supposed to be in these two characters
+    // But they could be right-aligned or left-aligned
     if ((htElementsInCurrentGroup == null ||
          htElementsInCurrentGroup.get(line.substring(12, 14)) != null) &&
         Atom.isValidElementSymbolNoCaseSecondChar(ch12, ch13))
       return (isHetero || ch12 != 'H' ? "" + ch12 + ch13 : "H");
     // not a known two-letter code
-    if (ch12 == 'H') // added check for PQR files " HD3" for example
+    if (ch12 == 'H') // added check for PQR files "HD22" for example
       return "H";
-    // check for " NH2" for example
+    // check for " NZ" for example
     if ((htElementsInCurrentGroup == null ||
          htElementsInCurrentGroup.get("" + ch13) != null) &&
         Atom.isValidElementSymbol(ch13))
       return "" + ch13;
+    // check for misplaced "O   " for example
     if ((htElementsInCurrentGroup == null ||
          htElementsInCurrentGroup.get("" + ch12) != null) &&
         Atom.isValidElementSymbol(ch12))

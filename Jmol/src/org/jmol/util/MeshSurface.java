@@ -201,6 +201,7 @@ public class MeshSurface {
       if (bsValid != null) {
         polygonCount = polygonCount0;
         vertexCount = vertexCount0;
+        polygonCount0 = vertexCount0 = 0;
         bsValid.set(0, polygonCount);
         slabOptions = new StringBuffer(" slab none");
       }
@@ -232,16 +233,16 @@ public class MeshSurface {
     if (slabbingObject instanceof Object[]) {
       Object[] o = (Object[]) slabbingObject;
       float distance = ((Float) o[0]).floatValue();
-      Point3f center = (Point3f) o[1];
-      getIntersection(null, center, distance, null, andCap, false);
+      Point3f[] centers = (Point3f[]) o[1];
+      getIntersection(null, centers, distance, null, andCap, false);
     }
   }
 
-  public boolean getIntersection(Point4f plane, Point3f ptCenter,
+  public boolean getIntersection(Point4f plane, Point3f[] ptCenters,
                                  float distance, List<Point3f[]> vData,
                                  boolean andCap, boolean doClean) {
     boolean isSlab = (vData == null);
-    if (ptCenter != null)
+    if (ptCenters != null)
       andCap = false; // can only cap faces
     Point3f[] pts;
     int iD, iE;
@@ -256,18 +257,18 @@ public class MeshSurface {
       Point3f vB = vertices[iB];
       Point3f vC = vertices[iC];
       float d1, d2, d3;
-      if (ptCenter == null) {
+      if (ptCenters == null) {
         d1 = Measure.distanceToPlane(plane, vA);
         d2 = Measure.distanceToPlane(plane, vB);
         d3 = Measure.distanceToPlane(plane, vC);
       } else if (distance < 0) {
-        d1 = -vA.distance(ptCenter) - distance;
-        d2 = -vB.distance(ptCenter) - distance;
-        d3 = -vC.distance(ptCenter) - distance;
+        d1 = -minDist(vA, ptCenters) - distance;
+        d2 = -minDist(vB, ptCenters) - distance;
+        d3 = -minDist(vC, ptCenters) - distance;
       } else {
-        d1 = vA.distance(ptCenter) - distance;
-        d2 = vB.distance(ptCenter) - distance;
-        d3 = vC.distance(ptCenter) - distance;
+        d1 = minDist(vA, ptCenters) - distance;
+        d2 = minDist(vB, ptCenters) - distance;
+        d3 = minDist(vC, ptCenters) - distance;
       }
       int test1 = (d1 < 0 ? 1 : 0) + (d2 < 0 ? 2 : 0) + (d3 < 0 ? 4 : 0);
       int test2 = (d1 >= 0 ? 1 : 0) + (d2 >= 0 ? 2 : 0) + (d3 >= 0 ? 4 : 0);
@@ -287,7 +288,7 @@ public class MeshSurface {
       case 1:
       case 6:
         // BC on same side
-        if (ptCenter == null)
+        if (ptCenters == null)
           pts = new Point3f[] { interpolatePoint(vA, vB, -d1, d2),
               interpolatePoint(vA, vC, -d1, d3) };
         else
@@ -297,7 +298,7 @@ public class MeshSurface {
       case 2:
       case 5:
         //AC on same side
-        if (ptCenter == null)
+        if (ptCenters == null)
           pts = new Point3f[] { interpolatePoint(vB, vA, -d2, d1),
               interpolatePoint(vB, vC, -d2, d3) };
         else
@@ -307,7 +308,7 @@ public class MeshSurface {
       case 3:
       case 4:
         //AB on same side need A-C, B-C
-        if (ptCenter == null)
+        if (ptCenters == null)
           pts = new Point3f[] { interpolatePoint(vC, vA, -d3, d1),
               interpolatePoint(vC, vB, -d3, d2) };
         else
@@ -487,6 +488,16 @@ public class MeshSurface {
       polygonCount = nPoly;
     }
     return false;
+  }
+
+  private static float minDist(Point3f pt, Point3f[] ptCenters) {
+    float dmin = Integer.MAX_VALUE;
+    for (int i = ptCenters.length; --i >= 0;) {
+      float d = ptCenters[i].distance(pt);
+      if (d < dmin)
+        dmin = d;
+    }
+    return dmin;
   }
 
   private Point3f interpolateSphere(Point3f v1, Point3f v2, float d1, float d2,

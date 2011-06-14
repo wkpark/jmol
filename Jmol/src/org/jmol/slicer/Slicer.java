@@ -26,6 +26,8 @@
 package org.jmol.slicer;
 
 
+/*
+
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
@@ -37,7 +39,6 @@ import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 import org.jmol.util.*;
 
-/*
 *//**
  * 
  *//*

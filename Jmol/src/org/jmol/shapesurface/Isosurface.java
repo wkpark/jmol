@@ -395,6 +395,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       if (thisMesh != null && thisMesh.polygonCount != 0) {
         thisMesh.slabPolygons((Object[]) value);
         thisMesh.initialize(thisMesh.lighting, null, null);
+        if (thisMesh.colorEncoder != null) {
+          thisMesh.vertexColixes = null;
+          remapColors(thisMesh.colorEncoder);
+        }
         return;
       }
     }

@@ -25,8 +25,8 @@
 
 package org.jmol.slicer;
 
-import javax.vecmath.*;
 /*
+import javax.vecmath.*;
 public class SliceBox {
 
   Point3f[] vertices = new Point3f[8]; //8 vertices (ordered to match boundbox)

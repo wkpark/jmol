@@ -666,8 +666,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
         meshData.polygonColorData = getPolygonColorData(meshData.polygonCount, meshData.polygonColixes);
       }
-      return JvxlCoder.jvxlGetFile(jvxlData, meshData, title, "", true, 1, thisMesh
-              .getState(myType), (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand));
+      StringBuffer sb = new StringBuffer();
+      getMeshCommand(sb, thisMesh.index);
+      return JvxlCoder.jvxlGetFile(jvxlData, meshData, title, "", true, 1, sb.toString(), null);
     }
     if (property == "jvxlFileInfo")
       return JvxlCoder.jvxlGetInfo(jvxlData);

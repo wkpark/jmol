@@ -208,7 +208,7 @@ public class JvxlCoder {
         state = TextFormat.split(state, "** XML **")[1].trim(); 
         XmlUtil.appendTag(data, "jvxlIsosurfaceState",  "\n" + state + "\n");
       } else {
-        XmlUtil.appendCdata(data, "jvxlIsosurfaceState", null, "\n" + state + "\n");
+        XmlUtil.appendCdata(data, "jvxlIsosurfaceState", null, "\n" + state);
       }
     }
   }
@@ -326,7 +326,9 @@ public class JvxlCoder {
       addAttrib(attribs, "\n  insideOut", "true");
     
     // rest is information only:
-    if (jvxlData.isXLowToHigh)
+    if (jvxlData.vertexDataOnly)
+      addAttrib(attribs, "\n  note", "vertex/face data only");
+    else if (jvxlData.isXLowToHigh)
       addAttrib(attribs, "\n  note", "progressive JVXL+ -- X values read from low(0) to high("
               + (jvxlData.nPointsX - 1) + ")");
     addAttrib(attribs, "\n  xyzMin", Escape.escape(jvxlData.boundingBox[0]));

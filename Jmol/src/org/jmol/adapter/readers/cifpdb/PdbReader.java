@@ -691,7 +691,11 @@ REMARK 290 REMARK: NULL
          htElementsInCurrentGroup.get(line.substring(12, 14)) != null) &&
         Atom.isValidElementSymbolNoCaseSecondChar(ch12, ch13))
       return (isHetero || ch12 != 'H' ? "" + ch12 + ch13 : "H");
-    if (!Character.isLetter(ch12) && (htElementsInCurrentGroup == null ||
+    // not a known two-letter code
+    if (ch12 == 'H') // added check for PQR files " HD3" for example
+      return "H";
+    // check for " NH2" for example
+    if ((htElementsInCurrentGroup == null ||
          htElementsInCurrentGroup.get("" + ch13) != null) &&
         Atom.isValidElementSymbol(ch13))
       return "" + ch13;

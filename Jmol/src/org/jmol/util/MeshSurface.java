@@ -221,26 +221,37 @@ public class MeshSurface {
       slabOptions.append(slabInfo[1]);
     boolean andCap = ((Boolean)slabInfo[2]).booleanValue();
     if (slabbingObject instanceof Point4f) {
-      getIntersection((Point4f) slabbingObject, null, 0, null, andCap, false);
+      getIntersection((Point4f) slabbingObject, null, 0, null, andCap, false, SLAB_NOMINMAX);
       return;
     }
     if (slabbingObject instanceof Point3f[]) {
       Point4f[] faces = BoxInfo.getFacesFromCriticalPoints((Point3f[]) slabbingObject);
       for (int i = 0; i < faces.length; i++)
-        getIntersection(faces[i], null, 0, null, andCap, false);
+        getIntersection(faces[i], null, 0, null, andCap, false, SLAB_NOMINMAX);
       return; 
     }
     if (slabbingObject instanceof Object[]) {
       Object[] o = (Object[]) slabbingObject;
       float distance = ((Float) o[0]).floatValue();
-      Point3f[] centers = (Point3f[]) o[1];
-      getIntersection(null, centers, distance, null, andCap, false);
+      if (o[1] instanceof Float) {
+        if (vertexValues == null)
+          return;
+        getIntersection(null, null, distance, null, andCap, false, SLAB_MIN);
+        getIntersection(null, null, ((Float) o[1]).floatValue(), null, andCap, false, SLAB_MAX);       
+      } else {
+        Point3f[] centers = (Point3f[]) o[1];      
+        getIntersection(null, centers, distance, null, andCap, false, SLAB_NOMINMAX);
+      }
     }
   }
 
+  public final static int SLAB_NOMINMAX = 0;
+  public final static int SLAB_MIN = 1;
+  public final static int SLAB_MAX = -1;
+
   public boolean getIntersection(Point4f plane, Point3f[] ptCenters,
                                  float distance, List<Point3f[]> vData,
-                                 boolean andCap, boolean doClean) {
+                                 boolean andCap, boolean doClean, int minMaxMode) {
     boolean isSlab = (vData == null);
     if (ptCenters != null)
       andCap = false; // can only cap faces
@@ -257,7 +268,16 @@ public class MeshSurface {
       Point3f vB = vertices[iB];
       Point3f vC = vertices[iC];
       float d1, d2, d3;
-      if (ptCenters == null) {
+      if (minMaxMode != SLAB_NOMINMAX) {
+        d1 = vertexValues[iA] - distance;
+        d2 = vertexValues[iB] - distance;
+        d3 = vertexValues[iC] - distance;
+        if (minMaxMode == SLAB_MIN) {
+          d1 = -d1;
+          d2 = -d2;
+          d3 = -d3;
+        }
+      } else if (ptCenters == null) {
         d1 = Measure.distanceToPlane(plane, vA);
         d2 = Measure.distanceToPlane(plane, vB);
         d3 = Measure.distanceToPlane(plane, vC);

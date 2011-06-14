@@ -103,6 +103,7 @@ import org.jmol.util.ColorEncoder;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
+import org.jmol.util.MeshSurface;
 import org.jmol.util.Parser;
 import org.jmol.util.Point3fi;
 import org.jmol.util.Quaternion;
@@ -600,7 +601,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       if (mesh == null)
         return false;
       data[3] = Integer.valueOf(mesh.modelIndex);
-      return mesh.getIntersection((Point4f) data[1], null, 0, (List<Point3f[]>) data[2], false, false);
+      return mesh.getIntersection((Point4f) data[1], null, 0, (List<Point3f[]>) data[2], false, false, MeshSurface.SLAB_NOMINMAX);
     }
     if (property == "getBoundingBox") {
       String id = (String) data[0];
@@ -1180,7 +1181,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     thisMesh.insideOut = sg.isInsideOut();
     thisMesh.calculatedArea = null;
     thisMesh.calculatedVolume = null;
-    thisMesh.initialize(sg.getPlane() != null ? JmolConstants.FULLYLIT
+    thisMesh.initialize(sg.isFullyLit() ? JmolConstants.FULLYLIT
         : lighting, null, sg.getPlane());
     if (sg.getParams().psi_monteCarloCount > 0)
       thisMesh.diameter = 1;

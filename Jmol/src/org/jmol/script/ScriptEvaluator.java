@@ -15161,7 +15161,7 @@ public class ScriptEvaluator {
     boolean isSlab = (tok0 == Token.slab);
     int tok = tokAt(i + 1);
     Point4f plane = null;
-    float d = 0;
+    float d = 0, d2 = Float.MAX_VALUE;
     Point3f[] pts = null;
     BitSet bs = null;
     switch (tok) {
@@ -15170,7 +15170,10 @@ public class ScriptEvaluator {
       break;
     case Token.within:
       i++;
-      if (isFloatParameter(++i)) {
+      if (tokAt(++i) == Token.range) {
+        data = new Object[] { Float.valueOf(d = floatParameter(++i)),
+            Float.valueOf(d2 = floatParameter(++i)) };
+      } else if (isFloatParameter(i)) {
         d = floatParameter(i);
         if (isCenterParameter(++i)) {
           Point3f pt = centerParameter(i);
@@ -15180,7 +15183,8 @@ public class ScriptEvaluator {
             Atom[] atoms = viewer.getModelSet().atoms;
             bs = (BitSet) expressionResult;
             pts = new Point3f[bs.cardinality()];
-            for (int k = 0, j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1), k++)
+            for (int k = 0, j = bs.nextSetBit(0); j >= 0; j = bs
+                .nextSetBit(j + 1), k++)
               pts[k] = atoms[j];
           }
         } else {
@@ -15191,24 +15195,25 @@ public class ScriptEvaluator {
           error(ERROR_invalidArgument);
         }
         data = new Object[] { Float.valueOf(d), pts };
-      }
-     else
+      } else {
         data = getPointArray(i, 4);
+      }
       break;
     case Token.boundbox:
-      data = BoxInfo.getCriticalPoints(viewer.getBoundBoxVertices(), null);
       iToken = i + 1;
+      data = BoxInfo.getCriticalPoints(viewer.getBoundBoxVertices(), null);
       break;
     //case Token.slicebox:
-     // data = BoxInfo.getCriticalPoints(((JmolViewer)(viewer)).slicer.getSliceVert(), null);
-      //iToken = i + 1;
-      //break;      
+    // data = BoxInfo.getCriticalPoints(((JmolViewer)(viewer)).slicer.getSliceVert(), null);
+    //iToken = i + 1;
+    //break;      
     case Token.unitcell:
+      iToken = i + 1;
       SymmetryInterface unitCell = viewer.getCurrentUnitCell();
       if (unitCell == null)
         error(ERROR_invalidArgument);
-      pts = BoxInfo.getCriticalPoints(unitCell.getUnitCellVertices(),
-          unitCell.getCartesianOffset());
+      pts = BoxInfo.getCriticalPoints(unitCell.getUnitCellVertices(), unitCell
+          .getCartesianOffset());
       int iType = (int) unitCell.getUnitCellInfo(JmolConstants.INFO_DIMENSIONS);
       Vector3f v1 = null;
       Vector3f v2 = null;
@@ -15235,7 +15240,6 @@ public class ScriptEvaluator {
       }
       data = pts;
       pts = null;
-      iToken = i + 1;
       break;
     default:
       if (!isLcaoCartoon && isSlab && isFloatParameter(i + 1)) {
@@ -15258,10 +15262,12 @@ public class ScriptEvaluator {
         sb2.append("within ").append(d).append(" ").append(Escape.escape(bs));
       else if (pts != null)
         sb2.append("within ").append(d).append(" ").append(Escape.escape(pts));
-      else if (data == null)
-        sb2.append("none");
-      else
+      else if (d2 != Float.MAX_VALUE)
+        sb2.append("within range ").append(d).append(" ").append(d2);
+      else if (data != null)
         sb2.append("within ").append(Escape.escape(data));
+      else
+        sb2.append("none");
       sb.append(sb2);
       data = new Object[] { data, sb2, Boolean.valueOf(!isSlab) };
     }

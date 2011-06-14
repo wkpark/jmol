@@ -647,7 +647,7 @@ public void initShape() {
   
   private void setSlabData() {
     if (plane != null) {
-      slabData.getIntersection(plane, null, 0, null, false, true);
+      slabData.getIntersection(plane, null, 0, null, false, true, MeshSurface.SLAB_NOMINMAX);
       polygon = new ArrayList<Object>();
       polygon.add(slabData.vertices);
       polygon.add(slabData.polygonIndexes);

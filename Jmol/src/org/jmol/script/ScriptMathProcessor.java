@@ -1222,6 +1222,8 @@ class ScriptMathProcessor {
     if (args.length == 0)
       return false;
 
+    // {*}.find("MF")
+    // {*}.find("SEQENCE")
     // {*}.find("SMARTS", "CCCC")
     // "CCCC".find("SMARTS", "CC")
     // "CCCC".find("SMILES", "MF")

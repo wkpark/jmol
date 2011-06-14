@@ -209,6 +209,7 @@ public class Parameters {
     fileIndex = 1;
     readAllData = true;
     fileName = "";
+    fullyLit = false;
     functionXYinfo = null;
     iAddGridPoints = false;
     insideOut = false;
@@ -637,6 +638,7 @@ public class Parameters {
   float[] qm_moLinearCombination = null;
   
   void setNci(boolean isPromolecular) {
+    fullyLit = true;
     if (isPromolecular)
       dataType = SURFACE_NCI;
     qm_marginAngstroms = 2f;
@@ -764,6 +766,7 @@ public class Parameters {
   public boolean doFullMolecular;
   public float propertyDistanceMax = Integer.MAX_VALUE;
   public int randomSeed;
+  public boolean fullyLit;
   
   void setMapRanges(SurfaceReader surfaceReader, boolean haveData) {
     if (!colorDensity)

@@ -1359,5 +1359,9 @@ public class SurfaceGenerator {
      meshDataServer.setOutputStream(binaryDoc, os);    
   }
 
+  public boolean isFullyLit() {
+    return (params.thePlane != null || params.fullyLit);
+  }
+
 
 }

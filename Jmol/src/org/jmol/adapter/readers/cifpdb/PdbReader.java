@@ -691,7 +691,7 @@ REMARK 290 REMARK: NULL
          htElementsInCurrentGroup.get(line.substring(12, 14)) != null) &&
         Atom.isValidElementSymbolNoCaseSecondChar(ch12, ch13))
       return (isHetero || ch12 != 'H' ? "" + ch12 + ch13 : "H");
-    if ((htElementsInCurrentGroup == null ||
+    if (!Character.isLetter(ch12) && (htElementsInCurrentGroup == null ||
          htElementsInCurrentGroup.get("" + ch13) != null) &&
         Atom.isValidElementSymbol(ch13))
       return "" + ch13;

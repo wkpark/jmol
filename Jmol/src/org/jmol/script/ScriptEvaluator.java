@@ -5751,6 +5751,7 @@ public class ScriptEvaluator {
       // for (var i = 1; i < 3; i = i + 1);
       // for (;;;);
       // for (var x in {...}) { xxxxx }
+      // for (var x in y) { xxxx }
       Token token = theToken;
       int[] pts = new int[2];
       int j = 0;
@@ -5769,9 +5770,16 @@ public class ScriptEvaluator {
             bsOrList = atomExpression(i);            
           } else {
             ScriptVariable vl =  parameterExpressionList(-i, 1, false).get(0);
-            if (vl.tok != Token.varray)
+            switch (vl.tok) {
+            case Token.bitset:
+              bsOrList = ScriptVariable.getBitSet(vl, false);
+              break;
+            case Token.varray:
+              bsOrList = vl.getList();
+              break;
+            default:
               error(ERROR_invalidArgument);
-            bsOrList = vl.getList();
+            }
           }
           i = iToken;
           break;

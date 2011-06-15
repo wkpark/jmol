@@ -398,4 +398,18 @@ public class Mesh extends MeshSurface {
     recalcAltVertices = true;
   }
 
+  BitSet getVisibleVertexBitSet() {
+    BitSet bs = new BitSet();
+    for (int i = polygonCount; --i >= 0; ) 
+      if (bsSlabDisplay == null || bsSlabDisplay.get(i)) {
+        int[] vertexIndexes = polygonIndexes[i];
+        if (vertexIndexes == null)
+          continue;
+        bs.set(vertexIndexes[0]);
+        bs.set(vertexIndexes[1]);
+        bs.set(vertexIndexes[2]);
+      }
+    return bs;
+  }
+
 }

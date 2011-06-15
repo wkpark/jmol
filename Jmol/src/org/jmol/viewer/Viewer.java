@@ -3089,6 +3089,10 @@ private void zap(String msg) {
     return bs;
   }
 
+  public BitSet getAtomsWithin(float distance, Point3f[] points, BitSet bsInclude) {
+    return modelSet.getAtomsWithin(distance, points, bsInclude);
+  }
+  
   public BitSet getAtomsWithin(float distance, Point4f plane) {
     return modelSet.getAtomsWithin(distance, plane);
   }
@@ -9766,5 +9770,5 @@ private void zap(String msg) {
   public void setZslabPoint(Point3f pt) {
     transformManager.setZslabPoint(pt);
   }
-  
+
 }

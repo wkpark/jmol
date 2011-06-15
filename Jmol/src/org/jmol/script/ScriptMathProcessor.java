@@ -2191,8 +2191,10 @@ class ScriptMathProcessor {
         i = 0;
         break;
       case Token.string:
-        isWithinGroup = (ScriptVariable.sValue(args[1])
-            .equalsIgnoreCase("group"));
+        String s = ScriptVariable.sValue(args[1]);
+        if (s.startsWith("$"))
+          return addX(eval.getAtomsNearSurface(distance, s.substring(1)));
+        isWithinGroup = (s.equalsIgnoreCase("group"));
         tok = Token.group;
         break;
       }

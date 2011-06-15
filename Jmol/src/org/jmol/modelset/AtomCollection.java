@@ -2498,6 +2498,25 @@ abstract public class AtomCollection {
     return bsResult;
   }
   
+  public BitSet getAtomsWithin(float distance, Point3f[] points,
+                               BitSet bsInclude) {
+    BitSet bsResult = new BitSet();
+    if (points.length == 0 || bsInclude != null && bsInclude.cardinality() == 0)
+      return bsResult;
+    if (bsInclude == null)
+      bsInclude = BitSetUtil.setAll(points.length);
+    for (int i = atomCount; --i >= 0;) {
+      Atom atom = atoms[i];
+      for (int j = bsInclude.nextSetBit(0); j >= 0; j = bsInclude
+          .nextSetBit(j + 1))
+        if (atom.distance(points[j]) < distance) {
+          bsResult.set(i);
+          break;
+        }
+    }
+    return bsResult;
+  }
+
   public BitSet getVisibleSet() {
     BitSet bs = new BitSet();
     for (int i = atomCount; --i >= 0;)

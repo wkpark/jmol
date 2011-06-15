@@ -17150,4 +17150,11 @@ public class ScriptEvaluator {
     if (!isSyntaxCheck)
       viewer.undoAction(tokAt(0), n);
   }
+
+  BitSet getAtomsNearSurface(float distance, String surfaceId) {
+    Object[] data = new Object[] { surfaceId, null, null };
+    if (isSyntaxCheck || !getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "getVertices", data))
+      return new BitSet();
+    return viewer.getAtomsWithin(distance, (Point3f[])data[1], (BitSet) data[2]);
+  }
 }

@@ -372,6 +372,15 @@ public abstract class MeshCollection extends Shape {
 
   @Override
   public boolean getProperty(String property, Object[] data) {
+    if (property == "getVertices") {
+      Mesh m = getMesh((String) data[0]);
+      if (m == null)
+        return false;
+      data[1] = m.vertices;
+      data[2] = m.getVisibleVertexBitSet();
+      return true;
+        
+    }
     if (property == "checkID") {
       String key = ((String) data[0]).toUpperCase();
       boolean isWild = TextFormat.isWild(key);

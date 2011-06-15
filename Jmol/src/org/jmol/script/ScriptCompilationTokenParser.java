@@ -574,6 +574,8 @@ abstract class ScriptCompilationTokenParser {
     // within ( distance, plane, planeExpression)
     // within ( distance, hkl, hklExpression)
     // within ( distance, coord, point)
+    // within ( distance, point)
+    // within ( distance, $surfaceId)
     // within ( distance, orClause)
     // within ( group|branch|etc, ....)
     // within ( distance, group, ....)
@@ -658,7 +660,8 @@ abstract class ScriptCompilationTokenParser {
       addTokenToPostfix(Token.decimal, new Float(distance));
     else if (key.length() > 0)
       addTokenToPostfix(Token.string, key);
-    while (true) {
+    boolean done = false;
+    while (!done) {
       if (!addNextTokenIf(Token.comma))
         break;
       tok = tokPeek();
@@ -682,6 +685,12 @@ abstract class ScriptCompilationTokenParser {
           isCoordOrPlane = true;
           addNextToken();
           break;
+        case Token.dollarsign:
+          getToken();
+          getToken();
+          addTokenToPostfix(Token.string, "$" + theValue );
+          done = true;
+          break;
         case Token.group:
           getToken();
           addTokenToPostfix(Token.string, "group");
@@ -692,9 +701,12 @@ abstract class ScriptCompilationTokenParser {
           addTokenToPostfix(Token
               .getTokenFromName(distance == Float.MAX_VALUE ? "plane" : "coord"));
         }
-        addNextTokenIf(Token.comma);
+        if (!done)
+          addNextTokenIf(Token.comma);
       }
       tok = tokPeek();
+      if (done) 
+        break;
       if (isCoordOrPlane) {
         while (!tokPeek(Token.rightparen)) {
           switch (tokPeek()) {

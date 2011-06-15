@@ -999,9 +999,9 @@ class CalculationsUFF extends Calculations {
     case CALC_TORSION:
       return 
            "\nT O R S I O N A L (" + torsions.length + " torsions)\n\n"
-          +"      ATOMS           ATOM TYPES             FORCE      TORSION\n"
-          +"  I   J   K   L   I     J     K     L       CONSTANT     ANGLE        ENERGY\n"
-          +"----------------------------------------------------------------------------";
+          +"      ATOMS           ATOM TYPES            n    COS          FORCE      TORSION\n"
+          +"  I   J   K   L   I     J     K     L          (n phi0)      CONSTANT     ANGLE        ENERGY\n"
+          +"---------------------------------------------------------------------------------------------";
     case CALC_OOP:
       return 
            "\nO U T - O F - P L A N E   B E N D I N G\n\n"
@@ -1045,13 +1045,13 @@ class CalculationsUFF extends Calculations {
               atoms[c.ic].atom.getAtomNumber()} });
       case CALC_TORSION:
       return TextFormat.sprintf(
-          "%3d %3d %3d %3d  %-5s %-5s %-5s %-5s  %8.3f     %8.3f     %8.3f", 
+          "%3d %3d %3d %3d  %-5s %-5s %-5s %-5s  %3d %8.3f     %8.3f     %8.3f     %8.3f", 
           new Object[] { atoms[c.ia].type, atoms[c.ib].type, 
-              atoms[c.ic].type, atoms[c.id].type,
-          new float[] { (float) c.dData[0]/*V*/, 
+              atoms[c.ic].type, atoms[c.id].type, 
+          new float[] { (float) c.dData[1]/*cosNphi0*/, (float) c.dData[0]/*V*/, 
               (float) (c.theta * RAD_TO_DEG), (float) c.energy },
           new int[] { atoms[c.ia].atom.getAtomNumber(), atoms[c.ib].atom.getAtomNumber(),
-              atoms[c.ic].atom.getAtomNumber(), atoms[c.id].atom.getAtomNumber() } });
+              atoms[c.ic].atom.getAtomNumber(), atoms[c.id].atom.getAtomNumber(), c.iData[4] } });
     case CALC_OOP:
       return TextFormat.sprintf("" +
           "%3d %3d %3d %3d  %-5s %-5s %-5s %-5s  %8.3f   %8.3f     %8.3f",

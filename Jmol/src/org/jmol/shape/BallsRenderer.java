@@ -37,26 +37,21 @@ public class BallsRenderer extends ShapeRenderer {
 
   @Override
   protected void render() {
-    // minX = rectClip.x;
-    // maxX = minX + rectClip.width;
-    // minY = rectClip.y;
-    // maxY = minY + rectClip.height;
-    int atomCount = modelSet.getAtomCount();
-    boolean firstPass = g3d.setColix(Graphics3D.BLACK);
-    boolean renderCrosshairs = (atomCount > 0
-        && viewer.getShowNavigationPoint()
-        && exportType == Graphics3D.EXPORT_NOT && firstPass);
     boolean renderBalls = !viewer.getWireframeRotation()
         || !viewer.getInMotion();
+    boolean renderCrosshairs = (modelSet.getAtomCount() > 0
+        && viewer.getShowNavigationPoint()
+        && exportType == Graphics3D.EXPORT_NOT && g3d
+        .setColix(Graphics3D.BLACK));
     if (renderCrosshairs) {
       minX = Integer.MAX_VALUE;
       maxX = Integer.MIN_VALUE;
       minY = Integer.MAX_VALUE;
       maxY = Integer.MIN_VALUE;
     }
-    Atom[] atoms = modelSet.atoms;
-    BitSet bsOK = viewer.getRenderableBitSet();
     if (renderBalls) {
+      Atom[] atoms = modelSet.atoms;
+      BitSet bsOK = viewer.getRenderableBitSet();
       for (int i = bsOK.nextSetBit(0); i >= 0; i = bsOK.nextSetBit(i + 1)) {
         Atom atom = atoms[i];
         if (atom.screenDiameter > 0

@@ -15818,8 +15818,9 @@ public class ScriptEvaluator {
             smoothingPower = viewer.getIsosurfacePropertySmoothing(true);
           addShapeProperty(propertyList, "propertySmoothingPower", Integer
               .valueOf(smoothingPower));
-          sbCommand.append(" isosurfacePropertySmoothingPower "
-              + smoothingPower);
+          if (smoothing == Boolean.TRUE)
+            sbCommand.append(" isosurfacePropertySmoothingPower "
+                + smoothingPower);
           if (viewer.isRangeSelected())
             addShapeProperty(propertyList, "rangeSelected", Boolean.TRUE);
         } else {

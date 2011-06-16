@@ -469,6 +469,7 @@ public class VolumeData implements VolumeDataInterface {
   private final Vector3f edgeVector = new Vector3f();
   
   private Point3f ptTemp = new Point3f();
+  public int[] voxelSource;
   
   public float calculateFractionalPoint(float cutoff, Point3f pointA,
                                         Point3f pointB, float valueA,

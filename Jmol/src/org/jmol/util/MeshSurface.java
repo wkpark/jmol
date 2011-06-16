@@ -19,6 +19,7 @@ public class MeshSurface {
   public boolean isColorSolid = true;
   public int vertexCount;
   public Point3f[] vertices;
+  public int[] vertexSource;
   public Point3f offset;
   public Tuple3f[] altVertices;
   public short[] vertexColixes;

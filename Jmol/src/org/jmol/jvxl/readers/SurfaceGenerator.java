@@ -210,6 +210,10 @@ public class SurfaceGenerator {
     return params.colorEncoder;
   }
 
+  public int[] getVertexSource() {
+    return params.vertexSource;
+  }
+
   public void setJvxlData(JvxlData jvxlData) {
     this.jvxlData = jvxlData;
     if (jvxlData != null)

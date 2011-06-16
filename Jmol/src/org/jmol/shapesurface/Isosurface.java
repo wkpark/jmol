@@ -1142,6 +1142,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     switch (mode) {
     case MeshData.MODE_GET_VERTICES:
       meshData.vertices = mesh.vertices;
+      meshData.vertexSource = mesh.vertexSource;
       meshData.vertexValues = mesh.vertexValues;
       meshData.vertexCount = mesh.vertexCount;
       meshData.vertexIncrement = mesh.vertexIncrement;
@@ -1170,6 +1171,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       mesh.vertexValues = meshData.vertexValues;
       mesh.vertexCount = meshData.vertexCount;
       mesh.vertexIncrement = meshData.vertexIncrement;
+      mesh.vertexSource = meshData.vertexSource;
       mesh.polygonCount = meshData.polygonCount;
       mesh.polygonIndexes = meshData.polygonIndexes;
       mesh.polygonColixes = meshData.polygonColixes;
@@ -1184,6 +1186,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   public void notifySurfaceGenerationCompleted() {
     setMesh();
     thisMesh.insideOut = sg.isInsideOut();
+    thisMesh.vertexSource = sg.getVertexSource();
     thisMesh.calculatedArea = null;
     thisMesh.calculatedVolume = null;
     thisMesh.initialize(sg.isFullyLit() ? JmolConstants.FULLYLIT

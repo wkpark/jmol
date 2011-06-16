@@ -30,6 +30,7 @@ import org.jmol.util.Logger;
 import org.jmol.api.AtomIndexIterator;
 import org.jmol.api.Interface;
 import org.jmol.api.MepCalculationInterface;
+import org.jmol.jvxl.data.MeshData;
 
 class AtomPropertyMapper extends AtomDataReader {
 
@@ -72,14 +73,31 @@ class AtomPropertyMapper extends AtomDataReader {
       doSmoothProperty = true;
       if (params.mep_calcType >= 0)
         calcType = params.mep_calcType;
-      m = (MepCalculationInterface) Interface.getOptionInterface("quantum." + mepType + "Calculation");
+      m = (MepCalculationInterface) Interface.getOptionInterface("quantum."
+          + mepType + "Calculation");
     }
     if (!doSmoothProperty && maxDistance == Integer.MAX_VALUE)
       maxDistance = 5.0f; // usually just local to a group
-    getAtoms(Float.NaN, false, true);    
+    getAtoms(Float.NaN, false, true);
+    if (meshDataServer != null)
+      meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
+    if (!doSmoothProperty && meshData.vertexSource != null) {
+      hasColorData = true;
+      for (int i = meshData.vertexCount; --i >= 0;) {
+        int iAtom = meshData.vertexSource[i];
+        if (iAtom >= 0) {
+          meshData.vertexValues[i] = params.theProperty[iAtom];
+        } else {
+          hasColorData = false;
+          break;
+        }
+      }
+    }
+
     setHeader("property", params.calculationType);
     // for plane mapping
-    setRangesAndAddAtoms(params.solvent_ptsPerAngstrom, params.solvent_gridMax, 0); 
+    setRangesAndAddAtoms(params.solvent_ptsPerAngstrom, params.solvent_gridMax,
+        0);
     params.cutoff = 0;
   }
 

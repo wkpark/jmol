@@ -186,8 +186,11 @@ public class Parameters {
 
   void initialize() {
     addHydrogens = false;
+    atomRadiusData = null;
     atomIndex = -1;
     blockCubeData = false; // Gaussian standard, but we allow for multiple surfaces one per data block
+    boundingBox = null;
+    bsExcluded = new BitSet[4];
     bsIgnore = null;
     bsSelected = null;
     bsSolvent = null;
@@ -200,6 +203,11 @@ public class Parameters {
     colorNegLCAO = defaultColorNegativeLCAO;
     colorPos = defaultColorPositive;
     colorPosLCAO = defaultColorPositiveLCAO;
+    colorSchemeTranslucent = false;
+    contourIncrements = null;
+    contoursDiscrete = null;
+    contourColixes = null;
+    contourFromZero = true;
     cutoff = Float.MAX_VALUE;
     cutoffAutomatic = true;
     dataXYReversed = false;
@@ -220,26 +228,23 @@ public class Parameters {
     isSquared = false;
     isContoured = false;
     isEccentric = isAnisotropic = false;
+    isPeriodic = false;
     isSilent = false;
     iUseBitSets = false;
     logCube = logCompression = false;
     logMessages = Logger.debugging;
     mappedDataMin = Float.MAX_VALUE;
+    mep_calcType = -1;
     minSet = 0;
     modelIndex = -1;
-    boundingBox = null;
-    bsExcluded = new BitSet[4];
     nContours = 0;
-    colorSchemeTranslucent = false;
-    contourIncrements = null;
-    contoursDiscrete = null;
-    contourColixes = null;
-    mep_calcType = -1;
     pocket = null;
     propertyDistanceMax = Integer.MAX_VALUE;
     propertySmoothing = false;
     propertySmoothingPower = 4;
     rangeDefined = false;
+    rangeAll = false;
+    rangeSelected = false;
     resolution = Float.MAX_VALUE;
     scale = Float.NaN;
     scale3d = 0;
@@ -249,14 +254,10 @@ public class Parameters {
     state = STATE_INITIALIZED;
     thePlane = null;
     theProperty = null;
-    usePropertyForColorRange = true; // except for MEP and MLP
     thisContour = -1;
-    contourFromZero = true;
     title = null;
-    atomRadiusData = null;
-    rangeAll = false;
-    rangeSelected = false;
-    isPeriodic = false;
+    usePropertyForColorRange = true; // except for MEP and MLP
+    vertexSource = null;
   }
   
   String calculationType = "";
@@ -767,6 +768,7 @@ public class Parameters {
   public float propertyDistanceMax = Integer.MAX_VALUE;
   public int randomSeed;
   public boolean fullyLit;
+  public int[] vertexSource;
   
   void setMapRanges(SurfaceReader surfaceReader, boolean haveData) {
     if (!colorDensity)

@@ -37,6 +37,7 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
@@ -143,7 +144,7 @@ class IsoSolventReader extends AtomDataReader {
   private boolean havePlane;
   final private Point3f ptXyzTemp = new Point3f();
   private AtomIndexIterator iter;
-  private float[] voxelRadii;
+  private int[] voxelSource;
   private BitSet bsSurfaceVoxels, bsSurfacePoints, bsSurfaceDone;
   private BitSet[] bsLocale;
   private Map<String, Edge> htEdges;
@@ -213,9 +214,10 @@ class IsoSolventReader extends AtomDataReader {
       return;
     Logger.startTimer();
     getMaxRadius();
-    voxelRadii = new float[volumeData.nPoints];
+    volumeData.voxelSource = voxelSource = new int[volumeData.nPoints];
     if (isCavity && dataType != Parameters.SURFACE_NOMAP
         && dataType != Parameters.SURFACE_PROPERTY) {
+      params.vertexSource = null;
       volumeData.voxelData = voxelData = new float[nPointsX][nPointsY][nPointsZ];
       resetVoxelData(Float.MAX_VALUE);
       markSphereVoxels(cavityRadius, params.distance);
@@ -239,6 +241,7 @@ class IsoSolventReader extends AtomDataReader {
   }
 
   private boolean isSurfacePoint;
+  private int iAtomSurface;
   private static boolean testLinear = false;
 
   /**
@@ -347,13 +350,15 @@ class IsoSolventReader extends AtomDataReader {
     int vB = marchingCubes.getLinearOffset(x, y, z, vB0);
     isSurfacePoint = (bsSurfaceVoxels != null && (bsSurfaceVoxels.get(vA) || bsSurfaceVoxels
         .get(vB)));
+    iAtomSurface = Math.abs(valueA < valueB ? voxelSource[vA] : voxelSource[vB]);
 
-    if (testLinear || voxelRadii == null || voxelRadii[vA] == 0
-        || voxelRadii[vA] != voxelRadii[vB])
+    if (testLinear || voxelSource == null || voxelSource[vA] == 0
+        || voxelSource[vA] != voxelSource[vB])
       return super.getSurfacePointAndFraction(cutoff, isCutoffAbsolute, valueA,
           valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn);
     float fraction = fReturn[0] = MeshSurface
-        .getSphericalInterpolationFraction(voxelRadii[vA], valueA, valueB,
+        .getSphericalInterpolationFraction((voxelSource[vA] < 0 ? solventRadius : 
+          atomRadius[voxelSource[vA] - 1]), valueA, valueB,
             edgeVector.length());
     ptReturn.scaleAdd(fraction, edgeVector, pointA);
     float diff = valueB - valueA;
@@ -375,8 +380,12 @@ class IsoSolventReader extends AtomDataReader {
     // We use it to identify all points derived from (a) all +F and (b)
     // all -S voxels for atoms that are not related to a face. 
     int i = super.addVertexCopy(vertexXYZ, value, assocVertex);
-    if (isSurfacePoint && i >= 0)
+    if (i < 0)
+      return i;
+    if (isSurfacePoint)
       bsSurfacePoints.set(i);
+    if (params.vertexSource != null)
+      params.vertexSource[i] = iAtomSurface;
     return i;
   }
 
@@ -428,9 +437,15 @@ class IsoSolventReader extends AtomDataReader {
   protected void postProcessVertices() {
     // Here we identify the actual surface set and cull out the other fragments
     // created when the toroidal surfaces are split by faces.
+    if (meshDataServer != null)
+      meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
+    if (params.vertexSource != null) {
+      params.vertexSource = ArrayUtil.setLength(params.vertexSource,
+          meshData.vertexCount);
+      for (int i = 0; i < meshData.vertexCount; i++)
+        params.vertexSource[i] = Math.abs(params.vertexSource[i]) - 1;
+    }
     if (doCalculateTroughs && bsSurfacePoints != null) {
-      if (meshDataServer != null)
-        meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
       BitSet[] bsSurfaces = meshData.getSurfaceSet();
       for (int i = 0; i < meshData.nSets; i++)
         if (!bsSurfaces[i].intersects(bsSurfacePoints))
@@ -486,6 +501,7 @@ class IsoSolventReader extends AtomDataReader {
   private void generateSolventCube() {
     if (dataType == Parameters.SURFACE_NOMAP)
       return;
+    params.vertexSource = new int[volumeData.nPoints]; // overkill?
     bsSurfaceDone = new BitSet();
     bsSurfaceVoxels = new BitSet();
     bsSurfacePoints = new BitSet();
@@ -659,7 +675,7 @@ class IsoSolventReader extends AtomDataReader {
         edges[k].addFace(f);
     }
 
-    public void dump() {
+    protected void dump() {
       Point3f ptA = atomXyz[ia];
       Point3f ptB = atomXyz[ib];
       Point3f ptC = atomXyz[ic];
@@ -833,7 +849,7 @@ class IsoSolventReader extends AtomDataReader {
      *    
      * Pass 2:
      * 
-     * In the second pass we are marking inside (-) voxels. The rules are:
+     * In the second pass we are marking inside (-) voxels.
      * 
      */
     BitSet bsThisPass = new BitSet();
@@ -878,7 +894,7 @@ class IsoSolventReader extends AtomDataReader {
                       .get(ipt)))) {
                 bsThisPass.set(ipt);
                 setVoxel(i, j, k, value);
-                voxelRadii[ipt] = -solventRadius;
+                voxelSource[ipt] = -1 - f.ia;
                 if (value > 0) {
                   bsSurfaceVoxels.set(ipt);
                 }
@@ -930,7 +946,7 @@ class IsoSolventReader extends AtomDataReader {
             if (value < voxelData[i][j][k]) {
               setVoxel(i, j, k, value);
               int ipt = volumeData.getPointIndex(i, j, k);
-              voxelRadii[ipt] = -solventRadius;
+              voxelSource[ipt] = -1 - ia;
             }
           }
         }
@@ -980,7 +996,7 @@ class IsoSolventReader extends AtomDataReader {
               setVoxel(i, j, k, value);
               if (!Float.isNaN(value)) {
                 int ipt = volumeData.getPointIndex(i, j, k);
-                voxelRadii[ipt] = rA;
+                voxelSource[ipt] = iAtom + 1;
                 if (value < 0 && isSurface)
                   bsSurfaceVoxels.set(ipt);
               }

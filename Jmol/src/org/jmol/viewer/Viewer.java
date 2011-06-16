@@ -9787,4 +9787,8 @@ private void zap(String msg) {
     transformManager.setZslabPoint(pt);
   }
 
+  public int[] getCrossHairMinMax() {
+    return shapeManager.getCrossHairMinMax();
+  }
+
 }

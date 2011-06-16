@@ -33,22 +33,14 @@ import org.jmol.modelset.Atom;
 import javax.vecmath.*;
 public class BallsRenderer extends ShapeRenderer {
 
-  private int minX, minY, maxX, maxY;
-
   @Override
   protected void render() {
+    
+    // also crosshairs for navigation mode
+    
     boolean renderBalls = !viewer.getWireframeRotation()
         || !viewer.getInMotion();
-    boolean renderCrosshairs = (modelSet.getAtomCount() > 0
-        && viewer.getShowNavigationPoint()
-        && exportType == Graphics3D.EXPORT_NOT && g3d
-        .setColix(Graphics3D.BLACK));
-    if (renderCrosshairs) {
-      minX = Integer.MAX_VALUE;
-      maxX = Integer.MIN_VALUE;
-      minY = Integer.MAX_VALUE;
-      maxY = Integer.MIN_VALUE;
-    }
+    int[] minMax = viewer.getCrossHairMinMax();
     if (renderBalls) {
       Atom[] atoms = modelSet.atoms;
       BitSet bsOK = viewer.getRenderableBitSet();
@@ -56,24 +48,14 @@ public class BallsRenderer extends ShapeRenderer {
         Atom atom = atoms[i];
         if (atom.screenDiameter > 0
             && (atom.getShapeVisibilityFlags() & myVisibilityFlag) != 0
-            && g3d.setColix(atom.getColix())) {
-          if (renderCrosshairs) {
-            if (atom.screenX < minX)
-              minX = atom.screenX;
-            if (atom.screenX > maxX)
-              maxX = atom.screenX;
-            if (atom.screenY < minY)
-              minY = atom.screenY;
-            if (atom.screenY > maxY)
-              maxY = atom.screenY;
-          }
+            && g3d.setColix(atom.getColix())) {       
           g3d.drawAtom(atom);
         }
       }
     }
 
     // this is the square and crosshairs for the navigator
-    if (renderCrosshairs) {
+    if (minMax[0] != Integer.MAX_VALUE) {
       Point3f navOffset = new Point3f(viewer.getNavigationOffset());
       boolean antialiased = g3d.isAntialiased();
       float navDepth = viewer.getNavigationDepthPercent();
@@ -92,13 +74,13 @@ public class BallsRenderer extends ShapeRenderer {
       g3d.drawRect(x - off, y - off, z, 0, h, h);
       off = h;
       h = h >> 1;
-      g3d.setColix(maxX < navOffset.x ? Graphics3D.YELLOW : Graphics3D.GREEN);
+      g3d.setColix(minMax[1] < navOffset.x ? Graphics3D.YELLOW : Graphics3D.GREEN);
       g3d.drawRect(x - off, y, z, 0, h, w);
-      g3d.setColix(minX > navOffset.x ? Graphics3D.YELLOW : Graphics3D.GREEN);
+      g3d.setColix(minMax[0] > navOffset.x ? Graphics3D.YELLOW : Graphics3D.GREEN);
       g3d.drawRect(x + h, y, z, 0, h, w);
-      g3d.setColix(maxY < navOffset.y ? Graphics3D.YELLOW : Graphics3D.GREEN);
+      g3d.setColix(minMax[3] < navOffset.y ? Graphics3D.YELLOW : Graphics3D.GREEN);
       g3d.drawRect(x, y - off, z, 0, w, h);
-      g3d.setColix(minY > navOffset.y ? Graphics3D.YELLOW : Graphics3D.GREEN);
+      g3d.setColix(minMax[2] > navOffset.y ? Graphics3D.YELLOW : Graphics3D.GREEN);
       g3d.drawRect(x, y + h, z, 0, w, h);
     }
   }

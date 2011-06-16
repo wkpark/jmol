@@ -385,6 +385,11 @@ public class ShapeManager {
     return bsRenderable;
   }
   
+  private final int[] minMax = new int[4];
+  public int[] getCrossHairMinMax() {
+    return minMax;
+  }
+
   public void transformAtoms() {
     bsRenderable.clear();
     Atom[] atoms = modelSet.atoms;
@@ -408,48 +413,77 @@ public class ShapeManager {
           .abs(atom.madAtom));
       //      System.out.println("shapeman " + atom + " scaleToScreen(" + screen.z + "," + atom.madAtom + ")=" + atom.screenDiameter);
     }
-    if (!viewer.getSlabEnabled())
-      return;
-    boolean slabByMolecule = viewer.getSlabByMolecule();
-    boolean slabByAtom = viewer.getSlabByAtom();
-    int minZ = g3d.getSlab();
-    int maxZ = g3d.getDepth();
-    if (slabByMolecule) {
-      JmolMolecule[] molecules = modelSet.getMolecules();
-      int moleculeCount = modelSet.getMoleculeCountInModel(-1);
-      for (int i = 0; i < moleculeCount; i++) {
-        JmolMolecule m = molecules[i];
-        int j = 0;
-        int pt = m.firstAtomIndex;
-        if (!bsRenderable.get(pt))
-          continue;
-        for (; j < m.atomCount; j++, pt++)
-          if (g3d.isClippedZ(atoms[pt].screenZ
-              - (atoms[pt].screenDiameter >> 1)))
-            break;
-        if (j != m.atomCount) {
-          pt = m.firstAtomIndex;
-          for (int k = 0; k < m.atomCount; k++) {
-            bsRenderable.clear(pt);
-            atoms[pt++].screenZ = 0;
+
+    if (viewer.getSlabEnabled()) {
+      boolean slabByMolecule = viewer.getSlabByMolecule();
+      boolean slabByAtom = viewer.getSlabByAtom();
+      int minZ = g3d.getSlab();
+      int maxZ = g3d.getDepth();
+      if (slabByMolecule) {
+        JmolMolecule[] molecules = modelSet.getMolecules();
+        int moleculeCount = modelSet.getMoleculeCountInModel(-1);
+        for (int i = 0; i < moleculeCount; i++) {
+          JmolMolecule m = molecules[i];
+          int j = 0;
+          int pt = m.firstAtomIndex;
+          if (!bsRenderable.get(pt))
+            continue;
+          for (; j < m.atomCount; j++, pt++)
+            if (g3d.isClippedZ(atoms[pt].screenZ
+                - (atoms[pt].screenDiameter >> 1)))
+              break;
+          if (j != m.atomCount) {
+            pt = m.firstAtomIndex;
+            for (int k = 0; k < m.atomCount; k++) {
+              bsRenderable.clear(pt);
+              atoms[pt++].screenZ = 0;
+            }
+          }
+        }
+      }
+      for (int i = bsRenderable.nextSetBit(0); i >= 0; i = bsRenderable
+          .nextSetBit(i + 1)) {
+        Atom atom = atoms[i];
+        if (g3d.isClippedZ(atom.screenZ
+            - (slabByAtom ? atoms[i].screenDiameter >> 1 : 0))) {
+          atom.setClickable(0);
+          // note that in the case of navigation,
+          // maxZ is set to Integer.MAX_VALUE.
+          int r = (slabByAtom ? -1 : 1) * atom.screenDiameter / 2;
+          if (atom.screenZ + r < minZ || atom.screenZ - r > maxZ
+              || !g3d.isInDisplayRange(atom.screenX, atom.screenY)) {
+            bsRenderable.clear(i);
           }
         }
       }
     }
+
+    boolean renderCrosshairs = (modelSet.getAtomCount() > 0
+        && viewer.getShowNavigationPoint()
+        && g3d.getExportType() == Graphics3D.EXPORT_NOT && g3d
+        .setColix(Graphics3D.BLACK));
+    minMax[0] = Integer.MAX_VALUE;
+    if (!renderCrosshairs)
+      return;
+    int minX = Integer.MAX_VALUE;
+    int maxX = Integer.MIN_VALUE;
+    int minY = Integer.MAX_VALUE;
+    int maxY = Integer.MIN_VALUE;
     for (int i = bsRenderable.nextSetBit(0); i >= 0; i = bsRenderable
         .nextSetBit(i + 1)) {
       Atom atom = atoms[i];
-      if (g3d.isClippedZ(atom.screenZ
-          - (slabByAtom ? atoms[i].screenDiameter >> 1 : 0))) {
-        atom.setClickable(0);
-        // note that in the case of navigation,
-        // maxZ is set to Integer.MAX_VALUE.
-        int r = (slabByAtom ? -1 : 1) * atom.screenDiameter / 2;
-        if (atom.screenZ + r < minZ || atom.screenZ - r > maxZ
-            || !g3d.isInDisplayRange(atom.screenX, atom.screenY)) {
-          bsRenderable.clear(i);
-        }
-      }
+      if (atom.screenX < minX)
+        minX = atom.screenX;
+      if (atom.screenX > maxX)
+        maxX = atom.screenX;
+      if (atom.screenY < minY)
+        minY = atom.screenY;
+      if (atom.screenY > maxY)
+        maxY = atom.screenY;
     }
+    minMax[0] = minX;
+    minMax[1] = maxX;
+    minMax[2] = minY;
+    minMax[3] = maxY;
   }
 }

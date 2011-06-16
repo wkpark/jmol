@@ -56,22 +56,24 @@ public class BallsRenderer extends ShapeRenderer {
     }
     Atom[] atoms = modelSet.atoms;
     BitSet bsOK = viewer.getRenderableBitSet();
-    for (int i = bsOK.nextSetBit(0); i >= 0; i = bsOK.nextSetBit(i + 1)) {
-      Atom atom = atoms[i];
-      if (renderBalls && atom.screenDiameter > 0
-          && (atom.getShapeVisibilityFlags() & myVisibilityFlag) != 0
-          && g3d.setColix(atom.getColix())) {
-        if (renderCrosshairs) {
-          if (atom.screenX < minX)
-            minX = atom.screenX;
-          if (atom.screenX > maxX)
-            maxX = atom.screenX;
-          if (atom.screenY < minY)
-            minY = atom.screenY;
-          if (atom.screenY > maxY)
-            maxY = atom.screenY;
+    if (renderBalls) {
+      for (int i = bsOK.nextSetBit(0); i >= 0; i = bsOK.nextSetBit(i + 1)) {
+        Atom atom = atoms[i];
+        if (atom.screenDiameter > 0
+            && (atom.getShapeVisibilityFlags() & myVisibilityFlag) != 0
+            && g3d.setColix(atom.getColix())) {
+          if (renderCrosshairs) {
+            if (atom.screenX < minX)
+              minX = atom.screenX;
+            if (atom.screenX > maxX)
+              maxX = atom.screenX;
+            if (atom.screenY < minY)
+              minY = atom.screenY;
+            if (atom.screenY > maxY)
+              maxY = atom.screenY;
+          }
+          g3d.drawAtom(atom);
         }
-        g3d.drawAtom(atom);
       }
     }
 

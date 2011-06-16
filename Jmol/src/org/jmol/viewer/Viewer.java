@@ -38,6 +38,7 @@ import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.BoxInfo;
 import org.jmol.modelset.Group;
+import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.MeasurementPending;
 import org.jmol.modelset.ModelLoader;
 import org.jmol.modelset.ModelSet;
@@ -4498,8 +4499,16 @@ private void zap(String msg) {
         global.edsUrlOptions };
   }
 
-  public String getStandardLabelFormat() {
-    return stateManager.getStandardLabelFormat();
+  public String getStandardLabelFormat(int type) {
+    switch (type) {
+    default:
+    case 0: // standard
+      return LabelToken.STANDARD_LABEL;
+    case 1:
+      return global.defaultLabelXYZ;
+    case 2:
+      return global.defaultLabelPDB;
+    }
   }
 
   public int getRibbonAspectRatio() {
@@ -5505,6 +5514,13 @@ private void zap(String msg) {
 
   private void setStringProperty(String key, int tok, String value) {
     switch (tok) {
+      // 12.1.50
+    case Token.defaultlabelpdb:
+      global.defaultLabelPDB = value;
+      break;
+    case Token.defaultlabelxyz:
+      global.defaultLabelXYZ = value;
+      break;
     case Token.defaultloadfilter:
       // 12.0.RC10
       global.defaultLoadFilter = value;

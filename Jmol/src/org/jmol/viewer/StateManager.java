@@ -33,7 +33,6 @@ import java.util.Map;
 
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Bond;
-import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.ModelSet;
 import org.jmol.script.ScriptFunction;
 import org.jmol.script.ScriptVariable;
@@ -170,31 +169,6 @@ public class StateManager {
     viewer.setIntProperty("percentVdwAtom", 0);
     viewer.setIntProperty("bondRadiusMilliAngstroms", 1);
     viewer.setDefaultVdw("Rasmol");
-  }
-
-  String getStandardLabelFormat() {
-    // from the RasMol 2.6b2 manual: RasMol uses the label
-    // "%n%r:%c.%a" if the molecule contains more than one chain:
-    // "%e%i" if the molecule has only a single residue (a small molecule) and
-    // "%n%r.%a" otherwise.
-    
-    // Jmol 11.7.39 -- see Atom.getIdentity(true);
-    
-    String strLabel = LabelToken.STANDARD_LABEL;
-    
-    /*
-    int modelCount = viewer.getModelCount();
-    if (viewer.getChainCount() > modelCount)
-      strLabel = "[%n]%r:%c.%a";
-    else if (viewer.getGroupCount() <= modelCount)
-      strLabel = "%e%i";
-    else
-      strLabel = "[%n]%r.%a";
-    if (viewer.getModelCount() > 1)
-      strLabel += "/%M";
-    */
-    
-    return strLabel;
   }
 
   String listSavedStates() {
@@ -831,6 +805,8 @@ public class StateManager {
       setParameterValue("defaultDrawArrowScale", defaultDrawArrowScale);
       setParameterValue("defaultDirectory", defaultDirectory);
       setParameterValue("defaultDistanceLabel", defaultDistanceLabel);
+      setParameterValue("defaultLabelPDB", defaultLabelPDB);
+      setParameterValue("defaultLabelXYZ", defaultLabelXYZ);
       setParameterValue("defaultLoadFilter", defaultLoadFilter);
       setParameterValue("defaultLoadScript", defaultLoadScript);
       setParameterValue("defaultStructureDSSP", defaultStructureDSSP);
@@ -1202,6 +1178,8 @@ public class StateManager {
     String dataSeparator = "~~~";
     boolean debugScript = false;
     float defaultDrawArrowScale = 0.5f;
+    String defaultLabelXYZ = "%a";
+    String defaultLabelPDB = "%m%r";
     float defaultTranslucent = 0.5f;
     int delayMaximumMs = 0;
     float dipoleScale = 1.0f;

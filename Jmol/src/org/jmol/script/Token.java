@@ -779,7 +779,9 @@ public class Token {
   public final static int currentlocalpath               = strparam | 18;
   public final static int dataseparator                  = strparam | 20;
   public final static int defaultanglelabel              = strparam | 22;
-  public final static int defaultcolorscheme             = strparam | 24;
+  public final static int defaultlabelpdb                = strparam | 23;
+  public final static int defaultlabelxyz                = strparam | 24;
+  public final static int defaultcolorscheme             = strparam | 25;
   public final static int defaultdirectory               = strparam | 26;
   public final static int defaultdistancelabel           = strparam | 28;
   public final static int defaultloadfilter              = strparam | 29;
@@ -2074,6 +2076,8 @@ public class Token {
       "defaultColors",                            null,
       "defaultDirectory",                         new Token(defaultdirectory),
       "defaultDistanceLabel",                     new Token(defaultdistancelabel),
+      "defaultLabelPDB",                          new Token(defaultlabelpdb),
+      "defaultLabelXYZ",                          new Token(defaultlabelxyz),
       "defaultLoadFilter",                        new Token(defaultloadfilter),
       "defaultLoadScript",                        new Token(defaultloadscript),
       "defaults",                                 new Token(defaults),

@@ -1056,7 +1056,7 @@ public class ScriptEvaluator {
     boolean isAtoms = !(tokenValue instanceof BondSet);
     if (isAtoms) {
       if (label == null)
-        label = viewer.getStandardLabelFormat();
+        label = viewer.getStandardLabelFormat(0);
       else if (label.length() == 0)
         label = "%[label]";
     }
@@ -8129,7 +8129,7 @@ public class ScriptEvaluator {
     String strLabel = null;
     switch (getToken(index).tok) {
     case Token.on:
-      strLabel = viewer.getStandardLabelFormat();
+      strLabel = viewer.getStandardLabelFormat(0);
       break;
     case Token.off:
       break;

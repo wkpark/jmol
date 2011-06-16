@@ -267,8 +267,12 @@ public class Labels extends AtomShape {
           : ((Boolean) value).booleanValue() ? 1 : -1);
       if (mads == null)
         mads = new short[atomCount];
-      String strLabel = null;
-      LabelToken[] tokens = null;
+      String strLabelPDB = null;
+      LabelToken[] tokensPDB = null;
+      String strLabelUNK = null;
+      LabelToken[] tokensUNK = null;
+      String strLabel;
+      LabelToken[] tokens;
       for (int atomIndex = atomCount; --atomIndex >= 0;) {
         if (bsSelected.get(atomIndex)) {
           Atom atom = atoms[atomIndex];
@@ -282,9 +286,20 @@ public class Labels extends AtomShape {
             if (bsSizeSet == null)
               bsSizeSet = new BitSet();
             strings = ArrayUtil.ensureLength(strings, atomIndex + 1);
-            if (strLabel == null) {
-              strLabel = viewer.getStandardLabelFormat();
-              tokens = LabelToken.compile(viewer, strLabel, '\0', null);
+            if (atom.getGroup3(false).equals("UNK")) {
+              if (strLabelUNK == null) {
+                strLabelUNK = viewer.getStandardLabelFormat(1);
+                tokensUNK = LabelToken.compile(viewer, strLabelUNK, '\0', null);
+              }              
+              strLabel = strLabelUNK;
+              tokens = tokensUNK;
+            } else {
+              if (strLabelPDB == null) {
+                strLabelPDB = viewer.getStandardLabelFormat(2);
+                tokensPDB = LabelToken.compile(viewer, strLabelPDB, '\0', null);
+              }
+              strLabel = strLabelPDB;
+              tokens = tokensPDB;
             }
             strings[atomIndex] = LabelToken.formatLabel(viewer, atom, tokens, '\0', null);
             formats[atomIndex] = strLabel;

@@ -35,26 +35,24 @@ public class BallsRenderer extends ShapeRenderer {
 
   @Override
   protected void render() {
-    
+
     // also crosshairs for navigation mode
-    
-    boolean renderBalls = !viewer.getWireframeRotation()
-        || !viewer.getInMotion();
-    int[] minMax = viewer.getCrossHairMinMax();
-    if (renderBalls) {
+
+    if (!viewer.getWireframeRotation() || !viewer.getInMotion()) {
       Atom[] atoms = modelSet.atoms;
       BitSet bsOK = viewer.getRenderableBitSet();
       for (int i = bsOK.nextSetBit(0); i >= 0; i = bsOK.nextSetBit(i + 1)) {
         Atom atom = atoms[i];
         if (atom.screenDiameter > 0
             && (atom.getShapeVisibilityFlags() & myVisibilityFlag) != 0
-            && g3d.setColix(atom.getColix())) {       
+            && g3d.setColix(atom.getColix())) {
           g3d.drawAtom(atom);
         }
       }
     }
 
     // this is the square and crosshairs for the navigator
+    int[] minMax = viewer.getCrossHairMinMax();
     if (minMax[0] != Integer.MAX_VALUE) {
       Point3f navOffset = new Point3f(viewer.getNavigationOffset());
       boolean antialiased = g3d.isAntialiased();
@@ -74,13 +72,17 @@ public class BallsRenderer extends ShapeRenderer {
       g3d.drawRect(x - off, y - off, z, 0, h, h);
       off = h;
       h = h >> 1;
-      g3d.setColix(minMax[1] < navOffset.x ? Graphics3D.YELLOW : Graphics3D.GREEN);
+      g3d.setColix(minMax[1] < navOffset.x ? Graphics3D.YELLOW
+          : Graphics3D.GREEN);
       g3d.drawRect(x - off, y, z, 0, h, w);
-      g3d.setColix(minMax[0] > navOffset.x ? Graphics3D.YELLOW : Graphics3D.GREEN);
+      g3d.setColix(minMax[0] > navOffset.x ? Graphics3D.YELLOW
+          : Graphics3D.GREEN);
       g3d.drawRect(x + h, y, z, 0, h, w);
-      g3d.setColix(minMax[3] < navOffset.y ? Graphics3D.YELLOW : Graphics3D.GREEN);
+      g3d.setColix(minMax[3] < navOffset.y ? Graphics3D.YELLOW
+          : Graphics3D.GREEN);
       g3d.drawRect(x, y - off, z, 0, w, h);
-      g3d.setColix(minMax[2] > navOffset.y ? Graphics3D.YELLOW : Graphics3D.GREEN);
+      g3d.setColix(minMax[2] > navOffset.y ? Graphics3D.YELLOW
+          : Graphics3D.GREEN);
       g3d.drawRect(x, y + h, z, 0, w, h);
     }
   }

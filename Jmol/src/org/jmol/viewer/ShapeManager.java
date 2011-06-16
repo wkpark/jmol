@@ -32,6 +32,7 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
+import org.jmol.api.JmolMolecule;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
@@ -379,18 +380,20 @@ public class ShapeManager {
         }
   }
 
-  private final BitSet bsOK = new BitSet();
-  public BitSet transformAtoms(boolean firstPass) {
-    if (!firstPass)
-      return bsOK;
-    bsOK.clear();
+  private final BitSet bsRenderable = new BitSet();
+  BitSet getRenderableBitSet() {
+    return bsRenderable;
+  }
+  
+  public void transformAtoms() {
+    bsRenderable.clear();
     Atom[] atoms = modelSet.atoms;
     Vector3f[] vibrationVectors = modelSet.vibrationVectors;
     for (int i = modelSet.getAtomCount(); --i >= 0;) {
       Atom atom = atoms[i];
       if ((atom.getShapeVisibilityFlags() & JmolConstants.ATOM_IN_FRAME) == 0)
         continue;
-      bsOK.set(i);
+      bsRenderable.set(i);
       Point3i screen;
       if (vibrationVectors != null && atom.hasVibration())
         screen = viewer.transformPoint(atom, vibrationVectors[i]);
@@ -403,8 +406,50 @@ public class ShapeManager {
       atom.screenZ = screen.z;
       atom.screenDiameter = viewer.scaleToScreen(screen.z, Math
           .abs(atom.madAtom));
-//      System.out.println("shapeman " + atom + " scaleToScreen(" + screen.z + "," + atom.madAtom + ")=" + atom.screenDiameter);
+      //      System.out.println("shapeman " + atom + " scaleToScreen(" + screen.z + "," + atom.madAtom + ")=" + atom.screenDiameter);
     }
-    return bsOK;
+    if (!viewer.getSlabEnabled())
+      return;
+    boolean slabByMolecule = viewer.getSlabByMolecule();
+    boolean slabByAtom = viewer.getSlabByAtom();
+    int minZ = g3d.getSlab();
+    int maxZ = g3d.getDepth();
+    if (slabByMolecule) {
+      JmolMolecule[] molecules = modelSet.getMolecules();
+      int moleculeCount = modelSet.getMoleculeCountInModel(-1);
+      for (int i = 0; i < moleculeCount; i++) {
+        JmolMolecule m = molecules[i];
+        int j = 0;
+        int pt = m.firstAtomIndex;
+        if (!bsRenderable.get(pt))
+          continue;
+        for (; j < m.atomCount; j++, pt++)
+          if (g3d.isClippedZ(atoms[pt].screenZ
+              - (atoms[pt].screenDiameter >> 1)))
+            break;
+        if (j != m.atomCount) {
+          pt = m.firstAtomIndex;
+          for (int k = 0; k < m.atomCount; k++) {
+            bsRenderable.clear(pt);
+            atoms[pt++].screenZ = 0;
+          }
+        }
+      }
+    }
+    for (int i = bsRenderable.nextSetBit(0); i >= 0; i = bsRenderable
+        .nextSetBit(i + 1)) {
+      Atom atom = atoms[i];
+      if (g3d.isClippedZ(atom.screenZ
+          - (slabByAtom ? atoms[i].screenDiameter >> 1 : 0))) {
+        atom.setClickable(0);
+        // note that in the case of navigation,
+        // maxZ is set to Integer.MAX_VALUE.
+        int r = (slabByAtom ? -1 : 1) * atom.screenDiameter / 2;
+        if (atom.screenZ + r < minZ || atom.screenZ - r > maxZ
+            || !g3d.isInDisplayRange(atom.screenX, atom.screenY)) {
+          bsRenderable.clear(i);
+        }
+      }
+    }
   }
 }

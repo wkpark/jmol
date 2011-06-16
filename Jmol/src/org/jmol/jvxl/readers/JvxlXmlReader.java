@@ -111,6 +111,8 @@ public class JvxlXmlReader extends VolumeFileReader {
         jvxlData.jvxlExcluded[1]  
                             = JvxlCoder.jvxlDecodeBitSet(
                                 xr.getXmlData("jvxlInvalidatedVertexData", null, false, false));
+if (invalidatedVertexCount > 0)        
+  System.out.println(Escape.escape(jvxlData.jvxlExcluded[1]));
       if (haveContourData)
         jvxlDecodeContourData(jvxlData, xr.getXmlData("jvxlContourData", null, false, false));
     } catch (Exception e) {

@@ -349,6 +349,7 @@ public class MeshData extends MeshSurface {
   }
 
   public void updateInvalidatedVertices(BitSet bs) {
+    bs.clear();
     for (int i = 0, ipt = 0; i < vertexCount; i += vertexIncrement, ipt++)
       if (Float.isNaN(vertexValues[i]))
         bs.set(i);

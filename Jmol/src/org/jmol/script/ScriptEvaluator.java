@@ -15720,11 +15720,13 @@ public class ScriptEvaluator {
       case Token.within:
         boolean isDisplay = (theTok == Token.display);
         if (isDisplay) {
-          iptDisplayProperty = i;
           sbCommand.append(" display");
-          int tok = tokAt(++i);
+          iptDisplayProperty = i;
+          int tok = tokAt(i + 1);
           if (tok == Token.nada)
             continue;
+          i++;
+          addShapeProperty(propertyList, "token", Integer.valueOf(Token.on));
           if (tok == Token.bitset || tok == Token.all) {
             propertyName = "bsDisplay";
             if (tok == Token.all) {
@@ -17043,7 +17045,7 @@ public class ScriptEvaluator {
     case Token.hidden:
     case Token.display:
     case Token.displayed:
-      if (iToken == 1 && shape >= 0)
+      if (iToken == 1 && shape >= 0 && tokAt(2) == Token.nada)
         setShapeProperty(shape, "thisID", null);
       if (tok == Token.nada)
         return (iToken == 1);

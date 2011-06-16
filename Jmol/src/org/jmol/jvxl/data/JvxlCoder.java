@@ -528,6 +528,8 @@ public class JvxlCoder {
     StringBuffer list2 = new StringBuffer();
     for (int i = 0; i < vertexCount; i++) {
       float value = vertexValues[i];
+      if (Float.isNaN(value))
+        value = min;
       if (doTruncate)
         value = (value > 0 ? 0.999f : -0.999f);
       if (writePrecisionColor)

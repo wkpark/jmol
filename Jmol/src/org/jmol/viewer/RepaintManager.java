@@ -105,10 +105,8 @@ class RepaintManager {
     notify(); // to cancel any wait in requestRepaintAndWait()
   }
 
-  void render(Graphics3D g3d, ModelSet modelSet) {// , Rectangle rectClip
-    //System.out.println("render " + (test++));
-    //System.out.println("repaintManager render thread=" + Thread.currentThread().getName());
-    render1(g3d, modelSet); // , rectClip
+  void render(Graphics3D g3d, ModelSet modelSet, boolean isFirstPass) {
+    render1(g3d, modelSet, isFirstPass); // , rectClip
     Rectangle band = viewer.getRubberBandSelection();
     if (band != null && g3d.setColix(viewer.getColixRubberband()))
       g3d.drawRect(band.x, band.y, 0, 0, band.width, band.height);
@@ -116,21 +114,19 @@ class RepaintManager {
 
   private boolean logTime;
   
-  private void render1(Graphics3D g3d, ModelSet modelSet) { // , Rectangle
-                                                            // rectClip
+  private void render1(Graphics3D g3d, ModelSet modelSet, boolean isFirstPass) {
     if (modelSet == null || !viewer.mustRenderFlag())
       return;
     if (logTime)
       Logger.startTimer();
-
-
-
     logTime = viewer.getTestFlag1();
     viewer.finalizeTransformParameters();
     try {
       if (bsAtoms != null)
         translateSelected();
       g3d.renderBackground();
+      if (isFirstPass)
+        shapeManager.transformAtoms();
       if (renderers == null)
         renderers = new ShapeRenderer[JmolConstants.SHAPE_MAX];
       for (int i = 0; i < JmolConstants.SHAPE_MAX && g3d.currentlyRendering(); ++i) {

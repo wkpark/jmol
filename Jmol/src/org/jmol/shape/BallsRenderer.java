@@ -27,14 +27,13 @@ package org.jmol.shape;
 
 import java.util.BitSet;
 
-import org.jmol.api.JmolMolecule;
 import org.jmol.g3d.*;
 import org.jmol.modelset.Atom;
 
 import javax.vecmath.*;
 public class BallsRenderer extends ShapeRenderer {
 
-  private int minX, minY, minZ, maxX, maxY, maxZ;
+  private int minX, minY, maxX, maxY;
 
   @Override
   protected void render() {
@@ -44,68 +43,21 @@ public class BallsRenderer extends ShapeRenderer {
     // maxY = minY + rectClip.height;
     int atomCount = modelSet.getAtomCount();
     boolean firstPass = g3d.setColix(Graphics3D.BLACK);
-    boolean slabbing = viewer.getSlabEnabled();
-    boolean slabByMolecule = viewer.getSlabByMolecule();
-    boolean slabByAtom = viewer.getSlabByAtom();
     boolean renderCrosshairs = (atomCount > 0
         && viewer.getShowNavigationPoint()
         && exportType == Graphics3D.EXPORT_NOT && firstPass);
     boolean renderBalls = !viewer.getWireframeRotation()
         || !viewer.getInMotion();
-
-    if (slabbing) {
-      minZ = g3d.getSlab();
-      maxZ = g3d.getDepth();
-    }
     if (renderCrosshairs) {
       minX = Integer.MAX_VALUE;
       maxX = Integer.MIN_VALUE;
       minY = Integer.MAX_VALUE;
       maxY = Integer.MIN_VALUE;
     }
-
     Atom[] atoms = modelSet.atoms;
-    BitSet bsOK = viewer.transformAtoms(firstPass);
-    if (firstPass && slabByMolecule && slabbing) {
-      JmolMolecule[] molecules = modelSet.getMolecules();
-      int moleculeCount = modelSet.getMoleculeCountInModel(-1);
-      for (int i = 0; i < moleculeCount; i++) {
-        JmolMolecule m = molecules[i];
-        int j = 0;
-        int pt = m.firstAtomIndex;
-        if (!bsOK.get(pt))
-          continue;
-        for (; j < m.atomCount; j++, pt++)
-          if (g3d.isClippedZ(atoms[pt].screenZ
-              - (atoms[pt].screenDiameter >> 1)))
-            break;
-        if (j != m.atomCount) {
-          pt = m.firstAtomIndex;
-          for (int k = 0; k < m.atomCount; k++) {
-            bsOK.clear(pt);
-            atoms[pt++].screenZ = 0;
-          }
-        }
-      }
-    }
+    BitSet bsOK = viewer.getRenderableBitSet();
     for (int i = bsOK.nextSetBit(0); i >= 0; i = bsOK.nextSetBit(i + 1)) {
       Atom atom = atoms[i];
-      if (firstPass && slabbing) {
-        if (g3d.isClippedZ(atom.screenZ
-            - (slabByAtom ? atoms[i].screenDiameter >> 1 : 0))) {
-          atom.setClickable(0);
-          // note that in the case of navigation,
-          // maxZ is set to Integer.MAX_VALUE.
-          int r = (slabByAtom ? -1 : 1) * atom.screenDiameter / 2;
-          if (atom.screenZ + r < minZ || atom.screenZ - r > maxZ
-              || !g3d.isInDisplayRange(atom.screenX, atom.screenY)) {
-            bsOK.clear(i);
-            continue;
-          }
-        }
-      }
-      // note: above transform is required for all other renderings
-
       if (renderBalls && atom.screenDiameter > 0
           && (atom.getShapeVisibilityFlags() & myVisibilityFlag) != 0
           && g3d.setColix(atom.getColix())) {

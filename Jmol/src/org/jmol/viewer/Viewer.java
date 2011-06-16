@@ -3978,10 +3978,10 @@ private void zap(String msg) {
     if (!refreshing && !creatingImage)
       return;
     boolean antialias2 = antialiasDisplay && global.antialiasTranslucent;
-    repaintManager.render(g3d, modelSet);
+    repaintManager.render(g3d, modelSet, true);
     if (g3d.setPass2(antialias2)) {
       transformManager.setAntialias(antialias2);
-      repaintManager.render(g3d, modelSet);
+      repaintManager.render(g3d, modelSet, false);
       transformManager.setAntialias(antialiasDisplay);
     }
   }
@@ -9418,8 +9418,8 @@ private void zap(String msg) {
     return global.multiProcessor && isParallel;
   }
 
-  public BitSet transformAtoms(boolean firstPass) {
-    return shapeManager.transformAtoms(firstPass);
+  public BitSet getRenderableBitSet() {
+    return shapeManager.getRenderableBitSet();
   }
 
   private void setAtomPickingOption(String option) {

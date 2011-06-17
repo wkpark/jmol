@@ -1939,6 +1939,21 @@ public class ScriptEvaluator {
 
   private ParallelProcessor parallelProcessor;
 
+  @SuppressWarnings("unchecked")
+  public float evalFunctionFloat(Object func, Object params, float[] values) {
+    try {
+      List<ScriptVariable>p = (List<ScriptVariable>)params;
+      for (int i = 0; i < values.length; i++)
+        p.get(i).value = new Float(values[i]);
+      ScriptFunction f = (ScriptFunction) func;
+      return ScriptVariable.fValue(runFunction(f, f.name, p, null, true));
+    } catch (Exception e) {
+      return 0;
+    } 
+
+    
+  }
+
   ScriptVariable runFunction(ScriptFunction function, String name,
                              List<ScriptVariable> params,
                              ScriptVariable tokenAtom, boolean getReturn)
@@ -7368,6 +7383,7 @@ public class ScriptEvaluator {
       case Token.fixedtemp:
       case Token.formalcharge:
       case Token.group:
+      case Token.hydrophobicity:
       case Token.insertion:
       case Token.jmol:
       case Token.molecule:
@@ -10860,6 +10876,7 @@ public class ScriptEvaluator {
     case Token.adpmax:
     case Token.adpmin:
     case Token.ionic:
+    case Token.hydrophobicity:
     case Token.temperature:
     case Token.vanderwaals:
       value = 1;
@@ -15737,6 +15754,25 @@ public class ScriptEvaluator {
         sbCommand.append(" pmesh");
         propertyName = "fileType";
         propertyValue = "Pmesh";
+        break;
+      case Token.intersection:
+        // isosurface intersection {A} {B} VDW....
+        BitSet bsA = atomExpression(++i);
+        BitSet bsB = atomExpression(++iToken);
+        i = iToken;
+        if (tokAt(i + 1) == Token.function) {
+          i++;
+          List<ScriptVariable> params = new ArrayList<ScriptVariable>();
+          params.add(ScriptVariable.getVariable(Float.valueOf(0f)).setName("a"));
+          params.add(ScriptVariable.getVariable(Float.valueOf(0f)).setName("b"));
+          addShapeProperty(propertyList, "func", new Object[] { 
+              viewer.getFunction((String) getToken(++i).value),
+              params });
+        }
+        if (tokAt(i + 1) != Token.vanderwaals)
+          error(ERROR_invalidArgument);
+        propertyName = "intersection";
+        propertyValue = new BitSet[] { bsA, bsB };        
         break;
       case Token.display:
       case Token.within:

@@ -94,9 +94,10 @@ abstract class AtomDataReader extends VolumeDataReader {
    * @param marginAtoms
    * @param doGetAllAtoms UNUSED
    * @param addNearbyAtoms
+   * @param bsSelected TODO
    */
   protected void getAtoms(float marginAtoms, boolean doGetAllAtoms,
-                          boolean addNearbyAtoms) {
+                          boolean addNearbyAtoms, BitSet bsSelected) {
 
     if (params.atomRadiusData == null)
       params.atomRadiusData = new RadiusData(1, RadiusData.TYPE_FACTOR,
@@ -106,7 +107,7 @@ abstract class AtomDataReader extends VolumeDataReader {
       atomData.radiusData.vdwType = JmolConstants.VDW_NOJMOL;
     atomData.modelIndex = modelIndex; // -1 here means fill ALL atoms; any other
     // means "this model only"
-    atomData.bsSelected = params.bsSelected;
+    atomData.bsSelected = bsSelected;
     atomData.bsIgnored = bsMyIgnored;
     atomDataServer.fillAtomData(atomData, AtomData.MODE_FILL_COORDS_AND_RADII);
     if (doUseIterator)
@@ -116,8 +117,8 @@ abstract class AtomDataReader extends VolumeDataReader {
     int nSelected = 0;
     boolean needRadius = false;
     for (int i = 0; i < atomCount; i++) {
-      if ((params.bsSelected == null 
-          || params.bsSelected.get(i))
+      if ((bsSelected == null 
+          || bsSelected.get(i))
           && (!bsMyIgnored.get(i))) {
         if (doUsePlane
             && Math.abs(volumeData.distancePointToPlane(atomData.atomXyz[i])) > 2 * (atomData.atomRadius[i] = getWorkingRadius(

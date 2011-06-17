@@ -138,6 +138,8 @@ abstract public class AtomCollection {
   short[] bfactor100s;
   float[] partialCharges;
   float[] ionicRadii;
+  float[] hydrophobicities;
+  
   protected Object[][] ellipsoids;
   protected int[] surfaceDistance100s;
 
@@ -163,6 +165,11 @@ abstract public class AtomCollection {
   public short[] getBFactors() {
     return bfactor100s;
   }
+
+  public float[] getHydrophobicity() {
+    return hydrophobicities;
+  }
+  
 
   private BitSet bsHidden = new BitSet();
 
@@ -580,6 +587,10 @@ abstract public class AtomCollection {
         atom.setFormalCharge(iValue);
         taint(i, TAINT_FORMALCHARGE);
         break;
+      case Token.hydrophobicity:
+        if (setHydrophobicity(i, fValue))
+          taint(i, TAINT_HYDROPHOBICITY);
+        break;
       case Token.label:
       case Token.format:
         viewer.setAtomLabel(sValue, i);
@@ -754,6 +765,18 @@ abstract public class AtomCollection {
     return true;
   }
 
+  protected boolean setHydrophobicity(int atomIndex, float value) {
+    if (Float.isNaN(value))
+      return false;
+    if (hydrophobicities == null) {
+      hydrophobicities = new float[atoms.length];
+      for (int i = 0; i < atoms.length; i++)
+        hydrophobicities[i] = JmolConstants.getHydrophobicity(atoms[i].getGroupID());
+    }
+    hydrophobicities[atomIndex] = value;
+    return true;
+  }
+
   protected void setEllipsoid(int atomIndex, Object[] ellipsoid) {
     if (ellipsoid == null)
       return;
@@ -815,11 +838,14 @@ abstract public class AtomCollection {
         case TAINT_FORMALCHARGE:
           atom.setFormalCharge((int)x);          
           break;
-        case TAINT_PARTIALCHARGE:
-          setPartialCharge(atomIndex, x);          
+        case TAINT_HYDROPHOBICITY:
+          setHydrophobicity(atomIndex, x);
           break;
         case TAINT_IONICRADIUS:
           setIonicRadius(atomIndex, x);          
+          break;
+        case TAINT_PARTIALCHARGE:
+          setPartialCharge(atomIndex, x);          
           break;
         case TAINT_TEMPERATURE:
           setBFactor(atomIndex, x);
@@ -887,15 +913,16 @@ abstract public class AtomCollection {
   final public static byte TAINT_COORD = 2;
   final public static byte TAINT_ELEMENT = 3;
   public final static byte TAINT_FORMALCHARGE = 4;
-  final private static byte TAINT_IONICRADIUS = 5;
-  final private static byte TAINT_OCCUPANCY = 6;
-  final private static byte TAINT_PARTIALCHARGE = 7;
-  final private static byte TAINT_TEMPERATURE = 8;
-  final private static byte TAINT_VALENCE = 9;
-  final private static byte TAINT_VANDERWAALS = 10;
-  final private static byte TAINT_VIBRATION = 11;
-  final public static byte TAINT_ATOMNO = 12;
-  final public static byte TAINT_MAX = 13; // 1 more than last number, above
+  public final static byte TAINT_HYDROPHOBICITY = 5;
+  final private static byte TAINT_IONICRADIUS = 6;
+  final private static byte TAINT_OCCUPANCY = 7;
+  final private static byte TAINT_PARTIALCHARGE = 8;
+  final private static byte TAINT_TEMPERATURE = 9;
+  final private static byte TAINT_VALENCE = 10;
+  final private static byte TAINT_VANDERWAALS = 11;
+  final private static byte TAINT_VIBRATION = 12;
+  final public static byte TAINT_ATOMNO = 13;
+  final public static byte TAINT_MAX = 14; // 1 more than last number, above
   
   final private static String[] userSettableValues = {
     "atomName",
@@ -903,6 +930,7 @@ abstract public class AtomCollection {
     "coord",
     "element",
     "formalCharge",
+    "hydrophobicity",
     "ionic",
     "occupany",
     "partialCharge",

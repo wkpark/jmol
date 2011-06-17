@@ -613,19 +613,20 @@ public class Token {
   public final static int fux             = floatproperty | 7 | settable;
   public final static int fuy             = floatproperty | 8 | settable;
   public final static int fuz             = floatproperty | 9 | settable;
-  public final static int ionic           = floatproperty | 10 | settable;
-  public final static int partialcharge   = floatproperty | 11| settable;
-  public final static int property        = floatproperty | 12| mathproperty | setparam | settable;
-  public final static int selected        = floatproperty | 13 | settable | predefinedset;
-  public final static int temperature     = floatproperty | 14 | settable;
-  public final static int vanderwaals     = floatproperty | 15 | settable;
-  public final static int vectorscale     = floatproperty | 16 | floatparam;
-  public final static int vibx            = floatproperty | 17 | settable;
-  public final static int viby            = floatproperty | 18 | settable;
-  public final static int vibz            = floatproperty | 19 | settable;
-  public final static int x               = floatproperty | 20 | settable;
-  public final static int y               = floatproperty | 21 | settable;
-  public final static int z               = floatproperty | 22 | settable;
+  public final static int hydrophobicity  = floatproperty | 10 | settable;
+  public final static int ionic           = floatproperty | 11 | settable;
+  public final static int partialcharge   = floatproperty | 12 | settable;
+  public final static int property        = floatproperty | 13 | mathproperty | setparam | settable;
+  public final static int selected        = floatproperty | 14 | settable | predefinedset;
+  public final static int temperature     = floatproperty | 15 | settable;
+  public final static int vanderwaals     = floatproperty | 16 | settable;
+  public final static int vectorscale     = floatproperty | 17 | floatparam;
+  public final static int vibx            = floatproperty | 18 | settable;
+  public final static int viby            = floatproperty | 19 | settable;
+  public final static int vibz            = floatproperty | 20 | settable;
+  public final static int x               = floatproperty | 21 | settable;
+  public final static int y               = floatproperty | 22 | settable;
+  public final static int z               = floatproperty | 23 | settable;
   
   public final static int backbone     = floatproperty | shapeCommand | 1 | predefinedset | defaultON | settable;
   public final static int cartoon      = floatproperty | shapeCommand | 2 | defaultON | settable;
@@ -1765,6 +1766,8 @@ public class Token {
       "hidden",          new Token(hidden),
       "highlight",       new Token(highlight),
       "hkl",             new Token(hkl),
+      "hydrophobicity",  new Token(hydrophobicity),
+      "hydro",           null,
       "id",              new Token(id),
       "identify",        new Token(identify),
       "ident",           null,

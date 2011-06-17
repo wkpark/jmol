@@ -190,7 +190,7 @@ class IsoSolventReader extends AtomDataReader {
     doCalculateTroughs = (atomDataServer != null && !isCavity // Jvxl needs an atom iterator to do this.
         && solventRadius > 0 && (dataType == Parameters.SURFACE_SOLVENT || dataType == Parameters.SURFACE_MOLECULAR));
     doUseIterator = doCalculateTroughs;
-    getAtoms(Float.NaN, false, true);
+    getAtoms(Float.NaN, false, true, params.bsSelected);
     if (isCavity || isPocket)
       dots = meshDataServer.calculateGeodesicSurface(bsMySelected,
           envelopeRadius);

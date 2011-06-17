@@ -207,11 +207,6 @@ final public class Atom extends Point3fi implements JmolNode {
   public void setMadAtom(Viewer viewer, RadiusData rd) {
     madAtom = calculateMad(viewer, rd);
   }
-  /* what about these?    
-  if (Float.isNaN(fsize)) {
-    case -1000: // temperature
-      break;
-*/
   
   public short calculateMad(Viewer viewer, RadiusData rd) {
     if (rd == null)
@@ -229,6 +224,9 @@ final public class Atom extends Point3fi implements JmolNode {
       case Token.temperature:
         float tmax = viewer.getBfactor100Hi();
         r = (tmax > 0 ? getBfactor100() / tmax : 0);
+        break;
+      case Token.hydrophobicity:
+        r = Math.abs(getHydrophobicity());
         break;
       case Token.ionic:
         r = getBondingRadiusFloat();
@@ -387,6 +385,13 @@ final public class Atom extends Point3fi implements JmolNode {
     if (bfactor100s == null)
       return 0;
     return bfactor100s[index];
+  }
+
+  private float getHydrophobicity() {
+    float[] values = group.chain.modelSet.hydrophobicities;
+    if (values == null)
+      return JmolConstants.getHydrophobicity(group.getGroupID());
+    return values[index];
   }
 
   public boolean setRadius(float radius) {
@@ -1214,6 +1219,8 @@ final public class Atom extends Point3fi implements JmolNode {
       return atom.getSurfaceDistance100() / 100f;
     case Token.temperature: // 0 - 9999
       return atom.getBfactor100() / 100f;
+    case Token.hydrophobicity:
+      return atom.getHydrophobicity();
     case Token.volume:
       return atom.getVolume(viewer, JmolConstants.VDW_AUTO);
 
@@ -1396,5 +1403,4 @@ final public class Atom extends Point3fi implements JmolNode {
   public String toString() {
     return getInfo();
   }
-
 }

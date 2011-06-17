@@ -24,5 +24,7 @@ public interface AtomDataServer {
   public BufferedInputStream getBufferedInputStream(String fullPathName);
 
   public void log(String msg);
+  
+  public float evalFunctionFloat(Object func, Object params, float[] values);
 
 }

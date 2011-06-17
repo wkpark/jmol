@@ -79,7 +79,7 @@ class AtomPropertyMapper extends AtomDataReader {
     }
     if (!doSmoothProperty && maxDistance == Integer.MAX_VALUE)
       maxDistance = 5.0f; // usually just local to a group
-    getAtoms(Float.NaN, false, true);
+    getAtoms(Float.NaN, false, true, params.bsSelected);
     if (meshDataServer != null)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
     if (!doSmoothProperty && meshData.vertexSource != null) {

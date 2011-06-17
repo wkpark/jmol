@@ -150,7 +150,7 @@ public class LabelToken {
       Token.strucid, Token.symbol, Token.theta, Token.unitx, Token.unity,
       Token.unitz, Token.valence, Token.vectorscale, Token.vibx, Token.viby, Token.vibz,
       Token.volume, Token.unitxyz, Token.fracxyz, Token.xyz, Token.fuxyz,
-      Token.fux, Token.fuy, Token.fuz,
+      Token.fux, Token.fuy, Token.fuz, Token.hydrophobicity
 
   };
 

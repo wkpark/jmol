@@ -152,6 +152,7 @@ public class Parameters {
   final public static int IS_SOLVENTTYPE = 1 << 7;
   final static int HAS_MAXGRID = 1 << 8;
   final static int IS_POINTMAPPABLE = 1 << 9;
+
   
   public int dataType;
   int surfaceType;
@@ -178,6 +179,7 @@ public class Parameters {
   final static int SURFACE_MLP = 17 | NO_ANISOTROPY | HAS_MAXGRID;
   final static int SURFACE_MOLECULAR = 19 | IS_SOLVENTTYPE | NO_ANISOTROPY;
   final static int SURFACE_NCI = 20 | NO_ANISOTROPY | HAS_MAXGRID | IS_POINTMAPPABLE;
+  final static int SURFACE_INTERSECT = 21 | NO_ANISOTROPY | HAS_MAXGRID;
 
   // mapColor only:
 
@@ -218,9 +220,11 @@ public class Parameters {
     readAllData = true;
     fileName = "";
     fullyLit = false;
+    func = null;
     functionXYinfo = null;
     iAddGridPoints = false;
     insideOut = false;
+    intersection = null;
     isAngstroms = false;
     isBicolorMap = isCutoffAbsolute = isPositiveOnly = false;
     isCavity = false;
@@ -498,12 +502,16 @@ public class Parameters {
     isEccentric = isAnisotropic = false;
     //anisotropy[0] = anisotropy[1] = anisotropy[2] = 1f;
     solventRadius = Math.abs(radius);
-    dataType = ("nomap" == propertyName ? SURFACE_NOMAP
+    dataType = (intersection != null ? SURFACE_INTERSECT 
+        : "nomap" == propertyName ? SURFACE_NOMAP
         : "molecular" == propertyName ? SURFACE_MOLECULAR
             : "sasurface" == propertyName || solventRadius == 0f ? SURFACE_SASURFACE
                 : SURFACE_SOLVENT);
 
     switch (dataType) {
+    case Parameters.SURFACE_INTERSECT:
+      calculationType = "VDW intersection";
+      break;
     case Parameters.SURFACE_NOMAP:
       calculationType = "unmapped plane";
       break;
@@ -717,6 +725,8 @@ public class Parameters {
   
   boolean iUseBitSets = false;
   
+  Object[] func;
+
   String[] title;
   boolean blockCubeData;
   boolean readAllData;
@@ -769,6 +779,7 @@ public class Parameters {
   public int randomSeed;
   public boolean fullyLit;
   public int[] vertexSource;
+  public BitSet[] intersection; 
   
   void setMapRanges(SurfaceReader surfaceReader, boolean haveData) {
     if (!colorDensity)
@@ -804,9 +815,11 @@ public class Parameters {
     qmOrbitalType = QM_TYPE_UNKNOWN; 
     parameters = null;
     mappedDataMin = Float.MAX_VALUE;
+    intersection = null;
+    func = null;
   }
 
-  public void addSlabInfo(Object[] value) {
+    public void addSlabInfo(Object[] value) {
     if (slabInfo == null)
       slabInfo = new ArrayList<Object[]>();
     slabInfo.add(value);

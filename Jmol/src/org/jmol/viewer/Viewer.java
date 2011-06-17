@@ -9791,4 +9791,8 @@ private void zap(String msg) {
     return shapeManager.getCrossHairMinMax();
   }
 
+  public float evalFunctionFloat(Object func, Object params, float[] values) {
+    return eval.evalFunctionFloat(func, params, values);
+  }
+
 }

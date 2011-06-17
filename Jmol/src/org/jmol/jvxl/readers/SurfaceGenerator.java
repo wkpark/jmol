@@ -404,6 +404,16 @@ public class SurfaceGenerator {
       return true;
     }
 
+    if ("func" == propertyName) {
+      params.func = (Object[]) value;
+      return true;
+    }
+
+    if ("intersection" == propertyName) {
+      params.intersection = (BitSet[]) value;
+      return true;
+    }
+
     if ("bsSolvent" == propertyName) {
       params.bsSolvent = (BitSet) value;
       return true;
@@ -1005,6 +1015,9 @@ public class SurfaceGenerator {
       break;
     case Parameters.SURFACE_PROPERTY:
       surfaceReader = new AtomPropertyMapper(this, null);
+      break;
+    case Parameters.SURFACE_INTERSECT:
+      surfaceReader = new IsoIntersectReader(this);
       break;
     case Parameters.SURFACE_SOLVENT:
     case Parameters.SURFACE_MOLECULAR:

@@ -2072,6 +2072,41 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   };
   
+  public static float getHydrophobicity(int i) {
+    return (i < 1 || i >= hydrophobicities.length ? 0 : hydrophobicities[i]);
+  }
+
+  /*
+   * # Source: http://us.expasy.org/tools/pscale/Hphob.Eisenberg.html
+   * # Amino acid scale: Normalized consensus hydrophobicity scale
+   * # Author(s): Eisenberg D., Schwarz E., Komarony M., Wall R.
+   * # Reference: J. Mol. Biol. 179:125-142 (1984)
+   *
+   */
+  private final static float[] hydrophobicities = {
+                0f,
+      /* Ala*/  0.62f,
+      /* Arg*/ -2.53f,
+      /* Asn*/ -0.78f,
+      /* Asp*/ -0.90f,
+      /* Cys*/  0.29f,
+      /* Gln*/ -0.85f,
+      /* Glu*/ -0.74f,
+      /* Gly*/  0.48f,
+      /* His*/ -0.40f,
+      /* Ile*/  1.38f,
+      /* Leu*/  1.06f,
+      /* Lys*/ -1.50f,
+      /* Met*/  0.64f,
+      /* Phe*/  1.19f,
+      /* Pro*/  0.12f,
+      /* Ser*/ -0.18f,
+      /* Thr*/ -0.05f,
+      /* Trp*/  0.81f,
+      /* Tyr*/  0.26f,
+      /* Val*/  1.08f
+  };
+
   public final static int[] argbsShapely = {
     0xFFFF00FF, // default
     // these are rasmol values, not xwindows colors

@@ -775,7 +775,6 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
       attUserInput = new SimpleAttributeSet();
       StyleConstants.setForeground(attUserInput, Color.black);
 
-      SimpleAttributeSet attEcho;
       attEcho = new SimpleAttributeSet();
       StyleConstants.setForeground(attEcho, Color.blue);
       StyleConstants.setBold(attEcho, true);

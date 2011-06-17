@@ -34,7 +34,7 @@ import org.jmol.jvxl.data.MeshData;
 
 class AtomPropertyMapper extends AtomDataReader {
 
-  private MepCalculationInterface m;
+  private MepCalculationInterface mepCalc;
   private String mepType;
   private int calcType = 0;
   AtomPropertyMapper(SurfaceGenerator sg, String mepType) {
@@ -52,6 +52,7 @@ class AtomPropertyMapper extends AtomDataReader {
   protected void setup() {
     super.setup();
     // MAP only
+    haveSurfaceAtoms = true;
     volumeData.sr = this;
     volumeData.doIterate = false;
     point = params.point;
@@ -73,7 +74,7 @@ class AtomPropertyMapper extends AtomDataReader {
       doSmoothProperty = true;
       if (params.mep_calcType >= 0)
         calcType = params.mep_calcType;
-      m = (MepCalculationInterface) Interface.getOptionInterface("quantum."
+      mepCalc = (MepCalculationInterface) Interface.getOptionInterface("quantum."
           + mepType + "Calculation");
     }
     if (!doSmoothProperty && maxDistance == Integer.MAX_VALUE)
@@ -127,6 +128,13 @@ class AtomPropertyMapper extends AtomDataReader {
     // not applicable
   }
 
+  
+  private int iAtomSurface;
+  @Override
+  public int getSurfaceAtomIndex() {
+    return iAtomSurface;
+  }
+  
   @Override
   public float getValueAtPoint(Point3f pt) {
     float dmin = Float.MAX_VALUE;
@@ -134,6 +142,7 @@ class AtomPropertyMapper extends AtomDataReader {
     float value = (doSmoothProperty ? 0 : Float.NaN);
     float vdiv = 0;
     atomDataServer.setIteratorForPoint(iter, modelIndex, pt, maxDistance);
+    iAtomSurface = -1;
     while (iter.hasNext()) {
       int iAtom = myIndex[iter.next()];
       boolean isNearby = (iAtom >= firstNearbyAtom);
@@ -152,11 +161,12 @@ class AtomPropertyMapper extends AtomDataReader {
         }
       } else if (d2 < dmin) {
         dmin = d2;
+        iAtomSurface = iAtom;
         if (!doSmoothProperty)
           value = p;
       }
-      if (m != null) {
-        value += m.valueFor(p, d2, calcType);
+      if (mepCalc != null) {
+        value += mepCalc.valueFor(p, d2, calcType);
       } else if (doSmoothProperty) {
         d2 = (float) Math.pow(d2, smoothingPower);
         vdiv += d2;
@@ -164,7 +174,7 @@ class AtomPropertyMapper extends AtomDataReader {
       }
     }
     //System.out.println(pt + " " + value + " " + vdiv + " " + value / vdiv);
-    return (m != null ? value : doSmoothProperty ? (vdiv == 0
+    return (mepCalc != null ? value : doSmoothProperty ? (vdiv == 0
         || dminNearby < dmin ? Float.NaN : value / vdiv) : value);
   }
 

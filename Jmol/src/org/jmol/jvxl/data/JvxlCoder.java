@@ -29,6 +29,7 @@ import javax.vecmath.Point3f;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
+import java.util.Map;
 
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
@@ -145,17 +146,24 @@ public class JvxlCoder {
           jvxlData.isJvxlPrecisionColor, jvxlData.valueMappedToRed,
           jvxlData.valueMappedToBlue);
     }
-    appendEncodedBitSetTag(sb, "jvxlInvalidatedVertexData", jvxlData.jvxlExcluded[1], -1);
+    appendEncodedBitSetTag(sb, "jvxlInvalidatedVertexData", jvxlData.jvxlExcluded[1], -1, null);
     if (jvxlData.excludedVertexCount > 0) {
-      appendEncodedBitSetTag(sb, "jvxlExcludedVertexData", jvxlData.jvxlExcluded[0], jvxlData.excludedVertexCount);
-      appendEncodedBitSetTag(sb, "jvxlExcludedPlaneData", jvxlData.jvxlExcluded[2], -1);
+      appendEncodedBitSetTag(sb, "jvxlExcludedVertexData", jvxlData.jvxlExcluded[0], jvxlData.excludedVertexCount, null);
+      appendEncodedBitSetTag(sb, "jvxlExcludedPlaneData", jvxlData.jvxlExcluded[2], -1, null);
     }
-    appendEncodedBitSetTag(sb, "jvxlExcludedTriangleData", jvxlData.jvxlExcluded[3], jvxlData.excludedTriangleCount);
+    appendEncodedBitSetTag(sb, "jvxlExcludedTriangleData", jvxlData.jvxlExcluded[3], jvxlData.excludedTriangleCount, null);
     XmlUtil.closeTag(sb, "jvxlSurfaceData");
     int len = sb.length();
     data.append(sb);
     if (jvxlData.vContours != null && jvxlData.vContours.length > 0) {
       jvxlEncodeContourData(jvxlData.vContours, data);
+    }
+    if (jvxlData.vertexColorMap != null) {
+      XmlUtil.openTag(data, "jvxlVertexColorData");
+      for (Map.Entry<String, BitSet> entry : jvxlData.vertexColorMap.entrySet())
+        appendEncodedBitSetTag(data, "jvxlColorMap", entry.getValue(), -1, new Object[] { "color", entry.getKey() });
+      jvxlData.vertexColorMap = null;
+      XmlUtil.closeTag(data, "jvxlVertexColorData");
     }
     XmlUtil.closeTag(data, "jvxlSurface");
     if (includeHeader) {
@@ -165,14 +173,15 @@ public class JvxlCoder {
     return jvxlSetCompressionRatio(data, jvxlData, len);
   }
 
-  private static void appendEncodedBitSetTag(StringBuffer sb, String name, BitSet bs, int count) {
+  private static void appendEncodedBitSetTag(StringBuffer sb, String name, BitSet bs, int count, Object[] attribs) {
     if (count < 0)
       count = BitSetUtil.cardinalityOf(bs);
     if (count == 0)
       return;
     StringBuffer sb1 = new StringBuffer("\n ");
     jvxlEncodeBitSet(bs, -1, sb1);
-    XmlUtil.appendTag(sb, name, new String[] {
+    XmlUtil.appendTag(sb, name, new Object[] {
+        attribs,
         "bsEncoding", "base90+35",
         "count", "" + count,
         "len", "" + bs.length() }, 
@@ -264,6 +273,15 @@ public class JvxlCoder {
       if (nColorData > 0)
         addAttrib(attribs, "\n  nBytesUncompressedColorData", "" + nColorData); // TODO: later?
     }
+    jvxlData.excludedVertexCount = BitSetUtil.cardinalityOf(jvxlData.jvxlExcluded[0]);
+    jvxlData.excludedTriangleCount = BitSetUtil.cardinalityOf(jvxlData.jvxlExcluded[3]);
+    if (jvxlData.excludedVertexCount > 0)
+      addAttrib(attribs, "\n  nExcludedVertexes", "" + jvxlData.excludedVertexCount);
+    if (jvxlData.excludedTriangleCount > 0)
+      addAttrib(attribs, "\n  nExcludedTriangles", "" + jvxlData.excludedTriangleCount);
+    int n = BitSetUtil.cardinalityOf(jvxlData.jvxlExcluded[1]);
+    if (n > 0)
+      addAttrib(attribs, "\n  nInvalidatedVertexes", "" + n);
     //next is for information only -- will be superceded by "encoding" attribute of jvxlColorData
     if (jvxlData.isJvxlPrecisionColor)
       addAttrib(attribs, "\n  precisionColor", "true");
@@ -287,15 +305,24 @@ public class JvxlCoder {
         addAttrib(attribs, "\n  colorMapped", "true");
       addAttrib(attribs, "\n  plane", Escape.escape(jvxlData.jvxlPlane));
     }
-    jvxlData.excludedVertexCount = BitSetUtil.cardinalityOf(jvxlData.jvxlExcluded[0]);
-    jvxlData.excludedTriangleCount = BitSetUtil.cardinalityOf(jvxlData.jvxlExcluded[3]);
-    if (jvxlData.excludedVertexCount > 0)
-      addAttrib(attribs, "\n  nExcludedVertexes", "" + jvxlData.excludedVertexCount);
-    if (jvxlData.excludedTriangleCount > 0)
-      addAttrib(attribs, "\n  nExcludedTriangles", "" + jvxlData.excludedTriangleCount);
-    int n = BitSetUtil.cardinalityOf(jvxlData.jvxlExcluded[1]);
-    if (n > 0)
-      addAttrib(attribs, "\n  nInvalidatedVertexes", "" + n);
+    addAttrib(attribs, "\n  color", jvxlData.color);
+    addAttrib(attribs, "\n  translucency", "" + jvxlData.translucency);
+    if (jvxlData.colorScheme != null)
+      addAttrib(attribs, "\n  colorScheme", jvxlData.colorScheme);
+    if (jvxlData.nVertexColors > 0)
+      addAttrib(attribs, "\n  nVertexColors", "" + jvxlData.nVertexColors);
+
+    float min = (jvxlData.mappedDataMin == Float.MAX_VALUE ? 0f
+        : jvxlData.mappedDataMin);
+    float blue = (jvxlData.isColorReversed ? jvxlData.valueMappedToRed : jvxlData.valueMappedToBlue);
+    float red = (jvxlData.isColorReversed ? jvxlData.valueMappedToBlue : jvxlData.valueMappedToRed);
+
+    if (jvxlData.jvxlColorData != null && jvxlData.jvxlColorData.length() > 0 && !jvxlData.isBicolorMap) {
+      addAttrib(attribs, "\n  dataMinimum", "" + min);
+      addAttrib(attribs, "\n  dataMaximum", "" + jvxlData.mappedDataMax);
+      addAttrib(attribs, "\n  valueMappedToRed", "" + red);
+      addAttrib(attribs, "\n  valueMappedToBlue", "" + blue);
+    }
     if (jvxlData.isContoured) {
       if (jvxlData.contourValues == null || jvxlData.contourColixes == null) {
         if (jvxlData.vContours == null)
@@ -307,19 +334,6 @@ public class JvxlCoder {
         addAttrib(attribs, "\n  contourValues", Escape.escapeArray(jvxlData.contourValuesUsed == null ? jvxlData.contourValues : jvxlData.contourValuesUsed));
         addAttrib(attribs, "\n  contourColors", jvxlData.contourColors);
       }
-    }
-    // ... mappedDataMin mappedDataMax valueMappedToRed valueMappedToBlue ...
-    //TODO: again, these really should not be necessary here
-    float min = (jvxlData.mappedDataMin == Float.MAX_VALUE ? 0f
-        : jvxlData.mappedDataMin);
-    float blue = (jvxlData.isColorReversed ? jvxlData.valueMappedToRed : jvxlData.valueMappedToBlue);
-    float red = (jvxlData.isColorReversed ? jvxlData.valueMappedToBlue : jvxlData.valueMappedToRed);
-
-    if (jvxlData.jvxlColorData != null && jvxlData.jvxlColorData.length() > 0 && !jvxlData.isBicolorMap) {
-      addAttrib(attribs, "\n  dataMinimum", "" + min);
-      addAttrib(attribs, "\n  dataMaximum", "" + jvxlData.mappedDataMax);
-      addAttrib(attribs, "\n  valueMappedToRed", "" + red);
-      addAttrib(attribs, "\n  valueMappedToBlue", "" + blue);
     }
     //TODO: confusing flag insideOut:
     if (jvxlData.insideOut)

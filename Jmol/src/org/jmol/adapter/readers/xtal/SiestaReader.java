@@ -16,7 +16,7 @@ import org.jmol.adapter.smarter.AtomSetCollectionReader;
 
 public class SiestaReader extends AtomSetCollectionReader {
 
-  private boolean geomMod = false;
+  //private boolean geomMod = false;
   private int noAtoms;
 
   @Override
@@ -29,7 +29,7 @@ public class SiestaReader extends AtomSetCollectionReader {
   protected boolean checkLine() throws Exception {
 
     if (line.contains("%block LatticeVectors")) {
-      geomMod = false;
+      //geomMod = false;
       setCell();
       return true;
     } else if (line.contains("AtomicCoordinatesFormat Ang")) {
@@ -37,7 +37,7 @@ public class SiestaReader extends AtomSetCollectionReader {
       return true;
     } else if (line.contains("NumberOfAtoms")){
       readNoAtoms();
-      geomMod = true;
+      //geomMod = true;
       return true;
     } else if (line.contains("Begin CG move =")) {
       setNewmodel();

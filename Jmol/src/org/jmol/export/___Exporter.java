@@ -348,11 +348,11 @@ public abstract class ___Exporter {
   }
 
   protected static String translucencyFractionalFromColix(short colix) {
-    return round(Graphics3D.translucencyFractionalFromColix(colix));
+    return round(Graphics3D.getColixTranslucencyFractional(colix));
   }
 
   protected static String opacityFractionalFromColix(short colix) {
-    return round(1 - Graphics3D.translucencyFractionalFromColix(colix));
+    return round(1 - Graphics3D.getColixTranslucencyFractional(colix));
   }
 
   protected static String opacityFractionalFromArgb(int argb) {

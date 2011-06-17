@@ -421,11 +421,12 @@ public abstract class MeshCollection extends Shape {
     }
     if (property == "ID")
       return (currentMesh == null ? null : currentMesh.thisID);
-    if (property == "list") {
+    if (property.startsWith("list")) {
       StringBuffer sb = new StringBuffer();
       int k = 0;
+      String id = (property == "list" ? null : property.substring(5));
       for (int i = 0; i < meshCount; i++) {
-         if ((m = meshes[i]) == null || m.vertexCount == 0)
+         if ((m = meshes[i]) == null || m.vertexCount == 0 || id != null && !id.equalsIgnoreCase(m.thisID))
           continue;
         sb.append((++k)).append(" id:" + m.thisID).append(
             "; model:" + viewer.getModelNumberDotted(m.modelIndex)).append(
@@ -440,6 +441,11 @@ public abstract class MeshCollection extends Shape {
           sb.append(s);
         }
         sb.append('\n');
+        if (id != null) {
+          Object info = getProperty("jvxlFileInfo", 0);
+          if (info != null)
+            sb.append(info).append('\n');
+        }
       }
       return sb.toString();
     }

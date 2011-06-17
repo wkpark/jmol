@@ -27,6 +27,7 @@ package org.jmol.jvxl.readers;
 import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Hashtable;
 import java.util.List;
 
 import javax.vecmath.Point3f;
@@ -111,10 +112,18 @@ public class JvxlXmlReader extends VolumeFileReader {
         jvxlData.jvxlExcluded[1]  
                             = JvxlCoder.jvxlDecodeBitSet(
                                 xr.getXmlData("jvxlInvalidatedVertexData", null, false, false));
-if (invalidatedVertexCount > 0)        
-  System.out.println(Escape.escape(jvxlData.jvxlExcluded[1]));
       if (haveContourData)
         jvxlDecodeContourData(jvxlData, xr.getXmlData("jvxlContourData", null, false, false));
+      if (jvxlData.nVertexColors > 0) {
+        jvxlData.vertexColorMap = new Hashtable<String, BitSet>();
+        for (int i = 0; i < jvxlData.nVertexColors; i++) {
+          String s = xr.getXmlData("jvxlColorMap", null, true, false); 
+          String color = XmlReader.getXmlAttrib(s, "color");
+          BitSet bs = JvxlCoder.jvxlDecodeBitSet(xr.getXmlData("jvxlColorMap", s, false, false));
+          jvxlData.vertexColorMap.put(color, bs);
+        }
+      }
+        
     } catch (Exception e) {
       Logger.error(e.toString());
       return false;
@@ -205,6 +214,7 @@ if (invalidatedVertexCount > 0)
       params.nContours = (haveContourData ? nContourData : nContoursRead);
       //TODO ? params.contourFromZero = false; // MEP data to complete the plane
     }
+    jvxlData.nVertexColors = parseInt(XmlReader.getXmlAttrib(data, "nVertexColors"));
     params.isBicolorMap = XmlReader.getXmlAttrib(data, "bicolorMap").equals("true");
     if (params.isBicolorMap || params.colorBySign)
       jvxlCutoff = 0;
@@ -238,6 +248,18 @@ if (invalidatedVertexCount > 0)
     invalidatedVertexCount = parseInt(XmlReader.getXmlAttrib(data, "nInvalidatedVertexes"));
     colorDataCount = Math.max(0, parseInt(XmlReader.getXmlAttrib(data, "nBytesUncompressedColorData")));
     jvxlDataIs2dContour = (params.thePlane != null && jvxlDataIsColorMapped);
+
+    // new Jmol 12.1.50
+    jvxlData.color = XmlReader.getXmlAttrib(data, "color");
+    if (jvxlData.color.length() == 0)
+      jvxlData.color = "orange";
+    jvxlData.translucency = parseInt(XmlReader.getXmlAttrib(data, "translucency"));
+    if (jvxlData.translucency == Integer.MAX_VALUE)
+      jvxlData.translucency = 0;
+    jvxlData.colorScheme = XmlReader.getXmlAttrib(data, "colorScheme");
+    if (jvxlData.colorScheme.length() == 0)
+      jvxlData.colorScheme = "rgb";
+    
     if (jvxlDataIs2dContour)
       params.isContoured = true;
     

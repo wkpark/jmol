@@ -64,6 +64,7 @@ package org.jmol.jvxl.data;
 
 import java.util.BitSet;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
@@ -147,6 +148,13 @@ public class JvxlData {
   public String moleculeXml;
   public float dataMin, dataMax;
   public int saveVertexCount;
+  
+  // added Jmol 12.1.50
+  public Map<String, BitSet> vertexColorMap; // from color isosurface {atom subset} red 
+  public int nVertexColors;
+  public String color;
+  public int translucency;
+  public String colorScheme;
   
   public void setSurfaceInfo(Point4f thePlane, int nSurfaceInts, String surfaceData) {
     jvxlSurfaceData = surfaceData;

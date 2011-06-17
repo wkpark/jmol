@@ -1136,9 +1136,6 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       } else {
         if (isBondOrMatrix)
           addTokenToPrefix(new Token(Token.bitset, new BondSet(bs)));
-        // occasionally BondSet appears unknown in Eclipse even though it
-        // is defined
-        // in Eval.java -- doesn't seem to matter.
         else
           addTokenToPrefix(new Token(Token.bitset, bs));
         return CONTINUE;

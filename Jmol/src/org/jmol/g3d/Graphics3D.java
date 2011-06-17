@@ -2134,7 +2134,7 @@ final public class Graphics3D implements JmolRendererInterface {
     }
   }
   
-  public static float translucencyFractionalFromColix(short colix) {
+  public static float getColixTranslucencyFractional(short colix) {
     int translevel = getColixTranslucencyLevel(colix);
     return (
           translevel == -1 ? 0.5f 
@@ -2167,6 +2167,10 @@ final public class Graphics3D implements JmolRendererInterface {
     return (isTranslucent ? applyColorTranslucencyLevel(colix, translucentLevel) : colix);
   }
 
+  public final static short copyColixTranslucency(short colixFrom, short colixTo) {
+    return getColixTranslucent(colixTo, isColixTranslucent(colixFrom), getColixTranslucencyFractional(colixFrom));  
+  }
+  
   public int getColorArgbOrGray(short colix) {
     if (colix < 0)
       colix = changeableColixMap[colix & UNMASK_CHANGEABLE_TRANSLUCENT];

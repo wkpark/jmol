@@ -662,8 +662,14 @@ import org.jmol.util.ArrayUtil;
       String name = entry.getKey();
       if (name.length() > 0 & n++ >= 0)
         s.append("color \"" + name + "="
-            + ColorEncoder.getColorSchemeList(entry.getValue()) + "\";\n");
+            + getColorSchemeList(entry.getValue()) + "\";\n");
     }
     return n;
+  }
+
+  public String getColorScheme() {
+    return (isTranslucent ? "translucent " : "")
+        + (currentPalette < 0 ? getColorSchemeList(getColorSchemeArray(currentPalette))
+            : getColorSchemeName(currentPalette));
   }
 }

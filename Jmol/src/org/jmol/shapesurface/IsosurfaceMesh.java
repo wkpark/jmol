@@ -54,7 +54,7 @@ public class IsosurfaceMesh extends Mesh {
   Object calculatedArea;
   Object calculatedVolume;
   public boolean isSolvent;
-  
+
   IsosurfaceMesh(String thisID, Graphics3D g3d, short colix, int index) {
     super(thisID, g3d, colix, index);
     checkByteCount = 2;
@@ -62,39 +62,47 @@ public class IsosurfaceMesh extends Mesh {
   }
 
   void clear(String meshType, boolean iAddGridPoints) {
-    super.clear(meshType);  
-    nSets = 0;
-    thisSet = -1;
-    vertexIncrement = 1;
-    firstRealVertex = -1;
-    hasGridPoints = iAddGridPoints;
-    showPoints = iAddGridPoints;
+    super.clear(meshType);
+
     jvxlData.jvxlSurfaceData = "";
     jvxlData.jvxlEdgeData = "";
     jvxlData.jvxlColorData = "";
     jvxlData.jvxlVolumeDataXml = "";
-    isColorSolid = true;
-    colorEncoder = null;
-    vertexColixes = null;
-    vertexValues = null;
-    polygonColixes = null;
+    jvxlData.color = null;
+    jvxlData.colorScheme = null;
     jvxlData.contourValues = null;
     jvxlData.contourValuesUsed = null;
     jvxlData.contourColixes = null;
     jvxlData.contourColors = null;
-    assocGridPointMap = null;
-    assocGridPointNormals = null;
-    vertexSets = null;
-    centers = null;
     jvxlData.vContours = null;
     jvxlData.colorDensity = false;
+    jvxlData.vertexColorMap = null;
+    jvxlData.nVertexColors = 0;
+    jvxlData.translucency = 0;
+
+    assocGridPointMap = null;
+    assocGridPointNormals = null;
+    centers = null;
+    colorEncoder = null;
+    vertexColorMap = null;
+    firstRealVertex = -1;
+    hasGridPoints = iAddGridPoints;
+    isColorSolid = true;
+    nSets = 0;
+    polygonColixes = null;
+    showPoints = iAddGridPoints;
     surfaceSet = null;
-  }  
+    thisSet = -1;
+    vertexColixes = null;
+    vertexIncrement = 1;
+    vertexValues = null;
+    vertexSets = null;
+  }
 
   void allocVertexColixes() {
     if (vertexColixes == null) {
       vertexColixes = new short[vertexCount];
-      for (int i = vertexCount; --i >= 0; )
+      for (int i = vertexCount; --i >= 0;)
         vertexColixes[i] = colix;
     }
     isColorSolid = false;
@@ -103,7 +111,8 @@ public class IsosurfaceMesh extends Mesh {
   Map<Integer, Integer> assocGridPointMap;
   Map<Integer, Vector3f> assocGridPointNormals;
 
-  int addVertexCopy(Point3f vertex, float value, int assocVertex, boolean associateNormals) {
+  int addVertexCopy(Point3f vertex, float value, int assocVertex,
+                    boolean associateNormals) {
     int vPt = addVertexCopy(vertex, value);
     switch (assocVertex) {
     case MarchingSquares.CONTOUR_POINT:
@@ -137,13 +146,13 @@ public class IsosurfaceMesh extends Mesh {
   public void setTranslucent(boolean isTranslucent, float iLevel) {
     super.setTranslucent(isTranslucent, iLevel);
     if (vertexColixes != null)
-      for (int i = vertexCount; --i >= 0; )
-        vertexColixes[i] =
-          Graphics3D.getColixTranslucent(vertexColixes[i], isTranslucent, iLevel);
+      for (int i = vertexCount; --i >= 0;)
+        vertexColixes[i] = Graphics3D.getColixTranslucent(vertexColixes[i],
+            isTranslucent, iLevel);
   }
-  
+
   int thisSet = -1;
-  
+
   @Override
   protected void sumVertexNormals(Point3f[] vertices, Vector3f[] vectorSums) {
     super.sumVertexNormals(vertices, vectorSums);
@@ -161,7 +170,8 @@ public class IsosurfaceMesh extends Mesh {
     if (assocGridPointMap != null) {
       for (Map.Entry<Integer, Integer> entry : assocGridPointMap.entrySet()) {
         Integer I = entry.getKey();
-        assocGridPointNormals.get(entry.getValue()).add(vectorSums[I.intValue()]);
+        assocGridPointNormals.get(entry.getValue()).add(
+            vectorSums[I.intValue()]);
       }
       for (Map.Entry<Integer, Integer> entry : assocGridPointMap.entrySet()) {
         Integer I = entry.getKey();
@@ -169,8 +179,9 @@ public class IsosurfaceMesh extends Mesh {
       }
     }
   }
-  
+
   Point3f[] centers;
+
   Point3f[] getCenters() {
     if (centers != null)
       return centers;
@@ -183,36 +194,29 @@ public class IsosurfaceMesh extends Mesh {
       pt.add(vertices[pi[0]]);
       pt.add(vertices[pi[1]]);
       pt.add(vertices[pi[2]]);
-      pt.scale(1/3f);
+      pt.scale(1 / 3f);
     }
     return centers;
   }
-  
+
   Point4f getFacePlane(int i, Vector3f vNorm) {
     Point4f plane = new Point4f();
-    Measure.getPlaneThroughPoints(vertices[polygonIndexes[i][0]], 
-        vertices[polygonIndexes[i][1]], vertices[polygonIndexes[i][2]], 
-        vNorm, vAB, vAC, plane);
+    Measure.getPlaneThroughPoints(vertices[polygonIndexes[i][0]],
+        vertices[polygonIndexes[i][1]], vertices[polygonIndexes[i][2]], vNorm,
+        vAB, vAC, plane);
     return plane;
   }
-  
+
   /**
-   * create a set of contour data. 
+   * create a set of contour data.
    * 
-   * Each contour is a Vector containing:
-   *   0 Integer number of polygons (length of BitSet) 
-   *   1 BitSet of critical triangles
-   *   2 Float value
-   *   3 int[] [colorArgb]
-   *   4 StringBuffer containing encoded data for each segment:
-   *     char type ('3', '6', '5') indicating which two edges
-   *       of the triangle are connected: 
-   *         '3' 0x011 AB-BC
-   *         '5' 0x101 AB-CA
-   *         '6' 0x110 BC-CA
-   *     char fraction along first edge (jvxlFractionToCharacter)
-   *     char fraction along second edge (jvxlFractionToCharacter)
-   *   5- stream of pairs of points for rendering
+   * Each contour is a Vector containing: 0 Integer number of polygons (length
+   * of BitSet) 1 BitSet of critical triangles 2 Float value 3 int[] [colorArgb]
+   * 4 StringBuffer containing encoded data for each segment: char type ('3',
+   * '6', '5') indicating which two edges of the triangle are connected: '3'
+   * 0x011 AB-BC '5' 0x101 AB-CA '6' 0x110 BC-CA char fraction along first edge
+   * (jvxlFractionToCharacter) char fraction along second edge
+   * (jvxlFractionToCharacter) 5- stream of pairs of points for rendering
    * 
    * @return contour vector set
    */
@@ -254,7 +258,7 @@ public class IsosurfaceMesh extends Mesh {
       for (int i = 0; i < n; i++) {
         float value = jvxlData.contourValuesUsed[i];
         get3dContour(vContours[i], value, jvxlData.contourColixes[i]);
-      }      
+      }
     }
     jvxlData.contourColixes = new short[n];
     jvxlData.contourValues = new float[n];
@@ -264,7 +268,7 @@ public class IsosurfaceMesh extends Mesh {
     }
     return jvxlData.vContours = vContours;
   }
-  
+
   private void get3dContour(List<Object> v, float value, short colix) {
     BitSet bsContour = new BitSet(polygonCount);
     StringBuffer fData = new StringBuffer();
@@ -272,13 +276,13 @@ public class IsosurfaceMesh extends Mesh {
     setContourVector(v, polygonCount, bsContour, value, colix, color, fData);
     for (int i = 0; i < polygonCount; i++)
       if (setABC(i))
-        addContourPoints(v, bsContour, i, fData, vertices,
-            vertexValues, iA, iB, iC, value);
+        addContourPoints(v, bsContour, i, fData, vertices, vertexValues, iA,
+            iB, iC, value);
   }
 
   public static void setContourVector(List<Object> v, int nPolygons,
-                                      BitSet bsContour, float value, short colix,
-                                      int color, StringBuffer fData) {
+                                      BitSet bsContour, float value,
+                                      short colix, int color, StringBuffer fData) {
     v.add(JvxlCoder.CONTOUR_NPOLYGONS, Integer.valueOf(nPolygons));
     v.add(JvxlCoder.CONTOUR_BITSET, bsContour);
     v.add(JvxlCoder.CONTOUR_VALUE, new Float(value));
@@ -343,35 +347,28 @@ public class IsosurfaceMesh extends Mesh {
   }
 
   /**
-   *  two values -- v1, and v2, which need not be ordered v1 < v2.
-   *  v == v1 --> 0
-   *  v == v2 --> 1
-   *  v1 < v < v2 --> f in (0,1)
-   *  v2 < v < v1 --> f in (0,1) 
-   *  i.e. (v1 < v) == (v < v2)
-   *
-   *  We check AB, then (usually) BC, then (sometimes) CA.
-   *  
-   *  What if two end points are identical values?
-   *  So, for example, if v = 1.0 and:
-   *  
-   *      A             1.0         0.5        1.0         1.0      
-   *     / \            /  \        /  \       /  \        /  \
-   *    /   \          /    \      /    \     /    \      /    \
-   *   C-----B        1.0--0.5    1.0--1.0   0.5--1.0   1.0---1.0
-   *                   case I      case II   case III    case IV
-   *                   
-   *     case I: AB[0] and BC[1], type == 3 --> CA not tested.
-   *    case II: AB[1] and CA[0]; f1 == 1.0 --> BC not tested.
-   *   case III: AB[0] and BC[0], type == 3 --> CA not tested.
-   *   case  IV: AB[0] and BC[0], type == 3 --> CA not tested.
-   *  
-   *  what if v = 0.5?
-   *  
-   *     case I: AB[1]; BC not tested --> type == 1, invalid.
-   *    case II: AB[0]; type == 1, f1 == 0.0 --> CA not tested.
-   *   case III: BC[1]; f2 == 1.0 --> CA not tested.
-   *   
+   * two values -- v1, and v2, which need not be ordered v1 < v2. v == v1 --> 0
+   * v == v2 --> 1 v1 < v < v2 --> f in (0,1) v2 < v < v1 --> f in (0,1) i.e.
+   * (v1 < v) == (v < v2)
+   * 
+   * We check AB, then (usually) BC, then (sometimes) CA.
+   * 
+   * What if two end points are identical values? So, for example, if v = 1.0
+   * and:
+   * 
+   * A 1.0 0.5 1.0 1.0 / \ / \ / \ / \ / \ / \ / \ / \ / \ / \ C-----B 1.0--0.5
+   * 1.0--1.0 0.5--1.0 1.0---1.0 case I case II case III case IV
+   * 
+   * case I: AB[0] and BC[1], type == 3 --> CA not tested. case II: AB[1] and
+   * CA[0]; f1 == 1.0 --> BC not tested. case III: AB[0] and BC[0], type == 3
+   * --> CA not tested. case IV: AB[0] and BC[0], type == 3 --> CA not tested.
+   * 
+   * what if v = 0.5?
+   * 
+   * case I: AB[1]; BC not tested --> type == 1, invalid. case II: AB[0]; type
+   * == 1, f1 == 0.0 --> CA not tested. case III: BC[1]; f2 == 1.0 --> CA not
+   * tested.
+   * 
    * @param vertexValues
    * @param i
    * @param j
@@ -380,13 +377,12 @@ public class IsosurfaceMesh extends Mesh {
    */
   private static float checkPt(float[] vertexValues, int i, int j, float v) {
     float v1, v2;
-    return (v == (v1 = vertexValues[i]) ? 0 
-        : v == (v2 = vertexValues[j]) ? 1 
-        : (v1 < v) == (v < v2) ? (v - v1) / (v2 - v1) 
-        : Float.NaN);
+    return (v == (v1 = vertexValues[i]) ? 0 : v == (v2 = vertexValues[j]) ? 1
+        : (v1 < v) == (v < v2) ? (v - v1) / (v2 - v1) : Float.NaN);
   }
 
-  private static Point3f getContourPoint(Point3f[] vertices, int i, int j, float f) {
+  private static Point3f getContourPoint(Point3f[] vertices, int i, int j,
+                                         float f) {
     Point3f pt = new Point3f();
     pt.set(vertices[j]);
     pt.sub(vertices[i]);
@@ -398,7 +394,7 @@ public class IsosurfaceMesh extends Mesh {
   float[] contourValues;
   short[] contourColixes;
   ColorEncoder colorEncoder;
-  
+
   public void setDiscreteColixes(float[] values, short[] colixes) {
     if (values != null)
       jvxlData.contourValues = values;
@@ -416,13 +412,14 @@ public class IsosurfaceMesh extends Mesh {
     float vMax = values[n - 1];
     colorCommand = null;
     boolean haveColixes = (colixes != null && colixes.length > 0);
-    isColorSolid = haveColixes && jvxlData.jvxlPlane != null;
+    isColorSolid = (haveColixes && jvxlData.jvxlPlane != null);
     if (jvxlData.vContours != null) {
       if (haveColixes)
         for (int i = 0; i < jvxlData.vContours.length; i++) {
-          short colix  = colixes[i % colixes.length];
+          short colix = colixes[i % colixes.length];
           ((short[]) jvxlData.vContours[i].get(JvxlCoder.CONTOUR_COLIX))[0] = colix;
-          ((int[]) jvxlData.vContours[i].get(JvxlCoder.CONTOUR_COLOR))[0] = Graphics3D.getArgb(colix);
+          ((int[]) jvxlData.vContours[i].get(JvxlCoder.CONTOUR_COLOR))[0] = Graphics3D
+              .getArgb(colix);
         }
       return;
     }
@@ -433,7 +430,7 @@ public class IsosurfaceMesh extends Mesh {
       if (pi == null)
         continue;
       polygonColixes[i] = defaultColix;
-      float v = (vertexValues[pi[0]] + vertexValues[pi[1]] + vertexValues[pi[2]])/3;
+      float v = (vertexValues[pi[0]] + vertexValues[pi[1]] + vertexValues[pi[2]]) / 3;
       //System.out.println(i + " " + v);
       for (int j = n; --j >= 0;) {
         if (v >= values[j] && v < vMax) {
@@ -453,12 +450,15 @@ public class IsosurfaceMesh extends Mesh {
    */
   Map<String, Object> getContourList(Viewer viewer) {
     Map<String, Object> ht = new Hashtable<String, Object>();
-    ht.put("values", (jvxlData.contourValuesUsed == null ? jvxlData.contourValues : jvxlData.contourValuesUsed));
+    ht.put("values",
+        (jvxlData.contourValuesUsed == null ? jvxlData.contourValues
+            : jvxlData.contourValuesUsed));
     List<Point3f> colors = new ArrayList<Point3f>();
     if (jvxlData.contourColixes != null) {
       // set in SurfaceReader.colorData()
       for (int i = 0; i < jvxlData.contourColixes.length; i++) {
-        colors.add(Graphics3D.colorPointFromInt2(Graphics3D.getArgb(jvxlData.contourColixes[i])));
+        colors.add(Graphics3D.colorPointFromInt2(Graphics3D
+            .getArgb(jvxlData.contourColixes[i])));
       }
       ht.put("colors", colors);
     }
@@ -472,9 +472,246 @@ public class IsosurfaceMesh extends Mesh {
     jvxlData.vContours = null;
   }
 
+  /**
+   * color a specific set of vertices based on a set of atoms
+   * 
+   * @param colix
+   * @param bs
+   */
+  void colorAtoms(short colix, BitSet bs) {
+    colorVertices(colix, bs, true);
+  }
+
+  /**
+   * color a specific set of vertices
+   * 
+   * @param colix
+   * @param bs
+   */
+  void colorVertices(short colix, BitSet bs) {
+    colorVertices(colix, bs, false);
+  }
+
+  /**
+   * color a specific set of vertices a specific color
+   * 
+   * @param colix
+   * @param bs
+   * @param isAtoms
+   */
+  private void colorVertices(short colix, BitSet bs, boolean isAtoms) {
+    if (vertexSource == null)
+      return;
+    colix = Graphics3D.copyColixTranslucency(this.colix, colix);
+    BitSet bsVertices = (isAtoms ? new BitSet() : bs);
+    if (vertexColixes == null || vertexColorMap == null && isColorSolid) {
+      vertexColixes = new short[vertexCount];
+      for (int i = 0; i < vertexCount; i++)
+        vertexColixes[i] = this.colix;
+    }
+    isColorSolid = false;
+    // TODO: color translucency?
+    if (isAtoms)
+      for (int i = 0; i < vertexCount; i++) {
+        if (bs.get(vertexSource[i])) {
+          vertexColixes[i] = colix;
+          bsVertices.set(i);
+        }
+      }
+    else
+      for (int i = 0; i < vertexCount; i++)
+        if (bsVertices.get(i))
+          vertexColixes[i] = colix;
+
+    if (!isAtoms) {
+      // JVXL file color maps do not have to be saved here. 
+      // They are just kept in jvxlData 
+      return;
+    }
+    String color = Graphics3D.getHexCode(colix);
+    if (vertexColorMap == null)
+      vertexColorMap = new Hashtable<String, BitSet>();
+    addColorToMap(vertexColorMap, color, bs);
+  }
+
+  /**
+   * adds a set of specifically-colored vertices to the map, 
+   * ensuring that no vertex is in two maps.
+   * 
+   * @param colorMap
+   * @param color
+   * @param bs
+   */
+  private static void addColorToMap(Map<String, BitSet> colorMap, String color,
+                                    BitSet bs) {
+    BitSet bsMap = null;
+    for (Map.Entry<String, BitSet> entry : colorMap.entrySet())
+      if (entry.getKey() == color) {
+        bsMap = entry.getValue();
+        bsMap.or(bs);
+      } else {
+        entry.getValue().andNot(bs);
+      }
+    if (bsMap == null)
+      colorMap.put(color, bs);
+  }
+
+  /**
+   * set up the jvxlData fields needed for either just the 
+   * header (isAll = false) or the full file (isAll = true)
+   * 
+   * @param isAll
+   */
+  void setJvxlColorMap(boolean isAll) {
+    jvxlData.color = Graphics3D.getHexCode(colix);
+    jvxlData.translucency = Graphics3D.getColixTranslucencyLevel(colix);
+    jvxlData.colorScheme = (colorEncoder == null ? null : colorEncoder
+        .getColorScheme());
+    jvxlData.nVertexColors = (vertexColorMap == null ? 0 : vertexColorMap
+        .size());
+    if (vertexColorMap == null || vertexSource == null || !isAll)
+      return;
+    if (jvxlData.vertexColorMap == null)
+      jvxlData.vertexColorMap = new Hashtable<String, BitSet>();
+    for (Map.Entry<String, BitSet> entry : vertexColorMap.entrySet()) {
+      BitSet bsMap = entry.getValue();
+      if (bsMap.isEmpty())
+        continue;
+      String color = entry.getKey();
+      BitSet bs = new BitSet();
+      for (int i = 0; i < vertexCount; i++)
+        if (bsMap.get(vertexSource[i]))
+          bs.set(i);
+      addColorToMap(jvxlData.vertexColorMap, color, bs);
+    }
+    jvxlData.nVertexColors = jvxlData.vertexColorMap.size();
+    if (jvxlData.vertexColorMap.size() == 0)
+      jvxlData.vertexColorMap = null;
+  }
+
+  /**
+   *  just sets the color command for this isosurface. 
+   */
+  void setColorCommand() {
+    if (colorEncoder == null)
+      return;
+    colorCommand = colorEncoder.getColorScheme();
+    if (colorCommand == null)
+      return;
+    colorCommand = "color $"
+        + thisID
+        + " "
+        + colorCommand
+        + " range "
+        + (jvxlData.isColorReversed ? jvxlData.valueMappedToBlue + " "
+            + jvxlData.valueMappedToRed : jvxlData.valueMappedToRed + " "
+            + jvxlData.valueMappedToBlue);
+  }
+
+  /**
+   * from Isosurface.notifySurfaceGenerationCompleted()
+   * 
+   * starting with Jmol 12.1.50, JVXL files contain 
+   * color, translucency, color scheme information, 
+   * and vertex color mappings (as from COLOR ISOSURFACE {hydrophobic} WHITE),
+   * returning these settings when the JVXL file is opened. 
+   */
+  void setColorsFromJvxlData() {
+    if (jvxlData.color != null)
+      colix = Graphics3D.getColix(jvxlData.color);
+    if (colix == 0)
+      colix = Graphics3D.ORANGE;
+    colix = Graphics3D.getColixTranslucent(colix, jvxlData.translucency != 0,
+        jvxlData.translucency);
+    if (colorEncoder == null)
+      return;
+    if (jvxlData.colorScheme != null) {
+      String colorScheme = jvxlData.colorScheme;
+      boolean isTranslucent = colorScheme.startsWith("translucent ");
+      if (isTranslucent)
+        colorScheme = colorScheme.substring(12);
+      colorEncoder.setColorScheme(colorScheme, isTranslucent);
+      remapColors(null, jvxlData.translucency);
+    }
+    if (jvxlData.vertexColorMap != null)
+      for (Map.Entry<String, BitSet> entry : jvxlData.vertexColorMap.entrySet()) {
+        BitSet bsMap = entry.getValue();
+        short colix = Graphics3D.copyColixTranslucency(this.colix, Graphics3D
+            .getColix(entry.getKey()));
+        for (int i = bsMap.nextSetBit(0); i >= 0; i = bsMap.nextSetBit(i + 1))
+          vertexColixes[i] = colix;
+      }
+  }
+
+  /**
+   * remaps colors based on a new color scheme or translucency level
+   * 
+   * @param ce
+   * @param translucentLevel
+   */
+  void remapColors(ColorEncoder ce, float translucentLevel) {
+    if (ce == null)
+      ce = colorEncoder;
+    float min = ce.lo;
+    float max = ce.hi;
+
+    vertexColorMap = null;
+    polygonColixes = null;
+    if (vertexValues == null || jvxlData.isBicolorMap
+        || jvxlData.vertexCount == 0)
+      return;
+    if (vertexColixes == null)
+      vertexColixes = new short[vertexCount];
+    jvxlData.isColorReversed = ce.isReversed;
+    if (max != Float.MAX_VALUE) {
+      jvxlData.valueMappedToRed = min;
+      jvxlData.valueMappedToBlue = max;
+    }
+    ce.setRange(jvxlData.valueMappedToRed, jvxlData.valueMappedToBlue,
+        jvxlData.isColorReversed);
+    // colix must be translucent if the scheme is translucent
+    // but may be translucent if the scheme is not translucent
+    boolean isTranslucent = Graphics3D.isColixTranslucent(colix);
+    if (ce.isTranslucent) {
+      if (!isTranslucent)
+        colix = Graphics3D.getColixTranslucent(colix, true, 0.5f);
+      // still, if the scheme is translucent, we don't want to color the vertices translucent
+      isTranslucent = false;
+    }
+    for (int i = vertexCount; --i >= 0;) {
+      vertexColixes[i] = ce.getColorIndex(vertexValues[i]);
+      if (isTranslucent)
+        vertexColixes[i] = Graphics3D.getColixTranslucent(vertexColixes[i],
+            true, translucentLevel);
+    }
+    colorEncoder = ce;
+    List<Object>[] contours = getContours();
+    if (contours != null) {
+      for (int i = contours.length; --i >= 0;) {
+        float value = ((Float) contours[i].get(JvxlCoder.CONTOUR_VALUE))
+            .floatValue();
+        short[] colix = ((short[]) contours[i].get(JvxlCoder.CONTOUR_COLIX));
+        colix[0] = ce.getColorIndex(value);
+        int[] color = ((int[]) contours[i].get(JvxlCoder.CONTOUR_COLOR));
+        color[0] = Graphics3D.getArgb(colix[0]);
+      }
+    }
+    //TODO -- still not right.
+    if (contourValues != null) {
+      contourColixes = new short[contourValues.length];
+      for (int i = 0; i < contourValues.length; i++)
+        contourColixes[i] = ce.getColorIndex(contourValues[i]);
+      setDiscreteColixes(null, null);
+    }
+    jvxlData.isJvxlPrecisionColor = true;
+    JvxlCoder.jvxlCreateColorData(jvxlData, vertexValues);
+    setColorCommand();
+    isColorSolid = false;
+  }
+
   //private void dumpData() {
-    //for (int i =0;i<10;i++) {
-    //  System.out.println("P["+i+"]="+polygonIndexes[i][0]+" "+polygonIndexes[i][1]+" "+polygonIndexes[i][2]+" "+ polygonIndexes[i][3]+" "+vertices[i]);
-    //}
+  //for (int i =0;i<10;i++) {
+  //  System.out.println("P["+i+"]="+polygonIndexes[i][0]+" "+polygonIndexes[i][1]+" "+polygonIndexes[i][2]+" "+ polygonIndexes[i][3]+" "+vertices[i]);
+  //}
   //}
 }

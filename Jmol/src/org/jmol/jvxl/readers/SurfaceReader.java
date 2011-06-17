@@ -194,6 +194,7 @@ public abstract class SurfaceReader implements VertexDataServer {
   protected VolumeData volumeData;
   private String edgeData;
 
+  protected boolean haveSurfaceAtoms = false;
   protected boolean allowSigma = false;
   protected boolean isProgressive = false;
   protected boolean isXLowToHigh = false; //can be overridden in some readers by --progressive
@@ -390,7 +391,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     jvxlData.vertexDataOnly = vertexDataOnly;
     jvxlData.saveVertexCount = 0;
 
-    if (jvxlDataIsColorMapped) {
+    if (jvxlDataIsColorMapped || jvxlData.nVertexColors > 0) {
       if (meshDataServer != null) {
         meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
         meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_COLOR_INDEXES, null);
@@ -727,7 +728,8 @@ public abstract class SurfaceReader implements VertexDataServer {
         hasColorData || vertexDataOnly || params.colorDensity || params.isBicolorMap
         && !params.isContoured;
     if (!useMeshDataValues) {
-
+      if (haveSurfaceAtoms && meshData.vertexSource == null)
+        meshData.vertexSource = new int[meshData.vertexCount];
       float min = Float.MAX_VALUE;
       float max = -Float.MAX_VALUE;
       float value;
@@ -739,15 +741,18 @@ public abstract class SurfaceReader implements VertexDataServer {
          * the key to making the JVXL contours work.
          *  
          */
-        if (params.colorBySets)
+        if (params.colorBySets) {
           value = meshData.vertexSets[i];
-        else if (params.colorByPhase)
+        } else if (params.colorByPhase) {
           value = getPhase(meshData.vertices[i]);
         //else if (jvxlDataIs2dContour)
         //marchingSquares
         //    .getInterpolatedPixelValue(meshData.vertices[i]);
-        else
+        } else {
           value = volumeData.lookupInterpolatedVoxelValue(meshData.vertices[i]);
+          if (haveSurfaceAtoms)
+            meshData.vertexSource[i] = getSurfaceAtomIndex();
+        }
         if (value < min)
           min = value;
         if (value > max && value != Float.MAX_VALUE)
@@ -767,6 +772,9 @@ public abstract class SurfaceReader implements VertexDataServer {
 
     JvxlCoder.jvxlCreateColorData(jvxlData,
         (saveColorData ? meshData.vertexValues : null));
+
+    if (haveSurfaceAtoms && meshDataServer != null)
+      meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_VERTICES, null);
 
     if (meshDataServer != null && params.colorBySets)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS, null);
@@ -1042,6 +1050,11 @@ public abstract class SurfaceReader implements VertexDataServer {
 
   protected void finalizeMapping() {
     // release any iterators
+  }
+
+  public int getSurfaceAtomIndex() {
+    // atomPropertyMapper
+    return -1;
   }
 
 }

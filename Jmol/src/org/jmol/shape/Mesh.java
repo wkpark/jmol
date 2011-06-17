@@ -26,6 +26,7 @@ package org.jmol.shape;
 
 import java.util.BitSet;
 import java.util.List;
+import java.util.Map;
 
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
@@ -72,6 +73,8 @@ public class Mesh extends MeshSurface {
   public Point3f ptCenter = new Point3f(0,0,0);
   public String meshType;
   public Mesh linkedMesh; //for lcaoOrbitals
+  public Map<String, BitSet> vertexColorMap;
+  
 
   public int index;
   public int atomIndex = -1;

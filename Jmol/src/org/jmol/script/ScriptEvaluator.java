@@ -5769,7 +5769,10 @@ public class ScriptEvaluator {
           if (tokAt(++i) == Token.expressionBegin || tokAt(i) == Token.bitset) {
             bsOrList = atomExpression(i);            
           } else {
-            ScriptVariable vl =  parameterExpressionList(-i, 1, false).get(0);
+            List<ScriptVariable> what = parameterExpressionList(-i, 1, false);
+            if (what == null || what.size() < 1)
+              error(ERROR_invalidArgument);
+            ScriptVariable vl = what.get(0);
             switch (vl.tok) {
             case Token.bitset:
               bsOrList = ScriptVariable.getBitSet(vl, false);
@@ -7539,14 +7542,33 @@ public class ScriptEvaluator {
       getToken(++index);
     if (isBackground)
       prefix = "bg";
-    else if (isIsosurface && theTok == Token.mesh) {
-      getToken(++index);
-      prefix = "mesh";
+    else if (isIsosurface) {
+      switch (theTok) {
+      case Token.mesh:
+        getToken(++index);
+        prefix = "mesh";
+        break;
+      case Token.bitset:
+      case Token.expressionBegin:
+        if (theToken.value instanceof BondSet) {
+          bs = (BondSet) theToken.value;
+          prefix = "vertex";
+        } else {
+          bs = atomExpression(index);
+          // don't allow isosurface partial translucency (yet)
+          prefix = "atom";
+        }
+        translucentLevel = Float.MIN_VALUE;
+        getToken(index = iToken + 1);
+        break;
+      }
     }
     if (!isSyntaxCheck && shapeType == JmolConstants.SHAPE_MO && !mo(true))
       return;
     boolean isTranslucent = (theTok == Token.translucent);
     if (isTranslucent || theTok == Token.opaque) {
+      if (translucentLevel == Float.MIN_VALUE)
+        error(ERROR_invalidArgument);
       translucency = parameterAsString(index++);
       if (isTranslucent && isFloatParameter(index))
         translucentLevel = getTranslucentLevel(index++);
@@ -15600,9 +15622,9 @@ public class ScriptEvaluator {
   }
 
   private boolean listIsosurface(int iShape) throws ScriptException {
-    checkLength(2);
+    checkLength23();
     if (!isSyntaxCheck)
-      showString((String) getShapeProperty(iShape, "list"));
+      showString((String) getShapeProperty(iShape, "list" + (tokAt(2) == Token.nada ? "" : " " + getToken(2).value)));
     return true;
   }
 

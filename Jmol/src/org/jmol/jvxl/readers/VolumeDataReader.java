@@ -114,15 +114,17 @@ class VolumeDataReader extends SurfaceReader {
   }
   
   protected boolean setVolumeDataParams() {
-    if (params.origin == null || params.steps == null || params.counts == null)
+    if (params.origin == null || params.steps == null || params.points == null)
       return false;
     volumetricOrigin.set(params.origin);
     volumetricVectors[0].set(params.steps.x, 0, 0);
     volumetricVectors[1].set(0, params.steps.y, 0);
     volumetricVectors[2].set(0, 0, params.steps.z);
-    voxelCounts[0] = (int) params.counts.x;
-    voxelCounts[1] = (int) params.counts.y;
-    voxelCounts[2] = (int) params.counts.z;
+    voxelCounts[0] = (int) params.points.x;
+    voxelCounts[1] = (int) params.points.y;
+    voxelCounts[2] = (int) params.points.z;
+    if (voxelCounts[0] < 1 || voxelCounts[1] < 1 || voxelCounts[2] < 1)
+      return false;
     showGridInfo();
     return true;
   }  
@@ -130,10 +132,10 @@ class VolumeDataReader extends SurfaceReader {
   protected void showGridInfo() {
     Logger.info("grid origin  = " + params.origin);
     Logger.info("grid steps   = " + params.steps);
-    Logger.info("grid counts  = " + params.counts);
-    ptTemp.x = params.steps.x * params.counts.x;
-    ptTemp.y = params.steps.y * params.counts.y;
-    ptTemp.z = params.steps.z * params.counts.z;
+    Logger.info("grid points  = " + params.points);
+    ptTemp.x = params.steps.x * params.points.x;
+    ptTemp.y = params.steps.y * params.points.y;
+    ptTemp.z = params.steps.z * params.points.z;
     Logger.info("grid lengths = " + ptTemp);
     ptTemp.add(params.origin);
     Logger.info("grid max xyz = " + ptTemp);

@@ -1068,7 +1068,6 @@ public class Token {
   public final static int contourlines  = misc  | 74;
   final static int contours      = misc  | 76;
   final static int corners       = misc  | 78;
-  final static int count         = misc  | 79; // 12.1.51
   public final static int create = misc  | 80;
   final static int criterion     = misc  | 81;
   final static int crossed       = misc  | 82;
@@ -1728,8 +1727,6 @@ public class Token {
       "coords",          null,
       "cos",             new Token(cos),
       "cross",           new Token(cross),
-      "count",           new Token(count),
-      "counts",          null,
       "covalent",        new Token(covalent),
       "direction",       new Token(direction),
       "displacement",    new Token(displacement),

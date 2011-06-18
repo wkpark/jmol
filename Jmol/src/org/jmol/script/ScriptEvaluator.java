@@ -15759,7 +15759,7 @@ public class ScriptEvaluator {
         break;
       case Token.origin:
       case Token.step:
-      case Token.count:
+      case Token.point:
         haveOrigin = true;
         propertyName = theToken.value.toString();
         sbCommand.append(" ").append(theToken.value);

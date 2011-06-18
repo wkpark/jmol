@@ -631,8 +631,8 @@ public class SurfaceGenerator {
       return true;
     }
 
-    if ("count" == propertyName) {
-      params.counts = (Point3f) value;
+    if ("point" == propertyName) {
+      params.points = (Point3f) value;
       return true;
     }
 

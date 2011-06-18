@@ -783,7 +783,7 @@ public class Parameters {
   public BitSet[] intersection;
   public Point3f origin;
   public Point3f steps;
-  public Point3f counts;
+  public Point3f points;
   
   void setMapRanges(SurfaceReader surfaceReader, boolean haveData) {
     if (!colorDensity)
@@ -821,7 +821,7 @@ public class Parameters {
     mappedDataMin = Float.MAX_VALUE;
     intersection = null;
     func = null;
-    counts = null;
+    points = null;
     origin = null;
     steps = null;
   }

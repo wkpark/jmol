@@ -197,6 +197,7 @@ class IsoSolventReader extends AtomDataReader {
     setRangesAndAddAtoms(params.solvent_ptsPerAngstrom, params.solvent_gridMax,
         params.thePlane != null ? Integer.MAX_VALUE : Math.min(firstNearbyAtom,
             100));
+    volumeData.getYzCount();
     margin = volumeData.maxGrid * 1.8f;
     if (bsNearby != null)
       bsMySelected.or(bsNearby);
@@ -208,7 +209,6 @@ class IsoSolventReader extends AtomDataReader {
   @Override
   protected void generateCube() {
     // This is the starting point for the calculation.
-    volumeData.getYzCount();
     if (isCavity && params.theProperty != null)
       return;
     Logger.startTimer();

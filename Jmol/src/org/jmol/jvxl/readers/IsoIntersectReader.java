@@ -134,24 +134,30 @@ class IsoIntersectReader extends AtomDataReader {
     voxelData = new float[nPointsX][nPointsY][nPointsZ];
     resetVoxelData(Float.MAX_VALUE);
     markSphereVoxels(0, params.distance, bsB);
-    setVoxels();
+    if (!setVoxels()) { 
+      volumeData.voxelData = new float[nPointsX][nPointsY][nPointsZ];      
+    }
   }
   
-  protected void setVoxels() {
+  protected boolean setVoxels() {
     for (int i = 0; i < nPointsX; i++)
       for (int j = 0; j < nPointsY; j++)
         for (int k = 0; k < nPointsX; k++) {
           float va = volumeData.voxelData[i][j][k];
           float vb = voxelData[i][j][k];
           float v = getValue(va, vb);
+          if (Float.isNaN(v))
+            return false;
           volumeData.voxelData[i][j][k] = v;
         }
+    return true;
   }
 
   private float[] values = new float[2];
   
   private float getValue(float va, float vb) {
-    if (va == Float.MAX_VALUE || vb == Float.MAX_VALUE)
+    if (va == Float.MAX_VALUE || vb == Float.MAX_VALUE
+        || Float.isNaN(va) || Float.isNaN(vb))
       return Float.MAX_VALUE;
     // looks crappy and serated because lens-like
     // surface slimmer than grid:
@@ -161,7 +167,8 @@ class IsoIntersectReader extends AtomDataReader {
       return (va - vb);
     values[0] = va;
     values[1] = vb;
-    return atomDataServer.evalFunctionFloat(params.func[0], params.func[1], values);
+    float v = atomDataServer.evalFunctionFloat(params.func[0], params.func[1], values);
+    return v;
   }
   
   private final Point3f ptY0 = new Point3f();

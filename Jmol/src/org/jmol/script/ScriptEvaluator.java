@@ -202,6 +202,21 @@ public class ScriptEvaluator {
     return compileScript(null, script, debugScript);
   }
 
+  /** for the ISOSURFACE command
+   * 
+   * @param string
+   * @return        compiled function to send to IsoIntersectReader
+   */
+  private ScriptFunction createFunction(String string) {
+    ScriptEvaluator e = new ScriptEvaluator(viewer);
+    try {
+      e.compileScript(null, "function " + string, false);
+      return (ScriptFunction) e.aatoken[0][1].value;
+    } catch (Exception ex) {
+      return null;
+    }
+  }
+
   public boolean compileScriptFile(String filename, boolean tQuiet) {
     clearState(tQuiet);
     contextPath = filename;
@@ -1948,7 +1963,7 @@ public class ScriptEvaluator {
       ScriptFunction f = (ScriptFunction) func;
       return ScriptVariable.fValue(runFunction(f, f.name, p, null, true));
     } catch (Exception e) {
-      return 0;
+      return Float.NaN;
     } 
 
     
@@ -10672,7 +10687,7 @@ public class ScriptEvaluator {
     }else{//command to slice object, not show slice planes
       String name = (String)getToken(1).value;
       //TODO - should accept "all"  for now "all" will fail silently.
-      // Should check it is a valid isosurface name
+      // Should check it is a valid  isosurface name
       //Should be followed by two angles, and two percents (float values)
       float[] param = new float[4];
       for (int i=2;i<6;++i){
@@ -15666,6 +15681,8 @@ public class ScriptEvaluator {
     boolean isCavity = false;
     boolean haveRadius = false;
     boolean isFxy = false;
+    boolean haveSlab = false;
+    boolean haveIntersection = false;
     float[] data = null;
     int thisSetNumber = -1;
     int nFiles = 0;
@@ -15675,7 +15692,7 @@ public class ScriptEvaluator {
     int ptWithin = 0;
     Boolean smoothing = null;
     int smoothingPower = Integer.MAX_VALUE;
-    BitSet bs;
+    BitSet bs = null;
     BitSet bsSelect = null;
     BitSet bsIgnore = null;
     StringBuffer sbCommand = new StringBuffer();
@@ -15760,22 +15777,36 @@ public class ScriptEvaluator {
         break;
       case Token.intersection:
         // isosurface intersection {A} {B} VDW....
-        BitSet bsA = atomExpression(++i);
-        BitSet bsB = atomExpression(++iToken);
+        // isosurface intersection {A} {B} function "a-b" VDW....
+        bsSelect = atomExpression(++i);
+        if (tokAt(iToken + 1) == Token.expressionBegin || tokAt(iToken + 1) == Token.bitset) {
+          bs = atomExpression(++iToken);
+          bs.and(viewer.getAtomsWithin(5.0f, bsSelect, false));
+        } else {
+          // default is "within(5.0, selected) and not within(molecule,selected)"
+          bs = viewer.getAtomsWithin(5.0f, bsSelect, true);
+          bs.andNot(viewer.getAtomBits(Token.molecule, bsSelect));
+        }
+        bs.andNot(bsSelect);
+        sbCommand.append(" intersection ").append(Escape.escape(bsSelect)).append(" ").append(Escape.escape(bs));
         i = iToken;
         if (tokAt(i + 1) == Token.function) {
           i++;
-          List<ScriptVariable> params = new ArrayList<ScriptVariable>();
-          params.add(ScriptVariable.getVariable(Float.valueOf(0f)).setName("a"));
-          params.add(ScriptVariable.getVariable(Float.valueOf(0f)).setName("b"));
-          addShapeProperty(propertyList, "func", new Object[] { 
-              viewer.getFunction((String) getToken(++i).value),
+          String f = (String) getToken(++i).value;
+          sbCommand.append(" function ").append(Escape.escape(f));
+          if (!isSyntaxCheck) {
+            List<ScriptVariable> params = new ArrayList<ScriptVariable>();
+            params.add(ScriptVariable.getVariable(Float.valueOf(0f)).setName("a"));
+            params.add(ScriptVariable.getVariable(Float.valueOf(0f)).setName("b"));
+            addShapeProperty(propertyList, "func", new Object[] { 
+              createFunction("__iso__(a,b){return " + f + "}"),
               params });
+          }
+        } else {
+          haveIntersection = true;
         }
-        if (tokAt(i + 1) != Token.vanderwaals)
-          error(ERROR_invalidArgument);
         propertyName = "intersection";
-        propertyValue = new BitSet[] { bsA, bsB };        
+        propertyValue = new BitSet[] { bsSelect, bs };        
         break;
       case Token.display:
       case Token.within:
@@ -16349,6 +16380,7 @@ public class ScriptEvaluator {
         break;
       case Token.cap:
       case Token.slab:
+        haveSlab = true;
         propertyName = (String) theToken.value;
         propertyValue = getCapSlabObject(sbCommand, i, false);
         i = iToken;
@@ -16950,8 +16982,20 @@ public class ScriptEvaluator {
         }
       }
     }
-
+    
     // OK, now send them all
+
+    if (haveIntersection && !haveSlab) {
+      if (!surfaceObjectSeen)
+        addShapeProperty(propertyList, "sasurface", Float.valueOf(0));
+      if (!isMapped) {
+        addShapeProperty(propertyList, "map", Boolean.TRUE);
+        addShapeProperty(propertyList, "select", bs);
+        addShapeProperty(propertyList, "sasurface", Float.valueOf(0));
+      }
+      addShapeProperty(propertyList, "slab", new Object[] {new Object[] { Float.valueOf(-100),
+          Float.valueOf(0) }, null, Boolean.FALSE });
+    }
 
     setShapeProperty(iShape, "setProperties", propertyList);
 

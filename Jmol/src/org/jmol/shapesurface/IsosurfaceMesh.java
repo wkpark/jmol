@@ -600,9 +600,9 @@ public class IsosurfaceMesh extends Mesh {
       return;
     colorCommand = "color $"
         + thisID
-        + " "
+        + " \""
         + colorCommand
-        + " range "
+        + "\" range "
         + (jvxlData.isColorReversed ? jvxlData.valueMappedToBlue + " "
             + jvxlData.valueMappedToRed : jvxlData.valueMappedToRed + " "
             + jvxlData.valueMappedToBlue);

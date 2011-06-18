@@ -216,20 +216,24 @@ public class MeshSurface {
       if (polygonCount == 0 && vertexCount == 0)
         return;
     }
-    if (slabOptions == null)
-      slabOptions = new StringBuffer();
-    if (slabOptions.indexOf(slabInfo[1].toString()) < 0)
-      slabOptions.append(slabInfo[1]);
-    boolean andCap = ((Boolean)slabInfo[2]).booleanValue();
+    if (slabInfo[1] != null) {
+      if (slabOptions == null)
+        slabOptions = new StringBuffer();
+      if (slabOptions.indexOf(slabInfo[1].toString()) < 0)
+        slabOptions.append(slabInfo[1]);
+    }
+    boolean andCap = ((Boolean) slabInfo[2]).booleanValue();
     if (slabbingObject instanceof Point4f) {
-      getIntersection((Point4f) slabbingObject, null, 0, null, andCap, false, SLAB_NOMINMAX);
+      getIntersection((Point4f) slabbingObject, null, 0, null, andCap, false,
+          SLAB_NOMINMAX);
       return;
     }
     if (slabbingObject instanceof Point3f[]) {
-      Point4f[] faces = BoxInfo.getFacesFromCriticalPoints((Point3f[]) slabbingObject);
+      Point4f[] faces = BoxInfo
+          .getFacesFromCriticalPoints((Point3f[]) slabbingObject);
       for (int i = 0; i < faces.length; i++)
         getIntersection(faces[i], null, 0, null, andCap, false, SLAB_NOMINMAX);
-      return; 
+      return;
     }
     if (slabbingObject instanceof Object[]) {
       Object[] o = (Object[]) slabbingObject;
@@ -238,10 +242,12 @@ public class MeshSurface {
         if (vertexValues == null)
           return;
         getIntersection(null, null, distance, null, andCap, false, SLAB_MIN);
-        getIntersection(null, null, ((Float) o[1]).floatValue(), null, andCap, false, SLAB_MAX);       
+        getIntersection(null, null, ((Float) o[1]).floatValue(), null, andCap,
+            false, SLAB_MAX);
       } else {
-        Point3f[] centers = (Point3f[]) o[1];      
-        getIntersection(null, centers, distance, null, andCap, false, SLAB_NOMINMAX);
+        Point3f[] centers = (Point3f[]) o[1];
+        getIntersection(null, centers, distance, null, andCap, false,
+            SLAB_NOMINMAX);
       }
     }
   }

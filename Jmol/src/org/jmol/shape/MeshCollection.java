@@ -424,7 +424,7 @@ public abstract class MeshCollection extends Shape {
     if (property.startsWith("list")) {
       StringBuffer sb = new StringBuffer();
       int k = 0;
-      String id = (property == "list" ? null : property.substring(5));
+      String id = (property.equals("list") ? null : property.substring(5));
       for (int i = 0; i < meshCount; i++) {
          if ((m = meshes[i]) == null || m.vertexCount == 0 || id != null && !id.equalsIgnoreCase(m.thisID))
           continue;

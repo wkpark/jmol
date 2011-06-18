@@ -148,7 +148,7 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
     } else {
       Map<String, Token> map = null;
       if (!asCommand) {
-        System.out.println(" tsting " + splitCmd[0] + "///" + splitCmd[1] + "///" + splitCmd[2]);
+        //System.out.println(" tsting " + splitCmd[0] + "///" + splitCmd[1] + "///" + splitCmd[2]);
         notThis = s;
         if (splitCmd[2].startsWith("$") 
             || s.equalsIgnoreCase("isosurface ")

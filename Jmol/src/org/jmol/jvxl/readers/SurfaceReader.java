@@ -335,6 +335,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     nPointsX = voxelCounts[0];
     nPointsY = voxelCounts[1];
     nPointsZ = voxelCounts[2];
+    jvxlData.isSlabbable = ((params.dataType & Parameters.IS_SLABBABLE) != 0);
     jvxlData.insideOut = params.insideOut;
     jvxlData.dataXYReversed = params.dataXYReversed;
     jvxlData.isBicolorMap = params.isBicolorMap;
@@ -360,8 +361,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     int i = s.indexOf('\n', s.indexOf('\n',s.indexOf('\n') + 1) + 1) + 1;
     jvxlData.jvxlFileTitle = s.substring(0, i);
     jvxlData.jvxlFileHeader = s;
-    if (xyzMin == null)
-      setBoundingBox();
+    setBoundingBox();
     if (!params.isSilent)
       Logger.info("boundbox corners " + Escape.escape(xyzMin) + " " + Escape.escape(xyzMax));
     jvxlData.boundingBox = new Point3f[] {xyzMin, xyzMax};
@@ -1023,6 +1023,7 @@ public abstract class SurfaceReader implements VertexDataServer {
   private void setBoundingBox() {
     if (meshDataServer != null)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
+    xyzMin = null;
     for (int i = 0; i < meshData.vertexCount; i++) {
       Point3f p = meshData.vertices[i];
       if (!Float.isNaN(p.x))

@@ -55,7 +55,6 @@ public class IsosurfaceMesh extends Mesh {
   boolean hasGridPoints;
   Object calculatedArea;
   Object calculatedVolume;
-  public boolean isSolvent;
 
   IsosurfaceMesh(String thisID, Graphics3D g3d, short colix, int index) {
     super(thisID, g3d, colix, index);
@@ -67,11 +66,11 @@ public class IsosurfaceMesh extends Mesh {
     super.clear(meshType);
 
     jvxlData.clear();
+
     assocGridPointMap = null;
     assocGridPointNormals = null;
     centers = null;
     colorEncoder = null;
-    vertexColorMap = null;
     firstRealVertex = -1;
     hasGridPoints = iAddGridPoints;
     isColorSolid = true;
@@ -81,9 +80,10 @@ public class IsosurfaceMesh extends Mesh {
     surfaceSet = null;
     thisSet = -1;
     vertexColixes = null;
+    vertexColorMap = null;
     vertexIncrement = 1;
-    vertexValues = null;
     vertexSets = null;
+    vertexValues = null;
   }
 
   void allocVertexColixes() {
@@ -550,10 +550,10 @@ public class IsosurfaceMesh extends Mesh {
    * @param isAll
    */
   void setJvxlColorMap(boolean isAll) {
-    jvxlData.rendering = getRendering();
     jvxlData.color = Graphics3D.getHexCode(colix);
     jvxlData.meshColor = (meshColix == 0 ? null : Graphics3D.getHexCode(meshColix));
     jvxlData.translucency = Graphics3D.getColixTranslucencyLevel(colix);
+    jvxlData.rendering = getRendering().substring(1);
     jvxlData.colorScheme = (colorEncoder == null ? null : colorEncoder
         .getColorScheme());
     jvxlData.nVertexColors = (vertexColorMap == null ? 0 : vertexColorMap

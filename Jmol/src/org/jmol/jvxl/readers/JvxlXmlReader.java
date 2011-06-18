@@ -48,7 +48,9 @@ import org.jmol.util.XmlReader;
 
 public class JvxlXmlReader extends VolumeFileReader {
 
-  protected String JVXL_VERSION = "2.1";
+  protected String JVXL_VERSION = "2.2";
+  // 2.2 adds full support for return of rendering information, retrieval of triangle edge data when
+  //     edges have been modified by slabbing.
   
   protected int surfaceDataCount;
   protected int edgeDataCount;
@@ -253,18 +255,20 @@ public class JvxlXmlReader extends VolumeFileReader {
     jvxlData.color = XmlReader.getXmlAttrib(data, "color");
     if (jvxlData.color.length() == 0)
       jvxlData.color = "orange";
-    s = XmlReader.getXmlAttrib(data, "meshColor");
-    if (s.length() != 0)
-      jvxlData.meshColor = s;
-    s = XmlReader.getXmlAttrib(data, "rending");
-    if (s.length() != 0)
-      jvxlData.rendering = s;
     jvxlData.translucency = parseInt(XmlReader.getXmlAttrib(data, "translucency"));
     if (jvxlData.translucency == Integer.MAX_VALUE)
       jvxlData.translucency = 0;
+    s = XmlReader.getXmlAttrib(data, "meshColor");
+    if (s.length() != 0)
+      jvxlData.meshColor = s;
+    s = XmlReader.getXmlAttrib(data, "rendering");
+    if (s.length() != 0)
+      jvxlData.rendering = s;
     jvxlData.colorScheme = XmlReader.getXmlAttrib(data, "colorScheme");
     if (jvxlData.colorScheme.length() == 0)
       jvxlData.colorScheme = "rgb";
+    jvxlData.slabValue = parseInt(XmlReader.getXmlAttrib(data, "slabValue"));    
+    jvxlData.isSlabbable = (XmlReader.getXmlAttrib(data, "slabbable").equalsIgnoreCase("true"));    
     
     if (jvxlDataIs2dContour)
       params.isContoured = true;
@@ -584,7 +588,7 @@ public class JvxlXmlReader extends VolumeFileReader {
   }
 
   /**
-   * retrieve Jvxl 2.0 format vertex/triangle/color data found
+   * retrieve Jvxl 2.0 format vertex/triangle/edge/color data found
    * within <jvxlSurfaceData> element 
    * 
    * @throws Exception
@@ -592,9 +596,10 @@ public class JvxlXmlReader extends VolumeFileReader {
   protected void getEncodedVertexData() throws Exception {
     String data = xr.getXmlData("jvxlSurfaceData", null, true, false);
     String tData = xr.getXmlData("jvxlTriangleData", data, true, false);
+    String edgeData = xr.getXmlData("jvxlTriangleEdgeData", data, true, false);
     jvxlDecodeVertexData(xr.getXmlData("jvxlVertexData", data, true, false), false);
     String polygonColorData = xr.getXmlData("jvxlPolygonColorData", data, false, false);
-    jvxlDecodeTriangleData(tData, polygonColorData);
+    jvxlDecodeTriangleData(tData, edgeData, polygonColorData);
     Logger.info("Checking for vertex values");
     data = xr.getXmlData("jvxlColorData", data, true, false);
     jvxlData.isJvxlPrecisionColor = XmlReader.getXmlAttrib(data, "encoding").endsWith("2");
@@ -656,11 +661,12 @@ public class JvxlXmlReader extends VolumeFileReader {
    * 
    * @param data
    *          tag and contents
+   * @param edgeData 
    * @param colorData
    * @return int[][] if desired
    * @throws Exception
    */
-  int[][] jvxlDecodeTriangleData(String data, String colorData)
+  int[][] jvxlDecodeTriangleData(String data, String edgeData, String colorData)
       throws Exception {
     int nColors = (colorData == null ? -1 : 0);
     int color = 0;
@@ -671,8 +677,11 @@ public class JvxlXmlReader extends VolumeFileReader {
     String s = JvxlCoder.jvxlUncompressString(XmlReader.getXmlAttrib(data, "data"));
     if (s.length() == 0)
       s = xr.getXmlData("jvxlTriangleData", data, false, false);
+    String sEdge = JvxlCoder.jvxlUncompressString(XmlReader.getXmlAttrib(edgeData, "data")).trim();
     int[] nextp = new int[1];
     int[] nextc = new int[1];
+    int edgeMask = 7;
+    boolean haveEdgeInfo = (sEdge.length() == nData);
     int ilast = 0;
     int p = 0;
     int b0 = '\\';
@@ -712,8 +721,11 @@ public class JvxlXmlReader extends VolumeFileReader {
       ilast += idiff;
       triangle[p] = ilast;
       if (++p % 3 == 0) {
-        i++;
-        p = 0;
+        if(haveEdgeInfo) {
+          edgeMask = sEdge.charAt(i) - '0';
+          if (edgeMask < 0 || edgeMask > 7)
+            edgeMask = 7;
+        }
         if (nColors >= 0) {
           if (nColors == 0) {
             nColors = Parser.parseInt(colorData, nextc);
@@ -723,8 +735,10 @@ public class JvxlXmlReader extends VolumeFileReader {
           }
           nColors--;
         }
-        addTriangleCheck(triangle[0], triangle[1], triangle[2], 7, 0, false,
+        addTriangleCheck(triangle[0], triangle[1], triangle[2], edgeMask, 0, false,
             color);
+        i++;
+        p = 0;
       }
     }
     return triangles;

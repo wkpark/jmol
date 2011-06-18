@@ -29,12 +29,14 @@ import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
+//import java.util.Map.Entry;
 
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
+//import org.jmol.script.Token;
 import org.jmol.shape.AtomShape;
 import org.jmol.util.Escape;
 import org.jmol.util.Quadric;
@@ -64,6 +66,21 @@ public class Ellipsoids extends AtomShape {
       this.modelIndex = modelIndex;
     }
 
+  }
+    
+//  @SuppressWarnings("unchecked")
+  @Override
+  public boolean getProperty(String property, Object[] data) {
+/*  just implemented for DRAW and ISOSURFACE
+    if (property == "getNames") {
+      Map<String, Token> map = (Map<String, Token>) data[0];
+      boolean withDollar = ((Boolean) data[1]).booleanValue();
+      for (Entry<String, Ellipsoid>entry : htEllipsoids.entrySet())
+        map.put((withDollar ? "$" : "") + entry.getKey(), Token.tokenExpressionBegin); // just a placeholder
+      return true;
+    }
+*/
+    return super.getProperty(property, data);
   }
     
   @Override

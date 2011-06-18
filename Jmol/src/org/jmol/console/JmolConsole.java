@@ -133,6 +133,7 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
       return null;
     boolean asCommand = splitCmd[2] == null;
     String notThis = splitCmd[asCommand ? 1 : 2];
+    String s = splitCmd[1];
     if (notThis.length() == 0)
       return null;
     splitCmd = ScriptCompiler.splitCommandLine(strCommand);
@@ -145,9 +146,19 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
       if (cmd != null)
         cmd = splitCmd[0] + splitCmd[1] + q + (cmd == null ? notThis : cmd) + q;
     } else {
-      if (!asCommand)
-        notThis = splitCmd[1];
-      cmd = Token.completeCommand(null, splitCmd[1].equalsIgnoreCase("set "), asCommand, asCommand ? splitCmd[1]
+      Map<String, Token> map = null;
+      if (!asCommand) {
+        System.out.println(" tsting " + splitCmd[0] + "///" + splitCmd[1] + "///" + splitCmd[2]);
+        notThis = s;
+        if (splitCmd[2].startsWith("$") 
+            || s.equalsIgnoreCase("isosurface ")
+            || s.equalsIgnoreCase("draw ")
+         ) {
+          map = new Hashtable<String, Token>();
+          viewer.getObjectMap(map, splitCmd[2].startsWith("$"));
+        }
+      }
+      cmd = Token.completeCommand(map, s.equalsIgnoreCase("set "), asCommand, asCommand ? splitCmd[1]
           : splitCmd[2], nTab);
       cmd = splitCmd[0]
           + (cmd == null ? notThis : asCommand ? cmd : splitCmd[1] + cmd);

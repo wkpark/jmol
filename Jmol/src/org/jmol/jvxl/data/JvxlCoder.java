@@ -89,7 +89,7 @@ public class JvxlCoder {
       return data.toString();
     }
     
-    boolean verticesOnly = (meshData != null);
+    boolean vertexDataOnly = (meshData != null);
     boolean isHeaderOnly = ("HEADERONLY".equals(msg));
     if (includeHeader) {
       XmlUtil.openDocument(data);
@@ -102,7 +102,7 @@ public class JvxlCoder {
         XmlUtil.appendCdata(data, "jvxlFileTitle", null, "\n" + jvxlData.jvxlFileTitle);
       if (jvxlData.moleculeXml != null)
         data.append(jvxlData.moleculeXml);
-      String volumeDataXml = (verticesOnly ? null : jvxlData.jvxlVolumeDataXml);
+      String volumeDataXml = (vertexDataOnly ? null : jvxlData.jvxlVolumeDataXml);
       if (volumeDataXml == null)
         volumeDataXml = (new VolumeData()).setVolumetricXml();
       data.append(volumeDataXml);
@@ -112,13 +112,13 @@ public class JvxlCoder {
         return data.toString();
     }
     StringBuffer sb;
-    String type = (verticesOnly ? "pmesh"
+    String type = (vertexDataOnly ? "pmesh"
         : jvxlData.jvxlPlane == null ? "isosurface" : "plane");
     // TODO: contours mentioned here? when discrete?
     if (jvxlData.jvxlColorData != null && jvxlData.jvxlColorData.length() > 0)
       type = "mapped " + type;
     XmlUtil.openTag(data, "jvxlSurface", new String[] { "type", type });
-    data.append(jvxlGetInfo(jvxlData, verticesOnly));
+    data.append(jvxlGetInfo(jvxlData, vertexDataOnly));
     jvxlAppendCommandState(data, comment, state);
     if (title != null || msg != null && msg.length() > 0) {
       sb = new StringBuffer();
@@ -132,7 +132,7 @@ public class JvxlCoder {
     sb = new StringBuffer();
     XmlUtil.openTag(sb, "jvxlSurfaceData", (jvxlData.jvxlPlane == null ? null :
       new String[] { "plane", Escape.escape(jvxlData.jvxlPlane) }));
-    if (verticesOnly) {
+    if (vertexDataOnly) {
       jvxlAppendMeshXml(sb, jvxlData, meshData, true);
     } else if (jvxlData.jvxlPlane == null) {
       if (jvxlData.jvxlEdgeData == null)
@@ -194,7 +194,7 @@ public class JvxlCoder {
     int r = (int) (jvxlData.nBytes > 0 ? ((float) jvxlData.nBytes) / len
         : ((float) (jvxlData.nPointsX
           * jvxlData.nPointsY * jvxlData.nPointsZ * 13)) / len);
-    return TextFormat.simpleReplace(s, "#RATIO#", (r > 0 ? "" + r : "?"));
+    return TextFormat.simpleReplace(s, "\"not Caculated\"", (r > 0 ? "\"" + r +":1\"": "\"?\""));
   }
 
   private static void appendXmlEdgeData(StringBuffer sb, JvxlData jvxlData) {
@@ -245,16 +245,16 @@ public class JvxlCoder {
     return jvxlGetInfo(jvxlData, jvxlData.vertexDataOnly);
   }
 
-  public static String jvxlGetInfo(JvxlData jvxlData, boolean verticesOnly) {
+  public static String jvxlGetInfo(JvxlData jvxlData, boolean vertexDataOnly) {
     if (jvxlData.jvxlSurfaceData == null)
       return "";
     List<String[]> attribs = new ArrayList<String[]>();
      
     int nSurfaceInts = jvxlData.nSurfaceInts;// jvxlData.jvxlSurfaceData.length();
-    int bytesUncompressedEdgeData = (verticesOnly ? 0
+    int bytesUncompressedEdgeData = (vertexDataOnly ? 0
         : jvxlData.jvxlEdgeData.length() - 1);
     int nColorData = (jvxlData.jvxlColorData == null ? -1 : (jvxlData.jvxlColorData.length() - 1));
-    if (!verticesOnly) {
+    if (!vertexDataOnly) {
       // informational only:
       addAttrib(attribs, "\n  cutoff", "" + jvxlData.cutoff);
       addAttrib(attribs, "\n  isCutoffAbsolute", "" + jvxlData.isCutoffAbsolute);
@@ -313,7 +313,10 @@ public class JvxlCoder {
       addAttrib(attribs, "\n  colorScheme", jvxlData.colorScheme);
     if (jvxlData.rendering != null)
       addAttrib(attribs, "\n  rendering", jvxlData.rendering);
-    
+    if (jvxlData.slabValue != Integer.MAX_VALUE)
+      addAttrib(attribs, "\n  slabValue", "" + jvxlData.slabValue);
+    if (jvxlData.isSlabbable)
+      addAttrib(attribs, "\n  slabbable", "true");
     if (jvxlData.nVertexColors > 0)
       addAttrib(attribs, "\n  nVertexColors", "" + jvxlData.nVertexColors);
 
@@ -352,7 +355,7 @@ public class JvxlCoder {
               + (jvxlData.nPointsX - 1) + ")");
     addAttrib(attribs, "\n  xyzMin", Escape.escape(jvxlData.boundingBox[0]));
     addAttrib(attribs, "\n  xyzMax", Escape.escape(jvxlData.boundingBox[1]));
-    addAttrib(attribs, "\n  approximateCompressionRatio", "#RATIO#:1");
+    addAttrib(attribs, "\n  approximateCompressionRatio", "not Calculated");
     addAttrib(attribs, "\n  jmolVersion", jvxlData.version);
     
     StringBuffer info = new StringBuffer();
@@ -631,21 +634,25 @@ public class JvxlCoder {
    * @param sb
    * @param triangles
    * @param nData
-   * @param bsInclude 
+   * @param bsSlabDisplay 
    * @param vertexIdNew
    * @param escapeXml 
    * @return (triangles are present)
    */
   private static boolean appendXmlTriangleData(StringBuffer sb, int[][] triangles, int nData,
-                                              BitSet bsInclude, int[] vertexIdNew, boolean escapeXml) {
+                                              BitSet bsSlabDisplay, int[] vertexIdNew, boolean escapeXml) {
     StringBuffer list1 = new StringBuffer();
+    StringBuffer list2 = new StringBuffer();
     int ilast = 1;
     int p = 0;
     int inew = 0;
     boolean addPlus = false;
     int nTri = 0;
+    
+    // note that the slabbing present becomes irreversible.
+    
     for (int i = 0; i < nData;) {
-      if (triangles[i] == null || (bsInclude != null && !bsInclude.get(i))) {
+      if (triangles[i] == null || (bsSlabDisplay != null && !bsSlabDisplay.get(i))) {
         i++;
         continue;
       }
@@ -673,6 +680,7 @@ public class JvxlCoder {
         addPlus = false;
       }
       if (++p % 3 == 0) {
+        list2.append(triangles[i][3]);
         p = 0;
         i++;
         nTri++;
@@ -684,6 +692,10 @@ public class JvxlCoder {
         "count", "" + nTri,
         "encoding", "jvxltdiff",
         "data" , jvxlCompressString(list1.toString(), escapeXml) }, null);
+    XmlUtil.appendTag(sb, "jvxlTriangleEdgeData", new String[] { // Jmol 12.1.50
+        "count", "" + nTri,
+        "encoding", "jvxlsc",
+        "data" , jvxlCompressString(list2.toString(), escapeXml) }, null);
     return true;
   }
 

@@ -164,6 +164,14 @@ public class ShapeManager {
     return -1;
   }
 
+  public void getObjectMap(Map<String, Token> map, boolean withDollar) {
+    if (shapes == null)
+      return;
+    Boolean bDollar = Boolean.valueOf(withDollar);
+      for (int i = JmolConstants.SHAPE_MIN_SPECIAL; i < JmolConstants.SHAPE_MAX_MESH_COLLECTION; ++i)
+          getShapeProperty(i, "getNames", new Object[] { map , bDollar } );
+  }
+
   public void setModelVisibility() {
     if (shapes == null || shapes[JmolConstants.SHAPE_BALLS] == null)
       return;
@@ -486,4 +494,5 @@ public class ShapeManager {
     minMax[2] = minY;
     minMax[3] = maxY;
   }
+
 }

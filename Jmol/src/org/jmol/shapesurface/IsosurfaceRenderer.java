@@ -61,8 +61,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
       imesh = (IsosurfaceMesh) isosurface.meshes[i];
       volumeRender = imesh.jvxlData.colorDensity;
       if (!isNavigationMode) {
-        int meshSlabValue = imesh.slabValue;
-        if (meshSlabValue != Integer.MAX_VALUE && imesh.isSolvent) {
+        int meshSlabValue = imesh.jvxlData.slabValue;
+        if (meshSlabValue != Integer.MAX_VALUE && imesh.jvxlData.isSlabbable) {
           Point3f[] points = imesh.jvxlData.boundingBox;
           pt2f.set(points[0]);
           pt2f.add(points[1]);
@@ -75,7 +75,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       g3d.setTranslucentCoverOnly(imesh.frontOnly);
       thePlane = imesh.jvxlData.jvxlPlane;
       vertexValues = imesh.vertexValues;
-      if (mySlabValue != Integer.MAX_VALUE && imesh.isSolvent) {
+      if (mySlabValue != Integer.MAX_VALUE && imesh.jvxlData.isSlabbable) {
         g3d.setSlab(mySlabValue);
         render1(imesh);
         g3d.setSlab(slabValue);

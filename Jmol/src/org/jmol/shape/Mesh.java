@@ -63,8 +63,6 @@ public class Mesh extends MeshSurface {
   public boolean visible = true;
   public int lighting = JmolConstants.FRONTLIT;
   public Quaternion q;
-  public int slabValue = Integer.MAX_VALUE;
-
 
   public float scale = 1;
   public boolean haveXyPoints;
@@ -149,7 +147,6 @@ public class Mesh extends MeshSurface {
     slabbingObject = null;
     cappingObject = null;
     q = null;
-    slabValue = Integer.MAX_VALUE;
     
     this.meshType = meshType;
   }

@@ -157,6 +157,8 @@ public class JvxlData {
   public int translucency;
   public String colorScheme;
   public String rendering;
+  public int slabValue = Integer.MAX_VALUE;
+  public boolean isSlabbable;
 
   public void clear() {
     jvxlSurfaceData = "";
@@ -170,8 +172,10 @@ public class JvxlData {
     contourValuesUsed = null;
     contourColixes = null;
     contourColors = null;
+    isSlabbable = false;
     meshColor = null;
     nVertexColors = 0;
+    slabValue = Integer.MAX_VALUE;
     rendering = null;    
     translucency = 0;
     vContours = null;

@@ -190,10 +190,6 @@ public class SurfaceGenerator {
     return params.state == Parameters.STATE_DATA_READ;
   }
 
-  public int getDataType() {
-    return params.dataType;
-  }
-  
   public String getFileName() {
     return params.fileName;
   }
@@ -712,6 +708,7 @@ public class SurfaceGenerator {
 
     if ("pocket" == propertyName) {
       params.pocket = (Boolean) value;
+      params.fullyLit = params.pocket.booleanValue();
       return true;
     }
 

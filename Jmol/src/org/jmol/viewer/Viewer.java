@@ -9795,4 +9795,9 @@ private void zap(String msg) {
     return eval.evalFunctionFloat(func, params, values);
   }
 
+  @Override
+  public void getObjectMap(Map<String, Token> map, boolean withDollar) {
+    shapeManager.getObjectMap(map, withDollar);
+  }
+
 }

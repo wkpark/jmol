@@ -349,8 +349,17 @@ public abstract class MeshCollection extends Shape {
     }
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public boolean getProperty(String property, Object[] data) {
+    if (property == "getNames") {
+      Map<String, Token> map = (Map<String, Token>) data[0];
+      boolean withDollar = ((Boolean) data[1]).booleanValue();
+      for (int i = meshCount; --i >= 0;)
+        if (meshes[i] != null)
+          map.put((withDollar ? "$" : "") + meshes[i].thisID, Token.tokenOr); // just a placeholder
+      return true;
+    }
     if (property == "getVertices") {
       Mesh m = getMesh((String) data[0]);
       if (m == null)
@@ -358,7 +367,7 @@ public abstract class MeshCollection extends Shape {
       data[1] = m.vertices;
       data[2] = m.getVisibleVertexBitSet();
       return true;
-        
+
     }
     if (property == "checkID") {
       String key = ((String) data[0]).toUpperCase();
@@ -375,13 +384,13 @@ public abstract class MeshCollection extends Shape {
     }
     if (property == "getCenter") {
       String id = (String) data[0];
-      int index = ((Integer)data[1]).intValue();
+      int index = ((Integer) data[1]).intValue();
       Mesh m;
       if ((m = getMesh(id)) == null || m.vertices == null)
-          return false;
+        return false;
       if (index == Integer.MAX_VALUE)
         data[2] = new Point3f(m.index + 1, meshCount, m.vertexCount);
-      else 
+      else
         data[2] = m.vertices[m.getVertexIndexFromNumber(index)];
       return true;
     }
@@ -390,7 +399,7 @@ public abstract class MeshCollection extends Shape {
 
   @Override
   public Object getProperty(String property, int index) {
-   Mesh m;
+    Mesh m;
     if (property == "count") {
       int n = 0;
       for (int i = 0; i < meshCount; i++)
@@ -405,7 +414,8 @@ public abstract class MeshCollection extends Shape {
       int k = 0;
       String id = (property.equals("list") ? null : property.substring(5));
       for (int i = 0; i < meshCount; i++) {
-         if ((m = meshes[i]) == null || m.vertexCount == 0 || id != null && !id.equalsIgnoreCase(m.thisID))
+        if ((m = meshes[i]) == null || m.vertexCount == 0 || id != null
+            && !id.equalsIgnoreCase(m.thisID))
           continue;
         sb.append((++k)).append(" id:" + m.thisID).append(
             "; model:" + viewer.getModelNumberDotted(m.modelIndex)).append(

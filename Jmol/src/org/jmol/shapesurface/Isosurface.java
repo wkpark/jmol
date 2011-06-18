@@ -113,7 +113,6 @@ import org.jmol.viewer.JmolConstants;
 import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
 import org.jmol.viewer.StateManager.Orientation;
-import org.jmol.jvxl.readers.Parameters;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -174,7 +173,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   }
   //private boolean logMessages;
   private String actualID;
-  private int lighting;
   private boolean iHaveBitSets;
   private boolean explicitContours;
   private int atomIndex;
@@ -406,7 +404,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if ("slab" == propertyName) {
       if (value instanceof Integer) {
         if (thisMesh != null)
-          thisMesh.slabValue = ((Integer) value).intValue();
+          thisMesh.jvxlData.slabValue = ((Integer) value).intValue();
         return;
       }
       if (thisMesh != null && thisMesh.polygonCount != 0) {
@@ -495,9 +493,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     } else if ("plane" == propertyName) {
       //allowContourLines = false;
     } else if ("pocket" == propertyName) {
-      Boolean pocket = (Boolean) value;
-      lighting = (pocket.booleanValue() ? JmolConstants.FULLYLIT
-          : JmolConstants.FRONTLIT);
+     // Boolean pocket = (Boolean) value;
+     // lighting = (pocket.booleanValue() ? JmolConstants.FULLYLIT
+     //     : JmolConstants.FRONTLIT);
     } else if ("scale3d" == propertyName) {
       scale3d = ((Float) value).floatValue();
       if (thisMesh != null) {
@@ -758,48 +756,48 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     }
 
   private void getMeshCommand(StringBuffer sb, int i) {
-    Mesh mesh = meshes[i];
-    String cmd = mesh.scriptCommand;
+    IsosurfaceMesh imesh = (IsosurfaceMesh) meshes[i];
+    String cmd = imesh.scriptCommand;
     if (cmd == null)
       return;
-    if (mesh.modelIndex >= 0 && modelCount > 1)
-      appendCmd(sb, "frame " + viewer.getModelNumberDotted(mesh.modelIndex));
+    if (imesh.modelIndex >= 0 && modelCount > 1)
+      appendCmd(sb, "frame " + viewer.getModelNumberDotted(imesh.modelIndex));
     cmd = TextFormat.simpleReplace(cmd, "; isosurface map", " map");
     cmd = cmd.replace('\t', ' ');
     cmd = TextFormat.simpleReplace(cmd, ";#", "; #");
     int pt = cmd.indexOf("; #");
     if (pt >= 0)
       cmd = cmd.substring(0, pt);
-    if (mesh.connections != null)
-      cmd += " connect " + Escape.escape(mesh.connections);
+    if (imesh.connections != null)
+      cmd += " connect " + Escape.escape(imesh.connections);
     cmd = TextFormat.trim(cmd, ";");
-    if (mesh.linkedMesh != null)
+    if (imesh.linkedMesh != null)
       cmd += " LINK"; // for lcaoCartoon state
     appendCmd(sb, cmd);
-    String id = myType + " ID " + Escape.escape(mesh.thisID);
-    if (mesh.q != null && mesh.q.q0 != 1)
-      appendCmd(sb, id + " rotate " + mesh.q.toString());
-    if (mesh.ptOffset != null)
-      appendCmd(sb, id + " offset " + Escape.escape(mesh.ptOffset));
-    if (mesh.scale3d != 0)
-      appendCmd(sb, id + " scale3d " + mesh.scale3d);
-    if (mesh.slabOptions != null)
-      appendCmd(sb, id + mesh.slabOptions.toString());
-    if (mesh.slabValue != Integer.MAX_VALUE)
-      appendCmd(sb, id + " slab " + mesh.slabValue);
+    String id = myType + " ID " + Escape.escape(imesh.thisID);
+    if (imesh.q != null && imesh.q.q0 != 1)
+      appendCmd(sb, id + " rotate " + imesh.q.toString());
+    if (imesh.ptOffset != null)
+      appendCmd(sb, id + " offset " + Escape.escape(imesh.ptOffset));
+    if (imesh.scale3d != 0)
+      appendCmd(sb, id + " scale3d " + imesh.scale3d);
+    if (imesh.slabOptions != null)
+      appendCmd(sb, id + imesh.slabOptions.toString());
+    if (imesh.jvxlData.slabValue != Integer.MAX_VALUE)
+      appendCmd(sb, id + " slab " + imesh.jvxlData.slabValue);
     if (cmd.charAt(0) != '#') {
       if (allowMesh)
-        appendCmd(sb, mesh.getState(myType));
-      if (mesh.colorCommand != null) {
-        if (!mesh.isColorSolid && Graphics3D.isColixTranslucent(mesh.colix))
-          appendCmd(sb, getColorCommand(myType, mesh.colix));
-        appendCmd(sb, mesh.colorCommand);
+        appendCmd(sb, imesh.getState(myType));
+      if (imesh.colorCommand != null) {
+        if (!imesh.isColorSolid && Graphics3D.isColixTranslucent(imesh.colix))
+          appendCmd(sb, getColorCommand(myType, imesh.colix));
+        appendCmd(sb, imesh.colorCommand);
       }
-      boolean colorArrayed = (mesh.isColorSolid && ((IsosurfaceMesh) mesh).polygonColixes != null);
-      if (mesh.isColorSolid && !colorArrayed)
-        appendCmd(sb, getColorCommand(myType, mesh.colix));
-      if (mesh.vertexColorMap != null)
-        for (Map.Entry<String, BitSet> entry : mesh.vertexColorMap.entrySet()) {
+      boolean colorArrayed = (imesh.isColorSolid && imesh.polygonColixes != null);
+      if (imesh.isColorSolid && !colorArrayed)
+        appendCmd(sb, getColorCommand(myType, imesh.colix));
+      if (imesh.vertexColorMap != null)
+        for (Map.Entry<String, BitSet> entry : imesh.vertexColorMap.entrySet()) {
           BitSet bs = entry.getValue();
           if (!bs.isEmpty())
             appendCmd(sb, "color " + myType + " " + Escape.escape(bs, true)
@@ -904,7 +902,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   private boolean iHaveModelIndex;
 
   private void initializeIsosurface() {
-    lighting = JmolConstants.FRONTLIT;
     if (!iHaveModelIndex)
       modelIndex = viewer.getCurrentModelIndex();
     isFixed = (modelIndex < 0);
@@ -1213,14 +1210,13 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     thisMesh.calculatedArea = null;
     thisMesh.calculatedVolume = null;
     // from JVXL file:
-    thisMesh.setColorsFromJvxlData();
     thisMesh.initialize(sg.isFullyLit() ? JmolConstants.FULLYLIT
-        : lighting, null, sg.getPlane());
+        : JmolConstants.FRONTLIT, null, sg.getPlane());
+    thisMesh.setColorsFromJvxlData();
     if (sg.getParams().psi_monteCarloCount > 0)
       thisMesh.diameter = 1;
     //if (thisMesh.jvxlData.jvxlPlane != null)
       //allowContourLines = false;
-    thisMesh.isSolvent = ((sg.getDataType() & Parameters.IS_SOLVENTTYPE) != 0);
   }
 
   public void notifySurfaceMappingCompleted() {

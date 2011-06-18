@@ -42,6 +42,7 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
 
 /**
@@ -496,5 +497,14 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public boolean checkPrivateKey(double privateKey);
   
   public String menuStructure;
+
+  /**
+   * retrieves list of draw/isosurface objects
+   * 
+   * @param map 
+   * @param b 
+   * 
+   */
+  abstract public void getObjectMap(Map<String, Token> map, boolean b);
 }
 

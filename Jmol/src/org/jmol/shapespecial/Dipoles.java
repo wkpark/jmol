@@ -356,8 +356,18 @@ public class Dipoles extends Shape {
     Logger.error("Unkown dipole property! " + Token.nameOf(tok));
   }
 
+//  @SuppressWarnings("unchecked")
   @Override
   public boolean getProperty(String property, Object[] data) {
+    if (property == "getNames") {
+      /* just implemented for DRAW and ISOSURFACE
+      Map<String, Token> map = (Map<String, Token>) data[0];
+      boolean withDollar = ((Boolean) data[1]).booleanValue();
+      for (int i = dipoleCount; --i >= 0;)
+        map.put((withDollar ? "$" : "") + dipoles[i].thisID, Token.tokenAnd); // just a placeholder
+      return true;
+      */
+    }
     if (property == "checkID") {
       String key = ((String) data[0]).toUpperCase();
       boolean isWild = TextFormat.isWild(key);

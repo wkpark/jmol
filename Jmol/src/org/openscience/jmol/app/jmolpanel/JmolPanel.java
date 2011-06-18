@@ -120,7 +120,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
   PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
   // Window names for the history file
-  private final static String CONSOLE_WINDOW_NAME = "Console";
+ //private final static String CONSOLE_WINDOW_NAME = "Console";
   private final static String EDITOR_WINDOW_NAME = "ScriptEditor";
   private final static String SCRIPT_WINDOW_NAME = "ScriptWindow";
   private final static String FILE_OPEN_WINDOW_NAME = "FileOpen";
@@ -360,7 +360,37 @@ public class JmolPanel extends JPanel implements SplashInterface {
             java.awt.BorderLayout.CENTER);
         errorTextArea.append(GT._("Could not create ConsoleTextArea: ") + e);
       }
-      setWindow(CONSOLE_WINDOW_NAME, jmol.consoleframe, jmol);     
+
+      
+      Point location = jmol.frame.getLocation();
+      Dimension size = jmol.frame.getSize();
+   
+      // String name = CONSOLE_WINDOW_NAME;     
+
+      //Dimension consoleSize = historyFile.getWindowSize(name);
+      //Point consolePosition = historyFile.getWindowPosition(name);
+      //if (consoleSize != null && consolePosition != null) {
+      //  location = consolePosition;
+      //  size = consoleSize;
+      //} else {
+        location.y += size.height;
+        size.height = 200;
+      //}
+      if (size.height < 200 || size.height > 800)
+        size.height = 200;
+      if (size.width < 300 || size.width > 800)
+        size.width = 300;
+      if (location.y < 0 || location.y + size.height > screenSize.height)
+        location.y = screenSize.height - size.height;
+      if (location.x < 0 || location.x + size.width > screenSize.width)
+        location.x = 0;
+      jmol.consoleframe.setBounds(location.x, location.y, size.width, size.height);
+
+      //Boolean consoleVisible = historyFile.getWindowVisibility(name);
+      //if ((consoleVisible != null) && (consoleVisible.equals(Boolean.TRUE))) {
+        //jmol.consoleframe.setVisible(true);
+     // }
+
     }
   }
 
@@ -395,37 +425,6 @@ public class JmolPanel extends JPanel implements SplashInterface {
     if (jmolApp.haveDisplay)
       frame.setVisible(true);
     return window;
-  }
-
-  /*
-   * Convenient method to get values of UIManager strings private static void
-   * analyzeUIManagerString(String name, String value) {
-   * System.err.println(name); System.err.println(" en=[" +
-   * UIManager.getString(name) + "]"); System.err.println(" de=[" +
-   * UIManager.getString(name, Locale.GERMAN) + "]"); System.err.println(" es=["
-   * + UIManager.getString(name, new Locale("es")) + "]");
-   * System.err.println(" fr=[" + UIManager.getString(name, Locale.FRENCH) +
-   * "]"); UIManager.put(name, value); }
-   */
-
-  private static void setWindow(String name,
-                                          JFrame frame, JmolPanel jmol) {
-    Point location = jmol.frame.getLocation();
-    Dimension size = jmol.frame.getSize();
-    Dimension consoleSize = historyFile.getWindowSize(name);
-    Point consolePosition = historyFile.getWindowPosition(name);
-    if ((consoleSize != null) && (consolePosition != null)) {
-      frame.setBounds(consolePosition.x, consolePosition.y,
-          consoleSize.width, consoleSize.height);
-    } else {
-      frame.setBounds(location.x, location.y + size.height,
-          size.width, 200);
-    }
-
-    Boolean consoleVisible = historyFile.getWindowVisibility(name);
-    if ((consoleVisible != null) && (consoleVisible.equals(Boolean.TRUE))) {
-      frame.setVisible(true);
-    }
   }
 
   public void showStatus(String message) {
@@ -488,7 +487,6 @@ public class JmolPanel extends JPanel implements SplashInterface {
         jmolApp.border.y = frame.getHeight() - display.dimSize.height;
         historyFile.addWindowInfo("Jmol", frame, jmolApp.border);
       }
-      //System.out.println("doClose border: " + border);
       //historyFile.addWindowInfo(CONSOLE_WINDOW_NAME, consoleframe);
       AppConsole console = (AppConsole) viewer.getProperty("DATA_API","getAppConsole", null);
       if (console != null && console.jcd != null)

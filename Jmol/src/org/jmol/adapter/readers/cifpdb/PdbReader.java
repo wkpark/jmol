@@ -731,7 +731,7 @@ REMARK 290 REMARK: NULL
     // probably a bad file. But we will make ONE MORE ATTEMPT
     // and read columns 14/15 instead of 12/13. What the heck!
     char ch14 = line.charAt(14);
-    if ((htElementsInCurrentGroup == null ||
+    if (ch12 == ' ' && (htElementsInCurrentGroup == null ||
         htElementsInCurrentGroup.get(line.substring(13, 15)) != null) &&
         Atom.isValidElementSymbolNoCaseSecondChar(ch13, ch14))
      return  "" + ch13 + ch14;

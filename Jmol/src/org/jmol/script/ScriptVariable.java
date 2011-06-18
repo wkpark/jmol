@@ -430,6 +430,10 @@ public class ScriptVariable extends Token {
       return Boolean.FALSE;
     case integer:
       return Integer.valueOf(x.intValue);
+    case bitset:
+//      return bsSelect(x);
+    case array:
+      return selectItem(x).value;
     default:
       return x.value;
     }

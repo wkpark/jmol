@@ -13018,6 +13018,9 @@ public class ScriptEvaluator {
           t = tmap.get(hkey);
         } else {
           int ipt = ScriptVariable.iValue(vv);
+          // in the case of for (x in y) where y is an array, we need to select the item before continuing
+          if (t.tok == Token.varray)
+            t = ScriptVariable.selectItem(t);
           switch (t.tok) {
           case Token.varray:
             List<ScriptVariable> list = t.getList();

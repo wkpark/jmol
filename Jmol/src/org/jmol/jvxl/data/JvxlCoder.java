@@ -194,7 +194,7 @@ public class JvxlCoder {
     int r = (int) (jvxlData.nBytes > 0 ? ((float) jvxlData.nBytes) / len
         : ((float) (jvxlData.nPointsX
           * jvxlData.nPointsY * jvxlData.nPointsZ * 13)) / len);
-    return TextFormat.simpleReplace(s, "\"not Caculated\"", (r > 0 ? "\"" + r +":1\"": "\"?\""));
+    return TextFormat.simpleReplace(s, "\"not calculated\"", (r > 0 ? "\"" + r +":1\"": "\"?\""));
   }
 
   private static void appendXmlEdgeData(StringBuffer sb, JvxlData jvxlData) {
@@ -355,7 +355,7 @@ public class JvxlCoder {
               + (jvxlData.nPointsX - 1) + ")");
     addAttrib(attribs, "\n  xyzMin", Escape.escape(jvxlData.boundingBox[0]));
     addAttrib(attribs, "\n  xyzMax", Escape.escape(jvxlData.boundingBox[1]));
-    addAttrib(attribs, "\n  approximateCompressionRatio", "not Calculated");
+    addAttrib(attribs, "\n  approximateCompressionRatio", "not calculated");
     addAttrib(attribs, "\n  jmolVersion", jvxlData.version);
     
     StringBuffer info = new StringBuffer();

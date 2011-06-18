@@ -320,4 +320,6 @@ public interface JmolRendererInterface {
   public abstract boolean drawEllipse(Point3f ptAtom, Point3f ptX, Point3f ptY,
                                     boolean fillArc, boolean wireframeOnly);
 
+  public abstract void volumeRender(boolean TF);
+
 }

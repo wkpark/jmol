@@ -221,7 +221,7 @@ public class Parameters {
     fileName = "";
     fullyLit = false;
     func = null;
-    functionXYinfo = null;
+    functionInfo = null;
     iAddGridPoints = false;
     insideOut = false;
     intersection = null;
@@ -550,19 +550,20 @@ public class Parameters {
     }
   }
   
-  public List<Object> functionXYinfo;
+  public List<Object> functionInfo;
   
   void setFunctionXY(List<Object> value) {
     dataType = SURFACE_FUNCTIONXY;
-    functionXYinfo = value;
+    functionInfo = value;
     cutoff = Float.MIN_VALUE;
     isEccentric = isAnisotropic = false;
   }
 
   void setFunctionXYZ(List<Object> value) {
     dataType = SURFACE_FUNCTIONXYZ;
-    functionXYinfo = value;
-    cutoff = Float.MIN_VALUE;
+    functionInfo = value;
+    if (cutoff == Float.MAX_VALUE)
+      cutoff = Float.MIN_VALUE;
     isEccentric = isAnisotropic = false;
   }
 
@@ -779,7 +780,10 @@ public class Parameters {
   public int randomSeed;
   public boolean fullyLit;
   public int[] vertexSource;
-  public BitSet[] intersection; 
+  public BitSet[] intersection;
+  public Point3f origin;
+  public Point3f steps;
+  public Point3f counts;
   
   void setMapRanges(SurfaceReader surfaceReader, boolean haveData) {
     if (!colorDensity)
@@ -817,6 +821,9 @@ public class Parameters {
     mappedDataMin = Float.MAX_VALUE;
     intersection = null;
     func = null;
+    counts = null;
+    origin = null;
+    steps = null;
   }
 
     public void addSlabInfo(Object[] value) {

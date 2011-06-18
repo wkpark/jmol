@@ -66,8 +66,6 @@ class IsoShapeReader extends VolumeDataReader {
 
   
   private float radius;
-  private float ppa;
-  private int maxGrid;
   private final Point3f ptPsi = new Point3f();
 
 
@@ -82,7 +80,7 @@ class IsoShapeReader extends VolumeDataReader {
     case Parameters.SURFACE_ATOMICORBITAL:
       calcFactors(psi_n, psi_l, psi_m);
       autoScaleOrbital();
-      ppa = 5f;
+      ptsPerAngstrom = 5f;
       maxGrid = 40;
       type = "hydrogen-like orbital";
       if (monteCarloCount > 0) {
@@ -96,7 +94,7 @@ class IsoShapeReader extends VolumeDataReader {
       type = "lp";
       vertexDataOnly = true;
       radius = 0;
-      ppa = 1;
+      ptsPerAngstrom = 1;
       maxGrid = 1;
       break;
     case Parameters.SURFACE_LOBE:
@@ -105,14 +103,14 @@ class IsoShapeReader extends VolumeDataReader {
       radius = 1.1f * eccentricityRatio * eccentricityScale;
       if (eccentricityScale > 0 && eccentricityScale < 1)
         radius /= eccentricityScale;
-      ppa = 10f;
+      ptsPerAngstrom = 10f;
       maxGrid = 21;
       type = "lobe";
       break;
     case Parameters.SURFACE_ELLIPSOID3:
       type = "ellipsoid(thermal)";
       radius = 3.0f * sphere_radiusAngstroms;
-      ppa = 10f;
+      ptsPerAngstrom = 10f;
       maxGrid = 22;
       break;
     case Parameters.SURFACE_ELLIPSOID2:
@@ -121,17 +119,22 @@ class IsoShapeReader extends VolumeDataReader {
     case Parameters.SURFACE_SPHERE:
     default:
       radius = 1.2f * sphere_radiusAngstroms * eccentricityScale;
-      ppa = 10f;
+      ptsPerAngstrom = 10f;
       maxGrid = 22;
       break;
     }
-    setVoxelRange(0, -radius, radius, ppa, maxGrid);
-    setVoxelRange(1, -radius, radius, ppa, maxGrid);
-    if (allowNegative)
-      setVoxelRange(2, -radius, radius, ppa, maxGrid);
-    else
-      setVoxelRange(2, 0, radius / eccentricityRatio, ppa, maxGrid);
+    setVolumeData();
     setHeader(type + "\n");
+  }
+
+  @Override
+  protected void setVolumeData() {
+    setVoxelRange(0, -radius, radius, ptsPerAngstrom, maxGrid);
+    setVoxelRange(1, -radius, radius, ptsPerAngstrom, maxGrid);
+    if (allowNegative)
+      setVoxelRange(2, -radius, radius, ptsPerAngstrom, maxGrid);
+    else
+      setVoxelRange(2, 0, radius / eccentricityRatio, ptsPerAngstrom, maxGrid);
   }
 
   @Override
@@ -184,7 +187,7 @@ class IsoShapeReader extends VolumeDataReader {
       .append(", l=").append(psi_l)
       .append(", m=").append(psi_m)
       .append(" Znuc=").append(psi_Znuc)
-      .append(" res=").append(ppa)
+      .append(" res=").append(ptsPerAngstrom)
       .append(" rad=").append(radius);
     }
     jvxlFileHeaderBuffer.append(

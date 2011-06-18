@@ -29,10 +29,7 @@ import java.util.BitSet;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
-import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
-
-import org.jmol.jvxl.data.MeshData;
 
 class IsoIntersectReader extends AtomDataReader {
 
@@ -55,7 +52,6 @@ class IsoIntersectReader extends AtomDataReader {
   }
 
   private BitSet bsA, bsB;
-  private float margin;
   
   @Override
   protected void setup() {
@@ -73,7 +69,7 @@ class IsoIntersectReader extends AtomDataReader {
     setRangesAndAddAtoms(params.solvent_ptsPerAngstrom, params.solvent_gridMax,
         params.thePlane != null ? Integer.MAX_VALUE : Math.min(firstNearbyAtom,
             100));
-    margin = 5f;//volumeData.maxGrid * 1.8f;
+    margin = 5f;
   }
 
   //////////// meshData extensions ////////////
@@ -84,7 +80,15 @@ class IsoIntersectReader extends AtomDataReader {
     Logger.startTimer();
     volumeData.getYzCount();
     volumeData.voxelSource = voxelSource = new int[volumeData.nPoints];
-    generateSolventCube();
+    params.vertexSource = new int[volumeData.nPoints]; // overkill?
+    volumeData.voxelData = voxelData = new float[nPointsX][nPointsY][nPointsZ];
+    resetVoxelData(Float.MAX_VALUE);
+    markSphereVoxels(0, params.distance, bsA);
+    voxelData = new float[nPointsX][nPointsY][nPointsZ];
+    resetVoxelData(Float.MAX_VALUE);
+    markSphereVoxels(0, params.distance, bsB);
+    if (!setVoxels())
+      volumeData.voxelData = new float[nPointsX][nPointsY][nPointsZ];
     unsetVoxelData();
     Logger.checkTimer("solvent surface time");
   }
@@ -115,31 +119,11 @@ class IsoIntersectReader extends AtomDataReader {
 
   @Override
   protected void postProcessVertices() {
-    if (meshDataServer != null)
-      meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
-    if (params.vertexSource != null) {
-      params.vertexSource = ArrayUtil.setLength(params.vertexSource,
-          meshData.vertexCount);
-      for (int i = 0; i < meshData.vertexCount; i++)
-        params.vertexSource[i] = Math.abs(params.vertexSource[i]) - 1;
-    }
+    setVertexSource();
   }
 
   /////////////// calculation methods //////////////
 
-  private void generateSolventCube() {
-    params.vertexSource = new int[volumeData.nPoints]; // overkill?
-    volumeData.voxelData = voxelData = new float[nPointsX][nPointsY][nPointsZ];
-    resetVoxelData(Float.MAX_VALUE);
-    markSphereVoxels(0, params.distance, bsA);
-    voxelData = new float[nPointsX][nPointsY][nPointsZ];
-    resetVoxelData(Float.MAX_VALUE);
-    markSphereVoxels(0, params.distance, bsB);
-    if (!setVoxels()) { 
-      volumeData.voxelData = new float[nPointsX][nPointsY][nPointsZ];      
-    }
-  }
-  
   protected boolean setVoxels() {
     for (int i = 0; i < nPointsX; i++)
       for (int j = 0; j < nPointsY; j++)
@@ -154,7 +138,7 @@ class IsoIntersectReader extends AtomDataReader {
     return true;
   }
 
-  private float[] values = new float[2];
+  private final float[] values = new float[2];
   
   private float getValue(float va, float vb) {
     if (va == Float.MAX_VALUE || vb == Float.MAX_VALUE
@@ -168,18 +152,13 @@ class IsoIntersectReader extends AtomDataReader {
       return (va - vb);
     values[0] = va;
     values[1] = vb;
-    float v = atomDataServer.evalFunctionFloat(params.func[0], params.func[1], values);
-    return v;
+    return atomDataServer.evalFunctionFloat(params.func[0], params.func[1], values);
   }
   
   private final Point3f ptY0 = new Point3f();
   private final Point3f ptZ0 = new Point3f();
   private final Point3i pt0 = new Point3i();
   private final Point3i pt1 = new Point3i();
-
-  private void setVoxel(int i, int j, int k, float value) {
-    voxelData[i][j][k] = value;
-  }
 
   private void markSphereVoxels(float r0, float distance, BitSet bs) {
     boolean isWithin = (distance != Float.MAX_VALUE && point != null);
@@ -202,7 +181,7 @@ class IsoIntersectReader extends AtomDataReader {
               .add(volumetricVectors[2])) {
             float value = ptXyzTemp.distance(ptA) - rA;
             if ((r0 == 0 || value <= rA0) && value < voxelData[i][j][k]) {
-              setVoxel(i, j, k, value);
+              voxelData[i][j][k] = value;
               if (!Float.isNaN(value)) {
                 int ipt = volumeData.getPointIndex(i, j, k);
                 voxelSource[ipt] = ia + 1;
@@ -214,34 +193,4 @@ class IsoIntersectReader extends AtomDataReader {
     }
   }
 
-  void resetVoxelData(float value) {
-    for (int x = 0; x < nPointsX; ++x)
-      for (int y = 0; y < nPointsY; ++y)
-        for (int z = 0; z < nPointsZ; ++z)
-          voxelData[x][y][z] = value;
-  }
-
-  void unsetVoxelData() {
-    for (int x = 0; x < nPointsX; ++x)
-      for (int y = 0; y < nPointsY; ++y)
-        for (int z = 0; z < nPointsZ; ++z)
-          if (voxelData[x][y][z] == Float.MAX_VALUE)
-            voxelData[x][y][z] = Float.NaN;
-  }
-
-  private void setGridLimitsForAtom(Point3f ptA, float rA, Point3i pt0,
-                                    Point3i pt1) {
-    rA += margin; // to span corner-to-corner possibility
-    volumeData.xyzToVoxelPt(ptA.x - rA, ptA.y - rA, ptA.z - rA, pt0);
-    pt0.x = Math.max(pt0.x - 1, 0);
-    pt0.y = Math.max(pt0.y - 1, 0);
-    pt0.z = Math.max(pt0.z - 1, 0);
-    volumeData.xyzToVoxelPt(ptA.x + rA, ptA.y + rA, ptA.z + rA, pt1);
-    pt1.x = Math.min(pt1.x + 1, nPointsX);
-    pt1.y = Math.min(pt1.y + 1, nPointsY);
-    pt1.z = Math.min(pt1.z + 1, nPointsZ);
-  }
-
-  ///////////////// debugging ////////////////
-  
 }

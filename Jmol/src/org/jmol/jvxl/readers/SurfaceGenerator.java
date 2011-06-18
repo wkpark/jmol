@@ -621,6 +621,21 @@ public class SurfaceGenerator {
       return true;
     }
 
+    if ("origin" == propertyName) {
+      params.origin = (Point3f) value;
+      return true;
+    }
+
+    if ("step" == propertyName) {
+      params.steps = (Point3f) value;
+      return true;
+    }
+
+    if ("count" == propertyName) {
+      params.counts = (Point3f) value;
+      return true;
+    }
+
     if ("withinDistance" == propertyName) {
       params.distance = ((Float) value).floatValue();
       return true;
@@ -846,7 +861,7 @@ public class SurfaceGenerator {
         volumeData.setPlaneParameters(new Point4f(0, 0, 1, 0)); // xy plane
       // through
       // origin
-      if (((String) params.functionXYinfo.get(0)).indexOf("_xyz") >= 0)
+      if (((String) params.functionInfo.get(0)).indexOf("_xyz") >= 0)
         getFunctionZfromXY();
       processState();
       return true;
@@ -1271,12 +1286,12 @@ public class SurfaceGenerator {
   }
 
   private void getFunctionZfromXY() {
-    Point3f origin = (Point3f) params.functionXYinfo.get(1);
+    Point3f origin = (Point3f) params.functionInfo.get(1);
     int[] counts = new int[3];
     int[] nearest = new int[3];
     Vector3f[] vectors = new Vector3f[3];
     for (int i = 0; i < 3; i++) {
-      Point4f info = (Point4f) params.functionXYinfo.get(i + 2);
+      Point4f info = (Point4f) params.functionInfo.get(i + 2);
       counts[i] = Math.abs((int) info.x);
       vectors[i] = new Vector3f(info.y, info.z, info.w);
     }
@@ -1287,7 +1302,7 @@ public class SurfaceGenerator {
     Point3f ptb = new Point3f();
     Point3f ptc = new Point3f();
 
-    float[][] data = (float[][]) params.functionXYinfo.get(5);
+    float[][] data = (float[][]) params.functionInfo.get(5);
     float[][] data2 = new float[nx][ny];
     float[] d;
     //int n = 0;
@@ -1309,7 +1324,7 @@ public class SurfaceGenerator {
         data2[i][j] = pt.z;
         //System.out.println("draw pt"+(++n)+" " + Escape.escape(pt) + " color red");
       }
-    params.functionXYinfo.set(5, data2);
+    params.functionInfo.set(5, data2);
   }
 
   final Vector3f vAC = new Vector3f();

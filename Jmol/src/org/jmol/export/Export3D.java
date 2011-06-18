@@ -839,4 +839,8 @@ final public class Export3D implements JmolRendererInterface {
     return privateKey;
   }
 
+  public void volumeRender(boolean TF) {
+    // not implemented
+  }
+
 }

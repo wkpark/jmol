@@ -25,6 +25,7 @@ package org.jmol.jvxl.readers;
 
 import javax.vecmath.Point3f;
 
+import org.jmol.atomdata.AtomDataServer;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.util.Logger;
 
@@ -32,6 +33,7 @@ class VolumeDataReader extends SurfaceReader {
 
   /*        (requires AtomDataServer)
    *                |-- IsoSolventReader
+   *                |-- IsoIntersectReader
    *                |-- IsoMOReader, IsoMepReader
    *                |-- IsoPlaneReader
    *                |
@@ -51,6 +53,9 @@ class VolumeDataReader extends SurfaceReader {
   protected boolean precalculateVoxelData;
   protected boolean allowMapData;
   protected Point3f point;
+  protected float ptsPerAngstrom;
+  protected int maxGrid;
+  protected AtomDataServer atomDataServer;
 
   VolumeDataReader(SurfaceGenerator sg) {
     super(sg);
@@ -104,8 +109,39 @@ class VolumeDataReader extends SurfaceReader {
     }
   }
   
-  protected int setVoxelRange(int index, float min, float max, float ptsPerAngstrom,
-                    int gridMax) {
+  protected void setVolumeData() {
+    // required; just that this is not an abstract class;
+  }
+  
+  protected boolean setVolumeDataParams() {
+    if (params.origin == null || params.steps == null || params.counts == null)
+      return false;
+    volumetricOrigin.set(params.origin);
+    volumetricVectors[0].set(params.steps.x, 0, 0);
+    volumetricVectors[1].set(0, params.steps.y, 0);
+    volumetricVectors[2].set(0, 0, params.steps.z);
+    voxelCounts[0] = (int) params.counts.x;
+    voxelCounts[1] = (int) params.counts.y;
+    voxelCounts[2] = (int) params.counts.z;
+    showGridInfo();
+    return true;
+  }  
+
+  protected void showGridInfo() {
+    Logger.info("grid origin  = " + params.origin);
+    Logger.info("grid steps   = " + params.steps);
+    Logger.info("grid counts  = " + params.counts);
+    ptTemp.x = params.steps.x * params.counts.x;
+    ptTemp.y = params.steps.y * params.counts.y;
+    ptTemp.z = params.steps.z * params.counts.z;
+    Logger.info("grid lengths = " + ptTemp);
+    ptTemp.add(params.origin);
+    Logger.info("grid max xyz = " + ptTemp);
+  }
+  protected int setVoxelRange(int index, float min, float max,
+                              float ptsPerAngstrom, int gridMax) {
+    int nGrid;
+    float d;
     if (min >= max) {
       min = -10;
       max = 10;
@@ -115,11 +151,12 @@ class VolumeDataReader extends SurfaceReader {
     if (resolution != Float.MAX_VALUE) {
       ptsPerAngstrom = resolution;
     }
-    int nGrid = (int) (range * ptsPerAngstrom) + 1;
+    nGrid = (int) (range * ptsPerAngstrom) + 1;
     if (nGrid > gridMax) {
       if ((dataType & Parameters.HAS_MAXGRID) > 0) {
         if (resolution == Float.MAX_VALUE) {
-          Logger.info("Maximum number of voxels for index=" + index + " exceeded (" + nGrid + ") -- set to " + gridMax);
+          Logger.info("Maximum number of voxels for index=" + index
+              + " exceeded (" + nGrid + ") -- set to " + gridMax);
           nGrid = gridMax;
         } else {
           Logger.info("Warning -- high number of grid points: " + nGrid);
@@ -129,10 +166,12 @@ class VolumeDataReader extends SurfaceReader {
       }
     }
     ptsPerAngstrom = (nGrid - 1) / range;
+    d = volumeData.volumetricVectorLengths[index] = 1f / ptsPerAngstrom;
     voxelCounts[index] = nGrid;// + ((dataType & Parameters.IS_SOLVENTTYPE) != 0 ? 3 : 0);
-    float d = volumeData.volumetricVectorLengths[index] = 1f / ptsPerAngstrom;
 
-    Logger.info("isosurface resolution for axis " + (index + 1) + " set to " + ptsPerAngstrom + " points/Angstrom; " + voxelCounts[index] + " voxels");
+    Logger.info("isosurface resolution for axis " + (index + 1) + " set to "
+        + ptsPerAngstrom + " points/Angstrom; " + voxelCounts[index]
+        + " voxels");
     switch (index) {
     case 0:
       volumetricVectors[0].set(d, 0, 0);
@@ -176,5 +215,6 @@ class VolumeDataReader extends SurfaceReader {
   @Override
   protected void closeReader() {
     // unnecessary -- no file opened
-  }  
+  }
+
  }

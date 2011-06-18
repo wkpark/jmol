@@ -103,6 +103,11 @@ class AtomPropertyMapper extends AtomDataReader {
   }
 
   @Override
+  protected void setVolumeData() {
+    // unnecessary -- point-specific property mapper only    
+  }
+
+  @Override
   protected void initializeMapping() {
     if (Logger.debugging)
       Logger.startTimer();

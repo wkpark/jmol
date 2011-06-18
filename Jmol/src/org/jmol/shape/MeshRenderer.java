@@ -75,7 +75,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
     this.mesh = mesh;
     if (!setVariables())
       return false;
-    if (!g3d.setColix(colix) && !mesh.showContourLines)
+    if (!doRender)
       return mesh.title != null;
     latticeOffset.set(0, 0, 0);
     for (int i = vertexCount; --i >= 0;)
@@ -111,14 +111,20 @@ public abstract class MeshRenderer extends ShapeRenderer {
     return true;
   }
 
+  private boolean doRender;
+  protected boolean volumeRender;
+  
+  
   private boolean setVariables() {
-    vertices = (mesh.ptOffset == null && mesh.scale3d == 0 
-        && mesh.q == null && mesh.mat4 == null 
-        ? mesh.vertices : mesh.getOffsetVertices(thePlane)); 
-    
-    colix = mesh.colix;
     if (mesh.visibilityFlags == 0)
       return false;
+    isTranslucent = Graphics3D.isColixTranslucent(mesh.colix);
+    doRender = (setColix(mesh.colix) || mesh.showContourLines);
+    if (!doRender)
+      return true;
+    vertices = (mesh.ptOffset == null && mesh.scale3d == 0 
+        && mesh.q == null && mesh.mat4 == null 
+        ? mesh.vertices : mesh.getOffsetVertices(thePlane));     
     if (mesh.lineData == null) {
       if ((vertexCount = mesh.vertexCount) == 0)
         return false;
@@ -133,8 +139,14 @@ public abstract class MeshRenderer extends ShapeRenderer {
       screens = viewer.allocTempScreens(vertexCount);
       transformedVectors = g3d.getTransformedVertexVectors();
     }
-    isTranslucent = Graphics3D.isColixTranslucent(mesh.colix);
     return true;
+  }
+
+  protected boolean setColix(short colix) {
+    if (volumeRender && !isTranslucent)
+      colix = Graphics3D.getColixTranslucent(colix, true, 0.8f);
+    this.colix = colix;
+    return g3d.setColix(colix);
   }
 
   // all of the following methods are overridden in subclasses

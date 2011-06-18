@@ -203,15 +203,19 @@ public class ScriptEvaluator {
   }
 
   /** for the ISOSURFACE command
-   * 
-   * @param string
-   * @return        compiled function to send to IsoIntersectReader
+   * @param fname 
+   * @param xyz 
+   * @param ret 
+   * @return    [ ScriptFunction, Params ]
    */
-  private ScriptFunction createFunction(String string) {
+  private Object[] createFunction(String fname, String xyz, String ret) {
     ScriptEvaluator e = new ScriptEvaluator(viewer);
     try {
-      e.compileScript(null, "function " + string, false);
-      return (ScriptFunction) e.aatoken[0][1].value;
+      e.compileScript(null, "function " + fname + "(" + xyz + ") { return " + ret + "}", false);
+      List<ScriptVariable> params = new ArrayList<ScriptVariable>();
+      for (int i = 0; i < xyz.length(); i += 2)
+        params.add(ScriptVariable.getVariable(Float.valueOf(0f)).setName(xyz.substring(i, i + 1)));
+      return new Object[] { e.aatoken[0][1].value, params };
     } catch (Exception ex) {
       return null;
     }
@@ -10224,7 +10228,6 @@ public class ScriptEvaluator {
         isSilent = true;
         break;
       case Token.step:
-      case Token.steps:
         steps = intParameter(++i);
         continue;
       default:
@@ -15683,6 +15686,7 @@ public class ScriptEvaluator {
     boolean isFxy = false;
     boolean haveSlab = false;
     boolean haveIntersection = false;
+    boolean haveOrigin = false;
     float[] data = null;
     int thisSetNumber = -1;
     int nFiles = 0;
@@ -15696,6 +15700,7 @@ public class ScriptEvaluator {
     BitSet bsSelect = null;
     BitSet bsIgnore = null;
     StringBuffer sbCommand = new StringBuffer();
+    Point3f pt;
     Point3f[] pts;
     String str = null;
     int modelIndex = (isSyntaxCheck ? 0 : -1);
@@ -15752,6 +15757,16 @@ public class ScriptEvaluator {
         sbCommand.append(" periodic");
         propertyName = "periodic";
         break;
+      case Token.origin:
+      case Token.step:
+      case Token.count:
+        haveOrigin = true;
+        propertyName = theToken.value.toString();
+        sbCommand.append(" ").append(theToken.value);
+        propertyValue = centerParameter(++i);
+        sbCommand.append(" ").append(Escape.escape(propertyValue));
+        i = iToken;
+        break;
       case Token.boundbox:
         if (fullCommand.indexOf("# BBOX=") >= 0) {
           String[] bbox = TextFormat.split(extractCommandOption("# BBOX"), ',');
@@ -15794,14 +15809,8 @@ public class ScriptEvaluator {
           i++;
           String f = (String) getToken(++i).value;
           sbCommand.append(" function ").append(Escape.escape(f));
-          if (!isSyntaxCheck) {
-            List<ScriptVariable> params = new ArrayList<ScriptVariable>();
-            params.add(ScriptVariable.getVariable(Float.valueOf(0f)).setName("a"));
-            params.add(ScriptVariable.getVariable(Float.valueOf(0f)).setName("b"));
-            addShapeProperty(propertyList, "func", new Object[] { 
-              createFunction("__iso__(a,b){return " + f + "}"),
-              params });
-          }
+          if (!isSyntaxCheck)
+            addShapeProperty(propertyList, "func", createFunction("__iso__", "a,b", f));
         } else {
           haveIntersection = true;
         }
@@ -16416,7 +16425,7 @@ public class ScriptEvaluator {
           i = iToken;
           break;
         case Token.increment:
-          Point3f pt = getPoint3f(i + 2, false);
+          pt = getPoint3f(i + 2, false);
           if (pt.z <= 0 || pt.y < pt.x)
             error(ERROR_invalidArgument); // from to step
           if (pt.z == (int) pt.z && pt.z > (pt.y - pt.x))
@@ -16489,26 +16498,38 @@ public class ScriptEvaluator {
         break;
       case Token.functionxy:
       case Token.functionxyz:
-        boolean isFxyz = (theTok == Token.functionxyz);
-        propertyName = "" + theToken.value;
         // isosurface functionXY "functionName"|"data2d_xxxxx"
         // isosurface functionXYZ "functionName"|"data3d_xxxxx"
         // {origin} {ni ix iy iz} {nj jx jy jz} {nk kx ky kz}
+        // or
+        // isosurface origin.. step... count... functionXY[Z] "x + y + z"
+        boolean isFxyz = (theTok == Token.functionxyz);
+        propertyName = "" + theToken.value;
         List<Object> vxy = new ArrayList<Object>();
-        i++;
-        String name = parameterAsString(i++);
+        propertyValue = vxy;
+        isFxy = surfaceObjectSeen = true;
+        sbCommand.append(" ").append(propertyName);
+        String name = parameterAsString(++i);
+        if (haveOrigin) {
+          sbCommand.append(" ").append(Escape.escape(name));
+          vxy.add(name);
+          if (!isSyntaxCheck)
+            addShapeProperty(propertyList, "func", createFunction("__iso__", "x,y,z", name));
+          break;
+        }
         // override of function or data name when saved as a state
         String dName = extractCommandOption("# DATA" + (isFxy ? "2" : ""));
         if (dName == null)
           dName = "inline";
         else
           name = dName;
-        sbCommand.append(" ").append(propertyName).append(" inline");
         boolean isXYZ = (name.indexOf("data2d_") == 0);
         boolean isXYZV = (name.indexOf("data3d_") == 0);
         boolean isInline = name.equals("inline");
+
+        sbCommand.append(" inline");
         vxy.add(name); // (0) = name
-        Point3f pt3 = getPoint3f(i, false);
+        Point3f pt3 = getPoint3f(++i, false);
         sbCommand.append(" ").append(Escape.escape(pt3));
         vxy.add(pt3); // (1) = {origin}
         Point4f pt4;
@@ -16595,8 +16616,6 @@ public class ScriptEvaluator {
           }
         }
         i = iToken;
-        propertyValue = vxy;
-        isFxy = surfaceObjectSeen = true;
         break;
       case Token.gridpoints:
         propertyName = "gridPoints";

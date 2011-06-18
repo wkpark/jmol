@@ -819,6 +819,7 @@ final public class Graphics3D implements JmolRendererInterface {
     }
   }
 
+  
   /**
    * fills a solid sphere
    *
@@ -841,6 +842,19 @@ final public class Graphics3D implements JmolRendererInterface {
           null, null, -1, null);
   }
 
+  private int saveAmbient, saveDiffuse;
+
+  public void volumeRender(boolean TF) {
+    if (TF) {
+      saveAmbient = Shade3D.ambientPercent;
+      saveDiffuse = Shade3D.diffusePercent;
+      setAmbientPercent(100);
+      setDiffusePercent(0);
+    } else {
+      setAmbientPercent(saveAmbient);
+      setDiffusePercent(saveDiffuse);
+    }
+  }
   /**
    * fills a solid sphere
    *
@@ -2929,5 +2943,6 @@ final public class Graphics3D implements JmolRendererInterface {
     // exporter only
     return 0;
   }
+
 
 }

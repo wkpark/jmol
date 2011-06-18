@@ -59,6 +59,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       mySlabValue = (int) viewer.getNavigationOffset().z;
     for (int i = isosurface.meshCount; --i >= 0;) {
       imesh = (IsosurfaceMesh) isosurface.meshes[i];
+      volumeRender = imesh.jvxlData.colorDensity;
       if (!isNavigationMode) {
         int meshSlabValue = imesh.slabValue;
         if (meshSlabValue != Integer.MAX_VALUE && imesh.isSolvent) {
@@ -87,7 +88,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
 
   @Override
   protected void render2(boolean isExport) {
-    if (imesh.jvxlData.colorDensity) {
+    if (volumeRender) {
       renderPoints();
       return;
     }
@@ -167,54 +168,64 @@ public class IsosurfaceRenderer extends MeshRenderer {
 
   @Override
   protected void renderPoints() {
-    int incr = imesh.vertexIncrement;
-    int diam = viewer.getScreenDim() / 100;
-    if (imesh.diameter > 0) {
-      diam = viewer.getDotScale();
-      frontOnly = false;
-    }
-    if (diam < 1)
-      diam = 1;
-    boolean showNumbers = viewer.getTestFlag3();
-    int cX = (showNumbers ? viewer.getScreenWidth() / 2 : 0);
-    int cY = (showNumbers ? viewer.getScreenHeight() / 2 : 0);
-    if (showNumbers)
-      g3d.setFont(g3d.getFontFid("Monospaced", 24));
-    for (int i = (!imesh.hasGridPoints || imesh.firstRealVertex < 0 ? 0
-        : imesh.firstRealVertex); i < vertexCount; i += incr) {
-      if (vertexValues != null && Float.isNaN(vertexValues[i]) || frontOnly
-          && transformedVectors[normixes[i]].z < 0
-          || imesh.thisSet >= 0 && imesh.vertexSets[i] != imesh.thisSet
-          || !imesh.isColorSolid && imesh.vertexColixes != null && !g3d.setColix(imesh.vertexColixes[i])
-          || haveBsDisplay && !imesh.bsDisplay.get(i))
-        continue;
-      if (showNumbers && screens[i].z > 10 && Math.abs(screens[i].x - cX) < 50
-          && Math.abs(screens[i].y - cY) < 50) {
-        String s = i + (imesh.isColorSolid ? "" : " " + imesh.vertexValues[i]);
-        //System.out.println("IsoSurfaceRenderer i=" + s + " " 
-        //  + vertices[i] + " " + imesh.vertexValues[i]);
-        g3d.drawStringNoSlab(s, null, screens[i].x, screens[i].y, screens[i].z);
+    try {
+      if (volumeRender)
+        g3d.volumeRender(true);
+      int incr = imesh.vertexIncrement;
+      int diam = viewer.getScreenDim() / (volumeRender ? 50 : 100);
+      if (imesh.diameter > 0) {
+        diam = viewer.getDotScale();
+        frontOnly = false;
       }
-      g3d.fillSphere(diam, screens[i]);
-    }
-    if (incr != 3)
-      return;
-    g3d.setColix(isTranslucent ? Graphics3D.getColixTranslucent(
-        Graphics3D.GRAY, true, 0.5f) : Graphics3D.GRAY);
-    for (int i = 1; i < vertexCount; i += 3)
-      g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, diam / 4, screens[i],
-          screens[i + 1]);
+      if (diam < 1)
+        diam = 1;
+      boolean showNumbers = viewer.getTestFlag3();
+      int cX = (showNumbers ? viewer.getScreenWidth() / 2 : 0);
+      int cY = (showNumbers ? viewer.getScreenHeight() / 2 : 0);
+      if (showNumbers)
+        g3d.setFont(g3d.getFontFid("Monospaced", 24));
+      for (int i = (!imesh.hasGridPoints || imesh.firstRealVertex < 0 ? 0
+          : imesh.firstRealVertex); i < vertexCount; i += incr) {
+        if (vertexValues != null && Float.isNaN(vertexValues[i]) || frontOnly
+            && transformedVectors[normixes[i]].z < 0 || imesh.thisSet >= 0
+            && imesh.vertexSets[i] != imesh.thisSet || !imesh.isColorSolid
+            && imesh.vertexColixes != null && !setColix(imesh.vertexColixes[i])
+            || haveBsDisplay && !imesh.bsDisplay.get(i))
+          continue;
+        if (showNumbers && screens[i].z > 10
+            && Math.abs(screens[i].x - cX) < 50
+            && Math.abs(screens[i].y - cY) < 50) {
+          String s = i
+              + (imesh.isColorSolid ? "" : " " + imesh.vertexValues[i]);
+          //System.out.println("IsoSurfaceRenderer i=" + s + " " 
+          //  + vertices[i] + " " + imesh.vertexValues[i]);
+          g3d.drawStringNoSlab(s, null, screens[i].x, screens[i].y,
+              screens[i].z);
+        }
+        g3d.fillSphere(diam, screens[i]);
+      }
+      if (incr == 3) {
+        g3d.setColix(isTranslucent ? Graphics3D.getColixTranslucent(
+            Graphics3D.GRAY, true, 0.5f) : Graphics3D.GRAY);
+        for (int i = 1; i < vertexCount; i += 3)
+          g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, diam / 4, screens[i],
+              screens[i + 1]);
+        g3d.setColix(isTranslucent ? Graphics3D.getColixTranslucent(
+            Graphics3D.YELLOW, true, 0.5f) : Graphics3D.YELLOW);
+        for (int i = 1; i < vertexCount; i += 3)
+          g3d.fillSphere(diam, screens[i]);
 
-    g3d.setColix(isTranslucent ? Graphics3D.getColixTranslucent(
-        Graphics3D.YELLOW, true, 0.5f) : Graphics3D.YELLOW);
-    for (int i = 1; i < vertexCount; i += 3)
-      g3d.fillSphere(diam, screens[i]);
-
-    g3d.setColix(isTranslucent ? Graphics3D.getColixTranslucent(
-        Graphics3D.BLUE, true, 0.5f) : Graphics3D.BLUE);
-    for (int i = 2; i < vertexCount; i += 3) {
-      g3d.fillSphere(diam, screens[i]);
+        g3d.setColix(isTranslucent ? Graphics3D.getColixTranslucent(
+            Graphics3D.BLUE, true, 0.5f) : Graphics3D.BLUE);
+        for (int i = 2; i < vertexCount; i += 3) {
+          g3d.fillSphere(diam, screens[i]);
+        }
+      }
+    } catch (Throwable e) {
+      // just in case, need to reset volume rendering
     }
+    if (volumeRender)
+      g3d.volumeRender(false);
   }
 
   @Override

@@ -27,6 +27,7 @@ import java.util.BitSet;
 import java.util.Date;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
 import org.jmol.util.ArrayUtil;
@@ -37,13 +38,12 @@ import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 
 import org.jmol.atomdata.AtomData;
-import org.jmol.atomdata.AtomDataServer;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.jvxl.data.JvxlCoder;
+import org.jmol.jvxl.data.MeshData;
 
 abstract class AtomDataReader extends VolumeDataReader {
 
-  protected AtomDataServer atomDataServer;
   protected float maxDistance;
 
   AtomDataReader(SurfaceGenerator sg) {
@@ -284,13 +284,64 @@ abstract class AtomDataReader extends VolumeDataReader {
                                       int nWritten) {
     if (xyzMin == null)
       return;
-    setVoxelRange(0, xyzMin.x, xyzMax.x, ptsPerAngstrom, maxGrid);
-    setVoxelRange(1, xyzMin.y, xyzMax.y, ptsPerAngstrom, maxGrid);
-    setVoxelRange(2, xyzMin.z, xyzMax.z, ptsPerAngstrom, maxGrid);
+    this.ptsPerAngstrom = ptsPerAngstrom;
+    this.maxGrid = maxGrid;
+    setVolumeData();
     JvxlCoder.jvxlCreateHeader(volumeData, nWritten, atomXyz,
         atomNo, jvxlFileHeaderBuffer);
   }
   
+  @Override
+  protected void setVolumeData() {
+    if (!setVolumeDataParams()) {
+      setVoxelRange(0, xyzMin.x, xyzMax.x, ptsPerAngstrom, maxGrid);
+      setVoxelRange(1, xyzMin.y, xyzMax.y, ptsPerAngstrom, maxGrid);
+      setVoxelRange(2, xyzMin.z, xyzMax.z, ptsPerAngstrom, maxGrid);
+    }
+  }
+  
+  protected void setVertexSource() {
+    if (meshDataServer != null)
+      meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
+    if (params.vertexSource != null) {
+      params.vertexSource = ArrayUtil.setLength(params.vertexSource,
+          meshData.vertexCount);
+      for (int i = 0; i < meshData.vertexCount; i++)
+        params.vertexSource[i] = Math.abs(params.vertexSource[i]) - 1;
+    }
+  }
+
+  protected void resetVoxelData(float value) {
+    for (int x = 0; x < nPointsX; ++x)
+      for (int y = 0; y < nPointsY; ++y)
+        for (int z = 0; z < nPointsZ; ++z)
+          voxelData[x][y][z] = value;
+  }
+
+  protected void unsetVoxelData() {
+    for (int x = 0; x < nPointsX; ++x)
+      for (int y = 0; y < nPointsY; ++y)
+        for (int z = 0; z < nPointsZ; ++z)
+          if (voxelData[x][y][z] == Float.MAX_VALUE)
+            voxelData[x][y][z] = Float.NaN;
+  }
+
+  protected float margin;
+  
+  protected void setGridLimitsForAtom(Point3f ptA, float rA, Point3i pt0,
+                                    Point3i pt1) {
+    rA += margin; // to span corner-to-corner possibility
+    volumeData.xyzToVoxelPt(ptA.x - rA, ptA.y - rA, ptA.z - rA, pt0);
+    pt0.x = Math.max(pt0.x - 1, 0);
+    pt0.y = Math.max(pt0.y - 1, 0);
+    pt0.z = Math.max(pt0.z - 1, 0);
+    volumeData.xyzToVoxelPt(ptA.x + rA, ptA.y + rA, ptA.z + rA, pt1);
+    pt1.x = Math.min(pt1.x + 1, nPointsX);
+    pt1.y = Math.min(pt1.y + 1, nPointsY);
+    pt1.z = Math.min(pt1.z + 1, nPointsZ);
+  }
+
+
   protected boolean fixTitleLine(int iLine) {
     if (params.title == null)
       return false;

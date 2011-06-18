@@ -24,9 +24,8 @@
 
 package org.jmol.jvxl.readers;
 
-//import java.util.ArrayList;
-import java.util.ArrayList; //import java.util.Arrays;
-import java.util.BitSet; //import java.util.Comparator;
+import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +36,6 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
@@ -199,6 +197,7 @@ class IsoSolventReader extends AtomDataReader {
     setRangesAndAddAtoms(params.solvent_ptsPerAngstrom, params.solvent_gridMax,
         params.thePlane != null ? Integer.MAX_VALUE : Math.min(firstNearbyAtom,
             100));
+    margin = volumeData.maxGrid * 1.8f;
     if (bsNearby != null)
       bsMySelected.or(bsNearby);
 
@@ -437,14 +436,7 @@ class IsoSolventReader extends AtomDataReader {
   protected void postProcessVertices() {
     // Here we identify the actual surface set and cull out the other fragments
     // created when the toroidal surfaces are split by faces.
-    if (meshDataServer != null)
-      meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
-    if (params.vertexSource != null) {
-      params.vertexSource = ArrayUtil.setLength(params.vertexSource,
-          meshData.vertexCount);
-      for (int i = 0; i < meshData.vertexCount; i++)
-        params.vertexSource[i] = Math.abs(params.vertexSource[i]) - 1;
-    }
+    setVertexSource();
     if (doCalculateTroughs && bsSurfacePoints != null) {
       BitSet[] bsSurfaces = meshData.getSurfaceSet();
       for (int i = 0; i < meshData.nSets; i++)
@@ -1007,30 +999,21 @@ class IsoSolventReader extends AtomDataReader {
     }
   }
 
-  void resetVoxelData(float value) {
+  @Override
+  protected void unsetVoxelData() {
+    if (!havePlane) {
+      super.unsetVoxelData();
+      return;
+    } //solvent planes just focus on negative values
     for (int x = 0; x < nPointsX; ++x)
       for (int y = 0; y < nPointsY; ++y)
         for (int z = 0; z < nPointsZ; ++z)
-          voxelData[x][y][z] = value;
-  }
+          if (voxelData[x][y][z] < 0.001f) {
+            // Float.NaN will also match ">=" this way
+          } else {
+            voxelData[x][y][z] = 0.001f;
+          }
 
-  void unsetVoxelData() {
-    if (!havePlane) {
-      for (int x = 0; x < nPointsX; ++x)
-        for (int y = 0; y < nPointsY; ++y)
-          for (int z = 0; z < nPointsZ; ++z)
-            if (voxelData[x][y][z] == Float.MAX_VALUE)
-              voxelData[x][y][z] = Float.NaN;
-    } else { //solvent planes just focus on negative values
-      for (int x = 0; x < nPointsX; ++x)
-        for (int y = 0; y < nPointsY; ++y)
-          for (int z = 0; z < nPointsZ; ++z)
-            if (voxelData[x][y][z] < 0.001f) {
-              // Float.NaN will also match ">=" this way
-            } else {
-              voxelData[x][y][z] = 0.001f;
-            }
-    }
   }
 
   void getMaxRadius() {
@@ -1040,19 +1023,6 @@ class IsoSolventReader extends AtomDataReader {
       if (rA > maxRadius)
         maxRadius = rA;
     }
-  }
-
-  private void setGridLimitsForAtom(Point3f ptA, float rA, Point3i pt0,
-                                    Point3i pt1) {
-    rA += volumeData.maxGrid * 1.8f; // to span corner-to-corner possibility
-    volumeData.xyzToVoxelPt(ptA.x - rA, ptA.y - rA, ptA.z - rA, pt0);
-    pt0.x = Math.max(pt0.x - 1, 0);
-    pt0.y = Math.max(pt0.y - 1, 0);
-    pt0.z = Math.max(pt0.z - 1, 0);
-    volumeData.xyzToVoxelPt(ptA.x + rA, ptA.y + rA, ptA.z + rA, pt1);
-    pt1.x = Math.min(pt1.x + 1, nPointsX);
-    pt1.y = Math.min(pt1.y + 1, nPointsY);
-    pt1.z = Math.min(pt1.z + 1, nPointsZ);
   }
 
   private static void mergeLimits(Point3i ptA, Point3i ptB, Point3i pt0,

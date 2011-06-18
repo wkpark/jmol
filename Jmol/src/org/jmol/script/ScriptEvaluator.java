@@ -3748,6 +3748,8 @@ public class ScriptEvaluator {
     isBondSet = (expressionResult instanceof BondSet);
     if (!isBondSet) {
       viewer.excludeAtoms(bs, ignoreSubset);
+      if (bs.length() > viewer.getAtomCount()) 
+        bs.clear();
     }
     if (tempStatement != null) {
       statement = tempStatement;
@@ -15794,7 +15796,10 @@ public class ScriptEvaluator {
         // isosurface intersection {A} {B} VDW....
         // isosurface intersection {A} {B} function "a-b" VDW....
         bsSelect = atomExpression(++i);
-        if (tokAt(iToken + 1) == Token.expressionBegin || tokAt(iToken + 1) == Token.bitset) {
+        if (isSyntaxCheck) {
+          bs = new BitSet();
+        } else if (tokAt(iToken + 1) == Token.expressionBegin
+            || tokAt(iToken + 1) == Token.bitset) {
           bs = atomExpression(++iToken);
           bs.and(viewer.getAtomsWithin(5.0f, bsSelect, false));
         } else {
@@ -15803,19 +15808,21 @@ public class ScriptEvaluator {
           bs.andNot(viewer.getAtomBits(Token.molecule, bsSelect));
         }
         bs.andNot(bsSelect);
-        sbCommand.append(" intersection ").append(Escape.escape(bsSelect)).append(" ").append(Escape.escape(bs));
+        sbCommand.append(" intersection ").append(Escape.escape(bsSelect))
+            .append(" ").append(Escape.escape(bs));
         i = iToken;
         if (tokAt(i + 1) == Token.function) {
           i++;
           String f = (String) getToken(++i).value;
           sbCommand.append(" function ").append(Escape.escape(f));
           if (!isSyntaxCheck)
-            addShapeProperty(propertyList, "func", createFunction("__iso__", "a,b", f));
+            addShapeProperty(propertyList, "func", createFunction("__iso__",
+                "a,b", f));
         } else {
           haveIntersection = true;
         }
         propertyName = "intersection";
-        propertyValue = new BitSet[] { bsSelect, bs };        
+        propertyValue = new BitSet[] { bsSelect, bs };
         break;
       case Token.display:
       case Token.within:
@@ -16272,9 +16279,8 @@ public class ScriptEvaluator {
         propertyName = "nci";
         sbCommand.append(" " + propertyName);
         int tok = tokAt(i + 1);
-        boolean isPromolecular = (tok != Token.file
-            && tok != Token.string && tok != Token.mrc);
-        propertyValue =  Boolean.valueOf(isPromolecular);
+        boolean isPromolecular = (tok != Token.file && tok != Token.string && tok != Token.mrc);
+        propertyValue = Boolean.valueOf(isPromolecular);
         if (isPromolecular)
           surfaceObjectSeen = true;
         break;
@@ -16514,7 +16520,8 @@ public class ScriptEvaluator {
           sbCommand.append(" ").append(Escape.escape(name));
           vxy.add(name);
           if (!isSyntaxCheck)
-            addShapeProperty(propertyList, "func", createFunction("__iso__", "x,y,z", name));
+            addShapeProperty(propertyList, "func", createFunction("__iso__",
+                "x,y,z", name));
           break;
         }
         // override of function or data name when saved as a state
@@ -16979,7 +16986,7 @@ public class ScriptEvaluator {
       }
     }
 
-    if (surfaceObjectSeen && !isLcaoCartoon && !isSyntaxCheck) {  
+    if (surfaceObjectSeen && !isLcaoCartoon && !isSyntaxCheck) {
       propertyList.add(0, new Object[] { "newObject", null });
       boolean needSelect = (bsSelect == null);
       if (needSelect)
@@ -17001,7 +17008,7 @@ public class ScriptEvaluator {
         }
       }
     }
-    
+
     // OK, now send them all
 
     if (haveIntersection && !haveSlab) {
@@ -17012,8 +17019,9 @@ public class ScriptEvaluator {
         addShapeProperty(propertyList, "select", bs);
         addShapeProperty(propertyList, "sasurface", Float.valueOf(0));
       }
-      addShapeProperty(propertyList, "slab", new Object[] {new Object[] { Float.valueOf(-100),
-          Float.valueOf(0) }, null, Boolean.FALSE });
+      addShapeProperty(propertyList, "slab", new Object[] {
+          new Object[] { Float.valueOf(-100), Float.valueOf(0) }, null,
+          Boolean.FALSE });
     }
 
     setShapeProperty(iShape, "setProperties", propertyList);

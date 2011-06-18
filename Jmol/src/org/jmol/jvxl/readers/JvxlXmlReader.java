@@ -253,6 +253,12 @@ public class JvxlXmlReader extends VolumeFileReader {
     jvxlData.color = XmlReader.getXmlAttrib(data, "color");
     if (jvxlData.color.length() == 0)
       jvxlData.color = "orange";
+    s = XmlReader.getXmlAttrib(data, "meshColor");
+    if (s.length() != 0)
+      jvxlData.meshColor = s;
+    s = XmlReader.getXmlAttrib(data, "rending");
+    if (s.length() != 0)
+      jvxlData.rendering = s;
     jvxlData.translucency = parseInt(XmlReader.getXmlAttrib(data, "translucency"));
     if (jvxlData.translucency == Integer.MAX_VALUE)
       jvxlData.translucency = 0;

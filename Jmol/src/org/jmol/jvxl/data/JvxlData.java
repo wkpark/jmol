@@ -153,9 +153,31 @@ public class JvxlData {
   public Map<String, BitSet> vertexColorMap; // from color isosurface {atom subset} red 
   public int nVertexColors;
   public String color;
+  public String meshColor;
   public int translucency;
   public String colorScheme;
-  
+  public String rendering;
+
+  public void clear() {
+    jvxlSurfaceData = "";
+    jvxlEdgeData = "";
+    jvxlColorData = "";
+    jvxlVolumeDataXml = "";
+    color = null;
+    colorScheme = null;
+    colorDensity = false;
+    contourValues = null;
+    contourValuesUsed = null;
+    contourColixes = null;
+    contourColors = null;
+    meshColor = null;
+    nVertexColors = 0;
+    rendering = null;    
+    translucency = 0;
+    vContours = null;
+    vertexColorMap = null;
+  }
+
   public void setSurfaceInfo(Point4f thePlane, int nSurfaceInts, String surfaceData) {
     jvxlSurfaceData = surfaceData;
     if (jvxlSurfaceData.indexOf("--") == 0)
@@ -187,6 +209,7 @@ public class JvxlData {
         chars[ipt] = isNaN;
     return String.copyValueOf(chars);
   }
+
   
 }
 

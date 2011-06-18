@@ -344,29 +344,8 @@ public abstract class MeshCollection extends Shape {
     case Token.translucent:
       m.setTranslucent(bProp, translucentLevel);
       return;
-    case Token.frontlit:
-    case Token.backlit:
-    case Token.fullylit:
-      m.setLighting(tokProp);
-      return;
-    case Token.dots:
-      m.showPoints = bProp;
-      return;
-    case Token.mesh:
-      m.drawTriangles = bProp;
-      return;
-    case Token.fill:
-      m.fillTriangles = bProp;
-      return;
-    case Token.triangles:
-      m.showTriangles = bProp;
-      return;
-    case Token.contourlines:
-      m.showContourLines = bProp;
-      return;
-    case Token.frontonly:
-      m.frontOnly = bProp;
-      return;
+    default:
+      m.setTokenProperty(tokProp, bProp);
     }
   }
 

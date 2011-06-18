@@ -28,6 +28,7 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
 
+import org.jmol.script.Token;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Measure;
@@ -271,6 +272,20 @@ public class Mesh extends MeshSurface {
       s.append(" lattice ").append(Escape.escape(lattice));
     if (meshColix != 0)
       s.append(" color mesh ").append(Graphics3D.getHexCode(meshColix));
+    s.append(getRendering());
+    if (!visible)
+      s.append(" hidden");
+    if (bsDisplay != null) {
+      s.append(";\n  ").append(type);
+      if (!type.equals("mo"))
+        s.append(" ID ").append(Escape.escape(thisID));
+      s.append(" display " + Escape.escape(bsDisplay));
+    }
+    return s.toString();
+  }
+
+  protected String getRendering() {
+    StringBuffer s = new StringBuffer();
     s.append(fillTriangles ? " fill" : " noFill");
     s.append(drawTriangles ? " mesh" : " noMesh");
     s.append(showPoints ? " dots" : " noDots");
@@ -281,14 +296,6 @@ public class Mesh extends MeshSurface {
       s.append(" triangles");
     s.append(lighting == JmolConstants.BACKLIT ? " backlit"
         : lighting == JmolConstants.FULLYLIT ? " fullylit" : " frontlit");
-    if (!visible)
-      s.append(" hidden");
-    if (bsDisplay != null) {
-      s.append(";\n  ").append(type);
-      if (!type.equals("mo"))
-        s.append(" ID ").append(Escape.escape(thisID));
-      s.append(" display " + Escape.escape(bsDisplay));
-    }
     return s.toString();
   }
 
@@ -415,4 +422,37 @@ public class Mesh extends MeshSurface {
     return bs;
   }
 
+  public void setTokenProperty(int tokProp, boolean bProp) {
+    switch (tokProp) {
+    case Token.notfrontonly:
+    case Token.frontonly:
+      frontOnly = (tokProp == Token.frontonly ? bProp : !bProp);
+      return;
+    case Token.frontlit:
+    case Token.backlit:
+    case Token.fullylit:
+      setLighting(tokProp);
+      return;
+    case Token.nodots:
+    case Token.dots:
+      showPoints =  (tokProp == Token.dots ? bProp : !bProp);
+      return;
+    case Token.nomesh:
+    case Token.mesh:
+      drawTriangles =  (tokProp == Token.mesh ? bProp : !bProp);
+      return;
+    case Token.nofill:
+    case Token.fill:
+      fillTriangles =  (tokProp == Token.fill ? bProp : !bProp);
+      return;
+    case Token.notriangles:
+    case Token.triangles:
+      showTriangles =  (tokProp == Token.triangles ? bProp : !bProp);
+      return;
+    case Token.nocontourlines:
+    case Token.contourlines:
+      showContourLines =  (tokProp == Token.contourlines ? bProp : !bProp);
+      return;
+    }
+  }
 }

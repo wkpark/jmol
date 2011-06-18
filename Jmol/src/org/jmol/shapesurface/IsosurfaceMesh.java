@@ -38,11 +38,13 @@ import org.jmol.g3d.Graphics3D;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
+import org.jmol.util.Parser;
 import org.jmol.viewer.Viewer;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.JvxlData;
 
 import org.jmol.jvxl.calc.MarchingSquares;
+import org.jmol.script.Token;
 import org.jmol.shape.Mesh;
 
 public class IsosurfaceMesh extends Mesh {
@@ -64,22 +66,7 @@ public class IsosurfaceMesh extends Mesh {
   void clear(String meshType, boolean iAddGridPoints) {
     super.clear(meshType);
 
-    jvxlData.jvxlSurfaceData = "";
-    jvxlData.jvxlEdgeData = "";
-    jvxlData.jvxlColorData = "";
-    jvxlData.jvxlVolumeDataXml = "";
-    jvxlData.color = null;
-    jvxlData.colorScheme = null;
-    jvxlData.contourValues = null;
-    jvxlData.contourValuesUsed = null;
-    jvxlData.contourColixes = null;
-    jvxlData.contourColors = null;
-    jvxlData.vContours = null;
-    jvxlData.colorDensity = false;
-    jvxlData.vertexColorMap = null;
-    jvxlData.nVertexColors = 0;
-    jvxlData.translucency = 0;
-
+    jvxlData.clear();
     assocGridPointMap = null;
     assocGridPointNormals = null;
     centers = null;
@@ -563,7 +550,9 @@ public class IsosurfaceMesh extends Mesh {
    * @param isAll
    */
   void setJvxlColorMap(boolean isAll) {
+    jvxlData.rendering = getRendering();
     jvxlData.color = Graphics3D.getHexCode(colix);
+    jvxlData.meshColor = (meshColix == 0 ? null : Graphics3D.getHexCode(meshColix));
     jvxlData.translucency = Graphics3D.getColixTranslucencyLevel(colix);
     jvxlData.colorScheme = (colorEncoder == null ? null : colorEncoder
         .getColorScheme());
@@ -611,10 +600,10 @@ public class IsosurfaceMesh extends Mesh {
   /**
    * from Isosurface.notifySurfaceGenerationCompleted()
    * 
-   * starting with Jmol 12.1.50, JVXL files contain 
-   * color, translucency, color scheme information, 
-   * and vertex color mappings (as from COLOR ISOSURFACE {hydrophobic} WHITE),
-   * returning these settings when the JVXL file is opened. 
+   * starting with Jmol 12.1.50, JVXL files contain color, translucency, color
+   * scheme information, and vertex color mappings (as from COLOR ISOSURFACE
+   * {hydrophobic} WHITE), returning these settings when the JVXL file is
+   * opened.
    */
   void setColorsFromJvxlData() {
     if (jvxlData.color != null)
@@ -623,24 +612,33 @@ public class IsosurfaceMesh extends Mesh {
       colix = Graphics3D.ORANGE;
     colix = Graphics3D.getColixTranslucent(colix, jvxlData.translucency != 0,
         jvxlData.translucency);
-    if (colorEncoder == null)
-      return;
-    if (jvxlData.colorScheme != null) {
-      String colorScheme = jvxlData.colorScheme;
-      boolean isTranslucent = colorScheme.startsWith("translucent ");
-      if (isTranslucent)
-        colorScheme = colorScheme.substring(12);
-      colorEncoder.setColorScheme(colorScheme, isTranslucent);
-      remapColors(null, jvxlData.translucency);
+    if (jvxlData.meshColor != null)
+      meshColix = Graphics3D.getColix(jvxlData.meshColor);
+    if (jvxlData.rendering != null) {
+      String[] tokens = Parser.getTokens(jvxlData.rendering);
+      for (int i = 0; i < tokens.length; i++)
+        setTokenProperty(Token.getTokFromName(tokens[i]), true);
     }
-    if (jvxlData.vertexColorMap != null)
-      for (Map.Entry<String, BitSet> entry : jvxlData.vertexColorMap.entrySet()) {
-        BitSet bsMap = entry.getValue();
-        short colix = Graphics3D.copyColixTranslucency(this.colix, Graphics3D
-            .getColix(entry.getKey()));
-        for (int i = bsMap.nextSetBit(0); i >= 0; i = bsMap.nextSetBit(i + 1))
-          vertexColixes[i] = colix;
+      
+    if (colorEncoder != null) {
+      if (jvxlData.colorScheme != null) {
+        String colorScheme = jvxlData.colorScheme;
+        boolean isTranslucent = colorScheme.startsWith("translucent ");
+        if (isTranslucent)
+          colorScheme = colorScheme.substring(12);
+        colorEncoder.setColorScheme(colorScheme, isTranslucent);
+        remapColors(null, jvxlData.translucency);
       }
+      if (jvxlData.vertexColorMap != null)
+        for (Map.Entry<String, BitSet> entry : jvxlData.vertexColorMap
+            .entrySet()) {
+          BitSet bsMap = entry.getValue();
+          short colix = Graphics3D.copyColixTranslucency(this.colix, Graphics3D
+              .getColix(entry.getKey()));
+          for (int i = bsMap.nextSetBit(0); i >= 0; i = bsMap.nextSetBit(i + 1))
+            vertexColixes[i] = colix;
+        }
+    }
   }
 
   /**

@@ -308,12 +308,12 @@ public class JvxlCoder {
     addAttrib(attribs, "\n  color", jvxlData.color);
     if (jvxlData.meshColor != null)
       addAttrib(attribs, "\n  meshColor", jvxlData.meshColor);
-    if (jvxlData.rendering != null)
-      addAttrib(attribs, "\n  rendering", jvxlData.rendering);
-
     addAttrib(attribs, "\n  translucency", "" + jvxlData.translucency);
     if (jvxlData.colorScheme != null)
       addAttrib(attribs, "\n  colorScheme", jvxlData.colorScheme);
+    if (jvxlData.rendering != null)
+      addAttrib(attribs, "\n  rendering", jvxlData.rendering);
+    
     if (jvxlData.nVertexColors > 0)
       addAttrib(attribs, "\n  nVertexColors", "" + jvxlData.nVertexColors);
 

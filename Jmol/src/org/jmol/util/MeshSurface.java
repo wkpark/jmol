@@ -350,10 +350,10 @@ public class MeshSurface {
         //           B---C
         switch (test2) {
         case 0:
-          // all on the same side
+          // all on the same side -- keep
           continue;
         case 7:
-          // all on the same side
+          // all on the same side -- toss
           break;
         case 1:
           // BC on side to keep

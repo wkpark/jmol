@@ -675,7 +675,29 @@ REMARK 290 REMARK: NULL
     atom.bfactor = parseFloat(line, 60, 66);
 
   }
-  
+
+  /**
+   * The problem here stems from the fact that developers have not fully 
+   * understood the PDB specifications -- and that those have changed. 
+   * The actual rules are as follows (using 1-based numbering:
+   * 
+   * 1) Chemical symbols may be in columns 77 and 78 for total disambiguity.
+   * 2) Only valid chemical symbols should be in columns 13 and 14
+   *    These are the first two characters of a four-character field.
+   * 3) Four-character atom names for hydrogen necessarily start in 
+   *    column 13, so when that is the case, if the four-letter 
+   *    name starts with "H" then it is hydrogen regardless of what
+   *    letter comes next. For example, "HG3 " is mercury (and should
+   *    be in a HETATM record, not an ATOM record, anyway), but "HG33"
+   *    is hydrogen, presumably.
+   *    
+   *    This leave open the ambiguity of a four-letter H name in a 
+   *    heteroatom set where the symbol is really H, not Hg or Ha, or Ho or Hf, etc.
+   *     
+   * 
+   * @param isHetero
+   * @return           an atom symbol
+   */
   private String deduceElementSymbol(boolean isHetero) {
     if (lineLength >= 78) {
       char ch76 = line.charAt(76);
@@ -706,6 +728,15 @@ REMARK 290 REMARK: NULL
          htElementsInCurrentGroup.get("" + ch12) != null) &&
         Atom.isValidElementSymbol(ch12))
       return "" + ch12;
+    // probably a bad file. But we will make ONE MORE ATTEMPT
+    // and read columns 14/15 instead of 12/13. What the heck!
+    char ch14 = line.charAt(14);
+    if ((htElementsInCurrentGroup == null ||
+        htElementsInCurrentGroup.get(line.substring(13, 15)) != null) &&
+        Atom.isValidElementSymbolNoCaseSecondChar(ch13, ch14))
+     return  "" + ch13 + ch14;
+    
+    
     return "Xx";
   }
 

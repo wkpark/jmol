@@ -60,6 +60,7 @@ class IsoIntersectReader extends AtomDataReader {
   @Override
   protected void setup() {
     super.setup();
+    params.fullyLit = true;
     point = params.point;
     bsA = params.intersection[0];
     bsB = params.intersection[1];

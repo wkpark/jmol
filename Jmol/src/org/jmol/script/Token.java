@@ -676,9 +676,10 @@ public class Token {
   public final static int plane     = 15 | 0 << 9 | mathfunc;
   public final static int point     = 16 | 0 << 9 | mathfunc;
   final static int quaternion       = 17 | 0 << 9 | mathfunc | scriptCommand;
-  public final static int sort      = 18 | 0 << 9 | mathfunc | mathproperty;
-  final static int within           = 19 | 0 << 9 | mathfunc;
-  final static int write            = 20 | 0 << 9 | mathfunc | scriptCommand;
+  final static int sort             = 18 | 0 << 9 | mathfunc | mathproperty;
+  final static int count            = 19 | 0 << 9 | mathfunc | mathproperty;
+  final static int within           = 20 | 0 << 9 | mathfunc;
+  final static int write            = 21 | 0 << 9 | mathfunc | scriptCommand;
 
   // xxx(a)
   
@@ -1943,6 +1944,7 @@ public class Token {
       "contour",         new Token(contour),
       "contours",        new Token(contours),
       "corners",         new Token(corners),
+      "count",           new Token(count),
       "criterion",       new Token(criterion),
       "create",          new Token(create),
       "crossed",         new Token(crossed),

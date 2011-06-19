@@ -741,7 +741,8 @@ class ScriptMathProcessor {
     case Token.substructure:
       return evaluateSubstructure(args, tok);
     case Token.sort:
-      return evaluateSort(args);
+    case Token.count:
+      return evaluateSort(args, tok);
     case Token.symop:
       return evaluateSymop(args, op.tok == Token.propselector);
     case Token.volume:
@@ -870,11 +871,60 @@ class ScriptMathProcessor {
     return addX(viewer.getVolume((BitSet) x1.value, type));
   }
 
-  private boolean evaluateSort(ScriptVariable[] args) throws ScriptException {
+  private boolean evaluateSort(ScriptVariable[] args, int tok)
+      throws ScriptException {
     if (args.length > 1)
       return false;
-    int n = ScriptVariable.iValue(args[0]);
-    return addX(getX().sortOrReverse(n));
+    if (tok == Token.sort) {
+      int n = (args.length == 0 ? 0 : ScriptVariable.iValue(args[0]));
+      return addX(getX().sortOrReverse(n));
+    }
+    ScriptVariable x = getX();
+    ScriptVariable match = (args.length == 0 ? null : args[0]);
+    if (x.tok == Token.string) {
+      int n = 0;
+      String s = ScriptVariable.sValue(x);
+      if (match == null)
+        return addX(0);
+      String m = ScriptVariable.sValue(match);
+      for (int i = 0; i < s.length(); i++) {
+        int pt = s.indexOf(m, i);
+        if (pt < 0)
+          break;
+        n++;
+        i = pt;
+      }
+      return addX(n);
+    }
+    List<ScriptVariable> counts = new ArrayList<ScriptVariable>();
+    ScriptVariable last = null;
+    ScriptVariable count = null;
+    List<ScriptVariable> xList = ScriptVariable.getVariable(x.value)
+        .sortOrReverse(0).getList();
+    if (xList == null)
+      return (match == null ? addX("") : addX(0));
+    for (int i = 0, nLast = xList.size(); i <= nLast; i++) {
+      ScriptVariable a = (i == nLast ? null : xList.get(i));
+      if (match != null && a != null && !ScriptVariable.areEqual(a, match))
+        continue;
+      if (ScriptVariable.areEqual(a, last)) {
+        count.intValue++;
+        continue;
+      } else if (last != null) {
+        List<ScriptVariable> y = new ArrayList<ScriptVariable>();
+        y.add(last);
+        y.add(count);
+        counts.add(ScriptVariable.getVariable(y));
+      }
+      count = ScriptVariable.intVariable(1);
+      last = a; 
+    }
+    if (match == null)
+      return addX(ScriptVariable.getVariable(counts));
+    if (counts.isEmpty())
+      return addX(0);
+    return addX(counts.get(0).getList().get(1));
+
   }
 
   private boolean evaluateSymop(ScriptVariable[] args, boolean haveBitSet)
@@ -2508,10 +2558,10 @@ class ScriptMathProcessor {
     if (op.tok == Token.propselector) {
       switch (iv) {
       case Token.length:
-        if (!(x2.value instanceof BondSet))
-          return addX(ScriptVariable.sizeOf(x2));
-        break;
+      case Token.count:
       case Token.size:
+        if (iv == Token.length && x2.value instanceof BondSet)
+          break;
         return addX(ScriptVariable.sizeOf(x2));
       case Token.type:
         return addX(ScriptVariable.typeOf(x2));
@@ -3121,13 +3171,18 @@ class ScriptMathProcessor {
       throws ScriptException {
     switch (x2.tok) {
     case Token.varray:
-      if (op.intValue == Token.min || op.intValue == Token.max
-          || op.intValue == Token.average || op.intValue == Token.stddev
-          || op.intValue == Token.sum || op.intValue == Token.sum2) {
+      switch (op.intValue) {
+      case Token.min:
+      case Token.max:
+      case Token.average:
+      case Token.stddev:
+      case Token.sum:
+      case Token.sum2:
         return addX(getMinMax(x2.getList(), op.intValue));
-      }
-      if (op.intValue == Token.sort || op.intValue == Token.reverse)
+      case Token.sort:
+      case Token.reverse:
         return addX(x2.sortOrReverse(op.intValue == Token.reverse ? Integer.MIN_VALUE : 1));
+      }
       ScriptVariable[] list2 = new ScriptVariable[x2.getList().size()];
       for (int i = 0; i < list2.length; i++) {
         Object v = ScriptVariable.unescapePointOrBitsetAsVariable(x2.getList().get(i));
@@ -3203,7 +3258,7 @@ class ScriptMathProcessor {
         return addX(x2);
       BitSet bs = ScriptVariable.bsSelect(x2);
       Object val = eval.getBitsetProperty(bs, op.intValue, null, null,
-          x2.value, op.value, false, x2.index, false);
+          x2.value, op.value, false, x2.index, true);
       if (op.intValue == Token.bonds)
         val = new ScriptVariable(Token.bitset, new BondSet((BitSet) val, viewer
             .getAtomIndices(bs)));

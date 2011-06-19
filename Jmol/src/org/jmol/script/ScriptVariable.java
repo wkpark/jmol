@@ -250,8 +250,6 @@ public class ScriptVariable extends Token {
     }
 
     // all the rest are stored as list
-    // at least for now, still saving as a string, 
-    // but ultimately, that should not be necessary
 
     List<ScriptVariable> objects = null;
     if (x instanceof List) {
@@ -1128,6 +1126,8 @@ public class ScriptVariable extends Token {
   }
 
   public static boolean areEqual(ScriptVariable x1, ScriptVariable x2) {
+    if (x1 == null || x2 == null)
+      return false;
     if (x1.tok == string && x2.tok == string)
       return sValue(x1).equalsIgnoreCase(
           sValue(x2));

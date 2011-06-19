@@ -1175,7 +1175,7 @@ public class ScriptEvaluator {
   protected Object getBitsetProperty(BitSet bs, int tok, Point3f ptRef,
                                      Point4f planeRef, Object tokenValue,
                                      Object opValue, boolean useAtomMap,
-                                     int index, boolean asVector)
+                                     int index, boolean asVectorIfAll)
       throws ScriptException {
 
     // index is a special argument set in parameterExpression that
@@ -1547,7 +1547,7 @@ public class ScriptEvaluator {
     if (minmaxtype == Token.allfloat)
       return fout;
     if (minmaxtype == Token.all) {
-      if (asVector)
+      if (asVectorIfAll)
         return vout;
       int len = vout.size();
       if (isString && !isExplicitlyAll && len == 1)
@@ -1606,7 +1606,7 @@ public class ScriptEvaluator {
       default:
         if (sum / n == (int) (sum / n))
           return Integer.valueOf((int) (sum / n));
-        return Float.valueOf((float)(sum / n));
+        return Float.valueOf((float) (sum / n));
       }
     }
     switch (minmaxtype) {

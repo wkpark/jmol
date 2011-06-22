@@ -15852,7 +15852,7 @@ public class ScriptEvaluator {
               if (f.floatValue() > 0) {
                 // go for HOMO = highest non-negative
                 moNumber = i;
-                break;
+                continue;
               }
             }
             if (moNumber < 0)

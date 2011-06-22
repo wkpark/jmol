@@ -350,5 +350,7 @@ public class WebMOReader extends MopacSlaterReader {
     mo.put("coefficients", coefs);
     orbitals.add(mo);
     nOrbitals++;
+    if (occupancy > 0)
+      moData.put("HOMO", Integer.valueOf(nOrbitals));
   }
 }

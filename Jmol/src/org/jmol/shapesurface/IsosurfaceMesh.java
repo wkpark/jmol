@@ -84,6 +84,7 @@ public class IsosurfaceMesh extends Mesh {
     vertexIncrement = 1;
     vertexSets = null;
     vertexValues = null;
+    volumeRenderPointSize = 0.15f;
   }
 
   void allocVertexColixes() {
@@ -146,7 +147,7 @@ public class IsosurfaceMesh extends Mesh {
     /* 
      * OK, so if there is an associated grid point (because the 
      * point is so close to one), we now declare that associated
-     * point to be used for the vecetorSum instead of a new, 
+     * point to be used for the   vecetorSum instead of a new, 
      * independent one for the point itself.
      *  
      *  Bob Hanson, 05/2006
@@ -381,6 +382,8 @@ public class IsosurfaceMesh extends Mesh {
   float[] contourValues;
   short[] contourColixes;
   ColorEncoder colorEncoder;
+  
+  public float volumeRenderPointSize = 0.15f;
 
   public void setDiscreteColixes(float[] values, short[] colixes) {
     if (values != null)

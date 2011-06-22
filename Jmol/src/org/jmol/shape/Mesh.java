@@ -86,8 +86,6 @@ public class Mesh extends MeshSurface {
     visibilityFlags = n;//set to 1 in mps
   }
 
-  public BitSet bsDisplay;
-
   public boolean showContourLines = false;
   public boolean showPoints = false;
   public boolean drawTriangles = false;
@@ -407,15 +405,18 @@ public class Mesh extends MeshSurface {
 
   BitSet getVisibleVertexBitSet() {
     BitSet bs = new BitSet();
-    for (int i = polygonCount; --i >= 0; ) 
-      if (bsSlabDisplay == null || bsSlabDisplay.get(i)) {
-        int[] vertexIndexes = polygonIndexes[i];
-        if (vertexIndexes == null)
-          continue;
-        bs.set(vertexIndexes[0]);
-        bs.set(vertexIndexes[1]);
-        bs.set(vertexIndexes[2]);
-      }
+    if (polygonCount == 0 && bsSlabDisplay != null)
+      BitSetUtil.copy(bsSlabDisplay, bs);
+    else
+      for (int i = polygonCount; --i >= 0;)
+        if (bsSlabDisplay == null || bsSlabDisplay.get(i)) {
+          int[] vertexIndexes = polygonIndexes[i];
+          if (vertexIndexes == null)
+            continue;
+          bs.set(vertexIndexes[0]);
+          bs.set(vertexIndexes[1]);
+          bs.set(vertexIndexes[2]);
+        }
     return bs;
   }
 

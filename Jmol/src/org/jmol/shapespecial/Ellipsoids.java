@@ -71,7 +71,7 @@ public class Ellipsoids extends AtomShape {
 //  @SuppressWarnings("unchecked")
   @Override
   public boolean getProperty(String property, Object[] data) {
-/*  just implemented for DRAW and ISOSURFACE
+/*  just implemented for MeshCollection
     if (property == "getNames") {
       Map<String, Token> map = (Map<String, Token>) data[0];
       boolean withDollar = ((Boolean) data[1]).booleanValue();

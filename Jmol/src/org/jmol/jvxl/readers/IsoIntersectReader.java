@@ -127,7 +127,7 @@ class IsoIntersectReader extends AtomDataReader {
   protected boolean setVoxels() {
     for (int i = 0; i < nPointsX; i++)
       for (int j = 0; j < nPointsY; j++)
-        for (int k = 0; k < nPointsX; k++) {
+        for (int k = 0; k < nPointsZ; k++) {
           float va = volumeData.voxelData[i][j][k];
           float vb = voxelData[i][j][k];
           float v = getValue(va, vb);

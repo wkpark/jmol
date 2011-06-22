@@ -819,6 +819,20 @@ final public class Graphics3D implements JmolRendererInterface {
     }
   }
 
+  public void volumeRender(int diameter, int x, int y, int z) {
+    if (isClippedZ(z))
+      return;
+    int r = (diameter + 1) / 2;
+    boolean isClipped = x < r || x + r >= width || y < r || y + r >= height;
+    if (isClipped && isClippedXY(diameter, x, y))
+      return;
+    if (isClipped)
+      circle3d.plotFilledCircleCenteredClipped(x, y, z, diameter);
+    else
+      circle3d.plotFilledCircleCenteredUnclipped(x, y, z, diameter);
+  }
+
+
   
   /**
    * fills a solid sphere

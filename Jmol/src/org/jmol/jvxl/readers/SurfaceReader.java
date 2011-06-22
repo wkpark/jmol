@@ -871,6 +871,7 @@ public abstract class SurfaceReader implements VertexDataServer {
   protected float[] minMax;
 
   public float[] getMinMaxMappedValues(boolean haveData) {
+    System.out.println("surf read getMinmax " + minMax + " " + haveData);
     if (minMax != null && minMax[0] != Float.MAX_VALUE)
       return minMax;
     if (params.colorBySets)

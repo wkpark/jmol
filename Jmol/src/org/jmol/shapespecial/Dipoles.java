@@ -360,7 +360,7 @@ public class Dipoles extends Shape {
   @Override
   public boolean getProperty(String property, Object[] data) {
     if (property == "getNames") {
-      /* just implemented for DRAW and ISOSURFACE
+      /* just implemented for MeshCollection
       Map<String, Token> map = (Map<String, Token>) data[0];
       boolean withDollar = ((Boolean) data[1]).booleanValue();
       for (int i = dipoleCount; --i >= 0;)

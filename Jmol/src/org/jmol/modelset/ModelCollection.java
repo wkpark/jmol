@@ -1593,13 +1593,13 @@ abstract public class ModelCollection extends BondCollection {
     return V;
   }
 
-  public int getMoleculeIndex(int atomIndex) {
+  public int getMoleculeIndex(int atomIndex, boolean inModel) {
     //ColorManager
     if (moleculeCount == 0)
       getMolecules();
     for (int i = 0; i < moleculeCount; i++) {
       if (molecules[i].atomList.get(atomIndex))
-        return molecules[i].indexInModel;
+        return (inModel ? molecules[i].indexInModel : i);
     }
     return 0;
   }

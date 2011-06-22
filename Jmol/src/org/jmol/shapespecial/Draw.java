@@ -47,6 +47,7 @@ import org.jmol.util.TextFormat;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.g3d.Graphics3D;
+import org.jmol.script.Token;
 import org.jmol.shape.Mesh;
 import org.jmol.shape.MeshCollection;
 
@@ -647,7 +648,7 @@ public void initShape() {
   
   private void setSlabData() {
     if (plane != null) {
-      slabData.getIntersection(plane, null, 0, null, false, true, MeshSurface.SLAB_NOMINMAX);
+      slabData.getIntersection(0, plane, null, null, null, false, true, Token.plane);
       polygon = new ArrayList<Object>();
       polygon.add(slabData.vertices);
       polygon.add(slabData.polygonIndexes);

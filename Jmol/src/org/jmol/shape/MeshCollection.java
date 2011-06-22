@@ -86,7 +86,9 @@ public abstract class MeshCollection extends Shape {
       linkedMesh = currentMesh.linkedMesh;
     }
     if (currentMesh.thisID == null) {
-      currentMesh.thisID = myType + (++nUnnamed);
+      if (nUnnamed == 0 || getMesh(myType + nUnnamed) != null)
+        nUnnamed++;
+      currentMesh.thisID = myType + nUnnamed;
       if (htObjects != null)
         htObjects.put(currentMesh.thisID.toUpperCase(), currentMesh);
     }
@@ -356,7 +358,7 @@ public abstract class MeshCollection extends Shape {
       Map<String, Token> map = (Map<String, Token>) data[0];
       boolean withDollar = ((Boolean) data[1]).booleanValue();
       for (int i = meshCount; --i >= 0;)
-        if (meshes[i] != null)
+        if (meshes[i] != null && meshes[i].vertexCount != 0)
           map.put((withDollar ? "$" : "") + meshes[i].thisID, Token.tokenOr); // just a placeholder
       return true;
     }
@@ -513,7 +515,7 @@ public abstract class MeshCollection extends Shape {
         return (m == null ? -1 : m.index);
       }
       for (int i = meshCount; --i >= 0;) {
-        if (meshes[i] != null && thisID.equalsIgnoreCase(meshes[i].thisID))
+        if (meshes[i] != null && meshes[i].vertexCount != 0 && thisID.equalsIgnoreCase(meshes[i].thisID))
           return i;
       }
     }

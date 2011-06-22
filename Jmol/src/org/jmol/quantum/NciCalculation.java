@@ -194,7 +194,7 @@ public class NciCalculation extends QuantumCalculation implements
         }
         if (type != TYPE_ALL) {
           int iMolecule = qmAtoms[i].iMolecule = qmAtoms[i].atom
-              .getMoleculeNumber();
+              .getMoleculeNumber(false);
           nMolecules = Math.max(nMolecules, iMolecule);
           firstMolecule = Math.min(firstMolecule, iMolecule);
         }

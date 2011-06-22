@@ -177,6 +177,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
         diam = viewer.getDotScale();
         frontOnly = false;
       }
+      int ptSize = ((int) (imesh.volumeRenderPointSize * 1000));
       if (diam < 1)
         diam = 1;
       boolean showNumbers = viewer.getTestFlag3();
@@ -190,7 +191,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
             && transformedVectors[normixes[i]].z < 0 || imesh.thisSet >= 0
             && imesh.vertexSets[i] != imesh.thisSet || !imesh.isColorSolid
             && imesh.vertexColixes != null && !setColix(imesh.vertexColixes[i])
-            || haveBsDisplay && !imesh.bsDisplay.get(i))
+            || haveBsDisplay && !imesh.bsDisplay.get(i)
+            || volumeRender && haveBsSlabDisplay && !mesh.bsSlabDisplay.get(i))
           continue;
         if (showNumbers && screens[i].z > 10
             && Math.abs(screens[i].x - cX) < 50
@@ -202,7 +204,12 @@ public class IsosurfaceRenderer extends MeshRenderer {
           g3d.drawStringNoSlab(s, null, screens[i].x, screens[i].y,
               screens[i].z);
         }
-        g3d.fillSphere(diam, screens[i]);
+        if (volumeRender) {
+          diam = viewer.scaleToScreen(screens[i].z, ptSize);
+          g3d.volumeRender(diam, screens[i].x, screens[i].y, screens[i].z);
+        } else {
+          g3d.fillSphere(diam, screens[i]);
+        }
       }
       if (incr == 3) {
         g3d.setColix(isTranslucent ? Graphics3D.getColixTranslucent(
@@ -267,7 +274,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     
     for (int i = imesh.polygonCount; --i >= 0;) {
       int[] vertexIndexes = polygonIndexes[i];
-      if (vertexIndexes == null || imesh.bsSlabDisplay != null && !imesh.bsSlabDisplay.get(i))
+      if (vertexIndexes == null || haveBsSlabDisplay && !imesh.bsSlabDisplay.get(i))
         continue;
       int iA = vertexIndexes[0];
       int iB = vertexIndexes[1];

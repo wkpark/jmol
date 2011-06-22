@@ -103,7 +103,6 @@ import org.jmol.util.ColorEncoder;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
-import org.jmol.util.MeshSurface;
 import org.jmol.util.Parser;
 import org.jmol.util.Point3fi;
 import org.jmol.util.Quaternion;
@@ -173,7 +172,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   }
   //private boolean logMessages;
   private String actualID;
-  private boolean iHaveBitSets;
+  protected boolean iHaveBitSets;
   private boolean explicitContours;
   private int atomIndex;
   private int moNumber;
@@ -202,6 +201,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   @Override
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
+    //System.out.println("isosurface testing " + propertyName + " " + value);
     // //isosurface-only (no calculation required; no calculation parameters to
     // set)
 
@@ -233,6 +233,13 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if ("atomcolor" == propertyName) {
       if (thisMesh != null) {
         thisMesh.colorAtoms(Graphics3D.getColix(value), bs);
+      }
+      return;
+    }
+
+    if ("pointSize" == propertyName) {
+      if (thisMesh != null) {
+        thisMesh.volumeRenderPointSize = ((Float)value).floatValue();
       }
       return;
     }
@@ -407,8 +414,18 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
           thisMesh.jvxlData.slabValue = ((Integer) value).intValue();
         return;
       }
-      if (thisMesh != null && thisMesh.polygonCount != 0) {
-        thisMesh.slabPolygons((Object[]) value);
+      if (thisMesh != null) {
+        Object[] slabInfo = (Object[]) value;
+        if (((Integer) slabInfo[0]).intValue() == Token.mesh) {
+          Object[] data = (Object[]) slabInfo[1];
+          Mesh m = getMesh((String) data[1]);
+          if (m == null)
+            return;
+          // TODO -- if slabbing on an isosurface, must then do all slabs AFTER all isosurfaces have been created!
+          // How to save this in the state??
+          data[1] = m;          
+        }
+        thisMesh.slabPolygons(slabInfo);
         thisMesh.jvxlData.vertexDataOnly = true;
         thisMesh.initialize(thisMesh.lighting, null, null);
         if (thisMesh.colorEncoder != null) {
@@ -616,7 +633,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       if (mesh == null)
         return false;
       data[3] = Integer.valueOf(mesh.modelIndex);
-      return mesh.getIntersection((Point4f) data[1], null, 0, (List<Point3f[]>) data[2], false, false, MeshSurface.SLAB_NOMINMAX);
+      mesh.getIntersection(0, (Point4f) data[1], null, (List<Point3f[]>) data[2], null, false, false, Token.plane);
+      return true;
     }
     if (property == "getBoundingBox") {
       String id = (String) data[0];

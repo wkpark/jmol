@@ -667,22 +667,78 @@ final public class Measure {
    * @param pt1  point on line
    * @param v    unit vector of line
    * @param plane 
-   * @return      point of intersection of line with plane
+   * @param ptRet  point of intersection of line with plane
+   * @param tempNorm 
+   * @param vTemp 
+   * @return       ptRte
    */
   public static Point3f getIntersection(Point3f pt1, Vector3f v,
-                                               Point4f plane) {
-    Vector3f norm = new Vector3f();
-    Point3f pt = new Point3f();
-    getPlaneProjection(pt1, plane, pt, norm);
-    norm.set(plane.x, plane.y, plane.z);
-    norm.normalize();
+                                               Point4f plane, Point3f ptRet, Vector3f tempNorm, Vector3f vTemp) {
+    getPlaneProjection(pt1, plane, ptRet, tempNorm);
+    tempNorm.set(plane.x, plane.y, plane.z);
+    tempNorm.normalize();
     if (v == null)
-      v = new Vector3f(norm);
-    float l_dot_n = v.dot(norm);
+      v = new Vector3f(tempNorm);
+    float l_dot_n = v.dot(tempNorm);
     if (Math.abs(l_dot_n) < 0.01) return null;
-    Vector3f perp = new Vector3f(pt);
-    perp.sub(pt1);
-    pt.scaleAdd(perp.dot(norm) / l_dot_n, v, pt1);
-    return pt;
+    vTemp.set(ptRet);
+    vTemp.sub(pt1);
+    ptRet.scaleAdd(vTemp.dot(tempNorm) / l_dot_n, v, pt1);
+    return ptRet;
   }
+
+  public static Point3f getTriangleIntersection(Point3f a1, Point3f a2,
+                                               Point3f a3, Point4f plane,
+                                               Point3f b1,
+                                               Point3f b2, Point3f b3,
+                                               Vector3f vNorm, Vector3f vTemp, 
+                                               Point3f ptRet, Point3f ptTemp, Vector3f vTemp2, Point4f pTemp, Vector3f vTemp3) {
+    
+    if (getTriangleIntersection(b1, b2, a1, a2, a3, vTemp, plane, vNorm, vTemp2, vTemp3, ptRet, ptTemp))
+      return ptRet;
+    if (getTriangleIntersection(b2, b3, a1, a2, a3, vTemp, plane, vNorm, vTemp2, vTemp3, ptRet, ptTemp))
+      return ptRet;
+    if (getTriangleIntersection(b3, b1, a1, a2, a3, vTemp, plane, vNorm, vTemp2, vTemp3, ptRet, ptTemp))
+      return ptRet;
+    return null;
+  }
+
+  public static boolean getTriangleIntersection(Point3f b1, Point3f b2,
+                                                Point3f a1, Point3f a2,
+                                                Point3f a3, Vector3f vTemp,
+                                                Point4f plane, Vector3f vNorm,
+                                                Vector3f vTemp2, Vector3f vTemp3,
+                                                Point3f ptRet,
+                                                Point3f ptTemp) {
+    if (distanceToPlane(plane, b1) * distanceToPlane(plane, b2) >= 0)
+      return false;
+    vTemp.sub(b2, b1);
+    vTemp.normalize();
+    if (getIntersection(b1, vTemp, plane, ptRet, vNorm, vTemp2) != null) {
+      if (isInTriangle(ptRet, a1, a2, a3, vTemp, vTemp2, vTemp3))
+        return true;
+    }
+    return false;
+
+  }
+
+  private static boolean isInTriangle(Point3f p, Point3f a, Point3f b,
+                                      Point3f c, Vector3f v0, Vector3f v1,
+                                      Vector3f v2) {
+    // from http://www.blackpawn.com/texts/pointinpoly/default.html
+    // Compute barycentric coordinates
+    v0.sub(c, a);
+    v1.sub(b, a);
+    v2.sub(p, a);
+    float dot00 = v0.dot(v0);
+    float dot01 = v0.dot(v1);
+    float dot02 = v0.dot(v2);
+    float dot11 = v1.dot(v1);
+    float dot12 = v1.dot(v2);
+    float invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
+    float u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+    float v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+    return (u > 0 && v > 0 && u + v < 1);
+  }
+
 }

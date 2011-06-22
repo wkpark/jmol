@@ -30,8 +30,14 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+//import javax.vecmath.Point3f;
+//import javax.vecmath.Point4f;
+//import javax.vecmath.Vector3f;
+
 import org.jmol.util.ArrayUtil;
+//import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+//import org.jmol.util.Measure;
 
 public class Token {
 
@@ -302,10 +308,10 @@ public class Token {
   public final static int connect = scriptCommand | 10;
   final static int console      = scriptCommand | 11 | defaultON;
 //final static int data         see mathfunc
-  final static int delay        = scriptCommand | 12 | defaultON;
-  public final static int depth = scriptCommand | 13 | intparam | defaultON;
-  final static int exit         = scriptCommand | 14 | noArgs;
-  final static int exitjmol     = scriptCommand | 17 | noArgs;
+  final static int delay        = scriptCommand | 13 | defaultON;
+  public final static int depth = scriptCommand | 14 | intparam | defaultON;
+  final static int exit         = scriptCommand | 15 | noArgs;
+  final static int exitjmol     = scriptCommand | 16 | noArgs;
 //final static int file         see intproperty
   final static int font         = scriptCommand | 18;
   final static int frame        = scriptCommand | 19;
@@ -366,21 +372,22 @@ public class Token {
   
   public final static int axes         = shapeCommand | 2 | deprecatedparam | defaultON;
 //final static int boundbox     see mathproperty
-  public final static int dipole       = shapeCommand | 14;
-  public final static int draw         = shapeCommand | 16;
-  public final static int frank        = shapeCommand | 21 | deprecatedparam | defaultON;
-  public final static int isosurface   = shapeCommand | 29;
-  public final static int lcaocartoon  = shapeCommand | 30;
-  public final static int measurements = shapeCommand | 31 | setparam;
-  public final static int mo           = shapeCommand | 33 | expression;
-  public final static int pmesh        = shapeCommand | 38;
-  public final static int plot3d       = shapeCommand | 39;
-  public final static int polyhedra    = shapeCommand | 40;
+  public final static int contact      = shapeCommand | 4;
+  public final static int dipole       = shapeCommand | 6;
+  public final static int draw         = shapeCommand | 8;
+  public final static int frank        = shapeCommand | 10 | deprecatedparam | defaultON;
+  public final static int isosurface   = shapeCommand | 12;
+  public final static int lcaocartoon  = shapeCommand | 14;
+  public final static int measurements = shapeCommand | 16 | setparam;
+  public final static int mo           = shapeCommand | 18 | expression;
+  public final static int pmesh        = shapeCommand | 20;
+  public final static int plot3d       = shapeCommand | 22;
+  public final static int polyhedra    = shapeCommand | 24;
   //public final static int spacefill see floatproperty
-  public final static int struts       = shapeCommand | 57 | defaultON | expression;
-  public final static int unitcell     = shapeCommand | 64 | deprecatedparam | expression | predefinedset | defaultON;
-  public final static int vector       = shapeCommand | 65;
-  public final static int wireframe    = shapeCommand | 67 | defaultON;
+  public final static int struts       = shapeCommand | 26 | defaultON | expression;
+  public final static int unitcell     = shapeCommand | 28 | deprecatedparam | expression | predefinedset | defaultON;
+  public final static int vector       = shapeCommand | 30;
+  public final static int wireframe    = shapeCommand | 32 | defaultON;
 
 
   
@@ -398,7 +405,7 @@ public class Token {
   final static int per                 = expression | 8;
   public final static int isaromatic   = expression | 9;
   final static int leftbrace           = expression | 10;
-  final static int none                = expression | 11;
+  public final static int none                = expression | 11;
   public final static int off          = expression | 12; //for within(dist,false,...)
   public final static int on           = expression | 13; //for within(dist,true,...)
   final static int rightbrace          = expression | 14;
@@ -613,7 +620,7 @@ public class Token {
   public final static int fux             = floatproperty | 7 | settable;
   public final static int fuy             = floatproperty | 8 | settable;
   public final static int fuz             = floatproperty | 9 | settable;
-  public final static int hydrophobicity  = floatproperty | 10 | settable;
+  public final static int hydrophobic     = floatproperty | 10 | settable | predefinedset;
   public final static int ionic           = floatproperty | 11 | settable;
   public final static int partialcharge   = floatproperty | 12 | settable;
   public final static int property        = floatproperty | 13 | mathproperty | setparam | settable;
@@ -678,7 +685,7 @@ public class Token {
   final static int quaternion       = 17 | 0 << 9 | mathfunc | scriptCommand;
   final static int sort             = 18 | 0 << 9 | mathfunc | mathproperty;
   final static int count            = 19 | 0 << 9 | mathfunc | mathproperty;
-  final static int within           = 20 | 0 << 9 | mathfunc;
+  public final static int within           = 20 | 0 << 9 | mathfunc;
   final static int write            = 21 | 0 << 9 | mathfunc | scriptCommand;
 
   // xxx(a)
@@ -729,7 +736,7 @@ public class Token {
   //so it can be a math property and it can have up to two parameters
   
   final static int add          = 1 | 2 << 9 | mathfunc | mathproperty;
-  final static int distance     = 2 | 2 << 9 | mathfunc | mathproperty;
+  public final static int distance     = 2 | 2 << 9 | mathfunc | mathproperty;
   final static int find         = 4 | 3 << 9 | mathfunc | mathproperty;
   final static int replace      = 3 | 2 << 9 | mathfunc | mathproperty;
 
@@ -1102,7 +1109,7 @@ public class Token {
   final static int frontedges     = misc  | 132;
   public final static int frontlit = misc  | 134;
   public final static int frontonly = misc  | 136;
-  final static int full            = misc  | 137;
+  public final static int full            = misc  | 137;
   final static int fullplane       = misc  | 138;
   public final static int fullylit = misc  | 140;
   final static int functionxy     = misc  | 142;
@@ -1121,10 +1128,13 @@ public class Token {
   final static int insideout      = misc  | 160;
   final static int interior       = misc  | 162;
   final static int internal       = misc  | 164;
+  public final static int intramolecular = misc  | 165;
+  public final static int intermolecular = misc  | 166;
   public final static int jmol    = misc  | 168;
-  public final static int last    = misc  | 170;
-  final static int lattice        = misc  | 171;
-  public final static int left           = misc  | 172;
+  public final static int last    = misc  | 169;
+  final static int lattice        = misc  | 170;
+  final static int lighting       = misc  | 171;
+  public final static int left    = misc  | 172;
   final static int line           = misc  | 174;
   final static int link           = misc  | 175;
   final static int linedata       = misc  | 176;
@@ -1150,7 +1160,7 @@ public class Token {
   final static int mrc            = misc  | 209;
   final static int msms           = misc  | 210;
   final static int name           = misc  | 211;
-  final static int nci            = misc  | 212;
+  public final static int nci            = misc  | 212;
   public final static int next    = misc  | 213;
   public final static int nocontourlines  = misc  | 214;
   final static int nocross        = misc  | 215;
@@ -1194,7 +1204,7 @@ public class Token {
   public final static int prev    = misc  | 284;
   final static int rad            = misc  | 286;
   final static int radical        = misc  | 288;
-  final static int range          = misc  | 290;
+  public final static int range          = misc  | 290;
   public final static int rasmol  = misc  | 292;
   final static int reference      = misc  | 294;
   public final static int residue = misc  | 296;
@@ -1215,7 +1225,7 @@ public class Token {
   final static int slicebox       = misc  | 326;
   final static int solid          = misc  | 327;
   final static int spacegroup     = misc  | 328;
-  final static int sphere         = misc  | 330;
+  public final static int sphere         = misc  | 330;
   final static int squared        = misc  | 332;
   final static int state          = misc  | 334;
   final static int stop           = misc  | 338;
@@ -1493,6 +1503,7 @@ public class Token {
       "config",            null,
       "connect",           new Token(connect),
       "console",           new Token(console),
+      "contact",           new Token(contact),
       "continue",          new Token(continuecmd),
       "data",              new Token(data),
       "default",           new Token(defaultcmd),
@@ -1769,7 +1780,8 @@ public class Token {
       "hidden",          new Token(hidden),
       "highlight",       new Token(highlight),
       "hkl",             new Token(hkl),
-      "hydrophobicity",  new Token(hydrophobicity),
+      "hydrophobic",     new Token(hydrophobic),
+      "hydrophobicity",  null,
       "hydro",           null,
       "id",              new Token(id),
       "identify",        new Token(identify),
@@ -1779,6 +1791,10 @@ public class Token {
       "inline",          new Token(inline),
       "insertion",       new Token(insertion),
       "insertions",      null, 
+      "intramolecular",  new Token(intramolecular),
+      "intra",           null,
+      "intermolecular",  new Token(intermolecular),
+      "inter",           null,
       "ionic",           new Token(ionic),
       "ionicRadius",     null,
       "isAromatic",      new Token(isaromatic),
@@ -1830,6 +1846,7 @@ public class Token {
       "partialCharge",   new Token(partialcharge),
       "phi",             new Token(phi),
       "plane",           new Token(plane),
+      "planar",          null,
       "play",            new Token(play),
       "playRev",         new Token(playrev),
       "point",           new Token(point),
@@ -2171,6 +2188,7 @@ public class Token {
       "helixStep",                                new Token(helixstep),
       "hermiteLevel",                             new Token(hermitelevel),
       "historyLevel",                             new Token(historylevel),
+      "lighting",                                 new Token(lighting),
       "logLevel",                                 new Token(loglevel),
       "minimizationSteps",                        new Token(minimizationsteps),
       "percentVdwAtom",                           new Token(percentvdwatom),
@@ -2370,5 +2388,42 @@ public class Token {
       return nada;
     return tok & paramTypes;
   }
+/*
+  static {
+    Point3f a1 = new Point3f(1,0,0);
+    Point3f a2 = new Point3f(0,1,0);
+    Point3f a3 = new Point3f(0,0,1);
+    Point3f b1 = new Point3f(0.25f, 0.25f, 0.25f);
+    Vector3f vNorm = new Vector3f();
+    Vector3f vTemp = new Vector3f();
+    Vector3f vTemp2 = new Vector3f();
+    Vector3f vTemp3 = new Vector3f();
+    Point4f pTemp = new Point4f();
+    Point4f plane = new Point4f();
+    Point3f ptTemp = new Point3f();
+    Point3f ptRet = new Point3f();
+
+    
+    Point3f b2 = new Point3f(1,-0.9f,-3);
+
+    
+    
+    Measure.getPlaneThroughPoints(a1, a2, a3, vNorm, vTemp, vTemp2, plane);
+    
+    String color = "red";
+    if (Measure.getTriangleIntersection(b1, b2, a1, a2, a3, vTemp, plane, vNorm, vTemp2, 
+        vTemp3, ptRet, ptTemp, pTemp)) {
+      System.out.println("testing Measure SUCCESS " + ptRet);
+      color = "white";
+    }
+    System.out.println("draw a1 {1 0 0};draw l1 {1 0 0} {0 1 0};draw a3 {0 0 1};draw l2 {0 0 1} {0 1 0}; draw a2 {0 1 0}; draw l3 {0 0 1} {1 0 0}; " 
+        + "draw b1 " + Escape.escape(b1) 
+        + " " + Escape.escape(b2) + " color blue;" 
+        + "draw pt " + Escape.escape(ptRet) + " color " + color + "; print angle(point" + b1 + ", point" + ptRet + ", point" + b2 + ")"); 
+    System.out.println("testing Measure " + ptRet);
+    
+  }
+*/
+
 
 }

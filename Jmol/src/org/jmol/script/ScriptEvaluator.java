@@ -64,9 +64,11 @@ import org.jmol.util.BitSetUtil;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
 
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
+import org.jmol.util.MeshSurface;
 import org.jmol.util.Parser;
 import org.jmol.util.Point3fi;
 import org.jmol.util.Quaternion;
@@ -2418,7 +2420,7 @@ public class ScriptEvaluator {
         for (String key : token.contextVariables.keySet())
           ScriptCompiler.addContextVariable(contextVariables, key);
     }
-    if (Logger.debugging || isCmdLine_c_or_C_Option)
+    if (debugScript || isCmdLine_c_or_C_Option)
       Logger.info("-->>-------------".substring(0, Math
           .max(17, scriptLevel + 5))
           + scriptLevel + " " + filename + " " + token + " " + thisContext);
@@ -2468,7 +2470,7 @@ public class ScriptEvaluator {
     ScriptContext scTemp = (isFlowCommand ? getScriptContext() : null);
     restoreScriptContext(thisContext, true, isFlowCommand, statementOnly);
     restoreScriptContext(scTemp, true, false, true);
-    if (Logger.debugging || isCmdLine_c_or_C_Option)
+    if (debugScript || isCmdLine_c_or_C_Option)
       Logger.info("--<<-------------".substring(0, Math.max(17, scriptLevel + 5))
           + scriptLevel + " " + filename + " "
           + (thisContext == null ? "" : "" + thisContext.token) + " "
@@ -5512,6 +5514,9 @@ public class ScriptEvaluator {
     case Token.cartoon:
       iShape = JmolConstants.SHAPE_CARTOON;
       break;
+    case Token.contact:
+      iShape = JmolConstants.SHAPE_CONTACT;
+      break;
     case Token.dipole:
       iShape = JmolConstants.SHAPE_DIPOLES;
       break;
@@ -5650,6 +5655,9 @@ public class ScriptEvaluator {
       return;
     case Token.boundbox:
       boundbox(1);
+      return;
+    case Token.contact:
+      contact();
       return;
     case Token.dipole:
       dipole();
@@ -7404,7 +7412,7 @@ public class ScriptEvaluator {
       case Token.fixedtemp:
       case Token.formalcharge:
       case Token.group:
-      case Token.hydrophobicity:
+      case Token.hydrophobic:
       case Token.insertion:
       case Token.jmol:
       case Token.molecule:
@@ -7509,6 +7517,9 @@ public class ScriptEvaluator {
       case Token.isosurface:
         setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "thisID",
             JmolConstants.PREVIOUS_MESH_ID);
+      case Token.contact:
+        setShapeProperty(JmolConstants.SHAPE_CONTACT, "thisID",
+            JmolConstants.PREVIOUS_MESH_ID);
         break;
       }
     }
@@ -7561,7 +7572,7 @@ public class ScriptEvaluator {
     BitSet bs = null;
     String prefix = "";
     boolean isColor = false;
-    boolean isIsosurface = (shapeType == JmolConstants.SHAPE_ISOSURFACE);
+    boolean isIsosurface = (shapeType == JmolConstants.SHAPE_ISOSURFACE || shapeType == JmolConstants.SHAPE_CONTACT);
     int typeMask = 0;
     boolean doClearBondSet = false;
     float translucentLevel = Float.MAX_VALUE;
@@ -9879,14 +9890,17 @@ public class ScriptEvaluator {
         Integer.valueOf(modelIndex) };
     return (getShapeProperty(JmolConstants.SHAPE_DRAW, "getCenter", data)
         || getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "getCenter", data)
+        || getShapeProperty(JmolConstants.SHAPE_CONTACT, "getCenter", data)
         || getShapeProperty(JmolConstants.SHAPE_MO, "getCenter", data) ? (Point3f) data[2]
         : null);
   }
 
   private Point3f[] getObjectBoundingBox(String id) {
     Object[] data = new Object[] { id, null, null };
-    return (getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "getBoundingBox",
-        data) || getShapeProperty(JmolConstants.SHAPE_MO, "getBoundingBox",
+    return (getShapeProperty(
+        JmolConstants.SHAPE_ISOSURFACE, "getBoundingBox", data) 
+        || getShapeProperty(JmolConstants.SHAPE_CONTACT, "getBoundingBox", data) 
+        || getShapeProperty(JmolConstants.SHAPE_MO, "getBoundingBox",
             data) ? (Point3f[]) data[2] : null);
   }
 
@@ -10891,12 +10905,12 @@ public class ScriptEvaluator {
     int type = RadiusData.TYPE_ABSOLUTE;
     int vdwType = 0;
 
-    int tok = getToken(index).tok;
+    int tok = (index == -1 ? Token.vanderwaals : getToken(index).tok);
     switch (tok) {
     case Token.adpmax:
     case Token.adpmin:
     case Token.ionic:
-    case Token.hydrophobicity:
+    case Token.hydrophobic:
     case Token.temperature:
     case Token.vanderwaals:
       value = 1;
@@ -14122,6 +14136,7 @@ public class ScriptEvaluator {
     case Token.specular:
     case Token.specularpower:
     case Token.specularexponent:
+    case Token.lighting:
       if (!isSyntaxCheck)
         msg = viewer.getSpecularState();
       break;
@@ -14891,8 +14906,7 @@ public class ScriptEvaluator {
           .valueOf(intScale));
     }
     if (iptDisplayProperty > 0) {
-      if (!setMeshDisplayProperty(JmolConstants.SHAPE_DRAW, iptDisplayProperty,
-          getToken(iptDisplayProperty).tok))
+      if (!setMeshDisplayProperty(JmolConstants.SHAPE_DRAW, iptDisplayProperty,0))
         error(ERROR_invalidArgument);
     }
   }
@@ -15066,7 +15080,243 @@ public class ScriptEvaluator {
       setShapeTranslucency(JmolConstants.SHAPE_POLYHEDRA, "", "translucent",
           translucentLevel, null);
   }
+  
+  private void contact() throws ScriptException {
+    // TODO: FULL option (currently defaults to PLANE
+    // new in Jmol 12.1.51
+    // contact LIST
+    // contact 
+    // required:
+    //         {setA}
+    // optional:
+    //         ID aaaa (if present, must be FIRST parameter, before {setA}
+    //         {setB} 
+    //         DENSITY x.x
+    //         IGNORE {ignore} 
+    //         DISTANCE x.x
+    //         PARAMETERS [....] 
+    //         FULL|PLANAR|CONNECT|NCI (FULL not implemented yet)
+    //         HYDROPHOBIC|HBOND
+    //         INTRAMOLECULAR|INTERMOLECULAR
+    //         nnn%
+    //         COLOR...
+    //         TRANSLUCENT/OPAQUE...
 
+    shapeManager.loadShape(JmolConstants.SHAPE_CONTACT);
+    if (tokAt(1) == Token.list && listIsosurface(JmolConstants.SHAPE_CONTACT))
+      return;
+    int iptDisplayProperty = 0;
+    iToken = 1;
+    String thisId = initIsosurface(JmolConstants.SHAPE_CONTACT);
+    boolean idSeen = (thisId != null);
+    boolean isWild = (idSeen && getShapeProperty(JmolConstants.SHAPE_CONTACT,
+        "ID") == null);
+    BitSet bsA = null;
+    BitSet bsB = null;
+    BitSet bsIgnore = null;
+    BitSet bs = null;
+    RadiusData rd = null;
+    float[] params = null;
+    boolean colorDensity = false;
+    StringBuffer sbCommand = new StringBuffer();
+    
+    int type = Token.plane;// TODO: Token.full;
+    int bondMode = Token.nada;
+    float distance = 5;
+    Boolean intramolecular = null;
+    int colorpt = 0;
+    int tok;
+    String filter = null;
+    for (int i = iToken; i < statementLength; ++i) {
+      switch (tok = getToken(i).tok) {
+      case Token.id:
+        setShapeId(JmolConstants.SHAPE_CONTACT, ++i, idSeen);
+        isWild = (getShapeProperty(JmolConstants.SHAPE_CONTACT, "ID") == null);
+        i = iToken;
+        break;
+      case Token.density:
+        colorDensity = true;
+        sbCommand.append(" density");
+        if (isFloatParameter(i + 1)) {
+          if (params == null)
+            params = new float[1];
+          params[0] = -Math.abs(floatParameter(++i));
+          sbCommand.append(" " + -params[0]);
+        }        
+        break;
+      case Token.distance:
+        distance = floatParameter(++i);
+        sbCommand.append(" distance ").append(distance);
+        break;
+      case Token.integer:
+        rd = encodeRadiusParameter(i, false);
+        sbCommand.append(" ").append(rd);
+        i = iToken;
+        break;
+      case Token.intermolecular:
+      case Token.intramolecular:
+        intramolecular = (tok == Token.intramolecular ? Boolean.TRUE
+            : Boolean.FALSE);
+        sbCommand.append(" ").append(theToken.value);
+        break;
+      case Token.hydrophobic:
+      case Token.hbond:
+        //case Token.ionic:
+        bondMode = tok;
+        sbCommand.append(" ").append(theToken.value);
+        break;
+      case Token.full:
+      case Token.plane:
+      case Token.connect:
+        type = theTok;
+        sbCommand.append(" ").append(theToken.value);
+        break;
+      case Token.nci:
+        type = theTok;
+        sbCommand.append(" nci");
+        if (params == null)
+          params = new float[] { 0, 2 }; // intermolecular
+        break;
+      case Token.parameters:
+        params = floatParameterSet(++i, 1, 10);
+        i = iToken;
+        sbCommand.append(" parameters ").append(Escape.escape(params));
+        break;
+      case Token.ignore:
+        bsIgnore = atomExpression(++i);
+        sbCommand.append(" ignore ").append(Escape.escape(bsIgnore));
+        i = iToken;
+        break;
+      case Token.bitset:
+      case Token.expressionBegin:
+        if (isWild || bsB != null)
+          error(ERROR_invalidArgument);
+        bs = atomExpression(i);
+        i = iToken;
+        if (bsA == null)
+          bsA = bs;
+        else
+          bsB = bs;
+        sbCommand.append(" ").append(Escape.escape(bs));
+        break;
+      case Token.color:
+      case Token.translucent:
+      case Token.opaque:
+        if (tok == Token.color && tokAt(i + 1) == Token.density) {
+          colorDensity = true;
+          sbCommand.append(" color density");
+          i++;
+          break;
+        }
+        colorpt = i;
+        setMeshDisplayProperty(JmolConstants.SHAPE_CONTACT, i, theTok);
+        i = iToken;
+        break;
+      default:
+        if (!setMeshDisplayProperty(JmolConstants.SHAPE_CONTACT, 0, theTok)) {
+          if (theTok == Token.times || Token.tokAttr(theTok, Token.identifier)) {
+            thisId = setShapeId(JmolConstants.SHAPE_CONTACT, i, idSeen);
+            i = iToken;
+            break;
+          }
+          error(ERROR_invalidArgument);
+        }
+        if (iptDisplayProperty == 0)
+          iptDisplayProperty = i;
+        i = iToken;
+        continue;
+      }
+      idSeen = (theTok != Token.delete);
+    }
+    if (isSyntaxCheck)
+      return;
+    if (rd == null)
+      rd = encodeRadiusParameter(-1, false);
+    if (Float.isNaN(rd.value))
+      rd.value = 100;
+    if (bsA != null) {
+      // bond mode, intramolec set here
+
+      if (bsB == null) {
+        // if INTRAMOLCULAR and no {B}, then this means "just {A} to {A}"
+        // otherwise, {B} should be set to {!A}
+        if (intramolecular != null && intramolecular.booleanValue()) {
+          intramolecular = null;
+          bsB = BitSetUtil.copy(bsA);
+        } else {
+          bsB = BitSetUtil.setAll(viewer.getAtomCount());
+          bsB.andNot(bsA);
+        }
+      }
+      if (bsIgnore == null)
+        bsIgnore = BitSetUtil.setAll(viewer.getAtomCount());
+
+      bs = viewer.getAtomsWithin(distance, bsA, true);
+      // {B} always within some fixed distance of A
+      bsB.and(bs);
+      // {ignore} always not A and not B and not within that distance 
+      bsIgnore.andNot(bsA);
+      bsIgnore.andNot(bsB);
+      bsIgnore.andNot(bs);
+      if (intramolecular != null) {
+        if (type == Token.nci) {
+          params = (params == null ? new float[2] : ArrayUtil.ensureLength(
+              params, 2));
+          params[1] = (intramolecular.booleanValue() ? 1 : 2);
+        } else if (intramolecular.booleanValue()) {
+          // for intramolecular, {B} must be in molecule, and {ignore} must not
+          bs = viewer.getAtomBits(Token.molecule, bsA);
+          bsIgnore.andNot(bs);
+          bsB.and(bs);
+        } else {
+          // now what?
+        }
+      }
+
+      // now adjust for type -- HBOND or HYDROPHOBIC
+      switch (bondMode) {
+      case Token.hbond:
+        filter = "_O | _N";
+        break;
+      case Token.hydrophobic:
+        filter = "!_O & !_N";
+        break;
+      }
+      if (filter != null) {
+        bs = viewer.getAtomBitSet(filter);
+        bsIgnore.or(bs);
+        bsA.and(bs);
+        bsB.and(bs);
+      }
+      Object[] func = null;
+      Object slab = null;
+      switch (type) {
+      case Token.plane:
+        func = createFunction("__con__", "a,b", "a-b");
+        slab = getCapSlabObject(-1, false);
+        break;
+      case Token.connect:
+        func = createFunction("__con__", "a,b", "a+b");
+        break;
+      }
+      setShapeProperty(JmolConstants.SHAPE_CONTACT, "set", new Object[] { bsA,
+          bsB, bsIgnore, new Integer(type), rd, params, func, slab, Boolean.valueOf(colorDensity), sbCommand.toString() });
+      setShapeProperty(JmolConstants.SHAPE_CONTACT, "clear", null);
+      if (colorpt > 0)
+        setMeshDisplayProperty(JmolConstants.SHAPE_CONTACT, colorpt, 0);
+    }
+    if (iptDisplayProperty > 0) {
+      if (!setMeshDisplayProperty(JmolConstants.SHAPE_CONTACT,
+          iptDisplayProperty, 0))
+        error(ERROR_invalidArgument);
+    }
+    setShapeProperty(JmolConstants.SHAPE_CONTACT, "clear", null);
+    if (colorpt == 0 && filter != null)
+      setShapeProperty(JmolConstants.SHAPE_CONTACT, "color", Integer
+          .valueOf(Graphics3D
+              .getArgbFromString(bondMode == Token.hbond ? "purple" : "green")));
+  }
+    
   private void lcaoCartoon() throws ScriptException {
     shapeManager.loadShape(JmolConstants.SHAPE_LCAOCARTOON);
     if (tokAt(1) == Token.list
@@ -15088,7 +15338,7 @@ public class ScriptEvaluator {
         propertyName = (String) theToken.value;
         if (tokAt(i + 1) == Token.off)
           iToken = i + 1;
-        propertyValue = getCapSlabObject(null, i, true);
+        propertyValue = getCapSlabObject(i, true);
         i = iToken;
         break;
       case Token.center:
@@ -15224,26 +15474,42 @@ public class ScriptEvaluator {
     setShapeProperty(JmolConstants.SHAPE_LCAOCARTOON, "clear", null);
   }
 
-  private Object getCapSlabObject(StringBuffer sb, int i, boolean isLcaoCartoon)
+  private Object getCapSlabObject(int i, boolean isLcaoCartoon)
       throws ScriptException {
+    if (i < 0) {
+      // standard range -100 to 0
+      return MeshSurface.getSlabObject(Token.range, 
+          new Object[] { Float.valueOf(i), Float.valueOf(0)}, false);
+    }
     Object data = null;
     int tok0 = tokAt(i);
     boolean isSlab = (tok0 == Token.slab);
     int tok = tokAt(i + 1);
     Point4f plane = null;
-    float d = 0, d2 = Float.MAX_VALUE;
     Point3f[] pts = null;
+    float d, d2;
     BitSet bs = null;
+    //TODO: check for compatibility with LCAOCARTOONS
     switch (tok) {
     case Token.none:
       iToken = i + 1;
       break;
+    case Token.dollarsign:
+      // do we need distance here? "-" here?
+      i++;
+      data = new Object[] { Float.valueOf(1), parameterAsString(++i) };
+      tok = Token.mesh;
+      break;
     case Token.within:
+      // isosurface SLAB WITHIN RANGE f1 f2
       i++;
       if (tokAt(++i) == Token.range) {
-        data = new Object[] { Float.valueOf(d = floatParameter(++i)),
-            Float.valueOf(d2 = floatParameter(++i)) };
+        d = floatParameter(++i);
+        d2 = floatParameter(++i);
+        data = new Object[] { Float.valueOf(d), Float.valueOf(d2) };
+        tok = Token.range;
       } else if (isFloatParameter(i)) {
+        // isosurface SLAB WITHIN distance {atomExpression}|[point array]
         d = floatParameter(i);
         if (isCenterParameter(++i)) {
           Point3f pt = centerParameter(i);
@@ -15264,9 +15530,10 @@ public class ScriptEvaluator {
           iToken = i;
           error(ERROR_invalidArgument);
         }
-        data = new Object[] { Float.valueOf(d), pts };
+        data = new Object[] { Float.valueOf(d), pts, bs };
       } else {
         data = getPointArray(i, 4);
+        tok = Token.boundbox;
       }
       break;
     case Token.boundbox:
@@ -15309,39 +15576,30 @@ public class ScriptEvaluator {
         break;
       }
       data = pts;
-      pts = null;
+      tok = Token.boundbox;
       break;
     default:
+      // isosurface SLAB n
+      // isosurface SLAB -100. 0.  as "within range" 
       if (!isLcaoCartoon && isSlab && isFloatParameter(i + 1)) {
-        data = new Integer((int) floatParameter(++i));
-      } else {
-        plane = planeParameter(++i);
-        float off = (isFloatParameter(iToken + 1) ? floatParameter(++iToken)
-            : Float.NaN);
-        if (!Float.isNaN(off))
-          plane.w -= off;
-        data = plane;
+        d = floatParameter(++i);
+        if (!isFloatParameter(i + 1))
+          return new Integer((int) d);
+        d2 = floatParameter(++i);
+        data = new Object[] { Float.valueOf(d), Float.valueOf(d2) };
+        tok = Token.range;
+        break;
       }
+      // isosurface SLAB [plane]
+      plane = planeParameter(++i);
+      float off = (isFloatParameter(iToken + 1) ? floatParameter(++iToken)
+          : Float.NaN);
+      if (!Float.isNaN(off))
+        plane.w -= off;
+      data = plane;
+      tok = Token.plane;
     }
-    if (sb != null && !(data instanceof Integer)) {
-      StringBuffer sb2 = new StringBuffer();
-      sb2.append(" ").append(Token.nameOf(tok0)).append(" ");
-      if (plane != null)
-        sb2.append(Escape.escape(plane));
-      else if (bs != null)
-        sb2.append("within ").append(d).append(" ").append(Escape.escape(bs));
-      else if (pts != null)
-        sb2.append("within ").append(d).append(" ").append(Escape.escape(pts));
-      else if (d2 != Float.MAX_VALUE)
-        sb2.append("within range ").append(d).append(" ").append(d2);
-      else if (data != null)
-        sb2.append("within ").append(Escape.escape(data));
-      else
-        sb2.append("none");
-      sb.append(sb2);
-      data = new Object[] { data, sb2, Boolean.valueOf(!isSlab) };
-    }
-    return data;
+    return MeshSurface.getSlabObject(tok, data, !isSlab);
   }
 
   private boolean mo(boolean isInitOnly) throws ScriptException {
@@ -15681,6 +15939,8 @@ public class ScriptEvaluator {
     boolean surfaceObjectSeen = false;
     boolean planeSeen = false;
     boolean isMapped = false;
+    boolean isBicolor = false;
+    boolean isPhased = false;
     boolean doCalcArea = false;
     boolean doCalcVolume = false;
     boolean isCavity = false;
@@ -16110,6 +16370,7 @@ public class ScriptEvaluator {
             i = iToken;
             addShapeProperty(propertyList, "colorRGB", Integer.valueOf(color));
             sbCommand.append(" ").append(Escape.escapeColor(color));
+            isBicolor = true;
           } else if (isSign) {
             error(ERROR_invalidParameterOrder);
           }
@@ -16362,6 +16623,10 @@ public class ScriptEvaluator {
       case Token.atomicorbital:
       case Token.orbital:
         surfaceObjectSeen = true;
+        if (isBicolor && !isPhased) {
+          sbCommand.append(" phase \"_orb\"");
+          addShapeProperty(propertyList, "phase", "_orb");
+        }
         float[] nlmZ = new float[5];
         nlmZ[0] = intParameter(++i);
         nlmZ[1] = intParameter(++i);
@@ -16397,7 +16662,7 @@ public class ScriptEvaluator {
       case Token.slab:
         haveSlab = true;
         propertyName = (String) theToken.value;
-        propertyValue = getCapSlabObject(sbCommand, i, false);
+        propertyValue = getCapSlabObject(i, false);
         i = iToken;
         break;
       case Token.cavity:
@@ -16666,10 +16931,10 @@ public class ScriptEvaluator {
         if (isMapped || statementLength == i + 1)
           error(ERROR_invalidArgument);
         isMapped = true;
-        if ((isCavity || haveRadius) && !surfaceObjectSeen) {
+        if ((isCavity || haveRadius || haveIntersection) && !surfaceObjectSeen) {
           surfaceObjectSeen = true;
           addShapeProperty(propertyList, "bsSolvent",
-              (haveRadius ? new BitSet() : lookupIdentifierValue("solvent")));
+              (haveRadius || haveIntersection ? new BitSet() : lookupIdentifierValue("solvent")));
           addShapeProperty(propertyList, "sasurface", Float.valueOf(0));
         }
         if (sbCommand.length() == 0) {
@@ -16758,6 +17023,7 @@ public class ScriptEvaluator {
         if (surfaceObjectSeen)
           error(ERROR_invalidArgument);
         propertyName = "phase";
+        isPhased = true;
         propertyValue = (tokAt(i + 1) == Token.string ? stringParameter(++i)
             : "_orb");
         sbCommand.append(" phase ").append(Escape.escape(propertyValue));
@@ -16986,7 +17252,8 @@ public class ScriptEvaluator {
       }
     }
 
-    if (surfaceObjectSeen && !isLcaoCartoon && !isSyntaxCheck) {
+    if (!isSyntaxCheck && surfaceObjectSeen && !isLcaoCartoon 
+        && sbCommand.indexOf(";") != 0) {
       propertyList.add(0, new Object[] { "newObject", null });
       boolean needSelect = (bsSelect == null);
       if (needSelect)
@@ -17019,9 +17286,7 @@ public class ScriptEvaluator {
         addShapeProperty(propertyList, "select", bs);
         addShapeProperty(propertyList, "sasurface", Float.valueOf(0));
       }
-      addShapeProperty(propertyList, "slab", new Object[] {
-          new Object[] { Float.valueOf(-100), Float.valueOf(0) }, null,
-          Boolean.FALSE });
+      addShapeProperty(propertyList, "slab", getCapSlabObject(-100, false));
     }
 
     setShapeProperty(iShape, "setProperties", propertyList);
@@ -17033,8 +17298,7 @@ public class ScriptEvaluator {
       sbCommand.append(" mesh nofill frontOnly");
     }
     if (iptDisplayProperty > 0) {
-      if (!setMeshDisplayProperty(iShape, iptDisplayProperty,
-          getToken(iptDisplayProperty).tok))
+      if (!setMeshDisplayProperty(iShape, iptDisplayProperty, 0))
         error(ERROR_invalidArgument);
     }
 
@@ -17149,12 +17413,15 @@ public class ScriptEvaluator {
       throws ScriptException {
     String propertyName = null;
     Object propertyValue = null;
+    boolean allowCOLOR = (shape == JmolConstants.SHAPE_CONTACT);
     boolean checkOnly = (i == 0);
     // these properties are all processed in MeshCollection.java
     if (!checkOnly)
-      iToken = i;
+      tok = getToken(i).tok;
     switch (tok) {
     case Token.lattice:
+      if (shape != JmolConstants.SHAPE_ISOSURFACE)
+        return false;
       if (checkOnly)
         return true;
       Point3f lattice = getPoint3f(iToken + 1, false);
@@ -17164,6 +17431,12 @@ public class ScriptEvaluator {
       propertyName = "lattice";
       propertyValue = lattice;
       break;
+    case Token.color:
+      if (allowCOLOR) 
+        iToken++;
+      else
+        break;
+      // fall through
     case Token.opaque:
     case Token.translucent:
       if (!checkOnly)
@@ -17224,8 +17497,8 @@ public class ScriptEvaluator {
     if (checkOnly)
       return true;
     setShapeProperty(shape, propertyName, propertyValue);
-    if ((tok = tokAt(iToken + 1)) != Token.nada) {
-      if (!setMeshDisplayProperty(shape, ++iToken, tok))
+    if ((tokAt(iToken + 1)) != Token.nada) {
+      if (!setMeshDisplayProperty(shape, ++iToken, 0))
         --iToken;
     }
     return true;

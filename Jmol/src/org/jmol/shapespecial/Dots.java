@@ -200,7 +200,7 @@ public class Dots extends AtomShape {
     switch (rd.vdwType) {
     case Token.adpmin:
     case Token.adpmax:
-    case Token.hydrophobicity:
+    case Token.hydrophobic:
     case Token.temperature:
       maxRadius = setRadius;
       break;

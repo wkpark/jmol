@@ -362,6 +362,8 @@ public class SurfaceGenerator {
 
     if ("map" == propertyName) {
       params.resetForMapping(((Boolean)value).booleanValue());
+      if (surfaceReader != null)
+        surfaceReader.minMax = null;
       return true;
     }
     if ("finalize" == propertyName) {
@@ -407,6 +409,8 @@ public class SurfaceGenerator {
 
     if ("intersection" == propertyName) {
       params.intersection = (BitSet[]) value;
+      System.out.println("SG inter: " + Escape.escape(((BitSet[])value)[0]));
+      System.out.println("SG inter: " + Escape.escape(((BitSet[])value)[1]));
       return true;
     }
 
@@ -470,7 +474,7 @@ public class SurfaceGenerator {
     }
 
     if ("parameters" == propertyName) {
-      params.parameters = (float[]) value;
+      params.parameters = ArrayUtil.ensureLength((float[]) value, 2);
       if (params.parameters.length > 0 && params.parameters[0] != 0)
         params.cutoff = params.parameters[0];
       return true;
@@ -887,9 +891,6 @@ public class SurfaceGenerator {
         || "sasurface" == propertyName || "nomap" == propertyName) {
       params.setSolvent(propertyName, ((Float) value).floatValue());
       Logger.info(params.calculationType);
-      if (params.state < Parameters.STATE_DATA_READ
-          && (params.cutoffAutomatic || !params.colorDensity))
-        params.cutoff = 0.0f;
       processState();
       return true;
     }
@@ -1059,6 +1060,7 @@ public class SurfaceGenerator {
         surfaceReader = new IsoMlpReader(this);
       break;
     }
+    Logger.info("Using surface reader " + surfaceReader);
     return true;
   }
   
@@ -1111,6 +1113,7 @@ public class SurfaceGenerator {
     if (surfaceReader.hasColorData || params.colorDensity) {
       params.state = Parameters.STATE_DATA_COLORED;
       colorIsosurface();
+      surfaceReader = null;
     } else {
       surfaceReader = null; // resets voxel reader for mapping
     }
@@ -1145,7 +1148,7 @@ public class SurfaceGenerator {
       params.isSquared = isSquared;
       params.mappedDataMin = Float.MAX_VALUE;
       surfaceReader.readVolumeData(true);
-    } else if (!params.colorBySets) {
+    } else if (!params.colorBySets && !params.colorDensity) {
       surfaceReader.readAndSetVolumeParameters(true);
       params.mappedDataMin = Float.MAX_VALUE;
       surfaceReader.readVolumeData(true);

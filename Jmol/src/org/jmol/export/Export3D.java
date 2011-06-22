@@ -843,4 +843,9 @@ final public class Export3D implements JmolRendererInterface {
     // not implemented
   }
 
+  public void volumeRender(int diam, int x, int y, int z) {
+    fillSphere(diam, x, y, z);
+    
+  }
+
 }

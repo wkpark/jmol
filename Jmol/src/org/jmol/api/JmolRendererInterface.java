@@ -322,4 +322,6 @@ public interface JmolRendererInterface {
 
   public abstract void volumeRender(boolean TF);
 
+  public abstract void volumeRender(int diam, int x, int y, int z);
+
 }

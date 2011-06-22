@@ -164,7 +164,7 @@ class IsoSolventReader extends AtomDataReader {
 
   @Override
   protected boolean readVolumeParameters(boolean isMapData) {
-    setup();
+    setup(isMapData);
     if (isMapData && !doCalculateTroughs) {
       precalculateVoxelData = false;
       volumeData.sr = this;
@@ -173,9 +173,8 @@ class IsoSolventReader extends AtomDataReader {
     return true;
   }
 
-  @Override
-  protected void setup() {
-    super.setup();
+  private void setup(boolean isMapData) {
+    setup();
     cavityRadius = params.cavityRadius;
     envelopeRadius = params.envelopeRadius;
     solventRadius = params.solventRadius;
@@ -185,7 +184,7 @@ class IsoSolventReader extends AtomDataReader {
     isPocket = (params.pocket != null && meshDataServer != null);
     havePlane = (params.thePlane != null);
 
-    doCalculateTroughs = (atomDataServer != null && !isCavity // Jvxl needs an atom iterator to do this.
+    doCalculateTroughs = (!isMapData && atomDataServer != null && !isCavity // Jvxl needs an atom iterator to do this.
         && solventRadius > 0 && (dataType == Parameters.SURFACE_SOLVENT || dataType == Parameters.SURFACE_MOLECULAR));
     doUseIterator = doCalculateTroughs;
     getAtoms(Float.NaN, false, true, params.bsSelected);
@@ -194,11 +193,13 @@ class IsoSolventReader extends AtomDataReader {
           envelopeRadius);
 
     setHeader("solvent/molecular surface", params.calculationType);
-    setRangesAndAddAtoms(params.solvent_ptsPerAngstrom, params.solvent_gridMax,
-        params.thePlane != null ? Integer.MAX_VALUE : Math.min(firstNearbyAtom,
+    if (!isMapData) {
+      setRangesAndAddAtoms(params.solvent_ptsPerAngstrom, params.solvent_gridMax,
+         params.thePlane != null ? Integer.MAX_VALUE : Math.min(firstNearbyAtom,
             100));
-    volumeData.getYzCount();
-    margin = volumeData.maxGrid * 1.8f;
+      volumeData.getYzCount();
+      margin = volumeData.maxGrid * 1.8f;
+    }
     if (bsNearby != null)
       bsMySelected.or(bsNearby);
 
@@ -668,6 +669,8 @@ class IsoSolventReader extends AtomDataReader {
     }
 
     protected void dump() {
+      return;
+/*
       Point3f ptA = atomXyz[ia];
       Point3f ptB = atomXyz[ib];
       Point3f ptC = atomXyz[ic];
@@ -678,6 +681,7 @@ class IsoSolventReader extends AtomDataReader {
       dumpLine2(pS, ptA, "f", solventRadius, color, "white");
       dumpLine2(pS, ptB, "f", solventRadius, color, "white");
       dumpLine2(pS, ptC, "f", solventRadius, color, "white");
+ */
     }
   }
 

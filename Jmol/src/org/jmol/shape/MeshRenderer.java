@@ -51,6 +51,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected boolean frontOnly;
   protected boolean antialias;
   protected boolean haveBsDisplay;
+  protected boolean haveBsSlabDisplay;
 
   protected Point4f thePlane;
   protected Point3f latticeOffset = new Point3f();
@@ -135,6 +136,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
       // during a surface calculation
 
       haveBsDisplay = (mesh.bsDisplay != null);
+      haveBsSlabDisplay = (mesh.bsSlabDisplay != null);
       frontOnly = !viewer.getSlabEnabled() && mesh.frontOnly && !mesh.isTwoSided;
       screens = viewer.allocTempScreens(vertexCount);
       transformedVectors = g3d.getTransformedVertexVectors();

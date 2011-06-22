@@ -2431,25 +2431,26 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int SHAPE_MIN_SURFACE = 23; //////////
 
     public final static int SHAPE_ISOSURFACE  = 23;
-    public final static int SHAPE_LCAOCARTOON = 24;
-    public final static int SHAPE_MO          = 25;  //but no ID for MO
-    public final static int SHAPE_PMESH       = 26;
-    public final static int SHAPE_PLOT3D      = 27;
+    public final static int SHAPE_CONTACT =     24;
+    public final static int SHAPE_LCAOCARTOON = 25;
+    public final static int SHAPE_MO          = 26;  //but no ID for MO
+    public final static int SHAPE_PMESH       = 27;
+    public final static int SHAPE_PLOT3D      = 28;
 
-  public final static int SHAPE_MAX_SURFACE         = 28; //////////
-  public final static int SHAPE_MAX_MESH_COLLECTION = 28; //////////
+  public final static int SHAPE_MAX_SURFACE         = 29; //////////
+  public final static int SHAPE_MAX_MESH_COLLECTION = 29; //////////
   
-    public final static int SHAPE_ECHO       = 28;
+    public final static int SHAPE_ECHO       = 29;
   
-  public final static int SHAPE_MAX_HAS_ID = 29;
+  public final static int SHAPE_MAX_HAS_ID = 30;
   
-  public final static int SHAPE_AXES       = 29;
-  public final static int SHAPE_BBCAGE     = 30;
-  public final static int SHAPE_UCCAGE     = 31;
-  public final static int SHAPE_HOVER      = 32;
+  public final static int SHAPE_AXES       = 30;
+  public final static int SHAPE_BBCAGE     = 31;
+  public final static int SHAPE_UCCAGE     = 32;
+  public final static int SHAPE_HOVER      = 33;
   
   // last should be frank:
-  public final static int SHAPE_FRANK      = 33;
+  public final static int SHAPE_FRANK      = 34;
   public final static int SHAPE_MAX        = SHAPE_FRANK + 1;
 
   public final static boolean isShapeSecondary(int i ) {
@@ -2465,7 +2466,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "Labels", "Measures", "Stars", "Halos",
     "Backbone", "Trace", "Cartoon", "Strands", "MeshRibbon", "Ribbons", "Rockets", 
     "Dots", "Dipoles", "Vectors", "GeoSurface", "Ellipsoids", "Polyhedra", 
-    "Draw", "Isosurface", "LcaoCartoon", "MolecularOrbital", "Pmesh", "Plot3D", 
+    "Draw", "Isosurface", "Contact", "LcaoCartoon", "MolecularOrbital", "Pmesh", "Plot3D", 
     "Echo", "Axes", "Bbcage", "Uccage", "Hover", 
     "Frank"
      };
@@ -2533,6 +2534,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
       return SHAPE_DRAW;
     case Token.isosurface:
       return SHAPE_ISOSURFACE;
+    case Token.contact:
+      return SHAPE_CONTACT;
     case Token.lcaocartoon:
       return SHAPE_LCAOCARTOON;
     case Token.mo:

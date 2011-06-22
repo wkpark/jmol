@@ -152,6 +152,7 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
         notThis = s;
         if (splitCmd[2].startsWith("$") 
             || s.equalsIgnoreCase("isosurface ")
+            || s.equalsIgnoreCase("contact ")
             || s.equalsIgnoreCase("draw ")
          ) {
           map = new Hashtable<String, Token>();

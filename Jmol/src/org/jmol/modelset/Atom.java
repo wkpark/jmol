@@ -225,7 +225,7 @@ final public class Atom extends Point3fi implements JmolNode {
         float tmax = viewer.getBfactor100Hi();
         r = (tmax > 0 ? getBfactor100() / tmax : 0);
         break;
-      case Token.hydrophobicity:
+      case Token.hydrophobic:
         r = Math.abs(getHydrophobicity());
         break;
       case Token.ionic:
@@ -695,8 +695,8 @@ final public class Atom extends Point3fi implements JmolNode {
     return modelIndex;
   }
    
-  public int getMoleculeNumber() {
-    return (group.chain.modelSet.getMoleculeIndex(index) + 1);
+  public int getMoleculeNumber(boolean inModel) {
+    return (group.chain.modelSet.getMoleculeIndex(index, inModel) + 1);
   }
    
   private float getFractionalCoord(char ch, boolean asAbsolute) {
@@ -1172,7 +1172,7 @@ final public class Atom extends Point3fi implements JmolNode {
     case Token.modelindex:
       return atom.modelIndex;
     case Token.molecule:
-      return atom.getMoleculeNumber();
+      return atom.getMoleculeNumber(true);
     case Token.occupancy:
       return atom.getOccupancy100();
     case Token.polymer:
@@ -1219,7 +1219,7 @@ final public class Atom extends Point3fi implements JmolNode {
       return atom.getSurfaceDistance100() / 100f;
     case Token.temperature: // 0 - 9999
       return atom.getBfactor100() / 100f;
-    case Token.hydrophobicity:
+    case Token.hydrophobic:
       return atom.getHydrophobicity();
     case Token.volume:
       return atom.getVolume(viewer, JmolConstants.VDW_AUTO);

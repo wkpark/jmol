@@ -587,7 +587,7 @@ abstract public class AtomCollection {
         atom.setFormalCharge(iValue);
         taint(i, TAINT_FORMALCHARGE);
         break;
-      case Token.hydrophobicity:
+      case Token.hydrophobic:
         if (setHydrophobicity(i, fValue))
           taint(i, TAINT_HYDROPHOBICITY);
         break;

@@ -1413,7 +1413,7 @@ class ScriptMathProcessor {
       return false;
     Point3f pt1, pt2, pt3;
     Point4f plane;
-    Vector3f norm;
+    Vector3f norm, vTemp;
 
     switch (args.length) {
     case 1:
@@ -1427,6 +1427,10 @@ class ScriptMathProcessor {
         // intersection(point, plane)
         if (args[1].tok != Token.point4f)
           return false;
+        pt3 = new Point3f();
+        norm = new Vector3f();
+        vTemp = new Vector3f();
+
         plane = (Point4f) args[1].value;
         if (args[0].tok == Token.point4f) {
           List<Object> list = Measure.getIntersection((Point4f) args[0].value,
@@ -1436,7 +1440,7 @@ class ScriptMathProcessor {
         pt2 = ptValue(args[0], false);
         if (pt2 == null)
           return addX("");
-        return addX(Measure.getIntersection(pt2, null, plane));
+        return addX(Measure.getIntersection(pt2, null, plane, pt3, norm, vTemp));
       }
       // fall through
     case 3:
@@ -1456,7 +1460,10 @@ class ScriptMathProcessor {
         vLine.normalize();
         if (args[2].tok == Token.point4f) {
           // intersection(ptLine, vLine, plane)
-          pt1 = Measure.getIntersection(pt1, vLine, (Point4f) args[2].value);
+          pt3 = new Point3f();
+          norm = new Vector3f();
+          vTemp = new Vector3f();
+          pt1 = Measure.getIntersection(pt1, vLine, (Point4f) args[2].value, pt3, norm, vTemp);
           return addX(pt1 == null ? "" : pt1);
         }
         pt3 = ptValue(args[2], false);

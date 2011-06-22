@@ -502,11 +502,16 @@ public class Parameters {
     isEccentric = isAnisotropic = false;
     //anisotropy[0] = anisotropy[1] = anisotropy[2] = 1f;
     solventRadius = Math.abs(radius);
-    dataType = (intersection != null ? SURFACE_INTERSECT 
+    dataType = (intersection != null ? SURFACE_INTERSECT
         : "nomap" == propertyName ? SURFACE_NOMAP
-        : "molecular" == propertyName ? SURFACE_MOLECULAR
-            : "sasurface" == propertyName || solventRadius == 0f ? SURFACE_SASURFACE
-                : SURFACE_SOLVENT);
+            : "molecular" == propertyName ? SURFACE_MOLECULAR
+                : "sasurface" == propertyName || solventRadius == 0f ? SURFACE_SASURFACE
+                    : SURFACE_SOLVENT);
+
+    if (state < Parameters.STATE_DATA_READ
+        && (cutoffAutomatic || !colorDensity)
+        && (intersection == null || cutoff == Float.MAX_VALUE))
+      cutoff = 0.0f;
 
     switch (dataType) {
     case Parameters.SURFACE_INTERSECT:
@@ -653,11 +658,17 @@ public class Parameters {
       dataType = SURFACE_NCI;
     qm_marginAngstroms = 2f;
     qmOrbitalType = (isPromolecular ? QM_TYPE_NCI_PRO : QM_TYPE_NCI_SCF);
+
+    if (isPromolecular) {
+      if (parameters == null || parameters.length < 2)
+        parameters = new float[] { cutoff, 2 }; // default intermolecular
+    }
+
     if (cutoff == Float.MAX_VALUE || cutoff == 0)
       cutoff = 0.3f;
     if (isSquared)
       cutoff *= cutoff;
-    
+
     if (title == null)
       title = new String[0];
     moData = new Hashtable<String, Object>();
@@ -793,6 +804,7 @@ public class Parameters {
     }
     if (mappedDataMin == Float.MAX_VALUE || mappedDataMin == mappedDataMax) {
       float[] minMax = surfaceReader.getMinMaxMappedValues(haveData);
+      //System.out.println("parameters - setmapranges " + Escape.escape(minMax));
       mappedDataMin = minMax[0];
       mappedDataMax = minMax[1];
     }
@@ -818,6 +830,7 @@ public class Parameters {
       state = Parameters.STATE_DATA_READ;
     qmOrbitalType = QM_TYPE_UNKNOWN; 
     parameters = null;
+    colorDensity = false;
     mappedDataMin = Float.MAX_VALUE;
     intersection = null;
     func = null;
@@ -826,10 +839,10 @@ public class Parameters {
     steps = null;
   }
 
-    public void addSlabInfo(Object[] value) {
+    public void addSlabInfo(Object[] slabObject) {
     if (slabInfo == null)
       slabInfo = new ArrayList<Object[]>();
-    slabInfo.add(value);
+    slabInfo.add(slabObject);
   }
 
 }

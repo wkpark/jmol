@@ -28,11 +28,12 @@ package org.jmol.shapesurface;
 import java.util.BitSet;
 
 import org.jmol.atomdata.RadiusData;
+import org.jmol.jvxl.data.MeshData;
 import org.jmol.script.Token;
+import org.jmol.util.BitSetUtil;
+import org.jmol.util.MeshSurface;
 
 public class Contact extends Isosurface {
-
-  // these are globals, stored here and only passed on when the they are needed. 
 
   @Override
   public void initShape() {
@@ -42,12 +43,6 @@ public class Contact extends Isosurface {
 
   @Override
   public void setProperty(String propertyName, Object value, BitSet bs) {
-
-
-    if ("init" == propertyName) {
-      super.setProperty("init", value, null);
-      return;
-    }
 
     if ("set" == propertyName) {
       setContacts((Object[]) value);
@@ -61,6 +56,7 @@ public class Contact extends Isosurface {
     BitSet bsA = (BitSet) value[0];
     BitSet bsB = (BitSet) value[1];
     BitSet bsIgnore = (BitSet) value[2];
+    BitSet bs;
     int type = ((Integer) value[3]).intValue();
     RadiusData rd = (RadiusData) value[4];
     float[] params = (float[]) value[5];
@@ -71,17 +67,59 @@ public class Contact extends Isosurface {
     float ptSize = (isColorDensity  && params != null && params[0] < 0 ? Math.abs(params[0]) : 0.15f);
     
     
-    if (type == Token.full)
-      type = Token.plane; // for now
-    
     setProperty("newObject", null, null);
     
     if (isColorDensity)
       sg.setParameter("colorDensity", null);
 
     switch (type) {
+    case Token.testflag1:
+      break;
     case Token.full:
-      // TODO
+      int atomCount = viewer.getAtomCount();
+      
+      newSg();
+      setProperty("select", bsA, null);
+      bs = BitSetUtil.copyInvert(bsA, atomCount);
+      setProperty("ignore", bs, null);
+      setProperty("radius", rd, null);
+      setProperty("bsSolvent", null, null);
+      setProperty("sasurface", Float.valueOf(0), null);
+      setProperty("map", Boolean.TRUE, null);
+      setProperty("select", bsB, null);
+      bs = BitSetUtil.copyInvert(bsB, atomCount);
+      setProperty("ignore", bs, null);
+      setProperty("radius", rd, null);
+      setProperty("sasurface", Float.valueOf(0), null);
+      thisMesh.slabPolygons(MeshSurface.getSlabObject(Token.range, 
+          new Object[] { Float.valueOf(-100), Float.valueOf(0)}, false));
+      
+      MeshData data1 = new MeshData();
+      fillMeshData(data1, MeshData.MODE_GET_VERTICES, thisMesh);
+      
+      setProperty("init", null, null);
+      //setProperty("newObject", null, null);
+      
+      setProperty("select", bsB, null);
+      bs = BitSetUtil.copyInvert(bsB, atomCount);
+      setProperty("ignore", bs, null);
+      setProperty("radius", rd, null);
+      setProperty("bsSolvent", null, null);
+      setProperty("sasurface", Float.valueOf(0), null);
+      setProperty("map", Boolean.TRUE, null);
+      setProperty("select", bsA, null);
+      bs = BitSetUtil.copyInvert(bsA, atomCount);
+      setProperty("ignore", bs, null);
+      setProperty("radius", rd, null);
+      setProperty("sasurface", Float.valueOf(0), null);
+      thisMesh.slabPolygons(MeshSurface.getSlabObject(Token.range, 
+          new Object[] { Float.valueOf(-100), Float.valueOf(0)}, false));
+      
+      // not ready for this yet: thisMesh.slabPolygons(MeshSurface.getSlabObject(Token.mesh, 
+      //    new Object[] { Float.valueOf(100), data1}, false));
+      thisMesh.merge(data1);
+      setVertexOnly();
+      setProperty("finalize", command, null);
       break;
     case Token.plane:
     case Token.connect:
@@ -89,9 +127,9 @@ public class Contact extends Isosurface {
         setProperty("parameters", params, null);
       setProperty("func", func, null);
       setProperty("intersection", new BitSet[] { bsA, bsB }, null);
-      setProperty("radius", rd, null);
       if (isColorDensity)
         setProperty("cutoffRange", new float[] { -0.3f, 0.3f }, null);
+      setProperty("radius", rd, null);
       setProperty("bsSolvent", null, null);
       setProperty("sasurface", Float.valueOf(0), null);
       // mapping

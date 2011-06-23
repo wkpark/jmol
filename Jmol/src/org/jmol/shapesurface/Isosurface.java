@@ -162,7 +162,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     newSg();
   }
 
-  private void newSg() {
+  protected void newSg() {
     sg = new SurfaceGenerator(viewer, this, null, jvxlData = new JvxlData());
     sg.setVersion("Jmol " + Viewer.getJmolVersion());
   }
@@ -425,13 +425,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
           // How to save this in the state??
           data[1] = m;          
         }
-        thisMesh.slabPolygons(slabInfo);
-        thisMesh.jvxlData.vertexDataOnly = true;
-        thisMesh.initialize(thisMesh.lighting, null, null);
-        if (thisMesh.colorEncoder != null) {
-          thisMesh.vertexColixes = null;
-          thisMesh.remapColors(null, translucentLevel);
-        }
+        slabPolygons(slabInfo);
         return;
       }
     }
@@ -604,6 +598,20 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     // processing by meshCollection:
     setPropertySuper(propertyName, value, bs);
   }  
+
+  protected void slabPolygons(Object[] slabInfo) {
+    thisMesh.slabPolygons(slabInfo);
+    setVertexOnly();
+  }
+
+  protected void setVertexOnly() {
+    thisMesh.jvxlData.vertexDataOnly = true;
+    thisMesh.initialize(thisMesh.lighting, null, null);
+    if (thisMesh.colorEncoder != null) {
+      thisMesh.vertexColixes = null;
+      thisMesh.remapColors(null, translucentLevel);
+    }
+  }
 
   private void setPropertySuper(String propertyName, Object value, BitSet bs) {
     if (propertyName == "thisID" && currentMesh != null 

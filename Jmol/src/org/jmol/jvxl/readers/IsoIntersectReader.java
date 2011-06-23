@@ -64,7 +64,7 @@ class IsoIntersectReader extends AtomDataReader {
     bsSelected.or(bsA);
     bsSelected.or(bsB);
     doUseIterator = true; // just means we want a map
-    getAtoms(Float.NaN, false, false, bsSelected);
+    getAtoms(Float.NaN, false, bsSelected);
     setHeader("VDW intersection surface", params.calculationType);
     setRangesAndAddAtoms(params.solvent_ptsPerAngstrom, params.solvent_gridMax,
         params.thePlane != null ? Integer.MAX_VALUE : Math.min(firstNearbyAtom,

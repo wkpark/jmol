@@ -10,30 +10,70 @@ import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
+import org.jmol.jvxl.data.MeshData;
 import org.jmol.modelset.BoxInfo;
 import org.jmol.script.Token;
 
 public class MeshSurface {
 
+
+  public void merge(MeshData m) {
+    int nV = vertexCount + m.vertexCount;
+    int nP = polygonCount + m.polygonCount;
+    vertices = (Point3f[]) ArrayUtil.ensureLength(vertices, nV);
+    vertexValues = ArrayUtil.ensureLength(vertexValues, nV);
+    boolean haveSources = (vertexSource != null && m.vertexSource != null);
+    vertexSource = ArrayUtil.ensureLength(vertexSource, nV);
+    polygonIndexes = (int[][]) ArrayUtil.ensureLength(polygonIndexes, nP);
+    // note -- assuming here this is not colorDensity
+    if (m.bsSlabDisplay != null  && bsSlabDisplay == null)
+      bsSlabDisplay = BitSetUtil.setAll(polygonCount);
+
+    for (int i = 0; i < m.polygonCount; i++, polygonCount++) {
+      int[] p = m.polygonIndexes[i];
+      for (int j = 0; j < 3; j++)
+        p[j] += vertexCount;
+      polygonIndexes[polygonCount] = p;
+      if (bsSlabDisplay != null)
+        bsSlabDisplay.set(polygonCount, (m.bsSlabDisplay == null || m.bsSlabDisplay.get(i)));
+    }
+
+    for (int i = 0; i < m.vertexCount; i++, vertexCount++) {
+      vertices[vertexCount] = m.vertices[i];
+      vertexValues[vertexCount] = m.vertexValues[i];
+      if (haveSources)
+        vertexSource[vertexCount] = m.vertexSource[i];
+    }
+    
+    vertexCount = nV;
+    polygonCount = nP;
+  }
+
+
+
   protected static final int SEED_COUNT = 25;
+
+  public int vertexCount;
+  public Point3f[] vertices;
+  public float[] vertexValues;
+  public int[] vertexSource;
+  
+  public int polygonCount;
+  public int[][] polygonIndexes;
+  
   public boolean haveQuads;
   public short colix;
   public boolean isColorSolid = true;
-  public int vertexCount;
-  public Point3f[] vertices;
-  public int[] vertexSource;
   public Point3f offset;
   public Tuple3f[] altVertices;
-  public short[] vertexColixes;
-  public int polygonCount;
-  public int[][] polygonIndexes;
+
   public short[] polygonColixes;
+  public short[] vertexColixes;
   public Tuple3f[] normals;
   public int normalCount;
   public BitSet bsPolygons;
   public Point3f ptOffset;
   public float scale3d;
-  public float[] vertexValues;
   public BitSet[] surfaceSet;
   public int[] vertexSets;
   public int nSets = 0;
@@ -204,7 +244,7 @@ public class MeshSurface {
 
   public StringBuffer slabOptions;
   
-  public static Object getSlabObject(int tok, Object data, boolean isCap) {
+  public static Object[] getSlabObject(int tok, Object data, boolean isCap) {
     return new Object[] { Integer.valueOf(tok), data, Boolean.valueOf(isCap) };
   }
 

@@ -92,12 +92,11 @@ abstract class AtomDataReader extends VolumeDataReader {
   /**
    * 
    * @param marginAtoms
-   * @param doGetAllAtoms UNUSED
    * @param addNearbyAtoms
    * @param bsSelected TODO
    */
-  protected void getAtoms(float marginAtoms, boolean doGetAllAtoms,
-                          boolean addNearbyAtoms, BitSet bsSelected) {
+  protected void getAtoms(float marginAtoms, boolean addNearbyAtoms,
+                          BitSet bsSelected) {
 
     if (params.atomRadiusData == null)
       params.atomRadiusData = new RadiusData(1, RadiusData.TYPE_FACTOR,

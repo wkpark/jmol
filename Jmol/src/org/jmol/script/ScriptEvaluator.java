@@ -15120,7 +15120,7 @@ public class ScriptEvaluator {
     boolean colorDensity = false;
     StringBuffer sbCommand = new StringBuffer();
     
-    int type = Token.plane;// TODO: Token.full;
+    int type = Token.plane; // Token.full;
     int bondMode = Token.nada;
     float distance = 5;
     Boolean intramolecular = null;
@@ -15169,7 +15169,6 @@ public class ScriptEvaluator {
       case Token.plane:
       case Token.connect:
         type = theTok;
-        sbCommand.append(" ").append(theToken.value);
         break;
       case Token.nci:
         type = theTok;
@@ -15230,6 +15229,7 @@ public class ScriptEvaluator {
     }
     if (isSyntaxCheck)
       return;
+    sbCommand.append(" ").append(Token.nameOf(type));
     if (rd == null)
       rd = encodeRadiusParameter(-1, false);
     if (Float.isNaN(rd.value))
@@ -15291,6 +15291,9 @@ public class ScriptEvaluator {
       Object[] func = null;
       Object slab = null;
       switch (type) {
+      case Token.full:
+        func = createFunction("__con__", "a,b", "(a > b ? a : b)");
+        break;
       case Token.plane:
         func = createFunction("__con__", "a,b", "a-b");
         slab = getCapSlabObject(-1, false);

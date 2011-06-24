@@ -123,9 +123,11 @@ public class AtomData {
   public AtomData() {    
   }
  
-  final static public int MODE_FILL_COORDS = 1;
-  final static public int MODE_FILL_COORDS_AND_RADII = 2;
-  final static public int MODE_GET_ATTACHED_HYDROGENS = 3;
+  public final static int MODE_FILL_COORDS = 1;
+  public final static int MODE_FILL_RADII = 2;
+  public final static int MODE_FILL_MOLECULES = 4;
+  public final static int MODE_GET_ATTACHED_HYDROGENS = 8;
+  public final static int MODE_FILL_MULTIMODEL = 16;
  
   public String programInfo;
   public String fileName;
@@ -134,6 +136,7 @@ public class AtomData {
   
   public BitSet bsSelected;
   public BitSet bsIgnored;
+  public BitSet[] bsMolecules;
   
   public RadiusData radiusData;
   

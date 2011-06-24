@@ -41,7 +41,7 @@ class IsoMepReader extends AtomDataReader {
   protected void setup() {
     super.setup();
     doAddHydrogens = false;
-    getAtoms(params.mep_marginAngstroms, false, params.bsSelected);
+    getAtoms(params.bsSelected, true, false, false, false, params.mep_marginAngstroms);
     setHeader("MEP", "");
     setRangesAndAddAtoms(params.mep_ptsPerAngstrom, params.mep_gridMax, myAtomCount);    
   }

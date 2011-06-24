@@ -25,6 +25,7 @@ package org.jmol.quantum;
 
 import org.jmol.api.QuantumPlaneCalculationInterface;
 import org.jmol.api.VolumeDataInterface;
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.Eigen;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
@@ -113,7 +114,6 @@ public class NciCalculation extends QuantumCalculation implements
   }
 
   private Eigen eigen;
-  private BitSet[] bsMolecules;
   private double[] rhoMolecules;
   private int type;
   private int nMolecules;
@@ -123,27 +123,30 @@ public class NciCalculation extends QuantumCalculation implements
 
   public boolean setupCalculation(VolumeDataInterface volumeData,
                                   BitSet bsSelected, BitSet bsExcluded,
-                                  String calculationType,
-                                  Point3f[] atomCoordAngstroms, int firstAtomOffset,
-                                  List<int[]> shells, float[][] gaussians,
-                                  int[][] dfCoefMaps, Object slaters,
-                                  float[] moCoefficients, float[] linearCombination,
-                                  float[][] coefs, float[] partialCharges,
-                                  boolean isDensityOnly, Point3f[] points, float[] parameters) {
+                                  BitSet[] bsMolecules, String calculationType,
+                                  Point3f[] atomCoordAngstroms,
+                                  int firstAtomOffset, List<int[]> shells,
+                                  float[][] gaussians, int[][] dfCoefMaps,
+                                  Object slaters, float[] moCoefficients,
+                                  float[] linearCombination, float[][] coefs,
+                                  float[] partialCharges,
+                                  boolean isDensityOnly, Point3f[] points,
+                                  float[] parameters) {
     this.bsExcluded = bsExcluded;
     BitSet bsLigand = new BitSet();
     bsLigand.or(bsSelected);
     if (bsExcluded != null) {
       bsLigand.andNot(bsExcluded);
     }
-    isPromolecular = (firstAtomOffset >= 0);    
+    isPromolecular = (firstAtomOffset >= 0);
     havePoints = (points != null);
     isReducedDensity = isDensityOnly;
     if (parameters != null)
       Logger.info("NCI calculation parameters = " + Escape.escape(parameters));
     // parameters[0] is the cutoff.
     type = (int) getParameter(parameters, 1, 0, "type");
-    rhoPlot = getParameter(parameters, 2, (isPromolecular ? DEFAULT_RHOPLOT_PRO : DEFAULT_RHOPLOT_SCF), "rhoPlot");
+    rhoPlot = getParameter(parameters, 2, (isPromolecular ? DEFAULT_RHOPLOT_PRO
+        : DEFAULT_RHOPLOT_SCF), "rhoPlot");
     rhoParam = getParameter(parameters, 3, DEFAULT_RHOPARAM, "rhoParam");
     dataScaling = (float) getParameter(parameters, 4, 1, "dataScaling");
     dataIsReducedDensity = (type < 0);
@@ -152,6 +155,7 @@ public class NciCalculation extends QuantumCalculation implements
     default:
       type = 0;
       stype = "all";
+      bsMolecules = null;
       break;
     case -TYPE_INTRA:
     case TYPE_INTRA:
@@ -167,13 +171,15 @@ public class NciCalculation extends QuantumCalculation implements
       stype = "ligand";
       break;
     }
-    
+    nMolecules = 0;
+
     // no need for atoms if ALL and SCF
     if (!isPromolecular && type == TYPE_ALL)
       atomCoordAngstroms = null;
-    
-    Logger.info("NCI calculation type = " + (isPromolecular ? "promolecular " : "SCF(CUBE) ") + stype);
-    
+
+    Logger.info("NCI calculation type = "
+        + (isPromolecular ? "promolecular " : "SCF(CUBE) ") + stype);
+
     voxelData = volumeData.getVoxelData();
     countsXYZ = volumeData.getVoxelCounts();
     initialize(countsXYZ[0], countsXYZ[1], countsXYZ[2], points);
@@ -185,11 +191,11 @@ public class NciCalculation extends QuantumCalculation implements
     setupCoordinates(volumeData.getOriginFloat(), volumeData
         .getVolumetricVectorLengths(), bsSelected, atomCoordAngstroms, points,
         true);
-    
+
     if (qmAtoms != null) {
-      nMolecules = 0;
-      int firstMolecule = Integer.MAX_VALUE;
+      int[] qmMap = new int[bsSelected.length()];
       for (int i = qmAtoms.length; --i >= 0;) {
+        qmMap[qmAtoms[i].index] = i;
         // must ignore heavier elements
         if (qmAtoms[i].znuc < 1) {
           qmAtoms[i] = null;
@@ -198,33 +204,27 @@ public class NciCalculation extends QuantumCalculation implements
           Logger.info("NCI calculation just setting nuclear charge for "
               + qmAtoms[i].atom + " to 18 (argon)");
         }
-        if (type != TYPE_ALL) {
-          int iMolecule = qmAtoms[i].iMolecule = qmAtoms[i].atom
-              .getMoleculeNumber(false);
-          nMolecules = Math.max(nMolecules, iMolecule);
-          firstMolecule = Math.min(firstMolecule, iMolecule);
+      }
+      nMolecules = 0;
+      if (type != TYPE_ALL) {
+        for (int i = 0; i < bsMolecules.length; i++) {
+          BitSet bs = BitSetUtil.copy(bsMolecules[i]);
+          bs.and(bsSelected);
+          if (bs.nextSetBit(0) < 0)
+            continue;
+          for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1))
+            qmAtoms[qmMap[j]].iMolecule = nMolecules;
+          nMolecules++;
+          Logger.info("Molecule " + (nMolecules) + " ("
+              + bs.cardinality() + " atoms): " + Escape.escape(bs));
         }
+        rhoMolecules = new double[nMolecules];
       }
       if (nMolecules == 0)
         nMolecules = 1;
-      else
-        nMolecules = nMolecules - firstMolecule + 1;
       if (nMolecules == 1) {
         noValuesAtAll = (type != TYPE_ALL && type != TYPE_INTRA);
         type = TYPE_ALL;
-      }
-      if (type != TYPE_ALL) {
-        bsMolecules = new BitSet[nMolecules];
-        for (int i = qmAtoms.length; --i >= 0;) {
-          int j = qmAtoms[i].iMolecule = qmAtoms[i].iMolecule - firstMolecule;
-          if (bsMolecules[j] == null)
-            bsMolecules[j] = new BitSet();
-          bsMolecules[j].set(i);
-        }
-        for (int i = 0; i < nMolecules; i++)
-          if (bsMolecules[i] != null)
-            Logger.info("Molecule " + (i + 1) + " (" + bsMolecules[i].cardinality() + " atoms): " + bsMolecules[i]);
-        rhoMolecules = new double[nMolecules];
       }
       if (!isPromolecular)
         getBsOK();

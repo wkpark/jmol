@@ -57,7 +57,7 @@ abstract class AtomDataReader extends VolumeDataReader {
   protected int modelIndex;
 
   protected AtomData atomData = new AtomData();
-  
+
   protected Point3f[] atomXyz;
   protected float[] atomRadius;
   protected float[] atomProp;
@@ -73,7 +73,6 @@ abstract class AtomDataReader extends VolumeDataReader {
   protected boolean doAddHydrogens;
   protected boolean doUsePlane;
   protected boolean doUseIterator;
-
 
   @Override
   protected void setup() {
@@ -91,14 +90,25 @@ abstract class AtomDataReader extends VolumeDataReader {
 
   /**
    * 
-   * @param marginAtoms
+   * @param bsSelected
+   *        TODO
+   * @param getRadii
+   *        TODO
+   * @param getMolecules
+   *        TODO
+   * @param getAllModels TODO
    * @param addNearbyAtoms
-   * @param bsSelected TODO
+   * @param marginAtoms
    */
-  protected void getAtoms(float marginAtoms, boolean addNearbyAtoms,
-                          BitSet bsSelected) {
+  protected void getAtoms(BitSet bsSelected, boolean getRadii,
+                          boolean getMolecules, boolean getAllModels,
+                          boolean addNearbyAtoms, float marginAtoms) {
 
-    if (params.atomRadiusData == null)
+    if (addNearbyAtoms)
+      getRadii = true;
+    // set atomRadiusData to 100% if it has not been set already
+    // if it hasn't already been set.
+    if (params.atomRadiusData == null && getRadii)
       params.atomRadiusData = new RadiusData(1, RadiusData.TYPE_FACTOR,
           JmolConstants.VDW_AUTO);
     atomData.radiusData = params.atomRadiusData;
@@ -108,17 +118,18 @@ abstract class AtomDataReader extends VolumeDataReader {
     // means "this model only"
     atomData.bsSelected = bsSelected;
     atomData.bsIgnored = bsMyIgnored;
-    atomDataServer.fillAtomData(atomData, AtomData.MODE_FILL_COORDS_AND_RADII);
+    atomDataServer.fillAtomData(atomData, AtomData.MODE_FILL_COORDS
+        | (getAllModels ? AtomData.MODE_FILL_MULTIMODEL : 0)
+        | (getMolecules ? AtomData.MODE_FILL_MOLECULES : 0)
+        | (getRadii ? AtomData.MODE_FILL_RADII : 0));
     if (doUseIterator)
-      atomData.bsSelected = null; 
+      atomData.bsSelected = null;
     atomCount = atomData.atomCount;
     modelIndex = atomData.firstModelIndex;
     int nSelected = 0;
     boolean needRadius = false;
     for (int i = 0; i < atomCount; i++) {
-      if ((bsSelected == null 
-          || bsSelected.get(i))
-          && (!bsMyIgnored.get(i))) {
+      if ((bsSelected == null || bsSelected.get(i)) && (!bsMyIgnored.get(i))) {
         if (doUsePlane
             && Math.abs(volumeData.distancePointToPlane(atomData.atomXyz[i])) > 2 * (atomData.atomRadius[i] = getWorkingRadius(
                 i, marginAtoms)))
@@ -127,12 +138,11 @@ abstract class AtomDataReader extends VolumeDataReader {
         nSelected++;
         needRadius = !doUsePlane;
       }
-      if (addNearbyAtoms || needRadius) {
+      if (getRadii && (addNearbyAtoms || needRadius))
         atomData.atomRadius[i] = getWorkingRadius(i, marginAtoms);
-      }
     }
 
-    float rH = (doAddHydrogens ? getWorkingRadius(-1, marginAtoms) : 0);
+    float rH = (getRadii && doAddHydrogens ? getWorkingRadius(-1, marginAtoms) : 0);
     myAtomCount = BitSetUtil.cardinalityOf(bsMySelected);
     BitSet atomSet = BitSetUtil.copy(bsMySelected);
     int nH = 0;
@@ -153,7 +163,8 @@ abstract class AtomDataReader extends VolumeDataReader {
         Logger.info(nH + " attached hydrogens added");
       }
       int n = nH + myAtomCount;
-      atomRadius = new float[n];
+      if (getRadii)
+        atomRadius = new float[n];
       atomXyz = new Point3f[n];
       if (params.theProperty != null)
         atomProp = new float[n];
@@ -164,7 +175,8 @@ abstract class AtomDataReader extends VolumeDataReader {
       }
 
       for (int i = 0; i < nH; i++) {
-        atomRadius[i] = rH;
+        if (getRadii)
+          atomRadius[i] = rH;
         atomXyz[i] = hAtoms[i];
         atomNo[i] = -1;
         if (atomProp != null)
@@ -184,14 +196,16 @@ abstract class AtomDataReader extends VolumeDataReader {
           atomIndex[myAtomCount] = i;
           myIndex[i] = myAtomCount;
         }
-        atomRadius[myAtomCount++] = atomData.atomRadius[i];
+        if (getRadii)
+          atomRadius[myAtomCount] = atomData.atomRadius[i];
+        myAtomCount++;
       }
     }
     firstNearbyAtom = myAtomCount;
     Logger.info(myAtomCount + " atoms will be used in the surface calculation");
 
     for (int i = 0; i < myAtomCount; i++)
-      setBoundingBox(atomXyz[i], atomRadius[i]);
+      setBoundingBox(atomXyz[i], getRadii ? atomRadius[i] : 0);
     if (!Float.isNaN(params.scale)) {
       Vector3f v = new Vector3f(xyzMax);
       v.sub(xyzMin);
@@ -275,8 +289,10 @@ abstract class AtomDataReader extends VolumeDataReader {
   protected void setHeader(String calcType, String line2) {
     jvxlFileHeaderBuffer = new StringBuffer();
     if (atomData.programInfo != null)
-      jvxlFileHeaderBuffer.append("#created by ").append(atomData.programInfo).append(" on ").append(new Date()).append("\n");
-    jvxlFileHeaderBuffer.append(calcType).append("\n").append(line2).append("\n");
+      jvxlFileHeaderBuffer.append("#created by ").append(atomData.programInfo)
+          .append(" on ").append(new Date()).append("\n");
+    jvxlFileHeaderBuffer.append(calcType).append("\n").append(line2).append(
+        "\n");
   }
 
   protected void setRangesAndAddAtoms(float ptsPerAngstrom, int maxGrid,
@@ -286,10 +302,10 @@ abstract class AtomDataReader extends VolumeDataReader {
     this.ptsPerAngstrom = ptsPerAngstrom;
     this.maxGrid = maxGrid;
     setVolumeData();
-    JvxlCoder.jvxlCreateHeader(volumeData, nWritten, atomXyz,
-        atomNo, jvxlFileHeaderBuffer);
+    JvxlCoder.jvxlCreateHeader(volumeData, nWritten, atomXyz, atomNo,
+        jvxlFileHeaderBuffer);
   }
-  
+
   @Override
   protected void setVolumeData() {
     if (!setVolumeDataParams()) {
@@ -298,7 +314,7 @@ abstract class AtomDataReader extends VolumeDataReader {
       setVoxelRange(2, xyzMin.z, xyzMax.z, ptsPerAngstrom, maxGrid);
     }
   }
-  
+
   protected void setVertexSource() {
     if (meshDataServer != null)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
@@ -326,9 +342,9 @@ abstract class AtomDataReader extends VolumeDataReader {
   }
 
   protected float margin;
-  
+
   protected void setGridLimitsForAtom(Point3f ptA, float rA, Point3i pt0,
-                                    Point3i pt1) {
+                                      Point3i pt1) {
     rA += margin; // to span corner-to-corner possibility
     volumeData.xyzToVoxelPt(ptA.x - rA, ptA.y - rA, ptA.z - rA, pt0);
     pt0.x = Math.max(pt0.x - 1, 0);
@@ -340,15 +356,16 @@ abstract class AtomDataReader extends VolumeDataReader {
     pt1.z = Math.min(pt1.z + 1, nPointsZ);
   }
 
-
   protected boolean fixTitleLine(int iLine) {
     if (params.title == null)
       return false;
     String line = params.title[iLine];
     if (line.indexOf("%F") > 0)
-      line = params.title[iLine] = TextFormat.formatString(line, "F", atomData.fileName);
+      line = params.title[iLine] = TextFormat.formatString(line, "F",
+          atomData.fileName);
     if (line.indexOf("%M") > 0)
-      params.title[iLine] = TextFormat.formatString(line, "M", atomData.modelName);
+      params.title[iLine] = TextFormat.formatString(line, "M",
+          atomData.modelName);
     return true;
   }
 }

@@ -600,12 +600,13 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   }  
 
   protected void slabPolygons(Object[] slabInfo) {
-    thisMesh.slabPolygons(slabInfo);
-    setVertexOnly();
+    if (thisMesh.slabPolygons(slabInfo))
+      thisMesh.jvxlData.vertexDataOnly = true;
+    reinitializeLightingAndColor();
+
   }
 
-  protected void setVertexOnly() {
-    thisMesh.jvxlData.vertexDataOnly = true;
+  protected void reinitializeLightingAndColor() {
     thisMesh.initialize(thisMesh.lighting, null, null);
     if (thisMesh.colorEncoder != null) {
       thisMesh.vertexColixes = null;
@@ -928,6 +929,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   private boolean iHaveModelIndex;
 
   private void initializeIsosurface() {
+    System.out.println("isosurface initializing " + thisMesh);
     if (!iHaveModelIndex)
       modelIndex = viewer.getCurrentModelIndex();
     isFixed = (modelIndex < 0);
@@ -1409,6 +1411,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   @Override
   public Point3fi checkObjectClicked(int x, int y, int action, BitSet bsVisible) {
+    if (!(viewer.getDrawPicking() || viewer.getNavigationMode() && viewer.getNavigateSurface())) 
+       return null;
     if (!viewer.isBound(action, ActionManager.ACTION_pickIsosurface))
       return null;
     int dmin2 = MAX_OBJECT_CLICK_DISTANCE_SQUARED;

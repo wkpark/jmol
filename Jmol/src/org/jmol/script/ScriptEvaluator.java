@@ -15092,7 +15092,6 @@ public class ScriptEvaluator {
     //         ID aaaa (if present, must be FIRST parameter, before {setA}
     //         {setB} 
     //         DENSITY x.x
-    //         IGNORE {ignore} 
     //         DISTANCE x.x
     //         PARAMETERS [....] 
     //         FULL|PLANAR|CONNECT|NCI (FULL not implemented yet)
@@ -15118,15 +15117,17 @@ public class ScriptEvaluator {
     RadiusData rd = null;
     float[] params = null;
     boolean colorDensity = false;
+    boolean haveColor = false;
     StringBuffer sbCommand = new StringBuffer();
-    int resolution;
     int minSet = Integer.MAX_VALUE;
     int type = Token.plane; // Token.full;
     int bondMode = Token.nada;
     float distance = 5;
     Boolean intramolecular = null;
+    Object userSlabObject = null;
     int colorpt = 0;
     int tok;
+    int ipoint = 0;
     String filter = null;
     for (int i = iToken; i < statementLength; ++i) {
       switch (tok = getToken(i).tok) {
@@ -15143,10 +15144,15 @@ public class ScriptEvaluator {
             params = new float[1];
           params[0] = -Math.abs(floatParameter(++i));
           sbCommand.append(" " + -params[0]);
-        }        
+        }
         break;
       case Token.resolution:
-        resolution = intParameter(++i);
+        float resolution = floatParameter(++i);
+        if (resolution > 0) {
+          sbCommand.append(" resolution ").append(resolution);
+          setShapeProperty(JmolConstants.SHAPE_CONTACT, "resolution", Float
+              .valueOf(resolution));
+        }
         break;
       case Token.distance:
         distance = floatParameter(++i);
@@ -15157,8 +15163,14 @@ public class ScriptEvaluator {
         sbCommand.append(" ").append(rd);
         i = iToken;
         break;
+      case Token.slab:
+        userSlabObject = getCapSlabObject(i, true);
+        setShapeProperty(JmolConstants.SHAPE_CONTACT, "slab", userSlabObject);
+        i = iToken;
+        break;
       case Token.intermolecular:
       case Token.intramolecular:
+        ipoint = iToken;
         intramolecular = (tok == Token.intramolecular ? Boolean.TRUE
             : Boolean.FALSE);
         sbCommand.append(" ").append(theToken.value);
@@ -15182,11 +15194,11 @@ public class ScriptEvaluator {
         params = floatParameterSet(++i, 1, 10);
         i = iToken;
         break;
-      case Token.ignore:
-        bsIgnore = atomExpression(++i);
-        sbCommand.append(" ignore ").append(Escape.escape(bsIgnore));
-        i = iToken;
-        break;
+      //case Token.ignore:
+      //  bsIgnore = atomExpression(++i);
+       // sbCommand.append(" ignore ").append(Escape.escape(bsIgnore));
+      //  i = iToken;
+      //  break;
       case Token.bitset:
       case Token.expressionBegin:
         if (isWild || bsB != null)
@@ -15200,14 +15212,16 @@ public class ScriptEvaluator {
         sbCommand.append(" ").append(Escape.escape(bs));
         break;
       case Token.color:
-      case Token.translucent:
-      case Token.opaque:
+        haveColor = true;
         if (tok == Token.color && tokAt(i + 1) == Token.density) {
           colorDensity = true;
           sbCommand.append(" color density");
           i++;
           break;
         }
+        // fall through to translucent
+      case Token.translucent:
+      case Token.opaque:
         colorpt = i;
         setMeshDisplayProperty(JmolConstants.SHAPE_CONTACT, i, theTok);
         i = iToken;
@@ -15230,6 +15244,11 @@ public class ScriptEvaluator {
     }
     if (isSyntaxCheck)
       return;
+
+    // allow INTRAMOLECULAR only for NCI
+    if (type != Token.nci && intramolecular != null && intramolecular.booleanValue())
+      error(ERROR_invalidArgument, ipoint);
+  
     sbCommand.append(" ").append(Token.nameOf(type));
     if (bsA != null) {
       // bond mode, intramolec set here
@@ -15238,7 +15257,7 @@ public class ScriptEvaluator {
         rd = encodeRadiusParameter(-1, false);
       if (Float.isNaN(rd.value))
         rd.value = 100;
-      
+
       Object[] func = null;
       Object slab = null;
       switch (type) {
@@ -15255,12 +15274,13 @@ public class ScriptEvaluator {
       case Token.nci:
         if (minSet == Integer.MAX_VALUE)
           minSet = 100;
-        setShapeProperty(JmolConstants.SHAPE_CONTACT, "minset", Integer.valueOf(minSet)); 
+        setShapeProperty(JmolConstants.SHAPE_CONTACT, "minset", Integer
+            .valueOf(minSet));
         sbCommand.append(" minSet ").append(minSet);
         if (params == null)
           params = new float[] { 0.5f, 2 };
       }
-      
+
       if (bsB == null) {
         // if INTRAMOLCULAR and no {B}, then this means "just {A} to {A}"
         // otherwise, {B} should be set to {!A}
@@ -15271,30 +15291,26 @@ public class ScriptEvaluator {
           bsB = BitSetUtil.setAll(viewer.getAtomCount());
           bsB.andNot(bsA);
         }
+        bs = viewer.getAtomsWithin(distance, bsA, false);
+        // {B} always within some fixed distance of A
+        bsB.and(bs);
+      } else {
+        bs = viewer.getAtomsWithin(distance, bsA, true);
+        // {B} always within some fixed distance of A
+        bsB.and(bs);
       }
       if (bsIgnore == null)
         bsIgnore = BitSetUtil.setAll(viewer.getAtomCount());
 
-      bs = viewer.getAtomsWithin(distance, bsA, true);
-      // {B} always within some fixed distance of A
-      bsB.and(bs);
       // {ignore} always not A and not B and not within that distance 
       bsIgnore.andNot(bsA);
       bsIgnore.andNot(bsB);
       bsIgnore.andNot(bs);
+      
       if (intramolecular != null) {
-        if (type == Token.nci) {
-          params = (params == null ? new float[2] : ArrayUtil.ensureLength(
-              params, 2));
-          params[1] = (intramolecular.booleanValue() ? 1 : 2);
-        } else if (intramolecular.booleanValue()) {
-          // for intramolecular, {B} must be in molecule, and {ignore} must not
-          bs = viewer.getAtomBits(Token.molecule, bsA);
-          bsIgnore.andNot(bs);
-          bsB.and(bs);
-        } else {
-          // now what?
-        }
+        params = (params == null ? new float[2] : ArrayUtil.ensureLength(
+            params, 2));
+        params[1] = (intramolecular.booleanValue() ? 1 : 2);
       }
 
       if (params != null)
@@ -15317,7 +15333,8 @@ public class ScriptEvaluator {
       }
 
       setShapeProperty(JmolConstants.SHAPE_CONTACT, "set", new Object[] { bsA,
-          bsB, bsIgnore, new Integer(type), rd, params, func, slab, Boolean.valueOf(colorDensity), sbCommand.toString() });
+          bsB, bsIgnore, new Integer(type), rd, params, func, slab,
+          Boolean.valueOf(colorDensity), sbCommand.toString() });
       setShapeProperty(JmolConstants.SHAPE_CONTACT, "clear", null);
       if (colorpt > 0)
         setMeshDisplayProperty(JmolConstants.SHAPE_CONTACT, colorpt, 0);
@@ -15328,10 +15345,21 @@ public class ScriptEvaluator {
         error(ERROR_invalidArgument);
     }
     setShapeProperty(JmolConstants.SHAPE_CONTACT, "clear", null);
-    if (colorpt == 0 && filter != null)
-      setShapeProperty(JmolConstants.SHAPE_CONTACT, "color", Integer
-          .valueOf(Graphics3D
-              .getArgbFromString(bondMode == Token.hbond ? "purple" : "green")));
+    if (!haveColor) {
+      if (filter != null) {
+        setShapeProperty(JmolConstants.SHAPE_CONTACT, "color",
+            Integer
+                .valueOf(Graphics3D
+                    .getArgbFromString(bondMode == Token.hbond ? "purple"
+                        : "green")));
+      } else if (type == Token.nci) {
+        ColorEncoder ce = viewer.getColorEncoder("bgr");
+        ce.setRange(-0.03f, 0.03f, false);
+        setShapeProperty(JmolConstants.SHAPE_CONTACT, "remapColor", ce);
+      }
+    }
+    if (userSlabObject != null)
+      setShapeProperty(JmolConstants.SHAPE_CONTACT, "slab", userSlabObject);
   }
     
   private void lcaoCartoon() throws ScriptException {

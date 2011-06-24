@@ -199,8 +199,6 @@ public class IsosurfaceRenderer extends MeshRenderer {
             && Math.abs(screens[i].y - cY) < 50) {
           String s = i
               + (imesh.isColorSolid ? "" : " " + imesh.vertexValues[i]);
-          //System.out.println("IsoSurfaceRenderer i=" + s + " " 
-          //  + vertices[i] + " " + imesh.vertexValues[i]);
           g3d.drawStringNoSlab(s, null, screens[i].x, screens[i].y,
               screens[i].z);
         }
@@ -252,7 +250,6 @@ public class IsosurfaceRenderer extends MeshRenderer {
       frontOnly = false;
     }
     boolean colorSolid = (vertexColixes == null || imesh.isColorSolid);
-    //System.out.println("isosurfacerenderer imesh.isColorSolid = " + imesh.isColorSolid);
     boolean noColor = (vertexColixes == null || !fill && imesh.meshColix != 0);
     boolean isPlane = (imesh.jvxlData.jvxlPlane != null);
     short colix = this.colix;

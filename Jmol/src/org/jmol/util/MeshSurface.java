@@ -18,16 +18,21 @@ public class MeshSurface {
 
 
   public void merge(MeshData m) {
+    System.out.println(vertexCount + " " + m.vertexCount + " " + polygonCount + " " + m.polygonCount + " " + polygonIndexes);
     int nV = vertexCount + m.vertexCount;
     int nP = polygonCount + m.polygonCount;
+    if (vertices == null)
+      vertices = new Point3f[0];
     vertices = (Point3f[]) ArrayUtil.ensureLength(vertices, nV);
     vertexValues = ArrayUtil.ensureLength(vertexValues, nV);
     boolean haveSources = (vertexSource != null && m.vertexSource != null);
     vertexSource = ArrayUtil.ensureLength(vertexSource, nV);
+    if (polygonIndexes == null)
+      polygonIndexes = new int[0][];
     polygonIndexes = (int[][]) ArrayUtil.ensureLength(polygonIndexes, nP);
     // note -- assuming here this is not colorDensity
     if (m.bsSlabDisplay != null  && bsSlabDisplay == null)
-      bsSlabDisplay = BitSetUtil.setAll(polygonCount);
+      bsSlabDisplay = m.bsSlabDisplay;
 
     for (int i = 0; i < m.polygonCount; i++, polygonCount++) {
       int[] p = m.polygonIndexes[i];
@@ -250,45 +255,47 @@ public class MeshSurface {
 
   public void slabPolygons(List<Object[]> slabInfo) {
     for (int i = 0; i < slabInfo.size(); i++)
-      slabPolygons(slabInfo.get(i));
+      if (!slabPolygons(slabInfo.get(i)))
+          return;
   }
   
-  public void slabPolygons(Object[] slabObject) {
+  public boolean slabPolygons(Object[] slabObject) {
+    if (polygonCount0 < 0)
+      return false; // disabled for some surface types
     int slabType = ((Integer) slabObject[0]).intValue();
     Object slabbingObject = slabObject[1];
     if (slabType == Token.none) {
-      if (bsSlabDisplay != null) {
+      if (bsSlabDisplay != null && polygonCount0 != 0) {
         polygonCount = polygonCount0;
         vertexCount = vertexCount0;
         polygonCount0 = vertexCount0 = 0;
         bsSlabDisplay.set(0, (polygonCount == 0 ? vertexCount : polygonCount));
         slabOptions = new StringBuffer(" slab none");
       }
-      return;
+      return false;
     }
     if (polygonCount0 == 0 || vertexCount0 == 0) {
       polygonCount0 = polygonCount;
       vertexCount0 = vertexCount;
       bsSlabDisplay = BitSetUtil.setAll(polygonCount == 0 ? vertexCount : polygonCount);
       if (polygonCount == 0 && vertexCount == 0)
-        return;
+        return false;
     }
 
     boolean andCap = ((Boolean) slabObject[2]).booleanValue();
 
-    if (slabOptions == null)
-      slabOptions = new StringBuffer();
-    slabOptions.append(andCap ? " cap " : " slab ");
+    StringBuffer sb = new StringBuffer();
+    sb.append(andCap ? " cap " : " slab ");
 
     switch (slabType) {
     case Token.plane:
       Point4f plane = (Point4f) slabbingObject;
-      slabOptions.append(Escape.escape(plane));
+      sb.append(Escape.escape(plane));
       getIntersection(0, plane, null, null, null, andCap, false, Token.plane);
       break;
     case Token.boundbox:
       Point3f[] box = (Point3f[]) slabbingObject;
-      slabOptions.append("within ").append(Escape.escape(box));
+      sb.append("within ").append(Escape.escape(box));
       Point4f[] faces = BoxInfo.getFacesFromCriticalPoints(box);
       for (int i = 0; i < faces.length; i++)
         getIntersection(0, faces[i], null, null, null, andCap, false,
@@ -303,7 +310,7 @@ public class MeshSurface {
       case Token.within:
         Point3f[] points = (Point3f[]) o[1];
         BitSet bs = (BitSet) o[2];
-        slabOptions.append("within ").append(
+        sb.append("within ").append(
             bs == null ? Escape.escape(points) : Escape.escape(bs));
         getIntersection(distance, null, points, null, null, andCap, false,
             (distance > 0 ? Token.distance : Token.sphere));
@@ -311,9 +318,9 @@ public class MeshSurface {
       case Token.range:
         // isosurface slab within range x.x y.y
         if (vertexValues == null)
-          return;
+          return false;
         float distanceMax = ((Float) o[1]).floatValue();
-        slabOptions.append("within range ").append(distance).append(" ")
+        sb.append("within range ").append(distance).append(" ")
             .append(distanceMax);
         getIntersection(distance, null, null, null, null, andCap, false,
             Token.min);
@@ -331,6 +338,12 @@ public class MeshSurface {
       }
       break;
     }
+    String newOptions = sb.toString();
+    if (slabOptions == null)
+      slabOptions = new StringBuffer();
+    if (slabOptions.indexOf(newOptions) < 0)
+      slabOptions.append(newOptions);
+    return true;
   }
 
   public void getIntersection(float distance, Point4f plane,

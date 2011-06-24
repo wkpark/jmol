@@ -136,7 +136,7 @@ abstract class QuantumCalculation {
       int i0 = (isAll ? qmAtoms.length - 1 : bsSelected.nextSetBit(0));
       for (int i = i0, j = 0; i >= 0; i = (isAll ? i - 1 : bsSelected
           .nextSetBit(i + 1)))
-        qmAtoms[renumber ? j++ : i] = new QMAtom((Atom) atomCoordAngstroms[i],
+        qmAtoms[renumber ? j++ : i] = new QMAtom(i, (Atom) atomCoordAngstroms[i],
             X, Y, Z, X2, Y2, Z2);
     }
   }
@@ -206,22 +206,25 @@ abstract class QuantumCalculation {
     // grid coordinate squares relative to orbital center in Bohr
     private float[] myX2, myY2, myZ2;
 
+    Atom atom;
+    int index;
     int znuc;
     int iMolecule;
-    Atom atom;
     boolean isExcluded;
 
-    QMAtom(Atom atom, float[] X, float[] Y, float[] Z, 
+    QMAtom(int i, Atom atom, float[] X, float[] Y, float[] Z, 
         float[] X2, float[] Y2, float[] Z2) {
+      index = i;
       myX = X;
       myY = Y;
       myZ = Z;
       myX2 = X2;
       myY2 = Y2;
       myZ2 = Z2;
+      this.atom = atom;
       
-      isExcluded = (bsExcluded != null && bsExcluded.get(atom.index));
-      set(this.atom = atom);
+      isExcluded = (bsExcluded != null && bsExcluded.get(i));
+      set(atom);
       scale(unitFactor);
       znuc = atom.getElementNumber();
     }

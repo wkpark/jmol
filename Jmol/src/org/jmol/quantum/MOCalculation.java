@@ -130,12 +130,12 @@ public class MOCalculation extends QuantumCalculation implements
   }
 
   public boolean setupCalculation(VolumeDataInterface volumeData, BitSet bsSelected,
-                        BitSet bsExclude, String calculationType,
-                        Point3f[] atomCoordAngstroms, int firstAtomOffset,
-                        List<int[]> shells, float[][] gaussians,
-                        int[][] dfCoefMaps,
-                        Object slaters, float[] moCoefficients, float[] linearCombination,
-                        float[][] coefs, float[] partialCharges, boolean doNormalize, Point3f[] points, float[] parameters) {
+                        BitSet bsExclude, BitSet[] bsMolecules,
+                        String calculationType, Point3f[] atomCoordAngstroms,
+                        int firstAtomOffset, List<int[]> shells,
+                        float[][] gaussians,
+                        int[][] dfCoefMaps, Object slaters, float[] moCoefficients,
+                        float[] linearCombination, float[][] coefs, float[] partialCharges, boolean doNormalize, Point3f[] points, float[] parameters) {
     havePoints = (points != null);
     this.calculationType = calculationType;
     this.firstAtomOffset = firstAtomOffset;

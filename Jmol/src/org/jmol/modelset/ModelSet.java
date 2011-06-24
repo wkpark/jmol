@@ -38,7 +38,6 @@ import org.jmol.api.Interface;
 import org.jmol.api.JmolEdge;
 import org.jmol.api.JmolMolecule;
 import org.jmol.api.SymmetryInterface;
-import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.shape.Shape;
 
@@ -303,27 +302,6 @@ abstract public class ModelSet extends ModelCollection {
       userProperties.put(name, property);
   }
 */  
-
-  ////////////////// atomData filling ////////////
-
-  @Override
-  public void fillAtomData(AtomData atomData, int mode) {
-    if (mode == AtomData.MODE_GET_ATTACHED_HYDROGENS) {
-      int[] nH = new int[1];
-      atomData.hAtomRadius = viewer.getVanderwaalsMar(1) / 1000f;
-      atomData.hAtoms = calculateHydrogens(atomData.bsSelected, nH, false, true, null);
-      atomData.hydrogenAtomCount = nH[0];
-      return;
-    }
-    if(atomData.modelIndex < 0)
-      atomData.firstAtomIndex = (atomData.bsSelected == null ? 0 : Math.max(0, atomData.bsSelected.nextSetBit(0)));
-    else
-      atomData.firstAtomIndex = models[atomData.modelIndex].firstAtomIndex;
-    atomData.lastModelIndex = atomData.firstModelIndex = (atomCount == 0 ? 0 : atoms[atomData.firstAtomIndex].modelIndex);
-    atomData.modelName = getModelNumberDotted(atomData.firstModelIndex);
-    super.fillAtomData(atomData, mode);
-  }
-
 
   ///////// atom and shape selecting /////////
 

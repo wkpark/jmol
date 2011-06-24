@@ -275,9 +275,8 @@ public final class EnvelopeCalculation {
     atomData.modelIndex = (multiModel ? -1 : 0);
     modelZeroBased = !multiModel;
 
-    viewer.fillAtomData(atomData,
-        mads == null ? AtomData.MODE_FILL_COORDS_AND_RADII
-            : AtomData.MODE_FILL_COORDS);
+    viewer.fillAtomData(atomData, AtomData.MODE_FILL_COORDS
+        | (mads == null ? AtomData.MODE_FILL_RADII : 0));
     atomCount = atomData.atomCount;
     if (mads != null)
       for (int i = 0; i < atomCount; i++)
@@ -292,7 +291,8 @@ public final class EnvelopeCalculation {
     bsSurface = new BitSet();
     // now, calculate surface for selected atoms
     boolean isAll = (bsSelected == null);
-    AtomIndexIterator iter = viewer.getSelectedAtomIterator(bsMySelected, false, modelZeroBased);
+    AtomIndexIterator iter = viewer.getSelectedAtomIterator(bsMySelected,
+        false, modelZeroBased);
     //true ==> only atom index > this atom accepted
     int i0 = (isAll ? atomCount - 1 : bsSelected.nextSetBit(0));
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsSelected.nextSetBit(i + 1)))

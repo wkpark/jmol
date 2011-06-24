@@ -421,11 +421,9 @@ public class IsosurfaceMesh extends Mesh {
         continue;
       polygonColixes[i] = defaultColix;
       float v = (vertexValues[pi[0]] + vertexValues[pi[1]] + vertexValues[pi[2]]) / 3;
-      //System.out.println(i + " " + v);
       for (int j = n; --j >= 0;) {
         if (v >= values[j] && v < vMax) {
           polygonColixes[i] = (haveColixes ? colixes[j % colixes.length] : 0);
-          //System.out.println(i + " " + v + " " + j + " " + colixes.length + " " + colixes[j % colixes.length]);
           break;
         }
       }

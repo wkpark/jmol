@@ -46,6 +46,7 @@ import org.jmol.api.JmolBioResolver;
 import org.jmol.api.JmolEdge;
 import org.jmol.api.JmolMolecule;
 import org.jmol.api.SymmetryInterface;
+import org.jmol.atomdata.AtomData;
 import org.jmol.bspt.Bspf;
 import org.jmol.bspt.CubeIterator;
 import org.jmol.util.ArrayUtil;
@@ -891,6 +892,30 @@ abstract public class ModelCollection extends BondCollection {
     }
   }
   
+  @Override
+  public void fillAtomData(AtomData atomData, int mode) {
+    if ((mode & AtomData.MODE_FILL_MOLECULES) != 0) {
+      getMolecules();
+      atomData.bsMolecules = new BitSet[molecules.length];
+      for (int i = 0; i < molecules.length; i++)
+        atomData.bsMolecules[i] = molecules[i].atomList;
+    }
+    if ((mode & AtomData.MODE_GET_ATTACHED_HYDROGENS) != 0) {
+      int[] nH = new int[1];
+      atomData.hAtomRadius = viewer.getVanderwaalsMar(1) / 1000f;
+      atomData.hAtoms = calculateHydrogens(atomData.bsSelected, nH, false, true, null);
+      atomData.hydrogenAtomCount = nH[0];
+      return;
+    }
+    if(atomData.modelIndex < 0)
+      atomData.firstAtomIndex = (atomData.bsSelected == null ? 0 : Math.max(0, atomData.bsSelected.nextSetBit(0)));
+    else
+      atomData.firstAtomIndex = models[atomData.modelIndex].firstAtomIndex;
+    atomData.lastModelIndex = atomData.firstModelIndex = (atomCount == 0 ? 0 : atoms[atomData.firstAtomIndex].modelIndex);
+    atomData.modelName = getModelNumberDotted(atomData.firstModelIndex);
+    super.fillAtomData(atomData, mode);
+  }
+
   public String getModelNumberDotted(int modelIndex) {
     return (modelCount < 1 || modelIndex >= modelCount || modelIndex < 0 ? "" : 
       Escape.escapeModelFileNumber(modelFileNumbers[modelIndex]));

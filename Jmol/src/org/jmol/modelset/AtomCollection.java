@@ -1177,12 +1177,13 @@ abstract public class AtomCollection {
     atomData.atomXyz = atoms;
     atomData.atomCount = atomCount;
     atomData.atomicNumber = new int[atomCount];
-    boolean includeRadii = (mode == AtomData.MODE_FILL_COORDS_AND_RADII);
+    boolean includeRadii = ((mode & AtomData.MODE_FILL_RADII) != 0);
     if (includeRadii)
       atomData.atomRadius = new float[atomCount];
+    boolean isMultiModel = ((mode & AtomData.MODE_FILL_MULTIMODEL) != 0);
     for (int i = 0; i < atomCount; i++) {
       Atom atom = atoms[i];
-      if (atom.isDeleted() || atomData.modelIndex >= 0
+      if (atom.isDeleted() || !isMultiModel && atomData.modelIndex >= 0
           && atom.modelIndex != atomData.firstModelIndex) {
         if (atomData.bsIgnored == null)
           atomData.bsIgnored = new BitSet();

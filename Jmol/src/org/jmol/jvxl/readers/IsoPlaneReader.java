@@ -36,7 +36,7 @@ class IsoPlaneReader extends AtomDataReader {
   protected void setup() {
     super.setup();
     doAddHydrogens = false;
-    getAtoms(params.mep_marginAngstroms, false, params.bsSelected);
+    getAtoms(params.bsSelected, true, false, false, false, params.mep_marginAngstroms);
     if (xyzMin == null) {
       setBoundingBox(new Point3f(-10, -10, -10), 0);
       setBoundingBox(new Point3f(10, 10, 10), 0);

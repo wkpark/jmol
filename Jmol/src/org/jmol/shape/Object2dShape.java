@@ -207,9 +207,8 @@ public class Object2dShape extends Shape {
 
   @Override
   public Point3fi checkObjectClicked(int x, int y, int modifiers, BitSet bsVisible) {
-    if (isHover) {
+    if (isHover || modifiers == 0)
       return null;
-    }
     Iterator<Text> e = objects.values().iterator();
     while (e.hasNext()) {
       Object2d obj = e.next();

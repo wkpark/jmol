@@ -1149,6 +1149,8 @@ public void initShape() {
 
   @Override
   public boolean checkObjectHovered(int x, int y, BitSet bsVisible) {
+    if (!viewer.getDrawHover())
+      return false;
     if (Graphics3D.isColixTranslucent(colix))
       return false;
     if (!findPickedObject(x, y, false, bsVisible))

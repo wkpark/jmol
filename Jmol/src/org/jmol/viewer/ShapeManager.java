@@ -218,48 +218,43 @@ public class ShapeManager {
     return (frankShape != null && frankShape.wasClicked(x, y));
   }
 
-  public boolean checkObjectHovered(int x, int y, BitSet bsVisible, boolean checkBonds) {
-    Shape shape    = shapes[JmolConstants.SHAPE_STICKS];
-    if (checkBonds && shape != null 
+  private final static int[] hoverable = {
+    JmolConstants.SHAPE_ECHO, Token.echo, 
+    JmolConstants.SHAPE_CONTACT, Token.contact,
+    JmolConstants.SHAPE_ISOSURFACE, Token.isosurface,
+    JmolConstants.SHAPE_DRAW, Token.draw,
+    JmolConstants.SHAPE_FRANK, Token.nada,
+  };
+  
+  public boolean checkObjectHovered(int x, int y, BitSet bsVisible,
+                                    boolean checkBonds) {
+    Shape shape = shapes[JmolConstants.SHAPE_STICKS];
+    if (checkBonds && shape != null
         && shape.checkObjectHovered(x, y, bsVisible))
       return true;
-    shape = shapes[JmolConstants.SHAPE_ECHO];
-    if (shape != null && shape.checkObjectHovered(x, y, bsVisible))
-      return true;
-    shape = shapes[JmolConstants.SHAPE_ISOSURFACE];
-    if (shape != null && shape.checkObjectHovered(x, y, bsVisible))
-      return true;
-    shape = shapes[JmolConstants.SHAPE_DRAW];
-    if (shape != null && viewer.getDrawHover() 
-        && shape.checkObjectHovered(x, y, bsVisible))
-      return true;
-    shape = shapes[JmolConstants.SHAPE_FRANK];
-    if (viewer.getShowFrank() && shape != null  
-        && shape.checkObjectHovered(x, y, bsVisible))
-      return true;
+    for (int i = 0; i < hoverable.length; i += 2) {
+      shape = shapes[hoverable[i]];
+      if (shape != null && shape.checkObjectHovered(x, y, bsVisible))
+        return true;
+    }
     return false;
   }
 
-  public Token checkObjectClicked(int x, int y, int modifiers,
-                                    BitSet bsVisible) {
+  public Token checkObjectClicked(int x, int y, int modifiers, BitSet bsVisible) {
     Shape shape;
     Point3fi pt = null;
-    if ((shape = shapes[JmolConstants.SHAPE_ISOSURFACE]) != null
-        && (viewer.getDrawPicking() || viewer.getNavigationMode() && viewer.getNavigateSurface()) 
-         && (pt = shape.checkObjectClicked(x, y, modifiers, bsVisible)) != null)
-      return new Token(Token.isosurface, pt);
-
-    if (modifiers != 0 && viewer.getBondPicking()
+    if (modifiers != 0
+        && viewer.getBondPicking()
         && (pt = shapes[JmolConstants.SHAPE_STICKS].checkObjectClicked(x, y,
             modifiers, bsVisible)) != null)
       return new Token(Token.bonds, pt);
 
-    if ((shape = shapes[JmolConstants.SHAPE_ECHO])!= null && modifiers != 0
-        && (pt = shape.checkObjectClicked(x, y, modifiers, bsVisible)) != null)
-      return new Token(Token.echo, pt);
-    if ((shape = shapes[JmolConstants.SHAPE_DRAW]) != null && 
-        (pt = shape.checkObjectClicked(x, y, modifiers, bsVisible)) != null)
-      return new Token(Token.draw, pt);
+    int tok;
+    for (int i = 0; i < hoverable.length; i += 2)
+      if ((tok = hoverable[i + 1]) != Token.nada
+          && (shape = shapes[hoverable[i]]) != null
+          && (pt = shape.checkObjectClicked(x, y, modifiers, bsVisible)) != null)
+        return new Token(tok, pt);
     return null;
   }
  

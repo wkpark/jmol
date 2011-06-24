@@ -654,6 +654,7 @@ public class Parameters {
   
   void setNci(boolean isPromolecular) {
     fullyLit = true;
+    qm_gridMax = 200;
     if (isPromolecular)
       dataType = SURFACE_NCI;
     qm_marginAngstroms = 2f;

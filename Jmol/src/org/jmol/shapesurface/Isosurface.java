@@ -786,8 +786,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     String cmd = imesh.scriptCommand;
     if (cmd == null)
       return;
-    if (imesh.modelIndex >= 0 && modelCount > 1)
-      appendCmd(sb, "frame " + viewer.getModelNumberDotted(imesh.modelIndex));
+    if (modelCount > 1)
+      appendCmd(sb, "frame " + (imesh.modelIndex >= 0 ? viewer.getModelNumberDotted(imesh.modelIndex) : "0"));
     cmd = TextFormat.simpleReplace(cmd, "; isosurface map", " map");
     cmd = cmd.replace('\t', ' ');
     cmd = TextFormat.simpleReplace(cmd, ";#", "; #");

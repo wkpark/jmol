@@ -33,6 +33,7 @@ import java.util.BitSet;
 abstract class QuantumCalculation {
 
   protected boolean doDebug = false;
+  protected BitSet bsExcluded;
 
   protected final static float bohr_per_angstrom = 1 / 0.52918f;
 
@@ -208,6 +209,7 @@ abstract class QuantumCalculation {
     int znuc;
     int iMolecule;
     Atom atom;
+    boolean isExcluded;
 
     QMAtom(Atom atom, float[] X, float[] Y, float[] Z, 
         float[] X2, float[] Y2, float[] Z2) {
@@ -218,6 +220,7 @@ abstract class QuantumCalculation {
       myY2 = Y2;
       myZ2 = Z2;
       
+      isExcluded = (bsExcluded != null && bsExcluded.get(atom.index));
       set(this.atom = atom);
       scale(unitFactor);
       znuc = atom.getElementNumber();

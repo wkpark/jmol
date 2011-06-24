@@ -270,22 +270,22 @@ class IsoMOReader extends AtomDataReader {
     qSetupDone = true;
     switch (params.qmOrbitalType) {
     case Parameters.QM_TYPE_GAUSSIAN:
-      return q.setupCalculation(volumeData, bsMySelected, (String) moData
-          .get("calculationType"), atomData.atomXyz, atomData.firstAtomIndex,
-          (List<int[]>) moData.get("shells"), (float[][]) moData
-              .get("gaussians"), dfCoefMaps, null, coef, linearCombination,
-          coefs, params.theProperty, moData.get("isNormalized") == null, points,
-          params.parameters);
+      return q.setupCalculation(volumeData, bsMySelected, null, (String) moData
+              .get("calculationType"), atomData.atomXyz,
+          atomData.firstAtomIndex, (List<int[]>) moData.get("shells"), (float[][]) moData
+                  .get("gaussians"), dfCoefMaps, null, coef,
+          linearCombination, coefs, params.theProperty, moData.get("isNormalized") == null,
+          points, params.parameters);
     case Parameters.QM_TYPE_SLATER:
-      return q.setupCalculation(volumeData, bsMySelected, (String) moData
-          .get("calculationType"), atomData.atomXyz, atomData.firstAtomIndex,
-          null, null, null, moData.get("slaters"), coef, linearCombination,
-          coefs, params.theProperty, true, points, params.parameters);
+      return q.setupCalculation(volumeData, bsMySelected, null, (String) moData
+              .get("calculationType"), atomData.atomXyz,
+          atomData.firstAtomIndex, null, null, null, moData.get("slaters"), coef,
+          linearCombination, coefs, params.theProperty, true, points, params.parameters);
     case Parameters.QM_TYPE_NCI_PRO:
-      return q.setupCalculation(volumeData, bsMySelected, null,
-          atomData.atomXyz, atomData.firstAtomIndex, null, null, null, null,
-          null, null, null, params.theProperty, true, points,
-          params.parameters);
+      return q.setupCalculation(volumeData, bsMySelected, params.bsSolvent,
+          null, atomData.atomXyz, atomData.firstAtomIndex, null, null, null,
+          null, null, null, null, params.theProperty, true,
+          points, params.parameters);
     }
     return false;
   }

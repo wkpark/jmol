@@ -15119,7 +15119,8 @@ public class ScriptEvaluator {
     float[] params = null;
     boolean colorDensity = false;
     StringBuffer sbCommand = new StringBuffer();
-    
+    int resolution;
+    int minSet = Integer.MAX_VALUE;
     int type = Token.plane; // Token.full;
     int bondMode = Token.nada;
     float distance = 5;
@@ -15144,6 +15145,9 @@ public class ScriptEvaluator {
           sbCommand.append(" " + -params[0]);
         }        
         break;
+      case Token.resolution:
+        resolution = intParameter(++i);
+        break;
       case Token.distance:
         distance = floatParameter(++i);
         sbCommand.append(" distance ").append(distance);
@@ -15159,6 +15163,9 @@ public class ScriptEvaluator {
             : Boolean.FALSE);
         sbCommand.append(" ").append(theToken.value);
         break;
+      case Token.minset:
+        minSet = intParameter(++i);
+        break;
       case Token.hydrophobic:
       case Token.hbond:
         //case Token.ionic:
@@ -15168,18 +15175,12 @@ public class ScriptEvaluator {
       case Token.full:
       case Token.plane:
       case Token.connect:
-        type = theTok;
-        break;
       case Token.nci:
         type = theTok;
-        sbCommand.append(" nci");
-        if (params == null)
-          params = new float[] { 0, 2 }; // intermolecular
         break;
       case Token.parameters:
         params = floatParameterSet(++i, 1, 10);
         i = iToken;
-        sbCommand.append(" parameters ").append(Escape.escape(params));
         break;
       case Token.ignore:
         bsIgnore = atomExpression(++i);
@@ -15230,13 +15231,36 @@ public class ScriptEvaluator {
     if (isSyntaxCheck)
       return;
     sbCommand.append(" ").append(Token.nameOf(type));
-    if (rd == null)
-      rd = encodeRadiusParameter(-1, false);
-    if (Float.isNaN(rd.value))
-      rd.value = 100;
     if (bsA != null) {
       // bond mode, intramolec set here
 
+      if (rd == null)
+        rd = encodeRadiusParameter(-1, false);
+      if (Float.isNaN(rd.value))
+        rd.value = 100;
+      
+      Object[] func = null;
+      Object slab = null;
+      switch (type) {
+      case Token.full:
+        func = createFunction("__con__", "a,b", "(a > b ? a : b)");
+        break;
+      case Token.plane:
+        func = createFunction("__con__", "a,b", "a-b");
+        slab = getCapSlabObject(-1, false);
+        break;
+      case Token.connect:
+        func = createFunction("__con__", "a,b", "a+b");
+        break;
+      case Token.nci:
+        if (minSet == Integer.MAX_VALUE)
+          minSet = 100;
+        setShapeProperty(JmolConstants.SHAPE_CONTACT, "minset", Integer.valueOf(minSet)); 
+        sbCommand.append(" minSet ").append(minSet);
+        if (params == null)
+          params = new float[] { 0.5f, 2 };
+      }
+      
       if (bsB == null) {
         // if INTRAMOLCULAR and no {B}, then this means "just {A} to {A}"
         // otherwise, {B} should be set to {!A}
@@ -15273,6 +15297,9 @@ public class ScriptEvaluator {
         }
       }
 
+      if (params != null)
+        sbCommand.append(" parameters ").append(Escape.escape(params));
+
       // now adjust for type -- HBOND or HYDROPHOBIC
       switch (bondMode) {
       case Token.hbond:
@@ -15288,20 +15315,7 @@ public class ScriptEvaluator {
         bsA.and(bs);
         bsB.and(bs);
       }
-      Object[] func = null;
-      Object slab = null;
-      switch (type) {
-      case Token.full:
-        func = createFunction("__con__", "a,b", "(a > b ? a : b)");
-        break;
-      case Token.plane:
-        func = createFunction("__con__", "a,b", "a-b");
-        slab = getCapSlabObject(-1, false);
-        break;
-      case Token.connect:
-        func = createFunction("__con__", "a,b", "a+b");
-        break;
-      }
+
       setShapeProperty(JmolConstants.SHAPE_CONTACT, "set", new Object[] { bsA,
           bsB, bsIgnore, new Integer(type), rd, params, func, slab, Boolean.valueOf(colorDensity), sbCommand.toString() });
       setShapeProperty(JmolConstants.SHAPE_CONTACT, "clear", null);

@@ -147,11 +147,13 @@ public class Contact extends Isosurface {
       }
       break;      
     case Token.nci:
-      bsA.or(bsB); // for now -- TODO -- need to distinguish ligand
+      bs = BitSetUtil.copy(bsA);
+      bs.or(bsB); // for now -- TODO -- need to distinguish ligand
+      
       if (params[0] < 0)
         params[0] = 0; // reset to default for density
-      setProperty("select", bsA, null);
-      setProperty("ignore", bsIgnore, null);
+      setProperty("select", bs, null);
+      setProperty("bsSolvent", bsB, null);
       setProperty("parameters", params, null);
       setProperty("nci", Boolean.TRUE, null);
       break;

@@ -122,14 +122,20 @@ public class NciCalculation extends QuantumCalculation implements
   private boolean noValuesAtAll;
 
   public boolean setupCalculation(VolumeDataInterface volumeData,
-                                  BitSet bsSelected, String calculationType,
-                                  Point3f[] atomCoordAngstroms,
-                                  int firstAtomOffset, List<int[]> shells,
-                                  float[][] gaussians, int[][] dfCoefMaps,
-                                  Object slaters, float[] moCoefficients,
-                                  float[] linearCombination, float[][] coefs,
-                                  float[] partialCharges, boolean isDensityOnly,
-                                  Point3f[] points, float[] parameters) {
+                                  BitSet bsSelected, BitSet bsExcluded,
+                                  String calculationType,
+                                  Point3f[] atomCoordAngstroms, int firstAtomOffset,
+                                  List<int[]> shells, float[][] gaussians,
+                                  int[][] dfCoefMaps, Object slaters,
+                                  float[] moCoefficients, float[] linearCombination,
+                                  float[][] coefs, float[] partialCharges,
+                                  boolean isDensityOnly, Point3f[] points, float[] parameters) {
+    this.bsExcluded = bsExcluded;
+    BitSet bsLigand = new BitSet();
+    bsLigand.or(bsSelected);
+    if (bsExcluded != null) {
+      bsLigand.andNot(bsExcluded);
+    }
     isPromolecular = (firstAtomOffset >= 0);    
     havePoints = (points != null);
     isReducedDensity = isDensityOnly;

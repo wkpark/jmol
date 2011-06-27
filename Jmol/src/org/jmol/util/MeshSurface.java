@@ -19,41 +19,51 @@ public class MeshSurface {
 
   public void merge(MeshData m) {
     int nV = vertexCount + m.vertexCount;
-    int nP = polygonCount + m.polygonCount;
+    if (polygonIndexes == null)
+      polygonIndexes = new int[0][];
+    if (m.polygonIndexes == null)
+      m.polygonIndexes = new int[0][];
+    int nP = 0;
+    for (int i = 0; i < polygonCount; i++)
+      if (polygonIndexes[i] != null && (bsSlabDisplay == null || bsSlabDisplay.get(i)))
+        nP++;
+    for (int i = 0; i < m.polygonCount; i++)
+      if (m.polygonIndexes[i] != null && (m.bsSlabDisplay == null || m.bsSlabDisplay.get(i)))
+        nP++;
     if (vertices == null)
       vertices = new Point3f[0];
     vertices = (Point3f[]) ArrayUtil.ensureLength(vertices, nV);
     vertexValues = ArrayUtil.ensureLength(vertexValues, nV);
     boolean haveSources = (vertexSource != null && m.vertexSource != null);
     vertexSource = ArrayUtil.ensureLength(vertexSource, nV);
-    if (polygonIndexes == null)
-      polygonIndexes = new int[0][];
-    polygonIndexes = (int[][]) ArrayUtil.ensureLength(polygonIndexes, nP);
+    int[][] newPolygons = new int[nP][];
     // note -- assuming here this is not colorDensity
-    if (m.bsSlabDisplay != null  && bsSlabDisplay == null)
-      bsSlabDisplay = m.bsSlabDisplay;
-
-    for (int i = 0; i < m.polygonCount; i++, polygonCount++) {
-      int[] p = m.polygonIndexes[i];
-      for (int j = 0; j < 3; j++)
-        p[j] += vertexCount;
-      polygonIndexes[polygonCount] = p;
-      if (bsSlabDisplay != null)
-        bsSlabDisplay.set(polygonCount, (m.bsSlabDisplay == null || m.bsSlabDisplay.get(i)));
-    }
-
+    int ipt = mergePolygons(this, 0, 0, newPolygons);
+    ipt = mergePolygons(m, ipt, vertexCount, newPolygons);
     for (int i = 0; i < m.vertexCount; i++, vertexCount++) {
       vertices[vertexCount] = m.vertices[i];
       vertexValues[vertexCount] = m.vertexValues[i];
       if (haveSources)
         vertexSource[vertexCount] = m.vertexSource[i];
     }
-    
-    vertexCount = nV;
+    bsSlabDisplay = null;
+    polygonIndexes = newPolygons;
     polygonCount = nP;
+    vertexCount = nV;
   }
 
-
+  private static int mergePolygons(MeshSurface m, int ipt, int vertexCount, int[][] newPolygons) {
+    int[] p;
+    for (int i = 0; i < m.polygonCount; i++) {
+      if ((p = m.polygonIndexes[i]) == null || m.bsSlabDisplay != null && !m.bsSlabDisplay.get(i))
+        continue;
+      newPolygons[ipt++] = m.polygonIndexes[i];
+      if (vertexCount > 0)
+        for (int j = 0; j < 3; j++)
+          p[j] += vertexCount;
+    }
+    return ipt;
+  }
 
   protected static final int SEED_COUNT = 25;
 

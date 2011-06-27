@@ -98,7 +98,8 @@ public class PdbReader extends AtomSetCollectionReader {
    "REMARK  " + //17
    "HEADER  " + //18
    "COMPND  " + //19
-   "SOURCE  ";  //20
+   "SOURCE  " + //20
+   "TITLE   ";  //21
 
  private int serial = 0;
  private StringBuffer pdbHeader;
@@ -110,6 +111,8 @@ public class PdbReader extends AtomSetCollectionReader {
    atomSetCollection.setIsPDB();
    pdbHeader = (getHeader ? new StringBuffer() : null);
    applySymmetry = !checkFilter("NOSYMMETRY");
+   headerTitle = new StringBuffer();
+
    
    if (checkFilter("CONF ")) {
      configurationPtr = parseInt(filter, filter.indexOf("CONF ") + 5);
@@ -225,6 +228,9 @@ public class PdbReader extends AtomSetCollectionReader {
     case 20:
       compndSource(true);
       return true;
+    case 21:
+      title();
+      return true;
     }
     return true;
   }
@@ -269,11 +275,20 @@ public class PdbReader extends AtomSetCollectionReader {
   private void header() {
     if (lineLength < 8)
       return;
+    headerTitle.append(line.substring(7).trim()).append("\n");
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("modelLoadNote", headerTitle.toString());
     if (lineLength >= 66)
       atomSetCollection.setCollectionName(line.substring(62, 66));
     if (lineLength > 50)
       line = line.substring(0, 50);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("CLASSIFICATION", line.substring(7).trim());
+  }
+
+  private void title() {
+    if (lineLength < 10)
+      return;
+    headerTitle.append(line.substring(10).trim()).append("\n");
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("modelLoadNote", headerTitle.toString());
   }
 
   private List<Map<String, String>> vCompnds;

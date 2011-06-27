@@ -149,7 +149,8 @@ public abstract class AtomSetCollectionReader {
   public boolean iHaveUnitCell;
   public boolean iHaveSymmetryOperators;
   public boolean continuing = true;
-
+  protected StringBuffer headerTitle;
+  
   protected JmolViewer viewer; // used by GenNBOReader and by CifReader
 
   protected boolean doApplySymmetry;

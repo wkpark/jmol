@@ -3274,7 +3274,7 @@ public class ScriptEvaluator {
   }
 
   private void showString(String str, boolean isPrint) {
-    if (isSyntaxCheck)
+    if (isSyntaxCheck || str == null)
       return;
     if (outputBuffer != null)
       outputBuffer.append(str).append('\n');
@@ -8731,6 +8731,8 @@ public class ScriptEvaluator {
       viewer.setAnimationRange(-1, -1);
       viewer.setCurrentModelIndex(modelCount);
     }
+    if (scriptLevel == 0 && !isAppend && nFiles < 2)
+      showString((String) viewer.getModelSetAuxiliaryInfo("modelLoadNote"));
     if (logMessages)
       scriptStatusOrBuffer("Successfully loaded:"
           + (filenames == null ? htParams.get("fullPathName") : modelName));

@@ -49,8 +49,8 @@ class AtomPropertyMapper extends AtomDataReader {
 
   
   @Override
-  protected void setup() {
-    super.setup();
+  protected void setup(boolean isMapData) {
+    super.setup(isMapData);
     // MAP only
     haveSurfaceAtoms = true;
     volumeData.sr = this;
@@ -81,7 +81,7 @@ class AtomPropertyMapper extends AtomDataReader {
       maxDistance = 5; // usually just local to a group
     if (maxDistance == Integer.MAX_VALUE && calcType != params.mep_calcType)
       maxDistance = 5; // max distance just for mep 
-    getAtoms(params.bsSelected, true, false, false, true, Float.NaN);
+    getAtoms(params.bsSelected, doAddHydrogens, true, false, false, true, Float.NaN);
     if (meshDataServer != null)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
     if (!doSmoothProperty && meshData.vertexSource != null) {
@@ -99,8 +99,7 @@ class AtomPropertyMapper extends AtomDataReader {
 
     setHeader("property", params.calculationType);
     // for plane mapping
-    setRangesAndAddAtoms(params.solvent_ptsPerAngstrom, params.solvent_gridMax,
-        0);
+    setRanges(params.solvent_ptsPerAngstrom, params.solvent_gridMax);
     params.cutoff = 0;
   }
 

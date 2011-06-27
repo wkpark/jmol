@@ -58,16 +58,17 @@ class IsoMOReader extends AtomDataReader {
   
   /////// ab initio/semiempirical quantum mechanical orbitals ///////
 
+  @Override
   @SuppressWarnings("unchecked")
-  private void setup(boolean isMapData) {
-    setup();
+  protected void setup(boolean isMapData) {
+    super.setup(isMapData);
     doAddHydrogens = false;
-    getAtoms(params.bsSelected, !isNci, isNci, isNci, false, params.qm_marginAngstroms);
+    getAtoms(params.bsSelected, doAddHydrogens, !isNci, isNci, isNci, false, params.qm_marginAngstroms);
     if (isNci)
       setHeader("NCI (promolecular)", "see NCIPLOT: A Program for Plotting Noncovalent Interaction Regions, Julia Contreras-Garcia, et al., J. of Chemical Theory and Computation, 2011, 7, 625-632");
     else
       setHeader("MO", "calculation type: " + params.moData.get("calculationType"));
-    setRangesAndAddAtoms(params.qm_ptsPerAngstrom, params.qm_gridMax, myAtomCount);
+    setRanges(params.qm_ptsPerAngstrom, params.qm_gridMax);
     String className = (isNci ? "quantum.NciCalculation" : "quantum.MOCalculation");
     q = (QuantumCalculationInterface) Interface.getOptionInterface(className);
     moData = params.moData;
@@ -188,6 +189,14 @@ class IsoMOReader extends AtomDataReader {
           break;
       }
     }
+  }
+
+  @Override
+  protected void postProcessVertices() {
+    // not clear that this is a good idea...
+    //if (params.thePlane != null && params.slabInfo == null)
+      //params.addSlabInfo(MeshSurface.getSlabWithinRange(0.01f, -0.01f));
+      
   }
 
   private void getValues() {        

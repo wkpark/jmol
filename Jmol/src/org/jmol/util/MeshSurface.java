@@ -249,6 +249,12 @@ public class MeshSurface {
 
   public StringBuffer slabOptions;
   
+  
+  public static Object[] getSlabWithinRange(float min, float max) {
+    return new Object[] { Integer.valueOf(Token.range), 
+        new Float[] {Float.valueOf(min), Float.valueOf(max)}, Boolean.FALSE };
+  }
+
   public static Object[] getSlabObject(int tok, Object data, boolean isCap) {
     return new Object[] { Integer.valueOf(tok), data, Boolean.valueOf(isCap) };
   }
@@ -256,7 +262,7 @@ public class MeshSurface {
   public void slabPolygons(List<Object[]> slabInfo) {
     for (int i = 0; i < slabInfo.size(); i++)
       if (!slabPolygons(slabInfo.get(i)))
-          return;
+          break;
   }
   
   public boolean slabPolygons(Object[] slabObject) {
@@ -277,7 +283,8 @@ public class MeshSurface {
     if (polygonCount0 == 0 || vertexCount0 == 0) {
       polygonCount0 = polygonCount;
       vertexCount0 = vertexCount;
-      bsSlabDisplay = BitSetUtil.setAll(polygonCount == 0 ? vertexCount : polygonCount);
+      bsSlabDisplay = BitSetUtil.setAll(polygonCount == 0 ? vertexCount
+          : polygonCount);
       if (polygonCount == 0 && vertexCount == 0)
         return false;
     }
@@ -317,15 +324,21 @@ public class MeshSurface {
         break;
       case Token.range:
         // isosurface slab within range x.x y.y
+        // if y.y < x.x then this effectively means "NOT within range y.y x.x"
         if (vertexValues == null)
           return false;
         float distanceMax = ((Float) o[1]).floatValue();
-        sb.append("within range ").append(distance).append(" ")
-            .append(distanceMax);
+        sb.append("within range ").append(distance).append(" ").append(
+            distanceMax);
+        bs = (distanceMax < distance ? BitSetUtil.copy(bsSlabDisplay) : null);
         getIntersection(distance, null, null, null, null, andCap, false,
             Token.min);
+        BitSet bsA = (bs == null ? null : BitSetUtil.copy(bsSlabDisplay));
+        BitSetUtil.copy(bs, bsSlabDisplay);
         getIntersection(distanceMax, null, null, null, null, andCap, false,
             Token.max);
+        if (bsA != null)
+          bsSlabDisplay.or(bsA);
         break;
       case Token.mesh:
         MeshSurface mesh = (MeshSurface) o[1];

@@ -54,7 +54,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     boundingBox = params.boundingBox;
     if (params.qmOrbitalType == Parameters.QM_TYPE_NCI_SCF) {
       hasColorData = (params.parameters == null || params.parameters[1] >= 0);
-      preProcessPlanes = true; 
+      preProcessPlanes = true;
       params.insideOut = !params.insideOut;
     }
   }
@@ -331,9 +331,9 @@ abstract class VolumeFileReader extends SurfaceFileReader {
       // means "this model only"
       atomData.bsSelected = params.bsSelected;
       sg.getAtomDataServer().fillAtomData(atomData, AtomData.MODE_FILL_COORDS);
-      qpc.setupCalculation(volumeData, sg.getBsSelected(), null,
-          null, null, atomData.atomXyz, -1, null, null, null, null, null,
-          null, null, params.theProperty, true, null, params.parameters);
+      qpc.setupCalculation(volumeData, sg.getBsSelected(), null, null, null,
+          atomData.atomXyz, -1, null, null, null, null, null, null, null,
+          params.theProperty, true, null, params.parameters);
       iPlaneRaw = 1;
       qpc.setPlanes(yzPlanesRaw = new float[4][yzCount]);
       if (hasColorData) {

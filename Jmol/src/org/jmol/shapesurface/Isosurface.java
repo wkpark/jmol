@@ -416,14 +416,15 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       }
       if (thisMesh != null) {
         Object[] slabInfo = (Object[]) value;
-        if (((Integer) slabInfo[0]).intValue() == Token.mesh) {
+        int tok = ((Integer) slabInfo[0]).intValue();
+        switch (tok) {
+        case Token.mesh:
           Object[] data = (Object[]) slabInfo[1];
           Mesh m = getMesh((String) data[1]);
           if (m == null)
             return;
-          // TODO -- if slabbing on an isosurface, must then do all slabs AFTER all isosurfaces have been created!
-          // How to save this in the state??
-          data[1] = m;          
+          data[1] = m;  
+          break;
         }
         slabPolygons(slabInfo);
         return;
@@ -602,16 +603,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   protected void slabPolygons(Object[] slabInfo) {
     if (thisMesh.slabPolygons(slabInfo))
       thisMesh.jvxlData.vertexDataOnly = true;
-    reinitializeLightingAndColor();
-
-  }
-
-  protected void reinitializeLightingAndColor() {
-    thisMesh.initialize(thisMesh.lighting, null, null);
-    if (thisMesh.colorEncoder != null) {
-      thisMesh.vertexColixes = null;
-      thisMesh.remapColors(null, translucentLevel);
-    }
+    thisMesh.reinitializeLightingAndColor();
   }
 
   private void setPropertySuper(String propertyName, Object value, BitSet bs) {
@@ -678,7 +670,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (ret != null)
       return ret;
     if (property == "dataRange")
-      return (thisMesh == null || jvxlData.jvxlPlane != null && !jvxlData.jvxlDataIsColorMapped ? null : new float[] {
+      return (thisMesh == null || jvxlData.jvxlPlane != null 
+          && thisMesh.colorEncoder == null 
+          ? null 
+              : new float[] {
           jvxlData.mappedDataMin, jvxlData.mappedDataMax,
           (jvxlData.isColorReversed ? jvxlData.valueMappedToBlue : jvxlData.valueMappedToRed),
           (jvxlData.isColorReversed ? jvxlData.valueMappedToRed : jvxlData.valueMappedToBlue)});
@@ -776,11 +771,12 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   @Override
   public String getShapeState() {
-      StringBuffer sb = new StringBuffer("\n");
-      for (int i = 0; i < meshCount; i++)
-        getMeshCommand(sb, i);
-      return sb.toString();
-    }
+    clean();
+    StringBuffer sb = new StringBuffer("\n");
+    for (int i = 0; i < meshCount; i++)
+      getMeshCommand(sb, i);
+    return sb.toString();
+  }
 
   private void getMeshCommand(StringBuffer sb, int i) {
     IsosurfaceMesh imesh = (IsosurfaceMesh) meshes[i];
@@ -810,7 +806,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       appendCmd(sb, id + " scale3d " + imesh.scale3d);
     if (imesh.slabOptions != null)
       appendCmd(sb, id + imesh.slabOptions.toString());
-    if (imesh.jvxlData.slabValue != Integer.MAX_VALUE)
+    if (imesh.jvxlData.slabValue != Integer.MIN_VALUE)
       appendCmd(sb, id + " slab " + imesh.jvxlData.slabValue);
     if (cmd.charAt(0) != '#') {
       if (allowMesh)
@@ -1224,6 +1220,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       mesh.polygonIndexes = meshData.polygonIndexes;
       mesh.polygonColixes = meshData.polygonColixes;
       mesh.bsSlabDisplay = meshData.bsSlabDisplay;
+      System.out.println("test isosurface bsSlabDisplay = " + Escape.escape(mesh.bsSlabDisplay));
       mesh.polygonCount0 = meshData.polygonCount0;
       mesh.vertexCount0 = meshData.vertexCount0;
       mesh.slabOptions = meshData.slabOptions;
@@ -1242,12 +1239,14 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         : JmolConstants.FRONTLIT, null, sg.getPlane());
     thisMesh.setColorsFromJvxlData();
     if (sg.getParams().psi_monteCarloCount > 0)
-      thisMesh.diameter = 1;
-    //if (thisMesh.jvxlData.jvxlPlane != null)
-      //allowContourLines = false;
+      thisMesh.diameter = -1; // use set DOTSCALE
+    
+    
   }
 
   public void notifySurfaceMappingCompleted() {
+    thisMesh.initialize(sg.isFullyLit() ? JmolConstants.FULLYLIT
+        : JmolConstants.FRONTLIT, null, sg.getPlane());
     thisMesh.isColorSolid = false;
     thisMesh.colorDensity = jvxlData.colorDensity;
     thisMesh.colorEncoder = sg.getColorEncoder();
@@ -1258,7 +1257,12 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       thisMesh.havePlanarContours = true;
     setPropertySuper("token", Integer.valueOf(explicitContours ? Token.nofill : Token.fill), null);
     setPropertySuper("token", Integer.valueOf(explicitContours ? Token.contourlines : Token.nocontourlines), null);
-    
+    List<Object[]> slabInfo = sg.getSlabInfo();
+    if (slabInfo != null) {
+      thisMesh.slabPolygons(slabInfo);
+      thisMesh.jvxlData.vertexDataOnly = true;
+      thisMesh.reinitializeLightingAndColor();
+    }
     // may not be the final color scheme, though.
     thisMesh.setColorCommand();
   }

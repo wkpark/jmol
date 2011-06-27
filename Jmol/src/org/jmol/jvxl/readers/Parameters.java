@@ -287,6 +287,8 @@ public class Parameters {
   float solvent_ptsPerAngstrom = 4f;
   int solvent_gridMax = 60;
 
+  float plane_ptsPerAngstrom = 4f;
+  int plane_gridMax = 81;
 
   //defaults
   
@@ -796,6 +798,7 @@ public class Parameters {
   public Point3f origin;
   public Point3f steps;
   public Point3f points;
+  public Object[] slabObject;
   
   void setMapRanges(SurfaceReader surfaceReader, boolean haveData) {
     if (!colorDensity)

@@ -30,7 +30,6 @@ import java.util.List;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
-import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.util.*;
@@ -199,7 +198,6 @@ public abstract class SurfaceReader implements VertexDataServer {
   protected boolean isProgressive = false;
   protected boolean isXLowToHigh = false; //can be overridden in some readers by --progressive
   private float assocCutoff = 0.3f;
-  protected Point4f mappingPlane;
   
   boolean vertexDataOnly;
   boolean hasColorData;
@@ -311,17 +309,24 @@ public abstract class SurfaceReader implements VertexDataServer {
   }
 
   boolean readAndSetVolumeParameters(boolean isMapData) {
-    return (readVolumeParameters(isMapData) && (vertexDataOnly || setUnitVectors()));
+    if (!readVolumeParameters(isMapData))
+        return false;
+    if (vertexDataOnly)
+      return true;
+    //if (volumeData.sr != null)
+      //return true;
+    return (volumeData.setUnitVectors());
+    
+//        && (vertexDataOnly 
+//            || isMapData && params.thePlane != null 
+//            || volumeData.sr != null
+//            || volumeData.setUnitVectors()));
   }
 
-  protected boolean setUnitVectors() {
-    return volumeData.setUnitVectors();
-  }
-  
   boolean createIsosurface(boolean justForPlane) {
     resetIsosurface();
     jvxlData.cutoff = Float.NaN;
-    if (!readAndSetVolumeParameters(false))
+    if (!readAndSetVolumeParameters(justForPlane))
       return false;
     if (!justForPlane && !Float.isNaN(params.sigma) && !allowSigma) {
       if (params.sigma > 0)
@@ -344,14 +349,17 @@ public abstract class SurfaceReader implements VertexDataServer {
     jvxlData.nPointsZ = nPointsZ;
     jvxlData.jvxlVolumeDataXml = volumeData.xmlData;
     if (justForPlane) {
-      float[][][] voxelDataTemp =  volumeData.voxelData;
-      volumeData.setDataDistanceToPlane(params.thePlane);
+      //float[][][] voxelDataTemp =  volumeData.voxelData;
+      volumeData.setMappingPlane(params.thePlane);
+      //volumeData.setDataDistanceToPlane(params.thePlane);
       if (meshDataServer != null)
         meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
       params.setMapRanges(this, false);
       generateSurfaceData();
-      if (volumeData != null)
-        volumeData.voxelData = voxelDataTemp;
+      volumeData.setMappingPlane(null);
+
+      //if (volumeData != null)
+      //  volumeData.voxelData = voxelDataTemp;
     } else {
       if (!readVolumeData(false))
         return false;
@@ -360,7 +368,6 @@ public abstract class SurfaceReader implements VertexDataServer {
     String s = jvxlFileHeaderBuffer.toString();
     int i = s.indexOf('\n', s.indexOf('\n',s.indexOf('\n') + 1) + 1) + 1;
     jvxlData.jvxlFileTitle = s.substring(0, i);
-    jvxlData.jvxlFileHeader = s;
     setBoundingBox();
     if (!params.isSilent)
       Logger.info("boundbox corners " + Escape.escape(xyzMin) + " " + Escape.escape(xyzMax));
@@ -669,6 +676,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     if (params.isContoured && marchingSquares != null) {
       initializeMapping();
       params.setMapRanges(this, false);
+      //System.out.println("Surf reader testing " + (params.valueMappedToBlue = 0.001f));
       marchingSquares.setMinMax(params.valueMappedToRed,
           params.valueMappedToBlue);
       jvxlData.saveVertexCount = marchingSquares.contourVertexCount;
@@ -906,6 +914,7 @@ public abstract class SurfaceReader implements VertexDataServer {
       if (v > max && v != Float.MAX_VALUE)
         max = v;
     }
+//    System.out.println("surf reader test " + (max = 0.001f));
     return (minMax = new float[] { min, max });
   }
 
@@ -964,8 +973,6 @@ public abstract class SurfaceReader implements VertexDataServer {
   public void slabIsosurface(List<Object[]> slabInfo) {
     if (meshDataServer != null)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
-    if (meshData.polygonIndexes == null)
-      return;
     meshData.slabPolygons(slabInfo);
     if (meshDataServer != null)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_VERTICES, null);
@@ -1029,10 +1036,6 @@ public abstract class SurfaceReader implements VertexDataServer {
       if (!Float.isNaN(p.x))
         setBoundingBox(p, 0);
     }
-  }
-
-  public void setMappingPlane(Point4f thePlane) {
-    mappingPlane = thePlane;
   }
 
   /**

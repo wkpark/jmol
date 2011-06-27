@@ -44,7 +44,7 @@ class IsoIntersectReader extends AtomDataReader {
 
   @Override
   protected boolean readVolumeParameters(boolean isMapData) {
-    setup();
+    setup(isMapData);
     if (isMapData)
       return false;
     initializeVolumetricData();
@@ -54,8 +54,8 @@ class IsoIntersectReader extends AtomDataReader {
   private BitSet bsA, bsB;
   
   @Override
-  protected void setup() {
-    super.setup();
+  protected void setup(boolean isMapData) {
+    super.setup(isMapData);
     params.fullyLit = true;
     point = params.point;
     bsA = params.intersection[0];
@@ -64,11 +64,9 @@ class IsoIntersectReader extends AtomDataReader {
     bsSelected.or(bsA);
     bsSelected.or(bsB);
     doUseIterator = true; // just means we want a map
-    getAtoms(bsSelected, true, true, false, false, Float.NaN);
+    getAtoms(bsSelected, doAddHydrogens, true, true, false, false, Float.NaN);
     setHeader("VDW intersection surface", params.calculationType);
-    setRangesAndAddAtoms(params.solvent_ptsPerAngstrom, params.solvent_gridMax,
-        params.thePlane != null ? Integer.MAX_VALUE : Math.min(firstNearbyAtom,
-            100));
+    setRanges(params.solvent_ptsPerAngstrom, params.solvent_gridMax);
     margin = 5f;
   }
 

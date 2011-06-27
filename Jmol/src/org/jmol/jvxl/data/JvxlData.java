@@ -85,7 +85,6 @@ public class JvxlData {
   
   public String jvxlFileTitle;
   public String jvxlFileMessage;
-  public String jvxlFileHeader;
   public String jvxlSurfaceData;
   public String jvxlEdgeData;
   public String jvxlColorData;
@@ -157,8 +156,10 @@ public class JvxlData {
   public int translucency;
   public String colorScheme;
   public String rendering;
-  public int slabValue = Integer.MAX_VALUE;
+  public int slabValue = Integer.MIN_VALUE;
   public boolean isSlabbable;
+  public int diameter;
+  
 
   public void clear() {
     jvxlSurfaceData = "";
@@ -175,7 +176,7 @@ public class JvxlData {
     isSlabbable = false;
     meshColor = null;
     nVertexColors = 0;
-    slabValue = Integer.MAX_VALUE;
+    slabValue = Integer.MIN_VALUE;
     rendering = null;    
     translucency = 0;
     vContours = null;

@@ -412,12 +412,13 @@ public abstract class MeshCollection extends Shape {
     if (property == "ID")
       return (currentMesh == null ? null : currentMesh.thisID);
     if (property.startsWith("list")) {
+      clean();
       StringBuffer sb = new StringBuffer();
       int k = 0;
       String id = (property.equals("list") ? null : property.substring(5));
       for (int i = 0; i < meshCount; i++) {
-        if ((m = meshes[i]) == null || m.vertexCount == 0 || id != null
-            && !id.equalsIgnoreCase(m.thisID))
+        m = meshes[i];
+        if (id != null && !id.equalsIgnoreCase(m.thisID))
           continue;
         sb.append((++k)).append(" id:" + m.thisID).append(
             "; model:" + viewer.getModelNumberDotted(m.modelIndex)).append(

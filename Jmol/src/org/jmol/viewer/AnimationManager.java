@@ -117,7 +117,7 @@ class AnimationManager {
     setFrameRangeVisible(); 
   }
   
-  private BitSet bsVisibleFrames = new BitSet();
+  private final BitSet bsVisibleFrames = new BitSet();
   BitSet getVisibleFramesBitSet() {
     return bsVisibleFrames;
   }

@@ -38,12 +38,12 @@ class IsoMepReader extends AtomDataReader {
   /////// molecular electrostatic potential ///////
 
   @Override
-  protected void setup() {
-    super.setup();
+  protected void setup(boolean isMapData) {
+    super.setup(isMapData);
     doAddHydrogens = false;
-    getAtoms(params.bsSelected, true, false, false, false, params.mep_marginAngstroms);
+    getAtoms(params.bsSelected, doAddHydrogens, true, false, false, false, params.mep_marginAngstroms);
     setHeader("MEP", "");
-    setRangesAndAddAtoms(params.mep_ptsPerAngstrom, params.mep_gridMax, myAtomCount);    
+    setRanges(params.mep_ptsPerAngstrom, params.mep_gridMax);    
   }
 
   @Override

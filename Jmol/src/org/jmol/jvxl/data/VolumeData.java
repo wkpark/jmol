@@ -166,6 +166,23 @@ public class VolumeData implements VolumeDataInterface {
     unitVolumetricVectors[2] = new Vector3f();
   }
 
+  public Point4f mappingPlane;
+  float mappingPlaneNormalMag;
+  
+  public void setMappingPlane(Point4f plane) {
+    //if(true)return;
+    mappingPlane = plane;
+    if (plane == null)
+      return;
+    mappingPlaneNormalMag = (float) Math.sqrt(plane.x * plane.x + plane.y * plane.y + plane.z * plane.z);
+  }
+
+  public float distanceToMappingPlane(Point3f pt) {
+    return (mappingPlane.x * pt.x + mappingPlane.y * pt.y + mappingPlane.z * pt.z + mappingPlane.w)
+    / mappingPlaneNormalMag;
+  }
+
+
   public void setVolumetricOrigin(float x, float y, float z) {
     volumetricOrigin.set(x, y, z);
   }
@@ -255,7 +272,7 @@ public class VolumeData implements VolumeDataInterface {
     getYzCount();
   }
   
-  public boolean setMatrix() {
+  private boolean setMatrix() {
     for (int i = 0; i < 3; i++)
       volumetricMatrix.setColumn(i, volumetricVectors[i]);
     try {
@@ -330,6 +347,8 @@ public class VolumeData implements VolumeDataInterface {
   public boolean isPeriodic;
   
   public float lookupInterpolatedVoxelValue(Point3f point) {
+    if (mappingPlane != null)
+      return distanceToMappingPlane(point);
     if (sr != null) {
       float v = sr.getValueAtPoint(point);
       return (isSquared ? v * v : v);
@@ -382,6 +401,7 @@ public class VolumeData implements VolumeDataInterface {
   }
 
   public void setDataDistanceToPlane(Point4f plane) {
+    //TODO REMOVE THIS METHOD.
     setPlaneParameters(plane);
     int nx = voxelCounts[0];
     int ny = voxelCounts[1];
@@ -510,5 +530,6 @@ public class VolumeData implements VolumeDataInterface {
     }
     return v0;
   }
+
   
 }

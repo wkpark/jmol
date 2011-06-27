@@ -130,10 +130,11 @@ public class JvxlCoder {
       XmlUtil.appendCdata(data, "jvxlSurfaceTitle", null, sb.toString());
     }
     sb = new StringBuffer();
-    XmlUtil.openTag(sb, "jvxlSurfaceData", (jvxlData.jvxlPlane == null ? null :
+    
+    XmlUtil.openTag(sb, "jvxlSurfaceData", (vertexDataOnly || jvxlData.jvxlPlane == null ? null :
       new String[] { "plane", Escape.escape(jvxlData.jvxlPlane) }));
     if (vertexDataOnly) {
-      jvxlAppendMeshXml(sb, jvxlData, meshData, true);
+      appendXmlVertexData(sb, jvxlData, meshData, true);
     } else if (jvxlData.jvxlPlane == null) {
       if (jvxlData.jvxlEdgeData == null)
         return "";
@@ -287,7 +288,9 @@ public class JvxlCoder {
       addAttrib(attribs, "\n  precisionColor", "true");
     if (jvxlData.colorDensity)
       addAttrib(attribs, "\n  colorDensity", "true");
-    if (jvxlData.jvxlPlane == null) {
+    else if (jvxlData.diameter != 0)
+      addAttrib(attribs, "\n  diameter", "" + jvxlData.diameter);
+    if (jvxlData.jvxlPlane == null || vertexDataOnly) {
       if (jvxlData.isContoured) {
         addAttrib(attribs, "\n  contoured", "true"); 
         addAttrib(attribs, "\n  colorMapped", "true");
@@ -313,7 +316,7 @@ public class JvxlCoder {
       addAttrib(attribs, "\n  colorScheme", jvxlData.colorScheme);
     if (jvxlData.rendering != null)
       addAttrib(attribs, "\n  rendering", jvxlData.rendering);
-    if (jvxlData.slabValue != Integer.MAX_VALUE)
+    if (jvxlData.slabValue != Integer.MIN_VALUE)
       addAttrib(attribs, "\n  slabValue", "" + jvxlData.slabValue);
     if (jvxlData.isSlabbable)
       addAttrib(attribs, "\n  slabbable", "true");
@@ -580,14 +583,14 @@ public class JvxlCoder {
    * 
    **********************************************************/
 
-  private static void jvxlAppendMeshXml(StringBuffer sb, 
+  private static void appendXmlVertexData(StringBuffer sb, 
                                         JvxlData jvxlData, MeshData meshData, boolean escapeXml) {
     int[] vertexIdNew = new int[meshData.vertexCount];
     if (appendXmlTriangleData(sb, meshData.polygonIndexes,
         meshData.polygonCount, meshData.bsSlabDisplay, vertexIdNew, escapeXml))
       appendXmlVertexData(sb, jvxlData, vertexIdNew,
           meshData.vertices, meshData.vertexValues, meshData.vertexCount,
-          meshData.polygonColorData, meshData.polygonCount,
+          meshData.polygonColorData, meshData.polygonCount, meshData.bsSlabDisplay, 
           jvxlData.jvxlColorData.length() > 0, escapeXml);
   }
 
@@ -687,7 +690,7 @@ public class JvxlCoder {
       }
     }
     if (list1.length() == 0)
-      return false;
+      return true;
     XmlUtil.appendTag(sb, "jvxlTriangleData", new String[] {
         "count", "" + nTri,
         "encoding", "jvxltdiff",
@@ -705,32 +708,27 @@ public class JvxlCoder {
    * 
    * Bob Hanson 11/2008
    * 
-   * If another program has created the triangles, we probably do not
-   * know the grid that was used for Marching Cubes, or quite possibly
-   * no grid was used. In that case, we just save the vertex/triangle/value
-   * data in a compact form.  
+   * If another program has created the triangles, we probably do not know the
+   * grid that was used for Marching Cubes, or quite possibly no grid was used.
+   * In that case, we just save the vertex/triangle/value data in a compact
+   * form.
    * 
-   * For the  we use an extension of the way edge points are encoded. 
-   * We simply identify the minimum and maximum x, y, and z coordinates and
-   * then express the point as a fraction along each of those directions. 
-   * Thus, the x, y, and z coordinate are within the interval [0,1]. 
-   *  
-   * We opt for the two-byte double-precision JVXL character compression. 
-   * This allows a 1 part in 8100 resolution, which is plenty for these 
-   * purposes. 
+   * For the we use an extension of the way edge points are encoded. We simply
+   * identify the minimum and maximum x, y, and z coordinates and then express
+   * the point as a fraction along each of those directions. Thus, the x, y, and
+   * z coordinate are within the interval [0,1].
+   * 
+   * We opt for the two-byte double-precision JVXL character compression. This
+   * allows a 1 part in 8100 resolution, which is plenty for these purposes.
    * 
    * The tag will indicate the minimum and maximum values:
    * 
-   *   <jvxlVertexData 
-   *      count="150"
-   *      min="(15.218472, -28.304049, 34.71112)" 
-   *      max="(97.8228, 54.011948, 109.95208)"
-   *      data="....">
-   *   </jvxlVertexData>
+   * <jvxlVertexData count="150" min="(15.218472, -28.304049, 34.71112)"
+   * max="(97.8228, 54.011948, 109.95208)" data="...."> </jvxlVertexData>
    * 
-   * The resultant string is really two strings of length nData
-   * where the first string lists the "high" part of the positions,
-   * and the second string lists the "low" part of the positions.
+   * The resultant string is really two strings of length nData where the first
+   * string lists the "high" part of the positions, and the second string lists
+   * the "low" part of the positions.
    * 
    * @param sb
    * @param jvxlData
@@ -738,20 +736,22 @@ public class JvxlCoder {
    * @param vertices
    * @param vertexValues
    * @param vertexCount
-   * @param polygonColorData 
-   * @param polygonCount 
+   * @param polygonColorData
+   * @param polygonCount
+   * @param bsSlabDisplay
    * @param addColorData
-   * @param escapeXml 
+   * @param escapeXml
    */
-  private static void appendXmlVertexData(StringBuffer sb,
-                                            JvxlData jvxlData,
-                                            int[] vertexIdNew,
-                                            Point3f[] vertices,
-                                            float[] vertexValues,
-                                            int vertexCount,
-                                            String polygonColorData, 
-                                            int polygonCount,
-                                            boolean addColorData, boolean escapeXml) {
+  private static void appendXmlVertexData(StringBuffer sb, JvxlData jvxlData,
+                                          int[] vertexIdNew,
+                                          Point3f[] vertices,
+                                          float[] vertexValues,
+                                          int vertexCount,
+                                          String polygonColorData,
+                                          int polygonCount,
+                                          BitSet bsSlabDisplay,
+                                          boolean addColorData,
+                                          boolean escapeXml) {
     int colorFractionBase = jvxlData.colorFractionBase;
     int colorFractionRange = jvxlData.colorFractionRange;
     Point3f p;
@@ -759,30 +759,34 @@ public class JvxlCoder {
     Point3f max = jvxlData.boundingBox[1];
     StringBuffer list1 = new StringBuffer();
     StringBuffer list2 = new StringBuffer();
-    int[] vertexIdOld = new int[vertexCount];
-    for (int i = 0; i < vertexCount; i++)
-      if (vertexIdNew[i] > 0) // not all vertices may be in triangle -- that's OK
-        vertexIdOld[vertexIdNew[i] - 1] = i;
-    for (int i = 0; i < vertexCount; i++) {
-      p = vertices[vertexIdOld[i]];
-      jvxlAppendCharacter2(p.x, min.x, max.x, colorFractionBase,
-          colorFractionRange, list1, list2);
-      jvxlAppendCharacter2(p.y, min.y, max.y, colorFractionBase,
-          colorFractionRange, list1, list2);
-      jvxlAppendCharacter2(p.z, min.z, max.z, colorFractionBase,
-          colorFractionRange, list1, list2);
+    int[] vertexIdOld = null;
+    if (polygonCount > 0) {
+      bsSlabDisplay = null;
+      vertexIdOld = new int[vertexCount];
+      for (int i = 0; i < vertexCount; i++)
+        if (vertexIdNew[i] > 0) // not all vertices may be in triangle -- that's OK
+          vertexIdOld[vertexIdNew[i] - 1] = i;
     }
+    int n = 0;
+    for (int i = 0; i < vertexCount; i++)
+      if (bsSlabDisplay == null || bsSlabDisplay.get(i)) {
+        n++;
+        p = vertices[(polygonCount == 0 ? i : vertexIdOld[i])];
+        jvxlAppendCharacter2(p.x, min.x, max.x, colorFractionBase,
+            colorFractionRange, list1, list2);
+        jvxlAppendCharacter2(p.y, min.y, max.y, colorFractionBase,
+            colorFractionRange, list1, list2);
+        jvxlAppendCharacter2(p.z, min.z, max.z, colorFractionBase,
+            colorFractionRange, list1, list2);
+      }
     list1.append(list2);
-    XmlUtil.appendTag(sb, "jvxlVertexData", new String[] {
-        "count", "" + vertexCount,
-        "min", Escape.escape(min),
-        "max", Escape.escape(max),
-        "encoding", "base90xyz2",
-        "data", jvxlCompressString(list1.toString(), escapeXml) }, null);
+    XmlUtil.appendTag(sb, "jvxlVertexData",
+        new String[] { "count", "" + n, "min", Escape.escape(min), "max",
+            Escape.escape(max), "encoding", "base90xyz2", "data",
+            jvxlCompressString(list1.toString(), escapeXml) }, null);
     if (polygonColorData != null)
-      XmlUtil.appendTag(sb, "jvxlPolygonColorData", new String[] {
-          "encoding", "jvxlnc",
-          "count", "" + polygonCount}, "\n" + polygonColorData);
+      XmlUtil.appendTag(sb, "jvxlPolygonColorData", new String[] { "encoding",
+          "jvxlnc", "count", "" + polygonCount }, "\n" + polygonColorData);
     if (!addColorData)
       return;
 
@@ -791,13 +795,14 @@ public class JvxlCoder {
     list1 = new StringBuffer();
     list2 = new StringBuffer();
     for (int i = 0; i < vertexCount; i++) {
-      float value = vertexValues[vertexIdOld[i]];
+      float value = vertexValues[polygonCount == 0 ? i : vertexIdOld[i]];
       jvxlAppendCharacter2(value, jvxlData.mappedDataMin,
           jvxlData.mappedDataMax, colorFractionBase, colorFractionRange, list1,
           list2);
     }
-    appendXmlColorData(sb, "jvxlColorData", list1.append(list2).append("\n").toString(), true, 
-        jvxlData.valueMappedToRed, jvxlData.valueMappedToBlue);
+    appendXmlColorData(sb, "jvxlColorData", list1.append(list2).append("\n")
+        .toString(), true, jvxlData.valueMappedToRed,
+        jvxlData.valueMappedToBlue);
   }
 
   ////////// character - fraction encoding and decoding
@@ -1168,17 +1173,24 @@ public class JvxlCoder {
   // VERSION 1 methods -- deprecated but still available through Jmol 11.9.18
   
   public static void jvxlCreateHeaderWithoutTitleOrAtoms(VolumeData v, StringBuffer bs) {
-    jvxlCreateHeader(v, Integer.MAX_VALUE, null, null,  bs);
+    jvxlCreateHeader(v, bs);
   }
 
-  public static void jvxlCreateHeader(VolumeData v, int nAtoms, 
-                                         Point3f[] atomXyz, int[] atomNo,
-                                         StringBuffer sb) {
+  /**
+   * Creates a two-line header for the XJVXL file. It is no longer necessary
+   * to create the atom set or generate the vectors here. Please leave the 
+   * commented code for posterity. 
+   * 
+   * @param v 
+   * @param sb 
+   */
+  public static void jvxlCreateHeader(VolumeData v, StringBuffer sb) {
     // if the StringBuffer comes in non-empty, it should have two lines
     // that do not start with # already present.
     v.setVolumetricXml();
     if (sb.length() == 0)
       sb.append("Line 1\nLine 2\n");
+    /* no longer necessary
     sb.append(nAtoms == Integer.MIN_VALUE ? "+2" 
         : nAtoms == Integer.MAX_VALUE ? "-2" : "" + (-nAtoms))
       .append(' ')
@@ -1204,6 +1216,7 @@ public class JvxlCoder {
       pt.scaleAdd(v.voxelCounts[i] - 1, v.volumetricVectors[i], pt);
     sb.append("2 2.0 ").append(pt.x).append(' ').append(pt.y).append(' ')
         .append(pt.z).append(" //BOGUS He ATOM ADDED FOR JVXL FORMAT\n");
+    */
   }
 
   /*

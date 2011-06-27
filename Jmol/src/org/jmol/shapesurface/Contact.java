@@ -91,7 +91,7 @@ public class Contact extends Isosurface {
           intramolecularMode, true);
       if (type == Token.full) {
         thisMesh.jvxlData.vertexDataOnly = true;
-        reinitializeLightingAndColor();
+        thisMesh.reinitializeLightingAndColor();
       } else if (type == Token.plane) {
         setProperty("clear", null, null);
         setProperty("init", null, null);
@@ -209,8 +209,7 @@ public class Contact extends Isosurface {
       setProperty("ignore", bs, null);
       setProperty("radius", rd, null);
       setProperty("sasurface", Float.valueOf(0), null);
-      thisMesh.slabPolygons(MeshSurface.getSlabObject(Token.range,
-          new Object[] { Float.valueOf(-100), Float.valueOf(0) }, false));
+      thisMesh.slabPolygons(MeshSurface.getSlabWithinRange(-100, 0));
       return;
     }
     if (type == Token.connect)

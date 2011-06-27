@@ -1134,10 +1134,9 @@ public class SurfaceGenerator {
       boolean isSquared = params.isSquared;
       params.isSquared = false;
       params.cutoff = 0;
-      surfaceReader.setMappingPlane(params.thePlane);
+      volumeData.setMappingPlane(params.thePlane);
       surfaceReader.createIsosurface(!params.isPeriodic);//but don't read volume data yet
-      if (params.slabInfo != null)
-        surfaceReader.slabIsosurface(params.slabInfo);
+      volumeData.setMappingPlane(null);
       if (meshDataServer != null)
         meshDataServer.notifySurfaceGenerationCompleted();
       if (params.dataType == Parameters.SURFACE_NOMAP) {
@@ -1157,6 +1156,10 @@ public class SurfaceGenerator {
     surfaceReader.closeReader();
   }
 
+  public List<Object[]> getSlabInfo() {
+    return params.slabInfo;
+  }
+  
   void colorIsosurface() {
     surfaceReader.colorIsosurface();
     surfaceReader.jvxlUpdateInfo();
@@ -1394,6 +1397,5 @@ public class SurfaceGenerator {
   public boolean isFullyLit() {
     return (params.thePlane != null || params.fullyLit);
   }
-
 
 }

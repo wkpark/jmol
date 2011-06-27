@@ -56,15 +56,20 @@ class VolumeDataReader extends SurfaceReader {
   protected float ptsPerAngstrom;
   protected int maxGrid;
   protected AtomDataServer atomDataServer;
+  protected boolean useOriginStepsPoints;
 
   VolumeDataReader(SurfaceGenerator sg) {
     super(sg);
+    useOriginStepsPoints = (params.origin != null && params.points != null && params.steps != null);
     dataType = params.dataType;
     precalculateVoxelData = true;
     allowMapData = true;    
   }
   
-  void setup() {
+  /**
+   * @param isMapData  
+   */
+  void setup(boolean isMapData) {
     //as is, just the volumeData as we have it.
     //but subclasses can modify this behavior.
     jvxlFileHeaderBuffer = new StringBuffer("volume data read from file\n\n");
@@ -73,7 +78,7 @@ class VolumeDataReader extends SurfaceReader {
   
   @Override
   protected boolean readVolumeParameters(boolean isMapData) {
-    setup();
+    setup(isMapData);
     initializeVolumetricData();
     return true;
   }
@@ -114,8 +119,9 @@ class VolumeDataReader extends SurfaceReader {
   }
   
   protected boolean setVolumeDataParams() {
-    if (params.origin == null || params.steps == null || params.points == null)
+    if (!useOriginStepsPoints) {
       return false;
+    }
     volumetricOrigin.set(params.origin);
     volumetricVectors[0].set(params.steps.x, 0, 0);
     volumetricVectors[1].set(0, params.steps.y, 0);

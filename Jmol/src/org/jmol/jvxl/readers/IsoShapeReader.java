@@ -70,7 +70,7 @@ class IsoShapeReader extends VolumeDataReader {
 
 
   @Override
-  protected void setup() {
+  protected void setup(boolean isMapData) {
     volumeData.sr = this; // we will provide point data for mapping
     precalculateVoxelData = false;
     if (center.x == Float.MAX_VALUE)

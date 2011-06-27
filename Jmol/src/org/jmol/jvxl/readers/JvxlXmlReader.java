@@ -91,7 +91,10 @@ public class JvxlXmlReader extends VolumeFileReader {
       gotoData(params.fileIndex - 1, nPointsX * nPointsY * nPointsZ);
       if (vertexDataOnly)
         return true;
+      volumeData.setMappingPlane(params.thePlane);
       readSurfaceData(isMapData);
+      volumeData.setMappingPlane(null);
+
       if (edgeDataCount > 0)
         jvxlEdgeDataRead = jvxlReadData("edge", edgeDataCount);
       params.bsExcluded = jvxlData.jvxlExcluded = new BitSet[4];
@@ -269,6 +272,9 @@ public class JvxlXmlReader extends VolumeFileReader {
       jvxlData.colorScheme = "rgb";
     jvxlData.slabValue = parseInt(XmlReader.getXmlAttrib(data, "slabValue"));    
     jvxlData.isSlabbable = (XmlReader.getXmlAttrib(data, "slabbable").equalsIgnoreCase("true"));    
+    jvxlData.diameter = parseInt(XmlReader.getXmlAttrib(data, "diameter"));
+    if (jvxlData.diameter == Integer.MIN_VALUE)
+      jvxlData.diameter = 0;
     
     if (jvxlDataIs2dContour)
       params.isContoured = true;
@@ -369,6 +375,7 @@ public class JvxlXmlReader extends VolumeFileReader {
   
   protected void readVolumeFileSurfaceData() throws Exception {
     super.readSurfaceData(false);
+    volumeData.setMappingPlane(null);
   }
 
   protected String jvxlReadData(String type,
@@ -671,6 +678,8 @@ public class JvxlXmlReader extends VolumeFileReader {
     int nColors = (colorData == null ? -1 : 0);
     int color = 0;
     int nData = parseInt(XmlReader.getXmlAttrib(data, "count"));
+    if (nData < 0)
+      return null;
     Logger.info("Reading " + nData + " triangles");
     int[][] triangles = null;
     int[] triangle = new int[3];

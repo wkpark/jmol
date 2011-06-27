@@ -62,7 +62,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
       volumeRender = imesh.jvxlData.colorDensity;
       if (!isNavigationMode) {
         int meshSlabValue = imesh.jvxlData.slabValue;
-        if (meshSlabValue != Integer.MAX_VALUE && imesh.jvxlData.isSlabbable) {
+        if (meshSlabValue != Integer.MIN_VALUE  
+            && imesh.jvxlData.isSlabbable) {
           Point3f[] points = imesh.jvxlData.boundingBox;
           pt2f.set(points[0]);
           pt2f.add(points[1]);
@@ -171,9 +172,10 @@ public class IsosurfaceRenderer extends MeshRenderer {
     try {
       if (volumeRender)
         g3d.volumeRender(true);
+      boolean slabPoints = ((volumeRender || imesh.polygonCount == 0) && haveBsSlabDisplay);
       int incr = imesh.vertexIncrement;
       int diam = viewer.getScreenDim() / (volumeRender ? 50 : 100);
-      if (imesh.diameter > 0) {
+      if (imesh.diameter < 0) {
         diam = viewer.getDotScale();
         frontOnly = false;
       }
@@ -192,7 +194,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
             && imesh.vertexSets[i] != imesh.thisSet || !imesh.isColorSolid
             && imesh.vertexColixes != null && !setColix(imesh.vertexColixes[i])
             || haveBsDisplay && !imesh.bsDisplay.get(i)
-            || volumeRender && haveBsSlabDisplay && !mesh.bsSlabDisplay.get(i))
+            || slabPoints && !mesh.bsSlabDisplay.get(i))
           continue;
         if (showNumbers && screens[i].z > 10
             && Math.abs(screens[i].x - cX) < 50

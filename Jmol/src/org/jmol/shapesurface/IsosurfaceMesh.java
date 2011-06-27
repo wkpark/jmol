@@ -155,7 +155,7 @@ public class IsosurfaceMesh extends Mesh {
      *  having 2-sided normixes is INCOMPATIBLE with this when not a plane 
      *  
      */
-    if (assocGridPointMap != null) {
+    if (assocGridPointMap != null && vectorSums.length > 0) {
       for (Map.Entry<Integer, Integer> entry : assocGridPointMap.entrySet()) {
         Integer I = entry.getKey();
         assocGridPointNormals.get(entry.getValue()).add(
@@ -551,6 +551,7 @@ public class IsosurfaceMesh extends Mesh {
    * @param isAll
    */
   void setJvxlColorMap(boolean isAll) {
+    jvxlData.diameter = diameter;
     jvxlData.color = Graphics3D.getHexCode(colix);
     jvxlData.meshColor = (meshColix == 0 ? null : Graphics3D.getHexCode(meshColix));
     jvxlData.translucency = Graphics3D.getColixTranslucencyLevel(colix);
@@ -607,6 +608,7 @@ public class IsosurfaceMesh extends Mesh {
    * opened.
    */
   void setColorsFromJvxlData() {
+    diameter = jvxlData.diameter;
     if (jvxlData.color != null)
       colix = Graphics3D.getColix(jvxlData.color);
     if (colix == 0)
@@ -659,7 +661,7 @@ public class IsosurfaceMesh extends Mesh {
     if (vertexValues == null || jvxlData.isBicolorMap
         || jvxlData.vertexCount == 0)
       return;
-    if (vertexColixes == null)
+    if (vertexColixes == null || vertexColixes.length != vertexCount)
       vertexColixes = new short[vertexCount];
     jvxlData.isColorReversed = ce.isReversed;
     if (max != Float.MAX_VALUE) {
@@ -707,6 +709,15 @@ public class IsosurfaceMesh extends Mesh {
     setColorCommand();
     isColorSolid = false;
   }
+
+  public void reinitializeLightingAndColor() {
+    initialize(lighting, null, null);
+    if (colorEncoder != null) {
+      vertexColixes = null;
+      remapColors(null, jvxlData.translucency);
+    }
+  }
+
 
   //private void dumpData() {
   //for (int i =0;i<10;i++) {

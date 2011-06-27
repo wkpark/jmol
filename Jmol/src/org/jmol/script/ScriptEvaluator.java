@@ -15096,7 +15096,7 @@ public class ScriptEvaluator {
     //         PARAMETERS [....] 
     //         FULL|PLANAR|CONNECT|NCI (FULL not implemented yet)
     //         HYDROPHOBIC|HBOND
-    //         INTRAMOLECULAR|INTERMOLECULAR
+    //         INTRAMOLECULAR|INTERMOLECULAR (default INTER)
     //         nnn%
     //         COLOR...
     //         TRANSLUCENT/OPAQUE...
@@ -15129,13 +15129,54 @@ public class ScriptEvaluator {
     int tok;
     int ipoint = 0;
     String filter = null;
+    boolean okNoAtoms = false;
     for (int i = iToken; i < statementLength; ++i) {
       switch (tok = getToken(i).tok) {
+      // these first do not need atoms defined
+      default:
+        okNoAtoms = true;
+        if (!setMeshDisplayProperty(JmolConstants.SHAPE_CONTACT, 0, theTok)) {
+          if (theTok != Token.times && !Token.tokAttr(theTok, Token.identifier))
+            error(ERROR_invalidArgument);
+          thisId = setShapeId(JmolConstants.SHAPE_CONTACT, i, idSeen);
+          i = iToken;
+          break;
+        }
+        if (iptDisplayProperty == 0)
+          iptDisplayProperty = i;
+        i = iToken;
+        continue;
       case Token.id:
+        okNoAtoms = true;
         setShapeId(JmolConstants.SHAPE_CONTACT, ++i, idSeen);
         isWild = (getShapeProperty(JmolConstants.SHAPE_CONTACT, "ID") == null);
         i = iToken;
         break;
+      case Token.color:
+        haveColor = true;
+        if (tok == Token.color && tokAt(i + 1) == Token.density) {
+          colorDensity = true;
+          sbCommand.append(" color density");
+          i++;
+          break;
+        }
+        // fall through to translucent
+      case Token.translucent:
+      case Token.opaque:
+        okNoAtoms = true;
+        colorpt = i;
+        setMeshDisplayProperty(JmolConstants.SHAPE_CONTACT, i, theTok);
+        i = iToken;
+        break;
+      case Token.slab:
+        okNoAtoms = true;
+        userSlabObject = getCapSlabObject(i, true);
+        setShapeProperty(JmolConstants.SHAPE_CONTACT, "slab", userSlabObject);
+        i = iToken;
+        break;
+       
+        // now after this you need atoms
+        
       case Token.density:
         colorDensity = true;
         sbCommand.append(" density");
@@ -15161,11 +15202,6 @@ public class ScriptEvaluator {
       case Token.integer:
         rd = encodeRadiusParameter(i, false);
         sbCommand.append(" ").append(rd);
-        i = iToken;
-        break;
-      case Token.slab:
-        userSlabObject = getCapSlabObject(i, true);
-        setShapeProperty(JmolConstants.SHAPE_CONTACT, "slab", userSlabObject);
         i = iToken;
         break;
       case Token.intermolecular:
@@ -15196,7 +15232,7 @@ public class ScriptEvaluator {
         break;
       //case Token.ignore:
       //  bsIgnore = atomExpression(++i);
-       // sbCommand.append(" ignore ").append(Escape.escape(bsIgnore));
+      // sbCommand.append(" ignore ").append(Escape.escape(bsIgnore));
       //  i = iToken;
       //  break;
       case Token.bitset:
@@ -15211,44 +15247,19 @@ public class ScriptEvaluator {
           bsB = bs;
         sbCommand.append(" ").append(Escape.escape(bs));
         break;
-      case Token.color:
-        haveColor = true;
-        if (tok == Token.color && tokAt(i + 1) == Token.density) {
-          colorDensity = true;
-          sbCommand.append(" color density");
-          i++;
-          break;
-        }
-        // fall through to translucent
-      case Token.translucent:
-      case Token.opaque:
-        colorpt = i;
-        setMeshDisplayProperty(JmolConstants.SHAPE_CONTACT, i, theTok);
-        i = iToken;
-        break;
-      default:
-        if (!setMeshDisplayProperty(JmolConstants.SHAPE_CONTACT, 0, theTok)) {
-          if (theTok == Token.times || Token.tokAttr(theTok, Token.identifier)) {
-            thisId = setShapeId(JmolConstants.SHAPE_CONTACT, i, idSeen);
-            i = iToken;
-            break;
-          }
-          error(ERROR_invalidArgument);
-        }
-        if (iptDisplayProperty == 0)
-          iptDisplayProperty = i;
-        i = iToken;
-        continue;
       }
       idSeen = (theTok != Token.delete);
     }
+    if (!okNoAtoms && bsA == null)
+      error(ERROR_endOfStatementUnexpected);
     if (isSyntaxCheck)
       return;
 
     // allow INTRAMOLECULAR only for NCI
-    if (type != Token.nci && intramolecular != null && intramolecular.booleanValue())
+    if (type != Token.nci && intramolecular != null
+        && intramolecular.booleanValue())
       error(ERROR_invalidArgument, ipoint);
-  
+
     sbCommand.append(" ").append(Token.nameOf(type));
     if (bsA != null) {
       // bond mode, intramolec set here
@@ -15283,7 +15294,13 @@ public class ScriptEvaluator {
 
       if (bsB == null) {
         // if INTRAMOLCULAR and no {B}, then this means "just {A} to {A}"
-        // otherwise, {B} should be set to {!A}
+        // otherwise, {B} should be set to {!A}.
+
+        if (type != Token.nci && intramolecular == null) {
+          sbCommand.append(" intramolecular");
+          intramolecular = Boolean.valueOf(false);
+        }
+
         if (intramolecular != null && intramolecular.booleanValue()) {
           intramolecular = null;
           bsB = BitSetUtil.copy(bsA);
@@ -15306,7 +15323,7 @@ public class ScriptEvaluator {
       bsIgnore.andNot(bsA);
       bsIgnore.andNot(bsB);
       bsIgnore.andNot(bs);
-      
+
       if (intramolecular != null) {
         params = (params == null ? new float[2] : ArrayUtil.ensureLength(
             params, 2));
@@ -15523,8 +15540,7 @@ public class ScriptEvaluator {
       throws ScriptException {
     if (i < 0) {
       // standard range -100 to 0
-      return MeshSurface.getSlabObject(Token.range, 
-          new Object[] { Float.valueOf(i), Float.valueOf(0)}, false);
+      return MeshSurface.getSlabWithinRange(i, 0);
     }
     Object data = null;
     int tok0 = tokAt(i);
@@ -15536,6 +15552,9 @@ public class ScriptEvaluator {
     BitSet bs = null;
     //TODO: check for compatibility with LCAOCARTOONS
     switch (tok) {
+    case Token.off:
+      iToken = i + 1;
+      return new Integer(Integer.MIN_VALUE);
     case Token.none:
       iToken = i + 1;
       break;
@@ -16818,7 +16837,7 @@ public class ScriptEvaluator {
         // isosurface functionXYZ "functionName"|"data3d_xxxxx"
         // {origin} {ni ix iy iz} {nj jx jy jz} {nk kx ky kz}
         // or
-        // isosurface origin.. step... count... functionXY[Z] "x + y + z"
+        // isosurface origin.. step... count... functionXY[Z] = "x + y + z"
         boolean isFxyz = (theTok == Token.functionxyz);
         propertyName = "" + theToken.value;
         List<Object> vxy = new ArrayList<Object>();
@@ -16826,7 +16845,9 @@ public class ScriptEvaluator {
         isFxy = surfaceObjectSeen = true;
         sbCommand.append(" ").append(propertyName);
         String name = parameterAsString(++i);
-        if (haveOrigin) {
+        if (name.equals("=")) {
+          sbCommand.append(" =");
+          name = parameterAsString(++i);
           sbCommand.append(" ").append(Escape.escape(name));
           vxy.add(name);
           if (!isSyntaxCheck)

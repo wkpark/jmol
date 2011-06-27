@@ -27,6 +27,7 @@ import java.util.BitSet;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
+import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.jvxl.api.VertexDataServer;
@@ -119,7 +120,7 @@ public class MarchingCubes extends TriangleData {
     bsExcludedVertices =  (bsExcluded[0] == null ? bsExcluded[0] = new BitSet() : bsExcluded[0]);
     bsExcludedPlanes =    (bsExcluded[2] == null ? bsExcluded[2] = new BitSet() : bsExcluded[2]);
     bsExcludedTriangles = (bsExcluded[3] == null ? bsExcluded[3] = new BitSet() : bsExcluded[3]);
-    mode = (volumeData.voxelData != null ? MODE_CUBE 
+    mode = (volumeData.voxelData != null || volumeData.mappingPlane != null ? MODE_CUBE 
         : bsVoxels != null ? MODE_BITSET : MODE_PLANES);
     setParameters(volumeData, params);
   }
@@ -194,8 +195,11 @@ public class MarchingCubes extends TriangleData {
     return plane;
   }
 
+  private Point4f mappingPlane;
+  
   public String getEdgeData() {
 
+    mappingPlane = volumeData.mappingPlane;
 
     // Logger.startTimer();
 
@@ -301,8 +305,15 @@ public class MarchingCubes extends TriangleData {
             case MODE_CUBE:
               //if (i == 0 && y == 0 && z == 0)
                 //dumpPlane(x, null);
-              v = vertexValues[i] = volumeData.voxelData[x + offset.x][y
+              if (mappingPlane == null) {
+                v = vertexValues[i] = volumeData.voxelData[x + offset.x][y
                   + offset.y][z + offset.z];
+              } else {
+                volumeData.voxelPtToXYZ(x + offset.x, y + offset.y, z
+                    + offset.z, pt0);
+                v = vertexValues[i] = volumeData.distanceToMappingPlane(pt0);
+              }
+
               if (isSquared)
                 vertexValues[i] *= vertexValues[i];
               isInside = (allInside ? true : isInside(vertexValues[i], cutoff, isCutoffAbsolute));

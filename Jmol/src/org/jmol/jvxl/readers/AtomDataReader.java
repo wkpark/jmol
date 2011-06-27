@@ -71,27 +71,44 @@ abstract class AtomDataReader extends VolumeDataReader {
   protected BitSet bsMySelected, bsMyIgnored, bsNearby;
 
   protected boolean doAddHydrogens;
-  protected boolean doUsePlane;
+  protected boolean havePlane;
   protected boolean doUseIterator;
 
   @Override
-  protected void setup() {
+  protected void setup(boolean isMapData) {
     //CANNOT BE IN HERE IF atomDataServer is not valid
     params.iUseBitSets = true;
     doAddHydrogens = (atomDataServer != null && params.addHydrogens); //Jvxl cannot do this on its own
     modelIndex = params.modelIndex;
     bsMySelected = new BitSet();
     bsMyIgnored = (params.bsIgnore == null ? new BitSet() : params.bsIgnore);
-
-    doUsePlane = (params.thePlane != null);
-    if (doUsePlane)
+    havePlane = (params.thePlane != null);
+    if (havePlane)
       volumeData.setPlaneParameters(params.thePlane);
+  }
+
+  protected void setVolumeForPlane() {
+    if (useOriginStepsPoints) {
+      xyzMin = new Point3f(params.origin);
+      xyzMax = new Point3f(params.origin);
+      xyzMax.x += (params.points.x - 1) * params.steps.x;
+      xyzMax.y += (params.points.y - 1) * params.steps.y;
+      xyzMax.z += (params.points.z - 1) * params.steps.z;
+    } else {
+      getAtoms(params.bsSelected, false, true, false, false, false, params.mep_marginAngstroms);
+      if (xyzMin == null) {
+        xyzMin = new Point3f(-10,-10,-10);
+        xyzMax = new Point3f(10, 10, 10);
+      }
+    }
+    setRanges(params.plane_ptsPerAngstrom, params.plane_gridMax); 
   }
 
   /**
    * 
    * @param bsSelected
    *        TODO
+   * @param doAddHydrogens TODO
    * @param getRadii
    *        TODO
    * @param getMolecules
@@ -100,9 +117,9 @@ abstract class AtomDataReader extends VolumeDataReader {
    * @param addNearbyAtoms
    * @param marginAtoms
    */
-  protected void getAtoms(BitSet bsSelected, boolean getRadii,
-                          boolean getMolecules, boolean getAllModels,
-                          boolean addNearbyAtoms, float marginAtoms) {
+  protected void getAtoms(BitSet bsSelected, boolean doAddHydrogens,
+                          boolean getRadii, boolean getMolecules,
+                          boolean getAllModels, boolean addNearbyAtoms, float marginAtoms) {
 
     if (addNearbyAtoms)
       getRadii = true;
@@ -130,13 +147,13 @@ abstract class AtomDataReader extends VolumeDataReader {
     boolean needRadius = false;
     for (int i = 0; i < atomCount; i++) {
       if ((bsSelected == null || bsSelected.get(i)) && (!bsMyIgnored.get(i))) {
-        if (doUsePlane
+        if (havePlane
             && Math.abs(volumeData.distancePointToPlane(atomData.atomXyz[i])) > 2 * (atomData.atomRadius[i] = getWorkingRadius(
                 i, marginAtoms)))
           continue;
         bsMySelected.set(i);
         nSelected++;
-        needRadius = !doUsePlane;
+        needRadius = !havePlane;
       }
       if (getRadii && (addNearbyAtoms || needRadius))
         atomData.atomRadius[i] = getWorkingRadius(i, marginAtoms);
@@ -295,15 +312,13 @@ abstract class AtomDataReader extends VolumeDataReader {
         "\n");
   }
 
-  protected void setRangesAndAddAtoms(float ptsPerAngstrom, int maxGrid,
-                                      int nWritten) {
+  protected void setRanges(float ptsPerAngstrom, int maxGrid) {
     if (xyzMin == null)
       return;
     this.ptsPerAngstrom = ptsPerAngstrom;
     this.maxGrid = maxGrid;
     setVolumeData();
-    JvxlCoder.jvxlCreateHeader(volumeData, nWritten, atomXyz, atomNo,
-        jvxlFileHeaderBuffer);
+    JvxlCoder.jvxlCreateHeader(volumeData, jvxlFileHeaderBuffer);
   }
 
   @Override

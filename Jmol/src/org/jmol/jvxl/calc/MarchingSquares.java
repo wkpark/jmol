@@ -264,12 +264,13 @@ public class MarchingSquares {
       }
       isValid = false;
     }
-
+/*
     void setValidity() {
       isValid &= (!Float.isNaN(contourVertexes[pts[0]].value)
           && !Float.isNaN(contourVertexes[pts[1]].value)
           && !Float.isNaN(contourVertexes[pts[2]].value));
     }
+*/    
   }
 
   public int generateContourData(boolean haveData, float zeroOffset) {
@@ -307,7 +308,7 @@ public class MarchingSquares {
     for (int i = triangleCount; --i >= 0;)
       triangles[i].check = 0;
 
-    float maxCutoff = Float.MAX_VALUE;
+    //float maxCutoff = Float.MAX_VALUE;
     float minCutoff = -Float.MAX_VALUE;
     //float lastCutoff = 0;
     float cutoff = minCutoff;
@@ -338,29 +339,37 @@ public class MarchingSquares {
       if (thisContour > 0) {
         if (i + 1 == thisContour)
           minCutoff = cutoff;
-        else if (i == thisContour)
-          maxCutoff = cutoff;
+      //  else if (i == thisContour)
+        //  maxCutoff = cutoff;
       } else {
-        maxCutoff = cutoff;
+       // maxCutoff = cutoff;
       }
     }
 
     if (contoursDiscrete != null) {
       minCutoff = contoursDiscrete[0];
-      maxCutoff = contoursDiscrete[contoursDiscrete.length - 1];
+      //maxCutoff = contoursDiscrete[contoursDiscrete.length - 1];
     }
     valueMin = contourValuesUsed[0];
     valueMax = (contourValuesUsed.length == 0 ?
         valueMin : contourValuesUsed[contourValuesUsed.length - 1]);
+    
+    /*
     if (contourFromZero || contoursDiscrete != null) {
+      
+      
       for (int i = 0; i < contourVertexCount; i++) {
         float v = contourVertexes[i].value;
         if (v > maxCutoff || v < minCutoff)
           contourVertexes[i].value = Float.NaN;
       }
+      
+      
       for (int i = triangleCount; --i >= 0;)
         triangles[i].setValidity();
     }
+    */
+    
     return true;
   }
 

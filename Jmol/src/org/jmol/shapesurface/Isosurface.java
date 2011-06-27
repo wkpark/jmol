@@ -201,9 +201,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   @Override
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
-    //System.out.println("isosurface testing " + propertyName + " " + value);
-    // //isosurface-only (no calculation required; no calculation parameters to
-    // set)
+    System.out.println("isosurface testing " + propertyName + " " + value + (propertyName == "token" ? " " + Token.nameOf(((Integer)value).intValue()) : ""));
+    
+    
+    //isosurface-only (no calculation required; no calc parameters to set)
 
     if ("navigate" == propertyName) {
       navigate(((Integer) value).intValue());
@@ -700,7 +701,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       if (property == "jvxlMeshXml" || jvxlData.vertexDataOnly) {
         meshData = new MeshData();
         fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
-        meshData.polygonColorData = getPolygonColorData(meshData.polygonCount, meshData.polygonColixes);
+        meshData.polygonColorData = getPolygonColorData(meshData.polygonCount, meshData.polygonColixes, meshData.bsSlabDisplay);
       }
       StringBuffer sb = new StringBuffer();
       getMeshCommand(sb, thisMesh.index);
@@ -745,7 +746,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     return ret;
   }
 
-  public static String getPolygonColorData(int ccount, short[] colixes) {
+  public static String getPolygonColorData(int ccount, short[] colixes, BitSet bsSlabDisplay) {
     if (colixes == null)
       return null;
     StringBuffer list1 = new StringBuffer();
@@ -753,6 +754,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     short colix = 0;
     boolean done = false;
     for (int i = 0; i < ccount || (done = true) == true; i++) {
+      if (!done && bsSlabDisplay != null && !bsSlabDisplay.get(i))
+        continue;
       if (done || colixes[i] != colix) {
         if (count != 0)
           list1.append(" ").append(count).append(" ").append(

@@ -143,6 +143,7 @@ public class Mesh extends MeshSurface {
     //data1 = null;
     //data2 = null;
     slabbingObject = null;
+    slabOptions = null;
     cappingObject = null;
     q = null;
     

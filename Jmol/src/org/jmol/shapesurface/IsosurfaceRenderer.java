@@ -141,6 +141,9 @@ public class IsosurfaceRenderer extends MeshRenderer {
     List<Object>[] vContours = imesh.getContours();
     if (vContours == null)
       return;
+    
+    if (imesh.jvxlData.vertexDataOnly)
+      return;
     for (int i = vContours.length; --i >= 0;) {
       List<Object> v = vContours[i];
       if (v.size() < JvxlCoder.CONTOUR_POINTS)
@@ -274,6 +277,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     for (int i = imesh.polygonCount; --i >= 0;) {
       int[] vertexIndexes = polygonIndexes[i];
       if (vertexIndexes == null || haveBsSlabDisplay && !imesh.bsSlabDisplay.get(i))
+        
         continue;
       int iA = vertexIndexes[0];
       int iB = vertexIndexes[1];

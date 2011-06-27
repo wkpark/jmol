@@ -134,7 +134,7 @@ public class JvxlCoder {
     XmlUtil.openTag(sb, "jvxlSurfaceData", (vertexDataOnly || jvxlData.jvxlPlane == null ? null :
       new String[] { "plane", Escape.escape(jvxlData.jvxlPlane) }));
     if (vertexDataOnly) {
-      appendXmlVertexData(sb, jvxlData, meshData, true);
+      appendXmlVertexOnlyData(sb, jvxlData, meshData, true);
     } else if (jvxlData.jvxlPlane == null) {
       if (jvxlData.jvxlEdgeData == null)
         return "";
@@ -583,7 +583,7 @@ public class JvxlCoder {
    * 
    **********************************************************/
 
-  private static void appendXmlVertexData(StringBuffer sb, 
+  private static void appendXmlVertexOnlyData(StringBuffer sb, 
                                         JvxlData jvxlData, MeshData meshData, boolean escapeXml) {
     int[] vertexIdNew = new int[meshData.vertexCount];
     if (appendXmlTriangleData(sb, meshData.polygonIndexes,
@@ -761,6 +761,8 @@ public class JvxlCoder {
     StringBuffer list2 = new StringBuffer();
     int[] vertexIdOld = null;
     if (polygonCount > 0) {
+      if (bsSlabDisplay != null)
+        polygonCount = bsSlabDisplay.cardinality();
       bsSlabDisplay = null;
       vertexIdOld = new int[vertexCount];
       for (int i = 0; i < vertexCount; i++)

@@ -17268,10 +17268,12 @@ public class ScriptEvaluator {
           propertyName = "thisID";
           propertyValue = str;
         }
+        /* I have no idea why this is here....
         if (planeSeen && !surfaceObjectSeen) {
           addShapeProperty(propertyList, "nomap", Float.valueOf(0));
           surfaceObjectSeen = true;
         }
+        */
         if (!setMeshDisplayProperty(iShape, 0, theTok)) {
           if (Token.tokAttr(theTok, Token.identifier) && !idSeen) {
             setShapeId(iShape, i, idSeen);

@@ -18,7 +18,6 @@ public class MeshSurface {
 
 
   public void merge(MeshData m) {
-    System.out.println(vertexCount + " " + m.vertexCount + " " + polygonCount + " " + m.polygonCount + " " + polygonIndexes);
     int nV = vertexCount + m.vertexCount;
     int nP = polygonCount + m.polygonCount;
     if (vertices == null)
@@ -209,7 +208,7 @@ public class MeshSurface {
       if (polygonColixes == null || polygonCount == 0)
         lastColor = 0;
       short colix = (color == lastColor ? lastColix : (lastColix = Graphics3D
-          .getColix(lastColor = color)));
+          .getColix(lastColor = color)));      
       setPolygonColix(polygonCount, colix);
     }
     return addPolygon(polygon);
@@ -218,7 +217,7 @@ public class MeshSurface {
   private void setPolygonColix(int index, short colix) {
     if (polygonColixes == null) {
       polygonColixes = new short[SEED_COUNT];
-    } else if (index == polygonColixes.length) {
+    } else if (index >= polygonColixes.length) {
       polygonColixes = ArrayUtil.doubleLength(polygonColixes);
     }
     polygonColixes[index] = colix;

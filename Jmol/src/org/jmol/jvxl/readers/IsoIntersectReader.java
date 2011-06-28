@@ -87,6 +87,7 @@ class IsoIntersectReader extends AtomDataReader {
     markSphereVoxels(0, params.distance, bsB);
     if (!setVoxels())
       volumeData.voxelData = new float[nPointsX][nPointsY][nPointsZ];
+    voxelData = volumeData.voxelData;
     unsetVoxelData();
     Logger.checkTimer("solvent surface time");
   }
@@ -150,7 +151,8 @@ class IsoIntersectReader extends AtomDataReader {
       return (va - vb);
     values[0] = va;
     values[1] = vb;
-    return atomDataServer.evalFunctionFloat(params.func[0], params.func[1], values);
+    float v = atomDataServer.evalFunctionFloat(params.func[0], params.func[1], values);
+    return v;
   }
   
   private final Point3f ptY0 = new Point3f();

@@ -32,6 +32,8 @@ import org.jmol.atomdata.RadiusData;
 import org.jmol.jvxl.data.MeshData;
 import org.jmol.script.Token;
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.Escape;
+import org.jmol.util.Logger;
 import org.jmol.util.MeshSurface;
 
 public class Contact extends Isosurface {
@@ -59,6 +61,8 @@ public class Contact extends Isosurface {
   private void setContacts(Object[] value) {
     BitSet bsA = (BitSet) value[0];
     BitSet bsB = (BitSet) value[1];
+    Logger.info("Contacts for " + Escape.escape(bsA));
+    Logger.info("Contacts to " + Escape.escape(bsB));
     //BitSet bsIgnore = (BitSet) value[2];
     BitSet bs;
     int type = ((Integer) value[3]).intValue();

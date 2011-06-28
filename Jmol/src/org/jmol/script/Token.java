@@ -1150,8 +1150,9 @@ public class Token {
   public final static int mesh    = misc  | 194;
   final static int middle         = misc  | 195;
   final static int minset         = misc  | 196;
-  final static int mlp            = misc  | 197;
-  final static int mode           = misc  | 198;
+  final static int miscellaneous  = misc  | 197;
+  final static int mlp            = misc  | 198;
+  final static int mode           = misc  | 199;
   public final static int modify         = misc  | 200;
   public final static int modifyorcreate = misc  | 202;
   final static int modelbased     = misc  | 204;
@@ -2016,6 +2017,8 @@ public class Token {
       "maxSet",          new Token(maxset),
       "menu",            new Token(menu),
       "minSet",          new Token(minset),
+      "miscellaneous",   new Token(miscellaneous),
+      "misc",            null,
       "modelBased",      new Token(modelbased),
       "molecular",       new Token(molecular),
       "mrc",             new Token(mrc),

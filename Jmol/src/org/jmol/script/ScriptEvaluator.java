@@ -15097,7 +15097,7 @@ public class ScriptEvaluator {
     //         DISTANCE x.x
     //         PARAMETERS [....] 
     //         FULL|PLANAR|CONNECT|NCI (FULL not implemented yet)
-    //         HYDROPHOBIC|HBOND
+    //         HYDROPHOBIC|HBOND|MISCELLANEOUS
     //         INTRAMOLECULAR|INTERMOLECULAR (default INTER)
     //         VDW
     //         nnn%
@@ -15219,7 +15219,7 @@ public class ScriptEvaluator {
         break;
       case Token.hydrophobic:
       case Token.hbond:
-        //case Token.ionic:
+      case Token.miscellaneous:
         bondMode = tok;
         sbCommand.append(" ").append(theToken.value);
         break;
@@ -15320,6 +15320,7 @@ public class ScriptEvaluator {
         bs = viewer.getAtomsWithin(distance, bsA, true);
         // {B} always within some fixed distance of A
         bsB.and(bs);
+        
       }
       if (bsIgnore == null)
         bsIgnore = BitSetUtil.setAll(viewer.getAtomCount());
@@ -15338,13 +15339,18 @@ public class ScriptEvaluator {
       if (params != null)
         sbCommand.append(" parameters ").append(Escape.escape(params));
 
-      // now adjust for type -- HBOND or HYDROPHOBIC
+      // now adjust for type -- HBOND or HYDROPHOBIC or MISC
+      // these are just "standard shortcuts" they are not necessary at all
       switch (bondMode) {
       case Token.hbond:
         filter = "_O | _N";
         break;
       case Token.hydrophobic:
-        filter = "!_O & !_N";
+        filter = "_C | _H & connected(_C)";
+        break;
+      case Token.miscellaneous:
+        // everything else!
+        filter = "!(_O | _N) && !(_C | _H & connected(_C))";
         break;
       }
       if (filter != null) {

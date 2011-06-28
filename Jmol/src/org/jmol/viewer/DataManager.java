@@ -313,6 +313,7 @@ class DataManager {
     case JmolConstants.VDW_BABEL:
     case JmolConstants.VDW_RASMOL:
     case JmolConstants.VDW_AUTO:
+    case JmolConstants.VDW_USER:
       break;
     default:
       iType = JmolConstants.VDW_JMOL;

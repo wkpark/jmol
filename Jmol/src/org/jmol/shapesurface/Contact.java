@@ -75,7 +75,8 @@ public class Contact extends Isosurface {
         : params[1]);
     setProperty("newObject", null, null);
 
-    if (type == Token.nci) {
+    switch (type) {
+    case Token.nci:
       if (isColorDensity)
         sg.setParameter("colorDensity", null);
       bs = BitSetUtil.copy(bsA);
@@ -86,7 +87,11 @@ public class Contact extends Isosurface {
       setProperty("bsSolvent", bsB, null);
       setProperty("parameters", params, null);
       setProperty("nci", Boolean.TRUE, null);
-    } else {
+      break;
+    case Token.vanderwaals:
+      newSurface(Token.vanderwaals, bsA, bsB, rd, null, null, false);
+      break;
+    default:
       doInterIntra(type, bsA, bsB, rd, params, func, isColorDensity,
           intramolecularMode, true);
       if (type == Token.full) {
@@ -97,7 +102,7 @@ public class Contact extends Isosurface {
         setProperty("init", null, null);
         setProperty("slab", slabObject, null);
       }
-
+      break;
     }
     setProperty("finalize", command, null);
     if (isColorDensity) {
@@ -196,7 +201,9 @@ public class Contact extends Isosurface {
 
   private void newSurface(int type, BitSet bsA, BitSet bsB, RadiusData rd,
                           Object params, Object func, boolean isColorDensity) {
-    if (type == Token.full) {
+    switch (type) {
+    case Token.vanderwaals:
+    case Token.full:
       setProperty("select", bsA, null);
       BitSet bs = BitSetUtil.copyInvert(bsA, atomCount);
       setProperty("ignore", bs, null);
@@ -209,23 +216,26 @@ public class Contact extends Isosurface {
       setProperty("ignore", bs, null);
       setProperty("radius", rd, null);
       setProperty("sasurface", Float.valueOf(0), null);
-      thisMesh.slabPolygons(MeshSurface.getSlabWithinRange(-100, 0));
+      if (type == Token.full)
+        thisMesh.slabPolygons(MeshSurface.getSlabWithinRange(-100, 0));
       return;
+    case Token.plane:
+    case Token.connect:
+      if (type == Token.connect)
+        setProperty("parameters", params, null);
+      setProperty("func", func, null);
+      setProperty("intersection", new BitSet[] { bsA, bsB }, null);
+      if (isColorDensity)
+        setProperty("cutoffRange", new float[] { -0.3f, 0.3f }, null);
+      setProperty("radius", rd, null);
+      setProperty("bsSolvent", null, null);
+      setProperty("sasurface", Float.valueOf(0), null);
+      // mapping
+      setProperty("map", Boolean.TRUE, null);
+      setProperty("select", bsA, null);
+      setProperty("radius", rd, null);
+      setProperty("sasurface", Float.valueOf(0), null);
     }
-    if (type == Token.connect)
-      setProperty("parameters", params, null);
-    setProperty("func", func, null);
-    setProperty("intersection", new BitSet[] { bsA, bsB }, null);
-    if (isColorDensity)
-      setProperty("cutoffRange", new float[] { -0.3f, 0.3f }, null);
-    setProperty("radius", rd, null);
-    setProperty("bsSolvent", null, null);
-    setProperty("sasurface", Float.valueOf(0), null);
-    // mapping
-    setProperty("map", Boolean.TRUE, null);
-    setProperty("select", bsA, null);
-    setProperty("radius", rd, null);
-    setProperty("sasurface", Float.valueOf(0), null);
   }
 
 }

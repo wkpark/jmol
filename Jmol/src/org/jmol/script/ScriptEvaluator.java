@@ -15099,6 +15099,7 @@ public class ScriptEvaluator {
     //         FULL|PLANAR|CONNECT|NCI (FULL not implemented yet)
     //         HYDROPHOBIC|HBOND
     //         INTRAMOLECULAR|INTERMOLECULAR (default INTER)
+    //         VDW
     //         nnn%
     //         COLOR...
     //         TRANSLUCENT/OPAQUE...
@@ -15226,6 +15227,7 @@ public class ScriptEvaluator {
       case Token.plane:
       case Token.connect:
       case Token.nci:
+      case Token.vanderwaals:
         type = theTok;
         break;
       case Token.parameters:

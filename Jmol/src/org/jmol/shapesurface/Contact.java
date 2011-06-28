@@ -143,7 +143,9 @@ public class Contact extends Isosurface {
               isFirst);
           isFirst = false;
         } else {
-          for (int j = i + 1; j < ad.bsMolecules.length; j++) {
+          for (int j = 0; j < ad.bsMolecules.length; j++) {
+            if (j == i)
+              continue;
             bsB1.clear();
             bsB1.or(ad.bsMolecules[j]);
             bsB1.and(bsB);

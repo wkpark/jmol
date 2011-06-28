@@ -15300,9 +15300,9 @@ public class ScriptEvaluator {
         // if INTRAMOLCULAR and no {B}, then this means "just {A} to {A}"
         // otherwise, {B} should be set to {!A}.
 
-        if (type != Token.nci && type != Token.vanderwaals 
+        if (type != Token.nci 
             && intramolecular == null) {
-          sbCommand.append(" intramolecular");
+          sbCommand.append(" intermolecular");
           intramolecular = Boolean.valueOf(false);
         }
 

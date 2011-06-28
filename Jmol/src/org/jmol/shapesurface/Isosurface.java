@@ -201,7 +201,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   @Override
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
-    System.out.println("isosurface testing " + propertyName + " " + value + (propertyName == "token" ? " " + Token.nameOf(((Integer)value).intValue()) : ""));
+    //System.out.println("isosurface testing " + propertyName + " " + value + (propertyName == "token" ? " " + Token.nameOf(((Integer)value).intValue()) : ""));
     
     
     //isosurface-only (no calculation required; no calc parameters to set)
@@ -928,7 +928,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   private boolean iHaveModelIndex;
 
   private void initializeIsosurface() {
-    System.out.println("isosurface initializing " + thisMesh);
+    //System.out.println("isosurface initializing " + thisMesh);
     if (!iHaveModelIndex)
       modelIndex = viewer.getCurrentModelIndex();
     isFixed = (modelIndex < 0);
@@ -1223,7 +1223,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       mesh.polygonIndexes = meshData.polygonIndexes;
       mesh.polygonColixes = meshData.polygonColixes;
       mesh.bsSlabDisplay = meshData.bsSlabDisplay;
-      System.out.println("test isosurface bsSlabDisplay = " + Escape.escape(mesh.bsSlabDisplay));
       mesh.polygonCount0 = meshData.polygonCount0;
       mesh.vertexCount0 = meshData.vertexCount0;
       mesh.slabOptions = meshData.slabOptions;

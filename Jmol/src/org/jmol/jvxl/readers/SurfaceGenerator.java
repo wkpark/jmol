@@ -409,8 +409,6 @@ public class SurfaceGenerator {
 
     if ("intersection" == propertyName) {
       params.intersection = (BitSet[]) value;
-      System.out.println("SG inter: " + Escape.escape(((BitSet[])value)[0]));
-      System.out.println("SG inter: " + Escape.escape(((BitSet[])value)[1]));
       return true;
     }
 

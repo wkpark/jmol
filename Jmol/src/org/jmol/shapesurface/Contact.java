@@ -144,7 +144,7 @@ public class Contact extends Isosurface {
             bsB1.and(bsB);
             if (bsB1.nextSetBit(0) < 0)
               continue;
-            System.out.println("contact " + bsA1 + " " + bsB1);
+            //System.out.println("contact " + bsA1 + " " + bsB1);
             doInterIntra(type, bsA1, bsB1, rd, params, func, isColorDensity, 0,
                 isFirst);
             isFirst = false;

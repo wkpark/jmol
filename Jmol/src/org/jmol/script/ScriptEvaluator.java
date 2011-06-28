@@ -15132,7 +15132,7 @@ public class ScriptEvaluator {
     int tok;
     int ipoint = 0;
     String filter = null;
-    boolean okNoAtoms = false;
+    boolean okNoAtoms = (iToken > 1);
     for (int i = iToken; i < statementLength; ++i) {
       switch (tok = getToken(i).tok) {
       // these first do not need atoms defined
@@ -15380,7 +15380,7 @@ public class ScriptEvaluator {
         setShapeProperty(JmolConstants.SHAPE_CONTACT, "remapColor", ce);
       }
     }
-    if (userSlabObject != null)
+    if (userSlabObject != null && bsA != null)
       setShapeProperty(JmolConstants.SHAPE_CONTACT, "slab", userSlabObject);
   }
     

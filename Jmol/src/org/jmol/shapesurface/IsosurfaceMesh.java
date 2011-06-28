@@ -630,7 +630,7 @@ public class IsosurfaceMesh extends Mesh {
         if (isTranslucent)
           colorScheme = colorScheme.substring(12);
         colorEncoder.setColorScheme(colorScheme, isTranslucent);
-        remapColors(null, jvxlData.translucency);
+        remapColors(null, Float.NaN);
       }
       if (jvxlData.vertexColorMap != null)
         for (Map.Entry<String, BitSet> entry : jvxlData.vertexColorMap
@@ -653,9 +653,15 @@ public class IsosurfaceMesh extends Mesh {
   void remapColors(ColorEncoder ce, float translucentLevel) {
     if (ce == null)
       ce = colorEncoder;
+    if (Float.isNaN(translucentLevel)) {
+      translucentLevel = Graphics3D.getColixTranslucencyFractional(colix);
+    } else {
+      colix = 
+      Graphics3D.getColixTranslucent(colix,
+          true, translucentLevel);
+    }
     float min = ce.lo;
     float max = ce.hi;
-
     vertexColorMap = null;
     polygonColixes = null;
     if (vertexValues == null || jvxlData.isBicolorMap
@@ -679,12 +685,9 @@ public class IsosurfaceMesh extends Mesh {
       // still, if the scheme is translucent, we don't want to color the vertices translucent
       isTranslucent = false;
     }
-    for (int i = vertexCount; --i >= 0;) {
+    for (int i = vertexCount; --i >= 0;)
       vertexColixes[i] = ce.getColorIndex(vertexValues[i]);
-      if (isTranslucent)
-        vertexColixes[i] = Graphics3D.getColixTranslucent(vertexColixes[i],
-            true, translucentLevel);
-    }
+    setTranslucent(isTranslucent, translucentLevel);
     colorEncoder = ce;
     List<Object>[] contours = getContours();
     if (contours != null) {
@@ -714,7 +717,7 @@ public class IsosurfaceMesh extends Mesh {
     initialize(lighting, null, null);
     if (colorEncoder != null) {
       vertexColixes = null;
-      remapColors(null, jvxlData.translucency);
+      remapColors(null, Float.NaN);
     }
   }
 

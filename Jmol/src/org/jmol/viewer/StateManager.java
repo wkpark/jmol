@@ -1376,6 +1376,7 @@ public class StateManager {
       // used by setAxesModeUnitCell to remove axesMolecular
       //   and either remove axesWindow or axesUnitCell
 
+      key = key.toLowerCase();
       if (htBooleanParameterFlags.containsKey(key)) {
         htBooleanParameterFlags.remove(key);
         if (!htPropertyFlagsRemoved.containsKey(key))

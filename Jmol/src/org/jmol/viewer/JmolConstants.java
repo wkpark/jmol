@@ -2085,7 +2085,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
    */
   public static boolean getAminoAcidValenceAndCharge(String res, String name,
                                                      int[] ret) {
-    if (res == null || name.length() == 1 || name.equals("CA")
+    if (res == null || res.length() == 0 || name.length() == 1 || name.equals("CA")
         || name.equals("CB"))
       return false;
     char ch0 = name.charAt(0);

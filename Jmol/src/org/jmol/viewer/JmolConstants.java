@@ -2099,7 +2099,6 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
       // dna/rna
       if (name.length() > 2 && name.charAt(2) == '\'')
         return false;
-      char cr = res.charAt(res.length() - 1);
       char ch1 = name.charAt(1); 
       switch (ch0) {
       case 'C':
@@ -2109,7 +2108,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
         switch (ch1) {
         case '1':
         case '3':
-          if (naNoH.indexOf("" + cr + name.charAt(1)) >= 0)
+          if (naNoH.indexOf("" + res.charAt(res.length() - 1) + ch1) >= 0)
             ret[0]--;
           break;
         case '7':

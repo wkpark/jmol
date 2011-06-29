@@ -430,12 +430,7 @@ final public class Atom extends Point3fi implements JmolNode {
   }
 
   public int getImplicitHydrogenCount() {
-    int targetValence = getTargetValence();
-    int charge = getFormalCharge();
-    if (charge != 0)
-      targetValence += (targetValence == 4 ? -Math.abs(charge) : charge);
-    int n = targetValence - getValence();
-    return (n < 0 ? 0 : n);
+    return group.chain.modelSet.getImplicitHydrogenCount(this);
   }
 
   int getTargetValence() {

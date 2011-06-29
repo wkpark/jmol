@@ -342,7 +342,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
         getPlane(yzPlanesRaw[1], false);
         plane = yzPlanes[0];
         for (int i = 0; i < yzCount; i++)
-          plane[i] = nan;
+          plane[i] = Float.NaN;
         return plane;
       }
       iPlaneRaw = -1;
@@ -374,7 +374,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
           recordData(plane[i]);
     } else {
       for (int i = 0; i < yzCount; i++)
-        plane[i] = nan;
+        plane[i] = Float.NaN;
     }
     return plane;
   }

@@ -62,6 +62,7 @@ import java.util.BitSet;
  *      Isosurface parameters [cutoff, p1, p2, p3, p4] NCI ...
  *
  *         -- p1 = 0(all, default), 1(intramolecular), 2(intermolecular)
+ *         -- p2 = rhoMin   (cutoff used to remove very low-density components)
  *         -- p2 = rhoPlot  (cutoff used to remove covalent density, default 0.07 for promolecular, 0.05 for SCF)
  *         -- p3 = rhoParam (fraction of total rho that defines intramolecular, default 0.95)
  *         -- p4 = dataScaling (default 1, but set to 0.01 to read back in NCIPLOT -dens.cube file)
@@ -94,6 +95,7 @@ public class NciCalculation extends QuantumCalculation implements
   private double DEFAULT_RHOPLOT_SCF = 0.05;
   private double DEFAULT_RHOPLOT_PRO = 0.07;
   private double DEFAULT_RHOPARAM = 0.95;
+  private double rhoMin;  // only rho >= this number plotted
   private double rhoPlot;  // only rho <= this number plotted
   private double rhoParam; // fractional rho cutoff defining intramolecular 
   private final static int TYPE_ALL = 0;
@@ -144,14 +146,18 @@ public class NciCalculation extends QuantumCalculation implements
     if (parameters != null)
       Logger.info("NCI calculation parameters = " + Escape.escape(parameters));
     // parameters[0] is the cutoff.
-    type = (int) getParameter(parameters, 1, 0, "type");
-    rhoPlot = getParameter(parameters, 2, (isPromolecular ? DEFAULT_RHOPLOT_PRO
+    type = (int) getParameter(parameters, 1, TYPE_ALL, "type");
+    if (type != TYPE_ALL && bsMolecules == null)
+      type = TYPE_ALL;
+    rhoMin = getParameter(parameters, 2, 1e-5, "rhoMin");
+    rhoPlot = getParameter(parameters, 3, (isPromolecular ? DEFAULT_RHOPLOT_PRO
         : DEFAULT_RHOPLOT_SCF), "rhoPlot");
-    rhoParam = getParameter(parameters, 3, DEFAULT_RHOPARAM, "rhoParam");
-    dataScaling = (float) getParameter(parameters, 4, 1, "dataScaling");
+    rhoParam = getParameter(parameters, 4, DEFAULT_RHOPARAM, "rhoParam");
+    dataScaling = (float) getParameter(parameters, 5, 1, "dataScaling");
     dataIsReducedDensity = (type < 0);
     String stype;
     switch (type) {
+    case TYPE_ALL:
     default:
       type = 0;
       stype = "all";
@@ -288,7 +294,7 @@ public class NciCalculation extends QuantumCalculation implements
   public void getPlane(int ix, float[] yzPlane) {
     if (noValuesAtAll) {
       for (int j = 0; j < yzCount; j++)
-        yzPlane[j] = (float) NO_VALUE;
+        yzPlane[j] = Float.NaN;
       return;
     }
     isReducedDensity = true;
@@ -300,7 +306,7 @@ public class NciCalculation extends QuantumCalculation implements
         if (bsOK == null || bsOK.get(index + i))
           yzPlane[i] = getValue(processAtoms(ix, iy, iz, -1), isReducedDensity);
         else
-          yzPlane[i] = (float) NO_VALUE;
+          yzPlane[i] = Float.NaN;
   }
 
   @Override
@@ -325,9 +331,9 @@ public class NciCalculation extends QuantumCalculation implements
   
   private float getValue(double rho, boolean isReducedDensity) {
     double s;
-    if (rho == NO_VALUE) {
-      s = NO_VALUE;
-    } else if (isReducedDensity) {
+    if (rho == NO_VALUE)
+      return Float.NaN; 
+    if (isReducedDensity) {
       s = c * grad * Math.pow(rho, rpower);
     } else {
       hess[0][0] = gxxTemp;
@@ -391,7 +397,7 @@ public class NciCalculation extends QuantumCalculation implements
       // Don't continue to more atoms if the density is already high. 
       // We couldn't do this if we were intending to write the density cube, 
       // but we aren't doing that.
-      if (rho > rhoPlot)
+      if (rho > rhoPlot || rho < rhoMin)
         return NO_VALUE;
       // Some efficiencies introduced here vs. NCIPLOT's FORTRAN code
       // just to minimize number of exponentials and multiplications, mostly.
@@ -490,7 +496,7 @@ public class NciCalculation extends QuantumCalculation implements
 
     if (noValuesAtAll) {
       for (int j = 0; j < yzCount; j++)
-        plane[j] = (float) NO_VALUE;
+        plane[j] = Float.NaN;
       return;
     }
 
@@ -530,14 +536,14 @@ public class NciCalculation extends QuantumCalculation implements
       for (int z = 0; z < nZ; z++, i++) {
         double rho = p1[i];
         if (bsOK != null && !bsOK.get(index + i)) {
-          plane[i] = (float) NO_VALUE;
+          plane[i] = Float.NaN;
         } else if (dataIsReducedDensity) {
           continue;
         } else if (rho == 0) {
           plane[i] = 0;
-        } else if (rho > rhoPlot || y == 0 || y == nY - 1 || z == 0
+        } else if (rho > rhoPlot || rho < rhoMin || y == 0 || y == nY - 1 || z == 0
             || z == nZ - 1) {
-          plane[i] = (float) NO_VALUE;
+          plane[i] = Float.NaN;
         } else {
           gxTemp = (p2[i] - p0[i]) / (2 * stepBohr[0]);
           gyTemp = (p1[i + nZ] - p1[i - nZ]) / (2 * stepBohr[1]);
@@ -592,7 +598,7 @@ public class NciCalculation extends QuantumCalculation implements
     // can't generate a value -- but if it WERE possible, getValue() would set it
     // to NO_VALUE anyway.
     
-    if (rho > rhoPlot)  
+    if (rho > rhoPlot || rho < rhoMin)  
       return NO_VALUE; 
     float dx = stepBohr[0];
     float dy = stepBohr[1];
@@ -611,6 +617,14 @@ public class NciCalculation extends QuantumCalculation implements
     gxyTemp = ((p2[i + nZ] - p2[i - nZ]) - (p0[i + nZ] - p0[i - nZ])) / (4 * dx * dy);
     gxzTemp = ((p2[i + 1] - p2[i - 1]) - (p0[i + 1] - p0[i - 1])) / (4 * dx * dz);
     gyzTemp = ((p1[i + nZ + 1] - p1[i - nZ + 1]) - (p1[i + nZ - 1] - p1[i - nZ - 1])) / (4 * dy * dz);
+    if (Double.isNaN(gxxTemp)
+        || Double.isNaN(gyyTemp)
+        || Double.isNaN(gzzTemp)
+        || Double.isNaN(gxyTemp)
+        || Double.isNaN(gxzTemp)
+        || Double.isNaN(gyzTemp)
+        )
+      return Float.NaN;
     return getValue(rho, false);
   }
   

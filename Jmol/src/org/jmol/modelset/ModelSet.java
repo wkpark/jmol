@@ -1047,6 +1047,5 @@ abstract public class ModelSet extends ModelCollection {
     if (bsDelete.nextSetBit(0) >= 0)
       deleteBonds(bsDelete, false);
   }
-
 }
 

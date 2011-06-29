@@ -269,9 +269,13 @@ public class FileManager {
           .getDefaultLoadFilter());
     setLoadState(htParams);
     Logger.info("FileManager.getAtomSetCollectionFromString()");
+    boolean isAddH = (strModel.indexOf(JmolConstants.ADD_HYDROGEN_TITLE) >= 0);
+    String[] fnames = (isAddH ? getFileInfo() : null);
     FileReader fileReader = new FileReader("string", "string", "string", null,
         getBufferedReaderForString(strModel), htParams, isAppend);
     fileReader.run();
+    if (fnames != null)
+      setFileInfo(fnames);
     if (!isAppend && !(fileReader.atomSetCollection instanceof String)) {
       viewer.zap(false, true, false);
       fullPathName = fileName = (strModel == JmolConstants.MODELKIT_ZAP_STRING ? JmolConstants.MODELKIT_ZAP_TITLE

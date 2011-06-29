@@ -2072,6 +2072,82 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   };
   
+  /**
+   * returns an array if we have special hybridization or charge
+   * 
+   * @param res
+   * @param name
+   * @param ret
+   *   [0] will be reduced by one for sp2 generally, but possibly not N
+   *   [1] will be 1 if charged (lysine only)
+   *   [2] will be 2 if sp2
+   * @return true for special; false if not
+   */
+  public static boolean getAminoAcidValenceAndCharge(String res, String name,
+                                                     int[] ret) {
+    if (res == null || name.length() == 1 || name.equals("CA")
+        || name.equals("CB"))
+      return false;
+    char ch0 = name.charAt(0);
+    boolean isSp2 = false;
+    if (res.length() == 3) {
+      String id = res + ch0;
+      isSp2 = (aaSp2.indexOf(id) >= 0);
+      if (aaPlus.indexOf(id) >= 0)
+        ret[1]++;
+    } else if (name.length() > 1) {
+      // dna/rna
+      if (name.length() > 2 && name.charAt(2) == '\'')
+        return false;
+      char cr = res.charAt(res.length() - 1);
+      char ch1 = name.charAt(1); 
+      switch (ch0) {
+      case 'C':
+        if (ch1 == '7') // T CH3
+          return false;
+      case 'N':
+        switch (ch1) {
+        case '1':
+        case '3':
+          if (naNoH.indexOf("" + cr + name.charAt(1)) >= 0)
+            ret[0]--;
+          break;
+        case '7':
+          ret[0]--;
+          break;
+        }
+        break;
+      }
+      isSp2 = true;
+    }
+    if (isSp2) {
+      switch (ch0) {
+      case 'N':
+        ret[2] = 2;
+        break;
+      case 'C':
+        ret[2] = 2;
+        ret[0]--;
+        break;
+      case 'O':
+        ret[0]--;
+        break;
+      }
+    }
+    return true;
+  }
+  private final static String naNoH = 
+  		"A3;A1;C3;G3;I3";
+  
+  private final static String aaSp2 = 
+    "ARGN;ASNN;ASNO;ASPO;" +
+    "GLNN;GLNO;GLUO;" +
+    "HISN;HISC;PHEC" +
+    "TRPC;TRPN;TYRC";
+  
+  private final static String aaPlus = 
+    "LYSN";
+
   public static float getHydrophobicity(int i) {
     return (i < 1 || i >= hydrophobicities.length ? 0 : hydrophobicities[i]);
   }
@@ -2083,6 +2159,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
    * # Reference: J. Mol. Biol. 179:125-142 (1984)
    *
    */
+
   private final static float[] hydrophobicities = {
                 0f,
       /* Ala*/  0.62f,
@@ -2363,7 +2440,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   };
   public final static String MODELKIT_ZAP_STRING = "1 0 C 0 0";
-  public static final String MODELKIT_ZAP_TITLE = "Jmol Model Kit";
+  public static final String MODELKIT_ZAP_TITLE = "Jmol Model Kit";//do not ever change this -- it is in the state
+  public final static String ADD_HYDROGEN_TITLE = "Viewer.AddHydrogens"; //do not ever change this -- it is in the state
 
   ////////////////////////////////////////////////////////////////
   // font-related

@@ -4580,7 +4580,7 @@ private void zap(String msg) {
     return bsB;
   }
 
-  public BitSet addHydrogensInline(BitSet bsAtoms, List<Atom> vConnections,
+  private BitSet addHydrogensInline(BitSet bsAtoms, List<Atom> vConnections,
                                    Point3f[] pts) throws Exception {
     int modelIndex = getAtomModelIndex(bsAtoms.nextSetBit(0));
     if (modelIndex != modelSet.getModelCount() - 1)
@@ -4601,7 +4601,7 @@ private void zap(String msg) {
           .append("({" + a.index + "});");
     }
     StringBuffer sb = new StringBuffer();
-    sb.append(pts.length).append("\nViewer.AddHydrogens#noautobond");
+    sb.append(pts.length).append("\n").append(JmolConstants.ADD_HYDROGEN_TITLE).append("#noautobond");
     sb.append("\n");
     for (int i = 0; i < pts.length; i++)
       sb.append("H ").append(pts[i].x).append(" ").append(pts[i].y).append(" ")

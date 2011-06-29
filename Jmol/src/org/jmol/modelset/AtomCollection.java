@@ -1257,11 +1257,12 @@ abstract public class AtomCollection {
           continue;
         if (doAll && atom.getCovalentHydrogenCount() > 0)
           continue;
-        int n = atom.getImplicitHydrogenCount();
+        int n = getImplicitHydrogenCount(atom);
         if (n == 0)
           continue;
+        int targetValence = aaRet[0];
+        int hybridization = aaRet[2];
         int nBonds = atom.getCovalentBondCount();
-        int targetValence = atom.getTargetValence();
         int atomicNumber = atom.getElementNumber();
 
         hAtoms[i] = new Point3f[n];
@@ -1327,7 +1328,7 @@ abstract public class AtomCollection {
           case 2:
             // 2 bonds needed R2C or R-N or R2C=C or O
             //                    or RC=C or C=C
-            boolean isEne = (atomicNumber == 5 || nBonds == 1
+            boolean isEne = (hybridization == 2 || atomicNumber == 5 || nBonds == 1
                 && targetValence == 4);
             getHybridizationAndAxes(i, z, x, (isEne ? "sp2b"
                 : targetValence == 3 ? "sp3c" : "lpa"), false, true);
@@ -1358,7 +1359,7 @@ abstract public class AtomCollection {
                 hAtoms[i] = null;
                 continue;
               }
-              if (getHybridizationAndAxes(i, z, x, (atomicNumber == 5 
+              if (getHybridizationAndAxes(i, z, x, (hybridization == 2 || atomicNumber == 5 
                   || atomicNumber == 7 && atom == atom.getGroup().getNitrogenAtom() 
                   ? "sp2c"
                   : "sp3d"), true, false) != null) {
@@ -1397,6 +1398,27 @@ abstract public class AtomCollection {
       }
     nTotal[0] = nH;
     return hAtoms;
+  }
+
+  private int[] aaRet;
+  int getImplicitHydrogenCount(Atom atom) {
+    int targetValence = atom.getTargetValence();
+    int charge = atom.getFormalCharge();
+    String s = atom.group.getGroup3();
+    if (s != null && charge == 0) {
+      if (aaRet == null)
+        aaRet = new int[3];
+      aaRet[0] = targetValence;
+      aaRet[1] = aaRet[2] = 0;
+      if (JmolConstants.getAminoAcidValenceAndCharge(s, atom.getAtomName(), aaRet)) {
+        targetValence = aaRet[0];
+        charge = aaRet[1];
+      }
+    }
+    if (charge != 0)
+      targetValence += (targetValence == 4 ? -Math.abs(charge) : charge);
+    int n = targetValence - atom.getValence();
+    return (n < 0 ? 0 : n);
   }
 
   private final static float sqrt3_2 = (float) (Math.sqrt(3) / 2);
@@ -1666,8 +1688,6 @@ abstract public class AtomCollection {
             doAlignZ);
         vTemp.set(x);
         if (isSp2) { // align z as sp2 orbital
-          //System.out.println("draw v1 vector @{ {_O}[1]} @{point" + x + "}");
-          //System.out.println("draw v2 vector @{ {_O}[1]} @{point" + z + "} color red");
           x.cross(x, z);
           if (pt == 1)
             x.scale(-1);

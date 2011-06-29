@@ -2246,7 +2246,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     ",[GUP],[LXC],[MAN],[RAM],[RIB],[RIP],[XYP],[XYS]" +
     ",[CBI],[CT3],[CTR],[CTT],[LAT],[MAB],[MAL],[MLR],[MTT]" +
     ",[SUC],[TRE],[GCU],[MTL],[NAG],[RHA],[SOR]" +
-    ",[XYL],[A2G],[NGA],[SIA],[SLB]" + 
+    ",[XYL],[A2G],[LBT],[NGA],[SIA],[SLB]" + 
     ",[AFL],[AGC],[GLB],[NAN],[RAA]"; //these 4 are deprecated in PDB
     // from Eric Martz; revision by Angel Herraez
 

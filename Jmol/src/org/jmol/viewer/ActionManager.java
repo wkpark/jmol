@@ -1228,6 +1228,14 @@ public class ActionManager {
       if (action == Binding.MOVED)
         return false;
     }
+    if (isBound(action, ACTION_clickFrank) && viewer.frankClicked(x, y)) {
+      viewer.popupMenu(-x, y, 'j');
+      return false;
+    }
+    if (isBound(action, ACTION_clickFrank) && viewer.frankClickedModelKit(x, y)) {
+      viewer.popupMenu(0, 0, 'm');
+      return false;
+    }
     Point3fi nearestPoint = null;
     int tokType = 0;
     // t.tok will let us know if this is an atom or a bond that was clicked
@@ -1269,14 +1277,6 @@ public class ActionManager {
       // continue checking --- no need to exit here
     }
 
-    if (isBound(action, ACTION_clickFrank) && viewer.frankClicked(x, y)) {
-      viewer.popupMenu(-x, y, 'j');
-      return false;
-    }
-    if (isBound(action, ACTION_clickFrank) && viewer.frankClickedModelKit(x, y)) {
-      viewer.popupMenu(0, 0, 'm');
-      return false;
-    }
     if (viewer.getNavigationMode() && atomPickingMode == PICKING_NAVIGATE
         && isBound(action, ACTION_pickNavigate)) {
       viewer.navTranslatePercent(0f, x * 100f / viewer.getScreenWidth() - 50f,

@@ -437,7 +437,7 @@ public class StateManager {
         if (c.atomIndex1 >= atomCount || c.atomIndex2 >= atomCount)
           continue;
         Bond b = modelSet.bondAtoms(modelSet.atoms[c.atomIndex1],
-            modelSet.atoms[c.atomIndex2], c.order, c.mad, null, c.energy, true);
+            modelSet.atoms[c.atomIndex2], c.order, c.mad, null, c.energy, false, true);
         b.setColix(c.colix);
         b.setShapeVisibilityFlags(c.shapeVisibilityFlags);
       }

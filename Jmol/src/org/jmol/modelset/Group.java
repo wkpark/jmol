@@ -331,8 +331,22 @@ public class Group {
     return (char)(seqcode & INSERTION_CODE_MASK);
   }
   
-  public final int selectAtoms(BitSet bs) {
+  private BitSet bsAdded;
+  
+  public boolean isAdded(int atomIndex) {
+    return bsAdded != null && bsAdded.get(atomIndex);
+  }
+  
+  public void addAtoms(int atomIndex) {
+    if (bsAdded == null)
+      bsAdded = new BitSet();
+    bsAdded.set(atomIndex);
+  }
+  
+  public int selectAtoms(BitSet bs) {
     bs.set(firstAtomIndex, lastAtomIndex + 1);
+    if (bsAdded != null)
+      bs.or(bsAdded);
     return lastAtomIndex;
   }
 
@@ -340,7 +354,7 @@ public class Group {
     for (int i = firstAtomIndex; i <= lastAtomIndex; ++i)
       if (bs.get(i))
         return true;
-    return false;
+    return (bsAdded == null ? false : bsAdded.intersects(bs));
   }
 
   boolean isHetero() {
@@ -505,4 +519,5 @@ public class Group {
   public Atom getCarbonylOxygenAtom() {
     return null;
   }
+
 }

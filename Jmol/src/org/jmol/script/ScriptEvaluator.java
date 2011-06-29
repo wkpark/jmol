@@ -7028,6 +7028,7 @@ public class ScriptEvaluator {
     int expression2 = 0;
     int ptColor = 0;
     float energy = 0;
+    boolean addGroup = false;
     /*
      * connect [<=2 distance parameters] [<=2 atom sets] [<=1 bond type] [<=1
      * operation]
@@ -7086,6 +7087,9 @@ public class ScriptEvaluator {
           iToken = pt;
         }
         i = iToken;
+        break;
+      case Token.group:
+        addGroup = true;
         break;
       case Token.color:
         int tok = tokAt(i + 1);
@@ -7231,14 +7235,14 @@ public class ScriptEvaluator {
           .nextSetBit(atom1 + 1)) {
         bs.set(atom1);
         result = viewer.makeConnections(distances[0], distances[1], bondOrder,
-            operation, bs, atomExpression(expression2), bsBonds, isBonds, 0);
+            operation, bs, atomExpression(expression2), bsBonds, isBonds, false, 0);
         nNew += Math.abs(result[0]);
         nModified += result[1];
         bs.clear(atom1);
       }
     } else {
       result = viewer.makeConnections(distances[0], distances[1], bondOrder,
-          operation, atomSets[0], atomSets[1], bsBonds, isBonds, energy);
+          operation, atomSets[0], atomSets[1], bsBonds, isBonds, addGroup, energy);
       nNew += Math.abs(result[0]);
       nModified += result[1];
     }

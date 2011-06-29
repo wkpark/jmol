@@ -1908,7 +1908,7 @@ abstract public class ModelCollection extends BondCollection {
    */
   public int calculateStruts(BitSet bs1, BitSet bs2) {
     // select only ONE model
-    makeConnections(0, Float.MAX_VALUE, JmolEdge.BOND_STRUT, JmolConstants.CONNECT_DELETE_BONDS, bs1, bs2, null, false, 0);
+    makeConnections(0, Float.MAX_VALUE, JmolEdge.BOND_STRUT, JmolConstants.CONNECT_DELETE_BONDS, bs1, bs2, null, false, false, 0);
     int iAtom = bs1.nextSetBit(0);
     if (iAtom < 0)
       return 0;
@@ -1943,7 +1943,7 @@ abstract public class ModelCollection extends BondCollection {
         .calculateStruts((ModelSet) this, atoms, bs1, bs2, vCA, thresh, delta, strutsMultiple);
     for (int i = 0; i < struts.size(); i++) {
       Atom[] o = struts.get(i);
-      bondAtoms(o[0], o[1], JmolEdge.BOND_STRUT, mad, null, 0, true);
+      bondAtoms(o[0], o[1], JmolEdge.BOND_STRUT, mad, null, 0, false, true);
     }
     return struts.size();
   }
@@ -2297,7 +2297,7 @@ abstract public class ModelCollection extends BondCollection {
   protected int[] makeConnections(float minDistance, float maxDistance,
                                   int order, int connectOperation,
                                   BitSet bsA, BitSet bsB, BitSet bsBonds,
-                                  boolean isBonds, float energy) {
+                                  boolean isBonds, boolean addGroup, float energy) {
     if (bsBonds == null)
       bsBonds = new BitSet();
     boolean matchAny = (order == JmolEdge.BOND_ORDER_ANY);
@@ -2397,7 +2397,7 @@ abstract public class ModelCollection extends BondCollection {
           }
         } else {
           bsBonds.set(
-               bondAtoms(atomA, atomB, order, mad, bsBonds, energy, true).index);
+               bondAtoms(atomA, atomB, order, mad, bsBonds, energy, addGroup, true).index);
           nNew++;
         }
       }
@@ -3943,7 +3943,7 @@ abstract public class ModelCollection extends BondCollection {
       bs = viewer.getModelUndeletedAtomsBitSet(atom.modelIndex);
       bs.andNot(getAtomBits(Token.hydrogen, null));
       makeConnections(0.1f, 1.8f, 1, JmolConstants.CONNECT_CREATE_ONLY, bsA,
-          bs, null, false, 0);
+          bs, null, false, false, 0);
 
       // 6) add hydrogen atoms
 

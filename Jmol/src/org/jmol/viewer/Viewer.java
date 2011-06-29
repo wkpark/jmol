@@ -4598,11 +4598,12 @@ private void zap(String msg) {
     for (int i = 0; i < vConnections.size(); i++) {
       Atom a = vConnections.get(i);
       sbConnect.append(";  connect 0 100 ").append("({" + (atomIndex++) + "}) ")
-          .append("({" + a.index + "});");
+          .append("({" + a.index + "}) group;");
     }
     StringBuffer sb = new StringBuffer();
-    sb.append(pts.length).append("\n").append(JmolConstants.ADD_HYDROGEN_TITLE).append("#noautobond");
-    sb.append("\n");
+    sb.append(pts.length).append("\n")
+        .append(JmolConstants.ADD_HYDROGEN_TITLE)
+        .append("#noautobond").append("\n");
     for (int i = 0; i < pts.length; i++)
       sb.append("H ").append(pts[i].x).append(" ").append(pts[i].y).append(" ")
           .append(pts[i].z).append(" - - - - ").append(++atomno).append('\n');
@@ -7024,13 +7025,13 @@ private void zap(String msg) {
 
   public int[] makeConnections(float minDistance, float maxDistance, int order,
                                int connectOperation, BitSet bsA, BitSet bsB,
-                               BitSet bsBonds, boolean isBonds, float energy) {
+                               BitSet bsBonds, boolean isBonds, boolean addGroup, float energy) {
     // eval
     clearModelDependentObjects();
     clearAllMeasurements(); // necessary for serialization
     clearMinimization();
     return modelSet.makeConnections(minDistance, maxDistance, order,
-        connectOperation, bsA, bsB, bsBonds, isBonds, energy);
+        connectOperation, bsA, bsB, bsBonds, isBonds, addGroup, energy);
   }
 
   @Override

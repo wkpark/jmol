@@ -422,7 +422,7 @@ abstract public class ModelSet extends ModelCollection {
   @Override
   public int[] makeConnections(float minDistance, float maxDistance, int order,
                                int connectOperation, BitSet bsA, BitSet bsB,
-                               BitSet bsBonds, boolean isBonds, float energy) {
+                               BitSet bsBonds, boolean isBonds, boolean addGroup, float energy) {
     if (connectOperation == JmolConstants.CONNECT_AUTO_BOND
         && order != JmolEdge.BOND_H_REGULAR) {
       String stateScript = "connect ";
@@ -435,7 +435,7 @@ abstract public class ModelSet extends ModelCollection {
     }
     moleculeCount = 0;
     return super.makeConnections(minDistance, maxDistance, order,
-        connectOperation, bsA, bsB, bsBonds, isBonds, energy);
+        connectOperation, bsA, bsB, bsBonds, isBonds, addGroup, energy);
   }
   
   @SuppressWarnings("unchecked")
@@ -553,7 +553,10 @@ abstract public class ModelSet extends ModelCollection {
           if (bonds[i].isHydrogen()
               || (bonds[i].order & JmolEdge.BOND_NEW) != 0) {
             Bond bond = bonds[i];
-            sb.append(bond.atom1.index).append('\t').append(bond.atom2.index)
+            int index = bond.atom1.index;
+            if (bond.atom1.getGroup().isAdded(index))
+              index = -1 - index;
+            sb.append(index).append('\t').append(bond.atom2.index)
                 .append('\t').append(bond.order & ~JmolEdge.BOND_NEW).append(
                     '\t').append(bond.mad / 1000f).append('\t').append(
                     bond.getEnergy()).append('\t').append(
@@ -815,7 +818,7 @@ abstract public class ModelSet extends ModelCollection {
           + n, n, n, pts[i].x, pts[i].y, pts[i].z);
       atom2.setMadAtom(viewer, rd);
       bs.set(atom2.index);
-      bondAtoms(atom1, atom2, JmolEdge.BOND_COVALENT_SINGLE, mad, null, 0, false);
+      bondAtoms(atom1, atom2, JmolEdge.BOND_COVALENT_SINGLE, mad, null, 0, false, false);
     }
     // must reset the shapes to give them new atom counts and arrays
     shapeManager.loadDefaultShapes(this);
@@ -1028,8 +1031,11 @@ abstract public class ModelSet extends ModelCollection {
       if (f == null || f.length < 2)
         continue;
       int index1 = (int) f[0];
+      boolean addGroup = (index1 < 0);
+      if (addGroup)
+        index1 = -1 - index1;
       int index2 = (int) f[1];
-      if (index1 < 0 || index2 < 0 || index1 >= atomCount || index2 >= atomCount)
+      if (index2 < 0 || index1 >= atomCount || index2 >= atomCount)
         continue;
       int order = (f.length > 2 ? (int) f[2] : JmolEdge.BOND_COVALENT_SINGLE);
       if (order < 0)
@@ -1042,7 +1048,7 @@ abstract public class ModelSet extends ModelCollection {
         continue; 
       }
       float energy = (f.length > 4 ? f[4] : 0);
-      bondAtoms(atoms[index1], atoms[index2], order, mad, null, energy, true);
+      bondAtoms(atoms[index1], atoms[index2], order, mad, null, energy, addGroup, true);
     }
     if (bsDelete.nextSetBit(0) >= 0)
       deleteBonds(bsDelete, false);

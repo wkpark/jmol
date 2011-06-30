@@ -688,7 +688,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
     return -1;
   }
 
-  public void setGroupBits(BitSet bs) {
+  public void getGroupBits(BitSet bs) {
     bs.set(index);
     return;
   }

@@ -2078,28 +2078,52 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
    * @param res
    * @param name
    * @param ret
-   *   [0] will be reduced by one for sp2 generally, but possibly not N
-   *   [1] will be 1 if charged (lysine only)
-   *   [2] will be 2 if sp2
+   *        [0] (target valence) may be reduced by one for sp2 for C or O only
+   *        [1] will be set to 1 if positive (lysine or terminal N) or -1 if negative (OXT)
+   *        [2] will be set to 2 if sp2 
+   *        [3] is supplied covalent bond count
    * @return true for special; false if not
    */
   public static boolean getAminoAcidValenceAndCharge(String res, String name,
                                                      int[] ret) {
-    if (res == null || res.length() == 0 || name.length() == 1 || name.equals("CA")
+    if (res == null || res.length() == 0 || name.equals("CA")
         || name.equals("CB"))
       return false;
     char ch0 = name.charAt(0);
+    char ch1 = (name.length() == 1 ? 0 : name.charAt(1));
     boolean isSp2 = false;
+    int bondCount = ret[3];
     if (res.length() == 3) {
-      String id = res + ch0;
-      isSp2 = (aaSp2.indexOf(id) >= 0);
-      if (aaPlus.indexOf(id) >= 0)
-        ret[1]++;
+      if (name.length() == 1) {
+        switch (ch0) {
+        case 'N':
+          // terminal N?
+          if (bondCount > 1)
+            return false;
+          ret[1] = 1;
+          break;
+        case 'O':
+          isSp2 = !res.equalsIgnoreCase("HOH");
+          break;
+        default:
+          isSp2 = true;
+        }
+      } else {
+        String id = res + ch0;
+        isSp2 = (aaSp2.indexOf(id) >= 0);
+        if (aaPlus.indexOf(id) >= 0) {
+          // LYS N is 1+
+          ret[1] = 1;
+        } else if (ch0 == 'O' && ch1 == 'X') {
+          // terminal O is 1-
+          ret[1] = -1;
+        }
+      }
+
     } else if (name.length() > 1) {
       // dna/rna
       if (name.length() > 2 && name.charAt(2) == '\'')
         return false;
-      char ch1 = name.charAt(1); 
       switch (ch0) {
       case 'C':
         if (ch1 == '7') // T CH3
@@ -2241,11 +2265,11 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   // this form is used for counting groups in ModelSet
   private final static String allCarbohydrates = 
-    ",[AHR],[ARA],[ARB],[BDF],[BDR],[BGC],[BMA]" +
+    ",[AHR],[ASF],[ARA],[ARB],[BDF],[BDR],[BGC],[BMA]" +
     ",[FCA],[FCB],[FRU],[FUC],[FUL],[GAL],[GLA],[GLC]" +
     ",[GUP],[LXC],[MAN],[RAM],[RIB],[RIP],[XYP],[XYS]" +
     ",[CBI],[CT3],[CTR],[CTT],[LAT],[MAB],[MAL],[MLR],[MTT]" +
-    ",[SUC],[TRE],[GCU],[MTL],[NAG],[RHA],[SOR]" +
+    ",[SUC],[TRE],[GCU],[MTL],[NAG],[NAM],[RHA],[SOR]" + // we need NAM for NAM-NAG sequences. 
     ",[XYL],[A2G],[LBT],[NGA],[SIA],[SLB]" + 
     ",[AFL],[AGC],[GLB],[NAN],[RAA]"; //these 4 are deprecated in PDB
     // from Eric Martz; revision by Angel Herraez

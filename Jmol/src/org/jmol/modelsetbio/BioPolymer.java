@@ -66,6 +66,7 @@ public abstract class BioPolymer extends Polymer {
 
   @Override
   public void getRange(BitSet bs) {
+    // this is OK -- doesn't relate to added hydrogens
     if (monomerCount == 0)
       return;
     bs.set(monomers[0].firstAtomIndex,
@@ -451,8 +452,7 @@ public abstract class BioPolymer extends Polymer {
   @Override
   public void getPolymerSequenceAtoms(int group1, int nGroups, BitSet bsInclude,
                                       BitSet bsResult) {
-    int max = group1 + nGroups;
-    for (int i = group1; i < monomerCount && i < max; i++)
+    for (int i = Math.min(monomerCount, group1 + nGroups); --i >= group1;)
       monomers[i].getMonomerSequenceAtoms(bsInclude, bsResult);
   }
 
@@ -969,14 +969,13 @@ public abstract class BioPolymer extends Polymer {
   public void getRangeGroups(int nResidues, BitSet bsAtoms, BitSet bsResult) {
     BitSet bsTemp = new BitSet();
     for (int i = 0; i < monomerCount; i++) {
-      int n = bsAtoms.nextSetBit(monomers[i].firstAtomIndex);
-      if (n < 0 || n > monomers[i].lastAtomIndex)
+      if (!monomers[i].isSelected(bsAtoms))
         continue;
       bsTemp.set(Math.max(0, i - nResidues), i + nResidues + 1);
       i += nResidues - 1;
     }
     for (int i = bsTemp.nextSetBit(0); i >= 0 && i < monomerCount; i = bsTemp.nextSetBit(i + 1)) 
-      bsResult.set(monomers[i].firstAtomIndex, monomers[i].lastAtomIndex + 1);
+      monomers[i].selectAtoms(bsResult);
   }
   
   @Override

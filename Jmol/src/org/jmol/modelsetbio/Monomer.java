@@ -35,7 +35,6 @@ import org.jmol.util.Quaternion;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.script.Token;
 
-import java.util.Hashtable;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
@@ -275,7 +274,7 @@ public abstract class Monomer extends Group {
   }
   
   public Map<String, Object> getMyInfo() {
-    Map<String, Object> info = new Hashtable<String, Object>();
+    Map<String, Object> info = super.getGroupInfo(groupIndex);
     char chainID = chain.getChainID();
     info.put("chain", (chainID == '\0' ? "" : "" + chainID));
     int seqNum = getSeqNumber();
@@ -284,12 +283,6 @@ public abstract class Monomer extends Group {
       info.put("sequenceNumber", Integer.valueOf(seqNum));
     if (insCode != 0)      
       info.put("insertionCode","" + insCode);
-    info.put("atomInfo1", chain.getAtom(firstAtomIndex).getInfo());
-    info.put("atomInfo2", chain.getAtom(lastAtomIndex).getInfo());
-    info.put("_apt1", Integer.valueOf(firstAtomIndex));
-    info.put("_apt2", Integer.valueOf(lastAtomIndex));
-    info.put("atomIndex1", Integer.valueOf(firstAtomIndex));
-    info.put("atomIndex2", Integer.valueOf(lastAtomIndex));
     float f = getGroupParameter(Token.phi);
     if (!Float.isNaN(f))
       info.put("phi", new Float(f));
@@ -387,9 +380,8 @@ public abstract class Monomer extends Group {
   }
     
   final void getMonomerSequenceAtoms(BitSet bsInclude, BitSet bsResult) {
-    for (int j = firstAtomIndex; j <= lastAtomIndex; j++)
-      if (bsInclude.get(j))
-        bsResult.set(j);
+    super.selectAtoms(bsResult);
+    bsResult.and(bsInclude);
   }
   
   protected final static boolean checkOptional(byte[]offsets, byte atom, 

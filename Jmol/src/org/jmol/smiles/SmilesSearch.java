@@ -533,7 +533,7 @@ public class SmilesSearch extends JmolMolecule {
             newPatternAtom.atomName, 1);
         if (nextGroupAtom >= 0) {
           BitSet bs = (BitSet) bsFound.clone();
-          jmolAtom.setGroupBits(bsFound);
+          jmolAtom.getGroupBits(bsFound);
 
           // working here
 
@@ -546,7 +546,7 @@ public class SmilesSearch extends JmolMolecule {
         List<Integer> vLinks = new ArrayList<Integer>();
         jmolAtom.getCrossLinkLeadAtomIndexes(vLinks);
         BitSet bs = (BitSet) bsFound.clone();
-        jmolAtom.setGroupBits(bsFound);
+        jmolAtom.getGroupBits(bsFound);
         for (int j = 0; j < vLinks.size(); j++)
           if (!checkMatch(newPatternAtom, atomNum, vLinks.get(j).intValue(), firstAtomOnly))
             return false;
@@ -602,7 +602,7 @@ public class SmilesSearch extends JmolMolecule {
       nMatch++;
       bs.set(i);
       if (patternAtoms[j].isBioAtom && patternAtoms[j].atomName == null)
-        jmolAtoms[i].setGroupBits(bs);
+        jmolAtoms[i].getGroupBits(bs);
       if (firstAtomOnly)
         break;
       if (!isSmarts && patternAtoms[j].missingHydrogenCount > 0)

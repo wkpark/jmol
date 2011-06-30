@@ -337,7 +337,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
       iPlaneRaw = 1;
       qpc.setPlanes(yzPlanesRaw = new float[4][yzCount]);
       if (hasColorData) {
-        float nan = qpc.getNoValue();
+        //float nan = qpc.getNoValue();
         getPlane(yzPlanesRaw[0], false);
         getPlane(yzPlanesRaw[1], false);
         plane = yzPlanes[0];

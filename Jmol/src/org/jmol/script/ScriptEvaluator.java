@@ -15247,7 +15247,7 @@ public class ScriptEvaluator {
       case Token.expressionBegin:
         if (isWild || bsB != null)
           error(ERROR_invalidArgument);
-        bs = atomExpression(i);
+        bs = BitSetUtil.copy(atomExpression(i));
         i = iToken;
         if (bsA == null)
           bsA = bs;
@@ -15345,16 +15345,18 @@ public class ScriptEvaluator {
 
       // now adjust for type -- HBOND or HYDROPHOBIC or MISC
       // these are just "standard shortcuts" they are not necessary at all
+      final String hbond = "_O | _N | _H & connected(_O | _N)"; 
+      final String hydro = "_C | _H & connected(_C)"; 
       switch (bondMode) {
       case Token.hbond:
-        filter = "_O | _N";
+        filter = hbond;
         break;
       case Token.hydrophobic:
-        filter = "_C | _H & connected(_C)";
+        filter = hydro;
         break;
       case Token.miscellaneous:
         // everything else!
-        filter = "!(_O | _N) && !(_C | _H & connected(_C))";
+        filter = "!(" + hbond + ") & !(" + hydro + ")";
         break;
       }
       if (filter != null) {

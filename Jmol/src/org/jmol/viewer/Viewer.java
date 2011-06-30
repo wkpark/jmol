@@ -9669,6 +9669,7 @@ private void zap(String msg) {
 
   /**
    * returns the SMILES string for a sequence or atom set
+   * does not include attached protons on groups
    * 
    * @param index1
    * @param index2

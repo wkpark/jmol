@@ -162,7 +162,7 @@ public class SmilesGenerator {
           }
           vLinks.clear();
         }
-        a.setGroupBits(bsIgnore);
+        a.getGroupBits(bsIgnore);
         bs.andNot(bsIgnore);
         int i2 = a.getOffsetResidueAtom("0", 1);
         if (i2 < 0 || !bs.get(i2)) {

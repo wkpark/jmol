@@ -25,6 +25,7 @@ package org.jmol.modelset;
 
 
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Quaternion;
 import org.jmol.viewer.JmolConstants;
@@ -40,7 +41,7 @@ import javax.vecmath.Vector3f;
 
 public class Group {
 
-  private int groupIndex;
+  protected int groupIndex;
   
   public int getGroupIndex() {
     return groupIndex;
@@ -351,10 +352,9 @@ public class Group {
   }
 
   public boolean isSelected(BitSet bs) {
-    for (int i = firstAtomIndex; i <= lastAtomIndex; ++i)
-      if (bs.get(i))
-        return true;
-    return (bsAdded == null ? false : bsAdded.intersects(bs));
+    int pt = bs.nextSetBit(firstAtomIndex);
+    return (pt >= 0 && pt <= lastAtomIndex 
+        || bsAdded != null &&  bsAdded.intersects(bs));
   }
 
   boolean isHetero() {
@@ -518,6 +518,46 @@ public class Group {
 
   public Atom getCarbonylOxygenAtom() {
     return null;
+  }
+
+  public void fixIndices(int atomsDeleted, BitSet bsDeleted) {
+    firstAtomIndex -= atomsDeleted;
+    leadAtomIndex -= atomsDeleted;
+    lastAtomIndex -= atomsDeleted;
+    if (bsAdded != null)
+      BitSetUtil.deleteBits(bsAdded, bsDeleted);
+  }
+
+  protected Map<String, Object> getGroupInfo(int igroup) {
+    Map<String, Object> infoGroup = new Hashtable<String, Object>();
+    infoGroup.put("groupIndex", Integer.valueOf(igroup));
+    infoGroup.put("groupID", Short.valueOf(groupID));
+    String s = getSeqcodeString();
+    if (s != null)
+      infoGroup.put("seqCode", s);
+    infoGroup.put("_apt1", Integer.valueOf(firstAtomIndex));
+    infoGroup.put("_apt2", Integer.valueOf(lastAtomIndex));
+    if (bsAdded != null)
+    infoGroup.put("addedAtoms", bsAdded);
+    infoGroup.put("atomInfo1", chain.modelSet.getAtomInfo(firstAtomIndex, null));
+    infoGroup.put("atomInfo2", chain.modelSet.getAtomInfo(lastAtomIndex, null));
+    infoGroup.put("visibilityFlags", Integer.valueOf(shapeVisibilityFlags));
+    return infoGroup;
+  }
+
+  public void getMinZ(Atom[] atoms, int[] minZ) {
+      minZ[0] = Integer.MAX_VALUE;
+      for (int i = firstAtomIndex; i <= lastAtomIndex; i++)
+        checkMinZ(atoms[i], minZ);
+      if (bsAdded != null)
+        for (int i = bsAdded.nextSetBit(0); i >= 0; i = bsAdded.nextSetBit(i + 1))
+          checkMinZ(atoms[i], minZ);
+  }
+
+  private void checkMinZ(Atom atom, int[] minZ) {
+      int z = atom.screenZ - atom.screenDiameter / 2 - 2;
+      if (z < minZ[0])
+        minZ[0] = Math.max(1, z);
   }
 
 }

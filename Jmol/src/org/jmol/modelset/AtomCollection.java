@@ -1262,7 +1262,7 @@ abstract public class AtomCollection {
           continue;
         int targetValence = aaRet[0];
         int hybridization = aaRet[2];
-        int nBonds = atom.getCovalentBondCount();
+        int nBonds = aaRet[3];
         int atomicNumber = atom.getElementNumber();
 
         hAtoms[i] = new Point3f[n];
@@ -1404,12 +1404,14 @@ abstract public class AtomCollection {
   int getImplicitHydrogenCount(Atom atom) {
     int targetValence = atom.getTargetValence();
     int charge = atom.getFormalCharge();
+    if (aaRet == null)
+      aaRet = new int[4];
+    aaRet[0] = targetValence;
+    aaRet[1] = charge;
+    aaRet[2] = 0;
+    aaRet[3] = atom.getCovalentBondCount();
     String s = atom.group.getGroup3();
     if (s != null && charge == 0) {
-      if (aaRet == null)
-        aaRet = new int[3];
-      aaRet[0] = targetValence;
-      aaRet[1] = aaRet[2] = 0;
       if (JmolConstants.getAminoAcidValenceAndCharge(s, atom.getAtomName(), aaRet)) {
         targetValence = aaRet[0];
         charge = aaRet[1];
@@ -1866,7 +1868,6 @@ abstract public class AtomCollection {
       case 120:
       case 210:
       case 300:
-        //System.out.println((Measure.computeTorsion(attached[0], atom, attached[1], attached[2], true)));
         if (Math.abs(Measure.computeTorsion(attached[0], atom, attached[1], attached[2], true)) > 162)
             return "trigonal planar";// -- AX3";
         return "trigonal pyramidal";// -- AX3E";
@@ -2275,8 +2276,11 @@ abstract public class AtomCollection {
     i = 0;
     switch (tokType) {
     case Token.group:
-      for (i = i0; i >= 0; i = bsInfo.nextSetBit(i+1))
-         i = atoms[i].getGroup().selectAtoms(bs);
+      for (i = i0; i >= 0; i = bsInfo.nextSetBit(i+1)) {
+        int j = atoms[i].getGroup().selectAtoms(bs);
+        if (j > i)
+          i = j;
+      }
       break;
     case Token.model:
       for (i = i0; i >= 0; i = bsInfo.nextSetBit(i+1)) {
@@ -2515,7 +2519,7 @@ abstract public class AtomCollection {
       chainId = Character.toUpperCase(chainId);
     BitSet bs = new BitSet();
     BitSet bsDone = new BitSet(atomCount);
-    for (int i = bsDone.nextClearBit(0); i < atomCount; i = bsDone.nextClearBit(i)) {
+    for (int i = bsDone.nextClearBit(0); i < atomCount; i = bsDone.nextClearBit(i + 1)) {
       Chain chain = atoms[i].getChain();
       if (chainId == (caseSensitive ? chain.chainID : Character.toUpperCase(chain.chainID))) {
         chain.setAtomBitSet(bs);

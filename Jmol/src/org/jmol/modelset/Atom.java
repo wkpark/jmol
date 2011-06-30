@@ -566,7 +566,7 @@ final public class Atom extends Point3fi implements JmolNode {
      return group;
    }
    
-   public void setGroupBits(BitSet bs) {
+   public void getGroupBits(BitSet bs) {
      group.selectAtoms(bs);
    }
    

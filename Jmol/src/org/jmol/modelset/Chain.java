@@ -148,16 +148,13 @@ public final class Chain {
     return selectedGroupCount;
   }
 
-  void fixIndices(int atomsDeleted) {
-    for (int i = 0; i < groupCount; i++) {
-      groups[i].firstAtomIndex -= atomsDeleted;
-      groups[i].leadAtomIndex -= atomsDeleted;
-      groups[i].lastAtomIndex -= atomsDeleted;
-    }
+  void fixIndices(int atomsDeleted, BitSet bsDeleted) {
+    for (int i = 0; i < groupCount; i++)
+      groups[i].fixIndices(atomsDeleted, bsDeleted);
   }
 
   void setAtomBitSet(BitSet bs) {
     for (int i = 0; i < groupCount; i++)
-      bs.set(groups[i].firstAtomIndex, groups[i].lastAtomIndex + 1);
+      groups[i].selectAtoms(bs);
   }
 }

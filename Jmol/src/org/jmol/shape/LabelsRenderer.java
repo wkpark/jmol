@@ -37,6 +37,7 @@ public class LabelsRenderer extends ShapeRenderer {
   protected Font3D font3d;
   protected int ascent;
   protected int descent;
+  final int[] minZ = new int[1];
 
   @Override
   protected void render() {
@@ -60,7 +61,7 @@ public class LabelsRenderer extends ShapeRenderer {
         .getScalePixelsPerAngstrom(true) * 10000f : 0);
     float imageFontScaling = viewer.getImageFontScaling();
     int iGroup = -1;
-    int minZ = Integer.MAX_VALUE;
+    minZ[0] = Integer.MAX_VALUE;
     boolean isAntialiased = g3d.isAntialiased();
     for (int i = labelStrings.length; --i >= 0;) {
       Atom atom = atoms[i];
@@ -97,10 +98,10 @@ public class LabelsRenderer extends ShapeRenderer {
         Group group = atom.getGroup();
         int ig = group.getGroupIndex();
         if (ig != iGroup) {
-          minZ = getMinZ(atoms, group);
+          group.getMinZ(atoms, minZ);
           iGroup = ig;
         }
-        zBox = minZ;
+        zBox = minZ[0];
       } else if (labelsFront) {
         zBox = 1;
       }
@@ -165,17 +166,4 @@ public class LabelsRenderer extends ShapeRenderer {
     }
 
   }
-
-  private int getMinZ(Atom[] atoms, Group group) {
-    int minZ = Integer.MAX_VALUE;
-    int first = group.firstAtomIndex;
-    int last = group.lastAtomIndex;
-    for (int i = first; i <= last; i++) {
-      int z = atoms[i].screenZ - atoms[i].screenDiameter / 2 - 2;
-      if (z < minZ)
-        minZ = Math.max(1, z);
-    }
-    return minZ;
-  }    
-
 }

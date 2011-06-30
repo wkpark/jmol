@@ -381,7 +381,7 @@ public final class Model {
       trajectoryBaseIndex--;
     firstAtomIndex -= nAtomsDeleted;
     for (int i = 0; i < chainCount; i++)
-      chains[i].fixIndices(nAtomsDeleted);
+      chains[i].fixIndices(nAtomsDeleted, bsDeleted);
     for (int i = 0; i < bioPolymerCount; i++)
       bioPolymers[i].recalculateLeadMidpointsAndWingVectors();
     BitSetUtil.deleteBits(bsAtoms, bsDeleted);

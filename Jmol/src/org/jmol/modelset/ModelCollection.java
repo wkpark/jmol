@@ -3517,20 +3517,8 @@ abstract public class ModelCollection extends BondCollection {
       Map<String, List<Map<String, Object>>> arrayName = new Hashtable<String, List<Map<String,Object>>>();
       for (int igroup = 0; igroup < nGroups; igroup++) {
         Group group = chain.getGroup(igroup);
-        if (!bs.get(group.firstAtomIndex)) 
-          continue;
-        Map<String, Object> infoGroup = new Hashtable<String, Object>();
-        infoGroup.put("groupIndex", Integer.valueOf(igroup));
-        infoGroup.put("groupID", Short.valueOf(group.getGroupID()));
-        String s = group.getSeqcodeString();
-        if (s != null)
-          infoGroup.put("seqCode", s);
-        infoGroup.put("_apt1", Integer.valueOf(group.firstAtomIndex));
-        infoGroup.put("_apt2", Integer.valueOf(group.lastAtomIndex));
-        infoGroup.put("atomInfo1", getAtomInfo(group.firstAtomIndex, null));
-        infoGroup.put("atomInfo2", getAtomInfo(group.lastAtomIndex, null));
-        infoGroup.put("visibilityFlags", Integer.valueOf(group.shapeVisibilityFlags));
-        infoChain.add(infoGroup);
+        if (bs.get(group.firstAtomIndex)) 
+          infoChain.add(group.getGroupInfo(igroup));
       }
       if (! infoChain.isEmpty()) { 
         arrayName.put("residues", infoChain);
@@ -4172,8 +4160,8 @@ abstract public class ModelCollection extends BondCollection {
         return -1;
       if ("0".equals(name))
         return m.leadAtomIndex;
-      int max = m.lastAtomIndex;
-      for (int i = m.firstAtomIndex; i <= max; i++)
+      // this is OK -- only used for finding special atom by name
+      for (int i = m.firstAtomIndex; i <= m.lastAtomIndex; i++)
         if (name == null || name.equalsIgnoreCase(atoms[i].getAtomName()))
           return i;
     }

@@ -551,6 +551,8 @@ public class JvxlCoder {
     float max = jvxlData.mappedDataMax;
     StringBuffer list1 = new StringBuffer();
     StringBuffer list2 = new StringBuffer();
+    if (vertexValues == null || vertexValues.length < vertexCount)
+      System.out.println("JVXLCOLOR OHOHO");  
     for (int i = 0; i < vertexCount; i++) {
       float value = vertexValues[i];
       if (Float.isNaN(value))

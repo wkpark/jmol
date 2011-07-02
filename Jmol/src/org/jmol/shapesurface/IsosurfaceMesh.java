@@ -664,6 +664,7 @@ public class IsosurfaceMesh extends Mesh {
     float max = ce.hi;
     vertexColorMap = null;
     polygonColixes = null;
+    jvxlData.vertexCount = vertexCount;
     if (vertexValues == null || jvxlData.isBicolorMap
         || jvxlData.vertexCount == 0)
       return;

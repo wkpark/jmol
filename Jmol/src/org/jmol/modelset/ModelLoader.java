@@ -1607,6 +1607,7 @@ public final class ModelLoader extends ModelSet {
   private void finalizeHydrogens() {
     if (!doAddHydrogens)
       return;
+    viewer.getLigandModel(null);
     finalizePdbMultipleBonds();
     if (bsAddedHydrogens == null || bsAddedHydrogens.nextSetBit(0) < 0
         || htBondMap == null)

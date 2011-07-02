@@ -150,7 +150,7 @@ public class PdbReader extends AtomSetCollectionReader {
         applySymmetryAndSetTrajectory();
       // supposedly MODEL is only for NMR
       model(modelNo);
-      if (!isAtom)
+      if (stateScriptVersionInt < 120000 || !isAtom) // Jmol 12.0.RC24 fixed this bug, but for earlier scripts we need to unfix it.
         return true;
     }
     /*

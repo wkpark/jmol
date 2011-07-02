@@ -87,9 +87,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.BitSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Map.Entry;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
@@ -1755,6 +1757,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       htParams.put("getHeader", Boolean.TRUE);
     if (global.pdbSequential)
       htParams.put("isSequential", Boolean.TRUE);
+    htParams.put("stateScriptVersionInt", Integer.valueOf(stateScriptVersionInt));
     if (!htParams.containsKey("filter")) {
       String filter = getDefaultLoadFilter();
       if (filter.length() > 0)
@@ -1985,7 +1988,25 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       ligandModels = new Hashtable<String, Object>();
     ligandModels.put(id + "_data", data);
   }
+
+  /**
+   * obtain CIF data for a ligand for purposes of adding hydrogens
+   * @param id   
+   *          if null, clear "bad" entries from the set. 
+   * @return  a ligand model or null
+   */
   public Object getLigandModel(String id) {
+    if (id == null) {
+      if (ligandModelSet != null) {
+        Iterator <Map.Entry<String, Object>> e = ligandModels.entrySet().iterator();
+        while (e.hasNext()) {
+          Entry<String, Object> entry = e.next();
+          if(entry.getValue() instanceof Boolean)
+            e.remove();
+        }
+      }
+      return null;
+    }
     id = id.toUpperCase();
     if (ligandModelSet == null)
       ligandModelSet = new Hashtable<String, Boolean>();
@@ -1999,30 +2020,37 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return null;
     if (model == null)
       model = ligandModels.get(id + "_data");
+    boolean isError = false;
     if (model == null) {
       fname = (String) setLoadFormat("#" + id, '#', false);
       if (fname.length() == 0)
         return null;
       scriptEcho("fetching " + fname);
       model = getFileAsString(fname);
-      ligandModels.put(id + "_data", model);
+      isError = (((String) model).indexOf("java.") == 0);
+      if (!isError)
+        ligandModels.put(id + "_data", model);
     }
-    if (model instanceof String) {
+    if (!isError && model instanceof String) {
       data = (String) model;
       // TODO: check for errors in reading file
       if (data.length() != 0) {
         Map<String, Object> htParams = new Hashtable<String, Object>();
         htParams.put("modelOnly", Boolean.TRUE);
-        model = getModelAdapter().getAtomSetCollectionReader("ligand", null, FileManager.getBufferedReaderForString(data),
-              htParams);
-        if (!(model instanceof String))
+        model = getModelAdapter().getAtomSetCollectionReader("ligand", null,
+            FileManager.getBufferedReaderForString(data), htParams);
+        isError = (model instanceof String);
+        if (!isError) {
           model = getModelAdapter().getAtomSetCollection(model);
-        if (fname != null && !(model instanceof String))
-          scriptEcho((String) getModelAdapter().getAtomSetCollectionAuxiliaryInfo(model).get("modelLoadNote"));    
+          isError = (model instanceof String);
+          if (fname != null && !isError)
+            scriptEcho((String) getModelAdapter()
+                .getAtomSetCollectionAuxiliaryInfo(model).get("modelLoadNote"));
+        }
       }
     }
-    if (model instanceof String) {
-      scriptEcho((String) model);
+    if (isError) {
+      scriptEcho(model.toString());
       ligandModels.put(id, Boolean.FALSE);
       return null;
     }
@@ -5572,6 +5600,10 @@ private void zap(String msg) {
 
   private void setStringProperty(String key, int tok, String value) {
     switch (tok) {
+    case Token.loadligandformat:
+      // /12.1.51//
+      global.loadLigandFormat = value;
+      break;
       // 12.1.50
     case Token.defaultlabelpdb:
       global.defaultLabelPDB = value;

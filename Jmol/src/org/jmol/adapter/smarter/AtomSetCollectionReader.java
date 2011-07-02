@@ -201,6 +201,9 @@ public abstract class AtomSetCollectionReader {
 
   String fileName;
 
+  protected int stateScriptVersionInt; // for compatiblity PDB reader Jmol 12.0.RC24 fix 
+  // http://jmol.svn.sourceforge.net/viewvc/jmol/trunk/Jmol/src/org/jmol/adapter/readers/cifpdb/PdbReader.java?r1=13502&r2=13525
+
   void setup(String fileName, Map<String, Object> htParams, Object reader) {
     this.htParams = htParams;
     this.fileName = fileName.replace('\\', '/');
@@ -353,6 +356,8 @@ public abstract class AtomSetCollectionReader {
     initializeSymmetry();
     viewer = (JmolViewer) htParams.get("viewer");
     htParams.remove("viewer"); // don't pass this on to user
+    if (htParams.containsKey("stateScriptVersionInt"))
+      stateScriptVersionInt = ((Integer) htParams.get("stateScriptVersionInt")).intValue();
     merging = htParams.containsKey("merging");
     getHeader = htParams.containsKey("getHeader");
     isSequential = htParams.containsKey("isSequential");

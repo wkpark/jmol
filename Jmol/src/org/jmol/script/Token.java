@@ -804,7 +804,8 @@ public class Token {
   public final static int helppath                       = strparam | 40;
   public final static int hoverlabel                     = strparam | 42;
   public final static int language                       = strparam | 44;
-  public final static int loadformat                     = strparam | 46;
+  public final static int loadformat                     = strparam | 45;
+  public final static int loadligandformat               = strparam | 46;
   public final static int logfile                        = strparam | 47;
   public final static int measurementunits               = strparam | 48;  
   public final static int picking                        = strparam | 49;
@@ -2119,6 +2120,7 @@ public class Token {
       "hoverLabel",                               new Token(hoverlabel),
       "language",                                 new Token(language),
       "loadFormat",                               new Token(loadformat),
+      "loadLigandFormat",                         new Token(loadligandformat),
       "logFile",                                  new Token(logfile),
       "measurementUnits",                         new Token(measurementunits),
       "picking",                                  new Token(picking),

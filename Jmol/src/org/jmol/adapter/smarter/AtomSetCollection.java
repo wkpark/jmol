@@ -1642,4 +1642,14 @@ public class AtomSetCollection {
       symmetry.toCartesian(atoms[i], true);
   }
 
+  public String[][] getBondList() {
+    String[][] info = new String[bondCount][];
+    for (int i = 0; i < bondCount; i++) {
+      info[i] = new String[] { atoms[bonds[i].atomIndex1].atomName, 
+        atoms[bonds[i].atomIndex2].atomName, "" + bonds[i].order };
+      //System.out.println("testing asc getBondList  " + info[i][0] + " " + info[i][1] + " " + info[i][2]);
+    }
+    return info;
+  }
+
 }

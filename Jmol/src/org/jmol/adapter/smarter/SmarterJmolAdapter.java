@@ -565,6 +565,12 @@ public class SmarterJmolAdapter extends JmolAdapter {
   public int getHydrogenAtomCount(Object atomSetCollection) {
     return ((AtomSetCollection)atomSetCollection).getHydrogenAtomCount();
   }
+  
+  @Override
+  public String[][] getBondList(Object atomSetCollection) {
+    return ((AtomSetCollection)atomSetCollection).getBondList();
+  }
+
 
   @Override
   public int getAtomCount(Object atomSetCollection) {
@@ -706,6 +712,10 @@ public class SmarterJmolAdapter extends JmolAdapter {
     @Override
     public char getInsertionCode()
     { return canonizeInsertionCode(atom.insertionCode); }
+    @Override
+    public Point3f getXYZ() {
+      return atom;
+    }
     
   }
 
@@ -826,4 +836,5 @@ public class SmarterJmolAdapter extends JmolAdapter {
       return structure.strandCount;
     }
   }
+
 }

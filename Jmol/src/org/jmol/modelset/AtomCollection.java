@@ -1258,8 +1258,6 @@ abstract public class AtomCollection {
           continue;
         if (doAll && atom.getCovalentHydrogenCount() > 0)
           continue;
-        if (atom.getAtomNumber() == 672)
-          System.out.println("HHHHHH");
         int n = getImplicitHydrogenCount(atom);
         if (n == 0)
           continue;

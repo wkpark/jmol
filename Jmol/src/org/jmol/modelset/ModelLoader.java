@@ -51,6 +51,7 @@ import javax.vecmath.Vector3f;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -135,6 +136,11 @@ public final class ModelLoader extends ModelSet {
   private boolean doMinimize;
   private boolean doAddHydrogens;
   private String fileHeader;
+  private Vector3f vAB;
+  private Vector3f vAC;
+  private Vector3f vNorm;
+  private Point4f plane;
+
 
   @SuppressWarnings("unchecked")
   private void initializeInfo(String name, Map<String, Object> info) {
@@ -149,7 +155,12 @@ public final class ModelLoader extends ModelSet {
     doAddHydrogens = isPDB && viewer.getBooleanProperty("pdbAddHydrogens");
     if (doAddHydrogens) {
       htBondMap = new Hashtable<String, String>();
-      htGroupBonds = new Hashtable<String, String[][]>();
+      htGroupBonds = new Hashtable<String, Boolean>();
+      hNames = new String[3];
+      vAB = new Vector3f();
+      vAC = new Vector3f();
+      vNorm = new Vector3f();
+      plane = new Point4f();
     }
     jmolData = (String) getModelSetAuxiliaryInfo("jmolData");
     fileHeader = (String) getModelSetAuxiliaryInfo("fileHeader");
@@ -663,6 +674,7 @@ public final class ModelLoader extends ModelSet {
         models[modelIndex].bsAtoms.clear();
         isPDB = models[modelIndex].isPDB;
         iLast = modelIndex;
+        maxSerial = 0;
       }
       String group3 = iterAtom.getGroup3();
       checkNewGroup(adapter, iterAtom.getChainID(), group3, iterAtom.getSequenceNumber(), iterAtom.getInsertionCode());
@@ -720,6 +732,8 @@ public final class ModelLoader extends ModelSet {
     return 0;
   }
 
+  private int maxSerial = 0;
+  
   private void addAtom(boolean isPDB, BitSet atomSymmetry, int atomSite,
                        Object atomUid, short atomicAndIsotopeNumber,
                        String atomName, int formalCharge, float partialCharge,
@@ -737,6 +751,8 @@ public final class ModelLoader extends ModelSet {
           && "CA".equalsIgnoreCase(group3)) // calcium
         specialAtomID = 0;
     }
+    if (atomSerial > maxSerial)
+      maxSerial = atomSerial;
     Atom atom = addAtom(currentModelIndex, nullGroup, atomicAndIsotopeNumber,
         atomName, atomSerial, atomSite, x, y, z, radius, vectorX, vectorY,
         vectorZ, formalCharge, partialCharge, occupancy, bfactor, ellipsoid,
@@ -1479,25 +1495,114 @@ public final class ModelLoader extends ModelSet {
     if (model == null) {
       bondInfo = viewer.getPdbBondInfo(group3);
     } else {
-      bondInfo = getBondInfo(adapter, model);
+      bondInfo = getLigandBondInfo(adapter, model, group3);
     }
     if (bondInfo == null)
       return;
-    htGroupBonds.put(group3, bondInfo);
-    for (int i = 0; i < bondInfo.length; i++)
+    htGroupBonds.put(group3, Boolean.TRUE);
+    for (int i = 0; i < bondInfo.length; i++) {
+      if (bondInfo[i] == null)
+        continue;
       if (bondInfo[i][1].charAt(0) == 'H')
         htBondMap.put(group3 + "." + bondInfo[i][0], bondInfo[i][1]);
       else
         htBondMap.put(group3 + ":" + bondInfo[i][0] + ":" + bondInfo[i][1], bondInfo[i][2]);
+    }
   }
 
-  private String[][] getBondInfo(JmolAdapter adapter, Object model) {
-    // TODO
-    return null;
+  /**
+   * reads PDB ligand CIF info and creats a bondInfo object.
+   * 
+   * @param adapter
+   * @param model
+   * @param group3 
+   * @return      [[atom1, atom2, order]...]
+   */
+  private String[][] getLigandBondInfo(JmolAdapter adapter, Object model, String group3) {
+    String[][] dataIn = adapter.getBondList(model);
+    Map<String, Point3f> htAtoms = new Hashtable<String, Point3f>();
+    JmolAdapter.AtomIterator iterAtom = adapter.getAtomIterator(model);
+    while (iterAtom.hasNext())
+      htAtoms.put(iterAtom.getAtomName(), iterAtom.getXYZ());      
+    String[][] temp = new String[dataIn.length * 2][];
+    int n = 0;
+    for (int i = 0; i < dataIn.length; i++) {
+      String[] b = dataIn[i];
+      if (b[0].charAt(0) != 'H')
+        temp[n++] = new String[] { b[0], b[1], b[2],
+            b[1].startsWith("H") ? "0" : "1" };
+      if (b[1].charAt(0) != 'H')
+        temp[n++] = new String[] { b[1], b[0], b[2],
+            b[0].startsWith("H") ? "0" : "1" };
+    }
+    Arrays.sort(temp, new BondSorter());
+    // now look for 
+    String[] t;
+    for (int i = 0; i < n;) {
+      t = temp[i];
+      String a1 = t[0];
+      int nH = 0;
+      int nC = 0;
+      for (; i < n && (t = temp[i])[0].equals(a1); i++) {
+        if (t[3].equals("0")) {
+          nH++;
+          continue;
+        }
+        if (t[3].equals("1"))
+          nC++;
+      }
+      int pt = i - nH - nC;
+      if (nH == 1)
+        continue;
+      switch (nC) {
+      case 1:
+        char sep = (nH == 2 ? '@' : '|');
+        for (int j = 1; j < nH; j++) {
+          temp[pt][1] += sep + temp[pt + j][1];
+          temp[pt + j] = null;
+        }
+        continue;
+      case 2:
+        if (nH != 2)
+          continue;
+        String name = temp[pt][0];
+        String name1 = temp[pt + nH][1];
+        String name2 = temp[pt + nH + 1][1];
+        int factor = name1.compareTo(name2);
+        Measure.getPlaneThroughPoints(htAtoms.get(name1), htAtoms.get(name), htAtoms.get(name2), vNorm, vAB, vAC,
+            plane);
+        float d = Measure.distanceToPlane(plane, htAtoms.get(temp[pt][1])) * factor;
+        temp[pt][1] = (d > 0 ? temp[pt][1] + "@" + temp[pt + 1][1]
+            :  temp[pt + 1][1] + "@" + temp[pt][1]);
+        temp[pt + 1] = null;
+      }
+    }
+    for (int i = 0; i < n; i++) {
+      if ((t = temp[i]) != null && t[1].charAt(0) != 'H' && t[0].compareTo(t[1]) > 0) {
+        temp[i] = null;
+        continue;
+      }
+      if (t != null)
+        Logger.info(" ligand " + group3 + ": " + temp[i][0] + " - " + temp[i][1] + " order " + temp[i][2]);
+    }
+    return temp;
   }
+  
+  class BondSorter implements Comparator<String[]>{
+    public int compare(String[] a, String[] b) {
+      return (b == null ? (a == null ? 0 : -1) : a == null ? 1 : a[0]
+          .compareTo(b[0]) < 0 ? -1 : a[0].compareTo(b[0]) > 0 ? 1 : a[3]
+          .compareTo(b[3]) < 0 ? -1 : a[3].compareTo(b[3]) > 0 ? 1 : a[1]
+          .compareTo(b[1]) < 0 ? -1 : a[1].compareTo(b[1]) > 0 ? 1 : 0);
+    }
+  }
+  
+
+ 
 
   private Map<String, String>htBondMap;
-  private Map<String, String[][]>htGroupBonds;
+  private Map<String, Boolean>htGroupBonds;
+  String[] hNames;
   
   private void finalizeHydrogens() {
     if (!doAddHydrogens)
@@ -1509,10 +1614,6 @@ public final class ModelLoader extends ModelSet {
     int[] nTotal = new int[1];
     Point3f[][] pts = calculateHydrogens(bsAtomsForHs, nTotal, true, false,
         null);
-    Vector3f vAB = new Vector3f();
-    Vector3f vAC = new Vector3f();
-    Vector3f vNorm = new Vector3f();
-    Point4f plane = new Point4f();
     Group groupLast = null;
     int ipt = 0;
     for (int i = 0; i < pts.length; i++) {
@@ -1530,7 +1631,7 @@ public final class ModelLoader extends ModelSet {
       if (hName == null)
         continue;
       boolean isChiral = hName.contains("@");
-      boolean isMethyl = hName.endsWith("0");
+      boolean isMethyl = (hName.endsWith("?") || hName.indexOf("|") >= 0);
       int n = pts[i].length;
       if (isChiral && n == 3 || isMethyl != (n == 3)) {
         Logger.info("Error adding H atoms to " + gName + g.getResno() + ": " + pts[i].length
@@ -1574,24 +1675,36 @@ public final class ModelLoader extends ModelSet {
         setHydrogen(i, ipt--, hName2, pts[i][1]);
         break;
       case 3:
-        setHydrogen(i, ipt--, hName.replace('0', '1'), pts[i][0]);
-        setHydrogen(i, ipt--, hName.replace('0', '2'), pts[i][1]);
-        setHydrogen(i, ipt--, hName.replace('0', '3'), pts[i][2]);
+        int pt1 = hName.indexOf('|'); 
+        if(pt1 >= 0) {
+          int pt2 = hName.lastIndexOf('|');
+          hNames[0] = hName.substring(0, pt1);
+          hNames[1] = hName.substring(pt1 + 1, pt2);          
+          hNames[2] = hName.substring(pt2 + 1);          
+        } else {
+          hNames[0] = hName.replace('?', '1');
+          hNames[1] = hName.replace('?', '2');
+          hNames[2] = hName.replace('?', '3');
+        }
+        for (int j = 0; j < 3; j++)
+          setHydrogen(i, ipt--, hNames[j] , pts[i][j]);
         break;
       }
     }
     viewer.deleteAtoms(bsAddedHydrogens, false);
+    for (int i = 0; i < atomCount; i++)
+      if (!atoms[i].isDeleted() && atoms[i].getAtomNumber() == 0)
+        setAtomNumber(i, ++maxSerial);
     bsAddedHydrogens = null;
   }
 
   private void finalizePdbMultipleBonds() {
+    Map<String, Boolean> htKeysUsed = new Hashtable<String, Boolean>();
     for (int i = 0; i < bonds.length; i++) {
       Atom a1 = bonds[i].atom1;
       Atom a2 = bonds[i].atom2;
-      if (a1.group != a2.group) {
-        // to do: retinal??
+      if (a1.group != a2.group)
         continue;
-      }
       StringBuffer key = new StringBuffer(a1.group.getGroup3());
       key.append(":");
       String n1 = a1.getAtomName();
@@ -1600,29 +1713,50 @@ public final class ModelLoader extends ModelSet {
         key.append(n2).append(":").append(n1);
       else
         key.append(n1).append(":").append(n2);
-      String type = htBondMap.get(key.toString());
+      String skey = key.toString();
+      String type = htBondMap.get(skey);
       if (type == null)
         continue;
-      int order = 1;
-      switch (Integer.valueOf(type).intValue()) {
-      case -1:
-        order = JmolEdge.BOND_AROMATIC_SINGLE;
-        break;
-      case -2:
-        order = JmolEdge.BOND_AROMATIC_DOUBLE;
-        break;
-      case 1:
-        continue;
-      case 2:
-        order = JmolEdge.BOND_COVALENT_DOUBLE;
-        break;
-      case 3:
-        order = JmolEdge.BOND_COVALENT_TRIPLE;
-        break;        
-      }
-      bonds[i].order = order;
+      htKeysUsed.put(skey, Boolean.TRUE);
+      bonds[i].order = Integer.valueOf(type).intValue();
     }
-    
+
+    for (String key : htBondMap.keySet()) {
+      if (htKeysUsed.get(key) != null)
+        continue;
+      if (key.indexOf(":") < 0) {
+        htKeysUsed.put(key, Boolean.TRUE);
+        continue;
+      }
+      String value = htBondMap.get(key);
+      Logger.info(key + " was not used; order=" + value);
+      if (htBondMap.get(key).equals("1")) {
+        htKeysUsed.put(key, Boolean.TRUE);
+        continue; // that's ok
+      }
+    }
+    //TODO  now what? some bonds missing?
+
+    Map<String, String> htKeysBad = new Hashtable<String, String>();
+    for (String key : htBondMap.keySet()) {
+      if (htKeysUsed.get(key) != null)
+        continue;
+      htKeysBad.put(key.substring(0, key.lastIndexOf(":")), htBondMap.get(key));
+    }
+    if (htKeysBad.isEmpty())
+      return;
+    for (int i = 0; i < bonds.length; i++) {
+      Atom a1 = bonds[i].atom1;
+      Atom a2 = bonds[i].atom2;
+      if (a1.group == a2.group)
+        continue;
+      String value;
+      if ((value = htKeysBad.get(a1.getGroup3(false) + ":" + a1.getAtomName())) == null
+          && ((value = htKeysBad.get(a2.getGroup3(false) + ":" + a2.getAtomName())) == null))
+        continue;
+      bonds[i].order = Integer.valueOf(value).intValue();
+      Logger.info("assigning order " + bonds[i].order + " to bond " + bonds[i]);
+    }
   }
 
   private void setHydrogen(int iTo, int iAtom, String name, Point3f pt) {

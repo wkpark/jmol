@@ -154,7 +154,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       if (!skipping) {
         key = key.replace('.', '_');
         if (key.startsWith("_chemical_name") || key.equals("_chem_comp_name")) {
-          processChemicalInfo("name");
+          atomSetCollection.setAtomSetCollectionAuxiliaryInfo("modelLoadNote", processChemicalInfo("name"));
         } else if (key.startsWith("_chemical_formula_structural")) {
           processChemicalInfo("structuralFormula");
         } else if (key.startsWith("_chemical_formula_sum") || key.equals("_chem_comp_formula")) {
@@ -236,9 +236,10 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
    * into specific atomSetAuxiliaryInfo elements
    * 
    * @param type    "name" "formula" etc.
+   * @return data
    * @throws Exception
    */
-  private void processChemicalInfo(String type) throws Exception {
+  private String processChemicalInfo(String type) throws Exception {
     if (type.equals("name"))
       chemicalName = data = tokenizer.fullTrim(data);
     else if (type.equals("structuralFormula"))
@@ -248,6 +249,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
     if (Logger.debugging) {
       Logger.debug(type + " = " + data);
     }
+    return data;
   }
 
   /**
@@ -914,7 +916,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           atomIndex2 = atomSetCollection.getAtomNameIndex(field);
           break;
         case CHEM_COMP_BOND_AROMATIC_FLAG:
-          isAromatic = true;
+          isAromatic = (field.charAt(0) == 'Y');
           break;
         case CHEM_COMP_BOND_VALUE_ORDER:
           order = JmolAdapter.ORDER_COVALENT_SINGLE;

@@ -1994,14 +1994,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       ligandModels = new Hashtable<String, Object>();
     Object model = ligandModels.get(id);
     String data;
+    String fname = null;
     if (model instanceof Boolean)
       return null;
     if (model == null)
       model = ligandModels.get(id + "_data");
     if (model == null) {
-      String fname = (String) setLoadFormat("#" + id, '#', false);
+      fname = (String) setLoadFormat("#" + id, '#', false);
       if (fname.length() == 0)
         return null;
+      scriptEcho("fetching " + fname);
       model = getFileAsString(fname);
       ligandModels.put(id + "_data", model);
     }
@@ -2015,9 +2017,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
               htParams);
         if (!(model instanceof String))
           model = getModelAdapter().getAtomSetCollection(model);
+        if (fname != null && !(model instanceof String))
+          scriptEcho((String) getModelAdapter().getAtomSetCollectionAuxiliaryInfo(model).get("modelLoadNote"));    
       }
     }
     if (model instanceof String) {
+      scriptEcho((String) model);
       ligandModels.put(id, Boolean.FALSE);
       return null;
     }
@@ -4500,6 +4505,10 @@ private void zap(String msg) {
     switch (type) {
     case '=':
     case '#': // ligand
+      if (name.startsWith("==")) {
+        f = f.substring(1);
+        type = '#';
+      }
       String s = (type == '=' ? global.loadFormat : global.loadLigandFormat);
       if (f.indexOf(".") > 0 && s.indexOf("%FILE.") >= 0)
         s = s.substring(0, s.indexOf("%FILE") + 5);
@@ -9689,6 +9698,13 @@ private void zap(String msg) {
   }
 
   void appendLoadStates(StringBuffer commands) {
+    if (ligandModelSet != null) {
+      for (String key : ligandModelSet.keySet()) {
+        String data = (String) ligandModels.get(key + "_data");
+        if (data != null)
+          commands.append("  ").append(Escape.encapsulateData("ligand_" + key, data.trim() + "\n"));
+      }
+    }
     modelSet.appendLoadStates(commands);
   }
 

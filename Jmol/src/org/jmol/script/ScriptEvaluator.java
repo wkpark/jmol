@@ -8024,6 +8024,11 @@ public class ScriptEvaluator {
       viewer.connect(Parser.parseFloatArray2d(dataString));
       return;
     }
+    if (dataType.indexOf("ligand_") == 0) {
+      // ligand structure for pdbAddHydrogen
+      viewer.setLigandModel(dataLabel.substring(7), dataString.trim());
+      return;
+    }
     if (dataType.indexOf("data2d_") == 0) {
       // data2d_someName
       data[0] = dataLabel;

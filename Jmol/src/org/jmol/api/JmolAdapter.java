@@ -30,6 +30,8 @@ import java.util.Hashtable;
 import java.util.BitSet;
 import java.util.Map;
 
+import javax.vecmath.Point3f;
+
 import org.jmol.modelset.Group;
 import org.jmol.util.Elements;
 import org.jmol.viewer.JmolConstants;
@@ -325,7 +327,14 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
    */
   abstract public int getHydrogenAtomCount(Object atomSetCollection);
 
-  
+ 
+  /**
+   * 
+   * @param atomSetCollection 
+   * @return   [ [atomName1 atomName2 order] ...]
+   */
+  abstract public String[][] getBondList(Object atomSetCollection);
+
   /**
    * Get the boolean whether coordinates are fractional.
    * @param atomSetCollection The client file
@@ -414,6 +423,7 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
     abstract public float getX();
     abstract public float getY();
     abstract public float getZ();
+    abstract public Point3f getXYZ();
     public float getVectorX() { return Float.NaN; }
     public float getVectorY() { return Float.NaN; }
     public float getVectorZ() { return Float.NaN; }

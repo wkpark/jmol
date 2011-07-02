@@ -208,6 +208,7 @@ public final class ModelLoader extends ModelSet {
   private int baseModelIndex = 0;
   private int baseModelCount = 0;
   private int baseAtomIndex = 0;
+  private int baseBondIndex = 0;
   private int baseGroupIndex = 0;
 
   private int baseTrajectoryCount = 0;
@@ -378,7 +379,7 @@ public final class ModelLoader extends ModelSet {
         modelCount = baseModelCount;
       }
       atomCount = baseAtomIndex = mergeModelSet.atomCount;
-      bondCount = mergeModelSet.bondCount;
+      bondCount = baseBondIndex = mergeModelSet.bondCount;
       groupCount = baseGroupIndex = mergeModelSet.groupCount;
       mergeModelArrays(mergeModelSet);
       growAtomArrays(atomCount + nAtoms);
@@ -1634,6 +1635,11 @@ public final class ModelLoader extends ModelSet {
       boolean isChiral = hName.contains("@");
       boolean isMethyl = (hName.endsWith("?") || hName.indexOf("|") >= 0);
       int n = pts[i].length;
+      if (n == 3 && !isMethyl && hName.equals("H@H2")) {
+          hName = "H|H2|H3";
+          isMethyl = true;
+          isChiral = false;
+      }
       if (isChiral && n == 3 || isMethyl != (n == 3)) {
         Logger.info("Error adding H atoms to " + gName + g.getResno() + ": " + pts[i].length
             + " atoms should not be added to " + aName);
@@ -1701,7 +1707,12 @@ public final class ModelLoader extends ModelSet {
 
   private void finalizePdbMultipleBonds() {
     Map<String, Boolean> htKeysUsed = new Hashtable<String, Boolean>();
-    for (int i = 0; i < bonds.length; i++) {
+    // fix terminal N groups as +1
+    for (int i = baseAtomIndex; i < atomCount; i++) {
+      if (atoms[i].getGroup().getNitrogenAtom() == atoms[i] && atoms[i].getCovalentBondCount() == 1)
+        atoms[i].setFormalCharge(1);
+    }
+    for (int i = baseBondIndex; i < bondCount; i++) {
       Atom a1 = bonds[i].atom1;
       Atom a2 = bonds[i].atom2;
       if (a1.group != a2.group)

@@ -103,6 +103,14 @@ public class AtomSetCollection {
   public int getAtomCount() {
     return atomCount;
   }
+
+  public int getHydrogenAtomCount() {
+    int n = 0;
+    for (int i = 0; i < atomCount; i++)
+      if (atoms[i].elementNumber == 1 || atoms[i].elementSymbol.equals("H"))
+        n++;
+    return n;
+  }
   
   private Atom[] atoms = new Atom[256];
   public Atom[] getAtoms() {

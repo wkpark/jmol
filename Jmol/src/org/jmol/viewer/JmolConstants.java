@@ -28,7 +28,9 @@ import org.jmol.api.JmolEdge;
 import org.jmol.modelset.Bond;
 import org.jmol.script.Token;
 import org.jmol.util.Elements;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.Parser;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -2000,9 +2002,9 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int GROUPID_PROLINE          = 15;
   public final static int GROUPID_AMINO_MAX        = 24;
   
-  private final static int GROUPID_WATER           = 43;
-  private final static int GROUPID_SOLVENTS        = 46;
-  private final static int GROUPID_SULPHATE        = 49;
+  private final static int GROUPID_WATER           = 42;
+  private final static int GROUPID_SOLVENTS        = 45;
+  private final static int GROUPID_SULPHATE        = 48;
   
   public final static String[] predefinedGroup3Names = {
     // taken from PDB spec
@@ -2058,17 +2060,17 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "+T",
     "+U",
     "+I",
-    "NOS", // inosine
+    /* removed bh 7/1/2011 this is isolated inosine, not a polymer "NOS", // inosine */
     
     // solvent types: -- if these numbers change, also change GROUPID_WATER,_SOLVENT,and_SULFATE
     
-    "HOH", // 43 water
-    "DOD", // 44
-    "WAT", // 45
-    "SOL", // 46 gromacs solvent
-    "UREA",// 47 urea
-    "PO4", // 48 phosphate ions
-    "SO4", // 49 sulphate ions
+    "HOH", // 42 water
+    "DOD", // 43
+    "WAT", // 44
+    "SOL", // 45 gromacs solvent
+    "UREA",// 46 urea
+    "PO4", // 47 phosphate ions
+    "SO4", // 48 sulphate ions
 
   };
   
@@ -2207,6 +2209,148 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
       /* Val*/  1.08f
   };
 
+  public static int getStandardPdbHydrogenCount(int pt) {
+    return (pt < 0 || pt >= pdbHydrogenCount.length ? -1 : pdbHydrogenCount[pt]);
+  }
+
+  public static String[][] getPdbBondInfo(int pt) {
+    if (pt < 0 || pt > pdbBondInfo.length)
+      return null;
+    String s = pdbBondInfo[pt];
+    String[] temp = Parser.getTokens(s);
+    String[][] info = new String[temp.length / 2][];
+    for (int i = 0, p = 0; i < info.length; i++) {
+      String source = temp[p++];
+      String target = temp[p++];
+      // a few shortcuts here:
+      if (target.length() == 1)
+        switch (target.charAt(0)) {
+        case 'N':
+          target = "H@H2";
+          break;
+        case 'B': // CB
+          target = "HB3@HB2";
+          break;
+        case 'D': // CD
+          target = "HD2@HD3";
+          break;
+        case 'G': // CG
+          target = "HG3@HG2";
+          break;
+        case '2': // C2'
+          target = "H2''@H2'";
+          break;
+        case '5': // C5'
+          target = "H5''@H5'";
+          break;
+        }
+      if (target.charAt(0) != 'H' && source.compareTo(target) > 0) {
+        s = target;
+        target = source;
+        source = s;
+      }
+
+      info[i] = new String[] { source, target,
+          (target.startsWith("H") ? "1" : "2") };
+    }
+    return info;
+  }
+  
+  private final static String[] pdbBondInfo = {
+    "",
+    /*ALA*/ "N N CA HA C O CB HB0", 
+    /*ARG*/ "N N CA HA C O CB HB2@HB3 CG HG2@HG3 CD D NE HE CZ NH1 NH1 HH11@HH12 NH2 HH21@HH22", 
+    /*ASN*/ "N N CA HA C O CB B CG OD1 ND2 HD21@HD22", 
+    /*ASP*/ "N N CA HA C O CB B CG OD1", 
+    /*CYS*/ "N N CA HA C O CB B SG HG", 
+    /*GLN*/ "N N CA HA C O CB B CG G CD OE1 NE2 HE21@HE22", 
+    /*GLU*/ "N N CA HA C O CB B CG G CD OE1", 
+    /*GLY*/ "N N CA HA2@HA3 C O", 
+    /*HIS*/ "N N CA HA C O CB B CG CD2 ND1 CE1 ND1 HD1 CD2 HD2 CE1 HE1 NE2 HE2", 
+    /*ILE*/ "N N CA HA C O CB HB CG1 HG12@HG13 CG2 HG20 CD1 HD10", 
+    /*LEU*/ "N N CA HA C O CB HB2@HB3 CG HG CD1 HD10 CD2 HD20", 
+    /*LYS*/ "N N CA HA C O CB B CG G CD HD2@HD3 CE HE3@HE2 NZ HZ0", 
+    /*MET*/ "N N CA HA C O CB HB2@HB3 CG HG2@HG3 CE HE0", 
+    /*PHE*/ "N N CA HA C O CB B CG CD1 CD1 HD1 CD2 CE2 CD2 HD2 CE1 CZ CE1 HE1 CE2 HE2 CZ HZ", 
+    /*PRO*/ "N H CA HA C O CB B CG G CD HD2@HD3", 
+    /*SER*/ "N N CA HA C O CB B OG HG", 
+    /*THR*/ "N N CA HA C O CB HB OG1 HG1 CG2 HG20", 
+    /*TRP*/ "N N CA HA C O CB B CG CD1 CD1 HD1 CD2 CE2 NE1 HE1 CE3 CZ3 CE3 HE3 CZ2 CH2 CZ2 HZ2 CZ3 CH2 CZ3 HZ3 CH2 HH2", 
+    /*TYR*/ "N N CA HA C O CB B CG CD1 CD1 HD1 CD2 CE2 CD2 HD2 CE1 CZ CE1 HE1 CE2 HE2 OH HH", 
+    /*VAL*/ "N N CA HA C O CB HB CG1 HG10 CG2 HG20",
+    /*ASX*/ "CA HA C O CB HB1 CB HB2",
+    /*GLX*/ "CA HA C O CB HB1 CB HB2 CG HG1 CG HG2", 
+    /*UNK*/ "",
+    /*G*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' H2' O2' HO2' C1' H1' C8 N7 C8 H8 C5 C4 C6 O6 N1 H1 C2 N3 N2 H21@H22", 
+    /*C*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' H2' O2' HO2' C1' H1' C2 O2 N3 C4 N4 H41@H42 C5 C6 C5 H5 C6 H6", 
+    /*A*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' H2' O2' HO2' C1' H1' C8 N7 C8 H8 C5 C4 C6 N1 N6 H61@H62 C2 N3 C2 H2",
+    /*T*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' 2 C1' H1' C2 O2 N3 H3 C4 O4 C5 C6 C7 H70 C6 H6",
+    /*U*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' H2' O2' HO2' C1' H1' C2 O2 N3 H3 C4 O4 C5 C6 C5 H5 C6 H6", 
+    /*I*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' H2' O2' HO2' C1' H1' C8 N7 C8 H8 C5 C4 C6 O6 N1 H1 C2 N3 C2 H2",
+    /*DG*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' 2 C1' H1' C8 N7 C8 H8 C5 C4 C6 O6 N1 H1 C2 N3 N2 H21@H22", 
+    /*DC*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' 2 C1' H1' C2 O2 N3 C4 N4 H41@H42 C5 C6 C5 H5 C6 H6", 
+    /*DA*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' 2 C1' H1' C8 N7 C8 H8 C5 C4 C6 N1 N6 H61@H62 C2 N3 C2 H2", 
+    /*DT*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' 2 C1' H1' C2 O2 N3 H3 C4 O4 C5 C6 C7 H70 C6 H6",
+    /*DU*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' H2' C2' H2'' C1' H1' C2 O2 N3 H3 C4 O4 C5 C6 C5 H5 C6 H6",  
+    /*DI*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' 2 C1' H1' C8 N7 C8 H8 C5 C4 C6 O6 N1 H1 C2 N3 C2 H2",  
+    /*+G*/ "?",
+    /*+C*/ "?",
+    /*+A*/ "?",
+    /*+T*/ "?",
+    /*+U*/ "?",
+    /*+I*/ "?",
+    /*HOH*/ "O H1@H2",
+    /*DOD*/ "O D1@D2",
+
+  };
+
+  private final static int[] pdbHydrogenCount = {
+            0,
+    /*ALA*/ 6,
+    /*ARG*/ 16,
+    /*ASN*/ 7,
+    /*ASP*/ 6,
+    /*CYS*/ 6,
+    /*GLN*/ 9,
+    /*GLU*/ 8,
+    /*GLY*/ 4,
+    /*HIS*/ 9,
+    /*ILE*/ 12,
+    /*LEU*/ 12,
+    /*LYS*/ 14,
+    /*MET*/ 10,
+    /*PHE*/ 10,
+    /*PRO*/ 8,
+    /*SER*/ 6,
+    /*THR*/ 8,
+    /*TRP*/ 11,
+    /*TYR*/ 10,
+    /*VAL*/ 10,  
+    /*ASX*/ 3,
+    /*GSX*/ 5,
+    /*UNK*/ 0,
+    /*G*/ 13,
+    /*C*/ 13,
+    /*A*/ 13,
+    /*T*/ -1,
+    /*U*/ 12,
+    /*I*/ 12,
+    /*DG*/ 13,
+    /*DC*/ 13,
+    /*DA*/ 13,
+    /*DT*/ 14,
+    /*DU*/ 12,
+    /*DI*/ 12,
+    /*+G*/ -1,
+    /*+C*/ -1,
+    /*+A*/ -1,
+    /*+T*/ -1,
+    /*+U*/ -1,
+    /*+I*/ -1,
+    /*HOH*/ 2,
+    /*DOD*/ 2,
+  };
+  
   public final static int[] argbsShapely = {
     0xFFFF00FF, // default
     // these are rasmol values, not xwindows colors
@@ -2255,7 +2399,6 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     0xFFA0FFA0, // +T
     0xFFFF8080, // +U
     0xFF80FFFF, // +I
-    0xFF80FFFF, // NOS
 
     // what to do about remediated +X names?
     // we will need a map
@@ -2293,13 +2436,25 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   }
   
   public final static boolean isHetero(String group3) {
-    int pt = group3List.indexOf("[" + (group3 + "   ").substring(0, 3) + "]");
-    return (pt < 0 || pt / 6 >= GROUPID_WATER);
+    return getGroup3Pt(group3) >= GROUPID_WATER;
+  }
+
+  private static int getGroup3Pt(String group3) {
+    StringBuffer sb = new StringBuffer("[");
+    sb.append(group3);
+    switch (group3.length()){
+    case 1:
+      sb.append("  ");
+    case 2:
+      sb.append(" ");
+    }
+    int pt = group3List.indexOf(sb.toString());
+    return (pt < 0 ? Integer.MAX_VALUE : pt / 6 + 1);
   }
 
   public final static String group3List = getGroup3List();
   public final static int group3Count = group3List.length() / 6;
-  
+
   public final static char[] predefinedGroup1Names = {
     /* rmh
      * 

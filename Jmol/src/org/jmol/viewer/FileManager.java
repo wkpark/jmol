@@ -168,7 +168,7 @@ public class FileManager {
     return null;
   }
 
-  private static BufferedReader getBufferedReaderForString(String string) {
+  static BufferedReader getBufferedReaderForString(String string) {
     return new BufferedReader(new StringReader(string));
   }
 
@@ -268,7 +268,6 @@ public class FileManager {
       DataManager.getInlineData(loadScript, strModel, isAppend, viewer
           .getDefaultLoadFilter());
     setLoadState(htParams);
-    Logger.info("FileManager.getAtomSetCollectionFromString()");
     boolean isAddH = (strModel.indexOf(JmolConstants.ADD_HYDROGEN_TITLE) >= 0);
     String[] fnames = (isAddH ? getFileInfo() : null);
     FileReader fileReader = new FileReader("string", "string", "string", null,

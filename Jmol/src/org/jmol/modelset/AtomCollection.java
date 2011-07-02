@@ -38,6 +38,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.api.JmolEdge;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.bspt.Bspf;
@@ -1257,6 +1258,8 @@ abstract public class AtomCollection {
           continue;
         if (doAll && atom.getCovalentHydrogenCount() > 0)
           continue;
+        if (atom.getAtomNumber() == 672)
+          System.out.println("HHHHHH");
         int n = getImplicitHydrogenCount(atom);
         if (n == 0)
           continue;
@@ -1329,7 +1332,7 @@ abstract public class AtomCollection {
             // 2 bonds needed R2C or R-N or R2C=C or O
             //                    or RC=C or C=C
             boolean isEne = (hybridization == 2 || atomicNumber == 5 || nBonds == 1
-                && targetValence == 4);
+                && targetValence == 4 || atomicNumber == 7 && isAdjacentSp2(atom));
             getHybridizationAndAxes(i, z, x, (isEne ? "sp2b"
                 : targetValence == 3 ? "sp3c" : "lpa"), false, true);
             pt = new Point3f(z);
@@ -1360,7 +1363,7 @@ abstract public class AtomCollection {
                 continue;
               }
               if (getHybridizationAndAxes(i, z, x, (hybridization == 2 || atomicNumber == 5 
-                  || atomicNumber == 7 && atom == atom.getGroup().getNitrogenAtom() 
+                  || atomicNumber == 7 && isAdjacentSp2(atom) 
                   ? "sp2c"
                   : "sp3d"), true, false) != null) {
                 pt = new Point3f(z);
@@ -1400,7 +1403,24 @@ abstract public class AtomCollection {
     return hAtoms;
   }
 
+  private boolean isAdjacentSp2(Atom atom) {
+    Bond[] bonds = atom.bonds;
+    for (int i = 0; i < bonds.length; i++) {
+      Bond[] b2 = bonds[i].getOtherAtom(atom).bonds;
+      for (int j = 0; j < b2.length; j++)
+        switch (b2[j].order) {
+        case JmolEdge.BOND_AROMATIC:
+        case JmolEdge.BOND_AROMATIC_DOUBLE:
+        case JmolEdge.BOND_COVALENT_DOUBLE:
+        case JmolEdge.BOND_COVALENT_TRIPLE:
+          return true;
+        }
+    }
+    return false;
+  }
+
   private int[] aaRet;
+
   int getImplicitHydrogenCount(Atom atom) {
     int targetValence = atom.getTargetValence();
     int charge = atom.getFormalCharge();
@@ -1410,9 +1430,11 @@ abstract public class AtomCollection {
     aaRet[1] = charge;
     aaRet[2] = 0;
     aaRet[3] = atom.getCovalentBondCount();
-    String s = atom.group.getGroup3();
+    String s = (((ModelCollection) this).models[atom.modelIndex].isPdbWithMultipleBonds ? null
+        : atom.group.getGroup3());
     if (s != null && charge == 0) {
-      if (JmolConstants.getAminoAcidValenceAndCharge(s, atom.getAtomName(), aaRet)) {
+      if (JmolConstants.getAminoAcidValenceAndCharge(s, atom.getAtomName(),
+          aaRet)) {
         targetValence = aaRet[0];
         charge = aaRet[1];
       }

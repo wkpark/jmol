@@ -977,8 +977,9 @@ public class Token {
   public final static int navigationmode                 = booleanparam | 110;
   public final static int navigationperiodic             = booleanparam | 111;
   public final static int partialdots                    = booleanparam | 112; // 12.1.46
-  public final static int pdbgetheader                   = booleanparam | 113;
-  public final static int pdbsequential                  = booleanparam | 114;
+  public final static int pdbaddhydrogens                = booleanparam | 113;
+  public final static int pdbgetheader                   = booleanparam | 114;
+  public final static int pdbsequential                  = booleanparam | 115;
   public final static int perspectivedepth               = booleanparam | 116;
   public final static int preservestate                  = booleanparam | 117;
   public final static int rangeselected                  = booleanparam | 118;
@@ -2308,6 +2309,7 @@ public class Token {
       "navigationMode",                           new Token(navigationmode),
       "navigationPeriodic",                       new Token(navigationperiodic),
       "partialDots",                              new Token(partialdots),
+      "pdbAddHydrogens",                          new Token(pdbaddhydrogens),
       "pdbGetHeader",                             new Token(pdbgetheader),
       "pdbSequential",                            new Token(pdbsequential),
       "perspectiveDepth",                         new Token(perspectivedepth),

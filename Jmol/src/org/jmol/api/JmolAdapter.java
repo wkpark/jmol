@@ -317,6 +317,14 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
    */
   abstract public int getAtomCount(Object atomSetCollection);
 
+  /**
+   * Get the hydrogen atom count -- for ligand files
+   * 
+   * @param atomSetCollection
+   * @return  number of hydrogen atoms in this model
+   */
+  abstract public int getHydrogenAtomCount(Object atomSetCollection);
+
   
   /**
    * Get the boolean whether coordinates are fractional.

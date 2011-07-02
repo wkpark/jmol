@@ -4085,6 +4085,9 @@ abstract public class ModelCollection extends BondCollection {
     models[modelIndex].bsAtoms.set(atomCount);
     if (atomicAndIsotopeNumber % 128 == 1)
       models[modelIndex].hydrogenCount++;
+    if (atomCount >= atoms.length)
+      growAtomArrays(atomCount + 100);  // only due to added hydrogens
+
     atoms[atomCount] = atom;
     setBFactor(atomCount, bfactor);
     setOccupancy(atomCount, occupancy);

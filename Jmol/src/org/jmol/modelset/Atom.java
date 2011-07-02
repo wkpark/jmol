@@ -315,9 +315,13 @@ final public class Atom extends Point3fi implements JmolNode {
   }
   
   public short getIsotopeNumber() {
-    return (short) (atomicAndIsotopeNumber >> 7);
+    return elementNumberOf(atomicAndIsotopeNumber);
   }
   
+  static short elementNumberOf(short atomicAndIsotopeNumber) {
+    return (short) (atomicAndIsotopeNumber >> 7);
+  }
+
   public short getAtomicAndIsotopeNumber() {
     return atomicAndIsotopeNumber;
   }

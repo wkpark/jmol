@@ -153,11 +153,11 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       }
       if (!skipping) {
         key = key.replace('.', '_');
-        if (key.startsWith("_chemical_name")) {
+        if (key.startsWith("_chemical_name") || key.equals("_chem_comp_name")) {
           processChemicalInfo("name");
         } else if (key.startsWith("_chemical_formula_structural")) {
           processChemicalInfo("structuralFormula");
-        } else if (key.startsWith("_chemical_formula_sum")) {
+        } else if (key.startsWith("_chemical_formula_sum") || key.equals("_chem_comp_formula")) {
           processChemicalInfo("formula");
         } else if (key.startsWith("_cell_")) {
           processCellParameter();
@@ -363,8 +363,10 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
     String str = tokenizer.peekToken();
     if (str == null)
       return;
-    if (str.startsWith("_atom_site_") || str.startsWith("_atom_site.")) {
-      if (!processAtomSiteLoopBlock())
+    boolean isLigand = false;
+    if (str.startsWith("_atom_site_") || str.startsWith("_atom_site.") 
+        || (isLigand = str.equals("_chem_comp_atom.comp_id"))) {
+      if (!processAtomSiteLoopBlock(isLigand))
         return;
       atomSetCollection.setAtomSetName(thisDataSetName);
       atomSetCollection.setAtomSetAuxiliaryInfo("chemicalName", chemicalName);
@@ -377,6 +379,11 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       processAtomTypeLoopBlock();
       return;
     }
+    if (str.startsWith("_chem_comp_bond")) {
+      processLigandBondLoopBlock();
+      return;
+    }
+    
     if (str.startsWith("_geom_bond")) {
       if (!doApplySymmetry) {
         isMolecular = true;
@@ -531,6 +538,17 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   final private static byte ANISO_Beta_13 = 45;
   final private static byte ANISO_Beta_23 = 46;
   final private static byte ADP_TYPE = 47;
+  final private static byte CHEM_COMP_AC_ID = 48;
+  final private static byte CHEM_COMP_AC_NAME = 49;
+  final private static byte CHEM_COMP_AC_SYM = 50;
+  final private static byte CHEM_COMP_AC_CHARGE = 51;
+  final private static byte CHEM_COMP_AC_X = 52;
+  final private static byte CHEM_COMP_AC_Y = 53;
+  final private static byte CHEM_COMP_AC_Z = 54;
+  final private static byte CHEM_COMP_AC_X_IDEAL = 55;
+  final private static byte CHEM_COMP_AC_Y_IDEAL = 56;
+  final private static byte CHEM_COMP_AC_Z_IDEAL = 57;
+
 
   final private static String[] atomFields = { 
       "_atom_site_type_symbol",
@@ -581,6 +599,16 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       "_atom_site_aniso_Beta_13",
       "_atom_site_aniso_Beta_23",
       "_atom_site_adp_type",
+      "_chem_comp_atom_comp_id",
+      "_chem_comp_atom_atom_id", 
+      "_chem_comp_atom_type_symbol", 
+      "_chem_comp_atom_charge",
+      "_chem_comp_atom_model_Cartn_x", 
+      "_chem_comp_atom_model_Cartn_y", 
+      "_chem_comp_atom_model_Cartn_z", 
+      "_chem_comp_atom_pdbx_model_Cartn_x_ideal", 
+      "_chem_comp_atom_pdbx_model_Cartn_y_ideal", 
+      "_chem_comp_atom_pdbx_model_Cartn_z_ideal", 
   };
 
   /* to: hansonr@stolaf.edu
@@ -594,15 +622,19 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
 
   /**
    * reads atom data in any order
+   * @param isLigand 
    * 
    * @return TRUE if successful; FALS if EOF encountered
    * @throws Exception
    */
-  boolean processAtomSiteLoopBlock() throws Exception {
+  boolean processAtomSiteLoopBlock(boolean isLigand) throws Exception {
     int currentModelNO = -1;
     boolean isAnisoData = false;
     parseLoopParameters(atomFields);
-    if (fieldOf[CARTN_X] != NONE) {
+    if (fieldOf[CHEM_COMP_AC_X_IDEAL] != NONE) {
+      isPDB = false;
+      setFractionalCoordinates(false);
+    } else if (fieldOf[CARTN_X] != NONE || fieldOf[CHEM_COMP_AC_X] != NONE) {
       setFractionalCoordinates(false);
       disableField(FRACT_X);
       disableField(FRACT_Y);
@@ -631,6 +663,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         switch (fieldProperty(i)) {
         case NONE:
           break;
+        case CHEM_COMP_AC_SYM:
         case TYPE_SYMBOL:
           String elementSymbol;
           if (field.length() < 2) {
@@ -654,21 +687,43 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
               }
           }
           break;
+        case CHEM_COMP_AC_NAME:
         case LABEL:
         case AUTH_ATOM:
           atom.atomName = field;
           break;
+        case CHEM_COMP_AC_X_IDEAL:
+          float x = parseFloat(field);
+          if (!Float.isNaN(x))
+            atom.x = x;
+          break;
+        case CHEM_COMP_AC_Y_IDEAL:
+          float y = parseFloat(field);
+          if (!Float.isNaN(y))
+            atom.y = y;
+          break;
+        case CHEM_COMP_AC_Z_IDEAL:
+          float z = parseFloat(field);
+          if (!Float.isNaN(z))
+            atom.z = z;
+          break;
+        case CHEM_COMP_AC_X:
         case CARTN_X:
         case FRACT_X:
           atom.x = parseFloat(field);
           break;
+        case CHEM_COMP_AC_Y:
         case CARTN_Y:
         case FRACT_Y:
           atom.y = parseFloat(field);
           break;
+        case CHEM_COMP_AC_Z:
         case CARTN_Z:
         case FRACT_Z:
           atom.z = parseFloat(field);
+          break;
+        case CHEM_COMP_AC_CHARGE:
+          atom.formalCharge = parseInt(field);
           break;
         case OCCUPANCY:
           float floatOccupancy = parseFloat(field);
@@ -678,6 +733,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         case B_ISO:
           atom.bfactor = parseFloat(field) * (isPDB ? 1 : 100f);
           break;
+        case CHEM_COMP_AC_ID:
         case COMP_ID:
           atom.group3 = field;
           break;
@@ -823,6 +879,71 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   // bond data
   ////////////////////////////////////////////////////////////////
 
+  final private static byte CHEM_COMP_BOND_ATOM_ID_1 = 0;
+  final private static byte CHEM_COMP_BOND_ATOM_ID_2 = 1;
+  final private static byte CHEM_COMP_BOND_VALUE_ORDER = 2;
+  final private static byte CHEM_COMP_BOND_AROMATIC_FLAG = 3;
+  final private static String[] chemCompBondFields = {
+    "_chem_comp_bond_atom_id_1",
+    "_chem_comp_bond_atom_id_2",
+    "_chem_comp_bond_value_order",
+    "_chem_comp_bond_pdbx_aromatic_flag", 
+  };
+  
+  private void processLigandBondLoopBlock() throws Exception {
+    parseLoopParameters(chemCompBondFields);
+    for (int i = propertyCount; --i >= 0;)
+      if (fieldOf[i] == NONE) {
+        Logger.warn("?que? missing _chem_comp_bond property:" + i);
+        skipLoop();
+        return;
+      }
+    int order = 0;
+    boolean isAromatic = false;
+    while (tokenizer.getData()) {
+      int atomIndex1 = -1;
+      int atomIndex2 = -1;
+      order = 0;
+      isAromatic = false;
+      for (int i = 0; i < tokenizer.fieldCount; ++i) {
+        switch (fieldProperty(i)) {
+        case CHEM_COMP_BOND_ATOM_ID_1:
+          atomIndex1 = atomSetCollection.getAtomNameIndex(field);
+          break;
+        case CHEM_COMP_BOND_ATOM_ID_2:
+          atomIndex2 = atomSetCollection.getAtomNameIndex(field);
+          break;
+        case CHEM_COMP_BOND_AROMATIC_FLAG:
+          isAromatic = true;
+          break;
+        case CHEM_COMP_BOND_VALUE_ORDER:
+          order = JmolAdapter.ORDER_COVALENT_SINGLE;
+          if (field.equals("SING"))
+            order = JmolAdapter.ORDER_COVALENT_SINGLE;
+          else if (field.equals("DOUB"))
+            order = JmolAdapter.ORDER_COVALENT_DOUBLE;
+          else if (field.equals("TRIP"))
+            order = JmolAdapter.ORDER_COVALENT_TRIPLE;
+          else
+            Logger.warn("unknown CIF bond order: " + field);
+          break;
+        }
+      }
+      if (atomIndex1 < 0 || atomIndex2 < 0)
+        continue;
+      if (isAromatic)
+        switch (order) {
+        case JmolAdapter.ORDER_COVALENT_SINGLE:
+          order = JmolAdapter.ORDER_AROMATIC_SINGLE;
+          break;
+        case JmolAdapter.ORDER_COVALENT_DOUBLE:
+          order = JmolAdapter.ORDER_AROMATIC_DOUBLE;
+          break;
+        }
+      atomSetCollection.addNewBond(atomIndex1, atomIndex2, order);
+    }
+  }
+
   final private static byte GEOM_BOND_ATOM_SITE_LABEL_1 = 0;
   final private static byte GEOM_BOND_ATOM_SITE_LABEL_2 = 1;
   final private static byte GEOM_BOND_DISTANCE = 2;
@@ -939,13 +1060,12 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
     hetatmData = null;
   }
 
-
   final private static byte CHEM_COMP_ID = 0;
   final private static byte CHEM_COMP_NAME = 1;
 
   final private static String[] chemCompFields = { 
       "_chem_comp_id",
-      "_chem_comp_name",  
+      "_chem_comp_name",
   };
   
 
@@ -972,9 +1092,8 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           break;
         }
       }
-      if (groupName == null || hetName == null)
-        return;
-      addHetero(groupName, hetName);
+      if (groupName != null && hetName != null)
+        addHetero(groupName, hetName);
     }
   }
 

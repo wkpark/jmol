@@ -29,6 +29,7 @@ import org.jmol.util.BitSetUtil;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.Logger;
+import org.jmol.util.Measure;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
@@ -44,6 +45,7 @@ import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import java.util.ArrayList;
@@ -131,6 +133,7 @@ public final class ModelLoader extends ModelSet {
   private boolean someModelsHaveUnitcells;
   private boolean isTrajectory;
   private boolean doMinimize;
+  private boolean doAddHydrogens;
   private String fileHeader;
 
   @SuppressWarnings("unchecked")
@@ -143,6 +146,11 @@ public final class ModelLoader extends ModelSet {
     modelSetProperties = (Properties) getModelSetAuxiliaryInfo("properties");
     //isMultiFile = getModelSetAuxiliaryInfoBoolean("isMultiFile"); -- no longer necessary
     isPDB = getModelSetAuxiliaryInfoBoolean("isPDB");
+    doAddHydrogens = isPDB && viewer.getBooleanProperty("pdbAddHydrogens");
+    if (doAddHydrogens) {
+      htBondMap = new Hashtable<String, String>();
+      htGroupBonds = new Hashtable<String, String[][]>();
+    }
     jmolData = (String) getModelSetAuxiliaryInfo("jmolData");
     fileHeader = (String) getModelSetAuxiliaryInfo("fileHeader");
     trajectorySteps = (List<Point3f[]>) getModelSetAuxiliaryInfo("trajectorySteps");
@@ -296,6 +304,7 @@ public final class ModelLoader extends ModelSet {
       mergeModelSet.releaseModelSet();
     }
     mergeModelSet = null;
+      finalizeHydrogens();
   }
 
   private void setDefaultRendering(int maxAtoms) {
@@ -655,12 +664,19 @@ public final class ModelLoader extends ModelSet {
         isPDB = models[modelIndex].isPDB;
         iLast = modelIndex;
       }
+      String group3 = iterAtom.getGroup3();
+      checkNewGroup(adapter, iterAtom.getChainID(), group3, iterAtom.getSequenceNumber(), iterAtom.getInsertionCode());
+      short isotope = iterAtom.getElementNumber();
+      if (doAddHydrogens && Atom.elementNumberOf(isotope) == 1)
+        haveHsAlready = true;
+      String name = iterAtom.getAtomName(); 
+      int charge = (doAddHydrogens ? getPdbCharge(group3, name) : iterAtom.getFormalCharge());
       addAtom(isPDB, iterAtom.getAtomSymmetry(), 
           iterAtom.getAtomSite(),
-          iterAtom.getUniqueID(), 
-          iterAtom.getElementNumber(), 
-          iterAtom.getAtomName(),
-          iterAtom.getFormalCharge(), 
+          iterAtom.getUniqueID(),
+          isotope,
+          name,
+          charge, 
           iterAtom.getPartialCharge(),
           iterAtom.getEllipsoid(), 
           iterAtom.getOccupancy(), 
@@ -670,10 +686,7 @@ public final class ModelLoader extends ModelSet {
           iterAtom.getZ(), 
           iterAtom.getIsHetero(), 
           iterAtom.getAtomSerial(), 
-          iterAtom.getChainID(), 
-          iterAtom.getGroup3(),
-          iterAtom.getSequenceNumber(), 
-          iterAtom.getInsertionCode(), 
+          group3,
           iterAtom.getVectorX(), 
           iterAtom.getVectorY(), 
           iterAtom.getVectorZ(),
@@ -698,23 +711,30 @@ public final class ModelLoader extends ModelSet {
     Logger.info(nRead + " atoms created");    
   }
 
+  private int getPdbCharge(String group3, String name) {
+    if (group3.equals("ARG") && name.equals("NH1")
+        || group3.equals("LYS") && name.equals("NZ")
+        || group3.equals("HIS") && name.equals("ND1")
+        )
+      return 1;
+    return 0;
+  }
+
   private void addAtom(boolean isPDB, BitSet atomSymmetry, int atomSite,
                        Object atomUid, short atomicAndIsotopeNumber,
                        String atomName, int formalCharge, float partialCharge,
                        Object[] ellipsoid, int occupancy, float bfactor,
                        float x, float y, float z, boolean isHetero,
-                       int atomSerial, char chainID, String group3,
-                       int groupSequenceNumber, char groupInsertionCode,
+                       int atomSerial, String group3,
                        float vectorX, float vectorY, float vectorZ,
                        char alternateLocationID, float radius) {
-    checkNewGroup(chainID, group3, groupSequenceNumber, groupInsertionCode);
     byte specialAtomID = 0;
     if (atomName != null) {
       if (isPDB && atomName.indexOf('*') >= 0)
         atomName = atomName.replace('*', '\'');
       specialAtomID = JmolConstants.lookupSpecialAtomID(atomName);
       if (isPDB && specialAtomID == JmolConstants.ATOMID_ALPHA_CARBON
-          && "CA".equalsIgnoreCase(group3))
+          && "CA".equalsIgnoreCase(group3)) // calcium
         specialAtomID = 0;
     }
     Atom atom = addAtom(currentModelIndex, nullGroup, atomicAndIsotopeNumber,
@@ -724,7 +744,7 @@ public final class ModelLoader extends ModelSet {
     htAtomMap.put(atomUid, atom);
   }
 
-  private void checkNewGroup(char chainID,
+  private void checkNewGroup(JmolAdapter adapter, char chainID,
                              String group3, int groupSequenceNumber,
                              char groupInsertionCode) {
     String group3i = (group3 == null ? null : group3.intern());
@@ -738,6 +758,8 @@ public final class ModelLoader extends ModelSet {
     if (groupSequenceNumber != currentGroupSequenceNumber
         || groupInsertionCode != currentGroupInsertionCode
         || group3i != currentGroup3) {
+      if (groupCount > 0 && doAddHydrogens)
+        addImplicitHydrogenAtoms(adapter, groupCount - 1);
       currentGroupSequenceNumber = groupSequenceNumber;
       currentGroupInsertionCode = groupInsertionCode;
       currentGroup3 = group3i;
@@ -1406,6 +1428,213 @@ public final class ModelLoader extends ModelSet {
       recalculateLeadMidpointsAndWingVectors(-1);
       break;
     }
-
   }
+  
+
+  //////////// ADDITION OF HYDROGEN ATOMS /////////////
+  // Bob Hanson and Erik Wyatt, Jmol 12.1.51, 7/1/2011
+  
+  private BitSet bsAddedHydrogens;
+  private BitSet bsAtomsForHs;
+  private boolean haveHsAlready;
+  
+  private void addImplicitHydrogenAtoms(JmolAdapter adapter, int iGroup) {
+    if (haveHsAlready) {
+      haveHsAlready = false;
+      return;
+    }
+    String group3 = group3Of[iGroup];
+    int nH = JmolConstants.getStandardPdbHydrogenCount(Group.lookupGroupID(group3));
+    int iFirst = firstAtomIndexes[iGroup];
+    models[atoms[iFirst].modelIndex].isPdbWithMultipleBonds = true;    
+    boolean isHetero = atoms[iFirst].isHetero();
+    Object model = null;
+    if (nH < 0) {
+      model = viewer.getLigandModel(group3);
+      if (model == null)
+        return;
+      nH = adapter.getHydrogenAtomCount(model);
+    }
+    if (nH < 1)
+      return;
+    getBondInfo(adapter, group3, model);
+    if (bsAddedHydrogens == null) {
+      bsAddedHydrogens = new BitSet();
+      bsAtomsForHs = new BitSet();
+    }
+    bsAtomsForHs.set(iFirst, atomCount);
+    bsAddedHydrogens.set(atomCount, atomCount + nH);
+    for (int i = 0; i < nH; i++)
+      addAtom(atoms[iFirst].modelIndex, atoms[iFirst].group, 
+          (short) 1, "H", 0,
+          0, 0, 0, 0, 
+          Float.NaN, Float.NaN, Float.NaN, 
+          Float.NaN, 0, 0, 1, 0, null, isHetero, '\0', (byte) 0, null).delete(null);
+  }
+
+  private void getBondInfo(JmolAdapter adapter, String group3, Object model) {
+    if (htGroupBonds.get(group3) != null)
+      return;
+    String[][] bondInfo;
+    if (model == null) {
+      bondInfo = viewer.getPdbBondInfo(group3);
+    } else {
+      bondInfo = getBondInfo(adapter, model);
+    }
+    if (bondInfo == null)
+      return;
+    htGroupBonds.put(group3, bondInfo);
+    for (int i = 0; i < bondInfo.length; i++)
+      if (bondInfo[i][1].charAt(0) == 'H')
+        htBondMap.put(group3 + "." + bondInfo[i][0], bondInfo[i][1]);
+      else
+        htBondMap.put(group3 + ":" + bondInfo[i][0] + ":" + bondInfo[i][1], bondInfo[i][2]);
+  }
+
+  private String[][] getBondInfo(JmolAdapter adapter, Object model) {
+    // TODO
+    return null;
+  }
+
+  private Map<String, String>htBondMap;
+  private Map<String, String[][]>htGroupBonds;
+  
+  private void finalizeHydrogens() {
+    if (!doAddHydrogens)
+      return;
+    finalizePdbMultipleBonds();
+    if (bsAddedHydrogens == null || bsAddedHydrogens.nextSetBit(0) < 0
+        || htBondMap == null)
+      return;
+    int[] nTotal = new int[1];
+    Point3f[][] pts = calculateHydrogens(bsAtomsForHs, nTotal, true, false,
+        null);
+    Vector3f vAB = new Vector3f();
+    Vector3f vAC = new Vector3f();
+    Vector3f vNorm = new Vector3f();
+    Point4f plane = new Point4f();
+    Group groupLast = null;
+    int ipt = 0;
+    for (int i = 0; i < pts.length; i++) {
+      if (pts[i] == null)
+        continue;
+      Atom atom = atoms[i];
+      Group g = atom.group;
+      if (g != groupLast) {
+        groupLast = g;
+        ipt = g.lastAtomIndex;
+      }
+      String gName = atom.getGroup3(false);
+      String aName = atom.getAtomName();
+      String hName = htBondMap.get(gName + "." + aName);
+      if (hName == null)
+        continue;
+      boolean isChiral = hName.contains("@");
+      boolean isMethyl = hName.endsWith("0");
+      int n = pts[i].length;
+      if (isChiral && n == 3 || isMethyl != (n == 3)) {
+        Logger.info("Error adding H atoms to " + gName + g.getResno() + ": " + pts[i].length
+            + " atoms should not be added to " + aName);
+        continue;
+      }
+      int pt = hName.indexOf("@");
+      switch (pts[i].length) {
+      case 1:
+        if (pt > 0)
+          hName = hName.substring(0, pt);
+        setHydrogen(i, ipt--, hName, pts[i][0]);
+        break;
+      case 2:
+        String hName1,
+        hName2;
+        float d = -1;
+        if (atom.bonds != null)
+          switch (atom.bonds.length) {
+          case 2:
+            // could be nitrogen?
+            Atom atom1 = atom.bonds[0].getOtherAtom(atom);
+            Atom atom2 = atom.bonds[1].getOtherAtom(atom);
+            int factor = atom1.getAtomName().compareTo(atom2.getAtomName());
+            Measure.getPlaneThroughPoints(atom1, atom, atom2, vNorm, vAB, vAC,
+                plane);
+            d = Measure.distanceToPlane(plane, pts[i][0]) * factor;
+            break;
+          }
+        if (pt < 0) {
+          Logger.info("Error adding H atoms to " + gName + g.getResno() + ": expected to only need 1 H but needed 2");
+          hName1 = hName2 = "H";
+        } else if (d < 0) {
+          hName2 = hName.substring(0, pt);
+          hName1 = hName.substring(pt + 1);
+        } else {
+          hName1 = hName.substring(0, pt);
+          hName2 = hName.substring(pt + 1);
+        }
+        setHydrogen(i, ipt--, hName1, pts[i][0]);
+        setHydrogen(i, ipt--, hName2, pts[i][1]);
+        break;
+      case 3:
+        setHydrogen(i, ipt--, hName.replace('0', '1'), pts[i][0]);
+        setHydrogen(i, ipt--, hName.replace('0', '2'), pts[i][1]);
+        setHydrogen(i, ipt--, hName.replace('0', '3'), pts[i][2]);
+        break;
+      }
+    }
+    viewer.deleteAtoms(bsAddedHydrogens, false);
+    bsAddedHydrogens = null;
+  }
+
+  private void finalizePdbMultipleBonds() {
+    for (int i = 0; i < bonds.length; i++) {
+      Atom a1 = bonds[i].atom1;
+      Atom a2 = bonds[i].atom2;
+      if (a1.group != a2.group) {
+        // to do: retinal??
+        continue;
+      }
+      StringBuffer key = new StringBuffer(a1.group.getGroup3());
+      key.append(":");
+      String n1 = a1.getAtomName();
+      String n2 = a2.getAtomName();
+      if (n1.compareTo(n2) > 0)
+        key.append(n2).append(":").append(n1);
+      else
+        key.append(n1).append(":").append(n2);
+      String type = htBondMap.get(key.toString());
+      if (type == null)
+        continue;
+      int order = 1;
+      switch (Integer.valueOf(type).intValue()) {
+      case -1:
+        order = JmolEdge.BOND_AROMATIC_SINGLE;
+        break;
+      case -2:
+        order = JmolEdge.BOND_AROMATIC_DOUBLE;
+        break;
+      case 1:
+        continue;
+      case 2:
+        order = JmolEdge.BOND_COVALENT_DOUBLE;
+        break;
+      case 3:
+        order = JmolEdge.BOND_COVALENT_TRIPLE;
+        break;        
+      }
+      bonds[i].order = order;
+    }
+    
+  }
+
+  private void setHydrogen(int iTo, int iAtom, String name, Point3f pt) {
+    if (!bsAddedHydrogens.get(iAtom))
+      return;
+    bsAddedHydrogens.clear(iAtom);
+    setAtomName(iAtom, name);
+    atoms[iAtom].set(pt);
+    bondAtoms(atoms[iTo], atoms[iAtom], JmolEdge.BOND_COVALENT_SINGLE, 
+        getDefaultMadFromOrder(JmolEdge.BOND_COVALENT_SINGLE), null, 0, true, false);
+  }
+
+
+  
 }

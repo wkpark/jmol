@@ -1977,6 +1977,52 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return createModelSetAndReturnError(atomSetCollection, isAppend, loadScript);
   }
 
+  private Map<String, Object> ligandModels;
+  private Map<String, Boolean> ligandModelSet;
+  public void setLigandModel(String id, String data) {
+    id = id.toUpperCase();
+    if (ligandModels == null)
+      ligandModels = new Hashtable<String, Object>();
+    ligandModels.put(id + "_data", data);
+  }
+  public Object getLigandModel(String id) {
+    id = id.toUpperCase();
+    if (ligandModelSet == null)
+      ligandModelSet = new Hashtable<String, Boolean>();
+    ligandModelSet.put(id, Boolean.TRUE);
+    if (ligandModels == null)
+      ligandModels = new Hashtable<String, Object>();
+    Object model = ligandModels.get(id);
+    String data;
+    if (model instanceof Boolean)
+      return null;
+    if (model == null)
+      model = ligandModels.get(id + "_data");
+    if (model == null) {
+      String fname = (String) setLoadFormat("#" + id, '#', false);
+      if (fname.length() == 0)
+        return null;
+      model = getFileAsString(fname);
+      ligandModels.put(id + "_data", model);
+    }
+    if (model instanceof String) {
+      data = (String) model;
+      // TODO: check for errors in reading file
+      if (data.length() != 0) {
+        Map<String, Object> htParams = new Hashtable<String, Object>();
+        htParams.put("modelOnly", Boolean.TRUE);
+        model = getModelAdapter().getAtomSetCollectionReader("ligand", null, FileManager.getBufferedReaderForString(data),
+              htParams);
+        if (!(model instanceof String))
+          model = getModelAdapter().getAtomSetCollection(model);
+      }
+    }
+    if (model instanceof String) {
+      ligandModels.put(id, Boolean.FALSE);
+      return null;
+    }
+    return model;
+  }
   /**
    * 
    * @param fileName
@@ -2533,6 +2579,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     stopAnimationThreads("zap");
     if (modelSet != null) {
       //setBooleanProperty("appendNew", true);
+      ligandModelSet = null;
       clearModelDependentObjects();
       fileManager.clear();
       repaintManager.clear();
@@ -4452,7 +4499,8 @@ private void zap(String msg) {
     String f = name.substring(1);
     switch (type) {
     case '=':
-      String s = global.loadFormat;
+    case '#': // ligand
+      String s = (type == '=' ? global.loadFormat : global.loadLigandFormat);
       if (f.indexOf(".") > 0 && s.indexOf("%FILE.") >= 0)
         s = s.substring(0, s.indexOf("%FILE") + 5);
       return TextFormat.formatString(s, "FILE", f);
@@ -6186,6 +6234,9 @@ private void zap(String msg) {
       break;
     case Token.pdbsequential:
       global.pdbSequential = value;
+      break;
+    case Token.pdbaddhydrogens:
+      global.pdbAddHydrogens = value;
       break;
     case Token.pdbgetheader:
       global.pdbGetHeader = value;
@@ -9800,6 +9851,18 @@ private void zap(String msg) {
   @Override
   public void getObjectMap(Map<String, Token> map, boolean withDollar) {
     shapeManager.getObjectMap(map, withDollar);
+  }
+
+  Map<String, String[][]>htPdbBondInfo; 
+  public String[][] getPdbBondInfo(String group3) {
+    if (htPdbBondInfo == null)
+      htPdbBondInfo = new Hashtable<String, String[][]>();
+    String[][] info = htPdbBondInfo.get(group3);
+    if (info != null)
+      return info;
+    info = JmolConstants.getPdbBondInfo(Group.lookupGroupID(group3));
+    htPdbBondInfo.put(group3, info);
+    return info;
   }
 
 }

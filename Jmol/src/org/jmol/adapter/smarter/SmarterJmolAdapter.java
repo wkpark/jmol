@@ -562,6 +562,11 @@ public class SmarterJmolAdapter extends JmolAdapter {
    * **************************************************************/
 
   @Override
+  public int getHydrogenAtomCount(Object atomSetCollection) {
+    return ((AtomSetCollection)atomSetCollection).getHydrogenAtomCount();
+  }
+
+  @Override
   public int getAtomCount(Object atomSetCollection) {
     return ((AtomSetCollection)atomSetCollection).getAtomCount();
   }

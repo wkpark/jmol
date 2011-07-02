@@ -255,4 +255,10 @@ public class Bond implements JmolEdge {
   public JmolNode getOtherAtom(JmolNode thisAtom) {
     return (atom1 == thisAtom ? atom2 : atom2 == thisAtom ? atom1 : null);
   }
+  
+  @Override
+  public String toString() {
+    return atom1 + " - " + atom2;
+  }
+
 }

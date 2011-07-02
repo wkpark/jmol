@@ -98,6 +98,7 @@ public final class Model {
 
   int hydrogenCount;
   boolean isPDB;
+  boolean isPdbWithMultipleBonds;
   
   String loadState = "";
   StringBuffer loadScript = new StringBuffer();

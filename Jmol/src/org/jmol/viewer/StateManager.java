@@ -558,7 +558,7 @@ public class StateManager {
         + ";_filecaching;_filecache;fontcaching;fontscaling;language"
         + ";legacyautobonding"
         + ";loglevel;logfile;loggestures;logcommands;measureStyleChime"
-        + ";loadformat;smilesurlformat;nihresolverformat;edsurlformat;edsurlcutoff;multiprocessor;navigationmode;"
+        + ";loadformat;loadligandformat;smilesurlformat;nihresolverformat;edsurlformat;edsurlcutoff;multiprocessor;navigationmode;"
         + ";perspectivedepth;phongexponent;perspectivemodel;preservestate;refreshing;repaintwaitms;rotationradius"
         + ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showunitcell"
         + ";slabenabled;slab;slabrange;depth;zshade;zshadepower;specular;specularexponent;specularpercent;specularpower;stateversion"
@@ -864,6 +864,7 @@ public class StateManager {
       setParameterValue("legacyAutoBonding", legacyAutoBonding);
       setParameterValue("loadAtomDataTolerance", loadAtomDataTolerance);
       setParameterValue("loadFormat", loadFormat);
+      setParameterValue("loadLigandFormat", loadLigandFormat);
       setParameterValue("logCommands", logCommands);
       setParameterValue("logGestures", logGestures);
       setParameterValue("measureAllModels", measureAllModels);
@@ -885,6 +886,7 @@ public class StateManager {
       setParameterValue("navigationPeriodic", navigationPeriodic);
       setParameterValue("navigationSpeed", navigationSpeed);
       setParameterValue("partialDots", partialDots);
+      setParameterValue("pdbAddHydrogens", pdbAddHydrogens); // new 12.1.51
       setParameterValue("pdbGetHeader", pdbGetHeader); // new 11.5.39
       setParameterValue("pdbSequential", pdbSequential); // new 11.5.39
       setParameterValue("perspectiveDepth", perspectiveDepth);
@@ -997,6 +999,7 @@ public class StateManager {
     boolean fractionalRelative = false; // true: UNITCELL offset will change meaning of {1/2 1/2 1/2} 
     char inlineNewlineChar = '|'; //pseudo static
     String loadFormat = "http://www.rcsb.org/pdb/files/%FILE.pdb.gz";
+    String loadLigandFormat = "http://www.rcsb.org/pdb/files/ligand/%FILE.cif";
     String smilesUrlFormat = "http://cactus.nci.nih.gov/chemical/structure/%FILE/file?format=sdf&get3d=True"; 
     String nihResolverFormat = "http://cactus.nci.nih.gov/chemical/structure/%FILE"; 
       
@@ -1005,6 +1008,7 @@ public class StateManager {
     String edsUrlCutoff = "load('http://eds.bmc.uu.se/eds/dfs/%LC13/%LCFILE/%LCFILE.sfdat').lines.find('MAP_SIGMA').split(' ')[2]";
     String edsUrlOptions = "within 2.0 {*}";
     float minBondDistance = JmolConstants.DEFAULT_MIN_BOND_DISTANCE;
+    boolean pdbAddHydrogens = false; // true to add hydrogen atoms
     boolean pdbGetHeader = false; // true to get PDB header in auxiliary info
     boolean pdbSequential = false; // true for no bonding check
     int percentVdwAtom = JmolConstants.DEFAULT_PERCENT_VDW_ATOM;
@@ -1055,6 +1059,7 @@ public class StateManager {
       appendCmd(str, "set forceAutoBond " + forceAutoBond);
       appendCmd(str, "#set defaultDirectory " + Escape.escape(defaultDirectory));
       appendCmd(str, "#set loadFormat " + Escape.escape(loadFormat));
+      appendCmd(str, "#set loadLigandFormat " + Escape.escape(loadLigandFormat));
       appendCmd(str, "#set smilesUrlFormat " + Escape.escape(smilesUrlFormat));
       appendCmd(str, "#set nihResolverFormat " + Escape.escape(nihResolverFormat));
       appendCmd(str, "#set edsUrlFormat " + Escape.escape(edsUrlFormat));
@@ -1066,6 +1071,7 @@ public class StateManager {
       // these next two might be part of a 2D->3D operation
       appendCmd(str, "set minimizationCriterion  " + minimizationCriterion);
       appendCmd(str, "set minimizationSteps  " + minimizationSteps);
+      appendCmd(str, "set pdbAddHydrogens " + pdbAddHydrogens);
       appendCmd(str, "set pdbGetHeader " + pdbGetHeader);
       appendCmd(str, "set pdbSequential " + pdbSequential);
       appendCmd(str, "set percentVdwAtom " + percentVdwAtom);

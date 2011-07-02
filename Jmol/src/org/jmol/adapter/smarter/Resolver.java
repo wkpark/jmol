@@ -248,7 +248,7 @@ public class Resolver {
             + readerName;
       else if (readerName.equals("spt"))
         errMsg = "NOTE: file recognized as a script file: " + fullName + "\n";
-      else
+      else if (!fullName.equals("ligand"))
         Logger.info("The Resolver thinks " + readerName);
     }
     if (errMsg != null) {

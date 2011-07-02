@@ -4071,7 +4071,8 @@ abstract public class ModelCollection extends BondCollection {
         100, Float.NaN, null, false, '\0', (byte) 0, null);
   }
   protected Atom addAtom(int modelIndex, Group group,
-                         short atomicAndIsotopeNumber, String atomName, int atomSerial,
+                         short atomicAndIsotopeNumber, String atomName, 
+                         int atomSerial,
                          int atomSite, float x, float y, float z,
                          float radius, float vectorX, float vectorY,
                          float vectorZ, int formalCharge, float partialCharge,

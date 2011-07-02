@@ -15274,6 +15274,7 @@ public class ScriptEvaluator {
       error(ERROR_invalidArgument, ipoint);
 
     sbCommand.append(" ").append(Token.nameOf(type));
+    String defaultColor = null;
     if (bsA != null) {
       // bond mode, intramolec set here
 
@@ -15351,17 +15352,19 @@ public class ScriptEvaluator {
       // now adjust for type -- HBOND or HYDROPHOBIC or MISC
       // these are just "standard shortcuts" they are not necessary at all
       final String hbond = "_O | _N | _H & connected(_O | _N)"; 
-      final String hydro = "_C | _H & connected(_C)"; 
+      final String hydro = "_C | _H & connected(_C)";
       switch (bondMode) {
       case Token.hbond:
         filter = hbond;
-        break;
+        defaultColor  = "purple";
       case Token.hydrophobic:
         filter = hydro;
+        defaultColor = "green";
         break;
       case Token.miscellaneous:
         // everything else!
         filter = "!(" + hbond + ") & !(" + hydro + ")";
+        defaultColor = "yellow";
         break;
       }
       if (filter != null) {
@@ -15385,12 +15388,11 @@ public class ScriptEvaluator {
     }
     setShapeProperty(JmolConstants.SHAPE_CONTACT, "clear", null);
     if (!haveColor) {
-      if (filter != null) {
+      if (defaultColor != null) {
         setShapeProperty(JmolConstants.SHAPE_CONTACT, "color",
             Integer
                 .valueOf(Graphics3D
-                    .getArgbFromString(bondMode == Token.hbond ? "purple"
-                        : "green")));
+                    .getArgbFromString(defaultColor)));
       } else if (type == Token.nci) {
         ColorEncoder ce = viewer.getColorEncoder("bgr");
         ce.setRange(-0.03f, 0.03f, false);

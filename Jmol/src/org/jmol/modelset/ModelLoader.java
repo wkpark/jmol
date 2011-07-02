@@ -675,7 +675,6 @@ public final class ModelLoader extends ModelSet {
         models[modelIndex].bsAtoms.clear();
         isPDB = models[modelIndex].isPDB;
         iLast = modelIndex;
-        maxSerial = 0;
       }
       String group3 = iterAtom.getGroup3();
       checkNewGroup(adapter, iterAtom.getChainID(), group3, iterAtom.getSequenceNumber(), iterAtom.getInsertionCode());
@@ -752,8 +751,6 @@ public final class ModelLoader extends ModelSet {
           && "CA".equalsIgnoreCase(group3)) // calcium
         specialAtomID = 0;
     }
-    if (atomSerial > maxSerial)
-      maxSerial = atomSerial;
     Atom atom = addAtom(currentModelIndex, nullGroup, atomicAndIsotopeNumber,
         atomName, atomSerial, atomSite, x, y, z, radius, vectorX, vectorY,
         vectorZ, formalCharge, partialCharge, occupancy, bfactor, ellipsoid,
@@ -1626,6 +1623,8 @@ public final class ModelLoader extends ModelSet {
       if (g != groupLast) {
         groupLast = g;
         ipt = g.lastAtomIndex;
+        while (bsAddedHydrogens.get(ipt))
+          ipt--;
       }
       String gName = atom.getGroup3(false);
       String aName = atom.getAtomName();
@@ -1636,13 +1635,13 @@ public final class ModelLoader extends ModelSet {
       boolean isMethyl = (hName.endsWith("?") || hName.indexOf("|") >= 0);
       int n = pts[i].length;
       if (n == 3 && !isMethyl && hName.equals("H@H2")) {
-          hName = "H|H2|H3";
-          isMethyl = true;
-          isChiral = false;
+        hName = "H|H2|H3";
+        isMethyl = true;
+        isChiral = false;
       }
       if (isChiral && n == 3 || isMethyl != (n == 3)) {
-        Logger.info("Error adding H atoms to " + gName + g.getResno() + ": " + pts[i].length
-            + " atoms should not be added to " + aName);
+        Logger.info("Error adding H atoms to " + gName + g.getResno() + ": "
+            + pts[i].length + " atoms should not be added to " + aName);
         continue;
       }
       int pt = hName.indexOf("@");
@@ -1650,7 +1649,7 @@ public final class ModelLoader extends ModelSet {
       case 1:
         if (pt > 0)
           hName = hName.substring(0, pt);
-        setHydrogen(i, ipt--, hName, pts[i][0]);
+        setHydrogen(i, ++ipt, hName, pts[i][0]);
         break;
       case 2:
         String hName1,
@@ -1669,7 +1668,8 @@ public final class ModelLoader extends ModelSet {
             break;
           }
         if (pt < 0) {
-          Logger.info("Error adding H atoms to " + gName + g.getResno() + ": expected to only need 1 H but needed 2");
+          Logger.info("Error adding H atoms to " + gName + g.getResno()
+              + ": expected to only need 1 H but needed 2");
           hName1 = hName2 = "H";
         } else if (d < 0) {
           hName2 = hName.substring(0, pt);
@@ -1678,30 +1678,27 @@ public final class ModelLoader extends ModelSet {
           hName1 = hName.substring(0, pt);
           hName2 = hName.substring(pt + 1);
         }
-        setHydrogen(i, ipt--, hName1, pts[i][0]);
-        setHydrogen(i, ipt--, hName2, pts[i][1]);
+        setHydrogen(i, ++ipt, hName1, pts[i][0]);
+        setHydrogen(i, ++ipt, hName2, pts[i][1]);
         break;
       case 3:
-        int pt1 = hName.indexOf('|'); 
-        if(pt1 >= 0) {
+        int pt1 = hName.indexOf('|');
+        if (pt1 >= 0) {
           int pt2 = hName.lastIndexOf('|');
           hNames[0] = hName.substring(0, pt1);
-          hNames[1] = hName.substring(pt1 + 1, pt2);          
-          hNames[2] = hName.substring(pt2 + 1);          
+          hNames[1] = hName.substring(pt1 + 1, pt2);
+          hNames[2] = hName.substring(pt2 + 1);
         } else {
           hNames[0] = hName.replace('?', '1');
           hNames[1] = hName.replace('?', '2');
           hNames[2] = hName.replace('?', '3');
         }
         for (int j = 0; j < 3; j++)
-          setHydrogen(i, ipt--, hNames[j] , pts[i][j]);
+          setHydrogen(i, ++ipt, hNames[j], pts[i][j]);
         break;
       }
     }
     viewer.deleteAtoms(bsAddedHydrogens, false);
-    for (int i = 0; i < atomCount; i++)
-      if (!atoms[i].isDeleted() && atoms[i].getAtomNumber() == 0)
-        setAtomNumber(i, ++maxSerial);
     bsAddedHydrogens = null;
   }
 
@@ -1771,12 +1768,18 @@ public final class ModelLoader extends ModelSet {
     }
   }
 
+  private int lastSetH = Integer.MIN_VALUE;
+  
   private void setHydrogen(int iTo, int iAtom, String name, Point3f pt) {
     if (!bsAddedHydrogens.get(iAtom))
       return;
+    if (lastSetH == Integer.MIN_VALUE || atoms[iAtom].modelIndex != atoms[lastSetH].modelIndex) 
+      maxSerial = ((int[]) getModelAuxiliaryInfo(atoms[lastSetH = iAtom].modelIndex, "PDB_CONECT_firstAtom_count_max"))[2];
     bsAddedHydrogens.clear(iAtom);
     setAtomName(iAtom, name);
     atoms[iAtom].set(pt);
+    setAtomNumber(iAtom, ++maxSerial);
+    atoms[iAtom].valence = 0;
     bondAtoms(atoms[iTo], atoms[iAtom], JmolEdge.BOND_COVALENT_SINGLE, 
         getDefaultMadFromOrder(JmolEdge.BOND_COVALENT_SINGLE), null, 0, true, false);
   }

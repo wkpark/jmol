@@ -68,7 +68,9 @@ abstract class AtomDataReader extends VolumeDataReader {
   protected int myAtomCount;
   protected int nearbyAtomCount;
   protected int firstNearbyAtom;
-  protected BitSet bsMySelected, bsMyIgnored, bsNearby;
+  protected BitSet bsMySelected = new BitSet();
+  protected BitSet  bsMyIgnored = new BitSet();
+  protected BitSet bsNearby;
 
   protected boolean doAddHydrogens;
   protected boolean havePlane;
@@ -80,8 +82,8 @@ abstract class AtomDataReader extends VolumeDataReader {
     params.iUseBitSets = true;
     doAddHydrogens = (atomDataServer != null && params.addHydrogens); //Jvxl cannot do this on its own
     modelIndex = params.modelIndex;
-    bsMySelected = new BitSet();
-    bsMyIgnored = (params.bsIgnore == null ? new BitSet() : params.bsIgnore);
+    if (params.bsIgnore != null)
+      bsMyIgnored = params.bsIgnore;
     havePlane = (params.thePlane != null);
     if (havePlane)
       volumeData.setPlaneParameters(params.thePlane);

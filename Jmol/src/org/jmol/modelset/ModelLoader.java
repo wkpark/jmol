@@ -749,8 +749,8 @@ public final class ModelLoader {
           iterAtom.getRadius()
           );
     }
-    if (modelSet.groupCount == 1 && addH)
-      jbr.addImplicitHydrogenAtoms(adapter, 0);    
+    if (modelSet.groupCount > 0 && addH)
+      jbr.addImplicitHydrogenAtoms(adapter, modelSet.groupCount - 1);    
     iLast = -1;
     int vdwtypeLast = -1;
     Atom[] atoms = modelSet.atoms;

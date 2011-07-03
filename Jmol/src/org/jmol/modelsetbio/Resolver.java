@@ -144,6 +144,20 @@ public final class Resolver implements JmolBioResolver {
   //////////// ADDITION OF HYDROGEN ATOMS /////////////
   // Bob Hanson and Erik Wyatt, Jmol 12.1.51, 7/1/2011
   
+  /*
+   * for each group, as it is finished in the file reading:
+   * 
+   * 1) get and store atom/bond information for group type
+   * 2) add placeholder (deleted) hydrogen atoms to a group
+   * 
+   * in the end:
+   * 
+   * 3) set multiple bonding and charges
+   * 4) determine actual number of required hydrogen atoms
+   * 5) set hydrogen atom names, atom numbers, and positions 
+   * 6) undelete those atoms  
+   * 
+   */
   private ModelLoader modelLoader;
   private ModelSet modelSet;
   private BitSet bsAddedHydrogens;
@@ -234,39 +248,39 @@ public final class Resolver implements JmolBioResolver {
   }
 
   /**
-   * reads PDB ligand CIF info and creats a bondInfo object.
+   * reads PDB ligand CIF info and creates a bondInfo object.
    * 
    * @param adapter
    * @param model
    * @param group3 
    * @return      [[atom1, atom2, order]...]
    */
-  public String[][] getLigandBondInfo(JmolAdapter adapter, Object model, String group3) {
+  private String[][] getLigandBondInfo(JmolAdapter adapter, Object model, String group3) {
     String[][] dataIn = adapter.getBondList(model);
     Map<String, Point3f> htAtoms = new Hashtable<String, Point3f>();
     JmolAdapter.AtomIterator iterAtom = adapter.getAtomIterator(model);
     while (iterAtom.hasNext())
       htAtoms.put(iterAtom.getAtomName(), iterAtom.getXYZ());      
-    String[][] temp = new String[dataIn.length * 2][];
+    String[][] bondInfo = new String[dataIn.length * 2][];
     int n = 0;
     for (int i = 0; i < dataIn.length; i++) {
       String[] b = dataIn[i];
       if (b[0].charAt(0) != 'H')
-        temp[n++] = new String[] { b[0], b[1], b[2],
+        bondInfo[n++] = new String[] { b[0], b[1], b[2],
             b[1].startsWith("H") ? "0" : "1" };
       if (b[1].charAt(0) != 'H')
-        temp[n++] = new String[] { b[1], b[0], b[2],
+        bondInfo[n++] = new String[] { b[1], b[0], b[2],
             b[0].startsWith("H") ? "0" : "1" };
     }
-    Arrays.sort(temp, new BondSorter());
+    Arrays.sort(bondInfo, new BondSorter());
     // now look for 
     String[] t;
     for (int i = 0; i < n;) {
-      t = temp[i];
+      t = bondInfo[i];
       String a1 = t[0];
       int nH = 0;
       int nC = 0;
-      for (; i < n && (t = temp[i])[0].equals(a1); i++) {
+      for (; i < n && (t = bondInfo[i])[0].equals(a1); i++) {
         if (t[3].equals("0")) {
           nH++;
           continue;
@@ -281,34 +295,34 @@ public final class Resolver implements JmolBioResolver {
       case 1:
         char sep = (nH == 2 ? '@' : '|');
         for (int j = 1; j < nH; j++) {
-          temp[pt][1] += sep + temp[pt + j][1];
-          temp[pt + j] = null;
+          bondInfo[pt][1] += sep + bondInfo[pt + j][1];
+          bondInfo[pt + j] = null;
         }
         continue;
       case 2:
         if (nH != 2)
           continue;
-        String name = temp[pt][0];
-        String name1 = temp[pt + nH][1];
-        String name2 = temp[pt + nH + 1][1];
+        String name = bondInfo[pt][0];
+        String name1 = bondInfo[pt + nH][1];
+        String name2 = bondInfo[pt + nH + 1][1];
         int factor = name1.compareTo(name2);
         Measure.getPlaneThroughPoints(htAtoms.get(name1), htAtoms.get(name), htAtoms.get(name2), vNorm, vAB, vAC,
             plane);
-        float d = Measure.distanceToPlane(plane, htAtoms.get(temp[pt][1])) * factor;
-        temp[pt][1] = (d > 0 ? temp[pt][1] + "@" + temp[pt + 1][1]
-            :  temp[pt + 1][1] + "@" + temp[pt][1]);
-        temp[pt + 1] = null;
+        float d = Measure.distanceToPlane(plane, htAtoms.get(bondInfo[pt][1])) * factor;
+        bondInfo[pt][1] = (d > 0 ? bondInfo[pt][1] + "@" + bondInfo[pt + 1][1]
+            :  bondInfo[pt + 1][1] + "@" + bondInfo[pt][1]);
+        bondInfo[pt + 1] = null;
       }
     }
     for (int i = 0; i < n; i++) {
-      if ((t = temp[i]) != null && t[1].charAt(0) != 'H' && t[0].compareTo(t[1]) > 0) {
-        temp[i] = null;
+      if ((t = bondInfo[i]) != null && t[1].charAt(0) != 'H' && t[0].compareTo(t[1]) > 0) {
+        bondInfo[i] = null;
         continue;
       }
       if (t != null)
-        Logger.info(" ligand " + group3 + ": " + temp[i][0] + " - " + temp[i][1] + " order " + temp[i][2]);
+        Logger.info(" ligand " + group3 + ": " + bondInfo[i][0] + " - " + bondInfo[i][1] + " order " + bondInfo[i][2]);
     }
-    return temp;
+    return bondInfo;
   }
   
   class BondSorter implements Comparator<String[]>{

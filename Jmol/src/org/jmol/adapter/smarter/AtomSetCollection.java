@@ -535,14 +535,14 @@ public class AtomSetCollection {
   }
 
   public void connectAll(int maxSerial) {
-    if (vConnect == null) {
-      return;
-    }
     int firstAtom = connectNextAtomIndex;
     for (int i = connectNextAtomSet; i < atomSetCount; i++) {
-      setGlobalBoolean(GLOBAL_CONECT);
-      setAtomSetAuxiliaryInfo("PDB_CONECT_firstAtom_count_max", new int[] {firstAtom, atomSetAtomCounts[i], maxSerial}, i);
-      setAtomSetAuxiliaryInfo("PDB_CONECT_bonds", vConnect, i);
+      setAtomSetAuxiliaryInfo("PDB_CONECT_firstAtom_count_max", new int[] {
+          firstAtom, atomSetAtomCounts[i], maxSerial }, i);
+      if (vConnect != null) {
+        setAtomSetAuxiliaryInfo("PDB_CONECT_bonds", vConnect, i);
+        setGlobalBoolean(GLOBAL_CONECT);
+      }
       firstAtom += atomSetAtomCounts[i];
     }
     vConnect = null;

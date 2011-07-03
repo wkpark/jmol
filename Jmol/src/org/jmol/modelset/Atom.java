@@ -363,7 +363,7 @@ final public class Atom extends Point3fi implements JmolNode {
     return (formalChargeAndFlags & VIBRATION_VECTOR_FLAG) != 0;
   }
 
-  void setFormalCharge(int charge) {
+  public void setFormalCharge(int charge) {
     formalChargeAndFlags = (byte)((formalChargeAndFlags & FLAG_MASK) 
         | ((charge == Integer.MIN_VALUE ? 0 : charge > 7 ? 7 : charge < -3 ? -3 : charge) << 2));
   }
@@ -1402,4 +1402,5 @@ final public class Atom extends Point3fi implements JmolNode {
   public String toString() {
     return getInfo();
   }
+
 }

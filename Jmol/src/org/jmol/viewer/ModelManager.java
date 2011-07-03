@@ -32,7 +32,7 @@ import org.jmol.modelset.ModelSet;
 class ModelManager {
 
   private final Viewer viewer;
-  private ModelLoader modelLoader;
+  private ModelSet modelSet;
 
   private String fullPathName;
   private String fileName;
@@ -43,8 +43,7 @@ class ModelManager {
 
   ModelSet zap() {
     fullPathName = fileName = null;
-    modelLoader = new ModelLoader(viewer, viewer.getZapName());
-    return modelLoader;
+    return (new ModelLoader(viewer, viewer.getZapName())).getModelSet();
   }
   
   String getModelSetFileName() {
@@ -60,7 +59,7 @@ class ModelManager {
                           BitSet bsNew, boolean isAppend) {
     String modelSetName = null;
     if (isAppend) {
-      modelSetName = modelLoader.getModelSetName();
+      modelSetName = modelSet.getModelSetName();
       if (modelSetName.equals("zapped"))
         modelSetName = null;
       else if (modelSetName.indexOf(" (modified)") < 0)
@@ -83,12 +82,12 @@ class ModelManager {
         if (modelSetName == null)
           modelSetName = reduceFilename(fileName);
       }
-      modelLoader = new ModelLoader(viewer, loadScript, atomSetCollection,
-          (isAppend ? modelLoader : null), modelSetName, bsNew);
+      modelSet = (new ModelLoader(viewer, loadScript, atomSetCollection,
+          (isAppend ? modelSet : null), modelSetName, bsNew)).getModelSet();
     }
-    if (modelLoader.getAtomCount() == 0)
+    if (modelSet.getAtomCount() == 0)
       zap();
-    return modelLoader;
+    return modelSet;
   }
 
   private static String reduceFilename(String fileName) {

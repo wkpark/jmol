@@ -349,7 +349,7 @@ abstract public class BondCollection extends AtomCollection {
    * @param order
    * @return if hydrogen bond, default to 1; otherwise 0 (general default)
    */
-  protected short getDefaultMadFromOrder(int order) {
+  public short getDefaultMadFromOrder(int order) {
     return (short) (Bond.isHydrogen(order) ? 1
         : (order & JmolEdge.BOND_STRUT) != 0 ? (int) (viewer
             .getStrutDefaultRadius() * 2000) : defaultCovalentMad);

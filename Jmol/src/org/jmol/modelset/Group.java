@@ -153,7 +153,7 @@ public class Group {
     return group3Names[groupID].equalsIgnoreCase(group3);
   }
 
-  final String getGroup3() {
+  public final String getGroup3() {
     return group3Names[groupID];
   }
 

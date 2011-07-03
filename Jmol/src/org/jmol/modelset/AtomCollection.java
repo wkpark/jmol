@@ -697,7 +697,7 @@ abstract public class AtomCollection {
     setAtomVibrationVector(atomIndex, v.x, v.y, v.z);
   }
 
-  protected void setAtomName(int atomIndex, String name) {
+  public void setAtomName(int atomIndex, String name) {
     byte id = JmolConstants.lookupSpecialAtomID(name);
     atoms[atomIndex].atomID = id;
     if (id > 0 && ((ModelCollection)this).models[atoms[atomIndex].modelIndex].isPDB)
@@ -713,7 +713,7 @@ abstract public class AtomCollection {
       atomTypes[atomIndex] = type;
   }
   
-  protected boolean setAtomNumber(int atomIndex, int atomno) {
+  public boolean setAtomNumber(int atomIndex, int atomno) {
     if (atomSerials == null) {
       atomSerials = new int[atoms.length];
     }

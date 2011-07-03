@@ -40,7 +40,6 @@ import org.jmol.modelset.BoxInfo;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.MeasurementPending;
-import org.jmol.modelset.ModelLoader;
 import org.jmol.modelset.ModelSet;
 import org.jmol.modelset.Bond.BondSet;
 import org.jmol.modelset.ModelCollection.StateScript;
@@ -2387,7 +2386,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return (String) atomSetCollection;
     setErrorMessage(null);
     try {
-      ((ModelLoader) modelSet).createAtomDataSet(tokType, atomSetCollection,
+      modelSet.createAtomDataSet(tokType, atomSetCollection,
           getSelectionSet(false));
       if (tokType == Token.vibration)
         setStatusFrameChanged(Integer.MIN_VALUE);

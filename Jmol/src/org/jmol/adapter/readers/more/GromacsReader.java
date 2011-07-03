@@ -29,7 +29,6 @@ import org.jmol.api.JmolAdapter;
 
 
 import org.jmol.util.Logger;
-import org.jmol.viewer.JmolConstants;
 
 import javax.vecmath.Point3f;
 

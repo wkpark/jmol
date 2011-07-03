@@ -238,7 +238,6 @@ abstract public class ModelCollection extends BondCollection {
 
   protected Group[] groups;
   protected int groupCount;
-  protected boolean haveBioClasses = true;
   protected JmolBioResolver jbr = null;
   
   protected void calculatePolymers(int baseGroupIndex, BitSet alreadyDefined) {
@@ -4070,7 +4069,7 @@ abstract public class ModelCollection extends BondCollection {
         atomSite, x, y, z, Float.NaN, Float.NaN, Float.NaN, Float.NaN, 0, 0,
         100, Float.NaN, null, false, '\0', (byte) 0, null);
   }
-  protected Atom addAtom(int modelIndex, Group group,
+  public Atom addAtom(int modelIndex, Group group,
                          short atomicAndIsotopeNumber, String atomName, 
                          int atomSerial,
                          int atomSite, float x, float y, float z,

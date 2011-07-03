@@ -28,7 +28,6 @@ import org.jmol.api.JmolEdge;
 import org.jmol.modelset.Bond;
 import org.jmol.script.Token;
 import org.jmol.util.Elements;
-import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 

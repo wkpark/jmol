@@ -141,7 +141,8 @@ class PointGroup {
   
   final private Point3f center = new Point3f();
 
-  private Point3f[] atoms;
+  private Point3f[] points;
+  private Atom[] atoms;
   private int[] elements;
 
   private BitSet bsAtoms;
@@ -167,7 +168,7 @@ class PointGroup {
       return false;
     for (int i = 0; i < nAtoms; i++) {
       // real floating == 0 here because they must be IDENTICAL POSITIONS
-      if (elements[i] != pg.elements[i] || atoms[i].distance(pg.atoms[i]) != 0)
+      if (elements[i] != pg.elements[i] || points[i].distance(pg.points[i]) != 0)
         return false;
     }
     return true;
@@ -187,26 +188,26 @@ class PointGroup {
     }
     getElementCounts();
     if (haveVibration) {
-      Point3f[] atomVibs = new Point3f[atoms.length];
-      for (int i = atoms.length; --i >= 0;) {
-        atomVibs[i] = new Point3f(atoms[i]);
-        Vector3f v = (atoms[i] instanceof Atom ? ((Atom) atoms[i]).getVibrationVector() : null);
+      Point3f[] atomVibs = new Point3f[points.length];
+      for (int i = points.length; --i >= 0;) {
+        atomVibs[i] = new Point3f(points[i]);
+        Vector3f v = atoms[i].getVibrationVector();
         if (v != null)
           atomVibs[i].add(v);
       }
-      atoms = atomVibs;
+      points = atomVibs;
     }
     if (isEqual(pgLast))
       return false;
     findInversionCenter();
 
-    if (isLinear(atoms)) {
+    if (isLinear(points)) {
       if (haveInversionCenter) {
         name = "D(infinity)h";
       } else {
         name = "C(infinity)v";
       }
-      vTemp.sub(atoms[1], atoms[0]);
+      vTemp.sub(points[1], points[0]);
       addAxis(c2, vTemp);
       principalAxis = axes[c2][0];
       if (haveInversionCenter) {
@@ -357,20 +358,22 @@ class PointGroup {
     int atomCount = BitSetUtil.cardinalityOf(bsAtoms);
     if (atomCount > ATOM_COUNT_MAX)
       return false;
-    Point3f[] atoms = this.atoms = new Point3f[atomCount];
+    Point3f[] points = this.points = new Point3f[atomCount];
+    atoms = new Atom[atomCount];
     elements = new int[atomCount];
     if (atomCount == 0) 
       return true;
     nAtoms = 0;
     for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
-        atoms[nAtoms] = new Point3f(atomset[i]);
+        points[nAtoms] = new Point3f(atomset[i]);
+        atoms[nAtoms] = atomset[i];
         int bondIndex = 1 + Math.max(3, atomset[i].getCovalentBondCount());
         elements[nAtoms] = atomset[i].getElementNumber() * bondIndex;
-        center.add(atoms[nAtoms++]);
+        center.add(points[nAtoms++]);
       }
     center.scale(1f / nAtoms);
     for (int i = nAtoms; --i >= 0;) {
-      float r = center.distance(atoms[i]);
+      float r = center.distance(points[i]);
       if (r < distanceTolerance)
         centerAtomIndex = i;
       radius = Math.max(radius, r);
@@ -390,11 +393,11 @@ class PointGroup {
     Point3f pt = new Point3f();
     int nFound = 0;
     boolean isInversion = (iOrder < firstProper);
-    out: for (int i = atoms.length; --i >= 0 && nFound < atoms.length;)
+    out: for (int i = points.length; --i >= 0 && nFound < points.length;)
       if (i == centerAtomIndex) {
         nFound++;
       } else {
-        Point3f a1 = atoms[i];
+        Point3f a1 = points[i];
         int e1 = elements[i];
         if (q != null) {
           pt.set(a1);
@@ -419,17 +422,17 @@ class PointGroup {
           nFound++;
           continue;
         }
-        for (int j = atoms.length; --j >= 0;) {
+        for (int j = points.length; --j >= 0;) {
           if (j == i || elements[j] != e1)
             continue;
-          Point3f a2 = atoms[j];
+          Point3f a2 = points[j];
           if (pt.distance(a2) < distanceTolerance) {
             nFound++;
             continue out;
           }
         }
       }
-    return nFound == atoms.length;
+    return nFound == points.length;
   }
 
   private boolean isLinear(Point3f[] atoms) {
@@ -468,13 +471,13 @@ class PointGroup {
   int[] eCounts;
 
   private void getElementCounts() {
-    for (int i = atoms.length; --i >= 0;) {
+    for (int i = points.length; --i >= 0;) {
       int e1 = elements[i];
       if (e1 > maxElement)
         maxElement = e1;
     }
     eCounts = new int[++maxElement];
-    for (int i = atoms.length; --i >= 0;)
+    for (int i = points.length; --i >= 0;)
       eCounts[elements[i]]++; 
   }
 
@@ -485,13 +488,13 @@ class PointGroup {
 
     // look for the proper and improper axes relating pairs of atoms
 
-    for (int i = atoms.length; --i >= 0;) {
+    for (int i = points.length; --i >= 0;) {
       if (i == centerAtomIndex)
         continue;
-      Point3f a1 = atoms[i];
+      Point3f a1 = points[i];
       int e1 = elements[i];
-      for (int j = atoms.length; --j > i;) {
-        Point3f a2 = atoms[j];
+      for (int j = points.length; --j > i;) {
+        Point3f a2 = points[j];
         if (elements[j] != e1)
           continue;
 
@@ -572,22 +575,22 @@ class PointGroup {
       }
     }
 
-    out: for (int i = 0; i < atoms.length - 2; i++)
+    out: for (int i = 0; i < points.length - 2; i++)
       if (elements[i] == iMin)
-        for (int j = i + 1; j < atoms.length - 1; j++)
+        for (int j = i + 1; j < points.length - 1; j++)
           if (elements[j] == iMin)
-            for (int k = j + 1; k < atoms.length; k++)
+            for (int k = j + 1; k < points.length; k++)
               if (elements[k] == iMin) {
-                v1.sub(atoms[i], atoms[j]);
-                v2.sub(atoms[i], atoms[k]);
+                v1.sub(points[i], points[j]);
+                v2.sub(points[i], points[k]);
                 v1.normalize();
                 v2.normalize();
                 v3.cross(v1, v2);
                 getAllAxes(v3);
 //                checkAxisOrder(3, v3, center);
-                v1.set(atoms[i]);
-                v1.add(atoms[j]);
-                v1.add(atoms[k]);
+                v1.set(points[i]);
+                v1.add(points[j]);
+                v1.add(points[k]);
                 v1.normalize();
                 if (!isParallel(v1, v3))
                   getAllAxes(v1);
@@ -598,13 +601,13 @@ class PointGroup {
     //check for C2 by looking for axes along element-based geometric centers
 
     vs = new Vector3f[maxElement];
-    for (int i = atoms.length; --i >= 0;) {
+    for (int i = points.length; --i >= 0;) {
       int e1 = elements[i];
       if (vs[e1] == null)
         vs[e1] = new Vector3f();
       else if (haveInversionCenter)
         continue;
-      vs[e1].add(atoms[i]);
+      vs[e1].add(points[i]);
     }
     if (!haveInversionCenter)
       for (int i = 0; i < maxElement; i++)
@@ -744,12 +747,12 @@ class PointGroup {
     Vector3f v3 = new Vector3f();
     int nPlanes = 0;
     boolean haveAxes = (getHighestOrder() > 1);
-    for (int i = atoms.length; --i >= 0;) {
+    for (int i = points.length; --i >= 0;) {
       if (i == centerAtomIndex)
         continue;
-      Point3f a1 = atoms[i];
+      Point3f a1 = points[i];
       int e1 = elements[i];
-      for (int j = atoms.length; --j > i;) {
+      for (int j = points.length; --j > i;) {
         if (haveAxes && elements[j] != e1)
           continue;
 
@@ -758,7 +761,7 @@ class PointGroup {
         // first, check planes through two atoms and the center
         // or perpendicular to a linear A -- 0 -- B set
 
-        Point3f a2 = atoms[j];
+        Point3f a2 = points[j];
         pt.add(a1, a2);
         pt.scale(0.5f);
         v1.sub(a1, center);

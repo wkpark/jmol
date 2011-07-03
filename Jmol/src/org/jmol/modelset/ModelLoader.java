@@ -152,7 +152,13 @@ public final class ModelLoader extends ModelSet {
     modelSetProperties = (Properties) getModelSetAuxiliaryInfo("properties");
     //isMultiFile = getModelSetAuxiliaryInfoBoolean("isMultiFile"); -- no longer necessary
     isPDB = getModelSetAuxiliaryInfoBoolean("isPDB");
-    doAddHydrogens = isPDB && viewer.getBooleanProperty("pdbAddHydrogens");
+    jmolData = (String) getModelSetAuxiliaryInfo("jmolData");
+    fileHeader = (String) getModelSetAuxiliaryInfo("fileHeader");
+    trajectorySteps = (List<Point3f[]>) getModelSetAuxiliaryInfo("trajectorySteps");
+    isTrajectory = (trajectorySteps != null);
+    if (isTrajectory)
+      info.remove("trajectorySteps");
+    doAddHydrogens = isPDB && !isTrajectory && viewer.getBooleanProperty("pdbAddHydrogens");
     if (doAddHydrogens) {
       htBondMap = new Hashtable<String, String>();
       htGroupBonds = new Hashtable<String, Boolean>();
@@ -162,12 +168,6 @@ public final class ModelLoader extends ModelSet {
       vNorm = new Vector3f();
       plane = new Point4f();
     }
-    jmolData = (String) getModelSetAuxiliaryInfo("jmolData");
-    fileHeader = (String) getModelSetAuxiliaryInfo("fileHeader");
-    trajectorySteps = (List<Point3f[]>) getModelSetAuxiliaryInfo("trajectorySteps");
-    isTrajectory = (trajectorySteps != null);
-    if (isTrajectory)
-      info.remove("trajectorySteps");
     noAutoBond = getModelSetAuxiliaryInfoBoolean("noAutoBond");
     is2D = getModelSetAuxiliaryInfoBoolean("is2D");
     doMinimize = is2D && getModelSetAuxiliaryInfoBoolean("doMinimize");

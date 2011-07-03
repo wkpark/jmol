@@ -15103,7 +15103,7 @@ public class ScriptEvaluator {
     //         ID aaaa (if present, must be FIRST parameter, before {setA}
     //         {setB} 
     //         DENSITY x.x
-    //         DISTANCE x.x
+    //         WITHIN x.x
     //         PARAMETERS [....] 
     //         FULL|PLANAR|CONNECT|NCI (FULL not implemented yet)
     //         HYDROPHOBIC|HBOND|MISCELLANEOUS
@@ -15207,9 +15207,10 @@ public class ScriptEvaluator {
               .valueOf(resolution));
         }
         break;
+      case Token.within:
       case Token.distance:
         distance = floatParameter(++i);
-        sbCommand.append(" distance ").append(distance);
+        sbCommand.append(" within ").append(distance);
         break;
       case Token.integer:
         rd = encodeRadiusParameter(i, false);

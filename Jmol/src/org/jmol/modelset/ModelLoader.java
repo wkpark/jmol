@@ -70,15 +70,16 @@ public final class ModelLoader {
   //  System.out.println("ModelLoader " + this + " finalized");
   //}
   
+  private Viewer viewer;
   private ModelSet modelSet;
   private ModelSet mergeModelSet;
-  private boolean merging;
-  private String jmolData; // from a PDB remark "Jmol PDB-encoded data"
 
-  private final int[] specialAtomIndexes = new int[JmolConstants.ATOMID_MAX];
+  private boolean merging;
+
+  private String jmolData; // from a PDB remark "Jmol PDB-encoded data"
   private String[] group3Lists;
   private int[][] group3Counts;
-  private Viewer viewer;
+  private final int[] specialAtomIndexes = new int[JmolConstants.ATOMID_MAX];
   
   public ModelLoader(Viewer viewer, String name) {
     this.viewer = viewer;
@@ -1118,22 +1119,13 @@ public final class ModelLoader {
       distinguishAndPropagateGroup(i, chainOf[i], group3Of[i], seqcodes[i],
           firstAtomIndexes[i], (i == modelSet.groupCount - 1 ? modelSet.atomCount
               : firstAtomIndexes[i + 1]));
-      chainOf[i] = null;
-      group3Of[i] = null;
     }
-    chainOf = null;
-    group3Of = null;
-
     if (group3Lists != null) {
       if (modelSet.modelSetAuxiliaryInfo != null) {
         modelSet.modelSetAuxiliaryInfo.put("group3Lists", group3Lists);
         modelSet.modelSetAuxiliaryInfo.put("group3Counts", group3Counts);
       }
     }
-
-    group3Counts = null;
-    group3Lists = null;
-
   }
 
   private void distinguishAndPropagateGroup(int groupIndex, Chain chain,
@@ -1377,11 +1369,8 @@ public final class ModelLoader {
     modelSet.shapeManager.loadDefaultShapes(modelSet);
     if (modelSet.someModelsHaveAromaticBonds && viewer.getSmartAromatic())
       modelSet.assignAromaticBonds(false);
-    if (merging) {
-      if (baseModelCount == 1)
+    if (merging && baseModelCount == 1)
         modelSet.shapeManager.setShapeProperty(JmolConstants.SHAPE_MEASURES, "clearModelIndex", null, null);
-      merging = false;
-    }
   }
   
 }

@@ -326,7 +326,7 @@ public class MeshSurface {
       case Token.within:
         Point3f[] points = (Point3f[]) o[1];
         BitSet bs = (BitSet) o[2];
-        sb.append("within ").append(
+        sb.append("within ").append(distance).append(
             bs == null ? Escape.escape(points) : Escape.escape(bs));
         getIntersection(distance, null, points, null, null, andCap, false,
             (distance > 0 ? Token.distance : Token.sphere));

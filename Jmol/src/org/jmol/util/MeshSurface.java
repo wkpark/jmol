@@ -280,7 +280,7 @@ public class MeshSurface {
     int slabType = ((Integer) slabObject[0]).intValue();
     Object slabbingObject = slabObject[1];
     if (slabType == Token.none) {
-      if (bsSlabDisplay != null && polygonCount0 != 0) {
+      if (bsSlabDisplay != null && (polygonCount0 != 0 || vertexCount0 != 0)) {
         polygonCount = polygonCount0;
         vertexCount = vertexCount0;
         polygonCount0 = vertexCount0 = 0;
@@ -289,7 +289,7 @@ public class MeshSurface {
       }
       return false;
     }
-    if (polygonCount0 == 0 || vertexCount0 == 0) {
+    if (polygonCount0 == 0 && vertexCount0 == 0) {
       polygonCount0 = polygonCount;
       vertexCount0 = vertexCount;
       bsSlabDisplay = BitSetUtil.setAll(polygonCount == 0 ? vertexCount

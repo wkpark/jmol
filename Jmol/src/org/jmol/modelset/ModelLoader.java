@@ -57,10 +57,10 @@ import java.util.Properties;
  * 
  * This subclass contains only the private methods 
  * used to load a model. Methods exclusively after 
- * file loading are included only in the superclass, ModelSet,
+ * file loading are included only in ModelSet,
  * and its superclasses, ModelCollection, BondCollection, and AtomCollection.
  * 
- * Bob Hanson, 5/2007
+ * Bob Hanson, 5/2007; refactored 7/2011
  *  
  */
 

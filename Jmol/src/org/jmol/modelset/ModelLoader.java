@@ -1700,6 +1700,7 @@ public final class ModelLoader extends ModelSet {
     }
     viewer.deleteAtoms(bsAddedHydrogens, false);
     bsAddedHydrogens = null;
+    bspf = null;
   }
 
   private void finalizePdbMultipleBonds() {

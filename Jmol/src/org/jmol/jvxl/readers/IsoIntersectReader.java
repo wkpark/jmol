@@ -29,6 +29,7 @@ import java.util.BitSet;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
 class IsoIntersectReader extends AtomDataReader {
@@ -60,6 +61,8 @@ class IsoIntersectReader extends AtomDataReader {
     point = params.point;
     bsA = params.intersection[0];
     bsB = params.intersection[1];
+    //System.out.println("select " + Escape.escape(bsA));
+    //System.out.println("select " + Escape.escape(bsB));
     BitSet bsSelected = new BitSet();
     bsSelected.or(bsA);
     bsSelected.or(bsB);

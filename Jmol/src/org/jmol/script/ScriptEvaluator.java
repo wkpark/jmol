@@ -15357,6 +15357,7 @@ public class ScriptEvaluator {
       case Token.hbond:
         filter = hbond;
         defaultColor  = "purple";
+        break;
       case Token.hydrophobic:
         filter = hydro;
         defaultColor = "green";

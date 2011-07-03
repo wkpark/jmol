@@ -190,7 +190,7 @@ class PointGroup {
       Point3f[] atomVibs = new Point3f[atoms.length];
       for (int i = atoms.length; --i >= 0;) {
         atomVibs[i] = new Point3f(atoms[i]);
-        Vector3f v = ((Atom) atoms[i]).getVibrationVector();
+        Vector3f v = (atoms[i] instanceof Atom ? ((Atom) atoms[i]).getVibrationVector() : null);
         if (v != null)
           atomVibs[i].add(v);
       }

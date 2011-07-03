@@ -163,7 +163,7 @@ class PointGroup {
       return false;
     if (this.linearTolerance != pg.linearTolerance 
         || this.distanceTolerance != pg.distanceTolerance
-        || this.nAtoms != pg.nAtoms || this.bsAtoms.equals(pg.bsAtoms))
+        || this.nAtoms != pg.nAtoms || !this.bsAtoms.equals(pg.bsAtoms))
       return false;
     for (int i = 0; i < nAtoms; i++) {
       // real floating == 0 here because they must be IDENTICAL POSITIONS

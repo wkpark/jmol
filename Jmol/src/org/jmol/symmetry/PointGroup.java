@@ -358,7 +358,7 @@ class PointGroup {
     int atomCount = BitSetUtil.cardinalityOf(bsAtoms);
     if (atomCount > ATOM_COUNT_MAX)
       return false;
-    Point3f[] points = this.points = new Point3f[atomCount];
+    points = new Point3f[atomCount];
     atoms = new Atom[atomCount];
     elements = new int[atomCount];
     if (atomCount == 0) 

@@ -336,21 +336,22 @@ public final class ModelLoader {
       models[atoms[i].modelIndex].bsAtoms.set(i);
     setDefaultRendering(viewer.getSmallMoleculeMaxAtoms());
     freeze();
-    modelSet.calcBoundBoxDimensions(null, 1);
-
     if (is2D) {
       applyStereochemistry();
     }
+
+    if (doAddHydrogens) {
+      jbr.finalizeHydrogens();
+      modelSet.calcBoundBoxDimensions(null, 1);
+      modelSet.bspf = null;
+    }
+
 
     finalizeShapes();
     if (mergeModelSet != null) {
       mergeModelSet.releaseModelSet();
     }
     mergeModelSet = null;
-    if (doAddHydrogens) {
-      jbr.finalizeHydrogens();
-      modelSet.bspf = null;
-    }
   }
 
   private void setDefaultRendering(int maxAtoms) {

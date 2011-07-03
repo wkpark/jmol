@@ -55,7 +55,7 @@ import java.util.Properties;
 
 /* 
  * 
- * This subclass contains only the private methods 
+ * This class contains only the private methods 
  * used to load a model. Methods exclusively after 
  * file loading are included only in ModelSet,
  * and its superclasses, ModelCollection, BondCollection, and AtomCollection.

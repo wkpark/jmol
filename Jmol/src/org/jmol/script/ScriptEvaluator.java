@@ -15331,7 +15331,6 @@ public class ScriptEvaluator {
         bs = viewer.getAtomsWithin(distance, bsA, true);
         // {B} always within some fixed distance of A
         bsB.and(bs);
-        
       }
       if (bsIgnore == null)
         bsIgnore = BitSetUtil.setAll(viewer.getAtomCount());

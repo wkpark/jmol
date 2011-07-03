@@ -169,6 +169,8 @@ public final class Resolver implements JmolBioResolver {
     this.modelLoader = modelLoader;
     this.modelSet = modelLoader.getModelSet();
     baseBondIndex = bondCount;
+    bsAddedHydrogens = new BitSet();
+    bsAtomsForHs = new BitSet();
     htBondMap = new Hashtable<String, String>();
     htGroupBonds = new Hashtable<String, Boolean>();
     hNames = new String[3];
@@ -176,8 +178,6 @@ public final class Resolver implements JmolBioResolver {
     vAC = new Vector3f();
     vNorm = new Vector3f();
     plane = new Point4f();
-    bsAddedHydrogens = new BitSet();
-    bsAtomsForHs = new BitSet();
   }
   
   public void addImplicitHydrogenAtoms(JmolAdapter adapter, int iGroup) {
@@ -323,99 +323,107 @@ public final class Resolver implements JmolBioResolver {
   public void finalizeHydrogens() {
     modelSet.viewer.getLigandModel(null);
     finalizePdbMultipleBonds();
-    if (bsAddedHydrogens.nextSetBit(0) <= 0)
-      return;
-    finalizePdbCharges();
-    int[] nTotal = new int[1];
-    Point3f[][] pts = modelSet.calculateHydrogens(bsAtomsForHs, nTotal, true, false,
-        null);
-    Group groupLast = null;
-    int ipt = 0;
-    for (int i = 0; i < pts.length; i++) {
-      if (pts[i] == null)
-        continue;
-      Atom atom = modelSet.atoms[i];
-      Group g = atom.getGroup();
-      if (g != groupLast) {
-        groupLast = g;
-        ipt = g.lastAtomIndex;
-        while (bsAddedHydrogens.get(ipt))
-          ipt--;
-      }
-      String gName = atom.getGroup3(false);
-      String aName = atom.getAtomName();
-      String hName = htBondMap.get(gName + "." + aName);
-      if (hName == null)
-        continue;
-      boolean isChiral = hName.contains("@");
-      boolean isMethyl = (hName.endsWith("?") || hName.indexOf("|") >= 0);
-      int n = pts[i].length;
-      if (n == 3 && !isMethyl && hName.equals("H@H2")) {
-        hName = "H|H2|H3";
-        isMethyl = true;
-        isChiral = false;
-      }
-      if (isChiral && n == 3 || isMethyl != (n == 3)) {
-        Logger.info("Error adding H atoms to " + gName + g.getResno() + ": "
-            + pts[i].length + " atoms should not be added to " + aName);
-        continue;
-      }
-      int pt = hName.indexOf("@");
-      switch (pts[i].length) {
-      case 1:
-        if (pt > 0)
-          hName = hName.substring(0, pt);
-        setHydrogen(i, ++ipt, hName, pts[i][0]);
-        break;
-      case 2:
-        String hName1,
-        hName2;
-        float d = -1;
-        Bond[] bonds = atom.getBonds();
-        if (bonds != null)
-          switch (bonds.length) {
-          case 2:
-            // could be nitrogen?
-            Atom atom1 = bonds[0].getOtherAtom(atom);
-            Atom atom2 = bonds[1].getOtherAtom(atom);
-            int factor = atom1.getAtomName().compareTo(atom2.getAtomName());
-            Measure.getPlaneThroughPoints(atom1, atom, atom2, vNorm, vAB, vAC,
-                plane);
-            d = Measure.distanceToPlane(plane, pts[i][0]) * factor;
-            break;
+    if (bsAddedHydrogens.nextSetBit(0) >= 0) {
+      finalizePdbCharges();
+      int[] nTotal = new int[1];
+      Point3f[][] pts = modelSet.calculateHydrogens(bsAtomsForHs, nTotal, true,
+          false, null);
+      Group groupLast = null;
+      int ipt = 0;
+      for (int i = 0; i < pts.length; i++) {
+        if (pts[i] == null)
+          continue;
+        Atom atom = modelSet.atoms[i];
+        Group g = atom.getGroup();
+        if (g != groupLast) {
+          groupLast = g;
+          ipt = g.lastAtomIndex;
+          while (bsAddedHydrogens.get(ipt))
+            ipt--;
+        }
+        String gName = atom.getGroup3(false);
+        String aName = atom.getAtomName();
+        String hName = htBondMap.get(gName + "." + aName);
+        if (hName == null)
+          continue;
+        boolean isChiral = hName.contains("@");
+        boolean isMethyl = (hName.endsWith("?") || hName.indexOf("|") >= 0);
+        int n = pts[i].length;
+        if (n == 3 && !isMethyl && hName.equals("H@H2")) {
+          hName = "H|H2|H3";
+          isMethyl = true;
+          isChiral = false;
+        }
+        if (isChiral && n == 3 || isMethyl != (n == 3)) {
+          Logger.info("Error adding H atoms to " + gName + g.getResno() + ": "
+              + pts[i].length + " atoms should not be added to " + aName);
+          continue;
+        }
+        int pt = hName.indexOf("@");
+        switch (pts[i].length) {
+        case 1:
+          if (pt > 0)
+            hName = hName.substring(0, pt);
+          setHydrogen(i, ++ipt, hName, pts[i][0]);
+          break;
+        case 2:
+          String hName1,
+          hName2;
+          float d = -1;
+          Bond[] bonds = atom.getBonds();
+          if (bonds != null)
+            switch (bonds.length) {
+            case 2:
+              // could be nitrogen?
+              Atom atom1 = bonds[0].getOtherAtom(atom);
+              Atom atom2 = bonds[1].getOtherAtom(atom);
+              int factor = atom1.getAtomName().compareTo(atom2.getAtomName());
+              Measure.getPlaneThroughPoints(atom1, atom, atom2, vNorm, vAB,
+                  vAC, plane);
+              d = Measure.distanceToPlane(plane, pts[i][0]) * factor;
+              break;
+            }
+          if (pt < 0) {
+            Logger.info("Error adding H atoms to " + gName + g.getResno()
+                + ": expected to only need 1 H but needed 2");
+            hName1 = hName2 = "H";
+          } else if (d < 0) {
+            hName2 = hName.substring(0, pt);
+            hName1 = hName.substring(pt + 1);
+          } else {
+            hName1 = hName.substring(0, pt);
+            hName2 = hName.substring(pt + 1);
           }
-        if (pt < 0) {
-          Logger.info("Error adding H atoms to " + gName + g.getResno()
-              + ": expected to only need 1 H but needed 2");
-          hName1 = hName2 = "H";
-        } else if (d < 0) {
-          hName2 = hName.substring(0, pt);
-          hName1 = hName.substring(pt + 1);
-        } else {
-          hName1 = hName.substring(0, pt);
-          hName2 = hName.substring(pt + 1);
+          setHydrogen(i, ++ipt, hName1, pts[i][0]);
+          setHydrogen(i, ++ipt, hName2, pts[i][1]);
+          break;
+        case 3:
+          int pt1 = hName.indexOf('|');
+          if (pt1 >= 0) {
+            int pt2 = hName.lastIndexOf('|');
+            hNames[0] = hName.substring(0, pt1);
+            hNames[1] = hName.substring(pt1 + 1, pt2);
+            hNames[2] = hName.substring(pt2 + 1);
+          } else {
+            hNames[0] = hName.replace('?', '1');
+            hNames[1] = hName.replace('?', '2');
+            hNames[2] = hName.replace('?', '3');
+          }
+          for (int j = 0; j < 3; j++)
+            setHydrogen(i, ++ipt, hNames[j], pts[i][j]);
+          break;
         }
-        setHydrogen(i, ++ipt, hName1, pts[i][0]);
-        setHydrogen(i, ++ipt, hName2, pts[i][1]);
-        break;
-      case 3:
-        int pt1 = hName.indexOf('|');
-        if (pt1 >= 0) {
-          int pt2 = hName.lastIndexOf('|');
-          hNames[0] = hName.substring(0, pt1);
-          hNames[1] = hName.substring(pt1 + 1, pt2);
-          hNames[2] = hName.substring(pt2 + 1);
-        } else {
-          hNames[0] = hName.replace('?', '1');
-          hNames[1] = hName.replace('?', '2');
-          hNames[2] = hName.replace('?', '3');
-        }
-        for (int j = 0; j < 3; j++)
-          setHydrogen(i, ++ipt, hNames[j], pts[i][j]);
-        break;
       }
+      modelSet.viewer.deleteAtoms(bsAddedHydrogens, false);
     }
-    modelSet.viewer.deleteAtoms(bsAddedHydrogens, false);
+    htBondMap = null;
+    htGroupBonds = null;
+    bsAddedHydrogens = null;
+    bsAtomsForHs = null;
+    vAB = vAC = vNorm = null;
+    plane = null;
+    modelSet = null;
+    modelLoader = null;
   }
 
   private void finalizePdbCharges() {

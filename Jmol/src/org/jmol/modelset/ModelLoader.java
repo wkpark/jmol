@@ -228,6 +228,23 @@ public final class ModelLoader {
   private boolean noAutoBond;
   private boolean is2D;
   
+  /**
+   * called from org.jmol.modelsetbio.resolver when adding hydrogens.
+   * 
+   * @param iAtom
+   */
+  public void undeleteAtom(int iAtom) {
+    modelSet.atoms[iAtom].valence = 0; 
+  }
+
+  public ModelSet getModelSet() {
+    return modelSet;
+  }
+
+  public int getAtomCount() {
+    return modelSet.atomCount;
+  }
+
   private void createModelSet(JmolAdapter adapter, Object atomSetCollection,
                               BitSet bsNew) {
     int nAtoms = (adapter == null ? 0 : adapter.getAtomCount(atomSetCollection));
@@ -1367,21 +1384,4 @@ public final class ModelLoader {
     }
   }
   
-  /**
-   * called from org.jmol.modelsetbio.resolver when adding hydrogens.
-   * 
-   * @param iAtom
-   */
-  public void undeleteAtom(int iAtom) {
-    modelSet.atoms[iAtom].valence = 0; 
-  }
-
-  public ModelSet getModelSet() {
-    return modelSet;
-  }
-
-  public int getAtomCount() {
-    return modelSet.atomCount;
-  }
-
 }

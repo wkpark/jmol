@@ -29,7 +29,6 @@ import java.util.BitSet;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
-import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
 class IsoIntersectReader extends AtomDataReader {

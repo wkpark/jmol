@@ -761,9 +761,7 @@ import javax.vecmath.Vector3f;
           fValue = 0;
         mar = (int) (fValue * 2000);
       } else {
-        rd = new RadiusData();
-        rd.values = values;
-        rd.value = Integer.MAX_VALUE;
+        rd = new RadiusData(values);
       }
       shapeManager
           .setShapeSize(JmolConstants.shapeTokenIndex(tok), mar, rd, bs);
@@ -1104,7 +1102,7 @@ import javax.vecmath.Vector3f;
       }
       pt.set(x, y, z);
       BitSet bs = new BitSet(atomCount);
-      getAtomsWithin(tolerance, pt, bs, -1);
+      getAtomsWithin(tolerance, pt, bs, -1, null);
       bs.and(bsSelected);
       if (loadAllData) {
         n = BitSetUtil.cardinalityOf(bs);

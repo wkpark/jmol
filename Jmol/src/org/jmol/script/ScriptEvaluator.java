@@ -8868,12 +8868,15 @@ public class ScriptEvaluator {
     boolean isAllConnected = false;
     boolean isNotConnected = false;
     boolean isRange = true;
+    RadiusData rd = null;
+    Boolean intramolecular = null;
     int tokAction = Token.opToggle;
     String strFormat = null;
     List<Object> points = new ArrayList<Object>();
     BitSet bs = new BitSet();
     Object value = null;
     TickInfo tickInfo = null;
+    int nBitSets = 0;
     for (int i = 1; i < statementLength; ++i) {
       switch (getToken(i).tok) {
       case Token.identifier:
@@ -8896,6 +8899,8 @@ public class ScriptEvaluator {
           error(ERROR_invalidArgument);
         break;
       case Token.decimal:
+        if (rd != null)
+          error(ERROR_invalidArgument);
         isAll = true;
         isRange = true;
         ptFloat = (ptFloat + 1) % 2;
@@ -8941,20 +8946,37 @@ public class ScriptEvaluator {
         isRange = true; // unnecessary
         atomIndex = -1;
         break;
-      case Token.string:
-        // measures "%a1 %a2 %v %u"
-        strFormat = stringParameter(i);
+      case Token.intramolecular:
+      case Token.intermolecular:
+        intramolecular = Boolean.valueOf(theTok == Token.intramolecular);
+        isAll = true;
+        isNotConnected = true;
         break;
-      case Token.ticks:
-        tickInfo = checkTicks(i, false, true, true);
+      case Token.vanderwaals:
+        if (ptFloat >= 0)
+          error(ERROR_invalidArgument);
+        rd = encodeRadiusParameter(i, false);
+        rd.values = rangeMinMax;
         i = iToken;
-        tokAction = Token.define;
+        isNotConnected = true;
+        isAll = true;
+        intramolecular = Boolean.valueOf(false);
+        if(nBitSets == 1) {
+          nBitSets++;
+          nAtoms++;
+          BitSet bs2 = BitSetUtil.copy(bs);
+          BitSetUtil.invertInPlace(bs2, viewer.getAtomCount());
+          bs2.and(viewer.getAtomsWithin(5, bs, false, null));
+          points.add(bs2);
+        }
         break;
       case Token.bitset:
       case Token.expressionBegin:
       case Token.leftbrace:
       case Token.point3f:
       case Token.dollarsign:
+        if (theTok == Token.bitset || theTok == Token.expressionBegin)
+          nBitSets++;
         if (atomIndex >= 0)
           error(ERROR_invalidArgument);
         expressionResult = Boolean.FALSE;
@@ -8972,28 +8994,42 @@ public class ScriptEvaluator {
         }
         if ((nAtoms = ++expressionCount) > 4)
           error(ERROR_badArgumentCount);
-        points.add(value);
         i = iToken;
+        points.add(value);
+        break;
+      case Token.string:
+        // measures "%a1 %a2 %v %u"
+        strFormat = stringParameter(i);
+        break;
+      case Token.ticks:
+        tickInfo = checkTicks(i, false, true, true);
+        i = iToken;
+        tokAction = Token.define;
         break;
       }
     }
-    if (nAtoms < 2 && (tickInfo == null || nAtoms == 1))
+    if (rd != null && (ptFloat >= 0 || nAtoms != 2) 
+        || nAtoms < 2 && (tickInfo == null || nAtoms == 1))
       error(ERROR_badArgumentCount);
     if (strFormat != null && strFormat.indexOf(nAtoms + ":") != 0)
       strFormat = nAtoms + ":" + strFormat;
-    if (isRange && rangeMinMax[1] < rangeMinMax[0]) {
-      rangeMinMax[1] = rangeMinMax[0];
-      rangeMinMax[0] = (rangeMinMax[1] == Float.MAX_VALUE ? Float.MAX_VALUE
-          : -200F);
-    }
+    if (isRange) {
+      if (rangeMinMax[1] < rangeMinMax[0]) {
+        rangeMinMax[1] = rangeMinMax[0];
+        rangeMinMax[0] = (rangeMinMax[1] == Float.MAX_VALUE ? Float.MAX_VALUE
+            : -200);
+      }
+    } 
     if (isSyntaxCheck)
       return;
     if (value != null || tickInfo != null) {
+      if (rd == null)
+        rd = new RadiusData(rangeMinMax);
       if (value == null)
         tickInfo.id = "default";
       setShapeProperty(JmolConstants.SHAPE_MEASURES, "measure",
-          new MeasurementData(points, tokAction, rangeMinMax, strFormat, null,
-              tickInfo, isAllConnected, isNotConnected, isAll));
+          new MeasurementData(points, tokAction, rd, strFormat, null,
+              tickInfo, isAllConnected, isNotConnected, intramolecular, isAll));
       return;
     }
     switch (tokAction) {
@@ -15324,12 +15360,12 @@ public class ScriptEvaluator {
           bsB = BitSetUtil.setAll(viewer.getAtomCount());
           bsB.andNot(bsA);
         }
-        bs = viewer.getAtomsWithin(distance, bsA, false);
-        // {B} always within some fixed distance of A
+        bs = viewer.getAtomsWithin(distance, bsA, false, null);
+        // {B} always within some fixed distance of A -- intramolecular
         bsB.and(bs);
       } else {
-        bs = viewer.getAtomsWithin(distance, bsA, true);
-        // {B} always within some fixed distance of A
+        bs = viewer.getAtomsWithin(distance, bsA, true, null);
+        // {B} always within some fixed distance of A -- intermolecular
         bsB.and(bs);
       }
       if (bsIgnore == null)
@@ -16150,10 +16186,10 @@ public class ScriptEvaluator {
         } else if (tokAt(iToken + 1) == Token.expressionBegin
             || tokAt(iToken + 1) == Token.bitset) {
           bs = atomExpression(++iToken);
-          bs.and(viewer.getAtomsWithin(5.0f, bsSelect, false));
+          bs.and(viewer.getAtomsWithin(5.0f, bsSelect, false, null));
         } else {
           // default is "within(5.0, selected) and not within(molecule,selected)"
-          bs = viewer.getAtomsWithin(5.0f, bsSelect, true);
+          bs = viewer.getAtomsWithin(5.0f, bsSelect, true, null);
           bs.andNot(viewer.getAtomBits(Token.molecule, bsSelect));
         }
         bs.andNot(bsSelect);

@@ -123,7 +123,7 @@ public class RadiusData {
   public final static int TYPE_FACTOR = 2;
   public static final int TYPE_SCREEN = 3;
   //private static final String[] typeNames = new String[] { "=", "+", "*", "." };
-  public int type;
+  public int type = TYPE_ABSOLUTE;
   public int vdwType = JmolConstants.VDW_AUTO;
   public float value = Float.NaN;
   public float valueExtended = 0;
@@ -136,6 +136,11 @@ public class RadiusData {
     this.type = type;
     this.value = value;
     this.vdwType = vdwType;
+  }
+
+  public RadiusData(float[] values) {
+    this.values = values;
+    value = Integer.MAX_VALUE;
   }
 
   @Override

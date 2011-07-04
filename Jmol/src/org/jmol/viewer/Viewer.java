@@ -2571,7 +2571,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void setIteratorForAtom(AtomIndexIterator iterator, int atomIndex,
                                  float distance) {
-    modelSet.setIteratorForAtom(iterator, -1, atomIndex, distance);
+    modelSet.setIteratorForAtom(iterator, -1, atomIndex, distance, null);
   }
 
   public void setIteratorForPoint(AtomIndexIterator iterator, int modelIndex, Point3f pt,
@@ -3165,7 +3165,7 @@ private void zap(String msg) {
 
   public BitSet getAtomsWithin(float distance, Point3f coord) {
     BitSet bs = new BitSet();
-    modelSet.getAtomsWithin(distance, coord, bs, -1);
+    modelSet.getAtomsWithin(distance, coord, bs, -1, null);
     return bs;
   }
 
@@ -3178,8 +3178,8 @@ private void zap(String msg) {
   }
 
   public BitSet getAtomsWithin(float distance, BitSet bs,
-                               boolean withinAllModels) {
-    return modelSet.getAtomsWithin(distance, bs, withinAllModels);
+                               boolean withinAllModels, RadiusData rd) {
+    return modelSet.getAtomsWithin(distance, bs, withinAllModels, rd);
   }
 
   public BitSet getAtomsConnected(float min, float max, int intType, BitSet bs) {
@@ -9273,7 +9273,7 @@ private void zap(String msg) {
     // are in the visible frame set and are within 5 angstroms
     // and are not already selected
     
-    BitSet bsNearby = getAtomsWithin(rangeFixed, bsSelected, true);
+    BitSet bsNearby = getAtomsWithin(rangeFixed, bsSelected, true, null);
     bsNearby.andNot(bsSelected);
     if (haveFixed) {
       bsMotionFixed.and(bsNearby);

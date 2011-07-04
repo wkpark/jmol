@@ -26,6 +26,7 @@ package org.jmol.modelset;
 import org.jmol.util.Escape;
 import org.jmol.util.Point3fi;
 import org.jmol.util.Measure;
+import org.jmol.atomdata.RadiusData;
 import org.jmol.modelset.TickInfo;
 
 import org.jmol.viewer.JmolConstants;
@@ -214,6 +215,7 @@ public class Measurement {
     count = indices[0];
     this.pts = (points == null ? new Point3fi[4] : points);
     this.modelSet = modelSet;
+    viewer = modelSet.viewer;
     this.tickInfo = tickInfo;
   }
 
@@ -326,7 +328,8 @@ public class Measurement {
 
   private String getLabelString() {
     String s = countPlusIndices[0]+":" + "";
-    String label = (strFormat != null && strFormat.indexOf(s)==0? strFormat : viewer
+    String label = (strFormat != null && strFormat.length() > 2 
+        && strFormat.indexOf(s)==0? strFormat : viewer
         .getDefaultMeasurementLabel(countPlusIndices[0]));
     if (label.indexOf(s)==0)
       label = label.substring(2);
@@ -471,6 +474,33 @@ public class Measurement {
     for (int i = 1; i <= count; i++)
       sb.append(" \t").append(getLabel(i, false, false));
     return sb.toString();
+  }
+
+  public boolean isInRange(RadiusData radiusData, float value) {
+    if (radiusData.type == RadiusData.TYPE_FACTOR) {
+      Atom atom1 = (Atom) getAtom(1);
+      Atom atom2 = (Atom) getAtom(2);
+      float d = (atom1.getVanderwaalsRadiusFloat(viewer, radiusData.vdwType)
+       + atom2.getVanderwaalsRadiusFloat(viewer, radiusData.vdwType)) * radiusData.value;
+      return (value <= d);      
+    }
+    return (radiusData.values[0] == Float.MAX_VALUE 
+        || value >= radiusData.values[0] && value <= radiusData.values[1]);
+  }
+
+  public boolean isIntramolecular(Atom[] atoms, int count) {
+    int molecule = -1;
+    for (int i = 1; i <= count; i++) {
+      int atomIndex = getAtomIndex(i);
+      if (atomIndex < 0)
+        continue;
+      int m = atoms[atomIndex].getMoleculeNumber(false);
+      if (molecule < 0)
+        molecule = m;
+      else if (m != molecule)
+        return false;
+    }
+    return true;
   }
 
 

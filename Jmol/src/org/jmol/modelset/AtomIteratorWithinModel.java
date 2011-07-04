@@ -30,8 +30,10 @@ import java.util.BitSet;
 import javax.vecmath.Point3f;
 
 import org.jmol.api.AtomIndexIterator;
+import org.jmol.atomdata.RadiusData;
 import org.jmol.bspt.Bspf;
 import org.jmol.bspt.CubeIterator;
+import org.jmol.viewer.Viewer;
 
 public class AtomIteratorWithinModel implements AtomIndexIterator {
 
@@ -74,7 +76,14 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
     this.threadSafe = threadSafe;
   }
 
-  public void set(int modelIndex, int firstModelAtom, int atomIndex, Point3f center, float distance) {
+  private RadiusData radiusData;
+  private float vdw1;
+  private boolean isVdw;
+  private Atom[] atoms;
+  private Viewer viewer;
+  
+  
+  public void set(ModelCollection modelSet, int modelIndex, int firstModelAtom, int atomIndex, Point3f center, float distance, RadiusData rd) {
     if (threadSafe)
       modelIndex = -1 - modelIndex; // no caching
     if (modelIndex != this.modelIndex || bsptIter == null) {
@@ -86,6 +95,14 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
     if (distance == Integer.MIN_VALUE) // distance and center will be added later
       return;
     this.atomIndex = (distance < 0 ? -1 : atomIndex);
+    isVdw = (rd != null);
+    if (isVdw) {
+      radiusData = rd;
+      atoms = modelSet.atoms;
+      viewer = modelSet.viewer;
+      distance = 5f * rd.value;
+      vdw1 = atoms[atomIndex].getVanderwaalsRadiusFloat(viewer, rd.vdwType);
+    }
     checkGreater = (isGreaterOnly && atomIndex != Integer.MAX_VALUE);
     set(center, distance);
   }
@@ -135,9 +152,19 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
   public void addAtoms(BitSet bsResult) {
     int iAtom;
     while (hasNext())
-      if ((iAtom = next()) >= 0
-          && foundDistance2() <= distanceSquared)
+      if ((iAtom = next()) >= 0) {
+        float d;
+        if (isVdw) {
+          d = atoms[iAtom].getVanderwaalsRadiusFloat(viewer, radiusData.vdwType) + vdw1;
+          d *= radiusData.value;
+          d *= d;
+        } else {
+          d = distanceSquared;
+        }
+              
+      if (foundDistance2() <= d)
         bsResult.set(iAtom);    
+      }
   }
 
   public void release() {

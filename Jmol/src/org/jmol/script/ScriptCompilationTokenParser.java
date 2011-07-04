@@ -648,6 +648,7 @@ abstract class ScriptCompilationTokenParser {
     case Token.site:
     case Token.structure:
     case Token.string:
+    case Token.vanderwaals:
       key = (String) theValue;
       break;
     case Token.identifier:

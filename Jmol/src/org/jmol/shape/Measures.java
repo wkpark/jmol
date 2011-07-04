@@ -25,6 +25,7 @@
 package org.jmol.shape;
 
 import org.jmol.api.JmolMeasurementClient;
+import org.jmol.atomdata.RadiusData;
 import org.jmol.g3d.*;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Measurement;
@@ -51,7 +52,8 @@ public class Measures extends Shape implements JmolMeasurementClient {
   private String strFormat;
   private boolean mustBeConnected = false;
   private boolean mustNotBeConnected = false;
-  private float[] rangeMinMax = {Float.MAX_VALUE, Float.MAX_VALUE};
+  private RadiusData radiusData;
+  private Boolean intramolecular;
 
   private Atom[] atoms;
 
@@ -173,10 +175,10 @@ public class Measures extends Shape implements JmolMeasurementClient {
         defaultTickInfo = md.tickInfo;
         return;
       }
-      rangeMinMax[0] = md.rangeMinMax[0];
-      rangeMinMax[1] = md.rangeMinMax[1];
+      radiusData = md.radiusData;
       mustBeConnected = md.mustBeConnected;
       mustNotBeConnected = md.mustNotBeConnected;
+      intramolecular = md.intramolecular;
       strFormat = md.strFormat;
       if (md.isAll) {
         if (tickInfo != null)
@@ -353,7 +355,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
   }
   
   private void toggle(Measurement m) {
-    rangeMinMax[0] = Float.MAX_VALUE;
+    radiusData = null;
     //toggling one that is hidden should be interpreted as DEFINE
     int i = find(m);
     Measurement mt;
@@ -365,7 +367,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
   }
 
   private void toggleOn(int[] indices) {
-    rangeMinMax[0] = Float.MAX_VALUE;
+    radiusData = null;
     //toggling one that is hidden should be interpreted as DEFINE
     bsSelected = new BitSet();
     define(Integer.MIN_VALUE, new Measurement(modelSet, indices, null, defaultTickInfo), false, true, true);
@@ -374,7 +376,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
   }
 
   private void delete(Measurement m) {
-    rangeMinMax[0] = Float.MAX_VALUE;
+    radiusData = null;
     //toggling one that is hidden should be interpreted as DEFINE
     int i = find(m);
     if (i >= 0)
@@ -421,12 +423,12 @@ public class Measures extends Shape implements JmolMeasurementClient {
     }
     MeasurementData md = new MeasurementData(points, 
                    tokAction,
-                   rangeMinMax, 
+                   radiusData, 
                    strFormat, null,
                    tickInfo,
                    mustBeConnected,
                    mustNotBeConnected,
-                   true);
+                   intramolecular, true);
     define(md, (isDelete ? Token.delete 
         : Token.define
         ));
@@ -469,8 +471,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
 
   private void defineMeasurement(int i, Measurement m, boolean doSelect) {
     float value = m.getMeasurement();
-    if (rangeMinMax[0] != Float.MAX_VALUE
-        && (value < rangeMinMax[0] || value > rangeMinMax[1]))
+    if (radiusData != null && !m.isInRange(radiusData, value))
       return;
     if (i == Integer.MIN_VALUE)
       i = find(m);

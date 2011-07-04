@@ -47,6 +47,7 @@ import org.jmol.api.JmolEdge;
 import org.jmol.api.JmolMolecule;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.AtomData;
+import org.jmol.atomdata.RadiusData;
 import org.jmol.bspt.Bspf;
 import org.jmol.bspt.CubeIterator;
 import org.jmol.util.ArrayUtil;
@@ -1860,16 +1861,16 @@ abstract public class ModelCollection extends BondCollection {
   public void setIteratorForPoint(AtomIndexIterator iterator, int modelIndex,
                                   Point3f pt, float distance) {
     initializeBspt(modelIndex);
-    iterator.set(modelIndex, models[modelIndex].firstAtomIndex, Integer.MAX_VALUE, pt, distance);    
+    iterator.set(this, modelIndex, models[modelIndex].firstAtomIndex, Integer.MAX_VALUE, pt, distance, null);    
   }
 
   public void setIteratorForAtom(AtomIndexIterator iterator, int modelIndex,
-                                   int atomIndex, float distance) {
+                                   int atomIndex, float distance, RadiusData rd) {
     if (modelIndex < 0)
       modelIndex = atoms[atomIndex].modelIndex;
     modelIndex = models[modelIndex].trajectoryBaseIndex;    
     initializeBspt(modelIndex);
-    iterator.set(modelIndex, models[modelIndex].firstAtomIndex, atomIndex, atoms[atomIndex], distance);    
+    iterator.set(this, modelIndex, models[modelIndex].firstAtomIndex, atomIndex, atoms[atomIndex], distance, rd);
   }
 
   public AtomIndexIterator getSelectedAtomIterator(BitSet bsSelected,
@@ -2007,7 +2008,7 @@ abstract public class ModelCollection extends BondCollection {
     case Token.boundbox:
       BoxInfo boxInfo = getBoxInfo((BitSet) specInfo, 1);
       bs = getAtomsWithin(boxInfo.getBoundBoxCornerVector().length() + 0.0001f,
-          boxInfo.getBoundBoxCenter(), null, -1);
+          boxInfo.getBoundBoxCenter(), null, -1, null);
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
         if (!boxInfo.isWithin(atoms[i]))
           bs.clear(i);
@@ -2120,10 +2121,11 @@ abstract public class ModelCollection extends BondCollection {
    * @param distance
    * @param bs
    * @param withinAllModels
+   * @param rd 
    * @return the set of atoms
    */
   public BitSet getAtomsWithin(float distance, BitSet bs,
-                               boolean withinAllModels) {
+                               boolean withinAllModels, RadiusData rd) {
     BitSet bsResult = new BitSet();
     BitSet bsCheck = getIterativeModels(false);
     AtomIndexIterator iter = getSelectedAtomIterator(null, false, false, false);
@@ -2134,20 +2136,20 @@ abstract public class ModelCollection extends BondCollection {
             continue;
           if (distance < 0) {
             getAtomsWithin(distance, atoms[i].getFractionalUnitCoord(true),
-                bsResult, -1);
+                bsResult, -1, null);
             continue;
           }
-          setIteratorForAtom(iter, iModel, i, distance);
+          setIteratorForAtom(iter, iModel, i, distance, rd);
           iter.addAtoms(bsResult);
         }
     } else {
       bsResult.or(bs);
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
         if (distance < 0) {
-            getAtomsWithin(distance, atoms[i], bsResult, atoms[i].modelIndex);
+            getAtomsWithin(distance, atoms[i], bsResult, atoms[i].modelIndex, null);
             continue;
           }
-          setIteratorForAtom(iter, -1, i, distance);
+          setIteratorForAtom(iter, -1, i, distance, rd);
           iter.addAtoms(bsResult);
         }
     }
@@ -2169,7 +2171,7 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public BitSet getAtomsWithin(float distance, Point3f coord, BitSet bsResult,
-                               int modelIndex) {
+                               int modelIndex, RadiusData rd) {
 
      if (bsResult == null)
       bsResult = new BitSet();
@@ -2194,7 +2196,7 @@ abstract public class ModelCollection extends BondCollection {
     for (int iModel = modelCount; --iModel >= 0;) {
       if (!bsCheck.get(iModel))
         continue;
-      setIteratorForAtom(iter, -1, models[iModel].firstAtomIndex, -1);
+      setIteratorForAtom(iter, -1, models[iModel].firstAtomIndex, -1, rd);
       iter.set(coord, distance);
       iter.addAtoms(bsResult);
     }
@@ -2477,7 +2479,7 @@ abstract public class ModelCollection extends BondCollection {
         continue;
       boolean isFirstExcluded = (bsExclude != null && bsExclude.get(i));
       float searchRadius = myBondingRadius + maxBondingRadius + bondTolerance;
-      setIteratorForAtom(iter, -1, i, searchRadius);
+      setIteratorForAtom(iter, -1, i, searchRadius, null);
       while (iter.hasNext()) {
         Atom atomNear = atoms[iter.next()];
         if (atomNear.isDeleted())
@@ -2698,7 +2700,7 @@ abstract public class ModelCollection extends BondCollection {
         max2 = hbondMax2;
         firstIsCO = bsCO.get(i);
       }
-      setIteratorForAtom(iter, -1, atom.index, dmax);
+      setIteratorForAtom(iter, -1, atom.index, dmax, null);
       while (iter.hasNext()) {
         Atom atomNear = atoms[iter.next()];
         int elementNumberNear = atomNear.getElementNumber();
@@ -3921,7 +3923,7 @@ abstract public class ModelCollection extends BondCollection {
 
       // 4) clear out all atoms within 1.0 angstrom
       bspf = null;
-      bs = getAtomsWithin(1.0f, bsA, false);
+      bs = getAtomsWithin(1.0f, bsA, false, null);
       bs.andNot(bsA);
       if (bs.nextSetBit(0) >= 0)
         viewer.deleteAtoms(bs, false);

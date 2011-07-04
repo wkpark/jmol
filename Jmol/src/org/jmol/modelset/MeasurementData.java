@@ -28,6 +28,7 @@ import java.util.BitSet;
 import java.util.List;
 
 import org.jmol.api.JmolMeasurementClient;
+import org.jmol.atomdata.RadiusData;
 import org.jmol.util.Point3fi;
 import org.jmol.viewer.Viewer;
 
@@ -48,29 +49,33 @@ public class MeasurementData implements JmolMeasurementClient {
   public TickInfo tickInfo;
   public int tokAction;
   public List<Object> points;
-  public float[] rangeMinMax;
+  //public float[] rangeMinMax;
+  public RadiusData radiusData;
   public String strFormat;
   public boolean isAll;
 
   private String units;
+  public Boolean intramolecular;
   
   /*
    * the general constructor. tokAction is not used here, but simply
    * passed back to the 
    */
   public MeasurementData(List<Object> points, int tokAction,
-                 float[] rangeMinMax, String strFormat, String units,
+                 RadiusData radiusData, String strFormat, String units,
                  TickInfo tickInfo,
                  boolean mustBeConnected, boolean mustNotBeConnected,
-                 boolean isAll) {
+                 Boolean intramolecular, boolean isAll) {
     this.tokAction = tokAction;
     this.points = points;
-    this.rangeMinMax = rangeMinMax;
+    //this.rangeMinMax = rangeMinMax;
+    this.radiusData = radiusData;
     this.strFormat = strFormat;
     this.units = units;
     this.tickInfo = tickInfo;
     this.mustBeConnected = mustBeConnected;
     this.mustNotBeConnected = mustNotBeConnected;
+    this.intramolecular = intramolecular;    
     this.isAll = isAll;
   }
   
@@ -83,8 +88,8 @@ public class MeasurementData implements JmolMeasurementClient {
    */
   public void processNextMeasure(Measurement m) {
     float value = m.getMeasurement();
-    if (rangeMinMax != null && rangeMinMax[0] != Float.MAX_VALUE
-        && (value < rangeMinMax[0] || value > rangeMinMax[1]))
+    // here's where we check vdw
+    if (radiusData != null && !m.isInRange(radiusData, value))
       return;
     //System.out.println(Escape.escapeArray(m.getCountPlusIndices()));
     measurementStrings.add(m.getString(viewer, strFormat, units));
@@ -168,7 +173,9 @@ public class MeasurementData implements JmolMeasurementClient {
     if (thispt > ptLastAtom) {
       if (m.isValid() 
           && (!mustBeConnected || m.isConnected(atoms, thispt))
-          && (!mustNotBeConnected || !m.isConnected(atoms, thispt)))
+          && (!mustNotBeConnected || !m.isConnected(atoms, thispt))
+          && (intramolecular == null || !m.isIntramolecular(atoms, thispt))
+          )
         client.processNextMeasure(m);
       return;
     }

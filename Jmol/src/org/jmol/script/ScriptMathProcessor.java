@@ -43,6 +43,7 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.api.JmolEdge;
 import org.jmol.api.JmolMolecule;
+import org.jmol.atomdata.RadiusData;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.BoxInfo;
 import org.jmol.modelset.MeasurementData;
@@ -1181,6 +1182,9 @@ class ScriptMathProcessor {
       boolean isNotConnected = false;
       int rPt = 0;
       boolean isNull = false;
+      RadiusData rd = null;
+      int nBitSets = 0;
+      float vdw = Float.MAX_VALUE;
       for (int i = 0; i < args.length; i++) {
         switch (args[i].tok) {
         case Token.bitset:
@@ -1189,6 +1193,7 @@ class ScriptMathProcessor {
             isNull = true;
           points.add(bs);
           nPoints++;
+          nBitSets++;
           break;
         case Token.point3f:
           Point3fi v = new Point3fi((Point3f) args[i].value);
@@ -1199,9 +1204,13 @@ class ScriptMathProcessor {
         case Token.decimal:
           rangeMinMax[rPt++ % 2] = ScriptVariable.fValue(args[i]);
           break;
+          
         case Token.string:
           String s = ScriptVariable.sValue(args[i]);
-          if (s.equalsIgnoreCase("notConnected"))
+          if (s.equalsIgnoreCase("vdw") || s.equalsIgnoreCase("vanderwaals"))
+            vdw = (i + 1 < args.length && args[i + 1].tok == Token.integer 
+                ? ScriptVariable.iValue(args[++i]) : 100) / 100f;
+          else if (s.equalsIgnoreCase("notConnected"))
             isNotConnected = true;
           else if (s.equalsIgnoreCase("connected"))
             isAllConnected = true;
@@ -1220,8 +1229,12 @@ class ScriptMathProcessor {
         return false;
       if (isNull)
         return addX("");
-      MeasurementData md = new MeasurementData(points, 0, rangeMinMax,
-          strFormat, units, null, isAllConnected, isNotConnected, true);
+      if (vdw != Float.MAX_VALUE && (nBitSets != 2 || nPoints != 2))
+          return addX("");
+      rd = (vdw == Float.MAX_VALUE ? new RadiusData(rangeMinMax)
+          : new RadiusData(vdw, RadiusData.TYPE_FACTOR, JmolConstants.VDW_AUTO));
+      MeasurementData md = new MeasurementData(points, 0, rd, strFormat, units,
+          null, isAllConnected, isNotConnected, null, true);
       return addX(md.getMeasurements(viewer));
     case Token.angle:
       if ((nPoints = args.length) != 3 && nPoints != 4)
@@ -2189,16 +2202,30 @@ class ScriptMathProcessor {
     if (args.length < 1 || args.length > 5)
       return false;
     int i = args.length;
+    float distance = 0;
     Object withinSpec = args[0].value;
-    String withinStr = "" + withinSpec; 
+    String withinStr = "" + withinSpec;
     int tok = args[0].tok;
     if (tok == Token.string)
       tok = Token.getTokFromName(withinStr.toLowerCase());
+    boolean isVdw = (tok == Token.vanderwaals);
+    if (isVdw || withinStr.startsWith("vdw")) {
+      distance = 1;
+      if (!isVdw && withinStr.length() > 3) {
+        distance = Parser.parseFloat(withinStr.substring(3));
+        if (Float.isNaN(distance))
+          return addX("");
+        distance = ((int) distance) / 100f;
+        isVdw = true;
+      }
+    }
+    if (isVdw)
+      withinSpec = null;    
     BitSet bs;
-    float distance = 0;
     boolean isWithinModelSet = false;
     boolean isWithinGroup = false;
-    boolean isDistance = (tok == Token.decimal || tok == Token.integer);
+    boolean isDistance = (isVdw || tok == Token.decimal || tok == Token.integer);
+    RadiusData rd = null;
     switch (tok) {
     case Token.branch:
       if (i != 3 || !(args[1].value instanceof BitSet)
@@ -2238,7 +2265,10 @@ class ScriptMathProcessor {
         i = 2;
       }
     } else if (isDistance) {
-      distance = ScriptVariable.fValue(args[0]);
+      if (isVdw)
+        rd = new RadiusData(distance, RadiusData.TYPE_FACTOR, JmolConstants.VDW_AUTO);
+      else
+        distance = ScriptVariable.fValue(args[0]); 
       if (i < 2)
         return false;
       switch (tok = args[1].tok) {
@@ -2337,7 +2367,7 @@ class ScriptMathProcessor {
       return addX(viewer.getAtomBits(tok, bs));
     if (isWithinGroup)
       return addX(viewer.getGroupsWithin((int) distance, bs));
-    return addX(viewer.getAtomsWithin(distance, bs, isWithinModelSet));
+    return addX(viewer.getAtomsWithin(distance, bs, isWithinModelSet, rd));
   }
 
   private boolean evaluateColor(ScriptVariable[] args) {

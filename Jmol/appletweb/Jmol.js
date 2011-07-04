@@ -659,11 +659,11 @@ with (_jmol) {
   isBrowserCompliant = hasGetElementById;
   // known exceptions (old browsers):
   if (browser == "opera" && browserVersion <= 7.54 && os == "mac" 
-      || browser == "webkit" && browserVersion < 125.12
-      || browser == "msie" && os == "mac" 
+      || browser == "webkit" && browserVersion < 125.12
+      || browser == "msie" && os == "mac" 
       || browser == "konqueror" && browserVersion <= 3.3
     ) {
-    isBrowserCompliant = false;
+    isBrowserCompliant = false;
   }
 
   // possibly more checks in the future for this

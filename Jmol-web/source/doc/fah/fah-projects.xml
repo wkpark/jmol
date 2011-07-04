@@ -8670,16 +8670,16 @@
   <!-- Projects 6900 to 6999 -->
   <fah_proj number="6900" name="ves_shooting" public="y"
     server="130.237.232.141" atoms="1098185" preferred="4" deadline="6"
-    credit="8955" frames="100" code="A5" contact="kasson" kfactor="26.4"/>
+    credit="7164" frames="100" code="A5" contact="kasson" kfactor="26.4"/>
   <fah_proj number="6901" name="ves_shooting" public="y"
     server="130.237.232.237" atoms="1098185" preferred="4" deadline="6"
-    credit="8955" frames="100" code="A5" contact="kasson" kfactor="26.4"/>
+    credit="7164" frames="100" code="A5" contact="kasson" kfactor="26.4"/>
   <fah_proj number="6903" name="ha_shooting" public="y"
     server="130.237.232.237" atoms="2533797" preferred="7.2" deadline="12"
-    credit="28384.0" frames="100" code="A5" contact="kasson" kfactor="38.05"/>
+    credit="22706.0" frames="100" code="A5" contact="kasson" kfactor="38.05"/>
   <fah_proj number="6904" name="ha_shooting" public="n"
     server="130.237.232.237" atoms="2533797" preferred="10.2" deadline="17"
-    credit="39426.0" frames="100" code="A5" contact="kasson" kfactor="37.31"/>
+    credit="31541.0" frames="100" code="A5" contact="kasson" kfactor="37.31"/>
   <fah_proj number="6940" name="hafp3_tamm" public="y"
     server="128.143.199.96" atoms="77113" preferred="2.7" deadline="4"
     credit="552.0" frames="100" code="A3" contact="kasson" kfactor="3.3"/>

@@ -318,7 +318,7 @@ public class Measurement {
           float vdw = ((Atom) getAtom(1)).getVanderwaalsRadiusFloat(viewer, JmolConstants.VDW_AUTO)
           + ((Atom) getAtom(2)).getVanderwaalsRadiusFloat(viewer, JmolConstants.VDW_AUTO);
           dist /= vdw;
-          return (andRound ? (int) (dist * 1000 + 0.5f)/10 : dist * 100);
+          return (andRound ? (int) (dist * 1000 + 0.5f)/10f : dist * 100);
         }
         units = "ang";
       }

@@ -46,7 +46,7 @@ public class MeshSurface {
       if (haveSources)
         vertexSource[vertexCount] = m.vertexSource[i];
     }
-    bsSlabDisplay = null;
+    resetSlab();
     polygonIndexes = newPolygons;
     polygonCount = nP;
     vertexCount = nV;
@@ -264,6 +264,10 @@ public class MeshSurface {
         new Float[] {Float.valueOf(min), Float.valueOf(max)}, Boolean.FALSE };
   }
 
+  public void resetSlab() {
+    slabPolygons(getSlabObject(Token.none, null, false));
+  }
+
   public static Object[] getSlabObject(int tok, Object data, boolean isCap) {
     return new Object[] { Integer.valueOf(tok), data, Boolean.valueOf(isCap) };
   }
@@ -307,15 +311,20 @@ public class MeshSurface {
     case Token.plane:
       Point4f plane = (Point4f) slabbingObject;
       sb.append(Escape.escape(plane));
-      getIntersection(0, plane, null, null, null, andCap, false, Token.plane);
+      getIntersection(0, plane, null, null, null, null, andCap, false, Token.plane);
       break;
     case Token.boundbox:
       Point3f[] box = (Point3f[]) slabbingObject;
       sb.append("within ").append(Escape.escape(box));
       Point4f[] faces = BoxInfo.getFacesFromCriticalPoints(box);
       for (int i = 0; i < faces.length; i++)
-        getIntersection(0, faces[i], null, null, null, andCap, false,
-            Token.plane);
+        getIntersection(0, faces[i], null, null, null, null, andCap,
+            false, Token.plane);
+      break;
+    case Token.data:
+      getIntersection(0, null, null, null, 
+          (float[]) slabbingObject, 
+          null, false, false, Token.min);
       break;
     case Token.within:
     case Token.range:
@@ -328,8 +337,8 @@ public class MeshSurface {
         BitSet bs = (BitSet) o[2];
         sb.append("within ").append(distance).append(
             bs == null ? Escape.escape(points) : Escape.escape(bs));
-        getIntersection(distance, null, points, null, null, andCap, false,
-            (distance > 0 ? Token.distance : Token.sphere));
+        getIntersection(distance, null, points, null, null, null, andCap,
+            false, (distance > 0 ? Token.distance : Token.sphere));
         break;
       case Token.range:
         // isosurface slab within range x.x y.y
@@ -340,20 +349,20 @@ public class MeshSurface {
         sb.append("within range ").append(distance).append(" ").append(
             distanceMax);
         bs = (distanceMax < distance ? BitSetUtil.copy(bsSlabDisplay) : null);
-        getIntersection(distance, null, null, null, null, andCap, false,
-            Token.min);
+        getIntersection(distance, null, null, null, null, null, andCap,
+            false, Token.min);
         BitSet bsA = (bs == null ? null : BitSetUtil.copy(bsSlabDisplay));
         BitSetUtil.copy(bs, bsSlabDisplay);
-        getIntersection(distanceMax, null, null, null, null, andCap, false,
-            Token.max);
+        getIntersection(distanceMax, null, null, null, null, null, andCap,
+            false, Token.max);
         if (bsA != null)
           bsSlabDisplay.or(bsA);
         break;
       case Token.mesh:
         MeshSurface mesh = (MeshSurface) o[1];
         //distance = -1;
-        getIntersection(0, null, null, null, mesh, andCap, false,
-            distance < 0 ? Token.min : Token.max);
+        getIntersection(0, null, null, null, null, mesh, andCap,
+            false, distance < 0 ? Token.min : Token.max);
         //TODO: unresolved how exactly to store this in the state
         // -- must indicate exact set of triangles to slab and how!
         break;
@@ -370,13 +379,15 @@ public class MeshSurface {
 
   public void getIntersection(float distance, Point4f plane,
                                  Point3f[] ptCenters, List<Point3f[]> vData,
-                                 MeshSurface meshSurface, boolean andCap,
-                                 boolean doClean, int tokType) {
+                                 float[] fData, MeshSurface meshSurface,
+                                 boolean andCap, boolean doClean, int tokType) {
     Vector3f vNorm = null;
     Vector3f vBC = null;
     Vector3f vAC = null;
     Point3f[] pts = null;
     Point3f[] pts2 = null;
+    if (fData == null)
+      fData = vertexValues;
     Vector3f vTemp3 = null;
     Point4f planeTemp = null;
     boolean isSlab = (vData == null);
@@ -401,7 +412,7 @@ public class MeshSurface {
     List<int[]> iPts = (andCap ? new ArrayList<int[]>() : null);
     if (polygonCount == 0) {
       for (int i = 0; i < vertexCount; i++) {
-        if (Float.isNaN(vertexValues[i]) || checkSlab(tokType, vertices[i], vertexValues[i], distance, plane, ptCenters) > 0)
+        if (Float.isNaN(fData[i]) || checkSlab(tokType, vertices[i], fData[i], distance, plane, ptCenters) > 0)
           bsSlabDisplay.clear(i);
       }
       return;
@@ -415,9 +426,9 @@ public class MeshSurface {
       Point3f vA = vertices[iA];
       Point3f vB = vertices[iB];
       Point3f vC = vertices[iC];
-      valA = vertexValues[iA];
-      valB = vertexValues[iB];
-      valC = vertexValues[iC];
+      valA = fData[iA];
+      valB = fData[iB];
+      valC = fData[iC];
       if (vertexSource != null) {
         sourceA = vertexSource[iA];
         sourceB = vertexSource[iB];

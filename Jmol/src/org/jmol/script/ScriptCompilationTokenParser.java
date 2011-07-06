@@ -693,8 +693,9 @@ abstract class ScriptCompilationTokenParser {
           done = true;
           break;
         case Token.group:
+        case Token.vanderwaals:
           getToken();
-          addTokenToPostfix(Token.string, "group");
+          addTokenToPostfix(Token.string, Token.nameOf(tok));
           break;
         case Token.leftbrace:
           returnToken();

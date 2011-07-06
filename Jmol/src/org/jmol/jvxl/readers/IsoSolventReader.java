@@ -210,7 +210,7 @@ class IsoSolventReader extends AtomDataReader {
       return;
     Logger.startTimer();
     getMaxRadius();
-    volumeData.voxelSource = voxelSource = new int[volumeData.nPoints];
+    voxelSource = new int[volumeData.nPoints];
     if (isCavity && dataType != Parameters.SURFACE_NOMAP
         && dataType != Parameters.SURFACE_PROPERTY) {
       params.vertexSource = null;
@@ -350,7 +350,8 @@ class IsoSolventReader extends AtomDataReader {
         || voxelSource[vA] != voxelSource[vB])
       return super.getSurfacePointAndFraction(cutoff, isCutoffAbsolute, valueA,
           valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn);
-    iAtomSurface = Math.abs(valueA < valueB ? voxelSource[vA] : voxelSource[vB]);
+    int iAtom = Math.abs(valueA < valueB ? voxelSource[vA] : voxelSource[vB]);
+    iAtomSurface = atomIndex[iAtom - 1];
     float fraction = fReturn[0] = MeshSurface
         .getSphericalInterpolationFraction((voxelSource[vA] < 0 ? solventRadius : 
           atomRadius[voxelSource[vA] - 1]), valueA, valueB,
@@ -1204,8 +1205,6 @@ class IsoSolventReader extends AtomDataReader {
       if (r < value)
         value = r;
     }
-//    if (havePlane && value > 0.001f)
-  //    value = 0.001f;
     return (value == Float.MAX_VALUE ? Float.NaN : value);
   }
 

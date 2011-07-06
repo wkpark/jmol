@@ -131,6 +131,7 @@ abstract class AtomDataReader extends VolumeDataReader {
       params.atomRadiusData = new RadiusData(1, RadiusData.TYPE_FACTOR,
           JmolConstants.VDW_AUTO);
     atomData.radiusData = params.atomRadiusData;
+    atomData.radiusData.valueExtended = params.solventExtendedAtomRadius;
     if (doAddHydrogens)
       atomData.radiusData.vdwType = JmolConstants.VDW_NOJMOL;
     atomData.modelIndex = modelIndex; // -1 here means fill ALL atoms; any other
@@ -188,10 +189,8 @@ abstract class AtomDataReader extends VolumeDataReader {
       if (params.theProperty != null)
         atomProp = new float[n];
       atomNo = new int[n];
-      if (doUseIterator) {
-        atomIndex = new int[n];
-        myIndex = new int[atomCount];
-      }
+      atomIndex = new int[n];
+      myIndex = new int[atomCount];
 
       for (int i = 0; i < nH; i++) {
         if (getRadii)
@@ -211,10 +210,8 @@ abstract class AtomDataReader extends VolumeDataReader {
               : Float.NaN);
         atomXyz[myAtomCount] = atomData.atomXyz[i];
         atomNo[myAtomCount] = atomData.atomicNumber[i];
-        if (doUseIterator) {
-          atomIndex[myAtomCount] = i;
-          myIndex[i] = myAtomCount;
-        }
+        atomIndex[myAtomCount] = i;
+        myIndex[i] = myAtomCount;
         if (getRadii)
           atomRadius[myAtomCount] = atomData.atomRadius[i];
         myAtomCount++;
@@ -286,23 +283,7 @@ abstract class AtomDataReader extends VolumeDataReader {
 
   private float getWorkingRadius(int i, float marginAtoms) {
     float r = (i < 0 ? atomData.hAtomRadius : atomData.atomRadius[i]);
-    if (!Float.isNaN(marginAtoms))
-      return r + marginAtoms;
-    switch (params.atomRadiusData.type) {
-    case RadiusData.TYPE_ABSOLUTE:
-      r = params.atomRadiusData.value;
-      break;
-    case RadiusData.TYPE_OFFSET:
-      r += params.atomRadiusData.value;
-      break;
-    case RadiusData.TYPE_FACTOR:
-      r *= params.atomRadiusData.value;
-      break;
-    }
-    r += params.solventExtendedAtomRadius;
-    if (r < 0.1)
-      r = 0.1f;
-    return r;
+    return (Float.isNaN(marginAtoms) ? Math.max(r, 0.1f) : r + marginAtoms);
   }
 
   protected void setHeader(String calcType, String line2) {

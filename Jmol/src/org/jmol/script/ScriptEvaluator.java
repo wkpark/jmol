@@ -2269,7 +2269,11 @@ public class ScriptEvaluator {
           i = iToken;
           v = (vt.tok == Token.varray ? vt : ScriptVariable.oValue(vt));
         } else {
-          v = getParameter(var, 0);
+          if (tokAt(i) == Token.integer) {
+            v = viewer.getAtomBits(Token.atomno, Integer.valueOf(statement[i].intValue));
+          } else {
+            v = getParameter(var, 0);
+          }
           if (!isExpression && !isSetAt)
             isClauseDefine = true;
         }
@@ -15160,7 +15164,6 @@ public class ScriptEvaluator {
         "ID") == null);
     BitSet bsA = null;
     BitSet bsB = null;
-    BitSet bsIgnore = null;
     BitSet bs = null;
     RadiusData rd = null;
     float[] params = null;
@@ -15176,7 +15179,6 @@ public class ScriptEvaluator {
     int colorpt = 0;
     int tok;
     int ipoint = 0;
-    String filter = null;
     boolean okNoAtoms = (iToken > 1);
     for (int i = iToken; i < statementLength; ++i) {
       switch (tok = getToken(i).tok) {
@@ -15222,9 +15224,9 @@ public class ScriptEvaluator {
         setShapeProperty(JmolConstants.SHAPE_CONTACT, "slab", userSlabObject);
         i = iToken;
         break;
-       
-        // now after this you need atoms
-        
+
+      // now after this you need atoms
+
       case Token.density:
         colorDensity = true;
         sbCommand.append(" density");
@@ -15280,11 +15282,6 @@ public class ScriptEvaluator {
         params = floatParameterSet(++i, 1, 10);
         i = iToken;
         break;
-      //case Token.ignore:
-      //  bsIgnore = atomExpression(++i);
-      // sbCommand.append(" ignore ").append(Escape.escape(bsIgnore));
-      //  i = iToken;
-      //  break;
       case Token.bitset:
       case Token.expressionBegin:
         if (isWild || bsB != null)
@@ -15347,8 +15344,7 @@ public class ScriptEvaluator {
         // if INTRAMOLCULAR and no {B}, then this means "just {A} to {A}"
         // otherwise, {B} should be set to {!A}.
 
-        if (type != Token.nci 
-            && intramolecular == null) {
+        if (type != Token.nci && intramolecular == null) {
           sbCommand.append(" intermolecular");
           intramolecular = Boolean.valueOf(false);
         }
@@ -15368,14 +15364,6 @@ public class ScriptEvaluator {
         // {B} always within some fixed distance of A -- intermolecular
         bsB.and(bs);
       }
-      if (bsIgnore == null)
-        bsIgnore = BitSetUtil.setAll(viewer.getAtomCount());
-
-      // {ignore} always not A and not B and not within that distance 
-      bsIgnore.andNot(bsA);
-      bsIgnore.andNot(bsB);
-      bsIgnore.andNot(bs);
-
       if (intramolecular != null) {
         params = (params == null ? new float[2] : ArrayUtil.ensureLength(
             params, 2));
@@ -15387,32 +15375,27 @@ public class ScriptEvaluator {
 
       // now adjust for type -- HBOND or HYDROPHOBIC or MISC
       // these are just "standard shortcuts" they are not necessary at all
-      final String hbond = "_O | _N | _H & connected(_O | _N)"; 
+      final String hbond = "_O | _N | _H & connected(_O | _N)";
       final String hydro = "_C | _H & connected(_C)";
+      BitSet[] bsFilters = null;
       switch (bondMode) {
       case Token.hbond:
-        filter = hbond;
-        defaultColor  = "purple";
+        bsFilters = new BitSet[] { viewer.getAtomBitSet(hbond), null };
+        defaultColor = "purple";
         break;
       case Token.hydrophobic:
-        filter = hydro;
+        bsFilters = new BitSet[] { viewer.getAtomBitSet(hydro), null };
         defaultColor = "green";
         break;
       case Token.miscellaneous:
         // everything else!
-        filter = "!(" + hbond + ") & !(" + hydro + ")";
+        bsFilters = new BitSet[] { viewer.getAtomBitSet(hbond), viewer.getAtomBitSet(hydro), viewer.getAtomBitSet("_C and connected(_O or _N)") };
         defaultColor = "yellow";
         break;
       }
-      if (filter != null) {
-        bs = viewer.getAtomBitSet(filter);
-        bsIgnore.or(bs);
-        bsA.and(bs);
-        bsB.and(bs);
-      }
 
       setShapeProperty(JmolConstants.SHAPE_CONTACT, "set", new Object[] { bsA,
-          bsB, bsIgnore, new Integer(type), rd, params, func, slab,
+          bsB, bsFilters, new Integer(type), rd, params, func, slab,
           Boolean.valueOf(colorDensity), sbCommand.toString() });
       setShapeProperty(JmolConstants.SHAPE_CONTACT, "clear", null);
       if (colorpt > 0)
@@ -15426,10 +15409,8 @@ public class ScriptEvaluator {
     setShapeProperty(JmolConstants.SHAPE_CONTACT, "clear", null);
     if (!haveColor) {
       if (defaultColor != null) {
-        setShapeProperty(JmolConstants.SHAPE_CONTACT, "color",
-            Integer
-                .valueOf(Graphics3D
-                    .getArgbFromString(defaultColor)));
+        setShapeProperty(JmolConstants.SHAPE_CONTACT, "color", Integer
+            .valueOf(Graphics3D.getArgbFromString(defaultColor)));
       } else if (type == Token.nci) {
         ColorEncoder ce = viewer.getColorEncoder("bgr");
         ce.setRange(-0.03f, 0.03f, false);

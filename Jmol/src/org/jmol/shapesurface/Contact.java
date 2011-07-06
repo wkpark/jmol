@@ -27,6 +27,8 @@ package org.jmol.shapesurface;
 
 import java.util.BitSet;
 
+import javax.vecmath.Point3f;
+
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.jvxl.data.MeshData;
@@ -61,9 +63,13 @@ public class Contact extends Isosurface {
   private void setContacts(Object[] value) {
     BitSet bsA = (BitSet) value[0];
     BitSet bsB = (BitSet) value[1];
-    Logger.info("Contacts for " + Escape.escape(bsA));
-    Logger.info("Contacts to " + Escape.escape(bsB));
-    //BitSet bsIgnore = (BitSet) value[2];
+    if (Logger.debugging) {
+      Logger.info("Contacts for " + bsA.cardinality() + ": " + Escape.escape(bsA));
+      Logger.info("Contacts to " + bsB.cardinality() + ": " + Escape.escape(bsB));
+    }
+    BitSet[] bsFilters = (BitSet[]) value[2];
+    boolean doSlabByType = (bsFilters != null);
+    boolean isMisc = (doSlabByType && bsFilters[1] != null);
     BitSet bs;
     int type = ((Integer) value[3]).intValue();
     RadiusData rd = (RadiusData) value[4];
@@ -98,24 +104,99 @@ public class Contact extends Isosurface {
     default:
       doInterIntra(type, bsA, bsB, rd, params, func, isColorDensity,
           intramolecularMode, true);
-      if (type == Token.full) {
-        thisMesh.jvxlData.vertexDataOnly = true;
-        thisMesh.reinitializeLightingAndColor();
-      } else if (type == Token.plane) {
-        setProperty("clear", null, null);
-        setProperty("init", null, null);
-        setProperty("slab", slabObject, null);
-      }
       break;
+    }    
+    if (type == Token.plane && slabObject != null) {
+      setProperty("clear", null, null);
+      setProperty("init", null, null);
+      thisMesh.slabPolygons((Object[]) slabObject);
     }
+    if (doSlabByType) {
+      if (isMisc) {
+        BitSet bsHbond = slabMisc(bsFilters[0], bsA, bsB, rd);
+        BitSet bsHydro = slabMisc(bsFilters[1], bsA, bsB, rd);
+        // from "not hbond and not hydro" to "anything"
+        bs = BitSetUtil.copy(bsA);
+        bs.andNot(bsFilters[0]);
+        bs.andNot(bsFilters[1]);
+        slabByType(bs, bsA, rd);
+        thisMesh.bsSlabDisplay.or(bsHbond);
+        thisMesh.bsSlabDisplay.or(bsHydro);
+      } else {
+        bs = BitSetUtil.copy(bsA);
+        bs.and(bsFilters[0]);
+        slabByType(bs, bsA, rd);
+        bs = BitSetUtil.copy(bsB);
+        bs.and(bsFilters[0]);
+        slabByType(bs, bsB, rd);
+      }
+    }
+    thisMesh.jvxlData.vertexDataOnly = true;
+    thisMesh.reinitializeLightingAndColor();
     setProperty("finalize", command, null);
     if (isColorDensity) {
       setProperty("pointSize", Float.valueOf(ptSize), null);
     }
-    if (thisMesh != null && thisMesh.slabOptions != null) {
+    if (thisMesh.slabOptions != null) {
       thisMesh.slabOptions = null;
       thisMesh.polygonCount0 = -1; // disable slabbing.
     }
+  }
+
+  private BitSet slabMisc(BitSet bs, BitSet bsA, BitSet bsB, RadiusData rd) {
+    BitSet bsTemp = BitSetUtil.copy(thisMesh.bsSlabDisplay);
+    BitSet bs1 = BitSetUtil.copy(bsA);
+    bs1.and(bs);
+    slabByType(bs1, bsA, rd);
+    bs1 = BitSetUtil.copy(bsB);
+    bs1.andNot(bs);
+    slabByType(bs1, bsB, rd);
+    bs1 = BitSetUtil.copy(thisMesh.bsSlabDisplay);
+    if (bsTemp == null)
+      thisMesh.resetSlab();
+    else
+      BitSetUtil.copy(bsTemp, thisMesh.bsSlabDisplay);
+    return bs1;
+  }
+
+  private void slabByType(BitSet bs1, BitSet bsAll, RadiusData rd) {
+    float[] fData = new float[thisMesh.vertexCount];
+    BitSet bs2 = BitSetUtil.copy(bsAll);
+    bs2.andNot(bs1);
+    setSlabData(fData, bs1, bs2, rd);
+    thisMesh.slabPolygons(new Object[] { Integer.valueOf(Token.data), 
+        fData, Boolean.FALSE });
+  }
+
+  private void setSlabData(float[] fData, BitSet bs1, BitSet bs2,
+                           RadiusData radiusData) {
+    AtomData ad1 = getAtomData(radiusData, bs1);
+    AtomData ad2 = getAtomData(radiusData, bs2);
+    for (int i = 0; i < thisMesh.vertexCount; i++) {
+      if (thisMesh.vertices[i] == null)
+        continue;
+      float d1 = getDistance(thisMesh.vertices[i], ad1.atomXyz, ad1.atomRadius);
+      float d2 = getDistance(thisMesh.vertices[i], ad2.atomXyz, ad2.atomRadius);
+      fData[i] = d2 - d1;
+    }
+  }
+
+  private AtomData getAtomData(RadiusData radiusData, BitSet bs) {
+    AtomData ad = new AtomData();
+    ad.radiusData = radiusData;
+    ad.bsSelected = bs;
+    viewer.fillAtomData(ad, AtomData.MODE_FILL_CONTACT);
+    return ad;
+  }
+
+  private static float getDistance(Point3f pt, Point3f[] points, float[] radii) {
+    float value = Float.MAX_VALUE;
+    for (int i = 0; i < points.length; i++) {
+      float r = pt.distance(points[i]) - radii[i];
+      if (r < value)
+        value = r;
+    }
+    return (value == Float.MAX_VALUE ? Float.NaN : value);
   }
 
   private void doInterIntra(int type, BitSet bsA, BitSet bsB, RadiusData rd,
@@ -155,7 +236,6 @@ public class Contact extends Isosurface {
             bsB1.and(bsB);
             if (bsB1.nextSetBit(0) < 0)
               continue;
-            //System.out.println("contact " + bsA1 + " " + bsB1);
             doInterIntra(type, bsA1, bsB1, rd, params, func, isColorDensity, 0,
                 isFirst);
             isFirst = false;
@@ -185,8 +265,6 @@ public class Contact extends Isosurface {
       if (isColorDensity)
         sg.setParameter("colorDensity", null);
       newSurface(Token.full, bsB, bsA, rd, null, null, false);
-      // not ready for this yet: thisMesh.slabPolygons(MeshSurface.getSlabObject(Token.mesh, 
-      //    new Object[] { Float.valueOf(100), data1}, false));
       merge(data1);
       break;
     case Token.plane:
@@ -201,12 +279,26 @@ public class Contact extends Isosurface {
 
   private void merge(MeshData md) {
     thisMesh.merge(md);
-    jvxlData.mappedDataMin = Math.min(minData, jvxlData.mappedDataMin);
-    jvxlData.mappedDataMax = Math.max(maxData, jvxlData.mappedDataMax);
+    if (minData == Float.MAX_VALUE) {
+      // just assign it
+    } else if (jvxlData.mappedDataMin == Float.MAX_VALUE) {
+      jvxlData.mappedDataMin = minData;
+      jvxlData.mappedDataMax = maxData;
+    } else {
+      jvxlData.mappedDataMin = Math.min(minData, jvxlData.mappedDataMin);
+      jvxlData.mappedDataMax = Math.max(maxData, jvxlData.mappedDataMax);
+    }
+    minData = jvxlData.mappedDataMin;
+    maxData = jvxlData.mappedDataMax;
+    jvxlData.valueMappedToBlue = minData;
+    jvxlData.valueMappedToRed = maxData;
+    
   }
 
   private void newSurface(int type, BitSet bsA, BitSet bsB, RadiusData rd,
                           Object params, Object func, boolean isColorDensity) {
+    if (bsA.nextSetBit(0) < 0 || bsB.nextSetBit(0) < 0)
+      return;
     switch (type) {
     case Token.vanderwaals:
     case Token.full:

@@ -197,10 +197,10 @@ class VolumeDataReader extends SurfaceReader {
       if (center.x != Float.MAX_VALUE)
         volumetricOrigin.add(center);
       
-      System.out.println("/*volumeDatareader*/draw vector @{point" + volumetricOrigin + "} {" 
-         +volumetricVectors[0].x * voxelCounts[0] 
-          + " " + volumetricVectors[1].y *voxelCounts[1] 
-          + " " + volumetricVectors[2].z *voxelCounts[2] + "}");
+      //System.out.println("/*volumeDatareader*/draw vector @{point" + volumetricOrigin + "} {" 
+        // +volumetricVectors[0].x * voxelCounts[0] 
+        //  + " " + volumetricVectors[1].y *voxelCounts[1] 
+        //  + " " + volumetricVectors[2].z *voxelCounts[2] + "}");
       
     }
     if (isEccentric)

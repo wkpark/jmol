@@ -202,7 +202,11 @@ public final class Resolver implements JmolBioResolver {
         .lookupGroupID(group3))) == 0)
       return;
     Object model = null;
+    int iFirst = modelLoader.getFirstAtomIndex(iGroup);
+    int atomCount = modelSet.getAtomCount();
     if (nH < 0) {
+      if (atomCount - iFirst == 1) // CA or P-only, or simple metals, also HOH, DOD
+        return;
       model = modelSet.viewer.getLigandModel(group3);
       if (model == null)
         return;
@@ -210,10 +214,6 @@ public final class Resolver implements JmolBioResolver {
       if (nH < 1)
         return;
     }
-    int iFirst = modelLoader.getFirstAtomIndex(iGroup);
-    int atomCount = modelSet.getAtomCount();
-    if (atomCount - iFirst == 1 && modelSet.atoms[iFirst].getElementNumber() != 8) // CA or P-only, or simple metals
-      return;
     getBondInfo(adapter, group3, model);
     modelSet.getModels()[modelSet.atoms[iFirst].modelIndex].isPdbWithMultipleBonds = true;
     bsAtomsForHs.set(iFirst, atomCount);

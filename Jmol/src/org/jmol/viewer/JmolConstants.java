@@ -2291,16 +2291,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     /*DA*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' 2 C1' H1' C8 N7 C8 H8 C5 C4 C6 N1 N6 H61@H62 C2 N3 C2 H2", 
     /*DT*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' 2 C1' H1' C2 O2 N3 H3 C4 O4 C5 C6 C7 H7? C6 H6",
     /*DU*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' H2' C2' H2'' C1' H1' C2 O2 N3 H3 C4 O4 C5 C6 C5 H5 C6 H6",  
-    /*DI*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' 2 C1' H1' C8 N7 C8 H8 C5 C4 C6 O6 N1 H1 C2 N3 C2 H2",  
-    /*+G*/ "?",
-    /*+C*/ "?",
-    /*+A*/ "?",
-    /*+T*/ "?",
-    /*+U*/ "?",
-    /*+I*/ "?",
-    /*HOH*/ "O H1@H2",
-    /*DOD*/ "O D1@D2",
-
+    /*DI*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' 2 C1' H1' C8 N7 C8 H8 C5 C4 C6 O6 N1 H1 C2 N3 C2 H2"
   };
 
   private final static int[] pdbHydrogenCount = {
@@ -2340,14 +2331,6 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     /*DT*/ 14,
     /*DU*/ 12,
     /*DI*/ 12,
-    /*+G*/ -1,
-    /*+C*/ -1,
-    /*+A*/ -1,
-    /*+T*/ -1,
-    /*+U*/ -1,
-    /*+I*/ -1,
-    /*HOH*/ 2,
-    /*DOD*/ 2,
   };
   
   public final static int[] argbsShapely = {

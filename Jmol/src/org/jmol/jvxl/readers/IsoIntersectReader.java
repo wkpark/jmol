@@ -79,7 +79,7 @@ class IsoIntersectReader extends AtomDataReader {
     // This is the starting point for the calculation.
     Logger.startTimer();
     volumeData.getYzCount();
-    volumeData.voxelSource = voxelSource = new int[volumeData.nPoints];
+    voxelSource = new int[volumeData.nPoints];
     params.vertexSource = new int[volumeData.nPoints]; // overkill?
     volumeData.voxelData = voxelData = new float[nPointsX][nPointsY][nPointsZ];
     resetVoxelData(Float.MAX_VALUE);
@@ -157,6 +157,25 @@ class IsoIntersectReader extends AtomDataReader {
     return v;
   }
   
+  @Override
+  public float getValueAtPoint(Point3f pt) {
+    // mapping sasurface/vdw 
+    float va = getValueAtPoint(pt, bsA);
+    float vb = getValueAtPoint(pt, bsB);
+    return getValue(va, vb);
+  }
+  
+  private float getValueAtPoint(Point3f pt, BitSet bs) {
+    float value = Float.MAX_VALUE;
+    for (int ia = bs.nextSetBit(0); ia >= 0; ia = bs.nextSetBit(ia + 1)) {
+      int iAtom = myIndex[ia];
+      float r = pt.distance(atomXyz[iAtom]) - atomRadius[iAtom];
+      if (r < value)
+        value = r;
+    }
+    return (value == Float.MAX_VALUE ? Float.NaN : value);
+  }
+
   private final Point3f ptY0 = new Point3f();
   private final Point3f ptZ0 = new Point3f();
   private final Point3i pt0 = new Point3i();
@@ -194,5 +213,6 @@ class IsoIntersectReader extends AtomDataReader {
       }
     }
   }
+
 
 }

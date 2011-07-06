@@ -676,7 +676,6 @@ public abstract class SurfaceReader implements VertexDataServer {
     if (params.isContoured && marchingSquares != null) {
       initializeMapping();
       params.setMapRanges(this, false);
-      //System.out.println("Surf reader testing " + (params.valueMappedToBlue = 0.001f));
       marchingSquares.setMinMax(params.valueMappedToRed,
           params.valueMappedToBlue);
       jvxlData.saveVertexCount = marchingSquares.contourVertexCount;
@@ -914,7 +913,6 @@ public abstract class SurfaceReader implements VertexDataServer {
       if (v > max && v != Float.MAX_VALUE)
         max = v;
     }
-//    System.out.println("surf reader test " + (max = 0.001f));
     return (minMax = new float[] { min, max });
   }
 

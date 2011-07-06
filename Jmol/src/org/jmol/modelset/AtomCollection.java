@@ -1175,6 +1175,16 @@ abstract public class AtomCollection {
   }
 
   protected void fillAtomData(AtomData atomData, int mode) {
+    if (mode == AtomData.MODE_FILL_CONTACT) {
+      atomData.atomCount = atomData.bsSelected.cardinality();
+      atomData.atomXyz = new Point3f[atomData.atomCount];
+      atomData.atomRadius = new float[atomData.atomCount];
+      for (int pt = 0, i = atomData.bsSelected.nextSetBit(0); i >= 0; i = atomData.bsSelected.nextSetBit(i + 1), pt++) {
+        atomData.atomXyz[pt] = atoms[i];
+        atomData.atomRadius[pt] = getWorkingRadius(atoms[i], atomData);        
+      }
+      return;
+    }
     atomData.atomXyz = atoms;
     atomData.atomCount = atomCount;
     atomData.atomicNumber = new int[atomCount];
@@ -1193,40 +1203,43 @@ abstract public class AtomCollection {
       }
       atomData.atomicNumber[i] = atom.getElementNumber();
       atomData.lastModelIndex = atom.modelIndex;
-      if (includeRadii) {
-        float r = 0;
-        RadiusData rd = atomData.radiusData;
-        switch (rd.type) {
-        case RadiusData.TYPE_ABSOLUTE:
-          r = rd.value;
-          break;
-        case RadiusData.TYPE_FACTOR:
-        case RadiusData.TYPE_OFFSET:
-          switch (rd.vdwType) {
-          case Token.ionic:
-            r = atom.getBondingRadiusFloat();
-            break;
-          case Token.adpmax:
-            r = atom.getADPMinMax(true);
-            break;
-          case Token.adpmin:
-            r = atom.getADPMinMax(false);
-            break;
-          default:
-            r = atom.getVanderwaalsRadiusFloat(viewer,
-                atomData.radiusData.vdwType);
-          }
-          if (rd.type == RadiusData.TYPE_FACTOR)
-            r *= rd.value;
-          else
-            r += rd.value;
-        }
-        atomData.atomRadius[i] = r + rd.valueExtended;
-      }
+      if (includeRadii)
+        atomData.atomRadius[i] = getWorkingRadius(atom, atomData); 
     }
   }
   
   ////// hybridization ///////////
+
+  private float getWorkingRadius(Atom atom, AtomData atomData) {
+    float r = 0;
+    RadiusData rd = atomData.radiusData;
+    switch (rd.type) {
+    case RadiusData.TYPE_ABSOLUTE:
+      r = rd.value;
+      break;
+    case RadiusData.TYPE_FACTOR:
+    case RadiusData.TYPE_OFFSET:
+      switch (rd.vdwType) {
+      case Token.ionic:
+        r = atom.getBondingRadiusFloat();
+        break;
+      case Token.adpmax:
+        r = atom.getADPMinMax(true);
+        break;
+      case Token.adpmin:
+        r = atom.getADPMinMax(false);
+        break;
+      default:
+        r = atom.getVanderwaalsRadiusFloat(viewer,
+            atomData.radiusData.vdwType);
+      }
+      if (rd.type == RadiusData.TYPE_FACTOR)
+        r *= rd.value;
+      else
+        r += rd.value;
+    }
+    return r + rd.valueExtended;
+  }
 
   /**
    * get a list of potential H atom positions based on 

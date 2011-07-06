@@ -155,6 +155,8 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
       if ((iAtom = next()) >= 0) {
         float d;
         if (isVdw) {
+          if (atoms[iAtom].isCovalentlyBonded(atoms[atomIndex]))
+            continue;
           d = atoms[iAtom].getVanderwaalsRadiusFloat(viewer, radiusData.vdwType) + vdw1;
           d *= radiusData.value;
           d *= d;

@@ -2282,7 +2282,14 @@ class ScriptMathProcessor {
         if (s.startsWith("$"))
           return addX(eval.getAtomsNearSurface(distance, s.substring(1)));
         isWithinGroup = (s.equalsIgnoreCase("group"));
-        tok = Token.group;
+        isVdw = (s.equalsIgnoreCase("vanderwaals"));
+        if (isVdw) {
+          withinSpec = null;
+          rd = new RadiusData(distance/100, RadiusData.TYPE_FACTOR, JmolConstants.VDW_AUTO);
+          tok = Token.vanderwaals;
+        } else {
+          tok = Token.group;
+        }
         break;
       }
     } else {
@@ -2326,6 +2333,7 @@ class ScriptMathProcessor {
       case Token.on:
       case Token.off:
       case Token.group:
+      case Token.vanderwaals:
       case Token.plane:
       case Token.hkl:
       case Token.coord:

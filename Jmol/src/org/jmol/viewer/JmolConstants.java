@@ -2257,7 +2257,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   
   private final static String[] pdbBondInfo = {
     "",
-    /*ALA*/ "N N CA HA C O CB HB?", 
+    /*ALA*/ "N N CA HA C O CB HB?",
     /*ARG*/ "N N CA HA C O CB HB2@HB3 CG HG2@HG3 CD D NE HE CZ NH1 NH1 HH11@HH12 NH2 HH21@HH22", 
     /*ASN*/ "N N CA HA C O CB B CG OD1 ND2 HD21@HD22", 
     /*ASP*/ "N N CA HA C O CB B CG OD1", 
@@ -2277,7 +2277,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     /*TRP*/ "N N CA HA C O CB B CG CD1 CD1 HD1 CD2 CE2 NE1 HE1 CE3 CZ3 CE3 HE3 CZ2 CH2 CZ2 HZ2 CZ3 HZ3 CH2 HH2", 
     /*TYR*/ "N N CA HA C O CB B CG CD1 CD1 HD1 CD2 CE2 CD2 HD2 CE1 CZ CE1 HE1 CE2 HE2 OH HH", 
     /*VAL*/ "N N CA HA C O CB HB CG1 HG1? CG2 HG2?",
-    /*ASX*/ "CA HA C O CB HB1 CB HB2",
+    /*ASX*/ "CA HA C O CB HB2@HB1 C H",
     /*GLX*/ "CA HA C O CB HB1 CB HB2 CG HG1 CG HG2", 
     /*UNK*/ "",
     /*G*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' H2' O2' HO2' C1' H1' C8 N7 C8 H8 C5 C4 C6 O6 N1 H1 C2 N3 N2 H21@H22", 
@@ -2289,10 +2289,10 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     /*DG*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' 2 C1' H1' C8 N7 C8 H8 C5 C4 C6 O6 N1 H1 C2 N3 N2 H21@H22", 
     /*DC*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' 2 C1' H1' C2 O2 N3 C4 N4 H41@H42 C5 C6 C5 H5 C6 H6", 
     /*DA*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' 2 C1' H1' C8 N7 C8 H8 C5 C4 C6 N1 N6 H61@H62 C2 N3 C2 H2", 
-    /*DT*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' 2 C1' H1' C2 O2 N3 H3 C4 O4 C5 C6 C7 H7? C6 H6",
-    /*DU*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' H2' C2' H2'' C1' H1' C2 O2 N3 H3 C4 O4 C5 C6 C5 H5 C6 H6",  
-    /*DI*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' 2 C1' H1' C8 N7 C8 H8 C5 C4 C6 O6 N1 H1 C2 N3 C2 H2"
-  };
+    /*DT*/ "P OP1 C5' H5'@H5'' C4' H4' C3' H3' C2' H2'@H2'' C1' H1' C2 O2 N3 H3 C4 O4 C5 C6 C7 H7? C6 H6",
+    /*DU*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' H2'@H2'' C1' H1' C2 O2 N3 H3 C4 O4 C5 C6 C5 H5 C6 H6",  
+    /*DI*/ "P OP1 C5' 5 C4' H4' C3' H3' C2' 2 C1' H1' C8 N7 C8 H8 C5 C4 C6 O6 N1 H1 C2 N3 C2 H2",  
+      };
 
   private final static int[] pdbHydrogenCount = {
             0,

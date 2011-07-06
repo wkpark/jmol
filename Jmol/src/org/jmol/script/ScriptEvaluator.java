@@ -9489,7 +9489,7 @@ public class ScriptEvaluator {
       if (bsSubset != null) {
         bsSelected = BitSetUtil.copy(viewer.getSelectionSet(true));
         bsSelected.and(bsSubset);
-        viewer.select(bsSelected, true);
+        viewer.select(bsSelected, false, null, true);
         BitSetUtil.invertInPlace(bsSelected, viewer.getAtomCount());
         bsSelected.and(bsSubset);
       }
@@ -9516,7 +9516,7 @@ public class ScriptEvaluator {
 
     if (!isBond)
       setBooleanProperty("bondModeOr", bondmode);
-    viewer.select(bsSelected, true);
+    viewer.select(bsSelected, false, null, true);
   }
 
   private void rotate(boolean isSpin, boolean isSelected)
@@ -10177,7 +10177,20 @@ public class ScriptEvaluator {
 
   private void display(boolean isDisplay) throws ScriptException {
     BitSet bs = null;
-    switch (tokAt(1)) {
+    Boolean addRemove = null;
+    int i = 1;
+    int tok;
+    switch (tok = tokAt(1)) {
+    case Token.add:
+    case Token.remove:
+      addRemove = Boolean.valueOf(tok == Token.add);
+      tok = tokAt(++i);
+      break;
+    }
+    boolean isGroup = (tok == Token.group);
+    if (isGroup)
+      tok = tokAt(++i);
+    switch (tok) {
     case Token.dollarsign:
       setObjectProperty();
       return;
@@ -10188,7 +10201,7 @@ public class ScriptEvaluator {
         bs = new BondSet(BitSetUtil.newBitSet(0, viewer.getModelSet()
             .getBondCount()));
       else
-        bs = atomExpression(1);
+        bs = atomExpression(i);
     }
     if (isSyntaxCheck)
       return;
@@ -10196,11 +10209,7 @@ public class ScriptEvaluator {
       viewer.displayBonds((BondSet) bs, isDisplay);
       return;
     }
-
-    if (isDisplay)
-      viewer.display(bs, tQuiet);
-    else
-      viewer.hide(bs, tQuiet);
+    viewer.display(bs, isDisplay, isGroup, addRemove, tQuiet);
   }
 
   private void delete() throws ScriptException {
@@ -10309,7 +10318,7 @@ public class ScriptEvaluator {
   private void select(int i) throws ScriptException {
     // NOTE this is called by restrict()
     if (statementLength == 1) {
-      viewer.select(null, tQuiet || scriptLevel > scriptReportingLevel);
+      viewer.select(null, false, null, tQuiet || scriptLevel > scriptReportingLevel);
       return;
     }
     if (statementLength == 2 && tokAt(1) == Token.only)
@@ -10336,6 +10345,8 @@ public class ScriptEvaluator {
       error(ERROR_invalidArgument);
     }
     BitSet bs = null;
+    Boolean addRemove = null;
+    boolean isGroup = false;
     if (getToken(1).intValue == 0) {
       Object v = parameterExpressionToken(0).value;
       if (!(v instanceof BitSet))
@@ -10343,6 +10354,16 @@ public class ScriptEvaluator {
       checkLast(iToken);
       bs = (BitSet) v;
     } else {
+      int tok = tokAt(i);
+      switch (tok) {
+      case Token.add:
+      case Token.remove:
+        addRemove = Boolean.valueOf(tok == Token.add);
+        tok = tokAt(++i);
+      }
+      isGroup = (tok == Token.group);
+      if (isGroup)
+        tok = tokAt(++i);
       bs = atomExpression(i);
     }
     if (isSyntaxCheck)
@@ -10355,7 +10376,7 @@ public class ScriptEvaluator {
         bs1.and(bs);
         bs = bs1;
       }
-      viewer.select(bs, tQuiet || scriptLevel > scriptReportingLevel);
+      viewer.select(bs, isGroup, addRemove, tQuiet || scriptLevel > scriptReportingLevel);
     }
   }
 
@@ -10473,7 +10494,7 @@ public class ScriptEvaluator {
     boolean isQuiet = (tQuiet || scriptLevel > scriptReportingLevel);
     if (!isQuiet)
       scriptStatusOrBuffer(GT._("{0} atoms deleted", nDeleted));
-    viewer.select(null, isQuiet);
+    viewer.select(null, false, null, isQuiet);
   }
 
   private void zoom(boolean isZoomTo) throws ScriptException {
@@ -11135,7 +11156,7 @@ public class ScriptEvaluator {
     setShapeSize(JmolConstants.SHAPE_STICKS, 0, bsAtoms);
     if (addHbonds)
       viewer.autoHbond(bsAtoms, bsAtoms);
-    viewer.select(bsAtoms, tQuiet);
+    viewer.select(bsAtoms, false, null, tQuiet);
   }
 
   private void vector() throws ScriptException {
@@ -12256,6 +12277,8 @@ public class ScriptEvaluator {
         setPicking();
         return;
       }
+      if (!isSyntaxCheck)
+        viewer.setPicked(-1);
       break;
     case Token.pickingstyle:
       if (statementLength > 2) {

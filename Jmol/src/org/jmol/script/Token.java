@@ -85,7 +85,7 @@ public class Token {
   final static int varray     =  7;  // List<ScriptVariable>
   final static int point3f    =  8;
   final static int point4f    =  9;  
-  final static int bitset     =  10;
+  public final static int bitset     =  10;
   
   public final static int matrix3f   = 11;  
   public final static int matrix4f   = 12;  
@@ -1210,6 +1210,7 @@ public class Token {
   public final static int range          = misc  | 290;
   public final static int rasmol  = misc  | 292;
   final static int reference      = misc  | 294;
+  final static int remove         = misc  | 295;
   public final static int residue = misc  | 296;
   final static int resolution     = misc  | 298;
   final static int reversecolor   = misc  | 300;
@@ -2054,6 +2055,7 @@ public class Token {
       "radical",         new Token(radical),
       "rad",             new Token(rad),
       "reference",       new Token(reference),
+      "remove",          new Token(remove),
       "resolution",      new Token(resolution),
       "reverseColor",    new Token(reversecolor),
       "rotate45",        new Token(rotate45),

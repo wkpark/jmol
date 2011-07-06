@@ -72,16 +72,23 @@ class SelectionManager {
 
   void clear() {
     clearSelection(true);
-    hide(null, true);
+    hide(null, null, true);
     setSelectionSubset(null);
     bsDeleted = null;
     setMotionFixedAtoms(null);
   }
 
-  void hide(BitSet bs, boolean isQuiet) {
-    bsHidden.clear();
-    if (bs != null)
+  void hide(BitSet bs, Boolean addRemove, boolean isQuiet) {
+    if (bs == null) {
+      bsHidden.clear();
+    } else if (addRemove == null) {
+      bsHidden.clear();
       bsHidden.or(bs);
+    } else if (addRemove.booleanValue()) {
+      bsHidden.or(bs);
+    } else {
+      bsHidden.andNot(bs);
+    }
     ModelSet modelSet = viewer.getModelSet();
     if (modelSet != null)
       modelSet.setBsHidden(bsHidden);
@@ -90,12 +97,16 @@ class SelectionManager {
           + bsHidden.cardinality()));
   }
 
-  void display(BitSet bsAll, BitSet bs, boolean isQuiet) {
+  void display(BitSet bsAll, BitSet bs, Boolean addRemove, boolean isQuiet) {
     if (bs == null) {
       bsHidden.clear();
-    } else {
+    } else if (addRemove == null) {
       bsHidden.or(bsAll);
       bsHidden.andNot(bs);
+    } else if (addRemove.booleanValue()) {
+      bsHidden.andNot(bs);
+    } else {
+      bsHidden.or(bs);
     }
     BitSetUtil.andNot(bsHidden, bsDeleted);
     ModelSet modelSet = viewer.getModelSet();
@@ -124,7 +135,7 @@ class SelectionManager {
     return (atomIndex >= 0 && bsSelection.get(atomIndex));
   }
 
-  void select(BitSet bs, boolean isQuiet) {
+  void select(BitSet bs, Boolean addRemove, boolean isQuiet) {
     if (bs == null) {
       selectAll(true);
       if (!viewer.getRasmolSetting(Token.hydrogen))
@@ -133,7 +144,7 @@ class SelectionManager {
         excludeSelectionSet(viewer.getAtomBits(Token.hetero, null));
       selectionChanged(false);
     } else {
-      setSelectionSet(bs);
+      setSelectionSet(bs, addRemove);
     }
     boolean reportChime = viewer.getMessageStyleChime();
     if (!reportChime && isQuiet)
@@ -185,10 +196,17 @@ class SelectionManager {
       empty = UNKNOWN;
   }
 
-  void setSelectionSet(BitSet set) {
-    bsSelection.clear();
-    if (set != null)
+  void setSelectionSet(BitSet set, Boolean addRemove) {
+    if (set == null) {
+      bsSelection.clear();
+    } else if (addRemove == null) {
+      bsSelection.clear();
       bsSelection.or(set);
+    } else if (addRemove.booleanValue()) {
+      bsSelection.or(set);
+    } else {
+      bsSelection.andNot(set);
+    }
     empty = UNKNOWN;
     selectionChanged(false);
   }
@@ -262,7 +280,7 @@ class SelectionManager {
 
   private void selectionChanged(boolean isQuiet) {
     if (hideNotSelected)
-      hide(BitSetUtil.copyInvert(bsSelection, viewer.getAtomCount()), isQuiet);
+      hide(BitSetUtil.copyInvert(bsSelection, viewer.getAtomCount()), null, isQuiet);
     if (isQuiet || listeners.length == 0)
       return;
     for (int i = listeners.length; --i >= 0;)
@@ -352,7 +370,7 @@ class SelectionManager {
     BitSetUtil.deleteBits(bsHidden, bsAtoms);
     BitSet bs = BitSetUtil.copy(bsSelection);
     BitSetUtil.deleteBits(bs, bsAtoms);
-    setSelectionSet(bs);
+    setSelectionSet(bs, null);
   }
 
   void setMotionFixedAtoms(BitSet bs) {

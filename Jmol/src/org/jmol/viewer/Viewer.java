@@ -1527,9 +1527,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // delegated to SelectionManager
   // ///////////////////////////////////////////////////////////////
 
-  public void select(BitSet bs, boolean isQuiet) {
+  public void select(BitSet bs, boolean isGroup, Boolean addRemove, boolean isQuiet) {
     // Eval, ActionManager
-    selectionManager.select(bs, isQuiet);
+    if (isGroup)
+      bs = getAtomBits(Token.group, bs);
+    selectionManager.select(bs, addRemove, isQuiet);
     shapeManager.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MAX_VALUE,
         null, null);
   }
@@ -1537,7 +1539,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   @Override
   public void setSelectionSet(BitSet set) {
     // JmolViewer API only -- not used in Jmol 
-    select(set, true);
+    select(set, false, null, true);
   }
 
   public void selectBonds(BitSet bs) {
@@ -1545,15 +1547,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         null, bs);
   }
 
-  public void hide(BitSet bs, boolean isQuiet) {
+  public void display(BitSet bs, boolean isDisplay, boolean isGroup, Boolean addRemove, boolean isQuiet) {
     // Eval
-    selectionManager.hide(bs, isQuiet);
-  }
-
-  public void display(BitSet bs, boolean isQuiet) {
-    // Eval
-    selectionManager.display(modelSet.getModelAtomBitSetIncludingDeleted(-1,
-        false), bs, isQuiet);
+    if (isGroup)
+      bs = getAtomBits(Token.group, bs);
+    if (isDisplay)
+      selectionManager.display(modelSet.getModelAtomBitSetIncludingDeleted(-1,
+          false), bs, addRemove, isQuiet);
+    else
+      selectionManager.hide(bs, addRemove, isQuiet);
   }
 
   public BitSet getHiddenSet() {
@@ -5351,7 +5353,7 @@ private void zap(String msg) {
       else
         info = modelSet.getAtomInfo(atomIndex, info);
     }
-    global.setParameterValue("_atompicked", atomIndex);
+    global.setPicked(atomIndex);
     global.setParameterValue("_pickinfo", info);
     statusManager.setStatusAtomPicked(atomIndex, info);
   }
@@ -9910,6 +9912,10 @@ private void zap(String msg) {
     info = JmolConstants.getPdbBondInfo(Group.lookupGroupID(group3));
     htPdbBondInfo.put(group3, info);
     return info;
+  }
+
+  public void setPicked(int iAtom) {
+    global.setPicked(iAtom);
   }
 
 }

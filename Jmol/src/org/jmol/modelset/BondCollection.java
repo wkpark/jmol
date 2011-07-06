@@ -781,6 +781,8 @@ abstract public class BondCollection extends AtomCollection {
   protected BitSet getAtomBits(int tokType, Object specInfo) {
     BitSet bs;
     switch (tokType) {
+    default:
+      return super.getAtomBits(tokType, specInfo);
     case Token.isaromatic:
       bs = new BitSet();
       for (int i = bondCount; --i >= 0;)
@@ -798,7 +800,6 @@ abstract public class BondCollection extends AtomCollection {
       }
       return bs;
     }
-    return super.getAtomBits(tokType, specInfo);
   }
  
   public BitSet setBondOrder(int bondIndex, char type) {

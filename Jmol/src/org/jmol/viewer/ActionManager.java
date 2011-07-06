@@ -1939,7 +1939,7 @@ public class ActionManager {
         Logger.debug(s);
       BitSet bs = getSelectionSet(s);
       if (bs != null) {
-        viewer.select(bs, false);
+        viewer.select(bs, false, null, false);
         viewer.refresh(3, "selections set");
       }
     }

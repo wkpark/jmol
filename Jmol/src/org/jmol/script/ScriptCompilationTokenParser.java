@@ -147,12 +147,26 @@ abstract class ScriptCompilationTokenParser {
     ltokenPostfix = new ArrayList<Token>();
     itokenInfix = 0;
     Token tokenBegin = null;
-    if (tokCommand == Token.restrict && tokAt(1) == Token.bonds) {
-      addNextToken();
-      addNextToken();
-    } else {
-      for (int i = 0; i < firstToken && addNextToken(); i++) {
+    int tok = tokAt(1);
+    switch (tokCommand) {
+    case Token.restrict:
+      if (tok == Token.bonds) 
+        firstToken = 2;
+      break;
+    case Token.hide:
+    case Token.display:
+    case Token.select:
+      switch(tok) {
+      case Token.add:
+      case Token.remove:
+        firstToken = 2;
+        tok = tokAt(2);
+        break;
       }
+      if (tok == Token.group)
+        firstToken++;
+    }
+    for (int i = 0; i < firstToken && addNextToken(); i++) {
     }
     while (moreTokens()) {
       if (isEmbeddedExpression) {

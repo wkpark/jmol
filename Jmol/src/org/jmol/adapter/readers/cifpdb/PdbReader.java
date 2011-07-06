@@ -739,19 +739,18 @@ REMARK 290 REMARK: NULL
         Atom.isValidElementSymbol(ch13))
       return "" + ch13;
     // check for misplaced "O   " for example
-    if ((htElementsInCurrentGroup == null ||
+    if (ch12 != ' ' && (htElementsInCurrentGroup == null ||
          htElementsInCurrentGroup.get("" + ch12) != null) &&
         Atom.isValidElementSymbol(ch12))
       return "" + ch12;
+    // could be GLX or ASX;
     // probably a bad file. But we will make ONE MORE ATTEMPT
     // and read columns 14/15 instead of 12/13. What the heck!
     char ch14 = line.charAt(14);
-    if (ch12 == ' ' && (htElementsInCurrentGroup == null ||
+    if (ch12 == ' ' && ch13 != 'X' && (htElementsInCurrentGroup == null ||
         htElementsInCurrentGroup.get(line.substring(13, 15)) != null) &&
         Atom.isValidElementSymbolNoCaseSecondChar(ch13, ch14))
      return  "" + ch13 + ch14;
-    
-    
     return "Xx";
   }
 

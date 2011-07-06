@@ -208,10 +208,10 @@ public class StateManager {
         : lastSelected);
     BitSet bsSelected = (BitSet) saved.get(name);
     if (bsSelected == null) {
-      viewer.select(new BitSet(), false);
+      viewer.select(new BitSet(), false, null, false);
       return false;
     }
-    viewer.select(bsSelected, false);
+    viewer.select(bsSelected, false, null, false);
     return true;
   }
 
@@ -646,7 +646,7 @@ public class StateManager {
       }
 
       // PER-zap settings made
-      setParameterValue("_atompicked", -1);
+      setPicked(-1);
       setParameterValue("_atomhovered", -1);
       setParameterValue("_pickinfo", "");
       setParameterValue("selectionhalos", false);
@@ -1667,6 +1667,20 @@ public class StateManager {
     
     public float[][] getStructureList() {
       return structureList;
+    }
+
+    void setPicked(int atomIndex) {
+      ScriptVariable pickedSet = null;
+      if (atomIndex >= 0) {
+        setParameterValue("_atompicked", atomIndex);
+        pickedSet = (ScriptVariable) getParameter("picked", true);
+      }
+      if (pickedSet == null || pickedSet.tok != Token.bitset) {
+        pickedSet = ScriptVariable.getVariable(new BitSet());
+        setUserVariable("picked", pickedSet);
+      }
+      if (atomIndex >= 0)
+        ScriptVariable.getBitSet(pickedSet, false).set(atomIndex);
     }
   }
 

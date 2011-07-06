@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-03-24 19:02+0100\n"
+"POT-Creation-Date: 2011-07-06 21:28+0200\n"
 "PO-Revision-Date: 2010-11-16 00:12+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@gmail.com>\n"
 "Language-Team: Ukrainian <translation@linux.org.ua>\n"
@@ -1008,51 +1008,51 @@ msgstr "Java-консоль Jmol"
 msgid "Could not create ConsoleTextArea: "
 msgstr "Не вдалося створити ConsoleTextArea: "
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:378
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:408
 msgid "Creating main window..."
 msgstr "Створення головного вікна…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:379
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:409
 msgid "Initializing Swing..."
 msgstr "Ініціалізація Swing…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:391
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:421
 msgid "Initializing Jmol..."
 msgstr "Ініціалізація Jmol…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:504
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:502
 msgid "Closing Jmol..."
 msgstr "Завершення роботи Jmol…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1119
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1117
 msgid "Open URL"
 msgstr "Відкрити URL"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1120
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1118
 msgid "Enter URL of molecular model"
 msgstr "Введіть адресу URL моделі молекули"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1146
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1144
 msgid "Get PDB file"
 msgstr "Звантажити файл PDB"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1147
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1145
 msgid "Enter a four-digit PDB ID"
 msgstr "Введіть чотирицифровий ідентифікатор PDB"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1164
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1162
 msgid "Get MOL file by compound name or ID"
 msgstr "Звантажити файл MOL за складеною назвою або ідентифікатором"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1165
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1163
 msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
 msgstr "Введіть назву або ідентифікатор молекули (SMILES, InChI, CAS)"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1331
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1329
 msgid "IO Exception:"
 msgstr "Виключення вводу або виводу."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1424
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1422
 msgid "width height?"
 msgstr "Ширина і висота?"
 
@@ -1423,130 +1423,134 @@ msgstr ""
 msgid "Insert more information for {0} here."
 msgstr "Тут ви можете вставити додаткові відомості щодо {0}."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:152
+#: org/openscience/jmol/app/webexport/WebPanel.java:153
 msgid "A web page containing Jmol applets"
 msgstr "Веб-сторінка, що містить аплети Jmol"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:177
+#: org/openscience/jmol/app/webexport/WebPanel.java:178
 msgid "click and drag to reorder"
 msgstr "клацніть і перетягніть, щоб змінити порядок"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:182
+#: org/openscience/jmol/app/webexport/WebPanel.java:183
 msgid "Add Present Jmol State as Instance..."
 msgstr "Додати поточний стан Jmol як екземпляр…"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:189
+#: org/openscience/jmol/app/webexport/WebPanel.java:190
 msgid "Delete Selected"
 msgstr "Вилучити позначені"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:221
+#: org/openscience/jmol/app/webexport/WebPanel.java:222
 msgid "Jmol Instances:"
 msgstr "Екземпляри Jmol:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:227
+#: org/openscience/jmol/app/webexport/WebPanel.java:228
 msgid "Select widgets:"
 msgstr "Виберіть віджети:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:330
+#: org/openscience/jmol/app/webexport/WebPanel.java:331
 msgid "Help/Instructions"
 msgstr "Довідка/Настанови"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:337
-#: org/openscience/jmol/app/webexport/WebPanel.java:345
+#: org/openscience/jmol/app/webexport/WebPanel.java:338
+#: org/openscience/jmol/app/webexport/WebPanel.java:346
 msgid "Cartoon of Page"
 msgstr "Макет сторінки"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:351
+#: org/openscience/jmol/app/webexport/WebPanel.java:352
 msgid "Save HTML as..."
 msgstr "Зберегти HTML як…"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:361
+#: org/openscience/jmol/app/webexport/WebPanel.java:362
 msgid "Relative server path to jar files:"
 msgstr "Відносний шлях на сервері для файлів jar:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:367
+#: org/openscience/jmol/app/webexport/WebPanel.java:368
 msgid "Relative local path to jar files:"
 msgstr "Відносний локальний шлях до файлів jar:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:373
+#: org/openscience/jmol/app/webexport/WebPanel.java:374
 msgid "Author (your name):"
 msgstr "Автор (ваше ім’я):"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:380
+#: org/openscience/jmol/app/webexport/WebPanel.java:381
 msgid "Browser window title for this web page:"
 msgstr "Заголовок вікна переглядача для цієї веб-сторінки:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:466
+#: org/openscience/jmol/app/webexport/WebPanel.java:467
 msgid "Give the occurrence of Jmol a name:"
 msgstr "Надайте об’єкту Jmol назву:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:482
+#: org/openscience/jmol/app/webexport/WebPanel.java:483
 msgid "Error creating new instance containing script(s) and image."
 msgstr ""
 "Помилка під час спроби створення нового екземпляра зі скриптами та "
 "зображенням."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:493
+#: org/openscience/jmol/app/webexport/WebPanel.java:494
 #, java-format
 msgid "added Instance {0}"
 msgstr "доданий екземпляр {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:496
+#: org/openscience/jmol/app/webexport/WebPanel.java:497
 #, java-format
 msgid "updated Instance {0}"
 msgstr "оновлений екземпляр {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:533
+#: org/openscience/jmol/app/webexport/WebPanel.java:534
 msgid "Select a directory to create or an HTML file to save"
 msgstr "Вкажіть каталог для створення або файл HTML для збереження"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:551
+#: org/openscience/jmol/app/webexport/WebPanel.java:554
 #, java-format
 msgid "file {0} created"
 msgstr "створено файл {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:553
+#: org/openscience/jmol/app/webexport/WebPanel.java:556
 msgid "Call to FileWriter unsuccessful."
 msgstr "Помилка виклику методу FileWriter."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:628
+#: org/openscience/jmol/app/webexport/WebPanel.java:560
+msgid "Errors occurred during web page creation.  See Log Tab!"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:635
 #, java-format
 msgid "Using directory {0}"
 msgstr "Використання каталогу {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:629
-#: org/openscience/jmol/app/webexport/WebPanel.java:638
-#: org/openscience/jmol/app/webexport/WebPanel.java:658
-#: org/openscience/jmol/app/webexport/WebPanel.java:672
-#: org/openscience/jmol/app/webexport/WebPanel.java:699
+#: org/openscience/jmol/app/webexport/WebPanel.java:636
+#: org/openscience/jmol/app/webexport/WebPanel.java:648
+#: org/openscience/jmol/app/webexport/WebPanel.java:668
+#: org/openscience/jmol/app/webexport/WebPanel.java:682
+#: org/openscience/jmol/app/webexport/WebPanel.java:710
 #, java-format
 msgid "adding {0}"
 msgstr "додавання {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:687
+#: org/openscience/jmol/app/webexport/WebPanel.java:697
 #, java-format
 msgid "Unable to load resource {0}"
 msgstr "Не вдалося завантажити ресурс {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:739
+#: org/openscience/jmol/app/webexport/WebPanel.java:750
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
 msgstr "Засновано на шаблоні A. Herr&#x00E1;ez, зміненому J. Gutow"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:742
+#: org/openscience/jmol/app/webexport/WebPanel.java:753
 #, java-format
 msgid "creating {0}"
 msgstr "створення {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:776
+#: org/openscience/jmol/app/webexport/WebPanel.java:789
 #, java-format
 msgid ""
 "Could not find or open:\n"
-"{0}"
+"{0}\n"
+"Please check that you are using a Jmol.jar that is part of a full Jmol "
+"distribution."
 msgstr ""
-"Не вдалося виявити або відкрити:\n"
-"{0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:779
+#: org/openscience/jmol/app/webexport/WebPanel.java:794
 #, java-format
 msgid ""
 "copying\n"
@@ -1557,7 +1561,7 @@ msgstr ""
 "{0}\n"
 "         до"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:786
+#: org/openscience/jmol/app/webexport/WebPanel.java:801
 msgid "compressing large data file to"
 msgstr "стискання великого файла даних до"
 
@@ -1672,6 +1676,13 @@ msgstr "Звантажити перегляд"
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr "не реалізовано"
+
+#~ msgid ""
+#~ "Could not find or open:\n"
+#~ "{0}"
+#~ msgstr ""
+#~ "Не вдалося виявити або відкрити:\n"
+#~ "{0}"
 
 #~ msgid "vector"
 #~ msgstr "вектор"

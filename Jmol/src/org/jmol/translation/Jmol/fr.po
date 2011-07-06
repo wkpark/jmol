@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-03-24 19:02+0100\n"
+"POT-Creation-Date: 2011-07-06 21:28+0200\n"
 "PO-Revision-Date: 2010-11-22 23:39+0000\n"
 "Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
@@ -1010,51 +1010,51 @@ msgstr "Console Java Jmol"
 msgid "Could not create ConsoleTextArea: "
 msgstr "Impossible de créer la ConsoleTextArea: "
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:378
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:408
 msgid "Creating main window..."
 msgstr "Création de la fenêtre principale..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:379
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:409
 msgid "Initializing Swing..."
 msgstr "Initialisation de Swing..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:391
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:421
 msgid "Initializing Jmol..."
 msgstr "Initialisation de Jmol..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:504
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:502
 msgid "Closing Jmol..."
 msgstr "Fermeture de Jmol..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1119
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1117
 msgid "Open URL"
 msgstr "Ouvrir une URL"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1120
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1118
 msgid "Enter URL of molecular model"
 msgstr "Saisissez l'URL d'un modèle moléculaire"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1146
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1144
 msgid "Get PDB file"
 msgstr "Obtenir un fichier PDB"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1147
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1145
 msgid "Enter a four-digit PDB ID"
 msgstr "Entrer une ID de PDB à 4 chiffres"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1164
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1162
 msgid "Get MOL file by compound name or ID"
 msgstr "Obtenir un fichier MOL par nom du composé ou ID"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1165
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1163
 msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
 msgstr "Entrer le nom ou l'identifiant (SMILES, InChI, CAS) d'une molécule"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1331
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1329
 msgid "IO Exception:"
 msgstr "Exception E/S!"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1424
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1422
 msgid "width height?"
 msgstr "largeur hauteur ?"
 
@@ -1424,130 +1424,134 @@ msgstr ""
 msgid "Insert more information for {0} here."
 msgstr "Insérez davantage d informations pour {0} ici."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:152
+#: org/openscience/jmol/app/webexport/WebPanel.java:153
 msgid "A web page containing Jmol applets"
 msgstr "Une page Web contenant des applets Jmol"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:177
+#: org/openscience/jmol/app/webexport/WebPanel.java:178
 msgid "click and drag to reorder"
 msgstr "Cliquez et glissez afin de réarranger."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:182
+#: org/openscience/jmol/app/webexport/WebPanel.java:183
 msgid "Add Present Jmol State as Instance..."
 msgstr "Ajouter Présents Jmol État comme instance ..."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:189
+#: org/openscience/jmol/app/webexport/WebPanel.java:190
 msgid "Delete Selected"
 msgstr "Effacer sélection"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:221
+#: org/openscience/jmol/app/webexport/WebPanel.java:222
 msgid "Jmol Instances:"
 msgstr "Jmol Instances:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:227
+#: org/openscience/jmol/app/webexport/WebPanel.java:228
 msgid "Select widgets:"
 msgstr "Sélectionner les widgets :"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:330
+#: org/openscience/jmol/app/webexport/WebPanel.java:331
 msgid "Help/Instructions"
 msgstr "Aide / Instructions"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:337
-#: org/openscience/jmol/app/webexport/WebPanel.java:345
+#: org/openscience/jmol/app/webexport/WebPanel.java:338
+#: org/openscience/jmol/app/webexport/WebPanel.java:346
 msgid "Cartoon of Page"
 msgstr "Caricature de la page"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:351
+#: org/openscience/jmol/app/webexport/WebPanel.java:352
 msgid "Save HTML as..."
 msgstr "Enregistrer HTML sous ..."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:361
+#: org/openscience/jmol/app/webexport/WebPanel.java:362
 msgid "Relative server path to jar files:"
 msgstr "Chemin relatif au serveur de fichiers jar:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:367
+#: org/openscience/jmol/app/webexport/WebPanel.java:368
 msgid "Relative local path to jar files:"
 msgstr "Chemin relatif au serveur de fichiers jar:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:373
+#: org/openscience/jmol/app/webexport/WebPanel.java:374
 msgid "Author (your name):"
 msgstr "Auteur (votre nom) :"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:380
+#: org/openscience/jmol/app/webexport/WebPanel.java:381
 msgid "Browser window title for this web page:"
 msgstr "Titre de la fenêtre du navigateur pour cette page web:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:466
+#: org/openscience/jmol/app/webexport/WebPanel.java:467
 msgid "Give the occurrence of Jmol a name:"
 msgstr "Copier le texte Donnez la survenance de Jmol un nom:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:482
+#: org/openscience/jmol/app/webexport/WebPanel.java:483
 msgid "Error creating new instance containing script(s) and image."
 msgstr ""
 "Erreur lors de la création de nouveaux scripts instancewith et l'image."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:493
+#: org/openscience/jmol/app/webexport/WebPanel.java:494
 #, java-format
 msgid "added Instance {0}"
 msgstr "ajouté instance {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:496
+#: org/openscience/jmol/app/webexport/WebPanel.java:497
 #, java-format
 msgid "updated Instance {0}"
 msgstr "Mise à jour instance {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:533
+#: org/openscience/jmol/app/webexport/WebPanel.java:534
 msgid "Select a directory to create or an HTML file to save"
 msgstr "Sélectionnez un répertoire à créer ou à un fichier HTML pour sauver"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:551
+#: org/openscience/jmol/app/webexport/WebPanel.java:554
 #, java-format
 msgid "file {0} created"
 msgstr "Fichier {0} créé"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:553
+#: org/openscience/jmol/app/webexport/WebPanel.java:556
 msgid "Call to FileWriter unsuccessful."
 msgstr "Appelez pour FileWriter infructueuses."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:628
+#: org/openscience/jmol/app/webexport/WebPanel.java:560
+msgid "Errors occurred during web page creation.  See Log Tab!"
+msgstr ""
+
+#: org/openscience/jmol/app/webexport/WebPanel.java:635
 #, java-format
 msgid "Using directory {0}"
 msgstr "Utilisation répertoire {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:629
-#: org/openscience/jmol/app/webexport/WebPanel.java:638
-#: org/openscience/jmol/app/webexport/WebPanel.java:658
-#: org/openscience/jmol/app/webexport/WebPanel.java:672
-#: org/openscience/jmol/app/webexport/WebPanel.java:699
+#: org/openscience/jmol/app/webexport/WebPanel.java:636
+#: org/openscience/jmol/app/webexport/WebPanel.java:648
+#: org/openscience/jmol/app/webexport/WebPanel.java:668
+#: org/openscience/jmol/app/webexport/WebPanel.java:682
+#: org/openscience/jmol/app/webexport/WebPanel.java:710
 #, java-format
 msgid "adding {0}"
 msgstr "ajout de {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:687
+#: org/openscience/jmol/app/webexport/WebPanel.java:697
 #, java-format
 msgid "Unable to load resource {0}"
 msgstr "Impossible de charger la ressource {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:739
+#: org/openscience/jmol/app/webexport/WebPanel.java:750
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
 msgstr ""
 "Sur la base de modèle pour A. Herr&#x00E1;ez telle que modifiée par J. Gutow"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:742
+#: org/openscience/jmol/app/webexport/WebPanel.java:753
 #, java-format
 msgid "creating {0}"
 msgstr "créer {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:776
+#: org/openscience/jmol/app/webexport/WebPanel.java:789
 #, java-format
 msgid ""
 "Could not find or open:\n"
-"{0}"
+"{0}\n"
+"Please check that you are using a Jmol.jar that is part of a full Jmol "
+"distribution."
 msgstr ""
-"Impossible de trouver ou ouvert: \n"
-"{0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:779
+#: org/openscience/jmol/app/webexport/WebPanel.java:794
 #, java-format
 msgid ""
 "copying\n"
@@ -1558,7 +1562,7 @@ msgstr ""
 "{0}\n"
 "         a"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:786
+#: org/openscience/jmol/app/webexport/WebPanel.java:801
 msgid "compressing large data file to"
 msgstr "compression de données volumineux dossier à"
 
@@ -1673,6 +1677,13 @@ msgstr "Affichage de téléchargement"
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr "non-implémenté"
+
+#~ msgid ""
+#~ "Could not find or open:\n"
+#~ "{0}"
+#~ msgstr ""
+#~ "Impossible de trouver ou ouvert: \n"
+#~ "{0}"
 
 #~ msgid "atom set"
 #~ msgstr "groupe d'atomes"

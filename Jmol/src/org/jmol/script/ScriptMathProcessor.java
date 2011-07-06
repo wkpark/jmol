@@ -1495,9 +1495,9 @@ class ScriptMathProcessor {
           float r = ScriptVariable.fValue(args[0]); 
           float theta = ScriptVariable.fValue(args[1]);  // longitude, azimuthal, in xy plane
           float phi = ScriptVariable.fValue(args[2]);    // 90 - latitude, polar, from z
-          // rotate {0 0 r} about x axis
+          // rotate {0 0 r} about y axis need to stay in the x-z plane
           norm = new Vector3f(0, 0, 1);
-          pt2 = new Point3f(1, 0, 0);
+          pt2 = new Point3f(0, 1, 0);
           Quaternion q = new Quaternion(pt2, phi);
           q.getMatrix().transform(norm);
           // rotate that vector around z

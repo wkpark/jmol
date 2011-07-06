@@ -5,7 +5,7 @@
 <head>
 <!--/*	Allows to open Jmol models on request, in a div
 	Available from  http://biomodel.uah.es/Jmol/  and  http://wiki.jmol.org/ 
-	Author: Angel Herráez.  Version 2007.04.23
+	Author: Angel Herrï¿½ez.  Version 2007.04.23
 	Modified by Jonathan Gutow Version 2007.07.17
 
 	This template is offered freely for anyone to use or adapt it, 
@@ -33,6 +33,9 @@
     var jmollocaljar ="JmolApplet.jar";  //JmolApplet.jar is everything in one file 
  	var dataDir = ".";       // where the model AND .spt files are to be found. Used by JmolPopIn.js
  	changePathIfLocal();
+ 	if (jmoljarpath =="."){
+ 	    jmoljarfile="JmolApplet.jar"; //use the unitary applet instead of incremental
+ 	    }
   </script>
   
   <script type="text/javascript">

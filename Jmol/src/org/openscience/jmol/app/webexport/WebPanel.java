@@ -125,6 +125,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
   protected JmolViewer viewer;
   private int panelIndex;
   private WebPanel[] webPanels;
+  private int errCount;
 
   protected WebPanel(JmolViewer viewer, JFileChooser fc, WebPanel[] webPanels,
       int panelIndex) {
@@ -536,6 +537,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
         return;
       File file = fc.getSelectedFile();
       String retVal = null;
+      errCount = 0;
       try {
         String path = remoteAppletPath.getText();
         WebExport.setAppletPath(path, true);
@@ -546,11 +548,16 @@ abstract class WebPanel extends JPanel implements ActionListener,
         retVal = fileWriter(file, instanceList);
       } catch (IOException IOe) {
         LogPanel.log(IOe.getMessage());
+        errCount+=1;
       }
       if (retVal != null) {
         LogPanel.log(GT._("file {0} created", retVal));
       } else {
         LogPanel.log(GT._("Call to FileWriter unsuccessful."));
+        errCount+=1;
+      }
+      if (errCount > 0){
+        LogPanel.log(GT._("Errors occurred during web page creation.  See Log Tab!"));
       }
       return;
     } 
@@ -627,9 +634,12 @@ abstract class WebPanel extends JPanel implements ActionListener,
     if (made_datadir) {
       LogPanel.log(GT._("Using directory {0}", datadirPath));
       LogPanel.log("  " + GT._("adding {0}", "JmolPopIn.js"));
-
+      try{
       viewer.writeTextFile(datadirPath + "/JmolPopIn.js", WebExport
           .getResourceString(this, "JmolPopIn.js"));
+      }catch (IOException IOe){
+        throw IOe;
+      }
       for (int i = 0; i < listModel.getSize(); i++) {
         JmolInstance thisInstance = (JmolInstance) (listModel.getElementAt(i));
         String javaname = thisInstance.javaname;
@@ -685,6 +695,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
               URL fileURL = WebExport.getResource(this, inFile);
               if (fileURL==null){
                 LogPanel.log("    "+GT._("Unable to load resource {0}", inFile));
+                errCount+=1;
               }else{
                 InputStream is = fileURL.openConnection().getInputStream();
                 FileOutputStream os = new FileOutputStream(datadirPath + "/"
@@ -772,9 +783,13 @@ abstract class WebPanel extends JPanel implements ActionListener,
       return gzname;
     try {
       Object ret = viewer.getFileAsBytes(fullPathName, null);
-      if (ret instanceof String)
-        LogPanel.log(GT._("Could not find or open:\n{0}", fullPathName));
-      else {
+      if (ret instanceof String){
+        LogPanel
+            .log(GT
+                ._("Could not find or open:\n{0}\nPlease check that you are using a Jmol.jar that is part of a full Jmol distribution.",
+                    fullPathName));
+        errCount+=1;
+      }else {
         LogPanel.log("      ..."
             + GT._("copying\n{0}\n         to", fullPathName));
         byte[] data = (byte[]) ret;
@@ -786,11 +801,14 @@ abstract class WebPanel extends JPanel implements ActionListener,
           LogPanel.log("      ..." + GT._("compressing large data file to")
               + "\n" + (name = retName[0]));
         LogPanel.log(name);
-        if (err != null)
+        if (err != null){
           LogPanel.log(err);
+          errCount+=1;
+        }
       }
     } catch (Exception e) {
       LogPanel.log(e.getMessage());
+      errCount+=1;
     }
     return name;
   }

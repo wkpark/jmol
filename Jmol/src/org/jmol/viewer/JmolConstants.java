@@ -248,6 +248,10 @@ final public class JmolConstants {
   public static final int MINIMIZATION_ATOM_MAX = 200;
   public static final float MINIMIZE_FIXED_RANGE = 5.0f;
 
+  public static boolean isMeasurementUnit(String units) {
+    return Parser.isOneOf(units.toLowerCase(),
+        "angstroms;au;bohr;nanometers;nm;picometers;pm;vanderwaals;vdw");
+  }
 
   public final static int CONNECT_DELETE_BONDS     = Token.delete;
   public final static int CONNECT_MODIFY_ONLY      = Token.modify;

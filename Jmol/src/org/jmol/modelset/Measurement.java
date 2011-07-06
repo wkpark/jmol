@@ -304,15 +304,29 @@ public class Measurement {
       return "pm";
     else if (units == "angstroms")
       return "\u00C5";
+    else if (units == "vanderwaals" || units == "vdw")
+      return "%";
     return units;
   }
   
-  private static float fixValue(float dist, String units, boolean andRound) {
+  private float fixValue(float dist, String units, boolean andRound) {
     if (units != null) {
+      if (units.equals("%")) {
+        int i1 = getAtomIndex(1);
+        int i2 = getAtomIndex(2);
+        if (i1 >= 0 && i2 >=0) {
+          float vdw = ((Atom) getAtom(1)).getVanderwaalsRadiusFloat(viewer, JmolConstants.VDW_AUTO)
+          + ((Atom) getAtom(2)).getVanderwaalsRadiusFloat(viewer, JmolConstants.VDW_AUTO);
+          dist /= vdw;
+          return (andRound ? (int) (dist * 1000 + 0.5f)/10 : dist * 100);
+        }
+        units = "ang";
+      }
+        
       if (units.equals("nm"))
         return (andRound ? (int) (dist * 100 + 0.5f) / 1000f : dist / 10);
       if (units.equals("pm"))
-        return (andRound? (int) ((dist * 1000 + 0.5)) / 10f : dist * 100);
+        return (andRound? (int) (dist * 1000 + 0.5f) / 10f : dist * 100);
       if (units.equals("au"))
         return (andRound ? (int) (dist / JmolConstants.ANGSTROMS_PER_BOHR * 1000 + 0.5f) / 1000f : dist / JmolConstants.ANGSTROMS_PER_BOHR);
     }

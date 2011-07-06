@@ -468,11 +468,6 @@ public class StateManager {
     }
   }
 
-  public static boolean isMeasurementUnit(String units) {
-    return Parser.isOneOf(units.toLowerCase(),
-        "angstroms;au;bohr;nanometers;nm;picometers;pm");
-  }
-
   private final static Map<String, ScriptFunction> staticFunctions = new Hashtable<String, ScriptFunction>();
   private Map<String, ScriptFunction> localFunctions = new Hashtable<String, ScriptFunction>();
 
@@ -1326,6 +1321,8 @@ public class StateManager {
         measureDistanceUnits = "picometers";
       else if (units.equalsIgnoreCase("bohr") || units.equalsIgnoreCase("au"))
         measureDistanceUnits = "au";
+      else if (units.equalsIgnoreCase("vanderwaals") || units.equalsIgnoreCase("vdw"))
+        measureDistanceUnits = "vdw";
       setParameterValue("measurementUnits", measureDistanceUnits);
     }
 

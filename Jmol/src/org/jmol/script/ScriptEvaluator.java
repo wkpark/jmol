@@ -2175,12 +2175,13 @@ public class ScriptEvaluator {
       return (BitSet) value;
     if (value instanceof Token[]) {
       pushContext(null);
+      System.out.println("TODO ScriptEval ignoring subset -- why?");
       BitSet bs = atomExpression((Token[]) value, -2, 0, true, false, true,
           true);
       popContext(false, false);
       if (!isDynamic)
         definedAtomSets.put(setName, bs);
-      return bs;
+      return bs;	
     }
     if (plurals)
       return null;
@@ -12816,7 +12817,7 @@ public class ScriptEvaluator {
   }
 
   private boolean setMeasurementUnits(String units) throws ScriptException {
-    if (!StateManager.isMeasurementUnit(units))
+    if (!JmolConstants.isMeasurementUnit(units))
       error(ERROR_unrecognizedParameter, "set measurementUnits ", units);
     if (!isSyntaxCheck)
       viewer.setMeasureDistanceUnits(units);

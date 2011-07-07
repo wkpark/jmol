@@ -1381,9 +1381,14 @@ public class Token {
     boolean isAll = (type.length() == 0);
     for (Map.Entry<String, Token> entry : tokenMap.entrySet()) {
       String name = entry.getKey();
+      if (name.charAt(0) == '_')
+        continue;
       Token token = entry.getValue();
-      if (tokAttr(token.tok, atomproperty) && (isAll || name.toLowerCase().startsWith(type)))
+      if (tokAttr(token.tok, atomproperty) && (isAll || name.toLowerCase().startsWith(type))) {
+        if (isAll || !((String) token.value).toLowerCase().startsWith(type))
+          token = new Token(token.tok, name);
         v.add(token);
+      }
     }
     return (v.size() == 0 ? null : v);
   }

@@ -8141,8 +8141,11 @@ public class ScriptEvaluator {
     // will evaluate the moment it is defined and then represent
     // that set of atoms forever.
 
-    
+    if (statementLength < 3 || !(getToken(1).value instanceof String)) 
+      error(ERROR_invalidArgument);
     String setName = ((String) getToken(1).value).toLowerCase();
+    if (Parser.parseInt(setName) != Integer.MIN_VALUE)
+      error(ERROR_invalidArgument);
     if (isSyntaxCheck)
       return;
     boolean isSite = setName.startsWith("site_");

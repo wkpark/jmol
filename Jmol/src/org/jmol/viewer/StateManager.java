@@ -41,7 +41,6 @@ import org.jmol.util.Escape;
 
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
-import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
 
 import java.util.Arrays;

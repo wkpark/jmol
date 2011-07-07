@@ -12284,12 +12284,12 @@ public class ScriptEvaluator {
       setIntProperty(key, intSetting(2, Integer.MAX_VALUE, 0, 1000));
       break;
     case Token.picking:
+      if (!isSyntaxCheck)
+        viewer.setPicked(-1);
       if (statementLength > 2) {
         setPicking();
         return;
       }
-      if (!isSyntaxCheck)
-        viewer.setPicked(-1);
       break;
     case Token.pickingstyle:
       if (statementLength > 2) {

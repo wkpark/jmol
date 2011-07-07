@@ -16078,7 +16078,6 @@ public class ScriptEvaluator {
     boolean isFxy = false;
     boolean haveSlab = false;
     boolean haveIntersection = false;
-    boolean haveOrigin = false;
     float[] data = null;
     int thisSetNumber = -1;
     int nFiles = 0;
@@ -16152,7 +16151,6 @@ public class ScriptEvaluator {
       case Token.origin:
       case Token.step:
       case Token.point:
-        haveOrigin = true;
         propertyName = theToken.value.toString();
         sbCommand.append(" ").append(theToken.value);
         propertyValue = centerParameter(++i);

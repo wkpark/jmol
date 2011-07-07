@@ -8141,6 +8141,7 @@ public class ScriptEvaluator {
     // will evaluate the moment it is defined and then represent
     // that set of atoms forever.
 
+    
     String setName = ((String) getToken(1).value).toLowerCase();
     if (isSyntaxCheck)
       return;

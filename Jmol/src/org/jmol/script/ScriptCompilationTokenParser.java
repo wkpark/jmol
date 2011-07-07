@@ -149,6 +149,22 @@ abstract class ScriptCompilationTokenParser {
     Token tokenBegin = null;
     int tok = tokAt(1);
     switch (tokCommand) {
+    case Token.define:
+      if (tokAt(1) == Token.integer && tokAt(2) == Token.per && tokAt(4) == Token.opEQ) {
+        // @2.xxx = 
+        tokCommand = Token.set;
+        isSetBrace = true;
+        ptNewSetModifier = 4;
+        isMathExpressionCommand = true;
+        isEmbeddedExpression = true;
+        addTokenToPostfix(Token.tokenSetProperty);
+        addTokenToPostfix(Token.tokenExpressionBegin);
+        addNextToken();
+        addNextToken();
+        addTokenToPostfix(Token.tokenExpressionEnd);
+        firstToken = 0;
+      }
+      break;
     case Token.restrict:
       if (tok == Token.bonds) 
         firstToken = 2;

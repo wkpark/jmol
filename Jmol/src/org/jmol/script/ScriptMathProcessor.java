@@ -2602,6 +2602,8 @@ class ScriptMathProcessor {
     int iv = op.intValue & ~Token.minmaxmask;
     if (op.tok == Token.propselector) {
       switch (iv) {
+      case Token.identifier:
+        return getAllProperties(x2,(String) op.value);
       case Token.length:
       case Token.count:
       case Token.size:
@@ -3195,6 +3197,38 @@ class ScriptMathProcessor {
           : addX(f));
     }
     return true;
+  }
+
+  private boolean getAllProperties(ScriptVariable x2, String abbr)
+      throws ScriptException {
+    if (x2.tok != Token.bitset)
+      return false;
+    if (isSyntaxCheck)
+      return addX("");
+    BitSet bs = ScriptVariable.bsSelect(x2);
+    List<Token> tokens;
+    int n = bs.cardinality();
+    if (n == 0
+        || (tokens = Token.getAtomPropertiesLike(abbr.substring(0, abbr
+            .length() - 1))) == null)
+      return addX("");
+    Map<String, Object> ht = new Hashtable<String, Object>();
+    int index = (n == 1 ? bs.nextSetBit(0) : Integer.MAX_VALUE);
+    for (int i = tokens.size(); --i >= 0;) {
+      Token t = tokens.get(i);
+      int tok = t.tok;
+      switch (tok) {
+      case Token.configuration:
+      case Token.cell:
+        continue;
+      default:
+        if (index == Integer.MAX_VALUE)
+          tok |= Token.minmaxmask;
+        ht.put((String) t.value, ScriptVariable.getVariable(
+            eval.getBitsetProperty(bs, tok, null, null, null, null, false, index, true)));
+      }
+    }
+    return addX(ht);
   }
 
   static Matrix4f getMatrix4f(Matrix3f matRotate, Tuple3f vTranslate) {

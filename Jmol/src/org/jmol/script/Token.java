@@ -1268,7 +1268,7 @@ public class Token {
   public final static Token tokenOrTRUE = new Token(opOr, "or");
   public final static Token tokenOpIf  = new Token(opIf, "?");
   public final static Token tokenComma = new Token(comma, ",");
-  final static Token tokenDefineString = new Token(Token.define, Token.string, "@");
+  final static Token tokenDefineString = new Token(define, string, "@");
   final static Token tokenPlus = new Token(plus, "+");
   final static Token tokenMinus = new Token(minus, "-");
   final static Token tokenTimes = new Token(times, "*");
@@ -1306,7 +1306,7 @@ public class Token {
   
   public static int getTokFromName(String name) {
     Token token = getTokenFromName(name);
-    return (token == null ? Token.nada : token.tok);
+    return (token == null ? nada : token.tok);
   }
 
 
@@ -1375,6 +1375,19 @@ public class Token {
     return cmds;
   }
   
+  public static List<Token> getAtomPropertiesLike(String type) {
+    type = type.toLowerCase();
+    List<Token> v = new ArrayList<Token>();
+    boolean isAll = (type.length() == 0);
+    for (Map.Entry<String, Token> entry : tokenMap.entrySet()) {
+      String name = entry.getKey();
+      Token token = entry.getValue();
+      if (tokAttr(token.tok, atomproperty) && (isAll || name.toLowerCase().startsWith(type)))
+        v.add(token);
+    }
+    return (v.size() == 0 ? null : v);
+  }
+
   public static String[] getTokensLike(String type) {
     int attr = (type.equals("setparam") ? setparam 
         : type.equals("misc") ? misc 
@@ -1404,7 +1417,7 @@ public class Token {
                                        boolean asCommand, 
                                        String str, int n) {
     if (map == null)
-      map = Token.tokenMap;
+      map = tokenMap;
     else
       asCommand = false;
     List<String> v = new ArrayList<String>();

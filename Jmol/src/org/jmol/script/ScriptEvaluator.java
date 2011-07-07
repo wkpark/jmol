@@ -1142,14 +1142,16 @@ public class ScriptEvaluator {
     default:
       if (Token.tokAttrOr(tok, Token.atomproperty, Token.mathproperty))
         break;
-      if (!Token.tokAttr(tok, Token.identifier))
+      if (tok != Token.opIf && !Token.tokAttr(tok, Token.identifier))
         return null;
       String name = parameterAsString(i);
       if (!mustBeSettable && viewer.isFunction(name)) {
         tok = Token.function;
         break;
       }
-      return null;
+      if (!name.endsWith("?"))
+        return null;
+      tok = Token.identifier;
     }
     if (mustBeSettable && !Token.tokAttr(tok, Token.settable))
       return null;
@@ -1396,6 +1398,8 @@ public class ScriptEvaluator {
             if (atom.getModelIndex() != iModel)
               iModel = atom.getModelIndex();
             BitSet bsSym = atom.getAtomSymmetry();
+            if (bsSym == null)
+              break;
             int p = 0;
             switch (minmaxtype) {
             case Token.min:

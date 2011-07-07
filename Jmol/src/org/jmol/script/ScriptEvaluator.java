@@ -1229,7 +1229,7 @@ public class ScriptEvaluator {
 
     Point3f zero = (minmaxtype == Token.allfloat ? new Point3f() : null);
     Point3f pt = (isPt || !isAtoms ? new Point3f() : null);
-    if (isExplicitlyAll || isString && minmaxtype != Token.allfloat)
+    if (isExplicitlyAll || isString && !haveIndex && minmaxtype != Token.allfloat)
       minmaxtype = Token.all;
     List<Object> vout = (minmaxtype == Token.all ? new ArrayList<Object>()
         : null);
@@ -1466,6 +1466,8 @@ public class ScriptEvaluator {
             fout[i] = Parser.parseFloat(s);
             break;
           default:
+            if (vout == null)
+              return s;
             vout.add(s);
           }
           break;

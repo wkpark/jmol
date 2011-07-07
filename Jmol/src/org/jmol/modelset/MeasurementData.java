@@ -174,7 +174,7 @@ public class MeasurementData implements JmolMeasurementClient {
       if (m.isValid() 
           && (!mustBeConnected || m.isConnected(atoms, thispt))
           && (!mustNotBeConnected || !m.isConnected(atoms, thispt))
-          && (intramolecular == null || !m.isIntramolecular(atoms, thispt))
+          && (intramolecular == null || m.isIntramolecular(atoms, thispt) == intramolecular.booleanValue())
           )
         client.processNextMeasure(m);
       return;

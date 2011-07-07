@@ -8965,7 +8965,7 @@ public class ScriptEvaluator {
       case Token.intermolecular:
         intramolecular = Boolean.valueOf(theTok == Token.intramolecular);
         isAll = true;
-        isNotConnected = true;
+        isNotConnected = (theTok == Token.intermolecular);
         break;
       case Token.vanderwaals:
         if (ptFloat >= 0)

@@ -9150,18 +9150,18 @@
   <fah_proj number="7803" name="p7803" public="y"
     server="171.64.65.100" atoms="36773" preferred="18.12" deadline="39.26"
     credit="1219.2" frames="100" code="A4" contact="schwancr" kfactor="0.58"/>
-  <fah_proj number="7804" name="p7804" public="n"
+  <fah_proj number="7804" name="p7804" public="y" file="xyz"
     server="171.64.65.98" atoms="59392" preferred="24.12" deadline="52.25"
-    credit="1622.91" frames="100" code="A4" contact="schwancr" kfactor="0.58"/>
-  <fah_proj number="7805" name="p7805" public="n"
+    credit="1622.91" frames="100" code="A4" contact="schwancr" kfactor="0.58" contrib="Jesse Hathaway"/>
+  <fah_proj number="7805" name="p7805" public="y"
     server="171.64.65.98" atoms="60595" preferred="25.54" deadline="55.34"
     credit="1718.76" frames="100" code="A4" contact="schwancr" kfactor="0.58"/>
-  <fah_proj number="7806" name="p7806" public="n"
+  <fah_proj number="7806" name="p7806" public="y"
     server="171.64.65.98" atoms="35284" preferred="17.579988425925926" deadline="38.09"
     credit="1183.12" frames="100" code="A4" contact="schwancr" kfactor="0.58"/>
-  <fah_proj number="7807" name="p7807" public="n"
+  <fah_proj number="7807" name="p7807" public="y" file="xyz"
     server="171.64.65.98" atoms="36773" preferred="18.12" deadline="39.26"
-    credit="1219.2" frames="100" code="A4" contact="schwancr" kfactor="0.58"/>
+    credit="1219.2" frames="100" code="A4" contact="schwancr" kfactor="0.58" contrib="Sam Novak"/>
 
   <!-- Projects 9900 to 9999 -->
   <fah_proj number="9900" name="p9900_supervillin_e1" public="y"

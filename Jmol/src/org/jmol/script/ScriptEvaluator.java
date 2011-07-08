@@ -15178,7 +15178,7 @@ public class ScriptEvaluator {
     //         DENSITY x.x
     //         WITHIN x.x
     //         PARAMETERS [....] 
-    //         FULL|PLANAR|CONNECT|NCI (FULL not implemented yet)
+    //         FULL|TRIM|PLANAR|CONNECT|NCI (FULL not implemented yet)
     //         HYDROPHOBIC|HBOND|MISCELLANEOUS
     //         INTRAMOLECULAR|INTERMOLECULAR (default INTER)
     //         VDW
@@ -15305,6 +15305,7 @@ public class ScriptEvaluator {
         sbCommand.append(" ").append(theToken.value);
         break;
       case Token.full:
+      case Token.trim:
       case Token.plane:
       case Token.connect:
       case Token.nci:
@@ -15353,6 +15354,9 @@ public class ScriptEvaluator {
       Object[] func = null;
       Object slab = null;
       switch (type) {
+      case Token.vanderwaals:
+      case Token.trim:
+        break;
       case Token.full:
         func = createFunction("__con__", "a,b", "(a > b ? a : b)");
         break;

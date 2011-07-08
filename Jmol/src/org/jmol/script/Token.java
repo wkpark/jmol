@@ -711,7 +711,7 @@ public class Token {
   final static int mul          = 3 | 1 << 9 | mathfunc | mathproperty;
   final static int split        = 4 | 1 << 9 | mathfunc | mathproperty;
   final static int sub          = 5 | 1 << 9 | mathfunc | mathproperty;
-  final static int trim         = 6 | 1 << 9 | mathfunc | mathproperty;  
+  public final static int trim         = 6 | 1 << 9 | mathfunc | mathproperty;  
   public final static int volume = 7 | 1 << 9 | mathfunc | mathproperty | floatproperty;  
   final static int col           = 8 | 1 << 9 | mathfunc | mathproperty;
   final static int row           = 9 | 1 << 9 | mathfunc | mathproperty;

@@ -99,7 +99,8 @@ public class Contact extends Isosurface {
       setProperty("nci", Boolean.TRUE, null);
       break;
     case Token.vanderwaals:
-      newSurface(Token.vanderwaals, bsA, bsB, rd, null, null, false);
+    case Token.trim:
+      newSurface(type, bsA, bsB, rd, null, null, false);
       break;
     default:
       doInterIntra(type, bsA, bsB, rd, params, func, isColorDensity,
@@ -301,6 +302,7 @@ public class Contact extends Isosurface {
       return;
     switch (type) {
     case Token.vanderwaals:
+    case Token.trim:
     case Token.full:
       setProperty("select", bsA, null);
       BitSet bs = BitSetUtil.copyInvert(bsA, atomCount);
@@ -314,7 +316,7 @@ public class Contact extends Isosurface {
       setProperty("ignore", bs, null);
       setProperty("radius", rd, null);
       setProperty("sasurface", Float.valueOf(0), null);
-      if (type == Token.full)
+      if (type == Token.full || type == Token.trim)
         thisMesh.slabPolygons(MeshSurface.getSlabWithinRange(-100, 0));
       return;
     case Token.plane:

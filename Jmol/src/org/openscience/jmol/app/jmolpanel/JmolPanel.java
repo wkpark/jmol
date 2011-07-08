@@ -726,7 +726,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
     //     mb.add(pluginManager.getMenu());
     // }
     // The Help menu, right aligned
-    mb.add(Box.createHorizontalGlue());
+    //mb.add(Box.createHorizontalGlue());
     addHelpMenuBar(mb);
     return mb;
   }

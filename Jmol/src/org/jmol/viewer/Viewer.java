@@ -1530,7 +1530,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void select(BitSet bs, boolean isGroup, Boolean addRemove, boolean isQuiet) {
     // Eval, ActionManager
     if (isGroup)
-      bs = getAtomBits(Token.group, bs);
+      bs = getUndeletedGroupAtomBits(bs);
     selectionManager.select(bs, addRemove, isQuiet);
     shapeManager.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MAX_VALUE,
         null, null);
@@ -1550,12 +1550,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void display(BitSet bs, boolean isDisplay, boolean isGroup, Boolean addRemove, boolean isQuiet) {
     // Eval
     if (isGroup)
-      bs = getAtomBits(Token.group, bs);
+      bs = getUndeletedGroupAtomBits(bs);
     if (isDisplay)
       selectionManager.display(modelSet.getModelAtomBitSetIncludingDeleted(-1,
           false), bs, addRemove, isQuiet);
     else
       selectionManager.hide(bs, addRemove, isQuiet);
+  }
+
+  private BitSet getUndeletedGroupAtomBits(BitSet bs) {
+    bs = getAtomBits(Token.group, bs);
+    BitSetUtil.andNot(bs, selectionManager.getDeletedAtoms());
+    return bs;
   }
 
   public BitSet getHiddenSet() {

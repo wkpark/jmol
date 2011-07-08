@@ -428,7 +428,7 @@ public final class Resolver implements JmolBioResolver {
           break;
         }
       }
-      modelSet.viewer.deleteAtoms(bsAddedHydrogens, false);
+      deleteUnneededAtoms();
     }
     htBondMap = null;
     htGroupBonds = null;
@@ -438,6 +438,55 @@ public final class Resolver implements JmolBioResolver {
     plane = null;
     modelSet = null;
     modelLoader = null;
+  }
+
+  /**
+   * Delete hydrogen atoms that are still in bsAddedHydrogens, 
+   * because they were not actually added.
+   * Also delete ligand hydrogen atoms from CO2- and PO3(2-)
+   * 
+   * Note that we do this AFTER all atoms have been added. That means that
+   * this operation will not mess up atom indexing
+   * 
+   */
+  private void deleteUnneededAtoms() {
+    BitSet bsBondsDeleted = new BitSet();
+    for (int i = bsAtomsForHs.nextSetBit(0); i >= 0; i = bsAtomsForHs
+        .nextSetBit(i + 1)) {
+      Atom atom = modelSet.atoms[i];
+      // specifically look for neutral HETATM O with a bond count of 2: 
+      if (!atom.isHetero() || atom.getElementNumber() != 8 || atom.getFormalCharge() != 0
+          || atom.getCovalentBondCount() != 2)
+        continue;
+      Bond[] bonds = atom.getBonds();
+      Atom atom1 = bonds[0].getOtherAtom(atom);
+      Atom atomH = bonds[1].getOtherAtom(atom);
+      if (atom1.getElementNumber() == 1) {
+        Atom a = atom1;
+        atom1 = atomH;
+        atomH = a;
+      }
+      
+      // Does it have an H attached?
+      if (atomH.getElementNumber() != 1)
+        continue;
+      // If so, does it have an attached atom that is doubly bonded to O?
+      // so this could be RSO4H or RPO3H2 or RCO2H
+      Bond[] bonds1 = atom1.getBonds();
+      for (int j = 0; j < bonds1.length; j++) {
+        if (bonds1[j].getOrder() == 2) {
+          Atom atomO = bonds1[j].getOtherAtom(atom1);
+          if (atomO.getElementNumber() == 8) {
+            bsAddedHydrogens.set(atomH.index);
+            atomH.delete(bsBondsDeleted);
+            // could do this... atom.setFormalCharge(atom.getFormalCharge() - 1);
+            break;
+          }
+        }
+
+      }
+    }
+    modelSet.viewer.deleteAtoms(bsAddedHydrogens, false);
   }
 
   private void finalizePdbCharges() {

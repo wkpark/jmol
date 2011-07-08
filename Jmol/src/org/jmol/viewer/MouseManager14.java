@@ -185,6 +185,8 @@ class MouseManager14 implements MouseWheelListener, MouseListener,
         switch (modifiers) {
         case Binding.CTRL:
           String ret = ImageCreator.getClipboardTextStatic();
+          if (ret == null)
+            break;
           if (ret.startsWith("http://") && ret.indexOf("\n") < 0) {
             viewer.evalString("load " + Escape.escape(ret));
             break;

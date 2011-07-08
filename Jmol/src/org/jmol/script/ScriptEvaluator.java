@@ -2181,7 +2181,6 @@ public class ScriptEvaluator {
       return (BitSet) value;
     if (value instanceof Token[]) {
       pushContext(null);
-      System.out.println("TODO ScriptEval ignoring subset -- why?");
       BitSet bs = atomExpression((Token[]) value, -2, 0, true, false, true,
           true);
       popContext(false, false);

@@ -1430,6 +1430,18 @@ class ScriptMathProcessor {
 
     switch (args.length) {
     case 1:
+      if (args[0].tok == Token.bitset) {
+        BitSet bs = ScriptVariable.getBitSet(args[0], false);
+        if (bs.cardinality() == 3) {
+          List<Point3f> pts = viewer.getAtomPointVector(bs);
+          Vector3f vNorm = new Vector3f();
+          Vector3f vAB = new Vector3f();
+          Vector3f vAC = new Vector3f();
+          plane = new Point4f();
+          Measure.getPlaneThroughPoints(pts.get(0), pts.get(1), pts.get(2), vNorm , vAB, vAC, plane);
+          return addX(plane);
+        }
+      }
       Object pt = Escape.unescapePoint(ScriptVariable.sValue(args[0]));
       if (pt instanceof Point4f)
         return addX(pt);

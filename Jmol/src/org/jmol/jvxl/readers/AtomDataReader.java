@@ -110,30 +110,35 @@ abstract class AtomDataReader extends VolumeDataReader {
    * 
    * @param bsSelected
    *        TODO
-   * @param doAddHydrogens TODO
+   * @param doAddHydrogens
+   *        TODO
    * @param getRadii
    *        TODO
    * @param getMolecules
    *        TODO
-   * @param getAllModels TODO
+   * @param getAllModels
+   *        TODO
    * @param addNearbyAtoms
    * @param marginAtoms
    */
   protected void getAtoms(BitSet bsSelected, boolean doAddHydrogens,
                           boolean getRadii, boolean getMolecules,
-                          boolean getAllModels, boolean addNearbyAtoms, float marginAtoms) {
+                          boolean getAllModels, boolean addNearbyAtoms,
+                          float marginAtoms) {
 
     if (addNearbyAtoms)
       getRadii = true;
     // set atomRadiusData to 100% if it has not been set already
     // if it hasn't already been set.
-    if (params.atomRadiusData == null && getRadii)
-      params.atomRadiusData = new RadiusData(1, RadiusData.TYPE_FACTOR,
-          JmolConstants.VDW_AUTO);
-    atomData.radiusData = params.atomRadiusData;
-    atomData.radiusData.valueExtended = params.solventExtendedAtomRadius;
-    if (doAddHydrogens)
-      atomData.radiusData.vdwType = JmolConstants.VDW_NOJMOL;
+    if (getRadii) {
+      if (params.atomRadiusData == null)
+        params.atomRadiusData = new RadiusData(1, RadiusData.TYPE_FACTOR,
+            JmolConstants.VDW_AUTO);
+      atomData.radiusData = params.atomRadiusData;
+      atomData.radiusData.valueExtended = params.solventExtendedAtomRadius;
+      if (doAddHydrogens)
+        atomData.radiusData.vdwType = JmolConstants.VDW_NOJMOL;
+    }
     atomData.modelIndex = modelIndex; // -1 here means fill ALL atoms; any other
     // means "this model only"
     atomData.bsSelected = bsSelected;
@@ -162,7 +167,8 @@ abstract class AtomDataReader extends VolumeDataReader {
         atomData.atomRadius[i] = getWorkingRadius(i, marginAtoms);
     }
 
-    float rH = (getRadii && doAddHydrogens ? getWorkingRadius(-1, marginAtoms) : 0);
+    float rH = (getRadii && doAddHydrogens ? getWorkingRadius(-1, marginAtoms)
+        : 0);
     myAtomCount = BitSetUtil.cardinalityOf(bsMySelected);
     BitSet atomSet = BitSetUtil.copy(bsMySelected);
     int nH = 0;

@@ -603,7 +603,8 @@ public class ScriptEvaluator {
   }
 
   private ScriptVariable parameterExpressionToken(int pt) throws ScriptException {
-    return parameterExpressionList(pt, -1, false).get(0);
+    List<ScriptVariable> result = parameterExpressionList(pt, -1, false);
+    return (result.size() > 0 ? result.get(0) : ScriptVariable.getVariable(""));
   }
 
   /**

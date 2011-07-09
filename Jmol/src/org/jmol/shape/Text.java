@@ -130,7 +130,6 @@ public class Text extends Object2d {
   }
 
   void setFontScale(float scale) {
-    System.out.println("Text " + scale);
     if (fontScale == scale)
       return;
     fontScale = scale;
@@ -333,11 +332,10 @@ public class Text extends Object2d {
     } else {
       yBoxOffset = yOffset;
     }
-    boxXY[2] = boxWidth;
-    boxXY[3] = boxHeight;
-    System.out.println("Text setBoxXY " + Escape.escape(boxXY) + " " + xBoxOffset + " " + yBoxOffset);
     boxXY[0] += xBoxOffset;
     boxXY[1] += yBoxOffset;
+    boxXY[2] = boxWidth;
+    boxXY[3] = boxHeight;
   }
   
   private static void showBox(JmolRendererInterface g3d, short colix,

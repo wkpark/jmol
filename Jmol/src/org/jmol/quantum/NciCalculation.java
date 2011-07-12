@@ -122,6 +122,7 @@ public class NciCalculation extends QuantumCalculation implements
   private boolean isPromolecular;
   private BitSet bsOK;
   private boolean noValuesAtAll;
+  private boolean useAbsolute;
 
   public boolean setupCalculation(VolumeDataInterface volumeData,
                                   BitSet bsSelected, BitSet bsExcluded,
@@ -133,7 +134,8 @@ public class NciCalculation extends QuantumCalculation implements
                                   float[] linearCombination, float[][] coefs,
                                   float[] partialCharges,
                                   boolean isDensityOnly, Point3f[] points,
-                                  float[] parameters) {
+                                  float[] parameters, int testFlags) {
+    useAbsolute = (testFlags == 2);
     this.bsExcluded = bsExcluded;
     BitSet bsLigand = new BitSet();
     bsLigand.or(bsSelected);
@@ -335,6 +337,8 @@ public class NciCalculation extends QuantumCalculation implements
       return Float.NaN; 
     if (isReducedDensity) {
       s = c * grad * Math.pow(rho, rpower);
+    } else if (useAbsolute) {
+      s = rho;
     } else {
       hess[0][0] = gxxTemp;
       hess[1][0] = hess[0][1] = gxyTemp;
@@ -450,7 +454,10 @@ public class NciCalculation extends QuantumCalculation implements
       default:
         break;
       }
-      grad = Math.sqrt(gxTemp * gxTemp + gyTemp * gyTemp + gzTemp * gzTemp);
+      if (useAbsolute)
+        grad = gxTemp + gyTemp + gzTemp;
+      else
+        grad = Math.sqrt(gxTemp * gxTemp + gyTemp * gyTemp + gzTemp * gzTemp);
 
       //if (ix == 4 && iy < 10 && iz < 10)
       //System.out.println(ix + " " + iy + " " + iz + " rho " + rho + " grad " + grad);

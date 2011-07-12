@@ -397,7 +397,7 @@ abstract public class AtomCollection {
   public Point3f[] calculateSurface(BitSet bsSelected, float envelopeRadius) {
     if (envelopeRadius < 0)
       envelopeRadius = EnvelopeCalculation.SURFACE_DISTANCE_FOR_CALCULATION;
-    EnvelopeCalculation ec = new EnvelopeCalculation(viewer, atomCount, null, viewer.getTestFlag2());
+    EnvelopeCalculation ec = new EnvelopeCalculation(viewer, atomCount, null);
     ec.calculate(new RadiusData(envelopeRadius, RadiusData.TYPE_ABSOLUTE, 0), 
         Float.MAX_VALUE, 
         bsSelected, BitSetUtil.copyInvert(bsSelected, atomCount), 

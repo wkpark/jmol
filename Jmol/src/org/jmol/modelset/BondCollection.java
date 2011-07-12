@@ -53,6 +53,11 @@ abstract public class BondCollection extends AtomCollection {
   protected JmolMolecule[] molecules = new JmolMolecule[4];
   protected int moleculeCount;
 
+  protected void resetMolecules() {
+    molecules = null;
+    moleculeCount = 0;
+  }
+
   protected Bond[] bonds;
   protected int bondCount;
   
@@ -417,8 +422,7 @@ abstract public class BondCollection extends AtomCollection {
     int iDst = bsBond.nextSetBit(0);
     if (iDst < 0)
       return;
-    molecules = null;
-    moleculeCount = 0;
+    resetMolecules();
     int modelIndexLast = -1;
     int n = bsBond.cardinality();
     for (int iSrc = iDst; iSrc < bondCount; ++iSrc) {
@@ -441,8 +445,9 @@ abstract public class BondCollection extends AtomCollection {
     bondCount = iDst;
     BitSet[] sets = (BitSet[]) viewer.getShapeProperty(
         JmolConstants.SHAPE_STICKS, "sets");
-    for (int i = 0; i < sets.length; i++)
-      BitSetUtil.deleteBits(sets[i], bsBond);
+    if (sets != null)
+      for (int i = 0; i < sets.length; i++)
+        BitSetUtil.deleteBits(sets[i], bsBond);
     BitSetUtil.deleteBits(bsHBondsRasmol, bsBond);
     BitSetUtil.deleteBits(bsAromatic, bsBond);
   }

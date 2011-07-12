@@ -576,6 +576,26 @@ import org.jmol.util.ArrayUtil;
     return propertyColorEncoder.paletteWB = b;
   }
 
+  public static int[] getPaletteAtoB(int color1, int color2) {
+    int[] b = new int[JmolConstants.argbsRoygbScale.length];
+    float red1 = (((color1 & 0xFF0000) >> 16) & 0xFF) / 255f;
+    float green1 = (((color1 & 0xFF00) >> 8) & 0xFF) / 255f;
+    float blue1 = (color1 & 0xFF) / 255f;
+    float red2 = (((color2 & 0xFF0000) >> 16) & 0xFF) / 255f;
+    float green2 = (((color2 & 0xFF00) >> 8) & 0xFF) / 255f;
+    float blue2 = (color2 & 0xFF) / 255f;
+    float dr = (red2 - red1) / b.length;
+    float dg = (green2 - green1) / b.length;
+    float db = (blue2 - blue1) / b.length;   
+    for (int i = 0; i < b.length; i++) {
+      b[i] = Graphics3D.colorTriadToInt(
+          red1 + dr * i,
+          green1 + dg * i,
+          blue1 + db * i
+          );
+    }
+    return b;
+  }
   private int[] getPaletteBW() {
     if (propertyColorEncoder.paletteBW != null) 
       return propertyColorEncoder.paletteBW;

@@ -3706,6 +3706,13 @@ public class ScriptEvaluator {
         rpn.addXNum(new ScriptVariable(instruction));
         break;
       case Token.bitset:
+        BitSet bs1 = BitSetUtil.copy((BitSet) value);
+        //System.out.println(Escape.escape(bs1));
+        if (isStateScript && viewer.getTestFlag(1))
+          BitSetUtil.deleteBits(bs1, (BitSet) viewer.getModelSetAuxiliaryInfo("bsDeletedAtoms"));
+        //System.out.println(Escape.escape(bs1));
+        rpn.addX(bs1);
+        break;
       case Token.point3f:
         rpn.addX(value);
         break;
@@ -3770,6 +3777,7 @@ public class ScriptEvaluator {
     }
     return bs;
   }
+
 
   private BitSet compareFloat(int tokWhat, float[] data, int tokOperator,
                               float comparisonFloat) {
@@ -5645,7 +5653,7 @@ public class ScriptEvaluator {
       lcaoCartoon();
       return;
     case Token.polyhedra:
-      polyhedra();
+      polyhedra();  
       return;
     case Token.struts:
       struts();
@@ -8333,13 +8341,11 @@ public class ScriptEvaluator {
       case Token.smiles:
         isInline = (tok == Token.inline);
         isSmiles = (tok == Token.smiles);
-        modelName = filename;
         i++;
         loadScript.append(" " + modelName);
         break;
       case Token.trajectory:
       case Token.model:
-        modelName = filename;
         i++;
         loadScript.append(" " + modelName);
         if (tok == Token.trajectory)
@@ -15035,7 +15041,7 @@ public class ScriptEvaluator {
         if (i + 1 != statementLength || needsGenerating || nAtomSets > 1
             || nAtomSets == 0 && setPropertyName == "to")
           error(ERROR_incompatibleArguments);
-        propertyName = parameterAsString(i);
+        propertyName = (theTok == Token.off ? "off" : theTok == Token.on ? "on" : "delete");
         onOffDelete = true;
         break;
       case Token.opEQ:
@@ -16503,9 +16509,9 @@ public class ScriptEvaluator {
         }
         if (isColorParam(i + 1)) {
           color = getArgbParam(++i);
-          addShapeProperty(propertyList, "colorRGB", Integer.valueOf(color));
           sbCommand.append(" ").append(Escape.escapeColor(color));
           i = iToken;
+          addShapeProperty(propertyList, "colorRGB", Integer.valueOf(color));
           idSeen = true;
           if (isColorParam(i + 1)) {
             color = getArgbParam(++i);
@@ -16734,6 +16740,16 @@ public class ScriptEvaluator {
           isColorSchemeTranslucent = true;
           i++;
         }
+        if (tokAt(i + 2) == Token.to) {
+          int color1 = getArgbParam(i + 1);
+          i = iToken;
+          int color2 = getArgbParam(i + 2);
+          i = iToken;
+          colorScheme = ColorEncoder.getColorSchemeList(ColorEncoder.getPaletteAtoB(color1, color2));
+          idSeen = true;
+          continue;
+        } 
+
         colorScheme = parameterAsString(++i).toLowerCase();
         if (colorScheme.equals("sets"))
           isColorSchemeTranslucent = false;

@@ -72,13 +72,13 @@ class SelectionManager {
 
   void clear() {
     clearSelection(true);
-    hide(null, null, true);
+    hide(null, null, null, true);
     setSelectionSubset(null);
     bsDeleted = null;
     setMotionFixedAtoms(null);
   }
 
-  void hide(BitSet bs, Boolean addRemove, boolean isQuiet) {
+  void hide(ModelSet modelSet, BitSet bs, Boolean addRemove, boolean isQuiet) {
     if (bs == null) {
       bsHidden.clear();
     } else if (addRemove == null) {
@@ -89,7 +89,6 @@ class SelectionManager {
     } else {
       bsHidden.andNot(bs);
     }
-    ModelSet modelSet = viewer.getModelSet();
     if (modelSet != null)
       modelSet.setBsHidden(bsHidden);
     if (!isQuiet)
@@ -97,8 +96,9 @@ class SelectionManager {
           + bsHidden.cardinality()));
   }
 
-  void display(BitSet bsAll, BitSet bs, Boolean addRemove, boolean isQuiet) {
-    if (bs == null) {
+  void display(ModelSet modelSet, BitSet bs, Boolean addRemove, boolean isQuiet) {
+      BitSet bsAll = modelSet.getModelAtomBitSetIncludingDeleted(-1, false); 
+        if (bs == null) {
       bsHidden.clear();
     } else if (addRemove == null) {
       bsHidden.or(bsAll);
@@ -109,7 +109,6 @@ class SelectionManager {
       bsHidden.or(bs);
     }
     BitSetUtil.andNot(bsHidden, bsDeleted);
-    ModelSet modelSet = viewer.getModelSet();
     if (modelSet != null)
       modelSet.setBsHidden(bsHidden);
     if (!isQuiet)
@@ -280,7 +279,7 @@ class SelectionManager {
 
   private void selectionChanged(boolean isQuiet) {
     if (hideNotSelected)
-      hide(BitSetUtil.copyInvert(bsSelection, viewer.getAtomCount()), null, isQuiet);
+      hide(viewer.getModelSet(), BitSetUtil.copyInvert(bsSelection, viewer.getAtomCount()), null, isQuiet);
     if (isQuiet || listeners.length == 0)
       return;
     for (int i = listeners.length; --i >= 0;)

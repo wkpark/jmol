@@ -210,7 +210,6 @@ class IsoSolventReader extends AtomDataReader {
       return;
     Logger.startTimer();
     getMaxRadius();
-    voxelSource = new int[volumeData.nPoints];
     if (isCavity && dataType != Parameters.SURFACE_NOMAP
         && dataType != Parameters.SURFACE_PROPERTY) {
       params.vertexSource = null;
@@ -221,6 +220,7 @@ class IsoSolventReader extends AtomDataReader {
       resetVoxelData(Float.MAX_VALUE);
       markSphereVoxels(0, Float.NaN);
     } else {
+      voxelSource = new int[volumeData.nPoints];
       generateSolventCube();
     }
     unsetVoxelData();
@@ -889,7 +889,8 @@ class IsoSolventReader extends AtomDataReader {
                       .get(ipt)))) {
                 bsThisPass.set(ipt);
                 setVoxel(i, j, k, value);
-                voxelSource[ipt] = -1 - f.ia;
+                if (voxelSource != null)
+                  voxelSource[ipt] = -1 - f.ia;
                 if (value > 0) {
                   bsSurfaceVoxels.set(ipt);
                 }
@@ -941,7 +942,8 @@ class IsoSolventReader extends AtomDataReader {
             if (value < voxelData[i][j][k]) {
               setVoxel(i, j, k, value);
               int ipt = volumeData.getPointIndex(i, j, k);
-              voxelSource[ipt] = -1 - ia;
+              if (voxelSource != null)
+                voxelSource[ipt] = -1 - ia;
             }
           }
         }
@@ -979,7 +981,8 @@ class IsoSolventReader extends AtomDataReader {
               setVoxel(i, j, k, value);
               if (!Float.isNaN(value)) {
                 int ipt = volumeData.getPointIndex(i, j, k);
-                voxelSource[ipt] = iAtom + 1;
+                if (voxelSource != null)
+                  voxelSource[ipt] = iAtom + 1;
                 if (value < 0 && isSurface)
                   bsSurfaceVoxels.set(ipt);
               }

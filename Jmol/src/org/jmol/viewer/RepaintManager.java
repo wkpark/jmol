@@ -119,7 +119,7 @@ class RepaintManager {
       return;
     if (logTime)
       Logger.startTimer();
-    logTime = viewer.getTestFlag1();
+    logTime = viewer.getTestFlag(2);
     viewer.finalizeTransformParameters();
     try {
       if (bsAtoms != null)

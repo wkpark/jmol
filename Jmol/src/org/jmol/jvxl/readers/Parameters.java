@@ -138,8 +138,10 @@ public class Parameters {
   public final static int STATE_DATA_READ = 2;
   public final static int STATE_DATA_COLORED = 3;
 
+  
   int state = STATE_UNINITIALIZED;
 
+  public int testFlags = 0;
   boolean logMessages = false;
   boolean logCompression = false;
   boolean logCube = false;
@@ -256,6 +258,7 @@ public class Parameters {
     slabInfo = null;
     solventExtendedAtomRadius = 0;
     state = STATE_INITIALIZED;
+    testFlags = 0;
     thePlane = null;
     theProperty = null;
     thisContour = -1;

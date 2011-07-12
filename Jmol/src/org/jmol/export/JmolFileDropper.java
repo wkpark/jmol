@@ -42,6 +42,7 @@ import java.io.File;
 
 import java.util.List;
 
+import org.jmol.api.JmolStatusListener;
 import org.jmol.api.JmolViewer;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
@@ -64,8 +65,10 @@ public class JmolFileDropper implements DropTargetListener {
 
   JmolViewer viewer;
   PropertyChangeListener pcl;
+  JmolStatusListener statusListener;
   
-  public JmolFileDropper(JmolViewer viewer) {
+  public JmolFileDropper(JmolStatusListener statusListener, JmolViewer viewer) {
+    this.statusListener = statusListener;
     fd_oldFileName = "";
     fd_propSupport = new PropertyChangeSupport(this);
     this.viewer = viewer;
@@ -90,6 +93,11 @@ public class JmolFileDropper implements DropTargetListener {
     fname = fname.replace('\\', '/').trim();
     if (fname.indexOf("://") < 0)
       fname = (fname.startsWith("/") ? "file://" : "file:///") + fname;
+    if (statusListener != null) {
+      String data = viewer.getFileAsString(fname);
+      if (data.indexOf("preferredWidthHeight") >= 0)
+        statusListener.resizeInnerPanel(data);
+    }
     viewer.openFileAsynchronously(fname);
   }
 

@@ -17,7 +17,7 @@ public interface QuantumCalculationInterface {
                                  float[][] gaussians,
                                  int[][] dfCoefMaps, 
                                  Object slaters, float[] moCoefficients,
-                                 float[] linearCombination, float[][] coefs, float[] partialCharges, boolean doNormalize, Point3f[] points, float[] parameters);
+                                 float[] linearCombination, float[][] coefs, float[] partialCharges, boolean doNormalize, Point3f[] points, float[] parameters, int testFlags);
   
   public abstract void createCube();
   public abstract float process(Point3f pt);

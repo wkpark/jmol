@@ -443,7 +443,7 @@ public class Jmol implements WrappedApplet {
 
     if (isSigned) {
       try {
-      dropper = new JmolFileDropper(viewer);
+      dropper = new JmolFileDropper(null, viewer);
       } catch (Exception e) {
         //
       }
@@ -1289,6 +1289,10 @@ public class Jmol implements WrappedApplet {
     public Map<String, Applet>  getRegistryInfo() {
       JmolAppletRegistry.checkIn(null, null); //cleans registry
       return JmolAppletRegistry.htRegistry;
+    }
+
+    public void resizeInnerPanel(String data) {
+      // application only?
     }
   }
 }

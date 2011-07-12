@@ -128,13 +128,13 @@ public final class Resolver implements JmolBioResolver {
   }
   
   public void clearBioPolymers(Group[] groups, int groupCount,
-                               BitSet alreadyDefined) {
+                               BitSet bsModelsExcluded) {
     for (int i = 0; i < groupCount; ++i) {
       Group group = groups[i];
       if (group instanceof Monomer) {
         Monomer monomer = (Monomer) group;
         if (monomer.getBioPolymer() != null
-            && (alreadyDefined == null || !alreadyDefined.get(monomer.getModelIndex())))
+            && (bsModelsExcluded == null || !bsModelsExcluded.get(monomer.getModelIndex())))
           monomer.setBioPolymer(null, -1);
       }
     }
@@ -179,9 +179,11 @@ public final class Resolver implements JmolBioResolver {
   private Vector3f vNorm;
   private Point4f plane;
 
+  public void initialize(ModelSet modelSet) {
+    this.modelSet = modelSet;
+  }
   public void initializeHydrogenAddition(ModelLoader modelLoader, int bondCount) {
     this.modelLoader = modelLoader;
-    this.modelSet = modelLoader.getModelSet();
     baseBondIndex = bondCount;
     bsAddedHydrogens = new BitSet();
     bsAtomsForHs = new BitSet();
@@ -430,14 +432,6 @@ public final class Resolver implements JmolBioResolver {
       }
       deleteUnneededAtoms();
     }
-    htBondMap = null;
-    htGroupBonds = null;
-    bsAddedHydrogens = null;
-    bsAtomsForHs = null;
-    vAB = vAC = vNorm = null;
-    plane = null;
-    modelSet = null;
-    modelLoader = null;
   }
 
   /**
@@ -486,7 +480,8 @@ public final class Resolver implements JmolBioResolver {
 
       }
     }
-    modelSet.viewer.deleteAtoms(bsAddedHydrogens, false);
+    modelSet.deleteBonds(bsBondsDeleted, true);
+    modelLoader.deleteAtoms(bsAddedHydrogens);
   }
 
   private void finalizePdbCharges() {
@@ -548,7 +543,7 @@ public final class Resolver implements JmolBioResolver {
     }
     if (htKeysBad.isEmpty())
       return;
-    for (int i = 0; i < bonds.length; i++) {
+    for (int i = 0; i < bondCount; i++) {
       Atom a1 = bonds[i].getAtom1();
       Atom a2 = bonds[i].getAtom2();
       if (a1.getGroup() == a2.getGroup())

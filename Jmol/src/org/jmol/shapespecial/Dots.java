@@ -62,7 +62,7 @@ public class Dots extends AtomShape {
   public void initShape() {
     super.initShape();
     translucentAllowed = false; //except for geosurface
-    ec = new EnvelopeCalculation(viewer, atomCount, mads, viewer.getTestFlag2());
+    ec = new EnvelopeCalculation(viewer, atomCount, mads);
   }
 
   @Override
@@ -156,7 +156,7 @@ public class Dots extends AtomShape {
     bsIgnore = null;
     isActive = false;
     if (ec == null)
-      ec = new EnvelopeCalculation(viewer, atomCount, mads, viewer.getTestFlag2());
+      ec = new EnvelopeCalculation(viewer, atomCount, mads);
   }
 
   @Override

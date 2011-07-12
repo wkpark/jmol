@@ -407,6 +407,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return;
     }
 
+    if ("cutoffRange" == propertyName) {
+      cutoffRange = (float[]) value;
+      return;
+    }
+
     // Isosurface / SurfaceGenerator both interested
 
     if ("slab" == propertyName) {
@@ -528,8 +533,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       withinPoints = (List<Point3f>) o[3];
       if (withinPoints.size() == 0)
         withinPoints = viewer.getAtomPointVector((BitSet) o[2]);
-    } else if ("cutoffRange" == propertyName) {
-      cutoffRange = (float[]) value;
+    } else if ("nci" == propertyName && sg != null) {
+      sg.getParams().testFlags = (viewer.getTestFlag(2) ? 2 : 0);
     }
 
     // surface Export3D only (return TRUE) or shared (return FALSE)

@@ -1257,15 +1257,19 @@ public class StateManager {
     int ellipsoidDotCount = 200;
     float ellipsoidAxisDiameter = 0.02f;
 
-    String getWindowState(StringBuffer sfunc) {
+    String getWindowState(StringBuffer sfunc, int width, int height) {
       StringBuffer str = new StringBuffer();
       if (sfunc != null) {
         sfunc
             .append("  initialize;\n  set refreshing false;\n  _setWindowState;\n");
         str.append("\nfunction _setWindowState() {\n");
       }
-      str.append("# height " + viewer.getScreenHeight() + ";\n# width "
-          + viewer.getScreenWidth() + ";\n");
+      if (width != 0)
+        str.append("# preferredWidthHeight ").append(width).append(" ").append(height).append(";\n");
+      str
+      .append("# width ").append(width == 0 ? viewer.getScreenWidth() : width)
+      .append(";\n# height ").append(height == 0 ? viewer.getScreenHeight() : height)
+      .append(";\n");
       appendCmd(str, "stateVersion = " + getParameter("_version"));
       appendCmd(str, "background " + Escape.escapeColor(objColors[0]));
       for (int i = 1; i < OBJ_MAX; i++)

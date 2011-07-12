@@ -122,10 +122,10 @@ public final class Model {
   int firstAtomIndex;  
   int atomCount = 0; // includes deleted atoms
   final BitSet bsAtoms = new BitSet();
-  final BitSet bsDeleted = new BitSet();
+  final BitSet bsAtomsDeleted = new BitSet();
   // this one is variable and calculated only if necessary:
   public int getTrueAtomCount() {
-    return bsAtoms.cardinality() - bsDeleted.cardinality();
+    return bsAtoms.cardinality() - bsAtomsDeleted.cardinality();
   }
   
   private int bondCount = -1;
@@ -386,7 +386,7 @@ public final class Model {
     for (int i = 0; i < bioPolymerCount; i++)
       bioPolymers[i].recalculateLeadMidpointsAndWingVectors();
     BitSetUtil.deleteBits(bsAtoms, bsDeleted);
-    BitSetUtil.deleteBits(this.bsDeleted, bsDeleted);
+    BitSetUtil.deleteBits(bsAtomsDeleted, bsDeleted);
   }
 
 }

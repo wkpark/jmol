@@ -333,7 +333,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
       sg.getAtomDataServer().fillAtomData(atomData, AtomData.MODE_FILL_COORDS);
       qpc.setupCalculation(volumeData, sg.getBsSelected(), null, null, null,
           atomData.atomXyz, -1, null, null, null, null, null, null, null,
-          params.theProperty, true, null, params.parameters);
+          params.theProperty, true, null, params.parameters, params.testFlags);
       iPlaneRaw = 1;
       qpc.setPlanes(yzPlanesRaw = new float[4][yzCount]);
       if (hasColorData) {

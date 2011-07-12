@@ -284,17 +284,17 @@ class IsoMOReader extends AtomDataReader {
           atomData.atomXyz, atomData.firstAtomIndex, (List<int[]>) moData.get("shells"), (float[][]) moData
                           .get("gaussians"), dfCoefMaps, null,
           coef, linearCombination, coefs, params.theProperty,
-          moData.get("isNormalized") == null, points, params.parameters);
+          moData.get("isNormalized") == null, points, params.parameters, params.testFlags);
     case Parameters.QM_TYPE_SLATER:
       return q.setupCalculation(volumeData, bsMySelected, null, null, (String) moData
                       .get("calculationType"),
           atomData.atomXyz, atomData.firstAtomIndex, null, null, null, moData.get("slaters"),
-          coef, linearCombination, coefs, params.theProperty, true, points, params.parameters);
+          coef, linearCombination, coefs, params.theProperty, true, points, params.parameters, params.testFlags);
     case Parameters.QM_TYPE_NCI_PRO:
       return q.setupCalculation(volumeData, bsMySelected, params.bsSolvent,
           atomData.bsMolecules, null, atomData.atomXyz, atomData.firstAtomIndex, null, null,
           null, null, null, null, null, params.theProperty,
-          true, points, params.parameters);
+          true, points, params.parameters, params.testFlags);
     }
     return false;
   }

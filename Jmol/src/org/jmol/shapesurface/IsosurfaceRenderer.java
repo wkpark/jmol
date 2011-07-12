@@ -50,7 +50,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
   }
   @Override
   protected void render() {
-    iShowNormals = viewer.getTestFlag4();
+    iShowNormals = viewer.getTestFlag(4);
     Isosurface isosurface = (Isosurface) shape;
     int mySlabValue = Integer.MAX_VALUE;
     boolean isNavigationMode = viewer.getNavigationMode();
@@ -185,7 +185,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       int ptSize = ((int) (imesh.volumeRenderPointSize * 1000));
       if (diam < 1)
         diam = 1;
-      boolean showNumbers = viewer.getTestFlag3();
+      boolean showNumbers = viewer.getTestFlag(3);
       int cX = (showNumbers ? viewer.getScreenWidth() / 2 : 0);
       int cY = (showNumbers ? viewer.getScreenHeight() / 2 : 0);
       if (showNumbers)

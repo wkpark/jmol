@@ -1552,10 +1552,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isGroup)
       bs = getUndeletedGroupAtomBits(bs);
     if (isDisplay)
-      selectionManager.display(modelSet.getModelAtomBitSetIncludingDeleted(-1,
-          false), bs, addRemove, isQuiet);
+      selectionManager.display(modelSet, bs, addRemove, isQuiet);
     else
-      selectionManager.hide(bs, addRemove, isQuiet);
+      selectionManager.hide(modelSet, bs, addRemove, isQuiet);
   }
 
   private BitSet getUndeletedGroupAtomBits(BitSet bs) {
@@ -3292,14 +3291,14 @@ private void zap(String msg) {
     return modelSet.getAllPolymerInfo(getAtomBitSet(atomExpression));
   }
 
-  public String getWrappedState(boolean isImage) {
+  public String getWrappedState(boolean isImage, int width, int height) {
     if (isImage && !global.imageState || !global.preserveState)
       return "";
     // we remove local file references in the embedded states for images
     String s = "";
     try {
       s = JmolConstants.embedScript(FileManager.setScriptFileReferences(
-          getStateInfo(null), ".", null, null));
+          getStateInfo(null, width, height), ".", null, null));
     } catch (Throwable e) {
       // ignore if this uses too much memory
       Logger.error("state could not be saved: " + e.getMessage());
@@ -3310,12 +3309,12 @@ private void zap(String msg) {
 
   @Override
   public String getStateInfo() {
-    return getStateInfo(null);
+    return getStateInfo(null, 0, 0);
   }
 
   public final static String STATE_VERSION_STAMP = "# Jmol state version ";
 
-  public String getStateInfo(String type) {
+  public String getStateInfo(String type, int width, int height) {
     // System.out.println("viewer getStateInfo " + type);
     if (!global.preserveState)
       return "";
@@ -3335,7 +3334,7 @@ private void zap(String msg) {
     }
     // window state
     if (isAll || type.equalsIgnoreCase("windowState"))
-      s.append(global.getWindowState(sfunc));
+      s.append(global.getWindowState(sfunc, width, height));
     //if (isAll)
       //s.append(getFunctionCalls(null)); // removed in 12.1.16; unnecessary in state
     // file state
@@ -6810,20 +6809,18 @@ private void zap(String msg) {
     return global.solventOn;
   }
 
-  public boolean getTestFlag1() {
-    return global.testFlag1;
-  }
-
-  public boolean getTestFlag2() {
-    return global.testFlag2;
-  }
-
-  public boolean getTestFlag3() {
-    return global.testFlag3;
-  }
-
-  public boolean getTestFlag4() {
-    return global.testFlag4;
+  public boolean getTestFlag(int i) {
+    switch (i) {
+    case 1:
+      return global.testFlag1;
+    case 2:
+      return global.testFlag2;
+    case 3:
+      return global.testFlag3;
+    case 4:
+      return global.testFlag4;
+    }
+    return false;
   }
 
   @Override

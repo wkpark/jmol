@@ -25,7 +25,6 @@
 
 package org.jmol.modelset;
 
-import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
@@ -317,16 +316,16 @@ import javax.vecmath.Vector3f;
                                     boolean dsspIgnoreHydrogen,
                                     boolean setStructure) {
     BitSet bsAllAtoms = new BitSet();
-    BitSet bsDefined = BitSetUtil.copyInvert(modelsOf(bsAtoms, bsAllAtoms),
+    BitSet bsModelsExcluded = BitSetUtil.copyInvert(modelsOf(bsAtoms, bsAllAtoms),
         modelCount);
     if (!setStructure)
-      return calculateStructuresAllExcept(bsDefined, asDSSP, true,
+      return calculateStructuresAllExcept(bsModelsExcluded, asDSSP, true,
           dsspIgnoreHydrogen, false, false);
     for (int i = 0; i < modelCount; i++)
-      if (!bsDefined.get(i))
+      if (!bsModelsExcluded.get(i))
         addBioPolymerToModel(null, models[i]);
-    calculatePolymers(0, bsDefined);
-    String ret = calculateStructuresAllExcept(bsDefined, asDSSP, true,
+    calculatePolymers(null, 0, 0, bsModelsExcluded);
+    String ret = calculateStructuresAllExcept(bsModelsExcluded, asDSSP, true,
         dsspIgnoreHydrogen, true, false);
     viewer.resetBioshapes(bsAllAtoms);
     setStructureIds();
@@ -709,10 +708,6 @@ import javax.vecmath.Vector3f;
       nAtomsDeleted += nAtoms;
       BitSet bs = oldModels[i].bsAtoms;
       int firstAtomIndex = oldModels[i].firstAtomIndex;
-      int firstGroupIndex = atoms[firstAtomIndex].getGroupIndex();
-      int nGroups = atoms[firstAtomIndex + nAtoms - 1].getGroupIndex() - firstGroupIndex + 1;
-      groups = (Group[]) ArrayUtil.deleteElements(groups, firstGroupIndex, nGroups);
-      groupCount -= nGroups;
 
       // delete from symmetry set
       BitSetUtil.deleteBits(bsSymmetry, bs);
@@ -1029,8 +1024,7 @@ import javax.vecmath.Vector3f;
 
   public void connect(float[][] connections) {
     // array of [index1 index2 order diameter energy]
-    molecules = null;
-    moleculeCount = 0;
+    resetMolecules();
     BitSet bsDelete = new BitSet();
     for (int i = 0; i < connections.length; i++) {
       float[] f = connections[i];
@@ -1155,7 +1149,6 @@ import javax.vecmath.Vector3f;
       break;
     }    
   }
-
 
 }
 

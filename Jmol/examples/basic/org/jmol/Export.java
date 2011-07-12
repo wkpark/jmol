@@ -223,4 +223,9 @@ class MyStatusListener implements JmolStatusListener {
   public String dialogAsk(String type, String data) {
     return null;
   }
+
+  public void resizeInnerPanel(String data) {
+    // TODO
+    
+  }
 }

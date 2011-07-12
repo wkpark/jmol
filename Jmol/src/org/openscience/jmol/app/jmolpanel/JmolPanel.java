@@ -139,6 +139,8 @@ public class JmolPanel extends JPanel implements SplashInterface {
   
   static HistoryFile historyFile;
 
+  private StatusListener myStatusListener;
+  
   public JmolPanel(JmolApp jmolApp, Splash splash, JFrame frame, JmolPanel parent,
       int startupWidth, int startupHeight, String commandOptions, Point loc) {
     super(true);
@@ -189,7 +191,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
      * 
      */
     display = new DisplayPanel(this);
-    StatusListener myStatusListener = new StatusListener(this, display);
+    myStatusListener = new StatusListener(this, display);
     viewer = JmolViewer.allocateViewer(display, modelAdapter, null, null, null,
         appletContext = commandOptions, myStatusListener);
     display.setViewer(viewer);
@@ -296,7 +298,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
       //historyFile.repositionWindow(EDITOR_WINDOW_NAME, c, 150, 50);
 
     say(GT._("Setting up Drag-and-Drop..."));
-    new JmolFileDropper(viewer);
+    new JmolFileDropper(myStatusListener, viewer);
     say(GT._("Launching main frame..."));
   }
 
@@ -1413,21 +1415,33 @@ public class JmolPanel extends JPanel implements SplashInterface {
       super(resizeAction);
     }
     public void actionPerformed(ActionEvent e) {
-      resizeInnerPanel();
+      resizeInnerPanel(null);
     } 
   }
   
-  void resizeInnerPanel() {
-    String data = viewer.getScreenWidth() + " " + viewer.getScreenHeight();
-    String info = JOptionPane.showInputDialog(GT._("width height?"), data);
+  void resizeInnerPanel(String data) {
+    String info = viewer.getScreenWidth() + " " + viewer.getScreenHeight();
+    if (data == null) {
+      data = info;
+   } else {
+     int pt = data.indexOf("preferredWidthHeight ");
+     int pt2 = data.indexOf(";", pt + 1);
+     if (pt >= 0 && pt2 > pt)
+       data = data.substring(pt + 21, pt2).trim();
+     if (data.equals(info))
+       return;
+   }
+    info = JOptionPane.showInputDialog(GT._("width height?"), data);
     if (info == null)
       return;
     float[] dims = new float[2];
     int n = Parser.parseStringInfestedFloatArray(info, null, dims);
     if (n < 2)
       return;
-    int width = (int) dims[0];
-    int height = (int) dims[1];
+    resizeDisplay((int) dims[0], (int) dims[1]);
+  }
+
+  void resizeDisplay(int width, int height) {
     Dimension d = new Dimension(width, height);
     display.setPreferredSize(d);
     d = new Dimension(width, 30);

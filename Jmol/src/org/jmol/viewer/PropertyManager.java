@@ -406,7 +406,7 @@ public class PropertyManager {
     case PROP_SHAPE_INFO:
       return viewer.getShapeInfo();
     case PROP_STATE_INFO:
-      return viewer.getStateInfo(myParam.toString());
+      return viewer.getStateInfo(myParam.toString(), 0, 0);
     case PROP_POINTGROUP_INFO:
       return viewer.getPointGroupInfo(myParam);
     case PROP_FILE_INFO:

@@ -79,4 +79,6 @@ public interface JmolStatusListener extends JmolCallbackListener {
 
   public void showUrl(String url);
 
+  public void resizeInnerPanel(String data);
+
 }

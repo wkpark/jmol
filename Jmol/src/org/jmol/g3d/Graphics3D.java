@@ -2502,6 +2502,7 @@ final public class Graphics3D implements JmolRendererInterface {
   }
 
   public Font3D getFont3DScaled(Font3D font, float scale) {
+    // TODO: problem here is that we are assigning a bold font, then not DEassigning it
     float newScale = font.fontSizeNominal * scale;
     return (newScale == font.fontSize ? font : Font3D.getFont3D(
         font.idFontFace,

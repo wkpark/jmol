@@ -186,7 +186,7 @@ public class ImageCreator implements JmolImageCreatorInterface {
           if (asBytes) {
             bytes = JpegEncoder.getBytes(image, quality, Viewer.getJmolVersion());
           } else {
-            JpegEncoder.write(image, quality, os, viewer.getWrappedState(true));
+            JpegEncoder.write(image, quality, os, viewer.getWrappedState(true, image.getWidth(null), image.getHeight(null)));
             bytes = null;
           }
         } else if (type.equalsIgnoreCase("JPG64") || type.equalsIgnoreCase("JPEG64")) {
@@ -209,7 +209,7 @@ public class ImageCreator implements JmolImageCreatorInterface {
           } else {
             PngEncoder.write(image, quality, os);
             if (appendText == null)
-              os.write(viewer.getWrappedState(true).getBytes());
+              os.write(viewer.getWrappedState(true, image.getWidth(null), image.getHeight(null)).getBytes());
             bytes = null;
           }
         } else if (type.equalsIgnoreCase("PPM")) {

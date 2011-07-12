@@ -319,4 +319,8 @@ class StatusListener implements JmolStatusListener {
     return null;
   }
 
+  public void resizeInnerPanel(String data) {
+    jmol.resizeInnerPanel(data);
+  }
+
 }

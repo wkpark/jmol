@@ -190,7 +190,7 @@ public class Text extends Object2d {
     setWindow(g3d, scalePixelsPerMicron);
     if (scalePixelsPerMicron != 0 && this.scalePixelsPerMicron != 0)
       setFontScale(scalePixelsPerMicron / this.scalePixelsPerMicron);
-    else if (fontScale != imageFontScaling) 
+    else if (fontScale != imageFontScaling)
       setFontScale(imageFontScaling);
     if (doFormatText)
       formatText();
@@ -198,8 +198,8 @@ public class Text extends Object2d {
     if (isLabelOrHover) {
       boxXY[0] = movableX;
       boxXY[1] = movableY;
-      setBoxXY(boxWidth, boxHeight, offsetX * imageFontScaling * fontScale, offsetY
-          * imageFontScaling * fontScale, boxXY, isExact);
+      setBoxXY(boxWidth, boxHeight, offsetX * imageFontScaling, offsetY
+          * imageFontScaling, boxXY, isExact);
     } else {
       setPosition(fontScale);
     }
@@ -312,6 +312,7 @@ public class Text extends Object2d {
   private static void setBoxXY(float boxWidth, float boxHeight, float xOffset,
                                float yOffset, float[] boxXY, boolean isExact) {
     float xBoxOffset, yBoxOffset;
+
     // these are based on a standard |_ grid, so y is reversed.
     if (xOffset > 0 || isExact) {
       xBoxOffset = xOffset;

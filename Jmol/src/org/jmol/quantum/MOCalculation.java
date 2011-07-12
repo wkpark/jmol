@@ -135,7 +135,7 @@ public class MOCalculation extends QuantumCalculation implements
                         int firstAtomOffset, List<int[]> shells,
                         float[][] gaussians,
                         int[][] dfCoefMaps, Object slaters, float[] moCoefficients,
-                        float[] linearCombination, float[][] coefs, float[] partialCharges, boolean doNormalize, Point3f[] points, float[] parameters) {
+                        float[] linearCombination, float[][] coefs, float[] partialCharges, boolean doNormalize, Point3f[] points, float[] parameters, int testFlags) {
     havePoints = (points != null);
     this.calculationType = calculationType;
     this.firstAtomOffset = firstAtomOffset;

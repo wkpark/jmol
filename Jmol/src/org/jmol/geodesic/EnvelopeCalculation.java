@@ -148,9 +148,8 @@ public final class EnvelopeCalculation {
    * @param viewer
    * @param atomCount
    * @param mads
-   * @param asJavaBitSet
    */
-  public EnvelopeCalculation(AtomDataServer viewer, int atomCount, short[] mads, boolean asJavaBitSet) {
+  public EnvelopeCalculation(AtomDataServer viewer, int atomCount, short[] mads/*, boolean asJavaBitSet*/) {
     this.viewer = viewer;
     this.atomCount = atomCount; //preliminary, for setFromBits()
     this.mads = mads;

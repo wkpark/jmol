@@ -237,15 +237,31 @@ abstract public class ModelCollection extends BondCollection {
   protected Properties modelSetProperties;
   protected Map<String, Object> modelSetAuxiliaryInfo;
 
-  protected Group[] groups;
-  protected int groupCount;
-  protected JmolBioResolver jbr = null;
-  
-  protected void calculatePolymers(int baseGroupIndex, BitSet alreadyDefined) {
+  protected JmolBioResolver getJbr() {
+    try {
+      Class<?> shapeClass = Class.forName("org.jmol.modelsetbio.Resolver");
+      JmolBioResolver jbr = (JmolBioResolver) shapeClass.newInstance();
+      jbr.initialize((ModelSet) this);
+      return jbr;
+    } catch (Exception e) {
+      Logger
+          .error("developer error: org.jmol.modelsetbio.Resolver could not be found");
+      return null;
+    }
+  }
+
+  protected void calculatePolymers(Group[] groups, int groupCount, int baseGroupIndex, BitSet modelsExcluded) {
+    if (!isPDB)
+      return;
+    JmolBioResolver jbr = getJbr();
     if (jbr == null)
       return;
-    if (alreadyDefined != null) {
-      jbr.clearBioPolymers(groups, groupCount, alreadyDefined);
+    if (groups == null) {
+      groups = getGroups();
+      groupCount = groups.length;
+    }
+    if (modelsExcluded != null) {
+      jbr.clearBioPolymers(groups, groupCount, modelsExcluded);
     }
     boolean checkPolymerConnections = !viewer.isPdbSequential();
     for (int i = baseGroupIndex; i < groupCount; ++i) {
@@ -258,6 +274,29 @@ abstract public class ModelCollection extends BondCollection {
       addBioPolymerToModel(bp, g.getModel());
       i += bp.monomerCount - 1;
     }
+  }
+
+  /**
+   * In versions earlier than 12.1.51, groups[] was a 
+   * field of ModelCollection. But this is not necessary,
+   * and it was wasting space. This method is only called
+   * when polymers are recreated.
+   * 
+   * @return full array of groups in modelSet
+   */
+  Group[] getGroups() {
+    int n = 0;
+    for (int i = 0; i < modelCount; i++)
+      n += models[i].getGroupCount();
+    Group[] groups = new Group[n];
+    for (int i = 0, iGroup = 0; i < modelCount; i++)
+      for (int j = 0; j < models[i].chainCount; j++)
+        for (int k = 0; k < models[i].chains[j].groupCount; k++) {
+          groups[iGroup] = models[i].chains[j].groups[k];
+          groups[iGroup].groupIndex = iGroup;
+          iGroup++;
+        }
+    return groups;
   }
 
   protected void addBioPolymerToModel(Polymer polymer, Model model) {
@@ -702,7 +741,7 @@ abstract public class ModelCollection extends BondCollection {
     }
   }
   
-  private void freezeModels() {
+  void freezeModels() {
     for (int iModel = modelCount; --iModel >= 0;) {
       Model m = models[iModel];
       m.chains = (Chain[])ArrayUtil.setLength(m.chains, m.chainCount);
@@ -1424,13 +1463,13 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public String getPDBHeader(int modelIndex) {
-    return (isPDB ? getFullPDBHeader(modelIndex) : getFileHeader(modelIndex));
+    return (models[modelIndex].isPDB ? getFullPDBHeader(modelIndex) : getFileHeader(modelIndex));
   }
 
   public String getFileHeader(int modelIndex) {
     if (modelIndex < 0)
       return "";
-    if (isPDB)
+    if (models[modelIndex].isPDB)
       return getFullPDBHeader(modelIndex);
     String info = (String) getModelAuxiliaryInfo(modelIndex, "fileHeader");
     if (info == null)
@@ -3755,8 +3794,7 @@ abstract public class ModelCollection extends BondCollection {
       //final deletions
       bspf = null;
       bsAll = null;
-      molecules = null;
-      moleculeCount = 0;
+      resetMolecules();
       isBbcageDefault = false;
       calcBoundBoxDimensions(null, 1);
       return;
@@ -3947,11 +3985,9 @@ abstract public class ModelCollection extends BondCollection {
     BitSet bsBonds = new BitSet();
     for (int i = bs.nextSetBit(0); i >= 0 && i < atomCount ; i = bs.nextSetBit(i + 1))
       atoms[i].delete(bsBonds);
-    BitSet bsTemp = new BitSet();
     for (int i = 0; i < modelCount; i++) {
-      BitSetUtil.copy(bs, bsTemp);
-      bsTemp.and(models[i].bsAtoms);
-      models[i].bsDeleted.or(bsTemp);
+      models[i].bsAtomsDeleted.or(bs);
+      models[i].bsAtomsDeleted.and(models[i].bsAtoms);
     }
     deleteBonds(bsBonds, false);
   }
@@ -4043,7 +4079,41 @@ abstract public class ModelCollection extends BondCollection {
     return sb.toString();
   }
 
+ 
   // atom addition //
+ 
+  void adjustAtomArrays(int[] map, int i0, int atomCount) {
+    // from ModelLoader, after hydrogen atom addition
+    this.atomCount = atomCount;
+    for (int i = i0; i < atomCount; i++) {
+      atoms[i] = atoms[map[i]];
+      atoms[i].index = i;
+    }
+    if (vibrationVectors != null)
+      for (int i  = i0; i < atomCount; i++)
+        vibrationVectors[i] = vibrationVectors[map[i]];
+    if (occupancies != null)
+      for (int i  = i0; i < atomCount; i++)
+        occupancies[i] = occupancies[map[i]];
+    if (bfactor100s != null)
+      for (int i  = i0; i < atomCount; i++)
+        bfactor100s[i] = bfactor100s[map[i]];
+    if (partialCharges != null)
+      for (int i  = i0; i < atomCount; i++)
+        partialCharges[i] = partialCharges[map[i]];
+    if (ellipsoids != null)
+      for (int i  = i0; i < atomCount; i++)
+        ellipsoids[i] = ellipsoids[map[i]];
+    if (atomNames != null)
+      for (int i  = i0; i < atomCount; i++)
+        atomNames[i] = atomNames[map[i]];
+    if (atomTypes != null)
+      for (int i  = i0; i < atomCount; i++)
+        atomTypes[i] = atomTypes[map[i]];
+    if (atomSerials != null)
+      for (int i  = i0; i < atomCount; i++)
+        atomSerials[i] = atomSerials[map[i]];    
+  }
   
   protected void growAtomArrays(int newLength) {
     atoms = (Atom[]) ArrayUtil.setLength(atoms, newLength);

@@ -16745,7 +16745,8 @@ public class ScriptEvaluator {
           i = iToken;
           int color2 = getArgbParam(i + 2);
           i = iToken;
-          colorScheme = ColorEncoder.getColorSchemeList(ColorEncoder.getPaletteAtoB(color1, color2));
+          int nColors = (tokAt(i + 1) == Token.integer ? intParameter(++i) : 0);
+          colorScheme = ColorEncoder.getColorSchemeList(ColorEncoder.getPaletteAtoB(color1, color2, nColors));
           idSeen = true;
           continue;
         } 

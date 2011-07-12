@@ -577,7 +577,7 @@ import org.jmol.util.ArrayUtil;
   }
 
   public static int[] getPaletteAtoB(int color1, int color2, int n) {
-    if (n < 1)
+    if (n < 2)
       n = JmolConstants.argbsRoygbScale.length;
     int[] b = new int[n];
     float red1 = (((color1 & 0xFF0000) >> 16) & 0xFF) / 255f;
@@ -586,9 +586,9 @@ import org.jmol.util.ArrayUtil;
     float red2 = (((color2 & 0xFF0000) >> 16) & 0xFF) / 255f;
     float green2 = (((color2 & 0xFF00) >> 8) & 0xFF) / 255f;
     float blue2 = (color2 & 0xFF) / 255f;
-    float dr = (red2 - red1) / n;
-    float dg = (green2 - green1) / n;
-    float db = (blue2 - blue1) / n;
+    float dr = (red2 - red1) / (n - 1);
+    float dg = (green2 - green1) / (n - 1);
+    float db = (blue2 - blue1) / (n - 1);
     for (int i = 0; i < n; i++)
       b[i] = Graphics3D.colorTriadToInt(red1 + dr * i, green1 + dg * i, blue1
           + db * i);

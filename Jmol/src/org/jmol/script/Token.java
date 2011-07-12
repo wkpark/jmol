@@ -1062,7 +1062,7 @@ public class Token {
   final static int bondset       = misc  | 46;
   final static int bottom        = misc  | 48;
   final static int cancel        = misc  | 49;
-  final static int cap           = misc  | 50 | expression;
+  public final static int cap           = misc  | 50 | expression;
   final static int cavity        = misc  | 52;
   final static int check         = misc  | 54;
   final static int chemical      = misc  | 55;

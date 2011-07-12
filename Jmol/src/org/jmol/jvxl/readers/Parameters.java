@@ -743,7 +743,7 @@ public class Parameters {
   
   boolean iUseBitSets = false;
   
-  Object[] func;
+  Object func;
 
   String[] title;
   boolean blockCubeData;

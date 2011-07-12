@@ -7649,7 +7649,7 @@ public class ScriptEvaluator {
         && tokAt(index) != Token.off) {
       isColor = true;
       tok = getToken(index).tok;
-      if (isColorParam(index)) {
+      if ((!isIsosurface || tokAt(index + 1) != Token.to) && isColorParam(index)) {
         int argb = getArgbParam(index, false);
         colorvalue = (argb == 0 ? null : Integer.valueOf(argb));
         if (translucency == null && tokAt(index = iToken + 1) != Token.nada) {
@@ -7718,8 +7718,14 @@ public class ScriptEvaluator {
           pid = JmolConstants.PALETTE_PROPERTY;
         }
         if (pid == JmolConstants.PALETTE_PROPERTY) {
-          String scheme = (tokAt(index) == Token.string ? parameterAsString(
-              index++).toLowerCase() : null);
+          String scheme = null;
+          if (tokAt(index) == Token.string) {
+            scheme = parameterAsString(
+              index++).toLowerCase();
+          } else if (isIsosurface && isColorParam(index)) {
+            scheme = getColorRange(index);
+            index = iToken + 1;           
+          }
           if (scheme != null && !isIsosurface) {
             setStringProperty("propertyColorScheme", (isTranslucent
                 && translucentLevel == Float.MAX_VALUE ? "translucent " : "")
@@ -15185,7 +15191,7 @@ public class ScriptEvaluator {
     //         DENSITY x.x
     //         WITHIN x.x
     //         PARAMETERS [....] 
-    //         FULL|TRIM|PLANAR|CONNECT|NCI (FULL not implemented yet)
+    //         FULL|TRIM|PLANAR|CONNECT|CAP|VDW|NCI
     //         HYDROPHOBIC|HBOND|MISCELLANEOUS
     //         INTRAMOLECULAR|INTERMOLECULAR (default INTER)
     //         VDW
@@ -15211,7 +15217,7 @@ public class ScriptEvaluator {
     boolean haveColor = false;
     StringBuffer sbCommand = new StringBuffer();
     int minSet = Integer.MAX_VALUE;
-    int type = Token.plane; // Token.full;
+    int type = Token.plane;
     int bondMode = Token.nada;
     float distance = 5;
     Boolean intramolecular = null;
@@ -15314,6 +15320,7 @@ public class ScriptEvaluator {
       case Token.full:
       case Token.trim:
       case Token.plane:
+      case Token.cap:
       case Token.connect:
       case Token.nci:
       case Token.vanderwaals:
@@ -15358,21 +15365,20 @@ public class ScriptEvaluator {
       if (Float.isNaN(rd.value))
         rd.value = 100;
 
-      Object[] func = null;
-      Object slab = null;
+      Object func = null;
       switch (type) {
       case Token.vanderwaals:
       case Token.trim:
         break;
       case Token.full:
-        func = createFunction("__con__", "a,b", "(a > b ? a : b)");
+        func = "(a>b?a:b)";
         break;
       case Token.plane:
-        func = createFunction("__con__", "a,b", "a-b");
-        slab = getCapSlabObject(-1, false);
+      case Token.cap:
+        func = "a-b"; 
         break;
       case Token.connect:
-        func = createFunction("__con__", "a,b", "a+b");
+        func = "a+b";
         break;
       case Token.nci:
         if (minSet == Integer.MAX_VALUE)
@@ -15439,7 +15445,7 @@ public class ScriptEvaluator {
       }
 
       setShapeProperty(JmolConstants.SHAPE_CONTACT, "set", new Object[] { bsA,
-          bsB, bsFilters, new Integer(type), rd, params, func, slab,
+          bsB, bsFilters, new Integer(type), rd, params, func,
           Boolean.valueOf(colorDensity), sbCommand.toString() });
       setShapeProperty(JmolConstants.SHAPE_CONTACT, "clear", null);
       if (colorpt > 0)
@@ -16446,15 +16452,15 @@ public class ScriptEvaluator {
       case Token.color:
         int color;
         idSeen = true;
-        sbCommand.append(" " + theToken.value);
         boolean isSign = (theTok == Token.sign);
         if (isSign) {
+          sbCommand.append(" sign");
           addShapeProperty(propertyList, "sign", Boolean.TRUE);
         } else {
           if (tokAt(i + 1) == Token.density) {
             i++;
             propertyName = "colorDensity";
-            sbCommand.append(" density");
+            sbCommand.append(" color density");
             break;
           }
           /*
@@ -16466,7 +16472,6 @@ public class ScriptEvaluator {
 
           if (getToken(i + 1).tok == Token.string) {
             colorScheme = parameterAsString(++i);
-            sbCommand.append(" ").append(Escape.escape(colorScheme));
             if (colorScheme.indexOf(" ") > 0) {
               discreteColixes = Graphics3D.getColixArray(colorScheme);
               if (discreteColixes == null)
@@ -16474,7 +16479,7 @@ public class ScriptEvaluator {
             }
           } else if (theTok == Token.mesh) {
             i++;
-            sbCommand.append(" mesh");
+            sbCommand.append(" color mesh");
             color = getArgbParam(++i);
             addShapeProperty(propertyList, "meshcolor", Integer.valueOf(color));
             sbCommand.append(" ").append(Escape.escapeColor(color));
@@ -16483,6 +16488,7 @@ public class ScriptEvaluator {
           }
           if ((theTok = tokAt(i + 1)) == Token.translucent
               || theTok == Token.opaque) {
+            sbCommand.append(" color");
             translucency = setColorOptions(sbCommand, i + 1,
                 JmolConstants.SHAPE_ISOSURFACE, -2);
             i = iToken;
@@ -16492,7 +16498,7 @@ public class ScriptEvaluator {
           case Token.absolute:
           case Token.range:
             getToken(++i);
-            sbCommand.append(" range");
+            sbCommand.append(" color range");
             addShapeProperty(propertyList, "rangeAll", null);
             if (tokAt(i + 1) == Token.all) {
               i++;
@@ -16506,6 +16512,15 @@ public class ScriptEvaluator {
             sbCommand.append(" ").append(min).append(" ").append(max);
             continue;
           }
+          if (isColorParam(i + 1)) {
+            color = getArgbParam(i + 1);
+            if (tokAt(i + 2) == Token.to) {
+              colorScheme = getColorRange(i + 1);
+              i = iToken;
+              break;
+            }
+          }
+          sbCommand.append(" color");
         }
         if (isColorParam(i + 1)) {
           color = getArgbParam(++i);
@@ -16735,29 +16750,21 @@ public class ScriptEvaluator {
         i = iToken;
         break;
       case Token.colorscheme:
-        // either order NOT OK -- documented for TRANSLUCENT "rwb" 
-        if (tokAt(i + 1) == Token.translucent) {
-          isColorSchemeTranslucent = true;
+        // either order NOT OK -- documented for TRANSLUCENT "rwb"
+        colorScheme = parameterAsString(i + 1).toLowerCase();
+        if (colorScheme.equals("sets")) {
+          sbCommand.append(" colorScheme \"sets\"");
           i++;
+        } else {
+          if (tokAt(i + 1) == Token.translucent) {
+            isColorSchemeTranslucent = true;
+            i++;
+          }
+          if (isColorParam(i + 1)) {
+            colorScheme = getColorRange(i + 1);
+            i = iToken;
+          }
         }
-        if (tokAt(i + 2) == Token.to) {
-          int color1 = getArgbParam(i + 1);
-          i = iToken;
-          int color2 = getArgbParam(i + 2);
-          i = iToken;
-          int nColors = (tokAt(i + 1) == Token.integer ? intParameter(++i) : 0);
-          colorScheme = ColorEncoder.getColorSchemeList(ColorEncoder.getPaletteAtoB(color1, color2, nColors));
-          idSeen = true;
-          continue;
-        } 
-
-        colorScheme = parameterAsString(++i).toLowerCase();
-        if (colorScheme.equals("sets"))
-          isColorSchemeTranslucent = false;
-        sbCommand.append(" colorScheme");
-        if (isColorSchemeTranslucent)
-          sbCommand.append(" translucent");
-        sbCommand.append(" ").append(Escape.escape(colorScheme));
         break;
       case Token.addhydrogens:
         propertyName = "addHydrogens";
@@ -17094,8 +17101,9 @@ public class ScriptEvaluator {
         isMapped = true;
         if ((isCavity || haveRadius || haveIntersection) && !surfaceObjectSeen) {
           surfaceObjectSeen = true;
-          addShapeProperty(propertyList, "bsSolvent",
-              (haveRadius || haveIntersection ? new BitSet() : lookupIdentifierValue("solvent")));
+          addShapeProperty(propertyList, "bsSolvent", (haveRadius
+              || haveIntersection ? new BitSet()
+              : lookupIdentifierValue("solvent")));
           addShapeProperty(propertyList, "sasurface", Float.valueOf(0));
         }
         if (sbCommand.length() == 0) {
@@ -17415,7 +17423,7 @@ public class ScriptEvaluator {
       }
     }
 
-    if (!isSyntaxCheck && surfaceObjectSeen && !isLcaoCartoon 
+    if (!isSyntaxCheck && surfaceObjectSeen && !isLcaoCartoon
         && sbCommand.indexOf(";") != 0) {
       propertyList.add(0, new Object[] { "newObject", null });
       boolean needSelect = (bsSelect == null);
@@ -17523,6 +17531,15 @@ public class ScriptEvaluator {
     if (translucency != null)
       setShapeProperty(iShape, "translucency", translucency);
     setShapeProperty(iShape, "clear", null);
+  }
+
+  private String getColorRange(int i) throws ScriptException {
+    int color1 = getArgbParam(i);
+    if (tokAt(++iToken) != Token.to)
+      error(ERROR_invalidArgument);
+    int color2 = getArgbParam(++iToken);
+    int nColors = (tokAt(iToken + 1) == Token.integer ? intParameter(++iToken) : 0);
+    return ColorEncoder.getColorSchemeList(ColorEncoder.getPaletteAtoB(color1, color2, nColors));
   }
 
   private String getIsosurfaceDataRange(int iShape, String sep) {

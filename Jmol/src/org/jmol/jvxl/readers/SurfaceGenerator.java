@@ -403,7 +403,7 @@ public class SurfaceGenerator {
     }
 
     if ("func" == propertyName) {
-      params.func = (Object[]) value;
+      params.func = value;
       return true;
     }
 

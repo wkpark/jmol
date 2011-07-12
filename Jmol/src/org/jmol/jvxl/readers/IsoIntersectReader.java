@@ -33,6 +33,11 @@ import org.jmol.util.Logger;
 
 class IsoIntersectReader extends AtomDataReader {
 
+  private static final int TYPE_FUNCTION = 0;
+  private static final int TYPE_SUM = 1;
+  private static final int TYPE_DIFF = 2;
+  private static final int TYPE_MAX = 3;
+
   IsoIntersectReader(SurfaceGenerator sg) {
     super(sg);
   }
@@ -52,6 +57,8 @@ class IsoIntersectReader extends AtomDataReader {
   }
 
   private BitSet bsA, bsB;
+  private Object[] func;
+  private int funcType = TYPE_FUNCTION;
   
   @Override
   protected void setup(boolean isMapData) {
@@ -70,6 +77,14 @@ class IsoIntersectReader extends AtomDataReader {
     setHeader("VDW intersection surface", params.calculationType);
     setRanges(params.solvent_ptsPerAngstrom, params.solvent_gridMax);
     margin = 5f;
+    if (params.func instanceof String) {
+      funcType = (params.func.equals("a-b") ? TYPE_DIFF : params.func.equals("a+b") ? TYPE_SUM : TYPE_MAX);  
+    } else if (func == null || atomDataServer == null) {
+      funcType = TYPE_DIFF;
+    } else {
+      func = (Object[]) params.func;
+    }
+      
   }
 
   //////////// meshData extensions ////////////
@@ -149,12 +164,18 @@ class IsoIntersectReader extends AtomDataReader {
     // surface slimmer than grid:
     //return (va < 0 && vb < 0 ? Math.max(va, vb) 
     //  : Math.min(Math.abs(va), Math.abs(vb)));
-    if (params.func == null || atomDataServer == null)
+    switch (funcType) {
+    case TYPE_SUM:
+      return (va + vb);
+    case TYPE_DIFF:
       return (va - vb);
-    values[0] = va;
-    values[1] = vb;
-    float v = atomDataServer.evalFunctionFloat(params.func[0], params.func[1], values);
-    return v;
+    case TYPE_MAX:
+      return (va>vb?va:vb);
+    default:
+      values[0] = va;
+      values[1] = vb;
+      return atomDataServer.evalFunctionFloat(func[0], func[1], values);
+    }
   }
   
   @Override

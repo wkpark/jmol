@@ -75,9 +75,8 @@ public class Contact extends Isosurface {
     RadiusData rd = (RadiusData) value[4];
     float[] params = (float[]) value[5];
     Object func = value[6];
-    Object slabObject = value[7];
-    boolean isColorDensity = ((Boolean) value[8]).booleanValue();
-    String command = (String) value[9];
+    boolean isColorDensity = ((Boolean) value[7]).booleanValue();
+    String command = (String) value[8];
     float ptSize = (isColorDensity && params != null && params[0] < 0 ? Math
         .abs(params[0]) : 0.15f);
     atomCount = viewer.getAtomCount();
@@ -107,11 +106,6 @@ public class Contact extends Isosurface {
           intramolecularMode, true);
       break;
     }    
-    if (type == Token.plane && slabObject != null) {
-      setProperty("clear", null, null);
-      setProperty("init", null, null);
-      thisMesh.slabPolygons((Object[]) slabObject);
-    }
     if (doSlabByType) {
       if (isMisc) {
         BitSet bsHbond = slabMisc(bsFilters[0], bsA, bsB, rd);
@@ -259,13 +253,17 @@ public class Contact extends Isosurface {
       sg.setParameter("colorDensity", null);
     switch (type) {
     case Token.full:
-      newSurface(Token.full, bsA, bsB, rd, null, null, false);
+    case Token.cap:
+      newSurface((type == Token.full ? type : Token.plane), bsA, bsB, rd, null, null, false);
       MeshData data1 = new MeshData();
       fillMeshData(data1, MeshData.MODE_GET_VERTICES, thisMesh);
       setProperty("init", null, null);
       if (isColorDensity)
         sg.setParameter("colorDensity", null);
-      newSurface(Token.full, bsB, bsA, rd, null, null, false);
+      if (type == Token.full)
+        newSurface(type, bsB, bsA, rd, null, null, false);
+      else
+        newSurface(Token.slab, bsA, bsB, rd, null, null, false);     
       merge(data1);
       break;
     case Token.plane:
@@ -275,7 +273,6 @@ public class Contact extends Isosurface {
     }
     if (prev != null)
       merge(prev);
-
   }
 
   private void merge(MeshData md) {
@@ -304,6 +301,7 @@ public class Contact extends Isosurface {
     case Token.vanderwaals:
     case Token.trim:
     case Token.full:
+    case Token.slab:
       setProperty("select", bsA, null);
       BitSet bs = BitSetUtil.copyInvert(bsA, atomCount);
       setProperty("ignore", bs, null);
@@ -316,11 +314,18 @@ public class Contact extends Isosurface {
       setProperty("ignore", bs, null);
       setProperty("radius", rd, null);
       setProperty("sasurface", Float.valueOf(0), null);
-      if (type == Token.full || type == Token.trim)
+      switch (type) {
+      case Token.full:
+      case Token.trim:
         thisMesh.slabPolygons(MeshSurface.getSlabWithinRange(-100, 0));
+        break;
+      case Token.slab:
+        thisMesh.slabPolygons(MeshSurface.getSlabWithinRange(0, -100));
+      }
       return;
     case Token.plane:
     case Token.connect:
+    case Token.cap:
       if (type == Token.connect)
         setProperty("parameters", params, null);
       setProperty("func", func, null);
@@ -335,6 +340,7 @@ public class Contact extends Isosurface {
       setProperty("select", bsA, null);
       setProperty("radius", rd, null);
       setProperty("sasurface", Float.valueOf(0), null);
+      thisMesh.slabPolygons(MeshSurface.getSlabWithinRange(-100, 0));
     }
   }
 

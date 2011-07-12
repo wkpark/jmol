@@ -43,6 +43,7 @@ class IsoFxyReader extends AtomDataReader {
 
   private float[][] data;
   private boolean isPlanarMapping;
+  private Object[] func;
   
   @Override
   protected void setup(boolean isMapData) {
@@ -52,6 +53,7 @@ class IsoFxyReader extends AtomDataReader {
   }
 
   protected void setup(String type) {
+    func = (Object[]) params.func;
     String functionName = (String) params.functionInfo.get(0);
     jvxlFileHeaderBuffer = new StringBuffer();
     jvxlFileHeaderBuffer.append(type).append("\n").append(functionName).append("\n");
@@ -121,7 +123,7 @@ class IsoFxyReader extends AtomDataReader {
     values[0] = pt.x;
     values[1] = pt.y;
     values[2] = pt.z;
-    return atomDataServer.evalFunctionFloat(params.func[0], params.func[1], values);
+    return atomDataServer.evalFunctionFloat(func[0], func[1], values);
   }
 
   protected float evaluateValue(int x, int y, int z) {

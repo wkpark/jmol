@@ -1093,7 +1093,10 @@ public class ActionManager {
     }
 
     if (checkMotionRotateZoom(action, x, deltaX, deltaY, true)) {
-      viewer.zoomBy(deltaY);
+      if (viewer.getSlabEnabled())
+        viewer.slabDepthByPixels(deltaY);
+      else
+        viewer.zoomBy(deltaY);
       return;
     }
     if (isBound(action, ACTION_rotate)) {

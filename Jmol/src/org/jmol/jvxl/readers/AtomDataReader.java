@@ -97,7 +97,7 @@ abstract class AtomDataReader extends VolumeDataReader {
       xyzMax.y += (params.points.y - 1) * params.steps.y;
       xyzMax.z += (params.points.z - 1) * params.steps.z;
     } else {
-      getAtoms(params.bsSelected, false, true, false, false, false, params.mep_marginAngstroms);
+      getAtoms(params.bsSelected, false, true, false, false, false, false, params.mep_marginAngstroms);
       if (xyzMin == null) {
         xyzMin = new Point3f(-10,-10,-10);
         xyzMax = new Point3f(10, 10, 10);
@@ -119,12 +119,13 @@ abstract class AtomDataReader extends VolumeDataReader {
    * @param getAllModels
    *        TODO
    * @param addNearbyAtoms
+   * @param getAtomMinMax TODO
    * @param marginAtoms
    */
   protected void getAtoms(BitSet bsSelected, boolean doAddHydrogens,
                           boolean getRadii, boolean getMolecules,
                           boolean getAllModels, boolean addNearbyAtoms,
-                          float marginAtoms) {
+                          boolean getAtomMinMax, float marginAtoms) {
 
     if (addNearbyAtoms)
       getRadii = true;

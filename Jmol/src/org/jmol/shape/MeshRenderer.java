@@ -70,7 +70,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
     for (int i = mc.meshCount; --i >= 0;)
       render1(mc.meshes[i]);
   }
-
+  
   // draw, isosurface, molecular orbitals
   public boolean render1(Mesh mesh) { // used by mps renderer
     this.mesh = mesh;
@@ -148,6 +148,8 @@ public abstract class MeshRenderer extends ShapeRenderer {
     if (volumeRender && !isTranslucent)
       colix = Graphics3D.getColixTranslucent(colix, true, 0.8f);
     this.colix = colix;
+    if (Graphics3D.isColixLastAvailable(colix))
+      g3d.setColor(mesh.color);
     return g3d.setColix(colix);
   }
 
@@ -285,8 +287,6 @@ public abstract class MeshRenderer extends ShapeRenderer {
                 screens[iC], colix, nC, 0.1f);
             continue;
           }
-          // System.out.println(normixes[iA]+ " " + normixes[iB] + " " +
-          // normixes[iC]);
           g3d.fillTriangle(screens[iA], colix, nA, screens[iB], colix, nB,
               screens[iC], colix, nC);
           continue;

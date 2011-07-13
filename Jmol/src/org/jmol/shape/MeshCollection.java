@@ -97,6 +97,7 @@ public abstract class MeshCollection extends Shape {
   }
 
   protected Map<String, Mesh> htObjects;
+  protected int color;
   
   public void allocMesh(String thisID, Mesh m) {
     // this particular version is only run from privately;
@@ -104,6 +105,7 @@ public abstract class MeshCollection extends Shape {
     int index = meshCount++;
     meshes = (Mesh[])ArrayUtil.ensureLength(meshes, meshCount * 2);
     currentMesh = meshes[index] = (m == null ? new Mesh(thisID, g3d, colix, index) : m);
+    currentMesh.color = color;
     currentMesh.index = index;
     if (thisID != null && htObjects != null)
       htObjects.put(thisID.toUpperCase(), currentMesh);
@@ -139,6 +141,7 @@ public abstract class MeshCollection extends Shape {
   public void initShape() {
     super.initShape();
     colix = Graphics3D.ORANGE;
+    color = 0xFFFFFFFF;
     modelCount = viewer.getModelCount();
   }
   
@@ -224,6 +227,9 @@ public abstract class MeshCollection extends Shape {
       if (value == null)
         return;
       colix = Graphics3D.getColix(value);
+      color = ((Integer) value).intValue();
+      if (currentMesh != null)
+        currentMesh.color = color;
       setTokenProperty(Token.color, false, false);
       return;
     }

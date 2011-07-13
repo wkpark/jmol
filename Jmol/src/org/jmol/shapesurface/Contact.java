@@ -63,7 +63,7 @@ public class Contact extends Isosurface {
   private void setContacts(Object[] value) {
     BitSet bsA = (BitSet) value[0];
     BitSet bsB = (BitSet) value[1];
-    if (Logger.debugging) {
+    if (true || Logger.debugging) {
       Logger.info("Contacts for " + bsA.cardinality() + ": " + Escape.escape(bsA));
       Logger.info("Contacts to " + bsB.cardinality() + ": " + Escape.escape(bsB));
     }
@@ -241,6 +241,7 @@ public class Contact extends Isosurface {
     }
 
     MeshData prev = null;
+    float resolution = sg.getParams().resolution;
     if (isFirst) {
       newSg();
     } else {
@@ -251,15 +252,18 @@ public class Contact extends Isosurface {
     }
     if (isColorDensity)
       sg.setParameter("colorDensity", null);
+    sg.getParams().resolution = resolution;
     switch (type) {
     case Token.full:
     case Token.cap:
       newSurface((type == Token.full ? type : Token.plane), bsA, bsB, rd, null, null, false);
       MeshData data1 = new MeshData();
       fillMeshData(data1, MeshData.MODE_GET_VERTICES, thisMesh);
+      resolution = sg.getParams().resolution;
       setProperty("init", null, null);
       if (isColorDensity)
         sg.setParameter("colorDensity", null);
+      sg.getParams().resolution = resolution;
       if (type == Token.full)
         newSurface(type, bsB, bsA, rd, null, null, false);
       else
@@ -297,6 +301,7 @@ public class Contact extends Isosurface {
                           Object params, Object func, boolean isColorDensity) {
     if (bsA.nextSetBit(0) < 0 || bsB.nextSetBit(0) < 0)
       return;
+    System.out.println("--------newSurface----" + Token.nameOf(type));
     switch (type) {
     case Token.vanderwaals:
     case Token.trim:

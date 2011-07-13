@@ -229,7 +229,6 @@ abstract public class Polymer {
   /**
    * 
    * @param modelSet
-   * @param atoms
    * @param bs1
    * @param bs2
    * @param vCA
@@ -238,7 +237,7 @@ abstract public class Polymer {
    * @param allowMultiple
    * @return List [ {atom1, atom2}, {atom1, atom2}...]
    */
-  public List<Atom[]> calculateStruts(ModelSet modelSet, Atom[] atoms, BitSet bs1, BitSet bs2,
+  public List<Atom[]> calculateStruts(ModelSet modelSet, BitSet bs1, BitSet bs2,
       List<Atom> vCA, float thresh, int delta, boolean allowMultiple) {
     return null;
   }

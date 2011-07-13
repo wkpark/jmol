@@ -228,8 +228,6 @@ final public class Graphics3D implements JmolRendererInterface {
   public final static byte ENDCAPS_SPHERICAL = 3;
   public final static byte ENDCAPS_OPENEND = 4;
   
-  public final static short INHERIT_ALL = 0;
-  public final static short USE_PALETTE = 2;
   public final static short BLACK = 4;
   public final static short ORANGE = 5;
   public final static short PINK = 6;
@@ -712,14 +710,25 @@ final public class Graphics3D implements JmolRendererInterface {
   }
 
   private int currentShadeIndex;
-    
+  private int lastRawColor;
+  
+  public void setColor(int argb) {
+    argbCurrent = argbNoisyUp = argbNoisyDn = argb;
+  }
+  
+  public static boolean isColixLastAvailable(short colix) {
+    return (colix > 0 && (colix & UNMASK_CHANGEABLE_TRANSLUCENT) == UNMASK_CHANGEABLE_TRANSLUCENT);
+  }
+
+
   /**
    * sets current color from colix color index
    * @param colix the color index
    * @return true or false if this is the right pass
    */
   public boolean setColix(short colix) {
-    if (colix == colixCurrent && currentShadeIndex == -1)
+    boolean isLast = isColixLastAvailable(colix); 
+    if (!isLast && colix == colixCurrent && currentShadeIndex == -1)
       return true;
     int mask = colix & TRANSLUCENT_MASK;
     if (mask == TRANSPARENT)
@@ -733,9 +742,18 @@ final public class Graphics3D implements JmolRendererInterface {
       translucencyMask = (mask << ALPHA_SHIFT) | 0xFFFFFF;
     }
     colixCurrent = colix;
+    if (isLast) {
+      if (argbCurrent != lastRawColor) {
+        if (argbCurrent == 0)
+          argbCurrent = 0xFFFFFFFF;
+        lastRawColor = argbCurrent;
+        Colix3D.allocateColix(argbCurrent);
+        Colix3D.getShades(argbCurrent, inGreyscaleMode);
+      }
+    }
     shadesCurrent = getShades(colix);
-    currentShadeIndex = -1; 
-    argbCurrent = argbNoisyUp = argbNoisyDn = getColorArgbOrGray(colix);
+    currentShadeIndex = -1;
+    setColor(getColorArgbOrGray(colix));
     return true;
   }
 
@@ -1948,23 +1966,29 @@ final public class Graphics3D implements JmolRendererInterface {
        ....
      0x0017  ...gold
      0x00?? additional colors used from JavaScript list or specified by user
+     
+     0x0177 last available colix
 
      Bob Hanson 3/2007
      
   */
-  private final static short CHANGEABLE_MASK       = (short)0x8000; // negative
+  
   private final static short UNMASK_CHANGEABLE_TRANSLUCENT =0x07FF;
-  private final static int   TRANSLUCENT_SHIFT        = 11;
+  private final static short CHANGEABLE_MASK          = (short)0x8000; // negative
+  public final static int    LAST_AVAILABLE_COLIX     = UNMASK_CHANGEABLE_TRANSLUCENT;
+  private final static int   TRANSLUCENT_SHIFT        = 11; 
   private final static int   ALPHA_SHIFT              = 24 - TRANSLUCENT_SHIFT;
   private final static int   TRANSLUCENT_MASK         = 0xF << TRANSLUCENT_SHIFT; //0x7800
-  private final static int   TRANSLUCENT_SCREENED     = TRANSLUCENT_MASK;
+  private final static int   TRANSLUCENT_SCREENED     = TRANSLUCENT_MASK;  
   private final static int   TRANSPARENT              =  8 << TRANSLUCENT_SHIFT;  //0x4000
   final static int           TRANSLUCENT_50           =  4 << TRANSLUCENT_SHIFT;  //0x2000
   public final static short  OPAQUE_MASK              = ~TRANSLUCENT_MASK;
 
 
+  public final static short  INHERIT_ALL         = 0;
   private final static short INHERIT_COLOR       = 1;
-  final static short         UNUSED_OPTION3      = 3;
+  public final static short  USE_PALETTE         = 2;
+  final static short         RAW_RGB             = 3;
   final static short         SPECIAL_COLIX_MAX   = 4;
 
   /**
@@ -2111,7 +2135,7 @@ final public class Graphics3D implements JmolRendererInterface {
         red = Integer.parseInt(strColor.substring(1, 3), 16);
         grn = Integer.parseInt(strColor.substring(3, 5), 16);
         blu = Integer.parseInt(strColor.substring(5, 7), 16);
-        return colorTriadToInt(red, grn, blu);
+        return colorTriadToInt(red/255f, grn/255f, blu/255f);
       } catch (NumberFormatException e) {
         return 0;
       }
@@ -2692,6 +2716,7 @@ final public class Graphics3D implements JmolRendererInterface {
     "yellowtint",           // F6F675
   };
 
+//#FFFFC3 hover
   private final static int[] colorArgbs = {
     0xFF000000, // black
     // plus the PE chain colors

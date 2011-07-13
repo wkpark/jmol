@@ -2391,6 +2391,7 @@ class ScriptMathProcessor {
   }
 
   private boolean evaluateColor(ScriptVariable[] args) {
+    // color("hsl", {r g b})         # r g b in 0 to 255 scale 
     // color("rwb")                  # "" for most recently used scheme for coloring by property
     // color("rwb", min, max)        # min/max default to most recent property mapping 
     // color("rwb", min, max, value) # returns color
@@ -2399,6 +2400,13 @@ class ScriptMathProcessor {
     
     String colorScheme = (args.length > 0 ? ScriptVariable.sValue(args[0])
         : "");
+    if (colorScheme.equalsIgnoreCase("hsl") && args.length == 2) {
+      Point3f pt = new Point3f(ScriptVariable.ptValue(args[1]));
+      float[] hsl = new float[3];
+      ColorEncoder.RGBtoHSL(pt.x, pt.y, pt.z, hsl);
+      pt.set(hsl[0]*360, hsl[1]*100, hsl[2]*100);
+      return addX(pt);
+    }
     boolean isIsosurface = colorScheme.startsWith("$");
     ColorEncoder ce = (isIsosurface ? null : viewer.getColorEncoder(colorScheme));
     if (!isIsosurface && ce == null)
@@ -3568,5 +3576,4 @@ class ScriptMathProcessor {
     }
     return data;
   }
-
 }

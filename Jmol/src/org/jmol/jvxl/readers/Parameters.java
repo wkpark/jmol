@@ -779,7 +779,7 @@ public class Parameters {
   boolean contourFromZero;
   float[] parameters; // additional parameters
  
-  float resolution;
+  public float resolution;
   int downsampleFactor;
   int maxSet;
   public float[] contoursDiscrete;

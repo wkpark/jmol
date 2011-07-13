@@ -714,6 +714,10 @@ final public class Export3D implements JmolRendererInterface {
     return true;
   }
 
+  public void setColor(int color) {
+    g3d.setColor(color);
+  }
+
   /**
    * gets g3d width
    * 

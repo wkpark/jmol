@@ -63,7 +63,7 @@ class IsoMOReader extends AtomDataReader {
   protected void setup(boolean isMapData) {
     super.setup(isMapData);
     doAddHydrogens = false;
-    getAtoms(params.bsSelected, doAddHydrogens, !isNci, isNci, isNci, false, params.qm_marginAngstroms);
+    getAtoms(params.bsSelected, doAddHydrogens, !isNci, isNci, isNci, false, false, params.qm_marginAngstroms);
     if (isNci)
       setHeader("NCI (promolecular)", "see NCIPLOT: A Program for Plotting Noncovalent Interaction Regions, Julia Contreras-Garcia, et al., J. of Chemical Theory and Computation, 2011, 7, 625-632");
     else

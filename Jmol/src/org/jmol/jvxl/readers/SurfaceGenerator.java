@@ -240,6 +240,12 @@ public class SurfaceGenerator {
     return params;
   }
 
+  public void setParameters(Parameters p) {
+    params = p;
+    if (surfaceReader != null)
+      surfaceReader.params = params;
+  }
+
   public String getScript() {
     //System.out.println("getting script " + params.script);
     return params.script;
@@ -1395,5 +1401,6 @@ public class SurfaceGenerator {
   public boolean isFullyLit() {
     return (params.thePlane != null || params.fullyLit);
   }
+
 
 }

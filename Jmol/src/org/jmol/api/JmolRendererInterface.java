@@ -324,4 +324,6 @@ public interface JmolRendererInterface {
 
   public abstract void volumeRender(int diam, int x, int y, int z);
 
+  public abstract void setColor(int color);
+
 }

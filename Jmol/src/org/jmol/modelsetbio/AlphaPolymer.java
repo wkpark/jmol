@@ -128,39 +128,36 @@ public class AlphaPolymer extends BioPolymer {
   ///////////////////////////////////////////////////////////
   /**
    * 
-   * Algorithm of George Phillips   phillips@biochem.wisc.edu
+   * Algorithm of George Phillips phillips@biochem.wisc.edu
    * 
-   * originally a contribution to pyMol as struts.py; 
-   * adapted here by Bob Hanson for Jmol 1/2010
+   * originally a contribution to pyMol as struts.py; adapted here by Bob Hanson
+   * for Jmol 1/2010
    * 
-   * Return a vector of support posts for rapid prototyping models 
-   * along the lines of George Phillips for Pymol except on actual molecular
-   * segments (biopolymers), not PDB chains (which may or may not be
-   * continuous). 
+   * Return a vector of support posts for rapid prototyping models along the
+   * lines of George Phillips for Pymol except on actual molecular segments
+   * (biopolymers), not PDB chains (which may or may not be continuous).
    * 
    * Like George, we go from thresh-4 to thresh in units of 1 Angstrom, but we
    * do not require this threshold to be an integer. In addition, we prevent
-   * double-creation of struts by tracking where struts are, and we do not
-   * look for any addtional end struts if there is a strut already to an atom
-   * at a particular biopolymer end. The three parameters are:
+   * double-creation of struts by tracking where struts are, and we do not look
+   * for any addtional end struts if there is a strut already to an atom at a
+   * particular biopolymer end. The three parameters are:
    * 
-   * set strutDefaultRadius 0.3
-   * set strutSpacingMinimum 6
-   * set strutLengthMaximum 7.0
+   * set strutDefaultRadius 0.3 set strutSpacingMinimum 6 set strutLengthMaximum
+   * 7.0
    * 
-   * Struts will be introduced by: 
+   * Struts will be introduced by:
    * 
    * calculate struts {atom set A} {atom set B}
    * 
-   * where the two atom sets are optional and default to the currently selected set.
+   * where the two atom sets are optional and default to the currently selected
+   * set.
    * 
    * They can be manipulated using the STRUTS command much like any "bond"
    * 
-   * struts 0.3
-   * color struts opaque pink
-   * connect {atomno=3} {atomno=4} strut
+   * struts 0.3 color struts opaque pink connect {atomno=3} {atomno=4} strut
    * 
-   * structs only
+   * struts only
    * 
    * command
    * 
@@ -171,19 +168,25 @@ public class AlphaPolymer extends BioPolymer {
    * @param vCA
    * @param thresh
    * @param delta
-   * @param allowMultiple 
+   * @param allowMultiple
    * @return vector of pairs of atoms
    * 
    */
   @Override
-  public List<Atom[]> calculateStruts(ModelSet modelSet, Atom[] atoms, BitSet bs1,
-                                BitSet bs2, List<Atom> vCA, float thresh, int delta, boolean allowMultiple) {
+  public List<Atom[]> calculateStruts(ModelSet modelSet, BitSet bs1,
+                                      BitSet bs2, List<Atom> vCA, float thresh,
+                                      int delta, boolean allowMultiple) {
+    return calculateStrutsStatic(modelSet, bs1, bs2, vCA, thresh, delta,
+        allowMultiple);
+  }
+    
+  private List<Atom[]> calculateStrutsStatic(ModelSet modelSet, BitSet bs1, BitSet bs2,
+                                             List<Atom> vCA, float thresh,
+                                             int delta, boolean allowMultiple) {
     List<Atom[]> vStruts = new ArrayList<Atom[]>(); // the output vector
     float thresh2 = thresh * thresh; // use distance squared for speed
 
-    //TODO  CHECK IMPLEMENT BITSETS
-    
-    int n = vCA.size();
+    int n = vCA.size();  // the set of alpha carbons
     int nEndMin = 3;
 
     // We set bitsets that indicate that there is no longer any need to
@@ -320,12 +323,12 @@ public class AlphaPolymer extends BioPolymer {
     return vStruts;
   }
 
-  private int strutPoint(int i, int j, int n) {
+  private static int strutPoint(int i, int j, int n) {
     return (j < i ? j * (2 * n - j - 1) / 2 + i - j - 1
      : i * (2 * n - i - 1) / 2 + j - i - 1);
   }
 
-  private void setStrut(int i, int j, int n, List<Atom> vCA, BitSet bs1, BitSet bs2, 
+  private static void setStrut(int i, int j, int n, List<Atom> vCA, BitSet bs1, BitSet bs2, 
                         List<Atom[]> vStruts,
                         BitSet bsStruts, BitSet bsNotAvailable,
                         BitSet bsNearbyResidues, int delta) {

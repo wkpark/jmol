@@ -1980,7 +1980,7 @@ abstract public class ModelCollection extends BondCollection {
     int delta = viewer.getStrutSpacingMinimum();
     boolean strutsMultiple = viewer.getStrutsMultiple();
     List<Atom[]> struts = model.getBioPolymer(a1.getPolymerIndexInModel())
-        .calculateStruts((ModelSet) this, atoms, bs1, bs2, vCA, thresh, delta, strutsMultiple);
+        .calculateStruts((ModelSet) this, bs1, bs2, vCA, thresh, delta, strutsMultiple);
     for (int i = 0; i < struts.size(); i++) {
       Atom[] o = struts.get(i);
       bondAtoms(o[0], o[1], JmolEdge.BOND_STRUT, mad, null, 0, false, true);

@@ -63,6 +63,7 @@ class Colix3D {
   private static int[][] ashades = new int[128][];
   private static int[][] ashadesGreyscale;
   private static final Int2IntHash colixHash = new Int2IntHash();
+  private static final int RAW_RGB_INT = Graphics3D.RAW_RGB;
 
   Colix3D() {
   }
@@ -80,11 +81,13 @@ class Colix3D {
       translucentFlag = Graphics3D.TRANSLUCENT_50;
     }
     int c = colixHash.get(argb);
+    if ((c & RAW_RGB_INT) == RAW_RGB_INT)
+      translucentFlag = 0;
     return (c > 0 ? (short) (c | translucentFlag)
         : (short) (allocateColix(argb) | translucentFlag));
   }
 
-  private synchronized static int allocateColix(int argb) {
+  synchronized static int allocateColix(int argb) {
     // double-check to make sure that someone else did not allocate
     // something of the same color while we were waiting for the lock
     if ((argb & 0xFF000000) != 0xFF000000)
@@ -95,6 +98,8 @@ class Colix3D {
     if (colixMax == argbs.length) {
       int oldSize = colixMax;
       int newSize = oldSize * 2;
+      if (newSize > Graphics3D.LAST_AVAILABLE_COLIX + 1)
+        newSize = Graphics3D.LAST_AVAILABLE_COLIX + 1;
       int[] t0 = new int[newSize];
       System.arraycopy(argbs, 0, t0, 0, oldSize);
       argbs = t0;
@@ -116,11 +121,11 @@ class Colix3D {
       }
     }
     argbs[colixMax] = argb;
-    //System.out.println("Colix "+colixMax + " = "+Integer.toHexString(argb));
+    //System.out.println("Colix "+colixMax + " = "+Integer.toHexString(argb) + " " + argb);
     if (argbsGreyscale != null)
       argbsGreyscale[colixMax] = Graphics3D.calcGreyscaleRgbFromRgb(argb);
     colixHash.put(argb, colixMax);
-    return colixMax++;
+    return (colixMax < Graphics3D.LAST_AVAILABLE_COLIX ? colixMax++ : colixMax);
   }
 
   private synchronized static void calcArgbsGreyscale() {
@@ -140,6 +145,15 @@ class Colix3D {
     if (argbsGreyscale == null)
       calcArgbsGreyscale();
     return argbsGreyscale[colix & Graphics3D.OPAQUE_MASK];
+  }
+
+  final static int[] getShades(int argb, boolean asGrey) {
+    if (asGrey) {
+      if (argbsGreyscale == null)
+        calcArgbsGreyscale();
+      argbsGreyscale[Graphics3D.LAST_AVAILABLE_COLIX] = Graphics3D.calcGreyscaleRgbFromRgb(argb);
+    }
+    return ashades[Graphics3D.LAST_AVAILABLE_COLIX] = Shade3D.getShades(argb, false);
   }
 
   final static int[] getShades(short colix) {

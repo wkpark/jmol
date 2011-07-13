@@ -69,6 +69,7 @@ public class Draw extends MeshCollection {
         meshCount * 2);
     currentMesh = thisMesh = dmeshes[index] = (m == null ? new DrawMesh(thisID,
         g3d, colix, index) : (DrawMesh) m);
+    currentMesh.color = color;
     currentMesh.index = index;
     if (thisID != null && thisID != JmolConstants.PREVIOUS_MESH_ID
         && htObjects != null)
@@ -136,6 +137,7 @@ public void initShape() {
 
     if ("init" == propertyName) {
       colix = Graphics3D.ORANGE;
+      color = 0xFFFFFFFF;
       newScale = 0;
       isFixed = isReversed = isRotated45 = isCrossed = noHead = isBarb = false;
       isCurve = isArc = isArrow = isPlane = isCircle = isCylinder = isLine = false;
@@ -394,6 +396,7 @@ public void initShape() {
       if (thisMesh == null) {
         allocMesh(null, null);
         thisMesh.colix = colix;
+        thisMesh.color = color;
       }
       thisMesh.isValid = (isValid ? setDrawing((int[]) value) : false);
       if (thisMesh.isValid) {
@@ -993,7 +996,6 @@ public void initShape() {
     if (nVertices == 0)
       return;
     int nVertices0 = thisMesh.vertexCount;
-
     for (int i = 0; i < nVertices; i++) {
       thisMesh.addVertexCopy(ptList[i]);
     }
@@ -1082,7 +1084,6 @@ public void initShape() {
     for (int i = 0; i < meshCount; i++) {
       DrawMesh m = dmeshes[i];
       if (m == null) {
-        //System.out.println("mesh is null");
         continue;
       }
       m.visibilityFlags = (m.isValid && m.visible ? myVisibilityFlag : 0);

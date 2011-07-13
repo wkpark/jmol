@@ -364,6 +364,8 @@ public class Mesh extends MeshSurface {
   }
 
   Matrix4f mat4;
+
+  public int color;
   
   public void updateCoordinates(Matrix4f m, BitSet bs) {
     boolean doUpdate = false;

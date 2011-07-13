@@ -522,7 +522,6 @@ public class ScriptEvaluator {
     e.historyDisabled = true;
     e.compiler = new ScriptCompiler(e.compiler);
     e.shapeManager = shapeManager;
-    //System.out.println("ScriptEvaluator evaluating context for " + shapeManager);
     try {
       e.restoreScriptContext(context, true, false, false);
       e.instructionDispatchLoop(false);
@@ -1988,7 +1987,6 @@ public class ScriptEvaluator {
       throws ScriptException {
     pushContext(null);
     thisContext.isFunction = true;
-    //System.out.println(contextPath);
     if (function == null) {
       function = viewer.getFunction(name);
       contextPath += " >> function " + name;
@@ -2435,7 +2433,6 @@ public class ScriptEvaluator {
       Logger.info("-->>-------------".substring(0, Math
           .max(17, scriptLevel + 5))
           + scriptLevel + " " + filename + " " + token + " " + thisContext);
-    //System.out.println("scriptEval " + token + " " + scriptLevel + ": " + contextVariables);
   }
 
   public ScriptContext getScriptContext() {
@@ -3708,8 +3705,8 @@ public class ScriptEvaluator {
       case Token.bitset:
         BitSet bs1 = BitSetUtil.copy((BitSet) value);
         //System.out.println(Escape.escape(bs1));
-        if (isStateScript && viewer.getTestFlag(1))
-          BitSetUtil.deleteBits(bs1, (BitSet) viewer.getModelSetAuxiliaryInfo("bsDeletedAtoms"));
+        //if (isStateScript && viewer.getTestFlag(1))
+          //BitSetUtil.deleteBits(bs1, (BitSet) viewer.getModelSetAuxiliaryInfo("bsDeletedAtoms"));
         //System.out.println(Escape.escape(bs1));
         rpn.addX(bs1);
         break;
@@ -5741,8 +5738,6 @@ public class ScriptEvaluator {
     case Token.defaultcmd:
     case Token.casecmd:
       ptNext = Math.abs(aatoken[Math.abs(pt)][0].intValue);
-      //System.out.println(theToken + " pc=" + pc + " pt=" + pt + " ptNext="
-      //  + ptNext);
       switch (isDone ? 0 : switchCmd((ContextToken) theToken, tok)) {
       case 0:
         // done
@@ -7418,6 +7413,35 @@ public class ScriptEvaluator {
   }
 
   private void color() throws ScriptException {
+    if (statementLength == 1 && viewer.getTestFlag(1) && !isSyntaxCheck) {
+      // a little test...
+      Point3f pt = new Point3f();
+      float[] hsl = new float[3];
+      
+      int n = 20;
+      for (int r = 0; r <= 260; r+= n)
+        for (int g = 0; g <= 260; g+= n)
+          for (int b = 0; b <= 260; b += n) {
+            if (r > 255)
+              r = 255;
+            if (g > 255)
+              g = 255;
+            if (b > 255)
+              b = 255;
+            ColorEncoder.RGBtoHSL(r, g, b, hsl);
+            if (Float.isNaN(hsl[1]))
+              hsl[1] = 1;//continue;
+            pt.x = (float) (10 * hsl[1] * Math.cos(Math.PI * 2 * hsl[0]));
+            pt.y = (float) (10 * hsl[1] * Math.sin(Math.PI * 2 * hsl[0]));
+            pt.z = hsl[2]*20 - 10;
+            viewer.log("draw c_" + r + "_" + g + "_" + b + " " 
+                + Escape.escape(pt) + " color " 
+                + Escape.escapeColor(Graphics3D.colorTriadToInt(r/255f, g/255f, b/255f)) 
+                //+ " \"" + (int) (hsv[0] * 240) + " "+ (int) (hsv[1] * 240) + " "+ (int) (hsv[2] * 240) + "\""
+                );
+          }
+      return;
+    }
     int i = 1;
     if (isColorParam(1)) {
       theTok = Token.atoms;
@@ -13211,7 +13235,6 @@ public class ScriptEvaluator {
     }
 
     if (isUserVariable) {
-      //System.out.println("setvar " + key + " " + t);
       t.set(tv, false);
       return;
     }
@@ -17753,4 +17776,5 @@ public class ScriptEvaluator {
       return new BitSet();
     return viewer.getAtomsWithin(distance, (Point3f[])data[1], (BitSet) data[2]);
   }
+    
 }

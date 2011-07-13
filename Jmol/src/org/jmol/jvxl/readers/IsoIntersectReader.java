@@ -73,7 +73,7 @@ class IsoIntersectReader extends AtomDataReader {
     bsSelected.or(bsA);
     bsSelected.or(bsB);
     doUseIterator = true; // just means we want a map
-    getAtoms(bsSelected, doAddHydrogens, true, true, false, false, Float.NaN);
+    getAtoms(bsSelected, doAddHydrogens, true, true, false, false, false, Float.NaN);
     setHeader("VDW intersection surface", params.calculationType);
     setRanges(params.solvent_ptsPerAngstrom, params.solvent_gridMax);
     margin = 5f;
@@ -98,10 +98,10 @@ class IsoIntersectReader extends AtomDataReader {
     params.vertexSource = new int[volumeData.nPoints]; // overkill?
     volumeData.voxelData = voxelData = new float[nPointsX][nPointsY][nPointsZ];
     resetVoxelData(Float.MAX_VALUE);
-    markSphereVoxels(0, params.distance, bsA);
+    markSphereVoxels(params.distance, bsA);
     voxelData = new float[nPointsX][nPointsY][nPointsZ];
     resetVoxelData(Float.MAX_VALUE);
-    markSphereVoxels(0, params.distance, bsB);
+    markSphereVoxels(params.distance, bsB);
     if (!setVoxels())
       volumeData.voxelData = new float[nPointsX][nPointsY][nPointsZ];
     voxelData = volumeData.voxelData;
@@ -201,8 +201,69 @@ class IsoIntersectReader extends AtomDataReader {
   private final Point3f ptZ0 = new Point3f();
   private final Point3i pt0 = new Point3i();
   private final Point3i pt1 = new Point3i();
+  
+  
+  protected BitSet[] bsAtomMinMax;
+  private BitSet[][] bsBothMinMax = new BitSet[2][];
 
-  private void markSphereVoxels(float r0, float distance, BitSet bs) {
+  protected void getAtomMinMax(boolean isWithin, float distance, BitSet bs) {
+    int n = bs.cardinality();
+    bsAtomMinMax = new BitSet[nPointsX];
+    for (int i = 0; i < n; i++)
+      bsAtomMinMax[i] = new BitSet();
+    for (int ia = bs.nextSetBit(0); ia >= 0; ia = bs.nextSetBit(ia + 1)) {
+      int iAtom = myIndex[ia];
+      Point3f ptA = atomXyz[iAtom];
+      float rA = atomRadius[iAtom] + margin;
+      if (isWithin && ptA.distance(point) > distance + rA + 0.5)
+        continue;
+      volumeData.xyzToVoxelPt(ptA.x - rA, ptA.y - rA, ptA.z - rA, pt0);
+      int min = Math.max(pt0.x - 1, 0);
+      volumeData.xyzToVoxelPt(ptA.x + rA, ptA.y + rA, ptA.z + rA, pt1);
+      int max = Math.min(pt1.x + 1, nPointsX);
+      for (int i = min; i < max; i++)
+        bsAtomMinMax[i].set(ia);
+    }
+  }
+
+  @Override
+  public float[] getPlane(int x) {
+    if (yzCount == 0)
+      initPlanes();
+    getPlane(bsBothMinMax[x][0], x, yzPlanes[x % 2]);
+    getPlane(bsBothMinMax[x][1], x, yzPlanes[x % 2]);
+    return yzPlanes[x % 2];
+  }
+
+  private int r0 = 0;
+
+  private void getPlane(BitSet bs, int x, float[] plane) {
+    ptY0.set(ptXyzTemp);
+    for (int ia = bs.nextSetBit(0); ia >= 0; ia = bs.nextSetBit(ia + 1)) {
+      int iAtom = myIndex[ia];
+      Point3f ptA = atomXyz[iAtom];
+      float rA = atomRadius[iAtom];
+      float rA0 = rA + r0;
+      setGridLimitsForAtom(ptA, rA0, pt0, pt1);
+      volumeData.voxelPtToXYZ(pt0.x, pt0.y, pt0.z, ptXyzTemp);
+      for (int pt = 0, j = pt0.y; j < pt1.y; j++, ptXyzTemp.scaleAdd(1,
+          volumetricVectors[1], ptZ0)) {
+        ptZ0.set(ptXyzTemp);
+        for (int k = pt0.z; k < pt1.z; k++, ptXyzTemp.add(volumetricVectors[2]), pt++) {
+          float value = ptXyzTemp.distance(ptA) - rA;
+          if ((r0 == 0 || value <= rA0) && value < plane[pt]) {
+            if (!Float.isNaN(value)) {
+              int ipt = volumeData.getPointIndex(x, j, k);
+              voxelSource[ipt] = ia + 1;
+            }
+            plane[pt] = value;
+          }
+        }
+      }
+    }
+  }
+
+  private void markSphereVoxels(float distance, BitSet bs) {
     boolean isWithin = (distance != Float.MAX_VALUE && point != null);
     for (int ia = bs.nextSetBit(0); ia >= 0; ia = bs.nextSetBit(ia + 1)) {
       int iAtom = myIndex[ia];
@@ -223,11 +284,11 @@ class IsoIntersectReader extends AtomDataReader {
               .add(volumetricVectors[2])) {
             float value = ptXyzTemp.distance(ptA) - rA;
             if ((r0 == 0 || value <= rA0) && value < voxelData[i][j][k]) {
-              voxelData[i][j][k] = value;
               if (!Float.isNaN(value)) {
                 int ipt = volumeData.getPointIndex(i, j, k);
                 voxelSource[ipt] = ia + 1;
               }
+              voxelData[i][j][k] = value;
             }
           }
         }

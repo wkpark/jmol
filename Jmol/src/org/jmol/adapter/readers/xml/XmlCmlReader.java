@@ -237,6 +237,9 @@ public class XmlCmlReader extends XmlReader {
 
       break;
     case CRYSTAL:
+      // we force this to be NOT serialized by number, because we might have a1 and a1_....
+      checkedSerial = true;
+      isSerial = false;
       if (name.equals("scalar")) {
         state = CRYSTAL_SCALAR;
         setKeepChars(true);
@@ -391,6 +394,7 @@ public class XmlCmlReader extends XmlReader {
         if (!checkedSerial) {
           // this is important because the atomName may not be unique
           // (as in PDB files)
+          // but it causes problems in cif-derived files that involve a1 and a1_1, for instance
           isSerial = (id != null && id.length() > 1 && id.startsWith("a")
               && Parser.parseInt(id.substring(1)) != Integer.MIN_VALUE);
           checkedSerial = true;
@@ -452,6 +456,7 @@ public class XmlCmlReader extends XmlReader {
 
   private void addNewBond(String a1, String a2, int order) {
     parent.applySymmetryToBonds = true;
+    System.out.println("atomsetcollection addnewbond " + a1 + " " + a2);
     if (isSerial)
       atomSetCollection.addNewBondWithMappedSerialNumbers(Parser.parseInt(a1.substring(1)),
           Parser.parseInt(a2.substring(1)), order);

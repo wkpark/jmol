@@ -63,10 +63,6 @@ public class Contact extends Isosurface {
   private void setContacts(Object[] value) {
     BitSet bsA = (BitSet) value[0];
     BitSet bsB = (BitSet) value[1];
-    if (Logger.debugging) {
-      Logger.info("Contacts for " + bsA.cardinality() + ": " + Escape.escape(bsA));
-      Logger.info("Contacts to " + bsB.cardinality() + ": " + Escape.escape(bsB));
-    }
     BitSet[] bsFilters = (BitSet[]) value[2];
     boolean doSlabByType = (bsFilters != null);
     boolean isMisc = (doSlabByType && bsFilters[1] != null);
@@ -82,6 +78,11 @@ public class Contact extends Isosurface {
     atomCount = viewer.getAtomCount();
     int intramolecularMode = (int) (params == null || params.length < 2 ? 0
         : params[1]);
+    if (Logger.debugging) {
+      Logger.info("Contact intramolecularMode " + intramolecularMode);
+      Logger.info("Contacts for " + bsA.cardinality() + ": " + Escape.escape(bsA));
+      Logger.info("Contacts to " + bsB.cardinality() + ": " + Escape.escape(bsB));
+    }
     setProperty("newObject", null, null);
 
     switch (type) {

@@ -15242,7 +15242,7 @@ public class ScriptEvaluator {
     int minSet = Integer.MAX_VALUE;
     int type = Token.plane;
     int bondMode = Token.nada;
-    float distance = 5;
+    float distance = Float.NaN;
     Boolean intramolecular = null;
     Object userSlabObject = null;
     int colorpt = 0;
@@ -15429,11 +15429,11 @@ public class ScriptEvaluator {
           bsB = BitSetUtil.setAll(viewer.getAtomCount());
           bsB.andNot(bsA);
         }
-        bs = viewer.getAtomsWithin(distance, bsA, false, null);
+        bs = viewer.getAtomsWithin(distance, bsA, false, (Float.isNaN(distance) ? rd : null));
         // {B} always within some fixed distance of A -- intramolecular
         bsB.and(bs);
       } else {
-        bs = viewer.getAtomsWithin(distance, bsA, true, null);
+        bs = viewer.getAtomsWithin(distance, bsA, true, (Float.isNaN(distance) ? rd : null));
         // {B} always within some fixed distance of A -- intermolecular
         bsB.and(bs);
       }

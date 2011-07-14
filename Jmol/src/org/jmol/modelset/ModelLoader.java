@@ -1388,13 +1388,19 @@ public final class ModelLoader {
       int[] mapNewToOld = new int[modelSet.atomCount
           - bsDeletedAtoms.cardinality()];
       int n = baseAtomIndex;
-      for (int i = baseAtomIndex; i < modelSet.atomCount; i++)
+      Model[] models = modelSet.models;
+      Atom[] atoms = modelSet.atoms;
+      for (int i = baseAtomIndex; i < modelSet.atomCount; i++) {
+        models[atoms[i].modelIndex].bsAtoms.clear(i);
+        models[atoms[i].modelIndex].bsAtomsDeleted.clear(i);
         if (bsDeletedAtoms.get(i)) {
           mapOldToNew[i] = n - 1;
+          models[atoms[i].modelIndex].atomCount--;
         } else {
           mapNewToOld[n] = i;
           mapOldToNew[i] = n++;
         }
+      }
       modelSet.modelSetAuxiliaryInfo.put("bsDeletedAtoms", bsDeletedAtoms);
       // adjust group pointers
       for (int i = baseGroupIndex; i < groups.length; i++) {

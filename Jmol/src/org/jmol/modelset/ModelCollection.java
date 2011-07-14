@@ -4088,6 +4088,10 @@ abstract public class ModelCollection extends BondCollection {
     for (int i = i0; i < atomCount; i++) {
       atoms[i] = atoms[map[i]];
       atoms[i].index = i;
+      Model m = models[atoms[i].modelIndex];
+      if (m.firstAtomIndex == map[i])
+        m.firstAtomIndex = i;
+      m.bsAtoms.set(i);
     }
     if (vibrationVectors != null)
       for (int i  = i0; i < atomCount; i++)

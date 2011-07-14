@@ -1040,6 +1040,10 @@ abstract public class AtomCollection {
         + " set";
     int n = 0;
     boolean isDefault = (type == TAINT_COORD);
+    if (bs != null && bs.length() > atomCount) {
+      System.out.println("atomcollection check bs " + Escape.escape(bs));
+      return;
+    }
     if (bs != null)
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
         s.append(i + 1).append(" ").append(atoms[i].getElementSymbol()).append(

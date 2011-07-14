@@ -529,7 +529,7 @@ public final class Resolver implements JmolBioResolver {
         continue;
       }
       String value = htBondMap.get(key);
-      Logger.info(key + " was not used; order=" + value);
+      Logger.info("bond " + key + " was not used; order=" + value);
       if (htBondMap.get(key).equals("1")) {
         htKeysUsed.put(key, Boolean.TRUE);
         continue; // that's ok

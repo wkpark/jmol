@@ -162,7 +162,6 @@ public class AlphaPolymer extends BioPolymer {
    * command
    * 
    * @param modelSet
-   * @param atoms
    * @param bs1
    * @param bs2
    * @param vCA

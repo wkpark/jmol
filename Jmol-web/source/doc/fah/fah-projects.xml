@@ -8666,6 +8666,9 @@
   <fah_proj number="6890" name="Abeta42_dimer" public="y"
     server="171.67.108.52" atoms="12921" preferred="16" deadline="23"
     credit="75.0" frames="100" code="G" contact="lin5" kfactor="0.0"/>
+  <fah_proj number="6891" name="Abeta42_dimer" public="n"
+    server="171.67.108.52" atoms="22851" preferred="27" deadline="40"
+    credit="137.0" frames="100" code="G" contact="lin5" kfactor="0.0"/>
 
   <!-- Projects 6900 to 6999 -->
   <fah_proj number="6900" name="ves_shooting" public="y"
@@ -9162,9 +9165,9 @@
   <fah_proj number="7805" name="p7805" public="y" file="xyz"
     server="171.64.65.98" atoms="60595" preferred="25.54" deadline="55.34"
     credit="1718.76" frames="100" code="A4" contact="schwancr" kfactor="0.58" contrib="Danny Nielsen"/>
-  <fah_proj number="7806" name="p7806" public="y"
-    server="171.64.65.98" atoms="35284" preferred="17.579988425925926" deadline="38.09"
-    credit="1183.12" frames="100" code="A4" contact="schwancr" kfactor="0.58"/>
+  <fah_proj number="7806" name="p7806" public="y" file="xyz"
+    server="171.64.65.98" atoms="35284" preferred="17.58" deadline="38.09"
+    credit="1183.12" frames="100" code="A4" contact="schwancr" kfactor="0.58" contrib="Danny Nielsen"/>
   <fah_proj number="7807" name="p7807" public="y" file="xyz"
     server="171.64.65.98" atoms="36773" preferred="18.12" deadline="39.26"
     credit="1219.2" frames="100" code="A4" contact="schwancr" kfactor="0.58" contrib="Sam Novak"/>
@@ -9546,6 +9549,9 @@
   <fah_proj number="10123" name="p10123" public="y"
     server="171.64.65.71" atoms="1174" preferred="2" deadline="3"
     credit="494.0" frames="100" code="GG2" contact="gbowman" kfactor="0.0"/>
+  <fah_proj number="10124" name="p10124" public="n"
+    server="171.64.65.75" atoms="34366" preferred="8" deadline="13"
+    credit="1705.0" frames="100" code="A3" contact="gbowman" kfactor="3.0"/>
 
   <!-- Projects 10200 to 10299 -->
   <fah_proj number="10200" name="b2AR conformational space sampling" public="y" file="xyz"

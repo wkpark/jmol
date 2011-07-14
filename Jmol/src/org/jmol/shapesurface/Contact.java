@@ -63,7 +63,7 @@ public class Contact extends Isosurface {
   private void setContacts(Object[] value) {
     BitSet bsA = (BitSet) value[0];
     BitSet bsB = (BitSet) value[1];
-    if (true || Logger.debugging) {
+    if (Logger.debugging) {
       Logger.info("Contacts for " + bsA.cardinality() + ": " + Escape.escape(bsA));
       Logger.info("Contacts to " + bsB.cardinality() + ": " + Escape.escape(bsB));
     }

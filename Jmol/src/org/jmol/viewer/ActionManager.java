@@ -1093,7 +1093,7 @@ public class ActionManager {
     }
 
     if (checkMotionRotateZoom(action, x, deltaX, deltaY, true)) {
-      if (viewer.getSlabEnabled())
+      if (viewer.getSlabEnabled() && checkSlideZoom(action))
         viewer.slabDepthByPixels(deltaY);
       else
         viewer.zoomBy(deltaY);
@@ -1198,7 +1198,7 @@ public class ActionManager {
   private boolean checkMotionRotateZoom(int action, int x, 
                                         int deltaX, int deltaY,
                                         boolean inMotion) {
-    boolean isSlideZoom = isBound(action, ACTION_slideZoom);
+    boolean isSlideZoom = checkSlideZoom(action);
     boolean isRotateXY = isBound(action, ACTION_rotate);
     boolean isRotateZorZoom = isBound(action, ACTION_rotateZorZoom);
     if (!isSlideZoom && !isRotateXY && !isRotateZorZoom) 
@@ -1210,7 +1210,11 @@ public class ActionManager {
       viewer.setCursor(cursor);
     if (inMotion)
       viewer.setInMotion(true);
-    return (isZoom || isSlideZoom && isZoomArea(pressed.x));
+    return (isZoom || isSlideZoom);
+  }
+
+  private boolean checkSlideZoom(int action) {
+    return isBound(action, ACTION_slideZoom) && isZoomArea(pressed.x);
   }
 
   private boolean isZoomArea(int x) {

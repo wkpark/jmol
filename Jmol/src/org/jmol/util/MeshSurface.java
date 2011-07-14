@@ -46,10 +46,10 @@ public class MeshSurface {
       if (haveSources)
         vertexSource[vertexCount] = m.vertexSource[i];
     }
+    polygonCount0 = nP;
+    vertexCount0 = nV;
     resetSlab();
     polygonIndexes = newPolygons;
-    polygonCount = nP;
-    vertexCount = nV;
   }
 
   private static int mergePolygons(MeshSurface m, int ipt, int vertexCount, int[][] newPolygons) {

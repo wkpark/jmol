@@ -96,7 +96,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
      * 
      * blah blah blah loop_ _a _b _c 0 1 2 0 3 4 0 5 6 loop_......
      * 
-     * we don't actually check that any skpped loop has the proper number of
+     * we don't actually check that any skipped loop has the proper number of
      * data points --- some multiple of the number of data keys -- but other
      * than that, we are checking here for proper CIF syntax, and Jmol will
      * report if it finds data where a key is supposed to be.
@@ -1763,12 +1763,13 @@ _struct_site_gen.details
     BitSet bsBranch = new BitSet();
     Point3f cart1 = new Point3f();
     Point3f cart2 = new Point3f();
+    int nFactor = 2;
     for (int i = firstAtom; i < atomCount; i++)
       if (!bsMolecule.get(i) && !bsExclude.get(i))
         for (int j = bsMolecule.nextSetBit(0); j >= 0; j = bsMolecule
             .nextSetBit(j + 1))
           if (symmetry.checkDistance(atoms[j], atoms[i], atomRadius[i]
-              + atomRadius[j] + bondTolerance, 0, 1, 1, 1, ptOffset)) {
+              + atomRadius[j] + bondTolerance, 0, nFactor, nFactor, nFactor, ptOffset)) {
             setBs(atoms, i, bsConnected, bsBranch);
             for (int k = bsBranch.nextSetBit(0); k >= 0; k = bsBranch
                 .nextSetBit(k + 1)) {

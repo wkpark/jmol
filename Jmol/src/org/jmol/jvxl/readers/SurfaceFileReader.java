@@ -89,11 +89,7 @@ abstract class SurfaceFileReader extends SurfaceReader {
     next[0] = 0;
     return Parser.parseFloat(s, next);
   }
-/*
-  float parseFloatNext(String s) {
-    return Parser.parseFloat(s, next);
-  }
-*/
+
   protected int parseInt() {
     return Parser.parseInt(line, next);
   }

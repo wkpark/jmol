@@ -554,7 +554,7 @@ public class IsosurfaceMesh extends Mesh {
     jvxlData.diameter = diameter;
     jvxlData.color = Graphics3D.getHexCode(colix);
     jvxlData.meshColor = (meshColix == 0 ? null : Graphics3D.getHexCode(meshColix));
-    jvxlData.translucency = Graphics3D.getColixTranslucencyLevel(colix);
+    jvxlData.translucency = Graphics3D.getColixTranslucencyFractional(colix);
     jvxlData.rendering = getRendering().substring(1);
     jvxlData.colorScheme = (colorEncoder == null ? null : colorEncoder
         .getColorScheme());
@@ -654,7 +654,7 @@ public class IsosurfaceMesh extends Mesh {
     if (ce == null)
       ce = colorEncoder;
     if (Float.isNaN(translucentLevel)) {
-      translucentLevel = Graphics3D.getColixTranslucencyFractional(colix);
+      translucentLevel = Graphics3D.getColixTranslucencyLevel(colix);
     } else {
       colix = 
       Graphics3D.getColixTranslucent(colix,

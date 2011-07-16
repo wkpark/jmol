@@ -153,7 +153,7 @@ public class JvxlData {
   public int nVertexColors;
   public String color;
   public String meshColor;
-  public int translucency;
+  public float translucency;
   public String colorScheme;
   public String rendering;
   public int slabValue = Integer.MIN_VALUE;

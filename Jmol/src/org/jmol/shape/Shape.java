@@ -480,7 +480,7 @@ public abstract class Shape {
 
   private static String getTranslucentLabel(short colix) {
     return (Graphics3D.isColixTranslucent(colix) ? "translucent "
-        + Graphics3D.getColixTranslucencyLevel(colix): "opaque");
+        + Graphics3D.getColixTranslucencyFractional(colix): "opaque");
   }
 
   public static short getColix(short[] colixes, int i, Atom atom) {

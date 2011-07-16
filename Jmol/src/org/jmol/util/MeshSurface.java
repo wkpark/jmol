@@ -322,11 +322,14 @@ public class MeshSurface {
     }
 
     Object slabbingObject = slabObject[1];
-    boolean andCap = ((Boolean) slabObject[2]).booleanValue();
+    boolean andCap = (!isGhost && ((Boolean) slabObject[2]).booleanValue());
 
     StringBuffer sb = new StringBuffer();
     sb.append(andCap ? " cap " : " slab ");
-
+    if (isGhost)
+      sb.append("translucent ").append(
+          Graphics3D.getColixTranslucencyFractional(slabColix)).append(" ")
+          .append(Graphics3D.getHexCode(slabColix)).append(" ");
     switch (slabType) {
     case Token.plane:
       Point4f plane = (Point4f) slabbingObject;
@@ -379,6 +382,7 @@ public class MeshSurface {
           bsSlabDisplay.or(bsA);
         break;
       case Token.mesh:
+        //NOT IMPLEMENTED
         MeshSurface mesh = (MeshSurface) o[1];
         //distance = -1;
         getIntersection(0, null, null, null, null, mesh, andCap, false,
@@ -414,6 +418,7 @@ public class MeshSurface {
     boolean isSlab = (vData == null);
     boolean isMeshIntersect = (meshSurface != null);
     if (isMeshIntersect) {
+      // NOT IMPLEMENTED
       vBC = new Vector3f();
       vAC = new Vector3f();
       vNorm = new Vector3f();

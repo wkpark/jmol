@@ -312,7 +312,7 @@ public class LcaoCartoon extends Isosurface {
     if (isCpk) {
       short colix = viewer.getModelSet().getAtomColix(iAtom);
       if (Graphics3D.isColixTranslucent(colix)) {
-        super.setProperty("translucentLevel", new Float(Graphics3D.getColixTranslucencyFractional(colix)), null);
+        super.setProperty("translucentLevel", new Float(Graphics3D.getColixTranslucencyLevel(colix)), null);
         super.setProperty("translucency", "translucent", null);
       }
     } else if (isTranslucent)

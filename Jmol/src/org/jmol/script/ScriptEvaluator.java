@@ -15667,10 +15667,8 @@ public class ScriptEvaluator {
     BitSet bs = null;
     Short slabColix = null;
     Integer slabMeshType = null;
-    if (isColorParam(i + 1) || tok == Token.translucent) {
-      float slabTranslucency = 0;
-      if (theTok == Token.translucent)
-        slabTranslucency = (isFloatParameter(++i + 1) ? floatParameter(++i)
+    if (tok == Token.translucent) {
+      float slabTranslucency = (isFloatParameter(++i + 1) ? floatParameter(++i)
             : 0.5f);
       if (isColorParam(i + 1)) {
         slabColix = Short.valueOf(Graphics3D.getColixTranslucent(Graphics3D

@@ -2160,7 +2160,7 @@ final public class Graphics3D implements JmolRendererInterface {
     if (translucentLevel == 0) //opaque
       return (short) (colix & ~TRANSLUCENT_MASK);
     if (translucentLevel < 0) //screened
-      return (short) (colix | TRANSLUCENT_MASK);
+      return (short) (colix & ~TRANSLUCENT_MASK | TRANSLUCENT_SCREENED);
     if (Float.isNaN(translucentLevel) || translucentLevel >= 255 || translucentLevel == 1.0)
       return (short) ((colix & ~TRANSLUCENT_MASK) | TRANSPARENT);
     int iLevel = (int) (translucentLevel < 1 ? translucentLevel * 256
@@ -2171,17 +2171,17 @@ final public class Graphics3D implements JmolRendererInterface {
   }
 
   public final static int getColixTranslucencyLevel(short colix) {
-    int logAlpha = (colix >> TRANSLUCENT_SHIFT) & 15;
+    int logAlpha = (colix >> TRANSLUCENT_SHIFT) & 0xF;
     switch (logAlpha) {
     case 0:
       return 0;
-    case 1:
-    case 2:
-    case 3:
-    case 4:
-    case 5:
-    case 6:
-    case 7:
+    case 1: //  32
+    case 2: //  64
+    case 3: //  96
+    case 4: // 128
+    case 5: // 160
+    case 6: // 192
+    case 7: // 224
       return logAlpha << 5;
     case 15:
       return -1;
@@ -2224,7 +2224,7 @@ final public class Graphics3D implements JmolRendererInterface {
   }
 
   public final static short copyColixTranslucency(short colixFrom, short colixTo) {
-    return getColixTranslucent(colixTo, isColixTranslucent(colixFrom), getColixTranslucencyFractional(colixFrom));  
+    return getColixTranslucent(colixTo, isColixTranslucent(colixFrom), getColixTranslucencyLevel(colixFrom));  
   }
   
   public int getColorArgbOrGray(short colix) {

@@ -456,13 +456,13 @@ public class Text extends Object2d {
       s.append(" " + (10000f / scalePixelsPerMicron)); // Angstroms per pixel
     s.append("; color echo");
     if (Graphics3D.isColixTranslucent(colix))
-      s.append(" translucent " + Graphics3D.getColixTranslucencyLevel(colix));
+      s.append(" translucent " + Graphics3D.getColixTranslucencyFractional(colix));
     s.append(" ").append(Graphics3D.getHexCode(colix));
     if (bgcolix != 0) {
       s.append("; color echo background");
       if (Graphics3D.isColixTranslucent(bgcolix))
         s.append(" translucent "
-            + Graphics3D.getColixTranslucencyLevel(bgcolix));
+            + Graphics3D.getColixTranslucencyFractional(bgcolix));
       s.append(" ").append(Graphics3D.getHexCode(bgcolix));
     }
     s.append(";\n");

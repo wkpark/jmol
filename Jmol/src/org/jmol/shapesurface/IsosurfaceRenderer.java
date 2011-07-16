@@ -197,7 +197,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
             && imesh.vertexSets[i] != imesh.thisSet || !imesh.isColorSolid
             && imesh.vertexColixes != null && !setColix(imesh.vertexColixes[i])
             || haveBsDisplay && !imesh.bsDisplay.get(i)
-            || slabPoints && !mesh.bsSlabDisplay.get(i))
+            || slabPoints && !bsSlab.get(i))
           continue;
         if (showNumbers && screens[i].z > 10
             && Math.abs(screens[i].x - cX) < 50
@@ -242,7 +242,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
   protected void renderTriangles(boolean fill, boolean iShowTriangles,
                                  boolean isExport) {
     int[][] polygonIndexes = imesh.polygonIndexes;
-    colix = (!fill && imesh.meshColix != 0 ? imesh.meshColix : imesh.colix);
+    colix = (haveBsSlabGhost ? imesh.slabColix : !fill && imesh.meshColix != 0 ? imesh.meshColix : imesh.colix);
     short[] vertexColixes = (!fill && imesh.meshColix != 0 ? null : imesh.vertexColixes);
     g3d.setColix(colix);
     boolean generateSet = isExport;
@@ -254,8 +254,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
     if (exportType == Graphics3D.EXPORT_CARTESIAN) {
       frontOnly = false;
     }
-    boolean colorSolid = (vertexColixes == null || imesh.isColorSolid);
-    boolean noColor = (vertexColixes == null || !fill && imesh.meshColix != 0);
+    boolean colorSolid = (haveBsSlabGhost || vertexColixes == null || imesh.isColorSolid);
+    boolean noColor = (haveBsSlabGhost || vertexColixes == null || !fill && imesh.meshColix != 0);
     boolean isPlane = (imesh.jvxlData.jvxlPlane != null);
     short colix = this.colix;
     if (isPlane && !colorSolid && !fill && imesh.fillTriangles) {
@@ -276,7 +276,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     
     for (int i = imesh.polygonCount; --i >= 0;) {
       int[] vertexIndexes = polygonIndexes[i];
-      if (vertexIndexes == null || haveBsSlabDisplay && !imesh.bsSlabDisplay.get(i))
+      if (vertexIndexes == null || haveBsSlabDisplay && !bsSlab.get(i))
         
         continue;
       int iA = vertexIndexes[0];

@@ -186,6 +186,10 @@ final public class Graphics3D implements JmolRendererInterface {
   
   boolean twoPass = false;
   boolean isPass2;
+  public boolean isPass2() {
+    return isPass2;
+  }
+  
   boolean addAllPixels;
   boolean haveTranslucentObjects;
   boolean translucentCoverOnly = false;

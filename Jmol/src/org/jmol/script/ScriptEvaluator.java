@@ -15665,6 +15665,31 @@ public class ScriptEvaluator {
     Point3f[] pts = null;
     float d, d2;
     BitSet bs = null;
+    Short slabColix = null;
+    Integer slabMeshType = null;
+    if (isColorParam(i + 1) || tok == Token.translucent) {
+      float slabTranslucency = 0;
+      if (theTok == Token.translucent)
+        slabTranslucency = (isFloatParameter(++i + 1) ? floatParameter(++i)
+            : 0.5f);
+      if (isColorParam(i + 1)) {
+        slabColix = Short.valueOf(Graphics3D.getColixTranslucent(Graphics3D
+            .getColix(getArgbParam(i + 1)), slabTranslucency != 0, slabTranslucency));
+        i = iToken;
+      } else {
+        slabColix = Short.valueOf(Graphics3D.getColixTranslucent(Graphics3D.WHITE, slabTranslucency != 0, slabTranslucency));
+      }
+      switch (tok = tokAt(i + 1)) {
+      case Token.mesh:
+      case Token.fill:
+        slabMeshType = Integer.valueOf(tok);
+        tok = tokAt(++i + 1);
+        break;
+      default:
+        slabMeshType = Integer.valueOf(Token.fill);
+        break;
+      }
+    }
     //TODO: check for compatibility with LCAOCARTOONS
     switch (tok) {
     case Token.off:
@@ -15778,7 +15803,9 @@ public class ScriptEvaluator {
       data = plane;
       tok = Token.plane;
     }
-    return MeshSurface.getSlabObject(tok, data, !isSlab);
+    Object colorData = (slabMeshType == null ? null : new Object[] {
+        slabMeshType, slabColix });
+    return MeshSurface.getSlabObject(tok, data, !isSlab, colorData);
   }
 
   private boolean mo(boolean isInitOnly) throws ScriptException {

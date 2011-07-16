@@ -1763,7 +1763,7 @@ _struct_site_gen.details
     BitSet bsBranch = new BitSet();
     Point3f cart1 = new Point3f();
     Point3f cart2 = new Point3f();
-    int nFactor = 2;
+    int nFactor = 2; // 1 was not enough. (see data/cif/triclinic_issue.cif)
     for (int i = firstAtom; i < atomCount; i++)
       if (!bsMolecule.get(i) && !bsExclude.get(i))
         for (int j = bsMolecule.nextSetBit(0); j >= 0; j = bsMolecule

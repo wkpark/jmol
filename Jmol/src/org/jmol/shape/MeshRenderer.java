@@ -32,6 +32,7 @@ import javax.vecmath.Point3i;
 
 import org.jmol.api.SymmetryInterface;
 import org.jmol.g3d.Graphics3D;
+import org.jmol.script.Token;
 
 public abstract class MeshRenderer extends ShapeRenderer {
 
@@ -52,6 +53,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected boolean antialias;
   protected boolean haveBsDisplay;
   protected boolean haveBsSlabDisplay;
+  protected boolean haveBsSlabGhost;
 
   protected Point4f thePlane;
   protected Point3f latticeOffset = new Point3f();
@@ -114,15 +116,23 @@ public abstract class MeshRenderer extends ShapeRenderer {
 
   private boolean doRender;
   protected boolean volumeRender;
+  protected BitSet bsSlab;
   
   
   private boolean setVariables() {
     if (mesh.visibilityFlags == 0)
       return false;
-    isTranslucent = Graphics3D.isColixTranslucent(mesh.colix);
+    if (mesh.bsSlabGhost != null)
+      g3d.setColix(mesh.slabColix); // forces a second pass
+    haveBsSlabGhost = (mesh.bsSlabGhost != null && g3d.isPass2());    
+    isTranslucent = haveBsSlabGhost || Graphics3D.isColixTranslucent(mesh.colix);
     doRender = (setColix(mesh.colix) || mesh.showContourLines);
     if (!doRender)
       return true;
+    if (haveBsSlabGhost) {
+      if (!(doRender = g3d.setColix(mesh.slabColix)))
+        return true;
+    }
     vertices = (mesh.ptOffset == null && mesh.scale3d == 0 
         && mesh.q == null && mesh.mat4 == null 
         ? mesh.vertices : mesh.getOffsetVertices(thePlane));     
@@ -136,7 +146,8 @@ public abstract class MeshRenderer extends ShapeRenderer {
       // during a surface calculation
 
       haveBsDisplay = (mesh.bsDisplay != null);
-      haveBsSlabDisplay = (mesh.bsSlabDisplay != null);
+      haveBsSlabDisplay = (haveBsSlabGhost || mesh.bsSlabDisplay != null);
+      bsSlab = (haveBsSlabGhost ? mesh.bsSlabGhost : haveBsSlabDisplay ? mesh.bsSlabDisplay : null);
       frontOnly = !viewer.getSlabEnabled() && mesh.frontOnly && !mesh.isTwoSided;
       screens = viewer.allocTempScreens(vertexCount);
       transformedVectors = g3d.getTransformedVertexVectors();
@@ -145,6 +156,8 @@ public abstract class MeshRenderer extends ShapeRenderer {
   }
 
   protected boolean setColix(short colix) {
+    if (haveBsSlabGhost)
+      return true;
     if (volumeRender && !isTranslucent)
       colix = Graphics3D.getColixTranslucent(colix, true, 0.8f);
     this.colix = colix;
@@ -168,13 +181,13 @@ public abstract class MeshRenderer extends ShapeRenderer {
 
   //isosurface,meshRenderer::render1 (just about everything)
   protected void render2(boolean generateSet) {
-    if (!g3d.setColix(colix))
+    if (!g3d.setColix(haveBsSlabGhost ? mesh.slabColix : colix))
       return;
     if (mesh.showPoints || mesh.polygonCount == 0)
       renderPoints();
-    if (mesh.drawTriangles)
+    if (haveBsSlabGhost ? mesh.slabMeshType == Token.mesh : mesh.drawTriangles)
       renderTriangles(false, mesh.showTriangles, false);
-    if (mesh.fillTriangles)
+    if (haveBsSlabGhost ? mesh.slabMeshType == Token.fill : mesh.fillTriangles)
       renderTriangles(true, mesh.showTriangles, generateSet);
   }
   
@@ -212,7 +225,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected void renderTriangles(boolean fill, boolean iShowTriangles,
                                  boolean generateSet) {
     int[][] polygonIndexes = mesh.polygonIndexes;
-    colix = mesh.colix;
+    colix = (haveBsSlabGhost ? mesh.slabColix : mesh.colix);
     // vertexColixes are only isosurface properties of IsosurfaceMesh, not Mesh
     g3d.setColix(colix);
     if (generateSet) {

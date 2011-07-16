@@ -589,10 +589,12 @@ public class JvxlCoder {
                                         JvxlData jvxlData, MeshData meshData, boolean escapeXml) {
     int[] vertexIdNew = new int[meshData.vertexCount];
     if (appendXmlTriangleData(sb, meshData.polygonIndexes,
-        meshData.polygonCount, meshData.bsSlabDisplay, vertexIdNew, escapeXml))
+        meshData.polygonCount, meshData.bsSlabDisplay, 
+        meshData.bsSlabGhost, vertexIdNew, escapeXml))
       appendXmlVertexData(sb, jvxlData, vertexIdNew,
           meshData.vertices, meshData.vertexValues, meshData.vertexCount,
-          meshData.polygonColorData, meshData.polygonCount, meshData.bsSlabDisplay, 
+          meshData.polygonColorData, meshData.polygonCount, 
+          meshData.bsSlabDisplay, meshData.bsSlabGhost,
           jvxlData.jvxlColorData.length() > 0, escapeXml);
   }
 
@@ -640,12 +642,13 @@ public class JvxlCoder {
    * @param triangles
    * @param nData
    * @param bsSlabDisplay 
+   * @param bsSlabGhost TODO
    * @param vertexIdNew
    * @param escapeXml 
    * @return (triangles are present)
    */
   private static boolean appendXmlTriangleData(StringBuffer sb, int[][] triangles, int nData,
-                                              BitSet bsSlabDisplay, int[] vertexIdNew, boolean escapeXml) {
+                                              BitSet bsSlabDisplay, BitSet bsSlabGhost, int[] vertexIdNew, boolean escapeXml) {
     StringBuffer list1 = new StringBuffer();
     StringBuffer list2 = new StringBuffer();
     int ilast = 1;
@@ -741,6 +744,7 @@ public class JvxlCoder {
    * @param polygonColorData
    * @param polygonCount
    * @param bsSlabDisplay
+   * @param bsSlabGhost TODO
    * @param addColorData
    * @param escapeXml
    */
@@ -752,8 +756,8 @@ public class JvxlCoder {
                                           String polygonColorData,
                                           int polygonCount,
                                           BitSet bsSlabDisplay,
-                                          boolean addColorData,
-                                          boolean escapeXml) {
+                                          BitSet bsSlabGhost,
+                                          boolean addColorData, boolean escapeXml) {
     int colorFractionBase = jvxlData.colorFractionBase;
     int colorFractionRange = jvxlData.colorFractionRange;
     Point3f p;

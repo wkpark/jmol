@@ -326,4 +326,6 @@ public interface JmolRendererInterface {
 
   public abstract void setColor(int color);
 
+  public abstract boolean isPass2();
+
 }

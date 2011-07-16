@@ -533,7 +533,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       withinPoints = (List<Point3f>) o[3];
       if (withinPoints.size() == 0)
         withinPoints = viewer.getAtomPointVector((BitSet) o[2]);
-    } else if ("nci" == propertyName && sg != null) {
+    } else if (("nci" == propertyName || "orbital" == propertyName) && sg != null) {
       sg.getParams().testFlags = (viewer.getTestFlag(2) ? 2 : 0);
     }
 
@@ -640,7 +640,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       if (mesh == null)
         return false;
       data[3] = Integer.valueOf(mesh.modelIndex);
-      mesh.getIntersection(0, (Point4f) data[1], null, (List<Point3f[]>) data[2], null, null, false, false, Token.plane);
+      mesh.getIntersection(0, (Point4f) data[1], null, (List<Point3f[]>) data[2], null, null, false, false, Token.plane, false);
       return true;
     }
     if (property == "getBoundingBox") {

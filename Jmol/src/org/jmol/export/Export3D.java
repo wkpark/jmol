@@ -736,6 +736,10 @@ final public class Export3D implements JmolRendererInterface {
     return g3d.getRenderHeight();
   }
 
+  public boolean isPass2() {
+    return g3d.isPass2();
+  }
+
   /**
    * gets g3d slab
    * 

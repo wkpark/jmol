@@ -119,6 +119,7 @@ public class Mesh extends MeshSurface {
   public void clear(String meshType) {
     bsDisplay = null;
     bsSlabDisplay = null;
+    bsSlabGhost = null;
     connections = null;
     vertexCount0 = polygonCount0 = vertexCount = polygonCount = 0;
     scale = 1;
@@ -413,6 +414,23 @@ public class Mesh extends MeshSurface {
     else
       for (int i = polygonCount; --i >= 0;)
         if (bsSlabDisplay == null || bsSlabDisplay.get(i)) {
+          int[] vertexIndexes = polygonIndexes[i];
+          if (vertexIndexes == null)
+            continue;
+          bs.set(vertexIndexes[0]);
+          bs.set(vertexIndexes[1]);
+          bs.set(vertexIndexes[2]);
+        }
+    return bs;
+  }
+
+  BitSet getVisibleGhostBitSet() {
+    BitSet bs = new BitSet();
+    if (polygonCount == 0 && bsSlabGhost != null)
+      BitSetUtil.copy(bsSlabGhost, bs);
+    else
+      for (int i = polygonCount; --i >= 0;)
+        if (bsSlabGhost == null || bsSlabGhost.get(i)) {
           int[] vertexIndexes = polygonIndexes[i];
           if (vertexIndexes == null)
             continue;

@@ -103,6 +103,7 @@ import org.jmol.util.ColorEncoder;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
+import org.jmol.util.MeshSurface;
 import org.jmol.util.Parser;
 import org.jmol.util.Point3fi;
 import org.jmol.util.Quaternion;
@@ -436,16 +437,15 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         return;
       }
     }
-/* in principal, after-model CAP should work, but it's not quite there.
- * 
+
     if ("cap" == propertyName) {
+      // for lcaocartoons?
       if (thisMesh != null && thisMesh.polygonCount != 0) {
-        thisMesh.slabPolygons((Object[]) value);
+        thisMesh.slabPolygons((Object[]) value, true);
         thisMesh.initialize(thisMesh.lighting, null, null);
         return;
       }
     }
-*/
     if ("map" == propertyName) {
       setProperty("squareData", Boolean.FALSE, null);
       if (thisMesh == null || thisMesh.vertexCount == 0)
@@ -607,8 +607,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   }  
 
   protected void slabPolygons(Object[] slabInfo) {
-    if (thisMesh.slabPolygons(slabInfo))
-      thisMesh.jvxlData.vertexDataOnly = true;
+    thisMesh.slabPolygons(slabInfo, false);
     thisMesh.reinitializeLightingAndColor();
   }
 
@@ -703,10 +702,13 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return thisMesh.getContours();
     if (property == "jvxlDataXml" || property == "jvxlMeshXml") {
       MeshData meshData = null;
-      if (property == "jvxlMeshXml" || jvxlData.vertexDataOnly) {
+      jvxlData.slabInfo = null;
+      if (property == "jvxlMeshXml" || jvxlData.vertexDataOnly || thisMesh.bsSlabDisplay != null && thisMesh.bsSlabGhost == null) {
         meshData = new MeshData();
         fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
         meshData.polygonColorData = getPolygonColorData(meshData.polygonCount, meshData.polygonColixes, meshData.bsSlabDisplay);
+      } else if (thisMesh.bsSlabGhost != null) {
+        jvxlData.slabInfo = thisMesh.slabOptions.toString();
       }
       StringBuffer sb = new StringBuffer();
       getMeshCommand(sb, thisMesh.index);
@@ -892,42 +894,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   protected void getCapSlabInfo(String script) {
     int i = script.indexOf("# SLAB=");
     if (i >= 0)
-      sg.setParameter("slab", getCapSlabObject("slab", i, script));
+      sg.setParameter("slab", MeshSurface.getCapSlabObject(Parser.getNextQuotedString(script, i), false));
     i = script.indexOf("# CAP=");
     if (i >= 0)
-      sg.setParameter("slab", getCapSlabObject("cap", i, script));
-  }
-
-  /**
-   * legacy
-   * 
-   * @param type
-   * @param i
-   * @param script
-   * @return   slabInfo object
-   */
-  private Object[] getCapSlabObject(String type, int i, String script) {
-    Object[] info = new Object[3];
-    try {
-      String s = Parser.getNextQuotedString(script, i);
-      StringBuffer sb = new StringBuffer(type);
-      sb.append(" ");
-      if (s.indexOf("array") == 0) {
-        String[] pts = TextFormat.split(s.substring(6, s.length() - 1), ",");
-        info[0] = new Point3f[] { (Point3f) Escape.unescapePoint(pts[0]),
-            (Point3f) Escape.unescapePoint(pts[1]),
-            (Point3f) Escape.unescapePoint(pts[2]),
-            (Point3f) Escape.unescapePoint(pts[3]) };
-      } else {
-        info[0] = Escape.unescapePoint(s); // Point4f
-      }
-      sb.append(Escape.escape(info[0]));
-      info[1] = sb;
-      info[2] = Boolean.valueOf(type.equals("cap"));
-    } catch (Exception e) {
-      return null;
-    }
-    return info;
+      sg.setParameter("slab", MeshSurface.getCapSlabObject(Parser.getNextQuotedString(script, i), true));
   }
 
   private boolean iHaveModelIndex;
@@ -980,8 +950,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     thisMesh.ptCenter.set(center);
     thisMesh.ptOffset = offset;
     thisMesh.scale3d = (thisMesh.jvxlData.jvxlPlane == null ? 0 : scale3d);
-    if (thisMesh.bsSlabDisplay != null)
-      thisMesh.jvxlData.vertexDataOnly = true;
+//    if (thisMesh.bsSlabDisplay != null)
+//      thisMesh.jvxlData.vertexDataOnly = true;
 //      thisMesh.bsSlabDisplay = thisMesh.jvxlData.bsSlabDisplay;
   }
 
@@ -1202,6 +1172,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       meshData.polygonIndexes = mesh.polygonIndexes;
       meshData.polygonColixes = mesh.polygonColixes;
       meshData.bsSlabDisplay = mesh.bsSlabDisplay;
+      meshData.bsSlabGhost = mesh.bsSlabGhost;
+      meshData.slabColix = mesh.slabColix;
+      meshData.slabMeshType = mesh.slabMeshType;
       meshData.polygonCount0 = mesh.polygonCount0;
       meshData.vertexCount0 = mesh.vertexCount0;
       meshData.slabOptions = mesh.slabOptions;
@@ -1228,6 +1201,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       mesh.polygonIndexes = meshData.polygonIndexes;
       mesh.polygonColixes = meshData.polygonColixes;
       mesh.bsSlabDisplay = meshData.bsSlabDisplay;
+      mesh.bsSlabGhost = meshData.bsSlabGhost;
+      mesh.slabColix = meshData.slabColix;
+      mesh.slabMeshType = meshData.slabMeshType;
       mesh.polygonCount0 = meshData.polygonCount0;
       mesh.vertexCount0 = meshData.vertexCount0;
       mesh.slabOptions = meshData.slabOptions;
@@ -1245,6 +1221,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     thisMesh.initialize(sg.isFullyLit() ? JmolConstants.FULLYLIT
         : JmolConstants.FRONTLIT, null, sg.getPlane());
     thisMesh.setColorsFromJvxlData();
+    if (thisMesh.jvxlData.slabInfo != null)
+      viewer.runScriptImmediately("isosurface " + thisMesh.jvxlData.slabInfo);
+      
     if (sg.getParams().psi_monteCarloCount > 0)
       thisMesh.diameter = -1; // use set DOTSCALE
     
@@ -1266,8 +1245,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     setPropertySuper("token", Integer.valueOf(explicitContours ? Token.contourlines : Token.nocontourlines), null);
     List<Object[]> slabInfo = sg.getSlabInfo();
     if (slabInfo != null) {
-      thisMesh.slabPolygons(slabInfo);
-      thisMesh.jvxlData.vertexDataOnly = true;
+      thisMesh.slabPolygons(slabInfo, false);
       thisMesh.reinitializeLightingAndColor();
     }
     // may not be the final color scheme, though.

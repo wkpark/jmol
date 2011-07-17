@@ -359,5 +359,6 @@ public class MeshData extends MeshSurface {
     for (int i = bsInvalid.nextSetBit(0); i >= 0; i = bsInvalid.nextSetBit(i + 1))
       vertexValues[i] = Float.NaN;
   }
+  
 }
 

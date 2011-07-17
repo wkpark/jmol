@@ -1854,7 +1854,7 @@ public class ScriptEvaluator {
     return pc;
   }
 
-  private void runScript(String script) throws ScriptException {
+  public void runScript(String script) throws ScriptException {
     if (!viewer.isPreviewOnly())
       runScript(script, outputBuffer);
   }

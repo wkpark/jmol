@@ -641,7 +641,7 @@ public class IsosurfaceMesh extends Mesh {
           for (int i = bsMap.nextSetBit(0); i >= 0; i = bsMap.nextSetBit(i + 1))
             vertexColixes[i] = colix;
         }
-    }
+    }    
   }
 
   /**

@@ -72,7 +72,8 @@ public class XmlUtil {
         if (o == null)
           continue;
         if (o instanceof Object[])
-          appendAttrib(sb, ((Object[]) o)[0], ((Object[]) o)[1]);
+          for (int j = 0; j < ((Object[]) o).length; j+= 2)
+          appendAttrib(sb, ((Object[]) o)[j], ((Object[]) o)[j + 1]);
         else
           appendAttrib(sb, o, attributes[++i]);
       }

@@ -159,7 +159,7 @@ public class JvxlData {
   public int slabValue = Integer.MIN_VALUE;
   public boolean isSlabbable;
   public int diameter;
-  
+  public String slabInfo;
 
   public void clear() {
     jvxlSurfaceData = "";
@@ -176,6 +176,7 @@ public class JvxlData {
     isSlabbable = false;
     meshColor = null;
     nVertexColors = 0;
+    slabInfo = null;
     slabValue = Integer.MIN_VALUE;
     rendering = null;    
     translucency = 0;

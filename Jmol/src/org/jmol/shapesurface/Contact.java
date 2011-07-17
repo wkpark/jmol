@@ -161,7 +161,7 @@ public class Contact extends Isosurface {
     bs2.andNot(bs1);
     setSlabData(fData, bs1, bs2, rd);
     thisMesh.slabPolygons(new Object[] { Integer.valueOf(Token.data), 
-        fData, Boolean.FALSE });
+        fData, Boolean.FALSE }, false);
   }
 
   private void setSlabData(float[] fData, BitSet bs1, BitSet bs2,
@@ -323,10 +323,10 @@ public class Contact extends Isosurface {
       switch (type) {
       case Token.full:
       case Token.trim:
-        thisMesh.slabPolygons(MeshSurface.getSlabWithinRange(-100, 0));
+        thisMesh.slabPolygons(MeshSurface.getSlabWithinRange(-100, 0), false);
         break;
       case Token.slab:
-        thisMesh.slabPolygons(MeshSurface.getSlabWithinRange(0, -100));
+        thisMesh.slabPolygons(MeshSurface.getSlabWithinRange(0, -100), false);
       }
       return;
     case Token.plane:
@@ -346,7 +346,7 @@ public class Contact extends Isosurface {
       setProperty("select", bsA, null);
       setProperty("radius", rd, null);
       setProperty("sasurface", Float.valueOf(0), null);
-      thisMesh.slabPolygons(MeshSurface.getSlabWithinRange(-100, 0));
+      thisMesh.slabPolygons(MeshSurface.getSlabWithinRange(-100, 0), false);
     }
   }
 

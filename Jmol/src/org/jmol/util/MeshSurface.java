@@ -2,7 +2,9 @@ package org.jmol.util;
 
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
@@ -19,7 +21,6 @@ public class MeshSurface {
 
   public void merge(MeshData m) {
     int nV = vertexCount + m.vertexCount;
-    if (polygonIndexes == null)
       polygonIndexes = new int[0][];
     if (m.polygonIndexes == null)
       m.polygonIndexes = new int[0][];
@@ -144,6 +145,8 @@ public class MeshSurface {
     else if (vertexCount == vertices.length)
       vertices = (Point3f[]) ArrayUtil.doubleLength(vertices);
     vertices[vertexCount] = new Point3f(vertex);
+    if (vertex.distance(new Point3f(-1.9934448f, -2.4586916E-7f, 0.0f)) < 0.001f)
+      System.out.println("testing MeshSurface " + vertexCount);
     return vertexCount++;
   }
 
@@ -163,15 +166,6 @@ public class MeshSurface {
     if (polygonIndexes == null || polygonCount > polygonIndexes.length)
       polygonIndexes = new int[polygonCount][];
   }
-
-  private int addVertexCopy(Point3f vertex, float value, int source) {
-    if (vertexSource != null) {
-      if (vertexCount >= vertexSource.length)
-        vertexSource = ArrayUtil.doubleLength(vertexSource);
-      vertexSource[vertexCount] = source;
-    }
-    return addVertexCopy(vertex, value);
-  } 
 
   public int addVertexCopy(Point3f vertex, float value) {
     if (vertexCount == 0)
@@ -259,11 +253,34 @@ public class MeshSurface {
 
   public int polygonCount0;
   public int vertexCount0;
+  
   public BitSet bsSlabDisplay;
   public BitSet bsSlabGhost;
-  public short slabColix;
   public int slabMeshType;
+  public short slabColix;
+  
+  public void setSlab(BitSet bsDisplay, BitSet bsGhost, String type,
+                      String color, float translucency) {
+    bsSlabDisplay = bsDisplay;
+    bsSlabGhost = bsGhost;
+    slabMeshType = (type.equalsIgnoreCase("mesh") ? Token.mesh : Token.fill);
+    slabColix = Graphics3D.getColixTranslucent(Graphics3D.getColix(color),
+        true, translucency);
+  }
+
+
   public BitSet bsDisplay;
+  public String getSlabColor() {
+    return (bsSlabGhost == null ? null : Graphics3D.getHexCode(slabColix));
+  }
+
+  public String getSlabTranslucency() {
+    return (bsSlabGhost == null ? null : "" + Graphics3D.getColixTranslucencyFractional(slabColix));
+  }
+
+  public String getSlabType() {
+    return (bsSlabGhost != null && slabMeshType == Token.mesh ? "mesh" : null);
+  }
 
   public StringBuffer slabOptions;
   
@@ -274,20 +291,49 @@ public class MeshSurface {
   }
 
   public void resetSlab() {
-    slabPolygons(getSlabObject(Token.none, null, false, null));
+    slabPolygons(getSlabObject(Token.none, null, false, null), false);
   }
 
   public static Object[] getSlabObject(int tok, Object data, boolean isCap, Object colorData) {
     return new Object[] { Integer.valueOf(tok), data, Boolean.valueOf(isCap), colorData };
   }
 
-  public void slabPolygons(List<Object[]> slabInfo) {
+  /**
+   * legacy -- for some scripts with early isosurface slabbing
+   * 
+   * @param s
+   * @param isCap
+   * @return slabInfo object
+   */
+  public static Object[] getCapSlabObject(String s, boolean isCap) {
+    try {
+      if (s.indexOf("array") == 0) {
+        String[] pts = TextFormat.split(s.substring(6, s.length() - 1), ",");
+        return getSlabObject(Token.boundbox, new Point3f[] {
+            (Point3f) Escape.unescapePoint(pts[0]),
+            (Point3f) Escape.unescapePoint(pts[1]),
+            (Point3f) Escape.unescapePoint(pts[2]),
+            (Point3f) Escape.unescapePoint(pts[3]) }, isCap, null);
+      }
+      Object plane = Escape.unescapePoint(s);
+      if (plane instanceof Point4f)
+        return getSlabObject(Token.plane, plane, isCap, null);
+    } catch (Exception e) {
+      //
+    }
+    return null;
+  }
+
+
+
+  
+  public void slabPolygons(List<Object[]> slabInfo, boolean allowCap) {
     for (int i = 0; i < slabInfo.size(); i++)
-      if (!slabPolygons(slabInfo.get(i)))
+      if (!slabPolygons(slabInfo.get(i), allowCap))
           break;
   }
   
-  public boolean slabPolygons(Object[] slabObject) {
+  public boolean slabPolygons(Object[] slabObject, boolean allowCap) {
     if (polygonCount0 < 0)
       return false; // disabled for some surface types
     int slabType = ((Integer) slabObject[0]).intValue();
@@ -303,6 +349,10 @@ public class MeshSurface {
       }
       return false;
     }
+    Object slabbingObject = slabObject[1];
+    boolean andCap = ((Boolean) slabObject[2]).booleanValue();
+    if (andCap && !allowCap)
+      return false;
     Object[] colorData = (Object[]) slabObject[3];
     boolean isGhost = (colorData != null);
     if (polygonCount0 == 0 && vertexCount0 == 0) {
@@ -319,11 +369,10 @@ public class MeshSurface {
         bsSlabGhost = new BitSet();
       slabMeshType = ((Integer) colorData[0]).intValue();
       slabColix = ((Short) colorData[1]).shortValue();
+      andCap = false;
     }
 
-    Object slabbingObject = slabObject[1];
-    boolean andCap = (!isGhost && ((Boolean) slabObject[2]).booleanValue());
-
+    
     StringBuffer sb = new StringBuffer();
     sb.append(andCap ? " cap " : " slab ");
     if (isGhost)
@@ -341,9 +390,10 @@ public class MeshSurface {
       Point3f[] box = (Point3f[]) slabbingObject;
       sb.append("within ").append(Escape.escape(box));
       Point4f[] faces = BoxInfo.getFacesFromCriticalPoints(box);
-      for (int i = 0; i < faces.length; i++)
+      for (int i = 0; i < faces.length; i++) {
         getIntersection(0, faces[i], null, null, null, null, andCap, false,
             Token.plane, isGhost);
+      }
       break;
     case Token.data:
       getIntersection(0, null, null, null, (float[]) slabbingObject, null,
@@ -401,6 +451,38 @@ public class MeshSurface {
     return true;
   }
 
+  private int addIntersectionVertex(Point3f vertex, float value, int source,
+                                    Map<String, Integer> mapEdge, int i1, int i2) {
+    
+    String key = (i1 > i2 ? i2 + "_" + i1 : i1 + "_" + i2);
+    if (key.equals("1432_1435"))
+      System.out.println(key);
+    if (i1 >= 0) {
+      Integer v = mapEdge.get(key);
+      if (v != null) {
+        System.out.println("found edge for " + key + " " + v);
+        return v.intValue();
+      }
+    }
+    
+    if (vertexSource != null) {
+      if (vertexCount >= vertexSource.length)
+        vertexSource = ArrayUtil.doubleLength(vertexSource);
+      vertexSource[vertexCount] = source;
+      if (source < 0)
+        System.out.println("MeshSurface addVertex source = " + source);
+    }
+    int i = addVertexCopy(vertex, value);
+    mapEdge.put(key, Integer.valueOf(i));
+    return i;    
+  } 
+
+
+  private boolean doClear;
+  private boolean doGhost;
+  private boolean doCap;
+  private int iD, iE;
+  
   public void getIntersection(float distance, Point4f plane,
                               Point3f[] ptCenters, List<Point3f[]> vData,
                               float[] fData, MeshSurface meshSurface,
@@ -417,6 +499,7 @@ public class MeshSurface {
     Point4f planeTemp = null;
     boolean isSlab = (vData == null);
     boolean isMeshIntersect = (meshSurface != null);
+    Map<String, Integer> mapEdge = new Hashtable<String, Integer>();
     if (isMeshIntersect) {
       // NOT IMPLEMENTED
       vBC = new Vector3f();
@@ -431,7 +514,6 @@ public class MeshSurface {
       andCap = false; // can only cap faces, and no capping of ghosts
     float[] values = new float[2];
     float[] fracs = new float[2];
-    int iD, iE;
     double absD = Math.abs(distance);
     float d1, d2, d3, valA, valB, valC;
     int sourceA = 0, sourceB = 0, sourceC = 0;
@@ -474,7 +556,6 @@ public class MeshSurface {
 
       if (isMeshIntersect && test1 != 7 && test1 != 0) {
         // NOT IMPLEMENTED
-        //System.out.println(d1 + " " + d2 + " " + d3);
         boolean isOK = (d1 == 0 && d2 * d3 >= 0 || d2 == 0 && (d1 * d3) >= 0 || d3 == 0
             && d1 * d2 >= 0);
         if (isOK)
@@ -483,16 +564,13 @@ public class MeshSurface {
         // the other isosurface.
         if (checkIntersection(vA, vB, vC, meshSurface, pts2, vNorm, vBC, vAC,
             plane, planeTemp, vTemp3)) {
-          iD = addVertexCopy(pts2[0], 0, sourceA); // have to choose some source
-          //System.out.println("draw d" + iD + " " + Escape.escape(pts2[0]));
+          iD = addIntersectionVertex(pts2[0], 0, sourceA, mapEdge, -1, -1); // have to choose some source
           addPolygon(iA, iB, iD, check1 & 1, check2, 0, bsSlabDisplay);
           addPolygon(iD, iB, iC, check1 & 2, check2, 0, bsSlabDisplay);
           addPolygon(iA, iD, iC, check1 & 4, check2, 0, bsSlabDisplay);
           test1 = 0; // toss original    
           iLast = polygonCount;
         } else {
-          //if (i == 7490)
-          //System.out.println("draw s"  + i + " " + Escape.escape(vA)+ " " + Escape.escape(vB)+ " " + Escape.escape(vC) + " color red");
           // process normally for now  
           // not fully implemented -- need to check other way as well.
         }
@@ -522,14 +600,14 @@ public class MeshSurface {
         //AC on same side
         if (ptCenters == null)
           pts = new Point3f[] {
-              interpolatePoint(vB, vA, -d2, d1, valB, valA, values, fracs, 0),
-              interpolatePoint(vB, vC, -d2, d3, valB, valC, values, fracs, 1) };
+              interpolatePoint(vB, vA, -d2, d1, valB, valA, values, fracs, 1),
+              interpolatePoint(vB, vC, -d2, d3, valB, valC, values, fracs, 0) };
         else
           pts = new Point3f[] {
               interpolateSphere(vB, vA, -d2, -d1, absD, valB, valA, values,
-                  fracs, 0),
+                  fracs, 1),
               interpolateSphere(vB, vC, -d2, -d3, absD, valB, valC, values,
-                  fracs, 1) };
+                  fracs, 0) };
         break;
       case 3:
       case 4:
@@ -546,18 +624,24 @@ public class MeshSurface {
                   fracs, 1) };
         break;
       }
-      boolean isCut = true;
+      doClear = true;
+      doGhost = isGhost;
+      doCap = andCap;
       BitSet bs;
+      // adjust for minor discrepencies 
+      //for (int j = 0; j < 2; j++) 
+      //if (fracs[j] == 0)
+      //fracs[1 - j] = (fracs[1 - j] < 0.5 ? 0 : 1);
+
       if (isSlab) {
-        iD = iE = -1;
+        //        iD = iE = -1;
         switch (test1) {
         //             A
         //            / \
         //           B---C
         case 0:
           // all on the same side -- toss
-          if (isGhost)
-            isCut = false;
+          doCap = false;
           break;
         case 7:
           // all on the same side -- keep
@@ -566,51 +650,37 @@ public class MeshSurface {
         case 6:
           //          0  A  0
           //            / \
-          //        0 -------- 1
+          //        0 -------- 1 
           //          /     \
           //       1 B-------C  1
           boolean tossBC = (test1 == 1);
           if (tossBC || isGhost) {
-            // BC on side to toss
-            if (fracs[0] == 0 || fracs[1] == 0) {
-              isCut = false;
-              break; // forget it -- full triangle is out
-            }
-            if (fracs[0] == 1)
-              iD = iB;
-            if (fracs[1] == 1)
-              iE = iC;
-            if (iD >= 0 && iE >= 0)
-              continue;
+            // 1: BC on side to toss
+            if (!getDE(fracs, iA, iB, iC, true))
+              break;
             if (iD < 0)
-              iD = addVertexCopy(pts[0], values[0], sourceA); //AB
+              iD = addIntersectionVertex(pts[0], values[0], sourceA, mapEdge,
+                  iA, iB);
             if (iE < 0)
-              iE = addVertexCopy(pts[1], values[1], sourceA); //AC
+              iE = addIntersectionVertex(pts[1], values[1], sourceA, mapEdge,
+                  iA, iC);
             bs = (tossBC ? bsSlabDisplay : bsSlabGhost);
             addPolygon(iA, iD, iE, check1 & 5 | 2, check2, 0, bs);
-            if (isGhost)
-              iD = iE = -1;
-            else
+            if (!isGhost)
               break;
           }
           // BC on side to keep
-          if (fracs[0] == 0 || fracs[1] == 0)
-            continue;
-          if (fracs[0] == 1)
-            iE = iB;
-          if (fracs[1] == 1)
-            iD = iC;
-          if (iD >= 0 && iE >= 0) {
-            isCut = false;
+          if (!getDE(fracs, iA, iC, iB, false))
             break;
-          }
           bs = (tossBC ? bsSlabGhost : bsSlabDisplay);
           if (iE < 0) {
-            iE = addVertexCopy(pts[0], values[0], sourceB); //AB
+            iE = addIntersectionVertex(pts[0], values[0], sourceB, mapEdge, iA,
+                iB);
             addPolygon(iE, iB, iC, check1 & 3, check2, 0, bs);
           }
           if (iD < 0) {
-            iD = addVertexCopy(pts[1], values[1], sourceC); //AC
+            iD = addIntersectionVertex(pts[1], values[1], sourceC, mapEdge, iA,
+                iC);
             addPolygon(iD, iE, iC, check1 & 4 | 1, check2, 0, bs);
           }
           break;
@@ -625,45 +695,31 @@ public class MeshSurface {
           boolean tossAC = (test1 == 2);
           if (tossAC || isGhost) {
             //AC on side to toss
-            if (fracs[0] == 0 || fracs[1] == 0) {
-              isCut = false;
+            if (!getDE(fracs, iB, iC, iA, true))
               break;
-            }
-            if (fracs[0] == 1)
-              iE = iA;
-            if (fracs[1] == 1)
-              iD = iC;
-            if (iD >= 0 && iE >= 0)
-              continue;
             bs = (tossAC ? bsSlabDisplay : bsSlabGhost);
             if (iE < 0)
-              iE = addVertexCopy(pts[0], values[0], sourceB); //BA
+              iE = addIntersectionVertex(pts[0], values[0], sourceB, mapEdge,
+                  iB, iA);
             if (iD < 0)
-              iD = addVertexCopy(pts[1], values[1], sourceB); //BC
+              iD = addIntersectionVertex(pts[1], values[1], sourceB, mapEdge,
+                  iB, iC);
             addPolygon(iE, iB, iD, check1 & 3 | 4, check2, 0, bs);
-            if (isGhost)
-              iD = iE = -1;
-            else
+            if (!isGhost)
               break;
           }
           // AC on side to keep
-          if (fracs[0] == 0 || fracs[1] == 0)
-            continue;
-          if (fracs[0] == 1)
-            iD = iA;
-          if (fracs[1] == 1)
-            iE = iC;
-          if (iD >= 0 && iE >= 0) {
-            isCut = false;
+          if (!getDE(fracs, iB, iA, iC, false))
             break;
-          }
           bs = (tossAC ? bsSlabGhost : bsSlabDisplay);
           if (iD < 0) {
-            iD = addVertexCopy(pts[0], values[0], sourceA); //BA
+            iD = addIntersectionVertex(pts[0], values[0], sourceA, mapEdge, iB,
+                iA);
             addPolygon(iA, iD, iC, check1 & 5, check2, 0, bs);
           }
           if (iE < 0) {
-            iE = addVertexCopy(pts[1], values[1], sourceC); //BC
+            iE = addIntersectionVertex(pts[1], values[1], sourceC, mapEdge, iB,
+                iC);
             addPolygon(iD, iE, iC, check1 & 2 | 1, check2, 0, bs);
           }
           break;
@@ -677,55 +733,43 @@ public class MeshSurface {
           //
           boolean tossAB = (test1 == 4);
           if (tossAB || isGhost) {
-            //AB on side to toss
-            if (fracs[0] == 0 || fracs[1] == 0) {
-              isCut = false;
+            if (!getDE(fracs, iC, iA, iB, true))
               break;
-            }
-            if (fracs[0] == 1)
-              iD = iA;
-            if (fracs[1] == 1)
-              iE = iB;
-            if (iD >= 0 && iE >= 0)
-              continue;
             if (iD < 0)
-              iD = addVertexCopy(pts[0], values[0], sourceC); //CA
+              iD = addIntersectionVertex(pts[0], values[0], sourceC, mapEdge,
+                  iA, iC); //CA
             if (iE < 0)
-              iE = addVertexCopy(pts[1], values[1], sourceC); //CB
+              iE = addIntersectionVertex(pts[1], values[1], sourceC, mapEdge,
+                  iB, iC); //CB
             bs = (tossAB ? bsSlabDisplay : bsSlabGhost);
             addPolygon(iD, iE, iC, check1 & 6 | 1, check2, 0, bs);
-            if (isGhost)
-              iD = iE = -1;
-            else
+            if (!isGhost)
               break;
           }
           //AB on side to keep
-          if (fracs[0] == 0 || fracs[1] == 0)
-            continue;
-          if (fracs[0] == 1)
-            iE = iA;
-          if (fracs[1] == 1)
-            iD = iB;
-          if (iE >= 0 && iD >= 0) {
-            isCut = false;
+          if (!getDE(fracs, iC, iB, iA, false))
             break;
-          }
           bs = (tossAB ? bsSlabGhost : bsSlabDisplay);
           if (iE < 0) {
-            iE = addVertexCopy(pts[0], values[0], sourceA); //CA
+            iE = addIntersectionVertex(pts[0], values[0], sourceA, mapEdge, iA,
+                iC); //CA
             addPolygon(iA, iB, iE, check1 & 5, check2, 0, bs);
           }
           if (iD < 0) {
-            iD = addVertexCopy(pts[1], values[1], sourceB); //CB
+            iD = addIntersectionVertex(pts[1], values[1], sourceB, mapEdge, iB,
+                iC); //CB
             addPolygon(iE, iB, iD, check1 & 2 | 4, check2, 0, bs);
           }
           break;
         }
-        bsSlabDisplay.clear(i);
-        if (!isCut && isGhost)
-          bsSlabGhost.set(i);
-        if (andCap && isCut)
+        if (doClear) {
+          bsSlabDisplay.clear(i);
+          if (doGhost)
+            bsSlabGhost.set(i);
+        }
+        if (doCap) {
           iPts.add(new int[] { iD, iE });
+        }
       } else if (pts != null) {
         vData.add(pts);
       }
@@ -738,11 +782,15 @@ public class MeshSurface {
         center.add(vertices[ipts[1]]);
       }
       center.scale(0.5f / iPts.size());
-      int v0 = addVertexCopy(center);
+      int v0 = addIntersectionVertex(center, 0, -1, mapEdge, -1, -1);
       for (int i = iPts.size(); --i >= 0;) {
         int[] ipts = iPts.get(i);
-        addPolygon(ipts[0], v0, ipts[1], 0, 0, 0, bsSlabDisplay);
+        /*int p = */addPolygon(ipts[0], v0, ipts[1], 0, 0, 0, bsSlabDisplay);
+        //System.out.println("polygon " + p + " " + ipts[0] + " " + v0 + " "
+          //  + ipts[1]);
+        //        System.out.println("draw d" + i + "  @{point"+vertices[ipts[0]] + "} @{point"+vertices[ipts[1]] + "}" );
       }
+      //System.out.println(vertices[v0] + "  " + v0);
     }
     if (!doClean)
       return;
@@ -782,20 +830,71 @@ public class MeshSurface {
     }
   }
 
+  private static int setPoint(float[] fracs, int i, int i0, int i1) {
+    return (fracs[i] == 0 ? i0 : fracs[i] == 1 ? i1 : -1);
+  }
+
+  private boolean getDE(float[] fracs, int i1, int i2, int i3, boolean toss23) {
+    
+    //          0 (1) 0
+    //            / \
+    //     iD 0 -fracs- 1 iE 
+    //          /     \
+    //      1 (2)-------(3) 1
+    iD = setPoint(fracs, toss23 ? 0 : 1, i1, i2);
+    iE = setPoint(fracs, toss23 ? 1 : 0, i1, i3);
+
+    // initially: doClear=true, doCap = andCap, doGhost = isGhost
+
+    if (iD == i1 && iE == i1) {
+      // toss all if tossing 23, otherwise ignore
+      doClear = toss23;
+      doCap = false;
+      return false;
+    }
+    if (iD == i2 && iE == i3) {
+      // cap but don't toss if tossing 23
+      doClear = !toss23;
+      return false;
+    }
+    if (iD == i1 || iE == i1) {
+      // other is i2 or i3 -- along an edge
+      // cap but toss all if tossing 23
+      doClear = toss23;
+      if (iD < 0) {
+        iD = (toss23 ? i2 : i3);
+        System.out.println("iD set to " + iD + " for fracs " + fracs[0] + " " + fracs[1]);
+      } else if (iE < 0) {
+        iE = (toss23 ? i3 : i2);
+        System.out.println("iE set to " + iE + " for fracs " + fracs[0] + " " + fracs[1]);
+      }
+      return doCap;
+    }
+    doGhost = false;
+    return true;
+  }            
+
   private static float checkSlab(int tokType, Point3f v, float val, float distance,
                           Point4f plane, Point3f[] ptCenters) {
+    float d;
     switch (tokType) {
     case Token.min:
-      return distance - val;
+      d = distance - val;
+      break;
     case Token.max:
-      return val - distance;
+      d = val - distance;
+      break;
     case Token.plane:
-      return Measure.distanceToPlane(plane, v);
+      d = Measure.distanceToPlane(plane, v);
+      break;
     case Token.distance:
-      return minDist(v, ptCenters) - distance;
+      d = minDist(v, ptCenters) - distance;
+      break;
     default:  
-      return -minDist(v, ptCenters) - distance;
+      d = -minDist(v, ptCenters) - distance;
+      break;
     }
+    return (Math.abs(d) < 0.0001f ? 0 : d);
   }
 
   private static boolean checkIntersection(Point3f vA, Point3f vB, Point3f vC,

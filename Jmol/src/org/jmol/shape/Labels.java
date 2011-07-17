@@ -86,7 +86,7 @@ public class Labels extends AtomShape {
   public void setProperty(String propertyName, Object value, BitSet bsSelected) {
     isActive = true;
     
-    System.out.println(propertyName + " Labels " + value);
+    //System.out.println(propertyName + " Labels " + value);
 
     if ("setDefaults" == propertyName) {
       setDefaults = ((Boolean) value).booleanValue();

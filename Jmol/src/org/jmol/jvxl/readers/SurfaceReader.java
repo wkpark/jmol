@@ -757,8 +757,11 @@ public abstract class SurfaceReader implements VertexDataServer {
         //    .getInterpolatedPixelValue(meshData.vertices[i]);
         } else {
           value = volumeData.lookupInterpolatedVoxelValue(meshData.vertices[i]);
-          if (haveSurfaceAtoms)
+          if (haveSurfaceAtoms) {
             meshData.vertexSource[i] = getSurfaceAtomIndex();
+            if (meshData.vertexSource[i] < 0)
+              System.out.println("surfaceReader source ? " + i);
+          }
         }
         if (value < min)
           min = value;
@@ -971,7 +974,7 @@ public abstract class SurfaceReader implements VertexDataServer {
   public void slabIsosurface(List<Object[]> slabInfo) {
     if (meshDataServer != null)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
-    meshData.slabPolygons(slabInfo);
+    meshData.slabPolygons(slabInfo, true);
     if (meshDataServer != null)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_VERTICES, null);
   }

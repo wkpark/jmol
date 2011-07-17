@@ -184,7 +184,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
     if (!g3d.setColix(haveBsSlabGhost ? mesh.slabColix : colix))
       return;
     if (mesh.showPoints || mesh.polygonCount == 0)
-      renderPoints();
+      renderPoints();    
     if (haveBsSlabGhost ? mesh.slabMeshType == Token.mesh : mesh.drawTriangles)
       renderTriangles(false, mesh.showTriangles, false);
     if (haveBsSlabGhost ? mesh.slabMeshType == Token.fill : mesh.fillTriangles)

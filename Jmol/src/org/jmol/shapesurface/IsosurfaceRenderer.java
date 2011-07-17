@@ -282,6 +282,13 @@ public class IsosurfaceRenderer extends MeshRenderer {
       int iA = vertexIndexes[0];
       int iB = vertexIndexes[1];
       int iC = vertexIndexes[2];
+      //if ( i < 3083 || i > 3085)
+        //continue;
+      //int n1 = -1605;
+      //int n2 = 1605;
+      //if (n1 >= 0 && iA != n1 && iB != n1 && iC != n1
+        //  && iA != n2 && iB != n2 && iC != n2)continue;
+     //System.out.println(i + " " + iA + " " + iB + " " + iC);
       if (imesh.thisSet >= 0 && imesh.vertexSets[iA] != imesh.thisSet)
         continue;
       if (haveBsDisplay && (!imesh.bsDisplay.get(iA) || !imesh.bsDisplay.get(iB) || !imesh.bsDisplay.get(iC)))

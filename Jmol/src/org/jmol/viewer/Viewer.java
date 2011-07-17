@@ -9921,4 +9921,14 @@ private void zap(String msg) {
     global.setPicked(iAtom);
   }
 
+  public boolean runScriptImmediately(String script) {
+    // from isosurface reading JVXL file with slab
+    try {
+    eval.runScript(script);
+    } catch (Exception e) {
+      return  false;
+    }
+    return true; 
+  }
+
 }

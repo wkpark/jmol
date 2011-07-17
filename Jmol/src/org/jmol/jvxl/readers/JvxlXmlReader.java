@@ -82,10 +82,11 @@ public class JvxlXmlReader extends VolumeFileReader {
     fractionPtr = 0;
     return true;
   }
+
   @Override
   protected boolean gotoAndReadVoxelData(boolean isMapData) {
     initializeVolumetricData();
-    if (nPointsX < 0 || nPointsY < 0 || nPointsZ < 0) 
+    if (nPointsX < 0 || nPointsY < 0 || nPointsZ < 0)
       return true;
     try {
       gotoData(params.fileIndex - 1, nPointsX * nPointsY * nPointsZ);
@@ -101,34 +102,32 @@ public class JvxlXmlReader extends VolumeFileReader {
       if (colorDataCount > 0)
         jvxlColorDataRead = jvxlReadData("color", colorDataCount);
       if (excludedVertexCount > 0) {
-        jvxlData.jvxlExcluded[0]  
-            = JvxlCoder.jvxlDecodeBitSet(
-                xr.getXmlData("jvxlExcludedVertexData", null, false, false));
+        jvxlData.jvxlExcluded[0] = JvxlCoder.jvxlDecodeBitSet(xr.getXmlData(
+            "jvxlExcludedVertexData", null, false, false));
         if (xr.isNext("jvxlExcludedPlaneData"))
-          jvxlData.jvxlExcluded[2]  
-                                = JvxlCoder.jvxlDecodeBitSet(
-                                    xr.getXmlData("jvxlExcludedPlaneData", null, false, false));          
+          jvxlData.jvxlExcluded[2] = JvxlCoder.jvxlDecodeBitSet(xr.getXmlData(
+              "jvxlExcludedPlaneData", null, false, false));
       }
       if (excludedTriangleCount > 0)
-        jvxlData.jvxlExcluded[3]  
-            = JvxlCoder.jvxlDecodeBitSet(
-                xr.getXmlData("jvxlExcludedTriangleData", null, false, false));
+        jvxlData.jvxlExcluded[3] = JvxlCoder.jvxlDecodeBitSet(xr.getXmlData(
+            "jvxlExcludedTriangleData", null, false, false));
       if (invalidatedVertexCount > 0)
-        jvxlData.jvxlExcluded[1]  
-                            = JvxlCoder.jvxlDecodeBitSet(
-                                xr.getXmlData("jvxlInvalidatedVertexData", null, false, false));
+        jvxlData.jvxlExcluded[1] = JvxlCoder.jvxlDecodeBitSet(xr.getXmlData(
+            "jvxlInvalidatedVertexData", null, false, false));
       if (haveContourData)
-        jvxlDecodeContourData(jvxlData, xr.getXmlData("jvxlContourData", null, false, false));
+        jvxlDecodeContourData(jvxlData, xr.getXmlData("jvxlContourData", null,
+            false, false));
       if (jvxlData.nVertexColors > 0) {
         jvxlData.vertexColorMap = new Hashtable<String, BitSet>();
         for (int i = 0; i < jvxlData.nVertexColors; i++) {
-          String s = xr.getXmlData("jvxlColorMap", null, true, false); 
+          String s = xr.getXmlData("jvxlColorMap", null, true, false);
           String color = XmlReader.getXmlAttrib(s, "color");
-          BitSet bs = JvxlCoder.jvxlDecodeBitSet(xr.getXmlData("jvxlColorMap", s, false, false));
+          BitSet bs = JvxlCoder.jvxlDecodeBitSet(xr.getXmlData("jvxlColorMap",
+              s, false, false));
           jvxlData.vertexColorMap.put(color, bs);
         }
       }
-        
+
     } catch (Exception e) {
       Logger.error(e.toString());
       return false;
@@ -251,6 +250,9 @@ public class JvxlXmlReader extends VolumeFileReader {
     excludedVertexCount = parseInt(XmlReader.getXmlAttrib(data, "nExcludedVertexes"));
     excludedTriangleCount = parseInt(XmlReader.getXmlAttrib(data, "nExcludedTriangles"));
     invalidatedVertexCount = parseInt(XmlReader.getXmlAttrib(data, "nInvalidatedVertexes"));
+    s = XmlReader.getXmlAttrib(data, "slabInfo");
+    if (s.length() > 0)
+      jvxlData.slabInfo = s;
     colorDataCount = Math.max(0, parseInt(XmlReader.getXmlAttrib(data, "nBytesUncompressedColorData")));
     jvxlDataIs2dContour = (params.thePlane != null && jvxlDataIsColorMapped);
 
@@ -262,10 +264,10 @@ public class JvxlXmlReader extends VolumeFileReader {
     if (Float.isNaN(jvxlData.translucency))
       jvxlData.translucency = 0;
     s = XmlReader.getXmlAttrib(data, "meshColor");
-    if (s.length() != 0)
+    if (s.length() > 0)
       jvxlData.meshColor = s;
     s = XmlReader.getXmlAttrib(data, "rendering");
-    if (s.length() != 0)
+    if (s.length() > 0)
       jvxlData.rendering = s;
     jvxlData.colorScheme = XmlReader.getXmlAttrib(data, "colorScheme");
     if (jvxlData.colorScheme.length() == 0)

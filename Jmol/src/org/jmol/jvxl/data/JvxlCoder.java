@@ -283,6 +283,8 @@ public class JvxlCoder {
     int n = BitSetUtil.cardinalityOf(jvxlData.jvxlExcluded[1]);
     if (n > 0)
       addAttrib(attribs, "\n  nInvalidatedVertexes", "" + n);
+    if (jvxlData.slabInfo != null)
+      addAttrib(attribs, "\n  slabInfo", jvxlData.slabInfo);
     //next is for information only -- will be superceded by "encoding" attribute of jvxlColorData
     if (jvxlData.isJvxlPrecisionColor)
       addAttrib(attribs, "\n  precisionColor", "true");
@@ -589,12 +591,12 @@ public class JvxlCoder {
                                         JvxlData jvxlData, MeshData meshData, boolean escapeXml) {
     int[] vertexIdNew = new int[meshData.vertexCount];
     if (appendXmlTriangleData(sb, meshData.polygonIndexes,
-        meshData.polygonCount, meshData.bsSlabDisplay, 
-        meshData.bsSlabGhost, vertexIdNew, escapeXml))
+        meshData.polygonCount, meshData.bsSlabDisplay,
+        vertexIdNew, escapeXml))
       appendXmlVertexData(sb, jvxlData, vertexIdNew,
           meshData.vertices, meshData.vertexValues, meshData.vertexCount,
           meshData.polygonColorData, meshData.polygonCount, 
-          meshData.bsSlabDisplay, meshData.bsSlabGhost,
+          meshData.bsSlabDisplay, 
           jvxlData.jvxlColorData.length() > 0, escapeXml);
   }
 
@@ -642,13 +644,18 @@ public class JvxlCoder {
    * @param triangles
    * @param nData
    * @param bsSlabDisplay 
-   * @param bsSlabGhost TODO
+   * @param bsSlabDisplayEncoded 
+   * @param bsSlabGhostEncoded 
+   * @param slabColor 
+   * @param slabTranslucency 
+   * @param slabType 
    * @param vertexIdNew
    * @param escapeXml 
    * @return (triangles are present)
    */
   private static boolean appendXmlTriangleData(StringBuffer sb, int[][] triangles, int nData,
-                                              BitSet bsSlabDisplay, BitSet bsSlabGhost, int[] vertexIdNew, boolean escapeXml) {
+                                              BitSet bsSlabDisplay, 
+                                              int[] vertexIdNew, boolean escapeXml) {
     StringBuffer list1 = new StringBuffer();
     StringBuffer list2 = new StringBuffer();
     int ilast = 1;
@@ -657,10 +664,11 @@ public class JvxlCoder {
     boolean addPlus = false;
     int nTri = 0;
     
-    // note that the slabbing present becomes irreversible.
+    // note that the slabbing present becomes irreversible if there is no ghosting.
+    boolean removeSlabbed = (bsSlabDisplay != null);
     
     for (int i = 0; i < nData;) {
-      if (triangles[i] == null || (bsSlabDisplay != null && !bsSlabDisplay.get(i))) {
+      if (triangles[i] == null || (removeSlabbed && !bsSlabDisplay.get(i))) {
         i++;
         continue;
       }
@@ -699,7 +707,8 @@ public class JvxlCoder {
     XmlUtil.appendTag(sb, "jvxlTriangleData", new String[] {
         "count", "" + nTri,
         "encoding", "jvxltdiff",
-        "data" , jvxlCompressString(list1.toString(), escapeXml) }, null);
+        "data" , jvxlCompressString(list1.toString(), escapeXml), 
+        }, null);
     XmlUtil.appendTag(sb, "jvxlTriangleEdgeData", new String[] { // Jmol 12.1.50
         "count", "" + nTri,
         "encoding", "jvxlsc",
@@ -744,7 +753,11 @@ public class JvxlCoder {
    * @param polygonColorData
    * @param polygonCount
    * @param bsSlabDisplay
-   * @param bsSlabGhost TODO
+   * @param bsSlabDisplayEncoded 
+   * @param bsSlabGhostEncoded 
+   * @param slabColor 
+   * @param slabTranslucency 
+   * @param slabType 
    * @param addColorData
    * @param escapeXml
    */
@@ -755,8 +768,7 @@ public class JvxlCoder {
                                           int vertexCount,
                                           String polygonColorData,
                                           int polygonCount,
-                                          BitSet bsSlabDisplay,
-                                          BitSet bsSlabGhost,
+                                          BitSet bsSlabDisplay, 
                                           boolean addColorData, boolean escapeXml) {
     int colorFractionBase = jvxlData.colorFractionBase;
     int colorFractionRange = jvxlData.colorFractionRange;
@@ -766,10 +778,11 @@ public class JvxlCoder {
     StringBuffer list1 = new StringBuffer();
     StringBuffer list2 = new StringBuffer();
     int[] vertexIdOld = null;
+    boolean removeSlabbed = (bsSlabDisplay != null);
     if (polygonCount > 0) {
-      if (bsSlabDisplay != null)
+      if (removeSlabbed)
         polygonCount = bsSlabDisplay.cardinality();
-      bsSlabDisplay = null;
+      removeSlabbed = false;
       vertexIdOld = new int[vertexCount];
       for (int i = 0; i < vertexCount; i++)
         if (vertexIdNew[i] > 0) // not all vertices may be in triangle -- that's OK
@@ -777,7 +790,7 @@ public class JvxlCoder {
     }
     int n = 0;
     for (int i = 0; i < vertexCount; i++)
-      if (bsSlabDisplay == null || bsSlabDisplay.get(i)) {
+      if (!removeSlabbed || bsSlabDisplay.get(i)) {
         n++;
         p = vertices[(polygonCount == 0 ? i : vertexIdOld[i])];
         jvxlAppendCharacter2(p.x, min.x, max.x, colorFractionBase,
@@ -789,9 +802,13 @@ public class JvxlCoder {
       }
     list1.append(list2);
     XmlUtil.appendTag(sb, "jvxlVertexData",
-        new String[] { "count", "" + n, "min", Escape.escape(min), "max",
-            Escape.escape(max), "encoding", "base90xyz2", "data",
-            jvxlCompressString(list1.toString(), escapeXml) }, null);
+        new String[] { 
+            "count", "" + n, 
+            "min", Escape.escape(min), 
+            "max", Escape.escape(max), 
+            "encoding", "base90xyz2", 
+            "data", jvxlCompressString(list1.toString(), escapeXml),
+            }, null);
     if (polygonColorData != null)
       XmlUtil.appendTag(sb, "jvxlPolygonColorData", new String[] { "encoding",
           "jvxlnc", "count", "" + polygonCount }, "\n" + polygonColorData);
@@ -935,7 +952,12 @@ public class JvxlCoder {
     return n;
   }
   
-    
+  public static String jvxlEncodeBitSet(BitSet bs) {
+    StringBuffer sb = new StringBuffer();
+    jvxlEncodeBitSet(bs, -1, sb);
+    return sb.toString();
+  }
+  
   public static int jvxlEncodeBitSet(BitSet bs, int nPoints, StringBuffer sb) {
     //System.out.println("jvxlcoder " + Escape.escape(bs));
     int dataCount = 0;

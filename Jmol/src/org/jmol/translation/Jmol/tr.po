@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-07-06 21:28+0200\n"
-"PO-Revision-Date: 2011-03-20 13:07+0000\n"
+"PO-Revision-Date: 2011-07-16 17:44+0000\n"
 "Last-Translator: Muhammet Kara <Unknown>\n"
 "Language-Team: Turkish <yerellestirme@kde.org.tr>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-03-20 20:36+0000\n"
-"X-Generator: Launchpad (build 12617)\n"
+"X-Launchpad-Export-Date: 2011-07-16 23:28+0000\n"
+"X-Generator: Launchpad (build 13405)\n"
 "X-Poedit-Language: Turkish\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
@@ -68,7 +68,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:158
 msgid "independent command thread"
-msgstr ""
+msgstr "bağımsız komut kanalı"
 
 #: org/openscience/jmol/app/JmolApp.java:160
 msgid "exit after script (implicit with -n)"
@@ -276,15 +276,15 @@ msgstr "Denetleyici"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:363
 msgid "Go to first atom set in the collection"
-msgstr ""
+msgstr "Koleksiyondaki ilk atom kümesine git"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:364
 msgid "Go to previous atom set in the collection"
-msgstr ""
+msgstr "Koleksiyonda bir önceki atom kümesine git"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:365
 msgid "Play the whole collection of atom sets"
-msgstr ""
+msgstr "Tüm atom setleri koleksiyonunu oynat"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:366
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
@@ -293,31 +293,31 @@ msgstr "Oynatmayı Duraklat"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:367
 msgid "Go to next atom set in the collection"
-msgstr ""
+msgstr "Koleksiyonda bir sonraki atom kümesine git"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:368
 msgid "Jump to last atom set in the collection"
-msgstr ""
+msgstr "Koleksiyondaki son atom kümesine atla"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:372
 msgid "Go to first vector in the collection"
-msgstr ""
+msgstr "Koleksiyondaki ilk vektöre git"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:373
 msgid "Go to previous vector in the collection"
-msgstr ""
+msgstr "Koleksiyonda bir önceki vektöre git"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:374
 msgid "Play the whole collection of vectors"
-msgstr ""
+msgstr "Tüm vektörler koleksiyonunu oynat"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:376
 msgid "Go to next vector in the collection"
-msgstr ""
+msgstr "Koleksiyonda bir sonraki vektöre git"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:377
 msgid "Jump to last vector in the collection"
-msgstr ""
+msgstr "Koleksiyondaki son vektöre atla"
 
 #: org/openscience/jmol/app/jmolpanel/ConsoleTextArea.java:87
 #, java-format
@@ -478,7 +478,7 @@ msgstr "Geçerli görünümü görüntü olarak kaydet."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:73
 msgid "Export to &Web Page..."
-msgstr ""
+msgstr "&Web Sayfası olarak Dışa Aktar..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:74
 msgid "Export one or more views to a web page."
@@ -499,7 +499,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:78
 msgid "Save current view as a Jmol state script."
-msgstr ""
+msgstr "Mevcut görünümü bir Jmol durum betiği olarak kaydet."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:79
 msgid "&Print..."
@@ -519,7 +519,7 @@ msgstr "Ç&ıkış"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:83
 msgid "Recent &Files..."
-msgstr ""
+msgstr "&Son Kullanılan Dosyalar..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:84
 msgid "&Edit"
@@ -625,7 +625,7 @@ msgstr "%{0} van der Waals"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:114
 msgid "&Bond"
-msgstr ""
+msgstr "&Bağ"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:116
 msgid "&Wireframe"
@@ -662,7 +662,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:126
 msgid "&Upper right"
-msgstr ""
+msgstr "Sağ &üst"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:127
 msgid "&Vector"
@@ -726,7 +726,7 @@ msgstr "&Ölçüler"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:150
 msgid "Resi&ze"
-msgstr ""
+msgstr "&Yeniden Boyutlandır"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:151
 msgid "&View"
@@ -786,7 +786,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:166
 msgid "&Animate..."
-msgstr ""
+msgstr "C&anlandır..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:167
 msgid "&Vibrate..."
@@ -923,7 +923,7 @@ msgstr "Dosya önizleme (Jmol'un yeniden başlatılması gerekir)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:204
 msgid "Clear history (requires restarting Jmol)"
-msgstr ""
+msgstr "Geçmişi temizle (Jmol'un yeniden başlatılması gerekir)"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:205
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:206
@@ -944,7 +944,7 @@ msgstr "Uzaklıkları ölçmek için atomlara tıklayın"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:213
 msgid "Click an atom to center on it"
-msgstr ""
+msgstr "Üzerine ortalamak için bir atoma tıklayın"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:214
 msgid "Return molecule to home position."
@@ -1032,7 +1032,7 @@ msgstr "PDB dosyası al"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1145
 msgid "Enter a four-digit PDB ID"
-msgstr ""
+msgstr "Dört haneli bir PDB Kimliği girin"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1162
 msgid "Get MOL file by compound name or ID"
@@ -1663,28 +1663,26 @@ msgstr "İndirme görünümü"
 msgid "unimplemented"
 msgstr ""
 
-#~ msgid ""
-#~ "Could not find or open:\n"
-#~ "{0}"
-#~ msgstr ""
-#~ "Bulunamadı veya açılamadı:\n"
-#~ "{0}"
-
 #~ msgid "vector"
 #~ msgstr "vektör"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Koleksiyondaki ilk {0} elemanına git"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Koleksiyondaki önceki {0} elemana git"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "{0} elemanının tüm koleksiyonunu oynat"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Koleksiyondaki bir sonraki {0} elemanına git"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Koleksiyondaki en son {0} elemanına git"
 
@@ -1705,6 +1703,7 @@ msgstr ""
 #~ msgid "double-click and drag to reorder"
 #~ msgstr "yeniden sıralamak için çift-tıklayıp sürükleyin"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
@@ -1715,14 +1714,24 @@ msgstr ""
 #~ msgid "Show Selected"
 #~ msgstr "Seçilenleri Göster"
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "{0}.spt ekleniyor"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "{0}.png ekleniyor"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "JmolPopIn.js ekleniyor"
+
+#, java-format
+#~ msgid ""
+#~ "Could not find or open:\n"
+#~ "{0}"
+#~ msgstr ""
+#~ "Bulunamadı veya açılamadı:\n"
+#~ "{0}"
 
 #~ msgid "atom set"
 #~ msgstr "atom dizisi"

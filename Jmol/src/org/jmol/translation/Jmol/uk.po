@@ -8,20 +8,20 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-07-06 21:28+0200\n"
-"PO-Revision-Date: 2010-11-16 00:12+0000\n"
+"PO-Revision-Date: 2011-07-16 07:35+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@gmail.com>\n"
 "Language-Team: Ukrainian <translation@linux.org.ua>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-01-29 19:08+0000\n"
-"X-Generator: Launchpad (build 12274)\n"
+"X-Launchpad-Export-Date: 2011-07-16 23:28+0000\n"
+"X-Generator: Launchpad (build 13405)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr ""
-"Помилка під час спроби запуску Jmol: не вказано значення властивості «user."
-"home»."
+"Помилка під час спроби запуску Jmol: не вказано значення властивості "
+"«user.home»."
 
 #: org/openscience/jmol/app/JmolApp.java:139
 msgid "transparent background"
@@ -941,7 +941,8 @@ msgstr "Обертати молекулу."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:209
 msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
-msgstr "Вкажіть набір атомів за допомогою SHIFT-СТРІЛКА ЛІВОРУЧ-ПЕРЕТЯГУВАННЯ."
+msgstr ""
+"Вкажіть набір атомів за допомогою SHIFT-СТРІЛКА ЛІВОРУЧ-ПЕРЕТЯГУВАННЯ."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:211
 msgid "Click atoms to measure distances"
@@ -1380,8 +1381,8 @@ msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
 msgstr ""
-"Щоб отримати просторову модель, з якою можна буде працювати, натисніть {0}тут"
-"{1}. Перше звантаження за допомогою аплету може бути доволі тривалим."
+"Щоб отримати просторову модель, з якою можна буде працювати, натисніть "
+"{0}тут{1}. Перше звантаження за допомогою аплету може бути доволі тривалим."
 
 #: org/openscience/jmol/app/webexport/WebExport.java:360
 msgid "Insert the page TITLE here."
@@ -1512,6 +1513,8 @@ msgstr "Помилка виклику методу FileWriter."
 #: org/openscience/jmol/app/webexport/WebPanel.java:560
 msgid "Errors occurred during web page creation.  See Log Tab!"
 msgstr ""
+"Під час спроби створення вебсторінки сталися помилки. Дані наведено на "
+"вкладці «Журнал»."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:635
 #, java-format
@@ -1549,6 +1552,10 @@ msgid ""
 "Please check that you are using a Jmol.jar that is part of a full Jmol "
 "distribution."
 msgstr ""
+"Не вдалося знайти або відкрити:\n"
+"{0}\n"
+"Будь ласка, переконайтеся, що ви користуєтеся Jmol.jar з повного "
+"дистрибутива Jmol."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:794
 #, java-format
@@ -1677,13 +1684,6 @@ msgstr "Звантажити перегляд"
 msgid "unimplemented"
 msgstr "не реалізовано"
 
-#~ msgid ""
-#~ "Could not find or open:\n"
-#~ "{0}"
-#~ msgstr ""
-#~ "Не вдалося виявити або відкрити:\n"
-#~ "{0}"
-
 #~ msgid "vector"
 #~ msgstr "вектор"
 
@@ -1696,18 +1696,23 @@ msgstr "не реалізовано"
 #~ msgid "atom set"
 #~ msgstr "набір атомів"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Перейти до першого {0} у збірці"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Перейти до попереднього {0} у збірці"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Відтворити усю збірку {0}"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Перейти до наступного {0} у збірці"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Перейти до останнього {0} у збірці"
 
@@ -1720,25 +1725,35 @@ msgstr "не реалізовано"
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "додавання JmolPopIn.js"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "додавання {0}.png"
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "додавання {0}.spt"
+
+#, java-format
+#~ msgid ""
+#~ "Could not find or open:\n"
+#~ "{0}"
+#~ msgstr ""
+#~ "Не вдалося виявити або відкрити:\n"
+#~ "{0}"
 
 #~ msgid "Clear console button (requires restarting Jmol)"
 #~ msgstr "Кнопка спорожнення консолі (потрібен перезапуску Jmol)"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
-#~ "Тут ви можете вставити додатковий текст пояснення. Довгі рядки буде "
-#~ "поділено на частини і розташовано навколо моделі Jmol {0}."
+#~ "Тут ви можете вставити додатковий текст пояснення. Довгі рядки буде поділено "
+#~ "на частини і розташовано навколо моделі Jmol {0}."
 
 #~ msgid "double-click and drag to reorder"
-#~ msgstr ""
-#~ "двічі клацніть лівою кнопкою миші і перетягніть, щоб змінити порядок"
+#~ msgstr "двічі клацніть лівою кнопкою миші і перетягніть, щоб змінити порядок"
 
 #~ msgid "The -D options are as follows (defaults in parenthesis):"
 #~ msgstr "Параметри -D (типові значення вказано у дужках):"

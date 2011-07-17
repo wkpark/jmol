@@ -326,7 +326,7 @@ public class _ObjExporter extends __CartesianExporter {
    * @see org.jmol.export.___Exporter#drawSurface(MeshSurface meshSurface)
    */
   @Override
-  protected void drawSurface(MeshSurface meshSurface) {
+  protected void drawSurface(MeshSurface meshSurface, short colix) {
     if (Logger.debugging) {
       debugPrint("outputSurface");
       debugPrint("  nVertices=" + meshSurface.vertexCount);
@@ -351,7 +351,7 @@ public class _ObjExporter extends __CartesianExporter {
       } else {
         debugPrint("  number of polygons used=" + meshSurface.bsPolygons.cardinality());
       }
-      debugPrint("  solid color=" + g3d.getColorArgbOrGray(meshSurface.colix));
+      debugPrint("  solid color=" + g3d.getColorArgbOrGray(colix));
     }
 
     // Create reduced face set
@@ -374,8 +374,8 @@ public class _ObjExporter extends __CartesianExporter {
     data.vertexColixes = meshSurface.vertexColixes;
     // Do the texture
     String name = "Surface" + surfaceNum++;
-    boolean isSolidColor = (meshSurface.isColorSolid || meshSurface.vertexColixes == null);
-    addTexture(meshSurface.colix, isSolidColor ? null : name);
+    boolean isSolidColor = (colix != 0);
+    addTexture(colix, isSolidColor ? null : name);
 
     // Create a Point with the image file dimensions
     // If it remains null, then it is a flag that a texture file and
@@ -384,7 +384,7 @@ public class _ObjExporter extends __CartesianExporter {
 
     // Make a texture file if colixes is defined
     if (isSolidColor) {
-      debugPrint("outputSurface: colixes = null");
+      debugPrint("outputSurface: coloring solid");
       debugPrint("  Omitting texture map");
     } else {
       int nFaces = faces.length;
@@ -423,7 +423,7 @@ public class _ObjExporter extends __CartesianExporter {
     matrix.setIdentity();
     matrix.setTranslation(new Vector3f(meshSurface.offset));
     BitSet bsValid = new BitSet();
-    addMesh(name, data, matrix, null, meshSurface.colix, dim, bsValid);
+    addMesh(name, data, matrix, null, colix, dim, bsValid);
   }
 
   // Non-abstract overrides from _Exporter

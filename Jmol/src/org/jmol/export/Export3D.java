@@ -668,8 +668,8 @@ final public class Export3D implements JmolRendererInterface {
         colixD, normixD);
   }
 
-  public void drawSurface(MeshSurface meshSurface) {
-    exporter.drawSurface(meshSurface);
+  public void drawSurface(MeshSurface meshSurface, short colix) {
+    exporter.drawSurface(meshSurface, colix);
   }
 
   public short[] getBgColixes(short[] bgcolixes) {

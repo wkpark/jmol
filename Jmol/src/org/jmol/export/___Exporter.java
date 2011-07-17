@@ -473,7 +473,7 @@ public abstract class ___Exporter {
   abstract boolean drawEllipse(Point3f ptAtom, Point3f ptX, Point3f ptY,
                              short colix, boolean doFill);
 
-  void drawSurface(MeshSurface meshSurface) {
+  void drawSurface(MeshSurface meshSurface, short colix) {
     int nVertices = meshSurface.vertexCount;
     if (nVertices == 0)
       return;
@@ -492,11 +492,9 @@ public abstract class ___Exporter {
     Point3f[] vertices = (Point3f[]) meshSurface.getVertices();
     Vector3f[] normals = (Vector3f[]) meshSurface.normals;
 
-    short colix = meshSurface.colix;
-    short[] colixes = (meshSurface.isColorSolid ? null
-        : meshSurface.vertexColixes);
-    short[] polygonColixes = (meshSurface.isColorSolid ? meshSurface.polygonColixes
-        : null);
+    boolean colorSolid = (colix != 0);
+    short[] colixes = (colorSolid ? null : meshSurface.vertexColixes);
+    short[] polygonColixes = (colorSolid ? meshSurface.polygonColixes : null);
     Map<Short, Integer> htColixes = new Hashtable<Short, Integer>();
     List<Short> colorList = null;
     if (polygonColixes != null)
@@ -504,6 +502,7 @@ public abstract class ___Exporter {
           htColixes);
     else if (colixes != null)
       colorList = getColorList(0, colixes, nVertices, null, htColixes);
+    
     outputSurface(vertices, normals, colixes, indices, polygonColixes,
         nVertices, nPolygons, nFaces, bsPolygons, faceVertexMax, colix,
         colorList, htColixes, meshSurface.offset);

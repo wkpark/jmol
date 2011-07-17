@@ -36,13 +36,16 @@ import org.jmol.shape.MeshRenderer;
 
 public class IsosurfaceRenderer extends MeshRenderer {
 
-  private boolean iShowNormals;
   protected boolean iHideBackground;
   protected boolean isBicolorMap;
   protected short backgroundColix;
   protected int nError = 0;
   protected float[] vertexValues;
   protected IsosurfaceMesh imesh;
+
+  private boolean isNavigationMode;
+  private boolean iShowNormals;
+  private boolean showNumbers;
 
   @Override
   protected void initRenderer() {
@@ -51,42 +54,54 @@ public class IsosurfaceRenderer extends MeshRenderer {
   @Override
   protected void render() {
     iShowNormals = viewer.getTestFlag(4);
+    showNumbers = viewer.getTestFlag(3);
+    isExport = (exportType != Graphics3D.EXPORT_NOT);
     Isosurface isosurface = (Isosurface) shape;
+    exportPass = (isExport ? 2 : 0);
+    isNavigationMode = viewer.getNavigationMode();
     int mySlabValue = Integer.MAX_VALUE;
-    boolean isNavigationMode = viewer.getNavigationMode();
     int slabValue = g3d.getSlab();
     if (isNavigationMode)
       mySlabValue = (int) viewer.getNavigationOffset().z;
     for (int i = isosurface.meshCount; --i >= 0;) {
       imesh = (IsosurfaceMesh) isosurface.meshes[i];
-      volumeRender = imesh.jvxlData.colorDensity;
-      if (!isNavigationMode) {
-        int meshSlabValue = imesh.jvxlData.slabValue;
-        if (meshSlabValue != Integer.MIN_VALUE  
-            && imesh.jvxlData.isSlabbable) {
-          Point3f[] points = imesh.jvxlData.boundingBox;
-          pt2f.set(points[0]);
-          pt2f.add(points[1]);
-          pt2f.scale(0.5f); // center
-          viewer.transformPoint(pt2f, pt2f);
-          int r = viewer.scaleToScreen((int)pt2f.z, (int) points[0].distance(points[1]) * 500);
-          mySlabValue = (int) (pt2f.z + r * (1 - meshSlabValue / 50f));
-        }
+      renderMesh(mySlabValue, slabValue);      
+      if (isExport && haveBsSlabGhost) {
+        exportPass = 1;
+        renderMesh(mySlabValue, slabValue);
+        exportPass = 2;
       }
-      g3d.setTranslucentCoverOnly(imesh.frontOnly);
-      thePlane = imesh.jvxlData.jvxlPlane;
-      vertexValues = imesh.vertexValues;
-      if (mySlabValue != Integer.MAX_VALUE && imesh.jvxlData.isSlabbable) {
-        g3d.setSlab(mySlabValue);
-        render1(imesh);
-        g3d.setSlab(slabValue);
-      } else {
-        render1(imesh);
-      }
-      g3d.setTranslucentCoverOnly(false);
     }
   }
 
+  private void renderMesh(int mySlabValue, int slabValue) {
+    volumeRender = imesh.jvxlData.colorDensity;
+    if (!isNavigationMode) {
+      int meshSlabValue = imesh.jvxlData.slabValue;
+      if (meshSlabValue != Integer.MIN_VALUE  
+          && imesh.jvxlData.isSlabbable) {
+        Point3f[] points = imesh.jvxlData.boundingBox;
+        pt2f.set(points[0]);
+        pt2f.add(points[1]);
+        pt2f.scale(0.5f); // center
+        viewer.transformPoint(pt2f, pt2f);
+        int r = viewer.scaleToScreen((int)pt2f.z, (int) points[0].distance(points[1]) * 500);
+        mySlabValue = (int) (pt2f.z + r * (1 - meshSlabValue / 50f));
+      }
+    }
+    g3d.setTranslucentCoverOnly(imesh.frontOnly);
+    thePlane = imesh.jvxlData.jvxlPlane;
+    vertexValues = imesh.vertexValues;
+    if (mySlabValue != Integer.MAX_VALUE && imesh.jvxlData.isSlabbable) {
+      g3d.setSlab(mySlabValue);
+      render1(imesh);
+      g3d.setSlab(slabValue);
+    } else {
+      render1(imesh);
+    }
+    g3d.setTranslucentCoverOnly(false);
+  }
+  
   @Override
   protected void render2(boolean isExport) {
     if (volumeRender) {
@@ -185,7 +200,6 @@ public class IsosurfaceRenderer extends MeshRenderer {
       int ptSize = ((int) (imesh.volumeRenderPointSize * 1000));
       if (diam < 1)
         diam = 1;
-      boolean showNumbers = viewer.getTestFlag(3);
       int cX = (showNumbers ? viewer.getScreenWidth() / 2 : 0);
       int cY = (showNumbers ? viewer.getScreenHeight() / 2 : 0);
       if (showNumbers)
@@ -355,7 +369,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       }
     }
     if (generateSet)
-      exportSurface();
+      exportSurface(colorSolid ? colix : 0);
   }
 
   private void renderNormals() {

@@ -47,6 +47,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected float scalePixelsPerMicron;
   protected int diameter;
   protected float width;
+  
 
   protected boolean isTranslucent;
   protected boolean frontOnly;
@@ -64,10 +65,12 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected final Point3i pt1i = new Point3i();
   protected final Point3i pt2i = new Point3i();
   protected final Point3i pt3i = new Point3i();
+  protected boolean isExport;
+  protected int exportPass;
 
   @Override
   protected void render() {
-    antialias = g3d.isAntialiased();  
+    antialias = g3d.isAntialiased(); 
     MeshCollection mc = (MeshCollection) shape;
     for (int i = mc.meshCount; --i >= 0;)
       render1(mc.meshes[i]);
@@ -85,7 +88,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
       if (vertices[i] != null)
         viewer.transformPoint(vertices[i], screens[i]);
     if (mesh.lattice == null || mesh.modelIndex < 0) {
-      render2(exportType != Graphics3D.EXPORT_NOT);
+      render2(isExport);
     } else {
       SymmetryInterface unitcell = viewer.getModelUnitCell(mesh.modelIndex);
       if (unitcell != null) {
@@ -104,7 +107,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
                 vTemp.add(latticeOffset);
                 viewer.transformPoint(vTemp, screens[i]);
               }
-              render2(exportType != Graphics3D.EXPORT_NOT);
+              render2(isExport);
             }
       }
     }
@@ -124,7 +127,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
       return false;
     if (mesh.bsSlabGhost != null)
       g3d.setColix(mesh.slabColix); // forces a second pass
-    haveBsSlabGhost = (mesh.bsSlabGhost != null && g3d.isPass2());    
+    haveBsSlabGhost = (mesh.bsSlabGhost != null && (isExport ? exportPass == 2 : g3d.isPass2()));
     isTranslucent = haveBsSlabGhost || Graphics3D.isColixTranslucent(mesh.colix);
     doRender = (setColix(mesh.colix) || mesh.showContourLines);
     if (!doRender)
@@ -325,7 +328,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
       }
     }
     if (generateSet)
-      exportSurface();
+      exportSurface(colix);
   }
 
   protected int checkNormals(short nA, short nB, short nC) {
@@ -378,11 +381,11 @@ public abstract class MeshRenderer extends ShapeRenderer {
     }
   }
 
-  protected void exportSurface() {
+  protected void exportSurface(short colix) {
     mesh.normals = mesh.getNormals(vertices, null);
     mesh.bsPolygons = bsPolygons;
     mesh.offset = latticeOffset;
-    g3d.drawSurface(mesh);
+    g3d.drawSurface(mesh, colix);
     mesh.normals = null;
     mesh.bsPolygons = null;
   }

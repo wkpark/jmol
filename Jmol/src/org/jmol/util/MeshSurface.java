@@ -145,8 +145,6 @@ public class MeshSurface {
     else if (vertexCount == vertices.length)
       vertices = (Point3f[]) ArrayUtil.doubleLength(vertices);
     vertices[vertexCount] = new Point3f(vertex);
-    if (vertex.distance(new Point3f(-1.9934448f, -2.4586916E-7f, 0.0f)) < 0.001f)
-      System.out.println("testing MeshSurface " + vertexCount);
     return vertexCount++;
   }
 
@@ -455,12 +453,9 @@ public class MeshSurface {
                                     Map<String, Integer> mapEdge, int i1, int i2) {
     
     String key = (i1 > i2 ? i2 + "_" + i1 : i1 + "_" + i2);
-    if (key.equals("1432_1435"))
-      System.out.println(key);
     if (i1 >= 0) {
       Integer v = mapEdge.get(key);
       if (v != null) {
-        System.out.println("found edge for " + key + " " + v);
         return v.intValue();
       }
     }
@@ -469,8 +464,6 @@ public class MeshSurface {
       if (vertexCount >= vertexSource.length)
         vertexSource = ArrayUtil.doubleLength(vertexSource);
       vertexSource[vertexCount] = source;
-      if (source < 0)
-        System.out.println("MeshSurface addVertex source = " + source);
     }
     int i = addVertexCopy(vertex, value);
     mapEdge.put(key, Integer.valueOf(i));
@@ -785,7 +778,8 @@ public class MeshSurface {
       int v0 = addIntersectionVertex(center, 0, -1, mapEdge, -1, -1);
       for (int i = iPts.size(); --i >= 0;) {
         int[] ipts = iPts.get(i);
-        /*int p = */addPolygon(ipts[0], v0, ipts[1], 0, 0, 0, bsSlabDisplay);
+        //int p =
+        addPolygon(ipts[0], v0, ipts[1], 0, 0, 0, bsSlabDisplay);
         //System.out.println("polygon " + p + " " + ipts[0] + " " + v0 + " "
           //  + ipts[1]);
         //        System.out.println("draw d" + i + "  @{point"+vertices[ipts[0]] + "} @{point"+vertices[ipts[1]] + "}" );
@@ -863,10 +857,8 @@ public class MeshSurface {
       doClear = toss23;
       if (iD < 0) {
         iD = (toss23 ? i2 : i3);
-        System.out.println("iD set to " + iD + " for fracs " + fracs[0] + " " + fracs[1]);
       } else if (iE < 0) {
         iE = (toss23 ? i3 : i2);
-        System.out.println("iE set to " + iE + " for fracs " + fracs[0] + " " + fracs[1]);
       }
       return doCap;
     }

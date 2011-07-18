@@ -160,8 +160,7 @@ public class Contact extends Isosurface {
     BitSet bs2 = BitSetUtil.copy(bsAll);
     bs2.andNot(bs1);
     setSlabData(fData, bs1, bs2, rd);
-    thisMesh.slabPolygons(new Object[] { Integer.valueOf(Token.data), 
-        fData, Boolean.FALSE }, false);
+    thisMesh.slabPolygons(MeshSurface.getSlabObject(Token.data, fData, false, null), false); 
   }
 
   private void setSlabData(float[] fData, BitSet bs1, BitSet bs2,

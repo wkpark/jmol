@@ -552,7 +552,7 @@ public abstract class SurfaceReader implements VertexDataServer {
   }
 
   protected void postProcessVertices() {
-    // IsoSolventReader test. 
+    // optional
   }
   
   /////////////////  MarchingReader Interface Methods ///////////////////

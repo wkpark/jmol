@@ -222,8 +222,8 @@ public class MarchingCubes extends TriangleData {
       x1 = cubeCountX;
       // either this is a bug, or I'm forgetting something, but the
       // progressive readers otherwise will miss the last plane. Added in Jmol 12.1.49:
-      if (mode == MODE_PLANES)
-        x1++;
+      //if (mode == MODE_PLANES)
+        //x1++;
       xStep = 1;
       ptStep = yzCount;
       pt = ptX = (yzCount - 1) - nZ - 1;
@@ -260,7 +260,12 @@ public class MarchingCubes extends TriangleData {
       if (mode == MODE_PLANES) {
         // for a progressive reader, we read the next two planes
         // for x = 0, 2, 4, 6...
-        if (x + xStep != x1)
+        // say we have 50 points; then we have 49 cubes
+        // we definely what planes 0-49, but we will be processing those
+        // [0 1] [1 2] [2 3] ... [48 49]
+        // so our last x is 48, and there is no problem with (x + xStep) being == x1.
+        // 
+        if (x + xStep <= x1)
           getPlane(x + xStep, true);
       }
 

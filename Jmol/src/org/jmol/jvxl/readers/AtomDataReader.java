@@ -119,7 +119,8 @@ abstract class AtomDataReader extends VolumeDataReader {
    * @param getAllModels
    *        TODO
    * @param addNearbyAtoms
-   * @param getAtomMinMax TODO
+   * @param getAtomMinMax
+   *        TODO
    * @param marginAtoms
    */
   protected void getAtoms(BitSet bsSelected, boolean doAddHydrogens,
@@ -278,10 +279,8 @@ abstract class AtomDataReader extends VolumeDataReader {
           .nextSetBit(i + 1)) {
         if (props != null)
           atomProp[myAtomCount] = props[i];
-        if (doUseIterator) {
-          myIndex[i] = myAtomCount;
-          atomIndex[myAtomCount] = i;
-        }
+        myIndex[i] = myAtomCount;
+        atomIndex[myAtomCount] = i;
         atomXyz[myAtomCount] = atomData.atomXyz[i];
         atomRadius[myAtomCount++] = atomData.atomRadius[i];
       }
@@ -320,6 +319,19 @@ abstract class AtomDataReader extends VolumeDataReader {
     }
   }
 
+  protected boolean fixTitleLine(int iLine) {
+    if (params.title == null)
+      return false;
+    String line = params.title[iLine];
+    if (line.indexOf("%F") > 0)
+      line = params.title[iLine] = TextFormat.formatString(line, "F",
+          atomData.fileName);
+    if (line.indexOf("%M") > 0)
+      params.title[iLine] = TextFormat.formatString(line, "M",
+          atomData.modelName);
+    return true;
+  }
+  
   protected void setVertexSource() {
     if (meshDataServer != null)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
@@ -331,6 +343,11 @@ abstract class AtomDataReader extends VolumeDataReader {
     }
   }
 
+  protected void resetPlane(float value) {
+    for (int i = 0; i < yzCount; i++)
+      thisPlane[i] = value;
+  }
+
   protected void resetVoxelData(float value) {
     for (int x = 0; x < nPointsX; ++x)
       for (int y = 0; y < nPointsY; ++y)
@@ -338,12 +355,26 @@ abstract class AtomDataReader extends VolumeDataReader {
           voxelData[x][y][z] = value;
   }
 
+  protected float[] thisPlane;
+  protected BitSet thisAtomSet;
+  protected int thisX;
+  
+  private float getVoxel(int i, int j, int k, int ipt) {
+    return (isProgressive ? thisPlane[ipt % yzCount] : voxelData[i][j][k]);
+  }
+
   protected void unsetVoxelData() {
-    for (int x = 0; x < nPointsX; ++x)
-      for (int y = 0; y < nPointsY; ++y)
-        for (int z = 0; z < nPointsZ; ++z)
-          if (voxelData[x][y][z] == Float.MAX_VALUE)
-            voxelData[x][y][z] = Float.NaN;
+    if (isProgressive)
+      for (int i = 0; i < yzCount; i++) {
+        if (thisPlane[i] == Float.MAX_VALUE)
+          thisPlane[i] = Float.NaN;
+      }
+    else
+      for (int x = 0; x < nPointsX; ++x)
+        for (int y = 0; y < nPointsY; ++y)
+          for (int z = 0; z < nPointsZ; ++z)
+            if (voxelData[x][y][z] == Float.MAX_VALUE)
+              voxelData[x][y][z] = Float.NaN;
   }
 
   protected float margin;
@@ -361,16 +392,87 @@ abstract class AtomDataReader extends VolumeDataReader {
     pt1.z = Math.min(pt1.z + 1, nPointsZ);
   }
 
-  protected boolean fixTitleLine(int iLine) {
-    if (params.title == null)
-      return false;
-    String line = params.title[iLine];
-    if (line.indexOf("%F") > 0)
-      line = params.title[iLine] = TextFormat.formatString(line, "F",
-          atomData.fileName);
-    if (line.indexOf("%M") > 0)
-      params.title[iLine] = TextFormat.formatString(line, "M",
-          atomData.modelName);
-    return true;
+  // for isoSolventReader and isoIntersectReader
+
+  protected BitSet bsSurfaceVoxels;
+  protected BitSet validSpheres, noFaceSpheres;
+  protected int[] voxelSource;
+
+  protected void getAtomMinMax(BitSet bs, BitSet[] bsAtomMinMax) {
+    for (int i = 0; i < nPointsX; i++)
+      bsAtomMinMax[i] = new BitSet();
+    for (int iAtom = myAtomCount; --iAtom >= 0;) {
+      if (bs != null && !bs.get(iAtom))
+        continue;
+      Point3f ptA = atomXyz[iAtom];
+      float rA = atomRadius[iAtom] + margin;
+      volumeData.xyzToVoxelPt(ptA.x - rA, ptA.y - rA, ptA.z - rA, pt0);
+      int min = Math.max(pt0.x - 1, 0);
+      volumeData.xyzToVoxelPt(ptA.x + rA, ptA.y + rA, ptA.z + rA, pt1);
+      int max = Math.min(pt1.x + 1, nPointsX);
+      for (int i = min; i < max; i++)
+        bsAtomMinMax[i].set(iAtom);
+      //System.out.println("for atom " + iAtom + " " + ptA + " " + min + " " + max);
+    }
   }
+
+
+  protected final Point3f ptY0 = new Point3f();
+  protected final Point3f ptZ0 = new Point3f();
+  protected final Point3i pt0 = new Point3i();
+  protected final Point3i pt1 = new Point3i();
+  protected final Point3f ptXyzTemp = new Point3f();
+
+  protected void markSphereVoxels(float r0, float distance) {
+    boolean isWithin = (distance != Float.MAX_VALUE && point != null);
+    for (int iAtom = thisAtomSet.nextSetBit(0); iAtom >= 0; iAtom = thisAtomSet.nextSetBit(iAtom + 1)) {
+      if (!havePlane && validSpheres != null && !validSpheres.get(iAtom))
+        continue;
+      boolean isSurface = (noFaceSpheres != null && noFaceSpheres.get(iAtom));
+      boolean isNearby = (iAtom >= firstNearbyAtom);
+      Point3f ptA = atomXyz[iAtom];
+      float rA = atomRadius[iAtom];
+      if (isWithin && ptA.distance(point) > distance + rA + 0.5)
+        continue;
+      float rA0 = rA + r0;
+      setGridLimitsForAtom(ptA, rA0, pt0, pt1);
+      if (isProgressive) {
+        pt0.x = thisX;
+        pt1.x = thisX + 1;
+      }
+      volumeData.voxelPtToXYZ(pt0.x, pt0.y, pt0.z, ptXyzTemp);
+      for (int i = pt0.x; i < pt1.x; i++, ptXyzTemp.scaleAdd(1,
+          volumetricVectors[0], ptY0)) {
+        ptY0.set(ptXyzTemp);
+        for (int j = pt0.y; j < pt1.y; j++, ptXyzTemp.scaleAdd(1,
+            volumetricVectors[1], ptZ0)) {
+          ptZ0.set(ptXyzTemp);
+          for (int k = pt0.z; k < pt1.z; k++, ptXyzTemp
+              .add(volumetricVectors[2])) {
+            float value = ptXyzTemp.distance(ptA) - rA;            
+            int ipt = volumeData.getPointIndex(i, j, k);
+            if ((r0 == 0 || value <= rA0) && value < getVoxel(i, j, k, ipt)) {
+              if (isNearby || isWithin && ptXyzTemp.distance(point) > distance)
+                value = Float.NaN;
+              setVoxel(i, j, k, ipt, value);
+              if (!Float.isNaN(value)) {
+                if (voxelSource != null)
+                  voxelSource[ipt] = iAtom + 1;
+                if (value < 0 && isSurface)
+                  bsSurfaceVoxels.set(ipt);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  protected void setVoxel(int i, int j, int k, int ipt, float value) {
+    if (isProgressive)
+      thisPlane[ipt % yzCount] = value;
+    else
+      voxelData[i][j][k] = value;
+  }
+
 }

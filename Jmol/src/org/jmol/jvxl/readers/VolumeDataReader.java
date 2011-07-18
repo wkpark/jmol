@@ -211,6 +211,12 @@ class VolumeDataReader extends SurfaceReader {
   @Override
   protected void readSurfaceData(boolean isMapData) throws Exception {
     //precalculated -- just creating the JVXL equivalent
+    Logger.startTimer();
+    if (isProgressive && !isMapData) {
+      nDataPoints = volumeData.setVoxelCounts(nPointsX, nPointsY, nPointsZ);
+      voxelData = null;
+      return;
+    }
     if (precalculateVoxelData) 
       generateCube();
     else

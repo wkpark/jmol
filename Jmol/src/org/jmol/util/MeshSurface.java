@@ -21,6 +21,7 @@ public class MeshSurface {
 
   public void merge(MeshData m) {
     int nV = vertexCount + m.vertexCount;
+    if (polygonIndexes == null)
       polygonIndexes = new int[0][];
     if (m.polygonIndexes == null)
       m.polygonIndexes = new int[0][];
@@ -285,7 +286,7 @@ public class MeshSurface {
   
   public static Object[] getSlabWithinRange(float min, float max) {
     return new Object[] { Integer.valueOf(Token.range), 
-        new Float[] {Float.valueOf(min), Float.valueOf(max)}, Boolean.FALSE };
+        new Float[] {Float.valueOf(min), Float.valueOf(max)}, Boolean.FALSE, null };
   }
 
   public void resetSlab() {

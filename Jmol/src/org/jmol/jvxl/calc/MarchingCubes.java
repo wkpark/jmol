@@ -120,6 +120,7 @@ public class MarchingCubes extends TriangleData {
     bsExcludedVertices =  (bsExcluded[0] == null ? bsExcluded[0] = new BitSet() : bsExcluded[0]);
     bsExcludedPlanes =    (bsExcluded[2] == null ? bsExcluded[2] = new BitSet() : bsExcluded[2]);
     bsExcludedTriangles = (bsExcluded[3] == null ? bsExcluded[3] = new BitSet() : bsExcluded[3]);
+    // TODO -- need not be setting up planes for simple value-readers
     mode = (volumeData.voxelData != null || volumeData.mappingPlane != null ? MODE_CUBE 
         : bsVoxels != null ? MODE_BITSET : MODE_PLANES);
     setParameters(volumeData, params);
@@ -372,6 +373,8 @@ public class MarchingCubes extends TriangleData {
   }
 
   private void getPlane(int i, boolean andSwap) {
+    if (i < 0)
+      return;
     /*float[] p = */surfaceReader.getPlane(i);
     //dumpPlane(i, p);
     if (andSwap) {

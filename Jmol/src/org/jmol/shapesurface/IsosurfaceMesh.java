@@ -665,11 +665,16 @@ public class IsosurfaceMesh extends Mesh {
     vertexColorMap = null;
     polygonColixes = null;
     jvxlData.vertexCount = vertexCount;
-    if (vertexValues == null || jvxlData.isBicolorMap
+    if (vertexValues == null 
         || jvxlData.vertexCount == 0)
       return;
     if (vertexColixes == null || vertexColixes.length != vertexCount)
       vertexColixes = new short[vertexCount];
+    if (jvxlData.isBicolorMap) {
+      for (int i = 0; i < vertexCount; i++)
+        vertexColixes[i] = Graphics3D.copyColixTranslucency(colix, vertexValues[i] < 0 ? jvxlData.minColorIndex : jvxlData.maxColorIndex);
+      return;
+    }
     jvxlData.isColorReversed = ce.isReversed;
     if (max != Float.MAX_VALUE) {
       jvxlData.valueMappedToRed = min;
@@ -716,7 +721,7 @@ public class IsosurfaceMesh extends Mesh {
 
   public void reinitializeLightingAndColor() {
     initialize(lighting, null, null);
-    if (colorEncoder != null) {
+    if (colorEncoder != null || jvxlData.isBicolorMap) {
       vertexColixes = null;
       remapColors(null, Float.NaN);
     }

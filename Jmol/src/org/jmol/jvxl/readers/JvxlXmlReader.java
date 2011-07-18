@@ -220,6 +220,15 @@ public class JvxlXmlReader extends VolumeFileReader {
     }
     jvxlData.nVertexColors = parseInt(XmlReader.getXmlAttrib(data, "nVertexColors"));
     params.isBicolorMap = XmlReader.getXmlAttrib(data, "bicolorMap").equals("true");
+    if (params.isBicolorMap) {
+      // TODO -- not quite right, because
+      s = XmlReader.getXmlAttrib(data, "colorPositive");
+      if (s.length() > 0 && params.colorPos == Parameters.defaultColorPositive)
+        params.colorPos = Graphics3D.getArgbFromString(s);
+      s = XmlReader.getXmlAttrib(data, "colorNegative");
+      if (s.length() > 0 && params.colorNeg == Parameters.defaultColorNegative)
+        params.colorNeg = Graphics3D.getArgbFromString(s);
+    }
     if (params.isBicolorMap || params.colorBySign)
       jvxlCutoff = 0;
     jvxlDataIsColorMapped = params.isBicolorMap || XmlReader.getXmlAttrib(data, "colorMapped").equals("true");

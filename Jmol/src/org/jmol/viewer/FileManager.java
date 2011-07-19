@@ -80,7 +80,7 @@ public class FileManager {
 
   private void setLoadState(Map<String, Object> htParams) {
     if (viewer.getPreserveState()) {
-      htParams.put("loadState", viewer.getLoadState());
+      htParams.put("loadState", viewer.getLoadState(htParams));
     }
   }
 

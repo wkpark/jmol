@@ -501,6 +501,7 @@ class IsoSolventReader extends AtomDataReader {
             atomRadius[apt++] = voxelData[x][y][z];
           }
     myAtomCount = firstNearbyAtom = n;
+    thisAtomSet = BitSetUtil.setAll(myAtomCount);
   }
 
   private void generateSolventCube() {

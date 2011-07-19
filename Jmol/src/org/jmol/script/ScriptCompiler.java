@@ -930,7 +930,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       if (cchToken < 0)
         return ERROR(ERROR_endOfCommandUnexpected);
       String str;
-      if ((tokCommand == Token.load || tokCommand == Token.background || tokCommand == Token.script)
+      if ((tokCommand == Token.set && nTokens == 2 && lastToken.tok == Token.defaultdirectory
+          || tokCommand == Token.load || tokCommand == Token.background || tokCommand == Token.script)
           && !iHaveQuotedString) {
         if (lastToken.tok == Token.inline) {
           str = getUnescapedStringLiteral();

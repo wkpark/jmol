@@ -307,6 +307,16 @@ public abstract class AtomSetCollectionReader {
 
   /////////////////////////////////////////////////////////////////////////////////////
 
+  public void setIsPDB() {
+    atomSetCollection.setGlobalBoolean(AtomSetCollection.GLOBAL_ISPDB);
+    atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
+    if (htParams.get("pdbNoHydrogens") != null)
+      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("pdbNoHydrogens",
+          htParams.get("pdbNoHydrogens"));
+  }
+
+  protected void setPdb() {
+  }
   private Object finish() {
     String s = (String) htParams.get("loadState");
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("loadState",

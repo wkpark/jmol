@@ -1798,6 +1798,7 @@ public class ScriptEvaluator {
   private int lineEnd;
   private int pcEnd;
   private String scriptExtensions;
+  private boolean forceNoAddHydrogens;
 
   // ////////////////////// supporting methods for compilation and loading
   // //////////
@@ -1809,6 +1810,7 @@ public class ScriptEvaluator {
     restoreScriptContext(compiler.compile(filename, strScript, false, false,
         debugCompiler, false), false, false, false);
     isStateScript = (script.indexOf(Viewer.STATE_VERSION_STAMP) >= 0);
+    forceNoAddHydrogens = (isStateScript && script.indexOf("pdbAddHydrogens") < 0);
     String s = script;
     pc = setScriptExtensions();
     if (!isSyntaxCheck && viewer.isScriptEditorVisible()
@@ -8304,6 +8306,8 @@ public class ScriptEvaluator {
     int nFiles = 1;
     Map<String, Object> htParams = new Hashtable<String, Object>();
     // ignore optional file format
+    if (isStateScript && forceNoAddHydrogens)
+      htParams.put("doNotAddHydrogens", Boolean.TRUE);
     String modelName = null;
     String filename = null;
     String[] filenames = null;

@@ -632,6 +632,13 @@ abstract class ScriptCompilationTokenParser {
     case Token.decimal:
       distance = floatValue();
       break;
+    case Token.define:
+      addTokenToPostfix(theToken);
+      if (!clauseDefine(true, false))
+        return false;
+      key = "";
+      allowComma = false;
+      break;
     case Token.search: 
     case Token.smiles:  
     case Token.substructure:

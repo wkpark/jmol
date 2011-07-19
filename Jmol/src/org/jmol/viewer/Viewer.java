@@ -2898,7 +2898,7 @@ private void zap(String msg) {
 
   @Override
   public String getModelNumberDotted(int modelIndex) {
-    return modelIndex < 0 ? "0" : modelSet == null ? null : modelSet
+    return modelIndex < 0 ? "all" : modelSet == null ? null : modelSet
         .getModelNumberDotted(modelIndex);
   }
 
@@ -7103,8 +7103,8 @@ private void zap(String msg) {
     return global.highResolutionFlag;
   }
 
-  String getLoadState() {
-    return global.getLoadState();
+  String getLoadState(Map<String, Object> htParams) {
+    return global.getLoadState(htParams);
   }
 
   @Override

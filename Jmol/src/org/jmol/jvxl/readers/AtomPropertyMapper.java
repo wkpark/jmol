@@ -79,8 +79,8 @@ class AtomPropertyMapper extends AtomDataReader {
     }
     if (!doSmoothProperty && maxDistance == Integer.MAX_VALUE)
       maxDistance = 5; // usually just local to a group
-    if (maxDistance == Integer.MAX_VALUE && calcType != params.mep_calcType)
-      maxDistance = 5; // max distance just for mep 
+    //if (maxDistance == Integer.MAX_VALUE && calcType != params.mep_calcType)
+      //maxDistance = 5; // max distance just for mep 
     getAtoms(params.bsSelected, doAddHydrogens, true, false, false, true, false, Float.NaN);
     if (meshDataServer != null)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
@@ -150,10 +150,12 @@ class AtomPropertyMapper extends AtomDataReader {
     atomDataServer.setIteratorForPoint(iter, modelIndex, pt, maxDistance);
     iAtomSurface = -1;
     while (iter.hasNext()) {
-      int iAtom = myIndex[iter.next()];
+      int ia = iter.next();
+      int iAtom = myIndex[ia];
       boolean isNearby = (iAtom >= firstNearbyAtom);
       Point3f ptA = atomXyz[iAtom];
       float p = atomProp[iAtom];
+      //System.out.println(iAtom + " " + ia + ptA + " " + isNearby + " " + p);
       if (Float.isNaN(p))
         continue;
       float d2 = pt.distanceSquared(ptA);

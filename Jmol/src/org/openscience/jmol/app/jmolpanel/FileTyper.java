@@ -22,7 +22,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.openscience.jmol.app.jmolpanel;
-
+/*
 import java.io.File;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -40,8 +40,8 @@ import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.BorderLayout;
-
-public class FileTyper extends JPanel
+*/
+public class FileTyper {/*extends JPanel
     implements PropertyChangeListener, ItemListener {
 
   private JCheckBox useFileExtensionCheckBox;
@@ -59,10 +59,6 @@ public class FileTyper extends JPanel
   private int defaultTypeIndex = 0;
   private String fileType = choices[defaultTypeIndex];
 
-  /**
-   * A simple panel with a combo box for allowing the user to choose
-   * the input file type.
-   */
   public FileTyper() {
 
     setLayout(new BorderLayout());
@@ -110,9 +106,6 @@ public class FileTyper extends JPanel
     setUseFileExtension(useFileExtension);
   }
 
-  /**
-   * @return The file type which contains the user's choice
-   */
   public String getType() {
     return fileType;
   }
@@ -156,5 +149,6 @@ public class FileTyper extends JPanel
     }
   }
 
+*/
 }
 

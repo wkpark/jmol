@@ -427,7 +427,7 @@ public class MolecularOrbital extends Isosurface {
       return "";
     StringBuffer s = new StringBuffer();
     if (modelCount > 1)
-      appendCmd(s, "frame " + viewer.getModelNumber(modelIndex));
+      appendCmd(s, "frame " + viewer.getModelNumberDotted(modelIndex));
     if (moCutoff != null)
       appendCmd(s, "mo cutoff " + (sg.getIsPositiveOnly() ? "+" : "")
           + moCutoff);

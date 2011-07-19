@@ -82,17 +82,13 @@ public class AtomSetCollection {
   public final static int GLOBAL_SYMMETRY = 1;
   public final static int GLOBAL_UNITCELLS = 2;
   private final static int GLOBAL_CONECT = 3;
-  private final static int GLOBAL_ISPDB = 4;
-
-  public void setIsPDB() {
-    setGlobalBoolean(GLOBAL_ISPDB);
-  }
+  final static int GLOBAL_ISPDB = 4;
 
   public void clearGlobalBoolean(int globalIndex) {
     atomSetCollectionAuxiliaryInfo.remove(globalBooleans[globalIndex]);
   }
   
-  private void setGlobalBoolean(int globalIndex) {
+  void setGlobalBoolean(int globalIndex) {
     setAtomSetCollectionAuxiliaryInfo(globalBooleans[globalIndex], Boolean.TRUE);
   }
   

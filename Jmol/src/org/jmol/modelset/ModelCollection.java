@@ -577,7 +577,7 @@ abstract public class ModelCollection extends BondCollection {
     if (addFrameNumber) {
       if (thisStateModel != iModel)
         script1 = "frame "
-            + (iModel < 0 ? "" + iModel : getModelNumberDotted(iModel)) + ";\n  "
+            + (iModel < 0 ? "all #" + iModel : getModelNumberDotted(iModel)) + ";\n  "
             + script1;
       thisStateModel = iModel;
     } else {

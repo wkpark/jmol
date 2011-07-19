@@ -429,7 +429,7 @@ ActionListener, ChangeListener, Runnable {
     try {
       currentIndex = index;
       int atomSetIndex = indexes[index];
-      viewer.evalStringQuiet("frame " + viewer.getModelNumber(atomSetIndex));
+      viewer.evalStringQuiet("frame " + viewer.getModelNumberDotted(atomSetIndex));
       infoLabel.setText(viewer.getModelName(atomSetIndex));
       showProperties(viewer.getModelProperties(atomSetIndex));
       showAuxiliaryInfo(viewer.getModelAuxiliaryInfo(atomSetIndex));

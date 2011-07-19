@@ -345,7 +345,8 @@ public class Contact extends Isosurface {
       setProperty("select", bsA, null);
       setProperty("radius", rd, null);
       setProperty("sasurface", Float.valueOf(0), null);
-      thisMesh.slabPolygons(MeshSurface.getSlabWithinRange(-100, 0), false);
+      if (type != Token.connect)
+        thisMesh.slabPolygons(MeshSurface.getSlabWithinRange(-100, 0), false);
     }
   }
 

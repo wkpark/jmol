@@ -219,6 +219,7 @@ class IsoShapeReader extends VolumeDataReader {
           / fact[el - p] / fact[p - abm];
   }
 
+  private double aoMax;
   private void autoScaleOrbital() {
     double min;
     if (params.cutoff == 0) {
@@ -230,18 +231,18 @@ class IsoShapeReader extends VolumeDataReader {
         min = Math.sqrt(min / 2);
     }
     float r0 = 0;
-    double max = 0;
+    aoMax = 0;
     float rmax = 0;
     for (radius = 100; radius > 0; radius-= 0.1) {
       double d = Math.abs(radialPart(radius));
-      if (d < max)
+      if (d < aoMax)
         continue;
       rmax = radius;
-      max = d;
+      aoMax = d;
     }
-    Logger.info("Atomic Orbital max = " + max + " at " + rmax);
+    Logger.info("Atomic Orbital max = " + aoMax + " at " + rmax);
     if (monteCarloCount > 0)
-      min = max * 0.001;
+      min = aoMax * 0.001;
     for (radius = 100; radius > 0; radius-= 0.1) {
       double d = Math.abs(radialPart(radius));
       if (d >= min) {
@@ -250,7 +251,6 @@ class IsoShapeReader extends VolumeDataReader {
       }
     }
     radius = r0 + 1;
-    Logger.info("Atomic Orbital radius extent set to " + radius);
     if (isAnisotropic) {
       float aMax = 0;
       for (int i = 3; --i >= 0;)
@@ -258,7 +258,7 @@ class IsoShapeReader extends VolumeDataReader {
           aMax = anisotropy[i];
       radius *= aMax;
     }
-    Logger.info("radial extent set to " + radius + " for cutoff "
+    Logger.info("Atomic Orbital radial extent set to " + radius + " for cutoff "
         + params.cutoff);
   }
 
@@ -317,12 +317,12 @@ class IsoShapeReader extends VolumeDataReader {
    }
     if (f < 0.01f) // must be a node
       return;
-    float f2 = f * f; // NOT just f itself (Jmol 12.1.51)
+    f = (float) (params.thePlane == null ? aoMax * aoMax : f * f); // NOT just f itself (Jmol 12.1.51)
     for (int i = 0; i < monteCarloCount;) {
       setRandomPoint(d);
       ptPsi.add(center);
       value = getValueAtPoint(ptPsi);
-      if (value * value <= f2 * random.nextFloat())
+      if (value * value <= f * random.nextFloat())
         continue;
       rave += ptPsi.distance(center);
       addVertexCopy(ptPsi, value, 0);

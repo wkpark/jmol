@@ -870,8 +870,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       }
     }
     if (isPDB) {
-      atomSetCollection.setIsPDB();
-      atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
+      setIsPDB();
     }
     atomSetCollection.setAtomSetAuxiliaryInfo("isCIF", Boolean.TRUE);
     return true;

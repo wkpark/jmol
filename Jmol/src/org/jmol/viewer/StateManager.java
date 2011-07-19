@@ -1015,10 +1015,11 @@ public class StateManager {
      *  these settings are determined when the file is loaded and are
      *  kept even though they might later change. So we list them here
      *  and ALSO let them be defined in the settings. 10.9.98 missed this. 
+     * @param htParams 
      *  
      * @return script command
      */
-    String getLoadState() {
+    String getLoadState(Map<String, Object> htParams) {
       
       
       // some commands register flags so that they will be 
@@ -1065,7 +1066,7 @@ public class StateManager {
       // these next two might be part of a 2D->3D operation
       appendCmd(str, "set minimizationCriterion  " + minimizationCriterion);
       appendCmd(str, "set minimizationSteps  " + minimizationSteps);
-      appendCmd(str, "set pdbAddHydrogens " + pdbAddHydrogens);
+      appendCmd(str, "set pdbAddHydrogens " + (htParams != null && htParams.get("pdbNoHydrogens") == null ? pdbAddHydrogens : false));
       appendCmd(str, "set pdbGetHeader " + pdbGetHeader);
       appendCmd(str, "set pdbSequential " + pdbSequential);
       appendCmd(str, "set percentVdwAtom " + percentVdwAtom);

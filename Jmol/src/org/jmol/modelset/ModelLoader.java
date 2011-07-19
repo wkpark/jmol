@@ -159,7 +159,10 @@ public final class ModelLoader {
     if (isTrajectory)
       info.remove("trajectorySteps");
     doAddHydrogens = jbr != null && !isTrajectory
+        && modelSet.getModelSetAuxiliaryInfo("pdbNoHydrogens") == null
         && viewer.getBooleanProperty("pdbAddHydrogens");
+    if (info != null)
+      info.remove("pdbNoHydrogens");
     noAutoBond = modelSet.getModelSetAuxiliaryInfoBoolean("noAutoBond");
     is2D = modelSet.getModelSetAuxiliaryInfoBoolean("is2D");
     doMinimize = is2D && modelSet.getModelSetAuxiliaryInfoBoolean("doMinimize");

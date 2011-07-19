@@ -108,7 +108,7 @@ public class PdbReader extends AtomSetCollectionReader {
 
  @Override
  protected void initializeReader() throws Exception {
-   atomSetCollection.setIsPDB();
+   setIsPDB();
    pdbHeader = (getHeader ? new StringBuffer() : null);
    applySymmetry = !checkFilter("NOSYMMETRY");
    headerTitle = new StringBuffer();

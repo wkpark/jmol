@@ -1343,7 +1343,7 @@ public class ScriptEvaluator {
           case Token.function:
             bsAtom.set(i);
             fv = ScriptVariable.fValue(runFunction(null, userFunction, params,
-                tokenAtom, true));
+                tokenAtom, true, true));
             bsAtom.clear(i);
             break;
           case Token.property:
@@ -1975,7 +1975,7 @@ public class ScriptEvaluator {
       for (int i = 0; i < values.length; i++)
         p.get(i).value = new Float(values[i]);
       ScriptFunction f = (ScriptFunction) func;
-      return ScriptVariable.fValue(runFunction(f, f.name, p, null, true));
+      return ScriptVariable.fValue(runFunction(f, f.name, p, null, true, false));
     } catch (Exception e) {
       return Float.NaN;
     } 
@@ -1985,16 +1985,19 @@ public class ScriptEvaluator {
 
   ScriptVariable runFunction(ScriptFunction function, String name,
                              List<ScriptVariable> params,
-                             ScriptVariable tokenAtom, boolean getReturn)
+                             ScriptVariable tokenAtom, boolean getReturn, boolean setContextPath)
       throws ScriptException {
     if (function == null) {
+      // general function call
       function = viewer.getFunction(name);
-      contextPath += " >> function " + name;
-    } else {
+      if (function == null)
+        return null;
+      if (setContextPath)
+        contextPath += " >> function " + name;
+    } else if (setContextPath) {
+      // "try"; not from evalFunctionFloat
       contextPath += " >> " + name;
     }
-    if (function == null)
-      return null;
     pushContext(null);
     boolean isTry = (function.tok == Token.trycmd);
     thisContext.isFunction = !isTry;
@@ -5920,7 +5923,7 @@ public class ScriptEvaluator {
         if (isSyntaxCheck)
           return false;
         Map<String, ScriptVariable> cv = (Map<String, ScriptVariable>) runFunction(
-            trycmd, "try", null, null, true).value;
+            trycmd, "try", null, null, true, true).value;
         ScriptVariable ret = cv.get("_tryret");
         if (ret.value != null || ret.intValue != Integer.MAX_VALUE) {
           returnCmd(ret);
@@ -10162,7 +10165,7 @@ public class ScriptEvaluator {
         : parameterExpressionList(1, -1, false));
     if (isSyntaxCheck)
       return;
-    runFunction(null, name, params, null, false);
+    runFunction(null, name, params, null, false, true);
   }
 
   private void sync() throws ScriptException {
@@ -16286,8 +16289,9 @@ public class ScriptEvaluator {
           String f = (String) getToken(++i).value;
           sbCommand.append(" function ").append(Escape.escape(f));
           if (!isSyntaxCheck)
-            addShapeProperty(propertyList, "func", createFunction("__iso__",
-                "a,b", f));
+            addShapeProperty(propertyList, "func", 
+                (f.equals("a+b") || f.equals("a-b") ? f 
+                : createFunction("__iso__", "a,b", f)));
         } else {
           haveIntersection = true;
         }

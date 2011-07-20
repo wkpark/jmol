@@ -87,7 +87,7 @@ class IsoIntersectReader extends AtomDataReader {
     margin = 5f;
     if (params.func instanceof String) {
       funcType = (params.func.equals("a-b") ? TYPE_DIFF : params.func.equals("a+b") ? TYPE_SUM : TYPE_MAX);  
-    } else if (func == null || atomDataServer == null) {
+    } else if (params.func == null || atomDataServer == null) {
       funcType = TYPE_DIFF;
     } else {
       func = (Object[]) params.func;

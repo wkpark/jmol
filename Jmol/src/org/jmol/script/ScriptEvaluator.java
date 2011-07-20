@@ -1943,7 +1943,6 @@ public class ScriptEvaluator {
     if (var.equals("expressionBegin"))
       return null;
     var = var.toLowerCase();
-    System.out.println("var=" + var + " contextVariables "+(contextVariables == null ? 0 :contextVariables.hashCode()));
     if (contextVariables != null && contextVariables.containsKey(var))
       return contextVariables.get(var);
     ScriptContext context = thisContext;

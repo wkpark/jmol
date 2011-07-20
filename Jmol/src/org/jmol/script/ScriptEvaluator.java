@@ -5710,6 +5710,7 @@ public class ScriptEvaluator {
   @SuppressWarnings("unchecked")
   private boolean flowControl(int tok, boolean isForCheck)
       throws ScriptException {
+    ContextToken ct;
     switch (tok) {
     case Token.gotocmd:
       String strTo = parameterAsString(checkLast(1));
@@ -5728,7 +5729,10 @@ public class ScriptEvaluator {
     int ptNext = 0;
     switch (tok) {
     case Token.catchcmd:
-      pushContext((ContextToken) theToken);
+      ct = (ContextToken) theToken; 
+      pushContext(ct);
+      if (!isDone && ct.name0 != null)
+        contextVariables.put(ct.name0, ct.contextVariables.get(ct.name0));
       isOK = !isDone;
       break;
     case Token.process:
@@ -5933,8 +5937,8 @@ public class ScriptEvaluator {
         // normal return will skip the catch
         if (pc + 1 < aatoken.length && aatoken[pc + 1][0].tok == Token.catchcmd) {
           // set the intValue positive to indicate "not done" for the IF evaluation
-          ContextToken ct = (ContextToken) aatoken[pc + 1][0];
-          if (ct.contextVariables != null)
+          ct = (ContextToken) aatoken[pc + 1][0];
+          if (ct.contextVariables != null && ct.name0 != null)
             ct.contextVariables.put(ct.name0, ScriptVariable
                 .getVariable(errMsg));
           ct.intValue = (errMsg.length() > 0 ? 1 : -1) * Math.abs(ct.intValue);

@@ -152,9 +152,11 @@ public class AtomData {
   
   public float hAtomRadius;
   
+  public int[] atomIndex;
   public Point3f[] atomXyz;
   public float[] atomRadius;
   public int[] atomicNumber;
+  public int[] atomMolecule;
   public Point3f[][] hAtoms;
   public int atomCount;
   public int hydrogenAtomCount;

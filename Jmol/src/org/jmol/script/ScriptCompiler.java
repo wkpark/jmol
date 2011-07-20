@@ -1453,7 +1453,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
           return ERROR(ERROR_tokenExpected, "(");
         break; 
       case 2:
-        ((ContextToken)tokenCommand).name0 = ident;
+        if (theTok != Token.rightparen)
+          ((ContextToken)tokenCommand).name0 = ident;
         addContextVariable(ident);
         break;
       case 3:

@@ -21,6 +21,7 @@ public class MeshSurface {
 
   public void merge(MeshData m) {
     int nV = vertexCount + m.vertexCount;
+    System.out.println("merging " + vertexCount + " " + m.vertexCount + " " + nV);
     if (polygonIndexes == null)
       polygonIndexes = new int[0][];
     if (m.polygonIndexes == null)
@@ -29,9 +30,10 @@ public class MeshSurface {
     for (int i = 0; i < polygonCount; i++)
       if (polygonIndexes[i] != null && (bsSlabDisplay == null || bsSlabDisplay.get(i)))
         nP++;
-    for (int i = 0; i < m.polygonCount; i++)
+    for (int i = 0; i < m.polygonCount; i++)  
       if (m.polygonIndexes[i] != null && (m.bsSlabDisplay == null || m.bsSlabDisplay.get(i)))
         nP++;
+    System.out.println(nP + " " + m + " " + this);
     if (vertices == null)
       vertices = new Point3f[0];
     vertices = (Point3f[]) ArrayUtil.ensureLength(vertices, nV);

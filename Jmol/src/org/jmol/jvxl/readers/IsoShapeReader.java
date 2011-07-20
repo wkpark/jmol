@@ -123,7 +123,8 @@ class IsoShapeReader extends VolumeDataReader {
       maxGrid = 22;
       break;
     }
-    setVolumeData();
+    if (monteCarloCount == 0)
+      setVolumeData();
     setHeader(type + "\n");
   }
 
@@ -221,29 +222,31 @@ class IsoShapeReader extends VolumeDataReader {
 
   private double aoMax;
   private void autoScaleOrbital() {
-    double min;
-    if (params.cutoff == 0) {
-      min = 0.01f;
-    } else {
-      min = Math.abs(params.cutoff / 2);
-      // ISSQUARED means cutoff is in terms of psi*2, not psi
-      if (params.isSquared)
-        min = Math.sqrt(min / 2);
-    }
     float r0 = 0;
     aoMax = 0;
     float rmax = 0;
-    for (radius = 100; radius > 0; radius-= 0.1) {
+    for (radius = 100; radius >= 0.1f; radius-= 0.1f) {
       double d = Math.abs(radialPart(radius));
+      System.out.println(radius + " " + d + " " + r0);
       if (d < aoMax)
         continue;
       rmax = radius;
       aoMax = d;
     }
     Logger.info("Atomic Orbital max = " + aoMax + " at " + rmax);
-    if (monteCarloCount > 0)
-      min = aoMax * 0.001;
-    for (radius = 100; radius > 0; radius-= 0.1) {
+    double min;
+    if (params.cutoff == 0) {
+      min = (monteCarloCount > 0 ? aoMax * 0.01f : 0.01f);
+    } else if (monteCarloCount > 0) {
+      aoMax = Math.abs(params.cutoff);
+      min = aoMax * 0.01f;
+    } else {
+      min = Math.abs(params.cutoff / 2);
+      // ISSQUARED means cutoff is in terms of psi*2, not psi
+      if (params.isSquared)
+        min = Math.sqrt(min / 2);
+    }
+    for (radius = 100; radius >= 0.1f; radius-= 0.1f) {
       double d = Math.abs(radialPart(radius));
       if (d >= min) {
         r0 = radius;
@@ -297,6 +300,7 @@ class IsoShapeReader extends VolumeDataReader {
   }
 
   private boolean monteCarloDone;
+  private int nTries;
   
   private void createMonteCarloOrbital() {
     if (monteCarloDone)
@@ -317,12 +321,17 @@ class IsoShapeReader extends VolumeDataReader {
    }
     if (f < 0.01f) // must be a node
       return;
-    f = (float) (params.thePlane == null ? aoMax * aoMax : f * f); // NOT just f itself (Jmol 12.1.51)
+    f = (float) (params.thePlane == null ? aoMax : f); // NOT just f itself (Jmol 12.1.51)
+    boolean isSquared = params.isSquared;
+    params.isSquared = false; // for coloration, we want normal color
+    if (isSquared)
+      f *= f;
+    nTries = 0;
     for (int i = 0; i < monteCarloCount;) {
       setRandomPoint(d);
       ptPsi.add(center);
       value = getValueAtPoint(ptPsi);
-      if (value * value <= f * random.nextFloat())
+      if ((isSquared ? value * value : value) <= f * random.nextFloat())
         continue;
       rave += ptPsi.distance(center);
       addVertexCopy(ptPsi, value, 0);
@@ -330,7 +339,8 @@ class IsoShapeReader extends VolumeDataReader {
     }
     Logger.info("Atomic Orbital mean radius = " + rave/monteCarloCount 
         + " for "  + monteCarloCount
-        + " points");
+        + " points (" + nTries + " tries using psi^2_max=" + f + " and r_max = " + d/2 + ")");
+    
 //        + " points within a " + d + "x" + d + "x" + d + " cube");
   }
 
@@ -339,6 +349,7 @@ class IsoShapeReader extends VolumeDataReader {
 
   private void setRandomPoint(float x) {
     do {
+      nTries++;
       ptPsi.x = (random.nextFloat() - 0.5f) * x;
       ptPsi.y = (random.nextFloat() - 0.5f) * x;
       ptPsi.z = (random.nextFloat() - 0.5f) * x;

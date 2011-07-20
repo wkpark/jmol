@@ -936,8 +936,13 @@ abstract public class ModelCollection extends BondCollection {
     if ((mode & AtomData.MODE_FILL_MOLECULES) != 0) {
       getMolecules();
       atomData.bsMolecules = new BitSet[molecules.length];
-      for (int i = 0; i < molecules.length; i++)
-        atomData.bsMolecules[i] = molecules[i].atomList;
+      atomData.atomMolecule = new int[atomCount];
+      BitSet bs;
+      for (int i = 0; i < molecules.length; i++) {
+        bs = atomData.bsMolecules[i] = molecules[i].atomList;
+        for (int iAtom = bs.nextSetBit(0); iAtom >= 0; iAtom = bs.nextSetBit(iAtom + 1))
+          atomData.atomMolecule[iAtom] = i;
+      }
     }
     if ((mode & AtomData.MODE_GET_ATTACHED_HYDROGENS) != 0) {
       int[] nH = new int[1];

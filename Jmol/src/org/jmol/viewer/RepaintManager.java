@@ -182,7 +182,9 @@ class RepaintManager {
     JmolRendererInterface g3dExport = null;
     Object output = null;
     boolean isOK = false;
+    viewer.finalizeTransformParameters();
     try {
+      shapeManager.transformAtoms();
       if (fileName == null) {
         output = new StringBuffer();
       } else {

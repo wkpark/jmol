@@ -1190,7 +1190,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public float getScalePixelsPerAngstrom(boolean asAntialiased) {
     return transformManager.scalePixelsPerAngstrom
-        * (asAntialiased || !global.antialiasDisplay ? 1f : 0.5f);
+        * (asAntialiased || !antialiasDisplay ? 1f : 0.5f);
   }
 
   public short scaleToScreen(int z, int milliAngstroms) {
@@ -3939,9 +3939,11 @@ private void zap(String msg) {
       setShapeProperty(JmolConstants.SHAPE_LABELS, "clearBoxes", null);
     antialiasDisplay = (isReset ? global.antialiasDisplay : isImageWrite
         && !isExport ? global.antialiasImages : false);
+    System.out.println("antialiasd = " + antialiasDisplay);
     imageFontScaling = (isReset || width <= 0 ? 1
         : (global.zoomLarge == (height > width) ? height : width)
-            / getScreenDim()) * (antialiasDisplay ? 2 : 1);
+            / getScreenDim())
+        * (antialiasDisplay ? 2 : 1);
     if (width > 0) {
       dimScreen.width = width;
       dimScreen.height = height;
@@ -3992,7 +3994,6 @@ private void zap(String msg) {
     int saveHeight = dimScreen.height;
     resizeImage(width, height, true, true, false);
     setModelVisibility();
-    finalizeTransformParameters();
     String data = repaintManager.generateOutput(type, g3d, modelSet, fName);
     // mth 2003-01-09 Linux Sun JVM 1.4.2_02
     // Sun is throwing a NullPointerExceptions inside graphics routines

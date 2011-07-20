@@ -1996,8 +1996,8 @@ public class ScriptEvaluator {
     }
     if (function == null)
       return null;
-    boolean isTry = (function.tok == Token.trycmd);
     pushContext(null);
+    boolean isTry = (function.tok == Token.trycmd);
     thisContext.isFunction = !isTry;
     functionName = name;
 

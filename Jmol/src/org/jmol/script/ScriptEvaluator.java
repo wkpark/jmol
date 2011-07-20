@@ -1943,6 +1943,7 @@ public class ScriptEvaluator {
     if (var.equals("expressionBegin"))
       return null;
     var = var.toLowerCase();
+    System.out.println("var=" + var + " contextVariables "+(contextVariables == null ? 0 :contextVariables.hashCode()));
     if (contextVariables != null && contextVariables.containsKey(var))
       return contextVariables.get(var);
     ScriptContext context = thisContext;
@@ -1987,8 +1988,6 @@ public class ScriptEvaluator {
                              List<ScriptVariable> params,
                              ScriptVariable tokenAtom, boolean getReturn)
       throws ScriptException {
-    pushContext(null);
-    thisContext.isFunction = true;
     if (function == null) {
       function = viewer.getFunction(name);
       contextPath += " >> function " + name;
@@ -1997,6 +1996,9 @@ public class ScriptEvaluator {
     }
     if (function == null)
       return null;
+    boolean isTry = (function.tok == Token.trycmd);
+    pushContext(null);
+    thisContext.isFunction = !isTry;
     functionName = name;
 
     if (function instanceof ParallelProcessor) {
@@ -2006,7 +2008,6 @@ public class ScriptEvaluator {
         vProcess = null;
         runFunction(function, params, tokenAtom);
 
-        boolean isTry = (function.tok == Token.trycmd);
         ScriptContext sc = getScriptContext();
         if (isTry) {
           contextVariables.put("_breakval", ScriptVariable

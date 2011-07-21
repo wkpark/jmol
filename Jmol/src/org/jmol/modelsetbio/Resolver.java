@@ -425,8 +425,13 @@ public final class Resolver implements JmolBioResolver {
             hNames[1] = hName.replace('?', '2');
             hNames[2] = hName.replace('?', '3');
           }
-          for (int j = 0; j < 3; j++)
-            setHydrogen(i, ++ipt, hNames[j], pts[i][j]);
+//          Measure.getPlaneThroughPoints(pts[i][0], pts[i][1], pts[i][2], vNorm, vAB,
+  //            vAC, plane);
+    //      d = Measure.distanceToPlane(plane, atom);
+      //    int hpt = (d < 0 ? 1 : 2);
+          setHydrogen(i, ++ipt, hNames[0], pts[i][0]);
+          setHydrogen(i, ++ipt, hNames[1], pts[i][2]);
+          setHydrogen(i, ++ipt, hNames[2], pts[i][1]);          
           break;
         }
       }

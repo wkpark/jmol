@@ -32,6 +32,7 @@ import java.util.List;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.api.AtomIndexIterator;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.jvxl.data.MeshData;
@@ -142,7 +143,8 @@ public class Contact extends Isosurface {
                                float[] params, Object func,
                                boolean isColorDensity, int intramolecularMode,
                                BitSet[] bsFilters) {
-    bsB.andNot(bsA);
+    if (!bsA.equals(bsB))
+      bsB.andNot(bsA);
     List<ContactPair> pairs = getPairs(bsA, bsB, rd, intramolecularMode,
         bsFilters);
     BitSet bs1 = new BitSet();
@@ -153,6 +155,11 @@ public class Contact extends Isosurface {
     if (type == Token.full && resolution == Float.MAX_VALUE)
       resolution = 10;
     for (int i = 0; i < pairs.size(); i++) {
+      if ((i % 100) == 99) {
+        Logger.setLogLevel(logLevel);
+        Logger.info("contact..." + (i + 1));
+        Logger.setLogLevel(0);
+      }
       ContactPair cp = pairs.get(i);
       bs1.set(cp.iAtom1);
       bs2.set(cp.iAtom2);
@@ -205,13 +212,22 @@ public class Contact extends Isosurface {
     BitSet bs = BitSetUtil.copy(bsA);
     bs.or(bsB);
     ad.bsSelected = bs;
+    boolean isSelf = bsA.equals(bsB);
     viewer.fillAtomData(ad, AtomData.MODE_FILL_RADII
         | (intramolecularMode > 0 ? AtomData.MODE_FILL_MOLECULES : 0));
     boolean isMisc = (bsFilters != null && bsFilters[1] != null);
-    for (int ia = bsA.nextSetBit(0); ia >= 0; ia = bsA.nextSetBit(ia + 1))
-      for (int ib = bsB.nextSetBit(0); ib >= 0; ib = bsB.nextSetBit(ib + 1)) {
-        if (ia == ib)
+    float maxRadius = 0;
+    for (int ib = bsB.nextSetBit(0); ib >= 0; ib = bsB.nextSetBit(ib + 1))
+      if (ad.atomRadius[ib] > maxRadius)
+        maxRadius = ad.atomRadius[ib];
+    AtomIndexIterator iter = viewer.getSelectedAtomIterator(bsB, isSelf, false);
+    for (int ia = bsA.nextSetBit(0); ia >= 0; ia = bsA.nextSetBit(ia + 1)) {
+      viewer.setIteratorForAtom(iter, ia, ad.atomRadius[ia] + maxRadius);
+      while (iter.hasNext()) {
+        int ib = iter.next();
+        if (ia == ib || atoms[ia].isCovalentlyBonded(atoms[ib]) || atoms[ia].is14(atoms[ib]))
           continue;
+        //System.out.println(atoms[ia].distance(atoms[ib]));
         switch (intramolecularMode) {
         case 0:
           break;
@@ -239,6 +255,9 @@ public class Contact extends Isosurface {
         if (isContactClear(cp, ad, bs))
           list.add(cp);
       }
+    }
+    iter.release();
+    iter = null;
     Logger.info("Contact pairs: " + list.size());
     return list;
   }

@@ -1411,6 +1411,17 @@ final public class Atom extends Point3fi implements JmolNode {
   public String toString() {
     return getInfo();
   }
+
+  public boolean is14(Atom atomOther) {
+    Bond[] bondsOther = atomOther.bonds;
+    for (int i = 0; i < bondsOther.length; i++) {
+      Atom atom2 = bondsOther[i].getOtherAtom(atomOther);
+      for (int j = 0; j < bonds.length; j++)
+        if (bonds[j].getOtherAtom(this).isCovalentlyBonded(atom2))
+          return true;
+    }
+    return false;
+  }
   
 
 }

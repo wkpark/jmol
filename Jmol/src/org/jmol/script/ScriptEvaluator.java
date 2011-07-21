@@ -4576,7 +4576,7 @@ public class ScriptEvaluator {
     if (i < statementLength)
       switch (getToken(i).tok) {
       case Token.point4f:
-        plane = (Point4f) theToken.value;
+        plane = new Point4f((Point4f) theToken.value);
         break;
       case Token.dollarsign:
         String id = objectNameParameter(++i);

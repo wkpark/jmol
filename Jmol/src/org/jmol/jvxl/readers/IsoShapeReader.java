@@ -88,6 +88,8 @@ class IsoShapeReader extends VolumeDataReader {
         vertexDataOnly = true;
         //params.colorDensity = true;
         random = new Random(params.randomSeed);
+      } else {
+        isQuiet = false;
       }
       break;
     case Parameters.SURFACE_LONEPAIR:

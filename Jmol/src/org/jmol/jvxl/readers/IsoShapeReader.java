@@ -301,7 +301,7 @@ class IsoShapeReader extends VolumeDataReader {
         break;
       }
     }
-    radius = r0 + 1;
+    radius = r0 + (monteCarloCount == 0 ? 1 : 0);
     if (isAnisotropic) {
       float aMax = 0;
       for (int i = 3; --i >= 0;)

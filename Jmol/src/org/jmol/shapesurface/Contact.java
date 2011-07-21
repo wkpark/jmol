@@ -142,8 +142,7 @@ public class Contact extends Isosurface {
                                float[] params, Object func,
                                boolean isColorDensity, int intramolecularMode,
                                BitSet[] bsFilters) {
-    if (bsB.cardinality() == 0)
-      bsB = bsA;
+    bsB.andNot(bsA);
     List<ContactPair> pairs = getPairs(bsA, bsB, rd, intramolecularMode,
         bsFilters);
     BitSet bs1 = new BitSet();
@@ -151,6 +150,8 @@ public class Contact extends Isosurface {
     int logLevel = Logger.getLogLevel();
     Logger.setLogLevel(0);
     float resolution = sg.getParams().resolution;
+    if (type == Token.full && resolution == Float.MAX_VALUE)
+      resolution = 10;
     for (int i = 0; i < pairs.size(); i++) {
       ContactPair cp = pairs.get(i);
       bs1.set(cp.iAtom1);
@@ -399,9 +400,10 @@ public class Contact extends Isosurface {
 
   private void newSurface(int type, BitSet bs1, BitSet bs2, RadiusData rd,
                           Object params, Object func, boolean isColorDensity) {
+    bs2.andNot(bs1);
     if (bs1.isEmpty() || bs2.isEmpty())
       return;
-    System.out.println("--------newSurface----" + Token.nameOf(type) + bs1 + " " + bs2);
+    //System.out.println(Token.nameOf(type) + " " + bs1 + " " + bs2);
     switch (type) {
     case Token.vanderwaals:
     case Token.trim:

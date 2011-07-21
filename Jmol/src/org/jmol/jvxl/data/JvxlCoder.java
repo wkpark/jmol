@@ -293,6 +293,8 @@ public class JvxlCoder {
       addAttrib(attribs, "\n  colorDensity", "true");
     else if (jvxlData.diameter != 0)
       addAttrib(attribs, "\n  diameter", "" + jvxlData.diameter);
+    if (!jvxlData.allowVolumeRender)
+      addAttrib(attribs, "\n  allowVolumeRender", "false");
     if (jvxlData.jvxlPlane == null || vertexDataOnly) {
       if (jvxlData.isContoured) {
         addAttrib(attribs, "\n  contoured", "true"); 

@@ -160,8 +160,10 @@ public class JvxlData {
   public boolean isSlabbable;
   public int diameter;
   public String slabInfo;
+  public boolean allowVolumeRender;
 
   public void clear() {
+    allowVolumeRender = true;
     jvxlSurfaceData = "";
     jvxlEdgeData = "";
     jvxlColorData = "";

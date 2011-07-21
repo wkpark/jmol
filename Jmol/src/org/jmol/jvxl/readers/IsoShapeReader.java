@@ -73,6 +73,7 @@ class IsoShapeReader extends VolumeDataReader {
   protected void setup(boolean isMapData) {
     volumeData.sr = this; // we will provide point data for mapping
     precalculateVoxelData = false;
+    isQuiet = true;
     if (center.x == Float.MAX_VALUE)
       center.set(0, 0, 0);
     String type = "sphere";
@@ -201,7 +202,7 @@ class IsoShapeReader extends VolumeDataReader {
       fact[i] = fact[i - 1] * i;
   }
 
-  private double psi_normalization = 4 * Math.PI; // not applied!
+  private double psi_normalization = 1 / (2 * Math.sqrt(Math.PI));
 
   private void calcFactors(int n, int el, int m) {
     int abm = Math.abs(m);
@@ -222,48 +223,63 @@ class IsoShapeReader extends VolumeDataReader {
   private double aoMax;
   private double aoMax2;
   private double angMax2;
+  private Vector3f planeU;
+  private Vector3f planeV;
+  private Point3f planeCenter;
+  private float planeRadius;
   
   private void autoScaleOrbital() {
-    float r0 = 0;
     aoMax = 0;
     float rmax = 0;
     aoMax2 = 0;
     float rmax2 = 0;
     double d;
-    for (radius = 100f; radius >= 0.1f; radius -= 0.1f) {
-      d = Math.abs(radialPart(radius));
-      System.out.println(radius + " " + d + " " + r0);
-      if (d >= aoMax) {
-        rmax = radius;
-        aoMax = d;
+    if (params.distance == 0) {
+      for (int ir = 0; ir < 1000; ir++) {
+        float r = ir / 10f;
+        d = Math.abs(radialPart(r));
+        if (Logger.debugging)
+          Logger.debug("R\t" + r + "\t" + d);
+        if (d >= aoMax) {
+          rmax = r;
+          aoMax = d;
+        }
+        d *= d * r * r;
+        if (d >= aoMax2) {
+          rmax2 = r;
+          aoMax2 = d;
+        }
       }
-      d *= d * radius * radius;
-      if (d >= aoMax2) {
-        rmax2 = radius;
-        aoMax2 = d;
-      }
+    } else {
+      aoMax = Math.abs(radialPart(params.distance));
+      aoMax2 = aoMax * aoMax * params.distance * params.distance;
+      rmax = rmax2 = params.distance;
     }
-    
-    angMax2 = 0;
-    for (float ang = 0; ang < 180; ang += 1) {
-      double th = ang / (2 * Math.PI);
-      d = Math.abs(angularPart(th, 0, 0));
-      System.out.println(ang + "\t" + d);
-      if (d > angMax2) {
-        angMax2 = d;
-      }
-    }
-    angMax2 *= angMax2; 
-    if (psi_m != 0)
-      angMax2 *= 2; // apparently...
-    
     Logger.info("Atomic Orbital radial max = " + aoMax + " at " + rmax);
     Logger.info("Atomic Orbital r2R2 max = " + aoMax2 + " at " + rmax2);
-    Logger.info("Atomic Orbital angular max = " + angMax2 * 4 * Math.PI);
-    // (we don't apply the final 4pi here because it is just a constant)
-    //aoMax *= Math.sqrt(psi_l - psi_m + 0.5);      
-    //Logger.info("Atomic Orbital overall max = " + aoMax);
 
+    if (monteCarloCount >= 0) {
+      angMax2 = 0;
+      for (float ang = 0; ang < 180; ang += 1) {
+        double th = ang / (2 * Math.PI);
+        d = Math.abs(angularPart(th, 0, 0));
+        if (Logger.debugging)
+          Logger.debug("A\t" + ang + "\t" + d);
+        if (d > angMax2) {
+          angMax2 = d;
+        }
+      }
+      angMax2 *= angMax2;
+      if (psi_m != 0) {
+        // if psi_m not 0, we include sqrt2 from creating real counterpart
+        // of the imaginary solution: 1/sqrt2(psi_a +/- psi_b)
+        // you get, for example, 1/sqrt2(2 cos phi) = sqrt2 * cos phi
+        // which has a max of sqrt2.
+        angMax2 *= 2; 
+      }
+      Logger.info("Atomic Orbital phi^2theta^2 max = " + angMax2);
+      // (we don't apply the final 4pi here because it is just a constant)
+    }
     double min;
     if (params.cutoff == 0) {
       min = (monteCarloCount > 0 ? aoMax * 0.01f : 0.01f);
@@ -276,10 +292,12 @@ class IsoShapeReader extends VolumeDataReader {
       if (params.isSquared)
         min = Math.sqrt(min / 2);
     }
-    for (radius = 100; radius >= 0.1f; radius -= 0.1f) {
-      d = Math.abs(radialPart(radius));
+    float r0 = 0;
+    for (int ir = 1000; --ir >= 0; ir -= 1) {
+      float r = ir / 10f;
+      d = Math.abs(radialPart(r));
       if (d >= min) {
-        r0 = radius;
+        r0 = r;
         break;
       }
     }
@@ -293,6 +311,40 @@ class IsoShapeReader extends VolumeDataReader {
     }
     Logger.info("Atomic Orbital radial extent set to " + radius
         + " for cutoff " + params.cutoff);
+    if (params.thePlane != null && monteCarloCount > 0) {
+      // get two perpendicular unit vectors in the plane.
+      planeCenter = new Point3f();
+      planeU = new Vector3f();
+      Measure.getPlaneProjection(center, params.thePlane, planeCenter, planeU);
+      planeU.set(params.thePlane.x, params.thePlane.y, params.thePlane.z);
+      planeU.normalize();
+      planeV = new Vector3f(1, 0, 0);
+      if (Math.abs(planeU.dot(planeV)) > 0.5f)
+        planeV.set(0, 1, 0);
+      planeV.cross(planeU, planeV);
+      planeU.cross(planeU, planeV);
+      aoMax2 = 0;
+      d = center.distance(planeCenter);
+      if (d < radius) {
+        planeRadius = (float) Math.sqrt(radius * radius - d * d);
+        int ir = (int) (planeRadius * 10);
+        for (int ix = -ir; ix <= ir; ix++)
+          for (int iy = -ir; iy <= ir; iy++) {
+            ptPsi.set(planeU);
+            ptPsi.scale(ix / 10f);
+            ptPsi.scaleAdd(iy / 10f, planeV, ptPsi);
+            d = hydrogenAtomPsi(ptPsi);
+            // we need an approximation  of the max value here
+            d = Math.abs(hydrogenAtomPsi(ptPsi));
+            if (d > aoMax2)
+              aoMax2 = d;
+          }
+        if (aoMax2 < 0.001f) // must be a node
+          aoMax2 = 0;
+        else
+          aoMax2 *= aoMax2;
+      }
+    }
   }
 
   private double radialPart(double r) {
@@ -316,6 +368,7 @@ class IsoShapeReader extends VolumeDataReader {
   }
 
   private double angularPart(double th, double ph, int m) {
+    // note: we are factoring in 1 / 2 sqrt PI starting with Jmol 12.1.52
     double cth = Math.cos(th);
     double sth = Math.sin(th);
     boolean isS = (m == 0 && psi_l == 0);
@@ -330,100 +383,74 @@ class IsoShapeReader extends VolumeDataReader {
     double theta_lm = (abm == 0 ? sum : Math.abs(Math.pow(sth, abm)) * sum);
     double phi_m;
     if (m == 0)
-      return theta_lm;
-    if (m > 0)
+      phi_m = 1;
+    else if (m > 0)
       phi_m = Math.cos(m * ph) * ROOT2;
     else
       phi_m = Math.sin(m * ph) * ROOT2;
-    return (Math.abs(phi_m) < 0.0000000001 ? 0 : theta_lm * phi_m);
+    return (Math.abs(phi_m) < 0.0000000001 ? 0 : theta_lm * phi_m * psi_normalization);
   }
 
   private boolean monteCarloDone;
   private int nTries;
 
   private void createMonteCarloOrbital() {
-    if (monteCarloDone)
+    if (monteCarloDone || aoMax2 == 0 || params.distance > radius)
       return;
     boolean isS = (psi_m == 0 && psi_l == 0);
     monteCarloDone = true;
     float value;
-    if (params.thePlane != null)
-      vTemp = new Vector3f();
-    float f = 0;
-    float d = radius * 2;
     float rave = 0;
-    if (params.thePlane == null) {
-      f = (float) aoMax;
-    } else {
-      // we need an approximation  of the max value here
-      for (int i = 0; i < 10000; i++) {
-        setRandomPoint(d);
-        value = (float) Math.abs(hydrogenAtomPsi(ptPsi));
-        if (value > f)
-          f = value;
-      }
-      if (f < 0.01f) // must be a node
-        return;
-    }
-    f *= f;
     nTries = 0;
     for (int i = 0; i < monteCarloCount; nTries++) {
       // we do Pshemak's idea here -- force P(r2R2), then pick a random
       // point on the sphere for that radius
       if (params.thePlane == null) {
-      double r = random.nextDouble() * radius;
-      double rp = r * radialPart(r);
-      if (rp * rp <= aoMax2 * random.nextDouble())
-        continue;
-      double u = random.nextDouble();        
-      double v = random.nextDouble();        
-      double theta = 2 * Math.PI * u;
-      double cosPhi = 2 * v - 1;
-      if (!isS) {
-        double phi = Math.acos(cosPhi);
-        double ap = angularPart(phi, theta, psi_m);
-        if (ap * ap <= angMax2 * random.nextDouble())
-          continue;
-      }
-      //http://mathworld.wolfram.com/SpherePointPicking.html
-      double sinPhi = Math.sin(Math.acos(cosPhi));
-      double x = r * Math.cos(theta) * sinPhi;
-      double y = r * Math.sin(theta) * sinPhi;
-      double z = r * cosPhi;
-      //x = r; y = r2R2/aoMax2 * 10; z = 0;
-      ptPsi.set((float)x, (float) y, (float) z);
-      } else {
-        setRandomPoint(d);
+        double r;
+        if (params.distance == 0) {
+          r = random.nextDouble() * radius;
+          double rp = r * radialPart(r);
+          if (rp * rp <= aoMax2 * random.nextDouble())
+            continue;
+        } else {
+          r = params.distance;
+        }
+        double u = random.nextDouble();
+        double v = random.nextDouble();
+        double theta = 2 * Math.PI * u;
+        double cosPhi = 2 * v - 1;
+        if (!isS) {
+          double phi = Math.acos(cosPhi);
+          double ap = angularPart(phi, theta, psi_m);
+          if (ap * ap <= angMax2 * random.nextDouble())
+            continue;
+        }
+        //http://mathworld.wolfram.com/SpherePointPicking.html
+        double sinPhi = Math.sin(Math.acos(cosPhi));
+        double x = r * Math.cos(theta) * sinPhi;
+        double y = r * Math.sin(theta) * sinPhi;
+        double z = r * cosPhi;
+        //x = r; y = r2R2/aoMax2 * 10; z = 0;
+        ptPsi.set((float) x, (float) y, (float) z);
         ptPsi.add(center);
         value = getValueAtPoint(ptPsi);
-        if (value * value <= f * random.nextFloat())
+      } else {
+        ptPsi.set(planeU);
+        ptPsi.scale(random.nextFloat() * planeRadius * 2 - planeRadius);
+        ptPsi.scaleAdd(random.nextFloat() * planeRadius * 2 - planeRadius,
+            planeV, ptPsi);
+        ptPsi.add(planeCenter);
+        value = getValueAtPoint(ptPsi);
+        if (value * value <= aoMax2 * random.nextFloat())
           continue;
       }
-      ptPsi.add(center);
-      value = getValueAtPoint(ptPsi);
       rave += ptPsi.distance(center);
       addVertexCopy(ptPsi, value, 0);
       i++;
     }
-    Logger.info("Atomic Orbital mean radius = " + rave / monteCarloCount
-        + " for " + monteCarloCount + " points (" + nTries
-        + " tries using psi^2_max=" + f + " and r_max = " + d / 2 + ")");
-
-    //        + " points within a " + d + "x" + d + "x" + d + " cube");
-  }
-
-  private Vector3f vTemp;
-  private Point3f pt0 = new Point3f();
-
-  private void setRandomPoint(float x) {
-    do {
-      nTries++;
-      ptPsi.x = (random.nextFloat() - 0.5f) * x;
-      ptPsi.y = (random.nextFloat() - 0.5f) * x;
-      ptPsi.z = (random.nextFloat() - 0.5f) * x;
-    } while (pt0.distance(ptPsi) * 2 > x);
-    if (params.thePlane != null)
-      Measure.getPlaneProjection(ptPsi, params.thePlane, ptPsi, vTemp);
+    if (params.distance == 0)
+      Logger.info("Atomic Orbital mean radius = " + rave / monteCarloCount
+          + " for " + monteCarloCount + " points (" + nTries + " tries)");
   }
 
   @Override

@@ -75,7 +75,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
   }
 
   private void renderMesh(int mySlabValue, int slabValue) {
-    volumeRender = imesh.jvxlData.colorDensity;
+    volumeRender = (imesh.jvxlData.colorDensity && imesh.jvxlData.allowVolumeRender);
     if (!isNavigationMode) {
       int meshSlabValue = imesh.jvxlData.slabValue;
       if (meshSlabValue != Integer.MIN_VALUE  
@@ -193,7 +193,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       boolean slabPoints = ((volumeRender || imesh.polygonCount == 0) && haveBsSlabDisplay);
       int incr = imesh.vertexIncrement;
       int diam = viewer.getScreenDim() / (volumeRender ? 50 : 100);
-      if (imesh.diameter < 0) {
+      if (imesh.diameter <= 0) {
         diam = viewer.getDotScale();
         frontOnly = false;
       }

@@ -190,6 +190,7 @@ public class Parameters {
 
   void initialize() {
     addHydrogens = false;
+    allowVolumeRender = true;
     atomRadiusData = null;
     atomIndex = -1;
     blockCubeData = false; // Gaussian standard, but we allow for multiple surfaces one per data block
@@ -303,7 +304,9 @@ public class Parameters {
   final static float defaultMappedDataMin = 0f;
   final static float defaultMappedDataMax = 1.0f;
   final static float defaultCutoff = 0.02f;
-  final static float defaultOrbitalCutoff = 0.14f;
+  final static float defaultOrbitalCutoff = 0.04f;
+  final static float defaultLobeCutoff = 0.14f;
+  final static float defaultOrbitalCutoffOld = 0.14f;
   public final static float defaultQMOrbitalCutoff = 0.050f; // WebMO
   final static float defaultQMElectronDensityCutoff = 0.010f;
   final static int defaultContourCount = 11; //odd is better
@@ -448,7 +451,7 @@ public class Parameters {
     dataType = SURFACE_LOBE;
     setEccentricity(v);
     if (cutoff == Float.MAX_VALUE) {
-      cutoff = defaultOrbitalCutoff;
+      cutoff = defaultLobeCutoff;
       if (isSquared)
         cutoff = cutoff * cutoff;
     }
@@ -466,10 +469,10 @@ public class Parameters {
     dataType = SURFACE_LONEPAIR;
     setEccentricity(v);
     if (cutoff == Float.MAX_VALUE) {
-      cutoff = defaultOrbitalCutoff;
+      cutoff = defaultLobeCutoff;
       if (isSquared)
         cutoff = cutoff * cutoff;
-    }
+    } 
     isSilent = !logMessages;
     script = " center " + Escape.escape(center)
         + (Float.isNaN(scale) ? "" : " scale " + scale) + " LP {" + v.x + " "
@@ -480,7 +483,7 @@ public class Parameters {
     dataType = SURFACE_RADICAL;
     setEccentricity(v);
     if (cutoff == Float.MAX_VALUE) {
-      cutoff = defaultOrbitalCutoff;
+      cutoff = defaultLobeCutoff;
       if (isSquared)
         cutoff = cutoff * cutoff;
     }
@@ -584,17 +587,21 @@ public class Parameters {
   float psi_ptsPerAngstrom = 5f;
   public int psi_monteCarloCount = 0;
 
-  boolean setAtomicOrbital(float[] nlmZ) {
+  boolean setAtomicOrbital(float[] nlmZprs) {
     dataType = SURFACE_ATOMICORBITAL;
     setEccentricity(new Point4f(0, 0, 1, 1));
-    psi_n = (int) nlmZ[0];
-    psi_l = (int) nlmZ[1];
-    psi_m = (int) nlmZ[2];
-    psi_Znuc = nlmZ[3];
-    psi_monteCarloCount = (int) nlmZ[4];
+    psi_n = (int) nlmZprs[0];
+    psi_l = (int) nlmZprs[1];
+    psi_m = (int) nlmZprs[2];
+    psi_Znuc = nlmZprs[3];
+    psi_monteCarloCount = (int) nlmZprs[4];
+    distance = nlmZprs[5];
+    if (distance != 0 || thePlane != null)
+      allowVolumeRender = false;
+    randomSeed = (int) nlmZprs[6];
     psi_ptsPerAngstrom = 10;
     // quantum rule is abs(m) <= l < n
-    if (cutoff == Float.MAX_VALUE) {
+    if (cutoff == Float.MAX_VALUE || cutoff == defaultOrbitalCutoffOld) {
       cutoff = (psi_monteCarloCount > 0 ? 0 : defaultOrbitalCutoff);
       if (isSquared)
         cutoff = cutoff * cutoff;
@@ -734,6 +741,7 @@ public class Parameters {
   
   Point3f center, point;
   float distance;
+  public boolean allowVolumeRender;
   
   String script;
   

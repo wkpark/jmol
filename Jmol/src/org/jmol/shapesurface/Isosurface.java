@@ -1220,6 +1220,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     // from JVXL file:
     thisMesh.initialize(sg.isFullyLit() ? JmolConstants.FULLYLIT
         : JmolConstants.FRONTLIT, null, sg.getPlane());
+    if (!sg.getParams().allowVolumeRender)
+      thisMesh.jvxlData.allowVolumeRender = false;
     thisMesh.setColorsFromJvxlData();
     if (thisMesh.jvxlData.slabInfo != null)
       viewer.runScriptImmediately("isosurface " + thisMesh.jvxlData.slabInfo);

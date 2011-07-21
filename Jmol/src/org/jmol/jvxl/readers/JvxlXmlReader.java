@@ -235,6 +235,8 @@ public class JvxlXmlReader extends VolumeFileReader {
     //next is for information only -- will be superceded by "encoding" attribute of jvxlColorData
     jvxlData.isJvxlPrecisionColor = XmlReader.getXmlAttrib(data, "precisionColor").equals("true");
     jvxlData.colorDensity = params.colorDensity = XmlReader.getXmlAttrib(data, "colorDensity").equals("true");
+    s = XmlReader.getXmlAttrib(data, "allowVolumeRender");
+      jvxlData.allowVolumeRender = params.allowVolumeRender = (s.length() == 0 || s.equalsIgnoreCase("true"));
     s = XmlReader.getXmlAttrib(data, "plane");
     if (s.indexOf("{") >= 0) {
       try {

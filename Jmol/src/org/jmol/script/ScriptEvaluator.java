@@ -16853,26 +16853,25 @@ public class ScriptEvaluator {
           sbCommand.append(" phase \"_orb\"");
           addShapeProperty(propertyList, "phase", "_orb");
         }
-        float[] nlmZ = new float[5];
-        nlmZ[0] = intParameter(++i);
-        nlmZ[1] = intParameter(++i);
-        nlmZ[2] = intParameter(++i);
-        nlmZ[3] = (isFloatParameter(i + 1) ? floatParameter(++i) : 6f);
-        sbCommand.append(" atomicOrbital ").append((int) nlmZ[0]).append(" ")
-            .append((int) nlmZ[1]).append(" ").append((int) nlmZ[2])
-            .append(" ").append(nlmZ[3]);
+        float[] nlmZprs = new float[7];
+        nlmZprs[0] = intParameter(++i);
+        nlmZprs[1] = intParameter(++i);
+        nlmZprs[2] = intParameter(++i);
+        nlmZprs[3] = (isFloatParameter(i + 1) ? floatParameter(++i) : 6f);
+        sbCommand.append(" atomicOrbital ").append((int) nlmZprs[0]).append(" ")
+            .append((int) nlmZprs[1]).append(" ").append((int) nlmZprs[2])
+            .append(" ").append(nlmZprs[3]);
         if (tokAt(i + 1) == Token.point) {
           i += 2;
-          nlmZ[4] = floatParameter(i);
-          int randomSeed = (tokAt(i + 1) == Token.integer ? intParameter(++i)
+          nlmZprs[4] = intParameter(i);
+          nlmZprs[5] = (tokAt(i + 1) == Token.decimal ? floatParameter(++i) : 0);
+          nlmZprs[6] = (tokAt(i + 1) == Token.integer ? intParameter(++i)
               : ((int) -System.currentTimeMillis()) % 10000);
-          addShapeProperty(propertyList, "randomSeed", Integer
-              .valueOf(randomSeed));
-          sbCommand.append(" points ").append((int) nlmZ[4]).append(' ')
-              .append(randomSeed);
+          sbCommand.append(" points ").append((int) nlmZprs[4]).append(' ')
+          .append(nlmZprs[5]).append(' ').append((int) nlmZprs[6]);
         }
         propertyName = "hydrogenOrbital";
-        propertyValue = nlmZ;
+        propertyValue = nlmZprs;
         break;
       case Token.binary:
         sbCommand.append(" binary");

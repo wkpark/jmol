@@ -163,11 +163,13 @@ class VolumeDataReader extends SurfaceReader {
     if (nGrid > gridMax) {
       if ((dataType & Parameters.HAS_MAXGRID) > 0) {
         if (resolution == Float.MAX_VALUE) {
-          Logger.info("Maximum number of voxels for index=" + index
-              + " exceeded (" + nGrid + ") -- set to " + gridMax);
+          if (!isQuiet)
+            Logger.info("Maximum number of voxels for index=" + index
+                + " exceeded (" + nGrid + ") -- set to " + gridMax);
           nGrid = gridMax;
         } else {
-          Logger.info("Warning -- high number of grid points: " + nGrid);
+          if (!isQuiet)
+            Logger.info("Warning -- high number of grid points: " + nGrid);
         }
       } else if (resolution == Float.MAX_VALUE) {
         nGrid = gridMax;
@@ -176,10 +178,10 @@ class VolumeDataReader extends SurfaceReader {
     ptsPerAngstrom = (nGrid - 1) / range;
     d = volumeData.volumetricVectorLengths[index] = 1f / ptsPerAngstrom;
     voxelCounts[index] = nGrid;// + ((dataType & Parameters.IS_SOLVENTTYPE) != 0 ? 3 : 0);
-
-    Logger.info("isosurface resolution for axis " + (index + 1) + " set to "
-        + ptsPerAngstrom + " points/Angstrom; " + voxelCounts[index]
-        + " voxels");
+    if (!isQuiet)
+      Logger.info("isosurface resolution for axis " + (index + 1) + " set to "
+          + ptsPerAngstrom + " points/Angstrom; " + voxelCounts[index]
+          + " voxels");
     switch (index) {
     case 0:
       volumetricVectors[0].set(d, 0, 0);

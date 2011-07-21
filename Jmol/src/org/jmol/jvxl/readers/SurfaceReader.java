@@ -198,6 +198,7 @@ public abstract class SurfaceReader implements VertexDataServer {
   protected boolean isProgressive = false;
   protected boolean isXLowToHigh = false; //can be overridden in some readers by --progressive
   private float assocCutoff = 0.3f;
+  protected boolean isQuiet;
   
   boolean vertexDataOnly;
   boolean hasColorData;
@@ -501,7 +502,8 @@ public abstract class SurfaceReader implements VertexDataServer {
 
   protected void initPlanes() {
     yzCount = nPointsY * nPointsZ;
-    Logger.info("reading data progressively -- yzCount = " + yzCount);
+    if (!isQuiet)
+      Logger.info("reading data progressively -- yzCount = " + yzCount);
     yzPlanes = new float[2][];
     yzPlanes[0] = new float[yzCount];
     yzPlanes[1] = new float[yzCount];

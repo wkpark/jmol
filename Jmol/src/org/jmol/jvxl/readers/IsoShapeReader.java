@@ -201,7 +201,7 @@ class IsoShapeReader extends VolumeDataReader {
       fact[i] = fact[i - 1] * i;
   }
 
-  private double psi_normalization = 4 * Math.PI;
+  private double psi_normalization = 4 * Math.PI; // not applied!
 
   private void calcFactors(int n, int el, int m) {
     int abm = Math.abs(m);
@@ -232,7 +232,7 @@ class IsoShapeReader extends VolumeDataReader {
     double d;
     for (radius = 100f; radius >= 0.1f; radius -= 0.1f) {
       d = Math.abs(radialPart(radius));
-      //System.out.println(radius + " " + d + " " + r0);
+      System.out.println(radius + " " + d + " " + r0);
       if (d >= aoMax) {
         rmax = radius;
         aoMax = d;
@@ -365,14 +365,12 @@ class IsoShapeReader extends VolumeDataReader {
       if (f < 0.01f) // must be a node
         return;
     }
-    boolean isSquared = params.isSquared;
-    params.isSquared = false; // for coloration, we want normal color
-    if (isSquared)
-      f *= f;
+    f *= f;
     nTries = 0;
     for (int i = 0; i < monteCarloCount; nTries++) {
       // we do Pshemak's idea here -- force P(r2R2), then pick a random
       // point on the sphere for that radius
+      if (params.thePlane == null) {
       double r = random.nextDouble() * radius;
       double rp = r * radialPart(r);
       if (rp * rp <= aoMax2 * random.nextDouble())
@@ -386,21 +384,21 @@ class IsoShapeReader extends VolumeDataReader {
         double ap = angularPart(phi, theta, psi_m);
         if (ap * ap <= angMax2 * random.nextDouble())
           continue;
-        //http://mathworld.wolfram.com/SpherePointPicking.html
-        /* old way
-        setRandomPoint(d);
-        ptPsi.add(center);
-        value = getValueAtPoint(ptPsi);
-        if ((isSquared ? value * value : Math.abs(value)) <= f * random.nextFloat())
-          continue;
-          */
       }
+      //http://mathworld.wolfram.com/SpherePointPicking.html
       double sinPhi = Math.sin(Math.acos(cosPhi));
       double x = r * Math.cos(theta) * sinPhi;
       double y = r * Math.sin(theta) * sinPhi;
       double z = r * cosPhi;
       //x = r; y = r2R2/aoMax2 * 10; z = 0;
-      ptPsi.set((float)x, (float) y, (float) z); 
+      ptPsi.set((float)x, (float) y, (float) z);
+      } else {
+        setRandomPoint(d);
+        ptPsi.add(center);
+        value = getValueAtPoint(ptPsi);
+        if (value * value <= f * random.nextFloat())
+          continue;
+      }
       ptPsi.add(center);
       value = getValueAtPoint(ptPsi);
       rave += ptPsi.distance(center);

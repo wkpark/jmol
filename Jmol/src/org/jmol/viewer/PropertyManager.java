@@ -58,7 +58,7 @@ public class PropertyManager {
     "fileName"        , "", "",
     "fileHeader"      , "", "",
     "fileContents"    , "<pathname>", "",
-    "fileContents"    , "", "",  
+    "fileContents"    , "", "",
     "animationInfo"   , "", "",
     "modelInfo"       , atomExpression, "(*)",
     "X -vibrationInfo", "", "",  //not implemented -- see modelInfo
@@ -93,6 +93,7 @@ public class PropertyManager {
     "fileInfo"         , "<type>", "",
     "errorMessage", "", "",
     "mouseInfo", "", "",
+    "isosurfaceInfo"  , "", "",
   };
 
   private final static int PROP_APPLET_INFO = 0;
@@ -135,7 +136,8 @@ public class PropertyManager {
   private final static int PROP_FILE_INFO = 32;
   private final static int PROP_ERROR_MESSAGE = 33;
   private final static int PROP_MOUSE_INFO = 34;
-  private final static int PROP_COUNT = 35;
+  private final static int PROP_ISOSURFACE_INFO = 35;
+  private final static int PROP_COUNT = 36;
 
   //// static methods used by Eval and Viewer ////
   
@@ -409,6 +411,8 @@ public class PropertyManager {
       return viewer.getStateInfo(myParam.toString(), 0, 0);
     case PROP_POINTGROUP_INFO:
       return viewer.getPointGroupInfo(myParam);
+    case PROP_ISOSURFACE_INFO:
+      return viewer.getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "getInfo");
     case PROP_FILE_INFO:
       return getFileInfo(viewer.getFileData(), myParam.toString());
     case PROP_ERROR_MESSAGE:

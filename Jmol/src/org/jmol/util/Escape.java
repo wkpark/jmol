@@ -537,6 +537,17 @@ public class Escape {
       sb.append("]");
       return packageJSON(infoType, sb);
     }
+    if (info instanceof Point3f[]) {
+      sb.append("[");
+      int imax = ((Point3f[]) info).length;
+      for (int i = 0; i < imax; i++) {
+        sb.append(sep);
+        addJsonTuple(sb, ((Point3f[]) info)[i]);
+        sep = ",";
+      }
+      sb.append("]");
+      return packageJSON(infoType, sb);
+    }
     if (info instanceof int[][]) {
       sb.append("[");
       int imax = ((int[][]) info).length;
@@ -604,10 +615,7 @@ public class Escape {
       return packageJSON(infoType, sb);
     }
     if (info instanceof Tuple3f) {
-      sb.append("[")
-        .append(((Tuple3f) info).x).append(",")
-        .append(((Tuple3f) info).y).append(",")
-        .append(((Tuple3f) info).z).append("]");
+      addJsonTuple(sb, (Tuple3f) info);
       return packageJSON(infoType, sb);
     }
     if (info instanceof AxisAngle4f) {
@@ -639,6 +647,13 @@ public class Escape {
       return packageJSON(infoType, sb);
     }
     return packageJSON(infoType, fixString(info.toString()));
+  }
+
+  private static void addJsonTuple(StringBuilder sb, Tuple3f pt) {
+    sb.append("[")
+    .append(pt.x).append(",")
+    .append(pt.y).append(",")
+    .append(pt.z).append("]");
   }
 
   public static String toReadable(Object info) {
@@ -677,6 +692,16 @@ public class Escape {
       int imax = ((float[]) info).length;
       for (int i = 0; i < imax; i++) {
         sb.append(sep).append(((float[]) info)[i]);
+        sep = ",";
+      }
+      sb.append("]");
+      return packageReadable(name, "float[" + imax + "]", sb);
+    }
+    if (info instanceof Point3f[]) {
+      sb.append("[");
+      int imax = ((Point3f[]) info).length;
+      for (int i = 0; i < imax; i++) {
+        sb.append(sep).append(escape(((Point3f[])info)[i]));
         sep = ",";
       }
       sb.append("]");

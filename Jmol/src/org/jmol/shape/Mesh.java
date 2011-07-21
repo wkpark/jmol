@@ -25,10 +25,12 @@
 package org.jmol.shape;
 
 import java.util.BitSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
 import org.jmol.script.Token;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Measure;
@@ -474,4 +476,19 @@ public class Mesh extends MeshSurface {
       return;
     }
   }
+  
+  Object getInfo() {
+    Hashtable<String, Object> info = new Hashtable<String, Object>();
+    info.put("id", thisID);
+    info.put("vertexCount", Integer.valueOf(vertexCount));
+    info.put("polygonCount", Integer.valueOf(polygonCount));
+    info.put("haveQuads", Boolean.valueOf(haveQuads));
+    info.put("vertices", ArrayUtil.setLength(vertices, vertexCount));
+    if (vertexValues != null)
+      info.put("vertexValues", ArrayUtil.setLength(vertexValues, vertexCount));
+    if (polygonCount > 0)
+      info.put("polygons", ArrayUtil.setLength(polygonIndexes, polygonCount));
+    return info;
+  }
+
 }

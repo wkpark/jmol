@@ -449,6 +449,9 @@ public abstract class MeshCollection extends Shape {
     }
     if (property == "vertices")
       return getVertices(currentMesh);
+    if (property == "getInfo")
+      return (currentMesh == null ? null : currentMesh.getInfo());
+
     return null;
   }
 

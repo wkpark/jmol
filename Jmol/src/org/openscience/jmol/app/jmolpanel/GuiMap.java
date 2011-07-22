@@ -187,6 +187,8 @@ class GuiMap {
     labels.put("vibrateRewindScript", GT._("&First frequency"));
     labels.put("vibrateNextScript", GT._("&Next frequency"));
     labels.put("vibratePrevScript", GT._("&Previous frequency"));
+    labels.put("surfaceTool", GT._("SurfaceTool..."));
+    labels.put("surfaceToolTip", GT._("Control Display of Surfaces"));
     labels.put("help", GT._("&Help"));
     labels.put("about", GT._("About Jmol"));
     labels.put("uguide", GT._("User Guide"));

@@ -39,6 +39,7 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.Properties;
 
+import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
@@ -84,7 +85,7 @@ public class WebExport extends JPanel implements WindowListener {
     popInHeight=Parser.parseInt(historyFile.getProperty("webMakerPopInHeight", "300"));
     scriptButtonPercent = Parser.parseInt(historyFile.getProperty(
         "webMakerScriptButtonPercent", "60"));
-    
+
     //Define the tabbed pane
     JTabbedPane mainTabs = new JTabbedPane();
 
@@ -194,6 +195,11 @@ public class WebExport extends JPanel implements WindowListener {
       return webExport;
     }
     webFrame = new JFrame(GT._("Jmol Web Page Maker"));
+    //Set title bar icon
+    String imageName = "org/openscience/jmol/app/images/icon.png";
+    URL imageUrl = viewer.getClass().getClassLoader().getResource(imageName);
+    ImageIcon jmolIcon = new ImageIcon(imageUrl);
+    webFrame.setIconImage(jmolIcon.getImage());
     windowName = wName;
     historyFile.repositionWindow(windowName, webFrame, 700, 400);
     if (runStatus == STAND_ALONE) {

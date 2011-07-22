@@ -31,6 +31,8 @@ import org.jmol.export.dialog.Dialog;
 import org.jmol.export.history.HistoryFile;
 import org.jmol.export.image.ImageCreator;
 import org.jmol.i18n.GT;
+import org.openscience.jmol.app.surfacetool.SurfaceToolGUI;
+import org.openscience.jmol.app.surfacetool.SurfaceTool;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.viewer.JmolConstants;
@@ -125,7 +127,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
   private final static String SCRIPT_WINDOW_NAME = "ScriptWindow";
   private final static String FILE_OPEN_WINDOW_NAME = "FileOpen";
   private final static String WEB_MAKER_WINDOW_NAME = "JmolWebPageMaker";
-
+  private final static String SURFACETOOL_WINDOW_NAME = "SurfaceToolWindow";
 
   /**
    * Button group for toggle buttons in the toolbar.
@@ -906,7 +908,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
   private static final String atomsetchooserAction = "atomsetchooser";
   private static final String copyImageActionProperty = "copyImage";
   private static final String copyScriptActionProperty = "copyScript";
-  private static final String pasteClipboardActionProperty = "pasteClipboard";
+  private static final String surfaceToolActionProperty = "surfaceTool";  private static final String pasteClipboardActionProperty = "pasteClipboard";
   private static final String gaussianAction = "gauss";
   private static final String resizeAction = "resize";
 
@@ -919,6 +921,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
   private PrintAction printAction = new PrintAction();
   private CopyImageAction copyImageAction = new CopyImageAction();
   private CopyScriptAction copyScriptAction = new CopyScriptAction();
+  private SurfaceToolAction surfaceToolAction = new SurfaceToolAction();
   private PasteClipboardAction pasteClipboardAction = new PasteClipboardAction();
   private ViewMeasurementTableAction viewMeasurementTableAction = new ViewMeasurementTableAction();
 
@@ -937,7 +940,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
       new RecentFilesAction(), povrayAction, writeAction, toWebAction, 
       new ScriptWindowAction(), new ScriptEditorAction(),
       new AtomSetChooserAction(), viewMeasurementTableAction, 
-      new GaussianAction(), new ResizeAction() }
+      new GaussianAction(), new ResizeAction(), surfaceToolAction }
   ;
 
   class CloseAction extends AbstractAction {
@@ -1365,7 +1368,33 @@ public class JmolPanel extends JPanel implements SplashInterface {
       display.measurementTable.activate();
     }
   }
+  SurfaceTool surfaceTool;
+  void createSurfaceTool(){
+    //TODO check to see if it already exists, if so bring to front.
+    if(surfaceTool!=null){
+      surfaceTool.getGUI().toFront();
+    }else{
+    surfaceTool = new SurfaceTool(viewer, historyFile, SURFACETOOL_WINDOW_NAME, true);
+    }
+  }
+  
+  class SurfaceToolAction extends AbstractAction {
+    
+    public SurfaceToolAction(){
+      super(surfaceToolActionProperty);
+    }
+    
+    public void actionPerformed(ActionEvent e){
+      javax.swing.SwingUtilities.invokeLater(new Runnable() {
+        public void run() {
+          createSurfaceTool();
+        }
+      });
+    }
+  }
+  
 
+  
   /**
    * Returns a new File referenced by the property 'user.dir', or null
    * if the property is not defined.
@@ -1465,4 +1494,5 @@ public class JmolPanel extends JPanel implements SplashInterface {
     GT.setDoTranslate(doTranslate);
     guimap.updateLabels();
   }
+  
 }

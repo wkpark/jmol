@@ -762,7 +762,7 @@ abstract public class AtomCollection {
       bfactor100s = new short[atoms.length];
     }
     bfactor100s[atomIndex] = (short) ((bfactor < -327.68f ? -327.68f
-        : bfactor > 327.67 ? 327.67 : bfactor) * 100);
+        : bfactor > 327.67 ? 327.67 : bfactor) * 100 + (bfactor < 0 ? -0.5 : 0.5));
     return true;
   }
 

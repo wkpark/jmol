@@ -145,12 +145,13 @@ public class NWChemReader extends MOReader {
       readAtoms();
       return true;
     }
-    if (!doProcessLines)
-      return true;
     if (line.indexOf("NWChem Nuclear Hessian and Frequency Analysis") >= 0) {
       readFrequencies();
       return true;
     }
+
+    if (!doProcessLines)
+      return true;
 
     if (line.indexOf("ENERGY GRADIENTS") >= 0) {
       equivalentAtomSets++;

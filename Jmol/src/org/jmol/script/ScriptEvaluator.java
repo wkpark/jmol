@@ -17563,7 +17563,7 @@ public class ScriptEvaluator {
             + Escape.escape(bsSelect) + " ")
             + sbCommand);
         String s = (String) getShapeProperty(iShape, "ID");
-        if (s != null) {
+        if (s != null && !tQuiet) {
           cutoff = ((Float) getShapeProperty(iShape, "cutoff")).floatValue();
           if (Float.isNaN(cutoff) && !Float.isNaN(sigma)) {
             Logger.error("sigma not supported");

@@ -43,6 +43,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.script.Token;
+import org.jmol.util.BoxInfo;
 import org.jmol.viewer.Viewer;
 
 /**
@@ -254,6 +255,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
 
   abstract public void showUrl(String urlString);
 
+  abstract public void calcAtomsMinMax(BitSet bs, BoxInfo boxInfo);
   abstract public Point3f getBoundBoxCenter();
   abstract public Vector3f getBoundBoxCornerVector();
   abstract public int getMeasurementCount();

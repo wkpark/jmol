@@ -55,7 +55,7 @@ public class IsosurfaceMesh extends Mesh {
   boolean hasGridPoints;
   Object calculatedArea;
   Object calculatedVolume;
-
+  
   IsosurfaceMesh(String thisID, Graphics3D g3d, short colix, int index) {
     super(thisID, g3d, colix, index);
     checkByteCount = 2;
@@ -738,6 +738,10 @@ public class IsosurfaceMesh extends Mesh {
     }
   }
 
+  @Override
+  public Point3f[] getBoundingBox() {
+    return jvxlData.boundingBox;
+  }
   //private void dumpData() {
   //for (int i =0;i<10;i++) {
   //  System.out.println("P["+i+"]="+polygonIndexes[i][0]+" "+polygonIndexes[i][1]+" "+polygonIndexes[i][2]+" "+ polygonIndexes[i][3]+" "+vertices[i]);

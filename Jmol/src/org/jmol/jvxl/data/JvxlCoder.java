@@ -649,11 +649,6 @@ public class JvxlCoder {
    * @param triangles
    * @param nData
    * @param bsSlabDisplay 
-   * @param bsSlabDisplayEncoded 
-   * @param bsSlabGhostEncoded 
-   * @param slabColor 
-   * @param slabTranslucency 
-   * @param slabType 
    * @param vertexIdNew
    * @param escapeXml 
    * @return (triangles are present)
@@ -758,11 +753,6 @@ public class JvxlCoder {
    * @param polygonColorData
    * @param polygonCount
    * @param bsSlabDisplay
-   * @param bsSlabDisplayEncoded 
-   * @param bsSlabGhostEncoded 
-   * @param slabColor 
-   * @param slabTranslucency 
-   * @param slabType 
    * @param addColorData
    * @param escapeXml
    */

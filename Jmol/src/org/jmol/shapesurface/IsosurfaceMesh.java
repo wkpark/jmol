@@ -69,6 +69,7 @@ public class IsosurfaceMesh extends Mesh {
 
     assocGridPointMap = null;
     assocGridPointNormals = null;
+    mergeAssociatedNormalCount = 0;
     centers = null;
     colorEncoder = null;
     firstRealVertex = -1;
@@ -96,8 +97,8 @@ public class IsosurfaceMesh extends Mesh {
     isColorSolid = false;
   }
 
-  Map<Integer, Integer> assocGridPointMap;
-  Map<Integer, Vector3f> assocGridPointNormals;
+  private Map<Integer, Integer> assocGridPointMap;
+  private Map<Integer, Vector3f> assocGridPointNormals;
 
   int addVertexCopy(Point3f vertex, float value, int assocVertex,
                     boolean associateNormals) {
@@ -117,14 +118,9 @@ public class IsosurfaceMesh extends Mesh {
       if (firstRealVertex < 0)
         firstRealVertex = vPt;
       if (associateNormals) {
-        if (assocGridPointMap == null) {
+        if (assocGridPointMap == null)
           assocGridPointMap = new Hashtable<Integer, Integer>();
-          assocGridPointNormals = new Hashtable<Integer, Vector3f>();
-        }
-        Integer key = Integer.valueOf(assocVertex);
-        assocGridPointMap.put(Integer.valueOf(vPt), key);
-        if (!assocGridPointNormals.containsKey(key))
-          assocGridPointNormals.put(key, new Vector3f(0, 0, 0));
+        assocGridPointMap.put(Integer.valueOf(vPt), Integer.valueOf(assocVertex + mergeAssociatedNormalCount));
       }
     }
     return vPt;
@@ -140,6 +136,17 @@ public class IsosurfaceMesh extends Mesh {
   }
 
   int thisSet = -1;
+  private int mergeAssociatedNormalCount;
+  public void setMerged(boolean TF) {
+    isMerged = TF;
+    mergePolygonCount0 = (TF ? polygonCount : 0);
+    mergeVertexCount0 = (TF ? vertexCount: 0);
+    if (TF) {
+      mergeAssociatedNormalCount += jvxlData.nPointsX * jvxlData.nPointsY * jvxlData.nPointsZ;
+      assocGridPointNormals = null;
+    }
+  }
+
 
   @Override
   protected void sumVertexNormals(Point3f[] vertices, Vector3f[] vectorSums) {
@@ -155,16 +162,19 @@ public class IsosurfaceMesh extends Mesh {
      *  having 2-sided normixes is INCOMPATIBLE with this when not a plane 
      *  
      */
-    if (assocGridPointMap != null && vectorSums.length > 0) {
+    if (assocGridPointMap != null && vectorSums.length > 0 && !isMerged) {
+      if (assocGridPointNormals == null)
+        assocGridPointNormals = new Hashtable<Integer, Vector3f>();
       for (Map.Entry<Integer, Integer> entry : assocGridPointMap.entrySet()) {
-        Integer I = entry.getKey();
-        assocGridPointNormals.get(entry.getValue()).add(
-            vectorSums[I.intValue()]);
+        // keys are indices into vertices[]
+        // values are unique identifiers for a grid point
+        Integer gridPoint = entry.getValue();
+        if (!assocGridPointNormals.containsKey(gridPoint))
+          assocGridPointNormals.put(gridPoint, new Vector3f(0, 0, 0));
+        assocGridPointNormals.get(gridPoint).add(vectorSums[entry.getKey().intValue()]);
       }
-      for (Map.Entry<Integer, Integer> entry : assocGridPointMap.entrySet()) {
-        Integer I = entry.getKey();
-        vectorSums[I.intValue()] = assocGridPointNormals.get(entry.getValue());
-      }
+      for (Map.Entry<Integer, Integer> entry : assocGridPointMap.entrySet())
+        vectorSums[entry.getKey().intValue()] = assocGridPointNormals.get(entry.getValue());
     }
   }
 
@@ -653,26 +663,27 @@ public class IsosurfaceMesh extends Mesh {
   void remapColors(ColorEncoder ce, float translucentLevel) {
     if (ce == null)
       ce = colorEncoder;
+    if (ce == null)
+      ce = colorEncoder = new ColorEncoder(null);
     if (Float.isNaN(translucentLevel)) {
       translucentLevel = Graphics3D.getColixTranslucencyLevel(colix);
     } else {
-      colix = 
-      Graphics3D.getColixTranslucent(colix,
-          true, translucentLevel);
+      colix = Graphics3D.getColixTranslucent(colix, true, translucentLevel);
     }
     float min = ce.lo;
     float max = ce.hi;
     vertexColorMap = null;
     polygonColixes = null;
     jvxlData.vertexCount = vertexCount;
-    if (vertexValues == null 
-        || jvxlData.vertexCount == 0)
+    if (vertexValues == null || jvxlData.vertexCount == 0)
       return;
     if (vertexColixes == null || vertexColixes.length != vertexCount)
       vertexColixes = new short[vertexCount];
     if (jvxlData.isBicolorMap) {
-      for (int i = 0; i < vertexCount; i++)
-        vertexColixes[i] = Graphics3D.copyColixTranslucency(colix, vertexValues[i] < 0 ? jvxlData.minColorIndex : jvxlData.maxColorIndex);
+      for (int i = mergeVertexCount0; i < vertexCount; i++)
+        vertexColixes[i] = Graphics3D.copyColixTranslucency(colix,
+            vertexValues[i] < 0 ? jvxlData.minColorIndex
+                : jvxlData.maxColorIndex);
       return;
     }
     jvxlData.isColorReversed = ce.isReversed;
@@ -691,7 +702,7 @@ public class IsosurfaceMesh extends Mesh {
       // still, if the scheme is translucent, we don't want to color the vertices translucent
       isTranslucent = false;
     }
-    for (int i = vertexCount; --i >= 0;)
+    for (int i = vertexCount; --i >= mergeVertexCount0;)
       vertexColixes[i] = ce.getColorIndex(vertexValues[i]);
     setTranslucent(isTranslucent, translucentLevel);
     colorEncoder = ce;
@@ -726,7 +737,6 @@ public class IsosurfaceMesh extends Mesh {
       remapColors(null, Float.NaN);
     }
   }
-
 
   //private void dumpData() {
   //for (int i =0;i<10;i++) {

@@ -125,7 +125,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.jmol.atomdata.RadiusData;
+import org.jmol.jvxl.data.VolumeData;
 import org.jmol.util.ColorEncoder;
+import org.jmol.util.ContactPair;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
@@ -209,6 +211,7 @@ public class Parameters {
     colorPos = defaultColorPositive;
     colorPosLCAO = defaultColorPositiveLCAO;
     colorSchemeTranslucent = false;
+    contactPair = null;
     contourIncrements = null;
     contoursDiscrete = null;
     contourColixes = null;
@@ -237,7 +240,6 @@ public class Parameters {
     isEccentric = isAnisotropic = false;
     isPeriodic = false;
     isSilent = false;
-    iUseBitSets = false;
     logCube = logCompression = false;
     logMessages = Logger.debugging;
     mappedDataMin = Float.MAX_VALUE;
@@ -266,12 +268,13 @@ public class Parameters {
     title = null;
     usePropertyForColorRange = true; // except for MEP and MLP
     vertexSource = null;
+    volumeData = null;
   }
   
   String calculationType = "";
 
   //solvent/molecular-related:
-  RadiusData atomRadiusData;
+  public RadiusData atomRadiusData;
   boolean addHydrogens;
   float solventRadius;
   float solventExtendedAtomRadius;
@@ -502,10 +505,6 @@ public class Parameters {
     isSilent = !logMessages;
   }
     
-  void setRadius(RadiusData rd) {
-    atomRadiusData = rd;
-  }
-
   void setSolvent(String propertyName, float radius) {
     isEccentric = isAnisotropic = false;
     //anisotropy[0] = anisotropy[1] = anisotropy[2] = 1f;
@@ -689,7 +688,6 @@ public class Parameters {
    
   @SuppressWarnings("unchecked")
   void setMO(int iMo, float[] linearCombination) {
-    iUseBitSets = true;
     qm_moLinearCombination = linearCombination;
     qm_moNumber = (linearCombination == null ? Math.abs(iMo) : (int) linearCombination[1]);
     qmOrbitalType = (moData.containsKey("gaussians") ? QM_TYPE_GAUSSIAN
@@ -745,13 +743,11 @@ public class Parameters {
   
   String script;
   
-  BitSet bsSelected;
-  BitSet bsIgnore;
-  BitSet bsSolvent;
+  public BitSet bsSelected;
+  public BitSet bsIgnore;
+  public BitSet bsSolvent;
   
-  boolean iUseBitSets = false;
-  
-  Object func;
+  public Object func;
 
   String[] title;
   boolean blockCubeData;
@@ -809,6 +805,8 @@ public class Parameters {
   public Point3f origin;
   public Point3f steps;
   public Point3f points;
+  public VolumeData volumeData;
+  public ContactPair contactPair;
   
   void setMapRanges(SurfaceReader surfaceReader, boolean haveData) {
     if (!colorDensity)
@@ -851,6 +849,7 @@ public class Parameters {
     points = null;
     origin = null;
     steps = null;
+    volumeData = null;
   }
 
     public void addSlabInfo(Object[] slabObject) {

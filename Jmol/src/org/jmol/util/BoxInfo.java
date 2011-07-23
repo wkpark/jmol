@@ -23,7 +23,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.modelset;
+package org.jmol.util;
 
 
 import java.util.ArrayList;
@@ -36,9 +36,6 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
-import org.jmol.util.Measure;
-import org.jmol.util.Point3fi;
-import org.jmol.util.TriangleData;
 
 public class BoxInfo {
 
@@ -233,7 +230,7 @@ public class BoxInfo {
     return bbVertices;
   }
   
-  Map<String, Object> getBoundBoxInfo() {
+  public Map<String, Object> getBoundBoxInfo() {
     Map<String, Object> info = new Hashtable<String, Object>();
     info.put("center", new Point3f(bbCenter));
     info.put("vector", new Vector3f(bbVector));
@@ -263,12 +260,12 @@ public class BoxInfo {
     setBbcage(scale);
   }
 
-  void reset() {
+  public void reset() {
     bbCorner0.set(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
     bbCorner1.set(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
   }
   
-  void addBoundBoxPoint(Point3f pt) {
+  public void addBoundBoxPoint(Point3f pt) {
     float t = pt.x;
     if (t < bbCorner0.x)
       bbCorner0.x = t;
@@ -286,7 +283,7 @@ public class BoxInfo {
       bbCorner1.z = t;
   }
 
-  void setBbcage(float scale) {
+  public void setBbcage(float scale) {
     bbCenter.add(bbCorner0, bbCorner1);
     bbCenter.scale(0.5f);
     bbVector.sub(bbCorner1, bbCenter);
@@ -309,7 +306,7 @@ public class BoxInfo {
     bbCorner1.set(bbVertices[7]);
   }
   
-  boolean isWithin(Point3f pt) {
+  public boolean isWithin(Point3f pt) {
    return (pt.x >= bbCorner0.x && pt.x <= bbCorner1.x 
        && pt.y >= bbCorner0.y && pt.y <= bbCorner1.y
        && pt.z >= bbCorner0.z && pt.z <= bbCorner1.z); 

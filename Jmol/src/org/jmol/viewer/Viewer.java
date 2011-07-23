@@ -36,7 +36,6 @@ import org.jmol.i18n.GT;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
-import org.jmol.modelset.BoxInfo;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.MeasurementPending;
@@ -52,6 +51,7 @@ import org.jmol.atomdata.RadiusData;
 import org.jmol.g3d.*;
 import org.jmol.util.Base64;
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.BoxInfo;
 import org.jmol.util.CifDataReader;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.CommandHistory;
@@ -8936,6 +8936,8 @@ private void zap(String msg) {
       if (doClear)
         zap("" + er); // get some breathing room
       undoClear();
+      if (Logger.getLogLevel() == 0)
+        Logger.setLogLevel(Logger.LEVEL_INFO);
       setCursor(Viewer.CURSOR_DEFAULT);
       setBooleanProperty("refreshing", true);
       Logger.error("viewer handling error condition: " + er);

@@ -50,7 +50,6 @@ import org.jmol.i18n.GT;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
-import org.jmol.modelset.BoxInfo;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.MeasurementData;
@@ -65,6 +64,7 @@ import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
 
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BoxInfo;
 import org.jmol.util.Elements;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
@@ -7571,10 +7571,8 @@ public class ScriptEvaluator {
           return;
         error(ERROR_invalidArgument);
       case Token.isosurface:
-        setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "thisID",
-            JmolConstants.PREVIOUS_MESH_ID);
       case Token.contact:
-        setShapeProperty(JmolConstants.SHAPE_CONTACT, "thisID",
+        setShapeProperty(JmolConstants.shapeTokenIndex(tok), "thisID",
             JmolConstants.PREVIOUS_MESH_ID);
         break;
       }
@@ -15301,6 +15299,7 @@ public class ScriptEvaluator {
       case Token.slab:
         okNoAtoms = true;
         userSlabObject = getCapSlabObject(i, true);
+        System.out.println("scripteval tst");
         setShapeProperty(JmolConstants.SHAPE_CONTACT, "slab", userSlabObject);
         i = iToken;
         break;
@@ -15330,6 +15329,7 @@ public class ScriptEvaluator {
         distance = floatParameter(++i);
         sbCommand.append(" within ").append(distance);
         break;
+      case Token.plus:
       case Token.integer:
         rd = encodeRadiusParameter(i, false);
         sbCommand.append(" ").append(rd);
@@ -15498,6 +15498,13 @@ public class ScriptEvaluator {
       } else if (type == Token.nci) {
         ColorEncoder ce = viewer.getColorEncoder("bgr");
         ce.setRange(-0.03f, 0.03f, false);
+        setShapeProperty(JmolConstants.SHAPE_CONTACT, "remapColor", ce);
+      } else {
+        ColorEncoder ce = viewer.getColorEncoder("rgb");
+        if (colorDensity)
+          ce.setRange(-0.3f, 0.3f, false);
+        else
+          ce.setRange(-0.5f, 1f, false);
         setShapeProperty(JmolConstants.SHAPE_CONTACT, "remapColor", ce);
       }
     }
@@ -15686,7 +15693,7 @@ public class ScriptEvaluator {
             .getColix(getArgbParam(i + 1)), slabTranslucency != 0, slabTranslucency));
         i = iToken;
       } else {
-        slabColix = Short.valueOf(Graphics3D.getColixTranslucent(Graphics3D.WHITE, slabTranslucency != 0, slabTranslucency));
+        slabColix = Short.valueOf(Graphics3D.getColixTranslucent(Graphics3D.INHERIT_COLOR, slabTranslucency != 0, slabTranslucency));
       }
       switch (tok = tokAt(i + 1)) {
       case Token.mesh:
@@ -16289,9 +16296,8 @@ public class ScriptEvaluator {
           String f = (String) getToken(++i).value;
           sbCommand.append(" function ").append(Escape.escape(f));
           if (!isSyntaxCheck)
-            addShapeProperty(propertyList, "func", 
-                (f.equals("a+b") || f.equals("a-b") ? f 
-                : createFunction("__iso__", "a,b", f)));
+            addShapeProperty(propertyList, "func", (f.equals("a+b")
+                || f.equals("a-b") ? f : createFunction("__iso__", "a,b", f)));
         } else {
           haveIntersection = true;
         }
@@ -16811,19 +16817,16 @@ public class ScriptEvaluator {
         break;
       case Token.colorscheme:
         // either order NOT OK -- documented for TRANSLUCENT "rwb"
-        colorScheme = parameterAsString(i + 1).toLowerCase();
+        if (tokAt(i + 1) == Token.translucent) {
+          isColorSchemeTranslucent = true;
+          i++;
+        }
+        colorScheme = parameterAsString(++i).toLowerCase();
         if (colorScheme.equals("sets")) {
           sbCommand.append(" colorScheme \"sets\"");
-          i++;
-        } else {
-          if (tokAt(i + 1) == Token.translucent) {
-            isColorSchemeTranslucent = true;
-            i++;
-          }
-          if (isColorParam(i + 1)) {
-            colorScheme = getColorRange(i + 1);
-            i = iToken;
-          }
+        } else if (isColorParam(i)) {
+          colorScheme = getColorRange(i);
+          i = iToken;
         }
         break;
       case Token.addhydrogens:
@@ -16858,9 +16861,9 @@ public class ScriptEvaluator {
         nlmZprs[1] = intParameter(++i);
         nlmZprs[2] = intParameter(++i);
         nlmZprs[3] = (isFloatParameter(i + 1) ? floatParameter(++i) : 6f);
-        sbCommand.append(" atomicOrbital ").append((int) nlmZprs[0]).append(" ")
-            .append((int) nlmZprs[1]).append(" ").append((int) nlmZprs[2])
-            .append(" ").append(nlmZprs[3]);
+        sbCommand.append(" atomicOrbital ").append((int) nlmZprs[0])
+            .append(" ").append((int) nlmZprs[1]).append(" ").append(
+                (int) nlmZprs[2]).append(" ").append(nlmZprs[3]);
         if (tokAt(i + 1) == Token.point) {
           i += 2;
           nlmZprs[4] = intParameter(i);
@@ -16868,7 +16871,7 @@ public class ScriptEvaluator {
           nlmZprs[6] = (tokAt(i + 1) == Token.integer ? intParameter(++i)
               : ((int) -System.currentTimeMillis()) % 10000);
           sbCommand.append(" points ").append((int) nlmZprs[4]).append(' ')
-          .append(nlmZprs[5]).append(' ').append((int) nlmZprs[6]);
+              .append(nlmZprs[5]).append(' ').append((int) nlmZprs[6]);
         }
         propertyName = "hydrogenOrbital";
         propertyValue = nlmZprs;

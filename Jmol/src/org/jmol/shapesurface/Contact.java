@@ -36,12 +36,17 @@ import org.jmol.api.AtomIndexIterator;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.jvxl.data.MeshData;
+import org.jmol.jvxl.data.VolumeData;
+import org.jmol.jvxl.readers.Parameters;
 import org.jmol.modelset.Atom;
 import org.jmol.script.Token;
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.ContactPair;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.Measure;
 import org.jmol.util.MeshSurface;
+import org.jmol.viewer.JmolConstants;
 
 public class Contact extends Isosurface {
 
@@ -67,24 +72,42 @@ public class Contact extends Isosurface {
   private float minData, maxData;
 
   private void setContacts(Object[] value) {
+    Logger.startTimer();
     BitSet bsA = (BitSet) value[0];
     BitSet bsB = (BitSet) value[1];
     BitSet[] bsFilters = (BitSet[]) value[2];
     int type = ((Integer) value[3]).intValue();
     RadiusData rd = (RadiusData) value[4];
-    float[] params = (float[]) value[5];
+    float[] parameters = (float[]) value[5];
     Object func = value[6];
     boolean isColorDensity = ((Boolean) value[7]).booleanValue();
+    if (isColorDensity) {
+      switch (type) {
+      case Token.full:
+      case Token.trim:
+      case Token.plane:
+        type = Token.trim;
+        break;
+      case Token.connect:
+      case Token.nci:
+      case Token.vanderwaals:
+        // ok as is
+        break;
+      case Token.cap:
+        isColorDensity = false;
+        break;
+      }
+    }
     String command = (String) value[8];
 
     BitSet bs;
     atomCount = viewer.getAtomCount();
     atoms = viewer.getModelSet().atoms;
 
-    int intramolecularMode = (int) (params == null || params.length < 2 ? 0
-        : params[1]);
-    float ptSize = (isColorDensity && params != null && params[0] < 0 ? Math
-        .abs(params[0]) : 0.15f);
+    int intramolecularMode = (int) (parameters == null || parameters.length < 2 ? 0
+        : parameters[1]);
+    float ptSize = (isColorDensity && parameters != null && parameters[0] < 0 ? Math
+        .abs(parameters[0]) : 0.15f);
     if (Logger.debugging) {
       Logger.info("Contact intramolecularMode " + intramolecularMode);
       Logger.info("Contacts for " + bsA.cardinality() + ": "
@@ -92,116 +115,230 @@ public class Contact extends Isosurface {
       Logger.info("Contacts to " + bsB.cardinality() + ": "
           + Escape.escape(bsB));
     }
-    setProperty("newObject", null, null);
-
+    super.setProperty("newObject", null, null);
+    thisMesh.setMerged(true);
+    Parameters params = sg.getParams();
     switch (type) {
     case Token.nci:
-      if (isColorDensity)
-        sg.setParameter("colorDensity", null);
       bs = BitSetUtil.copy(bsA);
       bs.or(bsB); // for now -- TODO -- need to distinguish ligand
-      if (params[0] < 0)
-        params[0] = 0; // reset to default for density
-      setProperty("select", bs, null);
-      setProperty("bsSolvent", bsB, null);
-      setProperty("parameters", params, null);
-      setProperty("nci", Boolean.TRUE, null);
+      if (parameters[0] < 0)
+        parameters[0] = 0; // reset to default for density
+      params.colorDensity = isColorDensity;
+      params.bsSelected = bs;
+      params.bsSolvent = bsB;
+      sg.setParameter("parameters", parameters);
+      super.setProperty("nci", Boolean.TRUE, null);
       break;
     case Token.cap:
-      float resolution = sg.getParams().resolution;
-      newSurface(Token.slab, bsA, bsB, rd, null, null, false);
-      MeshData data1 = new MeshData();
-      fillMeshData(data1, MeshData.MODE_GET_VERTICES, thisMesh);
-      setProperty("init", null, null);
-      if (isColorDensity)
-        sg.setParameter("colorDensity", null);
-      sg.getParams().resolution = resolution;
-      newSurface(Token.plane, bsA, bsB, rd, params, func, isColorDensity);
-      merge(data1);
+      newSurface(Token.slab, null, bsA, bsB, rd, null, null, false, null);
+      VolumeData volumeData = sg.getVolumeData();
+      sg.initState();
+      newSurface(Token.plane, null, bsA, bsB, rd, parameters, func, isColorDensity, volumeData);
+      mergeMesh(null);
       break;
     case Token.vanderwaals:
-      newSurface(type, bsA, bsB, rd, null, null, false);
+      newSurface(type, null, bsA, bsB, rd, null, null, isColorDensity, null);
       break;
-    default:
-      combineSurfaces(type, bsA, bsB, rd, params, func, isColorDensity,
+    case Token.full:
+    case Token.trim:
+    case Token.plane:
+    case Token.connect:
+      combineSurfaces(type, bsA, bsB, rd, parameters, func, isColorDensity,
           intramolecularMode, bsFilters);
+      mergeMesh(null);
       break;
     }
+    thisMesh.setMerged(false);
     thisMesh.jvxlData.vertexDataOnly = true;
     thisMesh.reinitializeLightingAndColor();
-    setProperty("finalize", command, null);
+    super.setProperty("finalize", command, null);
     if (isColorDensity) {
-      setProperty("pointSize", Float.valueOf(ptSize), null);
+      super.setProperty("pointSize", Float.valueOf(ptSize), null);
+    } else {
+      super.setProperty("token", Integer.valueOf(JmolConstants.FULLYLIT), null);
     }
     if (thisMesh.slabOptions != null) {
       thisMesh.slabOptions = null;
       thisMesh.polygonCount0 = -1; // disable slabbing.
     }
+    Logger.checkTimer("contact");
   }
 
   private void combineSurfaces(int type, BitSet bsA, BitSet bsB, RadiusData rd,
-                               float[] params, Object func,
+                               float[] parameters, Object func,
                                boolean isColorDensity, int intramolecularMode,
                                BitSet[] bsFilters) {
     if (!bsA.equals(bsB))
       bsB.andNot(bsA);
     List<ContactPair> pairs = getPairs(bsA, bsB, rd, intramolecularMode,
         bsFilters);
-    BitSet bs1 = new BitSet();
-    BitSet bs2 = new BitSet();
+    VolumeData volumeData = new VolumeData();
     int logLevel = Logger.getLogLevel();
     Logger.setLogLevel(0);
     float resolution = sg.getParams().resolution;
+    int n = pairs.size();
     if (type == Token.full && resolution == Float.MAX_VALUE)
-      resolution = 10;
-    for (int i = 0; i < pairs.size(); i++) {
-      if ((i % 100) == 99) {
-        Logger.setLogLevel(logLevel);
-        Logger.info("contact..." + (i + 1));
-        Logger.setLogLevel(0);
-      }
+      resolution = (n > 1000 ? 3 : 10);
+    for (int i = n; --i >= 0;) {
       ContactPair cp = pairs.get(i);
-      bs1.set(cp.iAtom1);
-      bs2.set(cp.iAtom2);
-      MeshData prev = null;
-      if (i == 0) {
-        newSg();
-        minData = thisMesh.jvxlData.dataMin;
-        maxData = thisMesh.jvxlData.dataMax;
-      } else {
-        prev = new MeshData();
-        fillMeshData(prev, MeshData.MODE_GET_VERTICES, thisMesh);
-        setProperty("clear", null, null);
-        setProperty("init", null, null);
-      }
-      if (isColorDensity)
-        sg.setParameter("colorDensity", null);
-      sg.getParams().resolution = resolution;
+      setVolumeData(type, volumeData, cp, resolution, n);
       switch (type) {
       case Token.full:
-        newSurface((type == Token.cap ? Token.plane : type), bs1, bs2, rd,
-            null, null, false);
-        MeshData data1 = new MeshData();
-        fillMeshData(data1, MeshData.MODE_GET_VERTICES, thisMesh);
-        setProperty("init", null, null);
-        if (isColorDensity)
-          sg.setParameter("colorDensity", null);
-        sg.getParams().resolution = resolution;
-        newSurface(type, bs2, bs1, rd, null, null, false);
-        merge(data1);
+        newSurface(type, cp, null, null, rd, null, func, isColorDensity, volumeData);
+        cp.switchAtoms();
+        newSurface(type, cp, null, null, rd, null, null, isColorDensity, volumeData);
         break;
       case Token.trim:
       case Token.plane:
       case Token.connect:
-        newSurface(type, bs1, bs2, rd, params, func, isColorDensity);
+        newSurface(type, cp, null, null, rd, parameters, func, isColorDensity, volumeData);
         break;
       }
-      if (prev != null)
-        merge(prev);
-      bs1.clear(cp.iAtom1);
-      bs2.clear(cp.iAtom2);
+      if (i > 0 && (i % 100) == 0 && logLevel == 4) {
+        Logger.setLogLevel(4);
+        Logger.info("contact..." + i);
+        Logger.setLogLevel(0);
+      }
     }
     Logger.setLogLevel(logLevel);
+  }
+
+  private void newSurface(int type, ContactPair cp, BitSet bs1, BitSet bs2,
+                          RadiusData rd, float[] parameters, Object func,
+                          boolean isColorDensity, VolumeData volumeData) {
+    Parameters params = sg.getParams();
+    if (cp == null) {
+      bs2.andNot(bs1);
+      if (bs1.isEmpty() || bs2.isEmpty())
+        return;
+    } else {
+      params.contactPair = cp;
+    }
+    int iSlab0 = 0, iSlab1 = 0;
+    sg.initState();
+    switch (type) {
+    case Token.vanderwaals:
+    case Token.slab:
+    case Token.trim:
+    case Token.full:
+      params.colorDensity = isColorDensity;
+      if (isColorDensity) {
+        super.setProperty("cutoffRange", new float[] { -100f, 0f }, null);
+      }
+      if (cp == null) {
+        params.atomRadiusData = rd;
+        params.bsIgnore = BitSetUtil.copyInvert(bs1, atomCount);
+        params.bsSelected = bs1;
+        params.bsSolvent = null;
+      }
+      params.volumeData = volumeData;
+      super.setProperty("sasurface", Float.valueOf(0), null);
+      super.setProperty("map", Boolean.TRUE, null);
+      if (cp == null) {
+        params.atomRadiusData = rd;
+        params.bsIgnore = BitSetUtil.copyInvert(bs2, atomCount);
+        params.bsSelected = bs2;
+      }
+      params.volumeData = volumeData;
+      super.setProperty("sasurface", Float.valueOf(0), null);
+      switch (type) {
+      case Token.full:
+      case Token.trim:
+        iSlab0 = -100;
+        break;
+      case Token.vanderwaals:
+        if (isColorDensity)
+          iSlab0 = -100;
+        break;
+      case Token.slab:
+        iSlab1 = -100;
+      }
+      break;
+    case Token.plane:
+    case Token.connect:
+      if (type == Token.connect)
+        sg.setParameter("parameters", parameters);
+      if (cp == null) {
+        params.atomRadiusData = rd;
+        params.bsIgnore = BitSetUtil.copyInvert(bs2, atomCount);
+        params.bsIgnore.andNot(bs1);
+      }
+      params.func = func;
+      params.intersection = new BitSet[] { bs1, bs2 };
+      params.volumeData = volumeData;
+      params.colorDensity = isColorDensity;
+      if (isColorDensity)
+        super.setProperty("cutoffRange", new float[] { -5f, 0f }, null);
+      super.setProperty("sasurface", Float.valueOf(0), null);
+      // mapping
+      super.setProperty("map", Boolean.TRUE, null);
+      params.volumeData = volumeData;
+      super.setProperty("sasurface", Float.valueOf(0), null);
+      if (type != Token.connect)
+        iSlab0 = -100;
+    }
+    if (iSlab0 != iSlab1)
+      thisMesh.slabPolygons(MeshSurface.getSlabWithinRange(iSlab0, iSlab1),
+          false);
+    if (type != Token.vanderwaals)
+      thisMesh.setMerged(true);
+  }
+
+  private Vector3f vZ = new Vector3f();
+  private Vector3f vY = new Vector3f();
+  private Vector3f vX = new Vector3f();
+  private Point3f pt1 = new Point3f();
+  private Point3f pt2 = new Point3f();
+  
+  private void setVolumeData(int type, VolumeData volumeData, ContactPair cp,
+                             float resolution, int nPairs) {
+    pt1.set(atoms[cp.iAtom1]);
+    pt2.set(atoms[cp.iAtom2]);
+    vX.sub(pt2, pt1);
+    float dAB = vX.length();
+    float dYZ = (cp.radius1 * cp.radius1 + dAB * dAB - cp.radius2 * cp.radius2)/(2 * dAB * cp.radius1);
+    dYZ = 2.1f * (float) (cp.radius1 * Math.sin(Math.acos(dYZ)));
+    Measure.getNormalToLine(pt1, pt2, vZ);
+    vZ.scale(dYZ);
+    vY.cross(vZ, vX);
+    vY.normalize();
+    vY.scale(dYZ);
+    if (type != Token.connect) {
+      vX.normalize();
+      pt1.scaleAdd((dAB - cp.radius2) * 0.95f, vX, pt1);
+      pt2.scaleAdd((cp.radius1 - dAB) * 0.95f, vX, pt2);
+      vX.sub(pt2, pt1);
+    }
+    if (resolution == Float.MAX_VALUE)
+      resolution = (nPairs > 100 ? 3 : 10);
+    
+    // now set voxel counts and vectors, and grid origin
+
+    int nX = Math.max(5, (int) (pt1.distance(pt2) * resolution + 1));
+    if ((nX % 2) == 0)
+      nX++;
+    int nYZ = Math.max(7, (int) (dYZ * resolution + 1));
+    if ((nYZ % 2) == 0)
+      nYZ++;
+    volumeData.setVoxelCounts(nX, nYZ, nYZ);
+    pt1.scaleAdd(-0.5f, vY, pt1);
+    pt1.scaleAdd(-0.5f, vZ, pt1);
+    volumeData.setVolumetricOrigin(pt1.x, pt1.y, pt1.z);
+    /*
+    System.out.println("draw pt1 @{point"+pt1+"} color red");
+    System.out.println("draw vx vector @{point"+pt1+"} @{point"+vX+"} color red");
+    System.out.println("draw vy vector @{point"+pt1+"} @{point"+vY+"} color green");
+    System.out.println("draw vz vector @{point"+pt1+"} @{point"+vZ+"} color blue");
+    */
+
+    vX.scale(1f/(nX-1));
+    vY.scale(1f/(nYZ-1));
+    vZ.scale(1f/(nYZ-1));
+    volumeData.setVolumetricVector(0, vX.x, vX.y, vX.z);
+    volumeData.setVolumetricVector(1, vY.x, vY.y, vY.z);
+    volumeData.setVolumetricVector(2, vZ.x, vZ.y, vZ.z);
+
   }
 
   private List<ContactPair> getPairs(BitSet bsA, BitSet bsB, RadiusData rd,
@@ -225,9 +362,8 @@ public class Contact extends Isosurface {
       viewer.setIteratorForAtom(iter, ia, ad.atomRadius[ia] + maxRadius);
       while (iter.hasNext()) {
         int ib = iter.next();
-        if (ia == ib || atoms[ia].isCovalentlyBonded(atoms[ib]) || atoms[ia].is14(atoms[ib]))
+        if (ia == ib || atoms[ia].isWithinFourBonds(atoms[ib]))
           continue;
-        //System.out.println(atoms[ia].distance(atoms[ib]));
         switch (intramolecularMode) {
         case 0:
           break;
@@ -250,7 +386,7 @@ public class Contact extends Isosurface {
         if (atoms[ia].distance(atoms[ib]) > ad.atomRadius[ia]
             + ad.atomRadius[ib])
           continue;
-        ContactPair cp = new ContactPair(ia, ib, ad.atomRadius[ia],
+        ContactPair cp = new ContactPair(atoms, ia, ib, ad.atomRadius[ia],
             ad.atomRadius[ib]);
         if (isContactClear(cp, ad, bs))
           list.add(cp);
@@ -274,132 +410,7 @@ public class Contact extends Isosurface {
     return true;
   }
 
-  private class ContactPair {
-    int iAtom1, iAtom2;
-    Point3f pt;
-
-    ContactPair(int i1, int i2, float vdw1, float vdw2) {
-      iAtom1 = i1;
-      iAtom2 = i2;
-
-      //     ------d------------
-      //    i1--------|->vdw1
-      //        vdw2<-|--------i2
-      //              pt
-
-      Vector3f v = new Vector3f(atoms[i2]);
-      v.sub(atoms[i1]);
-      float dAB = v.length();
-      float f = (vdw1 - vdw2 + dAB) / (2 * dAB);
-      
-      //NOT float f = (vdw1*vdw1 - vdw2*vdw2 + dAB*dAB) / (2 * dAB*dAB);
-      // as that would be for truly planar section, but it is not quite planar
-      
-      pt = new Point3f();
-      pt.scaleAdd(f, v, atoms[i1]);
-      //System.out.println("draw a"+i1 + "_" + i2 + " arrow @{point"+new Point3f(atoms[i1]) +"} @{point"+pt+"}");
-      //System.out.println(atoms[i1] + "-" + atoms[i2] + "\t" + atoms[i1].distance(pt) + " " + atoms[i2].distance(pt));
-    }
-  }
-
-  /*
-  private static float getDistance(Point3f pt, Point3f[] points, float[] radii) {
-    float value = Float.MAX_VALUE;
-    for (int i = 0; i < points.length; i++) {
-      float r = pt.distance(points[i]) - radii[i];
-      if (r < value)
-        value = r;
-    }
-    return (value == Float.MAX_VALUE ? Float.NaN : value);
-  }
-  */
-  /*
-  private void doInterIntra(int type, BitSet bsA, BitSet bsB, RadiusData rd,
-                            float[] params, Object func,
-                            boolean isColorDensity, int intramolecularMode,
-                            boolean isFirst) {
-
-    if (intramolecularMode != 0) {
-      // get molecules
-      // run through all molecules a and b
-      AtomData ad = new AtomData();
-      viewer.fillAtomData(ad, AtomData.MODE_FILL_MOLECULES);
-      BitSet bsA1 = new BitSet();
-      BitSet bsB1 = new BitSet();
-      if (bsB.cardinality() == 0)
-        bsB = bsA;
-      if (isFirst) {
-        minData = thisMesh.jvxlData.dataMin;
-        maxData = thisMesh.jvxlData.dataMax;
-      }
-      for (int i = 0; i < ad.bsMolecules.length; i++) {
-        bsA1.clear();
-        bsA1.or(ad.bsMolecules[i]);
-        bsA1.and(bsA);
-        if (bsA1.nextSetBit(0) < 0)
-          continue;
-        if (intramolecularMode == 1) {
-          doInterIntra(type, bsA1, bsA1, rd, params, func, isColorDensity, 0,
-              isFirst);
-          isFirst = false;
-        } else {
-          for (int j = 0; j < ad.bsMolecules.length; j++) {
-            if (j == i)
-              continue;
-            bsB1.clear();
-            bsB1.or(ad.bsMolecules[j]);
-            bsB1.and(bsB);
-            if (bsB1.nextSetBit(0) < 0)
-              continue;
-            doInterIntra(type, bsA1, bsB1, rd, params, func, isColorDensity, 0,
-                isFirst);
-            isFirst = false;
-          }
-        }
-      }
-      return;
-    }
-
-    MeshData prev = null;
-    float resolution = sg.getParams().resolution;
-    if (isFirst) {
-      newSg();
-    } else {
-      prev = new MeshData();
-      fillMeshData(prev, MeshData.MODE_GET_VERTICES, thisMesh);
-      setProperty("clear", null, null);
-      setProperty("init", null, null);
-    }
-    if (isColorDensity)
-      sg.setParameter("colorDensity", null);
-    sg.getParams().resolution = resolution;
-    switch (type) {
-    case Token.full:
-    case Token.cap:
-      newSurface((type == Token.full ? type : Token.plane), bsA, bsB, rd, null, null, false);
-      MeshData data1 = new MeshData();
-      fillMeshData(data1, MeshData.MODE_GET_VERTICES, thisMesh);
-      resolution = sg.getParams().resolution;
-      setProperty("init", null, null);
-      if (isColorDensity)
-        sg.setParameter("colorDensity", null);
-      sg.getParams().resolution = resolution;
-      if (type == Token.full)
-        newSurface(type, bsB, bsA, rd, null, null, false);
-      else
-        newSurface(Token.slab, bsA, bsB, rd, null, null, false);     
-      merge(data1);
-      break;
-    case Token.plane:
-    case Token.connect:
-      newSurface(type, bsA, bsB, rd, params, func, isColorDensity);
-      break;
-    }
-    if (prev != null)
-      merge(prev);
-  }
-  */
-  private void merge(MeshData md) {
+  private void mergeMesh(MeshData md) {
     thisMesh.merge(md);
     if (minData == Float.MAX_VALUE) {
       // just assign it
@@ -415,61 +426,6 @@ public class Contact extends Isosurface {
     jvxlData.valueMappedToBlue = minData;
     jvxlData.valueMappedToRed = maxData;
 
-  }
-
-  private void newSurface(int type, BitSet bs1, BitSet bs2, RadiusData rd,
-                          Object params, Object func, boolean isColorDensity) {
-    bs2.andNot(bs1);
-    if (bs1.isEmpty() || bs2.isEmpty())
-      return;
-    //System.out.println(Token.nameOf(type) + " " + bs1 + " " + bs2);
-    switch (type) {
-    case Token.vanderwaals:
-    case Token.trim:
-    case Token.full:
-    case Token.slab:
-      setProperty("select", bs1, null);
-      BitSet bs = BitSetUtil.copyInvert(bs1, atomCount);
-      setProperty("ignore", bs, null);
-      setProperty("radius", rd, null);
-      setProperty("bsSolvent", null, null);
-      setProperty("sasurface", Float.valueOf(0), null);
-      setProperty("map", Boolean.TRUE, null);
-      setProperty("select", bs2, null);
-      bs = BitSetUtil.copyInvert(bs2, atomCount);
-      setProperty("ignore", bs, null);
-      setProperty("radius", rd, null);
-      setProperty("sasurface", Float.valueOf(0), null);
-      switch (type) {
-      case Token.full:
-      case Token.trim:
-        thisMesh.slabPolygons(MeshSurface.getSlabWithinRange(-100, 0), false);
-        break;
-      case Token.slab:
-        thisMesh.slabPolygons(MeshSurface.getSlabWithinRange(0, -100), false);
-      }
-      return;
-    case Token.plane:
-    case Token.connect:
-      if (type == Token.connect)
-        setProperty("parameters", params, null);
-      setProperty("func", func, null);
-      setProperty("intersection", new BitSet[] { bs1, bs2 }, null);
-      if (isColorDensity)
-        setProperty("cutoffRange", new float[] { -0.3f, 0.3f }, null);
-      setProperty("radius", rd, null);
-      setProperty("bsSolvent", null, null);
-      setProperty("sasurface", Float.valueOf(0), null);
-      // mapping
-      setProperty("map", Boolean.TRUE, null);
-      setProperty("select", bs1, null);
-      setProperty("radius", rd, null);
-      setProperty("sasurface", Float.valueOf(0), null);
-      //System.out.println("Contact newSurface " + bs1 + " " + bs2);
-
-      if (type != Token.connect)
-        thisMesh.slabPolygons(MeshSurface.getSlabWithinRange(-100, 0), false);
-    }
   }
 
 }

@@ -177,6 +177,7 @@ public class JvxlData {
     contourColors = null;
     isSlabbable = false;
     meshColor = null;
+    nPointsX = 0;
     nVertexColors = 0;
     slabInfo = null;
     slabValue = Integer.MIN_VALUE;

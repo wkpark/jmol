@@ -121,7 +121,8 @@ public class MarchingCubes extends TriangleData {
     bsExcludedPlanes =    (bsExcluded[2] == null ? bsExcluded[2] = new BitSet() : bsExcluded[2]);
     bsExcludedTriangles = (bsExcluded[3] == null ? bsExcluded[3] = new BitSet() : bsExcluded[3]);
     // TODO -- need not be setting up planes for simple value-readers
-    mode = (volumeData.voxelData != null || volumeData.mappingPlane != null ? MODE_CUBE 
+    
+    mode = (volumeData.getVoxelData() != null || volumeData.mappingPlane != null ? MODE_CUBE 
         : bsVoxels != null ? MODE_BITSET : MODE_PLANES);
     setParameters(volumeData, params);
   }
@@ -248,8 +249,15 @@ public class MarchingCubes extends TriangleData {
     int cellIndex0 = cubeCountY * cubeCountZ - 1;
     int cellIndex = cellIndex0;
     resetIndexPlane(isoPointIndexPlanes[1]);
-    if (mode == MODE_PLANES)
+    float[][][] voxelData = null;
+    switch (mode) {
+    case MODE_PLANES:
       getPlane(x0, false);
+      break;
+    case MODE_CUBE:
+      voxelData  = volumeData.getVoxelData();
+      break;
+    }
     float v = 0;
     int pti = 0;
     boolean allInside = (colorDensity && (cutoff == 0 || bsVoxels.cardinality() == 0));
@@ -313,7 +321,7 @@ public class MarchingCubes extends TriangleData {
               //if (i == 0 && y == 0 && z == 0)
                 //dumpPlane(x, null);
               if (mappingPlane == null) {
-                v = vertexValues[i] = volumeData.voxelData[x + offset.x][y
+                v = vertexValues[i] = voxelData[x + offset.x][y
                   + offset.y][z + offset.z];
               } else {
                 volumeData.voxelPtToXYZ(x + offset.x, y + offset.y, z

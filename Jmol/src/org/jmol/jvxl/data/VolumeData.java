@@ -137,7 +137,15 @@ public class VolumeData implements VolumeDataInterface {
   public final Vector3f[] volumetricVectors = new Vector3f[3];
   public final int[] voxelCounts = new int[3];
   public int nPoints;
-  public float[][][] voxelData;  
+  private float[][][] voxelData; 
+  public float[][][] getVoxelData() {
+    return voxelData;
+  }
+  
+  public void setVoxelData(float[][][] voxelData) {
+    this.voxelData = voxelData;
+  }
+
   private Map<Integer, Float> voxelMap; // alternative to voxelData for sparse (plane interesected) data
   public final float[] volumetricVectorLengths = new float[3];
   private float maxVectorLength;
@@ -231,10 +239,6 @@ public class VolumeData implements VolumeDataInterface {
     return nPointsX * nPointsY * nPointsZ;
   }
 
-  public float[][][] getVoxelData() {
-    return voxelData;
-  }
-  
   public float getVoxelData(int pt) {
     int ix = pt / yzCount;
     pt -= ix * yzCount;
@@ -263,10 +267,6 @@ public class VolumeData implements VolumeDataInterface {
     voxelData[ix][iy][iz] = value; 
   }
   
-  public void setVoxelData(float[][][] voxelData) {
-    this.voxelData = voxelData;
-  }
-
   public void setVoxelMap() {
     voxelMap = new Hashtable<Integer, Float>();
     getYzCount();

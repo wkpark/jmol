@@ -842,6 +842,10 @@ final public class Graphics3D implements JmolRendererInterface {
   }
 
   public void volumeRender(int diameter, int x, int y, int z) {
+    if (diameter == 1) {
+      plotPixelClipped(x, y, z);
+      return;
+    }
     if (isClippedZ(z))
       return;
     int r = (diameter + 1) / 2;
@@ -1990,7 +1994,7 @@ final public class Graphics3D implements JmolRendererInterface {
 
 
   public final static short  INHERIT_ALL         = 0;
-  private final static short INHERIT_COLOR       = 1;
+  public final static short INHERIT_COLOR       = 1;
   public final static short  USE_PALETTE         = 2;
   final static short         RAW_RGB             = 3;
   final static short         SPECIAL_COLIX_MAX   = 4;

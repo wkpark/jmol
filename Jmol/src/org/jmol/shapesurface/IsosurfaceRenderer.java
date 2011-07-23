@@ -255,6 +255,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
   @Override
   protected void renderTriangles(boolean fill, boolean iShowTriangles,
                                  boolean isExport) {
+    //System.out.println("isorend mvc=" + imesh.mergeVertexCount0 + " mpc=" + imesh.mergePolygonCount0 + " vc=" + imesh.vertexCount + " pc=" + imesh.polygonCount + " " + imesh);
+    //if (bsSlab != null) System.out.println("isorend bsSlab=" + bsSlab.cardinality() + " " + bsSlab);
     int[][] polygonIndexes = imesh.polygonIndexes;
     colix = (haveBsSlabGhost ? imesh.slabColix : !fill && imesh.meshColix != 0 ? imesh.meshColix : imesh.colix);
     short[] vertexColixes = (!fill && imesh.meshColix != 0 ? null : imesh.vertexColixes);

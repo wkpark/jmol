@@ -351,6 +351,8 @@ public abstract class MeshCollection extends Shape {
       return;
     case Token.translucent:
       m.setTranslucent(bProp, translucentLevel);
+      if (m.bsSlabGhost != null)
+        m.resetSlab();
       return;
     default:
       m.setTokenProperty(tokProp, bProp);
@@ -429,7 +431,11 @@ public abstract class MeshCollection extends Shape {
         sb.append((++k)).append(" id:" + m.thisID).append(
             "; model:" + viewer.getModelNumberDotted(m.modelIndex)).append(
             "; vertices:" + m.vertexCount).append(
-            "; polygons:" + m.polygonCount).append("; visible:" + m.visible);
+            "; polygons:" + m.polygonCount)
+            .append("; visible:" + m.visible);
+        Object range = getProperty("dataRange", 0);
+        if (range != null)
+            sb.append("; dataRange:").append(Escape.escape(range));
         if (m.title != null) {
           String s = "";
           for (int j = 0; j < m.title.length; j++)

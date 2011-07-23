@@ -45,12 +45,12 @@ import org.jmol.api.JmolEdge;
 import org.jmol.api.JmolMolecule;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.g3d.Graphics3D;
-import org.jmol.modelset.BoxInfo;
 import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.Bond.BondSet;
 import org.jmol.script.ScriptEvaluator.ScriptException;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.BoxInfo;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
@@ -2221,18 +2221,10 @@ class ScriptMathProcessor {
     if (tok == Token.string)
       tok = Token.getTokFromName(withinStr.toLowerCase());
     boolean isVdw = (tok == Token.vanderwaals);
-    if (isVdw || withinStr.startsWith("vdw")) {
-      distance = 1;
-      if (!isVdw && withinStr.length() > 3) {
-        distance = Parser.parseFloat(withinStr.substring(3));
-        if (Float.isNaN(distance))
-          return addX("");
-        distance = ((int) distance) / 100f;
-        isVdw = true;
-      }
+    if (isVdw) {
+      distance = 100;
+      withinSpec = null;
     }
-    if (isVdw)
-      withinSpec = null;    
     BitSet bs;
     boolean isWithinModelSet = false;
     boolean isWithinGroup = false;
@@ -2277,9 +2269,7 @@ class ScriptMathProcessor {
         i = 2;
       }
     } else if (isDistance) {
-      if (isVdw)
-        rd = new RadiusData(distance, RadiusData.TYPE_FACTOR, JmolConstants.VDW_AUTO);
-      else
+      if (!isVdw)
         distance = ScriptVariable.fValue(args[0]); 
       if (i < 2)
         return false;
@@ -2297,7 +2287,6 @@ class ScriptMathProcessor {
         isVdw = (s.equalsIgnoreCase("vanderwaals"));
         if (isVdw) {
           withinSpec = null;
-          rd = new RadiusData(distance/100, RadiusData.TYPE_FACTOR, JmolConstants.VDW_AUTO);
           tok = Token.vanderwaals;
         } else {
           tok = Token.group;
@@ -2387,6 +2376,10 @@ class ScriptMathProcessor {
       return addX(viewer.getAtomBits(tok, bs));
     if (isWithinGroup)
       return addX(viewer.getGroupsWithin((int) distance, bs));
+    if (isVdw)
+      rd = new RadiusData((distance > 10 ? distance / 100 : distance), 
+          (distance > 10 ? RadiusData.TYPE_FACTOR : RadiusData.TYPE_OFFSET), 
+          JmolConstants.VDW_AUTO);
     return addX(viewer.getAtomsWithin(distance, bs, isWithinModelSet, rd));
   }
 

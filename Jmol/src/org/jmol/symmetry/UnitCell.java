@@ -31,7 +31,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
-import org.jmol.modelset.BoxInfo;
+import org.jmol.util.BoxInfo;
 import org.jmol.util.Quadric;
 import org.jmol.util.SimpleUnitCell;
 

@@ -97,10 +97,11 @@ class VolumeDataReader extends SurfaceReader {
   protected void readVoxelDataIndividually(boolean isMapData) throws Exception {
     if (isMapData && !allowMapData)
       return; //not applicable
-    voxelData = (isMapData ? new float[nPointsX][nPointsY][nPointsZ] : null);
-    volumeData.setVoxelData(voxelData);
-    if (!isMapData || volumeData.sr != null) 
-      return;
+    if (!isMapData || volumeData.sr != null) {
+      volumeData.setVoxelData(voxelData = null);
+      return;      
+    }
+    newVoxelDataCube();
     for (int x = 0; x < nPointsX; ++x) {
       float[][] plane = new float[nPointsY][];
       voxelData[x] = plane;
@@ -119,6 +120,10 @@ class VolumeDataReader extends SurfaceReader {
   }
   
   protected boolean setVolumeDataParams() {
+    if (params.volumeData != null) {
+      setVolumeData(params.volumeData);
+      return true;
+    }
     if (!useOriginStepsPoints) {
       return false;
     }

@@ -55,7 +55,6 @@ public class Mesh extends MeshSurface {
   public short meshColix;
   public short[] normixes;
   private int normixCount;
-  public BitSet[] bitsets; // [0]bsSelected [1]bsIgnore [2]bsTrajectory
   public List<Point3f[]> lineData;
   public String thisID;
   public boolean isValid = true;
@@ -139,7 +138,6 @@ public class Mesh extends MeshSurface {
     frontOnly = false;
     title = null;
     normixes = null;
-    bitsets = null;    
     vertices = null;
     altVertices = null;
     polygonIndexes = null;

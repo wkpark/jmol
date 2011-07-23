@@ -165,6 +165,7 @@ class IsoSolventReader extends AtomDataReader {
     initializeVolumetricData();
     if (isProgressive) {
       volumeData.setUnitVectors();
+      volumeData.getYzCount();
       bsAtomMinMax = new BitSet[nPointsX];
       getAtomMinMax(null, bsAtomMinMax);
       voxelSource = new int[volumeData.nPoints];
@@ -175,30 +176,32 @@ class IsoSolventReader extends AtomDataReader {
   @Override
   protected void setup(boolean isMapData) {
     super.setup(isMapData);
-    cavityRadius = params.cavityRadius;
-    envelopeRadius = params.envelopeRadius;
-    solventRadius = params.solventRadius;
-    point = params.point;
-
-    isCavity = (params.isCavity && meshDataServer != null); // Jvxl cannot do this calculation on its own.
-    isPocket = (params.pocket != null && meshDataServer != null);
-    doCalculateTroughs = (!isMapData && atomDataServer != null && !isCavity // Jvxl needs an atom iterator to do this.
-        && solventRadius > 0 && (dataType == Parameters.SURFACE_SOLVENT || dataType == Parameters.SURFACE_MOLECULAR));
-    doUseIterator = doCalculateTroughs;
-    getAtoms(params.bsSelected, doAddHydrogens, true, false, false, true,
-        false, Float.NaN);
-    if (isCavity || isPocket)
-      dots = meshDataServer.calculateGeodesicSurface(bsMySelected,
-          envelopeRadius);
-
-    setHeader("solvent/molecular surface", params.calculationType);
-    if (havePlane || !isMapData) {
-      setRanges(params.solvent_ptsPerAngstrom, params.solvent_gridMax);
-      volumeData.getYzCount();
-      margin = volumeData.maxGrid * 1.8f;
+    if (contactPair == null) {
+      cavityRadius = params.cavityRadius;
+      envelopeRadius = params.envelopeRadius;
+      solventRadius = params.solventRadius;
+      point = params.point;
+      isCavity = (params.isCavity && meshDataServer != null); // Jvxl cannot do this calculation on its own.
+      isPocket = (params.pocket != null && meshDataServer != null);
+      doCalculateTroughs = (!isMapData && atomDataServer != null && !isCavity // Jvxl needs an atom iterator to do this.
+          && solventRadius > 0 && (dataType == Parameters.SURFACE_SOLVENT || dataType == Parameters.SURFACE_MOLECULAR));
+      doUseIterator = doCalculateTroughs;
+      getAtoms(params.bsSelected, doAddHydrogens, true, false, false, true,
+          false, Float.NaN);
+      if (isCavity || isPocket)
+        dots = meshDataServer.calculateGeodesicSurface(bsMySelected,
+            envelopeRadius);
+      setHeader("solvent/molecular surface", params.calculationType);
+      if (havePlane || !isMapData) {
+        setRanges(params.solvent_ptsPerAngstrom, params.solvent_gridMax);
+        volumeData.getYzCount();
+        margin = volumeData.maxGrid * 1.8f;
+      }
+      if (bsNearby != null)
+        bsMySelected.or(bsNearby);
+    } else if (!isMapData) {
+      setVolumeData();
     }
-    if (bsNearby != null)
-      bsMySelected.or(bsNearby);
     if (!doCalculateTroughs) {
       if (isMapData) {
         precalculateVoxelData = false;
@@ -225,7 +228,7 @@ class IsoSolventReader extends AtomDataReader {
     if (isCavity && dataType != Parameters.SURFACE_NOMAP
         && dataType != Parameters.SURFACE_PROPERTY) {
       params.vertexSource = null;
-      volumeData.voxelData = voxelData = new float[nPointsX][nPointsY][nPointsZ];
+      newVoxelDataCube();
       resetVoxelData(Float.MAX_VALUE);
       markSphereVoxels(cavityRadius, params.distance);
       generateSolventCavity();
@@ -541,7 +544,7 @@ class IsoSolventReader extends AtomDataReader {
 
       // PHASE II: Creating the voxel grid
 
-      volumeData.voxelData = voxelData = new float[nPointsX][nPointsY][nPointsZ];
+      newVoxelDataCube();
       resetVoxelData(Float.MAX_VALUE);
 
       //                     /
@@ -569,7 +572,7 @@ class IsoSolventReader extends AtomDataReader {
       markFaceVoxels(false);
       vFaces = null;
     } else {
-      volumeData.voxelData = voxelData = new float[nPointsX][nPointsY][nPointsZ];
+      newVoxelDataCube();
       resetVoxelData(Float.MAX_VALUE);
     }
 
@@ -1176,7 +1179,9 @@ class IsoSolventReader extends AtomDataReader {
 
   @Override
   public float getValueAtPoint(Point3f pt) {
-    // mapping sasurface/vdw 
+    // mapping sasurface/vdw
+    if (contactPair != null)
+      return pt.distance(contactPair.pt2) - contactPair.radius2;
     float value = Float.MAX_VALUE;
     for (int iAtom = 0; iAtom < firstNearbyAtom; iAtom++) {
       float r = pt.distance(atomXyz[iAtom]) - atomRadius[iAtom] - solventRadius;
@@ -1193,12 +1198,16 @@ class IsoSolventReader extends AtomDataReader {
     if (yzCount == 0) {
       initPlanes();
     }
-    thisPlane= yzPlanes[x % 2];
-    resetPlane(Float.MAX_VALUE);
-    thisAtomSet = bsAtomMinMax[x];
     thisX = x;
-    markSphereVoxels(0, params.distance);
-    unsetVoxelData();
+    thisPlane= yzPlanes[x % 2];
+    if (contactPair == null) {   
+      resetPlane(Float.MAX_VALUE);
+      thisAtomSet = bsAtomMinMax[x];
+      markSphereVoxels(0, params.distance);
+      unsetVoxelData();
+    } else {
+      markPlaneVoxels(contactPair.pt1, contactPair.radius1);
+    }
     return thisPlane;
   }
 

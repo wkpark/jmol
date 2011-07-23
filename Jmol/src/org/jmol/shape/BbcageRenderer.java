@@ -24,7 +24,7 @@
 package org.jmol.shape;
 
 import org.jmol.g3d.Graphics3D;
-import org.jmol.modelset.BoxInfo;
+import org.jmol.util.BoxInfo;
 import org.jmol.viewer.StateManager;
 
 public class BbcageRenderer extends CageRenderer {

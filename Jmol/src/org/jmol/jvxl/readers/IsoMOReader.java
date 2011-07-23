@@ -96,7 +96,7 @@ class IsoMOReader extends AtomDataReader {
     if (isMapData && !isElectronDensityCalc) {
       volumeData.sr = this;
       volumeData.doIterate = false;
-      volumeData.voxelData = voxelData = new float[1][1][1];
+      volumeData.setVoxelData(voxelData = new float[1][1][1]);
       points = new Point3f[1];
       points[0] = new Point3f();
       if (!setupCalculation())
@@ -166,7 +166,7 @@ class IsoMOReader extends AtomDataReader {
     for (int i = 0; i < 3; i++)
       vDist[i] = volumeData.volumetricVectorLengths[i]
           * volumeData.voxelCounts[i];
-    volumeData.voxelData = voxelData = new float[1000][1][1];
+    volumeData.setVoxelData(voxelData = new float[1000][1][1]);
     getValues();
     float value;
     float f = 0;
@@ -225,7 +225,7 @@ class IsoMOReader extends AtomDataReader {
   
   @Override
   protected void generateCube() {
-    volumeData.voxelData = voxelData = new float[nPointsX][nPointsY][nPointsZ];
+    newVoxelDataCube();
     createOrbital();
   }
 

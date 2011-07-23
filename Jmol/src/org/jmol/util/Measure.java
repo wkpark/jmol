@@ -295,12 +295,11 @@ final public class Measure {
     return !isReversed;
   }
 
-  public static void calcXYNormalToLine(Point3f pointA, Point3f pointB,
+  public static void getNormalToLine(Point3f pointA, Point3f pointB,
                                    Vector3f vNormNorm) {
     // vector in xy plane perpendicular to a line between two points RMH
-    Vector3f axis = new Vector3f(pointA);
-    axis.sub(pointB);
-    vNormNorm.cross(axis, JmolConstants.axisY);
+    vNormNorm.sub(pointA, pointB);
+    vNormNorm.cross(vNormNorm, JmolConstants.axisY);
     vNormNorm.normalize();
     if (Float.isNaN(vNormNorm.x))
       vNormNorm.set(1, 0, 0);

@@ -95,7 +95,6 @@ package org.jmol.shapesurface;
 import org.jmol.shape.Mesh;
 import org.jmol.shape.MeshCollection;
 import org.jmol.shape.Shape;
-import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 
 import org.jmol.util.BinaryDocument;
@@ -288,7 +287,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     if ("newObject" == propertyName) {
       if (thisMesh != null)
-        thisMesh.clear(thisMesh.meshType);
+        thisMesh.clear(thisMesh.meshType, false);
       return;
     }
     
@@ -575,7 +574,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     if (propertyName == "deleteModelAtoms") {
       int modelIndex = ((int[]) ((Object[]) value)[2])[0];
-      BitSet bsModels = BitSetUtil.setBit(modelIndex);
       int firstAtomDeleted = ((int[]) ((Object[]) value)[2])[1];
       int nAtomsDeleted = ((int[]) ((Object[]) value)[2])[2];
       for (int i = meshCount; --i >= 0;) {
@@ -592,11 +590,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
           m.modelIndex--;
           if (m.atomIndex >= firstAtomDeleted)
             m.atomIndex -= nAtomsDeleted;
-          if (m.bitsets != null) {
-            BitSetUtil.deleteBits(m.bitsets[0], bs);
-            BitSetUtil.deleteBits(m.bitsets[1], bs);
-            BitSetUtil.deleteBits(m.bitsets[2], bsModels);
-          }
         }
       }
       return;
@@ -1149,7 +1142,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (meshData == null) {
       if (thisMesh == null)
         allocMesh(null, null);
-      thisMesh.clear("isosurface", sg.getIAddGridPoints());
+      if (!thisMesh.isMerged)
+        thisMesh.clear("isosurface", sg.getIAddGridPoints());
       thisMesh.connections = connections;
       thisMesh.colix = getDefaultColix();
       thisMesh.meshColix = meshColix;
@@ -1161,8 +1155,13 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       mesh = thisMesh;
     if (mesh == null)
       return;
+    //System.out.println("isosurface _get " + mode + " " + MeshData.MODE_GET_VERTICES + " " + MeshData.MODE_PUT_VERTICES + " vc=" + mesh.vertexCount + " pc=" + mesh.polygonCount + " " + mesh +" " 
+      //  + (mesh.bsSlabDisplay == null ? "" :      
+        //" bscard=" + mesh.bsSlabDisplay.cardinality() +
+        //" " + mesh.bsSlabDisplay.hashCode() + "  " + mesh.bsSlabDisplay));
     switch (mode) {
     case MeshData.MODE_GET_VERTICES:
+      meshData.mergeVertexCount0 = mesh.mergeVertexCount0;
       meshData.vertices = mesh.vertices;
       meshData.vertexSource = mesh.vertexSource;
       meshData.vertexValues = mesh.vertexValues;
@@ -1206,6 +1205,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       mesh.slabMeshType = meshData.slabMeshType;
       mesh.polygonCount0 = meshData.polygonCount0;
       mesh.vertexCount0 = meshData.vertexCount0;
+      mesh.mergeVertexCount0 = meshData.mergeVertexCount0;
       mesh.slabOptions = meshData.slabOptions;
       return;
     }
@@ -1218,7 +1218,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     thisMesh.calculatedArea = null;
     thisMesh.calculatedVolume = null;
     // from JVXL file:
-    thisMesh.initialize(sg.isFullyLit() ? JmolConstants.FULLYLIT
+    if (!thisMesh.isMerged)
+      thisMesh.initialize(sg.isFullyLit() ? JmolConstants.FULLYLIT
         : JmolConstants.FRONTLIT, null, sg.getPlane());
     if (!sg.getParams().allowVolumeRender)
       thisMesh.jvxlData.allowVolumeRender = false;
@@ -1233,8 +1234,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   }
 
   public void notifySurfaceMappingCompleted() {
-    thisMesh.initialize(sg.isFullyLit() ? JmolConstants.FULLYLIT
-        : JmolConstants.FRONTLIT, null, sg.getPlane());
+    if (!thisMesh.isMerged)
+      thisMesh.initialize(sg.isFullyLit() ? JmolConstants.FULLYLIT
+          : JmolConstants.FRONTLIT, null, sg.getPlane());
     thisMesh.isColorSolid = false;
     thisMesh.colorDensity = jvxlData.colorDensity;
     thisMesh.colorEncoder = sg.getColorEncoder();
@@ -1303,16 +1305,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     thisMesh.title = sg.getTitle();
     thisMesh.dataType = sg.getParams().dataType;
     thisMesh.scale3d = sg.getParams().scale3d;
-    thisMesh.bitsets = null;
     if (script != null) {
       if (script.charAt(0) == ' ') {
         script = myType + " ID " + Escape.escape(thisMesh.thisID) + script;
         pt = script.indexOf("; isosurface map");
-      } else if (sg.getIUseBitSets()) {
-        thisMesh.bitsets = new BitSet[3];
-        thisMesh.bitsets[0] = sg.getBsSelected();
-        thisMesh.bitsets[1] = sg.getBsIgnore();
-        thisMesh.bitsets[2] = viewer.getBitSetTrajectories();
       }
     }    
     if (pt > 0 && scriptAppendix.length() > 0)

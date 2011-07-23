@@ -13,45 +13,42 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
 import org.jmol.jvxl.data.MeshData;
-import org.jmol.modelset.BoxInfo;
 import org.jmol.script.Token;
 
 public class MeshSurface {
 
-
   public void merge(MeshData m) {
-    int nV = vertexCount + m.vertexCount;
-    //System.out.println("merging " + vertexCount + " " + m.vertexCount + " " + nV);
+    int nV = vertexCount + (m == null ? 0 : m.vertexCount);
     if (polygonIndexes == null)
       polygonIndexes = new int[0][];
-    if (m.polygonIndexes == null)
+    if (m != null && m.polygonIndexes == null)
       m.polygonIndexes = new int[0][];
-    int nP = 0;
-    for (int i = 0; i < polygonCount; i++)
-      if (polygonIndexes[i] != null && (bsSlabDisplay == null || bsSlabDisplay.get(i)))
-        nP++;
-    for (int i = 0; i < m.polygonCount; i++)  
-      if (m.polygonIndexes[i] != null && (m.bsSlabDisplay == null || m.bsSlabDisplay.get(i)))
-        nP++;
+    int nP = (bsSlabDisplay == null || polygonCount == 0 ? polygonCount : bsSlabDisplay
+        .cardinality())
+        + (m == null || m.polygonCount == 0 ? 0 : m.bsSlabDisplay == null ? m.polygonCount
+            : m.bsSlabDisplay.cardinality());
     if (vertices == null)
       vertices = new Point3f[0];
     vertices = (Point3f[]) ArrayUtil.ensureLength(vertices, nV);
     vertexValues = ArrayUtil.ensureLength(vertexValues, nV);
-    boolean haveSources = (vertexSource != null && m.vertexSource != null);
+    boolean haveSources = (vertexSource != null && (m == null || m.vertexSource != null));
     vertexSource = ArrayUtil.ensureLength(vertexSource, nV);
     int[][] newPolygons = new int[nP][];
-    // note -- assuming here this is not colorDensity
+    // note -- no attempt here to merge vertices
     int ipt = mergePolygons(this, 0, 0, newPolygons);
-    ipt = mergePolygons(m, ipt, vertexCount, newPolygons);
-    for (int i = 0; i < m.vertexCount; i++, vertexCount++) {
-      vertices[vertexCount] = m.vertices[i];
-      vertexValues[vertexCount] = m.vertexValues[i];
-      if (haveSources)
-        vertexSource[vertexCount] = m.vertexSource[i];
+    if (m != null) {
+      ipt = mergePolygons(m, ipt, vertexCount, newPolygons);
+      for (int i = 0; i < m.vertexCount; i++, vertexCount++) {
+        vertices[vertexCount] = m.vertices[i];
+        vertexValues[vertexCount] = m.vertexValues[i];
+        if (haveSources)
+          vertexSource[vertexCount] = m.vertexSource[i];
+      }
     }
     polygonCount0 = nP;
     vertexCount0 = nV;
-    resetSlab();
+    if (nP > 0)
+      resetSlab();
     polygonIndexes = newPolygons;
   }
 
@@ -233,7 +230,7 @@ public class MeshSurface {
   }
   
   public void invalidatePolygons() {
-    for (int i = polygonCount; --i >= 0;)
+    for (int i = polygonCount; --i >= mergePolygonCount0;)
       if ((bsSlabDisplay == null || bsSlabDisplay.get(i)) && !setABC(i))
         polygonIndexes[i] = null;
   }
@@ -355,7 +352,7 @@ public class MeshSurface {
       return false;
     Object[] colorData = (Object[]) slabObject[3];
     boolean isGhost = (colorData != null);
-    if (polygonCount0 == 0 && vertexCount0 == 0) {
+    if (bsSlabDisplay == null || polygonCount0 == 0 && vertexCount0 == 0) {
       polygonCount0 = polygonCount;
       vertexCount0 = vertexCount;
       bsSlabDisplay = BitSetUtil.setAll(polygonCount == 0 ? vertexCount
@@ -363,13 +360,22 @@ public class MeshSurface {
       bsSlabGhost = null;
       if (polygonCount == 0 && vertexCount == 0)
         return false;
+    } else if (isMerged) {
+      if (polygonCount == 0)
+        bsSlabDisplay.set(mergeVertexCount0, vertexCount);
+      else
+        bsSlabDisplay.set(mergePolygonCount0, polygonCount);
     }
+
     if (isGhost) {
       if (bsSlabGhost == null)
         bsSlabGhost = new BitSet();
       slabMeshType = ((Integer) colorData[0]).intValue();
       slabColix = ((Short) colorData[1]).shortValue();
+      if (Graphics3D.isColixColorInherited(slabColix))
+        slabColix = Graphics3D.copyColixTranslucency(slabColix, colix);
       andCap = false;
+      colix = Graphics3D.getColixTranslucent(colix, false, 0);
     }
 
     
@@ -477,6 +483,11 @@ public class MeshSurface {
   private boolean doGhost;
   private boolean doCap;
   private int iD, iE;
+
+  public int mergeVertexCount0;
+  public int mergePolygonCount0;
+  public boolean isMerged;
+
   
   public void getIntersection(float distance, Point4f plane,
                               Point3f[] ptCenters, List<Point3f[]> vData,
@@ -514,7 +525,7 @@ public class MeshSurface {
     int sourceA = 0, sourceB = 0, sourceC = 0;
     List<int[]> iPts = (andCap ? new ArrayList<int[]>() : null);
     if (polygonCount == 0) {
-      for (int i = 0; i < vertexCount; i++) {
+      for (int i = mergeVertexCount0; i < vertexCount; i++) {
         if (Float.isNaN(fData[i])
             || checkSlab(tokType, vertices[i], fData[i], distance, plane,
                 ptCenters) > 0)
@@ -523,7 +534,7 @@ public class MeshSurface {
       return;
     }
     int iLast = polygonCount;
-    for (int i = 0; i < iLast; i++) {
+    for (int i = mergePolygonCount0; i < iLast; i++) {
       if (!setABC(i))
         continue;
       int check1 = polygonIndexes[i][3];
@@ -782,12 +793,9 @@ public class MeshSurface {
         int[] ipts = iPts.get(i);
         //int p =
         addPolygon(ipts[0], v0, ipts[1], 0, 0, 0, bsSlabDisplay);
-        //System.out.println("polygon " + p + " " + ipts[0] + " " + v0 + " "
-          //  + ipts[1]);
-        //        System.out.println("draw d" + i + "  @{point"+vertices[ipts[0]] + "} @{point"+vertices[ipts[1]] + "}" );
       }
-      //System.out.println(vertices[v0] + "  " + v0);
     }
+    
     if (!doClean)
       return;
     BitSet bsv = new BitSet();

@@ -32,6 +32,7 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.ContactPair;
 import org.jmol.util.Logger;
 
 import org.jmol.util.TextFormat;
@@ -45,6 +46,7 @@ import org.jmol.jvxl.data.MeshData;
 abstract class AtomDataReader extends VolumeDataReader {
 
   protected float maxDistance;
+  protected ContactPair contactPair;
 
   AtomDataReader(SurfaceGenerator sg) {
     super(sg);
@@ -79,14 +81,30 @@ abstract class AtomDataReader extends VolumeDataReader {
   @Override
   protected void setup(boolean isMapData) {
     //CANNOT BE IN HERE IF atomDataServer is not valid
-    params.iUseBitSets = true;
+    contactPair = params.contactPair;
     doAddHydrogens = (atomDataServer != null && params.addHydrogens); //Jvxl cannot do this on its own
     modelIndex = params.modelIndex;
     if (params.bsIgnore != null)
       bsMyIgnored = params.bsIgnore;
+    if (params.volumeData != null) {
+      setVolumeData(params.volumeData);
+      setBoundingBox(volumeData.volumetricOrigin, 0);
+      ptXyzTemp.set(volumeData.volumetricOrigin);
+      for (int i = 0; i < 3; i++)
+        ptXyzTemp.scaleAdd(volumeData.voxelCounts[i] - 1, 
+            volumeData.volumetricVectors[i], ptXyzTemp);
+      setBoundingBox(ptXyzTemp, 0);
+    }
     havePlane = (params.thePlane != null);
     if (havePlane)
       volumeData.setPlaneParameters(params.thePlane);
+  }
+
+  protected void markPlaneVoxels(Point3f p, float r) {
+    for (int i = 0, pt = thisX * yzCount, pt1 = pt + yzCount; pt < pt1; pt++, i++) {
+      volumeData.getPoint(pt, ptXyzTemp);
+      thisPlane[i] = ptXyzTemp.distance(p) - r;
+    }    
   }
 
   protected void setVolumeForPlane() {
@@ -382,11 +400,15 @@ abstract class AtomDataReader extends VolumeDataReader {
   protected void setGridLimitsForAtom(Point3f ptA, float rA, Point3i pt0,
                                       Point3i pt1) {
     rA += margin; // to span corner-to-corner possibility
-    volumeData.xyzToVoxelPt(ptA.x - rA, ptA.y - rA, ptA.z - rA, pt0);
+    volumeData.xyzToVoxelPt(ptA.x, ptA.y, ptA.z, pt0);
+    int x = (int) (rA / volumeData.volumetricVectorLengths[0]);
+    int y = (int) (rA / volumeData.volumetricVectorLengths[1]);
+    int z = (int) (rA / volumeData.volumetricVectorLengths[2]);
+    pt1.set(pt0.x + x, pt0.y + y, pt0.z + z);
+    pt0.set(pt0.x - x, pt0.y - y, pt0.z - z);
     pt0.x = Math.max(pt0.x - 1, 0);
     pt0.y = Math.max(pt0.y - 1, 0);
     pt0.z = Math.max(pt0.z - 1, 0);
-    volumeData.xyzToVoxelPt(ptA.x + rA, ptA.y + rA, ptA.z + rA, pt1);
     pt1.x = Math.min(pt1.x + 1, nPointsX);
     pt1.y = Math.min(pt1.y + 1, nPointsY);
     pt1.z = Math.min(pt1.z + 1, nPointsZ);
@@ -404,13 +426,8 @@ abstract class AtomDataReader extends VolumeDataReader {
     for (int iAtom = myAtomCount; --iAtom >= 0;) {
       if (bs != null && !bs.get(iAtom))
         continue;
-      Point3f ptA = atomXyz[iAtom];
-      float rA = atomRadius[iAtom] + margin;
-      volumeData.xyzToVoxelPt(ptA.x - rA, ptA.y - rA, ptA.z - rA, pt0);
-      int min = Math.max(pt0.x - 1, 0);
-      volumeData.xyzToVoxelPt(ptA.x + rA, ptA.y + rA, ptA.z + rA, pt1);
-      int max = Math.min(pt1.x + 1, nPointsX);
-      for (int i = min; i < max; i++)
+      setGridLimitsForAtom(atomXyz[iAtom], atomRadius[iAtom], pt0, pt1);
+      for (int i = pt0.x; i < pt1.x; i++)
         bsAtomMinMax[i].set(iAtom);
       //System.out.println("for atom " + iAtom + " " + ptA + " " + min + " " + max);
     }
@@ -436,6 +453,8 @@ abstract class AtomDataReader extends VolumeDataReader {
         continue;
       float rA0 = rA + r0;
       setGridLimitsForAtom(ptA, rA0, pt0, pt1);
+      //pt1.y = nPointsY;
+      //pt1.z = nPointsZ;
       if (isProgressive) {
         pt0.x = thisX;
         pt1.x = thisX + 1;

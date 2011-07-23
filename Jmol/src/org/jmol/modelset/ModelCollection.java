@@ -54,6 +54,7 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 
+import org.jmol.util.BoxInfo;
 import org.jmol.util.Elements;
 import org.jmol.util.Logger;
 import org.jmol.util.OutputStringBuffer;

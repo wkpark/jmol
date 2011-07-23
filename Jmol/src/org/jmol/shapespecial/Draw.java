@@ -916,7 +916,7 @@ public void initShape() {
           dist /= 2f;
         if (isPlane && isRotated45)
           dist *= 1.4142f;
-        Measure.calcXYNormalToLine(ptList[0], ptList[1], normal);
+        Measure.getNormalToLine(ptList[0], ptList[1], normal);
         normal.scale(dist);
         if (isPlane) {
           ptList[2] = new Point3f(center);

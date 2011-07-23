@@ -100,7 +100,7 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
       radiusData = rd;
       atoms = modelSet.atoms;
       viewer = modelSet.viewer;
-      distance = 5f * rd.value;
+      distance = (rd.type == RadiusData.TYPE_OFFSET ? 5f + rd.value : 5f * rd.value);
       vdw1 = atoms[atomIndex].getVanderwaalsRadiusFloat(viewer, rd.vdwType);
     }
     checkGreater = (isGreaterOnly && atomIndex != Integer.MAX_VALUE);
@@ -158,7 +158,14 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
           if (atoms[iAtom].isCovalentlyBonded(atoms[atomIndex]))
             continue;
           d = atoms[iAtom].getVanderwaalsRadiusFloat(viewer, radiusData.vdwType) + vdw1;
-          d *= radiusData.value;
+          switch (radiusData.type) {
+          case RadiusData.TYPE_OFFSET:
+            d += radiusData.value * 2;
+            break;
+          case RadiusData.TYPE_FACTOR:
+            d *= radiusData.value;
+            break;  
+          }
           d *= d;
         } else {
           d = distanceSquared;

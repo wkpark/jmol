@@ -240,12 +240,6 @@ public class SurfaceGenerator {
     return params;
   }
 
-  public void setParameters(Parameters p) {
-    params = p;
-    if (surfaceReader != null)
-      surfaceReader.params = params;
-  }
-
   public String getScript() {
     //System.out.println("getting script " + params.script);
     return params.script;
@@ -263,7 +257,7 @@ public class SurfaceGenerator {
     return params.bsIgnore;
   }
   
-  VolumeData getVolumeData() {
+  public VolumeData getVolumeData() {
     return volumeData;
   }
 
@@ -287,10 +281,6 @@ public class SurfaceGenerator {
 */  
   public void setModelIndex(int modelIndex) {
     params.modelIndex = modelIndex;
-  }
-
-  public boolean getIUseBitSets() {
-    return params.iUseBitSets;
   }
 
   public boolean getIAddGridPoints() {
@@ -624,6 +614,12 @@ public class SurfaceGenerator {
       params.center.set((Point3f) value);
       return true;
     }
+    
+    if ("volumeData" == propertyName) {
+      params.volumeData = (VolumeData) value;
+      return true;
+    }
+      
 
     if ("origin" == propertyName) {
       params.origin = (Point3f) value;
@@ -690,7 +686,7 @@ public class SurfaceGenerator {
 
     if ("radius" == propertyName) {
       Logger.info("solvent probe radius set to " + value);
-      params.setRadius((RadiusData) value);
+      params.atomRadiusData = (RadiusData) value;
       return true;
     }
 
@@ -1117,10 +1113,8 @@ public class SurfaceGenerator {
     if (surfaceReader.hasColorData || params.colorDensity) {
       params.state = Parameters.STATE_DATA_COLORED;
       colorIsosurface();
-      surfaceReader = null;
-    } else {
-      surfaceReader = null; // resets voxel reader for mapping
     }
+    surfaceReader = null;
   }
 
   private void mapSurface() {
@@ -1158,6 +1152,7 @@ public class SurfaceGenerator {
     }
     colorIsosurface();
     surfaceReader.closeReader();
+    surfaceReader = null;
   }
 
   public List<Object[]> getSlabInfo() {

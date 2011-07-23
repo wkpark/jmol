@@ -28,7 +28,7 @@ import java.text.NumberFormat;
 
 import org.jmol.api.SymmetryInterface;
 import org.jmol.g3d.Graphics3D;
-import org.jmol.modelset.BoxInfo;
+import org.jmol.util.BoxInfo;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.StateManager;

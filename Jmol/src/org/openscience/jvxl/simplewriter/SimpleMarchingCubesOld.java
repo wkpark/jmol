@@ -180,6 +180,7 @@ public class SimpleMarchingCubesOld {
     }
     int cellIndex0 = cubeCountY * cubeCountZ - 1;
     int cellIndex = cellIndex0;
+    float[][][] voxelData = (mode == MODE_CUBE ? volumeData.getVoxelData() : null);
     for (int x = x0; x != x1; x += xStep, ptX += ptStep, pt = ptX, cellIndex = cellIndex0) {
       if (mode == MODE_GETXYZ) {
         float[] plane = xyPlanes[0];
@@ -219,7 +220,7 @@ public class SimpleMarchingCubesOld {
               break;
             default:
             case MODE_CUBE:
-              vertexValues[i] = volumeData.voxelData[x + offset.x][y + offset.y][z
+              vertexValues[i] = voxelData[x + offset.x][y + offset.y][z
                   + offset.z];
               isInside = isInside(vertexValues[i], cutoff, isCutoffAbsolute);
               if (isInside)

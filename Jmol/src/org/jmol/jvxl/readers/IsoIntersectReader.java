@@ -28,6 +28,7 @@ import java.util.BitSet;
 
 import javax.vecmath.Point3f;
 
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
 class IsoIntersectReader extends AtomDataReader {
@@ -36,6 +37,7 @@ class IsoIntersectReader extends AtomDataReader {
   private static final int TYPE_SUM = 1;
   private static final int TYPE_DIFF = 2;
   private static final int TYPE_MAX = 3;
+  private static final int TYPE_DIFF_PAIR = 4;
 
   IsoIntersectReader(SurfaceGenerator sg) {
     super(sg);
@@ -49,7 +51,6 @@ class IsoIntersectReader extends AtomDataReader {
   private Object[] func;
   private int funcType = TYPE_FUNCTION;
   
-
   @Override
   protected boolean readVolumeParameters(boolean isMapData) {
     Logger.startTimer();
@@ -65,32 +66,41 @@ class IsoIntersectReader extends AtomDataReader {
     return true;
   }
   
+  
   @Override
   protected void setup(boolean isMapData) {
     super.setup(isMapData);
     params.fullyLit = true;
     point = params.point;
-    BitSet bsA = params.intersection[0];
-    BitSet bsB = params.intersection[1];
-    BitSet bsSelected = new BitSet();
-    bsSelected.or(bsA);
-    bsSelected.or(bsB);
-    doUseIterator = true; // just means we want a map
-    getAtoms(bsSelected, doAddHydrogens, true, true, false, false, false, Float.NaN);
-    
-    for (int i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1))
-      myBsA.set(myIndex[i]);
-    for (int i = bsB.nextSetBit(0); i >= 0; i = bsB.nextSetBit(i + 1))
-      myBsB.set(myIndex[i]);
-    setHeader("VDW intersection surface", params.calculationType);
-    setRanges(params.solvent_ptsPerAngstrom, params.solvent_gridMax);
-    margin = 5f;
     if (params.func instanceof String) {
-      funcType = (params.func.equals("a-b") ? TYPE_DIFF : params.func.equals("a+b") ? TYPE_SUM : TYPE_MAX);  
+      funcType = (params.func.equals("a-b") ? TYPE_DIFF : params.func
+          .equals("a+b") ? TYPE_SUM : TYPE_MAX);
     } else if (params.func == null || atomDataServer == null) {
       funcType = TYPE_DIFF;
     } else {
       func = (Object[]) params.func;
+    }
+    if (contactPair == null) {
+      BitSet bsA = params.intersection[0];
+      BitSet bsB = params.intersection[1];
+      System.out.println("select " + Escape.escape(bsA) + ";color white");
+      System.out.println("select " + Escape.escape(bsB) + ";color yellow");
+      
+      BitSet bsSelected = new BitSet();
+      bsSelected.or(bsA);
+      bsSelected.or(bsB);
+      doUseIterator = true; // just means we want a map
+      getAtoms(bsSelected, doAddHydrogens, true, true, false, false, false,
+          Float.NaN);      
+      for (int i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1))
+        myBsA.set(myIndex[i]);
+      for (int i = bsB.nextSetBit(0); i >= 0; i = bsB.nextSetBit(i + 1))
+        myBsB.set(myIndex[i]);
+      setHeader("VDW intersection surface", params.calculationType);
+      setRanges(params.solvent_ptsPerAngstrom, params.solvent_gridMax);
+      margin = 5f;
+    } else {
+      setVolumeData();
     }
     isProgressive = isXLowToHigh = true;
   }
@@ -103,22 +113,26 @@ class IsoIntersectReader extends AtomDataReader {
       initPlanes();
     }
 
-    thisX = x;
-    
+    thisX = x;   
     thisPlane= yzPlanes[x % 2];
-    resetPlane(Float.MAX_VALUE);
-    thisAtomSet = bsAtomMinMax[0][x];
-    markSphereVoxels(0, params.distance);
-
-    thisPlane = thisPlaneB;
-    resetPlane(Float.MAX_VALUE);
-    thisAtomSet = bsAtomMinMax[1][x];
-    markSphereVoxels(0, params.distance);
-    
+    if(contactPair == null) {
+      thisAtomSet = bsAtomMinMax[0][x];
+      resetPlane(Float.MAX_VALUE);
+      markSphereVoxels(0, params.distance);
+      thisPlane = thisPlaneB;
+      thisAtomSet = bsAtomMinMax[1][x];
+      resetPlane(Float.MAX_VALUE);
+      markSphereVoxels(0, params.distance);
+    } else {
+      markPlaneVoxels(contactPair.pt1, contactPair.radius1);
+      thisPlane = thisPlaneB;
+      markPlaneVoxels(contactPair.pt2, contactPair.radius2);
+    }
     thisPlane = yzPlanes[x % 2];
     if (!setVoxels())
       resetPlane(0);
-    unsetVoxelData();
+    if (contactPair == null)
+      unsetVoxelData();
     return thisPlane;
   }
 
@@ -151,6 +165,7 @@ class IsoIntersectReader extends AtomDataReader {
     case TYPE_SUM:
       return (va + vb);
     case TYPE_DIFF:
+    case TYPE_DIFF_PAIR:
       return (va - vb);
     case TYPE_MAX:
       return (va>vb?va:vb);

@@ -270,7 +270,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     if (exportType == Graphics3D.EXPORT_CARTESIAN) {
       frontOnly = false;
     }
-    boolean colorSolid = (haveBsSlabGhost || vertexColixes == null || imesh.isColorSolid);
+    boolean colorSolid = (haveBsSlabGhost && (!fill || !isBicolorMap) || vertexColixes == null || imesh.isColorSolid);
     boolean noColor = (haveBsSlabGhost || vertexColixes == null || !fill && imesh.meshColix != 0);
     boolean isPlane = (imesh.jvxlData.jvxlPlane != null);
     short colix = this.colix;
@@ -328,8 +328,12 @@ public class IsosurfaceRenderer extends MeshRenderer {
         colixA = vertexColixes[iA];
         colixB = vertexColixes[iB];
         colixC = vertexColixes[iC];
-        if (isBicolorMap && (colixA != colixB || colixB != colixC))
-          continue;
+        if (isBicolorMap) {
+          if  (colixA != colixB || colixB != colixC)
+            continue;
+          if (haveBsSlabGhost)
+            colixA = colixB = colixC = Graphics3D.copyColixTranslucency(imesh.slabColix, colixA);
+        }
       }
       if (fill) {
         if (generateSet) {

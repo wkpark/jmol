@@ -556,10 +556,13 @@ public class MeshSurface {
       int test1 = (d1 != 0 && d1 < 0 ? 1 : 0) + (d2 != 0 && d2 < 0 ? 2 : 0)
           + (d3 != 0 && d3 < 0 ? 4 : 0);
 
-      // testing -- just looking at new set
-      //      if (test1 == 7)
-      //      test1 = 0;
-
+/*      
+      if (iA == 960 || iB == 960 || iC == 960) {
+        System.out.println(i + " " + iA + " " + iB + " " + iC + " "+ d1 + " " + d2 + " " + d3 + " " + test1);
+        System.out.println("testing messhsurf ");
+      }
+*/     
+/*      
       if (isMeshIntersect && test1 != 7 && test1 != 0) {
         // NOT IMPLEMENTED
         boolean isOK = (d1 == 0 && d2 * d3 >= 0 || d2 == 0 && (d1 * d3) >= 0 || d3 == 0
@@ -581,6 +584,7 @@ public class MeshSurface {
           // not fully implemented -- need to check other way as well.
         }
       }
+*/      
       switch (test1) {
       default:
       case 7:
@@ -661,8 +665,8 @@ public class MeshSurface {
           //       1 B-------C  1
           boolean tossBC = (test1 == 1);
           if (tossBC || isGhost) {
-            // 1: BC on side to toss
-            if (!getDE(fracs, iA, iB, iC, true))
+            // 1: BC on side to toss -- +tossBC+isGhost  -tossBC+isGhost
+            if (!getDE(fracs, iA, iB, iC, tossBC, isGhost))
               break;
             if (iD < 0)
               iD = addIntersectionVertex(pts[0], values[0], sourceA, mapEdge,
@@ -675,8 +679,8 @@ public class MeshSurface {
             if (!isGhost)
               break;
           }
-          // BC on side to keep
-          if (!getDE(fracs, iA, iC, iB, false))
+          // BC on side to keep -- -tossBC+isGhost,  +tossBC+isGhost
+          if (!getDE(fracs, iA, iC, iB, tossBC, isGhost))
             break;
           bs = (tossBC ? bsSlabGhost : bsSlabDisplay);
           if (iE < 0) {
@@ -701,7 +705,7 @@ public class MeshSurface {
           boolean tossAC = (test1 == 2);
           if (tossAC || isGhost) {
             //AC on side to toss
-            if (!getDE(fracs, iB, iC, iA, true))
+            if (!getDE(fracs, iB, iC, iA, tossAC, isGhost))
               break;
             bs = (tossAC ? bsSlabDisplay : bsSlabGhost);
             if (iE < 0)
@@ -715,7 +719,7 @@ public class MeshSurface {
               break;
           }
           // AC on side to keep
-          if (!getDE(fracs, iB, iA, iC, false))
+          if (!getDE(fracs, iB, iA, iC, tossAC, isGhost))
             break;
           bs = (tossAC ? bsSlabGhost : bsSlabDisplay);
           if (iD < 0) {
@@ -739,7 +743,7 @@ public class MeshSurface {
           //
           boolean tossAB = (test1 == 4);
           if (tossAB || isGhost) {
-            if (!getDE(fracs, iC, iA, iB, true))
+            if (!getDE(fracs, iC, iA, iB, tossAB, isGhost))
               break;
             if (iD < 0)
               iD = addIntersectionVertex(pts[0], values[0], sourceC, mapEdge,
@@ -753,7 +757,7 @@ public class MeshSurface {
               break;
           }
           //AB on side to keep
-          if (!getDE(fracs, iC, iB, iA, false))
+          if (!getDE(fracs, iC, iB, iA, tossAB, isGhost))
             break;
           bs = (tossAB ? bsSlabGhost : bsSlabDisplay);
           if (iE < 0) {
@@ -838,7 +842,7 @@ public class MeshSurface {
     return (fracs[i] == 0 ? i0 : fracs[i] == 1 ? i1 : -1);
   }
 
-  private boolean getDE(float[] fracs, int i1, int i2, int i3, boolean toss23) {
+  private boolean getDE(float[] fracs, int i1, int i2, int i3, boolean toss23, boolean isGhost) {
     
     //          0 (1) 0
     //            / \
@@ -872,7 +876,7 @@ public class MeshSurface {
       }
       return doCap;
     }
-    doGhost = false;
+    doGhost = (isGhost == toss23);
     return true;
   }            
 

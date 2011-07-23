@@ -8404,13 +8404,13 @@
   <fah_proj number="6077" name="p6077_Mutant_scan" public="y"
     server="171.64.65.54" atoms="76980" preferred="3" deadline="6"
     credit="481" frames="100" code="A3" contact="kasson" kfactor="2.1"/>
-  <fah_proj number="6078" name="p6078_HAFP3" public="n"
+  <fah_proj number="6078" name="p6078_HAFP3" public="y"
     server="171.64.65.54" atoms="77445" preferred="2.5" deadline="4.2"
     credit="522.0" frames="100" code="A3" contact="kasson" kfactor="3.0"/>
   <fah_proj number="6079" name="p6079_HAFP3-mutant" public="y"
     server="171.64.65.54" atoms="77484" preferred="2.5" deadline="4.2"
     credit="518.0" frames="100" code="A3" contact="kasson" kfactor="2.98"/>
-  <fah_proj number="6080" name="p6080_HAFP3-mutant" public="n"
+  <fah_proj number="6080" name="p6080_HAFP3-mutant" public="y"
     server="171.64.65.54" atoms="77457" preferred="2.5" deadline="4.2"
     credit="521.0" frames="100" code="A3" contact="kasson" kfactor="2.99"/>
 
@@ -8648,6 +8648,9 @@
   <fah_proj number="6870" name="Abeta42_tet" public="n"
     server="171.64.65.65" atoms="97884" preferred="8" deadline="12"
     credit="529.0" frames="100" code="A4" contact="lin5" kfactor="0.82"/>
+  <fah_proj number="6871" name="Abeta42_p3" public="n"
+    server="171.67.108.52" atoms="12197" preferred="14" deadline="21"
+    credit="67.0" frames="100" code="G" contact="lin5" kfactor="0.0"/>
   <fah_proj number="6880" name="Abeta42_shooting" public="y" file="xyz"
     server="171.67.108.33" atoms="12222" preferred="14" deadline="21"
     credit="69" frames="100" code="G" contact="lin5" contrib="Danny Nielsen"/>
@@ -8678,12 +8681,15 @@
   <fah_proj number="6890" name="Abeta42_dimer" public="y"
     server="171.67.108.52" atoms="12921" preferred="16" deadline="23"
     credit="75.0" frames="100" code="G" contact="lin5" kfactor="0.0"/>
-  <fah_proj number="6891" name="Abeta42_dimer" public="y"
+  <fah_proj number="6891" name="Abeta42_dimer" public="y" file="xyz"
     server="171.67.108.52" atoms="22851" preferred="27" deadline="40"
-    credit="137.0" frames="100" code="G" contact="lin5" kfactor="0.0"/>
+    credit="137.0" frames="100" code="G" contact="lin5" kfactor="0.0" contrib="Danny Nielsen"/>
   <fah_proj number="6894" name="Abeta42_dimer_E" public="n"
     server="171.67.108.52" atoms="22659" preferred="27" deadline="39"
     credit="133.0" frames="100" code="G" contact="lin5" kfactor="0.0"/>
+  <fah_proj number="6896" name="Abeta42_dimer_fib" public="n"
+    server="171.67.108.52" atoms="22791" preferred="27" deadline="39"
+    credit="135.0" frames="100" code="G" contact="lin5" kfactor="0.0"/>
 
   <!-- Projects 6900 to 6999 -->
   <fah_proj number="6900" name="ves_shooting" public="y"
@@ -9141,6 +9147,9 @@
   <fah_proj number="7503" name="magainin/sol" public="n"
     server="128.143.199.97" atoms="29557" preferred="2.7" deadline="4.4"
     credit="552.0" frames="100" code="A3" contact="kasson" kfactor="3.03"/>
+  <fah_proj number="7504" name="kpc2" public="n"
+    server="128.143.199.97" atoms="69867" preferred="3.1" deadline="5.2"
+    credit="644.0" frames="100" code="A3" contact="kasson" kfactor="2.99"/>
 
   <!-- Projects 7600 to 7699 -->
   <fah_proj number="7600" name="p7600" public="y"
@@ -9681,6 +9690,15 @@
   <fah_proj number="10439" name="p10439" public="n"
     server="171.64.65.92" atoms="576" preferred="8" deadline="12"
     credit="21.0" frames="100" code="A4" contact="kyleb" kfactor="0.69"/>
+  <fah_proj number="10440" name="p10440" public="n"
+    server="171.64.65.81" atoms="0" preferred="8" deadline="12"
+    credit="311.0" frames="100" code="A4" contact="kyleb" kfactor="0.69"/>
+  <fah_proj number="10441" name="p10441" public="n"
+    server="171.64.65.81" atoms="0" preferred="8" deadline="12"
+    credit="311.0" frames="100" code="A4" contact="kyleb" kfactor="0.69"/>
+  <fah_proj number="10442" name="p10442" public="n"
+    server="171.64.65.81" atoms="0" preferred="8" deadline="12"
+    credit="311.0" frames="100" code="A4" contact="kyleb" kfactor="0.69"/>
 
   <!-- Projects 10500 to 10599 -->
   <fah_proj number="10501" name="p10501" public="y"

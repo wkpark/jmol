@@ -40,7 +40,6 @@ import java.util.Hashtable;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -52,7 +51,6 @@ import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import sun.awt.WindowClosingListener;
 
 import org.jmol.api.JmolViewer;
 import org.jmol.export.history.HistoryFile;
@@ -63,7 +61,7 @@ import org.jmol.i18n.GT;
  * 
  * @author Jonathan Gutow (gutow@uwosh.edu)
  */
-public class SurfaceToolGUI extends JPanel implements WindowClosingListener,
+class SurfaceToolGUI extends JPanel implements 
     WindowConstants, WindowListener, WindowFocusListener, ChangeListener,
     ActionListener {
 
@@ -89,7 +87,7 @@ public class SurfaceToolGUI extends JPanel implements WindowClosingListener,
   private JPanel positionThicknessPanel;
   private JSlider positionSlider;
   private JSlider thicknessSlider;
-  private JCheckBox[] objectCheckBoxes;
+  //private JCheckBox[] objectCheckBoxes;
   private ButtonGroup angleUnits;
   private ButtonGroup whichOrigin;
 
@@ -108,7 +106,7 @@ public class SurfaceToolGUI extends JPanel implements WindowClosingListener,
    *        (SurfaceTool) the surfaceTool that activated this GUI
    * @author Jonathan Gutow (gutow@uwosh.edu)
    */
-  public SurfaceToolGUI(JmolViewer viewer, HistoryFile hfile, String winName,
+  SurfaceToolGUI(JmolViewer viewer, HistoryFile hfile, String winName,
       SurfaceTool slicer) {
     super(new BorderLayout());
     this.historyFile = hfile;
@@ -176,7 +174,7 @@ public class SurfaceToolGUI extends JPanel implements WindowClosingListener,
       ghostCheck.addActionListener(this);
       boundaryPlaneCheck = new JCheckBox(GT._("Slice Planes"));
       boundaryPlaneCheck.setSelected(false);
-      slicer.hideSliceBoundaryPlanes();
+      slicer.showSliceBoundaryPlanes(false);
       boundaryPlaneCheck.addActionListener(this);
       ghostPanel.add(ghostCheck);
       ghostPanel.add(boundaryPlaneCheck);
@@ -280,20 +278,11 @@ public class SurfaceToolGUI extends JPanel implements WindowClosingListener,
       }
     }
     if (e.getSource() == ghostCheck) {
-      if (ghostCheck.isSelected()) {
-        slicer.setGhostOn(true);
-        slicer.updateSlices();
-      } else {
-        slicer.setGhostOn(false);
-        slicer.updateSlices();
-      }
+      slicer.setGhostOn(ghostCheck.isSelected());
+      slicer.updateSlices();
     }
     if (e.getSource() == boundaryPlaneCheck) {
-      if (boundaryPlaneCheck.isSelected()) {
-        slicer.showSliceBoundaryPlanes();
-      } else {
-        slicer.hideSliceBoundaryPlanes();
-      }
+      slicer.showSliceBoundaryPlanes(boundaryPlaneCheck.isSelected());
     }
   }
 
@@ -337,7 +326,7 @@ public class SurfaceToolGUI extends JPanel implements WindowClosingListener,
           temp = temp.substring(0, 4);
         }
       }
-      positionLabels.put((i * 30), new JLabel(temp));
+      positionLabels.put(Integer.valueOf(i * 30), new JLabel(temp));
     }
     positionSlider.setLabelTable(positionLabels);
     positionSlider.setPaintLabels(true);
@@ -355,7 +344,7 @@ public class SurfaceToolGUI extends JPanel implements WindowClosingListener,
       if (temp.length() > 5) {
         temp = temp.substring(0, 4);
       }
-      thicknessLabels.put((i * 30), new JLabel(temp));
+      thicknessLabels.put(Integer.valueOf(i * 30), new JLabel(temp));
     }
     thicknessSlider.setLabelTable(thicknessLabels);
     thicknessSlider.setPaintLabels(true);
@@ -369,20 +358,20 @@ public class SurfaceToolGUI extends JPanel implements WindowClosingListener,
     angleLabels.put(new Integer(0), new JLabel("0"));
     switch (slicer.getAngleUnits()) {
     case SurfaceTool.DEGREES:
-      angleLabels.put(30, new JLabel("30"));
-      angleLabels.put(60, new JLabel("60"));
-      angleLabels.put(90, new JLabel("90"));
-      angleLabels.put(120, new JLabel("120"));
-      angleLabels.put(150, new JLabel("150"));
-      angleLabels.put(180, new JLabel("180"));
+      angleLabels.put(Integer.valueOf(30), new JLabel("30"));
+      angleLabels.put(Integer.valueOf(60), new JLabel("60"));
+      angleLabels.put(Integer.valueOf(90), new JLabel("90"));
+      angleLabels.put(Integer.valueOf(120), new JLabel("120"));
+      angleLabels.put(Integer.valueOf(150), new JLabel("150"));
+      angleLabels.put(Integer.valueOf(180), new JLabel("180"));
       break;
     case SurfaceTool.RADIANS:
-      angleLabels.put(30, new JLabel("0.52"));
-      angleLabels.put(60, new JLabel("1.05"));
-      angleLabels.put(90, new JLabel("1.75"));
-      angleLabels.put(120, new JLabel("2.09"));
-      angleLabels.put(150, new JLabel("2.62"));
-      angleLabels.put(180, new JLabel("3.14"));
+      angleLabels.put(Integer.valueOf(30), new JLabel("0.52"));
+      angleLabels.put(Integer.valueOf(60), new JLabel("1.05"));
+      angleLabels.put(Integer.valueOf(90), new JLabel("1.75"));
+      angleLabels.put(Integer.valueOf(120), new JLabel("2.09"));
+      angleLabels.put(Integer.valueOf(150), new JLabel("2.62"));
+      angleLabels.put(Integer.valueOf(180), new JLabel("3.14"));
       break;
     }
     angleXYSlider.setLabelTable(angleLabels);
@@ -395,7 +384,7 @@ public class SurfaceToolGUI extends JPanel implements WindowClosingListener,
     angleZSlider.setValue(tempAngle);
   }
 
-  public void saveHistory() {
+  void saveHistory() {
     if (historyFile == null)
       return;
     historyFile.addWindowInfo(histWinName, slicerFrame, null);
@@ -411,7 +400,7 @@ public class SurfaceToolGUI extends JPanel implements WindowClosingListener,
   /**
    * @param layout
    */
-  public SurfaceToolGUI(LayoutManager layout) {
+  SurfaceToolGUI(LayoutManager layout) {
     super(layout);
     // TODO
   }
@@ -419,7 +408,7 @@ public class SurfaceToolGUI extends JPanel implements WindowClosingListener,
   /**
    * @param isDoubleBuffered
    */
-  public SurfaceToolGUI(boolean isDoubleBuffered) {
+  SurfaceToolGUI(boolean isDoubleBuffered) {
     super(isDoubleBuffered);
     // TODO
   }
@@ -428,7 +417,7 @@ public class SurfaceToolGUI extends JPanel implements WindowClosingListener,
    * @param layout
    * @param isDoubleBuffered
    */
-  public SurfaceToolGUI(LayoutManager layout, boolean isDoubleBuffered) {
+  SurfaceToolGUI(LayoutManager layout, boolean isDoubleBuffered) {
     super(layout, isDoubleBuffered);
     // TODO
   }
@@ -436,14 +425,14 @@ public class SurfaceToolGUI extends JPanel implements WindowClosingListener,
   /**
    * @return (JFrame) The frame for the slicerGUI
    */
-  public JFrame getFrame() {
+  JFrame getFrame() {
     return slicerFrame;
   }
 
   /**
    * Brings the surfaceTool to the front and updates sliders, etc...
    */
-  public void toFront() {
+  void toFront() {
     slicer.toFrontOrGotFocus();
     updateAngleSliders();
     updatePositionSlider();
@@ -534,22 +523,6 @@ public class SurfaceToolGUI extends JPanel implements WindowClosingListener,
   public void windowDeactivated(WindowEvent e) {
     // TODO
 
-  }
-
-  /* (non-Javadoc)
-   * @see sun.awt.WindowClosingListener#windowClosingDelivered(java.awt.event.WindowEvent)
-   */
-  public RuntimeException windowClosingDelivered(WindowEvent arg0) {
-    // TODO
-    return null;
-  }
-
-  /* (non-Javadoc)
-   * @see sun.awt.WindowClosingListener#windowClosingNotify(java.awt.event.WindowEvent)
-   */
-  public RuntimeException windowClosingNotify(WindowEvent arg0) {
-    // TODO
-    return null;
   }
 
 }

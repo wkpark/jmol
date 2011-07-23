@@ -489,4 +489,8 @@ public class Mesh extends MeshSurface {
     return info;
   }
 
+  public Point3f[] getBoundingBox() {
+    return null;
+  }
+
 }

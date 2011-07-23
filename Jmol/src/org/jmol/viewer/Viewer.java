@@ -7653,6 +7653,7 @@ private void zap(String msg) {
         + "disablePopupMenu...." // 160
         + "defaultDirectory...." // 180
         + "getPopupMenu........" // 200
+        + "shapeManager........" // 220
     ).indexOf(infoType)) {
 
     case 0:
@@ -7711,6 +7712,8 @@ private void zap(String msg) {
       if (paramInfo instanceof String)
         return getMenu((String) paramInfo);
       return getPopupMenu();
+    case 220:
+      return shapeManager.getProperty(paramInfo);
     default:
       Logger.error("ERROR in getProperty DATA_API: " + infoType);
       return null;
@@ -9895,6 +9898,10 @@ private void zap(String msg) {
     transformManager.setZslabPoint(pt);
   }
 
+  @Override
+  public void calcAtomsMinMax(BitSet bs, BoxInfo boxInfo) {
+    modelSet.calcAtomsMinMax(bs, boxInfo);
+  }
   public int[] getCrossHairMinMax() {
     return shapeManager.getCrossHairMinMax();
   }

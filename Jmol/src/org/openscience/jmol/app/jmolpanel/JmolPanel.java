@@ -31,7 +31,6 @@ import org.jmol.export.dialog.Dialog;
 import org.jmol.export.history.HistoryFile;
 import org.jmol.export.image.ImageCreator;
 import org.jmol.i18n.GT;
-import org.openscience.jmol.app.surfacetool.SurfaceToolGUI;
 import org.openscience.jmol.app.surfacetool.SurfaceTool;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
@@ -1372,7 +1371,7 @@ public class JmolPanel extends JPanel implements SplashInterface {
   void createSurfaceTool(){
     //TODO check to see if it already exists, if so bring to front.
     if(surfaceTool!=null){
-      surfaceTool.getGUI().toFront();
+      surfaceTool.toFront();
     }else{
     surfaceTool = new SurfaceTool(viewer, historyFile, SURFACETOOL_WINDOW_NAME, true);
     }

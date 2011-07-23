@@ -29,20 +29,20 @@ import javax.vecmath.*;
 
 import org.jmol.util.Measure;
 
-public class Slice {
+class Slice {
 
   //	Point3f[] vertices = new Point3f[8]; // 8 vertices (ordered to match
   // boundbox)
-  Point4f leftPlane = new Point4f(); // definition of the left plane, using Jmol format
-  Point4f middle = new Point4f();//plane representing center of slice.
-  Point4f rightPlane = new Point4f(); // definition of the left plane
+  final Point4f leftPlane = new Point4f(); // definition of the left plane, using Jmol format
+  final Point4f middle = new Point4f();//plane representing center of slice.
+  final Point4f rightPlane = new Point4f(); // definition of the left plane
   float angleXY; // 0<=anglexy< PI/2 radians
   float anglefromZ;// 0<=anglefromZ < PI/2 radians
   float position; // distance of slice middle from origin
   float thickness; // thickness of slice
-  Point3f boundBoxNegCorner;
-  Point3f boundBoxPosCorner;
-  Point3f boundBoxCenter;
+  final Point3f boundBoxNegCorner = new Point3f();
+  final Point3f boundBoxPosCorner = new Point3f();
+  final Point3f boundBoxCenter = new Point3f();
   float diagonal;
 
   /*
@@ -72,15 +72,14 @@ public class Slice {
    *        (float) angle of vector projection in XY plane (radians)
    * @param anglefromZ
    *        (float) angle of vector from Z axis (radians)
-   * @return (Point4f) meeting the Jmol definition of a plane.
+   * @param result
+   *    (Point4f) meeting the Jmol definition of a plane.
    */
-  Point4f makePlane(float length, float angleXY, float anglefromZ) {
-    Point4f result = new Point4f();
-    result.x = (float) (Math.cos(angleXY) * Math.sin(anglefromZ));
-    result.y = (float) (Math.sin(angleXY) * Math.sin(anglefromZ));
-    result.z = (float) (Math.cos(anglefromZ));
-    result.w = -1 * length;
-    return (result);
+  static void makePlane(float length, float angleXY, float anglefromZ, Point4f result) {
+    result.set((float) (Math.cos(angleXY) * Math.sin(anglefromZ))
+        , (float) (Math.sin(angleXY) * Math.sin(anglefromZ))
+        , (float) (Math.cos(anglefromZ))
+        , -length);
   }
 
   /**
@@ -110,12 +109,6 @@ public class Slice {
   void setSlice(float angleXY, float anglefromZ, float position,
                 float thickness, Point3f boundBoxCenter, Vector3f boundBoxVec,
                 boolean useMolecular) {
-    this.boundBoxNegCorner = vectoPoint(vecAdd(pointtoVec(boundBoxCenter),
-        vecScale(-1, boundBoxVec)));
-    this.boundBoxPosCorner = vectoPoint(vecAdd(pointtoVec(boundBoxCenter),
-        boundBoxVec));
-    this.boundBoxCenter = boundBoxCenter;
-    this.diagonal = boundBoxPosCorner.distance(boundBoxNegCorner);
     if (angleXY >= 0 && angleXY < Math.PI) {
       this.angleXY = angleXY;
     } else {
@@ -129,23 +122,25 @@ public class Slice {
       this.anglefromZ = (float) (anglefromZ - fix * Math.PI);
     }
     this.position = position;
-    this.middle = makePlane(position, angleXY, anglefromZ);
+    this.thickness = thickness;
+    this.boundBoxCenter.set(boundBoxCenter);
+    boundBoxNegCorner.sub(boundBoxCenter, boundBoxVec);
+    boundBoxPosCorner.add(boundBoxCenter, boundBoxVec);
+    diagonal = boundBoxPosCorner.distance(boundBoxNegCorner);
+    makePlane(position, angleXY, anglefromZ, middle);
     if (!useMolecular) {
+      // I think there's an easier way to do this....
       //correct for the offset between the boundbox center and the origin
-      Point3f pt = new Point3f();
-      pt.x = middle.x;
-      pt.y = middle.y;
-      pt.z = middle.z;
-      pt.scale((-1 * middle.w));
-      pt.add(boundBoxCenter);
+      Point3f pt = new Point3f(middle.x, middle.y, middle.z);
+      pt.scaleAdd(-middle.w, boundBoxCenter, pt);
       Measure.getPlaneThroughPoint(pt, new Vector3f(middle.x, middle.y,
           middle.z), middle);
     }
-    this.thickness = thickness;
-    this.leftPlane = new Point4f(this.middle);
-    this.leftPlane.w = middle.w + thickness / 2;
-    this.rightPlane = new Point4f(this.middle);
-    this.rightPlane.w = this.middle.w - thickness / 2;
+    leftPlane.set(middle);
+    leftPlane.w += thickness / 2;
+    rightPlane.set(middle);
+    rightPlane.w -= thickness / 2;
+    System.out.println(thickness + " left:" + leftPlane + " right:" + rightPlane);
   }
 
   /**
@@ -179,41 +174,12 @@ public class Slice {
    * 
    * @return returns this Slice
    */
-  public Slice getSlice() {
-    return (this);
+  Slice getSlice() {
+    return this;
   }
 
-  public Point4f getMiddle() {
+  Point4f getMiddle() {
     return middle;
-  }
-
-  public static Vector3f vecAdd(Vector3f v1, Vector3f v2) {
-    Vector3f result = new Vector3f();
-    result.x = v1.x + v2.x;
-    result.y = v1.y + v2.y;
-    result.z = v1.z + v2.z;
-    return (result);
-  }
-
-  public static Vector3f vecScale(float scale, Vector3f v) {
-    Vector3f result = new Vector3f();
-    result.x = scale * v.x;
-    result.y = scale * v.y;
-    result.z = scale * v.z;
-    return (result);
-  }
-
-  public static Point3f vectoPoint(Vector3f v) {
-    Point3f result = new Point3f();
-    result.x = v.x;
-    result.y = v.y;
-    result.z = v.z;
-    return (result);
-  }
-
-  public static Vector3f pointtoVec(Point3f p) {
-    Vector3f result = new Vector3f(p);
-    return (result);
   }
 
   /*	private Point3f[] calcPlaneVert(Plane plane) {

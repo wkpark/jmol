@@ -345,7 +345,8 @@ abstract public class ModelCollection extends BondCollection {
   private BitSet bboxAtoms;
   private final BoxInfo boxInfo = new BoxInfo();
   {
-    boxInfo.setBbcage(1);
+    boxInfo.addBoundBoxPoint(new Point3f(-10, -10, -10));
+    boxInfo.addBoundBoxPoint(new Point3f(10, 10, 10));
   }
   
   public Point3f getAverageAtomPoint() {

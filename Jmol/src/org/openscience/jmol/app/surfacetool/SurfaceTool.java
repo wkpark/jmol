@@ -15,7 +15,7 @@
  *  This library is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  Lesser General Public License for more details.
+ *  Lesser General License for more details.
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
@@ -25,8 +25,8 @@
 
 package org.openscience.jmol.app.surfacetool;
 
-import java.lang.reflect.Array;
-import java.util.Hashtable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
@@ -37,56 +37,55 @@ import org.jmol.api.JmolViewer;
 import org.jmol.export.history.HistoryFile;
 import org.jmol.i18n.GT;
 import org.jmol.script.Token;
+import org.jmol.shape.Mesh;
+import org.jmol.shape.MeshCollection;
 import org.jmol.shape.Shape;
-import org.jmol.shapesurface.Isosurface;
+import org.jmol.util.BoxInfo;
+import org.jmol.util.Escape;
 import org.jmol.viewer.JmolConstants;
-import org.jmol.viewer.ShapeManager;
-import org.jmol.viewer.Viewer;
-import org.jmol.util.*;
 
 /**
  * 
  */
 public class SurfaceTool {
 
-  private SurfaceToolGUI GUI;
+  private SurfaceToolGUI gui;
   boolean useGUI;
   protected JmolViewer viewer;
-  private Point3f negCorner;
-  private Point3f posCorner;
-  private Point3f center;
-  private Vector3f boxVec;
+  private final Point3f negCorner = new Point3f();
+  private final Point3f posCorner = new Point3f();
+  private final Point3f center = new Point3f();
+  private final Vector3f boxVec = new Vector3f();
   //surface specific parameters
   //TODO may want to combine the following into a single object
-  private String[] surfaceIDs = new String[0];
-  private String[] surfaceCmds = new String[0];//initially set to basic creation.
-  private boolean[] surfaceVisible = new boolean[0];
-  private boolean[] filled = new boolean[0];
-  private boolean[] meshon = new boolean[0];
+  private final List<String> surfaceIDs = new ArrayList<String>();
+  //private String[] surfaceCmds = new String[0];//initially set to basic creation.
+  //private boolean[] surfaceVisible = new boolean[0];
+  //private boolean[] filled = new boolean[0];
+  //private boolean[] meshon = new boolean[0];
   //TODO fill and mesh color, translucency, frontonly, lighting
 
-  public final static int RADIANS = 1;
-  public final static int DEGREES = 2;
+  final static int RADIANS = 1;
+  final static int DEGREES = 2;
   private int angleUnits = RADIANS;
 
   public SurfaceTool(JmolViewer viewer, HistoryFile hfile, String winName,
       boolean useGUI) {
     this.viewer = viewer;
+    this.useGUI = useGUI;
+    gui = (useGUI ? new SurfaceToolGUI(viewer, hfile, winName, this) : null);
     //initialize to match the boundbox
     updateSurfaceInfo();
     chooseBestBoundBox();
     setSurfaceToolParam();
     initSlice();
-    if (useGUI) {
-      GUI = new SurfaceToolGUI(viewer, hfile, winName, this);
-    } else {
-      GUI = null;
-      useGUI = false;
-    }
-    this.useGUI = useGUI;
   }
 
-  public void toFrontOrGotFocus() {
+  public void toFront() {
+    gui.toFront();
+  }
+
+  void toFrontOrGotFocus() {
     updateSurfaceInfo();
     chooseBestBoundBox();
     setSurfaceToolParam();
@@ -97,65 +96,49 @@ public class SurfaceTool {
     //objects that could be sliced.
     //select all atoms and molecules to start as first guess.  Want initialization
     //added to the script so do with call to script
-    viewer.script("boundbox {*};");
-    this.center = viewer.getBoundBoxCenter();
-    this.boxVec = viewer.getBoundBoxCornerVector();
-    this.negCorner = Slice.vectoPoint(Slice.vecAdd(Slice.pointtoVec(center),
-        Slice.vecScale(-1, boxVec)));
-    this.posCorner = Slice.vectoPoint(Slice.vecAdd(Slice.pointtoVec(center),
-        boxVec));
+    
+    BoxInfo box = new BoxInfo();
+    viewer.calcAtomsMinMax(null, box);
+    center.set(box.getBoundBoxCenter());
+    boxVec.set(box.getBoundBoxCornerVector());
+    posCorner.add(center, boxVec);
+    negCorner.sub(center, boxVec);
     //now iterate through all the shapes and get their XYZmin and XYZmax.  Expand
     //Boundbox used by SurfaceTool to encompass these.
-    Shape[] shapes = ((Viewer) viewer).getShapeManager().getShapes();
-    if (shapes == null)
+    surfaceIDs.clear();
+    MeshCollection mc = getIsosurfaces();
+    if (mc == null)
       return;
-    for (int i = 0; i < surfaceIDs.length; ++i) {
-      Object[] data = new Object[3];
-      data[0] = surfaceIDs[i];
-      boolean success = (shapes[JmolConstants.SHAPE_ISOSURFACE].getProperty(
-          "getBoundingBox", data));
-      Point3f[] minMax = (Point3f[]) data[2];
-      if (minMax != null) {
-        if (minMax[0].x < negCorner.x) {
-          negCorner.x = minMax[0].x;
-        }
-        if (minMax[0].y < negCorner.y) {
-          negCorner.y = minMax[0].y;
-        }
-        if (minMax[0].z < negCorner.z) {
-          negCorner.z = minMax[0].z;
-        }
-        if (minMax[1].x > posCorner.x) {
-          posCorner.x = minMax[1].x;
-        }
-        if (minMax[1].y > posCorner.y) {
-          posCorner.y = minMax[1].y;
-        }
-        if (minMax[1].z > posCorner.z) {
-          posCorner.z = minMax[1].z;
-        }
-      }
-      //check all the draw objects
+    for (int i = 0; i < mc.meshCount; i++) {
+      Mesh m = mc.meshes[i];
+      if (!m.isValid || m.vertexCount == 0 && m.polygonCount == 0)
+        continue;
+      if (m.thisID.equalsIgnoreCase("_slicerleft") || m.thisID.equalsIgnoreCase("_slicerright"))
+        continue;
+      surfaceIDs.add(m.thisID);
+      Point3f[] bb = m.getBoundingBox();
+      if (bb == null)
+        continue;
+      box.addBoundBoxPoint(bb[0]);
+      box.addBoundBoxPoint(bb[1]);    
     }
-    //update center and boxVec
-    center.x = (posCorner.x + negCorner.x) / 2;
-    center.y = (posCorner.y + negCorner.y) / 2;
-    center.z = (posCorner.z + negCorner.z) / 2;
-    boxVec = Slice.vecAdd(Slice.pointtoVec(posCorner),
-        Slice.vecScale(-1, Slice.pointtoVec(center)));
+    center.set(box.getBoundBoxCenter());
+    negCorner.sub(center, box.getBoundBoxCornerVector());
+    posCorner.add(center, box.getBoundBoxCornerVector());
+    boxVec.set(box.getBoundBoxCornerVector());
   }
 
-  public void setSurfaceToolParam() {
+  void setSurfaceToolParam() {
     //TODO should get stored parameters from History file upon initialization
     // probably belongs in another routine called only on start up.
     switch (angleUnits) {
     case RADIANS:
-      angleXYMax = (float) Math.PI;
-      anglefromZMax = (float) Math.PI;
+      //angleXYMax = (float) Math.PI;
+      //anglefromZMax = (float) Math.PI;
       break;
     case DEGREES:
-      angleXYMax = 180;
-      anglefromZMax = 180;
+      //angleXYMax = 180;
+      //anglefromZMax = 180;
       break;
     }
     thicknessMax = 2 * boxVec.length();
@@ -172,45 +155,39 @@ public class SurfaceTool {
     } else {
       positionMin = -1 * (boxVec.length());
     }
-    positionMax = positionMin + thicknessMax;
+    //positionMax = positionMin + thicknessMax;
     position = positionMin + delta;
   }
 
   private void updateSurfaceInfo() {
-    Shape[] shapes = ((Viewer) viewer).getShapeManager().getShapes();
-    if (shapes != null) {
-      //check all the isosurfaces (may have to do pmesh separately)
-      if (shapes[JmolConstants.SHAPE_ISOSURFACE] != null) {
-        //get list of surfaces by name        
-        String surfaceList = (String) ((Viewer) viewer).getShapeManager()
-            .getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "list",
-                Integer.MIN_VALUE);
-        String[] surfaces = surfaceList.split("\n");
-        String[] tempIDs = new String[surfaces.length];
-        String[] tempCmds = new String[surfaces.length];
-        for (int i = 0; i < surfaces.length; ++i) {
-          int start = surfaces[i].indexOf("id:") + 3;
-          int end = surfaces[i].indexOf(";", start);
-          tempIDs[i] = surfaces[i].substring(start, (end));
-          start = surfaces[i].indexOf("title:") + 6;
-          end = surfaces[i].indexOf(";", start);
-          tempCmds[i] = surfaces[i].substring(start, (end));
-        }
-        surfaceIDs = tempIDs;
-        surfaceCmds = tempCmds;
+    MeshCollection mc = getIsosurfaces();
+    if (mc != null) {
+      //check all the isosurfaces
+      for (int i = 0; i < mc.meshCount; i++) {
+        Mesh m = mc.meshes[i];
+        if (!m.isValid)
+          continue;
+        //... do stuff here. 
       }
     }
   }
 
-  public void setAngleUnits(int units) {
-    this.angleUnits = units;
+  private MeshCollection getIsosurfaces() {
+    Shape[] shapes = (Shape[]) viewer.getProperty("DATA_API", "shapeManager",
+        "getShapes");
+    return (shapes == null ? null
+        : (MeshCollection) shapes[JmolConstants.SHAPE_ISOSURFACE]);
   }
 
-  public Point3f getNegCorner() {
+  void setAngleUnits(int units) {
+    angleUnits = units;
+  }
+
+  Point3f getNegCorner() {
     return negCorner;
   }
 
-  public Point3f getPosCorner() {
+  Point3f getPosCorner() {
     return posCorner;
   }
 
@@ -218,12 +195,12 @@ public class SurfaceTool {
    * 
    */
   private float angleXY;
-  private float angleXYMax;
+  //private float angleXYMax;
   private float anglefromZ;
-  private float anglefromZMax;
+  //private float anglefromZMax;
   private float positionMin;
   private float position;
-  private float positionMax;
+  //private float positionMax;
   private float thickness;
   private float thicknessMax;
   private Slice slice = new Slice();
@@ -236,26 +213,20 @@ public class SurfaceTool {
 
   private void initSlice() {
     //set to middle and full width
-    this.angleXY = 0;
-    this.anglefromZ = (float) (Math.PI / 2);
-    this.position = 0;
-    this.thickness = negCorner.distance(posCorner);
-    this.slice.setSlice(angleXY, anglefromZ, position, thickness, center,
+    angleXY = 0;
+    anglefromZ = (float) (Math.PI / 2);
+    position = 0;
+    thickness = negCorner.distance(posCorner);
+    slice.setSlice(angleXY, anglefromZ, position, thickness, center,
         boxVec, useMolecular);
   }
 
-  public void showSliceBoundaryPlanes() {
-    this.lefton = true;
-    this.righton = true;
-    drawSlicePlane(Token.left, true);
-    drawSlicePlane(Token.right, true);
-  }
-
-  public void hideSliceBoundaryPlanes() {
-    this.lefton = false;
-    this.righton = false;
-    drawSlicePlane(Token.left, false);
-    drawSlicePlane(Token.right, false);
+  void showSliceBoundaryPlanes(boolean onOrOff) {
+    lefton = righton = onOrOff;
+    StringBuffer cmd = new StringBuffer();
+    drawSlicePlane(cmd, Token.left, onOrOff);
+    drawSlicePlane(cmd, Token.right, onOrOff);
+    viewer.evalStringQuiet(cmd.toString());
   }
 
   /**
@@ -271,7 +242,7 @@ public class SurfaceTool {
    * @param thickness
    *        (float) thickness of slice in absolute units
    */
-  public void setSlice(float angleXY, float anglefromZ, float position,
+  void setSlice(float angleXY, float anglefromZ, float position,
                        float thickness) {
     if (usePercent) {//convert to absolute units
       //TODO
@@ -283,7 +254,7 @@ public class SurfaceTool {
     this.anglefromZ = anglefromZ;
     this.position = position;
     this.thickness = thickness;
-    this.slice.setSlice(angleXY, anglefromZ, position, thickness, center,
+    slice.setSlice(angleXY, anglefromZ, position, thickness, center,
         boxVec, useMolecular);
   }
 
@@ -292,16 +263,16 @@ public class SurfaceTool {
    * @param angle
    *        (float) angle from X-axis of projection on XY plane in radians.
    */
-  public void setSliceAngleXY(float angle) {
-    if (this.angleXY != angle) {
-      this.angleXY = angle;
-      this.slice.setSlice(angleXY, anglefromZ, position, thickness, center,
+  void setSliceAngleXY(float angle) {
+    if (angleXY != angle) {
+      angleXY = angle;
+      slice.setSlice(angleXY, anglefromZ, position, thickness, center,
           boxVec, useMolecular);
     }
   }
 
-  public float getSliceAngleXY() {
-    return (this.angleXY);
+  float getSliceAngleXY() {
+    return (angleXY);
   }
 
   /**
@@ -309,16 +280,16 @@ public class SurfaceTool {
    * @param angle
    *        (float) angle of vector from Z axis in radians.
    */
-  public void setSliceAnglefromZ(float angle) {
-    if (this.anglefromZ != angle) {
-      this.anglefromZ = angle;
-      this.slice.setSlice(angleXY, anglefromZ, position, thickness, center,
+  void setSliceAnglefromZ(float angle) {
+    if (anglefromZ != angle) {
+      anglefromZ = angle;
+      slice.setSlice(angleXY, anglefromZ, position, thickness, center,
           boxVec, useMolecular);
     }
   }
 
-  public float getAnglefromZ() {
-    return (this.anglefromZ);
+  float getAnglefromZ() {
+    return (anglefromZ);
   }
 
   /**
@@ -326,22 +297,22 @@ public class SurfaceTool {
    * @param where
    *        (float) position of slice center along direction vector.
    */
-  public void setSlicePosition(float where) {
+  void setSlicePosition(float where) {
     if (usePercent) {//convert to absolute units
       //TODO
       JOptionPane.showMessageDialog(null,
           GT._("Percentage scaling not implemented yet!"), "Warning",
           javax.swing.JOptionPane.WARNING_MESSAGE);
     }
-    if (this.position != where) {
-      this.position = where;
-      this.slice.setSlice(angleXY, anglefromZ, position, thickness, center,
+    if (position != where) {
+      position = where;
+      slice.setSlice(angleXY, anglefromZ, position, thickness, center,
           boxVec, useMolecular);
     }
   }
 
-  public float getSlicePosition() {
-    return (this.position);
+  float getSlicePosition() {
+    return (position);
   }
 
   /**
@@ -349,102 +320,92 @@ public class SurfaceTool {
    * @param width
    *        (float) thickness of slice.
    */
-  public void setSliceThickness(float width) {
+  void setSliceThickness(float width) {
     if (usePercent) {//convert to absolute units
       //TODO
       JOptionPane.showMessageDialog(null,
           GT._("Percentage scaling not implemented yet!"), "Warning",
           javax.swing.JOptionPane.WARNING_MESSAGE);
     }
-    if (this.thickness != width) {
-      this.thickness = width;
-      this.slice.setSlice(angleXY, anglefromZ, position, thickness, center,
+    if (thickness != width) {
+      thickness = width;
+      slice.setSlice(angleXY, anglefromZ, position, thickness, center,
           boxVec, useMolecular);
     }
   }
 
-  public float getSliceThickness() {
-    return (this.thickness);
+  float getSliceThickness() {
+    return (thickness);
   }
 
-  public void updateSlices() {
-    for (int i = 0; i < surfaceIDs.length; i++) {
-      //TODO only operate on selected surfaces.
-      if (!surfaceIDs[i].equalsIgnoreCase("_slicerleft")
-          && !surfaceIDs[i].equalsIgnoreCase("_slicerright"))
-        sliceObject(surfaceIDs[i]);
-    }
+  void updateSlices() {
+    for (int i = 0; i < surfaceIDs.size(); i++)
+        sliceObject(surfaceIDs.get(i));
   }
 
-  public void sliceObject(String objectName) {
-    int objectID = ((Viewer) viewer).getShapeManager()
-        .getShapeIdFromObjectName(objectName);
-    if (objectID == JmolConstants.SHAPE_ISOSURFACE) {//valid shape
-      String ghostStr = "";
-      if (ghoston)
-        ghostStr = "translucent 0.8 mesh ";
+  void sliceObject(String objectName) {
+    MeshCollection mc = getIsosurfaces();
+    int iMesh = mc.getIndexFromName(objectName);
+    if (iMesh < 0 || !mc.meshes[iMesh].isValid) {
+      // do something here
+    } else {//valid isosurface
+      String ghostStr = (ghoston ? "translucent 0.8 mesh " : "");
       //      String cmd = "isosurface " + objectName + " off;";
-      String cmd = "isosurface " + objectName + " slab none";
-      cmd += " slab " + ghostStr;
-      cmd += "-{" + slice.leftPlane.x + " " + slice.leftPlane.y + " "
-          + slice.leftPlane.z + " " + slice.leftPlane.w + "}";
-      cmd += " slab " + ghostStr;
-      cmd += "{" + slice.rightPlane.x + " " + slice.rightPlane.y + " "
-          + slice.rightPlane.z + " " + slice.rightPlane.w + "};";
-      //      cmd += " isosurface " + objectName + " on;";
+      StringBuffer cmd = new StringBuffer();
       //planes on or off as appropriate
-      drawSlicePlane(Token.left, lefton);
-      drawSlicePlane(Token.right, righton);
+      drawSlicePlane(cmd, Token.left, lefton);
+      drawSlicePlane(cmd, Token.right, righton);
+      cmd.append("isosurface ID \"").append(objectName).append("\" slab none");
+      getSlabOption(cmd, ghostStr + "-", slice.leftPlane);
+      getSlabOption(cmd, ghostStr, slice.rightPlane);
+      cmd.append(";");
+      //      cmd += " isosurface ").append(objectName).append(" on;";
 
-      viewer.evalStringQuiet(cmd);
+      viewer.evalStringQuiet(cmd.toString());
     }//TODO shouldn't fail silently as it does now.
     return;
   }
+  
+  private static void getSlabOption(StringBuffer cmd, String prefix, Point4f plane) {
+    cmd.append(" slab ").append(prefix).append(Escape.escape(plane));
+  }
 
-  public void drawSlicePlane(int side, boolean on) {
+  private void drawSlicePlane(StringBuffer cmd, int side,
+                                     boolean on) {
+    String color;
+    String name = Token.nameOf(side);
+    Point4f plane;
     switch (side) {
+    default:
     case Token.left:
-      if (on) {
-        String planeStr = "{" + slice.leftPlane.x + " " + slice.leftPlane.y
-            + " " + slice.leftPlane.z + " " + slice.leftPlane.w + "}";
-        //        viewer.evalStringQuiet("draw _slicerLeft plane " + planeStr
-        //            + " color translucent 200 magenta;");
-        viewer.evalStringQuiet("isosurface _slicerLeft plane " + planeStr
-            + "translucent 0.7 magenta;");
-        lefton = true;
-      } else {
-        viewer.evalStringQuiet("isosurface _slicerLeft off");
-        lefton = false;
-      }
+      plane = slice.leftPlane;
+      color = "magenta";
       break;
     case Token.right:
-      if (on) {
-        String planeStr = "{" + slice.rightPlane.x + " " + slice.rightPlane.y
-            + " " + slice.rightPlane.z + " " + slice.rightPlane.w + "}";
-        //      viewer.evalStringQuiet("draw _slicerLeft plane " + planeStr
-        //          + " color translucent 200 magenta;");
-        viewer.evalStringQuiet("isosurface _slicerRight plane " + planeStr
-            + "translucent 0.7 cyan;");
-        righton = true;
-      } else {
-        viewer.evalStringQuiet("isosurface _slicerRight off");
-        righton = false;
-      }
+      plane = slice.rightPlane;
+      color = "cyan";
       break;
+    }
+    cmd.append("isosurface _slicer").append(name);
+    if (on) {
+      cmd.append(" plane ").append(Escape.escape(plane))
+          .append(" translucent 0.7 ").append(color).append(";");
+    } else {
+      cmd.append(" off;");
     }
   }
 
   /**
    * @return (int) possible values: SurfaceTool.RADIANS, SurfaceTool.DEGREES.
    */
-  public int getAngleUnits() {
+  int getAngleUnits() {
     return angleUnits;
   }
 
   /**
    * @return (boolean) true = ghost showing; false = ghost hiding.
    */
-  public boolean getGhoston() {
+  boolean getGhoston() {
     return ghoston;
   }
 
@@ -452,47 +413,39 @@ public class SurfaceTool {
    * @param b
    *        (boolean) true for ghost on.
    */
-  public void setGhostOn(boolean b) {
-    this.ghoston = b;
+  void setGhostOn(boolean b) {
+    ghoston = b;
   }
 
   /**
    * @return (boolean) true = using molecular coordinates; false = using
    *         boundbox coordinates.
    */
-  public boolean getUseMolecular() {
+  boolean getUseMolecular() {
     return useMolecular;
   }
 
-  public void setUseMolecular(boolean on) {
-    this.useMolecular = on;
+  void setUseMolecular(boolean on) {
+    useMolecular = on;
   }
 
-  public SurfaceToolGUI getGUI() {
-    return GUI;
-  }
-
-  public float getPositionMin() {
+  float getPositionMin() {
     return positionMin;
   }
 
-  public float getThicknessMax() {
+  float getThicknessMax() {
     return thicknessMax;
   }
 
-  public Point3f getCenter() {
+  Point3f getCenter() {
     return center;
   }
 
-  public Vector3f getBoxVec() {
+  Vector3f getBoxVec() {
     return boxVec;
   }
 
-  public Point4f getSliceMiddle() {
+  Point4f getSliceMiddle() {
     return slice.getMiddle();
   }
-  /* Slicer section End
-  * 
-  */
-
 }

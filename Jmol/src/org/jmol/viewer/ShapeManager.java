@@ -490,4 +490,10 @@ public class ShapeManager {
     minMax[3] = maxY;
   }
 
+  public Object getProperty(Object paramInfo) {
+    if (paramInfo.equals("getShapes"))
+      return shapes;
+    return null;
+  }
+
 }

@@ -40,11 +40,12 @@ import javax.vecmath.Vector3f;
 public class BoxInfo {
 
  
-  private final Point3f bbCorner0 = new Point3f(-10, -10, -10);
-  private final Point3f bbCorner1 = new Point3f(10, 10, 10);
+  private final Point3f bbCorner0 = new Point3f();
+  private final Point3f bbCorner1 = new Point3f();
   private final Point3f bbCenter = new Point3f();
-  private final Vector3f bbVector = new Vector3f(-1, -1, -1);
+  private final Vector3f bbVector = new Vector3f();
   private final Point3fi[] bbVertices = new Point3fi[8];
+  private boolean isScaleSet;
 
   {
     for (int i = 8; --i >= 0;)
@@ -67,6 +68,10 @@ public class BoxInfo {
       4,5, 4,6, 5,7, 6,7
       };
 
+  public BoxInfo() {
+    reset();
+  }
+  
   /**
    * returns a set of points defining the geometric object within the given
    * plane that spans the unit cell within the given margins
@@ -207,30 +212,40 @@ public class BoxInfo {
   }
   
   private final static Point3f[] unitBboxPoints = new Point3f[8];
-  { 
+  {
     for (int i = 0; i < 8; i++) {
       unitBboxPoints[i] = new Point3f(-1, -1, -1);
-      unitBboxPoints[i].scaleAdd(2, unitCubePoints[i], unitBboxPoints[i]); 
+      unitBboxPoints[i].scaleAdd(2, unitCubePoints[i], unitBboxPoints[i]);
     }
   }
 
   public Point3f getBoundBoxCenter() {
+    if (!isScaleSet)
+      setBbcage(1);
     return bbCenter;
   }
 
   public Vector3f getBoundBoxCornerVector() {
+    if (!isScaleSet)
+      setBbcage(1);
     return bbVector;
   }
 
   public Point3f[] getBoundBoxPoints() {
+    if (!isScaleSet)
+      setBbcage(1);
     return new Point3f[] {bbCenter, new Point3f(bbVector), bbCorner0, bbCorner1};
   }
 
   public Point3fi[] getBboxVertices() {
+    if (!isScaleSet)
+      setBbcage(1);
     return bbVertices;
   }
   
   public Map<String, Object> getBoundBoxInfo() {
+    if (!isScaleSet)
+      setBbcage(1);
     Map<String, Object> info = new Hashtable<String, Object>();
     info.put("center", new Point3f(bbCenter));
     info.put("vector", new Vector3f(bbVector));
@@ -261,29 +276,29 @@ public class BoxInfo {
   }
 
   public void reset() {
+    isScaleSet = false;
     bbCorner0.set(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
     bbCorner1.set(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
   }
   
   public void addBoundBoxPoint(Point3f pt) {
-    float t = pt.x;
-    if (t < bbCorner0.x)
-      bbCorner0.x = t;
-    if (t > bbCorner1.x)
-      bbCorner1.x = t;
-    t = pt.y;
-    if (t < bbCorner0.y)
-      bbCorner0.y = t;
-    if (t > bbCorner1.y)
-      bbCorner1.y = t;
-    t = pt.z;
-    if (t < bbCorner0.z)
-      bbCorner0.z = t;
-    if (t > bbCorner1.z)
-      bbCorner1.z = t;
+    isScaleSet = false;
+    if (pt.x < bbCorner0.x)
+      bbCorner0.x = pt.x;
+    if (pt.x > bbCorner1.x)
+      bbCorner1.x = pt.x;
+    if (pt.y < bbCorner0.y)
+      bbCorner0.y = pt.y;
+    if (pt.y > bbCorner1.y)
+      bbCorner1.y = pt.y;
+    if (pt.z < bbCorner0.z)
+      bbCorner0.z = pt.z;
+    if (pt.z > bbCorner1.z)
+      bbCorner1.z = pt.z;
   }
 
   public void setBbcage(float scale) {
+    isScaleSet = true;
     bbCenter.add(bbCorner0, bbCorner1);
     bbCenter.scale(0.5f);
     bbVector.sub(bbCorner1, bbCenter);
@@ -307,6 +322,8 @@ public class BoxInfo {
   }
   
   public boolean isWithin(Point3f pt) {
+    if (!isScaleSet)
+      setBbcage(1);
    return (pt.x >= bbCorner0.x && pt.x <= bbCorner1.x 
        && pt.y >= bbCorner0.y && pt.y <= bbCorner1.y
        && pt.z >= bbCorner0.z && pt.z <= bbCorner1.z); 

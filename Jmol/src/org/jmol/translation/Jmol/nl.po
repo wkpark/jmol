@@ -8,20 +8,21 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-07-23 12:29+0200\n"
-"PO-Revision-Date: 2010-04-29 00:27+0000\n"
-"Last-Translator: Nicolas Vervelle <Unknown>\n"
+"PO-Revision-Date: 2011-07-24 21:09+0000\n"
+"Last-Translator: Egon Willighagen <Unknown>\n"
 "Language-Team: Dutch <jmol-developer@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-01-29 19:08+0000\n"
-"X-Generator: Launchpad (build 12274)\n"
+"X-Launchpad-Export-Date: 2011-07-24 21:52+0000\n"
+"X-Generator: Launchpad (build 13483)\n"
 "X-Poedit-Country: The Netherlands\n"
 "X-Poedit-Language: Dutch\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
 msgid "Error starting Jmol: the property 'user.home' is not defined."
-msgstr "Kan Jmol niet starten: de syteemvariabele 'user.home' is not defined."
+msgstr ""
+"Kan Jmol niet starten: de syteemvariabele 'user.home' is ongedefinieerd."
 
 #: org/openscience/jmol/app/JmolApp.java:139
 msgid "transparent background"
@@ -65,7 +66,8 @@ msgstr "geen console -- alle uitvoer naar de command line"
 
 #: org/openscience/jmol/app/JmolApp.java:156
 msgid "send only output from print messages to console (implies -i)"
-msgstr "stuur alleen input van print berichten naar de console (impliceert -i)"
+msgstr ""
+"stuur alleen input van print berichten naar de console (impliceert -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:158
 msgid "independent command thread"
@@ -127,6 +129,8 @@ msgid ""
 "The -D options are as follows (defaults in parenthesis) and must be called "
 "preceding '-jar Jmol.jar':"
 msgstr ""
+"De -D opties zijn als volgt (voorbeelden in haakjes) en moeten gegeven "
+"worden voor '-jar Jmol.jar':"
 
 #: org/openscience/jmol/app/JmolApp.java:469
 msgid "Executing script 1..."
@@ -278,15 +282,15 @@ msgstr "Controller"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:363
 msgid "Go to first atom set in the collection"
-msgstr ""
+msgstr "Ga naar het eerste atoom in de set"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:364
 msgid "Go to previous atom set in the collection"
-msgstr ""
+msgstr "Ga naar het vorige atoom in de set"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:365
 msgid "Play the whole collection of atom sets"
-msgstr ""
+msgstr "Speel de hele collectie van atoomsets af"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:366
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:375
@@ -295,31 +299,31 @@ msgstr "Pausseer het afspelen"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:367
 msgid "Go to next atom set in the collection"
-msgstr ""
+msgstr "Ga naar de volgende atoomset in de collectie"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:368
 msgid "Jump to last atom set in the collection"
-msgstr ""
+msgstr "Ga naar de laatste atoomset in de collectie"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:372
 msgid "Go to first vector in the collection"
-msgstr ""
+msgstr "Ga naar de eerste vector in de collectie"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:373
 msgid "Go to previous vector in the collection"
-msgstr ""
+msgstr "Ga naar de vorige vector in de collectie"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:374
 msgid "Play the whole collection of vectors"
-msgstr ""
+msgstr "Speel de hele collectie van vectoren af"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:376
 msgid "Go to next vector in the collection"
-msgstr ""
+msgstr "Ga naar de volgende vector in de collectie"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:377
 msgid "Jump to last vector in the collection"
-msgstr ""
+msgstr "Ga naar de laatste vector in de collectie"
 
 #: org/openscience/jmol/app/jmolpanel/ConsoleTextArea.java:87
 #, java-format
@@ -436,15 +440,15 @@ msgstr "Open &URL"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:62
 msgid "&Get PDB"
-msgstr ""
+msgstr "Verkrij&g PDB"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:63
 msgid "Get &MOL"
-msgstr ""
+msgstr "Verkrijg &MOL"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:64
 msgid "&Reload"
-msgstr ""
+msgstr "He&rladen"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:65
 msgid "Scrip&t Editor..."
@@ -452,7 +456,7 @@ msgstr "Scrip&t Editor..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:66
 msgid "Conso&le..."
-msgstr ""
+msgstr "Opdrachtrege&l..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:67
 msgid "Jmol Java &Console"
@@ -728,7 +732,7 @@ msgstr "&Metingen"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:150
 msgid "Resi&ze"
-msgstr ""
+msgstr "Grootte wij&ziggen"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:151
 msgid "&View"
@@ -848,11 +852,11 @@ msgstr "Ga naar vorige frame"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:181
 msgid "All &frames"
-msgstr ""
+msgstr "Alle frames"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:182
 msgid "All frames"
-msgstr ""
+msgstr "Alle frames"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:183
 msgid "Go to &last frame"
@@ -1315,32 +1319,27 @@ msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:137
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:141
-#, fuzzy
 msgid "Degrees"
-msgstr "Wissen"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:138
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:142
-#, fuzzy
 msgid "Radians"
-msgstr "Straal"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:153
-#, fuzzy
 msgid "Angles"
-msgstr "Assen"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:158
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:161
-#, fuzzy
 msgid "View Center"
-msgstr "Definieer &centrum"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:159
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:162
-#, fuzzy
 msgid "Absolute"
-msgstr "Route"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:170
 msgid "Origin"
@@ -1746,31 +1745,29 @@ msgstr ""
 msgid "unimplemented"
 msgstr "niet geimplementeerd"
 
-#~ msgid ""
-#~ "Could not find or open:\n"
-#~ "{0}"
-#~ msgstr ""
-#~ "Kon het bestand niet vinden of openen:\n"
-#~ "{0}"
-
 #~ msgid "atom set"
 #~ msgstr "atoomset"
 
 #~ msgid "vector"
 #~ msgstr "vector"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Ga naar de eerste {0} in de collectie"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Ga naar de vorige {0} in de collectie"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Speel de hele collectie van {0}'s af"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Ga naar de volgende {0} in de collectie"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Ga naar de laatste {0} in de collectie"
 
@@ -1783,24 +1780,35 @@ msgstr "niet geimplementeerd"
 #~ msgid "double-click and drag to reorder"
 #~ msgstr "Dubbelklik en sleep om de volgorde te wijzigen"
 
+#, java-format
+#~ msgid ""
+#~ "Could not find or open:\n"
+#~ "{0}"
+#~ msgstr ""
+#~ "Kon het bestand niet vinden of openen:\n"
+#~ "{0}"
+
 #~ msgid "Show Selected"
 #~ msgstr "Selectie laten zien"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "toevoegen JmolPopIn.js"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "toevoegen {0}.png"
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "toevoegen {0}.spt"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
-#~ "Voeg hier extra uitleg in. Lange teksten worden om het Jmol-model {0} "
-#~ "heen gezet."
+#~ "Voeg hier extra uitleg in. Lange teksten worden om het Jmol-model {0} heen "
+#~ "gezet."
 
 #~ msgid "Clear console button (requires restarting Jmol)"
 #~ msgstr "Leeg console knop (vereist een herstart van Jmol)"

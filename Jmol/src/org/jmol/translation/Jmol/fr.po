@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-07-23 12:29+0200\n"
-"PO-Revision-Date: 2011-07-23 13:02+0000\n"
-"Last-Translator: Nicolas Vervelle <Unknown>\n"
+"PO-Revision-Date: 2011-07-24 18:39+0000\n"
+"Last-Translator: xemard.nicolas <Unknown>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-07-23 13:04+0000\n"
+"X-Launchpad-Export-Date: 2011-07-24 20:44+0000\n"
 "X-Generator: Launchpad (build 13483)\n"
 "X-Poedit-Country: France\n"
 "X-Poedit-Language: French\n"
@@ -1314,7 +1314,7 @@ msgstr "Les nouveautés de Jmol"
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:333
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:356
 msgid "Percentage scaling not implemented yet!"
-msgstr ""
+msgstr "Pourcentage d'échelle non encore disponible !"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:121
 msgid "SurfaceTool"
@@ -1358,11 +1358,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:192
 msgid "Angle from X-axis in XY plane"
-msgstr ""
+msgstr "Angle depuis l'axe X dans le plan XY"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:201
 msgid "Angle from Z-axis"
-msgstr ""
+msgstr "Angle depuis l'axe Z"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:212
 msgid "Direction vector of normal to slice"

@@ -604,6 +604,8 @@ public class AtomSetCollection {
     if (!allowMultiple)
       iatom = iatom % atomCount;
     Atom atom = atoms[iatom];
+    if (atom == null)
+      System.out.println("ohoh -- atomsetcollectionread");
     atom.vectorX = x;
     atom.vectorY = y;
     atom.vectorZ = z;

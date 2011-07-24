@@ -1058,7 +1058,7 @@ public abstract class AtomSetCollectionReader {
       String[] valuesY = (isWide ? null : data[++i]);
       String[] valuesZ = (isWide ? null : data[++i]);
       int dataPt = values.length - (isWide ? nFreq * 3 : nFreq) - 1;
-      for (int j = 0; j < nFreq; j++) {
+      for (int j = 0, jj = 0; jj < nFreq; jj++) {
         ++dataPt;
         String x = values[dataPt];
         if (x.charAt(0) == ')') // AMPAC reader!
@@ -1066,15 +1066,15 @@ public abstract class AtomSetCollectionReader {
         float vx = parseFloat(x);
         float vy = parseFloat(isWide ? values[++dataPt] : valuesY[dataPt]);
         float vz = parseFloat(isWide ? values[++dataPt] : valuesZ[dataPt]);
-        if (ignore[j])
+        if (ignore[jj])
           continue;
         int iAtom = (atomIndexes == null ? atomPt : atomIndexes[atomPt]);
         if (iAtom < 0)
           continue;
         if (Logger.debugging)
-          Logger.debug("vib " + iAtom + "/" + j + ": " + vx + " " + vy + " "
+          Logger.debug("atom " + iAtom + " vib" + j + ": " + vx + " " + vy + " "
               + vz);
-        atomSetCollection.addVibrationVector(iAtom0 + modelAtomCount * j
+        atomSetCollection.addVibrationVector(iAtom0 + modelAtomCount * j++
             + iAtom, vx, vy, vz, withSymmetry);
       }
     }

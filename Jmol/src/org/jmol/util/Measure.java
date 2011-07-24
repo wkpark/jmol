@@ -685,7 +685,7 @@ final public class Measure {
     ptRet.scaleAdd(vTemp.dot(tempNorm) / l_dot_n, v, pt1);
     return ptRet;
   }
-
+/*
   public static Point3f getTriangleIntersection(Point3f a1, Point3f a2,
                                                Point3f a3, Point4f plane,
                                                Point3f b1,
@@ -701,7 +701,8 @@ final public class Measure {
       return ptRet;
     return null;
   }
-
+*/
+/*  
   public static boolean getTriangleIntersection(Point3f b1, Point3f b2,
                                                 Point3f a1, Point3f a2,
                                                 Point3f a3, Vector3f vTemp,
@@ -718,9 +719,7 @@ final public class Measure {
         return true;
     }
     return false;
-
   }
-
   private static boolean isInTriangle(Point3f p, Point3f a, Point3f b,
                                       Point3f c, Vector3f v0, Vector3f v1,
                                       Vector3f v2) {
@@ -739,5 +738,6 @@ final public class Measure {
     float v = (dot00 * dot12 - dot01 * dot02) * invDenom;
     return (u > 0 && v > 0 && u + v < 1);
   }
+*/
 
 }

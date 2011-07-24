@@ -550,8 +550,9 @@ public class MeshSurface {
     }
     int iLast = polygonCount;
     for (int i = mergePolygonCount0; i < iLast; i++) {
-      if (!setABC(i) || bsSlabGhost != null && bsSlabGhost.get(i))
+      if (!setABC(i))
         continue;
+      BitSet bsSlab = (bsSlabGhost != null && bsSlabGhost.get(i) ?bsSlabGhost : bsSlabDisplay);
       int check1 = polygonIndexes[i][3];
       int check2 = (checkCount == 2 ? polygonIndexes[i][4] : 0);
       Point3f vA = vertices[iA];
@@ -689,7 +690,7 @@ public class MeshSurface {
             if (iE < 0)
               iE = addIntersectionVertex(pts[1], values[1], sourceA, mapEdge,
                   iA, iC);
-            bs = (tossBC ? bsSlabDisplay : bsSlabGhost);
+            bs = (tossBC ? bsSlab : bsSlabGhost);
             addPolygon(iA, iD, iE, check1 & 5 | 2, check2, 0, bs);
             if (!isGhost)
               break;
@@ -697,7 +698,7 @@ public class MeshSurface {
           // BC on side to keep -- -tossBC+isGhost,  +tossBC+isGhost
           if (!getDE(fracs, 1, iA, iC, iB, tossBC))
             break;
-          bs = (tossBC ? bsSlabGhost : bsSlabDisplay);
+          bs = (tossBC ? bsSlabGhost : bsSlab);
           if (iE < 0) {
             iE = addIntersectionVertex(pts[0], values[0], sourceB, mapEdge, iA,
                 iB);
@@ -722,7 +723,7 @@ public class MeshSurface {
             //AC on side to toss
             if (!getDE(fracs, 0, iB, iC, iA, tossAC))
               break;
-            bs = (tossAC ? bsSlabDisplay : bsSlabGhost);
+            bs = (tossAC ? bsSlab : bsSlabGhost);
             if (iE < 0)
               iE = addIntersectionVertex(pts[0], values[0], sourceB, mapEdge,
                   iB, iA);
@@ -736,7 +737,7 @@ public class MeshSurface {
           // AC on side to keep
           if (!getDE(fracs, 1, iB, iA, iC, tossAC))
             break;
-          bs = (tossAC ? bsSlabGhost : bsSlabDisplay);
+          bs = (tossAC ? bsSlabGhost : bsSlab);
           if (iD < 0) {
             iD = addIntersectionVertex(pts[0], values[0], sourceA, mapEdge, iB,
                 iA);
@@ -766,7 +767,7 @@ public class MeshSurface {
             if (iE < 0)
               iE = addIntersectionVertex(pts[1], values[1], sourceC, mapEdge,
                   iB, iC); //CB
-            bs = (tossAB ? bsSlabDisplay : bsSlabGhost);
+            bs = (tossAB ? bsSlab : bsSlabGhost);
             addPolygon(iD, iE, iC, check1 & 6 | 1, check2, 0, bs);
             if (!isGhost)
               break;
@@ -774,7 +775,7 @@ public class MeshSurface {
           //AB on side to keep
           if (!getDE(fracs, 1, iC, iB, iA, tossAB))
             break;
-          bs = (tossAB ? bsSlabGhost : bsSlabDisplay);
+          bs = (tossAB ? bsSlabGhost : bsSlab);
           if (iE < 0) {
             iE = addIntersectionVertex(pts[0], values[0], sourceA, mapEdge, iA,
                 iC); //CA
@@ -788,7 +789,7 @@ public class MeshSurface {
           break;
         }
         if (doClear) {
-          bsSlabDisplay.clear(i);
+          bsSlab.clear(i);
           if (doGhost)
             bsSlabGhost.set(i);
         }
@@ -918,7 +919,7 @@ public class MeshSurface {
     }
     return (Math.abs(d) < 0.0001f ? 0 : d);
   }
-
+/*
   private static boolean checkIntersection(Point3f vA, Point3f vB, Point3f vC,
                                     MeshSurface meshSurface, Point3f[] pts, 
                                     Vector3f vNorm, Vector3f vAB, Vector3f vAC, Point4f plane, Point4f pTemp, Vector3f vTemp3) {
@@ -933,7 +934,7 @@ public class MeshSurface {
     }
     return false;
   }
-
+*/
   
   private Point3f getTriangleIntersection(int i, Point3f vA, Point3f vB, Point3f vC, Point4f plane, Vector3f vNorm, Vector3f vTemp, 
                                           Point3f ptRet, Point3f ptTemp, Vector3f vTemp2, Point4f pTemp, Vector3f vTemp3) {

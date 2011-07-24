@@ -35,13 +35,16 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
+import org.jmol.util.MeshSurface;
 import org.jmol.util.Parser;
 import org.jmol.viewer.Viewer;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.JvxlData;
+import org.jmol.jvxl.data.MeshData;
 
 import org.jmol.jvxl.calc.MarchingSquares;
 import org.jmol.script.Token;
@@ -747,4 +750,54 @@ public class IsosurfaceMesh extends Mesh {
   //  System.out.println("P["+i+"]="+polygonIndexes[i][0]+" "+polygonIndexes[i][1]+" "+polygonIndexes[i][2]+" "+ polygonIndexes[i][3]+" "+vertices[i]);
   //}
   //}
+  
+  protected void merge(MeshData m) {
+    int nV = vertexCount + (m == null ? 0 : m.vertexCount);
+    if (polygonIndexes == null)
+      polygonIndexes = new int[0][];
+    if (m != null && m.polygonIndexes == null)
+      m.polygonIndexes = new int[0][];
+    int nP = (bsSlabDisplay == null || polygonCount == 0 ? polygonCount : bsSlabDisplay
+        .cardinality())
+        + (m == null || m.polygonCount == 0 ? 0 : m.bsSlabDisplay == null ? m.polygonCount
+            : m.bsSlabDisplay.cardinality());
+    if (vertices == null)
+      vertices = new Point3f[0];
+    vertices = (Point3f[]) ArrayUtil.ensureLength(vertices, nV);
+    vertexValues = ArrayUtil.ensureLength(vertexValues, nV);
+    boolean haveSources = (vertexSource != null && (m == null || m.vertexSource != null));
+    vertexSource = ArrayUtil.ensureLength(vertexSource, nV);
+    int[][] newPolygons = new int[nP][];
+    // note -- no attempt here to merge vertices
+    int ipt = mergePolygons(this, 0, 0, newPolygons);
+    if (m != null) {
+      ipt = mergePolygons(m, ipt, vertexCount, newPolygons);
+      for (int i = 0; i < m.vertexCount; i++, vertexCount++) {
+        vertices[vertexCount] = m.vertices[i];
+        vertexValues[vertexCount] = m.vertexValues[i];
+        if (haveSources)
+          vertexSource[vertexCount] = m.vertexSource[i];
+      }
+    }
+    polygonCount0 = nP;
+    vertexCount0 = nV;
+    if (nP > 0)
+      resetSlab();
+    polygonIndexes = newPolygons;
+  }
+
+  private static int mergePolygons(MeshSurface m, int ipt, int vertexCount, int[][] newPolygons) {
+    int[] p;
+    for (int i = 0; i < m.polygonCount; i++) {
+      if ((p = m.polygonIndexes[i]) == null || m.bsSlabDisplay != null && !m.bsSlabDisplay.get(i))
+        continue;
+      newPolygons[ipt++] = m.polygonIndexes[i];
+      if (vertexCount > 0)
+        for (int j = 0; j < 3; j++)
+          p[j] += vertexCount;
+    }
+    return ipt;
+  }
+
+
 }

@@ -168,7 +168,6 @@ public class XmlChem3dReader extends XmlReader {
           }
 
       // normalizing!
-      System.out.println(sum);
       sum = (float) (1 / Math.sqrt(sum));
       for (int z = 0; z < nPointsZ; z++)
         for (int y = 0; y < nPointsY; y++)

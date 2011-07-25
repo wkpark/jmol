@@ -132,7 +132,7 @@ class Slice {
       // I think there's an easier way to do this....
       //correct for the offset between the boundbox center and the origin
       Point3f pt = new Point3f(middle.x, middle.y, middle.z);
-      pt.scaleAdd(-middle.w, boundBoxCenter, pt);
+      pt.scaleAdd(-middle.w, pt, boundBoxCenter);
       Measure.getPlaneThroughPoint(pt, new Vector3f(middle.x, middle.y,
           middle.z), middle);
     }

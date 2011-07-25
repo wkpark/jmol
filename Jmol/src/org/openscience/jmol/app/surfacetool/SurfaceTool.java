@@ -73,12 +73,13 @@ public class SurfaceTool {
       boolean useGUI) {
     this.viewer = viewer;
     this.useGUI = useGUI;
-    gui = (useGUI ? new SurfaceToolGUI(viewer, hfile, winName, this) : null);
+    //initialization must occur before a new gui
     //initialize to match the boundbox
     updateSurfaceInfo();
     chooseBestBoundBox();
     setSurfaceToolParam();
     initSlice();
+    gui = (useGUI ? new SurfaceToolGUI(viewer, hfile, winName, this) : null);
   }
 
   public void toFront() {
@@ -216,7 +217,7 @@ public class SurfaceTool {
     angleXY = 0;
     anglefromZ = (float) (Math.PI / 2);
     position = 0;
-    thickness = negCorner.distance(posCorner);
+    thickness = negCorner.distance(posCorner)/5;
     slice.setSlice(angleXY, anglefromZ, position, thickness, center,
         boxVec, useMolecular);
   }

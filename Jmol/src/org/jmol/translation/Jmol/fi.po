@@ -8,20 +8,20 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-07-23 12:29+0200\n"
-"PO-Revision-Date: 2011-01-20 11:59+0000\n"
+"PO-Revision-Date: 2011-07-25 09:20+0000\n"
 "Last-Translator: Johannes Pernaa <Unknown>\n"
 "Language-Team: Finland <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-01-29 19:08+0000\n"
-"X-Generator: Launchpad (build 12274)\n"
+"X-Launchpad-Export-Date: 2011-07-25 17:24+0000\n"
+"X-Generator: Launchpad (build 13503)\n"
 "X-Poedit-Country: Finland\n"
 "X-Poedit-Language: Finnish\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
 msgid "Error starting Jmol: the property 'user.home' is not defined."
-msgstr "Virhe käynnistäessä Jmol: the property 'user.home' ei määritelty."
+msgstr "Virhe Jmolia käynnistettäessä: 'user.home' -arvo ei ole määritelty."
 
 #: org/openscience/jmol/app/JmolApp.java:139
 msgid "transparent background"
@@ -33,7 +33,7 @@ msgstr "annetaan tämä ohjesivu"
 
 #: org/openscience/jmol/app/JmolApp.java:142
 msgid "no display (and also exit when done)"
-msgstr "ei näyttöä (suljetaan toiminnan loputtua)"
+msgstr "ei näyttöä (suljetaan toiminnon loputtua)"
 
 #: org/openscience/jmol/app/JmolApp.java:144
 msgid "check script syntax only - no file loading"
@@ -45,7 +45,7 @@ msgstr "tarkistetaan komentosarjan syntaksi tiedoston latautuessa"
 
 #: org/openscience/jmol/app/JmolApp.java:147
 msgid "debug"
-msgstr "debug"
+msgstr "Virheen jäljitys"
 
 #: org/openscience/jmol/app/JmolApp.java:148
 msgid "silent startup operation"
@@ -65,7 +65,8 @@ msgstr "ei konsolia -- ulostulo sysout"
 
 #: org/openscience/jmol/app/JmolApp.java:156
 msgid "send only output from print messages to console (implies -i)"
-msgstr "tulostustiedoista vain ulostulot lähetetään konsolille (merkitään -i)"
+msgstr ""
+"tulostustiedoista vain ulostulot lähetetään konsolille (merkitään -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:158
 msgid "independent command thread"
@@ -885,11 +886,11 @@ msgstr "&Edellinen frekvenssi"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:190
 msgid "SurfaceTool..."
-msgstr ""
+msgstr "Pintatyökalu"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:191
 msgid "Control Display of Surfaces"
-msgstr ""
+msgstr "Ohjaa pintojen näyttöä"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:192
 msgid "&Help"
@@ -1308,72 +1309,67 @@ msgstr "Uutta Jmol-ohjelmistossa"
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:333
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:356
 msgid "Percentage scaling not implemented yet!"
-msgstr ""
+msgstr "Koon muuttaminen prosenteilla ei ole vielä käytössä!"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:121
 msgid "SurfaceTool"
-msgstr ""
+msgstr "Pintatyökalu"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:137
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:141
-#, fuzzy
 msgid "Degrees"
-msgstr "Poista"
+msgstr "Asteet"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:138
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:142
-#, fuzzy
 msgid "Radians"
-msgstr "Säde"
+msgstr "Radiaanit"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:153
-#, fuzzy
 msgid "Angles"
-msgstr "Akselit"
+msgstr "Kulmat"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:158
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:161
-#, fuzzy
 msgid "View Center"
-msgstr "Rajaa &Keskitä"
+msgstr "Näytä keskipiste"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:159
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:162
-#, fuzzy
 msgid "Absolute"
-msgstr "Reitti"
+msgstr "Absoluuttinen"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:170
 msgid "Origin"
-msgstr ""
+msgstr "Alkupiste"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:173
 msgid "Ghost On"
-msgstr ""
+msgstr "Ghost päällä"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:177
 msgid "Slice Planes"
-msgstr ""
+msgstr "Leikkaa tasot"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:192
 msgid "Angle from X-axis in XY plane"
-msgstr ""
+msgstr "X-akselin kulma XY-tasossa"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:201
 msgid "Angle from Z-axis"
-msgstr ""
+msgstr "Kulma Z-akselilta"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:212
 msgid "Direction vector of normal to slice"
-msgstr ""
+msgstr "Suuntavektori normaaliin leikkaamiseen"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:215
 msgid "Distance of slice from origin"
-msgstr ""
+msgstr "Leikkauksen etäysyys alkupisteestä"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:227
 msgid "Thickness of slice"
-msgstr ""
+msgstr "Leikkauksen paksuus"
 
 #: org/openscience/jmol/app/webexport/JmolInstance.java:81
 msgid "Attempt to make scratch directory failed."
@@ -1582,7 +1578,7 @@ msgstr "FileWriterin kutsuminen epäonnistui."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:560
 msgid "Errors occurred during web page creation.  See Log Tab!"
-msgstr ""
+msgstr "Virhe verkkosivua tehtäessä. Katso Log-välilehti!"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:635
 #, java-format
@@ -1621,6 +1617,8 @@ msgid ""
 "Please check that you are using a Jmol.jar that is part of a full Jmol "
 "distribution."
 msgstr ""
+"Tiedostoa ei löydy tai sitä ei voida avata:\n"
+"{0}"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:794
 #, java-format
@@ -1749,6 +1747,7 @@ msgstr "Latausnäkymä"
 msgid "unimplemented"
 msgstr "toteutumatta"
 
+#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -1768,11 +1767,13 @@ msgstr "toteutumatta"
 #~ msgid "Show Selected"
 #~ msgstr "Show Selected"
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "adding {0}.spt"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "adding JmolPopIn.js"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "adding {0}.png"

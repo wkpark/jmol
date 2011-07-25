@@ -14,14 +14,14 @@ msgstr ""
 "Project-Id-Version: JmolApplet 11\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-03-07 20:56+0100\n"
-"PO-Revision-Date: 2011-03-11 21:17+0000\n"
-"Last-Translator: pkramerruiz <Unknown>\n"
+"PO-Revision-Date: 2011-07-25 05:15+0000\n"
+"Last-Translator: Oliver Stueker <Unknown>\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-03-13 20:28+0000\n"
-"X-Generator: Launchpad (build 12568)\n"
+"X-Launchpad-Export-Date: 2011-07-25 17:24+0000\n"
+"X-Generator: Launchpad (build 13503)\n"
 
 #: org/jmol/applet/AppletConsole.java:199
 msgid "&Help"
@@ -413,7 +413,7 @@ msgstr "Französisch"
 
 #: org/jmol/i18n/GT.java:150
 msgid "Croatian"
-msgstr ""
+msgstr "Kroatisch"
 
 #: org/jmol/i18n/GT.java:151
 msgid "Hungarian"
@@ -635,6 +635,11 @@ msgid ""
 "Use {0} to not use this approximation.\n"
 "\n"
 msgstr ""
+"HINWEIS: Wasserstoff Positionen der Backbone Amide sind vorhanden und werden "
+"ignoriert. Ihre Positionen werden angenähert, so wie in der Standard DSSP "
+"Analyse.\n"
+"Verwenden Sie {0} um diese Annäherung nicht zu verwenden.\n"
+"\n"
 
 #: org/jmol/modelsetbio/AminoPolymer.java:582
 #, java-format
@@ -644,6 +649,11 @@ msgid ""
 "Use {0} to ignore these hydrogen positions.\n"
 "\n"
 msgstr ""
+"HINWEIS: Wasserstoff Positionen der Backbone Amide sind vorhanden und werden "
+"verwendet. Das Ergebnis kann signifikant von der Standard-DSSP-Analyse "
+"abweichen.\n"
+"Verwenden Sie {0} um diese Annäherung nicht zu verwenden.\n"
+"\n"
 
 #: org/jmol/popup/JmolPopup.java:149
 #: org/jmol/popup/MainPopupResourceBundle.java:536
@@ -1700,7 +1710,7 @@ msgstr "Lösungsmittel Oberfläche ({0}-Angström Sonde)"
 #: org/jmol/popup/MainPopupResourceBundle.java:897
 #, java-format
 msgid "Solvent-Accessible Surface (VDW + {0} Angstrom)"
-msgstr "flüssig-zugängliche Oberfläche (VDW + {0} Å)"
+msgstr "Lösungsmittel-zugängliche Oberfläche \"SAS\" (VDW + {0} Å)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:898
 msgid "Molecular Electrostatic Potential"
@@ -2258,7 +2268,7 @@ msgstr "Ausgewählte Atome drehen (benötigt {0})"
 #: org/jmol/viewer/ActionManager.java:88
 #, java-format
 msgid "rotate branch around bond (requires {0})"
-msgstr ""
+msgstr "rotiere Verzweigung um Bindung (erfordert {0})"
 
 #: org/jmol/viewer/ActionManager.java:90
 #, java-format
@@ -2273,7 +2283,7 @@ msgstr "Atom verschieben und Molekül minimieren (benötigt {0})"
 #: org/jmol/viewer/ActionManager.java:92
 #, java-format
 msgid "move and minimize molecule (requires {0})"
-msgstr ""
+msgstr "bewege und minimiere Molekül (erfordert {0})"
 
 #: org/jmol/viewer/ActionManager.java:93
 #, java-format
@@ -2297,7 +2307,7 @@ msgstr "Atom auswählen"
 #: org/jmol/viewer/ActionManager.java:98
 #, java-format
 msgid "pick a DRAW point (for measurements) (requires {0}"
-msgstr ""
+msgstr "wähle einen DRAW Punkt (für Messungen) (erfordert {0})"
 
 #: org/jmol/viewer/ActionManager.java:99
 #, java-format
@@ -2321,12 +2331,12 @@ msgstr "Atom auswählen um Messung zu initiieren oder abzuschließen"
 #: org/jmol/viewer/ActionManager.java:102
 #, java-format
 msgid "pick an ISOSURFACE point (requires {0}"
-msgstr ""
+msgstr "wähle einen ISOSURFACE Punkt (benötigt {0}"
 
 #: org/jmol/viewer/ActionManager.java:103
 #, java-format
 msgid "pick a point or atom to navigate to (requires {0})"
-msgstr ""
+msgstr "wähle einen Punkt oder Atom als Navigations-Ziel (erfordert {0})"
 
 #: org/jmol/viewer/ActionManager.java:105
 #, java-format
@@ -2346,7 +2356,7 @@ msgstr "Atome verbinden (benötigt {0})"
 #: org/jmol/viewer/ActionManager.java:108
 #, java-format
 msgid "assign/new atom or bond (requires {0})"
-msgstr ""
+msgstr "zuweisen/neues Atom oder Bindung (erfordert {0})"
 
 #: org/jmol/viewer/ActionManager.java:110
 msgid "reset (when clicked off the model)"
@@ -2371,12 +2381,12 @@ msgstr "wähle zwei Atome um das Modell um eine Achse zu drehen"
 
 #: org/jmol/viewer/ActionManager.java:1947
 msgid "pick one more atom in order to display the symmetry relationship"
-msgstr ""
+msgstr "wähle ein oder mehrere Atome um die Symmetrie-Beziehung anzuzeigen"
 
 #: org/jmol/viewer/ActionManager.java:1948
 msgid ""
 "pick two atoms in order to display the symmetry relationship between them"
-msgstr ""
+msgstr "wähle zwei Atome um ihre Symmetrie-Beziehung anzuzeigen"
 
 #: org/jmol/viewer/SelectionManager.java:89
 #: org/jmol/viewer/SelectionManager.java:105

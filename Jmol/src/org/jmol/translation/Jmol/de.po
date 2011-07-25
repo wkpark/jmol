@@ -14,14 +14,14 @@ msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2011-07-23 12:29+0200\n"
-"PO-Revision-Date: 2011-02-24 16:07+0000\n"
-"Last-Translator: Alexander <Unknown>\n"
+"PO-Revision-Date: 2011-07-25 05:49+0000\n"
+"Last-Translator: Oliver Stueker <Unknown>\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-02-24 19:52+0000\n"
-"X-Generator: Launchpad (build 12438)\n"
+"X-Launchpad-Export-Date: 2011-07-25 17:24+0000\n"
+"X-Generator: Launchpad (build 13503)\n"
 
 #: org/openscience/jmol/app/JmolApp.java:102
 msgid "Error starting Jmol: the property 'user.home' is not defined."
@@ -87,7 +87,8 @@ msgstr "Skript Datei zum Ausführen oder '-' für System.in"
 
 #: org/openscience/jmol/app/JmolApp.java:170
 msgid "use multitouch interface (requires \"sparshui\" parameter"
-msgstr "benutze die Multitouch Schnittstelle (benötigt \"sparshui\" Parameter"
+msgstr ""
+"benutze die Multitouch Schnittstelle (benötigt \"sparshui\" Parameter"
 
 #: org/openscience/jmol/app/JmolApp.java:177
 msgid "Jmol script to execute BEFORE -s option"
@@ -893,7 +894,7 @@ msgstr "&Vorherige Frequenz"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:190
 msgid "SurfaceTool..."
-msgstr ""
+msgstr "Oberflächen Tool..."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:191
 msgid "Control Display of Surfaces"
@@ -1318,44 +1319,39 @@ msgstr "Neues in Jmol"
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:333
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:356
 msgid "Percentage scaling not implemented yet!"
-msgstr ""
+msgstr "Prozentuale Skalierung ist noch nicht verfügbar!"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:121
 msgid "SurfaceTool"
-msgstr ""
+msgstr "Oberflächen Tool"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:137
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:141
-#, fuzzy
 msgid "Degrees"
-msgstr "Löschen"
+msgstr "Grad"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:138
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:142
-#, fuzzy
 msgid "Radians"
-msgstr "Radius"
+msgstr "Radian"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:153
-#, fuzzy
 msgid "Angles"
-msgstr "Achsen"
+msgstr "Winkel"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:158
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:161
-#, fuzzy
 msgid "View Center"
-msgstr "&Zentrum festlegen"
+msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:159
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:162
-#, fuzzy
 msgid "Absolute"
-msgstr "Route"
+msgstr "Absolut"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:170
 msgid "Origin"
-msgstr ""
+msgstr "Ursprung"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:173
 msgid "Ghost On"
@@ -1367,11 +1363,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:192
 msgid "Angle from X-axis in XY plane"
-msgstr ""
+msgstr "Winkel zur X-Achse in der XY-Ebene"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:201
 msgid "Angle from Z-axis"
-msgstr ""
+msgstr "Winkel zur Z-Achse"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:212
 msgid "Direction vector of normal to slice"
@@ -1379,11 +1375,11 @@ msgstr ""
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:215
 msgid "Distance of slice from origin"
-msgstr ""
+msgstr "Abstand der Scheibe vom Ursprung"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:227
 msgid "Thickness of slice"
-msgstr ""
+msgstr "Dicke der Scheibe"
 
 #: org/openscience/jmol/app/webexport/JmolInstance.java:81
 msgid "Attempt to make scratch directory failed."
@@ -1596,6 +1592,7 @@ msgstr "Aufruf von FileWriter nicht erfolgreich."
 #: org/openscience/jmol/app/webexport/WebPanel.java:560
 msgid "Errors occurred during web page creation.  See Log Tab!"
 msgstr ""
+"Bei der Erstellung der Webseite ist ein Fehler aufgetreten. Siehe Log-Tab!"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:635
 #, java-format
@@ -1634,6 +1631,10 @@ msgid ""
 "Please check that you are using a Jmol.jar that is part of a full Jmol "
 "distribution."
 msgstr ""
+"Kann nicht finden oder öffnen:\n"
+"{0}\n"
+"Bitte stellen Sie sicher, dass Sie die Datei Jmol.jar verwenden, die Teil "
+"einer vollständigen Jmol Distribution ist."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:794
 #, java-format
@@ -1761,31 +1762,29 @@ msgstr "Ansicht herunterladen"
 msgid "unimplemented"
 msgstr "nicht implementiert"
 
-#~ msgid ""
-#~ "Could not find or open:\n"
-#~ "{0}"
-#~ msgstr ""
-#~ "Kann nicht finden oder öffnen:\n"
-#~ "{0}"
-
 #~ msgid "atom set"
 #~ msgstr "Atomsatz"
 
 #~ msgid "vector"
 #~ msgstr "Vektor"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Springe zum ersten {0} der Sammlung"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Springe zum vorherigen {0} der Sammlung"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Spiele die gesamte {0}-Sammlung ab"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Springe zum nächsten {0} der Sammlung"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Springe zum letzten {0} der Sammlung"
 
@@ -1795,9 +1794,18 @@ msgstr "nicht implementiert"
 #~ msgid "double-click and drag to reorder"
 #~ msgstr "Doppelklick und ziehen um neu anzuordnen"
 
+#, java-format
+#~ msgid ""
+#~ "Could not find or open:\n"
+#~ "{0}"
+#~ msgstr ""
+#~ "Kann nicht finden oder öffnen:\n"
+#~ "{0}"
+
 #~ msgid "Jmol Script Console"
 #~ msgstr "Jmol Skript Konsole"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
@@ -1808,12 +1816,14 @@ msgstr "nicht implementiert"
 #~ msgid "Show Selected"
 #~ msgstr "Auswahl anzeigen"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "hinzufügen von {0}.png"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "hinzufügen von JmolPopIn.js"
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "hinzufügen von {0}.spt"
 
@@ -1821,8 +1831,7 @@ msgstr "nicht implementiert"
 #~ msgstr "Konsole leeren Button (benötigt Neustart von Jmol)"
 
 #~ msgid "The -D options are as follows (defaults in parenthesis):"
-#~ msgstr ""
-#~ "Folgende -D-Optionen werden unterstützt (Standardwerte in Klammern):"
+#~ msgstr "Folgende -D-Optionen werden unterstützt (Standardwerte in Klammern):"
 
 #~ msgid "Output Conso&le..."
 #~ msgstr "Skrip&t..."

@@ -406,12 +406,11 @@ public class Contact extends Isosurface {
   }
 
   private boolean isContactClear(ContactPair cp, AtomData ad, BitSet bs) {
-    float d;
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       if (ad.bsIgnored != null && ad.bsIgnored.get(i) || i == cp.iAtom1
-          || i == cp.iAtom2 || (d = ad.atomRadius[i]) == 0)
+          || i == cp.iAtom2 || ad.atomRadius[i] == 0)
         continue;
-      if (atoms[i].distance(cp.pt) < d)
+      if (atoms[i].distance(cp.pt) < atoms[i].getVanderwaalsRadiusFloat(viewer, JmolConstants.VDW_AUTO))
         return false;
     }
     return true;

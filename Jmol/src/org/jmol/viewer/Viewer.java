@@ -3939,7 +3939,7 @@ private void zap(String msg) {
       setShapeProperty(JmolConstants.SHAPE_LABELS, "clearBoxes", null);
     antialiasDisplay = (isReset ? global.antialiasDisplay : isImageWrite
         && !isExport ? global.antialiasImages : false);
-    System.out.println("antialiasd = " + antialiasDisplay);
+    //System.out.println("antialiasd = " + antialiasDisplay);
     imageFontScaling = (isReset || width <= 0 ? 1
         : (global.zoomLarge == (height > width) ? height : width)
             / getScreenDim())

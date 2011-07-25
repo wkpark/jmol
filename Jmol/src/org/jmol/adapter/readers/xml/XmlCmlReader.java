@@ -456,7 +456,7 @@ public class XmlCmlReader extends XmlReader {
 
   private void addNewBond(String a1, String a2, int order) {
     parent.applySymmetryToBonds = true;
-    System.out.println("atomsetcollection addnewbond " + a1 + " " + a2);
+    //System.out.println("atomsetcollection addnewbond " + a1 + " " + a2);
     if (isSerial)
       atomSetCollection.addNewBondWithMappedSerialNumbers(Parser.parseInt(a1.substring(1)),
           Parser.parseInt(a2.substring(1)), order);

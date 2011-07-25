@@ -16028,14 +16028,9 @@ public class ScriptEvaluator {
       if (modelIndex < 0)
         error(ERROR_multipleModelsDisplayedNotOK, "MO isosurfaces");
     }
-    Map moData = (Map) viewer.getModelAuxiliaryInfo(modelIndex,
-        "jmolSurfaceInfo");
     int firstMoNumber = moNumber;
-    if (moData != null && ((String) moData.get("surfaceDataType")).equals("mo")) {
-      // shapeManager.loadShape(shape);
-      // setShapeProperty(shape, "init", new Integer(modelIndex));
-    } else {
-      moData = (Map) viewer.getModelAuxiliaryInfo(modelIndex, "moData");
+    Map moData = (Map) viewer.getModelAuxiliaryInfo(modelIndex,
+        "moData");
       if (linearCombination == null) {
         if (moData == null)
           error(ERROR_moModelError);
@@ -16087,7 +16082,6 @@ public class ScriptEvaluator {
           error(ERROR_moIndex, "" + nOrb);
       }
       moData.put("lastMoNumber", Integer.valueOf(moNumber));
-    }
     if (isNegOffset)
       linearCombination = new float[] { -100, moNumber };
     addShapeProperty(propertyList, "moData", moData);

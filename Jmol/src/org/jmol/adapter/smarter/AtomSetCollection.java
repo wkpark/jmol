@@ -40,7 +40,6 @@ import javax.vecmath.Vector3f;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.SymmetryInterface;
-import org.jmol.api.VolumeDataInterface;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
@@ -366,7 +365,6 @@ public class AtomSetCollection {
     trajectoryStep = null;
     trajectorySteps = null;
     vConnect = null;
-    vd = null;
   }
 
   public void discardPreviousAtoms() {
@@ -1501,7 +1499,7 @@ public class AtomSetCollection {
     return true;
   }
   
-  Object getAtomSetAuxiliaryInfo(int index, String key) {
+  private Object getAtomSetAuxiliaryInfo(int index, String key) {
     return  atomSetAuxiliaryInfo[index].get(key);
   }
   
@@ -1575,36 +1573,8 @@ public class AtomSetCollection {
 
   //// for XmlChem3dReader, but could be for CUBE
   
-  VolumeDataInterface vd;
-
   public BitSet bsAtoms;
   
-  public void newVolumeData() {
-    vd = (VolumeDataInterface) Interface.getOptionInterface("jvxl.data.VolumeData");
-  }
-
-  public void setVoxelCounts(int nPointsX, int nPointsY, int nPointsZ) {
-    vd.setVoxelCounts(nPointsX, nPointsY, nPointsZ);
-  }
-
-  public void setVolumetricVector(int i, float x, float y, float z) {
-    vd.setVolumetricVector(i, x, y, z);
-  }
-
-  public void setVolumetricOrigin(float x, float y, float z) {
-    vd.setVolumetricOrigin(x, y, z);
-  }
-
-  public void setVoxelData(float[][][] voxelData) {
-    vd.setVoxelData(voxelData);    
-  }
-
-  public Object getVolumeData() {
-    VolumeDataInterface v = vd;
-    vd = null; //delete adapter reference
-    return v;
-  }
-
   public Properties setAtomNames(Properties atomIdNames) {
     // for CML reader "a3" --> "N3"
     if (atomIdNames == null)

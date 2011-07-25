@@ -209,11 +209,11 @@ class IsoSolventReader extends AtomDataReader {
       } else if (!isCavity) {
         // simple Solvent Accessible Surface uses a plane reader
         isProgressive = isXLowToHigh = true;
-      } else {
-        // will consider all atoms all times in markSphereVoxels
-        thisAtomSet = BitSetUtil.setAll(myAtomCount);
       }
     }
+    if (thisAtomSet == null)
+      thisAtomSet = BitSetUtil.setAll(myAtomCount);
+      
 
   }
 

@@ -653,6 +653,7 @@ public class Parameters {
   final static int QM_TYPE_SLATER = 2;
   final static int QM_TYPE_NCI_PRO = 3;
   final static int QM_TYPE_NCI_SCF = 4;
+  final static int QM_TYPE_VOLUME_DATA = 5;
   
   Map<String, Object> moData;
   public final static int MO_MAX_GRID = 80;
@@ -690,7 +691,8 @@ public class Parameters {
   void setMO(int iMo, float[] linearCombination) {
     qm_moLinearCombination = linearCombination;
     qm_moNumber = (linearCombination == null ? Math.abs(iMo) : (int) linearCombination[1]);
-    qmOrbitalType = (moData.containsKey("gaussians") ? QM_TYPE_GAUSSIAN
+    qmOrbitalType = (moData.containsKey("haveVolumeData") ? QM_TYPE_VOLUME_DATA 
+        : moData.containsKey("gaussians") ? QM_TYPE_GAUSSIAN
         : moData.containsKey("slaters") ? QM_TYPE_SLATER : QM_TYPE_UNKNOWN);
     boolean isElectronDensity = (iMo <= 0 && linearCombination == null);
     if (qmOrbitalType == QM_TYPE_UNKNOWN) {

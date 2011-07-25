@@ -2066,9 +2066,7 @@ abstract public class ModelCollection extends BondCollection {
    */
  
   public BitSet getAtomBits(int tokType, Object specInfo) {
-    BitSet bs = getAtomBitsMaybeDeleted(tokType, specInfo);
-    bs.andNot(viewer.getDeletedAtoms());
-    return bs;
+    return BitSetUtil.andNot(getAtomBitsMaybeDeleted(tokType, specInfo),viewer.getDeletedAtoms());
   }
   
   @Override

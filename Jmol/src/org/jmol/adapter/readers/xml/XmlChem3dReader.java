@@ -24,9 +24,13 @@
 package org.jmol.adapter.readers.xml;
 
 import org.jmol.adapter.smarter.*;
+import org.jmol.api.Interface;
+import org.jmol.api.VolumeDataInterface;
 
 import java.io.BufferedReader;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
 import netscape.javascript.JSObject;
@@ -55,6 +59,7 @@ public class XmlChem3dReader extends XmlReader {
       "gridDatOrigin", "gridDatDat",   // grid cube data
       "calcPartialCharges", "calcAtoms" // electronicStructureCalculation 
   };
+  protected List<Map<String, Object>> orbitals = new ArrayList<Map<String, Object>>();
 
   //String modelName = null;
   //String formula = null;
@@ -71,6 +76,7 @@ public class XmlChem3dReader extends XmlReader {
     this.atomSetCollection = atomSetCollection;
     new Chem3dHandler(xmlReader);
     parseReaderXML(xmlReader);
+    setMOData(moData);
   }
 
   @Override
@@ -84,8 +90,8 @@ public class XmlChem3dReader extends XmlReader {
   }
 
   @Override
-  public void processStartElement(String namespaceURI, String localName, String qName,
-                                  Map<String, String> atts) {
+  public void processStartElement(String namespaceURI, String localName,
+                                  String qName, Map<String, String> atts) {
     String[] tokens;
     //System.out.println("xmlchem3d: start " + localName);
     if ("model".equals(localName)) {
@@ -100,7 +106,8 @@ public class XmlChem3dReader extends XmlReader {
       if (atts.containsKey("cartCoords")) {
         String xyz = atts.get("cartCoords");
         tokens = getTokens(xyz);
-        atom.set(parseFloat(tokens[0]), parseFloat(tokens[1]), parseFloat(tokens[2]));
+        atom.set(parseFloat(tokens[0]), parseFloat(tokens[1]),
+            parseFloat(tokens[2]));
       }
       return;
     }
@@ -123,61 +130,67 @@ public class XmlChem3dReader extends XmlReader {
     }
 
     if ("gridData".equals(localName)) {
-      atomSetCollection.newVolumeData();
       int nPointsX = parseInt(atts.get("gridDatXDim"));
       int nPointsY = parseInt(atts.get("gridDatYDim"));
       int nPointsZ = parseInt(atts.get("gridDatZDim"));
-      atomSetCollection.setVoxelCounts(nPointsX, nPointsY, nPointsZ);
-      float xStep = parseFloat(atts.get("gridDatXSize"))
-          / (nPointsX);
-      float yStep = parseFloat(atts.get("gridDatYSize"))
-          / (nPointsY);
-      float zStep = parseFloat(atts.get("gridDatZSize"))
-          / (nPointsZ);
-      atomSetCollection.setVolumetricVector(0, xStep, 0, 0);
-      atomSetCollection.setVolumetricVector(1, 0, yStep, 0);
-      atomSetCollection.setVolumetricVector(2, 0, 0, zStep);
-
+      float xStep = parseFloat(atts.get("gridDatXSize")) / (nPointsX);
+      float yStep = parseFloat(atts.get("gridDatYSize")) / (nPointsY);
+      float zStep = parseFloat(atts.get("gridDatZSize")) / (nPointsZ);
       tokens = getTokens(atts.get("gridDatOrigin"));
-      atomSetCollection.setVolumetricOrigin(parseFloat(tokens[0]), parseFloat(tokens[1]), parseFloat(tokens[2]));
-      
+      float ox = parseFloat(tokens[0]);
+      float oy = parseFloat(tokens[1]);
+      float oz = parseFloat(tokens[2]);
+
       tokens = getTokens(atts.get("gridDatData"));
-      int nData = parseInt(tokens[0]);
       int pt = 1;
       float[][][] voxelData = new float[nPointsX][nPointsY][nPointsZ];
-      // this is pure speculation for now.
-      // seems to work for one test case.
-      // could EASILY be backward.
 
       /* from adeptscience:
        *
        * 
-"Here is what we can tell you:
+      "Here is what we can tell you:
 
-In Chem3D, all grid data in following format:
+      In Chem3D, all grid data in following format:
 
-  for (int z = 0; z < ZDim; z++)
-  for (int y = 0; y < YDim; y++)
-  for (int x = 0; x < XDim; x++)"
-  
-       */
+      for (int z = 0; z < ZDim; z++)
+      for (int y = 0; y < YDim; y++)
+      for (int x = 0; x < XDim; x++)"
       
+       */
+
       for (int z = 0; z < nPointsZ; z++)
         for (int y = 0; y < nPointsY; y++)
           for (int x = 0; x < nPointsX; x++)
             voxelData[x][y][z] = parseFloat(tokens[pt++]);
-      atomSetCollection.setVoxelData(voxelData);
-      Map<String, Object> surfaceInfo = new Hashtable<String, Object>();
-      surfaceInfo.put("surfaceDataType", "mo");
-      surfaceInfo.put("defaultCutoff", Float.valueOf((float) 0.01));
-      surfaceInfo.put("nCubeData", Integer.valueOf(nData));
-      surfaceInfo.put("volumeData", atomSetCollection.getVolumeData());
-      atomSetCollection.setAtomSetAuxiliaryInfo("jmolSurfaceInfo", surfaceInfo);
-      Logger.debug("Chem3D molecular orbital data displayable using:  isosurface sign \"\" ");
+
+      VolumeDataInterface vd = (VolumeDataInterface) Interface
+          .getOptionInterface("jvxl.data.VolumeData");
+      vd.setVoxelCounts(nPointsX, nPointsY, nPointsZ);
+      vd.setVolumetricVector(0, xStep, 0, 0);
+      vd.setVolumetricVector(1, 0, yStep, 0);
+      vd.setVolumetricVector(2, 0, 0, zStep);
+      vd.setVolumetricOrigin(ox, oy, oz);
+      vd.setVoxelData(voxelData);
+      if (moData == null) {
+        moData = new Hashtable<String, Object>();
+        moData.put("defaultCutoff", Float.valueOf((float) 0.01));
+        moData.put("haveVolumeData", Boolean.TRUE);
+        moData.put("calculationType", "Chem3D");
+        orbitals = new ArrayList<Map<String, Object>>();
+        moData.put("mos", orbitals);
+      }
+      Map<String, Object> mo = new Hashtable<String, Object>();
+      mo.put("volumeData", vd);
+      orbitals.add(mo);
+      Logger
+          .info("Chem3D molecular orbital data displayable using ISOSURFACE MO "
+              + orbitals.size());
       return;
     }
   }
 
+  private Map<String, Object> moData;
+  
   @Override
   public void processEndElement(String uri, String localName, String qName) {
     //System.out.println("xmlchem3d: end " + localName);

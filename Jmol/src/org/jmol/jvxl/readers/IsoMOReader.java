@@ -38,6 +38,7 @@ import org.jmol.viewer.JmolConstants;
 import org.jmol.api.Interface;
 import org.jmol.api.QuantumCalculationInterface;
 import org.jmol.api.QuantumPlaneCalculationInterface;
+import org.jmol.jvxl.data.VolumeData;
 
 class IsoMOReader extends AtomDataReader {
 
@@ -61,39 +62,53 @@ class IsoMOReader extends AtomDataReader {
   @Override
   @SuppressWarnings("unchecked")
   protected void setup(boolean isMapData) {
-    super.setup(isMapData);
-    doAddHydrogens = false;
-    getAtoms(params.bsSelected, doAddHydrogens, !isNci, isNci, isNci, false, false, params.qm_marginAngstroms);
-    if (isNci)
-      setHeader("NCI (promolecular)", "see NCIPLOT: A Program for Plotting Noncovalent Interaction Regions, Julia Contreras-Garcia, et al., J. of Chemical Theory and Computation, 2011, 7, 625-632");
-    else
-      setHeader("MO", "calculation type: " + params.moData.get("calculationType"));
-    setRanges(params.qm_ptsPerAngstrom, params.qm_gridMax);
-    String className = (isNci ? "quantum.NciCalculation" : "quantum.MOCalculation");
-    q = (QuantumCalculationInterface) Interface.getOptionInterface(className);
     moData = params.moData;
     mos = (List<Map<String, Object>>) moData.get("mos");
     linearCombination = params.qm_moLinearCombination;
-    if (isNci) {
-      qpc = (QuantumPlaneCalculationInterface) q;
-    } else if (linearCombination == null) {
-      Map<String, Object> mo = mos.get(params.qm_moNumber - 1);
+    Map<String, Object> mo = (linearCombination == null ? mos
+        .get(params.qm_moNumber - 1) : null);
+    boolean haveVolumeData = moData.containsKey("haveVolumeData");
+    if (haveVolumeData && mo != null)
+      params.volumeData = (VolumeData) mo.get("volumeData");
+    super.setup(isMapData);
+    doAddHydrogens = false;
+    getAtoms(params.bsSelected, doAddHydrogens, !isNci, isNci, isNci, false,
+        false, params.qm_marginAngstroms);
+    if (isNci)
+      setHeader(
+          "NCI (promolecular)",
+          "see NCIPLOT: A Program for Plotting Noncovalent Interaction Regions, Julia Contreras-Garcia, et al., J. of Chemical Theory and Computation, 2011, 7, 625-632");
+    else
+      setHeader("MO", "calculation type: "
+          + params.moData.get("calculationType"));
+    setRanges(params.qm_ptsPerAngstrom, params.qm_gridMax);
+    String className = (isNci ? "quantum.NciCalculation"
+        : "quantum.MOCalculation");
+    if (haveVolumeData) {
       for (int i = params.title.length; --i >= 0;)
         fixTitleLine(i, mo);
-      coef = (float[]) mo.get("coefficients"); 
-      dfCoefMaps = (int[][]) mo.get("dfCoefMaps");
     } else {
-      coefs = new float[mos.size()][];
-      for (int i = 1; i < linearCombination.length; i += 2) {
-        int j = (int) linearCombination[i];
-        if (j > mos.size() || j < 1)
-          return;
-        coefs[j - 1] = (float[]) mos.get(j - 1).get("coefficients");
+      q = (QuantumCalculationInterface) Interface.getOptionInterface(className);
+      if (isNci) {
+        qpc = (QuantumPlaneCalculationInterface) q;
+      } else if (linearCombination == null) {
+        for (int i = params.title.length; --i >= 0;)
+          fixTitleLine(i, mo);
+        coef = (float[]) mo.get("coefficients");
+        dfCoefMaps = (int[][]) mo.get("dfCoefMaps");
+      } else {
+        coefs = new float[mos.size()][];
+        for (int i = 1; i < linearCombination.length; i += 2) {
+          int j = (int) linearCombination[i];
+          if (j > mos.size() || j < 1)
+            return;
+          coefs[j - 1] = (float[]) mos.get(j - 1).get("coefficients");
+        }
       }
+      isElectronDensityCalc = (coef == null && linearCombination == null && !isNci);
     }
-    isElectronDensityCalc = (coef == null && linearCombination == null && !isNci);
     volumeData.sr = null;
-    if (isMapData && !isElectronDensityCalc) {
+    if (isMapData && !isElectronDensityCalc && !haveVolumeData) {
       volumeData.sr = this;
       volumeData.doIterate = false;
       volumeData.setVoxelData(voxelData = new float[1][1][1]);
@@ -105,8 +120,6 @@ class IsoMOReader extends AtomDataReader {
       vertexDataOnly = true;
       random = new Random(params.randomSeed);
     }
-    //if (isNci && params.thePlane == null)
-      //  params.insideOut = !params.insideOut;
   }
   
   @Override
@@ -225,6 +238,8 @@ class IsoMOReader extends AtomDataReader {
   
   @Override
   protected void generateCube() {
+    if (params.volumeData != null)
+      return;
     newVoxelDataCube();
     createOrbital();
   }
@@ -278,6 +293,8 @@ class IsoMOReader extends AtomDataReader {
   private boolean setupCalculation() {
     qSetupDone = true;
     switch (params.qmOrbitalType) {
+    case Parameters.QM_TYPE_VOLUME_DATA:
+      break;
     case Parameters.QM_TYPE_GAUSSIAN:
       return q.setupCalculation(volumeData, bsMySelected, null, null, (String) moData
                       .get("calculationType"),

@@ -2197,6 +2197,7 @@ abstract public class ModelCollection extends BondCollection {
                                boolean withinAllModels, RadiusData rd) {
     BitSet bsResult = new BitSet();
     BitSet bsCheck = getIterativeModels(false);
+    bs = BitSetUtil.andNot(bs, viewer.getDeletedAtoms());
     AtomIndexIterator iter = getSelectedAtomIterator(null, false, false, false, false);
     if (withinAllModels) {
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))

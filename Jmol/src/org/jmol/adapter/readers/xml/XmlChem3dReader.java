@@ -158,11 +158,23 @@ public class XmlChem3dReader extends XmlReader {
       
        */
 
+      float sum = 0;
       for (int z = 0; z < nPointsZ; z++)
         for (int y = 0; y < nPointsY; y++)
-          for (int x = 0; x < nPointsX; x++)
-            voxelData[x][y][z] = parseFloat(tokens[pt++]);
+          for (int x = 0; x < nPointsX; x++) {
+            float f = parseFloat(tokens[pt++]);
+            voxelData[x][y][z] = f;
+            sum += f * f;
+          }
 
+      // normalizing!
+      System.out.println(sum);
+      sum = (float) (1 / Math.sqrt(sum));
+      for (int z = 0; z < nPointsZ; z++)
+        for (int y = 0; y < nPointsY; y++)
+          for (int x = 0; x < nPointsX; x++) {
+            voxelData[x][y][z] *= sum;
+          }
       VolumeDataInterface vd = (VolumeDataInterface) Interface
           .getOptionInterface("jvxl.data.VolumeData");
       vd.setVoxelCounts(nPointsX, nPointsY, nPointsZ);

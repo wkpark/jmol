@@ -2162,7 +2162,7 @@ abstract public class AtomCollection {
    * @param specInfo
    * @return BitSet; or null if we mess up the type
    */
-  protected BitSet getAtomBits(int tokType, Object specInfo) {
+  protected BitSet getAtomBitsMaybeDeleted(int tokType, Object specInfo) {
     BitSet bs = new BitSet();
     BitSet bsInfo;
     BitSet bsTemp;

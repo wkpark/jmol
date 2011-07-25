@@ -791,7 +791,7 @@ abstract public class ModelCollection extends BondCollection {
           if (!models[i].getPdbConformation(bsConformation, conformationIndex))
             for (int c = nAltLocs; --c >= 0;)
               if (c != conformationIndex)
-                bsConformation.andNot(getAtomBits(Token.spec_alternate, altLocs
+                bsConformation.andNot(getAtomBitsMaybeDeleted(Token.spec_alternate, altLocs
                     .substring(c, c + 1)));
         }
         if (bsConformation.nextSetBit(0) >= 0) {
@@ -2064,14 +2064,21 @@ abstract public class ModelCollection extends BondCollection {
    * @param specInfo
    * @return BitSet; or null if we mess up the type
    */
-  @Override
+ 
   public BitSet getAtomBits(int tokType, Object specInfo) {
+    BitSet bs = getAtomBitsMaybeDeleted(tokType, specInfo);
+    bs.andNot(viewer.getDeletedAtoms());
+    return bs;
+  }
+  
+  @Override
+  protected BitSet getAtomBitsMaybeDeleted(int tokType, Object specInfo) {
     int[] info;
     BitSet bs;
     Point3f pt;
     switch (tokType) {
     default:
-      return super.getAtomBits(tokType, specInfo);
+      return super.getAtomBitsMaybeDeleted(tokType, specInfo);
     case Token.basepair:
       return getBasePairBits((String)specInfo);
     case Token.boundbox:
@@ -2322,7 +2329,7 @@ abstract public class ModelCollection extends BondCollection {
       bsAtoms.set(b.atom1.index);
       bsAtoms.set(b.atom2.index);
     }
-    return super.getAtomBits(Token.group, bsAtoms);
+    return super.getAtomBitsMaybeDeleted(Token.group, bsAtoms);
   }
 
   public BitSet getSequenceBits(String specInfo, BitSet bs) {
@@ -4000,7 +4007,7 @@ abstract public class ModelCollection extends BondCollection {
       // 5) attach nearby non-hydrogen atoms (rings)
 
       bs = viewer.getModelUndeletedAtomsBitSet(atom.modelIndex);
-      bs.andNot(getAtomBits(Token.hydrogen, null));
+      bs.andNot(getAtomBitsMaybeDeleted(Token.hydrogen, null));
       makeConnections(0.1f, 1.8f, 1, JmolConstants.CONNECT_CREATE_ONLY, bsA,
           bs, null, false, false, 0);
 

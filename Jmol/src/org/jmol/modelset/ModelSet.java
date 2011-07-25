@@ -265,7 +265,10 @@ import javax.vecmath.Vector3f;
   public BitSet getAtomBits(int tokType, Object specInfo) {
     switch (tokType) {
     case Token.spec_model:
-      return getSpecModel(((Integer) specInfo).intValue());
+      int modelNumber = ((Integer) specInfo).intValue();
+      int modelIndex = getModelNumberIndex(modelNumber, true, true);
+      return (modelIndex < 0 && modelNumber > 0 ? new BitSet()
+          : viewer.getModelUndeletedAtomsBitSet(modelIndex));
     }
     return super.getAtomBits(tokType, specInfo);
   }
@@ -274,12 +277,6 @@ import javax.vecmath.Vector3f;
     return (String) viewer.getShapeProperty(JmolConstants.SHAPE_LABELS, "label", i);
   }
   
-  private BitSet getSpecModel(int modelNumber) {
-    int modelIndex = getModelNumberIndex(modelNumber, true, true);
-    return (modelIndex < 0 && modelNumber > 0 ? new BitSet()
-        : viewer.getModelUndeletedAtomsBitSet(modelIndex));
-  }
-
   protected final Atom[] closest = new Atom[1];
 
   public int findNearestAtomIndex(int x, int y, BitSet bsNot) {

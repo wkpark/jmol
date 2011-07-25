@@ -783,11 +783,11 @@ abstract public class BondCollection extends AtomCollection {
   }
 
   @Override
-  protected BitSet getAtomBits(int tokType, Object specInfo) {
+  protected BitSet getAtomBitsMaybeDeleted(int tokType, Object specInfo) {
     BitSet bs;
     switch (tokType) {
     default:
-      return super.getAtomBits(tokType, specInfo);
+      return super.getAtomBitsMaybeDeleted(tokType, specInfo);
     case Token.isaromatic:
       bs = new BitSet();
       for (int i = bondCount; --i >= 0;)

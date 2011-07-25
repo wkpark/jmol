@@ -245,7 +245,7 @@ public class Polyhedra extends AtomShape {
 
   private void buildPolyhedra() {
     boolean useBondAlgorithm = radius == 0 || bondedOnly;
-    AtomIndexIterator iter = modelSet.getSelectedAtomIterator(null, false, false, false);
+    AtomIndexIterator iter = modelSet.getSelectedAtomIterator(null, false, false, false, false);
     for (int i = centers.nextSetBit(0); i >= 0; i = centers.nextSetBit(i + 1)) {
       Polyhedron p = (haveBitSetVertices ? constructBitSetPolyhedron(i)
           : useBondAlgorithm ? constructBondsPolyhedron(i)

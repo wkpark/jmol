@@ -114,7 +114,7 @@ class AtomPropertyMapper extends AtomDataReader {
       Logger.startTimer();
     if (bsNearby != null)
       bsMySelected.or(bsNearby);
-    iter = atomDataServer.getSelectedAtomIterator(bsMySelected, false, false);
+    iter = atomDataServer.getSelectedAtomIterator(bsMySelected, false, false, false);
   }
   
   @Override

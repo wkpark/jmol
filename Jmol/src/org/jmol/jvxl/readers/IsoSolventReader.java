@@ -519,7 +519,7 @@ class IsoSolventReader extends AtomDataReader {
 
       // solvent excluded surfaces only
 
-      iter = atomDataServer.getSelectedAtomIterator(bsMySelected, true, false);
+      iter = atomDataServer.getSelectedAtomIterator(bsMySelected, true, false, false);
 
       // PHASE I: Construction of the surface edge and face data
 

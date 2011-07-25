@@ -350,26 +350,33 @@ public class Contact extends Isosurface {
     bs.or(bsB);
     ad.bsSelected = bs;
     boolean isSelf = bsA.equals(bsB);
-    viewer.fillAtomData(ad, AtomData.MODE_FILL_RADII
-        | (intramolecularMode > 0 ? AtomData.MODE_FILL_MOLECULES : 0));
+    viewer.fillAtomData(ad, AtomData.MODE_FILL_RADII 
+        | AtomData.MODE_FILL_MULTIMODEL
+        | AtomData.MODE_FILL_MOLECULES);
     boolean isMisc = (bsFilters != null && bsFilters[1] != null);
+    boolean isMultiModel = (ad.firstModelIndex != ad.lastModelIndex || ad.firstAtomIndex != atoms[bsA.nextSetBit(0)].modelIndex);
+    
     float maxRadius = 0;
     for (int ib = bsB.nextSetBit(0); ib >= 0; ib = bsB.nextSetBit(ib + 1))
       if (ad.atomRadius[ib] > maxRadius)
         maxRadius = ad.atomRadius[ib];
-    AtomIndexIterator iter = viewer.getSelectedAtomIterator(bsB, isSelf, false);
+    AtomIndexIterator iter = viewer.getSelectedAtomIterator(bsB, isSelf, false, isMultiModel);
     for (int ia = bsA.nextSetBit(0); ia >= 0; ia = bsA.nextSetBit(ia + 1)) {
-      viewer.setIteratorForAtom(iter, ia, ad.atomRadius[ia] + maxRadius);
+      if (isMultiModel)
+        viewer.setIteratorForPoint(iter, -1, ad.atomXyz[ia], ad.atomRadius[ia] + maxRadius);
+      else
+        viewer.setIteratorForAtom(iter, ia, ad.atomRadius[ia] + maxRadius);
       while (iter.hasNext()) {
         int ib = iter.next();
-        if (ia == ib || atoms[ia].isWithinFourBonds(atoms[ib]))
+        boolean isSameMolecule = (ad.atomMolecule[ia] == ad.atomMolecule[ib]);
+        if (ia == ib || isSameMolecule && atoms[ia].isWithinFourBonds(atoms[ib]))
           continue;
         switch (intramolecularMode) {
         case 0:
           break;
         case 1:
         case 2:
-          if ((ad.atomMolecule[ia] == ad.atomMolecule[ib]) != (intramolecularMode == 1))
+          if (isSameMolecule != (intramolecularMode == 1))
             continue;
         }
         if (isMisc) {

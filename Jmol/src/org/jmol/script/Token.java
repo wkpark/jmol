@@ -361,7 +361,7 @@ public class Token {
   final static int translate    = scriptCommand | 64;
   final static int translateSelected = scriptCommand | 66;
   final static int unbind       = scriptCommand | 68;
-  public final static int undo  = scriptCommand | 69;
+  public final static int undo  = scriptCommand | 69 | setparam;
   public final static int vibration    = scriptCommand | 70;
   //final static int write   see mathfunc
   final static int zoom         = scriptCommand | 72;

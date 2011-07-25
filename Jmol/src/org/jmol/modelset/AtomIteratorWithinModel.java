@@ -37,13 +37,13 @@ import org.jmol.viewer.Viewer;
 
 public class AtomIteratorWithinModel implements AtomIndexIterator {
 
-  private CubeIterator bsptIter;
-  private Bspf bspf;
+  protected CubeIterator bsptIter;
+  protected Bspf bspf;
   private boolean threadSafe;
   private boolean hemisphereOnly;
   private boolean isZeroBased;
 
-  private int modelIndex = Integer.MAX_VALUE;
+  protected int modelIndex = Integer.MAX_VALUE;
   private int atomIndex = -1;
   private int zeroBase;
   private float distanceSquared;
@@ -52,6 +52,10 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
   private boolean isGreaterOnly;
   private boolean checkGreater;
 
+  AtomIteratorWithinModel() {
+    //for one model only
+  }
+  
   
   /**
    * 

@@ -351,7 +351,6 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
     //undoClear();
   }
 
-/*  
   private void undoClear() {
     if (undoButton == null)
       return;
@@ -361,7 +360,6 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
     undoButton.setEnabled(false);
     redoButton.setEnabled(false);
   }
-*/
   
   void undoSetEnabled() {
     if (undoButton == null)
@@ -424,9 +422,9 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
     } catch (Error e) {
       dontsave = true;
     }
-    if (dontsave || Logger.checkTimer(null) > 1000) {
-      //viewer.setBooleanProperty("undo", false);
-      //undoClear();
+    if (dontsave || Logger.checkTimer(null) > 2000) {
+      viewer.setBooleanProperty("undo", false);
+      undoClear();
       Logger.info("command processing slow; undo disabled");
     } else {
       undoSetEnabled();

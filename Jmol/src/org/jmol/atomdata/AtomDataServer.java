@@ -12,7 +12,7 @@ import org.jmol.api.AtomIndexIterator;
 public interface AtomDataServer {
   public AtomIndexIterator getSelectedAtomIterator(BitSet bsSelected,
                                                     boolean isGreaterOnly,
-                                                    boolean modelZeroBased);
+                                                    boolean modelZeroBased, boolean isMultiModel);
 
   public void setIteratorForAtom(AtomIndexIterator iterator, int atomIndex, float distance);
 

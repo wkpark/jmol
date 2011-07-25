@@ -1906,6 +1906,10 @@ abstract public class ModelCollection extends BondCollection {
  
   public void setIteratorForPoint(AtomIndexIterator iterator, int modelIndex,
                                   Point3f pt, float distance) {
+    if (modelIndex < 0) {
+      iterator.set(pt, distance);
+      return;
+    }
     initializeBspt(modelIndex);
     iterator.set(this, modelIndex, models[modelIndex].firstAtomIndex, Integer.MAX_VALUE, pt, distance, null);    
   }
@@ -1919,18 +1923,37 @@ abstract public class ModelCollection extends BondCollection {
     iterator.set(this, modelIndex, models[modelIndex].firstAtomIndex, atomIndex, atoms[atomIndex], distance, rd);
   }
 
+  /**
+   * @param bsSelected
+   * @param isGreaterOnly
+   * @param modelZeroBased
+   * @param hemisphereOnly
+   * @param isMultiModel
+   * @return an iterator
+   */
   public AtomIndexIterator getSelectedAtomIterator(BitSet bsSelected,
-                                                    boolean isGreaterOnly,
-                                                    boolean modelZeroBased, boolean hemisphereOnly) {
+                                                   boolean isGreaterOnly,
+                                                   boolean modelZeroBased,
+                                                   boolean hemisphereOnly,
+                                                   boolean isMultiModel) {
     //EnvelopeCalculation, IsoSolventReader
     // This iterator returns only atoms OTHER than the atom specified
     // and with the specified restrictions. 
     // Model zero-based means the index returned is within the model, 
     // not the full atom set. broken in 12.0.RC6; repaired in 12.0.RC15
-    
+
     initializeBspf();
-    AtomIteratorWithinModel iter = new AtomIteratorWithinModel();
-    iter.initialize(bspf, bsSelected, isGreaterOnly, modelZeroBased, hemisphereOnly, viewer.isParallel()); 
+    AtomIteratorWithinModel iter;
+    if (isMultiModel) {
+      BitSet bsModels = getModelBitSet(bsSelected, false);
+      for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1)) 
+        initializeBspt(i);
+      iter = new AtomIteratorWithinModelSet(bsModels);
+    } else {
+      iter = new AtomIteratorWithinModel();
+    }
+    iter.initialize(bspf, bsSelected, isGreaterOnly, modelZeroBased,
+        hemisphereOnly, viewer.isParallel());
     return iter;
   }
   
@@ -2174,7 +2197,7 @@ abstract public class ModelCollection extends BondCollection {
                                boolean withinAllModels, RadiusData rd) {
     BitSet bsResult = new BitSet();
     BitSet bsCheck = getIterativeModels(false);
-    AtomIndexIterator iter = getSelectedAtomIterator(null, false, false, false);
+    AtomIndexIterator iter = getSelectedAtomIterator(null, false, false, false, false);
     if (withinAllModels) {
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
         for (int iModel = modelCount; --iModel >= 0;) {
@@ -2238,7 +2261,7 @@ abstract public class ModelCollection extends BondCollection {
     }
 
     BitSet bsCheck = getIterativeModels(true);
-    AtomIndexIterator iter = getSelectedAtomIterator(null, false, false, false);
+    AtomIndexIterator iter = getSelectedAtomIterator(null, false, false, false, false);
     for (int iModel = modelCount; --iModel >= 0;) {
       if (!bsCheck.get(iModel))
         continue;
@@ -2501,7 +2524,7 @@ abstract public class ModelCollection extends BondCollection {
       }
       i0 = bsCheck.nextSetBit(0);
     }
-    AtomIndexIterator iter = getSelectedAtomIterator(null, false, false, true);
+    AtomIndexIterator iter = getSelectedAtomIterator(null, false, false, true, false);
     for (int i = i0; i >= 0 && i < atomCount; i = (isAll ? i + 1 : bsCheck
         .nextSetBit(i + 1))) {
       boolean isAtomInSetA = (isAll || bsA.get(i));
@@ -2713,7 +2736,7 @@ abstract public class ModelCollection extends BondCollection {
       Logger.startTimer();
     Point3f C = null;
     Point3f D = null;
-    AtomIndexIterator iter = getSelectedAtomIterator(bsB, false, false, false);
+    AtomIndexIterator iter = getSelectedAtomIterator(bsB, false, false, false, false);
 
     for (int i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1)) {
       Atom atom = atoms[i];

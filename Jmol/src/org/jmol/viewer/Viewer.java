@@ -2571,9 +2571,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public AtomIndexIterator getSelectedAtomIterator(BitSet bsSelected,
                                                    boolean isGreaterOnly,
-                                                   boolean modelZeroBased) {
+                                                   boolean modelZeroBased, boolean isMultiModel) {
     return modelSet.getSelectedAtomIterator(bsSelected, isGreaterOnly,
-        modelZeroBased, false);
+        modelZeroBased, false, isMultiModel);
   }
 
   public void setIteratorForAtom(AtomIndexIterator iterator, int atomIndex,

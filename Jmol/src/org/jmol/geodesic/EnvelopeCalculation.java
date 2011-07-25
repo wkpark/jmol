@@ -291,7 +291,7 @@ public final class EnvelopeCalculation {
     // now, calculate surface for selected atoms
     boolean isAll = (bsSelected == null);
     AtomIndexIterator iter = viewer.getSelectedAtomIterator(bsMySelected,
-        false, modelZeroBased);
+        false, modelZeroBased, false);
     //true ==> only atom index > this atom accepted
     int i0 = (isAll ? atomCount - 1 : bsSelected.nextSetBit(0));
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsSelected.nextSetBit(i + 1)))

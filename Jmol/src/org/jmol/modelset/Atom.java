@@ -1413,6 +1413,8 @@ final public class Atom extends Point3fi implements JmolNode {
   }
 
   public boolean isWithinFourBonds(Atom atomOther) {
+    if (modelIndex != atomOther.modelIndex)
+      return  false;
     if (isCovalentlyBonded(atomOther))
       return true; 
     Bond[] bondsOther = atomOther.bonds;

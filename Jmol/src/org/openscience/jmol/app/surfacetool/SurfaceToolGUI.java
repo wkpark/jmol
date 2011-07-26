@@ -41,11 +41,13 @@ import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSlider;
+import javax.swing.JSpinner;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
@@ -72,8 +74,7 @@ class SurfaceToolGUI extends JPanel implements
   private JPanel objectsPanel;
   private JPanel unitsPanel;
   private JPanel angleUnitsPanel;
-  private JRadioButton degreeButton;
-  private JRadioButton radianButton;
+  private JComboBox angleUnitsList;
   private JPanel originPanel;
   private JRadioButton viewCenterButton;
   private JRadioButton absoluteButton;
@@ -83,12 +84,15 @@ class SurfaceToolGUI extends JPanel implements
   private JPanel sliderPanel;
   private JPanel normAnglePanel;
   private JSlider angleXYSlider;
+//  private JSpinner angleXYSpinner;
   private JSlider angleZSlider;
+//  private JSpinner angleZSpinner;
   private JPanel positionThicknessPanel;
   private JSlider positionSlider;
+//  private JSpinner positionSpinner;
   private JSlider thicknessSlider;
+//  private JSpinner thicknessSpinner;
   //private JCheckBox[] objectCheckBoxes;
-  private ButtonGroup angleUnits;
   private ButtonGroup whichOrigin;
 
   /**
@@ -130,25 +134,13 @@ class SurfaceToolGUI extends JPanel implements
       //Units panel
       unitsPanel = new JPanel(new GridLayout(1, 0));
       angleUnitsPanel = new JPanel(new GridLayout(0, 1));
-      switch (slicer.getAngleUnits()) {
-      case (SurfaceTool.DEGREES):
-        degreeButton = new JRadioButton(GT._("Degrees"), true);
-        radianButton = new JRadioButton(GT._("Radians"), false);
-        break;
-      case (SurfaceTool.RADIANS):
-        degreeButton = new JRadioButton(GT._("Degrees"), false);
-        radianButton = new JRadioButton(GT._("Radians"), true);
-        break;
-      }
-      degreeButton.addActionListener(this);
-      radianButton.addActionListener(this);
-      angleUnits = new ButtonGroup();
-      angleUnits.add(degreeButton);
-      angleUnits.add(radianButton);
-      angleUnitsPanel.add(degreeButton);
-      angleUnitsPanel.add(radianButton);
+      String [] angleUnits = slicer.getAngleUnitsList();
+      angleUnitsList = new JComboBox(angleUnits);
+      angleUnitsList.setSelectedIndex(slicer.getAngleUnits());
+      angleUnitsList.addActionListener(this);
+      angleUnitsPanel.add(angleUnitsList);
       angleUnitsPanel
-          .setBorder(BorderFactory.createTitledBorder(GT._("Angles")));
+          .setBorder(BorderFactory.createTitledBorder(GT._("Angle Units")));
 
       whichOrigin = new ButtonGroup();
       originPanel = new JPanel(new GridLayout(0, 1));
@@ -170,7 +162,6 @@ class SurfaceToolGUI extends JPanel implements
       ghostPanel = new JPanel(new GridLayout(0, 1));
       ghostCheck = new JCheckBox(GT._("Ghost On"));
       ghostCheck.setSelected(slicer.getGhoston());
-      //      ghostCheck.addChangeListener(this);
       ghostCheck.addActionListener(this);
       boundaryPlaneCheck = new JCheckBox(GT._("Slice Planes"));
       boundaryPlaneCheck.setSelected(false);
@@ -258,13 +249,10 @@ class SurfaceToolGUI extends JPanel implements
   }
 
   public void actionPerformed(ActionEvent e) {
-    if (e.getSource() == degreeButton || e.getSource() == radianButton) {
-      if (degreeButton.isSelected())
-        slicer.setAngleUnits(SurfaceTool.DEGREES);
-      if (radianButton.isSelected())
-        slicer.setAngleUnits(SurfaceTool.RADIANS);
+    if (e.getSource() == angleUnitsList) {
+      slicer.setAngleUnits(angleUnitsList.getSelectedIndex());
       updateAngleSliders();
-    }
+    }  
     if (e.getSource() == viewCenterButton || e.getSource() == absoluteButton) {
       if (absoluteButton.isSelected() && !slicer.getUseMolecular()) {
         slicer.setUseMolecular(true);
@@ -373,6 +361,31 @@ class SurfaceToolGUI extends JPanel implements
       angleLabels.put(Integer.valueOf(150), new JLabel("2.62"));
       angleLabels.put(Integer.valueOf(180), new JLabel("3.14"));
       break;
+    case SurfaceTool.GRADIANS:
+      angleLabels.put(Integer.valueOf(30), new JLabel("33.3"));
+      angleLabels.put(Integer.valueOf(60), new JLabel("66.7"));
+      angleLabels.put(Integer.valueOf(90), new JLabel("100"));
+      angleLabels.put(Integer.valueOf(120), new JLabel("133"));
+      angleLabels.put(Integer.valueOf(150), new JLabel("167"));
+      angleLabels.put(Integer.valueOf(180), new JLabel("200"));
+      break;
+    case SurfaceTool.CIRCLE_FRACTION:
+      angleLabels.put(Integer.valueOf(30), new JLabel("1/12"));
+      angleLabels.put(Integer.valueOf(60), new JLabel("1/6"));
+      angleLabels.put(Integer.valueOf(90), new JLabel("1/4"));
+      angleLabels.put(Integer.valueOf(120), new JLabel("1/3"));
+      angleLabels.put(Integer.valueOf(150), new JLabel("5/12"));
+      angleLabels.put(Integer.valueOf(180), new JLabel("1/2"));
+      break;
+    case SurfaceTool.UNITS_PI:
+      String piStr = "\u03C0";
+      angleLabels.put(Integer.valueOf(30), new JLabel(piStr+"/6"));
+      angleLabels.put(Integer.valueOf(60), new JLabel(piStr+"/3"));
+      angleLabels.put(Integer.valueOf(90), new JLabel(piStr+"/2"));
+      angleLabels.put(Integer.valueOf(120), new JLabel("2"+piStr+"/3"));
+      angleLabels.put(Integer.valueOf(150), new JLabel("5"+piStr+"/6"));
+      angleLabels.put(Integer.valueOf(180), new JLabel(piStr));
+      break;      
     }
     angleXYSlider.setLabelTable(angleLabels);
     angleXYSlider.setPaintLabels(true);

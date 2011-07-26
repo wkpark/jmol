@@ -59,16 +59,22 @@ public class SurfaceTool {
   //surface specific parameters
   //TODO may want to combine the following into a single object
   private final List<String> surfaceIDs = new ArrayList<String>();
+  private final List<Integer> surfaceKind = new ArrayList<Integer>();
   //private String[] surfaceCmds = new String[0];//initially set to basic creation.
   //private boolean[] surfaceVisible = new boolean[0];
   //private boolean[] filled = new boolean[0];
   //private boolean[] meshon = new boolean[0];
   //TODO fill and mesh color, translucency, frontonly, lighting
 
+  final static int DEGREES = 0;
   final static int RADIANS = 1;
-  final static int DEGREES = 2;
-  private int angleUnits = RADIANS;
-
+  final static int GRADIANS = 2;
+  final static int CIRCLE_FRACTION = 3;
+  final static int UNITS_PI = 4;
+  private int angleUnits = DEGREES;
+  //Note order of following list must match above.
+  private String [] angleUnitsList = {GT._("Degrees"),GT._("Radians"),GT._("Gradians"),GT._("Circle Fraction"),GT._("Units of Pi")};
+                  
   public SurfaceTool(JmolViewer viewer, HistoryFile hfile, String winName,
       boolean useGUI) {
     this.viewer = viewer;
@@ -104,44 +110,44 @@ public class SurfaceTool {
     boxVec.set(box.getBoundBoxCornerVector());
     posCorner.add(center, boxVec);
     negCorner.sub(center, boxVec);
+    Shape[] shapes = (Shape[]) viewer.getProperty("DATA_API", "shapeManager",
+    "getShapes");
     //now iterate through all the shapes and get their XYZmin and XYZmax.  Expand
     //Boundbox used by SurfaceTool to encompass these.
-    surfaceIDs.clear();
-    MeshCollection mc = getIsosurfaces();
+    box = checkMeshBB(shapes,JmolConstants.SHAPE_ISOSURFACE, box);
+    box = checkMeshBB(shapes,JmolConstants.SHAPE_PMESH, box);
+    //TODO MOs...script parser doesn't treat them as isosurfaces...
+//    box = checkMeshBB(shapes,JmolConstants.SHAPE_MO, box);
+    if (box!=null){
+      center.set(box.getBoundBoxCenter());
+      negCorner.sub(center, box.getBoundBoxCornerVector());
+      posCorner.add(center, box.getBoundBoxCornerVector());
+      boxVec.set(box.getBoundBoxCornerVector());
+    }
+  }
+  
+  BoxInfo checkMeshBB(Shape [] shapes, int kind, BoxInfo box){
+    MeshCollection mc = (MeshCollection) shapes[kind];
     if (mc == null)
-      return;
+      return box;
     for (int i = 0; i < mc.meshCount; i++) {
       Mesh m = mc.meshes[i];
       if (!m.isValid || m.vertexCount == 0 && m.polygonCount == 0)
         continue;
       if (m.thisID.equalsIgnoreCase("_slicerleft") || m.thisID.equalsIgnoreCase("_slicerright"))
         continue;
-      surfaceIDs.add(m.thisID);
       Point3f[] bb = m.getBoundingBox();
       if (bb == null)
         continue;
       box.addBoundBoxPoint(bb[0]);
       box.addBoundBoxPoint(bb[1]);    
-    }
-    center.set(box.getBoundBoxCenter());
-    negCorner.sub(center, box.getBoundBoxCornerVector());
-    posCorner.add(center, box.getBoundBoxCornerVector());
-    boxVec.set(box.getBoundBoxCornerVector());
+    }   
+    return box;
   }
 
   void setSurfaceToolParam() {
     //TODO should get stored parameters from History file upon initialization
     // probably belongs in another routine called only on start up.
-    switch (angleUnits) {
-    case RADIANS:
-      //angleXYMax = (float) Math.PI;
-      //anglefromZMax = (float) Math.PI;
-      break;
-    case DEGREES:
-      //angleXYMax = 180;
-      //anglefromZMax = 180;
-      break;
-    }
     thicknessMax = 2 * boxVec.length();
     float delta = position - positionMin;
     if (useMolecular) {
@@ -161,24 +167,38 @@ public class SurfaceTool {
   }
 
   private void updateSurfaceInfo() {
-    MeshCollection mc = getIsosurfaces();
-    if (mc != null) {
-      //check all the isosurfaces
-      for (int i = 0; i < mc.meshCount; i++) {
-        Mesh m = mc.meshes[i];
-        if (!m.isValid)
-          continue;
-        //... do stuff here. 
-      }
-    }
-  }
-
-  private MeshCollection getIsosurfaces() {
     Shape[] shapes = (Shape[]) viewer.getProperty("DATA_API", "shapeManager",
         "getShapes");
-    return (shapes == null ? null
-        : (MeshCollection) shapes[JmolConstants.SHAPE_ISOSURFACE]);
+    surfaceIDs.clear();
+    surfaceKind.clear();
+    updateMeshInfo(shapes,JmolConstants.SHAPE_ISOSURFACE);
+    updateMeshInfo(shapes,JmolConstants.SHAPE_PMESH);
+//    updateMeshInfo(shapes,JmolConstants.SHAPE_MO);
   }
+
+private void updateMeshInfo(Shape[] shapes, int kind){
+  if (shapes != null) {
+    MeshCollection mc = (MeshCollection) shapes[kind];
+    if (mc != null) {
+      //check all the meshes
+      for (int i = 0; i < mc.meshCount; i++) {
+        Mesh m = mc.meshes[i];
+          if (!m.isValid || m.vertexCount == 0 && m.polygonCount == 0)
+            continue;
+          if (m.thisID.equalsIgnoreCase("_slicerleft") || m.thisID.equalsIgnoreCase("_slicerright"))
+            continue;
+          surfaceIDs.add(m.thisID);
+          surfaceKind.add(Integer.valueOf(kind));
+      }
+    }
+  }  
+}
+//  private MeshCollection getIsosurfaces() {
+//    Shape[] shapes = (Shape[]) viewer.getProperty("DATA_API", "shapeManager",
+//        "getShapes");
+//    return (shapes == null ? null
+//        : (MeshCollection) shapes[JmolConstants.SHAPE_ISOSURFACE]);
+//  }
 
   void setAngleUnits(int units) {
     angleUnits = units;
@@ -341,29 +361,42 @@ public class SurfaceTool {
 
   void updateSlices() {
     for (int i = 0; i < surfaceIDs.size(); i++)
-        sliceObject(surfaceIDs.get(i));
+        sliceObject(surfaceIDs.get(i), surfaceKind.get(i));
   }
 
-  void sliceObject(String objectName) {
-    MeshCollection mc = getIsosurfaces();
-    int iMesh = mc.getIndexFromName(objectName);
-    if (iMesh < 0 || !mc.meshes[iMesh].isValid) {
+  void sliceObject(String objectName, Integer kind) {
+ //   unnecessary already in ID list, which we carefully update
+//    MeshCollection mc = getIsosurfaces(); 
+//    int iMesh = mc.getIndexFromName(objectName);
+//    if (iMesh < 0 || !mc.meshes[iMesh].isValid) {
       // do something here
-    } else {//valid isosurface
+//    } else {
+      //valid surface because it is in the updated list and we check
+    //every time the window gains focus to catch changes.
+    String cmdStart ="";
+    switch (kind){
+    case JmolConstants.SHAPE_ISOSURFACE:
+      cmdStart = "isosurface";
+      break;
+    case JmolConstants.SHAPE_PMESH:
+      cmdStart = "pmesh";
+      break;
+    }
       String ghostStr = (ghoston ? "translucent 0.8 mesh " : "");
       //      String cmd = "isosurface " + objectName + " off;";
       StringBuffer cmd = new StringBuffer();
       //planes on or off as appropriate
       drawSlicePlane(cmd, Token.left, lefton);
       drawSlicePlane(cmd, Token.right, righton);
-      cmd.append("isosurface ID \"").append(objectName).append("\" slab none");
+      cmd.append(cmdStart);
+      cmd.append(" ID \"").append(objectName).append("\" slab none");
       getSlabOption(cmd, ghostStr + "-", slice.leftPlane);
       getSlabOption(cmd, ghostStr, slice.rightPlane);
       cmd.append(";");
       //      cmd += " isosurface ").append(objectName).append(" on;";
 
       viewer.evalStringQuiet(cmd.toString());
-    }//TODO shouldn't fail silently as it does now.
+//    }//TODO shouldn't fail silently as it does now.
     return;
   }
   
@@ -448,5 +481,9 @@ public class SurfaceTool {
 
   Point4f getSliceMiddle() {
     return slice.getMiddle();
+  }
+  
+  String[] getAngleUnitsList(){
+    return angleUnitsList;
   }
 }

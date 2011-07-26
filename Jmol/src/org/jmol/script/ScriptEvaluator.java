@@ -8340,15 +8340,19 @@ public class ScriptEvaluator {
         String key = stringParameter(++i).toLowerCase();
         loadScript.append(" ").append(Escape.escape(key));
         isAppend = key.startsWith("append");
-        String strModel = parameterAsString(++i);
+        String strModel = (key.indexOf("@") >= 0 ? ""
+            + getParameter(key.substring(key.indexOf("@") + 1), Token.string)
+            : parameterAsString(++i));
         strModel = viewer.fixInlineString(strModel, viewer.getInlineChar());
         htParams.put("fileData", strModel);
         htParams.put("isData", Boolean.TRUE);
         //note: ScriptCompiler will remove an initial \n if present
         loadScript.append('\n');
         loadScript.append(strModel);
-        loadScript.append(" end ").append(Escape.escape(key));
-        i += 2; // skip END "key"
+        if (key.indexOf("@") < 0) {
+          loadScript.append(" end ").append(Escape.escape(key));
+          i += 2; // skip END "key"
+        }
         break;
       case Token.append:
         isAppend = true;

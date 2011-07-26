@@ -9019,7 +9019,7 @@ public class ScriptEvaluator {
       case Token.vanderwaals:
         if (ptFloat >= 0)
           error(ERROR_invalidArgument);
-        rd = encodeRadiusParameter(i, false);
+        rd = encodeRadiusParameter(i, false, true);
         rd.values = rangeMinMax;
         i = iToken;
         isNotConnected = true;
@@ -11003,7 +11003,7 @@ public class ScriptEvaluator {
       // fall through
     case Token.integer:
     default:
-      rd = encodeRadiusParameter(1, isOnly);
+      rd = encodeRadiusParameter(1, isOnly, true);
       if (Float.isNaN(rd.value))
         error(ERROR_invalidArgument);
     }
@@ -11027,7 +11027,7 @@ public class ScriptEvaluator {
    * 80% percent (0
    */
 
-  private RadiusData encodeRadiusParameter(int index, boolean isOnly)
+  private RadiusData encodeRadiusParameter(int index, boolean isOnly, boolean allowAbsolute)
       throws ScriptException {
 
     float value = Float.NaN;
@@ -11062,15 +11062,16 @@ public class ScriptEvaluator {
       break;
     case Token.plus:
     case Token.decimal:
-      if (tok == Token.plus) {
+      if (tok == Token.plus)
         index++;
+      value = floatParameter(index, (isOnly || !allowAbsolute ? -Atom.RADIUS_MAX : 0),
+          Atom.RADIUS_MAX);
+      if (tok == Token.plus || !allowAbsolute) {
         type = RadiusData.TYPE_OFFSET;
       } else {
         type = RadiusData.TYPE_ABSOLUTE;
         vdwType = Integer.MAX_VALUE;
       }
-      value = floatParameter(index, (isOnly ? -Atom.RADIUS_MAX : 0),
-          Atom.RADIUS_MAX);
       if (isOnly)
         value = -value;
       break;
@@ -11658,7 +11659,7 @@ public class ScriptEvaluator {
       }
       break;
     }
-    RadiusData rd = (Float.isNaN(value) ? encodeRadiusParameter(ipt, false)
+    RadiusData rd = (Float.isNaN(value) ? encodeRadiusParameter(ipt, false, true)
         : new RadiusData(value, type, 0));
     if (Float.isNaN(rd.value))
       error(ERROR_invalidArgument);
@@ -15331,7 +15332,8 @@ public class ScriptEvaluator {
         break;
       case Token.plus:
       case Token.integer:
-        rd = encodeRadiusParameter(i, false);
+      case Token.decimal:
+        rd = encodeRadiusParameter(i, false, false);
         sbCommand.append(" ").append(rd);
         i = iToken;
         break;
@@ -15391,7 +15393,7 @@ public class ScriptEvaluator {
     if (bsA != null) {
       // bond mode, intramolec set here
       if (rd == null)
-        rd = encodeRadiusParameter(-1, false);
+        rd = encodeRadiusParameter(-1, false, false);
       if (Float.isNaN(rd.value))
         rd.value = 100;
 
@@ -15539,11 +15541,18 @@ public class ScriptEvaluator {
     }
     if (userSlabObject != null && bsA != null)
       setShapeProperty(JmolConstants.SHAPE_CONTACT, "slab", userSlabObject);
-    if (bsA != null) {
-      int nContacts = ((Integer) getShapeProperty(JmolConstants.SHAPE_CONTACT,
-          "nSets")).intValue();
-      if (nContacts >= 0)
-        showString(nContacts + " contacts");
+    if (bsA != null && (type== Token.nci || isPaired)) {
+      Object volume = getShapeProperty(JmolConstants.SHAPE_CONTACT,
+      "volume");
+      if (volume instanceof double[]) {
+        double[] vs = (double[]) volume;
+        double v = 0;
+        for (int i = 0; i < vs.length; i++)
+          v += Math.abs(vs[i]);
+        volume = Float.valueOf((float) v);
+      }
+        showString(getShapeProperty(JmolConstants.SHAPE_CONTACT,
+        "nSets") + " contacts with volume " + volume + " A^3");
     }
   }
     
@@ -16643,7 +16652,7 @@ public class ScriptEvaluator {
       case Token.ionic:
       case Token.vanderwaals:
         sbCommand.append(" ").append(theToken.value);
-        RadiusData rd = encodeRadiusParameter(i, false);
+        RadiusData rd = encodeRadiusParameter(i, false, true);
         sbCommand.append(" ").append(rd);
         if (Float.isNaN(rd.value))
           rd.value = 100;

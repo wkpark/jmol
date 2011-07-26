@@ -132,7 +132,7 @@ public class Contact extends Isosurface {
       super.setProperty("nci", Boolean.TRUE, null);
       break;
     case Token.cap:
-      thisMesh.nSets = -1;
+      thisMesh.nSets = 1;
       newSurface(Token.slab, null, bsA, bsB, rd, null, null, false, null);
       VolumeData volumeData = sg.getVolumeData();
       sg.initState();
@@ -140,7 +140,7 @@ public class Contact extends Isosurface {
       mergeMesh(null);
       break;
     case Token.vanderwaals:
-      thisMesh.nSets = -1;
+      thisMesh.nSets = 1;
       newSurface(type, null, bsA, bsB, rd, null, null, isColorDensity, null);
       break;
     case Token.full:
@@ -180,10 +180,12 @@ public class Contact extends Isosurface {
     float resolution = sg.getParams().resolution;
     int nContacts = pairs.size();
     thisMesh.nSets = nContacts;
+    double volume = 0;
     if (type == Token.full && resolution == Float.MAX_VALUE)
       resolution = (nContacts > 1000 ? 3 : 10);
     for (int i = nContacts; --i >= 0;) {
       ContactPair cp = pairs.get(i);
+      volume += cp.volume;
       setVolumeData(type, volumeData, cp, resolution, nContacts);
       switch (type) {
       case Token.full:
@@ -204,6 +206,7 @@ public class Contact extends Isosurface {
       }
     }
     Logger.setLogLevel(logLevel);
+    thisMesh.calculatedVolume = Float.valueOf((float)volume);
   }
 
   private void newSurface(int type, ContactPair cp, BitSet bs1, BitSet bs2,
@@ -295,12 +298,12 @@ public class Contact extends Isosurface {
   
   private void setVolumeData(int type, VolumeData volumeData, ContactPair cp,
                              float resolution, int nPairs) {
-    pt1.set(atoms[cp.iAtom1]);
-    pt2.set(atoms[cp.iAtom2]);
+    pt1.set(cp.pts[0]);
+    pt2.set(cp.pts[1]);
     vX.sub(pt2, pt1);
     float dAB = vX.length();
-    float dYZ = (cp.radius1 * cp.radius1 + dAB * dAB - cp.radius2 * cp.radius2)/(2 * dAB * cp.radius1);
-    dYZ = 2.1f * (float) (cp.radius1 * Math.sin(Math.acos(dYZ)));
+    float dYZ = (cp.radii[0] * cp.radii[0] + dAB * dAB - cp.radii[1] * cp.radii[1])/(2 * dAB * cp.radii[0]);
+    dYZ = 2.1f * (float) (cp.radii[0] * Math.sin(Math.acos(dYZ)));
     Measure.getNormalToLine(pt1, pt2, vZ);
     vZ.scale(dYZ);
     vY.cross(vZ, vX);
@@ -308,8 +311,8 @@ public class Contact extends Isosurface {
     vY.scale(dYZ);
     if (type != Token.connect) {
       vX.normalize();
-      pt1.scaleAdd((dAB - cp.radius2) * 0.95f, vX, pt1);
-      pt2.scaleAdd((cp.radius1 - dAB) * 0.95f, vX, pt2);
+      pt1.scaleAdd((dAB - cp.radii[1]) * 0.95f, vX, pt1);
+      pt2.scaleAdd((cp.radii[0] - dAB) * 0.95f, vX, pt2);
       vX.sub(pt2, pt1);
     }
     if (resolution == Float.MAX_VALUE)
@@ -398,25 +401,48 @@ public class Contact extends Isosurface {
           continue;
         ContactPair cp = new ContactPair(atoms, ia, ib, ad.atomRadius[ia],
             ad.atomRadius[ib]);
-        if (isContactClear(cp, ad, bs))
           list.add(cp);
       }
     }
     iter.release();
     iter = null;
+    checkAllContacts(list);
     Logger.info("Contact pairs: " + list.size());
     return list;
   }
 
-  private boolean isContactClear(ContactPair cp, AtomData ad, BitSet bs) {
-    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-      if (ad.bsIgnored != null && ad.bsIgnored.get(i) || i == cp.iAtom1
-          || i == cp.iAtom2 || ad.atomRadius[i] == 0)
-        continue;
-      if (atoms[i].distance(cp.pt) < atoms[i].getVanderwaalsRadiusFloat(viewer, JmolConstants.VDW_AUTO))
-        return false;
+  private void checkAllContacts(List<ContactPair> list) {
+    int n = list.size() - 1;
+    for (int i = 0; i < n; i++) {
+      ContactPair cp1 = list.get(i);
+      for (int j = i + 1; j <= n; j++) {
+        ContactPair cp2 = list.get(j);
+        for (int m = 0; m < 2; m++) {
+          for (int p = 0; p < 2; p++) {
+            switch (checkCp(cp1, cp2, m, p)) {
+            case 1:
+              list.remove(i);
+              j = n--;
+              i--;
+              break;
+            case 2:
+              list.remove(j);
+              j--;
+              n--;
+              break;
+            }
+          }
+        }
+      }
     }
-    return true;
+  }
+ 
+  private int checkCp(ContactPair cp1, ContactPair cp2, int  i1, int i2) {
+    if (cp1.pts[i1] != cp2.pts[i2])
+      return 0;
+    boolean clash1 = ( cp1.pt.distance(cp2.pts[1 - i2]) < cp2.radii[1 - i2]); 
+    boolean clash2 = ( cp2.pt.distance(cp1.pts[1 - i1]) < cp1.radii[1 - i1]);
+    return (!clash1 && !clash2 ? 0 : cp1.chord < cp2.chord ? 1 : 2);
   }
 
   private void mergeMesh(MeshData md) {

@@ -65,7 +65,7 @@ class IsoMOReader extends AtomDataReader {
     moData = params.moData;
     mos = (List<Map<String, Object>>) moData.get("mos");
     linearCombination = params.qm_moLinearCombination;
-    Map<String, Object> mo = (linearCombination == null ? mos
+    Map<String, Object> mo = (mos != null && linearCombination == null ? mos
         .get(params.qm_moNumber - 1) : null);
     boolean haveVolumeData = moData.containsKey("haveVolumeData");
     if (haveVolumeData && mo != null)

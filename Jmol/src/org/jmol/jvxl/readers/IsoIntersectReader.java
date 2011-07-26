@@ -124,9 +124,9 @@ class IsoIntersectReader extends AtomDataReader {
       resetPlane(Float.MAX_VALUE);
       markSphereVoxels(0, params.distance);
     } else {
-      markPlaneVoxels(contactPair.pt1, contactPair.radius1);
+      markPlaneVoxels(contactPair.pts[0], contactPair.radii[0]);
       thisPlane = thisPlaneB;
-      markPlaneVoxels(contactPair.pt2, contactPair.radius2);
+      markPlaneVoxels(contactPair.pts[1], contactPair.radii[1]);
     }
     thisPlane = yzPlanes[x % 2];
     if (!setVoxels())

@@ -3262,6 +3262,10 @@ private void zap(String msg) {
         false));
   }
 
+  public Map<String, Object> getLigandInfo(Object atomExpression) {
+    return modelSet.getLigandInfo(getAtomBitSet(atomExpression));
+  }
+
   public Map<String, Object> getAuxiliaryInfo(Object atomExpression) {
     return modelSet.getAuxiliaryInfo(getModelBitSet(
         getAtomBitSet(atomExpression), false));

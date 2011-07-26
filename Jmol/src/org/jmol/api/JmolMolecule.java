@@ -66,18 +66,20 @@ public class JmolMolecule {
    *          per-model atom list, or null
    * @param biobranches 
    *          pre-defined connections, like bonds but not to be followed internally
+   * @param bsExclude TODO
    * @return an array of JmolMolecules
    */
   public final static JmolMolecule[] getMolecules(JmolNode[] atoms,
                                                   BitSet[] bsModelAtoms,
-                                                  List<BitSet> biobranches) {
+                                                  List<BitSet> biobranches, BitSet bsExclude) {
     BitSet bsToTest = null;
     BitSet bsBranch = new BitSet();
     int thisModelIndex = -1;
     int indexInModel = 0;
     int moleculeCount = 0;
     JmolMolecule[] molecules = new JmolMolecule[4];
-    BitSet bsExclude = new BitSet();
+    if (bsExclude == null)
+      bsExclude = new BitSet();
     
     for (int i = 0; i < atoms.length; i++)
       if (!bsExclude.get(i) && !bsBranch.get(i)) {

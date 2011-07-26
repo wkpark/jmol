@@ -10437,17 +10437,14 @@ public class ScriptEvaluator {
   }
 
   private void subset() throws ScriptException {
-    BitSet bs = (statementLength == 1 ? null : atomExpression(-1));
-    if (isSyntaxCheck)
-      return;
-    // There might have been a reason to have bsSubset being set BEFORE
-    // checking syntax checking, but I can't remember why.
-    // will leave it this way for now. Might cause some problems with script
-    // checking.
-    viewer.setSelectionSubset(bs);
-    // I guess we do not want to select, because that could
-    // throw off picking in a strange way
-    // viewer.select(bsSubset, false);
+    BitSet bs = null;
+    if (!isSyntaxCheck)
+      viewer.setSelectionSubset(null);
+    if (statementLength != 1
+        && (statementLength != 4 || !getToken(2).value.equals("off")))
+      bs = atomExpression(1);
+    if (!isSyntaxCheck)
+      viewer.setSelectionSubset(bs);
   }
 
   private void invertSelected() throws ScriptException {
@@ -15252,11 +15249,11 @@ public class ScriptEvaluator {
     int type = Token.plane;
     int bondMode = Token.nada;
     float distance = Float.NaN;
+    boolean isPaired = true;
     Boolean intramolecular = null;
     Object userSlabObject = null;
     int colorpt = 0;
     int tok;
-    int ipoint = 0;
     boolean okNoAtoms = (iToken > 1);
     for (int i = iToken; i < statementLength; ++i) {
       switch (tok = getToken(i).tok) {
@@ -15299,7 +15296,6 @@ public class ScriptEvaluator {
       case Token.slab:
         okNoAtoms = true;
         userSlabObject = getCapSlabObject(i, true);
-        System.out.println("scripteval tst");
         setShapeProperty(JmolConstants.SHAPE_CONTACT, "slab", userSlabObject);
         i = iToken;
         break;
@@ -15337,7 +15333,6 @@ public class ScriptEvaluator {
         break;
       case Token.intermolecular:
       case Token.intramolecular:
-        ipoint = iToken;
         intramolecular = (tok == Token.intramolecular ? Boolean.TRUE
             : Boolean.FALSE);
         sbCommand.append(" ").append(theToken.value);
@@ -15354,10 +15349,13 @@ public class ScriptEvaluator {
       case Token.full:
       case Token.trim:
       case Token.plane:
-      case Token.cap:
       case Token.connect:
+        type = theTok;
+        break;
+      case Token.cap:
       case Token.nci:
       case Token.vanderwaals:
+        isPaired = false;
         type = theTok;
         break;
       case Token.parameters:
@@ -15384,16 +15382,10 @@ public class ScriptEvaluator {
     if (isSyntaxCheck)
       return;
 
-    // allow INTRAMOLECULAR only for NCI
-    if (type != Token.nci && intramolecular != null
-        && intramolecular.booleanValue())
-      error(ERROR_invalidArgument, ipoint);
-
     sbCommand.append(" ").append(Token.nameOf(type));
     String defaultColor = null;
     if (bsA != null) {
       // bond mode, intramolec set here
-
       if (rd == null)
         rd = encodeRadiusParameter(-1, false);
       if (Float.isNaN(rd.value))
@@ -15409,7 +15401,7 @@ public class ScriptEvaluator {
         break;
       case Token.plane:
       case Token.cap:
-        func = "a-b"; 
+        func = "a-b";
         break;
       case Token.connect:
         func = "a+b";
@@ -15424,29 +15416,60 @@ public class ScriptEvaluator {
           params = new float[] { 0.5f, 2 };
       }
 
-      if (bsB == null) {
-        // if INTRAMOLCULAR and no {B}, then this means "just {A} to {A}"
-        // otherwise, {B} should be set to {!A}.
-
-        if (type != Token.nci && intramolecular == null) {
-          sbCommand.append(" intermolecular");
-          intramolecular = Boolean.valueOf(false);
-        }
-
-        if (intramolecular != null && intramolecular.booleanValue()) {
-          intramolecular = null;
-          bsB = BitSetUtil.copy(bsA);
-        } else {
-          bsB = BitSetUtil.setAll(viewer.getAtomCount());
-          bsB.andNot(bsA);
-        }
-        bs = viewer.getAtomsWithin(distance, bsA, false, (Float.isNaN(distance) ? rd : null));
-        // {B} always within some fixed distance of A -- intramolecular
-        bsB.and(bs);
+      boolean withinAllModels;
+      boolean isDefaultB = (bsB == null);
+      if (isDefaultB) {
+        // default is "within just one model and not A" when {B} is missing
+        bsB = BitSetUtil.setAll(viewer.getAtomCount());
+        BitSetUtil.andNot(bsB, viewer.getDeletedAtoms());
+        withinAllModels = false;
       } else {
-        bs = viewer.getAtomsWithin(distance, bsA, true, (Float.isNaN(distance) ? rd : null));
-        // {B} always within some fixed distance of A -- intermolecular
-        bsB.and(bs);
+        // two atom sets specified; within ALL MODELS here
+        bs = BitSetUtil.copy(bsA);
+        bs.or(bsB);
+        withinAllModels = (viewer.getModelBitSet(bs, false).cardinality() > 1);
+      }
+      // B always within some possibly extended VDW of A or just A itself
+      if (!bsA.equals(bsB)) {
+        boolean setBfirst = (!isPaired || bsA.cardinality() < bsB.cardinality());
+        if (setBfirst) {
+          bs = viewer.getAtomsWithin(distance, bsA, withinAllModels, (Float
+              .isNaN(distance) ? rd : null));
+          bsB.and(bs);
+        }
+        if (isPaired) {
+          // we can just get the near atoms for A as well.
+          bs = viewer.getAtomsWithin(distance, bsB, withinAllModels, (Float
+              .isNaN(distance) ? rd : null));
+          bsA.and(bs);
+          if (!setBfirst) {
+            bs = viewer.getAtomsWithin(distance, bsA, withinAllModels, (Float
+                .isNaN(distance) ? rd : null));
+            bsB.and(bs);
+          }
+        }
+      }
+
+      switch (type) {
+      case Token.nci:
+        break;
+      case Token.vanderwaals:
+      case Token.cap:
+        bsB.andNot(bsA);
+        break;
+      default:
+        if (!bsA.equals(bsB)) {
+          // If the two sets are not the same,
+          // we AND them and see if that is A. 
+          // If so, then the smaller set is
+          // removed from the larger set.
+          bs = BitSetUtil.copy(bsB);
+          bs.and(bsA);
+          if (bs.equals(bsA))
+            bsB.andNot(bsA);
+          else if (bs.equals(bsB))
+            bsA.andNot(bsB);
+        }
       }
       if (intramolecular != null) {
         params = (params == null ? new float[2] : ArrayUtil.ensureLength(
@@ -15473,7 +15496,9 @@ public class ScriptEvaluator {
         break;
       case Token.miscellaneous:
         // everything else!
-        bsFilters = new BitSet[] { viewer.getAtomBitSet(hbond), viewer.getAtomBitSet(hydro), viewer.getAtomBitSet("_C and connected(_O or _N)") };
+        bsFilters = new BitSet[] { viewer.getAtomBitSet(hbond),
+            viewer.getAtomBitSet(hydro),
+            viewer.getAtomBitSet("_C and connected(_O or _N)") };
         defaultColor = "yellow";
         break;
       }
@@ -15510,6 +15535,12 @@ public class ScriptEvaluator {
     }
     if (userSlabObject != null && bsA != null)
       setShapeProperty(JmolConstants.SHAPE_CONTACT, "slab", userSlabObject);
+    if (bsA != null) {
+      int nContacts = ((Integer) getShapeProperty(JmolConstants.SHAPE_CONTACT,
+          "nSets")).intValue();
+      if (nContacts >= 0)
+        showString(nContacts + " contacts");
+    }
   }
     
   private void lcaoCartoon() throws ScriptException {

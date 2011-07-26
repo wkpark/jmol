@@ -1486,6 +1486,65 @@ abstract public class ModelCollection extends BondCollection {
     return "no header information found";
   }
 
+  public Map<String, Object> getLigandInfo(BitSet bsAtoms) {
+    Map<String, Object> info = new Hashtable<String, Object>();
+    List<Map<String, Object>> ligands = new ArrayList<Map<String, Object>>();
+    info.put("ligands", ligands);
+    BitSet bsExclude = BitSetUtil.copyInvert(bsAtoms, atomCount);
+    bsExclude.or(viewer.getAtomBitSet("solvent"));
+    for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1))
+      if (atoms[i].isProtein() || atoms[i].isNucleic())
+        bsExclude.set(i);
+    BitSet[] bsModelAtoms = new BitSet[modelCount];
+    for (int i = 0; i < modelCount; i++) {
+      bsModelAtoms[i] = viewer.getModelUndeletedAtomsBitSet(i);
+      bsModelAtoms[i].andNot(bsExclude);
+    }
+    JmolMolecule[] molList = JmolMolecule.getMolecules(atoms, bsModelAtoms,
+        null, bsExclude);
+    for (int i = 0; i < molList.length; i++) {
+      BitSet bs = molList[i].atomList;
+      Map<String, Object> ligand = new Hashtable<String, Object>();
+      ligands.add(ligand);
+      ligand.put("atoms", bs);
+      String names = "";
+      String sep = "";
+      Group lastGroup = null;
+      char chainlast = '\0';
+      String reslist = "";
+      String model = "";
+      int resnolast = Integer.MAX_VALUE;
+      int resnofirst = Integer.MAX_VALUE;
+      for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1)) {
+        if (lastGroup == atoms[j].group)
+          continue;
+        lastGroup = atoms[j].group;
+        int resno = atoms[j].getResno();
+        char chain = atoms[j].getChainID();
+        if (resnolast != resno - 1) {
+          if (reslist.length() != 0 && resnolast != resnofirst)
+            reslist += "-" + resnolast;
+          chain = '\1';
+          resnofirst = resno;
+        }
+        model = "/" + getModelNumberDotted(atoms[j].modelIndex);
+        if (chainlast != '\0' && chain != chainlast)
+          reslist += ":" + chainlast + model;
+        if (chain == '\1')
+          reslist += " " + resno;
+        resnolast = resno;
+        chain = atoms[j].getChainID();
+        names += sep + atoms[j].getGroup3(false);
+        sep = "-";
+      }
+      reslist += (resnofirst == resnolast ? "" : "-" + resnolast) + (chainlast == '\0' ? "" : ":" + chainlast)
+          + model;
+      ligand.put("groupNames", names);
+      ligand.put("residueList", reslist.substring(1));
+    }
+    return info;
+  }
+
   public Map<String, Object> getModelInfo(BitSet bsModels) {
     Map<String, Object> info = new Hashtable<String, Object>();
     info.put("modelSetName", modelSetName);
@@ -1815,7 +1874,7 @@ abstract public class ModelCollection extends BondCollection {
     }
     // problem, as with 1gzx, is that this does not include non-protein cofactors that are 
     // covalently bonded. So we indicate a set of "biobranches" in JmolMolecule.getMolecules
-    molecules = JmolMolecule.getMolecules(atoms, bsModelAtoms, biobranches);
+    molecules = JmolMolecule.getMolecules(atoms, bsModelAtoms, biobranches, null);
     moleculeCount = molecules.length;
     for (int i = moleculeCount; --i >= 0;) {
       m = models[molecules[i].modelIndex];

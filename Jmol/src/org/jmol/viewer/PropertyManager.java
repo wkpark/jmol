@@ -60,8 +60,9 @@ public class PropertyManager {
     "fileContents"    , "<pathname>", "",
     "fileContents"    , "", "",
     "animationInfo"   , "", "",
-    "modelInfo"       , atomExpression, "(*)",
-    "X -vibrationInfo", "", "",  //not implemented -- see modelInfo
+    "modelInfo"       , atomExpression, "{*}",
+    //"X -vibrationInfo", "", "",  //not implemented -- see modelInfo
+    "ligandInfo"      , atomExpression, "{*}",
     "shapeInfo"       , "", "",
     "measurementInfo" , "", "",
     
@@ -81,7 +82,7 @@ public class PropertyManager {
     "jmolStatus"      , "statusNameList", "",
     "jmolViewer"      , "", "",
     "messageQueue"    , "", "",
-    "auxiliaryInfo"   , atomExpression, "*",
+    "auxiliaryInfo"   , atomExpression, "{*}",
     
     "boundBoxInfo"    , "", "",  
     "dataInfo"        , "<data type>", "types",
@@ -90,9 +91,9 @@ public class PropertyManager {
     "menu"            , "<type>", "current",
     "minimizationInfo", "", "",
     "pointGroupInfo"  , atomExpression, "(visible)",
-    "fileInfo"         , "<type>", "",
-    "errorMessage", "", "",
-    "mouseInfo", "", "",
+    "fileInfo"        , "<type>", "",
+    "errorMessage"    , "", "",
+    "mouseInfo"       , "", "",
     "isosurfaceInfo"  , "", "",
   };
 
@@ -105,7 +106,8 @@ public class PropertyManager {
   private final static int PROP_ANIMATION_INFO = 5;
   private final static int PROP_MODEL_INFO = 6;
   //private final static int PROP_VIBRATION_INFO = 7; //not implemented -- see auxiliaryInfo
-  private final static int PROP_SHAPE_INFO = 8;
+  private final static int PROP_LIGAND_INFO = 7;
+   private final static int PROP_SHAPE_INFO = 8;
   private final static int PROP_MEASUREMENT_INFO = 9;
   
   private final static int PROP_CENTER_INFO = 10;
@@ -389,6 +391,8 @@ public class PropertyManager {
       return viewer.getStatusChanged(myParam.toString());
     case PROP_JMOL_VIEWER:
       return viewer;
+    case PROP_LIGAND_INFO:
+      return viewer.getLigandInfo(myParam);
     case PROP_MEASUREMENT_INFO:
       return viewer.getMeasurementInfo();
     case PROP_MENU:

@@ -50,6 +50,7 @@ import org.jmol.viewer.JmolConstants;
 
 public class Contact extends Isosurface {
 
+  
   @Override
   public void initShape() {
     super.initShape();
@@ -63,10 +64,9 @@ public class Contact extends Isosurface {
       setContacts((Object[]) value);
       return;
     }
-
     super.setProperty(propertyName, value, bs);
   }
-
+    
   protected Atom[] atoms;
   private int atomCount;
   private float minData, maxData;
@@ -117,6 +117,7 @@ public class Contact extends Isosurface {
     }
     super.setProperty("newObject", null, null);
     thisMesh.setMerged(true);
+    thisMesh.nSets = 0;
     Parameters params = sg.getParams();
     switch (type) {
     case Token.nci:
@@ -131,6 +132,7 @@ public class Contact extends Isosurface {
       super.setProperty("nci", Boolean.TRUE, null);
       break;
     case Token.cap:
+      thisMesh.nSets = -1;
       newSurface(Token.slab, null, bsA, bsB, rd, null, null, false, null);
       VolumeData volumeData = sg.getVolumeData();
       sg.initState();
@@ -138,6 +140,7 @@ public class Contact extends Isosurface {
       mergeMesh(null);
       break;
     case Token.vanderwaals:
+      thisMesh.nSets = -1;
       newSurface(type, null, bsA, bsB, rd, null, null, isColorDensity, null);
       break;
     case Token.full:
@@ -169,20 +172,19 @@ public class Contact extends Isosurface {
                                float[] parameters, Object func,
                                boolean isColorDensity, int intramolecularMode,
                                BitSet[] bsFilters) {
-    if (!bsA.equals(bsB))
-      bsB.andNot(bsA);
     List<ContactPair> pairs = getPairs(bsA, bsB, rd, intramolecularMode,
         bsFilters);
     VolumeData volumeData = new VolumeData();
     int logLevel = Logger.getLogLevel();
     Logger.setLogLevel(0);
     float resolution = sg.getParams().resolution;
-    int n = pairs.size();
+    int nContacts = pairs.size();
+    thisMesh.nSets = nContacts;
     if (type == Token.full && resolution == Float.MAX_VALUE)
-      resolution = (n > 1000 ? 3 : 10);
-    for (int i = n; --i >= 0;) {
+      resolution = (nContacts > 1000 ? 3 : 10);
+    for (int i = nContacts; --i >= 0;) {
       ContactPair cp = pairs.get(i);
-      setVolumeData(type, volumeData, cp, resolution, n);
+      setVolumeData(type, volumeData, cp, resolution, nContacts);
       switch (type) {
       case Token.full:
         newSurface(type, cp, null, null, rd, null, func, isColorDensity, volumeData);
@@ -348,14 +350,15 @@ public class Contact extends Isosurface {
     ad.radiusData = rd;
     BitSet bs = BitSetUtil.copy(bsA);
     bs.or(bsB);
+    if (bs.isEmpty())
+      return list;      
     ad.bsSelected = bs;
+    boolean isMultiModel = (atoms[bs.nextSetBit(0)].modelIndex != atoms[bs.length() - 1].modelIndex);
     boolean isSelf = bsA.equals(bsB);
     viewer.fillAtomData(ad, AtomData.MODE_FILL_RADII 
-        | AtomData.MODE_FILL_MULTIMODEL
+        | (isMultiModel ? AtomData.MODE_FILL_MULTIMODEL : 0)
         | AtomData.MODE_FILL_MOLECULES);
     boolean isMisc = (bsFilters != null && bsFilters[1] != null);
-    boolean isMultiModel = (ad.firstModelIndex != ad.lastModelIndex || ad.firstAtomIndex != atoms[bsA.nextSetBit(0)].modelIndex);
-    
     float maxRadius = 0;
     for (int ib = bsB.nextSetBit(0); ib >= 0; ib = bsB.nextSetBit(ib + 1))
       if (ad.atomRadius[ib] > maxRadius)

@@ -2654,6 +2654,6 @@ abstract public class AtomCollection {
         BitSetUtil.deleteBits(tainted[i], bs);
     // what about data?
   }
-  
+
 }
 

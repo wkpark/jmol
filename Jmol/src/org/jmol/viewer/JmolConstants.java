@@ -2525,7 +2525,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
         + ", oxygen & connected(2) & connected(2, hydrogen or deuterium or tritium), (hydrogen or deuterium or tritium) & connected(oxygen & connected(2) & connected(2, hydrogen or deuterium or tritium))",
     "@hoh water",
     "@solvent water, (_g>=" + GROUPID_SOLVENTS + " & _g<=" + GROUPID_SULPHATE + ")", // water, other solvent or ions
-    "@ligand hetero & !solvent",
+    "@ligand !(protein | dna | rna | solvent)",
 
     // structure
     "@turn structure=1",

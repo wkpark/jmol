@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-07-23 12:29+0200\n"
+"POT-Creation-Date: 2011-07-26 20:38+0200\n"
 "PO-Revision-Date: 2011-05-21 17:22+0000\n"
 "Last-Translator: Domen <Unknown>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -963,95 +963,95 @@ msgstr ""
 msgid "Jmol Help"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:172
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:171
 msgid "Initializing 3D display..."
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:205
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:204
 msgid "Initializing Script Window..."
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:228
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:227
 msgid "Building Command Hooks..."
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:239
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:238
 msgid "Building Menubar..."
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:256
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:255
 msgid "Starting display..."
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:302
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:301
 msgid "Setting up Drag-and-Drop..."
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:304
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:303
 msgid "Launching main frame..."
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:308
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:307
 msgid "Initializing Preferences..."
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:310
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:309
 msgid "Initializing Recent Files..."
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:345
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:344
 msgid "Jmol Java Console"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:365
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:364
 msgid "Could not create ConsoleTextArea: "
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:412
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:411
 msgid "Creating main window..."
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:413
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:412
 msgid "Initializing Swing..."
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:425
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:424
 msgid "Initializing Jmol..."
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:506
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:505
 msgid "Closing Jmol..."
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1122
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1121
 msgid "Open URL"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1123
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1122
 msgid "Enter URL of molecular model"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1149
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1148
 msgid "Get PDB file"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1150
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1149
 msgid "Enter a four-digit PDB ID"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1167
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1166
 msgid "Get MOL file by compound name or ID"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1168
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1167
 msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1334
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1333
 msgid "IO Exception:"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1463
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1462
 msgid "width height?"
 msgstr ""
 
@@ -1297,70 +1297,81 @@ msgstr ""
 msgid "What's New in Jmol"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:279
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:333
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:356
-msgid "Percentage scaling not implemented yet!"
-msgstr ""
-
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:121
-msgid "SurfaceTool"
-msgstr ""
-
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:137
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:141
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
 msgid "Degrees"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:138
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:142
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
 #, fuzzy
 msgid "Radians"
 msgstr "Polmer"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:153
-msgid "Angles"
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
+#, fuzzy
+msgid "Gradians"
+msgstr "Polmer"
+
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
+msgid "Circle Fraction"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:158
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:161
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:76
+msgid "Units of Pi"
+msgstr ""
+
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:271
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:325
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:348
+msgid "Percentage scaling not implemented yet!"
+msgstr ""
+
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:123
+msgid "SurfaceTool"
+msgstr ""
+
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:143
+msgid "Angle Units"
+msgstr ""
+
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:148
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:151
 msgid "View Center"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:159
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:162
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:149
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:152
 msgid "Absolute"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:170
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:160
 msgid "Origin"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:173
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:163
 msgid "Ghost On"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:177
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:166
 msgid "Slice Planes"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:192
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:181
 msgid "Angle from X-axis in XY plane"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:201
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:190
 msgid "Angle from Z-axis"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:212
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:201
 msgid "Direction vector of normal to slice"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:215
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:204
 msgid "Distance of slice from origin"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:227
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:216
 msgid "Thickness of slice"
 msgstr ""
 

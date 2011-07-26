@@ -162,6 +162,7 @@ public class GT {
       new Language("pt_BR", GT._("Brazilian Portuguese"), "Português brasileiro", true),
       new Language("ru",    GT._("Russian"),              "Русский",              false),
       new Language("sl",    GT._("Slovenian"),            "Slovenščina",          false),
+      new Language("sr",    GT._("Serbian"),              "српски језик",         false),
       new Language("sv",    GT._("Swedish"),              "Svenska",              false),
       new Language("ta",    GT._("Tamil"),                "தமிழ்",                 false),
       new Language("tr",    GT._("Turkish"),              "Türkçe",               true),

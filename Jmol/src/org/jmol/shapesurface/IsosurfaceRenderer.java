@@ -270,8 +270,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
     if (exportType == Graphics3D.EXPORT_CARTESIAN) {
       frontOnly = false;
     }
-    boolean colorSolid = (haveBsSlabGhost && (!fill || !isBicolorMap) || vertexColixes == null || imesh.isColorSolid);
-    boolean noColor = (haveBsSlabGhost || vertexColixes == null || !fill && imesh.meshColix != 0);
+    boolean colorSolid = (haveBsSlabGhost && (!isBicolorMap) || vertexColixes == null || imesh.isColorSolid);
+    boolean noColor = (haveBsSlabGhost && !isBicolorMap || vertexColixes == null || !fill && imesh.meshColix != 0);
     boolean isPlane = (imesh.jvxlData.jvxlPlane != null);
     short colix = this.colix;
     if (isPlane && !colorSolid && !fill && imesh.fillTriangles) {

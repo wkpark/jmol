@@ -272,7 +272,7 @@ public final class ModelLoader {
       }
     }
     initializeAtomBondModelCounts(nAtoms);
-    if (bsNew != null && doMinimize) {
+    if (bsNew != null && (doMinimize || is2D)) {
       bsNew.set(baseAtomIndex, baseAtomIndex + nAtoms);
     }
     if (adapter == null) {

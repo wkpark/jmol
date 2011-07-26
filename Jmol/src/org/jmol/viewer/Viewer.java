@@ -2346,7 +2346,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (bsNew.cardinality() > 0) {
         String jmolScript = (String) modelSet
             .getModelSetAuxiliaryInfo("jmolscript");
-        minimize(Integer.MAX_VALUE, 0, bsNew, null, 0, true, true, true);
+        if (modelSet.getModelSetAuxiliaryInfoBoolean("doMinimize"))
+          minimize(Integer.MAX_VALUE, 0, bsNew, null, 0, true, true, true);
+        else
+          addHydrogens(bsNew, false, true);
         // no longer necessary? -- this is the JME/SMILES data:
         if (jmolScript != null)
           modelSet.getModelSetAuxiliaryInfo().put("jmolscript", jmolScript);

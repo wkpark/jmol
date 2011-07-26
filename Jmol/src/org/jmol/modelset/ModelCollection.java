@@ -840,7 +840,7 @@ abstract public class ModelCollection extends BondCollection {
     return (modelSetAuxiliaryInfo == null ? null : modelSetAuxiliaryInfo.get(keyName));
   }
 
-  protected boolean getModelSetAuxiliaryInfoBoolean(String keyName) {
+  public boolean getModelSetAuxiliaryInfoBoolean(String keyName) {
     return (modelSetAuxiliaryInfo != null
         && modelSetAuxiliaryInfo.containsKey(keyName) && ((Boolean) modelSetAuxiliaryInfo
         .get(keyName)).booleanValue());

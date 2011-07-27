@@ -372,7 +372,7 @@ public class Token {
   
   public final static int axes         = shapeCommand | 2 | deprecatedparam | defaultON;
 //final static int boundbox     see mathproperty
-  public final static int contact      = shapeCommand | 4;
+//final static int contact      see mathfunc
   public final static int dipole       = shapeCommand | 6;
   public final static int draw         = shapeCommand | 8;
   public final static int frank        = shapeCommand | 10 | deprecatedparam | defaultON;
@@ -685,7 +685,7 @@ public class Token {
   final static int quaternion       = 17 | 0 << 9 | mathfunc | scriptCommand;
   final static int sort             = 18 | 0 << 9 | mathfunc | mathproperty;
   final static int count            = 19 | 0 << 9 | mathfunc | mathproperty;
-  public final static int within           = 20 | 0 << 9 | mathfunc;
+  public final static int within    = 20 | 0 << 9 | mathfunc;
   final static int write            = 21 | 0 << 9 | mathfunc | scriptCommand;
 
   // xxx(a)
@@ -725,7 +725,8 @@ public class Token {
   public final static int substructure = 6 | 2 << 9 | mathfunc | intproperty | strproperty;
   final static int search       = 7 | 2 << 9 | mathfunc;
   final static int smiles       = 8 | 2 << 9 | mathfunc;
- 
+  public final static int contact = 9 | 2 << 9 | mathfunc | shapeCommand;
+
 
   // ___.xxx(a,b)
 

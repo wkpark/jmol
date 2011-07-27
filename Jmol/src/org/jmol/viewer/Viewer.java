@@ -3175,7 +3175,7 @@ private void zap(String msg) {
 
   public BitSet getAtomsWithin(float distance, Point3f coord) {
     BitSet bs = new BitSet();
-    modelSet.getAtomsWithin(distance, coord, bs, -1, null);
+    modelSet.getAtomsWithin(distance, coord, bs, -1);
     return bs;
   }
 

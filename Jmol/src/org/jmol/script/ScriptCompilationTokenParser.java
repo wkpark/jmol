@@ -447,7 +447,8 @@ abstract class ScriptCompilationTokenParser {
     case Token.smiles:
       return clauseSubstructure();
     case Token.within:
-      return clauseWithin();
+    case Token.contact:
+      return clauseWithin(tok == Token.within);
     case Token.define:
       return clauseDefine(false, false);
     case Token.bonds:
@@ -597,8 +598,9 @@ abstract class ScriptCompilationTokenParser {
     return true;
   }
   
-  private boolean clauseWithin() {
+  private boolean clauseWithin(boolean isWithin) {
 
+    //    // contact(distance, {}, {}) // default 100 for distance
     // within ( plane, planeExpression)
     // within ( hkl, hklExpression)
     // within ( distance, plane, planeExpression)
@@ -617,9 +619,26 @@ abstract class ScriptCompilationTokenParser {
       return false;
     float distance = Float.MAX_VALUE;
     String key = null;
-    boolean allowComma = true;
-    int tok0 = theToken.tok;
+    boolean allowComma = isWithin;
     int tok;
+    int tok0 = theToken.tok;
+    if (!isWithin) {
+      tok = -1;
+      for (int i = itokenInfix; tok != Token.nada; i++) {
+        switch (tokAt(i)) {
+        case Token.comma:
+          tok = Token.nada;
+          break;
+        case Token.leftbrace:
+        case Token.leftparen:
+        case Token.rightparen:
+          distance = 100;
+          returnToken();
+          tok0 = tok = Token.nada;
+          break;
+        }
+      }
+    }
     switch (tok0) {
     case Token.minus:
       if (getToken() == null)
@@ -639,112 +658,123 @@ abstract class ScriptCompilationTokenParser {
       key = "";
       allowComma = false;
       break;
-    case Token.search: 
-    case Token.smiles:  
-    case Token.substructure:
-      addTokenToPostfix(Token.string, theValue);
-      if (!addNextTokenIf(Token.comma))
-        return false;
-      allowComma = false;
-      tok = tokPeek();
-      switch (tok) {
-      case Token.nada:
-        return false;
-      case Token.string:
-        addNextToken();
-        key = "";
-        break;
+    }
+    if (isWithin && distance == Float.MAX_VALUE)
+      switch (tok0) {
       case Token.define:
-        if (!clauseDefine(false, true))
+        break;
+      case Token.search:
+      case Token.smiles:
+      case Token.substructure:
+        addTokenToPostfix(Token.string, theValue);
+        if (!addNextTokenIf(Token.comma))
           return false;
-        key = "";
+        allowComma = false;
+        tok = tokPeek();
+        switch (tok) {
+        case Token.nada:
+          return false;
+        case Token.string:
+          addNextToken();
+          key = "";
+          break;
+        case Token.define:
+          if (!clauseDefine(false, true))
+            return false;
+          key = "";
+          break;
+        default:
+          return false;
+        }
+        break;
+      case Token.branch:
+        allowComma = false;
+        // fall through
+      case Token.atomtype:
+      case Token.atomname:
+      case Token.basepair:
+      case Token.boundbox:
+      case Token.chain:
+      case Token.coord:
+      case Token.element:
+      case Token.group:
+      case Token.helix:
+      case Token.model:
+      case Token.molecule:
+      case Token.plane:
+      case Token.hkl:
+      case Token.polymer:
+      case Token.sequence:
+      case Token.sheet:
+      case Token.site:
+      case Token.structure:
+      case Token.string:
+      case Token.vanderwaals:
+        key = (String) theValue;
+        break;
+      case Token.identifier:
+        key = ((String) theValue).toLowerCase();
         break;
       default:
-        return false;
+        return error(ERROR_unrecognizedParameter, "WITHIN", ": "
+            + theToken.value);
       }
-      break;
-    case Token.branch:
-      allowComma = false;
-      // fall through
-    case Token.atomtype:
-    case Token.atomname:
-    case Token.basepair:
-    case Token.boundbox:
-    case Token.chain:
-    case Token.coord:
-    case Token.element:
-    case Token.group:
-    case Token.helix:
-    case Token.model:
-    case Token.molecule:
-    case Token.plane:
-    case Token.hkl:
-    case Token.polymer:
-    case Token.sequence:
-    case Token.sheet:
-    case Token.site:
-    case Token.structure:
-    case Token.string:
-    case Token.vanderwaals:
-      key = (String) theValue;
-      break;
-    case Token.identifier:
-      key = ((String) theValue).toLowerCase();
-      break;
-    default:
-      return error(ERROR_unrecognizedParameter, "WITHIN", ": " + theToken.value);
-    }
     if (key == null)
       addTokenToPostfix(Token.decimal, new Float(distance));
     else if (key.length() > 0)
       addTokenToPostfix(Token.string, key);
     boolean done = false;
     while (!done) {
-      if (!addNextTokenIf(Token.comma))
+      if (tok0 != Token.nada && !addNextTokenIf(Token.comma))
         break;
-      tok = tokPeek();
-      switch (tok0) {
-      case Token.integer:
-      case Token.decimal:
-        if (tok == Token.on || tok == Token.off) {
-          addTokenToPostfix(getToken());
-          if (!addNextTokenIf(Token.comma))
-            break;
-          tok = tokPeek();
-        }
-        break;
-      }
+      if (tok0 == Token.nada)
+        tok0 = Token.contact;
       boolean isCoordOrPlane = false;
-      if (key == null) {
-        switch (tok) {
-        case Token.hkl:
-        case Token.coord:
-        case Token.plane:
-          isCoordOrPlane = true;
-          addNextToken();
+      tok = tokPeek();
+      if (isWithin) {
+        switch (tok0) {
+        case Token.integer:
+        case Token.decimal:
+          if (tok == Token.on || tok == Token.off) {
+            addTokenToPostfix(getToken());
+            if (!addNextTokenIf(Token.comma))
+              break;
+            tok = tokPeek();
+          }
           break;
-        case Token.dollarsign:
-          getToken();
-          getToken();
-          addTokenToPostfix(Token.string, "$" + theValue );
-          done = true;
-          break;
-        case Token.group:
-        case Token.vanderwaals:
-          getToken();
-          addTokenToPostfix(Token.string, Token.nameOf(tok));
-          break;
-        case Token.leftbrace:
-          returnToken();
-          isCoordOrPlane = true;
-          addTokenToPostfix(Token
-              .getTokenFromName(distance == Float.MAX_VALUE ? "plane" : "coord"));
         }
+        if (key == null) {
+          switch (tok) {
+          case Token.hkl:
+          case Token.coord:
+          case Token.plane:
+            isCoordOrPlane = true;
+            addNextToken();
+            break;
+          case Token.dollarsign:
+            getToken();
+            getToken();
+            addTokenToPostfix(Token.string, "$" + theValue);
+            done = true;
+            break;
+          case Token.group:
+          case Token.vanderwaals:
+            getToken();
+            addTokenToPostfix(Token.string, Token.nameOf(tok));
+            break;
+          case Token.leftbrace:
+            returnToken();
+            isCoordOrPlane = true;
+            addTokenToPostfix(Token
+                .getTokenFromName(distance == Float.MAX_VALUE ? "plane"
+                    : "coord"));
+          }
         if (!done)
           addNextTokenIf(Token.comma);
+        }
       }
       tok = tokPeek();
-      if (done) 
+      if (done)
         break;
       if (isCoordOrPlane) {
         while (!tokPeek(Token.rightparen)) {

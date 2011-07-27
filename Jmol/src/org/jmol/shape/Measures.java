@@ -485,11 +485,11 @@ public class Measures extends Shape implements JmolMeasurementClient {
         strFormat, measurementCount);
     measurements.add(measureNew);
     viewer.setStatusMeasuring("measureCompleted", measurementCount++,
-        measureNew.toVector().toString(), measureNew.getValue());
+        measureNew.toVector(false).toString(), measureNew.getValue());
   }
 
   private void deleteMeasurement(int i) {
-    String msg = measurements.get(i).toVector().toString();
+    String msg = measurements.get(i).toVector(true).toString();
     measurements.remove(i);
     measurementCount--;
     viewer.setStatusMeasuring("measureDeleted", i, msg, 0);
@@ -501,7 +501,7 @@ public class Measures extends Shape implements JmolMeasurementClient {
       return;
     if (measurementPending.getCount() > 1)
       viewer.setStatusMeasuring("measurePending",
-          measurementPending.getCount(), measurementPending.toVector().toString(), measurementPending.getValue());
+          measurementPending.getCount(), measurementPending.toVector(false).toString(), measurementPending.getValue());
   }
 
   private void reformatDistances() {

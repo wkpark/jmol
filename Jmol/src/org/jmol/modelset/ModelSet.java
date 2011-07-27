@@ -1093,7 +1093,7 @@ import javax.vecmath.Vector3f;
       }
       pt.set(x, y, z);
       BitSet bs = new BitSet(atomCount);
-      getAtomsWithin(tolerance, pt, bs, -1, null);
+      getAtomsWithin(tolerance, pt, bs, -1);
       bs.and(bsSelected);
       if (loadAllData) {
         n = BitSetUtil.cardinalityOf(bs);

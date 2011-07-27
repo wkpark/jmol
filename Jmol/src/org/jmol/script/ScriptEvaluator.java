@@ -3440,6 +3440,7 @@ public class ScriptEvaluator {
       case Token.search:
       case Token.substructure:
       case Token.within:
+      case Token.contact:
       case Token.connected:
       case Token.comma:
         rpn.addOp(instruction);
@@ -15422,60 +15423,12 @@ public class ScriptEvaluator {
           params = new float[] { 0.5f, 2 };
       }
 
-      boolean withinAllModels;
-      boolean isDefaultB = (bsB == null);
-      if (isDefaultB) {
-        // default is "within just one model and not A" when {B} is missing
-        bsB = BitSetUtil.setAll(viewer.getAtomCount());
-        BitSetUtil.andNot(bsB, viewer.getDeletedAtoms());
-        withinAllModels = false;
-      } else {
-        // two atom sets specified; within ALL MODELS here
-        bs = BitSetUtil.copy(bsA);
-        bs.or(bsB);
-        withinAllModels = (viewer.getModelBitSet(bs, false).cardinality() > 1);
-      }
-      // B always within some possibly extended VDW of A or just A itself
-      if (!bsA.equals(bsB)) {
-        boolean setBfirst = (!isPaired || bsA.cardinality() < bsB.cardinality());
-        if (setBfirst) {
-          bs = viewer.getAtomsWithin(distance, bsA, withinAllModels, (Float
-              .isNaN(distance) ? rd : null));
-          bsB.and(bs);
-        }
-        if (isPaired) {
-          // we can just get the near atoms for A as well.
-          bs = viewer.getAtomsWithin(distance, bsB, withinAllModels, (Float
-              .isNaN(distance) ? rd : null));
-          bsA.and(bs);
-          if (!setBfirst) {
-            bs = viewer.getAtomsWithin(distance, bsA, withinAllModels, (Float
-                .isNaN(distance) ? rd : null));
-            bsB.and(bs);
-          }
-        }
-      }
-
+      bsB = setContactBitSets(bsA, bsB, isPaired, distance, rd);
       switch (type) {
-      case Token.nci:
-        break;
       case Token.vanderwaals:
       case Token.cap:
         bsB.andNot(bsA);
         break;
-      default:
-        if (!bsA.equals(bsB)) {
-          // If the two sets are not the same,
-          // we AND them and see if that is A. 
-          // If so, then the smaller set is
-          // removed from the larger set.
-          bs = BitSetUtil.copy(bsB);
-          bs.and(bsA);
-          if (bs.equals(bsA))
-            bsB.andNot(bsA);
-          else if (bs.equals(bsB))
-            bsA.andNot(bsB);
-        }
       }
       if (intramolecular != null) {
         params = (params == null ? new float[2] : ArrayUtil.ensureLength(
@@ -15556,6 +15509,55 @@ public class ScriptEvaluator {
     }
   }
     
+  BitSet setContactBitSets(BitSet bsA, BitSet bsB, boolean isPaired,
+                           float distance, RadiusData rd) {
+    boolean withinAllModels;
+    BitSet bs;
+    if (bsB == null) {
+      // default is within just one model when {B} is missing
+      bsB = BitSetUtil.setAll(viewer.getAtomCount());
+      BitSetUtil.andNot(bsB, viewer.getDeletedAtoms());
+      bsB.andNot(bsA);
+      withinAllModels = false;
+    } else {
+      // two atom sets specified; within ALL MODELS here
+      bs = BitSetUtil.copy(bsA);
+      bs.or(bsB);
+      withinAllModels = (viewer.getModelBitSet(bs, false).cardinality() > 1);
+    }
+    // B always within some possibly extended VDW of A or just A itself
+    if (!bsA.equals(bsB)) {
+      boolean setBfirst = (!isPaired || bsA.cardinality() < bsB.cardinality());
+      if (setBfirst) {
+        bs = viewer.getAtomsWithin(distance, bsA, withinAllModels, (Float
+            .isNaN(distance) ? rd : null));
+        bsB.and(bs);
+      }
+      if (isPaired) {
+        // we can just get the near atoms for A as well.
+        bs = viewer.getAtomsWithin(distance, bsB, withinAllModels, (Float
+            .isNaN(distance) ? rd : null));
+        bsA.and(bs);
+        if (!setBfirst) {
+          bs = viewer.getAtomsWithin(distance, bsA, withinAllModels, (Float
+              .isNaN(distance) ? rd : null));
+          bsB.and(bs);
+        }
+        // If the two sets are not the same,
+        // we AND them and see if that is A. 
+        // If so, then the smaller set is
+        // removed from the larger set.
+        bs = BitSetUtil.copy(bsB);
+        bs.and(bsA);
+        if (bs.equals(bsA))
+          bsB.andNot(bsA);
+        else if (bs.equals(bsB))
+          bsA.andNot(bsB);
+      }
+    }
+    return bsB;
+  }
+
   private void lcaoCartoon() throws ScriptException {
     shapeManager.loadShape(JmolConstants.SHAPE_LCAOCARTOON);
     if (tokAt(1) == Token.list

@@ -2141,7 +2141,7 @@ abstract public class ModelCollection extends BondCollection {
     case Token.boundbox:
       BoxInfo boxInfo = getBoxInfo((BitSet) specInfo, 1);
       bs = getAtomsWithin(boxInfo.getBoundBoxCornerVector().length() + 0.0001f,
-          boxInfo.getBoundBoxCenter(), null, -1, null);
+          boxInfo.getBoundBoxCenter(), null, -1);
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
         if (!boxInfo.isWithin(atoms[i]))
           bs.clear(i);
@@ -2270,7 +2270,7 @@ abstract public class ModelCollection extends BondCollection {
             continue;
           if (distance < 0) {
             getAtomsWithin(distance, atoms[i].getFractionalUnitCoord(true),
-                bsResult, -1, null);
+                bsResult, -1);
             continue;
           }
           setIteratorForAtom(iter, iModel, i, distance, rd);
@@ -2280,7 +2280,7 @@ abstract public class ModelCollection extends BondCollection {
       bsResult.or(bs);
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
         if (distance < 0) {
-            getAtomsWithin(distance, atoms[i], bsResult, atoms[i].modelIndex, null);
+            getAtomsWithin(distance, atoms[i], bsResult, atoms[i].modelIndex);
             continue;
           }
           setIteratorForAtom(iter, -1, i, distance, rd);
@@ -2305,7 +2305,7 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public BitSet getAtomsWithin(float distance, Point3f coord, BitSet bsResult,
-                               int modelIndex, RadiusData rd) {
+                               int modelIndex) {
 
      if (bsResult == null)
       bsResult = new BitSet();
@@ -2330,7 +2330,7 @@ abstract public class ModelCollection extends BondCollection {
     for (int iModel = modelCount; --iModel >= 0;) {
       if (!bsCheck.get(iModel))
         continue;
-      setIteratorForAtom(iter, -1, models[iModel].firstAtomIndex, -1, rd);
+      setIteratorForAtom(iter, -1, models[iModel].firstAtomIndex, -1, null);
       iter.set(coord, distance);
       iter.addAtoms(bsResult);
     }

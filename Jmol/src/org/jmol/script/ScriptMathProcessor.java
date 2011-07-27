@@ -750,6 +750,8 @@ class ScriptMathProcessor {
       return evaluateVolume(args);
     case Token.within:
       return evaluateWithin(args);
+    case Token.contact:
+      return evaluateContact(args);
     case Token.write:
       return evaluateWrite(args);
     }
@@ -2381,6 +2383,37 @@ class ScriptMathProcessor {
           (distance > 10 ? RadiusData.TYPE_FACTOR : RadiusData.TYPE_OFFSET), 
           JmolConstants.VDW_AUTO);
     return addX(viewer.getAtomsWithin(distance, bs, isWithinModelSet, rd));
+  }
+
+  private boolean evaluateContact(ScriptVariable[] args) {
+    if (args.length < 1 || args.length > 3)
+      return false;
+    int i = 0;
+    float distance = 100;
+    int tok = args[0].tok;
+    switch (tok) {
+    case Token.decimal:
+    case Token.integer:
+      distance = ScriptVariable.fValue(args[i++]);
+      break;
+    case Token.bitset:
+      break;
+    default:
+      return false;
+    }
+    if (i == args.length || !(args[i].value instanceof BitSet))
+      return false;
+    BitSet bsA = BitSetUtil.copy(ScriptVariable.bsSelect(args[i++]));
+    if (isSyntaxCheck)
+      return addX(new BitSet());
+    BitSet bsB = (i < args.length ? BitSetUtil.copy(ScriptVariable
+        .bsSelect(args[i])) : null);
+    RadiusData rd = new RadiusData((distance > 10 ? distance / 100 : distance),
+        (distance > 10 ? RadiusData.TYPE_FACTOR : RadiusData.TYPE_OFFSET),
+        JmolConstants.VDW_AUTO);
+    bsB = eval.setContactBitSets(bsA, bsB, true, Float.NaN, rd);
+    bsB.or(bsA);
+    return addX(bsB);
   }
 
   private boolean evaluateColor(ScriptVariable[] args) {

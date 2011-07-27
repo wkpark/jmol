@@ -159,8 +159,6 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
       if ((iAtom = next()) >= 0) {
         float d;
         if (isVdw) {
-          if (atoms[iAtom].isCovalentlyBonded(atoms[atomIndex]))
-            continue;
           d = atoms[iAtom].getVanderwaalsRadiusFloat(viewer, radiusData.vdwType) + vdw1;
           switch (radiusData.type) {
           case RadiusData.TYPE_OFFSET:
@@ -174,9 +172,8 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
         } else {
           d = distanceSquared;
         }
-              
-      if (foundDistance2() <= d)
-        bsResult.set(iAtom);    
+        if (foundDistance2() <= d)
+          bsResult.set(iAtom);    
       }
   }
 

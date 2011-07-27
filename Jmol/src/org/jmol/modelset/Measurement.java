@@ -396,10 +396,10 @@ public class Measurement {
     return sameAs(countPlusIndices, pts, i, j);
   }
 
-  public List<String> toVector() {
+  public List<String> toVector(boolean asBitSet) {
     List<String> V = new ArrayList<String>();
     for (int i = 1; i <= count; i++ )
-      V.add(getLabel(i, false, false));
+      V.add(getLabel(i, asBitSet, false));
     V.add(strMeasurement);
     return V;  
   }

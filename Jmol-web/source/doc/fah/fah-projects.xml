@@ -5621,6 +5621,9 @@
   <fah_proj number="2974" name="p2974" public="n"
     server="143.89.28.72" atoms="33597" preferred="13.3" deadline="22.17"
     credit="895.0" frames="100" code="A4" contact="xhuang" kfactor="0.75"/>
+  <fah_proj number="2975" name="p2975" public="n"
+    server="143.89.28.72" atoms="33597" preferred="13.3" deadline="22.17"
+    credit="895.0" frames="100" code="A4" contact="xhuang" kfactor="0.75"/>
 
   <!-- Projects 3000 to 3099 -->
   <fah_proj number="3000" name="p3000_SMP-supervillin-beta1" public="n" file="xyz"
@@ -8314,6 +8317,9 @@
   <fah_proj number="6025" name="p6025_Protein in POPC" public="y" file="xyz"
     server="171.64.65.54" atoms="76757" preferred="3" deadline="6"
     credit="483" frames="100" code="A3" contact="kasson" kfactor="2.1" contrib="Rick Humphrey"/>
+  <fah_proj number="6026" name="p6026_Protein in POPC" public="n"
+    server="171.64.65.54" atoms="76977" preferred="2.5" deadline="4.2"
+    credit="517.0" frames="100" code="A3" contact="kasson" kfactor="2.97"/>
   <fah_proj number="6040" name="p6040_HA_solvated" public="y"
     server="171.64.65.54" atoms="330706" preferred="6" deadline="8"
     credit="1395" frames="100" code="A3" contact="kasson" kfactor="4.63"/>
@@ -8648,9 +8654,12 @@
   <fah_proj number="6870" name="Abeta42_tet" public="n"
     server="171.64.65.65" atoms="97884" preferred="8" deadline="12"
     credit="529.0" frames="100" code="A4" contact="lin5" kfactor="0.82"/>
-  <fah_proj number="6871" name="Abeta42_p3" public="n"
+  <fah_proj number="6871" name="Abeta42_p3" public="y"
     server="171.67.108.52" atoms="12197" preferred="14" deadline="21"
     credit="67.0" frames="100" code="G" contact="lin5" kfactor="0.0"/>
+  <fah_proj number="6872" name="Abeta4216" public="n"
+    server="171.67.108.52" atoms="12208" preferred="14" deadline="21"
+    credit="68.0" frames="100" code="G" contact="lin5" kfactor="0.0"/>
   <fah_proj number="6880" name="Abeta42_shooting" public="y" file="xyz"
     server="171.67.108.33" atoms="12222" preferred="14" deadline="21"
     credit="69" frames="100" code="G" contact="lin5" contrib="Danny Nielsen"/>
@@ -8684,11 +8693,14 @@
   <fah_proj number="6891" name="Abeta42_dimer" public="y" file="xyz"
     server="171.67.108.52" atoms="22851" preferred="27" deadline="40"
     credit="137.0" frames="100" code="G" contact="lin5" kfactor="0.0" contrib="Danny Nielsen"/>
-  <fah_proj number="6894" name="Abeta42_dimer_E" public="n"
+  <fah_proj number="6894" name="Abeta42_dimer_E" public="y"
     server="171.67.108.52" atoms="22659" preferred="27" deadline="39"
     credit="133.0" frames="100" code="G" contact="lin5" kfactor="0.0"/>
-  <fah_proj number="6896" name="Abeta42_dimer_fib" public="n"
+  <fah_proj number="6896" name="Abeta42_dimer_fib" public="y"
     server="171.67.108.52" atoms="22791" preferred="27" deadline="39"
+    credit="135.0" frames="100" code="G" contact="lin5" kfactor="0.0"/>
+  <fah_proj number="6897" name="Abeta42_dimer_control" public="n"
+    server="171.67.108.52" atoms="22809" preferred="27" deadline="39"
     credit="135.0" frames="100" code="G" contact="lin5" kfactor="0.0"/>
 
   <!-- Projects 6900 to 6999 -->
@@ -8880,9 +8892,9 @@
   <fah_proj number="7003" name="WW 3 ext/folded 395K" public="y"
     server="129.74.85.15" atoms="578" preferred="8" deadline="11"
     credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
-  <fah_proj number="7004" name="WW 4 ext/folded 395K" public="y"
+  <fah_proj number="7004" name="WW 4 ext/folded 395K" public="y" file="xyz"
     server="129.74.85.15" atoms="578" preferred="8" deadline="11"
-    credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
+    credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75" contrib="Danny Nielsen"/>
   <fah_proj number="7005" name="WW 5 ext/folded 395K" public="y"
     server="129.74.85.15" atoms="578" preferred="8" deadline="11"
     credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
@@ -8913,9 +8925,9 @@
   <fah_proj number="7014" name="WW 14 ext/folded 395K" public="y"
     server="129.74.85.15" atoms="575" preferred="8" deadline="11"
     credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
-  <fah_proj number="7015" name="WW 15 ext/folded 395K" public="y"
+  <fah_proj number="7015" name="WW 15 ext/folded 395K" public="y" file="xyz"
     server="129.74.85.15" atoms="558" preferred="8" deadline="11"
-    credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
+    credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75" contrib="Danny Nielsen"/>
   <fah_proj number="7016" name="WW 16 ext/folded 395K" public="y"
     server="129.74.85.15" atoms="554" preferred="8" deadline="11"
     credit="600.0" frames="100" code="A4" contact="abdulwahidc" kfactor="0.75"/>
@@ -9150,6 +9162,9 @@
   <fah_proj number="7504" name="kpc2" public="n"
     server="128.143.199.97" atoms="69867" preferred="3.1" deadline="5.2"
     credit="644.0" frames="100" code="A3" contact="kasson" kfactor="2.99"/>
+  <fah_proj number="7505" name="magainin/popc" public="n"
+    server="128.143.199.97" atoms="156434" preferred="13.4" deadline="22.3"
+    credit="2774.0" frames="100" code="A3" contact="kasson" kfactor="3.0"/>
 
   <!-- Projects 7600 to 7699 -->
   <fah_proj number="7600" name="p7600" public="y"
@@ -9183,9 +9198,9 @@
     credit="825.0" frames="100" code="A4" contact="xhuang" kfactor="0.75"/>
 
   <!-- Projects 7800 to 7899 -->
-  <fah_proj number="7800" name="p7800" public="y"
+  <fah_proj number="7800" name="p7800" public="y" file="xyz"
     server="171.64.65.99" atoms="59392" preferred="24.12" deadline="52.25"
-    credit="1622.91" frames="100" code="A4" contact="schwancr" kfactor="0.58"/>
+    credit="1622.91" frames="100" code="A4" contact="schwancr" kfactor="0.58" contrib="Danny Nielsen"/>
   <fah_proj number="7801" name="p7801" public="y" file="xyz"
     server="171.64.65.99" atoms="60595" preferred="25.54" deadline="55.34"
     credit="1718.76" frames="100" code="A4" contact="schwancr" kfactor="0.58" contrib="Danny Nielsen"/>
@@ -9691,14 +9706,14 @@
     server="171.64.65.92" atoms="576" preferred="8" deadline="12"
     credit="21.0" frames="100" code="A4" contact="kyleb" kfactor="0.69"/>
   <fah_proj number="10440" name="p10440" public="n"
-    server="171.64.65.81" atoms="0" preferred="8" deadline="12"
-    credit="311.0" frames="100" code="A4" contact="kyleb" kfactor="0.69"/>
+    server="171.64.65.81" atoms="0" preferred="7" deadline="16"
+    credit="412.0" frames="100" code="A4" contact="kyleb" kfactor="0.59"/>
   <fah_proj number="10441" name="p10441" public="n"
-    server="171.64.65.81" atoms="0" preferred="8" deadline="12"
-    credit="311.0" frames="100" code="A4" contact="kyleb" kfactor="0.69"/>
+    server="171.64.65.81" atoms="0" preferred="7" deadline="16"
+    credit="412.0" frames="100" code="A4" contact="kyleb" kfactor="0.59"/>
   <fah_proj number="10442" name="p10442" public="n"
-    server="171.64.65.81" atoms="0" preferred="8" deadline="12"
-    credit="311.0" frames="100" code="A4" contact="kyleb" kfactor="0.69"/>
+    server="171.64.65.81" atoms="0" preferred="7" deadline="16"
+    credit="412.0" frames="100" code="A4" contact="kyleb" kfactor="0.59"/>
 
   <!-- Projects 10500 to 10599 -->
   <fah_proj number="10501" name="p10501" public="y"

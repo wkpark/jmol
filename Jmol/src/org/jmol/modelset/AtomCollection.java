@@ -1263,14 +1263,26 @@ abstract public class AtomCollection {
     BitSet bsDeleted = viewer.getDeletedAtoms();
     Point3f pt;
     int nH = 0;
+    
     // just not doing aldehydes here -- all A-X-B bent == sp3 for now
     if (bs != null)
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
         if (bsDeleted != null && bsDeleted.get(i))
           continue;
         Atom atom = atoms[i];
-        if (justCarbon && atom.getElementNumber() != 6)
+        int atomicNumber = atom.getElementNumber();
+        if (justCarbon && atomicNumber != 6)
           continue;
+        float dHX = (atomicNumber <= 6 ? 1.1f // B, C
+            : atomicNumber <= 10 ? 1.0f       // N, O
+            : 1.3f);                          // S
+        switch (atomicNumber) {
+        case 7:
+        case 8:
+          dHX = 1.0f;
+          break;
+        case 6:
+        }
         if (doAll && atom.getCovalentHydrogenCount() > 0)
           continue;
         int n = getImplicitHydrogenCount(atom);
@@ -1279,7 +1291,6 @@ abstract public class AtomCollection {
         int targetValence = aaRet[0];
         int hybridization = aaRet[2];
         int nBonds = aaRet[3];
-        int atomicNumber = atom.getElementNumber();
 
         hAtoms[i] = new Point3f[n];
         int hPt = 0;
@@ -1322,21 +1333,21 @@ abstract public class AtomCollection {
           default:
             break;
           case 3: // three bonds needed RC
-            getHybridizationAndAxes(i, z, x, "sp3b", false, true);
+            getHybridizationAndAxes(i, atomicNumber, z, x, "sp3b", false, true);
             pt = new Point3f();
-            pt.scaleAdd(1.1f, z, atom);
+            pt.scaleAdd(dHX, z, atom);
             hAtoms[i][hPt++] = pt;
             if (vConnect != null)
               vConnect.add(atom);
-            getHybridizationAndAxes(i, z, x, "sp3c", false, true);
+            getHybridizationAndAxes(i, atomicNumber, z, x, "sp3c", false, true);
             pt = new Point3f();
-            pt.scaleAdd(1.1f, z, atom);
+            pt.scaleAdd(dHX, z, atom);
             hAtoms[i][hPt++] = pt;
             if (vConnect != null)
               vConnect.add(atom);
-            getHybridizationAndAxes(i, z, x, "sp3d", false, true);
+            getHybridizationAndAxes(i, atomicNumber, z, x, "sp3d", false, true);
             pt = new Point3f();
-            pt.scaleAdd(1.1f, z, atom);
+            pt.scaleAdd(dHX, z, atom);
             hAtoms[i][hPt++] = pt;
             if (vConnect != null)
               vConnect.add(atom);
@@ -1346,17 +1357,17 @@ abstract public class AtomCollection {
             //                    or RC=C or C=C
             boolean isEne = (hybridization == 2 || atomicNumber == 5 || nBonds == 1
                 && targetValence == 4 || atomicNumber == 7 && isAdjacentSp2(atom));
-            getHybridizationAndAxes(i, z, x, (isEne ? "sp2b"
+            getHybridizationAndAxes(i, atomicNumber, z, x, (isEne ? "sp2b"
                 : targetValence == 3 ? "sp3c" : "lpa"), false, true);
             pt = new Point3f(z);
-            pt.scaleAdd(1.1f, z, atom);
+            pt.scaleAdd(dHX, z, atom);
             hAtoms[i][hPt++] = pt;
             if (vConnect != null)
               vConnect.add(atom);
-            getHybridizationAndAxes(i, z, x, (isEne ? "sp2c"
+            getHybridizationAndAxes(i, atomicNumber, z, x, (isEne ? "sp2c"
                 : targetValence == 3 ? "sp3d" : "lpb"), false, true);
             pt = new Point3f(z);
-            pt.scaleAdd(1.1f, z, atom);
+            pt.scaleAdd(dHX, z, atom);
             hAtoms[i][hPt++] = pt;
             if (vConnect != null)
               vConnect.add(atom);
@@ -1375,12 +1386,12 @@ abstract public class AtomCollection {
                 hAtoms[i] = null;
                 continue;
               }
-              if (getHybridizationAndAxes(i, z, x, (hybridization == 2 || atomicNumber == 5 
+              if (getHybridizationAndAxes(i, atomicNumber, z, x, (hybridization == 2 || atomicNumber == 5 
                   || atomicNumber == 7 && isAdjacentSp2(atom) 
                   ? "sp2c"
                   : "sp3d"), true, false) != null) {
                 pt = new Point3f(z);
-                pt.scaleAdd(1.1f, z, atom);
+                pt.scaleAdd(dHX, z, atom);
                 hAtoms[i][hPt++] = pt;
                 if (vConnect != null)
                   vConnect.add(atom);
@@ -1390,19 +1401,19 @@ abstract public class AtomCollection {
               break;
             case 2:
               // sp2
-              getHybridizationAndAxes(i, z, x, (targetValence == 4 ? "sp2c"
+              getHybridizationAndAxes(i, atomicNumber, z, x, (targetValence == 4 ? "sp2c"
                   : "sp2b"), false, false);
               pt = new Point3f(z);
-              pt.scaleAdd(1.1f, z, atom);
+              pt.scaleAdd(dHX, z, atom);
               hAtoms[i][hPt++] = pt;
               if (vConnect != null)
                 vConnect.add(atom);
               break;
             case 3:
               // sp
-              getHybridizationAndAxes(i, z, x, "spb", false, true);
+              getHybridizationAndAxes(i, atomicNumber, z, x, "spb", false, true);
               pt = new Point3f(z);
-              pt.scaleAdd(1.1f, z, atom);
+              pt.scaleAdd(dHX, z, atom);
               hAtoms[i][hPt++] = pt;
               if (vConnect != null)
                 vConnect.add(atom);
@@ -1462,7 +1473,7 @@ abstract public class AtomCollection {
   private final static Vector3f vRef = new Vector3f(3.14159f, 2.71828f, 1.41421f);
   private final static float almost180 = (float) Math.PI * 0.95f;
 
-  public String getHybridizationAndAxes(int atomIndex, Vector3f z, Vector3f x,
+  public String getHybridizationAndAxes(int atomIndex, int atomicNumber, Vector3f z, Vector3f x,
                                         String lcaoTypeRaw,
                                         boolean hybridizationCompatible,
                                         boolean doAlignZ) {
@@ -1475,6 +1486,8 @@ abstract public class AtomCollection {
       return getHybridizationAndAxesD(atomIndex, z, x, lcaoType);
 
     Atom atom = atoms[atomIndex];
+    if (atomicNumber == 0)
+      atomicNumber = atom.getElementNumber();
     Atom[] attached = getAttached(atom, 4, hybridizationCompatible);
     int nAttached = attached.length;
     int pt = lcaoType.charAt(lcaoType.length() - 1) - 'a';
@@ -1530,7 +1543,7 @@ abstract public class AtomCollection {
       }
       switch (nAttached) {
       case 1:
-        if (atom.getElementNumber() == 1 && !isSp3)
+        if (atomicNumber == 1 && !isSp3)
           return null;
         if (isSp3) {
           hybridization = "sp3";
@@ -1721,7 +1734,7 @@ abstract public class AtomCollection {
         break;
       case 3:
         // special case, for example R2C=O oxygen
-        getHybridizationAndAxes(attached[0].index, x, vTemp, "pz", false,
+        getHybridizationAndAxes(attached[0].index, 0, x, vTemp, "pz", false,
             doAlignZ);
         vTemp.set(x);
         if (isSp2) { // align z as sp2 orbital
@@ -1749,7 +1762,7 @@ abstract public class AtomCollection {
             ok = ((a = attached[1]).getCovalentBondCount() == 3);
           if (ok) {
             // special case, for example R2C=C=CR2 central carbon
-            getHybridizationAndAxes(a.index, x, z, "pz", false, doAlignZ);
+            getHybridizationAndAxes(a.index, 0, x, z, "pz", false, doAlignZ);
             if (lcaoType.equals("px"))
               x.scale(-1);
             break;

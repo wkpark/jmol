@@ -2763,7 +2763,7 @@ private void zap(String msg) {
 
   public String getHybridizationAndAxes(int atomIndex, Vector3f z, Vector3f x,
                                         String lcaoType) {
-    return modelSet.getHybridizationAndAxes(atomIndex, z, x, lcaoType,
+    return modelSet.getHybridizationAndAxes(atomIndex, 0, z, x, lcaoType,
         true, true);
   }
 

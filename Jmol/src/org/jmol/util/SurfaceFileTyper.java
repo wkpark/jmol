@@ -65,6 +65,9 @@ public class SurfaceFileTyper {
     //  System.out.print(" " + i + ":" + (0 + line.charAt(i)));
     //System.out.println("");
     switch (line.charAt(0)) {
+    case '@':
+      if (line.indexOf("@kinemage") >= 0)
+        return "Kinemage";
     case '#':
       if (line.indexOf(".obj") >= 0)
         return "Obj"; // #file: pymol.obj

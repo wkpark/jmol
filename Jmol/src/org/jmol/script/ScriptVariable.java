@@ -1106,7 +1106,7 @@ public class ScriptVariable extends Token {
   
   @Override
   public String toString() {
-    return super.toString() + "[" + myName + "] index =" + index + " hashcode=" + hashCode();
+    return super.toString() + "[" + myName + " index =" + index + " intValue=" + intValue + "]";
   }
 
   @SuppressWarnings("unchecked")

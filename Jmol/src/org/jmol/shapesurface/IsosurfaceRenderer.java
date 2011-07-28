@@ -192,10 +192,12 @@ public class IsosurfaceRenderer extends MeshRenderer {
         g3d.volumeRender(true);
       boolean slabPoints = ((volumeRender || imesh.polygonCount == 0) && haveBsSlabDisplay);
       int incr = imesh.vertexIncrement;
-      int diam = viewer.getScreenDim() / (volumeRender ? 50 : 100);
+      int diam;
       if (imesh.diameter <= 0) {
         diam = viewer.getDotScale();
         frontOnly = false;
+      } else {
+        diam = viewer.getScreenDim() / (volumeRender ? 50 : 100);        
       }
       int ptSize = ((int) (imesh.volumeRenderPointSize * 1000));
       if (diam < 1)
@@ -258,9 +260,12 @@ public class IsosurfaceRenderer extends MeshRenderer {
     //System.out.println("isorend mvc=" + imesh.mergeVertexCount0 + " mpc=" + imesh.mergePolygonCount0 + " vc=" + imesh.vertexCount + " pc=" + imesh.polygonCount + " " + imesh);
     //if (bsSlab != null) System.out.println("isorend bsSlab=" + bsSlab.cardinality() + " " + bsSlab);
     int[][] polygonIndexes = imesh.polygonIndexes;
-    colix = (haveBsSlabGhost ? imesh.slabColix : !fill && imesh.meshColix != 0 ? imesh.meshColix : imesh.colix);
-    short[] vertexColixes = (!fill && imesh.meshColix != 0 ? null : imesh.vertexColixes);
+    colix = (haveBsSlabGhost ? imesh.slabColix
+        : !fill && imesh.meshColix != 0 ? imesh.meshColix : imesh.colix);
+    short[] vertexColixes = (!fill && imesh.meshColix != 0 ? null
+        : imesh.vertexColixes);
     g3d.setColix(colix);
+    int diam = Integer.MIN_VALUE;
     boolean generateSet = isExport;
     if (generateSet) {
       if (frontOnly && fill)
@@ -270,45 +275,49 @@ public class IsosurfaceRenderer extends MeshRenderer {
     if (exportType == Graphics3D.EXPORT_CARTESIAN) {
       frontOnly = false;
     }
-    boolean colorSolid = (haveBsSlabGhost && (!isBicolorMap) || vertexColixes == null || imesh.isColorSolid);
-    boolean noColor = (haveBsSlabGhost && !isBicolorMap || vertexColixes == null || !fill && imesh.meshColix != 0);
+    boolean colorSolid = (haveBsSlabGhost && (!isBicolorMap)
+        || vertexColixes == null || imesh.isColorSolid);
+    boolean noColor = (haveBsSlabGhost && !isBicolorMap
+        || vertexColixes == null || !fill && imesh.meshColix != 0);
     boolean isPlane = (imesh.jvxlData.jvxlPlane != null);
     short colix = this.colix;
     if (isPlane && !colorSolid && !fill && imesh.fillTriangles) {
       colorSolid = true;
       colix = Graphics3D.BLACK;
     }
-/*  only an idea -- causes flickering
-    if (isPlane && colorSolid) {
-      g3d.setNoisySurfaceShade(screens[polygonIndexes[0][0]], 
-          screens[polygonIndexes[imesh.polygonCount / 2][1]], screens[polygonIndexes[imesh.polygonCount - 1][2]]);
-    }
-*/
+    /*  only an idea -- causes flickering
+        if (isPlane && colorSolid) {
+          g3d.setNoisySurfaceShade(screens[polygonIndexes[0][0]], 
+              screens[polygonIndexes[imesh.polygonCount / 2][1]], screens[polygonIndexes[imesh.polygonCount - 1][2]]);
+        }
+    */
     boolean colorArrayed = (colorSolid && imesh.polygonColixes != null);
     if (colorArrayed && !fill && imesh.fillTriangles)
       colorArrayed = false;
     short[] contourColixes = imesh.jvxlData.contourColixes;
     // two-sided means like a plane, with no front/back distinction
-    
+
     for (int i = imesh.polygonCount; --i >= 0;) {
       int[] vertexIndexes = polygonIndexes[i];
       if (vertexIndexes == null || haveBsSlabDisplay && !bsSlab.get(i))
-        
+
         continue;
       int iA = vertexIndexes[0];
       int iB = vertexIndexes[1];
       int iC = vertexIndexes[2];
       //if ( i < 3083 || i > 3085)
-        //continue;
+      //continue;
       //int n1 = -1605;
       //int n2 = 1605;
       //if (n1 >= 0 && iA != n1 && iB != n1 && iC != n1
-        //  && iA != n2 && iB != n2 && iC != n2)continue;
-     //System.out.println(i + " " + iA + " " + iB + " " + iC);
+      //  && iA != n2 && iB != n2 && iC != n2)continue;
+      //System.out.println(i + " " + iA + " " + iB + " " + iC);
       if (imesh.thisSet >= 0 && imesh.vertexSets[iA] != imesh.thisSet)
         continue;
-      if (haveBsDisplay && (!imesh.bsDisplay.get(iA) || !imesh.bsDisplay.get(iB) || !imesh.bsDisplay.get(iC)))
-          continue;
+      if (haveBsDisplay
+          && (!imesh.bsDisplay.get(iA) || !imesh.bsDisplay.get(iB) || !imesh.bsDisplay
+              .get(iC)))
+        continue;
       short nA = normixes[iA];
       short nB = normixes[iB];
       short nC = normixes[iC];
@@ -329,10 +338,11 @@ public class IsosurfaceRenderer extends MeshRenderer {
         colixB = vertexColixes[iB];
         colixC = vertexColixes[iC];
         if (isBicolorMap) {
-          if  (colixA != colixB || colixB != colixC)
+          if (colixA != colixB || colixB != colixC)
             continue;
           if (haveBsSlabGhost)
-            colixA = colixB = colixC = Graphics3D.copyColixTranslucency(imesh.slabColix, colixA);
+            colixA = colixB = colixC = Graphics3D.copyColixTranslucency(
+                imesh.slabColix, colixA);
         }
       }
       if (fill) {
@@ -340,12 +350,27 @@ public class IsosurfaceRenderer extends MeshRenderer {
           bsPolygons.set(i);
           continue;
         }
-        if (iShowTriangles) {
+        if (iB == iC) {
+          if (diam == Integer.MIN_VALUE) {
+            if (imesh.diameter <= 0) {
+              diam = viewer.getDotScale();
+            } else {
+              diam = viewer.getScreenDim() / 100;
+            }
+            if (diam < 1)
+              diam = 1;
+          }
+          setColix(colixA);
+          if (iA == iB)
+            g3d.fillSphere(diam, screens[iA]);
+          else
+            g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, diam, screens[iA], screens[iB]);
+        } else if (iShowTriangles) {
           g3d.fillTriangle(screens[iA], colixA, nA, screens[iB], colixB, nB,
               screens[iC], colixC, nC, 0.1f);
         } else {
-            g3d.fillTriangle(screens[iA], colixA, nA, screens[iB], colixB, nB,
-                screens[iC], colixC, nC);
+          g3d.fillTriangle(screens[iA], colixA, nA, screens[iB], colixB, nB,
+              screens[iC], colixC, nC);
         }
         if (iShowNormals)
           renderNormals();

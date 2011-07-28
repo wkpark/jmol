@@ -5886,12 +5886,13 @@ public class ScriptEvaluator {
         } else {
           // for (var x in {xx})....
           isOK = true;
+          String key_incr = (key + "_incr");
           if (v == null)
-            v = getContextVariableAsVariable(key);
+            v = getContextVariableAsVariable(key_incr);
           if (v == null) {
             if (key.startsWith("_"))
               error(ERROR_invalidArgument);
-            v = viewer.getOrSetNewVariable(key, true);
+            v = viewer.getOrSetNewVariable(key_incr, true);
           }
           if (!isForCheck || v.tok != Token.bitset && v.tok != Token.varray
               || v.intValue == Integer.MAX_VALUE) {
@@ -5899,8 +5900,8 @@ public class ScriptEvaluator {
               // someone messed with this variable -- do not continue!
               isOK = false;
             } else {
-              v.set(ScriptVariable.getVariable(bsOrList), false);
-              v.intValue = 1;
+                v.set(ScriptVariable.getVariable(bsOrList), false);
+                v.intValue = 1;
             }
           } else {
             v.intValue++;
@@ -5908,6 +5909,11 @@ public class ScriptEvaluator {
           isOK = isOK
               && (bsOrList instanceof BitSet ? ScriptVariable.bsSelect(v)
                   .cardinality() == 1 : v.intValue <= v.getList().size());
+          if (isOK) {
+            v = ScriptVariable.selectItem(v);
+            ScriptVariable t = getContextVariableAsVariable(key);
+            t.set(v, false);
+          }
         }
       }
       if (bsOrList == null)

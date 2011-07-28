@@ -324,6 +324,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     tokCommand = Token.nada;
     lastFlowCommand = null;
     tokenAndEquals = null;
+    tokInitialPlusPlus = Token.nada;
     setBraceCount = 0;
     bracketCount = 0;
     forPoint3 = -1;
@@ -618,6 +619,11 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       } else if (setBraceCount > 0 && endOfLine && ichToken < cchScript) {
         return CONTINUE;
       }
+      if (tokInitialPlusPlus != Token.nada) {
+        if (!isNewSet)
+          checkNewSetCommand();
+        tokenizePlusPlus(tokInitialPlusPlus, true);
+      }
       // end of command or comment
       iCommand = lltoken.size();
       if (thisFunction != null && thisFunction.cmdpt0 < 0) {
@@ -698,6 +704,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       ptNewSetModifier = 1;
       ltoken.clear();
       nTokens = nSemiSkip = 0;
+      tokInitialPlusPlus = Token.nada;
       tokenAndEquals = null;
       ptSemi = -10;
       forPoint3 = -1;
@@ -814,6 +821,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
   }
 
   private boolean isUserToken;
+  private int tokInitialPlusPlus;
   
   private String getPrefixToken() {
     String ident = script.substring(ichToken, ichToken + cchToken);
@@ -1252,14 +1260,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         checkNewSetCommand();
       if (isNewSet && parenCount == 0 && bracketCount == 0
           && ichToken <= setEqualPt) {
-        nTokens = ltoken.size();
-        addTokenToPrefix(Token.tokenEquals);
-        setEqualPt = 0;
-        for (int i = 1; i < nTokens; i++)
-          addTokenToPrefix(ltoken.get(i));
-        addTokenToPrefix(theTok == Token.minusMinus ? Token.tokenMinus
-            : Token.tokenPlus);
-        addTokenToPrefix(Token.intToken(1));
+        tokenizePlusPlus(theTok, false);
         return CONTINUE;
       } else if (nSemiSkip == forPoint3 && nTokens == ptSemi + 2) {
         token = lastToken;
@@ -1343,6 +1344,22 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         return ERROR(ERROR_tokenUnexpected, "]");
     }
     return OK;
+  }
+
+  private void tokenizePlusPlus(int tok, boolean isPlusPlusX) {
+    //   ++ipt;   or ipt++
+    if (isPlusPlusX) {
+      setCommand(Token.tokenSet);
+      ltoken.add(0, tokenCommand);
+    }
+    nTokens = ltoken.size();
+    addTokenToPrefix(Token.tokenEquals);
+    setEqualPt = 0;
+    for (int i = 1; i < nTokens; i++)
+      addTokenToPrefix(ltoken.get(i));
+    addTokenToPrefix(tok == Token.minusMinus ? Token.tokenMinus
+        : Token.tokenPlus);
+    addTokenToPrefix(Token.intToken(1));
   }
 
   private boolean checkNewSetCommand() {
@@ -1430,6 +1447,9 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         switch (theTok) {
         case Token.plusPlus:
         case Token.minusMinus:
+          tokInitialPlusPlus = theTok;
+          tokCommand = Token.nada;
+          return CONTINUE;
         case Token.identifier:
         case Token.var:
         case Token.define:
@@ -1702,7 +1722,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     bracketCount = 0;
     setEqualPt = Integer.MAX_VALUE;
     ptNewSetModifier = (isNewSet ? (ident.equals("(") ? 2 : 1) : Integer.MAX_VALUE);
-    return (isSetBrace ? theToken : new Token(Token.identifier, ident));
+    return ((isSetBrace || theToken.tok == Token.plusPlus || theToken.tok == Token.minusMinus)? theToken : new Token(Token.identifier, ident));
   }
 
   private char nextChar() {

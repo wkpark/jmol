@@ -1264,6 +1264,8 @@ public class SurfaceGenerator {
       return new ObjReader(this, br);
     if (fileType.equals("Msms"))
       return new MsmsReader(this, params.fileName, br);
+    if (fileType.equals("Kinemage"))
+      return new KinemageReader(this, br);
     return null;
   }
 

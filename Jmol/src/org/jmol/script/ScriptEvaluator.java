@@ -4235,7 +4235,7 @@ public class ScriptEvaluator {
       n = fparams.length;
       break;
     case Token.varray:
-      fparams = ScriptVariable.flistValue(statement[i], 0); 
+      fparams = ScriptVariable.flistValue(statement[i++], 0); 
       n = fparams.length;
       break;
     default:

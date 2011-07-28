@@ -116,7 +116,7 @@ public class SurfaceTool {
     //Boundbox used by SurfaceTool to encompass these.
     box = checkMeshBB(shapes,JmolConstants.SHAPE_ISOSURFACE, box);
     box = checkMeshBB(shapes,JmolConstants.SHAPE_PMESH, box);
-    //TODO MOs...script parser doesn't treat them as isosurfaces...
+    //TODO
 //    box = checkMeshBB(shapes,JmolConstants.SHAPE_MO, box);
     if (box!=null){
       center.set(box.getBoundBoxCenter());
@@ -173,6 +173,7 @@ public class SurfaceTool {
     surfaceKind.clear();
     updateMeshInfo(shapes,JmolConstants.SHAPE_ISOSURFACE);
     updateMeshInfo(shapes,JmolConstants.SHAPE_PMESH);
+    //TODO
 //    updateMeshInfo(shapes,JmolConstants.SHAPE_MO);
   }
 
@@ -229,6 +230,7 @@ private void updateMeshInfo(Shape[] shapes, int kind){
   private boolean lefton = false;
   private boolean righton = false;
   private boolean ghoston = false;
+  private boolean capon = false;
   private boolean useMolecular = false;
   private boolean usePercent = false;
 
@@ -381,6 +383,9 @@ private void updateMeshInfo(Shape[] shapes, int kind){
     case JmolConstants.SHAPE_PMESH:
       cmdStart = "pmesh";
       break;
+    case JmolConstants.SHAPE_MO:
+      cmdStart = "mo";
+      break;
     }
       String ghostStr = (ghoston ? "translucent 0.8 mesh " : "");
       //      String cmd = "isosurface " + objectName + " off;";
@@ -400,8 +405,9 @@ private void updateMeshInfo(Shape[] shapes, int kind){
     return;
   }
   
-  private static void getSlabOption(StringBuffer cmd, String prefix, Point4f plane) {
-    cmd.append(" slab ").append(prefix).append(Escape.escape(plane));
+  private void getSlabOption(StringBuffer cmd, String prefix, Point4f plane) {
+    String slabCapStr = (capon ? " cap ":" slab ");
+    cmd.append(slabCapStr).append(prefix).append(Escape.escape(plane));
   }
 
   private void drawSlicePlane(StringBuffer cmd, int side,
@@ -485,5 +491,13 @@ private void updateMeshInfo(Shape[] shapes, int kind){
   
   String[] getAngleUnitsList(){
     return angleUnitsList;
+  }
+
+  boolean getCapOn() {
+    return capon;
+  }
+  
+  void setCapOn(boolean b){
+    capon = b;
   }
 }

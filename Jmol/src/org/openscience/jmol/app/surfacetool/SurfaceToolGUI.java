@@ -72,12 +72,14 @@ class SurfaceToolGUI extends JPanel implements
   private JFrame slicerFrame;
   private SurfaceTool slicer;
   private JPanel objectsPanel;
-  private JPanel unitsPanel;
+  private JPanel topPanel;
   private JPanel angleUnitsPanel;
   private JComboBox angleUnitsList;
   private JPanel originPanel;
   private JRadioButton viewCenterButton;
   private JRadioButton absoluteButton;
+  private JCheckBox capCheck;
+  private JPanel capPlanesPanel;
   private JPanel ghostPanel;
   private JCheckBox ghostCheck;
   private JCheckBox boundaryPlaneCheck;
@@ -131,17 +133,8 @@ class SurfaceToolGUI extends JPanel implements
       //Create and set up the content pane.
       setOpaque(true); //content panes must be opaque
 
-      //Units panel
-      unitsPanel = new JPanel(new GridLayout(1, 0));
-      angleUnitsPanel = new JPanel(new GridLayout(0, 1));
-      String [] angleUnits = slicer.getAngleUnitsList();
-      angleUnitsList = new JComboBox(angleUnits);
-      angleUnitsList.setSelectedIndex(slicer.getAngleUnits());
-      angleUnitsList.addActionListener(this);
-      angleUnitsPanel.add(angleUnitsList);
-      angleUnitsPanel
-          .setBorder(BorderFactory.createTitledBorder(GT._("Angle Units")));
-
+      //Top panel
+      topPanel = new JPanel(new GridLayout(1, 0));
       whichOrigin = new ButtonGroup();
       originPanel = new JPanel(new GridLayout(0, 1));
       if (slicer.getUseMolecular()) {
@@ -159,29 +152,50 @@ class SurfaceToolGUI extends JPanel implements
       originPanel.add(absoluteButton);
       originPanel.setBorder(BorderFactory.createTitledBorder(GT._("Origin")));
 
+      capPlanesPanel = new JPanel(new GridLayout(0,1));
+      capCheck = new JCheckBox(GT._("Cap"));
+      capCheck.setToolTipText(GT._("Caps slice with opaque surfaces."));
+      capCheck.setSelected(slicer.getCapOn());
+      capCheck.addActionListener(this);
+      capPlanesPanel.add(capCheck);
+      boundaryPlaneCheck = new JCheckBox(GT._("Slice Planes"));
+      boundaryPlaneCheck.setToolTipText(GT._("Shows planes at slicing surfaces."));
+      boundaryPlaneCheck.setSelected(false);
+      slicer.showSliceBoundaryPlanes(false);
+      boundaryPlaneCheck.addActionListener(this);
+      capPlanesPanel.add(boundaryPlaneCheck);
+      
+      
       ghostPanel = new JPanel(new GridLayout(0, 1));
       ghostCheck = new JCheckBox(GT._("Ghost On"));
       ghostCheck.setSelected(slicer.getGhoston());
       ghostCheck.addActionListener(this);
-      boundaryPlaneCheck = new JCheckBox(GT._("Slice Planes"));
-      boundaryPlaneCheck.setSelected(false);
-      slicer.showSliceBoundaryPlanes(false);
-      boundaryPlaneCheck.addActionListener(this);
+      ghostCheck.setToolTipText(GT._("Shows an unsliced \"ghost\"."));
       ghostPanel.add(ghostCheck);
-      ghostPanel.add(boundaryPlaneCheck);
 
-      unitsPanel.add(angleUnitsPanel);
-      unitsPanel.add(originPanel);
-      unitsPanel.add(ghostPanel);
-      unitsPanel.setSize(200, 40);
+      topPanel.add(originPanel);
+      topPanel.add(capPlanesPanel);
+      topPanel.add(ghostPanel);
+      topPanel.setSize(200, 40);
 
       //slider panel
       sliderPanel = new JPanel(new GridLayout(0, 1));
       normAnglePanel = new JPanel(new GridLayout(0, 1));
+      angleUnitsPanel = new JPanel(new BorderLayout());
+      JLabel space = new JLabel("   ");
+      angleUnitsPanel.add(space,BorderLayout.WEST);
+      String [] angleUnits = slicer.getAngleUnitsList();
+      angleUnitsList = new JComboBox(angleUnits);
+      angleUnitsList.setSelectedIndex(slicer.getAngleUnits());
+      angleUnitsList.addActionListener(this);
+      angleUnitsPanel.add(angleUnitsList,BorderLayout.EAST);
+      JPanel labelAndUnits = new JPanel(new GridLayout(1,0));
       JLabel sliderLabel = new JLabel(GT._("Angle from X-axis in XY plane"),
           SwingConstants.CENTER);
       sliderLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-      normAnglePanel.add(sliderLabel);
+      labelAndUnits.add(sliderLabel);
+      labelAndUnits.add(angleUnitsPanel);
+      normAnglePanel.add(labelAndUnits);
       angleXYSlider = new JSlider(0, 180, 0);
       angleXYSlider.setMajorTickSpacing(30);
       angleXYSlider.setPaintTicks(true);
@@ -230,7 +244,7 @@ class SurfaceToolGUI extends JPanel implements
       objectsPanel = new JPanel();
 
       //add everything
-      add(unitsPanel, BorderLayout.NORTH);
+      add(topPanel, BorderLayout.NORTH);
       add(sliderPanel, BorderLayout.SOUTH);
       add(objectsPanel, BorderLayout.EAST);
 
@@ -271,6 +285,10 @@ class SurfaceToolGUI extends JPanel implements
     }
     if (e.getSource() == boundaryPlaneCheck) {
       slicer.showSliceBoundaryPlanes(boundaryPlaneCheck.isSelected());
+    }
+    if (e.getSource()==capCheck){
+      slicer.setCapOn(capCheck.isSelected());
+      slicer.updateSlices();
     }
   }
 

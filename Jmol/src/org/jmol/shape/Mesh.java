@@ -71,7 +71,6 @@ public class Mesh extends MeshSurface {
   public int diameter;
   public float width;
   public Point3f ptCenter = new Point3f(0,0,0);
-  public String meshType;
   public Mesh linkedMesh; //for lcaoOrbitals
   public Map<String, BitSet> vertexColorMap;
   

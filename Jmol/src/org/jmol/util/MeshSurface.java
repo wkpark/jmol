@@ -17,6 +17,7 @@ public class MeshSurface {
 
   protected static final int SEED_COUNT = 25;
 
+  public String meshType;
   public int vertexCount;
   public Point3f[] vertices;
   public float[] vertexValues;
@@ -290,7 +291,7 @@ public class MeshSurface {
         vertexCount = vertexCount0;
         polygonCount0 = vertexCount0 = 0;
         bsSlabDisplay.set(0, (polygonCount == 0 ? vertexCount : polygonCount));
-        slabOptions = new StringBuffer(" slab none");
+        slabOptions = new StringBuffer(meshType + " slab none");
         bsSlabGhost = null;
         slabMeshType = Token.none;
       }
@@ -403,7 +404,7 @@ public class MeshSurface {
     if (slabOptions == null)
       slabOptions = new StringBuffer();
     if (slabOptions.indexOf(newOptions) < 0)
-      slabOptions.append(newOptions);
+      slabOptions.append(slabOptions.length() > 0 ? "; ": "").append(meshType).append(newOptions);      	
     return true;
   }
 

@@ -15901,7 +15901,14 @@ public class ScriptEvaluator {
         moNumber = Integer.MAX_VALUE;
       String propertyName = null;
       Object propertyValue = null;
+      
       switch (getToken(i).tok) {
+      case Token.cap:
+      case Token.slab:
+        propertyName = (String) theToken.value;
+        propertyValue = getCapSlabObject(i, false);
+        i = iToken;
+        break;
       case Token.integer:
         moNumber = intParameter(i);
         linearCombination = (moNumber >= 0 ? null : new float[] {-100, -moNumber});

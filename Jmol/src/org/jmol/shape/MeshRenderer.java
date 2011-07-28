@@ -151,7 +151,8 @@ public abstract class MeshRenderer extends ShapeRenderer {
       haveBsDisplay = (mesh.bsDisplay != null);
       haveBsSlabDisplay = (haveBsSlabGhost || mesh.bsSlabDisplay != null);
       bsSlab = (haveBsSlabGhost ? mesh.bsSlabGhost : haveBsSlabDisplay ? mesh.bsSlabDisplay : null);
-      frontOnly = !viewer.getSlabEnabled() && mesh.frontOnly && !mesh.isTwoSided;
+      frontOnly = !viewer.getSlabEnabled() && mesh.frontOnly 
+      && !mesh.isTwoSided && !haveBsSlabDisplay;
       screens = viewer.allocTempScreens(vertexCount);
       transformedVectors = g3d.getTransformedVertexVectors();
     }

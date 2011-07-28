@@ -809,10 +809,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       appendCmd(sb, id + " offset " + Escape.escape(imesh.ptOffset));
     if (imesh.scale3d != 0)
       appendCmd(sb, id + " scale3d " + imesh.scale3d);
-    if (imesh.slabOptions != null)
-      appendCmd(sb, id + imesh.slabOptions.toString());
     if (imesh.jvxlData.slabValue != Integer.MIN_VALUE)
       appendCmd(sb, id + " slab " + imesh.jvxlData.slabValue);
+    if (imesh.slabOptions != null)
+      appendCmd(sb, imesh.slabOptions.toString());
     if (cmd.charAt(0) != '#') {
       if (allowMesh)
         appendCmd(sb, imesh.getState(myType));
@@ -1145,7 +1145,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       if (thisMesh == null)
         allocMesh(null, null);
       if (!thisMesh.isMerged)
-        thisMesh.clear("isosurface", sg.getIAddGridPoints());
+        thisMesh.clear(myType, sg.getIAddGridPoints());
       thisMesh.connections = connections;
       thisMesh.colix = getDefaultColix();
       thisMesh.meshColix = meshColix;

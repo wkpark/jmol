@@ -25,6 +25,7 @@
 
 package org.jmol.shapesurface;
 
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.List;
@@ -46,7 +47,7 @@ public class MolecularOrbital extends Isosurface {
   @Override
   public void initShape() {
     super.initShape();
-    myType = "molecularOrbital";
+    myType = "mo";
     super.setProperty("thisID", "mo", null);
   }
 
@@ -76,6 +77,7 @@ public class MolecularOrbital extends Isosurface {
   private Map<String, Map<String, Object>> htModels;
   private Map<String, Object> thisModel;
 
+  @SuppressWarnings("unchecked")
   @Override
   public void setProperty(String propertyName, Object value, BitSet bs) {
 
@@ -102,6 +104,21 @@ public class MolecularOrbital extends Isosurface {
       return;
     }
 
+    if ("slab" == propertyName) {
+      Object[] slabInfo = (Object[]) value;
+      int tok = ((Integer) slabInfo[0]).intValue();
+      moSlab = (List<Object>) thisModel.get("slab");
+      if (moSlab == null)
+        thisModel.put("slab", moSlab = new ArrayList<Object>());
+      if (tok == Token.none) {
+        moSlab = null;
+        thisModel.remove("slab");
+        return;
+      }
+      moSlab.add(value);
+      return;
+    }
+    
     if ("cutoff" == propertyName) {
       thisModel.put("moCutoff", value);
       thisModel.put("moIsPositiveOnly", Boolean.FALSE);
@@ -331,6 +348,9 @@ public class MolecularOrbital extends Isosurface {
     //sg = null; // not Molecular Orbitals
   }
 
+  private List<Object> moSlab;
+  
+  @SuppressWarnings("unchecked")
   private boolean getSettings(String strID) {
     thisModel = htModels.get(strID);
     if (thisModel == null || thisModel.get("moNumber") == null)
@@ -351,6 +371,7 @@ public class MolecularOrbital extends Isosurface {
     moColorNeg = (Integer) thisModel.get("moColorNeg");
     moMonteCarloCount = (Integer) thisModel.get("monteCarloCount");
     moRandomSeed = (Integer) thisModel.get("randomSeed");
+    moSlab = (List<Object>) thisModel.get("slab");
     if (moRandomSeed == null)
       thisModel.put("randomSeed", moRandomSeed = Integer.valueOf(
           ((int) -System.currentTimeMillis())% 10000));
@@ -398,6 +419,9 @@ public class MolecularOrbital extends Isosurface {
     if (moPlane != null && moColorPos != null)
       super.setProperty("colorRGB", moColorPos, null);
     currentMesh.isColorSolid = false;
+    if (moSlab != null)
+      for (int i = 0; i < moSlab.size(); i++)
+        super.setProperty("slab", moSlab.get(i), null);
     if (moTranslucentLevel != null)
       super.setProperty("translucenctLevel", moTranslucentLevel, null);
     if (moTranslucency != null)
@@ -406,6 +430,7 @@ public class MolecularOrbital extends Isosurface {
     super.setProperty("token", Integer.valueOf(moMesh), null);
     super.setProperty("token", Integer.valueOf(moDots), null);
     super.setProperty("token", Integer.valueOf(moFrontOnly), null);
+    
     thisModel.put("mesh", currentMesh);
     return;
   }
@@ -448,6 +473,12 @@ public class MolecularOrbital extends Isosurface {
           + Escape.escapeColor(moColorNeg.intValue())
           + (moColorNeg.equals(moColorPos) ? "" : " "
               + Escape.escapeColor(moColorPos.intValue())));
+    if (moSlab != null) {
+      if (thisMesh.slabOptions != null)
+        appendCmd(s, thisMesh.slabOptions.toString());
+      if (thisMesh.jvxlData.slabValue != Integer.MIN_VALUE)
+        appendCmd(s, "mo slab " + thisMesh.jvxlData.slabValue);
+    }
     if (moLinearCombination == null) {
       appendCmd(s, "mo " + moNumber);
     } else {

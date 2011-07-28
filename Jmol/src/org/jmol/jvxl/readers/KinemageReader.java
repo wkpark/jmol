@@ -48,9 +48,16 @@ import org.jmol.util.Parser;
 
 class KinemageReader extends PmeshReader {
 
+  private final static int POINTS_ALL = 0;
+  private final static int POINTS_MCMC = 1;
+  private final static int POINTS_SCSC = 2;
+  private final static int POINTS_MCSC = 3;
+  private final static int POINTS_HETS = 4;
+  
   private int nDots = 0;
   private float vMin = -Float.MAX_VALUE;
   private float vMax = Float.MAX_VALUE;
+  private int pointType;
 
   /**
    * 
@@ -76,6 +83,7 @@ class KinemageReader extends PmeshReader {
     if (params.parameters != null && params.parameters.length >= 2) {
       vMin = params.parameters[1];
       vMax = (params.parameters.length >= 3 ? params.parameters[2] : vMin);
+      pointType = (params.parameters.length >= 4 ? (int) params.parameters[3] : POINTS_ALL);      
     }
   }
 
@@ -85,19 +93,24 @@ class KinemageReader extends PmeshReader {
     readLine();
     int n0;
     while (line != null) {
-      if (line.length() != 0 && line.charAt(0) == '@'
-          && line.indexOf("master={dots}") >= 0) {
-        String s = line;
-        if (line.indexOf("@dotlist") == 0) {
-          n0 = nDots;
-          readDots();
-          Logger.info((nDots - n0) + "/" + nDots + " " + s);
-          continue;
-        } else if (line.indexOf("@vectorlist") == 0) {
-          n0 = nPolygons; 
-          readVectors();
-          Logger.info((nPolygons - n0) + "/" + nPolygons + " " + s);
-          continue;
+      if (line.length() != 0 && line.charAt(0) == '@') {
+        Logger.info(line);
+        if (line.indexOf("contact}") >= 0 
+            || line.indexOf("overlap}") >= 0
+            || line.indexOf("H-bonds}") >= 0) {
+          if (line.indexOf("@dotlist") == 0) {
+            n0 = nDots;
+            readDots();
+            if (nDots > n0)
+              Logger.info("dots: " + (nDots - n0) + "/" + nDots);
+            continue;
+          } else if (line.indexOf("@vectorlist") == 0) {
+            n0 = nPolygons;
+            readVectors();
+            if (nPolygons > n0)
+              Logger.info("lines: " + (nPolygons - n0) + "/" + nPolygons);
+            continue;
+          }
         }
       }
       readLine();
@@ -114,7 +127,7 @@ class KinemageReader extends PmeshReader {
   private void readDots() throws Exception {
     int[] color = new int[1];
     while (readLine() != null && line.indexOf('@') < 0) {
-      int i = getPoint(line, 2, color);
+      int i = getPoint(line, 2, color, true);
       if (i < 0)
         continue;
       nDots++;
@@ -129,8 +142,8 @@ class KinemageReader extends PmeshReader {
   private void readVectors() throws Exception {
     int[] color = new int[1];
     while (readLine() != null && line.indexOf('@') < 0) {
-      int ia = getPoint(line, 3, color);
-      int ib = getPoint(line.substring(line.lastIndexOf('{')), 2, color);
+      int ia = getPoint(line, 3, color, true);
+      int ib = getPoint(line.substring(line.lastIndexOf('{')), 2, color, false);
       if (ia < 0 || ib < 0)
         continue;
       nPolygons++;
@@ -138,52 +151,33 @@ class KinemageReader extends PmeshReader {
     }
   }
 
-  /*
-char* assignGapColorForKin(float gap, int class) 
-{
-   char *colorValue = "";
-   if (class == 4)     { colorValue = "greentint "; } hbond
-   else if (gap > 0.35){ colorValue = "blue ";      }
-   else if (gap > 0.25){ colorValue = "sky ";       }
-   else if (gap > 0.15){ colorValue = "sea ";       }
-   else if (gap > 0.0) { colorValue = "green ";     }
-   else if (gap >-0.1) { colorValue = "yellowtint ";}
-   else if (gap >-0.2) { colorValue = "yellow ";    }
-   else if (gap >-0.3) { colorValue = "orange ";    }
-   else if (gap >-0.4) { colorValue = "red ";       }
-   else                { colorValue = "hotpink ";   }
-   return colorValue;
-}
-   */
-
-  /**
-   * C++ code gives these as " value > x.x ? "xxxxx", etc. 
-   * so technically we are off by a smidgeon. But they are the
-   * reference numbers, so we will use them inclusively instead.
-   * 
-   * @param color
-   * @return value or NaN if outsided desired range
-   */
-  private float assignValueFromGapColorForKin(String color) {
-     float value = (
-       color.equals("greentint") ? 4f
-         : color.equals("blue") ? 0.35f
-         : color.equals("sky") ? 0.25f
-         : color.equals("sea") ? 0.15f
-         : color.equals("green") ? 0.0f
-         : color.equals("yellowtint") ? -0.1f
-         : color.equals("yellow") ? -0.2f
-         : color.equals("orange") ? -0.3f
-         : color.equals("red") ? -0.4f
-         : -0.5f);
-     return (value >= vMin && value <= vMax ? value : Float.NaN);
-  }
-
-  private int getPoint(String line, int i, int[] retColor) {
+  private int getPoint(String line, int i, int[] retColor, boolean checkType) {
     String[] tokens = Parser.getTokens(line.substring(line.indexOf("}") + 1));
     float value = assignValueFromGapColorForKin(tokens[0]);
     if (Float.isNaN(value))
       return -1;
+    if (checkType && pointType != POINTS_ALL) {      
+      switch (tokens[i - 1].charAt(1)) {
+      case 'M':
+        if (pointType != POINTS_MCMC)
+          return -1;
+        break;
+      case 'S':
+        if (pointType != POINTS_SCSC)
+          return -1;
+        break;
+      case 'P':
+        if (pointType != POINTS_MCSC)
+          return -1;
+        break;
+      case 'O':
+        if (pointType != POINTS_HETS)
+          return -1;
+        break;
+      default:
+        return -1;
+      }
+    }
     retColor[0] = getColor(tokens[0]);
     tokens = Parser.getTokens(tokens[i].replace(',', ' '));
     Point3f pt = new Point3f(Parser.parseFloat(tokens[0]), Parser
@@ -201,6 +195,47 @@ char* assignGapColorForKin(float gap, int class)
     return Graphics3D.getArgbFromString(color); 
   }
   
+  /*
+  char* assignGapColorForKin(float gap, int class) 
+  {
+     char *colorValue = "";
+     if (class == 4)     { colorValue = "greentint "; } hbond
+     else if (gap > 0.35){ colorValue = "blue ";      }
+     else if (gap > 0.25){ colorValue = "sky ";       }
+     else if (gap > 0.15){ colorValue = "sea ";       }
+     else if (gap > 0.0) { colorValue = "green ";     }
+     else if (gap >-0.1) { colorValue = "yellowtint ";}
+     else if (gap >-0.2) { colorValue = "yellow ";    }
+     else if (gap >-0.3) { colorValue = "orange ";    }
+     else if (gap >-0.4) { colorValue = "red ";       }
+     else                { colorValue = "hotpink ";   }
+     return colorValue;
+  }
+     */
+
+    /**
+     * C++ code gives these as " value > x.x ? "xxxxx", etc. 
+     * so technically we are off by a smidgeon. But they are the
+     * reference numbers, so we will use them inclusively instead.
+     * 
+     * @param color
+     * @return value or NaN if outsided desired range
+     */
+    private float assignValueFromGapColorForKin(String color) {
+       float value = (
+         color.equals("greentint") ? 4f
+           : color.equals("blue") ? 0.35f
+           : color.equals("sky") ? 0.25f
+           : color.equals("sea") ? 0.15f
+           : color.equals("green") ? 0.0f
+           : color.equals("yellowtint") ? -0.1f
+           : color.equals("yellow") ? -0.2f
+           : color.equals("orange") ? -0.3f
+           : color.equals("red") ? -0.4f
+           : -0.5f);
+       return (value >= vMin && value <= vMax ? value : Float.NaN);
+    }
+
   
   @Override
   protected boolean readPolygons() {

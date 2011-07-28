@@ -66,7 +66,7 @@ public class SurfaceFileTyper {
     //System.out.println("");
     switch (line.charAt(0)) {
     case '@':
-      if (line.indexOf("@kinemage") >= 0)
+      if (line.indexOf("@text") == 0)
         return "Kinemage";
     case '#':
       if (line.indexOf(".obj") >= 0)

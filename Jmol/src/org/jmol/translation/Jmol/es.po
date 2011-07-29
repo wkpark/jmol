@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-07-26 20:38+0200\n"
+"POT-Creation-Date: 2011-07-29 23:21+0200\n"
 "PO-Revision-Date: 2011-07-27 08:36+0000\n"
 "Last-Translator: Angel Herráez <aherraez@users.sourceforge.net>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
@@ -67,8 +67,7 @@ msgstr "sin consola; toda la salida va a sysout"
 
 #: org/openscience/jmol/app/JmolApp.java:156
 msgid "send only output from print messages to console (implies -i)"
-msgstr ""
-"enviar sólo salida de mensajes de impresión a la consola (implica -i)"
+msgstr "enviar sólo salida de mensajes de impresión a la consola (implica -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:158
 msgid "independent command thread"
@@ -1331,59 +1330,71 @@ msgstr ""
 msgid "Units of Pi"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:271
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:325
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:348
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:273
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:327
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:350
 msgid "Percentage scaling not implemented yet!"
 msgstr "La escala en porcentaje no está aún implementada"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:123
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:125
 msgid "SurfaceTool"
 msgstr "Herramienta de superficies"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:143
-msgid "Angle Units"
-msgstr ""
-
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:148
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:151
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:141
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:144
 msgid "View Center"
 msgstr "Ver el centro"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:149
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:152
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:142
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:145
 msgid "Absolute"
 msgstr "Absoluto"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:160
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:153
 msgid "Origin"
 msgstr "Origen"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:163
-msgid "Ghost On"
-msgstr "Réplica activada"
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:156
+msgid "Cap"
+msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:166
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:157
+msgid "Caps slice with opaque surfaces."
+msgstr ""
+
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:161
 msgid "Slice Planes"
 msgstr "Planos de sección"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:181
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:162
+msgid "Shows planes at slicing surfaces."
+msgstr ""
+
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:170
+msgid "Ghost On"
+msgstr "Réplica activada"
+
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:173
+msgid "Shows an unsliced \"ghost\"."
+msgstr ""
+
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:193
 msgid "Angle from X-axis in XY plane"
 msgstr "Ángulo desde el eje X en el plano XY"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:190
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:204
 msgid "Angle from Z-axis"
 msgstr "Ángulo desde el eje Z"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:201
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:215
 msgid "Direction vector of normal to slice"
 msgstr "Vector de dirección de la normal a la sección"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:204
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:218
 msgid "Distance of slice from origin"
 msgstr "Distancia de la sección al origen"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:216
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:230
 msgid "Thickness of slice"
 msgstr "Grosor de la sección"
 
@@ -1774,23 +1785,18 @@ msgstr "no implementado"
 #~ msgid "vector"
 #~ msgstr "vector"
 
-#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Ir al primer {0} de la colección"
 
-#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Ir al {0} anterior de la colección"
 
-#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Reproducir toda la colección de {0}"
 
-#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Ir al siguiente {0} de la colección"
 
-#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Ir al último {0} de la colección"
 
@@ -1803,7 +1809,6 @@ msgstr "no implementado"
 #~ msgid "Show Selected"
 #~ msgstr "Mostrar las seleccionadas"
 
-#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -1812,15 +1817,12 @@ msgstr "no implementado"
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "añadiendo JmolPopIn.js"
 
-#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "añadiendo {0}.png"
 
-#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "añadiendo {0}.spt"
 
-#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."

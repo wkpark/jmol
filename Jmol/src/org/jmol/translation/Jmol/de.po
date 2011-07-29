@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2011-07-26 20:38+0200\n"
+"POT-Creation-Date: 2011-07-29 23:21+0200\n"
 "PO-Revision-Date: 2011-07-25 05:49+0000\n"
 "Last-Translator: Oliver Stueker <Unknown>\n"
 "Language-Team: German\n"
@@ -1336,60 +1336,71 @@ msgstr "Sammlung"
 msgid "Units of Pi"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:271
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:325
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:348
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:273
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:327
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:350
 msgid "Percentage scaling not implemented yet!"
 msgstr "Prozentuale Skalierung ist noch nicht verfügbar!"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:123
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:125
 msgid "SurfaceTool"
 msgstr "Oberflächen Tool"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:143
-#, fuzzy
-msgid "Angle Units"
-msgstr "Winkel"
-
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:148
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:151
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:141
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:144
 msgid "View Center"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:149
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:152
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:142
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:145
 msgid "Absolute"
 msgstr "Absolut"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:160
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:153
 msgid "Origin"
 msgstr "Ursprung"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:163
-msgid "Ghost On"
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:156
+msgid "Cap"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:166
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:157
+msgid "Caps slice with opaque surfaces."
+msgstr ""
+
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:161
 msgid "Slice Planes"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:181
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:162
+msgid "Shows planes at slicing surfaces."
+msgstr ""
+
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:170
+msgid "Ghost On"
+msgstr ""
+
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:173
+msgid "Shows an unsliced \"ghost\"."
+msgstr ""
+
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:193
 msgid "Angle from X-axis in XY plane"
 msgstr "Winkel zur X-Achse in der XY-Ebene"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:190
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:204
 msgid "Angle from Z-axis"
 msgstr "Winkel zur Z-Achse"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:201
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:215
 msgid "Direction vector of normal to slice"
 msgstr ""
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:204
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:218
 msgid "Distance of slice from origin"
 msgstr "Abstand der Scheibe vom Ursprung"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:216
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:230
 msgid "Thickness of slice"
 msgstr "Dicke der Scheibe"
 
@@ -1773,6 +1784,10 @@ msgstr "Ansicht herunterladen"
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr "nicht implementiert"
+
+#, fuzzy
+#~ msgid "Angle Units"
+#~ msgstr "Winkel"
 
 #~ msgid "atom set"
 #~ msgstr "Atomsatz"
